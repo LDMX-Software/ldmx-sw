@@ -39,9 +39,8 @@ class EcalVetoResult {
                     float stdLayerHit, float ecalBackEnergy,
                     int nStraightTracks, int nLinregTracks,
                     int firstNearPhLayer, int nNearPhHits,
-                    int photonTerritoryHits, float epAng, float epSep,
-                    float epDot,
-
+                    int photonTerritoryHits, float epAngAtEcal_,
+                    float epAngAtTarget_, float epSep, float epDotAtEcal_,
                     std::vector<float> electronContainmentEnergy,
                     std::vector<float> photonContainmentEnergy,
                     std::vector<float> outsideContainmentEnergy,
@@ -85,6 +84,9 @@ class EcalVetoResult {
   float getDisc() const { return discValue_; }
 
   bool getFiducial() const { return fiducial_; }
+
+  // Did ACTS find a recoil track in the tracker?
+  bool getTrackingFiducial() const { return tracking_fiducial_; }
 
   int getDeepestLayerHit() const { return deepestLayerHit_; }
 
@@ -214,6 +216,11 @@ class EcalVetoResult {
   void setDiscValue(float discValue) { discValue_ = discValue; }
   void setFiducial(bool fiducial) { fiducial_ = fiducial; }
 
+  // Fiducial from the recoil tracking point of view
+  void setTrackingFiducial(bool tracking_fiducial) {
+    tracking_fiducial_ = tracking_fiducial;
+  }
+
   /** Return the momentum of the recoil at the Ecal face. */
   const std::vector<double> getRecoilMomentum() const {
     return {recoilPx_, recoilPy_, recoilPz_};
@@ -234,9 +241,10 @@ class EcalVetoResult {
   int getFirstNearPhLayer() const { return firstNearPhLayer_; }
   int getNNearPhHits() const { return nNearPhHits_; }
   int getPhotonTerritoryHits() const { return photonTerritoryHits_; }
-  float getEPAng() const { return epAng_; }
+  float getEPAngAtEcal() const { return epAngAtEcal_; }
+  float getEPAngAtTarget() const { return epAngAtTarget_; }
   float getEPSep() const { return epSep_; }
-  float getEPDot() const { return epDot_; }
+  float getEPDotAtEcal() const { return epDotAtEcal_; }
 
  private:
   /** Flag indicating whether the event is vetoed by the Ecal. */
@@ -267,13 +275,19 @@ class EcalVetoResult {
   /// Number of hits in the photon territory
   int photonTerritoryHits_{0};
   /// Angular separation between the projected photon and electron trajectories
-  /// (currently unused)
-  float epAng_{0};
+  /// as projected at ECAL
+  float epAngAtEcal_{0};
+  /// Angular separation between the projected photon and electron trajectories
+  /// as at Target
+  float epAngAtTarget_{0};
   /// Distance between the projected photon and electron trajectories at the
   /// ECal face
   float epSep_{0};
-  /// Dot product of the photon and electron momenta unit vectors
-  float epDot_{0};
+  /// Dot product of the photon and electron momenta unit vectors as projected
+  /// at ECAL
+  float epDotAtEcal_{0};
+  /// Dot product of the photon and electron momenta unit vectors as at Target
+  float epDotAtTarget_{0};
 
   std::vector<float> electronContainmentEnergy_;
   std::vector<float> photonContainmentEnergy_;
@@ -312,6 +326,9 @@ class EcalVetoResult {
   /** is the recoil electron fiducial in ECAL?*/
   bool fiducial_{false};
 
+  /** is the recoil electron fiducial in Tracker?*/
+  bool tracking_fiducial_{false};
+
   /** px of recoil electron at the Ecal face. */
   double recoilPx_{-9999};
 
@@ -329,7 +346,7 @@ class EcalVetoResult {
 
   std::vector<float> ecalLayerEdepReadout_;
 
-  ClassDef(EcalVetoResult, 7);
+  ClassDef(EcalVetoResult, 8);
 };
 }  // namespace ldmx
 

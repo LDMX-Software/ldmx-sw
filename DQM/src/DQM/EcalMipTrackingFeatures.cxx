@@ -19,7 +19,8 @@ void EcalMipTrackingFeatures::analyze(const framework::Event &event) {
   histograms_.fill("n_straight_tracks", veto.getNStraightTracks());
   histograms_.fill("n_linreg_segments", veto.getNLinRegTracks());
   histograms_.fill("first_near_photon_layer", veto.getFirstNearPhLayer());
-  histograms_.fill("ep_ang", veto.getEPAng());
+  histograms_.fill("ep_ang_at_ecal", veto.getEPAngAtEcal());
+  histograms_.fill("ep_ang_at_target", veto.getEPAngAtTarget());
   histograms_.fill("ep_sep", veto.getEPSep());
   auto recoil_mom = veto.getRecoilMomentum();
   histograms_.fill("recoil_pz", recoil_mom[2]);
