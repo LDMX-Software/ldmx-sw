@@ -35,6 +35,14 @@ namespace hcal {
     featureListName_ = parameters.getParameter<std::string>("feature_list_name");
     // Load BDT ONNX file
     rt_ = std::make_unique<ldmx::Ort::ONNXRuntime>(parameters.getParameter<std::string>("bdt_file"));
+
+    bdtCutVal_ = parameters.getParameter<double>("disc_cut");
+
+    collectionName_ = parameters.getParameter<std::string>("collection_name");
+    rec_pass_name_ = parameters.getParameter<std::string>("rec_pass_name");
+    rec_coll_name_ = parameters.getParameter<std::string>("rec_coll_name");
+    recoil_from_tracking_ = parameters.getParameter<bool>("recoil_from_tracking");;
+    track_collection_ = parameters.getParameter<std::string>("track_collection");
   }
 
   void VisiblesVetoProcessor::clearProcessor() {
