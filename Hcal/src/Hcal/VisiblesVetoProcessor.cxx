@@ -125,11 +125,11 @@ namespace hcal {
 	  for (const ldmx::HcalHit &hit2 : hcalRecHits) {
 	    if (hit2.getEnergy() > 0.) {
 	      HcalID detID2(hit2.getID());
-	      if (detID2.getLayer() == detID.getLayer()) {
+	      if (detID2.getLayerID() == detID.getLayerID()) {
 		// Determine if a bar is vertical (along y-axis) or horizontal (along x-axis)
 		// Odd layers have horizontal strips
 		// Even layers have vertical strips
-		if (detID2.getLayer() % 2 == 0) {
+		if (detID2.getLayerID() % 2 == 0) {
 		  if (abs(hit2.getYPos() - y) > 0) {
 		    if (abs(hit2.getYPos() - y) < closestpoint) {
 		      closestpoint = abs(hit2.getYPos() - y);
