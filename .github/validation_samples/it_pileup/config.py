@@ -230,17 +230,9 @@ hcal_veto = hcal.HcalVetoProcessor()
 # but (at the debug level) is too much for commiting the gold log
 # into the git working tree on GitHub
 p.logger.termLevel = 1
-p.logger.custom(truth_tracking, level = 2)
-p.logger.custom(digi_tagger, level = 2)
-p.logger.custom(digi_recoil, level = 2)
-p.logger.custom(seeder_tagger, level = 2)
-p.logger.custom(seeder_recoil, level = 2)
-p.logger.custom(tracking_tagger, level = 1)
-p.logger.custom(tracking_recoil, level = 1)
-p.logger.custom(seed_tagger_dqm, level = 2)
-p.logger.custom(seed_recoil_dqm, level = 2)
-p.logger.custom(tagger_dqm, level = 2)
-p.logger.custom(recoil_dqm, level = 2)
+
+# Add full tracking for both tagger and recoil trackers: digi, seeds, CFK, ambiguity resolution, GSF, DQM
+p.sequence.extend(full_tracking_sequence.sequence)
 
 p.sequence.extend([
     digi_tagger,
