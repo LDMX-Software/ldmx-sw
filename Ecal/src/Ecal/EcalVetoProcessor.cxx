@@ -1023,8 +1023,8 @@ void EcalVetoProcessor::produce(framework::Event &event) {
   // ------------------------------------------------------
   // Linreg tracking:
   ldmx_log(info) << "Finding linreg tracks from a total of "
-                  << trackingHitList.size() << " hits using a radius of "
-                  << linreg_radius_ << " mm";
+                 << trackingHitList.size() << " hits using a radius of "
+                 << linreg_radius_ << " mm";
 
   for (int iHit = 0; iHit < trackingHitList.size(); iHit++) {
     // Hits being considered at a given time
