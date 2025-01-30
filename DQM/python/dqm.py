@@ -350,8 +350,10 @@ class EcalMipTrackingFeatures(ldmxcfg.Analyzer) :
                 'Num Linear Regression Segments',30,-0.5,29.5)
         self.build1DHistogram('first_near_photon_layer',
                 'First Near Photon Layer',34,-0.5,34.5)
-        self.build1DHistogram('ep_ang',
-                'Electron Photon Angle [degrees]',90,0.,90.)
+        self.build1DHistogram('ep_ang_at_ecal',
+                'Electron Photon Angle At Ecal [degrees]',90,0.,90.)
+        self.build1DHistogram('ep_ang_at_target',
+                'Electron Photon Angle At Target [degrees]',90,0.,90.)
         self.build1DHistogram('ep_sep',
                 'Electron Photon Separation',180,0.,180.)
         self.build1DHistogram('recoil_pz',

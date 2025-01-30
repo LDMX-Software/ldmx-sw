@@ -28,9 +28,10 @@ void EcalVetoResult::Clear() {
   firstNearPhLayer_ = 0;
   nNearPhHits_ = 0;
   photonTerritoryHits_ = 0;
-  epAng_ = 0;
+  epAngAtEcal_ = 0;
+  epAngAtTarget_ = 0;
   epSep_ = 0;
-  epDot_ = 0;
+  epDotAtEcal_ = 0;
 
   electronContainmentEnergy_.clear();
   photonContainmentEnergy_.clear();
@@ -79,8 +80,8 @@ void EcalVetoResult::setVariables(
     float summedTightIso, float maxCellDep, float showerRMS, float xStd,
     float yStd, float avgLayerHit, float stdLayerHit, float ecalBackEnergy,
     int nStraightTracks, int nLinregTracks, int firstNearPhLayer,
-    int nNearPhHits, int photonTerritoryHits, float epAng, float epSep,
-    float epDot,
+    int nNearPhHits, int photonTerritoryHits, float epAngAtEcal,
+    float epAngAtTarget, float epSep, float epDotAtEcal,
 
     std::vector<float> electronContainmentEnergy,
     std::vector<float> photonContainmentEnergy,
@@ -129,9 +130,10 @@ void EcalVetoResult::setVariables(
   firstNearPhLayer_ = firstNearPhLayer;
   nNearPhHits_ = nNearPhHits;
   photonTerritoryHits_ = photonTerritoryHits;
-  epAng_ = epAng;
+  epAngAtEcal_ = epAngAtEcal;
+  epAngAtTarget_ = epAngAtTarget;
   epSep_ = epSep;
-  epDot_ = epDot;
+  epDotAtEcal_ = epDotAtEcal;
 
   electronContainmentEnergy_ = electronContainmentEnergy;
   photonContainmentEnergy_ = photonContainmentEnergy;

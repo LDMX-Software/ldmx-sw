@@ -149,13 +149,16 @@ class EcalVetoProcessor : public framework::Producer {
   /// Number of hits near the photon trajectory
   int nNearPhHits_{0};
   /// Angular separation between the projected photon and electron trajectories
-  /// (currently unused)
-  float epAng_{0};
+  /// as projected at ECAL
+  float epAngAtEcal_{0};
+  /// Angular separation between the projected photon and electron trajectories
+  /// as at Target
+  float epAngAtTarget_{0};
   /// Distance between the projected photon and electron trajectories at the
   /// ECal face
   float epSep_{0};
   /// Dot product of the photon and electron momenta unit vectors
-  float epDot_{0};
+  float epDotAtEcal_{0};
   /// Number of hits in the photon territory
   int photonTerritoryHits_{0};
 
