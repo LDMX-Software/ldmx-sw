@@ -42,7 +42,7 @@ __main__() {
 
   start_group Compare to Golden Histograms
   if [[ "${_no_comp}" == "false" ]]; then
-    LDMXSW_VERSION=$(cat $GITHUB_ACTION_PATH/../../../../VERSION)
+    LDMXSW_VERSION=$(cat $GITHUB_ACTION_PATH/../../../../../VERSION)
     # assume sample directory has its gold histogram called 'gold.root'
     #   compare has 4 CLI inputs:
     #    gold_f, gold_label, test_f, test_label
