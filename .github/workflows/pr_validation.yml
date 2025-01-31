@@ -39,7 +39,7 @@ jobs:
       shell: bash
 
     - name: Package ldmx-sw Into Artifact
-      run: tar cf ldmx-sw-package.tar install/ .github/
+      run: tar cf ldmx-sw-package.tar install/ .github/ VERSION
 
     - name: Upload ldmx-sw Package
       uses: actions/upload-artifact@v4
