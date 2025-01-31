@@ -179,13 +179,13 @@ dqm_tagger_gsf.buildHistograms()
 
 # DQM for the recoil with GSF
 dqm_recoil_gsf = tkdqm.TrackingRecoDQM("RecoilGSFDQM")
-dqm_recoil_gsf.track_collection = GSF_recoil.out_trk_collection
-dqm_recoil_gsf.truth_collection = "RecoilTruthTracks"
-dqm_recoil_gsf.trackStates = ["ecal","target"]
-dqm_recoil_gsf.title = ""
-dqm_recoil_gsf.measurement_collection=digi_recoil.out_collection
-dqm_recoil_gsf.truth_hit_collection = "RecoilSimHits"
-dqm_recoil_gsf.buildHistograms()
+dqm_tagger_gsf = tkdqm.TrackingRecoDQM("TaggerDQM")
+dqm_tagger_gsf.truth_hit_collection="TaggerSimHits"
+dqm_tagger_gsf.truth_collection = "TaggerTruthTracks"
+dqm_tagger_gsf.trackStates = ["target"]
+dqm_tagger_gsf.title = ""
+dqm_tagger_gsf.measurement_collection=digi_tagger.out_collection
+dqm_tagger_gsf.buildHistograms()
 
 # Put it all together into a single sequance
 sequence = [
