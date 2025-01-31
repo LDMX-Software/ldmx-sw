@@ -110,7 +110,6 @@ GSF_recoil.trackCollection = greedy_solver_recoil.out_trk_collection
 GSF_recoil.measCollection  = digi_recoil.out_collection 
 GSF_recoil.out_trk_collection = "GSFRecoilTracks"
 
-
 # Running DQM for the collections above
 from LDMX.Tracking import dqm as tkdqm
 
@@ -128,7 +127,7 @@ dqm_seed_recoil.truth_collection = "RecoilTruthTracks"
 dqm_seed_recoil.title = ""
 dqm_seed_recoil.buildHistograms()
 
-# CKF DQM for the tagger
+# DQM for the tagger with CKF
 dqm_tagger_cfk = tkdqm.TrackingRecoDQM("TaggerDQM")
 dqm_tagger_cfk.track_collection = tracking_tagger.out_trk_collection
 dqm_tagger_cfk.truth_hit_collection="TaggerSimHits"
@@ -138,7 +137,7 @@ dqm_tagger_cfk.title = ""
 dqm_tagger_cfk.measurement_collection=digi_tagger.out_collection
 dqm_tagger_cfk.buildHistograms()
 
-# CKF DQM for the recoil
+# DQM for the recoil with CKF
 dqm_recoil_cfk = tkdqm.TrackingRecoDQM("RecoilDQM")
 dqm_recoil_cfk.track_collection = tracking_recoil.out_trk_collection
 dqm_recoil_cfk.truth_collection = "RecoilTruthTracks"
@@ -148,8 +147,8 @@ dqm_recoil_cfk.measurement_collection=digi_recoil.out_collection
 dqm_recoil_cfk.truth_hit_collection = "RecoilSimHits"
 dqm_recoil_cfk.buildHistograms()
 
-# GSF DQM for the tagger
-dqm_tagger_gsf = tkdqm.TrackingRecoDQM("TaggerDQM")
+# DQM for the tagger with GSF
+dqm_tagger_gsf = tkdqm.TrackingRecoDQM("TaggerGSFDQM")
 dqm_tagger_gsf.track_collection = GSF_tagger.out_trk_collection
 dqm_tagger_gsf.truth_hit_collection="TaggerSimHits"
 dqm_tagger_gsf.truth_collection = "TaggerTruthTracks"
@@ -158,8 +157,8 @@ dqm_tagger_gsf.title = ""
 dqm_tagger_gsf.measurement_collection=digi_tagger.out_collection
 dqm_tagger_gsf.buildHistograms()
 
-# GSF DQM for the recoil
-dqm_recoil_gsf = tkdqm.TrackingRecoDQM("RecoilDQM")
+# DQM for the recoil with GSF
+dqm_recoil_gsf = tkdqm.TrackingRecoDQM("RecoilGSFDQM")
 dqm_recoil_gsf.track_collection = GSF_recoil.out_trk_collection
 dqm_recoil_gsf.truth_collection = "RecoilTruthTracks"
 dqm_recoil_gsf.trackStates = ["ecal","target"]
