@@ -26,6 +26,8 @@ namespace hcal {
 
     void buildBDTFeatureVector(const ldmx::VisiblesVetoResult& result);
 
+    void saveAsCSV(const std::string& filename);
+
     int nLayersHit_{0};
     double xStd_{0};
     double yStd_{0};

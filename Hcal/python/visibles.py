@@ -43,6 +43,8 @@ class VisiblesVetoProcessor(ldmxcfg.Producer) :
 
         self.verbose = False
         self.feature_list_name = "input"
+        self.training = False
+        self.training_file = ""
         self.bdt_file = makeBDTPath("visibles_v1")
         self.beam_energy = 8000.0 # in MeV
         self.disc_cut = 0.99

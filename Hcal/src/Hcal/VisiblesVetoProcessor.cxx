@@ -36,6 +36,9 @@ namespace hcal {
     // Load BDT ONNX file
     rt_ = std::make_unique<ldmx::Ort::ONNXRuntime>(parameters.getParameter<std::string>("bdt_file"));
 
+    training_ = parameters.getParameter<bool>("training");
+    trainingFile_ = parameters.getParameter<std::string>("training_file")
+
     bdtCutVal_ = parameters.getParameter<double>("disc_cut");
 
     collectionName_ = parameters.getParameter<std::string>("collection_name");
@@ -205,6 +208,40 @@ namespace hcal {
 			rMeanFromPhotonProj_);
 
     buildBDTFeatureVector(result);
+
+    if (training_) {
+      
+      saveAsCSV(trainingFile_);
+    }
+
+    else {
+      ldmx::Ort::FloatArrays inputs({bdtFeatures_});
+      float pred = rt_->run({featuresListName_}, inputs, {"probabilities"})[0].at(1);
+      ldmx_log(info) << " Visibles BDT was ran, score is " << pred;
+
+      event.add(collectionName_, result);
+    }
+  }
+
+  void VisiblesVetoProcessor::saveAsCSV(const std::string& filename) {
+    // Check that a valid path to a file is created
+    std::filesystem::path filePath(filename);
+    if (!std::filesystem::exists(filePath.parent_path()) && !filePath.parent_path().empty()) {
+      std::cerr << "Error: Directory for BDT training file does not exist: "
+		<< filePath.parent_path() << std::endl;
+      return;
+    }
+    // Check that file can be opened and appended
+    std::ofstream file(filename, std::ios::app);
+    if (!file.is_open()) {
+      std::cerr << "Error: Could not open file " << filename << std::endl;
+      return;
+    }
+    
+    // Write features to file
+    for (int i = 0; i < bdtFeatures_.size(); ++i) {
+      file << bdtFeatures_[i] << (i + 1 == bdtFeatures_.size() ? "\n" : ",");
+    }
   }
   
 }
