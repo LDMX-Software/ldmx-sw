@@ -1263,7 +1263,7 @@ void EcalVetoProcessor::produce(framework::Event &event) {
 
   // Persist in the event if the recoil ele is fiducial
   result.setFiducial(inside_ecal_cell);
-  result.setFiducial(fiducial_in_tracker);
+  result.setTrackingFiducial(fiducial_in_tracker);
 
   // If the event passes the veto, keep it. Otherwise,
   // drop the event.

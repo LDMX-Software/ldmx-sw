@@ -19,6 +19,7 @@ void EcalVetoResults::analyze(const framework::Event &event) {
   histograms_.fill("bdt_disc", veto.getDisc());
   histograms_.fill("bdt_disc_log", -std::log10(1 - veto.getDisc()));
   histograms_.fill("fiducial", veto.getFiducial());
+  histograms_.fill("tracking_fiducial", veto.getTrackingFiducial());
   histograms_.fill("bdt_pass", veto.passesVeto());
 
   return;
