@@ -290,12 +290,9 @@ void EcalVetoProcessor::produce(framework::Event &event) {
     ldmx_log(debug) << "   Get projected trajectories for electron and photon";
   }
   // Get projected trajectories for electron and photon
-  std::vector<XYCoords> ele_trajectory, photon_trajectory,
-      ele_trajectory_at_target;
+  std::vector<XYCoords> ele_trajectory, photon_trajectory;
   if (!recoilP.empty() && !recoilPos.empty()) {
     ele_trajectory = getTrajectory(recoilP, recoilPos);
-    ele_trajectory_at_target =
-        getTrajectory(recoilPAtTarget, recoilPosAtTarget);
     std::vector<double> pvec = recoilPAtTarget.size()
                                    ? recoilPAtTarget
                                    : std::vector<double>{0.0, 0.0, 0.0};
@@ -304,6 +301,12 @@ void EcalVetoProcessor::produce(framework::Event &event) {
                                     : std::vector<float>{0.0, 0.0, 0.0};
     photon_trajectory =
         getTrajectory({-pvec[0], -pvec[1], beamEnergyMeV_ - pvec[2]}, posvec);
+  }
+  // Get trajectories for electron and photon at the target
+  std::vector<XYCoords> ele_trajectory_at_target;
+  if (!recoilPAtTarget.empty() && !recoilPosAtTarget.empty()) {
+    ele_trajectory_at_target =
+        getTrajectory(recoilPAtTarget, recoilPosAtTarget);
   }
 
   float recoilPMag =
