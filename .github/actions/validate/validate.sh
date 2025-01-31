@@ -46,7 +46,7 @@ __main__() {
     #   compare has 4 CLI inputs:
     #    gold_f, gold_label, test_f, test_label
     ldmx python3 $GITHUB_ACTION_PATH/compare.py \
-      gold.root $(LDMXSW_VERSION) hist.root ${GITHUB_REF} || return $?
+      gold.root ${LDMXSW_VERSION} hist.root ${GITHUB_REF} || return $?
 
     # print log diff into output directory
     cp -t ${_sample_dir}/plots gold.log output.log || return $?
