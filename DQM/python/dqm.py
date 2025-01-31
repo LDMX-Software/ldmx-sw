@@ -381,6 +381,8 @@ class EcalVetoResults(ldmxcfg.Analyzer) :
                 '-log(1-BDT discriminating score)',100,0.,5.)
         self.build1DHistogram('fiducial',
                 'Recoil eletron fiducial',2,-0.5,1.5)
+        self.build1DHistogram('tracking_fiducial',
+                'Recoil eletron fiducial in tracker',2,-0.5,1.5)
         self.build1DHistogram('bdt_pass',
                 'Event passed the ECal BDT',2,-0.5,1.5)
 
