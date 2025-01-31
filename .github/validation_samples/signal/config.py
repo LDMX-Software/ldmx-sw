@@ -69,9 +69,9 @@ count.input_pass_name = ''
 # Load the DQM modules
 from LDMX.DQM import dqm
 
-# Load ecal veto and dont use tracking in it
+# Load ecal veto and use tracking in it
 ecalVeto = ecal_vetos.EcalVetoProcessor()
-ecalVeto.recoil_from_tracking = False
+ecalVeto.recoil_from_tracking = True 
 
 # Load HCAL veto
 import LDMX.Hcal.hcal as hcal
