@@ -16,6 +16,8 @@
     <img src="https://github.com/LDMX-Software/ldmx-sw/actions/workflows/basic_test.yml/badge.svg" />
 </p>
 
+Test test test
+
 ## Start Up
 ldmx-sw is a large software project and so it is helpful to separate _using_ it to
 perform physics studies from _developing_ it to fix/improve/enable other studies.
