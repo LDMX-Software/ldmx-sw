@@ -97,7 +97,7 @@ p.sequence.extend([
         *ts_clusters,
         trigScintTrack, 
         count, TriggerProcessor('trigger', 8000.),
-        dqm.DarkBremInteraction(),
+        dqm.DarkBremInteraction()
         ])
 
 p.sequence.extend(dqm.all_dqm)
