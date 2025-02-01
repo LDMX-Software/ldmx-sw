@@ -47,9 +47,10 @@ void EcalPreselectionSkimmer::produce(framework::Event &event) {
                       (fiducial_level_ == 2 && !ecalVeto.getFiducial()));
 
   // Boolean to if we skim for fiducial / nonfiducial in tracker
-  trackerFiducialDecision = (tracking_fiducial_level_ == 0 ||
-                      (tracking_fiducial_level_ == 1 && ecalVeto.getTrackingFiducial()) ||
-                      (tracking_fiducial_level_ == 2 && !ecalVeto.getTrackingFiducial()));
+  trackerFiducialDecision =
+      (tracking_fiducial_level_ == 0 ||
+       (tracking_fiducial_level_ == 1 && ecalVeto.getTrackingFiducial()) ||
+       (tracking_fiducial_level_ == 2 && !ecalVeto.getTrackingFiducial()));
 
   // Boolean to check if we pass preselection
   passedPreselection =
@@ -63,7 +64,8 @@ void EcalPreselectionSkimmer::produce(framework::Event &event) {
       (ecalVeto.getMaxCellDep() < max_cell_dep_max_) &&
       (ecalVeto.getStdLayerHit() < std_layer_hit_max_) &&
       (ecalVeto.getNStraightTracks() < n_straight_tracks_max_) &&
-      (ecalVeto.getDisc() > bdt_disc_min_) && fiducialDecision && trackerFiducialDecision;
+      (ecalVeto.getDisc() > bdt_disc_min_) && fiducialDecision &&
+      trackerFiducialDecision;
 
   // Tell the skimmer to keep or drop the event based on whether preselection
   // passed
