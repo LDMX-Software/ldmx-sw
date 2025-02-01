@@ -67,6 +67,7 @@ class EcalPreselectionSkimmer : public framework::Producer {
    *  2: keep non-fid events only
    */
   int fiducial_level_;
+  int tracking_fiducial_level_;
 
 };  // EcalPreselectionSkimmer
 }  // namespace recon

@@ -29,6 +29,7 @@ void EcalPreselectionSkimmer::configure(framework::config::Parameters &ps) {
   n_straight_tracks_max_ = ps.getParameter<int>("n_straight_tracks_max");
   bdt_disc_min_ = ps.getParameter<double>("bdt_disc_min");
   fiducial_level_ = ps.getParameter<int>("fiducial_level");
+  tracking_fiducial_level_ = ps.getParameter<int>("tracking_fiducial_level");
 
   return;
 }
@@ -36,6 +37,7 @@ void EcalPreselectionSkimmer::configure(framework::config::Parameters &ps) {
 void EcalPreselectionSkimmer::produce(framework::Event &event) {
   bool passedPreselection{false};
   bool fiducialDecision{true};
+  bool trackerFiducialDecision{true};
   const auto &ecalVeto{
       event.getObject<ldmx::EcalVetoResult>(ecal_veto_name_, ecal_veto_pass_)};
 
@@ -43,6 +45,11 @@ void EcalPreselectionSkimmer::produce(framework::Event &event) {
   fiducialDecision = (fiducial_level_ == 0 ||
                       (fiducial_level_ == 1 && ecalVeto.getFiducial()) ||
                       (fiducial_level_ == 2 && !ecalVeto.getFiducial()));
+
+  // Boolean to if we skim for fiducial / nonfiducial in tracker
+  trackerFiducialDecision = (tracking_fiducial_level_ == 0 ||
+                      (tracking_fiducial_level_ == 1 && ecalVeto.getTrackingFiducial()) ||
+                      (tracking_fiducial_level_ == 2 && !ecalVeto.getTrackingFiducial()));
 
   // Boolean to check if we pass preselection
   passedPreselection =
@@ -56,7 +63,7 @@ void EcalPreselectionSkimmer::produce(framework::Event &event) {
       (ecalVeto.getMaxCellDep() < max_cell_dep_max_) &&
       (ecalVeto.getStdLayerHit() < std_layer_hit_max_) &&
       (ecalVeto.getNStraightTracks() < n_straight_tracks_max_) &&
-      (ecalVeto.getDisc() > bdt_disc_min_) && fiducialDecision;
+      (ecalVeto.getDisc() > bdt_disc_min_) && fiducialDecision && trackerFiducialDecision;
 
   // Tell the skimmer to keep or drop the event based on whether preselection
   // passed

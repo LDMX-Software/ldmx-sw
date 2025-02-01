@@ -81,13 +81,6 @@ p.logger.termLevel = 1
 p.sequence.extend(full_tracking_sequence.sequence)
 
 p.sequence.extend([
-        digi_tagger,
-        digi_recoil,
-        truth_tracking,
-        seeder_tagger,
-        seeder_recoil,
-        tracking_tagger,
-        tracking_recoil,
         ecal_digi.EcalDigiProducer(),
         ecal_digi.EcalRecProducer(), 
         ecalVeto,
@@ -100,11 +93,7 @@ p.sequence.extend([
         TrigScintClusterProducer.pad3(),
         trigScintTrack, 
         count, TriggerProcessor('trigger', 8000.),
-        dqm.DarkBremInteraction(),
-        seed_tagger_dqm,
-        tagger_dqm,
-        seed_recoil_dqm,
-        recoil_dqm,
+        dqm.DarkBremInteraction()
         ])
 
 p.sequence.extend(dqm.all_dqm)
