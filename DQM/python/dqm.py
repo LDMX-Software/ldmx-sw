@@ -810,4 +810,4 @@ trigger_dqm = [
         ]
 
 
-all_dqm = ecal_dqm + hcal_dqm + recoil_dqm + trigScint_dqm + trigger_dqm
+all_dqm = ecal_dqm + hcal_dqm + trigScint_dqm + trigger_dqm
