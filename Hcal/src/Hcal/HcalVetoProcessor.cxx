@@ -55,6 +55,7 @@ void HcalVetoProcessor::configure(framework::config::Parameters &parameters) {
       parameters.getParameter<std::string>("track_collection", "RecoilTracks");
   dr_from_recoil_max_ =
       parameters.getParameter<double>("dr_from_recoil_max", 100);
+  inverse_skim_ = parameters.getParameter<bool>("inverse_skim");
 }
 
 void HcalVetoProcessor::produce(framework::Event &event) {
@@ -176,10 +177,18 @@ void HcalVetoProcessor::produce(framework::Event &event) {
   result.setTotalPE(total_PE);
   result.setNumValidHits(num_valid_hits);
 
-  if (passes_veto) {
+  // Skimming rules
+  if (passes_veto && !inverse_skim_) {
     setStorageHint(framework::hint_shouldKeep);
   } else {
     setStorageHint(framework::hint_shouldDrop);
+  }
+
+  // Inverse skimming rules
+  if (passes_veto && inverse_skim_) {
+    setStorageHint(framework::hint_shouldDrop);
+  } else {
+    setStorageHint(framework::hint_shouldKeep);
   }
 
   event.add(output_coll_name_, result);
