@@ -79,18 +79,24 @@ namespace hcal {
     // by reconstructed tracker information, when available
     std::vector<double> gamma_p(3);
     std::vector<float> gamma_x0(3);
-    if (event.exists("TargetScoringPlaneHits")) {
-      std::vector<ldmx::SimTrackerHit> targetSPHits =
-	event.getCollection<ldmx::SimTrackerHit>("TargetScoringPlaneHits");
-      for (auto const &it : particle_map) {
-	for (auto const &sphit : targetSPHits) {
-	  if (sphit.getPosition()[2] > 0) {
-	    if (it.first == sphit.getTrackID()) {
-	      if (it.second.getPdgID() == 11 && in_list(it.second.getParents(), 0)) {
-		gamma_x0 = sphit.getPosition();
-		gamma_p[0] = -1*sphit.getMomentum()[0];
-		gamma_p[1] = -1*sphit.getMomentum()[1];
-		gamma_p[2] = 8000 - sphit.getMomentum()[2]; // hard-coded for 8 GeV
+    if (recoil_from_tracking_) {
+      auto recoilTracks{event.getCollection<ldmx::Track>(track_collection_)};
+      // Fill this in later when you know how to use it
+    }
+    else {
+      if (event.exists("TargetScoringPlaneHits")) {
+	std::vector<ldmx::SimTrackerHit> targetSPHits =
+	  event.getCollection<ldmx::SimTrackerHit>("TargetScoringPlaneHits");
+	for (auto const &it : particle_map) {
+	  for (auto const &sphit : targetSPHits) {
+	    if (sphit.getPosition()[2] > 0) {
+	      if (it.first == sphit.getTrackID()) {
+		if (it.second.getPdgID() == 11 && in_list(it.second.getParents(), 0)) {
+		  gamma_x0 = sphit.getPosition();
+		  gamma_p[0] = -1*sphit.getMomentum()[0];
+		  gamma_p[1] = -1*sphit.getMomentum()[1];
+		  gamma_p[2] = 8000. - sphit.getMomentum()[2]; // hard-coded for 8 GeV
+		}
 	      }
 	    }
 	  }
@@ -107,64 +113,65 @@ namespace hcal {
     for (const ldmx::HcalHit & hit : hcalRecHits) {
       if (hit.getEnergy() > 0.) {
 	HcalID detID(hit.getID());
-	if (detID.getSection() == 0) { // looking for hits in the back Hcal
-	  nReadoutHits_ += 1;
-	  double x = hit.getXPos();
-	  double y = hit.getYPos();
-	  double z = hit.getZPos();
-	  double r = sqrt(pow(x,2) + pow(y,2));
+	if (detID.getSection() != 0) { // skip hits that aren't in main Hcal
+	  continue;
+	}
+	nReadoutHits_ += 1;
+	double x = hit.getXPos();
+	double y = hit.getYPos();
+	double z = hit.getZPos();
+	double r = sqrt(pow(x,2) + pow(y,2));
 
-	  summedDet_ += hit.getEnergy();
+	summedDet_ += hit.getEnergy();
 
-	  xMean_ += x*hit.getEnergy();
-	  yMean_ += y*hit.getEnergy();
-	  zMean  += z*hit.getEnergy();
-	  rMean_ += r*hit.getEnergy();
+	xMean_ += x*hit.getEnergy();
+	yMean_ += y*hit.getEnergy();
+	zMean  += z*hit.getEnergy();
+	rMean_ += r*hit.getEnergy();
 
-	  // check if this is a new layer
-	  if (!(std::find(layersHit.begin(), layersHit.end(), detID.getLayerID()) != layersHit.end())) {
-	    layersHit.push_back(detID.getLayerID());
-	  }
+	// check if this is a new layer in the collection
+	if (!(std::find(layersHit.begin(), layersHit.end(), detID.getLayerID()) != layersHit.end())) {
+	  layersHit.push_back(detID.getLayerID());
+	}
 
-	  double x_proj = gamma_x0[0] + (z - gamma_x0[2])*gamma_p[0]/gamma_p[2];
-	  double y_proj = gamma_x0[1] + (z - gamma_x0[2])*gamma_p[1]/gamma_p[2];
+	double x_proj = gamma_x0[0] + (z - gamma_x0[2])*gamma_p[0]/gamma_p[2];
+	double y_proj = gamma_x0[1] + (z - gamma_x0[2])*gamma_p[1]/gamma_p[2];
 
-	  rMeanFromPhotonProj_ += hit.getEnergy()*sqrt(pow(x-x_proj,2) + pow(y-y_proj,2));
+	rMeanFromPhotonProj_ += hit.getEnergy()*sqrt(pow(x-x_proj,2) + pow(y-y_proj,2));
 
-	  // Calculate isolated hits
-	  double closestpoint = 9999.;
-	  for (const ldmx::HcalHit &hit2 : hcalRecHits) {
-	    if (hit2.getEnergy() > 0.) {
-	      HcalID detID2(hit2.getID());
-	      if (detID2.getLayerID() == detID.getLayerID()) {
-		// Determine if a bar is vertical (along y-axis) or horizontal (along x-axis)
-		// Odd layers have horizontal strips
-		// Even layers have vertical strips
-		if (detID2.getLayerID() % 2 == 0) {
-		  if (abs(hit2.getYPos() - y) > 0) {
-		    if (abs(hit2.getYPos() - y) < closestpoint) {
-		      closestpoint = abs(hit2.getYPos() - y);
-		    }
+	// Calculate isolated hits
+	double closestpoint = 9999.;
+	for (const ldmx::HcalHit &hit2 : hcalRecHits) {
+	  if (hit2.getEnergy() > 0.) {
+	    HcalID detID2(hit2.getID());
+	    if (detID2.getLayerID() == detID.getLayerID()) {
+	      // Determine if a bar is vertical (along y-axis) or horizontal (along x-axis)
+	      // Odd layers have horizontal strips
+	      // Even layers have vertical strips
+	      if (detID2.getLayerID() % 2 == 0) {
+		if (abs(hit2.getYPos() - y) > 0) {
+		  if (abs(hit2.getYPos() - y) < closestpoint) {
+		    closestpoint = abs(hit2.getYPos() - y);
 		  }
 		}
-		else {
-		  if (abs(hit2.getXPos() - x) > 0) {
-		    if (abs(hit2.getXPos() - x) < closestpoint) {
-		      closestpoint = abs(hit2.getXPos() - x);
-		    }
+	      }
+	      else {
+		if (abs(hit2.getXPos() - x) > 0) {
+		  if (abs(hit2.getXPos() - x) < closestpoint) {
+		    closestpoint = abs(hit2.getXPos() - x);
 		  }
 		}
 	      }
 	    }
 	  }
-	  if (closestpoint > 50.) {
-	    isoHits_ += 1;
-	    isoEnergy_ += hit.getEnergy();
 	  }
+	if (closestpoint > 50.) {
+	  isoHits_ += 1;
+	  isoEnergy_ += hit.getEnergy();
 	}
       }
     }
-
+  
     nLayersHit_ = layersHit.size();
 
     if (summedDet_ > 0.) {
@@ -209,8 +216,7 @@ namespace hcal {
 
     buildBDTFeatureVector(result);
 
-    if (training_) {
-      
+    if (training_) {      
       saveAsCSV(trainingFile_);
     }
 
