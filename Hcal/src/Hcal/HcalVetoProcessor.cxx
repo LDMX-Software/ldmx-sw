@@ -178,17 +178,19 @@ void HcalVetoProcessor::produce(framework::Event &event) {
   result.setNumValidHits(num_valid_hits);
 
   // Skimming rules
-  if (passes_veto && !inverse_skim_) {
-    setStorageHint(framework::hint_shouldKeep);
+  if (!inverse_skim_) {
+    if (passes_veto) {
+      setStorageHint(framework::hint_shouldKeep);
+    } else {
+      setStorageHint(framework::hint_shouldDrop);
+    }
   } else {
-    setStorageHint(framework::hint_shouldDrop);
-  }
-
-  // Inverse skimming rules
-  if (passes_veto && inverse_skim_) {
-    setStorageHint(framework::hint_shouldDrop);
-  } else {
-    setStorageHint(framework::hint_shouldKeep);
+    // Inverse skimming rules
+    if (passes_veto) {
+      setStorageHint(framework::hint_shouldDrop);
+    } else {
+      setStorageHint(framework::hint_shouldKeep);
+    }
   }
 
   event.add(output_coll_name_, result);

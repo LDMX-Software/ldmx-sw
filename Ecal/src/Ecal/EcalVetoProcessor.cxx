@@ -1151,17 +1151,19 @@ void EcalVetoProcessor::produce(framework::Event &event) {
 
   // If the event passes the veto, keep it. Otherwise,
   // drop the event.
-  if (result.passesVeto() && !inverse_skim_) {
-    setStorageHint(framework::hint_shouldKeep);
+  if (!inverse_skim_) {
+    if (result.passesVeto()) {
+      setStorageHint(framework::hint_shouldKeep);
+    } else {
+      setStorageHint(framework::hint_shouldDrop);
+    }
   } else {
-    setStorageHint(framework::hint_shouldDrop);
-  }
-
-  // Invert the skimming logic
-  if (result.passesVeto() && inverse_skim_) {
-    setStorageHint(framework::hint_shouldDrop);
-  } else {
-    setStorageHint(framework::hint_shouldKeep);
+    // Invert the skimming logic
+    if (result.passesVeto()) {
+      setStorageHint(framework::hint_shouldDrop);
+    } else {
+      setStorageHint(framework::hint_shouldKeep);
+    }
   }
 
   event.add(collectionName_, result);
