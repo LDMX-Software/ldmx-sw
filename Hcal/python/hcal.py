@@ -22,6 +22,7 @@ class HcalVetoProcessor(ldmxcfg.Producer) :
         self.input_hit_coll_name= "HcalRecHits";
         self.input_hit_pass_name = ''
         self.output_coll_name= "HcalVeto";
+        self.inverse_skim = False;
 
 class HcalWABVetoProcessor(ldmxcfg.Producer) :
     """Configuration for WAB veto in HCal
