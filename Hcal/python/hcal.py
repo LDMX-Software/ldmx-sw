@@ -16,7 +16,7 @@ class HcalVetoProcessor(ldmxcfg.Producer) :
     def __init__(self,name = 'hcalVeto') :
         super().__init__(name,'hcal::HcalVetoProcessor','Hcal')
 
-        self.pe_threshold = 5.0
+        self.pe_threshold = 8.0
         self.max_time = 50.0
         self.back_min_pe = 1.
         self.input_hit_coll_name= "HcalRecHits";
