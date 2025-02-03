@@ -135,6 +135,7 @@ void EcalVetoProcessor::configure(framework::config::Parameters &parameters) {
   rec_coll_name_ = parameters.getParameter<std::string>("rec_coll_name");
   recoil_from_tracking_ = parameters.getParameter<bool>("recoil_from_tracking");
   track_collection_ = parameters.getParameter<std::string>("track_collection");
+  inverse_skim_ = parameters.getParameter<bool>("inverse_skim");
 }
 
 void EcalVetoProcessor::clearProcessor() {
@@ -1150,10 +1151,19 @@ void EcalVetoProcessor::produce(framework::Event &event) {
 
   // If the event passes the veto, keep it. Otherwise,
   // drop the event.
-  if (result.passesVeto()) {
-    setStorageHint(framework::hint_shouldKeep);
+  if (!inverse_skim_) {
+    if (result.passesVeto()) {
+      setStorageHint(framework::hint_shouldKeep);
+    } else {
+      setStorageHint(framework::hint_shouldDrop);
+    }
   } else {
-    setStorageHint(framework::hint_shouldDrop);
+    // Invert the skimming logic
+    if (result.passesVeto()) {
+      setStorageHint(framework::hint_shouldDrop);
+    } else {
+      setStorageHint(framework::hint_shouldKeep);
+    }
   }
 
   event.add(collectionName_, result);

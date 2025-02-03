@@ -28,6 +28,7 @@ class EcalVetoProcessor(ldmxcfg.Producer) :
         self.rec_pass_name = ''
         self.recoil_from_tracking = False # Will be True soon
         self.track_collection = 'RecoilTracks'
+        self.inverse_skim = False
 
 
 class DNNEcalVetoProcessor(ldmxcfg.Producer) :

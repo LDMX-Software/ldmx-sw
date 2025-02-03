@@ -93,6 +93,7 @@ class HcalVetoProcessor : public framework::Producer {
   bool exclude_recoil_ele_;
   std::string track_collection_;
   float dr_from_recoil_max_;
+  bool inverse_skim_{false};
 };  // HcalVetoProcessor
 }  // namespace hcal
 
