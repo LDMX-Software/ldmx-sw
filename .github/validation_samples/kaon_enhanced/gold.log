@@ -1072,7 +1072,7 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ simpleTrig ] 100  info: Got trigger energy cut 3000 for 1 electrons counted in the event.
 [ simpleTrig ] 100  info: Got trigger energy sum 3589.21; and decision is pass = false
 [ hcalVeto ] 100  info: There are 9 / 9 HCal hits read out. 9 are not associated with the recoil ele. Total PE of 27
-[ hcalVeto ] 100  info: HCAL veto passed? false
+[ hcalVeto ] 100  info: HCAL veto passed? true
 [ EcalProcessFilter ] 101  info: There were 101 Brem photon produced 16 particle via biasWrapper(photonNuclear) process.
 [ ecalVeto ] 101  info: Finding linreg tracks from a total of 50 hits using a radius of 35 mm
 [ ecalVeto ] 101  info:  MIP tracking completed; found 1 straight tracks and 5 lin-reg tracks
@@ -9117,7 +9117,7 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ simpleTrig ] 902  info: Got trigger energy cut 0 for 0 electrons counted in the event.
 [ simpleTrig ] 902  info: Got trigger energy sum 5700.56; and decision is pass = false
 [ hcalVeto ] 902  info: There are 4 / 6 HCal hits read out. 4 are not associated with the recoil ele. Total PE of 14
-[ hcalVeto ] 902  info: HCAL veto passed? false
+[ hcalVeto ] 902  info: HCAL veto passed? true
 [ EcalProcessFilter ] 903  info: There were 903 Brem photon produced 28 particle via biasWrapper(photonNuclear) process.
 [ ecalVeto ] 903  info: Finding linreg tracks from a total of 94 hits using a radius of 35 mm
 [ ecalVeto ] 903  info:  MIP tracking completed; found 9 straight tracks and 8 lin-reg tracks
@@ -12042,7 +12042,7 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ simpleTrig ] 1193  info: Got trigger energy cut 3000 for 1 electrons counted in the event.
 [ simpleTrig ] 1193  info: Got trigger energy sum 6161.86; and decision is pass = false
 [ hcalVeto ] 1193  info: There are 4 / 5 HCal hits read out. 4 are not associated with the recoil ele. Total PE of 13
-[ hcalVeto ] 1193  info: HCAL veto passed? false
+[ hcalVeto ] 1193  info: HCAL veto passed? true
 [ EcalProcessFilter ] 1194  info: There were 1194 Brem photon produced 91 particle via biasWrapper(photonNuclear) process.
 [ ecalVeto ] 1194  info: Finding linreg tracks from a total of 55 hits using a radius of 35 mm
 [ ecalVeto ] 1194  info:  MIP tracking completed; found 5 straight tracks and 7 lin-reg tracks
@@ -12102,7 +12102,7 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ simpleTrig ] 1199  info: Got trigger energy cut 3000 for 1 electrons counted in the event.
 [ simpleTrig ] 1199  info: Got trigger energy sum 7621.2; and decision is pass = false
 [ hcalVeto ] 1199  info: There are 14 / 15 HCal hits read out. 14 are not associated with the recoil ele. Total PE of 55
-[ hcalVeto ] 1199  info: HCAL veto passed? false
+[ hcalVeto ] 1199  info: HCAL veto passed? true
 [ EcalProcessFilter ] 1200  info: There were 1200 Brem photon produced 43 particle via biasWrapper(photonNuclear) process.
 [ ecalVeto ] 1200  info: Finding linreg tracks from a total of 106 hits using a radius of 35 mm
 [ ecalVeto ] 1200  info:  MIP tracking completed; found 3 straight tracks and 18 lin-reg tracks
@@ -15344,7 +15344,7 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ simpleTrig ] 1522  info: Got trigger energy cut 3000 for 1 electrons counted in the event.
 [ simpleTrig ] 1522  info: Got trigger energy sum 6692.57; and decision is pass = false
 [ hcalVeto ] 1522  info: There are 3 / 3 HCal hits read out. 3 are not associated with the recoil ele. Total PE of 11
-[ hcalVeto ] 1522  info: HCAL veto passed? false
+[ hcalVeto ] 1522  info: HCAL veto passed? true
 [ EcalProcessFilter ] 1523  info: There were 1523 Brem photon produced 8 particle via biasWrapper(photonNuclear) process.
 [ ecalVeto ] 1523  info: Finding linreg tracks from a total of 37 hits using a radius of 35 mm
 [ ecalVeto ] 1523  info:  MIP tracking completed; found 2 straight tracks and 5 lin-reg tracks
@@ -16188,7 +16188,7 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ simpleTrig ] 1606  info: Got trigger energy cut 3000 for 1 electrons counted in the event.
 [ simpleTrig ] 1606  info: Got trigger energy sum 6656.64; and decision is pass = false
 [ hcalVeto ] 1606  info: There are 6 / 6 HCal hits read out. 6 are not associated with the recoil ele. Total PE of 30
-[ hcalVeto ] 1606  info: HCAL veto passed? false
+[ hcalVeto ] 1606  info: HCAL veto passed? true
 [ EcalProcessFilter ] 1607  info: There were 1607 Brem photon produced 8 particle via biasWrapper(photonNuclear) process.
 [ ecalVeto ] 1607  info: Finding linreg tracks from a total of 40 hits using a radius of 35 mm
 [ ecalVeto ] 1607  info:  MIP tracking completed; found 6 straight tracks and 0 lin-reg tracks
@@ -16998,7 +16998,7 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ simpleTrig ] 1687  info: Got trigger energy cut 3000 for 1 electrons counted in the event.
 [ simpleTrig ] 1687  info: Got trigger energy sum 6688.96; and decision is pass = false
 [ hcalVeto ] 1687  info: There are 10 / 10 HCal hits read out. 10 are not associated with the recoil ele. Total PE of 37
-[ hcalVeto ] 1687  info: HCAL veto passed? false
+[ hcalVeto ] 1687  info: HCAL veto passed? true
 [ EcalProcessFilter ] 1688  info: There were 1688 Brem photon produced 3 particle via biasWrapper(photonNuclear) process.
 [ ecalVeto ] 1688  info: Finding linreg tracks from a total of 41 hits using a radius of 35 mm
 [ ecalVeto ] 1688  info:  MIP tracking completed; found 0 straight tracks and 0 lin-reg tracks
@@ -21030,7 +21030,7 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ simpleTrig ] 2089  info: Got trigger energy cut 3000 for 1 electrons counted in the event.
 [ simpleTrig ] 2089  info: Got trigger energy sum 6352.45; and decision is pass = false
 [ hcalVeto ] 2089  info: There are 15 / 15 HCal hits read out. 15 are not associated with the recoil ele. Total PE of 29
-[ hcalVeto ] 2089  info: HCAL veto passed? false
+[ hcalVeto ] 2089  info: HCAL veto passed? true
 [ EcalProcessFilter ] 2090  info: There were 2090 Brem photon produced 7 particle via biasWrapper(photonNuclear) process.
 [ ecalVeto ] 2090  info: Finding linreg tracks from a total of 94 hits using a radius of 35 mm
 [ ecalVeto ] 2090  info:  MIP tracking completed; found 9 straight tracks and 5 lin-reg tracks
@@ -26305,7 +26305,7 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ simpleTrig ] 2615  info: Got trigger energy cut 3000 for 1 electrons counted in the event.
 [ simpleTrig ] 2615  info: Got trigger energy sum 5983.98; and decision is pass = false
 [ hcalVeto ] 2615  info: There are 5 / 5 HCal hits read out. 5 are not associated with the recoil ele. Total PE of 14
-[ hcalVeto ] 2615  info: HCAL veto passed? false
+[ hcalVeto ] 2615  info: HCAL veto passed? true
 [ EcalProcessFilter ] 2616  info: There were 2616 Brem photon produced 19 particle via biasWrapper(photonNuclear) process.
 [ ecalVeto ] 2616  info: Finding linreg tracks from a total of 75 hits using a radius of 35 mm
 [ ecalVeto ] 2616  info:  MIP tracking completed; found 7 straight tracks and 1 lin-reg tracks
@@ -26406,7 +26406,7 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ simpleTrig ] 2625  info: Got trigger energy cut 3000 for 1 electrons counted in the event.
 [ simpleTrig ] 2625  info: Got trigger energy sum 6848.1; and decision is pass = false
 [ hcalVeto ] 2625  info: There are 6 / 6 HCal hits read out. 6 are not associated with the recoil ele. Total PE of 19
-[ hcalVeto ] 2625  info: HCAL veto passed? false
+[ hcalVeto ] 2625  info: HCAL veto passed? true
 [ EcalProcessFilter ] 2626  info: There were 2626 Brem photon produced 8 particle via biasWrapper(photonNuclear) process.
 [ ecalVeto ] 2626  info: Finding linreg tracks from a total of 34 hits using a radius of 35 mm
 [ ecalVeto ] 2626  info:  MIP tracking completed; found 1 straight tracks and 0 lin-reg tracks
@@ -27057,7 +27057,7 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ simpleTrig ] 2690  info: Got trigger energy cut 3000 for 1 electrons counted in the event.
 [ simpleTrig ] 2690  info: Got trigger energy sum 5811.4; and decision is pass = false
 [ hcalVeto ] 2690  info: There are 2 / 2 HCal hits read out. 2 are not associated with the recoil ele. Total PE of 8
-[ hcalVeto ] 2690  info: HCAL veto passed? false
+[ hcalVeto ] 2690  info: HCAL veto passed? true
 [ EcalProcessFilter ] 2691  info: There were 2691 Brem photon produced 9 particle via biasWrapper(photonNuclear) process.
 [ ecalVeto ] 2691  info: Finding linreg tracks from a total of 25 hits using a radius of 35 mm
 [ ecalVeto ] 2691  info:  MIP tracking completed; found 4 straight tracks and 0 lin-reg tracks
@@ -27447,7 +27447,7 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ simpleTrig ] 2729  info: Got trigger energy cut 3000 for 1 electrons counted in the event.
 [ simpleTrig ] 2729  info: Got trigger energy sum 6779.41; and decision is pass = false
 [ hcalVeto ] 2729  info: There are 4 / 4 HCal hits read out. 4 are not associated with the recoil ele. Total PE of 13
-[ hcalVeto ] 2729  info: HCAL veto passed? false
+[ hcalVeto ] 2729  info: HCAL veto passed? true
 [ EcalProcessFilter ] 2730  info: There were 2730 Brem photon produced 9 particle via biasWrapper(photonNuclear) process.
 [ ecalVeto ] 2730  info: Finding linreg tracks from a total of 60 hits using a radius of 35 mm
 [ ecalVeto ] 2730  info:  MIP tracking completed; found 7 straight tracks and 1 lin-reg tracks
@@ -30508,7 +30508,7 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ simpleTrig ] 3034  info: Got trigger energy cut 3000 for 1 electrons counted in the event.
 [ simpleTrig ] 3034  info: Got trigger energy sum 7555.8; and decision is pass = false
 [ hcalVeto ] 3034  info: There are 6 / 6 HCal hits read out. 6 are not associated with the recoil ele. Total PE of 12
-[ hcalVeto ] 3034  info: HCAL veto passed? false
+[ hcalVeto ] 3034  info: HCAL veto passed? true
 [ EcalProcessFilter ] 3035  info: There were 3035 Brem photon produced 12 particle via biasWrapper(photonNuclear) process.
 [ ecalVeto ] 3035  info: Finding linreg tracks from a total of 13 hits using a radius of 35 mm
 [ ecalVeto ] 3035  info:  MIP tracking completed; found 0 straight tracks and 0 lin-reg tracks
@@ -37547,7 +37547,7 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ simpleTrig ] 3735  info: Got trigger energy cut 3000 for 1 electrons counted in the event.
 [ simpleTrig ] 3735  info: Got trigger energy sum 7499.19; and decision is pass = false
 [ hcalVeto ] 3735  info: There are 2 / 2 HCal hits read out. 2 are not associated with the recoil ele. Total PE of 11
-[ hcalVeto ] 3735  info: HCAL veto passed? false
+[ hcalVeto ] 3735  info: HCAL veto passed? true
 [ EcalProcessFilter ] 3736  info: There were 3736 Brem photon produced 7 particle via biasWrapper(photonNuclear) process.
 [ ecalVeto ] 3736  info: Finding linreg tracks from a total of 51 hits using a radius of 35 mm
 [ ecalVeto ] 3736  info:  MIP tracking completed; found 2 straight tracks and 0 lin-reg tracks
@@ -38809,7 +38809,7 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ simpleTrig ] 3861  info: Got trigger energy cut 3000 for 1 electrons counted in the event.
 [ simpleTrig ] 3861  info: Got trigger energy sum 7798.5; and decision is pass = false
 [ hcalVeto ] 3861  info: There are 5 / 5 HCal hits read out. 5 are not associated with the recoil ele. Total PE of 9
-[ hcalVeto ] 3861  info: HCAL veto passed? false
+[ hcalVeto ] 3861  info: HCAL veto passed? true
 [ EcalProcessFilter ] 3862  info: There were 3862 Brem photon produced 8 particle via biasWrapper(photonNuclear) process.
 [ ecalVeto ] 3862  info: Finding linreg tracks from a total of 56 hits using a radius of 35 mm
 [ ecalVeto ] 3862  info:  MIP tracking completed; found 1 straight tracks and 1 lin-reg tracks
@@ -38999,7 +38999,7 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ simpleTrig ] 3880  info: Got trigger energy cut 3000 for 1 electrons counted in the event.
 [ simpleTrig ] 3880  info: Got trigger energy sum 4307.17; and decision is pass = false
 [ hcalVeto ] 3880  info: There are 8 / 8 HCal hits read out. 8 are not associated with the recoil ele. Total PE of 21
-[ hcalVeto ] 3880  info: HCAL veto passed? false
+[ hcalVeto ] 3880  info: HCAL veto passed? true
 [ EcalProcessFilter ] 3881  info: There were 3881 Brem photon produced 10 particle via biasWrapper(photonNuclear) process.
 [ ecalVeto ] 3881  info: Finding linreg tracks from a total of 48 hits using a radius of 35 mm
 [ ecalVeto ] 3881  info:  MIP tracking completed; found 8 straight tracks and 7 lin-reg tracks
@@ -47807,7 +47807,7 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ simpleTrig ] 4758  info: Got trigger energy cut 3000 for 1 electrons counted in the event.
 [ simpleTrig ] 4758  info: Got trigger energy sum 6742.16; and decision is pass = false
 [ hcalVeto ] 4758  info: There are 4 / 4 HCal hits read out. 4 are not associated with the recoil ele. Total PE of 9
-[ hcalVeto ] 4758  info: HCAL veto passed? false
+[ hcalVeto ] 4758  info: HCAL veto passed? true
 [ EcalProcessFilter ] 4759  info: There were 4759 Brem photon produced 3 particle via biasWrapper(photonNuclear) process.
 [ ecalVeto ] 4759  info: Finding linreg tracks from a total of 22 hits using a radius of 35 mm
 [ ecalVeto ] 4759  info:  MIP tracking completed; found 2 straight tracks and 3 lin-reg tracks
@@ -50258,15 +50258,15 @@ Setting detector for tracking to ldmx-det-v14-8gev
     Geant4 revision = 
     Gen0 Class = simcore::generators::ParticleGun
     Gen0 Particle = e-
-    ldmx-sw revision = 363d575d79975040fdc30aa9c4bfc4828bbb07ce
-    ldmx-sw version = v4.2.7
+    ldmx-sw revision = 9bf6acc1544ed7e7ac2834eb5d0a16cccefa6499
+    ldmx-sw version = 4.2.8
 }
 [ Simulator ] : Started 393794 events to produce 5000 events.
 [ Tagger_TrackFinder ] 5000  info: found 4956 tracks  / 5219 nseeds
 [ Tagger_TrackFinder ] 5000  info: AVG Time/Event: 0.4 ms
 [ Tagger_TrackFinder ] 5000  info: Breakdown::
 [ Tagger_TrackFinder ] 5000  info: setup       Avg Time/Event = 0.002 ms
-[ Tagger_TrackFinder ] 5000  info: hits        Avg Time/Event = 0.034 ms
+[ Tagger_TrackFinder ] 5000  info: hits        Avg Time/Event = 0.036 ms
 [ Tagger_TrackFinder ] 5000  info: seeds       Avg Time/Event = 0.005 ms
 [ Tagger_TrackFinder ] 5000  info: cf_setup    Avg Time/Event = 0.005 ms
 [ Tagger_TrackFinder ] 5000  info: ckf_run     Avg Time/Event = 0.000 ms
@@ -50275,7 +50275,7 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ Recoil_TrackFinder ] 5000  info: AVG Time/Event: 0.2 ms
 [ Recoil_TrackFinder ] 5000  info: Breakdown::
 [ Recoil_TrackFinder ] 5000  info: setup       Avg Time/Event = 0.001 ms
-[ Recoil_TrackFinder ] 5000  info: hits        Avg Time/Event = 0.037 ms
+[ Recoil_TrackFinder ] 5000  info: hits        Avg Time/Event = 0.040 ms
 [ Recoil_TrackFinder ] 5000  info: seeds       Avg Time/Event = 0.004 ms
 [ Recoil_TrackFinder ] 5000  info: cf_setup    Avg Time/Event = 0.002 ms
 [ Recoil_TrackFinder ] 5000  info: ckf_run     Avg Time/Event = 0.000 ms

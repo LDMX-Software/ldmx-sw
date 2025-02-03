@@ -37,8 +37,8 @@ RunHeader { run: 1, numTries: 769845, detectorName: ldmx-det-v14-8gev, descripti
     Geant4 revision = 
     Gen0 Class = simcore::generators::ParticleGun
     Gen0 Particle = e-
-    ldmx-sw revision = 363d575d79975040fdc30aa9c4bfc4828bbb07ce
-    ldmx-sw version = v4.2.7
+    ldmx-sw revision = 9bf6acc1544ed7e7ac2834eb5d0a16cccefa6499
+    ldmx-sw version = 4.2.8
 }
 [ OverlayProducer ] 1  info: Starting overlay process with pileup event number 3003 (random event number picked was 3004).
 [ ecalVetoBDT ] 1  info: Finding linreg tracks from a total of 96 hits using a radius of 35 mm
@@ -1081,7 +1081,7 @@ RunHeader { run: 1, numTries: 769845, detectorName: ldmx-det-v14-8gev, descripti
 [ ecalVetoBDT ] 116  info:  BDT was ran, score is 1.64509e-05
 [ ecalVetoBDT ] 116  info:  The pred > bdtCutVal = false and MIP tracking passed = false
 [ hcalVeto ] 116  info: There are 8 / 8 HCal hits read out. 8 are not associated with the recoil ele. Total PE of 10
-[ hcalVeto ] 116  info: HCAL veto passed? false
+[ hcalVeto ] 116  info: HCAL veto passed? true
 [ ElectronCounter ] 116  info: Found 2 electrons (tracks) using input collection TriggerPadTracksY_
 [ trigger ] 116  info: Got trigger energy cut 10790 for 2 electrons counted in the event.
 [ trigger ] 116  info: Got trigger energy sum 16103.2; and decision is pass = false
@@ -2062,7 +2062,7 @@ RunHeader { run: 1, numTries: 769845, detectorName: ldmx-det-v14-8gev, descripti
 [ ecalVetoBDT ] 225  info:  BDT was ran, score is 1.28746e-05
 [ ecalVetoBDT ] 225  info:  The pred > bdtCutVal = false and MIP tracking passed = false
 [ hcalVeto ] 225  info: There are 1 / 1 HCal hits read out. 1 are not associated with the recoil ele. Total PE of 5
-[ hcalVeto ] 225  info: HCAL veto passed? false
+[ hcalVeto ] 225  info: HCAL veto passed? true
 [ ElectronCounter ] 225  info: Found 2 electrons (tracks) using input collection TriggerPadTracksY_
 [ trigger ] 225  info: Got trigger energy cut 10790 for 2 electrons counted in the event.
 [ trigger ] 225  info: Got trigger energy sum 13849.3; and decision is pass = false
@@ -2189,7 +2189,7 @@ RunHeader { run: 1, numTries: 769845, detectorName: ldmx-det-v14-8gev, descripti
 [ ecalVetoBDT ] 239  info:  BDT was ran, score is 1.85966e-05
 [ ecalVetoBDT ] 239  info:  The pred > bdtCutVal = false and MIP tracking passed = false
 [ hcalVeto ] 239  info: There are 5 / 5 HCal hits read out. 5 are not associated with the recoil ele. Total PE of 19
-[ hcalVeto ] 239  info: HCAL veto passed? false
+[ hcalVeto ] 239  info: HCAL veto passed? true
 [ ElectronCounter ] 239  info: Found 2 electrons (tracks) using input collection TriggerPadTracksY_
 [ trigger ] 239  info: Got trigger energy cut 10790 for 2 electrons counted in the event.
 [ trigger ] 239  info: Got trigger energy sum 13471.5; and decision is pass = false
@@ -2252,7 +2252,7 @@ RunHeader { run: 1, numTries: 769845, detectorName: ldmx-det-v14-8gev, descripti
 [ ecalVetoBDT ] 246  info:  BDT was ran, score is 2.67029e-05
 [ ecalVetoBDT ] 246  info:  The pred > bdtCutVal = false and MIP tracking passed = false
 [ hcalVeto ] 246  info: There are 6 / 6 HCal hits read out. 6 are not associated with the recoil ele. Total PE of 13
-[ hcalVeto ] 246  info: HCAL veto passed? false
+[ hcalVeto ] 246  info: HCAL veto passed? true
 [ ElectronCounter ] 246  info: Found 2 electrons (tracks) using input collection TriggerPadTracksY_
 [ trigger ] 246  info: Got trigger energy cut 10790 for 2 electrons counted in the event.
 [ trigger ] 246  info: Got trigger energy sum 16115.7; and decision is pass = false
@@ -2649,7 +2649,7 @@ RunHeader { run: 1, numTries: 769845, detectorName: ldmx-det-v14-8gev, descripti
 [ ecalVetoBDT ] 290  info:  BDT was ran, score is 2.96831e-05
 [ ecalVetoBDT ] 290  info:  The pred > bdtCutVal = false and MIP tracking passed = false
 [ hcalVeto ] 290  info: There are 4 / 4 HCal hits read out. 4 are not associated with the recoil ele. Total PE of 15
-[ hcalVeto ] 290  info: HCAL veto passed? false
+[ hcalVeto ] 290  info: HCAL veto passed? true
 [ ElectronCounter ] 290  info: Found 1 electrons (tracks) using input collection TriggerPadTracksY_
 [ trigger ] 290  info: Got trigger energy cut 3000 for 1 electrons counted in the event.
 [ trigger ] 290  info: Got trigger energy sum 15067.7; and decision is pass = false
@@ -3172,7 +3172,7 @@ RunHeader { run: 1, numTries: 769845, detectorName: ldmx-det-v14-8gev, descripti
 [ ecalVetoBDT ] 348  info:  BDT was ran, score is 1.16825e-05
 [ ecalVetoBDT ] 348  info:  The pred > bdtCutVal = false and MIP tracking passed = false
 [ hcalVeto ] 348  info: There are 5 / 5 HCal hits read out. 5 are not associated with the recoil ele. Total PE of 16
-[ hcalVeto ] 348  info: HCAL veto passed? false
+[ hcalVeto ] 348  info: HCAL veto passed? true
 [ ElectronCounter ] 348  info: Found 2 electrons (tracks) using input collection TriggerPadTracksY_
 [ trigger ] 348  info: Got trigger energy cut 10790 for 2 electrons counted in the event.
 [ trigger ] 348  info: Got trigger energy sum 15127.1; and decision is pass = false
@@ -3253,7 +3253,7 @@ RunHeader { run: 1, numTries: 769845, detectorName: ldmx-det-v14-8gev, descripti
 [ ecalVetoBDT ] 357  info:  BDT was ran, score is 8.70228e-06
 [ ecalVetoBDT ] 357  info:  The pred > bdtCutVal = false and MIP tracking passed = false
 [ hcalVeto ] 357  info: There are 2 / 2 HCal hits read out. 2 are not associated with the recoil ele. Total PE of 10
-[ hcalVeto ] 357  info: HCAL veto passed? false
+[ hcalVeto ] 357  info: HCAL veto passed? true
 [ ElectronCounter ] 357  info: Found 2 electrons (tracks) using input collection TriggerPadTracksY_
 [ trigger ] 357  info: Got trigger energy cut 10790 for 2 electrons counted in the event.
 [ trigger ] 357  info: Got trigger energy sum 16066.2; and decision is pass = false
@@ -3334,7 +3334,7 @@ RunHeader { run: 1, numTries: 769845, detectorName: ldmx-det-v14-8gev, descripti
 [ ecalVetoBDT ] 366  info:  BDT was ran, score is 5.78165e-05
 [ ecalVetoBDT ] 366  info:  The pred > bdtCutVal = false and MIP tracking passed = false
 [ hcalVeto ] 366  info: There are 5 / 5 HCal hits read out. 5 are not associated with the recoil ele. Total PE of 11
-[ hcalVeto ] 366  info: HCAL veto passed? false
+[ hcalVeto ] 366  info: HCAL veto passed? true
 [ ElectronCounter ] 366  info: Found 2 electrons (tracks) using input collection TriggerPadTracksY_
 [ trigger ] 366  info: Got trigger energy cut 10790 for 2 electrons counted in the event.
 [ trigger ] 366  info: Got trigger energy sum 14292.4; and decision is pass = false
@@ -3577,7 +3577,7 @@ RunHeader { run: 1, numTries: 769845, detectorName: ldmx-det-v14-8gev, descripti
 [ ecalVetoBDT ] 393  info:  BDT was ran, score is 3.92199e-05
 [ ecalVetoBDT ] 393  info:  The pred > bdtCutVal = false and MIP tracking passed = false
 [ hcalVeto ] 393  info: There are 5 / 5 HCal hits read out. 5 are not associated with the recoil ele. Total PE of 13
-[ hcalVeto ] 393  info: HCAL veto passed? false
+[ hcalVeto ] 393  info: HCAL veto passed? true
 [ ElectronCounter ] 393  info: Found 2 electrons (tracks) using input collection TriggerPadTracksY_
 [ trigger ] 393  info: Got trigger energy cut 10790 for 2 electrons counted in the event.
 [ trigger ] 393  info: Got trigger energy sum 15646.2; and decision is pass = false
@@ -4685,7 +4685,7 @@ RunHeader { run: 1, numTries: 769845, detectorName: ldmx-det-v14-8gev, descripti
 [ ecalVetoBDT ] 516  info:  BDT was ran, score is 4.52995e-06
 [ ecalVetoBDT ] 516  info:  The pred > bdtCutVal = false and MIP tracking passed = false
 [ hcalVeto ] 516  info: There are 3 / 3 HCal hits read out. 3 are not associated with the recoil ele. Total PE of 13
-[ hcalVeto ] 516  info: HCAL veto passed? false
+[ hcalVeto ] 516  info: HCAL veto passed? true
 [ ElectronCounter ] 516  info: Found 2 electrons (tracks) using input collection TriggerPadTracksY_
 [ trigger ] 516  info: Got trigger energy cut 10790 for 2 electrons counted in the event.
 [ trigger ] 516  info: Got trigger energy sum 16219; and decision is pass = false
@@ -5641,7 +5641,7 @@ RunHeader { run: 1, numTries: 769845, detectorName: ldmx-det-v14-8gev, descripti
 [ ecalVetoBDT ] 622  info:  BDT was ran, score is 2.83718e-05
 [ ecalVetoBDT ] 622  info:  The pred > bdtCutVal = false and MIP tracking passed = false
 [ hcalVeto ] 622  info: There are 3 / 3 HCal hits read out. 3 are not associated with the recoil ele. Total PE of 12
-[ hcalVeto ] 622  info: HCAL veto passed? false
+[ hcalVeto ] 622  info: HCAL veto passed? true
 [ ElectronCounter ] 622  info: Found 2 electrons (tracks) using input collection TriggerPadTracksY_
 [ trigger ] 622  info: Got trigger energy cut 10790 for 2 electrons counted in the event.
 [ trigger ] 622  info: Got trigger energy sum 16911; and decision is pass = false
@@ -7803,7 +7803,7 @@ RunHeader { run: 1, numTries: 769845, detectorName: ldmx-det-v14-8gev, descripti
 [ ecalVetoBDT ] 862  info:  BDT was ran, score is 2.76566e-05
 [ ecalVetoBDT ] 862  info:  The pred > bdtCutVal = false and MIP tracking passed = false
 [ hcalVeto ] 862  info: There are 7 / 7 HCal hits read out. 7 are not associated with the recoil ele. Total PE of 25
-[ hcalVeto ] 862  info: HCAL veto passed? false
+[ hcalVeto ] 862  info: HCAL veto passed? true
 [ ElectronCounter ] 862  info: Found 2 electrons (tracks) using input collection TriggerPadTracksY_
 [ trigger ] 862  info: Got trigger energy cut 10790 for 2 electrons counted in the event.
 [ trigger ] 862  info: Got trigger energy sum 14099.4; and decision is pass = false
@@ -7839,7 +7839,7 @@ RunHeader { run: 1, numTries: 769845, detectorName: ldmx-det-v14-8gev, descripti
 [ ecalVetoBDT ] 866  info:  BDT was ran, score is 1.06096e-05
 [ ecalVetoBDT ] 866  info:  The pred > bdtCutVal = false and MIP tracking passed = false
 [ hcalVeto ] 866  info: There are 2 / 2 HCal hits read out. 2 are not associated with the recoil ele. Total PE of 10
-[ hcalVeto ] 866  info: HCAL veto passed? false
+[ hcalVeto ] 866  info: HCAL veto passed? true
 [ ElectronCounter ] 866  info: Found 2 electrons (tracks) using input collection TriggerPadTracksY_
 [ trigger ] 866  info: Got trigger energy cut 10790 for 2 electrons counted in the event.
 [ trigger ] 866  info: Got trigger energy sum 14337.7; and decision is pass = false
@@ -9998,7 +9998,7 @@ RunHeader { run: 1, numTries: 769845, detectorName: ldmx-det-v14-8gev, descripti
 [ ecalVetoBDT ] 1105  info:  BDT was ran, score is 1.78814e-05
 [ ecalVetoBDT ] 1105  info:  The pred > bdtCutVal = false and MIP tracking passed = false
 [ hcalVeto ] 1105  info: There are 4 / 4 HCal hits read out. 4 are not associated with the recoil ele. Total PE of 12
-[ hcalVeto ] 1105  info: HCAL veto passed? false
+[ hcalVeto ] 1105  info: HCAL veto passed? true
 [ ElectronCounter ] 1105  info: Found 2 electrons (tracks) using input collection TriggerPadTracksY_
 [ trigger ] 1105  info: Got trigger energy cut 10790 for 2 electrons counted in the event.
 [ trigger ] 1105  info: Got trigger energy sum 11252.3; and decision is pass = false
@@ -10124,7 +10124,7 @@ RunHeader { run: 1, numTries: 769845, detectorName: ldmx-det-v14-8gev, descripti
 [ ecalVetoBDT ] 1119  info:  BDT was ran, score is 1.60933e-05
 [ ecalVetoBDT ] 1119  info:  The pred > bdtCutVal = false and MIP tracking passed = false
 [ hcalVeto ] 1119  info: There are 9 / 9 HCal hits read out. 9 are not associated with the recoil ele. Total PE of 23
-[ hcalVeto ] 1119  info: HCAL veto passed? false
+[ hcalVeto ] 1119  info: HCAL veto passed? true
 [ ElectronCounter ] 1119  info: Found 2 electrons (tracks) using input collection TriggerPadTracksY_
 [ trigger ] 1119  info: Got trigger energy cut 10790 for 2 electrons counted in the event.
 [ trigger ] 1119  info: Got trigger energy sum 17062.9; and decision is pass = false
@@ -10367,7 +10367,7 @@ RunHeader { run: 1, numTries: 769845, detectorName: ldmx-det-v14-8gev, descripti
 [ ecalVetoBDT ] 1146  info:  BDT was ran, score is 5.84126e-06
 [ ecalVetoBDT ] 1146  info:  The pred > bdtCutVal = false and MIP tracking passed = false
 [ hcalVeto ] 1146  info: There are 6 / 6 HCal hits read out. 6 are not associated with the recoil ele. Total PE of 20
-[ hcalVeto ] 1146  info: HCAL veto passed? false
+[ hcalVeto ] 1146  info: HCAL veto passed? true
 [ ElectronCounter ] 1146  info: Found 2 electrons (tracks) using input collection TriggerPadTracksY_
 [ trigger ] 1146  info: Got trigger energy cut 10790 for 2 electrons counted in the event.
 [ trigger ] 1146  info: Got trigger energy sum 16252.3; and decision is pass = false
@@ -11377,7 +11377,7 @@ RunHeader { run: 1, numTries: 769845, detectorName: ldmx-det-v14-8gev, descripti
 [ ecalVetoBDT ] 1258  info:  BDT was ran, score is 2.26498e-05
 [ ecalVetoBDT ] 1258  info:  The pred > bdtCutVal = false and MIP tracking passed = false
 [ hcalVeto ] 1258  info: There are 7 / 7 HCal hits read out. 7 are not associated with the recoil ele. Total PE of 16
-[ hcalVeto ] 1258  info: HCAL veto passed? false
+[ hcalVeto ] 1258  info: HCAL veto passed? true
 [ ElectronCounter ] 1258  info: Found 1 electrons (tracks) using input collection TriggerPadTracksY_
 [ trigger ] 1258  info: Got trigger energy cut 3000 for 1 electrons counted in the event.
 [ trigger ] 1258  info: Got trigger energy sum 15511; and decision is pass = false
@@ -11971,7 +11971,7 @@ RunHeader { run: 1, numTries: 769845, detectorName: ldmx-det-v14-8gev, descripti
 [ ecalVetoBDT ] 1324  info:  BDT was ran, score is 1.96695e-05
 [ ecalVetoBDT ] 1324  info:  The pred > bdtCutVal = false and MIP tracking passed = false
 [ hcalVeto ] 1324  info: There are 5 / 5 HCal hits read out. 5 are not associated with the recoil ele. Total PE of 12
-[ hcalVeto ] 1324  info: HCAL veto passed? false
+[ hcalVeto ] 1324  info: HCAL veto passed? true
 [ ElectronCounter ] 1324  info: Found 2 electrons (tracks) using input collection TriggerPadTracksY_
 [ trigger ] 1324  info: Got trigger energy cut 10790 for 2 electrons counted in the event.
 [ trigger ] 1324  info: Got trigger energy sum 14213; and decision is pass = false
@@ -12151,7 +12151,7 @@ RunHeader { run: 1, numTries: 769845, detectorName: ldmx-det-v14-8gev, descripti
 [ ecalVetoBDT ] 1344  info:  BDT was ran, score is 3.05176e-05
 [ ecalVetoBDT ] 1344  info:  The pred > bdtCutVal = false and MIP tracking passed = false
 [ hcalVeto ] 1344  info: There are 4 / 4 HCal hits read out. 4 are not associated with the recoil ele. Total PE of 17
-[ hcalVeto ] 1344  info: HCAL veto passed? false
+[ hcalVeto ] 1344  info: HCAL veto passed? true
 [ ElectronCounter ] 1344  info: Found 2 electrons (tracks) using input collection TriggerPadTracksY_
 [ trigger ] 1344  info: Got trigger energy cut 10790 for 2 electrons counted in the event.
 [ trigger ] 1344  info: Got trigger energy sum 15946.2; and decision is pass = false
@@ -14568,7 +14568,7 @@ RunHeader { run: 1, numTries: 769845, detectorName: ldmx-det-v14-8gev, descripti
 [ ecalVetoBDT ] 1612  info:  BDT was ran, score is 2.80142e-05
 [ ecalVetoBDT ] 1612  info:  The pred > bdtCutVal = false and MIP tracking passed = false
 [ hcalVeto ] 1612  info: There are 2 / 2 HCal hits read out. 2 are not associated with the recoil ele. Total PE of 9
-[ hcalVeto ] 1612  info: HCAL veto passed? false
+[ hcalVeto ] 1612  info: HCAL veto passed? true
 [ ElectronCounter ] 1612  info: Found 2 electrons (tracks) using input collection TriggerPadTracksY_
 [ trigger ] 1612  info: Got trigger energy cut 10790 for 2 electrons counted in the event.
 [ trigger ] 1612  info: Got trigger energy sum 13628.2; and decision is pass = false
@@ -16109,7 +16109,7 @@ RunHeader { run: 1, numTries: 769845, detectorName: ldmx-det-v14-8gev, descripti
 [ ecalVetoBDT ] 1783  info:  BDT was ran, score is 5.59092e-05
 [ ecalVetoBDT ] 1783  info:  The pred > bdtCutVal = false and MIP tracking passed = false
 [ hcalVeto ] 1783  info: There are 2 / 2 HCal hits read out. 2 are not associated with the recoil ele. Total PE of 10
-[ hcalVeto ] 1783  info: HCAL veto passed? false
+[ hcalVeto ] 1783  info: HCAL veto passed? true
 [ ElectronCounter ] 1783  info: Found 2 electrons (tracks) using input collection TriggerPadTracksY_
 [ trigger ] 1783  info: Got trigger energy cut 10790 for 2 electrons counted in the event.
 [ trigger ] 1783  info: Got trigger energy sum 15448.4; and decision is pass = false
@@ -16848,7 +16848,7 @@ RunHeader { run: 1, numTries: 769845, detectorName: ldmx-det-v14-8gev, descripti
 [ ecalVetoBDT ] 1865  info:  BDT was ran, score is 6.67572e-06
 [ ecalVetoBDT ] 1865  info:  The pred > bdtCutVal = false and MIP tracking passed = false
 [ hcalVeto ] 1865  info: There are 1 / 1 HCal hits read out. 1 are not associated with the recoil ele. Total PE of 6
-[ hcalVeto ] 1865  info: HCAL veto passed? false
+[ hcalVeto ] 1865  info: HCAL veto passed? true
 [ ElectronCounter ] 1865  info: Found 2 electrons (tracks) using input collection TriggerPadTracksY_
 [ trigger ] 1865  info: Got trigger energy cut 10790 for 2 electrons counted in the event.
 [ trigger ] 1865  info: Got trigger energy sum 14054.2; and decision is pass = false
@@ -17210,7 +17210,7 @@ RunHeader { run: 1, numTries: 769845, detectorName: ldmx-det-v14-8gev, descripti
 [ ecalVetoBDT ] 1905  info:  BDT was ran, score is 2.18153e-05
 [ ecalVetoBDT ] 1905  info:  The pred > bdtCutVal = false and MIP tracking passed = false
 [ hcalVeto ] 1905  info: There are 1 / 1 HCal hits read out. 1 are not associated with the recoil ele. Total PE of 6
-[ hcalVeto ] 1905  info: HCAL veto passed? false
+[ hcalVeto ] 1905  info: HCAL veto passed? true
 [ ElectronCounter ] 1905  info: Found 2 electrons (tracks) using input collection TriggerPadTracksY_
 [ trigger ] 1905  info: Got trigger energy cut 10790 for 2 electrons counted in the event.
 [ trigger ] 1905  info: Got trigger energy sum 14881.7; and decision is pass = false
@@ -17354,7 +17354,7 @@ RunHeader { run: 1, numTries: 769845, detectorName: ldmx-det-v14-8gev, descripti
 [ ecalVetoBDT ] 1921  info:  BDT was ran, score is 3.09944e-06
 [ ecalVetoBDT ] 1921  info:  The pred > bdtCutVal = false and MIP tracking passed = false
 [ hcalVeto ] 1921  info: There are 5 / 5 HCal hits read out. 5 are not associated with the recoil ele. Total PE of 16
-[ hcalVeto ] 1921  info: HCAL veto passed? false
+[ hcalVeto ] 1921  info: HCAL veto passed? true
 [ ElectronCounter ] 1921  info: Found 2 electrons (tracks) using input collection TriggerPadTracksY_
 [ trigger ] 1921  info: Got trigger energy cut 10790 for 2 electrons counted in the event.
 [ trigger ] 1921  info: Got trigger energy sum 15339.2; and decision is pass = false
@@ -17993,7 +17993,7 @@ RunHeader { run: 1, numTries: 769845, detectorName: ldmx-det-v14-8gev, descripti
 [ ecalVetoBDT ] 1992  info:  BDT was ran, score is 1.14441e-05
 [ ecalVetoBDT ] 1992  info:  The pred > bdtCutVal = false and MIP tracking passed = false
 [ hcalVeto ] 1992  info: There are 1 / 1 HCal hits read out. 1 are not associated with the recoil ele. Total PE of 6
-[ hcalVeto ] 1992  info: HCAL veto passed? false
+[ hcalVeto ] 1992  info: HCAL veto passed? true
 [ ElectronCounter ] 1992  info: Found 2 electrons (tracks) using input collection TriggerPadTracksY_
 [ trigger ] 1992  info: Got trigger energy cut 10790 for 2 electrons counted in the event.
 [ trigger ] 1992  info: Got trigger energy sum 15759.4; and decision is pass = false
@@ -18311,7 +18311,7 @@ RunHeader { run: 1, numTries: 769845, detectorName: ldmx-det-v14-8gev, descripti
 [ ecalVetoBDT ] 2027  info:  BDT was ran, score is 4.17233e-06
 [ ecalVetoBDT ] 2027  info:  The pred > bdtCutVal = false and MIP tracking passed = false
 [ hcalVeto ] 2027  info: There are 4 / 4 HCal hits read out. 4 are not associated with the recoil ele. Total PE of 13
-[ hcalVeto ] 2027  info: HCAL veto passed? false
+[ hcalVeto ] 2027  info: HCAL veto passed? true
 [ ElectronCounter ] 2027  info: Found 2 electrons (tracks) using input collection TriggerPadTracksY_
 [ trigger ] 2027  info: Got trigger energy cut 10790 for 2 electrons counted in the event.
 [ trigger ] 2027  info: Got trigger energy sum 12970.6; and decision is pass = false
@@ -21399,7 +21399,7 @@ RunHeader { run: 1, numTries: 769845, detectorName: ldmx-det-v14-8gev, descripti
 [ ecalVetoBDT ] 2370  info:  BDT was ran, score is 7.39098e-06
 [ ecalVetoBDT ] 2370  info:  The pred > bdtCutVal = false and MIP tracking passed = false
 [ hcalVeto ] 2370  info: There are 2 / 2 HCal hits read out. 2 are not associated with the recoil ele. Total PE of 7
-[ hcalVeto ] 2370  info: HCAL veto passed? false
+[ hcalVeto ] 2370  info: HCAL veto passed? true
 [ ElectronCounter ] 2370  info: Found 2 electrons (tracks) using input collection TriggerPadTracksY_
 [ trigger ] 2370  info: Got trigger energy cut 10790 for 2 electrons counted in the event.
 [ trigger ] 2370  info: Got trigger energy sum 13747.4; and decision is pass = false
@@ -21867,7 +21867,7 @@ RunHeader { run: 1, numTries: 769845, detectorName: ldmx-det-v14-8gev, descripti
 [ ecalVetoBDT ] 2422  info:  BDT was ran, score is 9.17912e-06
 [ ecalVetoBDT ] 2422  info:  The pred > bdtCutVal = false and MIP tracking passed = false
 [ hcalVeto ] 2422  info: There are 11 / 11 HCal hits read out. 11 are not associated with the recoil ele. Total PE of 26
-[ hcalVeto ] 2422  info: HCAL veto passed? false
+[ hcalVeto ] 2422  info: HCAL veto passed? true
 [ ElectronCounter ] 2422  info: Found 2 electrons (tracks) using input collection TriggerPadTracksY_
 [ trigger ] 2422  info: Got trigger energy cut 10790 for 2 electrons counted in the event.
 [ trigger ] 2422  info: Got trigger energy sum 14153.7; and decision is pass = false
@@ -23444,7 +23444,7 @@ RunHeader { run: 1, numTries: 769845, detectorName: ldmx-det-v14-8gev, descripti
 [ ecalVetoBDT ] 2597  info:  BDT was ran, score is 8.34465e-06
 [ ecalVetoBDT ] 2597  info:  The pred > bdtCutVal = false and MIP tracking passed = false
 [ hcalVeto ] 2597  info: There are 2 / 2 HCal hits read out. 2 are not associated with the recoil ele. Total PE of 7
-[ hcalVeto ] 2597  info: HCAL veto passed? false
+[ hcalVeto ] 2597  info: HCAL veto passed? true
 [ ElectronCounter ] 2597  info: Found 2 electrons (tracks) using input collection TriggerPadTracksY_
 [ trigger ] 2597  info: Got trigger energy cut 10790 for 2 electrons counted in the event.
 [ trigger ] 2597  info: Got trigger energy sum 15099.7; and decision is pass = false
@@ -24471,7 +24471,7 @@ RunHeader { run: 1, numTries: 769845, detectorName: ldmx-det-v14-8gev, descripti
 [ ecalVetoBDT ] 2711  info:  BDT was ran, score is 8.70228e-06
 [ ecalVetoBDT ] 2711  info:  The pred > bdtCutVal = false and MIP tracking passed = false
 [ hcalVeto ] 2711  info: There are 3 / 3 HCal hits read out. 3 are not associated with the recoil ele. Total PE of 11
-[ hcalVeto ] 2711  info: HCAL veto passed? false
+[ hcalVeto ] 2711  info: HCAL veto passed? true
 [ ElectronCounter ] 2711  info: Found 2 electrons (tracks) using input collection TriggerPadTracksY_
 [ trigger ] 2711  info: Got trigger energy cut 10790 for 2 electrons counted in the event.
 [ trigger ] 2711  info: Got trigger energy sum 16733.8; and decision is pass = false
@@ -24534,7 +24534,7 @@ RunHeader { run: 1, numTries: 769845, detectorName: ldmx-det-v14-8gev, descripti
 [ ecalVetoBDT ] 2718  info:  BDT was ran, score is 1.20401e-05
 [ ecalVetoBDT ] 2718  info:  The pred > bdtCutVal = false and MIP tracking passed = false
 [ hcalVeto ] 2718  info: There are 5 / 5 HCal hits read out. 5 are not associated with the recoil ele. Total PE of 13
-[ hcalVeto ] 2718  info: HCAL veto passed? false
+[ hcalVeto ] 2718  info: HCAL veto passed? true
 [ ElectronCounter ] 2718  info: Found 2 electrons (tracks) using input collection TriggerPadTracksY_
 [ trigger ] 2718  info: Got trigger energy cut 10790 for 2 electrons counted in the event.
 [ trigger ] 2718  info: Got trigger energy sum 15491.5; and decision is pass = false
@@ -25336,7 +25336,7 @@ RunHeader { run: 1, numTries: 769845, detectorName: ldmx-det-v14-8gev, descripti
 [ ecalVetoBDT ] 2807  info:  BDT was ran, score is 4.76837e-06
 [ ecalVetoBDT ] 2807  info:  The pred > bdtCutVal = false and MIP tracking passed = false
 [ hcalVeto ] 2807  info: There are 1 / 1 HCal hits read out. 1 are not associated with the recoil ele. Total PE of 6
-[ hcalVeto ] 2807  info: HCAL veto passed? false
+[ hcalVeto ] 2807  info: HCAL veto passed? true
 [ ElectronCounter ] 2807  info: Found 2 electrons (tracks) using input collection TriggerPadTracksY_
 [ trigger ] 2807  info: Got trigger energy cut 10790 for 2 electrons counted in the event.
 [ trigger ] 2807  info: Got trigger energy sum 14605.3; and decision is pass = false
@@ -25516,7 +25516,7 @@ RunHeader { run: 1, numTries: 769845, detectorName: ldmx-det-v14-8gev, descripti
 [ ecalVetoBDT ] 2827  info:  BDT was ran, score is 2.82526e-05
 [ ecalVetoBDT ] 2827  info:  The pred > bdtCutVal = false and MIP tracking passed = false
 [ hcalVeto ] 2827  info: There are 10 / 10 HCal hits read out. 10 are not associated with the recoil ele. Total PE of 24
-[ hcalVeto ] 2827  info: HCAL veto passed? false
+[ hcalVeto ] 2827  info: HCAL veto passed? true
 [ ElectronCounter ] 2827  info: Found 2 electrons (tracks) using input collection TriggerPadTracksY_
 [ trigger ] 2827  info: Got trigger energy cut 10790 for 2 electrons counted in the event.
 [ trigger ] 2827  info: Got trigger energy sum 15895.7; and decision is pass = false
@@ -25795,7 +25795,7 @@ RunHeader { run: 1, numTries: 769845, detectorName: ldmx-det-v14-8gev, descripti
 [ ecalVetoBDT ] 2858  info:  BDT was ran, score is 2.37226e-05
 [ ecalVetoBDT ] 2858  info:  The pred > bdtCutVal = false and MIP tracking passed = false
 [ hcalVeto ] 2858  info: There are 6 / 6 HCal hits read out. 6 are not associated with the recoil ele. Total PE of 20
-[ hcalVeto ] 2858  info: HCAL veto passed? false
+[ hcalVeto ] 2858  info: HCAL veto passed? true
 [ ElectronCounter ] 2858  info: Found 2 electrons (tracks) using input collection TriggerPadTracksY_
 [ trigger ] 2858  info: Got trigger energy cut 10790 for 2 electrons counted in the event.
 [ trigger ] 2858  info: Got trigger energy sum 15329.5; and decision is pass = false
@@ -26798,7 +26798,7 @@ RunHeader { run: 1, numTries: 769845, detectorName: ldmx-det-v14-8gev, descripti
 [ ecalVetoBDT ] 2969  info:  BDT was ran, score is 3.52859e-05
 [ ecalVetoBDT ] 2969  info:  The pred > bdtCutVal = false and MIP tracking passed = false
 [ hcalVeto ] 2969  info: There are 6 / 6 HCal hits read out. 6 are not associated with the recoil ele. Total PE of 27
-[ hcalVeto ] 2969  info: HCAL veto passed? false
+[ hcalVeto ] 2969  info: HCAL veto passed? true
 [ ElectronCounter ] 2969  info: Found 2 electrons (tracks) using input collection TriggerPadTracksY_
 [ trigger ] 2969  info: Got trigger energy cut 10790 for 2 electrons counted in the event.
 [ trigger ] 2969  info: Got trigger energy sum 14045.1; and decision is pass = false
@@ -27124,7 +27124,7 @@ RunHeader { run: 1, numTries: 769845, detectorName: ldmx-det-v14-8gev, descripti
 [ ecalVetoBDT ] 3005  info:  BDT was ran, score is 6.07967e-06
 [ ecalVetoBDT ] 3005  info:  The pred > bdtCutVal = false and MIP tracking passed = false
 [ hcalVeto ] 3005  info: There are 11 / 11 HCal hits read out. 11 are not associated with the recoil ele. Total PE of 26
-[ hcalVeto ] 3005  info: HCAL veto passed? false
+[ hcalVeto ] 3005  info: HCAL veto passed? true
 [ ElectronCounter ] 3005  info: Found 1 electrons (tracks) using input collection TriggerPadTracksY_
 [ trigger ] 3005  info: Got trigger energy cut 3000 for 1 electrons counted in the event.
 [ trigger ] 3005  info: Got trigger energy sum 15241.2; and decision is pass = false
@@ -28366,7 +28366,7 @@ RunHeader { run: 1, numTries: 769845, detectorName: ldmx-det-v14-8gev, descripti
 [ ecalVetoBDT ] 3143  info:  BDT was ran, score is 1.04904e-05
 [ ecalVetoBDT ] 3143  info:  The pred > bdtCutVal = false and MIP tracking passed = false
 [ hcalVeto ] 3143  info: There are 2 / 2 HCal hits read out. 2 are not associated with the recoil ele. Total PE of 6
-[ hcalVeto ] 3143  info: HCAL veto passed? false
+[ hcalVeto ] 3143  info: HCAL veto passed? true
 [ ElectronCounter ] 3143  info: Found 2 electrons (tracks) using input collection TriggerPadTracksY_
 [ trigger ] 3143  info: Got trigger energy cut 10790 for 2 electrons counted in the event.
 [ trigger ] 3143  info: Got trigger energy sum 14694.3; and decision is pass = false
@@ -28942,7 +28942,7 @@ RunHeader { run: 1, numTries: 769845, detectorName: ldmx-det-v14-8gev, descripti
 [ ecalVetoBDT ] 3207  info:  BDT was ran, score is 1.40667e-05
 [ ecalVetoBDT ] 3207  info:  The pred > bdtCutVal = false and MIP tracking passed = false
 [ hcalVeto ] 3207  info: There are 2 / 2 HCal hits read out. 2 are not associated with the recoil ele. Total PE of 7
-[ hcalVeto ] 3207  info: HCAL veto passed? false
+[ hcalVeto ] 3207  info: HCAL veto passed? true
 [ ElectronCounter ] 3207  info: Found 2 electrons (tracks) using input collection TriggerPadTracksY_
 [ trigger ] 3207  info: Got trigger energy cut 10790 for 2 electrons counted in the event.
 [ trigger ] 3207  info: Got trigger energy sum 16513.7; and decision is pass = false
@@ -28969,7 +28969,7 @@ RunHeader { run: 1, numTries: 769845, detectorName: ldmx-det-v14-8gev, descripti
 [ ecalVetoBDT ] 3210  info:  BDT was ran, score is 3.09944e-06
 [ ecalVetoBDT ] 3210  info:  The pred > bdtCutVal = false and MIP tracking passed = false
 [ hcalVeto ] 3210  info: There are 5 / 5 HCal hits read out. 5 are not associated with the recoil ele. Total PE of 14
-[ hcalVeto ] 3210  info: HCAL veto passed? false
+[ hcalVeto ] 3210  info: HCAL veto passed? true
 [ ElectronCounter ] 3210  info: Found 2 electrons (tracks) using input collection TriggerPadTracksY_
 [ trigger ] 3210  info: Got trigger energy cut 10790 for 2 electrons counted in the event.
 [ trigger ] 3210  info: Got trigger energy sum 13284.1; and decision is pass = false
@@ -29113,7 +29113,7 @@ RunHeader { run: 1, numTries: 769845, detectorName: ldmx-det-v14-8gev, descripti
 [ ecalVetoBDT ] 3226  info:  BDT was ran, score is 4.64916e-06
 [ ecalVetoBDT ] 3226  info:  The pred > bdtCutVal = false and MIP tracking passed = false
 [ hcalVeto ] 3226  info: There are 2 / 3 HCal hits read out. 2 are not associated with the recoil ele. Total PE of 14
-[ hcalVeto ] 3226  info: HCAL veto passed? false
+[ hcalVeto ] 3226  info: HCAL veto passed? true
 [ ElectronCounter ] 3226  info: Found 2 electrons (tracks) using input collection TriggerPadTracksY_
 [ trigger ] 3226  info: Got trigger energy cut 10790 for 2 electrons counted in the event.
 [ trigger ] 3226  info: Got trigger energy sum 14852.2; and decision is pass = false
@@ -29302,7 +29302,7 @@ RunHeader { run: 1, numTries: 769845, detectorName: ldmx-det-v14-8gev, descripti
 [ ecalVetoBDT ] 3247  info:  BDT was ran, score is 9.89437e-06
 [ ecalVetoBDT ] 3247  info:  The pred > bdtCutVal = false and MIP tracking passed = false
 [ hcalVeto ] 3247  info: There are 2 / 2 HCal hits read out. 2 are not associated with the recoil ele. Total PE of 6
-[ hcalVeto ] 3247  info: HCAL veto passed? false
+[ hcalVeto ] 3247  info: HCAL veto passed? true
 [ ElectronCounter ] 3247  info: Found 2 electrons (tracks) using input collection TriggerPadTracksY_
 [ trigger ] 3247  info: Got trigger energy cut 10790 for 2 electrons counted in the event.
 [ trigger ] 3247  info: Got trigger energy sum 17249.7; and decision is pass = false
@@ -29860,7 +29860,7 @@ RunHeader { run: 1, numTries: 769845, detectorName: ldmx-det-v14-8gev, descripti
 [ ecalVetoBDT ] 3309  info:  BDT was ran, score is 3.91006e-05
 [ ecalVetoBDT ] 3309  info:  The pred > bdtCutVal = false and MIP tracking passed = false
 [ hcalVeto ] 3309  info: There are 3 / 3 HCal hits read out. 3 are not associated with the recoil ele. Total PE of 8
-[ hcalVeto ] 3309  info: HCAL veto passed? false
+[ hcalVeto ] 3309  info: HCAL veto passed? true
 [ ElectronCounter ] 3309  info: Found 2 electrons (tracks) using input collection TriggerPadTracksY_
 [ trigger ] 3309  info: Got trigger energy cut 10790 for 2 electrons counted in the event.
 [ trigger ] 3309  info: Got trigger energy sum 15282.8; and decision is pass = false
@@ -29887,7 +29887,7 @@ RunHeader { run: 1, numTries: 769845, detectorName: ldmx-det-v14-8gev, descripti
 [ ecalVetoBDT ] 3312  info:  BDT was ran, score is 1.27554e-05
 [ ecalVetoBDT ] 3312  info:  The pred > bdtCutVal = false and MIP tracking passed = false
 [ hcalVeto ] 3312  info: There are 1 / 1 HCal hits read out. 1 are not associated with the recoil ele. Total PE of 7
-[ hcalVeto ] 3312  info: HCAL veto passed? false
+[ hcalVeto ] 3312  info: HCAL veto passed? true
 [ ElectronCounter ] 3312  info: Found 2 electrons (tracks) using input collection TriggerPadTracksY_
 [ trigger ] 3312  info: Got trigger energy cut 10790 for 2 electrons counted in the event.
 [ trigger ] 3312  info: Got trigger energy sum 16045.9; and decision is pass = false
@@ -31031,7 +31031,7 @@ RunHeader { run: 1, numTries: 769845, detectorName: ldmx-det-v14-8gev, descripti
 [ ecalVetoBDT ] 3439  info:  BDT was ran, score is 1.46627e-05
 [ ecalVetoBDT ] 3439  info:  The pred > bdtCutVal = false and MIP tracking passed = false
 [ hcalVeto ] 3439  info: There are 2 / 2 HCal hits read out. 2 are not associated with the recoil ele. Total PE of 7
-[ hcalVeto ] 3439  info: HCAL veto passed? false
+[ hcalVeto ] 3439  info: HCAL veto passed? true
 [ ElectronCounter ] 3439  info: Found 2 electrons (tracks) using input collection TriggerPadTracksY_
 [ trigger ] 3439  info: Got trigger energy cut 10790 for 2 electrons counted in the event.
 [ trigger ] 3439  info: Got trigger energy sum 15350.2; and decision is pass = false
@@ -31959,7 +31959,7 @@ RunHeader { run: 1, numTries: 769845, detectorName: ldmx-det-v14-8gev, descripti
 [ ecalVetoBDT ] 3542  info:  BDT was ran, score is 2.55108e-05
 [ ecalVetoBDT ] 3542  info:  The pred > bdtCutVal = false and MIP tracking passed = false
 [ hcalVeto ] 3542  info: There are 2 / 2 HCal hits read out. 2 are not associated with the recoil ele. Total PE of 9
-[ hcalVeto ] 3542  info: HCAL veto passed? false
+[ hcalVeto ] 3542  info: HCAL veto passed? true
 [ ElectronCounter ] 3542  info: Found 2 electrons (tracks) using input collection TriggerPadTracksY_
 [ trigger ] 3542  info: Got trigger energy cut 10790 for 2 electrons counted in the event.
 [ trigger ] 3542  info: Got trigger energy sum 17356.2; and decision is pass = false
@@ -32311,7 +32311,7 @@ RunHeader { run: 1, numTries: 769845, detectorName: ldmx-det-v14-8gev, descripti
 [ ecalVetoBDT ] 3581  info:  BDT was ran, score is 3.11136e-05
 [ ecalVetoBDT ] 3581  info:  The pred > bdtCutVal = false and MIP tracking passed = false
 [ hcalVeto ] 3581  info: There are 4 / 4 HCal hits read out. 4 are not associated with the recoil ele. Total PE of 15
-[ hcalVeto ] 3581  info: HCAL veto passed? false
+[ hcalVeto ] 3581  info: HCAL veto passed? true
 [ ElectronCounter ] 3581  info: Found 2 electrons (tracks) using input collection TriggerPadTracksY_
 [ trigger ] 3581  info: Got trigger energy cut 10790 for 2 electrons counted in the event.
 [ trigger ] 3581  info: Got trigger energy sum 17361.4; and decision is pass = false
@@ -33032,7 +33032,7 @@ RunHeader { run: 1, numTries: 769845, detectorName: ldmx-det-v14-8gev, descripti
 [ ecalVetoBDT ] 3661  info:  BDT was ran, score is 9.53674e-06
 [ ecalVetoBDT ] 3661  info:  The pred > bdtCutVal = false and MIP tracking passed = false
 [ hcalVeto ] 3661  info: There are 6 / 7 HCal hits read out. 6 are not associated with the recoil ele. Total PE of 14
-[ hcalVeto ] 3661  info: HCAL veto passed? false
+[ hcalVeto ] 3661  info: HCAL veto passed? true
 [ ElectronCounter ] 3661  info: Found 2 electrons (tracks) using input collection TriggerPadTracksY_
 [ trigger ] 3661  info: Got trigger energy cut 10790 for 2 electrons counted in the event.
 [ trigger ] 3661  info: Got trigger energy sum 18332.7; and decision is pass = false
@@ -33249,7 +33249,7 @@ RunHeader { run: 1, numTries: 769845, detectorName: ldmx-det-v14-8gev, descripti
 [ ecalVetoBDT ] 3685  info:  BDT was ran, score is 1.35899e-05
 [ ecalVetoBDT ] 3685  info:  The pred > bdtCutVal = false and MIP tracking passed = false
 [ hcalVeto ] 3685  info: There are 3 / 3 HCal hits read out. 3 are not associated with the recoil ele. Total PE of 11
-[ hcalVeto ] 3685  info: HCAL veto passed? false
+[ hcalVeto ] 3685  info: HCAL veto passed? true
 [ ElectronCounter ] 3685  info: Found 2 electrons (tracks) using input collection TriggerPadTracksY_
 [ trigger ] 3685  info: Got trigger energy cut 10790 for 2 electrons counted in the event.
 [ trigger ] 3685  info: Got trigger energy sum 16705.1; and decision is pass = false
@@ -33294,7 +33294,7 @@ RunHeader { run: 1, numTries: 769845, detectorName: ldmx-det-v14-8gev, descripti
 [ ecalVetoBDT ] 3690  info:  BDT was ran, score is 3.8147e-05
 [ ecalVetoBDT ] 3690  info:  The pred > bdtCutVal = false and MIP tracking passed = false
 [ hcalVeto ] 3690  info: There are 3 / 3 HCal hits read out. 3 are not associated with the recoil ele. Total PE of 8
-[ hcalVeto ] 3690  info: HCAL veto passed? false
+[ hcalVeto ] 3690  info: HCAL veto passed? true
 [ ElectronCounter ] 3690  info: Found 2 electrons (tracks) using input collection TriggerPadTracksY_
 [ trigger ] 3690  info: Got trigger energy cut 10790 for 2 electrons counted in the event.
 [ trigger ] 3690  info: Got trigger energy sum 14598.2; and decision is pass = false
@@ -34133,7 +34133,7 @@ RunHeader { run: 1, numTries: 769845, detectorName: ldmx-det-v14-8gev, descripti
 [ ecalVetoBDT ] 3783  info:  BDT was ran, score is 1.95503e-05
 [ ecalVetoBDT ] 3783  info:  The pred > bdtCutVal = false and MIP tracking passed = false
 [ hcalVeto ] 3783  info: There are 5 / 5 HCal hits read out. 5 are not associated with the recoil ele. Total PE of 15
-[ hcalVeto ] 3783  info: HCAL veto passed? false
+[ hcalVeto ] 3783  info: HCAL veto passed? true
 [ ElectronCounter ] 3783  info: Found 2 electrons (tracks) using input collection TriggerPadTracksY_
 [ trigger ] 3783  info: Got trigger energy cut 10790 for 2 electrons counted in the event.
 [ trigger ] 3783  info: Got trigger energy sum 14128.1; and decision is pass = false
@@ -34484,7 +34484,7 @@ RunHeader { run: 1, numTries: 769845, detectorName: ldmx-det-v14-8gev, descripti
 [ ecalVetoBDT ] 3822  info:  BDT was ran, score is 2.43187e-05
 [ ecalVetoBDT ] 3822  info:  The pred > bdtCutVal = false and MIP tracking passed = false
 [ hcalVeto ] 3822  info: There are 6 / 6 HCal hits read out. 6 are not associated with the recoil ele. Total PE of 16
-[ hcalVeto ] 3822  info: HCAL veto passed? false
+[ hcalVeto ] 3822  info: HCAL veto passed? true
 [ ElectronCounter ] 3822  info: Found 2 electrons (tracks) using input collection TriggerPadTracksY_
 [ trigger ] 3822  info: Got trigger energy cut 10790 for 2 electrons counted in the event.
 [ trigger ] 3822  info: Got trigger energy sum 14075.6; and decision is pass = false
@@ -34863,7 +34863,7 @@ RunHeader { run: 1, numTries: 769845, detectorName: ldmx-det-v14-8gev, descripti
 [ ecalVetoBDT ] 3864  info:  BDT was ran, score is 2.90871e-05
 [ ecalVetoBDT ] 3864  info:  The pred > bdtCutVal = false and MIP tracking passed = false
 [ hcalVeto ] 3864  info: There are 2 / 3 HCal hits read out. 2 are not associated with the recoil ele. Total PE of 9
-[ hcalVeto ] 3864  info: HCAL veto passed? false
+[ hcalVeto ] 3864  info: HCAL veto passed? true
 [ ElectronCounter ] 3864  info: Found 2 electrons (tracks) using input collection TriggerPadTracksY_
 [ trigger ] 3864  info: Got trigger energy cut 10790 for 2 electrons counted in the event.
 [ trigger ] 3864  info: Got trigger energy sum 14345.1; and decision is pass = false
@@ -35376,7 +35376,7 @@ RunHeader { run: 1, numTries: 769845, detectorName: ldmx-det-v14-8gev, descripti
 [ ecalVetoBDT ] 3921  info:  BDT was ran, score is 0.000107765
 [ ecalVetoBDT ] 3921  info:  The pred > bdtCutVal = false and MIP tracking passed = false
 [ hcalVeto ] 3921  info: There are 1 / 1 HCal hits read out. 1 are not associated with the recoil ele. Total PE of 6
-[ hcalVeto ] 3921  info: HCAL veto passed? false
+[ hcalVeto ] 3921  info: HCAL veto passed? true
 [ ElectronCounter ] 3921  info: Found 2 electrons (tracks) using input collection TriggerPadTracksY_
 [ trigger ] 3921  info: Got trigger energy cut 10790 for 2 electrons counted in the event.
 [ trigger ] 3921  info: Got trigger energy sum 15554.9; and decision is pass = false
@@ -35385,7 +35385,7 @@ RunHeader { run: 1, numTries: 769845, detectorName: ldmx-det-v14-8gev, descripti
 [ ecalVetoBDT ] 3922  info:  BDT was ran, score is 1.0252e-05
 [ ecalVetoBDT ] 3922  info:  The pred > bdtCutVal = false and MIP tracking passed = false
 [ hcalVeto ] 3922  info: There are 3 / 3 HCal hits read out. 3 are not associated with the recoil ele. Total PE of 6
-[ hcalVeto ] 3922  info: HCAL veto passed? false
+[ hcalVeto ] 3922  info: HCAL veto passed? true
 [ ElectronCounter ] 3922  info: Found 2 electrons (tracks) using input collection TriggerPadTracksY_
 [ trigger ] 3922  info: Got trigger energy cut 10790 for 2 electrons counted in the event.
 [ trigger ] 3922  info: Got trigger energy sum 15411.9; and decision is pass = false
@@ -35655,7 +35655,7 @@ RunHeader { run: 1, numTries: 769845, detectorName: ldmx-det-v14-8gev, descripti
 [ ecalVetoBDT ] 3952  info:  BDT was ran, score is 6.79493e-06
 [ ecalVetoBDT ] 3952  info:  The pred > bdtCutVal = false and MIP tracking passed = false
 [ hcalVeto ] 3952  info: There are 9 / 9 HCal hits read out. 9 are not associated with the recoil ele. Total PE of 17
-[ hcalVeto ] 3952  info: HCAL veto passed? false
+[ hcalVeto ] 3952  info: HCAL veto passed? true
 [ ElectronCounter ] 3952  info: Found 2 electrons (tracks) using input collection TriggerPadTracksY_
 [ trigger ] 3952  info: Got trigger energy cut 10790 for 2 electrons counted in the event.
 [ trigger ] 3952  info: Got trigger energy sum 14031.3; and decision is pass = false
@@ -36702,7 +36702,7 @@ RunHeader { run: 1, numTries: 769845, detectorName: ldmx-det-v14-8gev, descripti
 [ ecalVetoBDT ] 4068  info:  BDT was ran, score is 9.29832e-06
 [ ecalVetoBDT ] 4068  info:  The pred > bdtCutVal = false and MIP tracking passed = false
 [ hcalVeto ] 4068  info: There are 2 / 2 HCal hits read out. 2 are not associated with the recoil ele. Total PE of 13
-[ hcalVeto ] 4068  info: HCAL veto passed? false
+[ hcalVeto ] 4068  info: HCAL veto passed? true
 [ ElectronCounter ] 4068  info: Found 2 electrons (tracks) using input collection TriggerPadTracksY_
 [ trigger ] 4068  info: Got trigger energy cut 10790 for 2 electrons counted in the event.
 [ trigger ] 4068  info: Got trigger energy sum 15874.8; and decision is pass = false
@@ -38469,7 +38469,7 @@ RunHeader { run: 1, numTries: 769845, detectorName: ldmx-det-v14-8gev, descripti
 [ ecalVetoBDT ] 4264  info:  BDT was ran, score is 8.58307e-06
 [ ecalVetoBDT ] 4264  info:  The pred > bdtCutVal = false and MIP tracking passed = false
 [ hcalVeto ] 4264  info: There are 3 / 3 HCal hits read out. 3 are not associated with the recoil ele. Total PE of 16
-[ hcalVeto ] 4264  info: HCAL veto passed? false
+[ hcalVeto ] 4264  info: HCAL veto passed? true
 [ ElectronCounter ] 4264  info: Found 2 electrons (tracks) using input collection TriggerPadTracksY_
 [ trigger ] 4264  info: Got trigger energy cut 10790 for 2 electrons counted in the event.
 [ trigger ] 4264  info: Got trigger energy sum 15338.7; and decision is pass = false
@@ -38622,7 +38622,7 @@ RunHeader { run: 1, numTries: 769845, detectorName: ldmx-det-v14-8gev, descripti
 [ ecalVetoBDT ] 4281  info:  BDT was ran, score is 0.000147343
 [ ecalVetoBDT ] 4281  info:  The pred > bdtCutVal = false and MIP tracking passed = false
 [ hcalVeto ] 4281  info: There are 4 / 4 HCal hits read out. 4 are not associated with the recoil ele. Total PE of 9
-[ hcalVeto ] 4281  info: HCAL veto passed? false
+[ hcalVeto ] 4281  info: HCAL veto passed? true
 [ ElectronCounter ] 4281  info: Found 2 electrons (tracks) using input collection TriggerPadTracksY_
 [ trigger ] 4281  info: Got trigger energy cut 10790 for 2 electrons counted in the event.
 [ trigger ] 4281  info: Got trigger energy sum 14574.3; and decision is pass = false
@@ -38667,7 +38667,7 @@ RunHeader { run: 1, numTries: 769845, detectorName: ldmx-det-v14-8gev, descripti
 [ ecalVetoBDT ] 4286  info:  BDT was ran, score is 1.49012e-05
 [ ecalVetoBDT ] 4286  info:  The pred > bdtCutVal = false and MIP tracking passed = false
 [ hcalVeto ] 4286  info: There are 3 / 3 HCal hits read out. 3 are not associated with the recoil ele. Total PE of 12
-[ hcalVeto ] 4286  info: HCAL veto passed? false
+[ hcalVeto ] 4286  info: HCAL veto passed? true
 [ ElectronCounter ] 4286  info: Found 2 electrons (tracks) using input collection TriggerPadTracksY_
 [ trigger ] 4286  info: Got trigger energy cut 10790 for 2 electrons counted in the event.
 [ trigger ] 4286  info: Got trigger energy sum 17860.1; and decision is pass = false
@@ -39154,7 +39154,7 @@ RunHeader { run: 1, numTries: 769845, detectorName: ldmx-det-v14-8gev, descripti
 [ ecalVetoBDT ] 4340  info:  BDT was ran, score is 1.85966e-05
 [ ecalVetoBDT ] 4340  info:  The pred > bdtCutVal = false and MIP tracking passed = false
 [ hcalVeto ] 4340  info: There are 2 / 2 HCal hits read out. 2 are not associated with the recoil ele. Total PE of 11
-[ hcalVeto ] 4340  info: HCAL veto passed? false
+[ hcalVeto ] 4340  info: HCAL veto passed? true
 [ ElectronCounter ] 4340  info: Found 2 electrons (tracks) using input collection TriggerPadTracksY_
 [ trigger ] 4340  info: Got trigger energy cut 10790 for 2 electrons counted in the event.
 [ trigger ] 4340  info: Got trigger energy sum 16496.5; and decision is pass = false
@@ -40685,7 +40685,7 @@ RunHeader { run: 1, numTries: 769845, detectorName: ldmx-det-v14-8gev, descripti
 [ ecalVetoBDT ] 4510  info:  BDT was ran, score is 1.81198e-05
 [ ecalVetoBDT ] 4510  info:  The pred > bdtCutVal = false and MIP tracking passed = false
 [ hcalVeto ] 4510  info: There are 3 / 3 HCal hits read out. 3 are not associated with the recoil ele. Total PE of 11
-[ hcalVeto ] 4510  info: HCAL veto passed? false
+[ hcalVeto ] 4510  info: HCAL veto passed? true
 [ ElectronCounter ] 4510  info: Found 2 electrons (tracks) using input collection TriggerPadTracksY_
 [ trigger ] 4510  info: Got trigger energy cut 10790 for 2 electrons counted in the event.
 [ trigger ] 4510  info: Got trigger energy sum 17703; and decision is pass = false
@@ -41838,7 +41838,7 @@ RunHeader { run: 1, numTries: 769845, detectorName: ldmx-det-v14-8gev, descripti
 [ ecalVetoBDT ] 4638  info:  BDT was ran, score is 1.93119e-05
 [ ecalVetoBDT ] 4638  info:  The pred > bdtCutVal = false and MIP tracking passed = false
 [ hcalVeto ] 4638  info: There are 4 / 4 HCal hits read out. 4 are not associated with the recoil ele. Total PE of 15
-[ hcalVeto ] 4638  info: HCAL veto passed? false
+[ hcalVeto ] 4638  info: HCAL veto passed? true
 [ ElectronCounter ] 4638  info: Found 2 electrons (tracks) using input collection TriggerPadTracksY_
 [ trigger ] 4638  info: Got trigger energy cut 10790 for 2 electrons counted in the event.
 [ trigger ] 4638  info: Got trigger energy sum 13101; and decision is pass = false
@@ -41928,7 +41928,7 @@ RunHeader { run: 1, numTries: 769845, detectorName: ldmx-det-v14-8gev, descripti
 [ ecalVetoBDT ] 4648  info:  BDT was ran, score is 1.49012e-05
 [ ecalVetoBDT ] 4648  info:  The pred > bdtCutVal = false and MIP tracking passed = false
 [ hcalVeto ] 4648  info: There are 7 / 7 HCal hits read out. 7 are not associated with the recoil ele. Total PE of 30
-[ hcalVeto ] 4648  info: HCAL veto passed? false
+[ hcalVeto ] 4648  info: HCAL veto passed? true
 [ ElectronCounter ] 4648  info: Found 2 electrons (tracks) using input collection TriggerPadTracksY_
 [ trigger ] 4648  info: Got trigger energy cut 10790 for 2 electrons counted in the event.
 [ trigger ] 4648  info: Got trigger energy sum 15235.8; and decision is pass = false
@@ -42180,7 +42180,7 @@ RunHeader { run: 1, numTries: 769845, detectorName: ldmx-det-v14-8gev, descripti
 [ ecalVetoBDT ] 4676  info:  BDT was ran, score is 4.64916e-06
 [ ecalVetoBDT ] 4676  info:  The pred > bdtCutVal = false and MIP tracking passed = false
 [ hcalVeto ] 4676  info: There are 9 / 9 HCal hits read out. 9 are not associated with the recoil ele. Total PE of 23
-[ hcalVeto ] 4676  info: HCAL veto passed? false
+[ hcalVeto ] 4676  info: HCAL veto passed? true
 [ ElectronCounter ] 4676  info: Found 1 electrons (tracks) using input collection TriggerPadTracksY_
 [ trigger ] 4676  info: Got trigger energy cut 3000 for 1 electrons counted in the event.
 [ trigger ] 4676  info: Got trigger energy sum 13563.1; and decision is pass = false
@@ -42729,7 +42729,7 @@ RunHeader { run: 1, numTries: 769845, detectorName: ldmx-det-v14-8gev, descripti
 [ ecalVetoBDT ] 4737  info:  BDT was ran, score is 2.2769e-05
 [ ecalVetoBDT ] 4737  info:  The pred > bdtCutVal = false and MIP tracking passed = false
 [ hcalVeto ] 4737  info: There are 2 / 2 HCal hits read out. 2 are not associated with the recoil ele. Total PE of 9
-[ hcalVeto ] 4737  info: HCAL veto passed? false
+[ hcalVeto ] 4737  info: HCAL veto passed? true
 [ ElectronCounter ] 4737  info: Found 2 electrons (tracks) using input collection TriggerPadTracksY_
 [ trigger ] 4737  info: Got trigger energy cut 10790 for 2 electrons counted in the event.
 [ trigger ] 4737  info: Got trigger energy sum 15831.5; and decision is pass = false
@@ -43341,7 +43341,7 @@ RunHeader { run: 1, numTries: 769845, detectorName: ldmx-det-v14-8gev, descripti
 [ ecalVetoBDT ] 4805  info:  BDT was ran, score is 1.84774e-05
 [ ecalVetoBDT ] 4805  info:  The pred > bdtCutVal = false and MIP tracking passed = false
 [ hcalVeto ] 4805  info: There are 4 / 4 HCal hits read out. 4 are not associated with the recoil ele. Total PE of 13
-[ hcalVeto ] 4805  info: HCAL veto passed? false
+[ hcalVeto ] 4805  info: HCAL veto passed? true
 [ ElectronCounter ] 4805  info: Found 2 electrons (tracks) using input collection TriggerPadTracksY_
 [ trigger ] 4805  info: Got trigger energy cut 10790 for 2 electrons counted in the event.
 [ trigger ] 4805  info: Got trigger energy sum 16492.3; and decision is pass = false
@@ -44657,7 +44657,7 @@ RunHeader { run: 1, numTries: 769845, detectorName: ldmx-det-v14-8gev, descripti
 [ ecalVetoBDT ] 4951  info:  BDT was ran, score is 1.04904e-05
 [ ecalVetoBDT ] 4951  info:  The pred > bdtCutVal = false and MIP tracking passed = false
 [ hcalVeto ] 4951  info: There are 7 / 8 HCal hits read out. 7 are not associated with the recoil ele. Total PE of 18
-[ hcalVeto ] 4951  info: HCAL veto passed? false
+[ hcalVeto ] 4951  info: HCAL veto passed? true
 [ ElectronCounter ] 4951  info: Found 1 electrons (tracks) using input collection TriggerPadTracksY_
 [ trigger ] 4951  info: Got trigger energy cut 3000 for 1 electrons counted in the event.
 [ trigger ] 4951  info: Got trigger energy sum 15466.6; and decision is pass = false
@@ -45325,7 +45325,7 @@ RunHeader { run: 1, numTries: 769845, detectorName: ldmx-det-v14-8gev, descripti
 [ ecalVetoBDT ] 5025  info:  BDT was ran, score is 7.39098e-06
 [ ecalVetoBDT ] 5025  info:  The pred > bdtCutVal = false and MIP tracking passed = false
 [ hcalVeto ] 5025  info: There are 1 / 1 HCal hits read out. 1 are not associated with the recoil ele. Total PE of 6
-[ hcalVeto ] 5025  info: HCAL veto passed? false
+[ hcalVeto ] 5025  info: HCAL veto passed? true
 [ ElectronCounter ] 5025  info: Found 2 electrons (tracks) using input collection TriggerPadTracksY_
 [ trigger ] 5025  info: Got trigger energy cut 10790 for 2 electrons counted in the event.
 [ trigger ] 5025  info: Got trigger energy sum 15794.3; and decision is pass = false
@@ -45649,7 +45649,7 @@ RunHeader { run: 1, numTries: 769845, detectorName: ldmx-det-v14-8gev, descripti
 [ ecalVetoBDT ] 5061  info:  BDT was ran, score is 1.41859e-05
 [ ecalVetoBDT ] 5061  info:  The pred > bdtCutVal = false and MIP tracking passed = false
 [ hcalVeto ] 5061  info: There are 7 / 7 HCal hits read out. 7 are not associated with the recoil ele. Total PE of 24
-[ hcalVeto ] 5061  info: HCAL veto passed? false
+[ hcalVeto ] 5061  info: HCAL veto passed? true
 [ ElectronCounter ] 5061  info: Found 2 electrons (tracks) using input collection TriggerPadTracksY_
 [ trigger ] 5061  info: Got trigger energy cut 10790 for 2 electrons counted in the event.
 [ trigger ] 5061  info: Got trigger energy sum 16911.2; and decision is pass = false
@@ -45784,7 +45784,7 @@ RunHeader { run: 1, numTries: 769845, detectorName: ldmx-det-v14-8gev, descripti
 [ ecalVetoBDT ] 5076  info:  BDT was ran, score is 4.86374e-05
 [ ecalVetoBDT ] 5076  info:  The pred > bdtCutVal = false and MIP tracking passed = false
 [ hcalVeto ] 5076  info: There are 3 / 3 HCal hits read out. 3 are not associated with the recoil ele. Total PE of 17
-[ hcalVeto ] 5076  info: HCAL veto passed? false
+[ hcalVeto ] 5076  info: HCAL veto passed? true
 [ ElectronCounter ] 5076  info: Found 2 electrons (tracks) using input collection TriggerPadTracksY_
 [ trigger ] 5076  info: Got trigger energy cut 10790 for 2 electrons counted in the event.
 [ trigger ] 5076  info: Got trigger energy sum 15129.8; and decision is pass = false
@@ -47245,7 +47245,7 @@ RunHeader { run: 1, numTries: 769845, detectorName: ldmx-det-v14-8gev, descripti
 [ ecalVetoBDT ] 5238  info:  BDT was ran, score is 9.57251e-05
 [ ecalVetoBDT ] 5238  info:  The pred > bdtCutVal = false and MIP tracking passed = false
 [ hcalVeto ] 5238  info: There are 5 / 5 HCal hits read out. 5 are not associated with the recoil ele. Total PE of 9
-[ hcalVeto ] 5238  info: HCAL veto passed? false
+[ hcalVeto ] 5238  info: HCAL veto passed? true
 [ ElectronCounter ] 5238  info: Found 1 electrons (tracks) using input collection TriggerPadTracksY_
 [ trigger ] 5238  info: Got trigger energy cut 3000 for 1 electrons counted in the event.
 [ trigger ] 5238  info: Got trigger energy sum 14594.5; and decision is pass = false
@@ -47525,7 +47525,7 @@ RunHeader { run: 1, numTries: 769845, detectorName: ldmx-det-v14-8gev, descripti
 [ ecalVetoBDT ] 5269  info:  BDT was ran, score is 6.67572e-06
 [ ecalVetoBDT ] 5269  info:  The pred > bdtCutVal = false and MIP tracking passed = false
 [ hcalVeto ] 5269  info: There are 7 / 8 HCal hits read out. 7 are not associated with the recoil ele. Total PE of 24
-[ hcalVeto ] 5269  info: HCAL veto passed? false
+[ hcalVeto ] 5269  info: HCAL veto passed? true
 [ ElectronCounter ] 5269  info: Found 2 electrons (tracks) using input collection TriggerPadTracksY_
 [ trigger ] 5269  info: Got trigger energy cut 10790 for 2 electrons counted in the event.
 [ trigger ] 5269  info: Got trigger energy sum 14564; and decision is pass = false
@@ -48490,7 +48490,7 @@ RunHeader { run: 1, numTries: 769845, detectorName: ldmx-det-v14-8gev, descripti
 [ ecalVetoBDT ] 5376  info:  BDT was ran, score is 7.98702e-06
 [ ecalVetoBDT ] 5376  info:  The pred > bdtCutVal = false and MIP tracking passed = false
 [ hcalVeto ] 5376  info: There are 2 / 2 HCal hits read out. 2 are not associated with the recoil ele. Total PE of 9
-[ hcalVeto ] 5376  info: HCAL veto passed? false
+[ hcalVeto ] 5376  info: HCAL veto passed? true
 [ ElectronCounter ] 5376  info: Found 2 electrons (tracks) using input collection TriggerPadTracksY_
 [ trigger ] 5376  info: Got trigger energy cut 10790 for 2 electrons counted in the event.
 [ trigger ] 5376  info: Got trigger energy sum 14864.5; and decision is pass = false
@@ -49493,7 +49493,7 @@ RunHeader { run: 1, numTries: 769845, detectorName: ldmx-det-v14-8gev, descripti
 [ ecalVetoBDT ] 5487  info:  BDT was ran, score is 5.48363e-06
 [ ecalVetoBDT ] 5487  info:  The pred > bdtCutVal = false and MIP tracking passed = false
 [ hcalVeto ] 5487  info: There are 6 / 6 HCal hits read out. 6 are not associated with the recoil ele. Total PE of 10
-[ hcalVeto ] 5487  info: HCAL veto passed? false
+[ hcalVeto ] 5487  info: HCAL veto passed? true
 [ ElectronCounter ] 5487  info: Found 0 electrons (tracks) using input collection TriggerPadTracksY_
 [ trigger ] 5487  info: Got trigger energy cut 0 for 0 electrons counted in the event.
 [ trigger ] 5487  info: Got trigger energy sum 16048.3; and decision is pass = false
@@ -49565,7 +49565,7 @@ RunHeader { run: 1, numTries: 769845, detectorName: ldmx-det-v14-8gev, descripti
 [ ecalVetoBDT ] 5495  info:  BDT was ran, score is 4.52995e-06
 [ ecalVetoBDT ] 5495  info:  The pred > bdtCutVal = false and MIP tracking passed = false
 [ hcalVeto ] 5495  info: There are 6 / 6 HCal hits read out. 6 are not associated with the recoil ele. Total PE of 18
-[ hcalVeto ] 5495  info: HCAL veto passed? false
+[ hcalVeto ] 5495  info: HCAL veto passed? true
 [ ElectronCounter ] 5495  info: Found 2 electrons (tracks) using input collection TriggerPadTracksY_
 [ trigger ] 5495  info: Got trigger energy cut 10790 for 2 electrons counted in the event.
 [ trigger ] 5495  info: Got trigger energy sum 14111.4; and decision is pass = false
@@ -52311,7 +52311,7 @@ RunHeader { run: 1, numTries: 769845, detectorName: ldmx-det-v14-8gev, descripti
 [ ecalVetoBDT ] 5800  info:  BDT was ran, score is 6.91414e-06
 [ ecalVetoBDT ] 5800  info:  The pred > bdtCutVal = false and MIP tracking passed = false
 [ hcalVeto ] 5800  info: There are 8 / 8 HCal hits read out. 8 are not associated with the recoil ele. Total PE of 20
-[ hcalVeto ] 5800  info: HCAL veto passed? false
+[ hcalVeto ] 5800  info: HCAL veto passed? true
 [ ElectronCounter ] 5800  info: Found 2 electrons (tracks) using input collection TriggerPadTracksY_
 [ trigger ] 5800  info: Got trigger energy cut 10790 for 2 electrons counted in the event.
 [ trigger ] 5800  info: Got trigger energy sum 14820.1; and decision is pass = false
@@ -52671,7 +52671,7 @@ RunHeader { run: 1, numTries: 769845, detectorName: ldmx-det-v14-8gev, descripti
 [ ecalVetoBDT ] 5840  info:  BDT was ran, score is 7.86781e-06
 [ ecalVetoBDT ] 5840  info:  The pred > bdtCutVal = false and MIP tracking passed = false
 [ hcalVeto ] 5840  info: There are 4 / 4 HCal hits read out. 4 are not associated with the recoil ele. Total PE of 8
-[ hcalVeto ] 5840  info: HCAL veto passed? false
+[ hcalVeto ] 5840  info: HCAL veto passed? true
 [ ElectronCounter ] 5840  info: Found 2 electrons (tracks) using input collection TriggerPadTracksY_
 [ trigger ] 5840  info: Got trigger energy cut 10790 for 2 electrons counted in the event.
 [ trigger ] 5840  info: Got trigger energy sum 13569.8; and decision is pass = false
@@ -53391,7 +53391,7 @@ RunHeader { run: 1, numTries: 769845, detectorName: ldmx-det-v14-8gev, descripti
 [ ecalVetoBDT ] 5920  info:  BDT was ran, score is 2.563e-05
 [ ecalVetoBDT ] 5920  info:  The pred > bdtCutVal = false and MIP tracking passed = false
 [ hcalVeto ] 5920  info: There are 2 / 2 HCal hits read out. 2 are not associated with the recoil ele. Total PE of 7
-[ hcalVeto ] 5920  info: HCAL veto passed? false
+[ hcalVeto ] 5920  info: HCAL veto passed? true
 [ ElectronCounter ] 5920  info: Found 2 electrons (tracks) using input collection TriggerPadTracksY_
 [ trigger ] 5920  info: Got trigger energy cut 10790 for 2 electrons counted in the event.
 [ trigger ] 5920  info: Got trigger energy sum 18868.9; and decision is pass = false
@@ -53670,7 +53670,7 @@ RunHeader { run: 1, numTries: 769845, detectorName: ldmx-det-v14-8gev, descripti
 [ ecalVetoBDT ] 5951  info:  BDT was ran, score is 4.47035e-05
 [ ecalVetoBDT ] 5951  info:  The pred > bdtCutVal = false and MIP tracking passed = false
 [ hcalVeto ] 5951  info: There are 3 / 4 HCal hits read out. 3 are not associated with the recoil ele. Total PE of 14
-[ hcalVeto ] 5951  info: HCAL veto passed? false
+[ hcalVeto ] 5951  info: HCAL veto passed? true
 [ ElectronCounter ] 5951  info: Found 2 electrons (tracks) using input collection TriggerPadTracksY_
 [ trigger ] 5951  info: Got trigger energy cut 10790 for 2 electrons counted in the event.
 [ trigger ] 5951  info: Got trigger energy sum 15024.4; and decision is pass = false
@@ -54925,7 +54925,7 @@ RunHeader { run: 1, numTries: 769845, detectorName: ldmx-det-v14-8gev, descripti
 [ ecalVetoBDT ] 6090  info:  BDT was ran, score is 2.45571e-05
 [ ecalVetoBDT ] 6090  info:  The pred > bdtCutVal = false and MIP tracking passed = false
 [ hcalVeto ] 6090  info: There are 7 / 7 HCal hits read out. 7 are not associated with the recoil ele. Total PE of 12
-[ hcalVeto ] 6090  info: HCAL veto passed? false
+[ hcalVeto ] 6090  info: HCAL veto passed? true
 [ ElectronCounter ] 6090  info: Found 2 electrons (tracks) using input collection TriggerPadTracksY_
 [ trigger ] 6090  info: Got trigger energy cut 10790 for 2 electrons counted in the event.
 [ trigger ] 6090  info: Got trigger energy sum 15155.2; and decision is pass = false
@@ -56988,7 +56988,7 @@ RunHeader { run: 1, numTries: 769845, detectorName: ldmx-det-v14-8gev, descripti
 [ ecalVetoBDT ] 6319  info:  BDT was ran, score is 3.39746e-05
 [ ecalVetoBDT ] 6319  info:  The pred > bdtCutVal = false and MIP tracking passed = false
 [ hcalVeto ] 6319  info: There are 1 / 1 HCal hits read out. 1 are not associated with the recoil ele. Total PE of 7
-[ hcalVeto ] 6319  info: HCAL veto passed? false
+[ hcalVeto ] 6319  info: HCAL veto passed? true
 [ ElectronCounter ] 6319  info: Found 2 electrons (tracks) using input collection TriggerPadTracksY_
 [ trigger ] 6319  info: Got trigger energy cut 10790 for 2 electrons counted in the event.
 [ trigger ] 6319  info: Got trigger energy sum 15590.8; and decision is pass = false
@@ -57619,7 +57619,7 @@ RunHeader { run: 1, numTries: 769845, detectorName: ldmx-det-v14-8gev, descripti
 [ ecalVetoBDT ] 6389  info:  BDT was ran, score is 1.78814e-05
 [ ecalVetoBDT ] 6389  info:  The pred > bdtCutVal = false and MIP tracking passed = false
 [ hcalVeto ] 6389  info: There are 1 / 1 HCal hits read out. 1 are not associated with the recoil ele. Total PE of 6
-[ hcalVeto ] 6389  info: HCAL veto passed? false
+[ hcalVeto ] 6389  info: HCAL veto passed? true
 [ ElectronCounter ] 6389  info: Found 2 electrons (tracks) using input collection TriggerPadTracksY_
 [ trigger ] 6389  info: Got trigger energy cut 10790 for 2 electrons counted in the event.
 [ trigger ] 6389  info: Got trigger energy sum 16181.4; and decision is pass = false
@@ -58042,7 +58042,7 @@ RunHeader { run: 1, numTries: 769845, detectorName: ldmx-det-v14-8gev, descripti
 [ ecalVetoBDT ] 6436  info:  BDT was ran, score is 6.59227e-05
 [ ecalVetoBDT ] 6436  info:  The pred > bdtCutVal = false and MIP tracking passed = false
 [ hcalVeto ] 6436  info: There are 4 / 4 HCal hits read out. 4 are not associated with the recoil ele. Total PE of 7
-[ hcalVeto ] 6436  info: HCAL veto passed? false
+[ hcalVeto ] 6436  info: HCAL veto passed? true
 [ ElectronCounter ] 6436  info: Found 2 electrons (tracks) using input collection TriggerPadTracksY_
 [ trigger ] 6436  info: Got trigger energy cut 10790 for 2 electrons counted in the event.
 [ trigger ] 6436  info: Got trigger energy sum 14229.5; and decision is pass = false
@@ -58213,7 +58213,7 @@ RunHeader { run: 1, numTries: 769845, detectorName: ldmx-det-v14-8gev, descripti
 [ ecalVetoBDT ] 6455  info:  BDT was ran, score is 1.26362e-05
 [ ecalVetoBDT ] 6455  info:  The pred > bdtCutVal = false and MIP tracking passed = false
 [ hcalVeto ] 6455  info: There are 3 / 3 HCal hits read out. 3 are not associated with the recoil ele. Total PE of 10
-[ hcalVeto ] 6455  info: HCAL veto passed? false
+[ hcalVeto ] 6455  info: HCAL veto passed? true
 [ ElectronCounter ] 6455  info: Found 1 electrons (tracks) using input collection TriggerPadTracksY_
 [ trigger ] 6455  info: Got trigger energy cut 3000 for 1 electrons counted in the event.
 [ trigger ] 6455  info: Got trigger energy sum 14986.5; and decision is pass = false
@@ -58637,7 +58637,7 @@ RunHeader { run: 1, numTries: 769845, detectorName: ldmx-det-v14-8gev, descripti
 [ ecalVetoBDT ] 6502  info:  BDT was ran, score is 2.03848e-05
 [ ecalVetoBDT ] 6502  info:  The pred > bdtCutVal = false and MIP tracking passed = false
 [ hcalVeto ] 6502  info: There are 3 / 4 HCal hits read out. 3 are not associated with the recoil ele. Total PE of 10
-[ hcalVeto ] 6502  info: HCAL veto passed? false
+[ hcalVeto ] 6502  info: HCAL veto passed? true
 [ ElectronCounter ] 6502  info: Found 2 electrons (tracks) using input collection TriggerPadTracksY_
 [ trigger ] 6502  info: Got trigger energy cut 10790 for 2 electrons counted in the event.
 [ trigger ] 6502  info: Got trigger energy sum 16523.9; and decision is pass = false
@@ -59673,7 +59673,7 @@ RunHeader { run: 1, numTries: 769845, detectorName: ldmx-det-v14-8gev, descripti
 [ ecalVetoBDT ] 6617  info:  BDT was ran, score is 1.16825e-05
 [ ecalVetoBDT ] 6617  info:  The pred > bdtCutVal = false and MIP tracking passed = false
 [ hcalVeto ] 6617  info: There are 5 / 5 HCal hits read out. 5 are not associated with the recoil ele. Total PE of 19
-[ hcalVeto ] 6617  info: HCAL veto passed? false
+[ hcalVeto ] 6617  info: HCAL veto passed? true
 [ ElectronCounter ] 6617  info: Found 2 electrons (tracks) using input collection TriggerPadTracksY_
 [ trigger ] 6617  info: Got trigger energy cut 10790 for 2 electrons counted in the event.
 [ trigger ] 6617  info: Got trigger energy sum 14576.8; and decision is pass = false
@@ -59790,7 +59790,7 @@ RunHeader { run: 1, numTries: 769845, detectorName: ldmx-det-v14-8gev, descripti
 [ ecalVetoBDT ] 6630  info:  BDT was ran, score is 1.16825e-05
 [ ecalVetoBDT ] 6630  info:  The pred > bdtCutVal = false and MIP tracking passed = false
 [ hcalVeto ] 6630  info: There are 5 / 5 HCal hits read out. 5 are not associated with the recoil ele. Total PE of 11
-[ hcalVeto ] 6630  info: HCAL veto passed? false
+[ hcalVeto ] 6630  info: HCAL veto passed? true
 [ ElectronCounter ] 6630  info: Found 2 electrons (tracks) using input collection TriggerPadTracksY_
 [ trigger ] 6630  info: Got trigger energy cut 10790 for 2 electrons counted in the event.
 [ trigger ] 6630  info: Got trigger energy sum 15432.8; and decision is pass = false
@@ -60051,7 +60051,7 @@ RunHeader { run: 1, numTries: 769845, detectorName: ldmx-det-v14-8gev, descripti
 [ ecalVetoBDT ] 6659  info:  BDT was ran, score is 2.93255e-05
 [ ecalVetoBDT ] 6659  info:  The pred > bdtCutVal = false and MIP tracking passed = false
 [ hcalVeto ] 6659  info: There are 12 / 12 HCal hits read out. 12 are not associated with the recoil ele. Total PE of 35
-[ hcalVeto ] 6659  info: HCAL veto passed? false
+[ hcalVeto ] 6659  info: HCAL veto passed? true
 [ ElectronCounter ] 6659  info: Found 2 electrons (tracks) using input collection TriggerPadTracksY_
 [ trigger ] 6659  info: Got trigger energy cut 10790 for 2 electrons counted in the event.
 [ trigger ] 6659  info: Got trigger energy sum 15713.2; and decision is pass = false
@@ -60087,7 +60087,7 @@ RunHeader { run: 1, numTries: 769845, detectorName: ldmx-det-v14-8gev, descripti
 [ ecalVetoBDT ] 6663  info:  BDT was ran, score is 1.69277e-05
 [ ecalVetoBDT ] 6663  info:  The pred > bdtCutVal = false and MIP tracking passed = false
 [ hcalVeto ] 6663  info: There are 1 / 1 HCal hits read out. 1 are not associated with the recoil ele. Total PE of 7
-[ hcalVeto ] 6663  info: HCAL veto passed? false
+[ hcalVeto ] 6663  info: HCAL veto passed? true
 [ ElectronCounter ] 6663  info: Found 2 electrons (tracks) using input collection TriggerPadTracksY_
 [ trigger ] 6663  info: Got trigger energy cut 10790 for 2 electrons counted in the event.
 [ trigger ] 6663  info: Got trigger energy sum 16222.1; and decision is pass = false
@@ -60618,7 +60618,7 @@ RunHeader { run: 1, numTries: 769845, detectorName: ldmx-det-v14-8gev, descripti
 [ ecalVetoBDT ] 6722  info:  BDT was ran, score is 8.46386e-06
 [ ecalVetoBDT ] 6722  info:  The pred > bdtCutVal = false and MIP tracking passed = false
 [ hcalVeto ] 6722  info: There are 3 / 3 HCal hits read out. 3 are not associated with the recoil ele. Total PE of 11
-[ hcalVeto ] 6722  info: HCAL veto passed? false
+[ hcalVeto ] 6722  info: HCAL veto passed? true
 [ ElectronCounter ] 6722  info: Found 2 electrons (tracks) using input collection TriggerPadTracksY_
 [ trigger ] 6722  info: Got trigger energy cut 10790 for 2 electrons counted in the event.
 [ trigger ] 6722  info: Got trigger energy sum 14459.9; and decision is pass = false
@@ -60825,7 +60825,7 @@ RunHeader { run: 1, numTries: 769845, detectorName: ldmx-det-v14-8gev, descripti
 [ ecalVetoBDT ] 6745  info:  BDT was ran, score is 1.16825e-05
 [ ecalVetoBDT ] 6745  info:  The pred > bdtCutVal = false and MIP tracking passed = false
 [ hcalVeto ] 6745  info: There are 4 / 4 HCal hits read out. 4 are not associated with the recoil ele. Total PE of 12
-[ hcalVeto ] 6745  info: HCAL veto passed? false
+[ hcalVeto ] 6745  info: HCAL veto passed? true
 [ ElectronCounter ] 6745  info: Found 2 electrons (tracks) using input collection TriggerPadTracksY_
 [ trigger ] 6745  info: Got trigger energy cut 10790 for 2 electrons counted in the event.
 [ trigger ] 6745  info: Got trigger energy sum 14287; and decision is pass = false
@@ -60870,7 +60870,7 @@ RunHeader { run: 1, numTries: 769845, detectorName: ldmx-det-v14-8gev, descripti
 [ ecalVetoBDT ] 6750  info:  BDT was ran, score is 9.19104e-05
 [ ecalVetoBDT ] 6750  info:  The pred > bdtCutVal = false and MIP tracking passed = false
 [ hcalVeto ] 6750  info: There are 1 / 1 HCal hits read out. 1 are not associated with the recoil ele. Total PE of 6
-[ hcalVeto ] 6750  info: HCAL veto passed? false
+[ hcalVeto ] 6750  info: HCAL veto passed? true
 [ ElectronCounter ] 6750  info: Found 2 electrons (tracks) using input collection TriggerPadTracksY_
 [ trigger ] 6750  info: Got trigger energy cut 10790 for 2 electrons counted in the event.
 [ trigger ] 6750  info: Got trigger energy sum 13125.9; and decision is pass = false
@@ -61681,7 +61681,7 @@ RunHeader { run: 1, numTries: 769845, detectorName: ldmx-det-v14-8gev, descripti
 [ ecalVetoBDT ] 6840  info:  BDT was ran, score is 2.12193e-05
 [ ecalVetoBDT ] 6840  info:  The pred > bdtCutVal = false and MIP tracking passed = false
 [ hcalVeto ] 6840  info: There are 4 / 4 HCal hits read out. 4 are not associated with the recoil ele. Total PE of 9
-[ hcalVeto ] 6840  info: HCAL veto passed? false
+[ hcalVeto ] 6840  info: HCAL veto passed? true
 [ ElectronCounter ] 6840  info: Found 2 electrons (tracks) using input collection TriggerPadTracksY_
 [ trigger ] 6840  info: Got trigger energy cut 10790 for 2 electrons counted in the event.
 [ trigger ] 6840  info: Got trigger energy sum 15083.7; and decision is pass = false
@@ -63404,7 +63404,7 @@ RunHeader { run: 1, numTries: 769845, detectorName: ldmx-det-v14-8gev, descripti
 [ ecalVetoBDT ] 7031  info:  BDT was ran, score is 1.5378e-05
 [ ecalVetoBDT ] 7031  info:  The pred > bdtCutVal = false and MIP tracking passed = false
 [ hcalVeto ] 7031  info: There are 6 / 6 HCal hits read out. 6 are not associated with the recoil ele. Total PE of 16
-[ hcalVeto ] 7031  info: HCAL veto passed? false
+[ hcalVeto ] 7031  info: HCAL veto passed? true
 [ ElectronCounter ] 7031  info: Found 2 electrons (tracks) using input collection TriggerPadTracksY_
 [ trigger ] 7031  info: Got trigger energy cut 10790 for 2 electrons counted in the event.
 [ trigger ] 7031  info: Got trigger energy sum 16044.1; and decision is pass = false
@@ -65549,7 +65549,7 @@ RunHeader { run: 1, numTries: 769845, detectorName: ldmx-det-v14-8gev, descripti
 [ ecalVetoBDT ] 7269  info:  BDT was ran, score is 7.98702e-06
 [ ecalVetoBDT ] 7269  info:  The pred > bdtCutVal = false and MIP tracking passed = false
 [ hcalVeto ] 7269  info: There are 1 / 1 HCal hits read out. 1 are not associated with the recoil ele. Total PE of 7
-[ hcalVeto ] 7269  info: HCAL veto passed? false
+[ hcalVeto ] 7269  info: HCAL veto passed? true
 [ ElectronCounter ] 7269  info: Found 2 electrons (tracks) using input collection TriggerPadTracksY_
 [ trigger ] 7269  info: Got trigger energy cut 10790 for 2 electrons counted in the event.
 [ trigger ] 7269  info: Got trigger energy sum 14507.7; and decision is pass = false
@@ -65954,7 +65954,7 @@ RunHeader { run: 1, numTries: 769845, detectorName: ldmx-det-v14-8gev, descripti
 [ ecalVetoBDT ] 7314  info:  BDT was ran, score is 9.23872e-05
 [ ecalVetoBDT ] 7314  info:  The pred > bdtCutVal = false and MIP tracking passed = false
 [ hcalVeto ] 7314  info: There are 2 / 2 HCal hits read out. 2 are not associated with the recoil ele. Total PE of 7
-[ hcalVeto ] 7314  info: HCAL veto passed? false
+[ hcalVeto ] 7314  info: HCAL veto passed? true
 [ ElectronCounter ] 7314  info: Found 2 electrons (tracks) using input collection TriggerPadTracksY_
 [ trigger ] 7314  info: Got trigger energy cut 10790 for 2 electrons counted in the event.
 [ trigger ] 7314  info: Got trigger energy sum 15384; and decision is pass = false
@@ -67151,7 +67151,7 @@ RunHeader { run: 1, numTries: 769845, detectorName: ldmx-det-v14-8gev, descripti
 [ ecalVetoBDT ] 7447  info:  BDT was ran, score is 7.15256e-06
 [ ecalVetoBDT ] 7447  info:  The pred > bdtCutVal = false and MIP tracking passed = false
 [ hcalVeto ] 7447  info: There are 2 / 2 HCal hits read out. 2 are not associated with the recoil ele. Total PE of 9
-[ hcalVeto ] 7447  info: HCAL veto passed? false
+[ hcalVeto ] 7447  info: HCAL veto passed? true
 [ ElectronCounter ] 7447  info: Found 2 electrons (tracks) using input collection TriggerPadTracksY_
 [ trigger ] 7447  info: Got trigger energy cut 10790 for 2 electrons counted in the event.
 [ trigger ] 7447  info: Got trigger energy sum 17026.2; and decision is pass = false
@@ -68289,7 +68289,7 @@ RunHeader { run: 1, numTries: 769845, detectorName: ldmx-det-v14-8gev, descripti
 [ ecalVetoBDT ] 7573  info:  BDT was ran, score is 5.60284e-06
 [ ecalVetoBDT ] 7573  info:  The pred > bdtCutVal = false and MIP tracking passed = false
 [ hcalVeto ] 7573  info: There are 8 / 8 HCal hits read out. 8 are not associated with the recoil ele. Total PE of 19
-[ hcalVeto ] 7573  info: HCAL veto passed? false
+[ hcalVeto ] 7573  info: HCAL veto passed? true
 [ ElectronCounter ] 7573  info: Found 2 electrons (tracks) using input collection TriggerPadTracksY_
 [ trigger ] 7573  info: Got trigger energy cut 10790 for 2 electrons counted in the event.
 [ trigger ] 7573  info: Got trigger energy sum 12341.2; and decision is pass = false
@@ -70452,7 +70452,7 @@ RunHeader { run: 1, numTries: 769845, detectorName: ldmx-det-v14-8gev, descripti
 [ ecalVetoBDT ] 7813  info:  BDT was ran, score is 2.93255e-05
 [ ecalVetoBDT ] 7813  info:  The pred > bdtCutVal = false and MIP tracking passed = false
 [ hcalVeto ] 7813  info: There are 2 / 2 HCal hits read out. 2 are not associated with the recoil ele. Total PE of 7
-[ hcalVeto ] 7813  info: HCAL veto passed? false
+[ hcalVeto ] 7813  info: HCAL veto passed? true
 [ ElectronCounter ] 7813  info: Found 2 electrons (tracks) using input collection TriggerPadTracksY_
 [ trigger ] 7813  info: Got trigger energy cut 10790 for 2 electrons counted in the event.
 [ trigger ] 7813  info: Got trigger energy sum 16541.5; and decision is pass = false
@@ -71073,7 +71073,7 @@ RunHeader { run: 1, numTries: 769845, detectorName: ldmx-det-v14-8gev, descripti
 [ ecalVetoBDT ] 7882  info:  BDT was ran, score is 1.04904e-05
 [ ecalVetoBDT ] 7882  info:  The pred > bdtCutVal = false and MIP tracking passed = false
 [ hcalVeto ] 7882  info: There are 6 / 6 HCal hits read out. 6 are not associated with the recoil ele. Total PE of 12
-[ hcalVeto ] 7882  info: HCAL veto passed? false
+[ hcalVeto ] 7882  info: HCAL veto passed? true
 [ ElectronCounter ] 7882  info: Found 2 electrons (tracks) using input collection TriggerPadTracksY_
 [ trigger ] 7882  info: Got trigger energy cut 10790 for 2 electrons counted in the event.
 [ trigger ] 7882  info: Got trigger energy sum 14572; and decision is pass = false
@@ -71298,7 +71298,7 @@ RunHeader { run: 1, numTries: 769845, detectorName: ldmx-det-v14-8gev, descripti
 [ ecalVetoBDT ] 7907  info:  BDT was ran, score is 0.000109911
 [ ecalVetoBDT ] 7907  info:  The pred > bdtCutVal = false and MIP tracking passed = false
 [ hcalVeto ] 7907  info: There are 1 / 1 HCal hits read out. 1 are not associated with the recoil ele. Total PE of 6
-[ hcalVeto ] 7907  info: HCAL veto passed? false
+[ hcalVeto ] 7907  info: HCAL veto passed? true
 [ ElectronCounter ] 7907  info: Found 2 electrons (tracks) using input collection TriggerPadTracksY_
 [ trigger ] 7907  info: Got trigger energy cut 10790 for 2 electrons counted in the event.
 [ trigger ] 7907  info: Got trigger energy sum 15284.4; and decision is pass = false
@@ -71307,7 +71307,7 @@ RunHeader { run: 1, numTries: 769845, detectorName: ldmx-det-v14-8gev, descripti
 [ ecalVetoBDT ] 7908  info:  BDT was ran, score is 3.14713e-05
 [ ecalVetoBDT ] 7908  info:  The pred > bdtCutVal = false and MIP tracking passed = false
 [ hcalVeto ] 7908  info: There are 4 / 4 HCal hits read out. 4 are not associated with the recoil ele. Total PE of 10
-[ hcalVeto ] 7908  info: HCAL veto passed? false
+[ hcalVeto ] 7908  info: HCAL veto passed? true
 [ ElectronCounter ] 7908  info: Found 2 electrons (tracks) using input collection TriggerPadTracksY_
 [ trigger ] 7908  info: Got trigger energy cut 10790 for 2 electrons counted in the event.
 [ trigger ] 7908  info: Got trigger energy sum 15476.7; and decision is pass = false
@@ -71568,7 +71568,7 @@ RunHeader { run: 1, numTries: 769845, detectorName: ldmx-det-v14-8gev, descripti
 [ ecalVetoBDT ] 7937  info:  BDT was ran, score is 4.17233e-06
 [ ecalVetoBDT ] 7937  info:  The pred > bdtCutVal = false and MIP tracking passed = false
 [ hcalVeto ] 7937  info: There are 4 / 4 HCal hits read out. 4 are not associated with the recoil ele. Total PE of 8
-[ hcalVeto ] 7937  info: HCAL veto passed? false
+[ hcalVeto ] 7937  info: HCAL veto passed? true
 [ ElectronCounter ] 7937  info: Found 2 electrons (tracks) using input collection TriggerPadTracksY_
 [ trigger ] 7937  info: Got trigger energy cut 10790 for 2 electrons counted in the event.
 [ trigger ] 7937  info: Got trigger energy sum 15410; and decision is pass = false
@@ -71739,7 +71739,7 @@ RunHeader { run: 1, numTries: 769845, detectorName: ldmx-det-v14-8gev, descripti
 [ ecalVetoBDT ] 7956  info:  BDT was ran, score is 4.25577e-05
 [ ecalVetoBDT ] 7956  info:  The pred > bdtCutVal = false and MIP tracking passed = false
 [ hcalVeto ] 7956  info: There are 5 / 5 HCal hits read out. 5 are not associated with the recoil ele. Total PE of 15
-[ hcalVeto ] 7956  info: HCAL veto passed? false
+[ hcalVeto ] 7956  info: HCAL veto passed? true
 [ ElectronCounter ] 7956  info: Found 2 electrons (tracks) using input collection TriggerPadTracksY_
 [ trigger ] 7956  info: Got trigger energy cut 10790 for 2 electrons counted in the event.
 [ trigger ] 7956  info: Got trigger energy sum 13611.5; and decision is pass = false
@@ -72018,7 +72018,7 @@ RunHeader { run: 1, numTries: 769845, detectorName: ldmx-det-v14-8gev, descripti
 [ ecalVetoBDT ] 7987  info:  BDT was ran, score is 4.76837e-06
 [ ecalVetoBDT ] 7987  info:  The pred > bdtCutVal = false and MIP tracking passed = false
 [ hcalVeto ] 7987  info: There are 6 / 7 HCal hits read out. 6 are not associated with the recoil ele. Total PE of 12
-[ hcalVeto ] 7987  info: HCAL veto passed? false
+[ hcalVeto ] 7987  info: HCAL veto passed? true
 [ ElectronCounter ] 7987  info: Found 2 electrons (tracks) using input collection TriggerPadTracksY_
 [ trigger ] 7987  info: Got trigger energy cut 10790 for 2 electrons counted in the event.
 [ trigger ] 7987  info: Got trigger energy sum 19884.3; and decision is pass = false
@@ -72146,7 +72146,7 @@ RunHeader { run: 1, numTries: 769845, detectorName: ldmx-det-v14-8gev, descripti
 [ ecalVetoBDT ] 8001  info:  BDT was ran, score is 1.65701e-05
 [ ecalVetoBDT ] 8001  info:  The pred > bdtCutVal = false and MIP tracking passed = false
 [ hcalVeto ] 8001  info: There are 7 / 7 HCal hits read out. 7 are not associated with the recoil ele. Total PE of 14
-[ hcalVeto ] 8001  info: HCAL veto passed? false
+[ hcalVeto ] 8001  info: HCAL veto passed? true
 [ ElectronCounter ] 8001  info: Found 2 electrons (tracks) using input collection TriggerPadTracksY_
 [ trigger ] 8001  info: Got trigger energy cut 10790 for 2 electrons counted in the event.
 [ trigger ] 8001  info: Got trigger energy sum 14440.7; and decision is pass = false
@@ -72515,7 +72515,7 @@ RunHeader { run: 1, numTries: 769845, detectorName: ldmx-det-v14-8gev, descripti
 [ ecalVetoBDT ] 8042  info:  BDT was ran, score is 1.68085e-05
 [ ecalVetoBDT ] 8042  info:  The pred > bdtCutVal = false and MIP tracking passed = false
 [ hcalVeto ] 8042  info: There are 7 / 7 HCal hits read out. 7 are not associated with the recoil ele. Total PE of 23
-[ hcalVeto ] 8042  info: HCAL veto passed? false
+[ hcalVeto ] 8042  info: HCAL veto passed? true
 [ ElectronCounter ] 8042  info: Found 2 electrons (tracks) using input collection TriggerPadTracksY_
 [ trigger ] 8042  info: Got trigger energy cut 10790 for 2 electrons counted in the event.
 [ trigger ] 8042  info: Got trigger energy sum 15206.7; and decision is pass = false
@@ -72938,7 +72938,7 @@ RunHeader { run: 1, numTries: 769845, detectorName: ldmx-det-v14-8gev, descripti
 [ ecalVetoBDT ] 8089  info:  BDT was ran, score is 2.65837e-05
 [ ecalVetoBDT ] 8089  info:  The pred > bdtCutVal = false and MIP tracking passed = false
 [ hcalVeto ] 8089  info: There are 1 / 1 HCal hits read out. 1 are not associated with the recoil ele. Total PE of 7
-[ hcalVeto ] 8089  info: HCAL veto passed? false
+[ hcalVeto ] 8089  info: HCAL veto passed? true
 [ ElectronCounter ] 8089  info: Found 2 electrons (tracks) using input collection TriggerPadTracksY_
 [ trigger ] 8089  info: Got trigger energy cut 10790 for 2 electrons counted in the event.
 [ trigger ] 8089  info: Got trigger energy sum 15110.5; and decision is pass = false
@@ -73226,7 +73226,7 @@ RunHeader { run: 1, numTries: 769845, detectorName: ldmx-det-v14-8gev, descripti
 [ ecalVetoBDT ] 8121  info:  BDT was ran, score is 6.4373e-06
 [ ecalVetoBDT ] 8121  info:  The pred > bdtCutVal = false and MIP tracking passed = false
 [ hcalVeto ] 8121  info: There are 4 / 4 HCal hits read out. 4 are not associated with the recoil ele. Total PE of 15
-[ hcalVeto ] 8121  info: HCAL veto passed? false
+[ hcalVeto ] 8121  info: HCAL veto passed? true
 [ ElectronCounter ] 8121  info: Found 2 electrons (tracks) using input collection TriggerPadTracksY_
 [ trigger ] 8121  info: Got trigger energy cut 10790 for 2 electrons counted in the event.
 [ trigger ] 8121  info: Got trigger energy sum 15652.7; and decision is pass = false
@@ -73542,7 +73542,7 @@ RunHeader { run: 1, numTries: 769845, detectorName: ldmx-det-v14-8gev, descripti
 [ ecalVetoBDT ] 8156  info:  BDT was ran, score is 5.72205e-06
 [ ecalVetoBDT ] 8156  info:  The pred > bdtCutVal = false and MIP tracking passed = false
 [ hcalVeto ] 8156  info: There are 2 / 2 HCal hits read out. 2 are not associated with the recoil ele. Total PE of 8
-[ hcalVeto ] 8156  info: HCAL veto passed? false
+[ hcalVeto ] 8156  info: HCAL veto passed? true
 [ ElectronCounter ] 8156  info: Found 2 electrons (tracks) using input collection TriggerPadTracksY_
 [ trigger ] 8156  info: Got trigger energy cut 10790 for 2 electrons counted in the event.
 [ trigger ] 8156  info: Got trigger energy sum 15653.4; and decision is pass = false
@@ -76057,7 +76057,7 @@ RunHeader { run: 1, numTries: 769845, detectorName: ldmx-det-v14-8gev, descripti
 [ ecalVetoBDT ] 8435  info:  BDT was ran, score is 2.52724e-05
 [ ecalVetoBDT ] 8435  info:  The pred > bdtCutVal = false and MIP tracking passed = false
 [ hcalVeto ] 8435  info: There are 2 / 2 HCal hits read out. 2 are not associated with the recoil ele. Total PE of 9
-[ hcalVeto ] 8435  info: HCAL veto passed? false
+[ hcalVeto ] 8435  info: HCAL veto passed? true
 [ ElectronCounter ] 8435  info: Found 2 electrons (tracks) using input collection TriggerPadTracksY_
 [ trigger ] 8435  info: Got trigger energy cut 10790 for 2 electrons counted in the event.
 [ trigger ] 8435  info: Got trigger energy sum 13552.7; and decision is pass = false
@@ -76435,7 +76435,7 @@ RunHeader { run: 1, numTries: 769845, detectorName: ldmx-det-v14-8gev, descripti
 [ ecalVetoBDT ] 8477  info:  BDT was ran, score is 1.43051e-05
 [ ecalVetoBDT ] 8477  info:  The pred > bdtCutVal = false and MIP tracking passed = false
 [ hcalVeto ] 8477  info: There are 9 / 9 HCal hits read out. 9 are not associated with the recoil ele. Total PE of 19
-[ hcalVeto ] 8477  info: HCAL veto passed? false
+[ hcalVeto ] 8477  info: HCAL veto passed? true
 [ ElectronCounter ] 8477  info: Found 2 electrons (tracks) using input collection TriggerPadTracksY_
 [ trigger ] 8477  info: Got trigger energy cut 10790 for 2 electrons counted in the event.
 [ trigger ] 8477  info: Got trigger energy sum 14429.4; and decision is pass = false
@@ -77138,7 +77138,7 @@ RunHeader { run: 1, numTries: 769845, detectorName: ldmx-det-v14-8gev, descripti
 [ ecalVetoBDT ] 8555  info:  BDT was ran, score is 1.27554e-05
 [ ecalVetoBDT ] 8555  info:  The pred > bdtCutVal = false and MIP tracking passed = false
 [ hcalVeto ] 8555  info: There are 3 / 3 HCal hits read out. 3 are not associated with the recoil ele. Total PE of 8
-[ hcalVeto ] 8555  info: HCAL veto passed? false
+[ hcalVeto ] 8555  info: HCAL veto passed? true
 [ ElectronCounter ] 8555  info: Found 2 electrons (tracks) using input collection TriggerPadTracksY_
 [ trigger ] 8555  info: Got trigger energy cut 10790 for 2 electrons counted in the event.
 [ trigger ] 8555  info: Got trigger energy sum 14541.7; and decision is pass = false
@@ -78824,7 +78824,7 @@ RunHeader { run: 1, numTries: 769845, detectorName: ldmx-det-v14-8gev, descripti
 [ ecalVetoBDT ] 8742  info:  BDT was ran, score is 1.34706e-05
 [ ecalVetoBDT ] 8742  info:  The pred > bdtCutVal = false and MIP tracking passed = false
 [ hcalVeto ] 8742  info: There are 7 / 8 HCal hits read out. 7 are not associated with the recoil ele. Total PE of 30
-[ hcalVeto ] 8742  info: HCAL veto passed? false
+[ hcalVeto ] 8742  info: HCAL veto passed? true
 [ ElectronCounter ] 8742  info: Found 0 electrons (tracks) using input collection TriggerPadTracksY_
 [ trigger ] 8742  info: Got trigger energy cut 0 for 0 electrons counted in the event.
 [ trigger ] 8742  info: Got trigger energy sum 14631.2; and decision is pass = false
@@ -81005,7 +81005,7 @@ RunHeader { run: 1, numTries: 769845, detectorName: ldmx-det-v14-8gev, descripti
 [ ecalVetoBDT ] 8984  info:  BDT was ran, score is 4.17233e-06
 [ ecalVetoBDT ] 8984  info:  The pred > bdtCutVal = false and MIP tracking passed = false
 [ hcalVeto ] 8984  info: There are 6 / 6 HCal hits read out. 6 are not associated with the recoil ele. Total PE of 18
-[ hcalVeto ] 8984  info: HCAL veto passed? false
+[ hcalVeto ] 8984  info: HCAL veto passed? true
 [ ElectronCounter ] 8984  info: Found 2 electrons (tracks) using input collection TriggerPadTracksY_
 [ trigger ] 8984  info: Got trigger energy cut 10790 for 2 electrons counted in the event.
 [ trigger ] 8984  info: Got trigger energy sum 14611.3; and decision is pass = false
@@ -81095,7 +81095,7 @@ RunHeader { run: 1, numTries: 769845, detectorName: ldmx-det-v14-8gev, descripti
 [ ecalVetoBDT ] 8994  info:  BDT was ran, score is 6.59227e-05
 [ ecalVetoBDT ] 8994  info:  The pred > bdtCutVal = false and MIP tracking passed = false
 [ hcalVeto ] 8994  info: There are 4 / 4 HCal hits read out. 4 are not associated with the recoil ele. Total PE of 14
-[ hcalVeto ] 8994  info: HCAL veto passed? false
+[ hcalVeto ] 8994  info: HCAL veto passed? true
 [ ElectronCounter ] 8994  info: Found 2 electrons (tracks) using input collection TriggerPadTracksY_
 [ trigger ] 8994  info: Got trigger energy cut 10790 for 2 electrons counted in the event.
 [ trigger ] 8994  info: Got trigger energy sum 15353; and decision is pass = false
@@ -82988,7 +82988,7 @@ RunHeader { run: 1, numTries: 769845, detectorName: ldmx-det-v14-8gev, descripti
 [ ecalVetoBDT ] 9204  info:  BDT was ran, score is 1.2517e-05
 [ ecalVetoBDT ] 9204  info:  The pred > bdtCutVal = false and MIP tracking passed = false
 [ hcalVeto ] 9204  info: There are 6 / 6 HCal hits read out. 6 are not associated with the recoil ele. Total PE of 19
-[ hcalVeto ] 9204  info: HCAL veto passed? false
+[ hcalVeto ] 9204  info: HCAL veto passed? true
 [ ElectronCounter ] 9204  info: Found 2 electrons (tracks) using input collection TriggerPadTracksY_
 [ trigger ] 9204  info: Got trigger energy cut 10790 for 2 electrons counted in the event.
 [ trigger ] 9204  info: Got trigger energy sum 16219.1; and decision is pass = false
@@ -84249,7 +84249,7 @@ RunHeader { run: 1, numTries: 769845, detectorName: ldmx-det-v14-8gev, descripti
 [ ecalVetoBDT ] 9344  info:  BDT was ran, score is 1.35899e-05
 [ ecalVetoBDT ] 9344  info:  The pred > bdtCutVal = false and MIP tracking passed = false
 [ hcalVeto ] 9344  info: There are 5 / 5 HCal hits read out. 5 are not associated with the recoil ele. Total PE of 13
-[ hcalVeto ] 9344  info: HCAL veto passed? false
+[ hcalVeto ] 9344  info: HCAL veto passed? true
 [ ElectronCounter ] 9344  info: Found 2 electrons (tracks) using input collection TriggerPadTracksY_
 [ trigger ] 9344  info: Got trigger energy cut 10790 for 2 electrons counted in the event.
 [ trigger ] 9344  info: Got trigger energy sum 14584.5; and decision is pass = false
@@ -84808,7 +84808,7 @@ RunHeader { run: 1, numTries: 769845, detectorName: ldmx-det-v14-8gev, descripti
 [ ecalVetoBDT ] 9406  info:  BDT was ran, score is 9.17912e-06
 [ ecalVetoBDT ] 9406  info:  The pred > bdtCutVal = false and MIP tracking passed = false
 [ hcalVeto ] 9406  info: There are 12 / 12 HCal hits read out. 12 are not associated with the recoil ele. Total PE of 39
-[ hcalVeto ] 9406  info: HCAL veto passed? false
+[ hcalVeto ] 9406  info: HCAL veto passed? true
 [ ElectronCounter ] 9406  info: Found 0 electrons (tracks) using input collection TriggerPadTracksY_
 [ trigger ] 9406  info: Got trigger energy cut 0 for 0 electrons counted in the event.
 [ trigger ] 9406  info: Got trigger energy sum 16351.3; and decision is pass = false
@@ -85403,7 +85403,7 @@ RunHeader { run: 1, numTries: 769845, detectorName: ldmx-det-v14-8gev, descripti
 [ ecalVetoBDT ] 9472  info:  BDT was ran, score is 1.07288e-05
 [ ecalVetoBDT ] 9472  info:  The pred > bdtCutVal = false and MIP tracking passed = false
 [ hcalVeto ] 9472  info: There are 8 / 8 HCal hits read out. 8 are not associated with the recoil ele. Total PE of 17
-[ hcalVeto ] 9472  info: HCAL veto passed? false
+[ hcalVeto ] 9472  info: HCAL veto passed? true
 [ ElectronCounter ] 9472  info: Found 2 electrons (tracks) using input collection TriggerPadTracksY_
 [ trigger ] 9472  info: Got trigger energy cut 10790 for 2 electrons counted in the event.
 [ trigger ] 9472  info: Got trigger energy sum 13627; and decision is pass = false
@@ -88844,7 +88844,7 @@ RunHeader { run: 1, numTries: 769845, detectorName: ldmx-det-v14-8gev, descripti
 [ ecalVetoBDT ] 9854  info:  BDT was ran, score is 5.84126e-06
 [ ecalVetoBDT ] 9854  info:  The pred > bdtCutVal = false and MIP tracking passed = false
 [ hcalVeto ] 9854  info: There are 3 / 3 HCal hits read out. 3 are not associated with the recoil ele. Total PE of 8
-[ hcalVeto ] 9854  info: HCAL veto passed? false
+[ hcalVeto ] 9854  info: HCAL veto passed? true
 [ ElectronCounter ] 9854  info: Found 2 electrons (tracks) using input collection TriggerPadTracksY_
 [ trigger ] 9854  info: Got trigger energy cut 10790 for 2 electrons counted in the event.
 [ trigger ] 9854  info: Got trigger energy sum 13515.2; and decision is pass = false
@@ -89964,7 +89964,7 @@ RunHeader { run: 1, numTries: 769845, detectorName: ldmx-det-v14-8gev, descripti
 [ ecalVetoBDT ] 9978  info:  BDT was ran, score is 5.96046e-06
 [ ecalVetoBDT ] 9978  info:  The pred > bdtCutVal = false and MIP tracking passed = false
 [ hcalVeto ] 9978  info: There are 12 / 12 HCal hits read out. 12 are not associated with the recoil ele. Total PE of 35
-[ hcalVeto ] 9978  info: HCAL veto passed? false
+[ hcalVeto ] 9978  info: HCAL veto passed? true
 [ ElectronCounter ] 9978  info: Found 2 electrons (tracks) using input collection TriggerPadTracksY_
 [ trigger ] 9978  info: Got trigger energy cut 10790 for 2 electrons counted in the event.
 [ trigger ] 9978  info: Got trigger energy sum 14353.2; and decision is pass = false
@@ -90072,7 +90072,7 @@ RunHeader { run: 1, numTries: 769845, detectorName: ldmx-det-v14-8gev, descripti
 [ ecalVetoBDT ] 9990  info:  BDT was ran, score is 5.16176e-05
 [ ecalVetoBDT ] 9990  info:  The pred > bdtCutVal = false and MIP tracking passed = false
 [ hcalVeto ] 9990  info: There are 2 / 2 HCal hits read out. 2 are not associated with the recoil ele. Total PE of 7
-[ hcalVeto ] 9990  info: HCAL veto passed? false
+[ hcalVeto ] 9990  info: HCAL veto passed? true
 [ ElectronCounter ] 9990  info: Found 2 electrons (tracks) using input collection TriggerPadTracksY_
 [ trigger ] 9990  info: Got trigger energy cut 10790 for 2 electrons counted in the event.
 [ trigger ] 9990  info: Got trigger energy sum 16096.9; and decision is pass = false
@@ -90174,7 +90174,7 @@ RunHeader { run: 1, numTries: 769845, detectorName: ldmx-det-v14-8gev, descripti
 [ Tagger_TrackFinder ] 10000  info: AVG Time/Event: 0.4 ms
 [ Tagger_TrackFinder ] 10000  info: Breakdown::
 [ Tagger_TrackFinder ] 10000  info: setup       Avg Time/Event = 0.002 ms
-[ Tagger_TrackFinder ] 10000  info: hits        Avg Time/Event = 0.035 ms
+[ Tagger_TrackFinder ] 10000  info: hits        Avg Time/Event = 0.033 ms
 [ Tagger_TrackFinder ] 10000  info: seeds       Avg Time/Event = 0.004 ms
 [ Tagger_TrackFinder ] 10000  info: cf_setup    Avg Time/Event = 0.004 ms
 [ Tagger_TrackFinder ] 10000  info: ckf_run     Avg Time/Event = 0.000 ms
@@ -90183,8 +90183,8 @@ RunHeader { run: 1, numTries: 769845, detectorName: ldmx-det-v14-8gev, descripti
 [ Recoil_TrackFinder ] 10000  info: AVG Time/Event: 0.2 ms
 [ Recoil_TrackFinder ] 10000  info: Breakdown::
 [ Recoil_TrackFinder ] 10000  info: setup       Avg Time/Event = 0.001 ms
-[ Recoil_TrackFinder ] 10000  info: hits        Avg Time/Event = 0.038 ms
-[ Recoil_TrackFinder ] 10000  info: seeds       Avg Time/Event = 0.003 ms
+[ Recoil_TrackFinder ] 10000  info: hits        Avg Time/Event = 0.037 ms
+[ Recoil_TrackFinder ] 10000  info: seeds       Avg Time/Event = 0.004 ms
 [ Recoil_TrackFinder ] 10000  info: cf_setup    Avg Time/Event = 0.002 ms
 [ Recoil_TrackFinder ] 10000  info: ckf_run     Avg Time/Event = 0.000 ms
 [ Recoil_TrackFinder ] 10000  info: result_loop Avg Time/Event = 0.2 ms
