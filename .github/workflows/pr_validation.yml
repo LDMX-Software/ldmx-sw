@@ -37,14 +37,14 @@ jobs:
     steps:
     - name: Print out ref used in checkout
       run: |
-        echo "PR ref: ${{ github.event.issue.pull_request.head.ref }}"
+        echo "PR ref: ${{ github.head_ref }}"
       
     - name: Checkout ldmx-sw
       uses: actions/checkout@v4
       with:
         submodules: 'recursive'
         fetch-depth: 0
-        ref: ${{ github.event.issue.pull_request.head.ref }}
+        ref: ${{ github.head_ref }}
 
     - name: Install just
       uses: extractions/setup-just@v2
