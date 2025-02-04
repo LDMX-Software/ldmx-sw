@@ -38,7 +38,7 @@ jobs:
       with:
         submodules: 'recursive'
         fetch-depth: 0
-        ref: refs/pull/${{ github.event.pull_request.number }}/merge
+        ref: ${{ github.event.pull_request.head.sha }}
 
     - name: Install just
       uses: extractions/setup-just@v2
