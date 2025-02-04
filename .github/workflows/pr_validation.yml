@@ -4,8 +4,8 @@ name: PR Validation
 on:
   workflow_dispatch:
   pull_request: 
-    branches: [refs/remotes/pull/*/merge]
-    types: [opened, ready_for_review, synchronize]
+    branches: [trunk]
+    types: [opened, ready_for_review]
   issue_comment:
     types: [created]
 
@@ -26,6 +26,8 @@ jobs:
             -d '{"body": "'"$COMMENT"'"}' \
             "https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.issue.number }}/comments"
 
+
+
   compile-ldmx-sw:
     needs: check-comment
     if: github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch' || (github.event_name == 'issue_comment' && contains(github.event.comment.body, '/run-validation'))
@@ -33,11 +35,16 @@ jobs:
     outputs:
       job_matrix: ${{steps.gen-mat.outputs.job_matrix}}
     steps:
+    - name: Print out ref used in checkout
+      run: |
+        echo "PR ref: ${{ github.event.issue.pull_request.head.ref }}"
+      
     - name: Checkout ldmx-sw
       uses: actions/checkout@v4
       with:
         submodules: 'recursive'
         fetch-depth: 0
+        ref: ${{ github.event.issue.pull_request.head.ref }}
 
     - name: Install just
       uses: extractions/setup-just@v2
