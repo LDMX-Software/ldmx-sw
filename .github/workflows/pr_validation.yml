@@ -35,16 +35,21 @@ jobs:
     outputs:
       job_matrix: ${{steps.gen-mat.outputs.job_matrix}}
     steps:
-    - name: Print out ref used in checkout
+    - name: Get PR Info
+      id: get_pr
+      if: github.event_name == 'issue_comment'
       run: |
-        echo "PR ref: ${{ github.event.pull_request.head.ref }}"
-      
+        PR_DATA=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+          "https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.issue.number }}")
+        HEAD_REF=$(echo "$PR_DATA" | jq -r .head.ref)
+        echo "HEAD_REF=$HEAD_REF" >> $GITHUB_ENV
+
     - name: Checkout ldmx-sw
       uses: actions/checkout@v4
       with:
         submodules: 'recursive'
         fetch-depth: 0
-        ref: ${{ github.event.pull_request.head.ref }}
+        ref: ${{ env.HEAD_REF }}
 
     - name: Install just
       uses: extractions/setup-just@v2
