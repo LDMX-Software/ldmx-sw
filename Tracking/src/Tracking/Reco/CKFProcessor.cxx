@@ -547,7 +547,17 @@ void CKFProcessor::produce(framework::Event& event) {
       trk.setMomentum(track.momentum()[0], track.momentum()[1],
                       track.momentum()[2]);
 
-      ldmx_log(debug) << "starting extrapolations";
+      // At least min_hits_ hits and p > 50 MeV
+      if (trk.getNhits() < min_hits_ || abs(1. / trk.getQoP()) < 0.05) {
+        ldmx_log(debug)
+            << "  > Track candidate did NOT meet the requirements: Nhits = "
+            << trk.getNhits() << " and p = " << abs(1. / trk.getQoP())
+            << " GeV";
+        // No point of doing the extrapolations if the track candidate anyway
+        // wont be kept
+        continue;
+      }
+
       // Extrapolations
       // To ECAL
       const double ECAL_SCORING_PLANE = 240.5;
