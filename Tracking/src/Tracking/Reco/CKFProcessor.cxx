@@ -270,7 +270,7 @@ void CKFProcessor::produce(framework::Event& event) {
                     << ", QoP = " << paramVec[4] << ", Time = " << paramVec[5];
 
     ldmx_log(debug) << "  Cov matrix diagonal (" << covMat(0, 0) << ", "
-                    << covMat(1, 1) << ", " << covMat(1, 1) << ")";
+                    << covMat(1, 1) << ", " << covMat(2, 2) << ")";
 
     // need to set particle hypothesis...set to electron for now...
     auto partHypo{Acts::SinglyChargedParticleHypothesis::electron()};
