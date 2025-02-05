@@ -269,7 +269,8 @@ void CKFProcessor::produce(framework::Event& event) {
                     << ", Phi = " << paramVec[2] << ", Theta = " << paramVec[3]
                     << ", QoP = " << paramVec[4] << ", Time = " << paramVec[5];
 
-    ldmx_log(debug) << "  Cov matrix diagonal (" << covMat(0, 0) << ", " << covMat(1, 1) << ", "<< covMat(1, 1) << ")";
+    ldmx_log(debug) << "  Cov matrix diagonal (" << covMat(0, 0) << ", "
+                    << covMat(1, 1) << ", " << covMat(1, 1) << ")";
 
     // need to set particle hypothesis...set to electron for now...
     auto partHypo{Acts::SinglyChargedParticleHypothesis::electron()};
@@ -553,7 +554,7 @@ void CKFProcessor::produce(framework::Event& event) {
           ldmx_log(debug) << "    Adding measurement to ldmx::track with "
                              "source link index = "
                           << sl.index();
-          ldmx_log(debug) <<  "    Measurement:\n" << ldmx_meas;
+          ldmx_log(debug) << "    Measurement:\n" << ldmx_meas;
           trk.addMeasurementIndex(sl.index());
         } else {
           ldmx_log(debug) << "    This TrackState is not a measurement";
@@ -688,7 +689,7 @@ void CKFProcessor::produce(framework::Event& event) {
 void CKFProcessor::onProcessStart() {
   if (use1Dmeasurements_)
     ldmx_log(debug) << "Use1Dmeasurements = " << std::boolalpha
-                   << use1Dmeasurements_;
+                    << use1Dmeasurements_;
   if (remove_stereo_)
     ldmx_log(debug) << "Remove_stereo = " << std::boolalpha << remove_stereo_;
 }
