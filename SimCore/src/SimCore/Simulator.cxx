@@ -113,6 +113,7 @@ void Simulator::beforeNewRun(ldmx::RunHeader& header) {
                       "G4 Version string.";
   }
 
+  header.setStringParameter("ldmx-sw version", LDMXSW_VERSION);
   header.setStringParameter("ldmx-sw revision", GIT_SHA1);
 }
 

@@ -127,11 +127,15 @@ void EcalVetoProcessor::configure(framework::config::Parameters &parameters) {
   ecalLayerTime_.resize(nEcalLayers_, 0);
 
   beamEnergyMeV_ = parameters.getParameter<double>("beam_energy");
+  linreg_radius_ = parameters.getParameter<double>("linreg_radius");
 
   // Set the collection name as defined in the configuration
   collectionName_ = parameters.getParameter<std::string>("collection_name");
   rec_pass_name_ = parameters.getParameter<std::string>("rec_pass_name");
   rec_coll_name_ = parameters.getParameter<std::string>("rec_coll_name");
+  recoil_from_tracking_ = parameters.getParameter<bool>("recoil_from_tracking");
+  track_collection_ = parameters.getParameter<std::string>("track_collection");
+  inverse_skim_ = parameters.getParameter<bool>("inverse_skim");
 }
 
 void EcalVetoProcessor::clearProcessor() {
@@ -241,13 +245,28 @@ void EcalVetoProcessor::produce(framework::Event &event) {
       }
     }
   }
+  // Get recoilPos using recoil tracking
+  if (recoil_from_tracking_) {
+    std::vector<float> recoil_track_states;
+    if (verbose_) {
+      ldmx_log(debug) << "   Propagate recoil tracks to ECAL face";
+    }
+    // Get the recoil track collection
+    auto recoil_tracks{event.getCollection<ldmx::Track>(track_collection_)};
+
+    ldmx::TrackStateType ts_type = ldmx::TrackStateType::AtECAL;
+    recoil_track_states = trackProp(recoil_tracks, ts_type, "ecal");
+    // Redefining recoilPos now to come from the track state
+    // track_state_loc0 is recoilPos[0] and track_state_loc1 is recoilPos[1]
+    recoilPos = recoil_track_states;
+  }
 
   if (verbose_) {
     ldmx_log(debug) << "   Get projected trajectories for electron and photon";
   }
   // Get projected trajectories for electron and photon
   std::vector<XYCoords> ele_trajectory, photon_trajectory;
-  if (recoilP.size() > 0) {
+  if (!recoilP.empty() && !recoilPos.empty()) {
     ele_trajectory = getTrajectory(recoilP, recoilPos);
     std::vector<double> pvec = recoilPAtTarget.size()
                                    ? recoilPAtTarget
@@ -656,7 +675,7 @@ void EcalVetoProcessor::produce(framework::Event &event) {
   const float dz_from_face{7.932};
   float drifted_recoil_x{-9999.};
   float drifted_recoil_y{-9999.};
-  if (recoilP.size() > 0) {
+  if (!recoilP.empty()) {
     drifted_recoil_x =
         (dz_from_face * (recoilP[0] / recoilP[2])) + recoilPos[0];
     drifted_recoil_y =
@@ -696,7 +715,7 @@ void EcalVetoProcessor::produce(framework::Event &event) {
   TVector3 e_traj_end;
   TVector3 p_traj_start;
   TVector3 p_traj_end;
-  if (ele_trajectory.size() > 0 && photon_trajectory.size() > 0) {
+  if (!ele_trajectory.empty() && !photon_trajectory.empty()) {
     // Create TVector3s marking the start and endpoints of each projected
     // trajectory
     e_traj_start.SetXYZ(ele_trajectory[0].first, ele_trajectory[0].second,
@@ -740,8 +759,8 @@ void EcalVetoProcessor::produce(framework::Event &event) {
   // segmipBDT
   firstNearPhLayer_ = nEcalLayers_ - 1;
 
-  if (photon_trajectory.size() !=
-      0) {  // If no photon trajectory, leave this at the default (ECal back)
+  // If no photon trajectory, leave this at the default (ECal back)
+  if (!photon_trajectory.empty()) {
     for (std::vector<HitData>::iterator it = trackingHitList.begin();
          it != trackingHitList.end(); ++it) {
       float ehDist =
@@ -759,7 +778,7 @@ void EcalVetoProcessor::produce(framework::Event &event) {
   // Territories limited to trackingHitList
   TVector3 gToe = (e_traj_start - p_traj_start).Unit();
   TVector3 origin = p_traj_start + 0.5 * 8.7 * gToe;
-  if (ele_trajectory.size() > 0) {
+  if (!ele_trajectory.empty()) {
     for (auto &hitData : trackingHitList) {
       TVector3 hitPos = hitData.pos;
       TVector3 hitPrime = hitPos - origin;
@@ -957,26 +976,25 @@ void EcalVetoProcessor::produce(framework::Event &event) {
 
   // ------------------------------------------------------
   // Linreg tracking:
-  ldmx_log(debug) << "Finding linreg tracks from " << trackingHitList.size()
-                  << " hits";
+  ldmx_log(info) << "Finding linreg tracks from a total of "
+                 << trackingHitList.size() << " hits using a radius of "
+                 << linreg_radius_ << " mm";
 
   for (int iHit = 0; iHit < trackingHitList.size(); iHit++) {
-    int track[34];
-    int trackLen{0};
-    // Hits being considered at one time
-    // TODO: This is currently not used, but it really should be!
-    // int hitsInRegion[50];
-    // Number of hits under consideration
-    int nHitsInRegion{1};
+    // Hits being considered at a given time
+    std::vector<int> hitsInRegion;
     TMatrixD Vm(3, 3);
     TMatrixD hdt(3, 3);
     TVector3 slopeVec;
     TVector3 hmean;
     TVector3 hpoint;
     float r_corr_best{0.0};
+    // Temp array having 3 potential hits
     int hitNums[3];
+    // From the above which are passing the correlation reqs
+    int bestHitNums[3];
 
-    // hitsInRegion[0] = iHit; // TODO
+    hitsInRegion.push_back(iHit);
     // Find all hits within 2 cells of the primary hit:
     for (int jHit = 0; jHit < trackingHitList.size(); jHit++) {
       // Dont try to put hits on the same layer to the lin-reg track
@@ -985,22 +1003,29 @@ void EcalVetoProcessor::produce(framework::Event &event) {
       }
       float dstToHit =
           (trackingHitList[iHit].pos - trackingHitList[jHit].pos).Mag();
-      // This distance needs to be optimized in a future study //TODO
-      // Current 2*cellWidth has no particular meaning
-      if (dstToHit <= 2 * cellWidth) {
-        // hitsInRegion[nHitsInRegion] = jHit; // TODO
-        nHitsInRegion++;
+      // This distance optimized to give the best significance
+      // it used to be 2*cellWidth, i.e. 4.81 mm
+      // note, the layers in the back have a separation of 22.3
+      if (dstToHit <= 2 * linreg_radius_) {
+        hitsInRegion.push_back(jHit);
       }
     }
-
+    // Found a track that passed the lin-reg reqs
+    bool bestLinRegFound{false};
+    if (verbose_) {
+      ldmx_log(debug) << "There are " << hitsInRegion.size()
+                      << " hits within a radius of " << linreg_radius_ << " mm";
+    }
     // Look at combinations of hits within the region (do not consider the same
     // combination twice):
     hitNums[0] = iHit;
-    for (int jHit = 1; jHit < nHitsInRegion - 1; jHit++) {
-      if (trackingHitList.size() < 3) break;
-      hitNums[1] = jHit;
-      for (int kHit = jHit + 1; kHit < nHitsInRegion; kHit++) {
-        hitNums[2] = kHit;
+    for (int jHitInReg = 1; jHitInReg < hitsInRegion.size() - 1; jHitInReg++) {
+      // We require (exactly) 3 hits for the lin-reg track building
+      if (hitsInRegion.size() < 3) break;
+      hitNums[1] = hitsInRegion[jHitInReg];
+      for (int kHitReg = jHitInReg + 1; kHitReg < hitsInRegion.size();
+           kHitReg++) {
+        hitNums[2] = hitsInRegion[kHitReg];
         for (int hInd = 0; hInd < 3; hInd++) {
           // hmean = geometric mean, subtract off from hits to improve SVD
           // performance
@@ -1060,32 +1085,38 @@ void EcalVetoProcessor::produce(framework::Event &event) {
         // oversensitive doesn't lower performance significantly
         if (r_corr > r_corr_best and r_corr > .6) {
           r_corr_best = r_corr;
-          trackLen = 0;
           // Only looking for 3-hit tracks currently
+          bestLinRegFound = true;
           for (int k = 0; k < 3; k++) {
-            track[k] = hitNums[k];
-            trackLen++;
+            bestHitNums[k] = hitNums[k];
           }
         }
       }  // end loop on hits in the region
     }    // end 2nd loop on hits in the region
 
     // Continue early if not hits on track
-    if (trackLen == 0) continue;
-
-    // Ordinarily, additional hits in line w/ track would be added here.
-    // However, this doesn't affect the results of the simple veto. Exclude all
-    // hits in a found track from further consideration:
-    if (trackLen >= 2) {
-      nLinregTracks_++;
-      for (int kHit = 0; kHit < trackLen; kHit++) {
-        trackingHitList.erase(trackingHitList.begin() + track[kHit]);
-      }
-      iHit--;
+    if (!bestLinRegFound) continue;
+    // Otherwise increase the number of lin-reg tracks
+    nLinregTracks_++;
+    ldmx_log(debug) << " Lin-reg track " << nLinregTracks_;
+    for (int finalHitIndx = 0; finalHitIndx < 3; finalHitIndx++) {
+      ldmx_log(debug) << "   Hit " << finalHitIndx << " ["
+                      << trackingHitList[bestHitNums[finalHitIndx]].pos(0)
+                      << ", "
+                      << trackingHitList[bestHitNums[finalHitIndx]].pos(1)
+                      << ", "
+                      << trackingHitList[bestHitNums[finalHitIndx]].pos(2)
+                      << "] ";
     }
+
+    // Exclude all hits in a found track from further consideration:
+    for (int lHit = 0; lHit < 3; lHit++) {
+      trackingHitList.erase(trackingHitList.begin() + bestHitNums[lHit]);
+    }
+    iHit--;
   }  // end loop on all hits
 
-  ldmx_log(info) << "  MIP tracking completed; found " << nStraightTracks_
+  ldmx_log(info) << " MIP tracking completed; found " << nStraightTracks_
                  << " straight tracks and " << nLinregTracks_
                  << " lin-reg tracks";
 
@@ -1105,23 +1136,34 @@ void EcalVetoProcessor::produce(framework::Event &event) {
   buildBDTFeatureVector(result);
   ldmx::Ort::FloatArrays inputs({bdtFeatures_});
   float pred = rt_->run({featureListName_}, inputs, {"probabilities"})[0].at(1);
+  ldmx_log(info) << " BDT was ran, score is " << pred;
   // Other considerations were (nLinregTracks_ == 0)  && (firstNearPhLayer_ >=
   // 6)
   // && (epAng_ > 3.0 && epAng_ < 900 || epSep_ > 10.0 && epSep_ < 900)
   bool passesTrackingVeto = (nStraightTracks_ < 3);
   result.setVetoResult(pred > bdtCutVal_ && passesTrackingVeto);
   result.setDiscValue(pred);
-  ldmx_log(debug) << "  The pred > bdtCutVal = " << (pred > bdtCutVal_);
+  ldmx_log(info) << " The pred > bdtCutVal = " << (pred > bdtCutVal_)
+                 << " and MIP tracking passed = " << passesTrackingVeto;
 
   // Persist in the event if the recoil ele is fiducial
   result.setFiducial(inside);
 
   // If the event passes the veto, keep it. Otherwise,
   // drop the event.
-  if (result.passesVeto()) {
-    setStorageHint(framework::hint_shouldKeep);
+  if (!inverse_skim_) {
+    if (result.passesVeto()) {
+      setStorageHint(framework::hint_shouldKeep);
+    } else {
+      setStorageHint(framework::hint_shouldDrop);
+    }
   } else {
-    setStorageHint(framework::hint_shouldDrop);
+    // Invert the skimming logic
+    if (result.passesVeto()) {
+      setStorageHint(framework::hint_shouldDrop);
+    } else {
+      setStorageHint(framework::hint_shouldKeep);
+    }
   }
 
   event.add(collectionName_, result);
@@ -1259,6 +1301,44 @@ float EcalVetoProcessor::distTwoLines(TVector3 v1, TVector3 v2, TVector3 w1,
 
 float EcalVetoProcessor::distPtToLine(TVector3 h1, TVector3 p1, TVector3 p2) {
   return ((h1 - p1).Cross(h1 - p2)).Mag() / (p1 - p2).Mag();
+}
+
+std::vector<float> EcalVetoProcessor::trackProp(const ldmx::Tracks &tracks,
+                                                ldmx::TrackStateType ts_type,
+                                                const std::string &ts_title) {
+  // Vector to hold the new track state variables
+  std::vector<float> new_track_states;
+
+  // Return if no tracks
+  if (tracks.empty()) return new_track_states;
+
+  // Otherwise loop on the tracks
+  for (auto &track : tracks) {
+    // Get track state for ts_type
+    auto trk_ts = track.getTrackState(ts_type);
+    // Continue if there's no value
+    if (!trk_ts.has_value()) continue;
+    ldmx::Track::TrackState &ecal_track_state = trk_ts.value();
+
+    // Check that the track state is filled
+    if (ecal_track_state.params.size() < 5) continue;
+
+    float track_state_loc0 = static_cast<float>(ecal_track_state.params[0]);
+    float track_state_loc1 = static_cast<float>(ecal_track_state.params[1]);
+
+    // Store the new track state variables
+    new_track_states.push_back(track_state_loc0);
+    new_track_states.push_back(track_state_loc1);
+    // z-position at the ECAL scoring plane
+    new_track_states.push_back(239.999);
+
+    // Break after getting the first valid track state
+    // TODO: interface this with CLUE to make sure the propageted track
+    //       has an associated cluster in the ECAL
+    break;
+  }
+
+  return new_track_states;
 }
 
 }  // namespace ecal

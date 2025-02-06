@@ -549,15 +549,22 @@ void CKFProcessor::produce(framework::Event& event) {
 
       ldmx_log(debug) << "starting extrapolations";
       // Extrapolations
-
+      // To ECAL
       const double ECAL_SCORING_PLANE = 240.5;
       Acts::Vector3 pos(ECAL_SCORING_PLANE, 0., 0.);
       Acts::Translation3 surf_translation(pos);
       Acts::Transform3 surf_transform(surf_translation * surf_rotation);
-
-      // Unbounded surface
       const std::shared_ptr<Acts::PlaneSurface> ecal_surface =
           Acts::Surface::makeShared<Acts::PlaneSurface>(surf_transform);
+
+      // To HCAL
+      // Let's extrapolat to 540 mm which is the mid of the side HCAL
+      Acts::Vector3 pos_hcal(540.0, 0., 0.);
+      Acts::Translation3 surf_translation_hcal(pos_hcal);
+      Acts::Transform3 surf_transform_hcal(surf_translation_hcal *
+                                           surf_rotation);
+      const std::shared_ptr<Acts::PlaneSurface> hcal_surface =
+          Acts::Surface::makeShared<Acts::PlaneSurface>(surf_transform_hcal);
 
       // Beam Origin unbounded surface
       const std::shared_ptr<Acts::Surface> beamOrigin_surface =
@@ -593,6 +600,23 @@ void CKFProcessor::produce(framework::Event& event) {
         }
       }
 
+      // Recoil Extrapolation to HCAL only
+      if (!taggerTracking_) {
+        ldmx_log(debug) << "Hcal Extrapolation";
+        ldmx::Track::TrackState tsAtHcal;
+        success = trk_extrap_->TrackStateAtSurface(
+            track, hcal_surface, tsAtHcal, ldmx::TrackStateType::AtHCAL);
+
+        if (success) {
+          trk.addTrackState(tsAtHcal);
+          ldmx_log(debug) << "Successfully obtained TS at Hcal";
+          ldmx_log(debug) << "Parameters At Hcal:  \n"
+                          << tsAtHcal.params[0] << " " << tsAtHcal.params[1]
+                          << " " << tsAtHcal.params[2] << " "
+                          << tsAtHcal.params[3] << " " << tsAtHcal.params[4];
+        }
+      }
+
       // Truth matching
       if (truthMatchingTool) {
         auto truthInfo = truthMatchingTool->TruthMatch(trk);
@@ -608,6 +632,18 @@ void CKFProcessor::produce(framework::Event& event) {
       }
     }
   }  // loop seed track parameters
+
+  // Calculating Shared Hits
+
+  auto sharedHits = computeSharedHits(tracks, measurements, tg,
+                                      tracking::sim::utils::sourceLinkHash,
+                                      tracking::sim::utils::sourceLinkEquality);
+  for (std::size_t iTrack = 0; iTrack < sharedHits.size(); ++iTrack) {
+    tracks[iTrack].setNsharedHits(sharedHits[iTrack].size());
+    for (auto idx : sharedHits[iTrack]) {
+      tracks[iTrack].addSharedIndex(idx);
+    }
+  }
 
   auto result_loop = std::chrono::high_resolution_clock::now();
   profiling_map_["result_loop"] +=
@@ -641,7 +677,7 @@ void CKFProcessor::onProcessEnd() {
                  << std::setprecision(3) << profiling_map_["setup"] / nevents_
                  << " ms";
   ldmx_log(info) << "hits        Avg Time/Event = " << std::fixed
-                 << std::setprecision(2) << profiling_map_["hits"] / nevents_
+                 << std::setprecision(3) << profiling_map_["hits"] / nevents_
                  << " ms";
   ldmx_log(info) << "seeds       Avg Time/Event = " << std::fixed
                  << std::setprecision(3) << profiling_map_["seeds"] / nevents_
@@ -750,6 +786,75 @@ auto CKFProcessor::makeGeoIdSourceLinkMap(
   }
 
   return geoId_sl_map;
+}
+
+template <typename geometry_t, typename source_link_hash_t,
+          typename source_link_equality_t>
+std::vector<std::vector<std::size_t>> CKFProcessor::computeSharedHits(
+    std::vector<ldmx::Track> tracks, std::vector<ldmx::Measurement> meas_coll,
+    geometry_t& tg, source_link_hash_t&& sourceLinkHash,
+    source_link_equality_t&& sourceLinkEquality) const {
+  auto measurementIndexMap =
+      std::unordered_map<Acts::SourceLink, std::size_t, source_link_hash_t,
+                         source_link_equality_t>(0, sourceLinkHash,
+                                                 sourceLinkEquality);
+
+  std::vector<std::vector<std::size_t>> measurementsPerTrack;
+  boost::container::flat_map<std::size_t,
+                             boost::container::flat_set<std::size_t>>
+      tracksPerMeasurement;
+  std::vector<std::size_t> sharedMeasurementsPerTrack;
+  auto numberOfTracks = 0;
+
+  // Iterate through all input tracks, collect their properties like measurement
+  // count and chi2 and fill the measurement map in order to relate tracks to
+  // each other if they have shared hits.
+  for (const auto& track : tracks) {
+    // Kick out tracks that do not fulfill our initial requirements
+    // if (track.getNhits() < nMeasurementsMin_) {
+    //   continue;
+    // }
+
+    std::vector<std::size_t> measurements;
+    for (auto imeas : track.getMeasurementsIdxs()) {
+      auto meas = meas_coll.at(imeas);
+      const Acts::Surface* hit_surface = tg.getSurface(meas.getLayerID());
+      // Store the index source link
+      ActsExamples::IndexSourceLink idx_sl(hit_surface->geometryId(), imeas);
+      Acts::SourceLink sourceLink = Acts::SourceLink(idx_sl);
+
+      auto emplace = measurementIndexMap.try_emplace(
+          sourceLink, measurementIndexMap.size());
+      measurements.push_back(emplace.first->second);
+    }
+
+    measurementsPerTrack.push_back(std::move(measurements));
+
+    ++numberOfTracks;
+  }
+
+  // Now we relate measurements to tracks
+  for (std::size_t iTrack = 0; iTrack < numberOfTracks; ++iTrack) {
+    for (auto iMeasurement : measurementsPerTrack[iTrack]) {
+      tracksPerMeasurement[iMeasurement].insert(iTrack);
+    }
+  }
+
+  // Finally, we can accumulate the number of shared measurements per track
+  sharedMeasurementsPerTrack = std::vector<std::size_t>(numberOfTracks, 0);
+
+  std::vector<std::vector<std::size_t>> sharedMeasurementIdxsPerTrack;
+  for (std::size_t iTrack = 0; iTrack < numberOfTracks; ++iTrack) {
+    std::vector<std::size_t> sharedMeasurementIdxs;
+    for (auto iMeasurement : measurementsPerTrack[iTrack]) {
+      if (tracksPerMeasurement[iMeasurement].size() > 1) {
+        ++sharedMeasurementsPerTrack[iTrack];
+        sharedMeasurementIdxs.push_back(iMeasurement);
+      }
+    }
+    sharedMeasurementIdxsPerTrack.push_back(sharedMeasurementIdxs);
+  }
+  return sharedMeasurementIdxsPerTrack;
 }
 
 }  // namespace reco

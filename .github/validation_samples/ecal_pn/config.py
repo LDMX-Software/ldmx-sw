@@ -24,11 +24,6 @@ p.run = int(os.environ['LDMX_RUN_NUMBER'])
 p.histogramFile = f'hist.root'
 p.outputFiles = [f'events.root']
 
-# The Tracking modules produce a lot of helpful messages
-# but (at the debug level) is too much for commiting the gold log
-# into the git working tree on GitHub
-p.termLogLevel = 1
-
 # Load the tracking module
 from LDMX.Tracking import tracking
 from LDMX.Tracking import geo
@@ -185,6 +180,7 @@ seed_recoil_dqm.truth_collection = "RecoilTruthTracks"
 seed_recoil_dqm.title = ""
 seed_recoil_dqm.buildHistograms()
 
+
 recoil_dqm = tkdqm.TrackingRecoDQM("RecoilDQM")
 recoil_dqm.track_collection = tracking_recoil.out_trk_collection
 recoil_dqm.truth_collection = "RecoilTruthTracks"
@@ -193,6 +189,30 @@ recoil_dqm.title = ""
 recoil_dqm.measurement_collection=digi_recoil.out_collection
 recoil_dqm.truth_hit_collection="RecoilSimHits"
 recoil_dqm.buildHistograms()
+
+# Load ecal veto and use tracking in it
+ecalVeto = ecal_vetos.EcalVetoProcessor()
+ecalVeto.recoil_from_tracking = True
+
+# Load hcal veto
+import LDMX.Hcal.hcal as hcal
+hcal_veto = hcal.HcalVetoProcessor()
+
+# The Tracking modules produce a lot of helpful messages
+# but (at the debug level) is too much for commiting the gold log
+# into the git working tree on GitHub
+p.logger.termLevel = 1
+p.logger.custom(truth_tracking, level = 2)
+p.logger.custom(digi_tagger, level = 2)
+p.logger.custom(digi_recoil, level = 2)
+p.logger.custom(seeder_tagger, level = 2)
+p.logger.custom(seeder_recoil, level = 2)
+p.logger.custom(tracking_tagger, level = 1)
+p.logger.custom(tracking_recoil, level = 1)
+p.logger.custom(seed_tagger_dqm, level = 2)
+p.logger.custom(seed_recoil_dqm, level = 2)
+p.logger.custom(tagger_dqm, level = 2)
+p.logger.custom(recoil_dqm, level = 2)
 
 p.sequence.extend([
         digi_tagger,
@@ -204,9 +224,10 @@ p.sequence.extend([
         tracking_recoil,
         ecal_digi.EcalDigiProducer(),
         ecal_digi.EcalRecProducer(), 
-        ecal_vetos.EcalVetoProcessor(),
+        ecalVeto,
         hcal_digi.HcalDigiProducer(),
         hcal_digi.HcalRecProducer(),
+        hcal_veto,
         *ts_digis,
         TrigScintClusterProducer.pad1(),
         TrigScintClusterProducer.pad2(),
@@ -218,5 +239,7 @@ p.sequence.extend([
         tagger_dqm,
         seed_recoil_dqm,
         recoil_dqm,
-        ] + dqm.all_dqm)
+        ])
+
+p.sequence.extend(dqm.all_dqm)
 
