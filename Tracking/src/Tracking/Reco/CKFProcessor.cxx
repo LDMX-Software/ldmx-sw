@@ -656,7 +656,7 @@ void CKFProcessor::produce(framework::Event& event) {
   }    // loop seed track parameters (i.e. track candidates)
 
   ldmx_log(info) << "Number of CKF tracks " << tracks.size();
-    
+
   auto ckf_run = std::chrono::high_resolution_clock::now();
   profiling_map_["ckf_run"] +=
       std::chrono::duration<double, std::milli>(ckf_run - ckf_setup).count();
