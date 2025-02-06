@@ -2,6 +2,7 @@
  * @file HcalHit.h
  * @brief Class that stores Stores reconstructed hit information from the HCAL
  * @author Jeremy Mans, University of Minnesota
+ * @author Tamas Almos Vami, UCSB, added orientation members
  */
 
 #ifndef HCAL_EVENT_HCALHIT_H_
@@ -119,24 +120,25 @@ class HcalHit : public ldmx::CalorimeterHit {
 
   /**
    * Get if bar is oriented in X
-   * @return orientationX
+   * @return true if oriented in X
    */
-  int getOrientationX_() const { return orientationX_; }
+  bool isOrientationX_() const { return orientation_ == 0; }
 
   /**
    * Get if bar is oriented in Y
-   * @return orientationY
+   * @return true if oriented in Y
    */
-  int getOrientationY_() const { return orientationY_; }
+  bool isOrientationY_() const { return orientation_ == 1; }
 
   /**
    * Get if bar is oriented in Z
-   * @return orientationZ
+   * @return true if oriented in Z
    */
-  int getOrientationZ_() const { return orientationZ_; }
+  bool isOrientationZ_() const { return orientation_ == 2; }
 
   /**
    * Get the time difference between the two ends
+   * Note: only applies for double ended readout
    * @return timeDiff
    */
   double getTimeDiff() const { return timeDiff_; }
@@ -220,25 +222,16 @@ class HcalHit : public ldmx::CalorimeterHit {
   /**
    * Set original position
    */
-  void setPositionUnchanged(double position, bool orientation) {
+  void setPositionUnchanged(double position, int orientation) {
     position_ = position;
     orientation_ = orientation;
   }
 
   /**
-   * Set if the bar is orientied in X
+   * Set if the bar is orientied in X / Y / Z
+   * meanig 0 / 1 / 2, respectively
    */
-  void setOrientationX(bool orientationX) { orientationX_ = orientationX; }
-
-  /**
-   * Set if the bar is orientied in Y
-   */
-  void setOrientationY(bool orientationY) { orientationY_ = orientationY; }
-
-  /**
-   * Set if the bar is orientied in Z
-   */
-  void setOrientationZ(bool orientationZ) { orientationZ_ = orientationZ; }
+  void setOrientation(int orientation) { orientation_ = orientation; }
 
  private:
   /** The number of PE estimated for this hit. */
@@ -260,9 +253,6 @@ class HcalHit : public ldmx::CalorimeterHit {
   double timeDiff_{-9999.};
   double position_{-9999.};
   int orientation_{-9999};
-  bool orientationX_{false};
-  bool orientationY_{false};
-  bool orientationZ_{false};
 
   double toaPos_{-9999.};
   double toaNeg_{-9999.};

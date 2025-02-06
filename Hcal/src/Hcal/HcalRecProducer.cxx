@@ -174,17 +174,7 @@ void HcalRecProducer::produce(framework::Event& event) {
 
     // Check if the bar is oriented in X or Y
     const auto orientation{hcalGeometry.getScintillatorOrientation(id)};
-    bool orientationX{false}, orientationY{false}, orientationZ{false};
-    if (orientation ==
-        ldmx::HcalGeometry::ScintillatorOrientation::horizontal) {
-      orientationX = true;
-    } else if (orientation ==
-               ldmx::HcalGeometry::ScintillatorOrientation::vertical) {
-      orientationY = true;
-    } else if (orientation ==
-               ldmx::HcalGeometry::ScintillatorOrientation::depth) {
-      orientationZ = true;
-    }
+    int orientation_int = static_cast<int>(orientation);
 
     // double readout
     if (id.section() == ldmx::HcalID::HcalSection::BACK) {
@@ -242,8 +232,8 @@ void HcalRecProducer::produce(framework::Event& event) {
 
       // get x(y) coordinate from TOA measurement = (dt*v/2)
       // if time_posend < time_negend: position is positive
-      double v =
-          299.792 / 1.6;  // velocity of light in polystyrene, n = 1.6 = c/v
+      // velocity of light in polystyrene, n = 1.6 = c/v
+      double v = 299.792 / 1.6;
       double position_bar =
           position_bar_sign * fabs(TOA_posend - TOA_negend) * v / 2;
 
@@ -371,9 +361,7 @@ void HcalRecProducer::produce(framework::Event& event) {
     recHit.setAmplitude((amplT / voltage_per_mip_) * mip_energy_);
     recHit.setEnergy(reconstructed_energy);
     recHit.setTime(hitTime);
-    recHit.setOrientationX(orientationX);
-    recHit.setOrientationY(orientationY);
-    recHit.setOrientationZ(orientationZ);
+    recHit.setOrientation(orientation_int);
     hcalRecHits.push_back(recHit);
   }
 
