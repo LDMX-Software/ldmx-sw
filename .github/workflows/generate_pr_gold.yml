@@ -25,6 +25,13 @@ jobs:
       with:
           just-version: 1.26.0
 
+    - name: Take care of versioning
+      run: | 
+        source ${GITHUB_WORKSPACE}/.github/actions/common.sh
+        echo "Old Label: $(ldmx_gold_label)"
+        echo "${GITHUB_REF##refs/tags/}" > ${LDMX_VERSION_FILE}
+        echo "New Label: $(ldmx_gold_label)"
+
     - name: Compile and Install ldmx-sw
       run: | 
         just install-denv init configure-force-error
