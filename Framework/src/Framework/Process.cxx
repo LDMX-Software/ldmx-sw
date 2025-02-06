@@ -29,6 +29,7 @@ Process::Process(const framework::config::Parameters &configuration)
 
   maxTries_ = configuration.getParameter<int>("maxTriesPerEvent", 1);
   eventLimit_ = configuration.getParameter<int>("maxEvents", -1);
+  minEvents_ = configuration.getParameter<int>("minEvents", -1);
   totalEvents_ = configuration.getParameter<int>("totalEvents", -1);
   logFrequency_ = configuration.getParameter<int>("logFrequency", -1);
   compressionSetting_ =
@@ -327,6 +328,11 @@ void Process::run() {
         // empty output file list, use inputFile as master file
         inFile.setupEvent(&theEvent);
         masterFile = &inFile;
+      }
+
+      // In case we'd like to skip up to the event of minEvents_
+      while(n_events_processed < (minEvents_-1) && masterFile->nextEvent()) {
+        n_events_processed++;
       }
 
       bool event_completed = true;

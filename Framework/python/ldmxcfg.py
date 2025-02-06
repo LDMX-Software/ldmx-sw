@@ -521,6 +521,8 @@ class Process:
     maxEvents : int
         Maximum number events to process.
         If totalEvents is set, this will be ignored.
+    minEvents : int
+        Index of the first events to process.
     maxTriesPerEvent : int
         Maximum number of attempts to make in a row before giving up on an event
         Only used in Production Mode (no input files)
@@ -570,6 +572,7 @@ class Process:
 
         self.passName=passName
         self.maxEvents=-1
+        self.minEvents=-1
         self.maxTriesPerEvent=1
         self.run=-1
         self.inputFiles=[]

@@ -174,6 +174,9 @@ class Process {
   /** Limit on events to process. */
   int eventLimit_;
 
+  /** When reading a file in, what's the first event to read */
+  int minEvents_;
+
   /** Number of events we'd like to produce
    independetly of the number of tries it would take.
    Be warned about infinite loops!*/
