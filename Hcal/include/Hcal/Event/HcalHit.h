@@ -112,6 +112,26 @@ class HcalHit : public ldmx::CalorimeterHit {
   int getAmplitudeNeg() const { return amplitudeNeg_; }
 
   /**
+   * Get the position of the hit
+   * @return position
+   */
+  double getPosition() const { return position_; }
+
+  /**
+   * Get if bar is oriented in X
+   * @return isX
+   */
+  int getIsX() const { return isX_; }
+
+  /**
+   * Get the time difference between the two ends
+   * @return timeDiff
+   */
+  double getTimeDiff() const { return timeDiff_; }
+
+  // Now the setters
+
+  /**
    * Set the number of photoelectrons estimated for this hit.
    * @param pe Number of photoelectrons, including noise which affects the
    * estimate.
@@ -193,9 +213,12 @@ class HcalHit : public ldmx::CalorimeterHit {
     isX_ = isX;
   }
 
-  double getPosition() const { return position_; }
-  int getIsX() const { return isX_; }
-  double getTimeDiff() const { return timeDiff_; }
+  /**
+   * Set if the bar is orientied in X
+   * 0 means oriented in Y
+   * 1 means oriented in X
+   */
+  void setIsX(int isX) { isX_ = isX; }
 
  private:
   /** The number of PE estimated for this hit. */
@@ -216,7 +239,7 @@ class HcalHit : public ldmx::CalorimeterHit {
 
   double timeDiff_{-9999.};
   double position_{-9999.};
-  double isX_{-9999.};
+  int isX_{-9999};
 
   double toaPos_{-9999.};
   double toaNeg_{-9999.};
@@ -226,7 +249,7 @@ class HcalHit : public ldmx::CalorimeterHit {
   /**
    * The ROOT class definition.
    */
-  ClassDef(HcalHit, 4);
+  ClassDef(HcalHit, 5);
 };
 }  // namespace ldmx
 

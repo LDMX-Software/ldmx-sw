@@ -172,6 +172,16 @@ void HcalRecProducer::produce(framework::Event& event) {
     double amplT_posend(0.), amplTm1_posend(0.);
     double amplT_negend(0.), amplTm1_negend(0.);
 
+    // Check if the bar is oriented in X or Y
+    const auto orientation{hcalGeometry.getScintillatorOrientation(id)};
+    int isX{-9999};
+    if (orientation ==
+        ldmx::HcalGeometry::ScintillatorOrientation::horizontal) {
+      isX = 1;
+    } else {
+      isX = 0;
+    }
+
     // double readout
     if (id.section() == ldmx::HcalID::HcalSection::BACK) {
       auto digi_negend = hcalDigis.getDigi(iDigi + 1);
@@ -250,7 +260,6 @@ void HcalRecProducer::produce(framework::Event& event) {
       // set amplitude as the average of both bars (reverse attenuated)
       amplT = (amplT_posend / att_posend + amplT_negend / att_negend) / 2;
 
-      const auto orientation{hcalGeometry.getScintillatorOrientation(id)};
       // set position along the bar
       if (orientation ==
           ldmx::HcalGeometry::ScintillatorOrientation::horizontal) {
@@ -358,6 +367,7 @@ void HcalRecProducer::produce(framework::Event& event) {
     recHit.setAmplitude((amplT / voltage_per_mip_) * mip_energy_);
     recHit.setEnergy(reconstructed_energy);
     recHit.setTime(hitTime);
+    recHit.setIsX(isX);
     hcalRecHits.push_back(recHit);
   }
 
