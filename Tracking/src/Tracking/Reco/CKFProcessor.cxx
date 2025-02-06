@@ -379,10 +379,6 @@ void CKFProcessor::produce(framework::Event& event) {
   profiling_map_["ckf_setup"] +=
       std::chrono::duration<double, std::milli>(ckf_setup - seeds).count();
 
-  auto ckf_run = std::chrono::high_resolution_clock::now();
-  profiling_map_["ckf_run"] +=
-      std::chrono::duration<double, std::milli>(ckf_run - ckf_setup).count();
-
   Acts::VectorTrackContainer vtc;
   Acts::VectorMultiTrajectory mtj;
   Acts::TrackContainer tc{vtc, mtj};
@@ -635,13 +631,15 @@ void CKFProcessor::produce(framework::Event& event) {
         trk.setTruthProb(truthInfo.truthProb);
       }
 
-      // At least min_hits_ hits and p > 50 MeV
-      if (trk.getNhits() > min_hits_ && abs(1. / trk.getQoP()) > 0.05) {
-        tracks.push_back(trk);
-        ntracks_++;
-      }
+      // Push the track candidate into the final track collecion
+      tracks.push_back(trk);
+      ntracks_++;
     }
   }  // loop seed track parameters
+
+  auto ckf_run = std::chrono::high_resolution_clock::now();
+  profiling_map_["ckf_run"] +=
+      std::chrono::duration<double, std::milli>(ckf_run - ckf_setup).count();
 
   // Calculating Shared Hits
 
