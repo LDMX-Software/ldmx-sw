@@ -43,7 +43,7 @@ jobs:
           "https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.issue.number }}")
         HEAD_REF=$(echo "$PR_DATA" | jq -r .head.ref)
         echo "HEAD_REF=$HEAD_REF" >> $GITHUB_ENV
-        echo "$HEAD_REF" >> $GITHUB_REF
+        echo "GITHUB_REF=$HEAD_REF" >> "$GITHUB_ENV"
 
     - name: Checkout ldmx-sw
       uses: actions/checkout@v4
