@@ -379,10 +379,6 @@ void CKFProcessor::produce(framework::Event& event) {
   profiling_map_["ckf_setup"] +=
       std::chrono::duration<double, std::milli>(ckf_setup - seeds).count();
 
-  auto ckf_run = std::chrono::high_resolution_clock::now();
-  profiling_map_["ckf_run"] +=
-      std::chrono::duration<double, std::milli>(ckf_run - ckf_setup).count();
-
   Acts::VectorTrackContainer vtc;
   Acts::VectorMultiTrajectory mtj;
   Acts::TrackContainer tc{vtc, mtj};
@@ -509,7 +505,7 @@ void CKFProcessor::produce(framework::Event& event) {
                       track.momentum()[2]);
 
       // At least min_hits_ hits and p > 50 MeV
-      if (trk.getNhits() < min_hits_ || abs(1. / trk.getQoP()) < 0.05) {
+      if ((trk.getNhits() < min_hits_) || (abs(1. / trk.getQoP()) < 0.05)) {
         ldmx_log(debug)
             << "  > Track candidate did NOT meet the requirements: Nhits = "
             << trk.getNhits() << " and p = " << abs(1. / trk.getQoP())
@@ -660,6 +656,10 @@ void CKFProcessor::produce(framework::Event& event) {
   }    // loop seed track parameters (i.e. track candidates)
 
   ldmx_log(info) << "Number of CKF tracks " << tracks.size();
+    
+  auto ckf_run = std::chrono::high_resolution_clock::now();
+  profiling_map_["ckf_run"] +=
+      std::chrono::duration<double, std::milli>(ckf_run - ckf_setup).count();
 
   // Calculating Shared Hits
   auto sharedHits = computeSharedHits(tracks, measurements, tg,
