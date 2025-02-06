@@ -172,6 +172,10 @@ void HcalRecProducer::produce(framework::Event& event) {
     double amplT_posend(0.), amplTm1_posend(0.);
     double amplT_negend(0.), amplTm1_negend(0.);
 
+    // Check if the bar is oriented in X or Y
+    const auto orientation{hcalGeometry.getScintillatorOrientation(id)};
+    int orientation_int = static_cast<int>(orientation);
+
     // double readout
     if (id.section() == ldmx::HcalID::HcalSection::BACK) {
       auto digi_negend = hcalDigis.getDigi(iDigi + 1);
@@ -228,8 +232,8 @@ void HcalRecProducer::produce(framework::Event& event) {
 
       // get x(y) coordinate from TOA measurement = (dt*v/2)
       // if time_posend < time_negend: position is positive
-      double v =
-          299.792 / 1.6;  // velocity of light in polystyrene, n = 1.6 = c/v
+      // velocity of light in polystyrene, n = 1.6 = c/v
+      double v = 299.792 / 1.6;
       double position_bar =
           position_bar_sign * fabs(TOA_posend - TOA_negend) * v / 2;
 
@@ -250,7 +254,6 @@ void HcalRecProducer::produce(framework::Event& event) {
       // set amplitude as the average of both bars (reverse attenuated)
       amplT = (amplT_posend / att_posend + amplT_negend / att_negend) / 2;
 
-      const auto orientation{hcalGeometry.getScintillatorOrientation(id)};
       // set position along the bar
       if (orientation ==
           ldmx::HcalGeometry::ScintillatorOrientation::horizontal) {
@@ -358,6 +361,7 @@ void HcalRecProducer::produce(framework::Event& event) {
     recHit.setAmplitude((amplT / voltage_per_mip_) * mip_energy_);
     recHit.setEnergy(reconstructed_energy);
     recHit.setTime(hitTime);
+    recHit.setOrientation(orientation_int);
     hcalRecHits.push_back(recHit);
   }
 
