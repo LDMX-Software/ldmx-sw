@@ -25,6 +25,15 @@ jobs:
       with:
           just-version: 1.26.0
 
+    - name: Take care of versioning
+      run: | 
+        source ${GITHUB_WORKSPACE}/.github/actions/common.sh
+        start_group Update Gold Label
+        echo "Old Label: $(ldmx_gold_label)"
+        echo "${GITHUB_REF##refs/tags/}" > ${LDMX_VERSION_FILE}
+        echo "New Label: $(ldmx_gold_label)"
+        end_group
+
     - name: Compile and Install ldmx-sw
       run: | 
         just install-denv init configure-force-error
@@ -98,13 +107,6 @@ jobs:
     - name: Update the Gold
       id: update-gold
       run: |
-        source ${GITHUB_WORKSPACE}/.github/actions/common.sh
-        start_group Update Gold Label
-        echo "Old Label: $(ldmx_gold_label)"
-        echo "${GITHUB_REF##refs/tags/}" > ${LDMX_VERSION_FILE}
-        echo "New Label: $(ldmx_gold_label)"
-        git add ${LDMX_GOLD_LABEL_FILE}
-        end_group
         start_group Copy over new Gold Histograms
         artifacts_d=${{steps.download.outputs.download-path}}
         echo ${artifacts_d}
