@@ -505,7 +505,7 @@ void CKFProcessor::produce(framework::Event& event) {
                       track.momentum()[2]);
 
       // At least min_hits_ hits and p > 50 MeV
-      if ((trk.getNhits() < min_hits_) || (abs(1. / trk.getQoP()) < 0.05)) {
+      if ((trk.getNhits() <= min_hits_) || (abs(1. / trk.getQoP()) <= 0.05)) {
         ldmx_log(debug)
             << "  > Track candidate did NOT meet the requirements: Nhits = "
             << trk.getNhits() << " and p = " << abs(1. / trk.getQoP())
