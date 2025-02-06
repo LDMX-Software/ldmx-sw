@@ -105,21 +105,21 @@ void HcalDoubleEndRecProducer::produce(framework::Event& event) {
 
     int position_bar_sign = hitTimeDiff > 0 ? 1 : -1;
     double position_unchanged = 0;
-    int isX = 0;
+    int bar_orientation = 0;
     double position_bar = position_bar_sign * fabs(hitTimeDiff) * v / 2;
     if (orientation ==
         ldmx::HcalGeometry::ScintillatorOrientation::horizontal) {
       position_unchanged = position.X();
-      isX = 1;
+      bar_orientation = 1;
       position.SetX(position_bar);
     } else {
       position_unchanged = position.Y();
-      isX = 0;
+      bar_orientation = 0;
       position.SetY(position_bar);
     }
-    // std::cout << "position unchanged " << position_unchanged << " isx " <<
-    // isX << std::endl; std::cout << "newposition " << position.X() << " " <<
-    // position.Y() << " " << position.Z() << std::endl;
+    // std::cout << "position unchanged " << position_unchanged << " orientation
+    // " << bar_orientation << std::endl; std::cout << "newposition " <<
+    // position.X() << " " << position.Y() << " " << position.Z() << std::endl;
 
     // TODO: switch unique hit time for this pulse
     [[maybe_unused]] double hitTime =
@@ -151,7 +151,7 @@ void HcalDoubleEndRecProducer::produce(framework::Event& event) {
     recHit.setEnergy(reconstructed_energy);
     recHit.setTime(hitTimeDiff);
     recHit.setTimeDiff(hitPosEnd.getTime() - hitNegEnd.getTime());
-    recHit.setPositionUnchanged(position_unchanged, isX);
+    recHit.setPositionUnchanged(position_unchanged, bar_orientation);
     doubleHcalRecHits.push_back(recHit);
   }
 

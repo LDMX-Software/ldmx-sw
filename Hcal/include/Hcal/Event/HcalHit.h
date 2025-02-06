@@ -119,9 +119,21 @@ class HcalHit : public ldmx::CalorimeterHit {
 
   /**
    * Get if bar is oriented in X
-   * @return isX
+   * @return orientationX
    */
-  int getIsX() const { return isX_; }
+  int getOrientationX_() const { return orientationX_; }
+
+  /**
+   * Get if bar is oriented in Y
+   * @return orientationY
+   */
+  int getOrientationY_() const { return orientationY_; }
+
+  /**
+   * Get if bar is oriented in Z
+   * @return orientationZ
+   */
+  int getOrientationZ_() const { return orientationZ_; }
 
   /**
    * Get the time difference between the two ends
@@ -208,17 +220,25 @@ class HcalHit : public ldmx::CalorimeterHit {
   /**
    * Set original position
    */
-  void setPositionUnchanged(double position, int isX) {
+  void setPositionUnchanged(double position, bool orientation) {
     position_ = position;
-    isX_ = isX;
+    orientation_ = orientation;
   }
 
   /**
    * Set if the bar is orientied in X
-   * 0 means oriented in Y
-   * 1 means oriented in X
    */
-  void setIsX(int isX) { isX_ = isX; }
+  void setOrientationX(bool orientationX) { orientationX_ = orientationX; }
+
+  /**
+   * Set if the bar is orientied in Y
+   */
+  void setOrientationY(bool orientationY) { orientationY_ = orientationY; }
+
+  /**
+   * Set if the bar is orientied in Z
+   */
+  void setOrientationZ(bool orientationZ) { orientationZ_ = orientationZ; }
 
  private:
   /** The number of PE estimated for this hit. */
@@ -239,7 +259,10 @@ class HcalHit : public ldmx::CalorimeterHit {
 
   double timeDiff_{-9999.};
   double position_{-9999.};
-  int isX_{-9999};
+  int orientation_{-9999};
+  bool orientationX_{false};
+  bool orientationY_{false};
+  bool orientationZ_{false};
 
   double toaPos_{-9999.};
   double toaNeg_{-9999.};

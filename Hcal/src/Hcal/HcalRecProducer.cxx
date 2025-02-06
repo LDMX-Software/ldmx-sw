@@ -174,12 +174,16 @@ void HcalRecProducer::produce(framework::Event& event) {
 
     // Check if the bar is oriented in X or Y
     const auto orientation{hcalGeometry.getScintillatorOrientation(id)};
-    int isX{-9999};
+    bool orientationX{false}, orientationY{false}, orientationZ{false};
     if (orientation ==
         ldmx::HcalGeometry::ScintillatorOrientation::horizontal) {
-      isX = 1;
-    } else {
-      isX = 0;
+      orientationX = true;
+    } else if (orientation ==
+               ldmx::HcalGeometry::ScintillatorOrientation::vertical) {
+      orientationY = true;
+    } else if (orientation ==
+               ldmx::HcalGeometry::ScintillatorOrientation::depth) {
+      orientationZ = true;
     }
 
     // double readout
@@ -367,7 +371,9 @@ void HcalRecProducer::produce(framework::Event& event) {
     recHit.setAmplitude((amplT / voltage_per_mip_) * mip_energy_);
     recHit.setEnergy(reconstructed_energy);
     recHit.setTime(hitTime);
-    recHit.setIsX(isX);
+    recHit.setOrientationX(orientationX);
+    recHit.setOrientationY(orientationY);
+    recHit.setOrientationZ(orientationZ);
     hcalRecHits.push_back(recHit);
   }
 
