@@ -331,7 +331,8 @@ void Process::run() {
       }
 
       // In case we'd like to skip up to the event of minEvents_
-      while(n_events_processed < (minEvents_-1) && masterFile->nextEvent()) {
+      while (n_events_processed < (minEvents_ - 1) &&
+             masterFile->nextEvent(false)) {
         n_events_processed++;
       }
 
