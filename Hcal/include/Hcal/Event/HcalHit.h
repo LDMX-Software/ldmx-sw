@@ -122,19 +122,19 @@ class HcalHit : public ldmx::CalorimeterHit {
    * Get if bar is oriented in X
    * @return true if oriented in X
    */
-  bool isOrientationX_() const { return orientation_ == 0; }
+  bool isOrientationX() const { return orientation_ == 0; }
 
   /**
    * Get if bar is oriented in Y
    * @return true if oriented in Y
    */
-  bool isOrientationY_() const { return orientation_ == 1; }
+  bool isOrientationY() const { return orientation_ == 1; }
 
   /**
    * Get if bar is oriented in Z
    * @return true if oriented in Z
    */
-  bool isOrientationZ_() const { return orientation_ == 2; }
+  bool isOrientationZ() const { return orientation_ == 2; }
 
   /**
    * Get the time difference between the two ends
