@@ -88,6 +88,16 @@ jobs:
       matrix: ${{fromJson(needs.compile-ldmx-sw.outputs.job_matrix)}}
       fail-fast: false
     steps:
+
+    - name: Get PR Info for Validation job
+      id: get_pr_again
+      if: github.event_name == 'issue_comment'
+      run: |
+        PR_DATA=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+          "https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.issue.number }}")
+        HEAD_REF=$(echo "$PR_DATA" | jq -r .head.ref)
+        echo "HEAD_REF=$HEAD_REF" >> $GITHUB_ENV
+        
     - name: Download ldmx-sw Package
       uses: actions/download-artifact@v4
       with:
