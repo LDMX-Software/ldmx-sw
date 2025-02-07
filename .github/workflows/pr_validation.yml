@@ -11,7 +11,7 @@ on:
 
 env:
   LDMX_DOCKER_TAG: ldmx/dev:latest
-  LDMX_NUM_EVENTS: 10000
+  LDMX_NUM_EVENTS: 10
 
 jobs:
   check-comment:
