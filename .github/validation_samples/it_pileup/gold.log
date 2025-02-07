@@ -37,8 +37,8 @@ RunHeader { run: 1, numTries: 769845, detectorName: ldmx-det-v14-8gev, descripti
     Geant4 revision = 
     Gen0 Class = simcore::generators::ParticleGun
     Gen0 Particle = e-
-    ldmx-sw revision = 9bf6acc1544ed7e7ac2834eb5d0a16cccefa6499
-    ldmx-sw version = 4.2.8
+    ldmx-sw revision = 596d49bbb4b55491b7112cc74e6c44707a6dbe5f
+    ldmx-sw version = v4.2.10
 }
 [ OverlayProducer ] 1  info: Starting overlay process with pileup event number 3003 (random event number picked was 3004).
 [ ecalVetoBDT ] 1  info: Finding linreg tracks from a total of 96 hits using a radius of 35 mm
@@ -90171,12 +90171,12 @@ RunHeader { run: 1, numTries: 769845, detectorName: ldmx-det-v14-8gev, descripti
 [ Process ] 10000  info: Reached event limit of 10000 events
 [ Process ] 10000  info: Closing file ecal_pn.root
 [ Tagger_TrackFinder ] 10000  info: found 9891 tracks  / 10413 nseeds
-[ Tagger_TrackFinder ] 10000  info: AVG Time/Event: 0.4 ms
+[ Tagger_TrackFinder ] 10000  info: AVG Time/Event: 0.3 ms
 [ Tagger_TrackFinder ] 10000  info: Breakdown::
-[ Tagger_TrackFinder ] 10000  info: setup       Avg Time/Event = 0.002 ms
+[ Tagger_TrackFinder ] 10000  info: setup       Avg Time/Event = 0.001 ms
 [ Tagger_TrackFinder ] 10000  info: hits        Avg Time/Event = 0.033 ms
 [ Tagger_TrackFinder ] 10000  info: seeds       Avg Time/Event = 0.004 ms
-[ Tagger_TrackFinder ] 10000  info: cf_setup    Avg Time/Event = 0.004 ms
+[ Tagger_TrackFinder ] 10000  info: cf_setup    Avg Time/Event = 0.003 ms
 [ Tagger_TrackFinder ] 10000  info: ckf_run     Avg Time/Event = 0.000 ms
 [ Tagger_TrackFinder ] 10000  info: result_loop Avg Time/Event = 0.3 ms
 [ Recoil_TrackFinder ] 10000  info: found 9673 tracks  / 9968 nseeds
@@ -90184,7 +90184,7 @@ RunHeader { run: 1, numTries: 769845, detectorName: ldmx-det-v14-8gev, descripti
 [ Recoil_TrackFinder ] 10000  info: Breakdown::
 [ Recoil_TrackFinder ] 10000  info: setup       Avg Time/Event = 0.001 ms
 [ Recoil_TrackFinder ] 10000  info: hits        Avg Time/Event = 0.037 ms
-[ Recoil_TrackFinder ] 10000  info: seeds       Avg Time/Event = 0.004 ms
+[ Recoil_TrackFinder ] 10000  info: seeds       Avg Time/Event = 0.003 ms
 [ Recoil_TrackFinder ] 10000  info: cf_setup    Avg Time/Event = 0.002 ms
 [ Recoil_TrackFinder ] 10000  info: ckf_run     Avg Time/Event = 0.000 ms
 [ Recoil_TrackFinder ] 10000  info: result_loop Avg Time/Event = 0.2 ms
