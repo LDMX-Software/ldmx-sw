@@ -46,8 +46,23 @@ public:
 private:
   std::string rec_pass_name_;
   std::string rec_coll_name_;
+  std::string track_pass_name_;
+  std::string track_coll_name_;
   bool data;
   bool WAB;
+
+  // std::tuple<Eigen::VectorXd, double, int, Eigen::MatrixXd, int>
+  // fit2DTracksConstrained(const std::vector<double>& x1,
+  //                        const std::vector<double>& y1,
+  //                        const std::vector<double>& s1,
+  //                        const std::vector<double>& x2,
+  //                        const std::vector<double>& y2,
+  //                        const std::vector<double>& s2,
+  //                        const std::vector<double>& guess,
+  //                        int maxIter = 20,
+  //                        int verbosity = 0,
+  //                        double dchisq = 0.001,
+  //                        double abs_lim = 10.0)
 
   /** Name of the collection which will containt the results. */
   std::string collectionName_{"EcalWABRec"};
