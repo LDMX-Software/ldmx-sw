@@ -24,17 +24,11 @@ adc_pedestal = SimpleCSVDoubleTableProvider("hcal_adc_pedestal",["pedestal"])
 adc_pedestal.validForAllRows([1.]) # should match HgcrocEmulator
 
 adc_gain = SimpleCSVDoubleTableProvider("hcal_adc_gain",["gain"])
-adc_gain.validForAllRows([1.2]) # 4 ADCs per PE - maxADCRange/readoutPadCapacitance/1024
+adc_gain.validForAllRows([5100./1024.]) 
 
-tot_calib = SimpleCSVDoubleTableProvider("hcal_tot_calibration",
-                                         ["m_adc_i","cut_point_tot","high_slope","high_offset",
-                                          "low_slope","low_power","low_offset","tot_not",
-                                          "channel","flagged"])
-tot_calib.validForAllRows([
-    1.,1.,1.,1.,
-    1.,1.,1.,1.,
-    1.,1.
-]) # dummy value since TOT is not implemented
+tot_calib = SimpleCSVDoubleTableProvider("hcal_tot_pedestal",
+                                         ["tot_pedestal", "tot_gain"])
+tot_calib.validForAllRows([1., 1.]) # needs to be tweaked
 
 toa_calib =  SimpleCSVDoubleTableProvider("hcal_toa_calibration",
                                           ["bx_shift","mean_shift"])
@@ -59,13 +53,13 @@ HcalHgcrocConditionsHardcode=SimpleCSVDoubleTableProvider("HcalHgcrocConditions"
 
 HcalHgcrocConditionsHardcode.validForAllRows([
     1. , #PEDESTAL 
-    0.02*5/(5100./1023.), #NOISE - 0.02 PE with 1 PE ~ 5mV and gain = 5100./1023.
+    0.02*5/(5100./1024.), #NOISE - 0.02 PE with 1 PE ~ 5mV and gain = 5100./1024.
     12.5, #MEAS_TIME - ns - clock_cycle/2 - defines the point in the BX where an in-time (time=0 in times vector) hit would arrive
     13/5.1, #PAD_CAPACITANCE - pF
     200., #TOT_MAX - ns - maximum time chip would be in TOT mode
     320000./200., #DRAIN_RATE - fC/ns - to drain maximum charge of 320000fC in 200ns
-    5100./1023., #GAIN - take 160 fC - 13 pC to be the linear range of ADC -> V_{adc_max} = 13pC/13/5.1pF = 5100mV
+    5100./1024., #GAIN - take 160 fC - 13 pC to be the linear range of ADC -> V_{adc_max} = 13pC/13/5.1pF = 5100mV
     1. + 4., #READOUT_THRESHOLD - 4 ADC counts above pedestal
-    1.*(5100./1023.) + 1*5, #TOA_THRESHOLD - mV - 1 PE above pedestal ( 1 PE  - 5 mV conversion)
+    1.*(5100./1024.) + 1*5, #TOA_THRESHOLD - mV - 1 PE above pedestal ( 1 PE  - 5 mV conversion)
     5100., #TOT_THRESHOLD - mV - TOT begins at V_{adc_max}
     ])
