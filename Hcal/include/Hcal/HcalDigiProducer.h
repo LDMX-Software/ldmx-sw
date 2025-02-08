@@ -93,7 +93,7 @@ class HcalDigiProducer : public framework::Producer {
 
   /// Name of txt file to save digitization emulation
   std::string digiEmulationFile_;
-  
+
   /// Hgcroc Emulator to digitize analog voltage signals
   std::unique_ptr<ldmx::HgcrocEmulator> hgcroc_;
 

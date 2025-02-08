@@ -497,7 +497,7 @@ void HcalDigiProducer::produce(framework::Event& event) {
         }
       }
     }
-  }    // if we should add noise
+  }  // if we should add noise
 
   event.add(digiCollName_, hcalDigis);
 
