@@ -495,13 +495,8 @@ void HcalDigiProducer::produce(framework::Event& event) {
           hcalDigis.addDigi(digiID.raw(), digi);
         }
       }
-<<<<<<< HEAD
-    }  // loop over noise amplitudes
-
-=======
     }
->>>>>>> trunk
-  }  // if we should add noise
+  } // end noise
 
   event.add(digiCollName_, hcalDigis);
 
