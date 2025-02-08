@@ -88,6 +88,12 @@ class HcalDigiProducer : public framework::Producer {
   /// Helpful when comparing with test beam data
   bool zeroSuppression_{true};
 
+  /// If true, save digitization emulation in a file
+  bool digiEmulationDebug_{false};
+
+  /// Name of txt file to save digitization emulation
+  std::string digiEmulationFile_;
+  
   /// Hgcroc Emulator to digitize analog voltage signals
   std::unique_ptr<ldmx::HgcrocEmulator> hgcroc_;
 
