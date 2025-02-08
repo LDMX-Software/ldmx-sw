@@ -27,8 +27,15 @@ adc_gain = SimpleCSVDoubleTableProvider("hcal_adc_gain",["gain"])
 adc_gain.validForAllRows([5100./1024.]) 
 
 tot_calib = SimpleCSVDoubleTableProvider("hcal_tot_pedestal",
-                                         ["tot_pedestal", "tot_gain"])
-tot_calib.validForAllRows([1., 1.]) # needs to be tweaked
+                                         ["m_adc_i","cut_point_tot","high_slope","high_offset",
+                                          "low_slope","low_power","low_offset","tot_not",
+                                          "channel","flagged","tot_pedestal","tot_gain"])
+tot_calib.validForAllRows([
+    1.,1.,1.,1.,
+    1.,1.,1.,1.,
+    1.,1.,
+    1.,1.
+]) # needs to be tweaked 
 
 toa_calib =  SimpleCSVDoubleTableProvider("hcal_toa_calibration",
                                           ["bx_shift","mean_shift"])
