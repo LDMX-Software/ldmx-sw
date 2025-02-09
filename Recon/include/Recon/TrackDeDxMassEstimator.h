@@ -31,8 +31,6 @@ class TrackDeDxMassEstimator : public framework::Producer {
   virtual void produce(framework::Event& event) override;
 
  private:
-  // specific verbosity of this producer
-  int verbose_{0};
 
   float fit_res_C_{0.};
   float fit_res_K_{-9999.};
