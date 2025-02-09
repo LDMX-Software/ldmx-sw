@@ -11,6 +11,17 @@
 namespace trigscint {
 
 void TrigScintFirmwareTracker::configure(framework::config::Parameters &ps) {
+
+  (void)maxWidth_;  // This prevents the unused variable warning
+  (void)vertBarStartIdx_;  // This prevents the unused variable warning
+  (void)centroid_;  // This prevents the unused variable warning
+  (void)centroidX_;  // This prevents the unused variable warning
+  (void)centroidY_;  // This prevents the unused variable warning
+  (void)val_;  // This prevents the unused variable warning
+  (void)valE_;  // This prevents the unused variable warning
+  (void)beamE_;  // This prevents the unused variable warning
+  (void)time_;  // This prevents the unused variable warning
+
   minThr_ = ps.getParameter<double>("clustering_threshold");
   digis1_collection_ = ps.getParameter<std::string>("digis1_collection");
   digis2_collection_ = ps.getParameter<std::string>("digis2_collection");
@@ -20,6 +31,9 @@ void TrigScintFirmwareTracker::configure(framework::config::Parameters &ps) {
   verbose_ = ps.getParameter<int>("verbosity");
   timeTolerance_ = ps.getParameter<double>("time_tolerance");
   padTime_ = ps.getParameter<double>("pad_time");
+
+  // vertBarStartIdx_ = ps.getParameter<int>("vertical_bar_start_index");
+  // maxWidth_ = ps.getParameter<int>("max_cluster_width");
 
   if (verbose_) {
     ldmx_log(info) << "In TrigScintFirmwareTracker: configure done!";

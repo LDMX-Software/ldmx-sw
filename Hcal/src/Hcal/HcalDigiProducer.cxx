@@ -320,6 +320,7 @@ void HcalDigiProducer::produce(framework::Event& event) {
     std::vector<ldmx::HcalDigiID> channelMap;
     int numChannels = 0;
     for (int section = 0; section < hcalGeometry.getNumSections(); section++) {
+
       for (int layer = 1; layer <= hcalGeometry.getNumLayers(section);
            layer++) {
         // Note zero-indexed strip numbering...
