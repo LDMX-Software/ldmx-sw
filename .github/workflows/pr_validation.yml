@@ -6,22 +6,50 @@ on:
   pull_request: 
     branches: [trunk]
     types: [opened, ready_for_review]
+  issue_comment:
+    types: [created]
 
 env:
   LDMX_DOCKER_TAG: ldmx/dev:latest
   LDMX_NUM_EVENTS: 10000
 
 jobs:
+  check-comment:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Post the workflow run for comment based trigger
+        if: ${{ github.event_name == 'issue_comment' && github.event.issue.pull_request && contains(github.event.comment.body, '/run-validation') }}
+        run: |
+          COMMENT="The validation workflow is running here: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}."
+          curl -s -X POST \
+            -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            -d '{"body": "'"$COMMENT"'"}' \
+            "https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.issue.number }}/comments"
+
+
+
   compile-ldmx-sw:
+    needs: check-comment
+    if: github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch' || (github.event_name == 'issue_comment' && contains(github.event.comment.body, '/run-validation'))
     runs-on: ubuntu-latest
     outputs:
       job_matrix: ${{steps.gen-mat.outputs.job_matrix}}
     steps:
+    - name: Get PR Info
+      id: get_pr
+      if: github.event_name == 'issue_comment'
+      run: |
+        PR_DATA=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+          "https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.issue.number }}")
+        HEAD_REF=$(echo "$PR_DATA" | jq -r .head.ref)
+        echo "HEAD_REF=$HEAD_REF" >> $GITHUB_ENV
+
     - name: Checkout ldmx-sw
       uses: actions/checkout@v4
       with:
         submodules: 'recursive'
         fetch-depth: 0
+        ref: ${{ env.HEAD_REF }}
 
     - name: Install just
       uses: extractions/setup-just@v2
@@ -39,7 +67,7 @@ jobs:
       shell: bash
 
     - name: Package ldmx-sw Into Artifact
-      run: tar cf ldmx-sw-package.tar install/ .github/
+      run: tar cf ldmx-sw-package.tar install/ .github/ VERSION
 
     - name: Upload ldmx-sw Package
       uses: actions/upload-artifact@v4
@@ -60,6 +88,15 @@ jobs:
       matrix: ${{fromJson(needs.compile-ldmx-sw.outputs.job_matrix)}}
       fail-fast: false
     steps:
+
+    - name: Get PR Info for Validation job
+      id: get_pr_again
+      run: |
+        PR_DATA=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+          "https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.issue.number }}")
+        HEAD_REF=$(echo "$PR_DATA" | jq -r .head.ref)
+        echo "HEAD_REF=$HEAD_REF" >> $GITHUB_ENV
+        
     - name: Download ldmx-sw Package
       uses: actions/download-artifact@v4
       with:
