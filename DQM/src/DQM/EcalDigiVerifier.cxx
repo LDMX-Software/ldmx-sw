@@ -62,6 +62,9 @@ void EcalDigiVerifier::analyze(const framework::Event &event) {
     myCostumModIDs.push_back(myModConstumID);
     myCostumModIDsSet.insert(myModConstumID);
 
+    // Measure the sum energy of all rechits (inc noise)
+    totalRecEnergy += recHit.getEnergy();
+
     // skip anything that digi flagged as noise
     if (recHit.isNoise()) {
       numNoiseHits++;
@@ -92,8 +95,6 @@ void EcalDigiVerifier::analyze(const framework::Event &event) {
     histograms_.fill("num_sim_hits_per_cell", numSimHits);
     histograms_.fill("sim_edep__rec_amplitude", totalSimEDep,
                      recHit.getAmplitude());
-
-    totalRecEnergy += recHit.getEnergy();
   }
 
   std::map<int, int> moduleHits;
