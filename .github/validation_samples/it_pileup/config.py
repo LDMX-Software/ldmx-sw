@@ -68,7 +68,7 @@ for d in ts_digis :
 ecalDigi   =eDigi.EcalDigiProducer('ecalDigis')
 ecalReco   =eDigi.EcalRecProducer('ecalRecon')
 ecalVeto   =vetos.EcalVetoProcessor('ecalVetoBDT')
-ecalVeto.recoil_from_tracking = True
+ecalVeto.recoil_from_tracking = False 
 
 ecalDigi.inputCollName  = ecalDigi.inputCollName+overlayStr
 ecalReco.simHitCollName = ecalReco.simHitCollName+overlayStr
@@ -92,6 +92,9 @@ count.input_pass_name = ''
 # Load HCAL veto
 import LDMX.Hcal.hcal as hcal
 hcal_veto = hcal.HcalVetoProcessor()
+
+# Load the DQM modules
+from LDMX.DQM import dqm
 
 # The Tracking modules produce a lot of helpful messages
 # but (at the debug level) is too much for commiting the gold log
