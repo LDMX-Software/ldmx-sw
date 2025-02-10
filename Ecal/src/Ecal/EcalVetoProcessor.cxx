@@ -415,6 +415,7 @@ void EcalVetoProcessor::produce(framework::Event &event) {
       ldmx_log(fatal)
           << "ECal hit has negative or zero energy, this should never happen, "
              "check the threshold settings in HgcrocEmulator";
+      continue;
     }
     nReadoutHits_++;
     ecalLayerEdepReadout_[id.layer()] += hit.getEnergy();
