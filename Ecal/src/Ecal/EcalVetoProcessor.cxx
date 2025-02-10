@@ -411,101 +411,100 @@ void EcalVetoProcessor::produce(framework::Event &event) {
         ecalLayerEdepRaw_[id.layer()] + hit.getEnergy();
     if (id.layer() >= 20) ecalBackEnergy_ += hit.getEnergy();
     if (maxCellDep_ < hit.getEnergy()) maxCellDep_ = hit.getEnergy();
-    if (hit.getEnergy() > 0) {
-      nReadoutHits_++;
-      ecalLayerEdepReadout_[id.layer()] += hit.getEnergy();
-      ecalLayerTime_[id.layer()] += (hit.getEnergy()) * hit.getTime();
-      auto [x, y, z] = geometry_->getPosition(id);
-      xMean += x * hit.getEnergy();
-      yMean += y * hit.getEnergy();
-      avgLayerHit_ += id.layer();
-      wavgLayerHit += id.layer() * hit.getEnergy();
-      if (deepestLayerHit_ < id.layer()) {
-        deepestLayerHit_ = id.layer();
-      }
-      XYCoords xy_pair = std::make_pair(x, y);
-      float distance_ele_trajectory =
-          ele_trajectory.size()
-              ? sqrt(
-                    pow((xy_pair.first - ele_trajectory[id.layer()].first), 2) +
-                    pow((xy_pair.second - ele_trajectory[id.layer()].second),
-                        2))
-              : -1.0;
-      float distance_photon_trajectory =
-          photon_trajectory.size()
-              ? sqrt(
-                    pow((xy_pair.first - photon_trajectory[id.layer()].first),
-                        2) +
-                    pow((xy_pair.second - photon_trajectory[id.layer()].second),
-                        2))
-              : -1.0;
+    if (hit.getEnergy() <= 0) {
+      ldmx_log(fatal)
+          << "ECal hit has negative or zero energy, this should never happen, "
+             "check the threshold settings in HgcrocEmulator";
+    }
+    nReadoutHits_++;
+    ecalLayerEdepReadout_[id.layer()] += hit.getEnergy();
+    ecalLayerTime_[id.layer()] += (hit.getEnergy()) * hit.getTime();
+    auto [x, y, z] = geometry_->getPosition(id);
+    xMean += x * hit.getEnergy();
+    yMean += y * hit.getEnergy();
+    avgLayerHit_ += id.layer();
+    wavgLayerHit += id.layer() * hit.getEnergy();
+    if (deepestLayerHit_ < id.layer()) {
+      deepestLayerHit_ = id.layer();
+    }
+    XYCoords xy_pair = std::make_pair(x, y);
+    float distance_ele_trajectory =
+        ele_trajectory.size()
+            ? sqrt(pow((xy_pair.first - ele_trajectory[id.layer()].first), 2) +
+                   pow((xy_pair.second - ele_trajectory[id.layer()].second), 2))
+            : -1.0;
+    float distance_photon_trajectory =
+        photon_trajectory.size()
+            ? sqrt(pow((xy_pair.first - photon_trajectory[id.layer()].first),
+                       2) +
+                   pow((xy_pair.second - photon_trajectory[id.layer()].second),
+                       2))
+            : -1.0;
 
-      // Decide which longitudinal segment the hit is in and add to sums
-      for (unsigned int iseg = 0; iseg < nsegments; iseg++) {
-        if (id.layer() >= segLayers[iseg] &&
-            id.layer() <= segLayers[iseg + 1] - 1) {
-          energySeg[iseg] += hit.getEnergy();
-          xMeanSeg[iseg] += xy_pair.first * hit.getEnergy();
-          yMeanSeg[iseg] += xy_pair.second * hit.getEnergy();
-          layerMeanSeg[iseg] += id.layer() * hit.getEnergy();
+    // Decide which longitudinal segment the hit is in and add to sums
+    for (unsigned int iseg = 0; iseg < nsegments; iseg++) {
+      if (id.layer() >= segLayers[iseg] &&
+          id.layer() <= segLayers[iseg + 1] - 1) {
+        energySeg[iseg] += hit.getEnergy();
+        xMeanSeg[iseg] += xy_pair.first * hit.getEnergy();
+        yMeanSeg[iseg] += xy_pair.second * hit.getEnergy();
+        layerMeanSeg[iseg] += id.layer() * hit.getEnergy();
 
-          // Decide which containment region the hit is in and add to sums
-          for (unsigned int ireg = 0; ireg < nregions; ireg++) {
-            if (distance_ele_trajectory >= ireg * ele_radii[id.layer()] &&
-                distance_ele_trajectory < (ireg + 1) * ele_radii[id.layer()]) {
-              eContEnergy[ireg][iseg] += hit.getEnergy();
-              eContXMean[ireg][iseg] += xy_pair.first * hit.getEnergy();
-              eContYMean[ireg][iseg] += xy_pair.second * hit.getEnergy();
-            }
-            if (distance_photon_trajectory >= ireg * photon_radii[id.layer()] &&
-                distance_photon_trajectory <
-                    (ireg + 1) * photon_radii[id.layer()]) {
-              gContEnergy[ireg][iseg] += hit.getEnergy();
-              gContNHits[ireg][iseg] += 1;
-              gContXMean[ireg][iseg] += xy_pair.first * hit.getEnergy();
-              gContYMean[ireg][iseg] += xy_pair.second * hit.getEnergy();
-            }
-            if (distance_ele_trajectory > (ireg + 1) * ele_radii[id.layer()] &&
-                distance_photon_trajectory >
-                    (ireg + 1) * photon_radii[id.layer()]) {
-              oContEnergy[ireg][iseg] += hit.getEnergy();
-              oContNHits[ireg][iseg] += 1;
-              oContXMean[ireg][iseg] += xy_pair.first * hit.getEnergy();
-              oContYMean[ireg][iseg] += xy_pair.second * hit.getEnergy();
-              oContLayerMean[ireg][iseg] += id.layer() * hit.getEnergy();
-            }
+        // Decide which containment region the hit is in and add to sums
+        for (unsigned int ireg = 0; ireg < nregions; ireg++) {
+          if (distance_ele_trajectory >= ireg * ele_radii[id.layer()] &&
+              distance_ele_trajectory < (ireg + 1) * ele_radii[id.layer()]) {
+            eContEnergy[ireg][iseg] += hit.getEnergy();
+            eContXMean[ireg][iseg] += xy_pair.first * hit.getEnergy();
+            eContYMean[ireg][iseg] += xy_pair.second * hit.getEnergy();
+          }
+          if (distance_photon_trajectory >= ireg * photon_radii[id.layer()] &&
+              distance_photon_trajectory <
+                  (ireg + 1) * photon_radii[id.layer()]) {
+            gContEnergy[ireg][iseg] += hit.getEnergy();
+            gContNHits[ireg][iseg] += 1;
+            gContXMean[ireg][iseg] += xy_pair.first * hit.getEnergy();
+            gContYMean[ireg][iseg] += xy_pair.second * hit.getEnergy();
+          }
+          if (distance_ele_trajectory > (ireg + 1) * ele_radii[id.layer()] &&
+              distance_photon_trajectory >
+                  (ireg + 1) * photon_radii[id.layer()]) {
+            oContEnergy[ireg][iseg] += hit.getEnergy();
+            oContNHits[ireg][iseg] += 1;
+            oContXMean[ireg][iseg] += xy_pair.first * hit.getEnergy();
+            oContYMean[ireg][iseg] += xy_pair.second * hit.getEnergy();
+            oContLayerMean[ireg][iseg] += id.layer() * hit.getEnergy();
           }
         }
       }
+    }
 
-      // Decide which containment region the hit is in and add to sums
-      for (unsigned int ireg = 0; ireg < nregions; ireg++) {
-        if (distance_ele_trajectory >= ireg * ele_radii[id.layer()] &&
-            distance_ele_trajectory < (ireg + 1) * ele_radii[id.layer()])
-          electronContainmentEnergy[ireg] += hit.getEnergy();
-        if (distance_photon_trajectory >= ireg * photon_radii[id.layer()] &&
-            distance_photon_trajectory < (ireg + 1) * photon_radii[id.layer()])
-          photonContainmentEnergy[ireg] += hit.getEnergy();
-        if (distance_ele_trajectory > (ireg + 1) * ele_radii[id.layer()] &&
-            distance_photon_trajectory >
-                (ireg + 1) * photon_radii[id.layer()]) {
-          outsideContainmentEnergy[ireg] += hit.getEnergy();
-          outsideContainmentNHits[ireg] += 1;
-          outsideContainmentXmean[ireg] += xy_pair.first * hit.getEnergy();
-          outsideContainmentYmean[ireg] += xy_pair.second * hit.getEnergy();
-        }
+    // Decide which containment region the hit is in and add to sums
+    for (unsigned int ireg = 0; ireg < nregions; ireg++) {
+      if (distance_ele_trajectory >= ireg * ele_radii[id.layer()] &&
+          distance_ele_trajectory < (ireg + 1) * ele_radii[id.layer()])
+        electronContainmentEnergy[ireg] += hit.getEnergy();
+      if (distance_photon_trajectory >= ireg * photon_radii[id.layer()] &&
+          distance_photon_trajectory < (ireg + 1) * photon_radii[id.layer()])
+        photonContainmentEnergy[ireg] += hit.getEnergy();
+      if (distance_ele_trajectory > (ireg + 1) * ele_radii[id.layer()] &&
+          distance_photon_trajectory > (ireg + 1) * photon_radii[id.layer()]) {
+        outsideContainmentEnergy[ireg] += hit.getEnergy();
+        outsideContainmentNHits[ireg] += 1;
+        outsideContainmentXmean[ireg] += xy_pair.first * hit.getEnergy();
+        outsideContainmentYmean[ireg] += xy_pair.second * hit.getEnergy();
       }
+    }
 
-      // MIP tracking:  Decide whether hit should be added to trackingHitList
-      // If inside e- RoC or if etraj is missing, use the hit for tracking:
-      if (distance_ele_trajectory >= ele_radii[id.layer()] ||
-          distance_ele_trajectory == -1.0) {
-        HitData hd;
-        hd.pos = TVector3(xy_pair.first, xy_pair.second,
-                          geometry_->getZPosition(id.layer()));
-        hd.layer = id.layer();
-        trackingHitList.push_back(hd);
-      }
+    // MIP tracking:  Decide whether hit should be added to trackingHitList
+    // If inside e- RoC or if etraj is missing, use the hit for tracking:
+    if (distance_ele_trajectory >= ele_radii[id.layer()] ||
+        distance_ele_trajectory == -1.0) {
+      HitData hd;
+      hd.pos = TVector3(xy_pair.first, xy_pair.second,
+                        geometry_->getZPosition(id.layer()));
+      hd.layer = id.layer();
+      trackingHitList.push_back(hd);
     }
   }  // end loop over rechits
 
