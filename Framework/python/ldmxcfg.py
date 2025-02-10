@@ -521,6 +521,11 @@ class Process:
     maxEvents : int
         Maximum number events to process.
         If totalEvents is set, this will be ignored.
+    minEvents : int
+        Index of the first events to process.
+        The skipping process is relatively slow, if used for anything outside of debugging
+        make a  skim to a new file and then run again rather than use this.
+        Note: this skips events of *each* input file, you a single file only.
     maxTriesPerEvent : int
         Maximum number of attempts to make in a row before giving up on an event
         Only used in Production Mode (no input files)
@@ -570,6 +575,7 @@ class Process:
 
         self.passName=passName
         self.maxEvents=-1
+        self.minEvents=-1
         self.maxTriesPerEvent=1
         self.run=-1
         self.inputFiles=[]
