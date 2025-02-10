@@ -66,7 +66,7 @@ count.input_pass_name = ''
 
 # Load ecal veto and dont use tracking in it
 ecalVeto = ecal_vetos.EcalVetoProcessor()
-ecalVeto.recoil_from_tracking = True 
+ecalVeto.recoil_from_tracking = False
 
 # Load HCAL veto
 import LDMX.Hcal.hcal as hcal
