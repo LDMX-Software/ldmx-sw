@@ -36,10 +36,13 @@ endif()
 # to an external folder and create the targets.
 find_package(ONNXRuntime 1.2.0)
 
+find_package(Eigen3 CONFIG REQUIRED)
+
 setup_library(module Ecal
               dependencies ROOT::Physics 
                            Framework::Framework Recon::Event Tools::Tools DetDescr::DetDescr 
                            ONNXRuntime::Interface
+                           Eigen3::Eigen
 )
 
 setup_test(dependencies Ecal::Ecal)

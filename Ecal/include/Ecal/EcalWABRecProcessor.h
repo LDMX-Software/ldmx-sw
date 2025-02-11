@@ -14,8 +14,10 @@
 #include "Ecal/Event/EcalWABResult.h"
 #include "Framework/Configure/Parameters.h"
 #include "Framework/EventProcessor.h"
+#include "Tracking/Event/ReducedTrack.h"
 
 #include "Tools/ONNXRuntime.h"
+#include "Eigen/Dense"
 
 // ROOT (MIP tracking)
 #include "TVector3.h"
@@ -23,6 +25,7 @@
 // C++
 #include <map>
 #include <memory>
+
 
 namespace ecal {
 
@@ -34,11 +37,10 @@ public:
 
   virtual ~EcalWABRecProcessor() {}
 
-  /**
-   * Configure the processor using the given user specified parameters.
-   *
-   * @param parameters Set of parameters used to configure this processor.
-   */
+  void onProcessStart() override;
+
+  void onProcessEnd() override;
+
   void configure(framework::config::Parameters& parameters) override;
 
   void produce(framework::Event& event);
@@ -48,21 +50,19 @@ private:
   std::string rec_coll_name_;
   std::string track_pass_name_;
   std::string track_coll_name_;
-  bool data;
-  bool WAB;
+  int nevents_{0};
+  double processing_time_{0.};
 
-  // std::tuple<Eigen::VectorXd, double, int, Eigen::MatrixXd, int>
-  // fit2DTracksConstrained(const std::vector<double>& x1,
-  //                        const std::vector<double>& y1,
-  //                        const std::vector<double>& s1,
-  //                        const std::vector<double>& x2,
-  //                        const std::vector<double>& y2,
-  //                        const std::vector<double>& s2,
-  //                        const std::vector<double>& guess,
-  //                        int maxIter = 20,
-  //                        int verbosity = 0,
-  //                        double dchisq = 0.001,
-  //                        double abs_lim = 10.0)
+  std::tuple<Eigen::VectorXd, double, int, Eigen::MatrixXd, int>
+  fit2DTracksConstrained(const std::vector<double>& x1,
+                         const std::vector<double>& y1,
+                         const std::vector<double>& s1,
+                         const std::vector<double>& x2,
+                         const std::vector<double>& y2,
+                         const std::vector<double>& s2,
+                         const std::vector<double>& guess,
+                         int maxIter, int verbosity,
+                         double dchisq, double abs_lim);
 
   /** Name of the collection which will containt the results. */
   std::string collectionName_{"EcalWABRec"};

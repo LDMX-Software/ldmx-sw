@@ -19,5 +19,3 @@ class EcalWABRecProcessor(ldmxcfg.Producer) :
         self.rec_pass_name = ''
         self.track_coll_name = 'ReducedTracks'
         self.track_pass_name = ''
-        self.data = 0
-        self.WAB = 0

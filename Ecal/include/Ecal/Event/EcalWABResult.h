@@ -1,6 +1,6 @@
 /**
  * @file EcalWABResult.h
- * @brief Class used to encapsulate the results obtained from EcalWAbRecProcessor
+ * @brief Class used to encapsulate the results obtained from EcalWABRecProcessor
  * @author Sanjit Masanam (UCSB)
  */
 

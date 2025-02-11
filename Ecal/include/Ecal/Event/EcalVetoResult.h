@@ -133,7 +133,7 @@ class EcalVetoResult {
   }
 
   const std::vector<float>& getEcalLayerEdepReadout() const {
-    return ecalLayerEdepReadout_; 
+    return ecalLayerEdepReadout_;
   }
 
   const std::vector<float>& getEnergySeg() const { return energySeg_; }
