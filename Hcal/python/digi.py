@@ -219,3 +219,33 @@ class HcalDoubleEndRecProducer(Producer) :
         self.pass_name = pass_name
         self.rec_coll_name = rec_coll_name
         self.rec_pass_name = rec_pass_name
+
+class HcalSimpleDigiAndRecProducer(Producer) :
+    """Configuration for Digitization producer in the HCal
+        Sets all parameters to reasonable defaults.
+    Examples
+    --------
+        from LDMX.EventProc.hcal import HcalDigiProducer
+        p.sequence.append( HcalDigiProducer() )
+    """
+
+    def __init__(self,name = 'hcalSimpleDigiAndRec') :
+        super().__init__(name,'hcal::HcalSimpleDigiAndRecProducer','Hcal')
+        self.input_coll_name = 'HcalSimHits'
+        self.input_pass_name = ''
+        self.output_coll_name = 'HcalRecHits'
+
+        self.mean_noise = 0.02
+        self.readout_threshold= 1
+        self.strips_side_lr_per_layer = 12
+        self.num_side_lr_hcal_layers = 26
+        self.strips_side_tb_per_layer = 12
+        self.num_side_tb_hcal_layers = 28
+        self.strips_back_per_layer = 60 # n strips correspond to 5 cm wide bars
+        self.num_back_hcal_layers = 96
+        self.super_strip_size = 1 # 1 = 5 cm readout, 2 = 10 cm readout, ...
+        self.mev_per_mip = 4.66  # measured 1.4 MeV for a 6mm thick tile, so for 20mm bar = 1.4*20/6
+        self.pe_per_mip = 68. # PEs per MIP at 1m (assume 80% attentuation of 1m)
+        self.attenuation_length = 5. # this is in m
+        self.position_resolution = 150. # this is in mm
+        self.sim_hit_pass_name = '' #use any pass available
