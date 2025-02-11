@@ -24,12 +24,12 @@ class TrkDeDxMassEstFeatures : public framework::Analyzer {
   /**
    * Input python configuration parameters
    */
-  virtual void configure(framework::config::Parameters& ps);
+  virtual void configure(framework::config::Parameters& ps) override;
 
   /**
    * Fills histograms
    */
-  virtual void analyze(const framework::Event& event);
+  virtual void analyze(const framework::Event& event) override;
 
   /// Method executed before processing of events begins.
   void onProcessStart() override;
