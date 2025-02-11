@@ -43,9 +43,6 @@ class TrigScintFirmwareTracker : public framework::Producer {
   // min threshold for adding a hit to a cluster
   double minThr_{0.};
 
-  // max number of neighboring hits to combine when forming a cluster
-  int maxWidth_{2};
-
   // specific verbosity of this producer
   int verbose_{0};
 
@@ -68,36 +65,11 @@ class TrigScintFirmwareTracker : public framework::Producer {
   // specific pass name to use for track making
   std::string passName_{""};
 
-  // vertical bar start index
-  int vertBarStartIdx_{52};
-
-  // cluster channel nb centroid (will be content weighted)
-  float centroid_{0.};
-
-  // cluster channel nb horizontal centroid (will be content weighted)
-  float centroidX_{-1};
-
-  // cluster channel nb vertical centroid (will be content weighted)
-  float centroidY_{-1};
-
-  // energy (edep), PE, or sth
-  float val_{0.};
-
-  // edep content, only; leave val_ for PE
-  float valE_{0.};
-
   // book keep which channels have already been added to the cluster at hand
   std::vector<unsigned int> v_addedIndices_;
 
   // book keep which channels have already been added to any cluster
   std::vector<unsigned int> v_usedIndices_;
-
-  // fraction of cluster energy deposition associated with beam electron sim
-  // hits
-  float beamE_{0.};
-
-  // cluster time (energy weighted based on hit time)
-  float time_{0.};
 
   // empty map container
   std::map<int, int> hitChannelMap_;
