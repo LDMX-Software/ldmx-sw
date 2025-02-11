@@ -125,9 +125,9 @@ void HcalSimpleDigiAndRecProducer::produce(framework::Event& event) {
       recHit.setPE(PE);
       recHit.setMinPE(PE);
       // TODO: Look into this
-          xpos = stripCenter.x();
-          ypos = stripCenter.y();
-          zpos = stripCenter.z();
+      xpos = stripCenter.x();
+      ypos = stripCenter.y();
+      zpos = stripCenter.z();
     }
 
     recHit.setID(hitID.raw());
