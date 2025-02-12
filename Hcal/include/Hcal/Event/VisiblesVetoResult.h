@@ -1,3 +1,10 @@
+/**
+ *@file VisiblesVetoResult.h
+ *@brief Class used to encapsulate the results obstained
+         from VisiblesVetoProcessor
+ *@author Tyler Horoho, University of Virginia
+ */
+
 #ifndef EVENT_VISIBLESVETORESULT_H_
 #define EVENT_VISIBLESVETORESULT_H_
 
@@ -73,6 +80,8 @@ namespace ldmx {
 
     double discValue_{0};
 
+
+    ClassDef(VisiblesVetoResult, 7);
   };
 } // namespace ldmx
 
