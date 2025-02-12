@@ -82,6 +82,15 @@ namespace hcal {
     if (recoil_from_tracking_) {
       auto recoilTracks{event.getCollection<ldmx::Track>(track_collection_)};
       // Fill this in later when you know how to use it
+      for (auto &track : recoilTracks) {
+	// need to figure out how to best isolate candidate electron track
+	if (track.q() == 1 && track.getNhits() == 5) {
+	  gamma_x0 = track.getPosition();
+	  gamma_p[0] = -1.*track.getMomentum()[0];
+	  gamma_p[1] = -1.*track.getMomentum()[1];
+	  gamma_p[2] = 8000. - track.getMomentum()[2];
+	}
+      }
     }
     else {
       if (event.exists("TargetScoringPlaneHits")) {
@@ -93,8 +102,8 @@ namespace hcal {
 	      if (it.first == sphit.getTrackID()) {
 		if (it.second.getPdgID() == 11 && in_list(it.second.getParents(), 0)) {
 		  gamma_x0 = sphit.getPosition();
-		  gamma_p[0] = -1*sphit.getMomentum()[0];
-		  gamma_p[1] = -1*sphit.getMomentum()[1];
+		  gamma_p[0] = -1.*sphit.getMomentum()[0];
+		  gamma_p[1] = -1.*sphit.getMomentum()[1];
 		  gamma_p[2] = 8000. - sphit.getMomentum()[2]; // hard-coded for 8 GeV
 		}
 	      }
