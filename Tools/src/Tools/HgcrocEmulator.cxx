@@ -181,6 +181,7 @@ bool HgcrocEmulator::digitize(
       // ADC at t-1
       auto adc_at_tminus1 =
           (iADC > 0) ? digiToAdd.at(iADC - 1).adc_t() : pedestal;
+      auto i_tot_sample = digiToAdd.size() - 1;
       // mark as a TOT measurement with 2nd boolean as true
       digiToAdd.emplace_back(false, true, adc_at_tminus1, tdc_counts, toa);
 
@@ -195,9 +196,8 @@ bool HgcrocEmulator::digitize(
         // flags to mark type of sample
         digiToAdd.emplace_back(true, false, 0x3FF, 0x3FF, 0);
       }
-      // Read out if the toa is between the nADCs_ * clockCycle_
-      int toa_max = nADCs_ * clockCycle_;
-      return (toa < toa_max);
+      // Read out if the toa is within one Bx after nominal
+      return (i_tot_sample <= iSOI_ + 1);
     } else {
       // determine the voltage at the sampling time
       double bxvolts = pulse((iADC - iSOI_) * clockCycle_);
