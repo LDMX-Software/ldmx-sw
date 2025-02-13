@@ -3,7 +3,7 @@
  * @brief Class that performs basic ECal digitization
  * @author Cameron Bravo, SLAC National Accelerator Laboratory
  * @author Tom Eichlersmith, University of Minnesota
- * @author Tamas Almos Vami, UCSB 
+ * @author Tamas Almos Vami, UCSB
  */
 
 #include "Ecal/EcalDigiProducer.h"
@@ -61,15 +61,15 @@ void EcalDigiProducer::onNewRun(const ldmx::RunHeader&) {
   noiseGenerator_->setNoiseThreshold(readoutThreshold_);
   // Set up seeds
   const auto& rseed = getCondition<framework::RandomNumberSeedService>(
-    framework::RandomNumberSeedService::CONDITIONS_OBJECT_NAME);
+      framework::RandomNumberSeedService::CONDITIONS_OBJECT_NAME);
   noiseGenerator_->seedGenerator(
-    rseed.getSeed("EcalDigiProducer::NoiseGenerator"));
-  // Random number generator for layer / module / cell 
+      rseed.getSeed("EcalDigiProducer::NoiseGenerator"));
+  // Random number generator for layer / module / cell
   rng_.seed(rseed.getSeed("EcalDigiProducer"));
   // Setting up the read-out chip
   hgcroc_->seedGenerator(rseed.getSeed("EcalDigiProducer::HgcrocEmulator"));
   hgcroc_->condition(
-    getCondition<conditions::DoubleTableCondition>("EcalHgcrocConditions"));
+      getCondition<conditions::DoubleTableCondition>("EcalHgcrocConditions"));
 }
 
 void EcalDigiProducer::produce(framework::Event& event) {
