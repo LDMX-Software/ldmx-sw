@@ -46,8 +46,10 @@ bool HgcrocEmulator::digitize(
     const int &channelID,
     std::vector<std::pair<double, double>> &arriving_pulses,
     std::vector<ldmx::HgcrocDigiCollection::Sample> &digiToAdd) const {
+  // The emulation is run on each sim hit in each crossing, this is very
+  // verbose, so ldmx_log(debug) is not enough
+  bool verbose{false};
   // step 0: prepare ourselves for emulation
-
   digiToAdd.clear();  // make sure it is clean
 
   // Configure chip settings based off of table (that may have been passed)
@@ -87,6 +89,8 @@ bool HgcrocEmulator::digitize(
   bool wasTOA = false;
   for (int iADC = 0; iADC < nADCs_; iADC++) {
     double startBX = (iADC - iSOI_) * clockCycle_ - measTime;
+    if (verbose)
+      ldmx_log(debug) << "  iADC = " << iADC << " at startBX = " << startBX;
 
     // step 3b: check each merged hit to see if it peaks in this BX.  If so,
     // check its peak time to see if it's over TOT or TOA.
@@ -96,15 +100,19 @@ bool HgcrocEmulator::digitize(
     double toverTOT = -1;
     for (auto hit : pulse.hits()) {
       int hitBX = int((hit.second + measTime) / clockCycle_ + iSOI_);
-      if (hitBX != iADC)
-        continue;  // if this hit wasn't in the current BX, continue...
+      // if this hit wasn't in the current BX, continue...
+      if (hitBX != iADC) {
+        continue;
+      }
 
       double vpeak = pulse(hit.second);
 
       if (vpeak > totThreshold) {
         startTOT = true;
-        if (toverTOT < hit.second)
-          toverTOT = hit.second;  // use the latest time in the window
+        // use the latest time in the window
+        if (toverTOT < hit.second) {
+          toverTOT = hit.second;
+        }
       }
 
       if (vpeak > toaThreshold) {
@@ -143,6 +151,8 @@ bool HgcrocEmulator::digitize(
       //  ==> x-intercept = amplitude / rate
       // actual time over threshold using the real signal voltage amplitude
       double tot = charge_deposited / drainRate;
+      if (verbose)
+        ldmx_log(debug) << "    we are in TOT read-out mode, TOT = " << tot;
 
       // calculate the TDC counts for this tot measurement
       //  internally, the chip uses 12 bits (2^12 = 4096)
@@ -163,23 +173,31 @@ bool HgcrocEmulator::digitize(
         if (toa == 0) toa = 1;
         if (toa > 1023) toa = 1023;
       }
-
-      digiToAdd.emplace_back(
-          false, true,  // mark as a TOT measurement
-          (iADC > 0) ? digiToAdd.at(iADC - 1).adc_t()
-                     : pedestal,  // ADC t-1 is first measurement
-          tdc_counts,             // TOT
-          toa                     // TOA is third measurement
-      );
+      if (verbose)
+        ldmx_log(debug) << "    Adding TOT hit with toa = " << toa
+                        << ", tdc_counts = " << tdc_counts
+                        << " adc_t at prev iADC = "
+                        << digiToAdd.at(iADC - 1).adc_t();
+      // ADC at t-1
+      auto adc_at_tminus1 =
+          (iADC > 0) ? digiToAdd.at(iADC - 1).adc_t() : pedestal;
+      // mark as a TOT measurement with 2nd boolean as true
+      digiToAdd.emplace_back(false, true, adc_at_tminus1, tdc_counts, toa);
 
       // TODO: properly handle saturation and recovery, eventually.
       // Now just kill everything...
+      if (verbose)
+        ldmx_log(debug)
+            << "   Adding further hits with ADC [t-1] = 0x3FF, toa = "
+               "0x3FF, until digiToAdd.size() = "
+            << digiToAdd.size() << " < nADCs_(" << nADCs_ << ")";
       while (digiToAdd.size() < nADCs_) {
-        digiToAdd.emplace_back(true, false,  // flags to mark type of sample
-                               0x3FF, 0x3FF, 0);
+        // flags to mark type of sample
+        digiToAdd.emplace_back(true, false, 0x3FF, 0x3FF, 0);
       }
-
-      return true;  // always readout
+      // Read out if the toa is between the nADCs_ * clockCycle_
+      int toa_max = nADCs_ * clockCycle_;
+      return (toa < toa_max);
     } else {
       // determine the voltage at the sampling time
       double bxvolts = pulse((iADC - iSOI_) * clockCycle_);
@@ -187,6 +205,8 @@ bool HgcrocEmulator::digitize(
       if (noise_) bxvolts += noise(channelID);
       // convert to integer and keep in range (handle low and high saturation)
       int adc = bxvolts / gain;
+      if (verbose)
+        ldmx_log(debug) << "    we are in ADC read-out mode, adc = " << adc;
       if (adc < 0) adc = 0;
       if (adc > 1023) adc = 1023;
 
@@ -202,19 +222,20 @@ bool HgcrocEmulator::digitize(
       } else {
         wasTOA = false;
       }
+      // ADC at t-1
+      auto adc_t_minus1 =
+          (iADC > 0) ? digiToAdd.at(iADC - 1).adc_t() : pedestal;
 
-      digiToAdd.emplace_back(
-          false, false,  // use flags to mark this sample as an ADC measurement
-          (iADC > 0) ? digiToAdd.at(iADC - 1).adc_t()
-                     : pedestal,  // ADC t-1 is first measurement
-          adc,                    // ADC[t] is the second field
-          toa                     // TOA is third measurement
-      );
+      digiToAdd.emplace_back(false, false, adc_t_minus1, adc, toa);
     }  // TOT or ADC Mode
   }    // sampling baskets
 
   // we only get here if we never went into TOT mode
   // check the SOI to see if we should read out
+  if (verbose)
+    ldmx_log(debug) << "  we are adding the hit IFF iSOI= " << iSOI_
+                    << "'s adc_t = " << digiToAdd.at(iSOI_).adc_t()
+                    << " >= thresh (" << readoutThreshold << ")";
   return digiToAdd.at(iSOI_).adc_t() >= readoutThreshold;
 }  // HgcrocEmulator::digitize
 
@@ -227,11 +248,14 @@ std::vector<ldmx::HgcrocDigiCollection::Sample> HgcrocEmulator::noiseDigi(
   std::vector<ldmx::HgcrocDigiCollection::Sample> noise_digi;
   for (int iADC{0}; iADC < nADCs_; iADC++) {
     // gen noise for ADC samples
+    // ADC at t-1
     int adc_tm1{static_cast<int>(pedestal)};
-    if (iADC > 0)
+    if (iADC > 0) {
       adc_tm1 = noise_digi.at(iADC - 1).adc_t();
-    else
+    } else {
       adc_tm1 += noise(channel) / gain;
+    }
+    // ADC at t
     int adc_t{static_cast<int>(pedestal + noise(channel) / gain)};
 
     if (iADC == iSOI_) adc_t += soi_amplitude / gain;

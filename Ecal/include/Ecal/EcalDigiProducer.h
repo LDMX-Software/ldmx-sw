@@ -43,9 +43,8 @@ class EcalDigiProducer : public framework::Producer {
 
   /**
    * Destructor
-   * Deletes digi collection if it has been created
    */
-  virtual ~EcalDigiProducer();
+  virtual ~EcalDigiProducer() = default;
 
   /**
    * Configure this producer from the python configuration.
