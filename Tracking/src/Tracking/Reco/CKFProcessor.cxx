@@ -236,7 +236,7 @@ void CKFProcessor::produce(framework::Event& event) {
   ldmx_log(debug) << "Retrieve the seeds::" << seed_coll_name_;
 
   const std::vector<ldmx::Track> seed_tracks =
-      event.getCollection<ldmx::Track>(seed_coll_name_);
+      event.getCollection<ldmx::Track>(seed_coll_name_, input_pass_name_);
 
   ldmx_log(debug) << "Number of seeds::" << seed_tracks.size();
 
@@ -728,6 +728,9 @@ void CKFProcessor::configure(framework::config::Parameters& parameters) {
   // seeds from the event
   seed_coll_name_ =
       parameters.getParameter<std::string>("seed_coll_name", "seedTracks");
+
+  input_pass_name_ =
+      parameters.getParameter<std::string>("input_pass_name", "input_pass_name");
 
   // output track collection
   out_trk_collection_ =
