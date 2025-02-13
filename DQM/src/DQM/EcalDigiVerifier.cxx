@@ -68,8 +68,10 @@ void EcalDigiVerifier::analyze(const framework::Event &event) {
     // skip anything that digi flagged as noise
     if (recHit.isNoise()) {
       numNoiseHits++;
+      histograms_.fill("is_noise_hit", 1.);
       continue;
     }
+    histograms_.fill("is_noise_hit", 0.);
 
     int rawID = recHit.getID();
 
