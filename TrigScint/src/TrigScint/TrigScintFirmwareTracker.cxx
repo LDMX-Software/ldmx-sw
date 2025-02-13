@@ -11,7 +11,6 @@
 namespace trigscint {
 
 void TrigScintFirmwareTracker::configure(framework::config::Parameters &ps) {
-
   minThr_ = ps.getParameter<double>("clustering_threshold");
   digis1_collection_ = ps.getParameter<std::string>("digis1_collection");
   digis2_collection_ = ps.getParameter<std::string>("digis2_collection");

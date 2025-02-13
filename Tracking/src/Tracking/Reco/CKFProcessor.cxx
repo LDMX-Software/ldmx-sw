@@ -729,8 +729,8 @@ void CKFProcessor::configure(framework::config::Parameters& parameters) {
   seed_coll_name_ =
       parameters.getParameter<std::string>("seed_coll_name", "seedTracks");
 
-  input_pass_name_ =
-      parameters.getParameter<std::string>("input_pass_name", "input_pass_name");
+  input_pass_name_ = parameters.getParameter<std::string>("input_pass_name",
+                                                          "input_pass_name");
 
   // output track collection
   out_trk_collection_ =
