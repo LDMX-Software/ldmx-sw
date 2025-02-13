@@ -1,52 +1,45 @@
 #include "Hcal/HcalSimpleDigiAndRecProducer.h"
 
+#include "Hcal/Event/HcalHit.h"
+#include "SimCore/Event/SimCalorimeterHit.h"
+
 namespace hcal {
 
 void HcalSimpleDigiAndRecProducer::configure(
     framework::config::Parameters& ps) {
-  input_coll_name = ps.getParameter<std::string>("input_coll_name");
-  input_pass_name = ps.getParameter<std::string>("input_pass_name");
-  output_coll_name = ps.getParameter<std::string>("output_coll_name");
-  mev_per_mip = ps.getParameter<double>("mev_per_mip");
-  pe_per_mip = ps.getParameter<double>("pe_per_mip");
-  attenuation_length = ps.getParameter<double>("attenuation_length");
-  readout_threshold = ps.getParameter<int>("readout_threshold");
-  mean_noise = ps.getParameter<double>("mean_noise");
-  position_resolution = ps.getParameter<double>("position_resolution");
+  input_coll_name_ = ps.getParameter<std::string>("input_coll_name");
+  input_pass_name_ = ps.getParameter<std::string>("input_pass_name");
+  output_coll_name_ = ps.getParameter<std::string>("output_coll_name");
+  mev_per_mip_ = ps.getParameter<double>("mev_per_mip");
+  pe_per_mip_ = ps.getParameter<double>("pe_per_mip");
+  attenuation_length_ = ps.getParameter<double>("attenuation_length");
+  readout_threshold_ = ps.getParameter<int>("readout_threshold");
+  mean_noise_ = ps.getParameter<double>("mean_noise");
+  position_resolution_smear_ =
+      std::make_unique<std::normal_distribution<double>>(
+          0.0, ps.getParameter<double>("position_resolution"));
 }
 
-void HcalSimpleDigiAndRecProducer::SetupRandomNumberGeneration() {
-  if (noiseGenerator == nullptr) {
-    noiseGenerator = std::make_unique<ldmx::NoiseGenerator>(mean_noise, false);
-    noiseGenerator->setNoiseThreshold(
-        1);  // hard-code this number, create noise hits for non-zero PEs!
-  }
-  if (!noiseGenerator->hasSeed()) {
-    const framework::RandomNumberSeedService& rseed =
-        getCondition<framework::RandomNumberSeedService>(
-            framework::RandomNumberSeedService::CONDITIONS_OBJECT_NAME);
-    noiseGenerator->seedGenerator(
-        rseed.getSeed("HcalSimpleDigiAndRecProducer::NoiseGenerator"));
-  }
-  if (random == nullptr) {
-    const framework::RandomNumberSeedService& rseed =
-        getCondition<framework::RandomNumberSeedService>(
-            framework::RandomNumberSeedService::CONDITIONS_OBJECT_NAME);
-    random = std::make_unique<TRandom3>(
-        rseed.getSeed("HcalSimpleDigiAndRecProducer"));
-  }
+void HcalSimpleDigiAndRecProducer::onNewRun(const ldmx::RunHeader&) {
+  noiseGenerator_ = std::make_unique<ldmx::NoiseGenerator>(mean_noise_, false);
+  // hard-code this number, create noise hits for non-zero PEs!
+  noiseGenerator_->setNoiseThreshold(1);
+  const framework::RandomNumberSeedService& rseed =
+      getCondition<framework::RandomNumberSeedService>(
+          framework::RandomNumberSeedService::CONDITIONS_OBJECT_NAME);
+  noiseGenerator_->seedGenerator(
+      rseed.getSeed("HcalSimpleDigiAndRecProducer::NoiseGenerator"));
+  rng_.seed(rseed.getSeed("HcalSimpleDigiAndRecProducer"));
 }
 
 void HcalSimpleDigiAndRecProducer::produce(framework::Event& event) {
   const auto& hcalGeometry = getCondition<ldmx::HcalGeometry>(
       ldmx::HcalGeometry::CONDITIONS_OBJECT_NAME);
 
-  SetupRandomNumberGeneration();
-
   std::vector<ldmx::HcalHit> hcalRecHits;
 
-  auto simHits{event.getCollection<ldmx::SimCalorimeterHit>(input_coll_name,
-                                                            input_pass_name)};
+  auto simHits{event.getCollection<ldmx::SimCalorimeterHit>(input_coll_name_,
+                                                            input_pass_name_)};
   std::unordered_map<unsigned int, std::vector<const ldmx::SimCalorimeterHit*>>
       hits_by_id{};
   // Important, has to be a reference so that we don't take the address of a
@@ -76,7 +69,7 @@ void HcalSimpleDigiAndRecProducer::produce(framework::Event& event) {
     ldmx::HcalID hitID{barID};
 
     // Position smearing
-    double mean_pe{(edep / mev_per_mip) * pe_per_mip};
+    double mean_pe{(edep / mev_per_mip_) * pe_per_mip_};
     double xpos{pos[0] / edep};
     double ypos{pos[1] / edep};
     double zpos{pos[2] / edep};
@@ -97,31 +90,33 @@ void HcalSimpleDigiAndRecProducer::produce(framework::Event& event) {
       if (orientation ==
           ldmx::HcalGeometry::ScintillatorOrientation::horizontal) {
         ypos = stripCenter.y();
-        xpos += random->Gaus(0, position_resolution);
+        xpos += (*position_resolution_smear_)(rng_);
       } else {
         xpos = stripCenter.x();
-        ypos += random->Gaus(0, position_resolution);
+        ypos += (*position_resolution_smear_)(rng_);
       }
       zpos = stripCenter.z();
       // Attenuation
-      mean_pe *= exp(1. / attenuation_length);
+      mean_pe *= exp(1. / attenuation_length_);
       double mean_pe_close =
           mean_pe * exp(-1. *
                         ((half_total_width - distance_along_bar) /
                          (scint_bar_length * 0.5)) /
-                        attenuation_length);
+                        attenuation_length_);
       double mean_pe_far =
           mean_pe * exp(-1. *
                         ((half_total_width + distance_along_bar) /
                          (scint_bar_length * 0.5)) /
-                        attenuation_length);
-      int PE_close{random->Poisson(mean_pe_close + mean_noise)};
-      int PE_far{random->Poisson(mean_pe_far + mean_noise)};
+                        attenuation_length_);
+      int PE_close{
+          std::poisson_distribution<int>(mean_pe_close + mean_noise_)(rng_)};
+      int PE_far{
+          std::poisson_distribution<int>(mean_pe_far + mean_noise_)(rng_)};
       recHit.setPE(PE_close + PE_far);
       recHit.setMinPE(std::min(PE_close, PE_far));
     } else {
       // Side HCAL, no attenuation business since single ended readout
-      int PE{random->Poisson(mean_pe + mean_noise)};
+      int PE{std::poisson_distribution<int>(mean_pe + mean_noise_)(rng_)};
       recHit.setPE(PE);
       recHit.setMinPE(PE);
       // TODO: Look into this
@@ -140,8 +135,9 @@ void HcalSimpleDigiAndRecProducer::produce(framework::Event& event) {
     recHit.setStrip(hitID.strip());
     recHit.setLayer(hitID.layer());
     recHit.setEnergy(edep);
+    recHit.setOrientation(static_cast<int>(orientation));
   }
-  event.add(output_coll_name, hcalRecHits);
+  event.add(output_coll_name_, hcalRecHits);
 }
 
 }  // namespace hcal
