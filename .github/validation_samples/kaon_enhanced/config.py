@@ -151,7 +151,6 @@ p.logger.termLevel = 1
 p.sequence.extend(full_tracking_sequence.sequence)
 
 p.sequence.extend([ 
-        mySim, 
         ecalDigi, 
         ecalReco, 
         ecalVeto,
