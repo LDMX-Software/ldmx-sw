@@ -14,7 +14,7 @@ p=ldmxcfg.Process(thisPassName)
 
 det = 'ldmx-det-v14-8gev'
 p.run = int(os.environ['LDMX_RUN_NUMBER'])
-p.maxEvents = int(os.environ['LDMX_NUM_EVENTS'])
+p.maxEvents = int(os.environ['LDMX_NUM_EVENTS']) // 2
 
 # Load the full tracking sequance
 from LDMX.Tracking import full_tracking_sequence
