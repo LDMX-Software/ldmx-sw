@@ -205,7 +205,7 @@ class CKFProcessor final : public TrackingGeometryUser {
   // The seed track collection
   std::string seed_coll_name_{"seedTracks"};
 
-  std::string input_pass_name_{"input_pass_name"};
+  std::string input_pass_name_{""};
 
   // The interpolated bfield
   std::string field_map_{""};

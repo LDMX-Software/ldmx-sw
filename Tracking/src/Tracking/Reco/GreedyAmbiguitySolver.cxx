@@ -173,6 +173,9 @@ void GreedyAmbiguitySolver::configure(
   meas_collection_ = parameters.getParameter<std::string>("measCollection",
                                                           "DigiTaggerSimHits");
 
+  input_pass_name_ =
+      parameters.getParameter<std::string>("input_pass_name", "");
+
   n_meas_min_ = parameters.getParameter<int>("nMeasurementsMin", 5);
   maximum_shared_hits_ = parameters.getParameter<int>("maximumSharedHits", 1);
 }
