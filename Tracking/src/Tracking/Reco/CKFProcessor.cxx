@@ -762,6 +762,9 @@ void CKFProcessor::configure(framework::config::Parameters& parameters) {
   // BField Systematics
   map_offset_ =
       parameters.getParameter<std::vector<double>>("map_offset_", {0., 0., 0.});
+
+  input_pass_name_ =
+      parameters.getParameter<std::string>("input_pass_name", "");
 }
 
 auto CKFProcessor::makeGeoIdSourceLinkMap(

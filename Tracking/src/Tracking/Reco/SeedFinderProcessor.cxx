@@ -82,6 +82,9 @@ void SeedFinderProcessor::configure(framework::config::Parameters& parameters) {
       "inflate_factors", {10., 10., 10., 10., 10., 10.});
 
   bfield_ = parameters.getParameter<double>("bfield", 1.5);
+
+  input_pass_name_ =
+      parameters.getParameter<std::string>("input_pass_name", "");
 }
 
 void SeedFinderProcessor::produce(framework::Event& event) {
