@@ -93,6 +93,8 @@ class VertexProcessor : public framework::Producer {
 
   std::string trk_coll_name_{"Tracks"};
 
+  std::string input_pass_name_{""};
+
   // The propagator
   std::shared_ptr<VoidPropagator> propagator_;
 

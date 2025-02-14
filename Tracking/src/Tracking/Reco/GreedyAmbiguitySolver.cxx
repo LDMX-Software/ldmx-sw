@@ -172,7 +172,8 @@ void GreedyAmbiguitySolver::configure(
 
   meas_collection_ = parameters.getParameter<std::string>("measCollection",
                                                           "DigiTaggerSimHits");
-
+  input_pass_name_ =
+      parameters.getParameter<std::string>("input_pass_name", "");
   n_meas_min_ = parameters.getParameter<int>("nMeasurementsMin", 5);
   maximum_shared_hits_ = parameters.getParameter<int>("maximumSharedHits", 1);
 }
@@ -184,10 +185,12 @@ void GreedyAmbiguitySolver::produce(framework::Event& event) {
   auto tg{geometry()};
 
   if (!event.exists(track_collection_)) return;
-  auto tracks{event.getCollection<ldmx::Track>(track_collection_)};
+  auto tracks{
+      event.getCollection<ldmx::Track>(track_collection_, input_pass_name_)};
 
   if (!event.exists(meas_collection_)) return;
-  auto measurements{event.getCollection<ldmx::Measurement>(meas_collection_)};
+  auto measurements{event.getCollection<ldmx::Measurement>(meas_collection_,
+                                                           input_pass_name_)};
 
   computeInitialState(tracks, measurements, state, tg,
                       tracking::sim::utils::sourceLinkHash,
