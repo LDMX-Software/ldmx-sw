@@ -207,7 +207,8 @@ void CKFProcessor::produce(framework::Event& event) {
       std::chrono::duration<double, std::milli>(setup - start).count();
 
   const std::vector<ldmx::Measurement> measurements =
-      event.getCollection<ldmx::Measurement>(measurement_collection_);
+      event.getCollection<ldmx::Measurement>(measurement_collection_,
+                                             input_pass_name_);
 
   // check if SimParticleMap is available for truth matching
   std::shared_ptr<tracking::sim::TruthMatchingTool> truthMatchingTool = nullptr;
@@ -232,7 +233,7 @@ void CKFProcessor::produce(framework::Event& event) {
 
   // Retrieve the seeds
   const std::vector<ldmx::Track> seed_tracks =
-      event.getCollection<ldmx::Track>(seed_coll_name_);
+      event.getCollection<ldmx::Track>(seed_coll_name_, input_pass_name_);
 
   ldmx_log(info) << "Number of " << seed_coll_name_
                  << " seed tracks = " << seed_tracks.size();
@@ -762,6 +763,9 @@ void CKFProcessor::configure(framework::config::Parameters& parameters) {
   // BField Systematics
   map_offset_ =
       parameters.getParameter<std::vector<double>>("map_offset_", {0., 0., 0.});
+
+  input_pass_name_ =
+      parameters.getParameter<std::string>("input_pass_name", "");
 }
 
 auto CKFProcessor::makeGeoIdSourceLinkMap(
