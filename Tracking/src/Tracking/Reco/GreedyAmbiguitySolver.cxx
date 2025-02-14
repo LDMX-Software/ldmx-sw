@@ -185,10 +185,10 @@ void GreedyAmbiguitySolver::produce(framework::Event& event) {
   auto tg{geometry()};
 
   if (!event.exists(track_collection_)) return;
-  auto tracks{event.getCollection<ldmx::Track>(track_collection_)};
+  auto tracks{event.getCollection<ldmx::Track>(track_collection_, input_pass_name_)};
 
   if (!event.exists(meas_collection_)) return;
-  auto measurements{event.getCollection<ldmx::Measurement>(meas_collection_)};
+  auto measurements{event.getCollection<ldmx::Measurement>(meas_collection_, input_pass_name_)};
 
   computeInitialState(tracks, measurements, state, tg,
                       tracking::sim::utils::sourceLinkHash,

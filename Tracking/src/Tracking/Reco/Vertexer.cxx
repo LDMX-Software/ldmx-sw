@@ -125,9 +125,9 @@ void Vertexer::produce(framework::Event& event) {
   // Retrive the two track collections
 
   const std::vector<ldmx::Track> tracks_1 =
-      event.getCollection<ldmx::Track>(trk_c_name_1);
+      event.getCollection<ldmx::Track>(trk_c_name_1, input_pass_name_);
   const std::vector<ldmx::Track> tracks_2 =
-      event.getCollection<ldmx::Track>(trk_c_name_2);
+      event.getCollection<ldmx::Track>(trk_c_name_2, input_pass_name_);
 
   ldmx_log(debug) << "Retrieved track collections" << std::endl
                   << "Track 1 size:" << tracks_1.size() << std::endl
