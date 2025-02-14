@@ -181,7 +181,7 @@ bool HgcrocEmulator::digitize(
       // ADC at t-1
       auto adc_at_tminus1 =
           (iADC > 0) ? digiToAdd.at(iADC - 1).adc_t() : pedestal;
-      auto i_tot_sample = digiToAdd.size() - 1;
+      auto i_tot_sample = digiToAdd.size();
       // mark as a TOT measurement with 2nd boolean as true
       digiToAdd.emplace_back(false, true, adc_at_tminus1, tdc_counts, toa);
 
