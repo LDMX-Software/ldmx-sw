@@ -32,7 +32,6 @@ class HcalSimpleDigiAndRecProducer : public framework::Producer {
   std::mt19937 rng_{};
   std::unique_ptr<std::normal_distribution<double>> position_resolution_smear_{
       nullptr};
-  std::unique_ptr<TRandom3> random_{nullptr};
   std::unique_ptr<ldmx::NoiseGenerator> noiseGenerator_{nullptr};
   int readout_threshold_{2};
 };
