@@ -228,7 +228,6 @@ class EcalDigiVerify(ldmxcfg.Analyzer) :
     Contains an instance of EcalDigiVerifier that
     has already been configured.
 
-    The EcalDigiVerifier fills three histograms.
     1. Number of SimHits per cell
        - Only including cells that have at least one hit
        - Integrates to number of rec hits
@@ -241,6 +240,9 @@ class EcalDigiVerify(ldmxcfg.Analyzer) :
          relationship between these two variables
        - Integrates to number of rec hits
        - Aggregates EDeps from any SimHits in the same cell
+    4. RecHit - SimHit spacial residuals
+    5. Number of hits in modules
+    6. Noise related plots
     
     Examples
     --------
@@ -294,7 +296,7 @@ class EcalDigiVerify(ldmxcfg.Analyzer) :
                 "Num of modules with >2 hits" , 31 , -0.5 , 30.5 )
 
         self.build1DHistogram( "num_hit_if_more_than_2hits"      ,
-                "Num of modules with >2 hits" , 31 , -0.5 , 30.5 )
+                "Num of hits for modules with >2 hits" , 31 , -0.5 , 30.5 )
         
         self.build2DHistogram( "sim_edep__rec_amplitude" ,
                 "Simulated [MeV]" , 1000 , 0. , 50. ,
