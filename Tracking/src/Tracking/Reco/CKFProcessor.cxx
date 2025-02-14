@@ -207,7 +207,8 @@ void CKFProcessor::produce(framework::Event& event) {
       std::chrono::duration<double, std::milli>(setup - start).count();
 
   const std::vector<ldmx::Measurement> measurements =
-      event.getCollection<ldmx::Measurement>(measurement_collection_, input_pass_name_);
+      event.getCollection<ldmx::Measurement>(measurement_collection_,
+                                             input_pass_name_);
 
   // check if SimParticleMap is available for truth matching
   std::shared_ptr<tracking::sim::TruthMatchingTool> truthMatchingTool = nullptr;

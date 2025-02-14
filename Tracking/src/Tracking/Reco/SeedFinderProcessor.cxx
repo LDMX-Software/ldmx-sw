@@ -99,11 +99,13 @@ void SeedFinderProcessor::produce(framework::Event& event) {
   std::map<int, ldmx::SimParticle> particleMap;
 
   const std::vector<ldmx::Measurement> measurements =
-      event.getCollection<ldmx::Measurement>(input_hits_collection_, input_pass_name_);
+      event.getCollection<ldmx::Measurement>(input_hits_collection_,
+                                             input_pass_name_);
 
   std::vector<ldmx::Track> tagger_tracks;
   if (event.exists(tagger_trks_collection_)) {
-    tagger_tracks = event.getCollection<ldmx::Track>(tagger_trks_collection_, input_pass_name_);
+    tagger_tracks = event.getCollection<ldmx::Track>(tagger_trks_collection_,
+                                                     input_pass_name_);
   }
 
   // Create an unbound surface at the target
