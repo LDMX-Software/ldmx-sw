@@ -174,7 +174,10 @@ void TrigScintClusterProducer::produce(framework::Event &event) {
       }
 
       // don't add in late hits
-      if (digi.getTime() > padTime_ + timeTolerance_) continue;
+      if (digi.getTime() > padTime_ + timeTolerance_) {
+        iDigi++;
+        continue;
+      }
 
       hitChannelMap_.insert(std::pair<int, int>(ID, iDigi));
       // the channel number is the key, the digi list index is the value

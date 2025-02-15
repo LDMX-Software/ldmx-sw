@@ -278,6 +278,8 @@ void PhotoNuclearDQM::analyze(const framework::Event &event) {
 
   histograms_.fill("pn_particle_mult", pnGamma->getDaughters().size());
   histograms_.fill("pn_gamma_energy", pnGamma->getEnergy());
+  histograms_.fill("pn_gamma_int_x", pnGamma->getEndPoint()[0]);
+  histograms_.fill("pn_gamma_int_y", pnGamma->getEndPoint()[1]);
   histograms_.fill("pn_gamma_int_z", pnGamma->getEndPoint()[2]);
   histograms_.fill("pn_gamma_vertex_x", pnGamma->getVertex()[0]);
   histograms_.fill("pn_gamma_vertex_y", pnGamma->getVertex()[1]);

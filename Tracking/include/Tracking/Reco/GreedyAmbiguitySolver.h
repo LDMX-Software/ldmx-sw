@@ -101,6 +101,8 @@ class GreedyAmbiguitySolver final : public TrackingGeometryUser {
 
   std::string meas_collection_{"DigiTaggerSimHits"};
 
+  std::string input_pass_name_{""};
+
   struct State {
     std::size_t number_of_tracks{};
 

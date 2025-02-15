@@ -2909,8 +2909,8 @@
 [ ecalVeto ] 173  info:  The pred > bdtCutVal = true and MIP tracking passed = true
 [ hcalVeto ] 173  info: There are 46 / 46 HCal hits read out. 46 are not associated with the recoil ele. Total PE of 1573
 [ hcalVeto ] 173  info: HCAL veto passed? false
-[ ElectronCounter ] 173  info: Found 0 electrons (tracks) using input collection TriggerPadTracksY_
-[ trigger ] 173  info: Got trigger energy cut 0 for 0 electrons counted in the event.
+[ ElectronCounter ] 173  info: Found 1 electrons (tracks) using input collection TriggerPadTracksY_
+[ trigger ] 173  info: Got trigger energy cut 1500 for 1 electrons counted in the event.
 [ trigger ] 173  info: Got trigger energy sum 1931.17; and decision is pass = false
 [ TrigScintDigiPad1 ] 173 debug: Looping over hits in trigScintDigisPad1
 [ TrigScintDigiPad2 ] 173 debug: Looping over hits in trigScintDigisPad2
@@ -16674,9 +16674,9 @@
 [ ecalVeto ] 1008  info:  The pred > bdtCutVal = true and MIP tracking passed = true
 [ hcalVeto ] 1008  info: There are 55 / 58 HCal hits read out. 55 are not associated with the recoil ele. Total PE of 2529
 [ hcalVeto ] 1008  info: HCAL veto passed? false
-[ ElectronCounter ] 1008  info: Found 0 electrons (tracks) using input collection TriggerPadTracksY_
-[ trigger ] 1008  info: Got trigger energy cut 0 for 0 electrons counted in the event.
-[ trigger ] 1008  info: Got trigger energy sum 1319.19; and decision is pass = false
+[ ElectronCounter ] 1008  info: Found 1 electrons (tracks) using input collection TriggerPadTracksY_
+[ trigger ] 1008  info: Got trigger energy cut 1500 for 1 electrons counted in the event.
+[ trigger ] 1008  info: Got trigger energy sum 1319.19; and decision is pass = true
 [ TrigScintDigiPad1 ] 1008 debug: Looping over hits in trigScintDigisPad1
 [ TrigScintDigiPad2 ] 1008 debug: Looping over hits in trigScintDigisPad2
 [ TrigScintDigiPad3 ] 1008 debug: Looping over hits in trigScintDigisPad3
@@ -22746,8 +22746,8 @@
 [ ecalVeto ] 1375  info:  The pred > bdtCutVal = true and MIP tracking passed = true
 [ hcalVeto ] 1375  info: There are 46 / 47 HCal hits read out. 46 are not associated with the recoil ele. Total PE of 2810
 [ hcalVeto ] 1375  info: HCAL veto passed? false
-[ ElectronCounter ] 1375  info: Found 0 electrons (tracks) using input collection TriggerPadTracksY_
-[ trigger ] 1375  info: Got trigger energy cut 0 for 0 electrons counted in the event.
+[ ElectronCounter ] 1375  info: Found 1 electrons (tracks) using input collection TriggerPadTracksY_
+[ trigger ] 1375  info: Got trigger energy cut 1500 for 1 electrons counted in the event.
 [ trigger ] 1375  info: Got trigger energy sum 1553.56; and decision is pass = false
 [ TrigScintDigiPad1 ] 1375 debug: Looping over hits in trigScintDigisPad1
 [ TrigScintDigiPad2 ] 1375 debug: Looping over hits in trigScintDigisPad2
@@ -99517,8 +99517,8 @@
 [ ecalVeto ] 6043  info:  The pred > bdtCutVal = false and MIP tracking passed = true
 [ hcalVeto ] 6043  info: There are 42 / 42 HCal hits read out. 42 are not associated with the recoil ele. Total PE of 2198
 [ hcalVeto ] 6043  info: HCAL veto passed? false
-[ ElectronCounter ] 6043  info: Found 0 electrons (tracks) using input collection TriggerPadTracksY_
-[ trigger ] 6043  info: Got trigger energy cut 0 for 0 electrons counted in the event.
+[ ElectronCounter ] 6043  info: Found 1 electrons (tracks) using input collection TriggerPadTracksY_
+[ trigger ] 6043  info: Got trigger energy cut 1500 for 1 electrons counted in the event.
 [ trigger ] 6043  info: Got trigger energy sum 1597.77; and decision is pass = false
 [ TrigScintDigiPad1 ] 6043 debug: Looping over hits in trigScintDigisPad1
 [ TrigScintDigiPad2 ] 6043 debug: Looping over hits in trigScintDigisPad2
@@ -164742,8 +164742,8 @@
   stringParameters: 
     Geant4 revision = 
     Gen0 Class = simcore::generators::MultiParticleGunPrimaryGenerator
-    ldmx-sw revision = 596d49bbb4b55491b7112cc74e6c44707a6dbe5f
-    ldmx-sw version = v4.2.10
+    ldmx-sw revision = e1cc154df424d4c5c52199096160cb669cbeea53
+    ldmx-sw version = v4.2.12
 }
 [ Simulator ] : Started 10000 events to produce 10000 events.
 [ trigScintClustersPad1 ] 10000 debug: Process ends!

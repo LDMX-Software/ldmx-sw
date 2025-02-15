@@ -208,6 +208,8 @@ class CKFProcessor final : public TrackingGeometryUser {
   // The interpolated bfield
   std::string field_map_{""};
 
+  std::string input_pass_name_{""};
+
   // The Propagator
   std::unique_ptr<const CkfPropagator> propagator_;
 

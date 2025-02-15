@@ -3,6 +3,7 @@
  * @brief Class that performs basic ECal digitization
  * @author Cameron Bravo, SLAC National Accelerator Laboratory
  * @author Tom Eichlersmith, University of Minnesota
+ * @author Tamas Almos Vami, UCSB
  */
 
 #include "Ecal/EcalDigiProducer.h"
@@ -11,17 +12,6 @@
 #include "Framework/RandomNumberSeedService.h"
 
 namespace ecal {
-
-EcalDigiProducer::EcalDigiProducer(const std::string& name,
-                                   framework::Process& process)
-    : Producer(name, process) {
-  // noise generator by default uses a Gausian model for noise
-  //  i.e. It assumes the noise is distributed around a mean (setPedestal)
-  //  with a certain RMS (setNoise) and then calculates
-  //  how many hits should be generated for a given number of empty
-  //  channels and a minimum readout value (setNoiseThreshold)
-  noiseGenerator_ = std::make_unique<ldmx::NoiseGenerator>();
-}
 
 void EcalDigiProducer::configure(framework::config::Parameters& ps) {
   // settings of readout chip
@@ -48,41 +38,39 @@ void EcalDigiProducer::configure(framework::config::Parameters& ps) {
   //  time [ns] * ( 2^10 / max time in ns ) = clock counts
   ns_ = 1024. / clockCycle_;
 
+  readoutThreshold_ = ps.getParameter<double>("avgReadoutThreshold");
+  pedestal_ = ps.getParameter<double>("avgPedestal");
+  noiseRMS_ = ps.getParameter<double>("avgNoiseRMS");
+}
+
+void EcalDigiProducer::onNewRun(const ldmx::RunHeader&) {
+  // noise generator by default uses a Gausian model for noise
+  //  i.e. It assumes the noise is distributed around a mean (setPedestal)
+  //  with a certain RMS (setNoise) and then calculates
+  //  how many hits should be generated for a given number of empty
+  //  channels and a minimum readout value (setNoiseThreshold)
+  noiseGenerator_ = std::make_unique<ldmx::NoiseGenerator>();
   // Configure generator that will produce noise hits in empty channels
-  double readoutThreshold = ps.getParameter<double>("avgReadoutThreshold");
-  double pedestal = ps.getParameter<double>("avgPedestal");
-  double noiseRMS = ps.getParameter<double>("avgNoiseRMS");
   // rms noise in mV
-  noiseGenerator_->setNoise(noiseRMS);
+  noiseGenerator_->setNoise(noiseRMS_);
   // mean noise amplitude (if using Gaussian Model for the noise) in mV
-  noiseGenerator_->setPedestal(pedestal);
+  noiseGenerator_->setPedestal(pedestal_);
   // threshold for readout in mV
-  noiseGenerator_->setNoiseThreshold(readoutThreshold);
+  noiseGenerator_->setNoiseThreshold(readoutThreshold_);
+  // Set up seeds
+  const auto& rseed = getCondition<framework::RandomNumberSeedService>(
+      framework::RandomNumberSeedService::CONDITIONS_OBJECT_NAME);
+  noiseGenerator_->seedGenerator(
+      rseed.getSeed("EcalDigiProducer::NoiseGenerator"));
+  // Random number generator for layer / module / cell
+  rng_.seed(rseed.getSeed("EcalDigiProducer"));
+  // Setting up the read-out chip
+  hgcroc_->seedGenerator(rseed.getSeed("EcalDigiProducer::HgcrocEmulator"));
+  hgcroc_->condition(
+      getCondition<conditions::DoubleTableCondition>("EcalHgcrocConditions"));
 }
 
 void EcalDigiProducer::produce(framework::Event& event) {
-  // Need to handle seeding on the first event
-  if (!noiseGenerator_->hasSeed()) {
-    const auto& rseed = getCondition<framework::RandomNumberSeedService>(
-        framework::RandomNumberSeedService::CONDITIONS_OBJECT_NAME);
-    noiseGenerator_->seedGenerator(
-        rseed.getSeed("EcalDigiProducer::NoiseGenerator"));
-  }
-  if (noiseInjector_.get() == nullptr) {
-    const auto& rseed = getCondition<framework::RandomNumberSeedService>(
-        framework::RandomNumberSeedService::CONDITIONS_OBJECT_NAME);
-    noiseInjector_ = std::make_unique<TRandom3>(
-        rseed.getSeed("EcalDigiProducer::NoiseInjector"));
-  }
-  if (!hgcroc_->hasSeed()) {
-    const auto& rseed = getCondition<framework::RandomNumberSeedService>(
-        framework::RandomNumberSeedService::CONDITIONS_OBJECT_NAME);
-    hgcroc_->seedGenerator(rseed.getSeed("EcalDigiProducer::HgcrocEmulator"));
-  }
-
-  hgcroc_->condition(
-      getCondition<conditions::DoubleTableCondition>("EcalHgcrocConditions"));
-
   // Empty collection to be filled
   ldmx::HgcrocDigiCollection ecalDigis;
   ecalDigis.setNumSamplesPerDigi(nADCs_);
@@ -164,6 +152,11 @@ void EcalDigiProducer::produce(framework::Event& event) {
     int numEmptyChannels = nEcalLayers * nModulesPerLayer * nCellsPerModule -
                            ecalDigis.getNumDigis();
 
+    // Uniform distributions for integer generation
+    std::uniform_int_distribution<int> layer_dist(0, nEcalLayers - 1);
+    std::uniform_int_distribution<int> module_dist(0, nModulesPerLayer - 1);
+    std::uniform_int_distribution<int> cell_dist(0, nCellsPerModule - 1);
+
     if (zero_suppression_) {
       // noise generator gives us a list of noise amplitudes [mV] that randomly
       // populate the empty channels and are above the readout threshold
@@ -175,9 +168,9 @@ void EcalDigiProducer::produce(framework::Event& event) {
         // making sure that it is in an empty channel
         unsigned int noiseID;
         do {
-          int layerID = noiseInjector_->Integer(nEcalLayers);
-          int moduleID = noiseInjector_->Integer(nModulesPerLayer);
-          int cellID = noiseInjector_->Integer(nCellsPerModule);
+          int layerID = layer_dist(rng_);
+          int moduleID = module_dist(rng_);
+          int cellID = cell_dist(rng_);
           auto detID = ldmx::EcalID(layerID, moduleID, cellID);
           noiseID = detID.raw();
         } while (filledDetIDs.find(noiseID) != filledDetIDs.end());

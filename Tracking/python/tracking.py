@@ -37,8 +37,8 @@ class DigitizationProcessor(Producer):
                          'tracking::reco::DigitizationProcessor', 'Tracking')
         self.merge_hits = True
         self.do_smearing = True
-        self.sigma_u = 0.06
-        self.sigma_v = 0.0
+        self.sigma_u = 0.006
+        self.sigma_v = 0.000001
         self.track_id = -1
         self.min_e_dep = 0.05
         self.hit_collection = 'TaggerSimHits'

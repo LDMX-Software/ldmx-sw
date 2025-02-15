@@ -36,7 +36,7 @@ class EcalProcessFilter : public simcore::UserAction {
                     framework::config::Parameters& parameters);
 
   /// Destructor
-  ~EcalProcessFilter();
+  virtual ~EcalProcessFilter() = default;
 
   void stepping(const G4Step* step) override;
 
