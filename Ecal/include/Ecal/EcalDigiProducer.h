@@ -53,13 +53,16 @@ class EcalDigiProducer : public framework::Producer {
    * Sets event constants and configures the noise generator, noise injector,
    * and pulse function. Creates digi collection
    */
-  virtual void configure(framework::config::Parameters&);
+  virtual void configure(framework::config::Parameters&) override;
 
   /**
    * Simulates measurement of pulse and creates digi collection for input event.
    */
-  virtual void produce(framework::Event& event);
+  virtual void produce(framework::Event& event) override;
 
+  /**
+   * Set up random number / noise generation
+   */
   virtual void onNewRun(const ldmx::RunHeader& runHeader) override;
 
  private:
