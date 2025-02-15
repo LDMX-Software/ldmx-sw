@@ -24,14 +24,6 @@ project(LDMX_SW VERSION ${LDMXSW_VERSION_NUM}
 )
 
 set(CMAKE_CXX_STANDARD 20)
-option(WARNINGS_AS_ERRORS "Treat warnings as errors" OFF)
-
-if (WARNINGS_AS_ERRORS)
-    message(STATUS "Warnings will be treated as errors!")
-    add_compile_options(-Wall -Wextra -Wpedantic -Werror)
-endif()
-
-
 
 # Load additional macros used by this project. 
 list(APPEND CMAKE_MODULE_PATH ${LDMX_SW_SOURCE_DIR}/cmake/)
