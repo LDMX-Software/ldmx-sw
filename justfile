@@ -79,7 +79,7 @@ configure-force-error: (configure "-DWARNINGS_AS_ERRORS=ON")
 # Use alternative compiler and enable LTO (test compiling only, won't run properly)
 configure-clang-lto: (configure "-DENABLE_LTO=ON -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_C_COMPILER=clang") 
 
-configure-clang-lto-fail-on-warning: (configure-clang-lto "-DWARNINGS_AS_ERRORS=ON")
+configure-clang-lto-fail-on-warning: (configure "-DENABLE_LTO=ON -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_C_COMPILER=clang -DWARNINGS_AS_ERRORS=ON")
 # Keep debug symbols so running with gdb provides more helpful detail
 configure-gdb: (configure-base "-DCMAKE_BUILD_TYPE=Debug")
 # compile and install ldmx-sw
