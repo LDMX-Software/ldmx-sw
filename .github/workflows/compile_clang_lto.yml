@@ -25,5 +25,5 @@ jobs:
 
     - name: Compile and Install ldmx-sw
       run: | 
-        just install-denv init configure-clang-lto
+        just install-denv init configure-clang-lto-fail-on-warning
         just build
