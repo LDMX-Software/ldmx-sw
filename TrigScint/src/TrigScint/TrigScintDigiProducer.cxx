@@ -1,10 +1,5 @@
 #include "TrigScint/TrigScintDigiProducer.h"
 
-#include <iostream>
-
-#include "Framework/Exception/Exception.h"
-#include "Framework/RandomNumberSeedService.h"
-
 namespace trigscint {
 
 TrigScintDigiProducer::TrigScintDigiProducer(const std::string &name,
@@ -23,37 +18,34 @@ void TrigScintDigiProducer::configure(
   inputPassName_ = parameters.getParameter<std::string>("input_pass_name");
   outputCollection_ = parameters.getParameter<std::string>("output_collection");
   verbose_ = parameters.getParameter<bool>("verbose");
+}
 
-  random_ =
-      std::make_unique<TRandom3>(parameters.getParameter<int>("randomSeed"));
-
+void TrigScintDigiProducer::onNewRun(const ldmx::RunHeader &) {
   noiseGenerator_ = std::make_unique<ldmx::NoiseGenerator>(meanNoise_, false);
   noiseGenerator_->setNoiseThreshold(1);
+  // Set up seeds
+  const auto &rseed = getCondition<framework::RandomNumberSeedService>(
+      framework::RandomNumberSeedService::CONDITIONS_OBJECT_NAME);
+
+  noiseGenerator_->seedGenerator(
+      rseed.getSeed("TrigScintDigiProducer::NoiseGenerator"));
+  // Random number generator for module id
+  rng_.seed(rseed.getSeed("TrigScintDigiProducer"));
 }
 
 ldmx::TrigScintID TrigScintDigiProducer::generateRandomID(int module) {
-  ldmx::TrigScintID tempID(module, random_->Integer(stripsPerArray_));
+  // Uniform distributions for integer generation
+  std::uniform_int_distribution<int> strips_dist(0, stripsPerArray_ - 1);
+  ldmx::TrigScintID tempID(module, strips_dist(rng_));
   if (module >= TrigScintSection::NUM_SECTIONS) {
-    // Throw an exception
-    std::cout << "WARNING [TrigScintDigiProducer::generateRandomID]: "
-                 "TrigScintSection is not known"
-              << std::endl;
+    ldmx_log(fatal) << "TrigScintSection is not known";
   }
 
   return tempID;
 }
 
 void TrigScintDigiProducer::produce(framework::Event &event) {
-  // Need to handle seeding on the first event
-  if (!noiseGenerator_->hasSeed()) {
-    const auto &rseed = getCondition<framework::RandomNumberSeedService>(
-        framework::RandomNumberSeedService::CONDITIONS_OBJECT_NAME);
-    noiseGenerator_->seedGenerator(
-        rseed.getSeed("TrigScintDigiProducer::NoiseGenerator"));
-  }
-
-  std::map<ldmx::TrigScintID, int> cellPEs;
-  std::map<ldmx::TrigScintID, int> cellMinPEs;
+  std::map<ldmx::TrigScintID, int> cellPEs, cellMinPEs;
   std::map<ldmx::TrigScintID, float> Xpos, Ypos, Zpos, Edep, Time, beamFrac;
   std::set<ldmx::TrigScintID> noiseHitIDs;
 
@@ -92,14 +84,15 @@ void TrigScintDigiProducer::produce(framework::Event &event) {
       }
       if (particleMap[contrib.trackID].getPdgID() == 11 &&
           particleMap[contrib.trackID].getGenStatus() == 1) {
-        if (beamFrac.find(id) == beamFrac.end())
+        if (beamFrac.find(id) == beamFrac.end()) {
           beamFrac[id] = contrib.edep;
-        else
+        } else {
           beamFrac[id] += contrib.edep;
+        }
       }
     }
 
-    // for now, we take am energy weighted average of the hit in each stip to
+    // for now, we take am energy weighted average of the hit in each strip to
     // simulate the hit position. AJW: these should be dropped, they are likely
     // to lead to a problem since we can't measure them anyway except roughly y
     // and z, which is encoded in the ids.
@@ -137,9 +130,11 @@ void TrigScintDigiProducer::produce(framework::Event &event) {
     Ypos[id] = Ypos[id] / Edep[id];
     Zpos[id] = Zpos[id] / Edep[id];
     double meanPE = depEnergy / mevPerMip_ * pePerMip_;
-    cellPEs[id] = random_->Poisson(meanPE + meanNoise_);
+    std::poisson_distribution<int> poisson_dist(meanPE + meanNoise_);
+    cellPEs[id] = poisson_dist(rng_);
 
     // If a cell has a PE count above threshold, persit the hit.
+    // TAV: we should move the threshold to be an input variable
     if (cellPEs[id] >= 1) {
       ldmx::TrigScintHit hit;
       hit.setID(id.raw());
