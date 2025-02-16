@@ -69,8 +69,7 @@ G4VBiasingOperation* PhotoNuclear::ProposeOccurenceBiasingOperation(
     double emXsecBiased = std::max(
         emXsecUnbiased + pnXsecUnbiased_ - pnXsecBiased_, pnXsecUnbiased_);
     auto material = track->GetMaterial();
-    if ((emXsecBiased == pnXsecUnbiased_) &&
-        material->GetName() == "G4_W") {
+    if ((emXsecBiased == pnXsecUnbiased_) && material->GetName() == "G4_W") {
       ldmx_log(warn) << "EM XS = PN unbiased XS! The biasing factor ("
                      << factor_ << ") is too large for particle with energy "
                      << track->GetKineticEnergy()
