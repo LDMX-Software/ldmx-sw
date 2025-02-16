@@ -98,29 +98,17 @@ from LDMX.Recon.electronCounter import ElectronCounter
 from LDMX.Recon.simpleTrigger import TriggerProcessor
 
 #TS digi + clustering + track chain
-tsDigisDown  =TrigScintDigiProducer.pad1()
-tsDigisTag   =TrigScintDigiProducer.pad2()
-tsDigisUp    =TrigScintDigiProducer.pad3()
+ts_digis = [
+        TrigScintDigiProducer.pad1(),
+        TrigScintDigiProducer.pad2(),
+        TrigScintDigiProducer.pad3(),
+        ]
 
-tsDigis = [tsDigisDown, tsDigisTag, tsDigisUp]
-for d in tsDigis :
-    d.randomSeed = 1
-
-tsClustersDown  =TrigScintClusterProducer.pad1()
-tsClustersTag  =TrigScintClusterProducer.pad2()
-tsClustersUp  =TrigScintClusterProducer.pad3()
-
-tsClustersDown.input_collection = tsDigisDown.output_collection
-tsClustersTag.input_collection = tsDigisTag.output_collection
-tsClustersUp.input_collection = tsDigisUp.output_collection
-
-#make sure to pick up the right pass 
-tsClustersTag.input_pass_name = thisPassName 
-tsClustersUp.input_pass_name = tsClustersTag.input_pass_name
-tsClustersDown.input_pass_name = tsClustersTag.input_pass_name
-
-trigScintTrack.input_pass_name = thisPassName
-trigScintTrack.seeding_collection = tsClustersTag.output_collection
+ts_clusters = [
+        TrigScintClusterProducer.pad1(),
+        TrigScintClusterProducer.pad2(),
+        TrigScintClusterProducer.pad3(),
+        ]
 
 # ECAL part
 ecalReco   =eDigi.EcalRecProducer()
@@ -154,10 +142,8 @@ p.sequence.extend([
         ecalDigi, 
         ecalReco, 
         ecalVeto,
-        *tsDigis, 
-        tsClustersTag,
-        tsClustersUp,
-        tsClustersDown, 
+        *ts_digis,
+        *ts_clusters, 
         trigScintTrack, 
         eCount, 
         simpleTrig, 

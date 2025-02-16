@@ -52,8 +52,12 @@ ts_digis = [
         TrigScintDigiProducer.pad2(),
         TrigScintDigiProducer.pad3(),
         ]
-for d in ts_digis :
-    d.randomSeed = 1
+
+ts_clusters = [
+        TrigScintClusterProducer.pad1(),
+        TrigScintClusterProducer.pad2(),
+        TrigScintClusterProducer.pad3(),
+        ]
 
 # Load electron counting and trigger
 from LDMX.Recon.electronCounter import ElectronCounter
@@ -89,9 +93,7 @@ p.sequence.extend([
         hcal_digi.HcalRecProducer(),
         hcal_veto,
         *ts_digis,
-        TrigScintClusterProducer.pad1(),
-        TrigScintClusterProducer.pad2(),
-        TrigScintClusterProducer.pad3(),
+        *ts_clusters,
         trigScintTrack, 
         count, TriggerProcessor('trigger', 8000.),
         dqm.DarkBremInteraction(),

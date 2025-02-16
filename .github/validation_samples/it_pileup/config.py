@@ -61,9 +61,17 @@ ts_digis = [
         TrigScintDigiProducer.pad2(),
         TrigScintDigiProducer.pad3(),
         ]
-for d in ts_digis :
-    d.randomSeed = 1
-    d.input_collection += overlayStr
+for digi in ts_digis :
+    digi.input_collection += overlayStr
+
+ts_clusters = [
+        TrigScintClusterProducer.pad1(),
+        TrigScintClusterProducer.pad2(),
+        TrigScintClusterProducer.pad3(),
+        ] 
+for clu in ts_clusters :
+    clu.input_collection += overlayStr
+
 
 # Load the ECAL modules                           
 ecalDigi   =eDigi.EcalDigiProducer('ecalDigis')
@@ -107,9 +115,7 @@ p.sequence.extend([
     ecalDigi, ecalReco, ecalVeto,
     hcalDigi, hcalReco, hcal_veto,
     *ts_digis,
-    TrigScintClusterProducer.pad1(),
-    TrigScintClusterProducer.pad2(),
-    TrigScintClusterProducer.pad3(),
+    *ts_clusters,
     trigScintTrack,
     count, TriggerProcessor('trigger', 8000.),
     dqm.PhotoNuclearDQM(verbose=False),
