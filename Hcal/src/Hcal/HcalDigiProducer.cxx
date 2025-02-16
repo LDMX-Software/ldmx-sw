@@ -60,23 +60,23 @@ void HcalDigiProducer::configure(framework::config::Parameters& ps) {
 }
 
 void HcalDigiProducer::onNewRun(const ldmx::RunHeader&) {
-    // rms noise in mV
-    noiseGenerator_->setNoise(gain_ * noiseRMS_);
-    // mean noise amplitude (if using Gaussian Model for the noise) in mV
-    noiseGenerator_->setPedestal(gain_ * pedestal_);
-    // threshold for readout in mV
-    noiseGenerator_->setNoiseThreshold(gain_ * readoutThreshold_);
+  // rms noise in mV
+  noiseGenerator_->setNoise(gain_ * noiseRMS_);
+  // mean noise amplitude (if using Gaussian Model for the noise) in mV
+  noiseGenerator_->setPedestal(gain_ * pedestal_);
+  // threshold for readout in mV
+  noiseGenerator_->setNoiseThreshold(gain_ * readoutThreshold_);
 
-    // Set up seeds
-    const auto& rseed = getCondition<framework::RandomNumberSeedService>(
+  // Set up seeds
+  const auto& rseed = getCondition<framework::RandomNumberSeedService>(
       framework::RandomNumberSeedService::CONDITIONS_OBJECT_NAME);
-    noiseGenerator_->seedGenerator(
+  noiseGenerator_->seedGenerator(
       rseed.getSeed("HcalDigiProducer::NoiseGenerator"));
 
-      // Random number generator for layer / module / cell
-    rng_.seed(rseed.getSeed("HcalDigiProducer"));
-    // Setting up the read-out chip
-    hgcroc_->seedGenerator(rseed.getSeed("HcalDigiProducer::HgcrocEmulator"));
+  // Random number generator for layer / module / cell
+  rng_.seed(rseed.getSeed("HcalDigiProducer"));
+  // Setting up the read-out chip
+  hgcroc_->seedGenerator(rseed.getSeed("HcalDigiProducer::HgcrocEmulator"));
 }
 
 void HcalDigiProducer::produce(framework::Event& event) {
@@ -203,7 +203,7 @@ void HcalDigiProducer::produce(framework::Event& event) {
       // Calculate voltage attenuation and time shift for the close and far
       // pulse.
       // velocity of light in Polystyrene, n = 1.6 = c/v mm/ns
-      float v = 299.792 / 1.6;  
+      float v = 299.792 / 1.6;
       double att_close =
           exp(-1. * ((distance_close - fabs(distance_along_bar)) / 1000.) /
               attlength_);
@@ -219,9 +219,9 @@ void HcalDigiProducer::produce(framework::Event& event) {
            iContrib++) {
         double voltage = simHit.getContrib(iContrib).edep * MeV_;
         // global time (t=0ns at target)
-        double time = simHit.getContrib(iContrib).time;  
-         // shift light-speed particle traveling along z
-        time -= position.at(2) / 299.702547; 
+        double time = simHit.getContrib(iContrib).time;
+        // shift light-speed particle traveling along z
+        time -= position.at(2) / 299.702547;
 
         if (end_close == 0) {
           pulses_posend.emplace_back(voltage * att_close, time + shift_close);
@@ -336,7 +336,8 @@ void HcalDigiProducer::produce(framework::Event& event) {
     }
 
     // Uniform distributions for integer generation
-    std::uniform_int_distribution<int> section_dist(0, hcalGeometry.getNumSections() - 1);
+    std::uniform_int_distribution<int> section_dist(
+        0, hcalGeometry.getNumSections() - 1);
     std::uniform_int_distribution<int> end_dist(0, 1);
     std::uniform_int_distribution<int> clock_dist(0, clockCycle_);
 
@@ -358,14 +359,17 @@ void HcalDigiProducer::produce(framework::Event& event) {
           // Get a random section value
           sectionID = section_dist(rng_);
 
-          // Get a random value for the layer 
-          std::uniform_int_distribution<int> layer_dist(0, hcalGeometry.getNumLayers(sectionID) - 1);
+          // Get a random value for the layer
+          std::uniform_int_distribution<int> layer_dist(
+              0, hcalGeometry.getNumLayers(sectionID) - 1);
           layerID = layer_dist(rng_);
-          // set layer to 1 if the generator says it is 0 (geometry map starts from 1)
+          // set layer to 1 if the generator says it is 0 (geometry map starts
+          // from 1)
           if (layerID == 0) layerID = 1;
 
           // Get a random value for the  strip
-          std::uniform_int_distribution<int> strips_dist(0, hcalGeometry.getNumStrips(sectionID, layerID) - 1);
+          std::uniform_int_distribution<int> strips_dist(
+              0, hcalGeometry.getNumStrips(sectionID, layerID) - 1);
           stripID = strips_dist(rng_);
 
           //  Get a random value for the  end

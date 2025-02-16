@@ -5,8 +5,8 @@
 //   C++ StdLib   //
 //----------------//
 #include <memory>  //for smart pointers
+#include <random>  //for random num generators
 #include <set>     //for tracking used detector IDs
-#include <random> //for random num generators
 
 //----------//
 //   LDMX   //
@@ -21,7 +21,6 @@
 #include "SimCore/Event/SimCalorimeterHit.h"
 #include "Tools/HgcrocEmulator.h"
 #include "Tools/NoiseGenerator.h"
-
 
 namespace hcal {
 
