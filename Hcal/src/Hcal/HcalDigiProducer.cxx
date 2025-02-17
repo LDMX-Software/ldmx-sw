@@ -4,11 +4,10 @@
  * @author Cameron Bravo, SLAC National Accelerator Laboratory
  * @author Tom Eichlersmith, University of Minnesota
  * @author Cristina Suarez, Fermi National Accelerator Laboratory
+ * @author Tamas Almos Vami, UCSB
  */
 
 #include "Hcal/HcalDigiProducer.h"
-
-#include "Framework/RandomNumberSeedService.h"
 
 namespace hcal {
 
@@ -54,37 +53,33 @@ void HcalDigiProducer::configure(framework::config::Parameters& ps) {
   ns_ = 1024. / clockCycle_;
 
   // Configure generator that will produce noise hits in empty channels
-  double readoutThreshold = ps.getParameter<double>("avgReadoutThreshold");
-  double gain = ps.getParameter<double>("avgGain");
-  double pedestal = ps.getParameter<double>("avgPedestal");
+  gain_ = ps.getParameter<double>("avgGain");
+  readoutThreshold_ = ps.getParameter<double>("avgReadoutThreshold");
+  pedestal_ = ps.getParameter<double>("avgPedestal");
+  noiseRMS_ = ps.getParameter<double>("avgNoiseRMS");
+}
+
+void HcalDigiProducer::onNewRun(const ldmx::RunHeader&) {
   // rms noise in mV
-  noiseGenerator_->setNoise(gain * ps.getParameter<double>("avgNoiseRMS"));
+  noiseGenerator_->setNoise(gain_ * noiseRMS_);
   // mean noise amplitude (if using Gaussian Model for the noise) in mV
-  noiseGenerator_->setPedestal(gain * pedestal);
+  noiseGenerator_->setPedestal(gain_ * pedestal_);
   // threshold for readout in mV
-  noiseGenerator_->setNoiseThreshold(gain * readoutThreshold);
+  noiseGenerator_->setNoiseThreshold(gain_ * readoutThreshold_);
+
+  // Set up seeds
+  const auto& rseed = getCondition<framework::RandomNumberSeedService>(
+      framework::RandomNumberSeedService::CONDITIONS_OBJECT_NAME);
+  noiseGenerator_->seedGenerator(
+      rseed.getSeed("HcalDigiProducer::NoiseGenerator"));
+
+  // Random number generator for layer / module / cell
+  rng_.seed(rseed.getSeed("HcalDigiProducer"));
+  // Setting up the read-out chip
+  hgcroc_->seedGenerator(rseed.getSeed("HcalDigiProducer::HgcrocEmulator"));
 }
 
 void HcalDigiProducer::produce(framework::Event& event) {
-  // Handle seeding on the first event
-  if (!noiseGenerator_->hasSeed()) {
-    const auto& rseed = getCondition<framework::RandomNumberSeedService>(
-        framework::RandomNumberSeedService::CONDITIONS_OBJECT_NAME);
-    noiseGenerator_->seedGenerator(
-        rseed.getSeed("HcalDigiProducer::NoiseGenerator"));
-  }
-  if (noiseInjector_.get() == nullptr) {
-    const auto& rseed = getCondition<framework::RandomNumberSeedService>(
-        framework::RandomNumberSeedService::CONDITIONS_OBJECT_NAME);
-    noiseInjector_ = std::make_unique<TRandom3>(
-        rseed.getSeed("HcalDigiProducer::NoiseInjector"));
-  }
-  if (!hgcroc_->hasSeed()) {
-    const auto& rseed = getCondition<framework::RandomNumberSeedService>(
-        framework::RandomNumberSeedService::CONDITIONS_OBJECT_NAME);
-    hgcroc_->seedGenerator(rseed.getSeed("HcalDigiProducer::HgcrocEmulator"));
-  }
-
   // Get the Hgcroc Conditions
   hgcroc_->condition(
       getCondition<conditions::DoubleTableCondition>("HcalHgcrocConditions"));
@@ -207,8 +202,8 @@ void HcalDigiProducer::produce(framework::Event& event) {
 
       // Calculate voltage attenuation and time shift for the close and far
       // pulse.
-      float v = 299.792 /
-                1.6;  // velocity of light in Polystyrene, n = 1.6 = c/v mm/ns
+      // velocity of light in Polystyrene, n = 1.6 = c/v mm/ns
+      float v = 299.792 / 1.6;
       double att_close =
           exp(-1. * ((distance_close - fabs(distance_along_bar)) / 1000.) /
               attlength_);
@@ -223,10 +218,10 @@ void HcalDigiProducer::produce(framework::Event& event) {
       for (int iContrib = 0; iContrib < simHit.getNumberOfContribs();
            iContrib++) {
         double voltage = simHit.getContrib(iContrib).edep * MeV_;
-        double time =
-            simHit.getContrib(iContrib).time;  // global time (t=0ns at target)
-        time -= position.at(2) /
-                299.702547;  // shift light-speed particle traveling along z
+        // global time (t=0ns at target)
+        double time = simHit.getContrib(iContrib).time;
+        // shift light-speed particle traveling along z
+        time -= position.at(2) / 299.702547;
 
         if (end_close == 0) {
           pulses_posend.emplace_back(voltage * att_close, time + shift_close);
@@ -340,34 +335,52 @@ void HcalDigiProducer::produce(framework::Event& event) {
       }
     }
 
-    if (zeroSuppression_) {  // Fast noise sim
+    // Uniform distributions for integer generation
+    std::uniform_int_distribution<int> section_dist(
+        0, hcalGeometry.getNumSections() - 1);
+    std::uniform_int_distribution<int> end_dist(0, 1);
+    std::uniform_int_distribution<int> clock_dist(0, clockCycle_);
+
+    // Fast noise sim
+    if (zeroSuppression_) {
       int numEmptyChannels = numChannels - hcalDigis.getNumDigis();
       // noise generator gives us a list of noise amplitudes [mV] that randomly
       // populate the empty channels and are above the readout threshold
       auto noiseHitAmplitudes{
           noiseGenerator_->generateNoiseHits(numEmptyChannels)};
       std::vector<std::pair<double, double>> fake_pulse(1, {0., 0.});
+
       for (double noiseHit : noiseHitAmplitudes) {
         // generate detector ID for noise hit
         // making sure that it is in an empty channel
         unsigned int noiseID;
         int sectionID, layerID, stripID, endID;
         do {
-          sectionID = noiseInjector_->Integer(hcalGeometry.getNumSections());
-          layerID =
-              noiseInjector_->Integer(hcalGeometry.getNumLayers(sectionID));
+          // Get a random section value
+          sectionID = section_dist(rng_);
+
+          // Get a random value for the layer
+          std::uniform_int_distribution<int> layer_dist(
+              0, hcalGeometry.getNumLayers(sectionID) - 1);
+          layerID = layer_dist(rng_);
           // set layer to 1 if the generator says it is 0 (geometry map starts
           // from 1)
           if (layerID == 0) layerID = 1;
-          stripID = noiseInjector_->Integer(
-              hcalGeometry.getNumStrips(sectionID, layerID));
-          endID = noiseInjector_->Integer(2);
+
+          // Get a random value for the  strip
+          std::uniform_int_distribution<int> strips_dist(
+              0, hcalGeometry.getNumStrips(sectionID, layerID) - 1);
+          stripID = strips_dist(rng_);
+
+          //  Get a random value for the  end
           if ((sectionID == ldmx::HcalID::HcalSection::TOP) ||
               (sectionID == ldmx::HcalID::HcalSection::LEFT)) {
             endID = 0;
           } else if ((sectionID == ldmx::HcalID::HcalSection::BOTTOM) ||
                      (sectionID == ldmx::HcalID::HcalSection::RIGHT)) {
             endID = 1;
+          } else {
+            endID = end_dist(rng_);
           }
           auto detID = ldmx::HcalDigiID(sectionID, layerID, stripID, endID);
           noiseID = detID.raw();
@@ -376,7 +389,7 @@ void HcalDigiProducer::produce(framework::Event& event) {
             std::vector<const ldmx::SimCalorimeterHit*>();  // mark this as used
 
         // get a time for this noise hit
-        fake_pulse[0].second = noiseInjector_->Uniform(clockCycle_);
+        fake_pulse[0].second = clock_dist(rng_);
 
         // noise generator gives the amplitude above the readout threshold
         // we need to convert it to the amplitude above the pedestal
