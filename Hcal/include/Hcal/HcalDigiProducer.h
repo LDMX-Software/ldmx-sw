@@ -5,6 +5,7 @@
 //   C++ StdLib   //
 //----------------//
 #include <memory>  //for smart pointers
+#include <random>  //for random num generators
 #include <set>     //for tracking used detector IDs
 
 //----------//
@@ -14,6 +15,7 @@
 #include "DetDescr/HcalGeometry.h"
 #include "DetDescr/HcalID.h"
 #include "Framework/EventProcessor.h"
+#include "Framework/RandomNumberSeedService.h"
 #include "Recon/Event/EventConstants.h"
 #include "Recon/Event/HgcrocDigiCollection.h"
 #include "SimCore/Event/SimCalorimeterHit.h"
@@ -48,6 +50,11 @@ class HcalDigiProducer : public framework::Producer {
    * Simulates measurement of pulse and creates digi collection for input event.
    */
   void produce(framework::Event& event) override;
+
+  /**
+   * Random number generation
+   */
+  virtual void onNewRun(const ldmx::RunHeader& runHeader) override;
 
  private:
   ///////////////////////////////////////////////////////////////////////////////////////
@@ -94,11 +101,20 @@ class HcalDigiProducer : public framework::Producer {
   /// Conversion from time in ns to ticks of the internal clock
   double ns_;
 
+  /// Read out threshold
+  double readoutThreshold_;
+  /// Read out pedestal
+  double pedestal_;
+  /// Read out gain
+  double gain_;
+  /// Noise RMS
+  double noiseRMS_;
+
   /// Generates noise hits based off of number of cells that are not hit
   std::unique_ptr<ldmx::NoiseGenerator> noiseGenerator_;
 
   /// Generates Gaussian noise on top of real hits
-  std::unique_ptr<TRandom3> noiseInjector_;
+  std::mt19937 rng_;
 };
 }  // namespace hcal
 
