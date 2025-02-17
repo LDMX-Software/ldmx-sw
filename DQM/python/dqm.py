@@ -345,6 +345,11 @@ class EcalWABRecResults(ldmxcfg.Analyzer) :
         self.ecal_WAB_rec_name = 'EcalWABRec'
         self.ecal_WAB_rec_pass = ''
 
+        self.build2DHistogram("ThetaDiffElectronPhoton", 
+                            "Reco #theta Difference between Photon and Electron (Degrees)",
+                            92, -1, 91,
+                            "True #theta Difference between Photon and Electron (Degrees)",
+                            92, -1, 91)
         self.build2DHistogram("ThetaElectron", 
                             "Electron Reco #theta (Degrees)",
                             92, -1, 91, 
@@ -360,6 +365,20 @@ class EcalWABRecResults(ldmxcfg.Analyzer) :
                             92, -1, 91,
                             "True #phi Difference between Photon and Electron (Degrees)",
                             92, -1, 91)
+        self.build2DHistogram("PhiElectron", 
+                            "Electron Reco #phi (Degrees)",
+                            92, -1, 91, 
+                            "Electron True #phi (Degrees)",
+                            92, -1, 91)
+        self.build2DHistogram("PhiPhoton", 
+                            "Photon Reco #phi (Degrees)",
+                            92, -1, 91, 
+                            "Photon True #phi (Degrees)",
+                            92, -1, 91)
+        self.build1DHistogram("ElectronThetaDiff", "Electron True and Reconstruction #theta Difference (Degrees)", 181, 0, 181)
+        self.build1DHistogram("PhotonThetaDiff", "Photon True and Reconstruction #theta Difference (Degrees)", 181, 0, 181)
+        self.build1DHistogram("ElectronPhiDiff", "Electron True and Reconstruction #phi Difference (Degrees)", 181, 0, 181)
+        self.build1DHistogram("PhotonPhiDiff", "Photon True and Reconstruction #phi Difference (Degrees)", 181, 0, 181)
 
 class SimObjects(ldmxcfg.Analyzer) :
     """Configuration for sim-level objects to histogram-ize
