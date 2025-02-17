@@ -155,31 +155,38 @@ void EcalWABRecProcessor::produce(framework::Event &event) {
     // Loop through all of the sim particles and find the recoil photon/electron.
     //
 
-    // Get the collection of simulated particles from the event
-    auto particleMap{event.getMap<int, ldmx::SimParticle>("SimParticles")};
+    // // Get the collection of simulated particles from the event
+    // auto particleMap{event.getMap<int, ldmx::SimParticle>("SimParticles")};
 
-    // Search for the recoil electron
-    auto [recoilTrackID, recoilElectron] = Analysis::getRecoil(particleMap);
+    // // Search for the recoil electron
+    // auto [recoilTrackID, recoilElectron] = Analysis::getRecoil(particleMap);
 
     // Find Target SP hit for recoil photon/electron
     std::vector<ldmx::SimTrackerHit> targetSpHits =
           event.getCollection<ldmx::SimTrackerHit>("TargetScoringPlaneHits");
-    float pmax = 0;
+    float photon_pmax = 0, electron_pmax = 0;
     for (ldmx::SimTrackerHit &spHit : targetSpHits) {
       ldmx::SimSpecialID hit_id(spHit.getID());
       if (hit_id.plane() != 1 || spHit.getMomentum()[2] <= 0) continue;
 
-      if (spHit.getTrackID() == recoilTrackID) {
+      if (spHit.getPdgID() == 11) {
+          if (sqrt(pow(spHit.getMomentum()[0], 2) +
+                  pow(spHit.getMomentum()[1], 2) +
+                  pow(spHit.getMomentum()[2], 2)) > electron_pmax) {
           recoilE_P = spHit.getMomentum();
           recoilE_Pos = spHit.getPosition();
+          electron_pmax =
+              sqrt(pow(recoilE_P[0], 2) + pow(recoilE_P[1], 2) +
+                    pow(recoilE_P[2], 2));
+          }
       }
       if (spHit.getPdgID() == 22) {
         if (sqrt(pow(spHit.getMomentum()[0], 2) +
                   pow(spHit.getMomentum()[1], 2) +
-                  pow(spHit.getMomentum()[2], 2)) > pmax) {
+                  pow(spHit.getMomentum()[2], 2)) > photon_pmax) {
           recoilY_P = spHit.getMomentum();
           recoilY_Pos = spHit.getPosition();
-          pmax =
+          photon_pmax =
               sqrt(pow(recoilY_P[0], 2) + pow(recoilY_P[1], 2) +
                     pow(recoilY_P[2], 2));
         }

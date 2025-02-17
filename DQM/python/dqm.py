@@ -336,6 +336,31 @@ class EcalVetoResults(ldmxcfg.Analyzer) :
         self.build1DHistogram('fiducial',
                 'Recoil eletron fiducial',2,-0.5,1.5)
 
+class EcalWABRecResults(ldmxcfg.Analyzer) :
+    """Configured EcalWABRec python object """
+
+    def __init__(self,name="EcalWABRecResults") :
+        super().__init__(name,'dqm::EcalWABRecResults','DQM')
+
+        self.ecal_WAB_rec_name = 'EcalWABRec'
+        self.ecal_WAB_rec_pass = ''
+
+        self.build2DHistogram("ThetaElectron", 
+                            "Electron Reco #theta (Degrees)",
+                            92, -1, 91, 
+                            "Electron True #theta (Degrees)",
+                            92, -1, 91)
+        self.build2DHistogram("ThetaPhoton", 
+                            "Photon Reci #theta (Degrees)",
+                            92, -1, 91, 
+                            "Photon True #theta (Degrees)",
+                            92, -1, 91)
+        self.build2DHistogram("PhiDiffElectronPhoton", 
+                            "Reco #phi Difference between Photon and Electron (Degrees)",
+                            92, -1, 91,
+                            "True #phi Difference between Photon and Electron (Degrees)",
+                            92, -1, 91)
+
 class SimObjects(ldmxcfg.Analyzer) :
     """Configuration for sim-level objects to histogram-ize
 
