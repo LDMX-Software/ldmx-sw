@@ -63,6 +63,10 @@ private:
                          const std::vector<double>& guess,
                          int maxIter, int verbosity,
                          double dchisq, double abs_lim);
+  
+  std::pair<Eigen::VectorXd, Eigen::VectorXd> polyfitXYvsZ(
+    const std::vector<double>& x, const std::vector<double>& y,
+    const std::vector<double>& z, int degree);
 
   /** Name of the collection which will containt the results. */
   std::string collectionName_{"EcalWABRec"};

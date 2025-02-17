@@ -351,7 +351,7 @@ class EcalWABRecResults(ldmxcfg.Analyzer) :
                             "Electron True #theta (Degrees)",
                             92, -1, 91)
         self.build2DHistogram("ThetaPhoton", 
-                            "Photon Reci #theta (Degrees)",
+                            "Photon Reco #theta (Degrees)",
                             92, -1, 91, 
                             "Photon True #theta (Degrees)",
                             92, -1, 91)

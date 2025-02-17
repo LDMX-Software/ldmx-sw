@@ -116,6 +116,7 @@ void EcalWABRecProcessor::produce(framework::Event &event) {
   std::vector<float> recoilE_Pos;
   std::vector<double> recoilY_P;
   std::vector<float> recoilY_Pos;
+  bool SoleElectronShower = 0;
   
   // Result object that stores kinematic variables
   ldmx::EcalWABResult result;
@@ -148,6 +149,7 @@ void EcalWABRecProcessor::produce(framework::Event &event) {
     ldmx::EcalID id(hit.getID());
     auto [x,y,z] = geometry_->getPosition(id);
     recHitList.push_back({x, y, z, id.layer(), 0});
+
   }
 
   if (event.exists("TargetScoringPlaneHits")) {
@@ -155,40 +157,26 @@ void EcalWABRecProcessor::produce(framework::Event &event) {
     // Loop through all of the sim particles and find the recoil photon/electron.
     //
 
-    // // Get the collection of simulated particles from the event
-    // auto particleMap{event.getMap<int, ldmx::SimParticle>("SimParticles")};
-
-    // // Search for the recoil electron
-    // auto [recoilTrackID, recoilElectron] = Analysis::getRecoil(particleMap);
-
     // Find Target SP hit for recoil photon/electron
     std::vector<ldmx::SimTrackerHit> targetSpHits =
           event.getCollection<ldmx::SimTrackerHit>("TargetScoringPlaneHits");
-    float photon_pmax = 0, electron_pmax = 0;
+    float photon_pZmax = 0, electron_pZmax = 0;
     for (ldmx::SimTrackerHit &spHit : targetSpHits) {
       ldmx::SimSpecialID hit_id(spHit.getID());
       if (hit_id.plane() != 1 || spHit.getMomentum()[2] <= 0) continue;
 
       if (spHit.getPdgID() == 11) {
-          if (sqrt(pow(spHit.getMomentum()[0], 2) +
-                  pow(spHit.getMomentum()[1], 2) +
-                  pow(spHit.getMomentum()[2], 2)) > electron_pmax) {
+          if (spHit.getMomentum()[2] > electron_pZmax) {
           recoilE_P = spHit.getMomentum();
           recoilE_Pos = spHit.getPosition();
-          electron_pmax =
-              sqrt(pow(recoilE_P[0], 2) + pow(recoilE_P[1], 2) +
-                    pow(recoilE_P[2], 2));
+          electron_pZmax = recoilE_P[2];
           }
       }
       if (spHit.getPdgID() == 22) {
-        if (sqrt(pow(spHit.getMomentum()[0], 2) +
-                  pow(spHit.getMomentum()[1], 2) +
-                  pow(spHit.getMomentum()[2], 2)) > photon_pmax) {
+        if (spHit.getMomentum()[2] > photon_pZmax) {
           recoilY_P = spHit.getMomentum();
           recoilY_Pos = spHit.getPosition();
-          photon_pmax =
-              sqrt(pow(recoilY_P[0], 2) + pow(recoilY_P[1], 2) +
-                    pow(recoilY_P[2], 2));
+          photon_pZmax = recoilY_P[2];
         }
       }
     }
@@ -223,6 +211,7 @@ void EcalWABRecProcessor::produce(framework::Event &event) {
   }
 
   // Defining variables to save best fit results
+  std::pair<Eigen::VectorXd, Eigen::VectorXd> linearFitCoeffs;
   std::tuple<Eigen::VectorXd, double, int, Eigen::MatrixXd, int> best_x_result;
   std::tuple<Eigen::VectorXd, double, int, Eigen::MatrixXd, int> best_y_result;
   std::get<1>(best_x_result) = 10e99;
@@ -266,7 +255,8 @@ void EcalWABRecProcessor::produce(framework::Event &event) {
             photHitList_z.push_back(hit[2]);
         }
     }
-    // Ensure there are at least 3 hits for photon/electron showers
+
+    // Fit both photon/electron or just electron hits based on # of viable showers
     if (photHitList.size() >= 3 && eleHitList.size() >= 3) {
       // Generate guesses and error vectors for vertex constrainted fit
       std::vector<double> x_guess = {track.getAX(), 
@@ -276,26 +266,31 @@ void EcalWABRecProcessor::produce(framework::Event &event) {
       std::vector<double> photHitError(photHitList.size(), 0.456435464588 * 4.816);
       std::vector<double> eleHitError(eleHitList.size(), 0.456435464588 * 4.816);
 
+      int maxIter = 200;
       // Carry out fit
       std::tuple<Eigen::VectorXd, double, int, Eigen::MatrixXd, int> x_result = fit2DTracksConstrained (
                                                       eleHitList_z, eleHitList_x, eleHitError, 
                                                       photHitList_z, photHitList_x, photHitError,
-                                                      x_guess, 20, 0, 0.001, 10.0);
+                                                      x_guess, maxIter, 0, 0.001, 10.0);
 
       std::tuple<Eigen::VectorXd, double, int, Eigen::MatrixXd, int> y_result = fit2DTracksConstrained (
                                                       eleHitList_z, eleHitList_y, eleHitError, 
                                                       photHitList_z, photHitList_y, photHitError,
-                                                      y_guess, 20, 0, 0.001, 40.0);
+                                                      y_guess, maxIter, 0, 0.001, 40.0);
       
       // Update best fit variables if current fit is an improvement
       if ((std::get<1>(x_result) + std::get<1>(y_result))/2 < (std::get<1>(best_x_result) + std::get<1>(best_y_result))/2) {
         best_x_result = x_result;
         best_y_result = y_result;
       }
+    } else if (eleHitList.size() >= 3) {
+      SoleElectronShower = 1;
+      linearFitCoeffs = polyfitXYvsZ(eleHitList_x, eleHitList_y, eleHitList_z, 1);
     }
   }
   
-  // Calculate kinematic variables (with reconstruction information)
+  // Calculate kinematic variables for electron and/or photon 
+  // based on # of viable showers (with reconstruction information)
   if (std::get<0>(best_x_result).size() != 0) {
     std::vector<double> eleParams = {std::get<0>(best_x_result)(0), std::get<0>(best_y_result)(0)};
     std::vector<double> photParams = {std::get<0>(best_x_result)(1), std::get<0>(best_y_result)(1)};
@@ -321,6 +316,28 @@ void EcalWABRecProcessor::produce(framework::Event &event) {
       trueRecPhiDiffElectron = (180/std::numbers::pi)*std::acos(std::inner_product(eleParams.begin(), eleParams.end(), recoilE_P.begin(), 0)/(sqrt(pow(eleParams[0], 2) + pow(eleParams[1], 2)) * sqrt(pow(recoilE_P[0], 2) + pow(recoilE_P[1], 2))));
       trueRecPhiDiffPhoton = (180/std::numbers::pi)*std::acos(std::inner_product(photParams.begin(), photParams.end(), recoilY_P.begin(), 0)/(sqrt(pow(photParams[0], 2) + pow(photParams[1], 2)) * sqrt(pow(recoilY_P[0], 2) + pow(recoilY_P[1], 2))));
     }
+  } else if (SoleElectronShower == 1) {
+    std::vector<double> eleParams = {linearFitCoeffs.first(1), linearFitCoeffs.second(1)};
+    std::vector<double> eleParams_x = {linearFitCoeffs.first(1)};
+    
+    recThetaElectron = (180/std::numbers::pi)*std::acos(1/sqrt(pow(eleParams[0], 2) + pow(eleParams[1], 2) + 1));
+    recPhiElectron = (180/std::numbers::pi)*std::atan(eleParams[1]/eleParams[0]);
+    if (eleParams[1] < 0) {recPhiElectron += 180;}
+    if (eleParams[0] < 0 && eleParams[1] > 0) {recPhiElectron += 360;}
+    
+    if (recoilY_P.size() == 3 && recoilY_P[2] != 0 && recoilE_P.size() == 3 && recoilE_P[2] != 0) {
+      trueRecThetaDiffElectron = (180/std::numbers::pi)*std::acos(std::inner_product(eleParams_x.begin(), eleParams_x.end(), recoilE_P.begin(), recoilE_P[2])/(sqrt(pow(eleParams_x[0], 2) + pow(1, 2)) * sqrt(pow(recoilE_P[0], 2) + pow(recoilE_P[2], 2))));
+      trueRecPhiDiffElectron = (180/std::numbers::pi)*std::acos(std::inner_product(eleParams.begin(), eleParams.end(), recoilE_P.begin(), 0)/(sqrt(pow(eleParams[0], 2) + pow(eleParams[1], 2)) * sqrt(pow(recoilE_P[0], 2) + pow(recoilE_P[1], 2))));
+    }
+    
+    // Set photon variables to non-physical value 
+    // that corresponds to electron-only reco case
+    recThetaPhoton = -4.;
+    recPhiPhoton = -4.;
+    recThetaDiffElectronPhoton = -4.;
+    recPhiDiffElectronPhoton = -4.;
+    trueRecThetaDiffPhoton = -4.;
+    trueRecPhiDiffPhoton = -4.;
   }
 
   // Setting output object equal to calculated variables
@@ -567,6 +584,63 @@ const std::vector<double>& guess, int maxIter, int verbosity, double dchisq, dou
   return std::make_tuple(par, chisq, ndof, cov, niter);
 }
 
+std::pair<Eigen::VectorXd, Eigen::VectorXd> EcalWABRecProcessor::polyfitXYvsZ(
+  const std::vector<double>& x,
+  const std::vector<double>& y,
+  const std::vector<double>& z,
+  int degree) {
+  /*
+  Function that fits two polynomials (x vs. z and y vs. z) to 3D hit position data using a least-squares method.
+  The fitted models are defined as:
+    x = a₀ + a₁ * z + a₂ * z² + ... + aₙ * zⁿ
+    y = b₀ + b₁ * z + b₂ * z² + ... + bₙ * zⁿ
+  where n is the specified polynomial degree.
+  
+  Inputs:
+    x, y, z : measured coordinates for the tracks; 
+              x and y are the dependent variables, and z is the independent variable 
+              (all provided as std::vector<double>)
+    degree  : degree of the polynomial to be fitted (int)
+  
+  Returns:
+    A pair containing:
+      first  : polynomial coefficients for the x vs. z fit (Eigen::VectorXd)
+      second : polynomial coefficients for the y vs. z fit (Eigen::VectorXd)
+  
+  Notes:
+    The polynomial is represented with the constant term first (i.e., [a₀, a₁, ..., aₙ]),
+    so the linear term (slope) is located at index 1.
+  */
+  const size_t n = z.size();
+  if (n == 0 || x.size() != n || y.size() != n) {
+      throw std::invalid_argument("Vectors x, y, and z must be non-empty and have the same size.");
+  }
+
+  // Construct the Vandermonde (design) matrix A (n x (degree + 1)):
+  // Each row i: [1, z[i], z[i]^2, ..., z[i]^degree]
+  Eigen::MatrixXd A(n, degree + 1);
+  for (size_t i = 0; i < n; ++i) {
+      double term = 1.0;
+      for (int j = 0; j <= degree; ++j) {
+          A(i, j) = term;
+          term *= z[i];
+      }
+  }
+
+  // Map the x and y data into Eigen vectors.
+  Eigen::VectorXd bx(n), by(n);
+  for (size_t i = 0; i < n; ++i) {
+      bx(i) = x[i];
+      by(i) = y[i];
+  }
+
+  // Solve the least-squares problems:
+  // A * coeffsX ≈ bx and A * coeffsY ≈ by
+  Eigen::VectorXd coeffsX = A.colPivHouseholderQr().solve(bx);
+  Eigen::VectorXd coeffsY = A.colPivHouseholderQr().solve(by);
+
+  return {coeffsX, coeffsY};
+}
 }  // namespace ecal
 
 DECLARE_PRODUCER_NS(ecal, EcalWABRecProcessor);
