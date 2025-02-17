@@ -2,6 +2,7 @@
 name: Build with CLANG using LTO sanitizer 
 
 on:
+  workflow_dispatch:
   push:
     branches: '**' #all branches
     tags: 'v*.*.*' #all version tags
