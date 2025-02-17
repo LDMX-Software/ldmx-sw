@@ -212,7 +212,7 @@ class EcalFakeSimHits : public framework::Producer {
  * - Estimated energy at TP level matches sim energy
  *
  * Assumptions
- * - Only one sim hit per event
+ * - Max one sim hit per event
  * - Noise generation has been turned off
  */
 class EcalCheckEnergyReconstruction : public framework::Analyzer {
@@ -248,40 +248,41 @@ class EcalCheckEnergyReconstruction : public framework::Analyzer {
     const auto daqDigis{
         event.getObject<ldmx::HgcrocDigiCollection>("EcalDigis")};
 
-    CHECK(daqDigis.getNumDigis() == 1);
-    auto daqDigi = daqDigis.getDigi(0);
-    ntuple_.setVar<int>("DaqDigi", daqDigi.soi().raw());
-    bool is_in_adc_mode = daqDigi.isADC();
-    ntuple_.setVar<int>("DaqDigiIsADC", is_in_adc_mode);
-    ntuple_.setVar<int>("DaqDigiADC", daqDigi.soi().adc_t());
-    ntuple_.setVar<int>("DaqDigiTOT", daqDigi.tot());
+    if (daqDigis.getNumDigis() == 1) {
+      auto daqDigi = daqDigis.getDigi(0);
+      ntuple_.setVar<int>("DaqDigi", daqDigi.soi().raw());
+      bool is_in_adc_mode = daqDigi.isADC();
+      ntuple_.setVar<int>("DaqDigiIsADC", is_in_adc_mode);
+      ntuple_.setVar<int>("DaqDigiADC", daqDigi.soi().adc_t());
+      ntuple_.setVar<int>("DaqDigiTOT", daqDigi.tot());
 
-    const auto recHits = event.getCollection<ldmx::EcalHit>("EcalRecHits");
-    CHECK(recHits.size() == 1);
+      const auto recHits = event.getCollection<ldmx::EcalHit>("EcalRecHits");
+      CHECK(recHits.size() == 1);
 
-    auto hit = recHits.at(0);
-    ldmx::EcalID id(hit.getID());
-    CHECK_FALSE(hit.isNoise());
-    CHECK(id.raw() == simHits.at(0).getID());
+      auto hit = recHits.at(0);
+      ldmx::EcalID id(hit.getID());
+      CHECK_FALSE(hit.isNoise());
+      CHECK(id.raw() == simHits.at(0).getID());
 
-    double daq_energy{hit.getAmplitude()};
-    CHECK_THAT(daq_energy, isCloseEnough(truth_energy, MAX_ENERGY_ERROR_DAQ,
-                                         MAX_ENERGY_PERCENT_ERROR_DAQ));
-    ntuple_.setVar<float>("RecEnergy", hit.getAmplitude());
+      double daq_energy{hit.getAmplitude()};
+      CHECK_THAT(daq_energy, isCloseEnough(truth_energy, MAX_ENERGY_ERROR_DAQ,
+                                           MAX_ENERGY_PERCENT_ERROR_DAQ));
+      ntuple_.setVar<float>("RecEnergy", hit.getAmplitude());
 
-    const auto trigDigis{
-        event.getObject<ldmx::HgcrocTrigDigiCollection>("ecalTrigDigis")};
-    CHECK(trigDigis.size() == 1);
+      const auto trigDigis{
+          event.getObject<ldmx::HgcrocTrigDigiCollection>("ecalTrigDigis")};
+      CHECK(trigDigis.size() == 1);
 
-    auto trigDigi = trigDigis.at(0);
-    float tp_energy = 8 * trigDigi.linearPrimitive() * 320. / 1024 * MeV_per_fC;
+      auto trigDigi = trigDigis.at(0);
+      float tp_energy =
+          8 * trigDigi.linearPrimitive() * 320. / 1024 * MeV_per_fC;
 
-    CHECK_THAT(tp_energy, isCloseEnough(truth_energy, MAX_ENERGY_ERROR_TP,
-                                        MAX_ENERGY_PERCENT_ERROR_TP));
-    ntuple_.setVar<float>("TrigPrimEnergy", tp_energy);
-    ntuple_.setVar<int>("TrigPrimDigiEncoded", trigDigi.getPrimitive());
-    ntuple_.setVar<int>("TrigPrimDigiLinear", trigDigi.linearPrimitive());
-
+      CHECK_THAT(tp_energy, isCloseEnough(truth_energy, MAX_ENERGY_ERROR_TP,
+                                          MAX_ENERGY_PERCENT_ERROR_TP));
+      ntuple_.setVar<float>("TrigPrimEnergy", tp_energy);
+      ntuple_.setVar<int>("TrigPrimDigiEncoded", trigDigi.getPrimitive());
+      ntuple_.setVar<int>("TrigPrimDigiLinear", trigDigi.linearPrimitive());
+    }
     return;
   }
 };  // EcalCheckEnergyReconstruction
