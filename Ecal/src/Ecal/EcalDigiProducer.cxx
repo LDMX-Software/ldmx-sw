@@ -13,8 +13,6 @@
 
 namespace ecal {
 
-EcalDigiProducer::~EcalDigiProducer() {}
-
 void EcalDigiProducer::configure(framework::config::Parameters& ps) {
   // settings of readout chip
   //  used  in actual digitization
@@ -78,8 +76,8 @@ void EcalDigiProducer::produce(framework::Event& event) {
   ecalDigis.setNumSamplesPerDigi(nADCs_);
   ecalDigis.setSampleOfInterestIndex(iSOI_);
 
-  std::set<unsigned int>
-      filledDetIDs;  // detector IDs that already have a hit in them
+  // detector IDs that already have a hit in them
+  std::set<unsigned int> filledDetIDs;
 
   /******************************************************************************************
    * HGCROC Emulation on Simulated Hits
@@ -122,17 +120,17 @@ void EcalDigiProducer::produce(framework::Event& event) {
     unsigned int hitID = simHit.getID();
     filledDetIDs.insert(hitID);
 
-    /* debug printout
-    std::cout << hitID << " "
-        << simHit.getEdep()
-        << " MeV at "
-        << simHit.getTime() - simHit.getPosition().at(2)/299.702547
-        << std::endl;
-     */
+    ldmx_log(debug) << " Emulation of hitID = " << hitID
+                    << " with energy = " << simHit.getEdep()
+                    << " MeV at time = "
+                    << simHit.getTime() -
+                           simHit.getPosition().at(2) / 299.702547;
+
     // container emulator uses to write out samples and
     // transfer samples into the digi collection
     std::vector<ldmx::HgcrocDigiCollection::Sample> digiToAdd;
     if (hgcroc_->digitize(hitID, pulses_at_chip, digiToAdd)) {
+      ldmx_log(debug) << "  --> The HGCROC will read-out this hit!";
       ecalDigis.addDigi(hitID, digiToAdd);
     }
   }
@@ -141,7 +139,6 @@ void EcalDigiProducer::produce(framework::Event& event) {
    * Noise Simulation on Empty Channels
    *****************************************************************************************/
   if (noise_) {
-    // std::cout << "Noise Hits" << std::endl;
     // put noise into some empty channels
 
     // geometry constants
