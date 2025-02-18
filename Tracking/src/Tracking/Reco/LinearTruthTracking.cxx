@@ -25,6 +25,10 @@ void LinearTruthTracking::configure(framework::config::Parameters& parameters) {
     // Input strip hits
     input_hits_collection_ = parameters.getParameter<std::string>("input_hits_collection", "DigiRecoilSimHits");
     input_recHits_collection_ = parameters.getParameter<std::string>("input_recHits_collection", "EcalRecHits");
+    
+    layer12_midpoint_ = parameters.getParameter<double>("layer12_midpoint");
+    layer23_midpoint_ = parameters.getParameter<double>("layer23_midpoint");
+    layer34_midpoint_ = parameters.getParameter<double>("layer34_midpoint");
 }
 
 void LinearTruthTracking::produce(framework::Event& event) {
@@ -149,9 +153,9 @@ std::vector<ldmx::Measurement> LinearTruthTracking::findTruthHits(const std::vec
     
     // Split hits into layers based on z position
     for (const auto& point : hitCollection) {
-        if (point.getGlobalPosition()[0] < 12) layer1.push_back(point);
-        else if (point.getGlobalPosition()[0] < 20) layer2.push_back(point);
-        else if (point.getGlobalPosition()[0] < 28) layer3.push_back(point);
+        if (point.getGlobalPosition()[0] < layer12_midpoint_) layer1.push_back(point);
+        else if (point.getGlobalPosition()[0] < layer23_midpoint_) layer2.push_back(point);
+        else if (point.getGlobalPosition()[0] < layer34_midpoint_) layer3.push_back(point);
         else layer4.push_back(point);
     }
     

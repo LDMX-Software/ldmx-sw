@@ -33,8 +33,12 @@ void LinearSeedFinder::configure(framework::config::Parameters& parameters) {
     //    loc1cut_ = parameters.getParameter<double>("loc1cut", 0.3);
     
     recoil_uncertainty_ = parameters.getParameter<std::vector<double>>("recoil_uncertainty", {0.006, 0.12});
-    ecal_uncertainty_ = parameters.getParameter<double>("ecal_uncertainty");
+    ecal_uncertainty_ = parameters.getParameter<double>("ecal_uncertainty", {3.87});
     ecal_distance_threshold_ = parameters.getParameter<double>("ecal_distance_threshold");
+    
+    layer12_midpoint_ = parameters.getParameter<double>("layer12_midpoint");
+    layer23_midpoint_ = parameters.getParameter<double>("layer23_midpoint");
+    layer34_midpoint_ = parameters.getParameter<double>("layer34_midpoint");
 }
 
 void LinearSeedFinder::produce(framework::Event& event) {
@@ -158,9 +162,9 @@ LinearSeedFinder::combineMultiGlobalHits(const std::vector<ldmx::Measurement>& h
 
     // Split hits into layers based on z position
     for (const auto& point : hitCollection) {
-        if (point.getGlobalPosition()[0] < 12) layer1.push_back(point);
-        else if (point.getGlobalPosition()[0] < 20) layer2.push_back(point);
-        else if (point.getGlobalPosition()[0] < 28) layer3.push_back(point);
+        if (point.getGlobalPosition()[0] < layer12_midpoint_) layer1.push_back(point);
+        else if (point.getGlobalPosition()[0] < layer23_midpoint_) layer2.push_back(point);
+        else if (point.getGlobalPosition()[0] < layer34_midpoint_) layer3.push_back(point);
         else layer4.push_back(point);
     }
 

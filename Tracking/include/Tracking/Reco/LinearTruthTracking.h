@@ -96,6 +96,9 @@ protected:
     long nempty_{0};
     
     std::vector<double> recoil_truth_uncertainty_{0.006, 0.12};
+    double layer12_midpoint_{12.5};
+    double layer23_midpoint_{20.0};
+    double layer34_midpoint_{27.5};
 
     /// The name of the output collection of seeds to be stored.
     std::string out_trk_collection_{"LinearRecoilTruthTracks"};

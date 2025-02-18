@@ -106,6 +106,10 @@ protected:
     double ecal_uncertainty_{3.87};
     double ecal_distance_threshold_{10.0};
     
+    double layer12_midpoint_{12.5};
+    double layer23_midpoint_{20.0};
+    double layer34_midpoint_{27.5};
+    
     std::vector<double> recoil_uncertainty_{0.006, 0.12};
     
     // Check failures

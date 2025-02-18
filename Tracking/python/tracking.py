@@ -76,6 +76,9 @@ class LinearSeedFinder(Producer):
         self.recoil_uncertainty = [0.006, 0.12]
         self.ecal_uncertainty = 3.87
         self.ecal_distance_threshold = 15.0
+        self.layer12_midpoint = 12.5
+        self.layer23_midpoint = 20.0
+        self.layer34_midpoint = 27.5
         
 class LinearTrackFinder(Producer):
     """ Producer to find Seeds for the reduced geometry track finding
@@ -136,6 +139,9 @@ class LinearTruthTracking(Producer):
         self.input_recHits_collection = 'EcalRecHits'
         self.out_track_collection = 'LinearRecoilTruthTracks'
         self.recoil_truth_uncertainty = [0.006, 0.12]
+        self.layer12_midpoint = 12.5
+        self.layer23_midpoint = 20.0
+        self.layer34_midpoint = 27.5
 
 class SeedFinderProcessor(Producer):
     """ Producer to find Seeds for the KF-based track finding.
