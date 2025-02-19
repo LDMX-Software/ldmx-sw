@@ -44,6 +44,19 @@ class EcalVetoProcessor : public framework::Producer {
   virtual ~EcalVetoProcessor() {}
 
   /**
+   * onNewRun is the first function called for each processor
+   * *after* the conditions are fully configured and accessible.
+   * This is where you could create single-processors, multi-event
+   * calculation objects.
+   */
+  void onNewRun(const ldmx::RunHeader& rh) override;
+
+  /**
+   *
+   */
+  void onProcessEnd() override;
+
+  /**
    * Configure the processor using the given user specified parameters.
    *
    * @param parameters Set of parameters used to configure this processor.
@@ -117,6 +130,10 @@ class EcalVetoProcessor : public framework::Producer {
                                const std::string& ts_title);
 
  private:
+  int nevents_{0};
+  double processing_time_{0.};
+
+  std::map<std::string, double> profiling_map_;
   std::map<ldmx::EcalID, float> cellMap_;
   std::map<ldmx::EcalID, float> cellMapTightIso_;
 
