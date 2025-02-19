@@ -3,13 +3,18 @@
 
 #include "G4ParticleDefinition.hh"
 #include "G4ProcessManager.hh"
+#include "G4LogicalVolume.hh"
 #include "G4RegionStore.hh"
 #include "G4Region.hh"
 #include "G4Gamma.hh"
 #include <string>
+#include <iostream>
+
+#include "G4RegionStore.hh"
+#include "G4PhysicalVolumeStore.hh"
+#include "G4TouchableHistory.hh"
 
 namespace ptr_retrieval {
-
 
 /**
  * @brief Retrieve a specific process for a given particle type.
@@ -17,7 +22,7 @@ namespace ptr_retrieval {
  * @param processName Name of the process to find.
  * @return Pointer to the process if found, nullptr otherwise.
  */
-inline const G4VProcess* GetProcess(G4ParticleDefinition* particle, const std::string& processName) {
+inline const G4VProcess* GetProcess(const G4ParticleDefinition* particle, const std::string& processName) {
   if (!particle) return nullptr;
 
   const auto manager = particle->GetProcessManager();
@@ -40,7 +45,6 @@ inline const G4VProcess* GetProcess(G4ParticleDefinition* particle, const std::s
 inline const G4VProcess* GetPhotonuclearProcess() {
   return GetProcess(G4Gamma::Definition(), "photonNuclear");
 }
-
 
 /**
  * @brief Retrieve a Geant4 region by name.
