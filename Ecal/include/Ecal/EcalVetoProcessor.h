@@ -49,7 +49,7 @@ class EcalVetoProcessor : public framework::Producer {
    * This is where you could create single-processors, multi-event
    * calculation objects.
    */
-  void onNewRun(const ldmx::RunHeader &rh) override;
+  void onNewRun(const ldmx::RunHeader& rh) override;
 
   /**
    *
@@ -130,7 +130,6 @@ class EcalVetoProcessor : public framework::Producer {
                                const std::string& ts_title);
 
  private:
-  
   int nevents_{0};
   double processing_time_{0.};
 
