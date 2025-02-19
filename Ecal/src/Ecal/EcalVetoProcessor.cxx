@@ -1233,7 +1233,8 @@ void EcalVetoProcessor::produce(framework::Event &event) {
 
   auto end = std::chrono::high_resolution_clock::now();
   auto time_diff = end - start;
-  processing_time_ += std::chrono::duration<double, std::milli>(time_diff).count();
+  processing_time_ +=
+      std::chrono::duration<double, std::milli>(time_diff).count();
 }
 
 void EcalVetoProcessor::onProcessEnd() {
