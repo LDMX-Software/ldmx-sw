@@ -150,11 +150,10 @@ def compare(gold_f, gold_label, test_f, test_label) :
         The label used in the histogram legends for the test histograms
     """
 
-    gold = HistogramFile(gold_f,gold_label,ROOT.kRed ,True )
+    gold = HistogramFile(gold_f,gold_label,ROOT.kRed ,False )
     test = HistogramFile(test_f,test_label,ROOT.kBlue,False)
 
     c = ROOT.TCanvas()
-    c.SetLogy()
 
     os.makedirs(f'plots/pass',exist_ok=True)
     os.makedirs(f'plots/fail',exist_ok=True)
@@ -184,8 +183,23 @@ def compare(gold_f, gold_label, test_f, test_label) :
             # one empty and other non-empty
             sub_dir = 'fail'
 
-        gold_h.Draw()
-        test_h.Draw('same')
+        if (gold_h.ClassName() == "TH2F") :
+            # Make the yield-axis log scale
+            c.SetLogz(1)
+            # Plot the 2D plots as a scatter plot
+            gold_h.Draw('SCAT')
+            test_h.Draw('SCAT SAME')
+        else :
+            # Make the yield-axis log scale
+            c.SetLogy(1)
+            # Normalize the 1D plots to unit area
+            if gold_h.Integral() > 0 :
+                gold_h.Scale(1/gold_h.Integral())
+            if test_h.Integral() > 0 :
+                test_h.Scale(1/test_h.Integral())
+            # Plot the 1D plots with their uncertainty
+            gold_h.Draw("E")
+            test_h.Draw('ESAME')
     
         c.BuildLegend()
         c.SaveAs(f'plots/{sub_dir}/{key.replace("/","_").replace(":","_")}.pdf')
