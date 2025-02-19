@@ -37,7 +37,7 @@ void EcalVetoProcessor::onNewRun(const ldmx::RunHeader& rh) {
   profiling_map_["mip_tracking_setup"] = 0.;
   profiling_map_["straight_tracks"] = 0.;
   profiling_map_["linreg_tracks"] = 0.;
-  profiling_map_["set_vFsariables"] = 0.;
+  profiling_map_["set_variables"] = 0.;
   profiling_map_["bdt_variables"] = 0.;
   }
 
