@@ -37,8 +37,8 @@ void EcalVetoProcessor::onNewRun(const ldmx::RunHeader& rh) {
   profiling_map_["mip_tracking_setup"] = 0.;
   profiling_map_["straight_tracks"] = 0.;
   profiling_map_["linreg_tracks"] = 0.;
-  profiling_map_["setVariables"] = 0.;
-  profiling_map_["bdtVariables"] = 0.;
+  profiling_map_["set_vFsariables"] = 0.;
+  profiling_map_["bdt_variables"] = 0.;
   }
 
 void EcalVetoProcessor::buildBDTFeatureVector(
@@ -1187,9 +1187,9 @@ void EcalVetoProcessor::produce(framework::Event &event) {
       oContXStd, oContYStd, oContLayerMean, oContLayerStd,
       ecalLayerEdepReadout_, recoilP, recoilPos);
 
-  auto setVariables = std::chrono::high_resolution_clock::now();
-  profiling_map_["setVariables"] +=
-    std::chrono::duration<double, std::milli>(setVariables - linreg_tracks).count();
+  auto set_variables = std::chrono::high_resolution_clock::now();
+  profiling_map_["set_variables"] +=
+    std::chrono::duration<double, std::milli>(set_variables - linreg_tracks).count();
 
   buildBDTFeatureVector(result);
   ldmx::Ort::FloatArrays inputs({bdtFeatures_});
@@ -1216,9 +1216,9 @@ void EcalVetoProcessor::produce(framework::Event &event) {
 
   event.add(collectionName_, result);
 
-  auto bdtVariables = std::chrono::high_resolution_clock::now();
-  profiling_map_["bdtVariables"] +=
-    std::chrono::duration<double, std::milli>(bdtVariables - setVariables).count();
+  auto bdt_variables = std::chrono::high_resolution_clock::now();
+  profiling_map_["bdt_variables"] +=
+    std::chrono::duration<double, std::milli>(bdt_variables - set_variables).count();
 
 
 
@@ -1270,12 +1270,12 @@ void EcalVetoProcessor::onProcessEnd() {
                  << std::setprecision(3) << profiling_map_["linreg_tracks"] / nevents_
                  << " ms";
                  
-  ldmx_log(info) << "setVariables           Avg Time/Event = " << std::fixed
-                 << std::setprecision(3) << profiling_map_["setVariables"] / nevents_
+  ldmx_log(info) << "set_variables           Avg Time/Event = " << std::fixed
+                 << std::setprecision(3) << profiling_map_["set_variables"] / nevents_
                  << " ms";
 
-  ldmx_log(info) << "bdtVariables           Avg Time/Event = " << std::fixed
-                 << std::setprecision(3) << profiling_map_["bdtVariables"] / nevents_
+  ldmx_log(info) << "bdt_variables           Avg Time/Event = " << std::fixed
+                 << std::setprecision(3) << profiling_map_["bdt_variables"] / nevents_
                  << " ms";    
 }
 /* Function to calculate the energy weighted shower centroid */
