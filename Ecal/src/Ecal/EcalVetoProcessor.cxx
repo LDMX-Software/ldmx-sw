@@ -57,6 +57,7 @@ void EcalVetoProcessor::buildBDTFeatureVector(
   bdtFeatures_.push_back(result.getDeepestLayerHit());
   bdtFeatures_.push_back(result.getEcalBackEnergy());
   // MIP tracking
+  bdtFeatures_.push_back(-1);
   bdtFeatures_.push_back(result.getNStraightTracks());
   // bdtFeatures_.push_back(result.getNLinregTracks());
   bdtFeatures_.push_back(result.getFirstNearPhLayer());
@@ -1255,7 +1256,6 @@ void EcalVetoProcessor::produce(framework::Event &event) {
                  << " straight tracks and " << nLinregTracks_
                  << " lin-reg tracks";
 
-  nStraightTracks_ = -1;
   result.setVariables(
       nReadoutHits_, deepestLayerHit_, summedDet_, summedTightIso_, maxCellDep_,
       showerRMS_, xStd_, yStd_, avgLayerHit_, stdLayerHit_, ecalBackEnergy_,
