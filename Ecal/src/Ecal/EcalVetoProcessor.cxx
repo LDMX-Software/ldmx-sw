@@ -19,6 +19,7 @@
 #include <algorithm>
 #include <cmath>
 #include <fstream>
+#include <iomanip>
 
 // ROOT (MIP tracking)
 #include "TDecompSVD.h"
@@ -26,6 +27,20 @@
 #include "TVector3.h"
 
 namespace ecal {
+
+void EcalVetoProcessor::onNewRun(const ldmx::RunHeader &rh) {
+  profiling_map_["setup"] = 0.;
+  profiling_map_["recoil_electron"] = 0.;
+  profiling_map_["trajectories"] = 0.;
+  profiling_map_["roc_var"] = 0.;
+  profiling_map_["fill_hitmaps"] = 0.;
+  profiling_map_["containment_var"] = 0.;
+  profiling_map_["mip_tracking_setup"] = 0.;
+  profiling_map_["straight_tracks"] = 0.;
+  profiling_map_["linreg_tracks"] = 0.;
+  profiling_map_["set_variables"] = 0.;
+  profiling_map_["bdt_variables"] = 0.;
+}
 
 void EcalVetoProcessor::buildBDTFeatureVector(
     const ldmx::EcalVetoResult &result) {
@@ -170,6 +185,9 @@ void EcalVetoProcessor::clearProcessor() {
 }
 
 void EcalVetoProcessor::produce(framework::Event &event) {
+  auto start = std::chrono::high_resolution_clock::now();
+  nevents_++;
+
   // Get the Ecal Geometry
   geometry_ = &getCondition<ldmx::EcalGeometry>(
       ldmx::EcalGeometry::CONDITIONS_OBJECT_NAME);
@@ -185,6 +203,10 @@ void EcalVetoProcessor::produce(framework::Event &event) {
   std::vector<float> recoilPos;
   std::vector<double> recoilPAtTarget;
   std::vector<float> recoilPosAtTarget;
+
+  auto setup = std::chrono::high_resolution_clock::now();
+  profiling_map_["setup"] +=
+      std::chrono::duration<double, std::milli>(setup - start).count();
 
   if (verbose_) {
     ldmx_log(debug) << "   Loop through all of the sim particles and find the "
@@ -264,6 +286,12 @@ void EcalVetoProcessor::produce(framework::Event &event) {
   if (verbose_) {
     ldmx_log(debug) << "   Get projected trajectories for electron and photon";
   }
+
+  auto recoil_electron = std::chrono::high_resolution_clock::now();
+  profiling_map_["recoil_electron"] +=
+      std::chrono::duration<double, std::milli>(recoil_electron - setup)
+          .count();
+
   // Get projected trajectories for electron and photon
   std::vector<XYCoords> ele_trajectory, photon_trajectory;
   if (!recoilP.empty() && !recoilPos.empty()) {
@@ -288,6 +316,12 @@ void EcalVetoProcessor::produce(framework::Event &event) {
   if (verbose_) {
     ldmx_log(debug) << "   Build Radii of containment (ROC)";
   }
+
+  auto trajectories = std::chrono::high_resolution_clock::now();
+  profiling_map_["trajectories"] +=
+      std::chrono::duration<double, std::milli>(trajectories - recoil_electron)
+          .count();
+
   // Use the appropriate containment radii for the recoil electron
   std::vector<double> roc_values_bin0(roc_range_values_[0].begin() + 4,
                                       roc_range_values_[0].end());
@@ -323,6 +357,10 @@ void EcalVetoProcessor::produce(framework::Event &event) {
   // Use default RoC bin for photon
   std::vector<double> photon_radii = roc_values_bin0;
 
+  auto roc_var = std::chrono::high_resolution_clock::now();
+  profiling_map_["roc_var"] +=
+      std::chrono::duration<double, std::milli>(roc_var - trajectories).count();
+
   // Get the collection of digitized Ecal hits from the event.
   const std::vector<ldmx::EcalHit> ecalRecHits =
       event.getCollection<ldmx::EcalHit>(rec_coll_name_, rec_pass_name_);
@@ -335,6 +373,10 @@ void EcalVetoProcessor::produce(framework::Event &event) {
   /* ~~ Fill the isolated hit maps ~~ O(n)  */
   fillIsolatedHitMap(ecalRecHits, globalCentroid, cellMap_, cellMapTightIso_,
                      doTight);
+
+  auto fill_hitmaps = std::chrono::high_resolution_clock::now();
+  profiling_map_["fill_hitmaps"] +=
+      std::chrono::duration<double, std::milli>(fill_hitmaps - roc_var).count();
 
   // Loop over the hits from the event to calculate the rest of the important
   // quantities
@@ -393,6 +435,11 @@ void EcalVetoProcessor::produce(framework::Event &event) {
       nregions, std::vector<float>(nsegments, 0.0));
   std::vector<std::vector<float>> oContLayerStd(
       nregions, std::vector<float>(nsegments, 0.0));
+
+  auto containment_var = std::chrono::high_resolution_clock::now();
+  profiling_map_["containment_var"] +=
+      std::chrono::duration<double, std::milli>(containment_var - fill_hitmaps)
+          .count();
 
   // MIP tracking:  vector of hits to be used in the MIP tracking algorithm. All
   // hits inside the electron ROC (or all hits in the ECal if the event is
@@ -790,6 +837,12 @@ void EcalVetoProcessor::produce(framework::Event &event) {
     photonTerritoryHits_ = nReadoutHits_;
   }
 
+  auto mip_tracking_setup = std::chrono::high_resolution_clock::now();
+  profiling_map_["mip_tracking_setup"] +=
+      std::chrono::duration<double, std::milli>(mip_tracking_setup -
+                                                containment_var)
+          .count();
+
   // ------------------------------------------------------
   // Find straight MIP tracks:
 
@@ -974,6 +1027,12 @@ void EcalVetoProcessor::produce(framework::Event &event) {
     }
   }
 
+  auto straight_tracks = std::chrono::high_resolution_clock::now();
+  profiling_map_["straight_tracks"] +=
+      std::chrono::duration<double, std::milli>(straight_tracks -
+                                                mip_tracking_setup)
+          .count();
+
   // ------------------------------------------------------
   // Linreg tracking:
   ldmx_log(info) << "Finding linreg tracks from a total of "
@@ -1116,6 +1175,11 @@ void EcalVetoProcessor::produce(framework::Event &event) {
     iHit--;
   }  // end loop on all hits
 
+  auto linreg_tracks = std::chrono::high_resolution_clock::now();
+  profiling_map_["linreg_tracks"] +=
+      std::chrono::duration<double, std::milli>(linreg_tracks - straight_tracks)
+          .count();
+
   ldmx_log(info) << " MIP tracking completed; found " << nStraightTracks_
                  << " straight tracks and " << nLinregTracks_
                  << " lin-reg tracks";
@@ -1132,6 +1196,11 @@ void EcalVetoProcessor::produce(framework::Event &event) {
       gContXMean, gContYMean, oContEnergy, oContNHits, oContXMean, oContYMean,
       oContXStd, oContYStd, oContLayerMean, oContLayerStd,
       ecalLayerEdepReadout_, recoilP, recoilPos);
+
+  auto set_variables = std::chrono::high_resolution_clock::now();
+  profiling_map_["set_variables"] +=
+      std::chrono::duration<double, std::milli>(set_variables - linreg_tracks)
+          .count();
 
   buildBDTFeatureVector(result);
   ldmx::Ort::FloatArrays inputs({bdtFeatures_});
@@ -1167,8 +1236,65 @@ void EcalVetoProcessor::produce(framework::Event &event) {
   }
 
   event.add(collectionName_, result);
+
+  auto bdt_variables = std::chrono::high_resolution_clock::now();
+  profiling_map_["bdt_variables"] +=
+      std::chrono::duration<double, std::milli>(bdt_variables - set_variables)
+          .count();
+
+  auto end = std::chrono::high_resolution_clock::now();
+  auto time_diff = end - start;
+  processing_time_ +=
+      std::chrono::duration<double, std::milli>(time_diff).count();
 }
 
+void EcalVetoProcessor::onProcessEnd() {
+  ldmx_log(info) << "AVG Time/Event: " << std::fixed << std::setprecision(2)
+                 << processing_time_ / nevents_ << " ms";
+
+  ldmx_log(info) << "Breakdown::";
+
+  ldmx_log(info) << "setup                  Avg Time/Event = " << std::fixed
+                 << std::setprecision(3) << profiling_map_["setup"] / nevents_
+                 << " ms";
+
+  ldmx_log(info) << "recoil_electron        Avg Time/Event = " << std::fixed
+                 << std::setprecision(3)
+                 << profiling_map_["recoil_electron"] / nevents_ << " ms";
+  ldmx_log(info) << "trajectories           Avg Time/Event = " << std::fixed
+                 << std::setprecision(3)
+                 << profiling_map_["trajectories"] / nevents_ << " ms";
+
+  ldmx_log(info) << "roc_var                Avg Time/Event = " << std::fixed
+                 << std::setprecision(3) << profiling_map_["roc_var"] / nevents_
+                 << " ms";
+
+  ldmx_log(info) << "fill_hitmaps           Avg Time/Event = " << std::fixed
+                 << std::setprecision(3)
+                 << profiling_map_["fill_hitmaps"] / nevents_ << " ms";
+  ldmx_log(info) << "containment_var        Avg Time/Event = " << std::fixed
+                 << std::setprecision(3)
+                 << profiling_map_["containment_var"] / nevents_ << " ms";
+  ldmx_log(info) << "mip_tracking_setup     Avg Time/Event = " << std::fixed
+                 << std::setprecision(3)
+                 << profiling_map_["mip_tracking_setup"] / nevents_ << " ms";
+
+  ldmx_log(info) << "straight_tracks        Avg Time/Event = " << std::fixed
+                 << std::setprecision(3)
+                 << profiling_map_["straight_tracks"] / nevents_ << " ms";
+
+  ldmx_log(info) << "linreg_tracks          Avg Time/Event = " << std::fixed
+                 << std::setprecision(3)
+                 << profiling_map_["linreg_tracks"] / nevents_ << " ms";
+
+  ldmx_log(info) << "set_variables           Avg Time/Event = " << std::fixed
+                 << std::setprecision(3)
+                 << profiling_map_["set_variables"] / nevents_ << " ms";
+
+  ldmx_log(info) << "bdt_variables           Avg Time/Event = " << std::fixed
+                 << std::setprecision(3)
+                 << profiling_map_["bdt_variables"] / nevents_ << " ms";
+}
 /* Function to calculate the energy weighted shower centroid */
 ldmx::EcalID EcalVetoProcessor::GetShowerCentroidIDAndRMS(
     const std::vector<ldmx::EcalHit> &ecalRecHits, double &showerRMS) {
