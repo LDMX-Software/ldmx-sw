@@ -29,7 +29,7 @@ struct EcalTP {
     cell    = 0;
     tp_lin  = 0;
   }
-  void fill(int _tid, int _tp, int _layer, int _module, int _cell, float _tp_lin) {
+  void fill(int _tid, int _tp, int _layer, int _module, int _cell, int _tp_lin) {
     tid     = _tid;
     tp      = _tp;
     layer   = _layer;
