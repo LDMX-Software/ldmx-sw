@@ -7,8 +7,8 @@ from LDMX.Framework import ldmxcfg
 
 # first, we define the process, which must have a name which identifies this
 # processing pass ("pass name").
-simPassName="test"
-pileupFilePassName="test"
+simPassName="ecal_pn"
+pileupFilePassName="pileup"
 thisPassName="overlay"
 p=ldmxcfg.Process(thisPassName)
 
@@ -69,9 +69,6 @@ ts_clusters = [
         TrigScintClusterProducer.pad2(),
         TrigScintClusterProducer.pad3(),
         ] 
-for clu in ts_clusters :
-    clu.input_collection += overlayStr
-
 
 # Load the ECAL modules                           
 ecalDigi   =eDigi.EcalDigiProducer('ecalDigis')

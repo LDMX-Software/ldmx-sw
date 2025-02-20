@@ -1,5 +1,5 @@
 from LDMX.Framework import ldmxcfg
-p = ldmxcfg.Process('test')
+p = ldmxcfg.Process('pileup')
 
 import os
 p.run = int(os.environ['LDMX_RUN_NUMBER'])

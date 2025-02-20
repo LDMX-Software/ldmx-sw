@@ -92,7 +92,7 @@ void TrigScintDigiProducer::produce(framework::Event &event) {
       }
     }
 
-    // for now, we take am energy weighted average of the hit in each strip to
+    // for now, we take an energy weighted average of the hit in each strip to
     // simulate the hit position. AJW: these should be dropped, they are likely
     // to lead to a problem since we can't measure them anyway except roughly y
     // and z, which is encoded in the ids.
@@ -134,7 +134,8 @@ void TrigScintDigiProducer::produce(framework::Event &event) {
     cellPEs[id] = poisson_dist(rng_);
 
     // If a cell has a PE count above threshold, persit the hit.
-    // TAV: we should move the threshold to be an input variable
+    // Thresholds are introduced (and configurable) in clustering.
+    // the cell PE >=1 suppresses artifical noise that is below one light quantum in the SiPM and unphysical.
     if (cellPEs[id] >= 1) {
       ldmx::TrigScintHit hit;
       hit.setID(id.raw());
