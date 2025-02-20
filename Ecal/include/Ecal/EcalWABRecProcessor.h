@@ -1,8 +1,8 @@
 /**
- * @file EcalWABRecProcessor.h
- * @brief Class that reconstructs important kinematic variables for WAB studies
- * @author Sanjit Masanam, UCSB
- */
+* @file EcalWABRecProcessor.h
+* @brief Class that reconstructs important kinematic variables for WAB studies
+* @author Sanjit Masanam, UCSB
+*/
 
 #ifndef EVENTPROC_ECALWABROCESSOR_H_
 #define EVENTPROC_ECALWABROCESSOR_H_
@@ -69,7 +69,7 @@ private:
     const std::vector<double>& z, int degree);
 
   /** Name of the collection which will containt the results. */
-  std::string collectionName_{"EcalWABRec"};
+  std::string collection_name_{"EcalWABRec"};
 
   /// handle to current geometry (to share with member functions)
   const ldmx::EcalGeometry* geometry_;
