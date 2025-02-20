@@ -119,6 +119,28 @@ hcal_veto.input_hit_pass_name = thisPassName
 # Load the DQM modules
 from LDMX.DQM import dqm
 
+trigScint_sim_dqm = [
+    dqm.TrigScintSimDQM('TrigScintSimPad1','TriggerPad1SimHits','pad1'),
+    dqm.TrigScintSimDQM('TrigScintSimPad2','TriggerPad2SimHits','pad2'),
+    dqm.TrigScintSimDQM('TrigScintSimPad3','TriggerPad3SimHits','pad3'),
+    ]
+
+for ts_sim_dqm in trigScint_sim_dqm :
+    ts_sim_dqm.hit_collection += overlayStr
+ 
+trigScint_dqm = [
+    dqm.TrigScintDigiDQM('TrigScintDigiPad1','trigScintDigisPad1','pad1'),
+    dqm.TrigScintDigiDQM('TrigScintDigiPad2','trigScintDigisPad2','pad2'),
+    dqm.TrigScintDigiDQM('TrigScintDigiPad3','trigScintDigisPad3','pad3'),
+    dqm.TrigScintClusterDQM('TrigScintClusterPad1','TriggerPad1Clusters','pad1'),
+    dqm.TrigScintClusterDQM('TrigScintClusterPad2','TriggerPad2Clusters','pad2'),
+    dqm.TrigScintClusterDQM('TrigScintClusterPad3','TriggerPad3Clusters','pad3'),
+    dqm.TrigScintTrackDQM('TrigScintTracks','TriggerPadTracks')
+    ]
+
+for ts_dqm in trigScint_dqm :
+    ts_dqm.passName = thisPassName
+
 # EcalDigiVerify
 ecalDigiVerify = dqm.EcalDigiVerify()
 ecalDigiVerify.ecalSimHitColl += overlayStr
@@ -165,7 +187,7 @@ triggerDQM = dqm.Trigger()
 triggerDQM.trigger_pass = thisPassName
 
 
-dqm_with_overlay = [triggerDQM, ecalDigiVerify, ecalShowerFeatures, ecalMipTrackingFeatures, ecalVetoResults, hcalDQM] 
+dqm_with_overlay = trigScint_sim_dqm + trigScint_dqm + [triggerDQM, ecalDigiVerify, ecalShowerFeatures, ecalMipTrackingFeatures, ecalVetoResults] + hcalDQM 
 
 p.logger.termLevel = 1
 
@@ -179,7 +201,7 @@ p.sequence.extend([
     *ts_clusters,
     trigScintTrack,
     count, TriggerProcessor('trigger', 8000.),
-    dqm.PhotoNuclearDQM(verbose=False),
+    dqm.PhotoNuclearDQM(),
 ])
 
 p.sequence.extend(dqm_with_overlay)
