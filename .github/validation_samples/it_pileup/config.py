@@ -112,7 +112,7 @@ p.sequence.extend([
     TrigScintClusterProducer.pad3(),
     trigScintTrack,
     count, TriggerProcessor('trigger', 8000.),
-    dqm.PhotoNuclearDQM(verbose=False),
+    dqm.PhotoNuclearDQM(),
 ])
 
 p.sequence.extend(dqm.all_dqm)
