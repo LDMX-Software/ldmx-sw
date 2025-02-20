@@ -271,8 +271,8 @@ void PhotoNuclearDQM::analyze(const framework::Event &event) {
 
     } else {
       ldmx_log(debug) << " Else pn_vertex_volume = " << pn_vertex_volume
-                     << " with pn_interaction_material = "
-                     << pn_interaction_material;
+                      << " with pn_interaction_material = "
+                      << pn_interaction_material;
       histograms_.fill("pn_vertex_volume", 1);
     }
 
@@ -301,8 +301,8 @@ void PhotoNuclearDQM::analyze(const framework::Event &event) {
       histograms_.fill("pn_interaction_material", 9);
     } else {
       ldmx_log(debug) << " Else pn_interaction_material = "
-                     << pn_interaction_material
-                     << " with pn_vertex_volume = " << pn_vertex_volume;
+                      << pn_interaction_material
+                      << " with pn_vertex_volume = " << pn_vertex_volume;
       histograms_.fill("pn_interaction_material", 1);
     }
   } else {
