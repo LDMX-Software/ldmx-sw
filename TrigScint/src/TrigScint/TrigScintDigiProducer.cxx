@@ -135,7 +135,8 @@ void TrigScintDigiProducer::produce(framework::Event &event) {
 
     // If a cell has a PE count above threshold, persit the hit.
     // Thresholds are introduced (and configurable) in clustering.
-    // the cell PE >=1 suppresses artifical noise that is below one light quantum in the SiPM and unphysical.
+    // the cell PE >=1 suppresses artifical noise that is below one light
+    // quantum in the SiPM and unphysical.
     if (cellPEs[id] >= 1) {
       ldmx::TrigScintHit hit;
       hit.setID(id.raw());
