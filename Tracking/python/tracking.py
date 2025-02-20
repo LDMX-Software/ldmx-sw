@@ -86,6 +86,7 @@ class SeedFinderProcessor(Producer):
         self.phicut = 0.1
         self.thetacut = 0.2
         self.strategies = []
+        self.bfield = 1.5
         self.input_hits_collection = 'TaggerSimHits'
         self.out_seed_collection = 'SeedTracks' 
         
@@ -169,13 +170,12 @@ class CKFProcessor(Producer):
                          'Tracking')
 
         self.dumpobj = False
+        self.debug_acts = False
         self.pionstates = 0
-        self.track_id = -1
-        self.pdg_id = 11
-        self.bfield = 0.
-        self.const_b_field = True
+        self.bfield = -1.5 
+        self.const_b_field = False
         self.field_map = makeFieldMapPath()
-        self.propagator_step_size = 200.
+        self.propagator_step_size = 1000.
         self.propagator_maxSteps = 10000
         self.hit_collection = 'RecoilSimHits'
         self.remove_stereo = False
@@ -184,14 +184,7 @@ class CKFProcessor(Producer):
         self.use_seed_perigee = False
         self.seed_coll_name = 'SeedTracks'
         self.out_trk_collection = 'Tracks'
-        self.do_smearing = False
-        self.sigma_u = 0.01
-        self.sigma_v = 0.
-        self.kf_refit = False
-        self.gsf_refit = False
         self.min_hits = 6
-        self.debug = False
-        self.use_score_based_solver = False
         self.outlier_pval_ = 3.84
 
 class GSFProcessor(Producer):
@@ -335,9 +328,9 @@ class GreedyAmbiguitySolver(Producer):
         super().__init__(instance_name, 'tracking::reco::GreedyAmbiguitySolver',
                          'Tracking')
 
-        self.maximumSharedHits = 1
+        self.maximumSharedHits = 2 
         self.maximumIterations = 1000
-        self.nMeasurementsMin = 7
+        self.nMeasurementsMin = 5
         self.out_trk_collection = "TaggerTracksClean"
         self.trackCollection = "TaggerTracks"
         self.measCollection = "DigiTaggerSimHits"
