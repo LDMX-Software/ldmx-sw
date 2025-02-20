@@ -164,7 +164,7 @@ p.sequence.extend([
         hcalDigi, 
         hcalReco, 
         hcal_veto,
-        dqm.PhotoNuclearDQM(verbose=False)
+        dqm.PhotoNuclearDQM()
         ])
 
 p.sequence.extend(dqm.all_dqm)
