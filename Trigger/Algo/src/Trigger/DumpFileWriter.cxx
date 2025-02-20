@@ -28,7 +28,8 @@ void DumpFileWriter::analyze(const framework::Event& event) {
     ldmx_int::EcalTP tp;
     // tp.fill( trigDigi.getId(), trigDigi.getPrimitive() );
     // store complete information for firmware studies
-    tp.fill(trigDigi.getId(),trigDigi.getPrimitive(),tid.layer(), tid.module(), tid.triggercell(), int(e));    
+    tp.fill(trigDigi.getId(), trigDigi.getPrimitive(), tid.layer(),
+            tid.module(), tid.triggercell(), int(e));
     myEvent.EcalTPs.push_back(tp);
   }
 
