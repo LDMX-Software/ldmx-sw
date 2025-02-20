@@ -88,7 +88,7 @@ p.sequence.extend([
         *ts_clusters,
         trigScintTrack,
         count, TriggerProcessor('trigger', 8000.),
-        dqm.PhotoNuclearDQM(verbose=True),
+        dqm.PhotoNuclearDQM(),
         ])
 
 p.sequence.extend(dqm.all_dqm)

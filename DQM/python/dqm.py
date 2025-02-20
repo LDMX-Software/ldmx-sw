@@ -490,23 +490,24 @@ class PhotoNuclearDQM(ldmxcfg.Analyzer) :
         p.sequence.append( dqm.PhotoNuclearDQM() )
     """
 
-    def __init__(self,name='PN', verbose=False, count_light_ions=True) :
+    def __init__(self,name='PN', count_light_ions=True) :
         super().__init__(name,'dqm::PhotoNuclearDQM','DQM')
 
         self.count_light_ions=count_light_ions
-        self.verbose = verbose
         self.build1DHistogram("event_type"         , "", 24, -1, 23)
         self.build1DHistogram("event_type_500mev"  , "", 24, -1, 23)
         self.build1DHistogram("event_type_2000mev" , "", 24, -1, 23)
         self.build1DHistogram("event_type_compact"         , "", 8, -1, 7)
         self.build1DHistogram("event_type_compact_500mev"  , "", 8, -1, 7)
         self.build1DHistogram("event_type_compact_2000mev" , "", 8, -1, 7)
-        self.build1DHistogram("1n_event_type"      , "", 7,  -1, 6)
+        self.build1DHistogram("1n_event_type"              , "", 7,  -1, 6)
+        self.build1DHistogram("pn_vertex_volume"           , "", 13,  -0.5, 12.5)
+        self.build1DHistogram("pn_interaction_material"    , "", 10,  -0.5, 9.5)
         self.build1DHistogram("pn_particle_mult"   , "Photo-nuclear Multiplicity", 200, 0, 200)
-        self.build1DHistogram("pn_neutron_mult", "Photo-nuclear Neutron Multiplicity", 200,0, 200)
+        self.build1DHistogram("pn_neutron_mult"    , "Photo-nuclear Neutron Multiplicity", 200,0, 200)
         self.build1DHistogram("pn_gamma_energy"    , "#gamma Energy (MeV)", 100, 0, 10000)
-        self.build1DHistogram("pn_total_ke"  , "Total Kineitc Energy of Photo-Nuclear Products (MeV)", 100, 0, 10000)
-        self.build1DHistogram("pn_total_neutron_ke"  , "Total Kineitc Energy of Photo-Nuclear Neutrons  (MeV)", 100, 0, 10000)
+        self.build1DHistogram("pn_total_ke"        , "Total Kineitc Energy of Photo-Nuclear Products (MeV)", 100, 0, 10000)
+        self.build1DHistogram("pn_total_neutron_ke", "Total Kineitc Energy of Photo-Nuclear Neutrons  (MeV)", 100, 0, 10000)
         self.build1DHistogram("1n_neutron_energy"  , "Neutron Energy (MeV)", 100, 0, 10000)
         self.build1DHistogram("1n_energy_diff"     , "E(#gamma_{PN}) - E(n) (MeV)", 100, 0, 10000)
         self.build1DHistogram("1n_energy_frac"     , "E(n)/E(#gamma_{PN}) (MeV)", 100, 0, 1)
@@ -524,11 +525,11 @@ class PhotoNuclearDQM(ldmxcfg.Analyzer) :
         self.build1DHistogram("recoil_vertex_y",   "Recoil e^{-} Vertex - y (mm)", 80, -80, 80)
         self.build1DHistogram("recoil_vertex_z",   "Recoil e^{-} Vertex - z (mm)", 20, -950, -850)
 
-        self.build1DHistogram("pn_gamma_int_x",    "#gamma Interaction Vertex - x (mm)", 40, 200, 400)
-        self.build1DHistogram("pn_gamma_int_y",    "#gamma Interaction Vertex - y (mm)", 40, 200, 400)
+        self.build1DHistogram("pn_gamma_int_x",    "#gamma Interaction Vertex - x (mm)", 50, -250, 250)
+        self.build1DHistogram("pn_gamma_int_y",    "#gamma Interaction Vertex - y (mm)", 50, -250, 250)
         self.build1DHistogram("pn_gamma_int_z",    "#gamma Interaction Vertex - z (mm)", 40, 200, 400)
 
-        self.build1DHistogram("pn_gamma_vertex_x", "#gamma Vertex - y (mm)", 40,   -40, 40)
+        self.build1DHistogram("pn_gamma_vertex_x", "#gamma Vertex - y (mm)", 40,  -40, 40)
         self.build1DHistogram("pn_gamma_vertex_y", "#gamma Vertex - y (mm)", 80,  -80, 80)
         self.build1DHistogram("pn_gamma_vertex_z", "#gamma Vertex - z (mm)", 10, -5,  5)
 
@@ -570,6 +571,13 @@ class PhotoNuclearDQM(ldmxcfg.Analyzer) :
                            80, -40, 40, 
                            "Recoil electron vertex y (mm)", 
                            160, -80, 80)
+        
+        self.build2DHistogram("pn_gamma_int_x:pn_gamma_int_y", 
+                           "PN gamme interaction vertex x (mm)", 
+                           50, -250, 250, 
+                           "PN gamme interaction vertex x (mm)", 
+                           50, -250, 250)
+        
 
 class TrkDeDxMassEstFeatures(ldmxcfg.Analyzer) :
     """Configured TrkDeDxMassEstFeatures python object
