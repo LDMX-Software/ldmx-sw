@@ -32,6 +32,7 @@ namespace logging {
  * Severity/Logging levels
  */
 enum level {
+  trace = -1,
   debug = 0,  ///> 0
   info,       ///> 1
   warn,       ///> 2
