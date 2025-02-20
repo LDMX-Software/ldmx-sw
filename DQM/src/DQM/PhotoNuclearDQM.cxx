@@ -265,13 +265,12 @@ void PhotoNuclearDQM::analyze(const framework::Event &event) {
     } else if (pn_vertex_volume.find("Si_volume") != std::string::npos) {
       histograms_.fill("pn_vertex_volume", 7);
     } else if (pn_vertex_volume.find("Glue") != std::string::npos) {
-      ldmx_log(warn) << "Glue volume";
       histograms_.fill("pn_vertex_volume", 8);
     } else if (pn_vertex_volume.find("motherboard") != std::string::npos) {
       histograms_.fill("pn_vertex_volume", 9);
 
     } else {
-      ldmx_log(warn) << " Else pn_vertex_volume = " << pn_vertex_volume
+      ldmx_log(debug) << " Else pn_vertex_volume = " << pn_vertex_volume
                      << " with pn_interaction_material = "
                      << pn_interaction_material;
       histograms_.fill("pn_vertex_volume", 1);
@@ -301,7 +300,7 @@ void PhotoNuclearDQM::analyze(const framework::Event &event) {
       // Air
       histograms_.fill("pn_interaction_material", 9);
     } else {
-      ldmx_log(warn) << " Else pn_interaction_material = "
+      ldmx_log(debug) << " Else pn_interaction_material = "
                      << pn_interaction_material
                      << " with pn_vertex_volume = " << pn_vertex_volume;
       histograms_.fill("pn_interaction_material", 1);
