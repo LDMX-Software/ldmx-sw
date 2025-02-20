@@ -1,5 +1,5 @@
 from LDMX.Framework import ldmxcfg
-p = ldmxcfg.Process('test')
+p = ldmxcfg.Process('ecal_pn')
 
 import os
 p.maxTriesPerEvent = 1000
