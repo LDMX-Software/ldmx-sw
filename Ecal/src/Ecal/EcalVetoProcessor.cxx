@@ -57,8 +57,8 @@ void EcalVetoProcessor::buildBDTFeatureVector(
   bdtFeatures_.push_back(result.getDeepestLayerHit());
   bdtFeatures_.push_back(result.getEcalBackEnergy());
   // MIP tracking
-  bdtFeatures_.push_back(-1);
-  bdtFeatures_.push_back(result.getNStraightTracks());
+  bdtFeatures_.push_back(-1.);
+  // bdtFeatures_.push_back(result.getNStraightTracks());
   // bdtFeatures_.push_back(result.getNLinregTracks());
   bdtFeatures_.push_back(result.getFirstNearPhLayer());
   bdtFeatures_.push_back(result.getNNearPhHits());
