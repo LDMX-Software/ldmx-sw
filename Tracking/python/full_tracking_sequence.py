@@ -40,65 +40,38 @@ digi_recoil.out_collection = "DigiRecoilSimHits"
 seeder_tagger = tracking.SeedFinderProcessor("SeedTagger")
 seeder_tagger.input_hits_collection =  digi_tagger.out_collection
 seeder_tagger.out_seed_collection = "TaggerRecoSeeds"
-# optimized params:
-# seeder_tagger.pmin  = 0.03
-# seeder_tagger.pmax  =  63.0
-# seeder_tagger.d0min =  -36.9
-# seeder_tagger.d0max = 31.5
-# seeder_tagger.z0max = 54.6
-# seeder_tagger.thetacut = 0.26
-# seeder_tagger.phicut =  0.84
-# old params
-seeder_tagger.pmin  = 0.1
-seeder_tagger.pmax  = 10.0
-seeder_tagger.d0min = -45.
-seeder_tagger.d0max = 45.
-seeder_tagger.z0max = 60.
+seeder_tagger.pmin  = 0.03
+seeder_tagger.pmax  =  63.0
+seeder_tagger.d0min =  -36.9
+seeder_tagger.d0max = 31.5
+seeder_tagger.z0max = 54.6
+seeder_tagger.thetacut = 0.26
+seeder_tagger.phicut =  0.84
 
 #Seed finder processor - Recoil
 seeder_recoil = tracking.SeedFinderProcessor("SeedRecoil")
 seeder_recoil.perigee_location = [0.,0.,0.]
 seeder_recoil.input_hits_collection =  digi_recoil.out_collection
 seeder_recoil.out_seed_collection = "RecoilRecoSeeds"
-# optimized params:
-# seeder_recoil.bfield = 1.5
-# seeder_recoil.pmin  =   0.04
-# seeder_recoil.pmax  =  819.0
-# seeder_recoil.d0min =  -40.2
-# seeder_recoil.d0max = 36.5
-# seeder_recoil.z0max = 40.5
-# seeder_recoil.thetacut =  1.5
-# seeder_recoil.phicut =  1.6
 seeder_recoil.bfield = 1.5
-seeder_recoil.pmin  = 0.1
-seeder_recoil.pmax  = 10.0
-seeder_recoil.d0min = -40.0
-seeder_recoil.d0max = 40.0
-seeder_recoil.z0max = 50.
+seeder_recoil.pmin  =   0.04
+seeder_recoil.pmax  =  819.0
+seeder_recoil.d0min =  -40.2
+seeder_recoil.d0max = 36.5
+seeder_recoil.z0max = 40.5
+seeder_recoil.thetacut =  1.5
+seeder_recoil.phicut =  1.6
 
 # CKF track finding for tagger tracker using seeds.
 tracking_tagger  = tracking.CKFProcessor("Tagger_TrackFinder")
 tracking_tagger.taggerTracking = True
 # for truth seed based case use 
 # tracking_tagger.seed_coll_name = "TaggerTruthSeeds"
-# optimized params:
-# tracking_tagger.seed_coll_name = seeder_tagger.out_seed_collection
-# tracking_tagger.out_trk_collection = "TaggerTracks"
-# tracking_tagger.measurement_collection = digi_tagger.out_collection
-# tracking_tagger.min_hits = 5
-# tracking_tagger.outlier_pval_ = 16.5
-# old params
-tracking_tagger.dumpobj = False
-tracking_tagger.debug = True
-tracking_tagger.propagator_step_size = 1000.  #mm
-tracking_tagger.bfield = -1.5  #in T #From looking at the BField map
-tracking_tagger.const_b_field = False
 tracking_tagger.seed_coll_name = seeder_tagger.out_seed_collection
 tracking_tagger.out_trk_collection = "TaggerTracks"
-tracking_tagger.trackID = -1 #1
-tracking_tagger.pdgID = -9999 #11
 tracking_tagger.measurement_collection = digi_tagger.out_collection
-tracking_tagger.min_hits = 6
+tracking_tagger.min_hits = 5
+tracking_tagger.outlier_pval_ = 16.5
 
 # CKF track finding for recoil tracker using seeds.
 tracking_recoil  = tracking.CKFProcessor("Recoil_TrackFinder")
@@ -107,21 +80,9 @@ tracking_recoil.seed_coll_name = seeder_recoil.out_seed_collection
 tracking_recoil.out_trk_collection = "RecoilTracks"
 # for truth seed based case use 
 # tracking_recoil.seed_coll_name = "RecoilTruthSeeds"
-# optimized params:
-# tracking_recoil.measurement_collection = digi_recoil.out_collection
-# tracking_recoil.min_hits = 6
-# tracking_recoil.outlier_pval_ =  22.1
-# old params
-tracking_recoil.dumpobj = False
-tracking_recoil.debug = True
-tracking_recoil.propagator_step_size = 1000.  #mm
-tracking_recoil.bfield = -1.5  #in T #From looking at the BField map
-tracking_recoil.const_b_field = False
-tracking_recoil.taggerTracking=False
-tracking_recoil.trackID = -1 #1
-tracking_recoil.pdgID = -9999 #11
 tracking_recoil.measurement_collection = digi_recoil.out_collection
 tracking_recoil.min_hits = 6
+tracking_recoil.outlier_pval_ =  22.1
 
 # Greedy ambiguity solver for the tagger
 greedy_solver_tagger = tracking.GreedyAmbiguitySolver("GreedySolverTagger")
@@ -238,7 +199,10 @@ sequence = [
     greedy_solver_tagger,
     greedy_solver_recoil,
     GSF_tagger,
-    GSF_recoil,
+    GSF_recoil
+]
+
+dqm_sequence = [
     dqm_seed_tagger,
     dqm_seed_recoil,
     dqm_tagger_cfk,
