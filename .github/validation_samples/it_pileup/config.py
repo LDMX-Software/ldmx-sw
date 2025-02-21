@@ -103,12 +103,6 @@ count.input_pass_name = ''
 import LDMX.Hcal.hcal as hcal
 hcal_veto = hcal.HcalVetoProcessor()
 
-# Load the DQM modules
-from LDMX.DQM import dqm
-
-# The Tracking modules produce a lot of helpful messages
-# but (at the debug level) is too much for commiting the gold log
-# into the git working tree on GitHub
 p.logger.termLevel = 1
 
 # Add full tracking for both tagger and recoil trackers: digi, seeds, CFK, ambiguity resolution, GSF, DQM
