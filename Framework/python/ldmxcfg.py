@@ -442,11 +442,12 @@ class Logger:
 
     The "severity level" of messages correspond to the following integers.
 
-        - 0 : Debug
-        - 1 : Information
-        - 2 : Warning
-        - 3 : Error
-        - 4 : Fatal (reserved for program-ending exceptions)
+        - -1: Trace
+        - 0  : Debug
+        - 1  : Information
+        - 2  : Warning
+        - 3  : Error
+        - 4  : Fatal (reserved for program-ending exceptions)
 
     Whenever a level is specified, messages for that level and any level above
     it (corresponding to a larger integer) are including when printing out
@@ -489,6 +490,9 @@ class Logger:
             name = name.instanceName
         self.logRules.append(_LogRule(name, level))
 
+    def trace(self, name):
+        """drop the input channel to the trace level"""
+        self.custom(name, level = -1)
 
     def debug(self, name):
         """drop the input channel to the debug level"""
