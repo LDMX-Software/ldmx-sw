@@ -3,6 +3,7 @@
 
 #include "Framework/Configure/Parameters.h"
 #include "Framework/EventProcessor.h"
+#include "Framework/Logger.h"
 #include "Framework/RunHeader.h"
 #include "SimCore/Factory.h"
 
@@ -177,7 +178,7 @@ class XsecBiasingOperator : public G4VBiasingOperator {
     return nullptr;
   }
   /// Enable logging
-  enableLogging("XsecBiasingOperator")
+  framework::logging::logger theLog_;
 
 };  // XsecBiasingOperator
 }  // namespace simcore
