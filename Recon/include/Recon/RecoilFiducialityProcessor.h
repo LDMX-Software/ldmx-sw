@@ -38,7 +38,7 @@ class RecoilFiducialityProcessor : public framework::Producer {
   /**
    * Class destructor.
    */
-  virtual ~RecoilFiducialityProcessor() {}
+  virtual ~RecoilFiducialityProcessor() = default;
 
   /**
    * Configure the processor using the given user specified parameters.

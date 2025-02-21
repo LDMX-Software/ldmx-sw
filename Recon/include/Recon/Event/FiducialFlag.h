@@ -32,7 +32,7 @@ class FiducialFlag {
   /**
    * Class destructor.
    */
-  virtual ~FiducialFlag();
+  virtual ~FiducialFlag() = default;
 
   /**
    * Print a description of this object.
