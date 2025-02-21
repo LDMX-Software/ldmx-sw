@@ -74,7 +74,7 @@ ts_clusters = [
 ecalDigi   =eDigi.EcalDigiProducer('ecalDigis')
 ecalReco   =eDigi.EcalRecProducer('ecalRecon')
 ecalVeto   =vetos.EcalVetoProcessor('ecalVetoBDT')
-ecalVeto.recoil_from_tracking = False 
+ecalVeto.recoil_from_tracking = True 
 
 ecalDigi.inputCollName  = ecalDigi.inputCollName+overlayStr
 ecalReco.simHitCollName = ecalReco.simHitCollName+overlayStr
