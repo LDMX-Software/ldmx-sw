@@ -7,12 +7,12 @@ ClassImp(ldmx::FiducialFlag)
 
   void FiducialFlag::Print() const {
     std::cout << "FiducialFlag { "
-              << "fiducialFlag: " << fiducialFlag_ << ", "
-              << "isFiducial: " << isFiducial_ << ", "
-              << "hasEcalHit: " << hasEcalHit_ << ", "
-              << "hasHcalHit: " << hasHcalHit_ << ", "
-              << "hasMinTrackerHits: " << hasMinTrackerHits_ << ", "
-              << "hasMinEnergy: " << hasMinEnergy_ << " }" << std::endl;
+              << "fiducialFlag: " << fiducial_flag_ << ", "
+              << "isFiducial: " << is_fiducial_ << ", "
+              << "hasEcalHit: " << has_ecal_hit_ << ", "
+              << "hasHcalHit: " << has_hcal_hit_ << ", "
+              << "hasMinTrackerHits: " << has_min_tracker_hits_ << ", "
+              << "hasMinEnergy: " << has_min_energy_ << " }" << std::endl;
 
     for (int i = 0; i < variables_.GetSize(); ++i) {
       std::cout << "Element " << i << " : " << variables_[i] << std::endl;
@@ -20,44 +20,44 @@ ClassImp(ldmx::FiducialFlag)
   }
 
   void FiducialFlag::Clear() {
-    fiducialFlag_ = 0;
-    isFiducial_ = false;
-    hasEcalHit_ = false;
-    hasHcalHit_ = false;
-    hasMinTrackerHits_ = false;
-    hasMinEnergy_ = false;
+    fiducial_flag_ = 0;
+    is_fiducial_ = false;
+    has_ecal_hit_ = false;
+    has_hcal_hit_ = false;
+    has_min_tracker_hits_ = false;
+    has_min_energy_ = false;
 
     for (int i = 0; i < variables_.GetSize(); ++i) {
       variables_[i] = 0;
     }
   }
 
-  void FiducialFlag::setFiducialFlag(int fiducialFlag, int nvar) {
-    fiducialFlag_ = fiducialFlag;
+  void FiducialFlag::setFiducialFlag(int fiducial_flag, int nvar) {
+    fiducial_flag_ = fiducial_flag;
 
     if (nvar > variables_.GetSize()) {
       variables_.Set(nvar);
     }
   }
 
-  void FiducialFlag::setIsFiducial(bool isFiducial) {
-    isFiducial_ = isFiducial;
+  void FiducialFlag::setIsFiducial(bool is_fiducial) {
+    is_fiducial_ = is_fiducial;
   }
 
-  void FiducialFlag::setHasEcalHit(bool hasEcalHit) {
-    hasEcalHit_ = hasEcalHit;
+  void FiducialFlag::setHasEcalHit(bool has_ecal_hit) {
+    has_ecal_hit_ = has_ecal_hit;
   }
 
-  void FiducialFlag::setHasHcalHit(bool hasHcalHit) {
-    hasHcalHit_ = hasHcalHit;
+  void FiducialFlag::setHasHcalHit(bool has_hcal_hit) {
+    has_hcal_hit_ = has_hcal_hit;
   }
 
-  void FiducialFlag::setHasMinTrackerHits(bool hasMinTrackerHits) {
-    hasMinTrackerHits_ = hasMinTrackerHits;
+  void FiducialFlag::setHasMinTrackerHits(bool has_min_tracker_hits) {
+    has_min_tracker_hits_ = has_min_tracker_hits;
   }
 
-  void FiducialFlag::setHasMinEnergy(bool hasMinEnergy) {
-    hasMinEnergy_ = hasMinEnergy;
+  void FiducialFlag::setHasMinEnergy(bool has_min_energy) {
+    has_min_energy_ = has_min_energy;
   }
 
   void FiducialFlag::setAlgoVar(int element, double value) {

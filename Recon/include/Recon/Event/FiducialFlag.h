@@ -48,37 +48,37 @@ class FiducialFlag {
    * Return true/false if event is fiducial.
    * @return True if fiducial.
    */
-  bool isFiducial() const { return isFiducial_; }
+  bool isFiducial() const { return is_fiducial_; }
 
   /**
    * Return fiducial flag bit mask.
    * @return Fiducial flag bit mask.
    */
-  int getFiducialFlag() const { return fiducialFlag_; }
+  int getFiducialFlag() const { return fiducial_flag_; }
 
   /**
    * Return true/false if event has ecal hit.
    * @return True if ecal hit.
    */
-  bool hasEcalHit() const { return hasEcalHit_; }
+  bool hasEcalHit() const { return has_ecal_hit_; }
 
   /**
    * Return true/false if event has hcal hit.
    * @return True if hcal hit.
    */
-  bool hasHcalHit() const { return hasHcalHit_; }
+  bool hasHcalHit() const { return has_hcal_hit_; }
 
   /**
    * Return true/false if event has min. number of tracker hits.
    * @return True if >= min tracker hits.
    */
-  bool hasMinTrackerHits() const { return hasMinTrackerHits_; }
+  bool hasMinTrackerHits() const { return has_min_tracker_hits_; }
 
   /**
    * Return true/false if event has min. recoil energy at production.
    * @return True if >= min energy.
    */
-  bool hasMinEnergy() const { return hasMinEnergy_; }
+  bool hasMinEnergy() const { return has_min_energy_; }
 
   /**
    * Return algorithm variable i (see algorithm code for details).
@@ -134,40 +134,40 @@ class FiducialFlag {
 
   /**
    * Set fiduciality bit mask.
-   * @param fiducialFlag Bit-mask holding fiduciality conditions.
+   * @param fiducial_flag Bit-mask holding fiduciality conditions.
    * @param nvar The number of algorithm variables.
    */
-  void setFiducialFlag(int fiducialFlag, int nvar);
+  void setFiducialFlag(int fiducial_flag, int nvar);
 
   /**
    * Set fiduciality flag.
-   * @param isFiducial True/false if event is fiducial.
+   * @param is_fiducial True/false if event is fiducial.
    */
-  void setIsFiducial(bool isFiducial);
+  void setIsFiducial(bool is_fiducial);
 
   /**
    * Set ecal hit flag.
-   * @param hasEcalHit True/false if event has ecal hit.
+   * @param has_ecal_hit True/false if event has ecal hit.
    */
-  void setHasEcalHit(bool hasEcalHit);
+  void setHasEcalHit(bool has_ecal_hit);
 
   /**
    * Set hcal hit flag.
-   * @param hasEcalHit True/false if event has hcal hit.
+   * @param has_hcal_hit True/false if event has hcal hit.
    */
-  void setHasHcalHit(bool hasHcalHit);
+  void setHasHcalHit(bool has_hcal_hit);
 
   /**
    * Set tracker hit flag.
-   * @param hasMinTrackerHits True/false if event has >= min. tracker hits.
+   * @param has_min_tracker_hits True/false if event has >= min. tracker hits.
    */
-  void setHasMinTrackerHits(bool hasMinTrackerHits);
+  void setHasMinTrackerHits(bool has_min_tracker_hits);
 
   /**
    * Set recoil min. energy flag.
-   * @param hasMinEnergy True/false if event has >= min. recoil energy.
+   * @param has_min_energy True/false if event has >= min. recoil energy.
    */
-  void setHasMinEnergy(bool hasMinEnergy);
+  void setHasMinEnergy(bool has_min_energy);
 
   /**
    * Set an algorithm variable.
@@ -178,22 +178,22 @@ class FiducialFlag {
 
  private:
   /* Bit-mask that represents fiduciality conditions. */
-  int fiducialFlag_{0};
+  int fiducial_flag_{0};
 
   /* True if event is fiducial. */
-  bool isFiducial_{false};
+  bool is_fiducial_{false};
 
   /* True if recoil electron has ecal hit. */
-  bool hasEcalHit_{false};
+  bool has_ecal_hit_{false};
 
   /* True if recoil electron has hcal hit. */
-  bool hasHcalHit_{false};
+  bool has_hcal_hit_{false};
 
   /* True if recoil electron has >= min tracker hits. */
-  bool hasMinTrackerHits_{false};
+  bool has_min_tracker_hits_{false};
 
   /* True if recoil electron has >= min energy at production. */
-  bool hasMinEnergy_{false};
+  bool has_min_energy_{false};
 
   /* Variable results from the fiduciality decision. */
   TArrayD variables_;
