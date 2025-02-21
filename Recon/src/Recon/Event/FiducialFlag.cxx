@@ -3,9 +3,9 @@
 ClassImp(ldmx::FiducialFlag)
 
     namespace ldmx {
-   FiducialFlag::FiducialFlag() {}
+  FiducialFlag::FiducialFlag() {}
 
-   FiducialFlag::~FiducialFlag() { Clear(); }
+  FiducialFlag::~FiducialFlag() { Clear(); }
 
   void FiducialFlag::Print() const {
     std::cout << "FiducialFlag { "
@@ -42,15 +42,25 @@ ClassImp(ldmx::FiducialFlag)
     }
   }
 
-  void FiducialFlag::setIsFiducial(bool isFiducial) {isFiducial_ = isFiducial;}
+  void FiducialFlag::setIsFiducial(bool isFiducial) {
+    isFiducial_ = isFiducial;
+  }
 
-  void FiducialFlag::setHasEcalHit(bool hasEcalHit) {hasEcalHit_ = hasEcalHit;}
+  void FiducialFlag::setHasEcalHit(bool hasEcalHit) {
+    hasEcalHit_ = hasEcalHit;
+  }
 
-  void FiducialFlag::setHasHcalHit(bool hasHcalHit) {hasHcalHit_ = hasHcalHit;}
+  void FiducialFlag::setHasHcalHit(bool hasHcalHit) {
+    hasHcalHit_ = hasHcalHit;
+  }
 
-  void FiducialFlag::setHasMinTrackerHits(bool hasMinTrackerHits) {hasMinTrackerHits_ = hasMinTrackerHits;}
+  void FiducialFlag::setHasMinTrackerHits(bool hasMinTrackerHits) {
+    hasMinTrackerHits_ = hasMinTrackerHits;
+  }
 
-  void FiducialFlag::setHasMinEnergy(bool hasMinEnergy) {hasMinEnergy_ = hasMinEnergy;}
+  void FiducialFlag::setHasMinEnergy(bool hasMinEnergy) {
+    hasMinEnergy_ = hasMinEnergy;
+  }
 
   void FiducialFlag::setAlgoVar(int element, double value) {
     if (element >= 0 && element < variables_.GetSize()) {
