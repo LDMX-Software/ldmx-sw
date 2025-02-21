@@ -23,8 +23,7 @@ void XsecBiasingOperator::StartRun() {
                                      this->getParticleToBias() + "'.");
   }
 
-  std::cout << "[ XsecBiasingOperator ]: Biasing particles of type "
-            << this->getParticleToBias() << std::endl;
+  ldmx_log(info) << "Biasing particles of type " << this->getParticleToBias();
 
   if (processIsBiased(this->getProcessToBias())) {
     xsecOperation_ =

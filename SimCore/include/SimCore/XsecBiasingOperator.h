@@ -177,7 +177,7 @@ class XsecBiasingOperator : public G4VBiasingOperator {
     return nullptr;
   }
   /// Enable logging
-  enableLogging("EcalProcessFilter")
+  enableLogging("XsecBiasingOperator")
 
 };  // XsecBiasingOperator
 }  // namespace simcore
