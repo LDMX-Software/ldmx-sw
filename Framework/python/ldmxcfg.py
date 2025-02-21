@@ -936,4 +936,4 @@ class RunHeaderAna(Analyzer) :
     """
 
     def __init__(self, name='RunHeaderAnalyzer'):
-        super().__init__(name, 'RunHeaderAnalyzer', '')  
+        super().__init__(name, 'RunHeaderAnalyzer', 'Framework')
