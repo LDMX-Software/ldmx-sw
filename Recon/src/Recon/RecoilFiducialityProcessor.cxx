@@ -77,7 +77,7 @@ void RecoilFiducialityProcessor::produce(framework::Event &event) {
   for (const ldmx::SimTrackerHit &simHit : recoilSimHits) {
     if (simHit.getTrackID() == recoilTrackID) {
       // int sensorID = tracking::sim::utils::getSensorID(sim_hit);
-      if ((simHit.getTime() < 0.8) & (simHit.getMomentum()[2] > 0)) {
+      if ((simHit.getTime() < 0.8) && (simHit.getMomentum()[2] > 0)) {
         layers_hit.insert(simHit.getLayerID());
       }
     }
