@@ -5,8 +5,6 @@ ClassImp(ldmx::FiducialFlag)
     namespace ldmx {
   FiducialFlag::FiducialFlag() {}
 
-  FiducialFlag::~FiducialFlag() { Clear(); }
-
   void FiducialFlag::Print() const {
     std::cout << "FiducialFlag { "
               << "fiducialFlag: " << fiducialFlag_ << ", "
