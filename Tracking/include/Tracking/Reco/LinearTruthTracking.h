@@ -5,27 +5,11 @@
 #include "Framework/Event.h"
 #include "Framework/EventProcessor.h"
 
-//---< Tracking >---//
-#include "Tracking/Sim/LdmxSpacePoint.h"
-#include "Tracking/Sim/SeedToTrackParamMaker.h"
-#include "Tracking/Sim/TrackingUtils.h"
-
 //---< SimCore >---//
 #include "SimCore/Event/SimTrackerHit.h"
 
 //---< STD C++ >---//
-
 #include <iostream>
-
-//---< ACTS >---//
-#include "Acts/Definitions/Algebra.hpp"
-#include "Acts/MagneticField/MagneticFieldContext.hpp"
-#include "Acts/Seeding/EstimateTrackParamsFromSeed.hpp"
-#include "Acts/Seeding/Seed.hpp"
-#include "Acts/Seeding/SeedFilter.hpp"
-#include "Acts/Seeding/SpacePointGrid.hpp"
-#include "Acts/Utilities/CalibrationContext.hpp"
-#include "Acts/Utilities/Intersection.hpp"
 
 //--- LDMX ---//
 #include "TFile.h"
@@ -78,15 +62,19 @@ public:
     void produce(framework::Event& event) override;
     
 protected:
+    //Function to find recoil e- based on 4 recoil points with trackID = 1
     ldmx::StraightTrack TruthTracker(const std::vector<ldmx::Measurement>& points, std::vector<std::array<double, 3>>& ecalPoints);
     
+    //Function to find recoil e- hits with trackID = 1
     std::vector<ldmx::Measurement> findTruthHits(const std::vector<ldmx::Measurement>& hitCollection);
    
+    //Helper function: calculate distance between 2 3D points
     double calculateDistance(const std::array<double, 3> &point1, const std::array<double, 3> &point2);
-
-    int uniqueSensorsHit(const std::vector<ldmx::Measurement> &digiPoints);
     
-    std::tuple<double, double, double, double> fit3DLine(const std::vector<ldmx::Measurement>& points);
+    //Fitting function: fit a straight line in 3D using 4 points (2 degrees of freedom)
+    std::tuple<double, double, double, double, std::vector<double>> fit3DLine(const std::vector<ldmx::Measurement>& points);
+    
+    //Calculate chi2 of the fit
     double globalChiSquare(const std::vector<ldmx::Measurement>& points, double ax, double ay, double bx, double by);
     
     double processing_time_{0.};
@@ -96,6 +84,8 @@ protected:
     long nempty_{0};
     
     std::vector<double> recoil_truth_uncertainty_{0.006, 0.12};
+    
+    //Assuming rLDMX v1 geometry
     double layer12_midpoint_{12.5};
     double layer23_midpoint_{20.0};
     double layer34_midpoint_{27.5};

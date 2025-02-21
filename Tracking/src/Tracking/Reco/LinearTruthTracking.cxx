@@ -1,9 +1,6 @@
 #include "Tracking/Reco/LinearTruthTracking.h"
 
-#include "Acts/Definitions/TrackParametrization.hpp"
-#include "Acts/Seeding/EstimateTrackParamsFromSeed.hpp"
 #include "Eigen/Dense"
-#include "Tracking/Sim/TrackingUtils.h"
 
 namespace tracking {
 namespace reco {
@@ -53,8 +50,9 @@ void LinearTruthTracking::produce(framework::Event& event) {
       truthMatchingTool_->setup(particleMap, recoilHits);
     }
 
-//     ! Check if we would fit empty seeds !
-    if (recoilHits.size() < 2) { // || uniqueSensorsHit(recoilHits) < 2) {
+    // Check if we would fit empty seeds.
+    // TODO: Currently, we only want more than 2 hits in recoil. Is there a better check?
+    if (recoilHits.size() < 2) {
         nmissing_++;
         ntruth_ += straight_truth_tracks.size();
         return;
@@ -64,11 +62,12 @@ void LinearTruthTracking::produce(framework::Event& event) {
 
     if (truthMatchingTool_->configured()) {
         truthPoints = findTruthHits(recoilHits);
-    }
+    } //match recoilHits with truth data
     
     if (truthPoints.size() > 0) {
         straight_truth_tracks.push_back(TruthTracker(truthPoints, firstLayerEcalRecHits));
-    }
+    } //should only find 1 track (recoil e-) or 0 track (no recoil e-)
+    
     else {
         nempty_++;
         ntruth_ += straight_truth_tracks.size();
@@ -90,12 +89,15 @@ void LinearTruthTracking::produce(framework::Event& event) {
 ldmx::StraightTrack LinearTruthTracking::TruthTracker(const std::vector<ldmx::Measurement>& points, std::vector<std::array<double, 3>>& ecalPoints) {
     ldmx::StraightTrack trk = ldmx::StraightTrack();
 
-    auto [ax, bx, ay, by] = fit3DLine(points);
+    //We have pre-selected hits corresponding to the Recoil e-, so we only fit these (no RecHit)
+    auto [mx, bx, my, by, truthTrk_cov] = fit3DLine(points);
 
-    trk.setSlopeX(ax);
+    trk.setSlopeX(mx);
     trk.setInterceptX(bx);
-    trk.setSlopeY(ay);
+    trk.setSlopeY(my);
     trk.setInterceptY(by);
+    trk.setTheta(std::atan2(my, std::sqrt(1 + mx * mx)));
+    trk.setPhi(std::atan2(mx, 1.0));
     trk.setTargetLocation(0.0, bx, by);
     trk.setNhits(points.size());
     trk.setNdf(points.size() - 2);
@@ -109,29 +111,30 @@ ldmx::StraightTrack LinearTruthTracking::TruthTracker(const std::vector<ldmx::Me
 
     trk.setAllSensorPoints(points);
 
-    trk.setChi2(globalChiSquare(points, ax, ay, bx, by));
+    trk.setChi2(globalChiSquare(points, mx, my, bx, by));
+    trk.setCov(truthTrk_cov);
     
     if (ecalPoints.size() > 0) {
-        double ecal_firstLayer_z = ecalPoints[0][0];  // Z position from the first point of ecalPoints
+        double ecal_firstLayer_z = ecalPoints[0][0];  // Z position from the first point in ecalPoints
         
-        std::array<double, 3> extrapolatedPoint = {ecal_firstLayer_z, ax * ecal_firstLayer_z + bx, ay * ecal_firstLayer_z + by};
+        //Extrapolate track to first layer of Ecal
+        std::array<double, 3> extrapolatedPoint = {ecal_firstLayer_z, mx * ecal_firstLayer_z + bx, my * ecal_firstLayer_z + by};
         
-        // Initialize closestRecHit and minDistance
         const std::array<double, 3>* closestRecHit = nullptr;
         double minDistance = std::numeric_limits<double>::max();
         
-        // Loop through ecalPoints to find the closest recHit
+        // Loop through ecalPoints to find the closest recHit to our track
         for (const auto& ecalRecHit : ecalPoints) {
             double tempDistance = calculateDistance(extrapolatedPoint, ecalRecHit);
             
             if (tempDistance < minDistance) {
                 minDistance = tempDistance;
-                closestRecHit = &ecalRecHit; // Update to the closest recHit
+                closestRecHit = &ecalRecHit;
             }
-        }
+        } //for recHits
         
         if (closestRecHit != nullptr) {
-            trk.setFirstLayerEcalRecHit(*closestRecHit);  // Dereference the pointer to pass by value
+            trk.setFirstLayerEcalRecHit(*closestRecHit);
             trk.setDistancetoRecHit(minDistance);
             trk.setEcalLayer1Location(extrapolatedPoint);
         }
@@ -159,6 +162,8 @@ std::vector<ldmx::Measurement> LinearTruthTracking::findTruthHits(const std::vec
         else layer4.push_back(point);
     }
     
+    // Construct combinations of hits on all layers until we find the combination with 4 recoil e- hits (trackID = 1)
+    // TODO: should we also allow combinations of 3 recoil e- hits in the truth fitting?
     for (const auto& hit1 : layer1) {
         for (const auto& hit2 : layer2) {
             for (const auto& hit3 : layer3) {
@@ -173,7 +178,7 @@ std::vector<ldmx::Measurement> LinearTruthTracking::findTruthHits(const std::vec
         } //for layer2
     } //for layer1
 
-    return {};
+    return {}; //if we can't find the recoil e-, don't return any points
     
 } //findTruthHits
 
@@ -182,11 +187,7 @@ double LinearTruthTracking::calculateDistance(const std::array<double, 3> &point
     return sqrt(pow(point1[1] - point2[1], 2) + pow(point1[2] - point2[2], 2));
 } //calculateDistance
 
-std::tuple<double, double, double, double> LinearTruthTracking::fit3DLine(const std::vector<ldmx::Measurement>& points) {
-
-    if (points.size() < 2) {
-        throw std::invalid_argument("At least two points are required to fit a 3D line.");
-    }
+std::tuple<double, double, double, double, std::vector<double>> LinearTruthTracking::fit3DLine(const std::vector<ldmx::Measurement>& points) {
 
     std::vector<double> z_vals, x_vals, y_vals;
 
@@ -198,19 +199,22 @@ std::tuple<double, double, double, double> LinearTruthTracking::fit3DLine(const 
     } //get coordinates
 
     double sigma_x = recoil_truth_uncertainty_[0];
+    
+    //TODO: technically, the y uncertainty for a layer hit is the length of the strip
+    //TODO: for now, I assign the same uncertainty as a sensor (geometric combination of two layers)
     double sigma_y = recoil_truth_uncertainty_[1];
-    std::vector<double> weights(2 * points.size()); //weighting
+    
+    std::vector<double> weights(2 * points.size());
 
     for (size_t i = 0; i < points.size(); ++i) {
-        weights[2 * i] = 1.0 / (sigma_x * sigma_x);  // Weight for x
-        weights[2 * i + 1] = 1.0 / (sigma_y * sigma_y);  // Weight for y
-    }
+        weights[2 * i] = 1.0 / (sigma_x * sigma_x);
+        weights[2 * i + 1] = 1.0 / (sigma_y * sigma_y);
+    } //construct weights matrix
 
-    Eigen::MatrixXd A(2 * points.size(), 4);  // 2 equations for each point (x and y fitting)
-    Eigen::VectorXd d(2 * points.size());    // Data vector (x and y values)
-    Eigen::VectorXd w(2 * points.size());    // Weight vector
+    Eigen::MatrixXd A(2 * points.size(), 4);
+    Eigen::VectorXd d(2 * points.size());
+    Eigen::VectorXd w(2 * points.size());
 
-    // Fill the A matrix and d vector
     for (size_t i = 0; i < points.size(); ++i) {
         double z = z_vals[i], x = x_vals[i], y = y_vals[i];
 
@@ -239,11 +243,20 @@ std::tuple<double, double, double, double> LinearTruthTracking::fit3DLine(const 
     Eigen::MatrixXd At_W_d = A.transpose() * w.asDiagonal() * d;
     Eigen::VectorXd m = At_W_A.ldlt().solve(At_W_d);
 
-    // Return results (ax, bx, ay, by)
-    return {m(0), m(1), m(2), m(3)};
-}
+    Eigen::Matrix4d covariance_matrix = At_W_A.inverse();
+    
+    std::vector<double> covariance_vector = {
+        covariance_matrix(0, 0), covariance_matrix(0, 1), covariance_matrix(0, 2), covariance_matrix(0, 3),
+        covariance_matrix(1, 1), covariance_matrix(1, 2), covariance_matrix(1, 3),
+        covariance_matrix(2, 2), covariance_matrix(2, 3),
+        covariance_matrix(3, 3)
+    };
 
-double LinearTruthTracking::globalChiSquare(const std::vector<ldmx::Measurement>& points, double ax, double ay, double bx, double by) {
+    // Return results (mx, bx, my, by, covariance matrix as vector)
+    return {m(0), m(1), m(2), m(3), covariance_vector};
+} //fit3Dline
+
+double LinearTruthTracking::globalChiSquare(const std::vector<ldmx::Measurement>& points, double mx, double my, double bx, double by) {
 
     double chi2_x = 0, chi2_y = 0;
 
@@ -253,36 +266,15 @@ double LinearTruthTracking::globalChiSquare(const std::vector<ldmx::Measurement>
         double x = position[1];
         double y = position[2];
 
-        double x_fit = ax * z + bx;
-        double y_fit = ay * z + by;
+        double x_fit = mx * z + bx;
+        double y_fit = my * z + by;
 
         chi2_x += std::pow((x - x_fit) / recoil_truth_uncertainty_[0], 2);
         chi2_y += std::pow((y - y_fit) / recoil_truth_uncertainty_[1], 2);
     }
 
     return chi2_x + chi2_y;
-}
-
-
-int LinearTruthTracking::uniqueSensorsHit(const std::vector<ldmx::Measurement>& digiPoints) {
-    // Step 1: Create a copy of digiPoints to allow modifications
-    std::vector<ldmx::Measurement> sortedPoints = digiPoints;
-
-    // Step 2: Sort by x-coordinate
-    std::sort(sortedPoints.begin(), sortedPoints.end(),
-              [](const ldmx::Measurement& m1, const ldmx::Measurement& m2) {
-                  return m1.getGlobalPosition()[0] < m2.getGlobalPosition()[0];
-              });
-
-    // Step 3: Remove duplicates using std::unique
-    auto last = std::unique(sortedPoints.begin(), sortedPoints.end(),
-                            [](const ldmx::Measurement& m1, const ldmx::Measurement& m2) {
-                                return m1.getGlobalPosition()[0] == m2.getGlobalPosition()[0];
-                            });
-
-    // Step 4: Calculate the number of unique elements
-    return std::distance(sortedPoints.begin(), last);
-} // uniqueSensorsHit
+} //globalChiSquare
 
 } //namespace reco
 } //namespace tracking

@@ -1,5 +1,5 @@
 from LDMX.Framework import ldmxcfg
-p = ldmxcfg.Process('rLDMX_vEXP')
+p = ldmxcfg.Process('rLDMX_v1')
 
 p.maxTriesPerEvent = 100
 
@@ -16,7 +16,7 @@ myGun.pdgID = 11
 myGun.enablePoisson = False #True
 
 mySim = sim.simulator( "mySim" ) # Build simulator object
-det = 'ldmx-reduced-experiment'
+det = 'ldmx-reduced-v1'
 mySim.setDetector(det, True )
 mySim.beamSpotSmear = [20.,80.,0.]
 #mySim.beamSpotSmear = [0.,0.,0.]
@@ -30,10 +30,8 @@ p.termLogLevel = 0
 p.maxEvents = 5000
 p.run = 200
 
-p.histogramFile = f'hist_reducedAlgoV1.root'
-p.outputFiles = [f'events_5000_rLDMX_vEXP_dSensor27half.root']
-#p.outputFiles = [f'test.root']
-
+p.histogramFile = f'hist_rLDMX_V1_5000events.root'
+p.outputFiles = [f'events_5000_rLDMX_v1.root']
 
 import LDMX.Ecal.EcalGeometry
 import LDMX.Ecal.ecal_hardcoded_conditions
@@ -71,9 +69,10 @@ p.sequence.extend([
         
 from LDMX.Tracking import tracking
 from LDMX.Tracking import geo
+from LDMX.Tracking import dqm
 
 from LDMX.Tracking.geo import TrackersTrackingGeometryProvider as trackgeo
-trackgeo.get_instance().setDetector('ldmx-reduced-experiment')
+trackgeo.get_instance().setDetector('ldmx-reduced-v1')
 
 #smearings
 uSmearing = 0.006       #mm #could bump up to 10 micron if we want
@@ -87,9 +86,11 @@ digiRecoil.merge_hits = True
 digiRecoil.sigma_u = uSmearing
 digiRecoil.sigma_v = vSmearing
 
+#Assuming rLDMX-v1 geometry. These should be updated if one changes the position of the recoil layers
+#TODO: is there some way to get this directly from the gdml?
 layer12_mid = (9.5+15.5)/2.
-layer23_mid = (15.5+27.5)/2.
-layer34_mid = (27.5+33.5)/2.
+layer23_mid = (15.5+24.5)/2.
+layer34_mid = (24.5+30.5)/2.
 
 truth_tracking = tracking.LinearTruthTracking("LinearTruthTracking")
 truth_tracking.input_hit_collection = "DigiRecoilSimHits"
@@ -112,4 +113,11 @@ rTracking = tracking.LinearTrackFinder("LinearTrackFinder")
 rTracking.seed_coll_name = "LinearRecoilSeedTracks"
 rTracking.out_trk_collection = "LinearRecoilTracks"
 
-p.sequence.extend([digiRecoil, truth_tracking, rSeedTracking, rTracking])
+rTracking_dqm = dqm.StraightTracksDQM("LinearRecoilTracksDQM")
+rTracking_dqm.track_collection = rTracking.out_trk_collection
+rTracking_dqm.truth_collection = truth_tracking.out_track_collection
+rTracking_dqm.title = ""
+rTracking_dqm.measurement_collection=digiRecoil.out_collection
+rTracking_dqm.buildHistograms()
+
+p.sequence.extend([digiRecoil, truth_tracking, rSeedTracking, rTracking, rTracking_dqm])

@@ -1,0 +1,332 @@
+#include "Tracking/dqm/StraightTracksDQM.h"
+
+#include <algorithm>
+#include <iostream>
+
+#include "Tracking/Sim/TrackingUtils.h"
+
+namespace tracking::dqm {
+
+void StraightTracksDQM::configure(framework::config::Parameters& parameters) {
+    trackCollection_ = parameters.getParameter<std::string>("track_collection", "LinearRecoilTracks");
+    truthCollection_ = parameters.getParameter<std::string>("truth_collection", "LinearRecoilTruthTracks");
+    title_ = parameters.getParameter<std::string>("title", "recoil_lin_trk_");
+    trackProb_cut_ = parameters.getParameter<double>("trackProb_cut", 0.5);
+    subdetector_ = parameters.getParameter<std::string>("subdetector", "Recoil");
+    measurementCollection_ = parameters.getParameter<std::string>("measurement_collection", "DigiRecoilSimHits");
+    
+    ldmx_log(info) << "Track Collection " << trackCollection_ << std::endl;
+    ldmx_log(info) << "Truth Collection " << truthCollection_ << std::endl;
+} //configure
+
+void StraightTracksDQM::analyze(const framework::Event& event) {
+    ldmx_log(debug) << "DQM Reading in::" << trackCollection_ << std::endl;
+    
+    if (!event.exists(trackCollection_)) {
+        ldmx_log(error) << "ERROR:: trackCollection " << trackCollection_
+        << " not in event" << std::endl;
+        return;
+    }
+        
+    const std::vector<ldmx::StraightTrack> tracks = event.getCollection<ldmx::StraightTrack>(trackCollection_);
+    const std::vector<ldmx::Measurement> measurements = event.getCollection<ldmx::Measurement>(measurementCollection_);
+    
+    // Get the truth track collection
+    if (event.exists(truthCollection_)) {
+        truthTrackCollection_ = std::make_shared<std::vector<ldmx::StraightTrack>>(event.getCollection<ldmx::StraightTrack>(truthCollection_));
+        doTruthComparison = true;
+    }
+    
+    ldmx_log(debug) << "Do truth comparison::" << doTruthComparison << std::endl;
+    
+    if (doTruthComparison) {
+        sortTracks(tracks, uniqueTracks_, duplicateTracks_, fakeTracks_);
+    } else {
+        uniqueTracks_ = tracks;
+    }
+    
+    ldmx_log(debug) << "Filling histograms " << std::endl;
+    
+    // General Plots
+    histograms_.fill(title_ + "N_tracks", tracks.size());
+    
+    ldmx_log(debug) << "Track Monitoring on Unique Tracks" << std::endl;
+    
+    TrackMonitoringUnique(uniqueTracks_, measurements, title_, true, true);
+    
+    ldmx_log(debug) << "Track Monitoring on duplicates and fakes" << std::endl;
+    
+    // Fakes and duplicates
+    TrackMonitoring(duplicateTracks_, measurements, title_ + "dup_", false);
+    TrackMonitoring(fakeTracks_, measurements, title_ + "fake_", false);
+    
+    // Clear the vectors
+    uniqueTracks_.clear();
+    duplicateTracks_.clear();
+    fakeTracks_.clear();
+} //analyze
+
+void StraightTracksDQM::onProcessEnd() {
+    // Produce the efficiency plots. (TODO::Switch to TEfficiency instead)
+} //onProcessEnd
+
+void StraightTracksDQM::TrackMonitoring(const std::vector<ldmx::StraightTrack>& tracks,
+                                        const std::vector<ldmx::Measurement>& measurements, const std::string title,
+                                        const bool& doDetail) {
+    for (auto& track : tracks) {
+        double trk_theta = track.getTheta();
+        double trk_phi = track.getPhi();
+        double track_state_loc0_target = track.getTargetX();
+        double track_state_loc1_target = track.getTargetY();
+        double track_state_loc0_ecal = track.getEcalLayer1X();
+        double track_state_loc1_ecal = track.getEcalLayer1Y();
+        int track_pdgID = track.getPdgID();
+        
+        double sigmaphi = phiAngleError(track.getSlopeX(), track.getCov());
+        double sigmatheta = thetaAngleError(track.getSlopeX(), track.getSlopeY(), track.getCov());
+        
+        histograms_.fill(title + "phi", trk_phi);
+        histograms_.fill(title + "theta", trk_theta);
+        histograms_.fill(title_ + "trk_target_loc0", track_state_loc0_target);
+        histograms_.fill(title_ + "trk_target_loc1", track_state_loc1_target);
+        histograms_.fill(title_ + "trk_ecal_loc0", track_state_loc0_ecal);
+        histograms_.fill(title_ + "trk_ecal_loc1", track_state_loc1_ecal);
+        histograms_.fill(title + "trk_PID", track_pdgID);
+
+        if (doDetail) {
+            histograms_.fill(title + "nHits", track.getNhits());
+            histograms_.fill(title + "Chi2", track.getChi2());
+            histograms_.fill(title + "ndf", track.getNdf());
+            histograms_.fill(title + "Chi2_per_ndf",
+                             track.getChi2() / track.getNdf());
+            histograms_.fill(title + "dRecHit", track.getDistanceToRecHit());
+            
+            histograms_.fill(title + "phi_err", sigmaphi);
+            histograms_.fill(title + "theta_err", sigmatheta);
+        }    // do detail
+        
+    }  // for tracks
+} //TrackMonitoring
+
+void StraightTracksDQM::TrackMonitoringUnique(const std::vector<ldmx::StraightTrack>& tracks,
+                                              const std::vector<ldmx::Measurement>& measurements, const std::string title,
+                                              const bool& doDetail, const bool& doTruth) {
+    for (auto& track : tracks) {
+        double trk_theta = track.getTheta();
+        double trk_phi = track.getPhi();
+        double track_state_loc0_target = track.getTargetX();
+        double track_state_loc1_target = track.getTargetY();
+        double track_state_loc0_ecal = track.getEcalLayer1X();
+        double track_state_loc1_ecal = track.getEcalLayer1Y();
+        int track_pdgID = track.getPdgID();
+
+        double sigmaphi = phiAngleError(track.getSlopeX(), track.getCov());
+        double sigmatheta = thetaAngleError(track.getSlopeX(), track.getSlopeY(), track.getCov());
+        double sigmaloc0_target = std::sqrt(track.getCov()[4]); //sqrt(bxbx)
+        double sigmaloc1_target = std::sqrt(track.getCov()[9]); //sqrt(byby)
+        double sigmaloc0_ecal = locError(track.getCov()[0], track.getCov()[4], track.getCov()[1], track.getEcalLayer1Z());
+        double sigmaloc1_ecal = locError(track.getCov()[7], track.getCov()[9], track.getCov()[8], track.getEcalLayer1Z());
+        
+        histograms_.fill(title + "phi", trk_phi);
+        histograms_.fill(title + "theta", trk_theta);
+        histograms_.fill(title_ + "trk_target_loc0", track_state_loc0_target);
+        histograms_.fill(title_ + "trk_target_loc1", track_state_loc1_target);
+        histograms_.fill(title_ + "trk_ecal_loc0", track_state_loc0_ecal);
+        histograms_.fill(title_ + "trk_ecal_loc1", track_state_loc1_ecal);
+        histograms_.fill(title + "trk_PID", track_pdgID);
+        
+        if (doDetail) {
+            histograms_.fill(title + "nHits", track.getNhits());
+            histograms_.fill(title + "Chi2", track.getChi2());
+            histograms_.fill(title + "ndf", track.getNdf());
+            histograms_.fill(title + "Chi2_per_ndf",
+                             track.getChi2() / track.getNdf());
+            histograms_.fill(title + "dRecHit", track.getDistanceToRecHit());
+            
+            histograms_.fill(title + "phi_err", sigmaphi);
+            histograms_.fill(title + "theta_err", sigmatheta);
+            
+            if (doTruth) {
+                // Match to the truth track
+                //TODO: Currently, we assume the truth tracks have no uncertainty, but the parameters for the truth tracks
+                //TODO: are found from a fitting algorithm, and so have some uncertainty. Is there a better way to represent
+                //TODO: the truth tracks for a more accurate comparison?
+                ldmx::StraightTrack* truth_trk = nullptr;
+                
+                auto it = std::find_if(truthTrackCollection_->begin(),
+                                       truthTrackCollection_->end(),
+                                       [&](const ldmx::StraightTrack& tt) {
+                    return tt.getTrackID() == track.getTrackID(); //Only compare truth and reco tracks with same ID
+                });
+                
+                double trackTruthProb = track.getTruthProb();
+                
+                if (it != truthTrackCollection_->end() && trackTruthProb >= trackProb_cut_) {
+                    truth_trk = &(*it); //make sure truth track has good enough truth prob.
+                }
+                
+                // Found matched track
+                if (truth_trk) {
+                    double truth_theta = truth_trk->getTheta();
+                    double truth_phi = truth_trk->getPhi();
+                    double truth_state_loc0_target = truth_trk->getTargetX();
+                    double truth_state_loc1_target = truth_trk->getTargetY();
+                    double truth_state_loc0_ecal = truth_trk->getEcalLayer1X();
+                    double truth_state_loc1_ecal = truth_trk->getEcalLayer1Y();
+                    int truth_pdgID = truth_trk->getPdgID();
+                    
+                    histograms_.fill(title+"truth_phi",  truth_phi);
+                    histograms_.fill(title+"truth_theta",truth_theta);
+                    histograms_.fill(title + "truth_PID", truth_pdgID);
+
+                    double res_phi = trk_phi - truth_phi;
+                    double res_theta = trk_theta - truth_theta;
+                    
+                    histograms_.fill(title + "res_phi", res_phi);
+                    histograms_.fill(title + "res_theta", res_theta);
+                    
+                    double pull_phi = res_phi / sigmaphi;
+                    double pull_theta = res_theta / sigmatheta;
+                    histograms_.fill(title + "pull_phi", pull_phi);
+                    histograms_.fill(title + "pull_theta", pull_theta);
+                    
+                    // TH1F  The difference(residual) between end_loc and truth_endloc (IS THIS APPROPRIATE?)
+                    histograms_.fill(title_ + "trk_target_loc0-truth_target_loc0", track_state_loc0_target - truth_state_loc0_target);
+                    histograms_.fill(title_ + "trk_target_loc1-truth_target_loc1", track_state_loc1_target - truth_state_loc1_target);
+                    histograms_.fill(title_ + "trk_ecal_loc0-truth_ecal_loc0", track_state_loc0_ecal - truth_state_loc0_ecal);
+                    histograms_.fill(title_ + "trk_ecal_loc1-truth_ecal_loc1", track_state_loc1_ecal - truth_state_loc1_ecal);
+                    
+                    // TH1F  The pulls of loc0 and loc1
+                    histograms_.fill(title_ + "target_Pulls_of_loc0", (track_state_loc0_target - truth_state_loc0_target) / sigmaloc0_target);
+                    histograms_.fill(title_ + "target_Pulls_of_loc1", (track_state_loc1_target - truth_state_loc1_target) / sigmaloc1_target);
+                    histograms_.fill(title_ + "ecal_Pulls_of_loc0", (track_state_loc0_ecal - truth_state_loc0_ecal) / sigmaloc0_ecal);
+                    histograms_.fill(title_ + "ecal_Pulls_of_loc1", (track_state_loc1_ecal - truth_state_loc1_ecal) / sigmaloc1_ecal);
+                    
+                    // TH2F  residual vs Nhits
+                    histograms_.fill(title_ + "target_res_loc0-vs-N_hits",
+                                     track.getNhits(), track_state_loc0_target - truth_state_loc0_target);
+                    histograms_.fill(title_ + "target_res_loc1-vs-N_hits",
+                                     track.getNhits(), track_state_loc1_target - truth_state_loc1_target);
+                    histograms_.fill(title_ + "ecal_res_loc0-vs-N_hits",
+                                     track.getNhits(), track_state_loc0_ecal - truth_state_loc0_ecal);
+                    histograms_.fill(title_ + "ecal_res_loc1-vs-N_hits",
+                                     track.getNhits(), track_state_loc1_ecal - truth_state_loc1_ecal);
+                    
+                    // TH2F  pulls vs Nhits
+                    histograms_.fill(title_ + "target_pulls_loc0-vs-N_hits", track.getNhits(), (track_state_loc0_target - truth_state_loc0_target) / sigmaloc0_target);
+                    histograms_.fill(title_ + "target_pulls_loc1-vs-N_hits", track.getNhits(), (track_state_loc1_target - truth_state_loc1_target) / sigmaloc1_target);
+                    histograms_.fill(title_ + "ecal_pulls_loc0-vs-N_hits", track.getNhits(), (track_state_loc0_ecal - truth_state_loc0_ecal) / sigmaloc0_ecal);
+                    histograms_.fill(title_ + "ecal_pulls_loc1-vs-N_hits", track.getNhits(), (track_state_loc1_ecal - truth_state_loc1_ecal) / sigmaloc1_ecal);
+                    
+                }  // loop on tracks
+                
+            }  //do truth
+        }    // do detail
+        
+    }  // for tracks
+} //TrackMonitoringUnique
+
+void StraightTracksDQM::sortTracks(const std::vector<ldmx::StraightTrack>& tracks,
+                                   std::vector<ldmx::StraightTrack>& uniqueTracks,
+                                   std::vector<ldmx::StraightTrack>& duplicateTracks,
+                                   std::vector<ldmx::StraightTrack>& fakeTracks) {
+    std::vector<ldmx::StraightTrack> sortedTracks = tracks;
+    
+    // Sort the vector of Track objects based on their trackID member
+    std::sort(sortedTracks.begin(), sortedTracks.end(),
+              [](ldmx::StraightTrack& t1, ldmx::StraightTrack& t2) {
+        return t1.getTrackID() < t2.getTrackID();
+    });
+    
+    // Loop over the sorted vector of Track objects
+    for (size_t i = 0; i < sortedTracks.size(); i++) {
+        if (sortedTracks[i].getTruthProb() < trackProb_cut_)
+            fakeTracks.push_back(sortedTracks[i]);
+        else {  // not a fake track
+            // If this is the first Track object with this trackID, add it to the
+            // uniqueTracks vector directly
+            if (uniqueTracks.size() == 0 ||
+                sortedTracks[i].getTrackID() != sortedTracks[i - 1].getTrackID()) {
+                uniqueTracks.push_back(sortedTracks[i]);
+            }
+            // Otherwise, add it to the duplicateTracks vector if its truthProb is
+            // lower than the existing Track object Otherwise, if the truthProbability
+            // is higher than the track stored in uniqueTracks, put it in uniqueTracks
+            // and move the uniqueTracks.back to duplicateTracks.
+            else if (sortedTracks[i].getTruthProb() >
+                     uniqueTracks.back().getTruthProb()) {
+                duplicateTracks.push_back(uniqueTracks.back());
+                uniqueTracks.back() = sortedTracks[i];
+            }
+            // Otherwise, add it to the duplicateTracks vector
+            else {
+                duplicateTracks.push_back(sortedTracks[i]);
+            }
+        }  // a real track
+    }    // loop on sorted tracks
+    // The total number of elements in the uniqueTracks and duplicateTracks
+    // vectors should be equal to the number of elements in the original tracks
+    // vector
+    if (uniqueTracks.size() + duplicateTracks.size() + fakeTracks.size() !=
+        tracks.size()) {
+        std::cerr << "Error: unique and duplicate tracks vectors do not add up to "
+        "original tracks vector"
+        << std::endl;
+        return;
+    } //if different tracks don't add up to correct total
+    
+    if (debug_) {
+        // Iterate through the uniqueTracks vector and duplicateTracks vector
+        std::cout << "Unique tracks:" << std::endl;
+        for (const ldmx::StraightTrack& track : uniqueTracks) {
+            std::cout << "Track ID: " << track.getTrackID()
+            << ", Truth Prob: " << track.getTruthProb() << std::endl;
+        }
+        std::cout << "Duplicate tracks:" << std::endl;
+        for (const ldmx::StraightTrack& track : duplicateTracks) {
+            std::cout << "Track ID: " << track.getTrackID()
+            << ", Truth Prob: " << track.getTruthProb() << std::endl;
+        }
+        std::cout << "Fake tracks:" << std::endl;
+        for (const ldmx::StraightTrack& track : fakeTracks) {
+            std::cout << "Track ID: " << track.getTrackID()
+            << ", Truth Prob: " << track.getTruthProb() << std::endl;
+        }
+    } //if debug
+} //sortTracks
+
+double StraightTracksDQM::thetaAngleError(double mx, double my, const std::vector<double>& covariance_vector) {
+    double sqrt_term = std::sqrt(1 + (mx*mx));
+    double sum_term = (1 + (mx*mx) + (my*my));
+    
+    double dtheta_dmx = (-mx * my) / (sqrt_term * sum_term);
+    double dtheta_dmy = (sqrt_term / sum_term) ;
+    
+    double sigma_mx2 = covariance_vector[0];  // mxmx
+    double sigma_my2 = covariance_vector[7];  // mymy
+    double cov_mx_my = covariance_vector[2];  // mxmy
+    
+    double sigma_theta2 = (dtheta_dmx * dtheta_dmx * sigma_mx2) +
+                          (dtheta_dmy * dtheta_dmy * sigma_my2) +
+                          (2 * dtheta_dmx * dtheta_dmy * cov_mx_my);
+    
+    return std::sqrt(sigma_theta2);
+} // thetaAngleError
+
+double StraightTracksDQM::phiAngleError(double mx, const std::vector<double>& covariance_vector) {
+    double sum_term = (1 + (mx*mx));
+        
+    double sigma_mx = std::sqrt(covariance_vector[0]);  // mx
+    
+    double sigma_phi = (sigma_mx / sum_term);
+    
+    return sigma_phi;
+} // phiAngleError
+
+double StraightTracksDQM::locError(double var_slope, double var_intercept, double cov_slope_intercept, double z_pos) {
+    return std::sqrt((z_pos*z_pos*var_slope) + var_intercept + (2 * z_pos * cov_slope_intercept));
+} // locAngleError
+
+}  // namespace tracking::dqm
+
+DECLARE_ANALYZER_NS(tracking::dqm, StraightTracksDQM)

@@ -71,7 +71,10 @@ private:
     int ntracks_{0};
     int eventnr_{0};
     
+    //Find tracks from seeds by taking the seeds with lowest chi2 for each RecHit
     std::vector<ldmx::StraightTrack> findTracks(const std::vector<ldmx::StraightTrack>& trackSeeds);
+    
+    // Helper function to check if a measurement's position is already used
     bool isPositionUsed(const ldmx::Measurement& measurement, const std::set<std::tuple<float, float, float>>& usedSensorPositions);
     
 };  // LinearTrackFinder

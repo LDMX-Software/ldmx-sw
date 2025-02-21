@@ -1,16 +1,11 @@
 #include "Tracking/Reco/LinearTrackFinder.h"
 
-#include "Acts/EventData/TrackContainer.hpp"
-#include "Acts/Utilities/TrackHelpers.hpp"
-#include "SimCore/Event/SimParticle.h"
-#include "Tracking/Reco/TruthMatchingTool.h"
-#include "Tracking/Sim/GeometryContainers.h"
-
 //--- C++ StdLib ---//
 #include <map>
-#include <algorithm>  //std::vector reverse
+#include <algorithm>
 #include <iostream>
 #include <typeinfo>
+
 // eN files
 #include <fstream>
 
@@ -80,7 +75,8 @@ std::vector<ldmx::StraightTrack> LinearTrackFinder::findTracks(const std::vector
     
     std::set<std::tuple<float, float, float>> usedSensorPositions; //Track used sensor positions
     
-    // Process seedsByRecHit: iterate over the sorted keys and find the best seed for each RecHit
+    // Find the best seed for each RecHit
+    // numTracks <= number of RecHits
     for (auto& entry : seedsByRecHit) {
         const auto& recHitPoint = entry.first;
         auto& seedsWithSameRecHit = entry.second;
@@ -93,19 +89,19 @@ std::vector<ldmx::StraightTrack> LinearTrackFinder::findTracks(const std::vector
         // Main function to remove seeds with overlapping sensor positions
         seedsWithSameRecHit.erase( std::remove_if(seedsWithSameRecHit.begin(), seedsWithSameRecHit.end(),
                                                   [&](const ldmx::StraightTrack& seed) {
-                                                        for (const auto& measurement : seed.getAllSensorPoints()) {
-                                                        // Check if this sensor point's position is already used
-                                                            if (isPositionUsed(measurement, usedSensorPositions)) {
-                                                                return true; // Mark seed for removal
-                                                            } //if
-                                                        } //for
-                                                        return false;}), // Keep the seed if no position overlaps
-                                    seedsWithSameRecHit.end() );
+            for (const auto& measurement : seed.getAllSensorPoints()) {
+                // Check if this sensor's position is already used
+                if (isPositionUsed(measurement, usedSensorPositions)) {
+                    return true; // Mark this seed for removal
+                } //if
+            } //for
+            return false;}), // Keep the seed if no position overlap
+                                  seedsWithSameRecHit.end() );
         
         // If no valid seeds remain after filtering, skip to next RecHit
         if (seedsWithSameRecHit.empty()) continue;
         
-        // Find the seed with the lowest chi2 for this RecHit
+        // Find the seed with the lowest chi2 for this RecHit, this is "best" seed
         auto bestSeedIt = std::min_element(seedsWithSameRecHit.begin(),
                                            seedsWithSameRecHit.end(),
                                            [](const ldmx::StraightTrack& a, const ldmx::StraightTrack& b) {
@@ -123,6 +119,7 @@ std::vector<ldmx::StraightTrack> LinearTrackFinder::findTracks(const std::vector
         
         // Add best seed's sensor position to the global used positions set
         auto bestSeedMeasurement = bestSeed.getAllSensorPoints();
+        
         for (auto& positionObject : bestSeedMeasurement) {
             usedSensorPositions.insert(std::make_tuple(positionObject.getGlobalPosition()[0], positionObject.getGlobalPosition()[1], positionObject.getGlobalPosition()[2]));
             ldmx_log(debug) << "We used the following point: ("
@@ -130,16 +127,20 @@ std::vector<ldmx::StraightTrack> LinearTrackFinder::findTracks(const std::vector
             << positionObject.getGlobalPosition()[1] << ", "
             << positionObject.getGlobalPosition()[2] << ")\n";
             ldmx_log(debug) << "Which gave a track a distance: " << bestSeed.getDistanceToRecHit() << " to the closest ECalRecHit\n";
-        }
-    } //for entry loop
+        } //for sensor points in the "best" seed
+        
+    } //for entry loop, everytime we loop onto a new RecHit, we will have fewer points to check
+    
     return bestTracks;
-}
+    
+} //findTracks
 
-// Helper function to check if a measurement's position is already used
-bool LinearTrackFinder::isPositionUsed(const ldmx::Measurement& measurement,
-                    const std::set<std::tuple<float, float, float>>& usedSensorPositions) {
+bool LinearTrackFinder::isPositionUsed(const ldmx::Measurement& measurement, const std::set<std::tuple<float, float, float>>& usedSensorPositions) {
+    
     const auto& position = std::make_tuple(measurement.getGlobalPosition()[0], measurement.getGlobalPosition()[1], measurement.getGlobalPosition()[2]);
+    
     return usedSensorPositions.find(position) != usedSensorPositions.end();
+    
 } //isPositionUsed
     
 }  // namespace reco

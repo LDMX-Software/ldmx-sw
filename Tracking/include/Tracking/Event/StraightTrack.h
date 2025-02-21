@@ -15,10 +15,6 @@
 #include "TObject.h"
 #include "Measurement.h"
 
-// --- ACTS --- //
-//#include "Acts/Definitions/TrackParametrization.hpp"
-//#include "Acts/EventData/TrackParameters.hpp"
-
 namespace ldmx {
 
     class StraightTrack {
@@ -66,6 +62,12 @@ namespace ldmx {
         
         void setDistancetoRecHit(double distance) {distance_to_RecHit_ = distance;}
         double getDistanceToRecHit() const { return distance_to_RecHit_; }
+        
+        void setTheta(double theta) {theta_ = theta;}
+        double getTheta() const { return theta_; }
+        
+        void setPhi(double phi) {phi_ = phi;}
+        double getPhi() const { return phi_; }
         
         const std::vector<ldmx::Measurement>& getAllSensorPoints() const { return bothSensors_;};
         void setAllSensorPoints(const std::vector<ldmx::Measurement>& sensorPoints) {
@@ -126,6 +128,15 @@ namespace ldmx {
         void setPdgID(int pdgID) { pdgID_ = pdgID; };
         int getPdgID() const { return pdgID_; };
         
+        // Covariance vector has 10 elements arranged as a vector
+        // mxmx mxbx mxmy mxby
+        //      bxbx bxmy bxby
+        //           mymy myby
+        //                byby
+        // m = slope, b = intercept
+        void setCov(const std::vector<double>& cov) { trk_cov_ = cov; }
+        std::vector<double> getCov() const { return trk_cov_; }
+        
     protected:
         //Actual Track Parameters
         double slopeX_;
@@ -133,6 +144,8 @@ namespace ldmx {
         double interceptX_;
         double interceptY_;
         double distance_to_RecHit_;
+        double theta_;
+        double phi_;
         
         std::vector<ldmx::Measurement> bothSensors_;
         std::array<double, 3> firstSensor_;
@@ -155,10 +168,12 @@ namespace ldmx {
         // pdgID (truth value)
         int pdgID_{0};
         
-        /// Class declaration needed by the ROOT dictionary.
-        ClassDef(StraightTrack, 1);
+        std::vector<double> trk_cov_;
         
-    };  // Track
+        /// Class declaration needed by the ROOT dictionary.
+        ClassDef(StraightTrack, 3);
+        
+    };  // StraightTrack
 
     typedef std::vector<ldmx::StraightTrack> StraightTracks;
 

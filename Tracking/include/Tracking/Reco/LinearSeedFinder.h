@@ -5,27 +5,14 @@
 #include "Framework/Event.h"
 #include "Framework/EventProcessor.h"
 
-//---< Tracking >---//
-#include "Tracking/Sim/LdmxSpacePoint.h"
-#include "Tracking/Sim/SeedToTrackParamMaker.h"
-#include "Tracking/Sim/TrackingUtils.h"
-
 //---< SimCore >---//
 #include "SimCore/Event/SimTrackerHit.h"
 
+//--- LDMX ---//
+#include "Tracking/Reco/TrackingGeometryUser.h"
+
 //---< STD C++ >---//
-
 #include <iostream>
-
-//---< ACTS >---//
-#include "Acts/Definitions/Algebra.hpp"
-#include "Acts/MagneticField/MagneticFieldContext.hpp"
-#include "Acts/Seeding/EstimateTrackParamsFromSeed.hpp"
-#include "Acts/Seeding/Seed.hpp"
-#include "Acts/Seeding/SeedFilter.hpp"
-#include "Acts/Seeding/SpacePointGrid.hpp"
-#include "Acts/Utilities/CalibrationContext.hpp"
-#include "Acts/Utilities/Intersection.hpp"
 
 //--- LDMX ---//
 #include "TFile.h"
@@ -78,19 +65,26 @@ public:
     void produce(framework::Event& event) override;
     
 protected:
+    //Function to find seeds based on 2 Recoil points and 1 EcalRecHit
     ldmx::StraightTrack SeedTracker(const std::tuple<std::array<double, 3>, ldmx::Measurement, ldmx::Measurement> recoilOne, const std::tuple<std::array<double, 3>, ldmx::Measurement, ldmx::Measurement> recoilTwo, const std::array<double, 3> ecalOne);
     
+    //Function to combine Recoil layer points into "real" sensor points
     std::pair<std::vector<std::tuple<std::array<double, 3>, ldmx::Measurement, ldmx::Measurement>>, std::vector<std::tuple<std::array<double, 3>, ldmx::Measurement, ldmx::Measurement>>> combineMultiGlobalHits(const std::vector<ldmx::Measurement> &hitCollection);
     
+    //Function to do weighted averaging when combining Recoil layer points
     std::vector<std::tuple<std::array<double, 3>, ldmx::Measurement, ldmx::Measurement>> weightedAverage(const std::vector<ldmx::Measurement>& layer1, const std::vector<ldmx::Measurement>& layer2);
 
-    std::tuple<double, double, double, double> fit3DLine(const std::array<double, 3> &firstRecoil, const std::array<double, 3> &secondRecoil, const std::array<double, 3> &ECal);
+    //Fitting function: fit a straight line in 3D using 3 points (1 degree of freedom)
+    std::tuple<double, double, double, double, std::vector<double>> fit3DLine(const std::array<double, 3> &firstRecoil, const std::array<double, 3> &secondRecoil, const std::array<double, 3> &ECal);
     
+    //Helper function: calculate distance between 2 3D points
     double calculateDistance(const std::array<double, 3> &point1, const std::array<double, 3> &point2);
     
+    //Calculate chi2 of the fit
     double globalChiSquare(const std::array<double, 3> &firstSensor, const std::array<double, 3> &secondSensor, const std::array<double, 3> &ecalHit, double ax, double ay, double bx, double by);
 
-    int uniqueSensorsHit(const std::vector<ldmx::Measurement> &digiPoints);
+    //Function to find the number of unique layers hit (to determine if we have enough points to fit)
+    int uniqueLayersHit(const std::vector<ldmx::Measurement> &digiPoints);
     
     double processing_time_{0.};
     long nevents_{0};
@@ -104,8 +98,9 @@ protected:
     std::string input_recHits_collection_{"EcalRecHits"};
     
     double ecal_uncertainty_{3.87};
-    double ecal_distance_threshold_{10.0};
+    double ecal_distance_threshold_{10.0}; //Max distance from RecHit for valid track
     
+    //Assuming rLDMX_v1 geometry
     double layer12_midpoint_{12.5};
     double layer23_midpoint_{20.0};
     double layer34_midpoint_{27.5};

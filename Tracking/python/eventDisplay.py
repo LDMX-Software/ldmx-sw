@@ -129,8 +129,10 @@ def trackPlotter(tree, event_number, tag, save, angle_analysis = False):
             ax.plot([0.0, ecalRecHits[0][0]], [track[1], track[0]*ecalRecHits[0][0]+track[1]], [track[3], track[2]*ecalRecHits[0][0]+track[3]], 'r--', label=f'TrackID = {track[6]}, d_RecHit = {track[4]:.2f} mm, chi2 = {track[5]:.3f}')
         if (angle_analysis):
             theta, phi = calculate_angles(track[0], track[2])
-            x, y, z = plot_3d_line((0.0, track[1], track[3]), theta, phi)
-            ax.plot(z, x, y, label=f'Line: θ={theta:.2f}, φ={phi:.2f}')
+            theta_plot = math.degrees(theta)
+            phi_plot = math.degrees(phi)
+            z, x, y = plot_3d_line((0.0, track[1], track[3]), theta, phi)
+            ax.plot(z, x, y, label=f'Line: θ={theta_plot:.2f} deg, φ={phi_plot:.2f} deg')
             
     if (len(truthTrackParams) > 0):
         for truthTrack in truthTrackParams:
@@ -193,32 +195,23 @@ def plot_3d_line(initial_point, theta, phi):
     z0, x0, y0 = initial_point
 
     # Direction vector based on the angles
-    vx = np.sin(theta) * np.cos(phi)
-    vy = np.sin(theta) * np.sin(phi)
-    vz = np.cos(theta)
+    mx = np.tan(phi)
+    my = np.tan(theta) / np.cos(phi)
 
-    t = np.linspace(0, 250, 250)
+    z = np.linspace(0, 250, 250)
 
-    x = x0 + t * vx
-    y = y0 + t * vy
-    z = z0 + t * vz
+    x = x0 + z * mx
+    y = y0 + z * my
     
-    return x, y, z
+    return z, x, y
 
 
 def calculate_angles(slope_x, slope_y):
-    # Magnitude of the direction vector
-    magnitude = np.sqrt(slope_x**2 + slope_y**2 + 1)
+    # Theta: Beam Angle that describes the elevation above the zx-plane
+    theta = np.arctan2(slope_y, np.sqrt(1+slope_x**2))
     
-    # Theta: Angle from the z-axis
-    theta = np.arccos(1. / magnitude)
-    
-    # Phi: Azimuthal angle in the xy-plane
-    phi = np.arctan2(slope_y, slope_x)
-    
-    if (phi < 0):
-        theta = (-1)*theta
-        phi += math.pi
+    # Phi: Azimuthal angle in the xz-plane (horizontal tilt)
+    phi = np.arctan2(slope_x, 1)
     
     return theta, phi
 
@@ -245,14 +238,15 @@ def addBranch(tree, ldmx_class, branch_name):
     
 def main():
     tree = r.TChain("LDMX_Events")
-    tree.Add('/Users/fdelzanno/Desktop/Incandela/Coding/ldmx-sw/events_5000_rLDMX_vEXP_dSensor41half.root')
+#    tree.Add('/Users/fdelzanno/Desktop/Incandela/Coding/ldmx-sw/events_5000_rLDMX_vEXP_dSensor41half.root')
+    tree.Add('/Users/fdelzanno/Desktop/Incandela/Coding/ldmx-sw/events_5000_rLDMXV1.root')
 
     nentries = tree.GetEntries()
     print("nentries = ", nentries)
     
-    tag = 'rLDMX_vEXP'
-    save_loc = '/Users/fdelzanno/Desktop/Incandela/Coding/ldmx-sw/plots/event_displays/recoilGeometry_dSensor41half'
-#    save_loc = '/Users/fdelzanno/Desktop/Incandela/Coding/ldmx-sw/plots'
+    tag = 'rLDMX_v1'
+#    save_loc = '/Users/fdelzanno/Desktop/Incandela/Coding/ldmx-sw/plots/event_displays/recoilGeometry_dSensor41half'
+    save_loc = '/Users/fdelzanno/Desktop/Incandela/Coding/ldmx-sw/plots/event_displays/recoilGeometry_v1'
 
 
     numbers = list(range(0, 5001))
@@ -261,10 +255,10 @@ def main():
     #random_numbers_v1 = [1428, 1458, 1487, 1582, 1635, 1712, 1752, 1878, 1894, 1955, 1973, 1987]
     random_numbers_v2 = [2469, 2664, 1806, 740, 1964, 3668, 4121, 4635, 302, 3994, 4545, 3007, 4472, 3464, 2350, 1145, 2965, 4121, 62, 4707]
 
-    for number in random_numbers_v2:
-        trackPlotter(tree, number, tag, save_loc, False)
+#    for number in random_numbers_v2:
+#        trackPlotter(tree, number, tag, save_loc, False)
         
-#    trackPlotter(tree, 1712, tag, save_loc, False)
+    trackPlotter(tree, 183, tag, save_loc, False)
 
 if __name__ == "__main__":
     main()
