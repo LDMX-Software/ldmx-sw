@@ -2,12 +2,10 @@
 
 namespace framework {
 
-void onNewRun(ldmx::RunHeader& rh) {
-  rh.Print();
-}
+void onNewRun(ldmx::RunHeader& rh) { rh.Print(); }
 
 void analyze(const framework::Event& event) {
- std::cout << " heeey " << std::endl;
+  std::cout << " heeey " << std::endl;
 }
 
-}
+}  // namespace framework
