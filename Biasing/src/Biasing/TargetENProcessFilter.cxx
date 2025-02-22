@@ -39,10 +39,10 @@ void TargetENProcessFilter::stepping(const G4Step* step) {
 
   // Get the volume the particle is in.
   G4VPhysicalVolume* volume = track->GetVolume();
-  G4String volumeName = volume->GetName();
-
+  //G4String volumeName = volume->GetName();
+  auto Target_Volume = Geant4_PtrRetrieval::GetVolume("target_PV"); 
   // If the particle isn't in the target, don't continue with the processing.
-  if (volumeName.compareTo(volumeName_) != 0) return;
+  if (volume != Target_Volume) return;
 
   /*std::cout << "*******************************" << std::endl;
   std::cout << "*   Step " << track->GetCurrentStepNumber() << std::endl;

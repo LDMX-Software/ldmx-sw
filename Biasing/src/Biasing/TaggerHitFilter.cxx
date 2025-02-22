@@ -5,6 +5,8 @@
 #include "G4RunManager.hh"
 #include "G4Step.hh"
 
+#include "SimCore/Geant4_PtrRetrieval.h"
+
 namespace biasing {
 
 TaggerHitFilter::TaggerHitFilter(const std::string& name,
@@ -25,23 +27,23 @@ void TaggerHitFilter::stepping(const G4Step* step) {
   }
 
   // Only electrons in the Tagger region are of interest.
-  auto volume{track->GetVolume()};
-  if (auto region{volume->GetLogicalVolume()->GetRegion()->GetName()};
-      region.compareTo("tagger") != 0)
+  auto Current_Region = (track->GetVolume()->GetLogicalVolume()->GetRegion());
+  auto Tagger_Region = Geant4_PtrRetrieval::GetRegion("tagger"); 
+  if (Current_Region != Tagger_Region)
     return;
 
   // Check if we are exiting the tagger
-  if (auto nregion{
-          track->GetNextVolume()->GetLogicalVolume()->GetRegion()->GetName()};
-      (nregion.compareTo("tagger") != 0)) {
+  auto Next_Region = (track->GetNextVolume()->GetLogicalVolume()->GetRegion());
+  if (Next_Region != Tagger_Region) {
     checkAbortEvent(track);
     return;
   }
 
   // A particle will only leave hits in the active silicon so other volumes can
   // be skipped for now.
-  if (auto volume_name{track->GetVolume()->GetName()};
-      volume_name.compareTo("tagger_PV") == 0)
+  auto Current_Volume = (track->GetVolume());
+  auto Tagger_PhysicalVolume = Geant4_PtrRetrieval::GetVolume("tagger_PV"); 
+  if (Current_Volume == Tagger_PhysicalVolume)
     return;
 
   // The copy number is used to identify which layer energy was deposited into.

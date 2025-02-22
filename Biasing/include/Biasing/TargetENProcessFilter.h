@@ -12,6 +12,7 @@
 /*   SimCore   */
 /*~~~~~~~~~~~~~*/
 #include "SimCore/UserAction.h"
+#include "SimCore/Geant4_PtrRetrieval.h"
 
 // Forward Declarations
 class G4Step;
@@ -56,7 +57,6 @@ class TargetENProcessFilter : public simcore::UserAction {
    * target parent volume and so it will break if the target parent volume
    * changes its name.
    */
-  std::string volumeName_{"target_PV"};
 
   /** Flag indicating if the reaction of intereset occurred. */
   bool reactionOccurred_{false};

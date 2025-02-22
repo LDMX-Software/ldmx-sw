@@ -6,12 +6,14 @@
 /*~~~~~~~~~~~~*/
 #include "G4EventManager.hh"
 #include "G4RunManager.hh"
+#include "G4ParticleTable.hh"
 
 /*~~~~~~~~~~~~~*/
 /*   SimCore   */
 /*~~~~~~~~~~~~~*/
 #include "SimCore/UserEventInformation.h"
 #include "SimCore/UserTrackInformation.h"
+#include "SimCore/Geant4_PtrRetrieval.h"
 
 namespace biasing {
 
@@ -60,9 +62,10 @@ void TargetBremFilter::stepping(const G4Step* step) {
 
   // Get the region the particle is currently in.  Continue processing
   // the particle only if it's in the target region.
-  if (auto region{
-          track->GetVolume()->GetLogicalVolume()->GetRegion()->GetName()};
-      region.compareTo("target") != 0)
+  auto Target_Region = Geant4_PtrRetrieval::GetRegion("target");
+  auto Track_Volume = track->GetVolume()->GetLogicalVolume()->GetRegion(); 
+  if (Track_Volume != Target_Region) 
+  //if (auto region{track->GetVolume()->GetLogicalVolume()->GetRegion()} != Target_Region)
     return;
 
   /*
@@ -84,8 +87,12 @@ void TargetBremFilter::stepping(const G4Step* step) {
    * We also check if the next volume is World_PV because in some geometries
    * (e.g. v14), there is a air-gap between the target region and the recoil.
    */
-  if (auto volume{track->GetNextVolume()->GetName()};
-      volume.compareTo("recoil_PV") == 0 or volume.compareTo("World_PV") == 0) {
+  auto Recoil_PV = Geant4_PtrRetrieval::GetRegion("recoil_PV");
+  auto World_PV = Geant4_PtrRetrieval::GetRegion("World_PV");
+  auto volume = track->GetNextVolume(); // Declare volume separatelyi
+  auto region = volume->GetLogicalVolume()->GetRegion();
+  //if (auto volume{track->GetNextVolume()} == Recoil_PV or auto volume{track->GetNextVolume()} == World_PV) {
+  if (region == Recoil_PV or region == World_PV) {
     // If the recoil electron
     if (track->GetMomentum().mag() >= recoilMaxPThreshold_) {
       track->SetTrackStatus(fKillTrackAndSecondaries);
@@ -103,9 +110,13 @@ void TargetBremFilter::stepping(const G4Step* step) {
       for (auto& secondary_track : *secondaries) {
         G4String processName =
             secondary_track->GetCreatorProcess()->GetProcessName();
-
-        if (processName.compareTo("eBrem") == 0 &&
+        auto electron = G4ParticleTable::GetParticleTable()->FindParticle("e-");  // Get the electron definition
+        auto eBrem_process = Geant4_PtrRetrieval::GetProcess(electron,"eBrem");
+        //if (processName == eBrem_process &&
+          //  secondary_track->GetKineticEnergy() > bremEnergyThreshold_) {
+        if (processName == eBrem_process->GetProcessName() &&
             secondary_track->GetKineticEnergy() > bremEnergyThreshold_) {
+
           auto trackInfo{simcore::UserTrackInformation::get(secondary_track)};
           trackInfo->tagBremCandidate();
 

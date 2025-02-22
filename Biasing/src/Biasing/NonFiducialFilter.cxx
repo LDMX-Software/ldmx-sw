@@ -14,6 +14,7 @@
 /*~~~~~~~~~~~~~*/
 #include "SimCore/UserEventInformation.h"
 #include "SimCore/UserTrackInformation.h"
+#include "SimCore/Geant4_PtrRetrieval.h"
 
 namespace biasing {
 
@@ -43,9 +44,22 @@ void NonFiducialFilter::stepping(const G4Step* step) {
   }
 
   // Check in which volume the electron is currently
-  auto volume{track->GetVolume()->GetLogicalVolume()
-                  ? track->GetVolume()->GetLogicalVolume()->GetName()
-                  : "undefined"};
+  //auto volume{track->GetVolume()->GetLogicalVolume()
+  //                ? track->GetVolume()->GetLogicalVolume()->GetName()
+  //                : "undefined"};
+  auto volume = track->GetVolume()->GetLogicalVolume();
+
+
+  // Retrieve a known volume pointer (e.g., "target" region)
+  //const G4LogicalVolume* targetVolume = Geant4_PtrRetrieval::GetVolume("target");
+
+  // Compare pointers instead of strings
+  //if (logicalVolume == targetVolume) {
+  //  std::cout << "Track is in the target volume!" << std::endl;
+  // } else {
+  //  std::cout << "Track is in a different volume." << std::endl;
+  //}
+
 
   // Check if the track is tagged.
   auto electronCheck{simcore::UserTrackInformation::get(track)};
@@ -60,12 +74,16 @@ void NonFiducialFilter::stepping(const G4Step* step) {
     }
     // Check if the track ever enters the ECal. If it does, kill the track and
     // abort the event.
-    auto isInEcal{((volume.contains("Si") || volume.contains("W") ||
-                    volume.contains("PCB") || volume.contains("strongback") ||
-                    volume.contains("Glue") || volume.contains("CFMix") ||
-                    volume.contains("Al") || volume.contains("C")) &&
-                   volume.contains("volume")) ||
-                  (volume.contains("nohole_motherboard"))};
+    bool isInEcal = false;
+
+    auto ECal_volume = Geant4_PtrRetrieval::GetVolume("ecal_PV");
+    if (volume == ECal_volume->GetLogicalVolume()) {isInEcal = true;} 
+    //auto isInEcal{((volume.contains("Si") || volume.contains("W") ||
+    //                volume.contains("PCB") || volume.contains("strongback") ||
+    //                volume.contains("Glue") || volume.contains("CFMix") ||
+    //                volume.contains("Al") || volume.contains("C")) &&
+    //               volume.contains("volume")) ||
+    //              (volume.contains("nohole_motherboard"))};
 
     // isInEcal should be taken from
     // simcore::logical_volume_tests::isInEcal(volume) but for now it's under
@@ -86,7 +104,8 @@ void NonFiducialFilter::stepping(const G4Step* step) {
     return;
   } else {
     // Check if the particle enters the recoil tracker.
-    if (volume.compareTo("recoil") == 0) {
+    auto recoil_volume = Geant4_PtrRetrieval::GetVolume("recoil");
+    if (volume == recoil_volume->GetLogicalVolume()) {
       /* Tag the tracks that:
        1) Have a recoil electron
        2) Enter/Exit the Target */

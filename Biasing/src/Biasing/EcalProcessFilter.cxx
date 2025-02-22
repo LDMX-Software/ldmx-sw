@@ -1,4 +1,3 @@
-
 #include "Biasing/EcalProcessFilter.h"
 
 /*~~~~~~~~~~~~*/
@@ -13,6 +12,7 @@
 /*   SimCore   */
 /*~~~~~~~~~~~~~*/
 #include "SimCore/UserTrackInformation.h"
+#include "SimCore/Geant4_PtrRetrieval.h"
 
 namespace biasing {
 
@@ -26,7 +26,7 @@ G4ClassificationOfNewTrack EcalProcessFilter::ClassifyNewTrack(
     const G4Track* track, const G4ClassificationOfNewTrack& currentTrackClass) {
   // Get the particle type.
   G4String particleName = track->GetParticleDefinition()->GetParticleName();
-
+  
   if (track == currentTrack_) {
     /*
     std::cout << "[ EcalProcessFilter ]: "
@@ -54,15 +54,19 @@ void EcalProcessFilter::stepping(const G4Step* step) {
   // Get the track info and check if this track is a brem candidate
   auto trackInfo{simcore::UserTrackInformation::get(track)};
   if ((trackInfo != nullptr) && !trackInfo->isBremCandidate()) return;
-
+   
   // Get the particles daughters.
   auto secondaries{step->GetSecondary()};
-
+  
   // Get the region the particle is currently in.  Continue processing
   // the particle only if it's in the calorimeter region.
-  if (auto region{
-          track->GetVolume()->GetLogicalVolume()->GetRegion()->GetName()};
-      region.compareTo("CalorimeterRegion") != 0) {
+  auto region = Geant4_PtrRetrieval::GetRegion("CalorimeterRegion");
+  
+  
+  //Original
+  //if (auto region{
+  //       track->GetVolume()->GetLogicalVolume()->GetRegion()->GetName()};
+  if (track->GetVolume()->GetLogicalVolume()->GetRegion() != region) {
     // If secondaries were produced outside of the volume of interest,
     // and there aren't additional brems to process, abort the
     // event.  Otherwise, suspend the track and move on to the next
@@ -95,6 +99,7 @@ void EcalProcessFilter::stepping(const G4Step* step) {
   }
 
   // If the particle doesn't interact, then move on to the next step.
+  
   if (secondaries->size() == 0) {
     /**
      * Check if the photon will be exiting the ecal
@@ -105,8 +110,9 @@ void EcalProcessFilter::stepping(const G4Step* step) {
      * hcal parent volume and so it will break if the hcal parent volume
      * changes its name.
      */
-    if (auto volume{track->GetNextVolume()->GetName()};
-        volume.compareTo("hcal_PV") == 0) {
+    auto volume_after_exiting_ecal = Geant4_PtrRetrieval::GetVolume("hcal_PV");
+    auto volume = track->GetNextVolume();
+    if (volume == volume_after_exiting_ecal) {
       /*
       std::cout << "[ EcalProcessFilter ]: "
             <<

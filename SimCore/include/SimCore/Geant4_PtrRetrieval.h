@@ -1,12 +1,14 @@
-#ifndef SIMCORE_PTR_RETRIEVAL_H
-#define SIMCORE_PTR_RETRIEVAL_H
+#ifndef SIMCORE_GEANT4_PTR_RETRIEVAL_H
+#define SIMCORE_GEANT4_PTR_RETRIEVAL_H
 
 #include "G4ParticleDefinition.hh"
 #include "G4ProcessManager.hh"
 #include "G4LogicalVolume.hh"
+#include "G4LogicalVolumeStore.hh"
 #include "G4RegionStore.hh"
 #include "G4Region.hh"
 #include "G4Gamma.hh"
+#include "G4VPhysicalVolume.hh"
 #include <string>
 #include <iostream>
 
@@ -14,7 +16,7 @@
 #include "G4PhysicalVolumeStore.hh"
 #include "G4TouchableHistory.hh"
 
-namespace ptr_retrieval {
+namespace Geant4_PtrRetrieval {
 
 /**
  * @brief Retrieve a specific process for a given particle type.
@@ -55,6 +57,21 @@ inline G4Region* GetRegion(const std::string& name) {
     return G4RegionStore::GetInstance()->GetRegion(name);
 }
 
-} // namespace ptr_retrieval
+/**
+ * @brief Retrieve a Geant4 physical volume by name.
+ * @param name Name of the physical volume.
+ * @return Pointer to the physical volume if found, nullptr otherwise.
+ */
+inline G4VPhysicalVolume* GetVolume(const std::string& name) {
+  auto* volumeStore = G4PhysicalVolumeStore::GetInstance();
+  for (const auto& volume : *volumeStore) {
+    if (std::string(volume->GetName()) == name) {  // Convert G4String to std::string
+      return volume;
+    }
+  }
+  return nullptr;  // Volume not found
+}
+
+} // namespace Geant4_ptr_retrieval
 
 #endif // SIMCORE_PTR_RETRIEVAL_H
