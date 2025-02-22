@@ -101,7 +101,8 @@ void RecoilFiducialityProcessor::produce(framework::Event &event) {
   int mask_tracker_hits = has_min_tracker_hits << 1;
   int mask_ecal = has_ecal_hit << 2;
   int mask_hcal = has_hcal_hit << 3;
-  int fiducial_flag = mask_tracker_E | mask_tracker_hits | mask_ecal | mask_hcal;
+  int fiducial_flag =
+      mask_tracker_E | mask_tracker_hits | mask_ecal | mask_hcal;
 
   ldmx::FiducialFlag flag;
   flag.setFiducialFlag(fiducial_flag, 6);
@@ -129,8 +130,7 @@ void RecoilFiducialityProcessor::produce(framework::Event &event) {
     } else {
       setStorageHint(framework::hint_shouldDrop);
     }
-  }
-  else {
+  } else {
     if (is_fiducial) {
       setStorageHint(framework::hint_shouldDrop);
     } else {

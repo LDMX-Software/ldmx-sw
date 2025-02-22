@@ -76,7 +76,6 @@ class RecoilFiducialityProcessor : public framework::Producer {
 
   /** Inverse option for skimming. */
   bool inverse_skim_{false};
-
 };
 
 }  // namespace recon
