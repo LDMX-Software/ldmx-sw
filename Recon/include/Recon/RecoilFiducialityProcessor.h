@@ -73,6 +73,10 @@ class RecoilFiducialityProcessor : public framework::Producer {
 
   /** The name of the output collection. */
   std::string output_collection_;
+
+  /** Inverse option for skimming. */
+  bool inverse_skim_{false};
+
 };
 
 }  // namespace recon

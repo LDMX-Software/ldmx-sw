@@ -31,3 +31,4 @@ class RecoilFiducialityProcessor(ldmxcfg.Producer) :
         self.hcal_collection = "HcalSimHits"
         self.recoil_collection = "RecoilSimHits"
         self.output_collection = "RecoilTruthFiducialFlags"
+        self.inverse_skim = False
