@@ -83,6 +83,9 @@ void NonFiducialFilter::stepping(const G4Step* step) {
     // Check if the particle enters the recoil tracker.
     auto recoil_volume =
         simcore::g4user::ptrretrieval::getLogicalVolume("recoil");
+    if (!recoil_volume) {
+      ldmx_log(warn) << "Volume 'recoil' not found in Geant4 volume store";
+    }
     if (volume == recoil_volume) {
       /* Tag the tracks that:
        1) Have a recoil electron

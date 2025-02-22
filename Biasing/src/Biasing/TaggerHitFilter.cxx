@@ -36,6 +36,9 @@ void TaggerHitFilter::stepping(const G4Step* step) {
   // Only electrons in the Tagger region are of interest.
   auto current_region = (track->GetVolume()->GetLogicalVolume()->GetRegion());
   auto tagger_region = simcore::g4user::ptrretrieval::getRegion("tagger");
+  if (!tagger_region) {
+    ldmx_log(warn) << "Region 'tagger' not found in Geant4 region store";
+  }
   if (current_region != tagger_region) return;
 
   // Check if we are exiting the tagger
@@ -50,6 +53,9 @@ void TaggerHitFilter::stepping(const G4Step* step) {
   auto current_volume = (track->GetVolume());
   auto tagger_physical_volume =
       simcore::g4user::ptrretrieval::getPhysicalVolume("tagger_PV");
+  if (!tagger_physical_volume) {
+    ldmx_log(warn) << "Volume 'tagger_PV' not found in Geant4 volume store";
+  }
   if (current_volume == tagger_physical_volume) return;
 
   // The copy number is used to identify which layer energy was deposited into.

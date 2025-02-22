@@ -65,6 +65,9 @@ void TargetBremFilter::stepping(const G4Step* step) {
   // Get the region the particle is currently in.  Continue processing
   // the particle only if it's in the target region.
   auto target_region = simcore::g4user::ptrretrieval::getRegion("target");
+  if (!target_region) {
+    ldmx_log(warn) << "Region 'target' not found in Geant4 region store";
+  }
   auto track_region = track->GetVolume()->GetLogicalVolume()->GetRegion();
   if (track_region != target_region) return;
 
@@ -91,6 +94,12 @@ void TargetBremFilter::stepping(const G4Step* step) {
       simcore::g4user::ptrretrieval::getPhysicalVolume("recoil_PV");
   auto world_physical_volume =
       simcore::g4user::ptrretrieval::getPhysicalVolume("World_PV");
+  if (!recoil_physical_volume) {
+    ldmx_log(warn) << "Volume 'recoil_PV' not found in Geant4 volume store";
+  }
+  if (!world_physical_volume) {
+    ldmx_log(warn) << "Volume 'World_PV' not found in Geant4 volume store";
+  }
   auto track_volume = track->GetNextVolume();
   if (track_volume == recoil_physical_volume or
       track_volume == world_physical_volume) {
@@ -111,7 +120,13 @@ void TargetBremFilter::stepping(const G4Step* step) {
       for (auto& secondary_track : *secondaries) {
         auto electron = G4Electron::Definition();
         auto ebrem_process =
-            simcore::g4user::ptrretrieval::getProcess(electron, "eBrem");
+          simcore::g4user::ptrretrieval::getProcess(electron, "eBrem");
+        if (!ebrem_process) {
+          ldmx_log(warn) << "Process 'eBrem' not found in Geant4 process store";
+        }
+
+
+
         if (ebrem_process &&
             secondary_track->GetKineticEnergy() > bremEnergyThreshold_) {
           auto trackInfo{simcore::UserTrackInformation::get(secondary_track)};

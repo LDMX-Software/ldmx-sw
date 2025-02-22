@@ -13,6 +13,11 @@
 /*~~~~~~~~~~~~~*/
 #include "SimCore/UserAction.h"
 
+/*~~~~~~~~~~*/
+/*   Core   */
+/*~~~~~~~~~~*/
+#include "Framework/Logger.h"
+
 // Forward Declarations
 class G4Step;
 class G4Event;
@@ -55,6 +60,8 @@ class TargetENProcessFilter : public simcore::UserAction {
 
   /// Process to filter on
   std::string process_{"electronNuclear"};
+
+  enableLogging("TargetENProcessFilter");
 
 };  // TargetENProcessFilter
 }  // namespace biasing

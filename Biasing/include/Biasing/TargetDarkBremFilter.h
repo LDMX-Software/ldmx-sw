@@ -26,6 +26,7 @@
 //------------//
 #include "SimCore/G4User/PtrRetrieval.h"
 #include "SimCore/UserAction.h"
+#include "SimCore/Geant4_PtrRetrieval.h"
 
 namespace biasing {
 
@@ -116,11 +117,18 @@ class TargetDarkBremFilter : public simcore::UserAction {
    * @returns true if vol is outside target region or nullptr or doesn't have a
    * region
    */
+  //static G4Region* TargetRegion = Geant4_PtrRetrieval::GetRegion("target");
   inline bool isOutsideTargetRegion(const G4LogicalVolume* vol) const {
     if (!vol) return true;
+<<<<<<< HEAD
     auto target_region = simcore::g4user::ptrretrieval::getRegion("target");
     auto region = vol->GetRegion();
     return region ? (region != target_region) : true;
+=======
+    static G4Region* TargetRegion = Geant4_PtrRetrieval::GetRegion("target"); // Static local variable
+    auto region = vol->GetRegion();
+    return region ? (region != TargetRegion) : true;
+>>>>>>> Replaced the compareto() functions
   }
 
   /**

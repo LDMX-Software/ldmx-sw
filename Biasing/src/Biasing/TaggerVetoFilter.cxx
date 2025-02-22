@@ -50,6 +50,9 @@ void TaggerVetoFilter::stepping(const G4Step *step) {
   // the particle only if it's in the tagger region.
   auto current_region = track->GetVolume()->GetLogicalVolume()->GetRegion();
   auto tagger_region = simcore::g4user::ptrretrieval::getRegion("tagger");
+  if (!tagger_region) {
+    ldmx_log(warn) << "Region 'tagger' not found in Geant4 region store";
+  }
   if (current_region != tagger_region) {
     return;
   }
