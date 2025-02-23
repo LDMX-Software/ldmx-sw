@@ -1,4 +1,3 @@
-// VolumeTests.h
 #ifndef SIMCORE_VOLUMETESTS_H
 #define SIMCORE_VOLUMETESTS_H
 
@@ -22,7 +21,6 @@ namespace volume_tests {
    */
   //bool isInEcal(const G4LogicalVolume* volume);
   bool isInEcal(G4LogicalVolume* volume, const std::string& volumeName);
-
  
   /**
   * isInEcalOld
@@ -36,9 +34,6 @@ namespace volume_tests {
   * @param[in] vol_to_bias UNUSED name of volume to bias
   */
   bool isInEcalOld(const G4LogicalVolume* volume);
- 
- 
- 
  
   /**
    * isInHcal
@@ -59,9 +54,6 @@ namespace volume_tests {
    * @param[in] vol_to_bias UNUSED name of volume to bias
    */
   bool isInTargetRegion(const G4LogicalVolume* volume);
-
-
-
 
    /**
    * isInTargetONLY
@@ -89,9 +81,6 @@ namespace volume_tests {
    */
   bool nameContains(const G4LogicalVolume* volume);
 
-
-
 } // namespace volume_tests
 } // namespace simcore
-
 #endif

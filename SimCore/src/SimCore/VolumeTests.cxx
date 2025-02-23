@@ -58,7 +58,6 @@ namespace volume_tests {
           volumeName.contains("volume"));
   }
 
-
   /**
   * isInTargetRegion
   *
@@ -103,7 +102,6 @@ namespace volume_tests {
   static bool nameContains(G4LogicalVolume* vol, const std::string& vol_to_bias) {
     return vol->GetName().contains(vol_to_bias);
   }
-
 
 } // namespace volume_tests
 } // namespace simcore
