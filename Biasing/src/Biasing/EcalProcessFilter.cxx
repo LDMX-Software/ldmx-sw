@@ -63,9 +63,6 @@ void EcalProcessFilter::stepping(const G4Step* step) {
   auto region = Geant4_PtrRetrieval::GetRegion("CalorimeterRegion");
   
   
-  //Original
-  //if (auto region{
-  //       track->GetVolume()->GetLogicalVolume()->GetRegion()->GetName()};
   if (track->GetVolume()->GetLogicalVolume()->GetRegion() != region) {
     // If secondaries were produced outside of the volume of interest,
     // and there aren't additional brems to process, abort the

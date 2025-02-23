@@ -12,7 +12,6 @@
 #include <string>
 #include <iostream>
 
-#include "G4RegionStore.hh"
 #include "G4PhysicalVolumeStore.hh"
 #include "G4TouchableHistory.hh"
 

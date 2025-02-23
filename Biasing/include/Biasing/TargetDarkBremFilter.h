@@ -116,7 +116,6 @@ class TargetDarkBremFilter : public simcore::UserAction {
    * @returns true if vol is outside target region or nullptr or doesn't have a
    * region
    */
-  //static G4Region* TargetRegion = Geant4_PtrRetrieval::GetRegion("target");
   inline bool isOutsideTargetRegion(const G4LogicalVolume* vol) const {
     if (!vol) return true;
     static G4Region* TargetRegion = Geant4_PtrRetrieval::GetRegion("target"); // Static local variable
