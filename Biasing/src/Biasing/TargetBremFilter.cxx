@@ -87,12 +87,10 @@ void TargetBremFilter::stepping(const G4Step* step) {
    * We also check if the next volume is World_PV because in some geometries
    * (e.g. v14), there is a air-gap between the target region and the recoil.
    */
-  auto Recoil_PV = Geant4_PtrRetrieval::GetRegion("recoil_PV");
-  auto World_PV = Geant4_PtrRetrieval::GetRegion("World_PV");
+  auto Recoil_PV = Geant4_PtrRetrieval::GetVolume("recoil_PV");
+  auto World_PV = Geant4_PtrRetrieval::GetVolume("World_PV");
   auto volume = track->GetNextVolume(); // Declare volume separatelyi
-  auto region = volume->GetLogicalVolume()->GetRegion();
-  //if (auto volume{track->GetNextVolume()} == Recoil_PV or auto volume{track->GetNextVolume()} == World_PV) {
-  if (region == Recoil_PV or region == World_PV) {
+  if (volume == Recoil_PV or volume == World_PV) {
     // If the recoil electron
     if (track->GetMomentum().mag() >= recoilMaxPThreshold_) {
       track->SetTrackStatus(fKillTrackAndSecondaries);
@@ -112,8 +110,6 @@ void TargetBremFilter::stepping(const G4Step* step) {
             secondary_track->GetCreatorProcess()->GetProcessName();
         auto electron = G4ParticleTable::GetParticleTable()->FindParticle("e-");  // Get the electron definition
         auto eBrem_process = Geant4_PtrRetrieval::GetProcess(electron,"eBrem");
-        //if (processName == eBrem_process &&
-          //  secondary_track->GetKineticEnergy() > bremEnergyThreshold_) {
         if (processName == eBrem_process->GetProcessName() &&
             secondary_track->GetKineticEnergy() > bremEnergyThreshold_) {
 

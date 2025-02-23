@@ -1,4 +1,3 @@
-
 #include "Biasing/TaggerVetoFilter.h"
 
 /*~~~~~~~~~~~~*/
@@ -7,6 +6,9 @@
 #include "G4RunManager.hh"
 #include "G4Step.hh"
 
+/*~~~~~~~~~~~~~*/
+/*   SimCore   */
+/*~~~~~~~~~~~~~*/
 #include "SimCore/Geant4_PtrRetrieval.h"
 
 namespace biasing {

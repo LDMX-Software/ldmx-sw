@@ -1,10 +1,14 @@
-
 #include "Biasing/TaggerHitFilter.h"
 
-//~~ Geant4 ~~//
+//------------//
+//   Geant4   //
+//------------//
 #include "G4RunManager.hh"
 #include "G4Step.hh"
 
+/*~~~~~~~~~~~~~*/
+/*   SimCore   */
+/*~~~~~~~~~~~~~*/
 #include "SimCore/Geant4_PtrRetrieval.h"
 
 namespace biasing {

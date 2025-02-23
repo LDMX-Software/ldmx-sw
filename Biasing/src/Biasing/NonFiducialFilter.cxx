@@ -29,7 +29,6 @@ NonFiducialFilter::NonFiducialFilter(const std::string& name,
 }
 
 void NonFiducialFilter::stepping(const G4Step* step) {
-  std::cout << "finding nonfiducial track" << std::endl;
   // Get the track associated with this step.
   auto track{step->GetTrack()};
 

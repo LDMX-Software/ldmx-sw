@@ -62,7 +62,6 @@ void EcalProcessFilter::stepping(const G4Step* step) {
   // the particle only if it's in the calorimeter region.
   auto region = Geant4_PtrRetrieval::GetRegion("CalorimeterRegion");
   
-  
   if (track->GetVolume()->GetLogicalVolume()->GetRegion() != region) {
     // If secondaries were produced outside of the volume of interest,
     // and there aren't additional brems to process, abort the
@@ -96,7 +95,6 @@ void EcalProcessFilter::stepping(const G4Step* step) {
   }
 
   // If the particle doesn't interact, then move on to the next step.
-  
   if (secondaries->size() == 0) {
     /**
      * Check if the photon will be exiting the ecal
@@ -107,7 +105,7 @@ void EcalProcessFilter::stepping(const G4Step* step) {
      * hcal parent volume and so it will break if the hcal parent volume
      * changes its name.
      */
-    auto volume_after_exiting_ecal = Geant4_PtrRetrieval::GetVolume("hcal_PV");
+    auto volume_after_exiting_ecal = Geant4_PtrRetrieval::GetVolume("hadronic_calorimeter");
     auto volume = track->GetNextVolume();
     if (volume == volume_after_exiting_ecal) {
       /*

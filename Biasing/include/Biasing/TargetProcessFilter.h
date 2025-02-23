@@ -10,7 +10,6 @@
 /*   Framework   */
 /*~~~~~~~~~~~~~~~*/
 #include "Framework/Configure/Parameters.h"
-#include <map>  // Include std::map
 
 // Forward declaration
 class G4Event;
@@ -68,8 +67,6 @@ class TargetProcessFilter : public simcore::UserAction {
 
   /// The process to bias
   std::string process_{""};
-  /// Track entry counter: Maps Track ID → Number of times entering World_PV
-  std::map<int, int> trackEntryCount;
   
 };
 
