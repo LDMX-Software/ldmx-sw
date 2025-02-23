@@ -1,7 +1,6 @@
 #include "SimCore/XsecBiasingOperator.h"
 
 #include "Framework/Exception/Exception.h"
-#include "SimCore/Geant4_PtrRetrieval.h"
 
 namespace simcore {
 
@@ -47,16 +46,10 @@ bool XsecBiasingOperator::processIsBiased(std::string process) {
          ++iprocess) {
       const G4BiasingProcessInterface* wrapperProcess =
           (sharedData->GetPhysicsBiasingProcessInterfaces())[iprocess];
-          
-      const G4VProcess* expectedProcess = Geant4_PtrRetrieval::GetProcess(
-           processManager_->GetParticleType(), process);
-      if (wrapperProcess->GetWrappedProcess() == expectedProcess) {
-        return true;
 
-      
-      //if (wrapperProcess->GetWrappedProcess()->GetProcessName().compareTo(process) == 0) {
-        //return true;  
-     
+      if (wrapperProcess->GetWrappedProcess()->GetProcessName().compareTo(
+              process) == 0) {
+        return true;
       }
     }
   }
