@@ -60,7 +60,6 @@ void NonFiducialFilter::stepping(const G4Step* step) {
     }
     // Check if the track ever enters the ECal. If it does, kill the track and
     // abort the event.
-    auto volume = track->GetVolume()->GetLogicalVolume();
     auto volumeName = volume->GetName();
     auto isInEcal = simcore::volume_tests::isInEcal(volume, volumeName);
     if (abort_fiducial_ && isInEcal) {

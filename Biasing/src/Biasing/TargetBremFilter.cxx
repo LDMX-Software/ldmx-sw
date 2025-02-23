@@ -7,6 +7,7 @@
 #include "G4EventManager.hh"
 #include "G4ParticleTable.hh"
 #include "G4RunManager.hh"
+#include "G4Electron.hh"
 
 /*~~~~~~~~~~~~~*/
 /*   SimCore   */
@@ -109,8 +110,7 @@ void TargetBremFilter::stepping(const G4Step* step) {
       for (auto& secondary_track : *secondaries) {
         G4String processName =
             secondary_track->GetCreatorProcess()->GetProcessName();
-        auto electron = G4ParticleTable::GetParticleTable()->FindParticle(
-            "e-");  // Get the electron definition
+        auto electron = G4Electron::Definition();
         auto eBrem_process = Geant4_PtrRetrieval::GetProcess(electron, "eBrem");
         if (processName == eBrem_process->GetProcessName() &&
             secondary_track->GetKineticEnergy() > bremEnergyThreshold_) {
