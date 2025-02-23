@@ -53,6 +53,7 @@ void LinearSeedFinder::produce(framework::Event& event) {
     if (recoilHits.size() < 2 || firstLayerEcalRecHits.empty() || uniqueLayersHit(recoilHits) < 2) {
         nmissing_++;
         nseeds_ += straight_seed_tracks.size();
+        event.add(out_seed_collection_, straight_seed_tracks);
         return;
     }
     

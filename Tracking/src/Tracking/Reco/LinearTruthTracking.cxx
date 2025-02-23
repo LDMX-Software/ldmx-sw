@@ -55,6 +55,7 @@ void LinearTruthTracking::produce(framework::Event& event) {
     if (recoilHits.size() < 2) {
         nmissing_++;
         ntruth_ += straight_truth_tracks.size();
+        event.add(out_trk_collection_, straight_truth_tracks);
         return;
     }
     
