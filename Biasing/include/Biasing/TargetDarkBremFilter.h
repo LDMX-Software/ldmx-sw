@@ -26,7 +26,11 @@
 //------------//
 #include "SimCore/G4User/PtrRetrieval.h"
 #include "SimCore/UserAction.h"
-#include "SimCore/Geant4_PtrRetrieval.h"
+
+/*~~~~~~~~~~*/
+/*   Core   */
+/*~~~~~~~~~~*/
+#include "Framework/Logger.h"
 
 namespace biasing {
 
@@ -117,19 +121,16 @@ class TargetDarkBremFilter : public simcore::UserAction {
    * @returns true if vol is outside target region or nullptr or doesn't have a
    * region
    */
-  //static G4Region* TargetRegion = Geant4_PtrRetrieval::GetRegion("target");
   inline bool isOutsideTargetRegion(const G4LogicalVolume* vol) const {
-    if (!vol) return true;
-<<<<<<< HEAD
-    auto target_region = simcore::g4user::ptrretrieval::getRegion("target");
-    auto region = vol->GetRegion();
-    return region ? (region != target_region) : true;
-=======
-    static G4Region* TargetRegion = Geant4_PtrRetrieval::GetRegion("target"); // Static local variable
-    auto region = vol->GetRegion();
-    return region ? (region != TargetRegion) : true;
->>>>>>> Replaced the compareto() functions
+      if (!vol) return true;
+      auto target_region = simcore::g4user::ptrretrieval::getRegion("target");
+      if (!target_region) {
+        ldmx_log(warn) << "Region 'target' not found in Geant4 region store";
+      }
+      auto region = vol->GetRegion();
+      return region ? (region != target_region) : true;
   }
+
 
   /**
    * Helper to abort an event with a message
@@ -140,6 +141,9 @@ class TargetDarkBremFilter : public simcore::UserAction {
    * @param[in] reason reason for aborting the event
    */
   void AbortEvent(const std::string& reason) const;
+
+  /** Enable logging for this class */
+  enableLogging("TargetDarkBremFilter");
 
  private:
   /**
