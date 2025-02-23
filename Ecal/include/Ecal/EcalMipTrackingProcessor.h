@@ -1,9 +1,11 @@
 /**
- * @file EcalVetoProcessor.h
- * @brief Class that determines if event is vetoable using ECAL hit information
+ * @file EcalMipTrackingProcessor.h
+ * @brief TODO fill later
  * @author Owen Colegrove, Danyi Zhang, Tamas Vami (UCSB)
  */
 
+
+//  TODO Change Later
 #ifndef EVENTPROC_ECALVETOPROCESSOR_H_
 #define EVENTPROC_ECALVETOPROCESSOR_H_
 
@@ -27,8 +29,7 @@
 #include <memory>
 
 namespace ecal {
-
-/**
+    /**
  * @class EcalVetoProcessor
  * @brief Determines if event is vetoable using ECAL hit information
  */
@@ -72,30 +73,9 @@ class EcalVetoProcessor : public framework::Producer {
     TVector3 pos;
   };
 
- private:
-  void clearProcessor();
 
-  /* Function to calculate the energy weighted shower centroid */
-  ldmx::EcalID GetShowerCentroidIDAndRMS(
-      const std::vector<ldmx::EcalHit>& ecalRecHits, float& showerRMS);
 
-  /* Function to load up empty vector of hit maps */
-  void fillHitMap(const std::vector<ldmx::EcalHit>& ecalRecHits,
-                  std::map<ldmx::EcalID, float>& cellMap_);
-
-  /* Function to take loaded hit maps and find isolated hits in them */
-  void fillIsolatedHitMap(const std::vector<ldmx::EcalHit>& ecalRecHits,
-                          ldmx::EcalID globalCentroid,
-                          std::map<ldmx::EcalID, float>& cellMap,
-                          std::map<ldmx::EcalID, float>& cellMapIso,
-                          bool doTight = false);
-
-  std::vector<XYCoords> getTrajectory(std::array<float, 3> momentum,
-                                      std::array<float, 3> position);
-
-  void buildBDTFeatureVector(const ldmx::EcalVetoResult& result);
-
-  // MIP tracking
+ // MIP tracking
   /**
    * Returns the distance between the lines v and w, with v defined to pass
    * through the points (v1,v2) (and similarly for w).
@@ -131,9 +111,9 @@ class EcalVetoProcessor : public framework::Producer {
 
  private:
   int nevents_{0};
-  float processing_time_{0.};
+  double processing_time_{0.};
 
-  std::map<std::string, float> profiling_map_;
+  std::map<std::string, double> profiling_map_;
   std::map<ldmx::EcalID, float> cellMap_;
   std::map<ldmx::EcalID, float> cellMapTightIso_;
 
@@ -141,21 +121,21 @@ class EcalVetoProcessor : public framework::Producer {
   std::vector<float> ecalLayerEdepReadout_;
   std::vector<float> ecalLayerTime_;
 
-  std::vector<std::vector<float>> roc_range_values_;
+  std::vector<std::vector<double>> roc_range_values_;
 
   int nEcalLayers_{0};
   int nReadoutHits_{0};
   int deepestLayerHit_{0};
 
-  float summedDet_{0};
-  float summedTightIso_{0};
-  float maxCellDep_{0};
-  float showerRMS_{0};
-  float xStd_{0};
-  float yStd_{0};
-  float avgLayerHit_{0};
-  float stdLayerHit_{0};
-  float ecalBackEnergy_{0};
+  double summedDet_{0};
+  double summedTightIso_{0};
+  double maxCellDep_{0};
+  double showerRMS_{0};
+  double xStd_{0};
+  double yStd_{0};
+  double avgLayerHit_{0};
+  double stdLayerHit_{0};
+  double ecalBackEnergy_{0};
   // MIP tracking
   /// Number of "straight" tracks found in the event
   int nStraightTracks_{0};
@@ -166,52 +146,16 @@ class EcalVetoProcessor : public framework::Producer {
   /// Number of hits near the photon trajectory
   int nNearPhHits_{0};
   /// Angular separation between the projected photon and electron trajectories
-  /// as projected at ECAL
+  /// (currently unused)
   float epAng_{0};
-  /// Angular separation between the projected photon and electron trajectories
-  /// as at Target
-  float epAngAtTarget_{0};
   /// Distance between the projected photon and electron trajectories at the
   /// ECal face
   float epSep_{0};
-  /// Dot product of the photon and electron momenta unit vectors at Ecal
+  /// Dot product of the photon and electron momenta unit vectors
   float epDot_{0};
-  /// Dot product of the photon and electron momenta unit vectors at Target
-  float epDotAtTarget_{0};
   /// Number of hits in the photon territory
   int photonTerritoryHits_{0};
-
-  float bdtCutVal_{0};
-
-  float beamEnergyMeV_{0};
-  bool run_lin_reg_{true};
-  float linreg_radius_{0};
-
-  std::string bdtFileName_;
-  std::string rocFileName_;
-  std::vector<float> bdtFeatures_;
-  std::string featureListName_;
-
-  // Pass and collection names
-  std::string sp_pass_name_;
-  std::string rec_pass_name_;
-  std::string rec_coll_name_;
-  bool recoil_from_tracking_;
-  std::string track_pass_name_;
-  std::string track_collection_;
-
-  std::string sim_particles_passname_;
-  bool inverse_skim_{false};
-
-  /** Name of the collection which will contain the results. */
-  std::string collectionName_{"EcalVeto"};
-
-  std::unique_ptr<ldmx::Ort::ONNXRuntime> rt_;
-
-  /// handle to current geometry (to share with member functions)
-  const ldmx::EcalGeometry* geometry_;
-};
-
-}  // namespace ecal
+  
+  }  // namespace ecal
 
 #endif
