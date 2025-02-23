@@ -34,7 +34,8 @@ bool isInEcal(G4LogicalVolume* vol, const std::string& vol_to_bias) {
  * @param[in] vol G4LogicalVolume to check
  * @param[in] vol_to_bias UNUSED name of volume to bias
  */
-[[maybe_unused]] static bool isInHcal(G4LogicalVolume* vol, const std::string& vol_to_bias) {
+[[maybe_unused]] static bool isInHcal(G4LogicalVolume* vol,
+                                      const std::string& vol_to_bias) {
   const G4String& volumeName = vol->GetName();
   return ((volumeName.contains("abso") || volumeName.contains("ScintBox") ||
            volumeName.contains("scint")) &&
@@ -52,7 +53,8 @@ bool isInEcal(G4LogicalVolume* vol, const std::string& vol_to_bias) {
  * @param[in] vol G4LogicalVolume to check
  * @param[in] vol_to_bias UNUSED name of volume to bias
  */
-[[maybe_unused]] static bool isInEcalOld(G4LogicalVolume* vol, const std::string& vol_to_bias) {
+[[maybe_unused]] static bool isInEcalOld(G4LogicalVolume* vol,
+                                         const std::string& vol_to_bias) {
   const G4String& volumeName = vol->GetName();
   return ((volumeName.contains("Si") || volumeName.contains("W")) &&
           volumeName.contains("volume"));
@@ -67,7 +69,7 @@ bool isInEcal(G4LogicalVolume* vol, const std::string& vol_to_bias) {
  * @param[in] vol_to_bias UNUSED name of volume to bias
  */
 [[maybe_unused]] static bool isInTargetRegion(G4LogicalVolume* vol,
-                             const std::string& vol_to_bias) {
+                                              const std::string& vol_to_bias) {
   auto region = vol->GetRegion();
   return (region and region->GetName().contains("target"));
 }
@@ -83,7 +85,7 @@ bool isInEcal(G4LogicalVolume* vol, const std::string& vol_to_bias) {
  * @param[in] vol_to_bias UNUSED name of volume to bias
  */
 [[maybe_unused]] static bool isInTargetOnly(G4LogicalVolume* vol,
-                           const std::string& vol_to_bias) {
+                                            const std::string& vol_to_bias) {
   return vol->GetName().contains("target");
 }
 
@@ -99,7 +101,8 @@ bool isInEcal(G4LogicalVolume* vol, const std::string& vol_to_bias) {
  * @param[in] vol G4LogicalVolume to check
  * @param[in] vol_to_bias name of volume to bias
  */
-[[maybe_unused]] static bool nameContains(G4LogicalVolume* vol, const std::string& vol_to_bias) {
+[[maybe_unused]] static bool nameContains(G4LogicalVolume* vol,
+                                          const std::string& vol_to_bias) {
   return vol->GetName().contains(vol_to_bias);
 }
 
