@@ -4,7 +4,6 @@
 namespace simcore {
 namespace volume_tests {
 
-
   /**
   * isInEcal
   *
@@ -26,10 +25,6 @@ namespace volume_tests {
              volumeName.contains("volume")) ||
              (volumeName.contains("nohole_motherboard"));
   }
-
-
-
-
 
   /**
   * isInHcal
