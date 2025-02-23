@@ -48,6 +48,7 @@ void TaggerVetoFilter::stepping(const G4Step *step) {
 
   // Get the region the particle is currently in.  Continue processing
   // the particle only if it's in the tagger region.
+<<<<<<< HEAD
   auto current_region = track->GetVolume()->GetLogicalVolume()->GetRegion();
   auto tagger_region = simcore::g4user::ptrretrieval::getRegion("tagger");
   if (!tagger_region) {

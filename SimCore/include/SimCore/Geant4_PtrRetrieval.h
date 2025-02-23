@@ -1,19 +1,19 @@
 #ifndef SIMCORE_GEANT4_PTR_RETRIEVAL_H
 #define SIMCORE_GEANT4_PTR_RETRIEVAL_H
 
-#include "G4ParticleDefinition.hh"
-#include "G4ProcessManager.hh"
+#include <iostream>
+#include <string>
+
+#include "G4Gamma.hh"
 #include "G4LogicalVolume.hh"
 #include "G4LogicalVolumeStore.hh"
-#include "G4RegionStore.hh"
-#include "G4Region.hh"
-#include "G4Gamma.hh"
-#include "G4VPhysicalVolume.hh"
-#include <string>
-#include <iostream>
-
+#include "G4ParticleDefinition.hh"
 #include "G4PhysicalVolumeStore.hh"
+#include "G4ProcessManager.hh"
+#include "G4Region.hh"
+#include "G4RegionStore.hh"
 #include "G4TouchableHistory.hh"
+#include "G4VPhysicalVolume.hh"
 
 namespace Geant4_PtrRetrieval {
 
@@ -23,7 +23,8 @@ namespace Geant4_PtrRetrieval {
  * @param processName Name of the process to find.
  * @return Pointer to the process if found, nullptr otherwise.
  */
-inline const G4VProcess* GetProcess(const G4ParticleDefinition* particle, const std::string& processName) {
+inline const G4VProcess* GetProcess(const G4ParticleDefinition* particle,
+                                    const std::string& processName) {
   if (!particle) return nullptr;
 
   const auto manager = particle->GetProcessManager();
@@ -53,7 +54,7 @@ inline const G4VProcess* GetPhotonuclearProcess() {
  * @return Pointer to the region if found, nullptr otherwise.
  */
 inline G4Region* GetRegion(const std::string& name) {
-    return G4RegionStore::GetInstance()->GetRegion(name);
+  return G4RegionStore::GetInstance()->GetRegion(name);
 }
 
 /**
@@ -64,13 +65,14 @@ inline G4Region* GetRegion(const std::string& name) {
 inline G4VPhysicalVolume* GetVolume(const std::string& name) {
   auto* volumeStore = G4PhysicalVolumeStore::GetInstance();
   for (const auto& volume : *volumeStore) {
-    if (std::string(volume->GetName()) == name) {  // Convert G4String to std::string
+    if (std::string(volume->GetName()) ==
+        name) {  // Convert G4String to std::string
       return volume;
     }
   }
   return nullptr;  // Volume not found
 }
 
-} // namespace Geant4_ptr_retrieval
+}  // namespace Geant4_PtrRetrieval
 
-#endif // SIMCORE_PTR_RETRIEVAL_H
+#endif  // SIMCORE_PTR_RETRIEVAL_H
