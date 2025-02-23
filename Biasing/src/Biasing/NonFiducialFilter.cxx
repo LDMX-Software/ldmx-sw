@@ -12,9 +12,9 @@
 /*~~~~~~~~~~~~~*/
 /*   SimCore   */
 /*~~~~~~~~~~~~~*/
+#include "SimCore/Geant4_PtrRetrieval.h"
 #include "SimCore/UserEventInformation.h"
 #include "SimCore/UserTrackInformation.h"
-#include "SimCore/Geant4_PtrRetrieval.h"
 #include "SimCore/VolumeTests.h"
 
 namespace biasing {

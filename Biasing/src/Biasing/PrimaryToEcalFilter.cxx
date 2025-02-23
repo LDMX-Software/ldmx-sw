@@ -26,10 +26,10 @@ void PrimaryToEcalFilter::stepping(const G4Step* step) {
 
   // Get the region the particle is currently in.  Continue processing
   // the particle only if it's NOT in the calorimeter region
-  auto CurrentRegion = step->GetTrack()->GetVolume()->GetLogicalVolume()->GetRegion();
+  auto CurrentRegion =
+      step->GetTrack()->GetVolume()->GetLogicalVolume()->GetRegion();
   auto CalorimeterRegion = Geant4_PtrRetrieval::GetRegion("CalorimeterRegion");
-  if (CurrentRegion == CalorimeterRegion)
-    return;
+  if (CurrentRegion == CalorimeterRegion) return;
 
   // If the energy of the particle fell below threshold, stop processing the
   // event.

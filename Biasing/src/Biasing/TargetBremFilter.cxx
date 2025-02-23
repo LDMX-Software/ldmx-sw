@@ -5,15 +5,15 @@
 /*   Geant4   */
 /*~~~~~~~~~~~~*/
 #include "G4EventManager.hh"
-#include "G4RunManager.hh"
 #include "G4ParticleTable.hh"
+#include "G4RunManager.hh"
 
 /*~~~~~~~~~~~~~*/
 /*   SimCore   */
 /*~~~~~~~~~~~~~*/
+#include "SimCore/Geant4_PtrRetrieval.h"
 #include "SimCore/UserEventInformation.h"
 #include "SimCore/UserTrackInformation.h"
-#include "SimCore/Geant4_PtrRetrieval.h"
 
 namespace biasing {
 
@@ -63,9 +63,10 @@ void TargetBremFilter::stepping(const G4Step* step) {
   // Get the region the particle is currently in.  Continue processing
   // the particle only if it's in the target region.
   auto Target_Region = Geant4_PtrRetrieval::GetRegion("target");
-  auto Track_Volume = track->GetVolume()->GetLogicalVolume()->GetRegion(); 
-  if (Track_Volume != Target_Region) 
-  //if (auto region{track->GetVolume()->GetLogicalVolume()->GetRegion()} != Target_Region)
+  auto Track_Volume = track->GetVolume()->GetLogicalVolume()->GetRegion();
+  if (Track_Volume != Target_Region)
+    // if (auto region{track->GetVolume()->GetLogicalVolume()->GetRegion()} !=
+    // Target_Region)
     return;
 
   /*
@@ -89,7 +90,7 @@ void TargetBremFilter::stepping(const G4Step* step) {
    */
   auto Recoil_PV = Geant4_PtrRetrieval::GetVolume("recoil_PV");
   auto World_PV = Geant4_PtrRetrieval::GetVolume("World_PV");
-  auto volume = track->GetNextVolume(); // Declare volume separatelyi
+  auto volume = track->GetNextVolume();  // Declare volume separatelyi
   if (volume == Recoil_PV or volume == World_PV) {
     // If the recoil electron
     if (track->GetMomentum().mag() >= recoilMaxPThreshold_) {
@@ -108,11 +109,11 @@ void TargetBremFilter::stepping(const G4Step* step) {
       for (auto& secondary_track : *secondaries) {
         G4String processName =
             secondary_track->GetCreatorProcess()->GetProcessName();
-        auto electron = G4ParticleTable::GetParticleTable()->FindParticle("e-");  // Get the electron definition
-        auto eBrem_process = Geant4_PtrRetrieval::GetProcess(electron,"eBrem");
+        auto electron = G4ParticleTable::GetParticleTable()->FindParticle(
+            "e-");  // Get the electron definition
+        auto eBrem_process = Geant4_PtrRetrieval::GetProcess(electron, "eBrem");
         if (processName == eBrem_process->GetProcessName() &&
             secondary_track->GetKineticEnergy() > bremEnergyThreshold_) {
-
           auto trackInfo{simcore::UserTrackInformation::get(secondary_track)};
           trackInfo->tagBremCandidate();
 

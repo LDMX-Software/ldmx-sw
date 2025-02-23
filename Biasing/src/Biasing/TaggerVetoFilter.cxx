@@ -47,7 +47,9 @@ void TaggerVetoFilter::stepping(const G4Step *step) {
   // the particle only if it's in the tagger region.
   auto Current_Region = track->GetVolume()->GetLogicalVolume()->GetRegion();
   auto Tagger_Region = Geant4_PtrRetrieval::GetRegion("tagger");
-  if (Current_Region != Tagger_Region) {return;}
+  if (Current_Region != Tagger_Region) {
+    return;
+  }
 
   primary_entered_tagger_region_ = true;
   // If the energy of the particle falls below threshold, stop

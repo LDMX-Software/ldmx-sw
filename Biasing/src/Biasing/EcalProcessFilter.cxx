@@ -11,8 +11,8 @@
 /*~~~~~~~~~~~~~*/
 /*   SimCore   */
 /*~~~~~~~~~~~~~*/
-#include "SimCore/UserTrackInformation.h"
 #include "SimCore/Geant4_PtrRetrieval.h"
+#include "SimCore/UserTrackInformation.h"
 
 namespace biasing {
 
@@ -26,7 +26,7 @@ G4ClassificationOfNewTrack EcalProcessFilter::ClassifyNewTrack(
     const G4Track* track, const G4ClassificationOfNewTrack& currentTrackClass) {
   // Get the particle type.
   G4String particleName = track->GetParticleDefinition()->GetParticleName();
-  
+
   if (track == currentTrack_) {
     /*
     std::cout << "[ EcalProcessFilter ]: "
@@ -54,14 +54,14 @@ void EcalProcessFilter::stepping(const G4Step* step) {
   // Get the track info and check if this track is a brem candidate
   auto trackInfo{simcore::UserTrackInformation::get(track)};
   if ((trackInfo != nullptr) && !trackInfo->isBremCandidate()) return;
-   
+
   // Get the particles daughters.
   auto secondaries{step->GetSecondary()};
-  
+
   // Get the region the particle is currently in.  Continue processing
   // the particle only if it's in the calorimeter region.
   auto region = Geant4_PtrRetrieval::GetRegion("CalorimeterRegion");
-  
+
   if (track->GetVolume()->GetLogicalVolume()->GetRegion() != region) {
     // If secondaries were produced outside of the volume of interest,
     // and there aren't additional brems to process, abort the
@@ -105,7 +105,8 @@ void EcalProcessFilter::stepping(const G4Step* step) {
      * hcal parent volume and so it will break if the hcal parent volume
      * changes its name.
      */
-    auto volume_after_exiting_ecal = Geant4_PtrRetrieval::GetVolume("hadronic_calorimeter");
+    auto volume_after_exiting_ecal =
+        Geant4_PtrRetrieval::GetVolume("hadronic_calorimeter");
     auto volume = track->GetNextVolume();
     if (volume == volume_after_exiting_ecal) {
       /*

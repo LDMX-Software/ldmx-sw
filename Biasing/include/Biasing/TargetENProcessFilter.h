@@ -11,8 +11,8 @@
 /*~~~~~~~~~~~~~*/
 /*   SimCore   */
 /*~~~~~~~~~~~~~*/
-#include "SimCore/UserAction.h"
 #include "SimCore/Geant4_PtrRetrieval.h"
+#include "SimCore/UserAction.h"
 
 // Forward Declarations
 class G4Step;

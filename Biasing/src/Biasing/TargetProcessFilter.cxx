@@ -18,8 +18,8 @@
 /*~~~~~~~~~~~~~*/
 /*   SimCore   */
 /*~~~~~~~~~~~~~*/
-#include "SimCore/UserTrackInformation.h"
 #include "SimCore/Geant4_PtrRetrieval.h"
+#include "SimCore/UserTrackInformation.h"
 
 namespace biasing {
 
@@ -62,8 +62,8 @@ void TargetProcessFilter::stepping(const G4Step* step) {
   // Get the region the particle is currently in. Continue processing
   // the particle only if it's in the target region.
   auto Target_Region = Geant4_PtrRetrieval::GetRegion("target");
-  auto Current_Region = track->GetVolume()->GetLogicalVolume()->GetRegion(); 
-  if (Target_Region != Current_Region) { 
+  auto Current_Region = track->GetVolume()->GetLogicalVolume()->GetRegion();
+  if (Target_Region != Current_Region) {
     // If secondaries were produced outside of the volume of interest,
     // and there aren't additional brems to process, abort the event.
     // Otherwise, suspend the track and move on to the next brem.
@@ -100,8 +100,9 @@ void TargetProcessFilter::stepping(const G4Step* step) {
      */
     auto recoil_PhysicalVolume = Geant4_PtrRetrieval::GetVolume("recoil_PV");
     auto World_PhysicalVolume = Geant4_PtrRetrieval::GetVolume("World_PV");
-    auto Current_Volume = track->GetNextVolume(); 
-    if (Current_Volume == recoil_PhysicalVolume or Current_Volume == World_PhysicalVolume) { 
+    auto Current_Volume = track->GetNextVolume();
+    if (Current_Volume == recoil_PhysicalVolume or
+        Current_Volume == World_PhysicalVolume) {
       if (getEventInfo()->bremCandidateCount() == 1) {
         track->SetTrackStatus(fKillTrackAndSecondaries);
         G4RunManager::GetRunManager()->AbortEvent();

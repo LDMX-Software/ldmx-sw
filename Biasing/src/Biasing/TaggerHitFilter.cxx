@@ -32,9 +32,8 @@ void TaggerHitFilter::stepping(const G4Step* step) {
 
   // Only electrons in the Tagger region are of interest.
   auto Current_Region = (track->GetVolume()->GetLogicalVolume()->GetRegion());
-  auto Tagger_Region = Geant4_PtrRetrieval::GetRegion("tagger"); 
-  if (Current_Region != Tagger_Region)
-    return;
+  auto Tagger_Region = Geant4_PtrRetrieval::GetRegion("tagger");
+  if (Current_Region != Tagger_Region) return;
 
   // Check if we are exiting the tagger
   auto Next_Region = (track->GetNextVolume()->GetLogicalVolume()->GetRegion());
@@ -46,9 +45,8 @@ void TaggerHitFilter::stepping(const G4Step* step) {
   // A particle will only leave hits in the active silicon so other volumes can
   // be skipped for now.
   auto Current_Volume = (track->GetVolume());
-  auto Tagger_PhysicalVolume = Geant4_PtrRetrieval::GetVolume("tagger_PV"); 
-  if (Current_Volume == Tagger_PhysicalVolume)
-    return;
+  auto Tagger_PhysicalVolume = Geant4_PtrRetrieval::GetVolume("tagger_PV");
+  if (Current_Volume == Tagger_PhysicalVolume) return;
 
   // The copy number is used to identify which layer energy was deposited into.
   int copy_number{0};
