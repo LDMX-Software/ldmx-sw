@@ -77,7 +77,7 @@ static bool isInTargetRegion(G4LogicalVolume* vol,
 }
 
 /**
- * isInTargetRegion
+ * isInTargetOnly
  *
  * Check if the passed volume is inside the target volume.
  *

@@ -29,6 +29,7 @@ NonFiducialFilter::NonFiducialFilter(const std::string& name,
 }
 
 void NonFiducialFilter::stepping(const G4Step* step) {
+  std::cout << "finding nonfiducial track" << std::endl;
   // Get the track associated with this step.
   auto track{step->GetTrack()};
 
@@ -60,9 +61,9 @@ void NonFiducialFilter::stepping(const G4Step* step) {
     }
     // Check if the track ever enters the ECal. If it does, kill the track and
     // abort the event.
-
-    auto isInEcal = simcore::volume_tests::isInEcal(volume);
-
+    auto volume = track->GetVolume()->GetLogicalVolume();
+    auto volumeName = volume->GetName();
+    auto isInEcal = simcore::volume_tests::isInEcal(volume, volumeName);
     if (abort_fiducial_ && isInEcal) {
       track->SetTrackStatus(fKillTrackAndSecondaries);
       G4RunManager::GetRunManager()->AbortEvent();
