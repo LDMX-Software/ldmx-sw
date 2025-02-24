@@ -4,6 +4,8 @@
 
 ClassImp(ldmx::StraightTrack)
 
-namespace ldmx {
-    void StraightTrack::Print() const { std::cout << "print straight track" << std::endl; }
+    namespace ldmx {
+  void StraightTrack::Print() const {
+    std::cout << "print straight track" << std::endl;
+  }
 }

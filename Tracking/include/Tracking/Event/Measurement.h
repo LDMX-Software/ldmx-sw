@@ -91,7 +91,7 @@ class Measurement {
 
   /// @return The hit time in ns.
   [[nodiscard]] float getTime() const { return t_; };
-    
+
   [[nodiscard]] float getEdep() const { return edep_; };
 
   /**

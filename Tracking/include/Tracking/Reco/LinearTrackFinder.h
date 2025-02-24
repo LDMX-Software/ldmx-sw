@@ -22,61 +22,64 @@ namespace tracking {
 namespace reco {
 
 class LinearTrackFinder : public TrackingGeometryUser {
-public:
-    /**
-     * Constructor.
-     *
-     * @param name The name of the instance of this object.
-     * @param process The process running this producer.
-     */
-    LinearTrackFinder(const std::string &name, framework::Process &process);
-    
-    /// Destructor
-    ~LinearTrackFinder();
-    
-    /**
-     *
-     */
-    void onProcessStart() override;
-    /**
-     *
-     */
-    void onProcessEnd() override;
-    
-    /**
-     * Configure the processor using the given user specified parameters.
-     *
-     * @param parameters Set of parameters used to configure this processor.
-     */
-    void configure(framework::config::Parameters &parameters) override;
-    
-    /**
-     * Run the processor
-     *
-     * @param event The event to process.
-     */
-    void produce(framework::Event &event) override;
-    
-private:
-    int nevents_{0};
-    double processing_time_{0.};
-    
-    // The output track collection
-    std::string out_trk_collection_{"LinearRecoilTracks"};
-    
-    // The seed track collection
-    std::string seed_coll_name_{"LinearRecoilSeedTracks"};
-    
-    int nseeds_{0};
-    int ntracks_{0};
-    int eventnr_{0};
-    
-    //Find tracks from seeds by taking the seeds with lowest chi2 for each RecHit
-    std::vector<ldmx::StraightTrack> findTracks(const std::vector<ldmx::StraightTrack>& trackSeeds);
-    
-    // Helper function to check if a measurement's position is already used
-    bool isPositionUsed(const ldmx::Measurement& measurement, const std::set<std::tuple<float, float, float>>& usedSensorPositions);
-    
+ public:
+  /**
+   * Constructor.
+   *
+   * @param name The name of the instance of this object.
+   * @param process The process running this producer.
+   */
+  LinearTrackFinder(const std::string &name, framework::Process &process);
+
+  /// Destructor
+  ~LinearTrackFinder();
+
+  /**
+   *
+   */
+  void onProcessStart() override;
+  /**
+   *
+   */
+  void onProcessEnd() override;
+
+  /**
+   * Configure the processor using the given user specified parameters.
+   *
+   * @param parameters Set of parameters used to configure this processor.
+   */
+  void configure(framework::config::Parameters &parameters) override;
+
+  /**
+   * Run the processor
+   *
+   * @param event The event to process.
+   */
+  void produce(framework::Event &event) override;
+
+ private:
+  int nevents_{0};
+  double processing_time_{0.};
+
+  // The output track collection
+  std::string out_trk_collection_{"LinearRecoilTracks"};
+
+  // The seed track collection
+  std::string seed_coll_name_{"LinearRecoilSeedTracks"};
+
+  int nseeds_{0};
+  int ntracks_{0};
+  int eventnr_{0};
+
+  // Find tracks from seeds by taking the seeds with lowest chi2 for each RecHit
+  std::vector<ldmx::StraightTrack> findTracks(
+      const std::vector<ldmx::StraightTrack> &trackSeeds);
+
+  // Helper function to check if a measurement's position is already used
+  bool isPositionUsed(
+      const ldmx::Measurement &measurement,
+      const std::set<std::tuple<float, float, float>> &usedSensorPositions);
+
 };  // LinearTrackFinder
 
 }  // namespace reco
