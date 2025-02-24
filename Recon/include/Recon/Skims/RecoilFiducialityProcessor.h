@@ -9,9 +9,9 @@
 
 // LDMX
 #include "Ecal/Event/EcalHit.h"
-#include "Recon/Event/FiducialFlag.h"
 #include "Framework/Configure/Parameters.h"
 #include "Framework/EventProcessor.h"
+#include "Recon/Event/FiducialFlag.h"
 #include "SimCore/Event/SimCalorimeterHit.h"
 #include "SimCore/Event/SimParticle.h"
 #include "SimCore/Event/SimTrackerHit.h"
