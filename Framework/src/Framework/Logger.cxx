@@ -23,8 +23,8 @@ namespace logging {
  * @return converted enum level
  */
 level convertLevel(int iLvl) {
-  if (iLvl < 0)
-    iLvl = 0;
+  if (iLvl < -1)
+    iLvl = -1;
   else if (iLvl > 4)
     iLvl = 4;
   return level(iLvl);
@@ -169,6 +169,9 @@ void Formatter::operator()(const log::record_view& view,
    */
   const level& msg_level{safe_extract<level>(view["Severity"])};
   switch (msg_level) {
+    case level::trace:
+      os << "trace";
+      break;
     case level::debug:
       os << "debug";
       break;

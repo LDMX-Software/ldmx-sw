@@ -37,8 +37,8 @@ class DigitizationProcessor(Producer):
                          'tracking::reco::DigitizationProcessor', 'Tracking')
         self.merge_hits = True
         self.do_smearing = True
-        self.sigma_u = 0.06
-        self.sigma_v = 0.0
+        self.sigma_u = 0.006
+        self.sigma_v = 0.000001
         self.track_id = -1
         self.min_e_dep = 0.05
         self.hit_collection = 'TaggerSimHits'
@@ -182,9 +182,12 @@ class SeedFinderProcessor(Producer):
         self.d0min = 20.
         self.d0max = 20.
         self.z0max = 60.
+        self.phicut = 0.1
+        self.thetacut = 0.2
         self.strategies = []
+        self.bfield = 1.5
         self.input_hits_collection = 'TaggerSimHits'
-        self.out_seed_collection = 'SeedTracks'
+        self.out_seed_collection = 'SeedTracks' 
         
 
 class CKFProcessor(Producer):
@@ -266,13 +269,12 @@ class CKFProcessor(Producer):
                          'Tracking')
 
         self.dumpobj = False
+        self.debug_acts = False
         self.pionstates = 0
-        self.track_id = -1
-        self.pdg_id = 11
-        self.bfield = 0.
-        self.const_b_field = True
+        self.bfield = -1.5 
+        self.const_b_field = False
         self.field_map = makeFieldMapPath()
-        self.propagator_step_size = 200.
+        self.propagator_step_size = 1000.
         self.propagator_maxSteps = 10000
         self.hit_collection = 'RecoilSimHits'
         self.remove_stereo = False
@@ -281,14 +283,8 @@ class CKFProcessor(Producer):
         self.use_seed_perigee = False
         self.seed_coll_name = 'SeedTracks'
         self.out_trk_collection = 'Tracks'
-        self.do_smearing = False
-        self.sigma_u = 0.01
-        self.sigma_v = 0.
-        self.kf_refit = False
-        self.gsf_refit = False
         self.min_hits = 6
-
-
+        self.outlier_pval_ = 3.84
 
 class GSFProcessor(Producer):
     """ Producer that runs Gaussian Sum Fitter on a specific track collection
@@ -323,10 +319,10 @@ class GSFProcessor(Producer):
     def __init__(self, instance_name='GSFProcessor'):
         super().__init__(instance_name, 'tracking::reco::GSFProcessor',
                          'Tracking')
-
+        
         self.trackCollection = "TaggerTracks"
         self.measCollection  = "DigiTaggerSimHits"
-        self.maxComponent    = 4
+        self.maxComponent    = 12
         self.abortOnError    = False
         self.disableAllMaterialHandling = False
         self.weightCutoff    = 1.0e-4
@@ -394,7 +390,8 @@ class TruthSeedProcessor(Producer):
         self.scoring_hits_coll_name = 'TargetScoringPlaneHits'
         self.recoil_sim_hits_coll_name = 'RecoilSimHits'
         self.tagger_sim_hits_coll_name = 'TaggerSimHits'
-        self.n_min_hits = 7
+        self.n_min_hits_tagger = 11
+        self.n_min_hits_recoil = 7
         self.z_min = -9999. #mm
         self.track_id = -9999
         self.pz_cut = -9999. #MeV
@@ -404,3 +401,35 @@ class TruthSeedProcessor(Producer):
         self.skip_tagger = False
         self.skip_recoil = False
         self.max_track_id = 5
+
+
+class GreedyAmbiguitySolver(Producer):
+    """ Producer that cleans duplicate tracks from CKF output. 
+
+    Parameters
+    ----------
+    instance_name : str
+        Unique name for this instance.
+
+    Attributes
+    ----------
+
+    Parameters
+    ----------
+    maximumSharedHits : int
+        Maximum number of shared hits for a track to remain.
+    maximumIterations : int
+        Maximum number of iterations in track cleaning loop.
+    nMeasurementsMin : int
+        Minimum number of hits on a track.
+    """
+    def __init__(self, instance_name = "GreedyAmbiguitySolver"):
+        super().__init__(instance_name, 'tracking::reco::GreedyAmbiguitySolver',
+                         'Tracking')
+
+        self.maximumSharedHits = 2 
+        self.maximumIterations = 1000
+        self.nMeasurementsMin = 5
+        self.out_trk_collection = "TaggerTracksClean"
+        self.trackCollection = "TaggerTracks"
+        self.measCollection = "DigiTaggerSimHits"

@@ -77,6 +77,7 @@ void TrackMap::save(const G4Track* track) {
 
   auto track_info{UserTrackInformation::get(track)};
   particle.setVertexVolume(track_info->getVertexVolume());
+  particle.setInteractionMaterial(track->GetMaterial()->GetName());
 
   auto vert{track->GetVertexPosition()};
   particle.setVertex(vert.x(), vert.y(), vert.z());

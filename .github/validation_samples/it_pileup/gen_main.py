@@ -1,15 +1,15 @@
 from LDMX.Framework import ldmxcfg
-p = ldmxcfg.Process('test')
+p = ldmxcfg.Process('ecal_pn')
 
 import os
 p.maxTriesPerEvent = 1000
 p.run = int(os.environ['LDMX_RUN_NUMBER'])
-p.maxEvents = int(os.environ['LDMX_NUM_EVENTS'])
+p.maxEvents = int(os.environ['LDMX_NUM_EVENTS']) // 2
 
 
 from LDMX.Biasing import ecal
 from LDMX.SimCore import generators as gen
-mySim = ecal.photo_nuclear('ldmx-det-v14',gen.single_4gev_e_upstream_tagger())
+mySim = ecal.photo_nuclear('ldmx-det-v14-8gev',gen.single_8gev_e_upstream_tagger())
 mySim.beamSpotSmear = [20.,80.,0.]
 mySim.description = 'ECal PN Test Simulation'
 

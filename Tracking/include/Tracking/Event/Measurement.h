@@ -115,6 +115,10 @@ class Measurement {
   /// @return the sim particle IDs that compose the measurement
   std::vector<unsigned int> getTrackIds() { return trackIds_; };
 
+  ///  @return The energy deposited in the sensor where the measurement took
+  ///  place.
+  float getEdep() const { return edep_; };
+
   /**
    * Overload the stream insertion operator to output a string representation of
    * this Measurement.
@@ -158,7 +162,7 @@ class Measurement {
   /// TrackIDs the vector of TrackIDs that form the measurement
   std::vector<unsigned int> trackIds_{};
 
-  ClassDef(Measurement, 1);
+  ClassDef(Measurement, 2);
 };  // Measurement
 
 typedef std::vector<Measurement> Measurements;

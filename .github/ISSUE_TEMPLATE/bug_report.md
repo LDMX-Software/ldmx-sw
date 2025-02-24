@@ -24,7 +24,7 @@ A clear and concise description of what you want to happen (i.e. instead of the 
 If applicable, add screenshots to help explain your problem.
 
 **Environment:**
-Output of `ldmx config`:
+Output of `denv config print`:
 
 **Additional context**
 Add any other context about the problem here.

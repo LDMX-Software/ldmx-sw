@@ -7,15 +7,17 @@ from LDMX.Framework import ldmxcfg
 
 # first, we define the process, which must have a name which identifies this
 # processing pass ("pass name").
-simPassName="test"
-pileupFilePassName="test"
+simPassName="ecal_pn"
+pileupFilePassName="pileup"
 thisPassName="overlay"
 p=ldmxcfg.Process(thisPassName)
 
 det = 'ldmx-det-v14-8gev'
 p.run = int(os.environ['LDMX_RUN_NUMBER'])
-p.maxEvents = int(os.environ['LDMX_NUM_EVENTS'])
-p.termLogLevel = 0
+p.maxEvents = int(os.environ['LDMX_NUM_EVENTS']) // 2
+
+# Load the full tracking sequance
+from LDMX.Tracking import full_tracking_sequence
 
 from LDMX.Recon.overlay import OverlayProducer
 overlay=OverlayProducer('pileup.root')
@@ -50,6 +52,7 @@ from LDMX.Hcal import digi as hDigi
 
 overlayStr="Overlay"
 
+# Load the TS modules
 from LDMX.TrigScint.trigScint import TrigScintDigiProducer
 from LDMX.TrigScint.trigScint import TrigScintClusterProducer
 from LDMX.TrigScint.trigScint import trigScintTrack
@@ -58,26 +61,35 @@ ts_digis = [
         TrigScintDigiProducer.pad2(),
         TrigScintDigiProducer.pad3(),
         ]
-for d in ts_digis :
-    d.randomSeed = 1
-    d.input_collection += overlayStr
+for digi in ts_digis :
+    digi.input_collection += overlayStr
 
-                                                            
+ts_clusters = [
+        TrigScintClusterProducer.pad1(),
+        TrigScintClusterProducer.pad2(),
+        TrigScintClusterProducer.pad3(),
+        ] 
+
+# Load the ECAL modules                           
 ecalDigi   =eDigi.EcalDigiProducer('ecalDigis')
 ecalReco   =eDigi.EcalRecProducer('ecalRecon')
 ecalVeto   =vetos.EcalVetoProcessor('ecalVetoBDT')
+ecalVeto.recoil_from_tracking = False
 
 ecalDigi.inputCollName  = ecalDigi.inputCollName+overlayStr
 ecalReco.simHitCollName = ecalReco.simHitCollName+overlayStr
 ecalReco.digiPassName = thisPassName
 ecalVeto.rec_pass_name = thisPassName
 
+# Load the HCAL modules
 hcalDigi   =hDigi.HcalDigiProducer('hcalDigis')
 hcalDigi.inputCollName  = hcalDigi.inputCollName+overlayStr
 hcalReco   =hDigi.HcalRecProducer('hcalRecon')
 hcalReco.digiPassName = thisPassName
 
+# Load the DQM modules
 from LDMX.DQM import dqm
+
 ecalDigiVerify = dqm.EcalDigiVerify()
 ecalDigiVerify.ecalSimHitColl = ecalDigiVerify.ecalSimHitColl+overlayStr
 
@@ -87,21 +99,27 @@ from LDMX.Recon.simpleTrigger import TriggerProcessor
 count = ElectronCounter(1,'ElectronCounter')
 count.input_pass_name = ''
 
+# Load HCAL veto
+import LDMX.Hcal.hcal as hcal
+hcal_veto = hcal.HcalVetoProcessor()
+
+p.logger.termLevel = 1
+
+# Add full tracking for both tagger and recoil trackers: digi, seeds, CFK, ambiguity resolution, GSF, DQM
+p.sequence.extend(full_tracking_sequence.sequence)
+p.sequence.extend(full_tracking_sequence.dqm_sequence)
+
 p.sequence.extend([
     ecalDigi, ecalReco, ecalVeto,
-    hcalDigi, hcalReco,
+    hcalDigi, hcalReco, hcal_veto,
     *ts_digis,
-    TrigScintClusterProducer.pad1(),
-    TrigScintClusterProducer.pad2(),
-    TrigScintClusterProducer.pad3(),
+    *ts_clusters,
     trigScintTrack,
     count, TriggerProcessor('trigger', 8000.),
-    dqm.SimObjects(sim_pass=thisPassName),
-    ecalDigiVerify,dqm.EcalShowerFeatures(),
-        dqm.PhotoNuclearDQM(verbose=False),
-    dqm.HCalDQM(),
+    dqm.PhotoNuclearDQM(),
+])
 
-]+dqm.recoil_dqm+dqm.trigger_dqm)
+p.sequence.extend(dqm.all_dqm)
 
 p.inputFiles = ['ecal_pn.root']
 p.outputFiles= ['events.root']

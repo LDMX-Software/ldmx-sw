@@ -56,7 +56,8 @@
     Gen0 Init Cmd 7 = /gps/pos/type Plane
     Gen0 Init Cmd 8 = /gps/pos/shape Square
     Gen0 Init Cmd 9 = /gps/pos/centre 0 0 220. mm
-    ldmx-sw revision = 
+    ldmx-sw revision = eae9559d1d747984c40f8bb72db96fc52b3e14be
+    ldmx-sw version = v4.2.13
 }
 [ Simulator ] : Started 10000 events to produce 10000 events.
 ---- LDMXSW: Event processing complete  --------

@@ -19,6 +19,9 @@
 // ROOT (MIP tracking)
 #include "TVector3.h"
 
+// For recoil tracking
+#include "Tracking/Event/Track.h"
+
 // C++
 #include <map>
 #include <memory>
@@ -39,6 +42,19 @@ class EcalVetoProcessor : public framework::Producer {
       : Producer(name, process) {}
 
   virtual ~EcalVetoProcessor() {}
+
+  /**
+   * onNewRun is the first function called for each processor
+   * *after* the conditions are fully configured and accessible.
+   * This is where you could create single-processors, multi-event
+   * calculation objects.
+   */
+  void onNewRun(const ldmx::RunHeader& rh) override;
+
+  /**
+   *
+   */
+  void onProcessEnd() override;
 
   /**
    * Configure the processor using the given user specified parameters.
@@ -102,7 +118,22 @@ class EcalVetoProcessor : public framework::Producer {
    */
   float distPtToLine(TVector3 h1, TVector3 p1, TVector3 p2);
 
+  /**
+   * Return a vector of parameters for a propagated recoil track
+   * @param[in] tracks The track collection
+   * @param[in] ts_type The track state type, i.e. tracks state at the ECAL face
+   * @param[in] ts_title The track state title, most likely "ecal"
+   * @returns Vector of parameters for a propagated recoil track
+   */
+  std::vector<float> trackProp(const ldmx::Tracks& tracks,
+                               ldmx::TrackStateType ts_type,
+                               const std::string& ts_title);
+
  private:
+  int nevents_{0};
+  double processing_time_{0.};
+
+  std::map<std::string, double> profiling_map_;
   std::map<ldmx::EcalID, float> cellMap_;
   std::map<ldmx::EcalID, float> cellMapTightIso_;
 
@@ -148,6 +179,7 @@ class EcalVetoProcessor : public framework::Producer {
   double bdtCutVal_{0};
 
   double beamEnergyMeV_{0};
+  double linreg_radius_{0};
 
   bool verbose_{false};
 
@@ -158,6 +190,9 @@ class EcalVetoProcessor : public framework::Producer {
 
   std::string rec_pass_name_;
   std::string rec_coll_name_;
+  bool recoil_from_tracking_;
+  std::string track_collection_;
+  bool inverse_skim_{false};
 
   /** Name of the collection which will containt the results. */
   std::string collectionName_{"EcalVeto"};
