@@ -8,5 +8,6 @@ _Hint_: Use the phrase '_This resolves #< issue number >_' so that they are link
 
 ## Check List
 - [ ] I successfully compiled _ldmx-sw_ with my developments
+- [ ] I read, understood and follow the coding rules outlined in https://ldmx-software.github.io/developing/coding-rules.html
 - [ ] I ran my developments and the following shows that they are successful.
 <!-- put plots or some other proof that your developments work and do the intended function -->
