@@ -4,7 +4,7 @@
  * @author Elizabeth Berzin, Stanford University
  */
 
-#include "Recon/RecoilFiducialityProcessor.h"
+#include "Recon/Skims/RecoilFiducialityProcessor.h"
 
 namespace recon {
 
