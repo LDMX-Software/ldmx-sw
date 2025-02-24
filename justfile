@@ -82,8 +82,14 @@ configure-clang-lto: (configure "-DENABLE_LTO=ON -DCMAKE_CXX_COMPILER=clang++ -D
 configure-clang-lto-fail-on-warning: (configure "-DENABLE_LTO=ON -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_C_COMPILER=clang -DWARNINGS_AS_ERRORS=ON")
 # Keep debug symbols so running with gdb provides more helpful detail
 configure-gdb: (configure-base "-DCMAKE_BUILD_TYPE=Debug")
+
+# prep version file
+[private]
+prep-version:
+    git fetch --tags && git describe --tags | cut -f 1 -d '-' > VERSION
+
 # compile and install ldmx-sw
-build ncpu=num_cpus():
+build ncpu=num_cpus(): prep-version
     denv cmake --build build --target install -- -j{{ ncpu }}
 
 # run the ldmx-sw tests
