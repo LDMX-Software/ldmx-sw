@@ -1,3 +1,5 @@
+# file storing git VERSION for build
+VERSION
 
 # Byte-compiled files
 __pycache__/

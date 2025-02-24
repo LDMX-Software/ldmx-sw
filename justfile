@@ -57,11 +57,16 @@ _default:
 install-denv:
     curl -s https://raw.githubusercontent.com/tomeichlersmith/denv/main/install | sh
 
+# prep version file
+[private]
+prep-version:
+    git fetch --tags && git describe --tags | cut -f 1 -d '-' > VERSION
+
 # configure how ldmx-sw will be built
 # added ADDITIONAL_WARNINGS and CLANG_TIDY to help improve code quality
 # base configure command defining how cmake is called, private so only experts call it
 [private]
-configure-base *CONFIG:
+configure-base *CONFIG: prep-version
     denv cmake -B build -S . {{ CONFIG }}
 
 # default configure of build when developing
@@ -80,16 +85,12 @@ configure-force-error: (configure "-DWARNINGS_AS_ERRORS=ON")
 configure-clang-lto: (configure "-DENABLE_LTO=ON -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_C_COMPILER=clang") 
 
 configure-clang-lto-fail-on-warning: (configure "-DENABLE_LTO=ON -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_C_COMPILER=clang -DWARNINGS_AS_ERRORS=ON")
+
 # Keep debug symbols so running with gdb provides more helpful detail
 configure-gdb: (configure-base "-DCMAKE_BUILD_TYPE=Debug")
 
-# prep version file
-[private]
-prep-version:
-    git fetch --tags && git describe --tags | cut -f 1 -d '-' > VERSION
-
 # compile and install ldmx-sw
-build ncpu=num_cpus(): prep-version
+build ncpu=num_cpus():
     denv cmake --build build --target install -- -j{{ ncpu }}
 
 # run the ldmx-sw tests
@@ -151,7 +152,7 @@ check:
 # remove the build and install directories of ldmx-sw
 [confirm("This will remove the build and install directories. Are you sure?")]
 clean:
-    rm -r build install
+    rm -r build install VERSION
 
 # format the ldmx-sw source code
 format: format-cpp format-just
