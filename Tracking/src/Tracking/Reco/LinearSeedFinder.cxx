@@ -93,13 +93,28 @@ void LinearSeedFinder::produce(framework::Event& event) {
     
 } //produce
 
-ldmx::StraightTrack LinearSeedFinder::SeedTracker(const std::tuple<std::array<double, 3>, ldmx::Measurement, ldmx::Measurement> recoilOne, const std::tuple<std::array<double, 3>, ldmx::Measurement, ldmx::Measurement> recoilTwo, const std::array<double, 3> ecalOne) {
+ldmx::StraightTrack LinearSeedFinder::SeedTracker(const std::tuple<std::array<double, 3>, ldmx::Measurement, std::optional<ldmx::Measurement>> recoilOne, const std::tuple<std::array<double, 3>, ldmx::Measurement, std::optional<ldmx::Measurement>> recoilTwo, const std::array<double, 3> ecalOne) {
         
     auto [sensor1, layer1, layer2] = recoilOne;
     auto [sensor2, layer3, layer4] = recoilTwo;
+    std::vector<ldmx::Measurement> allPoints;
     
-    std::vector<ldmx::Measurement> allPoints = {layer1, layer2, layer3, layer4};
+    //TODO: in the case where we don't have all 4 hits, we will be fitting a sensor (weighted average of two layers) + single layer
+    //TODO: or fitting two single layers. Currently, the single layer point has the uncertainty of a sensor assigned to it,
+    //TODO: but this is not a realistic uncertainty for a single layer...
+    //IF all layers are well-defined, this sequence will add layer1, 2, 3, 4 to the allPoints vector
+    allPoints.push_back(layer1);
+
+    if (layer2.has_value()) {
+        allPoints.push_back(*layer2);
+    } //if layer2 doesn't exist (has_value == False), then the layer1 we added is either layer1 or 2, depending on which one has_value
     
+    allPoints.push_back(layer3);
+
+    if (layer4.has_value()) {
+        allPoints.push_back(*layer4);
+    } //if layer4 doesn't exist (has_value == False), then the layer3 we added is either layer3 or 4, depending on which one has_value
+        
     //Fit the 3 points to a 3D straight line, find track location at first layer of Ecal, check distance to recHit used in fitting
     auto [mx, bx, my, by, seed_cov] = fit3DLine(sensor1, sensor2, ecalOne); // m = slope ; b = intercept
     std::array<double, 3> tempExtrapolatedPoint = {ecalOne[0], mx * ecalOne[0] + bx, my * ecalOne[0] + by};
@@ -153,8 +168,8 @@ void LinearSeedFinder::onProcessEnd() {
 
 } //onProcessEnd
 
-std::pair< std::vector<std::tuple<std::array<double, 3>, ldmx::Measurement, ldmx::Measurement>>,
-           std::vector<std::tuple<std::array<double, 3>, ldmx::Measurement, ldmx::Measurement>> >
+std::pair< std::vector<std::tuple<std::array<double, 3>, ldmx::Measurement, std::optional<ldmx::Measurement>>>,
+           std::vector<std::tuple<std::array<double, 3>, ldmx::Measurement, std::optional<ldmx::Measurement>>> >
 LinearSeedFinder::combineMultiGlobalHits(const std::vector<ldmx::Measurement>& hitCollection) {
     std::vector<ldmx::Measurement> layer1, layer2, layer3, layer4;
 
@@ -164,19 +179,46 @@ LinearSeedFinder::combineMultiGlobalHits(const std::vector<ldmx::Measurement>& h
         if (point.getGlobalPosition()[0] < layer12_midpoint_) layer1.push_back(point);
         else if (point.getGlobalPosition()[0] < layer23_midpoint_) layer2.push_back(point);
         else if (point.getGlobalPosition()[0] < layer34_midpoint_) layer3.push_back(point);
+        //else {ldmx_log(debug) << "Skipping layer 4, the fit should be layer 1, 2, 3";}
         else layer4.push_back(point);
     }
+    
+    std::vector<std::tuple<std::array<double, 3>, ldmx::Measurement, std::optional<ldmx::Measurement>>> firstSensorMergedHits, secondSensorMergedHits;
+    
+    if (layer1.empty()) {
+        for (const auto& p : layer2) {
+            firstSensorMergedHits.push_back(std::make_tuple(std::array<double, 3>{p.getGlobalPosition()[0], p.getGlobalPosition()[1], p.getGlobalPosition()[2]}, p, std::nullopt));
+        } //only look at layer2
+    } //if layer1 empty
+    else if (layer2.empty()) {
+        for (const auto& p : layer1) {
+            firstSensorMergedHits.push_back(std::make_tuple(std::array<double, 3>{p.getGlobalPosition()[0], p.getGlobalPosition()[1], p.getGlobalPosition()[2]}, p, std::nullopt));
+        } //only look at layer1
+    } //if layer2 empty
+    else {
+        firstSensorMergedHits = weightedAverage(layer1, layer2);
+    } //do weighted average of two layers
 
-    // Perform weighted averages and convert to 3D arrays (z, x, y)
-    auto firstSensorMergedHits = weightedAverage(layer1, layer2);
-    auto secondSensorMergedHits = weightedAverage(layer3, layer4);
-
+    if (layer3.empty()) {
+        for (const auto& p : layer4) {
+            secondSensorMergedHits.push_back(std::make_tuple(std::array<double, 3>{p.getGlobalPosition()[0], p.getGlobalPosition()[1], p.getGlobalPosition()[2]}, p, std::nullopt));
+        } //only look at layer4
+    } //if layer3 empty
+    else if (layer4.empty()) {
+        for (const auto& p : layer3) {
+            secondSensorMergedHits.push_back(std::make_tuple(std::array<double, 3>{p.getGlobalPosition()[0], p.getGlobalPosition()[1], p.getGlobalPosition()[2]}, p, std::nullopt));
+        } //only look at layer4
+    } //if layer4 empty
+    else {
+        secondSensorMergedHits = weightedAverage(layer3, layer4);
+    } //do weighted average of two layers
+    
     return {firstSensorMergedHits, secondSensorMergedHits};
 } //combineMultiGlobalHits
 
-std::vector<std::tuple<std::array<double, 3>, ldmx::Measurement, ldmx::Measurement>> LinearSeedFinder::weightedAverage(const std::vector<ldmx::Measurement>& layer1, const std::vector<ldmx::Measurement>& layer2) {
+std::vector<std::tuple<std::array<double, 3>, ldmx::Measurement, std::optional<ldmx::Measurement>>> LinearSeedFinder::weightedAverage(const std::vector<ldmx::Measurement>& layer1, const std::vector<ldmx::Measurement>& layer2) {
     
-    std::vector<std::tuple<std::array<double, 3>, ldmx::Measurement, ldmx::Measurement>> mergedHits;
+    std::vector<std::tuple<std::array<double, 3>, ldmx::Measurement, std::optional<ldmx::Measurement>>> mergedHits;
 
     for (const auto& p1 : layer1) {
         for (const auto& p2 : layer2) {

@@ -66,13 +66,13 @@ public:
     
 protected:
     //Function to find seeds based on 2 Recoil points and 1 EcalRecHit
-    ldmx::StraightTrack SeedTracker(const std::tuple<std::array<double, 3>, ldmx::Measurement, ldmx::Measurement> recoilOne, const std::tuple<std::array<double, 3>, ldmx::Measurement, ldmx::Measurement> recoilTwo, const std::array<double, 3> ecalOne);
+    ldmx::StraightTrack SeedTracker(const std::tuple<std::array<double, 3>, ldmx::Measurement, std::optional<ldmx::Measurement>> recoilOne, const std::tuple<std::array<double, 3>, ldmx::Measurement, std::optional<ldmx::Measurement>> recoilTwo, const std::array<double, 3> ecalOne);
     
     //Function to combine Recoil layer points into "real" sensor points
-    std::pair<std::vector<std::tuple<std::array<double, 3>, ldmx::Measurement, ldmx::Measurement>>, std::vector<std::tuple<std::array<double, 3>, ldmx::Measurement, ldmx::Measurement>>> combineMultiGlobalHits(const std::vector<ldmx::Measurement> &hitCollection);
+    std::pair< std::vector<std::tuple<std::array<double, 3>, ldmx::Measurement, std::optional<ldmx::Measurement>>>, std::vector<std::tuple<std::array<double, 3>, ldmx::Measurement, std::optional<ldmx::Measurement>>> > combineMultiGlobalHits(const std::vector<ldmx::Measurement> &hitCollection);
     
     //Function to do weighted averaging when combining Recoil layer points
-    std::vector<std::tuple<std::array<double, 3>, ldmx::Measurement, ldmx::Measurement>> weightedAverage(const std::vector<ldmx::Measurement>& layer1, const std::vector<ldmx::Measurement>& layer2);
+    std::vector<std::tuple<std::array<double, 3>, ldmx::Measurement, std::optional<ldmx::Measurement>>> weightedAverage(const std::vector<ldmx::Measurement>& layer1, const std::vector<ldmx::Measurement>& layer2);
 
     //Fitting function: fit a straight line in 3D using 3 points (1 degree of freedom)
     std::tuple<double, double, double, double, std::vector<double>> fit3DLine(const std::array<double, 3> &firstRecoil, const std::array<double, 3> &secondRecoil, const std::array<double, 3> &ECal);
