@@ -63,6 +63,46 @@ count.input_pass_name = ''
 
 from LDMX.DQM import dqm
 
+from LDMX.Tracking import tracking
+from LDMX.Tracking import geo
+from LDMX.Tracking import dqm
+
+from LDMX.Tracking.geo import TrackersTrackingGeometryProvider as trackgeo
+trackgeo.get_instance().setDetector(det)
+
+#smearings
+uSmearing = 0.006       #mm #could bump up to 10 micron if we want
+vSmearing = 0.000001    #mm #~unused
+
+# Smearing Processor - Recoil
+digiRecoil = tracking.DigitizationProcessor("DigitizationProcessorRecoil")
+digiRecoil.hit_collection = "RecoilSimHits"
+digiRecoil.out_collection = "DigiRecoilSimHits"
+digiRecoil.merge_hits = True
+digiRecoil.sigma_u = uSmearing
+digiRecoil.sigma_v = vSmearing
+
+truth_tracking = tracking.LinearTruthTracking("LinearTruthTracking")
+truth_tracking.input_hit_collection = "DigiRecoilSimHits"
+truth_tracking.input_recHits_collection = "EcalRecHits"
+truth_tracking.out_track_collection = "LinearRecoilTruthTracks"
+
+rSeedTracking = tracking.LinearSeedFinder("LinearSeedFinder")
+rSeedTracking.input_hit_collection = "DigiRecoilSimHits"
+rSeedTracking.input_recHits_collection = "EcalRecHits"
+rSeedTracking.out_seed_collection = "LinearRecoilSeedTracks"
+
+rTracking = tracking.LinearTrackFinder("LinearTrackFinder")
+rTracking.seed_coll_name = "LinearRecoilSeedTracks"
+rTracking.out_trk_collection = "LinearRecoilTracks"
+
+rTracking_dqm = dqm.StraightTracksDQM("LinearRecoilTracksDQM")
+rTracking_dqm.track_collection = rTracking.out_trk_collection
+rTracking_dqm.truth_collection = truth_tracking.out_track_collection
+rTracking_dqm.title = ""
+rTracking_dqm.measurement_collection=digiRecoil.out_collection
+rTracking_dqm.buildHistograms()
+
 p.sequence.extend([
         ecal_digi.EcalDigiProducer(),
         ecal_digi.EcalRecProducer(), 
@@ -75,4 +115,8 @@ p.sequence.extend([
         TrigScintClusterProducer.pad3(),
         trigScintTrack, 
         count, TriggerProcessor('trigger', 4000.),
-       ] + dqm.ecal_dqm)
+        digiRecoil,
+        truth_tracking,
+        rSeedTracking,
+        rTracking,
+        rTracking_dqm] + dqm.ecal_dqm)
