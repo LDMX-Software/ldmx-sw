@@ -30,19 +30,19 @@
 
 namespace ecal {
     /**
- * @class EcalVetoProcessor
- * @brief Determines if event is vetoable using ECAL hit information
+ * @class EcalMipTrackingProcessor
+ * @brief TODO
  */
-class EcalVetoProcessor : public framework::Producer {
+class EcalMipTrackingProcessor : public framework::Producer {
  public:
   typedef std::pair<ldmx::EcalID, float> CellEnergyPair;
 
   typedef std::pair<float, float> XYCoords;
 
-  EcalVetoProcessor(const std::string& name, framework::Process& process)
+  EcalMipTrackingProcessor(const std::string& name, framework::Process& process)
       : Producer(name, process) {}
 
-  virtual ~EcalVetoProcessor() {}
+  virtual ~EcalMipTrackingProcessor() {}
 
   /**
    * onNewRun is the first function called for each processor
@@ -73,9 +73,10 @@ class EcalVetoProcessor : public framework::Producer {
     TVector3 pos;
   };
 
+ private:
+  void clearProcessor();
 
-
- // MIP tracking
+  // MIP tracking
   /**
    * Returns the distance between the lines v and w, with v defined to pass
    * through the points (v1,v2) (and similarly for w).
@@ -105,37 +106,20 @@ class EcalVetoProcessor : public framework::Producer {
    * @param[in] ts_title The track state title, most likely "ecal"
    * @returns Vector of parameters for a propagated recoil track
    */
-  std::vector<float> trackProp(const ldmx::Tracks& tracks,
-                               ldmx::TrackStateType ts_type,
-                               const std::string& ts_title);
+
 
  private:
   int nevents_{0};
   double processing_time_{0.};
 
   std::map<std::string, double> profiling_map_;
-  std::map<ldmx::EcalID, float> cellMap_;
-  std::map<ldmx::EcalID, float> cellMapTightIso_;
 
-  std::vector<float> ecalLayerEdepRaw_;
-  std::vector<float> ecalLayerEdepReadout_;
-  std::vector<float> ecalLayerTime_;
 
-  std::vector<std::vector<double>> roc_range_values_;
-
+  double linreg_radius_{0};
+  bool verbose_{false};
   int nEcalLayers_{0};
   int nReadoutHits_{0};
-  int deepestLayerHit_{0};
 
-  double summedDet_{0};
-  double summedTightIso_{0};
-  double maxCellDep_{0};
-  double showerRMS_{0};
-  double xStd_{0};
-  double yStd_{0};
-  double avgLayerHit_{0};
-  double stdLayerHit_{0};
-  double ecalBackEnergy_{0};
   // MIP tracking
   /// Number of "straight" tracks found in the event
   int nStraightTracks_{0};
@@ -155,7 +139,12 @@ class EcalVetoProcessor : public framework::Producer {
   float epDot_{0};
   /// Number of hits in the photon territory
   int photonTerritoryHits_{0};
-  
-  }  // namespace ecal
+
+
+  /// handle to current geometry (to share with member functions)
+  const ldmx::EcalGeometry* geometry_;
+};
+
+}  // namespace ecal
 
 #endif

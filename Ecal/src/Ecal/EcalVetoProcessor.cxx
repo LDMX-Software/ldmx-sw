@@ -805,17 +805,10 @@ void EcalVetoProcessor::produce(framework::Event &event) {
   ldmx_log(info) << "   Is this event is fiducial in ECAL? "
                  << inside_ecal_cell;
 
-  event.add(trackingHitCollection, trackingHitList);
 // Took out MIP tracking here
-
-  auto linreg_tracks = std::chrono::high_resolution_clock::now();
-  profiling_map_["linreg_tracks"] +=
-      std::chrono::duration<float, std::milli>(linreg_tracks - straight_tracks)
-          .count();
-
-  ldmx_log(info) << " MIP tracking completed; found " << nStraightTracks_
-                 << " straight tracks and " << nLinregTracks_
-                 << " lin-reg tracks";
+event.add("ele_trajectory_", ele_trajectory);
+event.add("photon_trajectory_", photon_trajectory);
+event.add("trackingHitList_", trackingHitList);
 
   result.setVariables(
       nReadoutHits_, deepestLayerHit_, summedDet_, summedTightIso_, maxCellDep_,
@@ -912,14 +905,6 @@ void EcalVetoProcessor::onProcessEnd() {
   ldmx_log(info) << "mip_tracking_setup     Avg Time/Event = " << std::fixed
                  << std::setprecision(3)
                  << profiling_map_["mip_tracking_setup"] / nevents_ << " ms";
-
-  ldmx_log(info) << "straight_tracks        Avg Time/Event = " << std::fixed
-                 << std::setprecision(3)
-                 << profiling_map_["straight_tracks"] / nevents_ << " ms";
-
-  ldmx_log(info) << "linreg_tracks          Avg Time/Event = " << std::fixed
-                 << std::setprecision(3)
-                 << profiling_map_["linreg_tracks"] / nevents_ << " ms";
 
   ldmx_log(info) << "set_variables           Avg Time/Event = " << std::fixed
                  << std::setprecision(3)

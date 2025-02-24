@@ -36,63 +36,33 @@ void EcalMipTrackingProcessor::onNewRun(const ldmx::RunHeader &rh) {
 //  TODO Need to change to new Mip Tracking Configure
 void EcalMipTrackingProcessor::configure(framework::config::Parameters &parameters) {
   verbose_ = parameters.getParameter<bool>("verbose");
-  featureListName_ = parameters.getParameter<std::string>("feature_list_name");
-  // Load BDT ONNX file
-  rt_ = std::make_unique<ldmx::Ort::ONNXRuntime>(
-      parameters.getParameter<std::string>("bdt_file"));
-
-  // Read in arrays holding 68% containment radius per layer
-  // for different bins in momentum/angle
-  rocFileName_ = parameters.getParameter<std::string>("roc_file");
-  if (!std::ifstream(rocFileName_).good()) {
-    EXCEPTION_RAISE(
-        "EcalMipTrackingProcessor",
-        "The specified RoC file '" + rocFileName_ + "' does not exist!");
-  } else {
-    std::ifstream rocfile(rocFileName_);
-    std::string line, value;
-
-    // Extract the first line in the file
-    std::getline(rocfile, line);
-    std::vector<double> values;
-
-    // Read data, line by line
-    while (std::getline(rocfile, line)) {
-      std::stringstream ss(line);
-      values.clear();
-      while (std::getline(ss, value, ',')) {
-        double f_value = (value != "") ? std::stof(value) : -1.0;
-        values.push_back(f_value);
-      }
-      roc_range_values_.push_back(values);
-    }
-  }
   nEcalLayers_ = parameters.getParameter<int>("num_ecal_layers");
-
-  bdtCutVal_ = parameters.getParameter<double>("disc_cut");
-  ecalLayerEdepRaw_.resize(nEcalLayers_, 0);
-  ecalLayerEdepReadout_.resize(nEcalLayers_, 0);
-  ecalLayerTime_.resize(nEcalLayers_, 0);
-
-  beamEnergyMeV_ = parameters.getParameter<double>("beam_energy");
   linreg_radius_ = parameters.getParameter<double>("linreg_radius");
 
-  // Set the collection name as defined in the configuration
-  collectionName_ = parameters.getParameter<std::string>("collection_name");
-  rec_pass_name_ = parameters.getParameter<std::string>("rec_pass_name");
-  rec_coll_name_ = parameters.getParameter<std::string>("rec_coll_name");
-  recoil_from_tracking_ = parameters.getParameter<bool>("recoil_from_tracking");
-  track_collection_ = parameters.getParameter<std::string>("track_collection");
-  inverse_skim_ = parameters.getParameter<bool>("inverse_skim");
 }
 
-
+void EcalMipTrackingProcessor::clearProcessor() {
+   // MIP tracking
+  nStraightTracks_ = 0;
+  nLinregTracks_ = 0;
+  firstNearPhLayer_ = 0;
+  nNearPhHits_ = 0;
+  epAng_ = 0;
+  epSep_ = 0;
+  epDot_ = 0;
+  photonTerritoryHits_ = 0;
+}
 
 void EcalMipTrackingProcessor::produce(framework::Event &event) {
 
-// Read in hits near photon from EcalVetoProcessor
-std::vector<HitData> trackingHitList = event.getCollection<std::vector<HitData>>(trackingHitCollection_);
 
+clearProcessor();
+nevents_++;
+
+// Read in hits near photon from EcalVetoProcessor
+auto ele_trajectory = event.getCollection<std::vector<XYCoords>>("ele_trajectory_");
+auto photon_trajectory = event.getCollection<std::vector<XYCoords>>("photon_trajectory_");
+auto trackingHitList = event.getCollection<std::vector<HitData>>("trackingHitList_");
 // Now inputting Lines 753-1178 of the original EcalVetoProcessor
 // ------------------------------------------------------
   // MIP tracking starts here
@@ -537,7 +507,7 @@ std::vector<HitData> trackingHitList = event.getCollection<std::vector<HitData>>
 
 // MIP tracking functions:
 
-float EcalVetoProcessor::distTwoLines(TVector3 v1, TVector3 v2, TVector3 w1,
+float EcalMipTrackingProcessor::distTwoLines(TVector3 v1, TVector3 v2, TVector3 w1,
                                       TVector3 w2) {
   TVector3 e1 = v1 - v2;
   TVector3 e2 = w1 - w2;
@@ -550,7 +520,7 @@ float EcalVetoProcessor::distTwoLines(TVector3 v1, TVector3 v2, TVector3 w1,
   }
 }
 
-float EcalVetoProcessor::distPtToLine(TVector3 h1, TVector3 p1, TVector3 p2) {
+float EcalMipTrackingProcessor::distPtToLine(TVector3 h1, TVector3 p1, TVector3 p2) {
   return ((h1 - p1).Cross(h1 - p2)).Mag() / (p1 - p2).Mag();
 }
 

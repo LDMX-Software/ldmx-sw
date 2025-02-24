@@ -1,3 +1,4 @@
+
 /**
  * @file EcalVetoProcessor.h
  * @brief Class that determines if event is vetoable using ECAL hit information
@@ -203,7 +204,7 @@ class EcalVetoProcessor : public framework::Producer {
   std::string sim_particles_passname_;
   bool inverse_skim_{false};
 
-  /** Name of the collection which will contain the results. */
+  /** Name of the collection which will containt the results. */
   std::string collectionName_{"EcalVeto"};
 
   std::unique_ptr<ldmx::Ort::ONNXRuntime> rt_;
