@@ -351,7 +351,7 @@ void Process::run() {
             runHeader_ = rh;
             ldmx_log(info) << "Got new run header from '"
                            << masterFile->getFileName()
-                           << "'" newRun(*runHeader_);
+                           << "'"; newRun(*runHeader_);
           } else {
             ldmx_log(warn) << "Run header for run " << wasRun
                            << " was not found!";
