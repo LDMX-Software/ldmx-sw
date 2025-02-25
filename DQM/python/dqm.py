@@ -573,9 +573,9 @@ class PhotoNuclearDQM(ldmxcfg.Analyzer) :
                            160, -80, 80)
         
         self.build2DHistogram("pn_gamma_int_x:pn_gamma_int_y", 
-                           "PN gamme interaction vertex x (mm)", 
+                           "PN gamma interaction vertex x (mm)", 
                            50, -250, 250, 
-                           "PN gamme interaction vertex x (mm)", 
+                           "PN gamma interaction vertex y (mm)", 
                            50, -250, 250)
         
 
