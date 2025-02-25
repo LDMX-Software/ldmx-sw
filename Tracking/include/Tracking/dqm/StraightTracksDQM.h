@@ -20,15 +20,15 @@ class StraightTracksDQM : public framework::Analyzer {
   void analyze(const framework::Event& event) override;
 
   // Track monitoring for non-unique tracks (no truth comparison)
-  void TrackMonitoring(const std::vector<ldmx::StraightTrack>& tracks,
+  void trackMonitoring(const std::vector<ldmx::StraightTrack>& tracks,
                        const std::vector<ldmx::Measurement>& measurements,
-                       const std::string title, const bool& doDetail);
+                       const std::string title, const bool& do_detail);
 
   // Track monitoring for unique tracks (has a truth comparison)
-  void TrackMonitoringUnique(const std::vector<ldmx::StraightTrack>& tracks,
+  void trackMonitoringUnique(const std::vector<ldmx::StraightTrack>& tracks,
                              const std::vector<ldmx::Measurement>& measurements,
-                             const std::string title, const bool& doDetail,
-                             const bool& doTruth);
+                             const std::string title, const bool& do_detail,
+                             const bool& do_truth);
 
   void configure(framework::config::Parameters& parameters) override;
 
@@ -36,9 +36,9 @@ class StraightTracksDQM : public framework::Analyzer {
 
   // Distinguish which tracks are unique, duplicates, fake
   void sortTracks(const std::vector<ldmx::StraightTrack>& tracks,
-                  std::vector<ldmx::StraightTrack>& uniqueTracks,
-                  std::vector<ldmx::StraightTrack>& duplicateTracks,
-                  std::vector<ldmx::StraightTrack>& fakeTracks);
+                  std::vector<ldmx::StraightTrack>& unique_tracks,
+                  std::vector<ldmx::StraightTrack>& duplicate_tracks,
+                  std::vector<ldmx::StraightTrack>& fake_tracks);
 
   // Helper Functions: propogate track parameter error into calculation of
   // angles and ecal_locs I use error propagation based on partial derivatives
@@ -50,25 +50,25 @@ class StraightTracksDQM : public framework::Analyzer {
                   double cov_slope_intercept, double z_pos);
 
  private:
-  std::string trackCollection_{"LinearRecoilTracks"};
-  std::string truthCollection_{"LinearRecoilTruthTracks"};
-  std::string measurementCollection_{"DigiRecoilSimHits"};
+  std::string track_collection_{"LinearRecoilTracks"};
+  std::string truth_collection_{"LinearRecoilTruthTracks"};
+  std::string measurement_collection_{"DigiRecoilSimHits"};
   std::string title_{"recoil_lin_trk_"};
-  double trackProb_cut_{0.5};
+  double track_prob_cut_{0.5};
   std::string subdetector_{"Recoil"};
-  bool doTruthComparison{false};
+  bool do_truth_comparison_{false};
   bool debug_{false};
 
   // Truth Track collection
-  std::shared_ptr<ldmx::StraightTracks> truthTrackCollection_{nullptr};
+  std::shared_ptr<ldmx::StraightTracks> truth_track_collection_{nullptr};
 
   // If I have truth information, sort the tracks vector according to their
   // trackID and truthProb
   // real tracks (truth_prob > cut), unique
-  std::vector<ldmx::StraightTrack> uniqueTracks_;
+  std::vector<ldmx::StraightTrack> unique_tracks_;
   // real tracks (truth_prob > cut), duplicated
-  std::vector<ldmx::StraightTrack> duplicateTracks_;
+  std::vector<ldmx::StraightTrack> duplicate_tracks_;
   // fake tracks (truth_prob < cut)
-  std::vector<ldmx::StraightTrack> fakeTracks_;
+  std::vector<ldmx::StraightTrack> fake_tracks_;
 };
 }  // namespace tracking::dqm

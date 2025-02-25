@@ -37,9 +37,15 @@ class LinearSeedFinder : public TrackingGeometryUser {
   LinearSeedFinder(const std::string &name, framework::Process &process);
 
   /// Destructor
-  ~LinearSeedFinder();
-
-
+  virtual ~LinearSeedFinder() = default;
+  /**
+    *
+    */
+  void onProcessStart() override;
+  /**
+    *
+    */
+  void onProcessEnd() override;
   /**
    * Configure the processor using the given user specified parameters.
    *
@@ -60,18 +66,18 @@ class LinearSeedFinder : public TrackingGeometryUser {
   ldmx::StraightTrack SeedTracker(
       const std::tuple<std::array<double, 3>, ldmx::Measurement,
                        std::optional<ldmx::Measurement>>
-          recoilOne,
+          recoil_one,
       const std::tuple<std::array<double, 3>, ldmx::Measurement,
                        std::optional<ldmx::Measurement>>
-          recoilTwo,
-      const std::array<double, 3> ecalOne);
+          recoil_two,
+      const std::array<double, 3> ecal_one);
 
   // Function to combine Recoil layer points into "real" sensor points
   std::pair<std::vector<std::tuple<std::array<double, 3>, ldmx::Measurement,
                                    std::optional<ldmx::Measurement>>>,
             std::vector<std::tuple<std::array<double, 3>, ldmx::Measurement,
                                    std::optional<ldmx::Measurement>>>>
-  combineMultiGlobalHits(const std::vector<ldmx::Measurement> &hitCollection);
+  combineMultiGlobalHits(const std::vector<ldmx::Measurement> &hit_collection);
 
   // Function to do weighted averaging when combining Recoil layer points
   std::vector<std::tuple<std::array<double, 3>, ldmx::Measurement,
@@ -82,34 +88,34 @@ class LinearSeedFinder : public TrackingGeometryUser {
   // Fitting function: fit a straight line in 3D using 3 points (1 degree of
   // freedom)
   std::tuple<double, double, double, double, std::vector<double>> fit3DLine(
-      const std::array<double, 3> &firstRecoil,
-      const std::array<double, 3> &secondRecoil,
-      const std::array<double, 3> &ECal);
+      const std::array<double, 3> &first_recoil,
+      const std::array<double, 3> &second_recoil,
+      const std::array<double, 3> &ecal);
 
   // Helper function: calculate distance between 2 3D points
   double calculateDistance(const std::array<double, 3> &point1,
                            const std::array<double, 3> &point2);
 
   // Calculate chi2 of the fit
-  double globalChiSquare(const std::array<double, 3> &firstSensor,
-                         const std::array<double, 3> &secondSensor,
-                         const std::array<double, 3> &ecalHit, double ax,
+  double globalChiSquare(const std::array<double, 3> &first_sensor,
+                         const std::array<double, 3> &second_sensor,
+                         const std::array<double, 3> &ecal_hit, double ax,
                          double ay, double bx, double by);
 
   // Function to find the number of unique layers hit (to determine if we have
   // enough points to fit)
-  int uniqueLayersHit(const std::vector<ldmx::Measurement> &digiPoints);
+  int uniqueLayersHit(const std::vector<ldmx::Measurement> &digi_points);
 
   double processing_time_{0.};
-  long nevents_{0};
-  unsigned int nseeds_{0};
+  long n_events_{0};
+  unsigned int n_seeds_{0};
 
   /// The name of the output collection of seeds to be stored.
   std::string out_seed_collection_{"LinearRecoilSeedTracks"};
   /// The name of the input hits collection to use in finding seeds..
   std::string input_hits_collection_{"DigiRecoilSimHits"};
   /// The name of the tagger Tracks (only for Recoil Seeding)
-  std::string input_recHits_collection_{"EcalRecHits"};
+  std::string input_rec_hits_collection_{"EcalRecHits"};
 
   double ecal_uncertainty_{3.87};
   // Max distance from RecHit for valid track
@@ -123,10 +129,10 @@ class LinearSeedFinder : public TrackingGeometryUser {
   std::vector<double> recoil_uncertainty_{0.006, 0.12};
 
   // Check failures
-  long nmissing_{0};
+  long n_missing_{0};
 
   // Truth Matching tool
-  std::shared_ptr<tracking::sim::TruthMatchingTool> truthMatchingTool_ =
+  std::shared_ptr<tracking::sim::TruthMatchingTool> truth_matching_tool_ =
       nullptr;
 
 };  // SeedFinderProcessor

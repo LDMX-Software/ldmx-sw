@@ -42,25 +42,25 @@ class StraightTrack {
   int getNhits() const { return n_hits_; }
 
   void setNdf(int ndf) { ndf_ = ndf; }
-  int getNdf() const { return ndf_; };
+  int getNdf() const { return ndf_; }
 
   void setChi2(double chi2) { chi2_ = chi2; }
   double getChi2() const { return chi2_; }
 
-  void setSlopeX(double slopeX) { slopeX_ = slopeX; }
-  double getSlopeX() const { return slopeX_; }
+  void setSlopeX(double slope_x) { slope_x_ = slope_x; }
+  double getSlopeX() const { return slope_x_; }
 
-  void setInterceptX(double interceptX) { interceptX_ = interceptX; }
-  double getInterceptX() const { return interceptX_; }
+  void setInterceptX(double intercept_x) { intercept_x_ = intercept_x; }
+  double getInterceptX() const { return intercept_x_; }
 
-  void setSlopeY(double slopeY) { slopeY_ = slopeY; }
-  double getSlopeY() const { return slopeY_; }
+  void setSlopeY(double slope_y) { slope_y_ = slope_y; }
+  double getSlopeY() const { return slope_y_; }
 
-  void setInterceptY(double interceptY) { interceptY_ = interceptY; }
-  double getInterceptY() const { return interceptY_; }
+  void setInterceptY(double intercept_y) { intercept_y_ = intercept_y; }
+  double getInterceptY() const { return intercept_y_; }
 
-  void setDistancetoRecHit(double distance) { distance_to_RecHit_ = distance; }
-  double getDistanceToRecHit() const { return distance_to_RecHit_; }
+  void setDistancetoRecHit(double distance) { distance_to_rec_hit_ = distance; }
+  double getDistanceToRecHit() const { return distance_to_rec_hit_; }
 
   void setTheta(double theta) { theta_ = theta; }
   double getTheta() const { return theta_; }
@@ -69,69 +69,64 @@ class StraightTrack {
   double getPhi() const { return phi_; }
 
   const std::vector<ldmx::Measurement>& getAllSensorPoints() const {
-    return bothSensors_;
-  };
-  void setAllSensorPoints(const std::vector<ldmx::Measurement>& sensorPoints) {
-    bothSensors_ = sensorPoints;
+    return both_sensors_;
+  }
+  void setAllSensorPoints(const std::vector<ldmx::Measurement>& sensor_points) {
+    both_sensors_ = sensor_points;
   }
 
-  void setFirstSensorPosition(const std::array<double, 3>& firstSensor) {
-    firstSensor_ = firstSensor;
+  void setFirstSensorPosition(const std::array<double, 3>& first_sensor) {
+    first_sensor_ = first_sensor;
   }
-  std::array<double, 3> getFirstSensorPosition() const { return firstSensor_; };
+  std::array<double, 3> getFirstSensorPosition() const { return first_sensor_; }
 
-  void setSecondSensorPosition(const std::array<double, 3>& secondSensor) {
-    secondSensor_ = secondSensor;
+  void setSecondSensorPosition(const std::array<double, 3>& second_sensor) {
+    second_sensor_ = second_sensor;
   }
-  std::array<double, 3> getSecondSensorPosition() const {
-    return secondSensor_;
-  };
+  std::array<double, 3> getSecondSensorPosition() const { return second_sensor_; }
 
   void setFirstLayerEcalRecHit(const std::array<double, 3>& ecal_hit) {
-    ecalRecHit_ = ecal_hit;
+    ecal_rec_hit_ = ecal_hit;
   }
-  std::array<double, 3> getFirstLayerEcalRecHit() const { return ecalRecHit_; };
+  std::array<double, 3> getFirstLayerEcalRecHit() const { return ecal_rec_hit_; }
 
   void setTargetLocation(const std::array<double, 3>& target_loc) {
-    targetPos_ = target_loc;
+    target_pos_ = target_loc;
   }
   void setEcalLayer1Location(const std::array<double, 3>& ecal_loc) {
-    ecalLayer1Pos_ = ecal_loc;
+    ecal_layer1_pos_ = ecal_loc;
   }
 
   void setTargetLocation(const double& z, const double& x, const double& y) {
-    targetPos_[0] = z;
-    targetPos_[1] = x;
-    targetPos_[2] = y;
+    target_pos_[0] = z;
+    target_pos_[1] = x;
+    target_pos_[2] = y;
   }
 
-  void setEcalLayer1Location(const double& z, const double& x,
-                             const double& y) {
-    ecalLayer1Pos_[0] = z;
-    ecalLayer1Pos_[1] = x;
-    ecalLayer1Pos_[2] = y;
+  void setEcalLayer1Location(const double& z, const double& x, const double& y) {
+    ecal_layer1_pos_[0] = z;
+    ecal_layer1_pos_[1] = x;
+    ecal_layer1_pos_[2] = y;
   }
 
-  std::array<double, 3> getTargetLocation() const { return targetPos_; };
-  double getTargetZ() const { return targetPos_[0]; };
-  double getTargetX() const { return targetPos_[1]; };
-  double getTargetY() const { return targetPos_[2]; };
+  std::array<double, 3> getTargetLocation() const { return target_pos_; }
+  double getTargetZ() const { return target_pos_[0]; }
+  double getTargetX() const { return target_pos_[1]; }
+  double getTargetY() const { return target_pos_[2]; }
 
-  std::array<double, 3> getEcalLayer1Location() const {
-    return ecalLayer1Pos_;
-  };
-  double getEcalLayer1Z() const { return ecalLayer1Pos_[0]; };
-  double getEcalLayer1X() const { return ecalLayer1Pos_[1]; };
-  double getEcalLayer1Y() const { return ecalLayer1Pos_[2]; };
+  std::array<double, 3> getEcalLayer1Location() const { return ecal_layer1_pos_; }
+  double getEcalLayer1Z() const { return ecal_layer1_pos_[0]; }
+  double getEcalLayer1X() const { return ecal_layer1_pos_[1]; }
+  double getEcalLayer1Y() const { return ecal_layer1_pos_[2]; }
 
-  void setTrackID(int trackid) { trackID_ = trackid; };
-  int getTrackID() const { return trackID_; };
+  void setTrackID(int track_id) { track_id_ = track_id; }
+  int getTrackID() const { return track_id_; }
 
-  void setTruthProb(double truthProb) { truthProb_ = truthProb; };
-  double getTruthProb() const { return truthProb_; };
+  void setTruthProb(double truth_prob) { truth_prob_ = truth_prob; }
+  double getTruthProb() const { return truth_prob_; }
 
-  void setPdgID(int pdgID) { pdgID_ = pdgID; };
-  int getPdgID() const { return pdgID_; };
+  void setPdgID(int pdg_id) { pdg_id_ = pdg_id; }
+  int getPdgID() const { return pdg_id_; }
 
   // Covariance vector has 10 elements arranged as a vector
   // mxmx mxbx mxmy mxby
@@ -144,34 +139,34 @@ class StraightTrack {
 
  protected:
   // Actual Track Parameters
-  double slopeX_;
-  double slopeY_;
-  double interceptX_;
-  double interceptY_;
-  double distance_to_RecHit_;
+  double slope_x_;
+  double slope_y_;
+  double intercept_x_;
+  double intercept_y_;
+  double distance_to_rec_hit_;
   double theta_;
   double phi_;
 
-  std::vector<ldmx::Measurement> bothSensors_;
-  std::array<double, 3> firstSensor_;
-  std::array<double, 3> secondSensor_;
-  std::array<double, 3> ecalRecHit_;
+  std::vector<ldmx::Measurement> both_sensors_;
+  std::array<double, 3> first_sensor_;
+  std::array<double, 3> second_sensor_;
+  std::array<double, 3> ecal_rec_hit_;
 
   int n_hits_;
   int ndf_;
   double chi2_;
 
   // The target location
-  std::array<double, 3> targetPos_;
+  std::array<double, 3> target_pos_;
   // The ecal first layer position
-  std::array<double, 3> ecalLayer1Pos_;
+  std::array<double, 3> ecal_layer1_pos_;
 
   // ID of the matched particle in the SimParticles map
-  int trackID_{-1};
+  int track_id_{-1};
   // Truth probability
-  double truthProb_{0.};
+  double truth_prob_{0.};
   // pdgID (truth value)
-  int pdgID_{0};
+  int pdg_id_{0};
 
   std::vector<double> trk_cov_;
 

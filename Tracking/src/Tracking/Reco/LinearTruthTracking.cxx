@@ -9,10 +9,8 @@ LinearTruthTracking::LinearTruthTracking(const std::string& name,
                                          framework::Process& process)
     : TrackingGeometryUser(name, process) {}
 
-LinearTruthTracking::~LinearTruthTracking() {}
-
 void LinearTruthTracking::onProcessStart() {
-  truthMatchingTool_ = std::make_shared<tracking::sim::TruthMatchingTool>();
+  truth_matching_tool_ = std::make_shared<tracking::sim::TruthMatchingTool>();
 }
 
 void LinearTruthTracking::configure(framework::config::Parameters& parameters) {
@@ -23,7 +21,7 @@ void LinearTruthTracking::configure(framework::config::Parameters& parameters) {
   // Input strip hits
   input_hits_collection_ = parameters.getParameter<std::string>(
       "input_hits_collection", "DigiRecoilSimHits");
-  input_recHits_collection_ = parameters.getParameter<std::string>(
+  input_rec_hits_collection_ = parameters.getParameter<std::string>(
       "input_recHits_collection", "EcalRecHits");
 
   layer12_midpoint_ = parameters.getParameter<double>("layer12_midpoint");
@@ -34,75 +32,75 @@ void LinearTruthTracking::configure(framework::config::Parameters& parameters) {
 void LinearTruthTracking::produce(framework::Event& event) {
   auto start = std::chrono::high_resolution_clock::now();
   std::vector<ldmx::StraightTrack> straight_truth_tracks;
-  nevents_++;
+  n_events_++;
 
-  const std::vector<ldmx::Measurement> recoilHits =
+  const std::vector<ldmx::Measurement> recoil_hits =
       event.getCollection<ldmx::Measurement>(input_hits_collection_);
-  const std::vector<ldmx::EcalHit> ecalRecHit =
-      event.getCollection<ldmx::EcalHit>(input_recHits_collection_);
+  const std::vector<ldmx::EcalHit> ecal_rec_hit =
+      event.getCollection<ldmx::EcalHit>(input_rec_hits_collection_);
 
-  std::vector<std::array<double, 3>> firstLayerEcalRecHits;
+  std::vector<std::array<double, 3>> first_layer_ecal_rec_hits;
 
-  for (const auto& x_ecal : ecalRecHit) {
+  for (const auto& x_ecal : ecal_rec_hit) {
     if (x_ecal.getZPos() < 250) {
-      firstLayerEcalRecHits.push_back(
+      first_layer_ecal_rec_hits.push_back(
           {x_ecal.getZPos(), x_ecal.getXPos(), x_ecal.getYPos()});
     }  // if first layer of Ecal
   }    // for positions in ecalRecHit
 
-  std::map<int, ldmx::SimParticle> particleMap;
+  std::map<int, ldmx::SimParticle> particle_map;
   if (event.exists("SimParticles")) {
-    particleMap = event.getMap<int, ldmx::SimParticle>("SimParticles");
-    truthMatchingTool_->setup(particleMap, recoilHits);
+    particle_map = event.getMap<int, ldmx::SimParticle>("SimParticles");
+    truth_matching_tool_->setup(particle_map, recoil_hits);
   }
 
   // Check if we would fit empty seeds.
   // TODO: Currently, we only want more than 2 hits in recoil. Is there a better
   // check?
-  if (recoilHits.size() < 2) {
-    nmissing_++;
-    ntruth_ += straight_truth_tracks.size();
+  if (recoil_hits.size() < 2) {
+    n_missing_++;
+    n_truth_ += straight_truth_tracks.size();
     event.add(out_trk_collection_, straight_truth_tracks);
     return;
   }
 
-  std::vector<ldmx::Measurement> truthPoints;
+  std::vector<ldmx::Measurement> truth_points;
 
-  if (truthMatchingTool_->configured()) {
-    truthPoints = findTruthHits(recoilHits);
+  if (truth_matching_tool_->configured()) {
+    truth_points = findTruthHits(recoil_hits);
   }  // match recoilHits with truth data
 
-  if (truthPoints.size() > 0) {
+  if (truth_points.size() > 0) {
     straight_truth_tracks.push_back(
-        TruthTracker(truthPoints, firstLayerEcalRecHits));
+        truthTracker(truth_points, first_layer_ecal_rec_hits));
   }  // should only find 1 track (recoil e-) or 0 track (no recoil e-)
 
   else {
-    nempty_++;
-    ntruth_ += straight_truth_tracks.size();
+    n_empty_++;
+    n_truth_ += straight_truth_tracks.size();
     return;
   }
 
-  ntruth_ += straight_truth_tracks.size();
+  n_truth_ += straight_truth_tracks.size();
   event.add(out_trk_collection_, straight_truth_tracks);
 
   auto end = std::chrono::high_resolution_clock::now();
   auto diff = end - start;
   processing_time_ += std::chrono::duration<double, std::milli>(diff).count();
 
-  firstLayerEcalRecHits.clear();
+  first_layer_ecal_rec_hits.clear();
   straight_truth_tracks.clear();
 
 }  // produce
 
-ldmx::StraightTrack LinearTruthTracking::TruthTracker(
+ldmx::StraightTrack LinearTruthTracking::truthTracker(
     const std::vector<ldmx::Measurement>& points,
-    std::vector<std::array<double, 3>>& ecalPoints) {
+    std::vector<std::array<double, 3>>& ecal_points) {
   ldmx::StraightTrack trk = ldmx::StraightTrack();
 
   // We have pre-selected hits corresponding to the Recoil e-, so we only fit
   // these (no RecHit)
-  auto [mx, bx, my, by, truthTrk_cov] = fit3DLine(points);
+  auto [mx, bx, my, by, truth_trk_cov] = fit3DLine(points);
 
   trk.setSlopeX(mx);
   trk.setInterceptX(bx);
@@ -114,44 +112,45 @@ ldmx::StraightTrack LinearTruthTracking::TruthTracker(
   trk.setNhits(points.size());
   trk.setNdf(points.size() - 2);
 
-  if (truthMatchingTool_->configured()) {
-    auto truthInfo = truthMatchingTool_->TruthMatch(points);
-    trk.setTrackID(truthInfo.trackID);
-    trk.setPdgID(truthInfo.pdgID);
-    trk.setTruthProb(truthInfo.truthProb);
+  if (truth_matching_tool_->configured()) {
+    auto truth_info = truth_matching_tool_->TruthMatch(points);
+    trk.setTrackID(truth_info.trackID);
+    trk.setPdgID(truth_info.pdgID);
+    trk.setTruthProb(truth_info.truthProb);
   }
 
   trk.setAllSensorPoints(points);
 
   trk.setChi2(globalChiSquare(points, mx, my, bx, by));
-  trk.setCov(truthTrk_cov);
+  trk.setCov(truth_trk_cov);
 
-  if (ecalPoints.size() > 0) {
-    double ecal_firstLayer_z =
-        ecalPoints[0][0];  // Z position from the first point in ecalPoints
+  // Z position from the first point in ecalPoints
+  if (ecal_points.size() > 0) {
+    double ecal_first_layer_z =
+        ecal_points[0][0];
 
     // Extrapolate track to first layer of Ecal
-    std::array<double, 3> extrapolatedPoint = {ecal_firstLayer_z,
-                                               mx * ecal_firstLayer_z + bx,
-                                               my * ecal_firstLayer_z + by};
+    std::array<double, 3> extrapolated_point = {ecal_first_layer_z,
+                                               mx * ecal_first_layer_z + bx,
+                                               my * ecal_first_layer_z + by};
 
-    const std::array<double, 3>* closestRecHit = nullptr;
-    double minDistance = std::numeric_limits<double>::max();
+    const std::array<double, 3>* closest_rec_hit = nullptr;
+    double min_distance = std::numeric_limits<double>::max();
 
     // Loop through ecalPoints to find the closest recHit to our track
-    for (const auto& ecalRecHit : ecalPoints) {
-      double tempDistance = calculateDistance(extrapolatedPoint, ecalRecHit);
+    for (const auto& ecal_rec_hit : ecal_points) {
+      double temp_distance = calculateDistance(extrapolated_point, ecal_rec_hit);
 
-      if (tempDistance < minDistance) {
-        minDistance = tempDistance;
-        closestRecHit = &ecalRecHit;
+      if (temp_distance < min_distance) {
+        min_distance = temp_distance;
+        closest_rec_hit = &ecal_rec_hit;
       }
     }  // for recHits
 
-    if (closestRecHit != nullptr) {
-      trk.setFirstLayerEcalRecHit(*closestRecHit);
-      trk.setDistancetoRecHit(minDistance);
-      trk.setEcalLayer1Location(extrapolatedPoint);
+    if (closest_rec_hit != nullptr) {
+      trk.setFirstLayerEcalRecHit(*closest_rec_hit);
+      trk.setDistancetoRecHit(min_distance);
+      trk.setEcalLayer1Location(extrapolated_point);
     }
   }  // make sure there are ecalPoints to work with
 
@@ -160,20 +159,20 @@ ldmx::StraightTrack LinearTruthTracking::TruthTracker(
 
 void LinearTruthTracking::onProcessEnd() {
   ldmx_log(info) << "AVG Time / Event: " << std::fixed << std::setprecision(1)
-                 << processing_time_ / nevents_ << " ms";
+                 << processing_time_ / n_events_ << " ms";
   ldmx_log(info) << "Number of Events without enough seed points: "
-                 << nmissing_;
-  ldmx_log(info) << "Number of Events without trackID == 1 combo: " << nempty_;
-  ldmx_log(info) << "Total Truth Tracks / Event: " << ntruth_ << "/"
-                 << nevents_;
+                 << n_missing_;
+  ldmx_log(info) << "Number of Events without trackID == 1 combo: " << n_empty_;
+  ldmx_log(info) << "Total Truth Tracks / Event: " << n_truth_ << "/"
+                 << n_events_;
 }  // onProcessEnd
 
 std::vector<ldmx::Measurement> LinearTruthTracking::findTruthHits(
-    const std::vector<ldmx::Measurement>& hitCollection) {
+    const std::vector<ldmx::Measurement>& hit_collection) {
   std::vector<ldmx::Measurement> layer1, layer2, layer3, layer4;
 
   // Split hits into layers based on z position
-  for (const auto& point : hitCollection) {
+  for (const auto& point : hit_collection) {
     if (point.getGlobalPosition()[0] < layer12_midpoint_)
       layer1.push_back(point);
     else if (point.getGlobalPosition()[0] < layer23_midpoint_)
@@ -193,8 +192,8 @@ std::vector<ldmx::Measurement> LinearTruthTracking::findTruthHits(
       for (const auto& hit3 : layer3) {
         for (const auto& hit4 : layer4) {
           std::vector<ldmx::Measurement> combination = {hit1, hit2, hit3, hit4};
-          auto truthInfo = truthMatchingTool_->TruthMatch(combination);
-          if (truthInfo.trackID == 1.0 and truthInfo.truthProb == 1.0) {
+          auto truth_info = truth_matching_tool_->TruthMatch(combination);
+          if (truth_info.trackID == 1.0 and truth_info.truthProb == 1.0) {
             return combination;
           }  // if trackID
         }    // for layer4

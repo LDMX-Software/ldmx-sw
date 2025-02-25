@@ -34,7 +34,7 @@ class LinearTruthTracking : public TrackingGeometryUser {
   LinearTruthTracking(const std::string& name, framework::Process& process);
 
   /// Destructor
-  ~LinearTruthTracking();
+  virtual ~LinearTruthTracking() = default;
 
   /**
    *
@@ -63,13 +63,13 @@ class LinearTruthTracking : public TrackingGeometryUser {
 
  protected:
   // Function to find recoil e- based on 4 recoil points with trackID = 1
-  ldmx::StraightTrack TruthTracker(
+  ldmx::StraightTrack truthTracker(
       const std::vector<ldmx::Measurement>& points,
-      std::vector<std::array<double, 3>>& ecalPoints);
+      std::vector<std::array<double, 3>>& ecal_points);
 
   // Function to find recoil e- hits with trackID = 1
   std::vector<ldmx::Measurement> findTruthHits(
-      const std::vector<ldmx::Measurement>& hitCollection);
+      const std::vector<ldmx::Measurement>& hit_collection);
 
   // Helper function: calculate distance between 2 3D points
   double calculateDistance(const std::array<double, 3>& point1,
@@ -85,10 +85,10 @@ class LinearTruthTracking : public TrackingGeometryUser {
                          double ax, double ay, double bx, double by);
 
   double processing_time_{0.};
-  long nevents_{0};
-  unsigned int ntruth_{0};
-  long nmissing_{0};
-  long nempty_{0};
+  long n_events_{0};
+  unsigned int n_truth_{0};
+  long n_missing_{0};
+  long n_empty_{0};
 
   std::vector<double> recoil_truth_uncertainty_{0.006, 0.12};
 
@@ -102,10 +102,10 @@ class LinearTruthTracking : public TrackingGeometryUser {
   /// The name of the input hits collection to use in finding seeds..
   std::string input_hits_collection_{"DigiRecoilSimHits"};
   /// The name of the tagger Tracks (only for Recoil Seeding)
-  std::string input_recHits_collection_{"EcalRecHits"};
+  std::string input_rec_hits_collection_{"EcalRecHits"};
 
   // Truth Matching tool
-  std::shared_ptr<tracking::sim::TruthMatchingTool> truthMatchingTool_ =
+  std::shared_ptr<tracking::sim::TruthMatchingTool> truth_matching_tool_ =
       nullptr;
 
 };  // LinearTruthTracking
