@@ -75,10 +75,6 @@ from LDMX.Tracking import dqm
 from LDMX.Tracking.geo import TrackersTrackingGeometryProvider as trackgeo
 trackgeo.get_instance().setDetector(det)
 
-#smearings
-uSmearing = 0.006       #mm #could bump up to 10 micron if we want
-vSmearing = 0.000001    #mm #~unused
-
 # Smearing Processor - Recoil
 digiRecoil = tracking.DigitizationProcessor("DigitizationProcessorRecoil")
 digiRecoil.hit_collection = "RecoilSimHits"
