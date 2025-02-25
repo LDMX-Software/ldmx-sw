@@ -39,15 +39,6 @@ class LinearSeedFinder : public TrackingGeometryUser {
   /// Destructor
   ~LinearSeedFinder();
 
-  /**
-   *
-   */
-  void onProcessStart() override;
-
-  /**
-   *
-   */
-  void onProcessEnd() override;
 
   /**
    * Configure the processor using the given user specified parameters.
