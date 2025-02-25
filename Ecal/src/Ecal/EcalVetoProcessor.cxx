@@ -805,11 +805,16 @@ void EcalVetoProcessor::produce(framework::Event &event) {
   ldmx_log(info) << "   Is this event is fiducial in ECAL? "
                  << inside_ecal_cell;
 
-// Took out MIP tracking here
-event.add("ele_trajectory_", ele_trajectory);
-event.add("photon_trajectory_", photon_trajectory);
-event.add("trackingHitList_", trackingHitList);
+  // Took out MIP tracking here
+  event.add("ele_trajectory_", ele_trajectory);
+  event.add("photon_trajectory_", photon_trajectory);
+  event.add("trackingHitList_", trackingHitList);
 
+  auto mip_tracking_setup = std::chrono::high_resolution_clock::now();
+  profiling_map_["mip_tracking_setup"] +=
+      std::chrono::duration<double, std::milli>(mip_tracking_setup -
+                                                start)
+          .count();
   result.setVariables(
       nReadoutHits_, deepestLayerHit_, summedDet_, summedTightIso_, maxCellDep_,
       showerRMS_, xStd_, yStd_, avgLayerHit_, stdLayerHit_, ecalBackEnergy_,
@@ -825,7 +830,7 @@ event.add("trackingHitList_", trackingHitList);
 
   auto set_variables = std::chrono::high_resolution_clock::now();
   profiling_map_["set_variables"] +=
-      std::chrono::duration<float, std::milli>(set_variables - linreg_tracks)
+      std::chrono::duration<double, std::milli>(set_variables - mip_tracking_setup)
           .count();
 
   buildBDTFeatureVector(result);

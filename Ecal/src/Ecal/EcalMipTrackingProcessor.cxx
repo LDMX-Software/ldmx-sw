@@ -29,9 +29,12 @@
 #include "TVector3.h"
 
 namespace ecal {
+
+
 void EcalMipTrackingProcessor::onNewRun(const ldmx::RunHeader &rh) {
   profiling_map_["straight_tracks"] = 0.;
   profiling_map_["linreg_tracks"] = 0.;
+  profiling_map_["processing_time_"] = 0;
 }
 //  TODO Need to change to new Mip Tracking Configure
 void EcalMipTrackingProcessor::configure(framework::config::Parameters &parameters) {
@@ -55,14 +58,15 @@ void EcalMipTrackingProcessor::clearProcessor() {
 
 void EcalMipTrackingProcessor::produce(framework::Event &event) {
 
+auto start = std::chrono::high_resolution_clock::now();
 
 clearProcessor();
 nevents_++;
 
 // Read in hits near photon from EcalVetoProcessor
-auto ele_trajectory = event.getCollection<std::vector<XYCoords>>("ele_trajectory_");
-auto photon_trajectory = event.getCollection<std::vector<XYCoords>>("photon_trajectory_");
-auto trackingHitList = event.getCollection<std::vector<HitData>>("trackingHitList_");
+std::vector<XYCoords> ele_trajectory = event.getCollection<XYCoords>("ele_trajectory_");
+std::vector<XYCoords> photon_trajectory = event.getCollection<XYCoords>("photon_trajectory_");
+std::vector<HitData> trackingHitList = event.getCollection<HitData>("trackingHitList_");
 // Now inputting Lines 753-1178 of the original EcalVetoProcessor
 // ------------------------------------------------------
   // MIP tracking starts here
@@ -152,11 +156,7 @@ auto trackingHitList = event.getCollection<std::vector<HitData>>("trackingHitLis
     photonTerritoryHits_ = nReadoutHits_;
   }
 
-  auto mip_tracking_setup = std::chrono::high_resolution_clock::now();
-  profiling_map_["mip_tracking_setup"] +=
-      std::chrono::duration<double, std::milli>(mip_tracking_setup -
-                                                containment_var)
-          .count();
+
 
   // ------------------------------------------------------
   // Find straight MIP tracks:
@@ -344,10 +344,7 @@ auto trackingHitList = event.getCollection<std::vector<HitData>>("trackingHitLis
 
   auto straight_tracks = std::chrono::high_resolution_clock::now();
   profiling_map_["straight_tracks"] +=
-      std::chrono::duration<double, std::milli>(straight_tracks -
-                                                mip_tracking_setup)
-          .count();
-
+      std::chrono::duration<double, std::milli>(straight_tracks - start).count();
   // ------------------------------------------------------
   // Linreg tracking:
   ldmx_log(info) << "Finding linreg tracks from a total of "
@@ -490,21 +487,39 @@ auto trackingHitList = event.getCollection<std::vector<HitData>>("trackingHitLis
     }
     iHit--;
   }  // end loop on all hits
-
-
-}
-
+  ldmx_log(info) << " MIP tracking completed; found " << nStraightTracks_
+                  << " straight tracks and " << nLinregTracks_
+                  << " lin-reg tracks";
 
   auto linreg_tracks = std::chrono::high_resolution_clock::now();
   profiling_map_["linreg_tracks"] +=
       std::chrono::duration<double, std::milli>(linreg_tracks - straight_tracks)
           .count();
 
-  ldmx_log(info) << " MIP tracking completed; found " << nStraightTracks_
-                 << " straight tracks and " << nLinregTracks_
-                 << " lin-reg tracks";
+  auto end = std::chrono::high_resolution_clock::now();
+  auto time_diff = end - start;
+  processing_time_ +=
+      std::chrono::duration<double, std::milli>(time_diff).count();
+}
 
+  
 
+  
+
+void EcalMipTrackingProcessor::onProcessEnd() {
+  ldmx_log(info) << "AVG Time/Event: " << std::fixed << std::setprecision(2)
+                 << processing_time_ / nevents_ << " ms";
+
+  ldmx_log(info) << "Breakdown::";
+
+  ldmx_log(info) << "straight_tracks        Avg Time/Event = " << std::fixed
+                 << std::setprecision(3) << profiling_map_["straight_tracks"] / nevents_
+                 << " ms";
+
+  ldmx_log(info) << "linreg_tracks        Avg Time/Event = " << std::fixed
+                 << std::setprecision(3)
+                 << profiling_map_["linreg_tracks"] / nevents_ << " ms";
+}
 // MIP tracking functions:
 
 float EcalMipTrackingProcessor::distTwoLines(TVector3 v1, TVector3 v2, TVector3 w1,

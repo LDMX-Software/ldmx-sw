@@ -1,13 +1,12 @@
 /**
  * @file EcalMipTrackingProcessor.h
- * @brief TODO fill later
+ * @brief Class that determines MIP tracking information using ECAL hit information
  * @author Owen Colegrove, Danyi Zhang, Tamas Vami (UCSB)
  */
 
 
-//  TODO Change Later
-#ifndef EVENTPROC_ECALVETOPROCESSOR_H_
-#define EVENTPROC_ECALVETOPROCESSOR_H_
+#ifndef EVENTPROC_ECALMIPTRACKINGPROCESSOR_H_
+#define EVENTPROC_ECALMIPTRACKINGPROCESSOR_H_
 
 // LDMX
 #include "DetDescr/EcalGeometry.h"
@@ -31,7 +30,8 @@
 namespace ecal {
     /**
  * @class EcalMipTrackingProcessor
- * @brief TODO
+ * @brief Determines MIP tracking information using ECAL hit information
+ * @author Owen Colegrove, Danyi Zhang, Tamas Vami (UCSB)
  */
 class EcalMipTrackingProcessor : public framework::Producer {
  public:
