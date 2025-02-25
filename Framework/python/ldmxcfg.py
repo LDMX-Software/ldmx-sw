@@ -929,4 +929,15 @@ class Process:
 
         return msg
 
-    
+class RunHeaderAna(Analyzer) :
+    """                                                                                                                  
+    Contains an instance of RunHeaderAnalyzer that
+    has already been configured.
+
+    Examples
+    --------
+        p.sequence.append( ldmxcfg.RunHeaderAna() )
+    """
+
+    def __init__(self, name='RunHeaderAnalyzer'):
+        super().__init__(name, 'framework::RunHeaderAnalyzer', 'Framework')
