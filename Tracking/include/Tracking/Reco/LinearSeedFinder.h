@@ -113,7 +113,6 @@ class LinearSeedFinder : public TrackingGeometryUser {
   double ecal_uncertainty_{3.87};
 // Max distance from RecHit for valid track
   double ecal_distance_threshold_{10.0};  
-      10.0};  // Max distance from RecHit for valid track
 
   // Assuming rLDMX_v1 geometry
   double layer12_midpoint_{12.5};
