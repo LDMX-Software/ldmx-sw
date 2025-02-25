@@ -39,7 +39,6 @@ class LinearSeedFinder : public TrackingGeometryUser {
   /// Destructor
   ~LinearSeedFinder();
 
-
   /**
    * Configure the processor using the given user specified parameters.
    *
