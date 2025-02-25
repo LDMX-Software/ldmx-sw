@@ -75,27 +75,34 @@ from LDMX.Tracking import dqm
 from LDMX.Tracking.geo import TrackersTrackingGeometryProvider as trackgeo
 trackgeo.get_instance().setDetector(det)
 
-#smearings
-uSmearing = 0.006       #mm #could bump up to 10 micron if we want
-vSmearing = 0.000001    #mm #~unused
-
 # Smearing Processor - Recoil
 digiRecoil = tracking.DigitizationProcessor("DigitizationProcessorRecoil")
 digiRecoil.hit_collection = "RecoilSimHits"
 digiRecoil.out_collection = "DigiRecoilSimHits"
 digiRecoil.merge_hits = True
-digiRecoil.sigma_u = uSmearing
-digiRecoil.sigma_v = vSmearing
+digiRecoil.sigma_u = 0.006
+digiRecoil.sigma_v = 0.000001
+
+layer12_mid = (9.5+15.5)/2.
+layer23_mid = (15.5+24.5)/2.
+layer34_mid = (24.5+30.5)/2.
 
 truth_tracking = tracking.LinearTruthTracking("LinearTruthTracking")
 truth_tracking.input_hit_collection = "DigiRecoilSimHits"
 truth_tracking.input_recHits_collection = "EcalRecHits"
 truth_tracking.out_track_collection = "LinearRecoilTruthTracks"
+truth_tracking.layer12_midpoint = layer12_mid
+truth_tracking.layer23_midpoint = layer23_mid
+truth_tracking.layer34_midpoint = layer34_mid
 
 rSeedTracking = tracking.LinearSeedFinder("LinearSeedFinder")
 rSeedTracking.input_hit_collection = "DigiRecoilSimHits"
 rSeedTracking.input_recHits_collection = "EcalRecHits"
 rSeedTracking.out_seed_collection = "LinearRecoilSeedTracks"
+rSeedTracking.layer12_midpoint = layer12_mid
+rSeedTracking.layer23_midpoint = layer23_mid
+rSeedTracking.layer34_midpoint = layer34_mid
+rSeedTracking.ecal_distance_threshold = 15.0
 
 rTracking = tracking.LinearTrackFinder("LinearTrackFinder")
 rTracking.seed_coll_name = "LinearRecoilSeedTracks"
