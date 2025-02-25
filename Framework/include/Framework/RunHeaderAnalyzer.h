@@ -10,13 +10,26 @@ namespace framework {
 
 class RunHeaderAnalyzer : public framework::Analyzer {
  public:
-  RunHeaderAnalyzer(const std::string& n, framework::Process& p)
-      : framework::Analyzer(n, p) {}
+  /**
+   * Constructor
+   */
+  RunHeaderAnalyzer(const std::string& name, framework::Process& process)
+      : framework::Analyzer(name, process) {}
+
+  /**
+   * Destructor
+   */
   virtual ~RunHeaderAnalyzer() = default;
 
-  // void configure(framework::config::Parameters& ps) override {}
-  void analyze(const framework::Event& event) override;
-  void onNewRun(const ldmx::RunHeader& rh) override;
+  /**
+   * This is used to print out the run header on a new run
+   */
+  virtual void onNewRun(const ldmx::RunHeader& rh) override;
+
+  /**
+   * Not used but necessary for an analyzer
+   */
+  virtual void analyze(const framework::Event& event) override;
 };
 
 }  // namespace framework

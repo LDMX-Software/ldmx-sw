@@ -2,10 +2,10 @@
 
 namespace framework {
 
-void onNewRun(ldmx::RunHeader& rh) { rh.Print(); }
+void RunHeaderAnalyzer::onNewRun(const ldmx::RunHeader& rh) { rh.Print(); }
 
-void analyze(const framework::Event& event) {
-  std::cout << " heeey " << std::endl;
-}
+void RunHeaderAnalyzer::analyze(const framework::Event& event) { return; }
 
 }  // namespace framework
+
+DECLARE_ANALYZER_NS(framework, RunHeaderAnalyzer);

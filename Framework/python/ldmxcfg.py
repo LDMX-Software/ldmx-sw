@@ -932,8 +932,8 @@ class RunHeaderAna(Analyzer) :
 
     Examples
     --------
-        p.sequence.append( dqm.RunHeaderAna() )
+        p.sequence.append( ldmxcfg.RunHeaderAna() )
     """
 
     def __init__(self, name='RunHeaderAnalyzer'):
-        super().__init__(name, 'RunHeaderAnalyzer', 'Framework')
+        super().__init__(name, 'framework::RunHeaderAnalyzer', 'Framework')

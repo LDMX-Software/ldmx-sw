@@ -7,9 +7,6 @@ from LDMX.Framework import ldmxcfg
 p = ldmxcfg.Process('myAna')
 dumpRunHeader = ldmxcfg.RunHeaderAna()
 
-#import LDMX.Ecal.ecal_hardcoded_conditions
-#from LDMX.Ecal import EcalGeometry
-
 p.maxEvents = -1
 p.run = 2
 
