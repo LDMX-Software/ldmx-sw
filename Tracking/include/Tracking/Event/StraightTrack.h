@@ -176,7 +176,7 @@ class StraightTrack {
   std::vector<double> trk_cov_;
 
   /// Class declaration needed by the ROOT dictionary.
-  ClassDef(StraightTrack, 3);
+  ClassDef(StraightTrack, 1);
 
 };  // StraightTrack
 
