@@ -51,7 +51,7 @@ void LinearSeedFinder::produce(framework::Event& event) {
   // Find RecHits at first layer of ECal
   for (const auto& x_ecal : ecal_rec_hit) {
     if (x_ecal.getZPos() < 250) {
-        first_layer_ecal_rec_hits.push_back(
+      first_layer_ecal_rec_hits.push_back(
           {x_ecal.getZPos(), x_ecal.getXPos(), x_ecal.getYPos()});
     }  // if first layer of Ecal
   }    // for positions in ecalRecHit
@@ -85,7 +85,7 @@ void LinearSeedFinder::produce(framework::Event& event) {
             SeedTracker(first_point, second_point, rec_hit);
         if (seed_track.getChi2() > 0.0) {
           straight_seed_tracks.push_back(
-            seed_track);  // Seed passed RecHit distance check
+              seed_track);  // Seed passed RecHit distance check
         }
       }  // for rec_hits
     }    // for second recoil tracker
@@ -279,14 +279,14 @@ LinearSeedFinder::weightedAverage(
       double edepL1 = p1.getEdep();
       double edepL2 = p2.getEdep();
       double z_avg = (p1.getGlobalPosition()[0] * edepL1 +
-                     p2.getGlobalPosition()[0] * edepL2) /
-                    (edepL1 + edepL2);
+                      p2.getGlobalPosition()[0] * edepL2) /
+                     (edepL1 + edepL2);
       double x_avg = (p1.getGlobalPosition()[1] * edepL1 +
-                     p2.getGlobalPosition()[1] * edepL2) /
-                    (edepL1 + edepL2);
+                      p2.getGlobalPosition()[1] * edepL2) /
+                     (edepL1 + edepL2);
       double y_avg = (p1.getGlobalPosition()[2] * edepL1 +
-                     p2.getGlobalPosition()[2] * edepL2) /
-                    (edepL1 + edepL2);
+                      p2.getGlobalPosition()[2] * edepL2) /
+                     (edepL1 + edepL2);
       merged_hits.push_back(
           std::make_tuple(std::array<double, 3>{z_avg, x_avg, y_avg}, p1, p2));
     }
@@ -352,9 +352,11 @@ double LinearSeedFinder::globalChiSquare(
     double by) {
   double chi2_x = 0, chi2_y = 0;
   chi2_x += pow(
-      (mx * first_sensor[0] + bx - first_sensor[1]) / recoil_uncertainty_[0], 2);
+      (mx * first_sensor[0] + bx - first_sensor[1]) / recoil_uncertainty_[0],
+      2);
   chi2_y += pow(
-      (my * first_sensor[0] + by - first_sensor[2]) / recoil_uncertainty_[1], 2);
+      (my * first_sensor[0] + by - first_sensor[2]) / recoil_uncertainty_[1],
+      2);
 
   chi2_x += pow(
       (mx * second_sensor[0] + bx - second_sensor[1]) / recoil_uncertainty_[0],
@@ -381,7 +383,7 @@ int LinearSeedFinder::uniqueLayersHit(
 
   // Remove duplicates to ensure we only keep unique z positions
   auto last = std::unique(
-        sorted_points.begin(), sorted_points.end(),
+      sorted_points.begin(), sorted_points.end(),
       [](const ldmx::Measurement& m1, const ldmx::Measurement& m2) {
         return m1.getGlobalPosition()[0] == m2.getGlobalPosition()[0];
       });

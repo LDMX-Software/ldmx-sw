@@ -30,7 +30,7 @@ class LinearTrackFinder : public TrackingGeometryUser {
    * @param process The process running this producer.
    */
   LinearTrackFinder(const std::string &name, framework::Process &process);
-   
+
   /// Destructor
   virtual ~LinearTrackFinder() = default;
   /**

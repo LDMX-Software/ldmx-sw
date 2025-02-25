@@ -126,20 +126,20 @@ ldmx::StraightTrack LinearTruthTracking::truthTracker(
 
   // Z position from the first point in ecalPoints
   if (ecal_points.size() > 0) {
-    double ecal_first_layer_z =
-        ecal_points[0][0];
+    double ecal_first_layer_z = ecal_points[0][0];
 
     // Extrapolate track to first layer of Ecal
     std::array<double, 3> extrapolated_point = {ecal_first_layer_z,
-                                               mx * ecal_first_layer_z + bx,
-                                               my * ecal_first_layer_z + by};
+                                                mx * ecal_first_layer_z + bx,
+                                                my * ecal_first_layer_z + by};
 
     const std::array<double, 3>* closest_rec_hit = nullptr;
     double min_distance = std::numeric_limits<double>::max();
 
     // Loop through ecalPoints to find the closest recHit to our track
     for (const auto& ecal_rec_hit : ecal_points) {
-      double temp_distance = calculateDistance(extrapolated_point, ecal_rec_hit);
+      double temp_distance =
+          calculateDistance(extrapolated_point, ecal_rec_hit);
 
       if (temp_distance < min_distance) {
         min_distance = temp_distance;

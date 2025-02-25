@@ -39,12 +39,12 @@ class LinearSeedFinder : public TrackingGeometryUser {
   /// Destructor
   virtual ~LinearSeedFinder() = default;
   /**
-    *
-    */
+   *
+   */
   void onProcessStart() override;
   /**
-    *
-    */
+   *
+   */
   void onProcessEnd() override;
   /**
    * Configure the processor using the given user specified parameters.

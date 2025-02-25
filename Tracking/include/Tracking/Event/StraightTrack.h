@@ -83,12 +83,16 @@ class StraightTrack {
   void setSecondSensorPosition(const std::array<double, 3>& second_sensor) {
     second_sensor_ = second_sensor;
   }
-  std::array<double, 3> getSecondSensorPosition() const { return second_sensor_; }
+  std::array<double, 3> getSecondSensorPosition() const {
+    return second_sensor_;
+  }
 
   void setFirstLayerEcalRecHit(const std::array<double, 3>& ecal_hit) {
     ecal_rec_hit_ = ecal_hit;
   }
-  std::array<double, 3> getFirstLayerEcalRecHit() const { return ecal_rec_hit_; }
+  std::array<double, 3> getFirstLayerEcalRecHit() const {
+    return ecal_rec_hit_;
+  }
 
   void setTargetLocation(const std::array<double, 3>& target_loc) {
     target_pos_ = target_loc;
@@ -103,7 +107,8 @@ class StraightTrack {
     target_pos_[2] = y;
   }
 
-  void setEcalLayer1Location(const double& z, const double& x, const double& y) {
+  void setEcalLayer1Location(const double& z, const double& x,
+                             const double& y) {
     ecal_layer1_pos_[0] = z;
     ecal_layer1_pos_[1] = x;
     ecal_layer1_pos_[2] = y;
@@ -114,7 +119,9 @@ class StraightTrack {
   double getTargetX() const { return target_pos_[1]; }
   double getTargetY() const { return target_pos_[2]; }
 
-  std::array<double, 3> getEcalLayer1Location() const { return ecal_layer1_pos_; }
+  std::array<double, 3> getEcalLayer1Location() const {
+    return ecal_layer1_pos_;
+  }
   double getEcalLayer1Z() const { return ecal_layer1_pos_[0]; }
   double getEcalLayer1X() const { return ecal_layer1_pos_[1]; }
   double getEcalLayer1Y() const { return ecal_layer1_pos_[2]; }
