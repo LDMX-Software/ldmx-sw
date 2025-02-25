@@ -461,7 +461,7 @@ void Process::newRun(ldmx::RunHeader &header) {
   // the run header through 'beforeNewRun' method
 
   // Put the version into the rh string param
-  header.setStringParameter("Pass = " + pass_name_ + " version",
+  header.setStringParameter("Pass = " + pass_name_ + ", version",
                             LDMXSW_VERSION);
   if (performance_) performance_->start(performance::Callback::beforeNewRun, 0);
   std::size_t i_proc{0};
