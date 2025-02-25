@@ -84,8 +84,8 @@ digiRecoil = tracking.DigitizationProcessor("DigitizationProcessorRecoil")
 digiRecoil.hit_collection = "RecoilSimHits"
 digiRecoil.out_collection = "DigiRecoilSimHits"
 digiRecoil.merge_hits = True
-digiRecoil.sigma_u = uSmearing
-digiRecoil.sigma_v = vSmearing
+digiRecoil.sigma_u = 0.006
+digiRecoil.sigma_v = 0.000001
 
 truth_tracking = tracking.LinearTruthTracking("LinearTruthTracking")
 truth_tracking.input_hit_collection = "DigiRecoilSimHits"
