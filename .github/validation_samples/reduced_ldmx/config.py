@@ -71,7 +71,7 @@ from LDMX.DQM import dqm
 from LDMX.Tracking import tracking
 from LDMX.Tracking import reducedTracking
 from LDMX.Tracking import geo
-from LDMX.Tracking import dqm
+from LDMX.Tracking import trk_dqm
 
 from LDMX.Tracking.geo import TrackersTrackingGeometryProvider as trackgeo
 trackgeo.get_instance().setDetector(det)
@@ -111,7 +111,7 @@ rTracking = reducedTracking.LinearTrackFinder("LinearTrackFinder")
 rTracking.seed_collection = "LinearRecoilSeedTracks"
 rTracking.out_trk_collection = "LinearRecoilTracks"
 
-rTracking_dqm = dqm.StraightTracksDQM("LinearRecoilTracksDQM")
+rTracking_dqm = trk_dqm.StraightTracksDQM("LinearRecoilTracksDQM")
 rTracking_dqm.track_collection = rTracking.out_trk_collection
 rTracking_dqm.truth_collection = truth_tracking.out_track_collection
 rTracking_dqm.title = ""
