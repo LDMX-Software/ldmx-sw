@@ -63,11 +63,11 @@ jobs:
       shell: bash
 
     - name: Git Gold Histograms from trunk
-      run: git checkout origin/trunk -- .github/validation_samples/*/gold.root VERSION
+      run: git checkout origin/trunk -- .github/validation_samples/*/**
       shell: bash
 
     - name: Package ldmx-sw Into Artifact
-      run: tar cf ldmx-sw-package.tar install/ .github/ VERSION
+      run: tar cf ldmx-sw-package.tar install/ .github/
 
     - name: Upload ldmx-sw Package
       uses: actions/upload-artifact@v4
@@ -101,7 +101,14 @@ jobs:
         fi
         echo "HEAD_REF=$HEAD_REF" >> $GITHUB_ENV
 
-        
+    # need clone of ldmx-sw for getting gold tag
+    - name: Checkout ldmx-sw
+      uses: actions/checkout@v4
+      with:
+        submodules: 'recursive'
+        fetch-depth: 0
+        ref: ${{ env.HEAD_REF }}
+
     - name: Download ldmx-sw Package
       uses: actions/download-artifact@v4
       with:

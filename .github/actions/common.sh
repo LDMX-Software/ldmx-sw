@@ -22,7 +22,12 @@
 
 # Print the gold label
 ldmx_gold_label() {
-  cat ${LDMX_VERSION_FILE}
+  #  git the commit that last edited any of the validation samples
+  #  use git describe --tags to deduce the tag it is closest to
+  #  cut out the first field which is the name of the closest tag
+  git log -n 1 --pretty=format:"%h" -- ${LDMX_BASE}/ldmx-sw/.github/validation_samples/*/** |\
+    xargs git describe --tags |\
+    cut -f 1 -d -
 }
 
 # container running command
@@ -67,8 +72,6 @@ warn() {
 
 start_group Deduce Common Environment Variables
 export LDMX_BASE=$(cd ${GITHUB_WORKSPACE}/../ && pwd)
-export LDMX_VERSION_FILE=${LDMX_BASE}/ldmx-sw/VERSION
-echo "LDMX_VERSION_FILE=${LDMX_VERSION_FILE}"
 echo "LDMX_BASE=${LDMX_BASE}"
 end_group
 
