@@ -39,27 +39,7 @@ ClassImp(ldmx::FiducialFlag)
       variables_.Set(nvar);
     }
   }
-
-  void FiducialFlag::setIsFiducial(bool is_fiducial) {
-    is_fiducial_ = is_fiducial;
-  }
-
-  void FiducialFlag::setHasEcalHit(bool has_ecal_hit) {
-    has_ecal_hit_ = has_ecal_hit;
-  }
-
-  void FiducialFlag::setHasHcalHit(bool has_hcal_hit) {
-    has_hcal_hit_ = has_hcal_hit;
-  }
-
-  void FiducialFlag::setHasMinTrackerHits(bool has_min_tracker_hits) {
-    has_min_tracker_hits_ = has_min_tracker_hits;
-  }
-
-  void FiducialFlag::setHasMinEnergy(bool has_min_energy) {
-    has_min_energy_ = has_min_energy;
-  }
-
+  
   void FiducialFlag::setAlgoVar(int element, double value) {
     if (element >= 0 && element < variables_.GetSize()) {
       variables_[element] = value;

@@ -62,6 +62,9 @@ class RecoilFiducialityProcessor : public framework::Producer {
   /** Minimum number of recoil electron hits in the recoil tracker. */
   int min_tracker_hits_;
 
+  /** The pass name of the input collections. */
+  std::string input_pass_name_;
+
   /** The name of the ecal collection. */
   std::string ecal_collection_;
 
