@@ -24,6 +24,7 @@
 /*   Framework   */
 /*~~~~~~~~~~~~~~~*/
 #include "Framework/Configure/Parameters.h"
+#include "Framework/EventProcessor.h"
 #include "SimCore/KaonPhysics.h"
 
 namespace simcore {
@@ -107,6 +108,9 @@ class RunManager : public G4RunManager {
    * Should we use random seed from root file?
    */
   bool useRootSeed_{false};
+
+  /// Enable logging
+  enableLogging("RunManager")
 
 };  // RunManager
 }  // namespace simcore
