@@ -8,8 +8,8 @@
 namespace tracking::dqm {
 
 void StraightTracksDQM::configure(framework::config::Parameters& parameters) {
-  track_collection_ = parameters.getParameter<std::string>("track_collection",
-                                                          "LinearRecoilTracks");
+  track_collection_ = parameters.getParameter<std::string>(
+      "track_collection", "LinearRecoilTracks");
   truth_collection_ = parameters.getParameter<std::string>(
       "truth_collection", "LinearRecoilTruthTracks");
   title_ = parameters.getParameter<std::string>("title", "recoil_lin_trk_");
@@ -44,7 +44,8 @@ void StraightTracksDQM::analyze(const framework::Event& event) {
     do_truth_comparison_ = true;
   }
 
-  ldmx_log(debug) << "Do truth comparison::" << do_truth_comparison_ << std::endl;
+  ldmx_log(debug) << "Do truth comparison::" << do_truth_comparison_
+                  << std::endl;
 
   if (do_truth_comparison_) {
     sortTracks(tracks, unique_tracks_, duplicate_tracks_, fake_tracks_);
@@ -224,12 +225,12 @@ void StraightTracksDQM::trackMonitoringUnique(
           histograms_.fill(title_ + "target_Pulls_of_loc1",
                            (track_state_loc1_target - truth_state_loc1_target) /
                                sigma_loc1_target);
-          histograms_.fill(
-              title_ + "ecal_Pulls_of_loc0",
-              (track_state_loc0_ecal - truth_state_loc0_ecal) / sigma_loc0_ecal);
-          histograms_.fill(
-              title_ + "ecal_Pulls_of_loc1",
-              (track_state_loc1_ecal - truth_state_loc1_ecal) / sigma_loc1_ecal);
+          histograms_.fill(title_ + "ecal_Pulls_of_loc0",
+                           (track_state_loc0_ecal - truth_state_loc0_ecal) /
+                               sigma_loc0_ecal);
+          histograms_.fill(title_ + "ecal_Pulls_of_loc1",
+                           (track_state_loc1_ecal - truth_state_loc1_ecal) /
+                               sigma_loc1_ecal);
 
           // TH2F  residual vs Nhits
           histograms_.fill(title_ + "target_res_loc0-vs-N_hits",
@@ -252,12 +253,14 @@ void StraightTracksDQM::trackMonitoringUnique(
                            track.getNhits(),
                            (track_state_loc1_target - truth_state_loc1_target) /
                                sigma_loc1_target);
-          histograms_.fill(
-              title_ + "ecal_pulls_loc0-vs-N_hits", track.getNhits(),
-              (track_state_loc0_ecal - truth_state_loc0_ecal) / sigma_loc0_ecal);
-          histograms_.fill(
-              title_ + "ecal_pulls_loc1-vs-N_hits", track.getNhits(),
-              (track_state_loc1_ecal - truth_state_loc1_ecal) / sigma_loc1_ecal);
+          histograms_.fill(title_ + "ecal_pulls_loc0-vs-N_hits",
+                           track.getNhits(),
+                           (track_state_loc0_ecal - truth_state_loc0_ecal) /
+                               sigma_loc0_ecal);
+          histograms_.fill(title_ + "ecal_pulls_loc1-vs-N_hits",
+                           track.getNhits(),
+                           (track_state_loc1_ecal - truth_state_loc1_ecal) /
+                               sigma_loc1_ecal);
 
         }  // loop on tracks
 

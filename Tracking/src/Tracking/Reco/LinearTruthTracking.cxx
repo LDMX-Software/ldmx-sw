@@ -128,8 +128,7 @@ ldmx::StraightTrack LinearTruthTracking::truthTracker(
 
   // Z position from the first point in ecalPoints
   if (ecal_points.size() > 0) {
-    double ecal_first_layer_z =
-        ecal_points[0][0];
+    double ecal_first_layer_z = ecal_points[0][0];
 
     // Extrapolate track to first layer of Ecal
     std::array<double, 3> extrapolated_point = {ecal_first_layer_z,
