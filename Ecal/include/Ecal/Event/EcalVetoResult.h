@@ -70,7 +70,7 @@ class EcalVetoResult {
                     std::vector<std::vector<float>> oContLayerStd,
 
                     std::vector<float> EcalLayerEdepReadout,
-                    std::vector<double> recoilP, std::vector<float> recoilPos);
+                    std::array<float, 3> recoilP, std::array<float, 3> recoilPos);
 
   /** Reset the object. */
   void Clear();
@@ -346,7 +346,7 @@ class EcalVetoResult {
 
   std::vector<float> ecalLayerEdepReadout_;
 
-  ClassDef(EcalVetoResult, 8);
+  ClassDef(EcalVetoResult, 9);
 };
 }  // namespace ldmx
 

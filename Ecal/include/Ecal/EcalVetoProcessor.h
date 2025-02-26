@@ -90,8 +90,8 @@ class EcalVetoProcessor : public framework::Producer {
                           std::map<ldmx::EcalID, float>& cellMapIso,
                           bool doTight = false);
 
-  std::vector<XYCoords> getTrajectory(std::vector<double> momentum,
-                                      std::vector<float> position);
+  std::vector<XYCoords> getTrajectory(std::array<float, 3> momentum,
+    std::array<float, 3> position);
 
   void buildBDTFeatureVector(const ldmx::EcalVetoResult& result);
 
@@ -194,6 +194,7 @@ class EcalVetoProcessor : public framework::Producer {
   std::string rec_pass_name_;
   std::string rec_coll_name_;
   bool recoil_from_tracking_;
+  bool recoil_from_scoring_plane_;
   std::string track_collection_;
   bool inverse_skim_{false};
 

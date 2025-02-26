@@ -27,6 +27,7 @@ class EcalVetoProcessor(ldmxcfg.Producer) :
         self.rec_coll_name = 'EcalRecHits'
         self.rec_pass_name = ''
         self.recoil_from_tracking = True
+        self.recoil_from_scoring_plane = False
         self.track_collection = 'RecoilTracksClean'
         self.inverse_skim = False
 
