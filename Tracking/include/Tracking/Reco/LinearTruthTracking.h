@@ -72,7 +72,8 @@ class LinearTruthTracking : public TrackingGeometryUser {
   double calculateDistance(const std::array<double, 3>& point1,
                            const std::array<double, 3>& point2);
 
-  // Fitting function: fit a straight line in 3D using 4 points (2 degrees of freedom)
+  // Fitting function: fit a straight line in 3D using 4 points (2 degrees of
+  // freedom)
   std::tuple<double, double, double, double, std::vector<double>> fit3DLine(
       const std::vector<ldmx::Measurement>& points);
 

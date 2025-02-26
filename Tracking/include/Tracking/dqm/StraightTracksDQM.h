@@ -43,7 +43,8 @@ class StraightTracksDQM : public framework::Analyzer {
   // of functions that determine theta/phi/loc
   double thetaAngleError(double m_x, double m_y,
                          const std::vector<double>& covariance_vector);
-  double phiAngleError(double m_x, const std::vector<double>& covariance_vector);
+  double phiAngleError(double m_x,
+                       const std::vector<double>& covariance_vector);
   double locError(double var_slope, double var_intercept,
                   double cov_slope_intercept, double z_pos);
 

@@ -33,7 +33,7 @@ class LinearTrackFinder : public TrackingGeometryUser {
 
   /// Destructor
   virtual ~LinearTrackFinder() = default;
-  
+
   /**
    * Output event statistics.
    */
