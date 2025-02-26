@@ -70,7 +70,8 @@ class EcalVetoResult {
                     std::vector<std::vector<float>> oContLayerStd,
 
                     std::vector<float> EcalLayerEdepReadout,
-                    std::array<float, 3> recoilP, std::array<float, 3> recoilPos);
+                    std::array<float, 3> recoilP,
+                    std::array<float, 3> recoilPos);
 
   /** Reset the object. */
   void Clear();

@@ -91,7 +91,7 @@ class EcalVetoProcessor : public framework::Producer {
                           bool doTight = false);
 
   std::vector<XYCoords> getTrajectory(std::array<float, 3> momentum,
-    std::array<float, 3> position);
+                                      std::array<float, 3> position);
 
   void buildBDTFeatureVector(const ldmx::EcalVetoResult& result);
 

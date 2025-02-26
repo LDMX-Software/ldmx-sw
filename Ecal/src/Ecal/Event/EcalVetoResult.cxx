@@ -112,7 +112,7 @@ void EcalVetoResult::setVariables(
     std::vector<std::vector<float>> oContLayerStd,
 
     std::vector<float> EcalLayerEdepReadout, std::array<float, 3> recoilP,
-    std::array<float, 3>  recoilPos) {
+    std::array<float, 3> recoilPos) {
   nReadoutHits_ = nReadoutHits;
   summedDet_ = summedDet;
   summedTightIso_ = summedTightIso;
