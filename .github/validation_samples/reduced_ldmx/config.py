@@ -71,7 +71,7 @@ from LDMX.DQM import dqm
 from LDMX.Tracking import tracking
 from LDMX.Tracking import reducedTracking
 from LDMX.Tracking import geo
-from LDMX.Tracking import trk_dqm
+from LDMX.Tracking import dqm as trk_dqm
 
 from LDMX.Tracking.geo import TrackersTrackingGeometryProvider as trackgeo
 trackgeo.get_instance().setDetector(det)
