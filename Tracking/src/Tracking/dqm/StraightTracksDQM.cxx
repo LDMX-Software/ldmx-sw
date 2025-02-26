@@ -318,26 +318,30 @@ void StraightTracksDQM::sortTracks(
   // The total number of elements in the uniqueTracks and duplicateTracks
   // vectors should be equal to the number of elements in the original tracks
   // vector
-  if ( (unique_tracks.size() + duplicate_tracks.size() + fake_tracks.size() ) !=
+  if ((unique_tracks.size() + duplicate_tracks.size() + fake_tracks.size()) !=
       tracks.size()) {
-    ldmx_log(error) << "Unique and duplicate track vectors do not add up to original tracks vector";
+    ldmx_log(error) << "Unique and duplicate track vectors do not add up to "
+                       "original tracks vector";
     return;
   }  // if different tracks don't add up to correct total
 
   // Iterate through the uniqueTracks vector and duplicateTracks vector
   ldmx_log(trace) << "Unique tracks:";
   for (const ldmx::StraightTrack& track : unique_tracks) {
-      ldmx_log(trace) << "Track ID: " << track.getTrackID() << ", Truth Prob: " << track.getTruthProb();
+    ldmx_log(trace) << "Track ID: " << track.getTrackID()
+                    << ", Truth Prob: " << track.getTruthProb();
   }
   ldmx_log(trace) << "Duplicate tracks:";
   for (const ldmx::StraightTrack& track : duplicate_tracks) {
-      ldmx_log(trace) << "Track ID: " << track.getTrackID() << ", Truth Prob: " << track.getTruthProb();
+    ldmx_log(trace) << "Track ID: " << track.getTrackID()
+                    << ", Truth Prob: " << track.getTruthProb();
   }
   ldmx_log(trace) << "Fake tracks:";
   for (const ldmx::StraightTrack& track : fake_tracks) {
-      ldmx_log(trace) << "Track ID: " << track.getTrackID() << ", Truth Prob: " << track.getTruthProb();
-    }
-    
+    ldmx_log(trace) << "Track ID: " << track.getTrackID()
+                    << ", Truth Prob: " << track.getTruthProb();
+  }
+
 }  // sortTracks
 
 double StraightTracksDQM::thetaAngleError(
