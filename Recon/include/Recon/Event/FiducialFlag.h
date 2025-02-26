@@ -143,25 +143,19 @@ class FiducialFlag {
    * Set fiduciality flag.
    * @param is_fiducial True/false if event is fiducial.
    */
-  void setIsFiducial(bool is_fiducial) {
-    is_fiducial_ = is_fiducial;
-  }
+  void setIsFiducial(bool is_fiducial) { is_fiducial_ = is_fiducial; }
 
   /**
    * Set ecal hit flag.
    * @param has_ecal_hit True/false if event has ecal hit.
    */
-  void setHasEcalHit(bool has_ecal_hit) {
-    has_ecal_hit_ = has_ecal_hit;
-  }
+  void setHasEcalHit(bool has_ecal_hit) { has_ecal_hit_ = has_ecal_hit; }
 
   /**
    * Set hcal hit flag.
    * @param has_hcal_hit True/false if event has hcal hit.
    */
-  void setHasHcalHit(bool has_hcal_hit) {
-    has_hcal_hit_ = has_hcal_hit;
-  }
+  void setHasHcalHit(bool has_hcal_hit) { has_hcal_hit_ = has_hcal_hit; }
 
   /**
    * Set tracker hit flag.

@@ -24,22 +24,26 @@ void RecoilFiducialityProcessor::configure(
 
 void RecoilFiducialityProcessor::produce(framework::Event &event) {
   // Get the collection of simulated particles from the event
-  auto particleMap{event.getMap<int, ldmx::SimParticle>("SimParticles", input_pass_name_)};
+  auto particleMap{
+      event.getMap<int, ldmx::SimParticle>("SimParticles", input_pass_name_)};
 
   // Search for the recoil electron
   auto [recoil_track_id, recoil_electron] = Analysis::getRecoil(particleMap);
 
   // Get the collection of simulated Ecal hits from the event.
   const std::vector<ldmx::SimCalorimeterHit> ecal_sim_hits =
-      event.getCollection<ldmx::SimCalorimeterHit>(ecal_collection_, input_pass_name_);
+      event.getCollection<ldmx::SimCalorimeterHit>(ecal_collection_,
+                                                   input_pass_name_);
 
   // Get the collection of simulated Ecal hits from the event.
   const std::vector<ldmx::SimCalorimeterHit> hcal_sim_hits =
-      event.getCollection<ldmx::SimCalorimeterHit>(hcal_collection_, input_pass_name_);
+      event.getCollection<ldmx::SimCalorimeterHit>(hcal_collection_,
+                                                   input_pass_name_);
 
   // Get the collection of simulated tracker hits from the event.
   const std::vector<ldmx::SimTrackerHit> recoil_sim_hits =
-      event.getCollection<ldmx::SimTrackerHit>(recoil_collection_, input_pass_name_);
+      event.getCollection<ldmx::SimTrackerHit>(recoil_collection_,
+                                               input_pass_name_);
 
   // Loop through the Ecal hits and check if the recoil electron is
   // associated with any of them.

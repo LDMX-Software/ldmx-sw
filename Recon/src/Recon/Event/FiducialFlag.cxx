@@ -39,7 +39,7 @@ ClassImp(ldmx::FiducialFlag)
       variables_.Set(nvar);
     }
   }
-  
+
   void FiducialFlag::setAlgoVar(int element, double value) {
     if (element >= 0 && element < variables_.GetSize()) {
       variables_[element] = value;
