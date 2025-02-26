@@ -245,7 +245,6 @@ void Process::run() {
 
     runHeader.setRunEnd(std::time(nullptr));
     runHeader.setNumTries(totalTries);
-    ldmx_log(info) << runHeader;
     outFile.writeRunTree();
 
     // Give a warning that this filter has very low efficiency
@@ -351,8 +350,7 @@ void Process::run() {
           if (rh != nullptr) {
             runHeader_ = rh;
             ldmx_log(info) << "Got new run header from '"
-                           << masterFile->getFileName() << "' ...\n"
-                           << *runHeader_;
+                           << masterFile->getFileName() << "'";
             newRun(*runHeader_);
           } else {
             ldmx_log(warn) << "Run header for run " << wasRun
@@ -490,6 +488,7 @@ void Process::newRun(ldmx::RunHeader &header) {
       performance_->stop(performance::Callback::onNewRun, i_proc);
   }
   if (performance_) performance_->stop(performance::Callback::onNewRun, 0);
+  ldmx_log(info) << header;
 }
 
 bool Process::process(int n, int n_try, Event &event) const {
