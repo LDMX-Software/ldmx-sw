@@ -63,11 +63,11 @@ jobs:
       shell: bash
 
     - name: Git Gold Histograms from trunk
-      run: git checkout origin/trunk -- .github/validation_samples/*/gold.root VERSION
+      run: git checkout origin/trunk -- .github/validation_samples/*/**
       shell: bash
 
     - name: Package ldmx-sw Into Artifact
-      run: tar cf ldmx-sw-package.tar install/ .github/ VERSION
+      run: tar cf ldmx-sw-package.tar install/ .github/
 
     - name: Upload ldmx-sw Package
       uses: actions/upload-artifact@v4
