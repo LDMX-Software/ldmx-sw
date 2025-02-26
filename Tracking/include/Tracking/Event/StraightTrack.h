@@ -97,16 +97,16 @@ class StraightTrack {
     ecal_layer1_pos_ = ecal_loc;
   }
 
-  void setTargetLocation(const double& z, const double& x, const double& y) {
-    target_pos_[0] = z;
-    target_pos_[1] = x;
-    target_pos_[2] = y;
+  void setTargetLocation(const double& z_pos, const double& x_pos, const double& y_pos) {
+    target_pos_[0] = z_pos;
+    target_pos_[1] = x_pos;
+    target_pos_[2] = y_pos;
   }
 
-  void setEcalLayer1Location(const double& z, const double& x, const double& y) {
-    ecal_layer1_pos_[0] = z;
-    ecal_layer1_pos_[1] = x;
-    ecal_layer1_pos_[2] = y;
+  void setEcalLayer1Location(const double& z_pos, const double& x_pos, const double& y_pos) {
+    ecal_layer1_pos_[0] = z_pos;
+    ecal_layer1_pos_[1] = x_pos;
+    ecal_layer1_pos_[2] = y_pos;
   }
 
   std::array<double, 3> getTargetLocation() const { return target_pos_; }

@@ -17,6 +17,7 @@ void StraightTracksDQM::configure(framework::config::Parameters& parameters) {
   subdetector_ = parameters.getParameter<std::string>("subdetector", "Recoil");
   measurement_collection_ = parameters.getParameter<std::string>(
       "measurement_collection", "DigiRecoilSimHits");
+  input_pass_name_ = parameters.getParameter<std::string>("input_pass_name", "");
 
   ldmx_log(info) << "Track Collection " << track_collection_ << std::endl;
   ldmx_log(info) << "Truth Collection " << truth_collection_ << std::endl;
@@ -32,14 +33,14 @@ void StraightTracksDQM::analyze(const framework::Event& event) {
   }
 
   const std::vector<ldmx::StraightTrack> tracks =
-      event.getCollection<ldmx::StraightTrack>(track_collection_);
+      event.getCollection<ldmx::StraightTrack>(track_collection_, input_pass_name_);
   const std::vector<ldmx::Measurement> measurements =
-      event.getCollection<ldmx::Measurement>(measurement_collection_);
+      event.getCollection<ldmx::Measurement>(measurement_collection_, input_pass_name_);
 
   // Get the truth track collection
   if (event.exists(truth_collection_)) {
     truth_track_collection_ = std::make_shared<std::vector<ldmx::StraightTrack>>(
-        event.getCollection<ldmx::StraightTrack>(truth_collection_));
+        event.getCollection<ldmx::StraightTrack>(truth_collection_, input_pass_name_));
     do_truth_comparison_ = true;
   }
 
@@ -47,7 +48,8 @@ void StraightTracksDQM::analyze(const framework::Event& event) {
 
   if (do_truth_comparison_) {
     sortTracks(tracks, unique_tracks_, duplicate_tracks_, fake_tracks_);
-  } else {
+  } 
+  else {
     unique_tracks_ = tracks;
   }
 
@@ -71,10 +73,6 @@ void StraightTracksDQM::analyze(const framework::Event& event) {
   duplicate_tracks_.clear();
   fake_tracks_.clear();
 }  // analyze
-
-void StraightTracksDQM::onProcessEnd() {
-  // Produce the efficiency plots. (TODO::Switch to TEfficiency instead)
-}  // onProcessEnd
 
 void StraightTracksDQM::trackMonitoring(
     const std::vector<ldmx::StraightTrack>& tracks,
@@ -132,8 +130,8 @@ void StraightTracksDQM::trackMonitoringUnique(
     double sigma_phi = phiAngleError(track.getSlopeX(), track.getCov());
     double sigma_theta =
         thetaAngleError(track.getSlopeX(), track.getSlopeY(), track.getCov());
-    double sigma_loc0_target = std::sqrt(track.getCov()[4]);  // sqrt(bxbx)
-    double sigma_loc1_target = std::sqrt(track.getCov()[9]);  // sqrt(byby)
+    double sigma_loc0_target = std::sqrt(track.getCov()[4]);
+    double sigma_loc1_target = std::sqrt(track.getCov()[9]);
     double sigma_loc0_ecal = locError(track.getCov()[0], track.getCov()[4],
                                      track.getCov()[1], track.getEcalLayer1Z());
     double sigma_loc1_ecal = locError(track.getCov()[7], track.getCov()[9],
@@ -167,20 +165,21 @@ void StraightTracksDQM::trackMonitoringUnique(
         // TODO: the truth tracks for a more accurate comparison?
         ldmx::StraightTrack* truth_trk = nullptr;
 
+        // Only compare truth and reco tracks with same ID
         auto it = std::find_if(
             truth_track_collection_->begin(), truth_track_collection_->end(),
             [&](const ldmx::StraightTrack& tt) {
               return tt.getTrackID() ==
-                     track.getTrackID();  // Only compare truth and reco tracks
-                                          // with same ID
+                     track.getTrackID();
             });
 
         double track_truth_prob = track.getTruthProb();
 
+        // make sure truth track has good enough truth prob.
         if (it != truth_track_collection_->end() &&
             track_truth_prob >= track_prob_cut_) {
           truth_trk =
-              &(*it);  // make sure truth track has good enough truth prob.
+              &(*it);
         }
 
         // Found matched track
@@ -208,8 +207,7 @@ void StraightTracksDQM::trackMonitoringUnique(
           histograms_.fill(title + "pull_phi", pull_phi);
           histograms_.fill(title + "pull_theta", pull_theta);
 
-          // TH1F  The difference(residual) between end_loc and truth_endloc (IS
-          // THIS APPROPRIATE?)
+          // TH1F  The difference(residual) between end_loc and truth_endloc
           histograms_.fill(title_ + "trk_target_loc0-truth_target_loc0",
                            track_state_loc0_target - truth_state_loc0_target);
           histograms_.fill(title_ + "trk_target_loc1-truth_target_loc1",
@@ -278,21 +276,22 @@ void StraightTracksDQM::sortTracks(
 
   // Sort the vector of Track objects based on their trackID member
   std::sort(sorted_tracks.begin(), sorted_tracks.end(),
-            [](ldmx::StraightTrack& t1, ldmx::StraightTrack& t2) {
-              return t1.getTrackID() < t2.getTrackID();
+            [](ldmx::StraightTrack& trk1, ldmx::StraightTrack& trk2) {
+              return trk1.getTrackID() < trk2.getTrackID();
             });
 
   // Loop over the sorted vector of Track objects
   for (size_t i = 0; i < sorted_tracks.size(); i++) {
     if (sorted_tracks[i].getTruthProb() < track_prob_cut_)
       fake_tracks.push_back(sorted_tracks[i]);
-    else {  // not a fake track
+    else {
       // If this is the first Track object with this trackID, add it to the
       // uniqueTracks vector directly
       if (unique_tracks.size() == 0 ||
           sorted_tracks[i].getTrackID() != sorted_tracks[i - 1].getTrackID()) {
         unique_tracks.push_back(sorted_tracks[i]);
       }
+      
       // Otherwise, add it to the duplicateTracks vector if its truthProb is
       // lower than the existing Track object Otherwise, if the truthProbability
       // is higher than the track stored in uniqueTracks, put it in uniqueTracks
@@ -302,12 +301,14 @@ void StraightTracksDQM::sortTracks(
         duplicate_tracks.push_back(unique_tracks.back());
         unique_tracks.back() = sorted_tracks[i];
       }
+      
       // Otherwise, add it to the duplicateTracks vector
       else {
         duplicate_tracks.push_back(sorted_tracks[i]);
       }
-    }  // a real track
+    }  // else (a real track)
   }    // loop on sorted tracks
+  
   // The total number of elements in the uniqueTracks and duplicateTracks
   // vectors should be equal to the number of elements in the original tracks
   // vector
@@ -340,16 +341,16 @@ void StraightTracksDQM::sortTracks(
 }  // sortTracks
 
 double StraightTracksDQM::thetaAngleError(
-    double mx, double my, const std::vector<double>& covariance_vector) {
-  double sqrt_term = std::sqrt(1 + (mx * mx));
-  double sum_term = (1 + (mx * mx) + (my * my));
+    double m_x, double m_y, const std::vector<double>& covariance_vector) {
+  double sqrt_term = std::sqrt(1 + (m_x * m_x));
+  double sum_term = (1 + (m_x * m_x) + (m_y * m_y));
 
-  double dtheta_dmx = (-mx * my) / (sqrt_term * sum_term);
+  double dtheta_dmx = (-m_x * m_y) / (sqrt_term * sum_term);
   double dtheta_dmy = (sqrt_term / sum_term);
 
-  double sigma_mx2 = covariance_vector[0];  // mxmx
-  double sigma_my2 = covariance_vector[7];  // mymy
-  double cov_mx_my = covariance_vector[2];  // mxmy
+  double sigma_mx2 = covariance_vector[0];
+  double sigma_my2 = covariance_vector[7];
+  double cov_mx_my = covariance_vector[2];
 
   double sigma_theta2 = (dtheta_dmx * dtheta_dmx * sigma_mx2) +
                         (dtheta_dmy * dtheta_dmy * sigma_my2) +
@@ -359,10 +360,10 @@ double StraightTracksDQM::thetaAngleError(
 }  // thetaAngleError
 
 double StraightTracksDQM::phiAngleError(
-    double mx, const std::vector<double>& covariance_vector) {
-  double sum_term = (1 + (mx * mx));
+    double m_x, const std::vector<double>& covariance_vector) {
+  double sum_term = (1 + (m_x * m_x));
 
-  double sigma_mx = std::sqrt(covariance_vector[0]);  // mx
+  double sigma_mx = std::sqrt(covariance_vector[0]);
 
   double sigma_phi = (sigma_mx / sum_term);
 

@@ -39,11 +39,11 @@ class LinearSeedFinder : public TrackingGeometryUser {
   /// Destructor
   virtual ~LinearSeedFinder() = default;
   /**
-    *
+    * Setup the truth matching
     */
   void onProcessStart() override;
   /**
-    *
+    * Output event statistics
     */
   void onProcessEnd() override;
   /**
@@ -99,8 +99,8 @@ class LinearSeedFinder : public TrackingGeometryUser {
   // Calculate chi2 of the fit
   double globalChiSquare(const std::array<double, 3> &first_sensor,
                          const std::array<double, 3> &second_sensor,
-                         const std::array<double, 3> &ecal_hit, double ax,
-                         double ay, double bx, double by);
+                         const std::array<double, 3> &ecal_hit, double a_x,
+                         double a_y, double b_x, double b_y);
 
   // Function to find the number of unique layers hit (to determine if we have
   // enough points to fit)
@@ -116,6 +116,7 @@ class LinearSeedFinder : public TrackingGeometryUser {
   std::string input_hits_collection_{"DigiRecoilSimHits"};
   /// The name of the tagger Tracks (only for Recoil Seeding)
   std::string input_rec_hits_collection_{"EcalRecHits"};
+  std::string input_pass_name_{""};
 
   double ecal_uncertainty_{3.87};
   // Max distance from RecHit for valid track
@@ -125,6 +126,7 @@ class LinearSeedFinder : public TrackingGeometryUser {
   double layer12_midpoint_{12.5};
   double layer23_midpoint_{20.0};
   double layer34_midpoint_{27.5};
+  double ecal_first_layer_z_threshold_{250};
 
   std::vector<double> recoil_uncertainty_{0.006, 0.12};
 

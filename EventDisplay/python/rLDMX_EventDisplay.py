@@ -1,23 +1,34 @@
 from LDMX.Framework import EventTree
 import numpy as np
 import matplotlib.pyplot as plt
-import uproot
-import math
-import time
-import copy
-import os
 import sys
 import ROOT as r
-import statistics as stat
 import random
 from mpl_toolkits.mplot3d import Axes3D, art3d
-import matplotlib.animation as animation
-from sklearn.linear_model import LinearRegression
 
-def pause():
-    programPause = input("Press the <ENTER> key to continue...")
+def addBranch(tree, ldmx_class, branch_name):
+    if tree == None:
+        sys.exit('Set tree')
+
+    if ldmx_class == 'EventHeader':
+        branch = r.ldmx.EventHeader()
+    elif ldmx_class == 'EcalVetoResult':
+        branch = r.ldmx.EcalVetoResult()
+    elif ldmx_class == 'HcalVetoResult':
+        branch = r.ldmx.HcalVetoResult()
+    elif ldmx_class == 'TriggerResult':
+        branch = r.ldmx.TriggerResult()
+    elif ldmx_class == 'SimParticle':
+        branch = r.std.map(int, 'ldmx::'+ldmx_class)()
+    else:
+        branch = r.std.vector('ldmx::'+ldmx_class)()
+
+    tree.SetBranchAddress(branch_name, r.AddressOf(branch))
+
+    return branch
     
-def trackPlotter(tree, event_number, tag, save, angle_analysis = False):
+def trackPlotter(tree, event_number, tag, save):
+    
     recoilSimHits = addBranch(tree, 'SimTrackerHit', 'RecoilSimHits_{}'.format(tag))
     ecalRecHit = addBranch(tree, 'EcalHit', 'EcalRecHits_{}'.format(tag))
     digiRecoil = addBranch(tree, 'Measurement', 'DigiRecoilSimHits_{}'.format(tag))
@@ -87,7 +98,6 @@ def trackPlotter(tree, event_number, tag, save, angle_analysis = False):
     for x_truth in recoilTruth:
         truthTrackParams.append((x_truth.getSlopeX(), x_truth.getInterceptX(), x_truth.getSlopeY(), x_truth.getInterceptY(), x_truth.getDistanceToRecHit(), x_truth.getChi2()))
     
-        
     digiPoints = np.column_stack((zpos_digi_tot, xpos_digi_tot, ypos_digi_tot))
     ecalRecHits = np.column_stack((ecal_end_z, ecal_end_x, ecal_end_y))
     ecalRecHits_noise = np.column_stack((ecal_end_NOISE_z, ecal_end_NOISE_x, ecal_end_NOISE_y))
@@ -98,20 +108,16 @@ def trackPlotter(tree, event_number, tag, save, angle_analysis = False):
     fig = plt.figure(figsize=(8, 8))
     ax = fig.add_subplot(111, projection='3d')
 
-    x_unc = 0.006 #mm
-    y_unc = 0.12 # mm
-    
-    for zi, xi, yi in zip(digiPoints[:,0], digiPoints[:,1], digiPoints[:,2]):
-        ax.plot([zi, zi], [xi - x_unc, xi + x_unc], [yi, yi], color='black',linewidth=2)  # x error
-        ax.plot([zi, zi], [xi, xi], [yi - y_unc, yi + y_unc], color='black',linewidth=2)  # y error
+    x_sensor_uncertainty = 0.006 #mm
+    y_sensor_uncertainty = 0.12 # mm
         
     for zi, xi, yi in zip(first_sensor_pos[:,0], first_sensor_pos[:,1], first_sensor_pos[:,2]):
-        ax.plot([zi, zi], [xi - x_unc, xi + x_unc], [yi, yi], color='black',linewidth=2)  # x error
-        ax.plot([zi, zi], [xi, xi], [yi - y_unc, yi + y_unc], color='black',linewidth=2)  # y error
+        ax.plot([zi, zi], [xi - x_sensor_uncertainty, xi + x_sensor_uncertainty], [yi, yi], color='black',linewidth=2)  # x error
+        ax.plot([zi, zi], [xi, xi], [yi - y_sensor_uncertainty, yi + y_sensor_uncertainty], color='black',linewidth=2)  # y error
 
     for zi, xi, yi in zip(second_sensor_pos[:,0], second_sensor_pos[:,1], second_sensor_pos[:,2]):
-        ax.plot([zi, zi], [xi - x_unc, xi + x_unc], [yi, yi], color='black',linewidth=2)  # x error
-        ax.plot([zi, zi], [xi, xi], [yi - y_unc, yi + y_unc], color='black',linewidth=2)  # y error
+        ax.plot([zi, zi], [xi - x_sensor_uncertainty, xi + x_sensor_uncertainty], [yi, yi], color='black',linewidth=2)  # x error
+        ax.plot([zi, zi], [xi, xi], [yi - y_sensor_uncertainty, yi + y_sensor_uncertainty], color='black',linewidth=2)  # y error
         
     ax.scatter(digiPoints[:,0], digiPoints[:,1], digiPoints[:,2], c='b', marker='o', label='DigiRecoil SimHit', s=25)
     ax.scatter(ecalRecHits[:, 0], ecalRecHits[:, 1], ecalRecHits[:, 2], c='purple', label='ECalRecHit', s=50, alpha=0.5)
@@ -127,12 +133,6 @@ def trackPlotter(tree, event_number, tag, save, angle_analysis = False):
             ax.plot([0.0, ecalRecHits[0][0]], [track[1], track[0]*ecalRecHits[0][0]+track[1]], [track[3], track[2]*ecalRecHits[0][0]+track[3]], 'b--', label=f'TrackID = {track[6]}, d_RecHit = {track[4]:.2f} mm, chi2 = {track[5]:.3f}')
         else:
             ax.plot([0.0, ecalRecHits[0][0]], [track[1], track[0]*ecalRecHits[0][0]+track[1]], [track[3], track[2]*ecalRecHits[0][0]+track[3]], 'r--', label=f'TrackID = {track[6]}, d_RecHit = {track[4]:.2f} mm, chi2 = {track[5]:.3f}')
-        if (angle_analysis):
-            theta, phi = calculate_angles(track[0], track[2])
-            theta_plot = math.degrees(theta)
-            phi_plot = math.degrees(phi)
-            z, x, y = plot_3d_line((0.0, track[1], track[3]), theta, phi)
-            ax.plot(z, x, y, label=f'Line: θ={theta_plot:.2f} deg, φ={phi_plot:.2f} deg')
             
     if (len(truthTrackParams) > 0):
         for truthTrack in truthTrackParams:
@@ -171,94 +171,39 @@ def trackPlotter(tree, event_number, tag, save, angle_analysis = False):
     
     plt.savefig(f'{save}/{tag}_eventDisplay_eventID_{event_number}.png')
 
-    ax.set_xlim(0, 50)
-    
-    x_low_lim = -10
-    x_up_lim = -5
-    y_low_lim = 14
-    y_up_lim = 17
-    
-    x_target = 0.0
-    y_target_range = np.linspace(x_low_lim, x_up_lim, 50)
-    z_target_range = np.linspace(y_low_lim, y_up_lim, 50)
-    Y_target, Z_target = np.meshgrid(y_target_range, z_target_range)
-    X_target = np.full(Y_target.shape, 0.0)
-    target_plane = ax.plot_surface(X_target, Y_target, Z_target, color='purple', alpha=0.1, edgecolor='none')
-
-    ax.set_ylim(x_low_lim, x_up_lim)
-    ax.set_zlim(y_low_lim, y_up_lim)
-    plane.set_visible(False)
-
+#    UNCOMMENT THESE LINES IF YOU WANT A ZOOMED IN PLOT (i.e. just recoil points)
+#    ax.set_xlim(0, 50)
+#
+#    x_low_lim = -10
+#    x_up_lim = -5
+#    y_low_lim = 14
+#    y_up_lim = 17
+#    
+#    x_target = 0.0
+#    y_target_range = np.linspace(x_low_lim, x_up_lim, 50)
+#    z_target_range = np.linspace(y_low_lim, y_up_lim, 50)
+#    Y_target, Z_target = np.meshgrid(y_target_range, z_target_range)
+#    X_target = np.full(Y_target.shape, 0.0)
+#    target_plane = ax.plot_surface(X_target, Y_target, Z_target, color='purple', alpha=0.1, edgecolor='none')
+#
+#    ax.set_ylim(x_low_lim, x_up_lim)
+#    ax.set_zlim(y_low_lim, y_up_lim)
+#    plane.set_visible(False)
+#
 #    plt.savefig(f'{save}/{tag}_eventDisplay_eventID_{event_number}_ZOOM.png')
-
-def plot_3d_line(initial_point, theta, phi):
-    z0, x0, y0 = initial_point
-
-    # Direction vector based on the angles
-    mx = np.tan(phi)
-    my = np.tan(theta) / np.cos(phi)
-
-    z = np.linspace(0, 250, 250)
-
-    x = x0 + z * mx
-    y = y0 + z * my
-    
-    return z, x, y
-
-
-def calculate_angles(slope_x, slope_y):
-    # Theta: Beam Angle that describes the elevation above the zx-plane
-    theta = np.arctan2(slope_y, np.sqrt(1+slope_x**2))
-    
-    # Phi: Azimuthal angle in the xz-plane (horizontal tilt)
-    phi = np.arctan2(slope_x, 1)
-    
-    return theta, phi
-
-def addBranch(tree, ldmx_class, branch_name):
-    if tree == None:
-        sys.exit('Set tree')
-
-    if ldmx_class == 'EventHeader':
-        branch = r.ldmx.EventHeader()
-    elif ldmx_class == 'EcalVetoResult':
-        branch = r.ldmx.EcalVetoResult()
-    elif ldmx_class == 'HcalVetoResult':
-        branch = r.ldmx.HcalVetoResult()
-    elif ldmx_class == 'TriggerResult':
-        branch = r.ldmx.TriggerResult()
-    elif ldmx_class == 'SimParticle':
-        branch = r.std.map(int, 'ldmx::'+ldmx_class)()
-    else:
-        branch = r.std.vector('ldmx::'+ldmx_class)()
-
-    tree.SetBranchAddress(branch_name, r.AddressOf(branch))
-
-    return branch
     
 def main():
     tree = r.TChain("LDMX_Events")
-#    tree.Add('/Users/fdelzanno/Desktop/Incandela/Coding/ldmx-sw/events_5000_rLDMX_vEXP_dSensor41half.root')
-    tree.Add('/Users/fdelzanno/Desktop/Incandela/Coding/ldmx-sw/events_5000_rLDMXV1.root')
+    tree.Add('events_5000_rLDMXV1.root')
 
     nentries = tree.GetEntries()
     print("nentries = ", nentries)
     
     tag = 'rLDMX_v1'
-#    save_loc = '/Users/fdelzanno/Desktop/Incandela/Coding/ldmx-sw/plots/event_displays/recoilGeometry_dSensor41half'
-    save_loc = '/Users/fdelzanno/Desktop/Incandela/Coding/ldmx-sw/plots/event_displays/recoilGeometry_v1'
+    save_loc = 'event_displays/rLDMX_v1'
+    event_number = 10
 
-
-    numbers = list(range(0, 5001))
-    random_numbers = random.sample(numbers, 10)
-#    random_numbers = [521, 896, 1034, 1201, 1556, 1771, 1797, 2051, 2418, 2575, 2658, 3194, 3319, 3791, 3902, 3972, 4000, 4751, 4767, 4841, 4842, 4880]
-    #random_numbers_v1 = [1428, 1458, 1487, 1582, 1635, 1712, 1752, 1878, 1894, 1955, 1973, 1987]
-    random_numbers_v2 = [2469, 2664, 1806, 740, 1964, 3668, 4121, 4635, 302, 3994, 4545, 3007, 4472, 3464, 2350, 1145, 2965, 4121, 62, 4707]
-
-#    for number in random_numbers_v2:
-#        trackPlotter(tree, number, tag, save_loc, False)
-        
-    trackPlotter(tree, 183, tag, save_loc, False)
+    trackPlotter(tree, event_number, tag, save_loc)
 
 if __name__ == "__main__":
     main()

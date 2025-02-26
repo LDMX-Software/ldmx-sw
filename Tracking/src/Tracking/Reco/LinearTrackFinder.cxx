@@ -16,8 +16,6 @@ LinearTrackFinder::LinearTrackFinder(const std::string& name,
                                      framework::Process& process)
     : TrackingGeometryUser(name, process) {}
 
-void LinearTrackFinder::onProcessStart() {}
-
 void LinearTrackFinder::configure(framework::config::Parameters& parameters) {
   // seeds from the event
   seed_collection_ = parameters.getParameter<std::string>(
@@ -25,7 +23,10 @@ void LinearTrackFinder::configure(framework::config::Parameters& parameters) {
   // output track collection
   out_trk_collection_ = parameters.getParameter<std::string>(
       "out_trk_collection", "LinearRecoilTracks");
-}
+    
+  input_pass_name_ = parameters.getParameter<std::string>("input_pass_name", "");
+
+} //configure
 
 void LinearTrackFinder::produce(framework::Event& event) {
   std::vector<ldmx::StraightTrack> straight_tracks;
@@ -38,7 +39,7 @@ void LinearTrackFinder::produce(framework::Event& event) {
   ldmx_log(debug) << "Retrieve the seeds::" << seed_collection_;
 
   const std::vector<ldmx::StraightTrack> seed_tracks =
-      event.getCollection<ldmx::StraightTrack>(seed_collection_);
+      event.getCollection<ldmx::StraightTrack>(seed_collection_, input_pass_name_);
 
   n_seeds_ = seed_tracks.size();
   ldmx_log(debug) << "Number of seeds::" << n_seeds_;
@@ -57,14 +58,14 @@ void LinearTrackFinder::produce(framework::Event& event) {
   processing_time_ += std::chrono::duration<double, std::milli>(diff).count();
 
   straight_tracks.clear();
-}
+} //produce
 
 void LinearTrackFinder::onProcessEnd() {
   ldmx_log(info) << "found " << n_tracks_ << " tracks / " << n_events_
                  << " events.";
   ldmx_log(info) << "AVG Time/Event: " << std::fixed << std::setprecision(1)
                  << processing_time_ / n_events_ << " ms";
-}
+} //onProcessEnd
 
 std::vector<ldmx::StraightTrack> LinearTrackFinder::findTracks(
     const std::vector<ldmx::StraightTrack>& track_seeds) {
@@ -78,8 +79,8 @@ std::vector<ldmx::StraightTrack> LinearTrackFinder::findTracks(
     seeds_by_rec_hit[rec_hit_point].push_back(seed);
   }
 
-  std::set<std::tuple<float, float, float>>
-      used_sensor_positions;  // Track used sensor positions
+  // Track used sensor positions
+  std::set<std::tuple<float, float, float>> used_sensor_positions;
 
   // Find the best seed for each RecHit
   // numTracks <= number of RecHits
@@ -98,11 +99,13 @@ std::vector<ldmx::StraightTrack> LinearTrackFinder::findTracks(
               for (const auto& measurement : seed.getAllSensorPoints()) {
                 // Check if this sensor's position is already used
                 if (isPositionUsed(measurement, used_sensor_positions)) {
-                  return true;  // Mark this seed for removal
-                }               // if
-              }                 // for
+                  // Mark this seed for removal
+                  return true;
+                } // ifPositionUsed
+              } // for measurement
+              // Keep the seed if no position overlap
               return false;
-            }),  // Keep the seed if no position overlap
+            }),
         seeds_with_same_rec_hit.end());
 
     // If no valid seeds remain after filtering, skip to next RecHit
@@ -111,8 +114,8 @@ std::vector<ldmx::StraightTrack> LinearTrackFinder::findTracks(
     // Find the seed with the lowest chi2 for this RecHit, this is "best" seed
     auto best_seed_it = std::min_element(
         seeds_with_same_rec_hit.begin(), seeds_with_same_rec_hit.end(),
-        [](const ldmx::StraightTrack& a, const ldmx::StraightTrack& b) {
-          return a.getChi2() < b.getChi2();
+        [](const ldmx::StraightTrack& trk_a, const ldmx::StraightTrack& trk_b) {
+          return trk_a.getChi2() < trk_b.getChi2();
         });
 
     // Store the best seed for this RecHit
@@ -137,10 +140,9 @@ std::vector<ldmx::StraightTrack> LinearTrackFinder::findTracks(
       ldmx_log(debug) << "Which gave a track a distance: "
                       << best_seed.getDistanceToRecHit()
                       << " to the closest ECalRecHit\n";
-    }  // for sensor points in the "best" seed
+    }  // for sensor points in "best" seed
 
-  }  // for entry loop, everytime we loop onto a new RecHit, we will have fewer
-     // points to check
+  } // for entry loop, everytime we loop onto a new RecHit, we will have fewer points to check
 
   return best_tracks;
 

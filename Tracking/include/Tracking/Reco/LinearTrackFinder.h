@@ -33,15 +33,11 @@ class LinearTrackFinder : public TrackingGeometryUser {
    
   /// Destructor
   virtual ~LinearTrackFinder() = default;
+  
   /**
-   *
-   */
-  void onProcessStart() override;
-  /**
-   *
+   * Output event statistics.
    */
   void onProcessEnd() override;
-
   /**
    * Configure the processor using the given user specified parameters.
    *
@@ -65,6 +61,7 @@ class LinearTrackFinder : public TrackingGeometryUser {
 
   // The seed track collection
   std::string seed_collection_{"LinearRecoilSeedTracks"};
+  std::string input_pass_name_{""};
 
   int n_seeds_{0};
   int n_tracks_{0};

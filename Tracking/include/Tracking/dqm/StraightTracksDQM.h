@@ -32,8 +32,6 @@ class StraightTracksDQM : public framework::Analyzer {
 
   void configure(framework::config::Parameters& parameters) override;
 
-  void onProcessEnd() override;
-
   // Distinguish which tracks are unique, duplicates, fake
   void sortTracks(const std::vector<ldmx::StraightTrack>& tracks,
                   std::vector<ldmx::StraightTrack>& unique_tracks,
@@ -41,11 +39,11 @@ class StraightTracksDQM : public framework::Analyzer {
                   std::vector<ldmx::StraightTrack>& fake_tracks);
 
   // Helper Functions: propogate track parameter error into calculation of
-  // angles and ecal_locs I use error propagation based on partial derivatives
+  // angles and ecal_locs. I use error propagation based on partial derivatives
   // of functions that determine theta/phi/loc
-  double thetaAngleError(double mx, double my,
+  double thetaAngleError(double m_x, double m_y,
                          const std::vector<double>& covariance_vector);
-  double phiAngleError(double mx, const std::vector<double>& covariance_vector);
+  double phiAngleError(double m_x, const std::vector<double>& covariance_vector);
   double locError(double var_slope, double var_intercept,
                   double cov_slope_intercept, double z_pos);
 
@@ -54,6 +52,7 @@ class StraightTracksDQM : public framework::Analyzer {
   std::string truth_collection_{"LinearRecoilTruthTracks"};
   std::string measurement_collection_{"DigiRecoilSimHits"};
   std::string title_{"recoil_lin_trk_"};
+  std::string input_pass_name_{""};
   double track_prob_cut_{0.5};
   std::string subdetector_{"Recoil"};
   bool do_truth_comparison_{false};

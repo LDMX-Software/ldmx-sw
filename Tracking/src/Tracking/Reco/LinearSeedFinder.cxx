@@ -23,6 +23,8 @@ void LinearSeedFinder::configure(framework::config::Parameters& parameters) {
       "input_hits_collection", "DigiRecoilSimHits");
   input_rec_hits_collection_ = parameters.getParameter<std::string>(
       "input_rec_hits_collection", "EcalRecHits");
+    
+  input_pass_name_ = parameters.getParameter<std::string>("input_pass_name", "");
 
   recoil_uncertainty_ = parameters.getParameter<std::vector<double>>(
       "recoil_uncertainty", {0.006, 0.12});
@@ -30,6 +32,7 @@ void LinearSeedFinder::configure(framework::config::Parameters& parameters) {
       parameters.getParameter<double>("ecal_uncertainty", {3.87});
   ecal_distance_threshold_ =
       parameters.getParameter<double>("ecal_distance_threshold");
+  ecal_first_layer_z_threshold_ = parameters.getParameter<double>("ecal_first_layer_z_threshold");
 
   layer12_midpoint_ = parameters.getParameter<double>("layer12_midpoint");
   layer23_midpoint_ = parameters.getParameter<double>("layer23_midpoint");
@@ -42,19 +45,19 @@ void LinearSeedFinder::produce(framework::Event& event) {
   n_events_++;
 
   const std::vector<ldmx::Measurement> recoil_hits =
-      event.getCollection<ldmx::Measurement>(input_hits_collection_);
+      event.getCollection<ldmx::Measurement>(input_hits_collection_, input_pass_name_);
   const std::vector<ldmx::EcalHit> ecal_rec_hit =
-      event.getCollection<ldmx::EcalHit>(input_rec_hits_collection_);
+      event.getCollection<ldmx::EcalHit>(input_rec_hits_collection_, input_pass_name_);
 
   std::vector<std::array<double, 3>> first_layer_ecal_rec_hits;
 
   // Find RecHits at first layer of ECal
   for (const auto& x_ecal : ecal_rec_hit) {
-    if (x_ecal.getZPos() < 250) {
+    if (x_ecal.getZPos() < ecal_first_layer_z_threshold_) {
         first_layer_ecal_rec_hits.push_back(
           {x_ecal.getZPos(), x_ecal.getXPos(), x_ecal.getYPos()});
     }  // if first layer of Ecal
-  }    // for positions in ecalRecHit
+  }  // for positions in ecalRecHit
 
   // Check if we would fit empty seeds, if so: end tracking
   if (recoil_hits.size() < 2 || first_layer_ecal_rec_hits.empty() ||
@@ -79,17 +82,20 @@ void LinearSeedFinder::produce(framework::Event& event) {
   for (const auto& first_point : first_sensor) {
     for (const auto& second_point : second_sensor) {
       for (const auto& rec_hit : first_layer_ecal_rec_hits) {
+        
         // Do fitting on 2 sensor + 1 recHit combinations = 1 degree of freedom
         // for linear fit
         ldmx::StraightTrack seed_track =
             SeedTracker(first_point, second_point, rec_hit);
+        
+        // Seed passed RecHit distance check
         if (seed_track.getChi2() > 0.0) {
           straight_seed_tracks.push_back(
-            seed_track);  // Seed passed RecHit distance check
-        }
+            seed_track);
+        } // if chi2 > 0
       }  // for rec_hits
-    }    // for second recoil tracker
-  }      // for first recoil tracker
+    } // for second recoil tracker
+  } // for first recoil tracker
 
   n_seeds_ += straight_seed_tracks.size();
   event.add(out_seed_collection_, straight_seed_tracks);
@@ -125,35 +131,38 @@ ldmx::StraightTrack LinearSeedFinder::SeedTracker(
   // the allPoints vector
   all_points.push_back(layer1);
 
+  // if layer2 doesn't exist (has_value == False), then the layer1 we added
+  // is either layer1 or 2, depending on which one has_value
   if (layer2.has_value()) {
     all_points.push_back(*layer2);
-  }  // if layer2 doesn't exist (has_value == False), then the layer1 we added
-     // is either layer1 or 2, depending on which one has_value
+  }
 
   all_points.push_back(layer3);
 
+  // if layer4 doesn't exist (has_value == False), then the layer3 we added
+  // is either layer3 or 4, depending on which one has_value
   if (layer4.has_value()) {
     all_points.push_back(*layer4);
-  }  // if layer4 doesn't exist (has_value == False), then the layer3 we added
-     // is either layer3 or 4, depending on which one has_value
+  }
 
   // Fit the 3 points to a 3D straight line, find track location at first layer
   // of Ecal, check distance to recHit used in fitting
-  auto [mx, bx, my, by, seed_cov] =
-      fit3DLine(sensor1, sensor2, ecal_one);  // m = slope ; b = intercept
+  // m = slope ; b = intercept
+  auto [m_x, b_x, m_y, b_y, seed_cov] =
+      fit3DLine(sensor1, sensor2, ecal_one);
   std::array<double, 3> temp_extrapolated_point = {
-      ecal_one[0], mx * ecal_one[0] + bx, my * ecal_one[0] + by};
+      ecal_one[0], m_x * ecal_one[0] + b_x, m_y * ecal_one[0] + b_y};
   double temp_distance = calculateDistance(temp_extrapolated_point, ecal_one);
 
   ldmx::StraightTrack trk = ldmx::StraightTrack();
 
   if (temp_distance < ecal_distance_threshold_) {
-    trk.setSlopeX(mx);
-    trk.setInterceptX(bx);
-    trk.setSlopeY(my);
-    trk.setInterceptY(by);
-    trk.setTheta(std::atan2(my, std::sqrt(1 + mx * mx)));
-    trk.setPhi(std::atan2(mx, 1.0));
+    trk.setSlopeX(m_x);
+    trk.setInterceptX(b_x);
+    trk.setSlopeY(m_y);
+    trk.setInterceptY(b_y);
+    trk.setTheta(std::atan2(m_y, std::sqrt(1 + m_x * m_x)));
+    trk.setPhi(std::atan2(m_x, 1.0));
 
     trk.setAllSensorPoints(all_points);
     trk.setFirstSensorPosition(sensor1);
@@ -161,28 +170,29 @@ ldmx::StraightTrack LinearSeedFinder::SeedTracker(
     trk.setFirstLayerEcalRecHit(ecal_one);
     trk.setDistancetoRecHit(temp_distance);
 
-    trk.setTargetLocation(0.0, bx, by);
+    trk.setTargetLocation(0.0, b_x, b_y);
     trk.setEcalLayer1Location(temp_extrapolated_point);
-    trk.setChi2(globalChiSquare(sensor1, sensor2, ecal_one, mx, my, bx, by));
+    trk.setChi2(globalChiSquare(sensor1, sensor2, ecal_one, m_x, m_y, b_x, b_y));
     trk.setNhits(3);
     trk.setNdf(1);
 
     trk.setCov(seed_cov);
 
+    // truth matching
     if (truth_matching_tool_->configured()) {
       auto truth_info = truth_matching_tool_->TruthMatch(all_points);
       trk.setTrackID(truth_info.trackID);
       trk.setPdgID(truth_info.pdgID);
       trk.setTruthProb(truth_info.truthProb);
-    }  // truthMatching
+    }
 
     return trk;
 
-  }  // check whether the track is close enough to EcalRecHit
+  } // if (track is close enough to EcalRecHit)
   else {
     trk.setChi2(-1);
     return trk;
-  }  // does not pass the threshold
+  }  // else (does not pass the threshold)
 }  // SeedTracker
 
 void LinearSeedFinder::onProcessEnd() {
@@ -219,48 +229,49 @@ LinearSeedFinder::combineMultiGlobalHits(
       first_sensor_merged_hits, second_sensor_merged_hits;
 
   if (layer1.empty()) {
-    for (const auto& p : layer2) {
+    for (const auto& point : layer2) {
       first_sensor_merged_hits.push_back(
-          std::make_tuple(std::array<double, 3>{p.getGlobalPosition()[0],
-                                                p.getGlobalPosition()[1],
-                                                p.getGlobalPosition()[2]},
-                          p, std::nullopt));
+          std::make_tuple(std::array<double, 3>{point.getGlobalPosition()[0],
+                                                point.getGlobalPosition()[1],
+                                                point.getGlobalPosition()[2]},
+                          point, std::nullopt));
     }  // only look at layer2
-  }    // if layer1 empty
+  } // if layer1 empty
   else if (layer2.empty()) {
-    for (const auto& p : layer1) {
+    for (const auto& point : layer1) {
       first_sensor_merged_hits.push_back(
-          std::make_tuple(std::array<double, 3>{p.getGlobalPosition()[0],
-                                                p.getGlobalPosition()[1],
-                                                p.getGlobalPosition()[2]},
-                          p, std::nullopt));
+          std::make_tuple(std::array<double, 3>{point.getGlobalPosition()[0],
+                                                point.getGlobalPosition()[1],
+                                                point.getGlobalPosition()[2]},
+                          point, std::nullopt));
     }  // only look at layer1
-  }    // if layer2 empty
+  } // if layer2 empty
   else {
     first_sensor_merged_hits = weightedAverage(layer1, layer2);
   }  // do weighted average of two layers
 
   if (layer3.empty()) {
-    for (const auto& p : layer4) {
+    for (const auto& point : layer4) {
       second_sensor_merged_hits.push_back(
-          std::make_tuple(std::array<double, 3>{p.getGlobalPosition()[0],
-                                                p.getGlobalPosition()[1],
-                                                p.getGlobalPosition()[2]},
-                          p, std::nullopt));
+          std::make_tuple(std::array<double, 3>{point.getGlobalPosition()[0],
+                                                point.getGlobalPosition()[1],
+                                                point.getGlobalPosition()[2]},
+                          point, std::nullopt));
     }  // only look at layer4
-  }    // if layer3 empty
+  } // if layer3 empty
   else if (layer4.empty()) {
-    for (const auto& p : layer3) {
+    for (const auto& point : layer3) {
       second_sensor_merged_hits.push_back(
-          std::make_tuple(std::array<double, 3>{p.getGlobalPosition()[0],
-                                                p.getGlobalPosition()[1],
-                                                p.getGlobalPosition()[2]},
-                          p, std::nullopt));
-    }  // only look at layer4
-  }    // if layer4 empty
+          std::make_tuple(std::array<double, 3>{point.getGlobalPosition()[0],
+                                                point.getGlobalPosition()[1],
+                                                point.getGlobalPosition()[2]},
+                          point, std::nullopt));
+    }
+  } // if layer4 empty
+  // do weighted average of two layers
   else {
     second_sensor_merged_hits = weightedAverage(layer3, layer4);
-  }  // do weighted average of two layers
+  }
 
   return {first_sensor_merged_hits, second_sensor_merged_hits};
 }  // combineMultiGlobalHits
@@ -274,23 +285,23 @@ LinearSeedFinder::weightedAverage(
                          std::optional<ldmx::Measurement>>>
       merged_hits;
 
-  for (const auto& p1 : layer1) {
-    for (const auto& p2 : layer2) {
-      double edepL1 = p1.getEdep();
-      double edepL2 = p2.getEdep();
-      double z_avg = (p1.getGlobalPosition()[0] * edepL1 +
-                     p2.getGlobalPosition()[0] * edepL2) /
+  for (const auto& point1 : layer1) {
+    for (const auto& point2 : layer2) {
+      double edepL1 = point1.getEdep();
+      double edepL2 = point2.getEdep();
+      double z_avg = (point1.getGlobalPosition()[0] * edepL1 +
+                      point2.getGlobalPosition()[0] * edepL2) /
                     (edepL1 + edepL2);
-      double x_avg = (p1.getGlobalPosition()[1] * edepL1 +
-                     p2.getGlobalPosition()[1] * edepL2) /
+      double x_avg = (point1.getGlobalPosition()[1] * edepL1 +
+                      point2.getGlobalPosition()[1] * edepL2) /
                     (edepL1 + edepL2);
-      double y_avg = (p1.getGlobalPosition()[2] * edepL1 +
-                     p2.getGlobalPosition()[2] * edepL2) /
+      double y_avg = (point1.getGlobalPosition()[2] * edepL1 +
+                      point2.getGlobalPosition()[2] * edepL2) /
                     (edepL1 + edepL2);
       merged_hits.push_back(
-          std::make_tuple(std::array<double, 3>{z_avg, x_avg, y_avg}, p1, p2));
-    }
-  }
+          std::make_tuple(std::array<double, 3>{z_avg, x_avg, y_avg}, point1, point2));
+    } // for layer2
+  } // for layer1
   return merged_hits;
 }  // weightedAverage
 
@@ -298,46 +309,44 @@ std::tuple<double, double, double, double, std::vector<double>>
 LinearSeedFinder::fit3DLine(const std::array<double, 3>& first_recoil,
                             const std::array<double, 3>& second_recoil,
                             const std::array<double, 3>& ecal) {
-  double z1 = first_recoil[0], x1 = first_recoil[1], y1 = first_recoil[2];
-  double z2 = second_recoil[0], x2 = second_recoil[1], y2 = second_recoil[2];
-  double z3 = ecal[0], x3 = ecal[1], y3 = ecal[2];
+  double z_pos1 = first_recoil[0], x_pos1 = first_recoil[1], y_pos1 = first_recoil[2];
+  double z_pos2 = second_recoil[0], x_pos2 = second_recoil[1], y_pos2 = second_recoil[2];
+  double z_pos3 = ecal[0], x_pos3 = ecal[1], y_pos3 = ecal[2];
 
   std::array<double, 6> weights = {
       1 / pow(recoil_uncertainty_[0], 2), 1 / pow(recoil_uncertainty_[1], 2),
       1 / pow(recoil_uncertainty_[0], 2), 1 / pow(recoil_uncertainty_[1], 2),
       1 / pow(ecal_uncertainty_, 2),      1 / pow(ecal_uncertainty_, 2)};
 
-  Eigen::Matrix<double, 6, 4> A;
-  Eigen::Matrix<double, 6, 1> d, w;
+  Eigen::Matrix<double, 6, 4> A_mat;
+  Eigen::Matrix<double, 6, 1> d_vec, w_vec;
 
   // Fill the A matrix (z, 1, 0, 0) for x and (0, 0, z, 1) for y
-  A << z1, 1, 0, 0, 0, 0, z1, 1, z2, 1, 0, 0, 0, 0, z2, 1, z3, 1, 0, 0, 0, 0,
-      z3, 1;
+  A_mat << z_pos1, 1, 0, 0, 0, 0, z_pos1, 1, z_pos2, 1, 0, 0, 0, 0, z_pos2, 1, z_pos3, 1, 0, 0, 0, 0,
+    z_pos3, 1;
 
   // Fill the d vector with x and y values
-  d << x1, y1, x2, y2, x3, y3;
+  d_vec << x_pos1, y_pos1, x_pos2, y_pos2, x_pos3, y_pos3;
 
   // Fill the weights vector
-  w = Eigen::Matrix<double, 6, 1>(weights.data());
+  w_vec = Eigen::Matrix<double, 6, 1>(weights.data());
 
   // Solve the weighted least squares system
-  Eigen::MatrixXd At_W_A = A.transpose() * w.asDiagonal() * A;
-  Eigen::MatrixXd At_W_d = A.transpose() * w.asDiagonal() * d;
-  Eigen::VectorXd m = At_W_A.ldlt().solve(At_W_d);
+  Eigen::MatrixXd At_W_A = A_mat.transpose() * w_vec.asDiagonal() * A_mat;
+  Eigen::MatrixXd At_W_d = A_mat.transpose() * w_vec.asDiagonal() * d_vec;
+  Eigen::VectorXd param_vec = At_W_A.ldlt().solve(At_W_d);
 
   Eigen::Matrix4d covariance_matrix = At_W_A.inverse();
 
-  // Store only the upper triangular part of the covariance matrix since it is
-  // symmetric
+  // Store only the upper triangular part of the covariance matrix since it is symmetric
   std::vector<double> covariance_vector = {
       covariance_matrix(0, 0), covariance_matrix(0, 1), covariance_matrix(0, 2),
       covariance_matrix(0, 3), covariance_matrix(1, 1), covariance_matrix(1, 2),
       covariance_matrix(1, 3), covariance_matrix(2, 2), covariance_matrix(2, 3),
       covariance_matrix(3, 3)};
 
-  return {m(0), m(1), m(2), m(3),
-          covariance_vector};  // return {slope_x, intercept_x, slope_y,
-                               // intercept_y, covariance}
+  // return {slope_x, intercept_x, slope_y, intercept_y, covariance}
+  return {param_vec(0), param_vec(1), param_vec(2), param_vec(3), covariance_vector};
 }  // fit3DLine
 
 double LinearSeedFinder::calculateDistance(
@@ -348,23 +357,23 @@ double LinearSeedFinder::calculateDistance(
 double LinearSeedFinder::globalChiSquare(
     const std::array<double, 3>& first_sensor,
     const std::array<double, 3>& second_sensor,
-    const std::array<double, 3>& ecal_hit, double mx, double my, double bx,
-    double by) {
+    const std::array<double, 3>& ecal_hit, double m_x, double m_y, double b_x,
+    double b_y) {
   double chi2_x = 0, chi2_y = 0;
   chi2_x += pow(
-      (mx * first_sensor[0] + bx - first_sensor[1]) / recoil_uncertainty_[0], 2);
+      (m_x * first_sensor[0] + b_x - first_sensor[1]) / recoil_uncertainty_[0], 2);
   chi2_y += pow(
-      (my * first_sensor[0] + by - first_sensor[2]) / recoil_uncertainty_[1], 2);
+      (m_y * first_sensor[0] + b_y - first_sensor[2]) / recoil_uncertainty_[1], 2);
 
   chi2_x += pow(
-      (mx * second_sensor[0] + bx - second_sensor[1]) / recoil_uncertainty_[0],
+      (m_x * second_sensor[0] + b_x - second_sensor[1]) / recoil_uncertainty_[0],
       2);
   chi2_y += pow(
-      (my * second_sensor[0] + by - second_sensor[2]) / recoil_uncertainty_[1],
+      (m_y * second_sensor[0] + b_y - second_sensor[2]) / recoil_uncertainty_[1],
       2);
 
-  chi2_x += pow((mx * ecal_hit[0] + bx - ecal_hit[1]) / ecal_uncertainty_, 2);
-  chi2_y += pow((my * ecal_hit[0] + by - ecal_hit[2]) / ecal_uncertainty_, 2);
+  chi2_x += pow((m_x * ecal_hit[0] + b_x - ecal_hit[1]) / ecal_uncertainty_, 2);
+  chi2_y += pow((m_y * ecal_hit[0] + b_y - ecal_hit[2]) / ecal_uncertainty_, 2);
 
   return chi2_x + chi2_y;
 }  // globalChiSquare
@@ -373,21 +382,21 @@ int LinearSeedFinder::uniqueLayersHit(
     const std::vector<ldmx::Measurement>& digi_points) {
   std::vector<ldmx::Measurement> sorted_points = digi_points;
 
-  // Sort by z-position in the Recoil
+  // Sort by z position in the Recoil
   std::sort(sorted_points.begin(), sorted_points.end(),
-            [](const ldmx::Measurement& m1, const ldmx::Measurement& m2) {
-              return m1.getGlobalPosition()[0] < m2.getGlobalPosition()[0];
+            [](const ldmx::Measurement& meas1, const ldmx::Measurement& meas2) {
+              return meas1.getGlobalPosition()[0] < meas2.getGlobalPosition()[0];
             });
 
   // Remove duplicates to ensure we only keep unique z positions
   auto last = std::unique(
         sorted_points.begin(), sorted_points.end(),
-      [](const ldmx::Measurement& m1, const ldmx::Measurement& m2) {
-        return m1.getGlobalPosition()[0] == m2.getGlobalPosition()[0];
+      [](const ldmx::Measurement& meas1, const ldmx::Measurement& meas2) {
+        return meas1.getGlobalPosition()[0] == meas2.getGlobalPosition()[0];
       });
 
-  return std::distance(sorted_points.begin(),
-                       last);  // return the number of unique layer hits
+  // return the number of unique layer hits
+  return std::distance(sorted_points.begin(),last);
 }  // uniqueLayersHit
 
 }  // namespace reco
