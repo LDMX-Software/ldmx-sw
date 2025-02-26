@@ -56,7 +56,6 @@ class StraightTracksDQM : public framework::Analyzer {
   double track_prob_cut_{0.5};
   std::string subdetector_{"Recoil"};
   bool do_truth_comparison_{false};
-  bool debug_{false};
 
   // Truth Track collection
   std::shared_ptr<ldmx::StraightTracks> truth_track_collection_{nullptr};

@@ -19,16 +19,16 @@ void StraightTracksDQM::configure(framework::config::Parameters& parameters) {
       "measurement_collection", "DigiRecoilSimHits");
   input_pass_name_ = parameters.getParameter<std::string>("input_pass_name", "");
 
-  ldmx_log(info) << "Track Collection " << track_collection_ << std::endl;
-  ldmx_log(info) << "Truth Collection " << truth_collection_ << std::endl;
+  ldmx_log(info) << "Track Collection " << track_collection_;
+  ldmx_log(info) << "Truth Collection " << truth_collection_;
 }  // configure
 
 void StraightTracksDQM::analyze(const framework::Event& event) {
-  ldmx_log(debug) << "DQM Reading in::" << track_collection_ << std::endl;
+  ldmx_log(debug) << "DQM Reading in::" << track_collection_;
 
   if (!event.exists(track_collection_)) {
-    ldmx_log(error) << "ERROR:: trackCollection " << track_collection_
-                    << " not in event" << std::endl;
+    ldmx_log(error) << "trackCollection " << track_collection_
+                    << " not in event";
     return;
   }
 
@@ -44,8 +44,7 @@ void StraightTracksDQM::analyze(const framework::Event& event) {
     do_truth_comparison_ = true;
   }
 
-  ldmx_log(debug) << "Do truth comparison::" << do_truth_comparison_
-                  << std::endl;
+  ldmx_log(debug) << "Do truth comparison::" << do_truth_comparison_;
 
   if (do_truth_comparison_) {
     sortTracks(tracks, unique_tracks_, duplicate_tracks_, fake_tracks_);
@@ -54,16 +53,16 @@ void StraightTracksDQM::analyze(const framework::Event& event) {
     unique_tracks_ = tracks;
   }
 
-  ldmx_log(debug) << "Filling histograms " << std::endl;
+  ldmx_log(debug) << "Filling histograms ";
 
   // General Plots
   histograms_.fill(title_ + "N_tracks", tracks.size());
 
-  ldmx_log(debug) << "Track Monitoring on Unique Tracks" << std::endl;
+  ldmx_log(debug) << "Track Monitoring on Unique Tracks";
 
   trackMonitoringUnique(unique_tracks_, measurements, title_, true, true);
 
-  ldmx_log(debug) << "Track Monitoring on duplicates and fakes" << std::endl;
+  ldmx_log(debug) << "Track Monitoring on duplicates and fakes";
 
   // Fakes and duplicates
   trackMonitoring(duplicate_tracks_, measurements, title_ + "dup_", false);
@@ -315,32 +314,26 @@ void StraightTracksDQM::sortTracks(
   // The total number of elements in the uniqueTracks and duplicateTracks
   // vectors should be equal to the number of elements in the original tracks
   // vector
-  if (unique_tracks.size() + duplicate_tracks.size() + fake_tracks.size() !=
+  if ( (unique_tracks.size() + duplicate_tracks.size() + fake_tracks.size() ) !=
       tracks.size()) {
-    std::cerr << "Error: unique and duplicate tracks vectors do not add up to "
-                 "original tracks vector"
-              << std::endl;
+    ldmx_log(error) << "Unique and duplicate track vectors do not add up to original tracks vector";
     return;
   }  // if different tracks don't add up to correct total
 
-  if (debug_) {
-    // Iterate through the uniqueTracks vector and duplicateTracks vector
-    std::cout << "Unique tracks:" << std::endl;
-    for (const ldmx::StraightTrack& track : unique_tracks) {
-      std::cout << "Track ID: " << track.getTrackID()
-                << ", Truth Prob: " << track.getTruthProb() << std::endl;
+  // Iterate through the uniqueTracks vector and duplicateTracks vector
+  ldmx_log(trace) << "Unique tracks:";
+  for (const ldmx::StraightTrack& track : unique_tracks) {
+      ldmx_log(trace) << "Track ID: " << track.getTrackID() << ", Truth Prob: " << track.getTruthProb();
+  }
+  ldmx_log(trace) << "Duplicate tracks:";
+  for (const ldmx::StraightTrack& track : duplicate_tracks) {
+      ldmx_log(trace) << "Track ID: " << track.getTrackID() << ", Truth Prob: " << track.getTruthProb();
+  }
+  ldmx_log(trace) << "Fake tracks:";
+  for (const ldmx::StraightTrack& track : fake_tracks) {
+      ldmx_log(trace) << "Track ID: " << track.getTrackID() << ", Truth Prob: " << track.getTruthProb();
     }
-    std::cout << "Duplicate tracks:" << std::endl;
-    for (const ldmx::StraightTrack& track : duplicate_tracks) {
-      std::cout << "Track ID: " << track.getTrackID()
-                << ", Truth Prob: " << track.getTruthProb() << std::endl;
-    }
-    std::cout << "Fake tracks:" << std::endl;
-    for (const ldmx::StraightTrack& track : fake_tracks) {
-      std::cout << "Track ID: " << track.getTrackID()
-                << ", Truth Prob: " << track.getTruthProb() << std::endl;
-    }
-  }  // if debug
+    
 }  // sortTracks
 
 double StraightTracksDQM::thetaAngleError(

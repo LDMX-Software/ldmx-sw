@@ -60,8 +60,8 @@ void LinearSeedFinder::produce(framework::Event& event) {
   }  // for positions in ecalRecHit
 
   // Check if we would fit empty seeds, if so: end tracking
-  if (recoil_hits.size() < 2 || first_layer_ecal_rec_hits.empty() ||
-      uniqueLayersHit(recoil_hits) < 2) {
+  if ((recoil_hits.size() < 2) || (first_layer_ecal_rec_hits.empty()) ||
+      (uniqueLayersHit(recoil_hits) < 2)) {
     n_missing_++;
     n_seeds_ += straight_seed_tracks.size();
     event.add(out_seed_collection_, straight_seed_tracks);
