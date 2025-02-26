@@ -19,18 +19,12 @@ jobs:
       uses: actions/checkout@v4
       with:
         submodules: 'recursive'
+        fetch-depth: 0
 
     - name : Install just
       uses: extractions/setup-just@v2
       with:
           just-version: 1.26.0
-
-    - name: Take care of versioning
-      run: | 
-        source ${GITHUB_WORKSPACE}/.github/actions/common.sh
-        echo "Old Label: $(ldmx_gold_label)"
-        echo "${GITHUB_REF##refs/tags/}" > ${LDMX_VERSION_FILE}
-        echo "New Label: $(ldmx_gold_label)"
 
     - name: Compile and Install ldmx-sw
       run: | 
@@ -92,6 +86,7 @@ jobs:
       uses: actions/checkout@v4
       with:
         submodules: 'recursive'
+        fetch-depth: 0
         ref: trunk
 
     - name: Download All the Gold
@@ -106,12 +101,6 @@ jobs:
       id: update-gold
       run: |
         source ${GITHUB_WORKSPACE}/.github/actions/common.sh
-        start_group Update Gold Label
-        echo "Old Label: $(ldmx_gold_label)"
-        echo "${GITHUB_REF##refs/tags/}" > ${LDMX_VERSION_FILE}
-        echo "New Label: $(ldmx_gold_label)"
-        git add ${LDMX_GOLD_LABEL_FILE}
-        end_group
         start_group Copy over new Gold Histograms
         artifacts_d=${{steps.download.outputs.download-path}}
         echo ${artifacts_d}
