@@ -53,7 +53,7 @@ class Process {
    * Get the processing pass label.
    * @return The processing pass label.
    */
-  const std::string &getPassName() const { return passname_; }
+  const std::string &getPassName() const { return pass_name_; }
 
   /**
    * Get the current run number or the run number to be used when initiating new
@@ -169,7 +169,7 @@ class Process {
   framework::config::Parameters config_;
 
   /** Processing pass name. */
-  std::string passname_;
+  std::string pass_name_;
 
   /** Limit on events to process. */
   int eventLimit_;
