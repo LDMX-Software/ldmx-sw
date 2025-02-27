@@ -65,8 +65,8 @@ void OverlayProducer::onNewRun(const ldmx::RunHeader &) {
         framework::RandomNumberSeedService::CONDITIONS_OBJECT_NAME);
     rndm_ = std::make_unique<TRandom2>(rnss.getSeed("OverlayProducer::rndm"));
   }
-
-  int start_event = rndm_->Uniform(20., 1e4);
+  // TAV: These boundaries should be configurable
+  int start_event = rndm_->Uniform(20., 4570);
   // EventFile::skipToEvent handles actual number of events in file
   int evNb = overlayFile_->skipToEvent(start_event);
   if (evNb < 0) {
@@ -118,6 +118,7 @@ void OverlayProducer::produce(framework::Event &event) {
         event.getCollection<ldmx::SimCalorimeterHit>(collName, simPassName_);
     // but don't copy ecal hits immediately: for them, wait until overlay
     // contribs have been added. then add everything through the hitmap
+    // TAV: the string "Overlay" should be configurable too
     if (!needsContribsAdded) {
       caloCollectionMap[collName + "Overlay"] = simHitsCalo;
     }
