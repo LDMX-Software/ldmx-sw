@@ -1,4 +1,6 @@
-
+/*~~~~~~~~~~~~~*/
+/*   Biasing   */
+/*~~~~~~~~~~~~~*/
 #include "Biasing/TargetProcessFilter.h"
 
 /*~~~~~~~~~~~~*/
@@ -11,14 +13,9 @@
 #include "G4Track.hh"
 
 /*~~~~~~~~~~~~~*/
-/*   Biasing   */
-/*~~~~~~~~~~~~~*/
-#include "Biasing/TargetBremFilter.h"
-
-/*~~~~~~~~~~~~~*/
 /*   SimCore   */
 /*~~~~~~~~~~~~~*/
-#include "SimCore/Geant4_PtrRetrieval.h"
+#include "SimCore/G4User/PtrRetrieval.h"
 #include "SimCore/UserTrackInformation.h"
 
 namespace biasing {
@@ -61,9 +58,9 @@ void TargetProcessFilter::stepping(const G4Step* step) {
 
   // Get the region the particle is currently in. Continue processing
   // the particle only if it's in the target region.
-  auto Target_Region = Geant4_PtrRetrieval::GetRegion("target");
-  auto Current_Region = track->GetVolume()->GetLogicalVolume()->GetRegion();
-  if (Target_Region != Current_Region) {
+  auto target_region = simcore::g4user::ptrretrieval::getRegion("target");
+  auto current_region = track->GetVolume()->GetLogicalVolume()->GetRegion();
+  if (current_region != target_region) {
     // If secondaries were produced outside of the volume of interest,
     // and there aren't additional brems to process, abort the event.
     // Otherwise, suspend the track and move on to the next brem.
@@ -98,11 +95,13 @@ void TargetProcessFilter::stepping(const G4Step* step) {
      * We also check for 'World_PV' because in later geometries, there is
      * an air gap between the target region and the recoil tracker.
      */
-    auto recoil_PhysicalVolume = Geant4_PtrRetrieval::GetVolume("recoil_PV");
-    auto World_PhysicalVolume = Geant4_PtrRetrieval::GetVolume("World_PV");
-    auto Current_Volume = track->GetNextVolume();
-    if (Current_Volume == recoil_PhysicalVolume or
-        Current_Volume == World_PhysicalVolume) {
+    auto recoil_physical_volume =
+        simcore::g4user::ptrretrieval::getPhysicalVolume("recoil_PV");
+    auto world_physical_volume =
+        simcore::g4user::ptrretrieval::getPhysicalVolume("World_PV");
+    auto current_volume = track->GetNextVolume();
+    if (current_volume == recoil_physical_volume or
+        current_volume == world_physical_volume) {
       if (getEventInfo()->bremCandidateCount() == 1) {
         track->SetTrackStatus(fKillTrackAndSecondaries);
         G4RunManager::GetRunManager()->AbortEvent();

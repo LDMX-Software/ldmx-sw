@@ -1,0 +1,133 @@
+#ifndef SIMCORE_VOLUMECHECKs_H
+#define SIMCORE_VOLUMECHECKs_H
+
+//----------------//
+//   C++ StdLib   //
+//----------------//
+#include <string>
+#include <iostream>
+
+//------------//
+//   Geant4   //
+//------------//
+#include "G4Gamma.hh"
+#include "G4Region.hh"
+#include "G4RegionStore.hh"
+#include "G4LogicalVolume.hh"
+#include "G4ProcessManager.hh"
+#include "G4VPhysicalVolume.hh"
+#include "G4TouchableHistory.hh"
+#include "G4LogicalVolumeStore.hh"
+#include "G4ParticleDefinition.hh"
+#include "G4PhysicalVolumeStore.hh"
+
+namespace simcore{
+namespace g4user {
+namespace volumechecks {
+
+/**
+ * isInEcal
+ *
+ * Check that the passed volume is inside the ECal
+ *
+ * @TODO this is _horrible_
+ * can we get an 'ecal' and 'hcal' region instead
+ * of just a 'CalorimeterRegion' region?
+ *
+ * @param[in] vol G4LogicalVolume to check
+ * @param[in] vol_to_bias UNUSED name of volume to bias
+ */
+inline bool isInEcal(G4LogicalVolume* vol, const std::string& vol_to_bias) {
+  const G4String& volumeName = vol->GetName();
+  return ((volumeName.contains("Si") || volumeName.contains("W") ||
+           volumeName.contains("PCB") || volumeName.contains("strongback") ||
+           volumeName.contains("Glue") || volumeName.contains("CFMix") ||
+           volumeName.contains("Al") || volumeName.contains("C")) &&
+          volumeName.contains("volume")) ||
+         (volumeName.contains("nohole_motherboard"));
+}
+
+/**
+ * isInHcal
+ *
+ * Check that the passed volume is inside the HCal
+ *
+ * @param[in] vol G4LogicalVolume to check
+ * @param[in] vol_to_bias UNUSED name of volume to bias
+ */
+[[maybe_unused]] inline bool isInHcal(G4LogicalVolume* vol,
+                                      const std::string& vol_to_bias) {
+  const G4String& volumeName = vol->GetName();
+  return ((volumeName.contains("abso") || volumeName.contains("ScintBox") ||
+           volumeName.contains("scint")) &&
+          volumeName.contains("hcal") && volumeName.contains("olume"));
+}
+
+/**
+ * isInEcalOld
+ *
+ * This is the old method for checking if the passed volume was inside the ECal
+ * and only looks for tungsten or silicon layers.
+ *
+ * @note Deprecating soon (hopefully).
+ *
+ * @param[in] vol G4LogicalVolume to check
+ * @param[in] vol_to_bias UNUSED name of volume to bias
+ */
+[[maybe_unused]] inline bool isInEcalOld(G4LogicalVolume* vol,
+                                         const std::string& vol_to_bias) {
+  const G4String& volumeName = vol->GetName();
+  return ((volumeName.contains("Si") || volumeName.contains("W")) &&
+          volumeName.contains("volume"));
+}
+
+/**
+ * isInTargetRegion
+ *
+ * Check if the passed volume is inside the target region.
+ *
+ * @param[in] vol G4LogicalVolume to check
+ * @param[in] vol_to_bias UNUSED name of volume to bias
+ */
+[[maybe_unused]] inline bool isInTargetRegion(G4LogicalVolume* vol,
+                                              const std::string& vol_to_bias) {
+  auto region = vol->GetRegion();
+  return (region and region->GetName().contains("target"));
+}
+
+/**
+ * isInTargetONLY
+ *
+ * Check if the passed volume is inside the target volume.
+ *
+ * @note This leaves out the trig scint modules inside the target region.
+ *
+ * @param[in] vol G4LogicalVolume to check
+ * @param[in] vol_to_bias UNUSED name of volume to bias
+ */
+[[maybe_unused]] inline bool isInTargetOnly(G4LogicalVolume* vol,
+                                            const std::string& vol_to_bias) {
+  return vol->GetName().contains("target");
+}
+
+/**
+ * nameContains
+ *
+ * Check if the passed volume has a name containing the
+ * name of the volume to bias.
+ *
+ * @note This is the default if we don't recognize
+ * the volume to bias that is requested.
+ *
+ * @param[in] vol G4LogicalVolume to check
+ * @param[in] vol_to_bias name of volume to bias
+ */
+[[maybe_unused]] inline bool nameContains(G4LogicalVolume* vol,
+                                          const std::string& vol_to_bias) {
+  return vol->GetName().contains(vol_to_bias);
+}
+
+}  // namespace volumechecks
+}  // namespace g4user
+}  // namespace simcore 
+#endif

@@ -24,7 +24,7 @@
 //------------//
 //    LDMX    //
 //------------//
-#include "SimCore/Geant4_PtrRetrieval.h"
+#include "SimCore/G4User/PtrRetrieval.h"
 #include "SimCore/UserAction.h"
 
 namespace biasing {
@@ -118,10 +118,9 @@ class TargetDarkBremFilter : public simcore::UserAction {
    */
   inline bool isOutsideTargetRegion(const G4LogicalVolume* vol) const {
     if (!vol) return true;
-    static G4Region* TargetRegion =
-        Geant4_PtrRetrieval::GetRegion("target");  // Static local variable
+    auto target_region = simcore::g4user::ptrretrieval::getRegion("target");
     auto region = vol->GetRegion();
-    return region ? (region != TargetRegion) : true;
+    return region ? (region != target_region) : true;
   }
 
   /**

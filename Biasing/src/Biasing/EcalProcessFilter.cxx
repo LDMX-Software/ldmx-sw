@@ -1,3 +1,6 @@
+/*~~~~~~~~~~~~~*/
+/*   Biasing   */
+/*~~~~~~~~~~~~~*/
 #include "Biasing/EcalProcessFilter.h"
 
 /*~~~~~~~~~~~~*/
@@ -11,7 +14,7 @@
 /*~~~~~~~~~~~~~*/
 /*   SimCore   */
 /*~~~~~~~~~~~~~*/
-#include "SimCore/Geant4_PtrRetrieval.h"
+#include "SimCore/G4User/PtrRetrieval.h"
 #include "SimCore/UserTrackInformation.h"
 
 namespace biasing {
@@ -60,7 +63,7 @@ void EcalProcessFilter::stepping(const G4Step* step) {
 
   // Get the region the particle is currently in.  Continue processing
   // the particle only if it's in the calorimeter region.
-  auto region = Geant4_PtrRetrieval::GetRegion("CalorimeterRegion");
+  auto region = simcore::g4user::ptrretrieval::getRegion("CalorimeterRegion");
 
   if (track->GetVolume()->GetLogicalVolume()->GetRegion() != region) {
     // If secondaries were produced outside of the volume of interest,
@@ -106,8 +109,8 @@ void EcalProcessFilter::stepping(const G4Step* step) {
      * changes its name.
      */
     auto volume_after_exiting_ecal =
-        Geant4_PtrRetrieval::GetVolume("hadronic_calorimeter");
-    auto volume = track->GetNextVolume();
+        simcore::g4user::ptrretrieval::getLogicalVolume("hadronic_calorimeter");
+    auto volume = track->GetNextVolume()->GetLogicalVolume();
     if (volume == volume_after_exiting_ecal) {
       /*
       std::cout << "[ EcalProcessFilter ]: "

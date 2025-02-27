@@ -1,4 +1,6 @@
-
+/*~~~~~~~~~~~~~*/
+/*   Biasing   */
+/*~~~~~~~~~~~~~*/
 #include "Biasing/TargetBremFilter.h"
 
 /*~~~~~~~~~~~~*/
@@ -6,13 +8,12 @@
 /*~~~~~~~~~~~~*/
 #include "G4Electron.hh"
 #include "G4EventManager.hh"
-#include "G4ParticleTable.hh"
 #include "G4RunManager.hh"
 
 /*~~~~~~~~~~~~~*/
 /*   SimCore   */
 /*~~~~~~~~~~~~~*/
-#include "SimCore/Geant4_PtrRetrieval.h"
+#include "SimCore/G4User/PtrRetrieval.h"
 #include "SimCore/UserEventInformation.h"
 #include "SimCore/UserTrackInformation.h"
 
@@ -63,12 +64,9 @@ void TargetBremFilter::stepping(const G4Step* step) {
 
   // Get the region the particle is currently in.  Continue processing
   // the particle only if it's in the target region.
-  auto Target_Region = Geant4_PtrRetrieval::GetRegion("target");
-  auto Track_Volume = track->GetVolume()->GetLogicalVolume()->GetRegion();
-  if (Track_Volume != Target_Region)
-    // if (auto region{track->GetVolume()->GetLogicalVolume()->GetRegion()} !=
-    // Target_Region)
-    return;
+  auto target_region = simcore::g4user::ptrretrieval::getRegion("target");
+  auto track_region = track->GetVolume()->GetLogicalVolume()->GetRegion();
+  if (track_region != target_region) return;
 
   /*
   std::cout << "[TargetBremFilter] : Stepping primary electron in 'target'
@@ -89,10 +87,13 @@ void TargetBremFilter::stepping(const G4Step* step) {
    * We also check if the next volume is World_PV because in some geometries
    * (e.g. v14), there is a air-gap between the target region and the recoil.
    */
-  auto Recoil_PV = Geant4_PtrRetrieval::GetVolume("recoil_PV");
-  auto World_PV = Geant4_PtrRetrieval::GetVolume("World_PV");
-  auto volume = track->GetNextVolume();  // Declare volume separatelyi
-  if (volume == Recoil_PV or volume == World_PV) {
+  auto recoil_physical_volume =
+      simcore::g4user::ptrretrieval::getPhysicalVolume("recoil_PV");
+  auto world_physical_volume =
+      simcore::g4user::ptrretrieval::getPhysicalVolume("World_PV");
+  auto track_volume = track->GetNextVolume();
+  if (track_volume == recoil_physical_volume or
+      track_volume == world_physical_volume) {
     // If the recoil electron
     if (track->GetMomentum().mag() >= recoilMaxPThreshold_) {
       track->SetTrackStatus(fKillTrackAndSecondaries);
@@ -108,11 +109,10 @@ void TargetBremFilter::stepping(const G4Step* step) {
       return;
     } else {
       for (auto& secondary_track : *secondaries) {
-        G4String processName =
-            secondary_track->GetCreatorProcess()->GetProcessName();
         auto electron = G4Electron::Definition();
-        auto eBrem_process = Geant4_PtrRetrieval::GetProcess(electron, "eBrem");
-        if (processName == eBrem_process->GetProcessName() &&
+        auto ebrem_process =
+            simcore::g4user::ptrretrieval::getProcess(electron, "eBrem");
+        if (ebrem_process &&
             secondary_track->GetKineticEnergy() > bremEnergyThreshold_) {
           auto trackInfo{simcore::UserTrackInformation::get(secondary_track)};
           trackInfo->tagBremCandidate();

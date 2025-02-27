@@ -11,7 +11,6 @@
 /*~~~~~~~~~~~~~*/
 /*   SimCore   */
 /*~~~~~~~~~~~~~*/
-#include "SimCore/Geant4_PtrRetrieval.h"
 #include "SimCore/UserAction.h"
 
 // Forward Declarations
@@ -68,7 +67,6 @@ class TargetENProcessFilter : public simcore::UserAction {
   std::string process_{"electronNuclear"};
 
 };  // TargetENProcessFilter
-
 }  // namespace biasing
 
 #endif  // BIASING_TARGETPROCESSFILTER_H

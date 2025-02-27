@@ -1,4 +1,6 @@
-
+/*~~~~~~~~~~~~~*/
+/*   Biasing   */
+/*~~~~~~~~~~~~~*/
 #include "Biasing/PrimaryToEcalFilter.h"
 
 /*~~~~~~~~~~~~*/
@@ -7,7 +9,11 @@
 #include "G4EventManager.hh"
 #include "G4RunManager.hh"
 #include "G4Step.hh"
-#include "SimCore/Geant4_PtrRetrieval.h"
+
+/*~~~~~~~~~~~~~*/
+/*   SimCore   */
+/*~~~~~~~~~~~~~*/
+#include "SimCore/G4User/PtrRetrieval.h"
 
 namespace biasing {
 
@@ -26,10 +32,11 @@ void PrimaryToEcalFilter::stepping(const G4Step* step) {
 
   // Get the region the particle is currently in.  Continue processing
   // the particle only if it's NOT in the calorimeter region
-  auto CurrentRegion =
+  auto current_region =
       step->GetTrack()->GetVolume()->GetLogicalVolume()->GetRegion();
-  auto CalorimeterRegion = Geant4_PtrRetrieval::GetRegion("CalorimeterRegion");
-  if (CurrentRegion == CalorimeterRegion) return;
+  auto calorimeter_region =
+      simcore::g4user::ptrretrieval::getRegion("CalorimeterRegion");
+  if (current_region == calorimeter_region) return;
 
   // If the energy of the particle fell below threshold, stop processing the
   // event.
