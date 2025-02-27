@@ -46,7 +46,8 @@ void TargetENProcessFilter::stepping(const G4Step* step) {
 
   // Get the volume the particle is in.
   G4VPhysicalVolume* track_volume = track->GetVolume();
-  auto target_volume = simcore::g4user::ptrretrieval::getPhysicalVolume("target_PV");
+  auto target_volume =
+      simcore::g4user::ptrretrieval::getPhysicalVolume("target_PV");
   // If the particle isn't in the target, don't continue with the processing.
   if (track_volume != target_volume) return;
 

@@ -12,9 +12,9 @@
 /*~~~~~~~~~~~~~*/
 /*   SimCore   */
 /*~~~~~~~~~~~~~*/
+#include "SimCore/G4User/VolumeChecks.h"
 #include "SimCore/UserEventInformation.h"
 #include "SimCore/UserTrackInformation.h"
-#include "SimCore/G4User/VolumeChecks.h"
 
 namespace biasing {
 
@@ -55,7 +55,9 @@ void DeepEcalProcessFilter::stepping(const G4Step* step) {
   // Check in which volume the particle is currently
   auto volume = track->GetVolume()->GetLogicalVolume();
   auto volume_name = volume->GetName();
-  if (!volume_name) {volume_name="undefined";}
+  if (!volume_name) {
+    volume_name = "undefined";
+  }
   // auto volume{track->GetVolume()->GetLogicalVolume()
   //                 ? track->GetVolume()->GetLogicalVolume()->GetName()
   //                 : "undefined"};
@@ -90,7 +92,8 @@ void DeepEcalProcessFilter::stepping(const G4Step* step) {
   // skip this step if it does not have any of the processes needed
   if (not hasProcessNeeded) return;
 
-  auto is_in_ecal = simcore::g4user::volumechecks::isInEcal(volume, volume_name);
+  auto is_in_ecal =
+      simcore::g4user::volumechecks::isInEcal(volume, volume_name);
 
   // Skip this step if it does not have the processes needed
   // or if it's not in the ECAL

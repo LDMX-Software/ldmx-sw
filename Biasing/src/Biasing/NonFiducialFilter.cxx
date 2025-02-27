@@ -15,10 +15,10 @@
 /*~~~~~~~~~~~~~*/
 /*   SimCore   */
 /*~~~~~~~~~~~~~*/
-#include "SimCore/UserEventInformation.h"
-#include "SimCore/UserTrackInformation.h"
 #include "SimCore/G4User/PtrRetrieval.h"
 #include "SimCore/G4User/VolumeChecks.h"
+#include "SimCore/UserEventInformation.h"
+#include "SimCore/UserTrackInformation.h"
 
 namespace biasing {
 
@@ -64,7 +64,8 @@ void NonFiducialFilter::stepping(const G4Step* step) {
     // Check if the track ever enters the ECal. If it does, kill the track and
     // abort the event.
     auto volume_name = volume->GetName();
-    auto is_in_ecal = simcore::g4user::volumechecks::isInEcal(volume, volume_name);
+    auto is_in_ecal =
+        simcore::g4user::volumechecks::isInEcal(volume, volume_name);
     if (abort_fiducial_ && is_in_ecal) {
       track->SetTrackStatus(fKillTrackAndSecondaries);
       G4RunManager::GetRunManager()->AbortEvent();
@@ -80,7 +81,8 @@ void NonFiducialFilter::stepping(const G4Step* step) {
     return;
   } else {
     // Check if the particle enters the recoil tracker.
-    auto recoil_volume = simcore::g4user::ptrretrieval::getLogicalVolume("recoil");
+    auto recoil_volume =
+        simcore::g4user::ptrretrieval::getLogicalVolume("recoil");
     if (volume == recoil_volume) {
       /* Tag the tracks that:
        1) Have a recoil electron
