@@ -21,7 +21,7 @@
 [ DetectorConstruction ] 0 debug: Attaching trig_scint_Pad1_sd to trigger_pad1_bar_volume
 [ DetectorConstruction ] 0 debug: Attaching trig_scint_Pad2_sd to trigger_pad2_bar_volume
 [ DetectorConstruction ] 0 debug: Attaching trig_scint_Pad3_sd to trigger_pad3_bar_volume
-[ Process ] 10000  info: RunHeader { run: 1, numTries: 10000, detectorName: ldmx-det-v14-8gev, description: Hcal Muons and Neutrons
+[ Process ] 0  info: RunHeader { run: 1, numTries: 0, detectorName: ldmx-det-v14-8gev, description: Hcal Muons and Neutrons
   intParameters: 
     Included Scoring Planes = 0
     RandomNumberMasterSeed[test] = 1
@@ -56,8 +56,9 @@
     Gen0 Init Cmd 7 = /gps/pos/type Plane
     Gen0 Init Cmd 8 = /gps/pos/shape Square
     Gen0 Init Cmd 9 = /gps/pos/centre 0 0 220. mm
-    ldmx-sw revision = eae9559d1d747984c40f8bb72db96fc52b3e14be
-    ldmx-sw version = v4.2.13
+    Pass = test, version = v4.2.14
+    SIM revision = 0c1344e23d331bd304bff7b89104f79fa39757c7
+    SIM version = v4.2.14
 }
 [ Simulator ] : Started 10000 events to produce 10000 events.
 ---- LDMXSW: Event processing complete  --------
