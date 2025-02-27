@@ -1,27 +1,9 @@
-#ifndef SIMCORE_VOLUMECHECKs_H
-#define SIMCORE_VOLUMECHECKs_H
+#include "Framework/Exception/Exception.h"
+#include "SimCore/DetectorConstruction.h"
+#include "SimCore/SensitiveDetector.h"
+#include "SimCore/XsecBiasingOperator.h"
 
-//----------------//
-//   C++ StdLib   //
-//----------------//
-#include <string>
-#include <iostream>
-
-//------------//
-//   Geant4   //
-//------------//
-#include "G4Gamma.hh"
-#include "G4Region.hh"
-#include "G4RegionStore.hh"
-#include "G4LogicalVolume.hh"
-#include "G4ProcessManager.hh"
-#include "G4VPhysicalVolume.hh"
-#include "G4TouchableHistory.hh"
-#include "G4LogicalVolumeStore.hh"
-#include "G4ParticleDefinition.hh"
-#include "G4PhysicalVolumeStore.hh"
-
-namespace simcore{
+namespace simcore {
 namespace g4user {
 namespace volumechecks {
 
@@ -55,7 +37,7 @@ inline bool isInEcal(G4LogicalVolume* vol, const std::string& vol_to_bias) {
  * @param[in] vol G4LogicalVolume to check
  * @param[in] vol_to_bias UNUSED name of volume to bias
  */
-[[maybe_unused]] inline bool isInHcal(G4LogicalVolume* vol,
+inline bool isInHcal(G4LogicalVolume* vol,
                                       const std::string& vol_to_bias) {
   const G4String& volumeName = vol->GetName();
   return ((volumeName.contains("abso") || volumeName.contains("ScintBox") ||
@@ -74,7 +56,7 @@ inline bool isInEcal(G4LogicalVolume* vol, const std::string& vol_to_bias) {
  * @param[in] vol G4LogicalVolume to check
  * @param[in] vol_to_bias UNUSED name of volume to bias
  */
-[[maybe_unused]] inline bool isInEcalOld(G4LogicalVolume* vol,
+inline bool isInEcalOld(G4LogicalVolume* vol,
                                          const std::string& vol_to_bias) {
   const G4String& volumeName = vol->GetName();
   return ((volumeName.contains("Si") || volumeName.contains("W")) &&
@@ -89,7 +71,7 @@ inline bool isInEcal(G4LogicalVolume* vol, const std::string& vol_to_bias) {
  * @param[in] vol G4LogicalVolume to check
  * @param[in] vol_to_bias UNUSED name of volume to bias
  */
-[[maybe_unused]] inline bool isInTargetRegion(G4LogicalVolume* vol,
+inline bool isInTargetRegion(G4LogicalVolume* vol,
                                               const std::string& vol_to_bias) {
   auto region = vol->GetRegion();
   return (region and region->GetName().contains("target"));
@@ -105,7 +87,7 @@ inline bool isInEcal(G4LogicalVolume* vol, const std::string& vol_to_bias) {
  * @param[in] vol G4LogicalVolume to check
  * @param[in] vol_to_bias UNUSED name of volume to bias
  */
-[[maybe_unused]] inline bool isInTargetOnly(G4LogicalVolume* vol,
+inline bool isInTargetOnly(G4LogicalVolume* vol,
                                             const std::string& vol_to_bias) {
   return vol->GetName().contains("target");
 }
@@ -122,12 +104,11 @@ inline bool isInEcal(G4LogicalVolume* vol, const std::string& vol_to_bias) {
  * @param[in] vol G4LogicalVolume to check
  * @param[in] vol_to_bias name of volume to bias
  */
-[[maybe_unused]] inline bool nameContains(G4LogicalVolume* vol,
+inline bool nameContains(G4LogicalVolume* vol,
                                           const std::string& vol_to_bias) {
   return vol->GetName().contains(vol_to_bias);
 }
 
 }  // namespace volumechecks
 }  // namespace g4user
-}  // namespace simcore 
-#endif
+}  // namespace simcore

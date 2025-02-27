@@ -11,14 +11,14 @@
 //   Geant4   //
 //------------//
 #include "G4Gamma.hh"
+#include "G4LogicalVolume.hh"
+#include "G4LogicalVolumeStore.hh"
 #include "G4ParticleDefinition.hh"
 #include "G4PhysicalVolumeStore.hh"
 #include "G4ProcessManager.hh"
 #include "G4Region.hh"
 #include "G4RegionStore.hh"
 #include "G4VPhysicalVolume.hh"
-#include "G4LogicalVolume.hh"
-#include "G4LogicalVolumeStore.hh"
 
 namespace simcore {
 namespace g4user {
@@ -45,7 +45,7 @@ inline const G4VProcess* getProcess(const G4ParticleDefinition* particle,
     }
   }
   std::cerr << "[WARNING] Process '" << processName << "' not found.\n";
-  return nullptr; 
+  return nullptr;
 }
 
 /**
