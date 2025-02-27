@@ -15,7 +15,7 @@
 #include "G4TouchableHistory.hh"
 #include "G4VPhysicalVolume.hh"
 
-namespace Geant4_PtrRetrieval {
+namespace VolumeCheckHelper {
 
 /**
  * @brief Retrieve a specific process for a given particle type.
@@ -23,7 +23,7 @@ namespace Geant4_PtrRetrieval {
  * @param processName Name of the process to find.
  * @return Pointer to the process if found, nullptr otherwise.
  */
-inline const G4VProcess* GetProcess(const G4ParticleDefinition* particle,
+inline const G4VProcess* getProcess(const G4ParticleDefinition* particle,
                                     const std::string& processName) {
   if (!particle) return nullptr;
 
@@ -44,7 +44,7 @@ inline const G4VProcess* GetProcess(const G4ParticleDefinition* particle,
  * @brief Retrieve the photonuclear process for gamma particles.
  * @return Pointer to the photonuclear process if found, nullptr otherwise.
  */
-inline const G4VProcess* GetPhotonuclearProcess() {
+inline const G4VProcess* getPhotonuclearProcess() {
   return GetProcess(G4Gamma::Definition(), "photonNuclear");
 }
 
@@ -53,7 +53,7 @@ inline const G4VProcess* GetPhotonuclearProcess() {
  * @param name Name of the region.
  * @return Pointer to the region if found, nullptr otherwise.
  */
-inline G4Region* GetRegion(const std::string& name) {
+inline G4Region* getRegion(const std::string& name) {
   return G4RegionStore::GetInstance()->GetRegion(name);
 }
 
@@ -62,7 +62,7 @@ inline G4Region* GetRegion(const std::string& name) {
  * @param name Name of the physical volume.
  * @return Pointer to the physical volume if found, nullptr otherwise.
  */
-inline G4VPhysicalVolume* GetVolume(const std::string& name) {
+inline G4VPhysicalVolume* getVolume(const std::string& name) {
   auto* volumeStore = G4PhysicalVolumeStore::GetInstance();
   for (const auto& volume : *volumeStore) {
     if (std::string(volume->GetName()) ==
