@@ -44,7 +44,6 @@ inline const G4VProcess* getProcess(const G4ParticleDefinition* particle,
       return process;
     }
   }
-  std::cerr << "[WARNING] Process '" << processName << "' not found.\n";
   return nullptr;
 }
 
@@ -64,7 +63,6 @@ inline const G4VProcess* getPhotonuclearProcess() {
 inline G4Region* getRegion(const std::string& name) {
   G4Region* region = G4RegionStore::GetInstance()->GetRegion(name);
   if (!region) {
-    std::cerr << "[WARNING] Region '" << name << "' not found.\n";
     return nullptr;
   }
   return region;
@@ -78,7 +76,6 @@ inline G4Region* getRegion(const std::string& name) {
 inline G4VPhysicalVolume* getPhysicalVolume(const std::string& name) {
   auto* volume = G4PhysicalVolumeStore::GetInstance()->GetVolume(name);
   if (!volume) {
-    std::cerr << "[WARNING] Volume '" << name << "' not found.\n";
     return nullptr;
   }
   return volume;
@@ -92,7 +89,6 @@ inline G4VPhysicalVolume* getPhysicalVolume(const std::string& name) {
 inline G4LogicalVolume* getLogicalVolume(const std::string& name) {
   auto* volume = G4LogicalVolumeStore::GetInstance()->GetVolume(name);
   if (!volume) {
-    std::cerr << "[WARNING] Volume '" << name << "' not found.\n";
     return nullptr;
   }
   return volume;
