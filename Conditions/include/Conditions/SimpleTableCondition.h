@@ -6,9 +6,9 @@
 #ifndef FRAMEWORK_SIMPLETABLECONDITION_H_
 #define FRAMEWORK_SIMPLETABLECONDITION_H_
 
+#include <cstdint>
 #include <ostream>
 #include <vector>
-#include <cstdint>
 
 #include "Framework/ConditionsObject.h"
 #include "Framework/Exception/Exception.h"
