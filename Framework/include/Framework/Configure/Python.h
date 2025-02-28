@@ -25,7 +25,7 @@ namespace framework::config {
  * the lastProcess object.
  *
  * The basic premise of this function is to execute the python
- * configuration script. Then, **after the script has been executed**, 
+ * configuration script. Then, **after the script has been executed**,
  * all of the parameters for the Process are gathered from python.
  * The fact that the script has been executed means that the user
  * can get up to a whole lot of shenanigans that can help them
@@ -36,7 +36,8 @@ namespace framework::config {
  * @param[in] args Commandline arguments to be passed to the python script.
  * @param[in] nargs Number of commandline arguments, assumed to be >= 0
  */
-Parameters run(const std::string& root_object, const std::string& pythonScript, char* args[], int nargs);
+Parameters run(const std::string& root_object, const std::string& pythonScript,
+               char* args[], int nargs);
 
 }  // namespace framework::config
 

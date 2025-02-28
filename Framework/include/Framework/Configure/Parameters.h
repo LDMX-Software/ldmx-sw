@@ -5,6 +5,7 @@
 /*   C++ StdLib   */
 /*~~~~~~~~~~~~~~~~*/
 #include <any>
+#include <boost/core/demangle.hpp>
 #include <iostream>
 #include <limits>
 #include <map>
@@ -12,7 +13,7 @@
 #include <type_traits>
 #include <typeinfo>
 #include <vector>
-#include <boost/core/demangle.hpp>
+
 #include "Framework/Exception/Exception.h"
 
 namespace framework::config {
@@ -22,7 +23,7 @@ namespace framework::config {
  *
  * The storage of arbitrary parameters recursively is done using a map
  * from parameter names (std::string) to parameter values. The values
- * are stored in std::any which allows the user to store any object they wish 
+ * are stored in std::any which allows the user to store any object they wish
  * in a memory-safe environment.
  */
 class Parameters {
@@ -41,7 +42,8 @@ class Parameters {
   void add(const std::string& name, const T& value) {
     if (exists(name)) {
       EXCEPTION_RAISE("Config",
-          "The parameter " + name + " already exists in the list of parameters.");
+                      "The parameter " + name +
+                          " already exists in the list of parameters.");
     }
 
     parameters_[name] = value;
@@ -49,7 +51,7 @@ class Parameters {
 
   template <typename T>
   void addParameter(const std::string& name, const T& value) {
-    add<T>(name,value);
+    add<T>(name, value);
   }
 
   /**
@@ -77,16 +79,19 @@ class Parameters {
     // Check if the variable exists in the map.  If it doesn't,
     // raise an exception.
     if (not exists(name)) {
-      EXCEPTION_RAISE("Config","Parameter '" + name + "' does not exist in list of parameters.");
+      EXCEPTION_RAISE("Config", "Parameter '" + name +
+                                    "' does not exist in list of parameters.");
     }
 
     try {
       return std::any_cast<const T&>(parameters_.at(name));
     } catch (const std::bad_any_cast& e) {
-      EXCEPTION_RAISE("Config","Parameter '" + name + "' of type '" +
-                          boost::core::demangle(parameters_.at(name).type().name()) +
-                          "' is being cast to incorrect type '" +
-                          boost::core::demangle(typeid(T).name()) + "'.");
+      EXCEPTION_RAISE(
+          "Config",
+          "Parameter '" + name + "' of type '" +
+              boost::core::demangle(parameters_.at(name).type().name()) +
+              "' is being cast to incorrect type '" +
+              boost::core::demangle(typeid(T).name()) + "'.");
     }
   }
 
@@ -115,7 +120,7 @@ class Parameters {
 
   template <typename T>
   const T& getParameter(const std::string& name, const T& def) const {
-    return get<T>(name,def);
+    return get<T>(name, def);
   }
 
   /**

@@ -1,5 +1,6 @@
 
 #include "Framework/Configure/Python.h"
+
 #include "Framework/Exception/Exception.h"
 
 /*~~~~~~~~~~~~*/
@@ -13,10 +14,10 @@
 #include <any>
 #include <cstring>
 #include <iostream>
-#include <string>
-#include <sstream>
-#include <vector>
 #include <memory>
+#include <sstream>
+#include <string>
+#include <vector>
 
 namespace framework::config {
 
@@ -126,11 +127,12 @@ PyObject* extractDictionary(PyObject* obj) {
  *
  * @note Empty lists are NOT read in because there is no way for us
  * to know what type should be inside the list. This means list
- * parameters that can be empty need to put in a default empty list value: 
+ * parameters that can be empty need to put in a default empty list value:
  * `{}`.
  *
  * This recursive extraction method is able to handle the following cases.
- * - User-defined classes (via the `__dict__` member) are extracted to Parameters
+ * - User-defined classes (via the `__dict__` member) are extracted to
+ * Parameters
  * - one-dimensional lists whose entries all have the same type are extracted
  *   to std::vector of the type of the first entry in the list
  * - `dict` objects are extracted to Parameters
@@ -277,7 +279,8 @@ static Parameters getMembers(PyObject* object) {
   return params;
 }
 
-Parameters run(const std::string& root_object, const std::string& pythonScript, char* args[], int nargs) {
+Parameters run(const std::string& root_object, const std::string& pythonScript,
+               char* args[], int nargs) {
   // assumes that nargs >= 0
   //  this is true always because we error out if no python script has been
   //  found
@@ -320,17 +323,18 @@ Parameters run(const std::string& root_object, const std::string& pythonScript, 
   PySys_SetArgvEx(nargs + 1, targs, 1);
 
   // the following line is what actually runs the script
-  std::unique_ptr<FILE, int (*)(FILE*)> fp{fopen(pythonScript.c_str(),"r"),&fclose};
+  std::unique_ptr<FILE, int (*)(FILE*)> fp{fopen(pythonScript.c_str(), "r"),
+                                           &fclose};
   if (fp.get() == NULL) {
     // file does not exist
-    EXCEPTION_RAISE("Python","Configuration script "+pythonScript+
-        " either does not exist or can't be read.");
+    EXCEPTION_RAISE("Python", "Configuration script " + pythonScript +
+                                  " either does not exist or can't be read.");
   }
   if (PyRun_SimpleFile(fp.get(), pythonScript.c_str()) != 0) {
     // running the script executed with an error
     PyErr_Print();
-    EXCEPTION_RAISE("Python","Execution of python script failed.");
-  } 
+    EXCEPTION_RAISE("Python", "Execution of python script failed.");
+  }
 
   // script has been run so we can
   // free up arguments to python script
@@ -344,7 +348,8 @@ Parameters run(const std::string& root_object, const std::string& pythonScript, 
   PyObject* py_root_obj = PyImport_ImportModule("__main__");
   if (!py_root_obj) {
     PyErr_Print();
-    EXCEPTION_RAISE("Python","I don't know what happened. This should never happen.");
+    EXCEPTION_RAISE("Python",
+                    "I don't know what happened. This should never happen.");
   }
 
   // descend the hierarchy of modules that hold the root_object
@@ -354,23 +359,27 @@ Parameters run(const std::string& root_object, const std::string& pythonScript, 
   std::string attr;
   std::stringstream root_obj_ss{root_object};
   while (std::getline(root_obj_ss, attr, '.')) {
-    PyObject* one_level_down = PyObject_GetAttrString(py_root_obj, attr.c_str());
+    PyObject* one_level_down =
+        PyObject_GetAttrString(py_root_obj, attr.c_str());
     if (one_level_down == 0) {
-      EXCEPTION_RAISE("Python","Unable to find python object '"+attr+"'.");
+      EXCEPTION_RAISE("Python", "Unable to find python object '" + attr + "'.");
     }
-    Py_DECREF(py_root_obj); // don't need previous python object anymore
+    Py_DECREF(py_root_obj);  // don't need previous python object anymore
     py_root_obj = one_level_down;
   }
 
   // now py_root_obj should hold the root configuration object
   if (py_root_obj == Py_None) {
     // root config object left undefined
-    EXCEPTION_RAISE("Python","Root configuration object "+root_object+" not defined. This object is required to run.");
+    EXCEPTION_RAISE("Python",
+                    "Root configuration object " + root_object +
+                        " not defined. This object is required to run.");
   }
 
   // okay, now we have fully imported the script and gotten the handle
   // to the root configuration object defined in the script.
-  // We can now look at this object and recursively get all of our parameters out of it.
+  // We can now look at this object and recursively get all of our parameters
+  // out of it.
 
   Parameters configuration(getMembers(py_root_obj));
 
@@ -382,7 +391,8 @@ Parameters run(const std::string& root_object, const std::string& pythonScript, 
   // close up python interpreter
   if (Py_FinalizeEx() < 0) {
     PyErr_Print();
-    EXCEPTION_RAISE("Python","I wasn't able to close up the python interpreter!");
+    EXCEPTION_RAISE("Python",
+                    "I wasn't able to close up the python interpreter!");
   }
 
   return configuration;
