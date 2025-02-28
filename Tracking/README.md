@@ -1,7 +1,7 @@
 Tracking
 ---------
 
-An `ldmx-sw` submodule focused on the digitization of tracker hits and track finding/fitting using ACTS.
+An `ldmx-sw` module focused on the digitization of tracker hits and track finding/fitting using ACTS.
 
 #### Track Reconstruction
 
@@ -14,12 +14,3 @@ Tracks are stored in the output file. The EDM provides access to the parameters 
 #### Running reconstruction. 
 
 A jobOption `Tracking/python/reco.py` provides a standard flow for running track reconstruction within ldmx-sw
-
-## Contributors
-
-<a href="https://github.com/LDMX-Software/Tracking/graphs/contributors">
-  <img src="https://contributors-img.web.app/image?repo=LDMX-Software/Tracking" />
-</a>
-
-
-
