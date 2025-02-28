@@ -100,7 +100,7 @@ void RecoilFiducialityProcessor::produce(framework::Event &event) {
   }
 
   // Configure outputs
-  bool is_fiducial = has_min_energy & has_min_tracker_hits & has_ecal_hit;
+  bool is_fiducial = has_min_energy && has_min_tracker_hits && has_ecal_hit;
 
   int mask_tracker_E = has_min_energy << 0;
   int mask_tracker_hits = has_min_tracker_hits << 1;
