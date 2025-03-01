@@ -51,7 +51,7 @@ class TruthSeedProcessor : public TrackingGeometryUser {
   TruthSeedProcessor(const std::string& name, framework::Process& process);
 
   /// Destructor
-  ~TruthSeedProcessor() = default;
+  virtual ~TruthSeedProcessor() = default;
 
   /**
    * Callback for the EventProcessor to configure itself from the

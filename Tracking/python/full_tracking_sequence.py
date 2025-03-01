@@ -187,6 +187,8 @@ dqm_recoil_gsf.measurement_collection=digi_recoil.out_collection
 dqm_recoil_gsf.truth_hit_collection = "RecoilSimHits"
 dqm_recoil_gsf.buildHistograms()
 
+tracker_veto = tracking.TrackerVetoProcessor()
+
 # Put it all together into a single sequance
 sequence = [
     digi_tagger,
@@ -199,7 +201,8 @@ sequence = [
     greedy_solver_tagger,
     greedy_solver_recoil,
     GSF_tagger,
-    GSF_recoil
+    GSF_recoil,
+    tracker_veto
 ]
 
 dqm_sequence = [

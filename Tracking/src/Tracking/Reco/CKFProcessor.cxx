@@ -19,8 +19,6 @@ namespace reco {
 CKFProcessor::CKFProcessor(const std::string& name, framework::Process& process)
     : TrackingGeometryUser(name, process) {}
 
-CKFProcessor::~CKFProcessor() {}
-
 void CKFProcessor::onNewRun(const ldmx::RunHeader& rh) {
   profiling_map_["setup"] = 0.;
   profiling_map_["hits"] = 0.;

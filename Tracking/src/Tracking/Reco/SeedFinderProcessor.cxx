@@ -38,8 +38,6 @@ SeedFinderProcessor::SeedFinderProcessor(const std::string& name,
   */
 }
 
-SeedFinderProcessor::~SeedFinderProcessor() {}
-
 void SeedFinderProcessor::onProcessStart() {
   truthMatchingTool_ = std::make_shared<tracking::sim::TruthMatchingTool>();
 }

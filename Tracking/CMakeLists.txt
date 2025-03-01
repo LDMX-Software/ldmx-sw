@@ -35,6 +35,10 @@ if(BUILD_EVENT_ONLY)
                           namespace "ldmx"
                           class "Measurement" type "collection")
 
+    register_event_object(module_path "Tracking/Event"
+                          namespace "ldmx"
+                          class "TrackerVetoResult" type "collection")
+
     # Get all of the event sources that will be included in this library
     file(GLOB EVENT_SRC_FILES CONFIGURE_DEPENDS 
         ${PROJECT_SOURCE_DIR}/src/Tracking/Event/[a-zA-z]*.cxx)
@@ -69,6 +73,7 @@ file(GLOB SRC_FILES CONFIGURE_DEPENDS
   ${PROJECT_SOURCE_DIR}/src/Tracking/Reco/[a-zA-z]*.cxx
   ${PROJECT_SOURCE_DIR}/src/Tracking/dqm/[a-zA-z]*.cxx
   ${PROJECT_SOURCE_DIR}/src/Tracking/geo/[a-zA-z]*.cxx
+  ${PROJECT_SOURCE_DIR}/src/Tracking/[a-zA-z]*.cxx
 )
 
 setup_library(module Tracking
@@ -80,7 +85,5 @@ setup_library(module Tracking
                            Tracking::Event
               sources ${SRC_FILES})
 
-
-#include_directories(${PROJECT_SOURCE_DIR}/include/Tracking/Reco/)
 
 setup_python(package_name LDMX/Tracking)

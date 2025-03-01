@@ -101,7 +101,7 @@ class CKFProcessor final : public TrackingGeometryUser {
   CKFProcessor(const std::string &name, framework::Process &process);
 
   /// Destructor
-  ~CKFProcessor();
+  virtual ~CKFProcessor() = default;
 
   /**
    *
