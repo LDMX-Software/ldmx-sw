@@ -375,6 +375,16 @@ class EcalWABRecResults(ldmxcfg.Analyzer) :
                             92, -1, 91, 
                             "Photon True #phi (Degrees)",
                             92, -1, 91)
+        self.build2DHistogram("ElectronEnergy", 
+                            "Reconstructed Recoil Electron Shower Energy (MeV)",
+                            80, 0, 4000,
+                            "True Recoil Electron Energy (MeV)",
+                            80, 0, 4000)
+        self.build2DHistogram("PhotonEnergy", 
+                            "Reconstructed Photon Shower Energy (MeV)",
+                            80, 0, 4000, 
+                            "True Photon Energy (MeV)",
+                            80, 0, 4000)
         self.build1DHistogram("ElectronThetaDiff", "Electron True and Reconstruction #theta Difference (Degrees)", 181, 0, 181)
         self.build1DHistogram("PhotonThetaDiff", "Photon True and Reconstruction #theta Difference (Degrees)", 181, 0, 181)
         self.build1DHistogram("ElectronPhiDiff", "Electron True and Reconstruction #phi Difference (Degrees)", 181, 0, 181)

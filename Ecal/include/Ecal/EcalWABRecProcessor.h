@@ -1,8 +1,8 @@
 /**
-* @file EcalWABRecProcessor.h
-* @brief Class that reconstructs important kinematic variables for WAB studies
-* @author Sanjit Masanam, UCSB
-*/
+ * @file EcalWABRecProcessor.h
+ * @brief Class that reconstructs important kinematic variables for WAB studies
+ * @author Sanjit Masanam, UCSB
+ */
 
 #ifndef EVENTPROC_ECALWABROCESSOR_H_
 #define EVENTPROC_ECALWABROCESSOR_H_
@@ -12,12 +12,10 @@
 #include "DetDescr/EcalID.h"
 #include "Ecal/Event/EcalHit.h"
 #include "Ecal/Event/EcalWABResult.h"
+#include "Eigen/Dense"
 #include "Framework/Configure/Parameters.h"
 #include "Framework/EventProcessor.h"
-#include "Tracking/Event/ReducedTrack.h"
-
 #include "Tools/ONNXRuntime.h"
-#include "Eigen/Dense"
 
 // ROOT (MIP tracking)
 #include "TVector3.h"
@@ -26,16 +24,14 @@
 #include <map>
 #include <memory>
 
-
 namespace ecal {
 
 class EcalWABRecProcessor : public framework::Producer {
-public:
-  
+ public:
   EcalWABRecProcessor(const std::string& name, framework::Process& process)
       : Producer(name, process) {}
 
-  virtual ~EcalWABRecProcessor() {}
+  virtual ~EcalWABRecProcessor() = default;
 
   void onProcessStart() override;
 
@@ -43,9 +39,9 @@ public:
 
   void configure(framework::config::Parameters& parameters) override;
 
-  void produce(framework::Event& event);
-    
-private:
+  void produce(framework::Event& event) override;
+
+ private:
   std::string rec_pass_name_;
   std::string rec_coll_name_;
   std::string track_pass_name_;
@@ -60,15 +56,14 @@ private:
                          const std::vector<double>& x2,
                          const std::vector<double>& y2,
                          const std::vector<double>& s2,
-                         const std::vector<double>& guess,
-                         int maxIter, int verbosity,
-                         double dchisq, double abs_lim);
-  
-  std::pair<Eigen::VectorXd, Eigen::VectorXd> polyfitXYvsZ(
-    const std::vector<double>& x, const std::vector<double>& y,
-    const std::vector<double>& z, int degree);
+                         const std::vector<double>& guess, int maxIter,
+                         int verbosity, double dchisq, double abs_lim);
 
-  /** Name of the collection which will containt the results. */
+  std::pair<Eigen::VectorXd, Eigen::VectorXd> polyfitXYvsZ(
+      const std::vector<double>& x, const std::vector<double>& y,
+      const std::vector<double>& z, int degree);
+
+  /** Name of the collection which will contain the results. */
   std::string collection_name_{"EcalWABRec"};
 
   /// handle to current geometry (to share with member functions)

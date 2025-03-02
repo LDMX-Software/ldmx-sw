@@ -17,18 +17,18 @@ class EcalWABRecResults : public framework::Analyzer {
    *
    * Blank Analyzer constructor
    */
-   EcalWABRecResults(const std::string& name, framework::Process& process)
+  EcalWABRecResults(const std::string& name, framework::Process& process)
       : framework::Analyzer(name, process) {}
 
   /**
    * Input python configuration parameters
    */
-  virtual void configure(framework::config::Parameters& ps);
+  virtual void configure(framework::config::Parameters& ps) override;
 
   /**
    * Fills histograms
    */
-  virtual void analyze(const framework::Event& event);
+  virtual void analyze(const framework::Event& event) override;
 
  private:
   /// Collection Name for WABRec object
