@@ -4,7 +4,7 @@
 #include <catch2/matchers/catch_matchers_string.hpp>
 #include <fstream>  // ifstream, ofstream
 
-#include "Framework/ConfigurePython.h"
+#include "Framework/Configure/Python.h"
 #include "Framework/EventProcessor.h"
 #include "Framework/Process.h"
 #include "Python.h"
@@ -49,20 +49,20 @@ class TestConfig : public framework::Producer {
    */
   void configure(framework::config::Parameters &parameters) final override {
     // Check parameters
-    CHECK(parameters.getParameter<int>("test_int") == 9);
-    CHECK(parameters.getParameter<double>("test_double") == Approx(7.7));
-    CHECK(parameters.getParameter<std::string>("test_string") == "Yay!");
+    CHECK(parameters.get<int>("test_int") == 9);
+    CHECK(parameters.get<double>("test_double") == Approx(7.7));
+    CHECK(parameters.get<std::string>("test_string") == "Yay!");
 
     // Check dictionary
     auto test_dict{
-        parameters.getParameter<framework::config::Parameters>("test_dict")};
-    CHECK(test_dict.getParameter<int>("one") == 1);
-    CHECK(test_dict.getParameter<double>("two") == 2.0);
+        parameters.get<framework::config::Parameters>("test_dict")};
+    CHECK(test_dict.get<int>("one") == 1);
+    CHECK(test_dict.get<double>("two") == 2.0);
 
     // Check int vector
     std::vector<int> int_vect{1, 2, 3};
     auto test_int_vec{
-        parameters.getParameter<std::vector<int>>("test_int_vec")};
+        parameters.get<std::vector<int>>("test_int_vec")};
     REQUIRE(test_int_vec.size() == int_vect.size());
     for (std::size_t i{0}; i < test_int_vec.size(); i++)
       CHECK(test_int_vec.at(i) == int_vect.at(i));
@@ -70,7 +70,7 @@ class TestConfig : public framework::Producer {
     // Check double vec
     std::vector<double> double_vec{0.1, 0.2, 0.3};
     auto test_double_vec{
-        parameters.getParameter<std::vector<double>>("test_double_vec")};
+        parameters.get<std::vector<double>>("test_double_vec")};
     REQUIRE(test_double_vec.size() == double_vec.size());
     for (std::size_t i{0}; i < test_double_vec.size(); i++)
       CHECK(test_double_vec.at(i) == double_vec.at(i));
@@ -78,7 +78,7 @@ class TestConfig : public framework::Producer {
     // Check string vector
     std::vector<std::string> string_vec{"first", "second", "third"};
     auto test_string_vec{
-        parameters.getParameter<std::vector<std::string>>("test_string_vec")};
+        parameters.get<std::vector<std::string>>("test_string_vec")};
     REQUIRE(test_string_vec.size() == string_vec.size());
     for (std::size_t i{0}; i < test_string_vec.size(); i++)
       CHECK(test_string_vec.at(i) == string_vec.at(i));
@@ -87,7 +87,7 @@ class TestConfig : public framework::Producer {
     std::vector<std::vector<int>> twod_vec{
         {11, 12, 13}, {21, 22}, {31, 32, 33, 34}};
     auto test_2d_vec{
-        parameters.getParameter<std::vector<std::vector<int>>>("test_2dlist")};
+        parameters.get<std::vector<std::vector<int>>>("test_2dlist")};
     REQUIRE(test_2d_vec.size() == twod_vec.size());
     for (std::size_t i{0}; i < twod_vec.size(); i++) {
       REQUIRE(test_2d_vec.at(i).size() == twod_vec.at(i).size());
@@ -126,8 +126,10 @@ TEST_CASE("Configure Python Test", "[Framework][functionality]") {
 
   // Run a check of the python configuration class without arguments.
   SECTION("No arguments to python script") {
-    framework::ConfigurePython cfg(config_file_name, args, 0);
-    p = cfg.makeProcess();
+    framework::config::Parameters config{
+      framework::config::run("ldmxcfg.Process.lastProcess", config_file_name, args, 0)
+    };
+    p = std::make_unique<framework::Process>(config);
 
     CHECK(p->getPassName() == "test");
   }
@@ -153,9 +155,8 @@ TEST_CASE("Configure Python Test", "[Framework][functionality]") {
   auto correct_log_freq{9000};
   SECTION("Single argument to python script") {
     args[0] = (char *)"9000";
-    framework::ConfigurePython cfg(config_file_name_arg, args, 1);
-    p = cfg.makeProcess();
-
+    auto config{framework::config::run("ldmxcfg.Process.lastProcess", config_file_name_arg, args, 1)};
+    p = std::make_unique<framework::Process>(config);
     CHECK(p->getLogFrequency() == correct_log_freq);
   }
 
@@ -173,8 +174,7 @@ TEST_CASE("Configure Python Test", "[Framework][functionality]") {
   // warning: this test will fail if the repr of a tuple changes format
   SECTION("Bad parameter exception test") {
     REQUIRE_THROWS_WITH(
-        std::make_unique<framework::ConfigurePython>(config_file_name_arg, args,
-                                                     0),
+        framework::config::run("ldmxcfg.Process.lastProcess", config_file_name_arg, args, 0),
         ContainsSubstring("('tuples', 'are', 'not', 'supported')"));
     // we need to manually close up our python interpreter
     // because we left during an exception without closing it above

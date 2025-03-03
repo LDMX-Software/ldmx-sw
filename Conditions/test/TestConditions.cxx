@@ -12,7 +12,7 @@
 #include "Conditions/URLStreamer.h"
 #include "DetDescr/EcalID.h"
 #include "DetDescr/HcalID.h"
-#include "Framework/ConfigurePython.h"
+#include "Framework/Configure/Python.h"
 #include "Framework/EventHeader.h"
 #include "Framework/Process.h"
 #include "Framework/RunHeader.h"
@@ -188,7 +188,7 @@ TEST_CASE("Conditions", "[Conditions]") {
   }
 
   SECTION("Testing python static") {
-    const char* cfg =
+    const char* cfgpy =
         "#!/usr/bin/python3\n\nimport sys\n\nfrom LDMX.Framework import "
         "ldmxcfg\nfrom LDMX.Conditions import "
         "SimpleCSVTableProvider\n\np=ldmxcfg.Process('test')\np.testMode="
@@ -197,11 +197,11 @@ TEST_CASE("Conditions", "[Conditions]") {
         "validForAllRows([10,45,129])";
 
     FILE* f = fopen("/tmp/test_cond.py", "w");
-    fputs(cfg, f);
+    fputs(cfgpy, f);
     fclose(f);
 
-    framework::ConfigurePython cp("/tmp/test_cond.py", 0, 0);
-    framework::ProcessHandle hp = cp.makeProcess();
+    auto cfg{framework::config::run("ldmxcfg.Process.lastProcess", "/tmp/test_cond.py", 0, 0)};
+    auto hp{std::make_unique<framework::Process>(cfg)};
     ldmx::EventHeader cxt;
     hp->setEventHeader(&cxt);
 
@@ -223,7 +223,7 @@ TEST_CASE("Conditions", "[Conditions]") {
     fs.close();
     //	std::cout << "Step 1" << std::endl << ss.str();
 
-    const char* cfg =
+    const char* cfgpy =
         "#!/usr/bin/python3\n\nimport sys\n\nfrom LDMX.Framework import "
         "ldmxcfg\nfrom LDMX.Conditions import "
         "SimpleCSVTableProvider\n\np=ldmxcfg.Process('test')\np.testMode="
@@ -233,11 +233,11 @@ TEST_CASE("Conditions", "[Conditions]") {
         "tmp/dump_double.csv',101,120)\n";
 
     FILE* f = fopen("/tmp/test_cond.py", "w");
-    fputs(cfg, f);
+    fputs(cfgpy, f);
     fclose(f);
 
-    framework::ConfigurePython cp("/tmp/test_cond.py", 0, 0);
-    framework::ProcessHandle hp = cp.makeProcess();
+    auto cfg{framework::config::run("ldmxcfg.Process.lastProcess", "/tmp/test_cond.py", 0, 0)};
+    auto hp{std::make_unique<framework::Process>(cfg)};
     ldmx::EventHeader cxt;
     hp->setEventHeader(&cxt);
 
@@ -254,7 +254,7 @@ TEST_CASE("Conditions", "[Conditions]") {
   }
 
   SECTION("Testing HTTP loading") {
-    const char* cfg =
+    const char* cfgpy =
         "#!/usr/bin/python3\n\nimport sys\n\nfrom LDMX.Framework "
         "import ldmxcfg\nfrom LDMX.Conditions import SimpleCSVTableProvider\n"
         "p=ldmxcfg.Process(\"test\")\n"
@@ -266,11 +266,11 @@ TEST_CASE("Conditions", "[Conditions]") {
         "test_table.csv\")\n";
 
     FILE* f = fopen("/tmp/test_cond.py", "w");
-    fputs(cfg, f);
+    fputs(cfgpy, f);
     fclose(f);
 
-    framework::ConfigurePython cp("/tmp/test_cond.py", 0, 0);
-    framework::ProcessHandle hp = cp.makeProcess();
+    auto cfg{framework::config::run("ldmxcfg.Process.lastProcess", "/tmp/test_cond.py", 0, 0)};
+    auto hp{std::make_unique<framework::Process>(cfg)};
     ldmx::EventHeader cxt;
     hp->setEventHeader(&cxt);
 
@@ -281,7 +281,7 @@ TEST_CASE("Conditions", "[Conditions]") {
   }
 
   SECTION("Testing CSV metatable") {
-    const char* cfg =
+    const char* cfgpy =
         "#!/usr/bin/python3\n\nimport sys\n\nfrom LDMX.Framework "
         "import ldmxcfg\nfrom LDMX.Conditions import SimpleCSVTableProvider\n"
         "p=ldmxcfg.Process(\"test\")\n"
@@ -294,11 +294,11 @@ TEST_CASE("Conditions", "[Conditions]") {
         "cop.entriesURL='${LDMX_CONDITION_BASEURL}/testbeam22_pedestals.csv'\n";
 
     FILE* f = fopen("/tmp/test_cond.py", "w");
-    fputs(cfg, f);
+    fputs(cfgpy, f);
     fclose(f);
 
-    framework::ConfigurePython cp("/tmp/test_cond.py", 0, 0);
-    framework::ProcessHandle hp = cp.makeProcess();
+    auto cfg{framework::config::run("ldmxcfg.Process.lastProcess", "/tmp/test_cond.py", 0, 0)};
+    auto hp{std::make_unique<framework::Process>(cfg)};
     ldmx::EventHeader cxt;
 
     hp->setEventHeader(&cxt);
