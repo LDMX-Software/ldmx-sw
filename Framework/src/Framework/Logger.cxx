@@ -80,7 +80,8 @@ void open(const framework::config::Parameters& p) {
 
   level termLevel{convertLevel(p.getParameter<int>("termLevel", 4))};
   std::vector<framework::config::Parameters> empty{};
-  const auto& logRules{p.get<std::vector<framework::config::Parameters>>("logRules", empty)};
+  const auto& logRules{
+      p.get<std::vector<framework::config::Parameters>>("logRules", empty)};
   std::unordered_map<std::string, level> custom_levels;
   for (const auto& logRule : logRules) {
     custom_levels[logRule.getParameter<std::string>("name")] =

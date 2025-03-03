@@ -331,7 +331,7 @@ void TrigScintTrackProducer::produce(framework::Event &event) {
         // no need to start pulling constituents from tracks that are
         // ridiculously far apart
         if (fabs(track.getCentroid() - nextTrack.getCentroid()) <
-                 3 * maxDelta_) {
+            3 * maxDelta_) {
           std::vector<ldmx::TrigScintCluster> consts_1 =
               track.getConstituents();
           std::vector<ldmx::TrigScintCluster> consts_2 =

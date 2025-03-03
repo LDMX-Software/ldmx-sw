@@ -44,7 +44,7 @@ void LHEPrimaryGenerator::GeneratePrimaryVertex(G4Event* anEvent) {
 
     const std::vector<simcore::lhe::LHEParticle*>& particles =
         lheEvent->getParticles();
-    for (auto* particle: particles) {
+    for (auto* particle : particles) {
       if (particle->getISTUP() > 0) {
         G4PrimaryParticle* primary = new G4PrimaryParticle();
         if (particle->getIDUP() == -623) { /* Tungsten ion */
