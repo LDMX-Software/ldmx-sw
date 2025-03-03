@@ -35,8 +35,11 @@ void PFTruthProducer::produce(framework::Event &event) {
   std::vector<ldmx::SimTrackerHit> atHcal;
   for (const auto &pm : particle_map) {
     const auto &p = pm.second;
-    // the only parent of a primary is "track 0"
-    if (p.getParents().size() == 1 && p.getParents()[0] == 0) {
+    // sim particles only ever have exactly one parent
+    auto parents = p.getParents();
+    auto parent = parents.at(0);
+    // the parent of a primary is "track 0"
+    if (parent == 0) {
       primaries[pm.first] = p;
       simIDs.insert(pm.first);
     }
