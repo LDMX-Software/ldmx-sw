@@ -8,6 +8,23 @@
 /*~~~~~~~~~~~~*/
 #include "Python.h"
 
+#if PY_MAJOR_VERSION != 3
+#error("Framework requires compiling with Python3")
+#endif
+
+#undef DEV_IMAGE_MAJOR
+#if PY_MINOR_VERSION == 6
+#define DEV_IMAGE_MAJOR 3
+#elif PY_MINOR_VERSION == 10
+#define DEV_IMAGE_MAJOR 4
+#elif PY_MINOR_VERSION == 12
+#define DEV_IMAGE_MAJOR 5
+#endif
+
+#ifndef DEV_IMAGE_MAJOR
+#warning("Unrecognized Python3 minor version. The usage of the Python C API is untested!")
+#endif
+
 /*~~~~~~~~~~~~~~~~*/
 /*   C++ StdLib   */
 /*~~~~~~~~~~~~~~~~*/
@@ -72,12 +89,6 @@ std::string repr(PyObject* obj) {
  * @return pointer to python dictionary for its members
  */
 PyObject* extractDictionary(PyObject* obj) {
-#if PY_MAJOR_VERSION != 3
-#error("Framework requires compiling with Python3")
-#else
-#if PY_MINOR_VERSION != 10 && PY_MINOR_VERSION != 6
-#warning("Unrecognized Python3 minor version. Unsure if accessing C API properly for configuration.")
-#endif
   /**
    * This was developed for Python3.10 when upgrading to Ubuntu 22.04 in the
    * development container image. A lot of memory-saving measures were taken
@@ -100,7 +111,6 @@ PyObject* extractDictionary(PyObject* obj) {
     }
   }
   return *p_dictionary;
-#endif
 }
 
 /**
@@ -309,6 +319,7 @@ Parameters run(const std::string& root_object, const std::string& pythonScript,
   targs[0] = Py_DecodeLocale(pythonScript.c_str(), NULL);
   for (int i = 0; i < nargs; i++) targs[i + 1] = Py_DecodeLocale(args[i], NULL);
 
+#if DEV_IMAGE_MAJOR < 5
   // name our program after the script that is being run
   Py_SetProgramName(targs[0]);
 
@@ -321,6 +332,31 @@ Parameters run(const std::string& root_object, const std::string& pythonScript,
   // This way, the command to import the module just needs to be
   // the name of the python script
   PySys_SetArgvEx(nargs + 1, targs, 1);
+#else
+  PyStatus status;
+  PyConfig config;
+  PyConfig_InitPythonConfig(&config);
+  status = PyConfig_SetString(&config, &config.program_name, targs[0]);
+  if (PyStatus_Exception(status)) {
+    PyConfig_Clear(&config);
+    Py_ExitStatusException(status);
+    EXCEPTION_RAISE("PyConfigInit", "Unable to set the program name in the python config.");
+  }
+  status = PyConfig_SetArgv(&config, nargs+1, targs);
+  if (PyStatus_Exception(status)) {
+    PyConfig_Clear(&config);
+    Py_ExitStatusException(status);
+    EXCEPTION_RAISE("PyConfigInit", "Unable to set argv for the python config.");
+  }
+  status = Py_InitializeFromConfig(&config);
+  if (PyStatus_Exception(status)) {
+    PyConfig_Clear(&config);
+    Py_ExitStatusException(status);
+    EXCEPTION_RAISE("PyConfigInit", "Unable to initilize the python interpreter.");
+  }
+  // don't need config anymore now that the initialization is done
+  PyConfig_Clear(&clear);
+#endif 
 
   // the following line is what actually runs the script
   std::unique_ptr<FILE, int (*)(FILE*)> fp{fopen(pythonScript.c_str(), "r"),
