@@ -340,23 +340,26 @@ Parameters run(const std::string& root_object, const std::string& pythonScript,
   if (PyStatus_Exception(status)) {
     PyConfig_Clear(&config);
     Py_ExitStatusException(status);
-    EXCEPTION_RAISE("PyConfigInit", "Unable to set the program name in the python config.");
+    EXCEPTION_RAISE("PyConfigInit",
+                    "Unable to set the program name in the python config.");
   }
-  status = PyConfig_SetArgv(&config, nargs+1, targs);
+  status = PyConfig_SetArgv(&config, nargs + 1, targs);
   if (PyStatus_Exception(status)) {
     PyConfig_Clear(&config);
     Py_ExitStatusException(status);
-    EXCEPTION_RAISE("PyConfigInit", "Unable to set argv for the python config.");
+    EXCEPTION_RAISE("PyConfigInit",
+                    "Unable to set argv for the python config.");
   }
   status = Py_InitializeFromConfig(&config);
   if (PyStatus_Exception(status)) {
     PyConfig_Clear(&config);
     Py_ExitStatusException(status);
-    EXCEPTION_RAISE("PyConfigInit", "Unable to initilize the python interpreter.");
+    EXCEPTION_RAISE("PyConfigInit",
+                    "Unable to initilize the python interpreter.");
   }
   // don't need config anymore now that the initialization is done
   PyConfig_Clear(&clear);
-#endif 
+#endif
 
   // the following line is what actually runs the script
   std::unique_ptr<FILE, int (*)(FILE*)> fp{fopen(pythonScript.c_str(), "r"),

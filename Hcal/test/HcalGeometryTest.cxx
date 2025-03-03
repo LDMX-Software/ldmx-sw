@@ -48,7 +48,8 @@ DECLARE_ANALYZER_NS(hcal::test, HcalCheckPositionMap)
 TEST_CASE("Hcal Geometry test", "[Hcal][functionality]") {
   const std::string config_file{"hcal_geometry_test_config.py"};
   char **args{nullptr};
-  auto cfg{framework::config::run("ldmxcfg.Process.lastProcess", config_file, args, 0)};
+  auto cfg{framework::config::run("ldmxcfg.Process.lastProcess", config_file,
+                                  args, 0)};
   auto p{std::make_unique<framework::Process>(cfg)};
   p->run();
 }

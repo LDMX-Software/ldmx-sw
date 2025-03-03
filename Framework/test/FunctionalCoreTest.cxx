@@ -458,11 +458,13 @@ TEST_CASE("Core Framework Functionality", "[Framework][functionality]") {
   process.add<std::string>("tree_name", "LDMX_Events");
 
   framework::config::Parameters producerParameters;
-  producerParameters.add<std::string>("className", "framework::test::TestProducer");
+  producerParameters.add<std::string>("className",
+                                      "framework::test::TestProducer");
   producerParameters.add<std::string>("instanceName", "TestProducer");
 
   framework::config::Parameters analyzerParameters;
-  analyzerParameters.add<std::string>("className", "framework::test::TestAnalyzer");
+  analyzerParameters.add<std::string>("className",
+                                      "framework::test::TestAnalyzer");
   analyzerParameters.add<std::string>("instanceName", "TestAnalyzer");
 
   // declare used and re-used types, not used in all branches
@@ -560,13 +562,14 @@ TEST_CASE("Core Framework Functionality", "[Framework][functionality]") {
       makeInputs.add<std::string>("passName", "makeInputs");
       auto producer = producerParameters;
       producer.add("createRunHeader", true);
-      makeInputs.add<std::vector<framework::config::Parameters>>("sequence", {producer});
-      outputFiles = {inputFiles.at(run-2)};
+      makeInputs.add<std::vector<framework::config::Parameters>>("sequence",
+                                                                 {producer});
+      outputFiles = {inputFiles.at(run - 2)};
       makeInputs.add("outputFiles", outputFiles);
       makeInputs.add("maxEvents", run);
       makeInputs.add("run", run);
       REQUIRE(framework::test::runProcess(makeInputs));
-      REQUIRE_THAT(inputFiles.at(run-2),
+      REQUIRE_THAT(inputFiles.at(run - 2),
                    framework::test::isGoodEventFile("makeInputs", run, 1));
     }
     process.add<std::string>("passName", "test");

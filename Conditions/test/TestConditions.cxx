@@ -200,7 +200,8 @@ TEST_CASE("Conditions", "[Conditions]") {
     fputs(cfgpy, f);
     fclose(f);
 
-    auto cfg{framework::config::run("ldmxcfg.Process.lastProcess", "/tmp/test_cond.py", 0, 0)};
+    auto cfg{framework::config::run("ldmxcfg.Process.lastProcess",
+                                    "/tmp/test_cond.py", 0, 0)};
     auto hp{std::make_unique<framework::Process>(cfg)};
     ldmx::EventHeader cxt;
     hp->setEventHeader(&cxt);
@@ -236,7 +237,8 @@ TEST_CASE("Conditions", "[Conditions]") {
     fputs(cfgpy, f);
     fclose(f);
 
-    auto cfg{framework::config::run("ldmxcfg.Process.lastProcess", "/tmp/test_cond.py", 0, 0)};
+    auto cfg{framework::config::run("ldmxcfg.Process.lastProcess",
+                                    "/tmp/test_cond.py", 0, 0)};
     auto hp{std::make_unique<framework::Process>(cfg)};
     ldmx::EventHeader cxt;
     hp->setEventHeader(&cxt);
@@ -269,7 +271,8 @@ TEST_CASE("Conditions", "[Conditions]") {
     fputs(cfgpy, f);
     fclose(f);
 
-    auto cfg{framework::config::run("ldmxcfg.Process.lastProcess", "/tmp/test_cond.py", 0, 0)};
+    auto cfg{framework::config::run("ldmxcfg.Process.lastProcess",
+                                    "/tmp/test_cond.py", 0, 0)};
     auto hp{std::make_unique<framework::Process>(cfg)};
     ldmx::EventHeader cxt;
     hp->setEventHeader(&cxt);
@@ -297,7 +300,8 @@ TEST_CASE("Conditions", "[Conditions]") {
     fputs(cfgpy, f);
     fclose(f);
 
-    auto cfg{framework::config::run("ldmxcfg.Process.lastProcess", "/tmp/test_cond.py", 0, 0)};
+    auto cfg{framework::config::run("ldmxcfg.Process.lastProcess",
+                                    "/tmp/test_cond.py", 0, 0)};
     auto hp{std::make_unique<framework::Process>(cfg)};
     ldmx::EventHeader cxt;
 

@@ -54,15 +54,13 @@ class TestConfig : public framework::Producer {
     CHECK(parameters.get<std::string>("test_string") == "Yay!");
 
     // Check dictionary
-    auto test_dict{
-        parameters.get<framework::config::Parameters>("test_dict")};
+    auto test_dict{parameters.get<framework::config::Parameters>("test_dict")};
     CHECK(test_dict.get<int>("one") == 1);
     CHECK(test_dict.get<double>("two") == 2.0);
 
     // Check int vector
     std::vector<int> int_vect{1, 2, 3};
-    auto test_int_vec{
-        parameters.get<std::vector<int>>("test_int_vec")};
+    auto test_int_vec{parameters.get<std::vector<int>>("test_int_vec")};
     REQUIRE(test_int_vec.size() == int_vect.size());
     for (std::size_t i{0}; i < test_int_vec.size(); i++)
       CHECK(test_int_vec.at(i) == int_vect.at(i));
@@ -126,9 +124,8 @@ TEST_CASE("Configure Python Test", "[Framework][functionality]") {
 
   // Run a check of the python configuration class without arguments.
   SECTION("No arguments to python script") {
-    framework::config::Parameters config{
-      framework::config::run("ldmxcfg.Process.lastProcess", config_file_name, args, 0)
-    };
+    framework::config::Parameters config{framework::config::run(
+        "ldmxcfg.Process.lastProcess", config_file_name, args, 0)};
     p = std::make_unique<framework::Process>(config);
 
     CHECK(p->getPassName() == "test");
@@ -155,7 +152,8 @@ TEST_CASE("Configure Python Test", "[Framework][functionality]") {
   auto correct_log_freq{9000};
   SECTION("Single argument to python script") {
     args[0] = (char *)"9000";
-    auto config{framework::config::run("ldmxcfg.Process.lastProcess", config_file_name_arg, args, 1)};
+    auto config{framework::config::run("ldmxcfg.Process.lastProcess",
+                                       config_file_name_arg, args, 1)};
     p = std::make_unique<framework::Process>(config);
     CHECK(p->getLogFrequency() == correct_log_freq);
   }
@@ -174,7 +172,8 @@ TEST_CASE("Configure Python Test", "[Framework][functionality]") {
   // warning: this test will fail if the repr of a tuple changes format
   SECTION("Bad parameter exception test") {
     REQUIRE_THROWS_WITH(
-        framework::config::run("ldmxcfg.Process.lastProcess", config_file_name_arg, args, 0),
+        framework::config::run("ldmxcfg.Process.lastProcess",
+                               config_file_name_arg, args, 0),
         ContainsSubstring("('tuples', 'are', 'not', 'supported')"));
     // we need to manually close up our python interpreter
     // because we left during an exception without closing it above
