@@ -357,7 +357,7 @@ Parameters run(const std::string& root_object, const std::string& pythonScript,
                     "Unable to initilize the python interpreter.");
   }
   // don't need config anymore now that the initialization is done
-  PyConfig_Clear(&clear);
+  PyConfig_Clear(&config);
 #endif
 
   // the following line is what actually runs the script
