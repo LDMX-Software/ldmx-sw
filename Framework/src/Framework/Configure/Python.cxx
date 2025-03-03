@@ -306,15 +306,12 @@ Parameters run(const std::string& root_object, const std::string& pythonScript,
                         "mounted to the container?");
   }
 
-  std::string cmd = pythonScript;
-  if (pythonScript.rfind("/") != std::string::npos) {
-    cmd = pythonScript.substr(pythonScript.rfind("/") + 1);
-  }
-  cmd = cmd.substr(0, cmd.find(".py"));
-
   // python needs the argument list as if you are on the command line
   //  targs = [ script , arg0 , arg1 , ... ] ==> len(targs) = nargs+1
-  // PySys_SetArgvEx uses wchar_t instead of char in python3
+  // the updated Python3.12 (DEV_IMAGE_MAJOR == 5) C API looks to have
+  // more helper functions to avoid having to do this ourselves, but
+  // I think sharing the same targs between the different Python versions
+  // makes the code cleaner
   wchar_t** targs = new wchar_t*[nargs + 1];
   targs[0] = Py_DecodeLocale(pythonScript.c_str(), NULL);
   for (int i = 0; i < nargs; i++) targs[i + 1] = Py_DecodeLocale(args[i], NULL);
@@ -336,6 +333,7 @@ Parameters run(const std::string& root_object, const std::string& pythonScript,
   PyStatus status;
   PyConfig config;
   PyConfig_InitPythonConfig(&config);
+  // name our program after the script that is being run
   status = PyConfig_SetString(&config, &config.program_name, targs[0]);
   if (PyStatus_Exception(status)) {
     PyConfig_Clear(&config);
@@ -343,6 +341,7 @@ Parameters run(const std::string& root_object, const std::string& pythonScript,
     EXCEPTION_RAISE("PyConfigInit",
                     "Unable to set the program name in the python config.");
   }
+  // copy over updated argument vector
   status = PyConfig_SetArgv(&config, nargs + 1, targs);
   if (PyStatus_Exception(status)) {
     PyConfig_Clear(&config);
