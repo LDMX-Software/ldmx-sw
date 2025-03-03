@@ -334,7 +334,14 @@ Parameters run(const std::string& root_object, const std::string& pythonScript,
   PyStatus status;
   PyConfig config;
   PyConfig_InitPythonConfig(&config);
-  // name our program after the script that is being run
+  // we do not want python to parse our args (we are already doing that)
+  config.parse_argv = 0;
+  // note to future developers: the embedding docs encourage users to
+  // set config.isolated = 1 in order to more securely embed python.
+  // we do /not/ want to do this because we want to inherit the
+  // external environment of python
+
+  // copy over program name
   status = PyConfig_SetString(&config, &config.program_name, targs[0]);
   if (PyStatus_Exception(status)) {
     PyConfig_Clear(&config);
@@ -350,6 +357,15 @@ Parameters run(const std::string& root_object, const std::string& pythonScript,
     EXCEPTION_RAISE("PyConfigInit",
                     "Unable to set argv for the python config.");
   }
+  // read and solidify the configuration
+  status = PyConfig_Read(&config);
+  if (PyStatus_Exception(status)) {
+    PyConfig_Clear(&config);
+    Py_ExitStatusException(status);
+    EXCEPTION_RAISE("PyConfigInit",
+                    "Unable to read the python config.");
+  }
+  // initialize the python interpreter with our deduced configuration
   status = Py_InitializeFromConfig(&config);
   if (PyStatus_Exception(status)) {
     PyConfig_Clear(&config);
