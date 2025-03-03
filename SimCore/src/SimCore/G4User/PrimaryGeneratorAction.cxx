@@ -88,8 +88,7 @@ void PrimaryGeneratorAction::GeneratePrimaries(G4Event* event) {
       if (not primary_vertex) {
         EXCEPTION_RAISE(
             "BadGen",
-            "One of the primary generators created a NULL primary vertex."
-        );
+            "One of the primary generators created a NULL primary vertex.");
       }
 
       // Loop over all particle associated with the primary vertex and
@@ -101,8 +100,7 @@ void PrimaryGeneratorAction::GeneratePrimaries(G4Event* event) {
         if (not primary) {
           EXCEPTION_RAISE(
               "BadGen",
-              "One of the primary generators created a NULL primary particle."
-          );
+              "One of the primary generators created a NULL primary particle.");
         }
 
         auto primary_info{dynamic_cast<UserPrimaryParticleInformation*>(

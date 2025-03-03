@@ -115,7 +115,7 @@ void KaonPhysics::DumpDecayDetails(const G4ParticleDefinition* kaon) const {
       } else {
         products += "NULL";
       }
-      if (j < daughters-1) {
+      if (j < daughters - 1) {
         // only add '+' when there are more to come
         products += " + ";
       }
