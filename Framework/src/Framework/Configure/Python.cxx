@@ -362,8 +362,7 @@ Parameters run(const std::string& root_object, const std::string& pythonScript,
   if (PyStatus_Exception(status)) {
     PyConfig_Clear(&config);
     Py_ExitStatusException(status);
-    EXCEPTION_RAISE("PyConfigInit",
-                    "Unable to read the python config.");
+    EXCEPTION_RAISE("PyConfigInit", "Unable to read the python config.");
   }
   // initialize the python interpreter with our deduced configuration
   status = Py_InitializeFromConfig(&config);
