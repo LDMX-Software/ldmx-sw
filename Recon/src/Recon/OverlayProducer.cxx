@@ -205,12 +205,6 @@ void OverlayProducer::produce(framework::Event &event) {
       }
     }
 
-    // get event wherever nextEvent()  left us
-    if (!&overlayEvent_) {
-      ldmx_log(error) << "No overlay event!";
-      return;
-    }
-
     float bunchTimeOffset = bunchSpacing_ * bunchOffset;
 
     for (int iEv = 0; iEv < nEvsOverlay; iEv++) {
