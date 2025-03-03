@@ -49,10 +49,7 @@ LHEEvent* LHEReader::readNextEvent() {
   }
 
   const std::vector<LHEParticle*>& particles = nextEvent->getParticles();
-  int particleIndex = 0;
-  for (std::vector<LHEParticle*>::const_iterator it = particles.begin();
-       it != particles.end(); it++) {
-    LHEParticle* particle = (*it);
+  for (LHEParticle* particle: particles) {
     if (particle->getMOTHUP(0) != 0) {
       int mother1 = particle->getMOTHUP(0);
       int mother2 = particle->getMOTHUP(1);
@@ -63,7 +60,6 @@ LHEEvent* LHEReader::readNextEvent() {
         particle->setMother(1, particles[mother2 - 1]);
       }
     }
-    ++particleIndex;
   }
 
   return nextEvent;
