@@ -22,7 +22,7 @@
  * that we check if its null before dereferencing, returning
  * the default construct if that fails.
  */
-template<typename T>
+template <typename T>
 T safe_deref(TTreeReaderValue<T> reader_val) {
   T const* val_ptr{reader_val.Get()};
   if (val_ptr != nullptr) {
