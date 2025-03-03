@@ -296,8 +296,9 @@ Parameters run(const std::string& root_object, const std::string& pythonScript,
   //  found
 
   // load a handle to the config file into memory (and check that it exists)
-  FILE* config_file{fopen(pythonScript.c_str(), "r")};
-  if (config_file == NULL) {
+  std::unique_ptr<FILE, int (*)(FILE*)> fp{fopen(pythonScript.c_str(), "r"),
+                                           &fclose};
+  if (fp.get() == NULL) {
     EXCEPTION_RAISE("ConfigDNE",
                     "Passed config script '" + pythonScript +
                         "' is not accessible.\n"
@@ -353,6 +354,7 @@ Parameters run(const std::string& root_object, const std::string& pythonScript,
   if (PyStatus_Exception(status)) {
     PyConfig_Clear(&config);
     Py_ExitStatusException(status);
+    Py_FinalizeEx();
     EXCEPTION_RAISE("PyConfigInit",
                     "Unable to initilize the python interpreter.");
   }
@@ -360,17 +362,10 @@ Parameters run(const std::string& root_object, const std::string& pythonScript,
   PyConfig_Clear(&config);
 #endif
 
-  // the following line is what actually runs the script
-  std::unique_ptr<FILE, int (*)(FILE*)> fp{fopen(pythonScript.c_str(), "r"),
-                                           &fclose};
-  if (fp.get() == NULL) {
-    // file does not exist
-    EXCEPTION_RAISE("Python", "Configuration script " + pythonScript +
-                                  " either does not exist or can't be read.");
-  }
   if (PyRun_SimpleFile(fp.get(), pythonScript.c_str()) != 0) {
     // running the script executed with an error
     PyErr_Print();
+    Py_FinalizeEx();
     EXCEPTION_RAISE("Python", "Execution of python script failed.");
   }
 
@@ -386,6 +381,7 @@ Parameters run(const std::string& root_object, const std::string& pythonScript,
   PyObject* py_root_obj = PyImport_ImportModule("__main__");
   if (!py_root_obj) {
     PyErr_Print();
+    Py_FinalizeEx();
     EXCEPTION_RAISE("Python",
                     "I don't know what happened. This should never happen.");
   }
@@ -400,6 +396,7 @@ Parameters run(const std::string& root_object, const std::string& pythonScript,
     PyObject* one_level_down =
         PyObject_GetAttrString(py_root_obj, attr.c_str());
     if (one_level_down == 0) {
+      Py_FinalizeEx();
       EXCEPTION_RAISE("Python", "Unable to find python object '" + attr + "'.");
     }
     Py_DECREF(py_root_obj);  // don't need previous python object anymore
@@ -409,6 +406,7 @@ Parameters run(const std::string& root_object, const std::string& pythonScript,
   // now py_root_obj should hold the root configuration object
   if (py_root_obj == Py_None) {
     // root config object left undefined
+    Py_FinalizeEx();
     EXCEPTION_RAISE("Python",
                     "Root configuration object " + root_object +
                         " not defined. This object is required to run.");
