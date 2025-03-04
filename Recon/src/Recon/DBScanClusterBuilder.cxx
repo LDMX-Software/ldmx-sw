@@ -129,7 +129,7 @@ void DBScanClusterBuilder::fillClusterInfoFromHits(
     // skip fits for 'vertical' clusters
     std::vector<float> sortedZ = raw_zvals;
     std::sort(sortedZ.begin(), sortedZ.end());
-    if (sortedZ.size() > 2 and sortedZ[sortedZ.size() - 1] - sortedZ[0] > 1e3) {
+    if ((sortedZ.size() > 2) and (sortedZ.back() - sortedZ.front() > 1e3)) {
       for (int i = 0; i < raw_xvals.size(); i++) {  // mean subtract
         raw_xvals[i] = raw_xvals[i] - x;
         raw_yvals[i] = raw_yvals[i] - y;
