@@ -549,7 +549,7 @@ void CKFProcessor::produce(framework::Event& event) {
           ldmx_log(debug) << "    Adding measurement to ldmx::track with "
                              "source link index = "
                           << sl.index();
-          ldmx_log(debug) << "    Measurement:\n" << ldmx_meas;
+          ldmx_log(trace) << "    Measurement:\n" << ldmx_meas;
           trk.addMeasurementIndex(sl.index());
         } else {
           ldmx_log(debug) << "    This TrackState is not a measurement";

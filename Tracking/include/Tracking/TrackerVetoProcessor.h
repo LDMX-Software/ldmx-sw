@@ -59,20 +59,29 @@ class TrackerVetoProcessor : public framework::Producer {
   void produce(framework::Event& event) override;
 
  private:
-  /** Minimum number of recoil tracks required. */
-  int min_recoil_n_;
-
-  /** Maximum number of recoil tracks allowed. */
-  int max_recoil_n_;
-
   /** Maximum allowed transverse impact parameter (d0) for tracks. */
   float max_d0_;
 
   /** Maximum allowed longitudinal impact parameter (z0) for tracks. */
   float max_z0_;
 
+  /** Max chi2/ndf required for tracks. */
+  float max_chi2_per_ndf_;
+
   /** Minimum required momentum for tagger tracks. */
   float min_tagger_momentum_;
+
+  /** Minimum number of recoil tracks required. */
+  int min_recoil_n_;
+
+  /** Maximum number of recoil tracks allowed. */
+  int max_recoil_n_;
+
+  /** Min number of hits for tagger tracks required. */
+  int min_tagger_hits_;
+
+  /** Min number of hits for recoil tracks required. */
+  int min_recoil_hits_;
 
   /** The name of the tagger track collection. */
   std::string tagger_track_collection_name_;

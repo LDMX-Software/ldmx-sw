@@ -347,16 +347,22 @@ class TrackerVetoProcessor(Producer):
     
     Attributes
     ----------
-    min_recoil_n : int
-        Minimum number of recoil tracks required.
-    max_recoil_n : int
-        Maximum number of recoil tracks allowed.
     max_d0 : float
         Maximum allowed d0 impact parameter for tracks.
     max_z0 : float
         Maximum allowed z0 impact parameter for tracks.
+    max_chi2_per_ndf: float
+        Max chi2/ndf required for tracks.
+    min_recoil_n : int
+        Minimum number of recoil tracks required.
+    max_recoil_n : int
+        Maximum number of recoil tracks allowed.
     min_tagger_momentum : float
         Minimum required momentum for tagger tracks.
+    min_tagger_hits: int
+          Min number of hits for tagger tracks required.
+    min_recoil_hits: int
+          Min number of hits for recoild tracks required.
     tagger_track_collection : str
         The name of the tagger track collection.
     recoil_track_collection : str
@@ -374,11 +380,15 @@ class TrackerVetoProcessor(Producer):
     def __init__(self, instance_name = "TrackerVetoProcessor"):
         super().__init__(instance_name, 'tracking::TrackerVetoProcessor','Tracking')
 
-        self.min_recoil_n = 1
-        self.max_recoil_n = 1
+
         self.max_d0 = 10.
         self.max_z0 = 40.0
+        self.max_z0 = 40.0
+        self.min_recoil_n = 1
+        self.max_chi2_per_ndf = 5.0
         self.min_tagger_momentum = 5600.
+        self.min_tagger_hits = 4
+        self.min_recoil_hits = 4
         self.tagger_track_collection = "TaggerTracks"
         self.recoil_track_collection = "RecoilTracks"
         self.input_tagger_pass_name = ""

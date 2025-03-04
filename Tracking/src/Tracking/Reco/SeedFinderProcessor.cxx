@@ -352,8 +352,7 @@ ldmx::Track SeedFinderProcessor::SeedTracker(
                           seed_free, *seed_perigee, geometry_context())
                           .value();
 
-  ldmx_log(debug) << "bound parameters at perigee location" << std::endl
-                  << bound_params;
+  ldmx_log(trace) << "bound parameters at perigee location" << bound_params;
 
   Acts::BoundVector stddev;
   // sigma set to 75% of momentum
@@ -445,7 +444,7 @@ bool SeedFinderProcessor::GroupStrips(
   // std::cout<<std::endl;
 
   for (auto& meas : measurements) {
-    ldmx_log(debug) << meas;
+    ldmx_log(trace) << meas;
 
     if (std::find(strategy.begin(), strategy.end(), meas.getLayer()) !=
         strategy.end()) {
