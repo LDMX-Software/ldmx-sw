@@ -351,9 +351,9 @@ class TrackerVetoProcessor(Producer):
         Minimum number of recoil tracks required.
     max_recoil_n : int
         Maximum number of recoil tracks allowed.
-    max_recoil_d0 : float
+    max_d0 : float
         Maximum allowed d0 impact parameter for tracks.
-    max_recoil_z0 : float
+    max_z0 : float
         Maximum allowed z0 impact parameter for tracks.
     min_tagger_momentum : float
         Minimum required momentum for tagger tracks.
@@ -365,7 +365,7 @@ class TrackerVetoProcessor(Producer):
         The pass name of the input tagger collections.
     input_recoil_pass_name : str
         The pass name of the input recoil collections.
-    inverse_skim_ : bool
+    inverse_skim : bool
         Boolean flag to invert the selection criteria for skimming purposes.
     output_collection : str
         The name of the new collection.
@@ -376,8 +376,8 @@ class TrackerVetoProcessor(Producer):
 
         self.min_recoil_n = 1
         self.max_recoil_n = 1
-        self.max_recoil_d0 = 10.
-        self.max_recoil_z0 = 40.0
+        self.max_d0 = 10.
+        self.max_z0 = 40.0
         self.min_tagger_momentum = 5600.
         self.tagger_track_collection = "TaggerTracks"
         self.recoil_track_collection = "RecoilTracks"

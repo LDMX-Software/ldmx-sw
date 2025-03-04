@@ -18,6 +18,7 @@ void TrackerVetoProcessor::configure(framework::config::Parameters& ps) {
   input_recoil_pass_name_ =
       ps.getParameter<std::string>("input_recoil_pass_name", "");
   output_collection_ = ps.getParameter<std::string>("output_collection", "");
+  inverse_skim_ = ps.getParameter<bool>("inverse_skim", false);
   max_d0_ = ps.getParameter<double>("max_d0", 10.);
   max_z0_ = ps.getParameter<double>("max_z0", 40.);
   min_tagger_momentum_ = ps.getParameter<double>("min_tagger_momentum", 5600.);
