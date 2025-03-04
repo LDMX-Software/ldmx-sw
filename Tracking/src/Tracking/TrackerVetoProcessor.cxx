@@ -53,6 +53,8 @@ void TrackerVetoProcessor::produce(framework::Event& event) {
     }
   }
 
+  ldmx_log(info) << "Tagger requirements passed for " << tagger_n << " tracks";
+
   // Recoil tracks now
   int recoil_n{0};
   for (const auto& trk : recoil_track_collection) {
@@ -66,6 +68,8 @@ void TrackerVetoProcessor::produce(framework::Event& event) {
       recoil_n++;
     };
   }
+
+  ldmx_log(info) << "Recoil requirements passed for " << recoil_n << " tracks";
 
   if ((min_recoil_n_ <= recoil_n) && (recoil_n <= max_recoil_n_)) {
     passes_recoil_veto = true;
@@ -82,7 +86,7 @@ void TrackerVetoProcessor::produce(framework::Event& event) {
 
   if (!inverse_skim_) {
     if (passes_veto) {
-      ldmx_log(info) << "Tracker veto passed";
+      ldmx_log(info) << "Tracker veto passed, skim will keep the event";
       setStorageHint(framework::hint_shouldKeep);
     } else {
       ldmx_log(info) << "Tracker veto failed";
@@ -93,7 +97,7 @@ void TrackerVetoProcessor::produce(framework::Event& event) {
       ldmx_log(info) << "Inverse tracker veto passed";
       setStorageHint(framework::hint_shouldDrop);
     } else {
-      ldmx_log(info) << "Inverse tracker veto failed";
+      ldmx_log(info) << "Inverse tracker veto failed, skim will keep the event";
       setStorageHint(framework::hint_shouldKeep);
     }
   }
