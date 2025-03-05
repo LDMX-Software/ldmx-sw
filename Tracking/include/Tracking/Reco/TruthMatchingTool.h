@@ -40,8 +40,7 @@ class TruthMatchingTool {
   /**
    * Destructor.
    */
-
-  ~TruthMatchingTool() = default;
+  virtual ~TruthMatchingTool() = default;
 
   TruthInfo TruthMatch(const ldmx::Track& trk);
   TruthInfo Evaluate(
