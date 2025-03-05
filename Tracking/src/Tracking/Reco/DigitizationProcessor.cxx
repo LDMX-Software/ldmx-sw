@@ -198,7 +198,7 @@ std::vector<ldmx::Measurement> DigitizationProcessor::digitizeHits(
       if (hit_surface) {
         // Transform from global to local coordinates.
         // hit_surface->toStream(geometry_context(), std::cout);
-        ldmx_log(debug)
+        ldmx_log(trace)
             << "Local to global" << std::endl
             << hit_surface->transform(geometry_context()).rotation()
             << std::endl

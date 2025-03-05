@@ -48,7 +48,7 @@ class SeedFinderProcessor : public TrackingGeometryUser {
   SeedFinderProcessor(const std::string& name, framework::Process& process);
 
   /// Destructor
-  ~SeedFinderProcessor();
+  virtual ~SeedFinderProcessor() = default;
 
   /**
    *

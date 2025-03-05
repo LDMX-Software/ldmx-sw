@@ -334,3 +334,64 @@ class GreedyAmbiguitySolver(Producer):
         self.out_trk_collection = "TaggerTracksClean"
         self.trackCollection = "TaggerTracks"
         self.measCollection = "DigiTaggerSimHits"
+
+class TrackerVetoProcessor(Producer):
+    """ Class that flags events that pass the tracker veto
+        This processor evaluates tracker events based on recoil and tagger track properties,
+    applying configurable selection criteria to determine whether an event should be flagged.
+    
+    Parameters
+    ----------
+    instance_name : str
+        Unique name for this instance.
+    
+    Attributes
+    ----------
+    max_d0 : float
+        Maximum allowed d0 impact parameter for tracks.
+    max_z0 : float
+        Maximum allowed z0 impact parameter for tracks.
+    max_chi2_per_ndf: float
+        Max chi2/ndf required for tracks.
+    min_recoil_n : int
+        Minimum number of recoil tracks required.
+    max_recoil_n : int
+        Maximum number of recoil tracks allowed.
+    min_tagger_momentum : float
+        Minimum required momentum for tagger tracks.
+    min_tagger_hits: int
+          Min number of hits for tagger tracks required.
+    min_recoil_hits: int
+          Min number of hits for recoild tracks required.
+    tagger_track_collection : str
+        The name of the tagger track collection.
+    recoil_track_collection : str
+        The name of the recoil track collection.
+    input_tagger_pass_name : str
+        The pass name of the input tagger collections.
+    input_recoil_pass_name : str
+        The pass name of the input recoil collections.
+    inverse_skim : bool
+        Boolean flag to invert the selection criteria for skimming purposes.
+    output_collection : str
+        The name of the new collection.
+    """
+
+    def __init__(self, instance_name = "TrackerVetoProcessor"):
+        super().__init__(instance_name, 'tracking::TrackerVetoProcessor','Tracking')
+
+
+        self.max_d0 = 10.
+        self.max_z0 = 40.0
+        self.max_z0 = 40.0
+        self.min_recoil_n = 1
+        self.max_chi2_per_ndf = 5.0
+        self.min_tagger_momentum = 5600.
+        self.min_tagger_hits = 4
+        self.min_recoil_hits = 4
+        self.tagger_track_collection = "TaggerTracks"
+        self.recoil_track_collection = "RecoilTracks"
+        self.input_tagger_pass_name = ""
+        self.input_recoil_pass_name = ""
+        self.inverse_skim = False
+        self.output_collection = "TrackerVeto"
