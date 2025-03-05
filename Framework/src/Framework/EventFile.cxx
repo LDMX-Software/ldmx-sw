@@ -418,7 +418,7 @@ void EventFile::importRunHeaders() {
         // copy input run tree into run map
         // We should consider moving to a shared_ptr instead of 'new'
         runMap_[oldRunHeaderPtr->getRunNumber()] =
-            std::make_pair(true, new ldmx::RunHeader(*oldRunHeader));
+            std::make_pair(true, new ldmx::RunHeader(*oldRunHeaderPtr));
       }
     }
   }

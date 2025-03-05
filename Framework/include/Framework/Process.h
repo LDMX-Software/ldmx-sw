@@ -113,25 +113,7 @@ class Process {
    */
   void setEventHeader(ldmx::EventHeader *h) { eventHeader_ = h; }
 
-  /**
-   * Get a dummy process
-   *
-   * This function returns an instance of this class without
-   * any configuration. This is only helpful in the use case
-   * where the user is writing a test for a processor and
-   * needs to pass a Process object to the processor's constructor.
-   *
-   * @return Process without any configuration
-   */
-  static Process getDummy() { return std::move(Process()); }
-
  private:
-  /**
-   * Private dummy constructor
-   * We hide it here because it shouldn't be used anywhere else.
-   */
-  Process() : conditions_{*this} {}
-
   /**
    * Process the input event through the sequence
    * of processors

@@ -6,6 +6,7 @@
 #ifndef FRAMEWORK_SIMPLETABLECONDITION_H_
 #define FRAMEWORK_SIMPLETABLECONDITION_H_
 
+#include <cstdint>
 #include <ostream>
 #include <vector>
 

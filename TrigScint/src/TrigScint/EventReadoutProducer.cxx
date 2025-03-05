@@ -61,7 +61,7 @@ void EventReadoutProducer::produce(framework::Event &event) {
     float avgQ = 0;
     float totPosQ = 0;
     int iS = 0;
-    int nPos = 0;
+    [[maybe_unused]] int nPos = 0;
     float earlyPed = 0;
     for (auto &val : adc) {
       float Q = qie.ADC2Q(val);
