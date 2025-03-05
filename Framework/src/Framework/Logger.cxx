@@ -62,13 +62,11 @@ class Filter {
       : fallback_level_{fallback}, custom_levels_{custom} {}
   Filter(level fallback) : Filter(fallback, {}) {}
   bool operator()(log::attribute_value_set const& attrs) {
-    const std::string& channel{safe_extract<std::string>(attrs["Channel"])};
-    const level& msg_level{safe_extract<level>(attrs["Severity"])};
-    auto it = custom_levels_.find(channel);
+    auto it = custom_levels_.find(safe_extract<std::string>(attrs["Channel"]));
     if (it != custom_levels_.end()) {
-      return msg_level >= it->second;
+      return safe_extract<level>(attrs["Severity"]) >= it->second;
     }
-    return msg_level >= fallback_level_;
+    return safe_extract<level>(attrs["Severity"]) >= fallback_level_;
   }
 };
 
@@ -81,9 +79,9 @@ void open(const framework::config::Parameters& p) {
   std::string filePath{p.getParameter<std::string>("filePath", "")};
 
   level termLevel{convertLevel(p.getParameter<int>("termLevel", 4))};
+  std::vector<framework::config::Parameters> empty{};
   const auto& logRules{
-      p.getParameter<std::vector<framework::config::Parameters>>("logRules",
-                                                                 {})};
+      p.get<std::vector<framework::config::Parameters>>("logRules", empty)};
   std::unordered_map<std::string, level> custom_levels;
   for (const auto& logRule : logRules) {
     custom_levels[logRule.getParameter<std::string>("name")] =
@@ -167,7 +165,7 @@ void Formatter::operator()(const log::record_view& view,
    * We de-reference the value out of the log into our own type
    * so that we can compare and convert it into a string.
    */
-  const level& msg_level{safe_extract<level>(view["Severity"])};
+  const level msg_level{safe_extract<level>(view["Severity"])};
   switch (msg_level) {
     case level::trace:
       os << "trace";

@@ -48,12 +48,6 @@ if (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
     message(STATUS "Install directory set to ${CMAKE_INSTALL_PREFIX}")
 endif()
 
-# If a user is building outside of a Docker or Singularity environment, 
-# warn them. 
-if (NOT EXISTS /.dockerenv AND NOT EXISTS /singularity)
-    message(WARNING "You are not inside a container; you may be working in an untested environment.")
-endif()
-
 # Set the default release type to "Release". If a release type is specified 
 # at the command line, it's respected.
 set(default_build_type "Release")
