@@ -18,11 +18,11 @@ p.sequence = [ mySim ]
 import os
 import sys
 
-p.maxEvents = int(os.environ['LDMX_NUM_EVENTS'])
-p.run = int(os.environ['LDMX_RUN_NUMBER'])
+p.maxEvents = 100
+p.run = 1
 
-p.histogramFile = f'hist.root'
-p.outputFiles = [f'events.root']
+p.histogramFile = f'test_hist.root'
+p.outputFiles = [f'test_events.root']
 
 # Load the full tracking sequance
 from LDMX.Tracking import full_tracking_sequence
