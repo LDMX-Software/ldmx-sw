@@ -389,6 +389,7 @@ class EcalWABRecResults(ldmxcfg.Analyzer) :
         self.build1DHistogram("PhotonThetaDiff", "Photon True and Reconstruction #theta Difference (Degrees)", 181, 0, 181)
         self.build1DHistogram("ElectronPhiDiff", "Electron True and Reconstruction #phi Difference (Degrees)", 181, 0, 181)
         self.build1DHistogram("PhotonPhiDiff", "Photon True and Reconstruction #phi Difference (Degrees)", 181, 0, 181)
+        self.build1DHistogram("ProgressNum", "Reconstruction Progress", 4, 0, 4)
 
 class SimObjects(ldmxcfg.Analyzer) :
     """Configuration for sim-level objects to histogram-ize

@@ -38,6 +38,7 @@ void EcalWABRecResults::analyze(const framework::Event &event) {
   histograms_.fill("PhotonThetaDiff", WABRec.getTrueRecThetaDiffPhoton());
   histograms_.fill("ElectronPhiDiff", WABRec.getTrueRecPhiDiffElectron());
   histograms_.fill("PhotonPhiDiff", WABRec.getTrueRecPhiDiffPhoton());
+  histograms_.fill("ProgressNum", WABRec.getProgressNum());
 
   return;
 }

@@ -123,7 +123,6 @@ void EcalWABRecProcessor::produce(framework::Event& event) {
   // Define variables to save recoil electron/photon information (SP)
   std::vector<double> recoil_e_p, recoil_y_p;
   std::vector<float> recoil_e_pos, recoil_y_pos;
-  int sole_electron_reco = 0;
 
   // Result object that stores kinematic variables
   ldmx::EcalWABResult result;
@@ -335,8 +334,8 @@ void EcalWABRecProcessor::produce(framework::Event& event) {
     // Fit both photon/electron or just electron hits based on # of viable
     // showers
     if (phot_hit_list.size() >= 3 && ele_hit_list.size() >= 3) {
-      sole_electron_reco =
-          2;  // Set sole_electron_reco to 2 to stop WAS reconstruction
+      progress_num =
+          3;  // Set progress_num to 3 to halt electron-only reconstruction
 
       // Generate guesses and error vectors for vertex constrained fit
       std::vector<double> x_guess = {
@@ -379,16 +378,13 @@ void EcalWABRecProcessor::produce(framework::Event& event) {
     // If there isn't enough info for both electron and photon reconstruction,
     // reconstruct electron if possible
     else if (ele_hit_list.size() >= 3) {
-      if (sole_electron_reco != 2) {
-        sole_electron_reco = 1;
+      if (progress_num != 3) {
+        progress_num = 2; // Set progress_num to 3 to indicate electron-only reconstruction
         linear_fit_coeffs =
             polyfitXYvsZ(ele_hit_list_x, ele_hit_list_y, ele_hit_list_z, 1);
       }
     }
   }
-
-  // Update progress_num based on reconstruction outcome
-  progress_num = sole_electron_reco + 1;
 
   // Calculate kinematic variables for electron and/or photon
   // based on # of viable showers (with reconstruction information)
@@ -480,7 +476,7 @@ void EcalWABRecProcessor::produce(framework::Event& event) {
                      std::sqrt(std::pow(recoil_y_p[0], 2) +
                                std::pow(recoil_y_p[1], 2))));
     }
-  } else if (sole_electron_reco == 1) {
+  } else if (progress_num == 2) {
     rec_electron_shower_energy = 0;
     for (const auto& hit : ele_hit_list) {rec_electron_shower_energy += hit[5];}
     
