@@ -20,7 +20,8 @@ if(BUILD_EVENT_ONLY)
     register_event_object( module_path "Ecal/Event" namespace "ldmx" class "EcalDigiCollection" )
     register_event_object( module_path "Ecal/Event" namespace "ldmx" class "EcalCluster" type "collection" )
     register_event_object( module_path "Ecal/Event" namespace "ldmx" class "EcalHit"     type "collection" )
-   
+    register_event_object( module_path "Ecal/Event" namespace "ldmx" class "EcalMipCollection")
+    
     # Generate the files needed to build the event classes.
     setup_library(module Ecal
                   name Event

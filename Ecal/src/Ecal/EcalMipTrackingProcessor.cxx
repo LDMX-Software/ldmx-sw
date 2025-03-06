@@ -36,12 +36,10 @@ void EcalMipTrackingProcessor::onNewRun(const ldmx::RunHeader &rh) {
   profiling_map_["linreg_tracks"] = 0.;
   profiling_map_["processing_time_"] = 0;
 }
-//  TODO Need to change to new Mip Tracking Configure
 void EcalMipTrackingProcessor::configure(framework::config::Parameters &parameters) {
   verbose_ = parameters.getParameter<bool>("verbose");
   nEcalLayers_ = parameters.getParameter<int>("num_ecal_layers");
   linreg_radius_ = parameters.getParameter<double>("linreg_radius");
-
 }
 
 void EcalMipTrackingProcessor::clearProcessor() {
@@ -64,9 +62,10 @@ clearProcessor();
 nevents_++;
 
 // Read in hits near photon from EcalVetoProcessor
-std::vector<XYCoords> ele_trajectory = event.getCollection<XYCoords>("ele_trajectory_");
-std::vector<XYCoords> photon_trajectory = event.getCollection<XYCoords>("photon_trajectory_");
-std::vector<HitData> trackingHitList = event.getCollection<HitData>("trackingHitList_");
+ldmx::EcalMipCollection MipVariables = event.getCollection<ldmx::EcalMipCollection>("EcalMipCollection");
+std::vector<XYCoords> ele_trajectory = MipVariables.getEleTrajectory();
+std::vector<XYCoords> photon_trajectory = MipVariables.getPhotonTrajectory();
+// std::vector<HitData> trackingHitList = MipVariables.getTrackingHitList();
 // Now inputting Lines 753-1178 of the original EcalVetoProcessor
 // ------------------------------------------------------
   // MIP tracking starts here

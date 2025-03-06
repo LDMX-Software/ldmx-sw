@@ -7,6 +7,7 @@
 #include "Recon/Event/EventConstants.h"
 #include "SimCore/Event/SimParticle.h"
 #include "SimCore/Event/SimTrackerHit.h"
+#include "Ecal/Event/EcalMipCollection.h"
 
 /*~~~~~~~~~~~*/
 /*   Tools   */
@@ -806,9 +807,11 @@ void EcalVetoProcessor::produce(framework::Event &event) {
                  << inside_ecal_cell;
 
   // Took out MIP tracking here
-  event.add("ele_trajectory_", ele_trajectory);
-  event.add("photon_trajectory_", photon_trajectory);
-  event.add("trackingHitList_", trackingHitList);
+  ldmx::EcalMipCollection MipCollection;
+  MipCollection.setEleTrajectory(ele_trajectory);
+  MipCollection.setPhotonTrajectory(photon_trajectory);
+  // MipCollection.setTrackingHitList(trackingHitList);
+  event.add("EcalMipCollection", MipCollection);
 
   auto mip_tracking_setup = std::chrono::high_resolution_clock::now();
   profiling_map_["mip_tracking_setup"] +=

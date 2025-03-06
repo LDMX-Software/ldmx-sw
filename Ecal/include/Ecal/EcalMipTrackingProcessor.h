@@ -13,6 +13,7 @@
 #include "DetDescr/EcalID.h"
 #include "Ecal/Event/EcalHit.h"
 #include "Ecal/Event/EcalVetoResult.h"
+#include "Ecal/Event/EcalMipCollection.h"
 #include "Framework/Configure/Parameters.h"
 #include "Framework/EventProcessor.h"
 #include "Tools/ONNXRuntime.h"
