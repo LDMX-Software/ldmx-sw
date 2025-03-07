@@ -290,17 +290,18 @@ LinearSeedFinder::midPointCalculation(
 
   for (const auto& point1 : layer1) {
     for (const auto& point2 : layer2) {
-      double z_avg = (point1.getGlobalPosition()[0] +
-                      point2.getGlobalPosition()[0]) /
-                     (2.0);
-      double x_avg = (point1.getGlobalPosition()[1] +
-                      point2.getGlobalPosition()[1]) /
-                     (2.0);
-      //Until we make axial/stereo combinations, we don't know anything about the y value
+      double z_avg =
+          (point1.getGlobalPosition()[0] + point2.getGlobalPosition()[0]) /
+          (2.0);
+      double x_avg =
+          (point1.getGlobalPosition()[1] + point2.getGlobalPosition()[1]) /
+          (2.0);
+      // Until we make axial/stereo combinations, we don't know anything about
+      // the y value
       double y_avg = 0.0;
-        
+
       merged_hits.push_back(std::make_tuple(
-        std::array<double, 3>{z_avg, x_avg, y_avg}, point1, point2));
+          std::array<double, 3>{z_avg, x_avg, y_avg}, point1, point2));
 
     }  // for layer2
   }    // for layer1

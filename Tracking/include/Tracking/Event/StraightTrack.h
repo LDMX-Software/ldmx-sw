@@ -72,13 +72,14 @@ class StraightTrack {
     return all_layers_;
   }
   void setAllSensorPoints(const std::vector<ldmx::Measurement>& all_layers) {
-      all_layers_ = all_layers;
+    all_layers_ = all_layers;
   }
   const std::vector<ldmx::SimTrackerHit>& getAllTruthSensorPoints() const {
-      return all_truth_layers_;
-    }
-  void setAllTruthSensorPoints(const std::vector<ldmx::SimTrackerHit>& all_truth_layers) {
-      all_truth_layers_ = all_truth_layers;
+    return all_truth_layers_;
+  }
+  void setAllTruthSensorPoints(
+      const std::vector<ldmx::SimTrackerHit>& all_truth_layers) {
+    all_truth_layers_ = all_truth_layers;
   }
 
   void setFirstSensorPosition(const std::array<double, 3>& first_sensor) {

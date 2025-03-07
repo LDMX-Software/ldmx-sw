@@ -34,7 +34,7 @@ void LinearTruthTracking::produce(framework::Event& event) {
 
   const std::vector<ldmx::SimTrackerHit> recoil_hits =
       event.getCollection<ldmx::SimTrackerHit>(input_hits_collection_,
-                                             input_pass_name_);
+                                               input_pass_name_);
   const std::vector<ldmx::EcalHit> ecal_rec_hit =
       event.getCollection<ldmx::EcalHit>(input_rec_hits_collection_,
                                          input_pass_name_);
@@ -61,9 +61,9 @@ void LinearTruthTracking::produce(framework::Event& event) {
   // Find only recoil electron out of the hit collection
   for (const auto& point : recoil_hits) {
     if (point.getTrackID() == 1) {
-        truth_points.push_back(point);
-    } // if trackID == 1
-  }  // for point in hit collection
+      truth_points.push_back(point);
+    }  // if trackID == 1
+  }    // for point in hit collection
 
   // should only find 1 track (recoil e-) or 0 track (no recoil e-)
   if (truth_points.size() > 1) {
@@ -153,7 +153,8 @@ void LinearTruthTracking::onProcessEnd() {
                  << processing_time_ / n_events_ << " ms";
   ldmx_log(info) << "Number of Events without enough seed points: "
                  << n_missing_;
-  ldmx_log(info) << "Number of Events with only 1 trackID == 1 point: " << n_empty_;
+  ldmx_log(info) << "Number of Events with only 1 trackID == 1 point: "
+                 << n_empty_;
   ldmx_log(info) << "Total Truth Tracks / Event: " << n_truth_ << "/"
                  << n_events_;
 }  // onProcessEnd
@@ -163,8 +164,8 @@ double LinearTruthTracking::calculateDistance(
   return sqrt(pow(point1[1] - point2[1], 2) + pow(point1[2] - point2[2], 2));
 }  // calculateDistance
 
-std::tuple<double, double, double, double>
-LinearTruthTracking::fit3DLine(const std::vector<ldmx::SimTrackerHit>& points) {
+std::tuple<double, double, double, double> LinearTruthTracking::fit3DLine(
+    const std::vector<ldmx::SimTrackerHit>& points) {
   std::vector<double> z_vals, x_vals, y_vals;
 
   for (const auto& point : points) {
@@ -188,7 +189,7 @@ LinearTruthTracking::fit3DLine(const std::vector<ldmx::SimTrackerHit>& points) {
   Eigen::Matrix2d AtA = a_mat.transpose() * a_mat;
   Eigen::Vector2d At_x = a_mat.transpose() * x_vec;
   Eigen::Vector2d At_y = a_mat.transpose() * y_vec;
-  
+
   Eigen::Vector2d x_params = AtA.ldlt().solve(At_x);
   Eigen::Vector2d y_params = AtA.ldlt().solve(At_y);
 

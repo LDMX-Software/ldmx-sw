@@ -80,7 +80,7 @@ class LinearSeedFinder : public TrackingGeometryUser {
   std::vector<std::tuple<std::array<double, 3>, ldmx::Measurement,
                          std::optional<ldmx::Measurement>>>
   midPointCalculation(const std::vector<ldmx::Measurement> &layer1,
-                  const std::vector<ldmx::Measurement> &layer2);
+                      const std::vector<ldmx::Measurement> &layer2);
 
   // Fitting function: fit a straight line in 3D using 3 points (1 degree of
   // freedom)
