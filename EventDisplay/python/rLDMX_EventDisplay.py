@@ -109,8 +109,8 @@ def trackPlotter(tree, event_number, tag, save):
     ax = fig.add_subplot(111, projection='3d')
 
     x_sensor_uncertainty = 0.006 #mm
-    y_sensor_uncertainty = 0.12 # mm
-        
+    y_sensor_uncertainty = 20./np.sqrt(12) # mm
+    
     for zi, xi, yi in zip(first_sensor_pos[:,0], first_sensor_pos[:,1], first_sensor_pos[:,2]):
         ax.plot([zi, zi], [xi - x_sensor_uncertainty, xi + x_sensor_uncertainty], [yi, yi], color='black',linewidth=2)  # x error
         ax.plot([zi, zi], [xi, xi], [yi - y_sensor_uncertainty, yi + y_sensor_uncertainty], color='black',linewidth=2)  # y error

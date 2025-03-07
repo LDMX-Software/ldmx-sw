@@ -8,9 +8,6 @@
 //---< SimCore >---//
 #include "SimCore/Event/SimTrackerHit.h"
 
-//--- LDMX ---//
-#include "Tracking/Reco/TrackingGeometryUser.h"
-
 //---< STD C++ >---//
 #include <iostream>
 
@@ -82,7 +79,7 @@ class LinearSeedFinder : public TrackingGeometryUser {
   // Function to do weighted averaging when combining Recoil layer points
   std::vector<std::tuple<std::array<double, 3>, ldmx::Measurement,
                          std::optional<ldmx::Measurement>>>
-  weightedAverage(const std::vector<ldmx::Measurement> &layer1,
+  midPointCalculation(const std::vector<ldmx::Measurement> &layer1,
                   const std::vector<ldmx::Measurement> &layer2);
 
   // Fitting function: fit a straight line in 3D using 3 points (1 degree of
@@ -128,7 +125,7 @@ class LinearSeedFinder : public TrackingGeometryUser {
   double layer34_midpoint_{27.5};
   double ecal_first_layer_z_threshold_{250};
 
-  std::vector<double> recoil_uncertainty_{0.006, 0.12};
+  std::vector<double> recoil_uncertainty_{0.006, 5.7735};
 
   // Check failures
   long n_missing_{0};

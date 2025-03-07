@@ -36,10 +36,6 @@ class LinearTruthTracking : public TrackingGeometryUser {
   /// Destructor
   virtual ~LinearTruthTracking() = default;
   /**
-   * Setup truth matching
-   */
-  void onProcessStart() override;
-  /**
    * Output event statistics
    */
   void onProcessEnd() override;
@@ -61,12 +57,8 @@ class LinearTruthTracking : public TrackingGeometryUser {
  protected:
   // Function to find recoil e- based on 4 recoil points with trackID = 1
   ldmx::StraightTrack truthTracker(
-      const std::vector<ldmx::Measurement>& points,
+      const std::vector<ldmx::SimTrackerHit>& points,
       std::vector<std::array<double, 3>>& ecal_points);
-
-  // Function to find recoil e- hits with trackID = 1
-  std::vector<ldmx::Measurement> findTruthHits(
-      const std::vector<ldmx::Measurement>& hit_collection);
 
   // Helper function: calculate distance between 2 3D points
   double calculateDistance(const std::array<double, 3>& point1,
@@ -74,11 +66,11 @@ class LinearTruthTracking : public TrackingGeometryUser {
 
   // Fitting function: fit a straight line in 3D using 4 points (2 degrees of
   // freedom)
-  std::tuple<double, double, double, double, std::vector<double>> fit3DLine(
-      const std::vector<ldmx::Measurement>& points);
+  std::tuple<double, double, double, double> fit3DLine(
+      const std::vector<ldmx::SimTrackerHit>& points);
 
   // Calculate chi2 of the fit
-  double globalChiSquare(const std::vector<ldmx::Measurement>& points,
+  double globalChiSquare(const std::vector<ldmx::SimTrackerHit>& points,
                          double a_x, double a_y, double b_x, double b_y);
 
   double processing_time_{0.};
@@ -87,25 +79,16 @@ class LinearTruthTracking : public TrackingGeometryUser {
   long n_missing_{0};
   long n_empty_{0};
 
-  std::vector<double> recoil_truth_uncertainty_{0.006, 0.12};
-
   // Assuming rLDMX v1 geometry
-  double layer12_midpoint_{12.5};
-  double layer23_midpoint_{20.0};
-  double layer34_midpoint_{27.5};
   double ecal_first_layer_z_threshold_{250};
 
   /// The name of the output collection of seeds to be stored.
   std::string out_trk_collection_{"LinearRecoilTruthTracks"};
   /// The name of the input hits collection to use in finding seeds..
-  std::string input_hits_collection_{"DigiRecoilSimHits"};
+  std::string input_hits_collection_{"RecoilSimHits"};
   /// The name of the tagger Tracks (only for Recoil Seeding)
   std::string input_rec_hits_collection_{"EcalRecHits"};
   std::string input_pass_name_{""};
-
-  // Truth Matching tool
-  std::shared_ptr<tracking::sim::TruthMatchingTool> truth_matching_tool_ =
-      nullptr;
 
 };  // LinearTruthTracking
 

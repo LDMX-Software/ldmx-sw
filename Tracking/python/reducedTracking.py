@@ -37,7 +37,7 @@ class LinearSeedFinder(Producer):
         self.input_hits_collection = 'DigiRecoilSimHits'
         self.input_rec_hits_collection = 'EcalRecHits'
         self.out_seed_collection = 'LinearRecoilSeedTracks'
-        self.recoil_uncertainty = [0.006, 0.12]
+        self.recoil_uncertainty = [0.006, 20./(12**(0.5))]
         self.ecal_uncertainty = 3.87
         self.ecal_first_layer_z_threshold = 250
         self.ecal_distance_threshold = 15.0
@@ -82,23 +82,11 @@ class LinearTruthTracking(Producer):
         The name of the input collection of Ecal RecHits (from layer 1) to check track quality
     out_track_collection : string
         The name of the ouput collection of truth tracks to be stored.
-    recoil_uncertainty : double
-        The position uncertainty in [x, y] of a recoil tracker double-layer from combining an axial-stereo sensor pair to make one 3D position
-    layer12_midpoint : double
-        The z coordinate of the midpoint between Recoil layers 1 and 2
-    layer23_midpoint : double
-        The z coordinate of the midpoint between Recoil layers 2 and 3
-    layer34_midpoint : double
-        The z coordinate of the midpoint between Recoil layers 3 and 4
     """
 
     def __init__(self, instance_name="LinearTruthTracking"):
         super().__init__(instance_name, 'tracking::reco::LinearTruthTracking', 'Tracking')
-        self.input_hits_collection = 'DigiRecoilSimHits'
+        self.input_hits_collection = 'RecoilSimHits'
         self.input_rec_hits_collection = 'EcalRecHits'
         self.out_track_collection = 'LinearRecoilTruthTracks'
-        self.recoil_truth_uncertainty = [0.006, 0.12]
         self.ecal_first_layer_z_threshold = 250
-        self.layer12_midpoint = 12.5
-        self.layer23_midpoint = 20.0
-        self.layer34_midpoint = 27.5

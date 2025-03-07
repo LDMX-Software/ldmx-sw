@@ -27,14 +27,15 @@ void LinearSeedFinder::configure(framework::config::Parameters& parameters) {
   input_pass_name_ =
       parameters.getParameter<std::string>("input_pass_name", "");
 
+  // the uncertainty is sigma_x = 6 microns and sigma_y = 20./sqrt(12)
   recoil_uncertainty_ = parameters.getParameter<std::vector<double>>(
-      "recoil_uncertainty", {0.006, 0.12});
+      "recoil_uncertainty", {0.006, 5.7735});
   ecal_uncertainty_ =
       parameters.getParameter<double>("ecal_uncertainty", {3.87});
   ecal_distance_threshold_ =
       parameters.getParameter<double>("ecal_distance_threshold");
   ecal_first_layer_z_threshold_ =
-      parameters.getParameter<double>("ecal_first_layer_z_threshold");
+      parameters.getParameter<int>("ecal_first_layer_z_threshold");
 
   layer12_midpoint_ = parameters.getParameter<double>("layer12_midpoint");
   layer23_midpoint_ = parameters.getParameter<double>("layer23_midpoint");
@@ -249,7 +250,7 @@ LinearSeedFinder::combineMultiGlobalHits(
     }  // only look at layer1
   }    // if layer2 empty
   else {
-    first_sensor_merged_hits = weightedAverage(layer1, layer2);
+    first_sensor_merged_hits = midPointCalculation(layer1, layer2);
   }  // do weighted average of two layers
 
   if (layer3.empty()) {
@@ -272,7 +273,7 @@ LinearSeedFinder::combineMultiGlobalHits(
   }  // if layer4 empty
   // do weighted average of two layers
   else {
-    second_sensor_merged_hits = weightedAverage(layer3, layer4);
+    second_sensor_merged_hits = midPointCalculation(layer3, layer4);
   }
 
   return {first_sensor_merged_hits, second_sensor_merged_hits};
@@ -280,7 +281,7 @@ LinearSeedFinder::combineMultiGlobalHits(
 
 std::vector<std::tuple<std::array<double, 3>, ldmx::Measurement,
                        std::optional<ldmx::Measurement>>>
-LinearSeedFinder::weightedAverage(
+LinearSeedFinder::midPointCalculation(
     const std::vector<ldmx::Measurement>& layer1,
     const std::vector<ldmx::Measurement>& layer2) {
   std::vector<std::tuple<std::array<double, 3>, ldmx::Measurement,
@@ -289,23 +290,22 @@ LinearSeedFinder::weightedAverage(
 
   for (const auto& point1 : layer1) {
     for (const auto& point2 : layer2) {
-      double edepL1 = point1.getEdep();
-      double edepL2 = point2.getEdep();
-      double z_avg = (point1.getGlobalPosition()[0] * edepL1 +
-                      point2.getGlobalPosition()[0] * edepL2) /
-                     (edepL1 + edepL2);
-      double x_avg = (point1.getGlobalPosition()[1] * edepL1 +
-                      point2.getGlobalPosition()[1] * edepL2) /
-                     (edepL1 + edepL2);
-      double y_avg = (point1.getGlobalPosition()[2] * edepL1 +
-                      point2.getGlobalPosition()[2] * edepL2) /
-                     (edepL1 + edepL2);
+      double z_avg = (point1.getGlobalPosition()[0] +
+                      point2.getGlobalPosition()[0]) /
+                     (2.0);
+      double x_avg = (point1.getGlobalPosition()[1] +
+                      point2.getGlobalPosition()[1]) /
+                     (2.0);
+      //Until we make axial/stereo combinations, we don't know anything about the y value
+      double y_avg = 0.0;
+        
       merged_hits.push_back(std::make_tuple(
-          std::array<double, 3>{z_avg, x_avg, y_avg}, point1, point2));
+        std::array<double, 3>{z_avg, x_avg, y_avg}, point1, point2));
+
     }  // for layer2
   }    // for layer1
   return merged_hits;
-}  // weightedAverage
+}  // midPointCalculation
 
 std::tuple<double, double, double, double, std::vector<double>>
 LinearSeedFinder::fit3DLine(const std::array<double, 3>& first_recoil,

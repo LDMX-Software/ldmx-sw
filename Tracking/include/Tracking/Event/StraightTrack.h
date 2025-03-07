@@ -69,10 +69,16 @@ class StraightTrack {
   double getPhi() const { return phi_; }
 
   const std::vector<ldmx::Measurement>& getAllSensorPoints() const {
-    return both_sensors_;
+    return all_layers_;
   }
-  void setAllSensorPoints(const std::vector<ldmx::Measurement>& sensor_points) {
-    both_sensors_ = sensor_points;
+  void setAllSensorPoints(const std::vector<ldmx::Measurement>& all_layers) {
+      all_layers_ = all_layers;
+  }
+  const std::vector<ldmx::SimTrackerHit>& getAllTruthSensorPoints() const {
+      return all_truth_layers_;
+    }
+  void setAllTruthSensorPoints(const std::vector<ldmx::SimTrackerHit>& all_truth_layers) {
+      all_truth_layers_ = all_truth_layers;
   }
 
   void setFirstSensorPosition(const std::array<double, 3>& first_sensor) {
@@ -155,7 +161,9 @@ class StraightTrack {
   double theta_;
   double phi_;
 
-  std::vector<ldmx::Measurement> both_sensors_;
+  std::vector<ldmx::Measurement> all_layers_;
+  std::vector<ldmx::SimTrackerHit> all_truth_layers_;
+
   std::array<double, 3> first_sensor_;
   std::array<double, 3> second_sensor_;
   std::array<double, 3> ecal_rec_hit_;
