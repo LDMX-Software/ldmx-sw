@@ -39,7 +39,7 @@ class LinearSeedFinder(Producer):
         self.out_seed_collection = 'LinearRecoilSeedTracks'
         self.recoil_uncertainty = [0.006, 20./(12**(0.5))]
         self.ecal_uncertainty = 3.87
-        self.ecal_first_layer_z_threshold = 250
+        self.ecal_first_layer_z_threshold = 250.0
         self.ecal_distance_threshold = 15.0
         self.layer12_midpoint = 12.5
         self.layer23_midpoint = 20.0
