@@ -89,4 +89,4 @@ class LinearTruthTracking(Producer):
         self.input_hits_collection = 'RecoilSimHits'
         self.input_rec_hits_collection = 'EcalRecHits'
         self.out_track_collection = 'LinearRecoilTruthTracks'
-        self.ecal_first_layer_z_threshold = 250
+        self.ecal_first_layer_z_threshold = 250.0
