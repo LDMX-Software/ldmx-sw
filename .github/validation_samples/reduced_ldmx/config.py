@@ -91,7 +91,7 @@ layer23_mid = (15.5+24.5)/2.
 layer34_mid = (24.5+30.5)/2.
 
 truth_tracking = reducedTracking.LinearTruthTracking("LinearTruthTracking")
-truth_tracking.input_hits_collection = "DigiRecoilSimHits"
+truth_tracking.input_hits_collection = "RecoilSimHits"
 truth_tracking.input_rec_hits_collection = "EcalRecHits"
 truth_tracking.out_track_collection = "LinearRecoilTruthTracks"
 truth_tracking.layer12_midpoint = layer12_mid
