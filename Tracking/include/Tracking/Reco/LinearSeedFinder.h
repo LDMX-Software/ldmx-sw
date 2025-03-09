@@ -123,7 +123,7 @@ class LinearSeedFinder : public TrackingGeometryUser {
   double layer12_midpoint_{12.5};
   double layer23_midpoint_{20.0};
   double layer34_midpoint_{27.5};
-  double ecal_first_layer_z_threshold_{250};
+  double ecal_first_layer_z_threshold_{250.0};
 
   std::vector<double> recoil_uncertainty_{0.006, 5.7735};
 

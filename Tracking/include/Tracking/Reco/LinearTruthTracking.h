@@ -80,7 +80,7 @@ class LinearTruthTracking : public TrackingGeometryUser {
   long n_empty_{0};
 
   // Assuming rLDMX v1 geometry
-  double ecal_first_layer_z_threshold_{250};
+  double ecal_first_layer_z_threshold_{250.0};
 
   /// The name of the output collection of seeds to be stored.
   std::string out_trk_collection_{"LinearRecoilTruthTracks"};
