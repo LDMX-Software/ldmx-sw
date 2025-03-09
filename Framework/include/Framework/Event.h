@@ -26,6 +26,7 @@
 #include <set>
 #include <sstream>
 #include <string>
+#include <typeinfo>
 
 namespace framework {
 
@@ -367,8 +368,9 @@ class Event {
       const T &obj = bus_.get<T>(branchName);
       return obj;
     } catch (const std::bad_cast &) {
-      EXCEPTION_RAISE("BadType", "Trying to get product from '" + branchName +
-                                     "' but asking for wrong type.");
+      EXCEPTION_RAISE("BadType",
+                      "Trying to get product from '" + branchName +
+                          "' but asking for wrong type: " + typeid(T).name());
     }
   }  // getObject
 

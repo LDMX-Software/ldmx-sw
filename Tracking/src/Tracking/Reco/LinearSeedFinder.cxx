@@ -35,7 +35,7 @@ void LinearSeedFinder::configure(framework::config::Parameters& parameters) {
   ecal_distance_threshold_ =
       parameters.getParameter<double>("ecal_distance_threshold");
   ecal_first_layer_z_threshold_ =
-      parameters.getParameter<int>("ecal_first_layer_z_threshold");
+      parameters.getParameter<double>("ecal_first_layer_z_threshold");
 
   layer12_midpoint_ = parameters.getParameter<double>("layer12_midpoint");
   layer23_midpoint_ = parameters.getParameter<double>("layer23_midpoint");
