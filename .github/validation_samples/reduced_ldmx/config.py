@@ -77,12 +77,12 @@ from LDMX.Tracking.geo import TrackersTrackingGeometryProvider as trackgeo
 trackgeo.get_instance().setDetector(det)
 
 # Smearing Processor - Recoil
-digiRecoil = tracking.DigitizationProcessor("DigitizationProcessorRecoil")
-digiRecoil.hit_collection = "RecoilSimHits"
-digiRecoil.out_collection = "DigiRecoilSimHits"
-digiRecoil.merge_hits = True
-digiRecoil.sigma_u = 0.006
-digiRecoil.sigma_v = 0.000001
+digi_recoil_reduced = tracking.DigitizationProcessor("DigitizationProcessorRecoilReduced")
+digi_recoil_reduced.hit_collection = "RecoilSimHits"
+digi_recoil_reduced.out_collection = "DigiRecoilSimHits"
+digi_recoil_reduced.merge_hits = True
+digi_recoil_reduced.sigma_u = 0.006
+digi_recoil_reduced.sigma_v = 0.000001
 
 #Midpoints between recoil layers. Used to classify hits by layer
 #Need to be manually updated for geometry changes that move the Recoil positions
@@ -115,7 +115,7 @@ rTracking_dqm = trk_dqm.StraightTracksDQM("LinearRecoilTracksDQM")
 rTracking_dqm.track_collection = rTracking.out_trk_collection
 rTracking_dqm.truth_collection = truth_tracking.out_track_collection
 rTracking_dqm.title = ""
-rTracking_dqm.measurement_collection=digiRecoil.out_collection
+rTracking_dqm.measurement_collection=digi_recoil_reduced.out_collection
 rTracking_dqm.buildHistograms()
 
 p.sequence.extend([
@@ -131,7 +131,7 @@ p.sequence.extend([
         TrigScintClusterProducer.pad3(),
         trigScintTrack, 
         count, TriggerProcessor('trigger', 4000.),
-        digiRecoil,
+        digi_recoil_reduced,
         truth_tracking,
         rSeedTracking,
         rTracking,
