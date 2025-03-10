@@ -56,9 +56,9 @@
     Gen0 Init Cmd 7 = /gps/pos/type Plane
     Gen0 Init Cmd 8 = /gps/pos/shape Square
     Gen0 Init Cmd 9 = /gps/pos/centre 0 0 220. mm
-    Pass = test, version = v4.2.14
-    SIM revision = 0c1344e23d331bd304bff7b89104f79fa39757c7
-    SIM version = v4.2.14
+    Pass = test, version = v4.2.16
+    SIM revision = 4651287e39ba121f6ecea7c5911153effd44f8f1
+    SIM version = v4.2.16
 }
 [ Simulator ] : Started 10000 events to produce 10000 events.
 ---- LDMXSW: Event processing complete  --------
