@@ -807,11 +807,11 @@ void EcalVetoProcessor::produce(framework::Event &event) {
                  << inside_ecal_cell;
 
   // Took out MIP tracking here
-  ldmx::EcalMipCollection MipCollection;
-  MipCollection.setEleTrajectory(ele_trajectory);
-  MipCollection.setPhotonTrajectory(photon_trajectory);
+  ldmx::EcalMipCollection ecal_mip_collection;
+  ecal_mip_collection.setEleTrajectory(ele_trajectory);
+  ecal_mip_collection.setPhotonTrajectory(photon_trajectory);
   // MipCollection.setTrackingHitList(trackingHitList);
-  event.add("EcalMipCollection", MipCollection);
+  event.add("EcalMipCollection", ecal_mip_collection);
 
   auto mip_tracking_setup = std::chrono::high_resolution_clock::now();
   profiling_map_["mip_tracking_setup"] +=

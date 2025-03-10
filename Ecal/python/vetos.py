@@ -42,6 +42,17 @@ class EcalVetoProcessor(ldmxcfg.Producer) :
         self.ecal_rechits_passname = ""
         self.ecal_trig_digis_passname = ""
 
+class EcalMipProcessor(ldmxcfg.Producer) :
+    """Configuration for the ECal MIP processor"""
+
+    def __init__(self,name = 'ecalMip') :
+        super().__init__(name,"ecal::EcalMipProcessor",'Ecal')
+
+        self.verbose = False
+        self.num_ecal_layers = 34
+        self.linreg_radius = 35.0 # in mm
+        self.mip_collection_name = "EcalMipCollection"
+
 class DNNEcalVetoProcessor(ldmxcfg.Producer) :
     """Configuration for DNN Ecal Veto
 

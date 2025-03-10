@@ -18,8 +18,8 @@ p.sequence = [ mySim ]
 import os
 import sys
 
-p.maxEvents = 100
-p.run = 1
+p.maxEvents = int(os.environ['LDMX_NUM_EVENTS'])
+p.run = int(os.environ['LDMX_RUN_NUMBER'])
 
 p.histogramFile = f'test_hist.root'
 p.outputFiles = [f'test_events.root']

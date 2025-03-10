@@ -40,6 +40,7 @@ void EcalMipTrackingProcessor::configure(framework::config::Parameters &paramete
   verbose_ = parameters.getParameter<bool>("verbose");
   nEcalLayers_ = parameters.getParameter<int>("num_ecal_layers");
   linreg_radius_ = parameters.getParameter<double>("linreg_radius");
+  mip_collection_name_ = parameters.getParameter<std::string>("mip_collection_name");
 }
 
 void EcalMipTrackingProcessor::clearProcessor() {
@@ -59,12 +60,24 @@ void EcalMipTrackingProcessor::produce(framework::Event &event) {
 auto start = std::chrono::high_resolution_clock::now();
 
 clearProcessor();
-nevents_++;
+
 
 // Read in hits near photon from EcalVetoProcessor
-ldmx::EcalMipCollection MipVariables = event.getCollection<ldmx::EcalMipCollection>("EcalMipCollection");
-std::vector<XYCoords> ele_trajectory = MipVariables.getEleTrajectory();
-std::vector<XYCoords> photon_trajectory = MipVariables.getPhotonTrajectory();
+auto result = event.getCollection<ldmx::EcalVetoResult>("EcalVetoResult");
+// auto disc_val = result.getDiscValue();
+
+auto ecal_mip_collection = event.getCollection<ldmx::EcalMipCollection>(mip_collection_name_);
+std::vector<XYCoords> ele_trajectory;
+std::vector<XYCoords> photon_trajectory;
+std::vector<HitData> trackingHitList;
+if (nevents_ <= ecal_mip_collection.size()) {
+  ele_trajectory = ecal_mip_collection[nevents_].getEleTrajectory();
+  photon_trajectory = ecal_mip_collection[nevents_].getPhotonTrajectory();
+  trackingHitList = ecal_mip_collection[nevents_].getTrackingHitList();
+};
+nevents_++;
+// std::vector<XYCoords> ele_trajectory = ecal_mip_collection.getEleTrajectory();
+// std::vector<XYCoords> photon_trajectory = ecal_mip_collection.getPhotonTrajectory();
 // std::vector<HitData> trackingHitList = MipVariables.getTrackingHitList();
 // Now inputting Lines 753-1178 of the original EcalVetoProcessor
 // ------------------------------------------------------

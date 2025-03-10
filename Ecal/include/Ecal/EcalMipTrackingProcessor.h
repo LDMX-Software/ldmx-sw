@@ -142,9 +142,13 @@ class EcalMipTrackingProcessor : public framework::Producer {
   int photonTerritoryHits_{0};
 
 
+  std::string mip_collection_name_{"EcalMipCollection"};
+
   /// handle to current geometry (to share with member functions)
   const ldmx::EcalGeometry* geometry_;
 };
+
+
 
 }  // namespace ecal
 
