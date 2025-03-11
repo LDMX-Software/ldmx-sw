@@ -71,6 +71,10 @@ if (NOT Acts_FOUND)
       URL_HASH MD5=f543dd8ba030bea2e4ee2f1b07dbe7c0
   )
   FetchContent_MakeAvailable(Acts)
+  FetchContent_GetProperties(Acts)
+  # Adding Acts as "SYSTEM" 
+  # which will silence compiler warnings from these 3rd party softwares
+  include_directories(SYSTEM "${Acts_SOURCE_DIR}/Core/include")
 endif()
 
 setup_geant4_target()
