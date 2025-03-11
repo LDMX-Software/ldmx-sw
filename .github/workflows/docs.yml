@@ -29,6 +29,7 @@ jobs:
       uses: actions/checkout@v4
       with:
         submodules: 'recursive'
+        fetch-depth: 0
 
     - name: Install just
       uses: extractions/setup-just@v2
@@ -50,7 +51,7 @@ jobs:
 
     # Runs doxygen doxygen.conf in the docs/ directory
     - name: Run Doxygen to build C++ Docs
-      uses: mattnotmitt/doxygen-action@v1.9
+      uses: mattnotmitt/doxygen-action@v1.12
       with:
         doxyfile-path: docs/doxygen.conf/doxyfile #relative to working directory
 

@@ -122,6 +122,15 @@ class SimParticle {
   std::string getVertexVolume() const { return vertexVolume_; }
 
   /**
+   * Get the material name in which this particle was created in.
+   *
+   * The material names are set in the GDML detector description.
+   *
+   * @return The material name in which this particle was created in.
+   */
+  std::string getInteractionMaterial() const { return interactionMaterial_; }
+
+  /**
    * Get the endpoint of this particle where it was destroyed
    * or left the world volume [mm].
    *
@@ -216,6 +225,16 @@ class SimParticle {
    */
   void setVertexVolume(const std::string& vertexVolume) {
     vertexVolume_ = vertexVolume;
+  }
+
+  /**
+   * Set the name of the material that this particle was created in.
+   *
+   * @param[in] interactionMaterial volume name that this particle was
+   *      created in.
+   */
+  void setInteractionMaterial(const std::string& interactionMaterial) {
+    interactionMaterial_ = interactionMaterial;
   }
 
   /**
@@ -393,10 +412,13 @@ class SimParticle {
   /// Volume the track was created in.
   std::string vertexVolume_{""};
 
+  /// Volume the track was created in.
+  std::string interactionMaterial_{""};
+
   /// Map containing the process types.
   static ProcessTypeMap PROCESS_MAP;
 
-  ClassDef(SimParticle, 7);
+  ClassDef(SimParticle, 8);
 
 };  // SimParticle
 }  // namespace ldmx

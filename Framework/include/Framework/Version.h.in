@@ -4,6 +4,7 @@
  *        software related constants e.g. git SHA-1. 
  * @author Omar Moreno, SLAC National Accelerator Laboratory
  * @author Tom Eichlersmith, University of Minnesota
+ * @author Tamas Almos Vami (UCSB), added LDMXSW_VERSION
  */
 
 #ifndef _EVENT_VERSION_H_
@@ -20,6 +21,11 @@ namespace ldmx {
  * The git commit sha for this installation of ldmx-sw
  */
 #define GIT_SHA1 "${GIT_SHA1}"
+
+/**
+ * ldmx-sw version
+ */
+#define LDMXSW_VERSION "${LDMXSW_VERSION}"
 
 }
 

@@ -53,7 +53,7 @@ class Process {
    * Get the processing pass label.
    * @return The processing pass label.
    */
-  const std::string &getPassName() const { return passname_; }
+  const std::string &getPassName() const { return pass_name_; }
 
   /**
    * Get the current run number or the run number to be used when initiating new
@@ -113,25 +113,7 @@ class Process {
    */
   void setEventHeader(ldmx::EventHeader *h) { eventHeader_ = h; }
 
-  /**
-   * Get a dummy process
-   *
-   * This function returns an instance of this class without
-   * any configuration. This is only helpful in the use case
-   * where the user is writing a test for a processor and
-   * needs to pass a Process object to the processor's constructor.
-   *
-   * @return Process without any configuration
-   */
-  static Process getDummy() { return std::move(Process()); }
-
  private:
-  /**
-   * Private dummy constructor
-   * We hide it here because it shouldn't be used anywhere else.
-   */
-  Process() : conditions_{*this} {}
-
   /**
    * Process the input event through the sequence
    * of processors
@@ -169,10 +151,13 @@ class Process {
   framework::config::Parameters config_;
 
   /** Processing pass name. */
-  std::string passname_;
+  std::string pass_name_;
 
   /** Limit on events to process. */
   int eventLimit_;
+
+  /** When reading a file in, what's the first event to read */
+  int minEvents_;
 
   /** Number of events we'd like to produce
    independetly of the number of tries it would take.

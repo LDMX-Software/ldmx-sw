@@ -50,25 +50,29 @@ export APPTAINER_CACHEDIR := env("APPTAINER_CACHEDIR", LDMX_BASE / ".apptainer")
 _default:
     @just --list --justfile {{ justfile() }} --list-heading "{{ help_message }}"
 
-# this install is private since I'd prefer users knowing what tools they are installing;
-
-# however, the CI needs to install denv before it can run any testing
+# install recipe for the CI, private so users know what tools they have on their computers
 [private]
 install-denv:
     curl -s https://raw.githubusercontent.com/tomeichlersmith/denv/main/install | sh
 
+# prep version file
+[private]
+prep-version:
+    git fetch --tags && git describe --tags | cut -f 1 -d '-' > VERSION
+
 # configure how ldmx-sw will be built
 # added ADDITIONAL_WARNINGS and CLANG_TIDY to help improve code quality
+
 # base configure command defining how cmake is called, private so only experts call it
 [private]
-configure-base *CONFIG:
+configure-base *CONFIG: prep-version
     denv cmake -B build -S . {{ CONFIG }}
 
 # default configure of build when developing
 configure *CONFIG: (configure-base "-DADDITIONAL_WARNINGS=ON -DENABLE_CLANG_TIDY=ON" CONFIG)
 
 # configure minimal option for faster compilation
-configure-quick: (configure-base)
+configure-quick: configure-base
 
 # configure with Address Sanitizer (ASAN) and  UndefinedBehaviorSanitizer (UBSan)
 configure-asan-ubsan: (configure-base "-DENABLE_SANITIZER_UNDEFINED_BEHAVIOR=ON -DENABLE_SANITIZER_ADDRESS=ON")
@@ -77,10 +81,13 @@ configure-asan-ubsan: (configure-base "-DENABLE_SANITIZER_UNDEFINED_BEHAVIOR=ON 
 configure-force-error: (configure "-DWARNINGS_AS_ERRORS=ON")
 
 # Use alternative compiler and enable LTO (test compiling only, won't run properly)
-configure-clang-lto: (configure "-DENABLE_LTO=ON -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_C_COMPILER=clang") 
+configure-clang-lto: (configure "-DENABLE_LTO=ON -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_C_COMPILER=clang")
+
+configure-clang-lto-fail-on-warning: (configure "-DENABLE_LTO=ON -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_C_COMPILER=clang -DWARNINGS_AS_ERRORS=ON")
 
 # Keep debug symbols so running with gdb provides more helpful detail
 configure-gdb: (configure-base "-DCMAKE_BUILD_TYPE=Debug")
+
 # compile and install ldmx-sw
 build ncpu=num_cpus():
     denv cmake --build build --target install -- -j{{ ncpu }}
@@ -97,24 +104,35 @@ fire config_py *ARGS:
 # run gdb on a config file
 [no-cd]
 debug config_py *ARGS:
-    denv gdb fire {{ config_py }} {{ ARGS }}
+    denv gdb --args fire {{ config_py }} {{ ARGS }}
 
 # initialize a containerized development environment
 init:
     #!/usr/bin/env sh
-    # while setting the denv_workspace is helpful for other
-    # commands that can assume the denv is already initialized,
-    # we need to unset this environment variable to make sure
-    # the test is done appropriately.
-    # just makes sure this recipe runs from the directory of
-    # the justfile so we know we are in the correct location.
-    unset denv_workspace
-    if denv check --workspace --quiet; then
-      echo "\033[32mWorkspace already initialized.\033[0m"
-      denv config print
+    set -eu
+    denv_major=$(denv version | sed 's/denv v//' | cut -f 1 -d.)
+    denv_minor=$(denv version | sed 's/denv v//' | cut -f 2 -d.)
+    if [ "${denv_major}" -lt "1" ] || [ "${denv_minor}" -lt "1" ]; then
+      # denv v1.0.X or earlier, manually check for workspace
+      # which may print a confusing error from denv when no workspace is found
+      unset denv_workspace
+      # while setting the denv_workspace is helpful for other
+      # commands that can assume the denv is already initialized,
+      # we need to unset this environment variable to make sure
+      # the test is done appropriately.
+      # just makes sure this recipe runs from the directory of
+      # the justfile so we know we are in the correct location.
+      if denv check --workspace --quiet; then
+        echo "\033[32mWorkspace already initialized.\033[0m"
+      else
+        denv init --clean-env --name ldmx ldmx/dev:latest "${LDMX_BASE}"
+      fi
     else
-      denv init --clean-env --name ldmx ldmx/dev:latest ${LDMX_BASE}
+      # denv v1.1.0 and later has updated denv init to allow us
+      # to avoid overwriting quietly
+      denv init --clean-env --no-over --no-mkdir --name ldmx ldmx/dev:latest "${LDMX_BASE}"
     fi
+    denv config print
 
 # check that the necessary programs for running ldmx-sw are present
 check:
@@ -133,7 +151,7 @@ check:
 # remove the build and install directories of ldmx-sw
 [confirm("This will remove the build and install directories. Are you sure?")]
 clean:
-    rm -r build install
+    rm -r build install VERSION
 
 # format the ldmx-sw source code
 format: format-cpp format-just
@@ -161,10 +179,21 @@ format-just:
 # check the scripts for common errors and bugs
 shellcheck:
     #!/usr/bin/env sh
-    set -exu
+    set -x
     format_list=$(mktemp)
-    git ls-tree -r HEAD | awk '{ if ($1 == 100755 || $4 ~ /\.sh/) print $4 }' > ${format_list}
-    shellcheck --severity style --shell sh $(cat ${format_list})
+    git ls-tree -r HEAD | awk '{ if ($1 == 100755 || $4 ~ /\.sh/) print $4 }' \
+      > "${format_list}"
+    xargs --arg-file="${format_list}" \
+      shellcheck --severity style --shell sh
+    rm "${format_list}"
+
+# check a script recipe also using shellcheck
+shellcheck-recipe RECIPE:
+    #!/usr/bin/env sh
+    source=$(mktemp)
+    just -n {{ RECIPE }} 2> "${source}"
+    shellcheck --severity style --shell sh "${source}"
+    rm "${source}"
 
 # below are the mimics of ldmx <cmd>
 # we could think about removing them if folks are happy with committing to the
@@ -203,12 +232,13 @@ recompFire config_py *ARGS: compile (fire config_py ARGS)
 # install the validation module
 # `python3 -m pip install Validation/` is the standard `pip` install method.
 # We add `--upgrade` to tell `pip` it should overwrite the package if it already has been
-# # installed before which is helpful in the case where someone is updating the code and running
-# # the new code within the container. The `--target install/python/` arguments tell `pip`
-# # where to install the package. This directory is where we currently store our python modules
-# # and is where the container expects them to be. The `--no-cache` argument tells `pip` to
-# # not use a cache for downloading any dependencies from the internet which is necessary since
-# # `pip` will not be able to write to the cache location within the container.
-# # install the python Validation plotting module
+# installed before which is helpful in the case where someone is updating the code and running
+# the new code within the container. The `--target install/python/` arguments tell `pip`
+# where to install the package. This directory is where we currently store our python modules
+# and is where the container expects them to be. The `--no-cache` argument tells `pip` to
+# not use a cache for downloading any dependencies from the internet which is necessary since
+# `pip` will not be able to write to the cache location within the container.
+
+# install the python Validation plotting module
 install-validation:
     denv python3 -m pip install Validation/ --upgrade --target install/python/ --no-cache

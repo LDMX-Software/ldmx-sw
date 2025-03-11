@@ -18,7 +18,7 @@ root_generate_dictionary(PerfDict
   MODULE Framework_Performance)
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/Framework_Performance_rdict.pcm DESTINATION lib)
 
-setup_library(module Framework name Configure interface)
+setup_library(module Framework name Configure dependencies Python3::Python)
 
 # Search for the Python3 library
 find_package(Python3 COMPONENTS Interpreter Development)
@@ -41,12 +41,30 @@ find_package(ROOT 6.16 CONFIG REQUIRED)
 # to generate the dictionary.
 include("${ROOT_DIR}/RootMacros.cmake")
 
-# Execute the command to extract the SHA1 hash of the current git tag. The
-# variable GIT_SHA1 will be set to contain the hash.
-execute_process(COMMAND git rev-parse HEAD OUTPUT_VARIABLE GIT_SHA1)
+# Execute the command to extract the SHA1 hash of the current git tag.
+# 'git' is removed from within the container to discourage opening a shell
+# in the container, so we need to go to some lengths in order to avoid using 'git'
+# The variable GIT_SHA1 will be set to contain the hash.
+set(git_dir "${PROJECT_SOURCE_DIR}/../.git")
+if (NOT IS_DIRECTORY "${git_dir}")
+  # we are a submodule of another project
+  file(READ "${git_dir}" git_dir)
+  string(REGEX REPLACE "^gitdir: " "" git_dir ${git_dir})
+  string(REGEX REPLACE "\n$" "" git_dir ${git_dir})
+endif()
+file(READ "${git_dir}/HEAD" current_ref)
+string(REGEX REPLACE "\n$" "" current_ref ${current_ref})
+if (current_ref MATCHES "^ref:.*$")
+  # on a branch
+  string(REGEX REPLACE "^ref: " "" current_ref "${current_ref}")
+  file(READ "${git_dir}/${current_ref}" GIT_SHA1)
+  string(REGEX REPLACE "\n$" "" GIT_SHA1 ${GIT_SHA1})
+else()
+  # in detached head state (probably on a tag)
+  set(GIT_SHA1 ${current_ref})
+endif()
+message(STATUS "Deduced git SHA: ${GIT_SHA1}")
 
-# Remove the newline character
-string(REGEX REPLACE "\n$" "" GIT_SHA1 "${GIT_SHA1}")
 
 # Copies the file 'Version.h.in', substitutes the value of GIT_SHA1 and writes
 # it out to Version.h.
@@ -63,8 +81,7 @@ register_event_object(module_path "Framework" namespace "ldmx"
 
 # Setup the library
 setup_library(module Framework 
-  dependencies Python3::Python
-               ROOT::Core
+  dependencies ROOT::Core
                ROOT::Hist
                ROOT::TreePlayer
                Boost::log
@@ -79,7 +96,7 @@ setup_library(module Framework
 # standard.
 set_target_properties(
   Framework
-  PROPERTIES CXX_STANDARD 17
+  PROPERTIES CXX_STANDARD ${CMAKE_CXX_STANDARD}
              CXX_STANDARD_REQUIRED YES
              CXX_EXTENSIONS NO)
 

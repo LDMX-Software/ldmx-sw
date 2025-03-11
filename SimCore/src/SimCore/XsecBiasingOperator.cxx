@@ -6,7 +6,7 @@ namespace simcore {
 
 XsecBiasingOperator::XsecBiasingOperator(
     std::string name, const framework::config::Parameters& parameters)
-    : G4VBiasingOperator(name) {}
+    : G4VBiasingOperator(name), theLog_{framework::logging::makeLogger(name)} {}
 
 void XsecBiasingOperator::StartRun() {
   if (this->getParticleToBias().compare("gamma") == 0) {
@@ -23,8 +23,7 @@ void XsecBiasingOperator::StartRun() {
                                      this->getParticleToBias() + "'.");
   }
 
-  std::cout << "[ XsecBiasingOperator ]: Biasing particles of type "
-            << this->getParticleToBias() << std::endl;
+  ldmx_log(info) << "Biasing particles of type " << this->getParticleToBias();
 
   if (processIsBiased(this->getProcessToBias())) {
     xsecOperation_ =

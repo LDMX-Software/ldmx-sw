@@ -7,8 +7,6 @@ AlignmentTestProcessor::AlignmentTestProcessor(const std::string& name,
 
     : TrackingGeometryUser(name, process) {}
 
-AlignmentTestProcessor::~AlignmentTestProcessor() {}
-
 void AlignmentTestProcessor::configure(
     framework::config::Parameters& parameters) {}
 

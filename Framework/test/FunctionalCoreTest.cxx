@@ -392,12 +392,10 @@ static bool removeFile(const std::string& filepath) {
 /**
  * @func run the process for the input parameters
  */
-static bool runProcess(const std::map<std::string, std::any>& parameters) {
-  framework::config::Parameters configuration;
-  configuration.setParameters(parameters);
+static bool runProcess(const framework::config::Parameters& parameters) {
   ProcessHandle p;
   try {
-    p = std::make_unique<Process>(configuration);
+    p = std::make_unique<Process>(parameters);
   } catch (framework::exception::Exception& e) {
     std::cerr << "Config Error [" << e.name() << "] : " << e.message()
               << std::endl;
@@ -450,37 +448,24 @@ DECLARE_ANALYZER_NS(framework::test, TestAnalyzer)
  */
 TEST_CASE("Core Framework Functionality", "[Framework][functionality]") {
   // these parameters aren't tested/changed, so we set them out here
-  std::map<std::string, std::any> process;
-  process["passName"] = std::string("test");
-  process["compressionSetting"] = 9;
-  process["maxTriesPerEvent"] = 1;
-  process["logFrequency"] = -1;
-  process["termLogLevel"] = 4;
-  process["fileLogLevel"] = 4;
-  process["logFileName"] = std::string();
-  process["tree_name"] = std::string("LDMX_Events");
+  framework::config::Parameters process;
+  process.add("compressionSetting", 9);
+  process.add("maxTriesPerEvent", 1);
+  process.add("logFrequency", -1);
+  process.add("termLogLevel", 4);
+  process.add("fileLogLevel", 4);
+  process.add<std::string>("logFileName", "");
+  process.add<std::string>("tree_name", "LDMX_Events");
 
-  process["histogramFile"] =
-      std::string("");                  // will be changed in some branches
-  process["maxEvents"] = -1;            // will be changed
-  process["skimDefaultIsKeep"] = true;  // will be changed in some branches
-  process["run"] = -1;                  // will be changed in some branches
+  framework::config::Parameters producerParameters;
+  producerParameters.add<std::string>("className",
+                                      "framework::test::TestProducer");
+  producerParameters.add<std::string>("instanceName", "TestProducer");
 
-  std::map<std::string, std::any> producerParameters;
-  producerParameters["className"] =
-      std::string("framework::test::TestProducer");
-  producerParameters["instanceName"] = std::string("TestProducer");
-  producerParameters["createRunHeader"] = false;
-
-  std::map<std::string, std::any> analyzerParameters;
-  analyzerParameters["className"] =
-      std::string("framework::test::TestAnalyzer");
-  analyzerParameters["instanceName"] = std::string("TestAnalyzer");
-
-  // parameters classes to wrap parameters in
-  framework::config::Parameters processConfig, producerConfig,
-      analyzerConfig;  // parameters classes to wrap parameters in
-  analyzerConfig.setParameters(analyzerParameters);
+  framework::config::Parameters analyzerParameters;
+  analyzerParameters.add<std::string>("className",
+                                      "framework::test::TestAnalyzer");
+  analyzerParameters.add<std::string>("instanceName", "TestAnalyzer");
 
   // declare used and re-used types, not used in all branches
   std::vector<framework::config::Parameters> sequence;
@@ -490,17 +475,18 @@ TEST_CASE("Core Framework Functionality", "[Framework][functionality]") {
     // no input files, only output files
 
     outputFiles = {"test_productionmode_events.root"};
-    process["outputFiles"] = outputFiles;
-    process["maxEvents"] = 3;
-    process["run"] = 3;
+    process.add<std::string>("passName", "test");
+    process.add("outputFiles", outputFiles);
+    process.add("maxEvents", 3);
+    process.add("run", 3);
 
-    producerParameters["createRunHeader"] = true;
-    producerConfig.setParameters(producerParameters);
+    producerParameters.add("createRunHeader", true);
 
-    sequence = {producerConfig};
-    process["sequence"] = sequence;
+    sequence = {producerParameters};
 
     SECTION("only producers") {
+      process.add("sequence", sequence);
+      process.add<std::string>("histogramFile", "");
       SECTION("no drop/keep rules") {
         // Process owns and deletes the processors
         REQUIRE(framework::test::runProcess(process));
@@ -510,16 +496,16 @@ TEST_CASE("Core Framework Functionality", "[Framework][functionality]") {
 
       SECTION("drop TestCollection") {
         std::vector<std::string> keep = {"drop .*Collection.*"};
-        process["keep"] = keep;
+        process.add("keep", keep);
         REQUIRE(framework::test::runProcess(process));
         CHECK_THAT(outputFiles.at(0),
                    framework::test::isGoodEventFile("test", 3, 1, false));
       }
 
       SECTION("skim for even indexed events") {
-        process["skimDefaultIsKeep"] = false;
+        process.add("skimDefaultIsKeep", false);
         std::vector<std::string> rules = {"TestProducer", ""};
-        process["skimRules"] = rules;
+        process.add("skimRules", rules);
         REQUIRE(framework::test::runProcess(process));
         CHECK_THAT(outputFiles.at(0),
                    framework::test::isGoodEventFile("test", 1, 1));
@@ -530,10 +516,10 @@ TEST_CASE("Core Framework Functionality", "[Framework][functionality]") {
       std::string hist_file_path =
           "test_productionmode_withanalyses_hists.root";
 
-      process["histogramFile"] = hist_file_path;
+      process.add("histogramFile", hist_file_path);
 
-      sequence.push_back(analyzerConfig);
-      process["sequence"] = sequence;
+      sequence.push_back(analyzerParameters);
+      process.add("sequence", sequence);
 
       SECTION("no drop/keep rules") {
         REQUIRE(framework::test::runProcess(process));
@@ -543,16 +529,16 @@ TEST_CASE("Core Framework Functionality", "[Framework][functionality]") {
 
       SECTION("drop TestCollection") {
         std::vector<std::string> keep = {"drop .*Collection.*"};
-        process["keep"] = keep;
+        process.add("keep", keep);
         REQUIRE(framework::test::runProcess(process));
         CHECK_THAT(outputFiles.at(0),
                    framework::test::isGoodEventFile("test", 3, 1, false));
       }
 
       SECTION("skim for even indexed events") {
-        process["skimDefaultIsKeep"] = false;
+        process.add("skimDefaultIsKeep", false);
         std::vector<std::string> rules = {"TestProducer", ""};
-        process["skimRules"] = rules;
+        process.add("skimRules", rules);
         REQUIRE(framework::test::runProcess(process));
         CHECK_THAT(outputFiles.at(0),
                    framework::test::isGoodEventFile("test", 1, 1));
@@ -571,61 +557,42 @@ TEST_CASE("Core Framework Functionality", "[Framework][functionality]") {
                   "test_needinputfiles_3_events.root",
                   "test_needinputfiles_4_events.root"};
 
-    producerParameters["createRunHeader"] = true;
-    producerConfig.setParameters(producerParameters);
-
-    sequence = {producerConfig};
-
-    auto makeInputs = process;
-    makeInputs["passName"] = std::string("makeInputs");
-    makeInputs["sequence"] = sequence;
-
-    outputFiles = {inputFiles.at(0)};
-    makeInputs["outputFiles"] = outputFiles;
-    makeInputs["maxEvents"] = 2;
-    makeInputs["run"] = 2;
-
-    REQUIRE(framework::test::runProcess(makeInputs));
-    REQUIRE_THAT(inputFiles.at(0),
-                 framework::test::isGoodEventFile("makeInputs", 2, 1));
-
-    outputFiles = {inputFiles.at(1)};
-    makeInputs["outputFiles"] = outputFiles;
-    makeInputs["maxEvents"] = 3;
-    makeInputs["run"] = 3;
-
-    REQUIRE(framework::test::runProcess(makeInputs));
-    REQUIRE_THAT(inputFiles.at(1),
-                 framework::test::isGoodEventFile("makeInputs", 3, 1));
-
-    outputFiles = {inputFiles.at(2)};
-    makeInputs["outputFiles"] = outputFiles;
-    makeInputs["maxEvents"] = 4;
-    makeInputs["run"] = 4;
-
-    REQUIRE(framework::test::runProcess(makeInputs));
-    REQUIRE_THAT(inputFiles.at(2),
-                 framework::test::isGoodEventFile("makeInputs", 4, 1));
+    for (int run{2}; run < 5; run++) {
+      auto makeInputs = process;
+      makeInputs.add<std::string>("passName", "makeInputs");
+      auto producer = producerParameters;
+      producer.add("createRunHeader", true);
+      makeInputs.add<std::vector<framework::config::Parameters>>("sequence",
+                                                                 {producer});
+      outputFiles = {inputFiles.at(run - 2)};
+      makeInputs.add("outputFiles", outputFiles);
+      makeInputs.add("maxEvents", run);
+      makeInputs.add("run", run);
+      REQUIRE(framework::test::runProcess(makeInputs));
+      REQUIRE_THAT(inputFiles.at(run - 2),
+                   framework::test::isGoodEventFile("makeInputs", run, 1));
+    }
+    process.add<std::string>("passName", "test");
 
     SECTION("Analysis Mode") {
       // no output files, only histogram output
 
-      sequence = {analyzerConfig};
-      process["sequence"] = sequence;
+      sequence = {analyzerParameters};
+      process.add("sequence", sequence);
 
       std::string hist_file_path = "test_analysismode_hists.root";
-      process["histogramFile"] = hist_file_path;
+      process.add("histogramFile", hist_file_path);
 
       SECTION("one input file") {
         std::vector<std::string> inputFile = {inputFiles.at(0)};
-        process["inputFiles"] = inputFile;
+        process.add("inputFiles", inputFile);
         REQUIRE(framework::test::runProcess(process));
         CHECK_THAT(hist_file_path, framework::test::isGoodHistogramFile(1 + 2));
         CHECK(framework::test::removeFile(hist_file_path));
       }
 
       SECTION("multiple input files") {
-        process["inputFiles"] = inputFiles;
+        process.add("inputFiles", inputFiles);
         REQUIRE(framework::test::runProcess(process));
         CHECK_THAT(hist_file_path, framework::test::isGoodHistogramFile(
                                        1 + 2 + 1 + 2 + 3 + 1 + 2 + 3 + 4));
@@ -637,19 +604,19 @@ TEST_CASE("Core Framework Functionality", "[Framework][functionality]") {
     SECTION("Merge Mode") {
       // many input files to one output file
 
-      process["inputFiles"] = inputFiles;
+      process.add("inputFiles", inputFiles);
 
       std::string event_file_path = "test_mergemode_events.root";
       outputFiles = {event_file_path};
-      process["outputFiles"] = outputFiles;
+      process.add("outputFiles", outputFiles);
 
       SECTION("with analyzers") {
-        sequence = {analyzerConfig};
+        sequence = {analyzerParameters};
 
         std::string hist_file_path = "test_mergemode_withanalyzers_hists.root";
 
-        process["sequence"] = sequence;
-        process["histogramFile"] = hist_file_path;
+        process.add("sequence", sequence);
+        process.add("histogramFile", hist_file_path);
 
         SECTION("no drop/keep rules") {
           REQUIRE(framework::test::runProcess(process));
@@ -659,7 +626,7 @@ TEST_CASE("Core Framework Functionality", "[Framework][functionality]") {
 
         SECTION("drop TestCollection") {
           std::vector<std::string> keep = {"drop .*Collection.*"};
-          process["keep"] = keep;
+          process.add("keep", keep);
           REQUIRE(framework::test::runProcess(process));
           CHECK_THAT(event_file_path, framework::test::isGoodEventFile(
                                           "makeInputs", 2 + 3 + 4, 3, false));
@@ -671,11 +638,10 @@ TEST_CASE("Core Framework Functionality", "[Framework][functionality]") {
       }
 
       SECTION("with producers") {
-        producerParameters["createRunHeader"] = false;
-        producerConfig.setParameters(producerParameters);
-        sequence = {producerConfig};
+        producerParameters.add("createRunHeader", false);
+        sequence = {producerParameters};
 
-        process["sequence"] = sequence;
+        process.add("sequence", sequence);
 
         SECTION("not listening to storage hints") {
           REQUIRE(framework::test::runProcess(process));
@@ -684,9 +650,9 @@ TEST_CASE("Core Framework Functionality", "[Framework][functionality]") {
         }
 
         SECTION("skim for even indexed events") {
-          process["skimDefaultIsKeep"] = false;
+          process.add("skimDefaultIsKeep", false);
           std::vector<std::string> rules = {"TestProducer", ""};
-          process["skimRules"] = rules;
+          process.add("skimRules", rules);
           REQUIRE(framework::test::runProcess(process));
           CHECK_THAT(event_file_path,
                      framework::test::isGoodEventFile("test", 1 + 1 + 2, 3));

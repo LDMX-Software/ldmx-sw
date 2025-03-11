@@ -22,8 +22,6 @@ EcalProcessFilter::EcalProcessFilter(const std::string& name,
   process_ = parameters.getParameter<std::string>("process");
 }
 
-EcalProcessFilter::~EcalProcessFilter() {}
-
 G4ClassificationOfNewTrack EcalProcessFilter::ClassifyNewTrack(
     const G4Track* track, const G4ClassificationOfNewTrack& currentTrackClass) {
   // Get the particle type.
@@ -166,12 +164,8 @@ void EcalProcessFilter::stepping(const G4Step* step) {
       return;
     }
 
-    ldmx_log(debug) << "[ EcalProcessFilter ]: "
-                    << G4EventManager::GetEventManager()
-                           ->GetConstCurrentEvent()
-                           ->GetEventID()
-                    << " Brem photon produced " << secondaries->size()
-                    << " particle via " << processName << " process.";
+    ldmx_log(info) << " Brem photon produced " << secondaries->size()
+                   << " particles via " << processName << " process.";
     trackInfo->tagBremCandidate(false);
     trackInfo->setSaveFlag(true);
     trackInfo->tagPNGamma();

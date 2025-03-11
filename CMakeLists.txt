@@ -15,7 +15,10 @@ if ("${srcdir}" STREQUAL "${bindir}")
 endif()
 
 # Set the project name
-project(LDMX_SW VERSION 3.1.1
+file(READ ${CMAKE_CURRENT_SOURCE_DIR}/VERSION LDMXSW_VERSION)
+string(STRIP "${LDMXSW_VERSION}" LDMXSW_VERSION)
+string(REGEX REPLACE "^v" "" LDMXSW_VERSION_NUM "${LDMXSW_VERSION}") 
+project(LDMX_SW VERSION ${LDMXSW_VERSION_NUM} 
                 DESCRIPTION "The Light Dark Matter eXperiment simulation and reconstruction framework." 
                 LANGUAGES CXX    
 )
@@ -43,12 +46,6 @@ set_source_files_properties(Framework/test/FunctionalCoreTest.cxx PROPERTIES COM
 if (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
     set(CMAKE_INSTALL_PREFIX ${CMAKE_CURRENT_SOURCE_DIR}/install CACHE PATH "" FORCE)
     message(STATUS "Install directory set to ${CMAKE_INSTALL_PREFIX}")
-endif()
-
-# If a user is building outside of a Docker or Singularity environment, 
-# warn them. 
-if (NOT EXISTS /.dockerenv AND NOT EXISTS /singularity)
-    message(WARNING "You are not inside a container; you may be working in an untested environment.")
 endif()
 
 # Set the default release type to "Release". If a release type is specified 

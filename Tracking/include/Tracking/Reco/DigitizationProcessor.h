@@ -26,7 +26,7 @@ namespace tracking::reco {
 class DigitizationProcessor : public TrackingGeometryUser {
  public:
   DigitizationProcessor(const std::string& name, framework::Process& process);
-  ~DigitizationProcessor() = default;
+  virtual ~DigitizationProcessor() = default;
 
   void onProcessStart() override;
 

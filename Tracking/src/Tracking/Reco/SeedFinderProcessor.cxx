@@ -38,8 +38,6 @@ SeedFinderProcessor::SeedFinderProcessor(const std::string& name,
   */
 }
 
-SeedFinderProcessor::~SeedFinderProcessor() {}
-
 void SeedFinderProcessor::onProcessStart() {
   truthMatchingTool_ = std::make_shared<tracking::sim::TruthMatchingTool>();
 }
@@ -82,6 +80,9 @@ void SeedFinderProcessor::configure(framework::config::Parameters& parameters) {
       "inflate_factors", {10., 10., 10., 10., 10., 10.});
 
   bfield_ = parameters.getParameter<double>("bfield", 1.5);
+
+  input_pass_name_ =
+      parameters.getParameter<std::string>("input_pass_name", "");
 }
 
 void SeedFinderProcessor::produce(framework::Event& event) {
@@ -96,11 +97,13 @@ void SeedFinderProcessor::produce(framework::Event& event) {
   std::map<int, ldmx::SimParticle> particleMap;
 
   const std::vector<ldmx::Measurement> measurements =
-      event.getCollection<ldmx::Measurement>(input_hits_collection_);
+      event.getCollection<ldmx::Measurement>(input_hits_collection_,
+                                             input_pass_name_);
 
   std::vector<ldmx::Track> tagger_tracks;
   if (event.exists(tagger_trks_collection_)) {
-    tagger_tracks = event.getCollection<ldmx::Track>(tagger_trks_collection_);
+    tagger_tracks = event.getCollection<ldmx::Track>(tagger_trks_collection_,
+                                                     input_pass_name_);
   }
 
   // Create an unbound surface at the target
@@ -349,8 +352,7 @@ ldmx::Track SeedFinderProcessor::SeedTracker(
                           seed_free, *seed_perigee, geometry_context())
                           .value();
 
-  ldmx_log(debug) << "bound parameters at perigee location" << std::endl
-                  << bound_params;
+  ldmx_log(trace) << "bound parameters at perigee location" << bound_params;
 
   Acts::BoundVector stddev;
   // sigma set to 75% of momentum
@@ -442,7 +444,7 @@ bool SeedFinderProcessor::GroupStrips(
   // std::cout<<std::endl;
 
   for (auto& meas : measurements) {
-    ldmx_log(debug) << meas;
+    ldmx_log(trace) << meas;
 
     if (std::find(strategy.begin(), strategy.end(), meas.getLayer()) !=
         strategy.end()) {

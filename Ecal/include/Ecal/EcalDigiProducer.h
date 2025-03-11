@@ -5,6 +5,7 @@
  * @author Omar Moreno, SLAC National Accelerator Laboratory
  * @author Cameron Bravo, SLAC National Accelerator Laboratory
  * @author Tom Eichlersmith, University of Minnesota
+ * @author Tamas Almos Vami, UCSB
  */
 
 #ifndef EVENTPROC_ECALDIGIPRODUCER_H_
@@ -14,6 +15,7 @@
 //   C++ StdLib   //
 //----------------//
 #include <memory>  //for smart pointers
+#include <random>  //for random num generators
 #include <set>     //for tracking used detector IDs
 
 //----------//
@@ -37,27 +39,31 @@ class EcalDigiProducer : public framework::Producer {
  public:
   /**
    * Constructor
-   * Makes unique noise generator and injector for this class
    */
-  EcalDigiProducer(const std::string& name, framework::Process& process);
+  EcalDigiProducer(const std::string& name, framework::Process& process)
+      : Producer(name, process) {}
 
   /**
    * Destructor
-   * Deletes digi collection if it has been created
    */
-  virtual ~EcalDigiProducer();
+  virtual ~EcalDigiProducer() = default;
 
   /**
    * Configure this producer from the python configuration.
    * Sets event constants and configures the noise generator, noise injector,
    * and pulse function. Creates digi collection
    */
-  virtual void configure(framework::config::Parameters&);
+  virtual void configure(framework::config::Parameters&) override;
 
   /**
    * Simulates measurement of pulse and creates digi collection for input event.
    */
-  virtual void produce(framework::Event& event);
+  virtual void produce(framework::Event& event) override;
+
+  /**
+   * Set up random number / noise generation
+   */
+  virtual void onNewRun(const ldmx::RunHeader& runHeader) override;
 
  private:
   ///////////////////////////////////////////////////////////////////////////////////////
@@ -108,18 +114,21 @@ class EcalDigiProducer : public framework::Producer {
   /// Hgcroc Emulator to digitize analog voltage signals
   std::unique_ptr<ldmx::HgcrocEmulator> hgcroc_;
 
-  /// Total number of channels in the ECal
-  // In a real data, zero-compression scenario the number of channels per event
-  // will change. Unused now, but keeping if for future dev int nTotalChannels_;
-
   /// Conversion from time in ns to ticks of the internal clock
   double ns_;
+
+  /// Read out threshold
+  double readoutThreshold_;
+  /// Read out pedestal
+  double pedestal_;
+  /// Noise RMS
+  double noiseRMS_;
 
   /// Generates noise hits based off of number of cells that are not hit
   std::unique_ptr<ldmx::NoiseGenerator> noiseGenerator_;
 
-  /// Generates Gaussian noise on top of real hits
-  std::unique_ptr<TRandom3> noiseInjector_;
+  /// Generates random numbers for which channels to fill up with noise
+  std::mt19937 rng_;
 };
 }  // namespace ecal
 

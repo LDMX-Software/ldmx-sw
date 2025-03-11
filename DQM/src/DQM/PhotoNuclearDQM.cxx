@@ -1,32 +1,12 @@
 
 #include "DQM/PhotoNuclearDQM.h"
 
-/*~~~~~~~~~~~~~~~~*/
-/*   C++ StdLib   */
-/*~~~~~~~~~~~~~~~~*/
-#include <algorithm>
-
-//----------//
-//   ROOT   //
-//----------//
-#include "TH1F.h"
-#include "TH2F.h"
-
-//----------//
-//   LDMX   //
-//----------//
-#include <TVector3.h>
-
-#include "Framework/Event.h"
-#include "Tools/AnalysisUtils.h"
-
 namespace dqm {
 
 PhotoNuclearDQM::PhotoNuclearDQM(const std::string &name,
                                  framework::Process &process)
     : framework::Analyzer(name, process) {}
 
-PhotoNuclearDQM::~PhotoNuclearDQM() {}
 std::vector<const ldmx::SimParticle *> PhotoNuclearDQM::findDaughters(
     const std::map<int, ldmx::SimParticle> &particleMap,
     const ldmx::SimParticle *parent) const {
@@ -173,6 +153,15 @@ void PhotoNuclearDQM::findSubleadingKinematics(
     histograms_.fill("1k0_energy_frac", energyFrac);
   }
 }
+
+void PhotoNuclearDQM::setHistLabels(const std::string &name,
+                                    const std::vector<std::string> &labels) {
+  auto histo{histograms_.get(name)};
+  for (std::size_t ibin{1}; ibin <= labels.size(); ibin++) {
+    histo->GetXaxis()->SetBinLabel(ibin, labels[ibin - 1].c_str());
+  }
+}
+
 void PhotoNuclearDQM::onProcessStart() {
   std::vector<std::string> labels = {"",
                                      "Nothing hard",   // 0
@@ -198,18 +187,9 @@ void PhotoNuclearDQM::onProcessStart() {
                                      "multi-body",     // 20
                                      ""};
 
-  std::vector<TH1 *> hists = {
-      histograms_.get("event_type"),
-      histograms_.get("event_type_500mev"),
-      histograms_.get("event_type_2000mev"),
-
-  };
-
-  for (int ilabel{1}; ilabel < labels.size(); ++ilabel) {
-    for (auto &hist : hists) {
-      hist->GetXaxis()->SetBinLabel(ilabel, labels[ilabel - 1].c_str());
-    }
-  }
+  setHistLabels("event_type", labels);
+  setHistLabels("event_type_500mev", labels);
+  setHistLabels("event_type_2000mev", labels);
 
   labels = {"",
             "1 n",      // 0
@@ -220,34 +200,24 @@ void PhotoNuclearDQM::onProcessStart() {
             "Other",    // 5
             ""};
 
-  hists = {
-      histograms_.get("event_type_compact"),
-      histograms_.get("event_type_compact_500mev"),
-      histograms_.get("event_type_compact_2000mev"),
-  };
+  setHistLabels("event_type_compact", labels);
+  setHistLabels("event_type_compact_500mev", labels);
+  setHistLabels("event_type_compact_2000mev", labels);
 
-  for (int ilabel{1}; ilabel < labels.size(); ++ilabel) {
-    for (auto &hist : hists) {
-      hist->GetXaxis()->SetBinLabel(ilabel, labels[ilabel - 1].c_str());
-    }
-  }
+  setHistLabels("1n_event_type", {"nn", "pn", "#pi^{+}n", "#pi^{0}n", "other"});
 
-  std::vector<std::string> n_labels = {"",
-                                       "nn",        // 0
-                                       "pn",        // 1
-                                       "#pi^{+}n",  // 2
-                                       "#pi^{0}n",  // 3
-                                       "other",     // 4
-                                       ""};
+  setHistLabels(
+      "pn_vertex_volume",
+      {"Didn't happen", "Else", "W Cooling", "C Cooling", "PCB",
+       "CarbonBasePlate", "Absorber", "Sensor", "Glue", "Motherboard"});
 
-  TH1 *hist = histograms_.get("1n_event_type");
-  for (int ilabel{1}; ilabel < n_labels.size(); ++ilabel) {
-    hist->GetXaxis()->SetBinLabel(ilabel, n_labels[ilabel - 1].c_str());
-  }
-}
+  setHistLabels("pn_interaction_material",
+                {"Didn't happen", "Else", "Si", "W", "FR4", "Steel", "Epoxy",
+                 "PVT", "Glue", "Air"});
+
+}  // end of onProcessStart
 
 void PhotoNuclearDQM::configure(framework::config::Parameters &parameters) {
-  verbose_ = parameters.getParameter<bool>("verbose");
   count_light_ions_ = parameters.getParameter<bool>("count_light_ions", true);
 }
 
@@ -267,17 +237,87 @@ void PhotoNuclearDQM::analyze(const framework::Event &event) {
   // photo-nuclear reaction.
   auto pnGamma{Analysis::getPNGamma(particleMap, recoil, 2500.)};
   if (pnGamma == nullptr) {
-    if (verbose_) {
-      std::cout << "[ PhotoNuclearDQM ]: PN Daughter is lost, skipping."
-                << std::endl;
-    }
+    ldmx_log(warn) << "PN Daughter is lost, skipping";
     return;
   }
+
   const auto pnDaughters{findDaughters(particleMap, pnGamma)};
+
+  if (!pnDaughters.empty()) {
+    auto pn_vertex_volume{pnDaughters[0]->getVertexVolume()};
+    auto pn_interaction_material{pnDaughters[0]->getInteractionMaterial()};
+
+    // Let's start with the PN vertex volume
+    if (pn_vertex_volume.find("W_cooling") != std::string::npos) {
+      // W_cooling_volume_X
+      histograms_.fill("pn_vertex_volume", 2);
+    } else if (pn_vertex_volume.find("C_volume") != std::string::npos) {
+      // C_volume_X
+      histograms_.fill("pn_vertex_volume", 3);
+    } else if (pn_vertex_volume.find("PCB_volume") != std::string::npos) {
+      histograms_.fill("pn_vertex_volume", 4);
+    } else if (pn_vertex_volume.find("CarbonBasePlate") != std::string::npos) {
+      // CarbonBasePlate_volume
+      histograms_.fill("pn_vertex_volume", 5);
+    } else if (pn_vertex_volume.find("W_front") != std::string::npos) {
+      // W_front_volume_X
+      histograms_.fill("pn_vertex_volume", 6);
+    } else if (pn_vertex_volume.find("Si_volume") != std::string::npos) {
+      histograms_.fill("pn_vertex_volume", 7);
+    } else if (pn_vertex_volume.find("Glue") != std::string::npos) {
+      histograms_.fill("pn_vertex_volume", 8);
+    } else if (pn_vertex_volume.find("motherboard") != std::string::npos) {
+      histograms_.fill("pn_vertex_volume", 9);
+
+    } else {
+      ldmx_log(debug) << " Else pn_vertex_volume = " << pn_vertex_volume
+                      << " with pn_interaction_material = "
+                      << pn_interaction_material;
+      histograms_.fill("pn_vertex_volume", 1);
+    }
+
+    // Now the interaction material
+    if (pn_interaction_material.find("G4_Si") != std::string::npos) {
+      histograms_.fill("pn_interaction_material", 2);
+    } else if (pn_interaction_material.find("G4_W") != std::string::npos) {
+      histograms_.fill("pn_interaction_material", 3);
+    } else if (pn_interaction_material.find("FR4") != std::string::npos) {
+      // Glass epoxy
+      histograms_.fill("pn_interaction_material", 4);
+    } else if (pn_interaction_material.find("Steel") != std::string::npos) {
+      histograms_.fill("pn_interaction_material", 5);
+    } else if (pn_interaction_material.find("Epoxy") != std::string::npos) {
+      // CarbonEpoxyComposite
+      histograms_.fill("pn_interaction_material", 6);
+    } else if (pn_interaction_material.find("Scintillator") !=
+               std::string::npos) {
+      // This is the notion for PVT
+      histograms_.fill("pn_interaction_material", 7);
+    } else if (pn_interaction_material.find("Glue") != std::string::npos) {
+      // This is the notion for PVT
+      histograms_.fill("pn_interaction_material", 8);
+    } else if (pn_interaction_material.find("G4_AIR") != std::string::npos) {
+      // Air
+      histograms_.fill("pn_interaction_material", 9);
+    } else {
+      ldmx_log(debug) << " Else pn_interaction_material = "
+                      << pn_interaction_material
+                      << " with pn_vertex_volume = " << pn_vertex_volume;
+      histograms_.fill("pn_interaction_material", 1);
+    }
+  } else {
+    histograms_.fill("pn_vertex_volume", 0);
+    histograms_.fill("pn_interaction_material", 0);
+  }
+
   findParticleKinematics(pnDaughters);
 
   histograms_.fill("pn_particle_mult", pnGamma->getDaughters().size());
   histograms_.fill("pn_gamma_energy", pnGamma->getEnergy());
+  histograms_.fill("pn_gamma_int_x", pnGamma->getEndPoint()[0]);
+  histograms_.fill("pn_gamma_int_y", pnGamma->getEndPoint()[1]);
+  histograms_.fill("pn_gamma_int_x:pn_gamma_int_y", pnGamma->getEndPoint()[0],
+                   pnGamma->getEndPoint()[1]);
   histograms_.fill("pn_gamma_int_z", pnGamma->getEndPoint()[2]);
   histograms_.fill("pn_gamma_vertex_x", pnGamma->getVertex()[0]);
   histograms_.fill("pn_gamma_vertex_y", pnGamma->getVertex()[1]);

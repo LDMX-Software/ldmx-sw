@@ -2,6 +2,7 @@
 name: Build with CLANG using LTO sanitizer 
 
 on:
+  workflow_dispatch:
   push:
     branches: '**' #all branches
     tags: 'v*.*.*' #all version tags
@@ -17,6 +18,7 @@ jobs:
       uses: actions/checkout@v4
       with:
         submodules: 'recursive'
+        fetch-depth: 0
 
     - name: Install just
       uses: extractions/setup-just@v2
@@ -25,5 +27,5 @@ jobs:
 
     - name: Compile and Install ldmx-sw
       run: | 
-        just install-denv init configure-clang-lto
+        just install-denv init configure-clang-lto-fail-on-warning
         just build

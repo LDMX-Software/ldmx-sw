@@ -437,8 +437,7 @@ class HgcrocDigiCollection {
    * in the collection and only getting the digi when the iterator is
    * asked to de-reference.
    */
-  class iterator
-      : public std::iterator<std::input_iterator_tag, HgcrocDigi, long> {
+  class iterator {
    public:
     /// Connect the parent collection with an index to this iterator
     explicit iterator(HgcrocDigiCollection& c, long index = 0)
@@ -527,7 +526,7 @@ class HgcrocDigiCollection {
   /**
    * The ROOT class definition.
    */
-  ClassDef(HgcrocDigiCollection, 4);
+  ClassDef(HgcrocDigiCollection, 5);
 };
 }  // namespace ldmx
 
