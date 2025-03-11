@@ -176,8 +176,8 @@ SET( GENIE_LIBS
 	     xml2
 	     Genie::GFwReg
 	     ROOT::EG
-	     ROOT::EGPythia6
-	     Pythia6
+	     ROOT::EGPythia8
+	     pythia8
 	     Genie::GFwNtp
 	     Genie::GPhXSIg
 	     Genie::GPhPDF
