@@ -694,7 +694,8 @@ void TruthSeedProcessor::produce(framework::Event& event) {
 
   // Recover the EcalScoring hits
   std::vector<ldmx::SimTrackerHit> ecal_spHits =
-      event.getCollection<ldmx::SimTrackerHit>("EcalScoringPlaneHits");
+      event.getCollection<ldmx::SimTrackerHit>("EcalScoringPlaneHits",
+                                               sp_pass_name_);
   // Select ECAL hits
   std::vector<ldmx::SimTrackerHit> sel_ecal_spHits;
 
