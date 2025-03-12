@@ -97,19 +97,29 @@ void KaonPhysics::DumpDecayDetails(const G4ParticleDefinition* kaon) const {
                  << std::scientific << std::setprecision(15)
                  << " (PDG Lifetime " << kaon->GetPDGLifeTime() << ")"
                  << std::endl;
-  const auto table{kaon->GetDecayTable()};
+  auto* table{kaon->GetDecayTable()};
+  if (not table) {
+    ldmx_log(error) << "No Kaon decay table.";
+    return;
+  }
   const int entries{table->entries()};
   for (auto i{0}; i < entries; ++i) {
     const auto channel{(*table)[i]};
     const auto daughters{channel->GetNumberOfDaughters()};
     std::string products{};
     // N-1 to avoid extra " + "
-    for (auto j{0}; j < daughters - 1; ++j) {
-      products += channel->GetDaughter(j)->GetParticleName();
-      products += " + ";
+    for (auto j{0}; j < daughters; ++j) {
+      auto* d{channel->GetDaughter(j)};
+      if (d) {
+        products += d->GetParticleName();
+      } else {
+        products += "NULL";
+      }
+      if (j < daughters - 1) {
+        // only add '+' when there are more to come
+        products += " + ";
+      }
     }
-    // Special formatting for last one :)
-    products += channel->GetDaughter(daughters - 1)->GetParticleName();
     ldmx_log(info) << "Channel " << i << " (" << kaon->GetParticleName()
                    << " -> " << products << ") Kinematics type "
                    << channel->GetKinematicsName() << " with BR "

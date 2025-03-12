@@ -50,25 +50,29 @@ export APPTAINER_CACHEDIR := env("APPTAINER_CACHEDIR", LDMX_BASE / ".apptainer")
 _default:
     @just --list --justfile {{ justfile() }} --list-heading "{{ help_message }}"
 
-# this install is private since I'd prefer users knowing what tools they are installing;
-
-# however, the CI needs to install denv before it can run any testing
+# install recipe for the CI, private so users know what tools they have on their computers
 [private]
 install-denv:
     curl -s https://raw.githubusercontent.com/tomeichlersmith/denv/main/install | sh
 
+# prep version file
+[private]
+prep-version:
+    git fetch --tags && git describe --tags | cut -f 1 -d '-' > VERSION
+
 # configure how ldmx-sw will be built
 # added ADDITIONAL_WARNINGS and CLANG_TIDY to help improve code quality
+
 # base configure command defining how cmake is called, private so only experts call it
 [private]
-configure-base *CONFIG:
+configure-base *CONFIG: prep-version
     denv cmake -B build -S . {{ CONFIG }}
 
 # default configure of build when developing
 configure *CONFIG: (configure-base "-DADDITIONAL_WARNINGS=ON -DENABLE_CLANG_TIDY=ON" CONFIG)
 
 # configure minimal option for faster compilation
-configure-quick: (configure-base)
+configure-quick: configure-base
 
 # configure with Address Sanitizer (ASAN) and  UndefinedBehaviorSanitizer (UBSan)
 configure-asan-ubsan: (configure-base "-DENABLE_SANITIZER_UNDEFINED_BEHAVIOR=ON -DENABLE_SANITIZER_ADDRESS=ON")
@@ -77,11 +81,13 @@ configure-asan-ubsan: (configure-base "-DENABLE_SANITIZER_UNDEFINED_BEHAVIOR=ON 
 configure-force-error: (configure "-DWARNINGS_AS_ERRORS=ON")
 
 # Use alternative compiler and enable LTO (test compiling only, won't run properly)
-configure-clang-lto: (configure "-DENABLE_LTO=ON -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_C_COMPILER=clang") 
+configure-clang-lto: (configure "-DENABLE_LTO=ON -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_C_COMPILER=clang")
 
 configure-clang-lto-fail-on-warning: (configure "-DENABLE_LTO=ON -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_C_COMPILER=clang -DWARNINGS_AS_ERRORS=ON")
+
 # Keep debug symbols so running with gdb provides more helpful detail
 configure-gdb: (configure-base "-DCMAKE_BUILD_TYPE=Debug")
+
 # compile and install ldmx-sw
 build ncpu=num_cpus():
     denv cmake --build build --target install -- -j{{ ncpu }}
@@ -145,7 +151,7 @@ check:
 # remove the build and install directories of ldmx-sw
 [confirm("This will remove the build and install directories. Are you sure?")]
 clean:
-    rm -r build install
+    rm -r build install VERSION
 
 # format the ldmx-sw source code
 format: format-cpp format-just
@@ -226,12 +232,13 @@ recompFire config_py *ARGS: compile (fire config_py ARGS)
 # install the validation module
 # `python3 -m pip install Validation/` is the standard `pip` install method.
 # We add `--upgrade` to tell `pip` it should overwrite the package if it already has been
-# # installed before which is helpful in the case where someone is updating the code and running
-# # the new code within the container. The `--target install/python/` arguments tell `pip`
-# # where to install the package. This directory is where we currently store our python modules
-# # and is where the container expects them to be. The `--no-cache` argument tells `pip` to
-# # not use a cache for downloading any dependencies from the internet which is necessary since
-# # `pip` will not be able to write to the cache location within the container.
-# # install the python Validation plotting module
+# installed before which is helpful in the case where someone is updating the code and running
+# the new code within the container. The `--target install/python/` arguments tell `pip`
+# where to install the package. This directory is where we currently store our python modules
+# and is where the container expects them to be. The `--no-cache` argument tells `pip` to
+# not use a cache for downloading any dependencies from the internet which is necessary since
+# `pip` will not be able to write to the cache location within the container.
+
+# install the python Validation plotting module
 install-validation:
     denv python3 -m pip install Validation/ --upgrade --target install/python/ --no-cache

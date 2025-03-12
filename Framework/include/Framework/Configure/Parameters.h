@@ -5,6 +5,7 @@
 /*   C++ StdLib   */
 /*~~~~~~~~~~~~~~~~*/
 #include <any>
+#include <boost/core/demangle.hpp>
 #include <iostream>
 #include <limits>
 #include <map>
@@ -13,53 +14,44 @@
 #include <typeinfo>
 #include <vector>
 
-/*~~~~~~~~~~~~~~~*/
-/*   Exception   */
-/*~~~~~~~~~~~~~~~*/
 #include "Framework/Exception/Exception.h"
 
-namespace framework {
-namespace config {
+namespace framework::config {
 
 /**
  * Class encapsulating parameters for configuring a processor.
+ *
+ * The storage of arbitrary parameters recursively is done using a map
+ * from parameter names (std::string) to parameter values. The values
+ * are stored in std::any which allows the user to store any object they wish
+ * in a memory-safe environment.
  */
 class Parameters {
  public:
-  /// Constructor
-  Parameters(){};
-
-  /// Destructor
-  ~Parameters(){};
-
-  /**
-   * Set the mapping of parameter names to value.
-   *
-   * @param [in, out] parameters mapping between parameter names and the
-   * corresponding value.
-   */
-  void setParameters(std::map<std::string, std::any> parameters) {
-    parameters_ = parameters;
-  }
-
   /**
    * Add a parameter to the parameter list.  If the parameter already
    * exists in the list, throw an exception.
    *
    * @param[in] name Name of the parameter.
    * @param[in] value The value of the parameter.
+   * @tparam T type of parameter being added
    * @throw Exception if a parameter by that name already exist in
    *  the list.
    */
   template <typename T>
-  void addParameter(const std::string& name, const T& value) {
+  void add(const std::string& name, const T& value) {
     if (exists(name)) {
-      EXCEPTION_RAISE("ParameterExist",
+      EXCEPTION_RAISE("Config",
                       "The parameter " + name +
                           " already exists in the list of parameters.");
     }
 
     parameters_[name] = value;
+  }
+
+  template <typename T>
+  void addParameter(const std::string& name, const T& value) {
+    add<T>(name, value);
   }
 
   /**
@@ -76,35 +68,36 @@ class Parameters {
    * Retrieve the parameter of the given name.
    *
    * @throw Exception if parameter of the given name isn't found
-   *
    * @throw Exception if parameter is found but not of the input type
    *
-   * @param T the data type to cast the parameter to.
-   *
+   * @tparam T the data type to cast the parameter to.
    * @param[in] name the name of the parameter value to retrieve.
-   *
    * @return The user specified parameter of type T.
    */
   template <typename T>
-  T getParameter(const std::string& name) const {
+  const T& get(const std::string& name) const {
     // Check if the variable exists in the map.  If it doesn't,
     // raise an exception.
     if (not exists(name)) {
-      EXCEPTION_RAISE(
-          "NonExistParam",
-          "Parameter '" + name + "' does not exist in list of parameters.");
+      EXCEPTION_RAISE("Config", "Parameter '" + name +
+                                    "' does not exist in list of parameters.");
     }
 
     try {
-      auto parameter = std::any_cast<T>(parameters_.at(name));
-      return parameter;
+      return std::any_cast<const T&>(parameters_.at(name));
     } catch (const std::bad_any_cast& e) {
-      EXCEPTION_RAISE("BadTypeParam",
-                      "Parameter '" + name + "' of type '" +
-                          parameters_.at(name).type().name() +
-                          "' is being cast to incorrect type '" +
-                          typeid(T).name() + "'.");
+      EXCEPTION_RAISE(
+          "Config",
+          "Parameter '" + name + "' of type '" +
+              boost::core::demangle(parameters_.at(name).type().name()) +
+              "' is being cast to incorrect type '" +
+              boost::core::demangle(typeid(T).name()) + "'.");
     }
+  }
+
+  template <typename T>
+  const T& getParameter(const std::string& name) const {
+    return get<T>(name);
   }
 
   /**
@@ -112,20 +105,31 @@ class Parameters {
    *
    * Return the input default if a parameter is not found in map.
    *
+   * @tparam T type of parameter to return
+   * @param[in] name parameter name to retrieve
+   * @param[in,out] def default to use if parameter is not found
    * @return the user parameter of type T
    */
   template <typename T>
-  T getParameter(const std::string& name, const T& def) const {
+  const T& get(const std::string& name, const T& def) const {
     if (not exists(name)) return def;
 
     // get here knowing that name exists in parameters_
-    return getParameter<T>(name);
+    return get<T>(name);
+  }
+
+  template <typename T>
+  const T& getParameter(const std::string& name, const T& def) const {
+    return get<T>(name, def);
   }
 
   /**
    * Get a list of the keys available.
+   *
    * This may be helpful in debugging to make sure the parameters are spelled
    * correctly.
+   *
+   * @return list of all keys in this map of parameters
    */
   std::vector<std::string> keys() const {
     std::vector<std::string> key;
@@ -134,11 +138,10 @@ class Parameters {
   }
 
  private:
-  /// Parameters
+  /// container holding parameter names and their values
   std::map<std::string, std::any> parameters_;
 
 };  // Parameters
-}  // namespace config
-}  // namespace framework
+}  // namespace framework::config
 
 #endif  // FRAMEWORK_PARAMETERS_H

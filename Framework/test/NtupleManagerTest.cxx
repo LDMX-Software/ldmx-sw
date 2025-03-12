@@ -14,6 +14,24 @@
 #include "TTreeReader.h"  //to check output event files
 
 /**
+ * Have to avoid dereferencing the value itself since
+ * there are no checks within it and so the compiler warns us
+ * that we could be dereferencing a nullptr.
+ *
+ * This gets the raw pointer value and shows the compiler
+ * that we check if its null before dereferencing, returning
+ * the default construct if that fails.
+ */
+template <typename T>
+T safe_deref(TTreeReaderValue<T> reader_val) {
+  T const* val_ptr{reader_val.Get()};
+  if (val_ptr != nullptr) {
+    return *val_ptr;
+  }
+  return T();
+}
+
+/**
  * Test for NtupleManager
  *
  * We check that the NtupleManager can fill a TTree with
@@ -119,17 +137,17 @@ TEST_CASE("Ntuple Manager Functions", "[Framework][functionality]") {
     //  in order to try to save space
     // This means we need to use unordered equals.
     // Not too much loss in efficiency becuase we keep our vectors short.
-    CHECK_THAT(*root_vector_bool,
+    CHECK_THAT(safe_deref(root_vector_bool),
                Catch::Matchers::UnorderedEquals(vector_bools.at(i)));
-    CHECK_THAT(*root_vector_short,
+    CHECK_THAT(safe_deref(root_vector_short),
                Catch::Matchers::UnorderedEquals(vector_shorts.at(i)));
-    CHECK_THAT(*root_vector_int,
+    CHECK_THAT(safe_deref(root_vector_int),
                Catch::Matchers::UnorderedEquals(vector_ints.at(i)));
-    CHECK_THAT(*root_vector_long,
+    CHECK_THAT(safe_deref(root_vector_long),
                Catch::Matchers::UnorderedEquals(vector_longs.at(i)));
-    CHECK_THAT(*root_vector_float,
+    CHECK_THAT(safe_deref(root_vector_float),
                Catch::Matchers::UnorderedEquals(vector_floats.at(i)));
-    CHECK_THAT(*root_vector_double,
+    CHECK_THAT(safe_deref(root_vector_double),
                Catch::Matchers::UnorderedEquals(vector_doubles.at(i)));
   }
 

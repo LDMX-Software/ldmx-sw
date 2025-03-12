@@ -18,7 +18,7 @@ root_generate_dictionary(PerfDict
   MODULE Framework_Performance)
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/Framework_Performance_rdict.pcm DESTINATION lib)
 
-setup_library(module Framework name Configure interface)
+setup_library(module Framework name Configure dependencies Python3::Python)
 
 # Search for the Python3 library
 find_package(Python3 COMPONENTS Interpreter Development)
@@ -81,8 +81,7 @@ register_event_object(module_path "Framework" namespace "ldmx"
 
 # Setup the library
 setup_library(module Framework 
-  dependencies Python3::Python
-               ROOT::Core
+  dependencies ROOT::Core
                ROOT::Hist
                ROOT::TreePlayer
                Boost::log
@@ -97,7 +96,7 @@ setup_library(module Framework
 # standard.
 set_target_properties(
   Framework
-  PROPERTIES CXX_STANDARD 17
+  PROPERTIES CXX_STANDARD ${CMAKE_CXX_STANDARD}
              CXX_STANDARD_REQUIRED YES
              CXX_EXTENSIONS NO)
 

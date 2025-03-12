@@ -56,7 +56,7 @@ class VertexProcessor : public framework::Producer {
   VertexProcessor(const std::string &name, framework::Process &process);
 
   /// Destructor
-  ~VertexProcessor() = default;
+  virtual ~VertexProcessor() = default;
 
   void onProcessStart() override;
   void onProcessEnd() override;

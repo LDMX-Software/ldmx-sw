@@ -414,3 +414,95 @@ class TrackingRecoDQM(ldmxcfg.Analyzer):
                 self.build2DHistogram(trackState+"_pulls_loc0-vs-trk_p","trk_p",200,0,5,     trackState+"_pulls_loc0 [mm]",100,-3,3)
                 self.build2DHistogram(trackState+"_pulls_loc1-vs-trk_p","trk_p",200,0,5,     trackState+"_pulls_loc1 [mm]",100,-3,3)
             
+class StraightTracksDQM(ldmxcfg.Analyzer):
+    def __init__(self, name="StraightTracksDQM"):
+        super().__init__(name, 'tracking::dqm::StraightTracksDQM','Tracking')
+        
+        self.nbins    = 100
+        self.phimin   = -0.2
+        self.phimax   = 0.2
+        self.thetamin = -0.3
+        self.thetamax = 0.3
+                         
+        self.doTruth= True
+    
+    def buildHistograms(self) :
+        
+        nbins   =self.nbins
+        phimin  =self.phimin
+        phimax  =self.phimax
+        thetamin=self.thetamin
+        thetamax=self.thetamax
+        
+        self.build1DHistogram("N_tracks","N tracks",10,0,10)
+        
+        self.build1DHistogram("phi", "#phi [rad]",nbins,phimin,phimax)
+        
+        self.build1DHistogram("theta", "#theta [rad]",nbins,thetamin,thetamax)
+        
+        self.build1DHistogram("trk_PID","Particles",30,-15,15)
+        self.build1DHistogram("nHits", "nHits",5,0,5)
+        self.build1DHistogram("Chi2", "Chi2",nbins,0,15)
+        self.build1DHistogram("ndf", "ndf",5,0,5)
+        self.build1DHistogram("Chi2_per_ndf", "Chi2/ndf",nbins,0,10)
+        self.build1DHistogram("dRecHit", "Distance to Nearest EcalRecHit [mm]",nbins, 0.0, 20.0)
+        self.build1DHistogram("phi_err","#sigma_{#phi} [rad]",nbins,0,0.001)
+        self.build1DHistogram("theta_err","#sigma_{#theta} [rad]",nbins,0,0.03)
+    
+        if self.doTruth:
+#            self.build1DHistogram("truth_N_tracks","truth_N tracks",10,0,10)
+#            self.build1DHistogram("truth_nHits","truth nHits", 15, 0,15)
+            self.build1DHistogram("truth_phi","truth #phi", nbins, phimin, phimax)
+            self.build1DHistogram("truth_theta","truth #theta", nbins, thetamin,thetamax)
+
+            self.build1DHistogram("truth_PID","Particles",30,-15,15)
+
+            self.build1DHistogram("res_phi","res #phi", nbins, -0.02, 0.02)
+            self.build1DHistogram("res_theta","res #theta", nbins, -0.04,0.04)
+
+            self.build1DHistogram("pull_phi","pull #phi",   100, -5, 5)
+            self.build1DHistogram("pull_theta","pull #theta", 100, -5,5)
+        
+            chi2Fake_max    = 15
+            chi2NdfFake_max = 10
+            scaling = 1.
+                
+            #Fake Plots
+            self.build1DHistogram("fake_phi","fake #phi", nbins, scaling*phimin, scaling*phimax)
+            self.build1DHistogram("fake_theta", "fake #theta", nbins, scaling*thetamin,scaling*thetamax)
+            self.build1DHistogram("fake_nHits","fake nHits",5,0,5)
+            self.build1DHistogram("fake_Chi2","fake Chi2",nbins,0,chi2Fake_max)
+            self.build1DHistogram("fake_Chi2_per_ndf","fake Chi2/ndf",nbins,0,chi2NdfFake_max)
+            self.build1DHistogram("fake_trk_PID","Particles",8,-4,4)
+                
+            #Duplicate plots
+            self.build1DHistogram("dup_phi","dup #phi", 100, phimin, phimax)
+            self.build1DHistogram("dup_theta","dup #theta", 100, thetamin,thetamax)
+            self.build1DHistogram("dup_nHits","dup nHits",5,0,5)
+            self.build1DHistogram("dup_Chi2","dup Chi2",1000,0,100)
+            self.build1DHistogram("dup_Chi2_per_ndf","dup Chi2/ndf",1000,0,100)
+            self.build1DHistogram("dup_trk_PID","Particles",30,-15,15)
+                    
+            self.build1DHistogram("trk_target_loc0","trk_target_loc0 [mm]",200,-50,50)
+            self.build1DHistogram("trk_target_loc1","trk_target_loc1 [mm]",200,-50,50)
+            self.build1DHistogram("trk_target_loc0-truth_target_loc0","target trk_loc0 - truth_loc0 [mm]",100,-0.1,0.1)
+            self.build1DHistogram("trk_target_loc1-truth_target_loc1","target trk_loc1 - truth_loc1 [mm]",100,-2,2)
+            self.build1DHistogram("trk_ecal_loc0","trk_ecal_loc0 [mm]",200,-50,50)
+            self.build1DHistogram("trk_ecal_loc1","trk_ecal_loc1 [mm]",200,-50,50)
+            self.build1DHistogram("trk_ecal_loc0-truth_ecal_loc0","ecal trk_loc0 - truth_loc0 [mm]",200,-0.3,0.3)
+            self.build1DHistogram("trk_ecal_loc1-truth_ecal_loc1","ecal trk_loc1 - truth_loc1 [mm]",200,-6,6)
+
+            self.build1DHistogram("target_Pulls_of_loc0","target_pulls_of_loc0 [mm]",200,-5,5)
+            self.build1DHistogram("target_Pulls_of_loc1","target_pulls_of_loc1 [mm]",200,-5,5)
+            self.build1DHistogram("ecal_Pulls_of_loc0","ecal_pulls_of_loc0 [mm]",200,-5,5)
+            self.build1DHistogram("ecal_Pulls_of_loc1","ecal_pulls_of_loc1 [mm]",200,-5,5)
+
+            self.build2DHistogram("target_res_loc0-vs-N_hits","N_hits",5,0.0,5.0,"target_res_loc0 [mm]",100,-0.2,0.2)
+            self.build2DHistogram("target_res_loc1-vs-N_hits","N_hits",5,0.0, 5.0,"target_res_loc1 [mm]",100,-5,5)
+            self.build2DHistogram("ecal_res_loc0-vs-N_hits","N_hits",5,0.0,5.0,"ecal_res_loc0 [mm]",100,-0.2,0.2)
+            self.build2DHistogram("ecal_res_loc1-vs-N_hits","N_hits",5,0.0, 5.0,"ecal_res_loc1 [mm]",100,-5,5)
+            
+            self.build2DHistogram("target_pulls_loc0-vs-N_hits","N_hits",5,0.0,5.0,"target_pulls_loc0 [mm]",100,-3,3)
+            self.build2DHistogram("target_pulls_loc1-vs-N_hits","N_hits",5,0.0,5.0,"target_pulls_loc1 [mm]",100,-3,3)
+            self.build2DHistogram("ecal_pulls_loc0-vs-N_hits","N_hits",5,0.0,5.0,"ecal_pulls_loc0 [mm]",100,-3,3)
+            self.build2DHistogram("ecal_pulls_loc1-vs-N_hits","N_hits",5,0.0,5.0,"ecal_pulls_loc1 [mm]",100,-3,3)

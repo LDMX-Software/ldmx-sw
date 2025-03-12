@@ -50,12 +50,14 @@ from LDMX.Ecal import digi as eDigi
 from LDMX.Ecal import vetos
 from LDMX.Hcal import digi as hDigi
 
+# this is hardwired into the code to be appended to the sim hits collections
 overlayStr="Overlay"
 
 # Load the TS modules
 from LDMX.TrigScint.trigScint import TrigScintDigiProducer
 from LDMX.TrigScint.trigScint import TrigScintClusterProducer
 from LDMX.TrigScint.trigScint import trigScintTrack
+
 ts_digis = [
         TrigScintDigiProducer.pad1(),
         TrigScintDigiProducer.pad2(),
@@ -69,39 +71,123 @@ ts_clusters = [
         TrigScintClusterProducer.pad2(),
         TrigScintClusterProducer.pad3(),
         ] 
+for clu in ts_clusters :
+    clu.input_pass_name = thisPassName
+
+trigScintTrack.input_pass_name = thisPassName
+
 
 # Load the ECAL modules                           
-ecalDigi   =eDigi.EcalDigiProducer('ecalDigis')
-ecalReco   =eDigi.EcalRecProducer('ecalRecon')
-ecalVeto   =vetos.EcalVetoProcessor('ecalVetoBDT')
-ecalVeto.recoil_from_tracking = True 
+ecalDigi   = eDigi.EcalDigiProducer('ecalDigis')
+ecalReco   = eDigi.EcalRecProducer('ecalRecon')
+ecalVeto   = vetos.EcalVetoProcessor('ecalVetoBDT')
 
-ecalDigi.inputCollName  = ecalDigi.inputCollName+overlayStr
-ecalReco.simHitCollName = ecalReco.simHitCollName+overlayStr
+# The newly produced, overlayed simhits
+ecalDigi.inputCollName += overlayStr
+ecalDigi.inputPassName = thisPassName
+
+# Use the digis produced above
 ecalReco.digiPassName = thisPassName
+# SimHits are used to find noise
+ecalReco.simHitCollName += overlayStr
+ecalReco.simHitPassName = thisPassName
+
+ecalVeto.recoil_from_tracking = False
 ecalVeto.rec_pass_name = thisPassName
 
 # Load the HCAL modules
-hcalDigi   =hDigi.HcalDigiProducer('hcalDigis')
-hcalDigi.inputCollName  = hcalDigi.inputCollName+overlayStr
-hcalReco   =hDigi.HcalRecProducer('hcalRecon')
+hcalDigi   = hDigi.HcalDigiProducer('hcalDigis')
+hcalReco   = hDigi.HcalRecProducer('hcalRecon')
+# The newly produced, overlayed simhits
+hcalDigi.inputCollName  += overlayStr
+hcalDigi.inputPassName = thisPassName
+# Use the digis produced above
 hcalReco.digiPassName = thisPassName
 
-# Load the DQM modules
-from LDMX.DQM import dqm
-
-ecalDigiVerify = dqm.EcalDigiVerify()
-ecalDigiVerify.ecalSimHitColl = ecalDigiVerify.ecalSimHitColl+overlayStr
-
+# Load ElectronCounter and Trigger
 from LDMX.Recon.electronCounter import ElectronCounter
 from LDMX.Recon.simpleTrigger import TriggerProcessor
 
-count = ElectronCounter(1,'ElectronCounter')
-count.input_pass_name = ''
+count = ElectronCounter(2,'ElectronCounter')
+count.input_pass_name = thisPassName
 
 # Load HCAL veto
 import LDMX.Hcal.hcal as hcal
 hcal_veto = hcal.HcalVetoProcessor()
+hcal_veto.input_hit_pass_name = thisPassName
+
+# Load the DQM modules
+from LDMX.DQM import dqm
+
+trigScint_sim_dqm = [
+    dqm.TrigScintSimDQM('TrigScintSimPad1','TriggerPad1SimHits','pad1'),
+    dqm.TrigScintSimDQM('TrigScintSimPad2','TriggerPad2SimHits','pad2'),
+    dqm.TrigScintSimDQM('TrigScintSimPad3','TriggerPad3SimHits','pad3'),
+    ]
+
+for ts_sim_dqm in trigScint_sim_dqm :
+    ts_sim_dqm.hit_collection += overlayStr
+ 
+trigScint_dqm = [
+    dqm.TrigScintDigiDQM('TrigScintDigiPad1','trigScintDigisPad1','pad1'),
+    dqm.TrigScintDigiDQM('TrigScintDigiPad2','trigScintDigisPad2','pad2'),
+    dqm.TrigScintDigiDQM('TrigScintDigiPad3','trigScintDigisPad3','pad3'),
+    dqm.TrigScintClusterDQM('TrigScintClusterPad1','TriggerPad1Clusters','pad1'),
+    dqm.TrigScintClusterDQM('TrigScintClusterPad2','TriggerPad2Clusters','pad2'),
+    dqm.TrigScintClusterDQM('TrigScintClusterPad3','TriggerPad3Clusters','pad3'),
+    dqm.TrigScintTrackDQM('TrigScintTracks','TriggerPadTracks')
+    ]
+
+for ts_dqm in trigScint_dqm :
+    ts_dqm.passName = thisPassName
+
+# EcalDigiVerify
+ecalDigiVerify = dqm.EcalDigiVerify()
+ecalDigiVerify.ecalSimHitColl += overlayStr
+
+# EcalShowerFeatures
+ecalShowerFeatures = dqm.EcalShowerFeatures()
+ecalShowerFeatures.ecal_veto_pass = thisPassName
+
+# EcalMipTrackingFeatures
+ecalMipTrackingFeatures = dqm.EcalMipTrackingFeatures()
+ecalMipTrackingFeatures.ecal_veto_pass = thisPassName
+
+# EcalVetoResults
+ecalVetoResults = dqm.EcalVetoResults()
+ecalVetoResults.ecal_veto_pass = thisPassName
+
+# HCAL DQM
+hcalDQM = [
+    dqm.HCalDQM(pe_threshold=8,
+                section=0
+                ),
+    dqm.HCalDQM(pe_threshold=8,
+                section=1
+                ),
+    dqm.HCalDQM(pe_threshold=8,
+                section=2
+                ),
+    dqm.HCalDQM(pe_threshold=8,
+                section=3
+                ),
+    dqm.HCalDQM(pe_threshold=8,
+                section=4
+                ),
+    dqm.HcalInefficiencyAnalyzer(),
+]
+
+for hdqm in hcalDQM:
+    hdqm.rec_pass_name = thisPassName
+    hdqm.sim_pass_name = thisPassName
+    hdqm.sim_coll_name += overlayStr
+
+# Trigger DQM
+triggerDQM = dqm.Trigger()
+triggerDQM.trigger_pass = thisPassName
+
+
+dqm_with_overlay = trigScint_sim_dqm + trigScint_dqm + [triggerDQM, ecalDigiVerify, ecalShowerFeatures, ecalMipTrackingFeatures, ecalVetoResults] + hcalDQM 
 
 p.logger.termLevel = 1
 
@@ -119,7 +205,7 @@ p.sequence.extend([
     dqm.PhotoNuclearDQM(),
 ])
 
-p.sequence.extend(dqm.all_dqm)
+p.sequence.extend(dqm_with_overlay)
 
 p.inputFiles = ['ecal_pn.root']
 p.outputFiles= ['events.root']

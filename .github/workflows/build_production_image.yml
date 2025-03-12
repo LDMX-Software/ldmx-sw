@@ -40,11 +40,15 @@ jobs:
       uses: actions/checkout@v4
       with:
         submodules: recursive
+        fetch-depth: 0
         ref: ${{ github.event.inputs.branch }}
     -
       name: Determine Image Tags
       id: generate_tag
       run: |
+        # this part is just a copy of just prep-version
+        # TODO: transfer building of the production image to a just recipe
+        git fetch --tags && git describe --tags | cut -f 1 -d '-' > VERSION
         source ${GITHUB_WORKSPACE}/.github/actions/common.sh
         _tags=""
         if [[ $GITHUB_EVENT_NAME == "workflow_dispatch" ]]; then
