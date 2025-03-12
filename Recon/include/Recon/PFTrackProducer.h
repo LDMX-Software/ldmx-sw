@@ -32,6 +32,8 @@ class PFTrackProducer : public framework::Producer {
 
   // name of collection for track inputs to be passed
   std::string inputTrackCollName_;
+  // pass name for the input collection
+  std::string input_pass_name_;
   // name of collection for pfTracks to be output
   std::string outputTrackCollName_;
 };

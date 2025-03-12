@@ -69,6 +69,8 @@ class TrackingRecoDQM : public framework::Analyzer {
   std::string trackCollection_{"TruthTracks"};
   std::string truthCollection_{"TaggerTruthTracks"};
   std::string measurementCollection_{"DigiTaggerSimHits"};
+  std::string sp_pass_name_{""};
+
   std::string title_{"tagger_trk_"};
   double trackProb_cut_{0.5};
   std::string subdetector_{"Tagger"};
