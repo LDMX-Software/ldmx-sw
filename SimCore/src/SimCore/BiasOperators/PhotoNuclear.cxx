@@ -42,6 +42,8 @@ G4VBiasingOperation* PhotoNuclear::ProposeOccurenceBiasingOperation(
 
   std::string currentProcess =
       callingProcess->GetWrappedProcess()->GetProcessName();
+
+  // If the current process is what want to bias
   if (currentProcess.compare(this->getProcessToBias()) == 0) {
     G4double interactionLength =
         callingProcess->GetWrappedProcess()->GetCurrentInteractionLength();
@@ -52,6 +54,12 @@ G4VBiasingOperation* PhotoNuclear::ProposeOccurenceBiasingOperation(
 
     return BiasedXsec(pnXsecBiased_);
   }
+
+  // If the current process is conversion and we want to bias down
+  // make sure that the biased electromagnetic xsec never falls below the
+  // normal (unbiased) photon-nuclear cross section
+  // In that regime, the PN events generated would almost certainly be over
+  // sampled.
   if ((currentProcess.compare(CONVERSION_PROCESS) == 0) and down_bias_conv_) {
     G4double interactionLength =
         callingProcess->GetWrappedProcess()->GetCurrentInteractionLength();
@@ -61,8 +69,8 @@ G4VBiasingOperation* PhotoNuclear::ProposeOccurenceBiasingOperation(
     double emXsecBiased = std::max(
         emXsecUnbiased + pnXsecUnbiased_ - pnXsecBiased_, pnXsecUnbiased_);
     if (emXsecBiased == pnXsecUnbiased_) {
-      G4cout << "[ PhotoNuclearXsecBiasingOperator ]: [ WARNING ]: "
-             << "Biasing factor is too large." << std::endl;
+      ldmx_log(debug) << "EM XS = PN unbiased XS! The biasing factor ("
+                      << factor_ << ") is too large";
     }
 
     emXsecOperation->SetBiasedCrossSection(emXsecBiased);

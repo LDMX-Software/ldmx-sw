@@ -117,34 +117,36 @@ class Layer :
         layers = []
         for name, num_bilayers, front, cooling in sections :
             for bilayer in range(num_bilayers) :
-                layers.append(Layer.air(0.5))
+                layers.append(Layer.air(0.5)) #Front_Tolerance
                 if front > 0 :
                     layers.append(Layer.tungsten(front))
                     layers.append(Layer.air(0.5))
-                layers.append(Layer.pcb()) # Motherboard
+                if front == 0:
+                    layers.append(Layer.air(0.15)) # correction
+                layers.append(Layer.pcb()) # PCB_dz
+                layers.append(Layer.air(3.5)) # PCB_Motherboard_Gap
+                layers.append(Layer.pcb()) # PCB_dz
+                layers.append(Layer.glue(0.1)) # Glue_dz
+                layers.append(Layer.silicon()) # Si_dz
+                layers.append(Layer.glue(0.2)) # GlueThick_dz
+                layers.append(Layer.carbon(0.79)) # CarbonBasePlate_dz
                 if cooling == 0 :
-                    layers.append(Layer.air(0.5))
-                layers.append(Layer.air(3.5))
-                layers.append(Layer.pcb())
-                layers.append(Layer.glue(0.1))
-                layers.append(Layer.silicon())
-                layers.append(Layer.glue(0.2))
-                layers.append(Layer.carbon(0.79))
+                    layers.append(Layer.air(0.5)) # preshower_extra_air
                 if cooling > 0 :
                     layers.append(Layer.tungsten(cooling))
-                layers.append(Layer.carbon(5.7))
+                layers.append(Layer.carbon(5.7)) # CarbonCoolingPlane_dz
                 if cooling > 0 :
                     layers.append(Layer.tungsten(cooling))
-                layers.append(Layer.carbon(0.79))
-                layers.append(Layer.glue(0.2))
-                layers.append(Layer.silicon())
-                layers.append(Layer.glue(0.1))
-                layers.append(Layer.pcb())
-                layers.append(Layer.air(3.5))
-                if cooling == 0 :
+                layers.append(Layer.carbon(0.79)) # CarbonBasePlate_dz
+                layers.append(Layer.glue(0.2)) # GlueThick_dz
+                layers.append(Layer.silicon()) # Si_dz
+                layers.append(Layer.glue(0.1)) # Glue_dz
+                layers.append(Layer.pcb()) # PCB_dz
+                layers.append(Layer.air(3.5)) # PCB_Motherboard_Gap
+                if cooling == 0 : # sampling_section_offset
                     layers.append(Layer.air(0.5))
-                    layers.append(Layer.air(0.75))
-                layers.append(Layer.pcb())
+                    layers.append(Layer.air(0.5))
+                layers.append(Layer.pcb()) # PCB_dz
     
         return layers
 

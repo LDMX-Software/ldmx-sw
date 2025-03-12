@@ -24,14 +24,12 @@ void DumpFileWriter::analyze(const framework::Event& event) {
     // compressed ECal digis are 8xADCs (HCal will be 4x)
     ecalTpToE cvt;
     float e = cvt.calc(trigDigi.linearPrimitive(), tid.layer());
-    // float sie = 8 * trigDigi.linearPrimitive() * gain *
-    //             mVtoMeV;  // in MeV, before layer corrections
-    // float e = (sie / mipSiEnergy * layerWeights.at(tid.layer()) + sie) *
-    //           secondOrderEnergyCorrection;
 
     ldmx_int::EcalTP tp;
     // tp.fill( trigDigi.getId(), trigDigi.getPrimitive() );
-    tp.fill(trigDigi.getId(), e);  // store linearized E
+    // store complete information for firmware studies
+    tp.fill(trigDigi.getId(), trigDigi.getPrimitive(), tid.layer(),
+            tid.module(), tid.triggercell(), int(e));
     myEvent.EcalTPs.push_back(tp);
   }
 

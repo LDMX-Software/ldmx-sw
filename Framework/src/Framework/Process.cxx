@@ -24,11 +24,12 @@ Process::Process(const framework::config::Parameters &configuration)
     : conditions_{*this} {
   config_ = configuration;
 
-  passname_ = configuration.getParameter<std::string>("passName", "");
+  pass_name_ = configuration.getParameter<std::string>("passName", "");
   histoFilename_ = configuration.getParameter<std::string>("histogramFile", "");
 
   maxTries_ = configuration.getParameter<int>("maxTriesPerEvent", 1);
   eventLimit_ = configuration.getParameter<int>("maxEvents", -1);
+  minEvents_ = configuration.getParameter<int>("minEvents", -1);
   totalEvents_ = configuration.getParameter<int>("totalEvents", -1);
   logFrequency_ = configuration.getParameter<int>("logFrequency", -1);
   compressionSetting_ =
@@ -148,7 +149,7 @@ void Process::run() {
   NtupleManager::getInstance().reset();
 
   // event bus for this process
-  Event theEvent(passname_);
+  Event theEvent(pass_name_);
   // the EventHeader object is created with the event bus as
   // one of its members, we obtain a pointer for the header
   // here so we can share it with the conditions system
@@ -244,7 +245,6 @@ void Process::run() {
 
     runHeader.setRunEnd(std::time(nullptr));
     runHeader.setNumTries(totalTries);
-    ldmx_log(info) << runHeader;
     outFile.writeRunTree();
 
     // Give a warning that this filter has very low efficiency
@@ -329,6 +329,12 @@ void Process::run() {
         masterFile = &inFile;
       }
 
+      // In case we'd like to skip up to the event of minEvents_
+      while (n_events_processed < (minEvents_ - 1) &&
+             masterFile->nextEvent(false)) {
+        n_events_processed++;
+      }
+
       bool event_completed = true;
       while (masterFile->nextEvent(
                  storageController_.keepEvent(event_completed)) &&
@@ -344,8 +350,7 @@ void Process::run() {
           if (rh != nullptr) {
             runHeader_ = rh;
             ldmx_log(info) << "Got new run header from '"
-                           << masterFile->getFileName() << "' ...\n"
-                           << *runHeader_;
+                           << masterFile->getFileName() << "'";
             newRun(*runHeader_);
           } else {
             ldmx_log(warn) << "Run header for run " << wasRun
@@ -452,6 +457,10 @@ TDirectory *Process::openHistoFile() {
 void Process::newRun(ldmx::RunHeader &header) {
   // Producers are allowed to put parameters into
   // the run header through 'beforeNewRun' method
+
+  // Put the version into the rh string param
+  header.setStringParameter("Pass = " + pass_name_ + ", version",
+                            LDMXSW_VERSION);
   if (performance_) performance_->start(performance::Callback::beforeNewRun, 0);
   std::size_t i_proc{0};
   for (auto module : sequence_) {
@@ -479,6 +488,7 @@ void Process::newRun(ldmx::RunHeader &header) {
       performance_->stop(performance::Callback::onNewRun, i_proc);
   }
   if (performance_) performance_->stop(performance::Callback::onNewRun, 0);
+  ldmx_log(info) << header;
 }
 
 bool Process::process(int n, int n_try, Event &event) const {

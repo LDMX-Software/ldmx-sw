@@ -6,7 +6,6 @@ from LDMX.Framework import ldmxcfg
 thisPassName = 'test'
 p=ldmxcfg.Process(thisPassName)
 
-p.termLogLevel = 0
 # This need to be set but has no meaning given p.totalEvents
 p.maxEvents = 1
 # kaon-focused sample takes about twice as long as normal PN,
@@ -72,85 +71,88 @@ mySim.photonuclear_model = myModel
 myFilter = particle_filter.PhotoNuclearProductsFilter.kaon()
 mySim.actions.extend([myFilter])
 
-# Loading calorimeter and TS processors
+p.sequence=[mySim]
+
+# Load the full tracking sequance
+from LDMX.Tracking import full_tracking_sequence
+
+# Load the ECAL modules
 import LDMX.Ecal.EcalGeometry
 import LDMX.Ecal.ecal_hardcoded_conditions
-import LDMX.Hcal.HcalGeometry
-import LDMX.Hcal.hcal_hardcoded_conditions
-
 from LDMX.Ecal import digi as eDigi
 from LDMX.Ecal import vetos
+
+# Load the HCAL modules
+import LDMX.Hcal.HcalGeometry
+import LDMX.Hcal.hcal_hardcoded_conditions
 from LDMX.Hcal import digi as hDigi
 from LDMX.Hcal import hcal
-                                                                                                      
+
+# Load the TS modules                                                                    
 from LDMX.TrigScint.trigScint import TrigScintDigiProducer
 from LDMX.TrigScint.trigScint import TrigScintClusterProducer
 from LDMX.TrigScint.trigScint import trigScintTrack
 
+# Load electron counting and trigger
 from LDMX.Recon.electronCounter import ElectronCounter
+from LDMX.Recon.simpleTrigger import TriggerProcessor
 
 #TS digi + clustering + track chain
-tsDigisDown  =TrigScintDigiProducer.pad1()
-tsDigisTag   =TrigScintDigiProducer.pad2()
-tsDigisUp    =TrigScintDigiProducer.pad3()
+ts_digis = [
+        TrigScintDigiProducer.pad1(),
+        TrigScintDigiProducer.pad2(),
+        TrigScintDigiProducer.pad3(),
+        ]
 
-tsDigis = [tsDigisDown, tsDigisTag, tsDigisUp]
-for d in tsDigis :
-    d.randomSeed = 1
-
-tsClustersDown  =TrigScintClusterProducer.pad1()
-tsClustersTag  =TrigScintClusterProducer.pad2()
-tsClustersUp  =TrigScintClusterProducer.pad3()
-
-tsClustersDown.input_collection = tsDigisDown.output_collection
-tsClustersTag.input_collection = tsDigisTag.output_collection
-tsClustersUp.input_collection = tsDigisUp.output_collection
-
-#make sure to pick up the right pass 
-tsClustersTag.input_pass_name = thisPassName 
-tsClustersUp.input_pass_name = tsClustersTag.input_pass_name
-tsClustersDown.input_pass_name = tsClustersTag.input_pass_name
-
-trigScintTrack.input_pass_name = thisPassName
-trigScintTrack.seeding_collection = tsClustersTag.output_collection
+ts_clusters = [
+        TrigScintClusterProducer.pad1(),
+        TrigScintClusterProducer.pad2(),
+        TrigScintClusterProducer.pad3(),
+        ]
 
 # ECAL part
 ecalReco   =eDigi.EcalRecProducer()
 ecalDigi = eDigi.EcalDigiProducer()
 ecalVeto   =vetos.EcalVetoProcessor()
+ecalVeto.recoil_from_tracking = False
 
 # HCAL part
 hcalDigi   =hDigi.HcalDigiProducer()
 hcalReco   =hDigi.HcalRecProducer()
-hcalVeto   =hcal.HcalVetoProcessor()
 
 # electron counter for trigger processor 
 eCount = ElectronCounter( 1, "ElectronCounter") # first argument is number of electrons in simulation
 eCount.input_pass_name = ''
-from LDMX.Recon.simpleTrigger import TriggerProcessor
 simpleTrig = TriggerProcessor("simpleTrig",8000.)
 simpleTrig.input_pass=thisPassName
 
 # Load DQM 
 from LDMX.DQM import dqm
 
-p.sequence=[ 
-        mySim, 
+# Load HCAL veto
+import LDMX.Hcal.hcal as hcal
+hcal_veto = hcal.HcalVetoProcessor()
+
+p.logger.termLevel = 1
+
+# Add full tracking for both tagger and recoil trackers: digi, seeds, CFK, ambiguity resolution, GSF, DQM
+p.sequence.extend(full_tracking_sequence.sequence)
+p.sequence.extend(full_tracking_sequence.dqm_sequence)
+
+p.sequence.extend([ 
         ecalDigi, 
         ecalReco, 
         ecalVeto,
-        *tsDigis, 
-        tsClustersTag,
-        tsClustersUp,
-        tsClustersDown, 
+        *ts_digis,
+        *ts_clusters, 
         trigScintTrack, 
         eCount, 
         simpleTrig, 
         hcalDigi, 
         hcalReco, 
-        hcalVeto,
-        dqm.PhotoNuclearDQM(verbose=False)
-        ]
+        hcal_veto,
+        dqm.PhotoNuclearDQM()
+        ])
 
 p.sequence.extend(dqm.all_dqm)
 

@@ -113,7 +113,8 @@ void Simulator::beforeNewRun(ldmx::RunHeader& header) {
                       "G4 Version string.";
   }
 
-  header.setStringParameter("ldmx-sw revision", GIT_SHA1);
+  header.setStringParameter("SIM version", LDMXSW_VERSION);
+  header.setStringParameter("SIM revision", GIT_SHA1);
 }
 
 void Simulator::onNewRun(const ldmx::RunHeader& runHeader) {

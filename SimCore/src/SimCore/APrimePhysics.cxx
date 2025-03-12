@@ -108,7 +108,7 @@ void APrimePhysics::ConstructProcess() {
               model.getParameter<double>("epsilon"), scaling_method_it->second,
               g4db::G4DarkBreMModel::XsecMethod::Auto,
               model.getParameter<double>("max_R_for_full", 50.0),
-              model.getParameter<int>("aprime_lhe_id", 622),
+              model.getParameter<int>("aprime_lhe_id", 1023),
               true,  // always load the library
               model.getParameter<bool>("scale_APrime", false),
               model.getParameter<double>("dist_decay_min", 0.0),

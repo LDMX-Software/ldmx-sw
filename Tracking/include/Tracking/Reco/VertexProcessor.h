@@ -56,7 +56,7 @@ class VertexProcessor : public framework::Producer {
   VertexProcessor(const std::string &name, framework::Process &process);
 
   /// Destructor
-  ~VertexProcessor() = default;
+  virtual ~VertexProcessor() = default;
 
   void onProcessStart() override;
   void onProcessEnd() override;
@@ -92,6 +92,8 @@ class VertexProcessor : public framework::Producer {
   // Track collection name
 
   std::string trk_coll_name_{"Tracks"};
+
+  std::string input_pass_name_{""};
 
   // The propagator
   std::shared_ptr<VoidPropagator> propagator_;

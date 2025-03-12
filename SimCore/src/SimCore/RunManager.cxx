@@ -52,9 +52,7 @@ void RunManager::setupPhysics() {
   parallelWorldPath_ = parameters_.getParameter<std::string>("scoringPlanes");
   isPWEnabled_ = !parallelWorldPath_.empty();
   if (isPWEnabled_) {
-    std::cout
-        << "[ RunManager ]: Parallel worlds physics list has been registered."
-        << std::endl;
+    ldmx_log(debug) << "Parallel worlds physics list has been registered";
     pList->RegisterPhysics(new G4ParallelWorldPhysics("ldmxParallelWorld"));
   }
 
@@ -69,8 +67,8 @@ void RunManager::setupPhysics() {
       parameters_.getParameter<std::vector<framework::config::Parameters>>(
           "biasing_operators", {})};
   if (!biasing_operators.empty()) {
-    std::cout << "[ RunManager ]: Biasing enabled with "
-              << biasing_operators.size() << " operator(s)." << std::endl;
+    ldmx_log(info) << " Biasing enabled with " << biasing_operators.size()
+                   << " operator(s)";
 
     // create all the biasing operators that will be used
     for (framework::config::Parameters& bop : biasing_operators) {
@@ -85,12 +83,12 @@ void RunManager::setupPhysics() {
     // specify which particles are going to be biased
     //  this will put a biasing interface wrapper around *all* processes
     //  associated with these particles
-    simcore::XsecBiasingOperator::Factory::get().apply([biasingPhysics](
-                                                           auto bop) {
-      std::cout << "[ RunManager ]: Biasing operator '" << bop->GetName()
-                << "' set to bias " << bop->getParticleToBias() << std::endl;
-      biasingPhysics->Bias(bop->getParticleToBias());
-    });
+    simcore::XsecBiasingOperator::Factory::get().apply(
+        [this, biasingPhysics](auto bop) {
+          ldmx_log(info) << "Biasing operator '" << bop->GetName()
+                         << "' set to bias " << bop->getParticleToBias();
+          biasingPhysics->Bias(bop->getParticleToBias());
+        });
 
     // Register the physics constructor to the physics list:
     pList->RegisterPhysics(biasingPhysics);
@@ -105,8 +103,7 @@ void RunManager::Initialize() {
   // The parallel world needs to be registered before the mass world is
   // constructed i.e. before G4RunManager::Initialize() is called.
   if (isPWEnabled_) {
-    std::cout << "[ RunManager ]: Parallel worlds have been enabled."
-              << std::endl;
+    ldmx_log(debug) << "Parallel worlds have been enabled";
 
     auto validateGeometry_{parameters_.getParameter<bool>("validate_detector")};
     G4GDMLParser* pwParser = new G4GDMLParser();
@@ -182,9 +179,7 @@ void RunManager::TerminateOneEvent() {
   reactivate_dark_brem(G4Electron::Definition()->GetProcessManager());
 
   if (this->GetVerboseLevel() > 1) {
-    std::cout << "[ RunManager ] : "
-              << "Reset the dark brem process (if it was activated)."
-              << std::endl;
+    ldmx_log(debug) << "Reset the dark brem process (if it was activated)";
   }
 }
 

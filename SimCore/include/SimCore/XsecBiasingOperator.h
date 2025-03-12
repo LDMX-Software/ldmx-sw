@@ -2,6 +2,8 @@
 #define SIMCORE_XSECBIASINGOPERATOR_H_
 
 #include "Framework/Configure/Parameters.h"
+#include "Framework/EventProcessor.h"
+#include "Framework/Logger.h"
 #include "Framework/RunHeader.h"
 #include "SimCore/Factory.h"
 
@@ -175,6 +177,8 @@ class XsecBiasingOperator : public G4VBiasingOperator {
       const G4Track*, const G4BiasingProcessInterface*) {
     return nullptr;
   }
+  /// Enable logging
+  framework::logging::logger theLog_;
 
 };  // XsecBiasingOperator
 }  // namespace simcore

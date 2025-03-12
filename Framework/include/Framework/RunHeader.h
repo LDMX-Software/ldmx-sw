@@ -50,6 +50,9 @@ namespace ldmx {
  * the user somehow gets into the situation of reading a v4 RunHeader with v3
  * software, the numTries_ member is quietly ignored, maintaining the format of
  * the v3 RunHeader in the resulting output file.
+ *
+ * ## v5
+ * Include a member to track the ldmx-sw version
  */
 class RunHeader {
  public:
@@ -84,6 +87,11 @@ class RunHeader {
    * to generate this file.
    */
   const std::string &getSoftwareTag() const { return softwareTag_; }
+
+  /**
+   * @return The ldmx-sw version used to generate this file
+   */
+  const std::string &getLdmxswVersion() const { return ldmxsw_version_; }
 
   /** @return A short description of the run. */
   const std::string &getDescription() const { return description_; }
@@ -281,6 +289,11 @@ class RunHeader {
    */
   std::string softwareTag_{GIT_SHA1};
 
+  /**
+   * ldmx-sw software version
+   */
+  std::string ldmxsw_version_{LDMXSW_VERSION};
+
   /** Map of int parameters. */
   std::map<std::string, int> intParameters_;
 
@@ -290,7 +303,7 @@ class RunHeader {
   /** Map of string parameters. */
   std::map<std::string, std::string> stringParameters_;
 
-  ClassDef(RunHeader, 4);
+  ClassDef(RunHeader, 5);
 
 };  // RunHeader
 
