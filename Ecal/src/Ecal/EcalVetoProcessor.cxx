@@ -145,11 +145,14 @@ void EcalVetoProcessor::configure(framework::config::Parameters &parameters) {
   linreg_radius_ = parameters.getParameter<double>("linreg_radius");
 
   // Set the collection name as defined in the configuration
+  sp_pass_name_ = parameters.getParameter<std::string>("sp_pass_name", "");
   collectionName_ = parameters.getParameter<std::string>("collection_name");
   rec_pass_name_ = parameters.getParameter<std::string>("rec_pass_name");
   rec_coll_name_ = parameters.getParameter<std::string>("rec_coll_name");
   recoil_from_tracking_ = parameters.getParameter<bool>("recoil_from_tracking");
   track_collection_ = parameters.getParameter<std::string>("track_collection");
+  track_pass_name_ =
+      parameters.getParameter<std::string>("track_pass_name", "");
   inverse_skim_ = parameters.getParameter<bool>("inverse_skim");
 }
 
@@ -213,7 +216,7 @@ void EcalVetoProcessor::produce(framework::Event &event) {
                        "recoil electron";
   }
 
-  if (event.exists("EcalScoringPlaneHits")) {
+  if (event.exists("EcalScoringPlaneHits", sp_pass_name_)) {
     //
     // Loop through all of the sim particles and find the recoil electron.
     //
@@ -225,8 +228,8 @@ void EcalVetoProcessor::produce(framework::Event &event) {
     auto [recoilTrackID, recoilElectron] = Analysis::getRecoil(particleMap);
 
     // Find ECAL SP hit for recoil electron
-    auto ecalSpHits{
-        event.getCollection<ldmx::SimTrackerHit>("EcalScoringPlaneHits")};
+    auto ecalSpHits{event.getCollection<ldmx::SimTrackerHit>(
+        "EcalScoringPlaneHits", sp_pass_name_)};
     float pmax = 0;
     for (ldmx::SimTrackerHit &spHit : ecalSpHits) {
       ldmx::SimSpecialID hit_id(spHit.getID());
@@ -245,9 +248,10 @@ void EcalVetoProcessor::produce(framework::Event &event) {
     }
 
     // Find target SP hit for recoil electron
-    if (event.exists("TargetScoringPlaneHits")) {
+    if (event.exists("TargetScoringPlaneHits", sp_pass_name_)) {
       std::vector<ldmx::SimTrackerHit> targetSpHits =
-          event.getCollection<ldmx::SimTrackerHit>("TargetScoringPlaneHits");
+          event.getCollection<ldmx::SimTrackerHit>("TargetScoringPlaneHits",
+                                                   sp_pass_name_);
       pmax = 0;
       for (ldmx::SimTrackerHit &spHit : targetSpHits) {
         ldmx::SimSpecialID hit_id(spHit.getID());
@@ -274,7 +278,8 @@ void EcalVetoProcessor::produce(framework::Event &event) {
       ldmx_log(debug) << "   Propagate recoil tracks to ECAL face";
     }
     // Get the recoil track collection
-    auto recoil_tracks{event.getCollection<ldmx::Track>(track_collection_)};
+    auto recoil_tracks{
+        event.getCollection<ldmx::Track>(track_collection_, track_pass_name_)};
 
     ldmx::TrackStateType ts_type = ldmx::TrackStateType::AtECAL;
     recoil_track_states = trackProp(recoil_tracks, ts_type, "ecal");

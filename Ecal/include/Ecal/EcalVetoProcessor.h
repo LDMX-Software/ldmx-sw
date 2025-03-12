@@ -188,9 +188,12 @@ class EcalVetoProcessor : public framework::Producer {
   std::vector<float> bdtFeatures_;
   std::string featureListName_;
 
+  // Pass and collection names
+  std::string sp_pass_name_;
   std::string rec_pass_name_;
   std::string rec_coll_name_;
   bool recoil_from_tracking_;
+  std::string track_pass_name_;
   std::string track_collection_;
   bool inverse_skim_{false};
 
