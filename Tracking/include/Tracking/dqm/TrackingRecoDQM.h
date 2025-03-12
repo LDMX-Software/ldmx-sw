@@ -70,7 +70,7 @@ class TrackingRecoDQM : public framework::Analyzer {
   std::string truthCollection_{"TaggerTruthTracks"};
   std::string measurementCollection_{"DigiTaggerSimHits"};
   std::string sp_pass_name_{""};
-  
+
   std::string title_{"tagger_trk_"};
   double trackProb_cut_{0.5};
   std::string subdetector_{"Tagger"};
@@ -83,7 +83,6 @@ class TrackingRecoDQM : public framework::Analyzer {
 
   // Ecal scoring plane hits
   std::shared_ptr<std::vector<ldmx::SimTrackerHit>> ecal_scoring_hits_{nullptr};
-
 
   // Target  scoring plane hits
   std::shared_ptr<std::vector<ldmx::SimTrackerHit>> target_scoring_hits_{

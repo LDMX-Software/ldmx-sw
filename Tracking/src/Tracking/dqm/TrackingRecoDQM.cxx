@@ -55,12 +55,14 @@ void TrackingRecoDQM::analyze(const framework::Event& event) {
   // The scoring plane hits
   if (event.exists("EcalScoringPlaneHits")) {
     ecal_scoring_hits_ = std::make_shared<std::vector<ldmx::SimTrackerHit>>(
-        event.getCollection<ldmx::SimTrackerHit>("EcalScoringPlaneHits",sp_pass_name_));
+        event.getCollection<ldmx::SimTrackerHit>("EcalScoringPlaneHits",
+                                                 sp_pass_name_));
   }
 
   if (event.exists("TargetScoringPlaneHits")) {
     target_scoring_hits_ = std::make_shared<std::vector<ldmx::SimTrackerHit>>(
-        event.getCollection<ldmx::SimTrackerHit>("TargetScoringPlaneHits",sp_pass_name_));
+        event.getCollection<ldmx::SimTrackerHit>("TargetScoringPlaneHits",
+                                                 sp_pass_name_));
   }
 
   ldmx_log(debug) << "Do truth comparison::" << doTruthComparison << std::endl;
