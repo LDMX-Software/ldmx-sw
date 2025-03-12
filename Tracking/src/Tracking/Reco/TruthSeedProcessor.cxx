@@ -24,6 +24,8 @@ void TruthSeedProcessor::onNewRun(const ldmx::RunHeader& rh) {
 void TruthSeedProcessor::configure(framework::config::Parameters& parameters) {
   scoring_hits_coll_name_ =
       parameters.getParameter<std::string>("scoring_hits_coll_name");
+      sp_pass_name_=
+      parameters.getParameter<std::string>("sp_pass_name");
   recoil_sim_hits_coll_name_ =
       parameters.getParameter<std::string>("recoil_sim_hits_coll_name");
   tagger_sim_hits_coll_name_ =
@@ -532,29 +534,27 @@ void TruthSeedProcessor::produce(framework::Event& event) {
   // scoring plane hit left by the particle at the target.
 
   const std::vector<ldmx::SimTrackerHit> scoring_hits{
-      event.getCollection<ldmx::SimTrackerHit>(scoring_hits_coll_name_)};
+      event.getCollection<ldmx::SimTrackerHit>(scoring_hits_coll_name_, sp_pass_name_)};
 
   // Retrieve the scoring plane hits at the ECAL
   const std::vector<ldmx::SimTrackerHit> scoring_hits_ecal{
-      event.getCollection<ldmx::SimTrackerHit>("EcalScoringPlaneHits")};
+      event.getCollection<ldmx::SimTrackerHit>("EcalScoringPlaneHits", sp_pass_name_)};
 
   // Retrieve the sim hits in the tagger tracker
   const std::vector<ldmx::SimTrackerHit> tagger_sim_hits =
-      event.getCollection<ldmx::SimTrackerHit>(tagger_sim_hits_coll_name_);
+      event.getCollection<ldmx::SimTrackerHit>(tagger_sim_hits_coll_name_, input_pass_name_);
 
   // Retrieve the sim hits in the recoil tracker
   const std::vector<ldmx::SimTrackerHit> recoil_sim_hits =
-      event.getCollection<ldmx::SimTrackerHit>(recoil_sim_hits_coll_name_);
+      event.getCollection<ldmx::SimTrackerHit>(recoil_sim_hits_coll_name_, input_pass_name_);
 
   // If sim hit collections are empty throw a warning
-  if (tagger_sim_hits.size() == 0 && !skip_tagger_)
-    ldmx_log(error) << "Tagger sim hits collection empty for event "
-                    << event.getEventNumber() << " in run "
-                    << event.getEventHeader().getRun() << std::endl;
-  if (recoil_sim_hits.size() == 0 && !skip_recoil_)
-    ldmx_log(error) << "Recoil sim hits collection empty for event "
-                    << event.getEventNumber() << " in run "
-                    << event.getEventHeader().getRun() << std::endl;
+  if (tagger_sim_hits.size() == 0 && !skip_tagger_) {
+    ldmx_log(error) << "Tagger sim hits collection empty for event ";
+  }
+  if (recoil_sim_hits.size() == 0 && !skip_recoil_) {
+    ldmx_log(error) << "Recoil sim hits collection empty for event ";
+  }
 
   // The map stores which track leaves which sim hits
   std::map<int, std::vector<int>> hit_count_map_recoil;
