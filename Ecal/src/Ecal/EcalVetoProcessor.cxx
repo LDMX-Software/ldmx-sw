@@ -216,7 +216,7 @@ void EcalVetoProcessor::produce(framework::Event &event) {
                        "recoil electron";
   }
 
-  if (event.exists("EcalScoringPlaneHits")) {
+  if (event.exists("EcalScoringPlaneHits", sp_pass_name_)) {
     //
     // Loop through all of the sim particles and find the recoil electron.
     //
@@ -248,7 +248,7 @@ void EcalVetoProcessor::produce(framework::Event &event) {
     }
 
     // Find target SP hit for recoil electron
-    if (event.exists("TargetScoringPlaneHits")) {
+    if (event.exists("TargetScoringPlaneHits", sp_pass_name_)) {
       std::vector<ldmx::SimTrackerHit> targetSpHits =
           event.getCollection<ldmx::SimTrackerHit>("TargetScoringPlaneHits",
                                                    sp_pass_name_);
