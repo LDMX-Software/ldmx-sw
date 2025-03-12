@@ -186,9 +186,7 @@ class EcalWABResult {
   }
   double getRecPhotonShowerEnergy() const { return recPhotonShowerEnergy_; }
 
-  void setProgressNum(int progressNum) { 
-    progressNum_ = progressNum; 
-  }
+  void setProgressNum(int progressNum) { progressNum_ = progressNum; }
   double getProgressNum() const { return progressNum_; }
 
  protected:

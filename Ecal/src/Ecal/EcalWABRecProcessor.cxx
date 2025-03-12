@@ -379,7 +379,8 @@ void EcalWABRecProcessor::produce(framework::Event& event) {
     // reconstruct electron if possible
     else if (ele_hit_list.size() >= 3) {
       if (progress_num != 3) {
-        progress_num = 2; // Set progress_num to 3 to indicate electron-only reconstruction
+        progress_num = 2;  // Set progress_num to 3 to indicate electron-only
+                           // reconstruction
         linear_fit_coeffs =
             polyfitXYvsZ(ele_hit_list_x, ele_hit_list_y, ele_hit_list_z, 1);
       }
@@ -391,8 +392,12 @@ void EcalWABRecProcessor::produce(framework::Event& event) {
   if (std::get<0>(best_x_result).size() != 0) {
     rec_electron_shower_energy = 0;
     rec_photon_shower_energy = 0;
-    for (const auto& hit : ele_hit_list) {rec_electron_shower_energy += hit[5];}
-    for (const auto& hit : phot_hit_list) {rec_photon_shower_energy += hit[5];}
+    for (const auto& hit : ele_hit_list) {
+      rec_electron_shower_energy += hit[5];
+    }
+    for (const auto& hit : phot_hit_list) {
+      rec_photon_shower_energy += hit[5];
+    }
 
     std::vector<double> ele_params = {std::get<0>(best_x_result)(0),
                                       std::get<0>(best_y_result)(0)};
@@ -478,8 +483,10 @@ void EcalWABRecProcessor::produce(framework::Event& event) {
     }
   } else if (progress_num == 2) {
     rec_electron_shower_energy = 0;
-    for (const auto& hit : ele_hit_list) {rec_electron_shower_energy += hit[5];}
-    
+    for (const auto& hit : ele_hit_list) {
+      rec_electron_shower_energy += hit[5];
+    }
+
     std::vector<double> ele_params = {linear_fit_coeffs.first(1),
                                       linear_fit_coeffs.second(1)};
     std::vector<double> ele_params_x = {linear_fit_coeffs.first(1)};
