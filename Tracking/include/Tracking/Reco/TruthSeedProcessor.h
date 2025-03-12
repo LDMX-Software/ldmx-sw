@@ -206,7 +206,6 @@ class TruthSeedProcessor : public TrackingGeometryUser {
 
   /// Pass name for the sim hit collections
   std::string input_pass_name_{""};
-  
 
   /**
    * Minimum number of hits left in the recoil tracker to consider the seed
