@@ -40,6 +40,9 @@ class TrackDeDxMassEstimator : public framework::Producer {
   // name of input simhit collection
   std::string simhit_collection_;
 
+  // pass name the input collections
+  std::string input_pass_name_;
+
 };  // TrackDeDxMassEstimator
 
 }  // namespace recon
