@@ -251,7 +251,7 @@ void EcalVetoProcessor::produce(framework::Event &event) {
                       pow(recoilP[2], 2));
         }
       }
-    }
+    }  // If recoil ele from scoring plane
 
     // Find target SP hit for recoil electron
     if (event.exists("TargetScoringPlaneHits", sp_pass_name_)) {
@@ -852,8 +852,9 @@ void EcalVetoProcessor::produce(framework::Event &event) {
     e_traj_end = TVector3(
         999, 999, geometry_->getZPosition((nEcalLayers_ - 1)));       // 999);
     p_traj_start = TVector3(1000, 1000, geometry_->getZPosition(0));  // 0);
-    p_traj_end = TVector3(
-        1000, 1000, geometry_->getZPosition((nEcalLayers_ - 1)));  // 1000);
+    p_traj_end =
+        TVector3(1000, 1000,
+                 geometry_->getZPosition((nEcalLayers_ - 1)));  // 1000);
     /*ensures event will not be vetoed by angle/separation cut */
     epAngAtEcal_ = 999.;
     epAngAtTarget_ = 999.;
