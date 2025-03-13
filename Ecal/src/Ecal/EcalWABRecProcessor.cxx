@@ -7,41 +7,10 @@
 
 #include "Ecal/EcalWABRecProcessor.h"
 
-// LDMX
-#include "DetDescr/SimSpecialID.h"
-#include "Ecal/Event/EcalHit.h"
-#include "Recon/Event/EventConstants.h"
-#include "SimCore/Event/SimParticle.h"
-#include "SimCore/Event/SimTrackerHit.h"
-#include "Tracking/Event/StraightTrack.h"
-
-/*~~~~~~~~~~~*/
-/*   Tools   */
-/*~~~~~~~~~~~*/
-#include "Eigen/Dense"
-#include "Tools/AnalysisUtils.h"
-
-// C++
-#include <stdlib.h>
-
-#include <algorithm>
-#include <cmath>
-#include <fstream>
-#include <iomanip>
-#include <numbers>  // For std::numbers::pi
-#include <numeric>
-#include <tuple>
-#include <vector>
-
-// ROOT (MIP tracking)
-#include "TDecompSVD.h"
-#include "TMatrixD.h"
-#include "TVector3.h"
-
 namespace ecal {
 
 // 68% Electron Radii of Containment for various theta ranges
-const std::vector<double> radius_68_theta_0_to_10 = {
+const std::vector<float> radius_68_theta_0_to_10 = {
     10.12233413, 9.921772,    11.38255086, 11.67991867, 13.14337347,
     13.17120624, 16.80994665, 17.83787244, 22.44684374, 23.74239886,
     28.60564083, 30.27889678, 34.86404888, 36.39009394, 41.29309474,
@@ -49,8 +18,7 @@ const std::vector<double> radius_68_theta_0_to_10 = {
     60.64828824, 65.51760517, 68.26709803, 76.32877518, 84.61219467,
     98.21320491, 110.9880892, 120.6762931, 140.6174478, 136.4979268,
     145.579465,  154.9803228, 164.7005,    174.7399968};
-
-const std::vector<double> radius_68_theta_10_to_15 = {
+const std::vector<float> radius_68_theta_10_to_15 = {
     10.82307758, 11.17850518, 16.2185281,  18.62488713, 22.63408229,
     24.71769042, 30.11217538, 32.69939046, 37.99753196, 40.81619543,
     45.89054775, 49.03066318, 54.00440948, 59.31733555, 63.40789682,
@@ -59,7 +27,7 @@ const std::vector<double> radius_68_theta_10_to_15 = {
     128.0220711, 145.4137195, 210.3582819, 199.6355662, 184.2513208,
     195.076552,  206.2322029, 217.7182737, 229.5347642};
 
-const std::vector<double> radius_68_theta_15_to_20 = {
+const std::vector<float> radius_68_theta_15_to_20 = {
     12.79450901, 13.02698578, 21.27450933, 25.66008312, 31.78592103,
     35.99689874, 44.37101115, 48.82709363, 55.05972458, 59.68948687,
     65.39866214, 70.59280337, 76.06007787, 82.22695257, 87.50371819,
@@ -68,7 +36,7 @@ const std::vector<double> radius_68_theta_15_to_20 = {
     175.4329544, 184.3003543, 259.8415751, 215.0165,    231.1288534,
     243.4440277, 256.085458,  269.0531444, 282.3470868};
 
-const std::vector<double> radius_68_theta_20_to_30 = {
+const std::vector<float> radius_68_theta_20_to_30 = {
     14.16989595, 15.4488322,  28.31044668, 37.54285657, 48.57288885,
     57.04243339, 68.99836079, 75.33388728, 85.00572867, 91.52574074,
     102.5044698, 106.5315986, 116.2341378, 127.1121442, 133.8866375,
@@ -77,7 +45,7 @@ const std::vector<double> radius_68_theta_20_to_30 = {
     251.7701385, 293.9351568, 310.521898,  344.1455457, 293.3518953,
     303.2401036, 313.128312,  323.0165203, 332.9047287};
 
-const std::vector<double> radius_68_theta_30_to_90 = {
+const std::vector<float> radius_68_theta_30_to_90 = {
     22.50983127, 26.44537503, 58.24642887, 90.59076279, 130.0592014,
     157.4611392, 184.2187293, 202.6994588, 225.3488816, 243.3454167,
     269.2456428, 280.6119298, 303.8591523, 322.0522722, 335.1780181,
@@ -86,10 +54,9 @@ const std::vector<double> radius_68_theta_30_to_90 = {
     480.2334627, 566.5438302, 505.7032783, 556.1650321, 596.9112032,
     616.1614593, 635.4117154, 654.6619715, 673.9122276};
 
-void EcalWABRecProcessor::onProcessStart() {}
-
 void EcalWABRecProcessor::configure(framework::config::Parameters& parameters) {
   // Set the collection name as defined in the configuration
+  sp_pass_name_ = parameters.getParameter<std::string>("sp_pass_name");
   collection_name_ = parameters.getParameter<std::string>("collection_name");
   rec_pass_name_ = parameters.getParameter<std::string>("rec_pass_name");
   rec_coll_name_ = parameters.getParameter<std::string>("rec_coll_name");
@@ -110,7 +77,7 @@ void EcalWABRecProcessor::produce(framework::Event& event) {
   int progress_num = 0;
 
   // Get the Ecal Geometry
-  geometry_ = &getCondition<ldmx::EcalGeometry>(
+  const ldmx::EcalGeometry* geometry_ = &getCondition<ldmx::EcalGeometry>(
       ldmx::EcalGeometry::CONDITIONS_OBJECT_NAME);
 
   // Get the collection of ecal_rec_hits and tracks
@@ -128,43 +95,43 @@ void EcalWABRecProcessor::produce(framework::Event& event) {
   ldmx::EcalWABResult result;
 
   // Define kinematic variables
-  const std::vector<double> z_hat = {0, 0, 1};
-  double true_theta_electron = -9.;
-  double true_theta_photon = -9.;
-  double true_phi_electron = -9.;
-  double true_phi_photon = -9.;
-  double rec_theta_electron = -9.;
-  double rec_theta_photon = -9.;
-  double rec_phi_electron = -9.;
-  double rec_phi_photon = -9.;
-  double true_theta_diff_electron_photon = -9.;
-  double true_phi_diff_electron_photon = -9.;
-  double rec_theta_diff_electron_photon = -9.;
-  double rec_phi_diff_electron_photon = -9.;
-  double true_rec_theta_diff_electron = -9.;
-  double true_rec_phi_diff_electron = -9.;
-  double true_rec_theta_diff_photon = -9.;
-  double true_rec_phi_diff_photon = -9.;
+  const std::vector<float> z_hat = {0, 0, 1};
+  float true_theta_electron = -9.;
+  float true_theta_photon = -9.;
+  float true_phi_electron = -9.;
+  float true_phi_photon = -9.;
+  float rec_theta_electron = -9.;
+  float rec_theta_photon = -9.;
+  float rec_phi_electron = -9.;
+  float rec_phi_photon = -9.;
+  float true_theta_diff_electron_photon = -9.;
+  float true_phi_diff_electron_photon = -9.;
+  float rec_theta_diff_electron_photon = -9.;
+  float rec_phi_diff_electron_photon = -9.;
+  float true_rec_theta_diff_electron = -9.;
+  float true_rec_phi_diff_electron = -9.;
+  float true_rec_theta_diff_photon = -9.;
+  float true_rec_phi_diff_photon = -9.;
   float true_electron_shower_energy = -999.;
   float true_photon_shower_energy = -999.;
-  double rec_electron_shower_energy = -999.;
-  double rec_photon_shower_energy = -999.;
+  float rec_electron_shower_energy = -999.;
+  float rec_photon_shower_energy = -999.;
 
   // Create lists for rec hits and electron/photon shower hits
-  std::vector<std::array<double, 6>> rec_hit_list;
-  std::vector<std::array<double, 6>> ele_hit_list;
-  std::vector<std::array<double, 6>> phot_hit_list;
+  std::vector<std::array<float, 6>> rec_hit_list;
+  std::vector<std::array<float, 6>> ele_hit_list;
+  std::vector<std::array<float, 6>> phot_hit_list;
 
   // Save rec hit info to rec_hit_list
   for (const ldmx::EcalHit& hit : ecal_rec_hits) {
     ldmx::EcalID id(hit.getID());
     auto [x, y, z] = geometry_->getPosition(id);
-    double energy = hit.getEnergy();
-    double layer_num = id.layer();
+    float energy = hit.getEnergy();
+    float layer_num = id.layer();
     rec_hit_list.push_back({x, y, z, layer_num, 0, energy});
   }
 
-  if (event.exists("TargetScoringPlaneHits")) {
+  if (event.exists("TargetScoringPlaneHits", sp_pass_name_)) {
     //
     // Loop through all of the sim particles and find the recoil
     // photon/electron.
@@ -172,7 +139,7 @@ void EcalWABRecProcessor::produce(framework::Event& event) {
 
     // Find Target SP hit for recoil photon/electron
     const std::vector<ldmx::SimTrackerHit> target_sp_hits =
-        event.getCollection<ldmx::SimTrackerHit>("TargetScoringPlaneHits");
+        event.getCollection<ldmx::SimTrackerHit>("TargetScoringPlaneHits", sp_pass_name_);
     float photon_p_zmax = 0, electron_p_zmax = 0;
     for (const ldmx::SimTrackerHit& sp_hit : target_sp_hits) {
       ldmx::SimSpecialID hit_id(sp_hit.getID());
@@ -198,25 +165,27 @@ void EcalWABRecProcessor::produce(framework::Event& event) {
 
     // Calculating true theta values using SP hit parameters
     if (recoil_y_p.size() == 3 &&
-        std::sqrt(std::pow(recoil_y_p[0], 2) + std::pow(recoil_y_p[1], 2) +
-                  std::pow(recoil_y_p[2], 2)) != 0 &&
+        std::sqrt((recoil_y_p[0]) * (recoil_y_p[0]) +
+                  (recoil_y_p[1]) * (recoil_y_p[1]) +
+                  (recoil_y_p[2]) * (recoil_y_p[2])) != 0 &&
         recoil_e_p.size() == 3 &&
-        std::sqrt(std::pow(recoil_e_p[0], 2) + std::pow(recoil_e_p[1], 2) +
-                  std::pow(recoil_e_p[2], 2)) != 0) {
+        std::sqrt((recoil_e_p[0]) * (recoil_e_p[0]) +
+                  (recoil_e_p[1]) * (recoil_e_p[1]) +
+                  (recoil_e_p[2]) * (recoil_e_p[2])) != 0) {
       true_theta_electron =
           (180 / std::numbers::pi) *
           std::acos(std::inner_product(recoil_e_p.begin(), recoil_e_p.end(),
                                        z_hat.begin(), 0.0) /
-                    std::sqrt(std::pow(recoil_e_p[0], 2) +
-                              std::pow(recoil_e_p[1], 2) +
-                              std::pow(recoil_e_p[2], 2)));
+                    std::sqrt((recoil_e_p[0]) * (recoil_e_p[0]) +
+                              (recoil_e_p[1]) * (recoil_e_p[1]) +
+                              (recoil_e_p[2]) * (recoil_e_p[2])));
       true_theta_photon =
           (180 / std::numbers::pi) *
           std::acos(std::inner_product(recoil_y_p.begin(), recoil_y_p.end(),
                                        z_hat.begin(), 0.0) /
-                    std::sqrt(std::pow(recoil_y_p[0], 2) +
-                              std::pow(recoil_y_p[1], 2) +
-                              std::pow(recoil_y_p[2], 2)));
+                    std::sqrt((recoil_y_p[0]) * (recoil_y_p[0]) +
+                              (recoil_y_p[1]) * (recoil_y_p[1]) +
+                              (recoil_y_p[2]) * (recoil_y_p[2])));
     }
 
     // Calculating true phi values using SP hit parameters
@@ -242,55 +211,61 @@ void EcalWABRecProcessor::produce(framework::Event& event) {
 
     // Calculating true delta_phi/delta_theta using SP hit parameters
     if (recoil_y_p.size() == 3 && recoil_e_p.size() == 3) {
-      std::array<double, 2> phi_diff_electron_arr = {recoil_e_p[0],
+      std::array<float, 2> phi_diff_electron_arr = {recoil_e_p[0],
                                                      recoil_e_p[1]};
-      std::array<double, 2> phi_diff_photon_arr = {recoil_y_p[0],
+      std::array<float, 2> phi_diff_photon_arr = {recoil_y_p[0],
                                                    recoil_y_p[1]};
-      std::array<double, 2> theta_diff_electron_arr = {recoil_e_p[2],
+      std::array<float, 2> theta_diff_electron_arr = {recoil_e_p[2],
                                                        recoil_e_p[0]};
-      std::array<double, 2> theta_diff_photon_arr = {recoil_y_p[2],
+      std::array<float, 2> theta_diff_photon_arr = {recoil_y_p[2],
                                                      recoil_y_p[0]};
 
       true_theta_diff_electron_photon =
           (180 / std::numbers::pi) *
-          std::acos(std::inner_product(theta_diff_electron_arr.begin(),
-                                       theta_diff_electron_arr.end(),
-                                       theta_diff_photon_arr.begin(), 0.0) /
-                    (std::sqrt(std::pow(theta_diff_electron_arr[0], 2) +
-                               std::pow(theta_diff_electron_arr[1], 2)) *
-                     std::sqrt(std::pow(theta_diff_photon_arr[0], 2) +
-                               std::pow(theta_diff_photon_arr[1], 2))));
+          std::acos(
+              std::inner_product(theta_diff_electron_arr.begin(),
+                                 theta_diff_electron_arr.end(),
+                                 theta_diff_photon_arr.begin(), 0.0) /
+              (std::sqrt((theta_diff_electron_arr[0]) *
+                             (theta_diff_electron_arr[0]) +
+                         (theta_diff_electron_arr[1]) *
+                             (theta_diff_electron_arr[1])) *
+               std::sqrt(
+                   (theta_diff_photon_arr[0]) * (theta_diff_photon_arr[0]) +
+                   (theta_diff_photon_arr[1]) * (theta_diff_photon_arr[1]))));
       true_phi_diff_electron_photon =
           (180 / std::numbers::pi) *
-          std::acos(std::inner_product(phi_diff_electron_arr.begin(),
-                                       phi_diff_electron_arr.end(),
-                                       phi_diff_photon_arr.begin(), 0.0) /
-                    (std::sqrt(std::pow(phi_diff_electron_arr[0], 2) +
-                               std::pow(phi_diff_electron_arr[1], 2)) *
-                     std::sqrt(std::pow(phi_diff_photon_arr[0], 2) +
-                               std::pow(phi_diff_photon_arr[1], 2))));
+          std::acos(
+              std::inner_product(phi_diff_electron_arr.begin(),
+                                 phi_diff_electron_arr.end(),
+                                 phi_diff_photon_arr.begin(), 0.0) /
+              (std::sqrt(
+                   (phi_diff_electron_arr[0]) * (phi_diff_electron_arr[0]) +
+                   (phi_diff_electron_arr[1]) * (phi_diff_electron_arr[1])) *
+               std::sqrt((phi_diff_photon_arr[0]) * (phi_diff_photon_arr[0]) +
+                         (phi_diff_photon_arr[1]) * (phi_diff_photon_arr[1]))));
     }
   }
 
   // Defining variables to save best fit results
   std::pair<Eigen::VectorXd, Eigen::VectorXd> linear_fit_coeffs;
-  std::tuple<Eigen::VectorXd, double, int, Eigen::MatrixXd, int> best_x_result;
-  std::tuple<Eigen::VectorXd, double, int, Eigen::MatrixXd, int> best_y_result;
+  std::tuple<Eigen::VectorXd, float, int, Eigen::MatrixXd, int> best_x_result;
+  std::tuple<Eigen::VectorXd, float, int, Eigen::MatrixXd, int> best_y_result;
   std::get<1>(best_x_result) = 10e99;
   std::get<1>(best_y_result) = 10e99;
 
   // Looping over tracks to find best fit to hits
-  std::vector<double> ele_roc = radius_68_theta_30_to_90;
+  std::vector<float> ele_roc = radius_68_theta_30_to_90;
   for (const ldmx::StraightTrack& track : linear_tracks) {
     progress_num = 1;
     // Determining the RoC value to use based on recoil electron (track) theta
     std::vector<double> track_vec = {track.getSlopeX(), track.getSlopeY(), 1};
-    double track_theta =
+    float track_theta =
         (180 / std::numbers::pi) *
         std::acos(std::inner_product(track_vec.begin(), track_vec.end(),
                                      z_hat.begin(), 0.0) /
-                  std::sqrt(std::pow(track_vec[0], 2) +
-                            std::pow(track_vec[1], 2) + 1));
+                  std::sqrt((track_vec[0]) * (track_vec[0]) +
+                            (track_vec[1]) * (track_vec[1]) + 1));
     if (track_theta <= 10) {
       ele_roc = radius_68_theta_0_to_10;
     } else if (track_theta > 10 && track_theta <= 15) {
@@ -302,19 +277,20 @@ void EcalWABRecProcessor::produce(framework::Event& event) {
     }
 
     // Labeling hits as electron (1) or photon (0)
-    for (std::array<double, 6>& hit : rec_hit_list) {
-      if (std::sqrt(std::pow(hit[0] - (track.getSlopeX() * hit[2] +
-                                       track.getInterceptX()),
-                             2) +
-                    std::pow(hit[1] - (track.getSlopeY() * hit[2] +
-                                       track.getInterceptY()),
-                             2)) < ele_roc[hit[3]]) {
+    for (std::array<float, 6>& hit : rec_hit_list) {
+      if (std::sqrt(
+              (hit[0] - (track.getSlopeX() * hit[2] + track.getInterceptX())) *
+                  (hit[0] -
+                   (track.getSlopeX() * hit[2] + track.getInterceptX())) +
+              (hit[1] - (track.getSlopeY() * hit[2] + track.getInterceptY())) *
+                  (hit[1] - (track.getSlopeY() * hit[2] +
+                             track.getInterceptY()))) < ele_roc[hit[3]]) {
         hit[4] = 1;
       }
     }
     // Create vectors to hold electron/photon hits specifically
-    std::vector<double> ele_hit_list_x, ele_hit_list_y, ele_hit_list_z;
-    std::vector<double> phot_hit_list_x, phot_hit_list_y, phot_hit_list_z;
+    std::vector<float> ele_hit_list_x, ele_hit_list_y, ele_hit_list_z;
+    std::vector<float> phot_hit_list_x, phot_hit_list_y, phot_hit_list_z;
 
     // Use labels to sort hits as electron/photon and calculate shower energies
     for (const auto& hit : rec_hit_list) {
@@ -348,20 +324,20 @@ void EcalWABRecProcessor::produce(framework::Event& event) {
           (phot_hit_list.back()[1] - phot_hit_list[0][1]) /
               (phot_hit_list.back()[2] - phot_hit_list[0][2]),
           track.getInterceptY()};
-      std::vector<double> phot_hit_error(phot_hit_list.size(),
+      std::vector<float> phot_hit_error(phot_hit_list.size(),
                                          0.456435464588 * 4.816);
-      std::vector<double> ele_hit_error(ele_hit_list.size(),
+      std::vector<float> ele_hit_error(ele_hit_list.size(),
                                         0.456435464588 * 4.816);
 
       int max_iter = 200;
       // Carry out fit
-      std::tuple<Eigen::VectorXd, double, int, Eigen::MatrixXd, int> x_result =
+      std::tuple<Eigen::VectorXd, float, int, Eigen::MatrixXd, int> x_result =
           fit2DTracksConstrained(ele_hit_list_z, ele_hit_list_x, ele_hit_error,
                                  phot_hit_list_z, phot_hit_list_x,
                                  phot_hit_error, x_guess, max_iter, 0, 0.001,
                                  10.0);
 
-      std::tuple<Eigen::VectorXd, double, int, Eigen::MatrixXd, int> y_result =
+      std::tuple<Eigen::VectorXd, float, int, Eigen::MatrixXd, int> y_result =
           fit2DTracksConstrained(ele_hit_list_z, ele_hit_list_y, ele_hit_error,
                                  phot_hit_list_z, phot_hit_list_y,
                                  phot_hit_error, y_guess, max_iter, 0, 0.001,
@@ -408,12 +384,12 @@ void EcalWABRecProcessor::produce(framework::Event& event) {
 
     rec_theta_electron =
         (180 / std::numbers::pi) *
-        std::acos(1 / std::sqrt(std::pow(ele_params[0], 2) +
-                                std::pow(ele_params[1], 2) + 1));
+        std::acos(1 / std::sqrt((ele_params[0]) * (ele_params[0]) +
+                                (ele_params[1]) * (ele_params[1]) + 1));
     rec_theta_photon =
         (180 / std::numbers::pi) *
-        std::acos(1 / std::sqrt(std::pow(phot_params[0], 2) +
-                                std::pow(phot_params[1], 2) + 1));
+        std::acos(1 / std::sqrt((phot_params[0]) * (phot_params[0]) +
+                                (phot_params[1]) * (phot_params[1]) + 1));
 
     rec_phi_electron =
         (180 / std::numbers::pi) * std::atan(ele_params[1] / ele_params[0]);
@@ -436,16 +412,16 @@ void EcalWABRecProcessor::produce(framework::Event& event) {
         (180 / std::numbers::pi) *
         std::acos(std::inner_product(ele_params_x.begin(), ele_params_x.end(),
                                      phot_params_x.begin(), 1.0) /
-                  (std::sqrt(std::pow(ele_params_x[0], 2) + std::pow(1, 2)) *
-                   std::sqrt(std::pow(phot_params_x[0], 2) + std::pow(1, 2))));
+                  (std::sqrt((ele_params_x[0]) * (ele_params_x[0]) + (1)) *
+                   std::sqrt((phot_params_x[0]) * (phot_params_x[0]) + 1)));
     rec_phi_diff_electron_photon =
         (180 / std::numbers::pi) *
         std::acos(std::inner_product(ele_params.begin(), ele_params.end(),
                                      phot_params.begin(), 0.0) /
-                  (std::sqrt(std::pow(ele_params[0], 2) +
-                             std::pow(ele_params[1], 2)) *
-                   std::sqrt(std::pow(phot_params[0], 2) +
-                             std::pow(phot_params[1], 2))));
+                  (std::sqrt((ele_params[0]) * (ele_params[0]) +
+                             (ele_params[1]) * (ele_params[1])) *
+                   std::sqrt((phot_params[0]) * (phot_params[0]) +
+                             (phot_params[1]) * (phot_params[1]))));
 
     if (recoil_y_p.size() == 3 && recoil_y_p[2] != 0 &&
         recoil_e_p.size() == 3 && recoil_e_p[2] != 0) {
@@ -453,33 +429,33 @@ void EcalWABRecProcessor::produce(framework::Event& event) {
           (180 / std::numbers::pi) *
           std::acos(std::inner_product(ele_params_x.begin(), ele_params_x.end(),
                                        recoil_e_p.begin(), recoil_e_p[2]) /
-                    (std::sqrt(std::pow(ele_params_x[0], 2) + std::pow(1, 2)) *
-                     std::sqrt(std::pow(recoil_e_p[0], 2) +
-                               std::pow(recoil_e_p[2], 2))));
+                    (std::sqrt((ele_params_x[0]) * (ele_params_x[0]) + 1) *
+                     std::sqrt((recoil_e_p[0]) * (recoil_e_p[0]) +
+                               (recoil_e_p[2]) * (recoil_e_p[2]))));
       true_rec_theta_diff_photon =
           (180 / std::numbers::pi) *
           std::acos(std::inner_product(phot_params_x.begin(),
                                        phot_params_x.end(), recoil_y_p.begin(),
                                        recoil_y_p[2]) /
-                    (std::sqrt(std::pow(phot_params_x[0], 2) + std::pow(1, 2)) *
-                     std::sqrt(std::pow(recoil_y_p[0], 2) +
-                               std::pow(recoil_y_p[2], 2))));
+                    (std::sqrt((phot_params_x[0]) * (phot_params_x[0]) + 1) *
+                     std::sqrt((recoil_y_p[0]) * (recoil_y_p[0]) +
+                               (recoil_y_p[2]) * (recoil_y_p[2]))));
       true_rec_phi_diff_electron =
           (180 / std::numbers::pi) *
           std::acos(std::inner_product(ele_params.begin(), ele_params.end(),
                                        recoil_e_p.begin(), 0) /
-                    (std::sqrt(std::pow(ele_params[0], 2) +
-                               std::pow(ele_params[1], 2)) *
-                     std::sqrt(std::pow(recoil_e_p[0], 2) +
-                               std::pow(recoil_e_p[1], 2))));
+                    (std::sqrt((ele_params[0]) * (ele_params[0]) +
+                               (ele_params[1]) * (ele_params[1])) *
+                     std::sqrt((recoil_e_p[0]) * (recoil_e_p[0]) +
+                               (recoil_e_p[1]) * (recoil_e_p[1]))));
       true_rec_phi_diff_photon =
           (180 / std::numbers::pi) *
           std::acos(std::inner_product(phot_params.begin(), phot_params.end(),
                                        recoil_y_p.begin(), 0) /
-                    (std::sqrt(std::pow(phot_params[0], 2) +
-                               std::pow(phot_params[1], 2)) *
-                     std::sqrt(std::pow(recoil_y_p[0], 2) +
-                               std::pow(recoil_y_p[1], 2))));
+                    (std::sqrt((phot_params[0]) * (phot_params[0]) +
+                               (phot_params[1]) * (phot_params[1])) *
+                     std::sqrt((recoil_y_p[0]) * (recoil_y_p[0]) +
+                               (recoil_y_p[1]) * (recoil_y_p[1]))));
     }
   } else if (progress_num == 2) {
     rec_electron_shower_energy = 0;
@@ -493,8 +469,8 @@ void EcalWABRecProcessor::produce(framework::Event& event) {
 
     rec_theta_electron =
         (180 / std::numbers::pi) *
-        std::acos(1 / std::sqrt(std::pow(ele_params[0], 2) +
-                                std::pow(ele_params[1], 2) + 1));
+        std::acos(1 / std::sqrt((ele_params[0]) * (ele_params[0]) +
+                                (ele_params[1]) * (ele_params[1]) + 1));
     rec_phi_electron =
         (180 / std::numbers::pi) * std::atan(ele_params[1] / ele_params[0]);
     if (ele_params[1] < 0) {
@@ -510,17 +486,17 @@ void EcalWABRecProcessor::produce(framework::Event& event) {
           (180 / std::numbers::pi) *
           std::acos(std::inner_product(ele_params_x.begin(), ele_params_x.end(),
                                        recoil_e_p.begin(), recoil_e_p[2]) /
-                    (std::sqrt(std::pow(ele_params_x[0], 2) + std::pow(1, 2)) *
-                     std::sqrt(std::pow(recoil_e_p[0], 2) +
-                               std::pow(recoil_e_p[2], 2))));
+                    (std::sqrt((ele_params_x[0]) * (ele_params_x[0]) + 1) *
+                     std::sqrt((recoil_e_p[0]) * (recoil_e_p[0]) +
+                               (recoil_e_p[2]) * (recoil_e_p[2]))));
       true_rec_phi_diff_electron =
           (180 / std::numbers::pi) *
           std::acos(std::inner_product(ele_params.begin(), ele_params.end(),
                                        recoil_e_p.begin(), 0) /
-                    (std::sqrt(std::pow(ele_params[0], 2) +
-                               std::pow(ele_params[1], 2)) *
-                     std::sqrt(std::pow(recoil_e_p[0], 2) +
-                               std::pow(recoil_e_p[1], 2))));
+                    (std::sqrt((ele_params[0]) * (ele_params[0]) +
+                               (ele_params[1]) * (ele_params[1])) *
+                     std::sqrt((recoil_e_p[0]) * (recoil_e_p[0]) +
+                               (recoil_e_p[1]) * (recoil_e_p[1]))));
     }
 
     // Set photon variables to non-physical value
@@ -550,7 +526,7 @@ void EcalWABRecProcessor::produce(framework::Event& event) {
   // Calculate processing time for event
   auto end = std::chrono::high_resolution_clock::now();
   auto diff = end - start;
-  processing_time_ += std::chrono::duration<double, std::milli>(diff).count();
+  processing_time_ += std::chrono::duration<float, std::milli>(diff).count();
 }
 
 void EcalWABRecProcessor::onProcessEnd() {
@@ -558,13 +534,13 @@ void EcalWABRecProcessor::onProcessEnd() {
                  << processing_time_ / nevents_ << " ms";
 }
 
-std::tuple<Eigen::VectorXd, double, int, Eigen::MatrixXd, int>
+std::tuple<Eigen::VectorXd, float, int, Eigen::MatrixXd, int>
 EcalWABRecProcessor::fit2DTracksConstrained(
-    const std::vector<double>& x1, const std::vector<double>& y1,
-    const std::vector<double>& s1, const std::vector<double>& x2,
-    const std::vector<double>& y2, const std::vector<double>& s2,
-    const std::vector<double>& guess, int max_iter, int verbose, double d_chisq,
-    double abs_lim) {
+    const std::vector<float>& x1, const std::vector<float>& y1,
+    const std::vector<float>& s1, const std::vector<float>& x2,
+    const std::vector<float>& y2, const std::vector<float>& s2,
+    const std::vector<double>& guess, int max_iter, int verbose, float d_chisq,
+    float abs_lim) {
   /*
     Function that fits two 2D tracks with a vertex constraint (same intercepts).
     The fitted model is initially defined as:
@@ -583,7 +559,7 @@ EcalWABRecProcessor::fit2DTracksConstrained(
       d_chisq    : stopping criterion for chi-squared improvement (default
     0.001) abs_lim   : a parameter used in the fit (default 10) Returns: A tuple
     containing: par    : fitted parameters (Eigen::VectorXd of size 3) chisq  :
-    chi-squared at minimum (double) ndof   : number of degrees of freedom (int)
+    chi-squared at minimum (float) ndof   : number of degrees of freedom (int)
         cov    : covariance matrix (Eigen::MatrixXd 3x3)
         niter  : number of iterations used (int)
   */
@@ -614,11 +590,11 @@ EcalWABRecProcessor::fit2DTracksConstrained(
   // Build the weight matrix W = diag(1/s_i^2)
   Eigen::MatrixXd W = Eigen::MatrixXd::Zero(n, n);
   for (int i = 0; i < n; ++i) {
-    W(i, i) = 1.0 / (s(i) * s(i));
+    W(i, i) = 1.0 / ((s(i)) * (s(i)));
   }
 
-  double chi_sq = 0.0;
-  double old_chi_sq = 1e12;  // a large initial value
+  float chi_sq = 0.0;
+  float old_chi_sq = 1e12;  // a large initial value
   int n_iter = 0;
   Eigen::MatrixXd cov(3, 3);  // covariance matrix
 
@@ -630,7 +606,7 @@ EcalWABRecProcessor::fit2DTracksConstrained(
     // For track 1: y1_fit = par[0] * x1 + abs_lim * tanh(par[2]/abs_lim)
     // For track 2: y2_fit = par[1] * x2 + abs_lim * tanh(par[2]/abs_lim)
     Eigen::VectorXd y1_fit(n1), y2_fit(n2);
-    double tanh_term = std::tanh(par(2) / abs_lim);
+    float tanh_term = std::tanh(par(2) / abs_lim);
     for (int i = 0; i < n1; ++i) {
       y1_fit(i) = par(0) * x1[i] + abs_lim * tanh_term;
     }
@@ -650,8 +626,8 @@ EcalWABRecProcessor::fit2DTracksConstrained(
     // Compute chi-squared: sum_i [ (y_fit[i]-y[i])^2 / s[i]^2 ]
     chi_sq = 0.0;
     for (int i = 0; i < n; ++i) {
-      double diff = y_fit(i) - y(i);
-      chi_sq += (diff * diff) / (s(i) * s(i));
+      float diff = y_fit(i) - y(i);
+      chi_sq += (diff * diff) / ((s(i)) * (s(i)));
     }
 
     if (verbose > 0) {
@@ -678,7 +654,7 @@ EcalWABRecProcessor::fit2DTracksConstrained(
     Eigen::VectorXd dy2_dpar_0 = Eigen::VectorXd::Zero(n2), dy2_dpar_1(n2),
                     dy2_dpar_2(n2);
 
-    double d_term = 1.0 / std::cosh(par(2) / abs_lim);
+    float d_term = 1.0 / std::cosh(par(2) / abs_lim);
     d_term = d_term * d_term;  // square it
     for (int i = 0; i < n1; ++i) {
       dy1_dpar_0(i) = x1[i];
@@ -753,10 +729,10 @@ EcalWABRecProcessor::fit2DTracksConstrained(
     }
 
     // Recompute chi-squared with the updated fitted values.
-    double new_chi_sq = 0.0;
+    float new_chi_sq = 0.0;
     for (int i = 0; i < n; ++i) {
-      double diff = y_fit(i) - y(i);
-      new_chi_sq += (diff * diff) / (s(i) * s(i));
+      float diff = y_fit(i) - y(i);
+      new_chi_sq += (diff * diff) / ((s(i)) * (s(i)));
     }
     chi_sq = new_chi_sq;
 
@@ -773,12 +749,12 @@ EcalWABRecProcessor::fit2DTracksConstrained(
     ldmx_log(debug) << "At the end chi_sq = " << chi_sq;
     ldmx_log(debug) << "Scaled residuals for track 1:";
     for (int i = 0; i < n1; ++i) {
-      double fit_val = par(0) * (x1[i] - par(2));
+      float fit_val = par(0) * (x1[i] - par(2));
       ldmx_log(debug) << 10000 * (fit_val - y1[i]);
     }
     ldmx_log(debug) << "Scaled residuals for track 2:";
     for (int i = 0; i < n2; ++i) {
-      double fit_val = par(1) * (x2[i] - par(2));
+      float fit_val = par(1) * (x2[i] - par(2));
       ldmx_log(debug) << 10000 * (fit_val - y2[i]);
     }
   }
@@ -788,18 +764,19 @@ EcalWABRecProcessor::fit2DTracksConstrained(
 }
 
 std::pair<Eigen::VectorXd, Eigen::VectorXd> EcalWABRecProcessor::polyfitXYvsZ(
-    const std::vector<double>& x, const std::vector<double>& y,
-    const std::vector<double>& z, int degree) {
+    const std::vector<float>& x, const std::vector<float>& y,
+    const std::vector<float>& z, int degree) {
   /*
     Function that fits two polynomials (x vs. z and y vs. z) to 3D hit position
     data using a least-squares method. The fitted models are defined as: x = a₀
-    + a₁ * z + a₂ * z² + ... + aₙ * zⁿ y = b₀ + b₁ * z + b₂ * z² + ... + bₙ * zⁿ
+    + a₁ * z + a₂ * z² + ... + aₙ * zⁿ
+    y = b₀ + b₁ * z + b₂ * z² + ... + bₙ * zⁿ
     where n is the specified polynomial degree.
 
     Inputs:
       x, y, z : measured coordinates for the tracks;
                 x and y are the dependent variables, and z is the independent
-    variable (all provided as std::vector<double>) degree  : degree of the
+    variable (all provided as std::vector<float>) degree  : degree of the
     polynomial to be fitted (int)
 
     Returns:
@@ -821,7 +798,7 @@ std::pair<Eigen::VectorXd, Eigen::VectorXd> EcalWABRecProcessor::polyfitXYvsZ(
   // Each row i: [1, z[i], z[i]^2, ..., z[i]^degree]
   Eigen::MatrixXd A(n, degree + 1);
   for (size_t i = 0; i < n; ++i) {
-    double term = 1.0;
+    float term = 1.0;
     for (int j = 0; j <= degree; ++j) {
       A(i, j) = term;
       term *= z[i];

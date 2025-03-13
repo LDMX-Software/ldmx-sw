@@ -2,7 +2,7 @@
  * @file EcalWABResult.h
  * @brief Class used to encapsulate the results obtained from
  * EcalWABRecProcessor
- * @author Sanjit Masanam (UCSB)
+ * @author Sanjit Masanam, UCSB
  */
 
 #ifndef EVENT_ECALWABRESULT_H_
@@ -35,187 +35,194 @@ class EcalWABResult {
   /**
    * Print the string representation of this object.
    *
-   * This class is needed by ROOT when building the dictionary.
+   * This method is needed by ROOT when building the dictionary.
    */
   void Print() const;
 
-  // To match the Framework Bus clear. It's doing nothing
-  void Clear(){};
+  // To match the Framework Bus clear. It's doing nothing.
+  void Clear() {}
 
   void setVariables(
-      double trueThetaElectron, double trueThetaPhoton, double truePhiElectron,
-      double truePhiPhoton, double recThetaElectron, double recThetaPhoton,
-      double recPhiElectron, double recPhiPhoton,
-      double trueThetaDiffElectronPhoton, double truePhiDiffElectronPhoton,
-      double recThetaDiffElectronPhoton, double recPhiDiffElectronPhoton,
-      double trueRecThetaDiffElectron, double trueRecPhiDiffElectron,
-      double trueRecThetaDiffPhoton, double trueRecPhiDiffPhoton,
-      float trueElectronShowerEnergy, float truePhotonShowerEnergy,
-      double recElectronShowerEnergy, double recPhotonShowerEnergy,
-      int progressNum) {
-    trueThetaElectron_ = trueThetaElectron;
-    trueThetaPhoton_ = trueThetaPhoton;
-    truePhiElectron_ = truePhiElectron;
-    truePhiPhoton_ = truePhiPhoton;
-    recThetaElectron_ = recThetaElectron;
-    recThetaPhoton_ = recThetaPhoton;
-    recPhiElectron_ = recPhiElectron;
-    recPhiPhoton_ = recPhiPhoton;
-    trueThetaDiffElectronPhoton_ = trueThetaDiffElectronPhoton;
-    truePhiDiffElectronPhoton_ = truePhiDiffElectronPhoton;
-    recThetaDiffElectronPhoton_ = recThetaDiffElectronPhoton;
-    recPhiDiffElectronPhoton_ = recPhiDiffElectronPhoton;
-    trueRecThetaDiffElectron_ = trueRecThetaDiffElectron;
-    trueRecPhiDiffElectron_ = trueRecPhiDiffElectron;
-    trueRecThetaDiffPhoton_ = trueRecThetaDiffPhoton;
-    trueRecPhiDiffPhoton_ = trueRecPhiDiffPhoton;
-    trueElectronShowerEnergy_ = trueElectronShowerEnergy;
-    truePhotonShowerEnergy_ = truePhotonShowerEnergy;
-    recElectronShowerEnergy_ = recElectronShowerEnergy;
-    recPhotonShowerEnergy_ = recPhotonShowerEnergy;
-    progressNum_ = progressNum;
+      float true_theta_electron, float true_theta_photon,
+      float true_phi_electron, float true_phi_photon, float rec_theta_electron,
+      float rec_theta_photon, float rec_phi_electron, float rec_phi_photon,
+      float true_theta_diff_electron_photon,
+      float true_phi_diff_electron_photon, float rec_theta_diff_electron_photon,
+      float rec_phi_diff_electron_photon, float true_rec_theta_diff_electron,
+      float true_rec_phi_diff_electron, float true_rec_theta_diff_photon,
+      float true_rec_phi_diff_photon, float true_electron_shower_energy,
+      float true_photon_shower_energy, float rec_electron_shower_energy,
+      float rec_photon_shower_energy, int progress_num) {
+    true_theta_electron_ = true_theta_electron;
+    true_theta_photon_ = true_theta_photon;
+    true_phi_electron_ = true_phi_electron;
+    true_phi_photon_ = true_phi_photon;
+    rec_theta_electron_ = rec_theta_electron;
+    rec_theta_photon_ = rec_theta_photon;
+    rec_phi_electron_ = rec_phi_electron;
+    rec_phi_photon_ = rec_phi_photon;
+    true_theta_diff_electron_photon_ = true_theta_diff_electron_photon;
+    true_phi_diff_electron_photon_ = true_phi_diff_electron_photon;
+    rec_theta_diff_electron_photon_ = rec_theta_diff_electron_photon;
+    rec_phi_diff_electron_photon_ = rec_phi_diff_electron_photon;
+    true_rec_theta_diff_electron_ = true_rec_theta_diff_electron;
+    true_rec_phi_diff_electron_ = true_rec_phi_diff_electron;
+    true_rec_theta_diff_photon_ = true_rec_theta_diff_photon;
+    true_rec_phi_diff_photon_ = true_rec_phi_diff_photon;
+    true_electron_shower_energy_ = true_electron_shower_energy;
+    true_photon_shower_energy_ = true_photon_shower_energy;
+    rec_electron_shower_energy_ = rec_electron_shower_energy;
+    rec_photon_shower_energy_ = rec_photon_shower_energy;
+    progress_num_ = progress_num;
   }
 
-  void setTrueThetaElectron(double trueThetaElectron) {
-    trueThetaElectron_ = trueThetaElectron;
+  void setTrueThetaElectron(float true_theta_electron) {
+    true_theta_electron_ = true_theta_electron;
   }
-  double getTrueThetaElectron() const { return trueThetaElectron_; }
+  float getTrueThetaElectron() const { return true_theta_electron_; }
 
-  void setTrueThetaPhoton(double trueThetaPhoton) {
-    trueThetaPhoton_ = trueThetaPhoton;
+  void setTrueThetaPhoton(float true_theta_photon) {
+    true_theta_photon_ = true_theta_photon;
   }
-  double getTrueThetaPhoton() const { return trueThetaPhoton_; }
+  float getTrueThetaPhoton() const { return true_theta_photon_; }
 
-  void setTruePhiElectron(double truePhiElectron) {
-    truePhiElectron_ = truePhiElectron;
+  void setTruePhiElectron(float true_phi_electron) {
+    true_phi_electron_ = true_phi_electron;
   }
-  double getTruePhiElectron() const { return truePhiElectron_; }
+  float getTruePhiElectron() const { return true_phi_electron_; }
 
-  void setTruePhiPhoton(double truePhiPhoton) {
-    truePhiPhoton_ = truePhiPhoton;
+  void setTruePhiPhoton(float true_phi_photon) {
+    true_phi_photon_ = true_phi_photon;
   }
-  double getTruePhiPhoton() const { return truePhiPhoton_; }
+  float getTruePhiPhoton() const { return true_phi_photon_; }
 
-  void setRecThetaElectron(double recThetaElectron) {
-    recThetaElectron_ = recThetaElectron;
+  void setRecThetaElectron(float rec_theta_electron) {
+    rec_theta_electron_ = rec_theta_electron;
   }
-  double getRecThetaElectron() const { return recThetaElectron_; }
+  float getRecThetaElectron() const { return rec_theta_electron_; }
 
-  void setRecThetaPhoton(double recThetaPhoton) {
-    recThetaPhoton_ = recThetaPhoton;
+  void setRecThetaPhoton(float rec_theta_photon) {
+    rec_theta_photon_ = rec_theta_photon;
   }
-  double getRecThetaPhoton() const { return recThetaPhoton_; }
+  float getRecThetaPhoton() const { return rec_theta_photon_; }
 
-  void setRecPhiElectron(double recPhiElectron) {
-    recPhiElectron_ = recPhiElectron;
+  void setRecPhiElectron(float rec_phi_electron) {
+    rec_phi_electron_ = rec_phi_electron;
   }
-  double getRecPhiElectron() const { return recPhiElectron_; }
+  float getRecPhiElectron() const { return rec_phi_electron_; }
 
-  void setRecPhiPhoton(double recPhiPhoton) { recPhiPhoton_ = recPhiPhoton; }
-  double getRecPhiPhoton() const { return recPhiPhoton_; }
+  void setRecPhiPhoton(float rec_phi_photon) {
+    rec_phi_photon_ = rec_phi_photon;
+  }
+  float getRecPhiPhoton() const { return rec_phi_photon_; }
 
-  void setTrueThetaDiffElectronPhoton(double trueThetaDiffElectronPhoton) {
-    trueThetaDiffElectronPhoton_ = trueThetaDiffElectronPhoton;
+  void setTrueThetaDiffElectronPhoton(float true_theta_diff_electron_photon) {
+    true_theta_diff_electron_photon_ = true_theta_diff_electron_photon;
   }
-  double getTrueThetaDiffElectronPhoton() const {
-    return trueThetaDiffElectronPhoton_;
-  }
-
-  void setTruePhiDiffElectronPhoton(double truePhiDiffElectronPhoton) {
-    truePhiDiffElectronPhoton_ = truePhiDiffElectronPhoton;
-  }
-  double getTruePhiDiffElectronPhoton() const {
-    return truePhiDiffElectronPhoton_;
+  float getTrueThetaDiffElectronPhoton() const {
+    return true_theta_diff_electron_photon_;
   }
 
-  void setRecThetaDiffElectronPhoton(double recThetaDiffElectronPhoton) {
-    recThetaDiffElectronPhoton_ = recThetaDiffElectronPhoton;
+  void setTruePhiDiffElectronPhoton(float true_phi_diff_electron_photon) {
+    true_phi_diff_electron_photon_ = true_phi_diff_electron_photon;
   }
-  double getRecThetaDiffElectronPhoton() const {
-    return recThetaDiffElectronPhoton_;
-  }
-
-  void setRecPhiDiffElectronPhoton(double recPhiDiffElectronPhoton) {
-    recPhiDiffElectronPhoton_ = recPhiDiffElectronPhoton;
-  }
-  double getRecPhiDiffElectronPhoton() const {
-    return recPhiDiffElectronPhoton_;
+  float getTruePhiDiffElectronPhoton() const {
+    return true_phi_diff_electron_photon_;
   }
 
-  void setTrueRecThetaDiffElectron(double trueRecThetaDiffElectron) {
-    trueRecThetaDiffElectron_ = trueRecThetaDiffElectron;
+  void setRecThetaDiffElectronPhoton(float rec_theta_diff_electron_photon) {
+    rec_theta_diff_electron_photon_ = rec_theta_diff_electron_photon;
   }
-  double getTrueRecThetaDiffElectron() const {
-    return trueRecThetaDiffElectron_;
+  float getRecThetaDiffElectronPhoton() const {
+    return rec_theta_diff_electron_photon_;
   }
 
-  void setTrueRecPhiDiffElectron(double trueRecPhiDiffElectron) {
-    trueRecPhiDiffElectron_ = trueRecPhiDiffElectron;
+  void setRecPhiDiffElectronPhoton(float rec_phi_diff_electron_photon) {
+    rec_phi_diff_electron_photon_ = rec_phi_diff_electron_photon;
   }
-  double getTrueRecPhiDiffElectron() const { return trueRecPhiDiffElectron_; }
-
-  void setTrueRecThetaDiffPhoton(double trueRecThetaDiffPhoton) {
-    trueRecThetaDiffPhoton_ = trueRecThetaDiffPhoton;
+  float getRecPhiDiffElectronPhoton() const {
+    return rec_phi_diff_electron_photon_;
   }
-  double getTrueRecThetaDiffPhoton() const { return trueRecThetaDiffPhoton_; }
 
-  void setTrueRecPhiDiffPhoton(double trueRecPhiDiffPhoton) {
-    trueRecPhiDiffPhoton_ = trueRecPhiDiffPhoton;
+  void setTrueRecThetaDiffElectron(float true_rec_theta_diff_electron) {
+    true_rec_theta_diff_electron_ = true_rec_theta_diff_electron;
   }
-  double getTrueRecPhiDiffPhoton() const { return trueRecPhiDiffPhoton_; }
+  float getTrueRecThetaDiffElectron() const {
+    return true_rec_theta_diff_electron_;
+  }
 
-  void setTrueElectronShowerEnergy(float trueElectronShowerEnergy) {
-    trueElectronShowerEnergy_ = trueElectronShowerEnergy;
+  void setTrueRecPhiDiffElectron(float true_rec_phi_diff_electron) {
+    true_rec_phi_diff_electron_ = true_rec_phi_diff_electron;
+  }
+  float getTrueRecPhiDiffElectron() const {
+    return true_rec_phi_diff_electron_;
+  }
+
+  void setTrueRecThetaDiffPhoton(float true_rec_theta_diff_photon) {
+    true_rec_theta_diff_photon_ = true_rec_theta_diff_photon;
+  }
+  float getTrueRecThetaDiffPhoton() const {
+    return true_rec_theta_diff_photon_;
+  }
+
+  void setTrueRecPhiDiffPhoton(float true_rec_phi_diff_photon) {
+    true_rec_phi_diff_photon_ = true_rec_phi_diff_photon;
+  }
+  float getTrueRecPhiDiffPhoton() const { return true_rec_phi_diff_photon_; }
+
+  void setTrueElectronShowerEnergy(float true_electron_shower_energy) {
+    true_electron_shower_energy_ = true_electron_shower_energy;
   }
   float getTrueElectronShowerEnergy() const {
-    return trueElectronShowerEnergy_;
+    return true_electron_shower_energy_;
   }
 
-  void setTruePhotonShowerEnergy(float truePhotonShowerEnergy) {
-    truePhotonShowerEnergy_ = truePhotonShowerEnergy;
+  void setTruePhotonShowerEnergy(float true_photon_shower_energy) {
+    true_photon_shower_energy_ = true_photon_shower_energy;
   }
-  float getTruePhotonShowerEnergy() const { return truePhotonShowerEnergy_; }
+  float getTruePhotonShowerEnergy() const { return true_photon_shower_energy_; }
 
-  void setRecElectronShowerEnergy(double recElectronShowerEnergy) {
-    recElectronShowerEnergy_ = recElectronShowerEnergy;
+  void setRecElectronShowerEnergy(float rec_electron_shower_energy) {
+    rec_electron_shower_energy_ = rec_electron_shower_energy;
   }
-  double getRecElectronShowerEnergy() const { return recElectronShowerEnergy_; }
-
-  void setRecPhotonShowerEnergy(double recPhotonShowerEnergy) {
-    recPhotonShowerEnergy_ = recPhotonShowerEnergy;
+  float getRecElectronShowerEnergy() const {
+    return rec_electron_shower_energy_;
   }
-  double getRecPhotonShowerEnergy() const { return recPhotonShowerEnergy_; }
 
-  void setProgressNum(int progressNum) { progressNum_ = progressNum; }
-  double getProgressNum() const { return progressNum_; }
+  void setRecPhotonShowerEnergy(float rec_photon_shower_energy) {
+    rec_photon_shower_energy_ = rec_photon_shower_energy;
+  }
+  float getRecPhotonShowerEnergy() const { return rec_photon_shower_energy_; }
+
+  void setProgressNum(int progress_num) { progress_num_ = progress_num; }
+  float getProgressNum() const { return progress_num_; }
 
  protected:
   // Actual Kinematic Parameters
-  double trueThetaElectron_;
-  double trueThetaPhoton_;
-  double truePhiElectron_;
-  double truePhiPhoton_;
-  double recThetaElectron_;
-  double recThetaPhoton_;
-  double recPhiElectron_;
-  double recPhiPhoton_;
-  double trueThetaDiffElectronPhoton_;
-  double truePhiDiffElectronPhoton_;
-  double recThetaDiffElectronPhoton_;
-  double recPhiDiffElectronPhoton_;
-  double trueRecThetaDiffElectron_;
-  double trueRecPhiDiffElectron_;
-  double trueRecThetaDiffPhoton_;
-  double trueRecPhiDiffPhoton_;
-  float trueElectronShowerEnergy_;
-  float truePhotonShowerEnergy_;
-  double recElectronShowerEnergy_;
-  double recPhotonShowerEnergy_;
-  int progressNum_;
+  float true_theta_electron_;
+  float true_theta_photon_;
+  float true_phi_electron_;
+  float true_phi_photon_;
+  float rec_theta_electron_;
+  float rec_theta_photon_;
+  float rec_phi_electron_;
+  float rec_phi_photon_;
+  float true_theta_diff_electron_photon_;
+  float true_phi_diff_electron_photon_;
+  float rec_theta_diff_electron_photon_;
+  float rec_phi_diff_electron_photon_;
+  float true_rec_theta_diff_electron_;
+  float true_rec_phi_diff_electron_;
+  float true_rec_theta_diff_photon_;
+  float true_rec_phi_diff_photon_;
+  float true_electron_shower_energy_;
+  float true_photon_shower_energy_;
+  float rec_electron_shower_energy_;
+  float rec_photon_shower_energy_;
+  int progress_num_;
 
   /// Class declaration needed by the ROOT dictionary.
   ClassDef(EcalWABResult, 1);
-
 };  // EcalWABResult
 
 typedef std::vector<ldmx::EcalWABResult> EcalWABResults;

@@ -10,19 +10,26 @@
 // LDMX
 #include "DetDescr/EcalGeometry.h"
 #include "DetDescr/EcalID.h"
+#include "DetDescr/SimSpecialID.h"
 #include "Ecal/Event/EcalHit.h"
 #include "Ecal/Event/EcalWABResult.h"
-#include "Eigen/Dense"
-#include "Framework/Configure/Parameters.h"
 #include "Framework/EventProcessor.h"
-#include "Tools/ONNXRuntime.h"
+#include "SimCore/Event/SimParticle.h"
+#include "SimCore/Event/SimTrackerHit.h"
+#include "Tracking/Event/StraightTrack.h"
 
-// ROOT (MIP tracking)
-#include "TVector3.h"
+/*~~~~~~~~~~~*/
+/*   Tools   */
+/*~~~~~~~~~~~*/
+#include "Eigen/Dense"
 
 // C++
+#include <stdlib.h>
+#include <iomanip>
 #include <map>
 #include <memory>
+#include <numbers>  // For std::numbers::pi
+#include <numeric>
 
 namespace ecal {
 
@@ -33,8 +40,6 @@ class EcalWABRecProcessor : public framework::Producer {
 
   virtual ~EcalWABRecProcessor() = default;
 
-  void onProcessStart() override;
-
   void onProcessEnd() override;
 
   void configure(framework::config::Parameters& parameters) override;
@@ -42,32 +47,30 @@ class EcalWABRecProcessor : public framework::Producer {
   void produce(framework::Event& event) override;
 
  private:
+  std::string sp_pass_name_;
   std::string rec_pass_name_;
   std::string rec_coll_name_;
   std::string track_pass_name_;
   std::string track_coll_name_;
   int nevents_{0};
-  double processing_time_{0.};
+  float processing_time_{0.};
 
-  std::tuple<Eigen::VectorXd, double, int, Eigen::MatrixXd, int>
-  fit2DTracksConstrained(const std::vector<double>& x1,
-                         const std::vector<double>& y1,
-                         const std::vector<double>& s1,
-                         const std::vector<double>& x2,
-                         const std::vector<double>& y2,
-                         const std::vector<double>& s2,
+  std::tuple<Eigen::VectorXd, float, int, Eigen::MatrixXd, int>
+  fit2DTracksConstrained(const std::vector<float>& x1,
+                         const std::vector<float>& y1,
+                         const std::vector<float>& s1,
+                         const std::vector<float>& x2,
+                         const std::vector<float>& y2,
+                         const std::vector<float>& s2,
                          const std::vector<double>& guess, int maxIter,
-                         int verbosity, double dchisq, double abs_lim);
+                         int verbosity, float dchisq, float abs_lim);
 
   std::pair<Eigen::VectorXd, Eigen::VectorXd> polyfitXYvsZ(
-      const std::vector<double>& x, const std::vector<double>& y,
-      const std::vector<double>& z, int degree);
+      const std::vector<float>& x, const std::vector<float>& y,
+      const std::vector<float>& z, int degree);
 
   /** Name of the collection which will contain the results. */
   std::string collection_name_{"EcalWABRec"};
-
-  /// handle to current geometry (to share with member functions)
-  const ldmx::EcalGeometry* geometry_;
 
 };  // EcalWABRecProcessor
 
