@@ -219,10 +219,10 @@ void EcalVetoProcessor::produce(framework::Event &event) {
 
   // Get the collection of Ecal scoring plane hits. If it doesn't exist,
   // don't bother adding any truth tracking information.
-  if (recoil_from_scoring_plane_ && event.exists("EcalScoringPlaneHits", sp_pass_name_)) {
+  if (recoil_from_scoring_plane_ &&
+      event.exists("EcalScoringPlaneHits", sp_pass_name_)) {
     ldmx_log(trace) << "  Loop through all of the sim particles and find the "
                        "recoil electron";
-  }
     // Loop through all of the sim particles and find the recoil electron.
     // Get the collection of simulated particles from the event
     auto particleMap{event.getMap<int, ldmx::SimParticle>("SimParticles")};
