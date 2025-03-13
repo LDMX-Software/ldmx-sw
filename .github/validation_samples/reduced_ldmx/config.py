@@ -38,12 +38,15 @@ import LDMX.Hcal.HcalGeometry
 import LDMX.Hcal.hcal_hardcoded_conditions
 import LDMX.Ecal.digi as ecal_digi
 import LDMX.Ecal.vetos as ecal_vetos
+import LDMX.Ecal.EcalWABRecProcessor as ecal_WAB
 import LDMX.Hcal.digi as hcal_digi
 
 ecalVeto = ecal_vetos.EcalVetoProcessor()
 ecalVeto.num_ecal_layers = 6
 ecalVeto.beam_energy = 4000.
 ecalVeto.recoil_from_tracking = False
+
+ecalWAB = ecal_WAB.EcalWABRecProcessor()
 
 from LDMX.TrigScint.trigScint import TrigScintDigiProducer
 from LDMX.TrigScint.trigScint import TrigScintClusterProducer
@@ -67,6 +70,8 @@ import LDMX.Hcal.hcal as hcal
 hcal_veto = hcal.HcalVetoProcessor()
 
 from LDMX.DQM import dqm
+
+ecalWAB_dqm = dqm.EcalWABRecResults()
 
 from LDMX.Tracking import tracking
 from LDMX.Tracking import reducedTracking
@@ -135,6 +140,8 @@ p.sequence.extend([
         truth_tracking,
         rSeedTracking,
         rTracking,
-        rTracking_dqm])
+        rTracking_dqm,
+	ecalWAB,
+	ecalWAB_dqm])
 
 p.sequence.extend(dqm.all_dqm)
