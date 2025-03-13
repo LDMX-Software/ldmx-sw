@@ -16,9 +16,17 @@ void TrkDeDxMassEstFeatures::analyze(const framework::Event &event) {
   auto mass_estimates_{event.getCollection<ldmx::TrackDeDxMassEstimate>(
       mass_estimate_name_, mass_estimate_pass_)};
 
-  for (const auto &mass_est_ : mass_estimates_) {
-    histograms_.fill("mass_estimate", mass_est_.getMass());
-    histograms_.fill("track_type", mass_est_.getTrackType());
+  for (const auto &mass_est : mass_estimates_) {
+    auto momentum = mass_est.getMomentum();
+    histograms_.fill("momentum:harmonic_mean_dedx", momentum, mass_est.getIh());
+    if (momentum < 2000)
+      histograms_.fill("momentum_low:harmonic_mean_dedx", momentum,
+                       mass_est.getIh());
+    histograms_.fill("harmonic_mean_dedx", mass_est.getIh());
+    histograms_.fill("mass_estimate", mass_est.getMass());
+    if (momentum < 1000)
+      histograms_.fill("mass_estimate_low_p", mass_est.getMass());
+    histograms_.fill("track_type", mass_est.getTrackType());
   }
 
   return;

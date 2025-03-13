@@ -142,9 +142,11 @@ void EcalVetoProcessor::configure(framework::config::Parameters &parameters) {
   ecalLayerTime_.resize(nEcalLayers_, 0);
 
   beamEnergyMeV_ = parameters.getParameter<double>("beam_energy");
+  run_lin_reg_ = parameters.getParameter<bool>("run_lin_reg");
   linreg_radius_ = parameters.getParameter<double>("linreg_radius");
 
   // Set the collection name as defined in the configuration
+  sp_pass_name_ = parameters.getParameter<std::string>("sp_pass_name", "");
   collectionName_ = parameters.getParameter<std::string>("collection_name");
   rec_pass_name_ = parameters.getParameter<std::string>("rec_pass_name");
   rec_coll_name_ = parameters.getParameter<std::string>("rec_coll_name");
@@ -152,6 +154,8 @@ void EcalVetoProcessor::configure(framework::config::Parameters &parameters) {
   recoil_from_scoring_plane_ =
       parameters.getParameter<bool>("recoil_from_scoring_plane");
   track_collection_ = parameters.getParameter<std::string>("track_collection");
+  track_pass_name_ =
+      parameters.getParameter<std::string>("track_pass_name", "");
   inverse_skim_ = parameters.getParameter<bool>("inverse_skim");
 }
 
@@ -215,10 +219,11 @@ void EcalVetoProcessor::produce(framework::Event &event) {
 
   // Get the collection of Ecal scoring plane hits. If it doesn't exist,
   // don't bother adding any truth tracking information.
-  if (recoil_from_scoring_plane_ && event.exists("EcalScoringPlaneHits")) {
+  if (recoil_from_scoring_plane_ && event.exists("EcalScoringPlaneHits", sp_pass_name_)) {
     ldmx_log(trace) << "  Loop through all of the sim particles and find the "
                        "recoil electron";
-
+  }
+    // Loop through all of the sim particles and find the recoil electron.
     // Get the collection of simulated particles from the event
     auto particleMap{event.getMap<int, ldmx::SimParticle>("SimParticles")};
 
@@ -226,8 +231,8 @@ void EcalVetoProcessor::produce(framework::Event &event) {
     auto [recoilTrackID, recoilElectron] = Analysis::getRecoil(particleMap);
 
     // Find ECAL SP hit for recoil electron
-    auto ecalSpHits{
-        event.getCollection<ldmx::SimTrackerHit>("EcalScoringPlaneHits")};
+    auto ecalSpHits{event.getCollection<ldmx::SimTrackerHit>(
+        "EcalScoringPlaneHits", sp_pass_name_)};
     float pmax = 0;
     for (ldmx::SimTrackerHit &spHit : ecalSpHits) {
       ldmx::SimSpecialID hit_id(spHit.getID());
@@ -249,9 +254,10 @@ void EcalVetoProcessor::produce(framework::Event &event) {
     }
 
     // Find target SP hit for recoil electron
-    if (event.exists("TargetScoringPlaneHits")) {
+    if (event.exists("TargetScoringPlaneHits", sp_pass_name_)) {
       std::vector<ldmx::SimTrackerHit> targetSpHits =
-          event.getCollection<ldmx::SimTrackerHit>("TargetScoringPlaneHits");
+          event.getCollection<ldmx::SimTrackerHit>("TargetScoringPlaneHits",
+                                                   sp_pass_name_);
       pmax = 0;
       for (ldmx::SimTrackerHit &spHit : targetSpHits) {
         ldmx::SimSpecialID hit_id(spHit.getID());
@@ -281,7 +287,8 @@ void EcalVetoProcessor::produce(framework::Event &event) {
     ldmx_log(trace)
         << "  Loop through the track collection and find the recoil electron";
     // Get the recoil track collection
-    auto recoil_tracks{event.getCollection<ldmx::Track>(track_collection_)};
+    auto recoil_tracks{
+        event.getCollection<ldmx::Track>(track_collection_, track_pass_name_)};
 
     ldmx::TrackStateType ts_type_ecal = ldmx::TrackStateType::AtECAL;
 
@@ -1090,7 +1097,9 @@ void EcalVetoProcessor::produce(framework::Event &event) {
                  << trackingHitList.size() << " hits using a radius of "
                  << linreg_radius_ << " mm";
 
-  for (int iHit = 0; iHit < trackingHitList.size(); iHit++) {
+  int max_lin_reg_hit{0};
+  if (run_lin_reg_) max_lin_reg_hit = trackingHitList.size();
+  for (int iHit = 0; iHit < max_lin_reg_hit; iHit++) {
     // Hits being considered at a given time
     std::vector<int> hitsInRegion;
     TMatrixD Vm(3, 3);

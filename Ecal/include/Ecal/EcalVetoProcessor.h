@@ -182,6 +182,7 @@ class EcalVetoProcessor : public framework::Producer {
   double bdtCutVal_{0};
 
   float beamEnergyMeV_{0};
+  bool run_lin_reg_{true};
   float linreg_radius_{0};
 
   bool verbose_{false};
@@ -191,10 +192,13 @@ class EcalVetoProcessor : public framework::Producer {
   std::vector<float> bdtFeatures_;
   std::string featureListName_;
 
+  // Pass and collection names
+  std::string sp_pass_name_;
   std::string rec_pass_name_;
   std::string rec_coll_name_;
   bool recoil_from_tracking_;
   bool recoil_from_scoring_plane_;
+  std::string track_pass_name_;
   std::string track_collection_;
   bool inverse_skim_{false};
 

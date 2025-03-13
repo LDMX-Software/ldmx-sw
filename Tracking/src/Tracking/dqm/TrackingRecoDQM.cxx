@@ -12,6 +12,7 @@ void TrackingRecoDQM::configure(framework::config::Parameters& parameters) {
       parameters.getParameter<std::string>("track_collection", "TaggerTracks");
   truthCollection_ = parameters.getParameter<std::string>("truth_collection",
                                                           "TaggerTruthTracks");
+  sp_pass_name_ = parameters.getParameter<std::string>("track_collection", "");
   title_ = parameters.getParameter<std::string>("title", "tagger_trk_");
   trackProb_cut_ = parameters.getParameter<double>("trackProb_cut", 0.5);
   subdetector_ = parameters.getParameter<std::string>("subdetector", "Tagger");
@@ -52,14 +53,16 @@ void TrackingRecoDQM::analyze(const framework::Event& event) {
   }
 
   // The scoring plane hits
-  if (event.exists("EcalScoringPlaneHits")) {
+  if (event.exists("EcalScoringPlaneHits", sp_pass_name_)) {
     ecal_scoring_hits_ = std::make_shared<std::vector<ldmx::SimTrackerHit>>(
-        event.getCollection<ldmx::SimTrackerHit>("EcalScoringPlaneHits"));
+        event.getCollection<ldmx::SimTrackerHit>("EcalScoringPlaneHits",
+                                                 sp_pass_name_));
   }
 
-  if (event.exists("TargetScoringPlaneHits")) {
+  if (event.exists("TargetScoringPlaneHits", sp_pass_name_)) {
     target_scoring_hits_ = std::make_shared<std::vector<ldmx::SimTrackerHit>>(
-        event.getCollection<ldmx::SimTrackerHit>("TargetScoringPlaneHits"));
+        event.getCollection<ldmx::SimTrackerHit>("TargetScoringPlaneHits",
+                                                 sp_pass_name_));
   }
 
   ldmx_log(debug) << "Do truth comparison::" << doTruthComparison << std::endl;

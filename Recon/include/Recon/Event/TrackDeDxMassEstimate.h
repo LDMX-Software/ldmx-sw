@@ -36,7 +36,7 @@ class TrackDeDxMassEstimate {
   /**
    * Class destructor.
    */
-  virtual ~TrackDeDxMassEstimate();
+  virtual ~TrackDeDxMassEstimate() = default;
 
   /**
    * Clear the data in the object.
@@ -49,10 +49,22 @@ class TrackDeDxMassEstimate {
   void Print() const;
 
   /**
+   * Set the momentum of the particle/track.
+   * @param momentum The momentum of the particle/track.
+   */
+  void setMomentum(float momentum) { momentum_ = momentum; }
+
+  /**
+   * Set the Ih of the particle/track.
+   * @param theIh The Ih of the particle/track.
+   */
+  void setIh(float theIh) { theIh_ = theIh; }
+
+  /**
    * Set the estimated mass of the particle/track.
    * @param mass The estimated mass of the particle/track.
    */
-  void setMass(double mass) { mass_ = mass; }
+  void setMass(float mass) { mass_ = mass; }
 
   /**
    * Set the index of the track.
@@ -70,10 +82,22 @@ class TrackDeDxMassEstimate {
   void setTrackType(int track_type) { track_type_ = track_type; }
 
   /**
+   * Get the momentum of the particle/track.
+   * @return The momentum of the particle/track.
+   */
+  float getMomentum() const { return momentum_; }
+
+  /**
+   * Get the Ih of the particle/track.
+   * @return The Ih of the particle/track.
+   */
+  float getIh() const { return theIh_; }
+
+  /**
    * Get the estimated mass of the particle/track.
    * @return The estimated mass of the particle/track.
    */
-  double getMass() const { return mass_; }
+  float getMass() const { return mass_; }
 
   /**
    * Get the index of the track.
@@ -88,8 +112,14 @@ class TrackDeDxMassEstimate {
   int getTrackType() const { return track_type_; }
 
  private:
+  /* The momentum of the particle/track */
+  float momentum_{0.};
+
+  /* The Ih of the particle/track */
+  float theIh_{0.};
+
   /* The estimated mass of the particle/track */
-  double mass_{0.};
+  float mass_{0.};
 
   /* The index of the track */
   int track_index_{-1};
@@ -100,7 +130,7 @@ class TrackDeDxMassEstimate {
   /**
    * The ROOT class definition.
    */
-  ClassDef(TrackDeDxMassEstimate, 1);
+  ClassDef(TrackDeDxMassEstimate, 2);
 };
 }  // namespace ldmx
 
