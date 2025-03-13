@@ -139,7 +139,8 @@ void EcalWABRecProcessor::produce(framework::Event& event) {
 
     // Find Target SP hit for recoil photon/electron
     const std::vector<ldmx::SimTrackerHit> target_sp_hits =
-        event.getCollection<ldmx::SimTrackerHit>("TargetScoringPlaneHits", sp_pass_name_);
+        event.getCollection<ldmx::SimTrackerHit>("TargetScoringPlaneHits",
+                                                 sp_pass_name_);
     float photon_p_zmax = 0, electron_p_zmax = 0;
     for (const ldmx::SimTrackerHit& sp_hit : target_sp_hits) {
       ldmx::SimSpecialID hit_id(sp_hit.getID());
@@ -212,13 +213,12 @@ void EcalWABRecProcessor::produce(framework::Event& event) {
     // Calculating true delta_phi/delta_theta using SP hit parameters
     if (recoil_y_p.size() == 3 && recoil_e_p.size() == 3) {
       std::array<float, 2> phi_diff_electron_arr = {recoil_e_p[0],
-                                                     recoil_e_p[1]};
-      std::array<float, 2> phi_diff_photon_arr = {recoil_y_p[0],
-                                                   recoil_y_p[1]};
+                                                    recoil_e_p[1]};
+      std::array<float, 2> phi_diff_photon_arr = {recoil_y_p[0], recoil_y_p[1]};
       std::array<float, 2> theta_diff_electron_arr = {recoil_e_p[2],
-                                                       recoil_e_p[0]};
+                                                      recoil_e_p[0]};
       std::array<float, 2> theta_diff_photon_arr = {recoil_y_p[2],
-                                                     recoil_y_p[0]};
+                                                    recoil_y_p[0]};
 
       true_theta_diff_electron_photon =
           (180 / std::numbers::pi) *
@@ -325,9 +325,9 @@ void EcalWABRecProcessor::produce(framework::Event& event) {
               (phot_hit_list.back()[2] - phot_hit_list[0][2]),
           track.getInterceptY()};
       std::vector<float> phot_hit_error(phot_hit_list.size(),
-                                         0.456435464588 * 4.816);
-      std::vector<float> ele_hit_error(ele_hit_list.size(),
                                         0.456435464588 * 4.816);
+      std::vector<float> ele_hit_error(ele_hit_list.size(),
+                                       0.456435464588 * 4.816);
 
       int max_iter = 200;
       // Carry out fit
