@@ -598,8 +598,18 @@ class TrkDeDxMassEstFeatures(ldmxcfg.Analyzer) :
         
         self.mass_estimate_name = "TrackDeDxMassEstimate"
         self.mass_estimate_pass = ""
-        
-        self.build1DHistogram("mass_estimate", "Mass Estimate [MeV]", 100, 0, 2000)
+
+        momentum_bins = [90.,100.,125.,150.,175.,200.,250.,300.,350.,400.,450.,500., 600.,700.,800.,900.,1000.,1300.,2000.,3000.,4000.,6000.,8000.]
+        low_momentum_bins = [50.,90.,100.,125.,150.,175.,200.,250.,300.,350.,400.,450.,500., 600.,700.,800.,900.,1000.,2000.]
+        self.build2DHistogram('momentum:harmonic_mean_dedx' ,
+                xlabel='Momentum (MeV)', xbins=momentum_bins,
+                ylabel='I_{h} [MeV/cm]', ybins=50, ymin=0., ymax=30. )
+        self.build2DHistogram('momentum_low:harmonic_mean_dedx' ,
+                xlabel='Momentum (MeV)', xbins=low_momentum_bins,
+                ylabel='I_{h} [MeV/cm]', ybins=50, ymin=0., ymax=30. )
+        self.build1DHistogram("harmonic_mean_dedx", "I_{h} [MeV/cm]", 50, 0., 30.)
+        self.build1DHistogram("mass_estimate", "Mass Estimate [MeV]", 100, 0., 2000.)
+        self.build1DHistogram("mass_estimate_low_p", "Mass Estimate [MeV]", 100, 0., 2000.)
         self.build1DHistogram("track_type", "Track Type", 3, 0, 3)
         
 
