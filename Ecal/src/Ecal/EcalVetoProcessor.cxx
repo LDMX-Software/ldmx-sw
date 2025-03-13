@@ -142,6 +142,7 @@ void EcalVetoProcessor::configure(framework::config::Parameters &parameters) {
   ecalLayerTime_.resize(nEcalLayers_, 0);
 
   beamEnergyMeV_ = parameters.getParameter<double>("beam_energy");
+  run_lin_reg_ = parameters.getParameter<bool>("run_lin_reg");
   linreg_radius_ = parameters.getParameter<double>("linreg_radius");
 
   // Set the collection name as defined in the configuration
@@ -1044,7 +1045,9 @@ void EcalVetoProcessor::produce(framework::Event &event) {
                  << trackingHitList.size() << " hits using a radius of "
                  << linreg_radius_ << " mm";
 
-  for (int iHit = 0; iHit < trackingHitList.size(); iHit++) {
+  int max_lin_reg_hit{0};
+  if (run_lin_reg_) max_lin_reg_hit = trackingHitList.size();
+  for (int iHit = 0; iHit < max_lin_reg_hit; iHit++) {
     // Hits being considered at a given time
     std::vector<int> hitsInRegion;
     TMatrixD Vm(3, 3);
