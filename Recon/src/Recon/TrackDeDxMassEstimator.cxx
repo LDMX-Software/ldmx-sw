@@ -13,8 +13,9 @@ namespace recon {
 void TrackDeDxMassEstimator::configure(framework::config::Parameters &ps) {
   fit_res_C_ = ps.getParameter<double>("fit_res_C");
   fit_res_K_ = ps.getParameter<double>("fit_res_K");
+  input_pass_name_ = ps.getParameter<std::string>("input_pass_name", "");
   track_collection_ =
-      ps.getParameter<std::string>("track_collection", "RecoilTruthTracks");
+      ps.getParameter<std::string>("track_collection", "RecoilTruthSeeds");
 
   ldmx_log(info) << "Track Collection used for TrackDeDxMassEstimator "
                  << track_collection_;
@@ -22,12 +23,12 @@ void TrackDeDxMassEstimator::configure(framework::config::Parameters &ps) {
 
 void TrackDeDxMassEstimator::produce(framework::Event &event) {
   if (!event.exists(track_collection_)) {
-    ldmx_log(error) << "ERROR:: track collection " << track_collection_
-                    << " not in event" << std::endl;
+    ldmx_log(error) << "Track collection " << track_collection_
+                    << " not in event";
     return;
   }
   const std::vector<ldmx::Track> tracks{
-      event.getCollection<ldmx::Track>(track_collection_)};
+      event.getCollection<ldmx::Track>(track_collection_, input_pass_name_)};
 
   int track_type;
   std::string track_coll_str = track_collection_;
@@ -46,7 +47,8 @@ void TrackDeDxMassEstimator::produce(framework::Event &event) {
 
   // Retrieve the simhits
   if (!event.exists(simhit_collection_)) return;
-  auto simhits{event.getCollection<ldmx::SimTrackerHit>(simhit_collection_)};
+  auto simhits{event.getCollection<ldmx::SimTrackerHit>(simhit_collection_,
+                                                        input_pass_name_)};
 
   std::vector<ldmx::TrackDeDxMassEstimate> mass_estimates_;
 
@@ -54,14 +56,14 @@ void TrackDeDxMassEstimator::produce(framework::Event &event) {
   for (uint i = 0; i < tracks.size(); i++) {
     auto track = tracks.at(i);
     // If track momentum doen't exist, skip
-    auto QoP = track.getQoP();
-    if (QoP == 0) {
+    auto theQoP = track.getQoP();
+    if (theQoP == 0) {
       ldmx_log(debug) << "Track " << i << "has zero q/p ";
       continue;
     }
 
-    float p = 1. / abs(QoP) * 1000;  // unit: MeV
-    ldmx_log(debug) << "Track " << i << " has momentum " << p;
+    float momentum = 1. / abs(theQoP) * 1000;  // unit: MeV
+    ldmx_log(debug) << "Track " << i << " has momentum " << momentum;
 
     /// Get the hits associated with the truth track
     ldmx::TrackDeDxMassEstimate mass_est;
@@ -84,17 +86,19 @@ void TrackDeDxMassEstimator::produce(framework::Event &event) {
     }
 
     // Ih = (1/N * sum_i^N(dE/dx_i)^-2)^-1/2
-    float Ih = 1. / sqrt(1. / n_simhits * sum_dEdx_inv2);
+    float theIh = 1. / sqrt(1. / n_simhits * sum_dEdx_inv2);
 
     float mass = 0.;
-    if (Ih > fit_res_C_) {
-      mass = p * sqrt((Ih - fit_res_C_) / fit_res_K_);
+    if (theIh > fit_res_C_) {
+      mass = momentum * sqrt((theIh - fit_res_C_) / fit_res_K_);
     } else {
-      ldmx_log(info) << "Track " << i << " has Ih " << Ih
+      ldmx_log(info) << "Track " << i << " has Ih " << theIh
                      << " which is less than fit_res_C " << fit_res_C_;
       mass = -100.;
     }
 
+    mass_est.setMomentum(momentum);
+    mass_est.setIh(theIh);
     mass_est.setMass(mass);
     mass_est.setTrackIndex(i);
     mass_est.setTrackType(track_type);
