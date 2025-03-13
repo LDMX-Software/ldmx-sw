@@ -125,7 +125,11 @@ void EcalWABRecProcessor::produce(framework::Event& event) {
   // Save rec hit info to rec_hit_list
   for (const ldmx::EcalHit& hit : ecal_rec_hits) {
     ldmx::EcalID id(hit.getID());
-    auto [x, y, z] = geometry_->getPosition(id);
+    auto pos = geometry_->getPosition(id);
+    auto [x, y, z] = std::apply([](double a, double b, double c) {
+        return std::make_tuple(static_cast<float>(a),
+                              static_cast<float>(b),
+                              static_cast<float>(c));}, pos);
     float energy = hit.getEnergy();
     float layer_num = id.layer();
     rec_hit_list.push_back({x, y, z, layer_num, 0, energy});
@@ -212,12 +216,12 @@ void EcalWABRecProcessor::produce(framework::Event& event) {
 
     // Calculating true delta_phi/delta_theta using SP hit parameters
     if (recoil_y_p.size() == 3 && recoil_e_p.size() == 3) {
-      std::array<float, 2> phi_diff_electron_arr = {recoil_e_p[0],
+      std::array<double, 2> phi_diff_electron_arr = {recoil_e_p[0],
                                                     recoil_e_p[1]};
-      std::array<float, 2> phi_diff_photon_arr = {recoil_y_p[0], recoil_y_p[1]};
-      std::array<float, 2> theta_diff_electron_arr = {recoil_e_p[2],
+      std::array<double, 2> phi_diff_photon_arr = {recoil_y_p[0], recoil_y_p[1]};
+      std::array<double, 2> theta_diff_electron_arr = {recoil_e_p[2],
                                                       recoil_e_p[0]};
-      std::array<float, 2> theta_diff_photon_arr = {recoil_y_p[2],
+      std::array<double, 2> theta_diff_photon_arr = {recoil_y_p[2],
                                                     recoil_y_p[0]};
 
       true_theta_diff_electron_photon =
