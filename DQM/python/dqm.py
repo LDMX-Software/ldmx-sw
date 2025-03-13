@@ -600,7 +600,7 @@ class TrkDeDxMassEstFeatures(ldmxcfg.Analyzer) :
         self.mass_estimate_pass = ""
 
         momentum_bins = [90.,100.,125.,150.,175.,200.,250.,300.,350.,400.,450.,500., 600.,700.,800.,900.,1000.,1300.,2000.,3000.,4000.,6000.,8000.]
-        low_momentum_bins = [50.,90.,100.,125.,150.,175.,200.,250.,300.,350.,400.,450.,500., 600.,700.,800.,900.,1000.,2000.]
+        low_momentum_bins = [50.,70.,90.,100.,125.,150.,175.,200.,250.,300.,350.,400.,450.,500., 600.,700.,800.,900.,1000.,2000.]
         self.build2DHistogram('momentum:harmonic_mean_dedx' ,
                 xlabel='Momentum (MeV)', xbins=momentum_bins,
                 ylabel='I_{h} [MeV/cm]', ybins=50, ymin=0., ymax=30. )
