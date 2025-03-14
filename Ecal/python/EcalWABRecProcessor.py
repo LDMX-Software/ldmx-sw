@@ -14,6 +14,7 @@ class EcalWABRecProcessor(ldmxcfg.Producer) :
     def __init__(self,name = 'EcalWABRec') :
         super().__init__(name,"ecal::EcalWABRecProcessor",'Ecal')
 
+        self.sp_pass_name = ''
         self.collection_name = "EcalWABRec"
         self.rec_coll_name = 'EcalRecHits'
         self.rec_pass_name = ''
