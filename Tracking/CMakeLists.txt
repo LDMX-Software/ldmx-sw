@@ -64,6 +64,7 @@ find_package(Eigen3 CONFIG REQUIRED)
 # 2. git clone acts into this directory and choose your version
 find_package(Acts QUIET)
 if (NOT Acts_FOUND)
+  message(STATUS "Did not find Acts, downloading and compiling it here")
   include(FetchContent)
   FetchContent_Declare(
       Acts
@@ -75,6 +76,8 @@ if (NOT Acts_FOUND)
   # Adding Acts as "SYSTEM" 
   # which will silence compiler warnings from these 3rd party softwares
   include_directories(SYSTEM "${Acts_SOURCE_DIR}/Core/include")
+else()
+  message(STATUS "Found Acts ${Acts_VERSION}")
 endif()
 
 setup_geant4_target()
