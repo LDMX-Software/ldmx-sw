@@ -387,6 +387,61 @@ class EcalVetoResults(ldmxcfg.Analyzer) :
         self.build1DHistogram('bdt_pass',
                 'Event passed the ECal BDT',2,-0.5,1.5)
 
+class EcalWABRecResults(ldmxcfg.Analyzer) :
+    """Configured EcalWABRec python object """
+
+    def __init__(self,name="EcalWABRecResults") :
+        super().__init__(name,'dqm::EcalWABRecResults','DQM')
+
+        self.ecal_WAB_rec_name = 'EcalWABRec'
+        self.ecal_WAB_rec_pass = ''
+
+        self.build2DHistogram("ThetaDiffElectronPhoton", 
+                            "Reco #theta Difference between Photon and Electron (Degrees)",
+                            92, -1, 91,
+                            "True #theta Difference between Photon and Electron (Degrees)",
+                            92, -1, 91)
+        self.build2DHistogram("ThetaElectron", 
+                            "Electron Reco #theta (Degrees)",
+                            92, -1, 91, 
+                            "Electron True #theta (Degrees)",
+                            92, -1, 91)
+        self.build2DHistogram("ThetaPhoton", 
+                            "Photon Reco #theta (Degrees)",
+                            92, -1, 91, 
+                            "Photon True #theta (Degrees)",
+                            92, -1, 91)
+        self.build2DHistogram("PhiDiffElectronPhoton", 
+                            "Reco #phi Difference between Photon and Electron (Degrees)",
+                            92, -1, 91,
+                            "True #phi Difference between Photon and Electron (Degrees)",
+                            92, -1, 91)
+        self.build2DHistogram("PhiElectron", 
+                            "Electron Reco #phi (Degrees)",
+                            92, -1, 91, 
+                            "Electron True #phi (Degrees)",
+                            92, -1, 91)
+        self.build2DHistogram("PhiPhoton", 
+                            "Photon Reco #phi (Degrees)",
+                            92, -1, 91, 
+                            "Photon True #phi (Degrees)",
+                            92, -1, 91)
+        self.build2DHistogram("ElectronEnergy", 
+                            "Reconstructed Recoil Electron Shower Energy (MeV)",
+                            80, 0, 4000,
+                            "True Recoil Electron Energy (MeV)",
+                            80, 0, 4000)
+        self.build2DHistogram("PhotonEnergy", 
+                            "Reconstructed Photon Shower Energy (MeV)",
+                            80, 0, 4000, 
+                            "True Photon Energy (MeV)",
+                            80, 0, 4000)
+        self.build1DHistogram("ElectronThetaDiff", "Electron True and Reconstruction #theta Difference (Degrees)", 181, 0, 181)
+        self.build1DHistogram("PhotonThetaDiff", "Photon True and Reconstruction #theta Difference (Degrees)", 181, 0, 181)
+        self.build1DHistogram("ElectronPhiDiff", "Electron True and Reconstruction #phi Difference (Degrees)", 181, 0, 181)
+        self.build1DHistogram("PhotonPhiDiff", "Photon True and Reconstruction #phi Difference (Degrees)", 181, 0, 181)
+        self.build1DHistogram("ProgressNum", "Reconstruction Progress", 4, 0, 4)
+
 class SimObjects(ldmxcfg.Analyzer) :
     """Configuration for sim-level objects to histogram-ize
 
