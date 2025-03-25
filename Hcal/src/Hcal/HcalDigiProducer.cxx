@@ -268,7 +268,7 @@ void HcalDigiProducer::produce(framework::Event& event) {
           hcalDigis.addDigi(posendID.raw(), digi);
         }
         if (negEndActivity) {
-          hcalDigis.addDigi(posendID.raw(), digiToAddPosend);
+          hcalDigis.addDigi(negendID.raw(), digiToAddNegend);
         } else {
           std::vector<ldmx::HgcrocDigiCollection::Sample> digi =
               hgcroc_->noiseDigi(negendID.raw(), 0.0);
