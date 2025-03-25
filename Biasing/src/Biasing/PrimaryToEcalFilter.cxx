@@ -37,7 +37,8 @@ void PrimaryToEcalFilter::stepping(const G4Step* step) {
   auto calorimeter_region =
       simcore::g4user::ptrretrieval::getRegion("CalorimeterRegion");
   if (!calorimeter_region) {
-    ldmx_log(warn) << "Region 'CalorimeterRegion' not found in Geant4 region store";
+    ldmx_log(warn)
+        << "Region 'CalorimeterRegion' not found in Geant4 region store";
   }
   if (current_region == calorimeter_region) return;
 

@@ -122,15 +122,14 @@ class TargetDarkBremFilter : public simcore::UserAction {
    * region
    */
   inline bool isOutsideTargetRegion(const G4LogicalVolume* vol) const {
-      if (!vol) return true;
-      auto target_region = simcore::g4user::ptrretrieval::getRegion("target");
-      if (!target_region) {
-        ldmx_log(warn) << "Region 'target' not found in Geant4 region store";
-      }
-      auto region = vol->GetRegion();
-      return region ? (region != target_region) : true;
+    if (!vol) return true;
+    auto target_region = simcore::g4user::ptrretrieval::getRegion("target");
+    if (!target_region) {
+      ldmx_log(warn) << "Region 'target' not found in Geant4 region store";
+    }
+    auto region = vol->GetRegion();
+    return region ? (region != target_region) : true;
   }
-
 
   /**
    * Helper to abort an event with a message

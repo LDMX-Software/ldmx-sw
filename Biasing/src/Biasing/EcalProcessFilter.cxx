@@ -65,7 +65,8 @@ void EcalProcessFilter::stepping(const G4Step* step) {
   // the particle only if it's in the calorimeter region.
   auto region = simcore::g4user::ptrretrieval::getRegion("CalorimeterRegion");
   if (!region) {
-    ldmx_log(warn) << "Region 'CalorimeterRegion' not found in Geant4 region store";
+    ldmx_log(warn)
+        << "Region 'CalorimeterRegion' not found in Geant4 region store";
   }
 
   if (track->GetVolume()->GetLogicalVolume()->GetRegion() != region) {

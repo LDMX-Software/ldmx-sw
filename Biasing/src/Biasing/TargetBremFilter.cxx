@@ -120,12 +120,10 @@ void TargetBremFilter::stepping(const G4Step* step) {
       for (auto& secondary_track : *secondaries) {
         auto electron = G4Electron::Definition();
         auto ebrem_process =
-          simcore::g4user::ptrretrieval::getProcess(electron, "eBrem");
+            simcore::g4user::ptrretrieval::getProcess(electron, "eBrem");
         if (!ebrem_process) {
           ldmx_log(warn) << "Process 'eBrem' not found in Geant4 process store";
         }
-
-
 
         if (ebrem_process &&
             secondary_track->GetKineticEnergy() > bremEnergyThreshold_) {
