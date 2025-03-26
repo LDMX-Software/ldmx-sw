@@ -10,6 +10,8 @@ mySim.generators.append( gen.single_8gev_e_upstream_tagger() )
 mySim.beamSpotSmear = [20.,80.,0.]
 mySim.description = 'Basic test Simulation'
 
+raise Exception('Failed to run config.py which should succeed and not be overwritten when copying the gold to this branch.')
+
 p.sequence = [ mySim ]
 
 ##################################################################
