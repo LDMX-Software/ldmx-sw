@@ -15,6 +15,7 @@
 /*   Framework   */
 /*~~~~~~~~~~~~~~~*/
 #include "Framework/Configure/Parameters.h"
+#include "Framework/Logger.h"
 
 // Forward declarations
 class G4Step;
@@ -82,6 +83,8 @@ class TaggerVetoFilter : public simcore::UserAction {
   // Should the EndOfEventAction reject events where the primary particle never
   // entered the tagger region?
   bool reject_primaries_missing_tagger_{true};
+
+  enableLogging("TaggerVetoFilter");
 
 };  // TaggerVetoFilter
 

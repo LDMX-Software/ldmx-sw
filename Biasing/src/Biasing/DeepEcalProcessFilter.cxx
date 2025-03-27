@@ -12,6 +12,7 @@
 /*~~~~~~~~~~~~~*/
 /*   SimCore   */
 /*~~~~~~~~~~~~~*/
+#include "SimCore/G4User/VolumeChecks.h"
 #include "SimCore/UserEventInformation.h"
 #include "SimCore/UserTrackInformation.h"
 
@@ -52,9 +53,11 @@ void DeepEcalProcessFilter::stepping(const G4Step* step) {
   }
 
   // Check in which volume the particle is currently
-  auto volume{track->GetVolume()->GetLogicalVolume()
-                  ? track->GetVolume()->GetLogicalVolume()->GetName()
-                  : "undefined"};
+  auto volume = track->GetVolume()->GetLogicalVolume();
+  auto volume_name = volume->GetName();
+  if (!volume_name) {
+    volume_name = "undefined";
+  }
 
   auto trackInfo{simcore::UserTrackInformation::get(track)};
   // Tag the brem photon from the primary electron
@@ -62,7 +65,7 @@ void DeepEcalProcessFilter::stepping(const G4Step* step) {
     trackInfo->tagBremCandidate();
     getEventInfo()->incBremCandidateCount();
     trackInfo->setSaveFlag(true);
-    if (volume.contains("target")) {
+    if (volume_name.contains("target")) {
       photonFromTarget_ = true;
     }
   }
@@ -86,20 +89,12 @@ void DeepEcalProcessFilter::stepping(const G4Step* step) {
   // skip this step if it does not have any of the processes needed
   if (not hasProcessNeeded) return;
 
-  // isInEcal should be taken from
-  // simcore::logical_volume_tests::isInEcal(volume) but for now it's under
-  // its own namespace so I cannot reach it here, see issue
-  // https://github.com/LDMX-Software/ldmx-sw/issues/1286
-  auto isInEcal{((volume.contains("Si") || volume.contains("W") ||
-                  volume.contains("PCB") || volume.contains("strongback") ||
-                  volume.contains("Glue") || volume.contains("CFMix") ||
-                  volume.contains("Al") || volume.contains("C")) &&
-                 volume.contains("volume")) ||
-                (volume.contains("nohole_motherboard"))};
+  auto is_in_ecal =
+      simcore::g4user::volumechecks::isInEcal(volume, volume_name);
 
   // Skip this step if it does not have the processes needed
   // or if it's not in the ECAL
-  if (not isInEcal) return;
+  if (not is_in_ecal) return;
 
   // Check the z position of the particle, and
   // flag if it is deeper than the min Z we are considering (but in ECAL)

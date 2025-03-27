@@ -1,3 +1,6 @@
+/*~~~~~~~~~~~~~*/
+/*   Biasing   */
+/*~~~~~~~~~~~~~*/
 #include "Biasing/NonFiducialFilter.h"
 
 /*~~~~~~~~~~~~*/
@@ -12,6 +15,8 @@
 /*~~~~~~~~~~~~~*/
 /*   SimCore   */
 /*~~~~~~~~~~~~~*/
+#include "SimCore/G4User/PtrRetrieval.h"
+#include "SimCore/G4User/VolumeChecks.h"
 #include "SimCore/UserEventInformation.h"
 #include "SimCore/UserTrackInformation.h"
 
@@ -43,9 +48,7 @@ void NonFiducialFilter::stepping(const G4Step* step) {
   }
 
   // Check in which volume the electron is currently
-  auto volume{track->GetVolume()->GetLogicalVolume()
-                  ? track->GetVolume()->GetLogicalVolume()->GetName()
-                  : "undefined"};
+  auto volume = track->GetVolume()->GetLogicalVolume();
 
   // Check if the track is tagged.
   auto electronCheck{simcore::UserTrackInformation::get(track)};
@@ -60,18 +63,10 @@ void NonFiducialFilter::stepping(const G4Step* step) {
     }
     // Check if the track ever enters the ECal. If it does, kill the track and
     // abort the event.
-    auto isInEcal{((volume.contains("Si") || volume.contains("W") ||
-                    volume.contains("PCB") || volume.contains("strongback") ||
-                    volume.contains("Glue") || volume.contains("CFMix") ||
-                    volume.contains("Al") || volume.contains("C")) &&
-                   volume.contains("volume")) ||
-                  (volume.contains("nohole_motherboard"))};
-
-    // isInEcal should be taken from
-    // simcore::logical_volume_tests::isInEcal(volume) but for now it's under
-    // its own namespace so I cannot reach it here see issue
-    // https://github.com/LDMX-Software/ldmx-sw/issues/1286
-    if (abort_fiducial_ && isInEcal) {
+    auto volume_name = volume->GetName();
+    auto is_in_ecal =
+        simcore::g4user::volumechecks::isInEcal(volume, volume_name);
+    if (abort_fiducial_ && is_in_ecal) {
       track->SetTrackStatus(fKillTrackAndSecondaries);
       G4RunManager::GetRunManager()->AbortEvent();
       ldmx_log(debug) << ">> This event is fiducial, exiting";
@@ -86,7 +81,12 @@ void NonFiducialFilter::stepping(const G4Step* step) {
     return;
   } else {
     // Check if the particle enters the recoil tracker.
-    if (volume.compareTo("recoil") == 0) {
+    auto recoil_volume =
+        simcore::g4user::ptrretrieval::getLogicalVolume("recoil");
+    if (!recoil_volume) {
+      ldmx_log(warn) << "Volume 'recoil' not found in Geant4 volume store";
+    }
+    if (volume == recoil_volume) {
       /* Tag the tracks that:
        1) Have a recoil electron
        2) Enter/Exit the Target */
