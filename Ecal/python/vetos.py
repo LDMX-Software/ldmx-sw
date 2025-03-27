@@ -21,7 +21,7 @@ class EcalVetoProcessor(ldmxcfg.Producer) :
         self.bdt_file = makeBDTPath( "segmip" )
         self.roc_file = makeRoCPath( 'RoC_v14_8gev' )
         self.beam_energy = 8000.0  # in MeV
-        self.run_lin_reg = True
+        self.run_lin_reg = False
         self.linreg_radius = 35.0 # in mm
         self.disc_cut = 0.99741
         self.collection_name = "EcalVeto"

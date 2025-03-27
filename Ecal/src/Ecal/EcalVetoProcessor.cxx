@@ -1178,7 +1178,9 @@ void EcalVetoProcessor::produce(framework::Event &event) {
 
     // Exclude all hits in a found track from further consideration:
     for (int lHit = 0; lHit < 3; lHit++) {
-      trackingHitList.erase(trackingHitList.begin() + bestHitNums[lHit]);
+      if (!trackingHitList.empty()) {
+        trackingHitList.erase(trackingHitList.begin() + bestHitNums[lHit]);
+      }
     }
     iHit--;
   }  // end loop on all hits
