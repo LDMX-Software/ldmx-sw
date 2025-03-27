@@ -11,6 +11,11 @@
 /*~~~~~~~~~~~~~*/
 #include "SimCore/UserAction.h"
 
+/*~~~~~~~~~~~~~~~*/
+/*   Framework   */
+/*~~~~~~~~~~~~~~~*/
+#include "Framework/Logger.h"
+
 // Forward declarations
 class G4Step;
 
@@ -57,6 +62,8 @@ class PrimaryToEcalFilter : public simcore::UserAction {
  private:
   /// Energy [MeV] below which a primary should be vetoed.
   double threshold_;
+
+  enableLogging("PrimaryToEcalFilter");
 
 };  // PrimaryToEcalFilter
 

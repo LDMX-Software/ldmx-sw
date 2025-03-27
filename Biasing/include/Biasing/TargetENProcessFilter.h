@@ -13,6 +13,11 @@
 /*~~~~~~~~~~~~~*/
 #include "SimCore/UserAction.h"
 
+/*~~~~~~~~~~*/
+/*   Core   */
+/*~~~~~~~~~~*/
+#include "Framework/Logger.h"
+
 // Forward Declarations
 class G4Step;
 class G4Event;
@@ -47,17 +52,6 @@ class TargetENProcessFilter : public simcore::UserAction {
   }
 
  private:
-  /**
-   * The volume name of the LDMX target
-   *
-   * The 'target_PV' volume name is automatically constructed by Geant4's
-   * GDML parser and was found by inspecting the geometry using a
-   * visualization. This Physical Volume (PV) is associated with the
-   * target parent volume and so it will break if the target parent volume
-   * changes its name.
-   */
-  std::string volumeName_{"target_PV"};
-
   /** Flag indicating if the reaction of intereset occurred. */
   bool reactionOccurred_{false};
 
@@ -67,8 +61,9 @@ class TargetENProcessFilter : public simcore::UserAction {
   /// Process to filter on
   std::string process_{"electronNuclear"};
 
-};  // TargetENProcessFilter
+  enableLogging("TargetENProcessFilter");
 
+};  // TargetENProcessFilter
 }  // namespace biasing
 
 #endif  // BIASING_TARGETPROCESSFILTER_H
