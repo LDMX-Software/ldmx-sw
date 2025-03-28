@@ -243,8 +243,7 @@ void EcalVetoProcessor::produce(framework::Event &event) {
           recoilP = {static_cast<float>(ecal_sp_momentum[0]),
                      static_cast<float>(ecal_sp_momentum[1]),
                      static_cast<float>(ecal_sp_momentum[2])};
-          recoilPos = {(ecal_sp_position[0]),
-                       (ecal_sp_position[1]),
+          recoilPos = {(ecal_sp_position[0]), (ecal_sp_position[1]),
                        (ecal_sp_position[2])};
           pmax = sqrt(recoilP[0] * recoilP[0] + recoilP[1] * recoilP[1] +
                       recoilP[2] * recoilP[2]);
