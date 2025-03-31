@@ -20,6 +20,8 @@ namespace ldmx {
 
 typedef std::pair<float, float> XYCoords;
 
+ // MIP tracking:  Class for storing hit information for tracking in a
+ // convenient way
 struct HitData {
     int layer;
     TVector3 pos;

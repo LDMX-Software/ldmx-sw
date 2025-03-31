@@ -63,22 +63,17 @@ clearProcessor();
 
 
 // Read in hits near photon from EcalVetoProcessor
-auto result = event.getCollection<ldmx::EcalVetoResult>("EcalVetoResult");
-// auto disc_val = result.getDiscValue();
 
 auto ecal_mip_collection = event.getCollection<ldmx::EcalMipCollection>(mip_collection_name_);
 std::vector<XYCoords> ele_trajectory;
 std::vector<XYCoords> photon_trajectory;
-std::vector<HitData> trackingHitList;
+std::vector<ldmx::HitData> trackingHitList;
 if (nevents_ <= ecal_mip_collection.size()) {
   ele_trajectory = ecal_mip_collection[nevents_].getEleTrajectory();
   photon_trajectory = ecal_mip_collection[nevents_].getPhotonTrajectory();
   trackingHitList = ecal_mip_collection[nevents_].getTrackingHitList();
 };
 nevents_++;
-// std::vector<XYCoords> ele_trajectory = ecal_mip_collection.getEleTrajectory();
-// std::vector<XYCoords> photon_trajectory = ecal_mip_collection.getPhotonTrajectory();
-// std::vector<HitData> trackingHitList = MipVariables.getTrackingHitList();
 // Now inputting Lines 753-1178 of the original EcalVetoProcessor
 // ------------------------------------------------------
   // MIP tracking starts here
@@ -139,7 +134,7 @@ nevents_++;
 
   // If no photon trajectory, leave this at the default (ECal back)
   if (!photon_trajectory.empty()) {
-    for (std::vector<HitData>::iterator it = trackingHitList.begin();
+    for (std::vector<ldmx::HitData>::iterator it = trackingHitList.begin();
          it != trackingHitList.end(); ++it) {
       float ehDist =
           sqrt(pow((*it).pos.X() - photon_trajectory[(*it).layer].first, 2) +
@@ -174,12 +169,12 @@ nevents_++;
   // Find straight MIP tracks:
 
   std::sort(trackingHitList.begin(), trackingHitList.end(),
-            [](HitData ha, HitData hb) { return ha.layer > hb.layer; });
+            [](ldmx::HitData ha, ldmx::HitData hb) { return ha.layer > hb.layer; });
   // For merging tracks:  Need to keep track of existing tracks
   // Candidate tracks to merge in will always be in front of the current track
   // (lower z), so only store the last hit 3-layer vector:  each track = vector
   // of 3-tuples (xy+layer).
-  std::vector<std::vector<HitData>> track_list;
+  std::vector<std::vector<ldmx::HitData>> track_list;
 
   // print trackingHitList
   if (verbose_) {
@@ -255,7 +250,7 @@ nevents_++;
     // if track found, increment nStraightTracks and remove all hits in track
     // from future consideration
     if (trackLen >= 2) {
-      std::vector<HitData> temp_track_list;
+      std::vector<ldmx::HitData> temp_track_list;
       int n_remove = 0;
       for (int kHit = 0; kHit < trackLen; kHit++) {
         temp_track_list.push_back(trackingHitList[track[kHit] - n_remove]);
@@ -306,12 +301,12 @@ nevents_++;
   for (int track_i = 0; track_i < track_list.size(); track_i++) {
     // for each track, check the remainder of the track list for compatible
     // tracks
-    std::vector<HitData> base_track = track_list[track_i];
-    HitData tail_hitdata = base_track.back();  // xylayer of last hit in track
+    std::vector<ldmx::HitData> base_track = track_list[track_i];
+    ldmx::HitData tail_hitdata = base_track.back();  // xylayer of last hit in track
     if (verbose_) ldmx_log(debug) << "  Considering track " << track_i;
     for (int track_j = track_i + 1; track_j < track_list.size(); track_j++) {
-      std::vector<HitData> checking_track = track_list[track_j];
-      HitData head_hitdata = checking_track.front();
+      std::vector<ldmx::HitData> checking_track = track_list[track_j];
+      ldmx::HitData head_hitdata = checking_track.front();
       // if 1-2 layers behind, and xy within one cell...
       if ((head_hitdata.layer == tail_hitdata.layer + 1 ||
            head_hitdata.layer == tail_hitdata.layer + 2) &&

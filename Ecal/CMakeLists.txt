@@ -25,7 +25,7 @@ if(BUILD_EVENT_ONLY)
     # Generate the files needed to build the event classes.
     setup_library(module Ecal
                   name Event
-                  dependencies ROOT::Core 
+                  dependencies ROOT::Core ROOT::Physics 
                                Recon::Event SimCore::Event 
                   register_target)
 
@@ -56,7 +56,7 @@ setup_data(module Ecal)
 add_executable(print-ecal-hex-readout ${PROJECT_SOURCE_DIR}/src/Ecal/print_ecal_hex_readout.cxx)
 
 # Link to the Framework library
-target_link_libraries(print-ecal-hex-readout PRIVATE DetDescr Ecal)
+target_link_libraries(print-ecal-hex-readout PRIVATE DetDescr Ecal ROOT::Physics)
 
 # Install the fire executable
 install(TARGETS print-ecal-hex-readout DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)

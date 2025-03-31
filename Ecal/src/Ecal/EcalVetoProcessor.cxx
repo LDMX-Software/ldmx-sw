@@ -502,7 +502,7 @@ void EcalVetoProcessor::produce(framework::Event &event) {
   // MIP tracking:  vector of hits to be used in the MIP tracking algorithm. All
   // hits inside the electron ROC (or all hits in the ECal if the event is
   // missing an electron) will be included.
-  std::vector<HitData> trackingHitList;
+  std::vector<ldmx::HitData> trackingHitList;
 
   ldmx_log(trace)
       << "   Loop over the hits from the event to calculate the BDT features";
@@ -604,7 +604,7 @@ void EcalVetoProcessor::produce(framework::Event &event) {
     // If inside e- RoC or if etraj is missing, use the hit for tracking:
     if (distance_ele_trajectory >= ele_radii[id.layer()] ||
         distance_ele_trajectory == -1.0) {
-      HitData hd;
+      ldmx::HitData hd;
       hd.pos = TVector3(xy_pair.first, xy_pair.second,
                         geometry_->getZPosition(id.layer()));
       hd.layer = id.layer();

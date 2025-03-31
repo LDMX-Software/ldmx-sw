@@ -21,8 +21,6 @@ class EcalVetoProcessor(ldmxcfg.Producer) :
         self.bdt_file = makeBDTPath( "segmip" )
         self.roc_file = makeRoCPath( "RoC_v14_8gev" )
         self.beam_energy = 8000.0  # in MeV
-        self.run_lin_reg = False
-        self.linreg_radius = 35.0 # in mm
         self.disc_cut = 0.99741
         
         self.sp_pass_name = ""
@@ -45,7 +43,7 @@ class EcalVetoProcessor(ldmxcfg.Producer) :
 class EcalMipProcessor(ldmxcfg.Producer) :
     """Configuration for the ECal MIP processor"""
 
-    def __init__(self,name = 'ecalMip') :
+    def __init__(self,name = 'ecalMipTracking') :
         super().__init__(name,"ecal::EcalMipProcessor",'Ecal')
 
         self.verbose = False

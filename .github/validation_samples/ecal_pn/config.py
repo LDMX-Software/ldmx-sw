@@ -21,8 +21,8 @@ import sys
 p.maxEvents = int(os.environ['LDMX_NUM_EVENTS'])
 p.run = int(os.environ['LDMX_RUN_NUMBER'])
 
-p.histogramFile = f'test_hist.root'
-p.outputFiles = [f'test_events.root']
+p.histogramFile = f'hist.root'
+p.outputFiles = [f'events.root']
 
 # Load the full tracking sequance
 from LDMX.Tracking import full_tracking_sequence
@@ -68,6 +68,8 @@ from LDMX.DQM import dqm
 
 # Load ecal veto and use tracking in it
 ecal_veto = ecal_vetos.EcalVetoProcessor()
+# ecal_mip = ecal_vetos.EcalMipProcessor()
+ecal_veto.recoil_from_tracking = True
 
 # Load hcal veto
 import LDMX.Hcal.hcal as hcal
@@ -87,6 +89,8 @@ p.sequence.extend([
         ecal_cluster.EcalClusterProducer(),
         ecal_veto,
         hcal_digi_reco,
+        hcal_digi.HcalDigiProducer(),
+        hcal_digi.HcalRecProducer(),
         hcal_veto,
         *ts_digis,
         *ts_clusters,

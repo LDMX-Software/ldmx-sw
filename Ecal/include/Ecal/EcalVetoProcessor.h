@@ -18,7 +18,7 @@
 #include "Tools/ONNXRuntime.h"
 
 // ROOT (MIP tracking)
-#include "TVector3.h"
+#include "Ecal/Event/EcalMipCollection.h"
 
 // For recoil tracking
 #include "Tracking/Event/Track.h"
@@ -66,12 +66,6 @@ class EcalVetoProcessor : public framework::Producer {
 
   void produce(framework::Event& event) override;
 
-  // MIP tracking:  Class for storing hit information for tracking in a
-  // convenient way
-  struct HitData {
-    int layer;
-    TVector3 pos;
-  };
 
  private:
   void clearProcessor();
