@@ -64,7 +64,7 @@ void TaggerHitFilter::stepping(const G4Step* step) {
   auto* preStepPoint = step->GetPreStepPoint();
   if (preStepPoint) {
     // Get the touchable handle
-    auto touchableHandle = preStepPoint->GetTouchableHandle();
+    const auto& touchableHandle = preStepPoint->GetTouchableHandle();
     if (touchableHandle) {
       // Get the history
       auto* history = touchableHandle->GetHistory();
