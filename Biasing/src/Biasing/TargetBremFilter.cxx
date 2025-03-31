@@ -68,7 +68,8 @@ void TargetBremFilter::stepping(const G4Step* step) {
   if (!target_region) {
     ldmx_log(warn) << "Region 'target' not found in Geant4 region store";
   }
-  auto log_vol{track->GetVolume() ? track->GetVolume()->GetLogicalVolume() : nullptr};
+  auto phy_vol{track->GetVolume()};
+  auto log_vol{phy_vol ? phy_vol->GetLogicalVolume() : nullptr};
   auto track_region{log_vol ? log_vol->GetRegion() : nullptr};
   if (track_region != target_region) return;
 
