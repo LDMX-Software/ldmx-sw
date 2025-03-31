@@ -34,15 +34,19 @@ void TaggerHitFilter::stepping(const G4Step* step) {
   }
 
   // Only electrons in the Tagger region are of interest.
-  auto current_region = (track->GetVolume()->GetLogicalVolume()->GetRegion());
-  auto tagger_region = simcore::g4user::ptrretrieval::getRegion("tagger");
+  auto phys_vol{track->GetVolume()};
+  auto volume{phys_vol ? phys_vol->GetLogicalVolume() : nullptr};
+  auto current_region{volume ? volume->GetRegion() : nullptr};
+  static auto tagger_region = simcore::g4user::ptrretrieval::getRegion("tagger");
   if (!tagger_region) {
     ldmx_log(warn) << "Region 'tagger' not found in Geant4 region store";
   }
   if (current_region != tagger_region) return;
 
   // Check if we are exiting the tagger
-  auto next_region = (track->GetNextVolume()->GetLogicalVolume()->GetRegion());
+  auto next_phy_vol{track->GetNextVolume()};
+  auto next_log_vol{next_phy_vol ? next_phy_vol->GetLogicalVolume() : nullptr};
+  auto next_region{next_log_vol ? next_log_vol->GetRegion() : nullptr};
   if (next_region != tagger_region) {
     checkAbortEvent(track);
     return;
@@ -51,7 +55,7 @@ void TaggerHitFilter::stepping(const G4Step* step) {
   // A particle will only leave hits in the active silicon so other volumes can
   // be skipped for now.
   auto current_volume = (track->GetVolume());
-  auto tagger_physical_volume =
+  static auto tagger_physical_volume =
       simcore::g4user::ptrretrieval::getPhysicalVolume("tagger_PV");
   if (!tagger_physical_volume) {
     ldmx_log(warn) << "Volume 'tagger_PV' not found in Geant4 volume store";

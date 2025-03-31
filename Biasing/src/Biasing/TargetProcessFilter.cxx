@@ -58,11 +58,12 @@ void TargetProcessFilter::stepping(const G4Step* step) {
 
   // Get the region the particle is currently in. Continue processing
   // the particle only if it's in the target region.
-  auto target_region = simcore::g4user::ptrretrieval::getRegion("target");
+  static auto target_region = simcore::g4user::ptrretrieval::getRegion("target");
   if (!target_region) {
     ldmx_log(warn) << "Region 'target' not found in Geant4 region store";
   }
-  auto current_region = track->GetVolume()->GetLogicalVolume()->GetRegion();
+  auto log_vol{track->GetVolume()->GetLogicalVolume()};
+  auto current_region{log_vol ? log_vol->GetRegion() : nullptr};
   if (current_region != target_region) {
     // If secondaries were produced outside of the volume of interest,
     // and there aren't additional brems to process, abort the event.
@@ -98,9 +99,9 @@ void TargetProcessFilter::stepping(const G4Step* step) {
      * We also check for 'World_PV' because in later geometries, there is
      * an air gap between the target region and the recoil tracker.
      */
-    auto recoil_physical_volume =
+    static auto recoil_physical_volume =
         simcore::g4user::ptrretrieval::getPhysicalVolume("recoil_PV");
-    auto world_physical_volume =
+    static auto world_physical_volume =
         simcore::g4user::ptrretrieval::getPhysicalVolume("World_PV");
 
     if (!recoil_physical_volume) {

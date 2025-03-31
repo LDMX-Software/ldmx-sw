@@ -59,6 +59,16 @@ inline const G4VProcess* getPhotonuclearProcess() {
  * @brief Retrieve a Geant4 region by name.
  * @param name Name of the region.
  * @return Pointer to the region if found, nullptr otherwise.
+ *
+ * It can be helpful to store a copy of the pointer in a local
+ * variable so that the search doesn't need to be performed every time
+ * a comparison needs to be made.
+ * In many cases, this can be achieved by a `static` variable that
+ * will call this function when it first needs to be constructed
+ * and then just uses that value for the rest of running.
+ * ```cpp
+ * static auto reg = simcore::g4user::ptrretrieval::getRegion("MyRegion");
+ * ```
  */
 inline G4Region* getRegion(const std::string& name) {
   G4Region* region = G4RegionStore::GetInstance()->GetRegion(name);
