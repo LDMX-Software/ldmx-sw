@@ -4,8 +4,8 @@
 #include "G4Gamma.hh"
 #include "G4RunManager.hh"
 #include "G4Step.hh"
-#include "SimCore/UserTrackInformation.h"
 #include "SimCore/G4User/PtrRetrieval.h"
+#include "SimCore/UserTrackInformation.h"
 
 namespace biasing {
 
@@ -87,7 +87,8 @@ void MidShowerDiMuonBkgdFilter::NewStage() {
 
 bool MidShowerDiMuonBkgdFilter::isOutsideCalorimeterRegion(
     const G4Step* step) const {
-  static auto calorimeter_region = simcore::g4user::ptrretrieval::getRegion("CalorimeterRegion");
+  static auto calorimeter_region =
+      simcore::g4user::ptrretrieval::getRegion("CalorimeterRegion");
   if (!calorimeter_region) {
     ldmx_log(warn)
         << "Region 'CalorimeterRegion' not found in Geant4 region store";

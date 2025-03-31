@@ -48,7 +48,8 @@ G4ClassificationOfNewTrack EcalProcessFilter::ClassifyNewTrack(
 }
 
 void EcalProcessFilter::stepping(const G4Step* step) {
-  static auto calorimeter_region = simcore::g4user::ptrretrieval::getRegion("CalorimeterRegion");
+  static auto calorimeter_region =
+      simcore::g4user::ptrretrieval::getRegion("CalorimeterRegion");
   if (!calorimeter_region) {
     ldmx_log(warn)
         << "Region 'CalorimeterRegion' not found in Geant4 region store";
@@ -117,7 +118,8 @@ void EcalProcessFilter::stepping(const G4Step* step) {
       ldmx_log(warn) << "Unable to find 'hadronic_calorimeter' logical volume.";
     }
     auto next_phys_vol = track->GetNextVolume();
-    auto next_log_vol{next_phys_vol ? next_phys_vol->GetLogicalVolume() : nullptr};
+    auto next_log_vol{next_phys_vol ? next_phys_vol->GetLogicalVolume()
+                                    : nullptr};
     if (next_log_vol == volume_after_exiting_ecal) {
       /*
       std::cout << "[ EcalProcessFilter ]: "

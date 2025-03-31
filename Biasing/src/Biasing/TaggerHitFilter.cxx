@@ -37,7 +37,8 @@ void TaggerHitFilter::stepping(const G4Step* step) {
   auto phys_vol{track->GetVolume()};
   auto volume{phys_vol ? phys_vol->GetLogicalVolume() : nullptr};
   auto current_region{volume ? volume->GetRegion() : nullptr};
-  static auto tagger_region = simcore::g4user::ptrretrieval::getRegion("tagger");
+  static auto tagger_region =
+      simcore::g4user::ptrretrieval::getRegion("tagger");
   if (!tagger_region) {
     ldmx_log(warn) << "Region 'tagger' not found in Geant4 region store";
   }
