@@ -141,9 +141,6 @@ class TargetDarkBremFilter : public simcore::UserAction {
    */
   void AbortEvent(const std::string& reason) const;
 
-  /** Enable logging for this class */
-  enableLogging("TargetDarkBremFilter");
-
  private:
   /**
    * Minimum energy [MeV] that the A' should have to keep the event.

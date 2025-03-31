@@ -65,9 +65,6 @@ class NonFiducialFilter : public simcore::UserAction {
   double recoil_max_p_{1500};  // MeV
   /// If turned on, this aborts fiducial events.
   bool abort_fiducial_{true};
-  /// Enable logging
-  enableLogging("NonFiducialFilter")
-
 };  // NonFiducialFilter
 }  // namespace biasing
 

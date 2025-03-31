@@ -68,8 +68,6 @@ class TargetProcessFilter : public simcore::UserAction {
 
   /// The process to bias
   std::string process_{""};
-
-  enableLogging("TargetBremFilter");
 };
 
 }  // namespace biasing
