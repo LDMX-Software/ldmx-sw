@@ -26,7 +26,8 @@ void PFHcalClusterProducer::configure(framework::config::Parameters& ps) {
 
 void PFHcalClusterProducer::produce(framework::Event& event) {
   if (!event.exists(hitCollName_)) return;
-  const auto hcalRecHits = event.getCollection<ldmx::HcalHit>(hitCollName_, hitPassName_);
+  const auto hcalRecHits =
+      event.getCollection<ldmx::HcalHit>(hitCollName_, hitPassName_);
   float eTotal = 0;
   for (const auto& h : hcalRecHits) eTotal += h.getEnergy();
 

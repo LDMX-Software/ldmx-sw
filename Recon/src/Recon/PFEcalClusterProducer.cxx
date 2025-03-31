@@ -22,7 +22,8 @@ void PFEcalClusterProducer::configure(framework::config::Parameters& ps) {
 
 void PFEcalClusterProducer::produce(framework::Event& event) {
   if (!event.exists(hitCollName_)) return;
-  const auto ecalRecHits = event.getCollection<ldmx::EcalHit>(hitCollName_, hitPassName_);
+  const auto ecalRecHits =
+      event.getCollection<ldmx::EcalHit>(hitCollName_, hitPassName_);
 
   float eTotal = 0;
   for (const auto& h : ecalRecHits) eTotal += h.getEnergy();
