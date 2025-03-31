@@ -15,6 +15,7 @@ class pfEcalClusterProducer(ldmxcfg.Producer) :
     def __init__(self, name='PFEcalCluster') :
         super().__init__(name, 'recon::PFEcalClusterProducer','Recon')
         self.hitCollName     = 'EcalRecHits'
+        self.hitPassName     = ''
         self.clusterCollName = 'PFEcalClusters'
         self.doSingleCluster = False
         self.logEnergyWeight = True
@@ -27,6 +28,7 @@ class pfHcalClusterProducer(ldmxcfg.Producer) :
     def __init__(self, name='PFHcalCluster') :
         super().__init__(name, 'recon::PFHcalClusterProducer','Recon')
         self.hitCollName     = 'HcalRecHits'
+        self.hitPassName     = ''
         self.clusterCollName = 'PFHcalClusters'
         self.doSingleCluster = False
         self.logEnergyWeight = True
