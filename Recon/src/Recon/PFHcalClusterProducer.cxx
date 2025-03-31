@@ -12,6 +12,7 @@ namespace recon {
 
 void PFHcalClusterProducer::configure(framework::config::Parameters& ps) {
   hitCollName_ = ps.getParameter<std::string>("hitCollName");
+  hitPassName_ = ps.getParameter<std::string>("hitPassName");
   clusterCollName_ = ps.getParameter<std::string>("clusterCollName");
   suffix_ = ps.getParameter<std::string>("suffix", "");
   singleCluster_ = ps.getParameter<bool>("doSingleCluster");
@@ -25,7 +26,7 @@ void PFHcalClusterProducer::configure(framework::config::Parameters& ps) {
 
 void PFHcalClusterProducer::produce(framework::Event& event) {
   if (!event.exists(hitCollName_)) return;
-  const auto hcalRecHits = event.getCollection<ldmx::HcalHit>(hitCollName_);
+  const auto hcalRecHits = event.getCollection<ldmx::HcalHit>(hitCollName_, hitPassName_);
   float eTotal = 0;
   for (const auto& h : hcalRecHits) eTotal += h.getEnergy();
 
