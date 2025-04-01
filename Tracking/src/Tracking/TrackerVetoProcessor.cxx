@@ -40,9 +40,10 @@ void TrackerVetoProcessor::produce(framework::Event& event) {
   // Start with tagger tracks
   int tagger_n{0};
   for (const auto& trk : tagger_track_collection) {
-    if ((abs(trk.getD0()) < max_d0_) && (abs(trk.getZ0()) < max_z0_)) {
+    if ((std::abs(trk.getD0()) < max_d0_) &&
+        (std::abs(trk.getZ0()) < max_z0_)) {
       auto charge_over_momentum = trk.getQoP();
-      auto tagger_momentum = 1000. / abs(charge_over_momentum);
+      auto tagger_momentum = 1000. / std::abs(charge_over_momentum);
       float chi2_per_ndf = trk.getChi2() / trk.getNdf();
       if ((tagger_momentum > min_tagger_momentum_) &&
           (chi2_per_ndf < max_chi2_per_ndf_) &&
@@ -59,7 +60,8 @@ void TrackerVetoProcessor::produce(framework::Event& event) {
   int recoil_n{0};
   for (const auto& trk : recoil_track_collection) {
     float chi2_per_ndf = trk.getChi2() / trk.getNdf();
-    if ((abs(trk.getD0()) < max_d0_) && (abs(trk.getZ0()) < max_z0_) &&
+    if ((std::abs(trk.getD0()) < max_d0_) &&
+        (std::abs(trk.getZ0()) < max_z0_) &&
         (chi2_per_ndf < max_chi2_per_ndf_) &&
         (trk.getNhits() > min_recoil_hits_)) {
       // we may wanna use these in the future, keeping them commented

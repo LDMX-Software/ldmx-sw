@@ -53,11 +53,9 @@ void DeepEcalProcessFilter::stepping(const G4Step* step) {
   }
 
   // Check in which volume the particle is currently
-  auto volume = track->GetVolume()->GetLogicalVolume();
-  auto volume_name = volume->GetName();
-  if (!volume_name) {
-    volume_name = "undefined";
-  }
+  auto phys_vol{track->GetVolume()};
+  auto volume{phys_vol ? phys_vol->GetLogicalVolume() : nullptr};
+  auto volume_name{volume ? volume->GetName() : "undefined"};
 
   auto trackInfo{simcore::UserTrackInformation::get(track)};
   // Tag the brem photon from the primary electron

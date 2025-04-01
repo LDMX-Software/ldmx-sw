@@ -62,7 +62,7 @@ void TrackDeDxMassEstimator::produce(framework::Event &event) {
       continue;
     }
 
-    float momentum = 1. / abs(theQoP) * 1000;  // unit: MeV
+    float momentum = 1. / std::abs(theQoP) * 1000;  // unit: MeV
     ldmx_log(debug) << "Track " << i << " has momentum " << momentum;
 
     /// Get the hits associated with the truth track

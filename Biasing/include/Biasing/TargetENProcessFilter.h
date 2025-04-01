@@ -61,8 +61,6 @@ class TargetENProcessFilter : public simcore::UserAction {
   /// Process to filter on
   std::string process_{"electronNuclear"};
 
-  enableLogging("TargetENProcessFilter");
-
 };  // TargetENProcessFilter
 }  // namespace biasing
 

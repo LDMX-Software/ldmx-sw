@@ -155,8 +155,9 @@ float TrigElectronProducer::getP(bool isX, float e, float d) {
     printf("%f %f %f %f :: %f %f %f \n", d, e,
            prof->GetXaxis()->GetBinCenter(bin1),
            prof->GetXaxis()->GetBinCenter(bin2), res1, res2,
-           abs(frac / diff) * res2 + (1 - abs(frac / diff)) * res1);
-  return e * (abs(frac / diff) * res2 + (1 - abs(frac / diff)) * res1);
+           std::abs(frac / diff) * res2 + (1 - std::abs(frac / diff)) * res1);
+  return e *
+         (std::abs(frac / diff) * res2 + (1 - std::abs(frac / diff)) * res1);
 }
 
 void TrigElectronProducer::onProcessStart() {

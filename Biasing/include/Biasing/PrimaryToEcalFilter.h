@@ -63,8 +63,6 @@ class PrimaryToEcalFilter : public simcore::UserAction {
   /// Energy [MeV] below which a primary should be vetoed.
   double threshold_;
 
-  enableLogging("PrimaryToEcalFilter");
-
 };  // PrimaryToEcalFilter
 
 }  // namespace biasing
