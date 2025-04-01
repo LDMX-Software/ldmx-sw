@@ -84,8 +84,6 @@ class TaggerVetoFilter : public simcore::UserAction {
   // entered the tagger region?
   bool reject_primaries_missing_tagger_{true};
 
-  enableLogging("TaggerVetoFilter");
-
 };  // TaggerVetoFilter
 
 }  // namespace biasing

@@ -64,11 +64,14 @@ void TargetBremFilter::stepping(const G4Step* step) {
 
   // Get the region the particle is currently in.  Continue processing
   // the particle only if it's in the target region.
-  auto target_region = simcore::g4user::ptrretrieval::getRegion("target");
+  static auto target_region =
+      simcore::g4user::ptrretrieval::getRegion("target");
   if (!target_region) {
     ldmx_log(warn) << "Region 'target' not found in Geant4 region store";
   }
-  auto track_region = track->GetVolume()->GetLogicalVolume()->GetRegion();
+  auto phy_vol{track->GetVolume()};
+  auto log_vol{phy_vol ? phy_vol->GetLogicalVolume() : nullptr};
+  auto track_region{log_vol ? log_vol->GetRegion() : nullptr};
   if (track_region != target_region) return;
 
   /*

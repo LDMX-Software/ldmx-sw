@@ -71,8 +71,6 @@ class TargetBremFilter : public simcore::UserAction {
   /// Flag indicating if the recoil electron track should be killed
   bool killRecoil_{false};
 
-  enableLogging("TargetBremFilter");
-
 };  // TargetBremFilter
 }  // namespace biasing
 

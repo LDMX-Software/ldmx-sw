@@ -20,6 +20,7 @@
 /*   Framework   */
 /*~~~~~~~~~~~~~~~*/
 #include "Framework/Configure/Parameters.h"
+#include "Framework/Logger.h"
 #include "SimCore/Event/SimParticle.h"
 #include "SimCore/Factory.h"
 #include "SimCore/UserEventInformation.h"
@@ -182,6 +183,9 @@ class UserAction {
 
   /// The set of parameters used to configure this class
   framework::config::Parameters parameters_;
+
+  /// the logging channel user actions can use `ldmx_log` with
+  mutable ::framework::logging::logger theLog_;
 
 };  // UserAction
 

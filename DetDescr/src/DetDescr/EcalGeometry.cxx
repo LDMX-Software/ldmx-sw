@@ -95,7 +95,7 @@ EcalID EcalGeometry::getID(double x, double y, double z, bool fallible) const {
   static const double tolerance = 0.3;  // thickness of Si
   int layer_id{-1};
   for (const auto& [lid, layer_xyz] : layer_pos_xy_) {
-    if (abs(std::get<2>(layer_xyz) - z) < tolerance) {
+    if (std::abs(std::get<2>(layer_xyz) - z) < tolerance) {
       layer_id = lid;
       break;
     }

@@ -51,7 +51,7 @@ G4bool EcalSD::ProcessHits(G4Step* aStep, G4TouchableHistory*) {
 
   auto preStepPoint = aStep->GetPreStepPoint();
   if (preStepPoint) {
-    auto touchableHandle = preStepPoint->GetTouchableHandle();
+    const auto& touchableHandle = preStepPoint->GetTouchableHandle();
     if (touchableHandle) {
       auto history = touchableHandle->GetHistory();
       if (history) {

@@ -48,7 +48,8 @@ void NonFiducialFilter::stepping(const G4Step* step) {
   }
 
   // Check in which volume the electron is currently
-  auto volume = track->GetVolume()->GetLogicalVolume();
+  auto phys_vol = track->GetVolume();
+  auto volume{phys_vol ? phys_vol->GetLogicalVolume() : nullptr};
 
   // Check if the track is tagged.
   auto electronCheck{simcore::UserTrackInformation::get(track)};
@@ -63,7 +64,7 @@ void NonFiducialFilter::stepping(const G4Step* step) {
     }
     // Check if the track ever enters the ECal. If it does, kill the track and
     // abort the event.
-    auto volume_name = volume->GetName();
+    auto volume_name{volume ? volume->GetName() : "undefined"};
     auto is_in_ecal =
         simcore::g4user::volumechecks::isInEcal(volume, volume_name);
     if (abort_fiducial_ && is_in_ecal) {
@@ -81,7 +82,7 @@ void NonFiducialFilter::stepping(const G4Step* step) {
     return;
   } else {
     // Check if the particle enters the recoil tracker.
-    auto recoil_volume =
+    static auto recoil_volume =
         simcore::g4user::ptrretrieval::getLogicalVolume("recoil");
     if (!recoil_volume) {
       ldmx_log(warn) << "Volume 'recoil' not found in Geant4 volume store";
