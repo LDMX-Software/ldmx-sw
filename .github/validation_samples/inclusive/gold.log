@@ -47,9 +47,9 @@ Setting detector for tracking to ldmx-det-v14-8gev
     Geant4 revision = 
     Gen0 Class = simcore::generators::ParticleGun
     Gen0 Particle = e-
-    Pass = test, version = v4.2.17
-    SIM revision = 630b391fd424c8a7fa03f07ba66693f9f0b4f0be
-    SIM version = v4.2.17
+    Pass = test, version = v4.2.18
+    SIM revision = 837656dd9190b0c49dc705da0938b6c147a5616a
+    SIM version = v4.2.18
 }
 [ Tagger_TrackFinder ] 1  info: Number of TaggerRecoSeeds seed tracks = 1
 [ Tagger_TrackFinder ] 1  info: Number of CKF tracks 1
@@ -1149,8 +1149,8 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ Recoil_TrackFinder ] 59  info: Number of RecoilRecoSeeds seed tracks = 29
 [ Recoil_TrackFinder ] 59  info:     Could not extrapolate to HCAL!! Please check the track states
 [ Recoil_TrackFinder ] 59  info: Number of CKF tracks 10
-18:59:12    GSF            WARNING   Performed steps with errors: MagneticFieldError:1 | MagneticFieldError:1 | MagneticFieldError:1 | MagneticFieldError:1
-18:59:12    GSF_PROP       ERROR     Step failed with MultiStepperError:4: Stepping error occurred in all components
+22:06:48    GSF            WARNING   Performed steps with errors: MagneticFieldError:1 | MagneticFieldError:1 | MagneticFieldError:1 | MagneticFieldError:1
+22:06:48    GSF_PROP       ERROR     Step failed with MultiStepperError:4: Stepping error occurred in all components
 [ Recoil_GSF ] 59  warn: GSF re-fit failed
 [ TrackerVetoProcessor ] 59  info: Tagger requirements passed for 1 tracks
 [ TrackerVetoProcessor ] 59  info: Recoil requirements passed for 0 tracks
@@ -1290,7 +1290,7 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ Recoil_TrackFinder ] 67  info:     Could not extrapolate to ECAL!! Please check the track states
 [ Recoil_TrackFinder ] 67  info:     Could not extrapolate to HCAL!! Please check the track states
 [ Recoil_TrackFinder ] 67  info: Number of CKF tracks 1
-18:59:16    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
+22:06:52    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
 [ TrackerVetoProcessor ] 67  info: Tagger requirements passed for 1 tracks
 [ TrackerVetoProcessor ] 67  info: Recoil requirements passed for 1 tracks
 [ TrackerVetoProcessor ] 67  info: Tracker veto passed, skim will keep the event
@@ -3322,7 +3322,7 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ Recoil_TrackFinder ] 155  info:     Could not extrapolate to ECAL!! Please check the track states
 [ Recoil_TrackFinder ] 155  info:     Could not extrapolate to HCAL!! Please check the track states
 [ Recoil_TrackFinder ] 155  info: Number of CKF tracks 4
-19:00:04    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
+22:07:40    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
 [ TrackerVetoProcessor ] 155  info: Tagger requirements passed for 1 tracks
 [ TrackerVetoProcessor ] 155  info: Recoil requirements passed for 3 tracks
 [ TrackerVetoProcessor ] 155  info: Tracker veto failed
@@ -4525,8 +4525,8 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ Tagger_TrackFinder ] 220  info: Number of CKF tracks 1
 [ Recoil_TrackFinder ] 220  info: Number of RecoilRecoSeeds seed tracks = 1
 [ Recoil_TrackFinder ] 220  info: Number of CKF tracks 1
-19:00:39    GSF            WARNING   Performed steps with errors: MagneticFieldError:1 | MagneticFieldError:1 | MagneticFieldError:1 | MagneticFieldError:1
-19:00:39    GSF_PROP       ERROR     Step failed with MultiStepperError:4: Stepping error occurred in all components
+22:08:14    GSF            WARNING   Performed steps with errors: MagneticFieldError:1 | MagneticFieldError:1 | MagneticFieldError:1 | MagneticFieldError:1
+22:08:14    GSF_PROP       ERROR     Step failed with MultiStepperError:4: Stepping error occurred in all components
 [ Recoil_GSF ] 220  warn: GSF re-fit failed
 [ TrackerVetoProcessor ] 220  info: Tagger requirements passed for 1 tracks
 [ TrackerVetoProcessor ] 220  info: Recoil requirements passed for 1 tracks
@@ -5367,7 +5367,7 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ Recoil_TrackFinder ] 266  info:     Could not extrapolate to HCAL!! Please check the track states
 [ Recoil_TrackFinder ] 266  info:     Could not extrapolate to HCAL!! Please check the track states
 [ Recoil_TrackFinder ] 266  info: Number of CKF tracks 25
-19:01:03    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
+22:08:38    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
 [ TrackerVetoProcessor ] 266  info: Tagger requirements passed for 1 tracks
 [ TrackerVetoProcessor ] 266  info: Recoil requirements passed for 15 tracks
 [ TrackerVetoProcessor ] 266  info: Tracker veto failed
@@ -5621,8 +5621,8 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ Recoil_TrackFinder ] 280  info:     Could not extrapolate to ECAL!! Please check the track states
 [ Recoil_TrackFinder ] 280  info:     Could not extrapolate to HCAL!! Please check the track states
 [ Recoil_TrackFinder ] 280  info: Number of CKF tracks 11
-19:01:10    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
-19:01:10    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
+22:08:45    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
+22:08:45    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
 [ TrackerVetoProcessor ] 280  info: Tagger requirements passed for 1 tracks
 [ TrackerVetoProcessor ] 280  info: Recoil requirements passed for 6 tracks
 [ TrackerVetoProcessor ] 280  info: Tracker veto failed
@@ -10335,7 +10335,7 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ Recoil_TrackFinder ] 548  info:     Could not extrapolate to ECAL!! Please check the track states
 [ Recoil_TrackFinder ] 548  info:     Could not extrapolate to HCAL!! Please check the track states
 [ Recoil_TrackFinder ] 548  info: Number of CKF tracks 13
-19:03:34    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
+22:11:05    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
 [ TrackerVetoProcessor ] 548  info: Tagger requirements passed for 0 tracks
 [ TrackerVetoProcessor ] 548  info: Recoil requirements passed for 5 tracks
 [ TrackerVetoProcessor ] 548  info: Tracker veto failed
@@ -10718,7 +10718,7 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ Recoil_TrackFinder ] 570  info:     Could not extrapolate to ECAL!! Please check the track states
 [ Recoil_TrackFinder ] 570  info:     Could not extrapolate to HCAL!! Please check the track states
 [ Recoil_TrackFinder ] 570  info: Number of CKF tracks 2
-19:03:45    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
+22:11:17    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
 [ TrackerVetoProcessor ] 570  info: Tagger requirements passed for 1 tracks
 [ TrackerVetoProcessor ] 570  info: Recoil requirements passed for 2 tracks
 [ TrackerVetoProcessor ] 570  info: Tracker veto failed
@@ -12221,7 +12221,7 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ Recoil_TrackFinder ] 654  info:     Could not extrapolate to ECAL!! Please check the track states
 [ Recoil_TrackFinder ] 654  info:     Could not extrapolate to HCAL!! Please check the track states
 [ Recoil_TrackFinder ] 654  info: Number of CKF tracks 2
-19:04:30    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
+22:12:00    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
 [ TrackerVetoProcessor ] 654  info: Tagger requirements passed for 2 tracks
 [ TrackerVetoProcessor ] 654  info: Recoil requirements passed for 2 tracks
 [ TrackerVetoProcessor ] 654  info: Tracker veto failed
@@ -12477,7 +12477,7 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ Recoil_TrackFinder ] 667  info:     Could not extrapolate to ECAL!! Please check the track states
 [ Recoil_TrackFinder ] 667  info:     Could not extrapolate to HCAL!! Please check the track states
 [ Recoil_TrackFinder ] 667  info: Number of CKF tracks 15
-19:04:37    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
+22:12:07    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
 [ TrackerVetoProcessor ] 667  info: Tagger requirements passed for 1 tracks
 [ TrackerVetoProcessor ] 667  info: Recoil requirements passed for 4 tracks
 [ TrackerVetoProcessor ] 667  info: Tracker veto failed
@@ -15730,7 +15730,7 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ Recoil_TrackFinder ] 848  info:     Could not extrapolate to ECAL!! Please check the track states
 [ Recoil_TrackFinder ] 848  info:     Could not extrapolate to HCAL!! Please check the track states
 [ Recoil_TrackFinder ] 848  info: Number of CKF tracks 3
-19:06:12    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
+22:13:40    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
 [ TrackerVetoProcessor ] 848  info: Tagger requirements passed for 1 tracks
 [ TrackerVetoProcessor ] 848  info: Recoil requirements passed for 2 tracks
 [ TrackerVetoProcessor ] 848  info: Tracker veto failed
@@ -23374,7 +23374,7 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ Recoil_TrackFinder ] 1271  info:     Could not extrapolate to ECAL!! Please check the track states
 [ Recoil_TrackFinder ] 1271  info:     Could not extrapolate to HCAL!! Please check the track states
 [ Recoil_TrackFinder ] 1271  info: Number of CKF tracks 14
-19:09:54    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
+22:17:18    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
 [ TrackerVetoProcessor ] 1271  info: Tagger requirements passed for 1 tracks
 [ TrackerVetoProcessor ] 1271  info: Recoil requirements passed for 9 tracks
 [ TrackerVetoProcessor ] 1271  info: Tracker veto failed
@@ -27243,7 +27243,7 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ Recoil_TrackFinder ] 1496  info:     Could not extrapolate to ECAL!! Please check the track states
 [ Recoil_TrackFinder ] 1496  info:     Could not extrapolate to HCAL!! Please check the track states
 [ Recoil_TrackFinder ] 1496  info: Number of CKF tracks 2
-19:11:54    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
+22:19:17    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
 [ TrackerVetoProcessor ] 1496  info: Tagger requirements passed for 1 tracks
 [ TrackerVetoProcessor ] 1496  info: Recoil requirements passed for 1 tracks
 [ TrackerVetoProcessor ] 1496  info: Tracker veto passed, skim will keep the event
@@ -30138,7 +30138,7 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ Recoil_TrackFinder ] 1639  info:     Could not extrapolate to HCAL!! Please check the track states
 [ Recoil_TrackFinder ] 1639  info:     Could not extrapolate to HCAL!! Please check the track states
 [ Recoil_TrackFinder ] 1639  info: Number of CKF tracks 268
-19:13:07    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
+22:20:29    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
 [ TrackerVetoProcessor ] 1639  info: Tagger requirements passed for 1 tracks
 [ TrackerVetoProcessor ] 1639  info: Recoil requirements passed for 82 tracks
 [ TrackerVetoProcessor ] 1639  info: Tracker veto failed
@@ -30238,10 +30238,10 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ Recoil_TrackFinder ] 1643  info:     Could not extrapolate to ECAL!! Please check the track states
 [ Recoil_TrackFinder ] 1643  info:     Could not extrapolate to HCAL!! Please check the track states
 [ Recoil_TrackFinder ] 1643  info: Number of CKF tracks 18
-19:13:09    GSF            WARNING   Performed steps with errors: MagneticFieldError:1 | MagneticFieldError:1 | MagneticFieldError:1 | MagneticFieldError:1
-19:13:09    GSF_PROP       ERROR     Step failed with MultiStepperError:4: Stepping error occurred in all components
+22:20:31    GSF            WARNING   Performed steps with errors: MagneticFieldError:1 | MagneticFieldError:1 | MagneticFieldError:1 | MagneticFieldError:1
+22:20:31    GSF_PROP       ERROR     Step failed with MultiStepperError:4: Stepping error occurred in all components
 [ Recoil_GSF ] 1643  warn: GSF re-fit failed
-19:13:09    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
+22:20:31    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
 [ TrackerVetoProcessor ] 1643  info: Tagger requirements passed for 1 tracks
 [ TrackerVetoProcessor ] 1643  info: Recoil requirements passed for 14 tracks
 [ TrackerVetoProcessor ] 1643  info: Tracker veto failed
@@ -31546,8 +31546,8 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ Tagger_TrackFinder ] 1719  info: Number of CKF tracks 1
 [ Recoil_TrackFinder ] 1719  info: Number of RecoilRecoSeeds seed tracks = 0
 [ Recoil_TrackFinder ] 1719  info: No seed tracks, returning...
-19:13:48    GSF            WARNING   Performed steps with errors: MagneticFieldError:1 | MagneticFieldError:1 | MagneticFieldError:1 | MagneticFieldError:1
-19:13:48    GSF_PROP       ERROR     Step failed with MultiStepperError:4: Stepping error occurred in all components
+22:21:10    GSF            WARNING   Performed steps with errors: MagneticFieldError:1 | MagneticFieldError:1 | MagneticFieldError:1 | MagneticFieldError:1
+22:21:10    GSF_PROP       ERROR     Step failed with MultiStepperError:4: Stepping error occurred in all components
 [ Tagger_GSF ] 1719  warn: GSF re-fit failed
 [ TrackerVetoProcessor ] 1719  info: Tagger requirements passed for 0 tracks
 [ TrackerVetoProcessor ] 1719  info: Recoil requirements passed for 0 tracks
@@ -31748,7 +31748,7 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ Recoil_TrackFinder ] 1730  info:     Could not extrapolate to ECAL!! Please check the track states
 [ Recoil_TrackFinder ] 1730  info:     Could not extrapolate to HCAL!! Please check the track states
 [ Recoil_TrackFinder ] 1730  info: Number of CKF tracks 19
-19:13:54    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
+22:21:17    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
 [ TrackerVetoProcessor ] 1730  info: Tagger requirements passed for 1 tracks
 [ TrackerVetoProcessor ] 1730  info: Recoil requirements passed for 14 tracks
 [ TrackerVetoProcessor ] 1730  info: Tracker veto failed
@@ -32164,8 +32164,8 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ Recoil_TrackFinder ] 1753  info:     Could not extrapolate to HCAL!! Please check the track states
 [ Recoil_TrackFinder ] 1753  info:     Could not extrapolate to HCAL!! Please check the track states
 [ Recoil_TrackFinder ] 1753  info: Number of CKF tracks 7
-19:14:06    GSF            WARNING   Performed steps with errors: MagneticFieldError:1 | MagneticFieldError:1 | MagneticFieldError:1 | MagneticFieldError:1
-19:14:06    GSF_PROP       ERROR     Step failed with MultiStepperError:4: Stepping error occurred in all components
+22:21:29    GSF            WARNING   Performed steps with errors: MagneticFieldError:1 | MagneticFieldError:1 | MagneticFieldError:1 | MagneticFieldError:1
+22:21:29    GSF_PROP       ERROR     Step failed with MultiStepperError:4: Stepping error occurred in all components
 [ Recoil_GSF ] 1753  warn: GSF re-fit failed
 [ TrackerVetoProcessor ] 1753  info: Tagger requirements passed for 1 tracks
 [ TrackerVetoProcessor ] 1753  info: Recoil requirements passed for 4 tracks
@@ -32208,8 +32208,8 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ Recoil_TrackFinder ] 1754  info:     Could not extrapolate to ECAL!! Please check the track states
 [ Recoil_TrackFinder ] 1754  info:     Could not extrapolate to HCAL!! Please check the track states
 [ Recoil_TrackFinder ] 1754  info: Number of CKF tracks 20
-19:14:07    GSF            WARNING   Performed steps with errors: MagneticFieldError:1 | MagneticFieldError:1 | MagneticFieldError:1 | MagneticFieldError:1
-19:14:07    GSF_PROP       ERROR     Step failed with MultiStepperError:4: Stepping error occurred in all components
+22:21:29    GSF            WARNING   Performed steps with errors: MagneticFieldError:1 | MagneticFieldError:1 | MagneticFieldError:1 | MagneticFieldError:1
+22:21:29    GSF_PROP       ERROR     Step failed with MultiStepperError:4: Stepping error occurred in all components
 [ Recoil_GSF ] 1754  warn: GSF re-fit failed
 [ TrackerVetoProcessor ] 1754  info: Tagger requirements passed for 1 tracks
 [ TrackerVetoProcessor ] 1754  info: Recoil requirements passed for 1 tracks
@@ -32230,7 +32230,7 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ Recoil_TrackFinder ] 1755  info:     Could not extrapolate to ECAL!! Please check the track states
 [ Recoil_TrackFinder ] 1755  info:     Could not extrapolate to HCAL!! Please check the track states
 [ Recoil_TrackFinder ] 1755  info: Number of CKF tracks 1
-19:14:07    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
+22:21:30    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
 [ TrackerVetoProcessor ] 1755  info: Tagger requirements passed for 1 tracks
 [ TrackerVetoProcessor ] 1755  info: Recoil requirements passed for 1 tracks
 [ TrackerVetoProcessor ] 1755  info: Tracker veto passed, skim will keep the event
@@ -32950,7 +32950,7 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ Recoil_TrackFinder ] 1797  info:     Could not extrapolate to ECAL!! Please check the track states
 [ Recoil_TrackFinder ] 1797  info:     Could not extrapolate to HCAL!! Please check the track states
 [ Recoil_TrackFinder ] 1797  info: Number of CKF tracks 4
-19:14:29    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
+22:21:51    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
 [ TrackerVetoProcessor ] 1797  info: Tagger requirements passed for 1 tracks
 [ TrackerVetoProcessor ] 1797  info: Recoil requirements passed for 3 tracks
 [ TrackerVetoProcessor ] 1797  info: Tracker veto failed
@@ -33545,7 +33545,7 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ Recoil_TrackFinder ] 1826  info:     Could not extrapolate to ECAL!! Please check the track states
 [ Recoil_TrackFinder ] 1826  info:     Could not extrapolate to HCAL!! Please check the track states
 [ Recoil_TrackFinder ] 1826  info: Number of CKF tracks 5
-19:14:43    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
+22:22:05    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
 [ TrackerVetoProcessor ] 1826  info: Tagger requirements passed for 1 tracks
 [ TrackerVetoProcessor ] 1826  info: Recoil requirements passed for 5 tracks
 [ TrackerVetoProcessor ] 1826  info: Tracker veto failed
@@ -35384,7 +35384,7 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ Recoil_TrackFinder ] 1925  info:     Could not extrapolate to ECAL!! Please check the track states
 [ Recoil_TrackFinder ] 1925  info:     Could not extrapolate to HCAL!! Please check the track states
 [ Recoil_TrackFinder ] 1925  info: Number of CKF tracks 4
-19:15:34    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
+22:22:56    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
 [ TrackerVetoProcessor ] 1925  info: Tagger requirements passed for 1 tracks
 [ TrackerVetoProcessor ] 1925  info: Recoil requirements passed for 4 tracks
 [ TrackerVetoProcessor ] 1925  info: Tracker veto failed
@@ -36731,7 +36731,7 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ Recoil_TrackFinder ] 2002  info:     Could not extrapolate to ECAL!! Please check the track states
 [ Recoil_TrackFinder ] 2002  info:     Could not extrapolate to HCAL!! Please check the track states
 [ Recoil_TrackFinder ] 2002  info: Number of CKF tracks 29
-19:16:15    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
+22:23:36    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
 [ TrackerVetoProcessor ] 2002  info: Tagger requirements passed for 1 tracks
 [ TrackerVetoProcessor ] 2002  info: Recoil requirements passed for 13 tracks
 [ TrackerVetoProcessor ] 2002  info: Tracker veto failed
@@ -36907,9 +36907,9 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ TrackerVetoProcessor ] 2012  info: Recoil requirements passed for 0 tracks
 [ TrackerVetoProcessor ] 2012  info: Tracker veto failed
 [ ecalVeto ] 2012  info: This event is non-fiducial in ECAL
-[ ecalVeto ] 2012  info: Finding linreg tracks from a total of 74 hits using a radius of 35 mm
-[ ecalVeto ] 2012  info:  MIP tracking completed; found 8 straight tracks and 0 lin-reg tracks
-[ ecalVeto ] 2012  info:  BDT was ran, score is 0.00170916
+[ ecalVeto ] 2012  info: Finding linreg tracks from a total of 54 hits using a radius of 35 mm
+[ ecalVeto ] 2012  info:  MIP tracking completed; found 11 straight tracks and 0 lin-reg tracks
+[ ecalVeto ] 2012  info:  BDT was ran, score is 0.0173749
 [ ecalVeto ] 2012  info:  The pred > bdtCutVal = false and MIP tracking passed = false
 [ hcalVeto ] 2012  info: There are 19 / 19 HCal hits read out. 19 are not associated with the recoil ele. Total PE of 775
 [ hcalVeto ] 2012  info: HCAL veto passed? false
@@ -37368,9 +37368,9 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ TrackerVetoProcessor ] 2039  info: Recoil requirements passed for 0 tracks
 [ TrackerVetoProcessor ] 2039  info: Tracker veto failed
 [ ecalVeto ] 2039  info: This event is non-fiducial in ECAL
-[ ecalVeto ] 2039  info: Finding linreg tracks from a total of 81 hits using a radius of 35 mm
-[ ecalVeto ] 2039  info:  MIP tracking completed; found 6 straight tracks and 0 lin-reg tracks
-[ ecalVeto ] 2039  info:  BDT was ran, score is 0.0140969
+[ ecalVeto ] 2039  info: Finding linreg tracks from a total of 55 hits using a radius of 35 mm
+[ ecalVeto ] 2039  info:  MIP tracking completed; found 12 straight tracks and 0 lin-reg tracks
+[ ecalVeto ] 2039  info:  BDT was ran, score is 0.323417
 [ ecalVeto ] 2039  info:  The pred > bdtCutVal = false and MIP tracking passed = false
 [ hcalVeto ] 2039  info: There are 17 / 17 HCal hits read out. 17 are not associated with the recoil ele. Total PE of 640
 [ hcalVeto ] 2039  info: HCAL veto passed? false
@@ -37834,7 +37834,7 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ Recoil_TrackFinder ] 2066  info:     Could not extrapolate to ECAL!! Please check the track states
 [ Recoil_TrackFinder ] 2066  info:     Could not extrapolate to HCAL!! Please check the track states
 [ Recoil_TrackFinder ] 2066  info: Number of CKF tracks 4
-19:16:48    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
+22:24:09    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
 [ TrackerVetoProcessor ] 2066  info: Tagger requirements passed for 1 tracks
 [ TrackerVetoProcessor ] 2066  info: Recoil requirements passed for 2 tracks
 [ TrackerVetoProcessor ] 2066  info: Tracker veto failed
@@ -38965,7 +38965,7 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ Recoil_TrackFinder ] 2131  info:     Could not extrapolate to HCAL!! Please check the track states
 [ Recoil_TrackFinder ] 2131  info:     Could not extrapolate to HCAL!! Please check the track states
 [ Recoil_TrackFinder ] 2131  info: Number of CKF tracks 13
-19:17:21    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
+22:24:41    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
 [ TrackerVetoProcessor ] 2131  info: Tagger requirements passed for 1 tracks
 [ TrackerVetoProcessor ] 2131  info: Recoil requirements passed for 6 tracks
 [ TrackerVetoProcessor ] 2131  info: Tracker veto failed
@@ -43103,7 +43103,7 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ Recoil_TrackFinder ] 2368  info:     Could not extrapolate to HCAL!! Please check the track states
 [ Recoil_TrackFinder ] 2368  info:     Could not extrapolate to HCAL!! Please check the track states
 [ Recoil_TrackFinder ] 2368  info: Number of CKF tracks 28
-19:19:24    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
+22:26:43    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
 [ TrackerVetoProcessor ] 2368  info: Tagger requirements passed for 1 tracks
 [ TrackerVetoProcessor ] 2368  info: Recoil requirements passed for 11 tracks
 [ TrackerVetoProcessor ] 2368  info: Tracker veto failed
@@ -44379,8 +44379,8 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ Recoil_TrackFinder ] 2437  info:     Could not extrapolate to ECAL!! Please check the track states
 [ Recoil_TrackFinder ] 2437  info:     Could not extrapolate to HCAL!! Please check the track states
 [ Recoil_TrackFinder ] 2437  info: Number of CKF tracks 6
-19:20:00    GSF            WARNING   Performed steps with errors: MagneticFieldError:1 | MagneticFieldError:1 | MagneticFieldError:1 | MagneticFieldError:1
-19:20:00    GSF_PROP       ERROR     Step failed with MultiStepperError:4: Stepping error occurred in all components
+22:27:20    GSF            WARNING   Performed steps with errors: MagneticFieldError:1 | MagneticFieldError:1 | MagneticFieldError:1 | MagneticFieldError:1
+22:27:20    GSF_PROP       ERROR     Step failed with MultiStepperError:4: Stepping error occurred in all components
 [ Recoil_GSF ] 2437  warn: GSF re-fit failed
 [ TrackerVetoProcessor ] 2437  info: Tagger requirements passed for 0 tracks
 [ TrackerVetoProcessor ] 2437  info: Recoil requirements passed for 0 tracks
@@ -44875,7 +44875,7 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ Recoil_TrackFinder ] 2463  info:     Could not extrapolate to HCAL!! Please check the track states
 [ Recoil_TrackFinder ] 2463  info:     Could not extrapolate to HCAL!! Please check the track states
 [ Recoil_TrackFinder ] 2463  info: Number of CKF tracks 6
-19:20:14    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
+22:27:33    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
 [ TrackerVetoProcessor ] 2463  info: Tagger requirements passed for 1 tracks
 [ TrackerVetoProcessor ] 2463  info: Recoil requirements passed for 5 tracks
 [ TrackerVetoProcessor ] 2463  info: Tracker veto failed
@@ -46357,8 +46357,8 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ Recoil_TrackFinder ] 2542  info:     Could not extrapolate to ECAL!! Please check the track states
 [ Recoil_TrackFinder ] 2542  info:     Could not extrapolate to HCAL!! Please check the track states
 [ Recoil_TrackFinder ] 2542  info: Number of CKF tracks 3
-19:20:56    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
-19:20:56    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
+22:28:15    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
+22:28:15    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
 [ TrackerVetoProcessor ] 2542  info: Tagger requirements passed for 1 tracks
 [ TrackerVetoProcessor ] 2542  info: Recoil requirements passed for 3 tracks
 [ TrackerVetoProcessor ] 2542  info: Tracker veto failed
@@ -52157,7 +52157,7 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ Recoil_TrackFinder ] 2868  info:     Could not extrapolate to ECAL!! Please check the track states
 [ Recoil_TrackFinder ] 2868  info:     Could not extrapolate to HCAL!! Please check the track states
 [ Recoil_TrackFinder ] 2868  info: Number of CKF tracks 6
-19:23:44    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
+22:31:02    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
 [ TrackerVetoProcessor ] 2868  info: Tagger requirements passed for 1 tracks
 [ TrackerVetoProcessor ] 2868  info: Recoil requirements passed for 4 tracks
 [ TrackerVetoProcessor ] 2868  info: Tracker veto failed
@@ -52177,7 +52177,7 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ Recoil_TrackFinder ] 2869  info:     Could not extrapolate to ECAL!! Please check the track states
 [ Recoil_TrackFinder ] 2869  info:     Could not extrapolate to HCAL!! Please check the track states
 [ Recoil_TrackFinder ] 2869  info: Number of CKF tracks 2
-19:23:45    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
+22:31:03    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
 [ TrackerVetoProcessor ] 2869  info: Tagger requirements passed for 1 tracks
 [ TrackerVetoProcessor ] 2869  info: Recoil requirements passed for 2 tracks
 [ TrackerVetoProcessor ] 2869  info: Tracker veto failed
@@ -52827,7 +52827,7 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ Recoil_TrackFinder ] 2907  info:     Could not extrapolate to ECAL!! Please check the track states
 [ Recoil_TrackFinder ] 2907  info:     Could not extrapolate to HCAL!! Please check the track states
 [ Recoil_TrackFinder ] 2907  info: Number of CKF tracks 2
-19:24:04    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
+22:31:22    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
 [ TrackerVetoProcessor ] 2907  info: Tagger requirements passed for 1 tracks
 [ TrackerVetoProcessor ] 2907  info: Recoil requirements passed for 1 tracks
 [ TrackerVetoProcessor ] 2907  info: Tracker veto passed, skim will keep the event
@@ -54930,7 +54930,7 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ Recoil_TrackFinder ] 3021  info:     Could not extrapolate to ECAL!! Please check the track states
 [ Recoil_TrackFinder ] 3021  info:     Could not extrapolate to HCAL!! Please check the track states
 [ Recoil_TrackFinder ] 3021  info: Number of CKF tracks 31
-19:25:10    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
+22:32:28    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
 [ TrackerVetoProcessor ] 3021  info: Tagger requirements passed for 1 tracks
 [ TrackerVetoProcessor ] 3021  info: Recoil requirements passed for 18 tracks
 [ TrackerVetoProcessor ] 3021  info: Tracker veto failed
@@ -55411,7 +55411,7 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ Recoil_TrackFinder ] 3049  info:     Could not extrapolate to ECAL!! Please check the track states
 [ Recoil_TrackFinder ] 3049  info:     Could not extrapolate to HCAL!! Please check the track states
 [ Recoil_TrackFinder ] 3049  info: Number of CKF tracks 2
-19:25:25    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
+22:32:42    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
 [ TrackerVetoProcessor ] 3049  info: Tagger requirements passed for 1 tracks
 [ TrackerVetoProcessor ] 3049  info: Recoil requirements passed for 2 tracks
 [ TrackerVetoProcessor ] 3049  info: Tracker veto failed
@@ -55979,7 +55979,7 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ Recoil_TrackFinder ] 3082  info:     Could not extrapolate to HCAL!! Please check the track states
 [ Recoil_TrackFinder ] 3082  info:     Could not extrapolate to HCAL!! Please check the track states
 [ Recoil_TrackFinder ] 3082  info: Number of CKF tracks 6
-19:25:41    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
+22:32:58    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
 [ TrackerVetoProcessor ] 3082  info: Tagger requirements passed for 1 tracks
 [ TrackerVetoProcessor ] 3082  info: Recoil requirements passed for 2 tracks
 [ TrackerVetoProcessor ] 3082  info: Tracker veto failed
@@ -58543,9 +58543,9 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ TrackerVetoProcessor ] 3230  info: Recoil requirements passed for 0 tracks
 [ TrackerVetoProcessor ] 3230  info: Tracker veto failed
 [ ecalVeto ] 3230  info: This event is non-fiducial in ECAL
-[ ecalVeto ] 3230  info: Finding linreg tracks from a total of 73 hits using a radius of 35 mm
-[ ecalVeto ] 3230  info:  MIP tracking completed; found 7 straight tracks and 0 lin-reg tracks
-[ ecalVeto ] 3230  info:  BDT was ran, score is 0.00678188
+[ ecalVeto ] 3230  info: Finding linreg tracks from a total of 50 hits using a radius of 35 mm
+[ ecalVeto ] 3230  info:  MIP tracking completed; found 13 straight tracks and 0 lin-reg tracks
+[ ecalVeto ] 3230  info:  BDT was ran, score is 0.100846
 [ ecalVeto ] 3230  info:  The pred > bdtCutVal = false and MIP tracking passed = false
 [ hcalVeto ] 3230  info: There are 20 / 20 HCal hits read out. 20 are not associated with the recoil ele. Total PE of 637
 [ hcalVeto ] 3230  info: HCAL veto passed? false
@@ -58843,7 +58843,7 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ Recoil_TrackFinder ] 3247  info:     Could not extrapolate to ECAL!! Please check the track states
 [ Recoil_TrackFinder ] 3247  info:     Could not extrapolate to HCAL!! Please check the track states
 [ Recoil_TrackFinder ] 3247  info: Number of CKF tracks 6
-19:27:08    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
+22:34:23    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
 [ TrackerVetoProcessor ] 3247  info: Tagger requirements passed for 1 tracks
 [ TrackerVetoProcessor ] 3247  info: Recoil requirements passed for 4 tracks
 [ TrackerVetoProcessor ] 3247  info: Tracker veto failed
@@ -60761,7 +60761,7 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ Recoil_TrackFinder ] 3355  info:     Could not extrapolate to HCAL!! Please check the track states
 [ Recoil_TrackFinder ] 3355  info:   tracksFromSeed.size = 0
 [ Recoil_TrackFinder ] 3355  info: Number of CKF tracks 28
-19:28:03    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
+22:35:18    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
 [ TrackerVetoProcessor ] 3355  info: Tagger requirements passed for 1 tracks
 [ TrackerVetoProcessor ] 3355  info: Recoil requirements passed for 14 tracks
 [ TrackerVetoProcessor ] 3355  info: Tracker veto failed
@@ -60874,7 +60874,7 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ Recoil_TrackFinder ] 3361  info:     Could not extrapolate to HCAL!! Please check the track states
 [ Recoil_TrackFinder ] 3361  info:     Could not extrapolate to HCAL!! Please check the track states
 [ Recoil_TrackFinder ] 3361  info: Number of CKF tracks 18
-19:28:06    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
+22:35:21    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
 [ TrackerVetoProcessor ] 3361  info: Tagger requirements passed for 1 tracks
 [ TrackerVetoProcessor ] 3361  info: Recoil requirements passed for 12 tracks
 [ TrackerVetoProcessor ] 3361  info: Tracker veto failed
@@ -63417,10 +63417,10 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ Recoil_TrackFinder ] 3486  info:     Could not extrapolate to ECAL!! Please check the track states
 [ Recoil_TrackFinder ] 3486  info:     Could not extrapolate to HCAL!! Please check the track states
 [ Recoil_TrackFinder ] 3486  info: Number of CKF tracks 9
-19:29:11    GSF            WARNING   Performed steps with errors: MagneticFieldError:1 | MagneticFieldError:1 | MagneticFieldError:1 | MagneticFieldError:1
-19:29:11    GSF_PROP       ERROR     Step failed with MultiStepperError:4: Stepping error occurred in all components
+22:36:27    GSF            WARNING   Performed steps with errors: MagneticFieldError:1 | MagneticFieldError:1 | MagneticFieldError:1 | MagneticFieldError:1
+22:36:27    GSF_PROP       ERROR     Step failed with MultiStepperError:4: Stepping error occurred in all components
 [ Recoil_GSF ] 3486  warn: GSF re-fit failed
-19:29:11    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
+22:36:27    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
 [ TrackerVetoProcessor ] 3486  info: Tagger requirements passed for 1 tracks
 [ TrackerVetoProcessor ] 3486  info: Recoil requirements passed for 8 tracks
 [ TrackerVetoProcessor ] 3486  info: Tracker veto failed
@@ -64207,7 +64207,7 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ Recoil_TrackFinder ] 3532  info:     Could not extrapolate to ECAL!! Please check the track states
 [ Recoil_TrackFinder ] 3532  info:     Could not extrapolate to HCAL!! Please check the track states
 [ Recoil_TrackFinder ] 3532  info: Number of CKF tracks 5
-19:29:35    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
+22:36:50    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
 [ TrackerVetoProcessor ] 3532  info: Tagger requirements passed for 1 tracks
 [ TrackerVetoProcessor ] 3532  info: Recoil requirements passed for 2 tracks
 [ TrackerVetoProcessor ] 3532  info: Tracker veto failed
@@ -65356,7 +65356,7 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ Recoil_TrackFinder ] 3599  info:     Could not extrapolate to ECAL!! Please check the track states
 [ Recoil_TrackFinder ] 3599  info:     Could not extrapolate to HCAL!! Please check the track states
 [ Recoil_TrackFinder ] 3599  info: Number of CKF tracks 4
-19:30:09    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
+22:37:24    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
 [ TrackerVetoProcessor ] 3599  info: Tagger requirements passed for 1 tracks
 [ TrackerVetoProcessor ] 3599  info: Recoil requirements passed for 3 tracks
 [ TrackerVetoProcessor ] 3599  info: Tracker veto failed
@@ -66475,8 +66475,8 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ Recoil_TrackFinder ] 3664  info:     Could not extrapolate to HCAL!! Please check the track states
 [ Recoil_TrackFinder ] 3664  info:     Could not extrapolate to HCAL!! Please check the track states
 [ Recoil_TrackFinder ] 3664  info: Number of CKF tracks 10
-19:30:42    GSF            WARNING   Performed steps with errors: MagneticFieldError:1 | MagneticFieldError:1 | MagneticFieldError:1 | MagneticFieldError:1
-19:30:42    GSF_PROP       ERROR     Step failed with MultiStepperError:4: Stepping error occurred in all components
+22:37:57    GSF            WARNING   Performed steps with errors: MagneticFieldError:1 | MagneticFieldError:1 | MagneticFieldError:1 | MagneticFieldError:1
+22:37:57    GSF_PROP       ERROR     Step failed with MultiStepperError:4: Stepping error occurred in all components
 [ Recoil_GSF ] 3664  warn: GSF re-fit failed
 [ TrackerVetoProcessor ] 3664  info: Tagger requirements passed for 1 tracks
 [ TrackerVetoProcessor ] 3664  info: Recoil requirements passed for 1 tracks
@@ -74551,7 +74551,7 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ Recoil_TrackFinder ] 4126  info:     Could not extrapolate to ECAL!! Please check the track states
 [ Recoil_TrackFinder ] 4126  info:     Could not extrapolate to HCAL!! Please check the track states
 [ Recoil_TrackFinder ] 4126  info: Number of CKF tracks 10
-19:34:45    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
+22:41:56    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
 [ TrackerVetoProcessor ] 4126  info: Tagger requirements passed for 1 tracks
 [ TrackerVetoProcessor ] 4126  info: Recoil requirements passed for 3 tracks
 [ TrackerVetoProcessor ] 4126  info: Tracker veto failed
@@ -75322,7 +75322,7 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ Recoil_TrackFinder ] 4166  info:     Could not extrapolate to HCAL!! Please check the track states
 [ Recoil_TrackFinder ] 4166  info:     Could not extrapolate to HCAL!! Please check the track states
 [ Recoil_TrackFinder ] 4166  info: Number of CKF tracks 37
-19:35:06    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
+22:42:16    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
 [ TrackerVetoProcessor ] 4166  info: Tagger requirements passed for 0 tracks
 [ TrackerVetoProcessor ] 4166  info: Recoil requirements passed for 4 tracks
 [ TrackerVetoProcessor ] 4166  info: Tracker veto failed
@@ -78219,9 +78219,9 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ TrackerVetoProcessor ] 4323  info: Recoil requirements passed for 0 tracks
 [ TrackerVetoProcessor ] 4323  info: Tracker veto failed
 [ ecalVeto ] 4323  info: This event is non-fiducial in ECAL
-[ ecalVeto ] 4323  info: Finding linreg tracks from a total of 89 hits using a radius of 35 mm
-[ ecalVeto ] 4323  info:  MIP tracking completed; found 7 straight tracks and 0 lin-reg tracks
-[ ecalVeto ] 4323  info:  BDT was ran, score is 0.000546634
+[ ecalVeto ] 4323  info: Finding linreg tracks from a total of 64 hits using a radius of 35 mm
+[ ecalVeto ] 4323  info:  MIP tracking completed; found 15 straight tracks and 0 lin-reg tracks
+[ ecalVeto ] 4323  info:  BDT was ran, score is 0.00952125
 [ ecalVeto ] 4323  info:  The pred > bdtCutVal = false and MIP tracking passed = false
 [ hcalVeto ] 4323  info: There are 15 / 15 HCal hits read out. 15 are not associated with the recoil ele. Total PE of 690
 [ hcalVeto ] 4323  info: HCAL veto passed? false
@@ -78510,7 +78510,7 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ Recoil_TrackFinder ] 4340  info:     Could not extrapolate to ECAL!! Please check the track states
 [ Recoil_TrackFinder ] 4340  info:     Could not extrapolate to HCAL!! Please check the track states
 [ Recoil_TrackFinder ] 4340  info: Number of CKF tracks 2
-19:36:37    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
+22:43:45    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
 [ TrackerVetoProcessor ] 4340  info: Tagger requirements passed for 1 tracks
 [ TrackerVetoProcessor ] 4340  info: Recoil requirements passed for 2 tracks
 [ TrackerVetoProcessor ] 4340  info: Tracker veto failed
@@ -82112,7 +82112,7 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ Recoil_TrackFinder ] 4537  info:     Could not extrapolate to HCAL!! Please check the track states
 [ Recoil_TrackFinder ] 4537  info:     Could not extrapolate to HCAL!! Please check the track states
 [ Recoil_TrackFinder ] 4537  info: Number of CKF tracks 9
-19:38:27    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
+22:45:34    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
 [ TrackerVetoProcessor ] 4537  info: Tagger requirements passed for 1 tracks
 [ TrackerVetoProcessor ] 4537  info: Recoil requirements passed for 4 tracks
 [ TrackerVetoProcessor ] 4537  info: Tracker veto failed
@@ -86663,9 +86663,9 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ Tagger_TrackFinder ] 4792  info: Number of CKF tracks 1
 [ Recoil_TrackFinder ] 4792  info: Number of RecoilRecoSeeds seed tracks = 0
 [ Recoil_TrackFinder ] 4792  info: No seed tracks, returning...
-19:40:39    GSF            WARNING   Performed steps with errors: -27.2352 | MagneticFieldError:1 | -27.7761 | -27.247
-19:40:39    GSF            WARNING   Performed steps with errors: MagneticFieldError:1 | MagneticFieldError:1 | MagneticFieldError:1
-19:40:39    GSF_PROP       ERROR     Step failed with MultiStepperError:4: Stepping error occurred in all components
+22:47:44    GSF            WARNING   Performed steps with errors: -27.2352 | MagneticFieldError:1 | -27.7761 | -27.247
+22:47:44    GSF            WARNING   Performed steps with errors: MagneticFieldError:1 | MagneticFieldError:1 | MagneticFieldError:1
+22:47:44    GSF_PROP       ERROR     Step failed with MultiStepperError:4: Stepping error occurred in all components
 [ Tagger_GSF ] 4792  warn: GSF re-fit failed
 [ TrackerVetoProcessor ] 4792  info: Tagger requirements passed for 0 tracks
 [ TrackerVetoProcessor ] 4792  info: Recoil requirements passed for 0 tracks
@@ -87678,8 +87678,8 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ Tagger_TrackFinder ] 4851  info: Number of CKF tracks 1
 [ Recoil_TrackFinder ] 4851  info: Number of RecoilRecoSeeds seed tracks = 1
 [ Recoil_TrackFinder ] 4851  info: Number of CKF tracks 1
-19:41:09    GSF            WARNING   Performed steps with errors: MagneticFieldError:1 | MagneticFieldError:1 | MagneticFieldError:1 | MagneticFieldError:1
-19:41:09    GSF_PROP       ERROR     Step failed with MultiStepperError:4: Stepping error occurred in all components
+22:48:14    GSF            WARNING   Performed steps with errors: MagneticFieldError:1 | MagneticFieldError:1 | MagneticFieldError:1 | MagneticFieldError:1
+22:48:14    GSF_PROP       ERROR     Step failed with MultiStepperError:4: Stepping error occurred in all components
 [ Recoil_GSF ] 4851  warn: GSF re-fit failed
 [ TrackerVetoProcessor ] 4851  info: Tagger requirements passed for 1 tracks
 [ TrackerVetoProcessor ] 4851  info: Recoil requirements passed for 1 tracks
@@ -93962,8 +93962,8 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ Tagger_TrackFinder ] 5208  info: Number of CKF tracks 1
 [ Recoil_TrackFinder ] 5208  info: Number of RecoilRecoSeeds seed tracks = 1
 [ Recoil_TrackFinder ] 5208  info: Number of CKF tracks 1
-19:44:14    GSF            WARNING   Performed steps with errors: MagneticFieldError:1 | MagneticFieldError:1 | MagneticFieldError:1 | MagneticFieldError:1
-19:44:14    GSF_PROP       ERROR     Step failed with MultiStepperError:4: Stepping error occurred in all components
+22:51:17    GSF            WARNING   Performed steps with errors: MagneticFieldError:1 | MagneticFieldError:1 | MagneticFieldError:1 | MagneticFieldError:1
+22:51:17    GSF_PROP       ERROR     Step failed with MultiStepperError:4: Stepping error occurred in all components
 [ Recoil_GSF ] 5208  warn: GSF re-fit failed
 [ TrackerVetoProcessor ] 5208  info: Tagger requirements passed for 0 tracks
 [ TrackerVetoProcessor ] 5208  info: Recoil requirements passed for 0 tracks
@@ -94758,7 +94758,7 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ Recoil_TrackFinder ] 5252  info:     Could not extrapolate to ECAL!! Please check the track states
 [ Recoil_TrackFinder ] 5252  info:     Could not extrapolate to HCAL!! Please check the track states
 [ Recoil_TrackFinder ] 5252  info: Number of CKF tracks 7
-19:44:37    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
+22:51:40    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
 [ TrackerVetoProcessor ] 5252  info: Tagger requirements passed for 1 tracks
 [ TrackerVetoProcessor ] 5252  info: Recoil requirements passed for 5 tracks
 [ TrackerVetoProcessor ] 5252  info: Tracker veto failed
@@ -95360,9 +95360,9 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ Recoil_TrackFinder ] 5286  info:     Could not extrapolate to ECAL!! Please check the track states
 [ Recoil_TrackFinder ] 5286  info:     Could not extrapolate to HCAL!! Please check the track states
 [ Recoil_TrackFinder ] 5286  info: Number of CKF tracks 5
-19:44:54    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
-19:44:54    GSF            WARNING   Performed steps with errors: MagneticFieldError:1 | MagneticFieldError:1 | MagneticFieldError:1 | MagneticFieldError:1
-19:44:54    GSF_PROP       ERROR     Step failed with MultiStepperError:4: Stepping error occurred in all components
+22:51:57    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
+22:51:57    GSF            WARNING   Performed steps with errors: MagneticFieldError:1 | MagneticFieldError:1 | MagneticFieldError:1 | MagneticFieldError:1
+22:51:57    GSF_PROP       ERROR     Step failed with MultiStepperError:4: Stepping error occurred in all components
 [ Recoil_GSF ] 5286  warn: GSF re-fit failed
 [ TrackerVetoProcessor ] 5286  info: Tagger requirements passed for 1 tracks
 [ TrackerVetoProcessor ] 5286  info: Recoil requirements passed for 1 tracks
@@ -95627,7 +95627,7 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ Recoil_TrackFinder ] 5301  info:     Could not extrapolate to ECAL!! Please check the track states
 [ Recoil_TrackFinder ] 5301  info:     Could not extrapolate to HCAL!! Please check the track states
 [ Recoil_TrackFinder ] 5301  info: Number of CKF tracks 1
-19:45:02    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
+22:52:05    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
 [ TrackerVetoProcessor ] 5301  info: Tagger requirements passed for 1 tracks
 [ TrackerVetoProcessor ] 5301  info: Recoil requirements passed for 1 tracks
 [ TrackerVetoProcessor ] 5301  info: Tracker veto passed, skim will keep the event
@@ -95698,8 +95698,8 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ Recoil_TrackFinder ] 5305  info: Number of RecoilRecoSeeds seed tracks = 1
 [ Recoil_TrackFinder ] 5305  info:     Could not extrapolate to HCAL!! Please check the track states
 [ Recoil_TrackFinder ] 5305  info: Number of CKF tracks 1
-19:45:04    GSF            WARNING   Performed steps with errors: MagneticFieldError:1 | MagneticFieldError:1 | MagneticFieldError:1 | MagneticFieldError:1
-19:45:04    GSF_PROP       ERROR     Step failed with MultiStepperError:4: Stepping error occurred in all components
+22:52:07    GSF            WARNING   Performed steps with errors: MagneticFieldError:1 | MagneticFieldError:1 | MagneticFieldError:1 | MagneticFieldError:1
+22:52:07    GSF_PROP       ERROR     Step failed with MultiStepperError:4: Stepping error occurred in all components
 [ Recoil_GSF ] 5305  warn: GSF re-fit failed
 [ TrackerVetoProcessor ] 5305  info: Tagger requirements passed for 1 tracks
 [ TrackerVetoProcessor ] 5305  info: Recoil requirements passed for 0 tracks
@@ -98978,7 +98978,7 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ Recoil_TrackFinder ] 5496  info:     Could not extrapolate to HCAL!! Please check the track states
 [ Recoil_TrackFinder ] 5496  info:     Could not extrapolate to HCAL!! Please check the track states
 [ Recoil_TrackFinder ] 5496  info: Number of CKF tracks 25
-19:46:44    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
+22:53:46    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
 [ TrackerVetoProcessor ] 5496  info: Tagger requirements passed for 1 tracks
 [ TrackerVetoProcessor ] 5496  info: Recoil requirements passed for 10 tracks
 [ TrackerVetoProcessor ] 5496  info: Tracker veto failed
@@ -102463,7 +102463,7 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ Recoil_TrackFinder ] 5692  info:     Could not extrapolate to ECAL!! Please check the track states
 [ Recoil_TrackFinder ] 5692  info:     Could not extrapolate to HCAL!! Please check the track states
 [ Recoil_TrackFinder ] 5692  info: Number of CKF tracks 14
-19:48:24    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
+22:55:25    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
 [ TrackerVetoProcessor ] 5692  info: Tagger requirements passed for 1 tracks
 [ TrackerVetoProcessor ] 5692  info: Recoil requirements passed for 8 tracks
 [ TrackerVetoProcessor ] 5692  info: Tracker veto failed
@@ -102483,7 +102483,7 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ Recoil_TrackFinder ] 5693  info:     Could not extrapolate to ECAL!! Please check the track states
 [ Recoil_TrackFinder ] 5693  info:     Could not extrapolate to HCAL!! Please check the track states
 [ Recoil_TrackFinder ] 5693  info: Number of CKF tracks 3
-19:48:26    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
+22:55:27    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
 [ TrackerVetoProcessor ] 5693  info: Tagger requirements passed for 1 tracks
 [ TrackerVetoProcessor ] 5693  info: Recoil requirements passed for 3 tracks
 [ TrackerVetoProcessor ] 5693  info: Tracker veto failed
@@ -103102,7 +103102,7 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ Recoil_TrackFinder ] 5729  info:     Could not extrapolate to ECAL!! Please check the track states
 [ Recoil_TrackFinder ] 5729  info:     Could not extrapolate to HCAL!! Please check the track states
 [ Recoil_TrackFinder ] 5729  info: Number of CKF tracks 3
-19:48:44    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
+22:55:45    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
 [ TrackerVetoProcessor ] 5729  info: Tagger requirements passed for 1 tracks
 [ TrackerVetoProcessor ] 5729  info: Recoil requirements passed for 2 tracks
 [ TrackerVetoProcessor ] 5729  info: Tracker veto failed
@@ -103992,7 +103992,7 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ Recoil_TrackFinder ] 5777  info:     Could not extrapolate to ECAL!! Please check the track states
 [ Recoil_TrackFinder ] 5777  info:     Could not extrapolate to HCAL!! Please check the track states
 [ Recoil_TrackFinder ] 5777  info: Number of CKF tracks 5
-19:49:09    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
+22:56:10    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
 [ TrackerVetoProcessor ] 5777  info: Tagger requirements passed for 1 tracks
 [ TrackerVetoProcessor ] 5777  info: Recoil requirements passed for 3 tracks
 [ TrackerVetoProcessor ] 5777  info: Tracker veto failed
@@ -105384,7 +105384,7 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ Recoil_TrackFinder ] 5852  info:     Could not extrapolate to HCAL!! Please check the track states
 [ Recoil_TrackFinder ] 5852  info:     Could not extrapolate to HCAL!! Please check the track states
 [ Recoil_TrackFinder ] 5852  info: Number of CKF tracks 25
-19:49:56    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
+22:56:55    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
 [ TrackerVetoProcessor ] 5852  info: Tagger requirements passed for 0 tracks
 [ TrackerVetoProcessor ] 5852  info: Recoil requirements passed for 0 tracks
 [ TrackerVetoProcessor ] 5852  info: Tracker veto failed
@@ -107201,7 +107201,7 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ Recoil_TrackFinder ] 5950  info:     Could not extrapolate to ECAL!! Please check the track states
 [ Recoil_TrackFinder ] 5950  info:     Could not extrapolate to HCAL!! Please check the track states
 [ Recoil_TrackFinder ] 5950  info: Number of CKF tracks 4
-19:50:46    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
+22:57:45    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
 [ TrackerVetoProcessor ] 5950  info: Tagger requirements passed for 0 tracks
 [ TrackerVetoProcessor ] 5950  info: Recoil requirements passed for 2 tracks
 [ TrackerVetoProcessor ] 5950  info: Tracker veto failed
@@ -108958,8 +108958,8 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ Recoil_TrackFinder ] 6050  info:     Could not extrapolate to HCAL!! Please check the track states
 [ Recoil_TrackFinder ] 6050  info:     Could not extrapolate to HCAL!! Please check the track states
 [ Recoil_TrackFinder ] 6050  info: Number of CKF tracks 4
-19:51:37    GSF            WARNING   Performed steps with errors: MagneticFieldError:1 | MagneticFieldError:1 | MagneticFieldError:1 | MagneticFieldError:1
-19:51:37    GSF_PROP       ERROR     Step failed with MultiStepperError:4: Stepping error occurred in all components
+22:58:36    GSF            WARNING   Performed steps with errors: MagneticFieldError:1 | MagneticFieldError:1 | MagneticFieldError:1 | MagneticFieldError:1
+22:58:36    GSF_PROP       ERROR     Step failed with MultiStepperError:4: Stepping error occurred in all components
 [ Recoil_GSF ] 6050  warn: GSF re-fit failed
 [ TrackerVetoProcessor ] 6050  info: Tagger requirements passed for 1 tracks
 [ TrackerVetoProcessor ] 6050  info: Recoil requirements passed for 3 tracks
@@ -110179,7 +110179,7 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ Recoil_TrackFinder ] 6115  info:     Could not extrapolate to ECAL!! Please check the track states
 [ Recoil_TrackFinder ] 6115  info:     Could not extrapolate to HCAL!! Please check the track states
 [ Recoil_TrackFinder ] 6115  info: Number of CKF tracks 15
-19:52:12    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
+22:59:10    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
 [ TrackerVetoProcessor ] 6115  info: Tagger requirements passed for 1 tracks
 [ TrackerVetoProcessor ] 6115  info: Recoil requirements passed for 7 tracks
 [ TrackerVetoProcessor ] 6115  info: Tracker veto failed
@@ -112239,7 +112239,7 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ Recoil_TrackFinder ] 6229  info:     Could not extrapolate to HCAL!! Please check the track states
 [ Recoil_TrackFinder ] 6229  info:     Could not extrapolate to HCAL!! Please check the track states
 [ Recoil_TrackFinder ] 6229  info: Number of CKF tracks 17
-19:53:11    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
+23:00:08    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
 [ TrackerVetoProcessor ] 6229  info: Tagger requirements passed for 1 tracks
 [ TrackerVetoProcessor ] 6229  info: Recoil requirements passed for 12 tracks
 [ TrackerVetoProcessor ] 6229  info: Tracker veto failed
@@ -114918,7 +114918,7 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ Recoil_TrackFinder ] 6380  info:     Could not extrapolate to ECAL!! Please check the track states
 [ Recoil_TrackFinder ] 6380  info:     Could not extrapolate to HCAL!! Please check the track states
 [ Recoil_TrackFinder ] 6380  info: Number of CKF tracks 4
-19:54:29    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
+23:01:25    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
 [ TrackerVetoProcessor ] 6380  info: Tagger requirements passed for 1 tracks
 [ TrackerVetoProcessor ] 6380  info: Recoil requirements passed for 2 tracks
 [ TrackerVetoProcessor ] 6380  info: Tracker veto failed
@@ -119851,8 +119851,8 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ Recoil_TrackFinder ] 6649  info:     Could not extrapolate to ECAL!! Please check the track states
 [ Recoil_TrackFinder ] 6649  info:     Could not extrapolate to HCAL!! Please check the track states
 [ Recoil_TrackFinder ] 6649  info: Number of CKF tracks 2
-19:56:48    GSF            WARNING   Performed steps with errors: MagneticFieldError:1 | MagneticFieldError:1 | MagneticFieldError:1 | MagneticFieldError:1
-19:56:48    GSF_PROP       ERROR     Step failed with MultiStepperError:4: Stepping error occurred in all components
+23:03:42    GSF            WARNING   Performed steps with errors: MagneticFieldError:1 | MagneticFieldError:1 | MagneticFieldError:1 | MagneticFieldError:1
+23:03:42    GSF_PROP       ERROR     Step failed with MultiStepperError:4: Stepping error occurred in all components
 [ Recoil_GSF ] 6649  warn: GSF re-fit failed
 [ TrackerVetoProcessor ] 6649  info: Tagger requirements passed for 1 tracks
 [ TrackerVetoProcessor ] 6649  info: Recoil requirements passed for 1 tracks
@@ -121120,8 +121120,8 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ Tagger_TrackFinder ] 6720  info: Number of CKF tracks 1
 [ Recoil_TrackFinder ] 6720  info: Number of RecoilRecoSeeds seed tracks = 1
 [ Recoil_TrackFinder ] 6720  info: Number of CKF tracks 1
-19:57:25    GSF            WARNING   Performed steps with errors: MagneticFieldError:1 | MagneticFieldError:1 | MagneticFieldError:1 | MagneticFieldError:1
-19:57:25    GSF_PROP       ERROR     Step failed with MultiStepperError:4: Stepping error occurred in all components
+23:04:19    GSF            WARNING   Performed steps with errors: MagneticFieldError:1 | MagneticFieldError:1 | MagneticFieldError:1 | MagneticFieldError:1
+23:04:19    GSF_PROP       ERROR     Step failed with MultiStepperError:4: Stepping error occurred in all components
 [ Recoil_GSF ] 6720  warn: GSF re-fit failed
 [ TrackerVetoProcessor ] 6720  info: Tagger requirements passed for 0 tracks
 [ TrackerVetoProcessor ] 6720  info: Recoil requirements passed for 0 tracks
@@ -121237,7 +121237,7 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ Recoil_TrackFinder ] 6726  info:     Could not extrapolate to ECAL!! Please check the track states
 [ Recoil_TrackFinder ] 6726  info:     Could not extrapolate to HCAL!! Please check the track states
 [ Recoil_TrackFinder ] 6726  info: Number of CKF tracks 19
-19:57:28    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
+23:04:22    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
 [ TrackerVetoProcessor ] 6726  info: Tagger requirements passed for 1 tracks
 [ TrackerVetoProcessor ] 6726  info: Recoil requirements passed for 12 tracks
 [ TrackerVetoProcessor ] 6726  info: Tracker veto failed
@@ -125710,7 +125710,7 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ Recoil_TrackFinder ] 6952  info:     Could not extrapolate to HCAL!! Please check the track states
 [ Recoil_TrackFinder ] 6952  info:     Could not extrapolate to HCAL!! Please check the track states
 [ Recoil_TrackFinder ] 6952  info: Number of CKF tracks 21
-19:59:27    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
+23:06:20    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
 [ TrackerVetoProcessor ] 6952  info: Tagger requirements passed for 1 tracks
 [ TrackerVetoProcessor ] 6952  info: Recoil requirements passed for 5 tracks
 [ TrackerVetoProcessor ] 6952  info: Tracker veto failed
@@ -126450,7 +126450,7 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ Recoil_TrackFinder ] 6995  info:   tracksFromSeed.size = 0
 [ Recoil_TrackFinder ] 6995  info:   tracksFromSeed.size = 0
 [ Recoil_TrackFinder ] 6995  info: Number of CKF tracks 8
-19:59:49    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
+23:06:42    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
 [ TrackerVetoProcessor ] 6995  info: Tagger requirements passed for 0 tracks
 [ TrackerVetoProcessor ] 6995  info: Recoil requirements passed for 6 tracks
 [ TrackerVetoProcessor ] 6995  info: Tracker veto failed
@@ -126561,7 +126561,7 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ Recoil_TrackFinder ] 7001  info:     Could not extrapolate to HCAL!! Please check the track states
 [ Recoil_TrackFinder ] 7001  info:     Could not extrapolate to HCAL!! Please check the track states
 [ Recoil_TrackFinder ] 7001  info: Number of CKF tracks 8
-19:59:52    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
+23:06:45    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
 [ TrackerVetoProcessor ] 7001  info: Tagger requirements passed for 1 tracks
 [ TrackerVetoProcessor ] 7001  info: Recoil requirements passed for 5 tracks
 [ TrackerVetoProcessor ] 7001  info: Tracker veto failed
@@ -132593,8 +132593,8 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ Tagger_TrackFinder ] 7345  info: Number of CKF tracks 1
 [ Recoil_TrackFinder ] 7345  info: Number of RecoilRecoSeeds seed tracks = 7
 [ Recoil_TrackFinder ] 7345  info: Number of CKF tracks 2
-20:02:59    GSF            WARNING   Performed steps with errors: MagneticFieldError:1 | MagneticFieldError:1 | MagneticFieldError:1 | MagneticFieldError:1
-20:02:59    GSF_PROP       ERROR     Step failed with MultiStepperError:4: Stepping error occurred in all components
+23:09:49    GSF            WARNING   Performed steps with errors: MagneticFieldError:1 | MagneticFieldError:1 | MagneticFieldError:1 | MagneticFieldError:1
+23:09:49    GSF_PROP       ERROR     Step failed with MultiStepperError:4: Stepping error occurred in all components
 [ Recoil_GSF ] 7345  warn: GSF re-fit failed
 [ TrackerVetoProcessor ] 7345  info: Tagger requirements passed for 1 tracks
 [ TrackerVetoProcessor ] 7345  info: Recoil requirements passed for 1 tracks
@@ -132839,8 +132839,8 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ Recoil_TrackFinder ] 7359  info:     Could not extrapolate to HCAL!! Please check the track states
 [ Recoil_TrackFinder ] 7359  info:     Could not extrapolate to HCAL!! Please check the track states
 [ Recoil_TrackFinder ] 7359  info: Number of CKF tracks 7
-20:03:06    GSF            WARNING   Performed steps with errors: MagneticFieldError:1 | MagneticFieldError:1 | MagneticFieldError:1 | MagneticFieldError:1
-20:03:06    GSF_PROP       ERROR     Step failed with MultiStepperError:4: Stepping error occurred in all components
+23:09:56    GSF            WARNING   Performed steps with errors: MagneticFieldError:1 | MagneticFieldError:1 | MagneticFieldError:1 | MagneticFieldError:1
+23:09:56    GSF_PROP       ERROR     Step failed with MultiStepperError:4: Stepping error occurred in all components
 [ Recoil_GSF ] 7359  warn: GSF re-fit failed
 [ TrackerVetoProcessor ] 7359  info: Tagger requirements passed for 1 tracks
 [ TrackerVetoProcessor ] 7359  info: Recoil requirements passed for 2 tracks
@@ -133582,9 +133582,9 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ TrackerVetoProcessor ] 7402  info: Recoil requirements passed for 0 tracks
 [ TrackerVetoProcessor ] 7402  info: Tracker veto failed
 [ ecalVeto ] 7402  info: This event is non-fiducial in ECAL
-[ ecalVeto ] 7402  info: Finding linreg tracks from a total of 79 hits using a radius of 35 mm
-[ ecalVeto ] 7402  info:  MIP tracking completed; found 5 straight tracks and 0 lin-reg tracks
-[ ecalVeto ] 7402  info:  BDT was ran, score is 0.000386298
+[ ecalVeto ] 7402  info: Finding linreg tracks from a total of 61 hits using a radius of 35 mm
+[ ecalVeto ] 7402  info:  MIP tracking completed; found 12 straight tracks and 0 lin-reg tracks
+[ ecalVeto ] 7402  info:  BDT was ran, score is 0.0193047
 [ ecalVeto ] 7402  info:  The pred > bdtCutVal = false and MIP tracking passed = false
 [ hcalVeto ] 7402  info: There are 20 / 20 HCal hits read out. 20 are not associated with the recoil ele. Total PE of 836
 [ hcalVeto ] 7402  info: HCAL veto passed? false
@@ -134357,7 +134357,7 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ Recoil_TrackFinder ] 7445  info:     Could not extrapolate to HCAL!! Please check the track states
 [ Recoil_TrackFinder ] 7445  info:     Could not extrapolate to HCAL!! Please check the track states
 [ Recoil_TrackFinder ] 7445  info: Number of CKF tracks 42
-20:03:51    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
+23:10:40    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
 [ TrackerVetoProcessor ] 7445  info: Tagger requirements passed for 1 tracks
 [ TrackerVetoProcessor ] 7445  info: Recoil requirements passed for 18 tracks
 [ TrackerVetoProcessor ] 7445  info: Tracker veto failed
@@ -137471,7 +137471,7 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ Recoil_TrackFinder ] 7624  info:     Could not extrapolate to ECAL!! Please check the track states
 [ Recoil_TrackFinder ] 7624  info:     Could not extrapolate to HCAL!! Please check the track states
 [ Recoil_TrackFinder ] 7624  info: Number of CKF tracks 26
-20:05:23    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
+23:12:12    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
 [ TrackerVetoProcessor ] 7624  info: Tagger requirements passed for 1 tracks
 [ TrackerVetoProcessor ] 7624  info: Recoil requirements passed for 14 tracks
 [ TrackerVetoProcessor ] 7624  info: Tracker veto failed
@@ -138174,10 +138174,10 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ Recoil_TrackFinder ] 7663  info:     Could not extrapolate to ECAL!! Please check the track states
 [ Recoil_TrackFinder ] 7663  info:     Could not extrapolate to HCAL!! Please check the track states
 [ Recoil_TrackFinder ] 7663  info: Number of CKF tracks 22
-20:05:43    GSF            WARNING   Performed steps with errors: MagneticFieldError:1 | MagneticFieldError:1 | MagneticFieldError:1 | MagneticFieldError:1
-20:05:43    GSF_PROP       ERROR     Step failed with MultiStepperError:4: Stepping error occurred in all components
+23:12:31    GSF            WARNING   Performed steps with errors: MagneticFieldError:1 | MagneticFieldError:1 | MagneticFieldError:1 | MagneticFieldError:1
+23:12:31    GSF_PROP       ERROR     Step failed with MultiStepperError:4: Stepping error occurred in all components
 [ Recoil_GSF ] 7663  warn: GSF re-fit failed
-20:05:43    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
+23:12:31    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
 [ TrackerVetoProcessor ] 7663  info: Tagger requirements passed for 1 tracks
 [ TrackerVetoProcessor ] 7663  info: Recoil requirements passed for 18 tracks
 [ TrackerVetoProcessor ] 7663  info: Tracker veto failed
@@ -143380,7 +143380,7 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ Recoil_TrackFinder ] 7964  info:     Could not extrapolate to ECAL!! Please check the track states
 [ Recoil_TrackFinder ] 7964  info:     Could not extrapolate to HCAL!! Please check the track states
 [ Recoil_TrackFinder ] 7964  info: Number of CKF tracks 2
-20:08:18    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
+23:15:05    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
 [ TrackerVetoProcessor ] 7964  info: Tagger requirements passed for 1 tracks
 [ TrackerVetoProcessor ] 7964  info: Recoil requirements passed for 2 tracks
 [ TrackerVetoProcessor ] 7964  info: Tracker veto failed
@@ -143950,8 +143950,8 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ Recoil_TrackFinder ] 7996  info:     Could not extrapolate to HCAL!! Please check the track states
 [ Recoil_TrackFinder ] 7996  info:     Could not extrapolate to HCAL!! Please check the track states
 [ Recoil_TrackFinder ] 7996  info: Number of CKF tracks 49
-20:08:35    GSF            WARNING   Performed steps with errors: MagneticFieldError:1 | MagneticFieldError:1 | MagneticFieldError:1 | MagneticFieldError:1
-20:08:35    GSF_PROP       ERROR     Step failed with MultiStepperError:4: Stepping error occurred in all components
+23:15:22    GSF            WARNING   Performed steps with errors: MagneticFieldError:1 | MagneticFieldError:1 | MagneticFieldError:1 | MagneticFieldError:1
+23:15:22    GSF_PROP       ERROR     Step failed with MultiStepperError:4: Stepping error occurred in all components
 [ Recoil_GSF ] 7996  warn: GSF re-fit failed
 [ TrackerVetoProcessor ] 7996  info: Tagger requirements passed for 1 tracks
 [ TrackerVetoProcessor ] 7996  info: Recoil requirements passed for 21 tracks
@@ -146727,7 +146727,7 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ Recoil_TrackFinder ] 8148  info:     Could not extrapolate to ECAL!! Please check the track states
 [ Recoil_TrackFinder ] 8148  info:     Could not extrapolate to HCAL!! Please check the track states
 [ Recoil_TrackFinder ] 8148  info: Number of CKF tracks 6
-20:09:54    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
+23:16:40    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
 [ TrackerVetoProcessor ] 8148  info: Tagger requirements passed for 1 tracks
 [ TrackerVetoProcessor ] 8148  info: Recoil requirements passed for 4 tracks
 [ TrackerVetoProcessor ] 8148  info: Tracker veto failed
@@ -147895,8 +147895,8 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ Recoil_TrackFinder ] 8216  info:     Could not extrapolate to HCAL!! Please check the track states
 [ Recoil_TrackFinder ] 8216  info:     Could not extrapolate to HCAL!! Please check the track states
 [ Recoil_TrackFinder ] 8216  info: Number of CKF tracks 6
-20:10:29    GSF            WARNING   Performed steps with errors: MagneticFieldError:1 | MagneticFieldError:1 | MagneticFieldError:1 | MagneticFieldError:1
-20:10:29    GSF_PROP       ERROR     Step failed with MultiStepperError:4: Stepping error occurred in all components
+23:17:14    GSF            WARNING   Performed steps with errors: MagneticFieldError:1 | MagneticFieldError:1 | MagneticFieldError:1 | MagneticFieldError:1
+23:17:14    GSF_PROP       ERROR     Step failed with MultiStepperError:4: Stepping error occurred in all components
 [ Recoil_GSF ] 8216  warn: GSF re-fit failed
 [ TrackerVetoProcessor ] 8216  info: Tagger requirements passed for 1 tracks
 [ TrackerVetoProcessor ] 8216  info: Recoil requirements passed for 1 tracks
@@ -148157,8 +148157,8 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ Tagger_TrackFinder ] 8231  info: Number of CKF tracks 1
 [ Recoil_TrackFinder ] 8231  info: Number of RecoilRecoSeeds seed tracks = 1
 [ Recoil_TrackFinder ] 8231  info: Number of CKF tracks 1
-20:10:37    GSF            WARNING   Performed steps with errors: MagneticFieldError:1 | MagneticFieldError:1 | MagneticFieldError:1 | MagneticFieldError:1
-20:10:37    GSF_PROP       ERROR     Step failed with MultiStepperError:4: Stepping error occurred in all components
+23:17:22    GSF            WARNING   Performed steps with errors: MagneticFieldError:1 | MagneticFieldError:1 | MagneticFieldError:1 | MagneticFieldError:1
+23:17:22    GSF_PROP       ERROR     Step failed with MultiStepperError:4: Stepping error occurred in all components
 [ Recoil_GSF ] 8231  warn: GSF re-fit failed
 [ TrackerVetoProcessor ] 8231  info: Tagger requirements passed for 1 tracks
 [ TrackerVetoProcessor ] 8231  info: Recoil requirements passed for 0 tracks
@@ -150082,8 +150082,8 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ Recoil_TrackFinder ] 8339  info:     Could not extrapolate to HCAL!! Please check the track states
 [ Recoil_TrackFinder ] 8339  info:     Could not extrapolate to HCAL!! Please check the track states
 [ Recoil_TrackFinder ] 8339  info: Number of CKF tracks 20
-20:11:35    GSF            WARNING   Performed steps with errors: MagneticFieldError:1 | MagneticFieldError:1 | MagneticFieldError:1 | MagneticFieldError:1
-20:11:35    GSF_PROP       ERROR     Step failed with MultiStepperError:4: Stepping error occurred in all components
+23:18:19    GSF            WARNING   Performed steps with errors: MagneticFieldError:1 | MagneticFieldError:1 | MagneticFieldError:1 | MagneticFieldError:1
+23:18:19    GSF_PROP       ERROR     Step failed with MultiStepperError:4: Stepping error occurred in all components
 [ Recoil_GSF ] 8339  warn: GSF re-fit failed
 [ TrackerVetoProcessor ] 8339  info: Tagger requirements passed for 1 tracks
 [ TrackerVetoProcessor ] 8339  info: Recoil requirements passed for 15 tracks
@@ -151874,7 +151874,7 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ Recoil_TrackFinder ] 8441  info:     Could not extrapolate to ECAL!! Please check the track states
 [ Recoil_TrackFinder ] 8441  info:     Could not extrapolate to HCAL!! Please check the track states
 [ Recoil_TrackFinder ] 8441  info: Number of CKF tracks 4
-20:12:27    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
+23:19:11    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
 [ TrackerVetoProcessor ] 8441  info: Tagger requirements passed for 1 tracks
 [ TrackerVetoProcessor ] 8441  info: Recoil requirements passed for 3 tracks
 [ TrackerVetoProcessor ] 8441  info: Tracker veto failed
@@ -152848,7 +152848,7 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ Recoil_TrackFinder ] 8497  info:     Could not extrapolate to ECAL!! Please check the track states
 [ Recoil_TrackFinder ] 8497  info:     Could not extrapolate to HCAL!! Please check the track states
 [ Recoil_TrackFinder ] 8497  info: Number of CKF tracks 3
-20:12:56    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
+23:19:39    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
 [ TrackerVetoProcessor ] 8497  info: Tagger requirements passed for 1 tracks
 [ TrackerVetoProcessor ] 8497  info: Recoil requirements passed for 2 tracks
 [ TrackerVetoProcessor ] 8497  info: Tracker veto failed
@@ -157603,9 +157603,9 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ TrackerVetoProcessor ] 8773  info: Recoil requirements passed for 0 tracks
 [ TrackerVetoProcessor ] 8773  info: Tracker veto failed
 [ ecalVeto ] 8773  info: This event is non-fiducial in ECAL
-[ ecalVeto ] 8773  info: Finding linreg tracks from a total of 71 hits using a radius of 35 mm
-[ ecalVeto ] 8773  info:  MIP tracking completed; found 7 straight tracks and 0 lin-reg tracks
-[ ecalVeto ] 8773  info:  BDT was ran, score is 0.000488639
+[ ecalVeto ] 8773  info: Finding linreg tracks from a total of 51 hits using a radius of 35 mm
+[ ecalVeto ] 8773  info:  MIP tracking completed; found 11 straight tracks and 0 lin-reg tracks
+[ ecalVeto ] 8773  info:  BDT was ran, score is 0.0167902
 [ ecalVeto ] 8773  info:  The pred > bdtCutVal = false and MIP tracking passed = false
 [ hcalVeto ] 8773  info: There are 9 / 9 HCal hits read out. 9 are not associated with the recoil ele. Total PE of 817
 [ hcalVeto ] 8773  info: HCAL veto passed? false
@@ -157721,7 +157721,7 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ Recoil_TrackFinder ] 8780  info:     Could not extrapolate to ECAL!! Please check the track states
 [ Recoil_TrackFinder ] 8780  info:     Could not extrapolate to HCAL!! Please check the track states
 [ Recoil_TrackFinder ] 8780  info: Number of CKF tracks 2
-20:15:30    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
+23:22:12    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
 [ TrackerVetoProcessor ] 8780  info: Tagger requirements passed for 1 tracks
 [ TrackerVetoProcessor ] 8780  info: Recoil requirements passed for 2 tracks
 [ TrackerVetoProcessor ] 8780  info: Tracker veto failed
@@ -158722,9 +158722,9 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ TrackerVetoProcessor ] 8833  info: Recoil requirements passed for 0 tracks
 [ TrackerVetoProcessor ] 8833  info: Tracker veto failed
 [ ecalVeto ] 8833  info: This event is non-fiducial in ECAL
-[ ecalVeto ] 8833  info: Finding linreg tracks from a total of 82 hits using a radius of 35 mm
-[ ecalVeto ] 8833  info:  MIP tracking completed; found 7 straight tracks and 0 lin-reg tracks
-[ ecalVeto ] 8833  info:  BDT was ran, score is 0.00489819
+[ ecalVeto ] 8833  info: Finding linreg tracks from a total of 47 hits using a radius of 35 mm
+[ ecalVeto ] 8833  info:  MIP tracking completed; found 16 straight tracks and 0 lin-reg tracks
+[ ecalVeto ] 8833  info:  BDT was ran, score is 0.0780686
 [ ecalVeto ] 8833  info:  The pred > bdtCutVal = false and MIP tracking passed = false
 [ hcalVeto ] 8833  info: There are 13 / 13 HCal hits read out. 13 are not associated with the recoil ele. Total PE of 854
 [ hcalVeto ] 8833  info: HCAL veto passed? false
@@ -160385,7 +160385,7 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ Recoil_TrackFinder ] 8921  info:     Could not extrapolate to ECAL!! Please check the track states
 [ Recoil_TrackFinder ] 8921  info:     Could not extrapolate to HCAL!! Please check the track states
 [ Recoil_TrackFinder ] 8921  info: Number of CKF tracks 20
-20:16:42    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
+23:23:24    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
 [ TrackerVetoProcessor ] 8921  info: Tagger requirements passed for 1 tracks
 [ TrackerVetoProcessor ] 8921  info: Recoil requirements passed for 8 tracks
 [ TrackerVetoProcessor ] 8921  info: Tracker veto failed
@@ -161603,7 +161603,7 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ Recoil_TrackFinder ] 8988  info:     Could not extrapolate to ECAL!! Please check the track states
 [ Recoil_TrackFinder ] 8988  info:     Could not extrapolate to HCAL!! Please check the track states
 [ Recoil_TrackFinder ] 8988  info: Number of CKF tracks 11
-20:17:16    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
+23:23:58    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
 [ TrackerVetoProcessor ] 8988  info: Tagger requirements passed for 1 tracks
 [ TrackerVetoProcessor ] 8988  info: Recoil requirements passed for 9 tracks
 [ TrackerVetoProcessor ] 8988  info: Tracker veto failed
@@ -168115,7 +168115,7 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ Recoil_TrackFinder ] 9360  info:     Could not extrapolate to ECAL!! Please check the track states
 [ Recoil_TrackFinder ] 9360  info:     Could not extrapolate to HCAL!! Please check the track states
 [ Recoil_TrackFinder ] 9360  info: Number of CKF tracks 3
-20:20:29    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
+23:27:09    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
 [ TrackerVetoProcessor ] 9360  info: Tagger requirements passed for 1 tracks
 [ TrackerVetoProcessor ] 9360  info: Recoil requirements passed for 1 tracks
 [ TrackerVetoProcessor ] 9360  info: Tracker veto passed, skim will keep the event
@@ -168720,7 +168720,7 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ TrackerVetoProcessor ] 9395  info: Tracker veto passed, skim will keep the event
 [ ecalVeto ] 9395  info: Finding linreg tracks from a total of 38 hits using a radius of 35 mm
 [ ecalVeto ] 9395  info:  MIP tracking completed; found 2 straight tracks and 0 lin-reg tracks
-[ ecalVeto ] 9395  info:  BDT was ran, score is 0.000266969
+[ ecalVeto ] 9395  info:  BDT was ran, score is 0.000282109
 [ ecalVeto ] 9395  info:  The pred > bdtCutVal = false and MIP tracking passed = true
 [ hcalVeto ] 9395  info: There are 4 / 4 HCal hits read out. 4 are not associated with the recoil ele. Total PE of 9
 [ hcalVeto ] 9395  info: HCAL veto passed? true
@@ -169158,7 +169158,7 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ Recoil_TrackFinder ] 9420  info:     Could not extrapolate to HCAL!! Please check the track states
 [ Recoil_TrackFinder ] 9420  info:     Could not extrapolate to HCAL!! Please check the track states
 [ Recoil_TrackFinder ] 9420  info: Number of CKF tracks 18
-20:20:59    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
+23:27:40    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
 [ TrackerVetoProcessor ] 9420  info: Tagger requirements passed for 1 tracks
 [ TrackerVetoProcessor ] 9420  info: Recoil requirements passed for 9 tracks
 [ TrackerVetoProcessor ] 9420  info: Tracker veto failed
@@ -171945,7 +171945,7 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ Recoil_TrackFinder ] 9578  info:     Could not extrapolate to ECAL!! Please check the track states
 [ Recoil_TrackFinder ] 9578  info:     Could not extrapolate to HCAL!! Please check the track states
 [ Recoil_TrackFinder ] 9578  info: Number of CKF tracks 16
-20:22:21    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
+23:29:01    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
 [ TrackerVetoProcessor ] 9578  info: Tagger requirements passed for 1 tracks
 [ TrackerVetoProcessor ] 9578  info: Recoil requirements passed for 9 tracks
 [ TrackerVetoProcessor ] 9578  info: Tracker veto failed
@@ -175321,7 +175321,7 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ Recoil_TrackFinder ] 9758  info:     Could not extrapolate to ECAL!! Please check the track states
 [ Recoil_TrackFinder ] 9758  info:     Could not extrapolate to HCAL!! Please check the track states
 [ Recoil_TrackFinder ] 9758  info: Number of CKF tracks 4
-20:23:55    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
+23:30:35    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
 [ TrackerVetoProcessor ] 9758  info: Tagger requirements passed for 1 tracks
 [ TrackerVetoProcessor ] 9758  info: Recoil requirements passed for 3 tracks
 [ TrackerVetoProcessor ] 9758  info: Tracker veto failed
@@ -176927,9 +176927,9 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ TrackerVetoProcessor ] 9852  info: Recoil requirements passed for 0 tracks
 [ TrackerVetoProcessor ] 9852  info: Tracker veto failed
 [ ecalVeto ] 9852  info: This event is non-fiducial in ECAL
-[ ecalVeto ] 9852  info: Finding linreg tracks from a total of 79 hits using a radius of 35 mm
-[ ecalVeto ] 9852  info:  MIP tracking completed; found 5 straight tracks and 0 lin-reg tracks
-[ ecalVeto ] 9852  info:  BDT was ran, score is 0.00764465
+[ ecalVeto ] 9852  info: Finding linreg tracks from a total of 49 hits using a radius of 35 mm
+[ ecalVeto ] 9852  info:  MIP tracking completed; found 13 straight tracks and 0 lin-reg tracks
+[ ecalVeto ] 9852  info:  BDT was ran, score is 0.0496842
 [ ecalVeto ] 9852  info:  The pred > bdtCutVal = false and MIP tracking passed = false
 [ hcalVeto ] 9852  info: There are 14 / 14 HCal hits read out. 14 are not associated with the recoil ele. Total PE of 778
 [ hcalVeto ] 9852  info: HCAL veto passed? false
@@ -177558,8 +177558,8 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ Recoil_TrackFinder ] 9889  info:     Could not extrapolate to HCAL!! Please check the track states
 [ Recoil_TrackFinder ] 9889  info:     Could not extrapolate to HCAL!! Please check the track states
 [ Recoil_TrackFinder ] 9889  info: Number of CKF tracks 4
-20:25:04    GSF            WARNING   Performed steps with errors: MagneticFieldError:1 | MagneticFieldError:1 | MagneticFieldError:1 | MagneticFieldError:1
-20:25:04    GSF_PROP       ERROR     Step failed with MultiStepperError:4: Stepping error occurred in all components
+23:31:43    GSF            WARNING   Performed steps with errors: MagneticFieldError:1 | MagneticFieldError:1 | MagneticFieldError:1 | MagneticFieldError:1
+23:31:43    GSF_PROP       ERROR     Step failed with MultiStepperError:4: Stepping error occurred in all components
 [ Recoil_GSF ] 9889  warn: GSF re-fit failed
 [ TrackerVetoProcessor ] 9889  info: Tagger requirements passed for 1 tracks
 [ TrackerVetoProcessor ] 9889  info: Recoil requirements passed for 1 tracks
@@ -179591,30 +179591,30 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ Tagger_TrackFinder ] 10000  info: Breakdown::
 [ Tagger_TrackFinder ] 10000  info: setup       Avg Time/Event = 0.002 ms
 [ Tagger_TrackFinder ] 10000  info: hits        Avg Time/Event = 0.03 ms
-[ Tagger_TrackFinder ] 10000  info: seeds       Avg Time/Event = 0.038 ms
+[ Tagger_TrackFinder ] 10000  info: seeds       Avg Time/Event = 0.036 ms
 [ Tagger_TrackFinder ] 10000  info: cf_setup    Avg Time/Event = 0.005 ms
-[ Tagger_TrackFinder ] 10000  info: ckf_run     Avg Time/Event = 0.459 ms
+[ Tagger_TrackFinder ] 10000  info: ckf_run     Avg Time/Event = 0.435 ms
 [ Tagger_TrackFinder ] 10000  info: result_loop Avg Time/Event = 0.0 ms
 [ Recoil_TrackFinder ] 10000  info: found 27803 tracks  / 63638 nseeds
-[ Recoil_TrackFinder ] 10000  info: AVG Time/Event: 1.1 ms
+[ Recoil_TrackFinder ] 10000  info: AVG Time/Event: 1.0 ms
 [ Recoil_TrackFinder ] 10000  info: Breakdown::
 [ Recoil_TrackFinder ] 10000  info: setup       Avg Time/Event = 0.001 ms
 [ Recoil_TrackFinder ] 10000  info: hits        Avg Time/Event = 0.05 ms
-[ Recoil_TrackFinder ] 10000  info: seeds       Avg Time/Event = 0.029 ms
+[ Recoil_TrackFinder ] 10000  info: seeds       Avg Time/Event = 0.027 ms
 [ Recoil_TrackFinder ] 10000  info: cf_setup    Avg Time/Event = 0.004 ms
-[ Recoil_TrackFinder ] 10000  info: ckf_run     Avg Time/Event = 0.959 ms
+[ Recoil_TrackFinder ] 10000  info: ckf_run     Avg Time/Event = 0.941 ms
 [ Recoil_TrackFinder ] 10000  info: result_loop Avg Time/Event = 0.0 ms
-[ ecalVeto ] 10000  info: AVG Time/Event: 0.44 ms
+[ ecalVeto ] 10000  info: AVG Time/Event: 0.46 ms
 [ ecalVeto ] 10000  info: Breakdown::
-[ ecalVeto ] 10000  info: setup                  Avg Time/Event = 0.016 ms
-[ ecalVeto ] 10000  info: recoil_electron        Avg Time/Event = 0.064 ms
+[ ecalVeto ] 10000  info: setup                  Avg Time/Event = 0.014 ms
+[ ecalVeto ] 10000  info: recoil_electron        Avg Time/Event = 0.063 ms
 [ ecalVeto ] 10000  info: trajectories           Avg Time/Event = 0.007 ms
 [ ecalVeto ] 10000  info: roc_var                Avg Time/Event = 0.001 ms
-[ ecalVeto ] 10000  info: fill_hitmaps           Avg Time/Event = 0.092 ms
-[ ecalVeto ] 10000  info: containment_var        Avg Time/Event = 0.004 ms
-[ ecalVeto ] 10000  info: mip_tracking_setup     Avg Time/Event = 0.046 ms
-[ ecalVeto ] 10000  info: straight_tracks        Avg Time/Event = 0.015 ms
+[ ecalVeto ] 10000  info: fill_hitmaps           Avg Time/Event = 0.085 ms
+[ ecalVeto ] 10000  info: containment_var        Avg Time/Event = 0.003 ms
+[ ecalVeto ] 10000  info: mip_tracking_setup     Avg Time/Event = 0.045 ms
+[ ecalVeto ] 10000  info: straight_tracks        Avg Time/Event = 0.060 ms
 [ ecalVeto ] 10000  info: linreg_tracks          Avg Time/Event = 0.023 ms
-[ ecalVeto ] 10000  info: set_variables           Avg Time/Event = 0.017 ms
-[ ecalVeto ] 10000  info: bdt_variables           Avg Time/Event = 0.153 ms
+[ ecalVeto ] 10000  info: set_variables           Avg Time/Event = 0.016 ms
+[ ecalVeto ] 10000  info: bdt_variables           Avg Time/Event = 0.146 ms
 ---- LDMXSW: Event processing complete  --------
