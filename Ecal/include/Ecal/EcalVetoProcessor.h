@@ -77,7 +77,7 @@ class EcalVetoProcessor : public framework::Producer {
 
   /* Function to calculate the energy weighted shower centroid */
   ldmx::EcalID GetShowerCentroidIDAndRMS(
-      const std::vector<ldmx::EcalHit>& ecalRecHits, double& showerRMS);
+      const std::vector<ldmx::EcalHit>& ecalRecHits, float& showerRMS);
 
   /* Function to load up empty vector of hit maps */
   void fillHitMap(const std::vector<ldmx::EcalHit>& ecalRecHits,
@@ -90,8 +90,8 @@ class EcalVetoProcessor : public framework::Producer {
                           std::map<ldmx::EcalID, float>& cellMapIso,
                           bool doTight = false);
 
-  std::vector<XYCoords> getTrajectory(std::vector<double> momentum,
-                                      std::vector<float> position);
+  std::vector<XYCoords> getTrajectory(std::array<float, 3> momentum,
+                                      std::array<float, 3> position);
 
   void buildBDTFeatureVector(const ldmx::EcalVetoResult& result);
 
@@ -131,9 +131,9 @@ class EcalVetoProcessor : public framework::Producer {
 
  private:
   int nevents_{0};
-  double processing_time_{0.};
+  float processing_time_{0.};
 
-  std::map<std::string, double> profiling_map_;
+  std::map<std::string, float> profiling_map_;
   std::map<ldmx::EcalID, float> cellMap_;
   std::map<ldmx::EcalID, float> cellMapTightIso_;
 
@@ -141,21 +141,21 @@ class EcalVetoProcessor : public framework::Producer {
   std::vector<float> ecalLayerEdepReadout_;
   std::vector<float> ecalLayerTime_;
 
-  std::vector<std::vector<double>> roc_range_values_;
+  std::vector<std::vector<float>> roc_range_values_;
 
   int nEcalLayers_{0};
   int nReadoutHits_{0};
   int deepestLayerHit_{0};
 
-  double summedDet_{0};
-  double summedTightIso_{0};
-  double maxCellDep_{0};
-  double showerRMS_{0};
-  double xStd_{0};
-  double yStd_{0};
-  double avgLayerHit_{0};
-  double stdLayerHit_{0};
-  double ecalBackEnergy_{0};
+  float summedDet_{0};
+  float summedTightIso_{0};
+  float maxCellDep_{0};
+  float showerRMS_{0};
+  float xStd_{0};
+  float yStd_{0};
+  float avgLayerHit_{0};
+  float stdLayerHit_{0};
+  float ecalBackEnergy_{0};
   // MIP tracking
   /// Number of "straight" tracks found in the event
   int nStraightTracks_{0};
@@ -176,13 +176,11 @@ class EcalVetoProcessor : public framework::Producer {
   /// Number of hits in the photon territory
   int photonTerritoryHits_{0};
 
-  double bdtCutVal_{0};
+  float bdtCutVal_{0};
 
-  double beamEnergyMeV_{0};
+  float beamEnergyMeV_{0};
   bool run_lin_reg_{true};
-  double linreg_radius_{0};
-
-  bool verbose_{false};
+  float linreg_radius_{0};
 
   std::string bdtFileName_;
   std::string rocFileName_;
