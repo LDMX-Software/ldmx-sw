@@ -63,7 +63,8 @@ void TargetProcessFilter::stepping(const G4Step* step) {
   if (!target_region) {
     ldmx_log(warn) << "Region 'target' not found in Geant4 region store";
   }
-  auto log_vol{track->GetVolume()->GetLogicalVolume()};
+  auto phy_vol{track->GetVolume()};
+  auto log_vol{phy_vol ? phy_vol->GetLogicalVolume() : nullptr};
   auto current_region{log_vol ? log_vol->GetRegion() : nullptr};
   if (current_region != target_region) {
     // If secondaries were produced outside of the volume of interest,
