@@ -73,6 +73,8 @@ import LDMX.Hcal.hcal as hcal
 hcal_veto = hcal.HcalVetoProcessor()
 
 p.logger.termLevel = 1
+# Example to show trace level logging for ecal veto (only)
+# p.logger.custom(ecal_veto, level = -1)
 
 # Add full tracking for both tagger and recoil trackers: digi, seeds, CFK, ambiguity resolution, GSF, DQM
 p.sequence.extend(full_tracking_sequence.sequence)

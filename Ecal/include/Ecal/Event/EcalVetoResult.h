@@ -71,7 +71,8 @@ class EcalVetoResult {
                     std::vector<std::vector<float>> oContLayerStd,
 
                     std::vector<float> EcalLayerEdepReadout,
-                    std::vector<double> recoilP, std::vector<float> recoilPos);
+                    std::array<float, 3> recoilP,
+                    std::array<float, 3> recoilPos);
 
   /** Reset the object. */
   void Clear();
@@ -215,15 +216,15 @@ class EcalVetoResult {
   void setFiducial(bool fiducial) { fiducial_ = fiducial; }
 
   /** Return the momentum of the recoil at the Ecal face. */
-  const std::vector<double> getRecoilMomentum() const {
+  const std::vector<float> getRecoilMomentum() const {
     return {recoilPx_, recoilPy_, recoilPz_};
   };
 
   /** Return the x position of the recoil at the Ecal face. */
-  double getRecoilX() const { return recoilX_; };
+  float getRecoilX() const { return recoilX_; };
 
   /** Return the y position of the recoil at the Ecal face. */
-  double getRecoilY() const { return recoilY_; };
+  float getRecoilY() const { return recoilY_; };
 
   /// Number of straight tracks found
   int getNStraightTracks() const { return nStraightTracks_; }
@@ -313,13 +314,13 @@ class EcalVetoResult {
   bool fiducial_{false};
 
   /** px of recoil electron at the Ecal face. */
-  double recoilPx_{-9999};
+  float recoilPx_{-9999};
 
   /** py of recoil electron at the Ecal face. */
-  double recoilPy_{-9999};
+  float recoilPy_{-9999};
 
   /** py of recoil electron at the Ecal face. */
-  double recoilPz_{-9999};
+  float recoilPz_{-9999};
 
   /** x position of recoil electron at the Ecal face. */
   float recoilX_{-9999};
@@ -329,7 +330,7 @@ class EcalVetoResult {
 
   std::vector<float> ecalLayerEdepReadout_;
 
-  ClassDef(EcalVetoResult, 7);
+  ClassDef(EcalVetoResult, 8);
 };
 }  // namespace ldmx
 
