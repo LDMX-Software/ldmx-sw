@@ -14,6 +14,7 @@
 //----------------//
 #include <iostream>
 #include <map>
+#include <array>
 
 //----------//
 //   ROOT   //
