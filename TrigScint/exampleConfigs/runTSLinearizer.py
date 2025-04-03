@@ -27,7 +27,8 @@ tsEv=EventReadoutProducer("eventLinearizer")
 tsEv.input_pass_name=inputPassName
 tsEv.input_collection="decodedQIEUp"
 tsEv.time_shift=timeOffset
-
+if logVerbosity < 1 :
+    tsEv.verbose=True 
 p.sequence = [
     tsEv
     ]
@@ -41,6 +42,11 @@ outname=outname.replace(".root", "_linearize.root")
 p.outputFiles = [ outname ]
 
 
-p.logFileName=p.outputFiles[0].replace(".root",".log")
-p.termLogLevel = 2
-p.fileLogLevel = logVerbosity
+p.logger.filePath=p.outputFiles[0].replace(".root",".log")
+p.logger.termLevel = 2
+p.logger.fileLevel = logVerbosity
+
+#p.pause()
+
+if (logVerbosity < 1 ) :
+    p.logger.debug(tsEv)

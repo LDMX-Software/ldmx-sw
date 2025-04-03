@@ -247,8 +247,9 @@ void QIEDecoder::produce(framework::Event &event) {
         }
         // this is LETDC; only the two most significant bits included
         // they are shipped as least significant bits --> shift them
-        TDCmap[iQ].at(iS) = (val + 1) * 16;  // want LE TDC = 3 to correspond to
+        //TDCmap[iQ].at(iS) = (val + 1) * 16;  // want LE TDC = 3 to correspond to
                                              // 64 > 49 (which is maxTDC in sim)
+        TDCmap[iQ].at(iS) = val;  // have full 6-bit TDC at SLAC 
       }
       iWord++;
     }

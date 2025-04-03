@@ -128,7 +128,7 @@ void QIEAnalyzer::onProcessStart() {
             << std::endl;
   getHistoDirectory();
 
-  int nTimeSamp = 40;
+  int nTimeSamp = 68;  //40
   int PEmax = 100;
   int nPEbins = 5 * PEmax;
   float Qmax = PEmax / (6250. / 4.e6);
@@ -194,6 +194,7 @@ void QIEAnalyzer::onProcessStart() {
                    nTimeSamp, -0.5, nTimeSamp - 0.5);
     }
   }
+
 
   hTDCfireChanvsEvent =
       new TH2F("hTDCfireChanvsEvent", ";channel with TDC < 63;event number",

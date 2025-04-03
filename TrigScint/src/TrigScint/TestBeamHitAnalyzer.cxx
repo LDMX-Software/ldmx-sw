@@ -60,6 +60,14 @@ void TestBeamHitAnalyzer::analyze(const framework::Event& event) {
     hPE[bar]->Fill(PE);
     if (chan.getQualityFlag() == 0 && bar < 12 && 15 < PE && PE < 40)
       existsIntermediatePE = true;
+
+    //cross talk/correlations
+    for (auto chanProbe : channels) {
+      int barProbe = chanProbe.getBarID();
+      if (barProbe >= bar) //we don't define the lower diagonal of the matrix of histograms 
+	hCrossTalk[bar][barProbe]->Fill( PE, chanProbe.getPE() );
+    }
+    
   }  // over channels
 
   if (existsIntermediatePE && fillNb < nEv) {
@@ -96,7 +104,7 @@ void TestBeamHitAnalyzer::onProcessStart() {
 
   getHistoDirectory();
 
-  int nTimeSamp = 40;
+  int nTimeSamp = 7;
   int PEmax = 400;
   int nPEbins = 2 * PEmax;
   // float Qmax = PEmax / (6250. / 4.e6);
@@ -123,7 +131,7 @@ void TestBeamHitAnalyzer::onProcessStart() {
   for (int iE = 0; iE < nEv; iE++) {
     for (int iB = 0; iB < nChannels; iB++) {
       hOut[iE][iB] =
-          new TH1F(Form("hCharge_chan%i_nv%i", iB, iE),
+          new TH1F(Form("hCharge_chan%i_ev%i", iB, iE),
                    Form(";time sample; Q, chan %i, ev %i [fC]", iB, iE),
                    nTimeSamp, -0.5, nTimeSamp - 0.5);
     }
@@ -138,6 +146,17 @@ void TestBeamHitAnalyzer::onProcessStart() {
                        nEv + 0.5, nChannels, -0.5, nChannels - 0.5);
 
   fillNb = 0;
+
+  
+  for (int iBtag = 0; iBtag < nChannels; iBtag++) {
+    for (int iBprobe = iBtag; iBprobe < nChannels; iBprobe++) { //use one side of diagonal
+      hCrossTalk[iBtag][iBprobe] =
+	new TH2F(Form("hPE_chan%i_vs_chan%i", iBprobe, iBtag),
+		 Form(";PE, channel %i; PE, channel %i", iBprobe, iBtag),
+		 nPEbins,0,PEmax, nPEbins,0,PEmax);
+    }
+  }
+  
 
   return;
 }

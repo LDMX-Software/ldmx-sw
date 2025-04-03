@@ -17,8 +17,10 @@ if len(sys.argv) > 4 :
 else :
     nEv=4e6 #default         
 
-    
-nChannels=16
+if len(sys.argv) > 5 :
+    nChannels=int(sys.argv[5])
+else :
+    nChannels=16 #default           
 lenHeader=4+4+4+3+1 #UTC timeStamp s, timestamp clock ticks, time since spill, evNb, 4bit error words+4bit empty
 nWords=2*nChannels*nTimeSamples+lenHeader
 

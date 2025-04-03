@@ -7,7 +7,6 @@ import sys
 
 
 nEv=400000
-nChan=16
 #mapFile="channelMapFrontBack_"+str(nChan)+"channels.txt" #../TrigScint/data/channelMapFrontBack.txt")
 
 #p.maxEvents = nEv
@@ -28,6 +27,11 @@ if len(sys.argv) > 6 :
 else :
     logVerbosity=2
 
+if len(sys.argv) > 7 :
+    nChan=int(sys.argv[7])
+else :
+    nChan=16 #default
+    
 from LDMX.TrigScint.qieFormat import QIEDecoder
 dec=QIEDecoder.up(mapFile)
 #dec.input_collection="QIEstreamUp" 
@@ -43,6 +47,15 @@ p.sequence = [
     dec
     ]
 
-p.termLogLevel = 1
-p.logFileName = logName
-p.fileLogLevel = logVerbosity
+#p.termLogLevel = 1
+p.logger.termLevel = 1
+#p.logFileName = logName
+p.logger.FilePath = logName
+#p.fileLogLevel = logVerbosity
+p.logger.fileLevel = logVerbosity
+
+
+#p.logger.logRules=[ "QIEDecoder", 0]
+#p.logger.debug("QIEDecoder") #wrong way, don't pass instance name
+if logVerbosity < 2 :
+    p.logger.debug(dec) #pass instance itself
