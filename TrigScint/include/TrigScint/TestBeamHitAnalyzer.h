@@ -61,7 +61,6 @@ class TestBeamHitAnalyzer : public framework::Analyzer {
   TH2F* hDeltaPEVsDelta[16];
   TH2F* hPEmaxVsDelta;
   TH2F* hCrossTalk[16][16];
-
 };
 }  // namespace trigscint
 

@@ -62,7 +62,7 @@ class QIEAnalyzer : public framework::Analyzer {
   TH2F* hPedSubtractedPEvsN[16];
   TH2F* hPedSubtractedPEvsT[16];
   TH2F* hAvgQvsT[16];
-  
+
   TH2F* hTDCfireChanvsEvent;
   double yOffset_{35.};
   double yToIDfactor_{50. / 80.};

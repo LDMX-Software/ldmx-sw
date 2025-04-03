@@ -61,13 +61,14 @@ void TestBeamHitAnalyzer::analyze(const framework::Event& event) {
     if (chan.getQualityFlag() == 0 && bar < 12 && 15 < PE && PE < 40)
       existsIntermediatePE = true;
 
-    //cross talk/correlations
+    // cross talk/correlations
     for (auto chanProbe : channels) {
       int barProbe = chanProbe.getBarID();
-      if (barProbe >= bar) //we don't define the lower diagonal of the matrix of histograms 
-	hCrossTalk[bar][barProbe]->Fill( PE, chanProbe.getPE() );
+      if (barProbe >= bar)  // we don't define the lower diagonal of the matrix
+                            // of histograms
+        hCrossTalk[bar][barProbe]->Fill(PE, chanProbe.getPE());
     }
-    
+
   }  // over channels
 
   if (existsIntermediatePE && fillNb < nEv) {
@@ -147,16 +148,15 @@ void TestBeamHitAnalyzer::onProcessStart() {
 
   fillNb = 0;
 
-  
   for (int iBtag = 0; iBtag < nChannels; iBtag++) {
-    for (int iBprobe = iBtag; iBprobe < nChannels; iBprobe++) { //use one side of diagonal
+    for (int iBprobe = iBtag; iBprobe < nChannels;
+         iBprobe++) {  // use one side of diagonal
       hCrossTalk[iBtag][iBprobe] =
-	new TH2F(Form("hPE_chan%i_vs_chan%i", iBprobe, iBtag),
-		 Form(";PE, channel %i; PE, channel %i", iBprobe, iBtag),
-		 nPEbins,0,PEmax, nPEbins,0,PEmax);
+          new TH2F(Form("hPE_chan%i_vs_chan%i", iBprobe, iBtag),
+                   Form(";PE, channel %i; PE, channel %i", iBprobe, iBtag),
+                   nPEbins, 0, PEmax, nPEbins, 0, PEmax);
     }
   }
-  
 
   return;
 }
