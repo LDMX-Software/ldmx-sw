@@ -12,6 +12,7 @@
 //----------------//
 //   C++ StdLib   //
 //----------------//
+#include <array>
 #include <iostream>
 #include <map>
 
