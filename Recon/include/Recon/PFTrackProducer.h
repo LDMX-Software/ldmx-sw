@@ -36,6 +36,9 @@ class PFTrackProducer : public framework::Producer {
   std::string input_pass_name_;
   // name of collection for pfTracks to be output
   std::string outputTrackCollName_;
+  //boolean to cheat to select only electron tracks
+  // in this cheating truth tracker
+  bool doElectronTracking_{};
 };
 }  // namespace recon
 
