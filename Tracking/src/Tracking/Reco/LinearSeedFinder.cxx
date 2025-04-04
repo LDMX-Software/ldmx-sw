@@ -46,6 +46,7 @@ void LinearSeedFinder::produce(framework::Event& event) {
   auto start = std::chrono::high_resolution_clock::now();
   std::vector<ldmx::StraightTrack> straight_seed_tracks;
   n_events_++;
+  auto tg{geometry()};
 
   const std::vector<ldmx::Measurement> recoil_hits =
       event.getCollection<ldmx::Measurement>(input_hits_collection_,
@@ -79,8 +80,45 @@ void LinearSeedFinder::produce(framework::Event& event) {
     particle_map = event.getMap<int, ldmx::SimParticle>("SimParticles");
     truth_matching_tool_->setup(particle_map, recoil_hits);
   }
+    
+    std::vector<ldmx::Measurement> first_two_layers;
+    for (const auto& point : recoil_hits) {
+      if (point.getGlobalPosition()[0] < layer12_midpoint_)
+        first_two_layers.push_back(point);
+      else if (point.getGlobalPosition()[0] < layer23_midpoint_)
+        first_two_layers.push_back(point);
+      else
+        continue;
+    }
 
-  // weighted averaging: layer1+layer2 = sensor1, layer3+layer4 = sensor2
+
+    auto firstSensorCombos = processMeasurements(first_two_layers, tg);
+      for (const auto& combo : firstSensorCombos) {
+          auto [combo_3d_points, first_layer, second_layer] = combo;
+          
+          ldmx_log(debug) << "The combined 3D hit is: (" << combo_3d_points[0] << ", "
+          << combo_3d_points[1] << ", " << combo_3d_points[2] << ")\n";
+          ldmx_log(debug) << "which is made out of layer1= (" << first_layer.getGlobalPosition()[0] << ", "
+          << first_layer.getGlobalPosition()[1] << ", " << first_layer.getGlobalPosition()[2] << ")\n";
+          ldmx_log(debug) << "and is made out of layer2= (" << second_layer.getGlobalPosition()[0] << ", "
+          << second_layer.getGlobalPosition()[1] << ", " << second_layer.getGlobalPosition()[2] << ")\n";
+          
+          const std::vector<ldmx::SimTrackerHit> recoil_sim_hits = event.getCollection<ldmx::SimTrackerHit>("RecoilSimHits",
+                                                                                                            input_pass_name_);
+          
+          ldmx_log(debug) << "The first recoil layer trackID is: (" << first_layer.getTrackIds()[0] << ")\n";
+          ldmx_log(debug) << "The second recoil layer trackID is: (" << second_layer.getTrackIds()[0] << ")\n";
+
+          for (const auto& hit : recoil_sim_hits) {
+              ldmx_log(debug) << "The hit trackID is: (" << hit.getTrackID() << ")\n";
+              if (hit.getTrackID() == first_layer.getTrackIds()[0]) {
+                  ldmx_log(debug) << "The global position of the SimParticle with matching trackID to the measurement is: (" << hit.getPosition()[0] << ", " << hit.getPosition()[1] << ", " << hit.getPosition()[2] << ")\n";
+              }
+          }
+          
+      }
+
+// weighted averaging: layer1+layer2 = sensor1, layer3+layer4 = sensor2
   // this gives all possible combinations of two tracker points for fitting
   auto [first_sensor, second_sensor] = combineMultiGlobalHits(recoil_hits);
 
@@ -278,6 +316,147 @@ LinearSeedFinder::combineMultiGlobalHits(
 
   return {first_sensor_merged_hits, second_sensor_merged_hits};
 }  // combineMultiGlobalHits
+
+std::vector<std::tuple<std::array<double, 3>, ldmx::Measurement, ldmx::Measurement>> LinearSeedFinder::processMeasurements(const std::vector<ldmx::Measurement>& measurements, const geo::TrackersTrackingGeometry& tg) {
+    
+    std::vector<ldmx::Measurement> axialMeasurements;
+    std::vector<ldmx::Measurement> stereoMeasurements;
+    std::vector<std::tuple<std::array<double, 3>, ldmx::Measurement, ldmx::Measurement>> points_with_measurement;
+    
+    for (const auto& meas : measurements) {
+        if (meas.getLayerID() % 2 == 0) {
+            axialMeasurements.push_back(meas);
+        } // even layers are axial, from looking at Measurement.h
+        else {
+            stereoMeasurements.push_back(meas);
+        } // odd layers are stereo, from looking at Meaasurement.h
+    } // for measurements
+    
+    for (const auto& axial : axialMeasurements) {
+        for (const auto& stereo : stereoMeasurements) {
+            
+            // Get surfaces from ACTS
+            const Acts::Surface* axial_surface = tg.getSurface(axial.getLayerID());
+            const Acts::Surface* stereo_surface = tg.getSurface(stereo.getLayerID());
+            
+            if (!axial_surface || !stereo_surface) continue;  // Skip invalid surfaces
+            
+            // Compute 3D space point
+            Acts::Vector3 spacePoint = compute3DHit(axial, *axial_surface, stereo, *stereo_surface);
+            
+            points_with_measurement.push_back({convertToLdmxStdArray(spacePoint), axial, stereo});
+        } // for stereo
+    } // for axial
+    
+    return points_with_measurement;
+}
+
+//I think ACTS saves its arrays like (x, y, z)
+std::array<double, 3> LinearSeedFinder::convertToLdmxStdArray(const Acts::Vector3& vec) {
+    return {vec.x(), vec.y(), vec.z()};
+}
+
+//Helper function to calculate unit vector by taking advantage of the localToGlobal transformation
+std::tuple<Acts::Vector3, Acts::Vector3, Acts::Vector3> LinearSeedFinder::getSurfaceVectors(const Acts::Surface& surface) {
+    Acts::Vector3 dummy{0., 0., 0.};
+    Acts::Vector3 u = surface.localToGlobal(geometry_context(), Acts::Vector2(1, 0), dummy) - surface.center(geometry_context());
+    Acts::Vector3 v = surface.localToGlobal(geometry_context(), Acts::Vector2(0, 1), dummy) - surface.center(geometry_context());
+    Acts::Vector3 w = u.cross(v).normalized();
+    return {u.normalized(), v.normalized(), w};
+}
+
+Acts::Vector3 LinearSeedFinder::compute3DHit(const ldmx::Measurement& axial, const Acts::Surface& axial_surface, const ldmx::Measurement& stereo, const Acts::Surface& stereo_surface) {
+    
+    // Compute unit vectors for both hits
+    auto [axial_u, axial_v, axial_w] = getSurfaceVectors(axial_surface);
+    auto [stereo_u, stereo_v, stereo_w] = getSurfaceVectors(stereo_surface);
+
+    ldmx_log(debug) << "############################################################" << "\n";
+    ldmx_log(debug) << "The axial unit vectors are: " << "\n";
+    ldmx_log(debug) << "u: " << axial_u[0] << ", " << axial_u[1] << ", " << axial_u[2] << "\n";
+    ldmx_log(debug) << "v: " << axial_v[0] << ", " << axial_v[1] << ", " << axial_v[2] << "\n";
+    ldmx_log(debug) << "w: " << axial_w[0] << ", " << axial_w[1] << ", " << axial_w[2] << "\n";
+
+    ldmx_log(debug) << "The stereo unit vectors are: " << "\n";
+    ldmx_log(debug) << "u: " << stereo_u[0] << ", " << stereo_u[1] << ", " << stereo_u[2] << "\n";
+    ldmx_log(debug) << "v: " << stereo_v[0] << ", " << stereo_v[1] << ", " << stereo_v[2] << "\n";
+    ldmx_log(debug) << "w: " << stereo_w[0] << ", " << stereo_w[1] << ", " << stereo_w[2] << "\n";
+
+    // Get global positions for strip origins
+    Acts::Vector3 axial_origin = axial_surface.center(geometry_context());
+    Acts::Vector3 stereo_origin = stereo_surface.center(geometry_context());
+    
+    ldmx_log(debug) << "The axial global origins are: " << axial_origin[0] << ", " << axial_origin[1] << ", " << axial_origin[2] << "\n";
+    ldmx_log(debug) << "The stereo global origins are: " << stereo_origin[0] << ", " << stereo_origin[1] << ", " << stereo_origin[2] << "\n";
+    
+    // Get local position components
+    auto [axial_u_value, axial_v_value] = axial.getLocalPosition();
+    auto [stereo_u_value, stereo_v_value] = stereo.getLocalPosition();
+    
+    // Manual correction, since v should always be 0 (insensitive direction)
+    axial_v_value = 0.0;
+    stereo_v_value = 0.0;
+    
+    ldmx_log(debug) << "The axial local positions are: " << axial_u_value << ", " << axial_v_value << "\n";
+    ldmx_log(debug) << "The stereo local positions are: " << stereo_u_value << ", " << stereo_v_value << "\n";
+    
+    Acts::Vector3 dummy{0., 0., 0.};
+    Acts::Vector3 axial_global = axial_surface.localToGlobal(geometry_context(), Acts::Vector2(axial_u_value, axial_v_value), dummy);
+    Acts::Vector3 stereo_global = stereo_surface.localToGlobal(geometry_context(), Acts::Vector2(stereo_u_value, stereo_v_value), dummy);
+    
+    ldmx_log(debug) << "The axial localToGlobal (i.e. global position) are: " << axial_global[0] << ", " << axial_global[1] << ", " << axial_global[2] << "\n";
+    ldmx_log(debug) << "The stereo localToGlobal (i.e. global position) are: " << stereo_global[0] << ", " << stereo_global[1] << ", " << stereo_global[2] << "\n";
+    
+    // From here we follow the logic of the HPS code
+    double gamma = dotProduct(stereo_origin, stereo_w) / nonZeroDotProduct(axial_origin, axial_w);
+    ldmx_log(debug) << "The value of gamma is: " << gamma << "\n";
+    
+    //This should be equivalent to the sin of the stereo angle, according to HPS
+    double salpha = dotProduct(axial_v, stereo_u);
+    ldmx_log(debug) << "The value of salpha is: " << salpha << "\n";
+
+    Acts::Vector3 p1 = stripCenter(axial_origin, axial_u_value, axial_u); //axial_u = axial unit vector in u
+    ldmx_log(debug) << "The p1 vector is: [" << p1[0] << ", " << p1[1] << ", " << p1[2] << "] \n";
+
+    Acts::Vector3 p2 = stripCenter(stereo_origin, stereo_u_value, stereo_u); //stereo_u = stereo unit vector in u
+    ldmx_log(debug) << "The p2 vector is: [" << p2[0] << ", " << p2[1] << ", " << p2[2] << "] \n";
+
+    Acts::Vector3 dp = p2 - p1;
+    ldmx_log(debug) << "The dp vector is: [" << dp[0] << ", " << dp[1] << ", " << dp[2] << "] \n";
+
+    double v1 = dotProduct(dp, stereo_u) / (gamma*salpha);
+    ldmx_log(debug) << "The value of v1 is: " << v1 << "\n";
+
+    if (v1 < -50.0) { v1 = -50.0; }
+    else if (v1 > 50.0) { v1 = 50.0; }
+    
+    Acts::Vector3 r1 = p1 + v1 * axial_v; //axial_v = axial unit vector in v
+    ldmx_log(debug) << "The r1 vector is: [" << r1[0] << ", " << r1[1] << ", " << r1[2] << "] \n";
+    
+    Acts::Vector3 final_position = (0.5 * (1 + gamma)) * r1;
+    ldmx_log(debug) << "The final position is: [" << final_position[0] << ", " << final_position[1] << ", " << final_position[2] << "] \n";
+    ldmx_log(debug) << "########################## end ##################################" << "\n";
+
+    return final_position;
+}
+
+double LinearSeedFinder::dotProduct(const Acts::Vector3& v1, const Acts::Vector3& v2) {
+    return v1.dot(v2);
+}
+
+Acts::Vector3 LinearSeedFinder::stripCenter(const Acts::Vector3& strip_origin, double u, const Acts::Vector3& strip_uhat) {
+    return strip_origin + u * strip_uhat;
+}
+
+double LinearSeedFinder::nonZeroDotProduct(const Acts::Vector3& v1, const Acts::Vector3& v2) {
+    double cth = v1.dot(v2);
+    double eps = 1e-6;
+    if (std::abs(cth) < eps) {
+        cth = (cth < 0.0) ? -eps : eps;
+    }
+    return cth;
+}
+
 
 std::vector<std::tuple<std::array<double, 3>, ldmx::Measurement,
                        std::optional<ldmx::Measurement>>>
