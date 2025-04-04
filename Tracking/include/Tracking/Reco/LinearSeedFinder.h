@@ -102,7 +102,15 @@ class LinearSeedFinder : public TrackingGeometryUser {
   // Function to find the number of unique layers hit (to determine if we have
   // enough points to fit)
   int uniqueLayersHit(const std::vector<ldmx::Measurement> &digi_points);
-
+    
+    std::vector<std::tuple<std::array<double, 3>, ldmx::Measurement, ldmx::Measurement>> processMeasurements(const std::vector<ldmx::Measurement>& measurements, const geo::TrackersTrackingGeometry& tg);
+    std::array<double, 3> convertToLdmxStdArray(const Acts::Vector3& vec);
+    std::tuple<Acts::Vector3, Acts::Vector3, Acts::Vector3> getSurfaceVectors(const Acts::Surface& surface);
+    Acts::Vector3 compute3DHit(const ldmx::Measurement& axial, const Acts::Surface& axial_surface, const ldmx::Measurement& stereo, const Acts::Surface& stereo_surface);
+    double dotProduct(const Acts::Vector3& v1, const Acts::Vector3& v2);
+    Acts::Vector3 stripCenter(const Acts::Vector3& strip_origin, double u, const Acts::Vector3& strip_uhat);
+    double nonZeroDotProduct(const Acts::Vector3& v1, const Acts::Vector3& v2);
+    
   double processing_time_{0.};
   long n_events_{0};
   unsigned int n_seeds_{0};
