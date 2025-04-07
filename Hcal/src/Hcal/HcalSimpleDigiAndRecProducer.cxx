@@ -121,7 +121,8 @@ void HcalSimpleDigiAndRecProducer::produce(framework::Event& event) {
       recHit.setPE(PE);
       recHit.setMinPE(PE);
 
-      // Checks orientation of side Hcal bars, sets center positions and add smearing along bar orientation axis
+      // Checks orientation of side Hcal bars, sets center positions and add
+      // smearing along bar orientation axis
       if (orientation ==
           ldmx::HcalGeometry::ScintillatorOrientation::horizontal) {
         xpos += (*position_resolution_smear_)(rng_);
@@ -138,12 +139,14 @@ void HcalSimpleDigiAndRecProducer::produce(framework::Event& event) {
         ypos = stripCenter.y();
         zpos += (*position_resolution_smear_)(rng_);
       }
-      // This might be irrelevant and the better way to do it would be to raise an exception?
+      // This might be irrelevant and the better way to do it would be to raise
+      // an exception?
       else {
         xpos = stripCenter.x();
         ypos = stripCenter.y();
         zpos = stripCenter.z();
-        // EXCEPTION_RAISE("NoBarOrientation","Hit could not be associated to bar orientation");
+        // EXCEPTION_RAISE("NoBarOrientation","Hit could not be associated to
+        // bar orientation");
       }
     }
 
