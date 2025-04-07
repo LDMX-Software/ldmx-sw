@@ -60,11 +60,12 @@ void HcalSimpleDigiAndRecProducer::produce(framework::Event& event) {
     std::vector<double> pos{0, 0, 0};
     for (auto hit : simhits_in_bar) {
       edep += hit->getEdep();
-      time += hit->getTime() * edep;
+      double edep_hit = hit->getEdep();
+      time += hit->getTime() * edep_hit;
       auto hitPos{hit->getPosition()};
-      pos[0] += hitPos[0] * edep;
-      pos[1] += hitPos[1] * edep;
-      pos[2] += hitPos[2] * edep;
+      pos[0] += hitPos[0] * edep_hit;
+      pos[1] += hitPos[1] * edep_hit;
+      pos[2] += hitPos[2] * edep_hit;
     }
     ldmx::HcalID hitID{barID};
 
@@ -119,10 +120,32 @@ void HcalSimpleDigiAndRecProducer::produce(framework::Event& event) {
       int PE{std::poisson_distribution<int>(mean_pe + mean_noise_)(rng_)};
       recHit.setPE(PE);
       recHit.setMinPE(PE);
-      // TODO: Look into this
-      xpos = stripCenter.x();
-      ypos = stripCenter.y();
-      zpos = stripCenter.z();
+
+      // Checks orientation of side Hcal bars
+      if (orientation ==
+        ldmx::HcalGeometry::ScintillatorOrientation::horizontal) {
+          xpos += (*position_resolution_smear_)(rng_);
+          ypos = stripCenter.y();
+          zpos = stripCenter.z();
+        }
+      else if (orientation ==
+        ldmx::HcalGeometry::ScintillatorOrientation::vertical) {
+          xpos = stripCenter.x();
+          ypos += (*position_resolution_smear_)(rng_);
+          zpos = stripCenter.z();
+        }
+      else if (orientation ==
+        ldmx::HcalGeometry::ScintillatorOrientation::depth) {
+          xpos = stripCenter.x();
+          ypos = stripCenter.y();
+          zpos += (*position_resolution_smear_)(rng_);
+        }
+      // This might be irrelevant
+      else {
+          xpos = stripCenter.x();
+          ypos = stripCenter.y();
+          zpos = stripCenter.z();
+        }
     }
 
     recHit.setID(hitID.raw());
