@@ -123,29 +123,27 @@ void HcalSimpleDigiAndRecProducer::produce(framework::Event& event) {
 
       // Checks orientation of side Hcal bars
       if (orientation ==
-        ldmx::HcalGeometry::ScintillatorOrientation::horizontal) {
-          xpos += (*position_resolution_smear_)(rng_);
-          ypos = stripCenter.y();
-          zpos = stripCenter.z();
-        }
-      else if (orientation ==
-        ldmx::HcalGeometry::ScintillatorOrientation::vertical) {
-          xpos = stripCenter.x();
-          ypos += (*position_resolution_smear_)(rng_);
-          zpos = stripCenter.z();
-        }
-      else if (orientation ==
-        ldmx::HcalGeometry::ScintillatorOrientation::depth) {
-          xpos = stripCenter.x();
-          ypos = stripCenter.y();
-          zpos += (*position_resolution_smear_)(rng_);
-        }
+          ldmx::HcalGeometry::ScintillatorOrientation::horizontal) {
+        xpos += (*position_resolution_smear_)(rng_);
+        ypos = stripCenter.y();
+        zpos = stripCenter.z();
+      } else if (orientation ==
+                 ldmx::HcalGeometry::ScintillatorOrientation::vertical) {
+        xpos = stripCenter.x();
+        ypos += (*position_resolution_smear_)(rng_);
+        zpos = stripCenter.z();
+      } else if (orientation ==
+                 ldmx::HcalGeometry::ScintillatorOrientation::depth) {
+        xpos = stripCenter.x();
+        ypos = stripCenter.y();
+        zpos += (*position_resolution_smear_)(rng_);
+      }
       // This might be irrelevant
       else {
-          xpos = stripCenter.x();
-          ypos = stripCenter.y();
-          zpos = stripCenter.z();
-        }
+        xpos = stripCenter.x();
+        ypos = stripCenter.y();
+        zpos = stripCenter.z();
+      }
     }
 
     recHit.setID(hitID.raw());
