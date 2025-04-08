@@ -138,12 +138,12 @@ void HcalSimpleDigiAndRecProducer::produce(framework::Event& event) {
         xpos = stripCenter.x();
         ypos = stripCenter.y();
         zpos += (*position_resolution_smear_)(rng_);
-      }
-      else {
+      } else {
         xpos = stripCenter.x();
         ypos = stripCenter.y();
         zpos = stripCenter.z();
-        ldmx_log(warn) << "Bar orientation not found. Hit" << hitID.raw() << "positioned at bar center.";
+        ldmx_log(warn) << "Bar orientation not found. Hit" << hitID.raw()
+                       << "positioned at bar center.";
       }
     }
 
