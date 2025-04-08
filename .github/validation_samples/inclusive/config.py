@@ -64,9 +64,8 @@ from LDMX.Recon.simpleTrigger import TriggerProcessor
 count = ElectronCounter(1,'ElectronCounter')
 count.input_pass_name = ''
 
-# Load ecal veto and dont use tracking in it
+# Load ecal veto and use tracking in it
 ecalVeto = ecal_vetos.EcalVetoProcessor()
-ecalVeto.recoil_from_tracking = False
 
 # Load HCAL veto
 import LDMX.Hcal.hcal as hcal

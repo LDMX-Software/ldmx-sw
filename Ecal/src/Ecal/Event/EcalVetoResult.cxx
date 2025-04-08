@@ -79,8 +79,8 @@ void EcalVetoResult::setVariables(
     float summedTightIso, float maxCellDep, float showerRMS, float xStd,
     float yStd, float avgLayerHit, float stdLayerHit, float ecalBackEnergy,
     int nStraightTracks, int nLinregTracks, int firstNearPhLayer,
-    int nNearPhHits, int photonTerritoryHits, float epAng, float epSep,
-    float epDot,
+    int nNearPhHits, int photonTerritoryHits, float epAng, float epAngAtTarget,
+    float epSep, float epDot, float epDotAtTarget,
 
     std::vector<float> electronContainmentEnergy,
     std::vector<float> photonContainmentEnergy,
