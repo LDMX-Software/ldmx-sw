@@ -139,14 +139,11 @@ void HcalSimpleDigiAndRecProducer::produce(framework::Event& event) {
         ypos = stripCenter.y();
         zpos += (*position_resolution_smear_)(rng_);
       }
-      // This might be irrelevant and the better way to do it would be to raise
-      // an exception?
       else {
         xpos = stripCenter.x();
         ypos = stripCenter.y();
         zpos = stripCenter.z();
-        // EXCEPTION_RAISE("NoBarOrientation","Hit could not be associated to
-        // bar orientation");
+        ldmx_log(warn) << "Bar orientation not found. Hit" << hitID.raw() << "positioned at bar center.";
       }
     }
 
