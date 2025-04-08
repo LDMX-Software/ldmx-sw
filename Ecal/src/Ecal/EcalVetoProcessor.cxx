@@ -213,11 +213,10 @@ void EcalVetoProcessor::produce(framework::Event &event) {
   profiling_map_["setup"] +=
       std::chrono::duration<float, std::milli>(setup - start).count();
 
-  ldmx_log(trace) << "   Loop through all of the sim particles and find the "
-                     "recoil electron";
-
   if (!recoil_from_tracking_ &&
       event.exists("EcalScoringPlaneHits", sp_pass_name_)) {
+    ldmx_log(trace) << "   Loop through all of the sim particles and find the "
+                       "recoil electron";
     //
     // Loop through all of the sim particles and find the recoil electron.
     //
@@ -288,13 +287,13 @@ void EcalVetoProcessor::produce(framework::Event &event) {
   // Get recoilPos using recoil tracking
   bool fiducial_in_tracker{false};
   if (recoil_from_tracking_) {
-    ldmx_log(trace) << "   Propagate recoil tracks to ECAL face";
+    ldmx_log(trace) << "  Get recoil tracks collection";
 
     // Get the recoil track collection
     auto recoil_tracks{
         event.getCollection<ldmx::Track>(track_collection_, track_pass_name_)};
 
-    ldmx_log(trace) << " Propagate the recoil ele to the ECAL";
+    ldmx_log(trace) << "  Propagate the recoil ele to the ECAL";
     ldmx::TrackStateType ts_type = ldmx::TrackStateType::AtECAL;
     auto recoil_track_states_ecal = trackProp(recoil_tracks, ts_type, "ecal");
     ldmx_log(trace) << "  Propagate the recoil ele to the Target";
@@ -319,14 +318,13 @@ void EcalVetoProcessor::produce(framework::Event &event) {
     ldmx_log(trace) << "  Set recoilPosAtTarget and recoilPAtTarget";
     // Repeat the above but now for the taget states
     if (!recoil_track_states_target.empty()) {
-      recoilPAtTarget = {(recoil_track_states_ecal[0]),
-                         (recoil_track_states_ecal[1]),
-                         (recoil_track_states_ecal[2])};
-      recoilPosAtTarget = {recoil_track_states_ecal[3],
-                           recoil_track_states_ecal[4],
-                           recoil_track_states_ecal[5]};
+      recoilPAtTarget = {(recoil_track_states_target[0]),
+                         (recoil_track_states_target[1]),
+                         (recoil_track_states_target[2])};
+      recoilPosAtTarget = {recoil_track_states_target[3],
+                           recoil_track_states_target[4],
+                           recoil_track_states_target[5]};
     }
-
   }  // condition to do recoil information from tracking
 
   ldmx_log(trace) << "   Get projected trajectories for electron and photon";
