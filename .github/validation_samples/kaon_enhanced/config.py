@@ -114,7 +114,6 @@ ts_clusters = [
 ecalReco   =eDigi.EcalRecProducer()
 ecalDigi = eDigi.EcalDigiProducer()
 ecalVeto   =vetos.EcalVetoProcessor()
-ecalVeto.recoil_from_tracking = False
 
 # HCAL part
 hcalDigi   =hDigi.HcalDigiProducer()
