@@ -139,7 +139,7 @@ class GreedyAmbiguitySolver final : public TrackingGeometryUser {
   ///
   /// @param state A state object that was previously filled by the
   /// initialization.
-  void resolve(State& state) const;
+  void resolve(State& state);
 
   /// @param state A state object that was previously filled by the
   /// initialization.
