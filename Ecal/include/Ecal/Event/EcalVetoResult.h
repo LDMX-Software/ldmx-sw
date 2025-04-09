@@ -245,8 +245,10 @@ class EcalVetoResult {
   int getNNearPhHits() const { return nNearPhHits_; }
   int getPhotonTerritoryHits() const { return photonTerritoryHits_; }
   float getEPAng() const { return epAng_; }
+  float getEPAngAtTarget() const { return epAngAtTarget_; }
   float getEPSep() const { return epSep_; }
   float getEPDot() const { return epDot_; }
+  float getEPDotAtTarget() const { return epDotAtTarget_; }
 
  private:
   /** Flag indicating whether the event is vetoed by the Ecal. */
@@ -348,7 +350,7 @@ class EcalVetoResult {
 
   std::vector<float> ecalLayerEdepReadout_;
 
-  ClassDef(EcalVetoResult, 8);
+  ClassDef(EcalVetoResult, 9);
 };
 }  // namespace ldmx
 

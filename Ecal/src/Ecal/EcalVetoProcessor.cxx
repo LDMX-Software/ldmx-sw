@@ -314,17 +314,25 @@ void EcalVetoProcessor::produce(framework::Event &event) {
       ldmx_log(trace) << "  No recoil track at ECAL";
       fiducial_in_tracker = false;
     }
+    ldmx_log(debug) << "  Set recoilP = (" << recoilP[0] << ", " << recoilP[1]
+                    << ", " << recoilP[2] << ") and recoilPos = ("
+                    << recoilPos[0] << ", " << recoilPos[1] << ", "
+                    << recoilPos[2] << ")";
 
-    ldmx_log(trace) << "  Set recoilPosAtTarget and recoilPAtTarget";
     // Repeat the above but now for the taget states
     if (!recoil_track_states_target.empty()) {
-      recoilPAtTarget = {(recoil_track_states_target[0]),
-                         (recoil_track_states_target[1]),
-                         (recoil_track_states_target[2])};
-      recoilPosAtTarget = {recoil_track_states_target[3],
-                           recoil_track_states_target[4],
-                           recoil_track_states_target[5]};
+      recoilPosAtTarget = {(recoil_track_states_target[0]),
+                           (recoil_track_states_target[1]),
+                           (recoil_track_states_target[2])};
+      recoilPAtTarget = {recoil_track_states_target[3],
+                         recoil_track_states_target[4],
+                         recoil_track_states_target[5]};
     }
+    ldmx_log(debug) << "  Set recoilPAtTarget = (" << recoilPAtTarget[0] << ", "
+                    << recoilPAtTarget[1] << ", " << recoilPAtTarget[2]
+                    << ") and recoilPosAtTarget = (" << recoilPosAtTarget[0]
+                    << ", " << recoilPosAtTarget[1] << ", "
+                    << recoilPosAtTarget[2] << ")";
   }  // condition to do recoil information from tracking
 
   ldmx_log(trace) << "   Get projected trajectories for electron and photon";
@@ -347,6 +355,11 @@ void EcalVetoProcessor::produce(framework::Event &event) {
         -recoilPAtTarget[0], -recoilPAtTarget[1],
         beamEnergyMeV_ - recoilPAtTarget[2]};
     photon_trajectory = getTrajectory(photon_proj_momentum, recoilPosAtTarget);
+  } else {
+    ldmx_log(trace) << "Ele / photon trajectory cannot be determined, pZ = "
+                    << recoilP[2] << " pZAtTarget = " << recoilPAtTarget[2]
+                    << " X = " << recoilPos[0]
+                    << " XAtTarget = " << recoilPosAtTarget[0];
   }
 
   float recoilPMag = (recoilP[2] > 0.) ? sqrt((recoilP[0] * recoilP[0]) +
@@ -923,7 +936,7 @@ void EcalVetoProcessor::produce(framework::Event &event) {
   ldmx_log(trace) << "====== Tracking hit list (original) length "
                   << trackingHitList.size() << " ======";
   for (int i = 0; i < trackingHitList.size(); i++) {
-    ldmx_log(trace) << "        [" << trackingHitList[i].pos.X() << ", "
+    ldmx_log(trace) << "   [" << trackingHitList[i].pos.X() << ", "
                     << trackingHitList[i].pos.Y() << ", "
                     << trackingHitList[i].layer << "]";
   }
@@ -979,7 +992,7 @@ void EcalVetoProcessor::produce(framework::Event &event) {
                     << trackingHitList[iHit].layer << "]";
 
     for (int k = 0; k < trackLen; k++) {
-      ldmx_log(trace) << "track[" << k << "] position = ["
+      ldmx_log(trace) << "   track[" << k << "] position = ["
                       << trackingHitList[track[k]].pos.X() << ", "
                       << trackingHitList[track[k]].pos.Y() << ", "
                       << trackingHitList[track[k]].layer << "]";
@@ -999,7 +1012,7 @@ void EcalVetoProcessor::produce(framework::Event &event) {
       ldmx_log(trace) << "====== Tracking hit list (after erase) length "
                       << trackingHitList.size() << " ======";
       for (int i = 0; i < trackingHitList.size(); i++) {
-        ldmx_log(trace) << "[" << trackingHitList[i].pos.X() << ", "
+        ldmx_log(trace) << "   [" << trackingHitList[i].pos.X() << ", "
                         << trackingHitList[i].pos.Y() << ", "
                         << trackingHitList[i].layer << "] ";
       }
