@@ -64,15 +64,16 @@ from LDMX.Recon.simpleTrigger import TriggerProcessor
 count = ElectronCounter(1,'ElectronCounter')
 count.input_pass_name = ''
 
-# Load ecal veto and dont use tracking in it
+# Load ecal veto and use tracking in it
 ecalVeto = ecal_vetos.EcalVetoProcessor()
-ecalVeto.recoil_from_tracking = False
 
 # Load HCAL veto
 import LDMX.Hcal.hcal as hcal
 hcal_veto = hcal.HcalVetoProcessor()
 
+
 p.logger.termLevel = 1
+# p.logger.custom(ecalVeto, level = -1)
 
 # Add full tracking for both tagger and recoil trackers: digi, seeds, CFK, ambiguity resolution, GSF, DQM
 p.sequence.extend(full_tracking_sequence.sequence)
