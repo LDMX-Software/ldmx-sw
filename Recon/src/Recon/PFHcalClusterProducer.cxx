@@ -25,7 +25,11 @@ void PFHcalClusterProducer::configure(framework::config::Parameters& ps) {
 }
 
 void PFHcalClusterProducer::produce(framework::Event& event) {
-  if (!event.exists(hitCollName_)) return;
+  if (!event.exists(hitCollName_, hitPassName_)) {
+    ldmx_log(fatal) << "Couldn't find input collection " << hitCollName_ << "_"
+                    << hitPassName_;
+    return;
+  }
   const auto hcalRecHits =
       event.getCollection<ldmx::HcalHit>(hitCollName_, hitPassName_);
   float eTotal = 0;
