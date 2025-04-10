@@ -40,6 +40,7 @@ import LDMX.Ecal.digi as ecal_digi
 import LDMX.Ecal.vetos as ecal_vetos
 import LDMX.Ecal.EcalWABRecProcessor as ecal_WAB
 import LDMX.Hcal.digi as hcal_digi
+hcal_digi_reco = hcal_digi.HcalSimpleDigiAndRecProducer()
 
 ecalVeto = ecal_vetos.EcalVetoProcessor()
 ecalVeto.num_ecal_layers = 6
@@ -127,8 +128,7 @@ p.sequence.extend([
         ecal_digi.EcalDigiProducer(),
         ecal_digi.EcalRecProducer(), 
         ecalVeto,
-        hcal_digi.HcalDigiProducer(),
-        hcal_digi.HcalRecProducer(),
+        hcal_digi_reco,
         hcal_veto,
         *ts_digis,
         TrigScintClusterProducer.pad1(),

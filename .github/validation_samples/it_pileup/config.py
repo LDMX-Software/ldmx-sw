@@ -96,13 +96,11 @@ ecalVeto.recoil_from_tracking = False
 ecalVeto.rec_pass_name = thisPassName
 
 # Load the HCAL modules
-hcalDigi   = hDigi.HcalDigiProducer('hcalDigis')
-hcalReco   = hDigi.HcalRecProducer('hcalRecon')
+hcal_digi_reco = hcal_digi.HcalSimpleDigiAndRecProducer()
 # The newly produced, overlayed simhits
-hcalDigi.inputCollName  += overlayStr
-hcalDigi.inputPassName = thisPassName
-# Use the digis produced above
-hcalReco.digiPassName = thisPassName
+hcal_digi_reco.input_coll_name  += overlayStr
+hcal_digi_reco.input_pass_name = thisPassName
+hcal_digi_reco.sim_hit_pass_name = thisPassName
 
 # Load ElectronCounter and Trigger
 from LDMX.Recon.electronCounter import ElectronCounter
@@ -197,7 +195,8 @@ p.sequence.extend(full_tracking_sequence.dqm_sequence)
 
 p.sequence.extend([
     ecalDigi, ecalReco, ecalVeto,
-    hcalDigi, hcalReco, hcal_veto,
+    hcal_digi_reco, 
+    hcal_veto,
     *ts_digis,
     *ts_clusters,
     trigScintTrack,
