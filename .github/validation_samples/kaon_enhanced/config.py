@@ -116,7 +116,7 @@ ecalDigi = eDigi.EcalDigiProducer()
 ecalVeto   =vetos.EcalVetoProcessor()
 
 # HCAL part
-hcal_digi_reco = hcal_digi.HcalSimpleDigiAndRecProducer()
+hcal_digi_reco = hDigi.HcalSimpleDigiAndRecProducer()
 
 # electron counter for trigger processor 
 eCount = ElectronCounter( 1, "ElectronCounter") # first argument is number of electrons in simulation
