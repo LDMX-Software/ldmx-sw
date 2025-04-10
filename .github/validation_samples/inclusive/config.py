@@ -37,6 +37,7 @@ import LDMX.Ecal.vetos as ecal_vetos
 import LDMX.Hcal.HcalGeometry
 import LDMX.Hcal.hcal_hardcoded_conditions
 import LDMX.Hcal.digi as hcal_digi
+hcal_digi_reco = hcal_digi.HcalSimpleDigiAndRecProducer()
 
 # Load the TS modules
 from LDMX.TrigScint.trigScint import TrigScintDigiProducer
@@ -83,8 +84,7 @@ p.sequence.extend([
         ecal_digi.EcalDigiProducer(),
         ecal_digi.EcalRecProducer(), 
         ecalVeto,
-        hcal_digi.HcalDigiProducer(),
-        hcal_digi.HcalRecProducer(),
+        hcal_digi_reco,
         hcal_veto,
         *ts_digis,
         *ts_clusters,

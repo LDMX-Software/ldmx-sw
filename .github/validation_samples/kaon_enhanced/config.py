@@ -39,7 +39,7 @@ mySim.actions.clear()
 mySim.actions.extend([
         filters.TaggerVetoFilter(thresh=2*3800.),
         # Only consider events where a hard brem occurs
-        filters.TargetBremFilter(recoil_max_p = 2*1500.,brem_min_e = 2*2500.),
+        filters.TargetBremFilter(recoil_max_p = 2*1500., brem_min_e = 2*2500.),
         # Only consider events where a PN reaction happnes in the ECal
         filters.EcalProcessFilter(),
         # Tag all photo-nuclear tracks to persist them to the event.
@@ -116,8 +116,7 @@ ecalDigi = eDigi.EcalDigiProducer()
 ecalVeto   =vetos.EcalVetoProcessor()
 
 # HCAL part
-hcalDigi   =hDigi.HcalDigiProducer()
-hcalReco   =hDigi.HcalRecProducer()
+hcal_digi_reco = hDigi.HcalSimpleDigiAndRecProducer()
 
 # electron counter for trigger processor 
 eCount = ElectronCounter( 1, "ElectronCounter") # first argument is number of electrons in simulation
@@ -147,8 +146,7 @@ p.sequence.extend([
         trigScintTrack, 
         eCount, 
         simpleTrig, 
-        hcalDigi, 
-        hcalReco, 
+        hcal_digi_reco,
         hcal_veto,
         dqm.PhotoNuclearDQM()
         ])
