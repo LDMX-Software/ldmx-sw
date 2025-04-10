@@ -21,7 +21,11 @@ void PFEcalClusterProducer::configure(framework::config::Parameters& ps) {
 }
 
 void PFEcalClusterProducer::produce(framework::Event& event) {
-  if (!event.exists(hitCollName_)) return;
+  if (!event.exists(hitCollName_, hitPassName_)) {
+    ldmx_log(fatal) << "Couldn't find input collection " << hitCollName_
+                    << " with pass name " << hitPassName_;
+    return;
+  }
   const auto ecalRecHits =
       event.getCollection<ldmx::EcalHit>(hitCollName_, hitPassName_);
 
