@@ -82,6 +82,12 @@ class TrackDeDxMassEstimate {
   void setTrackType(int track_type) { track_type_ = track_type; }
 
   /**
+   * Set the PDG ID of the track.
+   * @param pdg_id The PDG ID of the track.
+   */
+  void setPdgId(int pdg_id) { pdg_id_ = pdg_id; }
+
+  /**
    * Get the momentum of the particle/track.
    * @return The momentum of the particle/track.
    */
@@ -111,6 +117,14 @@ class TrackDeDxMassEstimate {
    */
   int getTrackType() const { return track_type_; }
 
+  /**
+   * Get the PDG ID of the track.
+   * @return The DPG ID of the track.
+   */
+  int getPdgId() const { return pdg_id_; }
+
+  
+
  private:
   /* The momentum of the particle/track */
   float momentum_{0.};
@@ -127,10 +141,13 @@ class TrackDeDxMassEstimate {
   /* The type of the track */
   int track_type_{-1};
 
+  /* PDG ID of the track*/
+  int pdg_id_{0};
+
   /**
    * The ROOT class definition.
    */
-  ClassDef(TrackDeDxMassEstimate, 2);
+  ClassDef(TrackDeDxMassEstimate, 3);
 };
 }  // namespace ldmx
 
