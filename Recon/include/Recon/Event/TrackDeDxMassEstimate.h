@@ -123,8 +123,6 @@ class TrackDeDxMassEstimate {
    */
   int getPdgId() const { return pdg_id_; }
 
-  
-
  private:
   /* The momentum of the particle/track */
   float momentum_{0.};

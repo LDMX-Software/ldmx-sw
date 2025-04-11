@@ -20,9 +20,8 @@ void TrackDeDxMassEstimate::Print() const {
             << "Ih: " << theIh_ << ", "
             << "Mass: " << mass_ << ", "
             << "Track Index: " << track_index_ << ", "
-            << "Track Type: " << track_type_ << " }" 
-            << "PDG ID: " << pdg_id_ << " }" 
-            << std::endl;
+            << "Track Type: " << track_type_ << " }"
+            << "PDG ID: " << pdg_id_ << " }" << std::endl;
 }
 
 }  // namespace ldmx
