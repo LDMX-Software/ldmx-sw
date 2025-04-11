@@ -96,7 +96,7 @@ ecalVeto.recoil_from_tracking = False
 ecalVeto.rec_pass_name = thisPassName
 
 # Load the HCAL modules
-hcal_digi_reco = hcal_digi.HcalSimpleDigiAndRecProducer()
+hcal_digi_reco = hDigi.HcalSimpleDigiAndRecProducer()
 # The newly produced, overlayed simhits
 hcal_digi_reco.input_coll_name  += overlayStr
 hcal_digi_reco.input_pass_name = thisPassName
