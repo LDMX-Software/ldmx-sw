@@ -665,6 +665,11 @@ class TrkDeDxMassEstFeatures(ldmxcfg.Analyzer) :
         self.build1DHistogram("harmonic_mean_dedx", "I_{h} [MeV/cm]", 50, 0., 30.)
         self.build1DHistogram("mass_estimate", "Mass Estimate [MeV]", 100, 0., 2000.)
         self.build1DHistogram("mass_estimate_low_p", "Mass Estimate [MeV]", 100, 0., 2000.)
+        self.build1DHistogram("mass_estimate_very_low_p", "Mass Estimate [MeV]", 100, 0., 2000.)
+        self.build1DHistogram("mass_estimate_very_low_p_electron", "Mass Estimate for electrons [MeV]", 20, 0., 200.)
+        self.build1DHistogram("mass_estimate_very_low_p_pion", "Mass Estimate for pions [MeV]", 20, 0., 200.)
+        self.build1DHistogram("mass_estimate_very_low_p_kaon", "Mass Estimate for kaons [MeV]", 60, 200., 800.)
+        self.build1DHistogram("mass_estimate_very_low_p_proton", "Mass Estimate for proton [MeV]", 40, 800., 1200.)
         self.build1DHistogram("track_type", "Track Type", 3, 0, 3)
         
 
