@@ -11,6 +11,7 @@ void TrackDeDxMassEstimate::Clear() {
   mass_ = 0.;
   track_index_ = -1;
   track_type_ = -1;
+  pdg_id_ = 0;
 }
 
 void TrackDeDxMassEstimate::Print() const {
@@ -19,7 +20,8 @@ void TrackDeDxMassEstimate::Print() const {
             << "Ih: " << theIh_ << ", "
             << "Mass: " << mass_ << ", "
             << "Track Index: " << track_index_ << ", "
-            << "Track Type: " << track_type_ << " }" << std::endl;
+            << "Track Type: " << track_type_ << " }"
+            << "PDG ID: " << pdg_id_ << " }" << std::endl;
 }
 
 }  // namespace ldmx
