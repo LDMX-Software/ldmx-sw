@@ -26,7 +26,8 @@
 
 // Test __SYNTHESIS__ only for mode
 #if !defined(__SYNTHESIS__) && (defined(AESL_SYN) || defined(__HLS_SYN__))
-//#pragma message "AESL_SYN and __HLS_SYN__ should be replaced by __SYNTHESIS__"
+// #pragma message "AESL_SYN and __HLS_SYN__ should be replaced by
+// __SYNTHESIS__"
 #define __SYNTHESIS__
 #endif
 

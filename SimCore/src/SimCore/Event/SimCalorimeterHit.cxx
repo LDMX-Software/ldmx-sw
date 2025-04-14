@@ -27,8 +27,7 @@ ClassImp(ldmx::SimCalorimeterHit)
   }
 
   void SimCalorimeterHit::Print() const {
-    std::cout << "SimCalorimeterHit { "
-              << "id: " << id_ << ",  edep: " << edep_
+    std::cout << "SimCalorimeterHit { " << "id: " << id_ << ",  edep: " << edep_
               << ", "
                  "position: ( "
               << x_ << ", " << y_ << ", " << z_

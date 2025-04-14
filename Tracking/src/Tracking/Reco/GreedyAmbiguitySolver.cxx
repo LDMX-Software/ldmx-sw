@@ -219,8 +219,7 @@ void GreedyAmbiguitySolver::produce(framework::Event& event) {
   // }
 
   ldmx_log(info) << " Resolved to " << state.selected_tracks.size()
-                 << " tracks from "
-                 << " " << tracks.size();
+                 << " tracks from " << " " << tracks.size();
 }
 
 }  // namespace reco

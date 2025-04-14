@@ -519,8 +519,8 @@ bool TruthSeedProcessor::scoringPlaneHitFilter(
 
       }  // check that the hit belongs to the inital particle from the target
          // scoring plane hit
-    }    // loop on Ecal scoring plane hits
-  }      // pcutEcal
+    }  // loop on Ecal scoring plane hits
+  }  // pcutEcal
 
   if (!pass_ecal_scoring_plane) return false;
 
@@ -612,7 +612,7 @@ void TruthSeedProcessor::produce(framework::Event& event) {
       recoil_sh_count_map[hit.getTrackID()].push_back(i_sh);
 
     }  // Recoil
-  }    // loop on Target scoring plane hits
+  }  // loop on Target scoring plane hits
 
   for (std::pair<int, std::vector<int>> element : recoil_sh_count_map) {
     std::sort(

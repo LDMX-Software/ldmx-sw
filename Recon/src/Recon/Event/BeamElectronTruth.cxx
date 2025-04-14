@@ -18,10 +18,9 @@ ClassImp(ldmx::BeamElectronTruth)
   }
 
   void BeamElectronTruth::Print() const {
-    std::cout << "BeamElectronTruth { "
-              << "(x: " << x_ << ", y: " << y_ << ", z: " << z_
-              << "); (binned X: " << binnedX_ << ", binned Y: " << binnedY_
-              << "); (px: " << px_ << ", py: " << py_ << ", pz: " << pz_ << ")"
-              << std::endl;
+    std::cout << "BeamElectronTruth { " << "(x: " << x_ << ", y: " << y_
+              << ", z: " << z_ << "); (binned X: " << binnedX_
+              << ", binned Y: " << binnedY_ << "); (px: " << px_
+              << ", py: " << py_ << ", pz: " << pz_ << ")" << std::endl;
   }
 }  // namespace ldmx

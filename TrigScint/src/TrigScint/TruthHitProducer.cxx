@@ -15,8 +15,8 @@ void TruthHitProducer::configure(framework::config::Parameters &parameters) {
 
   if (verbose_) {
     ldmx_log(info) << "In TruthHitProducer: configure done!";
-    ldmx_log(info) << "Got parameters:  "
-                   << "\nInput collection:     " << inputCollection_
+    ldmx_log(info) << "Got parameters:  " << "\nInput collection:     "
+                   << inputCollection_
                    << "\nInput pass name:     " << inputPassName_
                    << "\nOutput collection:    " << outputCollection_
                    << "\nVerbose: " << verbose_;

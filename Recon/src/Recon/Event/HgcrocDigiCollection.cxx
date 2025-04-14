@@ -102,18 +102,16 @@ ClassImp(ldmx::HgcrocDigiCollection)
 
 std::ostream &operator<<(std::ostream &s,
                          const ldmx::HgcrocDigiCollection::Sample &sample) {
-  s << "Sample { "
-    << "tot prog: " << sample.isTOTinProgress() << ", "
+  s << "Sample { " << "tot prog: " << sample.isTOTinProgress() << ", "
     << "tot comp: " << sample.isTOTComplete() << ", ";
   if (sample.isTOTComplete() and sample.isTOTinProgress())
-    s << "adc t: " << sample.adc_t() << ", "
-      << "tot: " << sample.tot() << ", ";
+    s << "adc t: " << sample.adc_t() << ", " << "tot: " << sample.tot() << ", ";
   else if (sample.isTOTComplete())
-    s << "adc t-1: " << sample.adc_tm1() << ", "
-      << "tot: " << sample.tot() << ", ";
+    s << "adc t-1: " << sample.adc_tm1() << ", " << "tot: " << sample.tot()
+      << ", ";
   else
-    s << "adc t-1: " << sample.adc_tm1() << ", "
-      << "adc t: " << sample.adc_t() << ", ";
+    s << "adc t-1: " << sample.adc_tm1() << ", " << "adc t: " << sample.adc_t()
+      << ", ";
 
   s << "toa: " << sample.toa() << " }";
   return s;

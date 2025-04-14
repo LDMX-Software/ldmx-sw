@@ -79,7 +79,7 @@ void TestBeamClusterAnalyzer::analyze(const framework::Event& event) {
           fabs(clusters[idx].getCentroid() - clusters[idx - 1].getCentroid()));
     }
     idx++;  // increment afterwards
-  }         // over clusters
+  }  // over clusters
 
   /*
 

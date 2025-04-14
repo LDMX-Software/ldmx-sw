@@ -324,8 +324,8 @@ void HcalGeometry::buildStripPositionMap() {
         pos.SetXYZ(x, y, z);
         strip_position_map_[ldmx::HcalID(section, layer, strip)] = pos;
       }  // loop over strips
-    }    // loop over layers
-  }      // loop over sections
+    }  // loop over layers
+  }  // loop over sections
 }  // strip position map
 
 }  // namespace ldmx

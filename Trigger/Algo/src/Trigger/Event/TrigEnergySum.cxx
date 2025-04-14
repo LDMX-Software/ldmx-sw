@@ -13,8 +13,8 @@ TrigEnergySum::TrigEnergySum(int layer, int module, float energy)
 void TrigEnergySum::Print() const { std::cout << *this << std::endl; }
 
 std::ostream &operator<<(std::ostream &s, const trigger::TrigEnergySum &sum) {
-  s << "TrigEnergySum { "
-    << "(layer " << sum.layer() << ", hwEnergy " << sum.hwEnergy() << " } ";
+  s << "TrigEnergySum { " << "(layer " << sum.layer() << ", hwEnergy "
+    << sum.hwEnergy() << " } ";
   return s;
 }
 

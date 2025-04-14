@@ -65,7 +65,7 @@ File::File(const framework::config::Parameters &ps) {
 
       reader_.seek<uint32_t>(1, std::ios::beg);
     }  // verify checksum of input file
-  }    // input or output file
+  }  // input or output file
 }
 
 bool File::connect(framework::Event &event) {
@@ -122,7 +122,7 @@ bool File::nextEvent() {
 
       event_->add(eid_to_name.at(subsys.id()), subsys.data());
     }  // loop over subsystems
-  }    // input or output
+  }  // input or output
   return true;
 }
 

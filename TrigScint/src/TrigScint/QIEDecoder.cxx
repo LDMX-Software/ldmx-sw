@@ -17,8 +17,8 @@ void QIEDecoder::configure(framework::config::Parameters &ps) {
   isRealData_ = ps.getParameter<bool>("is_real_data");
   verbose_ = ps.getParameter<bool>("verbose");
 
-  ldmx_log(debug) << "In configure, got parameters:"
-                  << "\noutput_collection = " << outputCollection_
+  ldmx_log(debug) << "In configure, got parameters:" << "\noutput_collection = "
+                  << outputCollection_
                   << "\ninput_collection = " << inputCollection_
                   << "\ninput_pass_name  = " << inputPassName_
                   << "\nchannel_map_file = " << channelMapFileName_

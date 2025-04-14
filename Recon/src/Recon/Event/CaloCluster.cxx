@@ -8,8 +8,7 @@ ClassImp(ldmx::CaloCluster)
   CaloCluster::~CaloCluster() { Clear(); }
 
   void CaloCluster::Print() const {
-    std::cout << "CaloCluster { "
-              << "Energy: " << energy_ << ", "
+    std::cout << "CaloCluster { " << "Energy: " << energy_ << ", "
               << "Number of hits: " << nHits_ << " }" << std::endl;
   }
 

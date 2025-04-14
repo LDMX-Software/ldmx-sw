@@ -459,8 +459,8 @@ void TrackingRecoDQM::TrackMonitoring(
                          res_pt_beam);
 
       }  // found matched track
-    }    // do TruthComparison
-  }      // loop on tracks
+    }  // do TruthComparison
+  }  // loop on tracks
 
 }  // Track Monitoring
 
@@ -616,7 +616,7 @@ void TrackingRecoDQM::sortTracks(const std::vector<ldmx::Track>& tracks,
         duplicateTracks.push_back(sortedTracks[i]);
       }
     }  // a real track
-  }    // loop on sorted tracks
+  }  // loop on sorted tracks
   // The total number of elements in the uniqueTracks and duplicateTracks
   // vectors should be equal to the number of elements in the original tracks
   // vector

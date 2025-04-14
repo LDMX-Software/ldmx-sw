@@ -83,8 +83,7 @@ void StepPrinter::stepping(const G4Step* step) {
             << " Particle currently in: " << volumeName
             << " Region: " << regionName << " Next volume: " << nextVolume
             << " Weight: " << track->GetWeight() << " Parent: " << parent
-            << " (" << processName << ") "
-            << " Children:";
+            << " (" << processName << ") " << " Children:";
   for (auto const& child : *(step->GetSecondaryInCurrentStep())) {
     std::cout << " (" << child->GetTotalEnergy()
               << "): " << child->GetParticleDefinition()->GetPDGEncoding();

@@ -95,7 +95,7 @@ void QIEAnalyzer::analyze(const framework::Event& event) {
         ldmx_log(debug) << " above channel event pedestal: " << q.at(iT)
                         << " > " << ped;
       }  // if above channel event pedestal
-    }    // over time samples
+    }  // over time samples
     float PE = qTot * 6250. / gain_[bar];
     subtrPE = subtrQ * 6250. / gain_[bar];
     hTotQvsPed[bar]->Fill(ped, qTot);

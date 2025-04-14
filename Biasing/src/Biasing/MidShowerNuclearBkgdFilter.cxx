@@ -94,7 +94,7 @@ bool MidShowerNuclearBkgdFilter::isNuclearProcess(
     for (auto const& option : nuclear_processes_) {
       if (proc_name.contains(option)) return true;
     }  // loop over nuclear processes
-  }    // pointer exists
+  }  // pointer exists
   return false;
 }
 
@@ -106,8 +106,7 @@ void MidShowerNuclearBkgdFilter::save(const G4Track* track) const {
 
 void MidShowerNuclearBkgdFilter::AbortEvent(const std::string& reason) const {
   if (G4RunManager::GetRunManager()->GetVerboseLevel() > 1) {
-    std::cout << "[ MidShowerNuclearBkgdFilter ]: "
-              << "("
+    std::cout << "[ MidShowerNuclearBkgdFilter ]: " << "("
               << G4EventManager::GetEventManager()
                      ->GetConstCurrentEvent()
                      ->GetEventID()

@@ -621,7 +621,7 @@ void CKFProcessor::produce(framework::Event& event) {
       tracks.push_back(trk);
       ntracks_++;
     }  // // loop on tracksFromSeed (which usually has 1 element)
-  }    // loop seed track parameters (i.e. track candidates)
+  }  // loop seed track parameters (i.e. track candidates)
 
   ldmx_log(info) << "Number of CKF tracks " << tracks.size();
 

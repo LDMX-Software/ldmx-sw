@@ -15,13 +15,11 @@ void TrackDeDxMassEstimate::Clear() {
 }
 
 void TrackDeDxMassEstimate::Print() const {
-  std::cout << "TrackDeDxMassEstimate { "
-            << "Momentum: " << momentum_ << ", "
-            << "Ih: " << theIh_ << ", "
-            << "Mass: " << mass_ << ", "
+  std::cout << "TrackDeDxMassEstimate { " << "Momentum: " << momentum_ << ", "
+            << "Ih: " << theIh_ << ", " << "Mass: " << mass_ << ", "
             << "Track Index: " << track_index_ << ", "
-            << "Track Type: " << track_type_ << " }"
-            << "PDG ID: " << pdg_id_ << " }" << std::endl;
+            << "Track Type: " << track_type_ << " }" << "PDG ID: " << pdg_id_
+            << " }" << std::endl;
 }
 
 }  // namespace ldmx
