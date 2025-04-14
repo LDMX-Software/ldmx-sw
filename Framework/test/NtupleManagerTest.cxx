@@ -12,16 +12,16 @@
 #include "Framework/NtupleManager.h"
 #include "TFile.h"        //to open and check root files
 #include "TTreeReader.h"  //to check output event files
-#include "TTreeReaderValue.h"
 #include "TTreeReaderArray.h"
+#include "TTreeReaderValue.h"
 
 /**
  * TTreeReaderValue<std::vector<T>> fails when attempting to register in this
  * test so we use TTreeReaderArray<T> instead.
- * This then functions properly but we then have to convert it back to a std::vector
- * so that Catch2 can compare it to our correct answer.
+ * This then functions properly but we then have to convert it back to a
+ * std::vector so that Catch2 can compare it to our correct answer.
  */
-template<typename T>
+template <typename T>
 std::vector<T> from_TTreeReaderArray(const TTreeReaderArray<T>& reader_val) {
   std::vector<T> v;
   for (const auto& val : reader_val) {
