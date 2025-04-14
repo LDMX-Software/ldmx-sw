@@ -142,13 +142,12 @@ void HcalVetoProcessor::produce(framework::Event &event) {
       ldmx_log(debug) << "    Ele is projected at " << drift_recoil_x << " / "
                       << drift_recoil_y << " /  " << recoil_pos_z - dZ;
       ldmx_log(debug) << "    from " << recoil_pos_x << " / " << recoil_pos_y
-                      << " / " << recoil_pos_z << " / "
-                      << " mm";
+                      << " / " << recoil_pos_z << " / " << " mm";
 
       ldmx_log(debug) << "       Ele had momentum of  " << recoil_mom_x << " / "
                       << recoil_mom_y << " /  " << recoil_mom_z << " MeV";
-      ldmx_log(debug) << "    This hit has PE = " << pe << " and dR from ele = "
-                      << "is " << dR << " mm";
+      ldmx_log(debug) << "    This hit has PE = " << pe
+                      << " and dR from ele = " << "is " << dR << " mm";
 
       // Dont consider this hit for max PE hit if it's too close to the recoil
       // electron trajectory

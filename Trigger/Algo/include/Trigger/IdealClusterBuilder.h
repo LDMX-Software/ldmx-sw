@@ -73,10 +73,9 @@ class Hit {
   int nSubHit = 0;  // for towers
   bool used = false;
   void Print() {
-    cout << "Hit ("
-         << "e= " << e << ", id=" << id << ", layer= " << layer << ", x= " << x
-         << ", y= " << y << ", z= " << z << ", nSub= " << nSubHit
-         << ", used= " << used << ")" << endl;
+    cout << "Hit (" << "e= " << e << ", id=" << id << ", layer= " << layer
+         << ", x= " << x << ", y= " << y << ", z= " << z
+         << ", nSub= " << nSubHit << ", used= " << used << ")" << endl;
   }
 };
 
@@ -111,22 +110,20 @@ class Cluster {
   void Print(ClusterGeometry* g = 0) {
     // ClusterGeometry* g;
     if (g == 0) {
-      cout << "Cluster ("
-           << "e= " << e << ", seed id=" << seed << ", x= " << x << ", y= " << y
-           << ", z= " << z << ", nHit= " << hits.size() << ")" << endl;
+      cout << "Cluster (" << "e= " << e << ", seed id=" << seed << ", x= " << x
+           << ", y= " << y << ", z= " << z << ", nHit= " << hits.size() << ")"
+           << endl;
     } else {
       auto idpair = g->id_map[seed];
-      cout << "Cluster ("
-           << "e= " << e << ", seed id=" << seed << ", cell id=" << idpair.first
-           << ", module id=" << idpair.second << ", layer=" << layer
-           << ", x= " << x << ", y= " << y << ", z= " << z
-           << ", nHit= " << hits.size() << ")" << endl;
+      cout << "Cluster (" << "e= " << e << ", seed id=" << seed
+           << ", cell id=" << idpair.first << ", module id=" << idpair.second
+           << ", layer=" << layer << ", x= " << x << ", y= " << y
+           << ", z= " << z << ", nHit= " << hits.size() << ")" << endl;
     }
   }
   void Print3d() {
-    cout << "Cluster ("
-         << "e= " << e << ", seed id=" << seed << ", x= " << x << ", y= " << y
-         << ", z= " << z << ", n2dClus= " << clusters2d.size()
+    cout << "Cluster (" << "e= " << e << ", seed id=" << seed << ", x= " << x
+         << ", y= " << y << ", z= " << z << ", n2dClus= " << clusters2d.size()
          << ", first_layer=" << first_layer << ", depth=" << depth << ")"
          << endl;
   }

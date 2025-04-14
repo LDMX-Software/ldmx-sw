@@ -46,7 +46,7 @@ void LinearTruthTracking::produce(framework::Event& event) {
       first_layer_ecal_rec_hits.push_back(
           {x_ecal.getZPos(), x_ecal.getXPos(), x_ecal.getYPos()});
     }  // if first layer of Ecal
-  }    // for positions in ecalRecHit
+  }  // for positions in ecalRecHit
 
   // Check if we would fit empty seeds.
   if (recoil_hits.size() < 2) {
@@ -63,7 +63,7 @@ void LinearTruthTracking::produce(framework::Event& event) {
     if (point.getTrackID() == 1) {
       truth_points.push_back(point);
     }  // if trackID == 1
-  }    // for point in hit collection
+  }  // for point in hit collection
 
   // should only find 1 track (recoil e-) or 0 track (no recoil e-)
   if (truth_points.size() > 1) {
@@ -136,14 +136,14 @@ ldmx::StraightTrack LinearTruthTracking::truthTracker(
         min_distance = temp_distance;
         closest_rec_hit = &ecal_rec_hit;
       }  // if compare min distance
-    }    // for recHits
+    }  // for recHits
 
     if (closest_rec_hit != nullptr) {
       trk.setFirstLayerEcalRecHit(*closest_rec_hit);
       trk.setDistancetoRecHit(min_distance);
       trk.setEcalLayer1Location(extrapolated_point);
     }  // if set trk info
-  }    // make sure there are ecalPoints to work with
+  }  // make sure there are ecalPoints to work with
 
   return trk;
 }  // truthTracker

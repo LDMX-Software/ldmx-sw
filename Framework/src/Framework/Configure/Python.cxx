@@ -275,7 +275,7 @@ static Parameters getMembers(PyObject* object) {
           }
           params.add(skey, vals);
         }  // type of object in python list
-      }    // python list has non-zero size
+      }  // python list has non-zero size
     } else {
       // object got here, so we assume
       // it is a higher level object
@@ -284,7 +284,7 @@ static Parameters getMembers(PyObject* object) {
       // RECURSION zoinks!
       params.add(skey, getMembers(value));
     }  // python object type
-  }    // loop through python dictionary
+  }  // loop through python dictionary
 
   return params;
 }

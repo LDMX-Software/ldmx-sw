@@ -274,11 +274,11 @@ void TrackingGeometry::getSurfaces(
               surfaces.push_back(surface);
 
             }  // surface exists
-          }    // surfaces
-        }      // layers objects
-      }        // confined layers
-    }          // volumes objects
-  }            // confined volumes
+          }  // surfaces
+        }  // layers objects
+      }  // confined layers
+    }  // volumes objects
+  }  // confined volumes
 }
 
 void TrackingGeometry::makeLayerSurfacesMap() {

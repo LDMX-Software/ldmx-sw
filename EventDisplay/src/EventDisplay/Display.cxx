@@ -208,8 +208,7 @@ void Display::NextEvent() {
     objects_.Initialize();
 
     if (verbose_) {
-      std::cout << "[ Display ] : Loading new event "
-                << "... " << std::endl;
+      std::cout << "[ Display ] : Loading new event " << "... " << std::endl;
     }
 
     // draw<std::vector<ldmx::EcalHit>>(ecalRecHitsCollName_);

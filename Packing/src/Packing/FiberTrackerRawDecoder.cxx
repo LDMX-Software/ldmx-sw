@@ -8,7 +8,7 @@
 #include "Packing/Utility/Reader.h"
 
 // un comment for FiberTrackerRawDecoder-specific debug printouts to std::cout
-//#define DEBUG
+// #define DEBUG
 
 namespace packing {
 
@@ -205,38 +205,34 @@ struct FiberTrackerBinaryPacket {
     int i_field{0};
     acqMode = FiberTrackerField(r, ++i_field).to_int();
 #ifdef DEBUG
-    std::cout << i_field << " "
-              << "acqMode = " << acqMode << std::endl;
+    std::cout << i_field << " " << "acqMode = " << acqMode << std::endl;
 #endif
     acqStamp = FiberTrackerField(r, ++i_field).to_long();
 #ifdef DEBUG
-    std::cout << i_field << " "
-              << "acqStamp = " << acqStamp << std::endl;
+    std::cout << i_field << " " << "acqStamp = " << acqStamp << std::endl;
 #endif
     acqType = FiberTrackerField(r, ++i_field).to_int();
 #ifdef DEBUG
-    std::cout << i_field << " "
-              << "acqType = " << acqType << std::endl;
+    std::cout << i_field << " " << "acqType = " << acqType << std::endl;
 #endif
     acqTypeAllowed = FiberTrackerField(r, ++i_field).to_int();
 #ifdef DEBUG
-    std::cout << i_field << " "
-              << "acqTypeAllowed = " << acqTypeAllowed << std::endl;
+    std::cout << i_field << " " << "acqTypeAllowed = " << acqTypeAllowed
+              << std::endl;
 #endif
     coincidenceInUse = FiberTrackerField(r, ++i_field).to_string();
 #ifdef DEBUG
-    std::cout << i_field << " "
-              << "coincidenceInUse = " << coincidenceInUse << std::endl;
+    std::cout << i_field << " " << "coincidenceInUse = " << coincidenceInUse
+              << std::endl;
 #endif
     counts = FiberTrackerField(r, ++i_field).to_int();
 #ifdef DEBUG
-    std::cout << i_field << " "
-              << "counts = " << counts << std::endl;
+    std::cout << i_field << " " << "counts = " << counts << std::endl;
 #endif
     countsRecords = FiberTrackerField(r, ++i_field).to_long();
 #ifdef DEBUG
-    std::cout << i_field << " "
-              << "countsRecords = " << countsRecords << std::endl;
+    std::cout << i_field << " " << "countsRecords = " << countsRecords
+              << std::endl;
 #endif
     countsRecordsWithZeroEvents = FiberTrackerField(r, ++i_field).to_long();
 #ifdef DEBUG
@@ -246,28 +242,25 @@ struct FiberTrackerBinaryPacket {
 #endif
     countsTrigs = FiberTrackerField(r, ++i_field).to_long();
 #ifdef DEBUG
-    std::cout << i_field << " "
-              << "countsTrigs = " << countsTrigs << std::endl;
+    std::cout << i_field << " " << "countsTrigs = " << countsTrigs << std::endl;
 #endif
     cycleName = FiberTrackerField(r, ++i_field).to_string();
 #ifdef DEBUG
-    std::cout << i_field << " "
-              << "cycleName = " << cycleName << std::endl;
+    std::cout << i_field << " " << "cycleName = " << cycleName << std::endl;
 #endif
     cycleStamp = FiberTrackerField(r, ++i_field).to_long();
 #ifdef DEBUG
-    std::cout << i_field << " "
-              << "cycleStamp = " << cycleStamp << std::endl;
+    std::cout << i_field << " " << "cycleStamp = " << cycleStamp << std::endl;
 #endif
     equipmentName = FiberTrackerField(r, ++i_field).to_string();
 #ifdef DEBUG
-    std::cout << i_field << " "
-              << "equipmentName = " << equipmentName << std::endl;
+    std::cout << i_field << " " << "equipmentName = " << equipmentName
+              << std::endl;
 #endif
     eventSelectionAcq = FiberTrackerField(r, ++i_field).to_int();
 #ifdef DEBUG
-    std::cout << i_field << " "
-              << "eventSelectionAcq = " << eventSelectionAcq << std::endl;
+    std::cout << i_field << " " << "eventSelectionAcq = " << eventSelectionAcq
+              << std::endl;
 #endif
     FiberTrackerField events_data_field(r, ++i_field);
     i_event = -1;
@@ -278,18 +271,16 @@ struct FiberTrackerBinaryPacket {
       eventsData.emplace_back(events_data_field.value(), i_word);
     }
 #ifdef DEBUG
-    std::cout << i_field << " "
-              << "eventsData (size = " << eventsData.size() << ")" << std::endl;
+    std::cout << i_field << " " << "eventsData (size = " << eventsData.size()
+              << ")" << std::endl;
 #endif
     meanSNew = FiberTrackerField(r, ++i_field).to_double();
 #ifdef DEBUG
-    std::cout << i_field << " "
-              << "meanSNew = " << meanSNew << std::endl;
+    std::cout << i_field << " " << "meanSNew = " << meanSNew << std::endl;
 #endif
     message = FiberTrackerField(r, ++i_field).to_string();
 #ifdef DEBUG
-    std::cout << i_field << " "
-              << "message = " << message << std::endl;
+    std::cout << i_field << " " << "message = " << message << std::endl;
 #endif
     FiberTrackerField profile_field(r, ++i_field);
     profile.clear();
@@ -299,8 +290,8 @@ struct FiberTrackerBinaryPacket {
       profile.push_back(profile_field.to_double(i_word));
     }
 #ifdef DEBUG
-    std::cout << i_field << " "
-              << "profile size " << profile.size() << std::endl;
+    std::cout << i_field << " " << "profile size " << profile.size()
+              << std::endl;
 #endif
     // fields 18 and 19 are skipped
     i_field += 2;
@@ -312,39 +303,37 @@ struct FiberTrackerBinaryPacket {
       profileStandAlone.push_back(profileStandAlone_field.to_double(i_word));
     }
 #ifdef DEBUG
-    std::cout << i_field << " "
-              << "profileStandAlone size " << profileStandAlone.size()
-              << std::endl;
+    std::cout << i_field << " " << "profileStandAlone size "
+              << profileStandAlone.size() << std::endl;
 #endif
     timeFirstEvent = FiberTrackerField(r, ++i_field).to_string();
 #ifdef DEBUG
-    std::cout << i_field << " "
-              << "timeFirstEvent = " << timeFirstEvent << std::endl;
+    std::cout << i_field << " " << "timeFirstEvent = " << timeFirstEvent
+              << std::endl;
 #endif
     timeFirstTrigger = FiberTrackerField(r, ++i_field).to_string();
 #ifdef DEBUG
-    std::cout << i_field << " "
-              << "timeFirstTrigger = " << timeFirstTrigger << std::endl;
+    std::cout << i_field << " " << "timeFirstTrigger = " << timeFirstTrigger
+              << std::endl;
 #endif
     timeLastEvent = FiberTrackerField(r, ++i_field).to_string();
 #ifdef DEBUG
-    std::cout << i_field << " "
-              << "timeLastEvent = " << timeLastEvent << std::endl;
+    std::cout << i_field << " " << "timeLastEvent = " << timeLastEvent
+              << std::endl;
 #endif
     timeLastTrigger = FiberTrackerField(r, ++i_field).to_string();
 #ifdef DEBUG
-    std::cout << i_field << " "
-              << "timeLastTrigger = " << timeLastTrigger << std::endl;
+    std::cout << i_field << " " << "timeLastTrigger = " << timeLastTrigger
+              << std::endl;
 #endif
     trigger = FiberTrackerField(r, ++i_field).to_int();
 #ifdef DEBUG
-    std::cout << i_field << " "
-              << "trigger = " << trigger << std::endl;
+    std::cout << i_field << " " << "trigger = " << trigger << std::endl;
 #endif
     triggerOffsetAcq = FiberTrackerField(r, ++i_field).to_int();
 #ifdef DEBUG
-    std::cout << i_field << " "
-              << "triggerOffsetAcq = " << triggerOffsetAcq << std::endl;
+    std::cout << i_field << " " << "triggerOffsetAcq = " << triggerOffsetAcq
+              << std::endl;
 #endif
     triggerSelectionAcq = FiberTrackerField(r, ++i_field).to_int();
 #ifdef DEBUG

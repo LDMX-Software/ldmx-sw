@@ -70,7 +70,7 @@ class TruthSeedProcessor : public TrackingGeometryUser {
    * processing of events starts. For this class, the callback is used to
    * retrieve the GeometryContext from ACTS.
    */
-  void onProcessStart() override{};
+  void onProcessStart() override {};
 
   /**
    * onNewRun is the first function called for each processor

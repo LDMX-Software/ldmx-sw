@@ -246,7 +246,7 @@ std::vector<ldmx::Measurement> DigitizationProcessor::digitizeHits(
       }  // hit_surface exists
 
     }  // energy cut
-  }    // loop on sim-hits
+  }  // loop on sim-hits
 
   return measurements;
 

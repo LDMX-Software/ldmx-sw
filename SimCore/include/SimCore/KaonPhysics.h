@@ -152,7 +152,7 @@ class KaonPhysics : public G4VPhysicsConstructor {
    * We don't do anything here since we are just attaching/updating
    * the kaon particle definitions.
    */
-  void ConstructProcess() override{};
+  void ConstructProcess() override {};
 
  private:
   mutable framework::logging::logger theLog_{

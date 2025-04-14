@@ -65,7 +65,7 @@ class UserAction {
    *
    * @param event Geant4 event object.
    */
-  virtual void BeginOfEventAction(const G4Event*){};
+  virtual void BeginOfEventAction(const G4Event*) {};
 
   /**
    * Method called at the end of every event.
@@ -74,7 +74,7 @@ class UserAction {
    *
    * @param event Geant4 event object.
    */
-  virtual void EndOfEventAction(const G4Event*){};
+  virtual void EndOfEventAction(const G4Event*) {};
 
   /**
    * Method called at the beginning of a run.
@@ -83,7 +83,7 @@ class UserAction {
    *
    * @param run Current Geant4 run object.
    */
-  virtual void BeginOfRunAction(const G4Run*){};
+  virtual void BeginOfRunAction(const G4Run*) {};
 
   /**
    * Method called at the end of a run.
@@ -92,7 +92,7 @@ class UserAction {
    *
    * @param run Current Geant4 run object.
    */
-  virtual void EndOfRunAction(const G4Run*){};
+  virtual void EndOfRunAction(const G4Run*) {};
 
   /**
    * Method called before the UserTrackingAction.
@@ -101,7 +101,7 @@ class UserAction {
    *
    * @param track current Geant4 track
    */
-  virtual void PreUserTrackingAction(const G4Track*){};
+  virtual void PreUserTrackingAction(const G4Track*) {};
 
   /**
    * Method called after the UserTrackingAction.
@@ -110,7 +110,7 @@ class UserAction {
    *
    * @param track current Geant4 track
    */
-  virtual void PostUserTrackingAction(const G4Track*){};
+  virtual void PostUserTrackingAction(const G4Track*) {};
 
   /**
    * Method called after each simulation step.
@@ -119,7 +119,7 @@ class UserAction {
    *
    * @param current Geant4 step
    */
-  virtual void stepping(const G4Step*){};
+  virtual void stepping(const G4Step*) {};
 
   /**
    * Method called when a track is updated
@@ -139,14 +139,14 @@ class UserAction {
    *
    * TYPE::STACKING
    */
-  virtual void NewStage(){};
+  virtual void NewStage() {};
 
   /**
    * Method called at the beginning of a new event
    *
    * TYPE::STACKING
    */
-  virtual void PrepareNewEvent(){};
+  virtual void PrepareNewEvent() {};
 
   /**
    * @return The user action types

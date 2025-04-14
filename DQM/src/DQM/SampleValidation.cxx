@@ -96,9 +96,9 @@ int SampleValidation::pdgid_label(const int pdgid) {
   if (pdgid == 22) label = 5;     // γ
   if (pdgid == 2212) label = 6;   // proton
   if (pdgid == 2112) label = 7;   // neutron
-  if (pdgid == 211) label = 8;    //π+
-  if (pdgid == -211) label = 9;   //π-
-  if (pdgid == 111) label = 10;   //π0
+  if (pdgid == 211) label = 8;    // π+
+  if (pdgid == -211) label = 9;   // π-
+  if (pdgid == 111) label = 10;   // π0
   if (pdgid == 321) label = 11;   // K+
   if (pdgid == -321) label = 12;  // K-
   if (pdgid == 130) label = 13;   // K-Long

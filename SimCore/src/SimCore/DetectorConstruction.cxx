@@ -82,7 +82,7 @@ void DetectorConstruction::ConstructSDandField() {
         ldmx_log(debug) << "Attaching biasing operator " << bop->GetName()
                         << " to volume " << volume->GetName();
       }  // BOP attached to target or ecal
-    }    // loop over volumes
-  });    // loop over biasing operators
+    }  // loop over volumes
+  });  // loop over biasing operators
 }
 }  // namespace simcore

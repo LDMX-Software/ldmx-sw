@@ -17,8 +17,8 @@ namespace ldmx {
 void HcalVetoResult::Clear() { passes_veto_ = false; }
 
 void HcalVetoResult::Print() const {
-  std::cout << "[ HcalVetoResult ]: Passes veto : "
-            << " Passes veto: " << passes_veto_ << std::endl;
+  std::cout << "[ HcalVetoResult ]: Passes veto : " << " Passes veto: "
+            << passes_veto_ << std::endl;
   max_PE_hit_.Print();
 }
 }  // namespace ldmx

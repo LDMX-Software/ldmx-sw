@@ -197,10 +197,10 @@ void EcalDigiProducer::produce(framework::Event& event) {
             // create a digi as put it into the collection
             ecalDigis.addDigi(channel, hgcroc_->noiseDigi(channel));
           }  // cells in each module
-        }    // modules in each layer
-      }      // layers in ECal
-    }        // yes or no zero suppression
-  }          // if we should do the noise
+        }  // modules in each layer
+      }  // layers in ECal
+    }  // yes or no zero suppression
+  }  // if we should do the noise
 
   event.add(digiCollName_, ecalDigis);
 

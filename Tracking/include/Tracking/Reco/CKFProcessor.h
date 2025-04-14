@@ -47,7 +47,7 @@
 
 // Kalman Filter
 
-//#include "Acts/EventData/Measurement.hpp"
+// #include "Acts/EventData/Measurement.hpp"
 #include "Acts/EventData/MultiTrajectory.hpp"
 #include "Acts/EventData/MultiTrajectoryHelpers.hpp"
 #include "Acts/EventData/VectorTrackContainer.hpp"
@@ -62,7 +62,7 @@
 #include "Acts/TrackFitting/KalmanFitter.hpp"
 
 // GSF
-//#include "Acts/TrackFitting/GaussianSumFitter.hpp"
+// #include "Acts/TrackFitting/GaussianSumFitter.hpp"
 #include "Acts/Propagator/MultiEigenStepperLoop.hpp"
 
 //--- Tracking ---//

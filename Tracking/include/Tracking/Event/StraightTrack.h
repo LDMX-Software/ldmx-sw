@@ -36,7 +36,7 @@ class StraightTrack {
   void Print() const;
 
   // To match the Framework Bus clear. It's doing nothing
-  void Clear(){};
+  void Clear() {};
 
   void setNhits(int nhits) { n_hits_ = nhits; }
   int getNhits() const { return n_hits_; }

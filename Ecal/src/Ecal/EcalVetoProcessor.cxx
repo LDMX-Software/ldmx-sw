@@ -281,8 +281,8 @@ void EcalVetoProcessor::produce(framework::Event &event) {
           }
         }
       }  // end loop on target SP hits
-    }    // end condition on target SP
-  }      // end condition on ecal SP
+    }  // end condition on target SP
+  }  // end condition on ecal SP
 
   // Get recoilPos using recoil tracking
   bool fiducial_in_tracker{false};
@@ -1216,7 +1216,7 @@ void EcalVetoProcessor::produce(framework::Event &event) {
           }
         }
       }  // end loop on hits in the region
-    }    // end 2nd loop on hits in the region
+    }  // end 2nd loop on hits in the region
 
     // Continue early if not hits on track
     if (!bestLinRegFound) continue;
