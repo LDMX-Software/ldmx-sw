@@ -100,22 +100,35 @@ def photo_nuclear( detector, generator ) :
     sim.setDetector( detector , True )
 
     # Set run parameters
-    sim.description = "ECal photo-nuclear, xsec bias 450"
+    if generator.energy == 8.0:
+          xsec_bias = 550.
+          xsec_bias_threshold = 5000.
+          tagger_threshold = 7600.
+          recoil_max_p = 3000.
+          brem_min_e = 5000.
+    else:
+          xsec_bias = 450.
+          xsec_bias_threshold = 2500.
+          tagger_threshold = 3800.
+          recoil_max_p = 1500.
+          brem_min_e = 2500.
+    
+    sim.description = "ECal photo-nuclear, xsec bias " + str(xsec_bias) + " xsec threshold " + str(xsec_bias_threshold) + " GeV"
     sim.beamSpotSmear = [20., 80., 0.]
 
     sim.generators.append(generator)
 
     # Enable and configure the biasing
-    sim.biasing_operators = [ bias_operators.PhotoNuclear('target',450.,2500.,only_children_of_primary=True) ]
+    sim.biasing_operators = [ bias_operators.PhotoNuclear('target',xsec_bias,xsec_bias_threshold,only_children_of_primary=True) ]
 
     # the following filters are in a library that needs to be included
     includeBiasing.library()
 
     # Configure the sequence in which user actions should be called.
     sim.actions.extend([
-            filters.TaggerVetoFilter(),
+            filters.TaggerVetoFilter(threesh = tagger_threshold),
             # Only consider events where a hard brem occurs
-            filters.TargetBremFilter(),
+            filters.TargetBremFilter(recoil_max_p = recoil_max_p, brem_min_e = brem_min_e),
             filters.TargetPNFilter(),
             # Tag all photo-nuclear tracks to persist them to the event.
             util.TrackProcessFilter.photo_nuclear()
