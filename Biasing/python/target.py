@@ -126,7 +126,7 @@ def photo_nuclear( detector, generator ) :
 
     # Configure the sequence in which user actions should be called.
     sim.actions.extend([
-            filters.TaggerVetoFilter(threesh = tagger_threshold),
+            filters.TaggerVetoFilter(thresh = tagger_threshold),
             # Only consider events where a hard brem occurs
             filters.TargetBremFilter(recoil_max_p = recoil_max_p, brem_min_e = brem_min_e),
             filters.TargetPNFilter(),
