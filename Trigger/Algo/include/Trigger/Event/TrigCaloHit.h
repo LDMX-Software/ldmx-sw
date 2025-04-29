@@ -45,16 +45,16 @@ class TrigCaloHit {
   void setModule(int x) { modulesection_ = x; }
   void setSection(int x) { modulesection_ = x; }
 
-  float x() { return x_; }
-  float y() { return y_; }
-  float z() { return z_; }
-  float e() { return e_; }
-  float energy() { return e_; }
+  float x() const { return x_; }
+  float y() const { return y_; }
+  float z() const { return z_; }
+  float e() const { return e_; }
+  float energy() const { return e_; }
   
-  int layer() { return layer_; }
-  int strip() { return strip_; }
-  int module() { return modulesection_; }
-  int section() { return modulesection_; }
+  int layer() const { return layer_; }
+  int strip() const { return strip_; }
+  int module() const { return modulesection_; }
+  int section() const { return modulesection_; }
   
  private:
   float x_{0};
