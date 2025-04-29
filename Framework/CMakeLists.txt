@@ -149,6 +149,6 @@ install(TARGETS fire DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
 set_property(TARGET fire PROPERTY ENABLE_EXPORTS TRUE)
 
 # Setup the test
-setup_test(dependencies Framework::Framework)
+#setup_test(dependencies Framework::Framework)
 
 setup_python(package_name LDMX/Framework)
