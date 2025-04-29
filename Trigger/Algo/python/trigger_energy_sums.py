@@ -30,7 +30,14 @@ class HcalTPSelector(Producer) :
         super().__init__(instance_name , 'trigger::HcalTPSelector','Trigger')
         self.combinedQuadCollName = "hcalTrigQuads"
         self.passCollName = "hcalTrig"
-        self.inputProc = "" # name of the process where the STQs are built
+
+class HCalTrigMipReco(Producer) :
+    """Configuration for TrigMipReco
+    """
+    def __init__(self, instance_name = 'myHCalTrigMipReco') :
+        super().__init__(instance_name , 'trigger::TrigMipReco','Trigger')
+        self.hitCollName = "hcalTrigHits"
+        self.passCollName = "hcalTrigMIPs"
 
 class TrigEcalClusterProducer(Producer) :
     """Configuration for TrigEcalClusterProducer
