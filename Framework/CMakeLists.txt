@@ -98,7 +98,8 @@ set_target_properties(
   Framework
   PROPERTIES CXX_STANDARD ${CMAKE_CXX_STANDARD}
              CXX_STANDARD_REQUIRED YES
-             CXX_EXTENSIONS NO)
+             CXX_EXTENSIONS NO
+             ENABLE_EXPORTS TRUE)
 
 # the following writes the LinkDef file using the CMake global variables
 # namespaces and dict that are lists appended to by the register_event_object function
@@ -145,6 +146,7 @@ install(FILES ${CMAKE_CURRENT_BINARY_DIR}/libFramework_rdict.pcm DESTINATION lib
 add_executable(fire ${PROJECT_SOURCE_DIR}/app/fire.cxx)
 target_link_libraries(fire PRIVATE Framework::Framework)
 install(TARGETS fire DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
+set_property(TARGET fire PROPERTY ENABLE_EXPORTS TRUE)
 
 # Setup the test
 setup_test(dependencies Framework::Framework)
