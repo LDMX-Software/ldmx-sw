@@ -23,6 +23,14 @@ class TrigHcalEnergySum(Producer) :
         self.quadCollName = "hcalTrigPrimDigiSTQs"
         self.combinedQuadCollName = "hcalTrigQuads"
         self.inputProc = "" # name of the process where the STQs are built
+class HcalTPSelector(Producer) :
+    """Configuration for HcalTPSelector (relies on TrigHcalEnergySum)
+    """
+    def __init__(self, instance_name = 'myHcalTPSelector') :
+        super().__init__(instance_name , 'trigger::HcalTPSelector','Trigger')
+        self.combinedQuadCollName = "hcalTrigQuads"
+        self.passCollName = "hcalTrig"
+        self.inputProc = "" # name of the process where the STQs are built
 
 class TrigEcalClusterProducer(Producer) :
     """Configuration for TrigEcalClusterProducer
