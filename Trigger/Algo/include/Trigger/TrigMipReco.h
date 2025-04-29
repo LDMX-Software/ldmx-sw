@@ -36,7 +36,7 @@ class TrigMipReco : public framework::Producer {
   // name of output collection
   std::string passCollName_;
 
-  float minEnergy_{0};
+  float minEnergy_{8.}; // mip peak is 10-11
   
 };
 }  // namespace trigger
