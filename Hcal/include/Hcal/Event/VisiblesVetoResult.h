@@ -56,7 +56,7 @@ namespace ldmx {
 
     double getIsoEnergy() const { return isoEnergy_; }
 
-    int getNHits() const { return nReadoutHits_; }
+    int getNReadoutHits() const { return nReadoutHits_; }
 
     double getSummedDet() const { return summedDet_; }
 

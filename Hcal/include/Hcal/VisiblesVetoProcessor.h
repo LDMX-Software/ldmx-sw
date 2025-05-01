@@ -8,11 +8,14 @@
 #include "Framework/EventProcessor.h"
 #include "Tools/ONNXRuntime.h"
 
+// recoil tracking
+#include "Tracking/Event/Track.h"
+
 namespace hcal {
 
   class VisiblesVetoProcessor : public framework::Producer {
   public:
-    EcalVetoProcessor(const std::string& name, framework::Process& process)
+    VisiblesVetoProcessor(const std::string& name, framework::Process& process)
       : Producer(name, process) {}
 
     virtual ~VisiblesVetoProcessor() {}
@@ -26,7 +29,11 @@ namespace hcal {
 
     void buildBDTFeatureVector(const ldmx::VisiblesVetoResult& result);
 
+    /* save feature vector to CSV for BDT training */
     void saveAsCSV(const std::string& filename);
+
+    /* a function for finding track IDs for truth-level tracking */
+    bool in_list(std::vector<int> parents, int a);
 
     int nLayersHit_{0};
     double xStd_{0};
@@ -47,13 +54,21 @@ namespace hcal {
 
     bool verbose_{false};
 
-    std::string bdtFileName_;
-    std::string rocFileName_;
     std::vector<float> bdtFeatures_;
     std::string featureListName_;
 
+    // BDT training variables
+    bool training_{false};
+    std::string trainingFile_;
+
+    // Pass and collection names
     std::string rec_pass_name_;
     std::string rec_coll_name_;
+    bool recoil_from_tracking_;
+    std::string track_pass_name_;
+    std::string track_collection_;
+    std::string sp_coll_name_;
+    std::string sp_pass_name_;
 
     std::string collectionName_{"VisiblesVeto"};
 
