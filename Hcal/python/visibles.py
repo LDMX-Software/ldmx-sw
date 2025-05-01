@@ -47,9 +47,12 @@ class VisiblesVetoProcessor(ldmxcfg.Producer) :
         self.training_file = ""
         self.bdt_file = makeBDTPath("visibles_v1")
         self.beam_energy = 8000.0 # in MeV
-        self.disc_cut = 0.99
+        self.disc_cut = 0.9999825
         self.collection_name = "VisiblesVeto"
         self.rec_coll_name = "HcalRecHits"
         self.rec_pass_name = ''
         self.recoil_from_tracking = False
         self.track_collection = 'RecoilTracks'
+        self.track_pass_name = ''
+        self.sp_coll_name = 'TargetScoringPlaneHits'
+        self.sp_pass_name = ''

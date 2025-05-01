@@ -16,7 +16,7 @@
 
 namespace hcal {
   void VisiblesVetoProcessor::buildBDTFeatureVector(const ldmx::VisiblesVetoResult &result) {
-    bdtFeatures_.push_back(result.getLayersHit());
+    bdtFeatures_.push_back(result.getNLayersHit());
     bdtFeatures_.push_back(result.getXStd());
     bdtFeatures_.push_back(result.getYStd());
     bdtFeatures_.push_back(result.getZStd());
@@ -27,25 +27,42 @@ namespace hcal {
     bdtFeatures_.push_back(result.getIsoEnergy());
     bdtFeatures_.push_back(result.getNReadoutHits());
     bdtFeatures_.push_back(result.getSummedDet());
-    bdtFeatures_.push_back(result.getMeanDistFromPhotonProj());
+    bdtFeatures_.push_back(result.getDistFromPhotonProj());
   }
 
   void VisiblesVetoProcessor::configure(framework::config::Parameters &parameters) {
     verbose_ = parameters.getParameter<bool>("verbose");
     featureListName_ = parameters.getParameter<std::string>("feature_list_name");
     // Load BDT ONNX file
-    rt_ = std::make_unique<ldmx::Ort::ONNXRuntime>(parameters.getParameter<std::string>("bdt_file"));
+    rt_ = std::make_unique<ldmx::Ort::ONNXRuntime>(
+	parameters.getParameter<std::string>("bdt_file"));
 
     training_ = parameters.getParameter<bool>("training");
-    trainingFile_ = parameters.getParameter<std::string>("training_file")
+    trainingFile_ = parameters.getParameter<std::string>("training_file");
 
     bdtCutVal_ = parameters.getParameter<double>("disc_cut");
 
+    beamEnergyMeV_ = parameters.getParameter<double>("beam_energy");
+
+    // collection and pass names
     collectionName_ = parameters.getParameter<std::string>("collection_name");
     rec_pass_name_ = parameters.getParameter<std::string>("rec_pass_name");
     rec_coll_name_ = parameters.getParameter<std::string>("rec_coll_name");
-    recoil_from_tracking_ = parameters.getParameter<bool>("recoil_from_tracking");;
+    recoil_from_tracking_ = parameters.getParameter<bool>("recoil_from_tracking");
+    track_pass_name_ = parameters.getParameter<std::string>("track_pass_name");
     track_collection_ = parameters.getParameter<std::string>("track_collection");
+    sp_coll_name_ = parameters.getParameter<std::string>("sp_coll_name");
+    sp_pass_name_ = parameters.getParameter<std::string>("sp_pass_name");
+  }
+
+  bool VisiblesVetoProcessor::in_list(std::vector<int> parents, int a) {
+    bool inlist = false;
+    for (const int &i : parents) {
+      if (i==a) {
+	inlist = true;
+      }
+    }
+    return inlist;
   }
 
   void VisiblesVetoProcessor::clearProcessor() {
@@ -60,7 +77,7 @@ namespace hcal {
     rMean_ = 0.;
     isoHits_ = 0;
     isoEnergy_ = 0.;
-    nReadoutHits = 0;
+    nReadoutHits_ = 0;
     summedDet_ = 0.;
     rMeanFromPhotonProj_ = 0.;
   }
@@ -78,7 +95,7 @@ namespace hcal {
     // This currently uses truth-level information, but it should be replaced
     // by reconstructed tracker information, when available
     std::vector<double> gamma_p(3);
-    std::vector<float> gamma_x0(3);
+    std::vector<double> gamma_x0(3);
     if (recoil_from_tracking_) {
       auto recoilTracks{event.getCollection<ldmx::Track>(track_collection_)};
       // Fill this in later when you know how to use it
@@ -93,18 +110,22 @@ namespace hcal {
       }
     }
     else {
-      if (event.exists("TargetScoringPlaneHits")) {
+      if (event.exists(sp_coll_name_)) {
 	std::vector<ldmx::SimTrackerHit> targetSPHits =
-	  event.getCollection<ldmx::SimTrackerHit>("TargetScoringPlaneHits");
+	  event.getCollection<ldmx::SimTrackerHit>(sp_coll_name_);
 	for (auto const &it : particle_map) {
 	  for (auto const &sphit : targetSPHits) {
 	    if (sphit.getPosition()[2] > 0) {
 	      if (it.first == sphit.getTrackID()) {
 		if (it.second.getPdgID() == 11 && in_list(it.second.getParents(), 0)) {
-		  gamma_x0 = sphit.getPosition();
+		  /* Since SP hit positions are stored as floats and gamma_x0 is
+		   a double vector, the conversion here is a little convolcuted. */
+		  std::vector<float> x0f = sphit.getPosition();
+		  std::vector<double> x0d(x0f.begin(), x0f.end());
+		  gamma_x0 = x0d;
 		  gamma_p[0] = -1.*sphit.getMomentum()[0];
 		  gamma_p[1] = -1.*sphit.getMomentum()[1];
-		  gamma_p[2] = 8000. - sphit.getMomentum()[2]; // hard-coded for 8 GeV
+		  gamma_p[2] = beamEnergyMeV_ - sphit.getMomentum()[2];
 		}
 	      }
 	    }
@@ -121,7 +142,7 @@ namespace hcal {
     std::vector<int> layersHit;
     for (const ldmx::HcalHit & hit : hcalRecHits) {
       if (hit.getEnergy() > 0.) {
-	HcalID detID(hit.getID());
+	ldmx::HcalID detID(hit.getID());
 	if (detID.getSection() != 0) { // skip hits that aren't in main Hcal
 	  continue;
 	}
@@ -152,7 +173,7 @@ namespace hcal {
 	double closestpoint = 9999.;
 	for (const ldmx::HcalHit &hit2 : hcalRecHits) {
 	  if (hit2.getEnergy() > 0.) {
-	    HcalID detID2(hit2.getID());
+	    ldmx::HcalID detID2(hit2.getID());
 	    if (detID2.getLayerID() == detID.getLayerID()) {
 	      // Determine if a bar is vertical (along y-axis) or horizontal (along x-axis)
 	      // Odd layers have horizontal strips
@@ -194,7 +215,7 @@ namespace hcal {
 
     for (const ldmx::HcalHit &hit : hcalRecHits) {
       if (hit.getEnergy() > 0.) {
-        HcalID detID(hit.getID());
+	ldmx::HcalID detID(hit.getID());
         if (detID.getSection() == 0) {
 	  xStd_ += hit.getEnergy()*pow(hit.getXPos()-xMean_,2);
 	  yStd_ += hit.getEnergy()*pow(hit.getYPos()-yMean_,2);
@@ -231,7 +252,7 @@ namespace hcal {
 
     else {
       ldmx::Ort::FloatArrays inputs({bdtFeatures_});
-      float pred = rt_->run({featuresListName_}, inputs, {"probabilities"})[0].at(1);
+      float pred = rt_->run({featureListName_}, inputs, {"probabilities"})[0].at(1);
       ldmx_log(info) << " Visibles BDT was ran, score is " << pred;
 
       event.add(collectionName_, result);
@@ -239,14 +260,7 @@ namespace hcal {
   }
 
   void VisiblesVetoProcessor::saveAsCSV(const std::string& filename) {
-    // Check that a valid path to a file is created
-    std::filesystem::path filePath(filename);
-    if (!std::filesystem::exists(filePath.parent_path()) && !filePath.parent_path().empty()) {
-      std::cerr << "Error: Directory for BDT training file does not exist: "
-		<< filePath.parent_path() << std::endl;
-      return;
-    }
-    // Check that file can be opened and appended
+    // Open a new file to be appended
     std::ofstream file(filename, std::ios::app);
     if (!file.is_open()) {
       std::cerr << "Error: Could not open file " << filename << std::endl;
