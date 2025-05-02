@@ -43,8 +43,6 @@ class VisiblesVetoProcessor(ldmxcfg.Producer) :
 
         self.verbose = False
         self.feature_list_name = "input"
-        self.training = False
-        self.training_file = ""
         self.bdt_file = makeBDTPath("visibles_v1")
         self.beam_energy = 8000.0 # in MeV
         self.disc_cut = 0.9999825
@@ -56,3 +54,36 @@ class VisiblesVetoProcessor(ldmxcfg.Producer) :
         self.track_pass_name = ''
         self.sp_coll_name = 'TargetScoringPlaneHits'
         self.sp_pass_name = ''
+
+class GetVisiblesFeatures(ldmxcfg.Analyzer) :
+    """Just plot the visibles features"""
+
+    def __init__(self, name='vis') :
+        super().__init__(name, 'hcal::VisiblesFeatureProducer', 'Hcal')
+
+        ## Parameters choose whether to save features to .txt file ##
+        self.training = False
+        self.training_file = ""
+
+        ## A few other useful parameters ##
+        self.beam_energy = 8000.0 # in MeV
+        self.hcal_rec_coll_name = "HcalRecHits"
+        self.ecal_rec_coll_name = "EcalRecHits"
+        self.recoil_from_tracking = False
+        self.track_collection = 'RecoilTracks'
+        self.sp_coll_name = 'TargetScoringPlaneHits'
+        
+        ## Define histograms ##
+
+        self.build1DHistogram("layershit", "layershit", 100, 0, 100);
+        self.build1DHistogram("xStd", "xStd", 80, 0, 800);
+        self.build1DHistogram("yStd", "yStd", 80, 0, 800);
+        self.build1DHistogram("zStd", "zStd", 100, 0, 1000)
+        self.build1DHistogram("xMean", "xMeean", 80, -800, 800)
+        self.build1DHistogram("yMean", "yMean", 80, -800, 800)
+        self.build1DHistogram("rMean", "rMean", 80, 0, 800)
+        self.build1DHistogram("isoHits", "isoHits", 100, 0, 100)
+        self.build1DHistogram("isoE", "isoE", 80, 0, 800)
+        self.build1DHistogram("nHits", "nHits", 200, 0, 200)
+        self.build1DHistogram("Etot", "Etot", 100, 4800, 9800)
+        self.build1DHistogram("photonProj", "photonProj", 80, 0, 800)
