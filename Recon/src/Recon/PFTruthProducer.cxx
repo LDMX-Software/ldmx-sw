@@ -10,6 +10,9 @@ void PFTruthProducer::configure(framework::config::Parameters &ps) {
   targetCollName_ = ps.getParameter<std::string>("outputTargetCollName");
   ecalCollName_ = ps.getParameter<std::string>("outputEcalCollName");
   hcalCollName_ = ps.getParameter<std::string>("outputHcalCollName");
+  targetSpPassName_ = ps.getParameter<std::string>("targetSpPassName");
+  ecalSpPassName_ = ps.getParameter<std::string>("ecalSpPassName");
+  simParticlesPassName_ = ps.getParameter<std::string>("simParticlesPassName");
 }
 template <class T>
 void sortHits(std::vector<T> spHits) {
@@ -22,11 +25,12 @@ void PFTruthProducer::produce(framework::Event &event) {
   if (!event.exists("EcalScoringPlaneHits")) return;
   if (!event.exists("SimParticles")) return;
   const auto targSpHits =
-      event.getCollection<ldmx::SimTrackerHit>("TargetScoringPlaneHits");
+      event.getCollection<ldmx::SimTrackerHit>("TargetScoringPlaneHits", targetSpPassName_);
   const auto ecalSpHits =
-      event.getCollection<ldmx::SimTrackerHit>("EcalScoringPlaneHits");
+      event.getCollection<ldmx::SimTrackerHit>("EcalScoringPlaneHits", ecalSpPassName_);
   const auto particle_map =
-      event.getMap<int, ldmx::SimParticle>("SimParticles");
+      event.getMap<int, ldmx::SimParticle>("SimParticles", simParticlesPassName_);
+
 
   std::map<int, ldmx::SimParticle> primaries;
   std::set<int> simIDs;
