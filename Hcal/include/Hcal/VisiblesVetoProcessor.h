@@ -57,10 +57,6 @@ namespace hcal {
     std::vector<float> bdtFeatures_;
     std::string featureListName_;
 
-    // BDT training variables
-    bool training_{false};
-    std::string trainingFile_;
-
     // Pass and collection names
     std::string rec_pass_name_;
     std::string rec_coll_name_;

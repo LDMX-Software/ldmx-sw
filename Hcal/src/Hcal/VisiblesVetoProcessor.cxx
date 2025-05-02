@@ -37,9 +37,6 @@ namespace hcal {
     rt_ = std::make_unique<ldmx::Ort::ONNXRuntime>(
 	parameters.getParameter<std::string>("bdt_file"));
 
-    training_ = parameters.getParameter<bool>("training");
-    trainingFile_ = parameters.getParameter<std::string>("training_file");
-
     bdtCutVal_ = parameters.getParameter<double>("disc_cut");
 
     beamEnergyMeV_ = parameters.getParameter<double>("beam_energy");
@@ -246,17 +243,11 @@ namespace hcal {
 
     buildBDTFeatureVector(result);
 
-    if (training_) {      
-      saveAsCSV(trainingFile_);
-    }
+    ldmx::Ort::FloatArrays inputs({bdtFeatures_});
+    float pred = rt_->run({featureListName_}, inputs, {"probabilities"})[0].at(1);
+    ldmx_log(info) << " Visibles BDT was ran, score is " << pred;
 
-    else {
-      ldmx::Ort::FloatArrays inputs({bdtFeatures_});
-      float pred = rt_->run({featureListName_}, inputs, {"probabilities"})[0].at(1);
-      ldmx_log(info) << " Visibles BDT was ran, score is " << pred;
-
-      event.add(collectionName_, result);
-    }
+    event.add(collectionName_, result);
   }
 
   void VisiblesVetoProcessor::saveAsCSV(const std::string& filename) {
