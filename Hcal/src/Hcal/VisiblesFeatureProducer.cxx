@@ -7,6 +7,7 @@
 #include "SimCore/Event/SimTrackerHit.h"
 #include "Hcal/Event/HcalHit.h"
 #include "Ecal/Event/EcalHit.h"
+#include "Tracking/Event/Track.h"
 #include "SimCore/Event/SimCalorimeterHit.h"
 
 // C++

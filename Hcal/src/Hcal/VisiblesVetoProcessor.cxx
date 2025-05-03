@@ -249,19 +249,5 @@ namespace hcal {
 
     event.add(collectionName_, result);
   }
-
-  void VisiblesVetoProcessor::saveAsCSV(const std::string& filename) {
-    // Open a new file to be appended
-    std::ofstream file(filename, std::ios::app);
-    if (!file.is_open()) {
-      std::cerr << "Error: Could not open file " << filename << std::endl;
-      return;
-    }
-    
-    // Write features to file
-    for (int i = 0; i < bdtFeatures_.size(); ++i) {
-      file << bdtFeatures_[i] << (i + 1 == bdtFeatures_.size() ? "\n" : ",");
-    }
-  }
   
 }
