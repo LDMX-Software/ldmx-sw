@@ -1,3 +1,9 @@
+/*
+ * @file VisiblesVetoProcessor.h
+ * @brief Class that determines if activity in the Hcal looks like a LLP
+ * @author Tyler Horoho, University of Virginia
+ */
+
 #ifndef EVENTPROC_VISIBLESVETOPROCESSOR_H_
 #define EVENTPROC_VISIBLESVETOPROCESSOR_H_
 
@@ -28,9 +34,6 @@ namespace hcal {
     void clearProcessor();
 
     void buildBDTFeatureVector(const ldmx::VisiblesVetoResult& result);
-
-    /* save feature vector to CSV for BDT training */
-    void saveAsCSV(const std::string& filename);
 
     /* a function for finding track IDs for truth-level tracking */
     bool in_list(std::vector<int> parents, int a);

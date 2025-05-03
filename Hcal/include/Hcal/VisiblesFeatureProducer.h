@@ -1,3 +1,10 @@
+/*
+ * @file VisiblesFeatureProducer.h
+ * @brief Class used to get features for visibles BDT,
+ *        and can save features to a .txt file.
+ * @author Tyler Horoho, University of Virginia
+ */
+
 #ifndef HCAL_VISIBLESFEATUREPRODUCER_H_
 #define HCAL_VISIBLESFEATUREPRODUCER_H_
 
@@ -27,7 +34,7 @@ namespace hcal {
 
     std::string hcal_rec_collection_;
     std::string ecal_rec_collection_;
-    bool recoil_from_tracking{false};
+    bool recoil_from_tracking_{false};
     std::string track_collection_;
     std::string sp_collection_;
 
