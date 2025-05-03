@@ -42,10 +42,10 @@ class VisiblesVetoProcessor(ldmxcfg.Producer) :
         super().__init__(name, "hcal::VisiblesVetoProcessor", "Visibles")
 
         self.verbose = False
-        self.feature_list_name = "input"
+        self.feature_list_name = "float_input"
         self.bdt_file = makeBDTPath("visibles_v1")
         self.beam_energy = 8000.0 # in MeV
-        self.disc_cut = 0.9999825
+        self.disc_cut = 0.999978
         self.collection_name = "VisiblesVeto"
         self.rec_coll_name = "HcalRecHits"
         self.rec_pass_name = ''
