@@ -412,7 +412,7 @@ class SimCalorimeterHit {
   /**
    * ROOT class definition.
    */
-  ClassDef(SimCalorimeterHit, 5)
+  ClassDef(SimCalorimeterHit, 6)
 };
 }  // namespace ldmx
 
