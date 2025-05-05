@@ -124,8 +124,7 @@ G4bool EcalSD::ProcessHits(G4Step* aStep, G4TouchableHistory*) {
       if (origin == -1) {
         origin = map.findIncident(track_id);
       }
-      hit.addContrib(getTrackMap().findIncident(track_id), track_id, pdg, edep,
-                     time, origin);
+      hit.addContrib(incident, track_id, pdg, edep, time, origin);
     }
   } else {
     // no hit contribs and hit already exists
