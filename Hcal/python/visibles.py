@@ -42,10 +42,10 @@ class VisiblesVetoProcessor(ldmxcfg.Producer) :
         super().__init__(name, "hcal::VisiblesVetoProcessor", "Visibles")
 
         self.verbose = False
-        self.feature_list_name = "float_input"
+        self.feature_list_name = "input"
         self.bdt_file = makeBDTPath("visibles_v1")
         self.beam_energy = 8000.0 # in MeV
-        self.disc_cut = 0.999978
+        self.disc_cut = 0.9999825
         self.collection_name = "VisiblesVeto"
         self.rec_coll_name = "HcalRecHits"
         self.rec_pass_name = ''
@@ -55,7 +55,7 @@ class VisiblesVetoProcessor(ldmxcfg.Producer) :
         self.sp_coll_name = 'TargetScoringPlaneHits'
         self.sp_pass_name = ''
 
-class GetVisiblesFeatures(ldmxcfg.Analyzer) :
+class VisiblesFeatureProducer(ldmxcfg.Analyzer) :
     """Just plot the visibles features"""
 
     def __init__(self, name='vis') :
@@ -74,6 +74,60 @@ class GetVisiblesFeatures(ldmxcfg.Analyzer) :
         self.sp_coll_name = 'TargetScoringPlaneHits'
         
         ## Define histograms ##
+
+        self.build1DHistogram("layershit", "layershit", 100, 0, 100);
+        self.build1DHistogram("xStd", "xStd", 80, 0, 800);
+        self.build1DHistogram("yStd", "yStd", 80, 0, 800);
+        self.build1DHistogram("zStd", "zStd", 100, 0, 1000)
+        self.build1DHistogram("xMean", "xMeean", 80, -800, 800)
+        self.build1DHistogram("yMean", "yMean", 80, -800, 800)
+        self.build1DHistogram("rMean", "rMean", 80, 0, 800)
+        self.build1DHistogram("isoHits", "isoHits", 100, 0, 100)
+        self.build1DHistogram("isoE", "isoE", 80, 0, 800)
+        self.build1DHistogram("nHits", "nHits", 200, 0, 200)
+        self.build1DHistogram("Etot", "Etot", 100, 4800, 9800)
+        self.build1DHistogram("photonProj", "photonProj", 80, 0, 800)
+
+class VisiblesCutflow(ldmxcfg.Analyzer) :
+    """Just plot the visibles features"""
+
+    def __init__(self, name='vis') :
+        super().__init__(name, 'hcal::VisiblesCutflow', 'Hcal')
+
+        self.bdt_file = makeBDTPath("visibles_v1")
+        self.feature_list_name = "float_input"
+        self.disc_cut = 0.999978
+       
+        self.beam_energy = 8000.0
+        
+        self.hcal_rec_coll_name = "HcalRecHits"
+        self.ecal_rec_coll_name = "EcalRecHits"
+        self.recoil_from_tracking = False
+        self.track_collection = 'RecoilTracks'
+        self.sp_coll_name = 'TargetScoringPlaneHits'
+
+        self.ecal_veto_coll_name = "EcalVeto"
+        self.ecal_veto_pass_name = ''
+        self.ecal_disc_cut = 0.99741
+
+        ## Define histograms ##
+
+        self.build1DHistogram("totalevents", "totalevents", 40, 0, 2000)
+        self.build1DHistogram("acceptance", "acceptance", 40, 0, 2000)
+        self.build1DHistogram("passtrigger", "passtrigger", 40, 0, 2000)
+        self.build1DHistogram("ecalenergy", "ecalenergy", 40, 0, 2000)
+        self.build1DHistogram("passTrackerVeto", "passTrackerVeto", 40, 0, 2000)
+        self.build1DHistogram("passEcalBDT", "passEcalBDT", 40, 0, 2000)
+        self.build1DHistogram("hcalEnergyReq", "hcalEnergyReq", 40, 0, 2000)
+        self.build1DHistogram("containment", "containment", 40, 0, 2000)
+        self.build1DHistogram("passVisiblesBDT", "passVisiblesBDT", 40, 0, 2000)
+        self.build1DHistogram("visiblesDisc", "visiblesDisc", 100, 0, 1)
+        self.build1DHistogram("visiblesDiscHigh", "visiblesDiscHigh", 1000, 0.9999, 1)
+        self.build1DHistogram("visiblesDiscHighNorm", "visiblesDiscHighNorm", 1000, 0.9999, 1)
+        self.build1DHistogram("ecalDiscHigh", "ecalDiscHigh", 1000, 0.999, 1)
+        self.build1DHistogram("ecalDiscHighNorm", "ecalDiscHighNorm", 1000, 0.999, 1)
+        self.build2DHistogram("ecalDiscvsVisDisc", "visDisc", 1000, 0.9999, 1, "ecalDisc", 1000, 0.999, 1)
+        
 
         self.build1DHistogram("layershit", "layershit", 100, 0, 100);
         self.build1DHistogram("xStd", "xStd", 80, 0, 800);

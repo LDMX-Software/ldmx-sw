@@ -57,6 +57,10 @@ namespace hcal {
     // by reconstructed tracker information, when available
     std::vector<double> gamma_p(3);
     std::vector<double> gamma_x0(3);
+
+    std::vector<double> recoil_p(3);
+    bool foundRecoile = false;
+    
     if (recoil_from_tracking_) {
       auto recoilTracks{event.getCollection<ldmx::Track>(track_collection_)};
       // Fill this in later when you know how to use it
@@ -76,13 +80,7 @@ namespace hcal {
 	  event.getCollection<ldmx::SimTrackerHit>(sp_collection_);
 	bool foundRec = false;
 	for (auto const &it : particle_map) {
-	  if (foundRec) {
-	    break;
-	  }
 	  for (auto const &sphit : targetSPHits) {
-	    if (foundRec) {
-	      break;
-	    }
 	    if (sphit.getPosition()[2] > 0) {
 	      if (it.first == sphit.getTrackID()) {
 		if (it.second.getPdgID() == 622) {
@@ -93,19 +91,28 @@ namespace hcal {
 		  foundRec = true;
 		}
 		if (it.second.getPdgID() == 11 && in_list(it.second.getParents(), 0)) {
-		  std::vector<float> x0f = sphit.getPosition();
-                  std::vector<double> x0d(x0f.begin(), x0f.end());
-                  gamma_x0 = x0d;
-		  gamma_p[0] = -1.*sphit.getMomentum()[0];
-		  gamma_p[1] = -1.*sphit.getMomentum()[1];
-		  gamma_p[2] = beamEnergyMeV_ - sphit.getMomentum()[2];
-		  foundRec = true;
+		  if (!foundRec) {
+		    std::vector<float> x0f = sphit.getPosition();
+		    std::vector<double> x0d(x0f.begin(), x0f.end());
+		    gamma_x0 = x0d;
+		    gamma_p[0] = -1.*sphit.getMomentum()[0];
+		    gamma_p[1] = -1.*sphit.getMomentum()[1];
+		    gamma_p[2] = beamEnergyMeV_ - sphit.getMomentum()[2];
+		    foundRec = true;
+		  }
+		  recoil_p = sphit.getMomentum();
+		  foundRecoile = true;
 		}
 	      }
 	    }
 	  }
 	}
       }
+    }
+
+    double pMag = 0.;
+    if (foundRecoile) {
+      pMag = std::sqrt(recoil_p[0]*recoil_p[0] + recoil_p[1]*recoil_p[1] + recoil_p[2]*recoil_p[2]);
     }
 
     // Get EcalRecHits, check that trigger is passed
@@ -135,7 +142,7 @@ namespace hcal {
     }
 
     // If trigger requirement is met
-    if (ecalE < 3160 && hcalE > 4840 && hcalContainment) {
+    if (ecalE < 3160 && hcalE > 4840 && hcalContainment && pMag < 2400) {
 
       // initialize all of the features
       int nLayersHit_ = 0;
@@ -234,6 +241,9 @@ namespace hcal {
 
       for (const ldmx::HcalHit &hit : hcalRecHits) {
 	if (hit.getEnergy() > 0.) {
+	  if (abs(hit.getXPos()) > 1000 || abs(hit.getYPos()) > 1000) {
+            continue;
+          }
 	  ldmx::HcalID detID(hit.getID());
 	  if (detID.getSection() == 0) {
 	    xStd_ += hit.getEnergy()*pow(hit.getXPos()-xMean_,2);

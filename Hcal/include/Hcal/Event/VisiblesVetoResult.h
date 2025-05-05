@@ -1,4 +1,4 @@
-/**
+/*
  *@file VisiblesVetoResult.h
  *@brief Class used to encapsulate the results obstained
          from VisiblesVetoProcessor
