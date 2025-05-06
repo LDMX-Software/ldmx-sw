@@ -28,3 +28,4 @@ mySim.generators.append( gen.single_4gev_e_upstream_tagger() )
 # add your configured simulation to the sequence
 mySim.description = 'Basic test Simulation'
 p.sequence.append( mySim )
+p.libraries.append('/home/tom/code/ldmx/ldmx-sw/build/clang-lto/install/lib/libSimCore_SDs.so')
