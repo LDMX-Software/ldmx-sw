@@ -195,6 +195,12 @@ namespace simcore {
 template <typename Prototype, typename PrototypePtr,
           typename... PrototypeConstructorArgs>
 class Factory {
+  std::ostream& emit() {
+    std::cout << "Factory<"
+      << boost::core::demangle(typeid(Prototype).name()) << ">("
+      << this << ", " << n_factories_ << ")";
+    return std::cout;
+  }
  public:
   /**
    * the signature of a function that can be used by this factory
@@ -240,6 +246,7 @@ class Factory {
   template <typename DerivedType>
   uint64_t declare() {
     std::string full_name{boost::core::demangle(typeid(DerivedType).name())};
+    emit() << "::declare<" << full_name << ">();" << std::endl;
     library_[full_name] = &maker<DerivedType>;
     return reinterpret_cast<std::uintptr_t>(&library_);
   }
@@ -269,6 +276,7 @@ class Factory {
       EXCEPTION_RAISE("SimFactory", "An object named " + full_name +
                                         " has not been declared.");
     }
+    emit() << "::make(" << full_name << ");" << std::endl;
     warehouse_.emplace_back(lib_it->second(maker_args...));
     return warehouse_.back();
   }
@@ -291,6 +299,7 @@ class Factory {
   void operator=(Factory const&) = delete;
 
  private:
+  static int n_factories_;
   /**
    * make a new DerivedType returning a PrototypePtr
    *
@@ -317,7 +326,14 @@ class Factory {
   }
 
   /// private constructor to prevent creation
-  Factory() = default;
+  Factory() {
+    n_factories_++;
+    emit() << "::constructor" << std::endl;
+  }
+
+  ~Factory() {
+    emit() << "::destructor" << std::endl;
+  }
 
   /// library of possible objects to create
   std::unordered_map<std::string, PrototypeMaker> library_;
@@ -326,5 +342,9 @@ class Factory {
   std::vector<PrototypePtr> warehouse_;
 };  // Factory
 
+template<typename T, typename P, typename... Args>
+int Factory<T, P, Args...>::n_factories_ = 0;
+
 }  // namespace simcore
+
 #endif  // SIMCORE_FACTORY_H
