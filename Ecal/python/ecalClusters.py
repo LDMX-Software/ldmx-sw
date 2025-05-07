@@ -14,27 +14,27 @@ class EcalClusterProducer(ldmxcfg.Producer) :
     def __init__(self,name='ecalClusters') :
         super().__init__(name,"ecal::EcalClusterProducer", 'Ecal')
         # Pass name rec hits
-        self.recHitCollName = 'EcalRecHits'
-        self.recHitPassName = ''
+        self.rec_hit_coll_name = 'EcalRecHits'
+        self.rec_hit_pass_name = ''
 
         # Name of the cluster collection to make
-        self.clusterCollName = "ecalClusters"
+        self.cluster_coll_name = "ecalClusters"
 
         # --- EXISTING ALGORITHM ---
         self.cutoff = 10.
         self.seedThreshold = 100.0 #MeV
 
         # Name of the algo to save to the root file 
-        self.algoName = "MyClusterAlgo"
+        self.algo_name = "MyClusterAlgo"
         # Name of the cluster algo collection to make
-        self.algoCollName = "ClusterAlgoResult"
+        self.algo_coll_name = "ClusterAlgoResult"
 
         # --- CLUE ALGORITHM ---
         # Enable CLUE algorithm
         self.CLUE = True
         # Nbr of layers to perform CLUE on
         # = 1 collapses all hits into same z-dimension, gives best results atm
-        self.nbrOfLayers = 1
+        self.nbr_of_layers = 1
         # Cutoff distance in calculation of local density
         # Currently only used when nbrOfLayers > 1
         self.dc = 5.
@@ -47,8 +47,6 @@ class EcalClusterProducer(ldmxcfg.Producer) :
         # Recluster merged clusters or not
         # No reclustering leads to more undercounting, reclustering leads to more overcounting
         self.reclustering = False
-        # very verbose debug
-        self.debug = False
 
         self.build1DHistogram("nLoops", "Number of loops for clustering", 50, 0, 400) # not applicable for CLUE
         self.build1DHistogram("nClusters", "Number of clusters", 20, 0, 20)
@@ -63,17 +61,17 @@ class EcalClusterAnalyzer(ldmxcfg.Analyzer) :
     def __init__(self,name='EcalClusterAnalyzer') :
         super().__init__(name,"ecal::EcalClusterAnalyzer", 'Ecal')
 
-        self.nbrOfElectrons = 2
+        self.nbr_of_electrons = 2
 
-        self.ecalSimHitColl = "EcalSimHits"
-        self.ecalSimHitPass = "" #use whatever pass is available
+        self.ecal_sim_hit_coll = "EcalSimHits"
+        self.ecal_sim_hit_pass = "" #use whatever pass is available
 
         # Pass name for ecal digis and rec hits
-        self.recHitCollName = 'EcalRecHits'
-        self.recHitPassName = ''
+        self.rec_hit_coll_name = 'EcalRecHits'
+        self.rec_hit_pass_name = ''
 
-        self.clusterCollName = 'ecalClusters'
-        self.clusterPassName = ''
+        self.cluster_coll_name = 'ecalClusters'
+        self.cluster_pass_name = ''
         
         # Need to mod for more than two electrons
         self.build1DHistogram("ancestors", "Ancestors of particles", 4, 0, 3)
