@@ -41,8 +41,10 @@ setup_geant4_target()
 add_subdirectory(G4DarkBreM)
 
 setup_library(module SimCore
-  name PhotoNuclearModels
-  dependencies SimCore::SimCore)
+              name PhotoNuclearModels
+              dependencies Geant4::Interface
+                           Framework::Configure
+            )
 
 # Set the LHE Reading Library
 setup_library(module SimCore 
@@ -56,9 +58,27 @@ setup_library(module SimCore
               dependencies Framework::Framework
                            Geant4::Interface)
 
+# Setup the biasing operators library
+setup_library(module SimCore
+              name BiasOperators
+              dependencies Geant4::Interface Framework::Configure Framework::Framework G4DarkBreM)
+
+# Primary Generators library
+setup_library(module SimCore
+              name Generators
+              dependencies Geant4::Interface Framework::Configure Framework::Framework SimCore::LHE)
+
+# Sensitive Detectors library
+setup_library(module SimCore
+              name SDs
+              dependencies Geant4::Interface Framework::Configure Framework::Framework DetDescr::DetDescr)
+
+
 # Get a list of all of the source files.
-file(GLOB SRC_FILES CONFIGURE_DEPDENDS ${PROJECT_SOURCE_DIR}/src/SimCore/Geo/[a-zA-Z]*.cxx
-                                       ${PROJECT_SOURCE_DIR}/src/SimCore/[a-zA-Z]*.cxx)
+file(GLOB SRC_FILES CONFIGURE_DEPDENDS 
+  ${PROJECT_SOURCE_DIR}/src/SimCore/Geo/[a-zA-Z]*.cxx
+  ${PROJECT_SOURCE_DIR}/src/SimCore/[a-zA-Z]*.cxx
+)
 
 # Setup the library
 setup_library(module SimCore
@@ -67,26 +87,15 @@ setup_library(module SimCore
                            Framework::Configure
                            Framework::Framework
                            SimCore::G4User
+                           SimCore::PhotoNuclearModels
+                           SimCore::BiasOperators
+                           SimCore::Generators
+                           SimCore::SDs
                            G4DarkBreM
                            DetDescr::DetDescr
                            Boost::log
                            "${registered_targets}"
               sources ${SRC_FILES})
-
-# Setup the biasing operators library
-setup_library(module SimCore
-              name BiasOperators
-              dependencies SimCore::SimCore)
-
-# Primary Generators library
-setup_library(module SimCore
-              name Generators
-              dependencies SimCore::SimCore SimCore::LHE)
-
-# Sensitive Detectors library
-setup_library(module SimCore
-              name SDs
-              dependencies SimCore::SimCore)
 
 # Set some target properties
 set_target_properties(SimCore
