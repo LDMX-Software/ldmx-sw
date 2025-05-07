@@ -27,7 +27,7 @@ class EcalCluster : public ldmx::CaloCluster {
   /**
    * Class destructor.
    */
-  virtual ~EcalCluster() override;
+  virtual ~EcalCluster();
 
   /**
    * Take in the hits that make up the cluster.
