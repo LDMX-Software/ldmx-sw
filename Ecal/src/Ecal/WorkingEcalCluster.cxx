@@ -14,42 +14,42 @@ WorkingEcalCluster::WorkingEcalCluster(const ldmx::EcalHit& eh, int layer) {
 }
 
 void WorkingEcalCluster::add(const ldmx::EcalHit& eh) {
-  double hitE = eh.getEnergy();
+  double hit_e = eh.getEnergy();
 
-  auto hitX = eh.getXPos();
-  auto hitY = eh.getYPos();
-  auto hitZ = eh.getZPos();
+  auto hit_x = eh.getXPos();
+  auto hit_y = eh.getYPos();
+  auto hit_z = eh.getZPos();
 
-  double newE = hitE + centroid_.E();
-  double newCentroidX = (centroid_.Px() * centroid_.E() + hitE * hitX) / newE;
-  double newCentroidY = (centroid_.Py() * centroid_.E() + hitE * hitY) / newE;
-  double newCentroidZ = (centroid_.Pz() * centroid_.E() + hitE * hitZ) / newE;
+  double new_e = hit_e + centroid_.E();
+  double new_centroid_x = (centroid_.Px() * centroid_.E() + hit_e * hit_x) / new_e;
+  double new_centroid_y = (centroid_.Py() * centroid_.E() + hit_e * hit_y) / new_e;
+  double new_centroid_z = (centroid_.Pz() * centroid_.E() + hit_e * hit_z) / new_e;
 
-  centroid_.SetPxPyPzE(newCentroidX, newCentroidY, newCentroidZ, newE);
+  centroid_.SetPxPyPzE(new_centroid_x, new_centroid_y, new_centroid_z, new_e);
 
   hits_.push_back(eh);
 }
 
 void WorkingEcalCluster::add(const WorkingEcalCluster& wc) {
-  double clusterE = wc.centroid().E();
-  double centroidX = wc.centroid().Px();
-  double centroidY = wc.centroid().Py();
-  double centroidZ = wc.centroid().Pz();
+  double cluster_e = wc.centroid().E();
+  double centroid_x = wc.centroid().Px();
+  double centroid_y = wc.centroid().Py();
+  double centroid_z = wc.centroid().Pz();
 
-  double newE = clusterE + centroid_.E();
-  double newCentroidX =
-      (centroid_.Px() * centroid_.E() + clusterE * centroidX) / newE;
-  double newCentroidY =
-      (centroid_.Py() * centroid_.E() + clusterE * centroidY) / newE;
-  double newCentroidZ =
-      (centroid_.Pz() * centroid_.E() + clusterE * centroidZ) / newE;
+  double new_e = cluster_e + centroid_.E();
+  double new_centroid_x =
+      (centroid_.Px() * centroid_.E() + cluster_e * centroid_x) / new_e;
+  double new_centroid_y =
+      (centroid_.Py() * centroid_.E() + cluster_e * centroid_y) / new_e;
+  double new_centroid_z =
+      (centroid_.Pz() * centroid_.E() + cluster_e * centroid_z) / new_e;
 
-  centroid_.SetPxPyPzE(newCentroidX, newCentroidY, newCentroidZ, newE);
+  centroid_.SetPxPyPzE(new_centroid_x, new_centroid_y, new_centroid_z, new_e);
 
-  const std::vector<ldmx::EcalHit>& clusterHits = wc.getHits();
+  const std::vector<ldmx::EcalHit>& cluster_hits = wc.getHits();
 
-  for (size_t i = 0; i < clusterHits.size(); i++) {
-    hits_.push_back(clusterHits[i]);
+  for (size_t i = 0; i < cluster_hits.size(); i++) {
+    hits_.push_back(cluster_hits[i]);
   }
 }
 

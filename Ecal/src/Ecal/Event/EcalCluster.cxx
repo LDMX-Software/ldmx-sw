@@ -1,33 +1,37 @@
 #include "Ecal/Event/EcalCluster.h"
 
-ClassImp(ldmx::EcalCluster)
+ClassImp(ldmx::EcalCluster);
 
-    namespace ldmx {
-  EcalCluster::EcalCluster() {}
+namespace ldmx {
 
-  EcalCluster::~EcalCluster() { Clear(); }
+EcalCluster::EcalCluster() {}
 
-  void EcalCluster::addHits(const std::vector<const EcalHit *> hitsVec) {
-    std::vector<unsigned int> vecIDs;
-    for (int iHit = 0; iHit < hitsVec.size(); iHit++) {
-      vecIDs.push_back(hitsVec[iHit]->getID());
-    }
-    setIDs(vecIDs);
+EcalCluster::~EcalCluster() { Clear(); }
+
+void EcalCluster::addHits(const std::vector<const EcalHit *> hits) {
+  std::vector<unsigned int> ids;
+  ids.reserve(hits.size());
+  for (const auto& h : hits) {
+    ids.push_back(h->getID());
   }
+  setIDs(ids);
+}
 
-  void EcalCluster::addHits(const std::vector<EcalHit> hitsVec) {
-    std::vector<unsigned int> vecIDs;
-    for (int iHit = 0; iHit < hitsVec.size(); iHit++) {
-      vecIDs.push_back(hitsVec[iHit].getID());
-    }
-    setIDs(vecIDs);
+void EcalCluster::addHits(const std::vector<EcalHit> hits) {
+  std::vector<unsigned int> ids;
+  ids.reserve(hits.size());
+  for (const auto& h : hits) {
+    ids.push_back(h.getID());
   }
+  setIDs(ids);
+}
 
-  void EcalCluster::addFirstLayerHits(const std::vector<EcalHit> hitsVec) {
-    std::vector<unsigned int> vecIDs;
-    for (int iHit = 0; iHit < hitsVec.size(); iHit++) {
-      vecIDs.push_back(hitsVec[iHit].getID());
-    }
-    firstLayerHitIDs_ = vecIDs;
+void EcalCluster::addFirstLayerHits(const std::vector<EcalHit> hits) {
+  first_layer_hit_IDs_.clear();
+  first_layer_hit_IDs_.reserve(hits.size());
+  for (const auto& h : hits) {
+    first_layer_hit_IDs_.push_back(h.getID());
   }
+}
+
 }  // namespace ldmx

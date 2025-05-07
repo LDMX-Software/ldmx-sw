@@ -27,45 +27,45 @@ class EcalCluster : public ldmx::CaloCluster {
   /**
    * Class destructor.
    */
-  virtual ~EcalCluster();
+  virtual ~EcalCluster() override;
 
   /**
    * Take in the hits that make up the cluster.
    * @param hit The digi hit's entry number in the events digi
    * collection.
    */
-  void addHits(const std::vector<const ldmx::EcalHit*> hitsVec);
+  void addHits(const std::vector<const ldmx::EcalHit*> hits);
 
-  void addHits(const std::vector<ldmx::EcalHit> hitsVec);
+  void addHits(const std::vector<ldmx::EcalHit> hits);
 
-  void addFirstLayerHits(const std::vector<ldmx::EcalHit> hitsVec);
+  void addFirstLayerHits(const std::vector<ldmx::EcalHit> hits);
 
   bool operator<(const EcalCluster& rhs) const {
     return this->getEnergy() < rhs.getEnergy();
   }
 
   void setFirstLayerCentroidXYZ(double x, double y, double z) {
-    firstLayerCentroidX_ = x;
-    firstLayerCentroidY_ = y;
-    firstLayerCentroidZ_ = z;
+    first_layer_centroid_x_ = x;
+    first_layer_centroid_y_ = y;
+    first_layer_centroid_z_ = z;
   }
 
-  double getFirstLayerCentroidX() const { return firstLayerCentroidX_; }
-  double getFirstLayerCentroidY() const { return firstLayerCentroidY_; }
-  double getFirstLayerCentroidZ() const { return firstLayerCentroidZ_; }
+  double getFirstLayerCentroidX() const { return first_layer_centroid_x_; }
+  double getFirstLayerCentroidY() const { return first_layer_centroid_y_; }
+  double getFirstLayerCentroidZ() const { return first_layer_centroid_z_; }
 
   std::vector<unsigned int> getFirstLayerHitIDs() const {
-    return firstLayerHitIDs_;
+    return first_layer_hit_IDs_;
   }
 
  private:
   // Could add further ECal-specific info here...
 
-  std::vector<unsigned int> firstLayerHitIDs_;
+  std::vector<unsigned int> first_layer_hit_IDs_;
 
-  double firstLayerCentroidX_{0};
-  double firstLayerCentroidY_{0};
-  double firstLayerCentroidZ_{0};
+  double first_layer_centroid_x_{0};
+  double first_layer_centroid_y_{0};
+  double first_layer_centroid_z_{0};
 
   ClassDef(EcalCluster, 1);
 };

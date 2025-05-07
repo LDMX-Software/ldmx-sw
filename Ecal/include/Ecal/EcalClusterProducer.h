@@ -10,8 +10,6 @@
 //----------//
 //   ROOT   //
 //----------//
-#include "TCanvas.h"
-#include "TFile.h"
 #include "TH1F.h"
 #include "TH2F.h"
 
@@ -47,8 +45,7 @@ namespace ecal {
 class EcalClusterProducer : public framework::Producer {
  public:
   EcalClusterProducer(const std::string& name, framework::Process& process);
-
-  virtual ~EcalClusterProducer();
+  ~EcalClusterProducer() override = default;
 
   /**
    * Configure the processor using the given user specified parameters.
@@ -57,10 +54,10 @@ class EcalClusterProducer : public framework::Producer {
    */
   void configure(framework::config::Parameters& parameters) override;
 
-  virtual void produce(framework::Event& event) override;
+  void produce(framework::Event& event) override;
 
  private:
-  double seedThreshold_{0};
+  double seed_threshold_{0};
   double cutoff_{0};
 
   double dc_{0};
@@ -68,18 +65,18 @@ class EcalClusterProducer : public framework::Producer {
   double deltac_{0};
   double deltao_{0};
 
-  std::string recHitCollName_;
-  std::string recHitPassName_;
-  std::string algoCollName_;
-  std::string clusterCollName_;
+  std::string rec_hit_coll_name_;
+  std::string rec_hit_pass_name_;
+  std::string algo_coll_name_;
+  std::string cluster_coll_name_;
 
   bool CLUE_;
-  int nbrOfLayers_;
+  int nbr_of_layers_;
   bool reclustering_;
   bool debug_;
 
   /** The name of the cluster algorithm used. */
-  TString algoName_;
+  TString algo_name_;
 };
 }  // namespace ecal
 

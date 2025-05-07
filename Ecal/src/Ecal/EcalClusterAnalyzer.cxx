@@ -19,39 +19,39 @@
 namespace ecal {
 
 void EcalClusterAnalyzer::configure(framework::config::Parameters& ps) {
-  nbrOfElectrons_ = ps.getParameter<int>("nbrOfElectrons");
+  nbr_of_electrons_ = ps.getParameter<int>("nbr_of_electrons");
 
-  ecalSimHitColl_ = ps.getParameter<std::string>("ecalSimHitColl");
-  ecalSimHitPass_ = ps.getParameter<std::string>("ecalSimHitPass");
+  ecal_sim_hit_coll_ = ps.getParameter<std::string>("ecal_sim_hit_coll");
+  ecal_sim_hit_pass_ = ps.getParameter<std::string>("ecal_sim_hit_pass");
 
-  recHitCollName_ = ps.getParameter<std::string>("recHitCollName");
-  recHitPassName_ = ps.getParameter<std::string>("recHitPassName");
+  rec_hit_coll_name_ = ps.getParameter<std::string>("rec_hit_coll_name");
+  rec_hit_pass_name_ = ps.getParameter<std::string>("rec_hit_pass_name");
 
-  clusterCollName_ = ps.getParameter<std::string>("clusterCollName");
-  clusterPassName_ = ps.getParameter<std::string>("clusterPassName");
+  cluster_coll_name_ = ps.getParameter<std::string>("cluster_coll_name");
+  cluster_pass_name_ = ps.getParameter<std::string>("cluster_pass_name");
   return;
 }
 
 void EcalClusterAnalyzer::analyze(const framework::Event& event) {
-  auto ecalRecHits{
-      event.getCollection<ldmx::EcalHit>(recHitCollName_, recHitPassName_)};
-  auto ecalSimHits{event.getCollection<ldmx::SimCalorimeterHit>(
-      ecalSimHitColl_, ecalSimHitPass_)};
-  auto ecalClusters{event.getCollection<ldmx::EcalCluster>(clusterCollName_,
-                                                           clusterPassName_)};
+  const auto& ecal_rec_hits{
+      event.getCollection<ldmx::EcalHit>(rec_hit_coll_name_, rec_hit_pass_name_)};
+  const auto& ecal_sim_hits{event.getCollection<ldmx::SimCalorimeterHit>(
+      ecal_sim_hit_coll_, ecal_sim_hit_pass_)};
+  const auto& ecal_clusters{event.getCollection<ldmx::EcalCluster>(cluster_coll_name_,
+                                                           cluster_pass_name_)};
 
-  if (ecalClusters.size() == nbrOfElectrons_)
+  if (ecal_clusters.size() == nbr_of_electrons_)
     histograms_.fill("correctly_predicted_events", 1);  // correct
-  else if (ecalClusters.size() < nbrOfElectrons_)
+  else if (ecal_clusters.size() < nbr_of_electrons_)
     histograms_.fill("correctly_predicted_events", 0);  // undercounting
-  else if (ecalClusters.size() > nbrOfElectrons_)
+  else if (ecal_clusters.size() > nbr_of_electrons_)
     histograms_.fill("correctly_predicted_events", 2);  // overcounting
 
   std::unordered_map<int, std::pair<int, std::vector<double>>> hitInfo;
-  hitInfo.reserve(ecalRecHits.size());
+  hitInfo.reserve(ecal_rec_hits.size());
 
   double dist;
-  if (nbrOfElectrons_ == 2) {
+  if (nbr_of_electrons_ == 2) {
     // Measures distance between two electrons in the ECal scoring plane
     // TODO: generalize for n electrons
     std::vector<float> pos1;
@@ -59,9 +59,9 @@ void EcalClusterAnalyzer::analyze(const framework::Event& event) {
     bool p1 = false;
     bool p2 = false;
 
-    auto ecalSpHits{
+    const auto& ecal_sp_hits{
         event.getCollection<ldmx::SimTrackerHit>("EcalScoringPlaneHits")};
-    for (ldmx::SimTrackerHit& spHit : ecalSpHits) {
+    for (const ldmx::SimTrackerHit& spHit : ecal_sp_hits) {
       if (spHit.getTrackID() == 1) {
         pos1 = spHit.getPosition();
         p1 = true;
@@ -75,25 +75,25 @@ void EcalClusterAnalyzer::analyze(const framework::Event& event) {
                        std::pow((pos1[1] - pos2[1]), 2));
   }
 
-  for (const auto& hit : ecalRecHits) {
+  for (const auto& hit : ecal_rec_hits) {
     auto it = std::find_if(
-        ecalSimHits.begin(), ecalSimHits.end(),
+        ecal_sim_hits.begin(), ecal_sim_hits.end(),
         [&hit](const auto& simHit) { return simHit.getID() == hit.getID(); });
-    if (it != ecalSimHits.end()) {
+    if (it != ecal_sim_hits.end()) {
       // if found a simhit matching this rechit
       int ancestor = 0;
       int prevAncestor = 0;
       bool tagged = false;
       int tag = 0;
       std::vector<double> edep;
-      edep.resize(nbrOfElectrons_ + 1);
+      edep.resize(nbr_of_electrons_ + 1);
       for (int i = 0; i < it->getNumberOfContribs(); i++) {
         // for each contrib in this simhit
         const auto& c = it->getContrib(i);
         // get origin electron ID
         ancestor = c.originID;
         // store energy from this contrib at index = origin electron ID
-        if (ancestor <= nbrOfElectrons_) edep[ancestor] += c.edep;
+        if (ancestor <= nbr_of_electrons_) edep[ancestor] += c.edep;
         if (!tagged && i != 0 && prevAncestor != ancestor) {
           // if origin electron ID does not match previous origin electron ID
           // this hit has contributions from several electrons, ie mixed case
@@ -113,14 +113,14 @@ void EcalClusterAnalyzer::analyze(const framework::Event& event) {
 
   int clusteredHits = 0;
 
-  for (const auto& cl : ecalClusters) {
+  for (const auto& cl : ecal_clusters) {
     // for each cluster
     // total number of hits coming from electron, index = electron ID
     std::vector<double> n;
-    n.resize(nbrOfElectrons_ + 1);
+    n.resize(nbr_of_electrons_ + 1);
     // total number of energy coming from electron, index = electron ID
     std::vector<double> e;
-    e.resize(nbrOfElectrons_ + 1);
+    e.resize(nbr_of_electrons_ + 1);
     double eSum = 0.;
     double nSum = 0.;
 
@@ -136,7 +136,7 @@ void EcalClusterAnalyzer::analyze(const framework::Event& event) {
         nSum++;
 
         double hitESum = 0.;
-        for (int i = 1; i < nbrOfElectrons_ + 1; i++) {
+        for (int i = 1; i < nbr_of_electrons_ + 1; i++) {
           // loop through energy vector
           if (energies[i] > 0.) {
             hitESum += energies[i];
@@ -164,7 +164,7 @@ void EcalClusterAnalyzer::analyze(const framework::Event& event) {
       histograms_.fill("total_energy_vs_hits", eSum, cl.getHitIDs().size());
       histograms_.fill("total_energy_vs_purity", eSum, 100. * (eMax / eSum));
 
-      if (nbrOfElectrons_ == 2)
+      if (nbr_of_electrons_ == 2)
         histograms_.fill("distance_energy_purity", dist, 100. * (eMax / eSum));
     }
     if (nSum > 0) {
@@ -173,11 +173,11 @@ void EcalClusterAnalyzer::analyze(const framework::Event& event) {
     }
   }
 
-  histograms_.fill("clusterless_hits", (ecalRecHits.size() - clusteredHits));
-  histograms_.fill("total_rechits_in_event", ecalRecHits.size());
+  histograms_.fill("clusterless_hits", (ecal_rec_hits.size() - clusteredHits));
+  histograms_.fill("total_rechits_in_event", ecal_rec_hits.size());
   histograms_.fill(
       "clusterless_hits_percentage",
-      100. * (ecalRecHits.size() - clusteredHits) / ecalRecHits.size());
+      100. * (ecal_rec_hits.size() - clusteredHits) / ecal_rec_hits.size());
 }
 
 }  // namespace ecal

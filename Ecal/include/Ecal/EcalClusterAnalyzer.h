@@ -17,36 +17,33 @@ namespace ecal {
  * @class EcalClusterAnalyzer
  * @brief
  */
-
 class EcalClusterAnalyzer : public framework::Analyzer {
  public:
   EcalClusterAnalyzer(const std::string& name, framework::Process& process)
       : Analyzer(name, process) {}
-
-  virtual void configure(framework::config::Parameters& ps);
-
-  virtual void analyze(const framework::Event& event);
-
+  ~EcalClusterAnalyzer() override = default;
+  void configure(framework::config::Parameters& ps) override;
+  void analyze(const framework::Event& event) override;
  private:
-  int nbrOfElectrons_;
+  int nbr_of_electrons_;
 
   // Collection Name for SimHits
-  std::string ecalSimHitColl_;
+  std::string ecal_sim_hit_coll_;
 
   // Pass Name for SimHits
-  std::string ecalSimHitPass_;
+  std::string ecal_sim_hit_pass_;
 
   // Collection Name for RecHits
-  std::string recHitCollName_;
+  std::string rec_hit_coll_name_;
 
   // Pass Name for RecHits
-  std::string recHitPassName_;
+  std::string rec_hit_pass_name_;
 
   // Collection Name for clusters
-  std::string clusterCollName_;
+  std::string cluster_coll_name_;
 
   // Pass Name for clusters
-  std::string clusterPassName_;
+  std::string cluster_pass_name_;
 };
 
 }  // namespace ecal

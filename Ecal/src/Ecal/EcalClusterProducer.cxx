@@ -14,41 +14,37 @@ EcalClusterProducer::EcalClusterProducer(const std::string& name,
                                          framework::Process& process)
     : Producer(name, process) {}
 
-EcalClusterProducer::~EcalClusterProducer() {}
-
 void EcalClusterProducer::configure(framework::config::Parameters& parameters) {
   cutoff_ = parameters.getParameter<double>("cutoff");
-  seedThreshold_ = parameters.getParameter<double>("seedThreshold");
+  seed_threshold_ = parameters.getParameter<double>("seed_threshold");
 
   dc_ = parameters.getParameter<double>("dc");
   rhoc_ = parameters.getParameter<double>("rhoc");
   deltac_ = parameters.getParameter<double>("deltac");
   deltao_ = parameters.getParameter<double>("deltao");
 
-  recHitCollName_ = parameters.getParameter<std::string>("recHitCollName");
-  recHitPassName_ = parameters.getParameter<std::string>("recHitPassName");
-  algoCollName_ = parameters.getParameter<std::string>("algoCollName");
-  algoName_ = parameters.getParameter<std::string>("algoName");
-  clusterCollName_ = parameters.getParameter<std::string>("clusterCollName");
+  rec_hit_coll_name_ = parameters.getParameter<std::string>("rec_hit_coll_name");
+  rec_hit_pass_name_ = parameters.getParameter<std::string>("rec_hit_pass_name");
+  algo_coll_name_ = parameters.getParameter<std::string>("algo_coll_name");
+  algo_name_ = parameters.getParameter<std::string>("algo_name");
+  cluster_coll_name_ = parameters.getParameter<std::string>("cluster_coll_name");
 
   CLUE_ = parameters.getParameter<bool>("CLUE");
-  nbrOfLayers_ = parameters.getParameter<int>("nbrOfLayers");
+  nbr_of_layers_ = parameters.getParameter<int>("nbr_of_layers");
   reclustering_ = parameters.getParameter<bool>("reclustering");
   debug_ = parameters.getParameter<bool>("debug");
 }
 
 void EcalClusterProducer::produce(framework::Event& event) {
-  std::vector<ldmx::EcalHit> ecalHits =
-      event.getCollection<ldmx::EcalHit>(recHitCollName_, recHitPassName_);
-
-  // Don't do anything if there are no ECal digis!
-  if (!(ecalHits.size() > 0)) {
+  const auto& ecal_hits{event.getCollection<ldmx::EcalHit>(rec_hit_coll_name_, rec_hit_pass_name_)};
+  if (ecal_hits.size() == 0) {
+    // don't do anything if there are no ECal hits
     return;
   }
+
   if (CLUE_) {
     CLUE cf;
-
-    cf.cluster(ecalHits, dc_, rhoc_, deltac_, deltao_, nbrOfLayers_,
+    cf.cluster(ecal_hits, dc_, rhoc_, deltac_, deltao_, nbr_of_layers_,
                reclustering_, debug_);
     std::vector<WorkingEcalCluster> wcVec = cf.getClusters();
     std::vector<WorkingEcalCluster> fWcVec = cf.getFirstLayerCentroids();
@@ -80,7 +76,7 @@ void EcalClusterProducer::produce(framework::Event& event) {
       ecalClusters.push_back(cluster);
     }
 
-    event.add(clusterCollName_, ecalClusters);
+    event.add(cluster_coll_name_, ecalClusters);
   } else {
     // Get the Ecal Geometry
     const auto& geometry = getCondition<ldmx::EcalGeometry>(
@@ -88,7 +84,7 @@ void EcalClusterProducer::produce(framework::Event& event) {
 
     TemplatedClusterFinder<MyClusterWeight> cf;
 
-    for (ldmx::EcalHit& hit : ecalHits) {
+    for (const ldmx::EcalHit& hit : ecal_hits) {
       // Skip zero energy digis.
       if (hit.getEnergy() == 0) {
         continue;
@@ -97,7 +93,7 @@ void EcalClusterProducer::produce(framework::Event& event) {
       cf.add(&hit, geometry);
     }
 
-    cf.cluster(seedThreshold_, cutoff_);
+    cf.cluster(seed_threshold_, cutoff_);
     std::vector<WorkingCluster> wcVec = cf.getClusters();
 
     auto nLoops = cf.getNLoops();
@@ -107,9 +103,9 @@ void EcalClusterProducer::produce(framework::Event& event) {
     std::map<int, double> cWeights = cf.getWeights();
 
     ldmx::ClusterAlgoResult algoResult;
-    algoResult.set(algoName_, 3, cWeights.rbegin()->first);
+    algoResult.set(algo_name_, 3, cWeights.rbegin()->first);
     algoResult.setAlgoVar(0, cutoff_);
-    algoResult.setAlgoVar(1, seedThreshold_);
+    algoResult.setAlgoVar(1, seed_threshold_);
     algoResult.setAlgoVar(2, cf.getNSeeds());
 
     std::map<int, double>::iterator it = cWeights.begin();
@@ -135,8 +131,8 @@ void EcalClusterProducer::produce(framework::Event& event) {
       ecalClusters.push_back(cluster);
     }
 
-    event.add(clusterCollName_, ecalClusters);
-    event.add(algoCollName_, algoResult);
+    event.add(cluster_coll_name_, ecalClusters);
+    event.add(algo_coll_name_, algoResult);
   }
 }
 }  // namespace ecal
