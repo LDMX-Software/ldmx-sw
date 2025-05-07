@@ -11,7 +11,8 @@ float CLUE::floatDist(float x1, float y1, float x2, float y2) {
   return powf(powf(x1 - x2, 2) + powf(y1 - y2, 2), 0.5);
 }
 
-float CLUE::floatDist(float x1, float y1, float z1, float x2, float y2, float z2) {
+float CLUE::floatDist(float x1, float y1, float z1, float x2, float y2,
+                      float z2) {
   return powf(powf(x1 - x2, 2) + powf(y1 - y2, 2) + powf(z1 - z2, 2), 0.5);
 }
 
@@ -167,7 +168,7 @@ std::vector<std::shared_ptr<CLUE::Density>> CLUE::setup(
         y = (1 - 0.5) * dc_;  // set x,y to middle of box
       coords = {i, j};
       ldmx_log(trace) << "    Index " << i << ", " << j << "; x: " << x
-                  << " y: " << y;
+                      << " y: " << y;
     } else {
       // if just one layer, have all densities with the same x,y be in same
       // density
@@ -229,8 +230,8 @@ std::vector<std::shared_ptr<CLUE::Density>> CLUE::setup(
 // connecting seeds between layers) otherwise, layerTag tells us which layer
 // number we're working on
 std::vector<std::vector<ldmx::EcalHit>> CLUE::clustering(
-    std::vector<std::shared_ptr<CLUE::Density>>& densities, bool connectingLayers,
-    int layerTag) {
+    std::vector<std::shared_ptr<CLUE::Density>>& densities,
+    bool connectingLayers, int layerTag) {
   ldmx_log(trace) << "--- CLUSTERING ---";
 
   if (!connectingLayers && nbr_of_layers_ > 1) {
@@ -239,7 +240,8 @@ std::vector<std::vector<ldmx::EcalHit>> CLUE::clustering(
     ldmx_log(trace) << "Setting rhoc on layer " << layerTag << " to " << rhoc_;
     if (layerTag * 2 - 1 < radius.size()) {
       deltac_ = radius[layerTag * 2 - 1];
-      ldmx_log(trace) << "Setting deltac on layer " << layerTag << " to " << deltac_;
+      ldmx_log(trace) << "Setting deltac on layer " << layerTag << " to "
+                      << deltac_;
     }
   } else if (connectingLayers) {
     // if currently doing 3D clustering
@@ -313,14 +315,14 @@ std::vector<std::vector<ldmx::EcalHit>> CLUE::clustering(
         isSeed = densities[i]->total_energy > rhoc_ &&
                  densities[i]->delta > deltacMod;
       } else
-        isSeed = densities[i]->total_energy > rhoc_ &&
-                 densities[i]->delta > deltac_;
+        isSeed =
+            densities[i]->total_energy > rhoc_ && densities[i]->delta > deltac_;
 
       if (isSeed) {
         ldmx_log(trace) << "  Distance to centroid: "
-                  << floatDist(densities[i]->x, densities[i]->y,
-                               event_centroid_.centroid().Px(),
-                               event_centroid_.centroid().Py());
+                        << floatDist(densities[i]->x, densities[i]->y,
+                                     event_centroid_.centroid().Px(),
+                                     event_centroid_.centroid().Py());
       }
 
       bool isOutlier =
@@ -418,7 +420,7 @@ std::vector<std::shared_ptr<CLUE::Density>> CLUE::layerSetup() {
       if (currentLayer[i]->total_energy > highestEnergy)
         highestEnergy = currentLayer[i]->total_energy;
       ldmx_log(trace) << "    Density with index " << currentLayer[i]->index
-                     << ", energy: " << currentLayer[i]->total_energy;
+                      << ", energy: " << currentLayer[i]->total_energy;
       int depth = 1;
       // decide delta and followerof from seeds in previous and next layer
       // do {
@@ -437,16 +439,19 @@ std::vector<std::shared_ptr<CLUE::Density>> CLUE::layerSetup() {
                           << ": " << std::setprecision(20) << dz << std::endl;
           if (previousLayer[j]->total_energy > currentLayer[i]->total_energy &&
               d < currentLayer[i]->delta && dz < currentLayer[i]->z_delta) {
-            ldmx_log(trace) << "      New parent: index "
-                            << previousLayer[j]->index << " on layer "
-                            << layer - depth << "; energy "
-                            << previousLayer[j]->total_energy;
-            ldmx_log(trace) << "      New delta: " << std::setprecision(20) << d;
-            ldmx_log(trace) << "      New deltaZ: " << std::setprecision(20) << dz;
+            ldmx_log(trace)
+                << "      New parent: index " << previousLayer[j]->index
+                << " on layer " << layer - depth << "; energy "
+                << previousLayer[j]->total_energy;
+            ldmx_log(trace)
+                << "      New delta: " << std::setprecision(20) << d;
+            ldmx_log(trace)
+                << "      New deltaZ: " << std::setprecision(20) << dz;
             currentLayer[i]->delta = d;
             currentLayer[i]->z_delta = dz;
             currentLayer[i]->follower_of = previousLayer[j]->index;
-          } else if (previousLayer[j]->total_energy < currentLayer[i]->total_energy) {
+          } else if (previousLayer[j]->total_energy <
+                     currentLayer[i]->total_energy) {
             break;
           }
         }
@@ -466,12 +471,15 @@ std::vector<std::shared_ptr<CLUE::Density>> CLUE::layerSetup() {
             ldmx_log(trace) << "      New parent: index " << nextLayer[j]->index
                             << " on layer " << layer + depth << "; energy "
                             << nextLayer[j]->total_energy;
-            ldmx_log(trace) << "      New delta: " << std::setprecision(20) << d;
-            ldmx_log(trace) << "      New deltaZ: " << std::setprecision(20) << dz;
+            ldmx_log(trace)
+                << "      New delta: " << std::setprecision(20) << d;
+            ldmx_log(trace)
+                << "      New deltaZ: " << std::setprecision(20) << dz;
             currentLayer[i]->delta = d;
             currentLayer[i]->z_delta = dz;
             currentLayer[i]->follower_of = nextLayer[j]->index;
-          } else if (nextLayer[j]->total_energy < currentLayer[i]->total_energy) {
+          } else if (nextLayer[j]->total_energy <
+                     currentLayer[i]->total_energy) {
             break;
           }
         }
@@ -507,7 +515,8 @@ void CLUE::convertToWorkingClusters(
 }
 
 void CLUE::cluster(const std::vector<ldmx::EcalHit>& hits, double dc, double rc,
-             double deltac, double deltao, int nbrOfLayers, bool reclustering) {
+                   double deltac, double deltao, int nbrOfLayers,
+                   bool reclustering) {
   // cutoff distance for local density
   dc_ = dc;
   // min density to promote as seed/max density to demote as outlier

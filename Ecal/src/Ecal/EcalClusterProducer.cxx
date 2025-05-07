@@ -23,11 +23,14 @@ void EcalClusterProducer::configure(framework::config::Parameters& parameters) {
   deltac_ = parameters.getParameter<double>("deltac");
   deltao_ = parameters.getParameter<double>("deltao");
 
-  rec_hit_coll_name_ = parameters.getParameter<std::string>("rec_hit_coll_name");
-  rec_hit_pass_name_ = parameters.getParameter<std::string>("rec_hit_pass_name");
+  rec_hit_coll_name_ =
+      parameters.getParameter<std::string>("rec_hit_coll_name");
+  rec_hit_pass_name_ =
+      parameters.getParameter<std::string>("rec_hit_pass_name");
   algo_coll_name_ = parameters.getParameter<std::string>("algo_coll_name");
   algo_name_ = parameters.getParameter<std::string>("algo_name");
-  cluster_coll_name_ = parameters.getParameter<std::string>("cluster_coll_name");
+  cluster_coll_name_ =
+      parameters.getParameter<std::string>("cluster_coll_name");
 
   CLUE_ = parameters.getParameter<bool>("CLUE");
   nbr_of_layers_ = parameters.getParameter<int>("nbr_of_layers");
@@ -35,7 +38,8 @@ void EcalClusterProducer::configure(framework::config::Parameters& parameters) {
 }
 
 void EcalClusterProducer::produce(framework::Event& event) {
-  const auto& ecal_hits{event.getCollection<ldmx::EcalHit>(rec_hit_coll_name_, rec_hit_pass_name_)};
+  const auto& ecal_hits{event.getCollection<ldmx::EcalHit>(rec_hit_coll_name_,
+                                                           rec_hit_pass_name_)};
   if (ecal_hits.size() == 0) {
     // don't do anything if there are no ECal hits
     return;
@@ -43,7 +47,8 @@ void EcalClusterProducer::produce(framework::Event& event) {
 
   if (CLUE_) {
     CLUE cf;
-    cf.cluster(ecal_hits, dc_, rhoc_, deltac_, deltao_, nbr_of_layers_, reclustering_);
+    cf.cluster(ecal_hits, dc_, rhoc_, deltac_, deltao_, nbr_of_layers_,
+               reclustering_);
     std::vector<WorkingEcalCluster> wcVec = cf.getClusters();
     std::vector<WorkingEcalCluster> fWcVec = cf.getFirstLayerCentroids();
 

@@ -8,7 +8,7 @@ EcalCluster::EcalCluster() {}
 
 EcalCluster::~EcalCluster() { Clear(); }
 
-void EcalCluster::addHits(const std::vector<const EcalHit *> hits) {
+void EcalCluster::addHits(const std::vector<const EcalHit*> hits) {
   std::vector<unsigned int> ids;
   ids.reserve(hits.size());
   for (const auto& h : hits) {

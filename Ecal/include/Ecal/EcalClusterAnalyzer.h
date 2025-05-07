@@ -24,6 +24,7 @@ class EcalClusterAnalyzer : public framework::Analyzer {
   ~EcalClusterAnalyzer() override = default;
   void configure(framework::config::Parameters& ps) override;
   void analyze(const framework::Event& event) override;
+
  private:
   int nbr_of_electrons_;
 

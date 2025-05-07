@@ -33,12 +33,12 @@ void EcalClusterAnalyzer::configure(framework::config::Parameters& ps) {
 }
 
 void EcalClusterAnalyzer::analyze(const framework::Event& event) {
-  const auto& ecal_rec_hits{
-      event.getCollection<ldmx::EcalHit>(rec_hit_coll_name_, rec_hit_pass_name_)};
+  const auto& ecal_rec_hits{event.getCollection<ldmx::EcalHit>(
+      rec_hit_coll_name_, rec_hit_pass_name_)};
   const auto& ecal_sim_hits{event.getCollection<ldmx::SimCalorimeterHit>(
       ecal_sim_hit_coll_, ecal_sim_hit_pass_)};
-  const auto& ecal_clusters{event.getCollection<ldmx::EcalCluster>(cluster_coll_name_,
-                                                           cluster_pass_name_)};
+  const auto& ecal_clusters{event.getCollection<ldmx::EcalCluster>(
+      cluster_coll_name_, cluster_pass_name_)};
 
   if (ecal_clusters.size() == nbr_of_electrons_)
     histograms_.fill("correctly_predicted_events", 1);  // correct

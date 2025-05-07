@@ -21,9 +21,12 @@ void WorkingEcalCluster::add(const ldmx::EcalHit& eh) {
   auto hit_z = eh.getZPos();
 
   double new_e = hit_e + centroid_.E();
-  double new_centroid_x = (centroid_.Px() * centroid_.E() + hit_e * hit_x) / new_e;
-  double new_centroid_y = (centroid_.Py() * centroid_.E() + hit_e * hit_y) / new_e;
-  double new_centroid_z = (centroid_.Pz() * centroid_.E() + hit_e * hit_z) / new_e;
+  double new_centroid_x =
+      (centroid_.Px() * centroid_.E() + hit_e * hit_x) / new_e;
+  double new_centroid_y =
+      (centroid_.Py() * centroid_.E() + hit_e * hit_y) / new_e;
+  double new_centroid_z =
+      (centroid_.Pz() * centroid_.E() + hit_e * hit_z) / new_e;
 
   centroid_.SetPxPyPzE(new_centroid_x, new_centroid_y, new_centroid_z, new_e);
 

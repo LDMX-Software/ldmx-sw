@@ -18,14 +18,15 @@
 #include <set>
 #include <stack>
 
-#include "Framework/Logger.h"
 #include "Ecal/Event/EcalHit.h"
 #include "Ecal/WorkingEcalCluster.h"
+#include "Framework/Logger.h"
 
 namespace ecal {
 
 class CLUE {
   enableLogging("CLUE");
+
  public:
   struct Density {
     float x;
@@ -68,7 +69,8 @@ class CLUE {
   std::vector<std::vector<ldmx::EcalHit>> createLayers(
       const std::vector<ldmx::EcalHit>& hits);
   float roundToDecimal(float x, int num_decimal_precision_digits);
-  std::vector<std::shared_ptr<Density>> setup(const std::vector<ldmx::EcalHit>& hits);
+  std::vector<std::shared_ptr<Density>> setup(
+      const std::vector<ldmx::EcalHit>& hits);
 
   // connectingLayers marks if we're currently doing 3D clustering (i.e.
   // connecting seeds between layers) otherwise, layerTag tells us which layer
@@ -83,7 +85,8 @@ class CLUE {
       std::vector<std::vector<ldmx::EcalHit>>& clusters);
 
   void cluster(const std::vector<ldmx::EcalHit>& hits, double dc, double rc,
-               double deltac, double deltao, int nbrOfLayers, bool reclustering);
+               double deltac, double deltao, int nbrOfLayers,
+               bool reclustering);
 
   std::vector<double> getCentroidDistances() const {
     return centroid_distances_;
@@ -93,7 +96,9 @@ class CLUE {
 
   int getInitialClusterNbr() const { return initial_cluster_nbr_; }
 
-  std::vector<WorkingEcalCluster> getClusters() const { return final_clusters_; }
+  std::vector<WorkingEcalCluster> getClusters() const {
+    return final_clusters_;
+  }
 
   // First layer centroids are available for potential future combination with
   // TS
@@ -119,8 +124,8 @@ class CLUE {
   double air_{10.};
   // thickness of ECal layers
   std::vector<double> layer_thickness_ = {2.,   3.5,  5.3,  5.3, 5.3, 5.3,
-                                         5.3,  5.3,  5.3,  5.3, 5.3, 10.5,
-                                         10.5, 10.5, 10.5, 10.5};
+                                          5.3,  5.3,  5.3,  5.3, 5.3, 10.5,
+                                          10.5, 10.5, 10.5, 10.5};
   std::vector<double> layer_rho_c_;
   std::vector<double> layer_delta_c;
   // containment radius for the different layers of the ECal
