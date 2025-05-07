@@ -32,7 +32,6 @@ void EcalClusterProducer::configure(framework::config::Parameters& parameters) {
   CLUE_ = parameters.getParameter<bool>("CLUE");
   nbr_of_layers_ = parameters.getParameter<int>("nbr_of_layers");
   reclustering_ = parameters.getParameter<bool>("reclustering");
-  debug_ = parameters.getParameter<bool>("debug");
 }
 
 void EcalClusterProducer::produce(framework::Event& event) {
@@ -44,8 +43,7 @@ void EcalClusterProducer::produce(framework::Event& event) {
 
   if (CLUE_) {
     CLUE cf;
-    cf.cluster(ecal_hits, dc_, rhoc_, deltac_, deltao_, nbr_of_layers_,
-               reclustering_, debug_);
+    cf.cluster(ecal_hits, dc_, rhoc_, deltac_, deltao_, nbr_of_layers_, reclustering_);
     std::vector<WorkingEcalCluster> wcVec = cf.getClusters();
     std::vector<WorkingEcalCluster> fWcVec = cf.getFirstLayerCentroids();
 

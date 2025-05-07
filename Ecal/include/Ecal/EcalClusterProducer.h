@@ -73,7 +73,6 @@ class EcalClusterProducer : public framework::Producer {
   bool CLUE_;
   int nbr_of_layers_;
   bool reclustering_;
-  bool debug_;
 
   /** The name of the cluster algorithm used. */
   TString algo_name_;

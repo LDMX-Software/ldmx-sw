@@ -83,8 +83,7 @@ class CLUE {
       std::vector<std::vector<ldmx::EcalHit>>& clusters);
 
   void cluster(const std::vector<ldmx::EcalHit>& hits, double dc, double rc,
-               double deltac, double deltao, int nbrOfLayers, bool reclustering,
-               bool debug);
+               double deltac, double deltao, int nbrOfLayers, bool reclustering);
 
   std::vector<double> getCentroidDistances() const {
     return centroid_distances_;
@@ -106,7 +105,6 @@ class CLUE {
   int clustering_loops_;
 
   bool reclustering_;
-  bool debug_;
 
   double dc_;
   double rhoc_;
