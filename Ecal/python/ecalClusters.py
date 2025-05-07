@@ -22,7 +22,7 @@ class EcalClusterProducer(ldmxcfg.Producer) :
 
         # --- EXISTING ALGORITHM ---
         self.cutoff = 10.
-        self.seedThreshold = 100.0 #MeV
+        self.seed_threshold = 100.0 #MeV
 
         # Name of the algo to save to the root file 
         self.algo_name = "MyClusterAlgo"
