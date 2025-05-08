@@ -69,19 +69,6 @@ class LinearSeedFinder : public TrackingGeometryUser {
           recoil_two,
       const std::array<double, 3> ecal_one);
 
-  // Function to combine Recoil layer points into "real" sensor points
-  std::pair<std::vector<std::tuple<std::array<double, 3>, ldmx::Measurement,
-                                   std::optional<ldmx::Measurement>>>,
-            std::vector<std::tuple<std::array<double, 3>, ldmx::Measurement,
-                                   std::optional<ldmx::Measurement>>>>
-  combineMultiGlobalHits(const std::vector<ldmx::Measurement> &hit_collection);
-
-  // Function to do weighted averaging when combining Recoil layer points
-  std::vector<std::tuple<std::array<double, 3>, ldmx::Measurement,
-                         std::optional<ldmx::Measurement>>>
-  midPointCalculation(const std::vector<ldmx::Measurement> &layer1,
-                      const std::vector<ldmx::Measurement> &layer2);
-
   // Fitting function: fit a straight line in 3D using 3 points (1 degree of
   // freedom)
   std::tuple<double, double, double, double, std::vector<double>> fit3DLine(
@@ -92,6 +79,12 @@ class LinearSeedFinder : public TrackingGeometryUser {
   // Helper function: calculate distance between 2 3D points
   double calculateDistance(const std::array<double, 3> &point1,
                            const std::array<double, 3> &point2);
+    
+  // Do 3D hit reconstruction using an axial measurement and a stereo measurement according to geometric projections
+  Acts::Vector3 simple3DHitV2(const ldmx::Measurement& axial, const Acts::Surface& axial_surface, const ldmx::Measurement& stereo, const Acts::Surface& stereo_surface, const ldmx::SimTrackerHit& hitOnTarget,  std::vector<ldmx::SimTrackerHit> pair_sim_hits);
+    
+  //Makes all combinations of sensor measurements to use in the seeding
+  std::vector<std::tuple<std::array<double, 3>, std::tuple<ldmx::Measurement, ldmx::SimTrackerHit, ldmx::SimTrackerHit>, std::optional<std::tuple<ldmx::Measurement, ldmx::SimTrackerHit, ldmx::SimTrackerHit>>>> processMeasurements(const std::vector<std::tuple<ldmx::Measurement, ldmx::SimTrackerHit, ldmx::SimTrackerHit>>& measurements, const geo::TrackersTrackingGeometry& tg);
 
   // Calculate chi2 of the fit
   double globalChiSquare(const std::array<double, 3> &first_sensor,
@@ -102,14 +95,12 @@ class LinearSeedFinder : public TrackingGeometryUser {
   // Function to find the number of unique layers hit (to determine if we have
   // enough points to fit)
   int uniqueLayersHit(const std::vector<ldmx::Measurement> &digi_points);
-    
-    std::vector<std::tuple<std::array<double, 3>, ldmx::Measurement, ldmx::Measurement>> processMeasurements(const std::vector<ldmx::Measurement>& measurements, const geo::TrackersTrackingGeometry& tg);
-    std::array<double, 3> convertToLdmxStdArray(const Acts::Vector3& vec);
-    std::tuple<Acts::Vector3, Acts::Vector3, Acts::Vector3> getSurfaceVectors(const Acts::Surface& surface);
-    Acts::Vector3 compute3DHit(const ldmx::Measurement& axial, const Acts::Surface& axial_surface, const ldmx::Measurement& stereo, const Acts::Surface& stereo_surface);
-    double dotProduct(const Acts::Vector3& v1, const Acts::Vector3& v2);
-    Acts::Vector3 stripCenter(const Acts::Vector3& strip_origin, double u, const Acts::Vector3& strip_uhat);
-    double nonZeroDotProduct(const Acts::Vector3& v1, const Acts::Vector3& v2);
+
+  //Helper functions:
+  std::array<double, 3> convertToLdmxStdArray(const Acts::Vector3& vec);
+  std::tuple<Acts::Vector3, Acts::Vector3, Acts::Vector3> getSurfaceVectors(const Acts::Surface& surface);
+  double dotProduct(const Acts::Vector3& v1, const Acts::Vector3& v2);
+  std::array<double, 3> getPointAtZ(std::array<double, 3> target, std::array<double, 3> measurement, double z_target);
     
   double processing_time_{0.};
   long n_events_{0};
@@ -133,7 +124,7 @@ class LinearSeedFinder : public TrackingGeometryUser {
   double layer34_midpoint_{27.5};
   double ecal_first_layer_z_threshold_{250.0};
 
-  std::vector<double> recoil_uncertainty_{0.006, 5.7735};
+  std::vector<double> recoil_uncertainty_{0.006, 0.085};
 
   // Check failures
   long n_missing_{0};
