@@ -118,7 +118,7 @@ class TestAnalyzer : public Analyzer {
     }
   ~TestAnalyzer() {}
   
-  void configure(framework::config::Parameters& ps) {
+  void configure(framework::config::Parameters& ps) override {
     test_collection_passname_ = ps.getParameter<std::string>("test_collection_passname", "");
     test_object_passname_ = ps.getParameter<std::string>("test_object_passname", "");
     veto_test_object_passname_ = ps.getParameter<std::string>("veto_test_object_passname", "");   
@@ -140,11 +140,6 @@ class TestAnalyzer : public Analyzer {
 
     const std::vector<ldmx::CalorimeterHit>& caloHits =
         event.getCollection<ldmx::CalorimeterHit>("TestCollection", test_collection_passname_);
-
-    const ldmx::HcalVetoResult& res =
-        event.getObject<ldmx::HcalVetoResult>("TestObject", test_object_passname_);
-
-       
 
     CHECK(caloHits.size() == i_event);
     for (unsigned int i = 0; i < caloHits.size(); i++) {
