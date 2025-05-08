@@ -15,7 +15,7 @@
 /*~~~~~~~~~~~~~*/
 /*   SimCore   */
 /*~~~~~~~~~~~~~*/
-#include "SimCore/PrimaryGenerator.h"
+#include "SimCore/Generators/PrimaryGenerator.h"
 #include "SimCore/UserEventInformation.h"
 #include "SimCore/UserPrimaryParticleInformation.h"
 

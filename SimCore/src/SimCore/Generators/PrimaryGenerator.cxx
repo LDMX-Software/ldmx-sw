@@ -5,7 +5,7 @@
  * @author Tom Eichlersmith, University of Minnesota
  */
 
-#include "SimCore/PrimaryGenerator.h"
+#include "SimCore/Generators/PrimaryGenerator.h"
 
 namespace simcore {
 

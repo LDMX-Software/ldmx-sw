@@ -12,8 +12,7 @@ project(
 find_package(ROOT CONFIG REQUIRED)
 
 # Search for Boost
-find_package(Boost REQUIRED
-             COMPONENTS log)
+find_package(Boost REQUIRED COMPONENTS log)
 
 option(BUILD_EVENT_ONLY "Build the event library." ON)
 if(BUILD_EVENT_ONLY)
@@ -72,7 +71,8 @@ setup_library(module SimCore
               dependencies Geant4::Interface
                            Framework::Configure
                            Framework::Framework
-                           SimCore::LHE)
+                           SimCore::LHE
+                           SimCore::G4User)
 
 # Sensitive Detectors library
 setup_library(module SimCore
