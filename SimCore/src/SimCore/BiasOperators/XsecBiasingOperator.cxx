@@ -1,4 +1,4 @@
-#include "SimCore/XsecBiasingOperator.h"
+#include "SimCore/BiasOperators/XsecBiasingOperator.h"
 
 #include "Framework/Exception/Exception.h"
 

@@ -19,6 +19,7 @@
 /*   SimCore   */
 /*~~~~~~~~~~~~~*/
 #include "SimCore/APrimePhysics.h"
+#include "SimCore/BiasOperators/XsecBiasingOperator.h"
 #include "SimCore/DetectorConstruction.h"
 #include "SimCore/G4Session.h"
 #include "SimCore/G4User/TrackingAction.h"
@@ -26,7 +27,6 @@
 #include "SimCore/Generators/PrimaryGenerator.h"
 #include "SimCore/SDs/SensitiveDetector.h"
 #include "SimCore/UserEventInformation.h"
-#include "SimCore/XsecBiasingOperator.h"
 
 /*~~~~~~~~~~~~~~*/
 /*    Geant4    */

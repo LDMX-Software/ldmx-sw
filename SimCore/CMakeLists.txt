@@ -71,8 +71,7 @@ setup_library(module SimCore
               dependencies Geant4::Interface
                            Framework::Configure
                            Framework::Framework
-                           SimCore::LHE
-                           SimCore::G4User)
+                           SimCore::LHE)
 
 # Sensitive Detectors library
 setup_library(module SimCore

@@ -20,7 +20,7 @@
 #include "SimCore/G4User/TrackingAction.h"
 #include "SimCore/GammaPhysics.h"
 #include "SimCore/ParallelWorld.h"
-#include "SimCore/XsecBiasingOperator.h"
+#include "SimCore/BiasOperators/XsecBiasingOperator.h"
 
 //------------//
 //   Geant4   //

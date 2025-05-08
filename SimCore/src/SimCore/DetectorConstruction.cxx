@@ -6,10 +6,10 @@
 /*~~~~~~~~~~~~~*/
 /*   SimCore   */
 /*~~~~~~~~~~~~~*/
+#include "SimCore/BiasOperators/XsecBiasingOperator.h"
 #include "SimCore/DetectorConstruction.h"
 #include "SimCore/G4User/VolumeChecks.h"
 #include "SimCore/SDs/SensitiveDetector.h"
-#include "SimCore/XsecBiasingOperator.h"
 
 namespace simcore {
 namespace logical_volume_tests {
