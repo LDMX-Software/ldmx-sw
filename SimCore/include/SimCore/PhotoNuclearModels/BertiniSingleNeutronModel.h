@@ -8,7 +8,7 @@
 #include <G4ProcessManager.hh>
 
 #include "Framework/Configure/Parameters.h"
-#include "SimCore/PhotoNuclearModel.h"
+#include "SimCore/PhotoNuclearModels/PhotoNuclearModel.h"
 #include "SimCore/PhotoNuclearModels/BertiniEventTopologyProcess.h"
 namespace simcore {
 class BertiniSingleNeutronProcess : public BertiniEventTopologyProcess {
