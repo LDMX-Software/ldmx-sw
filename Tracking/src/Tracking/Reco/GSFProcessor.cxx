@@ -127,6 +127,9 @@ void GSFProcessor::configure(framework::config::Parameters& parameters) {
       parameters.getParameter<std::string>("trackCollection", "TaggerTracks");
   measCollection_ = parameters.getParameter<std::string>("measCollection",
                                                          "DigiTaggerSimHits");
+                                                         
+  track_passname_ = parameters.getParameter<std::string>("track_passname");
+  meas_passname_ = parameters.getParameter<std::string>("meas_passname");
 
   maxComponents_ = parameters.getParameter<int>("maxComponents", 4);
   abortOnError_ = parameters.getParameter<bool>("abortOnError", false);
@@ -155,11 +158,11 @@ void GSFProcessor::produce(framework::Event& event) {
 
   // Retrieve the tracks
   if (!event.exists(trackCollection_)) return;
-  auto tracks{event.getCollection<ldmx::Track>(trackCollection_)};
+  auto tracks{event.getCollection<ldmx::Track>(trackCollection_,track_passname_)};
 
   // Retrieve the measurements
   if (!event.exists(measCollection_)) return;
-  auto measurements{event.getCollection<ldmx::Measurement>(measCollection_)};
+  auto measurements{event.getCollection<ldmx::Measurement>(measCollection_,meas_passname_)};
 
   tracking::sim::LdmxMeasurementCalibrator calibrator{measurements};
 

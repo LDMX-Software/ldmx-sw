@@ -34,9 +34,9 @@ class PFTruthProducer : public framework::Producer {
   std::string targetCollName_;
   std::string ecalCollName_;
   std::string hcalCollName_;
-  std::string targetSpPassName_{"sim"}; // Default, could be configurable
-  std::string ecalSpPassName_{"sim"};
-  std::string simParticlesPassName_{"sim"};
+  std::string target_sp_passname_;
+  std::string ecal_sp_passname_;
+  std::string sim_particles_passname_;
 };
 }  // namespace recon
 

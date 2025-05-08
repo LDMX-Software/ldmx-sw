@@ -18,7 +18,7 @@ void StraightTracksDQM::configure(framework::config::Parameters& parameters) {
   measurement_collection_ = parameters.getParameter<std::string>(
       "measurement_collection", "DigiRecoilSimHits");
   input_pass_name_ =
-      parameters.getParameter<std::string>("input_pass_name", "");
+      parameters.getParameter<std::string>("input_pass_name");
 
   ldmx_log(info) << "Track Collection " << track_collection_;
   ldmx_log(info) << "Truth Collection " << truth_collection_;

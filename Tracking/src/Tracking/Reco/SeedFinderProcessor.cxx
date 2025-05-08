@@ -82,7 +82,10 @@ void SeedFinderProcessor::configure(framework::config::Parameters& parameters) {
   bfield_ = parameters.getParameter<double>("bfield", 1.5);
 
   input_pass_name_ =
-      parameters.getParameter<std::string>("input_pass_name", "");
+      parameters.getParameter<std::string>("input_pass_name");
+      
+  sim_particles_passname_ =
+      parameters.getParameter<std::string>("sim_particles_passname");
 }
 
 void SeedFinderProcessor::produce(framework::Event& event) {
@@ -150,7 +153,7 @@ void SeedFinderProcessor::produce(framework::Event& event) {
   }
 
   if (event.exists("SimParticles")) {
-    particleMap = event.getMap<int, ldmx::SimParticle>("SimParticles");
+    particleMap = event.getMap<int, ldmx::SimParticle>("SimParticles", sim_particles_passname_);
     truthMatchingTool_->setup(particleMap, measurements);
   }
 

@@ -64,6 +64,8 @@ class DNNEcalVetoProcessor : public framework::Producer {
 
   /** Name of the collection which will containt the results. */
   std::string collectionName_{"DNNEcalVeto"};
+  
+  std::string ecal_rec_hits_passname_;
 
   bool debug_ = false;
 };

@@ -17,6 +17,8 @@ void TrigScintDigiProducer::configure(
   inputCollection_ = parameters.getParameter<std::string>("input_collection");
   inputPassName_ = parameters.getParameter<std::string>("input_pass_name");
   outputCollection_ = parameters.getParameter<std::string>("output_collection");
+  
+  sim_particles_passname_ = parameters.getParameter<std::string>("sim_particles_passname"); 
   verbose_ = parameters.getParameter<bool>("verbose");
 }
 
@@ -54,7 +56,7 @@ void TrigScintDigiProducer::produce(framework::Event &event) {
   // looper over sim hits and aggregate energy depositions for each detID
   const auto simHits{event.getCollection<ldmx::SimCalorimeterHit>(
       inputCollection_, inputPassName_)};
-  auto particleMap{event.getMap<int, ldmx::SimParticle>("SimParticles")};
+  auto particleMap{event.getMap<int, ldmx::SimParticle>("SimParticles",sim_particles_passname_)};
 
   int module{-1};
   for (const auto &simHit : simHits) {

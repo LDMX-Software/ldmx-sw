@@ -397,19 +397,6 @@ class Event {
   //    const std::string &passName) const {
   //  return getObject<std::vector<ContentType> >(collectionName, passName);
   //}
-  
-  //template <typename ContentType>
-  //const std::vector<ContentType>& getCollection(
-  //    const std::string& collectionName,
-  //    const std::string& passName) const {
-  //  return getObject<std::vector<ContentType>>(collectionName, passName);
-  //}
-  //template <typename ContentType>
-  //const std::vector<ContentType>& getCollection(
-  //    const std::string& collectionName,
-  //    const std::string& passName) const {
-  //  return getObject<std::vector<ContentType>>(collectionName, passName);
-  //}
 
   template <typename ContentType>
   const std::vector<ContentType>& getCollection(

@@ -82,6 +82,10 @@ class TrigScintDigiProducer : public framework::Producer {
   /// Name of the output collection that will be used to stored the
   /// digitized trigger scintillator hits
   std::string outputCollection_;
+  
+  std::string sim_particles_passname_;
+
+
 
   /// Number of strips per array
   int stripsPerArray_{50};

@@ -89,7 +89,8 @@ class HcalVetoProcessor : public framework::Producer {
 
   std::string output_coll_name_;
   std::string input_hit_coll_name_;
-  std::string input_hit_pass_name_;
+  std::string input_hit_pass_name_; 
+  std::string track_pass_name_;
   bool exclude_recoil_ele_;
   std::string track_collection_;
   float dr_from_recoil_max_;

@@ -21,6 +21,9 @@ void HcalVetoProcessor::configure(framework::config::Parameters &parameters) {
       parameters.getParameter<std::string>("input_hit_coll_name");
   input_hit_pass_name_ =
       parameters.getParameter<std::string>("input_hit_pass_name");
+  track_pass_name_ =
+      parameters.getParameter<std::string>("track_pass_name"); 
+  
   // A fake-hit that gets added for the rare case where no hit actually reaches
   // the maxPE < pe check to avoid producing uninitialized memory
   //
@@ -75,7 +78,7 @@ void HcalVetoProcessor::produce(framework::Event &event) {
   if (exclude_recoil_ele_) {
     std::vector<float> recoil_track_states;
     // Get the recoil track collection
-    auto recoil_tracks{event.getCollection<ldmx::Track>(track_collection_)};
+    auto recoil_tracks{event.getCollection<ldmx::Track>(track_collection_, track_pass_name_)};
 
     // Use ACTS to propage the recoil track to the end of the magnetic field
     // This happens to be at the ECAL face

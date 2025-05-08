@@ -150,6 +150,12 @@ class LinearSeedFinder : public TrackingGeometryUser {
   std::shared_ptr<tracking::sim::TruthMatchingTool> truth_matching_tool_ =
       nullptr;
 
+ private: 
+  std::string next_event_passname_;
+  std::string sim_particles_passname_;  
+
+
+
 };  // SeedFinderProcessor
 
 }  // namespace reco

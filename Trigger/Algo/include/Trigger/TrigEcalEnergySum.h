@@ -38,6 +38,8 @@ class TrigEcalEnergySum : public framework::Producer {
  private:
   // name of collection for trigHits to be passed as input
   std::string hitCollName_;
+  std::string hit_coll_passname_;
+
 
   // From:
   // Tools/python/HgcrocEmulator.py

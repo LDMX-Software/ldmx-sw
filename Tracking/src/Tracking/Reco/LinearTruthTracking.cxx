@@ -21,7 +21,7 @@ void LinearTruthTracking::configure(framework::config::Parameters& parameters) {
       "input_recHits_collection", "EcalRecHits");
 
   input_pass_name_ =
-      parameters.getParameter<std::string>("input_pass_name", "");
+      parameters.getParameter<std::string>("input_pass_name");
 
   ecal_first_layer_z_threshold_ =
       parameters.getParameter<double>("ecal_first_layer_z_threshold");

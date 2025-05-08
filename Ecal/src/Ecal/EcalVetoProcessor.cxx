@@ -102,6 +102,8 @@ void EcalVetoProcessor::buildBDTFeatureVector(
 
 void EcalVetoProcessor::configure(framework::config::Parameters &parameters) {
   featureListName_ = parameters.getParameter<std::string>("feature_list_name");
+  
+  sim_particles_passname_ = parameters.getParameter<std::string>("sim_particles_passname");
   // Load BDT ONNX file
   rt_ = std::make_unique<ldmx::Ort::ONNXRuntime>(
       parameters.getParameter<std::string>("bdt_file"));
@@ -145,7 +147,7 @@ void EcalVetoProcessor::configure(framework::config::Parameters &parameters) {
   linreg_radius_ = parameters.getParameter<double>("linreg_radius");
 
   // Set the collection name as defined in the configuration
-  sp_pass_name_ = parameters.getParameter<std::string>("sp_pass_name", "");
+  sp_pass_name_ = parameters.getParameter<std::string>("sp_pass_name");
   collectionName_ = parameters.getParameter<std::string>("collection_name");
   rec_pass_name_ = parameters.getParameter<std::string>("rec_pass_name");
   rec_coll_name_ = parameters.getParameter<std::string>("rec_coll_name");
@@ -222,7 +224,7 @@ void EcalVetoProcessor::produce(framework::Event &event) {
     //
 
     // Get the collection of simulated particles from the event
-    auto particleMap{event.getMap<int, ldmx::SimParticle>("SimParticles")};
+    auto particleMap{event.getMap<int, ldmx::SimParticle>("SimParticles",sim_particles_passname_)};
 
     // Search for the recoil electron
     auto [recoilTrackID, recoilElectron] = Analysis::getRecoil(particleMap);

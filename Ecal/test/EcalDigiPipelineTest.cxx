@@ -216,10 +216,24 @@ class EcalFakeSimHits : public framework::Producer {
  * - Noise generation has been turned off
  */
 class EcalCheckEnergyReconstruction : public framework::Analyzer {
+ private:
+  std::string ecal_simhits_passname_; 
+  std::string ecal_digis_passname_; 
+  std::string ecal_rechits_passname_; 
+  std::string ecal_trig_digis_passname_;
+
  public:
   EcalCheckEnergyReconstruction(const std::string &name, framework::Process &p)
       : framework::Analyzer(name, p) {}
   ~EcalCheckEnergyReconstruction() {}
+  
+  void configure(framework::config::Parameters& parameters) final override {
+    ecal_simhits_passname_ = parameters.getParameter<std::string>("ecal_simhits_passname", "");
+    ecal_digis_passname_ = parameters.getParameter<std::string>("ecal_digis_passname", "");
+    ecal_rechits_passname_ = parameters.getParameter<std::string>("ecal_rechits_passname", "");
+    ecal_trig_digis_passname_ = parameters.getParameter<std::string>("ecal_trig_digis_passname", "");
+  }
+
 
   void onProcessStart() final override {
     getHistoDirectory();
@@ -238,7 +252,7 @@ class EcalCheckEnergyReconstruction : public framework::Analyzer {
 
   void analyze(const framework::Event &event) final override {
     const auto simHits =
-        event.getCollection<ldmx::SimCalorimeterHit>("EcalSimHits");
+        event.getCollection<ldmx::SimCalorimeterHit>("EcalSimHits", ecal_simhits_passname_);
 
     REQUIRE(simHits.size() == 1);
 
@@ -246,7 +260,7 @@ class EcalCheckEnergyReconstruction : public framework::Analyzer {
     ntuple_.setVar<float>("SimEnergy", truth_energy);
 
     const auto daqDigis{
-        event.getObject<ldmx::HgcrocDigiCollection>("EcalDigis")};
+        event.getObject<ldmx::HgcrocDigiCollection>("EcalDigis", ecal_digis_passname_)};
 
     if (daqDigis.getNumDigis() == 1) {
       auto daqDigi = daqDigis.getDigi(0);
@@ -256,7 +270,7 @@ class EcalCheckEnergyReconstruction : public framework::Analyzer {
       ntuple_.setVar<int>("DaqDigiADC", daqDigi.soi().adc_t());
       ntuple_.setVar<int>("DaqDigiTOT", daqDigi.tot());
 
-      const auto recHits = event.getCollection<ldmx::EcalHit>("EcalRecHits");
+      const auto recHits = event.getCollection<ldmx::EcalHit>("EcalRecHits", ecal_rechits_passname_);
       CHECK(recHits.size() == 1);
 
       auto hit = recHits.at(0);
@@ -270,7 +284,7 @@ class EcalCheckEnergyReconstruction : public framework::Analyzer {
       ntuple_.setVar<float>("RecEnergy", hit.getAmplitude());
 
       const auto trigDigis{
-          event.getObject<ldmx::HgcrocTrigDigiCollection>("ecalTrigDigis")};
+          event.getObject<ldmx::HgcrocTrigDigiCollection>("ecalTrigDigis", ecal_trig_digis_passname_)};
       CHECK(trigDigis.size() == 1);
 
       auto trigDigi = trigDigis.at(0);
@@ -283,7 +297,11 @@ class EcalCheckEnergyReconstruction : public framework::Analyzer {
       ntuple_.setVar<int>("TrigPrimDigiEncoded", trigDigi.getPrimitive());
       ntuple_.setVar<int>("TrigPrimDigiLinear", trigDigi.linearPrimitive());
     }
+  
+  
     return;
+  
+  
   }
 };  // EcalCheckEnergyReconstruction
 

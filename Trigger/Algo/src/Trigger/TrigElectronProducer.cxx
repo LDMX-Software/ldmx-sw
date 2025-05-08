@@ -15,16 +15,18 @@ void TrigElectronProducer::configure(framework::config::Parameters& ps) {
   clusterCollName_ = ps.getParameter<std::string>("clusterCollName");
   eleCollName_ = ps.getParameter<std::string>("eleCollName");
   propMapName_ = ps.getParameter<std::string>("propMapName");
+  target_sp_passname_ = ps.getParameter<std::string>("target_sp_passname");
+  cluster_coll_passname_ = ps.getParameter<std::string>("cluster_coll_passname");  
 }
 
 void TrigElectronProducer::produce(framework::Event& event) {
   if (!event.exists(clusterCollName_)) return;
   auto ecalClusters{
-      event.getObject<TrigCaloClusterCollection>(clusterCollName_)};
+      event.getObject<TrigCaloClusterCollection>(clusterCollName_, cluster_coll_passname_)};
 
   if (!event.exists(spCollName_)) return;
   const std::vector<ldmx::SimTrackerHit> TargetSPHit =
-      event.getCollection<ldmx::SimTrackerHit>(spCollName_);
+      event.getCollection<ldmx::SimTrackerHit>(spCollName_, target_sp_passname_);
   // ldmx::SimTrackerHit targetPrimary;
   // std::map<int,int> tk_to_iTargetSPHit;
   float xT = 0, yT = 0;

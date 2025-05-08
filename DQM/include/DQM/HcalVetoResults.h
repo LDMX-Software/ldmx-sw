@@ -48,6 +48,8 @@ class HcalVetoResults : public framework::Analyzer {
 
   /// Pass Name for veto object
   std::string hcal_veto_pass_;
+  
+  std::string hcal_veto_passname_;
 };
 }  // namespace dqm
 

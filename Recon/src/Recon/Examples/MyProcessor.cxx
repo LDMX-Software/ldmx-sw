@@ -14,6 +14,8 @@ void MyProcessor::configure(framework::config::Parameters &parameters) {
    */
 
   int my_parameter = parameters.getParameter<int>("my_parameter");
+  
+  ecal_rechits_passname_ = parameters.getParameter<std::string>("ecal_rechits_passname");  
 
   std::cout << "MyProcessor has my_parameter = " << my_parameter << std::endl;
 }
@@ -25,7 +27,7 @@ void MyProcessor::produce(framework::Event &event) {
 
   // Get the collection of digitized ECal hits from the event
   const std::vector<ldmx::EcalHit> hits =
-      event.getCollection<ldmx::EcalHit>("EcalRecHits");
+      event.getCollection<ldmx::EcalHit>("EcalRecHits", ecal_rechits_passname_);
 
   // Loop over the collection of hits and print the hit details
   for (const ldmx::EcalHit &hit : hits) {

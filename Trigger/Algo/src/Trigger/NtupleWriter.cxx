@@ -10,6 +10,13 @@ NtupleWriter::NtupleWriter(const std::string& name, framework::Process& process)
 
 void NtupleWriter::configure(framework::config::Parameters& ps) {
   outPath_ = ps.getParameter<std::string>("outPath");
+  
+  targetSPPassName_ = ps.getParameter<std::string>("targetSPPassName");
+  ecalSPPassName_ = ps.getParameter<std::string>("ecalSPPassName");
+  
+  ecal_intag_passname_ = ps.getParameter<std::string>("ecal_intag_passname");
+  trig_electrons_passname_ = ps.getParameter<std::string>("trig_electrons_passname"); 
+  hcal_intag_passname_ = ps.getParameter<std::string>("hcal_intag_passname_"); 
 }
 
 // precision-limiting function
@@ -24,7 +31,9 @@ void NtupleWriter::produce(framework::Event& event) {
   inTag = "TargetScoringPlaneHits";
   if (writeTruth_ && event.exists(inTag)) {
     const std::vector<ldmx::SimTrackerHit> hits =
-        event.getCollection<ldmx::SimTrackerHit>(inTag);
+        //event.getCollection<ldmx::SimTrackerHit>(inTag);
+        event.getCollection<ldmx::SimTrackerHit>(inTag, targetSPPassName_);
+
     ldmx::SimTrackerHit h, hMaxEle;  // the desired truth hits
     for (const auto& hit : hits) {
       auto xyz = hit.getPosition();
@@ -50,7 +59,8 @@ void NtupleWriter::produce(framework::Event& event) {
   inTag = "EcalScoringPlaneHits";
   if (writeTruth_ && event.exists(inTag)) {
     const std::vector<ldmx::SimTrackerHit> hits =
-        event.getCollection<ldmx::SimTrackerHit>(inTag);
+        //event.getCollection<ldmx::SimTrackerHit>(inTag);
+        event.getCollection<ldmx::SimTrackerHit>(inTag, ecalSPPassName_);
     ldmx::SimTrackerHit h, hMaxEle;  // the desired truth hits
     for (const auto& hit : hits) {
       auto xyz = hit.getPosition();
@@ -76,7 +86,7 @@ void NtupleWriter::produce(framework::Event& event) {
 
   inTag = "ecalTrigSums";
   if (writeEcalSums_ && event.exists(inTag)) {
-    const auto sums = event.getCollection<TrigEnergySum>(inTag);
+    const auto sums = event.getCollection<TrigEnergySum>(inTag, ecal_intag_passname_);
     // const int nEcalLayers = 34;
     vector<float> energyAfterLayer;  // (nEcalLayers, 0.);
     for (const auto& sum : sums) {
@@ -92,7 +102,7 @@ void NtupleWriter::produce(framework::Event& event) {
   }
   inTag = "hcalTrigQuadsBackLayerSums";
   if (writeHcalSums_ && event.exists(inTag)) {
-    const auto sums = event.getCollection<TrigEnergySum>(inTag);
+    const auto sums = event.getCollection<TrigEnergySum>(inTag, hcal_intag_passname_);
     vector<float> energyAfterLayer;
     for (const auto& sum : sums) {
       if (!(sum.hwEnergy() > 0)) continue;
@@ -108,7 +118,7 @@ void NtupleWriter::produce(framework::Event& event) {
 
   inTag = "trigElectrons";
   if (writeEle_ && event.exists(inTag)) {
-    const auto eles = event.getCollection<TrigParticle>(inTag);
+    const auto eles = event.getCollection<TrigParticle>(inTag, trig_electrons_passname_);
     const int nEle = eles.size();
     int maxE = -1;
     float maxEVal = 0;

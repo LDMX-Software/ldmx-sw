@@ -33,6 +33,20 @@ class RecoilMissesEcalSkimmer : public framework::Producer {
    * @param event The event to process.
    */
   void produce(framework::Event &event);
+  
+  /**
+   * Configure the processor using the given user specified parameters.
+   *
+   * @param parameters Set of parameters used to configure this processor.
+   */
+  void configure(framework::config::Parameters& parameters) override;
+
+ private:
+ 
+  std::string ecalSimHitsPassName_;
+  
+  std::string sim_particles_pass_name_;
+
 
 };  // RecoilMissesEcalSkimmer
 }  // namespace recon

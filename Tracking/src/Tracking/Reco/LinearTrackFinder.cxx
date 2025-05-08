@@ -25,7 +25,7 @@ void LinearTrackFinder::configure(framework::config::Parameters& parameters) {
       "out_trk_collection", "LinearRecoilTracks");
 
   input_pass_name_ =
-      parameters.getParameter<std::string>("input_pass_name", "");
+      parameters.getParameter<std::string>("input_pass_name");
 
 }  // configure
 

@@ -224,6 +224,9 @@ class GSFProcessor final : public TrackingGeometryUser {
 
   std::string trackCollection_{"TaggerTracks"};
   std::string measCollection_{"DigiTaggerSimHits"};
+  
+  std::string track_passname_;
+  std::string meas_passname_;
 
   size_t maxComponents_{4};
   bool abortOnError_{false};

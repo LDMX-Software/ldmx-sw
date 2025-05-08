@@ -6,12 +6,14 @@
 
 namespace trigger {
 
-void DumpFileWriter::configure(framework::config::Parameters& ps) {}
+void DumpFileWriter::configure(framework::config::Parameters& ps) {
+  ecal_trig_digis_passname_ = ps.getParameter<std::string>("ecal_trig_digis_passname", "");
+}
 
 void DumpFileWriter::analyze(const framework::Event& event) {
   if (!event.exists("ecalTrigDigis")) return;
   auto ecalTrigDigis{
-      event.getObject<ldmx::HgcrocTrigDigiCollection>("ecalTrigDigis")};
+      event.getObject<ldmx::HgcrocTrigDigiCollection>("ecalTrigDigis", ecal_trig_digis_passname_)};
 
   // clear event to write
   myEvent.event = evtNo;
