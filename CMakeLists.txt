@@ -79,13 +79,13 @@ endif()
 # here.
 set(BUILD_EVENT_ONLY ON CACHE BOOL "Build the SimCore library." FORCE)
 
-#add_subdirectory(Recon ${CMAKE_BINARY_DIR}/ReconEvent)
+add_subdirectory(Recon ${CMAKE_BINARY_DIR}/ReconEvent)
 add_subdirectory(SimCore ${CMAKE_BINARY_DIR}/SimCoreEvent)
-#add_subdirectory(Ecal ${CMAKE_BINARY_DIR}/EcalEvent)
-#add_subdirectory(Hcal ${CMAKE_BINARY_DIR}/HcalEvent)
-#add_subdirectory(TrigScint ${CMAKE_BINARY_DIR}/TrigScintEvent)
-#add_subdirectory(Tracking ${CMAKE_BINARY_DIR}/TrackingEvent)
-#add_subdirectory(Trigger/Algo ${CMAKE_BINARY_DIR}/TriggerEvent)
+add_subdirectory(Ecal ${CMAKE_BINARY_DIR}/EcalEvent)
+add_subdirectory(Hcal ${CMAKE_BINARY_DIR}/HcalEvent)
+add_subdirectory(TrigScint ${CMAKE_BINARY_DIR}/TrigScintEvent)
+add_subdirectory(Tracking ${CMAKE_BINARY_DIR}/TrackingEvent)
+add_subdirectory(Trigger/Algo ${CMAKE_BINARY_DIR}/TriggerEvent)
 
 # Once the event libraries have been built, turn off the global option. 
 set(BUILD_EVENT_ONLY OFF CACHE BOOL "Build the SimCore library." FORCE)
@@ -95,42 +95,42 @@ add_subdirectory(Framework)
 
 # This module contains all detector service related code.  Needed by recon. 
 add_subdirectory(DetDescr)
-#
-#if(BUILD_ALL OR BUILD_RECON_ONLY)
-#
-#    message(STATUS "Building the modules necessary for the reconstruction.")
-#
-#    # Interface with raw data
-#    add_subdirectory(Packing)
-#
-#    # Conditions services
-#    add_subdirectory(Conditions)
-#
-#    # The tools module contains tools generic enough to be used by other modules.
-#    add_subdirectory(Tools)
-#
-#    # This module contains ECal reconstruction code.
-#    add_subdirectory(Ecal)
-#
-#    # Currently, this module contains processors from several subsystems.
-#    add_subdirectory(Recon)
-#
-#    # Data quality management plots.
-#    add_subdirectory(DQM)
-#
-#    # This module contains HCal reconstruction code.
-#    add_subdirectory(Hcal)
-#
-#    # This module contains all things trigger scintillator
-#    add_subdirectory(TrigScint)
-#
-#    # This module is focused on track reconstruction
-#    add_subdirectory(Tracking)
-#
-#    # This module contains trigger algorithms.
-#    add_subdirectory(Trigger/Algo)
-#
-#endif()
+
+if(BUILD_ALL OR BUILD_RECON_ONLY)
+
+    message(STATUS "Building the modules necessary for the reconstruction.")
+
+    # Interface with raw data
+    add_subdirectory(Packing)
+
+    # Conditions services
+    add_subdirectory(Conditions)
+
+    # The tools module contains tools generic enough to be used by other modules.
+    add_subdirectory(Tools)
+
+    # This module contains ECal reconstruction code.
+    add_subdirectory(Ecal)
+
+    # Currently, this module contains processors from several subsystems.
+    add_subdirectory(Recon)
+
+    # Data quality management plots.
+    add_subdirectory(DQM)
+
+    # This module contains HCal reconstruction code.
+    add_subdirectory(Hcal)
+
+    # This module contains all things trigger scintillator
+    add_subdirectory(TrigScint)
+
+    # This module is focused on track reconstruction
+    add_subdirectory(Tracking)
+
+    # This module contains trigger algorithms.
+    add_subdirectory(Trigger/Algo)
+
+endif()
 
 if(BUILD_ALL OR BUILD_SIM_ONLY)
 
@@ -140,7 +140,7 @@ if(BUILD_ALL OR BUILD_SIM_ONLY)
     add_subdirectory(SimCore)
 
     # Adding the Biasing module, allows the use of biasing in the simulation
-    #add_subdirectory(Biasing)
+    add_subdirectory(Biasing)
 
     # Add the Detectors submodule.  This has no dependecies.
     add_subdirectory(Detectors)

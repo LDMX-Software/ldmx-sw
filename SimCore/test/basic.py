@@ -12,16 +12,12 @@ p.termLogLevel = 0
 # Set a run number
 p.run = 9001
 # we also only have an output file
-p.outputFiles = [ "/dev/null" ]
+p.outputFiles = [ "justSim_" + str(p.maxEvents) + "_events.root" ]
 from LDMX.SimCore import simulator as sim
-#import LDMX.Ecal.EcalGeometry
-#import LDMX.Hcal.HcalGeometry
+import LDMX.Ecal.EcalGeometry
+import LDMX.Hcal.HcalGeometry
 mySim = sim.simulator( "mySim" )
 mySim.setDetector( 'ldmx-det-v14' , True )
-# only use first SD which is a TrigScint SD and so it doesn't need the Ecal/Hcal geometry compiled
-mySim.sensitive_detectors = [
-    mySim.sensitive_detectors[0]
-]
 # Get a pre-written generator
 from LDMX.SimCore import generators as gen
 mySim.generators.append( gen.single_4gev_e_upstream_tagger() )
