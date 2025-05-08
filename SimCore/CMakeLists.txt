@@ -61,17 +61,27 @@ setup_library(module SimCore
 # Setup the biasing operators library
 setup_library(module SimCore
               name BiasOperators
-              dependencies Geant4::Interface Framework::Configure Framework::Framework G4DarkBreM)
+              dependencies Geant4::Interface
+                           Framework::Configure
+                           Framework::Framework
+                           G4DarkBreM)
 
 # Primary Generators library
 setup_library(module SimCore
               name Generators
-              dependencies Geant4::Interface Framework::Configure Framework::Framework SimCore::LHE)
+              dependencies Geant4::Interface
+                           Framework::Configure
+                           Framework::Framework
+                           SimCore::LHE)
 
 # Sensitive Detectors library
 setup_library(module SimCore
               name SDs
-              dependencies Geant4::Interface Framework::Configure Framework::Framework DetDescr::DetDescr)
+              dependencies Geant4::Interface
+                           Framework::Configure
+                           Framework::Framework
+                           DetDescr::DetDescr
+                           SimCore::G4User)
 
 
 # Get a list of all of the source files.

@@ -1,4 +1,4 @@
-#include "SimCore/SensitiveDetector.h"
+#include "SimCore/SDs/SensitiveDetector.h"
 
 #include "Framework/Exception/Exception.h"
 #include "G4ChargedGeantino.hh"

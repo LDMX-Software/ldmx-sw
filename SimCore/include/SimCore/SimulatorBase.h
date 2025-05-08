@@ -16,8 +16,9 @@
 #include "SimCore/G4User/TrackingAction.h"
 #include "SimCore/Geo/ParserFactory.h"
 #include "SimCore/RunManager.h"
-#include "SimCore/SensitiveDetector.h"
+#include "SimCore/SDs/SensitiveDetector.h"
 #include "SimCore/UserEventInformation.h"
+
 namespace simcore {
 class SimulatorBase : public framework::Producer {
  public:

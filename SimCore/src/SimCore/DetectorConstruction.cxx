@@ -8,7 +8,7 @@
 /*~~~~~~~~~~~~~*/
 #include "SimCore/DetectorConstruction.h"
 #include "SimCore/G4User/VolumeChecks.h"
-#include "SimCore/SensitiveDetector.h"
+#include "SimCore/SDs/SensitiveDetector.h"
 #include "SimCore/XsecBiasingOperator.h"
 
 namespace simcore {

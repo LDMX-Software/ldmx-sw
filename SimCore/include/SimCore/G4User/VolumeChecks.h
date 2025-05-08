@@ -1,7 +1,11 @@
+#pragma once
+
+#include "G4LogicalVolume.hh"
+#include "G4LogicalVolumeStore.hh"
+#include "G4Region.hh"
+#include "G4String.hh"
+
 #include "Framework/Exception/Exception.h"
-#include "SimCore/DetectorConstruction.h"
-#include "SimCore/SensitiveDetector.h"
-#include "SimCore/XsecBiasingOperator.h"
 
 namespace simcore {
 namespace g4user {

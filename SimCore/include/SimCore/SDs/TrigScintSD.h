@@ -2,7 +2,7 @@
 #define SIMCORE_TRIGSD_H
 
 #include "SimCore/Event/SimCalorimeterHit.h"
-#include "SimCore/SensitiveDetector.h"
+#include "SimCore/SDs/SensitiveDetector.h"
 
 namespace simcore {
 

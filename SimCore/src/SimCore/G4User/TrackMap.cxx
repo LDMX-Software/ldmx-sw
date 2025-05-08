@@ -1,4 +1,4 @@
-#include "SimCore/TrackMap.h"
+#include "SimCore/G4User/TrackMap.h"
 
 // Geant4
 #include "G4Event.hh"
