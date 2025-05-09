@@ -110,8 +110,7 @@ setup_library(module SimCore
 set_target_properties(SimCore
                       PROPERTIES CXX_STANDARD 17
                       CXX_STANDARD_REQUIRED YES
-                      CXX_EXTENSIONS NO
-                      ENABLE_EXPORTS TRUE)
+                      CXX_EXTENSIONS NO)
 
 setup_python(package_name LDMX/SimCore)
 

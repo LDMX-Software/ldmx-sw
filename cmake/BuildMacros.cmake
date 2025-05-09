@@ -143,7 +143,6 @@ macro(setup_library)
   enable_compiler_warnings(${library_name})
   enable_ipo(${library_name})
   enable_clang_tidy(${library_name} ${WARNINGS_AS_ERRORS})
-  set_property(TARGET ${library_name} PROPERTY ENABLE_EXPORTS TRUE)
 
   # Define an alias. This is used to create the imported target.
   set(alias "${setup_library_module}::${setup_library_module}")
