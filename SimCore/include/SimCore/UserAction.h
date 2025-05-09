@@ -51,9 +51,8 @@ class UserAction {
              framework::config::Parameters& parameters);
 
   /// factory for user actions
-  using Factory =
-      ::simcore::Factory<UserAction, std::shared_ptr<UserAction>,
-                         const std::string&, framework::config::Parameters&>;
+  DeclareFactory(UserAction, std::shared_ptr<UserAction>,
+                 const std::string&, framework::config::Parameters&);
 
   /// Destructor
   virtual ~UserAction() = default;

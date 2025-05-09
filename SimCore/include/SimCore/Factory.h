@@ -212,20 +212,6 @@ class Factory {
 
  public:
   /**
-   * get the factory instance
-   *
-   * Using a static function variable gaurantees that the factory
-   * is created as soon as it is needed and that it is deleted
-   * before the program completes.
-   *
-   * @returns reference to single Factory instance
-   */
-  static Factory& get() {
-    static Factory the_factory;
-    return the_factory;
-  }
-
-  /**
    * register a new object to be constructible
    *
    * We insert the new object into the library after
@@ -298,6 +284,15 @@ class Factory {
   /// delete the assignment operator
   void operator=(Factory const&) = delete;
 
+  Factory() {
+    n_factories_++;
+    emit() << "::constructor" << std::endl;
+  }
+
+  ~Factory() {
+    emit() << "::destructor" << std::endl;
+  }
+
  private:
   static int n_factories_;
   /**
@@ -325,16 +320,6 @@ class Factory {
         new DerivedType(std::forward<PrototypeConstructorArgs>(args)...));
   }
 
-  /// private constructor to prevent creation
-  Factory() {
-    n_factories_++;
-    emit() << "::constructor" << std::endl;
-  }
-
-  ~Factory() {
-    emit() << "::destructor" << std::endl;
-  }
-
   /// library of possible objects to create
   std::unordered_map<std::string, PrototypeMaker> library_;
 
@@ -345,6 +330,32 @@ class Factory {
 template<typename T, typename P, typename... Args>
 int Factory<T, P, Args...>::n_factories_ = 0;
 
-}  // namespace simcore
+} // namespace simcore
 
-#endif  // SIMCORE_FACTORY_H
+/**
+ * This macro is used in the `public` portion of your prototype class declaration.
+ *
+ * ```cpp
+ * public:
+ *  DeclareFactory(MyProto, std::shared_ptr<MyProto>);
+ * ```
+ */
+#define DeclareFactory(...) \
+  struct Factory : public ::simcore::Factory<__VA_ARGS__> { \
+    static Factory& get(); \
+  }
+
+/**
+ * This should go into an implementation file for your prototype class.
+ *
+ * ```cpp
+ * DefineFactory(MyProto);
+ * ```
+ */
+#define DefineFactory(classtype) \
+  classtype::Factory& classtype::Factory::get() { \
+    static classtype::Factory the_factory; \
+    return the_factory; \
+  }
+
+#endif

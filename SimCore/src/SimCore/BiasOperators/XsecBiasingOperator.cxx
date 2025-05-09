@@ -56,4 +56,6 @@ bool XsecBiasingOperator::processIsBiased(std::string process) {
   return false;
 }
 
+DefineFactory(XsecBiasingOperator);
+
 }  // namespace simcore

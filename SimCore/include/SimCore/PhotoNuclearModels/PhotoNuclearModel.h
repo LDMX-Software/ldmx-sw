@@ -49,10 +49,9 @@ class PhotoNuclearModel {
   /**
    * The factory for PhotoNuclearModels.
    */
-  using Factory =
-      ::simcore::Factory<PhotoNuclearModel, std::shared_ptr<PhotoNuclearModel>,
-                         const std::string&,
-                         const framework::config::Parameters&>;
+  DeclareFactory(PhotoNuclearModel, std::shared_ptr<PhotoNuclearModel>,
+                 const std::string&,
+                 const framework::config::Parameters&);
 
   /**
    * Removes any existing photonNuclear process from the process manager of the

@@ -22,4 +22,7 @@ void PhotoNuclearModel::addPNCrossSectionData(
   }
   process->AddDataSet(crossSection);
 }
+
+DefineFactory(PhotoNuclearModel);
+
 }  // namespace simcore

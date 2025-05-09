@@ -13,4 +13,6 @@ PrimaryGenerator::PrimaryGenerator(
     const std::string& name, const framework::config::Parameters& parameters)
     : name_(name) {}
 
+DefineFactory(PrimaryGenerator);
+
 }  // namespace simcore

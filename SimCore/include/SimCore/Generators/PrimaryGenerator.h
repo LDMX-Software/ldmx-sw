@@ -45,11 +45,9 @@ class PrimaryGenerator : public G4VPrimaryGenerator {
   PrimaryGenerator(const std::string& name,
                    const framework::config::Parameters& parameters);
 
-  /// Factory for primary generators
-  using Factory =
-      ::simcore::Factory<PrimaryGenerator, std::shared_ptr<PrimaryGenerator>,
-                         const std::string&,
-                         const framework::config::Parameters&>;
+  DeclareFactory(PrimaryGenerator, std::shared_ptr<PrimaryGenerator>,
+                 const std::string&,
+                 const framework::config::Parameters&);
 
   /// Destructor
   virtual ~PrimaryGenerator() = default;
