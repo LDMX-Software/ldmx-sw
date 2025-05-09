@@ -1,7 +1,6 @@
 #include "Framework/EventProcessor.h"
 
 // LDMX
-#include "Framework/PluginFactory.h"
 #include "Framework/Process.h"
 #include "Framework/RunHeader.h"
 #include "TDirectory.h"
@@ -41,12 +40,6 @@ int EventProcessor::getLogFrequency() const {
 
 int EventProcessor::getRunNumber() const { return process_.getRunNumber(); }
 
-void EventProcessor::declare(const std::string &classname, int classtype,
-                             EventProcessorMaker *maker) {
-  PluginFactory::getInstance().registerEventProcessor(classname, classtype,
-                                                      maker);
-}
-
 void EventProcessor::createHistograms(
     const std::vector<framework::config::Parameters> &histos) {
   for (auto const &h : histos) {
@@ -64,6 +57,8 @@ void EventProcessor::createHistograms(
     }
   }
 }
+
+DefineFactory(EventProcessor);
 
 Producer::Producer(const std::string &name, Process &process)
     : EventProcessor(name, process) {}

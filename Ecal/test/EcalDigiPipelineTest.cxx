@@ -290,8 +290,10 @@ class EcalCheckEnergyReconstruction : public framework::Analyzer {
 }  // namespace test
 }  // namespace ecal
 
-DECLARE_PRODUCER_NS(ecal::test, EcalFakeSimHits)
-DECLARE_ANALYZER_NS(ecal::test, EcalCheckEnergyReconstruction)
+namespace {
+auto v1 = ::framework::EventProcessor::Factory::get().declare<ecal::test::EcalFakeSimHits>();
+auto v2 = ::framework::EventProcessor::Factory::get().declare<ecal::test::EcalCheckEnergyReconstruction>();
+}
 
 /**
  * Test for the Ecal Digi Pipeline

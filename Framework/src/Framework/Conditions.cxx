@@ -1,8 +1,8 @@
 #include "Framework/Conditions.h"
+#include "Framework/ConditionsObjectProvider.h"
 
 #include <sstream>
 
-#include "Framework/PluginFactory.h"
 #include "Framework/Process.h"
 
 namespace framework {
@@ -12,11 +12,11 @@ Conditions::Conditions(Process& p) : process_{p} {}
 void Conditions::createConditionsObjectProvider(
     const std::string& classname, const std::string& objname,
     const std::string& tagname, const framework::config::Parameters& params) {
-  ConditionsObjectProvider* cop =
-      PluginFactory::getInstance().createConditionsObjectProvider(
+
+  try {
+    ConditionsObjectProvider* cop = ConditionsObjectProvider::Factory::get().make(
           classname, objname, tagname, params, process_);
 
-  if (cop) {
     std::string provides = cop->getConditionObjectName();
     if (providerMap_.find(provides) != providerMap_.end()) {
       EXCEPTION_RAISE(
@@ -25,7 +25,7 @@ void Conditions::createConditionsObjectProvider(
               provides);
     }
     providerMap_[provides] = cop;
-  } else {
+  } catch (const framework::exception::Exception& e) {
     EXCEPTION_RAISE("ConditionsException",
                     "No ConditionsObjectProvider for " + classname);
   }

@@ -1,7 +1,6 @@
 #include "Framework/ConditionsObjectProvider.h"
 
 // LDMX
-#include "Framework/PluginFactory.h"
 #include "Framework/Process.h"
 
 namespace framework {
@@ -22,10 +21,6 @@ ConditionsObjectProvider::requestParentCondition(
   return std::make_pair(obj, iov);
 }
 
-void ConditionsObjectProvider::declare(const std::string& classname,
-                                       ConditionsObjectProviderMaker* maker) {
-  PluginFactory::getInstance().registerConditionsObjectProvider(
-      classname, CLASSTYPE, maker);
-}
+DefineFactory(ConditionsObjectProvider);
 
 }  // namespace framework

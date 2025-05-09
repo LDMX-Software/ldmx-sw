@@ -15,7 +15,6 @@
 #include "Framework/Exception/Exception.h"
 #include "Framework/Logger.h"
 #include "Framework/NtupleManager.h"
-#include "Framework/PluginFactory.h"
 #include "Framework/RunHeader.h"
 #include "TFile.h"
 #include "TROOT.h"
@@ -93,14 +92,12 @@ Process::Process(const framework::config::Parameters &configuration)
   for (auto proc : sequence) {
     auto className{proc.getParameter<std::string>("className")};
     auto instanceName{proc.getParameter<std::string>("instanceName")};
-    EventProcessor *ep = PluginFactory::getInstance().createEventProcessor(
+    EventProcessor *ep = EventProcessor::Factory::get().make(
         className, instanceName, *this);
     if (ep == 0) {
       EXCEPTION_RAISE(
-          "UnableToCreate",
-          "Unable to create instance '" + instanceName + "' of class '" +
-              className +
-              "'. Did you load the library that this class is apart of?");
+          "BadCode",
+          "Unable the Factory should throw its own exception so returning a nullptr shouldn't happen.");
     }
     auto histograms{
         proc.getParameter<std::vector<framework::config::Parameters>>(
@@ -120,7 +117,6 @@ Process::Process(const framework::config::Parameters &configuration)
     auto className{cop.getParameter<std::string>("className")};
     auto objectName{cop.getParameter<std::string>("objectName")};
     auto tagName{cop.getParameter<std::string>("tagName")};
-
     conditions_.createConditionsObjectProvider(className, objectName, tagName,
                                                cop);
   }

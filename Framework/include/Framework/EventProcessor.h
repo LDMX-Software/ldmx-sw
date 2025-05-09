@@ -19,6 +19,7 @@
 #include "Framework/NtupleManager.h"
 #include "Framework/RunHeader.h"
 #include "Framework/StorageControl.h"
+#include "Framework/Factory.h"
 
 /*~~~~~~~~~~~~~~~~*/
 /*   C++ StdLib   */
@@ -33,10 +34,6 @@ namespace framework {
 class Process;
 class EventProcessor;
 class EventFile;
-
-/** Typedef for EventProcessorFactory use. */
-typedef EventProcessor *EventProcessorMaker(const std::string &name,
-                                            Process &process);
 
 /**
  * @class AbortEventException
@@ -64,6 +61,9 @@ class AbortEventException : public framework::exception::Exception {
  */
 class EventProcessor {
  public:
+  /// declare that we have a factory for this class
+  DeclareFactory(EventProcessor, EventProcessor*, const std::string&, Process&);
+
   /**
    * Class constructor.
    * @param name Name for this instance of the class.
@@ -81,7 +81,7 @@ class EventProcessor {
   /**
    * Class destructor.
    */
-  virtual ~EventProcessor() { ; }
+  virtual ~EventProcessor() = default;
 
   /**
    * Callback for the EventProcessor to configure itself from the
@@ -96,6 +96,12 @@ class EventProcessor {
    * @param parameters Parameters for configuration.
    */
   virtual void configure(framework::config::Parameters &parameters) {}
+
+  /**
+   * Callback for Producers to add parameters to the run header before
+   * conditions are initialized.
+   */
+  virtual void beforeNewRun(ldmx::RunHeader &runHeader) {}
 
   /**
    * Callback for the EventProcessor to take any necessary
@@ -133,6 +139,13 @@ class EventProcessor {
    * calculating job-summary quantities.
    */
   virtual void onProcessEnd() {}
+
+  /**
+   * How an EventProcessor processes an event.
+   * This becomes Producer::produce or Analyzer::analyze
+   * depending on which one the user inherits from.
+   */
+  virtual void process(Event& event) = 0;
 
   /**
    * Access a conditions object for the current event
@@ -186,15 +199,6 @@ class EventProcessor {
    * Get the processor name
    */
   std::string getName() const { return name_; }
-
-  /**
-   * Internal function which is part of the PluginFactory machinery.
-   * @param classname The class name of the processor.
-   * @param classtype The class type of the processor (1 for Producer, 2 for
-   * Analyzer).
-   */
-  static void declare(const std::string &classname, int classtype,
-                      EventProcessorMaker *);
 
   /**
    * Internal function which is used to create histograms passed from the python
@@ -251,9 +255,6 @@ class EventProcessor {
  */
 class Producer : public EventProcessor {
  public:
-  /** Constant used to track EventProcessor types by the PluginFactory */
-  static const int CLASSTYPE{1};
-
   /**
    * Class constructor.
    * @param name Name for this instance of the class.
@@ -271,16 +272,17 @@ class Producer : public EventProcessor {
   Producer(const std::string &name, Process &process);
 
   /**
+   * Processing an event for a Producer is calling produce
+   */
+  virtual void process(Event &event) final {
+    produce(event);
+  }
+
+  /**
    * Process the event and put new data products into it.
    * @param event The Event to process.
    */
   virtual void produce(Event &event) = 0;
-
-  /**
-   * Handle allowing producers to modify run headers before the run begins
-   * @param header RunHeader for Producer to add parameters to
-   */
-  virtual void beforeNewRun(ldmx::RunHeader &header) {}
 };
 
 /**
@@ -292,9 +294,6 @@ class Producer : public EventProcessor {
  */
 class Analyzer : public EventProcessor {
  public:
-  /** Constant used to track EventProcessor types by the PluginFactory */
-  static const int CLASSTYPE{2};
-
   /**
    * Class constructor.
    *
@@ -311,6 +310,18 @@ class Analyzer : public EventProcessor {
    * not include whitespace or special characters.
    */
   Analyzer(const std::string &name, Process &process);
+
+  /**
+   * Processing an event for an Analyzer is calling analyze
+   */
+  virtual void process(Event &event) final {
+    analyze(event);
+  }
+
+  /**
+   * Don't allow Analyzers to add parameters to the run header
+   */
+  virtual void beforeNewRun(ldmx::RunHeader &runHeader) final {}
 
   /**
    * Process the event and make histograms or summaries
@@ -331,13 +342,8 @@ class Analyzer : public EventProcessor {
  * in the associated implementation (.cxx) file.
  */
 #define DECLARE_PRODUCER(CLASS)                                               \
-  framework::EventProcessor *CLASS##_ldmx_make(const std::string &name,       \
-                                               framework::Process &process) { \
-    return new CLASS(name, process);                                          \
-  }                                                                           \
-  __attribute__((constructor(1000))) static void CLASS##_ldmx_declare() {     \
-    framework::EventProcessor::declare(                                       \
-        #CLASS, ::framework::Producer::CLASSTYPE, &CLASS##_ldmx_make);        \
+  namespace { \
+    auto v = ::framework::EventProcessor::Factory::get().declare<CLASS>(); \
   }
 
 /**
@@ -350,13 +356,8 @@ class Analyzer : public EventProcessor {
  * in the associated implementation (.cxx) file.
  */
 #define DECLARE_ANALYZER(CLASS)                                               \
-  framework::EventProcessor *CLASS##_ldmx_make(const std::string &name,       \
-                                               framework::Process &process) { \
-    return new CLASS(name, process);                                          \
-  }                                                                           \
-  __attribute__((constructor(1000))) static void CLASS##_ldmx_declare() {     \
-    framework::EventProcessor::declare(                                       \
-        #CLASS, ::framework::Analyzer::CLASSTYPE, &CLASS##_ldmx_make);        \
+  namespace { \
+    auto v = ::framework::EventProcessor::Factory::get().declare<CLASS>(); \
   }
 
 /**
@@ -368,16 +369,7 @@ class Analyzer : public EventProcessor {
  * @attention Every Producer class must call this macro or DECLARE_PRODUCER() in
  * the associated implementation (.cxx) file.
  */
-#define DECLARE_PRODUCER_NS(NS, CLASS)                                        \
-  framework::EventProcessor *CLASS##_ldmx_make(const std::string &name,       \
-                                               framework::Process &process) { \
-    return new NS::CLASS(name, process);                                      \
-  }                                                                           \
-  __attribute__((constructor(1000))) static void CLASS##_ldmx_declare() {     \
-    framework::EventProcessor::declare(                                       \
-        std::string(#NS) + "::" + std::string(#CLASS),                        \
-        ::framework::Producer::CLASSTYPE, &CLASS##_ldmx_make);                \
-  }
+#define DECLARE_PRODUCER_NS(NS, CLASS) DECLARE_PRODUCER(NS::CLASS)
 
 /**
  * @def DECLARE_ANALYZER_NS(NS,CLASS)
@@ -388,15 +380,6 @@ class Analyzer : public EventProcessor {
  * @attention Every Analyzer class must call this macro or DECLARE_ANALYZER() in
  * the associated implementation (.cxx) file.
  */
-#define DECLARE_ANALYZER_NS(NS, CLASS)                                        \
-  framework::EventProcessor *CLASS##_ldmx_make(const std::string &name,       \
-                                               framework::Process &process) { \
-    return new NS::CLASS(name, process);                                      \
-  }                                                                           \
-  __attribute__((constructor(1000))) static void CLASS##_ldmx_declare() {     \
-    framework::EventProcessor::declare(                                       \
-        std::string(#NS) + "::" + std::string(#CLASS),                        \
-        ::framework::Analyzer::CLASSTYPE, &CLASS##_ldmx_make);                \
-  }
+#define DECLARE_ANALYZER_NS(NS, CLASS) DECLARE_ANALYZER(NS::CLASS)
 
 #endif
