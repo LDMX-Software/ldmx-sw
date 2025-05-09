@@ -80,6 +80,8 @@ configure-asan-ubsan: (configure-base "asan-ubsan" "-DENABLE_SANITIZER_UNDEFINED
 # This is the same as just configure but reports all (non-3rd-party) warnings as errors
 configure-force-error: (configure-base "force-error" "-DADDITIONAL_WARNINGS=ON -DENABLE_CLANG_TIDY=ON -DWARNINGS_AS_ERRORS=ON")
 
+configure-clang: (configure-base "clang" "-DADDITIONAL_WARNINGS=ON -DENABLE_CLANG_TIDY=ON -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_C_COMPILER=clang")
+
 # Use alternative compiler and enable LTO (test compiling only, won't run properly)
 configure-clang-lto: (configure-base "clang-lto" "-DADDITIONAL_WARNINGS=ON -DENABLE_CLANG_TIDY=ON -DENABLE_LTO=ON -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_C_COMPILER=clang")
 
@@ -94,7 +96,7 @@ build name ncpu=num_cpus():
 
 # test run config, TOM: DO NOT MERGE INTO MAIN
 run NAME:
-    rm -f install && ln -s build/{{NAME}}/install install && denv fire SimCore/test/basic.py
+    rm -f install && ln -s build/{{NAME}}/install install && denv fire SimCore/test/basic.py && denv fire Biasing/test/ecal_pn.py
 
 # run the ldmx-sw tests
 test *ARGS:
