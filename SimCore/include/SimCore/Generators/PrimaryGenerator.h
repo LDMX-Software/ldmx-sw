@@ -21,7 +21,7 @@
 /*~~~~~~~~~~~~~~~*/
 #include "Framework/Configure/Parameters.h"
 #include "Framework/RunHeader.h"
-#include "SimCore/Factory.h"
+#include "Framework/Factory.h"
 
 // Forward Declarations
 class G4Event;

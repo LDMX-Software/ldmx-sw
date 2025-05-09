@@ -22,7 +22,7 @@
 #include "Framework/Configure/Parameters.h"
 #include "Framework/Logger.h"
 #include "SimCore/Event/SimParticle.h"
-#include "SimCore/Factory.h"
+#include "Framework/Factory.h"
 #include "SimCore/UserEventInformation.h"
 
 // Forward Declarations

@@ -5,7 +5,7 @@
 #include "Framework/EventProcessor.h"
 #include "Framework/Logger.h"
 #include "Framework/RunHeader.h"
-#include "SimCore/Factory.h"
+#include "Framework/Factory.h"
 
 //------------//
 //   Geant4   //

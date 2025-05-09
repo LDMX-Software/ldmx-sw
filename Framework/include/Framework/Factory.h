@@ -1,5 +1,5 @@
-#ifndef SIMCORE_FACTORY_H
-#define SIMCORE_FACTORY_H
+#ifndef FRAMEWORK_FACTORY_H
+#define FRAMEWORK_FACTORY_H
 
 #include <algorithm>                // for for_each call in apply
 #include <boost/core/demangle.hpp>  // for demangling
@@ -9,7 +9,7 @@
 
 #include "Framework/Exception/Exception.h"
 
-namespace simcore {
+namespace framework {
 
 /**
  * Factory to dynamically create objects derived from a specific prototype
@@ -41,9 +41,8 @@ namespace simcore {
  *    to it in the form of a prototype-class pointer.
  *
  * ### Declaration
- * Using an
- * [unnamed
- namespace](https://en.cppreference.com/w/cpp/language/namespace#Unnamed_namespaces)
+ * Using an [unnamed namespace](
+ * https://en.cppreference.com/w/cpp/language/namespace#Unnamed_namespaces)
  * defines the variables inside it as having internal linkage and as implicitly
  * static. Having internal linkage allows us to have repeat variable names
  * across different source files. Being static means that the variable is
@@ -61,8 +60,8 @@ namespace simcore {
  * ```
  *
  * The details of how this is handled is documented in
- * [Storage Class
- Specifiers](https://en.cppreference.com/w/cpp/language/storage_duration).
+ * [Storage Class Specifiers](
+ * https://en.cppreference.com/w/cpp/language/storage_duration).
  *
  * ## Usage
  *
@@ -92,7 +91,7 @@ namespace simcore {
  *   // pure virtual function that our derived classes will implement
  *   virtual std::string name() = 0;
  *   // the factory type that we will use here
- *   using Factory = ::fire::factory::Factory<LibraryEntry>;
+ *   DeclareFactory(LibraryEntry);
  * };  // LibraryEntry
  *
  * // a macro to help with registering our library entries with our factory
@@ -101,11 +100,14 @@ namespace simcore {
  *     auto v = ::LibraryEntry::Factory::get().declare<CLASS>() \
  *   }
  * #endif // LIBRARYENTRY_HPP
+ * 
+ * // LibraryEntry.cpp
+ * #include "LibraryEntry.hpp"
+ * DefineFactory(LibraryEntry);
  * ```
  *
  * ### Example Derived Classes
  * Here are a few example derived classes.
-
  * ```cpp
  * // Book.cpp
  * #include "LibraryEntry.hpp"
@@ -156,11 +158,12 @@ namespace simcore {
  * ```
  *
  * ### Executable
- * Since the `DECLARE_LIBRARYENTRY` macro defines a function that is decorated
- * with a compiler attribute causing the function to be called at library-load
+ * Since the `DECLARE_LIBRARYENTRY` macro defines a function whose result
+ * produces a static variable, the function is called at library-load
  * time, the registration of our various library entries is automatically done
- * before the execution of `main` (or after if the loadLibrary function is
- * used). For simplicity, let's compile these sources files together with a
+ * before the execution of `main` (or after if the libraries are dynamically loaded
+ * with dlopen)
+ * For simplicity, let's compile these sources files together with a
  * main defined below.
  *
  * ```cpp
@@ -330,7 +333,7 @@ class Factory {
 template<typename T, typename P, typename... Args>
 int Factory<T, P, Args...>::n_factories_ = 0;
 
-} // namespace simcore
+} // namespace framework
 
 /**
  * This macro is used in the `public` portion of your prototype class declaration.
@@ -341,7 +344,7 @@ int Factory<T, P, Args...>::n_factories_ = 0;
  * ```
  */
 #define DeclareFactory(...) \
-  struct Factory : public ::simcore::Factory<__VA_ARGS__> { \
+  struct Factory : public ::framework::Factory<__VA_ARGS__> { \
     static Factory& get(); \
   }
 
