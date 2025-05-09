@@ -21,14 +21,17 @@ namespace test {
  * consistency.
  */
 class HcalCheckPositionMap : public framework::Analyzer {
+ private:
+  std::string hcal_sim_hits_pass_name_{""};
+
  public:
   HcalCheckPositionMap(const std::string &name, framework::Process &p)
       : framework::Analyzer(name, p) {}
   ~HcalCheckPositionMap() {}
 
-  void configure(framework::config::Parameters &parameters) final override {
+  void configure(framework::config::Parameters &parameters) override {
     hcal_sim_hits_pass_name_ =
-         parameters.getParameter<std::string>("hcal_sim_hits_pass_name");
+         parameters.getParameter<std::string>("hcal_sim_hits_pass_name", "");
   }
 
   void onProcessStart() final override {}
@@ -40,8 +43,6 @@ class HcalCheckPositionMap : public framework::Analyzer {
     CHECK(simHits.size() > 0);
     return;
   }
- private:
-  std::string hcal_sim_hits_pass_name_;
 };  // HcalCheckPositionMap
 
 }  // namespace test
