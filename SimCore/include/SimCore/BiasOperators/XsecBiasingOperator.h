@@ -188,9 +188,6 @@ class XsecBiasingOperator : public G4VBiasingOperator {
  * Defines a builder for the declared class
  * and then registers the class as a biasing operator.
  */
-#define DECLARE_XSECBIASINGOPERATOR(CLASS)                                  \
-  namespace {                                                               \
-  auto v = ::simcore::XsecBiasingOperator::Factory::get().declare<CLASS>(); \
-  }
+#define DECLARE_XSECBIASINGOPERATOR(CLASS) RegisterToFactory(simcore::XsecBiasingOperator, CLASS)
 
 #endif  // SIMCORE_XSECBIASINGOPERATOR_H_

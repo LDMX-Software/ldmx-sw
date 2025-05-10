@@ -91,8 +91,6 @@ class PhotoNuclearModel {
  *
  * See e.g. SimCore/src/SimCore/PhotoNuclearModels/BertiniModel.cxx
  */
-#define DECLARE_PHOTONUCLEAR_MODEL(CLASS)                                 \
-  namespace {                                                             \
-  auto v = ::simcore::PhotoNuclearModel::Factory::get().declare<CLASS>(); \
-  }
+#define DECLARE_PHOTONUCLEAR_MODEL(CLASS) RegisterToFactory(simcore::PhotoNuclearModel, CLASS)
+
 #endif /* SIMCORE_PHOTONUCLEAR_MODEL_H */

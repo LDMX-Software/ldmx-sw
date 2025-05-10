@@ -13,22 +13,21 @@ void Conditions::createConditionsObjectProvider(
     const std::string& classname, const std::string& objname,
     const std::string& tagname, const framework::config::Parameters& params) {
 
-  try {
-    ConditionsObjectProvider* cop = ConditionsObjectProvider::Factory::get().make(
-          classname, objname, tagname, params, process_);
-
-    std::string provides = cop->getConditionObjectName();
-    if (providerMap_.find(provides) != providerMap_.end()) {
-      EXCEPTION_RAISE(
-          "ConditionAmbiguityException",
-          "Multiple ConditonsObjectProviders configured to provide " +
-              provides);
-    }
-    providerMap_[provides] = cop;
-  } catch (const framework::exception::Exception& e) {
-    EXCEPTION_RAISE("ConditionsException",
+  ConditionsObjectProvider* cop = ConditionsObjectProvider::Factory::get().make(
+        classname, objname, tagname, params, process_);
+  if (not cop) {
+    EXCEPTION_RAISE("UnableToCreate",
                     "No ConditionsObjectProvider for " + classname);
   }
+
+  std::string provides = cop->getConditionObjectName();
+  if (providerMap_.find(provides) != providerMap_.end()) {
+    EXCEPTION_RAISE(
+        "ConditionAmbiguityException",
+        "Multiple ConditonsObjectProviders configured to provide " +
+            provides);
+  }
+  providerMap_[provides] = cop;
 }
 
 void Conditions::onProcessStart() {

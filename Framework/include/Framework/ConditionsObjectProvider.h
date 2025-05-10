@@ -150,10 +150,7 @@ class ConditionsObjectProvider {
  * DECLARE_CONDITIONS_PROVIDER_NS() in the associated implementation (.cxx)
  * file.
  */
-#define DECLARE_CONDITIONS_PROVIDER(CLASS) \
-  namespace { \
-    auto v = ::framework::ConditionsObjectProvider::Factory::get().declare<CLASS>(); \
-  }
+#define DECLARE_CONDITIONS_PROVIDER(CLASS) RegisterToFactory(framework::ConditionsObjectProvider, CLASS)
 
 /**
  * @def DECLARE_CONDITIONS_PROVIDER_NS(NS,CLASS)

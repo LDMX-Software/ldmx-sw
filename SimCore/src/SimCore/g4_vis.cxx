@@ -7,7 +7,7 @@
 #include "G4UIExecutive.hh"
 #include "G4VisExecutive.hh"
 #include "SimCore/DetectorConstruction.h"
-#include "SimCore/Geo/ParserFactory.h"
+#include "SimCore/Geo/Parser.h"
 
 static void printUsage() {
   std::cout << "usage: g4-vis {detector.gdml}" << std::endl;
@@ -41,8 +41,12 @@ int main(int argc, char* argv[]) {
   G4RunManager* runManager = new G4RunManager;
 
   // Detector components
-  auto parser{simcore::geo::ParserFactory::getInstance().createParser(
+  auto parser{simcore::geo::Parser::Factory::get().make(
       "gdml", parser_parameters, empty_interface)};
+  if (not parser) {
+    std::cerr << "Unable to create a 'gdml' parser to read the geometry." << std::endl;
+    return 1;
+  }
   runManager->SetUserInitialization(new simcore::DetectorConstruction(
       parser, parser_parameters, empty_interface));
   G4GeometryManager::GetInstance()->OpenGeometry();

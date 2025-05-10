@@ -14,7 +14,7 @@
 #include "SimCore/DetectorConstruction.h"
 #include "SimCore/G4Session.h"
 #include "SimCore/G4User/TrackingAction.h"
-#include "SimCore/Geo/ParserFactory.h"
+#include "SimCore/Geo/Parser.h"
 #include "SimCore/RunManager.h"
 #include "SimCore/SDs/SensitiveDetector.h"
 #include "SimCore/UserEventInformation.h"

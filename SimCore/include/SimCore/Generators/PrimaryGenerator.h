@@ -81,9 +81,6 @@ class PrimaryGenerator : public G4VPrimaryGenerator {
  * and then registers the class as a generator
  * with the Factory
  */
-#define DECLARE_GENERATOR(CLASS)                                         \
-  namespace {                                                            \
-  auto v = ::simcore::PrimaryGenerator::Factory::get().declare<CLASS>(); \
-  }
+#define DECLARE_GENERATOR(CLASS) RegisterToFactory(simcore::PrimaryGenerator, CLASS)
 
 #endif  // SIMCORE_PRIMARYGENERATOR_H

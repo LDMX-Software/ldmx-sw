@@ -341,10 +341,7 @@ class Analyzer : public EventProcessor {
  * @attention Every Producer class must call this macro or DECLARE_PRODUCER_NS()
  * in the associated implementation (.cxx) file.
  */
-#define DECLARE_PRODUCER(CLASS)                                               \
-  namespace { \
-    auto v = ::framework::EventProcessor::Factory::get().declare<CLASS>(); \
-  }
+#define DECLARE_PRODUCER(CLASS) RegisterToFactory(framework::EventProcessor, CLASS)
 
 /**
  * @def DECLARE_ANALYZER(CLASS)
@@ -355,10 +352,7 @@ class Analyzer : public EventProcessor {
  * @attention Every Analyzer class must call this macro or DECLARE_ANALYZER_NS()
  * in the associated implementation (.cxx) file.
  */
-#define DECLARE_ANALYZER(CLASS)                                               \
-  namespace { \
-    auto v = ::framework::EventProcessor::Factory::get().declare<CLASS>(); \
-  }
+#define DECLARE_ANALYZER(CLASS) RegisterToFactory(framework::EventProcessor, CLASS)
 
 /**
  * @def DECLARE_PRODUCER_NS(NS,CLASS)

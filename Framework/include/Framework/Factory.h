@@ -1,9 +1,15 @@
+/**
+ * @file Factory.h
+ * Header holding Factory class and supporting macros
+ */
+
 #ifndef FRAMEWORK_FACTORY_H
 #define FRAMEWORK_FACTORY_H
 
+#include <memory>
+#include <cstdint>
 #include <algorithm>                // for for_each call in apply
 #include <boost/core/demangle.hpp>  // for demangling
-#include <memory>                   // for the unique_ptr default
 #include <string>                   // for the keys in the library map
 #include <unordered_map>            // for the library of prototypes
 
@@ -37,35 +43,14 @@ namespace framework {
  *    so that the factory knowns how to create them.
  *    This registration is done by providing their type and the
  *    name they should be referred to by.
+ *    In order to reduce the amount of boilerplate code, the derived class
+ *    declaration can be done with the RegisterToFactory macro.
  * 2. The factory creates any of the registered classes and returns a pointer
  *    to it in the form of a prototype-class pointer.
  *
- * ### Declaration
- * Using an [unnamed namespace](
- * https://en.cppreference.com/w/cpp/language/namespace#Unnamed_namespaces)
- * defines the variables inside it as having internal linkage and as implicitly
- * static. Having internal linkage allows us to have repeat variable names
- * across different source files. Being static means that the variable is
- * guaranteed to be constructed during library load time.
- *
- * This if we put the following code in the source file for a class deriving
- * from our prototype, it will be declared to the factory during library load.
- * ```cpp
- * // MyDerived.cpp
- * // MyDerived inherits from MyPrototype
- * namespace {
- *   auto v = ::fire::factory::Factory<MyPrototype>::get()
- *     .declare<MyDerived>();
- * }
- * ```
- *
- * The details of how this is handled is documented in
- * [Storage Class Specifiers](
- * https://en.cppreference.com/w/cpp/language/storage_duration).
- *
  * ## Usage
  *
- * Using the factory effecitvely can be done in situations where many classes
+ * Using the factory effectively can be done in situations where many classes
  * all follow the same design structure, but have different implementations
  * for specific steps. In order to reflect this "same design structure",
  * we define an abstract base class for all of our derived classes from
@@ -75,11 +60,10 @@ namespace framework {
  *
  * ### A Prototype LibraryEntry
  * This `LibraryEntry` prototype class satisfies our requirements.
- * It also defines a helpful "declaration" macro for derived classes to use.
  * ```cpp
- * // LibraryEntry.hpp
- * #ifndef LIBRARYENTRY_HPP
- * #define LIBRARYENTRY_HPP
+ * // LibraryEntry.h
+ * #ifndef LIBRARYENTRY_H
+ * #define LIBRARYENTRY_H
  * // we need the factory template
  * #include "Factory.h"
  *
@@ -91,17 +75,12 @@ namespace framework {
  *   // pure virtual function that our derived classes will implement
  *   virtual std::string name() = 0;
  *   // the factory type that we will use here
- *   DeclareFactory(LibraryEntry);
+ *   DeclareFactory(LibraryEntry, std::shared_ptr<LibraryEntry>);
  * };  // LibraryEntry
  *
- * // a macro to help with registering our library entries with our factory
- * #define DECLARE_LIBRARYENTRY(CLASS)                          \
- *   namespace {                                                \
- *     auto v = ::LibraryEntry::Factory::get().declare<CLASS>() \
- *   }
- * #endif // LIBRARYENTRY_HPP
+ * #endif // LIBRARYENTRY_H
  * 
- * // LibraryEntry.cpp
+ * // LibraryEntry.cxx
  * #include "LibraryEntry.hpp"
  * DefineFactory(LibraryEntry);
  * ```
@@ -109,7 +88,7 @@ namespace framework {
  * ### Example Derived Classes
  * Here are a few example derived classes.
  * ```cpp
- * // Book.cpp
+ * // Book.cxx
  * #include "LibraryEntry.hpp"
  * namespace library {
  * class Book : public LibraryEntry {
@@ -120,7 +99,7 @@ namespace framework {
  * };
  * }
  *
- * DECLARE_LIBRARYENTRY(library::Book)
+ * RegisterToFactory(LibraryEntry, library::Book);
  * ```
  *
  * ```cpp
@@ -131,13 +110,13 @@ namespace framework {
  * class Podcast : public LibraryEntry {
  *  public :
  *   virtual std::string name() override {
- *     return "538 Politics Podcast";
+ *     return "More Rim and AB";
  *   }
  * };
  * }
  * }
  *
- * DECLARE_LIBRARYENTRY(library::audio::Podcast)
+ * RegisterToFactory(LibraryEntry, library::audio::Podcast);
  * ```
  *
  * ```cpp
@@ -154,15 +133,15 @@ namespace framework {
  * }
  * }
  *
- * DECLARE_LIBRARYENTRY(library::audio::Album)
+ * RegisterToFactory(LibraryEntry, library::audio::Album);
  * ```
  *
  * ### Executable
- * Since the `DECLARE_LIBRARYENTRY` macro defines a function whose result
+ * Since the `RegisterToFactory` macro defines a function whose result
  * produces a static variable, the function is called at library-load
  * time, the registration of our various library entries is automatically done
- * before the execution of `main` (or after if the libraries are dynamically loaded
- * with dlopen)
+ * before the execution of `main`
+ * (or after if the libraries are dynamically loaded with dlopen).
  * For simplicity, let's compile these sources files together with a
  * main defined below.
  *
@@ -172,11 +151,11 @@ namespace framework {
  *
  * int main(int argc, char* argv[]) {
  *   std::string full_cpp_name{argv[1]};
- *   try {
- *     auto entry_ptr{LibraryEntry::Factory::get().make(full_cpp_name)};
+ *   auto entry_ptr{LibraryEntry::Factory::get().make(full_cpp_name)};
+ *   if (entry_ptr) {
  *     std::cout << entry_ptr->name() << std::endl;
- *   } catch (const std::exception& e) {
- *     std::cerr << "ERROR: " <<  e.what() << std::endl;
+ *   } else {
+ *     std::cerr << "ERROR: could not create a " << full_cpp_name << std::endl;
  *   }
  * }
  * ```
@@ -188,22 +167,16 @@ namespace framework {
  * $ fave-things library::Book
  * Where the Red Fern Grows
  * $ fave-things library::audio::Podcast
- * 538 Politics Podcast
+ * More Rim and AB
  * $ fave-things library::audio::Album
  * Kind of Blue
  * $ fave-things library::DoesNotExist
- * ERROR: An object named library::DoesNotExist has not been declared.
+ * ERROR: could not create a library::DoesNotExist
  * ```
  */
 template <typename Prototype, typename PrototypePtr,
           typename... PrototypeConstructorArgs>
 class Factory {
-  std::ostream& emit() {
-    std::cout << "Factory<"
-      << boost::core::demangle(typeid(Prototype).name()) << ">("
-      << this << ", " << n_factories_ << ")";
-    return std::cout;
-  }
  public:
   /**
    * the signature of a function that can be used by this factory
@@ -217,26 +190,24 @@ class Factory {
   /**
    * register a new object to be constructible
    *
-   * We insert the new object into the library after
-   * checking that it hasn't been defined before.
+   * We insert the new object into the library **without checking if we
+   * are overwriting anything**.
    *
-   * @note This uses the demangled name of the input type
-   * as the key in our library of objects. Using the demangled
-   * name effectively assumes that all of the libraries being
-   * loaded were compiled with the same compiler version.
-   * We could undo this assumption by having the key be an
-   * input into this function.
+   * @note The derived_type_name argument is what should be used as an input
+   * to Factory::make. Most commonly, this is just the fully-specificed C++
+   * class name which is what is done with the RegisterToFactory macro, but
+   * it could be something else if the user wishes to use this function directly
+   * instead of the macro.
    *
    * @tparam DerivedType object type to declare
+   * @param[in] derived_type_name name of DerivedType to be used in the mapping
    * @return value to define a static variable to force running this function
    *  at library load time. It relates to variables so that it cannot be
    *  optimized away.
    */
   template <typename DerivedType>
-  uint64_t declare() {
-    std::string full_name{boost::core::demangle(typeid(DerivedType).name())};
-    emit() << "::declare<" << full_name << ">();" << std::endl;
-    library_[full_name] = &maker<DerivedType>;
+  uint64_t declare(const std::string& derived_type_name) {
+    library_[derived_type_name] = &maker<DerivedType>;
     return reinterpret_cast<std::uintptr_t>(&library_);
   }
 
@@ -244,37 +215,38 @@ class Factory {
    * make a new object by name
    *
    * We look through the library to find the requested object.
-   * If found, we create one and return a pointer to the newly
-   * created object. If not found, we raise an exception.
-   *
-   * @throws Exception if the input object name could not be found
+   * If found, we create one, store it inside our warehouse_,
+   * and return a pointer to the newly created object.
+   * If not found, we return a nullptr.
    *
    * The arguments to the maker are determined at compiletime
    * using the template parameters of Factory.
    *
-   * @param[in] full_name name of class to create, same name as passed to
-   * declare
+   * @param[in] full_name name of class to create
+   * same name as passed to declare
    * @param[in] maker_args parameter pack of arguments to pass on to maker
    *
-   * @returns a pointer to the parent class that the objects derive from.
+   * @returns a pointer to the parent class that the objects derive from (or null)
    */
   PrototypePtr make(const std::string& full_name,
                     PrototypeConstructorArgs... maker_args) {
     auto lib_it{library_.find(full_name)};
     if (lib_it == library_.end()) {
-      EXCEPTION_RAISE("SimFactory", "An object named " + full_name +
-                                        " has not been declared.");
+      return PrototypePtr(nullptr);
     }
-    emit() << "::make(" << full_name << ");" << std::endl;
     warehouse_.emplace_back(lib_it->second(maker_args...));
     return warehouse_.back();
   }
 
   /**
-   * Apply the input UnaryFunction to each entry in the inventory
+   * Apply the input UnaryFunction to each entry in the warehouse
    *
    * UnaryFunction is simply passed dirctly to std::for_each so
    * look there for requirements upon it.
+   *
+   * @tparam UnaryFunction type of function to be applied, its return
+   * value is ignored and its only argument are PrototypePtr objects.
+   * @param[in] f UnaryFunction to apply to each entry
    */
   template <class UnaryFunction>
   void apply(UnaryFunction f) const {
@@ -287,17 +259,10 @@ class Factory {
   /// delete the assignment operator
   void operator=(Factory const&) = delete;
 
-  Factory() {
-    n_factories_++;
-    emit() << "::constructor" << std::endl;
-  }
-
-  ~Factory() {
-    emit() << "::destructor" << std::endl;
-  }
+  /// default constructor that does nothing
+  Factory() = default;
 
  private:
-  static int n_factories_;
   /**
    * make a new DerivedType returning a PrototypePtr
    *
@@ -330,9 +295,6 @@ class Factory {
   std::vector<PrototypePtr> warehouse_;
 };  // Factory
 
-template<typename T, typename P, typename... Args>
-int Factory<T, P, Args...>::n_factories_ = 0;
-
 } // namespace framework
 
 /**
@@ -342,6 +304,10 @@ int Factory<T, P, Args...>::n_factories_ = 0;
  * public:
  *  DeclareFactory(MyProto, std::shared_ptr<MyProto>);
  * ```
+ *
+ * The arguments to this macro are the template arguments to the framework::Factory
+ * class and should at minimum define the base class the Factory will construct for
+ * and the type of pointer the Factory should return.
  */
 #define DeclareFactory(...) \
   struct Factory : public ::framework::Factory<__VA_ARGS__> { \
@@ -354,11 +320,72 @@ int Factory<T, P, Args...>::n_factories_ = 0;
  * ```cpp
  * DefineFactory(MyProto);
  * ```
+ *
+ * We need this to be separate from the declaration so that there is
+ * a unique single factory for the class across any of the C++ libraries
+ * that may use it.
  */
 #define DefineFactory(classtype) \
   classtype::Factory& classtype::Factory::get() { \
     static classtype::Factory the_factory; \
     return the_factory; \
+  }
+
+/**
+ * Concatenate two pieces of text into one
+ *
+ * We use the `__COUNTER__` macro to uniquely define variable
+ * names within a translation unit (file) but we need to pass
+ * `__COUNTER__` through a macro argument in order to have it
+ * resolved into a number.
+ */
+#define _CONCAT_INTERNAL(a, b) a ## b
+
+/**
+ * Concatenate two pieces of text into one with indirection
+ *
+ * We use the `__COUNTER__` macro to uniquely define variable
+ * names within a translation unit (file) but we need to pass
+ * `__COUNTER__` through a macro argument in order to have it
+ * resolved into a number.
+ */
+#define _CONCAT(a, b) _CONCAT_INTERNAL(a, b)
+
+/**
+ * Add a number suffix to the input variable name so that it is unique
+ *
+ * We use the `__COUNTER__` macro which counts up from 0 everytime it
+ * is called so these variables can be unique within a specific
+ * translation unit.
+ */
+#define UNIQUE(a) _CONCAT(a, __COUNTER__)
+
+/**
+ * Register a new class with a specific factory
+ *
+ * This macro should be used where the derived class is defined.
+ * This macro avoids typing all this out and making sure that the string
+ * passed as an argument to Factory::declare is the same characters as
+ * the actual class.
+ * If you want the name for a specific object to not be the full-specified
+ * class name, then you need to write the contents of this macro yourself.
+ *
+ * Using an [unnamed namespace](
+ * https://en.cppreference.com/w/cpp/language/namespace#Unnamed_namespaces)
+ * defines the variables inside it as having internal linkage and as implicitly
+ * static. Having internal linkage allows us to have repeat variable names
+ * across different source files. Being static means that the variable is
+ * guaranteed to be constructed during library load time.
+ * The details of how this is handled is documented in
+ * [Storage Class Specifiers](
+ * https://en.cppreference.com/w/cpp/language/storage_duration).
+ *
+ * @param[in] prototype fully-specified base class
+ * @param[in] derived fully-specified derived class
+ */
+#define RegisterToFactory(prototype, derived) \
+  namespace { \
+  auto UNIQUE(v) = ::prototype::Factory::get().declare<::derived>(#derived); \
   }
 
 #endif

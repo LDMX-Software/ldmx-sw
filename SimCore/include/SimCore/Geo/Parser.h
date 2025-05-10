@@ -6,6 +6,7 @@
 
 //---< Framework >---//
 #include "Framework/Configure/Parameters.h"
+#include "Framework/Factory.h"
 
 //---< SimCore >---//
 #include "SimCore/ConditionsInterface.h"
@@ -49,11 +50,8 @@ class Parser {
 
   virtual ~Parser() = default;
 
+  DeclareFactory(Parser, Parser*, framework::config::Parameters&, simcore::ConditionsInterface&);
 };  // Parser
-
-using createFunc =
-    std::function<Parser *(framework::config::Parameters &parameters,
-                           simcore::ConditionsInterface &ci)>;
 
 }  // namespace geo
 }  // namespace simcore

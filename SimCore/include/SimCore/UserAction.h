@@ -190,9 +190,6 @@ class UserAction {
 
 }  // namespace simcore
 
-#define DECLARE_ACTION(NS, CLASS)                                             \
-  namespace {                                                                 \
-  auto v##CLASS = ::simcore::UserAction::Factory::get().declare<NS::CLASS>(); \
-  }
+#define DECLARE_ACTION(NS, CLASS) RegisterToFactory(simcore::UserAction, NS::CLASS)
 
 #endif  // SIMCORE_USERACTION_H

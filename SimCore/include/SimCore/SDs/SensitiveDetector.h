@@ -151,9 +151,6 @@ class SensitiveDetector : public G4VSensitiveDetector {
  * Defines a builder for the declared class
  * and then registers the class as a possible sensitive detector
  */
-#define DECLARE_SENSITIVEDETECTOR(CLASS)                                  \
-  namespace {                                                             \
-  auto v = ::simcore::SensitiveDetector::Factory::get().declare<CLASS>(); \
-  }
+#define DECLARE_SENSITIVEDETECTOR(CLASS) RegisterToFactory(simcore::SensitiveDetector, CLASS)
 
 #endif  // SIMCORE_SENSITIVEDETECTOR_H_
