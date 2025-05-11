@@ -21,7 +21,8 @@ namespace framework {
  * Factory to dynamically create objects derived from a specific prototype
  * class.
  *
- * This factory is a singleton class meaning it cannot be created by the user.
+ * This factory should be a singleton class so its copy constructor and
+ * assignment operator have been deleted.
  *
  * @tparam Prototype the type of object that this factory creates.
  *    This should be the base class that all types in this factory derive from.
@@ -44,7 +45,7 @@ namespace framework {
  *    This registration is done by providing their type and the
  *    name they should be referred to by.
  *    In order to reduce the amount of boilerplate code, the derived class
- *    declaration can be done with the FACTORY_REGISTRATION macro.
+ *    declaration can be done with the #FACTORY_REGISTRATION macro.
  * 2. The factory creates any of the registered classes and returns a pointer
  *    to it in the form of a prototype-class pointer.
  *
@@ -137,7 +138,7 @@ namespace framework {
  * ```
  *
  * ### Executable
- * Since the `FACTORY_REGISTRATION` macro defines a function whose result
+ * Since the #FACTORY_REGISTRATION macro defines a function whose result
  * produces a static variable, the function is called at library-load
  * time, the registration of our various library entries is automatically done
  * before the execution of `main`
@@ -195,7 +196,7 @@ class Factory {
    *
    * @note The derived_type_name argument is what should be used as an input
    * to Factory::make. Most commonly, this is just the fully-specificed C++
-   * class name which is what is done with the FACTORY_REGISTRATION macro, but
+   * class name which is what is done with the #FACTORY_REGISTRATION macro, but
    * it could be something else if the user wishes to use this function directly
    * instead of the macro.
    *
@@ -367,7 +368,7 @@ class Factory {
  *
  * This macro should be used where the derived class is defined.
  * This macro avoids typing all this out and making sure that the string
- * passed as an argument to Factory::declare is the same characters as
+ * passed as an argument to framework::Factory::declare is the same characters as
  * the actual class.
  * If you want the name for a specific object to not be the full-specified
  * class name, then you need to write the contents of this macro yourself.
