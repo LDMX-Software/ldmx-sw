@@ -147,6 +147,6 @@ target_link_libraries(fire PRIVATE Framework::Framework)
 install(TARGETS fire DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
 
 # Setup the test
-#setup_test(dependencies Framework::Framework)
+setup_test(dependencies Framework::Framework)
 
 setup_python(package_name LDMX/Framework)
