@@ -154,23 +154,22 @@ def trackPlotter(tree, event_number, tag, save, save_tag):
         for truthTrack in truthTrackParams:
             ax.plot([0.0, ecalRecHits[0][0]], [truthTrack[1], truthTrack[0]*ecalRecHits[0][0]+truthTrack[1]], [truthTrack[3], truthTrack[2]*ecalRecHits[0][0]+truthTrack[3]], color='blue', label=f'Truth Track, d_RecHit = {truthTrack[4]:.2f} mm, chi2 = {truthTrack[5]:.3f}')
     
-    if (len(ecal_end_z) > 0):
-        x = ecalRecHits[0][0]
-        y_range = np.linspace(min(ecalRecHits[:,1]) - 5, max(ecalRecHits[:,1]) + 5, 50)
-        z_range = np.linspace(min(ecalRecHits[:,2]) - 5, max(ecalRecHits[:,2]) + 5, 50)
-        Y, Z = np.meshgrid(y_range, z_range)
-        X = np.full(Y.shape, ecalRecHits[0][0])
-    
-        plane = ax.plot_surface(X, Y, Z, color='red', alpha=0.1, edgecolor='none')
-    
-        for recHit in ecalRecHits:
-            center_z, center_x, center_y = recHit[0], recHit[1], recHit[2]
-            radius = 3.87
-            theta = np.linspace(0, 2 * np.pi, 100)
-            circle_x = center_x + radius * np.cos(theta)
-            circle_y = center_y + radius * np.sin(theta)
-            circle_z = np.full_like(circle_x, center_z)
-            ax.plot(circle_z, circle_x, circle_y, c='purple')
+    x = ecalRecHits[0][0]
+    y_range = np.linspace(min(ecalRecHits[:,1]) - 5, max(ecalRecHits[:,1]) + 5, 50)
+    z_range = np.linspace(min(ecalRecHits[:,2]) - 5, max(ecalRecHits[:,2]) + 5, 50)
+    Y, Z = np.meshgrid(y_range, z_range)
+    X = np.full(Y.shape, ecalRecHits[0][0])
+        
+    plane = ax.plot_surface(X, Y, Z, color='red', alpha=0.1, edgecolor='none')
+        
+    for recHit in ecalRecHits:
+        center_z, center_x, center_y = recHit[0], recHit[1], recHit[2]
+        radius = 3.87
+        theta = np.linspace(0, 2 * np.pi, 100)
+        circle_x = center_x + radius * np.cos(theta)
+        circle_y = center_y + radius * np.sin(theta)
+        circle_z = np.full_like(circle_x, center_z)
+        ax.plot(circle_z, circle_x, circle_y, c='purple')
 
     # Labels and title
     ax.set_xlabel('z [mm]')
@@ -189,29 +188,29 @@ def trackPlotter(tree, event_number, tag, save, save_tag):
     plt.savefig(f'{save}/{tag}_eventDisplay_eventID_{event_number}_{save_tag}.png')
 
 #    UNCOMMENT THESE LINES IF YOU WANT A ZOOMED IN PLOT (i.e. just recoil points)
-    ax.set_xlim(0, 50)
-
-    x_low_lim = 5
-    x_up_lim = 15
-    y_low_lim = 0
-    y_up_lim = 10
-    
-    x_target = 0.0
-    y_target_range = np.linspace(x_low_lim, x_up_lim, 50)
-    z_target_range = np.linspace(y_low_lim, y_up_lim, 50)
-    Y_target, Z_target = np.meshgrid(y_target_range, z_target_range)
-    X_target = np.full(Y_target.shape, 0.0)
-    target_plane = ax.plot_surface(X_target, Y_target, Z_target, color='purple', alpha=0.1, edgecolor='none')
-
-    ax.set_ylim(x_low_lim, x_up_lim)
-    ax.set_zlim(y_low_lim, y_up_lim)
-    plane.set_visible(False)
-
-    plt.savefig(f'{save}/{tag}_eventDisplay_eventID_{event_number}_ZOOM.png')
+#    ax.set_xlim(0, 50)
+#
+#    x_low_lim = -6
+#    x_up_lim = -4
+#    y_low_lim = -18.5
+#    y_up_lim = -17
+#
+#    x_target = 0.0
+#    y_target_range = np.linspace(x_low_lim, x_up_lim, 50)
+#    z_target_range = np.linspace(y_low_lim, y_up_lim, 50)
+#    Y_target, Z_target = np.meshgrid(y_target_range, z_target_range)
+#    X_target = np.full(Y_target.shape, 0.0)
+#    target_plane = ax.plot_surface(X_target, Y_target, Z_target, color='purple', alpha=0.1, edgecolor='none')
+#
+#    ax.set_ylim(x_low_lim, x_up_lim)
+#    ax.set_zlim(y_low_lim, y_up_lim)
+#    plane.set_visible(False)
+#
+#    plt.savefig(f'{save}/{tag}_eventDisplay_eventID_{event_number}_ZOOM.png')
     
 def main():
     tree = r.TChain("LDMX_Events")
-    tree.Add('events_1_rLDMX_v1_yZERO_new3Dpoints.root')
+    tree.Add('events_5000_rLDMX_v1_yZERO_new3Dpoints.root')
 
     nentries = tree.GetEntries()
     print("nentries = ", nentries)

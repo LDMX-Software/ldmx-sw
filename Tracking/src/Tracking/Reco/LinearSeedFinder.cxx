@@ -447,6 +447,7 @@ Acts::Vector3 LinearSeedFinder::simple3DHitV2(const ldmx::Measurement& axial, co
     auto [axial_u, axial_v, axial_w] = getSurfaceVectors(axial_surface);
     auto [stereo_u, stereo_v, stereo_w] = getSurfaceVectors(stereo_surface);
     double salpha = dotProduct(axial_v, stereo_u);
+    double cosalpha = dotProduct(axial_u, stereo_u);
         
     // Get sensor local measured coordinates
     // Get local position components
@@ -460,15 +461,16 @@ Acts::Vector3 LinearSeedFinder::simple3DHitV2(const ldmx::Measurement& axial, co
     //use the dx_proj as the displacement in u of the axial measurement
     //it's axial_u_value - dx_proj because u is in the -x direction
     // this calculation is in the axial frame
-    double v_intercept_useproj=-((axial_u_value-dx_proj)-stereo_u_value)/salpha;
-    double u_intercept_useproj=axial_u_value-dx_proj;
+    double v_intercept_useproj=(stereo_u_value - (axial_u_value-dx_proj)*cosalpha)/salpha;
+    double u_intercept_useproj=axial_u_value;
     
     //convert to tracking global
     Acts::Vector3 axst_global_useproj = axial_surface.localToGlobal(geometry_context(), Acts::Vector2(u_intercept_useproj,v_intercept_useproj), dummy);
     Acts::Vector3 dummy_stereo_proj = stereo_surface.localToGlobal(geometry_context(), Acts::Vector2(u_intercept_useproj,v_intercept_useproj), dummy);
     
-    //we want the reconstructed hit to be at the z of the stereo layer
+   //we want the reconstructed hit to be at the z of the stereo layer
     Acts::Vector3 reconstructed_hit{dummy_stereo_proj[0], axst_global_useproj[1], axst_global_useproj[2]};
+    
     ldmx_log(debug) << "The particle projected axst measured position is (compare with stereo sim position): " << reconstructed_hit[0] << ", " << reconstructed_hit[1] << ", " << reconstructed_hit[2] << "\n";
         
     return reconstructed_hit;
