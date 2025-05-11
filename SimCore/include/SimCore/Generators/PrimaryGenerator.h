@@ -20,8 +20,8 @@
 /*   Framework   */
 /*~~~~~~~~~~~~~~~*/
 #include "Framework/Configure/Parameters.h"
-#include "Framework/RunHeader.h"
 #include "Framework/Factory.h"
+#include "Framework/RunHeader.h"
 
 // Forward Declarations
 class G4Event;
@@ -46,8 +46,7 @@ class PrimaryGenerator : public G4VPrimaryGenerator {
                    const framework::config::Parameters& parameters);
 
   DECLARE_FACTORY(PrimaryGenerator, std::shared_ptr<PrimaryGenerator>,
-                 const std::string&,
-                 const framework::config::Parameters&);
+                  const std::string&, const framework::config::Parameters&);
 
   /// Destructor
   virtual ~PrimaryGenerator() = default;
@@ -81,6 +80,7 @@ class PrimaryGenerator : public G4VPrimaryGenerator {
  * and then registers the class as a generator
  * with the Factory
  */
-#define DECLARE_GENERATOR(CLASS) FACTORY_REGISTRATION(simcore::PrimaryGenerator, CLASS)
+#define DECLARE_GENERATOR(CLASS) \
+  FACTORY_REGISTRATION(simcore::PrimaryGenerator, CLASS)
 
 #endif  // SIMCORE_PRIMARYGENERATOR_H

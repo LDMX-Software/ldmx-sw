@@ -2,11 +2,11 @@
 #define SIMCORE_SENSITIVEDETECTOR_H_
 
 #include "Framework/Configure/Parameters.h"
+#include "Framework/Factory.h"
 #include "Framework/RunHeader.h"
 #include "SimCore/ConditionsInterface.h"
-#include "Framework/Factory.h"
-#include "SimCore/G4User/TrackingAction.h"
 #include "SimCore/G4User/TrackMap.h"
+#include "SimCore/G4User/TrackingAction.h"
 
 //------------//
 //   Geant4   //
@@ -37,9 +37,9 @@ class SensitiveDetector : public G4VSensitiveDetector {
    * We have the factory create raw pointers since the G4SDManager handles
    * destruction of all of the registered SensitiveDetectors.
    */
-  DECLARE_FACTORY(SensitiveDetector, SensitiveDetector*,
-                 const std::string&, simcore::ConditionsInterface&,
-                 const framework::config::Parameters&);
+  DECLARE_FACTORY(SensitiveDetector, SensitiveDetector*, const std::string&,
+                  simcore::ConditionsInterface&,
+                  const framework::config::Parameters&);
 
   /** Destructor */
   virtual ~SensitiveDetector() = default;
@@ -151,6 +151,7 @@ class SensitiveDetector : public G4VSensitiveDetector {
  * Defines a builder for the declared class
  * and then registers the class as a possible sensitive detector
  */
-#define DECLARE_SENSITIVEDETECTOR(CLASS) FACTORY_REGISTRATION(simcore::SensitiveDetector, CLASS)
+#define DECLARE_SENSITIVEDETECTOR(CLASS) \
+  FACTORY_REGISTRATION(simcore::SensitiveDetector, CLASS)
 
 #endif  // SIMCORE_SENSITIVEDETECTOR_H_

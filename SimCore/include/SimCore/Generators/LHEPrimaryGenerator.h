@@ -9,8 +9,8 @@
 #define SIMCORE_LHEPRIMARYGENERATOR_H
 
 // LDMX
-#include "SimCore/LHE/LHEReader.h"
 #include "SimCore/Generators/PrimaryGenerator.h"
+#include "SimCore/LHE/LHEReader.h"
 
 class G4Event;
 

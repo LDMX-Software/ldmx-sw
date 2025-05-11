@@ -178,13 +178,12 @@ void SimulatorBase::saveSDHits(framework::Event& event) {
 void SimulatorBase::buildGeometry() {
   // Instantiate the GDML parser and corresponding messenger owned and
   // managed by DetectorConstruction
-  auto parser{simcore::geo::Parser::Factory::get().make(
-      "gdml", parameters_, conditionsIntf_)};
+  auto parser{simcore::geo::Parser::Factory::get().make("gdml", parameters_,
+                                                        conditionsIntf_)};
   if (not parser) {
     EXCEPTION_RAISE(
         "UnableToCreate",
-        "Unable to find a parser registered under the name 'gdml'."
-    );
+        "Unable to find a parser registered under the name 'gdml'.");
   }
 
   // Set the DetectorConstruction instance used to build the detector

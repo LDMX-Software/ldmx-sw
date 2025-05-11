@@ -51,8 +51,7 @@ class PhotoNuclearModel {
    * The factory for PhotoNuclearModels.
    */
   DECLARE_FACTORY(PhotoNuclearModel, std::shared_ptr<PhotoNuclearModel>,
-                 const std::string&,
-                 const framework::config::Parameters&);
+                  const std::string&, const framework::config::Parameters&);
 
   /**
    * Removes any existing photonNuclear process from the process manager of the
@@ -91,6 +90,7 @@ class PhotoNuclearModel {
  *
  * See e.g. SimCore/src/SimCore/PhotoNuclearModels/BertiniModel.cxx
  */
-#define DECLARE_PHOTONUCLEAR_MODEL(CLASS) FACTORY_REGISTRATION(simcore::PhotoNuclearModel, CLASS)
+#define DECLARE_PHOTONUCLEAR_MODEL(CLASS) \
+  FACTORY_REGISTRATION(simcore::PhotoNuclearModel, CLASS)
 
 #endif /* SIMCORE_PHOTONUCLEAR_MODEL_H */

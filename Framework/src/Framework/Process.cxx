@@ -5,9 +5,10 @@
 
 #include "Framework/Process.h"
 
+#include <dlfcn.h>
+
 #include <iostream>
 #include <set>
-#include <dlfcn.h>
 
 #include "Framework/Event.h"
 #include "Framework/EventFile.h"
@@ -57,17 +58,17 @@ Process::Process(const framework::config::Parameters &configuration)
   auto libs{
       configuration.getParameter<std::vector<std::string>>("libraries", {})};
   std::set<std::string> libraries_loaded;
-  for (const auto& lib : libs) {
+  for (const auto &lib : libs) {
     if (libraries_loaded.find(lib) != libraries_loaded.end()) {
       continue;
     }
-    
-    void* handle = dlopen(lib.c_str(), RTLD_NOW);
+
+    void *handle = dlopen(lib.c_str(), RTLD_NOW);
     if (handle == nullptr) {
       EXCEPTION_RAISE("LibraryLoadFailure",
                       "Error loading library '" + lib + "':" + dlerror());
     }
-  
+
     libraries_loaded.insert(lib);
   }
 
@@ -92,13 +93,15 @@ Process::Process(const framework::config::Parameters &configuration)
   for (auto proc : sequence) {
     auto className{proc.getParameter<std::string>("className")};
     auto instanceName{proc.getParameter<std::string>("instanceName")};
-    EventProcessor *ep = EventProcessor::Factory::get().make(
-        className, instanceName, *this);
+    EventProcessor *ep =
+        EventProcessor::Factory::get().make(className, instanceName, *this);
     if (not ep) {
-      EXCEPTION_RAISE(
-          "UnableToCreate",
-          "The EventProcessor Factory was unable to create "+instanceName+" of type "+className+"."
-          "Did you load the library it is apart of? Did you DECLARE_PRODUCER or DECLARE_ANALYZER?");
+      EXCEPTION_RAISE("UnableToCreate",
+                      "The EventProcessor Factory was unable to create " +
+                          instanceName + " of type " + className +
+                          "."
+                          "Did you load the library it is apart of? Did you "
+                          "DECLARE_PRODUCER or DECLARE_ANALYZER?");
     }
     auto histograms{
         proc.getParameter<std::vector<framework::config::Parameters>>(

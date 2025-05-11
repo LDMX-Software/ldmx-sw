@@ -11,6 +11,7 @@
 //-------------//
 #include "G4DarkBreM/G4DarkBremsstrahlung.h"  //for process name
 #include "SimCore/APrimePhysics.h"
+#include "SimCore/BiasOperators/XsecBiasingOperator.h"
 #include "SimCore/DetectorConstruction.h"
 #include "SimCore/G4User/EventAction.h"
 #include "SimCore/G4User/PrimaryGeneratorAction.h"
@@ -20,7 +21,6 @@
 #include "SimCore/G4User/TrackingAction.h"
 #include "SimCore/GammaPhysics.h"
 #include "SimCore/ParallelWorld.h"
-#include "SimCore/BiasOperators/XsecBiasingOperator.h"
 
 //------------//
 //   Geant4   //

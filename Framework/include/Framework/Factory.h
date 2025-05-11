@@ -6,12 +6,12 @@
 #ifndef FRAMEWORK_FACTORY_H
 #define FRAMEWORK_FACTORY_H
 
-#include <memory>
-#include <cstdint>
 #include <algorithm>                // for for_each call in apply
 #include <boost/core/demangle.hpp>  // for demangling
-#include <string>                   // for the keys in the library map
-#include <unordered_map>            // for the library of prototypes
+#include <cstdint>
+#include <memory>
+#include <string>         // for the keys in the library map
+#include <unordered_map>  // for the library of prototypes
 
 #include "Framework/Exception/Exception.h"
 
@@ -79,7 +79,7 @@ namespace framework {
  * };  // LibraryEntry
  *
  * #endif // LIBRARYENTRY_H
- * 
+ *
  * // LibraryEntry.cxx
  * #include "LibraryEntry.hpp"
  * DEFINE_FACTORY(LibraryEntry);
@@ -226,7 +226,8 @@ class Factory {
    * same name as passed to declare
    * @param[in] maker_args parameter pack of arguments to pass on to maker
    *
-   * @returns a pointer to the parent class that the objects derive from (or null)
+   * @returns a pointer to the parent class that the objects derive from (or
+   * null)
    */
   PrototypePtr make(const std::string& full_name,
                     PrototypeConstructorArgs... maker_args) {
@@ -295,23 +296,24 @@ class Factory {
   std::vector<PrototypePtr> warehouse_;
 };  // Factory
 
-} // namespace framework
+}  // namespace framework
 
 /**
- * This macro is used in the `public` portion of your prototype class declaration.
+ * This macro is used in the `public` portion of your prototype class
+ * declaration.
  *
  * ```cpp
  * public:
  *  DECLARE_FACTORY(MyProto, std::shared_ptr<MyProto>);
  * ```
  *
- * The arguments to this macro are the template arguments to the framework::Factory
- * class and should at minimum define the base class the Factory will construct for
- * and the type of pointer the Factory should return.
+ * The arguments to this macro are the template arguments to the
+ * framework::Factory class and should at minimum define the base class the
+ * Factory will construct for and the type of pointer the Factory should return.
  */
-#define DECLARE_FACTORY(...) \
+#define DECLARE_FACTORY(...)                                  \
   struct Factory : public ::framework::Factory<__VA_ARGS__> { \
-    static Factory& get(); \
+    static Factory& get();                                    \
   }
 
 /**
@@ -325,10 +327,10 @@ class Factory {
  * a unique single factory for the class across any of the C++ libraries
  * that may use it.
  */
-#define DEFINE_FACTORY(classtype) \
+#define DEFINE_FACTORY(classtype)                 \
   classtype::Factory& classtype::Factory::get() { \
-    static classtype::Factory the_factory; \
-    return the_factory; \
+    static classtype::Factory the_factory;        \
+    return the_factory;                           \
   }
 
 /**
@@ -339,7 +341,7 @@ class Factory {
  * `__COUNTER__` through a macro argument in order to have it
  * resolved into a number.
  */
-#define _CONCAT_INTERNAL(a, b) a ## b
+#define _CONCAT_INTERNAL(a, b) a##b
 
 /**
  * Concatenate two pieces of text into one with indirection
@@ -383,8 +385,8 @@ class Factory {
  * @param[in] prototype fully-specified base class
  * @param[in] derived fully-specified derived class
  */
-#define FACTORY_REGISTRATION(prototype, derived) \
-  namespace { \
+#define FACTORY_REGISTRATION(prototype, derived)                             \
+  namespace {                                                                \
   auto UNIQUE(v) = ::prototype::Factory::get().declare<::derived>(#derived); \
   }
 

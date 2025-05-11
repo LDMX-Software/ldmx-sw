@@ -1,11 +1,10 @@
 #pragma once
 
+#include "Framework/Exception/Exception.h"
 #include "G4LogicalVolume.hh"
 #include "G4LogicalVolumeStore.hh"
 #include "G4Region.hh"
 #include "G4String.hh"
-
-#include "Framework/Exception/Exception.h"
 
 namespace simcore {
 namespace g4user {

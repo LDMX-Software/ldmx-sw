@@ -11,8 +11,8 @@
 // LDMX
 #include "DetDescr/EcalID.h"
 #include "SimCore/Event/SimCalorimeterHit.h"
-#include "SimCore/G4User/TrackingAction.h"
 #include "SimCore/G4User/TrackMap.h"
+#include "SimCore/G4User/TrackingAction.h"
 #include "SimCore/SDs/SensitiveDetector.h"
 
 // ROOT

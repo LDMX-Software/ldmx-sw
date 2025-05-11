@@ -20,9 +20,9 @@
 /*   Framework   */
 /*~~~~~~~~~~~~~~~*/
 #include "Framework/Configure/Parameters.h"
+#include "Framework/Factory.h"
 #include "Framework/Logger.h"
 #include "SimCore/Event/SimParticle.h"
-#include "Framework/Factory.h"
 #include "SimCore/UserEventInformation.h"
 
 // Forward Declarations
@@ -51,8 +51,8 @@ class UserAction {
              framework::config::Parameters& parameters);
 
   /// factory for user actions
-  DECLARE_FACTORY(UserAction, std::shared_ptr<UserAction>,
-                 const std::string&, framework::config::Parameters&);
+  DECLARE_FACTORY(UserAction, std::shared_ptr<UserAction>, const std::string&,
+                  framework::config::Parameters&);
 
   /// Destructor
   virtual ~UserAction() = default;
@@ -190,6 +190,7 @@ class UserAction {
 
 }  // namespace simcore
 
-#define DECLARE_ACTION(NS, CLASS) FACTORY_REGISTRATION(simcore::UserAction, NS::CLASS)
+#define DECLARE_ACTION(NS, CLASS) \
+  FACTORY_REGISTRATION(simcore::UserAction, NS::CLASS)
 
 #endif  // SIMCORE_USERACTION_H

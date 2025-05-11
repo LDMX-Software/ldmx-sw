@@ -44,7 +44,8 @@ int main(int argc, char* argv[]) {
   auto parser{simcore::geo::Parser::Factory::get().make(
       "gdml", parser_parameters, empty_interface)};
   if (not parser) {
-    std::cerr << "Unable to create a 'gdml' parser to read the geometry." << std::endl;
+    std::cerr << "Unable to create a 'gdml' parser to read the geometry."
+              << std::endl;
     return 1;
   }
   runManager->SetUserInitialization(new simcore::DetectorConstruction(

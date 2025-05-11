@@ -9,8 +9,8 @@
 /*~~~~~~~~~~~~~*/
 /*   SimCore   */
 /*~~~~~~~~~~~~~*/
-#include "SimCore/G4User/TrackingAction.h"
 #include "SimCore/G4User/TrackMap.h"
+#include "SimCore/G4User/TrackingAction.h"
 
 /*~~~~~~~~~~~~*/
 /*   Geant4   */

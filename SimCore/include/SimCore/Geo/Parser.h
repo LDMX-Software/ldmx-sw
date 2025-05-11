@@ -50,7 +50,8 @@ class Parser {
 
   virtual ~Parser() = default;
 
-  DECLARE_FACTORY(Parser, Parser*, framework::config::Parameters&, simcore::ConditionsInterface&);
+  DECLARE_FACTORY(Parser, Parser *, framework::config::Parameters &,
+                  simcore::ConditionsInterface &);
 };  // Parser
 
 }  // namespace geo

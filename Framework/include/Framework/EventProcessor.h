@@ -14,12 +14,12 @@
 #include "Framework/Configure/Parameters.h"
 #include "Framework/Event.h"
 #include "Framework/Exception/Exception.h"
+#include "Framework/Factory.h"
 #include "Framework/Histograms.h"
 #include "Framework/Logger.h"
 #include "Framework/NtupleManager.h"
 #include "Framework/RunHeader.h"
 #include "Framework/StorageControl.h"
-#include "Framework/Factory.h"
 
 /*~~~~~~~~~~~~~~~~*/
 /*   C++ StdLib   */
@@ -62,7 +62,8 @@ class AbortEventException : public framework::exception::Exception {
 class EventProcessor {
  public:
   /// declare that we have a factory for this class
-  DECLARE_FACTORY(EventProcessor, EventProcessor*, const std::string&, Process&);
+  DECLARE_FACTORY(EventProcessor, EventProcessor *, const std::string &,
+                  Process &);
 
   /**
    * Class constructor.
@@ -145,7 +146,7 @@ class EventProcessor {
    * This becomes Producer::produce or Analyzer::analyze
    * depending on which one the user inherits from.
    */
-  virtual void process(Event& event) = 0;
+  virtual void process(Event &event) = 0;
 
   /**
    * Access a conditions object for the current event
@@ -274,9 +275,7 @@ class Producer : public EventProcessor {
   /**
    * Processing an event for a Producer is calling produce
    */
-  virtual void process(Event &event) final {
-    produce(event);
-  }
+  virtual void process(Event &event) final { produce(event); }
 
   /**
    * Process the event and put new data products into it.
@@ -314,9 +313,7 @@ class Analyzer : public EventProcessor {
   /**
    * Processing an event for an Analyzer is calling analyze
    */
-  virtual void process(Event &event) final {
-    analyze(event);
-  }
+  virtual void process(Event &event) final { analyze(event); }
 
   /**
    * Don't allow Analyzers to add parameters to the run header
@@ -341,7 +338,8 @@ class Analyzer : public EventProcessor {
  * @attention Every Producer class must call this macro or DECLARE_PRODUCER_NS()
  * in the associated implementation (.cxx) file.
  */
-#define DECLARE_PRODUCER(CLASS) FACTORY_REGISTRATION(framework::EventProcessor, CLASS)
+#define DECLARE_PRODUCER(CLASS) \
+  FACTORY_REGISTRATION(framework::EventProcessor, CLASS)
 
 /**
  * @def DECLARE_ANALYZER(CLASS)
@@ -352,7 +350,8 @@ class Analyzer : public EventProcessor {
  * @attention Every Analyzer class must call this macro or DECLARE_ANALYZER_NS()
  * in the associated implementation (.cxx) file.
  */
-#define DECLARE_ANALYZER(CLASS) FACTORY_REGISTRATION(framework::EventProcessor, CLASS)
+#define DECLARE_ANALYZER(CLASS) \
+  FACTORY_REGISTRATION(framework::EventProcessor, CLASS)
 
 /**
  * @def DECLARE_PRODUCER_NS(NS,CLASS)
