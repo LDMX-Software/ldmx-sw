@@ -46,10 +46,10 @@ class LinearSeedFinder(Producer):
         self.layer34_midpoint = 27.5
     
     def buildHistograms(self) :
-        self.build1DHistogram("sensor1_measured_x-sim_stereo_layer1_x_ALL","Sensor1 Measured x - Sim Stereo1 x [mm]",200,-50,50)
-        self.build1DHistogram("sensor1_measured_y-sim_stereo_layer1_y_ALL","Sensor1 Measured y - Sim Stereo1 y [mm]",200,-50,50)
-        self.build1DHistogram("sensor2_measured_x-sim_stereo_layer2_x_ALL","Sensor2 Measured x - Sim Stereo2 x [mm]",200,-50,50)
-        self.build1DHistogram("sensor2_measured_y-sim_stereo_layer2_y_ALL","Sensor2 Measured y - Sim Stereo2 y [mm]",200,-50,50)
+        self.build1DHistogram("sensor1_measured_x-sim_stereo_layer1_x_ALL","Sensor1 Measured x - Sim Stereo1 x [mm]",100,-0.1,0.1)
+        self.build1DHistogram("sensor1_measured_y-sim_stereo_layer1_y_ALL","Sensor1 Measured y - Sim Stereo1 y [mm]",100,-2,2)
+        self.build1DHistogram("sensor2_measured_x-sim_stereo_layer2_x_ALL","Sensor2 Measured x - Sim Stereo2 x [mm]",100,-0.1,0.1)
+        self.build1DHistogram("sensor2_measured_y-sim_stereo_layer2_y_ALL","Sensor2 Measured y - Sim Stereo2 y [mm]",100,-2,2)
         self.build1DHistogram("sensor1_measured_x-sim_stereo_layer1_x_same_trackID","Sensor1 Measured x - Sim Stereo1 x [mm]",100,-0.1,0.1)
         self.build1DHistogram("sensor1_measured_y-sim_stereo_layer1_y_same_trackID","Sensor1 Measured y - Sim Stereo1 y [mm]",100,-2,2)
         self.build1DHistogram("sensor2_measured_x-sim_stereo_layer2_x_same_trackID","Sensor2 Measured x - Sim Stereo2 x [mm]",100,-0.1,0.1)
