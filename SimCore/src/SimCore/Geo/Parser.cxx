@@ -1,2 +1,2 @@
 #include "SimCore/Geo/Parser.h"
-DefineFactory(simcore::geo::Parser);
+DEFINE_FACTORY(simcore::geo::Parser);

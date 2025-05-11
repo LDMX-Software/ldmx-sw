@@ -50,7 +50,7 @@ class PhotoNuclearModel {
   /**
    * The factory for PhotoNuclearModels.
    */
-  DeclareFactory(PhotoNuclearModel, std::shared_ptr<PhotoNuclearModel>,
+  DECLARE_FACTORY(PhotoNuclearModel, std::shared_ptr<PhotoNuclearModel>,
                  const std::string&,
                  const framework::config::Parameters&);
 
@@ -91,6 +91,6 @@ class PhotoNuclearModel {
  *
  * See e.g. SimCore/src/SimCore/PhotoNuclearModels/BertiniModel.cxx
  */
-#define DECLARE_PHOTONUCLEAR_MODEL(CLASS) RegisterToFactory(simcore::PhotoNuclearModel, CLASS)
+#define DECLARE_PHOTONUCLEAR_MODEL(CLASS) FACTORY_REGISTRATION(simcore::PhotoNuclearModel, CLASS)
 
 #endif /* SIMCORE_PHOTONUCLEAR_MODEL_H */

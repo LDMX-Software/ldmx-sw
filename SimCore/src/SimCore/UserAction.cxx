@@ -29,6 +29,6 @@ const std::map<int, ldmx::SimParticle>& UserAction::getCurrentParticleMap()
   return g4user::TrackingAction::get()->getTrackMap().getParticleMap();
 }
 
-DefineFactory(UserAction);
+DEFINE_FACTORY(UserAction);
 
 }  // namespace simcore

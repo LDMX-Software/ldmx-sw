@@ -45,7 +45,7 @@ class PrimaryGenerator : public G4VPrimaryGenerator {
   PrimaryGenerator(const std::string& name,
                    const framework::config::Parameters& parameters);
 
-  DeclareFactory(PrimaryGenerator, std::shared_ptr<PrimaryGenerator>,
+  DECLARE_FACTORY(PrimaryGenerator, std::shared_ptr<PrimaryGenerator>,
                  const std::string&,
                  const framework::config::Parameters&);
 
@@ -81,6 +81,6 @@ class PrimaryGenerator : public G4VPrimaryGenerator {
  * and then registers the class as a generator
  * with the Factory
  */
-#define DECLARE_GENERATOR(CLASS) RegisterToFactory(simcore::PrimaryGenerator, CLASS)
+#define DECLARE_GENERATOR(CLASS) FACTORY_REGISTRATION(simcore::PrimaryGenerator, CLASS)
 
 #endif  // SIMCORE_PRIMARYGENERATOR_H

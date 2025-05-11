@@ -51,7 +51,7 @@ class UserAction {
              framework::config::Parameters& parameters);
 
   /// factory for user actions
-  DeclareFactory(UserAction, std::shared_ptr<UserAction>,
+  DECLARE_FACTORY(UserAction, std::shared_ptr<UserAction>,
                  const std::string&, framework::config::Parameters&);
 
   /// Destructor
@@ -190,6 +190,6 @@ class UserAction {
 
 }  // namespace simcore
 
-#define DECLARE_ACTION(NS, CLASS) RegisterToFactory(simcore::UserAction, NS::CLASS)
+#define DECLARE_ACTION(NS, CLASS) FACTORY_REGISTRATION(simcore::UserAction, NS::CLASS)
 
 #endif  // SIMCORE_USERACTION_H

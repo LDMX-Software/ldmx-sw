@@ -56,7 +56,7 @@ class XsecBiasingOperator : public G4VBiasingOperator {
   /**
    * The BiasingOperator factory
    */
-  DeclareFactory(XsecBiasingOperator,
+  DECLARE_FACTORY(XsecBiasingOperator,
                  std::shared_ptr<XsecBiasingOperator>, std::string,
                  const framework::config::Parameters&);
 
@@ -188,6 +188,6 @@ class XsecBiasingOperator : public G4VBiasingOperator {
  * Defines a builder for the declared class
  * and then registers the class as a biasing operator.
  */
-#define DECLARE_XSECBIASINGOPERATOR(CLASS) RegisterToFactory(simcore::XsecBiasingOperator, CLASS)
+#define DECLARE_XSECBIASINGOPERATOR(CLASS) FACTORY_REGISTRATION(simcore::XsecBiasingOperator, CLASS)
 
 #endif  // SIMCORE_XSECBIASINGOPERATOR_H_

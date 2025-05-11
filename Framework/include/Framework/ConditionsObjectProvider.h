@@ -44,7 +44,7 @@ class ConditionsObjectProvider;
 class ConditionsObjectProvider {
  public:
   /// declare that we have a factory for these types of classes
-  DeclareFactory(ConditionsObjectProvider, ConditionsObjectProvider*, const std::string&, const std::string&, const framework::config::Parameters&, Process&);
+  DECLARE_FACTORY(ConditionsObjectProvider, ConditionsObjectProvider*, const std::string&, const std::string&, const framework::config::Parameters&, Process&);
 
   /**
    * Class constructor.
@@ -150,7 +150,7 @@ class ConditionsObjectProvider {
  * DECLARE_CONDITIONS_PROVIDER_NS() in the associated implementation (.cxx)
  * file.
  */
-#define DECLARE_CONDITIONS_PROVIDER(CLASS) RegisterToFactory(framework::ConditionsObjectProvider, CLASS)
+#define DECLARE_CONDITIONS_PROVIDER(CLASS) FACTORY_REGISTRATION(framework::ConditionsObjectProvider, CLASS)
 
 /**
  * @def DECLARE_CONDITIONS_PROVIDER_NS(NS,CLASS)

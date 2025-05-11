@@ -44,7 +44,7 @@ namespace framework {
  *    This registration is done by providing their type and the
  *    name they should be referred to by.
  *    In order to reduce the amount of boilerplate code, the derived class
- *    declaration can be done with the RegisterToFactory macro.
+ *    declaration can be done with the FACTORY_REGISTRATION macro.
  * 2. The factory creates any of the registered classes and returns a pointer
  *    to it in the form of a prototype-class pointer.
  *
@@ -75,14 +75,14 @@ namespace framework {
  *   // pure virtual function that our derived classes will implement
  *   virtual std::string name() = 0;
  *   // the factory type that we will use here
- *   DeclareFactory(LibraryEntry, std::shared_ptr<LibraryEntry>);
+ *   DECLARE_FACTORY(LibraryEntry, std::shared_ptr<LibraryEntry>);
  * };  // LibraryEntry
  *
  * #endif // LIBRARYENTRY_H
  * 
  * // LibraryEntry.cxx
  * #include "LibraryEntry.hpp"
- * DefineFactory(LibraryEntry);
+ * DEFINE_FACTORY(LibraryEntry);
  * ```
  *
  * ### Example Derived Classes
@@ -99,7 +99,7 @@ namespace framework {
  * };
  * }
  *
- * RegisterToFactory(LibraryEntry, library::Book);
+ * FACTORY_REGISTRATION(LibraryEntry, library::Book);
  * ```
  *
  * ```cpp
@@ -116,7 +116,7 @@ namespace framework {
  * }
  * }
  *
- * RegisterToFactory(LibraryEntry, library::audio::Podcast);
+ * FACTORY_REGISTRATION(LibraryEntry, library::audio::Podcast);
  * ```
  *
  * ```cpp
@@ -133,11 +133,11 @@ namespace framework {
  * }
  * }
  *
- * RegisterToFactory(LibraryEntry, library::audio::Album);
+ * FACTORY_REGISTRATION(LibraryEntry, library::audio::Album);
  * ```
  *
  * ### Executable
- * Since the `RegisterToFactory` macro defines a function whose result
+ * Since the `FACTORY_REGISTRATION` macro defines a function whose result
  * produces a static variable, the function is called at library-load
  * time, the registration of our various library entries is automatically done
  * before the execution of `main`
@@ -195,7 +195,7 @@ class Factory {
    *
    * @note The derived_type_name argument is what should be used as an input
    * to Factory::make. Most commonly, this is just the fully-specificed C++
-   * class name which is what is done with the RegisterToFactory macro, but
+   * class name which is what is done with the FACTORY_REGISTRATION macro, but
    * it could be something else if the user wishes to use this function directly
    * instead of the macro.
    *
@@ -302,14 +302,14 @@ class Factory {
  *
  * ```cpp
  * public:
- *  DeclareFactory(MyProto, std::shared_ptr<MyProto>);
+ *  DECLARE_FACTORY(MyProto, std::shared_ptr<MyProto>);
  * ```
  *
  * The arguments to this macro are the template arguments to the framework::Factory
  * class and should at minimum define the base class the Factory will construct for
  * and the type of pointer the Factory should return.
  */
-#define DeclareFactory(...) \
+#define DECLARE_FACTORY(...) \
   struct Factory : public ::framework::Factory<__VA_ARGS__> { \
     static Factory& get(); \
   }
@@ -318,14 +318,14 @@ class Factory {
  * This should go into an implementation file for your prototype class.
  *
  * ```cpp
- * DefineFactory(MyProto);
+ * DEFINE_FACTORY(MyProto);
  * ```
  *
  * We need this to be separate from the declaration so that there is
  * a unique single factory for the class across any of the C++ libraries
  * that may use it.
  */
-#define DefineFactory(classtype) \
+#define DEFINE_FACTORY(classtype) \
   classtype::Factory& classtype::Factory::get() { \
     static classtype::Factory the_factory; \
     return the_factory; \
@@ -383,7 +383,7 @@ class Factory {
  * @param[in] prototype fully-specified base class
  * @param[in] derived fully-specified derived class
  */
-#define RegisterToFactory(prototype, derived) \
+#define FACTORY_REGISTRATION(prototype, derived) \
   namespace { \
   auto UNIQUE(v) = ::prototype::Factory::get().declare<::derived>(#derived); \
   }

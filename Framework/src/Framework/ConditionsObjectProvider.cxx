@@ -21,6 +21,6 @@ ConditionsObjectProvider::requestParentCondition(
   return std::make_pair(obj, iov);
 }
 
-DefineFactory(ConditionsObjectProvider);
+DEFINE_FACTORY(ConditionsObjectProvider);
 
 }  // namespace framework

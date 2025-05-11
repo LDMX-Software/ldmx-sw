@@ -62,7 +62,7 @@ class AbortEventException : public framework::exception::Exception {
 class EventProcessor {
  public:
   /// declare that we have a factory for this class
-  DeclareFactory(EventProcessor, EventProcessor*, const std::string&, Process&);
+  DECLARE_FACTORY(EventProcessor, EventProcessor*, const std::string&, Process&);
 
   /**
    * Class constructor.
@@ -341,7 +341,7 @@ class Analyzer : public EventProcessor {
  * @attention Every Producer class must call this macro or DECLARE_PRODUCER_NS()
  * in the associated implementation (.cxx) file.
  */
-#define DECLARE_PRODUCER(CLASS) RegisterToFactory(framework::EventProcessor, CLASS)
+#define DECLARE_PRODUCER(CLASS) FACTORY_REGISTRATION(framework::EventProcessor, CLASS)
 
 /**
  * @def DECLARE_ANALYZER(CLASS)
@@ -352,7 +352,7 @@ class Analyzer : public EventProcessor {
  * @attention Every Analyzer class must call this macro or DECLARE_ANALYZER_NS()
  * in the associated implementation (.cxx) file.
  */
-#define DECLARE_ANALYZER(CLASS) RegisterToFactory(framework::EventProcessor, CLASS)
+#define DECLARE_ANALYZER(CLASS) FACTORY_REGISTRATION(framework::EventProcessor, CLASS)
 
 /**
  * @def DECLARE_PRODUCER_NS(NS,CLASS)

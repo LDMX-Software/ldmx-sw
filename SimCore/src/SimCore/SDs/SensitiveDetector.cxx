@@ -22,6 +22,6 @@ bool SensitiveDetector::isGeantino(const G4Step* step) const {
           particle_def == G4ChargedGeantino::Definition());
 }
 
-DefineFactory(SensitiveDetector);
+DEFINE_FACTORY(SensitiveDetector);
 
 }  // namespace simcore
