@@ -12,7 +12,7 @@ p.termLogLevel = 0
 # Set a run number
 p.run = 9001
 # we also only have an output file
-p.outputFiles = [ '/dev/null' ]
+p.outputFiles = [ "justSim_" + str(p.maxEvents) + "_events.root" ]
 from LDMX.SimCore import simulator as sim
 import LDMX.Ecal.EcalGeometry
 import LDMX.Hcal.HcalGeometry

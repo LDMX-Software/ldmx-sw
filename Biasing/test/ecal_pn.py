@@ -11,6 +11,6 @@ p.sequence = [
         generators.single_4gev_e_upstream_tagger()
         )
     ]
-p.maxEvents = 1
+p.maxEvents = 1000
 p.maxTriesPerEvent = 1000
-p.outputFiles = [ '/dev/null' ]
+p.outputFiles = [ 'ecal_pn.root' ]
