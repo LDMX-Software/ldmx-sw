@@ -49,8 +49,8 @@ void EcalClusterProducer::produce(framework::Event& event) {
     CLUE cf;
     cf.cluster(ecal_hits, dc_, rhoc_, deltac_, deltao_, nbr_of_layers_,
                reclustering_);
-    std::vector<WorkingEcalCluster> wcVec = cf.getClusters();
-    std::vector<WorkingEcalCluster> fWcVec = cf.getFirstLayerCentroids();
+    std::vector<WorkingCluster> wcVec = cf.getClusters();
+    std::vector<WorkingCluster> fWcVec = cf.getFirstLayerCentroids();
 
     auto nLoops = cf.getNLoops();
     histograms_.fill("nLoops", nLoops);
@@ -81,10 +81,6 @@ void EcalClusterProducer::produce(framework::Event& event) {
 
     event.add(cluster_coll_name_, ecalClusters);
   } else {
-    // Get the Ecal Geometry
-    const auto& geometry = getCondition<ldmx::EcalGeometry>(
-        ldmx::EcalGeometry::CONDITIONS_OBJECT_NAME);
-
     TemplatedClusterFinder<MyClusterWeight> cf;
 
     for (const ldmx::EcalHit& hit : ecal_hits) {
@@ -92,8 +88,7 @@ void EcalClusterProducer::produce(framework::Event& event) {
       if (hit.getEnergy() == 0) {
         continue;
       }
-
-      cf.add(&hit, geometry);
+      cf.add(hit);
     }
 
     cf.cluster(seed_threshold_, cutoff_);

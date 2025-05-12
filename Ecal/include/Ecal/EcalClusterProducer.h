@@ -26,7 +26,6 @@
 #include "Ecal/MyClusterWeight.h"
 #include "Ecal/TemplatedClusterFinder.h"
 #include "Ecal/WorkingCluster.h"
-#include "Ecal/WorkingEcalCluster.h"
 #include "Framework/Configure/Parameters.h"
 #include "Framework/EventProcessor.h"
 

@@ -1,6 +1,3 @@
-/*
-   WorkingCluster -- In-memory tool for working on clusters
-   */
 
 #include "Ecal/WorkingCluster.h"
 
@@ -8,48 +5,49 @@
 
 namespace ecal {
 
-WorkingCluster::WorkingCluster(const ldmx::EcalHit* eh,
-                               const ldmx::EcalGeometry& hex) {
-  add(eh, hex);
+WorkingCluster::WorkingCluster(const ldmx::EcalHit& eh, int layer)
+  : layer_{layer}, hits_{}, centroid_{} {
+  add(eh);
 }
 
-void WorkingCluster::add(const ldmx::EcalHit* eh,
-                         const ldmx::EcalGeometry& hex) {
-  double hitE = eh->getEnergy();
+void WorkingCluster::add(const ldmx::EcalHit& eh) {
+  hits_.push_back(&eh);
 
-  /// The ID number is implicitly converted to EcalID
-  auto [hitX, hitY, hitZ] = hex.getPosition(eh->getID());
+  double hitE = eh.getEnergy();
+  double hitX = eh.getXPos();
+  double hitY = eh.getYPos();
+  double hitZ = eh.getZPos();
 
   double newE = hitE + centroid_.E();
-  double newCentroidX = (centroid_.Px() * centroid_.E() + hitE * hitX) / newE;
-  double newCentroidY = (centroid_.Py() * centroid_.E() + hitE * hitY) / newE;
-  double newCentroidZ = (centroid_.Pz() * centroid_.E() + hitE * hitZ) / newE;
+  centroid_.SetXYZT(
+    (centroid_.x() * centroid_.E() + hitE * hitX) / newE,
+    (centroid_.y() * centroid_.E() + hitE * hitY) / newE,
+    (centroid_.z() * centroid_.E() + hitE * hitZ) / newE,
+    newE
+  );
+}
 
-  centroid_.SetPxPyPzE(newCentroidX, newCentroidY, newCentroidZ, newE);
-
-  hits_.push_back(eh);
+void WorkingCluster::add(const ldmx::EcalHit* eh) {
+  if (eh != nullptr) add(*eh);
 }
 
 void WorkingCluster::add(const WorkingCluster& wc) {
   double clusterE = wc.centroid().E();
-  double centroidX = wc.centroid().Px();
-  double centroidY = wc.centroid().Py();
-  double centroidZ = wc.centroid().Pz();
+  double centroidX = wc.centroid().x();
+  double centroidY = wc.centroid().y();
+  double centroidZ = wc.centroid().z();
 
   double newE = clusterE + centroid_.E();
-  double newCentroidX =
-      (centroid_.Px() * centroid_.E() + clusterE * centroidX) / newE;
-  double newCentroidY =
-      (centroid_.Py() * centroid_.E() + clusterE * centroidY) / newE;
-  double newCentroidZ =
-      (centroid_.Pz() * centroid_.E() + clusterE * centroidZ) / newE;
+  centroid_.SetXYZT(
+    (centroid_.x() * centroid_.E() + wc.centroid().x() * wc.centroid().E()) / newE,
+    (centroid_.y() * centroid_.E() + wc.centroid().y() * wc.centroid().E()) / newE,
+    (centroid_.z() * centroid_.E() + wc.centroid().z() * wc.centroid().E()) / newE,
+    newE
+  );
 
-  centroid_.SetPxPyPzE(newCentroidX, newCentroidY, newCentroidZ, newE);
-
-  std::vector<const ldmx::EcalHit*> clusterHits = wc.getHits();
-
-  for (size_t i = 0; i < clusterHits.size(); i++) {
-    hits_.push_back(clusterHits[i]);
+  for (const auto eh : wc.getHits()) {
+    hits_.push_back(eh);
   }
 }
+
 }  // namespace ecal

@@ -34,11 +34,9 @@ class EcalCluster : public ldmx::CaloCluster {
    * @param hit The digi hit's entry number in the events digi
    * collection.
    */
-  void addHits(const std::vector<const ldmx::EcalHit*> hits);
+  void addHits(const std::vector<const ldmx::EcalHit*>& hits);
 
-  void addHits(const std::vector<ldmx::EcalHit> hits);
-
-  void addFirstLayerHits(const std::vector<ldmx::EcalHit> hits);
+  void addFirstLayerHits(const std::vector<const ldmx::EcalHit*>& hits);
 
   bool operator<(const EcalCluster& rhs) const {
     return this->getEnergy() < rhs.getEnergy();
