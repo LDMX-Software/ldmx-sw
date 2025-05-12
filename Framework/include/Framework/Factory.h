@@ -368,10 +368,10 @@ class Factory {
  *
  * This macro should be used where the derived class is defined.
  * This macro avoids typing all this out and making sure that the string
- * passed as an argument to framework::Factory::declare is the same characters as
- * the actual class.
- * If you want the name for a specific object to not be the full-specified
- * class name, then you need to write the contents of this macro yourself.
+ * passed as an argument to framework::Factory::declare is the same characters
+ * as the actual class. If you want the name for a specific object to not be the
+ * full-specified class name, then you need to write the contents of this macro
+ * yourself.
  *
  * Using an [unnamed namespace](
  * https://en.cppreference.com/w/cpp/language/namespace#Unnamed_namespaces)
