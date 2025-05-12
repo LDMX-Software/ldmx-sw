@@ -100,7 +100,7 @@ Process::Process(const framework::config::Parameters &configuration)
                       "The EventProcessor Factory was unable to create " +
                           instanceName + " of type " + className +
                           ". Did you inherit from framework::Producer or "
-                          "framework::Analyzer?"
+                          "framework::Analyzer? "
                           "Did you DECLARE_PRODUCER or DECLARE_ANALYZER in the "
                           "implementation (.cxx) file? "
                           "Did you use the class's full name (including "
