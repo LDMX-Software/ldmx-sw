@@ -99,9 +99,14 @@ Process::Process(const framework::config::Parameters &configuration)
       EXCEPTION_RAISE("UnableToCreate",
                       "The EventProcessor Factory was unable to create " +
                           instanceName + " of type " + className +
-                          "."
-                          "Did you load the library it is apart of? Did you "
-                          "DECLARE_PRODUCER or DECLARE_ANALYZER?");
+                          ". Did you inherit from framework::Producer or "
+                          "framework::Analyzer?"
+                          "Did you DECLARE_PRODUCER or DECLARE_ANALYZER in the "
+                          "implementation (.cxx) file? "
+                          "Did you use the class's full name (including "
+                          "namespaces) in the Python configuration class? "
+                          "Does the Python configuration class reference the "
+                          "correct library it is a part of?");
     }
     auto histograms{
         proc.getParameter<std::vector<framework::config::Parameters>>(
