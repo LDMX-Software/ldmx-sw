@@ -29,12 +29,7 @@ void WorkingCluster::add(const ldmx::EcalHit* eh) {
 }
 
 void WorkingCluster::add(const WorkingCluster& wc) {
-  double clusterE = wc.centroid().E();
-  double centroidX = wc.centroid().x();
-  double centroidY = wc.centroid().y();
-  double centroidZ = wc.centroid().z();
-
-  double newE = clusterE + centroid_.E();
+  double newE = wc.centroid().E() + centroid_.E();
   centroid_.SetXYZT(
       (centroid_.x() * centroid_.E() + wc.centroid().x() * wc.centroid().E()) /
           newE,
