@@ -42,8 +42,7 @@ add_subdirectory(G4DarkBreM)
 setup_library(module SimCore
               name PhotoNuclearModels
               dependencies Geant4::Interface
-                           Framework::Configure
-            )
+                           Framework::Configure)
 
 # Set the LHE Reading Library
 setup_library(module SimCore 
@@ -82,12 +81,12 @@ setup_library(module SimCore
                            DetDescr::DetDescr
                            SimCore::G4User)
 
-
-# Get a list of all of the source files.
-file(GLOB SRC_FILES CONFIGURE_DEPDENDS 
-  ${PROJECT_SOURCE_DIR}/src/SimCore/Geo/[a-zA-Z]*.cxx
-  ${PROJECT_SOURCE_DIR}/src/SimCore/[a-zA-Z]*.cxx
-)
+setup_library(module SimCore
+              name Geo
+              dependencies Geant4::Interface
+                           Framework::Configure
+                           Framework::Framework
+                           DetDescr::DetDescr)
 
 # Setup the library
 setup_library(module SimCore
@@ -95,16 +94,13 @@ setup_library(module SimCore
                            ROOT::Physics
                            Framework::Configure
                            Framework::Framework
+                           SimCore::Geo
                            SimCore::G4User
                            SimCore::PhotoNuclearModels
                            SimCore::BiasOperators
                            SimCore::Generators
-                           SimCore::SDs
-                           G4DarkBreM
-                           DetDescr::DetDescr
-                           Boost::log
-                           "${registered_targets}"
-              sources ${SRC_FILES})
+                           SimCore::SDs)
+                           
 
 # Set some target properties
 set_target_properties(SimCore

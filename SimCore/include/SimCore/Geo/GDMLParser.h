@@ -8,6 +8,9 @@
 #include "SimCore/Geo/AuxInfoReader.h"
 #include "SimCore/Geo/Parser.h"
 
+//---< SimCore >---//
+#include "SimCore/ConditionsInterface.h"
+
 // Forward Declarations
 class G4VPhysicalVolume;
 

@@ -1,9 +1,6 @@
 #ifndef SIMCORE_GEO_GEOPARSER_H_
 #define SIMCORE_GEO_GEOPARSER_H_
 
-//---< C++ >---//
-#include <functional>
-
 //---< Framework >---//
 #include "Framework/Configure/Parameters.h"
 #include "Framework/Factory.h"
