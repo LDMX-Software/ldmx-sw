@@ -19,9 +19,7 @@ template <class WeightClass>
 
 class TemplatedClusterFinder {
  public:
-  void add(const ldmx::EcalHit& eh) {
-    clusters_.push_back(WorkingCluster(eh));
-  }
+  void add(const ldmx::EcalHit& eh) { clusters_.push_back(WorkingCluster(eh)); }
 
   static bool compClusters(const WorkingCluster& a, const WorkingCluster& b) {
     return a.centroid().E() > b.centroid().E();

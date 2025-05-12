@@ -83,7 +83,7 @@ float CLUE::floatDist(float x1, float y1, float z1, float x2, float y2,
 std::vector<std::vector<const ldmx::EcalHit*>> CLUE::createLayers(
     const std::vector<const ldmx::EcalHit*>& hits) {
   ldmx_log(trace) << "--- LAYER CREATION ---";
-  std::vector<std::vector<const ldmx::EcalHit *>> layers;
+  std::vector<std::vector<const ldmx::EcalHit*>> layers;
 
   int layerTag = 0;
   int trueLayer = 0;
@@ -133,7 +133,7 @@ float CLUE::roundToDecimal(float x, int num_decimal_precision_digits) {
 }
 
 std::vector<std::shared_ptr<CLUE::Density>> CLUE::setup(
-    const std::vector<const ldmx::EcalHit *>& hits) {
+    const std::vector<const ldmx::EcalHit*>& hits) {
   std::vector<std::shared_ptr<Density>> densities;
   std::map<std::pair<float, float>, std::shared_ptr<Density>> densityMap;
   event_centroid_ = WorkingCluster();
@@ -222,7 +222,7 @@ std::vector<std::shared_ptr<CLUE::Density>> CLUE::setup(
 // connectingLayers marks if we're currently doing 3D clustering (i.e.
 // connecting seeds between layers) otherwise, layerTag tells us which layer
 // number we're working on
-std::vector<std::vector<const ldmx::EcalHit *>> CLUE::clustering(
+std::vector<std::vector<const ldmx::EcalHit*>> CLUE::clustering(
     std::vector<std::shared_ptr<CLUE::Density>>& densities,
     bool connectingLayers, int layerTag) {
   ldmx_log(trace) << "--- CLUSTERING ---";
@@ -254,7 +254,7 @@ std::vector<std::vector<const ldmx::EcalHit *>> CLUE::clustering(
   std::vector<std::shared_ptr<Density>>& layerSeeds = seeds_[layerTag];
 
   // stores hits in cluster
-  std::vector<std::vector<const ldmx::EcalHit *>> clusters;
+  std::vector<std::vector<const ldmx::EcalHit*>> clusters;
   // keeps track of which densities have merged; only used if reclustering
   std::vector<bool> mergedDensities;  // index = cluster id
   mergedDensities.resize(densities.size());
@@ -487,7 +487,7 @@ std::vector<std::shared_ptr<CLUE::Density>> CLUE::layerSetup() {
 }
 
 void CLUE::convertToWorkingClusters(
-    std::vector<std::vector<const ldmx::EcalHit *>>& clusters) {
+    std::vector<std::vector<const ldmx::EcalHit*>>& clusters) {
   // Convert to workingecalclusters to ensure compatibility with
   // EcalClusterProducer
   for (const auto& vec : clusters) {
@@ -507,8 +507,8 @@ void CLUE::convertToWorkingClusters(
   }
 }
 
-void CLUE::cluster(const std::vector<ldmx::EcalHit>& unsorted_hits, double dc, double rc,
-                   double deltac, double deltao, int nbrOfLayers,
+void CLUE::cluster(const std::vector<ldmx::EcalHit>& unsorted_hits, double dc,
+                   double rc, double deltac, double deltao, int nbrOfLayers,
                    bool reclustering) {
   // cutoff distance for local density
   dc_ = dc;

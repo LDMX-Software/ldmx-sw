@@ -46,7 +46,7 @@ class CLUE {
 
     int layer;
 
-    std::vector<const ldmx::EcalHit *> hits;
+    std::vector<const ldmx::EcalHit*> hits;
 
     Density() {}
 
@@ -66,10 +66,11 @@ class CLUE {
   float dist(double x1, double y1, double x2, double y2);
   float floatDist(float x1, float y1, float x2, float y2);
   float floatDist(float x1, float y1, float z1, float x2, float y2, float z2);
-  std::vector<std::vector<const ldmx::EcalHit *>> createLayers(
-      const std::vector<const ldmx::EcalHit *>& hits);
+  std::vector<std::vector<const ldmx::EcalHit*>> createLayers(
+      const std::vector<const ldmx::EcalHit*>& hits);
   float roundToDecimal(float x, int num_decimal_precision_digits);
-  std::vector<std::shared_ptr<Density>> setup(const std::vector<const ldmx::EcalHit *>& hits);
+  std::vector<std::shared_ptr<Density>> setup(
+      const std::vector<const ldmx::EcalHit*>& hits);
 
   // connectingLayers marks if we're currently doing 3D clustering (i.e.
   // connecting seeds between layers) otherwise, layerTag tells us which layer
@@ -81,7 +82,7 @@ class CLUE {
   std::vector<std::shared_ptr<Density>> layerSetup();
 
   void convertToWorkingClusters(
-      std::vector<std::vector<const ldmx::EcalHit *>>& clusters);
+      std::vector<std::vector<const ldmx::EcalHit*>>& clusters);
 
   void cluster(const std::vector<ldmx::EcalHit>& hits, double dc, double rc,
                double deltac, double deltao, int nbrOfLayers,
@@ -95,9 +96,7 @@ class CLUE {
 
   int getInitialClusterNbr() const { return initial_cluster_nbr_; }
 
-  std::vector<WorkingCluster> getClusters() const {
-    return final_clusters_;
-  }
+  std::vector<WorkingCluster> getClusters() const { return final_clusters_; }
 
   // First layer centroids are available for potential future combination with
   // TS

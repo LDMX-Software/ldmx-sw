@@ -17,7 +17,7 @@ void EcalCluster::addHits(const std::vector<const EcalHit*>& hits) {
   setIDs(ids);
 }
 
-void EcalCluster::addFirstLayerHits(const std::vector<const EcalHit *>& hits) {
+void EcalCluster::addFirstLayerHits(const std::vector<const EcalHit*>& hits) {
   first_layer_hit_IDs_.clear();
   first_layer_hit_IDs_.reserve(hits.size());
   for (const auto& h : hits) {

@@ -6,7 +6,7 @@
 namespace ecal {
 
 WorkingCluster::WorkingCluster(const ldmx::EcalHit& eh, int layer)
-  : layer_{layer}, hits_{}, centroid_{} {
+    : layer_{layer}, hits_{}, centroid_{} {
   add(eh);
 }
 
@@ -19,12 +19,9 @@ void WorkingCluster::add(const ldmx::EcalHit& eh) {
   double hitZ = eh.getZPos();
 
   double newE = hitE + centroid_.E();
-  centroid_.SetXYZT(
-    (centroid_.x() * centroid_.E() + hitE * hitX) / newE,
-    (centroid_.y() * centroid_.E() + hitE * hitY) / newE,
-    (centroid_.z() * centroid_.E() + hitE * hitZ) / newE,
-    newE
-  );
+  centroid_.SetXYZT((centroid_.x() * centroid_.E() + hitE * hitX) / newE,
+                    (centroid_.y() * centroid_.E() + hitE * hitY) / newE,
+                    (centroid_.z() * centroid_.E() + hitE * hitZ) / newE, newE);
 }
 
 void WorkingCluster::add(const ldmx::EcalHit* eh) {
@@ -39,11 +36,13 @@ void WorkingCluster::add(const WorkingCluster& wc) {
 
   double newE = clusterE + centroid_.E();
   centroid_.SetXYZT(
-    (centroid_.x() * centroid_.E() + wc.centroid().x() * wc.centroid().E()) / newE,
-    (centroid_.y() * centroid_.E() + wc.centroid().y() * wc.centroid().E()) / newE,
-    (centroid_.z() * centroid_.E() + wc.centroid().z() * wc.centroid().E()) / newE,
-    newE
-  );
+      (centroid_.x() * centroid_.E() + wc.centroid().x() * wc.centroid().E()) /
+          newE,
+      (centroid_.y() * centroid_.E() + wc.centroid().y() * wc.centroid().E()) /
+          newE,
+      (centroid_.z() * centroid_.E() + wc.centroid().z() * wc.centroid().E()) /
+          newE,
+      newE);
 
   for (const auto eh : wc.getHits()) {
     hits_.push_back(eh);

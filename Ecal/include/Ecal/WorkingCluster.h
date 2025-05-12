@@ -26,6 +26,7 @@ class WorkingCluster {
   bool empty() const { return hits_.empty(); }
   void clear() { hits_.clear(); }
   int getLayer() const { return layer_; }
+
  private:
   int layer_;
   std::vector<const ldmx::EcalHit*> hits_;
