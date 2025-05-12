@@ -225,4 +225,4 @@ void NtupleWriter::onProcessEnd() {
 }
 
 }  // namespace trigger
-DECLARE_PRODUCER_NS(trigger, NtupleWriter);
+DECLARE_PRODUCER(trigger::NtupleWriter);

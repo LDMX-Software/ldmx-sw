@@ -828,4 +828,4 @@ std::pair<Eigen::VectorXd, Eigen::VectorXd> EcalWABRecProcessor::polyfitXYvsZ(
 }
 }  // namespace ecal
 
-DECLARE_PRODUCER_NS(ecal, EcalWABRecProcessor);
+DECLARE_PRODUCER(ecal::EcalWABRecProcessor);

@@ -143,28 +143,17 @@ class ConditionsObjectProvider {
 
 /**
  * @def DECLARE_CONDITIONS_PROVIDER(CLASS)
- * @param CLASS The name of the class to register, which must not be in a
- * namespace.  If the class is in a namespace, use
- * DECLARE_CONDITIONS_PROVIDER_NS()
+ * @param CLASS The fully-specified name of the class to register
+ * (including any namespaces)
  * @brief Macro which allows the framework to construct a producer given its
  * name during configuration.
- * @attention Every Producer class must call this macro or
- * DECLARE_CONDITIONS_PROVIDER_NS() in the associated implementation (.cxx)
- * file.
+ * @attention Every Producer class must call this macro
+ * in the associated implementation (.cxx) file.
+ *
+ * We just call #FACTORY_REGISTRATION with framework::ConditionsObjectProvider
+ * as the first argument, so look there for the implementation details.
  */
 #define DECLARE_CONDITIONS_PROVIDER(CLASS) \
   FACTORY_REGISTRATION(framework::ConditionsObjectProvider, CLASS)
-
-/**
- * @def DECLARE_CONDITIONS_PROVIDER_NS(NS,CLASS)
- * @param NS The full namespace specification for the Producer
- * @param CLASS The name of the class to register
- * @brief Macro which allows the framework to construct a producer given its
- * name during configuration.
- * @attention Every Producer class must call this macro or
- * DECLARE_CONDITIONS_PROVIDER() in the associated implementation (.cxx) file.
- */
-#define DECLARE_CONDITIONS_PROVIDER_NS(NS, CLASS) \
-  DECLARE_CONDITIONS_PROVIDER(NS::CLASS)
 
 #endif

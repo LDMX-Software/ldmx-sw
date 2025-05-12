@@ -347,4 +347,4 @@ void EcalRawDecoder::produce(framework::Event& event) {
 
 }  // namespace ecal
 
-DECLARE_PRODUCER_NS(ecal, EcalRawDecoder);
+DECLARE_PRODUCER(ecal::EcalRawDecoder);

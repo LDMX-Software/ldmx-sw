@@ -188,4 +188,4 @@ void TrigElectronProducer::onProcessEnd() {
 
 }  // namespace trigger
 
-DECLARE_PRODUCER_NS(trigger, TrigElectronProducer);
+DECLARE_PRODUCER(trigger::TrigElectronProducer);

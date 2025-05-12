@@ -188,4 +188,4 @@ void EcalProcessFilter::stepping(const G4Step* step) {
 }
 }  // namespace biasing
 
-DECLARE_ACTION(biasing, EcalProcessFilter)
+DECLARE_ACTION(biasing::EcalProcessFilter)

@@ -146,4 +146,4 @@ void TestBeamHitAnalyzer::onProcessEnd() { return; }
 
 }  // namespace trigscint
 
-DECLARE_ANALYZER_NS(trigscint, TestBeamHitAnalyzer)
+DECLARE_ANALYZER(trigscint::TestBeamHitAnalyzer)

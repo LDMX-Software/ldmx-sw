@@ -1,3 +1,7 @@
+/**
+ * @file UserAction.h
+ * File holding UserAction prototype and supporting macro
+ */
 
 #ifndef SIMCORE_USERACTION_H
 #define SIMCORE_USERACTION_H
@@ -190,7 +194,15 @@ class UserAction {
 
 }  // namespace simcore
 
-#define DECLARE_ACTION(NS, CLASS) \
-  FACTORY_REGISTRATION(simcore::UserAction, NS::CLASS)
+/**
+ * register a new UserAction with its factory
+ *
+ * @param[in] CLASS the fully-specified class for the new UserAction
+ * (including any namespaces)
+ *
+ * We just call #FACTORY_REGISTRATION with simcore::UserAction as the
+ * first argument.
+ */
+#define DECLARE_ACTION(CLASS) FACTORY_REGISTRATION(simcore::UserAction, CLASS)
 
 #endif  // SIMCORE_USERACTION_H

@@ -145,4 +145,4 @@ void RecoilFiducialityProcessor::produce(framework::Event &event) {
 }
 }  // namespace recon
 
-DECLARE_PRODUCER_NS(recon, RecoilFiducialityProcessor);
+DECLARE_PRODUCER(recon::RecoilFiducialityProcessor);

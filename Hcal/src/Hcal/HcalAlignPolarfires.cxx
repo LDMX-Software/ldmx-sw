@@ -87,4 +87,4 @@ void HcalAlignPolarfires::produce(framework::Event& event) {
 }  // produce
 }  // namespace hcal
 
-DECLARE_PRODUCER_NS(hcal, HcalAlignPolarfires);
+DECLARE_PRODUCER(hcal::HcalAlignPolarfires);

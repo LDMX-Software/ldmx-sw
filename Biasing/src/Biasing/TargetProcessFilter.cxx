@@ -167,4 +167,4 @@ void TargetProcessFilter::stepping(const G4Step* step) {
 void TargetProcessFilter::EndOfEventAction(const G4Event*) {}
 }  // namespace biasing
 
-DECLARE_ACTION(biasing, TargetProcessFilter)
+DECLARE_ACTION(biasing::TargetProcessFilter)

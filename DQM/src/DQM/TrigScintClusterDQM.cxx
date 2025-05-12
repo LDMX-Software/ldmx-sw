@@ -72,4 +72,4 @@ void TrigScintClusterDQM::analyze(const framework::Event &event) {
 
 }  // namespace dqm
 
-DECLARE_ANALYZER_NS(dqm, TrigScintClusterDQM)
+DECLARE_ANALYZER(dqm::TrigScintClusterDQM)

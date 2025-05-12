@@ -132,4 +132,4 @@ HcalDetectorMap::HcalDetectorMap(const std::string& connections_table,
 }
 
 }  // namespace hcal
-DECLARE_CONDITIONS_PROVIDER_NS(hcal, HcalDetectorMapLoader);
+DECLARE_CONDITIONS_PROVIDER(hcal::HcalDetectorMapLoader);

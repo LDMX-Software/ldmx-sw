@@ -33,4 +33,4 @@ void TrackProcessFilter::PostUserTrackingAction(const G4Track* track) {
 }  // namespace utility
 }  // namespace biasing
 
-DECLARE_ACTION(biasing::utility, TrackProcessFilter)
+DECLARE_ACTION(biasing::utility::TrackProcessFilter)

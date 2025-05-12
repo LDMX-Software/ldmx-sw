@@ -103,4 +103,4 @@ void TriggerProcessor::produce(framework::Event& event) {
 }
 }  // namespace recon
 
-DECLARE_PRODUCER_NS(recon, TriggerProcessor)
+DECLARE_PRODUCER(recon::TriggerProcessor)

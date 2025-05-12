@@ -167,4 +167,4 @@ void TargetBremFilter::stepping(const G4Step* step) {
 void TargetBremFilter::EndOfEventAction(const G4Event*) {}
 }  // namespace biasing
 
-DECLARE_ACTION(biasing, TargetBremFilter)
+DECLARE_ACTION(biasing::TargetBremFilter)

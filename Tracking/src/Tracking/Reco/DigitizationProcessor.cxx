@@ -253,4 +253,4 @@ std::vector<ldmx::Measurement> DigitizationProcessor::digitizeHits(
 }  // digitizeHits
 }  // namespace tracking::reco
 
-DECLARE_PRODUCER_NS(tracking::reco, DigitizationProcessor)
+DECLARE_PRODUCER(tracking::reco::DigitizationProcessor)

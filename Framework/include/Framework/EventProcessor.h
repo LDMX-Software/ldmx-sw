@@ -331,48 +331,32 @@ class Analyzer : public EventProcessor {
 
 /**
  * @def DECLARE_PRODUCER(CLASS)
- * @param CLASS The name of the class to register, which must not be in a
- * namespace.  If the class is in a namespace, use DECLARE_PRODUCER_NS()
+ * @param CLASS The fully-specified name of the class to register
+ * (including any namespaces)
  * @brief Macro which allows the framework to construct a producer given its
  * name during configuration.
- * @attention Every Producer class must call this macro or DECLARE_PRODUCER_NS()
+ * @attention Every Producer class must call this macro
  * in the associated implementation (.cxx) file.
+ *
+ * We just call #FACTORY_REGISTRATION with framework::EventProcessor
+ * as the first argument, so look there for the implementation details.
  */
 #define DECLARE_PRODUCER(CLASS) \
   FACTORY_REGISTRATION(framework::EventProcessor, CLASS)
 
 /**
  * @def DECLARE_ANALYZER(CLASS)
- * @param CLASS The name of the class to register, which must not be in a
- * namespace.  If the class is in a namespace, use DECLARE_PRODUCER_NS()
+ * @param CLASS The fully-specified name of the class to register
+ * (including any namespaces)
  * @brief Macro which allows the framework to construct an analyzer given its
  * name during configuration.
- * @attention Every Analyzer class must call this macro or DECLARE_ANALYZER_NS()
+ * @attention Every Analyzer class must call this macro
  * in the associated implementation (.cxx) file.
+ *
+ * We just call #FACTORY_REGISTRATION with framework::EventProcessor
+ * as the first argument, so look there for the implementation details.
  */
 #define DECLARE_ANALYZER(CLASS) \
   FACTORY_REGISTRATION(framework::EventProcessor, CLASS)
-
-/**
- * @def DECLARE_PRODUCER_NS(NS,CLASS)
- * @param NS The full namespace specification for the Producer
- * @param CLASS The name of the class to register
- * @brief Macro which allows the framework to construct a producer given its
- * name during configuration.
- * @attention Every Producer class must call this macro or DECLARE_PRODUCER() in
- * the associated implementation (.cxx) file.
- */
-#define DECLARE_PRODUCER_NS(NS, CLASS) DECLARE_PRODUCER(NS::CLASS)
-
-/**
- * @def DECLARE_ANALYZER_NS(NS,CLASS)
- * @param NS The full namespace specification for the Analyzer
- * @param CLASS The name of the class to register
- * @brief Macro which allows the framework to construct an analyzer given its
- * name during configuration.
- * @attention Every Analyzer class must call this macro or DECLARE_ANALYZER() in
- * the associated implementation (.cxx) file.
- */
-#define DECLARE_ANALYZER_NS(NS, CLASS) DECLARE_ANALYZER(NS::CLASS)
 
 #endif

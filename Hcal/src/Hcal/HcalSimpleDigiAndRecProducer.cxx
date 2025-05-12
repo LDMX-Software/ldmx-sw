@@ -164,4 +164,4 @@ void HcalSimpleDigiAndRecProducer::produce(framework::Event& event) {
 
 }  // namespace hcal
 
-DECLARE_PRODUCER_NS(hcal, HcalSimpleDigiAndRecProducer);
+DECLARE_PRODUCER(hcal::HcalSimpleDigiAndRecProducer);

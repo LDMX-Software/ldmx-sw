@@ -486,4 +486,4 @@ void TestBeamClusterProducer::onProcessEnd() {
 
 }  // namespace trigscint
 
-DECLARE_PRODUCER_NS(trigscint, TestBeamClusterProducer);
+DECLARE_PRODUCER(trigscint::TestBeamClusterProducer);

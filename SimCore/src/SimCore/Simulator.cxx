@@ -202,4 +202,4 @@ void Simulator::setSeeds(std::vector<int> seeds) {
 
 }  // namespace simcore
 
-DECLARE_PRODUCER_NS(simcore, Simulator)
+DECLARE_PRODUCER(simcore::Simulator)

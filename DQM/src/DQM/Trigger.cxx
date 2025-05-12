@@ -57,4 +57,4 @@ void Trigger::analyze(const framework::Event &event) {
 
 }  // namespace dqm
 
-DECLARE_ANALYZER_NS(dqm, Trigger);
+DECLARE_ANALYZER(dqm::Trigger);

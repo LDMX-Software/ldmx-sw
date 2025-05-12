@@ -1560,4 +1560,4 @@ std::vector<float> EcalVetoProcessor::trackProp(const ldmx::Tracks &tracks,
 
 }  // namespace ecal
 
-DECLARE_PRODUCER_NS(ecal, EcalVetoProcessor);
+DECLARE_PRODUCER(ecal::EcalVetoProcessor);

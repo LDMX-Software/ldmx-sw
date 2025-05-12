@@ -452,4 +452,4 @@ void GSFProcessor::onProcessEnd() {};
 }  // namespace reco
 }  // namespace tracking
 
-DECLARE_PRODUCER_NS(tracking::reco, GSFProcessor)
+DECLARE_PRODUCER(tracking::reco::GSFProcessor)

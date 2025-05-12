@@ -853,4 +853,4 @@ std::vector<std::vector<std::size_t>> CKFProcessor::computeSharedHits(
 }  // namespace reco
 }  // namespace tracking
 
-DECLARE_PRODUCER_NS(tracking::reco, CKFProcessor)
+DECLARE_PRODUCER(tracking::reco::CKFProcessor)

@@ -208,4 +208,4 @@ void QIEAnalyzer::onProcessEnd() { return; }
 
 }  // namespace trigscint
 
-DECLARE_ANALYZER_NS(trigscint, QIEAnalyzer)
+DECLARE_ANALYZER(trigscint::QIEAnalyzer)

@@ -250,4 +250,4 @@ std::vector<float> HcalVetoProcessor::trackProp(const ldmx::Tracks &tracks,
 
 }  // namespace hcal
 
-DECLARE_PRODUCER_NS(hcal, HcalVetoProcessor);
+DECLARE_PRODUCER(hcal::HcalVetoProcessor);
