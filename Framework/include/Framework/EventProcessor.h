@@ -317,6 +317,10 @@ class Analyzer : public EventProcessor {
 
   /**
    * Don't allow Analyzers to add parameters to the run header
+   *
+   * We make a `final` override of beforeNewRun to be empty so
+   * that any derived Analyzer will not be able to compile an
+   * override of the beforeNewRun callback.
    */
   virtual void beforeNewRun(ldmx::RunHeader &runHeader) final {}
 
