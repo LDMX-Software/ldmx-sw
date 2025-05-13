@@ -79,12 +79,26 @@ class LinearSeedFinder : public TrackingGeometryUser {
   // Helper function: calculate distance between 2 3D points
   double calculateDistance(const std::array<double, 3> &point1,
                            const std::array<double, 3> &point2);
-    
-  // Do 3D hit reconstruction using an axial measurement and a stereo measurement according to geometric projections
-  Acts::Vector3 simple3DHitV2(const ldmx::Measurement& axial, const Acts::Surface& axial_surface, const ldmx::Measurement& stereo, const Acts::Surface& stereo_surface, const ldmx::SimTrackerHit& hitOnTarget,  std::vector<ldmx::SimTrackerHit> pair_sim_hits);
-    
-  //Makes all combinations of sensor measurements to use in the seeding
-  std::vector<std::tuple<std::array<double, 3>, std::tuple<ldmx::Measurement, ldmx::SimTrackerHit, ldmx::SimTrackerHit>, std::optional<std::tuple<ldmx::Measurement, ldmx::SimTrackerHit, ldmx::SimTrackerHit>>>> processMeasurements(const std::vector<std::tuple<ldmx::Measurement, ldmx::SimTrackerHit, ldmx::SimTrackerHit>>& measurements, const geo::TrackersTrackingGeometry& tg);
+
+  // Do 3D hit reconstruction using an axial measurement and a stereo
+  // measurement according to geometric projections
+  Acts::Vector3 simple3DHitV2(const ldmx::Measurement &axial,
+                              const Acts::Surface &axial_surface,
+                              const ldmx::Measurement &stereo,
+                              const Acts::Surface &stereo_surface,
+                              const ldmx::SimTrackerHit &hitOnTarget,
+                              std::vector<ldmx::SimTrackerHit> pair_sim_hits);
+
+  // Makes all combinations of sensor measurements to use in the seeding
+  std::vector<std::tuple<
+      std::array<double, 3>,
+      std::tuple<ldmx::Measurement, ldmx::SimTrackerHit, ldmx::SimTrackerHit>,
+      std::optional<std::tuple<ldmx::Measurement, ldmx::SimTrackerHit,
+                               ldmx::SimTrackerHit>>>>
+  processMeasurements(
+      const std::vector<std::tuple<ldmx::Measurement, ldmx::SimTrackerHit,
+                                   ldmx::SimTrackerHit>> &measurements,
+      const geo::TrackersTrackingGeometry &tg);
 
   // Calculate chi2 of the fit
   double globalChiSquare(const std::array<double, 3> &first_sensor,
@@ -96,12 +110,15 @@ class LinearSeedFinder : public TrackingGeometryUser {
   // enough points to fit)
   int uniqueLayersHit(const std::vector<ldmx::Measurement> &digi_points);
 
-  //Helper functions:
-  std::array<double, 3> convertToLdmxStdArray(const Acts::Vector3& vec);
-  std::tuple<Acts::Vector3, Acts::Vector3, Acts::Vector3> getSurfaceVectors(const Acts::Surface& surface);
-  double dotProduct(const Acts::Vector3& v1, const Acts::Vector3& v2);
-  std::array<double, 3> getPointAtZ(std::array<double, 3> target, std::array<double, 3> measurement, double z_target);
-    
+  // Helper functions:
+  std::array<double, 3> convertToLdmxStdArray(const Acts::Vector3 &vec);
+  std::tuple<Acts::Vector3, Acts::Vector3, Acts::Vector3> getSurfaceVectors(
+      const Acts::Surface &surface);
+  double dotProduct(const Acts::Vector3 &v1, const Acts::Vector3 &v2);
+  std::array<double, 3> getPointAtZ(std::array<double, 3> target,
+                                    std::array<double, 3> measurement,
+                                    double z_target);
+
   double processing_time_{0.};
   long n_events_{0};
   unsigned int n_seeds_{0};
