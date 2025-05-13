@@ -4,7 +4,7 @@
  * @author Ella Viirola, Lund University
  */
 
-#include "Ecal/EcalClusterAnalyzer.h"
+#include "DQM/EcalClusterAnalyzer.h"
 
 #include <algorithm>
 #include <fstream>
@@ -16,7 +16,7 @@
 #include "SimCore/Event/SimCalorimeterHit.h"
 #include "SimCore/Event/SimTrackerHit.h"
 
-namespace ecal {
+namespace dqm {
 
 void EcalClusterAnalyzer::configure(framework::config::Parameters& ps) {
   nbr_of_electrons_ = ps.getParameter<int>("nbr_of_electrons");
@@ -180,5 +180,5 @@ void EcalClusterAnalyzer::analyze(const framework::Event& event) {
       100. * (ecal_rec_hits.size() - clusteredHits) / ecal_rec_hits.size());
 }
 
-}  // namespace ecal
-DECLARE_ANALYZER_NS(ecal, EcalClusterAnalyzer)
+}  // namespace dqm
+DECLARE_ANALYZER_NS(dqm, EcalClusterAnalyzer)

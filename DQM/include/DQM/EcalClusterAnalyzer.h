@@ -11,7 +11,7 @@
 #include "Framework/Configure/Parameters.h"
 #include "Framework/EventProcessor.h"
 
-namespace ecal {
+namespace dqm {
 
 /**
  * @class EcalClusterAnalyzer
@@ -47,6 +47,6 @@ class EcalClusterAnalyzer : public framework::Analyzer {
   std::string cluster_pass_name_;
 };
 
-}  // namespace ecal
+}  // namespace dqm
 
 #endif

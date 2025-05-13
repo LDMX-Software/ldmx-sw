@@ -55,35 +55,3 @@ class EcalClusterProducer(ldmxcfg.Producer) :
         self.build2DHistogram("seed_weights", "Number of seeds", 20, 0, 100, "Minimum weight", 20, 0, 10) # not applicable for CLUE
         self.build2DHistogram("recluster", "Initial number of clusters", 20, 0, 20, "Number of clusters after reclustering", 20, 0, 20) # not applicable for existing algo
 
-class EcalClusterAnalyzer(ldmxcfg.Analyzer) :
-    """Analyze clustering"""
-
-    def __init__(self,name='EcalClusterAnalyzer') :
-        super().__init__(name,"ecal::EcalClusterAnalyzer", 'Ecal')
-
-        self.nbr_of_electrons = 2
-
-        self.ecal_sim_hit_coll = "EcalSimHits"
-        self.ecal_sim_hit_pass = "" #use whatever pass is available
-
-        # Pass name for ecal digis and rec hits
-        self.rec_hit_coll_name = 'EcalRecHits'
-        self.rec_hit_pass_name = ''
-
-        self.cluster_coll_name = 'ecalClusters'
-        self.cluster_pass_name = ''
-        
-        # Need to mod for more than two electrons
-        self.build1DHistogram("ancestors", "Ancestors of particles", 4, 0, 3)
-
-        self.build1DHistogram("same_ancestor", "Percentage of hits in cluster coming from the electron that produced most hits", 21, 0, 105)
-        self.build1DHistogram("energy_percentage", "Percentage of energy in cluster coming from the electron that produced most of energy", 21, 0, 105)
-        self.build1DHistogram("mixed_hit_energy", "Percentage of total energy coming from hits with energy contributions from more than one electron", 21, 0, 105)
-        self.build1DHistogram("clusterless_hits", "Number of hits not in a cluster", 10, 0, 200)
-        self.build1DHistogram("clusterless_hits_percentage", "Percentage of hits not in a cluster", 21, 0, 105)
-        self.build1DHistogram("total_rechits_in_event", "Rechits per event", 20, 0, 500)
-        self.build1DHistogram("correctly_predicted_events", "Correctly predicted events", 3, 0, 3)
-
-        self.build2DHistogram("total_energy_vs_hits", "Total energy (edep)", 30, 0, 150, "Hits in cluster", 20, 0, 200)
-        self.build2DHistogram("total_energy_vs_purity", "Total energy (edep)", 30, 0, 150, "Energy purity %", 21, 0, 105)
-        self.build2DHistogram("distance_energy_purity", "Distance in xy-plane", 20, 0, 220, "Energy purity %", 21, 0, 105)
