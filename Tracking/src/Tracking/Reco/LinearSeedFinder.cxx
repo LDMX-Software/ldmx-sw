@@ -462,7 +462,7 @@ Acts::Vector3 LinearSeedFinder::simple3DHitV2(const ldmx::Measurement& axial, co
     //it's axial_u_value - dx_proj because u is in the -x direction
     // this calculation is in the axial frame
     double v_intercept_useproj=(stereo_u_value - (axial_u_value-dx_proj)*cosalpha)/salpha;
-    double u_intercept_useproj=axial_u_value;
+    double u_intercept_useproj=axial_u_value-dx_proj;
     
     //convert to tracking global
     Acts::Vector3 axst_global_useproj = axial_surface.localToGlobal(geometry_context(), Acts::Vector2(u_intercept_useproj,v_intercept_useproj), dummy);
