@@ -21,6 +21,7 @@ EcalSD::EcalSD(const std::string& name, simcore::ConditionsInterface& ci,
     : SensitiveDetector(name, ci, p) {
   enableHitContribs_ = p.getParameter<bool>("enableHitContribs");
   compressHitContribs_ = p.getParameter<bool>("compressHitContribs");
+  max_origin_track_id_ = p.getParameter<int>("max_origin_track_id");
 }
 
 G4bool EcalSD::ProcessHits(G4Step* aStep, G4TouchableHistory*) {
@@ -112,17 +113,17 @@ G4bool EcalSD::ProcessHits(G4Step* aStep, G4TouchableHistory*) {
     if (compressHitContribs_ and contrib_i != -1) {
       hit.updateContrib(contrib_i, edep, time);
     } else {
-      int origin{-1};
       auto map{getTrackMap()};
       auto incident{map.findIncident(track_id)};
-      for (int i{1}; i < 6; ++i) {
+      // default "origin" is just the same as incident
+      // "origin" checks if a hit "originates" from one of the earliest
+      // track IDs (i.e. probably one of the primaries)
+      int origin{incident};
+      for (int i{1}; i < max_origin_track_id_; ++i) {
         if (map.isDescendant(track_id, i, 100)) {
           origin = i;
           break;
         }
-      }
-      if (origin == -1) {
-        origin = map.findIncident(track_id);
       }
       hit.addContrib(incident, track_id, pdg, edep, time, origin);
     }
