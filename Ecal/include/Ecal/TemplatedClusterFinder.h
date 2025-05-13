@@ -23,7 +23,8 @@ class TemplatedClusterFinder {
     clusters_.push_back(IntermediateCluster(eh));
   }
 
-  static bool compClusters(const IntermediateCluster& a, const IntermediateCluster& b) {
+  static bool compClusters(const IntermediateCluster& a,
+                           const IntermediateCluster& b) {
     return a.centroid().E() > b.centroid().E();
   }
 
@@ -99,7 +100,9 @@ class TemplatedClusterFinder {
 
   std::map<int, double> getWeights() const { return transitionWeights_; }
 
-  std::vector<IntermediateCluster> getClusters() const { return finalClusters_; }
+  std::vector<IntermediateCluster> getClusters() const {
+    return finalClusters_;
+  }
 
  private:
   WeightClass wgt_;

@@ -23,9 +23,9 @@
 #include "Ecal/Event/ClusterAlgoResult.h"
 #include "Ecal/Event/EcalCluster.h"
 #include "Ecal/Event/EcalHit.h"
+#include "Ecal/IntermediateCluster.h"
 #include "Ecal/MyClusterWeight.h"
 #include "Ecal/TemplatedClusterFinder.h"
-#include "Ecal/IntermediateCluster.h"
 #include "Framework/Configure/Parameters.h"
 #include "Framework/EventProcessor.h"
 

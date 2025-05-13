@@ -487,7 +487,7 @@ std::vector<std::shared_ptr<CLUE::Density>> CLUE::layerSetup() {
 }
 
 void CLUE::convertToIntermediateClusters(
-    std::vector<std::vector<const ldmx::EcalHit *>>& clusters) {
+    std::vector<std::vector<const ldmx::EcalHit*>>& clusters) {
   // Convert to workingecalclusters to ensure compatibility with
   // EcalClusterProducer
   for (const auto& vec : clusters) {
@@ -547,8 +547,8 @@ void CLUE::cluster(const std::vector<ldmx::EcalHit>& unsorted_hits, double dc,
       ldmx_log(trace) << "--- LAYER " << i << " ---";
       auto densities = setup(layers[i]);
       auto clusters = clustering(densities, false, i);
-      // convertToIntermediateClusters(clusters); // uncomment for layer clustering
-      // without 3D
+      // convertToIntermediateClusters(clusters); // uncomment for layer
+      // clustering without 3D
     }
     // Below for CLUE3D, comment for just layer clustering
     auto densities = layerSetup();

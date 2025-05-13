@@ -82,7 +82,7 @@ class CLUE {
   std::vector<std::shared_ptr<Density>> layerSetup();
 
   void convertToIntermediateClusters(
-      std::vector<std::vector<const ldmx::EcalHit *>>& clusters);
+      std::vector<std::vector<const ldmx::EcalHit*>>& clusters);
 
   void cluster(const std::vector<ldmx::EcalHit>& hits, double dc, double rc,
                double deltac, double deltao, int nbrOfLayers,

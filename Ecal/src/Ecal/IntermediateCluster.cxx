@@ -6,7 +6,7 @@
 namespace ecal {
 
 IntermediateCluster::IntermediateCluster(const ldmx::EcalHit& eh, int layer)
-  : layer_{layer}, hits_{}, centroid_{} {
+    : layer_{layer}, hits_{}, centroid_{} {
   add(eh);
 }
 
