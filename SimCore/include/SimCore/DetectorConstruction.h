@@ -39,7 +39,7 @@ class DetectorConstruction : public G4VUserDetectorConstruction {
    * @param parameters The parameters used to configure this class.
    * @param ci The conditions needed to build the detector.
    */
-  DetectorConstruction(simcore::geo::Parser *parser,
+  DetectorConstruction(std::shared_ptr<simcore::geo::Parser> parser,
                        framework::config::Parameters &parameters,
                        ConditionsInterface &ci);
 
@@ -66,7 +66,7 @@ class DetectorConstruction : public G4VUserDetectorConstruction {
 
  private:
   /// The parser used to load the detector into memory.
-  simcore::geo::Parser *parser_;
+  std::shared_ptr<simcore::geo::Parser> parser_;
 
   /// The set of parameters used to configure this class
   framework::config::Parameters parameters_;

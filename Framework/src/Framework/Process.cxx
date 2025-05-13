@@ -93,8 +93,7 @@ Process::Process(const framework::config::Parameters &configuration)
   for (auto proc : sequence) {
     auto className{proc.getParameter<std::string>("className")};
     auto instanceName{proc.getParameter<std::string>("instanceName")};
-    EventProcessor *ep =
-        EventProcessor::Factory::get().make(className, instanceName, *this);
+    auto ep{EventProcessor::Factory::get().make(className, instanceName, *this)};
     if (not ep) {
       EXCEPTION_RAISE("UnableToCreate",
                       "The EventProcessor Factory was unable to create " +
@@ -112,11 +111,11 @@ Process::Process(const framework::config::Parameters &configuration)
         proc.getParameter<std::vector<framework::config::Parameters>>(
             "histograms", {})};
     if (!histograms.empty()) {
-      ep->getHistoDirectory();
-      ep->createHistograms(histograms);
+      ep.value()->getHistoDirectory();
+      ep.value()->createHistograms(histograms);
     }
-    ep->configure(proc);
-    sequence_.push_back(ep);
+    ep.value()->configure(proc);
+    sequence_.push_back(ep.value());
   }
 
   auto conditionsObjectProviders{

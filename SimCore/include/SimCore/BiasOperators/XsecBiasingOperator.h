@@ -56,8 +56,10 @@ class XsecBiasingOperator : public G4VBiasingOperator {
   /**
    * The BiasingOperator factory
    */
-  DECLARE_FACTORY(XsecBiasingOperator, std::shared_ptr<XsecBiasingOperator>,
-                  std::string, const framework::config::Parameters&);
+  DECLARE_FACTORY_WITH_WAREHOUSE(XsecBiasingOperator,
+                                 std::shared_ptr<XsecBiasingOperator>,
+                                 std::string,
+                                 const framework::config::Parameters&);
 
   /** Destructor */
   virtual ~XsecBiasingOperator() = default;

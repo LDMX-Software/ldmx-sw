@@ -48,11 +48,12 @@ int main(int argc, char* argv[]) {
               << std::endl;
     return 1;
   }
+  auto parser_ptr{parser.value()};
   runManager->SetUserInitialization(new simcore::DetectorConstruction(
-      parser, parser_parameters, empty_interface));
+      parser_ptr, parser_parameters, empty_interface));
   G4GeometryManager::GetInstance()->OpenGeometry();
-  parser->read();
-  runManager->DefineWorldVolume(parser->GetWorldVolume());
+  parser_ptr->read();
+  runManager->DefineWorldVolume(parser_ptr->GetWorldVolume());
 
   // required to define a physics list to complete initialization
   G4PhysListFactory lists;

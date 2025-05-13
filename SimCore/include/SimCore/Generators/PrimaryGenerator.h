@@ -45,8 +45,10 @@ class PrimaryGenerator : public G4VPrimaryGenerator {
   PrimaryGenerator(const std::string& name,
                    const framework::config::Parameters& parameters);
 
-  DECLARE_FACTORY(PrimaryGenerator, std::shared_ptr<PrimaryGenerator>,
-                  const std::string&, const framework::config::Parameters&);
+  DECLARE_FACTORY_WITH_WAREHOUSE(PrimaryGenerator,
+                                 std::shared_ptr<PrimaryGenerator>,
+                                 const std::string&,
+                                 const framework::config::Parameters&);
 
   /// Destructor
   virtual ~PrimaryGenerator() = default;

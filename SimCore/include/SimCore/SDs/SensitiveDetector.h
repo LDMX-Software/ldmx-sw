@@ -37,9 +37,10 @@ class SensitiveDetector : public G4VSensitiveDetector {
    * We have the factory create raw pointers since the G4SDManager handles
    * destruction of all of the registered SensitiveDetectors.
    */
-  DECLARE_FACTORY(SensitiveDetector, SensitiveDetector*, const std::string&,
-                  simcore::ConditionsInterface&,
-                  const framework::config::Parameters&);
+  DECLARE_FACTORY_WITH_WAREHOUSE(SensitiveDetector, SensitiveDetector*,
+                                 const std::string&,
+                                 simcore::ConditionsInterface&,
+                                 const framework::config::Parameters&);
 
   /** Destructor */
   virtual ~SensitiveDetector() = default;
