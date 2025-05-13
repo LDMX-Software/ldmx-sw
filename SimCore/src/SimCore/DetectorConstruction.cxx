@@ -24,8 +24,8 @@ using Test = bool (*)(G4LogicalVolume*, const std::string&);
 }  // namespace logical_volume_tests
 
 DetectorConstruction::DetectorConstruction(
-    std::shared_ptr<simcore::geo::Parser> parser, framework::config::Parameters& parameters,
-    ConditionsInterface& ci)
+    std::shared_ptr<simcore::geo::Parser> parser,
+    framework::config::Parameters& parameters, ConditionsInterface& ci)
     : parser_(parser), parameters_{parameters}, conditions_interface_{ci} {}
 
 G4VPhysicalVolume* DetectorConstruction::Construct() {
@@ -44,8 +44,8 @@ void DetectorConstruction::ConstructSDandField() {
         det);
     if (not sd) {
       EXCEPTION_RAISE("UnableToCreate",
-          "Unable to create a SensitiveDetector of type "
-          +det.getParameter<std::string>("class_name"));
+                      "Unable to create a SensitiveDetector of type " +
+                          det.getParameter<std::string>("class_name"));
     }
     // attach to volumes
     for (G4LogicalVolume* volume : *G4LogicalVolumeStore::GetInstance()) {

@@ -51,11 +51,11 @@ PrimaryGeneratorAction::PrimaryGeneratorAction(
 
   for (auto& generator : generators) {
     if (not PrimaryGenerator::Factory::get().make(
-        generator.getParameter<std::string>("class_name"),
-        generator.getParameter<std::string>("instance_name"), generator)) {
+            generator.getParameter<std::string>("class_name"),
+            generator.getParameter<std::string>("instance_name"), generator)) {
       EXCEPTION_RAISE("UnableToCreate",
-          "Unable to create a PrimaryGenerator of type "
-          +generator.getParameter<std::string>("class_name"));
+                      "Unable to create a PrimaryGenerator of type " +
+                          generator.getParameter<std::string>("class_name"));
     }
   }
 }

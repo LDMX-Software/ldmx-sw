@@ -73,11 +73,11 @@ void RunManager::setupPhysics() {
     // create all the biasing operators that will be used
     for (framework::config::Parameters& bop : biasing_operators) {
       if (not simcore::XsecBiasingOperator::Factory::get().make(
-          bop.getParameter<std::string>("class_name"),
-          bop.getParameter<std::string>("instance_name"), bop)) {
+              bop.getParameter<std::string>("class_name"),
+              bop.getParameter<std::string>("instance_name"), bop)) {
         EXCEPTION_RAISE("UnableToCreate",
-            "Unable to create a XsecBiasingOperator of type "
-            +bop.getParameter<std::string>("class_name"));
+                        "Unable to create a XsecBiasingOperator of type " +
+                            bop.getParameter<std::string>("class_name"));
       }
     }
 
@@ -146,15 +146,16 @@ void RunManager::Initialize() {
         user_action.getParameter<std::string>("class_name"),
         user_action.getParameter<std::string>("instance_name"), user_action);
     if (not ua) {
-      EXCEPTION_RAISE("UnableToCreate",
-          "Unable to create a UserAction of type "
-          +user_action.getParameter<std::string>("class_name")+
-          ". Did you inherit from simcore::UserAction? "
-          "Do you have DECLARE_ACTION in your implementation (.cxx) file? "
-          "Did you include the fully-specified class name in your python "
-          "configuration class? "
-          "Did you specify the correct library in the python configuration "
-          "class?");
+      EXCEPTION_RAISE(
+          "UnableToCreate",
+          "Unable to create a UserAction of type " +
+              user_action.getParameter<std::string>("class_name") +
+              ". Did you inherit from simcore::UserAction? "
+              "Do you have DECLARE_ACTION in your implementation (.cxx) file? "
+              "Did you include the fully-specified class name in your python "
+              "configuration class? "
+              "Did you specify the correct library in the python configuration "
+              "class?");
     }
     for (auto& type : ua.value()->getTypes()) {
       if (type == simcore::TYPE::RUN) {

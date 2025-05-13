@@ -30,9 +30,10 @@ void GammaPhysics::ConstructProcess() {
       modelParameters.getParameter<std::string>("instance_name"),
       modelParameters);
   if (not pn) {
-    EXCEPTION_RAISE("UnableToCreate",
-        "Unable to create a PhotoNuclearModel of type "
-        +modelParameters.getParameter<std::string>("class_name"));
+    EXCEPTION_RAISE(
+        "UnableToCreate",
+        "Unable to create a PhotoNuclearModel of type " +
+            modelParameters.getParameter<std::string>("class_name"));
   }
   pn.value()->removeExistingModel(processManager);
   pn.value()->ConstructGammaProcess(processManager);

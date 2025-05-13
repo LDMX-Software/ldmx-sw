@@ -6,10 +6,10 @@
 #ifndef FRAMEWORK_FACTORY_H
 #define FRAMEWORK_FACTORY_H
 
-#include <optional>
 #include <algorithm>
 #include <cstdint>
 #include <memory>
+#include <optional>
 #include <string>
 #include <unordered_map>
 
@@ -229,9 +229,8 @@ class Factory {
    * @returns a pointer to the parent class that the objects derive from (or
    * null)
    */
-  [[nodiscard]] virtual std::optional<PrototypePtr>
-  make(const std::string& full_name,
-       PrototypeConstructorArgs... maker_args) {
+  [[nodiscard]] virtual std::optional<PrototypePtr> make(
+      const std::string& full_name, PrototypeConstructorArgs... maker_args) {
     auto lib_it{library_.find(full_name)};
     if (lib_it == library_.end()) {
       return std::nullopt;
@@ -290,16 +289,17 @@ class Factory {
  * the created objects will be managed after the Factory creates them.
  *
  * In order to gain access to the "warehouse" storage and the apply function,
- * you just need to change which type of factory is declared within your prototype.
- * Use the #DECLARE_FACTORY_WITH_WAREHOUSE macro instead of #DECLARE_FACTORY.
+ * you just need to change which type of factory is declared within your
+ * prototype. Use the #DECLARE_FACTORY_WITH_WAREHOUSE macro instead of
+ * #DECLARE_FACTORY.
  */
 template <typename Prototype, typename PrototypePtr,
           typename... PrototypeConstructorArgs>
-class FactoryWithWarehouse : public Factory<Prototype, PrototypePtr,
-                                            PrototypeConstructorArgs...> {
+class FactoryWithWarehouse
+    : public Factory<Prototype, PrototypePtr, PrototypeConstructorArgs...> {
  public:
-  using FactoryNoWarehouse = Factory<Prototype, PrototypePtr,
-                                     PrototypeConstructorArgs...>;
+  using FactoryNoWarehouse =
+      Factory<Prototype, PrototypePtr, PrototypeConstructorArgs...>;
 
   /**
    * make a new object by name
@@ -319,9 +319,9 @@ class FactoryWithWarehouse : public Factory<Prototype, PrototypePtr,
    * @returns a pointer to the parent class that the objects derive from (or
    * null)
    */
-  [[nodiscard]] std::optional<PrototypePtr>
-  make(const std::string& full_name,
-       PrototypeConstructorArgs... maker_args) override {
+  [[nodiscard]] std::optional<PrototypePtr> make(
+      const std::string& full_name,
+      PrototypeConstructorArgs... maker_args) override {
     auto obj{FactoryNoWarehouse::make(full_name, maker_args...)};
     if (obj) {
       warehouse_.emplace_back(obj.value());

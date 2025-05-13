@@ -45,9 +45,9 @@ class ConditionsObjectProvider {
  public:
   /// declare that we have a factory for these types of classes
   DECLARE_FACTORY(ConditionsObjectProvider,
-                  std::shared_ptr<ConditionsObjectProvider>,
-                  const std::string&, const std::string&,
-                  const framework::config::Parameters&, Process&);
+                  std::shared_ptr<ConditionsObjectProvider>, const std::string&,
+                  const std::string&, const framework::config::Parameters&,
+                  Process&);
 
   /**
    * Class constructor.

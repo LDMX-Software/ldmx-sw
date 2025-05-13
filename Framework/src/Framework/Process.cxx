@@ -93,7 +93,8 @@ Process::Process(const framework::config::Parameters &configuration)
   for (auto proc : sequence) {
     auto className{proc.getParameter<std::string>("className")};
     auto instanceName{proc.getParameter<std::string>("instanceName")};
-    auto ep{EventProcessor::Factory::get().make(className, instanceName, *this)};
+    auto ep{
+        EventProcessor::Factory::get().make(className, instanceName, *this)};
     if (not ep) {
       EXCEPTION_RAISE("UnableToCreate",
                       "The EventProcessor Factory was unable to create " +
