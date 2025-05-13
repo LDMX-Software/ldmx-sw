@@ -10,7 +10,7 @@
 #include <iostream>
 #include <map>
 
-#include "Ecal/WorkingCluster.h"
+#include "Ecal/IntermediateCluster.h"
 #include "TH2F.h"
 
 namespace ecal {
@@ -19,9 +19,11 @@ template <class WeightClass>
 
 class TemplatedClusterFinder {
  public:
-  void add(const ldmx::EcalHit& eh) { clusters_.push_back(WorkingCluster(eh)); }
+  void add(const ldmx::EcalHit& eh) {
+    clusters_.push_back(IntermediateCluster(eh));
+  }
 
-  static bool compClusters(const WorkingCluster& a, const WorkingCluster& b) {
+  static bool compClusters(const IntermediateCluster& a, const IntermediateCluster& b) {
     return a.centroid().E() > b.centroid().E();
   }
 
@@ -97,7 +99,7 @@ class TemplatedClusterFinder {
 
   std::map<int, double> getWeights() const { return transitionWeights_; }
 
-  std::vector<WorkingCluster> getClusters() const { return finalClusters_; }
+  std::vector<IntermediateCluster> getClusters() const { return finalClusters_; }
 
  private:
   WeightClass wgt_;
@@ -105,8 +107,8 @@ class TemplatedClusterFinder {
   int nseeds_;
   int loops_;
   std::map<int, double> transitionWeights_;
-  std::vector<WorkingCluster> clusters_;
-  std::vector<WorkingCluster> finalClusters_;
+  std::vector<IntermediateCluster> clusters_;
+  std::vector<IntermediateCluster> finalClusters_;
 };
 }  // namespace ecal
 

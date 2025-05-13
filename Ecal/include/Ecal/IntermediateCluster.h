@@ -1,5 +1,5 @@
 /*
-   WorkingCluster -- In-memory tool for working on clusters
+   IntermediateCluster -- In-memory tool for working on clusters
    */
 #ifndef ECAL_WORKINGCLUSTER_H_
 #define ECAL_WORKINGCLUSTER_H_
@@ -13,14 +13,14 @@
 
 namespace ecal {
 
-class WorkingCluster {
+class IntermediateCluster {
  public:
-  WorkingCluster(const ldmx::EcalHit& eh, int layer = -1);
-  WorkingCluster() = default;
-  ~WorkingCluster() = default;
+  IntermediateCluster(const ldmx::EcalHit& eh, int layer = -1);
+  IntermediateCluster() = default;
+  ~IntermediateCluster() = default;
   void add(const ldmx::EcalHit& eh);
   void add(const ldmx::EcalHit* eh);
-  void add(const WorkingCluster& wc);
+  void add(const IntermediateCluster& wc);
   const ROOT::Math::XYZTVector& centroid() const { return centroid_; }
   std::vector<const ldmx::EcalHit*> getHits() const { return hits_; }
   bool empty() const { return hits_.empty(); }

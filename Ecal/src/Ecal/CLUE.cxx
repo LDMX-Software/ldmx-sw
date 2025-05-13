@@ -29,7 +29,7 @@ float CLUE::floatDist(float x1, float y1, float z1, float x2, float y2,
 //       return a.getZPos() < b.getZPos();
 //   });
 //   std::vector<ldmx::EcalHit> firstLayers;
-//   std::vector<WorkingEcalCluster> firstLayerClusters;
+//   std::vector<IntermediateEcalCluster> firstLayerClusters;
 //   int layerTag = 0;
 //   double layerZ = hits[0].getZPos();
 //   for (const auto& hit : hits) {
@@ -39,7 +39,7 @@ float CLUE::floatDist(float x1, float y1, float z1, float x2, float y2,
 //       break;
 //     }
 //     firstLayers.push_back(hit);
-//     firstLayerClusters.push_back(WorkingEcalCluster(hit, layerTag));
+//     firstLayerClusters.push_back(IntermediateEcalCluster(hit, layerTag));
 
 //   }
 //   bool merge = false;
@@ -136,7 +136,7 @@ std::vector<std::shared_ptr<CLUE::Density>> CLUE::setup(
     const std::vector<const ldmx::EcalHit*>& hits) {
   std::vector<std::shared_ptr<Density>> densities;
   std::map<std::pair<float, float>, std::shared_ptr<Density>> densityMap;
-  event_centroid_ = WorkingCluster();
+  event_centroid_ = IntermediateCluster();
   ldmx_log(trace) << "--- SETUP ---";
   ldmx_log(trace) << "Building densities";
   for (const auto& hit : hits) {
@@ -486,13 +486,13 @@ std::vector<std::shared_ptr<CLUE::Density>> CLUE::layerSetup() {
   return densities;
 }
 
-void CLUE::convertToWorkingClusters(
-    std::vector<std::vector<const ldmx::EcalHit*>>& clusters) {
+void CLUE::convertToIntermediateClusters(
+    std::vector<std::vector<const ldmx::EcalHit *>>& clusters) {
   // Convert to workingecalclusters to ensure compatibility with
   // EcalClusterProducer
   for (const auto& vec : clusters) {
-    auto c = WorkingCluster();
-    auto fc = WorkingCluster();
+    auto c = IntermediateCluster();
+    auto fc = IntermediateCluster();
     for (const auto& hit : vec) {
       c.add(hit);
       // if hit is in first layer, add to first layer cluster
@@ -547,17 +547,17 @@ void CLUE::cluster(const std::vector<ldmx::EcalHit>& unsorted_hits, double dc,
       ldmx_log(trace) << "--- LAYER " << i << " ---";
       auto densities = setup(layers[i]);
       auto clusters = clustering(densities, false, i);
-      // convertToWorkingClusters(clusters); // uncomment for layer clustering
+      // convertToIntermediateClusters(clusters); // uncomment for layer clustering
       // without 3D
     }
     // Below for CLUE3D, comment for just layer clustering
     auto densities = layerSetup();
     auto clusters = clustering(densities, true);
-    convertToWorkingClusters(clusters);
+    convertToIntermediateClusters(clusters);
   } else {
     auto densities = setup(hits);
     auto clusters = clustering(densities, false);
-    convertToWorkingClusters(clusters);
+    convertToIntermediateClusters(clusters);
   }
 }
 

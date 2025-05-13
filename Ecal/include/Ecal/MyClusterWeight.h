@@ -4,15 +4,15 @@
 
 #include <iostream>
 
-#include "Ecal/WorkingCluster.h"
+#include "Ecal/IntermediateCluster.h"
 
 namespace ecal {
 
 class MyClusterWeight {
  public:
   double operator()(
-      const WorkingCluster& a,
-      const WorkingCluster& b) {  // returns weighting function, where smallest
+      const IntermediateCluster& a,
+      const IntermediateCluster& b) {  // returns weighting function, where smallest
                                   // weights will be combined first
 
     double rmol = 10.00;    // Moliere radius of detector, roughly. In mm

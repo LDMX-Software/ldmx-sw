@@ -19,7 +19,7 @@
 #include <stack>
 
 #include "Ecal/Event/EcalHit.h"
-#include "Ecal/WorkingCluster.h"
+#include "Ecal/IntermediateCluster.h"
 #include "Framework/Logger.h"
 
 namespace ecal {
@@ -81,8 +81,8 @@ class CLUE {
 
   std::vector<std::shared_ptr<Density>> layerSetup();
 
-  void convertToWorkingClusters(
-      std::vector<std::vector<const ldmx::EcalHit*>>& clusters);
+  void convertToIntermediateClusters(
+      std::vector<std::vector<const ldmx::EcalHit *>>& clusters);
 
   void cluster(const std::vector<ldmx::EcalHit>& hits, double dc, double rc,
                double deltac, double deltao, int nbrOfLayers,
@@ -96,11 +96,13 @@ class CLUE {
 
   int getInitialClusterNbr() const { return initial_cluster_nbr_; }
 
-  std::vector<WorkingCluster> getClusters() const { return final_clusters_; }
+  std::vector<IntermediateCluster> getClusters() const {
+    return final_clusters_;
+  }
 
   // First layer centroids are available for potential future combination with
   // TS
-  std::vector<WorkingCluster> getFirstLayerCentroids() const {
+  std::vector<IntermediateCluster> getFirstLayerCentroids() const {
     return first_layer_centroids_;
   }
 
@@ -140,16 +142,16 @@ class CLUE {
       75.78117972604727,  86.04697356716805,  96.90360704034346};
 
   std::vector<double> centroid_distances_;
-  WorkingCluster event_centroid_;
+  IntermediateCluster event_centroid_;
 
   float first_layer_max_z_;
-  std::vector<WorkingCluster> first_layer_centroids_;
+  std::vector<IntermediateCluster> first_layer_centroids_;
 
   int seed_index_{0};
   std::vector<std::vector<std::shared_ptr<Density>>> seeds_;
 
   int initial_cluster_nbr_{-1};
-  std::vector<WorkingCluster> final_clusters_;
+  std::vector<IntermediateCluster> final_clusters_;
   std::vector<std::pair<double, double>> layer_centroid_separations_;
 };
 }  // namespace ecal

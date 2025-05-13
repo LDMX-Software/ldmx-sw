@@ -49,8 +49,8 @@ void EcalClusterProducer::produce(framework::Event& event) {
     CLUE cf;
     cf.cluster(ecal_hits, dc_, rhoc_, deltac_, deltao_, nbr_of_layers_,
                reclustering_);
-    std::vector<WorkingCluster> wcVec = cf.getClusters();
-    std::vector<WorkingCluster> fWcVec = cf.getFirstLayerCentroids();
+    std::vector<IntermediateCluster> wcVec = cf.getClusters();
+    std::vector<IntermediateCluster> fWcVec = cf.getFirstLayerCentroids();
 
     auto nLoops = cf.getNLoops();
     histograms_.fill("nLoops", nLoops);
@@ -92,7 +92,7 @@ void EcalClusterProducer::produce(framework::Event& event) {
     }
 
     cf.cluster(seed_threshold_, cutoff_);
-    std::vector<WorkingCluster> wcVec = cf.getClusters();
+    std::vector<IntermediateCluster> wcVec = cf.getClusters();
 
     auto nLoops = cf.getNLoops();
     histograms_.fill("nLoops", nLoops);

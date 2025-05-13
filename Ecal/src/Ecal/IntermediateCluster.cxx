@@ -1,16 +1,16 @@
 
-#include "Ecal/WorkingCluster.h"
+#include "Ecal/IntermediateCluster.h"
 
 #include <iostream>
 
 namespace ecal {
 
-WorkingCluster::WorkingCluster(const ldmx::EcalHit& eh, int layer)
-    : layer_{layer}, hits_{}, centroid_{} {
+IntermediateCluster::IntermediateCluster(const ldmx::EcalHit& eh, int layer)
+  : layer_{layer}, hits_{}, centroid_{} {
   add(eh);
 }
 
-void WorkingCluster::add(const ldmx::EcalHit& eh) {
+void IntermediateCluster::add(const ldmx::EcalHit& eh) {
   hits_.push_back(&eh);
 
   double hitE = eh.getEnergy();
@@ -24,11 +24,11 @@ void WorkingCluster::add(const ldmx::EcalHit& eh) {
                     (centroid_.z() * centroid_.E() + hitE * hitZ) / newE, newE);
 }
 
-void WorkingCluster::add(const ldmx::EcalHit* eh) {
+void IntermediateCluster::add(const ldmx::EcalHit* eh) {
   if (eh != nullptr) add(*eh);
 }
 
-void WorkingCluster::add(const WorkingCluster& wc) {
+void IntermediateCluster::add(const IntermediateCluster& wc) {
   double newE = wc.centroid().E() + centroid_.E();
   centroid_.SetXYZT(
       (centroid_.x() * centroid_.E() + wc.centroid().x() * wc.centroid().E()) /
