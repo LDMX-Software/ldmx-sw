@@ -181,4 +181,5 @@ void EcalClusterAnalyzer::analyze(const framework::Event& event) {
 }
 
 }  // namespace dqm
-DECLARE_ANALYZER_NS(dqm, EcalClusterAnalyzer)
+
+DECLARE_ANALYZER(dqm::EcalClusterAnalyzer)
