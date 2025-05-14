@@ -165,54 +165,6 @@ void LinearSeedFinder::produce(framework::Event& event) {
   auto first_sensor_combos = processMeasurements(first_two_layers, tg);
   auto second_sensor_combos = processMeasurements(second_two_layers, tg);
 
-  // These histograms are being used to evaluate the performance of the hit
-  // reconstruction Since they rely on the sim hit associated to the layer, we
-  // output the histograms here instead of the DQM These can be commented out
-  // (and the declaration in reducedTracking.py removed) if they are not wanted
-  // HISTOGRAM START //
-  for (const auto& [combo_3d_point, first_layer, second_layer] :
-       first_sensor_combos) {
-    if (second_layer.has_value()) {
-      // Unpack the first and second layer measurements
-      const auto& [meas1, hit1, scoring1] = first_layer;
-      const auto& [meas2, hit2, scoring2] = *second_layer;
-
-      histograms_.fill("sensor1_measured_x-sim_stereo_layer1_x_ALL",
-                       combo_3d_point[1] - hit2.getPosition()[0]);
-      histograms_.fill("sensor1_measured_y-sim_stereo_layer1_y_ALL",
-                       combo_3d_point[2] - hit2.getPosition()[1]);
-
-      if (meas1.getTrackIds()[0] == meas2.getTrackIds()[0]) {
-        histograms_.fill("sensor1_measured_x-sim_stereo_layer1_x_same_trackID",
-                         combo_3d_point[1] - hit2.getPosition()[0]);
-        histograms_.fill("sensor1_measured_y-sim_stereo_layer1_y_same_trackID",
-                         combo_3d_point[2] - hit2.getPosition()[1]);
-      }  // if trackIDs match, save the difference
-    }  // if
-  }  // for
-
-  for (const auto& [combo_3d_point, first_layer, second_layer] :
-       second_sensor_combos) {
-    if (second_layer.has_value()) {
-      // Unpack the first and second layer measurements
-      const auto& [meas1, hit1, scoring1] = first_layer;
-      const auto& [meas2, hit2, scoring2] = *second_layer;
-
-      histograms_.fill("sensor2_measured_x-sim_stereo_layer2_x_ALL",
-                       combo_3d_point[1] - hit2.getPosition()[0]);
-      histograms_.fill("sensor2_measured_y-sim_stereo_layer2_y_ALL",
-                       combo_3d_point[2] - hit2.getPosition()[1]);
-
-      if (meas1.getTrackIds()[0] == meas2.getTrackIds()[0]) {
-        histograms_.fill("sensor2_measured_x-sim_stereo_layer2_x_same_trackID",
-                         combo_3d_point[1] - hit2.getPosition()[0]);
-        histograms_.fill("sensor2_measured_y-sim_stereo_layer2_y_same_trackID",
-                         combo_3d_point[2] - hit2.getPosition()[1]);
-      }  // if trackIDs match, save the difference
-    }  // if
-  }  // for
-  // HISTOGRAM END //
-
   for (const auto& [first_combo_3d_point, first_layer_one, first_layer_two] :
        first_sensor_combos) {
     std::tuple<std::array<double, 3>, ldmx::Measurement,
