@@ -84,7 +84,7 @@ void QualityFlagAnalyzer::analyze(const framework::Event& event) {
         hOut[evNb][bar]->SetBinContent(iT + startSample_, q.at(iT));
         hOut[evNb][bar]->SetBinError(iT + startSample_, fabs(qErr.at(iT)));
       }  // if within the number of events to plot individually
-    }    // over time samples
+    }  // over time samples
 
     // now select on flags
     // special case: flag = 0 (this will happen to all eventually, so catch it
@@ -102,8 +102,8 @@ void QualityFlagAnalyzer::analyze(const framework::Event& event) {
       hOutFlag[nFlags - 1][fillNb][bar]->GetYaxis()->SetTitle(
           Form("Q, flag 0, chan %i, ev %i [fC]", bar, evNb));
       nEvDrawn[nFlags - 1]++;  // update filled event counter for this flag (0)
-    }                          // if nothing was flagged
-    else {                     // hit was flagged somehow
+    }  // if nothing was flagged
+    else {                                       // hit was flagged somehow
       for (int iF = 0; iF < nFlags - 1; iF++) {  // do all but the last
         int fillNb = nEvDrawn[iF];
         ldmx_log(debug) << "Checking flag " << flags[iF];
@@ -124,10 +124,10 @@ void QualityFlagAnalyzer::analyze(const framework::Event& event) {
             nEvDrawn[iF]++;  // update filled event counter for this flag
           }
           flag -= flags[iF];  // subtract that flag from sum
-        }                     // if this flag
-      }                       // over flags
-    }                         // if any non-zero flag
-  }                           // over channels
+        }  // if this flag
+      }  // over flags
+    }  // if any non-zero flag
+  }  // over channels
 
   // select 15 < PE < 40 events
   if (existsIntermediatePE &&
@@ -147,9 +147,9 @@ void QualityFlagAnalyzer::analyze(const framework::Event& event) {
       }  // over time samples
       hOutPE[peFillNb][bar]->GetYaxis()->SetTitle(
           Form("Q, chan %i, ev %i, PE %.2f", bar, evNb, hitPEs[bar]));
-    }            // over channels
+    }  // over channels
     peFillNb++;  // update filled event counter for this flag
-  }              // if fill
+  }  // if fill
 
   return;
 }

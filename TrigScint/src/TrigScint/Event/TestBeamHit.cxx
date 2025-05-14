@@ -25,8 +25,7 @@ ClassImp(trigscint::TestBeamHit)
   }
 
   void TestBeamHit::Print(Option_t * option) const {
-    std::cout << "TestBeamHit { "
-              << "Total charge: " << getQ()
+    std::cout << "TestBeamHit { " << "Total charge: " << getQ()
               << " fC, start time sample: " << getStartSample()
               << ", bar: " << getBarID() << ", pulseWidth: " << getPulseWidth()
               << "}" << std::endl;

@@ -8,8 +8,8 @@ ClassImp(ldmx::ClusterAlgoResult)
   ClusterAlgoResult::~ClusterAlgoResult() { Clear(); }
 
   void ClusterAlgoResult::Print() const {
-    std::cout << "ClusterAlgoResult { "
-              << "name: " << name_ << " }" << std::endl;
+    std::cout << "ClusterAlgoResult { " << "name: " << name_ << " }"
+              << std::endl;
 
     for (int i = 0; i < variables_.GetSize(); ++i) {
       std::cout << "Element " << i << " : " << variables_[i] << std::endl;

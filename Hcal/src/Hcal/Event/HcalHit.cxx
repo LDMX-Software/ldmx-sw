@@ -13,8 +13,7 @@ void HcalHit::Clear() {
 }
 
 void HcalHit::Print() const {
-  std::cout << "HcalHit { "
-            << "id: " << std::hex << getID() << std::dec
+  std::cout << "HcalHit { " << "id: " << std::hex << getID() << std::dec
             << ",  energy: " << getEnergy() << "MeV, time: " << getTime()
             << "ns, amplitude: " << getAmplitude() << ", pe: " << getPE() << "}"
             << std::endl;

@@ -62,7 +62,7 @@ void LinearSeedFinder::produce(framework::Event& event) {
       first_layer_ecal_rec_hits.push_back(
           {x_ecal.getZPos(), x_ecal.getXPos(), x_ecal.getYPos()});
     }  // if first layer of Ecal
-  }    // for positions in ecalRecHit
+  }  // for positions in ecalRecHit
 
   // Check if we would fit empty seeds, if so: end tracking
   if ((recoil_hits.size() < 2) || (first_layer_ecal_rec_hits.empty()) ||
@@ -96,9 +96,9 @@ void LinearSeedFinder::produce(framework::Event& event) {
         if (seed_track.getChi2() > 0.0) {
           straight_seed_tracks.push_back(seed_track);
         }  // if chi2 > 0
-      }    // for rec_hits
-    }      // for second recoil tracker
-  }        // for first recoil tracker
+      }  // for rec_hits
+    }  // for second recoil tracker
+  }  // for first recoil tracker
 
   n_seeds_ += straight_seed_tracks.size();
   event.add(out_seed_collection_, straight_seed_tracks);
@@ -239,7 +239,7 @@ LinearSeedFinder::combineMultiGlobalHits(
                                                 point.getGlobalPosition()[2]},
                           point, std::nullopt));
     }  // only look at layer2
-  }    // if layer1 empty
+  }  // if layer1 empty
   else if (layer2.empty()) {
     for (const auto& point : layer1) {
       first_sensor_merged_hits.push_back(
@@ -248,7 +248,7 @@ LinearSeedFinder::combineMultiGlobalHits(
                                                 point.getGlobalPosition()[2]},
                           point, std::nullopt));
     }  // only look at layer1
-  }    // if layer2 empty
+  }  // if layer2 empty
   else {
     first_sensor_merged_hits = midPointCalculation(layer1, layer2);
   }  // do weighted average of two layers
@@ -261,7 +261,7 @@ LinearSeedFinder::combineMultiGlobalHits(
                                                 point.getGlobalPosition()[2]},
                           point, std::nullopt));
     }  // only look at layer4
-  }    // if layer3 empty
+  }  // if layer3 empty
   else if (layer4.empty()) {
     for (const auto& point : layer3) {
       second_sensor_merged_hits.push_back(
@@ -304,7 +304,7 @@ LinearSeedFinder::midPointCalculation(
           std::array<double, 3>{z_avg, x_avg, y_avg}, point1, point2));
 
     }  // for layer2
-  }    // for layer1
+  }  // for layer1
   return merged_hits;
 }  // midPointCalculation
 

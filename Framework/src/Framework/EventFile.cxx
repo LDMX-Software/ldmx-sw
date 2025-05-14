@@ -216,7 +216,7 @@ bool EventFile::nextEvent(bool storeCurrentEvent) {
       event_->beforeFill();
       if (storeCurrentEvent)  // we should store before moving on
         tree_->Fill();        // fill the clones...
-    }                         // we are an output file
+    }  // we are an output file
 
     // the event bus may not be defined
     //  for this file if we are input file and
@@ -225,7 +225,7 @@ bool EventFile::nextEvent(bool storeCurrentEvent) {
       event_->Clear();
       event_->onEndOfEvent();
     }  // event bus defined
-  }    // first or not first entry in this file
+  }  // first or not first entry in this file
 
   if (parent_) {
     // we have a parent, follow their lead

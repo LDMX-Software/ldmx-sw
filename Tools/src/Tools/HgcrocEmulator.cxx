@@ -219,7 +219,7 @@ bool HgcrocEmulator::digitize(
 
       digiToAdd.emplace_back(false, false, adc_t_minus1, adc, toa);
     }  // TOT or ADC Mode
-  }    // sampling baskets
+  }  // sampling baskets
 
   // we only get here if we never went into TOT mode
   // check the SOI to see if we should read out

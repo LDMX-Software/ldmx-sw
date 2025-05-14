@@ -6,8 +6,7 @@ ClassImp(ldmx::FiducialFlag)
   FiducialFlag::FiducialFlag() {}
 
   void FiducialFlag::Print() const {
-    std::cout << "FiducialFlag { "
-              << "fiducialFlag: " << fiducial_flag_ << ", "
+    std::cout << "FiducialFlag { " << "fiducialFlag: " << fiducial_flag_ << ", "
               << "isFiducial: " << is_fiducial_ << ", "
               << "hasEcalHit: " << has_ecal_hit_ << ", "
               << "hasHcalHit: " << has_hcal_hit_ << ", "

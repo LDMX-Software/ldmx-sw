@@ -1037,7 +1037,7 @@ struct ap_fixed_base : _AP_ROOT_TYPE<_AP_W, _AP_S> {
 
   INLINE int length() const { return _AP_W; };
 
-    // bits_to_int64 deleted.
+  // bits_to_int64 deleted.
 #ifndef __SYNTHESIS__
   // Used in autowrap, when _AP_W < 64.
   INLINE ap_ulong bits_to_uint64() const { return (Base::V).to_uint64(); }
@@ -1853,8 +1853,7 @@ INLINE std::string scientificFormat(std::string& input) {
 
   size_t firstNonZeroPos = 0;
   for (; input[firstNonZeroPos] > '9' || input[firstNonZeroPos] < '1';
-       firstNonZeroPos++)
-    ;
+       firstNonZeroPos++);
 
   int exp;
   if (firstNonZeroPos > decPosition)
@@ -1912,12 +1911,10 @@ INLINE std::string reduceToPrecision(std::string& input, int precision) {
   int truncBitPosition = 0;
   size_t decPosition = input.find('.');
   for (; input[FirstNonZeroPos] < '1' || input[FirstNonZeroPos] > '9';
-       FirstNonZeroPos++)
-    ;
+       FirstNonZeroPos++);
 
   for (; input[LastNonZeroPos] < '1' || input[LastNonZeroPos] > '9';
-       LastNonZeroPos--)
-    ;
+       LastNonZeroPos--);
 
   if (decPosition == std::string::npos) decPosition = inputLen;
   // Count the valid number, to decide whether we need to truncate
@@ -2009,8 +2006,7 @@ INLINE std::string reduceToPrecision(std::string& input, int precision) {
   decPosition = dupInput.find('.');
   if (decPosition != std::string::npos) {
     size_t it = 0;
-    for (it = decPosition + 1; dupInput[it] == '0'; it++)
-      ;
+    for (it = decPosition + 1; dupInput[it] == '0'; it++);
     if (it - decPosition - 1 < 4) {
       ans += dupInput;
       return ans;

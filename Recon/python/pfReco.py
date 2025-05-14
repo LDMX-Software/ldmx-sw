@@ -45,6 +45,7 @@ class pfTrackProducer(ldmxcfg.Producer) :
         self.outputTrackCollName = 'PFTracks'
         self.doElectronTracking = False
 
+
 class pfProducer(ldmxcfg.Producer) :
     """Configuration for particle reco"""
     def __init__(self, name='PFlow') :

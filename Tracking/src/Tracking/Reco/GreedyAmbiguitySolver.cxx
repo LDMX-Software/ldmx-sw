@@ -100,7 +100,7 @@ void GreedyAmbiguitySolver::computeInitialState(
   }
 }
 
-void GreedyAmbiguitySolver::resolve(State& state) const {
+void GreedyAmbiguitySolver::resolve(State& state) {
   /// Compares two tracks based on the number of shared measurements in order to
   /// decide if we already met the final state.
   auto sharedMeasurementsComperator = [&state](std::size_t a, std::size_t b) {
@@ -127,7 +127,7 @@ void GreedyAmbiguitySolver::resolve(State& state) const {
   for (std::size_t i = 0; i < maximum_iterations_; ++i) {
     // Lazy out if there is nothing to filter on.
     if (state.selected_tracks.empty()) {
-      // ldmx_log(debug) << "no tracks left - exit loop";
+      ldmx_log(trace) << "No tracks left - exit loop";
       break;
     }
 
@@ -148,12 +148,11 @@ void GreedyAmbiguitySolver::resolve(State& state) const {
     auto badTrack =
         *std::max_element(state.selected_tracks.begin(),
                           state.selected_tracks.end(), trackComperator);
-    // ldmx_log(debug)  << "remove track "
-    //             << badTrack << " nMeas "
-    //              << state.measurementsPerTrack[badTrack].size() << " nShared
-    //              "
-    //              << state.sharedMeasurementsPerTrack[badTrack] << " chi2 "
-    //              << state.trackChi2[badTrack] << std::endl;
+    ldmx_log(trace) << "Remove track " << badTrack << ", nMeas = "
+                    << state.measurements_per_track[badTrack].size()
+                    << ", nShared = "
+                    << state.shared_measurements_per_track[badTrack]
+                    << ", chi2 =" << state.track_chi2[badTrack];
     removeTrack(state, badTrack);
   }
 }
@@ -184,11 +183,17 @@ void GreedyAmbiguitySolver::produce(framework::Event& event) {
 
   auto tg{geometry()};
 
-  if (!event.exists(track_collection_)) return;
+  if (!event.exists(track_collection_, input_pass_name_)) {
+    ldmx_log(debug) << "Track collection not found, exiting";
+    return;
+  }
   auto tracks{
       event.getCollection<ldmx::Track>(track_collection_, input_pass_name_)};
 
-  if (!event.exists(meas_collection_)) return;
+  if (!event.exists(meas_collection_, input_pass_name_)) {
+    ldmx_log(debug) << "Measurement collection not found, exiting";
+    return;
+  }
   auto measurements{event.getCollection<ldmx::Measurement>(meas_collection_,
                                                            input_pass_name_)};
 
@@ -199,8 +204,8 @@ void GreedyAmbiguitySolver::produce(framework::Event& event) {
 
   for (auto iTrack : state.selected_tracks) {
     auto clean_trk = tracks[state.track_tips.at(iTrack)];
-    if (clean_trk.getNhits() > n_meas_min_ &&
-        abs(1. / clean_trk.getQoP()) > 0.05) {
+    if ((clean_trk.getNhits() > n_meas_min_) &&
+        (std::abs(1. / clean_trk.getQoP()) > 0.05)) {
       out_tracks.push_back(clean_trk);
     }
   }
@@ -213,10 +218,8 @@ void GreedyAmbiguitySolver::produce(framework::Event& event) {
   //     initial_state.measurementsPerTrack[iTrack].size() << std::endl;
   // }
 
-  ldmx_log(debug) << " "
-                  << "Resolved to " << state.selected_tracks.size()
-                  << " tracks from "
-                  << " " << tracks.size();
+  ldmx_log(info) << " Resolved to " << state.selected_tracks.size()
+                 << " tracks from " << " " << tracks.size();
 }
 
 }  // namespace reco

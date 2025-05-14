@@ -414,7 +414,7 @@ void HcalDigiProducer::produce(framework::Event& event) {
             hcalDigis.addDigi(noiseID, digiToAdd);
           }
         }
-      }       // loop over noise amplitudes
+      }  // loop over noise amplitudes
     } else {  // If zeroSuppression_ == false, add noise digis for all bars
               // without simhits
       for (auto digiID : channelMap) {

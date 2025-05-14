@@ -178,8 +178,10 @@ void EcalVetoProcessor::clearProcessor() {
   firstNearPhLayer_ = 0;
   nNearPhHits_ = 0;
   epAng_ = 0;
+  epAngAtTarget_ = 0;
   epSep_ = 0;
   epDot_ = 0;
+  epDotAtTarget_ = 0;
   photonTerritoryHits_ = 0;
 
   std::fill(ecalLayerEdepRaw_.begin(), ecalLayerEdepRaw_.end(), 0);
@@ -211,10 +213,10 @@ void EcalVetoProcessor::produce(framework::Event &event) {
   profiling_map_["setup"] +=
       std::chrono::duration<float, std::milli>(setup - start).count();
 
-  ldmx_log(trace) << "   Loop through all of the sim particles and find the "
-                     "recoil electron";
-
-  if (event.exists("EcalScoringPlaneHits", sp_pass_name_)) {
+  if (!recoil_from_tracking_ &&
+      event.exists("EcalScoringPlaneHits", sp_pass_name_)) {
+    ldmx_log(trace) << "   Loop through all of the sim particles and find the "
+                       "recoil electron";
     //
     // Loop through all of the sim particles and find the recoil electron.
     //
@@ -279,26 +281,59 @@ void EcalVetoProcessor::produce(framework::Event &event) {
           }
         }
       }  // end loop on target SP hits
-    }    // end condition on target SP
-  }      // end condition on ecal SP
+    }  // end condition on target SP
+  }  // end condition on ecal SP
 
   // Get recoilPos using recoil tracking
+  bool fiducial_in_tracker{false};
   if (recoil_from_tracking_) {
-    ldmx_log(trace) << "   Propagate recoil tracks to ECAL face";
+    ldmx_log(trace) << "  Get recoil tracks collection";
 
     // Get the recoil track collection
     auto recoil_tracks{
         event.getCollection<ldmx::Track>(track_collection_, track_pass_name_)};
 
+    ldmx_log(trace) << "  Propagate the recoil ele to the ECAL";
     ldmx::TrackStateType ts_type = ldmx::TrackStateType::AtECAL;
-    auto recoil_track_states = trackProp(recoil_tracks, ts_type, "ecal");
+    auto recoil_track_states_ecal = trackProp(recoil_tracks, ts_type, "ecal");
+    ldmx_log(trace) << "  Propagate the recoil ele to the Target";
+    ldmx::TrackStateType ts_type_target = ldmx::TrackStateType::AtTarget;
+    auto recoil_track_states_target =
+        trackProp(recoil_tracks, ts_type_target, "target");
+
+    ldmx_log(trace) << "  Set recoilPos and recoilP";
     // Redefining recoilPos now to come from the track state
     // track_state_loc0 is recoilPos[0] and track_state_loc1 is recoilPos[1]
-    if (!recoil_track_states.empty()) {
-      recoilPos = {recoil_track_states[0], recoil_track_states[1],
-                   recoil_track_states[2]};
+    if (!recoil_track_states_ecal.empty()) {
+      fiducial_in_tracker = true;
+      recoilPos = {recoil_track_states_ecal[0], recoil_track_states_ecal[1],
+                   recoil_track_states_ecal[2]};
+      recoilP = {(recoil_track_states_ecal[3]), (recoil_track_states_ecal[4]),
+                 (recoil_track_states_ecal[5])};
+    } else {
+      ldmx_log(trace) << "  No recoil track at ECAL";
+      fiducial_in_tracker = false;
     }
-  }
+    ldmx_log(debug) << "  Set recoilP = (" << recoilP[0] << ", " << recoilP[1]
+                    << ", " << recoilP[2] << ") and recoilPos = ("
+                    << recoilPos[0] << ", " << recoilPos[1] << ", "
+                    << recoilPos[2] << ")";
+
+    // Repeat the above but now for the taget states
+    if (!recoil_track_states_target.empty()) {
+      recoilPosAtTarget = {(recoil_track_states_target[0]),
+                           (recoil_track_states_target[1]),
+                           (recoil_track_states_target[2])};
+      recoilPAtTarget = {recoil_track_states_target[3],
+                         recoil_track_states_target[4],
+                         recoil_track_states_target[5]};
+    }
+    ldmx_log(debug) << "  Set recoilPAtTarget = (" << recoilPAtTarget[0] << ", "
+                    << recoilPAtTarget[1] << ", " << recoilPAtTarget[2]
+                    << ") and recoilPosAtTarget = (" << recoilPosAtTarget[0]
+                    << ", " << recoilPosAtTarget[1] << ", "
+                    << recoilPosAtTarget[2] << ")";
+  }  // condition to do recoil information from tracking
 
   ldmx_log(trace) << "   Get projected trajectories for electron and photon";
 
@@ -307,7 +342,8 @@ void EcalVetoProcessor::produce(framework::Event &event) {
       std::chrono::duration<float, std::milli>(recoil_electron - setup).count();
 
   // Get projected trajectories for electron and photon
-  std::vector<XYCoords> ele_trajectory, photon_trajectory;
+  std::vector<XYCoords> ele_trajectory, photon_trajectory,
+      ele_trajectory_at_target;
   // Require that z-momentum is positive (which will also exclude the default
   // initializaton) Require that the positions are not the default initializaton
   if ((recoilP[2] > 0.) && (recoilPAtTarget[2] > 0.) &&
@@ -319,6 +355,11 @@ void EcalVetoProcessor::produce(framework::Event &event) {
         -recoilPAtTarget[0], -recoilPAtTarget[1],
         beamEnergyMeV_ - recoilPAtTarget[2]};
     photon_trajectory = getTrajectory(photon_proj_momentum, recoilPosAtTarget);
+  } else {
+    ldmx_log(trace) << "Ele / photon trajectory cannot be determined, pZ = "
+                    << recoilP[2] << " pZAtTarget = " << recoilPAtTarget[2]
+                    << " X = " << recoilPos[0]
+                    << " XAtTarget = " << recoilPosAtTarget[0];
   }
 
   float recoilPMag = (recoilP[2] > 0.) ? sqrt((recoilP[0] * recoilP[0]) +
@@ -732,6 +773,10 @@ void EcalVetoProcessor::produce(framework::Event &event) {
   float drifted_recoil_x{-9999.};
   float drifted_recoil_y{-9999.};
   if (recoilP[2] > 0.) {
+    ldmx_log(trace) << "   Recoil electron pX = " << recoilP[0]
+                    << " pY = " << recoilP[1] << " pZ = " << recoilP[2];
+    ldmx_log(trace) << "   Recoil electron PosX = " << recoilPos[0]
+                    << " PosY = " << recoilPos[1] << " PosZ = " << recoilPos[2];
     drifted_recoil_x =
         (dz_from_face * (recoilP[0] / recoilP[2])) + recoilPos[0];
     drifted_recoil_y =
@@ -740,7 +785,7 @@ void EcalVetoProcessor::produce(framework::Event &event) {
   const int recoil_layer_index = 0;
 
   // Check if it's fiducial
-  bool inside{false};
+  bool inside_ecal_cell{false};
   // At module level
   const auto ecalID = geometry_->getID(drifted_recoil_x, drifted_recoil_y,
                                        recoil_layer_index, true);
@@ -750,13 +795,12 @@ void EcalVetoProcessor::produce(framework::Event &event) {
         geometry_->getID(drifted_recoil_x, drifted_recoil_y, recoil_layer_index,
                          ecalID.getModuleID(), true);
     if (!cellID.null()) {
-      inside = true;
+      inside_ecal_cell = true;
     }
   }
 
-  if (!inside) {
-    ldmx_log(info) << "This event is non-fiducial in ECAL";
-  }
+  ldmx_log(info) << "   Is this event is fiducial in ECAL? "
+                 << inside_ecal_cell;
 
   // ------------------------------------------------------
   // MIP tracking starts here
@@ -769,6 +813,8 @@ void EcalVetoProcessor::produce(framework::Event &event) {
   // Find epAng and epSep, and prepare EP trajectory vectors:
   TVector3 e_traj_start;
   TVector3 e_traj_end;
+  TVector3 e_traj_target_start;
+  TVector3 e_traj_target_end;
   TVector3 p_traj_start;
   TVector3 p_traj_end;
   if (!ele_trajectory.empty() && !photon_trajectory.empty()) {
@@ -789,24 +835,46 @@ void EcalVetoProcessor::produce(framework::Event &event) {
     TVector3 e_norm = evec.Unit();
     TVector3 pvec = p_traj_end - p_traj_start;
     TVector3 p_norm = pvec.Unit();
+
+    // Calculate the angle between the projected electron at Ecal and the photon
+    // (at target)
     epDot_ = e_norm.Dot(p_norm);
     epAng_ = acos(epDot_) * 180.0 / M_PI;
     epSep_ = sqrt(pow(e_traj_start.X() - p_traj_start.X(), 2) +
                   pow(e_traj_start.Y() - p_traj_start.Y(), 2));
+    // Calculate the electron trajectory with positions and momentum as measured
+    // at the target
+    if (!ele_trajectory_at_target.empty()) {
+      e_traj_target_start.SetXYZ(ele_trajectory_at_target[0].first,
+                                 ele_trajectory_at_target[0].second,
+                                 geometry_->getZPosition(0));
+      e_traj_target_end.SetXYZ(ele_trajectory_at_target[(0)].first,
+                               ele_trajectory_at_target[(0)].second,
+                               geometry_->getZPosition((nEcalLayers_ - 1)));
+      // Now calculate the ep angle at the target
+      TVector3 evec_target = e_traj_target_end - e_traj_target_start;
+      TVector3 e_norm_target = evec_target.Unit();
+      epDotAtTarget_ = e_norm_target.Dot(p_norm);
+      epAngAtTarget_ = acos(epDotAtTarget_) * 180.0 / M_PI;
+    }
+    ldmx_log(trace) << "   Electron trajectory calculated";
   } else {
     // Electron trajectory is missing, so all hits in the Ecal are fair game.
     // Pick e/ptraj so that they won't restrict the tracking algorithm (place
     // them far outside the ECal).
-    e_traj_start = TVector3(999, 999, geometry_->getZPosition(0));  // 0);
-    e_traj_end = TVector3(
-        999, 999, geometry_->getZPosition((nEcalLayers_ - 1)));       // 999);
-    p_traj_start = TVector3(1000, 1000, geometry_->getZPosition(0));  // 0);
-    p_traj_end = TVector3(
-        1000, 1000, geometry_->getZPosition((nEcalLayers_ - 1)));  // 1000);
+    ldmx_log(trace) << "   Electron trajectory is missing";
+    e_traj_start = TVector3(999, 999, geometry_->getZPosition(0));
+    e_traj_end =
+        TVector3(999, 999, geometry_->getZPosition((nEcalLayers_ - 1)));
+    p_traj_start = TVector3(1000, 1000, geometry_->getZPosition(0));
+    p_traj_end =
+        TVector3(1000, 1000, geometry_->getZPosition((nEcalLayers_ - 1)));
     /*ensures event will not be vetoed by angle/separation cut */
     epAng_ = 999.;
+    epAngAtTarget_ = 999.;
     epSep_ = 999.;
     epDot_ = 999.;
+    epDotAtTarget_ = 999.;
   }
 
   // Near photon step:  Find the first layer of the ECal where a hit near the
@@ -868,7 +936,7 @@ void EcalVetoProcessor::produce(framework::Event &event) {
   ldmx_log(trace) << "====== Tracking hit list (original) length "
                   << trackingHitList.size() << " ======";
   for (int i = 0; i < trackingHitList.size(); i++) {
-    ldmx_log(trace) << "        [" << trackingHitList[i].pos.X() << ", "
+    ldmx_log(trace) << "   [" << trackingHitList[i].pos.X() << ", "
                     << trackingHitList[i].pos.Y() << ", "
                     << trackingHitList[i].layer << "]";
   }
@@ -924,7 +992,7 @@ void EcalVetoProcessor::produce(framework::Event &event) {
                     << trackingHitList[iHit].layer << "]";
 
     for (int k = 0; k < trackLen; k++) {
-      ldmx_log(trace) << "track[" << k << "] position = ["
+      ldmx_log(trace) << "   track[" << k << "] position = ["
                       << trackingHitList[track[k]].pos.X() << ", "
                       << trackingHitList[track[k]].pos.Y() << ", "
                       << trackingHitList[track[k]].layer << "]";
@@ -944,7 +1012,7 @@ void EcalVetoProcessor::produce(framework::Event &event) {
       ldmx_log(trace) << "====== Tracking hit list (after erase) length "
                       << trackingHitList.size() << " ======";
       for (int i = 0; i < trackingHitList.size(); i++) {
-        ldmx_log(trace) << "[" << trackingHitList[i].pos.X() << ", "
+        ldmx_log(trace) << "   [" << trackingHitList[i].pos.X() << ", "
                         << trackingHitList[i].pos.Y() << ", "
                         << trackingHitList[i].layer << "] ";
       }
@@ -1148,7 +1216,7 @@ void EcalVetoProcessor::produce(framework::Event &event) {
           }
         }
       }  // end loop on hits in the region
-    }    // end 2nd loop on hits in the region
+    }  // end 2nd loop on hits in the region
 
     // Continue early if not hits on track
     if (!bestLinRegFound) continue;
@@ -1187,14 +1255,14 @@ void EcalVetoProcessor::produce(framework::Event &event) {
       nReadoutHits_, deepestLayerHit_, summedDet_, summedTightIso_, maxCellDep_,
       showerRMS_, xStd_, yStd_, avgLayerHit_, stdLayerHit_, ecalBackEnergy_,
       nStraightTracks_, nLinregTracks_, firstNearPhLayer_, nNearPhHits_,
-      photonTerritoryHits_, epAng_, epSep_, epDot_, electronContainmentEnergy,
-      photonContainmentEnergy, outsideContainmentEnergy,
-      outsideContainmentNHits, outsideContainmentXstd, outsideContainmentYstd,
-      energySeg, xMeanSeg, yMeanSeg, xStdSeg, yStdSeg, layerMeanSeg,
-      layerStdSeg, eContEnergy, eContXMean, eContYMean, gContEnergy, gContNHits,
-      gContXMean, gContYMean, oContEnergy, oContNHits, oContXMean, oContYMean,
-      oContXStd, oContYStd, oContLayerMean, oContLayerStd,
-      ecalLayerEdepReadout_, recoilP, recoilPos);
+      photonTerritoryHits_, epAng_, epAngAtTarget_, epSep_, epDot_,
+      epDotAtTarget_, electronContainmentEnergy, photonContainmentEnergy,
+      outsideContainmentEnergy, outsideContainmentNHits, outsideContainmentXstd,
+      outsideContainmentYstd, energySeg, xMeanSeg, yMeanSeg, xStdSeg, yStdSeg,
+      layerMeanSeg, layerStdSeg, eContEnergy, eContXMean, eContYMean,
+      gContEnergy, gContNHits, gContXMean, gContYMean, oContEnergy, oContNHits,
+      oContXMean, oContYMean, oContXStd, oContYStd, oContLayerMean,
+      oContLayerStd, ecalLayerEdepReadout_, recoilP, recoilPos);
 
   auto set_variables = std::chrono::high_resolution_clock::now();
   profiling_map_["set_variables"] +=
@@ -1215,7 +1283,8 @@ void EcalVetoProcessor::produce(framework::Event &event) {
                  << " and MIP tracking passed = " << passesTrackingVeto;
 
   // Persist in the event if the recoil ele is fiducial
-  result.setFiducial(inside);
+  result.setFiducial(inside_ecal_cell);
+  result.setTrackingFiducial(fiducial_in_tracker);
 
   // If the event passes the veto, keep it. Otherwise,
   // drop the event.
@@ -1450,12 +1519,35 @@ std::vector<float> EcalVetoProcessor::trackProp(const ldmx::Tracks &tracks,
 
     float track_state_loc0 = static_cast<float>(ecal_track_state.params[0]);
     float track_state_loc1 = static_cast<float>(ecal_track_state.params[1]);
+    // param 2 = phi (azimuthal), param 3 = theta (polar)
+    // param 4 = QoP
+    // ACTS (local)  to  LDMX (global) coordinates: (y,z,x)->  (x,y,z)
+    // convert qop [1/GeV] to p [MeV]
+    float p_track_state = (-1 / ecal_track_state.params[4]) * 1000;
+    // p * sin(theta) * sin(phi)
+    float recoil_mom_x = p_track_state * sin(ecal_track_state.params[3]) *
+                         sin(ecal_track_state.params[2]);
+    // p * cos(theta)
+    float recoil_mom_y = p_track_state * cos(ecal_track_state.params[3]);
+    // p * sin(theta) * cos(phi)
+    float recoil_mom_z = p_track_state * sin(ecal_track_state.params[3]) *
+                         cos(ecal_track_state.params[2]);
 
     // Store the new track state variables
     new_track_states.push_back(track_state_loc0);
     new_track_states.push_back(track_state_loc1);
-    // z-position at the ECAL scoring plane
-    new_track_states.push_back(239.999);
+    // z-position at the ECAL (4) or Target (1)
+    if (ts_type == 4) {
+      // this should match `ECAL_SCORING_PLANE` in CKFProcessor
+      new_track_states.push_back(240.5);
+    } else if (ts_type == 1) {
+      // This should match `target_surface` in CKFProcessor
+      new_track_states.push_back(0.0);
+    }
+
+    new_track_states.push_back(recoil_mom_x);
+    new_track_states.push_back(recoil_mom_y);
+    new_track_states.push_back(recoil_mom_z);
 
     // Break after getting the first valid track state
     // TODO: interface this with CLUE to make sure the propageted track

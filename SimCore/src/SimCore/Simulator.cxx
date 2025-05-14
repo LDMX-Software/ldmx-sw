@@ -169,9 +169,9 @@ void Simulator::produce(framework::Event& event) {
 
 void Simulator::onProcessEnd() {
   SimulatorBase::onProcessEnd();
-  std::cout << "[ Simulator ] : "
-            << "Started " << numEventsBegan_ << " events to produce "
-            << numEventsCompleted_ << " events." << std::endl;
+  std::cout << "[ Simulator ] : " << "Started " << numEventsBegan_
+            << " events to produce " << numEventsCompleted_ << " events."
+            << std::endl;
 }
 
 void Simulator::setSeeds(std::vector<int> seeds) {

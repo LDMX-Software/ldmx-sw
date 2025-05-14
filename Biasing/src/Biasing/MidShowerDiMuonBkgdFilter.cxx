@@ -108,8 +108,7 @@ void MidShowerDiMuonBkgdFilter::save(const G4Track* track) const {
 
 void MidShowerDiMuonBkgdFilter::AbortEvent(const std::string& reason) const {
   if (G4RunManager::GetRunManager()->GetVerboseLevel() > 1) {
-    std::cout << "[ MidShowerDiMuonBkgdFilter ]: "
-              << "("
+    std::cout << "[ MidShowerDiMuonBkgdFilter ]: " << "("
               << G4EventManager::GetEventManager()
                      ->GetConstCurrentEvent()
                      ->GetEventID()

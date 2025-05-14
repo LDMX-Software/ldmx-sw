@@ -142,7 +142,7 @@ void OverlayProducer::produce(framework::Event &event) {
         }
 
       }  // over calo simhit collection
-    }    // if needContribs or very verbose
+    }  // if needContribs or very verbose
 
   }  // over calo collections for sim event
 
@@ -165,7 +165,7 @@ void OverlayProducer::produce(framework::Event &event) {
 
       for (const ldmx::SimTrackerHit &simHit : simHitsTracker) simHit.Print();
     }  // if high verbosity
-  }    // over tracker collections for sim event
+  }  // over tracker collections for sim event
 
   /* ----------- now do the pileup overlay ----------- */
 
@@ -321,7 +321,7 @@ void OverlayProducer::produce(framework::Event &event) {
             ldmx_log(debug) << "Adding tracker overlay hit to outhit vector "
                             << outCollName;
           }  // verbose
-        }    // over overlay tracker simhit collection
+        }  // over overlay tracker simhit collection
 
         ldmx_log(debug) << "Nhits in overlay collection " << outCollName << ": "
                         << trackerCollectionMap[outCollName].size();
@@ -329,7 +329,7 @@ void OverlayProducer::produce(framework::Event &event) {
       }  // over trackerCollections
 
     }  // over overlay events
-  }    // over bunches
+  }  // over bunches
 
   // after all events are done, the ecal hitmap is final and can be written to
   // the event output
@@ -357,8 +357,8 @@ void OverlayProducer::produce(framework::Event &event) {
       }
       break;  // for now we only have one hitMap: for Ecal. so no need looking
               // further after we got a match
-    }         // isEcal
-  }           // second loop over collections, to collect hits from hitmap
+    }  // isEcal
+  }  // second loop over collections, to collect hits from hitmap
 
   // done collecting hits.
 

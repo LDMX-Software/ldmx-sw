@@ -77,8 +77,10 @@ void HcalVetoProcessor::produce(framework::Event &event) {
     // Get the recoil track collection
     auto recoil_tracks{event.getCollection<ldmx::Track>(track_collection_)};
 
-    ldmx::TrackStateType ts_type = ldmx::TrackStateType::AtHCAL;
-    recoil_track_states = trackProp(recoil_tracks, ts_type, "hcal");
+    // Use ACTS to propage the recoil track to the end of the magnetic field
+    // This happens to be at the ECAL face
+    ldmx::TrackStateType ts_type = ldmx::TrackStateType::AtECAL;
+    recoil_track_states = trackProp(recoil_tracks, ts_type, "ecal");
     if (!recoil_track_states.empty()) {
       recoil_pos_x = recoil_track_states[0];
       recoil_pos_y = recoil_track_states[1];
@@ -140,13 +142,12 @@ void HcalVetoProcessor::produce(framework::Event &event) {
       ldmx_log(debug) << "    Ele is projected at " << drift_recoil_x << " / "
                       << drift_recoil_y << " /  " << recoil_pos_z - dZ;
       ldmx_log(debug) << "    from " << recoil_pos_x << " / " << recoil_pos_y
-                      << " / " << recoil_pos_z << " / "
-                      << " mm";
+                      << " / " << recoil_pos_z << " / " << " mm";
 
       ldmx_log(debug) << "       Ele had momentum of  " << recoil_mom_x << " / "
                       << recoil_mom_y << " /  " << recoil_mom_z << " MeV";
-      ldmx_log(debug) << "    This hit has PE = " << pe << " and dR from ele = "
-                      << "is " << dR << " mm";
+      ldmx_log(debug) << "    This hit has PE = " << pe
+                      << " and dR from ele = " << "is " << dR << " mm";
 
       // Dont consider this hit for max PE hit if it's too close to the recoil
       // electron trajectory
@@ -237,7 +238,7 @@ std::vector<float> HcalVetoProcessor::trackProp(const ldmx::Tracks &tracks,
     new_track_states.push_back(track_state_loc0);
     new_track_states.push_back(track_state_loc1);
     // z-position as in the tracking exptrapolation
-    new_track_states.push_back(540.0);
+    new_track_states.push_back(240.5);
     new_track_states.push_back(recoil_mom_x);
     new_track_states.push_back(recoil_mom_y);
     new_track_states.push_back(recoil_mom_z);

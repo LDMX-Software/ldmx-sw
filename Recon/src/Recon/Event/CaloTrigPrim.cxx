@@ -10,8 +10,8 @@ ClassImp(ldmx::CaloTrigPrim)
   void CaloTrigPrim::Print() const { std::cout << *this << std::endl; }
 
   std::ostream &operator<<(std::ostream &s, const ldmx::CaloTrigPrim &c) {
-    s << "CaloTrigPrim { "
-      << "(id : 0x" << std::hex << c.getId() << std::dec << ") ";
+    s << "CaloTrigPrim { " << "(id : 0x" << std::hex << c.getId() << std::dec
+      << ") ";
     s << "0x" << std::hex << int(c.getPrimitive()) << " } ";
     return s;
   }

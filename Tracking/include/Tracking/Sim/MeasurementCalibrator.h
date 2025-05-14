@@ -24,8 +24,9 @@
 
  //ts.calibrated().block<2>(0) = surface.globalToLocal(simHit.position)
  //ts.clabiratedCov = simHit cov
- //ts.data().measDim = 2 Matrix H = makeProj() ts.setProjector(H)   Where ts is
- the proxyTrackState  H Matrix projector (this is only for u and v)
+ //ts.data().measDim = 2 Matrix H = makeProj() ts.setProjector(H)
+   Where ts is the proxyTrackState  H Matrix projector (this is only for
+ u and v)
  //(1 0 0 0 0 0)  
  //(0 1 0 0 0 0)
  */
