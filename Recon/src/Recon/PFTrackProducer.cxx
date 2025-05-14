@@ -22,7 +22,7 @@ void PFTrackProducer::produce(framework::Event& event) {
     ldmx_log(fatal) << "Couldn't find input collection " << inputTrackCollName_
                     << "_" << input_pass_name_;
     return;
-  } 
+  }
   const auto ecalSpHits = event.getCollection<ldmx::SimTrackerHit>(
       inputTrackCollName_, input_pass_name_);
 
@@ -31,33 +31,37 @@ void PFTrackProducer::produce(framework::Event& event) {
     for (const auto& spHit : ecalSpHits) {
       if (spHit.getPdgID() == 22 || spHit.getPdgID() == 2112) continue;
       if (fabs(240 - spHit.getPosition()[2]) > 0.1) continue;
-      if (doElectronTracking_) { //only select electron SP hits
-	if ( spHit.getPdgID() != 11 ) continue;
-	if ( spHit.getTrackID() < 2 && spHit.getMomentum()[2] > 2500 ) {
-	  //this is almost guaranteed to be a pileup beam electron! keep it
-	  pfTracks.push_back(spHit);
-	  ldmx_log(debug) << "Added beam electron SP hit: trackID=" <<  spHit.getTrackID() <<
-	    ", pz = " << spHit.getMomentum()[2];
-	}
-	else if ( spHit.getTrackID() <= 30 && spHit.getMomentum()[2] > 5) {
-	  //require more than minimum forward momentum to catch recoil electron candidates
-	  pfTracks.push_back(spHit);
-	  ldmx_log(debug) << "Adding SP hit: trackID=" <<  spHit.getTrackID() <<
-	    ", pdgID= " << spHit.getPdgID() << ", pz = " << spHit.getMomentum()[2];
-	  continue;
-	}
-      }//if electron tracking
+      if (doElectronTracking_) {  // only select electron SP hits
+        if (spHit.getPdgID() != 11) continue;
+        if (spHit.getTrackID() < 2 && spHit.getMomentum()[2] > 2500) {
+          // this is almost guaranteed to be a pileup beam electron! keep it
+          pfTracks.push_back(spHit);
+          ldmx_log(debug) << "Added beam electron SP hit: trackID="
+                          << spHit.getTrackID()
+                          << ", pz = " << spHit.getMomentum()[2];
+        } else if (spHit.getTrackID() <= 30 && spHit.getMomentum()[2] > 5) {
+          // require more than minimum forward momentum to catch recoil electron
+          // candidates
+          pfTracks.push_back(spHit);
+          ldmx_log(debug) << "Adding SP hit: trackID=" << spHit.getTrackID()
+                          << ", pdgID= " << spHit.getPdgID()
+                          << ", pz = " << spHit.getMomentum()[2];
+          continue;
+        }
+      }  // if electron tracking
       else {
-	if (spHit.getTrackID() != 1 || fabs(240 - spHit.getPosition()[2]) > 0.1 ||
-	    spHit.getMomentum()[2] < 0) continue;
-	pfTracks.push_back(spHit);
-	ldmx_log(debug) << "Adding SP hit: trackID=" <<  spHit.getTrackID() <<
-	  ", pdgID= " << spHit.getPdgID() <<
-	  ", pz = " << spHit.getMomentum()[2];
-	break;
+        if (spHit.getTrackID() != 1 ||
+            fabs(240 - spHit.getPosition()[2]) > 0.1 ||
+            spHit.getMomentum()[2] < 0)
+          continue;
+        pfTracks.push_back(spHit);
+        ldmx_log(debug) << "Adding SP hit: trackID=" << spHit.getTrackID()
+                        << ", pdgID= " << spHit.getPdgID()
+                        << ", pz = " << spHit.getMomentum()[2];
+        break;
       }
-    }//over SP hits
-  }//do truth tracking
+    }  // over SP hits
+  }  // do truth tracking
   std::sort(pfTracks.begin(), pfTracks.end(),
             [](ldmx::SimTrackerHit a, ldmx::SimTrackerHit b) {
               return getP(a) > getP(b);

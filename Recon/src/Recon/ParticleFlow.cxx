@@ -59,10 +59,10 @@ void ParticleFlow::fillCandEMCalo(ldmx::PFCandidate& cand,
     corr = eCorr_->GetY()[0];
   } else if (e > eCorr_->GetX()[eCorr_->GetN() - 1]) {
     corr = eCorr_->GetY()[eCorr_->GetN() - 1];
-  } else { // else look up calibration factor
+  } else {  // else look up calibration factor
     corr = eCorr_->Eval(e);
   }
-  cand.setEcalEnergy( e * corr);
+  cand.setEcalEnergy(e * corr);
   cand.setEcalRawEnergy(e);
   cand.setEcalClusterXYZ(em.getCentroidX(), em.getCentroidY(),
                          em.getCentroidZ());
