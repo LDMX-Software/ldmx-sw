@@ -29,7 +29,7 @@ void LinearSeedFinder::configure(framework::config::Parameters& parameters) {
 
   // the uncertainty is sigma_x = 6 microns and sigma_y = 20./sqrt(12)
   recoil_uncertainty_ = parameters.getParameter<std::vector<double>>(
-      "recoil_uncertainty", {0.006, 5.7735});
+      "recoil_uncertainty", {0.006, 0.085});
   ecal_uncertainty_ =
       parameters.getParameter<double>("ecal_uncertainty", {3.87});
   ecal_distance_threshold_ =
@@ -46,6 +46,7 @@ void LinearSeedFinder::produce(framework::Event& event) {
   auto start = std::chrono::high_resolution_clock::now();
   std::vector<ldmx::StraightTrack> straight_seed_tracks;
   n_events_++;
+  auto tg{geometry()};
 
   const std::vector<ldmx::Measurement> recoil_hits =
       event.getCollection<ldmx::Measurement>(input_hits_collection_,
@@ -80,19 +81,130 @@ void LinearSeedFinder::produce(framework::Event& event) {
     truth_matching_tool_->setup(particle_map, recoil_hits);
   }
 
-  // weighted averaging: layer1+layer2 = sensor1, layer3+layer4 = sensor2
-  // this gives all possible combinations of two tracker points for fitting
-  auto [first_sensor, second_sensor] = combineMultiGlobalHits(recoil_hits);
+  std::vector<
+      std::tuple<ldmx::Measurement, ldmx::SimTrackerHit, ldmx::SimTrackerHit>>
+      first_two_layers;
+  std::vector<
+      std::tuple<ldmx::Measurement, ldmx::SimTrackerHit, ldmx::SimTrackerHit>>
+      second_two_layers;
 
-  for (const auto& first_point : first_sensor) {
-    for (const auto& second_point : second_sensor) {
+  const std::vector<ldmx::SimTrackerHit> recoil_sim_hits =
+      event.getCollection<ldmx::SimTrackerHit>("RecoilSimHits",
+                                               input_pass_name_);
+  const std::vector<ldmx::SimTrackerHit> scoring_hits =
+      event.getCollection<ldmx::SimTrackerHit>("TargetScoringPlaneHits",
+                                               input_pass_name_);
+
+  // Index all sim hits by track ID
+  std::unordered_map<int, std::vector<const ldmx::SimTrackerHit*>>
+      sim_hits_by_track_id;
+  for (const auto& hit : recoil_sim_hits) {
+    sim_hits_by_track_id[hit.getTrackID()].push_back(&hit);
+  }  // for sim hits
+
+  // Index scoring hits by track ID (one positive scoring plane hit per trackID)
+  std::unordered_map<int, const ldmx::SimTrackerHit*> scoring_hit_map;
+  for (const auto& sp_hit : scoring_hits) {
+    if (sp_hit.getPosition()[2] > 0)
+      scoring_hit_map[sp_hit.getTrackID()] = &sp_hit;
+  }  // for sp hits
+
+  for (const auto& point : recoil_hits) {
+    // x is in tracking coordinates, z is in ldmx coordinates
+    float x = point.getGlobalPosition()[0];
+    int track_id = point.getTrackIds()[0];
+
+    // get the key value = track_id
+    auto sim_range_it = sim_hits_by_track_id.find(track_id);
+    if (sim_range_it == sim_hits_by_track_id.end()) continue;
+
+    // access map value at track_id
+    const auto& sim_hits = sim_range_it->second;
+
+    for (const auto* sim_hit : sim_hits) {
+      float z = sim_hit->getPosition()[2];
+
+      if (x < layer12_midpoint_) {
+        if (z < layer12_midpoint_) {
+          auto sp_it = scoring_hit_map.find(track_id);
+          if (sp_it != scoring_hit_map.end()) {
+            first_two_layers.emplace_back(point, *sim_hit, *sp_it->second);
+            break;
+          }  // add the associated scoring plane hit (will be needed for 3D
+             // reconstruction)
+        }  // associate 1st layer sim hit
+      }  // check if recoil hit is 1st layer
+      else if (x < layer23_midpoint_) {
+        if (z > layer12_midpoint_ && z < layer23_midpoint_) {
+          first_two_layers.emplace_back(point, *sim_hit, ldmx::SimTrackerHit());
+          break;
+        }  // associate 2nd layer sim hit
+      }  // check if recoil hit is 2nd layer
+      else if (x < layer34_midpoint_) {
+        if (z > layer23_midpoint_ && z < layer34_midpoint_) {
+          auto sp_it = scoring_hit_map.find(track_id);
+          if (sp_it != scoring_hit_map.end()) {
+            second_two_layers.emplace_back(point, *sim_hit, *sp_it->second);
+            break;
+          }  // add the associated scoring plane hit (will be needed for 3D
+             // reconstruction)
+        }  // associate 3rd layer sim hits
+      }  // check if recoil hit is 3rd layer
+      else {
+        if (z > layer34_midpoint_) {
+          second_two_layers.emplace_back(point, *sim_hit,
+                                         ldmx::SimTrackerHit());
+          break;
+        }  // associate 4th layer sim hits
+      }  // check if recoil hits is 4th layer
+
+    }  // loop through simhits
+  }  // loop through recoil hits
+
+  // Reconstruct 3D sensor points on which to do fitting
+  auto first_sensor_combos = processMeasurements(first_two_layers, tg);
+  auto second_sensor_combos = processMeasurements(second_two_layers, tg);
+
+  for (const auto& [first_combo_3d_point, first_layer_one, first_layer_two] :
+       first_sensor_combos) {
+    std::tuple<std::array<double, 3>, ldmx::Measurement,
+               std::optional<ldmx::Measurement>>
+        first_sensor_point;
+
+    if (first_layer_two.has_value()) {
+      first_sensor_point = {first_combo_3d_point,
+                            std::get<ldmx::Measurement>(first_layer_one),
+                            std::get<ldmx::Measurement>(*first_layer_two)};
+    }  // check whether we did reconstruction or...
+    else {
+      first_sensor_point = {first_combo_3d_point,
+                            std::get<ldmx::Measurement>(first_layer_one),
+                            std::nullopt};
+    }  //...we are taking only one layer as the measurement (axial or stereo)
+
+    for (const auto& [second_combo_3d_point, second_layer_one,
+                      second_layer_two] : second_sensor_combos) {
+      std::tuple<std::array<double, 3>, ldmx::Measurement,
+                 std::optional<ldmx::Measurement>>
+          second_sensor_point;
+      if (second_layer_two.has_value()) {
+        second_sensor_point = {second_combo_3d_point,
+                               std::get<ldmx::Measurement>(second_layer_one),
+                               std::get<ldmx::Measurement>(*second_layer_two)};
+      }  // check whether we did reconstruction or...
+      else {
+        second_sensor_point = {second_combo_3d_point,
+                               std::get<ldmx::Measurement>(second_layer_one),
+                               std::nullopt};
+      }  //...we are taking only one layer as the measurement (axial or stereo)
+
       for (const auto& rec_hit : first_layer_ecal_rec_hits) {
         // Do fitting on 2 sensor + 1 recHit combinations = 1 degree of freedom
         // for linear fit
         ldmx::StraightTrack seed_track =
-            SeedTracker(first_point, second_point, rec_hit);
+            SeedTracker(first_sensor_point, second_sensor_point, rec_hit);
 
-        // Seed passed RecHit distance check
+        // Seed passed RecHit distance check, add it
         if (seed_track.getChi2() > 0.0) {
           straight_seed_tracks.push_back(seed_track);
         }  // if chi2 > 0
@@ -206,107 +318,222 @@ void LinearSeedFinder::onProcessEnd() {
 
 }  // onProcessEnd
 
-std::pair<std::vector<std::tuple<std::array<double, 3>, ldmx::Measurement,
-                                 std::optional<ldmx::Measurement>>>,
-          std::vector<std::tuple<std::array<double, 3>, ldmx::Measurement,
-                                 std::optional<ldmx::Measurement>>>>
-LinearSeedFinder::combineMultiGlobalHits(
-    const std::vector<ldmx::Measurement>& hit_collection) {
-  std::vector<ldmx::Measurement> layer1, layer2, layer3, layer4;
+std::array<double, 3> LinearSeedFinder::getPointAtZ(
+    std::array<double, 3> target, std::array<double, 3> measurement,
+    double z_target) {
+  double slope_x = (measurement[1] - target[0]) / (measurement[0] - target[2]);
+  double slope_y = (measurement[2] - target[1]) / (measurement[0] - target[2]);
 
-  // Split hits into layers based on z position
-  // TODO: can we access layer information directly from ldmx::Measurement??
-  for (const auto& point : hit_collection) {
-    if (point.getGlobalPosition()[0] < layer12_midpoint_)
-      layer1.push_back(point);
-    else if (point.getGlobalPosition()[0] < layer23_midpoint_)
-      layer2.push_back(point);
-    else if (point.getGlobalPosition()[0] < layer34_midpoint_)
-      layer3.push_back(point);
-    else
-      layer4.push_back(point);
-  }
+  double intercept_x = target[0] - slope_x * target[2];
+  double intercept_y = target[1] - slope_y * target[2];
 
-  std::vector<std::tuple<std::array<double, 3>, ldmx::Measurement,
-                         std::optional<ldmx::Measurement>>>
-      first_sensor_merged_hits, second_sensor_merged_hits;
+  double x_target = slope_x * z_target + intercept_x;
+  double y_target = slope_y * z_target + intercept_y;
 
-  if (layer1.empty()) {
-    for (const auto& point : layer2) {
-      first_sensor_merged_hits.push_back(
-          std::make_tuple(std::array<double, 3>{point.getGlobalPosition()[0],
-                                                point.getGlobalPosition()[1],
-                                                point.getGlobalPosition()[2]},
-                          point, std::nullopt));
-    }  // only look at layer2
-  }  // if layer1 empty
-  else if (layer2.empty()) {
-    for (const auto& point : layer1) {
-      first_sensor_merged_hits.push_back(
-          std::make_tuple(std::array<double, 3>{point.getGlobalPosition()[0],
-                                                point.getGlobalPosition()[1],
-                                                point.getGlobalPosition()[2]},
-                          point, std::nullopt));
-    }  // only look at layer1
-  }  // if layer2 empty
-  else {
-    first_sensor_merged_hits = midPointCalculation(layer1, layer2);
-  }  // do weighted average of two layers
+  return {z_target, x_target, y_target};
+}
 
-  if (layer3.empty()) {
-    for (const auto& point : layer4) {
-      second_sensor_merged_hits.push_back(
-          std::make_tuple(std::array<double, 3>{point.getGlobalPosition()[0],
-                                                point.getGlobalPosition()[1],
-                                                point.getGlobalPosition()[2]},
-                          point, std::nullopt));
-    }  // only look at layer4
-  }  // if layer3 empty
-  else if (layer4.empty()) {
-    for (const auto& point : layer3) {
-      second_sensor_merged_hits.push_back(
-          std::make_tuple(std::array<double, 3>{point.getGlobalPosition()[0],
-                                                point.getGlobalPosition()[1],
-                                                point.getGlobalPosition()[2]},
-                          point, std::nullopt));
+std::vector<std::tuple<
+    std::array<double, 3>,
+    std::tuple<ldmx::Measurement, ldmx::SimTrackerHit, ldmx::SimTrackerHit>,
+    std::optional<std::tuple<ldmx::Measurement, ldmx::SimTrackerHit,
+                             ldmx::SimTrackerHit>>>>
+LinearSeedFinder::processMeasurements(
+    const std::vector<std::tuple<ldmx::Measurement, ldmx::SimTrackerHit,
+                                 ldmx::SimTrackerHit>>& measurements,
+    const geo::TrackersTrackingGeometry& tg) {
+  std::vector<
+      std::tuple<ldmx::Measurement, ldmx::SimTrackerHit, ldmx::SimTrackerHit>>
+      axial_measurements;
+  std::vector<
+      std::tuple<ldmx::Measurement, ldmx::SimTrackerHit, ldmx::SimTrackerHit>>
+      stereo_measurements;
+  std::vector<std::tuple<
+      std::array<double, 3>,
+      std::tuple<ldmx::Measurement, ldmx::SimTrackerHit, ldmx::SimTrackerHit>,
+      std::optional<std::tuple<ldmx::Measurement, ldmx::SimTrackerHit,
+                               ldmx::SimTrackerHit>>>>
+      points_with_measurement;
+  Acts::Vector3 dummy{0., 0., 0.};
+
+  // Separate measurements into axial and stereo based on layerID
+  for (const auto& [measurement, sim_hit, scoring_hit] : measurements) {
+    if (measurement.getLayerID() % 2 == 0) {
+      axial_measurements.emplace_back(measurement, sim_hit, scoring_hit);
+    } else {
+      stereo_measurements.emplace_back(measurement, sim_hit, scoring_hit);
     }
-  }  // if layer4 empty
-  // do weighted average of two layers
-  else {
-    second_sensor_merged_hits = midPointCalculation(layer3, layer4);
   }
 
-  return {first_sensor_merged_hits, second_sensor_merged_hits};
-}  // combineMultiGlobalHits
+  // If there are measurements in both axial and stereo layer:
+  // Iterate over axial and stereo measurements to compute 3D points
+  if (!axial_measurements.empty() && !stereo_measurements.empty()) {
+    for (const auto& axial : axial_measurements) {
+      const auto& [axial_meas, axial_hit, axial_sp] = axial;
 
-std::vector<std::tuple<std::array<double, 3>, ldmx::Measurement,
-                       std::optional<ldmx::Measurement>>>
-LinearSeedFinder::midPointCalculation(
-    const std::vector<ldmx::Measurement>& layer1,
-    const std::vector<ldmx::Measurement>& layer2) {
-  std::vector<std::tuple<std::array<double, 3>, ldmx::Measurement,
-                         std::optional<ldmx::Measurement>>>
-      merged_hits;
+      for (const auto& stereo : stereo_measurements) {
+        const auto& [stereo_meas, stereo_hit, stereo_sp] = stereo;
 
-  for (const auto& point1 : layer1) {
-    for (const auto& point2 : layer2) {
-      double z_avg =
-          (point1.getGlobalPosition()[0] + point2.getGlobalPosition()[0]) /
-          (2.0);
-      double x_avg =
-          (point1.getGlobalPosition()[1] + point2.getGlobalPosition()[1]) /
-          (2.0);
-      // Until we make axial/stereo combinations, we don't know anything about
-      // the y value
-      double y_avg = 0.0;
+        const Acts::Surface* axial_surface =
+            tg.getSurface(axial_meas.getLayerID());
+        const Acts::Surface* stereo_surface =
+            tg.getSurface(stereo_meas.getLayerID());
 
-      merged_hits.push_back(std::make_tuple(
-          std::array<double, 3>{z_avg, x_avg, y_avg}, point1, point2));
+        if (!axial_surface || !stereo_surface) continue;
 
-    }  // for layer2
-  }  // for layer1
-  return merged_hits;
-}  // midPointCalculation
+        std::vector<ldmx::SimTrackerHit> sim_hits = {axial_hit, stereo_hit};
+        Acts::Vector3 space_point =
+            simple3DHitV2(axial_meas, *axial_surface, stereo_meas,
+                          *stereo_surface, axial_sp, sim_hits);
+
+        points_with_measurement.push_back(
+            {convertToLdmxStdArray(space_point), axial, stereo});
+      }
+    }
+  } else if (!axial_measurements.empty()) {
+    // if there are only axial measurements, take them to be our sensor points
+    for (const auto& axial : axial_measurements) {
+      const auto& [axial_meas, axial_hit, axial_sp] = axial;
+      const Acts::Surface* axial_surface =
+          tg.getSurface(axial_meas.getLayerID());
+
+      Acts::Vector3 axial_meas_hit = axial_surface->localToGlobal(
+          geometry_context(),
+          Acts::Vector2(axial_meas.getLocalPosition()[0], 0.0), dummy);
+
+      points_with_measurement.push_back(
+          {convertToLdmxStdArray(axial_meas_hit), axial, std::nullopt});
+    }
+  } else if (!stereo_measurements.empty()) {
+    for (const auto& stereo : stereo_measurements) {
+      const auto& [stereo_meas, stereo_hit, stereo_sp] = stereo;
+      const Acts::Surface* stereo_surface =
+          tg.getSurface(stereo_meas.getLayerID());
+
+      Acts::Vector3 stereo_meas_hit = stereo_surface->localToGlobal(
+          geometry_context(),
+          Acts::Vector2(stereo_meas.getLocalPosition()[0], 0.0), dummy);
+
+      points_with_measurement.push_back(
+          {convertToLdmxStdArray(stereo_meas_hit), stereo, std::nullopt});
+    }
+  }
+  return points_with_measurement;
+}
+
+// ACTS saves its arrays like (x, y, z)
+std::array<double, 3> LinearSeedFinder::convertToLdmxStdArray(
+    const Acts::Vector3& vec) {
+  return {vec.x(), vec.y(), vec.z()};
+}
+
+// Helper function to calculate unit vector by taking advantage of the
+// localToGlobal transformation
+std::tuple<Acts::Vector3, Acts::Vector3, Acts::Vector3>
+LinearSeedFinder::getSurfaceVectors(const Acts::Surface& surface) {
+  Acts::Vector3 dummy{0., 0., 0.};
+  Acts::Vector3 u =
+      surface.localToGlobal(geometry_context(), Acts::Vector2(1, 0), dummy) -
+      surface.center(geometry_context());
+  Acts::Vector3 v =
+      surface.localToGlobal(geometry_context(), Acts::Vector2(0, 1), dummy) -
+      surface.center(geometry_context());
+  Acts::Vector3 w = u.cross(v).normalized();
+  return {u.normalized(), v.normalized(), w};
+}
+
+//  estimate the 3d position of the particle as it passes through a stereo/axial
+//  pair currently this uses the sim hits from the target and the axial sensor
+//  to calculate the angle of the particle, which is needed to project the two
+//  sensors to the same z For real data, we could use the position at the target
+//  for the tagger and the axial u position of the measured hit (we only project
+//  in x, which, in MC, is identically x) assumptions:   axial u-direction is
+//  identically global-x (tracking-global y)
+//                 sensors' w-directions are aligned with beam (global-z,
+//                 tracking-global x)
+Acts::Vector3 LinearSeedFinder::simple3DHitV2(
+    const ldmx::Measurement& axial, const Acts::Surface& axial_surface,
+    const ldmx::Measurement& stereo, const Acts::Surface& stereo_surface,
+    const ldmx::SimTrackerHit& target_sp,
+    std::vector<ldmx::SimTrackerHit> pair_sim_hits) {
+  Acts::Vector3 dummy{0., 0., 0.};
+  Acts::Vector3 hitOnTarget{target_sp.getPosition()[0],
+                            target_sp.getPosition()[1],
+                            target_sp.getPosition()[2]};  // x,y,z
+
+  Acts::Vector3 axial_true_global{pair_sim_hits[0].getPosition()[0],
+                                  pair_sim_hits[0].getPosition()[1],
+                                  pair_sim_hits[0].getPosition()[2]};
+  // stereo_true_global is unused
+  Acts::Vector3 stereo_true_global{pair_sim_hits[1].getPosition()[0],
+                                   pair_sim_hits[1].getPosition()[1],
+                                   pair_sim_hits[1].getPosition()[2]};
+
+  Acts::Vector3 simpart_path = axial_true_global - hitOnTarget;
+  Acts::Vector3 simpart_unit = simpart_path.normalized();
+
+  // Get global positions for strip origins  ....  actually these are in
+  // tracking coordinates!
+  Acts::Vector3 axial_origin = axial_surface.center(geometry_context());
+  Acts::Vector3 stereo_origin = stereo_surface.center(geometry_context());
+
+  // the tracking-global vector difference between stereo and axial sensor
+  // centers
+  Acts::Vector3 deltaSensors = stereo_origin - axial_origin;
+
+  // calculate the displacement in tracking global x (need to generalize) by
+  // going from tracking x=axial to x=stereo
+  double dx_proj =
+      (simpart_unit[0] / simpart_unit[2]) *
+      deltaSensors[0];  // this looks weird because simpart_unit is in
+                        // global-global and delta sensors is in tracking-global
+
+  // Compute unit vectors for both hits
+  auto [axial_u, axial_v, axial_w] = getSurfaceVectors(axial_surface);
+  auto [stereo_u, stereo_v, stereo_w] = getSurfaceVectors(stereo_surface);
+  double salpha = dotProduct(axial_v, stereo_u);
+  double cosalpha = dotProduct(axial_u, stereo_u);
+
+  // Get sensor local measured coordinates
+  // Get local position components
+  auto [axial_u_value, axial_v_value] = axial.getLocalPosition();
+  auto [stereo_u_value, stereo_v_value] = stereo.getLocalPosition();
+
+  // Manual correction, since v should always be 0 (insensitive direction)
+  axial_v_value = 0.0;
+  stereo_v_value = 0.0;
+
+  // use the dx_proj as the displacement in u of the axial measurement
+  // it's axial_u_value - dx_proj because u is in the -x direction
+  //  this calculation is in the axial frame
+  double v_intercept_useproj =
+      (stereo_u_value - (axial_u_value - dx_proj) * cosalpha) / salpha;
+  double u_intercept_useproj = axial_u_value - dx_proj;
+
+  // convert to tracking global
+  Acts::Vector3 axst_global_useproj = axial_surface.localToGlobal(
+      geometry_context(),
+      Acts::Vector2(u_intercept_useproj, v_intercept_useproj), dummy);
+  Acts::Vector3 dummy_stereo_proj = stereo_surface.localToGlobal(
+      geometry_context(),
+      Acts::Vector2(u_intercept_useproj, v_intercept_useproj), dummy);
+
+  // we want the reconstructed hit to be at the z of the stereo layer
+  Acts::Vector3 reconstructed_hit{dummy_stereo_proj[0], axst_global_useproj[1],
+                                  axst_global_useproj[2]};
+
+  ldmx_log(debug) << "The particle projected axst measured position is "
+                     "(compare with stereo sim position): "
+                  << reconstructed_hit[0] << ", " << reconstructed_hit[1]
+                  << ", " << reconstructed_hit[2] << "\n";
+
+  return reconstructed_hit;
+}
+
+double LinearSeedFinder::dotProduct(const Acts::Vector3& v1,
+                                    const Acts::Vector3& v2) {
+  return v1.dot(v2);
+}
 
 std::tuple<double, double, double, double, std::vector<double>>
 LinearSeedFinder::fit3DLine(const std::array<double, 3>& first_recoil,
