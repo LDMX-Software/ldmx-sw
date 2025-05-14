@@ -111,6 +111,7 @@ rSeedTracking.out_seed_collection = "LinearRecoilSeedTracks"
 rSeedTracking.layer12_midpoint = layer12_mid
 rSeedTracking.layer23_midpoint = layer23_mid
 rSeedTracking.layer34_midpoint = layer34_mid
+rSeedTracking.recoil_uncertainty = [0.006, 0.085]
 rSeedTracking.ecal_distance_threshold = 15.0
 
 rTracking = reducedTracking.LinearTrackFinder("LinearTrackFinder")
