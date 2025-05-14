@@ -54,4 +54,4 @@ void TrigEcalEnergySum::produce(framework::Event& event) {
 
 }  // namespace trigger
 
-DECLARE_PRODUCER_NS(trigger, TrigEcalEnergySum);
+DECLARE_PRODUCER(trigger::TrigEcalEnergySum);

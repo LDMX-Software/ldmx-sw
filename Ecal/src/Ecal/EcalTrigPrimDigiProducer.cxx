@@ -63,4 +63,4 @@ void EcalTrigPrimDigiProducer::produce(framework::Event& event) {
   event.add(getName(), tdigis);
 }
 }  // namespace ecal
-DECLARE_PRODUCER_NS(ecal, EcalTrigPrimDigiProducer);
+DECLARE_PRODUCER(ecal::EcalTrigPrimDigiProducer);

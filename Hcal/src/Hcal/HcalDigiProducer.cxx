@@ -438,4 +438,4 @@ void HcalDigiProducer::produce(framework::Event& event) {
 
 }  // namespace hcal
 
-DECLARE_PRODUCER_NS(hcal, HcalDigiProducer);
+DECLARE_PRODUCER(hcal::HcalDigiProducer);

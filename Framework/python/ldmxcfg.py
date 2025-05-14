@@ -136,7 +136,7 @@ class EventProcessor:
             import subprocess
             libs_to_link = set(['Framework']+needs)
             subprocess.run([
-                'g++', '-fPIC', '-shared', # construct a shared library for dynamic loading
+                'g++', '-std=c++20', '-fPIC', '-shared', # construct a shared library for dynamic loading
                 '-o', str(lib), str(src), # define output file and input source file
             ]+[
                 f'-l{lib}' for lib in libs_to_link

@@ -130,4 +130,4 @@ void EcalDetectorMap::buildElectronicsMap() {
 }
 
 }  // namespace ecal
-DECLARE_CONDITIONS_PROVIDER_NS(ecal, EcalDetectorMapLoader);
+DECLARE_CONDITIONS_PROVIDER(ecal::EcalDetectorMapLoader);

@@ -225,4 +225,4 @@ void GreedyAmbiguitySolver::produce(framework::Event& event) {
 }  // namespace reco
 }  // namespace tracking
 
-DECLARE_PRODUCER_NS(tracking::reco, GreedyAmbiguitySolver)
+DECLARE_PRODUCER(tracking::reco::GreedyAmbiguitySolver)

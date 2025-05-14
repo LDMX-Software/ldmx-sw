@@ -71,4 +71,4 @@ void EcalPreselectionSkimmer::produce(framework::Event &event) {
 }
 }  // namespace recon
 
-DECLARE_PRODUCER_NS(recon, EcalPreselectionSkimmer);
+DECLARE_PRODUCER(recon::EcalPreselectionSkimmer);

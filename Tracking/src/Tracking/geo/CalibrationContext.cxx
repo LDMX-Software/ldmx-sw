@@ -50,4 +50,4 @@ class CalibrationContextProvider : public framework::ConditionsObjectProvider {
 
 }  // namespace tracking::geo
 
-DECLARE_CONDITIONS_PROVIDER_NS(tracking::geo, CalibrationContextProvider)
+DECLARE_CONDITIONS_PROVIDER(tracking::geo::CalibrationContextProvider)

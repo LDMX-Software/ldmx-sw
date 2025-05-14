@@ -19,6 +19,7 @@
 #include "Framework/ConditionsIOV.h"
 #include "Framework/ConditionsObject.h"
 #include "Framework/Configure/Parameters.h"
+#include "Framework/Factory.h"
 #include "Framework/Logger.h"
 
 /*~~~~~~~~~~~~~~~~*/
@@ -36,19 +37,17 @@ namespace framework {
 class Process;
 class ConditionsObjectProvider;
 
-/** Typedef for PluginFactory use. */
-typedef ConditionsObjectProvider* ConditionsObjectProviderMaker(
-    const std::string& objname, const std::string& tagname,
-    const framework::config::Parameters& params, Process& process);
-
 /**
  * @class ConditionsObjectProvider
  * @brief Base class for all providers of conditions objects
  */
 class ConditionsObjectProvider {
  public:
-  /** Constant used to types by the PluginFactory */
-  static const int CLASSTYPE{10};
+  /// declare that we have a factory for these types of classes
+  DECLARE_FACTORY(ConditionsObjectProvider,
+                  std::shared_ptr<ConditionsObjectProvider>, const std::string&,
+                  const std::string&, const framework::config::Parameters&,
+                  Process&);
 
   /**
    * Class constructor.
@@ -72,7 +71,7 @@ class ConditionsObjectProvider {
   /**
    * Class destructor.
    */
-  virtual ~ConditionsObjectProvider() { ; }
+  virtual ~ConditionsObjectProvider() = default;
 
   /**
    * Pure virtual getCondition function.
@@ -115,13 +114,6 @@ class ConditionsObjectProvider {
   const std::string& getConditionObjectName() const { return objectName_; }
 
   /**
-   * Internal function which is part of the PluginFactory machinery.
-   * @param classname The class name of the processor.
-   */
-  static void declare(const std::string& classname,
-                      ConditionsObjectProviderMaker*);
-
-  /**
    * Access the tag name
    */
   const std::string& getTagName() const { return tagname_; }
@@ -152,45 +144,17 @@ class ConditionsObjectProvider {
 
 /**
  * @def DECLARE_CONDITIONS_PROVIDER(CLASS)
- * @param CLASS The name of the class to register, which must not be in a
- * namespace.  If the class is in a namespace, use
- * DECLARE_CONDITIONS_PROVIDER_NS()
+ * @param CLASS The fully-specified name of the class to register
+ * (including any namespaces)
  * @brief Macro which allows the framework to construct a producer given its
  * name during configuration.
- * @attention Every Producer class must call this macro or
- * DECLARE_CONDITIONS_PROVIDER_NS() in the associated implementation (.cxx)
- * file.
+ * @attention Every Producer class must call this macro
+ * in the associated implementation (.cxx) file.
+ *
+ * We just call #FACTORY_REGISTRATION with framework::ConditionsObjectProvider
+ * as the first argument, so look there for the implementation details.
  */
-#define DECLARE_CONDITIONS_PROVIDER(CLASS)                                    \
-  framework::ConditionsObjectProvider* CLASS##_ldmx_make(                     \
-      const std::string& name, const std::string& tagname,                    \
-      const framework::config::Parameters& params,                            \
-      framework::Process& process) {                                          \
-    return new CLASS(name, tagname, params, process);                         \
-  }                                                                           \
-  __attribute__((constructor(1000))) static void CLASS##_ldmx_declare() {     \
-    framework::ConditionsObjectProvider::declare(#CLASS, &CLASS##_ldmx_make); \
-  }
-
-/**
- * @def DECLARE_CONDITIONS_PROVIDER_NS(NS,CLASS)
- * @param NS The full namespace specification for the Producer
- * @param CLASS The name of the class to register
- * @brief Macro which allows the framework to construct a producer given its
- * name during configuration.
- * @attention Every Producer class must call this macro or
- * DECLARE_CONDITIONS_PROVIDER() in the associated implementation (.cxx) file.
- */
-#define DECLARE_CONDITIONS_PROVIDER_NS(NS, CLASS)                           \
-  framework::ConditionsObjectProvider* CLASS##_ldmx_make(                   \
-      const std::string& name, const std::string& tagname,                  \
-      const framework::config::Parameters& params,                          \
-      framework::Process& process) {                                        \
-    return new NS::CLASS(name, tagname, params, process);                   \
-  }                                                                         \
-  __attribute__((constructor(1000))) static void CLASS##_ldmx_declare() {   \
-    framework::ConditionsObjectProvider::declare(                           \
-        std::string(#NS) + "::" + std::string(#CLASS), &CLASS##_ldmx_make); \
-  }
+#define DECLARE_CONDITIONS_PROVIDER(CLASS) \
+  FACTORY_REGISTRATION(framework::ConditionsObjectProvider, CLASS)
 
 #endif

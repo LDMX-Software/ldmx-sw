@@ -407,4 +407,4 @@ void OverlayProducer::onProcessStart() {
 
 }  // namespace recon
 
-DECLARE_PRODUCER_NS(recon, OverlayProducer)
+DECLARE_PRODUCER(recon::OverlayProducer)

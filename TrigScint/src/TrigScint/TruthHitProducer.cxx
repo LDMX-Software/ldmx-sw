@@ -67,4 +67,4 @@ void TruthHitProducer::produce(framework::Event &event) {
 }
 }  // namespace trigscint
 
-DECLARE_PRODUCER_NS(trigscint, TruthHitProducer)
+DECLARE_PRODUCER(trigscint::TruthHitProducer)

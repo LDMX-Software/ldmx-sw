@@ -114,4 +114,4 @@ void DNNEcalVetoProcessor::make_inputs(
 
 }  // namespace ecal
 
-DECLARE_PRODUCER_NS(ecal, DNNEcalVetoProcessor);
+DECLARE_PRODUCER(ecal::DNNEcalVetoProcessor);

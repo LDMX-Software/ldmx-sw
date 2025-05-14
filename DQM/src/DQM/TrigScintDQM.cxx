@@ -77,4 +77,4 @@ void TrigScintDQM::analyze(const framework::Event &event) {
 
 }  // namespace dqm
 
-DECLARE_ANALYZER_NS(dqm, TrigScintDQM)
+DECLARE_ANALYZER(dqm::TrigScintDQM)

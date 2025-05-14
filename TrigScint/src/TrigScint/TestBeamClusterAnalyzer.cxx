@@ -160,4 +160,4 @@ void TestBeamClusterAnalyzer::onProcessEnd() { return; }
 
 }  // namespace trigscint
 
-DECLARE_ANALYZER_NS(trigscint, TestBeamClusterAnalyzer)
+DECLARE_ANALYZER(trigscint::TestBeamClusterAnalyzer)

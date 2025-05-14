@@ -410,8 +410,8 @@ static bool runProcess(const framework::config::Parameters& parameters) {
 }  // namespace test
 }  // namespace framework
 
-DECLARE_PRODUCER_NS(framework::test, TestProducer)
-DECLARE_ANALYZER_NS(framework::test, TestAnalyzer)
+DECLARE_PRODUCER(framework::test::TestProducer)
+DECLARE_ANALYZER(framework::test::TestAnalyzer)
 
 /**
  * Test for C++ Framework processing.

@@ -135,4 +135,4 @@ void EcalClusterProducer::produce(framework::Event& event) {
 }
 }  // namespace ecal
 
-DECLARE_PRODUCER_NS(ecal, EcalClusterProducer);
+DECLARE_PRODUCER(ecal::EcalClusterProducer);

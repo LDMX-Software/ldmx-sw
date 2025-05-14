@@ -405,4 +405,4 @@ void ParticleFlow::onProcessEnd() {
 
 }  // namespace recon
 
-DECLARE_PRODUCER_NS(recon, ParticleFlow);
+DECLARE_PRODUCER(recon::ParticleFlow);

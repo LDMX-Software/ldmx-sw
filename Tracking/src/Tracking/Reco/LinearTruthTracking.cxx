@@ -221,4 +221,4 @@ double LinearTruthTracking::globalChiSquare(
 }  // namespace reco
 }  // namespace tracking
 
-DECLARE_PRODUCER_NS(tracking::reco, LinearTruthTracking);
+DECLARE_PRODUCER(tracking::reco::LinearTruthTracking);

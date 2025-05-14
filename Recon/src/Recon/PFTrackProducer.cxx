@@ -44,4 +44,4 @@ void PFTrackProducer::produce(framework::Event& event) {
 }
 }  // namespace recon
 
-DECLARE_PRODUCER_NS(recon, PFTrackProducer);
+DECLARE_PRODUCER(recon::PFTrackProducer);
