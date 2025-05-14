@@ -35,4 +35,4 @@ void MyProcessor::produce(framework::Event &event) {
 }
 }  // namespace recon
 
-DECLARE_PRODUCER_NS(recon, MyProcessor)
+DECLARE_PRODUCER(recon::MyProcessor)

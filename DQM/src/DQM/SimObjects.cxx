@@ -235,4 +235,4 @@ void SimObjects::analyze(const framework::Event& event) {
 
 }  // namespace dqm
 
-DECLARE_ANALYZER_NS(dqm, SimObjects);
+DECLARE_ANALYZER(dqm::SimObjects);

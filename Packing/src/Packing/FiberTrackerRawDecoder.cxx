@@ -446,4 +446,4 @@ void FiberTrackerRawDecoder::produce(framework::Event& event) {
 
 }  // namespace packing
 
-DECLARE_PRODUCER_NS(packing, FiberTrackerRawDecoder);
+DECLARE_PRODUCER(packing::FiberTrackerRawDecoder);

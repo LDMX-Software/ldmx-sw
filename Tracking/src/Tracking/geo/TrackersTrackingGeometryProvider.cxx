@@ -73,4 +73,4 @@ TrackersTrackingGeometryProvider::getCondition(
 }
 }  // namespace tracking::geo
 
-DECLARE_CONDITIONS_PROVIDER_NS(tracking::geo, TrackersTrackingGeometryProvider);
+DECLARE_CONDITIONS_PROVIDER(tracking::geo::TrackersTrackingGeometryProvider);

@@ -106,4 +106,4 @@ void TrackerVetoProcessor::produce(framework::Event& event) {
 }  // produce
 }  // namespace tracking
 
-DECLARE_PRODUCER_NS(tracking, TrackerVetoProcessor);
+DECLARE_PRODUCER(tracking::TrackerVetoProcessor);

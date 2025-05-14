@@ -5,12 +5,14 @@
  * @author Tom Eichlersmith, University of Minnesota
  */
 
-#include "SimCore/PrimaryGenerator.h"
+#include "SimCore/Generators/PrimaryGenerator.h"
 
 namespace simcore {
 
 PrimaryGenerator::PrimaryGenerator(
     const std::string& name, const framework::config::Parameters& parameters)
     : name_(name) {}
+
+DEFINE_FACTORY(PrimaryGenerator);
 
 }  // namespace simcore

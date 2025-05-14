@@ -241,4 +241,4 @@ void QIEEncoder::onProcessEnd() {
 
 }  // namespace trigscint
 
-DECLARE_PRODUCER_NS(trigscint, QIEEncoder);
+DECLARE_PRODUCER(trigscint::QIEEncoder);

@@ -8,4 +8,4 @@ void RunHeaderAnalyzer::analyze(const framework::Event& event) { return; }
 
 }  // namespace framework
 
-DECLARE_ANALYZER_NS(framework, RunHeaderAnalyzer);
+DECLARE_ANALYZER(framework::RunHeaderAnalyzer);

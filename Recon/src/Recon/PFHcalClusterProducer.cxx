@@ -74,4 +74,4 @@ void PFHcalClusterProducer::produce(framework::Event& event) {
 
 }  // namespace recon
 
-DECLARE_PRODUCER_NS(recon, PFHcalClusterProducer);
+DECLARE_PRODUCER(recon::PFHcalClusterProducer);

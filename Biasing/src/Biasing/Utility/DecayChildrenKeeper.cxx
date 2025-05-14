@@ -38,4 +38,4 @@ void DecayChildrenKeeper::PostUserTrackingAction(const G4Track* track) {
 }  // namespace utility
 }  // namespace biasing
 
-DECLARE_ACTION(biasing::utility, DecayChildrenKeeper)
+DECLARE_ACTION(biasing::utility::DecayChildrenKeeper)

@@ -412,4 +412,4 @@ int LinearSeedFinder::uniqueLayersHit(
 }  // namespace reco
 }  // namespace tracking
 
-DECLARE_PRODUCER_NS(tracking::reco, LinearSeedFinder);
+DECLARE_PRODUCER(tracking::reco::LinearSeedFinder);

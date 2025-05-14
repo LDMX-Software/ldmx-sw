@@ -127,4 +127,4 @@ void TrigHcalEnergySum::produce(framework::Event& event) {
 
 }  // namespace trigger
 
-DECLARE_PRODUCER_NS(trigger, TrigHcalEnergySum);
+DECLARE_PRODUCER(trigger::TrigHcalEnergySum);

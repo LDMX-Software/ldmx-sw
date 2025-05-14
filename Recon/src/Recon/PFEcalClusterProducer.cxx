@@ -69,4 +69,4 @@ void PFEcalClusterProducer::produce(framework::Event& event) {
 
 }  // namespace recon
 
-DECLARE_PRODUCER_NS(recon, PFEcalClusterProducer);
+DECLARE_PRODUCER(recon::PFEcalClusterProducer);

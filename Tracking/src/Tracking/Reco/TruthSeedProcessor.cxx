@@ -786,4 +786,4 @@ void TruthSeedProcessor::produce(framework::Event& event) {
 }
 }  // namespace tracking::reco
 
-DECLARE_PRODUCER_NS(tracking::reco, TruthSeedProcessor)
+DECLARE_PRODUCER(tracking::reco::TruthSeedProcessor)

@@ -277,4 +277,4 @@ void Vertexer::TaggerRecoilMonitoring(
 }  // namespace reco
 }  // namespace tracking
 
-DECLARE_PRODUCER_NS(tracking::reco, Vertexer)
+DECLARE_PRODUCER(tracking::reco::Vertexer)

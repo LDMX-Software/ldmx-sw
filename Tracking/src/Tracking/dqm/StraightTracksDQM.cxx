@@ -382,4 +382,4 @@ double StraightTracksDQM::locError(double var_slope, double var_intercept,
 
 }  // namespace tracking::dqm
 
-DECLARE_ANALYZER_NS(tracking::dqm, StraightTracksDQM)
+DECLARE_ANALYZER(tracking::dqm::StraightTracksDQM)

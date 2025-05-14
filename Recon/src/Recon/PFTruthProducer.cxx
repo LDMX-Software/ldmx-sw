@@ -74,4 +74,4 @@ void PFTruthProducer::produce(framework::Event &event) {
 }
 }  // namespace recon
 
-DECLARE_PRODUCER_NS(recon, PFTruthProducer);
+DECLARE_PRODUCER(recon::PFTruthProducer);

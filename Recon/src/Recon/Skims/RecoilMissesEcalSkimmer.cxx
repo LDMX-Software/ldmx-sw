@@ -59,4 +59,4 @@ void RecoilMissesEcalSkimmer::produce(framework::Event &event) {
 }
 }  // namespace recon
 
-DECLARE_PRODUCER_NS(recon, RecoilMissesEcalSkimmer);
+DECLARE_PRODUCER(recon::RecoilMissesEcalSkimmer);

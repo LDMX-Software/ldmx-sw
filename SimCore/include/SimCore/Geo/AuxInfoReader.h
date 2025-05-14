@@ -11,9 +11,6 @@
 //---< Framework >---//
 #include "Framework/Configure/Parameters.h"
 
-//---< SimCore >---//
-#include "SimCore/ConditionsInterface.h"
-
 namespace simcore::geo {
 
 /**

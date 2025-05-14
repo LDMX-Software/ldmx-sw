@@ -78,4 +78,4 @@ void PhotoNuclearProductsFilter::stepping(const G4Step* step) {
 }
 }  // namespace biasing
 
-DECLARE_ACTION(biasing, PhotoNuclearProductsFilter)
+DECLARE_ACTION(biasing::PhotoNuclearProductsFilter)

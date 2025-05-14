@@ -11,6 +11,7 @@
 //-------------//
 #include "G4DarkBreM/G4DarkBremsstrahlung.h"  //for process name
 #include "SimCore/APrimePhysics.h"
+#include "SimCore/BiasOperators/XsecBiasingOperator.h"
 #include "SimCore/DetectorConstruction.h"
 #include "SimCore/G4User/EventAction.h"
 #include "SimCore/G4User/PrimaryGeneratorAction.h"
@@ -20,7 +21,6 @@
 #include "SimCore/G4User/TrackingAction.h"
 #include "SimCore/GammaPhysics.h"
 #include "SimCore/ParallelWorld.h"
-#include "SimCore/XsecBiasingOperator.h"
 
 //------------//
 //   Geant4   //
@@ -72,9 +72,13 @@ void RunManager::setupPhysics() {
 
     // create all the biasing operators that will be used
     for (framework::config::Parameters& bop : biasing_operators) {
-      simcore::XsecBiasingOperator::Factory::get().make(
-          bop.getParameter<std::string>("class_name"),
-          bop.getParameter<std::string>("instance_name"), bop);
+      if (not simcore::XsecBiasingOperator::Factory::get().make(
+              bop.getParameter<std::string>("class_name"),
+              bop.getParameter<std::string>("instance_name"), bop)) {
+        EXCEPTION_RAISE("UnableToCreate",
+                        "Unable to create a XsecBiasingOperator of type " +
+                            bop.getParameter<std::string>("class_name"));
+      }
     }
 
     // Instantiate the constructor used when biasing
@@ -141,17 +145,29 @@ void RunManager::Initialize() {
     auto ua = UserAction::Factory::get().make(
         user_action.getParameter<std::string>("class_name"),
         user_action.getParameter<std::string>("instance_name"), user_action);
-    for (auto& type : ua->getTypes()) {
+    if (not ua) {
+      EXCEPTION_RAISE(
+          "UnableToCreate",
+          "Unable to create a UserAction of type " +
+              user_action.getParameter<std::string>("class_name") +
+              ". Did you inherit from simcore::UserAction? "
+              "Do you have DECLARE_ACTION in your implementation (.cxx) file? "
+              "Did you include the fully-specified class name in your python "
+              "configuration class? "
+              "Did you specify the correct library in the python configuration "
+              "class?");
+    }
+    for (auto& type : ua.value()->getTypes()) {
       if (type == simcore::TYPE::RUN) {
-        run_action->registerAction(ua.get());
+        run_action->registerAction(ua.value());
       } else if (type == simcore::TYPE::EVENT) {
-        event_action->registerAction(ua.get());
+        event_action->registerAction(ua.value());
       } else if (type == simcore::TYPE::TRACKING) {
-        tracking_action->registerAction(ua.get());
+        tracking_action->registerAction(ua.value());
       } else if (type == simcore::TYPE::STEPPING) {
-        stepping_action->registerAction(ua.get());
+        stepping_action->registerAction(ua.value());
       } else if (type == simcore::TYPE::STACKING) {
-        stacking_action->registerAction(ua.get());
+        stacking_action->registerAction(ua.value());
       } else {
         EXCEPTION_RAISE("ActionType", "Action type does not exist.");
       }

@@ -6,10 +6,10 @@
 /*~~~~~~~~~~~~~*/
 /*   SimCore   */
 /*~~~~~~~~~~~~~*/
+#include "SimCore/BiasOperators/XsecBiasingOperator.h"
 #include "SimCore/DetectorConstruction.h"
 #include "SimCore/G4User/VolumeChecks.h"
-#include "SimCore/SensitiveDetector.h"
-#include "SimCore/XsecBiasingOperator.h"
+#include "SimCore/SDs/SensitiveDetector.h"
 
 namespace simcore {
 namespace logical_volume_tests {
@@ -24,8 +24,8 @@ using Test = bool (*)(G4LogicalVolume*, const std::string&);
 }  // namespace logical_volume_tests
 
 DetectorConstruction::DetectorConstruction(
-    simcore::geo::Parser* parser, framework::config::Parameters& parameters,
-    ConditionsInterface& ci)
+    std::shared_ptr<simcore::geo::Parser> parser,
+    framework::config::Parameters& parameters, ConditionsInterface& ci)
     : parser_(parser), parameters_{parameters}, conditions_interface_{ci} {}
 
 G4VPhysicalVolume* DetectorConstruction::Construct() {
@@ -42,12 +42,17 @@ void DetectorConstruction::ConstructSDandField() {
         det.getParameter<std::string>("class_name"),
         det.getParameter<std::string>("instance_name"), conditions_interface_,
         det);
+    if (not sd) {
+      EXCEPTION_RAISE("UnableToCreate",
+                      "Unable to create a SensitiveDetector of type " +
+                          det.getParameter<std::string>("class_name"));
+    }
     // attach to volumes
     for (G4LogicalVolume* volume : *G4LogicalVolumeStore::GetInstance()) {
-      if (sd->isSensDet(volume)) {
-        ldmx_log(debug) << "Attaching " << sd->GetName() << " to "
+      if (sd.value()->isSensDet(volume)) {
+        ldmx_log(debug) << "Attaching " << sd.value()->GetName() << " to "
                         << volume->GetName();
-        volume->SetSensitiveDetector(sd);
+        volume->SetSensitiveDetector(sd.value());
       }
     }
   }

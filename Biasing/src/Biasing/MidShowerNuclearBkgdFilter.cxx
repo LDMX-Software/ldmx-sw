@@ -117,4 +117,4 @@ void MidShowerNuclearBkgdFilter::AbortEvent(const std::string& reason) const {
 }
 }  // namespace biasing
 
-DECLARE_ACTION(biasing, MidShowerNuclearBkgdFilter)
+DECLARE_ACTION(biasing::MidShowerNuclearBkgdFilter)

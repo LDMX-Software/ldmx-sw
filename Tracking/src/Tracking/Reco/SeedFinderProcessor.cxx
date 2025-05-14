@@ -616,4 +616,4 @@ void SeedFinderProcessor::FindSeedsFromMap(ldmx::Tracks& seeds,
 }  // namespace reco
 }  // namespace tracking
 
-DECLARE_PRODUCER_NS(tracking::reco, SeedFinderProcessor)
+DECLARE_PRODUCER(tracking::reco::SeedFinderProcessor)

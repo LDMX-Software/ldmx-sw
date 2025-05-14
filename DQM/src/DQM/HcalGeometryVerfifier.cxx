@@ -185,4 +185,4 @@ std::array<int, 3> HcalGeometryVerifier::determine_indices(
   return {index_along, index_across, index_through};
 }
 }  // namespace dqm
-DECLARE_ANALYZER_NS(dqm, HcalGeometryVerifier);
+DECLARE_ANALYZER(dqm::HcalGeometryVerifier);

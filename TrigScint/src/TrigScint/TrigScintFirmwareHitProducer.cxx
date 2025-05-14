@@ -84,4 +84,4 @@ void TrigScintFirmwareHitProducer::produce(framework::Event &event) {
 
 }  // namespace trigscint
 
-DECLARE_PRODUCER_NS(trigscint, TrigScintFirmwareHitProducer);
+DECLARE_PRODUCER(trigscint::TrigScintFirmwareHitProducer);

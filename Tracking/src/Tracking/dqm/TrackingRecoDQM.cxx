@@ -649,4 +649,4 @@ void TrackingRecoDQM::sortTracks(const std::vector<ldmx::Track>& tracks,
 }
 }  // namespace tracking::dqm
 
-DECLARE_ANALYZER_NS(tracking::dqm, TrackingRecoDQM)
+DECLARE_ANALYZER(tracking::dqm::TrackingRecoDQM)

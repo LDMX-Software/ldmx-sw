@@ -210,4 +210,4 @@ void QualityFlagAnalyzer::onProcessEnd() { return; }
 
 }  // namespace trigscint
 
-DECLARE_ANALYZER_NS(trigscint, QualityFlagAnalyzer)
+DECLARE_ANALYZER(trigscint::QualityFlagAnalyzer)

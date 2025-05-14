@@ -143,4 +143,4 @@ class HcalReconConditionsProvider : public framework::ConditionsObjectProvider {
 
 }  // namespace hcal
 
-DECLARE_CONDITIONS_PROVIDER_NS(hcal, HcalReconConditionsProvider);
+DECLARE_CONDITIONS_PROVIDER(hcal::HcalReconConditionsProvider);

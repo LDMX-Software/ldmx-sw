@@ -208,4 +208,4 @@ void VertexProcessor::onProcessEnd() {
 }  // namespace reco
 }  // namespace tracking
 
-DECLARE_PRODUCER_NS(tracking::reco, VertexProcessor)
+DECLARE_PRODUCER(tracking::reco::VertexProcessor)

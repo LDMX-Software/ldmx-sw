@@ -54,4 +54,4 @@ void HcalVetoResults::analyze(const framework::Event &event) {
 
 }  // namespace dqm
 
-DECLARE_ANALYZER_NS(dqm, HcalVetoResults)
+DECLARE_ANALYZER(dqm::HcalVetoResults)

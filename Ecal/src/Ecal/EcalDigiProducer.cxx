@@ -209,4 +209,4 @@ void EcalDigiProducer::produce(framework::Event& event) {
 
 }  // namespace ecal
 
-DECLARE_PRODUCER_NS(ecal, EcalDigiProducer);
+DECLARE_PRODUCER(ecal::EcalDigiProducer);

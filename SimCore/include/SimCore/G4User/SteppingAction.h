@@ -45,13 +45,13 @@ class SteppingAction : public G4UserSteppingAction {
    *
    * @param action  User action of type SteppingAction
    */
-  void registerAction(UserAction* steppingAction) {
+  void registerAction(std::shared_ptr<UserAction> steppingAction) {
     steppingActions_.push_back(steppingAction);
   }
 
  private:
   /// Collection of user stepping actions
-  std::vector<UserAction*> steppingActions_;
+  std::vector<std::shared_ptr<UserAction>> steppingActions_;
 
 };  // SteppingAction
 
