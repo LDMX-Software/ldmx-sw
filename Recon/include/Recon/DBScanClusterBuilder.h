@@ -27,7 +27,7 @@ class DBScanClusterBuilder {
                        float minClusterHitMult);  // overloaded constructor
 
   std::vector<std::vector<const ldmx::CalorimeterHit *> > runDBSCAN(
-      const std::vector<const ldmx::CalorimeterHit *> &hits, bool doDebug);
+      const std::vector<const ldmx::CalorimeterHit *> &hits);
 
   void fillClusterInfoFromHits(ldmx::CaloCluster *cl,
                                std::vector<const ldmx::CalorimeterHit *> hits,

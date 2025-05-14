@@ -26,7 +26,7 @@ DBScanClusterBuilder::DBScanClusterBuilder(float minHitEnergy,
 
 std::vector<std::vector<const ldmx::CalorimeterHit *> >
 DBScanClusterBuilder::runDBSCAN(
-				const std::vector<const ldmx::CalorimeterHit *> &hits, bool doDebug = false /*not used, can be removed*/) {
+				const std::vector<const ldmx::CalorimeterHit *> &hits) {
   const int n = hits.size();
   std::vector<std::vector<const ldmx::CalorimeterHit *> > idx_clusters;
   std::vector<unsigned int> tried;
