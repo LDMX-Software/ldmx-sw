@@ -62,4 +62,4 @@ void TrkDeDxMassEstFeatures::onProcessStart() {
 
 }  // namespace dqm
 
-DECLARE_ANALYZER_NS(dqm, TrkDeDxMassEstFeatures);
+DECLARE_ANALYZER(dqm::TrkDeDxMassEstFeatures);

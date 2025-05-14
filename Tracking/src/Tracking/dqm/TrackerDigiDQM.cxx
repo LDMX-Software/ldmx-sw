@@ -28,4 +28,4 @@ void TrackerDigiDQM::analyze(const framework::Event& event) {
 }
 }  // namespace tracking::dqm
 
-DECLARE_ANALYZER_NS(tracking::dqm, TrackerDigiDQM)
+DECLARE_ANALYZER(tracking::dqm::TrackerDigiDQM)

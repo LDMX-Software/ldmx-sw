@@ -194,4 +194,4 @@ void DarkBremInteraction::produce(framework::Event& event) {
 
 }  // namespace dqm
 
-DECLARE_ANALYZER_NS(dqm, DarkBremInteraction);
+DECLARE_ANALYZER(dqm::DarkBremInteraction);

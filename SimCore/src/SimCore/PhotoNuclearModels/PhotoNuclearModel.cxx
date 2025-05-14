@@ -1,4 +1,4 @@
-#include "SimCore/PhotoNuclearModel.h"
+#include "SimCore/PhotoNuclearModels/PhotoNuclearModel.h"
 
 namespace simcore {
 void PhotoNuclearModel::removeExistingModel(G4ProcessManager* processManager) {
@@ -22,4 +22,7 @@ void PhotoNuclearModel::addPNCrossSectionData(
   }
   process->AddDataSet(crossSection);
 }
+
+DEFINE_FACTORY(PhotoNuclearModel);
+
 }  // namespace simcore

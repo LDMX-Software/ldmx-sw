@@ -141,4 +141,4 @@ void EcalDarkBremFilter::AbortEvent(const std::string& reason) const {
 }
 }  // namespace biasing
 
-DECLARE_ACTION(biasing, EcalDarkBremFilter)
+DECLARE_ACTION(biasing::EcalDarkBremFilter)

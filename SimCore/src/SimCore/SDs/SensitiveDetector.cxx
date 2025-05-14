@@ -1,4 +1,4 @@
-#include "SimCore/SensitiveDetector.h"
+#include "SimCore/SDs/SensitiveDetector.h"
 
 #include "Framework/Exception/Exception.h"
 #include "G4ChargedGeantino.hh"
@@ -21,5 +21,7 @@ bool SensitiveDetector::isGeantino(const G4Step* step) const {
   return (particle_def == G4Geantino::Definition() or
           particle_def == G4ChargedGeantino::Definition());
 }
+
+DEFINE_FACTORY(SensitiveDetector);
 
 }  // namespace simcore

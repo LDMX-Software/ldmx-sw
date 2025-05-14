@@ -351,4 +351,4 @@ void TrigPrimResolutionAnalyzer::analyze(const framework::Event& event) {
 
 }  // namespace ldmx::ecal
 
-DECLARE_ANALYZER_NS(ldmx::ecal, TrigPrimResolutionAnalyzer);
+DECLARE_ANALYZER(ldmx::ecal::TrigPrimResolutionAnalyzer);

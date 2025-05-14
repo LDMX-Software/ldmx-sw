@@ -11,9 +11,9 @@
 #include "DetDescr/HcalID.h"
 #include "DetDescr/PackedIndex.h"
 #include "SimCore/Event/SimCalorimeterHit.h"
+#include "SimCore/G4User/TrackMap.h"
 #include "SimCore/G4User/TrackingAction.h"
-#include "SimCore/SensitiveDetector.h"
-#include "SimCore/TrackMap.h"
+#include "SimCore/SDs/SensitiveDetector.h"
 
 namespace simcore {
 

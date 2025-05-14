@@ -119,4 +119,4 @@ void MidShowerDiMuonBkgdFilter::AbortEvent(const std::string& reason) const {
 }
 }  // namespace biasing
 
-DECLARE_ACTION(biasing, MidShowerDiMuonBkgdFilter)
+DECLARE_ACTION(biasing::MidShowerDiMuonBkgdFilter)

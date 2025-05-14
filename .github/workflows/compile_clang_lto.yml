@@ -29,3 +29,4 @@ jobs:
       run: | 
         just install-denv init configure-clang-lto-fail-on-warning
         just build
+        just test

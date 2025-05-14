@@ -138,4 +138,4 @@ void TargetDarkBremFilter::AbortEvent(const std::string& reason) const {
 }
 }  // namespace biasing
 
-DECLARE_ACTION(biasing, TargetDarkBremFilter)
+DECLARE_ACTION(biasing::TargetDarkBremFilter)

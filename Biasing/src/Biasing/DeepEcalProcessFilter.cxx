@@ -120,4 +120,4 @@ void DeepEcalProcessFilter::NewStage() {
 }
 }  // namespace biasing
 
-DECLARE_ACTION(biasing, DeepEcalProcessFilter)
+DECLARE_ACTION(biasing::DeepEcalProcessFilter)

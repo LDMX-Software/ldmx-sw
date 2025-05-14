@@ -130,4 +130,4 @@ void NtuplizeHgcrocDigiCollection::analyze(const framework::Event& event) {
 
 }  // namespace dqm
 
-DECLARE_ANALYZER_NS(dqm, NtuplizeHgcrocDigiCollection);
+DECLARE_ANALYZER(dqm::NtuplizeHgcrocDigiCollection);

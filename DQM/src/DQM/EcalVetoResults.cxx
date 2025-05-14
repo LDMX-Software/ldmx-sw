@@ -26,4 +26,4 @@ void EcalVetoResults::analyze(const framework::Event &event) {
 
 }  // namespace dqm
 
-DECLARE_ANALYZER_NS(dqm, EcalVetoResults);
+DECLARE_ANALYZER(dqm::EcalVetoResults);

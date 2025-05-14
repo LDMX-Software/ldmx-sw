@@ -19,14 +19,13 @@
 /*   SimCore   */
 /*~~~~~~~~~~~~~*/
 #include "SimCore/APrimePhysics.h"
+#include "SimCore/BiasOperators/XsecBiasingOperator.h"
 #include "SimCore/DetectorConstruction.h"
 #include "SimCore/G4Session.h"
 #include "SimCore/G4User/TrackingAction.h"
-#include "SimCore/Geo/ParserFactory.h"
-#include "SimCore/PrimaryGenerator.h"
-#include "SimCore/SensitiveDetector.h"
+#include "SimCore/Generators/PrimaryGenerator.h"
+#include "SimCore/SDs/SensitiveDetector.h"
 #include "SimCore/UserEventInformation.h"
-#include "SimCore/XsecBiasingOperator.h"
 
 /*~~~~~~~~~~~~~~*/
 /*    Geant4    */
@@ -203,4 +202,4 @@ void Simulator::setSeeds(std::vector<int> seeds) {
 
 }  // namespace simcore
 
-DECLARE_PRODUCER_NS(simcore, Simulator)
+DECLARE_PRODUCER(simcore::Simulator)

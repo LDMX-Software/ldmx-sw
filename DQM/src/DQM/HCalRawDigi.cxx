@@ -43,4 +43,4 @@ void HCalRawDigi::analyze(const framework::Event& event) {
 
 }  // namespace dqm
 
-DECLARE_ANALYZER_NS(dqm, HCalRawDigi)
+DECLARE_ANALYZER(dqm::HCalRawDigi)

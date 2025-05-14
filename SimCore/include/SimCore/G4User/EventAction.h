@@ -70,12 +70,12 @@ class EventAction : public G4UserEventAction {
    *
    * @param action  User action of type EventAction
    */
-  void registerAction(UserAction* eventAction) {
+  void registerAction(std::shared_ptr<UserAction> eventAction) {
     eventActions_.push_back(eventAction);
   }
 
  private:
-  std::vector<UserAction*> eventActions_;
+  std::vector<std::shared_ptr<UserAction>> eventActions_;
 
 };  // EventAction
 

@@ -163,4 +163,4 @@ void SampleValidation::onProcessStart() {
   }
 }
 }  // namespace dqm
-DECLARE_ANALYZER_NS(dqm, SampleValidation)
+DECLARE_ANALYZER(dqm::SampleValidation)

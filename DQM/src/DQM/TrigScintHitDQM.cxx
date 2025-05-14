@@ -92,4 +92,4 @@ void TrigScintHitDQM::analyze(const framework::Event &event) {
 
 }  // namespace dqm
 
-DECLARE_ANALYZER_NS(dqm, TrigScintHitDQM)
+DECLARE_ANALYZER(dqm::TrigScintHitDQM)

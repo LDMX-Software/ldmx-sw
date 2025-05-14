@@ -75,4 +75,4 @@ void HcalClusterProducer::produce(framework::Event& event) {
 }
 
 }  // namespace hcal
-DECLARE_PRODUCER_NS(hcal, HcalClusterProducer);
+DECLARE_PRODUCER(hcal::HcalClusterProducer);

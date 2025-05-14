@@ -179,4 +179,4 @@ void HcalRawDecoder::produce(framework::Event& event) {
 }  // produce
 
 }  // namespace hcal
-DECLARE_PRODUCER_NS(hcal, HcalRawDecoder);
+DECLARE_PRODUCER(hcal::HcalRawDecoder);

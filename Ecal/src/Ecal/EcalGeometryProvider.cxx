@@ -140,4 +140,4 @@ EcalGeometryProvider::getCondition(const ldmx::EventHeader& context) {
 
 }  // namespace ecal
 
-DECLARE_CONDITIONS_PROVIDER_NS(ecal, EcalGeometryProvider);
+DECLARE_CONDITIONS_PROVIDER(ecal::EcalGeometryProvider);

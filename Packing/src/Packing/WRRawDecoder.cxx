@@ -112,4 +112,4 @@ void WRRawDecoder::produce(framework::Event& event) {
 
 }  // namespace packing
 
-DECLARE_PRODUCER_NS(packing, WRRawDecoder);
+DECLARE_PRODUCER(packing::WRRawDecoder);

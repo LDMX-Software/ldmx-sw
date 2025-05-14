@@ -15,7 +15,7 @@
 /*~~~~~~~~~~~~~*/
 /*   SimCore   */
 /*~~~~~~~~~~~~~*/
-#include "SimCore/PrimaryGenerator.h"
+#include "SimCore/Generators/PrimaryGenerator.h"
 #include "SimCore/UserEventInformation.h"
 #include "SimCore/UserPrimaryParticleInformation.h"
 
@@ -50,9 +50,13 @@ PrimaryGeneratorAction::PrimaryGeneratorAction(
   }
 
   for (auto& generator : generators) {
-    PrimaryGenerator::Factory::get().make(
-        generator.getParameter<std::string>("class_name"),
-        generator.getParameter<std::string>("instance_name"), generator);
+    if (not PrimaryGenerator::Factory::get().make(
+            generator.getParameter<std::string>("class_name"),
+            generator.getParameter<std::string>("instance_name"), generator)) {
+      EXCEPTION_RAISE("UnableToCreate",
+                      "Unable to create a PrimaryGenerator of type " +
+                          generator.getParameter<std::string>("class_name"));
+    }
   }
 }
 

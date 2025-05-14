@@ -105,4 +105,4 @@ void HcalTrigPrimDigiProducer::produce(framework::Event& event) {
   event.add("hcalTrigPrimDigiSTQs", stq_digis);
 }
 }  // namespace hcal
-DECLARE_PRODUCER_NS(hcal, HcalTrigPrimDigiProducer);
+DECLARE_PRODUCER(hcal::HcalTrigPrimDigiProducer);

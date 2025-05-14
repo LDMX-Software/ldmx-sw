@@ -147,4 +147,4 @@ void EcalTPSelector::decodeTP(ldmx::HgcrocTrigDigi tp, double& x, double& y,
 
 }  // namespace trigger
 
-DECLARE_PRODUCER_NS(trigger, EcalTPSelector);
+DECLARE_PRODUCER(trigger::EcalTPSelector);

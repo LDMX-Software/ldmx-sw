@@ -108,4 +108,4 @@ void NonFiducialFilter::EndOfEventAction(const G4Event*) {
 }
 }  // namespace biasing
 
-DECLARE_ACTION(biasing, NonFiducialFilter)
+DECLARE_ACTION(biasing::NonFiducialFilter)

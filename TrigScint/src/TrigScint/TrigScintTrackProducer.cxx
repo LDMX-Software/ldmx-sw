@@ -877,4 +877,4 @@ void TrigScintTrackProducer::onProcessEnd() {
 
 }  // namespace trigscint
 
-DECLARE_PRODUCER_NS(trigscint, TrigScintTrackProducer);
+DECLARE_PRODUCER(trigscint::TrigScintTrackProducer);

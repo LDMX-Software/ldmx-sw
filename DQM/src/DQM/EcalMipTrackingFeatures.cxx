@@ -33,4 +33,4 @@ void EcalMipTrackingFeatures::analyze(const framework::Event &event) {
 
 }  // namespace dqm
 
-DECLARE_ANALYZER_NS(dqm, EcalMipTrackingFeatures);
+DECLARE_ANALYZER(dqm::EcalMipTrackingFeatures);

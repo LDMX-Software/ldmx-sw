@@ -165,4 +165,4 @@ bool LinearTrackFinder::isPositionUsed(
 }  // namespace reco
 }  // namespace tracking
 
-DECLARE_PRODUCER_NS(tracking::reco, LinearTrackFinder)
+DECLARE_PRODUCER(tracking::reco::LinearTrackFinder)

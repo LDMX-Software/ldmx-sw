@@ -116,4 +116,4 @@ void TrackDeDxMassEstimator::produce(framework::Event &event) {
 }
 }  // namespace recon
 
-DECLARE_PRODUCER_NS(recon, TrackDeDxMassEstimator)
+DECLARE_PRODUCER(recon::TrackDeDxMassEstimator)

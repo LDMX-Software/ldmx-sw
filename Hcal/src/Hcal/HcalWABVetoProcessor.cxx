@@ -112,4 +112,4 @@ void HcalWABVetoProcessor::produce(framework::Event &event) {
 }
 }  // namespace hcal
 
-DECLARE_PRODUCER_NS(hcal, HcalWABVetoProcessor);
+DECLARE_PRODUCER(hcal::HcalWABVetoProcessor);

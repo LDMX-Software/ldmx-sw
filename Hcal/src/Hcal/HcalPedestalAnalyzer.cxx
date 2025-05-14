@@ -109,4 +109,4 @@ void HcalPedestalAnalyzer::onProcessEnd() {
 
 }  // namespace hcal
 
-DECLARE_ANALYZER_NS(hcal, HcalPedestalAnalyzer);
+DECLARE_ANALYZER(hcal::HcalPedestalAnalyzer);
