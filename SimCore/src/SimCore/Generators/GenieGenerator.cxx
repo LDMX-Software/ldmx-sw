@@ -84,22 +84,19 @@ bool GenieGenerator::validateConfig() {
   bool ret = true;
 
   if (targets_.size() == 0 || abundances_.size() == 0) {
-    std::cout << "targets and/or abundances sizes are zero."
-              << "  " << targets_.size() << ", " << abundances_.size()
-              << std::endl;
+    std::cout << "targets and/or abundances sizes are zero." << "  "
+              << targets_.size() << ", " << abundances_.size() << std::endl;
     ret = false;
   }
   if (targets_.size() != abundances_.size()) {
-    std::cout << "targets and abundances sizes unequal."
-              << "  " << targets_.size() << " != " << abundances_.size()
-              << std::endl;
+    std::cout << "targets and abundances sizes unequal." << "  "
+              << targets_.size() << " != " << abundances_.size() << std::endl;
     ret = false;
   }
 
   if (position_.size() != 3 || direction_.size() != 3) {
-    std::cout << "position and/or direction sizes are not 3."
-              << "  " << position_.size() << ", " << direction_.size()
-              << std::endl;
+    std::cout << "position and/or direction sizes are not 3." << "  "
+              << position_.size() << ", " << direction_.size() << std::endl;
     ret = false;
   }
 
@@ -117,14 +114,13 @@ bool GenieGenerator::validateConfig() {
       beam_size_[0] = 0.0;
       beam_size_[1] = 0.0;
     } else {
-      std::cout << "beam size is set, but does not have size 2."
-                << " " << beam_size_.size() << std::endl;
+      std::cout << "beam size is set, but does not have size 2." << " "
+                << beam_size_.size() << std::endl;
       ret = false;
     }
   } else if (beam_size_[0] < 0 || beam_size_[1] < 0) {
-    std::cout << "Beam size set as negative value? "
-              << "(" << beam_size_[0] << "," << beam_size_[1] << ")"
-              << std::endl;
+    std::cout << "Beam size set as negative value? " << "(" << beam_size_[0]
+              << "," << beam_size_[1] << ")" << std::endl;
     std::cout << "Changing to positive." << std::endl;
     beam_size_[0] = std::abs(beam_size_[0]);
     beam_size_[1] = std::abs(beam_size_[1]);
@@ -159,9 +155,9 @@ bool GenieGenerator::validateConfig() {
   for (auto d : direction_) dir_total_sq += d * d;
 
   if (dir_total_sq < 1e-6) {
-    std::cout << "direction vector is zero or negative? "
-              << "(" << direction_[0] << "," << direction_[1] << ","
-              << direction_[2] << ")" << std::endl;
+    std::cout << "direction vector is zero or negative? " << "("
+              << direction_[0] << "," << direction_[1] << "," << direction_[2]
+              << ")" << std::endl;
     ret = false;
   }
   for (size_t i_d = 0; i_d < direction_.size(); ++i_d)
@@ -272,8 +268,7 @@ GenieGenerator::~GenieGenerator() {
     std::cout << "Target=" << targets_[i_t]
               << "\tAbundance=" << abundances_[i_t]
               << "\tXSEC=" << xsec_by_target_[i_t] / genie::units::millibarn
-              << " mb"
-              << "\tEvents=" << n_events_by_target_[i_t] << std::endl;
+              << " mb" << "\tEvents=" << n_events_by_target_[i_t] << std::endl;
     if (n_events_by_target_[i_t] > 0)
       total_xsec += xsec_by_target_[i_t] * abundances_[i_t];
   }
@@ -317,9 +312,8 @@ void GenieGenerator::GeneratePrimaryVertex(G4Event* event) {
   auto z_pos = position_[2] +
                (G4Random::getTheGenerator()->flat() - 0.5) * target_thickness_;
   if (verbosity_ >= 1)
-    std::cout << "Generating interaction at (x,y,z)="
-              << "(" << x_pos << "," << y_pos << "," << z_pos << ")"
-              << std::endl;
+    std::cout << "Generating interaction at (x,y,z)=" << "(" << x_pos << ","
+              << y_pos << "," << z_pos << ")" << std::endl;
 
   genie::InitialState initial_state(targets_.at(nucl_target_i), 11);
   evg_driver_.Configure(initial_state);
@@ -335,9 +329,9 @@ void GenieGenerator::GeneratePrimaryVertex(G4Event* event) {
   TLorentzVector e_p4;
   initial_e.Momentum(e_p4);
   if (verbosity_ >= 1)
-    std::cout << "Generating interation with (px,py,pz,e)="
-              << "(" << e_p4.Px() << "," << e_p4.Py() << "," << e_p4.Pz() << ","
-              << e_p4.E() << ")" << std::endl;
+    std::cout << "Generating interation with (px,py,pz,e)=" << "(" << e_p4.Px()
+              << "," << e_p4.Py() << "," << e_p4.Pz() << "," << e_p4.E() << ")"
+              << std::endl;
 
   // calculate total xsec
   if (n_events_by_target_[nucl_target_i] == 0)
@@ -366,9 +360,8 @@ void GenieGenerator::GeneratePrimaryVertex(G4Event* event) {
   int nentries = genie_event->GetEntries();
 
   if (verbosity_ >= 1) {
-    std::cout << "---------- "
-              << "Generated Event " << n_events_generated_ + 1 << " ----------"
-              << std::endl;
+    std::cout << "---------- " << "Generated Event " << n_events_generated_ + 1
+              << " ----------" << std::endl;
   }
 
   for (int i_p = 0; i_p < nentries; ++i_p) {
@@ -384,13 +377,13 @@ void GenieGenerator::GeneratePrimaryVertex(G4Event* event) {
     G4PrimaryParticle* primary = new G4PrimaryParticle();
     primary->SetPDGcode(p->Pdg());
 
-    //this sets the 4momentum. But may not respect masses in G4...
-    //primary->Set4Momentum(p->Px() * CLHEP::GeV, p->Py() * CLHEP::GeV,
-    //                      p->Pz() * CLHEP::GeV, p->E() * CLHEP::GeV);
+    // this sets the 4momentum. But may not respect masses in G4...
+    // primary->Set4Momentum(p->Px() * CLHEP::GeV, p->Py() * CLHEP::GeV,
+    //                       p->Pz() * CLHEP::GeV, p->E() * CLHEP::GeV);
 
-    //for now, do this to set the masses to be the G4 ones, through the PDG code
-    primary->SetMomentum(p->Px() * CLHEP::GeV,
-                         p->Py() * CLHEP::GeV,
+    // for now, do this to set the masses to be the G4 ones, through the PDG
+    // code
+    primary->SetMomentum(p->Px() * CLHEP::GeV, p->Py() * CLHEP::GeV,
                          p->Pz() * CLHEP::GeV);
 
     primary->SetProperTime(time_ * CLHEP::ns);

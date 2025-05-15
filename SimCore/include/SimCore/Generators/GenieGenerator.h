@@ -22,11 +22,11 @@
 //------------//
 //   LDMX     //
 //------------//
-#include "SimCore/Generators/PrimaryGenerator.h"
-#include "SimCore/UserEventInformation.h"
-
 #include <string>
 #include <vector>
+
+#include "SimCore/Generators/PrimaryGenerator.h"
+#include "SimCore/UserEventInformation.h"
 
 // Forward declarations
 class G4Event;
