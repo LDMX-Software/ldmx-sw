@@ -113,6 +113,8 @@ class SeedFinderProcessor : public TrackingGeometryUser {
   std::string input_pass_name_{""};
   
   std::string sim_particles_passname_;
+  std::string tagger_trks_event_collection_passname_;
+  std::string sim_particles_event_passname_;
   /// Location of the perigee for the helix track parameters.
   std::vector<double> perigee_location_{-700., 0., 0};
   /// Minimum cut on the momentum of the seeds.

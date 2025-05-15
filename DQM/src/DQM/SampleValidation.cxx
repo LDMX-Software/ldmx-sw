@@ -13,7 +13,7 @@ namespace dqm {
 void SampleValidation::configure(framework::config::Parameters& ps) { 
   target_scoring_plane_passname_ = ps.getParameter<std::string>("target_scoring_plane_passname");
   sim_particles_passname_ = ps.getParameter<std::string>("sim_particles_passname");   
-; }
+}
 
 void SampleValidation::analyze(const framework::Event& event) {
   // Grab the SimParticle Map and Target Scoring Plane Hits

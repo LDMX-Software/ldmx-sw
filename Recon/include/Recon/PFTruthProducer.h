@@ -37,6 +37,9 @@ class PFTruthProducer : public framework::Producer {
   std::string target_sp_passname_;
   std::string ecal_sp_passname_;
   std::string sim_particles_passname_;
+  std::string target_sp_hits_event_passname_;
+  std::string ecal_sp_hits_event_passname_;
+  std::string sim_particles_event_passname_;
 };
 }  // namespace recon
 

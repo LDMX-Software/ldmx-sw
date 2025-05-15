@@ -25,6 +25,8 @@ void TrackingRecoDQM::configure(framework::config::Parameters& parameters) {
       parameters.getParameter<std::vector<std::string>>("trackStates", {});
   measurementCollection_ = parameters.getParameter<std::string>(
       "measurement_collection", "DigiTaggerSimHits");
+  track_collection_events_passname_ = parameters.getParameter<std::string>(
+      "track_collection_events_passname"); 
 
   ldmx_log(info) << "Track Collection " << trackCollection_ << std::endl;
   ldmx_log(info) << "Truth Collection " << truthCollection_ << std::endl;
@@ -42,7 +44,7 @@ void TrackingRecoDQM::configure(framework::config::Parameters& parameters) {
 void TrackingRecoDQM::analyze(const framework::Event& event) {
   ldmx_log(debug) << "DQM Reading in::" << trackCollection_ << std::endl;
 
-  if (!event.exists(trackCollection_)) {
+  if (!event.exists(trackCollection_, track_collection_events_passname_)) {
     ldmx_log(error) << "ERROR:: trackCollection " << trackCollection_
                     << " not in event" << std::endl;
     return;

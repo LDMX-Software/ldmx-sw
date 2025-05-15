@@ -38,6 +38,7 @@ class TrigEcalClusterProducer : public framework::Producer {
   std::string clusterCollName_;
   
   std::string hit_coll_passname_;
+  std::string hit_coll_name_events_passname_;
 
   // From:
   // Tools/python/HgcrocEmulator.py

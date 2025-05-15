@@ -193,6 +193,7 @@ class CKFProcessor final : public TrackingGeometryUser {
   std::string measurement_collection_{"TaggerMeasurements"};
   
   std::string simParticles_passName_;
+  std::string sim_particles_event_passname_;
 
   // Outlier removal pvalue
   // The Chi2Cut is applied at filtering stage.

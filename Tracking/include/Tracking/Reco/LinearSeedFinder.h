@@ -152,7 +152,8 @@ class LinearSeedFinder : public TrackingGeometryUser {
 
  private: 
   std::string next_event_passname_;
-  std::string sim_particles_passname_;  
+  std::string sim_particles_passname_; 
+  std::string sim_particles_events_passname_; 
 
 
 

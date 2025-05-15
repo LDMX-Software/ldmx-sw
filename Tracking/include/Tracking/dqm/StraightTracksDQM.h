@@ -54,6 +54,9 @@ class StraightTracksDQM : public framework::Analyzer {
   std::string measurement_collection_{"DigiRecoilSimHits"};
   std::string title_{"recoil_lin_trk_"};
   std::string input_pass_name_{""};
+  std::string track_collection_events_passname_;
+  std::string truth_collection_events_passname_;
+  
   double track_prob_cut_{0.5};
   std::string subdetector_{"Recoil"};
   bool do_truth_comparison_{false};

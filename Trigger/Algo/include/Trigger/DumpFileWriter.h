@@ -63,6 +63,7 @@ class DumpFileWriter : public framework::Analyzer {
 
   std::string dumpFileName = "dummy.dump";
   std::string ecal_trig_digis_passname_;
+  std::string ecal_trig_digis_event_passname_;
 
   EventDump myEvent;
   FILE* file = 0;

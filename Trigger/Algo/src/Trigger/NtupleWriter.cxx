@@ -10,13 +10,22 @@ NtupleWriter::NtupleWriter(const std::string& name, framework::Process& process)
 
 void NtupleWriter::configure(framework::config::Parameters& ps) {
   outPath_ = ps.getParameter<std::string>("outPath");
+
+  target_sp_hits_event_passname_ = ps.getParameter<std::string>("target_sp_hits_event_passname"); 
+  target_sp_passname_ = ps.getParameter<std::string>("target_sp_passname");
   
-  targetSPPassName_ = ps.getParameter<std::string>("targetSPPassName");
-  ecalSPPassName_ = ps.getParameter<std::string>("ecalSPPassName");
+  ecal_sp_hits_events_passname_ = ps.getParameter<std::string>("ecal_sp_hits_events_passname_");
+  ecal_sp_passname_ = ps.getParameter<std::string>("ecal_sp_passname");
   
-  ecal_intag_passname_ = ps.getParameter<std::string>("ecal_intag_passname");
-  trig_electrons_passname_ = ps.getParameter<std::string>("trig_electrons_passname"); 
-  hcal_intag_passname_ = ps.getParameter<std::string>("hcal_intag_passname_"); 
+  ecal_trig_sums_event_passname_ = ps.getParameter<std::string>("ecal_trig_sums_event_passname");  
+  ecal_trig_sums_passname_ = ps.getParameter<std::string>("ecal_trig_sums_passname");
+   
+  trig_electrons_event_passname_ = ps.getParameter<std::string>("trig_electrons_event_passname"); 
+  trig_electrons_passname_ = ps.getParameter<std::string>("trig_electrons_passname");
+  
+  hcal_trig_quads_events_passname_ = ps.getParameter<std::string>("hcal_trig_quads_events_passname"); 
+  hcal_trig_quads_passname_ = ps.getParameter<std::string>("hcal_trig_quads_passname");
+   
 }
 
 // precision-limiting function
@@ -29,10 +38,9 @@ void NtupleWriter::produce(framework::Event& event) {
 
   std::string inTag;
   inTag = "TargetScoringPlaneHits";
-  if (writeTruth_ && event.exists(inTag)) {
+  if (writeTruth_ && event.exists(inTag, target_sp_hits_event_passname_)) {
     const std::vector<ldmx::SimTrackerHit> hits =
-        //event.getCollection<ldmx::SimTrackerHit>(inTag);
-        event.getCollection<ldmx::SimTrackerHit>(inTag, targetSPPassName_);
+        event.getCollection<ldmx::SimTrackerHit>(inTag, target_sp_passname_);
 
     ldmx::SimTrackerHit h, hMaxEle;  // the desired truth hits
     for (const auto& hit : hits) {
@@ -57,10 +65,9 @@ void NtupleWriter::produce(framework::Event& event) {
     n.setVar(coll + "_pdgId", h.getPdgID());
   }
   inTag = "EcalScoringPlaneHits";
-  if (writeTruth_ && event.exists(inTag)) {
+  if (writeTruth_ && event.exists(inTag,ecal_sp_hits_events_passname_)) {
     const std::vector<ldmx::SimTrackerHit> hits =
-        //event.getCollection<ldmx::SimTrackerHit>(inTag);
-        event.getCollection<ldmx::SimTrackerHit>(inTag, ecalSPPassName_);
+        event.getCollection<ldmx::SimTrackerHit>(inTag, ecal_sp_passname_);
     ldmx::SimTrackerHit h, hMaxEle;  // the desired truth hits
     for (const auto& hit : hits) {
       auto xyz = hit.getPosition();
@@ -85,8 +92,8 @@ void NtupleWriter::produce(framework::Event& event) {
   }
 
   inTag = "ecalTrigSums";
-  if (writeEcalSums_ && event.exists(inTag)) {
-    const auto sums = event.getCollection<TrigEnergySum>(inTag, ecal_intag_passname_);
+  if (writeEcalSums_ && event.exists(inTag, ecal_trig_sums_event_passname_)) {
+    const auto sums = event.getCollection<TrigEnergySum>(inTag, ecal_trig_sums_passname_);
     // const int nEcalLayers = 34;
     vector<float> energyAfterLayer;  // (nEcalLayers, 0.);
     for (const auto& sum : sums) {
@@ -101,8 +108,8 @@ void NtupleWriter::produce(framework::Event& event) {
     n.setVar("Ecal_e_nLayer", int(energyAfterLayer.size()));
   }
   inTag = "hcalTrigQuadsBackLayerSums";
-  if (writeHcalSums_ && event.exists(inTag)) {
-    const auto sums = event.getCollection<TrigEnergySum>(inTag, hcal_intag_passname_);
+  if (writeHcalSums_ && event.exists(inTag, hcal_trig_quads_events_passname_)) {
+    const auto sums = event.getCollection<TrigEnergySum>(inTag, hcal_trig_quads_passname_);
     vector<float> energyAfterLayer;
     for (const auto& sum : sums) {
       if (!(sum.hwEnergy() > 0)) continue;
@@ -117,7 +124,7 @@ void NtupleWriter::produce(framework::Event& event) {
   }
 
   inTag = "trigElectrons";
-  if (writeEle_ && event.exists(inTag)) {
+  if (writeEle_ && event.exists(inTag, trig_electrons_event_passname_)) {
     const auto eles = event.getCollection<TrigParticle>(inTag, trig_electrons_passname_);
     const int nEle = eles.size();
     int maxE = -1;

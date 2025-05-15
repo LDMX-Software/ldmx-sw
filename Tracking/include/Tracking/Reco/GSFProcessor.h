@@ -227,6 +227,8 @@ class GSFProcessor final : public TrackingGeometryUser {
   
   std::string track_passname_;
   std::string meas_passname_;
+  std::string track_collection_event_passname_;
+  std::string meas_collection_event_passname_;
 
   size_t maxComponents_{4};
   bool abortOnError_{false};

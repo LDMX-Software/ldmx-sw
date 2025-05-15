@@ -212,7 +212,7 @@ void CKFProcessor::produce(framework::Event& event) {
   std::shared_ptr<tracking::sim::TruthMatchingTool> truthMatchingTool = nullptr;
   std::map<int, ldmx::SimParticle> particleMap;
 
-  if (event.exists("SimParticles")) {
+  if (event.exists("SimParticles",sim_particles_event_passname_)) {
     ldmx_log(debug) << "Setting up track truth matching tool";
     particleMap = event.getMap<int, ldmx::SimParticle>("SimParticles", simParticles_passName_);
     truthMatchingTool = std::make_shared<tracking::sim::TruthMatchingTool>(
@@ -720,7 +720,8 @@ void CKFProcessor::configure(framework::config::Parameters& parameters) {
   seed_coll_name_ =
       parameters.getParameter<std::string>("seed_coll_name", "seedTracks");
       
-  simParticles_passName_ = parameters.getParameter<std::string>("simParticles_passName"); 
+  simParticles_passName_ = parameters.getParameter<std::string>("simParticles_passName");
+  sim_particles_event_passname_ = parameters.getParameter<std::string>("sim_particles_event_passname"); 
 
   // output track collection
   out_trk_collection_ =

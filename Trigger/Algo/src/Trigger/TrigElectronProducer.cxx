@@ -16,15 +16,17 @@ void TrigElectronProducer::configure(framework::config::Parameters& ps) {
   eleCollName_ = ps.getParameter<std::string>("eleCollName");
   propMapName_ = ps.getParameter<std::string>("propMapName");
   target_sp_passname_ = ps.getParameter<std::string>("target_sp_passname");
-  cluster_coll_passname_ = ps.getParameter<std::string>("cluster_coll_passname");  
+  cluster_coll_passname_ = ps.getParameter<std::string>("cluster_coll_passname");
+  cluster_collname_events_passname_ = ps.getParameter<std::string>("cluster_collname_events_passname");
+  sp_collname_events_passname_ = ps.getParameter<std::string>("sp_collname_events_passname_");  
 }
 
 void TrigElectronProducer::produce(framework::Event& event) {
-  if (!event.exists(clusterCollName_)) return;
+  if (!event.exists(clusterCollName_, cluster_collname_events_passname_)) return;
   auto ecalClusters{
       event.getObject<TrigCaloClusterCollection>(clusterCollName_, cluster_coll_passname_)};
 
-  if (!event.exists(spCollName_)) return;
+  if (!event.exists(spCollName_, sp_collname_events_passname_)) return;
   const std::vector<ldmx::SimTrackerHit> TargetSPHit =
       event.getCollection<ldmx::SimTrackerHit>(spCollName_, target_sp_passname_);
   // ldmx::SimTrackerHit targetPrimary;

@@ -204,7 +204,8 @@ class HcalCheckReconstruction : public framework::Analyzer {
       : framework::Analyzer(name, p) {}
   ~HcalCheckReconstruction() {}
   
-  void configure(framework::config::Parameters& ps) {
+  
+  void configure(framework::config::Parameters& ps) override {
     hcal_fake_sim_hits_passname_ = ps.getParameter("hcal_fake_sim_hits_passname","");   
     hcal_digis_passname_ = ps.getParameter("hcal_digis_passname",""); 
     hcal_rec_hits_passname_ = ps.getParameter("hcal_rec_hits_passname","");  

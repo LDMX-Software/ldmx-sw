@@ -32,14 +32,16 @@ class RecoilMissesEcalSkimmer : public framework::Producer {
    *
    * @param event The event to process.
    */
-  void produce(framework::Event &event);
-  
+  //void produce override (framework::Event &event);
+  void produce(framework::Event &event) override;
+
   /**
    * Configure the processor using the given user specified parameters.
    *
    * @param parameters Set of parameters used to configure this processor.
    */
   void configure(framework::config::Parameters& parameters) override;
+
 
  private:
  

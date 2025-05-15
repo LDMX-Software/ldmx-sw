@@ -9,8 +9,7 @@
 namespace dqm {
 
 void SimObjects::configure(framework::config::Parameters& ps) {
-  sim_pass_ = ps.getParameter<std::string>("sim_pass");
-  
+  sim_pass_ = ps.getParameter<std::string>("sim_pass"); 
   sim_particles_passname_ = ps.getParameter<std::string>("sim_particles_passname"); 
   return;
 }

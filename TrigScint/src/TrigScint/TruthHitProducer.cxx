@@ -11,7 +11,8 @@ void TruthHitProducer::configure(framework::config::Parameters &parameters) {
   inputCollection_ = parameters.getParameter<std::string>("input_collection");
   inputPassName_ = parameters.getParameter<std::string>("input_pass_name");
   outputCollection_ = parameters.getParameter<std::string>("output_collection");
-  sim_particles_passname_ = parameters.getParameter<std::string>("sim_particles_passname");   
+  sim_particles_passname_ = parameters.getParameter<std::string>("sim_particles_passname");
+  input_collection_events_passname_ = parameters.getParameter<std::string>("input_collection_events_passname"); 
 
   verbose_ = parameters.getParameter<bool>("verbose");
 
@@ -27,7 +28,7 @@ void TruthHitProducer::configure(framework::config::Parameters &parameters) {
 
 void TruthHitProducer::produce(framework::Event &event) {
   // Check if the collection exists.  If not, don't bother processing the event.
-  if (!event.exists(inputCollection_)) {
+  if (!event.exists(inputCollection_, input_collection_events_passname_)) {
     ldmx_log(error) << "No input collection called " << inputCollection_
                     << " found; skipping!";
     return;

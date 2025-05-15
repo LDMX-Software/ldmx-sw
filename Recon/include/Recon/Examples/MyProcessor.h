@@ -52,8 +52,7 @@ class MyProcessor : public framework::Producer {
  private:
   /// Pass name for the EcalRecHits collection
   std::string ecal_rechits_passname_;
-
-
+  std::string ecal_rec_hits_event_passname_;
 
 };  // MyProcessor
 
