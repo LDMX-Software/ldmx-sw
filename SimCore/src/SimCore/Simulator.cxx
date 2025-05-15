@@ -158,12 +158,6 @@ void Simulator::produce(framework::Event& event) {
 
   event_header.setStringParameter("eventSeed", stream.str());
 
-  /*
-  PrimaryGenerator::Factory::get().apply([](auto gen){
-    std::cout << gen->Name() << std::endl;
-  });
-  */
-
   auto event_info = static_cast<UserEventInformation*>(
       runManager_->GetCurrentEvent()->GetUserInformation());
 

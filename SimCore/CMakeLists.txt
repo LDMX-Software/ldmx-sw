@@ -36,8 +36,7 @@ if(BUILD_EVENT_ONLY)
   # Generate the files needed to build the event classes.
   setup_library(module SimCore name Event
                 dependencies ROOT::Core ${GENIE_LIBS} HepMC3 HepMC3rootIO
-                register_target
-		include )
+                register_target)
 
   return()
 
@@ -92,11 +91,11 @@ setup_library(module SimCore
 setup_library(module SimCore
               name Reweight
               dependencies SimCore::Generators
-	                         SimCore::Event
+                           SimCore::Event
                            Framework::Configure
-			                     Framework::Framework
+                           Framework::Framework
                            ${GENIE_LIBS}
-			                     HepMC3)
+                           HepMC3)
 
 # Sensitive Detectors library
 setup_library(module SimCore
@@ -127,7 +126,7 @@ setup_library(module SimCore
                            SimCore::PhotoNuclearModels
                            SimCore::BiasOperators
                            SimCore::Generators
-			                     SimCore::Reweight
+                           SimCore::Reweight
                            SimCore::SDs)
 			   
 

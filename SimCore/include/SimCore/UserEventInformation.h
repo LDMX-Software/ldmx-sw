@@ -17,7 +17,7 @@ class UserEventInformation : public G4VUserEventInformation {
   UserEventInformation() = default;
 
   /// Destructor
-  virtual ~UserEventInformation() {}
+  virtual ~UserEventInformation() = default;
 
   /// Print the information associated with the track
   void Print() const override;

@@ -137,88 +137,71 @@ add_genie_target(GRwFwk)
 add_genie_target(GRwIO)
 add_genie_target(GRwClc)
 
-add_library(Pythia6 SHARED IMPORTED GLOBAL) # or STATIC instead of SHARED
-set_target_properties(Pythia6 PROPERTIES
-  IMPORTED_LOCATION "/usr/local/pythia6/libPythia6.so"
-)
-
 add_library(blas SHARED IMPORTED GLOBAL) # or STATIC instead of SHARED
 set_target_properties(blas PROPERTIES
   IMPORTED_LOCATION "/usr/lib/x86_64-linux-gnu/libblas.so.3"
 )
 
-#add_library(Genie::Interface INTERFACE IMPORTED GLOBAL)
-#set_property(TARGET Genie::Interface PROPERTY
-#	     INTERFACE_LINK_LIBRARIES
-SET( GENIE_LIBS 
-#	     xml2
-	     log4cpp
-#	     LHAPDF
-#	     Pythia6
-	     gsl
-#	     Genie::GFwMsg
-#	     Genie::GFwReg
-#	     Genie::GFwAlg
-
+SET( GENIE_LIBS
+    log4cpp
+    gsl
     Genie::GRwFwk
     Genie::GRwClc
     Genie::GRwIO
-
     Genie::GFwInt
-#	     Genie::GFwGHEP
-	     Genie::GFwNum
-	     Genie::GFwUtl
-	     Genie::GFwParDat
-	     Genie::GFwEG
-	     Genie::GFwAlg
-	     Genie::GFwGHEP
-	     Genie::GFwMsg
-	     xml2
-	     Genie::GFwReg
-	     ROOT::EG
-	     ROOT::EGPythia8
-	     pythia8
-	     Genie::GFwNtp
-	     Genie::GPhXSIg
-	     Genie::GPhPDF
-	     Genie::GPhNuclSt
-	     Genie::GPhCmn
-	     Genie::GPhDcy
-	     Genie::GPhHadTransp
-	     Genie::GPhHadnz
-	     Genie::GPhHadTens
-	     Genie::GPhDeEx
-	     Genie::GPhAMNGXS
-	     Genie::GPhAMNGEG
-	     Genie::GPhChmXS
-	     Genie::GPhCohXS
-	     Genie::GPhCohEG
-	     Genie::GPhDISXS
-	     Genie::GPhDISEG
-	     Genie::GPhDfrcXS
-	     Genie::GPhDfrcEG
-	     Genie::GPhHELptnXS
-	     Genie::GPhHELptnEG
-	     Genie::GPhIBDXS
-	     Genie::GPhIBDEG
-	     Genie::GPhMNucXS
-	     Genie::GPhMNucEG
-	     Genie::GPhMEL
-	     Genie::GPhNuElXS
-	     Genie::GPhNuElEG
-	     Genie::GPhQELXS
-	     Genie::GPhQELEG
-	     Genie::GPhResXS
-	     Genie::GPhResEG
-	     Genie::GPhStrXS
-	     Genie::GPhStrEG
-	     Genie::GPhHEDISXS
-	     Genie::GPhHEDISEG
-	     Genie::GTlGeo
-	     Genie::GTlFlx
+    Genie::GFwNum
+    Genie::GFwUtl
+    Genie::GFwParDat
+    Genie::GFwEG
+    Genie::GFwAlg
+    Genie::GFwGHEP
+    Genie::GFwMsg
+    xml2
+    Genie::GFwReg
+    ROOT::EG
+    ROOT::EGPythia8
+    pythia8
+    Genie::GFwNtp
+    Genie::GPhXSIg
+    Genie::GPhPDF
+    Genie::GPhNuclSt
+    Genie::GPhCmn
+    Genie::GPhDcy
+    Genie::GPhHadTransp
+    Genie::GPhHadnz
+    Genie::GPhHadTens
+    Genie::GPhDeEx
+    Genie::GPhAMNGXS
+    Genie::GPhAMNGEG
+    Genie::GPhChmXS
+    Genie::GPhCohXS
+    Genie::GPhCohEG
+    Genie::GPhDISXS
+    Genie::GPhDISEG
+    Genie::GPhDfrcXS
+    Genie::GPhDfrcEG
+    Genie::GPhHELptnXS
+    Genie::GPhHELptnEG
+    Genie::GPhIBDXS
+    Genie::GPhIBDEG
+    Genie::GPhMNucXS
+    Genie::GPhMNucEG
+    Genie::GPhMEL
+    Genie::GPhNuElXS
+    Genie::GPhNuElEG
+    Genie::GPhQELXS
+    Genie::GPhQELEG
+    Genie::GPhResXS
+    Genie::GPhResEG
+    Genie::GPhStrXS
+    Genie::GPhStrEG
+    Genie::GPhHEDISXS
+    Genie::GPhHEDISEG
+    Genie::GTlGeo
+    Genie::GTlFlx
     ROOT::MathCore
     ROOT::MathMore
-	     blas)
+    blas)
 message(STATUS "Setting GENIE_LIBS to ${GENIE_LIBS}")
 endif()
 endmacro()
@@ -253,7 +236,7 @@ endmacro()
 
 macro(setup_library)
 
-  set(options interface register_target include)
+  set(options interface register_target)
   set(oneValueArgs module name)
   set(multiValueArgs dependencies sources)
   cmake_parse_arguments(setup_library "${options}" "${oneValueArgs}"
@@ -294,11 +277,7 @@ macro(setup_library)
   endif()
 
   # Setup the targets to link against
-  if(setup_library_interface)
-    target_link_libraries(${library_name} INTERFACE ${setup_library_dependencies})
-  else()
-    target_link_libraries(${library_name} PUBLIC ${setup_library_dependencies})
-  endif()
+  target_link_libraries(${library_name} PUBLIC ${setup_library_dependencies})
   
   enable_sanitizers(${library_name})
   enable_compiler_warnings(${library_name})
