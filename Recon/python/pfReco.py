@@ -44,7 +44,8 @@ class pfTrackProducer(ldmxcfg.Producer) :
         self.input_pass_name  = ''
         self.outputTrackCollName = 'PFTracks'
         self.doElectronTracking = False
-
+        self.minElectronMomentumZ = 2500.
+        self.maxElectronTrackID = 30
 
 class pfProducer(ldmxcfg.Producer) :
     """Configuration for particle reco"""
