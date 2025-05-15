@@ -79,7 +79,7 @@ void TestBeamClusterAnalyzer::analyze(const framework::Event& event) {
           fabs(clusters[idx].getCentroid() - clusters[idx - 1].getCentroid()));
     }
     idx++;  // increment afterwards
-  }         // over clusters
+  }  // over clusters
 
   /*
 
@@ -160,4 +160,4 @@ void TestBeamClusterAnalyzer::onProcessEnd() { return; }
 
 }  // namespace trigscint
 
-DECLARE_ANALYZER_NS(trigscint, TestBeamClusterAnalyzer)
+DECLARE_ANALYZER(trigscint::TestBeamClusterAnalyzer)

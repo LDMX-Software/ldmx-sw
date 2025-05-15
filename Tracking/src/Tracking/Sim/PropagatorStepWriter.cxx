@@ -8,8 +8,8 @@
 
 #include "Acts/Geometry/DetectorElementBase.hpp"
 // mg ... I don't think these are used, and they are not defined in acts v36
-//#include "Acts/Plugins/Identification/IdentifiedDetectorElement.hpp"
-//#include "Acts/Plugins/Identification/Identifier.hpp"
+// #include "Acts/Plugins/Identification/IdentifiedDetectorElement.hpp"
+// #include "Acts/Plugins/Identification/Identifier.hpp"
 
 namespace tracking {
 namespace sim {

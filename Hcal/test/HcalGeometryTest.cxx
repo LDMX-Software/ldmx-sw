@@ -40,7 +40,7 @@ class HcalCheckPositionMap : public framework::Analyzer {
 }  // namespace test
 }  // namespace hcal
 
-DECLARE_ANALYZER_NS(hcal::test, HcalCheckPositionMap)
+DECLARE_ANALYZER(hcal::test::HcalCheckPositionMap)
 
 /**
  * Test for the Hcal Geometry ID map

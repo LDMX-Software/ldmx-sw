@@ -80,4 +80,4 @@ void SequentialTrigger::produce(framework::Event& event) {
 }
 }  // namespace recon
 
-DECLARE_ANALYZER_NS(recon, SequentialTrigger);
+DECLARE_ANALYZER(recon::SequentialTrigger);

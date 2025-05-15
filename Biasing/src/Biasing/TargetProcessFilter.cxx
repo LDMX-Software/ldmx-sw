@@ -1,4 +1,6 @@
-
+/*~~~~~~~~~~~~~*/
+/*   Biasing   */
+/*~~~~~~~~~~~~~*/
 #include "Biasing/TargetProcessFilter.h"
 
 /*~~~~~~~~~~~~*/
@@ -11,13 +13,9 @@
 #include "G4Track.hh"
 
 /*~~~~~~~~~~~~~*/
-/*   Biasing   */
-/*~~~~~~~~~~~~~*/
-#include "Biasing/TargetBremFilter.h"
-
-/*~~~~~~~~~~~~~*/
 /*   SimCore   */
 /*~~~~~~~~~~~~~*/
+#include "SimCore/G4User/PtrRetrieval.h"
 #include "SimCore/UserTrackInformation.h"
 
 namespace biasing {
@@ -60,9 +58,15 @@ void TargetProcessFilter::stepping(const G4Step* step) {
 
   // Get the region the particle is currently in. Continue processing
   // the particle only if it's in the target region.
-  if (auto region{
-          track->GetVolume()->GetLogicalVolume()->GetRegion()->GetName()};
-      region.compareTo("target") != 0) {
+  static auto target_region =
+      simcore::g4user::ptrretrieval::getRegion("target");
+  if (!target_region) {
+    ldmx_log(warn) << "Region 'target' not found in Geant4 region store";
+  }
+  auto phy_vol{track->GetVolume()};
+  auto log_vol{phy_vol ? phy_vol->GetLogicalVolume() : nullptr};
+  auto current_region{log_vol ? log_vol->GetRegion() : nullptr};
+  if (current_region != target_region) {
     // If secondaries were produced outside of the volume of interest,
     // and there aren't additional brems to process, abort the event.
     // Otherwise, suspend the track and move on to the next brem.
@@ -97,9 +101,21 @@ void TargetProcessFilter::stepping(const G4Step* step) {
      * We also check for 'World_PV' because in later geometries, there is
      * an air gap between the target region and the recoil tracker.
      */
-    if (auto volume{track->GetNextVolume()->GetName()};
-        volume.compareTo("recoil_PV") == 0 or
-        volume.compareTo("World_PV") == 0) {
+    static auto recoil_physical_volume =
+        simcore::g4user::ptrretrieval::getPhysicalVolume("recoil_PV");
+    static auto world_physical_volume =
+        simcore::g4user::ptrretrieval::getPhysicalVolume("World_PV");
+
+    if (!recoil_physical_volume) {
+      ldmx_log(warn) << "Volume 'recoil_PV' not found in Geant4 volume store";
+    }
+    if (!world_physical_volume) {
+      ldmx_log(warn) << "Volume 'World_PV' not found in Geant4 volume store";
+    }
+
+    auto current_volume = track->GetNextVolume();
+    if (current_volume == recoil_physical_volume or
+        current_volume == world_physical_volume) {
       if (getEventInfo()->bremCandidateCount() == 1) {
         track->SetTrackStatus(fKillTrackAndSecondaries);
         G4RunManager::GetRunManager()->AbortEvent();
@@ -151,4 +167,4 @@ void TargetProcessFilter::stepping(const G4Step* step) {
 void TargetProcessFilter::EndOfEventAction(const G4Event*) {}
 }  // namespace biasing
 
-DECLARE_ACTION(biasing, TargetProcessFilter)
+DECLARE_ACTION(biasing::TargetProcessFilter)

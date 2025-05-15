@@ -153,4 +153,4 @@ void TrigScintQIEDigiProducer::produce(framework::Event& event) {
 
 }  // namespace trigscint
 
-DECLARE_PRODUCER_NS(trigscint, TrigScintQIEDigiProducer);
+DECLARE_PRODUCER(trigscint::TrigScintQIEDigiProducer);

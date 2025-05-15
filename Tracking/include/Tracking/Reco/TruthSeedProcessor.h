@@ -70,7 +70,7 @@ class TruthSeedProcessor : public TrackingGeometryUser {
    * processing of events starts. For this class, the callback is used to
    * retrieve the GeometryContext from ACTS.
    */
-  void onProcessStart() override{};
+  void onProcessStart() override {};
 
   /**
    * onNewRun is the first function called for each processor
@@ -196,12 +196,16 @@ class TruthSeedProcessor : public TrackingGeometryUser {
 
   /// Which scoring plane hits to use for the truth seeds generation
   std::string scoring_hits_coll_name_{"TargetScoringPlaneHits"};
+  std::string sp_pass_name_{""};
 
   /// Sim hits to check if the truth seed is findable
   std::string tagger_sim_hits_coll_name_{"TaggerSimHits"};
 
   /// Sim hits to check if the truth seed is findable
   std::string recoil_sim_hits_coll_name_{"RecoilSimHits"};
+
+  /// Pass name for the sim hit collections
+  std::string input_pass_name_{""};
 
   /**
    * Minimum number of hits left in the recoil tracker to consider the seed

@@ -21,7 +21,7 @@ jobs:
         fetch-depth: 0
 
     - name: Install just
-      uses: extractions/setup-just@v2
+      uses: extractions/setup-just@v3
       with:
           just-version: 1.26.0
 
@@ -29,3 +29,4 @@ jobs:
       run: | 
         just install-denv init configure-clang-lto-fail-on-warning
         just build
+        just test

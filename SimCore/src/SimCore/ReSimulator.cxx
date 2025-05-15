@@ -92,4 +92,4 @@ bool ReSimulator::skip(framework::Event& event) const {
 }
 
 }  // namespace simcore
-DECLARE_PRODUCER_NS(simcore, ReSimulator)
+DECLARE_PRODUCER(simcore::ReSimulator)

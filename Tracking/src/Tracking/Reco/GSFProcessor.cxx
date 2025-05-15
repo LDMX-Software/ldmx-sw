@@ -446,10 +446,10 @@ void GSFProcessor::produce(framework::Event& event) {
   event.add(out_trk_collection_, out_tracks);
 }
 
-void GSFProcessor::onProcessStart(){};
-void GSFProcessor::onProcessEnd(){};
+void GSFProcessor::onProcessStart() {};
+void GSFProcessor::onProcessEnd() {};
 
 }  // namespace reco
 }  // namespace tracking
 
-DECLARE_PRODUCER_NS(tracking::reco, GSFProcessor)
+DECLARE_PRODUCER(tracking::reco::GSFProcessor)

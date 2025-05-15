@@ -307,7 +307,7 @@ class Event {
           knownLookups_[collectionName] =
               makeBranchName(collectionName, matches.at(0).passname());
         }  // different options for number of possible branch matches
-      }    // collection not in known lookups
+      }  // collection not in known lookups
       branchName = knownLookups_.at(collectionName);
     } else {
       branchName = makeBranchName(collectionName, passName);

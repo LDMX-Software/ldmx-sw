@@ -7,6 +7,7 @@ namespace recon {
 
 void PFTrackProducer::configure(framework::config::Parameters& ps) {
   inputTrackCollName_ = ps.getParameter<std::string>("inputTrackCollName");
+  input_pass_name_ = ps.getParameter<std::string>("input_pass_name");
   outputTrackCollName_ = ps.getParameter<std::string>("outputTrackCollName");
 }
 
@@ -16,12 +17,13 @@ double getP(const ldmx::SimTrackerHit& tk) {
 }
 
 void PFTrackProducer::produce(framework::Event& event) {
-  if (!event.exists(inputTrackCollName_)) {
-    ldmx_log(fatal) << "Input track collection not found";
+  if (!event.exists(inputTrackCollName_, input_pass_name_)) {
+    ldmx_log(fatal) << "Couldn't find input collection " << inputTrackCollName_
+                    << "_" << input_pass_name_;
     return;
   }
-  const auto ecalSpHits =
-      event.getCollection<ldmx::SimTrackerHit>(inputTrackCollName_);
+  const auto ecalSpHits = event.getCollection<ldmx::SimTrackerHit>(
+      inputTrackCollName_, input_pass_name_);
 
   std::vector<ldmx::SimTrackerHit> pfTracks;
   if (truthTracking_) {
@@ -42,4 +44,4 @@ void PFTrackProducer::produce(framework::Event& event) {
 }
 }  // namespace recon
 
-DECLARE_PRODUCER_NS(recon, PFTrackProducer);
+DECLARE_PRODUCER(recon::PFTrackProducer);

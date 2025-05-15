@@ -200,4 +200,4 @@ void GenieTruthDQM::analyze(const framework::Event& event) {
 
 }  // namespace dqm
 
-DECLARE_ANALYZER_NS(dqm, GenieTruthDQM);
+DECLARE_ANALYZER(dqm::GenieTruthDQM);

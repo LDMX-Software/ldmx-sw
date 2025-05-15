@@ -246,11 +246,11 @@ std::vector<ldmx::Measurement> DigitizationProcessor::digitizeHits(
       }  // hit_surface exists
 
     }  // energy cut
-  }    // loop on sim-hits
+  }  // loop on sim-hits
 
   return measurements;
 
 }  // digitizeHits
 }  // namespace tracking::reco
 
-DECLARE_PRODUCER_NS(tracking::reco, DigitizationProcessor)
+DECLARE_PRODUCER(tracking::reco::DigitizationProcessor)

@@ -268,7 +268,7 @@ void StraightTracksDQM::trackMonitoringUnique(
         }  // loop on tracks
 
       }  // do truth
-    }    // do detail
+    }  // do detail
 
   }  // for tracks
 }  // TrackMonitoringUnique
@@ -313,7 +313,7 @@ void StraightTracksDQM::sortTracks(
         duplicate_tracks.push_back(sorted_tracks[i]);
       }
     }  // else (a real track)
-  }    // loop on sorted tracks
+  }  // loop on sorted tracks
 
   // The total number of elements in the uniqueTracks and duplicateTracks
   // vectors should be equal to the number of elements in the original tracks
@@ -382,4 +382,4 @@ double StraightTracksDQM::locError(double var_slope, double var_intercept,
 
 }  // namespace tracking::dqm
 
-DECLARE_ANALYZER_NS(tracking::dqm, StraightTracksDQM)
+DECLARE_ANALYZER(tracking::dqm::StraightTracksDQM)

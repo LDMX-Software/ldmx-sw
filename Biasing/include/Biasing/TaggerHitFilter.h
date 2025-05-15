@@ -61,8 +61,6 @@ class TaggerHitFilter : public simcore::UserAction {
   std::set<int> layer_count_;
   /// Total number of hits required to persist an event.
   int layers_hit_{8};
-  /// Enable logging
-  enableLogging("TaggerHitFilter")
 
 };  // TaggerHitFilter
 }  // namespace biasing

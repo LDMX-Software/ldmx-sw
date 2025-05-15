@@ -200,4 +200,4 @@ void GenieReweightProducer::produce(framework::Event& event) {
 }
 }  // namespace simcore
 
-DECLARE_PRODUCER_NS(simcore, GenieReweightProducer);
+DECLARE_PRODUCER(simcore::GenieReweightProducer)

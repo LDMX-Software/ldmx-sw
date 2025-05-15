@@ -106,8 +106,8 @@ void TargetDarkBremFilter::stepping(const G4Step* step) {
           // we found a good A', so we can leave
           return;
         }  // this secondary is an A'
-      }    // loop through secondaries
-    }      // are there secondaries to loop through
+      }  // loop through secondaries
+    }  // are there secondaries to loop through
 
     // got here without finding A'
     AbortEvent("Primary electron did not create A'.");
@@ -127,8 +127,7 @@ void TargetDarkBremFilter::EndOfEventAction(const G4Event* event) {
 
 void TargetDarkBremFilter::AbortEvent(const std::string& reason) const {
   if (G4RunManager::GetRunManager()->GetVerboseLevel() > 1) {
-    std::cout << "[ TargetDarkBremFilter ]: "
-              << "("
+    std::cout << "[ TargetDarkBremFilter ]: " << "("
               << G4EventManager::GetEventManager()
                      ->GetConstCurrentEvent()
                      ->GetEventID()
@@ -139,4 +138,4 @@ void TargetDarkBremFilter::AbortEvent(const std::string& reason) const {
 }
 }  // namespace biasing
 
-DECLARE_ACTION(biasing, TargetDarkBremFilter)
+DECLARE_ACTION(biasing::TargetDarkBremFilter)

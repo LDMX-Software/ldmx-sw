@@ -268,7 +268,7 @@ void HcalRecProducer::produce(framework::Event& event) {
       hitTime = fabs(TOA_posend + TOA_negend) / 2;  // ns
 
       iDigi += 2;
-    }       // end double readout loop
+    }  // end double readout loop
     else {  // single readout
 
       double voltage_i;
@@ -382,4 +382,4 @@ void HcalRecProducer::produce(framework::Event& event) {
 
 }  // namespace hcal
 
-DECLARE_PRODUCER_NS(hcal, HcalRecProducer);
+DECLARE_PRODUCER(hcal::HcalRecProducer);

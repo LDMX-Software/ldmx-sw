@@ -75,4 +75,4 @@ void PropagationMapWriter::onProcessEnd() {
 }
 
 }  // namespace trigger
-DECLARE_PRODUCER_NS(trigger, PropagationMapWriter);
+DECLARE_PRODUCER(trigger::PropagationMapWriter);

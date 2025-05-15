@@ -387,6 +387,61 @@ class EcalVetoResults(ldmxcfg.Analyzer) :
         self.build1DHistogram('bdt_pass',
                 'Event passed the ECal BDT',2,-0.5,1.5)
 
+class EcalWABRecResults(ldmxcfg.Analyzer) :
+    """Configured EcalWABRec python object """
+
+    def __init__(self,name="EcalWABRecResults") :
+        super().__init__(name,'dqm::EcalWABRecResults','DQM')
+
+        self.ecal_WAB_rec_name = 'EcalWABRec'
+        self.ecal_WAB_rec_pass = ''
+
+        self.build2DHistogram("ThetaDiffElectronPhoton", 
+                            "Reco #theta Difference between Photon and Electron (Degrees)",
+                            92, -1, 91,
+                            "True #theta Difference between Photon and Electron (Degrees)",
+                            92, -1, 91)
+        self.build2DHistogram("ThetaElectron", 
+                            "Electron Reco #theta (Degrees)",
+                            92, -1, 91, 
+                            "Electron True #theta (Degrees)",
+                            92, -1, 91)
+        self.build2DHistogram("ThetaPhoton", 
+                            "Photon Reco #theta (Degrees)",
+                            92, -1, 91, 
+                            "Photon True #theta (Degrees)",
+                            92, -1, 91)
+        self.build2DHistogram("PhiDiffElectronPhoton", 
+                            "Reco #phi Difference between Photon and Electron (Degrees)",
+                            92, -1, 91,
+                            "True #phi Difference between Photon and Electron (Degrees)",
+                            92, -1, 91)
+        self.build2DHistogram("PhiElectron", 
+                            "Electron Reco #phi (Degrees)",
+                            92, -1, 91, 
+                            "Electron True #phi (Degrees)",
+                            92, -1, 91)
+        self.build2DHistogram("PhiPhoton", 
+                            "Photon Reco #phi (Degrees)",
+                            92, -1, 91, 
+                            "Photon True #phi (Degrees)",
+                            92, -1, 91)
+        self.build2DHistogram("ElectronEnergy", 
+                            "Reconstructed Recoil Electron Shower Energy (MeV)",
+                            80, 0, 4000,
+                            "True Recoil Electron Energy (MeV)",
+                            80, 0, 4000)
+        self.build2DHistogram("PhotonEnergy", 
+                            "Reconstructed Photon Shower Energy (MeV)",
+                            80, 0, 4000, 
+                            "True Photon Energy (MeV)",
+                            80, 0, 4000)
+        self.build1DHistogram("ElectronThetaDiff", "Electron True and Reconstruction #theta Difference (Degrees)", 181, 0, 181)
+        self.build1DHistogram("PhotonThetaDiff", "Photon True and Reconstruction #theta Difference (Degrees)", 181, 0, 181)
+        self.build1DHistogram("ElectronPhiDiff", "Electron True and Reconstruction #phi Difference (Degrees)", 181, 0, 181)
+        self.build1DHistogram("PhotonPhiDiff", "Photon True and Reconstruction #phi Difference (Degrees)", 181, 0, 181)
+        self.build1DHistogram("ProgressNum", "Reconstruction Progress", 4, 0, 4)
+
 class SimObjects(ldmxcfg.Analyzer) :
     """Configuration for sim-level objects to histogram-ize
 
@@ -598,8 +653,23 @@ class TrkDeDxMassEstFeatures(ldmxcfg.Analyzer) :
         
         self.mass_estimate_name = "TrackDeDxMassEstimate"
         self.mass_estimate_pass = ""
-        
-        self.build1DHistogram("mass_estimate", "Mass Estimate [MeV]", 100, 0, 2000)
+
+        momentum_bins = [90.,100.,125.,150.,175.,200.,250.,300.,350.,400.,450.,500., 600.,700.,800.,900.,1000.,1300.,2000.,3000.,4000.,6000.,8000.]
+        low_momentum_bins = [50.,70.,90.,100.,125.,150.,175.,200.,250.,300.,350.,400.,450.,500., 600.,700.,800.,900.,1000.,2000.]
+        self.build2DHistogram('momentum:harmonic_mean_dedx' ,
+                xlabel='Momentum (MeV)', xbins=momentum_bins,
+                ylabel='I_{h} [MeV/cm]', ybins=50, ymin=0., ymax=30. )
+        self.build2DHistogram('momentum_low:harmonic_mean_dedx' ,
+                xlabel='Momentum (MeV)', xbins=low_momentum_bins,
+                ylabel='I_{h} [MeV/cm]', ybins=50, ymin=0., ymax=30. )
+        self.build1DHistogram("harmonic_mean_dedx", "I_{h} [MeV/cm]", 50, 0., 30.)
+        self.build1DHistogram("mass_estimate", "Mass Estimate [MeV]", 100, 0., 2000.)
+        self.build1DHistogram("mass_estimate_low_p", "Mass Estimate [MeV]", 100, 0., 2000.)
+        self.build1DHistogram("mass_estimate_very_low_p", "Mass Estimate [MeV]", 100, 0., 2000.)
+        self.build1DHistogram("mass_estimate_very_low_p_electron", "Mass Estimate for electrons [MeV]", 20, 0., 200.)
+        self.build1DHistogram("mass_estimate_very_low_p_pion", "Mass Estimate for pions [MeV]", 20, 0., 200.)
+        self.build1DHistogram("mass_estimate_very_low_p_kaon", "Mass Estimate for kaons [MeV]", 60, 200., 800.)
+        self.build1DHistogram("mass_estimate_very_low_p_proton", "Mass Estimate for proton [MeV]", 40, 800., 1200.)
         self.build1DHistogram("track_type", "Track Type", 3, 0, 3)
         
 

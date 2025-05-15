@@ -14,8 +14,7 @@ ClassImp(ldmx::TrigScintTrack)
   }
 
   void TrigScintTrack::Print() const {
-    std::cout << "TrigScintTrack { "
-              << " channel centroid: " << getCentroid()
+    std::cout << "TrigScintTrack { " << " channel centroid: " << getCentroid()
               << ",  residual: " << getResidual() << " }" << std::endl;
   }
 }  // namespace ldmx

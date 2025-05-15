@@ -38,12 +38,16 @@ import LDMX.Hcal.HcalGeometry
 import LDMX.Hcal.hcal_hardcoded_conditions
 import LDMX.Ecal.digi as ecal_digi
 import LDMX.Ecal.vetos as ecal_vetos
+import LDMX.Ecal.EcalWABRecProcessor as ecal_WAB
 import LDMX.Hcal.digi as hcal_digi
+hcal_digi_reco = hcal_digi.HcalSimpleDigiAndRecProducer()
 
 ecalVeto = ecal_vetos.EcalVetoProcessor()
 ecalVeto.num_ecal_layers = 6
 ecalVeto.beam_energy = 4000.
 ecalVeto.recoil_from_tracking = False
+
+ecalWAB = ecal_WAB.EcalWABRecProcessor()
 
 from LDMX.TrigScint.trigScint import TrigScintDigiProducer
 from LDMX.TrigScint.trigScint import TrigScintClusterProducer
@@ -67,6 +71,8 @@ import LDMX.Hcal.hcal as hcal
 hcal_veto = hcal.HcalVetoProcessor()
 
 from LDMX.DQM import dqm
+
+ecalWAB_dqm = dqm.EcalWABRecResults()
 
 from LDMX.Tracking import tracking
 from LDMX.Tracking import reducedTracking
@@ -105,6 +111,7 @@ rSeedTracking.out_seed_collection = "LinearRecoilSeedTracks"
 rSeedTracking.layer12_midpoint = layer12_mid
 rSeedTracking.layer23_midpoint = layer23_mid
 rSeedTracking.layer34_midpoint = layer34_mid
+rSeedTracking.recoil_uncertainty = [0.006, 0.085]
 rSeedTracking.ecal_distance_threshold = 15.0
 
 rTracking = reducedTracking.LinearTrackFinder("LinearTrackFinder")
@@ -122,8 +129,7 @@ p.sequence.extend([
         ecal_digi.EcalDigiProducer(),
         ecal_digi.EcalRecProducer(), 
         ecalVeto,
-        hcal_digi.HcalDigiProducer(),
-        hcal_digi.HcalRecProducer(),
+        hcal_digi_reco,
         hcal_veto,
         *ts_digis,
         TrigScintClusterProducer.pad1(),
@@ -135,6 +141,8 @@ p.sequence.extend([
         truth_tracking,
         rSeedTracking,
         rTracking,
-        rTracking_dqm])
+        rTracking_dqm,
+	ecalWAB,
+	ecalWAB_dqm])
 
 p.sequence.extend(dqm.all_dqm)

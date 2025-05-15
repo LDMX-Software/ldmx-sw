@@ -158,4 +158,4 @@ void HcalDoubleEndRecProducer::produce(framework::Event& event) {
 }
 
 }  // namespace hcal
-DECLARE_PRODUCER_NS(hcal, HcalDoubleEndRecProducer);
+DECLARE_PRODUCER(hcal::HcalDoubleEndRecProducer);

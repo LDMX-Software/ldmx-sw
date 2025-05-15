@@ -104,7 +104,7 @@ std::vector<ldmx::StraightTrack> LinearTrackFinder::findTracks(
                   // Mark this seed for removal
                   return true;
                 }  // ifPositionUsed
-              }    // for measurement
+              }  // for measurement
               // Keep the seed if no position overlap
               return false;
             }),
@@ -165,4 +165,4 @@ bool LinearTrackFinder::isPositionUsed(
 }  // namespace reco
 }  // namespace tracking
 
-DECLARE_PRODUCER_NS(tracking::reco, LinearTrackFinder)
+DECLARE_PRODUCER(tracking::reco::LinearTrackFinder)

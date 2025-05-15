@@ -56,11 +56,12 @@ import LDMX.Hcal.hcal_hardcoded_conditions
 import LDMX.Ecal.digi as ecal_digi
 import LDMX.Ecal.vetos as ecal_vetos
 import LDMX.Hcal.digi as hcal_digi
+hcal_digi_reco = hcal_digi.HcalSimpleDigiAndRecProducer()
 
 from LDMX.DQM import dqm
 
 p.sequence.extend([
-        hcal_digi.HcalDigiProducer(),
-        hcal_digi.HcalRecProducer(),
-        dqm.SimObjects(), dqm.HCalDQM()
+        hcal_digi_reco,
+        dqm.SimObjects(), 
+        dqm.HCalDQM()
         ])

@@ -101,7 +101,7 @@ class TestConfig : public framework::Producer {
 }  // namespace test
 }  // namespace framework
 
-DECLARE_PRODUCER_NS(framework::test, TestConfig)
+DECLARE_PRODUCER(framework::test::TestConfig)
 
 /**
  * Test for Configure Python class

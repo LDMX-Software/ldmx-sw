@@ -1,3 +1,7 @@
+/**
+ * @file UserAction.h
+ * File holding UserAction prototype and supporting macro
+ */
 
 #ifndef SIMCORE_USERACTION_H
 #define SIMCORE_USERACTION_H
@@ -20,8 +24,9 @@
 /*   Framework   */
 /*~~~~~~~~~~~~~~~*/
 #include "Framework/Configure/Parameters.h"
+#include "Framework/Factory.h"
+#include "Framework/Logger.h"
 #include "SimCore/Event/SimParticle.h"
-#include "SimCore/Factory.h"
 #include "SimCore/UserEventInformation.h"
 
 // Forward Declarations
@@ -50,9 +55,8 @@ class UserAction {
              framework::config::Parameters& parameters);
 
   /// factory for user actions
-  using Factory =
-      ::simcore::Factory<UserAction, std::shared_ptr<UserAction>,
-                         const std::string&, framework::config::Parameters&>;
+  DECLARE_FACTORY(UserAction, std::shared_ptr<UserAction>, const std::string&,
+                  framework::config::Parameters&);
 
   /// Destructor
   virtual ~UserAction() = default;
@@ -64,7 +68,7 @@ class UserAction {
    *
    * @param event Geant4 event object.
    */
-  virtual void BeginOfEventAction(const G4Event*){};
+  virtual void BeginOfEventAction(const G4Event*) {};
 
   /**
    * Method called at the end of every event.
@@ -73,7 +77,7 @@ class UserAction {
    *
    * @param event Geant4 event object.
    */
-  virtual void EndOfEventAction(const G4Event*){};
+  virtual void EndOfEventAction(const G4Event*) {};
 
   /**
    * Method called at the beginning of a run.
@@ -82,7 +86,7 @@ class UserAction {
    *
    * @param run Current Geant4 run object.
    */
-  virtual void BeginOfRunAction(const G4Run*){};
+  virtual void BeginOfRunAction(const G4Run*) {};
 
   /**
    * Method called at the end of a run.
@@ -91,7 +95,7 @@ class UserAction {
    *
    * @param run Current Geant4 run object.
    */
-  virtual void EndOfRunAction(const G4Run*){};
+  virtual void EndOfRunAction(const G4Run*) {};
 
   /**
    * Method called before the UserTrackingAction.
@@ -100,7 +104,7 @@ class UserAction {
    *
    * @param track current Geant4 track
    */
-  virtual void PreUserTrackingAction(const G4Track*){};
+  virtual void PreUserTrackingAction(const G4Track*) {};
 
   /**
    * Method called after the UserTrackingAction.
@@ -109,7 +113,7 @@ class UserAction {
    *
    * @param track current Geant4 track
    */
-  virtual void PostUserTrackingAction(const G4Track*){};
+  virtual void PostUserTrackingAction(const G4Track*) {};
 
   /**
    * Method called after each simulation step.
@@ -118,7 +122,7 @@ class UserAction {
    *
    * @param current Geant4 step
    */
-  virtual void stepping(const G4Step*){};
+  virtual void stepping(const G4Step*) {};
 
   /**
    * Method called when a track is updated
@@ -138,14 +142,14 @@ class UserAction {
    *
    * TYPE::STACKING
    */
-  virtual void NewStage(){};
+  virtual void NewStage() {};
 
   /**
    * Method called at the beginning of a new event
    *
    * TYPE::STACKING
    */
-  virtual void PrepareNewEvent(){};
+  virtual void PrepareNewEvent() {};
 
   /**
    * @return The user action types
@@ -183,13 +187,22 @@ class UserAction {
   /// The set of parameters used to configure this class
   framework::config::Parameters parameters_;
 
+  /// the logging channel user actions can use `ldmx_log` with
+  mutable ::framework::logging::logger theLog_;
+
 };  // UserAction
 
 }  // namespace simcore
 
-#define DECLARE_ACTION(NS, CLASS)                                             \
-  namespace {                                                                 \
-  auto v##CLASS = ::simcore::UserAction::Factory::get().declare<NS::CLASS>(); \
-  }
+/**
+ * register a new UserAction with its factory
+ *
+ * @param[in] CLASS the fully-specified class for the new UserAction
+ * (including any namespaces)
+ *
+ * We just call #FACTORY_REGISTRATION with simcore::UserAction as the
+ * first argument.
+ */
+#define DECLARE_ACTION(CLASS) FACTORY_REGISTRATION(simcore::UserAction, CLASS)
 
 #endif  // SIMCORE_USERACTION_H

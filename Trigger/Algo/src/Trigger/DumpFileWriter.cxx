@@ -55,4 +55,4 @@ void DumpFileWriter::onProcessEnd() {
 
 }  // namespace trigger
 
-DECLARE_ANALYZER_NS(trigger, DumpFileWriter);
+DECLARE_ANALYZER(trigger::DumpFileWriter);

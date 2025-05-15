@@ -81,8 +81,8 @@ static const int row_starts[25] = {0,   13,  27,  42,  58,  75,  93,  112, 132,
 std::pair<unsigned int, unsigned int> EcalID::getCellUV() const {
   int cell = getCellID();
   unsigned int v;
-  for (v = 0; v < max_v && cell >= row_starts[v + 1]; v++)
-    ;  // find the right v value
+  for (v = 0; v < max_v && cell >= row_starts[v + 1];
+       v++);  // find the right v value
   unsigned int u = cell - row_starts[v];
   if (v > v_middle) u += (v - v_middle);
   return std::pair<unsigned int, unsigned int>(u, v);

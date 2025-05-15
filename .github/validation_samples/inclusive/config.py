@@ -37,6 +37,7 @@ import LDMX.Ecal.vetos as ecal_vetos
 import LDMX.Hcal.HcalGeometry
 import LDMX.Hcal.hcal_hardcoded_conditions
 import LDMX.Hcal.digi as hcal_digi
+hcal_digi_reco = hcal_digi.HcalSimpleDigiAndRecProducer()
 
 # Load the TS modules
 from LDMX.TrigScint.trigScint import TrigScintDigiProducer
@@ -64,15 +65,16 @@ from LDMX.Recon.simpleTrigger import TriggerProcessor
 count = ElectronCounter(1,'ElectronCounter')
 count.input_pass_name = ''
 
-# Load ecal veto and dont use tracking in it
+# Load ecal veto and use tracking in it
 ecalVeto = ecal_vetos.EcalVetoProcessor()
-ecalVeto.recoil_from_tracking = False
 
 # Load HCAL veto
 import LDMX.Hcal.hcal as hcal
 hcal_veto = hcal.HcalVetoProcessor()
 
+
 p.logger.termLevel = 1
+# p.logger.custom(ecalVeto, level = -1)
 
 # Add full tracking for both tagger and recoil trackers: digi, seeds, CFK, ambiguity resolution, GSF, DQM
 p.sequence.extend(full_tracking_sequence.sequence)
@@ -82,8 +84,7 @@ p.sequence.extend([
         ecal_digi.EcalDigiProducer(),
         ecal_digi.EcalRecProducer(), 
         ecalVeto,
-        hcal_digi.HcalDigiProducer(),
-        hcal_digi.HcalRecProducer(),
+        hcal_digi_reco,
         hcal_veto,
         *ts_digis,
         *ts_clusters,

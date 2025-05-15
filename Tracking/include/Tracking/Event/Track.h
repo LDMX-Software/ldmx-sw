@@ -14,8 +14,8 @@
 #include "TObject.h"
 
 // --- ACTS --- //
-//#include "Acts/Definitions/TrackParametrization.hpp"
-//#include "Acts/EventData/TrackParameters.hpp"
+// #include "Acts/Definitions/TrackParametrization.hpp"
+// #include "Acts/EventData/TrackParameters.hpp"
 
 namespace ldmx {
 
@@ -79,7 +79,7 @@ class Track {
   void Print() const;
 
   // To match the Framework Bus clear. It's doing nothing
-  void Clear(){};
+  void Clear() {};
 
   void setNhits(int nhits) { n_hits_ = nhits; }
   int getNhits() const { return n_hits_; }

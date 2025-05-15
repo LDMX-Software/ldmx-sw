@@ -15,6 +15,7 @@
 /*   Framework   */
 /*~~~~~~~~~~~~~~~*/
 #include "Framework/Configure/Parameters.h"
+#include "Framework/Logger.h"
 
 namespace biasing {
 

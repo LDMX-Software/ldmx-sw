@@ -3,9 +3,9 @@
 
 #include "Framework/Configure/Parameters.h"
 #include "Framework/EventProcessor.h"
+#include "Framework/Factory.h"
 #include "Framework/Logger.h"
 #include "Framework/RunHeader.h"
-#include "SimCore/Factory.h"
 
 //------------//
 //   Geant4   //
@@ -56,10 +56,10 @@ class XsecBiasingOperator : public G4VBiasingOperator {
   /**
    * The BiasingOperator factory
    */
-  using Factory =
-      ::simcore::Factory<XsecBiasingOperator,
-                         std::shared_ptr<XsecBiasingOperator>, std::string,
-                         const framework::config::Parameters&>;
+  DECLARE_FACTORY_WITH_WAREHOUSE(XsecBiasingOperator,
+                                 std::shared_ptr<XsecBiasingOperator>,
+                                 std::string,
+                                 const framework::config::Parameters&);
 
   /** Destructor */
   virtual ~XsecBiasingOperator() = default;
@@ -189,9 +189,7 @@ class XsecBiasingOperator : public G4VBiasingOperator {
  * Defines a builder for the declared class
  * and then registers the class as a biasing operator.
  */
-#define DECLARE_XSECBIASINGOPERATOR(CLASS)                                  \
-  namespace {                                                               \
-  auto v = ::simcore::XsecBiasingOperator::Factory::get().declare<CLASS>(); \
-  }
+#define DECLARE_XSECBIASINGOPERATOR(CLASS) \
+  FACTORY_REGISTRATION(simcore::XsecBiasingOperator, CLASS)
 
 #endif  // SIMCORE_XSECBIASINGOPERATOR_H_

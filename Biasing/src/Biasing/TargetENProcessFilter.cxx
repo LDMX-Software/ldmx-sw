@@ -4,13 +4,20 @@
  *        events which involve an electronuclear reaction in the target
  * @author Omar Moreno, SLAC National Accelerator Laboratory
  */
-
+/*~~~~~~~~~~~~~*/
+/*   Biasing   */
+/*~~~~~~~~~~~~~*/
 #include "Biasing/TargetENProcessFilter.h"
 
 /*~~~~~~~~~~~~*/
 /*   Geant4   */
 /*~~~~~~~~~~~~*/
 #include "G4RunManager.hh"
+
+/*~~~~~~~~~~~~~*/
+/*   SimCore   */
+/*~~~~~~~~~~~~~*/
+#include "SimCore/G4User/PtrRetrieval.h"
 
 namespace biasing {
 
@@ -38,11 +45,14 @@ void TargetENProcessFilter::stepping(const G4Step* step) {
   if (pdgID != 11) return;  // Throw an exception
 
   // Get the volume the particle is in.
-  G4VPhysicalVolume* volume = track->GetVolume();
-  G4String volumeName = volume->GetName();
-
+  G4VPhysicalVolume* track_volume = track->GetVolume();
+  auto target_volume =
+      simcore::g4user::ptrretrieval::getPhysicalVolume("target_PV");
+  if (!target_volume) {
+    ldmx_log(warn) << "Volume 'target_PV' not found in Geant4 volume store";
+  }
   // If the particle isn't in the target, don't continue with the processing.
-  if (volumeName.compareTo(volumeName_) != 0) return;
+  if (track_volume != target_volume) return;
 
   /*std::cout << "*******************************" << std::endl;
   std::cout << "*   Step " << track->GetCurrentStepNumber() << std::endl;
@@ -102,4 +112,4 @@ void TargetENProcessFilter::EndOfEventAction(const G4Event*) {
 }
 }  // namespace biasing
 
-DECLARE_ACTION(biasing, TargetENProcessFilter)
+DECLARE_ACTION(biasing::TargetENProcessFilter)

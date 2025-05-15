@@ -39,7 +39,7 @@ class MyClusterWeight {
     double dijT = pow(pow(aX - bX, 2) + pow(aY - bY, 2), 0.5);
 
     double weightT = exp(pow(dijT / rmol, 2)) - 1;
-    double weightZ = (exp(abs(dijz) / dzchar) - 1);
+    double weightZ = (exp(std::abs(dijz) / dzchar) - 1);
 
     // Return the highest of the two weights
     if (weightT <= weightZ) {

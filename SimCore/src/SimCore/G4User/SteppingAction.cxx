@@ -46,10 +46,10 @@ void SteppingAction::UserSteppingAction(const G4Step* step) {
           event_info->addENEnergy(delta_energy);
           event_info->lastStepWasEN(true);
           break;  // done <- assumes first match determines step process
-        }         // creator name matches PN or EN
-      }           // creator exists
-    }             // loop over secondaries
-  }               // secondaries list was created
+        }  // creator name matches PN or EN
+      }  // creator exists
+    }  // loop over secondaries
+  }  // secondaries list was created
   // now stepping actions can use getEventInfo()->wasLastStep{P,E}N()
   //  to determine if last step was PN or EN
   for (auto& steppingAction : steppingActions_) steppingAction->stepping(step);

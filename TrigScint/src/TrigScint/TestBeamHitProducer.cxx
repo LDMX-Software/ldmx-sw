@@ -198,4 +198,4 @@ void TestBeamHitProducer::produce(framework::Event& event) {
 
 }  // namespace trigscint
 
-DECLARE_PRODUCER_NS(trigscint, TestBeamHitProducer)
+DECLARE_PRODUCER(trigscint::TestBeamHitProducer)

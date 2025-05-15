@@ -3,8 +3,8 @@
 #define SIMCORE_RESIMULATOR_H_
 #include "Framework/EventFile.h"
 #include "Framework/Process.h"
-#include "SimCore/SensitiveDetector.h"
 #include "SimCore/SimulatorBase.h"
+
 namespace simcore {
 class ReSimulator : public SimulatorBase {
  public:

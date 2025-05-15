@@ -15,8 +15,8 @@ void TruthHitProducer::configure(framework::config::Parameters &parameters) {
 
   if (verbose_) {
     ldmx_log(info) << "In TruthHitProducer: configure done!";
-    ldmx_log(info) << "Got parameters:  "
-                   << "\nInput collection:     " << inputCollection_
+    ldmx_log(info) << "Got parameters:  " << "\nInput collection:     "
+                   << inputCollection_
                    << "\nInput pass name:     " << inputPassName_
                    << "\nOutput collection:    " << outputCollection_
                    << "\nVerbose: " << verbose_;
@@ -67,4 +67,4 @@ void TruthHitProducer::produce(framework::Event &event) {
 }
 }  // namespace trigscint
 
-DECLARE_PRODUCER_NS(trigscint, TruthHitProducer)
+DECLARE_PRODUCER(trigscint::TruthHitProducer)

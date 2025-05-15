@@ -101,4 +101,4 @@ void TrigEcalClusterProducer::produce(framework::Event& event) {
 }
 }  // namespace trigger
 
-DECLARE_PRODUCER_NS(trigger, TrigEcalClusterProducer);
+DECLARE_PRODUCER(trigger::TrigEcalClusterProducer);

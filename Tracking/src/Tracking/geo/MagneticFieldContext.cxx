@@ -52,4 +52,4 @@ class MagneticFieldContextProvider
 
 }  // namespace tracking::geo
 
-DECLARE_CONDITIONS_PROVIDER_NS(tracking::geo, MagneticFieldContextProvider)
+DECLARE_CONDITIONS_PROVIDER(tracking::geo::MagneticFieldContextProvider)

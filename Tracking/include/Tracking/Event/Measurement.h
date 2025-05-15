@@ -111,7 +111,7 @@ class Measurement {
   /// Add a trackId to the internal vector
   void addTrackId(int trkId) { trackIds_.push_back(trkId); };
   /// @return the sim particle IDs that compose the measurement
-  std::vector<unsigned int> getTrackIds() { return trackIds_; };
+  std::vector<unsigned int> getTrackIds() const { return trackIds_; };
 
   ///  @return The energy deposited in the sensor where the measurement took
   ///  place.

@@ -567,15 +567,6 @@ void CKFProcessor::produce(framework::Event& event) {
       const std::shared_ptr<Acts::PlaneSurface> ecal_surface =
           Acts::Surface::makeShared<Acts::PlaneSurface>(surf_transform);
 
-      // To HCAL
-      // Let's extrapolate to 540 mm which is the mid of the side HCAL
-      Acts::Vector3 pos_hcal(540.0, 0., 0.);
-      Acts::Translation3 surf_translation_hcal(pos_hcal);
-      Acts::Transform3 surf_transform_hcal(surf_translation_hcal *
-                                           surf_rotation);
-      const std::shared_ptr<Acts::PlaneSurface> hcal_surface =
-          Acts::Surface::makeShared<Acts::PlaneSurface>(surf_transform_hcal);
-
       // Beam Origin unbounded surface
       const std::shared_ptr<Acts::Surface> beamOrigin_surface =
           tracking::sim::utils::unboundSurface(-700);
@@ -616,28 +607,6 @@ void CKFProcessor::produce(framework::Event& event) {
         }
       }
 
-      // Recoil Extrapolation to HCAL only
-      if (!taggerTracking_) {
-        ldmx_log(debug) << "    Hcal Extrapolation";
-        ldmx::Track::TrackState tsAtHcal;
-        success = trk_extrap_->TrackStateAtSurface(
-            track, hcal_surface, tsAtHcal, ldmx::TrackStateType::AtHCAL);
-
-        if (success) {
-          trk.addTrackState(tsAtHcal);
-          ldmx_log(debug) << "    Successfully obtained TrackState at Hcal";
-          ldmx_log(debug) << "    Parameters At Hcal: Loc0 = "
-                          << tsAtHcal.params[0]
-                          << ", Loc1 = " << tsAtHcal.params[1]
-                          << ", phi = " << tsAtHcal.params[2]
-                          << ", theta = " << tsAtHcal.params[3]
-                          << ", QoP = " << tsAtHcal.params[4];
-        } else {
-          ldmx_log(info) << "    Could not extrapolate to HCAL!! Please check "
-                            "the track states";
-        }
-      }
-
       // Truth matching
       if (truthMatchingTool) {
         auto truthInfo = truthMatchingTool->TruthMatch(trk);
@@ -652,7 +621,7 @@ void CKFProcessor::produce(framework::Event& event) {
       tracks.push_back(trk);
       ntracks_++;
     }  // // loop on tracksFromSeed (which usually has 1 element)
-  }    // loop seed track parameters (i.e. track candidates)
+  }  // loop seed track parameters (i.e. track candidates)
 
   ldmx_log(info) << "Number of CKF tracks " << tracks.size();
 
@@ -884,4 +853,4 @@ std::vector<std::vector<std::size_t>> CKFProcessor::computeSharedHits(
 }  // namespace reco
 }  // namespace tracking
 
-DECLARE_PRODUCER_NS(tracking::reco, CKFProcessor)
+DECLARE_PRODUCER(tracking::reco::CKFProcessor)

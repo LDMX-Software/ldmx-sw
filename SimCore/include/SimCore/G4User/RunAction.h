@@ -60,12 +60,12 @@ class RunAction : public G4UserRunAction {
    *
    * @param action  User action of type RunAction
    */
-  void registerAction(UserAction* runAction) {
+  void registerAction(std::shared_ptr<UserAction> runAction) {
     runActions_.push_back(runAction);
   }
 
  private:
-  std::vector<UserAction*> runActions_;
+  std::vector<std::shared_ptr<UserAction>> runActions_;
 
 };  // RunAction
 

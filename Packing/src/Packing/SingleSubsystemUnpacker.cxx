@@ -28,4 +28,4 @@ void SingleSubsystemUnpacker::produce(framework::Event& event) {
 
 }  // namespace packing
 
-DECLARE_PRODUCER_NS(packing, SingleSubsystemUnpacker)
+DECLARE_PRODUCER(packing::SingleSubsystemUnpacker)

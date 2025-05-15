@@ -312,4 +312,4 @@ ldmx::TrigScintTrack TrigScintFirmwareTracker::makeTrack(Track outTrk) {
 
 }  // namespace trigscint
 
-DECLARE_PRODUCER_NS(trigscint, TrigScintFirmwareTracker);
+DECLARE_PRODUCER(trigscint::TrigScintFirmwareTracker);

@@ -147,4 +147,4 @@ HcalGeometryProvider::getCondition(const ldmx::EventHeader& context) {
 
 }  // namespace hcal
 
-DECLARE_CONDITIONS_PROVIDER_NS(hcal, HcalGeometryProvider);
+DECLARE_CONDITIONS_PROVIDER(hcal::HcalGeometryProvider);

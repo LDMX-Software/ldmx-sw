@@ -538,4 +538,4 @@ PhotoNuclearDQM::CompactEventType PhotoNuclearDQM::classifyCompactEvent(
 
 }  // namespace dqm
 
-DECLARE_ANALYZER_NS(dqm, PhotoNuclearDQM)
+DECLARE_ANALYZER(dqm::PhotoNuclearDQM)

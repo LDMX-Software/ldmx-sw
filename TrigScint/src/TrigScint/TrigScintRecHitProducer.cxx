@@ -84,4 +84,4 @@ void TrigScintRecHitProducer::produce(framework::Event &event) {
 }
 }  // namespace trigscint
 
-DECLARE_PRODUCER_NS(trigscint, TrigScintRecHitProducer);
+DECLARE_PRODUCER(trigscint::TrigScintRecHitProducer);

@@ -18,9 +18,8 @@ void CalorimeterHit::Clear() {
 }
 
 void CalorimeterHit::Print() const {
-  std::cout << "CalorimeterHit { "
-            << "id: " << std::hex << id_ << std::dec << ",  energy: " << energy_
-            << "MeV, time: " << time_ << "ns, amplitude: " << amplitude_ << "}"
-            << std::endl;
+  std::cout << "CalorimeterHit { " << "id: " << std::hex << id_ << std::dec
+            << ",  energy: " << energy_ << "MeV, time: " << time_
+            << "ns, amplitude: " << amplitude_ << "}" << std::endl;
 }
 }  // namespace ldmx

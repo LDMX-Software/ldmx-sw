@@ -52,7 +52,7 @@ jobs:
         ref: ${{ env.HEAD_REF }}
 
     - name: Install just
-      uses: extractions/setup-just@v2
+      uses: extractions/setup-just@v3
       with:
           just-version: 1.26.0
  
@@ -63,7 +63,11 @@ jobs:
       shell: bash
 
     - name: Git Gold Histograms from trunk
-      run: git checkout origin/trunk -- .github/validation_samples/*/**
+      if: github.event_name == 'issue_comment'
+      run: |
+        git checkout origin/trunk \
+          -- .github/validation_samples/*/**.root .github/validation_samples/*/**.log
+        git status
       shell: bash
 
     - name: Package ldmx-sw Into Artifact

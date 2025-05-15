@@ -9,7 +9,7 @@
 #include <G4Nucleus.hh>
 #include <iostream>
 
-#include "SimCore/PhotoNuclearModel.h"
+#include "SimCore/PhotoNuclearModels/PhotoNuclearModel.h"
 #include "SimCore/UserEventInformation.h"
 namespace simcore {
 

@@ -144,4 +144,4 @@ void EcalDigiVerifier::analyze(const framework::Event &event) {
 
 }  // namespace dqm
 
-DECLARE_ANALYZER_NS(dqm, EcalDigiVerifier);
+DECLARE_ANALYZER(dqm::EcalDigiVerifier);

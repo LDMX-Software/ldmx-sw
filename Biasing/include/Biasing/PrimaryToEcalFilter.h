@@ -11,6 +11,11 @@
 /*~~~~~~~~~~~~~*/
 #include "SimCore/UserAction.h"
 
+/*~~~~~~~~~~~~~~~*/
+/*   Framework   */
+/*~~~~~~~~~~~~~~~*/
+#include "Framework/Logger.h"
+
 // Forward declarations
 class G4Step;
 

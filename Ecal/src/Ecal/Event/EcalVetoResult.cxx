@@ -29,8 +29,10 @@ void EcalVetoResult::Clear() {
   nNearPhHits_ = 0;
   photonTerritoryHits_ = 0;
   epAng_ = 0;
+  epAngAtTarget_ = 0;
   epSep_ = 0;
   epDot_ = 0;
+  epDotAtTarget_ = 0;
 
   electronContainmentEnergy_.clear();
   photonContainmentEnergy_.clear();
@@ -79,8 +81,8 @@ void EcalVetoResult::setVariables(
     float summedTightIso, float maxCellDep, float showerRMS, float xStd,
     float yStd, float avgLayerHit, float stdLayerHit, float ecalBackEnergy,
     int nStraightTracks, int nLinregTracks, int firstNearPhLayer,
-    int nNearPhHits, int photonTerritoryHits, float epAng, float epSep,
-    float epDot,
+    int nNearPhHits, int photonTerritoryHits, float epAng, float epAngAtTarget,
+    float epSep, float epDot, float epDotAtTarget,
 
     std::vector<float> electronContainmentEnergy,
     std::vector<float> photonContainmentEnergy,
@@ -110,8 +112,8 @@ void EcalVetoResult::setVariables(
     std::vector<std::vector<float>> oContLayerMean,
     std::vector<std::vector<float>> oContLayerStd,
 
-    std::vector<float> EcalLayerEdepReadout, std::vector<double> recoilP,
-    std::vector<float> recoilPos) {
+    std::vector<float> EcalLayerEdepReadout, std::array<float, 3> recoilP,
+    std::array<float, 3> recoilPos) {
   nReadoutHits_ = nReadoutHits;
   summedDet_ = summedDet;
   summedTightIso_ = summedTightIso;
@@ -130,8 +132,10 @@ void EcalVetoResult::setVariables(
   nNearPhHits_ = nNearPhHits;
   photonTerritoryHits_ = photonTerritoryHits;
   epAng_ = epAng;
+  epAngAtTarget_ = epAngAtTarget;
   epSep_ = epSep;
   epDot_ = epDot;
+  epDotAtTarget_ = epDotAtTarget;
 
   electronContainmentEnergy_ = electronContainmentEnergy;
   photonContainmentEnergy_ = photonContainmentEnergy;

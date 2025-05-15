@@ -301,8 +301,8 @@ class HcalCheckReconstruction : public framework::Analyzer {
 }  // namespace test
 }  // namespace hcal
 
-DECLARE_PRODUCER_NS(hcal::test, HcalFakeSimHits)
-DECLARE_ANALYZER_NS(hcal::test, HcalCheckReconstruction)
+DECLARE_ANALYZER(hcal::test::HcalFakeSimHits);
+DECLARE_PRODUCER(hcal::test::HcalCheckReconstruction);
 
 /**
  * Test for the Hcal Digi Pipeline

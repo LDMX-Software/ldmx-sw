@@ -10,6 +10,7 @@
 /*   Framework   */
 /*~~~~~~~~~~~~~~~*/
 #include "Framework/Configure/Parameters.h"
+#include "Framework/Logger.h"
 
 // Forward declaration
 class G4Event;

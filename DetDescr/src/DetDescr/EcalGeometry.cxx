@@ -95,7 +95,7 @@ EcalID EcalGeometry::getID(double x, double y, double z, bool fallible) const {
   static const double tolerance = 0.3;  // thickness of Si
   int layer_id{-1};
   for (const auto& [lid, layer_xyz] : layer_pos_xy_) {
-    if (abs(std::get<2>(layer_xyz) - z) < tolerance) {
+    if (std::abs(std::get<2>(layer_xyz) - z) < tolerance) {
       layer_id = lid;
       break;
     }
@@ -200,9 +200,8 @@ std::pair<double, double> EcalGeometry::getPositionInModule(int cell_id) const {
 
 void EcalGeometry::buildLayerMap() {
   if (verbose_ > 0) {
-    std::cout << "[EcalGeometry::buildLayerMap] "
-              << " Building layer map with " << layerZPositions_.size()
-              << " layers" << std::endl;
+    std::cout << "[EcalGeometry::buildLayerMap] " << " Building layer map with "
+              << layerZPositions_.size() << " layers" << std::endl;
     ;
     if (layer_shift_odd_ or layer_shift_odd_bilayer_) {
       std::cout << "  shifting odd ";
@@ -263,8 +262,8 @@ void EcalGeometry::buildModuleMap() {
     }
     module_pos_xy_[id] = std::pair<double, double>(x, y);
     if (verbose_ > 2)
-      std::cout << "    Module " << id << " is centered at (x,y) = "
-                << "(" << x << ", " << y << ") mm" << std::endl;
+      std::cout << "    Module " << id << " is centered at (x,y) = " << "(" << x
+                << ", " << y << ") mm" << std::endl;
   }
 }
 
@@ -418,9 +417,9 @@ void EcalGeometry::buildCellMap() {
                   << " is inside and adjacent to a vertex outside the module."
                   << std::endl;
               std::cout << "Working on edge with slope (" << edge_slope_p << ","
-                        << edge_slope_q << ")"
-                        << " and origin (" << edge_origin_p << ","
-                        << edge_origin_q << ")" << std::endl;
+                        << edge_slope_q << ")" << " and origin ("
+                        << edge_origin_p << "," << edge_origin_q << ")"
+                        << std::endl;
             }
 
             // project vertices adjacent to the vertex outside the module onto
@@ -457,7 +456,7 @@ void EcalGeometry::buildCellMap() {
             actual_q[num_vertices] = vertex_q[i];
             num_vertices++;
           }  // should we project or not
-        }    // loop through vertices
+        }  // loop through vertices
       } else {
         // all 6 inside, just copy the vertices over
         num_vertices = 6;
@@ -486,8 +485,8 @@ void EcalGeometry::buildCellMap() {
       // save cell location as center of ENTIRE hexagon
       cell_pos_in_module_[cell_id] = std::pair<double, double>(p, q);
       ++cell_id;  // incrememnt cell ID
-    }             // if num vertices inside is > 1
-  }               // loop over larger grid spanning module hexagon
+    }  // if num vertices inside is > 1
+  }  // loop over larger grid spanning module hexagon
   return;
 }
 

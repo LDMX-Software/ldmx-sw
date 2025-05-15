@@ -31,7 +31,7 @@ EcalReconConditions::EcalReconConditions(
                       "Expected column '" + EXPECTED_COLUMNS.at(i) +
                           "', got '" + the_table_.getColumnNames().at(i) + "'");
     }  // does name match?
-  }    // loop through columns
+  }  // loop through columns
 }
 
 }  // namespace ecal

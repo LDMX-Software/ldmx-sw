@@ -75,4 +75,4 @@ void HcalInefficiencyAnalyzer::configure(
 }
 }  // namespace dqm
 
-DECLARE_ANALYZER_NS(dqm, HcalInefficiencyAnalyzer);
+DECLARE_ANALYZER(dqm::HcalInefficiencyAnalyzer);

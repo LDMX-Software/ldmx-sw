@@ -12,6 +12,7 @@ namespace recon {
 
 void PFHcalClusterProducer::configure(framework::config::Parameters& ps) {
   hitCollName_ = ps.getParameter<std::string>("hitCollName");
+  hitPassName_ = ps.getParameter<std::string>("hitPassName");
   clusterCollName_ = ps.getParameter<std::string>("clusterCollName");
   suffix_ = ps.getParameter<std::string>("suffix", "");
   singleCluster_ = ps.getParameter<bool>("doSingleCluster");
@@ -24,8 +25,13 @@ void PFHcalClusterProducer::configure(framework::config::Parameters& ps) {
 }
 
 void PFHcalClusterProducer::produce(framework::Event& event) {
-  if (!event.exists(hitCollName_)) return;
-  const auto hcalRecHits = event.getCollection<ldmx::HcalHit>(hitCollName_);
+  if (!event.exists(hitCollName_, hitPassName_)) {
+    ldmx_log(fatal) << "Couldn't find input collection " << hitCollName_ << "_"
+                    << hitPassName_;
+    return;
+  }
+  const auto hcalRecHits =
+      event.getCollection<ldmx::HcalHit>(hitCollName_, hitPassName_);
   float eTotal = 0;
   for (const auto& h : hcalRecHits) eTotal += h.getEnergy();
 
@@ -68,4 +74,4 @@ void PFHcalClusterProducer::produce(framework::Event& event) {
 
 }  // namespace recon
 
-DECLARE_PRODUCER_NS(recon, PFHcalClusterProducer);
+DECLARE_PRODUCER(recon::PFHcalClusterProducer);

@@ -12,8 +12,7 @@ project(
 find_package(ROOT CONFIG REQUIRED)
 
 # Search for Boost
-find_package(Boost REQUIRED
-             COMPONENTS log)
+find_package(Boost REQUIRED COMPONENTS log)
 
 include_directories( /usr/local/include/GENIE )
 
@@ -54,8 +53,9 @@ setup_genie_target()
 add_subdirectory(G4DarkBreM)
 
 setup_library(module SimCore
-  name PhotoNuclearModels
-  dependencies SimCore::SimCore)
+              name PhotoNuclearModels
+              dependencies Geant4::Interface
+                           Framework::Configure)
 
 # Set the LHE Reading Library
 setup_library(module SimCore 
@@ -69,9 +69,50 @@ setup_library(module SimCore
               dependencies Framework::Framework
                            Geant4::Interface)
 
-# Get a list of all of the source files.
-file(GLOB SRC_FILES CONFIGURE_DEPDENDS ${PROJECT_SOURCE_DIR}/src/SimCore/Geo/[a-zA-Z]*.cxx
-                                       ${PROJECT_SOURCE_DIR}/src/SimCore/[a-zA-Z]*.cxx)
+# Setup the biasing operators library
+setup_library(module SimCore
+              name BiasOperators
+              dependencies Geant4::Interface
+                           Framework::Configure
+                           Framework::Framework
+                           G4DarkBreM)
+
+# Primary Generators library
+setup_library(module SimCore
+              name Generators
+              dependencies Geant4::Interface
+                           Framework::Configure
+                           Framework::Framework
+                           SimCore::Event
+                           SimCore::LHE
+                           ${GENIE_LIBS}
+                           HepMC3)
+
+# Reweight Library
+setup_library(module SimCore
+              name Reweight
+              dependencies SimCore::Generators
+	                         SimCore::Event
+                           Framework::Configure
+			                     Framework::Framework
+                           ${GENIE_LIBS}
+			                     HepMC3)
+
+# Sensitive Detectors library
+setup_library(module SimCore
+              name SDs
+              dependencies Geant4::Interface
+                           Framework::Configure
+                           Framework::Framework
+                           DetDescr::DetDescr
+                           SimCore::G4User)
+
+setup_library(module SimCore
+              name Geo
+              dependencies Geant4::Interface
+                           Framework::Configure
+                           Framework::Framework
+                           DetDescr::DetDescr)
 
 # Setup the library
 setup_library(module SimCore
@@ -81,33 +122,14 @@ setup_library(module SimCore
                            HepMC3
                            Framework::Configure
                            Framework::Framework
+                           SimCore::Geo
                            SimCore::G4User
-                           G4DarkBreM
-                           DetDescr::DetDescr
-                           Boost::log
-			                     log4cpp
-                           "${registered_targets}"
-              sources ${SRC_FILES})
-
-# Setup the biasing operators library
-setup_library(module SimCore
-              name BiasOperators
-              dependencies SimCore::SimCore)
-
-# Primary Generators library
-setup_library(module SimCore
-              name Generators
-              dependencies SimCore::SimCore SimCore::LHE SimCore::Event ${GENIE_LIBS} HepMC3)
-
-# Reweight Library
-setup_library(module SimCore
-    name Reweight
-    dependencies SimCore::SimCore SimCore::Generators SimCore::Event Framework::Framework ${GENIE_LIBS} HepMC3)
-
-# Sensitive Detectors library
-setup_library(module SimCore
-              name SDs
-              dependencies SimCore::SimCore)
+                           SimCore::PhotoNuclearModels
+                           SimCore::BiasOperators
+                           SimCore::Generators
+			                     SimCore::Reweight
+                           SimCore::SDs)
+			   
 
 # Set some target properties
 set_target_properties(SimCore
