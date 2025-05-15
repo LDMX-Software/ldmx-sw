@@ -10,6 +10,8 @@ void PFTrackProducer::configure(framework::config::Parameters& ps) {
   input_pass_name_ = ps.getParameter<std::string>("input_pass_name");
   outputTrackCollName_ = ps.getParameter<std::string>("outputTrackCollName");
   doElectronTracking_ = ps.getParameter<bool>("doElectronTracking");
+  minElectronMomentumZ_ = ps.getParameter<double>("minElectronMomentumZ");
+  maxElectronTrackID_ = ps.getParameter<int>("maxElectronTrackID");
 }
 
 double getP(const ldmx::SimTrackerHit& tk) {
@@ -33,13 +35,13 @@ void PFTrackProducer::produce(framework::Event& event) {
       if (fabs(240 - spHit.getPosition()[2]) > 0.1) continue;
       if (doElectronTracking_) {  // only select electron SP hits
         if (spHit.getPdgID() != 11) continue;
-        if (spHit.getTrackID() < 2 && spHit.getMomentum()[2] > 2500) {
+        if (spHit.getTrackID() < 2 && spHit.getMomentum()[2] > minElectronMomentumZ_) {
           // this is almost guaranteed to be a pileup beam electron! keep it
           pfTracks.push_back(spHit);
           ldmx_log(debug) << "Added beam electron SP hit: trackID="
                           << spHit.getTrackID()
                           << ", pz = " << spHit.getMomentum()[2];
-        } else if (spHit.getTrackID() <= 30 && spHit.getMomentum()[2] > 5) {
+        } else if (spHit.getTrackID() <= maxElectronTrackID_ && spHit.getMomentum()[2] > 5) {
           // require more than minimum forward momentum to catch recoil electron
           // candidates
           pfTracks.push_back(spHit);
