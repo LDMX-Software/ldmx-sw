@@ -383,8 +383,16 @@ void GenieGenerator::GeneratePrimaryVertex(G4Event* event) {
 
     G4PrimaryParticle* primary = new G4PrimaryParticle();
     primary->SetPDGcode(p->Pdg());
-    primary->Set4Momentum(p->Px() * CLHEP::GeV, p->Py() * CLHEP::GeV,
-                          p->Pz() * CLHEP::GeV, p->E() * CLHEP::GeV);
+
+    //this sets the 4momentum. But may not respect masses in G4...
+    //primary->Set4Momentum(p->Px() * CLHEP::GeV, p->Py() * CLHEP::GeV,
+    //                      p->Pz() * CLHEP::GeV, p->E() * CLHEP::GeV);
+
+    //for now, do this to set the masses to be the G4 ones, through the PDG code
+    primary->SetMomentum(p->Px() * CLHEP::GeV,
+                         p->Py() * CLHEP::GeV,
+                         p->Pz() * CLHEP::GeV);
+
     primary->SetProperTime(time_ * CLHEP::ns);
 
     UserPrimaryParticleInformation* primaryInfo =
