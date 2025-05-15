@@ -83,6 +83,8 @@ class EcalSD : public SensitiveDetector {
   bool enableHitContribs_;
   /// compress hit contribs
   bool compressHitContribs_;
+  /// maximum track ID to be considered an "origin"
+  int max_origin_track_id_;
 };
 
 }  // namespace simcore
