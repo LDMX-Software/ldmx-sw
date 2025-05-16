@@ -5,6 +5,12 @@ namespace trigger {
 void TrigMipReco::configure(framework::config::Parameters& ps) {
   hitCollName_ = ps.getParameter<std::string>("hitCollName");
   passCollName_ = ps.getParameter<std::string>("passCollName");
+  calorimeterTypeIsHcal_ = ps.getParameter<bool>("calorimeterTypeIsHcal");
+  if (calorimeterTypeIsHcal_) {
+    minEnergy_ = 8.0f; // mip peak is 10-11
+  } else {
+    minEnergy_ = 1.5f; // change later
+  }
 }
 
 void TrigMipReco::produce(framework::Event& event) {

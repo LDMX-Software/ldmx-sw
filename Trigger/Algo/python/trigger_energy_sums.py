@@ -8,6 +8,14 @@ class EcalTPSelector(Producer) :
         self.tpCollName = "ecalTrigDigis"
         self.passCollName = "ecalTrig"
 
+class HcalTPSelector(Producer) :
+    """Configuration for HcalTPSelector (relies on TrigHcalEnergySum)
+    """
+    def __init__(self, instance_name = 'myHcalTPSelector') :
+        super().__init__(instance_name , 'trigger::HcalTPSelector','Trigger')
+        self.combinedQuadCollName = "hcalTrigQuads"
+        self.passCollName = "hcalTrig"
+
 class TrigEcalEnergySum(Producer) :
     """Configuration for TrigEcalEnergySum
     """
@@ -23,21 +31,24 @@ class TrigHcalEnergySum(Producer) :
         self.quadCollName = "hcalTrigPrimDigiSTQs"
         self.combinedQuadCollName = "hcalTrigQuads"
         self.inputProc = "" # name of the process where the STQs are built
-class HcalTPSelector(Producer) :
-    """Configuration for HcalTPSelector (relies on TrigHcalEnergySum)
-    """
-    def __init__(self, instance_name = 'myHcalTPSelector') :
-        super().__init__(instance_name , 'trigger::HcalTPSelector','Trigger')
-        self.combinedQuadCollName = "hcalTrigQuads"
-        self.passCollName = "hcalTrig"
 
 class HCalTrigMipReco(Producer) :
-    """Configuration for TrigMipReco
+    """Configuration for TrigMipReco in Hcal
     """
     def __init__(self, instance_name = 'myHCalTrigMipReco') :
         super().__init__(instance_name , 'trigger::TrigMipReco','Trigger')
         self.hitCollName = "hcalTrigHits"
         self.passCollName = "hcalTrigMIPs"
+        self.calorimeterTypeIsHcal = True
+
+class ECalTrigMipReco(Producer) :
+    """Configuration for TrigMipReco in Ecal
+    """
+    def __init__(self, instance_name = 'myECalTrigMipReco') :
+        super().__init__(instance_name , 'trigger::TrigMipReco','Trigger')
+        self.hitCollName = "ecalTrigHits"
+        self.passCollName = "ecalTrigMIPs"
+        self.calorimeterTypeIsHcal = False
 
 class TrigEcalClusterProducer(Producer) :
     """Configuration for TrigEcalClusterProducer

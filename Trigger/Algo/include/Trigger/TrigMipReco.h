@@ -35,9 +35,11 @@ class TrigMipReco : public framework::Producer {
   std::string hitCollName_;
   // name of output collection
   std::string passCollName_;
+  // calorimeterTypeIsHcal boolean
+  bool calorimeterTypeIsHcal_;
 
-  float minEnergy_{8.}; // mip peak is 10-11
-  
+  float minEnergy_; // set in configure()
+
 };
 }  // namespace trigger
 
