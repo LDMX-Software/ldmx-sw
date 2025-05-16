@@ -278,9 +278,6 @@ class Event {
    * @param passName name of pass you want
    * @return const reference to requested object
    */
-  // template <typename T>
-  // const T &getObject(const std::string &collectionName,
-  //                    const std::string &passName) const {
   template <typename T>
   const T &getObject(const std::string &collectionName,
                      const std::string &passName) const {
