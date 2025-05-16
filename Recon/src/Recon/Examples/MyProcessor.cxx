@@ -14,9 +14,11 @@ void MyProcessor::configure(framework::config::Parameters &parameters) {
    */
 
   int my_parameter = parameters.getParameter<int>("my_parameter");
-  
-  ecal_rechits_passname_ = parameters.getParameter<std::string>("ecal_rechits_passname");
-  ecal_rec_hits_event_passname_ = parameters.getParameter<std::string>("ecal_rec_hits_event_passname"); 
+
+  ecal_rechits_passname_ =
+      parameters.getParameter<std::string>("ecal_rechits_passname");
+  ecal_rec_hits_event_passname_ =
+      parameters.getParameter<std::string>("ecal_rec_hits_event_passname");
 
   std::cout << "MyProcessor has my_parameter = " << my_parameter << std::endl;
 }

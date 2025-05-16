@@ -37,24 +37,29 @@ void HcalWABVetoProcessor::configure(
       parameters.getParameter<std::string>("inputHCALHitCollName");
   inputECALHitCollName_ =
       parameters.getParameter<std::string>("inputECALHitCollName");
-  hcal_hit_passname_ = parameters.getParameter<std::string>("hcal_hit_passname");
-  ecal_hit_passname_ = parameters.getParameter<std::string>("ecal_hit_passname");
-  hcal_cluster_passname_ = parameters.getParameter<std::string>("hcal_cluster_passname");      
-
+  hcal_hit_passname_ =
+      parameters.getParameter<std::string>("hcal_hit_passname");
+  ecal_hit_passname_ =
+      parameters.getParameter<std::string>("ecal_hit_passname");
+  hcal_cluster_passname_ =
+      parameters.getParameter<std::string>("hcal_cluster_passname");
 }
 
 void HcalWABVetoProcessor::produce(framework::Event &event) {
   // Get the collection of sim particles from the event
   // HCAL:
   const std::vector<ldmx::HcalHit> hcalRecHits =
-    event.getCollection<ldmx::HcalHit>(inputHCALHitCollName_, hcal_hit_passname_);
+      event.getCollection<ldmx::HcalHit>(inputHCALHitCollName_,
+                                         hcal_hit_passname_);
   // ECAL:
   const std::vector<ldmx::EcalHit> ecalRecHits =
-    event.getCollection<ldmx::EcalHit>(inputECALHitCollName_, ecal_hit_passname_);
+      event.getCollection<ldmx::EcalHit>(inputECALHitCollName_,
+                                         ecal_hit_passname_);
 
   // Clusters:
   const std::vector<ldmx::HcalCluster> hcalClusters =
-    event.getCollection<ldmx::HcalCluster>(inputHCALClusterCollName_, hcal_cluster_passname_);
+      event.getCollection<ldmx::HcalCluster>(inputHCALClusterCollName_,
+                                             hcal_cluster_passname_);
 
   // Loop over all of the Hcal hits and calculate to total photoelectrons
   // in the event.

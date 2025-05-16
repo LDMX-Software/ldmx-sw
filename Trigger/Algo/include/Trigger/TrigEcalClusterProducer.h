@@ -36,7 +36,7 @@ class TrigEcalClusterProducer : public framework::Producer {
   std::string hitCollName_;
   // name of collection for trigCluster to be output
   std::string clusterCollName_;
-  
+
   std::string hit_coll_passname_;
   std::string hit_coll_name_events_passname_;
 

@@ -31,14 +31,14 @@ class HcalCheckPositionMap : public framework::Analyzer {
 
   void configure(framework::config::Parameters &parameters) override {
     hcal_sim_hits_pass_name_ =
-         parameters.getParameter<std::string>("hcal_sim_hits_pass_name", "");
+        parameters.getParameter<std::string>("hcal_sim_hits_pass_name", "");
   }
 
   void onProcessStart() final override {}
 
   void analyze(const framework::Event &event) final override {
-    const auto simHits =
-        event.getCollection<ldmx::SimCalorimeterHit>("HcalSimHits",hcal_sim_hits_pass_name_);
+    const auto simHits = event.getCollection<ldmx::SimCalorimeterHit>(
+        "HcalSimHits", hcal_sim_hits_pass_name_);
 
     CHECK(simHits.size() > 0);
     return;

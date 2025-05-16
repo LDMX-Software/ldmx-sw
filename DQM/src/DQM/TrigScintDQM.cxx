@@ -49,7 +49,8 @@ void TrigScintDQM::configure(framework::config::Parameters &ps) {
 
 void TrigScintDQM::analyze(const framework::Event &event) {
   const std::vector<ldmx::SimCalorimeterHit> TrigScintHits =
-      event.getCollection<ldmx::SimCalorimeterHit>(hitCollectionName_, hit_passname_);
+      event.getCollection<ldmx::SimCalorimeterHit>(hitCollectionName_,
+                                                   hit_passname_);
 
   // Get the total hit count
   int hitCount = TrigScintHits.size();

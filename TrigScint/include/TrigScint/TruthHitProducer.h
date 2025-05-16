@@ -66,10 +66,10 @@ class TruthHitProducer : public framework::Producer {
   /// Name of the output collection that will be used to store the
   /// selected sim hits
   std::string outputCollection_;
+
  private:
   std::string sim_particles_passname_;
   std::string input_collection_events_passname_;
-
 
 };  // TruthHitProducer
 

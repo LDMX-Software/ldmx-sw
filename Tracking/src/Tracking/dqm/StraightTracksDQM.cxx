@@ -17,13 +17,12 @@ void StraightTracksDQM::configure(framework::config::Parameters& parameters) {
   subdetector_ = parameters.getParameter<std::string>("subdetector", "Recoil");
   measurement_collection_ = parameters.getParameter<std::string>(
       "measurement_collection", "DigiRecoilSimHits");
-  track_collection_events_passname_ = parameters.getParameter<std::string>(
-      "track_collection_events_passname");
-      
-  truth_collection_events_passname_ = parameters.getParameter<std::string>(
-      "truth_collection_events_passname"); 
-  input_pass_name_ =
-      parameters.getParameter<std::string>("input_pass_name");
+  track_collection_events_passname_ =
+      parameters.getParameter<std::string>("track_collection_events_passname");
+
+  truth_collection_events_passname_ =
+      parameters.getParameter<std::string>("truth_collection_events_passname");
+  input_pass_name_ = parameters.getParameter<std::string>("input_pass_name");
 
   ldmx_log(info) << "Track Collection " << track_collection_;
   ldmx_log(info) << "Truth Collection " << truth_collection_;

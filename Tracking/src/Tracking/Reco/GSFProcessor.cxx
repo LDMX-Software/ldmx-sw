@@ -127,11 +127,13 @@ void GSFProcessor::configure(framework::config::Parameters& parameters) {
       parameters.getParameter<std::string>("trackCollection", "TaggerTracks");
   measCollection_ = parameters.getParameter<std::string>("measCollection",
                                                          "DigiTaggerSimHits");
-                                                         
+
   track_passname_ = parameters.getParameter<std::string>("track_passname");
   meas_passname_ = parameters.getParameter<std::string>("meas_passname");
-  track_collection_event_passname_ = parameters.getParameter<std::string>("track_collection_event_passname");
-  meas_collection_event_passname_ = parameters.getParameter<std::string>("meas_collection_event_passname"); 
+  track_collection_event_passname_ =
+      parameters.getParameter<std::string>("track_collection_event_passname");
+  meas_collection_event_passname_ =
+      parameters.getParameter<std::string>("meas_collection_event_passname");
 
   maxComponents_ = parameters.getParameter<int>("maxComponents", 4);
   abortOnError_ = parameters.getParameter<bool>("abortOnError", false);
@@ -160,11 +162,13 @@ void GSFProcessor::produce(framework::Event& event) {
 
   // Retrieve the tracks
   if (!event.exists(trackCollection_, track_collection_event_passname_)) return;
-  auto tracks{event.getCollection<ldmx::Track>(trackCollection_,track_passname_)};
+  auto tracks{
+      event.getCollection<ldmx::Track>(trackCollection_, track_passname_)};
 
   // Retrieve the measurements
   if (!event.exists(measCollection_, meas_collection_event_passname_)) return;
-  auto measurements{event.getCollection<ldmx::Measurement>(measCollection_,meas_passname_)};
+  auto measurements{
+      event.getCollection<ldmx::Measurement>(measCollection_, meas_passname_)};
 
   tracking::sim::LdmxMeasurementCalibrator calibrator{measurements};
 

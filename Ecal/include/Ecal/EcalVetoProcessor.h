@@ -199,7 +199,7 @@ class EcalVetoProcessor : public framework::Producer {
   bool recoil_from_tracking_;
   std::string track_pass_name_;
   std::string track_collection_;
-  
+
   std::string sim_particles_passname_;
   bool inverse_skim_{false};
 

@@ -6,10 +6,10 @@ namespace framework {
 
 Event::Event(const std::string& thePassName) : passName_(thePassName) {}
 
-//void Event::configure(framework::config::Parameters &parameters) {
-//  nextEvent_passName_ = parameters.getParameter<std::string>("nextEvent_passName");
-//}
-
+// void Event::configure(framework::config::Parameters &parameters) {
+//   nextEvent_passName_ =
+//   parameters.getParameter<std::string>("nextEvent_passName");
+// }
 
 Event::~Event() {
   for (regex_t& reg : regexDropCollections_) {
@@ -154,7 +154,8 @@ void Event::setInputTree(TTree* tree) {
 }
 
 bool Event::nextEvent() {
-  eventHeader_ = getObject<ldmx::EventHeader>(ldmx::EventHeader::BRANCH,eventHeaderPassName_);
+  eventHeader_ = getObject<ldmx::EventHeader>(ldmx::EventHeader::BRANCH,
+                                              eventHeaderPassName_);
   return true;
 }
 

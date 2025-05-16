@@ -25,14 +25,15 @@ void DNNEcalVetoProcessor::configure(
   disc_cut_ = parameters.getParameter<double>("disc_cut");
   rt_ = std::make_unique<ldmx::Ort::ONNXRuntime>(
       parameters.getParameter<std::string>("model_path"));
-      
+
   // debug mode
   debug_ = parameters.getParameter<bool>("debug");
 
   // Set the collection name as defined in the configuration
   collectionName_ = parameters.getParameter<std::string>("collection_name");
-  
-  ecal_rec_hits_passname_ = parameters.getParameter<std::string>("ecal_rec_hits_passname");
+
+  ecal_rec_hits_passname_ =
+      parameters.getParameter<std::string>("ecal_rec_hits_passname");
 }
 
 void DNNEcalVetoProcessor::produce(framework::Event& event) {
@@ -43,7 +44,8 @@ void DNNEcalVetoProcessor::produce(framework::Event& event) {
       ldmx::EcalGeometry::CONDITIONS_OBJECT_NAME);
 
   // Get the collection of digitized Ecal hits from the event.
-  const auto ecalRecHits = event.getCollection<ldmx::EcalHit>("EcalRecHits",ecal_rec_hits_passname_);
+  const auto ecalRecHits = event.getCollection<ldmx::EcalHit>(
+      "EcalRecHits", ecal_rec_hits_passname_);
   auto nhits = std::count_if(
       ecalRecHits.begin(), ecalRecHits.end(),
       [](const ldmx::EcalHit& hit) { return hit.getEnergy() > 0; });

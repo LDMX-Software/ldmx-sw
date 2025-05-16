@@ -6,13 +6,14 @@ void EcalTPSelector::configure(framework::config::Parameters& ps) {
   tpCollName_ = ps.getParameter<std::string>("tpCollName");
   passCollName_ = ps.getParameter<std::string>("passCollName");
   tp_coll_passname_ = ps.getParameter<std::string>("tp_coll_pass_name");
-  tp_coll_event_passname_ = ps.getParameter<std::string>("tp_coll_event_passname");
+  tp_coll_event_passname_ =
+      ps.getParameter<std::string>("tp_coll_event_passname");
 }
 
 void EcalTPSelector::produce(framework::Event& event) {
-  if (!event.exists(tpCollName_,tp_coll_event_passname_)) return;
-  auto ecalTrigDigis{
-      event.getObject<ldmx::HgcrocTrigDigiCollection>(tpCollName_, tp_coll_passname_)};
+  if (!event.exists(tpCollName_, tp_coll_event_passname_)) return;
+  auto ecalTrigDigis{event.getObject<ldmx::HgcrocTrigDigiCollection>(
+      tpCollName_, tp_coll_passname_)};
 
   std::map<int, ldmx::HgcrocTrigDigiCollection> lDigis;  // left
   std::map<int, ldmx::HgcrocTrigDigiCollection> rDigis;  // right

@@ -25,9 +25,11 @@ class SiElectrodeDataCollection {
 
   std::map<int, int> getChargeMap() const;
 
-  //std::map<int, SiElectrodeData> getCollection() const { return collection_; };
-  std::map<int, SiElectrodeData> getCollection(const std::string &passName) const { 
-    return collection_; 
+  // std::map<int, SiElectrodeData> getCollection() const { return collection_;
+  // };
+  std::map<int, SiElectrodeData> getCollection(
+      const std::string& passName) const {
+    return collection_;
   };
 
   void clear() { collection_.clear(); };

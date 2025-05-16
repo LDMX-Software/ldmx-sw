@@ -10,15 +10,19 @@ void ParticleFlow::configure(framework::config::Parameters& ps) {
   inputHcalCollName_ = ps.getParameter<std::string>("inputHcalCollName");
   inputTrackCollName_ = ps.getParameter<std::string>("inputTrackCollName");
   outputCollName_ = ps.getParameter<std::string>("outputCollName");
-  
+
   input_ecal_passname_ = ps.getParameter<std::string>("input_ecal_passname");
   input_hcal_passname_ = ps.getParameter<std::string>("input_hcal_passname");
-  input_tracks_passname_ = ps.getParameter<std::string>("input_tracks_passname");
-  
-  input_track_event_passname_ = ps.getParameter<std::string>("input_track_event_passname");
-  input_ecal_event_passname_ = ps.getParameter<std::string>("input_ecal_event_passname");
-  input_hcal_event_passname_ = ps.getParameter<std::string>("input_hcal_event_passname");
- 
+  input_tracks_passname_ =
+      ps.getParameter<std::string>("input_tracks_passname");
+
+  input_track_event_passname_ =
+      ps.getParameter<std::string>("input_track_event_passname");
+  input_ecal_event_passname_ =
+      ps.getParameter<std::string>("input_ecal_event_passname");
+  input_hcal_event_passname_ =
+      ps.getParameter<std::string>("input_hcal_event_passname");
+
   // Algorithm configuration
   singleParticle_ = ps.getParameter<bool>("singleParticle");
 
@@ -111,12 +115,12 @@ void ParticleFlow::produce(framework::Event& event) {
   if (!event.exists(inputEcalCollName_, input_ecal_event_passname_)) return;
   if (!event.exists(inputHcalCollName_, input_hcal_event_passname_)) return;
   // get the track and clustering info
-  const auto ecalClusters =
-      event.getCollection<ldmx::CaloCluster>(inputEcalCollName_, input_ecal_passname_);
-  const auto hcalClusters =
-      event.getCollection<ldmx::CaloCluster>(inputHcalCollName_,input_hcal_passname_);
-  const auto tracks =
-      event.getCollection<ldmx::SimTrackerHit>(inputTrackCollName_,input_tracks_passname_);
+  const auto ecalClusters = event.getCollection<ldmx::CaloCluster>(
+      inputEcalCollName_, input_ecal_passname_);
+  const auto hcalClusters = event.getCollection<ldmx::CaloCluster>(
+      inputHcalCollName_, input_hcal_passname_);
+  const auto tracks = event.getCollection<ldmx::SimTrackerHit>(
+      inputTrackCollName_, input_tracks_passname_);
 
   std::vector<ldmx::PFCandidate> pfCands;
   // multi-particle case

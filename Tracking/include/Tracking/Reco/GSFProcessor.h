@@ -224,7 +224,7 @@ class GSFProcessor final : public TrackingGeometryUser {
 
   std::string trackCollection_{"TaggerTracks"};
   std::string measCollection_{"DigiTaggerSimHits"};
-  
+
   std::string track_passname_;
   std::string meas_passname_;
   std::string track_collection_event_passname_;

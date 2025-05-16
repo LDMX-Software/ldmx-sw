@@ -11,13 +11,14 @@ PropagationMapWriter::PropagationMapWriter(const std::string& name,
 
 void PropagationMapWriter::configure(framework::config::Parameters& ps) {
   outPath_ = ps.getParameter<std::string>("outPath");
-  ecal_scoring_plane_passname_ = ps.getParameter<std::string>("ecal_scoring_plane_passname");
-  target_scoring_plane_passname_ = ps.getParameter<std::string>("target_scoring_plane_passname");
-  target_sp_hits_events_passname_ = ps.getParameter<std::string>("target_sp_hits_events_passname");
-  ecal_sp_hits_events_passname_ = ps.getParameter<std::string>("ecal_sp_hits_events_passname"); 
-  
-
-
+  ecal_scoring_plane_passname_ =
+      ps.getParameter<std::string>("ecal_scoring_plane_passname");
+  target_scoring_plane_passname_ =
+      ps.getParameter<std::string>("target_scoring_plane_passname");
+  target_sp_hits_events_passname_ =
+      ps.getParameter<std::string>("target_sp_hits_events_passname");
+  ecal_sp_hits_events_passname_ =
+      ps.getParameter<std::string>("ecal_sp_hits_events_passname");
 }
 
 void PropagationMapWriter::produce(framework::Event& event) {
@@ -25,12 +26,14 @@ void PropagationMapWriter::produce(framework::Event& event) {
   inTag = "TargetScoringPlaneHits";
   if (!event.exists(inTag, target_sp_hits_events_passname_)) return;
   const std::vector<ldmx::SimTrackerHit> hitsTarg =
-      event.getCollection<ldmx::SimTrackerHit>(inTag, target_scoring_plane_passname_);
+      event.getCollection<ldmx::SimTrackerHit>(inTag,
+                                               target_scoring_plane_passname_);
 
   inTag = "EcalScoringPlaneHits";
   if (!event.exists(inTag, ecal_sp_hits_events_passname_)) return;
   const std::vector<ldmx::SimTrackerHit> hitsEcal =
-      event.getCollection<ldmx::SimTrackerHit>(inTag, ecal_scoring_plane_passname_);
+      event.getCollection<ldmx::SimTrackerHit>(inTag,
+                                               ecal_scoring_plane_passname_);
 
   ldmx::SimTrackerHit h1, h2;  // the desired truth hits
   for (const auto& hit : hitsTarg) {

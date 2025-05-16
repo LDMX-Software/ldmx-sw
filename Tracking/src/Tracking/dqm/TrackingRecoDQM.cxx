@@ -8,15 +8,14 @@
 namespace tracking::dqm {
 
 void TrackingRecoDQM::configure(framework::config::Parameters& parameters) {
-  trackCollection_ =
-      parameters.getParameter<std::string>("track_collection");
+  trackCollection_ = parameters.getParameter<std::string>("track_collection");
   truthCollection_ = parameters.getParameter<std::string>("truth_collection");
-  
+
   sp_pass_name_ = parameters.getParameter<std::string>("track_collection");
   track_passname_ = parameters.getParameter<std::string>("track_passname");
-  measurement_passname_ = parameters.getParameter<std::string>("measurement_passname");
+  measurement_passname_ =
+      parameters.getParameter<std::string>("measurement_passname");
   truth_passname_ = parameters.getParameter<std::string>("truth_passname");
-  
 
   title_ = parameters.getParameter<std::string>("title", "tagger_trk_");
   trackProb_cut_ = parameters.getParameter<double>("trackProb_cut", 0.5);
@@ -25,8 +24,8 @@ void TrackingRecoDQM::configure(framework::config::Parameters& parameters) {
       parameters.getParameter<std::vector<std::string>>("trackStates", {});
   measurementCollection_ = parameters.getParameter<std::string>(
       "measurement_collection", "DigiTaggerSimHits");
-  track_collection_events_passname_ = parameters.getParameter<std::string>(
-      "track_collection_events_passname"); 
+  track_collection_events_passname_ =
+      parameters.getParameter<std::string>("track_collection_events_passname");
 
   ldmx_log(info) << "Track Collection " << trackCollection_ << std::endl;
   ldmx_log(info) << "Truth Collection " << truthCollection_ << std::endl;
@@ -49,10 +48,11 @@ void TrackingRecoDQM::analyze(const framework::Event& event) {
                     << " not in event" << std::endl;
     return;
   }
-  
-  auto tracks{event.getCollection<ldmx::Track>(trackCollection_, track_passname_)};
-  auto measurements{
-    event.getCollection<ldmx::Measurement>(measurementCollection_, measurement_passname_)};      
+
+  auto tracks{
+      event.getCollection<ldmx::Track>(trackCollection_, track_passname_)};
+  auto measurements{event.getCollection<ldmx::Measurement>(
+      measurementCollection_, measurement_passname_)};
 
   // The truth track collection
   if (event.exists(truthCollection_, truth_passname_)) {
@@ -60,8 +60,6 @@ void TrackingRecoDQM::analyze(const framework::Event& event) {
         event.getCollection<ldmx::Track>(truthCollection_, truth_passname_));
     doTruthComparison = true;
   }
-
-
 
   // The scoring plane hits
   if (event.exists("EcalScoringPlaneHits", sp_pass_name_)) {

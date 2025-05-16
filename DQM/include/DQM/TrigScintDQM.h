@@ -59,8 +59,7 @@ class TrigScintDQM : public framework::Analyzer {
 
   /// Name of Pad
   std::string padName_{"_up"};
-  std::string hit_passname_;  
-
+  std::string hit_passname_;
 };
 
 }  // namespace dqm

@@ -18,17 +18,17 @@ class TrackerDigiDQM : public framework::Analyzer {
   /**
    *
    */
-   
+
   void configure(framework::config::Parameters& parameters) override;
 
   /**
    *
    */
-  
+
   void analyze(const framework::Event& event) override;
+
  private:
   std::string measurements_passname_;
   std::string output_measurements_passname_;
-  
 };
 }  // namespace tracking::dqm

@@ -31,7 +31,8 @@ void HcalVetoResults::onProcessStart() {
 
 void HcalVetoResults::analyze(const framework::Event &event) {
   // Get the veto object
-  auto hcal_veto{event.getObject<ldmx::HcalVetoResult>("HcalVeto",hcal_veto_passname_)};
+  auto hcal_veto{
+      event.getObject<ldmx::HcalVetoResult>("HcalVeto", hcal_veto_passname_)};
 
   // Get variables to be plotted
   auto veto_passed = hcal_veto.passesVeto();

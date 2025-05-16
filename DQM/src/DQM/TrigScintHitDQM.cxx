@@ -48,8 +48,8 @@ void TrigScintHitDQM::onProcessStart() {
 void TrigScintHitDQM::configure(framework::config::Parameters &ps) {
   hitCollectionName_ = ps.getParameter<std::string>("hit_collection");
   padName_ = ps.getParameter<std::string>("pad").c_str();
-  
-  trig_scint_passname_ = ps.getParameter<std::string>("trig_scint_passname"); 
+
+  trig_scint_passname_ = ps.getParameter<std::string>("trig_scint_passname");
 
   ldmx_log(debug) << "In TrigScintHitDQM::configure, got parameters "
                   << hitCollectionName_ << " and " << padName_;
@@ -58,7 +58,8 @@ void TrigScintHitDQM::configure(framework::config::Parameters &ps) {
 void TrigScintHitDQM::analyze(const framework::Event &event) {
   // Get the collection of TrigScintHit digitized hits if the exists
   const std::vector<ldmx::TrigScintHit> TrigScintHits =
-      event.getCollection<ldmx::TrigScintHit>(hitCollectionName_,trig_scint_passname_);
+      event.getCollection<ldmx::TrigScintHit>(hitCollectionName_,
+                                              trig_scint_passname_);
 
   // Get the total hit count
   int hitCount = TrigScintHits.size();

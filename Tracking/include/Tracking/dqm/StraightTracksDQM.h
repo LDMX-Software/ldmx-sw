@@ -56,7 +56,7 @@ class StraightTracksDQM : public framework::Analyzer {
   std::string input_pass_name_{""};
   std::string track_collection_events_passname_;
   std::string truth_collection_events_passname_;
-  
+
   double track_prob_cut_{0.5};
   std::string subdetector_{"Recoil"};
   bool do_truth_comparison_{false};
