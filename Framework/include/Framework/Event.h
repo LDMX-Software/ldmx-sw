@@ -132,10 +132,6 @@ class Event {
    * false if allowing for one or more matching objects
    * @return True if the object or collection exists in the event.
    */
-  // bool exists(const std::string& name) const {
-  //   return exists(name, "", true);
-  // }  just
-
   bool exists(const std::string &name, const std::string &passName,
               bool unique = true) const;
 
