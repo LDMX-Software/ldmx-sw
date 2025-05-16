@@ -45,6 +45,8 @@ class EcalClusterAnalyzer : public framework::Analyzer {
 
   // Pass Name for clusters
   std::string cluster_pass_name_;
+  
+  std::string ecal_sp_hits_passname_;
 };
 
 }  // namespace dqm
