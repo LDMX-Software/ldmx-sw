@@ -54,8 +54,7 @@ class DarkBremInteraction : public framework::Producer {
    */
   virtual void produce(framework::Event& e) override;
 
-
-  void configure(framework::config::Parameters &parameters) override;
+  void configure(framework::config::Parameters& parameters) override;
 
  private:
   /**
@@ -142,7 +141,7 @@ class DarkBremInteraction : public framework::Producer {
    */
   std::map<int, int> known_elements_ = {{1, 1},  {6, 2},  {8, 3},  {11, 4},
                                         {14, 5}, {20, 6}, {29, 7}, {74, 8}};
-                                        
+
   std::string particle_passname_;
 };
 

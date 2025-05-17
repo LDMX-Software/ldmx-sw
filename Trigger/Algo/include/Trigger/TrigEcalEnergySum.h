@@ -41,7 +41,6 @@ class TrigEcalEnergySum : public framework::Producer {
   std::string hit_coll_passname_;
   std::string hit_collname_events_passname_;
 
-
   // From:
   // Tools/python/HgcrocEmulator.py
   // ECal/python/digi.py

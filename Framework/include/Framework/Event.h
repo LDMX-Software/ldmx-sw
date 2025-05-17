@@ -132,10 +132,6 @@ class Event {
    * false if allowing for one or more matching objects
    * @return True if the object or collection exists in the event.
    */
-  //bool exists(const std::string& name) const {
-  //  return exists(name, "", true);
-  //}  just  
-
   bool exists(const std::string &name, const std::string &passName,
               bool unique = true) const;
 
@@ -278,12 +274,9 @@ class Event {
    * @param passName name of pass you want
    * @return const reference to requested object
    */
-  //template <typename T>
-  //const T &getObject(const std::string &collectionName,
-  //                   const std::string &passName) const {
   template <typename T>
-  const T &getObject(const std::string& collectionName,
-                    const std::string& passName) const {
+  const T &getObject(const std::string &collectionName,
+                     const std::string &passName) const {
     // get branch name
     std::string branchName;
     if (collectionName == ldmx::EventHeader::BRANCH) {
@@ -394,12 +387,9 @@ class Event {
 
   template <typename ContentType>
   const std::vector<ContentType> &getCollection(
-      const std::string &collectionName,
-      const std::string &passName) const {
+      const std::string &collectionName, const std::string &passName) const {
     return getObject<std::vector<ContentType> >(collectionName, passName);
   }
-
-
 
   /**
    * Get a map (std::map) of objects from the event bus
@@ -413,9 +403,8 @@ class Event {
    * @returns const reference to collection of objects on the bus
    */
   template <typename KeyType, typename ValType>
-  const std::map<KeyType, ValType> &getMap(
-      const std::string &collectionName,
-      const std::string &passName) const {
+  const std::map<KeyType, ValType> &getMap(const std::string &collectionName,
+                                           const std::string &passName) const {
     return getObject<std::map<KeyType, ValType> >(collectionName, passName);
   }
   /**
@@ -526,7 +515,6 @@ class Event {
    * The event header object.
    */
   ldmx::EventHeader eventHeader_;
-
 
   const std::string eventHeaderPassName_{"eventPassName"};
   /**

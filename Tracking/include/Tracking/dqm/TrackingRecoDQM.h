@@ -84,11 +84,18 @@ class TrackingRecoDQM : public framework::Analyzer {
   std::string truth_events_passname_;
   std::string truth_passname_;  
 
+<<<<<<< HEAD
   
   
   
   
+=======
+  std::string track_passname_;
+  std::string measurement_passname_;
 
+  std::string track_collection_events_passname_;
+  std::string truth_passname_;
+>>>>>>> cf1ed4f7755547696813c2a1d162109827d0e9d5
 
   std::string title_{"tagger_trk_"};
   double trackProb_cut_{0.5};

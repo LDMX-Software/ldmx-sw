@@ -7,15 +7,16 @@
 namespace trigger {
 
 void DumpFileWriter::configure(framework::config::Parameters& ps) {
-  ecal_trig_digis_passname_ = ps.getParameter<std::string>("ecal_trig_digis_passname");
-  ecal_trig_digis_event_passname_ = ps.getParameter<std::string>("ecal_trig_digis_event_passname"); 
-
+  ecal_trig_digis_passname_ =
+      ps.getParameter<std::string>("ecal_trig_digis_passname");
+  ecal_trig_digis_event_passname_ =
+      ps.getParameter<std::string>("ecal_trig_digis_event_passname");
 }
 
 void DumpFileWriter::analyze(const framework::Event& event) {
   if (!event.exists("ecalTrigDigis", ecal_trig_digis_event_passname_)) return;
-  auto ecalTrigDigis{
-      event.getObject<ldmx::HgcrocTrigDigiCollection>("ecalTrigDigis", ecal_trig_digis_passname_)};
+  auto ecalTrigDigis{event.getObject<ldmx::HgcrocTrigDigiCollection>(
+      "ecalTrigDigis", ecal_trig_digis_passname_)};
 
   // clear event to write
   myEvent.event = evtNo;

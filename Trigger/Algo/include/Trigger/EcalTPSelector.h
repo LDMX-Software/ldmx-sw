@@ -44,9 +44,9 @@ class EcalTPSelector : public framework::Producer {
   std::string tpCollName_;
   // name of output collection
   std::string passCollName_;
-  
+
   std::string tp_coll_passname_;
-  
+
   std::string tp_coll_event_passname_;
 
   unsigned int maxCentralTPs_{12};

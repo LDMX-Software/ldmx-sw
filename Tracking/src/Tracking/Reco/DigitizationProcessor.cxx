@@ -26,8 +26,9 @@ void DigitizationProcessor::configure(
     framework::config::Parameters& parameters) {
   hit_collection_ =
       parameters.getParameter<std::string>("hit_collection", "TaggerSimHits");
-      
-  tracker_hit_passname_ = parameters.getParameter<std::string>("tracker_hit_passname");
+
+  tracker_hit_passname_ =
+      parameters.getParameter<std::string>("tracker_hit_passname");
   out_collection_ = parameters.getParameter<std::string>("out_collection",
                                                          "OutputMeasuements");
   min_e_dep_ = parameters.getParameter<double>("min_e_dep", 0.05);
@@ -51,7 +52,8 @@ void DigitizationProcessor::produce(framework::Event& event) {
   // Mode 1: Load simulated hits and produce digitized 1d measurements
 
   const std::vector<ldmx::SimTrackerHit> sim_hits =
-      event.getCollection<ldmx::SimTrackerHit>(hit_collection_,tracker_hit_passname_);
+      event.getCollection<ldmx::SimTrackerHit>(hit_collection_,
+                                               tracker_hit_passname_);
 
   std::vector<ldmx::SimTrackerHit> merged_hits;
 

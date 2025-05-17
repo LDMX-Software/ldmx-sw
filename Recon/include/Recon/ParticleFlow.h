@@ -48,15 +48,15 @@ class ParticleFlow : public framework::Producer {
   std::string inputEcalCollName_;
   std::string inputHcalCollName_;
   std::string inputTrackCollName_;
-  
+
   std::string input_ecal_passname_;
   std::string input_hcal_passname_;
   std::string input_tracks_passname_;
 
   std::string input_track_event_passname_;
-  std::string input_ecal_event_passname_; 
+  std::string input_ecal_event_passname_;
   std::string input_hcal_event_passname_;
-  
+
   // name of collection for PF outputs
   std::string outputCollName_;
   // configuration

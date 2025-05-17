@@ -65,7 +65,7 @@ class DigitizationProcessor : public TrackingGeometryUser {
   std::string hit_collection_;
   /// Output hit collection name.
   std::string out_collection_;
-   
+
   /// Minimum energy deposition cut.
   double min_e_dep_;
   /// Select a particular track ID

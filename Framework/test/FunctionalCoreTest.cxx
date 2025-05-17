@@ -108,24 +108,26 @@ class TestAnalyzer : public Analyzer {
  private:
   std::string test_collection_passname_;
   std::string test_object_passname_;
-  std::string veto_test_object_passname_;  
+  std::string veto_test_object_passname_;
   std::string tenth_event_passname_;
-  std::string event_index_passname_; 
-  
+  std::string event_index_passname_;
 
  public:
-  TestAnalyzer(const std::string& name, Process& p) : Analyzer(name, p) {    
-    }
+  TestAnalyzer(const std::string& name, Process& p) : Analyzer(name, p) {}
   ~TestAnalyzer() {}
-  
+
   void configure(framework::config::Parameters& ps) override {
-    test_collection_passname_ = ps.getParameter<std::string>("test_collection_passname", "");
-    test_object_passname_ = ps.getParameter<std::string>("test_object_passname", "");
-    veto_test_object_passname_ = ps.getParameter<std::string>("veto_test_object_passname", "");   
-    tenth_event_passname_ = ps.getParameter<std::string>("tenth_event_passname", "");
-    event_index_passname_ = ps.getParameter<std::string>("event_index_passname", ""); 
+    test_collection_passname_ =
+        ps.getParameter<std::string>("test_collection_passname", "");
+    test_object_passname_ =
+        ps.getParameter<std::string>("test_object_passname", "");
+    veto_test_object_passname_ =
+        ps.getParameter<std::string>("veto_test_object_passname", "");
+    tenth_event_passname_ =
+        ps.getParameter<std::string>("tenth_event_passname", "");
+    event_index_passname_ =
+        ps.getParameter<std::string>("event_index_passname", "");
   }
-  
 
   void onProcessStart() final override {
     REQUIRE_NOTHROW(getHistoDirectory());
@@ -139,7 +141,8 @@ class TestAnalyzer : public Analyzer {
     REQUIRE(i_event > 0);
 
     const std::vector<ldmx::CalorimeterHit>& caloHits =
-        event.getCollection<ldmx::CalorimeterHit>("TestCollection", test_collection_passname_);
+        event.getCollection<ldmx::CalorimeterHit>("TestCollection",
+                                                  test_collection_passname_);
 
     CHECK(caloHits.size() == i_event);
     for (unsigned int i = 0; i < caloHits.size(); i++) {
@@ -147,15 +150,16 @@ class TestAnalyzer : public Analyzer {
       test_hist_->Fill(caloHits.at(i).getID());
     }
 
-    const ldmx::HcalVetoResult& vetoRes =
-        event.getObject<ldmx::HcalVetoResult>("TestObject", veto_test_object_passname_);
+    const ldmx::HcalVetoResult& vetoRes = event.getObject<ldmx::HcalVetoResult>(
+        "TestObject", veto_test_object_passname_);
 
     auto maxPEHit{vetoRes.getMaxPEHit()};
 
     CHECK(maxPEHit.getID() == i_event);
     CHECK(vetoRes.passesVeto() == (i_event % 2 == 0));
 
-    const float& tenth_event = event.getObject<float>("EventTenth", tenth_event_passname_);
+    const float& tenth_event =
+        event.getObject<float>("EventTenth", tenth_event_passname_);
     CHECK(tenth_event == Approx(i_event * 0.1));
 
     const std::vector<int>& i_event_from_bus =
@@ -484,7 +488,7 @@ TEST_CASE("Core Framework Functionality", "[Framework][functionality]") {
   analyzerParameters.add<std::string>("className",
                                       "framework::test::TestAnalyzer");
   analyzerParameters.add<std::string>("instanceName", "TestAnalyzer");
- 
+
   // declare used and re-used types, not used in all branches
   std::vector<framework::config::Parameters> sequence;
   std::vector<std::string> inputFiles, outputFiles;

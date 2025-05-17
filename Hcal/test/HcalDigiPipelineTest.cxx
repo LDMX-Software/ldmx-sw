@@ -193,22 +193,22 @@ class HcalCheckReconstruction : public framework::Analyzer {
   // save ntuple? False by default because if ntuplizer is on, the HcalGeometry
   // test cannot be run
   const bool save_ = false;
- 
+
  private:
   std::string hcal_fake_sim_hits_passname_;
-  std::string hcal_rec_hits_passname_; 
-  std::string hcal_digis_passname_; 
- 
+  std::string hcal_rec_hits_passname_;
+  std::string hcal_digis_passname_;
+
  public:
   HcalCheckReconstruction(const std::string &name, framework::Process &p)
       : framework::Analyzer(name, p) {}
   ~HcalCheckReconstruction() {}
-  
-  
-  void configure(framework::config::Parameters& ps) override {
-    hcal_fake_sim_hits_passname_ = ps.getParameter("hcal_fake_sim_hits_passname","");   
-    hcal_digis_passname_ = ps.getParameter("hcal_digis_passname",""); 
-    hcal_rec_hits_passname_ = ps.getParameter("hcal_rec_hits_passname","");  
+
+  void configure(framework::config::Parameters &ps) override {
+    hcal_fake_sim_hits_passname_ =
+        ps.getParameter("hcal_fake_sim_hits_passname", "");
+    hcal_digis_passname_ = ps.getParameter("hcal_digis_passname", "");
+    hcal_rec_hits_passname_ = ps.getParameter("hcal_rec_hits_passname", "");
   }
 
   void onProcessStart() final override {
@@ -233,8 +233,8 @@ class HcalCheckReconstruction : public framework::Analyzer {
   }
 
   void analyze(const framework::Event &event) final override {
-    const auto simHits =
-        event.getCollection<ldmx::SimCalorimeterHit>("HcalFakeSimHits", hcal_fake_sim_hits_passname_);
+    const auto simHits = event.getCollection<ldmx::SimCalorimeterHit>(
+        "HcalFakeSimHits", hcal_fake_sim_hits_passname_);
 
     REQUIRE(simHits.size() == 1);
 
@@ -248,8 +248,8 @@ class HcalCheckReconstruction : public framework::Analyzer {
       ntuple_.setVar<float>("SimTime", simHits.at(0).getContrib(0).time);
     }
 
-    const auto daqDigis{
-        event.getObject<ldmx::HgcrocDigiCollection>("HcalDigis", hcal_digis_passname_)};
+    const auto daqDigis{event.getObject<ldmx::HgcrocDigiCollection>(
+        "HcalDigis", hcal_digis_passname_)};
     auto daqDigi = daqDigis.getDigi(0);
     bool is_in_adc_mode = daqDigi.isADC();
 
@@ -260,7 +260,8 @@ class HcalCheckReconstruction : public framework::Analyzer {
       ntuple_.setVar<int>("DaqDigiTOT", daqDigi.tot());
     }
 
-    const auto recHits = event.getCollection<ldmx::HcalHit>("HcalRecHits", hcal_rec_hits_passname_);
+    const auto recHits = event.getCollection<ldmx::HcalHit>(
+        "HcalRecHits", hcal_rec_hits_passname_);
     CHECK(recHits.size() == 1);
 
     auto hit = recHits.at(0);

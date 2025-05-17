@@ -47,8 +47,7 @@ void VertexProcessor::configure(framework::config::Parameters &parameters) {
   trk_coll_name_ =
       parameters.getParameter<std::string>("trk_coll_name", "Tracks");
 
-  input_pass_name_ =
-      parameters.getParameter<std::string>("input_pass_name");
+  input_pass_name_ = parameters.getParameter<std::string>("input_pass_name");
 }
 
 void VertexProcessor::produce(framework::Event &event) {

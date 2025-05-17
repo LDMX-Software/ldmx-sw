@@ -24,7 +24,7 @@ class PFTruthProducer : public framework::Producer {
       : framework::Producer(name, process) {}
 
   virtual void configure(framework::config::Parameters& ps);
-  //void configure(framework::config::Parameters& parameters) override;
+  // void configure(framework::config::Parameters& parameters) override;
 
   virtual void produce(framework::Event& event);
 

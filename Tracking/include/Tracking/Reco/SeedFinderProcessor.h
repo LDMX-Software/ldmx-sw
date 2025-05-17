@@ -111,7 +111,7 @@ class SeedFinderProcessor : public TrackingGeometryUser {
   /// The name of the tagger Tracks (only for Recoil Seeding)
   std::string tagger_trks_collection_{"TaggerTracks"};
   std::string input_pass_name_{""};
-  
+
   std::string sim_particles_passname_;
   std::string tagger_trks_event_collection_passname_;
   std::string sim_particles_event_passname_;

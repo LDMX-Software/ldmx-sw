@@ -206,7 +206,7 @@ class TruthSeedProcessor : public TrackingGeometryUser {
 
   /// Pass name for the sim hit collections
   std::string input_pass_name_{""};
-  
+
   std::string sim_particles_passname_;
 
   /**
