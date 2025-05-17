@@ -18,61 +18,128 @@ void TrigMipReco::produce(framework::Event& event) {
   auto caloHits{
       event.getObject<TrigCaloHitCollection>(hitCollName_)};
 
-  
-  TrigCaloHitCollection sortedHits;
-  int evenMatrix[24][5]={};
-  int evenStart[5]={99,99,99,99,99};
-  int evenEnd[5]={};
-  int evenCounts[5]={};
-  int oddMatrix[24][5]={};
-  int oddStart[5]={99,99,99,99,99};
-  int oddEnd[5]={};
-  int oddCounts[5]={};
-  for (const auto& tp : caloHits) {
-    if( tp.section()>0 || tp.energy()<minEnergy_ || tp.layer()>47) continue;
-    sortedHits.push_back(tp);
-    if(tp.layer()%2){
-      oddMatrix[tp.layer()/2][tp.strip()] = 1;
-      if( tp.layer() < oddStart[tp.strip()] ) oddStart[tp.strip()] = tp.layer();
-      if( tp.layer() > oddEnd[tp.strip()] ) oddEnd[tp.strip()] = tp.layer();
-    } else {
-      evenMatrix[tp.layer()/2][tp.strip()] = 1;
-      if( tp.layer() < evenStart[tp.strip()] ) evenStart[tp.strip()] = tp.layer();
-      if( tp.layer() > evenEnd[tp.strip()] ) evenEnd[tp.strip()] = tp.layer();
-    }
-  }
-  for(int i=0; i<24; i++){
-    for(int j=0; j<5; j++){
-      if(evenMatrix[i][j]) {evenCounts[j]++;}
-      if(oddMatrix[i][j]) {oddCounts[j]++;}
-    }
-  }
-  
-  // straight MIP reco
-  TrigMipCollection mips;
-  for(int i=0; i<5; i++){
-    if(oddStart[i]<80){ // start in first 5 layers
-      TrigMip m;
-      m.setStartLayer(oddStart[i]);
-      m.setEndLayer(oddEnd[i]);
-      m.setNHits(oddCounts[i]);
-      m.setLength(oddEnd[i] - oddStart[i] + 1);
-      m.setNHoles(m.length()/2 - m.nHits());
-      mips.push_back(m);
-    }
-    if(evenStart[i]<80){ // start in first 5 layers
-      TrigMip m;
-      m.setStartLayer(evenStart[i]);
-      m.setEndLayer(evenEnd[i]);
-      m.setNHits(evenCounts[i]);
-      m.setLength(evenEnd[i] - evenStart[i] + 1);
-      m.setNHoles(m.length()/2 - m.nHits());
-      mips.push_back(m);
-    }
-  }
-  std::sort(mips.begin(), mips.end());
+  if (calorimeterTypeIsHcal_) {
+      TrigCaloHitCollection sortedHits;
+      int evenMatrix[24][5]={};
+      int evenStart[5]={99,99,99,99,99};
+      int evenEnd[5]={};
+      int evenCounts[5]={};
+      int oddMatrix[24][5]={};
+      int oddStart[5]={99,99,99,99,99};
+      int oddEnd[5]={};
+      int oddCounts[5]={};
+      for (const auto& tp : caloHits) {
+        if( tp.section()>0 || tp.energy()<minEnergy_ || tp.layer()>47) continue;
+        sortedHits.push_back(tp);
+        if(tp.layer()%2){
+          oddMatrix[tp.layer()/2][tp.strip()] = 1;
+          if( tp.layer() < oddStart[tp.strip()] ) oddStart[tp.strip()] = tp.layer();
+          if( tp.layer() > oddEnd[tp.strip()] ) oddEnd[tp.strip()] = tp.layer();
+        } else {
+          evenMatrix[tp.layer()/2][tp.strip()] = 1;
+          if( tp.layer() < evenStart[tp.strip()] ) evenStart[tp.strip()] = tp.layer();
+          if( tp.layer() > evenEnd[tp.strip()] ) evenEnd[tp.strip()] = tp.layer();
+        }
+      }
+      for(int i=0; i<24; i++){
+        for(int j=0; j<5; j++){
+          if(evenMatrix[i][j]) {evenCounts[j]++;}
+          if(oddMatrix[i][j]) {oddCounts[j]++;}
+        }
+      }
 
-  event.add(passCollName_, mips);
+      // straight MIP reco
+      TrigMipCollection mips;
+      for(int i=0; i<5; i++){
+        if(oddStart[i]<80){ // start in first 5 layers
+          TrigMip m;
+          m.setStartLayer(oddStart[i]);
+          m.setEndLayer(oddEnd[i]);
+          m.setNHits(oddCounts[i]);
+          m.setLength(oddEnd[i] - oddStart[i] + 1);
+          m.setNHoles(m.length()/2 - m.nHits());
+          mips.push_back(m);
+        }
+        if(evenStart[i]<80){ // start in first 5 layers
+          TrigMip m;
+          m.setStartLayer(evenStart[i]);
+          m.setEndLayer(evenEnd[i]);
+          m.setNHits(evenCounts[i]);
+          m.setLength(evenEnd[i] - evenStart[i] + 1);
+          m.setNHoles(m.length()/2 - m.nHits());
+          mips.push_back(m);
+        }
+      }
+
+      std::sort(mips.begin(), mips.end());
+
+      event.add(passCollName_, mips);
+  } else {
+        float radiusCut = 1.0; // cm?
+        int maxLayer = 32;
+        int minTrackLength = 5; // example
+
+        std::map<int, std::vector<TrigCaloHit>> layerHits;
+
+        // group hits by layer
+        for (const auto& hit : caloHits) {
+            layerHits[hit.layer()].push_back(hit);
+        }
+
+        // loop over mip seeds
+        TrigMipCollection mips;
+
+        for (const auto& seed : layerHits[0]) {
+            std::vector<TrigCaloHit> trackHits;
+            trackHits.push_back(seed);
+            TrigCaloHit last = seed;
+            int holes = 0;
+            // bool found = false;
+
+            for (int l = seed.layer() + 1; l <= maxLayer; ++l) {
+                bool found = false;
+                for (const auto& cand : layerHits[l]) {
+                    float dx = cand.x() - last.x();
+                    float dy = cand.y() - last.y();
+                    float dR2 = dx*dx + dy*dy;
+                    if (dR2 < radiusCut*radiusCut) {
+                        trackHits.push_back(cand);
+                        last = cand;
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found) {
+                holes++;
+                }
+            }
+
+            if (trackHits.size() >= minTrackLength) {
+                TrigMip mip;
+                mip.setStartLayer(trackHits.front().layer());
+                mip.setEndLayer(trackHits.back().layer());
+                mip.setNHits(trackHits.size());
+                mip.setLength(trackHits.back().layer() - trackHits.front().layer() + 1);
+                mip.setNHoles(mip.length() - mip.nHits());
+                mips.push_back(mip);
+            }
+        }
+
+
+        // TrigCaloHitCollection sortedHits;
+        // int startLayer
+        // int EndLayer
+        // int numCounts
+        // for (const auto& tp : caloHits) {
+        //     if( tp.section()>0 || tp.energy()<minEnergy_ || tp.layer()>32) continue;
+        //     sortedHits.push_back(tp);
+
+        // }
+        std::sort(mips.begin(), mips.end());
+
+        event.add(passCollName_, mips);
+  }
+
 
 
 

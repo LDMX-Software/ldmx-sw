@@ -98,6 +98,10 @@ void EcalTPSelector::produce(framework::Event& event) {
     double x, y, z, e;
     decodeTP(tp, x, y, z, e);
     passTrigHits.emplace_back(x, y, z, e);
+
+    ldmx::EcalTriggerID tid(tp.getId());
+    passTrigHits.back().setLayer(tid.layer());
+    passTrigHits.back().setModule(tid.module());
   }
 
   TrigEnergySumCollection passTrigSums;
