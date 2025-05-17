@@ -15,10 +15,6 @@ class TrackerDigiDQM : public framework::Analyzer {
   /// Destructor
   ~TrackerDigiDQM() = default;
 
-  /**
-   *
-   */
-   
   void configure(framework::config::Parameters& parameters) override;
 
   /**

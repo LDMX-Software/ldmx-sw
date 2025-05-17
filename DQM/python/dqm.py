@@ -95,6 +95,16 @@ class HCalDQM(ldmxcfg.Analyzer) :
         self.rec_pass_name = ''
         self.sim_coll_name = 'HcalSimHits'
         self.sim_pass_name = ''
+        
+        self.particle_passname = ''
+        self.ecal_sp_hits_passname = ''
+        self.hcal_veto_passname = ''
+        self.sim_particles_passname = ''
+        self.target_scoring_plane_passname = ''
+        self.sim_particles_passname = ''
+        self.sim_particles_map_passname = ''
+        self.hit_passname = ''
+        self.trig_scint_passname = ''
 
         pe_bins = [1500, 0, 1500]
         time_bins = [100, -100, 500]
@@ -181,6 +191,7 @@ class HcalVetoResults(ldmxcfg.Analyzer) :
 
         self.hcal_veto_name = 'HcalVeto'
         self.hcal_veto_pass = ''
+        self.hcal_veto_passname = ''
 
         self.build1DHistogram('max_pe',
                 'Maximal PE hit PE', 500, -0.5, 499.5)
@@ -454,11 +465,17 @@ class SimObjects(ldmxcfg.Analyzer) :
     def __init__(self,name='sim_dqm',sim_pass='') :
         super().__init__(name,'dqm::SimObjects','DQM')
         self.sim_pass = sim_pass
+        
+        self.sim_particles_passname = ''
+        self.sim_particles_map_passname = ''
+        
 
 
 class DarkBremInteraction(ldmxcfg.Producer) :
     def __init__(self) :
         super().__init__('db_kinematics','dqm::DarkBremInteraction','DQM')
+        
+        self.particle_passname = ''
 
         self.build1DHistogram('aprime_energy',
             'Dark Photon Energy [MeV]',101,0,8080)
@@ -547,6 +564,10 @@ class PhotoNuclearDQM(ldmxcfg.Analyzer) :
 
     def __init__(self,name='PN', count_light_ions=True) :
         super().__init__(name,'dqm::PhotoNuclearDQM','DQM')
+        
+        
+        self.sim_particles_passname = ''
+        
 
         self.count_light_ions=count_light_ions
         self.build1DHistogram("event_type"         , "", 24, -1, 23)
@@ -692,6 +713,7 @@ class TrigScintSimDQM(ldmxcfg.Analyzer) :
 
         self.hit_collection = hit_coll
         self.pad = pad
+        self.hit_passname = ''
 
 class TrigScintDigiDQM(ldmxcfg.Analyzer) :
     """Configured TrigScintDigiDQM python object
@@ -712,7 +734,7 @@ class TrigScintDigiDQM(ldmxcfg.Analyzer) :
 
         self.hit_collection = hit_coll
         self.pad = pad
-
+        self.trig_scint_passname = ''
 
 class TrigScintClusterDQM(ldmxcfg.Analyzer) :
     """Configured TrigScintClusterDQM python object
@@ -786,6 +808,9 @@ class SampleValidation(ldmxcfg.Analyzer) :
     """
     def __init__(self, name='SampleValidation') :
         super().__init__(name, 'dqm::SampleValidation', 'DQM')
+        
+        self.sim_particles_passname = ''
+        self.target_scoring_plane_passname = ''
 
         # primary histograms
         self.build1DHistogram("pdgid_primaries", "ID of primary particles", 20, 0, 20)
@@ -821,6 +846,8 @@ class EcalClusterAnalyzer(ldmxcfg.Analyzer) :
 
         self.cluster_coll_name = 'ecalClusters'
         self.cluster_pass_name = ''
+        
+        self.ecal_sp_hits_passname = ''
         
         # Need to mod for more than two electrons
         self.build1DHistogram("ancestors", "Ancestors of particles", 4, 0, 3)

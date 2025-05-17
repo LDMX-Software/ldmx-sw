@@ -20,3 +20,5 @@ class EcalWABRecProcessor(ldmxcfg.Producer) :
         self.rec_pass_name = ''
         self.track_coll_name = 'LinearRecoilTracks'
         self.track_pass_name = ''
+        
+        self.sim_particles_passname = ''

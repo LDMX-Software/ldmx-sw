@@ -32,7 +32,7 @@ void TruthSeedProcessor::configure(framework::config::Parameters& parameters) {
   input_pass_name_ =
       parameters.getParameter<std::string>("input_pass_name");
       
-  sim_particles_passname_ = parameters.getParameter<std::string>("sim_particles_passname_"); 
+  sim_particles_passname_ = parameters.getParameter<std::string>("sim_particles_passname"); 
 
   n_min_hits_tagger_ = parameters.getParameter<int>("n_min_hits_tagger", 11);
   n_min_hits_recoil_ = parameters.getParameter<int>("n_min_hits_recoil", 7);

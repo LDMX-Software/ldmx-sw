@@ -26,6 +26,8 @@ class VertexProcessor(Producer) :
 
         self.field_map = makeFieldMapPath()
         self.trk_coll_name = 'Tracks'
+        self.input_pass_name = ''
+        
 
 class Vertexer(Producer) :
     """ Producer that forms vertices betwen two different track 
@@ -55,3 +57,5 @@ class Vertexer(Producer) :
         self.field_map = makeFieldMapPath()
         trk_c_name_1 = 'TaggerTracks'
         trk_c_name_2 = 'RecoilTracks'
+        self.input_pass_name = ''
+        
