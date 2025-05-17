@@ -14,15 +14,8 @@ void NtupleWriter::configure(framework::config::Parameters& ps) {
   target_sp_hits_event_passname_ =
       ps.getParameter<std::string>("target_sp_hits_event_passname");
   target_sp_passname_ = ps.getParameter<std::string>("target_sp_passname");
-<<<<<<< HEAD
-
-  ecal_sp_hits_events_passname_ =
-      ps.getParameter<std::string>("ecal_sp_hits_events_passname");
-=======
-
-  ecal_sp_hits_events_passname_ =
-      ps.getParameter<std::string>("ecal_sp_hits_events_passname_");
->>>>>>> cf1ed4f7755547696813c2a1d162109827d0e9d5
+  
+  ecal_sp_hits_events_passname_ = ps.getParameter<std::string>("ecal_sp_hits_events_passname");
   ecal_sp_passname_ = ps.getParameter<std::string>("ecal_sp_passname");
 
   ecal_trig_sums_event_passname_ =

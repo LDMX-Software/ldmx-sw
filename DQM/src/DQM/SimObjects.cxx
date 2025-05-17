@@ -9,15 +9,8 @@
 namespace dqm {
 
 void SimObjects::configure(framework::config::Parameters& ps) {
-<<<<<<< HEAD
-  sim_pass_ = ps.getParameter<std::string>("sim_pass");
-  sim_particles_map_passname_ =
-      ps.getParameter<std::string>("sim_particles_map_passname"); 
-=======
-  sim_pass_ = ps.getParameter<std::string>("sim_pass");
-  sim_particles_passname_ =
-      ps.getParameter<std::string>("sim_particles_passname");
->>>>>>> cf1ed4f7755547696813c2a1d162109827d0e9d5
+  sim_pass_ = ps.getParameter<std::string>("sim_pass"); 
+  sim_particles_map_passname_ = ps.getParameter<std::string>("sim_particles_map_passname"); 
   return;
 }
 
@@ -155,13 +148,8 @@ void SimObjects::analyze(const framework::Event& event) {
     for (auto pt : track_colls) createTrackerHists(pt.name());
   }
 
-<<<<<<< HEAD
-  auto const& particle_map{event.getMap<int, ldmx::SimParticle>(
-      "SimParticles", sim_particles_map_passname_)};
-=======
-  auto const& particle_map{event.getMap<int, ldmx::SimParticle>(
-      "SimParticles", sim_particles_passname_)};
->>>>>>> cf1ed4f7755547696813c2a1d162109827d0e9d5
+  auto const& particle_map{
+      event.getMap<int, ldmx::SimParticle>("SimParticles",sim_particles_passname_)};
   for (auto const& [track_id, particle] : particle_map) {
     auto const& momentum{particle.getMomentum()};
     auto const& vertex{particle.getVertex()};

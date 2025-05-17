@@ -24,13 +24,7 @@ void HcalClusterProducer::configure(framework::config::Parameters& parameters) {
   cutOff_ = parameters.getParameter<double>("cutOff");
 
   clusterCollName_ = parameters.getParameter<std::string>("clusterCollName");
-<<<<<<< HEAD
-  hcal_hits_pass_name_ =
-      parameters.getParameter<std::string>("hcal_hits_pass_name"); 
-=======
-  hcal_hits_pass_name_ =
-      parameters.getParameter<std::string>("hcalHitsPassName");
->>>>>>> cf1ed4f7755547696813c2a1d162109827d0e9d5
+  hcal_hits_pass_name_ = parameters.getParameter<std::string>("hcal_hits_pass_name"); 
 }
 
 static bool compHitTimes(const ldmx::HcalHit* a, const ldmx::HcalHit* b) {
