@@ -149,7 +149,7 @@ void SimObjects::analyze(const framework::Event& event) {
   }
 
   auto const& particle_map{
-      event.getMap<int, ldmx::SimParticle>("SimParticles",sim_particles_passname_)};
+      event.getMap<int, ldmx::SimParticle>("SimParticles",sim_particles_map_passname_)};
   for (auto const& [track_id, particle] : particle_map) {
     auto const& momentum{particle.getMomentum()};
     auto const& vertex{particle.getVertex()};
