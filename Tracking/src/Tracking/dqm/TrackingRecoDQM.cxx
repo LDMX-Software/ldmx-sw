@@ -10,26 +10,30 @@ namespace tracking::dqm {
 void TrackingRecoDQM::configure(framework::config::Parameters& parameters) {
   trackCollection_ = parameters.getParameter<std::string>("track_collection");
   truthCollection_ = parameters.getParameter<std::string>("truth_collection");
-  measurementCollection_ = parameters.getParameter<std::string>(
-        "measurement_collection");  
-  measurement_passname_ = parameters.getParameter<std::string>("measurement_passname");
-  
-  ecal_sp_events_passname_ = parameters.getParameter<std::string>("ecal_sp_events_passname");
+  measurementCollection_ =
+      parameters.getParameter<std::string>("measurement_collection");
+  measurement_passname_ =
+      parameters.getParameter<std::string>("measurement_passname");
+
+  ecal_sp_events_passname_ =
+      parameters.getParameter<std::string>("ecal_sp_events_passname");
   ecal_sp_passname_ = parameters.getParameter<std::string>("ecal_sp_passname");
-  target_sp_events_passname_ = parameters.getParameter<std::string>("target_sp_events_passname");
-  target_sp_passname_ = parameters.getParameter<std::string>("target_sp_passname");  
+  target_sp_events_passname_ =
+      parameters.getParameter<std::string>("target_sp_events_passname");
+  target_sp_passname_ =
+      parameters.getParameter<std::string>("target_sp_passname");
   truth_passname_ = parameters.getParameter<std::string>("truth_passname");
-  truth_events_passname_ = parameters.getParameter<std::string>("truth_events_passname");
+  truth_events_passname_ =
+      parameters.getParameter<std::string>("truth_events_passname");
   track_passname_ = parameters.getParameter<std::string>("track_passname");
-  track_collection_events_passname_ = parameters.getParameter<std::string>(
-        "track_collection_events_passname");  
+  track_collection_events_passname_ =
+      parameters.getParameter<std::string>("track_collection_events_passname");
 
   title_ = parameters.getParameter<std::string>("title", "tagger_trk_");
   trackProb_cut_ = parameters.getParameter<double>("trackProb_cut", 0.5);
   subdetector_ = parameters.getParameter<std::string>("subdetector", "Tagger");
   trackStates_ =
       parameters.getParameter<std::vector<std::string>>("trackStates", {});
-  
 
   ldmx_log(info) << "Track Collection " << trackCollection_ << std::endl;
   ldmx_log(info) << "Truth Collection " << truthCollection_ << std::endl;
