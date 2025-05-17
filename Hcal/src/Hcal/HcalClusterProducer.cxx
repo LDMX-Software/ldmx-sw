@@ -25,7 +25,8 @@ void HcalClusterProducer::configure(framework::config::Parameters& parameters) {
 
   clusterCollName_ = parameters.getParameter<std::string>("clusterCollName");
 <<<<<<< HEAD
-  hcal_hits_pass_name_ = parameters.getParameter<std::string>("hcal_hits_pass_name"); 
+  hcal_hits_pass_name_ =
+      parameters.getParameter<std::string>("hcal_hits_pass_name"); 
 =======
   hcal_hits_pass_name_ =
       parameters.getParameter<std::string>("hcalHitsPassName");

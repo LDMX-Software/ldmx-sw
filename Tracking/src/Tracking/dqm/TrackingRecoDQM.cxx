@@ -11,21 +11,24 @@ void TrackingRecoDQM::configure(framework::config::Parameters& parameters) {
   trackCollection_ = parameters.getParameter<std::string>("track_collection");
   truthCollection_ = parameters.getParameter<std::string>("truth_collection");
 <<<<<<< HEAD
-  measurementCollection_ = parameters.getParameter<std::string>(
-        "measurement_collection");  
-  measurement_passname_ = parameters.getParameter<std::string>("measurement_passname");
-  
- 
+  measurementCollection_ =
+      parameters.getParameter<std::string>("measurement_collection");
+  measurement_passname_ =
+      parameters.getParameter<std::string>("measurement_passname");
 
-  ecal_sp_events_passname_ = parameters.getParameter<std::string>("ecal_sp_events_passname");
+  ecal_sp_events_passname_ =
+      parameters.getParameter<std::string>("ecal_sp_events_passname");
   ecal_sp_passname_ = parameters.getParameter<std::string>("ecal_sp_passname");
-  target_sp_events_passname_ = parameters.getParameter<std::string>("target_sp_events_passname");
-  target_sp_passname_ = parameters.getParameter<std::string>("target_sp_passname");  
+  target_sp_events_passname_ =
+      parameters.getParameter<std::string>("target_sp_events_passname");
+  target_sp_passname_ =
+      parameters.getParameter<std::string>("target_sp_passname");
   truth_passname_ = parameters.getParameter<std::string>("truth_passname");
-  truth_events_passname_ = parameters.getParameter<std::string>("truth_events_passname");
+  truth_events_passname_ =
+      parameters.getParameter<std::string>("truth_events_passname");
   track_passname_ = parameters.getParameter<std::string>("track_passname");
-  track_collection_events_passname_ = parameters.getParameter<std::string>(
-        "track_collection_events_passname");  
+  track_collection_events_passname_ =
+      parameters.getParameter<std::string>("track_collection_events_passname");  
 
   
   

@@ -15,8 +15,9 @@ void NtupleWriter::configure(framework::config::Parameters& ps) {
       ps.getParameter<std::string>("target_sp_hits_event_passname");
   target_sp_passname_ = ps.getParameter<std::string>("target_sp_passname");
 <<<<<<< HEAD
-  
-  ecal_sp_hits_events_passname_ = ps.getParameter<std::string>("ecal_sp_hits_events_passname");
+
+  ecal_sp_hits_events_passname_ =
+      ps.getParameter<std::string>("ecal_sp_hits_events_passname");
 =======
 
   ecal_sp_hits_events_passname_ =

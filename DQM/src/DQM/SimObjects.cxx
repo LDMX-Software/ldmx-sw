@@ -10,8 +10,9 @@ namespace dqm {
 
 void SimObjects::configure(framework::config::Parameters& ps) {
 <<<<<<< HEAD
-  sim_pass_ = ps.getParameter<std::string>("sim_pass"); 
-  sim_particles_map_passname_ = ps.getParameter<std::string>("sim_particles_map_passname"); 
+  sim_pass_ = ps.getParameter<std::string>("sim_pass");
+  sim_particles_map_passname_ =
+      ps.getParameter<std::string>("sim_particles_map_passname"); 
 =======
   sim_pass_ = ps.getParameter<std::string>("sim_pass");
   sim_particles_passname_ =
@@ -155,8 +156,8 @@ void SimObjects::analyze(const framework::Event& event) {
   }
 
 <<<<<<< HEAD
-  auto const& particle_map{
-      event.getMap<int, ldmx::SimParticle>("SimParticles",sim_particles_map_passname_)};
+  auto const& particle_map{event.getMap<int, ldmx::SimParticle>(
+      "SimParticles", sim_particles_map_passname_)};
 =======
   auto const& particle_map{event.getMap<int, ldmx::SimParticle>(
       "SimParticles", sim_particles_passname_)};
