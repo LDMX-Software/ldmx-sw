@@ -516,7 +516,6 @@ class Event {
    */
   ldmx::EventHeader eventHeader_;
 
-  const std::string eventHeaderPassName_{"eventPassName"};
   /**
    * The default pass name.
    */
