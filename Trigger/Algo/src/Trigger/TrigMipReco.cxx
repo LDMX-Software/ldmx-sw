@@ -75,53 +75,79 @@ void TrigMipReco::produce(framework::Event& event) {
 
       event.add(passCollName_, mips);
   } else {
-        float radiusCut = 1.0; // cm?
+        float radiusCut = 5; // cm?
         int maxLayer = 32;
         int minTrackLength = 5; // example
 
         std::map<int, std::vector<TrigCaloHit>> layerHits;
+        std::set<const TrigCaloHit*> usedHits;
 
         // group hits by layer
         for (const auto& hit : caloHits) {
+            if( hit.section()>0 || hit.energy()<minEnergy_ || hit.layer()>maxLayer) continue;
             layerHits[hit.layer()].push_back(hit);
         }
 
         // loop over mip seeds
         TrigMipCollection mips;
 
-        for (const auto& seed : layerHits[0]) {
-            std::vector<TrigCaloHit> trackHits;
-            trackHits.push_back(seed);
-            TrigCaloHit last = seed;
-            int holes = 0;
-            // bool found = false;
+        // Save before big changes
 
-            for (int l = seed.layer() + 1; l <= maxLayer; ++l) {
-                bool found = false;
-                for (const auto& cand : layerHits[l]) {
-                    float dx = cand.x() - last.x();
-                    float dy = cand.y() - last.y();
-                    float dR2 = dx*dx + dy*dy;
-                    if (dR2 < radiusCut*radiusCut) {
-                        trackHits.push_back(cand);
-                        last = cand;
-                        found = true;
-                        break;
+        for (const auto& [seedLayer, seeds] : layerHits) {\
+            for (const auto& seed: seeds) {
+                if (usedHits.count(&seed)) continue;
+                std::vector<TrigCaloHit> trackHits;
+                trackHits.push_back(seed);
+                TrigCaloHit last = seed;
+                int holes = 0;
+                // bool found = false;
+
+                for (int l = seed.layer() + 1; l <= maxLayer; ++l) {
+                    // bool found = false;
+                    const TrigCaloHit* bestHit = nullptr;
+                    float bestdR2 = radiusCut * radiusCut;
+                    for (const auto& cand : layerHits[l]) {
+                        if (usedHits.count(&cand)) continue;
+                        float dx = cand.x() - last.x();
+                        float dy = cand.y() - last.y();
+                        float dR2 = dx*dx + dy*dy;
+                        if (dR2 < bestdR2) {
+                            bestdR2 = dR2;
+                            bestHit = &cand;
+                        }
                     }
-                }
-                if (!found) {
-                holes++;
-                }
-            }
+                    if (bestHit) {
+                        trackHits.push_back(*bestHit);
+                        last = *bestHit;
+                        // found = true;
+                        } else {
+                            holes++;
+                            //if (holes > 2) break;
+                          }
 
-            if (trackHits.size() >= minTrackLength) {
-                TrigMip mip;
-                mip.setStartLayer(trackHits.front().layer());
-                mip.setEndLayer(trackHits.back().layer());
-                mip.setNHits(trackHits.size());
-                mip.setLength(trackHits.back().layer() - trackHits.front().layer() + 1);
-                mip.setNHoles(mip.length() - mip.nHits());
-                mips.push_back(mip);
+                }
+
+                // std::cout << "Track with " << trackHits.size() << " hits: ";
+                // for (const auto& h : trackHits) {
+                //     std::cout << h.layer() << " ";
+                // }
+                // std::cout << std::endl;
+
+                if (trackHits.size() >= minTrackLength) {
+                    TrigMip mip;
+                    mip.setStartLayer(trackHits.front().layer());
+                    mip.setEndLayer(trackHits.back().layer());
+                    mip.setNHits(trackHits.size());
+                    mip.setLength(trackHits.back().layer() - trackHits.front().layer());
+                    mip.setNHoles(mip.length() - mip.nHits());
+                    mips.push_back(mip);
+                    // std::cout << "Track with " << trackHits.size() << " hits: ";
+                    // for (const auto& h : trackHits) {
+                    //     usedHits.insert(&h);
+                    //     std::cout << h.layer() << " ";
+                    // }
+                    // std::cout << std::endl;
+                }
             }
         }
 
