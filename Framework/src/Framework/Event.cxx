@@ -149,8 +149,7 @@ void Event::setInputTree(TTree* tree) {
 }
 
 bool Event::nextEvent() {
-  eventHeader_ = getObject<ldmx::EventHeader>(ldmx::EventHeader::BRANCH,
-                                              eventHeaderPassName_);
+  eventHeader_ = getObject<ldmx::EventHeader>(ldmx::EventHeader::BRANCH, "");
   return true;
 }
 
