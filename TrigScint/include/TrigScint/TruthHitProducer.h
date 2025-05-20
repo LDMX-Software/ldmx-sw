@@ -67,6 +67,10 @@ class TruthHitProducer : public framework::Producer {
   /// selected sim hits
   std::string outputCollection_;
 
+ private:
+  std::string sim_particles_passname_;
+  std::string input_collection_events_passname_;
+
 };  // TruthHitProducer
 
 }  // namespace trigscint

@@ -192,6 +192,9 @@ class CKFProcessor final : public TrackingGeometryUser {
   // The measurement collection to use for track reconstruction
   std::string measurement_collection_{"TaggerMeasurements"};
 
+  std::string simParticles_passName_;
+  std::string sim_particles_event_passname_;
+
   // Outlier removal pvalue
   // The Chi2Cut is applied at filtering stage.
   // 1DOF pvalues: 0.1 = 2.706 0.05 = 3.841 0.025 = 5.024 0.01 = 6.635 0.005

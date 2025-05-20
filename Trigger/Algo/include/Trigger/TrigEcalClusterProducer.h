@@ -37,6 +37,9 @@ class TrigEcalClusterProducer : public framework::Producer {
   // name of collection for trigCluster to be output
   std::string clusterCollName_;
 
+  std::string hit_coll_passname_;
+  std::string hit_coll_name_events_passname_;
+
   // From:
   // Tools/python/HgcrocEmulator.py
   // ECal/python/digi.py

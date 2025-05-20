@@ -40,3 +40,8 @@ class MyProcessor(ldmxcfg.Producer) :
         super().__init__( name , "recon::MyProcessor" , 'Recon' )
 
         self.my_parameter = 20
+        self.ecal_rechits_passname = ''
+        self.ecal_rec_hits_event_passname = ''
+        
+        
+        

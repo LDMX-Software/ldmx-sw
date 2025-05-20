@@ -5,10 +5,18 @@
 
 namespace tracking::dqm {
 
+void TrackerDigiDQM::configure(framework::config::Parameters& parameters) {
+  output_measurements_passname_ =
+      parameters.getParameter<std::string>("output_measurements_passname");
+  measurements_passname_ =
+      parameters.getParameter<std::string>("measurements_passname");
+}
+
 void TrackerDigiDQM::analyze(const framework::Event& event) {
-  if (!event.exists("OutputMeasurements")) return;
-  auto measurements{
-      event.getCollection<ldmx::Measurement>("OutputMeasurements")};
+  if (!event.exists("OutputMeasurements", output_measurements_passname_))
+    return;
+  auto measurements{event.getCollection<ldmx::Measurement>(
+      "OutputMeasurements", measurements_passname_)};
 
   for (auto& measurement : measurements) {
     auto global_position{measurement.getGlobalPosition()};

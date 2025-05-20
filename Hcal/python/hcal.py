@@ -23,6 +23,9 @@ class HcalVetoProcessor(ldmxcfg.Producer) :
         self.input_hit_pass_name = ''
         self.output_coll_name= "HcalVeto";
         self.inverse_skim = False;
+        
+        self.track_pass_name = ''
+        
 
 class HcalWABVetoProcessor(ldmxcfg.Producer) :
     """Configuration for WAB veto in HCal
@@ -48,6 +51,12 @@ class HcalWABVetoProcessor(ldmxcfg.Producer) :
         self.inputECALHitCollName = "EcalRecHits" ;
         self.outputCollName = "HcalWABVetoes";
         self.inputHCALClusterCollName = "HcalClusters"
+        
+        self.hcal_hit_passname = ''
+        self.ecal_hit_passname = ''
+        self.hcal_cluster_passname = ''
+        self.track_pass_name = ''
+        self.track_pass_name = ''
 
 class HcalOldDigiProducer(ldmxcfg.Producer) :
     """Configuration for Digitization producer in the HCal
@@ -96,3 +105,5 @@ class HcalClusterProducer(ldmxcfg.Producer) :
         self.cutOff = 10.
 
         self.clusterCollName = 'HcalClusters'
+        self.hcal_hits_pass_name = ''
+        

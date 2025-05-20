@@ -45,6 +45,7 @@ class TrigScintHitDQM : public framework::Analyzer {
   /** Name of trigger pad hit  collection. */
   std::string hitCollectionName_{"TriggerPadUpDigiHits"};
   std::string padName_{"_up"};
+  std::string trig_scint_passname_;
 };
 
 }  // namespace dqm

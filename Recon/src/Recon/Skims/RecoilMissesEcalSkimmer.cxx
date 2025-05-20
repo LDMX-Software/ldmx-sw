@@ -15,16 +15,27 @@ RecoilMissesEcalSkimmer::RecoilMissesEcalSkimmer(const std::string &name,
 
 RecoilMissesEcalSkimmer::~RecoilMissesEcalSkimmer() {}
 
+void RecoilMissesEcalSkimmer::configure(
+    framework::config::Parameters &parameters) {
+  ecalSimHitsPassName_ =
+      parameters.getParameter<std::string>("ecalSimHitsPassName");
+
+  sim_particles_pass_name_ =
+      parameters.getParameter<std::string>("sim_particles_pass_name");
+}
+
 void RecoilMissesEcalSkimmer::produce(framework::Event &event) {
   // Get the collection of simulated particles from the event
-  auto particleMap{event.getMap<int, ldmx::SimParticle>("SimParticles")};
+  auto particleMap{event.getMap<int, ldmx::SimParticle>(
+      "SimParticles", sim_particles_pass_name_)};
 
   // Search for the recoil electron
   auto [recoilTrackID, recoilElectron] = Analysis::getRecoil(particleMap);
 
   // Get the collection of simulated Ecal hits from the event.
   const std::vector<ldmx::SimCalorimeterHit> ecalSimHits =
-      event.getCollection<ldmx::SimCalorimeterHit>("EcalSimHits");
+      event.getCollection<ldmx::SimCalorimeterHit>("EcalSimHits",
+                                                   ecalSimHitsPassName_);
 
   // Loop through the Ecal hits and check if the recoil electron is
   // associated with any of them.  If there are any recoil electron hits
