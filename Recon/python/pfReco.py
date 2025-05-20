@@ -41,8 +41,11 @@ class pfTrackProducer(ldmxcfg.Producer) :
     def __init__(self, name='PFTrack') :
         super().__init__(name, 'recon::PFTrackProducer','Recon')
         self.inputTrackCollName  = 'EcalScoringPlaneHits'
+        self.input_pass_name  = ''
         self.outputTrackCollName = 'PFTracks'
-        self.input_pass_name = ''
+        self.doElectronTracking = False
+        self.minElectronMomentumZ = 2500.
+        self.maxElectronTrackID = 30
 
 class pfProducer(ldmxcfg.Producer) :
     """Configuration for particle reco"""

@@ -54,11 +54,12 @@ void ParticleFlow::fillCandEMCalo(ldmx::PFCandidate& cand,
                                   const ldmx::CaloCluster& em) {
   float corr = 1.;
   float e = em.getEnergy();
+  // update energy: use min or max factor if outside calibration range
   if (e < eCorr_->GetX()[0]) {
-    corr = eCorr_->GetX()[0];
+    corr = eCorr_->GetY()[0];
   } else if (e > eCorr_->GetX()[eCorr_->GetN() - 1]) {
-    corr = eCorr_->GetX()[eCorr_->GetN() - 1];
-  } else {
+    corr = eCorr_->GetY()[eCorr_->GetN() - 1];
+  } else {  // else look up calibration factor
     corr = eCorr_->Eval(e);
   }
   cand.setEcalEnergy(e * corr);
@@ -78,9 +79,9 @@ void ParticleFlow::fillCandHadCalo(ldmx::PFCandidate& cand,
   float corr = 1.;
   float e = had.getEnergy();
   if (e < hCorr_->GetX()[0]) {
-    corr = hCorr_->GetX()[0];
+    corr = hCorr_->GetY()[0];
   } else if (e > hCorr_->GetX()[hCorr_->GetN() - 1]) {
-    corr = hCorr_->GetX()[hCorr_->GetN() - 1];
+    corr = hCorr_->GetY()[hCorr_->GetN() - 1];
   } else {
     corr = hCorr_->Eval(e);
   }
