@@ -24,13 +24,14 @@ void TruthSeedProcessor::onNewRun(const ldmx::RunHeader& rh) {
 void TruthSeedProcessor::configure(framework::config::Parameters& parameters) {
   scoring_hits_coll_name_ =
       parameters.getParameter<std::string>("scoring_hits_coll_name");
-  sp_pass_name_ = parameters.getParameter<std::string>("sp_pass_name", "");
+  sp_pass_name_ = parameters.getParameter<std::string>("sp_pass_name");
   recoil_sim_hits_coll_name_ =
       parameters.getParameter<std::string>("recoil_sim_hits_coll_name");
   tagger_sim_hits_coll_name_ =
       parameters.getParameter<std::string>("tagger_sim_hits_coll_name");
-  input_pass_name_ =
-      parameters.getParameter<std::string>("input_pass_name", "");
+  input_pass_name_ = parameters.getParameter<std::string>("input_pass_name");
+  sim_particles_passname_ =
+      parameters.getParameter<std::string>("sim_particles_passname");
 
   n_min_hits_tagger_ = parameters.getParameter<int>("n_min_hits_tagger", 11);
   n_min_hits_recoil_ = parameters.getParameter<int>("n_min_hits_recoil", 7);
@@ -529,7 +530,8 @@ bool TruthSeedProcessor::scoringPlaneHitFilter(
 
 void TruthSeedProcessor::produce(framework::Event& event) {
   // Retrieve the particleMap
-  auto particleMap{event.getMap<int, ldmx::SimParticle>("SimParticles")};
+  auto particleMap{event.getMap<int, ldmx::SimParticle>(
+      "SimParticles", sim_particles_passname_)};
 
   // Retrieve the target scoring hits
   // Information is extracted using the

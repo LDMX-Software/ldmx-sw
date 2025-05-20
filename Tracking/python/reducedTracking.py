@@ -44,6 +44,10 @@ class LinearSeedFinder(Producer):
         self.layer12_midpoint = 12.5
         self.layer23_midpoint = 20.0
         self.layer34_midpoint = 27.5
+       
+        self.input_pass_name = ''  
+        self.sim_particles_passname = ''
+        self.sim_particles_events_passname = ''
         
 class LinearTrackFinder(Producer):
     """ Producer to find Seeds for the reduced geometry track finding
@@ -65,6 +69,7 @@ class LinearTrackFinder(Producer):
         super().__init__(instance_name, 'tracking::reco::LinearTrackFinder', 'Tracking')
         self.seed_collection_ = 'LinearRecoilSeedTracks'
         self.out_trk_collection = 'LinearRecoilTracks'
+        self.input_pass_name = ''
 
 class LinearTruthTracking(Producer):
     """ Producer to find (truth) tracks using trackID=1 for the reduced geometry
@@ -90,3 +95,4 @@ class LinearTruthTracking(Producer):
         self.input_rec_hits_collection = 'EcalRecHits'
         self.out_track_collection = 'LinearRecoilTruthTracks'
         self.ecal_first_layer_z_threshold = 250.0
+        self.input_pass_name = ''

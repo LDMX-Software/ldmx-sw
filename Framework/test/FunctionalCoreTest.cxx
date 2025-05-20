@@ -105,9 +105,29 @@ class TestProducer : public Producer {
  * - Event::getCollection and Event::getObject don't throw errors.
  */
 class TestAnalyzer : public Analyzer {
+ private:
+  std::string test_collection_passname_;
+  std::string test_object_passname_;
+  std::string veto_test_object_passname_;
+  std::string tenth_event_passname_;
+  std::string event_index_passname_;
+
  public:
   TestAnalyzer(const std::string& name, Process& p) : Analyzer(name, p) {}
   ~TestAnalyzer() {}
+
+  void configure(framework::config::Parameters& ps) override {
+    test_collection_passname_ =
+        ps.getParameter<std::string>("test_collection_passname", "");
+    test_object_passname_ =
+        ps.getParameter<std::string>("test_object_passname", "");
+    veto_test_object_passname_ =
+        ps.getParameter<std::string>("veto_test_object_passname", "");
+    tenth_event_passname_ =
+        ps.getParameter<std::string>("tenth_event_passname", "");
+    event_index_passname_ =
+        ps.getParameter<std::string>("event_index_passname", "");
+  }
 
   void onProcessStart() final override {
     REQUIRE_NOTHROW(getHistoDirectory());
@@ -121,7 +141,8 @@ class TestAnalyzer : public Analyzer {
     REQUIRE(i_event > 0);
 
     const std::vector<ldmx::CalorimeterHit>& caloHits =
-        event.getCollection<ldmx::CalorimeterHit>("TestCollection");
+        event.getCollection<ldmx::CalorimeterHit>("TestCollection",
+                                                  test_collection_passname_);
 
     CHECK(caloHits.size() == i_event);
     for (unsigned int i = 0; i < caloHits.size(); i++) {
@@ -129,19 +150,20 @@ class TestAnalyzer : public Analyzer {
       test_hist_->Fill(caloHits.at(i).getID());
     }
 
-    const ldmx::HcalVetoResult& vetoRes =
-        event.getObject<ldmx::HcalVetoResult>("TestObject");
+    const ldmx::HcalVetoResult& vetoRes = event.getObject<ldmx::HcalVetoResult>(
+        "TestObject", veto_test_object_passname_);
 
     auto maxPEHit{vetoRes.getMaxPEHit()};
 
     CHECK(maxPEHit.getID() == i_event);
     CHECK(vetoRes.passesVeto() == (i_event % 2 == 0));
 
-    const float& tenth_event = event.getObject<float>("EventTenth");
+    const float& tenth_event =
+        event.getObject<float>("EventTenth", tenth_event_passname_);
     CHECK(tenth_event == Approx(i_event * 0.1));
 
     const std::vector<int>& i_event_from_bus =
-        event.getCollection<int>("EventIndex");
+        event.getCollection<int>("EventIndex", event_index_passname_);
 
     CHECK(i_event_from_bus.size() == 2);
     CHECK(i_event_from_bus.at(0) == i_event);

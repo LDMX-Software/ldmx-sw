@@ -46,6 +46,8 @@ class SimObjects : public framework::Analyzer {
  private:
   /// Pass Name for sim objects
   std::string sim_pass_;
+
+  std::string sim_particles_map_passname_;
 };
 }  // namespace dqm
 

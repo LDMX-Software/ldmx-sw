@@ -62,6 +62,9 @@ class HcalWABVetoProcessor : public framework::Producer {
   std::string inputHCALClusterCollName_;
   std::string inputHCALHitCollName_;
   std::string inputECALHitCollName_;
+  std::string hcal_hit_passname_;
+  std::string ecal_hit_passname_;
+  std::string hcal_cluster_passname_;
 
 };  // HcalWABVetoProcessor
 }  // namespace hcal

@@ -30,6 +30,8 @@ class TrigScintDigiProducer(ldmxcfg.Producer) :
         import time
         self.randomSeed = int(time.time())
         self.verbose = False
+        
+        self.sim_particles_passname = ""
 
     def pad1() :
         """Get the digitizer for the trigger pad most upstream of tagger"""
