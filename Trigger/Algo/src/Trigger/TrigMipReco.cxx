@@ -75,92 +75,86 @@ void TrigMipReco::produce(framework::Event& event) {
 
       event.add(passCollName_, mips);
   } else {
-        float radiusCut = 5; // cm?
+        float radiusCut = 5; // mm
         int maxLayer = 32;
         int minTrackLength = 5; // example
 
         std::map<int, std::vector<TrigCaloHit>> layerHits;
         std::set<const TrigCaloHit*> usedHits;
+        std::vector<std::vector<const TrigCaloHit*>> candidateTracks;
+        std::map<const TrigCaloHit*, size_t> hitToBestTrack;
 
-        // group hits by layer
         for (const auto& hit : caloHits) {
             if( hit.section()>0 || hit.energy()<minEnergy_ || hit.layer()>maxLayer) continue;
             layerHits[hit.layer()].push_back(hit);
         }
 
-        // loop over mip seeds
-        TrigMipCollection mips;
-
-        // Save before big changes
-
         for (const auto& [seedLayer, seeds] : layerHits) {\
             for (const auto& seed: seeds) {
                 if (usedHits.count(&seed)) continue;
-                std::vector<TrigCaloHit> trackHits;
-                trackHits.push_back(seed);
-                TrigCaloHit last = seed;
+
+                std::vector<const TrigCaloHit*> track;
+                track.push_back(&seed);
+
+                const TrigCaloHit* last = &seed;
                 int holes = 0;
-                // bool found = false;
 
                 for (int l = seed.layer() + 1; l <= maxLayer; ++l) {
-                    // bool found = false;
                     const TrigCaloHit* bestHit = nullptr;
                     float bestdR2 = radiusCut * radiusCut;
+
                     for (const auto& cand : layerHits[l]) {
                         if (usedHits.count(&cand)) continue;
-                        float dx = cand.x() - last.x();
-                        float dy = cand.y() - last.y();
+
+                        float dx = cand.x() - last->x();
+                        float dy = cand.y() - last->y();
                         float dR2 = dx*dx + dy*dy;
                         if (dR2 < bestdR2) {
                             bestdR2 = dR2;
                             bestHit = &cand;
                         }
                     }
+
                     if (bestHit) {
-                        trackHits.push_back(*bestHit);
-                        last = *bestHit;
-                        // found = true;
+                        track.push_back(bestHit);
+                        last = bestHit;
                         } else {
                             holes++;
                             //if (holes > 2) break;
                           }
-
                 }
 
-                // std::cout << "Track with " << trackHits.size() << " hits: ";
-                // for (const auto& h : trackHits) {
-                //     std::cout << h.layer() << " ";
-                // }
-                // std::cout << std::endl;
+                if (track.size() >= minTrackLength) {
+                    size_t i = candidateTracks.size();
+                    candidateTracks.push_back(track);
 
-                if (trackHits.size() >= minTrackLength) {
-                    TrigMip mip;
-                    mip.setStartLayer(trackHits.front().layer());
-                    mip.setEndLayer(trackHits.back().layer());
-                    mip.setNHits(trackHits.size());
-                    mip.setLength(trackHits.back().layer() - trackHits.front().layer());
-                    mip.setNHoles(mip.length() - mip.nHits());
-                    mips.push_back(mip);
-                    // std::cout << "Track with " << trackHits.size() << " hits: ";
-                    // for (const auto& h : trackHits) {
-                    //     usedHits.insert(&h);
-                    //     std::cout << h.layer() << " ";
-                    // }
-                    // std::cout << std::endl;
+                    for (const auto* h : track) {
+                        if (!hitToBestTrack.count(h) ||
+                            candidateTracks[i].size() > candidateTracks[hitToBestTrack[h]].size()) {
+                                hitToBestTrack[h] = i;
+                        }
+                    }
                 }
             }
         }
 
+        std::set<size_t> validTrackIndices;
+        for (const auto& [hit, idx] : hitToBestTrack) {
+            validTrackIndices.insert(idx);
+        }
 
-        // TrigCaloHitCollection sortedHits;
-        // int startLayer
-        // int EndLayer
-        // int numCounts
-        // for (const auto& tp : caloHits) {
-        //     if( tp.section()>0 || tp.energy()<minEnergy_ || tp.layer()>32) continue;
-        //     sortedHits.push_back(tp);
+        TrigMipCollection mips;
+        for (size_t idx : validTrackIndices) {
+            const auto& track = candidateTracks[idx];
 
-        // }
+            TrigMip mip;
+            mip.setStartLayer(track.front()->layer());
+            mip.setEndLayer(track.back()->layer());
+            mip.setNHits(track.size());
+            mip.setLength(track.back()->layer() - track.front()->layer());
+            mip.setNHoles(mip.length() - mip.nHits());
+            mips.push_back(mip);
+        }
         std::sort(mips.begin(), mips.end());
 
         event.add(passCollName_, mips);
