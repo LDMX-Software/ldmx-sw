@@ -8,6 +8,7 @@
 ###############################################################################
 
 start_group Produce Dark Brem Library
+curl -s https://tomeichlersmith.github.io/denv/install | sh
 denv init ldmx/dark-brem-lib-gen:v5.1
 denv dark-brem-lib-gen \
   --run 1 \
