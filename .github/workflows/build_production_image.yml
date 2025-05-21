@@ -2,19 +2,6 @@
 name: Build Production Image
 
 on:
-  workflow_dispatch:
-    inputs:
-      branch:
-        description: 'Git Reference to Build Into an Image'
-        required: true
-        default: trunk
-      repo:
-        description: 'Docker Repo to Push Image To'
-        required: true
-      tag:
-        description: 'Name for Image'
-        required: false
-        default: edge
   push:
     branches: 'trunk'
     tags: 'v*.*.*' #all version tags
@@ -30,6 +17,11 @@ jobs:
       name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v3
     -
+      name: Set up just
+      uses: extractions/setup-just@v3
+      with:
+        just-version: 1.26.0
+    -
       name: Login to DockerHub
       uses: docker/login-action@v3
       with:
@@ -43,41 +35,21 @@ jobs:
         fetch-depth: 0
         ref: ${{ github.event.inputs.branch }}
     -
-      name: Determine Image Tags
-      id: generate_tag
-      run: |
-        # this part is just a copy of just prep-version
-        # TODO: transfer building of the production image to a just recipe
-        git fetch --tags && git describe --tags | cut -f 1 -d '-' > VERSION
-        source ${GITHUB_WORKSPACE}/.github/actions/common.sh
-        _tags=""
-        if [[ $GITHUB_EVENT_NAME == "workflow_dispatch" ]]; then
-          _repo=${{ github.event.inputs.repo }}
-          _input_tag=${{ github.event.inputs.tag }}
-          if [[ ${_repo} == "ldmx/pro" ]]; then
-            error "Provided 'ldmx/pro' repo on non-trunk branch."
-            exit 1
-          fi
-          _tags="${_repo}:${_input_tag},${_repo}:sha-${GITHUB_SHA::8}"
-        elif [[ $GITHUB_REF == refs/tags/* ]]; then
-          # if pushing a git tag ==> get the git tag for the docker tag
-          _git_tag=${GITHUB_REF#refs/tags/}
-          _tags="ldmx/pro:$_git_tag"
-          if [[ $_git_tag =~ ^v[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$ ]]; then
-            # there was a version released on github
-            #   v<1-3 digits>.<1-3 digits>.<1-3 digits>
-            _tags="$_tags,ldmx/pro:latest"
-          fi
-        elif [[ $GITHUB_REF == refs/heads/* ]]; then
-          #pushing to trunk
-          _tags="ldmx/pro:edge,ldmx/pro:sha-${GITHUB_SHA::8}"
-        else
-          error "Running Determine Image Tags on a commit that isn't a tag or a branch."
-          exit 1
-        fi
-        set_output tags ${_tags}
-        set_output should_push ${_should_push}
-      shell: bash
+      name: Docker meta
+      id: meta
+      uses: docker/metadata-action@v5
+      with:
+        # Default image name for push actions
+        images: ${{ 'ldmx/pro' }}
+        tags: |
+          type=ref,event=branch
+          type=ref,event=pr
+          type=semver,pattern=v{{version}}
+          type=sha,format=short
+
+    - 
+      name: Update version variable before building
+      run: just prep-version
     -
       name: Build the Image
       id: docker_build
