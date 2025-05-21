@@ -24,10 +24,15 @@ void TruthSeedProcessor::onNewRun(const ldmx::RunHeader& rh) {
 void TruthSeedProcessor::configure(framework::config::Parameters& parameters) {
   scoring_hits_coll_name_ =
       parameters.getParameter<std::string>("scoring_hits_coll_name");
+  sp_pass_name_ = parameters.getParameter<std::string>("sp_pass_name");
   recoil_sim_hits_coll_name_ =
       parameters.getParameter<std::string>("recoil_sim_hits_coll_name");
   tagger_sim_hits_coll_name_ =
       parameters.getParameter<std::string>("tagger_sim_hits_coll_name");
+  input_pass_name_ = parameters.getParameter<std::string>("input_pass_name");
+  sim_particles_passname_ =
+      parameters.getParameter<std::string>("sim_particles_passname");
+
   n_min_hits_tagger_ = parameters.getParameter<int>("n_min_hits_tagger", 11);
   n_min_hits_recoil_ = parameters.getParameter<int>("n_min_hits_recoil", 7);
   pdg_ids_ = parameters.getParameter<std::vector<int>>("pdg_ids", {11});
@@ -107,7 +112,6 @@ void TruthSeedProcessor::createTruthTrack(
   // Eigen::Matrix<double, kSize, 1>;
   Acts::Vector3 pos{pos_vec[0], pos_vec[1], pos_vec[2]};
   Acts::Vector3 mom{p_vec[0], p_vec[1], p_vec[2]};
-  double time{0.};
 
   // Rotate the position and momentum into the ACTS frame.
   pos = tracking::sim::utils::Ldmx2Acts(pos);
@@ -137,12 +141,15 @@ void TruthSeedProcessor::createTruthTrack(
   // std::endl;
 
   // Transform the parameters to local positions on the perigee surface.
-  auto bound_params{Acts::detail::transformFreeToBoundParameters(
-                        free_params, *gen_surface, gctx_)
-                        .value()};
-
+  auto bound_params{
+      Acts::transformFreeToBoundParameters(free_params, *gen_surface, gctx_)
+          .value()};
+  int pdgid = 11;               // electron
+  if (charge > 0) pdgid = -11;  // positron
+  auto part{Acts::GenericParticleHypothesis(
+      Acts::ParticleHypothesis(Acts::PdgParticle(pdgid)))};
   Acts::BoundTrackParameters boundTrkPars(gen_surface, bound_params,
-                                          std::nullopt);
+                                          std::nullopt, part);
 
   // CAUTION:: The target surface should be close to the gen surface
   // Linear propagation to the target surface. I assume 1mm of tolerance
@@ -247,7 +254,13 @@ ldmx::Track TruthSeedProcessor::TaggerFullSeed(
 
   // Smeared track at the beam origin
   ldmx::Track smearedTruthTrack = seedFromTruth(truth_track, true);
-
+  // std::cout << "!!!!! Smeared truth track momentums: "
+  //           << smearedTruthTrack.getMomentum()[0] << " "
+  //           << smearedTruthTrack.getMomentum()[1] << " "
+  //           << smearedTruthTrack.getMomentum()[2] << std::endl;
+  // std::cout << "!!!!! Smeared truth track Q/P: " <<
+  // smearedTruthTrack.getQoP()
+  //           << std::endl;
   ldmx_log(debug) << "Truth parameters at beam origin" << std::endl;
   for (auto par : truth_track.getPerigeeParameters())
     ldmx_log(debug) << par << " ";
@@ -390,7 +403,8 @@ ldmx::Track TruthSeedProcessor::seedFromTruth(const ldmx::Track& tt,
         (bound_params).data(),
         bound_params.data() + bound_params.rows() * bound_params.cols());
 
-    Acts::BoundSymMatrix bound_cov = stddev.cwiseProduct(stddev).asDiagonal();
+    Acts::BoundSquareMatrix bound_cov =
+        stddev.cwiseProduct(stddev).asDiagonal();
     std::vector<double> v_seed_cov;
     tracking::sim::utils::flatCov(bound_cov, v_seed_cov);
     seed.setPerigeeParameters(v_seed_params);
@@ -415,7 +429,8 @@ ldmx::Track TruthSeedProcessor::seedFromTruth(const ldmx::Track& tt,
     stddev[Acts::eBoundTheta] = 5 * Acts::UnitConstants::degree;
     stddev[Acts::eBoundQOverP] = (1. / p) * (1. / p) * sigma_p;
 
-    Acts::BoundSymMatrix bound_cov = stddev.cwiseProduct(stddev).asDiagonal();
+    Acts::BoundSquareMatrix bound_cov =
+        stddev.cwiseProduct(stddev).asDiagonal();
     std::vector<double> v_seed_cov;
     tracking::sim::utils::flatCov(bound_cov, v_seed_cov);
     seed.setPerigeeParameters(v_seed_params);
@@ -505,8 +520,8 @@ bool TruthSeedProcessor::scoringPlaneHitFilter(
 
       }  // check that the hit belongs to the inital particle from the target
          // scoring plane hit
-    }    // loop on Ecal scoring plane hits
-  }      // pcutEcal
+    }  // loop on Ecal scoring plane hits
+  }  // pcutEcal
 
   if (!pass_ecal_scoring_plane) return false;
 
@@ -515,36 +530,39 @@ bool TruthSeedProcessor::scoringPlaneHitFilter(
 
 void TruthSeedProcessor::produce(framework::Event& event) {
   // Retrieve the particleMap
-  auto particleMap{event.getMap<int, ldmx::SimParticle>("SimParticles")};
+  auto particleMap{event.getMap<int, ldmx::SimParticle>(
+      "SimParticles", sim_particles_passname_)};
 
   // Retrieve the target scoring hits
   // Information is extracted using the
   // scoring plane hit left by the particle at the target.
 
   const std::vector<ldmx::SimTrackerHit> scoring_hits{
-      event.getCollection<ldmx::SimTrackerHit>(scoring_hits_coll_name_)};
+      event.getCollection<ldmx::SimTrackerHit>(scoring_hits_coll_name_,
+                                               sp_pass_name_)};
 
   // Retrieve the scoring plane hits at the ECAL
   const std::vector<ldmx::SimTrackerHit> scoring_hits_ecal{
-      event.getCollection<ldmx::SimTrackerHit>("EcalScoringPlaneHits")};
+      event.getCollection<ldmx::SimTrackerHit>("EcalScoringPlaneHits",
+                                               sp_pass_name_)};
 
   // Retrieve the sim hits in the tagger tracker
   const std::vector<ldmx::SimTrackerHit> tagger_sim_hits =
-      event.getCollection<ldmx::SimTrackerHit>(tagger_sim_hits_coll_name_);
+      event.getCollection<ldmx::SimTrackerHit>(tagger_sim_hits_coll_name_,
+                                               input_pass_name_);
 
   // Retrieve the sim hits in the recoil tracker
   const std::vector<ldmx::SimTrackerHit> recoil_sim_hits =
-      event.getCollection<ldmx::SimTrackerHit>(recoil_sim_hits_coll_name_);
+      event.getCollection<ldmx::SimTrackerHit>(recoil_sim_hits_coll_name_,
+                                               input_pass_name_);
 
   // If sim hit collections are empty throw a warning
-  if (tagger_sim_hits.size() == 0 && !skip_tagger_)
-    ldmx_log(error) << "Tagger sim hits collection empty for event "
-                    << event.getEventNumber() << " in run "
-                    << event.getEventHeader().getRun() << std::endl;
-  if (recoil_sim_hits.size() == 0 && !skip_recoil_)
-    ldmx_log(error) << "Recoil sim hits collection empty for event "
-                    << event.getEventNumber() << " in run "
-                    << event.getEventHeader().getRun() << std::endl;
+  if (tagger_sim_hits.size() == 0 && !skip_tagger_) {
+    ldmx_log(error) << "Tagger sim hits collection empty for event ";
+  }
+  if (recoil_sim_hits.size() == 0 && !skip_recoil_) {
+    ldmx_log(error) << "Recoil sim hits collection empty for event ";
+  }
 
   // The map stores which track leaves which sim hits
   std::map<int, std::vector<int>> hit_count_map_recoil;
@@ -596,7 +614,7 @@ void TruthSeedProcessor::produce(framework::Event& event) {
       recoil_sh_count_map[hit.getTrackID()].push_back(i_sh);
 
     }  // Recoil
-  }    // loop on Target scoring plane hits
+  }  // loop on Target scoring plane hits
 
   for (std::pair<int, std::vector<int>> element : recoil_sh_count_map) {
     std::sort(
@@ -678,7 +696,8 @@ void TruthSeedProcessor::produce(framework::Event& event) {
 
   // Recover the EcalScoring hits
   std::vector<ldmx::SimTrackerHit> ecal_spHits =
-      event.getCollection<ldmx::SimTrackerHit>("EcalScoringPlaneHits");
+      event.getCollection<ldmx::SimTrackerHit>("EcalScoringPlaneHits",
+                                               sp_pass_name_);
   // Select ECAL hits
   std::vector<ldmx::SimTrackerHit> sel_ecal_spHits;
 
@@ -694,7 +713,8 @@ void TruthSeedProcessor::produce(framework::Event& event) {
     // Only take the first entry of the vector: it should be the scoring plane
     // hit with the highest momentum.
     const ldmx::SimTrackerHit& hit = scoring_hits.at(element.second.at(0));
-    const ldmx::SimParticle& phit = particleMap[hit.getTrackID()];
+    [[maybe_unused]] const ldmx::SimParticle& phit =
+        particleMap[hit.getTrackID()];
     ldmx::SimTrackerHit ecal_hit;
 
     bool foundEcalHit = false;
@@ -707,12 +727,21 @@ void TruthSeedProcessor::produce(framework::Event& event) {
     }
 
     // Findable particle selection
+    // std::cout << "!!! n_recoil_sim_hits found: " <<
+    // hit_count_map_recoil[hit.getTrackID()].size() << std::endl;
     if (hit_count_map_recoil[hit.getTrackID()].size() > n_min_hits_recoil_ &&
         foundEcalHit && !skip_recoil_) {
       ldmx::Track truth_recoil_track =
           RecoilFullSeed(particleMap[hit.getTrackID()], hit.getTrackID(), hit,
                          ecal_hit, hit_count_map_recoil, targetSurface,
                          targetUnboundSurface, ecalSurface);
+      // std::cout << "!!! Recoil track created" << std::endl;
+      // std::cout << "!!! Recoil track momentum: " <<
+      // truth_recoil_track.getMomentum()[0] << " " <<
+      // truth_recoil_track.getMomentum()[1] << " " <<
+      // truth_recoil_track.getMomentum()[2] << std::endl; std::cout << "!!! Hit
+      // momentum: " << hit.getMomentum()[0] << " " << hit.getMomentum()[1] << "
+      // " << hit.getMomentum()[2] << std::endl;
       recoil_truth_tracks.push_back(truth_recoil_track);
     }
   }
@@ -759,4 +788,4 @@ void TruthSeedProcessor::produce(framework::Event& event) {
 }
 }  // namespace tracking::reco
 
-DECLARE_PRODUCER_NS(tracking::reco, TruthSeedProcessor)
+DECLARE_PRODUCER(tracking::reco::TruthSeedProcessor)

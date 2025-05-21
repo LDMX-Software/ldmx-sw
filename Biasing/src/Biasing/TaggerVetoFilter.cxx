@@ -1,4 +1,6 @@
-
+/*~~~~~~~~~~~~~*/
+/*   Biasing   */
+/*~~~~~~~~~~~~~*/
 #include "Biasing/TaggerVetoFilter.h"
 
 /*~~~~~~~~~~~~*/
@@ -6,6 +8,11 @@
 /*~~~~~~~~~~~~*/
 #include "G4RunManager.hh"
 #include "G4Step.hh"
+
+/*~~~~~~~~~~~~~*/
+/*   SimCore   */
+/*~~~~~~~~~~~~~*/
+#include "SimCore/G4User/PtrRetrieval.h"
 
 namespace biasing {
 
@@ -41,10 +48,14 @@ void TaggerVetoFilter::stepping(const G4Step *step) {
 
   // Get the region the particle is currently in.  Continue processing
   // the particle only if it's in the tagger region.
-  if (auto region{
-          track->GetVolume()->GetLogicalVolume()->GetRegion()->GetName()};
-      region.compareTo("tagger") != 0)
+  auto current_region = track->GetVolume()->GetLogicalVolume()->GetRegion();
+  auto tagger_region = simcore::g4user::ptrretrieval::getRegion("tagger");
+  if (!tagger_region) {
+    ldmx_log(warn) << "Region 'tagger' not found in Geant4 region store";
+  }
+  if (current_region != tagger_region) {
     return;
+  }
 
   primary_entered_tagger_region_ = true;
   // If the energy of the particle falls below threshold, stop
@@ -66,4 +77,4 @@ void TaggerVetoFilter::stepping(const G4Step *step) {
 
 }  // namespace biasing
 
-DECLARE_ACTION(biasing, TaggerVetoFilter)
+DECLARE_ACTION(biasing::TaggerVetoFilter)

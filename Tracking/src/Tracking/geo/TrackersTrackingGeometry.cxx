@@ -190,7 +190,9 @@ TrackersTrackingGeometry::buildTrackerVolume() {
     if (debug_) {
       std::cout << layer.first << " : surfaces==>" << layer.second.size()
                 << std::endl;
-      for (auto& surface : layer.second) surface->toStream(gctx_, std::cout);
+      //      for (auto& surface : layer.second) surface->toStreamImpl(gctx_,
+      //      std::cout);
+      for (auto& surface : layer.second) surface->toStream(gctx_);
     }
 
     Acts::CuboidVolumeBuilder::LayerConfig lcfg;
@@ -324,7 +326,7 @@ void TrackersTrackingGeometry::BuildRecoilLayoutMap(G4VPhysicalVolume* pvol,
         recoil_layout["recoil_tracker_L6"].push_back(sensorSurface);
 
     }  // found the daughter
-  }    // loop on daughters
+  }  // loop on daughters
 }  // BuildRecoilLayoutMap
 
 // This function gets the surfaces from the trackers and orders them in
@@ -439,7 +441,7 @@ void TrackersTrackingGeometry::BuildTaggerLayoutMap(G4VPhysicalVolume* pvol,
         tagger_layout["tagger_tracker_L7"].push_back(sensorSurface);
 
     }  // found a silicon surface
-  }    // loop on daughters
+  }  // loop on daughters
 }  // build the layout
 
 std::shared_ptr<Acts::PlaneSurface> TrackersTrackingGeometry::GetSurface(

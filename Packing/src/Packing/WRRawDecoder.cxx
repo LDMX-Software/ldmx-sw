@@ -8,7 +8,7 @@
 #include "Packing/Utility/Reader.h"
 
 // un comment for WRRawDecoder-specific debug printouts to std::cout
-//#define DEBUG
+// #define DEBUG
 
 namespace packing {
 
@@ -36,11 +36,10 @@ struct WRBinaryPacket {
 };
 
 std::ostream& operator<<(std::ostream& os, const WRBinaryPacket& p) {
-  return (os << "WR Packet {"
-             << "run: " << p.runNumber << ", counter: " << p.WRCounter
-             << ", channel: " << p.channel << ", seq_id: " << p.seq_id
-             << ", sec: " << p.sec << ", coarse: " << p.coarse
-             << ", frac: " << p.frac << "}");
+  return (os << "WR Packet {" << "run: " << p.runNumber
+             << ", counter: " << p.WRCounter << ", channel: " << p.channel
+             << ", seq_id: " << p.seq_id << ", sec: " << p.sec
+             << ", coarse: " << p.coarse << ", frac: " << p.frac << "}");
 }
 
 /**
@@ -113,4 +112,4 @@ void WRRawDecoder::produce(framework::Event& event) {
 
 }  // namespace packing
 
-DECLARE_PRODUCER_NS(packing, WRRawDecoder);
+DECLARE_PRODUCER(packing::WRRawDecoder);

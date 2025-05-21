@@ -1,9 +1,18 @@
-
+/*~~~~~~~~~~~~~*/
+/*   Biasing   */
+/*~~~~~~~~~~~~~*/
 #include "Biasing/TaggerHitFilter.h"
 
-//~~ Geant4 ~~//
+//------------//
+//   Geant4   //
+//------------//
 #include "G4RunManager.hh"
 #include "G4Step.hh"
+
+/*~~~~~~~~~~~~~*/
+/*   SimCore   */
+/*~~~~~~~~~~~~~*/
+#include "SimCore/G4User/PtrRetrieval.h"
 
 namespace biasing {
 
@@ -25,32 +34,55 @@ void TaggerHitFilter::stepping(const G4Step* step) {
   }
 
   // Only electrons in the Tagger region are of interest.
-  auto volume{track->GetVolume()};
-  if (auto region{volume->GetLogicalVolume()->GetRegion()->GetName()};
-      region.compareTo("tagger") != 0)
-    return;
+  auto phys_vol{track->GetVolume()};
+  auto volume{phys_vol ? phys_vol->GetLogicalVolume() : nullptr};
+  auto current_region{volume ? volume->GetRegion() : nullptr};
+  static auto tagger_region =
+      simcore::g4user::ptrretrieval::getRegion("tagger");
+  if (!tagger_region) {
+    ldmx_log(warn) << "Region 'tagger' not found in Geant4 region store";
+  }
+  if (current_region != tagger_region) return;
 
   // Check if we are exiting the tagger
-  if (auto nregion{
-          track->GetNextVolume()->GetLogicalVolume()->GetRegion()->GetName()};
-      (nregion.compareTo("tagger") != 0)) {
+  auto next_phy_vol{track->GetNextVolume()};
+  auto next_log_vol{next_phy_vol ? next_phy_vol->GetLogicalVolume() : nullptr};
+  auto next_region{next_log_vol ? next_log_vol->GetRegion() : nullptr};
+  if (next_region != tagger_region) {
     checkAbortEvent(track);
     return;
   }
 
   // A particle will only leave hits in the active silicon so other volumes can
   // be skipped for now.
-  if (auto volume_name{track->GetVolume()->GetName()};
-      volume_name.compareTo("tagger_PV") == 0)
-    return;
+  auto current_volume = (track->GetVolume());
+  static auto tagger_physical_volume =
+      simcore::g4user::ptrretrieval::getPhysicalVolume("tagger_PV");
+  if (!tagger_physical_volume) {
+    ldmx_log(warn) << "Volume 'tagger_PV' not found in Geant4 volume store";
+  }
+  if (current_volume == tagger_physical_volume) return;
 
   // The copy number is used to identify which layer energy was deposited into.
-  auto copy_number{step->GetPreStepPoint()
-                       ->GetTouchableHandle()
-                       ->GetHistory()
-                       ->GetVolume(2)
-                       ->GetCopyNo()};
-
+  int copy_number{0};
+  // Get the pre-step point
+  auto* preStepPoint = step->GetPreStepPoint();
+  if (preStepPoint) {
+    // Get the touchable handle
+    const auto& touchableHandle = preStepPoint->GetTouchableHandle();
+    if (touchableHandle) {
+      // Get the history
+      auto* history = touchableHandle->GetHistory();
+      if (history) {
+        // Get the volume
+        auto* volumeAtTwo = history->GetVolume(2);
+        if (volumeAtTwo) {
+          // Get the copy number
+          copy_number = volumeAtTwo->GetCopyNo();
+        }
+      }
+    }
+  }
   layer_count_.insert(copy_number);
 }
 
@@ -74,4 +106,4 @@ void TaggerHitFilter::checkAbortEvent(G4Track* track) {
 
 }  // namespace biasing
 
-DECLARE_ACTION(biasing, TaggerHitFilter)
+DECLARE_ACTION(biasing::TaggerHitFilter)

@@ -11,6 +11,11 @@
 /*~~~~~~~~~~~~~*/
 #include "SimCore/UserAction.h"
 
+/*~~~~~~~~~~~~~~~*/
+/*   Framework   */
+/*~~~~~~~~~~~~~~~*/
+#include "Framework/Logger.h"
+
 // Forward declarations
 class G4Step;
 
@@ -47,10 +52,10 @@ class PrimaryToEcalFilter : public simcore::UserAction {
    *
    * @param[in] step Geant4 step
    */
-  void stepping(const G4Step* step) final override;
+  void stepping(const G4Step* step) override;
 
   /// Retrieve the type of actions this class defines
-  std::vector<simcore::TYPE> getTypes() final override {
+  std::vector<simcore::TYPE> getTypes() override {
     return {simcore::TYPE::STEPPING};
   }
 

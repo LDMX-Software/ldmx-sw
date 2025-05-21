@@ -2,6 +2,10 @@
 
 namespace dqm {
 
+void DarkBremInteraction::configure(framework::config::Parameters& parameters) {
+  particle_passname_ =
+      parameters.getParameter<std::string>("particle_passname");
+}
 /**
  * calculate total energy from 3-momentum and mass
  *
@@ -56,7 +60,7 @@ void DarkBremInteraction::onProcessStart() {
 void DarkBremInteraction::produce(framework::Event& event) {
   histograms_.setWeight(event.getEventHeader().getWeight());
   const auto& particle_map{
-      event.getMap<int, ldmx::SimParticle>("SimParticles")};
+      event.getMap<int, ldmx::SimParticle>("SimParticles", particle_passname_)};
   const ldmx::SimParticle *recoil{nullptr}, *aprime{nullptr}, *beam{nullptr};
   for (const auto& [track_id, particle] : particle_map) {
     if (track_id == 1) beam = &particle;
@@ -111,7 +115,6 @@ void DarkBremInteraction::produce(framework::Event& event) {
 
   double incident_energy = energy(incident_p, recoil->getMass());
   double recoil_energy = energy(recoil_p, recoil->getMass());
-  double visible_energy = (beam->getEnergy() - incident_energy) + recoil_energy;
 
   std::vector<double> ap_vertex{aprime->getVertex()};
   std::string ap_vertex_volume{aprime->getVertexVolume()};
@@ -195,4 +198,4 @@ void DarkBremInteraction::produce(framework::Event& event) {
 
 }  // namespace dqm
 
-DECLARE_ANALYZER_NS(dqm, DarkBremInteraction);
+DECLARE_ANALYZER(dqm::DarkBremInteraction);

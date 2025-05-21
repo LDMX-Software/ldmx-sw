@@ -138,7 +138,6 @@ void TestBeamHitAnalyzer::onProcessStart() {
                        nEv + 0.5, nChannels, -0.5, nChannels - 0.5);
 
   fillNb = 0;
-  evNb = 0;
 
   return;
 }
@@ -147,4 +146,4 @@ void TestBeamHitAnalyzer::onProcessEnd() { return; }
 
 }  // namespace trigscint
 
-DECLARE_ANALYZER_NS(trigscint, TestBeamHitAnalyzer)
+DECLARE_ANALYZER(trigscint::TestBeamHitAnalyzer)

@@ -18,4 +18,4 @@ void SingleSubsystemPacker::analyze(const framework::Event& event) {
 
 }  // namespace packing
 
-DECLARE_PRODUCER_NS(packing, SingleSubsystemPacker)
+DECLARE_PRODUCER(packing::SingleSubsystemPacker)

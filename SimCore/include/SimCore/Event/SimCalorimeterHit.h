@@ -2,6 +2,7 @@
  * @file SimCalorimeterHit.h
  * @brief Class which stores simulated calorimeter hit information
  * @author Jeremy McCormick, SLAC National Accelerator Laboratory
+ * @author Tamas Almos Vami, UCSB : Update with missing getters, Jan 2025
  */
 
 #ifndef SIMCORE_EVENT_SIMCALORIMETERHIT_H_
@@ -65,6 +66,9 @@ class SimCalorimeterHit {
 
     /// Time this contributor made the hit (global Geant4 time)
     float time{0};
+
+    /// Saves ID of electron incident particle came from
+    int originID{-1};
   };
 
   /**
@@ -240,7 +244,7 @@ class SimCalorimeterHit {
    * @param time The time of the hit [ns].
    */
   void addContrib(int incidentID, int trackID, int pdgCode, float edep,
-                  float time);
+                  float time, int originID = -1);
 
   /**
    * Get a hit contribution by index.
@@ -272,6 +276,30 @@ class SimCalorimeterHit {
   bool operator<(const SimCalorimeterHit &rhs) const {
     return this->getTime() < rhs.getTime();
   }
+
+  /**
+   * Get the list of track IDs contributing to the hit.
+   */
+  std::vector<int> getTrackIds() const { return trackIDContribs_; }
+  /**
+   * Get the list of incident IDs contributing to the hit
+   */
+  std::vector<int> getIncidentIds() const { return incidentIDContribs_; }
+
+  /**
+   * Get the list of PDG codes contributing to the hit.
+   */
+  std::vector<int> getPdgIds() const { return pdgCodeContribs_; }
+
+  /**
+   * Get the list of energy depositions contributing to the hit.
+   */
+  std::vector<float> getEdeps() const { return edepContribs_; }
+
+  /**
+   * Get the list of times contributing to the hit.
+   */
+  std::vector<float> getTimes() const { return timeContribs_; }
 
  private:
   /**
@@ -333,6 +361,11 @@ class SimCalorimeterHit {
   std::vector<float> timeContribs_;
 
   /**
+   * The list of origin IDs contributing to the hit.
+   */
+  std::vector<int> originContribs_;
+
+  /**
    * The number of hit contributions.
    */
   unsigned nContribs_{0};
@@ -379,7 +412,7 @@ class SimCalorimeterHit {
   /**
    * ROOT class definition.
    */
-  ClassDef(SimCalorimeterHit, 4)
+  ClassDef(SimCalorimeterHit, 6)
 };
 }  // namespace ldmx
 

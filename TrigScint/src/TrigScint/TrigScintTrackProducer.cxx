@@ -235,7 +235,7 @@ void TrigScintTrackProducer::produce(framework::Event &event) {
               trackCandidates.push_back(track);
               hasMatchDn = true;
             }  // if match in pad2
-          }    // over clusters in pad2
+          }  // over clusters in pad2
           // if there was no match to this in pad 2, make a track with just
           // these two clusters
           if (!hasMatchDn &&
@@ -245,11 +245,11 @@ void TrigScintTrackProducer::produce(framework::Event &event) {
           }
 
         }  // if possible (x,)y match in pad1
-           /*
-   //same here
-   if (madeTrack)
-   break;
-   */
+        /*
+//same here
+if (madeTrack)
+break;
+*/
 
       }  // over clusters in pad1
 
@@ -281,8 +281,8 @@ void TrigScintTrackProducer::produce(framework::Event &event) {
             }
 
           }  // finding min residual
-        }    // over track candidates
-      }      // if more than 1 to choose from
+        }  // over track candidates
+      }  // if more than 1 to choose from
 
       // store the track at keepIdx, if there was one we made it this far and
       // keepIdx is 0 or has been updated to the smallest residual track idx
@@ -330,8 +330,8 @@ void TrigScintTrackProducer::produce(framework::Event &event) {
 
         // no need to start pulling constituents from tracks that are
         // ridiculously far apart
-        if (fabs(track.getCentroid() - nextTrack.getCentroid() <
-                 3 * maxDelta_)) {
+        if (fabs(track.getCentroid() - nextTrack.getCentroid()) <
+            3 * maxDelta_) {
           std::vector<ldmx::TrigScintCluster> consts_1 =
               track.getConstituents();
           std::vector<ldmx::TrigScintCluster> consts_2 =
@@ -381,9 +381,9 @@ void TrigScintTrackProducer::produce(framework::Event &event) {
                sure we will be in this situation any time soon though.
                   }*/
           }  // over matching/overlapping tracks
-        }    // over tracks close enough to share constituents
-      }      // over constructed tracks at other indices, to match
-    }        // over constructed tracks
+        }  // over tracks close enough to share constituents
+      }  // over constructed tracks at other indices, to match
+    }  // over constructed tracks
 
     for (uint idx = 0; idx < tracks_.size(); idx++) {
       if (verbose_ > 1) {
@@ -405,15 +405,15 @@ void TrigScintTrackProducer::produce(framework::Event &event) {
           //          (tracks_.at(idx)).Print();
         }
       }  // if index flagged for keeping
-    }    // over all (uniquely seeded) tracks in the event
-         /*
-           if (verbose_ ) {
-           for (uint idx=0; idx < tracks_.size(); idx++){
-           ldmx_log(debug)<< "Keeping track at index " << idx << ":";
-           (tracks_.at(idx)).Print();
-           }
-           }
-         */
+    }  // over all (uniquely seeded) tracks in the event
+    /*
+      if (verbose_ ) {
+      for (uint idx=0; idx < tracks_.size(); idx++){
+      ldmx_log(debug)<< "Keeping track at index " << idx << ":";
+      (tracks_.at(idx)).Print();
+      }
+      }
+    */
 
     if (verbose_) {
       ldmx_log(debug) << "Running track x,y matching ";
@@ -612,7 +612,8 @@ void TrigScintTrackProducer::matchXYTracks(
   for (auto yitr = yQuadMap.begin(); yitr != yQuadMap.end(); ++yitr) {
     int nYinQuad = yQuadMap.count((*yitr).first);
     int nXinQuad = xQuadMap.count((*yitr).first);
-    float y, sy, x, x1, x2, sx1, sx2, y1, y2, sy1, sy2;
+    float y{-9999.}, sy{-9999.}, x{-9999.}, x1{-9999.}, x2{-9999.}, sx1{-9999.},
+        sx2{-9999.}, y1{-9999.}, y2{-9999.}, sy1{-9999.}, sy2{-9999.};
     // quad midpoint:
     float y0 = (*yitr).first * 8 + sy0;
     float sx =
@@ -642,7 +643,7 @@ void TrigScintTrackProducer::matchXYTracks(
       if (verbose_)
         ldmx_log(debug) << "\t\t\t 1 x in quad " << (*yitr).first
                         << ", getting (x, sx)=(" << x << ", " << sx << ")";
-    }                          // 1 x track in quadrant
+    }  // 1 x track in quadrant
     else if (nXinQuad == 2) {  // finally if we have two tracks, get x1 and x2
                                // and decide later how to use them
       // don't think we want to experiment with discerning three overlapping
@@ -876,4 +877,4 @@ void TrigScintTrackProducer::onProcessEnd() {
 
 }  // namespace trigscint
 
-DECLARE_PRODUCER_NS(trigscint, TrigScintTrackProducer);
+DECLARE_PRODUCER(trigscint::TrigScintTrackProducer);

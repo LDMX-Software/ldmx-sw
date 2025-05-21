@@ -15,10 +15,9 @@ void HcalInefficiencyAnalyzer::analyze(const framework::Event &event) {
 
   const std::vector<std::string> sectionNames{"back", "top", "bottom", "right",
                                               "left"};
-  for (const auto hit : hcalRecHits) {
+  for (const auto &hit : hcalRecHits) {
     const ldmx::HcalID id{static_cast<ldmx::DetectorID::RawValue>(hit.getID())};
     const auto section{id.section()};
-    const auto z{hit.getZPos()};
     const auto layer{id.layer()};
     if (hitPassesVeto(hit, section)) {
       if (layer < firstLayersHit[section]) {
@@ -76,4 +75,4 @@ void HcalInefficiencyAnalyzer::configure(
 }
 }  // namespace dqm
 
-DECLARE_ANALYZER_NS(dqm, HcalInefficiencyAnalyzer);
+DECLARE_ANALYZER(dqm::HcalInefficiencyAnalyzer);

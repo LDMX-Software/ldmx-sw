@@ -14,11 +14,11 @@ ClassImp(ldmx::HcalVetoResult);
 
 namespace ldmx {
 
-void HcalVetoResult::Clear() { passesVeto_ = false; }
+void HcalVetoResult::Clear() { passes_veto_ = false; }
 
 void HcalVetoResult::Print() const {
-  std::cout << "[ HcalVetoResult ]: Passes veto : "
-            << " Passes veto: " << passesVeto_ << std::endl;
-  maxPEHit_.Print();
+  std::cout << "[ HcalVetoResult ]: Passes veto : " << " Passes veto: "
+            << passes_veto_ << std::endl;
+  max_PE_hit_.Print();
 }
 }  // namespace ldmx

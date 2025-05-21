@@ -41,6 +41,7 @@ void TrigScintDQM::onProcessStart() {
 void TrigScintDQM::configure(framework::config::Parameters &ps) {
   hitCollectionName_ = ps.getParameter<std::string>("hit_collection");
   padName_ = ps.getParameter<std::string>("pad");
+  hit_passname_ = ps.getParameter<std::string>("hit_passname");
 
   ldmx_log(debug) << "In TrigScintDQM::configure, got parameters "
                   << hitCollectionName_ << " and " << padName_;
@@ -48,7 +49,8 @@ void TrigScintDQM::configure(framework::config::Parameters &ps) {
 
 void TrigScintDQM::analyze(const framework::Event &event) {
   const std::vector<ldmx::SimCalorimeterHit> TrigScintHits =
-      event.getCollection<ldmx::SimCalorimeterHit>(hitCollectionName_);
+      event.getCollection<ldmx::SimCalorimeterHit>(hitCollectionName_,
+                                                   hit_passname_);
 
   // Get the total hit count
   int hitCount = TrigScintHits.size();
@@ -77,4 +79,4 @@ void TrigScintDQM::analyze(const framework::Event &event) {
 
 }  // namespace dqm
 
-DECLARE_ANALYZER_NS(dqm, TrigScintDQM)
+DECLARE_ANALYZER(dqm::TrigScintDQM)

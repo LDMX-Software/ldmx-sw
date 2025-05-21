@@ -4,6 +4,7 @@
 #include "Framework/Event.h"
 #include "Framework/EventProcessor.h"
 #include "SimCore/Event/SimTrackerHit.h"
+#include "Tracking/Event/Measurement.h"
 #include "Tracking/Event/Track.h"
 #include "Tracking/Event/TruthTrack.h"
 
@@ -28,13 +29,15 @@ class TrackingRecoDQM : public framework::Analyzer {
   /// Destructor
   ~TrackingRecoDQM() = default;
 
-  void analyze(const framework::Event& event) final override;
+  void analyze(const framework::Event& event) override;
 
   void TrackMonitoring(const std::vector<ldmx::Track>& tracks,
+                       const std::vector<ldmx::Measurement>& measurements,
                        const std::string title, const bool& doDetail,
                        const bool& doTruth);
 
   void EfficiencyPlots(const std::vector<ldmx::Track>& tracks,
+                       const std::vector<ldmx::Measurement>& measurements,
                        const std::string& title);
 
   /** Monitoring plots for tracks extrapolated to the ECAL Scoring plane.
@@ -63,8 +66,20 @@ class TrackingRecoDQM : public framework::Analyzer {
                   std::vector<ldmx::Track>& fakeTracks);
 
  private:
-  std::string trackCollection_{"TruthTracks"};
-  std::string truthCollection_{"TaggerTruthTracks"};
+  std::string trackCollection_;
+  std::string truthCollection_;
+  std::string measurementCollection_;
+  std::string measurement_passname_;
+
+  std::string ecal_sp_events_passname_;
+  std::string ecal_sp_passname_;
+  std::string target_sp_events_passname_;
+  std::string target_sp_passname_;
+  std::string track_collection_events_passname_;
+  std::string track_passname_;
+  std::string truth_events_passname_;
+  std::string truth_passname_;
+
   std::string title_{"tagger_trk_"};
   double trackProb_cut_{0.5};
   std::string subdetector_{"Tagger"};
@@ -84,11 +99,12 @@ class TrackingRecoDQM : public framework::Analyzer {
 
   // If I have truth information, sort the tracks vector according to their
   // trackID and truthProb
-  std::vector<ldmx::Track>
-      uniqueTracks;  // real tracks (truth_prob > cut), unique
-  std::vector<ldmx::Track>
-      duplicateTracks;  // real tracks (truth_prob > cut), duplicated
-  std::vector<ldmx::Track> fakeTracks;  // fake tracks (truth_prob < cut)
+  // real tracks (truth_prob > cut), unique
+  std::vector<ldmx::Track> uniqueTracks_;
+  // real tracks (truth_prob > cut), duplicated
+  std::vector<ldmx::Track> duplicateTracks_;
+  // fake tracks (truth_prob < cut)
+  std::vector<ldmx::Track> fakeTracks_;
 
   // PID mapping
   std::map<int, int> pidmap;

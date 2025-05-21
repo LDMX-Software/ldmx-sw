@@ -27,8 +27,8 @@
 
 #include "Acts/Propagator/EigenStepper.hpp"
 #include "Acts/Propagator/Propagator.hpp"
-//#include "Acts/Propagator/Navigator.hpp"
-//#include "Acts/Propagator/StandardAborters.hpp"
+// #include "Acts/Propagator/Navigator.hpp"
+// #include "Acts/Propagator/StandardAborters.hpp"
 
 // Geometry
 #include "Acts/Surfaces/PerigeeSurface.hpp"
@@ -56,31 +56,24 @@ class VertexProcessor : public framework::Producer {
   VertexProcessor(const std::string &name, framework::Process &process);
 
   /// Destructor
-  ~VertexProcessor();
+  virtual ~VertexProcessor() = default;
 
-  /**
-   *
-   */
-  void onProcessStart() final override;
-
-  /**
-   *
-   */
-  void onProcessEnd() final override;
+  void onProcessStart() override;
+  void onProcessEnd() override;
 
   /**
    * Configure the processor using the given user specified parameters.
    *
    * @param parameters Set of parameters used to configure this processor.
    */
-  void configure(framework::config::Parameters &parameters) final override;
+  void configure(framework::config::Parameters &parameters) override;
 
   /**
    * Run the processor
    *
    * @param event The event to process.
    */
-  void produce(framework::Event &event);
+  void produce(framework::Event &event) override;
 
  private:
   /// The contexts - TODO: they should move to some global location, I guess
@@ -99,6 +92,8 @@ class VertexProcessor : public framework::Producer {
   // Track collection name
 
   std::string trk_coll_name_{"Tracks"};
+
+  std::string input_pass_name_{""};
 
   // The propagator
   std::shared_ptr<VoidPropagator> propagator_;

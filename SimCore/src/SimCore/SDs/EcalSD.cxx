@@ -21,6 +21,7 @@ EcalSD::EcalSD(const std::string& name, simcore::ConditionsInterface& ci,
     : SensitiveDetector(name, ci, p) {
   enableHitContribs_ = p.getParameter<bool>("enableHitContribs");
   compressHitContribs_ = p.getParameter<bool>("compressHitContribs");
+  max_origin_track_id_ = p.getParameter<int>("max_origin_track_id");
 }
 
 G4bool EcalSD::ProcessHits(G4Step* aStep, G4TouchableHistory*) {
@@ -47,11 +48,21 @@ G4bool EcalSD::ProcessHits(G4Step* aStep, G4TouchableHistory*) {
       0.5 * (prePoint->GetPosition() + postPoint->GetPosition());
 
   // Create the ID for the hit.
-  int cpynum = aStep->GetPreStepPoint()
-                   ->GetTouchableHandle()
-                   ->GetHistory()
-                   ->GetVolume(layer_depth)
-                   ->GetCopyNo();
+  int cpynum{0};  // Initialize cpynum to 0
+
+  auto preStepPoint = aStep->GetPreStepPoint();
+  if (preStepPoint) {
+    const auto& touchableHandle = preStepPoint->GetTouchableHandle();
+    if (touchableHandle) {
+      auto history = touchableHandle->GetHistory();
+      if (history) {
+        auto volume = history->GetVolume(layer_depth);
+        if (volume) {
+          cpynum = volume->GetCopyNo();
+        }
+      }
+    }
+  }
   int layerNumber;
   layerNumber = cpynum / 7;
   int module_position = cpynum % 7;
@@ -69,7 +80,7 @@ G4bool EcalSD::ProcessHits(G4Step* aStep, G4TouchableHistory*) {
   // fastest, but need to trust module number between GDML and EcalGeometry
   // match
   ldmx::EcalID id =
-      geometry.getID(position[0], position[1], layerNumber, module_position);
+      geometry.getID(position.x(), position.y(), layerNumber, module_position);
 
   // medium, only need to trust z-layer positions in GDML and EcalGeometry match
   //    helpful for debugging any issues where transverse position is not
@@ -86,17 +97,7 @@ G4bool EcalSD::ProcessHits(G4Step* aStep, G4TouchableHistory*) {
     // hit in empty cell
     auto& hit = hits_[id];
     hit.setID(id.raw());
-    /**
-     * convert position to center of cell position
-     *
-     * This is the behavior that has been done in the past,
-     * although it is completely redundant with the ID information
-     * already deduced. It would probably help us more if we
-     * persisted the actual simulated position of the hit rather
-     * than the cell center; however, that is up for more discussion.
-     */
-    auto [x, y, z] = geometry.getPosition(id);
-    hit.setPosition(x, y, z);
+    hit.setPosition(position.x(), position.y(), position.z());
   }
 
   auto& hit = hits_[id];
@@ -112,8 +113,19 @@ G4bool EcalSD::ProcessHits(G4Step* aStep, G4TouchableHistory*) {
     if (compressHitContribs_ and contrib_i != -1) {
       hit.updateContrib(contrib_i, edep, time);
     } else {
-      hit.addContrib(getTrackMap().findIncident(track_id), track_id, pdg, edep,
-                     time);
+      auto map{getTrackMap()};
+      auto incident{map.findIncident(track_id)};
+      // default "origin" is just the same as incident
+      // "origin" checks if a hit "originates" from one of the earliest
+      // track IDs (i.e. probably one of the primaries)
+      int origin{incident};
+      for (int i{1}; i < max_origin_track_id_; ++i) {
+        if (map.isDescendant(track_id, i, 100)) {
+          origin = i;
+          break;
+        }
+      }
+      hit.addContrib(incident, track_id, pdg, edep, time, origin);
     }
   } else {
     // no hit contribs and hit already exists

@@ -136,7 +136,7 @@ class EventProcessor:
             import subprocess
             libs_to_link = set(['Framework']+needs)
             subprocess.run([
-                'g++', '-fPIC', '-shared', # construct a shared library for dynamic loading
+                'g++', '-std=c++20', '-fPIC', '-shared', # construct a shared library for dynamic loading
                 '-o', str(lib), str(src), # define output file and input source file
             ]+[
                 f'-l{lib}' for lib in libs_to_link
@@ -424,6 +424,85 @@ class RandomNumberSeedService(ConditionsObjectProvider):
     def time(self) :
         """Set master random seed based off of time"""
         self.seedMode = 'time'
+
+
+class _LogRule:
+    """A single pair holding a channel name and the level it should be logged at
+
+    This class should not be used directly, use the helper functions
+    in Logger instead to define rule sets.
+    """
+    def __init__(self, name, level):
+        self.name = name
+        self.level = level
+
+
+class Logger:
+    """Configure the logging infrastructure of ldmx-sw
+
+    The "severity level" of messages correspond to the following integers.
+
+        - -1: Trace
+        - 0  : Debug
+        - 1  : Information
+        - 2  : Warning
+        - 3  : Error
+        - 4  : Fatal (reserved for program-ending exceptions)
+
+    Whenever a level is specified, messages for that level and any level above
+    it (corresponding to a larger integer) are including when printing out
+    the messages.
+
+    Paramters
+    ---------
+    termLevel: int
+        minimum severity level to print to the terminal
+    fileLevel: int
+        minimum severity level to print to the file
+    filePath: str
+        path to file to direct logging to (if not provided, don't open a file for logging)
+    logRules: List[_LogRule]
+        list of custom logging rules that override the default terminal and file levels
+    """
+
+    def __init__(self):
+        self.termLevel = 2 # warnings and above
+        self.fileLevel = 0 # everything
+        self.filePath  = '' # don't open file for logging
+        self.logRules = []
+
+
+    def custom(self, name, level):
+        """Add a new custom logging rule to the logger
+
+        We automatically get the event processor's instance name
+        if an instance of an event processor is passed.
+
+        Parameters
+        ----------
+        name: str|EventProcessor
+            identification of the logging channel to customize
+        level: int
+            level (and above) messages to print for that channel
+        """
+
+        if isinstance(name, EventProcessor):
+            name = name.instanceName
+        self.logRules.append(_LogRule(name, level))
+
+    def trace(self, name):
+        """drop the input channel to the trace level"""
+        self.custom(name, level = -1)
+
+    def debug(self, name):
+        """drop the input channel to the debug level"""
+        self.custom(name, level = 0)
+
+
+    def silence(self, name):
+        """raise the input channel to the error-only level"""
+        self.custom(name, level = 3)
+
     
 class Process:
     """Process configuration object
@@ -446,6 +525,11 @@ class Process:
     maxEvents : int
         Maximum number events to process.
         If totalEvents is set, this will be ignored.
+    minEvents : int
+        Index of the first events to process.
+        The skipping process is relatively slow, if used for anything outside of debugging
+        make a  skim to a new file and then run again rather than use this.
+        Note: this skips events of *each* input file, you a single file only.
     maxTriesPerEvent : int
         Maximum number of attempts to make in a row before giving up on an event
         Only used in Production Mode (no input files)
@@ -471,12 +555,8 @@ class Process:
         List of skimming rules for which processors the process should listen to when deciding whether to keep an event
     logFrequency : int
         Print the event number whenever its modulus with this frequency is zero
-    termLogLevel : int
-        Minimum severity of log messages to print to terminal: 0 (debug) - 4 (fatal)
-    fileLogLevel : int
-        Minimum severity of log messages to print to file: 0 (debug) - 4 (fatal)
-    logFileName : str
-        File to print log messages to, won't setup file logging if this parameter is not set
+    logger : Logger
+        configuration for logging system in ldmx-sw
     conditionsGlobalTag : str
         Global tag for the current generation of conditions
     conditionsObjectProviders : list of ConditionsObjectProviders
@@ -499,6 +579,7 @@ class Process:
 
         self.passName=passName
         self.maxEvents=-1
+        self.minEvents=-1
         self.maxTriesPerEvent=1
         self.run=-1
         self.inputFiles=[]
@@ -509,9 +590,7 @@ class Process:
         self.skimDefaultIsKeep=True
         self.skimRules=[]
         self.logFrequency=-1
-        self.termLogLevel=2 #warnings and above
-        self.fileLogLevel=0 #print all messages
-        self.logFileName='' #won't setup log file
+        self.logger = Logger()
         self.compressionSetting=9
         self.histogramFile=''
         self.conditionsGlobalTag='Default'
@@ -521,6 +600,29 @@ class Process:
 
         # needs lastProcess defined to self-register
         self.randomNumberSeedService=RandomNumberSeedService()
+
+
+    def __setattr__(self, key, val):
+        logger_remap = {
+            'termLogLevel' : 'termLevel',
+            'fileLogLevel' : 'fileLevel',
+            'logFileName'  : 'filePath'
+        }
+        if key in logger_remap:
+            setattr(self.logger, logger_remap[key], val)
+            return
+        elif key == 'logFrequency' and val > 0:
+            # make sure the Process channel is lowered to info
+            # later log rules override earlier ones so we put this
+            # at the front of the list so the user could have overwritten
+            # this if need be
+            # 'Process' needs to match the name given in enableLogging
+            # in include/Framework/Process.h
+            self.logger.logRules.insert(0, _LogRule('Process', level=1))
+            # fall through to set the key=val
+        
+        super().__setattr__(key, val)
+
 
     def addLibrary(lib) :
         """Add a library to the list of dynamically loaded libraries
@@ -827,4 +929,15 @@ class Process:
 
         return msg
 
-    
+class RunHeaderAna(Analyzer) :
+    """                                                                                                                  
+    Contains an instance of RunHeaderAnalyzer that
+    has already been configured.
+
+    Examples
+    --------
+        p.sequence.append( ldmxcfg.RunHeaderAna() )
+    """
+
+    def __init__(self, name='RunHeaderAnalyzer'):
+        super().__init__(name, 'framework::RunHeaderAnalyzer', 'Framework')

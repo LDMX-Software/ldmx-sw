@@ -90,17 +90,13 @@ ClassImp(ldmx::SimParticle)
   }
 
   void SimParticle::Print() const {
-    std::cout << "SimParticle { "
-              << "energy: " << energy_ << ", "
-              << "PDG ID: " << pdgID_ << ", "
-              << "genStatus: " << genStatus_ << ", "
-              << "time: " << time_ << ", "
-              << "vertex: ( " << x_ << ", " << y_ << ", " << z_ << " ), "
-              << "endPoint: ( " << endX_ << ", " << endY_ << ", " << endZ_
-              << " ), "
-              << "momentum: ( " << px_ << ", " << py_ << ", " << pz_ << " ), "
-              << "endPointMomentum: ( " << endpx_ << ", " << endpy_ << ", "
-              << endpz_ << " ), "
+    std::cout << "SimParticle { " << "energy: " << energy_ << ", "
+              << "PDG ID: " << pdgID_ << ", " << "genStatus: " << genStatus_
+              << ", " << "time: " << time_ << ", " << "vertex: ( " << x_ << ", "
+              << y_ << ", " << z_ << " ), " << "endPoint: ( " << endX_ << ", "
+              << endY_ << ", " << endZ_ << " ), " << "momentum: ( " << px_
+              << ", " << py_ << ", " << pz_ << " ), " << "endPointMomentum: ( "
+              << endpx_ << ", " << endpy_ << ", " << endpz_ << " ), "
               << "mass: " << mass_ << ", "
               << "nDaughters: " << daughters_.size() << ", "
               << "nParents: " << parents_.size() << ", "

@@ -3,8 +3,8 @@
 #define SIMCORE_RESIMULATOR_H_
 #include "Framework/EventFile.h"
 #include "Framework/Process.h"
-#include "SimCore/SensitiveDetector.h"
 #include "SimCore/SimulatorBase.h"
+
 namespace simcore {
 class ReSimulator : public SimulatorBase {
  public:
@@ -16,7 +16,7 @@ class ReSimulator : public SimulatorBase {
    *
    * @param parameters ParameterSet for configuration.
    */
-  void configure(framework::config::Parameters& parameters) final override;
+  void configure(framework::config::Parameters& parameters) override;
   /**
    * Run resimulation if the event is part of the requested sets of events to
    * resimulate

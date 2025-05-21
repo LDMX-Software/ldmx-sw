@@ -32,7 +32,7 @@ class TruthHitProducer : public framework::Producer {
   TruthHitProducer(const std::string &name, framework::Process &process);
 
   /// Destructor
-  ~TruthHitProducer();
+  ~TruthHitProducer() = default;
 
   /**
    * Configure the processor using the given user specified parameters.
@@ -43,14 +43,14 @@ class TruthHitProducer : public framework::Producer {
    *
    * @param parameters Set of parameters used to configure this processor.
    */
-  void configure(framework::config::Parameters &parameters) final override;
+  void configure(framework::config::Parameters &parameters) override;
 
   /**
    * Process the event and put new data products into it.
    *
    * @param event The event to process.
    */
-  void produce(framework::Event &event);
+  void produce(framework::Event &event) override;
 
   /// Class to set the verbosity level.
   // TODO: Make use of the global verbose parameter.
@@ -66,6 +66,10 @@ class TruthHitProducer : public framework::Producer {
   /// Name of the output collection that will be used to store the
   /// selected sim hits
   std::string outputCollection_;
+
+ private:
+  std::string sim_particles_passname_;
+  std::string input_collection_events_passname_;
 
 };  // TruthHitProducer
 

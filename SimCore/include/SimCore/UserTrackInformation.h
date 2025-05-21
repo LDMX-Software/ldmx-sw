@@ -48,7 +48,7 @@ class UserTrackInformation : public G4VUserTrackInformation {
   void initialize(const G4Track* track);
 
   /// Print the information associated with the track.
-  void Print() const final override;
+  void Print() const override;
 
   /**
    * Get the flag which indicates whether this track should be saved

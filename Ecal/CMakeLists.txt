@@ -16,6 +16,7 @@ if(BUILD_EVENT_ONLY)
     
     register_event_object( module_path "Ecal/Event" namespace "ldmx" class "ClusterAlgoResult" )
     register_event_object( module_path "Ecal/Event" namespace "ldmx" class "EcalVetoResult" )
+    register_event_object( module_path "Ecal/Event" namespace "ldmx" class "EcalWABResult" )
     register_event_object( module_path "Ecal/Event" namespace "ldmx" class "EcalDigiCollection" )
     register_event_object( module_path "Ecal/Event" namespace "ldmx" class "EcalCluster" type "collection" )
     register_event_object( module_path "Ecal/Event" namespace "ldmx" class "EcalHit"     type "collection" )
@@ -35,10 +36,13 @@ endif()
 # to an external folder and create the targets.
 find_package(ONNXRuntime 1.2.0)
 
+find_package(Eigen3 CONFIG REQUIRED)
+
 setup_library(module Ecal
               dependencies ROOT::Physics 
                            Framework::Framework Recon::Event Tools::Tools DetDescr::DetDescr 
                            ONNXRuntime::Interface
+                           Eigen3::Eigen
 )
 
 setup_test(dependencies Ecal::Ecal)

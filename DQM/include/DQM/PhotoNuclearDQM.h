@@ -1,12 +1,18 @@
 #ifndef DQM_PHOTONUCLEARDQM_H
 #define DQM_PHOTONUCLEARDQM_H
 
-/*~~~~~~~~~~~~~~~*/
-/*   Framework   */
-/*~~~~~~~~~~~~~~~*/
+#include <TVector3.h>
+
+#include <algorithm>
+
 #include "Framework/Configure/Parameters.h"
+#include "Framework/Event.h"
 #include "Framework/EventProcessor.h"
 #include "SimCore/Event/SimParticle.h"
+#include "TH1F.h"
+#include "TH2F.h"
+#include "Tools/AnalysisUtils.h"
+
 namespace dqm {
 
 // Forward declarations within the ldmx workspace
@@ -52,7 +58,7 @@ class PhotoNuclearDQM : public framework::Analyzer {
   PhotoNuclearDQM(const std::string &name, framework::Process &process);
 
   /// Destructor
-  virtual ~PhotoNuclearDQM();
+  virtual ~PhotoNuclearDQM() = default;
 
   /**
    * Configure this analyzer using the user specified parameters.
@@ -69,6 +75,12 @@ class PhotoNuclearDQM : public framework::Analyzer {
    */
   void analyze(const framework::Event &event) override;
 
+  /// @brief  Helper function to label categorical histos
+  /// @param name : Name of the histo for the labels to set
+  /// @param labels : Labels on the X axis
+  void setHistLabels(const std::string &name,
+                     const std::vector<std::string> &labels);
+
   /// Method executed before processing of events begins.
   void onProcessStart() override;
 
@@ -77,6 +89,8 @@ class PhotoNuclearDQM : public framework::Analyzer {
    * kinetic energy. */
   EventType classifyEvent(
       const std::vector<const ldmx::SimParticle *> daughters, double threshold);
+
+  std::string sim_particles_passname_;
 
   /** Method used to classify events in a compact manner. */
   CompactEventType classifyCompactEvent(
@@ -142,7 +156,6 @@ class PhotoNuclearDQM : public framework::Analyzer {
     return false;
   }
 
-  bool verbose_;
   bool count_light_ions_;
 };
 

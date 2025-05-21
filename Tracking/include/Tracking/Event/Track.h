@@ -14,8 +14,8 @@
 #include "TObject.h"
 
 // --- ACTS --- //
-//#include "Acts/Definitions/TrackParametrization.hpp"
-//#include "Acts/EventData/TrackParameters.hpp"
+// #include "Acts/Definitions/TrackParametrization.hpp"
+// #include "Acts/EventData/TrackParameters.hpp"
 
 namespace ldmx {
 
@@ -38,7 +38,8 @@ enum TrackStateType {
   AtLastMeasurement = 3,
   AtECAL = 4,
   AtBeamOrigin = 5,
-  Invalid = 6
+  Invalid = 6,
+  AtHCAL = 7
 };
 
 /**
@@ -78,7 +79,7 @@ class Track {
   void Print() const;
 
   // To match the Framework Bus clear. It's doing nothing
-  void Clear(){};
+  void Clear() {};
 
   void setNhits(int nhits) { n_hits_ = nhits; }
   int getNhits() const { return n_hits_; }
@@ -126,6 +127,17 @@ class Track {
     meas_idxs_.push_back(measIdx);
   }
   std::vector<unsigned int> getMeasurementsIdxs() const { return meas_idxs_; }
+
+  void addOutlierIndex(unsigned int measIdx) {
+    outlier_idxs_.push_back(measIdx);
+  }
+  std::vector<unsigned int> getOutlierIdxs() const { return outlier_idxs_; }
+
+  void addHoleIndex(unsigned int measIdx) { hole_idxs_.push_back(measIdx); }
+  std::vector<unsigned int> getHoleIdxs() const { return hole_idxs_; }
+
+  void addSharedIndex(unsigned int measIdx) { shared_idxs_.push_back(measIdx); }
+  std::vector<unsigned int> getSharedIdxs() const { return shared_idxs_; }
 
   /// d_0 z_0 phi_0 theta q/p t
   // void setPerigeeParameters(const Acts::BoundVector& par)  {perigee_pars_ =
@@ -235,6 +247,15 @@ class Track {
   // The vector of measurement IDs
   std::vector<unsigned int> meas_idxs_{};
 
+  // The vector of outlier IDs
+  std::vector<unsigned int> outlier_idxs_{};
+
+  // The vector of hole IDs
+  std::vector<unsigned int> hole_idxs_{};
+
+  // The vector of shared hit IDs
+  std::vector<unsigned int> shared_idxs_{};
+
   // ID of the matched particle in the SimParticles map
   int trackID_{-1};
 
@@ -248,7 +269,7 @@ class Track {
   std::vector<TrackState> trackStates_;
 
   /// Class declaration needed by the ROOT dictionary.
-  ClassDef(Track, 2);
+  ClassDef(Track, 3);
 
 };  // Track
 

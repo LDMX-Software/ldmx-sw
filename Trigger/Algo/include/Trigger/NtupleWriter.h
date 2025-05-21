@@ -25,8 +25,23 @@ class NtupleWriter : public framework::Producer {
   TFile* outFile_{nullptr};
   std::string tag_{"Events"};
   std::string outPath_{"./ntuple.root"};
+
+  std::string target_sp_hits_event_passname_;
+  std::string target_sp_passname_;
+
+  std::string ecal_sp_hits_events_passname_;
+  std::string ecal_sp_passname_;
+
+  std::string ecal_trig_sums_event_passname_;
+  std::string ecal_trig_sums_passname_;
+
+  std::string hcal_trig_quads_events_passname_;
+  std::string hcal_trig_quads_passname_;
+
+  std::string trig_electrons_event_passname_;
+  std::string trig_electrons_passname_;
+
   bool writeTruth_{true};
-  bool writeCluster_{true};
   bool writeEle_{true};
   bool writeEcalSums_{true};
   bool writeHcalSums_{true};

@@ -14,10 +14,10 @@ EventFile::EventFile(const framework::config::Parameters &params,
                      const std::string &filename, EventFile *parent,
                      bool isOutputFile, bool isSingleOutput, bool isLoopable)
     : fileName_(filename),
-      parent_(parent),
       isOutputFile_(isOutputFile),
       isSingleOutput_(isSingleOutput),
-      isLoopable_(isLoopable) {
+      isLoopable_(isLoopable),
+      parent_(parent) {
   if (isOutputFile_) {
     // we are writting out so open the file and make sure it is writable
     file_ = new TFile(fileName_.c_str(), "RECREATE");
@@ -58,13 +58,31 @@ EventFile::EventFile(const framework::config::Parameters &params,
                                        "' is not readable or does not exist.");
     }
 
+    bool skip_corrupted =
+        params.getParameter<bool>("skipCorruptedInputFiles", false);
+
+    // make sure file is not a zombie file
+    // (i.e. process ended without closing or the file was corrupted some other
+    // way)
+    if (file_->IsZombie()) {
+      if (not skip_corrupted) {
+        EXCEPTION_RAISE("FileError", "Input file '" + fileName_ +
+                                         "' is corrupted. Framework will not "
+                                         "attempt to recover this file.");
+      }
+      return;
+    }
+
     // Get the tree name from the configuration
     auto tree_name{params.getParameter<std::string>("tree_name")};
     tree_ = static_cast<TTree *>(file_->Get(tree_name.c_str()));
     if (!tree_) {
-      EXCEPTION_RAISE("FileError", "File '" + fileName_ +
-                                       "' does not have a TTree named '" +
-                                       tree_name + "' in it.");
+      if (not skip_corrupted) {
+        EXCEPTION_RAISE("FileError", "File '" + fileName_ +
+                                         "' does not have a TTree named '" +
+                                         tree_name + "' in it.");
+      }
+      return;
     }
     entries_ = tree_->GetEntriesFast();
   }
@@ -95,6 +113,11 @@ EventFile::~EventFile() {
 
   // Close the file
   file_->Close();
+}
+
+bool EventFile::isCorrupted() const {
+  if (isOutputFile_) return file_->IsZombie();
+  return (!tree_ or file_->IsZombie());
 }
 
 void EventFile::addDrop(const std::string &rule) {
@@ -193,7 +216,7 @@ bool EventFile::nextEvent(bool storeCurrentEvent) {
       event_->beforeFill();
       if (storeCurrentEvent)  // we should store before moving on
         tree_->Fill();        // fill the clones...
-    }                         // we are an output file
+    }  // we are an output file
 
     // the event bus may not be defined
     //  for this file if we are input file and
@@ -202,7 +225,7 @@ bool EventFile::nextEvent(bool storeCurrentEvent) {
       event_->Clear();
       event_->onEndOfEvent();
     }  // event bus defined
-  }    // first or not first entry in this file
+  }  // first or not first entry in this file
 
   if (parent_) {
     // we have a parent, follow their lead
@@ -390,9 +413,13 @@ void EventFile::importRunHeaders() {
     TTreeReaderValue<ldmx::RunHeader> oldRunHeader(oldRunTree, "RunHeader");
     // TODO check that setup went correctly
     while (oldRunTree.Next()) {
-      // copy input run tree into run map
-      runMap_[oldRunHeader->getRunNumber()] =
-          std::make_pair(true, new ldmx::RunHeader(*oldRunHeader));
+      auto *oldRunHeaderPtr = oldRunHeader.Get();
+      if (oldRunHeaderPtr != nullptr) {
+        // copy input run tree into run map
+        // We should consider moving to a shared_ptr instead of 'new'
+        runMap_[oldRunHeaderPtr->getRunNumber()] =
+            std::make_pair(true, new ldmx::RunHeader(*oldRunHeaderPtr));
+      }
     }
   }
 

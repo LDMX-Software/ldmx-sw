@@ -82,7 +82,7 @@ class Bimoid : public QIEInputPulse {
   /**
    * Evaluate the pulse at time T
    */
-  float EvalSingle(float T, int id) final override;
+  float EvalSingle(float T, int id) override;
 
   /**
    * Indefinite integral at time T
@@ -92,17 +92,17 @@ class Bimoid : public QIEInputPulse {
   /**
    * Integrate the pulse from T1 to T2
    */
-  float Integrate(float T1, float T2) final override;
+  float Integrate(float T1, float T2) override;
 
   /**
    *  maximum of the pulse
    */
-  float Max(int id) final override;
+  float Max(int id) override;
 
   /**
    * Differentiate pulse at time T
    */
-  float Derivative(float T, int id) final override;
+  float Derivative(float T, int id) override;
 
  private:
   /// rise time
@@ -157,22 +157,22 @@ class Expo : public QIEInputPulse {
   /**
    * Evaluate the pulse at time T
    */
-  float EvalSingle(float T, int id) final override;
+  float EvalSingle(float T, int id) override;
 
   /**
    * Integrate the pulse from T1 to T2
    */
-  float Integrate(float T1, float T2) final override;
+  float Integrate(float T1, float T2) override;
 
   /**
    *  maximum of the pulse
    */
-  float Max(int id) final override;
+  float Max(int id) override;
 
   /**
    * Differentiate pulse at time T
    */
-  float Derivative(float T, int id) final override;
+  float Derivative(float T, int id) override;
 
  private:
   /// 1/RC time constant (for the capacitor)

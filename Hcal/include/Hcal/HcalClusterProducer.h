@@ -47,7 +47,6 @@ class HcalClusterProducer : public framework::Producer {
   void produce(framework::Event& event) override;
 
  private:
-  bool verbose_{false};
   // double     EminSeed_{0.};
   double EnoiseCut_{0.};
   double deltaTime_{0};
@@ -55,6 +54,7 @@ class HcalClusterProducer : public framework::Producer {
   double EminCluster_{0.};
   double cutOff_{0.};
   std::string clusterCollName_;
+  std::string hcal_hits_pass_name_;
 };
 
 }  // namespace hcal

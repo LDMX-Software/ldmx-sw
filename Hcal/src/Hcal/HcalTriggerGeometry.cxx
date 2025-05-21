@@ -111,4 +111,4 @@ class HcalTriggerGeometryProvider : public framework::ConditionsObjectProvider {
 };
 
 }  // namespace hcal
-DECLARE_CONDITIONS_PROVIDER_NS(hcal, HcalTriggerGeometryProvider);
+DECLARE_CONDITIONS_PROVIDER(hcal::HcalTriggerGeometryProvider);

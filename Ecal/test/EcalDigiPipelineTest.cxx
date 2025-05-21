@@ -4,7 +4,7 @@
 
 #include "DetDescr/EcalID.h"  //creating unique cell IDs
 #include "Ecal/Event/EcalHit.h"
-#include "Framework/ConfigurePython.h"
+#include "Framework/Configure/Python.h"
 #include "Framework/EventProcessor.h"
 #include "Framework/Process.h"
 #include "Recon/Event/HgcrocDigiCollection.h"
@@ -86,12 +86,6 @@ static const double MAX_ENERGY_ERROR_TP = 2 * MIP_SI_ENERGY;
  * how "fine-grained" the test is.
  */
 static const int NUM_TEST_SIM_HITS = 2000;
-
-/**
- * Should the sim/rec/tp energies be ntuplized
- * for your viewing?
- */
-static const bool NTUPLIZE_ENERGIES = true;
 
 /**
  * Our custom energy checker which makes sure that
@@ -185,8 +179,8 @@ class EcalFakeSimHits : public framework::Producer {
       : framework::Producer(name, p) {}
   ~EcalFakeSimHits() {}
 
-  void beforeNewRun(ldmx::RunHeader &header) {
-    header.setDetectorName("ldmx-det-v12");
+  void beforeNewRun(ldmx::RunHeader &header) final override {
+    header.setDetectorName("ldmx-det-v14-8gev");
   }
 
   void produce(framework::Event &event) final override {
@@ -195,19 +189,11 @@ class EcalFakeSimHits : public framework::Producer {
 
     ldmx::EcalID id(0, 0, 0);
     pretendSimHits[0].setID(id.raw());
-    pretendSimHits[0].addContrib(
-        -1  // incidentID
-        ,
-        -1  // trackID
-        ,
-        0  // pdg ID
-        ,
-        currEnergy_  // edep
-        ,
-        1.  // time - 299mm is about 1ns from target and in middle of ECal
-    );
-    pretendSimHits[0].setPosition(0., 0.,
-                                  299.);  // sim position in middle of ECal
+    // incidentID, trackID, pdg ID, edep, time - 299mm is about 1ns from target
+    // and in middle of ECal
+    pretendSimHits[0].addContrib(-1, -1, 0, currEnergy_, 1.);
+    // sim position in middle of ECal
+    pretendSimHits[0].setPosition(0., 0., 299.);
 
     // needs to be correct collection name
     REQUIRE_NOTHROW(event.add("EcalSimHits", pretendSimHits));
@@ -226,14 +212,31 @@ class EcalFakeSimHits : public framework::Producer {
  * - Estimated energy at TP level matches sim energy
  *
  * Assumptions
- * - Only one sim hit per event
+ * - Max one sim hit per event
  * - Noise generation has been turned off
  */
 class EcalCheckEnergyReconstruction : public framework::Analyzer {
+ private:
+  std::string ecal_simhits_passname_;
+  std::string ecal_digis_passname_;
+  std::string ecal_rechits_passname_;
+  std::string ecal_trig_digis_passname_;
+
  public:
   EcalCheckEnergyReconstruction(const std::string &name, framework::Process &p)
       : framework::Analyzer(name, p) {}
   ~EcalCheckEnergyReconstruction() {}
+
+  void configure(framework::config::Parameters &parameters) final override {
+    ecal_simhits_passname_ =
+        parameters.getParameter<std::string>("ecal_simhits_passname", "");
+    ecal_digis_passname_ =
+        parameters.getParameter<std::string>("ecal_digis_passname", "");
+    ecal_rechits_passname_ =
+        parameters.getParameter<std::string>("ecal_rechits_passname", "");
+    ecal_trig_digis_passname_ =
+        parameters.getParameter<std::string>("ecal_trig_digis_passname", "");
+  }
 
   void onProcessStart() final override {
     getHistoDirectory();
@@ -251,50 +254,53 @@ class EcalCheckEnergyReconstruction : public framework::Analyzer {
   }
 
   void analyze(const framework::Event &event) final override {
-    const auto simHits =
-        event.getCollection<ldmx::SimCalorimeterHit>("EcalSimHits");
+    const auto simHits = event.getCollection<ldmx::SimCalorimeterHit>(
+        "EcalSimHits", ecal_simhits_passname_);
 
     REQUIRE(simHits.size() == 1);
 
     float truth_energy = simHits.at(0).getEdep();
     ntuple_.setVar<float>("SimEnergy", truth_energy);
 
-    const auto daqDigis{
-        event.getObject<ldmx::HgcrocDigiCollection>("EcalDigis")};
+    const auto daqDigis{event.getObject<ldmx::HgcrocDigiCollection>(
+        "EcalDigis", ecal_digis_passname_)};
 
-    CHECK(daqDigis.getNumDigis() == 1);
-    auto daqDigi = daqDigis.getDigi(0);
-    ntuple_.setVar<int>("DaqDigi", daqDigi.soi().raw());
-    bool is_in_adc_mode = daqDigi.isADC();
-    ntuple_.setVar<int>("DaqDigiIsADC", is_in_adc_mode);
-    ntuple_.setVar<int>("DaqDigiADC", daqDigi.soi().adc_t());
-    ntuple_.setVar<int>("DaqDigiTOT", daqDigi.tot());
+    if (daqDigis.getNumDigis() == 1) {
+      auto daqDigi = daqDigis.getDigi(0);
+      ntuple_.setVar<int>("DaqDigi", daqDigi.soi().raw());
+      bool is_in_adc_mode = daqDigi.isADC();
+      ntuple_.setVar<int>("DaqDigiIsADC", is_in_adc_mode);
+      ntuple_.setVar<int>("DaqDigiADC", daqDigi.soi().adc_t());
+      ntuple_.setVar<int>("DaqDigiTOT", daqDigi.tot());
 
-    const auto recHits = event.getCollection<ldmx::EcalHit>("EcalRecHits");
-    CHECK(recHits.size() == 1);
+      const auto recHits = event.getCollection<ldmx::EcalHit>(
+          "EcalRecHits", ecal_rechits_passname_);
+      CHECK(recHits.size() == 1);
 
-    auto hit = recHits.at(0);
-    ldmx::EcalID id(hit.getID());
-    CHECK_FALSE(hit.isNoise());
-    CHECK(id.raw() == simHits.at(0).getID());
+      auto hit = recHits.at(0);
+      ldmx::EcalID id(hit.getID());
+      CHECK_FALSE(hit.isNoise());
+      CHECK(id.raw() == simHits.at(0).getID());
 
-    double daq_energy{hit.getAmplitude()};
-    CHECK_THAT(daq_energy, isCloseEnough(truth_energy, MAX_ENERGY_ERROR_DAQ,
-                                         MAX_ENERGY_PERCENT_ERROR_DAQ));
-    ntuple_.setVar<float>("RecEnergy", hit.getAmplitude());
+      double daq_energy{hit.getAmplitude()};
+      CHECK_THAT(daq_energy, isCloseEnough(truth_energy, MAX_ENERGY_ERROR_DAQ,
+                                           MAX_ENERGY_PERCENT_ERROR_DAQ));
+      ntuple_.setVar<float>("RecEnergy", hit.getAmplitude());
 
-    const auto trigDigis{
-        event.getObject<ldmx::HgcrocTrigDigiCollection>("ecalTrigDigis")};
-    CHECK(trigDigis.size() == 1);
+      const auto trigDigis{event.getObject<ldmx::HgcrocTrigDigiCollection>(
+          "ecalTrigDigis", ecal_trig_digis_passname_)};
+      CHECK(trigDigis.size() == 1);
 
-    auto trigDigi = trigDigis.at(0);
-    float tp_energy = 8 * trigDigi.linearPrimitive() * 320. / 1024 * MeV_per_fC;
+      auto trigDigi = trigDigis.at(0);
+      float tp_energy =
+          8 * trigDigi.linearPrimitive() * 320. / 1024 * MeV_per_fC;
 
-    CHECK_THAT(tp_energy, isCloseEnough(truth_energy, MAX_ENERGY_ERROR_TP,
-                                        MAX_ENERGY_PERCENT_ERROR_TP));
-    ntuple_.setVar<float>("TrigPrimEnergy", tp_energy);
-    ntuple_.setVar<int>("TrigPrimDigiEncoded", trigDigi.getPrimitive());
-    ntuple_.setVar<int>("TrigPrimDigiLinear", trigDigi.linearPrimitive());
+      CHECK_THAT(tp_energy, isCloseEnough(truth_energy, MAX_ENERGY_ERROR_TP,
+                                          MAX_ENERGY_PERCENT_ERROR_TP));
+      ntuple_.setVar<float>("TrigPrimEnergy", tp_energy);
+      ntuple_.setVar<int>("TrigPrimDigiEncoded", trigDigi.getPrimitive());
+      ntuple_.setVar<int>("TrigPrimDigiLinear", trigDigi.linearPrimitive());
+    }
 
     return;
   }
@@ -303,8 +309,8 @@ class EcalCheckEnergyReconstruction : public framework::Analyzer {
 }  // namespace test
 }  // namespace ecal
 
-DECLARE_PRODUCER_NS(ecal::test, EcalFakeSimHits)
-DECLARE_ANALYZER_NS(ecal::test, EcalCheckEnergyReconstruction)
+DECLARE_PRODUCER(ecal::test::EcalFakeSimHits)
+DECLARE_ANALYZER(ecal::test::EcalCheckEnergyReconstruction)
 
 /**
  * Test for the Ecal Digi Pipeline
@@ -321,11 +327,10 @@ DECLARE_ANALYZER_NS(ecal::test, EcalCheckEnergyReconstruction)
  */
 TEST_CASE("Ecal Digi Pipeline test", "[Ecal][functionality]") {
   const std::string config_file{"ecal_digi_pipeline_test_config.py"};
+  char **args{nullptr};
 
-  char **args;
-  framework::ProcessHandle p;
-
-  framework::ConfigurePython cfg(config_file, args, 0);
-  REQUIRE_NOTHROW(p = cfg.makeProcess());
+  auto cfg{framework::config::run("ldmxcfg.Process.lastProcess", config_file,
+                                  args, 0)};
+  auto p{std::make_unique<framework::Process>(cfg)};
   p->run();
 }

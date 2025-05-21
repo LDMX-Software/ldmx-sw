@@ -29,25 +29,25 @@ class RawIO : public framework::Producer {
    *
    * @param[in] ps Parameters for configuration
    */
-  void configure(framework::config::Parameters& ps) final override;
+  void configure(framework::config::Parameters& ps) override;
 
   /**
    * We are given a non-const reference to a new RunHeader so
    * we can add parameters unpacked from the raw data.
    */
-  void beforeNewRun(ldmx::RunHeader& header) final override;
+  void beforeNewRun(ldmx::RunHeader& header) override;
 
   /**
    * Actually do the unpacking/decoding.
    *
    * @param[in,out] event Event bus with raw data where we will put the digis
    */
-  void produce(framework::Event& event) final override;
+  void produce(framework::Event& event) override;
 
   /**
    * Close up ROOT file with raw data in it.
    */
-  void onProcessEnd() final override;
+  void onProcessEnd() override;
 
  private:
   /// raw data file we are reading

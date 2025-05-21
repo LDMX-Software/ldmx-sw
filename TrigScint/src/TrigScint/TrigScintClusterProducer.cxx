@@ -174,7 +174,10 @@ void TrigScintClusterProducer::produce(framework::Event &event) {
       }
 
       // don't add in late hits
-      if (digi.getTime() > padTime_ + timeTolerance_) continue;
+      if (digi.getTime() > padTime_ + timeTolerance_) {
+        iDigi++;
+        continue;
+      }
 
       hitChannelMap_.insert(std::pair<int, int>(ID, iDigi));
       // the channel number is the key, the digi list index is the value
@@ -295,7 +298,7 @@ void TrigScintClusterProducer::produce(framework::Event &event) {
           }
 
         }  // if seed-1 wasn't used already
-      }    // there exists a lower, unused neighbour
+      }  // there exists a lower, unused neighbour
 
       // 3. check next: if seed+1 exists && seed +2 exists,
       //    3a. if seed-1 is in already, this is a case for a split, at seed. go
@@ -352,9 +355,9 @@ void TrigScintClusterProducer::produce(framework::Event &event) {
                   }
                 }
 
-              }   // if no seed+3 --> added seed+2
-            }     // if seed-1 wasn't added
-          }       // if seed+2 exists. then already added seed+1.
+              }  // if no seed+3 --> added seed+2
+            }  // if seed-1 wasn't added
+          }  // if seed+2 exists. then already added seed+1.
           else {  // so: if not, then we need to add seed+1 here. (step 4)
             digi = (ldmx::TrigScintHit)digis.at(
                 itrNeighb->second);  // itrNeighb hasn't moved since there was
@@ -516,4 +519,4 @@ void TrigScintClusterProducer::onProcessEnd() {
 
 }  // namespace trigscint
 
-DECLARE_PRODUCER_NS(trigscint, TrigScintClusterProducer);
+DECLARE_PRODUCER(trigscint::TrigScintClusterProducer);

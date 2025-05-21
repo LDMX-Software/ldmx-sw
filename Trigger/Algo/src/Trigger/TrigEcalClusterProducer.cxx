@@ -12,18 +12,19 @@ namespace trigger {
 void TrigEcalClusterProducer::configure(framework::config::Parameters& ps) {
   hitCollName_ = ps.getParameter<std::string>("hitCollName");
   clusterCollName_ = ps.getParameter<std::string>("clusterCollName");
+  hit_coll_passname_ = ps.getParameter<std::string>("hit_coll_passname");
+  hit_coll_name_events_passname_ =
+      ps.getParameter<std::string>("hit_coll_name_events_passname");
 }
 
 void TrigEcalClusterProducer::produce(framework::Event& event) {
   const ecal::EcalTriggerGeometry& geom =
       getCondition<ecal::EcalTriggerGeometry>(
           ecal::EcalTriggerGeometry::CONDITIONS_OBJECT_NAME);
-  const ldmx::EcalGeometry& hexReadout = getCondition<ldmx::EcalGeometry>(
-      ldmx::EcalGeometry::CONDITIONS_OBJECT_NAME);
 
-  if (!event.exists(hitCollName_)) return;
-  auto ecalTrigDigis{
-      event.getObject<ldmx::HgcrocTrigDigiCollection>(hitCollName_)};
+  if (!event.exists(hitCollName_, hit_coll_name_events_passname_)) return;
+  auto ecalTrigDigis{event.getObject<ldmx::HgcrocTrigDigiCollection>(
+      hitCollName_, hit_coll_passname_)};
 
   std::vector<Hit> hits{};
   ecalTpToE cvt;
@@ -38,6 +39,8 @@ void TrigEcalClusterProducer::produce(framework::Event& event) {
 
     double x, y, z;
     // const auto center_ecalID = geom.centerInTriggerCell(tid);
+    // const ldmx::EcalGeometry& hexReadout = getCondition<ldmx::EcalGeometry>(
+    // ldmx::EcalGeometry::CONDITIONS_OBJECT_NAME);
     // hexReadout.getCellAbsolutePosition(center_ecalID,x,y,z);
     // std::tie(x,y) = geom.globalPosition( tid );
     std::tie(x, y, z) = geom.globalPosition(tid);
@@ -99,31 +102,6 @@ void TrigEcalClusterProducer::produce(framework::Event& event) {
 
   event.add(clusterCollName_, trigClusters);
 }
-
-void TrigEcalClusterProducer::onFileOpen() {
-  ldmx_log(debug) << "Opening file!";
-
-  return;
-}
-
-void TrigEcalClusterProducer::onFileClose() {
-  ldmx_log(debug) << "Closing file!";
-
-  return;
-}
-
-void TrigEcalClusterProducer::onProcessStart() {
-  ldmx_log(debug) << "Process starts!";
-
-  return;
-}
-
-void TrigEcalClusterProducer::onProcessEnd() {
-  ldmx_log(debug) << "Process ends!";
-
-  return;
-}
-
 }  // namespace trigger
 
-DECLARE_PRODUCER_NS(trigger, TrigEcalClusterProducer);
+DECLARE_PRODUCER(trigger::TrigEcalClusterProducer);

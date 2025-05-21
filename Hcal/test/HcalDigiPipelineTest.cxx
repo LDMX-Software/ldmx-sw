@@ -5,7 +5,7 @@
 using Catch::Approx;
 
 #include "DetDescr/HcalID.h"  //creating unique hcal IDs
-#include "Framework/ConfigurePython.h"
+#include "Framework/Configure/Python.h"
 #include "Framework/EventProcessor.h"
 #include "Framework/Process.h"
 #include "Hcal/Event/HcalHit.h"
@@ -27,8 +27,8 @@ static const double PE_ENERGY = 4.66 / 68;  // 0.069 MeV
  * Conversion between voltage and deposited energy
  * [MeV/mV]
  * 1 PE ~ 5 mV
+ *  static const double MeV_per_mV = PE_ENERGY / 5;  // 0.013 MeV/mV
  */
-static const double MeV_per_mV = PE_ENERGY / 5;  // 0.013 MeV/mV
 
 /**
  * Maximum error that a single hit energy/PE
@@ -43,20 +43,8 @@ static const double MeV_per_mV = PE_ENERGY / 5;  // 0.013 MeV/mV
 // static const double MAX_ENERGY_ERROR_DAQ = 4 * PE_ENERGY;
 // static const double MAX_ENERGY_PERCENT_ERROR_DAQ = 0.2;
 static const double MAX_PE_ERROR_DAQ = 40;
-static const double MAX_PE_PERCENT_ERROR_DAQ =
-    0.4;  // large percentage error for now
-
-/**
- * Maximum error that a single hit position along the bar
- * can be reconstructed with before failing the test
- * if in the back Hcal
- *
- * Comparing simulated position vs
- * reconstructed position along the bar for even/odd layers in the back Hcal.
- */
-static const double MAX_POSITION_ERROR_DAQ =
-    50. / 2;  // mm // scintillator length/2
-static const double MAX_POSITION_PERCENT_ERROR_DAQ = 0.3;
+// large percentage error for now
+static const double MAX_PE_PERCENT_ERROR_DAQ = 0.4;
 
 /**
  * Number of sim hits to create.
@@ -158,7 +146,7 @@ class HcalFakeSimHits : public framework::Producer {
       : framework::Producer(name, p) {}
   ~HcalFakeSimHits() {}
 
-  void beforeNewRun(ldmx::RunHeader &header) {
+  void beforeNewRun(ldmx::RunHeader &header) final override {
     header.setDetectorName("ldmx-det-v12");
   }
 
@@ -206,10 +194,22 @@ class HcalCheckReconstruction : public framework::Analyzer {
   // test cannot be run
   const bool save_ = false;
 
+ private:
+  std::string hcal_fake_sim_hits_passname_;
+  std::string hcal_rec_hits_passname_;
+  std::string hcal_digis_passname_;
+
  public:
   HcalCheckReconstruction(const std::string &name, framework::Process &p)
       : framework::Analyzer(name, p) {}
   ~HcalCheckReconstruction() {}
+
+  void configure(framework::config::Parameters &ps) override {
+    hcal_fake_sim_hits_passname_ =
+        ps.getParameter("hcal_fake_sim_hits_passname", "");
+    hcal_digis_passname_ = ps.getParameter("hcal_digis_passname", "");
+    hcal_rec_hits_passname_ = ps.getParameter("hcal_rec_hits_passname", "");
+  }
 
   void onProcessStart() final override {
     if (save_) {
@@ -233,8 +233,8 @@ class HcalCheckReconstruction : public framework::Analyzer {
   }
 
   void analyze(const framework::Event &event) final override {
-    const auto simHits =
-        event.getCollection<ldmx::SimCalorimeterHit>("HcalFakeSimHits");
+    const auto simHits = event.getCollection<ldmx::SimCalorimeterHit>(
+        "HcalFakeSimHits", hcal_fake_sim_hits_passname_);
 
     REQUIRE(simHits.size() == 1);
 
@@ -248,8 +248,8 @@ class HcalCheckReconstruction : public framework::Analyzer {
       ntuple_.setVar<float>("SimTime", simHits.at(0).getContrib(0).time);
     }
 
-    const auto daqDigis{
-        event.getObject<ldmx::HgcrocDigiCollection>("HcalDigis")};
+    const auto daqDigis{event.getObject<ldmx::HgcrocDigiCollection>(
+        "HcalDigis", hcal_digis_passname_)};
     auto daqDigi = daqDigis.getDigi(0);
     bool is_in_adc_mode = daqDigi.isADC();
 
@@ -260,7 +260,8 @@ class HcalCheckReconstruction : public framework::Analyzer {
       ntuple_.setVar<int>("DaqDigiTOT", daqDigi.tot());
     }
 
-    const auto recHits = event.getCollection<ldmx::HcalHit>("HcalRecHits");
+    const auto recHits = event.getCollection<ldmx::HcalHit>(
+        "HcalRecHits", hcal_rec_hits_passname_);
     CHECK(recHits.size() == 1);
 
     auto hit = recHits.at(0);
@@ -288,23 +289,24 @@ class HcalCheckReconstruction : public framework::Analyzer {
     //           << std::endl;
     // std::cout << "npes " << hit.getPE() << " approx PE " << int(truth_energy
     // / PE_ENERGY)  << std::endl;
-
-    if (id.section() == 0) {
-      double truth_pos, rec_pos;
-      if ((id.layer() % 2) == 1) {
-        truth_pos = simHits.at(0).getPosition()[0];
-        rec_pos = hit.getXPos();
-      } else {
-        truth_pos = simHits.at(0).getPosition()[1];
-        rec_pos = hit.getYPos();
-      }
-      // std::cout << "rec pos " << rec_pos << " truth " << truth_pos <<
-      // std::endl;
-      // comment position check for now
-      // CHECK_THAT(rec_pos, isCloseEnough(truth_pos, MAX_POSITION_ERROR_DAQ,
-      //                                 MAX_POSITION_PERCENT_ERROR_DAQ));
-    }
-
+    /*
+        if (id.section() == 0) {
+          double truth_pos, rec_pos;
+          if ((id.layer() % 2) == 1) {
+            truth_pos = simHits.at(0).getPosition()[0];
+            rec_pos = hit.getXPos();
+          } else {
+            truth_pos = simHits.at(0).getPosition()[1];
+            rec_pos = hit.getYPos();
+          }
+          // std::cout << "rec pos " << rec_pos << " truth " << truth_pos <<
+          // std::endl;
+          // comment position check for now
+          // CHECK_THAT(rec_pos, isCloseEnough(truth_pos,
+       MAX_POSITION_ERROR_DAQ,
+          //                                 MAX_POSITION_PERCENT_ERROR_DAQ));
+        }
+    */
     return;
   }
 };  // HcalCheckReconstruction
@@ -312,8 +314,8 @@ class HcalCheckReconstruction : public framework::Analyzer {
 }  // namespace test
 }  // namespace hcal
 
-DECLARE_PRODUCER_NS(hcal::test, HcalFakeSimHits)
-DECLARE_ANALYZER_NS(hcal::test, HcalCheckReconstruction)
+DECLARE_ANALYZER(hcal::test::HcalFakeSimHits);
+DECLARE_PRODUCER(hcal::test::HcalCheckReconstruction);
 
 /**
  * Test for the Hcal Digi Pipeline
@@ -331,11 +333,10 @@ DECLARE_ANALYZER_NS(hcal::test, HcalCheckReconstruction)
  */
 TEST_CASE("Hcal Digi Pipeline test", "[Hcal][functionality]") {
   const std::string config_file{"hcal_digi_pipeline_test_config.py"};
+  char **args{nullptr};
 
-  char **args;
-  framework::ProcessHandle p;
-
-  framework::ConfigurePython cfg(config_file, args, 0);
-  REQUIRE_NOTHROW(p = cfg.makeProcess());
+  auto cfg{framework::config::run("ldmxcfg.Process.lastProcess", config_file,
+                                  args, 0)};
+  auto p{std::make_unique<framework::Process>(cfg)};
   p->run();
 }

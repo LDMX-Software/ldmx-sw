@@ -27,8 +27,8 @@ class DNNEcalVetoProcessor : public framework::Producer {
  public:
   DNNEcalVetoProcessor(const std::string& name, framework::Process& process);
   virtual ~DNNEcalVetoProcessor() {}
-  void configure(framework::config::Parameters& parameters) final override;
-  void produce(framework::Event& event);
+  void configure(framework::config::Parameters& parameters) override;
+  void produce(framework::Event& event) override;
 
  private:
   /**
@@ -64,6 +64,8 @@ class DNNEcalVetoProcessor : public framework::Producer {
 
   /** Name of the collection which will containt the results. */
   std::string collectionName_{"DNNEcalVeto"};
+
+  std::string ecal_rec_hits_passname_;
 
   bool debug_ = false;
 };

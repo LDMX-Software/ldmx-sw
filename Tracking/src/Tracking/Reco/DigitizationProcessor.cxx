@@ -5,6 +5,10 @@
 #include "Tracking/Event/Measurement.h"
 #include "Tracking/Sim/TrackingUtils.h"
 
+// Use this instead of CartesianSegmeter I think
+//  BinUtility(std::size_t bins, float min, float max, BinningOption opt = open,
+//              BinningValue value = BinningValue::binX,
+//              const Transform3& tForm = Transform3::Identity())
 using namespace framework;
 
 namespace tracking::reco {
@@ -15,42 +19,6 @@ DigitizationProcessor::DigitizationProcessor(const std::string& name,
 
 void DigitizationProcessor::onProcessStart() {
   normal_ = std::make_shared<std::normal_distribution<float>>(0., 1.);
-
-  ldmx_log(info) << "Loading the tracking geometry";
-
-  // Module Bounds => Take them from the tracking geometry TODO
-  auto moduleBounds = std::make_shared<const Acts::RectangleBounds>(
-      20.17 * Acts::UnitConstants::mm, 50 * Acts::UnitConstants::mm);
-
-  // I assume 5 APVs
-  int nbinsx = 128 * 5;
-
-  // Strips
-  int nbinsy = 1;
-
-  // Thickness = 0.320 mm
-  double thickness = 0.320 * Acts::UnitConstants::mm;
-
-  // Lorentz angle
-  double lAngle = 0.01;
-
-  // Energy threshold
-  double eThresh = 0.;
-
-  // Analogue readout
-  bool isAnalog = true;
-
-  // Cartesian segmentation
-  auto cSegmentation = std::make_shared<const Acts::CartesianSegmentation>(
-      moduleBounds, nbinsx, nbinsy);
-
-  // Negative side readout => TODO Make sure this is correct!
-  //  - Ask Paul what does this mean: depending on how local w is oriented
-  // TODO: load proper lorentz angle
-
-  Acts::DigitizationModule ndModule(cSegmentation, thickness * 0.5, -1, lAngle,
-                                    eThresh, isAnalog);
-
   ldmx_log(info) << "Initialization done" << std::endl;
 }
 
@@ -58,6 +26,9 @@ void DigitizationProcessor::configure(
     framework::config::Parameters& parameters) {
   hit_collection_ =
       parameters.getParameter<std::string>("hit_collection", "TaggerSimHits");
+
+  tracker_hit_passname_ =
+      parameters.getParameter<std::string>("tracker_hit_passname");
   out_collection_ = parameters.getParameter<std::string>("out_collection",
                                                          "OutputMeasuements");
   min_e_dep_ = parameters.getParameter<double>("min_e_dep", 0.05);
@@ -81,7 +52,8 @@ void DigitizationProcessor::produce(framework::Event& event) {
   // Mode 1: Load simulated hits and produce digitized 1d measurements
 
   const std::vector<ldmx::SimTrackerHit> sim_hits =
-      event.getCollection<ldmx::SimTrackerHit>(hit_collection_);
+      event.getCollection<ldmx::SimTrackerHit>(hit_collection_,
+                                               tracker_hit_passname_);
 
   std::vector<ldmx::SimTrackerHit> merged_hits;
 
@@ -230,7 +202,7 @@ std::vector<ldmx::Measurement> DigitizationProcessor::digitizeHits(
       if (hit_surface) {
         // Transform from global to local coordinates.
         // hit_surface->toStream(geometry_context(), std::cout);
-        ldmx_log(debug)
+        ldmx_log(trace)
             << "Local to global" << std::endl
             << hit_surface->transform(geometry_context()).rotation()
             << std::endl
@@ -266,10 +238,11 @@ std::vector<ldmx::Measurement> DigitizationProcessor::digitizeHits(
                                          sigma_v_ * sigma_v_);
 
           // transform to global
-          auto global_pos{hit_surface->localToGlobal(
+          auto transf_global_pos{hit_surface->localToGlobal(
               geometry_context(), local_pos, dummy_momentum)};
           measurement.setGlobalPosition(measurement.getGlobalPosition()[0],
-                                        global_pos(1), global_pos(2));
+                                        transf_global_pos(1),
+                                        transf_global_pos(2));
 
         }  // do smearing
         measurement.setLocalPosition(local_pos(0), local_pos(1));
@@ -277,11 +250,11 @@ std::vector<ldmx::Measurement> DigitizationProcessor::digitizeHits(
       }  // hit_surface exists
 
     }  // energy cut
-  }    // loop on sim-hits
+  }  // loop on sim-hits
 
   return measurements;
 
 }  // digitizeHits
 }  // namespace tracking::reco
 
-DECLARE_PRODUCER_NS(tracking::reco, DigitizationProcessor)
+DECLARE_PRODUCER(tracking::reco::DigitizationProcessor)

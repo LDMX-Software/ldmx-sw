@@ -20,9 +20,9 @@ void EventHeader::Clear(Option_t*) {
 }
 
 void EventHeader::Print(Option_t*) const {
-  std::cout << "EventHeader {"
-            << " eventNumber: " << eventNumber_ << ", run: " << run_
-            << ", timestamp: " << timestamp_ << ", weight: " << weight_;
+  std::cout << "EventHeader {" << " eventNumber: " << eventNumber_
+            << ", run: " << run_ << ", timestamp: " << timestamp_
+            << ", weight: " << weight_;
   if (isRealData_)
     std::cout << ", DATA";
   else

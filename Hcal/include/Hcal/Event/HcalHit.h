@@ -2,6 +2,7 @@
  * @file HcalHit.h
  * @brief Class that stores Stores reconstructed hit information from the HCAL
  * @author Jeremy Mans, University of Minnesota
+ * @author Tamas Almos Vami, UCSB, added orientation members
  */
 
 #ifndef HCAL_EVENT_HCALHIT_H_
@@ -112,6 +113,39 @@ class HcalHit : public ldmx::CalorimeterHit {
   int getAmplitudeNeg() const { return amplitudeNeg_; }
 
   /**
+   * Get the position of the hit
+   * @return position
+   */
+  double getPosition() const { return position_; }
+
+  /**
+   * Get if bar is oriented in X
+   * @return true if oriented in X
+   */
+  bool isOrientationX() const { return orientation_ == 0; }
+
+  /**
+   * Get if bar is oriented in Y
+   * @return true if oriented in Y
+   */
+  bool isOrientationY() const { return orientation_ == 1; }
+
+  /**
+   * Get if bar is oriented in Z
+   * @return true if oriented in Z
+   */
+  bool isOrientationZ() const { return orientation_ == 2; }
+
+  /**
+   * Get the time difference between the two ends
+   * Note: only applies for double ended readout
+   * @return timeDiff
+   */
+  double getTimeDiff() const { return timeDiff_; }
+
+  // Now the setters
+
+  /**
    * Set the number of photoelectrons estimated for this hit.
    * @param pe Number of photoelectrons, including noise which affects the
    * estimate.
@@ -188,45 +222,47 @@ class HcalHit : public ldmx::CalorimeterHit {
   /**
    * Set original position
    */
-  void setPositionUnchanged(double position, int isX) {
+  void setPositionUnchanged(double position, int orientation) {
     position_ = position;
-    isX_ = isX;
+    orientation_ = orientation;
   }
 
-  double getPosition() const { return position_; }
-  int getIsX() const { return isX_; }
-  double getTimeDiff() const { return timeDiff_; }
+  /**
+   * Set if the bar is orientied in X / Y / Z
+   * meanig 0 / 1 / 2, respectively
+   */
+  void setOrientation(int orientation) { orientation_ = orientation; }
 
  private:
   /** The number of PE estimated for this hit. */
-  float pe_{0};
+  float pe_{0.0};
 
   /** The minimum number of PE estimated for this hit, different from pe_ when
    * you have two ended readout */
-  float minpe_{-99};
+  float minpe_{-99.0};
 
   /// section, layer, strip and end
-  int section_;
-  int layer_;
-  int strip_;
-  int end_;
+  int section_{-99};
+  int layer_{-99};
+  int strip_{-99};
+  int end_{-99};
 
   /// isADC
-  int isADC_;
+  int isADC_{-99};
 
-  double timeDiff_;
-  double position_;
-  double isX_;
+  double timeDiff_{-9999.};
+  double position_{-9999.};
+  int orientation_{-9999};
 
-  double toaPos_;
-  double toaNeg_;
-  double amplitudePos_;
-  double amplitudeNeg_;
+  double toaPos_{-9999.};
+  double toaNeg_{-9999.};
+  double amplitudePos_{-9999.};
+  double amplitudeNeg_{-9999.};
 
   /**
    * The ROOT class definition.
    */
-  ClassDef(HcalHit, 3);
+  ClassDef(HcalHit, 5);
 };
 }  // namespace ldmx
 

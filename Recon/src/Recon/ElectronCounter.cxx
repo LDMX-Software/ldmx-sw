@@ -62,9 +62,9 @@ void ElectronCounter::produce(framework::Event& event) {
         event.getCollection<ldmx::TrigScintTrack>(inputColl_, inputPassName_);
 
     nElectrons = tracks.size();
-    ldmx_log(debug) << "Found " << tracks.size()
-                    << " electrons (tracks) using input collection "
-                    << inputColl_ << "_" << inputPassName_;
+    ldmx_log(info) << "Found " << tracks.size()
+                   << " electrons (tracks) using input collection "
+                   << inputColl_ << "_" << inputPassName_;
   }
   // add number of electrons to event header. allow for it to be unset (-1)
   event.getEventHeader().setIntParameter("nElectrons", nElectrons);
@@ -72,4 +72,4 @@ void ElectronCounter::produce(framework::Event& event) {
 }
 }  // namespace recon
 
-DECLARE_PRODUCER_NS(recon, ElectronCounter)
+DECLARE_PRODUCER(recon::ElectronCounter)

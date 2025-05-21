@@ -154,7 +154,8 @@ void TrackingGeometry::dumpGeometry(const std::string& outputDir,
     for (auto const& surfaceId : layer_surface_map_) {
       std::cout << " " << surfaceId.first << std::endl;
       std::cout << " Check the surface" << std::endl;
-      surfaceId.second->toStream(gctx, std::cout);
+      //      surfaceId.second->toStream(gctx, std::cout);
+      surfaceId.second->toStream(gctx);
       std::cout << " GeometryID::" << surfaceId.second->geometryId()
                 << std::endl;
       std::cout << " GeometryID::" << surfaceId.second->geometryId().value()
@@ -273,11 +274,11 @@ void TrackingGeometry::getSurfaces(
               surfaces.push_back(surface);
 
             }  // surface exists
-          }    // surfaces
-        }      // layers objects
-      }        // confined layers
-    }          // volumes objects
-  }            // confined volumes
+          }  // surfaces
+        }  // layers objects
+      }  // confined layers
+    }  // volumes objects
+  }  // confined volumes
 }
 
 void TrackingGeometry::makeLayerSurfacesMap() {

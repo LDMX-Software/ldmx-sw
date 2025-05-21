@@ -19,7 +19,6 @@
 #include "Acts/Definitions/TrackParametrization.hpp"
 #include "Acts/Definitions/Units.hpp"
 #include "Acts/EventData/TrackParameters.hpp"
-#include "Acts/EventData/detail/TransformationFreeToBound.hpp"
 #include "Acts/Utilities/Logger.hpp"
 
 // geometry
@@ -48,7 +47,7 @@
 
 // Kalman Filter
 
-//#include "Acts/EventData/Measurement.hpp"
+// #include "Acts/EventData/Measurement.hpp"
 #include "Acts/EventData/MultiTrajectory.hpp"
 #include "Acts/EventData/MultiTrajectoryHelpers.hpp"
 #include "Acts/EventData/VectorTrackContainer.hpp"
@@ -63,7 +62,7 @@
 #include "Acts/TrackFitting/KalmanFitter.hpp"
 
 // GSF
-//#include "Acts/TrackFitting/GaussianSumFitter.hpp"
+// #include "Acts/TrackFitting/GaussianSumFitter.hpp"
 #include "Acts/Propagator/MultiEigenStepperLoop.hpp"
 
 //--- Tracking ---//
@@ -76,22 +75,17 @@
 
 //--- Interpolated magnetic field ---//
 #include "Tracking/Sim/BFieldXYZUtils.h"
+// mg Aug 2024 not sure if these are needed...
+using Updater = Acts::GainMatrixUpdater;
+using Smoother = Acts::GainMatrixSmoother;
 
 using ActionList =
     Acts::ActionList<Acts::detail::SteppingLogger, Acts::MaterialInteractor>;
 using AbortList = Acts::AbortList<Acts::EndOfWorldReached>;
 
 using CkfPropagator = Acts::Propagator<Acts::EigenStepper<>, Acts::Navigator>;
-using GsfPropagator = Acts::Propagator<
-    Acts::MultiEigenStepperLoop<
-        Acts::StepperExtensionList<
-            Acts::detail::GenericDefaultExtension<double>>,
-        Acts::WeightedComponentReducerLoop, Acts::detail::VoidAuctioneer>,
-    Acts::Navigator>;
-
-//?!
-// using PropagatorOptions =
-//    Acts::DenseStepperPropagatorOptions<ActionList, AbortList>;
+using TrackContainer = Acts::TrackContainer<Acts::VectorTrackContainer,
+                                            Acts::VectorMultiTrajectory>;
 
 namespace tracking {
 namespace reco {
@@ -107,7 +101,7 @@ class CKFProcessor final : public TrackingGeometryUser {
   CKFProcessor(const std::string &name, framework::Process &process);
 
   /// Destructor
-  ~CKFProcessor();
+  virtual ~CKFProcessor() = default;
 
   /**
    *
@@ -148,6 +142,13 @@ class CKFProcessor final : public TrackingGeometryUser {
       -> std::unordered_multimap<Acts::GeometryIdentifier,
                                  ActsExamples::IndexSourceLink>;
 
+  template <typename geometry_t, typename source_link_hash_t,
+            typename source_link_equality_t>
+  std::vector<std::vector<std::size_t>> computeSharedHits(
+      std::vector<ldmx::Track> tracks, std::vector<ldmx::Measurement> meas_coll,
+      geometry_t &tg, source_link_hash_t &&sourceLinkHash,
+      source_link_equality_t &&sourceLinkEquality) const;
+
   // If we want to dump the tracking geometry
   bool dumpobj_{false};
 
@@ -161,8 +162,10 @@ class CKFProcessor final : public TrackingGeometryUser {
   // time profiling
   std::map<std::string, double> profiling_map_;
 
-  bool debug_{false};
+  bool debug_acts_{false};
 
+  std::shared_ptr<Acts::PlaneSurface> target_surface;
+  Acts::RotationMatrix3 surf_rotation;
   // Constant BField
   double bfield_{0};
   // Use constant bfield
@@ -189,19 +192,18 @@ class CKFProcessor final : public TrackingGeometryUser {
   // The measurement collection to use for track reconstruction
   std::string measurement_collection_{"TaggerMeasurements"};
 
+  std::string simParticles_passName_;
+  std::string sim_particles_event_passname_;
+
   // Outlier removal pvalue
   // The Chi2Cut is applied at filtering stage.
   // 1DOF pvalues: 0.1 = 2.706 0.05 = 3.841 0.025 = 5.024 0.01 = 6.635 0.005
   // = 7.879 The probability to reject a good measurement is pvalue The
   // probability to reject an outlier is given in NIM A262 (1987) 444-450
-
   double outlier_pval_{3.84};
 
   // The output track collection
   std::string out_trk_collection_{"Tracks"};
-
-  // Mass for the propagator hypothesis in MeV
-  double mass_{0.511};
 
   // The seed track collection
   std::string seed_coll_name_{"seedTracks"};
@@ -209,12 +211,14 @@ class CKFProcessor final : public TrackingGeometryUser {
   // The interpolated bfield
   std::string field_map_{""};
 
+  std::string input_pass_name_{""};
+
   // The Propagator
   std::unique_ptr<const CkfPropagator> propagator_;
 
   // The CKF
-  std::unique_ptr<const Acts::CombinatorialKalmanFilter<
-      CkfPropagator, Acts::VectorMultiTrajectory>>
+  std::unique_ptr<
+      const Acts::CombinatorialKalmanFilter<CkfPropagator, TrackContainer>>
       ckf_;
 
   // Track Extrapolator Tool

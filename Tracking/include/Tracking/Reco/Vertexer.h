@@ -33,8 +33,8 @@
 
 #include "Acts/Propagator/EigenStepper.hpp"
 #include "Acts/Propagator/Propagator.hpp"
-//#include "Acts/Propagator/Navigator.hpp"
-//#include "Acts/Propagator/StandardAborters.hpp"
+// #include "Acts/Propagator/Navigator.hpp"
+// #include "Acts/Propagator/StandardAborters.hpp"
 
 // Geometry
 #include "Acts/Surfaces/PerigeeSurface.hpp"
@@ -49,14 +49,14 @@ class Vertexer : public framework::Producer {
  public:
   Vertexer(const std::string& name, framework::Process& process);
 
-  ~Vertexer();
+  virtual ~Vertexer() = default;
 
-  void onProcessStart() final override;
-  void onProcessEnd() final override;
+  void onProcessStart() override;
+  void onProcessEnd() override;
 
-  void configure(framework::config::Parameters& parameters) final override;
+  void configure(framework::config::Parameters& parameters) override;
 
-  void produce(framework::Event& event);
+  void produce(framework::Event& event) override;
 
   void TaggerRecoilMonitoring(const std::vector<ldmx::Track>& tagger_tracks,
                               const std::vector<ldmx::Track>& recoil_tracks);
@@ -76,15 +76,14 @@ class Vertexer : public framework::Producer {
 
   std::string trk_c_name_1{"TaggerTracks"};
   std::string trk_c_name_2{"RecoilTracks"};
+  std::string input_pass_name_{""};
   std::shared_ptr<VoidPropagator> propagator_;
-  double processing_time_{0.};
 
   // Monitoring histograms
-
   TH1F* h_delta_d0;
   TH1F* h_delta_z0;
   TH1F* h_delta_p;
-  ;
+
   TH1F* h_delta_phi;
   TH1F* h_delta_theta;
 
@@ -93,8 +92,6 @@ class Vertexer : public framework::Producer {
 
   TH2F* h_td0_vs_rd0;
   TH2F* h_tz0_vs_rz0;
-
-  // pT and photon direction
 };
 
 }  // namespace reco

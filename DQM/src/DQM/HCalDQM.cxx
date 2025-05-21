@@ -153,4 +153,4 @@ void HCalDQM::analyzeRecHits(const std::vector<ldmx::HcalHit> &hits) {
 
 }  // namespace dqm
 
-DECLARE_ANALYZER_NS(dqm, HCalDQM)
+DECLARE_ANALYZER(dqm::HCalDQM)

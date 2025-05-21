@@ -110,12 +110,13 @@ class EcalGeometry() :
     def v14() :
         eg = EcalGeometry(detectors_valid = ["ldmx-det-v14","ldmx-det-v14.*","ldmx-lyso-r1-v14", "ldmx-lyso-r1-v14.*"],
                 gap = 1.5,
-                layerZPositions = [ 
-                      7.932, 14.532, 32.146, 40.746, 58.110, 67.710, 86.574, 96.774, 115.638, 125.838, 
-                      144.702, 154.902, 173.766, 183.966, 202.830, 213.030, 231.894, 242.094, 260.958, 
-                      271.158, 290.022, 300.222, 319.086, 329.286, 351.650, 365.250, 387.614, 401.214, 
-                      423.578, 437.178, 459.542, 473.142, 495.506, 509.106
-                      ],
+                layerZPositions = [
+                      7.582, 16.062, 33.226, 43.206, 60.370, 71.350, 90.014, 101.594, 
+                      120.258, 131.838, 150.502, 162.082, 180.746, 192.326, 210.990, 
+                      222.570, 241.234, 252.814, 271.478, 283.058, 301.722, 313.302, 
+                      331.966, 343.546, 365.710, 380.690, 402.854, 417.834, 439.998,
+                      454.978, 477.142, 492.122, 514.286, 529.266
+			],
                 ecalFrontZ = 240.0,
                 cornersSideUp = True,
                 layer_shift_odd = True,
@@ -124,12 +125,25 @@ class EcalGeometry() :
         eg.layer_shift_x = 2*eg.moduleMinR / eg.nCellRHeight
         return eg
         
-        
     def reduced() :
-        eg = EcalGeometry(detectors_valid = ["ldmx-reduced","ldmx-reduced[.].*"],
+        eg = EcalGeometry(detectors_valid = ["ldmx-reduced"],
                 gap = 1.5,
                 layerZPositions = [
-                      7.932, 14.532, 32.146, 40.746, 58.110, 67.710
+                        7.448, 16.064, 33.229, 43.202, 60.366, 71.345
+                      ],
+                ecalFrontZ = 240.0,
+                cornersSideUp = True,
+                layer_shift_odd = True,
+                )
+        # shift by a single cell diameter
+        eg.layer_shift_x = 2*eg.moduleMinR / eg.nCellRHeight
+        return eg
+
+    def reduced_v2() :
+        eg = EcalGeometry(detectors_valid = ["ldmx-reduced-v2"],
+                gap = 1.5,
+                layerZPositions = [
+                      9.932, 22.412, 40.81, 54.556, 71.954, 85.67
                       ],
                 ecalFrontZ = 240.0,
                 cornersSideUp = True,
@@ -140,4 +154,4 @@ class EcalGeometry() :
         return eg
 
     def geometries() :
-        return [EcalGeometry.v9(), EcalGeometry.v12(), EcalGeometry.v13(), EcalGeometry.v14(), EcalGeometry.reduced()]
+        return [EcalGeometry.v9(), EcalGeometry.v12(), EcalGeometry.v13(), EcalGeometry.v14(), EcalGeometry.reduced(), EcalGeometry.reduced_v2()]

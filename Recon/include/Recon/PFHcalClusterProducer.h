@@ -27,17 +27,7 @@ class PFHcalClusterProducer : public framework::Producer {
 
   virtual void produce(framework::Event& event);
 
-  virtual void onFileOpen();
-
-  virtual void onFileClose();
-
-  virtual void onProcessStart();
-
-  virtual void onProcessEnd();
-
  private:
-  // specific verbosity of this producer
-  int verbose_{0};
   bool singleCluster_{true};
   bool logEnergyWeight_{true};
 
@@ -48,6 +38,8 @@ class PFHcalClusterProducer : public framework::Producer {
 
   // name of collection for hits to be passed as input
   std::string hitCollName_;
+  // pass name of hit collection to be passed as input
+  std::string hitPassName_;
   // name of collection for pfCluster to be output
   std::string clusterCollName_;
   std::string suffix_;

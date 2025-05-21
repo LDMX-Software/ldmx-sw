@@ -16,7 +16,7 @@ class UserEventInformation : public G4VUserEventInformation {
   virtual ~UserEventInformation() = default;
 
   /// Print the information associated with the track
-  void Print() const final override;
+  void Print() const override;
 
   /// Increment the number of brem candidates in an event.
   void incBremCandidateCount() { bremCandidateCount_ += 1; }

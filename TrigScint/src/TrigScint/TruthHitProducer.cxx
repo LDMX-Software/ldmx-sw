@@ -7,18 +7,21 @@ TruthHitProducer::TruthHitProducer(const std::string &name,
                                    framework::Process &process)
     : Producer(name, process) {}
 
-TruthHitProducer::~TruthHitProducer() {}
-
 void TruthHitProducer::configure(framework::config::Parameters &parameters) {
   inputCollection_ = parameters.getParameter<std::string>("input_collection");
   inputPassName_ = parameters.getParameter<std::string>("input_pass_name");
   outputCollection_ = parameters.getParameter<std::string>("output_collection");
+  sim_particles_passname_ =
+      parameters.getParameter<std::string>("sim_particles_passname");
+  input_collection_events_passname_ =
+      parameters.getParameter<std::string>("input_collection_events_passname");
+
   verbose_ = parameters.getParameter<bool>("verbose");
 
   if (verbose_) {
     ldmx_log(info) << "In TruthHitProducer: configure done!";
-    ldmx_log(info) << "Got parameters:  "
-                   << "\nInput collection:     " << inputCollection_
+    ldmx_log(info) << "Got parameters:  " << "\nInput collection:     "
+                   << inputCollection_
                    << "\nInput pass name:     " << inputPassName_
                    << "\nOutput collection:    " << outputCollection_
                    << "\nVerbose: " << verbose_;
@@ -27,7 +30,7 @@ void TruthHitProducer::configure(framework::config::Parameters &parameters) {
 
 void TruthHitProducer::produce(framework::Event &event) {
   // Check if the collection exists.  If not, don't bother processing the event.
-  if (!event.exists(inputCollection_)) {
+  if (!event.exists(inputCollection_, input_collection_events_passname_)) {
     ldmx_log(error) << "No input collection called " << inputCollection_
                     << " found; skipping!";
     return;
@@ -35,7 +38,8 @@ void TruthHitProducer::produce(framework::Event &event) {
   // looper over sim hits and aggregate energy depositions for each detID
   const auto simHits{event.getCollection<ldmx::SimCalorimeterHit>(
       inputCollection_, inputPassName_)};
-  auto particleMap{event.getMap<int, ldmx::SimParticle>("SimParticles")};
+  auto particleMap{event.getMap<int, ldmx::SimParticle>(
+      "SimParticles", sim_particles_passname_)};
 
   std::vector<ldmx::SimCalorimeterHit> truthBeamElectrons;
 
@@ -69,4 +73,4 @@ void TruthHitProducer::produce(framework::Event &event) {
 }
 }  // namespace trigscint
 
-DECLARE_PRODUCER_NS(trigscint, TruthHitProducer)
+DECLARE_PRODUCER(trigscint::TruthHitProducer)

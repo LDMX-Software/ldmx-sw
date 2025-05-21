@@ -14,8 +14,8 @@ void QIEEncoder::configure(framework::config::Parameters &ps) {
   nChannels_ = ps.getParameter<int>("number_channels");
   verbose_ = ps.getParameter<bool>("verbose");
 
-  ldmx_log(debug) << "In configure, got parameters:"
-                  << "\noutput_collection = " << outputCollection_
+  ldmx_log(debug) << "In configure, got parameters:" << "\noutput_collection = "
+                  << outputCollection_
                   << "\ninput_collection = " << inputCollection_
                   << "\ninput_pass_name  = " << inputPassName_
                   << "\nchannel_map_file = " << channelMapFileName_
@@ -198,7 +198,7 @@ void QIEEncoder::produce(framework::Event &event) {
     for (int iQ = 0; iQ < nChannels_; iQ++) {
       outWord.push_back(qieOuts.at(iQ).getTDC().at(iS));
     }  // over channels: TDC
-  }    // over time samples
+  }  // over time samples
 
   // in verbose mode, print this all to screen
   if (verbose_) {
@@ -241,4 +241,4 @@ void QIEEncoder::onProcessEnd() {
 
 }  // namespace trigscint
 
-DECLARE_PRODUCER_NS(trigscint, QIEEncoder);
+DECLARE_PRODUCER(trigscint::QIEEncoder);

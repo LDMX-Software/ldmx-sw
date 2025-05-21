@@ -33,10 +33,6 @@ class TrigElectronProducer : public framework::Producer {
 
   virtual void produce(framework::Event& event);
 
-  virtual void onFileOpen();
-
-  virtual void onFileClose();
-
   virtual void onProcessStart();
 
   virtual void onProcessEnd();
@@ -47,17 +43,17 @@ class TrigElectronProducer : public framework::Producer {
   float getPy(float e, float d) { return getP(false, e, d); }
 
  private:
-  // specific verbosity of this producer
-  int verbose_{0};
-
-  bool useTargetScoringPlane_{1};
-
   // name of collection for target scoring plane inputs
   std::string spCollName_;
   // name of collection for calo cluster inputs
   std::string clusterCollName_;
   // name of collection for electron outputs
   std::string eleCollName_;
+
+  std::string target_sp_passname_;
+  std::string cluster_coll_passname_;
+  std::string cluster_collname_events_passname_;
+  std::string sp_collname_events_passname_;
 
   std::string propMapName_;
   TProfile2D* propMapx_{nullptr};

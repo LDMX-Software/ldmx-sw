@@ -67,9 +67,8 @@ void QIEAnalyzer::analyze(const framework::Event& event) {
           ldmx_log(info) << "Found fired TDC = " << tdc.at(iT)
                          << " at time sample " << iT << " in channel " << bar
                          << " and event " << evNb;
-          hOut[evNb][bar]->SetLineColor(kRed +
-                                        1);  // for some reason, the style
-                                             // settings are washed out later...
+          // for some reason, the style settings are washed out later...
+          hOut[evNb][bar]->SetLineColor(kRed + 1);
           hOut[evNb][bar]->SetMarkerColor(hOut[evNb][bar]->GetLineColor());
           hOut[evNb][bar]->SetMarkerSize(0.2);
 
@@ -87,9 +86,8 @@ void QIEAnalyzer::analyze(const framework::Event& event) {
         ldmx_log(debug) << " above channel overall pedestal: " << q.at(iT)
                         << " > " << 2 * fabs(peds_[bar]);
 
-        if (firstT = startSample_ -
-                     1)  // keep track of first time sample above threshold
-          firstT = startSample_ + iT;
+        // keep track of first time sample above threshold
+        if (firstT == startSample_ - 1) firstT = startSample_ + iT;
       }  // if above threshold
       if (q.at(iT) > ped) {
         subtrQ += q.at(iT) - peds_[bar];
@@ -97,7 +95,7 @@ void QIEAnalyzer::analyze(const framework::Event& event) {
         ldmx_log(debug) << " above channel event pedestal: " << q.at(iT)
                         << " > " << ped;
       }  // if above channel event pedestal
-    }    // over time samples
+    }  // over time samples
     float PE = qTot * 6250. / gain_[bar];
     subtrPE = subtrQ * 6250. / gain_[bar];
     hTotQvsPed[bar]->Fill(ped, qTot);
@@ -201,8 +199,6 @@ void QIEAnalyzer::onProcessStart() {
       new TH2F("hTDCfireChanvsEvent", ";channel with TDC < 63;event number",
                nChannels, -0.5, nChannels - 0.5, nEv, 0, nEv);
 
-  evNb = 0;
-
   ldmx_log(debug) << "done setting up histograms";
 
   return;
@@ -212,4 +208,4 @@ void QIEAnalyzer::onProcessEnd() { return; }
 
 }  // namespace trigscint
 
-DECLARE_ANALYZER_NS(trigscint, QIEAnalyzer)
+DECLARE_ANALYZER(trigscint::QIEAnalyzer)

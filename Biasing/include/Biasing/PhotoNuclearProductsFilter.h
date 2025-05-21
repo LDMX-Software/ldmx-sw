@@ -48,10 +48,10 @@ class PhotoNuclearProductsFilter : public simcore::UserAction {
    * @param[in] step The Geant4 step containing transient information
    *      about the step taken by a track.
    */
-  void stepping(const G4Step* step) final override;
+  void stepping(const G4Step* step) override;
 
   /// Retrieve the type of actions this class defines
-  std::vector<simcore::TYPE> getTypes() final override {
+  std::vector<simcore::TYPE> getTypes() override {
     return {simcore::TYPE::STEPPING};
   }
 

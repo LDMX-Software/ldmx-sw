@@ -26,6 +26,10 @@ if(BUILD_EVENT_ONLY)
     register_event_object(module_path "Tracking/Event" 
                           namespace "ldmx" 
                           class "Track" type "collection")
+    
+    register_event_object(module_path "Tracking/Event" 
+                          namespace "ldmx" 
+                          class "StraightTrack" type "collection")
 
     register_event_object(module_path "Tracking/Event" 
                           namespace "ldmx" 
@@ -34,6 +38,10 @@ if(BUILD_EVENT_ONLY)
     register_event_object(module_path "Tracking/Event"
                           namespace "ldmx"
                           class "Measurement" type "collection")
+
+    register_event_object(module_path "Tracking/Event"
+                          namespace "ldmx"
+                          class "TrackerVetoResult" type "collection")
 
     # Get all of the event sources that will be included in this library
     file(GLOB EVENT_SRC_FILES CONFIGURE_DEPENDS 
@@ -50,42 +58,46 @@ if(BUILD_EVENT_ONLY)
      return()
 endif()
 
-# since ACTS changes frequently enough, we build it as a submodule of Tracking
-#   here we 'set' some CMake variables that we would have passed to 'cmake' on
-#   the command line with '-D' if we were building ACTS directly.
-#set(ACTS_BUILD_PLUGIN_DD4HEP ON) # representing geometry with DD4hep right now
-#set(ACTS_BUILD_PLUGIN_TGEO ON) # representing geometry with DD4hep right now
-set(ACTS_BUILD_PLUGIN_IDENTIFICATION ON) #This turns on the identiers
-set(ACTS_BUILD_EXAMPLES OFF)     # don't waste time building examples
-set(CMAKE_CXX_STANDARD 17)       # set C++ standard we use within ldmx-sw
-add_subdirectory(acts)           # now build acts
-#add_subdirectory(acts-dd4hep)
-# luckily for us, adding ACTS as a subdirectory produces the same CMake targets
-#   as find_package, so we don't need to do anything else from here on out
-
 find_package(Eigen3 CONFIG REQUIRED)
+# if you want to try an alternate Acts, you can
+# 1. comment out the stuff here and replace with add_subdirectory(acts)
+# 2. git clone acts into this directory and choose your version
+find_package(Acts QUIET)
+if (NOT Acts_FOUND)
+  message(STATUS "Did not find Acts, downloading and compiling it here")
+  include(FetchContent)
+  FetchContent_Declare(
+      Acts
+      URL https://github.com/acts-project/acts/archive/refs/tags/v36.0.0.tar.gz
+      URL_HASH MD5=f543dd8ba030bea2e4ee2f1b07dbe7c0
+  )
+  FetchContent_MakeAvailable(Acts)
+  FetchContent_GetProperties(Acts)
+  # Adding Acts as "SYSTEM" 
+  # which will silence compiler warnings from these 3rd party softwares
+  include_directories(SYSTEM "${Acts_SOURCE_DIR}/Core/include")
+else()
+  message(STATUS "Found Acts ${Acts_VERSION}")
+endif()
 
 setup_geant4_target()
-
 
 file(GLOB SRC_FILES CONFIGURE_DEPENDS 
   ${PROJECT_SOURCE_DIR}/src/Tracking/Sim/[a-zA-z]*.cxx
   ${PROJECT_SOURCE_DIR}/src/Tracking/Reco/[a-zA-z]*.cxx
   ${PROJECT_SOURCE_DIR}/src/Tracking/dqm/[a-zA-z]*.cxx
   ${PROJECT_SOURCE_DIR}/src/Tracking/geo/[a-zA-z]*.cxx
+  ${PROJECT_SOURCE_DIR}/src/Tracking/[a-zA-z]*.cxx
 )
 
 setup_library(module Tracking
               dependencies Framework::Configure 
                            Framework::Framework 
                            ActsCore
-                           ActsPluginIdentification
                            Geant4::Interface
                            ROOT::Physics
                            Tracking::Event
               sources ${SRC_FILES})
 
-
-#include_directories(${PROJECT_SOURCE_DIR}/include/Tracking/Reco/)
 
 setup_python(package_name LDMX/Tracking)

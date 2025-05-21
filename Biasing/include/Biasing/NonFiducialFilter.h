@@ -46,16 +46,16 @@ class NonFiducialFilter : public simcore::UserAction {
    * Implement the stepping action which performs the target volume biasing.
    * @param step The Geant4 step.
    */
-  void stepping(const G4Step* step) final override;
+  void stepping(const G4Step* step) override;
 
   /**
    * Method called at the end of every event.
    * @param event Geant4 event object.
    */
-  void EndOfEventAction(const G4Event*) final override;
+  void EndOfEventAction(const G4Event*) override;
 
   /// Retrieve the type of actions this class defines
-  std::vector<simcore::TYPE> getTypes() final override {
+  std::vector<simcore::TYPE> getTypes() override {
     return {simcore::TYPE::EVENT, simcore::TYPE::STACKING,
             simcore::TYPE::STEPPING};
   }
@@ -65,9 +65,6 @@ class NonFiducialFilter : public simcore::UserAction {
   double recoil_max_p_{1500};  // MeV
   /// If turned on, this aborts fiducial events.
   bool abort_fiducial_{true};
-  /// Enable logging
-  enableLogging("NonFiducialFilter")
-
 };  // NonFiducialFilter
 }  // namespace biasing
 

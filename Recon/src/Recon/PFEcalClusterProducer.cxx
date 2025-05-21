@@ -8,6 +8,7 @@ namespace recon {
 
 void PFEcalClusterProducer::configure(framework::config::Parameters& ps) {
   hitCollName_ = ps.getParameter<std::string>("hitCollName");
+  hitPassName_ = ps.getParameter<std::string>("hitPassName");
   clusterCollName_ = ps.getParameter<std::string>("clusterCollName");
   suffix_ = ps.getParameter<std::string>("suffix", "");
   singleCluster_ = ps.getParameter<bool>("doSingleCluster");
@@ -20,10 +21,13 @@ void PFEcalClusterProducer::configure(framework::config::Parameters& ps) {
 }
 
 void PFEcalClusterProducer::produce(framework::Event& event) {
-  if (!event.exists(hitCollName_)) return;
-  const auto ecalRecHits = event.getCollection<ldmx::EcalHit>(hitCollName_);
-  const auto& geo = getCondition<ldmx::EcalGeometry>(
-      ldmx::EcalGeometry::CONDITIONS_OBJECT_NAME);
+  if (!event.exists(hitCollName_, hitPassName_)) {
+    ldmx_log(fatal) << "Couldn't find input collection " << hitCollName_
+                    << " with pass name " << hitPassName_;
+    return;
+  }
+  const auto ecalRecHits =
+      event.getCollection<ldmx::EcalHit>(hitCollName_, hitPassName_);
 
   float eTotal = 0;
   for (const auto& h : ecalRecHits) eTotal += h.getEnergy();
@@ -35,9 +39,9 @@ void PFEcalClusterProducer::produce(framework::Event& event) {
     std::vector<const ldmx::CalorimeterHit*> ptrs;
     for (const auto& h : ecalRecHits) ptrs.push_back(&h);
     std::vector<std::vector<const ldmx::CalorimeterHit*> > all_hit_ptrs =
-        cb.runDBSCAN(ptrs, false);
+        cb.runDBSCAN(ptrs);
 
-    for (const auto hit_ptrs : all_hit_ptrs) {
+    for (const auto& hit_ptrs : all_hit_ptrs) {
       ldmx::CaloCluster cl;
       cb.fillClusterInfoFromHits(&cl, hit_ptrs, logEnergyWeight_);
       pfClusters.push_back(cl);
@@ -63,30 +67,6 @@ void PFEcalClusterProducer::produce(framework::Event& event) {
   event.add("EcalTotalEnergy" + suffix_, eTotal);
 }
 
-void PFEcalClusterProducer::onFileOpen() {
-  ldmx_log(debug) << "Opening file!";
-
-  return;
-}
-
-void PFEcalClusterProducer::onFileClose() {
-  ldmx_log(debug) << "Closing file!";
-
-  return;
-}
-
-void PFEcalClusterProducer::onProcessStart() {
-  ldmx_log(debug) << "Process starts!";
-
-  return;
-}
-
-void PFEcalClusterProducer::onProcessEnd() {
-  ldmx_log(debug) << "Process ends!";
-
-  return;
-}
-
 }  // namespace recon
 
-DECLARE_PRODUCER_NS(recon, PFEcalClusterProducer);
+DECLARE_PRODUCER(recon::PFEcalClusterProducer);

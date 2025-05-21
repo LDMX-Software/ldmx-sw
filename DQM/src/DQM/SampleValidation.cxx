@@ -10,17 +10,23 @@
 
 namespace dqm {
 
-void SampleValidation::configure(framework::config::Parameters& ps) { return; }
+void SampleValidation::configure(framework::config::Parameters& ps) {
+  target_scoring_plane_passname_ =
+      ps.getParameter<std::string>("target_scoring_plane_passname");
+  sim_particles_passname_ =
+      ps.getParameter<std::string>("sim_particles_passname");
+}
 
 void SampleValidation::analyze(const framework::Event& event) {
   // Grab the SimParticle Map and Target Scoring Plane Hits
-  auto targetSPHits(
-      event.getCollection<ldmx::SimTrackerHit>("TargetScoringPlaneHits"));
-  auto particle_map{event.getMap<int, ldmx::SimParticle>("SimParticles")};
+  auto targetSPHits(event.getCollection<ldmx::SimTrackerHit>(
+      "TargetScoringPlaneHits", target_scoring_plane_passname_));
+  auto particle_map{event.getMap<int, ldmx::SimParticle>(
+      "SimParticles", sim_particles_passname_)};
 
   std::vector<int> primary_daughters;
 
-  double hard_thresh;
+  double hard_thresh{9999.0};
 
   // Loop over all SimParticles
   for (auto const& it : particle_map) {
@@ -96,9 +102,9 @@ int SampleValidation::pdgid_label(const int pdgid) {
   if (pdgid == 22) label = 5;     // γ
   if (pdgid == 2212) label = 6;   // proton
   if (pdgid == 2112) label = 7;   // neutron
-  if (pdgid == 211) label = 8;    //π+
-  if (pdgid == -211) label = 9;   //π-
-  if (pdgid == 111) label = 10;   //π0
+  if (pdgid == 211) label = 8;    // π+
+  if (pdgid == -211) label = 9;   // π-
+  if (pdgid == 111) label = 10;   // π0
   if (pdgid == 321) label = 11;   // K+
   if (pdgid == -321) label = 12;  // K-
   if (pdgid == 130) label = 13;   // K-Long
@@ -163,4 +169,4 @@ void SampleValidation::onProcessStart() {
   }
 }
 }  // namespace dqm
-DECLARE_ANALYZER_NS(dqm, SampleValidation)
+DECLARE_ANALYZER(dqm::SampleValidation)

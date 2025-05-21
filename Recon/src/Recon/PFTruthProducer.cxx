@@ -10,6 +10,16 @@ void PFTruthProducer::configure(framework::config::Parameters &ps) {
   targetCollName_ = ps.getParameter<std::string>("outputTargetCollName");
   ecalCollName_ = ps.getParameter<std::string>("outputEcalCollName");
   hcalCollName_ = ps.getParameter<std::string>("outputHcalCollName");
+  target_sp_passname_ = ps.getParameter<std::string>("target_sp_passname");
+  ecal_sp_passname_ = ps.getParameter<std::string>("ecal_sp_passname");
+  sim_particles_passname_ =
+      ps.getParameter<std::string>("sim_particles_passname");
+  sim_particles_event_passname_ =
+      ps.getParameter<std::string>("sim_particles_event_passname");
+  ecal_sp_hits_event_passname_ =
+      ps.getParameter<std::string>("ecal_sp_hits_event_passname");
+  target_sp_hits_event_passname_ =
+      ps.getParameter<std::string>("target_sp_hits_event_passname");
 }
 template <class T>
 void sortHits(std::vector<T> spHits) {
@@ -18,15 +28,17 @@ void sortHits(std::vector<T> spHits) {
 }
 
 void PFTruthProducer::produce(framework::Event &event) {
-  if (!event.exists("TargetScoringPlaneHits")) return;
-  if (!event.exists("EcalScoringPlaneHits")) return;
-  if (!event.exists("SimParticles")) return;
-  const auto targSpHits =
-      event.getCollection<ldmx::SimTrackerHit>("TargetScoringPlaneHits");
-  const auto ecalSpHits =
-      event.getCollection<ldmx::SimTrackerHit>("EcalScoringPlaneHits");
-  const auto particle_map =
-      event.getMap<int, ldmx::SimParticle>("SimParticles");
+  if (!event.exists("TargetScoringPlaneHits", target_sp_hits_event_passname_))
+    return;
+  if (!event.exists("EcalScoringPlaneHits", ecal_sp_hits_event_passname_))
+    return;
+  if (!event.exists("SimParticles", sim_particles_event_passname_)) return;
+  const auto targSpHits = event.getCollection<ldmx::SimTrackerHit>(
+      "TargetScoringPlaneHits", target_sp_passname_);
+  const auto ecalSpHits = event.getCollection<ldmx::SimTrackerHit>(
+      "EcalScoringPlaneHits", ecal_sp_passname_);
+  const auto particle_map = event.getMap<int, ldmx::SimParticle>(
+      "SimParticles", sim_particles_passname_);
 
   std::map<int, ldmx::SimParticle> primaries;
   std::set<int> simIDs;
@@ -35,8 +47,11 @@ void PFTruthProducer::produce(framework::Event &event) {
   std::vector<ldmx::SimTrackerHit> atHcal;
   for (const auto &pm : particle_map) {
     const auto &p = pm.second;
-    // the only parent of a primary is "track 0"
-    if (p.getParents().size() == 1 && p.getParents()[0] == 0) {
+    // sim particles only ever have exactly one parent
+    auto parents = p.getParents();
+    auto parent = parents.at(0);
+    // the parent of a primary is "track 0"
+    if (parent == 0) {
       primaries[pm.first] = p;
       simIDs.insert(pm.first);
     }
@@ -69,31 +84,6 @@ void PFTruthProducer::produce(framework::Event &event) {
   event.add(ecalCollName_, atEcal);
   event.add(hcalCollName_, atHcal);
 }
-
-void PFTruthProducer::onFileOpen() {
-  ldmx_log(debug) << "Opening file!";
-
-  return;
-}
-
-void PFTruthProducer::onFileClose() {
-  ldmx_log(debug) << "Closing file!";
-
-  return;
-}
-
-void PFTruthProducer::onProcessStart() {
-  ldmx_log(debug) << "Process starts!";
-
-  return;
-}
-
-void PFTruthProducer::onProcessEnd() {
-  ldmx_log(debug) << "Process ends!";
-
-  return;
-}
-
 }  // namespace recon
 
-DECLARE_PRODUCER_NS(recon, PFTruthProducer);
+DECLARE_PRODUCER(recon::PFTruthProducer);

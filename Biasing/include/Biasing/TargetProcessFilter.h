@@ -10,6 +10,7 @@
 /*   Framework   */
 /*~~~~~~~~~~~~~~~*/
 #include "Framework/Configure/Parameters.h"
+#include "Framework/Logger.h"
 
 // Forward declaration
 class G4Event;
@@ -32,18 +33,18 @@ class TargetProcessFilter : public simcore::UserAction {
                       framework::config::Parameters &parameters);
 
   /// Destructor
-  ~TargetProcessFilter();
+  virtual ~TargetProcessFilter() = default;
 
   /**
    * Implementmthe stepping action which performs the target volume biasing.
    * @param step The Geant4 step.
    */
-  void stepping(const G4Step *step) final override;
+  void stepping(const G4Step *step) override;
 
   /**
    * End of event action.
    */
-  void EndOfEventAction(const G4Event *) final override;
+  void EndOfEventAction(const G4Event *) override;
 
   /**
    * Classify a new track which postpones track processing.
@@ -53,10 +54,10 @@ class TargetProcessFilter : public simcore::UserAction {
    */
   G4ClassificationOfNewTrack ClassifyNewTrack(
       const G4Track *aTrack,
-      const G4ClassificationOfNewTrack &currentTrackClass) final override;
+      const G4ClassificationOfNewTrack &currentTrackClass) override;
 
   /// Retrieve the type of actions this class defines
-  std::vector<simcore::TYPE> getTypes() final override {
+  std::vector<simcore::TYPE> getTypes() override {
     return {simcore::TYPE::EVENT, simcore::TYPE::STACKING,
             simcore::TYPE::STEPPING};
   }
@@ -64,9 +65,6 @@ class TargetProcessFilter : public simcore::UserAction {
  private:
   /** Pointer to the current track being processed. */
   G4Track *currentTrack_{nullptr};
-
-  /** Flag indicating if the reaction of intereset occurred. */
-  bool reactionOccurred_{false};
 
   /// The process to bias
   std::string process_{""};

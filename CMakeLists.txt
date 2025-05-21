@@ -9,15 +9,21 @@ get_filename_component(srcdir "${CMAKE_SOURCE_DIR}" REALPATH)
 get_filename_component(bindir "${CMAKE_BINARY_DIR}" REALPATH)
 if ("${srcdir}" STREQUAL "${bindir}")
   message(FATAL_ERROR "ldmx-sw does not support in-source builds.
-  Call 'ldmx cmake ..' from within a 'build/' subdirectory or
-  Tell cmake to use a different build directory with 'ldmx cmake -B build -S .'")
+  Call 'denv cmake ..' from within a 'build/' subdirectory or
+  Tell cmake to use a different build directory with 'denv cmake -B build -S .'
+  'just configure' and 'just build' will do the necessary directory movement for you as well.")
 endif()
 
 # Set the project name
-project(LDMX_SW VERSION 3.1.1
+file(READ ${CMAKE_CURRENT_SOURCE_DIR}/VERSION LDMXSW_VERSION)
+string(STRIP "${LDMXSW_VERSION}" LDMXSW_VERSION)
+string(REGEX REPLACE "^v" "" LDMXSW_VERSION_NUM "${LDMXSW_VERSION}") 
+project(LDMX_SW VERSION ${LDMXSW_VERSION_NUM} 
                 DESCRIPTION "The Light Dark Matter eXperiment simulation and reconstruction framework." 
                 LANGUAGES CXX    
 )
+
+set(CMAKE_CXX_STANDARD 20)
 
 # Load additional macros used by this project. 
 list(APPEND CMAKE_MODULE_PATH ${LDMX_SW_SOURCE_DIR}/cmake/)
@@ -27,17 +33,18 @@ list(APPEND CMAKE_MODULE_PATH ${LDMX_SW_SOURCE_DIR}/cmake/)
 # is set to NOTFOUND.
 include(BuildMacros RESULT_VARIABLE build_macros_found)
 
+# Adding ROOT as "SYSTEM" 
+# which will silence compiler warnings from these 3rd party softwares
+include_directories(SYSTEM /usr/local/include/root)
+
+# FunctionalCoreTest.cxx doesnt comply with clang-tidy but that's ok
+set_source_files_properties(Framework/test/FunctionalCoreTest.cxx PROPERTIES COMPILE_OPTIONS "-Wno-null-dereference")
+
 # If an install location hasn't been set via CMAKE_INSTALL_PREFIX, set it to 
 # a reasonable default ($PWD/install).  
 if (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
     set(CMAKE_INSTALL_PREFIX ${CMAKE_CURRENT_SOURCE_DIR}/install CACHE PATH "" FORCE)
     message(STATUS "Install directory set to ${CMAKE_INSTALL_PREFIX}")
-endif()
-
-# If a user is building outside of a Docker or Singularity environment, 
-# warn them. 
-if (NOT EXISTS /.dockerenv AND NOT EXISTS /singularity)
-    message(WARNING "You are not inside a container; you may be working in an untested environment.")
 endif()
 
 # Set the default release type to "Release". If a release type is specified 

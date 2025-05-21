@@ -53,7 +53,7 @@ class Process {
    * Get the processing pass label.
    * @return The processing pass label.
    */
-  const std::string &getPassName() const { return passname_; }
+  const std::string &getPassName() const { return pass_name_; }
 
   /**
    * Get the current run number or the run number to be used when initiating new
@@ -113,37 +113,20 @@ class Process {
    */
   void setEventHeader(ldmx::EventHeader *h) { eventHeader_ = h; }
 
-  /**
-   * Get a dummy process
-   *
-   * This function returns an instance of this class without
-   * any configuration. This is only helpful in the use case
-   * where the user is writing a test for a processor and
-   * needs to pass a Process object to the processor's constructor.
-   *
-   * @return Process without any configuration
-   */
-  static Process getDummy() { return std::move(Process()); }
-
  private:
-  /**
-   * Private dummy constructor
-   * We hide it here because it shouldn't be used anywhere else.
-   */
-  Process() : conditions_{*this} {}
-
   /**
    * Process the input event through the sequence
    * of processors
    *
-   * The input counter for number of events processed is
+   * The input counters (for events and tries) are
    * only used to print the status.
    *
    * @param[in] n counter for number of events processed
+   * @param[in] n_tries counter for number of tries on current event
    * @param[in,out] event reference to event we are going to process
    * @returns true if event was full processed (false if aborted)
    */
-  bool process(int n, Event &event) const;
+  bool process(int n, int n_tries, Event &event) const;
 
   /**
    * Run through the processors and let them know
@@ -168,10 +151,13 @@ class Process {
   framework::config::Parameters config_;
 
   /** Processing pass name. */
-  std::string passname_;
+  std::string pass_name_;
 
   /** Limit on events to process. */
   int eventLimit_;
+
+  /** When reading a file in, what's the first event to read */
+  int minEvents_;
 
   /** Number of events we'd like to produce
    independetly of the number of tries it would take.
@@ -181,17 +167,13 @@ class Process {
   /** The frequency with which event info is printed. */
   int logFrequency_;
 
-  /** Integer form of logging level to print to terminal */
-  int termLevelInt_;
-
-  /** Integer form of logging level to print to file */
-  int fileLevelInt_;
-
-  /** Name of file to print logging to */
-  std::string logFileName_;
-
   /** Maximum number of attempts to make before giving up on an event */
   int maxTries_;
+
+  /**
+   * allow the Process to skip input files that are corrupted
+   */
+  bool skipCorruptedInputFiles_;
 
   /** Storage controller */
   StorageControl storageController_;

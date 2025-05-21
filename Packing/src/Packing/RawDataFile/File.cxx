@@ -43,8 +43,8 @@ File::File(const framework::config::Parameters &ps) {
     run_ = ((word >> 4) & utility::mask<28>);
 
     reader_.seek<uint32_t>(-2, std::ios::end);
-    auto eof{
-        reader_.tell<uint32_t>()};  // save EOF in number of 32-bit-width words
+    // save EOF in number of 32-bit-width words
+    auto eof{reader_.tell<uint32_t>()};
     uint32_t crc_read_in;
     reader_ >> entries_ >> crc_read_in;
     i_entry_ = 0;
@@ -65,7 +65,7 @@ File::File(const framework::config::Parameters &ps) {
 
       reader_.seek<uint32_t>(1, std::ios::beg);
     }  // verify checksum of input file
-  }    // input or output file
+  }  // input or output file
 }
 
 bool File::connect(framework::Event &event) {
@@ -122,7 +122,7 @@ bool File::nextEvent() {
 
       event_->add(eid_to_name.at(subsys.id()), subsys.data());
     }  // loop over subsystems
-  }    // input or output
+  }  // input or output
   return true;
 }
 
@@ -130,9 +130,11 @@ void File::writeRunHeader(ldmx::RunHeader &header) {
   if (is_output_) {
     // use passed run number
     run_ = header.getRunNumber();
-    uint32_t header = (0 & utility::mask<4>)+((run_ & utility::mask<28>) << 4);
-    writer_ << header;
-    crc_ << header;
+    // Why cant we just take the header from above?
+    uint32_t tempHeader =
+        (0 & utility::mask<4>)+((run_ & utility::mask<28>) << 4);
+    writer_ << tempHeader;
+    crc_ << tempHeader;
   } else {
     // put our read-in run number here
     header.setIntParameter("raw_run", run_);

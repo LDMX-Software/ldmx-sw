@@ -29,8 +29,14 @@ void GammaPhysics::ConstructProcess() {
       modelParameters.getParameter<std::string>("class_name"),
       modelParameters.getParameter<std::string>("instance_name"),
       modelParameters);
-  pn->removeExistingModel(processManager);
-  pn->ConstructGammaProcess(processManager);
+  if (not pn) {
+    EXCEPTION_RAISE(
+        "UnableToCreate",
+        "Unable to create a PhotoNuclearModel of type " +
+            modelParameters.getParameter<std::string>("class_name"));
+  }
+  pn.value()->removeExistingModel(processManager);
+  pn.value()->ConstructGammaProcess(processManager);
   /**
    * Put the PN process first in the ordering in case PN biasing is happening.
    *

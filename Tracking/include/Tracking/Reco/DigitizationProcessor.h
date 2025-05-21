@@ -5,9 +5,6 @@
 
 //--- ACTS ---//
 #include "Acts/Definitions/Units.hpp"
-#include "Acts/Digitization/CartesianSegmentation.hpp"
-#include "Acts/Digitization/DigitizationModule.hpp"
-#include "Acts/Digitization/PlanarModuleStepper.hpp"
 #include "Acts/Surfaces/RectangleBounds.hpp"
 #include "Acts/Surfaces/Surface.hpp"
 
@@ -29,11 +26,11 @@ namespace tracking::reco {
 class DigitizationProcessor : public TrackingGeometryUser {
  public:
   DigitizationProcessor(const std::string& name, framework::Process& process);
-  ~DigitizationProcessor() = default;
+  virtual ~DigitizationProcessor() = default;
 
-  void onProcessStart() final override;
+  void onProcessStart() override;
 
-  void configure(framework::config::Parameters& parameters) final override;
+  void configure(framework::config::Parameters& parameters) override;
 
   /**
    * Before the run starts (but after the conditions are configured)
@@ -41,9 +38,9 @@ class DigitizationProcessor : public TrackingGeometryUser {
    *
    * @param[in] header RunHeader for this run, unused
    */
-  void onNewRun(const ldmx::RunHeader& header) final override;
+  void onNewRun(const ldmx::RunHeader& header) override;
 
-  void produce(framework::Event& event);
+  void produce(framework::Event& event) override;
 
   /**
    * Does basic digitization of SimTrackerHits. For now, this simply uses the
@@ -68,6 +65,7 @@ class DigitizationProcessor : public TrackingGeometryUser {
   std::string hit_collection_;
   /// Output hit collection name.
   std::string out_collection_;
+
   /// Minimum energy deposition cut.
   double min_e_dep_;
   /// Select a particular track ID
@@ -80,6 +78,8 @@ class DigitizationProcessor : public TrackingGeometryUser {
   double sigma_u_{0};
   /// v-direction sigma
   double sigma_v_{0};
+  /// Pass Name
+  std::string tracker_hit_passname_;
 
   //--- Smearing ---//
 

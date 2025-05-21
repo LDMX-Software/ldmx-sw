@@ -24,7 +24,13 @@
 //------------//
 //    LDMX    //
 //------------//
+#include "SimCore/G4User/PtrRetrieval.h"
 #include "SimCore/UserAction.h"
+
+/*~~~~~~~~~~*/
+/*   Core   */
+/*~~~~~~~~~~*/
+#include "Framework/Logger.h"
 
 namespace biasing {
 
@@ -54,14 +60,14 @@ class TargetDarkBremFilter : public simcore::UserAction {
   /**
    * Class destructor.
    */
-  ~TargetDarkBremFilter() {}
+  ~TargetDarkBremFilter() = default;
 
   /**
    * Get the types of actions this class can do
    *
    * @return list of action types this class does
    */
-  std::vector<simcore::TYPE> getTypes() final override {
+  std::vector<simcore::TYPE> getTypes() override {
     return {simcore::TYPE::STEPPING, simcore::TYPE::EVENT};
   }
 
@@ -70,7 +76,7 @@ class TargetDarkBremFilter : public simcore::UserAction {
    *
    * @param[in] e event being started, unused
    */
-  void BeginOfEventAction(const G4Event* e) final override;
+  void BeginOfEventAction(const G4Event* e) override;
 
   /**
    * Looking for A' while primary is stepping.
@@ -83,7 +89,7 @@ class TargetDarkBremFilter : public simcore::UserAction {
    *
    * @param[in] step current G4Step
    */
-  void stepping(const G4Step* step);
+  void stepping(const G4Step* step) override;
 
   /**
    * Check flag signaling finding of A', if false,
@@ -91,7 +97,7 @@ class TargetDarkBremFilter : public simcore::UserAction {
    *
    * @param[in] event being ended, check if it is already aborted
    */
-  void EndOfEventAction(const G4Event* event) final override;
+  void EndOfEventAction(const G4Event* event) override;
 
  private:
   /**
@@ -117,8 +123,12 @@ class TargetDarkBremFilter : public simcore::UserAction {
    */
   inline bool isOutsideTargetRegion(const G4LogicalVolume* vol) const {
     if (!vol) return true;
+    auto target_region = simcore::g4user::ptrretrieval::getRegion("target");
+    if (!target_region) {
+      ldmx_log(warn) << "Region 'target' not found in Geant4 region store";
+    }
     auto region = vol->GetRegion();
-    return region ? (region->GetName().compareTo("target") != 0) : true;
+    return region ? (region != target_region) : true;
   }
 
   /**

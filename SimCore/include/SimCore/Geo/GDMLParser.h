@@ -4,12 +4,12 @@
 //---< Geant4 >---//
 #include "G4GDMLParser.hh"
 
-//---< Framework >---//
-#include "Framework/Configure/Parameters.h"
-
 //---< SimCore >---//
 #include "SimCore/Geo/AuxInfoReader.h"
 #include "SimCore/Geo/Parser.h"
+
+//---< SimCore >---//
+#include "SimCore/ConditionsInterface.h"
 
 // Forward Declarations
 class G4VPhysicalVolume;
@@ -43,7 +43,7 @@ class GDMLParser : public Parser {
    *
    * @return The world volume.
    */
-  G4VPhysicalVolume *GetWorldVolume() final override;
+  G4VPhysicalVolume *GetWorldVolume() override;
 
   /**
    * Get the name of the parsed detector.
@@ -53,20 +53,12 @@ class GDMLParser : public Parser {
    *
    * @return The name of the detector.
    */
-  std::string getDetectorName() final override { return detector_name_; }
+  std::string getDetectorName() override { return detector_name_; }
 
   /**
    * Parse the detector geometry and read it into memory.
    */
-  void read() final override;
-
-  /**
-   * Create an instance of this parser.
-   */
-  static Parser *create(framework::config::Parameters &parameters,
-                        simcore::ConditionsInterface &ci) {
-    return new GDMLParser(parameters, ci);
-  }
+  void read() override;
 
  private:
   /// The GDML parser.

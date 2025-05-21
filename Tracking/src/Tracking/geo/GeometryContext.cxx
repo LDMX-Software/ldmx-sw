@@ -27,18 +27,18 @@ void GeometryContext::loadTransformations(const tgSurfMap& surf_map) {
             ->uncorrectedTransform();
   }
 }
+/*
+ Some testing functionality
+ deltaT = (tu, tv, tw)
+ deltaR = (ru, rv, rw)
 
-// Some testing functionality
+         /  1    -rw   rv  \
+deltaR = |  rw    1   -ru  |
+         \ -rv    ru   1   /
 
-// deltaT = (tu, tv, tw)
-// deltaR = (ru, rv, rw)
-
-//         /  1    -rw   rv  \
-  //deltaR = |  rw    1   -ru  |
-//         \ -rv    ru   1   /
-
-// "active"  means "rotate, then translate"
-// "passive" means "translate, then rotate"
+ "active"  means "rotate, then translate"
+ "passive" means "translate, then rotate"
+*/
 
 void GeometryContext::addAlignCorrection(unsigned int sensorId,
                                          const Acts::Vector3 deltaT,
@@ -100,4 +100,4 @@ class GeometryContextProvider : public framework::ConditionsObjectProvider {
 
 }  // namespace tracking::geo
 
-DECLARE_CONDITIONS_PROVIDER_NS(tracking::geo, GeometryContextProvider)
+DECLARE_CONDITIONS_PROVIDER(tracking::geo::GeometryContextProvider)

@@ -2,28 +2,24 @@
  * @file TrigScintDigiProducer.h
  * @brief Class that performs digitization of simulated trigger sctintillator
  * @author Andrew Whitbeck, TTU
+ * @author Tamas Almos Vami, UCSB
  */
 
 #ifndef EVENTPROC_TRIGSCINTDIGIPRODUCER_H
 #define EVENTPROC_TRIGSCINTDIGIPRODUCER_H
 
-/*~~~~~~~~~~*/
-/*   ROOT   */
-/*~~~~~~~~~~*/
-#include "TRandom3.h"
+#include <iostream>
+#include <random>  //for random num generators
 
-// LDMX
 #include "DetDescr/TrigScintID.h"
+#include "Framework/Configure/Parameters.h"
+#include "Framework/EventProcessor.h"
+#include "Framework/Exception/Exception.h"
+#include "Framework/RandomNumberSeedService.h"
 #include "Recon/Event/EventConstants.h"
 #include "SimCore/Event/SimCalorimeterHit.h"
 #include "Tools/NoiseGenerator.h"
 #include "TrigScint/Event/TrigScintHit.h"
-
-/*~~~~~~~~~~~~~~~*/
-/*   Framework   */
-/*~~~~~~~~~~~~~~~*/
-#include "Framework/Configure/Parameters.h"
-#include "Framework/EventProcessor.h"
 
 namespace trigscint {
 
@@ -46,7 +42,7 @@ class TrigScintDigiProducer : public framework::Producer {
 
   TrigScintDigiProducer(const std::string& name, framework::Process& process);
 
-  ~TrigScintDigiProducer();
+  ~TrigScintDigiProducer() = default;
 
   /**
    * Callback for the processor to configure itself from the given set
@@ -54,15 +50,20 @@ class TrigScintDigiProducer : public framework::Producer {
    *
    * @param parameters ParameterSet for configuration.
    */
-  void configure(framework::config::Parameters& parameters) final override;
+  void configure(framework::config::Parameters& parameters) override;
 
-  void produce(framework::Event& event);
+  void produce(framework::Event& event) override;
+
+  /**
+   * Random number generation
+   */
+  virtual void onNewRun(const ldmx::RunHeader& runHeader) override;
 
   ldmx::TrigScintID generateRandomID(int module);
 
  private:
   /// Random number generator
-  std::unique_ptr<TRandom3> random_{nullptr};
+  std::mt19937 rng_;
 
   /// Generate noise hits given the number of channels and mean noise.
   std::unique_ptr<ldmx::NoiseGenerator> noiseGenerator_{nullptr};
@@ -81,6 +82,8 @@ class TrigScintDigiProducer : public framework::Producer {
   /// Name of the output collection that will be used to stored the
   /// digitized trigger scintillator hits
   std::string outputCollection_;
+
+  std::string sim_particles_passname_;
 
   /// Number of strips per array
   int stripsPerArray_{50};

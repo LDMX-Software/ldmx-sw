@@ -23,16 +23,24 @@ p.maxEvents = int(os.environ['LDMX_NUM_EVENTS'])
 
 p.histogramFile = 'hist.root'
 p.outputFiles = ['events.root']
-p.termLogLevel = 0
 
+# Load the full tracking sequance
+from LDMX.Tracking import full_tracking_sequence
+
+# Load the ECAL modules
 import LDMX.Ecal.EcalGeometry
 import LDMX.Ecal.ecal_hardcoded_conditions
-import LDMX.Hcal.HcalGeometry
-import LDMX.Hcal.hcal_hardcoded_conditions
 import LDMX.Ecal.digi as ecal_digi
 import LDMX.Ecal.vetos as ecal_vetos
-import LDMX.Hcal.digi as hcal_digi
+import LDMX.Ecal.ecalClusters as ecal_cluster
 
+# Load the HCAL modules
+import LDMX.Hcal.HcalGeometry
+import LDMX.Hcal.hcal_hardcoded_conditions
+import LDMX.Hcal.digi as hcal_digi
+hcal_digi_reco = hcal_digi.HcalSimpleDigiAndRecProducer()
+
+# Load the TS modules
 from LDMX.TrigScint.trigScint import TrigScintDigiProducer
 from LDMX.TrigScint.trigScint import TrigScintClusterProducer
 from LDMX.TrigScint.trigScint import trigScintTrack
@@ -41,28 +49,51 @@ ts_digis = [
         TrigScintDigiProducer.pad2(),
         TrigScintDigiProducer.pad3(),
         ]
-for d in ts_digis :
-    d.randomSeed = 1
 
+ts_clusters = [
+        TrigScintClusterProducer.pad1(),
+        TrigScintClusterProducer.pad2(),
+        TrigScintClusterProducer.pad3(),
+        ]
+
+# Load the DQM modules
 from LDMX.DQM import dqm
 
+# Load electron counting and trigger
 from LDMX.Recon.electronCounter import ElectronCounter
 from LDMX.Recon.simpleTrigger import TriggerProcessor
 
 count = ElectronCounter(1,'ElectronCounter')
 count.input_pass_name = ''
 
+# Load ecal veto and use tracking in it
+ecalVeto = ecal_vetos.EcalVetoProcessor()
+
+# Load HCAL veto
+import LDMX.Hcal.hcal as hcal
+hcal_veto = hcal.HcalVetoProcessor()
+
+
+p.logger.termLevel = 1
+# p.logger.custom(ecalVeto, level = -1)
+
+# Add full tracking for both tagger and recoil trackers: digi, seeds, CFK, ambiguity resolution, GSF, DQM
+p.sequence.extend(full_tracking_sequence.sequence)
+p.sequence.extend(full_tracking_sequence.dqm_sequence)
+
 p.sequence.extend([
         ecal_digi.EcalDigiProducer(),
         ecal_digi.EcalRecProducer(), 
-        ecal_vetos.EcalVetoProcessor(),
-        hcal_digi.HcalDigiProducer(),
-        hcal_digi.HcalRecProducer(),
+        ecal_cluster.EcalClusterProducer(),
+        ecalVeto,
+        hcal_digi_reco,
+        hcal_veto,
         *ts_digis,
-        TrigScintClusterProducer.pad1(),
-        TrigScintClusterProducer.pad2(),
-        TrigScintClusterProducer.pad3(),
+        *ts_clusters,
         trigScintTrack,
         count, TriggerProcessor('trigger', 8000.),
-        dqm.PhotoNuclearDQM(verbose=False),
-        ] + dqm.all_dqm)
+        dqm.PhotoNuclearDQM(),
+        dqm.EcalClusterAnalyzer()
+        ])
+
+p.sequence.extend(dqm.all_dqm)

@@ -1,7 +1,7 @@
 #ifndef SIMCORE_BIASOPERATORS_NEUTRONINELASTIC_H_
 #define SIMCORE_BIASOPERATORS_NEUTRONINELASTIC_H_
 
-#include "SimCore/XsecBiasingOperator.h"
+#include "SimCore/BiasOperators/XsecBiasingOperator.h"
 
 namespace simcore {
 namespace biasoperators {
@@ -28,7 +28,7 @@ class NeutronInelastic : public XsecBiasingOperator {
    */
   G4VBiasingOperation* ProposeOccurenceBiasingOperation(
       const G4Track* track,
-      const G4BiasingProcessInterface* callingProcess) final override;
+      const G4BiasingProcessInterface* callingProcess) override;
 
   /// Return the process to bias
   std::string getProcessToBias() const override { return "neutronInelastic"; }

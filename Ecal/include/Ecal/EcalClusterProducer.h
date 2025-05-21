@@ -10,8 +10,6 @@
 //----------//
 //   ROOT   //
 //----------//
-#include "TCanvas.h"
-#include "TFile.h"
 #include "TH1F.h"
 #include "TH2F.h"
 
@@ -21,12 +19,13 @@
 #include "DetDescr/DetectorID.h"
 #include "DetDescr/EcalGeometry.h"
 #include "DetDescr/EcalID.h"
+#include "Ecal/CLUE.h"
 #include "Ecal/Event/ClusterAlgoResult.h"
 #include "Ecal/Event/EcalCluster.h"
 #include "Ecal/Event/EcalHit.h"
+#include "Ecal/IntermediateCluster.h"
 #include "Ecal/MyClusterWeight.h"
 #include "Ecal/TemplatedClusterFinder.h"
-#include "Ecal/WorkingCluster.h"
 #include "Framework/Configure/Parameters.h"
 #include "Framework/EventProcessor.h"
 
@@ -45,27 +44,37 @@ namespace ecal {
 class EcalClusterProducer : public framework::Producer {
  public:
   EcalClusterProducer(const std::string& name, framework::Process& process);
-
-  virtual ~EcalClusterProducer();
+  ~EcalClusterProducer() override = default;
 
   /**
    * Configure the processor using the given user specified parameters.
    *
    * @param parameters Set of parameters used to configure this processor.
    */
-  void configure(framework::config::Parameters& parameters) final override;
+  void configure(framework::config::Parameters& parameters) override;
 
-  virtual void produce(framework::Event& event);
+  void produce(framework::Event& event) override;
 
  private:
-  double seedThreshold_{0};
+  double seed_threshold_{0};
   double cutoff_{0};
-  std::string digisPassName_;
-  std::string algoCollName_;
-  std::string clusterCollName_;
+
+  double dc_{0};
+  double rhoc_{0};
+  double deltac_{0};
+  double deltao_{0};
+
+  std::string rec_hit_coll_name_;
+  std::string rec_hit_pass_name_;
+  std::string algo_coll_name_;
+  std::string cluster_coll_name_;
+
+  bool CLUE_;
+  int nbr_of_layers_;
+  bool reclustering_;
 
   /** The name of the cluster algorithm used. */
-  TString algoName_;
+  TString algo_name_;
 };
 }  // namespace ecal
 

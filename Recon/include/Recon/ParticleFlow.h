@@ -34,12 +34,6 @@ class ParticleFlow : public framework::Producer {
 
   virtual void produce(framework::Event& event);
 
-  virtual void onFileOpen();
-
-  virtual void onFileClose();
-
-  virtual void onProcessStart();
-
   virtual void onProcessEnd();
 
   void fillCandTrack(ldmx::PFCandidate& cand, const ldmx::SimTrackerHit& tk);
@@ -47,9 +41,6 @@ class ParticleFlow : public framework::Producer {
   void fillCandHadCalo(ldmx::PFCandidate& cand, const ldmx::CaloCluster& had);
 
  private:
-  // specific verbosity of this producer
-  int verbose_{0};
-
   TGraph* eCorr_{0};
   TGraph* hCorr_{0};
 
@@ -57,6 +48,15 @@ class ParticleFlow : public framework::Producer {
   std::string inputEcalCollName_;
   std::string inputHcalCollName_;
   std::string inputTrackCollName_;
+
+  std::string input_ecal_passname_;
+  std::string input_hcal_passname_;
+  std::string input_tracks_passname_;
+
+  std::string input_track_event_passname_;
+  std::string input_ecal_event_passname_;
+  std::string input_hcal_event_passname_;
+
   // name of collection for PF outputs
   std::string outputCollName_;
   // configuration

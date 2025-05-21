@@ -27,7 +27,7 @@ class Measurement {
               const float& cov_vv = 1.0);
 
   /// Default destructor
-  ~Measurement() = default;
+  virtual ~Measurement() = default;
 
   /**
    * Set the global position i.e. position of the measurement in the detector
@@ -111,7 +111,11 @@ class Measurement {
   /// Add a trackId to the internal vector
   void addTrackId(int trkId) { trackIds_.push_back(trkId); };
   /// @return the sim particle IDs that compose the measurement
-  std::vector<unsigned int> getTrackIds() { return trackIds_; };
+  std::vector<unsigned int> getTrackIds() const { return trackIds_; };
+
+  ///  @return The energy deposited in the sensor where the measurement took
+  ///  place.
+  float getEdep() const { return edep_; };
 
   /**
    * Overload the stream insertion operator to output a string representation of
@@ -156,7 +160,7 @@ class Measurement {
   /// TrackIDs the vector of TrackIDs that form the measurement
   std::vector<unsigned int> trackIds_{};
 
-  ClassDef(Measurement, 1);
+  ClassDef(Measurement, 2);
 };  // Measurement
 
 typedef std::vector<Measurement> Measurements;

@@ -13,6 +13,11 @@
 /*~~~~~~~~~~~~~*/
 #include "SimCore/UserAction.h"
 
+/*~~~~~~~~~~*/
+/*   Core   */
+/*~~~~~~~~~~*/
+#include "Framework/Logger.h"
+
 // Forward Declarations
 class G4Step;
 class G4Event;
@@ -34,30 +39,19 @@ class TargetENProcessFilter : public simcore::UserAction {
    * Implementmthe stepping action which performs the target volume biasing.
    * @param step The Geant4 step.
    */
-  void stepping(const G4Step* step) final override;
+  void stepping(const G4Step* step) override;
 
   /**
    * End of event action.
    */
-  void EndOfEventAction(const G4Event*) final override;
+  void EndOfEventAction(const G4Event*) override;
 
   /// Retrieve the type of actions this class defines
-  std::vector<simcore::TYPE> getTypes() final override {
+  std::vector<simcore::TYPE> getTypes() override {
     return {simcore::TYPE::EVENT, simcore::TYPE::STEPPING};
   }
 
  private:
-  /**
-   * The volume name of the LDMX target
-   *
-   * The 'target_PV' volume name is automatically constructed by Geant4's
-   * GDML parser and was found by inspecting the geometry using a
-   * visualization. This Physical Volume (PV) is associated with the
-   * target parent volume and so it will break if the target parent volume
-   * changes its name.
-   */
-  std::string volumeName_{"target_PV"};
-
   /** Flag indicating if the reaction of intereset occurred. */
   bool reactionOccurred_{false};
 
@@ -68,7 +62,6 @@ class TargetENProcessFilter : public simcore::UserAction {
   std::string process_{"electronNuclear"};
 
 };  // TargetENProcessFilter
-
 }  // namespace biasing
 
 #endif  // BIASING_TARGETPROCESSFILTER_H

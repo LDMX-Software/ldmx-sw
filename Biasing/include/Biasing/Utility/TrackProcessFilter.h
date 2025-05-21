@@ -47,10 +47,10 @@ class TrackProcessFilter : public simcore::UserAction {
    *
    * @param[in] track Geant4 track associated with a particle.
    */
-  void PostUserTrackingAction(const G4Track* track) final override;
+  void PostUserTrackingAction(const G4Track* track) override;
 
   /// Retrieve the type of actions this class defines.
-  std::vector<simcore::TYPE> getTypes() final override {
+  std::vector<simcore::TYPE> getTypes() override {
     return {simcore::TYPE::TRACKING};
   }
 

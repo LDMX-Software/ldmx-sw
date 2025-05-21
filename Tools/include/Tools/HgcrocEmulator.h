@@ -4,6 +4,7 @@
 
 #include "Conditions/SimpleTableCondition.h"
 #include "Framework/Configure/Parameters.h"
+#include "Framework/EventProcessor.h"
 #include "Recon/Event/HgcrocDigiCollection.h"
 #include "SimCore/Event/SimCalorimeterHit.h"
 #include "Tools/NoiseGenerator.h"
@@ -340,14 +341,14 @@ class HgcrocEmulator {
      */
     std::vector<std::pair<double, double>> hits_;
 
+    /// reference to pulse shape function shared by all pulses
+    TF1& pulseFunc_;
+
     /// gain for current chip we are emulating
     double gain_;
 
     /// pedestal for current chip we are emulating
     double pedestal_;
-
-    /// reference to pulse shape function shared by all pulses
-    TF1& pulseFunc_;
 
   };  // CompositePulse
 
@@ -441,6 +442,8 @@ class HgcrocEmulator {
    */
   mutable TF1 pulseFunc_;
 
+  /// Enable logging
+  enableLogging("HgcrocEmulator")
 };  // HgcrocEmulator
 
 }  // namespace ldmx

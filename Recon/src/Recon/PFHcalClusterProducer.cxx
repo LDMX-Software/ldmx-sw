@@ -12,6 +12,7 @@ namespace recon {
 
 void PFHcalClusterProducer::configure(framework::config::Parameters& ps) {
   hitCollName_ = ps.getParameter<std::string>("hitCollName");
+  hitPassName_ = ps.getParameter<std::string>("hitPassName");
   clusterCollName_ = ps.getParameter<std::string>("clusterCollName");
   suffix_ = ps.getParameter<std::string>("suffix", "");
   singleCluster_ = ps.getParameter<bool>("doSingleCluster");
@@ -24,8 +25,13 @@ void PFHcalClusterProducer::configure(framework::config::Parameters& ps) {
 }
 
 void PFHcalClusterProducer::produce(framework::Event& event) {
-  if (!event.exists(hitCollName_)) return;
-  const auto hcalRecHits = event.getCollection<ldmx::HcalHit>(hitCollName_);
+  if (!event.exists(hitCollName_, hitPassName_)) {
+    ldmx_log(fatal) << "Couldn't find input collection " << hitCollName_ << "_"
+                    << hitPassName_;
+    return;
+  }
+  const auto hcalRecHits =
+      event.getCollection<ldmx::HcalHit>(hitCollName_, hitPassName_);
   float eTotal = 0;
   for (const auto& h : hcalRecHits) eTotal += h.getEnergy();
 
@@ -37,9 +43,9 @@ void PFHcalClusterProducer::produce(framework::Event& event) {
     std::vector<const ldmx::CalorimeterHit*> ptrs;
     for (const auto& h : hcalRecHits) ptrs.push_back(&h);
     std::vector<std::vector<const ldmx::CalorimeterHit*> > all_hit_ptrs =
-        cb.runDBSCAN(ptrs, false);
+        cb.runDBSCAN(ptrs);
 
-    for (const auto hit_ptrs : all_hit_ptrs) {
+    for (const auto& hit_ptrs : all_hit_ptrs) {
       ldmx::CaloCluster cl;
       cb.fillClusterInfoFromHits(&cl, hit_ptrs, logEnergyWeight_);
       pfClusters.push_back(cl);
@@ -66,30 +72,6 @@ void PFHcalClusterProducer::produce(framework::Event& event) {
   event.add("HcalTotalEnergy" + suffix_, eTotal);
 }
 
-void PFHcalClusterProducer::onFileOpen() {
-  ldmx_log(debug) << "Opening file!";
-
-  return;
-}
-
-void PFHcalClusterProducer::onFileClose() {
-  ldmx_log(debug) << "Closing file!";
-
-  return;
-}
-
-void PFHcalClusterProducer::onProcessStart() {
-  ldmx_log(debug) << "Process starts!";
-
-  return;
-}
-
-void PFHcalClusterProducer::onProcessEnd() {
-  ldmx_log(debug) << "Process ends!";
-
-  return;
-}
-
 }  // namespace recon
 
-DECLARE_PRODUCER_NS(recon, PFHcalClusterProducer);
+DECLARE_PRODUCER(recon::PFHcalClusterProducer);

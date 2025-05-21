@@ -7,8 +7,6 @@ AlignmentTestProcessor::AlignmentTestProcessor(const std::string& name,
 
     : TrackingGeometryUser(name, process) {}
 
-AlignmentTestProcessor::~AlignmentTestProcessor() {}
-
 void AlignmentTestProcessor::configure(
     framework::config::Parameters& parameters) {}
 
@@ -52,7 +50,8 @@ void AlignmentTestProcessor::produce(framework::Event& event) {
     std::cout << entry.first << std::endl;
 
     std::cout << "Dumping surfaces information" << std::endl;
-    (entry.second)->toStream(align_gctx, std::cout);
+    //    (entry.second)->toStream(align_gctx, std::cout);
+    (entry.second)->toStream(align_gctx);
   }
 }
 
@@ -62,4 +61,4 @@ void AlignmentTestProcessor::onProcessEnd() {}
 
 }  // namespace tracking::reco
 
-DECLARE_PRODUCER_NS(tracking::reco, AlignmentTestProcessor)
+DECLARE_PRODUCER(tracking::reco::AlignmentTestProcessor)

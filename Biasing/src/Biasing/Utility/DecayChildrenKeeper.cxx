@@ -31,11 +31,11 @@ void DecayChildrenKeeper::PostUserTrackingAction(const G4Track* track) {
         simcore::UserTrackInformation::get(track)->setSaveFlag(true);
         break;
       }  // parent is an interesting one
-    }    // loop through interesting parent options
-  }      // parent is in particle map
+    }  // loop through interesting parent options
+  }  // parent is in particle map
 }
 
 }  // namespace utility
 }  // namespace biasing
 
-DECLARE_ACTION(biasing::utility, DecayChildrenKeeper)
+DECLARE_ACTION(biasing::utility::DecayChildrenKeeper)

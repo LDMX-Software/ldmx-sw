@@ -38,7 +38,7 @@
 //   LDMX-SW   //
 //-------------//
 #include "Framework/EventHeader.h"
-#include "SimCore/PrimaryGenerator.h"
+#include "SimCore/Generators/PrimaryGenerator.h"
 #include "SimCore/UserPrimaryParticleInformation.h"
 
 namespace simcore {
@@ -74,9 +74,9 @@ class MultiParticleGunPrimaryGenerator : public simcore::PrimaryGenerator {
    *
    * @param anEvent The Geant4 event.
    */
-  void GeneratePrimaryVertex(G4Event* anEvent) final override;
+  void GeneratePrimaryVertex(G4Event* anEvent) override;
 
-  void RecordConfig(const std::string& id, ldmx::RunHeader& rh) final override;
+  void RecordConfig(const std::string& id, ldmx::RunHeader& rh) override;
 
  private:
   /** Random number generator. */

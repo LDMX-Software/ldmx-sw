@@ -31,22 +31,14 @@ class TrigEcalClusterProducer : public framework::Producer {
 
   virtual void produce(framework::Event& event);
 
-  virtual void onFileOpen();
-
-  virtual void onFileClose();
-
-  virtual void onProcessStart();
-
-  virtual void onProcessEnd();
-
  private:
-  // specific verbosity of this producer
-  int verbose_{0};
-
   // name of collection for trigHits to be passed as input
   std::string hitCollName_;
   // name of collection for trigCluster to be output
   std::string clusterCollName_;
+
+  std::string hit_coll_passname_;
+  std::string hit_coll_name_events_passname_;
 
   // From:
   // Tools/python/HgcrocEmulator.py

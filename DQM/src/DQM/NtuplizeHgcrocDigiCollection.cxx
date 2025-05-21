@@ -99,7 +99,6 @@ void NtuplizeHgcrocDigiCollection::analyze(const framework::Event& event) {
     raw_id_ = static_cast<int>(d.id());
     if (using_eid_) {
       ldmx::HcalElectronicsID eid(d.id());
-      ldmx::HcalDigiID detid = detmap.get(eid);
       fpga_ = eid.fiber();
       link_ = eid.elink();
       good_link_ = (good_bxheader.at(link_) and good_trailer.at(link_));
@@ -131,4 +130,4 @@ void NtuplizeHgcrocDigiCollection::analyze(const framework::Event& event) {
 
 }  // namespace dqm
 
-DECLARE_ANALYZER_NS(dqm, NtuplizeHgcrocDigiCollection);
+DECLARE_ANALYZER(dqm::NtuplizeHgcrocDigiCollection);

@@ -36,9 +36,6 @@ ClassImp(ldmx::EcalDigiCollection)
       int32_t word = samples_.at(digiIndex * numSamplesPerDigi_ + sampleIndex);
 
       // this is where the word --> measurements translation occurs
-
-      bool firstFlag = ONE_BIT_MASK & (word >> FIRSTFLAG_POS);
-      bool seconFlag = ONE_BIT_MASK & (word >> SECONFLAG_POS);
       int firstMeas = TEN_BIT_MASK & (word >> FIRSTMEAS_POS);
       int seconMeas = TEN_BIT_MASK & (word >> SECONMEAS_POS);
       int lastMeas = TEN_BIT_MASK & (word);

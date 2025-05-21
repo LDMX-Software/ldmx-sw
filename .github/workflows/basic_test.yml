@@ -17,15 +17,19 @@ jobs:
       uses: actions/checkout@v4
       with:
         submodules: 'recursive'
+        fetch-depth: 0
+
+    - name: Install just
+      uses: extractions/setup-just@v3
+      with:
+          just-version: 1.26.0
 
     - name: Compile and Install ldmx-sw
-      uses: ./.github/actions/setup
+      run: | 
+        just install-denv init configure-force-error
+        just build
+      shell: bash
 
     - name: Basic Tests for Functionality
-      run: |
-        source ${GITHUB_WORKSPACE}/.github/actions/common.sh
-        start_group ctest --verbose
-        cd ${LDMX_BASE}/ldmx-sw/build
-        ldmx ctest --verbose
-        end_group
+      run: just test 
       shell: bash

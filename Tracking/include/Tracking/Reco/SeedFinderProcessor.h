@@ -20,8 +20,6 @@
 //---< ACTS >---//
 #include "Acts/Definitions/Algebra.hpp"
 #include "Acts/MagneticField/MagneticFieldContext.hpp"
-#include "Acts/Seeding/BinFinder.hpp"
-#include "Acts/Seeding/BinnedSPGroup.hpp"
 #include "Acts/Seeding/EstimateTrackParamsFromSeed.hpp"
 #include "Acts/Seeding/Seed.hpp"
 #include "Acts/Seeding/SeedFilter.hpp"
@@ -50,24 +48,24 @@ class SeedFinderProcessor : public TrackingGeometryUser {
   SeedFinderProcessor(const std::string& name, framework::Process& process);
 
   /// Destructor
-  ~SeedFinderProcessor();
+  virtual ~SeedFinderProcessor() = default;
 
   /**
    *
    */
-  void onProcessStart() final override;
+  void onProcessStart() override;
 
   /**
    *
    */
-  void onProcessEnd() final override;
+  void onProcessEnd() override;
 
   /**
    * Configure the processor using the given user specified parameters.
    *
    * @param parameters Set of parameters used to configure this processor.
    */
-  void configure(framework::config::Parameters& parameters) final override;
+  void configure(framework::config::Parameters& parameters) override;
 
   /**
    * Run the processor and create a collection of results which
@@ -75,7 +73,7 @@ class SeedFinderProcessor : public TrackingGeometryUser {
    *
    * @param event The event to process.
    */
-  void produce(framework::Event& event);
+  void produce(framework::Event& event) override;
 
   bool GroupStrips(const std::vector<ldmx::Measurement>& measurements,
                    const std::vector<int> strategy);
@@ -112,6 +110,11 @@ class SeedFinderProcessor : public TrackingGeometryUser {
   std::string input_hits_collection_{"TaggerSimHits"};
   /// The name of the tagger Tracks (only for Recoil Seeding)
   std::string tagger_trks_collection_{"TaggerTracks"};
+  std::string input_pass_name_{""};
+
+  std::string sim_particles_passname_;
+  std::string tagger_trks_event_collection_passname_;
+  std::string sim_particles_event_passname_;
   /// Location of the perigee for the helix track parameters.
   std::vector<double> perigee_location_{-700., 0., 0};
   /// Minimum cut on the momentum of the seeds.
@@ -145,9 +148,6 @@ class SeedFinderProcessor : public TrackingGeometryUser {
   std::vector<std::string> strategies_{};
   double bfield_{1.5};
 
-  TFile* outputFile_;
-  TTree* outputTree_;
-
   std::vector<float> xhit_;
   std::vector<float> yhit_;
   std::vector<float> zhit_;
@@ -170,9 +170,7 @@ class SeedFinderProcessor : public TrackingGeometryUser {
   long nfailtheta_{0};
 
   // The measurements groups
-
   std::map<int, std::vector<const ldmx::Measurement*>> groups_map;
-  std::array<const ldmx::Measurement*, 5> groups_array;
 
   // Truth Matching tool
   std::shared_ptr<tracking::sim::TruthMatchingTool> truthMatchingTool_ =

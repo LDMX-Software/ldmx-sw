@@ -25,7 +25,7 @@ function(message)
     list(REMOVE_AT ARGV 0)
     _message("${green}[ INFO ]: ${ARGV}${color_reset}")
   else()
-    _message("${green} ${ARGV} ${color_reset}")
+    _message(${ARGV})
   endif()
 endfunction()
 

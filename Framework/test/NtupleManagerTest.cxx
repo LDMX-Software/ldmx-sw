@@ -1,5 +1,5 @@
 /**
- * @file FunctionalCoreTest.cxx
+ * @file NtupleManagerTest.cxx
  * @brief Test the operation of Framework processing
  *
  * @author Tom Eichlersmith, University of Minnesota
@@ -12,6 +12,23 @@
 #include "Framework/NtupleManager.h"
 #include "TFile.h"        //to open and check root files
 #include "TTreeReader.h"  //to check output event files
+#include "TTreeReaderArray.h"
+#include "TTreeReaderValue.h"
+
+/**
+ * TTreeReaderValue<std::vector<T>> fails when attempting to register in this
+ * test so we use TTreeReaderArray<T> instead.
+ * This then functions properly but we then have to convert it back to a
+ * std::vector so that Catch2 can compare it to our correct answer.
+ */
+template <typename T>
+std::vector<T> from_TTreeReaderArray(const TTreeReaderArray<T>& reader_val) {
+  std::vector<T> v;
+  for (const auto& val : reader_val) {
+    v.push_back(val);
+  }
+  return v;
+}
 
 /**
  * Test for NtupleManager
@@ -90,6 +107,7 @@ TEST_CASE("Ntuple Manager Functions", "[Framework][functionality]") {
   f.Close();
 
   TTreeReader r("test", TFile::Open(ntuple_file));
+  r.Restart();
   TTreeReaderValue<bool> root_bool(r, "bool");
   TTreeReaderValue<short> root_short(r, "short");
   TTreeReaderValue<int> root_int(r, "int");
@@ -100,12 +118,12 @@ TEST_CASE("Ntuple Manager Functions", "[Framework][functionality]") {
   TTreeReaderValue<long long> root_long(r, "long");
   TTreeReaderValue<float> root_float(r, "float");
   TTreeReaderValue<double> root_double(r, "double");
-  TTreeReaderValue<std::vector<bool>> root_vector_bool(r, "vector_bool");
-  TTreeReaderValue<std::vector<short>> root_vector_short(r, "vector_short");
-  TTreeReaderValue<std::vector<int>> root_vector_int(r, "vector_int");
-  TTreeReaderValue<std::vector<long>> root_vector_long(r, "vector_long");
-  TTreeReaderValue<std::vector<float>> root_vector_float(r, "vector_float");
-  TTreeReaderValue<std::vector<double>> root_vector_double(r, "vector_double");
+  TTreeReaderArray<bool> root_vector_bool(r, "vector_bool");
+  TTreeReaderArray<short> root_vector_short(r, "vector_short");
+  TTreeReaderArray<int> root_vector_int(r, "vector_int");
+  TTreeReaderArray<long> root_vector_long(r, "vector_long");
+  TTreeReaderArray<float> root_vector_float(r, "vector_float");
+  TTreeReaderArray<double> root_vector_double(r, "vector_double");
 
   for (size_t i = 0; i < 3; i++) {
     REQUIRE(r.Next());
@@ -119,17 +137,17 @@ TEST_CASE("Ntuple Manager Functions", "[Framework][functionality]") {
     //  in order to try to save space
     // This means we need to use unordered equals.
     // Not too much loss in efficiency becuase we keep our vectors short.
-    CHECK_THAT(*root_vector_bool,
+    CHECK_THAT(from_TTreeReaderArray(root_vector_bool),
                Catch::Matchers::UnorderedEquals(vector_bools.at(i)));
-    CHECK_THAT(*root_vector_short,
+    CHECK_THAT(from_TTreeReaderArray(root_vector_short),
                Catch::Matchers::UnorderedEquals(vector_shorts.at(i)));
-    CHECK_THAT(*root_vector_int,
+    CHECK_THAT(from_TTreeReaderArray(root_vector_int),
                Catch::Matchers::UnorderedEquals(vector_ints.at(i)));
-    CHECK_THAT(*root_vector_long,
+    CHECK_THAT(from_TTreeReaderArray(root_vector_long),
                Catch::Matchers::UnorderedEquals(vector_longs.at(i)));
-    CHECK_THAT(*root_vector_float,
+    CHECK_THAT(from_TTreeReaderArray(root_vector_float),
                Catch::Matchers::UnorderedEquals(vector_floats.at(i)));
-    CHECK_THAT(*root_vector_double,
+    CHECK_THAT(from_TTreeReaderArray(root_vector_double),
                Catch::Matchers::UnorderedEquals(vector_doubles.at(i)));
   }
 

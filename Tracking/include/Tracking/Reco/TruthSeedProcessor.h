@@ -21,7 +21,6 @@
 #include "Acts/Definitions/Algebra.hpp"
 #include "Acts/Definitions/TrackParametrization.hpp"
 #include "Acts/EventData/TrackParameters.hpp"
-#include "Acts/EventData/detail/TransformationFreeToBound.hpp"
 #include "Acts/Propagator/Navigator.hpp"
 #include "Acts/Surfaces/PerigeeSurface.hpp"
 
@@ -52,7 +51,7 @@ class TruthSeedProcessor : public TrackingGeometryUser {
   TruthSeedProcessor(const std::string& name, framework::Process& process);
 
   /// Destructor
-  ~TruthSeedProcessor() = default;
+  virtual ~TruthSeedProcessor() = default;
 
   /**
    * Callback for the EventProcessor to configure itself from the
@@ -64,14 +63,14 @@ class TruthSeedProcessor : public TrackingGeometryUser {
    *
    * @param parameters Parameters for configuration.
    */
-  void configure(framework::config::Parameters& parameters) final override;
+  void configure(framework::config::Parameters& parameters) override;
 
   /**
    * Callback for the EventProcessor to take any necessary action when the
    * processing of events starts. For this class, the callback is used to
    * retrieve the GeometryContext from ACTS.
    */
-  void onProcessStart() final override{};
+  void onProcessStart() override {};
 
   /**
    * onNewRun is the first function called for each processor
@@ -87,7 +86,7 @@ class TruthSeedProcessor : public TrackingGeometryUser {
    *
    * @param event The event containing the collections to process.
    */
-  void produce(framework::Event& event) final override;
+  void produce(framework::Event& event) override;
 
  private:
   /**
@@ -197,12 +196,18 @@ class TruthSeedProcessor : public TrackingGeometryUser {
 
   /// Which scoring plane hits to use for the truth seeds generation
   std::string scoring_hits_coll_name_{"TargetScoringPlaneHits"};
+  std::string sp_pass_name_{""};
 
   /// Sim hits to check if the truth seed is findable
   std::string tagger_sim_hits_coll_name_{"TaggerSimHits"};
 
   /// Sim hits to check if the truth seed is findable
   std::string recoil_sim_hits_coll_name_{"RecoilSimHits"};
+
+  /// Pass name for the sim hit collections
+  std::string input_pass_name_{""};
+
+  std::string sim_particles_passname_;
 
   /**
    * Minimum number of hits left in the recoil tracker to consider the seed

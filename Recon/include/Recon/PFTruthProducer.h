@@ -24,27 +24,22 @@ class PFTruthProducer : public framework::Producer {
       : framework::Producer(name, process) {}
 
   virtual void configure(framework::config::Parameters& ps);
+  // void configure(framework::config::Parameters& parameters) override;
 
   virtual void produce(framework::Event& event);
 
-  virtual void onFileOpen();
-
-  virtual void onFileClose();
-
-  virtual void onProcessStart();
-
-  virtual void onProcessEnd();
-
  private:
-  // specific verbosity of this producer
-  int verbose_{0};
-  bool truthTracking_{true};
-
   // name of collection for target, ecal, hcal truth to be output
   std::string primaryCollName_;
   std::string targetCollName_;
   std::string ecalCollName_;
   std::string hcalCollName_;
+  std::string target_sp_passname_;
+  std::string ecal_sp_passname_;
+  std::string sim_particles_passname_;
+  std::string target_sp_hits_event_passname_;
+  std::string ecal_sp_hits_event_passname_;
+  std::string sim_particles_event_passname_;
 };
 }  // namespace recon
 
