@@ -52,19 +52,16 @@ jobs:
       uses: docker/metadata-action@v5
       with:
         # Default image name for push actions
-        images: ${{ github.event.inputs.repo || 'ldmx/pro' }}
-        # Tag strategies based on the event type
+        images: ${{ 'ldmx/pro' }}
         tags: |
-          just prep-version
-          # For workflow_dispatch events
-          type=raw,value=${{ github.event.inputs.tag || 'edge' }},enable=${{ github.event_name == 'workflow_dispatch' }}
-          type=sha,prefix=sha-,format=short,enable=${{ github.event_name == 'workflow_dispatch' }}
-          # For git tag pushes
-          type=semver,pattern=v{{version}},enable=${{ github.ref_type == 'tag' }}
-          type=raw,value=latest,enable=${{ github.ref_type == 'tag' && startsWith(github.ref_name, 'v') && contains(github.ref_name, '.') }}
-          # For trunk pushes
-          type=raw,value=edge,enable=${{ github.ref_name == 'trunk' && github.ref_type == 'branch' }}
-          type=sha,prefix=sha-,format=short,enable=${{ github.ref_name == 'trunk' && github.ref_type == 'branch' }}
+          type=ref,event=branch
+          type=ref,event=pr
+          type=semver,pattern=v{{version}}
+          type=sha,format=short
+
+    - 
+      name: Update version variable before building
+      run: just prep-version
     -
       name: Build the Image
       id: docker_build
