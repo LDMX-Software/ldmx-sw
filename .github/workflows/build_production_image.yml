@@ -55,7 +55,8 @@ jobs:
       id: docker_build
       uses: docker/build-push-action@v6
       with:
-        tags: ${{ steps.generate_tag.outputs.tags }}
+        tags: ${{ steps.meta.outputs.tags }}
+        labels: ${{ steps.meta.outputs.labels }}
         push: true
         context: .
 
