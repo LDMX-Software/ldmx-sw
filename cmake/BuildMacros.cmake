@@ -195,8 +195,10 @@ SET( GENIE_LIBS
     Genie::GPhResEG
     Genie::GPhStrXS
     Genie::GPhStrEG
+    LHAPDF
     Genie::GPhHEDISXS
     Genie::GPhHEDISEG
+    ROOT::Geom
     Genie::GTlGeo
     Genie::GTlFlx
     ROOT::MathCore
