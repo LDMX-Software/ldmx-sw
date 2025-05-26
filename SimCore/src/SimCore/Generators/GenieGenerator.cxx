@@ -300,6 +300,7 @@ void GenieGenerator::GeneratePrimaryVertex(G4Event* event) {
                (G4Random::getTheGenerator()->flat() - 0.5) * beam_size_[1];
   auto z_pos = position_[2] +
                (G4Random::getTheGenerator()->flat() - 0.5) * target_thickness_;
+
   ldmx_log(debug) << "Generating interaction at (x,y,z)="
                   << "(" << x_pos << "," << y_pos << "," << z_pos << ")";
 
@@ -316,6 +317,7 @@ void GenieGenerator::GeneratePrimaryVertex(G4Event* event) {
                         elec_i_p * direction_[2], energy_);
   TLorentzVector e_p4;
   initial_e.Momentum(e_p4);
+
   ldmx_log(debug) << "Generating interation with (px,py,pz,e)=" << "("
                   << e_p4.Px() << "," << e_p4.Py() << "," << e_p4.Pz() << ","
                   << e_p4.E() << ")";
@@ -362,13 +364,13 @@ void GenieGenerator::GeneratePrimaryVertex(G4Event* event) {
     G4PrimaryParticle* primary = new G4PrimaryParticle();
     primary->SetPDGcode(p->Pdg());
 
-    //this sets the 4momentum. But may not respect masses in G4...
-    //primary->Set4Momentum(p->Px() * CLHEP::GeV, p->Py() * CLHEP::GeV,
-    //                      p->Pz() * CLHEP::GeV, p->E() * CLHEP::GeV);
+    // this sets the 4momentum. But may not respect masses in G4...
+    // primary->Set4Momentum(p->Px() * CLHEP::GeV, p->Py() * CLHEP::GeV,
+    //                       p->Pz() * CLHEP::GeV, p->E() * CLHEP::GeV);
 
-    //for now, do this to set the masses to be the G4 ones, through the PDG code
-    primary->SetMomentum(p->Px() * CLHEP::GeV,
-                         p->Py() * CLHEP::GeV,
+    // for now, do this to set the masses to be the G4 ones, through the PDG
+    // code
+    primary->SetMomentum(p->Px() * CLHEP::GeV, p->Py() * CLHEP::GeV,
                          p->Pz() * CLHEP::GeV);
 
     primary->SetProperTime(time_ * CLHEP::ns);
