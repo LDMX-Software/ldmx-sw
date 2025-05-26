@@ -24,6 +24,7 @@
 //------------//
 #include "SimCore/Generators/PrimaryGenerator.h"
 #include "SimCore/UserEventInformation.h"
+#include "Framework/Logger.h"
 
 #include <string>
 #include <vector>
@@ -78,7 +79,6 @@ class GenieGenerator : public simcore::PrimaryGenerator {
   genie::GEVGDriver evg_driver_;
   genie::HepMC3Converter hepMC3Converter_;
 
-  int verbosity_;
   double energy_;
   std::vector<int> targets_;
   std::vector<double> abundances_;
@@ -107,9 +107,11 @@ class GenieGenerator : public simcore::PrimaryGenerator {
   void initializeGENIE();   /// GENIE initialization
   void calculateTotalXS();  /// GENIE initialization
 
-};  // ParticleGun
+  enableLogging("GenieGenerator")
+
+};  // GenieGenerator
 
 }  // namespace generators
 }  // namespace simcore
 
-#endif  // SIMCORE_PARTICLE_GUN_H
+#endif  // SIMCORE_GENIE_GENERATOR_H

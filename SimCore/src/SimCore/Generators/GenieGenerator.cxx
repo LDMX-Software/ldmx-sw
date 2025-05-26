@@ -77,55 +77,49 @@ void GenieGenerator::fillConfig(const framework::config::Parameters& p) {
   message_threshold_file_ =
       p.getParameter<std::string>("message_threshold_file");
 
-  verbosity_ = p.getParameter<int>("verbosity");
 }
 
 bool GenieGenerator::validateConfig() {
   bool ret = true;
 
   if (targets_.size() == 0 || abundances_.size() == 0) {
-    std::cout << "targets and/or abundances sizes are zero."
-              << "  " << targets_.size() << ", " << abundances_.size()
-              << std::endl;
+    ldmx_log(error) << "targets and/or abundances sizes are zero."
+                    << "  " << targets_.size() << ", " << abundances_.size();
     ret = false;
   }
   if (targets_.size() != abundances_.size()) {
-    std::cout << "targets and abundances sizes unequal."
-              << "  " << targets_.size() << " != " << abundances_.size()
-              << std::endl;
+    ldmx_log(error) << "targets and abundances sizes unequal."
+                    << "  " << targets_.size() << " != " << abundances_.size();
     ret = false;
   }
 
   if (position_.size() != 3 || direction_.size() != 3) {
-    std::cout << "position and/or direction sizes are not 3."
-              << "  " << position_.size() << ", " << direction_.size()
-              << std::endl;
+    ldmx_log(error) << "position and/or direction sizes are not 3."
+                    << "  " << position_.size() << ", " << direction_.size();
     ret = false;
   }
 
   if (target_thickness_ < 0) {
-    std::cout << "target thickness cannot be less than 0. " << target_thickness_
-              << std::endl;
-    std::cout << "Taking absolute value." << std::endl;
+    ldmx_log(warn) << "target thickness cannot be less than 0! (thickness="
+                   << target_thickness_ << "). Taking absolute value.";
     target_thickness_ = std::abs(target_thickness_);
   }
 
   if (beam_size_.size() != 2) {
     if (beam_size_.size() == 0) {
-      std::cout << "beam size not set. Using zero." << std::endl;
+      ldmx_log(info) << "beam size not set. Using zero.";
       beam_size_.resize(2);
       beam_size_[0] = 0.0;
       beam_size_[1] = 0.0;
     } else {
-      std::cout << "beam size is set, but does not have size 2."
-                << " " << beam_size_.size() << std::endl;
+      ldmx_log(error) << "beam size is set, but does not have size 2."
+                      << " " << beam_size_.size();
       ret = false;
     }
   } else if (beam_size_[0] < 0 || beam_size_[1] < 0) {
-    std::cout << "Beam size set as negative value? "
-              << "(" << beam_size_[0] << "," << beam_size_[1] << ")"
-              << std::endl;
-    std::cout << "Changing to positive." << std::endl;
+    ldmx_log(warn) << "Beam size set as negative value? "
+                   << "(" << beam_size_[0] << "," << beam_size_[1] << ")"
+                   << ". Changing to positive.";
     beam_size_[0] = std::abs(beam_size_[0]);
     beam_size_[1] = std::abs(beam_size_[1]);
   }
@@ -137,31 +131,29 @@ bool GenieGenerator::validateConfig() {
   }
 
   if (std::abs(abundance_sum) < 1e-6) {
-    std::cout << "abundances list sums to zero? " << abundance_sum << std::endl;
+    ldmx_log(error) << "abundances list sums to zero? " << abundance_sum;
     ret = false;
   }
 
   if (std::abs(abundance_sum - 1.0) > 2e-2) {
-    std::cout << "abundances list sums is not unity (" << abundance_sum
-              << " instead.)" << std::endl;
-    std::cout << "Will renormalize abundances to unity!" << std::endl;
+    ldmx_log(info) << "abundances list sums is not unity (" << abundance_sum
+                   << " instead.) Will renormalize abundances to unity!";
   }
 
   for (size_t i_a = 0; i_a < abundances_.size(); ++i_a) {
     abundances_[i_a] = abundances_[i_a] / abundance_sum;
 
-    if (verbosity_ > 0)
-      std::cout << "Target=" << targets_[i_a]
-                << ", Abundance=" << abundances_[i_a] << std::endl;
+      ldmx_log(debug) << "Target=" << targets_[i_a]
+                      << ", Abundance=" << abundances_[i_a];
   }
 
   double dir_total_sq = 0;
   for (auto d : direction_) dir_total_sq += d * d;
 
   if (dir_total_sq < 1e-6) {
-    std::cout << "direction vector is zero or negative? "
-              << "(" << direction_[0] << "," << direction_[1] << ","
-              << direction_[2] << ")" << std::endl;
+    ldmx_log(error) << "direction vector is zero or negative? "
+                    << "(" << direction_[0] << "," << direction_[1] << ","
+                    << direction_[2] << ")";
     ret = false;
   }
   for (size_t i_d = 0; i_d < direction_.size(); ++i_d)
@@ -176,10 +168,10 @@ bool GenieGenerator::validateConfig() {
 void GenieGenerator::initializeGENIE() {
   // initialize some RunOpt by hacking the command line interface
   {
-    char* inarr[3] = {const_cast<char*>(""),
+    char* in_arr[3] = {const_cast<char*>(""),
                       const_cast<char*>("--event-generator-list"),
                       const_cast<char*>("EM")};
-    genie::RunOpt::Instance()->ReadFromCommandLine(3, inarr);
+    genie::RunOpt::Instance()->ReadFromCommandLine(3, in_arr);
   }
 
   // set message thresholds
@@ -191,14 +183,6 @@ void GenieGenerator::initializeGENIE() {
     EXCEPTION_RAISE("ConfigurationException", "No TuneId in RunOption.");
   }
   genie::RunOpt::Instance()->BuildTune();
-
-  /*
-  //set random seed
-  auto seed = G4Random::getTheEngine()->getSeed();
-  if(verbosity_>=1)
-    std::cout << "Initializing GENIE with seed " << seed << std::endl;
-  genie::utils::app_init::RandGen(seed);
-  */
 
   // give it the splint file and require it
   genie::utils::app_init::XSecTable(spline_file_, true);
@@ -239,13 +223,13 @@ void GenieGenerator::calculateTotalXS() {
     ev_weighting_integral_[i_t] = xsec_total_;  // running sum
 
     // print...
-    std::cout << "Target=" << targets_[i_t]
-              << "\tAbundance=" << abundances_[i_t]
-              << "\tXSEC=" << xsec_by_target_[i_t] / genie::units::millibarn
-              << " mb" << std::endl;
+    ldmx_log(debug) << "Target=" << targets_[i_t]
+                    << "\tAbundance=" << abundances_[i_t]
+                    << "\tXSEC="
+                    << xsec_by_target_[i_t] / genie::units::millibarn << "mb";
   }
-  std::cout << "Total XSEC = " << xsec_total_ / genie::units::millibarn << " mb"
-            << std::endl;
+  ldmx_log(debug) << "Total XSEC = "
+                  << xsec_total_ / genie::units::millibarn << " mb";
 
   // renormalize our weighting integral
   for (size_t i_t = 0; i_t < ev_weighting_integral_.size(); ++i_t)
@@ -266,23 +250,24 @@ GenieGenerator::GenieGenerator(const std::string& name,
 }
 
 GenieGenerator::~GenieGenerator() {
-  std::cout << "--- GENIE Generation Summary BEGIN ---" << std::endl;
+  ldmx_log(info) << "--- GENIE Generation Summary BEGIN ---";
   double total_xsec = 0;
   for (size_t i_t = 0; i_t < targets_.size(); ++i_t) {
-    std::cout << "Target=" << targets_[i_t]
-              << "\tAbundance=" << abundances_[i_t]
-              << "\tXSEC=" << xsec_by_target_[i_t] / genie::units::millibarn
-              << " mb"
-              << "\tEvents=" << n_events_by_target_[i_t] << std::endl;
+    ldmx_log(info) << "Target=" << targets_[i_t]
+                   << "\tAbundance=" << abundances_[i_t]
+                   << "\tXSEC="
+                   << xsec_by_target_[i_t] / genie::units::millibarn << " mb"
+                   << "\tEvents=" << n_events_by_target_[i_t];
     if (n_events_by_target_[i_t] > 0)
       total_xsec += xsec_by_target_[i_t] * abundances_[i_t];
   }
 
-  std::cout << "Total events generated = " << n_events_generated_ << std::endl;
-  std::cout << "Total XSEC = " << total_xsec / genie::units::millibarn << " mb"
-            << std::endl;
+  ldmx_log(info) << "Total events generated = "
+                 << n_events_generated_
+                 << "\nTotal XSEC = "
+                 << total_xsec / genie::units::millibarn << " mb";
 
-  std::cout << "--- GENIE Generation Summary *END* ---" << std::endl;
+  ldmx_log(info) << "--- GENIE Generation Summary *END* ---";
 }
 
 void GenieGenerator::GeneratePrimaryVertex(G4Event* event) {
@@ -291,8 +276,7 @@ void GenieGenerator::GeneratePrimaryVertex(G4Event* event) {
     // have to do this here since seeds aren't properly set until we know the
     // run number
     auto seed = G4Random::getTheEngine()->getSeed();
-    if (verbosity_ >= 1)
-      std::cout << "Initializing GENIE with seed " << seed << std::endl;
+    ldmx_log(debug) << "Initializing GENIE with seed " << seed;
     genie::utils::app_init::RandGen(seed);
   }
 
@@ -305,9 +289,9 @@ void GenieGenerator::GeneratePrimaryVertex(G4Event* event) {
         ev_weighting_integral_.begin(),
         std::lower_bound(ev_weighting_integral_.begin(),
                          ev_weighting_integral_.end(), rand_uniform));
-    if (verbosity_ >= 1)
-      std::cout << "Random number = " << rand_uniform << ", target picked "
-                << targets_.at(nucl_target_i) << std::endl;
+
+    ldmx_log(debug) << "Random number = " << rand_uniform << ", target picked "
+                    << targets_.at(nucl_target_i);
   }
 
   auto x_pos = position_[0] +
@@ -316,10 +300,8 @@ void GenieGenerator::GeneratePrimaryVertex(G4Event* event) {
                (G4Random::getTheGenerator()->flat() - 0.5) * beam_size_[1];
   auto z_pos = position_[2] +
                (G4Random::getTheGenerator()->flat() - 0.5) * target_thickness_;
-  if (verbosity_ >= 1)
-    std::cout << "Generating interaction at (x,y,z)="
-              << "(" << x_pos << "," << y_pos << "," << z_pos << ")"
-              << std::endl;
+  ldmx_log(debug) << "Generating interaction at (x,y,z)="
+                  << "(" << x_pos << "," << y_pos << "," << z_pos << ")";
 
   genie::InitialState initial_state(targets_.at(nucl_target_i), 11);
   evg_driver_.Configure(initial_state);
@@ -334,10 +316,9 @@ void GenieGenerator::GeneratePrimaryVertex(G4Event* event) {
                         elec_i_p * direction_[2], energy_);
   TLorentzVector e_p4;
   initial_e.Momentum(e_p4);
-  if (verbosity_ >= 1)
-    std::cout << "Generating interation with (px,py,pz,e)="
-              << "(" << e_p4.Px() << "," << e_p4.Py() << "," << e_p4.Pz() << ","
-              << e_p4.E() << ")" << std::endl;
+  ldmx_log(debug) << "Generating interation with (px,py,pz,e)=" << "("
+                  << e_p4.Px() << "," << e_p4.Py() << "," << e_p4.Pz() << ","
+                  << e_p4.E() << ")";
 
   // calculate total xsec
   if (n_events_by_target_[nucl_target_i] == 0)
@@ -363,23 +344,20 @@ void GenieGenerator::GeneratePrimaryVertex(G4Event* event) {
   vertex->SetWeight(genie_event->Weight());
 
   // loop over the entries and add to the G4Event
-  int nentries = genie_event->GetEntries();
+  int n_entries = genie_event->GetEntries();
 
-  if (verbosity_ >= 1) {
-    std::cout << "---------- "
-              << "Generated Event " << n_events_generated_ + 1 << " ----------"
-              << std::endl;
-  }
+  ldmx_log(debug) << "---------- "
+                  << "Generated Event " << n_events_generated_ + 1
+                  << " ----------";
 
-  for (int i_p = 0; i_p < nentries; ++i_p) {
+  for (int i_p = 0; i_p < n_entries; ++i_p) {
     genie::GHepParticle* p = (genie::GHepParticle*)(*genie_event)[i_p];
 
     // make sure it's a final state particle
     if (p->Status() != 1) continue;
 
-    if (verbosity_ >= 1)
-      std::cout << "\tAdding particle " << p->Pdg() << " with status "
-                << p->Status() << " energy " << p->E() << " ..." << std::endl;
+    ldmx_log(debug) << "\tAdding particle " << p->Pdg() << " with status "
+                    << p->Status() << " energy " << p->E() << " ...";
 
     G4PrimaryParticle* primary = new G4PrimaryParticle();
     primary->SetPDGcode(p->Pdg());
