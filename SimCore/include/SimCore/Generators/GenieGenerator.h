@@ -19,15 +19,15 @@
 #include "GENIE/Framework/EventGen/GEVGDriver.h"
 #include "GENIE/Framework/EventGen/HepMC3Converter.h"
 
+#include <string>
+#include <vector>
+
 //------------//
 //   LDMX     //
 //------------//
+#include "Framework/Logger.h"
 #include "SimCore/Generators/PrimaryGenerator.h"
 #include "SimCore/UserEventInformation.h"
-#include "Framework/Logger.h"
-
-#include <string>
-#include <vector>
 
 // Forward declarations
 class G4Event;

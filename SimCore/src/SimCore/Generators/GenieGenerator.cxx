@@ -76,26 +76,25 @@ void GenieGenerator::fillConfig(const framework::config::Parameters& p) {
 
   message_threshold_file_ =
       p.getParameter<std::string>("message_threshold_file");
-
 }
 
 bool GenieGenerator::validateConfig() {
   bool ret = true;
 
   if (targets_.size() == 0 || abundances_.size() == 0) {
-    ldmx_log(error) << "targets and/or abundances sizes are zero."
-                    << "  " << targets_.size() << ", " << abundances_.size();
+    ldmx_log(error) << "targets and/or abundances sizes are zero." << "  "
+                    << targets_.size() << ", " << abundances_.size();
     ret = false;
   }
   if (targets_.size() != abundances_.size()) {
-    ldmx_log(error) << "targets and abundances sizes unequal."
-                    << "  " << targets_.size() << " != " << abundances_.size();
+    ldmx_log(error) << "targets and abundances sizes unequal." << "  "
+                    << targets_.size() << " != " << abundances_.size();
     ret = false;
   }
 
   if (position_.size() != 3 || direction_.size() != 3) {
-    ldmx_log(error) << "position and/or direction sizes are not 3."
-                    << "  " << position_.size() << ", " << direction_.size();
+    ldmx_log(error) << "position and/or direction sizes are not 3." << "  "
+                    << position_.size() << ", " << direction_.size();
     ret = false;
   }
 
@@ -112,13 +111,13 @@ bool GenieGenerator::validateConfig() {
       beam_size_[0] = 0.0;
       beam_size_[1] = 0.0;
     } else {
-      ldmx_log(error) << "beam size is set, but does not have size 2."
-                      << " " << beam_size_.size();
+      ldmx_log(error) << "beam size is set, but does not have size 2." << " "
+                      << beam_size_.size();
       ret = false;
     }
   } else if (beam_size_[0] < 0 || beam_size_[1] < 0) {
-    ldmx_log(warn) << "Beam size set as negative value? "
-                   << "(" << beam_size_[0] << "," << beam_size_[1] << ")"
+    ldmx_log(warn) << "Beam size set as negative value? " << "("
+                   << beam_size_[0] << "," << beam_size_[1] << ")"
                    << ". Changing to positive.";
     beam_size_[0] = std::abs(beam_size_[0]);
     beam_size_[1] = std::abs(beam_size_[1]);
@@ -143,16 +142,16 @@ bool GenieGenerator::validateConfig() {
   for (size_t i_a = 0; i_a < abundances_.size(); ++i_a) {
     abundances_[i_a] = abundances_[i_a] / abundance_sum;
 
-      ldmx_log(debug) << "Target=" << targets_[i_a]
-                      << ", Abundance=" << abundances_[i_a];
+    ldmx_log(debug) << "Target=" << targets_[i_a]
+                    << ", Abundance=" << abundances_[i_a];
   }
 
   double dir_total_sq = 0;
   for (auto d : direction_) dir_total_sq += d * d;
 
   if (dir_total_sq < 1e-6) {
-    ldmx_log(error) << "direction vector is zero or negative? "
-                    << "(" << direction_[0] << "," << direction_[1] << ","
+    ldmx_log(error) << "direction vector is zero or negative? " << "("
+                    << direction_[0] << "," << direction_[1] << ","
                     << direction_[2] << ")";
     ret = false;
   }
@@ -169,8 +168,8 @@ void GenieGenerator::initializeGENIE() {
   // initialize some RunOpt by hacking the command line interface
   {
     char* in_arr[3] = {const_cast<char*>(""),
-                      const_cast<char*>("--event-generator-list"),
-                      const_cast<char*>("EM")};
+                       const_cast<char*>("--event-generator-list"),
+                       const_cast<char*>("EM")};
     genie::RunOpt::Instance()->ReadFromCommandLine(3, in_arr);
   }
 
@@ -224,12 +223,11 @@ void GenieGenerator::calculateTotalXS() {
 
     // print...
     ldmx_log(debug) << "Target=" << targets_[i_t]
-                    << "\tAbundance=" << abundances_[i_t]
-                    << "\tXSEC="
+                    << "\tAbundance=" << abundances_[i_t] << "\tXSEC="
                     << xsec_by_target_[i_t] / genie::units::millibarn << "mb";
   }
-  ldmx_log(debug) << "Total XSEC = "
-                  << xsec_total_ / genie::units::millibarn << " mb";
+  ldmx_log(debug) << "Total XSEC = " << xsec_total_ / genie::units::millibarn
+                  << " mb";
 
   // renormalize our weighting integral
   for (size_t i_t = 0; i_t < ev_weighting_integral_.size(); ++i_t)
@@ -254,18 +252,16 @@ GenieGenerator::~GenieGenerator() {
   double total_xsec = 0;
   for (size_t i_t = 0; i_t < targets_.size(); ++i_t) {
     ldmx_log(info) << "Target=" << targets_[i_t]
-                   << "\tAbundance=" << abundances_[i_t]
-                   << "\tXSEC="
+                   << "\tAbundance=" << abundances_[i_t] << "\tXSEC="
                    << xsec_by_target_[i_t] / genie::units::millibarn << " mb"
                    << "\tEvents=" << n_events_by_target_[i_t];
     if (n_events_by_target_[i_t] > 0)
       total_xsec += xsec_by_target_[i_t] * abundances_[i_t];
   }
 
-  ldmx_log(info) << "Total events generated = "
-                 << n_events_generated_
-                 << "\nTotal XSEC = "
-                 << total_xsec / genie::units::millibarn << " mb";
+  ldmx_log(info) << "Total events generated = " << n_events_generated_
+                 << "\nTotal XSEC = " << total_xsec / genie::units::millibarn
+                 << " mb";
 
   ldmx_log(info) << "--- GENIE Generation Summary *END* ---";
 }
@@ -301,8 +297,8 @@ void GenieGenerator::GeneratePrimaryVertex(G4Event* event) {
   auto z_pos = position_[2] +
                (G4Random::getTheGenerator()->flat() - 0.5) * target_thickness_;
 
-  ldmx_log(debug) << "Generating interaction at (x,y,z)="
-                  << "(" << x_pos << "," << y_pos << "," << z_pos << ")";
+  ldmx_log(debug) << "Generating interaction at (x,y,z)=" << "(" << x_pos << ","
+                  << y_pos << "," << z_pos << ")";
 
   genie::InitialState initial_state(targets_.at(nucl_target_i), 11);
   evg_driver_.Configure(initial_state);
@@ -348,9 +344,8 @@ void GenieGenerator::GeneratePrimaryVertex(G4Event* event) {
   // loop over the entries and add to the G4Event
   int n_entries = genie_event->GetEntries();
 
-  ldmx_log(debug) << "---------- "
-                  << "Generated Event " << n_events_generated_ + 1
-                  << " ----------";
+  ldmx_log(debug) << "---------- " << "Generated Event "
+                  << n_events_generated_ + 1 << " ----------";
 
   for (int i_p = 0; i_p < n_entries; ++i_p) {
     genie::GHepParticle* p = (genie::GHepParticle*)(*genie_event)[i_p];
