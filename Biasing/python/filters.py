@@ -29,7 +29,7 @@ class TargetBremFilter(simcfg.UserAction):
         Should we kill the recoil electron track for a worst case scenario?
     """
 
-    def __init__(self,recoil_max_p = 1500.,brem_min_e = 2500.) :
+    def __init__(self,recoil_max_p = 3000.,brem_min_e = 5000.) :
         super().__init__("target_brem_filter", "biasing::TargetBremFilter")
 
         from LDMX.Biasing import include
@@ -50,7 +50,7 @@ class NonFiducialFilter(simcfg.UserAction):
         If true, aborts fiducial events. Otherwise, the fiducial events will be only tagged
     """
 
-    def __init__(self,recoil_max_momentum = 1500., abort_fid_event = True) :
+    def __init__(self,recoil_max_momentum = 3000., abort_fid_event = True) :
         super().__init__("nonfiducial_filter", "biasing::NonFiducialFilter")
 
         from LDMX.Biasing import include
@@ -113,7 +113,7 @@ class TargetENFilter(simcfg.UserAction) :
         Maximum energy recoil electron is allowed to have [MeV]
     """
 
-    def __init__(self,recoil_thresh = 2500.) :
+    def __init__(self,recoil_thresh = 5000.) :
         super().__init__("target_en_process_filter","biasing::TargetENProcessFilter")
 
         from LDMX.Biasing import include
@@ -188,7 +188,7 @@ class TaggerVetoFilter(simcfg.UserAction):
         Also veto events where the primary particle misses the tagger region
     """
     
-    def __init__(self,thresh=3800., reject_events_missing_tagger=True) :
+    def __init__(self,thresh=7600., reject_events_missing_tagger=True) :
         super().__init__('tagger_veto_filter','biasing::TaggerVetoFilter')
 
         from LDMX.Biasing import include
