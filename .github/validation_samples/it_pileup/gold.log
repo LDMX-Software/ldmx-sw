@@ -56,10 +56,10 @@ Setting detector for tracking to ldmx-det-v14-8gev
     Geant4 revision = 
     Gen0 Class = simcore::generators::ParticleGun
     Gen0 Particle = e-
-    Pass = ecal_pn, version = v4.3.0
-    Pass = overlay, version = v4.3.0
-    SIM revision = 1465a99a2868f8d10532e764df550d88ee5cc50b
-    SIM version = v4.3.0
+    Pass = ecal_pn, version = v4.3.1
+    Pass = overlay, version = v4.3.1
+    SIM revision = ddb77372166d09a5c4263913ecb10566523c7f2f
+    SIM version = v4.3.1
 }
 [ Tagger_TrackFinder ] 1  info: Number of TaggerRecoSeeds seed tracks = 1
 [ Tagger_TrackFinder ] 1  info: Number of CKF tracks 1
@@ -1475,7 +1475,7 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ Recoil_TrackFinder ] 75  info: Number of CKF tracks 4
 [ GreedySolverTagger ] 75  info:  Resolved to 1 tracks from  1
 [ GreedySolverRecoil ] 75  info:  Resolved to 2 tracks from  4
-15:42:57    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
+18:05:32    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
 [ TrackerVetoProcessor ] 75  info: Tagger requirements passed for 1 tracks
 [ TrackerVetoProcessor ] 75  info: Recoil requirements passed for 3 tracks
 [ TrackerVetoProcessor ] 75  info: Tracker veto failed
@@ -2883,7 +2883,7 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ Recoil_TrackFinder ] 149  info: Number of CKF tracks 1
 [ GreedySolverTagger ] 149  info:  Resolved to 1 tracks from  1
 [ GreedySolverRecoil ] 149  info:  Resolved to 1 tracks from  1
-15:43:00    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
+18:05:35    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
 [ TrackerVetoProcessor ] 149  info: Tagger requirements passed for 1 tracks
 [ TrackerVetoProcessor ] 149  info: Recoil requirements passed for 1 tracks
 [ TrackerVetoProcessor ] 149  info: Tracker veto passed, skim will keep the event
@@ -4406,7 +4406,7 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ Recoil_TrackFinder ] 229  info: Number of CKF tracks 1
 [ GreedySolverTagger ] 229  info:  Resolved to 1 tracks from  1
 [ GreedySolverRecoil ] 229  info:  Resolved to 1 tracks from  1
-15:43:07    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
+18:05:43    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
 [ TrackerVetoProcessor ] 229  info: Tagger requirements passed for 1 tracks
 [ TrackerVetoProcessor ] 229  info: Recoil requirements passed for 1 tracks
 [ TrackerVetoProcessor ] 229  info: Tracker veto passed, skim will keep the event
@@ -6581,8 +6581,8 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ Recoil_TrackFinder ] 343  info: Number of CKF tracks 1
 [ GreedySolverTagger ] 343  info:  Resolved to 1 tracks from  1
 [ GreedySolverRecoil ] 343  info:  Resolved to 1 tracks from  1
-15:43:13    GSF            WARNING   Performed steps with errors: MagneticFieldError:1 | MagneticFieldError:1 | MagneticFieldError:1 | MagneticFieldError:1
-15:43:13    GSF_PROP       ERROR     Step failed with MultiStepperError:4: Stepping error occurred in all components
+18:05:49    GSF            WARNING   Performed steps with errors: MagneticFieldError:1 | MagneticFieldError:1 | MagneticFieldError:1 | MagneticFieldError:1
+18:05:49    GSF_PROP       ERROR     Step failed with MultiStepperError:4: Stepping error occurred in all components
 [ Recoil_GSF ] 343  warn: GSF re-fit failed
 [ TrackerVetoProcessor ] 343  info: Tagger requirements passed for 1 tracks
 [ TrackerVetoProcessor ] 343  info: Recoil requirements passed for 1 tracks
@@ -7897,7 +7897,7 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ Recoil_TrackFinder ] 412  info: Number of CKF tracks 4
 [ GreedySolverTagger ] 412  info:  Resolved to 1 tracks from  1
 [ GreedySolverRecoil ] 412  info:  Resolved to 2 tracks from  4
-15:43:20    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
+18:05:56    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
 [ TrackerVetoProcessor ] 412  info: Tagger requirements passed for 1 tracks
 [ TrackerVetoProcessor ] 412  info: Recoil requirements passed for 3 tracks
 [ TrackerVetoProcessor ] 412  info: Tracker veto failed
@@ -9039,7 +9039,7 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ Recoil_TrackFinder ] 472  info: Number of CKF tracks 1
 [ GreedySolverTagger ] 472  info:  Resolved to 1 tracks from  1
 [ GreedySolverRecoil ] 472  info:  Resolved to 1 tracks from  1
-15:43:23    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
+18:05:59    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
 [ TrackerVetoProcessor ] 472  info: Tagger requirements passed for 1 tracks
 [ TrackerVetoProcessor ] 472  info: Recoil requirements passed for 1 tracks
 [ TrackerVetoProcessor ] 472  info: Tracker veto passed, skim will keep the event
@@ -9193,7 +9193,7 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ Recoil_TrackFinder ] 480  info: Number of CKF tracks 4
 [ GreedySolverTagger ] 480  info:  Resolved to 1 tracks from  1
 [ GreedySolverRecoil ] 480  info:  Resolved to 2 tracks from  4
-15:43:24    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
+18:06:00    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
 [ TrackerVetoProcessor ] 480  info: Tagger requirements passed for 1 tracks
 [ TrackerVetoProcessor ] 480  info: Recoil requirements passed for 2 tracks
 [ TrackerVetoProcessor ] 480  info: Tracker veto failed
@@ -9461,7 +9461,7 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ Recoil_TrackFinder ] 494  info: Number of CKF tracks 3
 [ GreedySolverTagger ] 494  info:  Resolved to 1 tracks from  1
 [ GreedySolverRecoil ] 494  info:  Resolved to 3 tracks from  3
-15:43:25    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
+18:06:01    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
 [ TrackerVetoProcessor ] 494  info: Tagger requirements passed for 1 tracks
 [ TrackerVetoProcessor ] 494  info: Recoil requirements passed for 3 tracks
 [ TrackerVetoProcessor ] 494  info: Tracker veto failed
@@ -10071,7 +10071,7 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ Recoil_TrackFinder ] 526  info: Number of CKF tracks 1
 [ GreedySolverTagger ] 526  info:  Resolved to 1 tracks from  1
 [ GreedySolverRecoil ] 526  info:  Resolved to 1 tracks from  1
-15:43:37    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
+18:06:13    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
 [ TrackerVetoProcessor ] 526  info: Tagger requirements passed for 1 tracks
 [ TrackerVetoProcessor ] 526  info: Recoil requirements passed for 1 tracks
 [ TrackerVetoProcessor ] 526  info: Tracker veto passed, skim will keep the event
@@ -10358,7 +10358,7 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ Recoil_TrackFinder ] 541  info: Number of CKF tracks 1
 [ GreedySolverTagger ] 541  info:  Resolved to 1 tracks from  1
 [ GreedySolverRecoil ] 541  info:  Resolved to 1 tracks from  1
-15:43:37    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
+18:06:13    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
 [ TrackerVetoProcessor ] 541  info: Tagger requirements passed for 1 tracks
 [ TrackerVetoProcessor ] 541  info: Recoil requirements passed for 1 tracks
 [ TrackerVetoProcessor ] 541  info: Tracker veto passed, skim will keep the event
@@ -11044,7 +11044,7 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ Recoil_TrackFinder ] 577  info: Number of CKF tracks 1
 [ GreedySolverTagger ] 577  info:  Resolved to 1 tracks from  1
 [ GreedySolverRecoil ] 577  info:  Resolved to 1 tracks from  1
-15:43:37    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
+18:06:14    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
 [ TrackerVetoProcessor ] 577  info: Tagger requirements passed for 1 tracks
 [ TrackerVetoProcessor ] 577  info: Recoil requirements passed for 1 tracks
 [ TrackerVetoProcessor ] 577  info: Tracker veto passed, skim will keep the event
@@ -11464,7 +11464,7 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ Recoil_TrackFinder ] 599  info: Number of CKF tracks 2
 [ GreedySolverTagger ] 599  info:  Resolved to 1 tracks from  1
 [ GreedySolverRecoil ] 599  info:  Resolved to 2 tracks from  2
-15:43:38    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
+18:06:15    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
 [ TrackerVetoProcessor ] 599  info: Tagger requirements passed for 1 tracks
 [ TrackerVetoProcessor ] 599  info: Recoil requirements passed for 1 tracks
 [ TrackerVetoProcessor ] 599  info: Tracker veto passed, skim will keep the event
@@ -13632,7 +13632,7 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ Recoil_TrackFinder ] 713  info: Number of CKF tracks 1
 [ GreedySolverTagger ] 713  info:  Resolved to 1 tracks from  1
 [ GreedySolverRecoil ] 713  info:  Resolved to 1 tracks from  1
-15:43:44    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
+18:06:22    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
 [ TrackerVetoProcessor ] 713  info: Tagger requirements passed for 1 tracks
 [ TrackerVetoProcessor ] 713  info: Recoil requirements passed for 1 tracks
 [ TrackerVetoProcessor ] 713  info: Tracker veto passed, skim will keep the event
@@ -15274,7 +15274,7 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ Recoil_TrackFinder ] 799  info: Number of CKF tracks 6
 [ GreedySolverTagger ] 799  info:  Resolved to 1 tracks from  1
 [ GreedySolverRecoil ] 799  info:  Resolved to 1 tracks from  6
-15:43:54    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
+18:06:32    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
 [ TrackerVetoProcessor ] 799  info: Tagger requirements passed for 1 tracks
 [ TrackerVetoProcessor ] 799  info: Recoil requirements passed for 6 tracks
 [ TrackerVetoProcessor ] 799  info: Tracker veto failed
@@ -17068,7 +17068,7 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ Recoil_TrackFinder ] 893  info: Number of CKF tracks 4
 [ GreedySolverTagger ] 893  info:  Resolved to 1 tracks from  1
 [ GreedySolverRecoil ] 893  info:  Resolved to 2 tracks from  4
-15:44:00    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
+18:06:38    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
 [ TrackerVetoProcessor ] 893  info: Tagger requirements passed for 1 tracks
 [ TrackerVetoProcessor ] 893  info: Recoil requirements passed for 2 tracks
 [ TrackerVetoProcessor ] 893  info: Tracker veto failed
@@ -18196,8 +18196,8 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ Recoil_TrackFinder ] 952  info: Number of CKF tracks 2
 [ GreedySolverTagger ] 952  info:  Resolved to 1 tracks from  1
 [ GreedySolverRecoil ] 952  info:  Resolved to 2 tracks from  2
-15:44:04    GSF            WARNING   Performed steps with errors: MagneticFieldError:1 | MagneticFieldError:1 | MagneticFieldError:1 | MagneticFieldError:1
-15:44:04    GSF_PROP       ERROR     Step failed with MultiStepperError:4: Stepping error occurred in all components
+18:06:40    GSF            WARNING   Performed steps with errors: MagneticFieldError:1 | MagneticFieldError:1 | MagneticFieldError:1 | MagneticFieldError:1
+18:06:40    GSF_PROP       ERROR     Step failed with MultiStepperError:4: Stepping error occurred in all components
 [ Recoil_GSF ] 952  warn: GSF re-fit failed
 [ TrackerVetoProcessor ] 952  info: Tagger requirements passed for 1 tracks
 [ TrackerVetoProcessor ] 952  info: Recoil requirements passed for 1 tracks
@@ -20197,7 +20197,7 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ Recoil_TrackFinder ] 1057  info: Number of CKF tracks 2
 [ GreedySolverTagger ] 1057  info:  Resolved to 1 tracks from  1
 [ GreedySolverRecoil ] 1057  info:  Resolved to 2 tracks from  2
-15:44:23    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
+18:07:02    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
 [ TrackerVetoProcessor ] 1057  info: Tagger requirements passed for 1 tracks
 [ TrackerVetoProcessor ] 1057  info: Recoil requirements passed for 2 tracks
 [ TrackerVetoProcessor ] 1057  info: Tracker veto failed
@@ -20826,7 +20826,7 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ Recoil_TrackFinder ] 1090  info: Number of CKF tracks 2
 [ GreedySolverTagger ] 1090  info:  Resolved to 1 tracks from  1
 [ GreedySolverRecoil ] 1090  info:  Resolved to 2 tracks from  2
-15:44:24    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
+18:07:03    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
 [ TrackerVetoProcessor ] 1090  info: Tagger requirements passed for 1 tracks
 [ TrackerVetoProcessor ] 1090  info: Recoil requirements passed for 2 tracks
 [ TrackerVetoProcessor ] 1090  info: Tracker veto failed
@@ -21456,7 +21456,7 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ Recoil_TrackFinder ] 1123  info: Number of CKF tracks 8
 [ GreedySolverTagger ] 1123  info:  Resolved to 1 tracks from  1
 [ GreedySolverRecoil ] 1123  info:  Resolved to 3 tracks from  8
-15:44:25    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
+18:07:04    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
 [ TrackerVetoProcessor ] 1123  info: Tagger requirements passed for 1 tracks
 [ TrackerVetoProcessor ] 1123  info: Recoil requirements passed for 5 tracks
 [ TrackerVetoProcessor ] 1123  info: Tracker veto failed
@@ -22238,8 +22238,8 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ Recoil_TrackFinder ] 1164  info: Number of CKF tracks 24
 [ GreedySolverTagger ] 1164  info:  Resolved to 1 tracks from  1
 [ GreedySolverRecoil ] 1164  info:  Resolved to 3 tracks from  24
-15:44:26    GSF            WARNING   Performed steps with errors: MagneticFieldError:1 | MagneticFieldError:1 | MagneticFieldError:1 | MagneticFieldError:1
-15:44:26    GSF_PROP       ERROR     Step failed with MultiStepperError:4: Stepping error occurred in all components
+18:07:04    GSF            WARNING   Performed steps with errors: MagneticFieldError:1 | MagneticFieldError:1 | MagneticFieldError:1 | MagneticFieldError:1
+18:07:04    GSF_PROP       ERROR     Step failed with MultiStepperError:4: Stepping error occurred in all components
 [ Recoil_GSF ] 1164  warn: GSF re-fit failed
 [ TrackerVetoProcessor ] 1164  info: Tagger requirements passed for 1 tracks
 [ TrackerVetoProcessor ] 1164  info: Recoil requirements passed for 12 tracks
@@ -26437,7 +26437,7 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ Recoil_TrackFinder ] 1384  info: Number of CKF tracks 15
 [ GreedySolverTagger ] 1384  info:  Resolved to 1 tracks from  1
 [ GreedySolverRecoil ] 1384  info:  Resolved to 3 tracks from  15
-15:44:42    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
+18:07:22    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
 [ TrackerVetoProcessor ] 1384  info: Tagger requirements passed for 1 tracks
 [ TrackerVetoProcessor ] 1384  info: Recoil requirements passed for 12 tracks
 [ TrackerVetoProcessor ] 1384  info: Tracker veto failed
@@ -27559,8 +27559,8 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ Recoil_TrackFinder ] 1443  info: Number of CKF tracks 2
 [ GreedySolverTagger ] 1443  info:  Resolved to 1 tracks from  1
 [ GreedySolverRecoil ] 1443  info:  Resolved to 2 tracks from  2
-15:44:47    GSF            WARNING   Performed steps with errors: MagneticFieldError:1 | MagneticFieldError:1 | MagneticFieldError:1 | MagneticFieldError:1
-15:44:47    GSF_PROP       ERROR     Step failed with MultiStepperError:4: Stepping error occurred in all components
+18:07:28    GSF            WARNING   Performed steps with errors: MagneticFieldError:1 | MagneticFieldError:1 | MagneticFieldError:1 | MagneticFieldError:1
+18:07:28    GSF_PROP       ERROR     Step failed with MultiStepperError:4: Stepping error occurred in all components
 [ Recoil_GSF ] 1443  warn: GSF re-fit failed
 [ TrackerVetoProcessor ] 1443  info: Tagger requirements passed for 1 tracks
 [ TrackerVetoProcessor ] 1443  info: Recoil requirements passed for 1 tracks
@@ -28607,8 +28607,8 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ Recoil_TrackFinder ] 1498  info: Number of CKF tracks 4
 [ GreedySolverTagger ] 1498  info:  Resolved to 1 tracks from  1
 [ GreedySolverRecoil ] 1498  info:  Resolved to 3 tracks from  4
-15:44:50    GSF            WARNING   Performed steps with errors: MagneticFieldError:1 | MagneticFieldError:1 | MagneticFieldError:1 | MagneticFieldError:1
-15:44:50    GSF_PROP       ERROR     Step failed with MultiStepperError:4: Stepping error occurred in all components
+18:07:31    GSF            WARNING   Performed steps with errors: MagneticFieldError:1 | MagneticFieldError:1 | MagneticFieldError:1 | MagneticFieldError:1
+18:07:31    GSF_PROP       ERROR     Step failed with MultiStepperError:4: Stepping error occurred in all components
 [ Recoil_GSF ] 1498  warn: GSF re-fit failed
 [ TrackerVetoProcessor ] 1498  info: Tagger requirements passed for 1 tracks
 [ TrackerVetoProcessor ] 1498  info: Recoil requirements passed for 1 tracks
@@ -29066,8 +29066,8 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ Recoil_TrackFinder ] 1522  info: Number of CKF tracks 3
 [ GreedySolverTagger ] 1522  info:  Resolved to 1 tracks from  1
 [ GreedySolverRecoil ] 1522  info:  Resolved to 2 tracks from  3
-15:44:51    GSF            WARNING   Performed steps with errors: MagneticFieldError:1 | MagneticFieldError:1 | MagneticFieldError:1 | MagneticFieldError:1
-15:44:51    GSF_PROP       ERROR     Step failed with MultiStepperError:4: Stepping error occurred in all components
+18:07:32    GSF            WARNING   Performed steps with errors: MagneticFieldError:1 | MagneticFieldError:1 | MagneticFieldError:1 | MagneticFieldError:1
+18:07:32    GSF_PROP       ERROR     Step failed with MultiStepperError:4: Stepping error occurred in all components
 [ Recoil_GSF ] 1522  warn: GSF re-fit failed
 [ TrackerVetoProcessor ] 1522  info: Tagger requirements passed for 1 tracks
 [ TrackerVetoProcessor ] 1522  info: Recoil requirements passed for 1 tracks
@@ -29354,8 +29354,8 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ Recoil_TrackFinder ] 1537  info: Number of CKF tracks 1
 [ GreedySolverTagger ] 1537  info:  Resolved to 1 tracks from  1
 [ GreedySolverRecoil ] 1537  info:  Resolved to 1 tracks from  1
-15:44:51    GSF            WARNING   Performed steps with errors: MagneticFieldError:1 | MagneticFieldError:1 | MagneticFieldError:1 | MagneticFieldError:1
-15:44:51    GSF_PROP       ERROR     Step failed with MultiStepperError:4: Stepping error occurred in all components
+18:07:32    GSF            WARNING   Performed steps with errors: MagneticFieldError:1 | MagneticFieldError:1 | MagneticFieldError:1 | MagneticFieldError:1
+18:07:32    GSF_PROP       ERROR     Step failed with MultiStepperError:4: Stepping error occurred in all components
 [ Recoil_GSF ] 1537  warn: GSF re-fit failed
 [ TrackerVetoProcessor ] 1537  info: Tagger requirements passed for 1 tracks
 [ TrackerVetoProcessor ] 1537  info: Recoil requirements passed for 1 tracks
@@ -31493,7 +31493,7 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ Recoil_TrackFinder ] 1649  info: Number of CKF tracks 1
 [ GreedySolverTagger ] 1649  info:  Resolved to 1 tracks from  1
 [ GreedySolverRecoil ] 1649  info:  Resolved to 1 tracks from  1
-15:45:09    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
+18:07:50    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
 [ TrackerVetoProcessor ] 1649  info: Tagger requirements passed for 1 tracks
 [ TrackerVetoProcessor ] 1649  info: Recoil requirements passed for 1 tracks
 [ TrackerVetoProcessor ] 1649  info: Tracker veto passed, skim will keep the event
@@ -33619,7 +33619,7 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ Recoil_TrackFinder ] 1760  info: Number of CKF tracks 1
 [ GreedySolverTagger ] 1760  info:  Resolved to 1 tracks from  1
 [ GreedySolverRecoil ] 1760  info:  Resolved to 1 tracks from  1
-15:45:16    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
+18:07:58    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
 [ TrackerVetoProcessor ] 1760  info: Tagger requirements passed for 1 tracks
 [ TrackerVetoProcessor ] 1760  info: Recoil requirements passed for 1 tracks
 [ TrackerVetoProcessor ] 1760  info: Tracker veto passed, skim will keep the event
@@ -34703,8 +34703,8 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ Recoil_TrackFinder ] 1817  info: Number of CKF tracks 1
 [ GreedySolverTagger ] 1817  info:  Resolved to 1 tracks from  1
 [ GreedySolverRecoil ] 1817  info:  Resolved to 1 tracks from  1
-15:45:25    GSF            WARNING   Performed steps with errors: MagneticFieldError:1 | MagneticFieldError:1 | MagneticFieldError:1 | MagneticFieldError:1
-15:45:25    GSF_PROP       ERROR     Step failed with MultiStepperError:4: Stepping error occurred in all components
+18:08:05    GSF            WARNING   Performed steps with errors: MagneticFieldError:1 | MagneticFieldError:1 | MagneticFieldError:1 | MagneticFieldError:1
+18:08:05    GSF_PROP       ERROR     Step failed with MultiStepperError:4: Stepping error occurred in all components
 [ Recoil_GSF ] 1817  warn: GSF re-fit failed
 [ TrackerVetoProcessor ] 1817  info: Tagger requirements passed for 1 tracks
 [ TrackerVetoProcessor ] 1817  info: Recoil requirements passed for 1 tracks
@@ -36915,7 +36915,7 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ Recoil_TrackFinder ] 1933  info: Number of CKF tracks 16
 [ GreedySolverTagger ] 1933  info:  Resolved to 1 tracks from  1
 [ GreedySolverRecoil ] 1933  info:  Resolved to 3 tracks from  16
-15:45:32    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
+18:08:14    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
 [ TrackerVetoProcessor ] 1933  info: Tagger requirements passed for 1 tracks
 [ TrackerVetoProcessor ] 1933  info: Recoil requirements passed for 10 tracks
 [ TrackerVetoProcessor ] 1933  info: Tracker veto failed
@@ -45809,9 +45809,9 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ Recoil_TrackFinder ] 2401  info: Number of CKF tracks 1
 [ GreedySolverTagger ] 2401  info:  Resolved to 1 tracks from  1
 [ GreedySolverRecoil ] 2401  info:  Resolved to 1 tracks from  1
-15:46:12    GSF            WARNING   Performed steps with errors: MagneticFieldError:1 | MagneticFieldError:1 | -6.42707 | MagneticFieldError:1
-15:46:12    GSF            WARNING   Performed steps with errors: MagneticFieldError:1
-15:46:12    GSF_PROP       ERROR     Step failed with MultiStepperError:4: Stepping error occurred in all components
+18:08:56    GSF            WARNING   Performed steps with errors: MagneticFieldError:1 | MagneticFieldError:1 | -6.42707 | MagneticFieldError:1
+18:08:56    GSF            WARNING   Performed steps with errors: MagneticFieldError:1
+18:08:56    GSF_PROP       ERROR     Step failed with MultiStepperError:4: Stepping error occurred in all components
 [ Recoil_GSF ] 2401  warn: GSF re-fit failed
 [ TrackerVetoProcessor ] 2401  info: Tagger requirements passed for 1 tracks
 [ TrackerVetoProcessor ] 2401  info: Recoil requirements passed for 1 tracks
@@ -46815,7 +46815,7 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ Recoil_TrackFinder ] 2453  info: Number of CKF tracks 1
 [ GreedySolverTagger ] 2453  info:  Resolved to 1 tracks from  1
 [ GreedySolverRecoil ] 2453  info:  Resolved to 1 tracks from  1
-15:46:17    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
+18:08:58    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
 [ TrackerVetoProcessor ] 2453  info: Tagger requirements passed for 1 tracks
 [ TrackerVetoProcessor ] 2453  info: Recoil requirements passed for 1 tracks
 [ TrackerVetoProcessor ] 2453  info: Tracker veto passed, skim will keep the event
@@ -47311,7 +47311,7 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ Recoil_TrackFinder ] 2479  info: Number of CKF tracks 2
 [ GreedySolverTagger ] 2479  info:  Resolved to 1 tracks from  1
 [ GreedySolverRecoil ] 2479  info:  Resolved to 2 tracks from  2
-15:46:18    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
+18:09:03    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
 [ TrackerVetoProcessor ] 2479  info: Tagger requirements passed for 1 tracks
 [ TrackerVetoProcessor ] 2479  info: Recoil requirements passed for 1 tracks
 [ TrackerVetoProcessor ] 2479  info: Tracker veto passed, skim will keep the event
@@ -47464,8 +47464,8 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ Recoil_TrackFinder ] 2487  info: Number of CKF tracks 1
 [ GreedySolverTagger ] 2487  info:  Resolved to 1 tracks from  1
 [ GreedySolverRecoil ] 2487  info:  Resolved to 1 tracks from  1
-15:46:18    GSF            WARNING   Performed steps with errors: MagneticFieldError:1 | MagneticFieldError:1 | MagneticFieldError:1 | MagneticFieldError:1
-15:46:18    GSF_PROP       ERROR     Step failed with MultiStepperError:4: Stepping error occurred in all components
+18:09:03    GSF            WARNING   Performed steps with errors: MagneticFieldError:1 | MagneticFieldError:1 | MagneticFieldError:1 | MagneticFieldError:1
+18:09:03    GSF_PROP       ERROR     Step failed with MultiStepperError:4: Stepping error occurred in all components
 [ Recoil_GSF ] 2487  warn: GSF re-fit failed
 [ TrackerVetoProcessor ] 2487  info: Tagger requirements passed for 1 tracks
 [ TrackerVetoProcessor ] 2487  info: Recoil requirements passed for 0 tracks
@@ -47696,7 +47696,7 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ Recoil_TrackFinder ] 2499  info: Number of CKF tracks 1
 [ GreedySolverTagger ] 2499  info:  Resolved to 1 tracks from  1
 [ GreedySolverRecoil ] 2499  info:  Resolved to 1 tracks from  1
-15:46:20    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
+18:09:03    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
 [ TrackerVetoProcessor ] 2499  info: Tagger requirements passed for 1 tracks
 [ TrackerVetoProcessor ] 2499  info: Recoil requirements passed for 1 tracks
 [ TrackerVetoProcessor ] 2499  info: Tracker veto passed, skim will keep the event
@@ -48484,7 +48484,7 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ Recoil_TrackFinder ] 2540  info: Number of CKF tracks 1
 [ GreedySolverTagger ] 2540  info:  Resolved to 1 tracks from  1
 [ GreedySolverRecoil ] 2540  info:  Resolved to 1 tracks from  1
-15:46:21    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
+18:09:06    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
 [ TrackerVetoProcessor ] 2540  info: Tagger requirements passed for 1 tracks
 [ TrackerVetoProcessor ] 2540  info: Recoil requirements passed for 1 tracks
 [ TrackerVetoProcessor ] 2540  info: Tracker veto passed, skim will keep the event
@@ -48752,7 +48752,7 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ Recoil_TrackFinder ] 2554  info: Number of CKF tracks 2
 [ GreedySolverTagger ] 2554  info:  Resolved to 1 tracks from  1
 [ GreedySolverRecoil ] 2554  info:  Resolved to 2 tracks from  2
-15:46:21    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
+18:09:07    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
 [ TrackerVetoProcessor ] 2554  info: Tagger requirements passed for 1 tracks
 [ TrackerVetoProcessor ] 2554  info: Recoil requirements passed for 1 tracks
 [ TrackerVetoProcessor ] 2554  info: Tracker veto passed, skim will keep the event
@@ -48812,7 +48812,7 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ Recoil_TrackFinder ] 2557  info: Number of CKF tracks 4
 [ GreedySolverTagger ] 2557  info:  Resolved to 1 tracks from  1
 [ GreedySolverRecoil ] 2557  info:  Resolved to 1 tracks from  4
-15:46:21    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
+18:09:07    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
 [ TrackerVetoProcessor ] 2557  info: Tagger requirements passed for 1 tracks
 [ TrackerVetoProcessor ] 2557  info: Recoil requirements passed for 2 tracks
 [ TrackerVetoProcessor ] 2557  info: Tracker veto failed
@@ -49385,7 +49385,7 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ Recoil_TrackFinder ] 2587  info: Number of CKF tracks 6
 [ GreedySolverTagger ] 2587  info:  Resolved to 1 tracks from  1
 [ GreedySolverRecoil ] 2587  info:  Resolved to 3 tracks from  6
-15:46:30    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
+18:09:08    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
 [ TrackerVetoProcessor ] 2587  info: Tagger requirements passed for 1 tracks
 [ TrackerVetoProcessor ] 2587  info: Recoil requirements passed for 4 tracks
 [ TrackerVetoProcessor ] 2587  info: Tracker veto failed
@@ -49636,8 +49636,8 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ Recoil_TrackFinder ] 2600  info: Number of CKF tracks 3
 [ GreedySolverTagger ] 2600  info:  Resolved to 1 tracks from  1
 [ GreedySolverRecoil ] 2600  info:  Resolved to 2 tracks from  3
-15:46:30    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
-15:46:30    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
+18:09:10    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
+18:09:10    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
 [ TrackerVetoProcessor ] 2600  info: Tagger requirements passed for 1 tracks
 [ TrackerVetoProcessor ] 2600  info: Recoil requirements passed for 2 tracks
 [ TrackerVetoProcessor ] 2600  info: Tracker veto failed
@@ -49828,8 +49828,8 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ Recoil_TrackFinder ] 2610  info: Number of CKF tracks 1
 [ GreedySolverTagger ] 2610  info:  Resolved to 1 tracks from  1
 [ GreedySolverRecoil ] 2610  info:  Resolved to 1 tracks from  1
-15:46:38    GSF            WARNING   Performed steps with errors: MagneticFieldError:1 | MagneticFieldError:1 | MagneticFieldError:1 | MagneticFieldError:1
-15:46:38    GSF_PROP       ERROR     Step failed with MultiStepperError:4: Stepping error occurred in all components
+18:09:24    GSF            WARNING   Performed steps with errors: MagneticFieldError:1 | MagneticFieldError:1 | MagneticFieldError:1 | MagneticFieldError:1
+18:09:24    GSF_PROP       ERROR     Step failed with MultiStepperError:4: Stepping error occurred in all components
 [ Recoil_GSF ] 2610  warn: GSF re-fit failed
 [ TrackerVetoProcessor ] 2610  info: Tagger requirements passed for 1 tracks
 [ TrackerVetoProcessor ] 2610  info: Recoil requirements passed for 1 tracks
@@ -51280,7 +51280,7 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ Recoil_TrackFinder ] 2686  info: Number of CKF tracks 25
 [ GreedySolverTagger ] 2686  info:  Resolved to 1 tracks from  1
 [ GreedySolverRecoil ] 2686  info:  Resolved to 2 tracks from  25
-15:46:40    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
+18:09:25    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
 [ TrackerVetoProcessor ] 2686  info: Tagger requirements passed for 1 tracks
 [ TrackerVetoProcessor ] 2686  info: Recoil requirements passed for 17 tracks
 [ TrackerVetoProcessor ] 2686  info: Tracker veto failed
@@ -53869,7 +53869,7 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ Recoil_TrackFinder ] 2822  info: Number of CKF tracks 1
 [ GreedySolverTagger ] 2822  info:  Resolved to 1 tracks from  1
 [ GreedySolverRecoil ] 2822  info:  Resolved to 1 tracks from  1
-15:46:46    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
+18:09:33    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
 [ TrackerVetoProcessor ] 2822  info: Tagger requirements passed for 1 tracks
 [ TrackerVetoProcessor ] 2822  info: Recoil requirements passed for 1 tracks
 [ TrackerVetoProcessor ] 2822  info: Tracker veto passed, skim will keep the event
@@ -55852,7 +55852,7 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ Recoil_TrackFinder ] 2926  info: Number of CKF tracks 11
 [ GreedySolverTagger ] 2926  info:  Resolved to 1 tracks from  1
 [ GreedySolverRecoil ] 2926  info:  Resolved to 2 tracks from  11
-15:46:56    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
+18:09:43    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
 [ TrackerVetoProcessor ] 2926  info: Tagger requirements passed for 1 tracks
 [ TrackerVetoProcessor ] 2926  info: Recoil requirements passed for 7 tracks
 [ TrackerVetoProcessor ] 2926  info: Tracker veto failed
@@ -56063,7 +56063,7 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ Recoil_TrackFinder ] 2937  info: Number of CKF tracks 1
 [ GreedySolverTagger ] 2937  info:  Resolved to 1 tracks from  1
 [ GreedySolverRecoil ] 2937  info:  Resolved to 1 tracks from  1
-15:46:56    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
+18:09:44    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
 [ TrackerVetoProcessor ] 2937  info: Tagger requirements passed for 1 tracks
 [ TrackerVetoProcessor ] 2937  info: Recoil requirements passed for 1 tracks
 [ TrackerVetoProcessor ] 2937  info: Tracker veto passed, skim will keep the event
@@ -62891,7 +62891,7 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ Recoil_TrackFinder ] 3296  info: Number of CKF tracks 2
 [ GreedySolverTagger ] 3296  info:  Resolved to 1 tracks from  2
 [ GreedySolverRecoil ] 3296  info:  Resolved to 2 tracks from  2
-15:47:30    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
+18:10:18    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
 [ TrackerVetoProcessor ] 3296  info: Tagger requirements passed for 2 tracks
 [ TrackerVetoProcessor ] 3296  info: Recoil requirements passed for 1 tracks
 [ TrackerVetoProcessor ] 3296  info: Tracker veto passed, skim will keep the event
@@ -65235,7 +65235,7 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ Recoil_TrackFinder ] 3419  info: Number of CKF tracks 1
 [ GreedySolverTagger ] 3419  info:  Resolved to 1 tracks from  1
 [ GreedySolverRecoil ] 3419  info:  Resolved to 1 tracks from  1
-15:47:40    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
+18:10:29    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
 [ TrackerVetoProcessor ] 3419  info: Tagger requirements passed for 1 tracks
 [ TrackerVetoProcessor ] 3419  info: Recoil requirements passed for 1 tracks
 [ TrackerVetoProcessor ] 3419  info: Tracker veto passed, skim will keep the event
@@ -67632,7 +67632,7 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ Recoil_TrackFinder ] 3545  info: Number of CKF tracks 1
 [ GreedySolverTagger ] 3545  info:  Resolved to 1 tracks from  1
 [ GreedySolverRecoil ] 3545  info:  Resolved to 1 tracks from  1
-15:47:49    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
+18:10:37    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
 [ TrackerVetoProcessor ] 3545  info: Tagger requirements passed for 1 tracks
 [ TrackerVetoProcessor ] 3545  info: Recoil requirements passed for 1 tracks
 [ TrackerVetoProcessor ] 3545  info: Tracker veto passed, skim will keep the event
@@ -68204,7 +68204,7 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ Recoil_TrackFinder ] 3575  info: Number of CKF tracks 1
 [ GreedySolverTagger ] 3575  info:  Resolved to 1 tracks from  1
 [ GreedySolverRecoil ] 3575  info:  Resolved to 1 tracks from  1
-15:47:49    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
+18:10:40    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
 [ TrackerVetoProcessor ] 3575  info: Tagger requirements passed for 1 tracks
 [ TrackerVetoProcessor ] 3575  info: Recoil requirements passed for 1 tracks
 [ TrackerVetoProcessor ] 3575  info: Tracker veto passed, skim will keep the event
@@ -69479,8 +69479,8 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ Recoil_TrackFinder ] 3642  info: Number of CKF tracks 1
 [ GreedySolverTagger ] 3642  info:  Resolved to 1 tracks from  1
 [ GreedySolverRecoil ] 3642  info:  Resolved to 1 tracks from  1
-15:48:06    GSF            WARNING   Performed steps with errors: MagneticFieldError:1 | MagneticFieldError:1 | MagneticFieldError:1 | MagneticFieldError:1
-15:48:06    GSF_PROP       ERROR     Step failed with MultiStepperError:4: Stepping error occurred in all components
+18:10:57    GSF            WARNING   Performed steps with errors: MagneticFieldError:1 | MagneticFieldError:1 | MagneticFieldError:1 | MagneticFieldError:1
+18:10:57    GSF_PROP       ERROR     Step failed with MultiStepperError:4: Stepping error occurred in all components
 [ Recoil_GSF ] 3642  warn: GSF re-fit failed
 [ TrackerVetoProcessor ] 3642  info: Tagger requirements passed for 1 tracks
 [ TrackerVetoProcessor ] 3642  info: Recoil requirements passed for 1 tracks
@@ -72910,7 +72910,7 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ Recoil_TrackFinder ] 3821  info: Number of CKF tracks 47
 [ GreedySolverTagger ] 3821  info:  Resolved to 1 tracks from  1
 [ GreedySolverRecoil ] 3821  info:  Resolved to 3 tracks from  47
-15:48:14    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
+18:11:05    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
 [ TrackerVetoProcessor ] 3821  info: Tagger requirements passed for 1 tracks
 [ TrackerVetoProcessor ] 3821  info: Recoil requirements passed for 35 tracks
 [ TrackerVetoProcessor ] 3821  info: Tracker veto failed
@@ -73312,7 +73312,7 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ Recoil_TrackFinder ] 3842  info: Number of CKF tracks 6
 [ GreedySolverTagger ] 3842  info:  Resolved to 1 tracks from  1
 [ GreedySolverRecoil ] 3842  info:  Resolved to 3 tracks from  6
-15:48:14    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
+18:11:06    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
 [ TrackerVetoProcessor ] 3842  info: Tagger requirements passed for 1 tracks
 [ TrackerVetoProcessor ] 3842  info: Recoil requirements passed for 5 tracks
 [ TrackerVetoProcessor ] 3842  info: Tracker veto failed
@@ -76758,8 +76758,8 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ Recoil_TrackFinder ] 4023  info: Number of CKF tracks 7
 [ GreedySolverTagger ] 4023  info:  Resolved to 1 tracks from  1
 [ GreedySolverRecoil ] 4023  info:  Resolved to 2 tracks from  7
-15:48:30    GSF            WARNING   Performed steps with errors: MagneticFieldError:1 | MagneticFieldError:1 | MagneticFieldError:1 | MagneticFieldError:1
-15:48:30    GSF_PROP       ERROR     Step failed with MultiStepperError:4: Stepping error occurred in all components
+18:11:23    GSF            WARNING   Performed steps with errors: MagneticFieldError:1 | MagneticFieldError:1 | MagneticFieldError:1 | MagneticFieldError:1
+18:11:23    GSF_PROP       ERROR     Step failed with MultiStepperError:4: Stepping error occurred in all components
 [ Recoil_GSF ] 4023  warn: GSF re-fit failed
 [ TrackerVetoProcessor ] 4023  info: Tagger requirements passed for 1 tracks
 [ TrackerVetoProcessor ] 4023  info: Recoil requirements passed for 6 tracks
@@ -77086,8 +77086,8 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ Recoil_TrackFinder ] 4040  info: Number of CKF tracks 24
 [ GreedySolverTagger ] 4040  info:  Resolved to 1 tracks from  1
 [ GreedySolverRecoil ] 4040  info:  Resolved to 2 tracks from  24
-15:48:30    GSF            WARNING   Performed steps with errors: MagneticFieldError:1 | MagneticFieldError:1 | MagneticFieldError:1 | MagneticFieldError:1
-15:48:30    GSF_PROP       ERROR     Step failed with MultiStepperError:4: Stepping error occurred in all components
+18:11:23    GSF            WARNING   Performed steps with errors: MagneticFieldError:1 | MagneticFieldError:1 | MagneticFieldError:1 | MagneticFieldError:1
+18:11:23    GSF_PROP       ERROR     Step failed with MultiStepperError:4: Stepping error occurred in all components
 [ Recoil_GSF ] 4040  warn: GSF re-fit failed
 [ TrackerVetoProcessor ] 4040  info: Tagger requirements passed for 1 tracks
 [ TrackerVetoProcessor ] 4040  info: Recoil requirements passed for 16 tracks
@@ -78971,7 +78971,7 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ Recoil_TrackFinder ] 4138  info: Number of CKF tracks 1
 [ GreedySolverTagger ] 4138  info:  Resolved to 1 tracks from  1
 [ GreedySolverRecoil ] 4138  info:  Resolved to 1 tracks from  1
-15:48:40    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
+18:11:28    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
 [ TrackerVetoProcessor ] 4138  info: Tagger requirements passed for 1 tracks
 [ TrackerVetoProcessor ] 4138  info: Recoil requirements passed for 1 tracks
 [ TrackerVetoProcessor ] 4138  info: Tracker veto passed, skim will keep the event
@@ -79392,7 +79392,7 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ Recoil_TrackFinder ] 4160  info: Number of CKF tracks 4
 [ GreedySolverTagger ] 4160  info:  Resolved to 1 tracks from  1
 [ GreedySolverRecoil ] 4160  info:  Resolved to 2 tracks from  4
-15:48:43    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
+18:11:34    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
 [ TrackerVetoProcessor ] 4160  info: Tagger requirements passed for 1 tracks
 [ TrackerVetoProcessor ] 4160  info: Recoil requirements passed for 4 tracks
 [ TrackerVetoProcessor ] 4160  info: Tracker veto failed
@@ -80552,8 +80552,8 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ Recoil_TrackFinder ] 4221  info: Number of CKF tracks 1
 [ GreedySolverTagger ] 4221  info:  Resolved to 1 tracks from  1
 [ GreedySolverRecoil ] 4221  info:  Resolved to 1 tracks from  1
-15:48:53    GSF            WARNING   Performed steps with errors: MagneticFieldError:1 | MagneticFieldError:1 | MagneticFieldError:1 | MagneticFieldError:1
-15:48:53    GSF_PROP       ERROR     Step failed with MultiStepperError:4: Stepping error occurred in all components
+18:11:46    GSF            WARNING   Performed steps with errors: MagneticFieldError:1 | MagneticFieldError:1 | MagneticFieldError:1 | MagneticFieldError:1
+18:11:46    GSF_PROP       ERROR     Step failed with MultiStepperError:4: Stepping error occurred in all components
 [ Recoil_GSF ] 4221  warn: GSF re-fit failed
 [ TrackerVetoProcessor ] 4221  info: Tagger requirements passed for 1 tracks
 [ TrackerVetoProcessor ] 4221  info: Recoil requirements passed for 1 tracks
@@ -82420,7 +82420,7 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ Recoil_TrackFinder ] 4319  info: Number of CKF tracks 3
 [ GreedySolverTagger ] 4319  info:  Resolved to 1 tracks from  1
 [ GreedySolverRecoil ] 4319  info:  Resolved to 2 tracks from  3
-15:48:59    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
+18:11:52    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
 [ TrackerVetoProcessor ] 4319  info: Tagger requirements passed for 1 tracks
 [ TrackerVetoProcessor ] 4319  info: Recoil requirements passed for 2 tracks
 [ TrackerVetoProcessor ] 4319  info: Tracker veto failed
@@ -83506,7 +83506,7 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ Recoil_TrackFinder ] 4376  info: Number of CKF tracks 4
 [ GreedySolverTagger ] 4376  info:  Resolved to 1 tracks from  1
 [ GreedySolverRecoil ] 4376  info:  Resolved to 2 tracks from  4
-15:49:00    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
+18:11:54    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
 [ TrackerVetoProcessor ] 4376  info: Tagger requirements passed for 1 tracks
 [ TrackerVetoProcessor ] 4376  info: Recoil requirements passed for 3 tracks
 [ TrackerVetoProcessor ] 4376  info: Tracker veto failed
@@ -84174,7 +84174,7 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ Recoil_TrackFinder ] 4411  info: Number of CKF tracks 1
 [ GreedySolverTagger ] 4411  info:  Resolved to 1 tracks from  1
 [ GreedySolverRecoil ] 4411  info:  Resolved to 1 tracks from  1
-15:49:06    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
+18:12:00    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
 [ TrackerVetoProcessor ] 4411  info: Tagger requirements passed for 1 tracks
 [ TrackerVetoProcessor ] 4411  info: Recoil requirements passed for 1 tracks
 [ TrackerVetoProcessor ] 4411  info: Tracker veto passed, skim will keep the event
@@ -84960,7 +84960,7 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ Recoil_TrackFinder ] 4452  info: Number of CKF tracks 36
 [ GreedySolverTagger ] 4452  info:  Resolved to 1 tracks from  1
 [ GreedySolverRecoil ] 4452  info:  Resolved to 3 tracks from  36
-15:49:09    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
+18:12:04    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
 [ TrackerVetoProcessor ] 4452  info: Tagger requirements passed for 1 tracks
 [ TrackerVetoProcessor ] 4452  info: Recoil requirements passed for 23 tracks
 [ TrackerVetoProcessor ] 4452  info: Tracker veto failed
@@ -86407,7 +86407,7 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ Recoil_TrackFinder ] 4528  info: Number of CKF tracks 3
 [ GreedySolverTagger ] 4528  info:  Resolved to 1 tracks from  1
 [ GreedySolverRecoil ] 4528  info:  Resolved to 2 tracks from  3
-15:49:15    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
+18:12:05    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
 [ TrackerVetoProcessor ] 4528  info: Tagger requirements passed for 1 tracks
 [ TrackerVetoProcessor ] 4528  info: Recoil requirements passed for 2 tracks
 [ TrackerVetoProcessor ] 4528  info: Tracker veto failed
@@ -89794,7 +89794,7 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ Recoil_TrackFinder ] 4706  info: Number of CKF tracks 13
 [ GreedySolverTagger ] 4706  info:  Resolved to 1 tracks from  1
 [ GreedySolverRecoil ] 4706  info:  Resolved to 3 tracks from  13
-15:49:38    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
+18:12:32    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
 [ TrackerVetoProcessor ] 4706  info: Tagger requirements passed for 1 tracks
 [ TrackerVetoProcessor ] 4706  info: Recoil requirements passed for 8 tracks
 [ TrackerVetoProcessor ] 4706  info: Tracker veto failed
@@ -91829,7 +91829,7 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ Recoil_TrackFinder ] 4813  info: Number of CKF tracks 2
 [ GreedySolverTagger ] 4813  info:  Resolved to 1 tracks from  1
 [ GreedySolverRecoil ] 4813  info:  Resolved to 2 tracks from  2
-15:49:44    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
+18:12:39    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
 [ TrackerVetoProcessor ] 4813  info: Tagger requirements passed for 1 tracks
 [ TrackerVetoProcessor ] 4813  info: Recoil requirements passed for 2 tracks
 [ TrackerVetoProcessor ] 4813  info: Tracker veto failed
@@ -94046,7 +94046,7 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ Recoil_TrackFinder ] 4928  info: Number of CKF tracks 7
 [ GreedySolverTagger ] 4928  info:  Resolved to 1 tracks from  1
 [ GreedySolverRecoil ] 4928  info:  Resolved to 2 tracks from  7
-15:49:52    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
+18:12:41    PROP           ERROR     Step failed with MagneticFieldError:1: Interpolation out of bounds was requested
 [ TrackerVetoProcessor ] 4928  info: Tagger requirements passed for 1 tracks
 [ TrackerVetoProcessor ] 4928  info: Recoil requirements passed for 5 tracks
 [ TrackerVetoProcessor ] 4928  info: Tracker veto failed
@@ -94389,8 +94389,8 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ Recoil_TrackFinder ] 4946  info: Number of CKF tracks 1
 [ GreedySolverTagger ] 4946  info:  Resolved to 1 tracks from  1
 [ GreedySolverRecoil ] 4946  info:  Resolved to 1 tracks from  1
-15:49:54    GSF            WARNING   Performed steps with errors: MagneticFieldError:1 | MagneticFieldError:1 | MagneticFieldError:1 | MagneticFieldError:1
-15:49:54    GSF_PROP       ERROR     Step failed with MultiStepperError:4: Stepping error occurred in all components
+18:12:50    GSF            WARNING   Performed steps with errors: MagneticFieldError:1 | MagneticFieldError:1 | MagneticFieldError:1 | MagneticFieldError:1
+18:12:50    GSF_PROP       ERROR     Step failed with MultiStepperError:4: Stepping error occurred in all components
 [ Recoil_GSF ] 4946  warn: GSF re-fit failed
 [ TrackerVetoProcessor ] 4946  info: Tagger requirements passed for 1 tracks
 [ TrackerVetoProcessor ] 4946  info: Recoil requirements passed for 1 tracks
@@ -95460,30 +95460,30 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ Tagger_TrackFinder ] 5000  info: Breakdown::
 [ Tagger_TrackFinder ] 5000  info: setup       Avg Time/Event = 0.001 ms
 [ Tagger_TrackFinder ] 5000  info: hits        Avg Time/Event = 0.04 ms
-[ Tagger_TrackFinder ] 5000  info: seeds       Avg Time/Event = 0.021 ms
+[ Tagger_TrackFinder ] 5000  info: seeds       Avg Time/Event = 0.028 ms
 [ Tagger_TrackFinder ] 5000  info: cf_setup    Avg Time/Event = 0.004 ms
-[ Tagger_TrackFinder ] 5000  info: ckf_run     Avg Time/Event = 0.396 ms
+[ Tagger_TrackFinder ] 5000  info: ckf_run     Avg Time/Event = 0.449 ms
 [ Tagger_TrackFinder ] 5000  info: result_loop Avg Time/Event = 0.0 ms
 [ Recoil_TrackFinder ] 5000  info: found 6797 tracks  / 12629 nseeds
 [ Recoil_TrackFinder ] 5000  info: AVG Time/Event: 0.5 ms
 [ Recoil_TrackFinder ] 5000  info: Breakdown::
 [ Recoil_TrackFinder ] 5000  info: setup       Avg Time/Event = 0.001 ms
-[ Recoil_TrackFinder ] 5000  info: hits        Avg Time/Event = 0.07 ms
-[ Recoil_TrackFinder ] 5000  info: seeds       Avg Time/Event = 0.021 ms
+[ Recoil_TrackFinder ] 5000  info: hits        Avg Time/Event = 0.08 ms
+[ Recoil_TrackFinder ] 5000  info: seeds       Avg Time/Event = 0.023 ms
 [ Recoil_TrackFinder ] 5000  info: cf_setup    Avg Time/Event = 0.004 ms
-[ Recoil_TrackFinder ] 5000  info: ckf_run     Avg Time/Event = 0.405 ms
+[ Recoil_TrackFinder ] 5000  info: ckf_run     Avg Time/Event = 0.414 ms
 [ Recoil_TrackFinder ] 5000  info: result_loop Avg Time/Event = 0.0 ms
-[ ecalVetoBDT ] 5000  info: AVG Time/Event: 1.52 ms
+[ ecalVetoBDT ] 5000  info: AVG Time/Event: 1.63 ms
 [ ecalVetoBDT ] 5000  info: Breakdown::
-[ ecalVetoBDT ] 5000  info: setup                  Avg Time/Event = 0.014 ms
-[ ecalVetoBDT ] 5000  info: recoil_electron        Avg Time/Event = 0.105 ms
-[ ecalVetoBDT ] 5000  info: trajectories           Avg Time/Event = 0.006 ms
+[ ecalVetoBDT ] 5000  info: setup                  Avg Time/Event = 0.032 ms
+[ ecalVetoBDT ] 5000  info: recoil_electron        Avg Time/Event = 0.115 ms
+[ ecalVetoBDT ] 5000  info: trajectories           Avg Time/Event = 0.008 ms
 [ ecalVetoBDT ] 5000  info: roc_var                Avg Time/Event = 0.001 ms
-[ ecalVetoBDT ] 5000  info: fill_hitmaps           Avg Time/Event = 0.169 ms
-[ ecalVetoBDT ] 5000  info: containment_var        Avg Time/Event = 0.003 ms
-[ ecalVetoBDT ] 5000  info: mip_tracking_setup     Avg Time/Event = 0.123 ms
-[ ecalVetoBDT ] 5000  info: straight_tracks        Avg Time/Event = 0.969 ms
-[ ecalVetoBDT ] 5000  info: linreg_tracks          Avg Time/Event = 0.016 ms
-[ ecalVetoBDT ] 5000  info: set_variables           Avg Time/Event = 0.017 ms
-[ ecalVetoBDT ] 5000  info: bdt_variables           Avg Time/Event = 0.101 ms
+[ ecalVetoBDT ] 5000  info: fill_hitmaps           Avg Time/Event = 0.189 ms
+[ ecalVetoBDT ] 5000  info: containment_var        Avg Time/Event = 0.004 ms
+[ ecalVetoBDT ] 5000  info: mip_tracking_setup     Avg Time/Event = 0.139 ms
+[ ecalVetoBDT ] 5000  info: straight_tracks        Avg Time/Event = 0.944 ms
+[ ecalVetoBDT ] 5000  info: linreg_tracks          Avg Time/Event = 0.020 ms
+[ ecalVetoBDT ] 5000  info: set_variables           Avg Time/Event = 0.021 ms
+[ ecalVetoBDT ] 5000  info: bdt_variables           Avg Time/Event = 0.160 ms
 ---- LDMXSW: Event processing complete  --------

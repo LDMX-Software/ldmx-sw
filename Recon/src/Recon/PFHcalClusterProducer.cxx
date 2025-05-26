@@ -43,7 +43,7 @@ void PFHcalClusterProducer::produce(framework::Event& event) {
     std::vector<const ldmx::CalorimeterHit*> ptrs;
     for (const auto& h : hcalRecHits) ptrs.push_back(&h);
     std::vector<std::vector<const ldmx::CalorimeterHit*> > all_hit_ptrs =
-        cb.runDBSCAN(ptrs, false);
+        cb.runDBSCAN(ptrs);
 
     for (const auto& hit_ptrs : all_hit_ptrs) {
       ldmx::CaloCluster cl;

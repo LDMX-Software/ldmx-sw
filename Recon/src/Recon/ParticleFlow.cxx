@@ -10,6 +10,19 @@ void ParticleFlow::configure(framework::config::Parameters& ps) {
   inputHcalCollName_ = ps.getParameter<std::string>("inputHcalCollName");
   inputTrackCollName_ = ps.getParameter<std::string>("inputTrackCollName");
   outputCollName_ = ps.getParameter<std::string>("outputCollName");
+
+  input_ecal_passname_ = ps.getParameter<std::string>("input_ecal_passname");
+  input_hcal_passname_ = ps.getParameter<std::string>("input_hcal_passname");
+  input_tracks_passname_ =
+      ps.getParameter<std::string>("input_tracks_passname");
+
+  input_track_event_passname_ =
+      ps.getParameter<std::string>("input_track_event_passname");
+  input_ecal_event_passname_ =
+      ps.getParameter<std::string>("input_ecal_event_passname");
+  input_hcal_event_passname_ =
+      ps.getParameter<std::string>("input_hcal_event_passname");
+
   // Algorithm configuration
   singleParticle_ = ps.getParameter<bool>("singleParticle");
 
@@ -54,11 +67,12 @@ void ParticleFlow::fillCandEMCalo(ldmx::PFCandidate& cand,
                                   const ldmx::CaloCluster& em) {
   float corr = 1.;
   float e = em.getEnergy();
+  // update energy: use min or max factor if outside calibration range
   if (e < eCorr_->GetX()[0]) {
-    corr = eCorr_->GetX()[0];
+    corr = eCorr_->GetY()[0];
   } else if (e > eCorr_->GetX()[eCorr_->GetN() - 1]) {
-    corr = eCorr_->GetX()[eCorr_->GetN() - 1];
-  } else {
+    corr = eCorr_->GetY()[eCorr_->GetN() - 1];
+  } else {  // else look up calibration factor
     corr = eCorr_->Eval(e);
   }
   cand.setEcalEnergy(e * corr);
@@ -78,9 +92,9 @@ void ParticleFlow::fillCandHadCalo(ldmx::PFCandidate& cand,
   float corr = 1.;
   float e = had.getEnergy();
   if (e < hCorr_->GetX()[0]) {
-    corr = hCorr_->GetX()[0];
+    corr = hCorr_->GetY()[0];
   } else if (e > hCorr_->GetX()[hCorr_->GetN() - 1]) {
-    corr = hCorr_->GetX()[hCorr_->GetN() - 1];
+    corr = hCorr_->GetY()[hCorr_->GetN() - 1];
   } else {
     corr = hCorr_->Eval(e);
   }
@@ -98,16 +112,16 @@ void ParticleFlow::fillCandHadCalo(ldmx::PFCandidate& cand,
 
 // produce track, ecal, and hcal linking
 void ParticleFlow::produce(framework::Event& event) {
-  if (!event.exists(inputTrackCollName_)) return;
-  if (!event.exists(inputEcalCollName_)) return;
-  if (!event.exists(inputHcalCollName_)) return;
+  if (!event.exists(inputTrackCollName_, input_track_event_passname_)) return;
+  if (!event.exists(inputEcalCollName_, input_ecal_event_passname_)) return;
+  if (!event.exists(inputHcalCollName_, input_hcal_event_passname_)) return;
   // get the track and clustering info
-  const auto ecalClusters =
-      event.getCollection<ldmx::CaloCluster>(inputEcalCollName_);
-  const auto hcalClusters =
-      event.getCollection<ldmx::CaloCluster>(inputHcalCollName_);
-  const auto tracks =
-      event.getCollection<ldmx::SimTrackerHit>(inputTrackCollName_);
+  const auto ecalClusters = event.getCollection<ldmx::CaloCluster>(
+      inputEcalCollName_, input_ecal_passname_);
+  const auto hcalClusters = event.getCollection<ldmx::CaloCluster>(
+      inputHcalCollName_, input_hcal_passname_);
+  const auto tracks = event.getCollection<ldmx::SimTrackerHit>(
+      inputTrackCollName_, input_tracks_passname_);
 
   std::vector<ldmx::PFCandidate> pfCands;
   // multi-particle case

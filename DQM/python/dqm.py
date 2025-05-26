@@ -96,6 +96,16 @@ class HCalDQM(ldmxcfg.Analyzer) :
         self.sim_coll_name = 'HcalSimHits'
         self.sim_pass_name = ''
 
+        self.particle_passname = ''
+        self.ecal_sp_hits_passname = ''
+        self.hcal_veto_passname = ''
+        self.sim_particles_passname = ''
+        self.target_scoring_plane_passname = ''
+        self.sim_particles_passname = ''
+        self.sim_particles_map_passname = ''
+        self.hit_passname = ''
+        self.trig_scint_passname = ''
+
         pe_bins = [1500, 0, 1500]
         time_bins = [100, -100, 500]
         layer_bins = [100,0,100]
@@ -181,6 +191,7 @@ class HcalVetoResults(ldmxcfg.Analyzer) :
 
         self.hcal_veto_name = 'HcalVeto'
         self.hcal_veto_pass = ''
+        self.hcal_veto_passname = ''
 
         self.build1DHistogram('max_pe',
                 'Maximal PE hit PE', 500, -0.5, 499.5)
@@ -455,10 +466,16 @@ class SimObjects(ldmxcfg.Analyzer) :
         super().__init__(name,'dqm::SimObjects','DQM')
         self.sim_pass = sim_pass
 
+        self.sim_particles_passname = ''
+        self.sim_particles_map_passname = ''
+
+
 
 class DarkBremInteraction(ldmxcfg.Producer) :
     def __init__(self) :
         super().__init__('db_kinematics','dqm::DarkBremInteraction','DQM')
+
+        self.particle_passname = ''
 
         self.build1DHistogram('aprime_energy',
             'Dark Photon Energy [MeV]',101,0,8080)
@@ -547,6 +564,10 @@ class PhotoNuclearDQM(ldmxcfg.Analyzer) :
 
     def __init__(self,name='PN', count_light_ions=True) :
         super().__init__(name,'dqm::PhotoNuclearDQM','DQM')
+
+
+        self.sim_particles_passname = ''
+
 
         self.count_light_ions=count_light_ions
         self.build1DHistogram("event_type"         , "", 24, -1, 23)
@@ -692,6 +713,7 @@ class TrigScintSimDQM(ldmxcfg.Analyzer) :
 
         self.hit_collection = hit_coll
         self.pad = pad
+        self.hit_passname = ''
 
 class TrigScintDigiDQM(ldmxcfg.Analyzer) :
     """Configured TrigScintDigiDQM python object
@@ -712,7 +734,7 @@ class TrigScintDigiDQM(ldmxcfg.Analyzer) :
 
         self.hit_collection = hit_coll
         self.pad = pad
-
+        self.trig_scint_passname = ''
 
 class TrigScintClusterDQM(ldmxcfg.Analyzer) :
     """Configured TrigScintClusterDQM python object
@@ -787,6 +809,9 @@ class SampleValidation(ldmxcfg.Analyzer) :
     def __init__(self, name='SampleValidation') :
         super().__init__(name, 'dqm::SampleValidation', 'DQM')
 
+        self.sim_particles_passname = ''
+        self.target_scoring_plane_passname = ''
+
         # primary histograms
         self.build1DHistogram("pdgid_primaries", "ID of primary particles", 20, 0, 20)
         self.build1DHistogram("energy_primaries", "Energy of primary particles [MeV]", 90, 0, 9000) # range applicable for 4 GeV beam
@@ -821,6 +846,41 @@ class GenieTruthDQM(ldmxcfg.Analyzer) :
 
         self.hepmc3CollName = coll_name
         self.hepmc3PassName = pass_name
+
+class EcalClusterAnalyzer(ldmxcfg.Analyzer) :
+    """Analyze clustering"""
+
+    def __init__(self,name='EcalClusterAnalyzer') :
+        super().__init__(name, "dqm::EcalClusterAnalyzer", 'DQM')
+
+        self.nbr_of_electrons = 2
+
+        self.ecal_sim_hit_coll = "EcalSimHits"
+        self.ecal_sim_hit_pass = "" #use whatever pass is available
+
+        # Pass name for ecal digis and rec hits
+        self.rec_hit_coll_name = 'EcalRecHits'
+        self.rec_hit_pass_name = ''
+
+        self.cluster_coll_name = 'ecalClusters'
+        self.cluster_pass_name = ''
+
+        self.ecal_sp_hits_passname = ''
+
+        # Need to mod for more than two electrons
+        self.build1DHistogram("ancestors", "Ancestors of particles", 4, 0, 3)
+
+        self.build1DHistogram("same_ancestor", "Percentage of hits in cluster coming from the electron that produced most hits", 21, 0, 105)
+        self.build1DHistogram("energy_percentage", "Percentage of energy in cluster coming from the electron that produced most of energy", 21, 0, 105)
+        self.build1DHistogram("mixed_hit_energy", "Percentage of total energy coming from hits with energy contributions from more than one electron", 21, 0, 105)
+        self.build1DHistogram("clusterless_hits", "Number of hits not in a cluster", 10, 0, 200)
+        self.build1DHistogram("clusterless_hits_percentage", "Percentage of hits not in a cluster", 21, 0, 105)
+        self.build1DHistogram("total_rechits_in_event", "Rechits per event", 20, 0, 500)
+        self.build1DHistogram("correctly_predicted_events", "Correctly predicted events", 3, 0, 3)
+
+        self.build2DHistogram("total_energy_vs_hits", "Total energy (edep)", 30, 0, 150, "Hits in cluster", 20, 0, 200)
+        self.build2DHistogram("total_energy_vs_purity", "Total energy (edep)", 30, 0, 150, "Energy purity %", 21, 0, 105)
+        self.build2DHistogram("distance_energy_purity", "Distance in xy-plane", 20, 0, 220, "Energy purity %", 21, 0, 105)
 
 ecal_dqm = [
         EcalDigiVerify(),

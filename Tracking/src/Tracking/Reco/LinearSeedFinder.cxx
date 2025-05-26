@@ -27,6 +27,12 @@ void LinearSeedFinder::configure(framework::config::Parameters& parameters) {
   input_pass_name_ =
       parameters.getParameter<std::string>("input_pass_name", "");
 
+  sim_particles_passname_ =
+      parameters.getParameter<std::string>("sim_particles_passname");
+
+  sim_particles_events_passname_ =
+      parameters.getParameter<std::string>("sim_particles_events_passname");
+
   // the uncertainty is sigma_x = 6 microns and sigma_y = 20./sqrt(12)
   recoil_uncertainty_ = parameters.getParameter<std::vector<double>>(
       "recoil_uncertainty", {0.006, 0.085});
@@ -76,8 +82,9 @@ void LinearSeedFinder::produce(framework::Event& event) {
 
   // Setup truth map
   std::map<int, ldmx::SimParticle> particle_map;
-  if (event.exists("SimParticles")) {
-    particle_map = event.getMap<int, ldmx::SimParticle>("SimParticles");
+  if (event.exists("SimParticles", sim_particles_events_passname_)) {
+    particle_map = event.getMap<int, ldmx::SimParticle>(
+        "SimParticles", sim_particles_passname_);
     truth_matching_tool_->setup(particle_map, recoil_hits);
   }
 

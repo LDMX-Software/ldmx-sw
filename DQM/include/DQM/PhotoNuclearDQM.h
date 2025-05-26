@@ -90,6 +90,8 @@ class PhotoNuclearDQM : public framework::Analyzer {
   EventType classifyEvent(
       const std::vector<const ldmx::SimParticle *> daughters, double threshold);
 
+  std::string sim_particles_passname_;
+
   /** Method used to classify events in a compact manner. */
   CompactEventType classifyCompactEvent(
       const ldmx::SimParticle *pnGamma,

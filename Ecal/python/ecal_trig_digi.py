@@ -1,4 +1,6 @@
+
 """Package to configure the ECal trigger digitization
+
 
 All classes are derived versions of LDMX.Framework.ldmxcfg.Producer
 with helpful member functions.

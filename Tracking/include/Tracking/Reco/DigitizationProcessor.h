@@ -65,6 +65,7 @@ class DigitizationProcessor : public TrackingGeometryUser {
   std::string hit_collection_;
   /// Output hit collection name.
   std::string out_collection_;
+
   /// Minimum energy deposition cut.
   double min_e_dep_;
   /// Select a particular track ID
@@ -77,6 +78,8 @@ class DigitizationProcessor : public TrackingGeometryUser {
   double sigma_u_{0};
   /// v-direction sigma
   double sigma_v_{0};
+  /// Pass Name
+  std::string tracker_hit_passname_;
 
   //--- Smearing ---//
 

@@ -7,6 +7,9 @@ class TrackerDigiDQM(ldmxcfg.Analyzer):
     def __init__(self, name='TaggerTracker'): 
         super().__init__(name, 'tracking::dqm::TrackerDigiDQM', 'Tracking')
 
+        self.output_measurements_passname = ''
+        self.measurements_passname = ''
+        
         for i in range(0, 14): 
             self.build2DHistogram('global_yz_l%s' % i, 
                                   'Global y (mm)', 70, -50, 20, 
@@ -45,6 +48,20 @@ class TrackingRecoDQM(ldmxcfg.Analyzer):
 
         self.trackStates = ["ecal","target"]
         self.doTruth= True
+      
+        self.track_collection = "TruthTracks"
+        self.truth_collection = "TaggerTruthTracks"
+        self.measurement_collection = "DigiTaggerSimHits"    
+        self.measurement_passname = ""
+        
+        self.ecal_sp_events_passname= ""
+        self.ecal_sp_passname= ""
+        self.target_sp_events_passname= ""
+        self.target_sp_passname= ""
+        self.truth_events_passname = ""
+        self.truth_passname = ""
+        self.track_collection_events_passname = ""
+        self.track_passname = ""
 
     def buildHistograms(self) :
         
@@ -425,6 +442,16 @@ class StraightTracksDQM(ldmxcfg.Analyzer):
         self.thetamax = 0.3
                          
         self.doTruth= True
+        
+        self.track_collection = "LinearRecoilTracks"
+        self.truth_collection = "LinearRecoilTruthTracks"
+        self.title="recoil_lin_trk_"
+        self.subdetector = "Recoil"
+        self.measurement_collection = "DigiRecoilSimHits"
+        
+        self.track_collection_events_passname = ""
+        self.truth_collection_events_passname = ""
+        self.input_pass_name = ""
     
     def buildHistograms(self) :
         

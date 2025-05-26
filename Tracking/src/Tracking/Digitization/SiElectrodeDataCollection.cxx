@@ -6,10 +6,13 @@ namespace digitization {
 SiElectrodeDataCollection::SiElectrodeDataCollection(
     const SiElectrodeDataCollection& electrode_data) {
   collection_ = electrode_data.getCollection();
+  electrodePassName_ = electrode_data.getPassName();
 }
 
 SiElectrodeDataCollection::SiElectrodeDataCollection(
-    const std::map<int, int>& electrode_charge, ldmx::SimTrackerHit hit) {
+    const std::map<int, int>& electrode_charge, ldmx::SimTrackerHit hit,
+    const std::string& passName) {
+  electrodePassName_ = passName;
   for (auto pair : electrode_charge) {
     collection_[pair.first] = SiElectrodeData(pair.second, hit);
   }
@@ -23,6 +26,10 @@ std::map<int, int> SiElectrodeDataCollection::getChargeMap() const {
   }
 
   return charge_map;
+}
+
+const std::string& SiElectrodeDataCollection::getPassName() const {
+  return electrodePassName_;
 }
 
 void SiElectrodeDataCollection::add(
