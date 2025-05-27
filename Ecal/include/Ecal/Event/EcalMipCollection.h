@@ -13,8 +13,8 @@
 //   ROOT   //
 //----------//
 #include "TObject.h"
-#include "TVector3.h"
-
+#include <TVector3.h>
+// #include "Vector3D.h"
 namespace ldmx {
 
 
@@ -24,7 +24,7 @@ typedef std::pair<float, float> XYCoords;
  // convenient way
 struct HitData {
     int layer;
-    TVector3 pos;
+   TVector3 pos;
   };
 
 class EcalMipCollection {

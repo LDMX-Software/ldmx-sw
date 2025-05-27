@@ -64,15 +64,14 @@ clearProcessor();
 
 // Read in hits near photon from EcalVetoProcessor
 
-auto ecal_mip_collection = event.getCollection<ldmx::EcalMipCollection>(mip_collection_name_);
+auto ecal_mip_collection = event.getObject<ldmx::EcalMipCollection>(mip_collection_name_);
 std::vector<XYCoords> ele_trajectory;
 std::vector<XYCoords> photon_trajectory;
 std::vector<ldmx::HitData> trackingHitList;
-if (nevents_ <= ecal_mip_collection.size()) {
-  ele_trajectory = ecal_mip_collection[nevents_].getEleTrajectory();
-  photon_trajectory = ecal_mip_collection[nevents_].getPhotonTrajectory();
-  trackingHitList = ecal_mip_collection[nevents_].getTrackingHitList();
-};
+  ele_trajectory = ecal_mip_collection.getEleTrajectory();
+  photon_trajectory = ecal_mip_collection.getPhotonTrajectory();
+  trackingHitList = ecal_mip_collection.getTrackingHitList();
+// };
 nevents_++;
 // Now inputting Lines 753-1178 of the original EcalVetoProcessor
 // ------------------------------------------------------

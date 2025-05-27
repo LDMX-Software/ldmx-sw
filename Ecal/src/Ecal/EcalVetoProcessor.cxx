@@ -4,10 +4,10 @@
 #include "DetDescr/EcalGeometry.h"
 #include "DetDescr/SimSpecialID.h"
 #include "Ecal/Event/EcalHit.h"
+#include "Ecal/Event/EcalMipCollection.h"
 #include "Recon/Event/EventConstants.h"
 #include "SimCore/Event/SimParticle.h"
 #include "SimCore/Event/SimTrackerHit.h"
-#include "Ecal/Event/EcalMipCollection.h"
 
 /*~~~~~~~~~~~*/
 /*   Tools   */
@@ -810,7 +810,7 @@ void EcalVetoProcessor::produce(framework::Event &event) {
   ldmx::EcalMipCollection ecal_mip_collection;
   ecal_mip_collection.setEleTrajectory(ele_trajectory);
   ecal_mip_collection.setPhotonTrajectory(photon_trajectory);
-  // MipCollection.setTrackingHitList(trackingHitList);
+  ecal_mip_collection.setTrackingHitList(trackingHitList);
   event.add("EcalMipCollection", ecal_mip_collection);
 
   auto mip_tracking_setup = std::chrono::high_resolution_clock::now();

@@ -18,7 +18,7 @@ p.sequence = [ mySim ]
 import os
 import sys
 
-p.maxEvents = int(os.environ['LDMX_NUM_EVENTS'])
+p.maxEvents = 1
 p.run = int(os.environ['LDMX_RUN_NUMBER'])
 
 p.histogramFile = f'hist.root'
@@ -68,7 +68,7 @@ from LDMX.DQM import dqm
 
 # Load ecal veto and use tracking in it
 ecal_veto = ecal_vetos.EcalVetoProcessor()
-# ecal_mip = ecal_vetos.EcalMipProcessor()
+ecal_mip = ecal_vetos.EcalMipProcessor()
 ecal_veto.recoil_from_tracking = True
 
 # Load hcal veto
@@ -89,6 +89,7 @@ p.sequence.extend([
         ecal_cluster.EcalClusterProducer(),
         ecal_veto,
         hcal_digi_reco,
+        ecal_mip,
         hcal_digi.HcalDigiProducer(),
         hcal_digi.HcalRecProducer(),
         hcal_veto,

@@ -25,7 +25,7 @@ if(BUILD_EVENT_ONLY)
     # Generate the files needed to build the event classes.
     setup_library(module Ecal
                   name Event
-                  dependencies ROOT::Core ROOT::Physics 
+                  dependencies ROOT::Core ROOT::Hist ROOT::Physics
                                Recon::Event SimCore::Event 
                   register_target)
 
