@@ -29,7 +29,7 @@ class TargetBremFilter(simcfg.UserAction):
         Should we kill the recoil electron track for a worst case scenario?
     """
 
-    def __init__(self,recoil_max_p = 3000.,brem_min_e = 5000.) :
+    def __init__(self,recoil_max_p,brem_min_e) :
         super().__init__("target_brem_filter", "biasing::TargetBremFilter")
 
         from LDMX.Biasing import include
