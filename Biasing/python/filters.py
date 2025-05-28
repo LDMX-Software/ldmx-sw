@@ -113,7 +113,7 @@ class TargetENFilter(simcfg.UserAction) :
         Maximum energy recoil electron is allowed to have [MeV]
     """
 
-    def __init__(self,recoil_thresh = 5000.) :
+    def __init__(self,recoil_thresh) :
         super().__init__("target_en_process_filter","biasing::TargetENProcessFilter")
 
         from LDMX.Biasing import include
