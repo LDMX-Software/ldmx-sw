@@ -188,7 +188,7 @@ class TaggerVetoFilter(simcfg.UserAction):
         Also veto events where the primary particle misses the tagger region
     """
     
-    def __init__(self,thresh=7600., reject_events_missing_tagger=True) :
+    def __init__(self,thresh, reject_events_missing_tagger=True) :
         super().__init__('tagger_veto_filter','biasing::TaggerVetoFilter')
 
         from LDMX.Biasing import include
