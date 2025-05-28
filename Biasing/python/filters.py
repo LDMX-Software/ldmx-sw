@@ -50,7 +50,7 @@ class NonFiducialFilter(simcfg.UserAction):
         If true, aborts fiducial events. Otherwise, the fiducial events will be only tagged
     """
 
-    def __init__(self,recoil_max_momentum = 3000., abort_fid_event = True) :
+    def __init__(self,recoil_max_momentum, abort_fid_event = True) :
         super().__init__("nonfiducial_filter", "biasing::NonFiducialFilter")
 
         from LDMX.Biasing import include
