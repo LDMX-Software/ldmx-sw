@@ -127,6 +127,47 @@ class BertiniAtLeastNProductsModel(simcfg.PhotoNuclearModel):
         return model
 
 
+class BertiniExactlyNProductsModel(simcfg.PhotoNuclearModel):
+    """ A photonuclear model producing only topologies with a define number
+    of particles above a certain threshold.
+
+    Uses the default Bertini model from Geant4.
+
+    """
+
+    def __init__(self, name):
+        super().__init__(name,
+                         'simcore::BertiniExactlyNProductsModel',
+                         'SimCore_PhotoNuclearModels')
+        self.hard_particle_threshold = 200.
+        self.zmin = 0
+        self.emin = 2500.
+        self.n_products = 1
+        self.pdg_ids = []
+
+    def kaon(n_products = 2, hard_particle_threshold=200.):
+        # This is requiring exactly 2 kaons with at least 200 MeV.
+        model = BertiniExactlyNProductsModel(f"{n_products}_kaon_model")
+        model.hard_particle_threshold=hard_particle_threshold
+        model.pdg_ids = [
+                130,  # K_L^0
+                310,  # K_S^0
+                311,  # K^0
+                321,  # K^+
+                -321, # K^-
+        ]
+        model.n_products = n_products
+        return model
+
+    def neutron(n_products = 1, hard_particle_threshold=200.):
+        # This is requiring exactly 1 neutron with at least 200 MeV
+        model = BertiniExactlyNProductsModel(f"{n_products}_neutron_model")
+        model.hard_particle_threshold=hard_particle_threshold
+        model.pdg_ids = [2212]
+        model.n_products = n_products
+        return model
+
+
 class NoPhotoNuclearModel(simcfg.PhotoNuclearModel):
     """A PhotoNuclear model that disables the photonuclear process entirely.
 
