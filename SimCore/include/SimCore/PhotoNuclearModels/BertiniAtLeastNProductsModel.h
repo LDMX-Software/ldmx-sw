@@ -14,13 +14,18 @@ namespace simcore {
 class BertiniAtLeastNProductsProcess : public BertiniEventTopologyProcess {
  public:
   BertiniAtLeastNProductsProcess(double threshold, int Zmin, double Emin,
-                                 std::vector<int> pdg_ids, int min_products)
+                                 const std::vector<int>& pdg_ids,
+                                 const std::vector<int>& n_products_vec,
+                                 bool per_species, bool exact_count)
       : BertiniEventTopologyProcess{},
         threshold_{threshold},
         Zmin_{Zmin},
         Emin_{Emin},
         pdg_ids_{pdg_ids},
-        min_products_{min_products} {}
+        n_products_vec_{n_products_vec},
+        per_species_{per_species},
+        exact_count_{exact_count} {}
+
   virtual ~BertiniAtLeastNProductsProcess() = default;
   bool acceptProjectile(const G4HadProjectile& projectile) const override {
     return projectile.GetKineticEnergy() >= Emin_;
@@ -35,7 +40,9 @@ class BertiniAtLeastNProductsProcess : public BertiniEventTopologyProcess {
   int Zmin_;
   double Emin_;
   std::vector<int> pdg_ids_;
-  int min_products_;
+  std::vector<int> n_products_vec_;
+  bool per_species_;
+  bool exact_count_;
 };
 
 class BertiniAtLeastNProductsModel : public PhotoNuclearModel {
@@ -47,16 +54,26 @@ class BertiniAtLeastNProductsModel : public PhotoNuclearModel {
         Zmin_{parameters.getParameter<int>("zmin")},
         Emin_{parameters.getParameter<double>("emin")},
         pdg_ids_{parameters.getParameter<std::vector<int>>("pdg_ids")},
-        min_products_{parameters.getParameter<int>("min_products")} {}
+        per_species_{parameters.getParameter<bool>("per_species", false)} {
+    if (per_species_) {
+      n_products_vec_ =
+          parameters.getParameter<std::vector<int>>("n_products_by_species");
+    } else {
+      int n = parameters.getParameter<int>("n_products", 1);
+      n_products_vec_ = std::vector<int>{n};
+    }
+  }
   virtual ~BertiniAtLeastNProductsModel() = default;
   void ConstructGammaProcess(G4ProcessManager* processManager) override;
 
  private:
-  double threshold_;
-  int Zmin_;
-  double Emin_;
-  std::vector<int> pdg_ids_;
-  int min_products_;
+  double threshold_{200.0 * CLHEP::MeV};
+  int Zmin_{0};
+  double Emin_{0.0};
+  std::vector<int> pdg_ids_{};
+  std::vector<int> n_products_vec_{};
+  bool per_species_{false};
+  bool exact_count_{false};
 };
 
 }  // namespace simcore

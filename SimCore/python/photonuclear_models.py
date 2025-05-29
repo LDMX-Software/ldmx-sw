@@ -91,40 +91,84 @@ class BertiniSingleNeutronModel(simcfg.PhotoNuclearModel):
         self.emin = 2500.
         self.count_light_ions = True
 
-
-
 class BertiniAtLeastNProductsModel(simcfg.PhotoNuclearModel):
-    """ A photonuclear model producing only topologies with no particles above a
-    certain threshold.
+    """
+    A photonuclear model producing only topologies with a configurable number
+    of hard particles, optionally per species and/or requiring an exact count.
 
     Uses the default Bertini model from Geant4.
-
     """
 
-    def __init__(self, name):
-        super().__init__(name,
-                         'simcore::BertiniAtLeastNProductsModel',
-                         'SimCore_PhotoNuclearModels')
-        self.hard_particle_threshold = 200.
-        self.zmin = 0
-        self.emin = 2500.
-        self.min_products = 1
-        self.pdg_ids = []
+    def __init__(
+        self,
+        name="BertiniNProductsModel",
+        hard_particle_threshold=200.,
+        zmin=0,
+        emin=2500.,
+        pdg_ids=None,
+        n_products=1,
+        n_products_vec=None,
+        per_species=False,
+        exact_count=False,
+    ):
+        super().__init__(
+            name,
+            'simcore::BertiniAtLeastNProductsModel',
+            'SimCore_PhotoNuclearModels'
+        )
+        self.hard_particle_threshold = hard_particle_threshold
+        self.zmin = zmin
+        self.emin = emin
+        self.pdg_ids = pdg_ids if pdg_ids is not None else []
+        self.per_species = per_species
+        self.exact_count = exact_count
 
-    def kaon(min_products = 1, hard_particle_threshold=200.):
-        # Note: By default, this is requiring at least 1 kaon with at least 200
-        # MeV. You may want a different energy threshold depending on your needs.
-        model = BertiniAtLeastNProductsModel(f"{min_products}_kaon_model")
-        model.hard_particle_threshold=hard_particle_threshold
-        model.pdg_ids = [
-                130,  # K_L^0
-                310,  # K_S^0
-                311,  # K^0
-                321,  # K^+
-                -321, # K^-
+        if self.per_species:
+            if n_products_vec is None:
+                raise ValueError(
+                    "per_species=True requires n_products_vec to be set"
+                )
+            self.n_products_vec = n_products_vec
+        else:
+            self.n_products = n_products
+
+    def kaon(
+        self,
+        n_products=1,
+        hard_particle_threshold=200.,
+        per_species=False,
+        exact_count=False
+    ):
+        """
+        Factory for a model requiring a certain number of kaons above threshold.
+        """
+        pdg_ids = [
+            130,   # K_L^0
+            310,   # K_S^0
+            311,   # K^0
+            321,   # K^+
+            -321,  # K^-
         ]
-        model.min_products = min_products
-        return model
+        if per_species:
+            n_products_vec = [n_products] * len(pdg_ids)
+            return BertiniAtLeastNProductsModel(
+                name=f"{n_products}_kaon_model",
+                hard_particle_threshold=hard_particle_threshold,
+                pdg_ids=pdg_ids,
+                n_products_vec=n_products_vec,
+                per_species=True,
+                exact_count=exact_count,
+            )
+        else:
+            return BertiniAtLeastNProductsModel(
+                name=f"{n_products}_kaon_model",
+                hard_particle_threshold=hard_particle_threshold,
+                pdg_ids=pdg_ids,
+                n_products=n_products,
+                per_species=False,
+                exact_count=exact_count,
+            )
+
 
 
 class NoPhotoNuclearModel(simcfg.PhotoNuclearModel):

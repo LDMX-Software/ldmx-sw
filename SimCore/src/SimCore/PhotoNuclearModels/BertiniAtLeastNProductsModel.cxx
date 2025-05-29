@@ -3,31 +3,48 @@
 namespace simcore {
 
 bool BertiniAtLeastNProductsProcess::acceptEvent() const {
-  int secondaries{theParticleChange.GetNumberOfSecondaries()};
-  int matchingCount{0};
+  auto secondaries{theParticleChange.GetNumberOfSecondaries()};
+  std::vector<int> counts(pdg_ids_.size(), 0);
+
   for (int i{0}; i < secondaries; ++i) {
-    const auto secondary{theParticleChange.GetSecondary(i)->GetParticle()};
+    const auto* const secondary{
+        theParticleChange.GetSecondary(i)->GetParticle()};
     const auto pdgCode{secondary->GetDefinition()->GetPDGEncoding()};
     const auto energy{secondary->GetKineticEnergy()};
-    if (std::find(std::begin(pdg_ids_), std::end(pdg_ids_), pdgCode) !=
-        std::end(pdg_ids_)) {
-      if (energy > threshold_) {
-        ++matchingCount;
+    for (size_t j = 0; j < pdg_ids_.size(); ++j) {
+      if (pdg_ids_[j] == pdgCode && energy > threshold_) {
+        counts[j]++;
       }
     }
-    if (matchingCount >= min_products_) {
-      return true;
-    }
   }
-  return false;
+
+  if (per_species_) {
+    for (size_t j = 0; j < pdg_ids_.size(); ++j) {
+      if (exact_count_) {
+        if (counts[j] != n_products_vec_[j]) return false;
+      } else {
+        if (counts[j] < n_products_vec_[j]) return false;
+      }
+    }
+    return true;
+  }
+  int total = 0;
+  for (int count : counts) {
+    total += count;
+  }
+  if (exact_count_) {
+    return total == n_products_vec_[0];
+  }
+  return total >= n_products_vec_[0];
 }
 
 void BertiniAtLeastNProductsModel::ConstructGammaProcess(
     G4ProcessManager* processManager) {
-  auto photoNuclearProcess{
+  auto* photoNuclearProcess{
       new G4HadronInelasticProcess("photonNuclear", G4Gamma::Definition())};
-  auto model{new BertiniAtLeastNProductsProcess{threshold_, Zmin_, Emin_,
-                                                pdg_ids_, min_products_}};
+  auto model = new BertiniAtLeastNProductsProcess{
+      threshold_,      Zmin_,        Emin_,       pdg_ids_,
+      n_products_vec_, per_species_, exact_count_};
   model->SetMaxEnergy(15 * CLHEP::GeV);
   addPNCrossSectionData(photoNuclearProcess);
   photoNuclearProcess->RegisterMe(model);
