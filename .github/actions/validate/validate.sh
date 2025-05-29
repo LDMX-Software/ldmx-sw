@@ -55,7 +55,7 @@ __main__() {
       || return $?
 
     # print log diff into output directory
-    cp -t ${_sample_dir}/plots ci-data/${_sample}/gold.log output.log || return $?
+    cp -t ${_sample_dir}/plots ${_ref_dir}/gold.log output.log || return $?
 
     # compare.py puts plots into the plots/ directory
     #   Package them up for upload
