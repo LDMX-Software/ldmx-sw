@@ -16,11 +16,11 @@
 //------------//
 //   GENIE   //
 //------------//
-#include "GENIE/Framework/EventGen/GEVGDriver.h"
-#include "GENIE/Framework/EventGen/HepMC3Converter.h"
-
 #include <string>
 #include <vector>
+
+#include "GENIE/Framework/EventGen/GEVGDriver.h"
+#include "GENIE/Framework/EventGen/HepMC3Converter.h"
 
 //------------//
 //   LDMX     //
