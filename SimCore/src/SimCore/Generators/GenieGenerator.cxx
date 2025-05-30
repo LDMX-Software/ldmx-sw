@@ -60,16 +60,16 @@ namespace simcore {
 namespace generators {
 
 void GenieGenerator::fillConfig(const framework::config::Parameters& p) {
-  energy_ = p.get<float>("energy");  // * GeV;
+  energy_ = p.get<double>("energy");  // * GeV;
 
   targets_ = p.get<std::vector<int> >("targets");
-  abundances_ = p.get<std::vector<float> >("abundances");
+  abundances_ = p.get<std::vector<double> >("abundances");
 
-  time_ = p.get<float>("time");                          // * ns;
-  position_ = p.get<std::vector<float> >("position");    // mm
-  beam_size_ = p.get<std::vector<float> >("beam_size");  // mm
-  direction_ = p.get<std::vector<float> >("direction");
-  target_thickness_ = p.get<float>("target_thickness");  // mm
+  time_ = p.get<double>("time");                          // * ns;
+  position_ = p.get<std::vector<double> >("position");    // mm
+  beam_size_ = p.get<std::vector<double> >("beam_size");  // mm
+  direction_ = p.get<std::vector<double> >("direction");
+  target_thickness_ = p.get<double>("target_thickness");  // mm
 
   tune_ = p.get<std::string>("tune");
   spline_file_ = p.get<std::string>("spline_file");

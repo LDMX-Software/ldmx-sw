@@ -81,12 +81,12 @@ class GenieGenerator : public simcore::PrimaryGenerator {
 
   double energy_;
   std::vector<int> targets_;
-  std::vector<float> abundances_;
-  std::vector<float> position_;
-  std::vector<float> beam_size_;
+  std::vector<double> abundances_;
+  std::vector<double> position_;
+  std::vector<double> beam_size_;
   float target_thickness_;
   float time_;
-  std::vector<float> direction_;
+  std::vector<double> direction_;
 
   std::string tune_;
   std::string spline_file_;
