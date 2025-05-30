@@ -8,19 +8,21 @@
 #include <G4ProcessManager.hh>
 
 #include "Framework/Configure/Parameters.h"
-#include "SimCore/PhotoNuclearModel.h"
 #include "SimCore/PhotoNuclearModels/BertiniEventTopologyProcess.h" /*  */
+#include "SimCore/PhotoNuclearModels/PhotoNuclearModel.h"
 
 namespace simcore {
 class BertiniExactlyNProductsProcess : public BertiniEventTopologyProcess {
  public:
   BertiniExactlyNProductsProcess(double threshold, int Zmin, double Emin,
-                                 std::vector<int> pdg_ids, int n_products)
+                                 std::vector<int> pdg_ids, bool check_allmatch, 
+				 int n_products)
       : BertiniEventTopologyProcess{},
         threshold_{threshold},
         Zmin_{Zmin},
         Emin_{Emin},
         pdg_ids_{pdg_ids},
+	check_allmatch_{check_allmatch},
         n_products_{n_products} {}
 
   virtual ~BertiniExactlyNProductsProcess() = default;
@@ -40,6 +42,7 @@ class BertiniExactlyNProductsProcess : public BertiniEventTopologyProcess {
   int Zmin_;
   double Emin_;
   std::vector<int> pdg_ids_;
+  bool check_allmatch_;
   int n_products_;
 };
 
@@ -52,6 +55,7 @@ class BertiniExactlyNProductsModel : public PhotoNuclearModel {
         Zmin_{parameters.getParameter<int>("zmin")},
         Emin_{parameters.getParameter<double>("emin")},
         pdg_ids_{parameters.getParameter<std::vector<int>>("pdg_ids")},
+        check_allmatch_{parameters.getParameter<bool>("check_allmatch")},
         n_products_{parameters.getParameter<int>("n_products")} {}
   virtual ~BertiniExactlyNProductsModel() = default;
   void ConstructGammaProcess(G4ProcessManager* processManager) override;
@@ -61,6 +65,7 @@ class BertiniExactlyNProductsModel : public PhotoNuclearModel {
   int Zmin_;
   double Emin_;
   std::vector<int> pdg_ids_;
+  bool check_allmatch_;
   int n_products_;
 };
 

@@ -143,6 +143,7 @@ class BertiniExactlyNProductsModel(simcfg.PhotoNuclearModel):
         self.zmin = 0
         self.emin = 2500.
         self.n_products = 1
+        self.check_allmatch = False
         self.pdg_ids = []
 
     def kaon(n_products = 2, hard_particle_threshold=200.):
