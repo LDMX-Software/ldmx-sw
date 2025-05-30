@@ -38,16 +38,16 @@ bool BertiniExactlyNProductsProcess::acceptEvent() const {
 }
 
 void BertiniExactlyNProductsModel::ConstructGammaProcess(
-    G4ProcessManager* processManager) {
-  auto photoNuclearProcess{
+    G4ProcessManager* process_manager) {
+  auto photo_nuclear_process{
       new G4HadronInelasticProcess("photonNuclear", G4Gamma::Definition())};
 
   auto model{new BertiniExactlyNProductsProcess{
-      threshold_, Zmin_, Emin_, pdg_ids_, check_allmatch_, n_products_}};
+      threshold_, zmin_, emin_, pdg_ids_, check_allmatch_, n_products_}};
   model->SetMaxEnergy(15 * CLHEP::GeV);
-  addPNCrossSectionData(photoNuclearProcess);
-  photoNuclearProcess->RegisterMe(model);
-  processManager->AddDiscreteProcess(photoNuclearProcess);
+  addPNCrossSectionData(photo_nuclear_process);
+  photo_nuclear_process->RegisterMe(model);
+  process_manager->AddDiscreteProcess(photo_nuclear_process);
 }
 }  // namespace simcore
 

@@ -14,13 +14,13 @@
 namespace simcore {
 class BertiniExactlyNProductsProcess : public BertiniEventTopologyProcess {
  public:
-  BertiniExactlyNProductsProcess(double threshold, int Zmin, double Emin,
+  BertiniExactlyNProductsProcess(double threshold, int zmin, double emin,
                                  std::vector<int> pdg_ids, bool check_allmatch,
                                  int n_products)
       : BertiniEventTopologyProcess{},
         threshold_{threshold},
-        Zmin_{Zmin},
-        Emin_{Emin},
+        zmin_{zmin},
+        emin_{emin},
         pdg_ids_{pdg_ids},
         check_allmatch_{check_allmatch},
         n_products_{n_products} {}
@@ -28,19 +28,19 @@ class BertiniExactlyNProductsProcess : public BertiniEventTopologyProcess {
   virtual ~BertiniExactlyNProductsProcess() = default;
 
   bool acceptProjectile(const G4HadProjectile& projectile) const override {
-    return projectile.GetKineticEnergy() >= Emin_;
+    return projectile.GetKineticEnergy() >= emin_;
   }
 
   bool acceptTarget(const G4Nucleus& targetNucleus) const override {
-    return targetNucleus.GetZ_asInt() >= Zmin_;
+    return targetNucleus.GetZ_asInt() >= zmin_;
   }
 
   bool acceptEvent() const override;
 
  private:
   double threshold_;
-  int Zmin_;
-  double Emin_;
+  int zmin_;
+  double emin_;
   std::vector<int> pdg_ids_;
   bool check_allmatch_;
   int n_products_;
@@ -52,8 +52,8 @@ class BertiniExactlyNProductsModel : public PhotoNuclearModel {
                                const framework::config::Parameters& parameters)
       : PhotoNuclearModel{name, parameters},
         threshold_{parameters.getParameter<double>("hard_particle_threshold")},
-        Zmin_{parameters.getParameter<int>("zmin")},
-        Emin_{parameters.getParameter<double>("emin")},
+        zmin_{parameters.getParameter<int>("zmin")},
+        emin_{parameters.getParameter<double>("emin")},
         pdg_ids_{parameters.getParameter<std::vector<int>>("pdg_ids")},
         check_allmatch_{parameters.getParameter<bool>("check_allmatch")},
         n_products_{parameters.getParameter<int>("n_products")} {}
@@ -62,8 +62,8 @@ class BertiniExactlyNProductsModel : public PhotoNuclearModel {
 
  private:
   double threshold_;
-  int Zmin_;
-  double Emin_;
+  int zmin_;
+  double emin_;
   std::vector<int> pdg_ids_;
   bool check_allmatch_;
   int n_products_;
