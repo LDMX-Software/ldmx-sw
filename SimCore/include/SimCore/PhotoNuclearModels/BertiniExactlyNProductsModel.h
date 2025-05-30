@@ -15,14 +15,14 @@ namespace simcore {
 class BertiniExactlyNProductsProcess : public BertiniEventTopologyProcess {
  public:
   BertiniExactlyNProductsProcess(double threshold, int Zmin, double Emin,
-                                 std::vector<int> pdg_ids, bool check_allmatch, 
-				 int n_products)
+                                 std::vector<int> pdg_ids, bool check_allmatch,
+                                 int n_products)
       : BertiniEventTopologyProcess{},
         threshold_{threshold},
         Zmin_{Zmin},
         Emin_{Emin},
         pdg_ids_{pdg_ids},
-	check_allmatch_{check_allmatch},
+        check_allmatch_{check_allmatch},
         n_products_{n_products} {}
 
   virtual ~BertiniExactlyNProductsProcess() = default;
