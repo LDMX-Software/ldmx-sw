@@ -2,8 +2,8 @@
 // Created by Wesley Ketchum on 4/27/24.
 //
 
-#ifndef SIM_CORE_EventWeights_H
-#define SIM_CORE_EventWeights_H
+#ifndef SIMCORE_EventWeights_H
+#define SIMCORE_EventWeights_H
 
 #include <map>
 #include <vector>
@@ -148,4 +148,4 @@ class EventWeights {
 };
 }  // namespace ldmx
 
-#endif  // SIM_CORE_EventWeights_H
+#endif  // SIMCORE_EventWeights_H

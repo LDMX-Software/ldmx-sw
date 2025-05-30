@@ -45,24 +45,19 @@ namespace simcore {
 GenieReweightProducer::GenieReweightProducer(const std::string& name,
                                              framework::Process& process)
     : Producer(name, process) {
-  hepMC3Converter_ = new genie::HepMC3Converter;
-  genie_rw_ = new genie::rew::GReWeight;
-}
-
-GenieReweightProducer::~GenieReweightProducer() {
-  delete hepMC3Converter_;
-  delete genie_rw_;
+  hepMC3Converter_ = std::make_unique<genie::HepMC3Converter>();
+  genie_rw_ = std::make_unique<genie::rew::GReWeight>();
 }
 
 void GenieReweightProducer::configure(framework::config::Parameters& ps) {
-  hepmc3CollName_ = ps.getParameter<std::string>("hepmc3CollName");
-  hepmc3PassName_ = ps.getParameter<std::string>("hepmc3PassName");
-  eventWeightsCollName_ = ps.getParameter<std::string>("eventWeightsCollName");
-  verbosity_ = ps.getParameter<int>("verbosity");
-  seed_ = ps.getParameter<int>("seed");
-  n_weights_ = (size_t)(ps.getParameter<int>("n_weights"));
+  verbosity_ = ps.get<int>("verbosity");
+  hepmc3CollName_ = ps.get<std::string>("hepmc3CollName");
+  hepmc3PassName_ = ps.get<std::string>("hepmc3PassName");
+  eventWeightsCollName_ = ps.get<std::string>("eventWeightsCollName");
+  seed_ = ps.get<int>("seed");
+  n_weights_ = static_cast<size_t>(ps.get<int>("n_weights"));
   auto var_types_strings =
-      ps.getParameter<std::vector<std::string> >("var_types");
+      ps.get<std::vector<std::string> >("var_types");
 
   std::default_random_engine generator(seed_);
   std::normal_distribution<double> normal_distribution;
@@ -75,8 +70,7 @@ void GenieReweightProducer::configure(framework::config::Parameters& ps) {
 }
 
 void GenieReweightProducer::reinitializeGenieReweight() {
-  delete genie_rw_;
-  genie_rw_ = new genie::rew::GReWeight;
+  genie_rw_ = std::make_unique<genie::rew::GReWeight>();
 
   genie::RunOpt::Instance()->SetTuneName(tune_);
   if (!genie::RunOpt::Instance()->Tune()) {
@@ -104,9 +98,8 @@ void GenieReweightProducer::onNewRun(const ldmx::RunHeader& runHeader) {
     }
 
   if (tune_ != new_tune) {
-    if (verbosity_ >= 0)
-      std::cout << "Found new tune " << new_tune << " (used to be " << tune_
-                << ")" << std::endl;
+    ldmx_log(debug) << "Found new tune " << new_tune << " (used to be " << tune_
+                    << ")" << std::endl;
     tune_ = new_tune;
     reinitializeGenieReweight();
   }

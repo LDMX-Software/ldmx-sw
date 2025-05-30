@@ -81,24 +81,24 @@ class GenieGenerator : public simcore::PrimaryGenerator {
 
   double energy_;
   std::vector<int> targets_;
-  std::vector<double> abundances_;
-  std::vector<double> position_;
-  std::vector<double> beam_size_;
-  double target_thickness_;
-  double time_;
-  std::vector<double> direction_;
+  std::vector<float> abundances_;
+  std::vector<float> position_;
+  std::vector<float> beam_size_;
+  float target_thickness_;
+  float time_;
+  std::vector<float> direction_;
 
   std::string tune_;
   std::string spline_file_;
 
   std::string message_threshold_file_;
 
-  std::vector<double> ev_weighting_integral_;
+  std::vector<float> ev_weighting_integral_;
   size_t n_events_generated_;
   std::vector<size_t> n_events_by_target_;
-  std::vector<double> xsec_by_target_;
+  std::vector<float> xsec_by_target_;
 
-  double xsec_total_;
+  float xsec_total_;
 
   void fillConfig(
       const framework::config::Parameters&);  /// fill the configuration

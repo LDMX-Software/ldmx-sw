@@ -220,7 +220,7 @@ class genie(simcfg.PrimaryGenerator) :
     tune: str
         Name of GENIE tune to use
     target_thickness : double
-        Thickness of target to use for generation
+        Thickness of target [mm] to use for generation
     beam_size : list of double
         uniform beam size width to use
 
@@ -238,7 +238,7 @@ class genie(simcfg.PrimaryGenerator) :
     """
 
     def __init__(self,name,
-                     energy=4.0,
+                     energy=8.0,
                      targets = [],
                      target_thickness = 0.3504,
                      abundances = [],
@@ -248,8 +248,7 @@ class genie(simcfg.PrimaryGenerator) :
                      direction = [ 0.0, 0.0, 1.0 ],
                      tune = 'default',
                      spline_file = '',
-                     message_threshold_file = "/usr/local/GENIE/Generator/config/Messenger.xml",
-                     verbosity=0 ) :
+                     message_threshold_file = "/usr/local/GENIE/Generator/config/Messenger.xml") :
         super().__init__( name , "simcore::generators::GenieGenerator" )
 
         self.energy = energy
@@ -263,7 +262,6 @@ class genie(simcfg.PrimaryGenerator) :
         self.tune = tune
         self.spline_file = spline_file
         self.message_threshold_file = message_threshold_file
-        self.verbosity = verbosity
 
 def _single_e_upstream_tagger(position, momentum, energy):
     """Internal helper function for creating electron beam guns upstream of tagger

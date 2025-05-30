@@ -60,22 +60,22 @@ namespace simcore {
 namespace generators {
 
 void GenieGenerator::fillConfig(const framework::config::Parameters& p) {
-  energy_ = p.getParameter<double>("energy");  // * GeV;
+  energy_ = p.get<float>("energy");  // * GeV;
 
-  targets_ = p.getParameter<std::vector<int> >("targets");
-  abundances_ = p.getParameter<std::vector<double> >("abundances");
+  targets_ = p.get<std::vector<int> >("targets");
+  abundances_ = p.get<std::vector<float> >("abundances");
 
-  time_ = p.getParameter<double>("time");                          // * ns;
-  position_ = p.getParameter<std::vector<double> >("position");    // mm
-  beam_size_ = p.getParameter<std::vector<double> >("beam_size");  // mm
-  direction_ = p.getParameter<std::vector<double> >("direction");
-  target_thickness_ = p.getParameter<double>("target_thickness");  // mm
+  time_ = p.get<float>("time");                          // * ns;
+  position_ = p.get<std::vector<float> >("position");    // mm
+  beam_size_ = p.get<std::vector<float> >("beam_size");  // mm
+  direction_ = p.get<std::vector<float> >("direction");
+  target_thickness_ = p.get<float>("target_thickness");  // mm
 
-  tune_ = p.getParameter<std::string>("tune");
-  spline_file_ = p.getParameter<std::string>("spline_file");
+  tune_ = p.get<std::string>("tune");
+  spline_file_ = p.get<std::string>("spline_file");
 
   message_threshold_file_ =
-      p.getParameter<std::string>("message_threshold_file");
+      p.get<std::string>("message_threshold_file");
 }
 
 bool GenieGenerator::validateConfig() {
@@ -124,7 +124,7 @@ bool GenieGenerator::validateConfig() {
   }
 
   // normalize abundances
-  double abundance_sum = 0;
+  float abundance_sum = 0;
   for (auto a : abundances_) {
     abundance_sum += a;
   }
@@ -146,7 +146,7 @@ bool GenieGenerator::validateConfig() {
                     << ", Abundance=" << abundances_[i_a];
   }
 
-  double dir_total_sq = 0;
+  float dir_total_sq = 0;
   for (auto d : direction_) dir_total_sq += d * d;
 
   if (dir_total_sq < 1e-6) {
@@ -248,6 +248,7 @@ GenieGenerator::GenieGenerator(const std::string& name,
 }
 
 GenieGenerator::~GenieGenerator() {
+  /*
   ldmx_log(info) << "--- GENIE Generation Summary BEGIN ---";
   double total_xsec = 0;
   for (size_t i_t = 0; i_t < targets_.size(); ++i_t) {
@@ -264,6 +265,7 @@ GenieGenerator::~GenieGenerator() {
                  << " mb";
 
   ldmx_log(info) << "--- GENIE Generation Summary *END* ---";
+   */
 }
 
 void GenieGenerator::GeneratePrimaryVertex(G4Event* event) {
@@ -307,7 +309,7 @@ void GenieGenerator::GeneratePrimaryVertex(G4Event* event) {
   // setup the initial election
   TParticle initial_e;
   initial_e.SetPdgCode(11);
-  double elec_i_p =
+  float elec_i_p =
       std::sqrt(energy_ * energy_ - initial_e.GetMass() * initial_e.GetMass());
   initial_e.SetMomentum(elec_i_p * direction_[0], elec_i_p * direction_[1],
                         elec_i_p * direction_[2], energy_);

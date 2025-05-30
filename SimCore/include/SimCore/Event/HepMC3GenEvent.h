@@ -5,8 +5,8 @@
 // for use on the ldmx Event Bus.
 //
 
-#ifndef SIM_CORE_HEPMC3GENEVENT_H
-#define SIM_CORE_HEPMC3GENEVENT_H
+#ifndef SIMCORE_HEPMC3GENEVENT_H
+#define SIMCORE_HEPMC3GENEVENT_H
 
 #include "HepMC3/Data/GenEventData.h"
 #include "HepMC3/GenEvent.h"
@@ -31,4 +31,4 @@ class HepMC3GenEvent : public HepMC3::GenEventData {
 
 }  // namespace ldmx
 
-#endif  // SIM_CORE_HEPMC3GENEVENT_H
+#endif  // SIMCORE_HEPMC3GENEVENT_H

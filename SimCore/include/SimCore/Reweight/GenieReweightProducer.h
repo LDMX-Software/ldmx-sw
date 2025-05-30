@@ -7,6 +7,7 @@
 
 #include <map>
 #include <string>
+#include <memory>
 
 #include "Framework/EventProcessor.h"
 #include "RwFramework/GSyst.h"
@@ -29,7 +30,7 @@ class GenieReweightProducer : public framework::Producer {
   GenieReweightProducer(const std::string& name, framework::Process& process);
 
   // default destructor
-  virtual ~GenieReweightProducer();
+  virtual ~GenieReweightProducer() = default;
 
   // configuration
   virtual void configure(framework::config::Parameters&);
@@ -41,7 +42,7 @@ class GenieReweightProducer : public framework::Producer {
   virtual void produce(framework::Event& event);
 
  private:
-  // seed to use
+  // verbosity
   int verbosity_;
 
   // input hepmc3 collection name
@@ -67,9 +68,9 @@ class GenieReweightProducer : public framework::Producer {
       variation_map_;
 
   // hepmc3 convertor
-  genie::HepMC3Converter* hepMC3Converter_;
+  std::unique_ptr<genie::HepMC3Converter> hepMC3Converter_;
 
-  genie::rew::GReWeight* genie_rw_;
+  std::unique_ptr<genie::rew::GReWeight> genie_rw_;
 
   void reinitializeGenieReweight();
   void reconfigureGenieReweight(size_t);
