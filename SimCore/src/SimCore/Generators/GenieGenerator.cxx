@@ -74,8 +74,7 @@ void GenieGenerator::fillConfig(const framework::config::Parameters& p) {
   tune_ = p.get<std::string>("tune");
   spline_file_ = p.get<std::string>("spline_file");
 
-  message_threshold_file_ =
-      p.get<std::string>("message_threshold_file");
+  message_threshold_file_ = p.get<std::string>("message_threshold_file");
 }
 
 bool GenieGenerator::validateConfig() {

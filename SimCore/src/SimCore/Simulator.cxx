@@ -165,8 +165,7 @@ void Simulator::produce(framework::Event& event) {
   for (auto& hepmc3ev : hepmc3_events) {
     hepmc3ev.event_number = event.getEventHeader().getEventNumber();
   }
-  if(hepmc3_events.size()>0)
-    event.add("SimHepMC3Events", hepmc3_events);
+  if (hepmc3_events.size() > 0) event.add("SimHepMC3Events", hepmc3_events);
 
   saveTracks(event);
 

@@ -6,8 +6,8 @@
 #define SIMCORE_GENIEREWEIGHTPRODUCER_H
 
 #include <map>
-#include <string>
 #include <memory>
+#include <string>
 
 #include "Framework/EventProcessor.h"
 #include "RwFramework/GSyst.h"

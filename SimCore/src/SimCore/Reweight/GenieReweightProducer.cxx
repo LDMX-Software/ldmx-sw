@@ -56,8 +56,7 @@ void GenieReweightProducer::configure(framework::config::Parameters& ps) {
   eventWeightsCollName_ = ps.get<std::string>("eventWeightsCollName");
   seed_ = ps.get<int>("seed");
   n_weights_ = static_cast<size_t>(ps.get<int>("n_weights"));
-  auto var_types_strings =
-      ps.get<std::vector<std::string> >("var_types");
+  auto var_types_strings = ps.get<std::vector<std::string> >("var_types");
 
   std::default_random_engine generator(seed_);
   std::normal_distribution<double> normal_distribution;
