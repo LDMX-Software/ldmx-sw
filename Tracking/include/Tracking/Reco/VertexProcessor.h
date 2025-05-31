@@ -42,71 +42,81 @@
 using VoidPropagator = Acts::Propagator<Acts::EigenStepper<>>;
 
 namespace tracking {
-namespace reco {
+  namespace reco {
+    
+    class VertexProcessor : public framework::Producer {
+    public:
+      /**
+       * Constructor.
+       *
+       * @param name The name of the instance of this object.
+       * @param process The process running this producer.
+       */
+      
+      VertexProcessor(const std::string &name, framework::Process &process);
 
-class VertexProcessor : public framework::Producer {
- public:
-  /**
-   * Constructor.
-   *
-   * @param name The name of the instance of this object.
-   * @param process The process running this producer.
-   */
+      /// Destructor
+      virtual ~VertexProcessor() = default;
+      
+      void onProcessStart() override;
+      void onProcessEnd() override;
+      
+      /**
+       * Configure the processor using the given user specified parameters.
+       *
+       * @param parameters Set of parameters used to configure this processor.
+       */
+      void configure(framework::config::Parameters &parameters) override;
+      
+      /**
+       * Run the processor
+       *
+       * @param event The event to process.
+       */
+      void produce(framework::Event &event) override;
+      /*
+      struct InputTrack{
+	InputTrack(const Acts::BoundTrackParameters& params):  m_parameters(params){}; 
+	const Acts::BoundTrackParameters& parameters() const {return m_parameters; };
 
-  VertexProcessor(const std::string &name, framework::Process &process);
-
-  /// Destructor
-  virtual ~VertexProcessor() = default;
-
-  void onProcessStart() override;
-  void onProcessEnd() override;
-
-  /**
-   * Configure the processor using the given user specified parameters.
-   *
-   * @param parameters Set of parameters used to configure this processor.
-   */
-  void configure(framework::config::Parameters &parameters) override;
-
-  /**
-   * Run the processor
-   *
-   * @param event The event to process.
-   */
-  void produce(framework::Event &event) override;
-
- private:
-  /// The contexts - TODO: they should move to some global location, I guess
-  Acts::GeometryContext gctx_;
-  Acts::MagneticFieldContext bctx_;
-
-  // Event counter
-  int nevents_{0};
-
-  // The interpolated bfield
-  std::shared_ptr<InterpolatedMagneticField3> sp_interpolated_bField_;
-
-  /// Path to the magnetic field map.
-  std::string field_map_{""};
-
-  // Track collection name
-
-  std::string trk_coll_name_{"Tracks"};
-
-  std::string input_pass_name_{""};
-
-  // The propagator
-  std::shared_ptr<VoidPropagator> propagator_;
-
-  // Processing time counter
-  double processing_time_{0.};
-
-  TH1F *h_m_;
-  TH1F *h_m_truthFilter_;
-  TH1F *h_m_truth_;
-};
-
-}  // namespace reco
+	int charge(){return m_parameters.charge();};
+      private:
+	Acts::BoundTrackParameters m_parameters;
+      };
+      */
+      //      std::function<Acts::BoundTrackParameters(Acts::InputTrack)> extractParameters = [](Acts::InputTrack params){return params.parameters();};
+    private:
+      /// The contexts - TODO: they should move to some global location, I guess
+      Acts::GeometryContext gctx_;
+      Acts::MagneticFieldContext bctx_;
+      
+      // Event counter
+      int nevents_{0};
+      
+      // The interpolated bfield
+      std::shared_ptr<InterpolatedMagneticField3> sp_interpolated_bField_;
+      
+      /// Path to the magnetic field map.
+      std::string field_map_{""};
+      
+      // Track collection name
+      
+      std::string trk_coll_name_{"Tracks"};
+      
+      std::string input_pass_name_{""};
+      
+      // The propagator
+      std::shared_ptr<VoidPropagator> propagator_;
+      
+      // Processing time counter
+      double processing_time_{0.};
+      
+      TH1F *h_m_;
+      TH1F *h_m_truthFilter_;
+      TH1F *h_m_truth_;
+    };
+    
+  }  // namespace reco
 }  // namespace tracking
 
 #endif  // TRACKING_RECO_VERTEXPROCESSOR_H_

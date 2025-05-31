@@ -72,9 +72,12 @@ void VertexProcessor::produce(framework::Event &event) {
   using VertexFitter = Acts::FullBilloirVertexFitter;
 
   VertexFitter::Config vertexFitterCfg;
-
+  vertexFitterCfg.extractParameters.connect<&Acts::InputTrack::extractParameters>(); 
+  vertexFitterCfg.trackLinearizer.connect<&Acts::HelicalTrackLinearizer::linearizeTrack>(&linearizer);
+  ldmx_log(info)<<"Making billoirFitter"; 
   VertexFitter billoirFitter(vertexFitterCfg);
-
+  ldmx_log(info)<<"Made fitter"; 
+  auto fieldCache =sp_interpolated_bField_->makeCache(bctx_);
   //  VertexFitter::State state(sp_interpolated_bField_->makeCache(bctx_));
 
   // Unconstrained fit
@@ -95,6 +98,7 @@ void VertexProcessor::produce(framework::Event &event) {
   if (tracks.size() < 1) return;
 
   // Transform the EDM ldmx::tracks to the format needed by ACTS
+  //  std::vector<Acts::BoundTrackParameters> billoir_tracks;
   std::vector<Acts::BoundTrackParameters> billoir_tracks;
 
   // TODO:: The perigee surface should be common between all tracks.
@@ -116,17 +120,54 @@ void VertexProcessor::produce(framework::Event &event) {
         tracking::sim::utils::unpackCov(tracks.at(iTrack).getPerigeeCov());
     auto part{Acts::GenericParticleHypothesis(Acts::ParticleHypothesis(
         Acts::PdgParticle(tracks.at(iTrack).getPdgID())))};
-    billoir_tracks.push_back(Acts::BoundTrackParameters(
-        perigeeSurface, paramVec, std::move(covMat), part));
+
+    billoir_tracks.push_back(Acts::BoundTrackParameters(perigeeSurface, paramVec, std::move(covMat), part));
   }
 
   // Select exactly 2 tracks
-  if (billoir_tracks.size() != 2) {
+  //  if (billoir_tracks.size() != 2) {
+
+  //check the number of tracks
+  if (billoir_tracks.size() >10 || billoir_tracks.size() <2) {
+    ldmx_log(info)<<" bailing because we found "<<billoir_tracks.size()
+		  <<" tracks";
     return;
   }
 
-  if (billoir_tracks.at(0).charge() * billoir_tracks.at(1).charge() > 0) return;
+  //loop over all pairs or tracks
+  std::vector<Acts::Vertex> foundVerts; 
+  for (int iBtp = 0; iBtp<billoir_tracks.size(); iBtp++){
+    for (int kBtp = iBtp+1; kBtp<billoir_tracks.size(); kBtp++){
 
+      if (billoir_tracks.at(iBtp).charge() * billoir_tracks.at(kBtp).charge() > 0) {
+	ldmx_log(info)<<" bailing on this pair because tracks have same sign "; 
+	continue;
+      }
+
+      std::vector<Acts::InputTrack> in_tracks;
+
+      in_tracks.push_back(Acts::InputTrack(&billoir_tracks.at(iBtp))); 
+      in_tracks.push_back(Acts::InputTrack(&billoir_tracks.at(kBtp))); 
+      ldmx_log(info)<<"Fitting vertex of two tracks";
+      Acts::Result<Acts::Vertex> vertRes=billoirFitter.fit(in_tracks,vfOptions, fieldCache);
+
+      if (vertRes.ok()){
+	Acts::Vertex vert=vertRes.value();
+	foundVerts.push_back(vert);
+	ldmx_log(info)<<"done with vertex"; 
+	ldmx_log(info)<<"vertex position (x,y,z) = ("
+		      <<vert.position()[0]<<","
+		      <<vert.position()[1]<<","
+		      <<vert.position()[2]<<")";
+	ldmx_log(info)<<"vertex chi2/NDF = "
+		      <<vert.fitQuality().first<<"/"
+		      <<vert.fitQuality().second;
+      } else{
+	ldmx_log(info)<<"vertex fit failed"; 
+      }
+      //  h_m_->Fill((p1 + p2).M());
+    }
+  }
   // Pion mass hypothesis
   double pion_mass = 139.570 * Acts::UnitConstants::MeV;
 
@@ -180,8 +221,7 @@ void VertexProcessor::produce(framework::Event &event) {
     // Check if the tracks have opposite charge
     h_m_truthFilter_->Fill((p1 + p2).M());
   }
-
-  h_m_->Fill((p1 + p2).M());
+  
 
   auto end = std::chrono::high_resolution_clock::now();
   // long long microseconds =
