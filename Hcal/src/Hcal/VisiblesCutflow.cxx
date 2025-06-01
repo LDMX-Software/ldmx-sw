@@ -60,6 +60,11 @@ namespace hcal {
     auto particle_map{event.getMap<int, ldmx::SimParticle>("SimParticles")};
 
     for (auto const &it : particle_map) {
+      if (it.second.getPdgID() == 622) {
+	std::vector<double> p = it.second.getMomentum();
+	histograms_.fill("beamEnergyFrac", it.second.getEnergy()/8000.);
+	histograms_.fill("beamAngle", std::acos(p[2]/std::sqrt(p[0]*p[0] + p[1]*p[1] + p[2]*p[2])));;
+      }
       std::vector<int> parents = it.second.getParents();
       for (int trackid : parents) {
 	if (trackid == 0 && it.second.getPdgID() == -11) {
@@ -349,11 +354,11 @@ namespace hcal {
 
     histograms_.fill("visiblesDisc", pred);
 
-    for (int i = 0; i < 1000; i++) {
-      double disc = 0.9999 + (double(i)/1000.)*(1. - 0.9999);
-      histograms_.fill("visiblesDiscHighNorm", 0.9999 + ((double(i)+0.5)/1000.)*(1. - 0.9999));
+    for (int i = 0; i < 10000; i++) {
+      double disc = 0.999 + (double(i)/10000.)*(1. - 0.999);
+      histograms_.fill("visiblesDiscHighNorm", 0.999 + ((double(i)+0.5)/10000.)*(1. - 0.999));
       if (pred >= disc) {
-	histograms_.fill("visiblesDiscHigh", 0.9999 + ((double(i)+0.5)/1000.)*(1.-0.9999));
+	histograms_.fill("visiblesDiscHigh", 0.999 + ((double(i)+0.5)/10000.)*(1.-0.999));
       }
     }
 
@@ -363,14 +368,6 @@ namespace hcal {
       return;
     }
     histograms_.fill("passVisiblesBDT", decayz_);
-
-    for (int i = 0; i < 1000; i++) {
-      double disc = 0.999 + (double(i)/1000.)*(1. - 0.999);
-      histograms_.fill("ecalDiscHighNorm", 0.999 + ((double(i)+0.5)/1000.)*(1. - 0.999));
-      if (ecalVeto.getDisc() >= disc) {
-        histograms_.fill("ecalDiscHigh", 0.999 + ((double(i)+0.5)/1000.)*(1.-0.999));
-      }
-    }
 
     return;
     
