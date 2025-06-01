@@ -94,9 +94,9 @@ class VisiblesCutflow(ldmxcfg.Analyzer) :
     def __init__(self, name='vis') :
         super().__init__(name, 'hcal::VisiblesCutflow', 'Hcal')
 
-        self.bdt_file = makeBDTPath("visibles_v1")
+        self.bdt_file = makeBDTPath("visibles_v2")
         self.feature_list_name = "float_input"
-        self.disc_cut = 0.999978
+        self.disc_cut = 0.999965
        
         self.beam_energy = 8000.0
         
@@ -122,12 +122,12 @@ class VisiblesCutflow(ldmxcfg.Analyzer) :
         self.build1DHistogram("containment", "containment", 40, 0, 2000)
         self.build1DHistogram("passVisiblesBDT", "passVisiblesBDT", 40, 0, 2000)
         self.build1DHistogram("visiblesDisc", "visiblesDisc", 100, 0, 1)
-        self.build1DHistogram("visiblesDiscHigh", "visiblesDiscHigh", 1000, 0.9999, 1)
-        self.build1DHistogram("visiblesDiscHighNorm", "visiblesDiscHighNorm", 1000, 0.9999, 1)
-        self.build1DHistogram("ecalDiscHigh", "ecalDiscHigh", 1000, 0.999, 1)
-        self.build1DHistogram("ecalDiscHighNorm", "ecalDiscHighNorm", 1000, 0.999, 1)
+        self.build1DHistogram("visiblesDiscHigh", "visiblesDiscHigh", 10000, 0.999, 1)
+        self.build1DHistogram("visiblesDiscHighNorm", "visiblesDiscHighNorm", 10000, 0.999, 1)
         self.build2DHistogram("ecalDiscvsVisDisc", "visDisc", 1000, 0.9999, 1, "ecalDisc", 1000, 0.999, 1)
-        
+
+        self.build1DHistogram("beamEnergyFrac", "beamEnergyFrac", 100, 0.5, 1)
+        self.build1DHistogram("beamAngle", "beamAngle", 100, 0, 0.5)
 
         self.build1DHistogram("layershit", "layershit", 100, 0, 100);
         self.build1DHistogram("xStd", "xStd", 80, 0, 800);
