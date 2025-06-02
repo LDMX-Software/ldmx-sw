@@ -9,7 +9,8 @@ void TrigMipReco::configure(framework::config::Parameters& ps) {
   if (calorimeterTypeIsHcal_) {
     minEnergy_ = 8.0f; // mip peak is 10-11
   } else {
-    minEnergy_ = 1.5f; // change later
+    minEnergy_ = 3.0f;
+    maxEnergy_ = 26.0f;
   }
 }
 
@@ -74,8 +75,8 @@ void TrigMipReco::produce(framework::Event& event) {
       std::sort(mips.begin(), mips.end());
 
       event.add(passCollName_, mips);
-  } else {
-        float radiusCut = 5; // mm
+  } else { // ECAL MIP Reconstruction
+        float radiusCut = 50; // mm
         int maxLayer = 32;
         int minTrackLength = 5; // example
 
@@ -84,21 +85,24 @@ void TrigMipReco::produce(framework::Event& event) {
         std::vector<std::vector<const TrigCaloHit*>> candidateTracks;
         std::map<const TrigCaloHit*, size_t> hitToBestTrack;
 
+        // Filter for section = 0, energy range, and hits < 33 layers
         for (const auto& hit : caloHits) {
-            if( hit.section()>0 || hit.energy()<minEnergy_ || hit.layer()>maxLayer) continue;
+            if( hit.section()>0 || hit.energy()<minEnergy_ || hit.energy()>maxEnergy_ || hit.layer()>maxLayer) continue;
             layerHits[hit.layer()].push_back(hit);
         }
 
+        // Find mip seeds
         for (const auto& [seedLayer, seeds] : layerHits) {\
             for (const auto& seed: seeds) {
-                if (usedHits.count(&seed)) continue;
+                if (usedHits.count(&seed)) continue; // Skip if hit already used
 
                 std::vector<const TrigCaloHit*> track;
                 track.push_back(&seed);
 
-                const TrigCaloHit* last = &seed;
+                const TrigCaloHit* last = &seed; // Most recent hit in track
                 int holes = 0;
 
+                // Look layer by layer for next hit within dR
                 for (int l = seed.layer() + 1; l <= maxLayer; ++l) {
                     const TrigCaloHit* bestHit = nullptr;
                     float bestdR2 = radiusCut * radiusCut;
@@ -106,17 +110,21 @@ void TrigMipReco::produce(framework::Event& event) {
                     for (const auto& cand : layerHits[l]) {
                         if (usedHits.count(&cand)) continue;
 
-                        float dx = cand.x() - last->x();
+                        // corrects for layer shift in x-direction, we calculated that the shift is 4.82 mm
+                        float layerShiftLast = (last->layer() % 2 == 0) ? 0.0f : 4.82f;
+                        float layerShiftCand = (cand.layer() % 2 == 0) ? 0.0f : 4.82f;
+
+                        float dx = (cand.x() - layerShiftCand) - (last->x() - layerShiftLast);
                         float dy = cand.y() - last->y();
                         float dR2 = dx*dx + dy*dy;
                         if (dR2 < bestdR2) {
                             bestdR2 = dR2;
-                            bestHit = &cand;
+                            bestHit = &cand; // closest unused hit in next layer
                         }
                     }
 
                     if (bestHit) {
-                        track.push_back(bestHit);
+                        track.push_back(bestHit); // builds track from best hits
                         last = bestHit;
                         } else {
                             holes++;
@@ -128,23 +136,26 @@ void TrigMipReco::produce(framework::Event& event) {
                     size_t i = candidateTracks.size();
                     candidateTracks.push_back(track);
 
+                    // ensures that only the longest track per event is kept
                     for (const auto* h : track) {
                         if (!hitToBestTrack.count(h) ||
                             candidateTracks[i].size() > candidateTracks[hitToBestTrack[h]].size()) {
                                 hitToBestTrack[h] = i;
+                        usedHits.insert(h); // adds used hits to vector so they cannot be used again
                         }
                     }
                 }
             }
         }
 
-        std::set<size_t> validTrackIndices;
+        std::set<size_t> validTrackIDs;
         for (const auto& [hit, idx] : hitToBestTrack) {
-            validTrackIndices.insert(idx);
+            validTrackIDs.insert(idx);
         }
 
         TrigMipCollection mips;
-        for (size_t idx : validTrackIndices) {
+        // Converts tracks to MIP objects
+        for (size_t idx : validTrackIDs) {
             const auto& track = candidateTracks[idx];
 
             TrigMip mip;
