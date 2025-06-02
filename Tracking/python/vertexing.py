@@ -26,6 +26,7 @@ class VertexProcessor(Producer) :
 
         self.field_map = makeFieldMapPath()
         self.trk_coll_name = 'Tracks'
+        self.out_vtx_collection = 'Vertices'
         self.input_pass_name = ''
         
 

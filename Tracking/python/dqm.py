@@ -533,3 +533,31 @@ class StraightTracksDQM(ldmxcfg.Analyzer):
             self.build2DHistogram("target_pulls_loc1-vs-N_hits","N_hits",5,0.0,5.0,"target_pulls_loc1 [mm]",100,-3,3)
             self.build2DHistogram("ecal_pulls_loc0-vs-N_hits","N_hits",5,0.0,5.0,"ecal_pulls_loc0 [mm]",100,-3,3)
             self.build2DHistogram("ecal_pulls_loc1-vs-N_hits","N_hits",5,0.0,5.0,"ecal_pulls_loc1 [mm]",100,-3,3)
+
+
+class VertexingDQM(ldmxcfg.Analyzer):
+    def __init__(self, name="VertexingDQM"):
+        super().__init__(name, 'tracking::dqm::VertexingDQM','Tracking')
+        self.track_collection = "RecoilTracksClean"
+        self.vertex_collection = "RecoilVertices"
+        self.truth_collection = "RecoilTruthTracks"
+        self.target_sp_events_passname= ""
+        self.target_sp_passname= ""
+        self.truth_events_passname = ""
+        self.truth_passname = ""
+        self.track_collection_events_passname = ""
+        self.track_passname = ""
+        self.vertex_collection_events_passname = ""
+        self.vertex_passname = ""
+        self.title="recoil_vertex_"
+        self.subdetector = "Recoil"
+
+        self.nbins    = 50
+    def buildHistograms(self) :
+        self.build1DHistogram("N_tracks","N_tracks", 10,0.,10.); 
+        self.build1DHistogram("N_vertex","N_vertex", 10,0.,10.); 
+        self.build1DHistogram("vertex_x","vertex_x",self.nbins, -50., 50.)
+        self.build1DHistogram("vertex_y","vertex_y",self.nbins, -50., 50.)
+        self.build1DHistogram("vertex_z","vertex_z",self.nbins, -50., 50.)
+        print(self.histograms)
+                

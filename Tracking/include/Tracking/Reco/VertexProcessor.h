@@ -102,7 +102,8 @@ namespace tracking {
       // Track collection name
       
       std::string trk_coll_name_{"Tracks"};
-      
+       // The output track collection
+      std::string out_vtx_collection_{"Vertices"};
       std::string input_pass_name_{""};
       
       // The propagator

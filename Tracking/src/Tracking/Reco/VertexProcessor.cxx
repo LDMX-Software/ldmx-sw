@@ -1,5 +1,5 @@
 #include "Tracking/Reco/VertexProcessor.h"
-
+#include "Tracking/Event/Vertex.h"
 #include <chrono>
 
 #include "Acts/MagneticField/ConstantBField.hpp"
@@ -46,18 +46,19 @@ void VertexProcessor::configure(framework::config::Parameters &parameters) {
 
   trk_coll_name_ =
       parameters.getParameter<std::string>("trk_coll_name", "Tracks");
-
+  out_vtx_collection_ =
+    parameters.getParameter<std::string>("vtx_coll_name", "Vertices");
   input_pass_name_ = parameters.getParameter<std::string>("input_pass_name");
 }
 
 void VertexProcessor::produce(framework::Event &event) {
   // TODO:: Move this to an external file
   // And move all this to a single time per processor not for each event!!
-
+  
   nevents_++;
   auto start = std::chrono::high_resolution_clock::now();
   auto &&stepper = Acts::EigenStepper<>{sp_interpolated_bField_};
-
+  
   // Set up propagator with void navigator
   propagator_ = std::make_shared<VoidPropagator>(stepper);
 
@@ -109,6 +110,7 @@ void VertexProcessor::produce(framework::Event &event) {
       Acts::Surface::makeShared<Acts::PerigeeSurface>(Acts::Vector3(
           tracks.front().getPerigeeX(), tracks.front().getPerigeeY(),
           tracks.front().getPerigeeZ()));
+  int pionPdgId = 211;  // pi+
 
   for (unsigned int iTrack = 0; iTrack < tracks.size(); iTrack++) {
     Acts::BoundVector paramVec;
@@ -118,8 +120,9 @@ void VertexProcessor::produce(framework::Event &event) {
 
     Acts::BoundSquareMatrix covMat =
         tracking::sim::utils::unpackCov(tracks.at(iTrack).getPerigeeCov());
-    auto part{Acts::GenericParticleHypothesis(Acts::ParticleHypothesis(
-        Acts::PdgParticle(tracks.at(iTrack).getPdgID())))};
+    //use pion hypothsis for now. 
+    auto part{Acts::GenericParticleHypothesis(Acts::ParticleHypothesis(Acts::PdgParticle(pionPdgId)))};
+    //    Acts::PdgParticle(tracks.at(iTrack).getPdgID())))};
 
     billoir_tracks.push_back(Acts::BoundTrackParameters(perigeeSurface, paramVec, std::move(covMat), part));
   }
@@ -135,7 +138,7 @@ void VertexProcessor::produce(framework::Event &event) {
   }
 
   //loop over all pairs or tracks
-  std::vector<Acts::Vertex> foundVerts; 
+  std::vector<ldmx::Vertex> foundVerts; 
   for (int iBtp = 0; iBtp<billoir_tracks.size(); iBtp++){
     for (int kBtp = iBtp+1; kBtp<billoir_tracks.size(); kBtp++){
 
@@ -153,7 +156,6 @@ void VertexProcessor::produce(framework::Event &event) {
 
       if (vertRes.ok()){
 	Acts::Vertex vert=vertRes.value();
-	foundVerts.push_back(vert);
 	ldmx_log(info)<<"done with vertex"; 
 	ldmx_log(info)<<"vertex position (x,y,z) = ("
 		      <<vert.position()[0]<<","
@@ -162,13 +164,26 @@ void VertexProcessor::produce(framework::Event &event) {
 	ldmx_log(info)<<"vertex chi2/NDF = "
 		      <<vert.fitQuality().first<<"/"
 		      <<vert.fitQuality().second;
+	//fill in the ldmx::vertex
+	ldmx::Vertex ldmxVert=ldmx::Vertex();
+	ldmxVert.setPosition(std::vector<double>{vert.position()[0],vert.position()[1], vert.position()[2]}); 
+	ldmxVert.setTime(vert.time());
+	ldmxVert.setChi2(vert.fitQuality().first); 
+	ldmxVert.setNDF(vert.fitQuality().second); 
+	//check if TrackAtVertex are the fitted tracks
+	foundVerts.push_back(ldmxVert);
       } else{
 	ldmx_log(info)<<"vertex fit failed"; 
       }
       //  h_m_->Fill((p1 + p2).M());
     }
   }
+  
+  // Add the tracks to the event
+  ldmx_log(info)<<"adding "<<foundVerts.size()<<" to event in collection name "<<out_vtx_collection_; 
+  event.add(out_vtx_collection_, foundVerts);
   // Pion mass hypothesis
+  /*
   double pion_mass = 139.570 * Acts::UnitConstants::MeV;
 
   TLorentzVector p1, p2;
@@ -214,13 +229,15 @@ void VertexProcessor::produce(framework::Event &event) {
 
     h_m_truth_->Fill((pion_seeds.at(0) + pion_seeds.at(1)).M());
   }
-
-  if ((pion_seeds.size() == 2) &&
-      (pion_seeds.at(0) + pion_seeds.at(1)).M() > 0.490 &&
-      (pion_seeds.at(0) + pion_seeds.at(1)).M() < 0.510) {
+  */
+  /*
+    if ((pion_seeds.size() == 2) &&
+    (pion_seeds.at(0) + pion_seeds.at(1)).M() > 0.490 &&
+    (pion_seeds.at(0) + pion_seeds.at(1)).M() < 0.510) {
     // Check if the tracks have opposite charge
     h_m_truthFilter_->Fill((p1 + p2).M());
-  }
+    }
+  */
   
 
   auto end = std::chrono::high_resolution_clock::now();
