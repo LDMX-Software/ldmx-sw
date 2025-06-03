@@ -29,6 +29,9 @@ void DNNEcalVetoProcessor::configure(
   // debug mode
   debug_ = parameters.getParameter<bool>("debug");
 
+  // max number of hits that this veto looks at
+  // max_num_hits_ = parameters.getParameter<int>("max_num_hits");
+
   // Set the collection name as defined in the configuration
   collectionName_ = parameters.getParameter<std::string>("collection_name");
 
@@ -50,6 +53,8 @@ void DNNEcalVetoProcessor::produce(framework::Event& event) {
       ecalRecHits.begin(), ecalRecHits.end(),
       [](const ldmx::EcalHit& hit) { return hit.getEnergy() > 0; });
 
+  ldmx_log(info) << "nhits = " << nhits << " max_num_hits_ = " << max_num_hits_;
+
   if (nhits < max_num_hits_) {
     // make inputs
     make_inputs(ecal_geometry, ecalRecHits);
@@ -60,9 +65,7 @@ void DNNEcalVetoProcessor::produce(framework::Event& event) {
     result.setDiscValue(-99);
   }
 
-  if (debug_) {
-    std::cout << "... disc_val = " << result.getDisc() << std::endl;
-  }
+  ldmx_log(info) << "ParticleNet disc valu = " << result.getDisc();
 
   result.setVetoResult(result.getDisc() > disc_cut_);
 
@@ -89,6 +92,7 @@ void DNNEcalVetoProcessor::make_inputs(
     if (hit.getEnergy() <= 0) continue;
     ldmx::EcalID id(hit.getID());
     auto [x, y, z] = geom.getPosition(id);
+    std::cout << " y = " << y << " z = " << z << std::endl;
 
     data_[0].at(coordinate_x_offset_ + idx) = x;
     data_[0].at(coordinate_y_offset_ + idx) = y;
@@ -109,6 +113,7 @@ void DNNEcalVetoProcessor::make_inputs(
       for (unsigned i = 0; i < input_sizes_[iname]; ++i) {
         std::cout << data_[iname].at(i) << ", ";
         if ((i + 1) % max_num_hits_ == 0) {
+          std::cout << std::endl;
           std::cout << std::endl;
         }
       }
