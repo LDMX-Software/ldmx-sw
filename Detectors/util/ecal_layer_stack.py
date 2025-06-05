@@ -6,7 +6,8 @@ have been updated using the output of this script.
 """
 
 import sys
-from dataclasses import dataclass
+from dataclasses import dataclass, asdict
+import json
 
 
 @dataclass
@@ -73,6 +74,24 @@ class PDGMaterial:
     def zero(cls):
         """we need a zero-object to start summing from in the mixture function"""
         return cls(0,0,0,0)
+
+
+class PDGMaterialEncoder(json.JSONEncoder):
+    """Encode a PDGMaterial into JSON
+
+    This just returns a dictionary of the dataclass members
+    when encoding to JSON so that we can pretty-print the material
+    table with indenting for easier readability.
+    For example
+
+        print(json.dumps(Layer.materials, cls=PDGMaterialEncoder, indent=2))
+
+    """
+
+    def default(self, o):
+        if isinstance(o, PDGMaterial):
+            return asdict(o)
+        return super().default(o)
 
 
 # This dictionary holds materials that are copied down from the PDG site
@@ -348,6 +367,7 @@ def materials_between_sensdet(layer_stack) :
         mbs.append(current)
     return mbs
 
+
 def calc_weights(layers_partitioned_by_sensdet) :
     # Does not include sensitive detector layers
     dE_between_sensdet = [ ]
@@ -378,6 +398,7 @@ def calc_weights(layers_partitioned_by_sensdet) :
 
     return dE_between_sensdet, X0_between_sensdet, L_between_sensdet, Zpos_layer
 
+
 def print_weights(dE_between_sensdet, X0_between_sensdet, L_between_sensdet, Zpos_layer, 
             output = sys.stdout) :
     output.write('{0:>5s} {1:>7s} {2:>6s} {3:>6s} {4:>6s}\n'.format('Layer', 'dE', 'X0', 'Lambda', 'Zpos'))
@@ -391,8 +412,33 @@ def print_weights(dE_between_sensdet, X0_between_sensdet, L_between_sensdet, Zpo
         'Back', dE_between_sensdet[-1], X0_between_sensdet[-1], L_between_sensdet[-1], Zpos_layer[-1]))
     output.flush()
 
-def main() :
-    # Section, bilayers, front, cooling
+
+def command(func):
+    command.__list__[func.__name__] = func
+    return func
+
+command.__list__ = {}
+
+
+@command
+def print_layer_materials():
+    print(json.dumps({
+        name : {
+            attr: getattr(material, attr)()
+            for attr in [
+                'minimum_ionization_MeV_mm',
+                'radiation_length_mm',
+                'nuclear_interaction_length_mm'
+            ]
+        }
+        for name, material in Layer.materials.items()
+    }, indent=2))
+
+
+@command
+def ldmx_ecal_v14():
+    """full LDMX Ecal v14 geometry"""
+    # section, bilayers, front, cooling
     absorber_sections = [
             ('a',1,1,1),
             ('b',1,2,1.5),
@@ -410,8 +456,26 @@ def main() :
     weights = calc_weights(mbs)
     print_weights(*weights)
 
-    for l in layers :
-        print(l)
+#    for l in layers :
+#        print(l)
+
+@command
+def minildmx():
+    # section, bilayers, front, cooling
+    layers = Layer.enumerate_full_stack([('a',3,0,0)])
+    mbs = materials_between_sensdet(layers)
+    weights = calc_weights(mbs)
+    print_weights(*weights)
+
+
+def main():
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument('command', choices = list(command.__list__))
+    args = parser.parse_args()
+
+    command.__list__[args.command]()
+
 
 if __name__ == '__main__' :
     main()
