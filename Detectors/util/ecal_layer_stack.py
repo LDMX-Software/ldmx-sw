@@ -1,6 +1,163 @@
-"""Calculate the depth parameters for the ECal absorber layers"""
+"""Calculate the depth parameters for the ECal layers
+
+This is a stand-alone python script meant to help make these calculations easer.
+It is kept within ldmx-sw since both the GDML and the reconstruction layer weights
+have been updated using the output of this script.
+"""
 
 import sys
+from dataclasses import dataclass
+
+
+@dataclass
+class PDGMaterial:
+    """a material copied down from the PDG's Atomic and Nuclear Properties site
+
+    This class also has the ability to be multiplied by weights and added to other
+    instances of this class, but that is purely implemented so that the `mixture`
+    function below can be used.
+
+    Attributes
+    ----------
+    density: float
+        density of material in g / cm^3
+    minimum_ionization: float
+        MeV * cm^2 / g
+    radiation_length: float
+        g / cm^2
+    nuclear_interaction_length: float
+        g / cm^2
+    """
+
+    density: float
+    minimum_ionization: float
+    radiation_length: float
+    nuclear_interaction_length: float
+
+
+    def minimum_ionization_MeV_mm(self):
+        """need to resolve the minimum ionization into MeV/mm units"""
+        return (self.minimum_ionization * self.density) / 10
+
+
+    def radiation_length_mm(self):
+        """resolve the radiation length into mm units"""
+        return (self.radiation_length / self.density) * 10
+
+
+    def nuclear_interaction_length_mm(self):
+        """resolve the nuclear interaction length into mm"""
+        return (self.nuclear_interaction_length / self.density) * 10
+
+
+    def __rmul__(self, weight):
+        """weight this material by input fraction"""
+        return PDGMaterial(
+            density = weight*self.density,
+            minimum_ionization = weight*self.minimum_ionization,
+            radiation_length = weight*self.radiation_length,
+            nuclear_interaction_length = weight*self.nuclear_interaction_length
+        )
+
+
+    def __add__(self, other):
+        """add this material and another"""
+        return PDGMaterial(
+            density = self.density + other.density,
+            minimum_ionization = self.minimum_ionization + other.minimum_ionization,
+            radiation_length = self.radiation_length + other.radiation_length,
+            nuclear_interaction_length = self.nuclear_interaction_length + other.nuclear_interaction_length
+        )
+
+    @classmethod
+    def zero(cls):
+        """we need a zero-object to start summing from in the mixture function"""
+        return cls(0,0,0,0)
+
+
+# This dictionary holds materials that are copied down from the PDG site
+__materials__ = dict(
+    Al = PDGMaterial(
+        density = 2.699,
+        minimum_ionization = 1.615,
+        nuclear_interaction_length = 107.2,
+        radiation_length = 24.01
+    ),
+    Air = PDGMaterial(
+        density = 1.205e-3,
+        minimum_ionization = 1.815,
+        nuclear_interaction_length = 90.1,
+        radiation_length = 36.62
+    ),
+    Cu = PDGMaterial(
+        density = 8.960,
+        minimum_ionization = 1.403,
+        nuclear_interaction_length = 137.3,
+        radiation_length = 12.86
+    ),
+    # this oxygen is oxygen gas
+    O = PDGMaterial(
+        density = 1.332e-3,
+        minimum_ionization = 1.801,
+        nuclear_interaction_length = 90.2,
+        radiation_length = 34.24
+    ),
+    Na = PDGMaterial(
+        density = 0.9710,
+        minimum_ionization = 1.639,
+        nuclear_interaction_length = 102.6,
+        radiation_length = 27.74
+    ),
+    Si = PDGMaterial(
+        density = 2.329,
+        minimum_ionization = 1.664,
+        nuclear_interaction_length = 108.4,
+        radiation_length = 21.82
+    ),
+    Ca = PDGMaterial(
+        density = 1.550,
+        minimum_ionization = 1.655,
+        nuclear_interaction_length = 119.8,
+        radiation_length = 16.14
+    ),
+    W = PDGMaterial(
+        density = 19.30,
+        minimum_ionization = 1.145,
+        nuclear_interaction_length = 191.9,
+        radiation_length = 6.76
+    ),
+    # this carbon is 6 C carbon (graphite)
+    C = PDGMaterial(
+        density = 2.210,
+        minimum_ionization = 1.742,
+        nuclear_interaction_length = 85.8,
+        radiation_length = 42.70
+    ),
+    polycarbonate = PDGMaterial(
+        density = 1.200,
+        minimum_ionization = 1.886,
+        nuclear_interaction_length = 83.6,
+        radiation_length = 41.50
+    )
+)
+
+
+def pdg_material(**kwargs):
+    """Estimate material properties by doing a weighted sum of its components
+    from the PDG material table copied from online.
+
+    The input key-word arguments specify the material (key) and its fraction (value).
+    For example, the following would produce a material which is 50% copper and 50% silicon.
+
+        pdg_material(Cu = 0.5, Si = 0.5)
+
+    """
+    
+    weight_sum = sum(weight for weight in kwargs.values())
+    if weight_sum != 1.0:
+        raise ValueError(f"Sum of weights provided ({weight_sum}) does not equal 1.0: {kwargs}")
+    return sum((weight*__materials__[material] for material, weight in kwargs.items()), PDGMaterial.zero())
+
 
 def print_gdml_list(**kwargs) :
     for name, l in kwargs.items() :
@@ -36,6 +193,25 @@ class Layer :
     be forced to use a similar material rather than one that perfectly matches our
     GDML definiton. The unit-conversion calculations is left here for transparency.
 
+    Here   | PDG
+    -------|-----
+    Al     | Al
+    Air    | Mixtures -> Air (dry, 1 atm)
+    PCB    | weighted mix of elements
+    Si     | Si
+    W      | W
+    Carbon | C -> 6 C carbon (graphite)
+    Glue   | Polymers -> polycarbonate (OC6H4C(CH3)2C6H4OCO)n
+
+    PCB in the GDML is 50% Cu, 23% O, 4.8% Na, 17% Si, 5.2% Ca,
+    and the PDG does not have any mixtures in the drop down menu
+    that have Copper in them so I have to spin my own.
+
+    Glue in the GDML is a polycarbon is 85% C, 4% H, and 11% O,
+    the polycarbonate in the PDG is 75% C, 5% H and 20% O which
+    I deemed close enough.
+
+
     dEdx : dict[str, float]
         material name to average energy loss per unit distance (MeV/mm) of a MIP.
         If listed in the PDG, they are the "Minimum ionization" line.
@@ -52,34 +228,35 @@ class Layer :
         The calculation is (nuclen [g/cm^2] / density [g/cm^3]) * 10 [mm/cm].
     """
 
+    materials = dict(
+        Al = pdg_material(Al = 1.0),
+        Air = pdg_material(Air = 1.0),
+        PCB = pdg_material(
+            Cu = 0.5,
+            O = 0.22990022990023,
+            Na = 0.0482205482205484,
+            Si = 0.168276668276668,
+            Ca = 0.0536025536025536
+        ),
+        Si = pdg_material(Si = 1.0),
+        W = pdg_material(W = 1.0),
+        Carbon = pdg_material(C = 1.0),
+        Glue = pdg_material(polycarbonate = 1.0)
+    )
+
     dEdx = {
-        'Al'     : (2.699 * 1.615) / 10,
-        'Air'    : (1.815 * 1.205) / 10,
-        'PCB'    : (1.815 * 1.205) / 10,
-        'Si'     : (2.329 * 1.664) / 10,
-        'W'      : (19.3  * 1.145) / 10,
-        'Carbon' : (1.742 * 2.210) / 10,
-        'Glue'   : (1.815 * 1.205) / 10
+        name : material.minimum_ionization_MeV_mm()
+        for name, material in materials.items()
     }
-    
+
     X0 = {
-        'Al'     : ( 24.01 / 2.699 ) * 10,
-        'Air'    : ( 36.62 / 1.205 ) * 10,
-        'PCB'    : ( 36.62 / 1.205 ) * 10,
-        'Si'     : ( 21.82 / 2.329 ) * 10,
-        'W'      : ( 6.76  / 19.3  ) * 10,
-        'Carbon' : ( 42.70 / 2.210 ) * 10,
-        'Glue'   : ( 36.62 / 1.205 ) * 10
+        name: material.radiation_length_mm()
+        for name, material in materials.items()
     }
     
     nuclen = {
-        'Al'     : ( 107.2 / 2.699 ) * 10,
-        'Air'    : ( 90.1  / 1.205 ) * 10,
-        'PCB'    : ( 90.1  / 1.205 ) * 10,
-        'Si'     : ( 108.4 / 2.329 ) * 10,
-        'W'      : ( 191.9 / 19.3  ) * 10,
-        'Carbon' : ( 85.8  / 2.210 ) * 10,
-        'Glue'   : ( 90.1  / 1.205 ) * 10
+        name: material.nuclear_interaction_length_mm()
+        for name, material in materials.items()
     }
 
     SensDetThickness = 0.3
