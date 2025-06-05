@@ -462,10 +462,15 @@ def ldmx_ecal_v14():
 @command
 def minildmx():
     # section, bilayers, front, cooling
-    layers = Layer.enumerate_full_stack([('a',3,0,0)])
-    mbs = materials_between_sensdet(layers)
-    weights = calc_weights(mbs)
-    print_weights(*weights)
+    print('            |     Depth     |')
+    print('N Bi-Layers | X0    | mm    |')
+    for n in range(1,4):
+        layers = Layer.enumerate_full_stack([('a',n,0,0)])
+        print('{n:>11} | {x0:<5.3g} | {z:<5.3g} |'.format(
+            n = n,
+            x0 = sum(layer.thickness / layer.x0 for layer in layers),
+            z = sum(layer.thickness for layer in layers)
+        ))
 
 
 def main():
