@@ -106,6 +106,22 @@ void NtupleWriter::produce(framework::Event& event) {
     n.setVar("Hcal_e_nLayer", int(energyAfterLayer.size()));
   }
 
+  inTag = "hcalTrigQuadsSideLayerSums";
+  if (writeHcalSums_ && event.exists(inTag)) {
+    const auto sums = event.getCollection<TrigEnergySum>(inTag);
+    vector<float> energyAfterLayer;
+    for (const auto& sum : sums) {
+      if (!(sum.hwEnergy() > 0)) continue;
+      if (sum.layer() >= energyAfterLayer.size())
+        energyAfterLayer.resize(sum.layer() + 1);
+      for (int i = 0; i <= sum.layer(); i++) {
+        energyAfterLayer[i] += sum.hwEnergy();
+      }
+    }
+    n.setVar("SideHcal_e", energyAfterLayer);
+    // n.setVar("Hcal_e_nLayer", int(energyAfterLayer.size()));
+  }
+
   inTag = "trigElectrons";
   if (writeEle_ && event.exists(inTag)) {
     const auto eles = event.getCollection<TrigParticle>(inTag);
@@ -217,6 +233,7 @@ void NtupleWriter::onProcessStart() {
   if (writeHcalSums_) {
     n.addVar<vector<float> >(tag_, "Hcal_e_afterLayer");
     n.addVar<int>(tag_, "Hcal_e_nLayer");
+    n.addVar<vector<float> >(tag_, "SideHcal_e");
   };
 }
 void NtupleWriter::onProcessEnd() {
