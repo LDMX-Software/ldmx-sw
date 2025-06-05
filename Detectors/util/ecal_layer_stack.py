@@ -108,6 +108,12 @@ __materials__ = dict(
         nuclear_interaction_length = 90.1,
         radiation_length = 36.62
     ),
+    SuperDenseAir = PDGMaterial(
+        density = 1.205,
+        minimum_ionization = 1.815,
+        nuclear_interaction_length = 90.1,
+        radiation_length = 36.62
+    ),
     Cu = PDGMaterial(
         density = 8.960,
         minimum_ionization = 1.403,
