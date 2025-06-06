@@ -51,25 +51,6 @@ class PDGMaterial:
         return (self.nuclear_interaction_length / self.density) * 10
 
 
-    def __rmul__(self, weight):
-        """weight this material by input fraction"""
-        return PDGMaterial(
-            density = weight*self.density,
-            minimum_ionization = weight*self.minimum_ionization,
-            radiation_length = weight*self.radiation_length,
-            nuclear_interaction_length = weight*self.nuclear_interaction_length
-        )
-
-
-    def __add__(self, other):
-        """add this material and another"""
-        return PDGMaterial(
-            density = self.density + other.density,
-            minimum_ionization = self.minimum_ionization + other.minimum_ionization,
-            radiation_length = self.radiation_length + other.radiation_length,
-            nuclear_interaction_length = self.nuclear_interaction_length + other.nuclear_interaction_length
-        )
-
     @classmethod
     def zero(cls):
         """we need a zero-object to start summing from in the mixture function"""
@@ -188,7 +169,22 @@ def pdg_material(**kwargs):
     weight_sum = sum(weight for weight in kwargs.values())
     if weight_sum != 1.0:
         raise ValueError(f"Sum of weights provided ({weight_sum}) does not equal 1.0: {kwargs}")
-    return sum((weight*__materials__[material] for material, weight in kwargs.items()), PDGMaterial.zero())
+
+    return PDGMaterial(
+        density = sum(weight*__materials__[material].density for material, weight in kwargs.items()),
+        minimum_ionization = sum(
+            weight*__materials__[material].minimum_ionization
+            for material, weight in kwargs.items()
+        ),
+        radiation_length = 1/(sum(
+            weight/__materials__[material].radiation_length
+            for material, weight in kwargs.items())
+        ),
+        nuclear_interaction_length = 1/(sum(
+            weight/__materials__[material].nuclear_interaction_length
+            for material, weight in kwargs.items())
+        )
+    )
 
 
 def print_gdml_list(**kwargs) :
