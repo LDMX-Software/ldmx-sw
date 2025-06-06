@@ -151,10 +151,10 @@ __materials__ = dict(
         nuclear_interaction_length = 191.9,
         radiation_length = 6.76
     ),
-    # this carbon is 6 C carbon (graphite)
+    # this carbon is 6 C carbon (amorphous)
     C = PDGMaterial(
-        density = 2.210,
-        minimum_ionization = 1.742,
+        density = 2.000,
+        minimum_ionization = 1.749,
         nuclear_interaction_length = 85.8,
         radiation_length = 42.70
     ),
