@@ -61,6 +61,11 @@ class ParticleFlow : public framework::Producer {
   std::string outputCollName_;
   // configuration
   bool singleParticle_;
+
+  // configurable matching criteria for Track + (side) HCal cluster matching
+  double tkHadCaloMatchDist_;
+  double tkHadCaloMinEnergyRatio_;
+  double tkHadCaloMaxEnergyRatio_;
 };
 }  // namespace recon
 
