@@ -359,3 +359,32 @@ def single_backwards_positron(energy: float):
     beam.energy = energy
     return beam
 
+def single_e_wide_angle_downstream_target(minTheta = 30, maxTheta = 70, minPhi = 0, maxPhi = 360):
+    """A general particle source configured to shoot electrons downstream from after the target at wide angles such that they hit the side hcal.
+
+    This generator is helpful to study the matching criteria between tracks and signals in the (side) hcal. Theta is the angle with respect to the downstream z axis. Note that the angular distribution and energy of the beam electrons can easily be modified. The particle source starts behind the target.
+    
+    Returns
+    -------
+    gun:
+        configured general particle source to shoot electrons downstream the target at wide angles
+    """
+    myGPS = gps( 'myGPS' , [
+            "/gps/particle e-",
+            "/gps/number 1",
+            "/gps/pos/type Plane",
+            "/gps/pos/shape Rectangle",
+            "/gps/pos/centre 0 0 0 mm",
+            "/gps/pos/halfx 10 mm",
+            "/gps/pos/halfy 40 mm",
+            "/gps/ang/type iso",
+            f"/gps/ang/mintheta {minTheta} deg",
+            f"/gps/ang/maxtheta {maxTheta} deg",
+            f"/gps/ang/minphi {minPhi} deg",
+            f"/gps/ang/maxphi {maxPhi} deg",
+            f"/gps/ang/rot1 0 1 0", # These have been determined by trial and error so that theta is the angle from the ldmx z axis and
+            f"/gps/ang/rot2 1 0 0", # phi is rotates clockwise in the XY plane starting from the negative Y axis
+            "/gps/ene/mono 8 GeV",
+            ] )
+    return myGPS
+
