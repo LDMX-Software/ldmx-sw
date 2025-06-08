@@ -56,6 +56,11 @@ class pfProducer(ldmxcfg.Producer) :
         self.inputTrackCollName = 'PFTracks'
         self.outputCollName     = 'PFCandidates'
         self.singleParticle     = False
+
+        # Matching criteria for Track + (side) HCal cluster matching (need to be configured)
+        self.tkHadCaloMatchDist         = 2.0
+        self.tkHadCaloMinEnergyRatio    = 0.3
+        self.tkHadCaloMaxEnergyRatio    = 2.0
         
         self.input_ecal_passname  = ''
         self.input_hcal_passname  = ''
