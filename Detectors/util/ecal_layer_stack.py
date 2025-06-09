@@ -158,6 +158,13 @@ __materials__ = dict(
         nuclear_interaction_length = 85.8,
         radiation_length = 42.70
     ),
+    # FR4 is a fire-retardant version of G10 with 7-8% bromide
+    G10 = PDGMaterial(
+        density = 1.800,
+        minimum_ionization = 1.762,
+        nuclear_interaction_length = 78.4,
+        radiation_length = 32.17
+    ),
     polycarbonate = PDGMaterial(
         density = 1.200,
         minimum_ionization = 1.886,
@@ -257,11 +264,8 @@ class Layer :
         Al = pdg_material(Al = 1.0),
         Air = pdg_material(Air = 1.0),
         PCB = pdg_material(
-            Cu = 0.5,
-            O = 0.22990022990023,
-            Na = 0.0482205482205484,
-            Si = 0.168276668276668,
-            Ca = 0.0536025536025536
+            Cu = 0.28/(1.37+0.28), #0.5,
+            G10 = 1.37/(1.37+0.28) #0.5
         ),
         Si = pdg_material(Si = 1.0),
         W = pdg_material(W = 1.0),
