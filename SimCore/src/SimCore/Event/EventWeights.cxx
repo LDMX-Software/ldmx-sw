@@ -8,20 +8,31 @@
 
 namespace ldmx {
 
+std::map<EventWeights::VariationType, double>
+    EventWeights::getVariationsNthWeight(size_t i_w) const
+{
+  std::map<EventWeights::VariationType, double> i_weights_map;
+  for (auto const& v : this->variations_map_)
+    i_weights_map[v.first] = v.second.at(i_w);
+  return i_weights_map;
+}
+
 void EventWeights::Clear() {
   weights_.clear();
   variations_map_.clear();
 }
 
-void EventWeights::Print() {
-  std::cout << "Num weights: " << getNumWeights() << std::endl;
-  for (size_t i_w = 0; i_w < weights_.size(); ++i_w) {
-    std::cout << "\t" << i_w << ": weight=" << weights_[i_w];
-    for (auto const& v : variations_map_) {
-      std::cout << "\n\t var_type=" << v.first
-                << ", var_value=" << v.second[i_w];
+std::ostream &operator<<(std::ostream &o, const EventWeights &ew) {
+  o << "Num weights: " << ew.getNumWeights() << std::endl;
+  for (size_t i_w = 0; i_w < ew.getNumWeights(); ++i_w) {
+    o << "\t" << i_w << ": weight=" << ew.getNthWeight(i_w);
+    for (auto const &v : ew.getVariationsNthWeight(i_w)) {
+      o << "\n\t var_type=" << v.first << ", var_value=" << v.second;
     }
-    std::cout << std::endl;
+    o << std::endl;
   }
 }
+
+void EventWeights::Print() { std::cout << *this; }
+
 }  // namespace ldmx

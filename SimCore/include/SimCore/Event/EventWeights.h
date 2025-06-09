@@ -46,6 +46,8 @@ class EventWeights {
   void Clear();
   void Print();
 
+  friend std::ostream &operator<<(std::ostream &o, const EventWeights &ew);
+
   std::vector<double> getWeights() const { return weights_; }
   std::map<VariationType, std::vector<double> > getVariations() const {
     return variations_map_;

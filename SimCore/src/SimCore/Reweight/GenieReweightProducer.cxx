@@ -10,6 +10,8 @@
 #include "Framework/EventGen/EventRecord.h"
 #include "Framework/EventGen/HepMC3Converter.h"
 #include "Framework/Interaction/Interaction.h"
+#include "Framework/Messenger/Messenger.h"
+#include "Framework/Utils/AppInit.h"
 #include "Framework/Utils/RunOpt.h"
 #include "HepMC3/GenEvent.h"
 #include "HepMC3/Print.h"
@@ -50,13 +52,14 @@ GenieReweightProducer::GenieReweightProducer(const std::string& name,
 }
 
 void GenieReweightProducer::configure(framework::config::Parameters& ps) {
-  verbosity_ = ps.get<int>("verbosity");
   hepmc3CollName_ = ps.get<std::string>("hepmc3CollName");
   hepmc3PassName_ = ps.get<std::string>("hepmc3PassName");
   eventWeightsCollName_ = ps.get<std::string>("eventWeightsCollName");
   seed_ = ps.get<int>("seed");
   n_weights_ = static_cast<size_t>(ps.get<int>("n_weights"));
   auto var_types_strings = ps.get<std::vector<std::string> >("var_types");
+
+  message_threshold_file_ = ps.get<std::string>("message_threshold_file");
 
   std::default_random_engine generator(seed_);
   std::normal_distribution<double> normal_distribution;
@@ -70,6 +73,9 @@ void GenieReweightProducer::configure(framework::config::Parameters& ps) {
 
 void GenieReweightProducer::reinitializeGenieReweight() {
   genie_rw_ = std::make_unique<genie::rew::GReWeight>();
+
+  // set message thresholds
+  genie::utils::app_init::MesgThresholds(message_threshold_file_);
 
   genie::RunOpt::Instance()->SetTuneName(tune_);
   if (!genie::RunOpt::Instance()->Tune()) {
@@ -186,7 +192,7 @@ void GenieReweightProducer::produce(framework::Event& event) {
 
   }  // end loop over weights
 
-  if (verbosity_ >= 1) ev_weights.Print();
+  ldmx_log(trace) << ev_weights;
 
   event.add(eventWeightsCollName_, ev_weights);
 }

@@ -60,6 +60,9 @@ class GenieReweightProducer : public framework::Producer {
   // number of weights to be calculated per event
   size_t n_weights_;
 
+  // GENIE message threshold file
+  std::string message_threshold_file_;
+
   // GENIE tune
   std::string tune_;
 
