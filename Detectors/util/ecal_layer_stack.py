@@ -263,9 +263,20 @@ class Layer :
     materials = dict(
         Al = pdg_material(Al = 1.0),
         Air = pdg_material(Air = 1.0),
+#        # using atomic fraction
+#        PCB = pdg_material(
+#            Cu = 0.5,
+#            G10 = 0.5
+#        ),
+#        # using depth/thickness fraction from ALICE TRD
+#        PCB = pdg_material(
+#            Cu = 0.025/(0.38+0.025),
+#            G10 = 0.38/(0.38+0.025),
+#        ),
+        # using depth/thickness fraction from pcb-layers.nbt
         PCB = pdg_material(
-            Cu = 0.28/(1.37+0.28), #0.5,
-            G10 = 1.37/(1.37+0.28) #0.5
+            Cu = 0.238/(0.238+1.422),
+            G10 = 1.422/(0.238+1.422)
         ),
         Si = pdg_material(Si = 1.0),
         W = pdg_material(W = 1.0),

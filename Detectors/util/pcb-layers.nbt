@@ -8,7 +8,8 @@ let hexagon_thick : Length = 1.66 mm
 let copper_density = 8.960 g / cm^3
 let fr4_density = 2.000 g / cm^3
 
-let n_copper_layers : Scalar = 15
+# best guess on the total number of copper layers in the PCB
+let n_copper_layers : Scalar = 12
 
 let hexagon_area : Area = _hexagon_area(hexagon_side)
 let copper_thick = _copper_layer_weight(n_copper_layers)/copper_density
@@ -22,13 +23,4 @@ let copper_mass = copper_thick*hexagon_area*copper_density
 let fr4_mass = fr4_thick*hexagon_area*fr4_density
 
 print(" Mass | {copper_mass -> g:.3f} | {fr4_mass -> g:.3f}")
-
-let copper_molar_mass = 63.546 * atomic_mass_constant
-# estimate FR-4 molar mass as weighted sum by atomic fraction
-# but its essentially all H by atomic fraction...
-let fr4_molar_mass = 1.0080 * atomic_mass_constant
-# total mass of hexagon PCB? then we could deduce the number
-# of copper layers or total copper thickness using the 
-# molar masses and the assumption that the copper atomic fraction
-# is 0.5
 
