@@ -9,10 +9,9 @@
 namespace ldmx {
 
 std::map<EventWeights::VariationType, double>
-    EventWeights::getVariationsNthWeight(size_t i_w) const
-{
+EventWeights::getVariationsNthWeight(size_t i_w) const {
   std::map<EventWeights::VariationType, double> i_weights_map;
-  for (auto const& v : this->variations_map_)
+  for (auto const &v : this->variations_map_)
     i_weights_map[v.first] = v.second.at(i_w);
   return i_weights_map;
 }

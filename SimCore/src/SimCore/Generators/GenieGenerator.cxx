@@ -247,28 +247,22 @@ GenieGenerator::GenieGenerator(const std::string& name,
 }
 
 GenieGenerator::~GenieGenerator() {
-
-  std::cout << "--- GENIE Generation Summary BEGIN ---"
-            << std::endl;
+  std::cout << "--- GENIE Generation Summary BEGIN ---" << std::endl;
   double total_xsec = 0;
   for (size_t i_t = 0; i_t < targets_.size(); ++i_t) {
     std::cout << "Target=" << targets_[i_t]
-              << "\tAbundance=" << abundances_[i_t] << "\tXSEC="
-              << xsec_by_target_[i_t] / genie::units::millibarn << " mb"
-              << "\tEvents=" << n_events_by_target_[i_t]
-              << std::endl;
+              << "\tAbundance=" << abundances_[i_t]
+              << "\tXSEC=" << xsec_by_target_[i_t] / genie::units::millibarn
+              << " mb" << "\tEvents=" << n_events_by_target_[i_t] << std::endl;
     if (n_events_by_target_[i_t] > 0)
       total_xsec += xsec_by_target_[i_t] * abundances_[i_t];
   }
 
   std::cout << "Total events generated = " << n_events_generated_
             << "\nTotal XSEC = " << total_xsec / genie::units::millibarn
-            << " mb"
-            << std::endl;
+            << " mb" << std::endl;
 
-  std::cout << "--- GENIE Generation Summary *END* ---"
-            << std::endl;
-
+  std::cout << "--- GENIE Generation Summary *END* ---" << std::endl;
 }
 
 void GenieGenerator::GeneratePrimaryVertex(G4Event* event) {

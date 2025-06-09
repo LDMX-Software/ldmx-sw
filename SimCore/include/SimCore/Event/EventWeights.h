@@ -73,7 +73,7 @@ class EventWeights {
 
  public:
   inline static std::string variation_type_to_string(
-      const VariationType& vtype) {
+      const VariationType &vtype) {
     switch (vtype) {
       case VariationType::kINVALID:
         return "INVALID";
@@ -111,7 +111,7 @@ class EventWeights {
     return "UNKNOWN";
   }
   inline static VariationType string_to_variation_type(
-      const std::string& typestring) {
+      const std::string &typestring) {
     if (typestring == "UNKNOWN")
       return VariationType::kUNKNOWN;
     else if (typestring == "INVALID")
