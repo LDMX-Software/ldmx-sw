@@ -10,19 +10,6 @@ void ParticleFlow::configure(framework::config::Parameters& ps) {
   inputHcalCollName_ = ps.getParameter<std::string>("inputHcalCollName");
   inputTrackCollName_ = ps.getParameter<std::string>("inputTrackCollName");
   outputCollName_ = ps.getParameter<std::string>("outputCollName");
-
-  input_ecal_passname_ = ps.getParameter<std::string>("input_ecal_passname");
-  input_hcal_passname_ = ps.getParameter<std::string>("input_hcal_passname");
-  input_tracks_passname_ =
-      ps.getParameter<std::string>("input_tracks_passname");
-
-  input_track_event_passname_ =
-      ps.getParameter<std::string>("input_track_event_passname");
-  input_ecal_event_passname_ =
-      ps.getParameter<std::string>("input_ecal_event_passname");
-  input_hcal_event_passname_ =
-      ps.getParameter<std::string>("input_hcal_event_passname");
-
   // Algorithm configuration
   singleParticle_ = ps.getParameter<bool>("singleParticle");
   tkHadCaloMatchDist_ = ps.getParameter<double>("tkHadCaloMatchDist");
@@ -70,12 +57,11 @@ void ParticleFlow::fillCandEMCalo(ldmx::PFCandidate& cand,
                                   const ldmx::CaloCluster& em) {
   float corr = 1.;
   float e = em.getEnergy();
-  // update energy: use min or max factor if outside calibration range
   if (e < eCorr_->GetX()[0]) {
-    corr = eCorr_->GetY()[0];
+    corr = eCorr_->GetX()[0];
   } else if (e > eCorr_->GetX()[eCorr_->GetN() - 1]) {
-    corr = eCorr_->GetY()[eCorr_->GetN() - 1];
-  } else {  // else look up calibration factor
+    corr = eCorr_->GetX()[eCorr_->GetN() - 1];
+  } else {
     corr = eCorr_->Eval(e);
   }
   cand.setEcalEnergy(e * corr);
@@ -95,9 +81,9 @@ void ParticleFlow::fillCandHadCalo(ldmx::PFCandidate& cand,
   float corr = 1.;
   float e = had.getEnergy();
   if (e < hCorr_->GetX()[0]) {
-    corr = hCorr_->GetY()[0];
+    corr = hCorr_->GetX()[0];
   } else if (e > hCorr_->GetX()[hCorr_->GetN() - 1]) {
-    corr = hCorr_->GetY()[hCorr_->GetN() - 1];
+    corr = hCorr_->GetX()[hCorr_->GetN() - 1];
   } else {
     corr = hCorr_->Eval(e);
   }
@@ -115,16 +101,16 @@ void ParticleFlow::fillCandHadCalo(ldmx::PFCandidate& cand,
 
 // produce track, ecal, and hcal linking
 void ParticleFlow::produce(framework::Event& event) {
-  if (!event.exists(inputTrackCollName_, input_track_event_passname_)) return;
-  if (!event.exists(inputEcalCollName_, input_ecal_event_passname_)) return;
-  if (!event.exists(inputHcalCollName_, input_hcal_event_passname_)) return;
+  if (!event.exists(inputTrackCollName_)) return;
+  if (!event.exists(inputEcalCollName_)) return;
+  if (!event.exists(inputHcalCollName_)) return;
   // get the track and clustering info
-  const auto ecalClusters = event.getCollection<ldmx::CaloCluster>(
-      inputEcalCollName_, input_ecal_passname_);
-  const auto hcalClusters = event.getCollection<ldmx::CaloCluster>(
-      inputHcalCollName_, input_hcal_passname_);
-  const auto tracks = event.getCollection<ldmx::SimTrackerHit>(
-      inputTrackCollName_, input_tracks_passname_);
+  const auto ecalClusters =
+      event.getCollection<ldmx::CaloCluster>(inputEcalCollName_);
+  const auto hcalClusters =
+      event.getCollection<ldmx::CaloCluster>(inputHcalCollName_);
+  const auto tracks =
+      event.getCollection<ldmx::SimTrackerHit>(inputTrackCollName_);
 
   std::vector<ldmx::PFCandidate> pfCands;
   // multi-particle case
@@ -138,7 +124,7 @@ void ParticleFlow::produce(framework::Event& event) {
       4c. (Upstream?) Categorize hcal clusters as: EM/Had-like
       5. Build candidates by category, moving from Tk-Ecal-Hcal
     */
-
+    std::cout << "PF Multiple Particles for Event: "<< event.getEventNumber() << std::endl;
     //
     // track-calo linking
     //
@@ -274,6 +260,8 @@ void ParticleFlow::produce(framework::Event& event) {
     std::vector<bool> EMIsHadLinked(ecalClusters.size(), false);
     std::vector<bool> HadIsEMLinked(hcalClusters.size(), false);
     std::map<int, int> EMHadPairs{};
+    std::map<int, int> HadEMPairs{};
+    
     for (int i = 0; i < ecalClusters.size(); i++) {
       if (emHadCaloMap.count(i)) {
         // pick first (highest-energy) unused matching cluster
@@ -282,6 +270,7 @@ void ParticleFlow::produce(framework::Event& event) {
             HadIsEMLinked[had_idx] = true;
             EMIsHadLinked[i] = true;
             EMHadPairs[i] = had_idx;
+            HadEMPairs[had_idx] = i;
             break;
           }
         }
@@ -316,7 +305,7 @@ void ParticleFlow::produce(framework::Event& event) {
     // Begin building pf candidates from tracks
     //
 
-    // starting from tracks
+    // loop through tracks
     for (int i = 0; i < tracks.size(); i++) {
       ldmx::PFCandidate cand;
       fillCandTrack(cand, tracks[i]);  // append track info to candidate
@@ -347,7 +336,6 @@ void ParticleFlow::produce(framework::Event& event) {
 
     // std::vector<ldmx::PFCandidate> emMatch;
     // std::vector<ldmx::PFCandidate> emUnmatch;
-    // ECal clusters
     for (int i = 0; i < ecalClusters.size(); i++) {
       if (EMIsTkLinked[i]) continue; // already linked with ECal with Track in the previous step
       if (EMIsHadLinked[i] && HadIsTkLinked[EMHadPairs[i]]) continue; // already linked with track through Hcal
@@ -364,7 +352,6 @@ void ParticleFlow::produce(framework::Event& event) {
     }
 
     // std::vector<ldmx::PFCandidate> hadOnly;
-    // HCal clusters
     for (int i = 0; i < hcalClusters.size(); i++) {
       if (HadIsEMLinked[i]) continue; // already linked with ecal
       if (HadIsTkLinked[i]) continue; // already linked with track
@@ -373,6 +360,7 @@ void ParticleFlow::produce(framework::Event& event) {
       // hadOnly.push_back(cand);
       pfCands.push_back(cand);
     }
+    
 
     // // track / ecal cluster arbitration
     // std::vector<ldmx::PFCandidate> caloMatchedTks;
@@ -445,6 +433,7 @@ void ParticleFlow::produce(framework::Event& event) {
     // }
 
   } else {
+    std::cout << "Matching Single Particle Signals" << std::endl;
     // Single-particle builder
     ldmx::PFCandidate pf;
     int pid = 0;  // initialize pid to add
@@ -478,4 +467,4 @@ void ParticleFlow::onProcessEnd() {
 
 }  // namespace recon
 
-DECLARE_PRODUCER(recon::ParticleFlow);
+DECLARE_PRODUCER_NS(recon, ParticleFlow);
