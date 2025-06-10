@@ -13,19 +13,19 @@ void HcalTPSelector::produce(framework::Event& event) {
   if (!event.exists(combinedQuadCollName_)) return;
   auto hcalTPs{
       event.getObject<ldmx::CaloTrigPrimCollection>(combinedQuadCollName_)};
-  
+
   // Should move the TP building itself here
   // In the meantime, create the "analysis object" hits
 
   TrigCaloHitCollection passTrigHits;
   for (const auto& tp : hcalTPs) {
-    double x{0}, y{0}, z{0}; // todo
+    double x{0}, y{0}, z{0};  // todo
     ldmx::HcalTriggerID combo_id(tp.getId());
-    
+
     int adc = tp.getPrimitive();
-    double e = adc * 1.2 / 72.961; // ADC to MeV
+    double e = adc * 1.2 / 72.961;  // ADC to MeV
     passTrigHits.emplace_back(x, y, z, e);
-    
+
     passTrigHits.back().setLayer(combo_id.layer());
     passTrigHits.back().setStrip(combo_id.superstrip());
     passTrigHits.back().setSection(combo_id.section());

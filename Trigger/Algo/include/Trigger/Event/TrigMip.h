@@ -17,20 +17,20 @@ class TrigMip {
  public:
   TrigMip() = default;
 
-  //TrigMip(float x, float y, float z, float e = 0);
+  // TrigMip(float x, float y, float z, float e = 0);
 
   virtual ~TrigMip() = default;
 
   bool operator<(const TrigMip &h) { return length_ < h.length_; }
 
-  //void Clear();
-  
-  void setStartLayer(int startLayer){ startLayer_ = startLayer; }
-  void setEndLayer  (int endLayer  ){ endLayer_   = endLayer; }
-  void setNHits     (int nHits     ){ nHits_      = nHits; }
-  void setNHoles    (int nHoles    ){ nHoles_     = nHoles; }
-  void setLength    (int length    ){ length_     = length; }
-    
+  // void Clear();
+
+  void setStartLayer(int startLayer) { startLayer_ = startLayer; }
+  void setEndLayer(int endLayer) { endLayer_ = endLayer; }
+  void setNHits(int nHits) { nHits_ = nHits; }
+  void setNHoles(int nHoles) { nHoles_ = nHoles; }
+  void setLength(int length) { length_ = length; }
+
   int startLayer() const { return startLayer_; }
   int endLayer() const { return endLayer_; }
   int nHits() const { return nHits_; }
@@ -44,7 +44,7 @@ class TrigMip {
   int nHits_{0};
   int nHoles_{0};
   int length_{0};
-  
+
   /// ROOT Dictionary class definition macro
   ClassDef(TrigMip, 1);
 };

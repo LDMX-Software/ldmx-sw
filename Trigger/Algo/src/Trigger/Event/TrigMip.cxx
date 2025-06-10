@@ -2,7 +2,7 @@
 
 ClassImp(trigger::TrigMip)
 
-namespace trigger {
+    namespace trigger {
   // TrigMip::TrigMip(float x, float y, float z, float e)
   //     : x_(x), y_(y), z_(z), e_(e) {}
 

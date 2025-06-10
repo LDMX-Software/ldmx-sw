@@ -50,12 +50,12 @@ class TrigCaloHit {
   float z() const { return z_; }
   float e() const { return e_; }
   float energy() const { return e_; }
-  
+
   int layer() const { return layer_; }
   int strip() const { return strip_; }
   int module() const { return modulesection_; }
   int section() const { return modulesection_; }
-  
+
  private:
   float x_{0};
   float y_{0};

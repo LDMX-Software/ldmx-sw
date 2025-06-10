@@ -47,7 +47,6 @@ class HcalTPSelector : public framework::Producer {
 
   // unsigned int maxCentralTPs_{12};
   // unsigned int maxOuterTPs_{8};
-
 };
 }  // namespace trigger
 

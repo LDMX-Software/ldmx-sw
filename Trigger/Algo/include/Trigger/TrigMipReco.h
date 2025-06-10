@@ -38,9 +38,8 @@ class TrigMipReco : public framework::Producer {
   // calorimeterTypeIsHcal boolean
   bool calorimeterTypeIsHcal_;
 
-  float minEnergy_; // set in configure()
-  float maxEnergy_; // set in configure()
-
+  float minEnergy_;  // set in configure()
+  float maxEnergy_;  // set in configure()
 };
 }  // namespace trigger
 
