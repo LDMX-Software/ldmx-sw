@@ -112,7 +112,7 @@ def photo_nuclear( detector, generator ) :
     else:
           xsec_bias = 450.
     
-    sim.description = "ECal photo-nuclear, xsec bias " + str(xsec_bias) + " xsec threshold " + str(xsec_bias_threshold) + " GeV"
+    sim.description = "Target photo-nuclear, xsec bias " + str(xsec_bias) + " xsec threshold " + str(xsec_bias_threshold) + " GeV"
     sim.beamSpotSmear = [20., 80., 0.]
 
     sim.generators.append(generator)
