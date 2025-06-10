@@ -20,8 +20,10 @@ __main__() {
   start_group Input Deduction
   local _sample="$1"
   local _no_comp="$2"
+  local _ref_dir="${GITHUB_WORKSPACE}/ci-data/${_sample}"
   cd ${GITHUB_WORKSPACE}/.github/validation_samples/${_sample} || return $?
   local _sample_dir="$(pwd)"
+  echo "Ref Dir: ${_ref_dir}"
   echo "Sample Name: ${_sample}"
   echo "Sample Dir: ${_sample_dir}"
   echo "Not Running Comparison? ${_no_comp}"
@@ -46,10 +48,14 @@ __main__() {
     #   compare has 4 CLI inputs:
     #    gold_f, gold_label, test_f, test_label
     ldmx python3 $GITHUB_ACTION_PATH/compare.py \
-      gold.root $(ldmx_gold_label) hist.root ${HEAD_REF} || return $?
+      ${_ref_dir}/gold.root \
+      $(cat ${GITHUB_WORKSPACE}/ci-data/label) \
+      hist.root \
+      ${HEAD_REF} \
+      || return $?
 
     # print log diff into output directory
-    cp -t ${_sample_dir}/plots gold.log output.log || return $?
+    cp -t ${_sample_dir}/plots ${_ref_dir}/gold.log output.log || return $?
 
     # compare.py puts plots into the plots/ directory
     #   Package them up for upload
