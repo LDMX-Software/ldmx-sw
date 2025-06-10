@@ -25,6 +25,9 @@ void ParticleFlow::configure(framework::config::Parameters& ps) {
 
   // Algorithm configuration
   singleParticle_ = ps.getParameter<bool>("singleParticle");
+  tkHadCaloMatchDist_ = ps.getParameter<double>("tkHadCaloMatchDist");
+  tkHadCaloMinEnergyRatio_ = ps.getParameter<double>("tkHadCaloMinEnergyRatio");
+  tkHadCaloMaxEnergyRatio_ = ps.getParameter<double>("tkHadCaloMaxEnergyRatio");
 
   // Calibration factors, from jason, temperary
   std::vector<float> em1{250.0,  750.0,  1250.0, 1750.0, 2250.0, 2750.0,
@@ -209,21 +212,43 @@ void ParticleFlow::produce(framework::Event& event) {
       }
     }
 
-    // NOT YET IMPLEMENTED...
-    // tk-hadcalo linking (Side HCal)
+    // tk-hadcalo linking (Side HCal) BY TILLRUE
     std::map<int, std::vector<int> > tkHadCaloMap;
-    // for(int i=0; i<tracks.size(); i++){
-    //   const auto& tk = tracks[i];
-    //   for(int j=0; j<hcalClusters.size(); j++){
-    // 	const auto& hcal = hcalClusters[j];
-    // 	// TODO: add the matching logic here...
-    // 	bool isMatch = true;
-    // 	if(isMatch){
-    // 	  if (tkHadCaloMap.count(i)) tkHadCaloMap[i].push_back(j);
-    // 	  else tkHadCaloMap[i] = {j};
-    // 	}
-    //   }
-    // }
+    std::map<int, std::vector<int> > HadCaloTkMap;
+    std::map<std::pair<int, int>, float> tkHadCaloDist;
+    for(int i=0; i<tracks.size(); i++){
+      const auto& tk = tracks[i];
+      const std::vector<float> xyz = tk.getPosition();
+      const std::vector<double> pxyz = tk.getMomentum();
+      const float p = sqrt(pow(pxyz[0], 2) + pow(pxyz[1], 2) + pow(pxyz[2], 2));
+
+      for(int j=0; j<hcalClusters.size(); j++){
+       	const auto& hcal = hcalClusters[j];
+        // Matching logic same as for track ecalCluster matching
+        const float hcalClusZ = hcal.getCentroidZ();
+        const float tkXAtClus =
+            xyz[0] + pxyz[0] / pxyz[2] * (hcalClusZ - xyz[2]);  // extrapolation
+        const float tkYAtClus =
+            xyz[1] + pxyz[1] / pxyz[2] * (hcalClusZ - xyz[2]);
+        float dist = hypot(
+            (tkXAtClus - hcal.getCentroidX()) / std::max(1.0, hcal.getRMSX()),
+            (tkYAtClus - hcal.getCentroidY()) / std::max(1.0, hcal.getRMSY()));
+        tkHadCaloDist[{i, j}] = dist;
+        bool isMatch =
+            (dist < tkHadCaloMatchDist_) && (hcal.getEnergy() > tkHadCaloMinEnergyRatio_ * p &&
+                           hcal.getEnergy() < tkHadCaloMaxEnergyRatio_ * p);  // matching criteria, need to be configured
+         if (isMatch) {
+          if (tkHadCaloMap.count(i))
+            tkHadCaloMap[i].push_back(j);
+          else
+            tkHadCaloMap[i] = {j};
+          if (HadCaloTkMap.count(j))
+            HadCaloTkMap[j].push_back(i);
+          else
+            HadCaloTkMap[j] = {i};
+        }
+      }
+    }
 
     //
     // track / ecal cluster arbitration
@@ -245,7 +270,7 @@ void ParticleFlow::produce(framework::Event& event) {
       }
     }
 
-    // track / hcal cluster arbitration
+    // ecal / hcal cluster arbitration
     std::vector<bool> EMIsHadLinked(ecalClusters.size(), false);
     std::vector<bool> HadIsEMLinked(hcalClusters.size(), false);
     std::map<int, int> EMHadPairs{};
@@ -263,6 +288,26 @@ void ParticleFlow::produce(framework::Event& event) {
       }
     }
 
+    //
+    // track / hcal cluster arbitration BY TILLRUE
+    //
+    std::vector<bool> tkIsHadLinked(tracks.size(), false);
+    std::vector<bool> HadIsTkLinked(hcalClusters.size(), false);
+    std::map<int, int> tkHadPairs{};
+    for (int i = 0; i < tracks.size(); i++) {
+      if (tkHadCaloMap.count(i)) {
+        // pick first (highest-energy) unused matching cluster
+        for (int had_idx : tkHadCaloMap[i]) {
+          if (!HadIsTkLinked[had_idx]) {
+            HadIsTkLinked[had_idx] = true;
+            tkIsHadLinked[i] = true;
+            tkHadPairs[i] = had_idx;
+            break;
+          }
+        }
+      }
+    }
+
     // can consider combining satellite clusters here...
     // define some "primary cluster" ID criterion
     //   and can add fails to the primaries
@@ -271,34 +316,45 @@ void ParticleFlow::produce(framework::Event& event) {
     // Begin building pf candidates from tracks
     //
 
-    // std::vector<ldmx::PFCandidate> chargedMatch;
-    // std::vector<ldmx::PFCandidate> chargedUnmatch;
+    // starting from tracks
     for (int i = 0; i < tracks.size(); i++) {
       ldmx::PFCandidate cand;
       fillCandTrack(cand, tracks[i]);  // append track info to candidate
-
-      if (!tkIsEMLinked[i]) {
-        // chargedUnmatch.push_back(cand);
-      } else {  // if track is linked with ECal cluster
+      if (tkIsEMLinked[i]){ // if track is linked with ECal cluster
         fillCandEMCalo(cand, ecalClusters[tkEMPairs[i]]);
-        if (EMIsHadLinked[tkEMPairs[i]]) {  // if ECal is linked with HCal
-                                            // cluster
-          fillCandHadCalo(cand, hcalClusters[EMHadPairs[tkEMPairs[i]]]);
+        if (EMIsHadLinked[tkEMPairs[i]]) {  // if ECal is linked with HCal cluster
+          if (!tkIsHadLinked[i]){   // if track is NOT also linked with Hcal
+          fillCandHadCalo(cand, hcalClusters[EMHadPairs[tkEMPairs[i]]]);}
         }
-        // chargedMatch.push_back(cand);
+      }
+      
+      if(tkIsHadLinked[i]){ // if track is linked with Hcal
+        fillCandHadCalo(cand, hcalClusters[tkHadPairs[i]]);
+        if(HadIsEMLinked[tkHadPairs[i]]){ // if hcal is linked with ecal
+          if(!tkIsEMLinked[i]){ // if ecal is NOT also linked with track
+          fillCandEMCalo(cand,ecalClusters[HadEMPairs[tkHadPairs[i]]]);
+          }
+        } else if(!tkIsEMLinked[i]){
+          cand.setDistTkHcalMatch(tkHadCaloDist[{i,tkHadPairs[i]}]);
+          if(hcalClusters.size() > 1){
+            cand.setHcalSecondEnergy(hcalClusters[tkHadPairs[i]+1].getEnergy());
+            cand.setDistTkHcalSecondCluster(tkHadCaloDist[{i,tkHadPairs[i]+1}]);
+          }
+        }
       }
       pfCands.push_back(cand);
     }
 
     // std::vector<ldmx::PFCandidate> emMatch;
     // std::vector<ldmx::PFCandidate> emUnmatch;
+    // ECal clusters
     for (int i = 0; i < ecalClusters.size(); i++) {
-      // already linked with ECal in the previous step
-      if (EMIsTkLinked[i]) continue;
+      if (EMIsTkLinked[i]) continue; // already linked with ECal with Track in the previous step
+      if (EMIsHadLinked[i] && HadIsTkLinked[EMHadPairs[i]]) continue; // already linked with track through Hcal
 
       ldmx::PFCandidate cand;
       fillCandEMCalo(cand, ecalClusters[i]);
-      if (EMIsHadLinked[tkEMPairs[i]]) {
+      if (EMIsHadLinked[i]) { // is Ecal is linked with Hcal
         fillCandHadCalo(cand, hcalClusters[EMHadPairs[i]]);
         // emMatch.push_back(cand);
       } else {
@@ -306,9 +362,12 @@ void ParticleFlow::produce(framework::Event& event) {
       }
       pfCands.push_back(cand);
     }
-    std::vector<ldmx::PFCandidate> hadOnly;
+
+    // std::vector<ldmx::PFCandidate> hadOnly;
+    // HCal clusters
     for (int i = 0; i < hcalClusters.size(); i++) {
-      if (HadIsEMLinked[i]) continue;
+      if (HadIsEMLinked[i]) continue; // already linked with ecal
+      if (HadIsTkLinked[i]) continue; // already linked with track
       ldmx::PFCandidate cand;
       fillCandHadCalo(cand, hcalClusters[i]);
       // hadOnly.push_back(cand);
