@@ -214,8 +214,8 @@ void CKFProcessor::produce(framework::Event& event) {
 
   if (event.exists("SimParticles", sim_particles_event_passname_)) {
     ldmx_log(debug) << "Setting up track truth matching tool";
-    particleMap = event.getMap<int, ldmx::SimParticle>("SimParticles",
-                                                       sim_particles_event_passname_);
+    particleMap = event.getMap<int, ldmx::SimParticle>(
+        "SimParticles", sim_particles_event_passname_);
     truthMatchingTool = std::make_shared<tracking::sim::TruthMatchingTool>(
         particleMap, measurements);
   }
