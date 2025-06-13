@@ -18,7 +18,7 @@ void TrigMipReco::produce(framework::Event& event) {
   if (!event.exists(hitCollName_)) return;
   auto caloHits{event.getObject<TrigCaloHitCollection>(hitCollName_)};
 
-  if (calorimeterTypeIsHcal_) {
+  if (calorimeterTypeIsHcal_) {  // HCAL MIP Reconstruction
     TrigCaloHitCollection sortedHits;
     int evenMatrix[24][5] = {};
     int evenStart[5] = {99, 99, 99, 99, 99};
@@ -138,22 +138,66 @@ void TrigMipReco::produce(framework::Event& event) {
             last = bestHit;
           } else {
             holes++;
-            // if (holes > 2) break;
+            // if (holes > 5) break; // break if six or more holes
           }
         }
-
+        // std::cout << "\n[DEBUG] This is a new track\n";
+        bool isIsolated = true;
         if (track.size() >= minTrackLength) {
+          // bool isIsolated = true;
+          float isolationECut = 5; // MeV
+          float isolationRadius2 = radiusCut*radiusCut;
+
+          for (const auto* hit : track) {
+            // usedHits.insert(hit);  // adds used hits to vector so they cannot be used again
+            int layer = hit->layer();
+            float hitx = hit->x();
+            float hity = hit->y();
+            // float layerShiftHit = (layer % 2 == 0) ? 0.0f : 4.82f;
+
+            float sumE = 0.0f;
+
+            // std::cout << "[DEBUG] Hit energy = " << hit->energy()
+            //               << " at layer " << layer
+            //               << " (x, y) = (" << hitx << ", " << hity << ")\n";
+
+            for (const auto& cand : layerHits[layer]) {
+                if (&cand == hit) continue; // skips self
+                float dx = cand.x() - hitx;
+                float dy = cand.y() - hity;
+                float dR2 = dx * dx + dy * dy;
+
+                if (dR2 < isolationRadius2) {
+
+                    // std::cout << "  [DEBUG] Nearby Cand energy = " << cand.energy()
+                    //           << " at layer " << cand.layer()
+                    //           << " (x, y) = (" << cand.x() << ", " << cand.y() << ") "
+                    //           << "dR = " << dR2 << "\n";
+
+                    sumE += cand.energy();
+                }
+            }
+             // std::cout << "  [DEBUG] Sum of energy of surrounding candidates: " << sumE << "\n";
+             if (sumE >= isolationECut) {
+             isIsolated = false;
+             usedHits.insert(hit);  // adds used hits to vector so they cannot be used again
+             break;
+             }
+          }
+          if (!isIsolated) {
+            continue; // reject track if any hit is not isolated
+          }
+
           size_t i = candidateTracks.size();
           candidateTracks.push_back(track);
 
           // ensures that only the longest track per event is kept
-          for (const auto* h : track) {
-            if (!hitToBestTrack.count(h) ||
+          for (const auto* hit : track) {
+            if (!hitToBestTrack.count(hit) ||
                 candidateTracks[i].size() >
-                    candidateTracks[hitToBestTrack[h]].size()) {
-              hitToBestTrack[h] = i;
-              usedHits.insert(
-                  h);  // adds used hits to vector so they cannot be used again
+                    candidateTracks[hitToBestTrack[hit]].size()) {
+              hitToBestTrack[hit] = i;
+              usedHits.insert(hit);  // adds used hits to vector so they cannot be used again
             }
           }
         }
