@@ -133,8 +133,9 @@ __materials__ = dict(
         radiation_length = 6.76
     ),
     # this carbon is 6 C carbon (amorphous)
+    # with a lower density to represent carbon fiber
     C = PDGMaterial(
-        density = 2.000,
+        density = 1.800,
         minimum_ionization = 1.749,
         nuclear_interaction_length = 85.8,
         radiation_length = 42.70
@@ -155,7 +156,7 @@ __materials__ = dict(
 )
 
 
-def pdg_material(**kwargs):
+def pdg_material(*, scale_weights=False, **kwargs):
     """Estimate material properties by doing a weighted sum of its components
     from the PDG material table copied from online.
 
@@ -168,7 +169,12 @@ def pdg_material(**kwargs):
     
     weight_sum = sum(weight for weight in kwargs.values())
     if weight_sum != 1.0:
-        raise ValueError(f"Sum of weights provided ({weight_sum}) does not equal 1.0: {kwargs}")
+        if not scale_weights:
+            raise ValueError(f"Sum of weights provided ({weight_sum}) does not equal 1.0: {kwargs}")
+
+        # divide all weights by the weight sum so it equals 1
+        for key in kwargs:
+            kwargs[key] /= weight_sum
 
     return PDGMaterial(
         density = sum(weight*__materials__[material].density for material, weight in kwargs.items()),
@@ -221,6 +227,9 @@ class Layer :
     be forced to use a similar material rather than one that perfectly matches our
     GDML definiton. The unit-conversion calculations is left here for transparency.
 
+    Natalia found [this study of the ALICE TRD](https://www-physics.lbl.gov/~gilg/PixelUpgradeMechanicsCooling/Material/Radiationlength.pdf)
+    which is a helpful source of comparison to make sure we aren't wildly off.
+
     Here   | PDG
     -------|-----
     Al     | Al
@@ -228,7 +237,7 @@ class Layer :
     PCB    | weighted mix of elements
     Si     | Si
     W      | W
-    Carbon | C -> 6 C carbon (graphite)
+    Carbon | C -> 6 C carbon (amorphous) with lower density to represent carbon fiber
     Glue   | Polymers -> polycarbonate (OC6H4C(CH3)2C6H4OCO)n
 
     PCB in the GDML is 50% Cu, 23% O, 4.8% Na, 17% Si, 5.2% Ca,
@@ -238,7 +247,6 @@ class Layer :
     Glue in the GDML is a polycarbon is 85% C, 4% H, and 11% O,
     the polycarbonate in the PDG is 75% C, 5% H and 20% O which
     I deemed close enough.
-
 
     dEdx : dict[str, float]
         material name to average energy loss per unit distance (MeV/mm) of a MIP.
@@ -262,17 +270,20 @@ class Layer :
 #        # using atomic fraction
 #        PCB = pdg_material(
 #            Cu = 0.5,
-#            G10 = 0.5
+#            G10 = 0.5,
+#            scale_weights = True
 #        ),
 #        # using depth/thickness fraction from ALICE TRD
 #        PCB = pdg_material(
-#            Cu = 0.025/(0.38+0.025),
-#            G10 = 0.38/(0.38+0.025),
+#            Cu = 0.025,
+#            G10 = 0.38,
+#            scale_weights = True
 #        ),
         # using depth/thickness fraction from pcb-layers.nbt
         PCB = pdg_material(
-            Cu = 0.238/(0.238+1.422),
-            G10 = 1.422/(0.238+1.422)
+            Cu = 0.238,
+            G10 = 1.422,
+            scale_weights=True
         ),
         Si = pdg_material(Si = 1.0),
         W = pdg_material(W = 1.0),
