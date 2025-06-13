@@ -1,5 +1,5 @@
-# numbat script
-# https://numbat.dev/doc/cli-installation.html
+# numbat script https://numbat.dev/doc/cli-installation.html
+# to help estimate the relative thickness of copper and FR4 in a PCB
 fn _hexagon_area(side: Length) -> Area = 3*sqrt(3)/2*side*side
 fn _copper_layer_weight(n: Scalar) = ((n-2)*(0.5 oz / ft^2) + 2*(1.0 oz / ft^2))
 
