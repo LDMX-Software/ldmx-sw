@@ -5,53 +5,57 @@ import logging
 log = logging.getLogger('8GeV')
 
 @plotter(hist=True, event=False)
-def beamenergy_comp(d: Differ, out_dir=None):
+def sample_validation(d: Differ, out_dir=None):
 
     pdgid_labels = ['', 'e+', 'e-', 'μ+', 'μ-', 'γ', 'p', 'n', 'π+', 'π-', 'π0', 'K+', 'K-', 'K-L', 'K-S', 'light nucleus', 'heavy nucleus', 'strange baryon', "A\'", 'something else'] # finish later 
 
-    d.plot1d("SampleValidation/SampleValidation_pdgid_primaries", "PDG ID, primaries",
+    d.plot1d("SampleValidation/SampleValidation_primaries_pdgid", "PDG ID, primaries",
              tick_labels=pdgid_labels,
              out_dir=out_dir,
              density=True)
 
-    d.plot1d("SampleValidation/SampleValidation_energy_primaries", "Energy of primaries (MeV)",
+    d.plot1d("SampleValidation/SampleValidation_primaries_energy", "Energy of primaries (MeV)",
              out_dir=out_dir,
              density=True)
 
-    d.plot1d("SampleValidation/SampleValidation_pdgid_primarydaughters", "PDG ID, primary daughters",
+    d.plot1d("SampleValidation/SampleValidation_primarydaughters_pdgid", "PDG ID, primary daughters",
              tick_labels=pdgid_labels,
              out_dir=out_dir,
              density=True)
-    d.plot1d("SampleValidation/SampleValidation_energy_daughterphoton", "Energy spectrum of all photons from primary",
+    d.plot1d("SampleValidation/SampleValidation_daughterphoton_energy", "Energy spectrum of all photons from primary",
              out_dir=out_dir,
              density=True)
 
-    d.plot1d("SampleValidation/SampleValidation_pdgid_harddaughters", "PDG ID of hard primary daughter",
-             tick_labels=pdgid_labels,
-             out_dir=out_dir,
-             density=True)
-
-    d.plot1d("SampleValidation/SampleValidation_startZ_hardbrem", "Start z position of hard primary daughter",
-             out_dir=out_dir,
-             density=True)
-
-    d.plot1d("SampleValidation/SampleValidation_endZ_hardbrem", "End z position of hard primary daughter",
-             out_dir=out_dir,
-             density=True)
-
-    d.plot1d("SampleValidation/SampleValidation_energy_hardbrem", "Energy spectrum of hard primary daughter",
-             out_dir=out_dir,
-             density=True)
-
-    d.plot1d("SampleValidation/SampleValidation_pdgid_hardbremdaughters", "PDG ID, hard brem daughters",
+    d.plot1d("SampleValidation/SampleValidation_harddaughters_pdgid", "PDG ID of hard primary daughter",
              tick_labels=pdgid_labels,
              out_dir=out_dir,
              density=True)
 
-    d.plot1d("SampleValidation/SampleValidation_startZ_hardbremdaughters", "Start z position of hard brem daughters",
+    d.plot1d("SampleValidation/SampleValidation_harddaughters_startZ", "Start z position of hard primary daughter [mm]",
              out_dir=out_dir,
              density=True)
 
-    d.plot1d("SampleValidation/SampleValidation_endZ_hardbremdaughters", "End z position of hard brem daughters",
+    d.plot1d("SampleValidation/SampleValidation_harddaughters_endZ", "End z position of hard primary daughter [mm]",
+             out_dir=out_dir,
+             density=True)
+
+    d.plot1d("SampleValidation/SampleValidation_harddaughters_energy", "Energy spectrum of hard primary daughter [MeV]",
+             out_dir=out_dir,
+             density=True)
+
+    d.plot1d("SampleValidation/SampleValidation_hardbremdaughters_pdgid", "PDG ID, hard brem daughters",
+             tick_labels=pdgid_labels,
+             out_dir=out_dir,
+             density=True)
+
+    d.plot1d("SampleValidation/SampleValidation_hardbremdaughters_startZ", "Start z position of hard brem daughters [mm]",
+             out_dir=out_dir,
+             density=True)
+
+    d.plot1d("SampleValidation/SampleValidation_hardbremdaughters_endZ", "End z position of hard brem daughters [mm]",
+             out_dir=out_dir,
+             density=True)
+
+    d.plot1d("SampleValidation/SampleValidation_hardbremdaughters_energy", "Energy of hard brem daughters [MeV]",
              out_dir=out_dir,
              density=True)
