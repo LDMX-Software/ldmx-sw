@@ -83,6 +83,7 @@ void SampleValidation::analyze(const framework::Event& event) {
           histograms_.fill("pdgid_hardbremdaughters",
                            pdgid_label(p.getPdgID()));
           histograms_.fill("startZ_hardbremdaughters", p.getVertex()[2]);
+          histograms_.fill("endZ_hardbremdaughters", p.getEndPoint()[2]);
         }
       }
     }
