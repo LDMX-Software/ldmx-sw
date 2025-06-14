@@ -828,7 +828,7 @@ class SampleValidation(ldmxcfg.Analyzer) :
         # daughters of hard brem histograms
         self.build1DHistogram("pdgid_hardbremdaughters", "ID of hard brem daughters", 20, 0, 20)
         self.build1DHistogram("startZ_hardbremdaughters", "Start z position of hard brem daughters  [mm]", 200, -1000, 1000)
-        self.build1DHistogram("endZ_hardbremdaughters", "End z position of hard brem daughters  [mm]", 140, -1000, 6000)
+        self.build1DHistogram("endZ_hardbremdaughters", "End z position of hard brem daughters  [mm]", 70, -1000, 6000)
         
         
 class EcalClusterAnalyzer(ldmxcfg.Analyzer) :
