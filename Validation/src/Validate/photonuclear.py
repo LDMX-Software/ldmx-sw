@@ -15,10 +15,10 @@ def pndqm(d: Differ, out_dir=None):
 
     compact_event_type_labels = ['', 'n', 'K^{±}X', 'K⁰', 'nn', 'soft', 'other', '']
     neutron_event_type_labels = ['', '', 'nn', 'pn', 'π^+n', 'π⁰n', '']
-    pn_interaction_material_labels= ['', Didn't happen", "Else", "Si", "W", "FR4", "Steel", "Epoxy",
-                 "PVT", "Glue", "Air"]
-    pn_vertex_volume_labels= ['', "Didn't happen", "Else", "W Cooling", "C Cooling", "PCB",
-       "CarbonBasePlate", "Absorber", "Sensor", "Glue", "Motherboard"]
+    pn_interaction_material_labels= ['Did not happen', 'Else', 'Si', 'W', 'FR4', 'Steel', 'Epoxy',
+      'PVT', 'Glue', 'Air']
+    pn_vertex_volume_labels= ['Did not happen', 'Else', 'W Cooling', 'C Cooling', 'PCB',
+       'CarbonBasePlate', 'Absorber', 'Sensor', 'Glue', 'Motherboard', '', '', '',]
 
     d.plot1d("PN/PN_event_type",  "Event category (200 MeV cut)",
              tick_labels=event_type_labels,
@@ -48,10 +48,10 @@ def pndqm(d: Differ, out_dir=None):
     d.plot1d("PN/PN_1n_event_type", "",
              tick_labels=neutron_event_type_labels,
              out_dir=out_dir) 
-    d.plot1d("PN/pn_interaction_material", "",
+    d.plot1d("PN/PN_pn_interaction_material", "",
              tick_labels=pn_interaction_material_labels,
              out_dir=out_dir)
-    d.plot1d("PN/pn_vertex_volume", "",
+    d.plot1d("PN/PN_pn_vertex_volume", "",
              tick_labels=pn_vertex_volume_labels,
              out_dir=out_dir)
     d.plot1d("PN/PN_pn_particle_mult", "Photo-nuclear Multiplicity", out_dir=out_dir)
