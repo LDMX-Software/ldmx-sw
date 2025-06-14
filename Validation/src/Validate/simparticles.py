@@ -51,3 +51,7 @@ def beamenergy_comp(d: Differ, out_dir=None):
     d.plot1d("SampleValidation/SampleValidation_startZ_hardbremdaughters", "Start z position of hard brem daughters",
              out_dir=out_dir,
              density=True)
+
+    d.plot1d("SampleValidation/SampleValidation_endZ_hardbremdaughters", "End z position of hard brem daughters",
+             out_dir=out_dir,
+             density=True)
