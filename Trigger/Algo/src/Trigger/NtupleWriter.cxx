@@ -3,6 +3,7 @@
 #include "SimCore/Event/SimTrackerHit.h"
 #include "Trigger/Event/TrigEnergySum.h"
 #include "Trigger/Event/TrigParticle.h"
+#include "Trigger/Event/TrigMip.h"
 
 namespace trigger {
 NtupleWriter::NtupleWriter(const std::string& name, framework::Process& process)
@@ -122,6 +123,17 @@ void NtupleWriter::produce(framework::Event& event) {
     // n.setVar("Hcal_e_nLayer", int(energyAfterLayer.size()));
   }
 
+  inTag = "ecalTrigMIPs";
+  if (writeEcalTrigMIPS_ && event.exists(inTag)) {
+    const auto mips = event.getCollection<TrigMip>(inTag);
+    for (const auto& mip : mips) {
+        n.setVar("Ecal_mip_length", mip.length());
+        n.setVar("Ecal_mip_nHoles", mip.nHoles());
+        n.setVar("Ecal_mip_isolationEnergy", mip.SumEinIsolationRegion());
+
+    }
+  }
+
   inTag = "trigElectrons";
   if (writeEle_ && event.exists(inTag)) {
     const auto eles = event.getCollection<TrigParticle>(inTag);
@@ -225,6 +237,11 @@ void NtupleWriter::onProcessStart() {
     n.addVar<float>(tag_, "TruthEcal_pz");
     n.addVar<float>(tag_, "TruthEcal_e");
     n.addVar<int>(tag_, "TruthEcal_pdgId");
+  }
+  if (writeEcalTrigMIPS_) {
+    n.addVar<int>(tag_, "Ecal_mip_length");
+    n.addVar<int>(tag_, "Ecal_mip_nHoles");
+    n.addVar<float>(tag_, "Ecal_mip_isolationEnergy");
   }
   if (writeEcalSums_) {
     n.addVar<vector<float> >(tag_, "Ecal_e_afterLayer");

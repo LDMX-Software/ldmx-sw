@@ -147,6 +147,7 @@ void TrigMipReco::produce(framework::Event& event) {
           // bool isIsolated = true;
           float isolationECut = 5; // MeV
           float isolationRadius2 = radiusCut*radiusCut;
+          // float totalIsolationESum = 0.0f;
 
           for (const auto* hit : track) {
             // usedHits.insert(hit);  // adds used hits to vector so they cannot be used again
@@ -177,12 +178,14 @@ void TrigMipReco::produce(framework::Event& event) {
                     sumE += cand.energy();
                 }
             }
-             // std::cout << "  [DEBUG] Sum of energy of surrounding candidates: " << sumE << "\n";
-             if (sumE >= isolationECut) {
-             isIsolated = false;
-             usedHits.insert(hit);  // adds used hits to vector so they cannot be used again
-             break;
-             }
+            // totalIsolationESum +=sumE
+
+            // std::cout << "  [DEBUG] Sum of energy of surrounding candidates: " << sumE << "\n";
+            if (sumE >= isolationECut) {
+            isIsolated = false;
+            usedHits.insert(hit);  // adds used hits to vector so they cannot be used again
+            break;
+            }
           }
           if (!isIsolated) {
             continue; // reject track if any hit is not isolated
@@ -220,6 +223,23 @@ void TrigMipReco::produce(framework::Event& event) {
       mip.setNHits(track.size());
       mip.setLength(track.back()->layer() - track.front()->layer());
       mip.setNHoles(mip.length() - mip.nHits());
+
+      float totalIsolationESum = 0.0f;
+      for (const auto* hit : track) {
+        int layer = hit->layer();
+        float hitx = hit->x();
+        float hity = hit->y();
+        for (const auto& cand : layerHits[layer]) {
+            if (&cand == hit) continue;
+            float dx = cand.x() - hitx;
+            float dy = cand.y() - hity;
+            float dR2 = dx * dx + dy * dy;
+            if (dR2 < radiusCut * radiusCut) {
+                totalIsolationESum += cand.energy();
+            }
+        }
+      }
+      mip.setSumEinIsolationRegion(totalIsolationESum);
       mips.push_back(mip);
     }
     std::sort(mips.begin(), mips.end());

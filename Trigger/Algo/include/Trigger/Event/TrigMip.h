@@ -30,12 +30,14 @@ class TrigMip {
   void setNHits(int nHits) { nHits_ = nHits; }
   void setNHoles(int nHoles) { nHoles_ = nHoles; }
   void setLength(int length) { length_ = length; }
+  void setSumEinIsolationRegion(float sum) { SumEinIsolationRegion_ = sum; }
 
   int startLayer() const { return startLayer_; }
   int endLayer() const { return endLayer_; }
   int nHits() const { return nHits_; }
   int nHoles() const { return nHoles_; }
   int length() const { return length_; }
+  float SumEinIsolationRegion() const { return SumEinIsolationRegion_; }
 
  private:
   // first draft based on hcal
@@ -44,6 +46,7 @@ class TrigMip {
   int nHits_{0};
   int nHoles_{0};
   int length_{0};
+  float SumEinIsolationRegion_{0.0f};
 
   /// ROOT Dictionary class definition macro
   ClassDef(TrigMip, 1);
