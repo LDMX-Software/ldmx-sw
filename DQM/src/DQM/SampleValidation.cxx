@@ -39,8 +39,8 @@ void SampleValidation::analyze(const framework::Event& event) {
 
     for (auto const& parent_track_id : parents_track_ids) {
       if (parent_track_id == 0) {
-        histograms_.fill("pdgid_primaries", pdgid_label(pdgid));
-        histograms_.fill("energy_primaries", energy);
+        histograms_.fill("primaries_pdgid", pdgid_label(pdgid));
+        histograms_.fill("primaries_energy", energy);
         hard_thresh = (2500. / 4000.) * energy;
         primary_daughters = daughters;
         for (const ldmx::SimTrackerHit& sphit : targetSPHits) {
@@ -59,15 +59,15 @@ void SampleValidation::analyze(const framework::Event& event) {
     ldmx::SimParticle p = it.second;
     for (auto const& primary_daughter : primary_daughters) {
       if (trackid == primary_daughter) {
-        histograms_.fill("pdgid_primarydaughters", pdgid_label(p.getPdgID()));
+        histograms_.fill("primarydaughters_pdgid", pdgid_label(p.getPdgID()));
         if (p.getPdgID() == 22) {
-          histograms_.fill("energy_daughterphoton", p.getEnergy());
+          histograms_.fill("daughterphoton_energy", p.getEnergy());
         }
         if (p.getEnergy() >= hard_thresh) {
-          histograms_.fill("pdgid_harddaughters", pdgid_label(p.getPdgID()));
-          histograms_.fill("startZ_hardbrem", p.getVertex()[2]);
-          histograms_.fill("endZ_hardbrem", p.getEndPoint()[2]);
-          histograms_.fill("energy_hardbrem", p.getEnergy());
+          histograms_.fill("harddaughters_pdgid", pdgid_label(p.getPdgID()));
+          histograms_.fill("harddaughters_startZ", p.getVertex()[2]);
+          histograms_.fill("harddaughters_endZ", p.getEndPoint()[2]);
+          histograms_.fill("harddaughters_energy", p.getEnergy());
           hardbrem_daughters.push_back(p.getDaughters());
         }
       }
@@ -80,9 +80,11 @@ void SampleValidation::analyze(const framework::Event& event) {
     for (const std::vector<int>& daughter_track_id : hardbrem_daughters) {
       for (const int& daughter_id : daughter_track_id) {
         if (trackid == daughter_id) {
-          histograms_.fill("pdgid_hardbremdaughters",
+          histograms_.fill("hardbremdaughters_pdgid",
                            pdgid_label(p.getPdgID()));
-          histograms_.fill("startZ_hardbremdaughters", p.getVertex()[2]);
+          histograms_.fill("hardbremdaughters_startZ", p.getVertex()[2]);
+          histograms_.fill("hardbremdaughters_endZ", p.getEndPoint()[2]);
+          histograms_.fill("hardbremdaughters_energy", p.getEnergy());
         }
       }
     }
@@ -155,10 +157,10 @@ void SampleValidation::onProcessStart() {
                                      ""};
 
   std::vector<TH1*> hists = {
-      histograms_.get("pdgid_primaries"),
-      histograms_.get("pdgid_primarydaughters"),
-      histograms_.get("pdgid_harddaughters"),
-      histograms_.get("pdgid_hardbremdaughters"),
+      histograms_.get("primaries_pdgid"),
+      histograms_.get("primarydaughters_pdgid"),
+      histograms_.get("harddaughters_pdgid"),
+      histograms_.get("hardbremdaughters_pdgid"),
 
   };
 
