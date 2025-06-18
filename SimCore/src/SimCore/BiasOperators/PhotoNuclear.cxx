@@ -68,7 +68,7 @@ G4VBiasingOperation* PhotoNuclear::ProposeOccurenceBiasingOperation(
 
     double emXsecBiased = std::max(
         emXsecUnbiased + pnXsecUnbiased_ - pnXsecBiased_, pnXsecUnbiased_);
-    auto material_tungsten = simcore::g4user::ptrretrieval::getMaterial("G4_W");
+    static auto material_tungsten = simcore::g4user::ptrretrieval::getMaterial("G4_W");
     auto interaction_material = track->GetMaterial();
     if ((emXsecBiased == pnXsecUnbiased_) &&
         (interaction_material == material_tungsten)) {
