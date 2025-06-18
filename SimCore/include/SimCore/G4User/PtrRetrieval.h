@@ -120,7 +120,6 @@ inline G4Material* getMaterial(const std::string& name) {
   return material;
 }
 
-
 }  // namespace ptrretrieval
 }  // namespace g4user
 }  // namespace simcore
