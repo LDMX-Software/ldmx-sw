@@ -93,16 +93,19 @@ void TrigMipReco::produce(framework::Event& event) {
 
     // Filter for section = 0, energy range, and hits < 33 layers
     for (const auto& hit : caloHits) {
-      if (hit.section() > 0 || hit.energy() < minEnergy_ ||
-          hit.energy() > maxEnergy_ || hit.layer() > maxLayer)
+      // if (hit.section() > 0 || hit.energy() < minEnergy_ ||
+      //     hit.energy() > maxEnergy_ || hit.layer() > maxLayer)
+      //   continue;
+      if (hit.section() > 0 || hit.layer() > maxLayer)
         continue;
       layerHits[hit.layer()].push_back(hit);
     }
 
+    // std::map<int, int> seedLayerCounts;
     // Find mip seeds
     for (const auto& [seedLayer, seeds] : layerHits) {
       for (const auto& seed : seeds) {
-        if (usedHits.count(&seed)) continue;  // Skip if hit already used
+        if (usedHits.count(&seed) || seed.energy() < minEnergy_ || seed.energy() > maxEnergy_) continue;  // Skip if hit already used
 
         std::vector<const TrigCaloHit*> track;
         track.push_back(&seed);
@@ -116,7 +119,7 @@ void TrigMipReco::produce(framework::Event& event) {
           float bestdR2 = radiusCut * radiusCut;
 
           for (const auto& cand : layerHits[l]) {
-            if (usedHits.count(&cand)) continue;
+            if (usedHits.count(&cand) || cand.energy() < minEnergy_ || cand.energy() > maxEnergy_) continue;
 
             // corrects for layer shift in x-direction, we calculated that the
             // shift is 4.82 mm
@@ -143,14 +146,15 @@ void TrigMipReco::produce(framework::Event& event) {
         }
         // std::cout << "\n[DEBUG] This is a new track\n";
         bool isIsolated = true;
+        float isolationECut = 20; // MeV
+        float isolationRadius2 = radiusCut*radiusCut;
         if (track.size() >= minTrackLength) {
           // bool isIsolated = true;
-          float isolationECut = 5; // MeV
-          float isolationRadius2 = radiusCut*radiusCut;
+          // float isolationECut = 5; // MeV
+          // float isolationRadius2 = radiusCut*radiusCut;
           // float totalIsolationESum = 0.0f;
 
           for (const auto* hit : track) {
-            // usedHits.insert(hit);  // adds used hits to vector so they cannot be used again
             int layer = hit->layer();
             float hitx = hit->x();
             float hity = hit->y();
@@ -206,6 +210,12 @@ void TrigMipReco::produce(framework::Event& event) {
         }
       }
     }
+
+    // std::cout << "\n=== Seed Counts by Layer ===\n";
+    // for (int layer = 0; layer <= maxLayer; ++layer) {
+    //     int count = seedLayerCounts.count(layer) ? seedLayerCounts[layer] : 0;
+    //     std::cout << "Layer " << layer << ": " << count << " seeds\n";
+    // }
 
     std::set<size_t> validTrackIDs;
     for (const auto& [hit, idx] : hitToBestTrack) {
