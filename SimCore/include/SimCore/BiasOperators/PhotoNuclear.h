@@ -3,6 +3,7 @@
 #define SIMCORE_BIASOPERATORS_PHOTONUCLEAR_H_
 
 #include "SimCore/BiasOperators/XsecBiasingOperator.h"
+#include "SimCore/G4User/PtrRetrieval.h"
 
 namespace simcore {
 namespace biasoperators {

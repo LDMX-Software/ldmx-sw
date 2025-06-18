@@ -104,6 +104,23 @@ inline G4LogicalVolume* getLogicalVolume(const std::string& name) {
   return volume;
 }
 
+/**
+ * @brief Retrieve a Geant4 material by name.
+ * @param name Name of the material.
+ * @return Pointer to the material if found, nullptr otherwise.
+ *
+ * This function retrieves a material from the G4Material store
+ * using its name. If the material is not found, it returns nullptr.
+ */
+inline G4Material* getMaterial(const std::string& name) {
+  auto* material = G4Material::GetMaterial(name);
+  if (!material) {
+    return nullptr;
+  }
+  return material;
+}
+
+
 }  // namespace ptrretrieval
 }  // namespace g4user
 }  // namespace simcore
