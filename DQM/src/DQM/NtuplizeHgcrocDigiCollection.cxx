@@ -80,9 +80,9 @@ void NtuplizeHgcrocDigiCollection::analyze(const framework::Event& event) {
 
   const ldmx::EventHeader* header =
       const_cast<framework::Event&>(event).getEventHeaderPtr();
-  bool is_simulation_ = not(header->isRealData());
+  bool is_simulation = not(header->isRealData());
 
-  if (not is_simulation_) {
+  if (not is_simulation) {
     if (already_aligned_) {
       aligned_ = event.getObject<bool>(input_name_ + "Aligned", input_pass_);
     } else {
@@ -103,7 +103,7 @@ void NtuplizeHgcrocDigiCollection::analyze(const framework::Event& event) {
   std::vector<bool> good_bxheader;
   std::vector<bool> good_trailer;
 
-  if (not is_simulation_) {
+  if (not is_simulation) {
     good_bxheader =
         event.getCollection<bool>(input_name_ + "GoodLinkHeader", input_pass_);
     good_trailer =
@@ -120,7 +120,7 @@ void NtuplizeHgcrocDigiCollection::analyze(const framework::Event& event) {
       ldmx::HcalElectronicsID eid(d.id());
       fpga_ = eid.fiber();
       link_ = eid.elink();
-      if (!is_simulation_) {
+      if (!is_simulation) {
         good_link_ = (good_bxheader.at(link_) and good_trailer.at(link_));
       } else {
         good_link_ = true;
@@ -131,7 +131,7 @@ void NtuplizeHgcrocDigiCollection::analyze(const framework::Event& event) {
       ldmx::HcalDigiID detid(d.id());
       ldmx::HcalElectronicsID eid = detmap.get(detid);
       int link = eid.elink();
-      if (!is_simulation_) {
+      if (!is_simulation) {
         good_link_ = (good_bxheader.at(link) and good_trailer.at(link));
       } else {
         good_link_ = true;
