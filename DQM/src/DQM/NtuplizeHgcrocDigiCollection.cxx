@@ -80,7 +80,7 @@ void NtuplizeHgcrocDigiCollection::analyze(const framework::Event& event) {
 
   const ldmx::EventHeader* header =
       const_cast<framework::Event&>(event).getEventHeaderPtr();
-  bool is_simulation_ = not (header->isRealData());
+  bool is_simulation_ = not(header->isRealData());
 
   if (not is_simulation_) {
     if (already_aligned_) {
@@ -104,10 +104,10 @@ void NtuplizeHgcrocDigiCollection::analyze(const framework::Event& event) {
   std::vector<bool> good_trailer;
 
   if (not is_simulation_) {
-    good_bxheader = event.getCollection<bool>(
-        input_name_ + "GoodLinkHeader", input_pass_);
-    good_trailer = event.getCollection<bool>(
-        input_name_ + "GoodLinkTrailer", input_pass_);
+    good_bxheader =
+        event.getCollection<bool>(input_name_ + "GoodLinkHeader", input_pass_);
+    good_trailer =
+        event.getCollection<bool>(input_name_ + "GoodLinkTrailer", input_pass_);
   }
 
   auto const& digis{
