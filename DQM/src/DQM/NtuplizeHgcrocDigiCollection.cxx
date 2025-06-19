@@ -77,23 +77,42 @@ void NtuplizeHgcrocDigiCollection::analyze(const framework::Event& event) {
       hcal::HcalDetectorMap::CONDITIONS_OBJECT_NAME)};
 
   ldmxsw_event_ = event.getEventNumber();
-  if (already_aligned_) {
-    aligned_ = event.getObject<bool>(input_name_ + "Aligned", input_pass_);
+
+  const ldmx::EventHeader* header =
+      const_cast<framework::Event&>(event).getEventHeaderPtr();
+  bool is_simulation_ = !(header->isRealData());
+
+  if (not is_simulation_) {
+    if (already_aligned_) {
+      aligned_ = event.getObject<bool>(input_name_ + "Aligned", input_pass_);
+    } else {
+      aligned_ = false;
+      version_ = event.getObject<int>(input_name_ + "Version", input_pass_);
+      pf_event_ = event.getObject<int>(input_name_ + "Number", input_pass_);
+      pf_ticks_ = event.getObject<int>(input_name_ + "Ticks", input_pass_);
+      pf_spill_ = event.getObject<int>(input_name_ + "Spill", input_pass_);
+    }
   } else {
-    aligned_ = false;
-    version_ = event.getObject<int>(input_name_ + "Version", input_pass_);
-    pf_event_ = event.getObject<int>(input_name_ + "Number", input_pass_);
-    pf_ticks_ = event.getObject<int>(input_name_ + "Ticks", input_pass_);
-    pf_spill_ = event.getObject<int>(input_name_ + "Spill", input_pass_);
+    aligned_ = true;
+    version_ = 0;
+    pf_event_ = ldmxsw_event_;
+    pf_ticks_ = 0;
+    pf_spill_ = 0;
   }
 
-  const auto& good_bxheader{
-      event.getCollection<bool>(input_name_ + "GoodLinkHeader", input_pass_)};
-  const auto& good_trailer{
-      event.getCollection<bool>(input_name_ + "GoodLinkTrailer", input_pass_)};
+  std::vector<bool> good_bxheader;
+  std::vector<bool> good_trailer;
+
+  if (not is_simulation_) {
+    good_bxheader = const_cast<framework::Event&>(event).getCollection<bool>(
+        input_name_ + "GoodLinkHeader", input_pass_);
+    good_trailer = const_cast<framework::Event&>(event).getCollection<bool>(
+        input_name_ + "GoodLinkTrailer", input_pass_);
+  }
 
   auto const& digis{
       event.getObject<ldmx::HgcrocDigiCollection>(input_name_, input_pass_)};
+
   for (std::size_t i_digi{0}; i_digi < digis.size(); i_digi++) {
     auto d{digis.getDigi(i_digi)};
     raw_id_ = static_cast<int>(d.id());
@@ -101,14 +120,22 @@ void NtuplizeHgcrocDigiCollection::analyze(const framework::Event& event) {
       ldmx::HcalElectronicsID eid(d.id());
       fpga_ = eid.fiber();
       link_ = eid.elink();
-      good_link_ = (good_bxheader.at(link_) and good_trailer.at(link_));
+      if (!is_simulation_) {
+        good_link_ = (good_bxheader.at(link_) and good_trailer.at(link_));
+      } else {
+        good_link_ = true;
+      }
       channel_ = eid.channel();
       index_ = eid.index();
     } else {
       ldmx::HcalDigiID detid(d.id());
       ldmx::HcalElectronicsID eid = detmap.get(detid);
       int link = eid.elink();
-      good_link_ = (good_bxheader.at(link) and good_trailer.at(link));
+      if (!is_simulation_) {
+        good_link_ = (good_bxheader.at(link) and good_trailer.at(link));
+      } else {
+        good_link_ = true;
+      }
       section_ = detid.section();
       layer_ = detid.layer();
       strip_ = detid.strip();
