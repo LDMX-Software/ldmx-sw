@@ -203,8 +203,6 @@ class genie(simcfg.PrimaryGenerator) :
 
     Attributes
     ----------
-    verbosity : int, optional
-        Verbosity flag for this generator
     energy : float
         Energy of particle to shoot [GeV]
     targets : list of int
@@ -233,8 +231,7 @@ class genie(simcfg.PrimaryGenerator) :
                          time = 0.0,
                          position = [0.,0.,0.],
                          direction = [0.,0.,1.],
-                         tune='G18_02a_00_000',
-                         verbosity=True)
+                         tune='G18_02a_00_000')
     """
 
     def __init__(self,name,

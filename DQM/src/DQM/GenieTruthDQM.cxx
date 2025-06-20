@@ -100,7 +100,7 @@ void GenieTruthDQM::analyze(const framework::Event& event) {
   auto rescatter_code_ptr =
       hepmc3_ev.attribute<HepMC3::IntAttribute>("GENIE.RescatterCode");
   if (rescatter_code_ptr)
-    ntuple_.setVar<int>("rescatter_code", scattering_type_ptr->value());
+    ntuple_.setVar<int>("rescatter_code", rescatter_code_ptr->value());
 
   // get kinematic vars
   auto kvar_labels_ptr = hepmc3_ev.attribute<HepMC3::VectorIntAttribute>(
@@ -182,7 +182,7 @@ void GenieTruthDQM::analyze(const framework::Event& event) {
   if (hqrkpdg_ptr) ntuple_.setVar<int>("hqrk_pdg", hqrkpdg_ptr->value());
   auto hqrksea_ptr = hepmc3_ev.attribute<HepMC3::IntAttribute>(
       "GENIE.Interaction.HitSeaQuark");
-  if (hqrksea_ptr) ntuple_.setVar<int>("hqrk_sea", hqrkpdg_ptr->value());
+  if (hqrksea_ptr) ntuple_.setVar<int>("hqrk_sea", hqrksea_ptr->value());
 
   auto hadsys_4vec_ptr = hepmc3_ev.attribute<HepMC3::VectorDoubleAttribute>(
       "GENIE.Interaction.HadSystP4");

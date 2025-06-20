@@ -14,7 +14,7 @@
 #include "Framework/Utils/AppInit.h"
 #include "Framework/Utils/RunOpt.h"
 #include "HepMC3/GenEvent.h"
-#include "HepMC3/Print.h"
+#include "HepMC3/PrintStreams.h"
 #include "RwCalculators/GReWeightAGKY.h"
 #include "RwCalculators/GReWeightDISNuclMod.h"
 #include "RwCalculators/GReWeightDeltaradAngle.h"
@@ -172,14 +172,15 @@ void GenieReweightProducer::produce(framework::Event& event) {
       hepmc3_genev.read_data(hepmc3_ev);
 
       // print it out to check it ...
-      if (i_w == 0 && verbosity_ >= 1)
-        HepMC3::Print::line(hepmc3_genev, true);  // print attributes
+      if (i_w == 0)
+        ldmx_log(debug) << hepmc3_genev;
 
       // now convert to genie event record
       auto genie_ev_record_ptr = hepMC3Converter_->RetrieveGHEP(hepmc3_genev);
 
       // print that out too ...
-      if (i_w == 0 && verbosity_ >= 1) genie_ev_record_ptr->Print(std::cout);
+      if (i_w == 0 )
+        ldmx_log(debug) << *genie_ev_record_ptr;
 
       // auto this_weight = 1.0 + var_value*0.05;
       auto this_weight = genie_rw_->CalcWeight(*genie_ev_record_ptr);

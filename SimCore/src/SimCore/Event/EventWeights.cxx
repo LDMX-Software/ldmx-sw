@@ -30,6 +30,8 @@ std::ostream &operator<<(std::ostream &o, const EventWeights &ew) {
     }
     o << std::endl;
   }
+
+  return o;
 }
 
 void EventWeights::Print() { std::cout << *this; }

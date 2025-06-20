@@ -42,8 +42,6 @@ class GenieReweightProducer : public framework::Producer {
   virtual void produce(framework::Event& event);
 
  private:
-  // verbosity
-  int verbosity_;
 
   // input hepmc3 collection name
   std::string hepmc3CollName_;

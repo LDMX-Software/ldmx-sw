@@ -47,7 +47,6 @@ class GenieGenerator : public simcore::PrimaryGenerator {
    * @param parameters Parameters used to configure GENIE generator.
    *
    * Parameters:
-   *  verbosity : > 1 means print configuration
    *  energy    : energy of initial electron (GeV)
    *  targets   : list of ten-digit 10LZZZAAAI target codes
    *  abundances: list of relative abundances for the given targets
