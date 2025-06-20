@@ -1,33 +1,5 @@
 #include "Ecal/EcalMipTrackingProcessor.h"
-// #include "Ecal/EcalVetoProcessor.h"
-
-// LDMX
-
-#include "DetDescr/EcalGeometry.h"
-#include "DetDescr/SimSpecialID.h"
-#include "Ecal/Event/EcalHit.h"
-#include "Recon/Event/EventConstants.h"
-#include "SimCore/Event/SimParticle.h"
-#include "SimCore/Event/SimTrackerHit.h"
-
-/*~~~~~~~~~~~*/
-/*   Tools   */
-/*~~~~~~~~~~~*/
-#include "Tools/AnalysisUtils.h"
-
-// C++
-#include <stdlib.h>
-
-#include <algorithm>
-#include <cmath>
-#include <fstream>
-#include <iomanip>
-
-// ROOT (MIP tracking)
-#include "TDecompSVD.h"
-#include "TMatrixD.h"
-#include "TVector3.h"
-
+#
 namespace ecal {
 
 void EcalMipTrackingProcessor::onNewRun(const ldmx::RunHeader &rh) {
@@ -35,13 +7,14 @@ void EcalMipTrackingProcessor::onNewRun(const ldmx::RunHeader &rh) {
   profiling_map_["linreg_tracks"] = 0.;
   profiling_map_["processing_time_"] = 0;
 }
+
 void EcalMipTrackingProcessor::configure(
     framework::config::Parameters &parameters) {
-  verbose_ = parameters.getParameter<bool>("verbose");
   nEcalLayers_ = parameters.getParameter<int>("num_ecal_layers");
   linreg_radius_ = parameters.getParameter<double>("linreg_radius");
   mip_collection_name_ =
       parameters.getParameter<std::string>("mip_collection_name");
+  mip_pass_name_ = parameters.getParameter<std::string>("mip_pass_name");
 }
 
 void EcalMipTrackingProcessor::clearProcessor() {
@@ -61,17 +34,21 @@ void EcalMipTrackingProcessor::produce(framework::Event &event) {
 
   clearProcessor();
 
+  // Get the Ecal Geometry
+  geometry_ = &getCondition<ldmx::EcalGeometry>(
+      ldmx::EcalGeometry::CONDITIONS_OBJECT_NAME);
+
   // Read in hits near photon from EcalVetoProcessor
 
-  auto ecal_mip_collection =
-      event.getObject<ldmx::EcalMipCollection>(mip_collection_name_, "");
+  auto ecal_mip_collection = event.getObject<ldmx::EcalMipCollection>(
+      mip_collection_name_, mip_pass_name_);
   std::vector<XYCoords> ele_trajectory;
   std::vector<XYCoords> photon_trajectory;
   std::vector<ldmx::HitData> trackingHitList;
+  ldmx_log(trace) << "EcalMipTrackingProcessor::produce() called";
   ele_trajectory = ecal_mip_collection.getEleTrajectory();
   photon_trajectory = ecal_mip_collection.getPhotonTrajectory();
   trackingHitList = ecal_mip_collection.getTrackingHitList();
-  // };
   nevents_++;
   // Now inputting Lines 753-1178 of the original EcalVetoProcessor
   // ------------------------------------------------------
@@ -87,6 +64,7 @@ void EcalMipTrackingProcessor::produce(framework::Event &event) {
   TVector3 e_traj_end;
   TVector3 p_traj_start;
   TVector3 p_traj_end;
+  ldmx_log(trace) << "Calculating epAng and epSep";
   if (!ele_trajectory.empty() && !photon_trajectory.empty()) {
     // Create TVector3s marking the start and endpoints of each projected
     // trajectory
@@ -101,6 +79,8 @@ void EcalMipTrackingProcessor::produce(framework::Event &event) {
                       photon_trajectory[(nEcalLayers_ - 1)].second,
                       geometry_->getZPosition((nEcalLayers_ - 1)));
 
+    ldmx_log(trace) << "Electron trajectory start: " << e_traj_start.X() << ", "
+                    << e_traj_start.Y() << ", " << e_traj_start.Z();
     TVector3 evec = e_traj_end - e_traj_start;
     TVector3 e_norm = evec.Unit();
     TVector3 pvec = p_traj_end - p_traj_start;
@@ -109,6 +89,8 @@ void EcalMipTrackingProcessor::produce(framework::Event &event) {
     epAng_ = acos(epDot_) * 180.0 / M_PI;
     epSep_ = sqrt(pow(e_traj_start.X() - p_traj_start.X(), 2) +
                   pow(e_traj_start.Y() - p_traj_start.Y(), 2));
+    ldmx_log(trace) << epAng_ << " degrees between electron and photon "
+                    << "trajectories, with separation of " << epSep_ << " mm";
   } else {
     // Electron trajectory is missing, so all hits in the Ecal are fair game.
     // Pick e/ptraj so that they won't restrict the tracking algorithm (place
@@ -132,12 +114,14 @@ void EcalMipTrackingProcessor::produce(framework::Event &event) {
   firstNearPhLayer_ = nEcalLayers_ - 1;
 
   // If no photon trajectory, leave this at the default (ECal back)
+  ldmx_log(trace) << "Finding first near photon layer";
   if (!photon_trajectory.empty()) {
     for (std::vector<ldmx::HitData>::iterator it = trackingHitList.begin();
          it != trackingHitList.end(); ++it) {
       float ehDist =
           sqrt(pow((*it).pos.X() - photon_trajectory[(*it).layer].first, 2) +
                pow((*it).pos.Y() - photon_trajectory[(*it).layer].second, 2));
+      // TODO: this 8.7 should be not hardcoded
       if (ehDist < 8.7) {
         nNearPhHits_++;
         if ((*it).layer < firstNearPhLayer_) {
@@ -145,11 +129,15 @@ void EcalMipTrackingProcessor::produce(framework::Event &event) {
         }
       }
     }
+    ldmx_log(trace) << "First near photon layer: " << firstNearPhLayer_;
   }
 
   // Territories limited to trackingHitList
   TVector3 gToe = (e_traj_start - p_traj_start).Unit();
+  // TODO what is this 8.7 here???
   TVector3 origin = p_traj_start + 0.5 * 8.7 * gToe;
+  ldmx_log(trace) << "Origin of photon territory: " << origin.X() << ", "
+                  << origin.Y() << ", " << origin.Z();
   if (!ele_trajectory.empty()) {
     for (auto &hitData : trackingHitList) {
       TVector3 hitPos = hitData.pos;
@@ -158,6 +146,7 @@ void EcalMipTrackingProcessor::produce(framework::Event &event) {
         photonTerritoryHits_++;
       }
     }
+    ldmx_log(trace) << "Photon territory hits: " << photonTerritoryHits_;
   } else {
     photonTerritoryHits_ = nReadoutHits_;
   }
@@ -175,17 +164,15 @@ void EcalMipTrackingProcessor::produce(framework::Event &event) {
   std::vector<std::vector<ldmx::HitData>> track_list;
 
   // print trackingHitList
-  if (verbose_) {
-    ldmx_log(debug) << "====== Tracking hit list (original) length "
-                    << trackingHitList.size() << " ======";
-    for (int i = 0; i < trackingHitList.size(); i++) {
-      std::cout << "[" << trackingHitList[i].pos.X() << ", "
-                << trackingHitList[i].pos.Y() << ", "
-                << trackingHitList[i].layer << "], ";
-    }
-    std::cout << std::endl;
-    ldmx_log(debug) << "====== END OF Tracking hit list ======";
+
+  ldmx_log(trace) << "====== Tracking hit list (original) length "
+                  << trackingHitList.size() << " ======";
+  for (int i = 0; i < trackingHitList.size(); i++) {
+    ldmx_log(trace) << "[" << trackingHitList[i].pos.X() << ", "
+                    << trackingHitList[i].pos.Y() << ", "
+                    << trackingHitList[i].layer << "], ";
   }
+  ldmx_log(trace) << "====== END OF Tracking hit list ======";
 
   // in v14 minR is 4.17 mm
   // while maxR is 4.81 mm
@@ -231,18 +218,17 @@ void EcalMipTrackingProcessor::produce(framework::Event &event) {
     // electron trajectory Details of these constraints may be revised
     if (closest_p > cellWidth and closest_e < 2 * cellWidth) continue;
     if (trackLen < 4 and closest_e > closest_p) continue;
-    if (verbose_) {
-      ldmx_log(debug) << "====== After rejection for MIP tracking ======";
-      ldmx_log(debug) << "current hit: [" << trackingHitList[iHit].pos.X()
-                      << ", " << trackingHitList[iHit].pos.Y() << ", "
-                      << trackingHitList[iHit].layer << "]";
 
-      for (int k = 0; k < trackLen; k++) {
-        ldmx_log(debug) << "track[" << k << "] position = ["
-                        << trackingHitList[track[k]].pos.X() << ", "
-                        << trackingHitList[track[k]].pos.Y() << ", "
-                        << trackingHitList[track[k]].layer << "]";
-      }
+    ldmx_log(debug) << "====== After rejection for MIP tracking ======";
+    ldmx_log(debug) << "current hit: [" << trackingHitList[iHit].pos.X() << ", "
+                    << trackingHitList[iHit].pos.Y() << ", "
+                    << trackingHitList[iHit].layer << "]";
+
+    for (int k = 0; k < trackLen; k++) {
+      ldmx_log(debug) << "track[" << k << "] position = ["
+                      << trackingHitList[track[k]].pos.X() << ", "
+                      << trackingHitList[track[k]].pos.Y() << ", "
+                      << trackingHitList[track[k]].layer << "]";
     }
 
     // if track found, increment nStraightTracks and remove all hits in track
@@ -256,17 +242,15 @@ void EcalMipTrackingProcessor::produce(framework::Event &event) {
         n_remove++;
       }
       // print trackingHitList
-      if (verbose_) {
-        ldmx_log(debug) << "====== Tracking hit list (after erase) length "
-                        << trackingHitList.size() << " ======";
-        for (int i = 0; i < trackingHitList.size(); i++) {
-          std::cout << "[" << trackingHitList[i].pos.X() << ", "
-                    << trackingHitList[i].pos.Y() << ", "
-                    << trackingHitList[i].layer << "] ";
-        }
-        std::cout << std::endl;
-        ldmx_log(debug) << "====== END OF Tracking hit list ======";
+
+      ldmx_log(trace) << "====== Tracking hit list (after erase) length "
+                      << trackingHitList.size() << " ======";
+      for (int i = 0; i < trackingHitList.size(); i++) {
+        ldmx_log(trace) << "[" << trackingHitList[i].pos.X() << ", "
+                        << trackingHitList[i].pos.Y() << ", "
+                        << trackingHitList[i].layer << "] ";
       }
+      ldmx_log(trace) << "====== END OF Tracking hit list ======";
 
       track_list.push_back(temp_track_list);
       // The *current* hit will have been removed, so iHit is currently pointing
@@ -277,16 +261,14 @@ void EcalMipTrackingProcessor::produce(framework::Event &event) {
 
   ldmx_log(debug) << "Straight tracks found (before merge): "
                   << track_list.size();
-  if (verbose_) {
-    for (int iTrack = 0; iTrack < track_list.size(); iTrack++) {
-      ldmx_log(debug) << "Track " << iTrack << ":";
-      for (int iHit = 0; iHit < track_list[iTrack].size(); iHit++) {
-        std::cout << "  Hit " << iHit << ": ["
-                  << track_list[iTrack][iHit].pos.X() << ", "
-                  << track_list[iTrack][iHit].pos.Y() << ", "
-                  << track_list[iTrack][iHit].layer << "]" << std::endl;
-      }
-      std::cout << std::endl;
+
+  for (int iTrack = 0; iTrack < track_list.size(); iTrack++) {
+    ldmx_log(trace) << "Track " << iTrack << ":";
+    for (int iHit = 0; iHit < track_list[iTrack].size(); iHit++) {
+      ldmx_log(trace) << "  Hit " << iHit << ": ["
+                      << track_list[iTrack][iHit].pos.X() << ", "
+                      << track_list[iTrack][iHit].pos.Y() << ", "
+                      << track_list[iTrack][iHit].layer << "]" << std::endl;
     }
   }
 
@@ -302,7 +284,7 @@ void EcalMipTrackingProcessor::produce(framework::Event &event) {
     std::vector<ldmx::HitData> base_track = track_list[track_i];
     ldmx::HitData tail_hitdata =
         base_track.back();  // xylayer of last hit in track
-    if (verbose_) ldmx_log(debug) << "  Considering track " << track_i;
+    ldmx_log(trace) << "  Considering track " << track_i;
     for (int track_j = track_i + 1; track_j < track_list.size(); track_j++) {
       std::vector<ldmx::HitData> checking_track = track_list[track_j];
       ldmx::HitData head_hitdata = checking_track.front();
@@ -315,16 +297,12 @@ void EcalMipTrackingProcessor::produce(framework::Event &event) {
         // ...then append the second track to the first one and delete it
         // NOTE:  TO ADD:  (trackingHitList[iHit].pos -
         // trackingHitList[jHit].pos).Mag()
-        if (verbose_) {
-          ldmx_log(debug) << "     ** Compatible track found at index "
-                          << track_j;
-          ldmx_log(debug) << "     Tail xylayer: " << head_hitdata.pos.X()
-                          << "," << head_hitdata.pos.Y() << ","
-                          << head_hitdata.layer;
-          ldmx_log(debug) << "     Head xylayer: " << tail_hitdata.pos.X()
-                          << "," << tail_hitdata.pos.Y() << ","
-                          << tail_hitdata.layer;
-        }
+        ldmx_log(trace) << "     ** Compatible track found at index "
+                        << track_j;
+        ldmx_log(trace) << "     Tail xylayer: " << head_hitdata.pos.X() << ","
+                        << head_hitdata.pos.Y() << "," << head_hitdata.layer;
+        ldmx_log(trace) << "     Head xylayer: " << tail_hitdata.pos.X() << ","
+                        << tail_hitdata.pos.Y() << "," << tail_hitdata.layer;
         for (int hit_k = 0; hit_k < checking_track.size(); hit_k++) {
           base_track.push_back(track_list[track_j][hit_k]);
         }
@@ -391,10 +369,9 @@ void EcalMipTrackingProcessor::produce(framework::Event &event) {
     }
     // Found a track that passed the lin-reg reqs
     bool bestLinRegFound{false};
-    if (verbose_) {
-      ldmx_log(debug) << "There are " << hitsInRegion.size()
-                      << " hits within a radius of " << linreg_radius_ << " mm";
-    }
+
+    ldmx_log(debug) << "There are " << hitsInRegion.size()
+                    << " hits within a radius of " << linreg_radius_ << " mm";
     // Look at combinations of hits within the region (do not consider the same
     // combination twice):
     hitNums[0] = iHit;

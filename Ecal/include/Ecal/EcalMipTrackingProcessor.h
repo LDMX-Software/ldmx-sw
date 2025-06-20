@@ -13,20 +13,34 @@
 #include "DetDescr/EcalID.h"
 #include "Ecal/Event/EcalHit.h"
 #include "Ecal/Event/EcalMipCollection.h"
-#include "Ecal/Event/EcalVetoResult.h"
+// #include "Ecal/Event/EcalVetoResult.h"
+#include "DetDescr/SimSpecialID.h"
 #include "Framework/Configure/Parameters.h"
 #include "Framework/EventProcessor.h"
+#include "Recon/Event/EventConstants.h"
+#include "SimCore/Event/SimParticle.h"
+#include "SimCore/Event/SimTrackerHit.h"
+#include "Tools/AnalysisUtils.h"
 #include "Tools/ONNXRuntime.h"
-
-// ROOT (MIP tracking)
-#include "TVector3.h"
-
-// For recoil tracking
 #include "Tracking/Event/Track.h"
 
 // C++
+#include <stdlib.h>
+
+#include <algorithm>
+#include <cmath>
+#include <fstream>
+#include <iomanip>
+#include <iostream>
 #include <map>
 #include <memory>
+#include <utility>
+
+// ROOT (MIP tracking)
+#include "TDecompSVD.h"
+#include "TMatrixD.h"
+#include "TObject.h"
+#include "TVector3.h"
 
 namespace ecal {
 class EcalMipTrackingProcessor : public framework::Producer {
@@ -135,6 +149,7 @@ class EcalMipTrackingProcessor : public framework::Producer {
   int photonTerritoryHits_{0};
 
   std::string mip_collection_name_{"EcalMipCollection"};
+  std::string mip_pass_name_{""};
 
   /// handle to current geometry (to share with member functions)
   const ldmx::EcalGeometry* geometry_;

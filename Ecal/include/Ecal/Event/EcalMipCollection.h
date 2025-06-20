@@ -21,7 +21,7 @@
 #include <TVector3.h>
 
 #include "TObject.h"
-// #include "Vector3D.h"
+
 namespace ldmx {
 
 typedef std::pair<float, float> XYCoords;
@@ -40,15 +40,14 @@ class EcalMipCollection {
 
   /** Destructor */
   virtual ~EcalMipCollection() = default;
+
   /**
    * Print the string representation of this object.
-   *
    * This class is needed by ROOT when building the dictionary.
    */
   void Print() const;
 
-  // To match the Framework Bus clear. It's doing nothing
-  void Clear() {};
+  void Clear();
 
   const std::vector<XYCoords>& getEleTrajectory() const {
     return ele_trajectory_;
@@ -81,4 +80,4 @@ class EcalMipCollection {
 
 }  // namespace ldmx
 
-#endif  // ECAL_MIP_COLLECTION_H_
+#endif  // EVENT_ECALMIPCOLLECTION_H_

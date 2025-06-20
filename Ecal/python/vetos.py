@@ -46,10 +46,10 @@ class EcalMipProcessor(ldmxcfg.Producer) :
     def __init__(self,name = 'ecalMipTracking') :
         super().__init__(name,"ecal::EcalMipTrackingProcessor",'Ecal')
 
-        self.verbose = False
         self.num_ecal_layers = 34
         self.linreg_radius = 35.0 # in mm
         self.mip_collection_name = "EcalMipCollection"
+        self.mip_pass_name = ""
 
 class DNNEcalVetoProcessor(ldmxcfg.Producer) :
     """Configuration for DNN Ecal Veto

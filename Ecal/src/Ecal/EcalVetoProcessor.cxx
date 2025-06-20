@@ -805,6 +805,7 @@ void EcalVetoProcessor::produce(framework::Event &event) {
 
   // Took out MIP tracking here
   ldmx::EcalMipCollection ecal_mip_collection;
+  ldmx_log(trace) << "   Set up input info  for MIP tracking";
   ecal_mip_collection.setEleTrajectory(ele_trajectory);
   ecal_mip_collection.setPhotonTrajectory(photon_trajectory);
   ecal_mip_collection.setTrackingHitList(trackingHitList);
