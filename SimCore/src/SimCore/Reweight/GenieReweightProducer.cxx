@@ -172,15 +172,13 @@ void GenieReweightProducer::produce(framework::Event& event) {
       hepmc3_genev.read_data(hepmc3_ev);
 
       // print it out to check it ...
-      if (i_w == 0)
-        ldmx_log(debug) << hepmc3_genev;
+      if (i_w == 0) ldmx_log(debug) << hepmc3_genev;
 
       // now convert to genie event record
       auto genie_ev_record_ptr = hepMC3Converter_->RetrieveGHEP(hepmc3_genev);
 
       // print that out too ...
-      if (i_w == 0 )
-        ldmx_log(debug) << *genie_ev_record_ptr;
+      if (i_w == 0) ldmx_log(debug) << *genie_ev_record_ptr;
 
       // auto this_weight = 1.0 + var_value*0.05;
       auto this_weight = genie_rw_->CalcWeight(*genie_ev_record_ptr);

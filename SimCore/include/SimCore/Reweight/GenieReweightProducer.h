@@ -42,7 +42,6 @@ class GenieReweightProducer : public framework::Producer {
   virtual void produce(framework::Event& event);
 
  private:
-
   // input hepmc3 collection name
   std::string hepmc3CollName_;
 
