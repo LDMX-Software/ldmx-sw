@@ -66,7 +66,6 @@ class EcalVetoProcessor : public framework::Producer {
 
   void produce(framework::Event& event) override;
 
-
  private:
   void clearProcessor();
 

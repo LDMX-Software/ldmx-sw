@@ -1,9 +1,9 @@
 /**
  * @file EcalMipTrackingProcessor.h
- * @brief Class that determines MIP tracking information using ECAL hit information
+ * @brief Class that determines MIP tracking information using ECAL hit
+ * information
  * @author Owen Colegrove, Danyi Zhang, Jihoon Yoo, Tamas Vami (UCSB)
  */
-
 
 #ifndef EVENTPROC_ECALMIPTRACKINGPROCESSOR_H_
 #define EVENTPROC_ECALMIPTRACKINGPROCESSOR_H_
@@ -12,8 +12,8 @@
 #include "DetDescr/EcalGeometry.h"
 #include "DetDescr/EcalID.h"
 #include "Ecal/Event/EcalHit.h"
-#include "Ecal/Event/EcalVetoResult.h"
 #include "Ecal/Event/EcalMipCollection.h"
+#include "Ecal/Event/EcalVetoResult.h"
 #include "Framework/Configure/Parameters.h"
 #include "Framework/EventProcessor.h"
 #include "Tools/ONNXRuntime.h"
@@ -103,13 +103,11 @@ class EcalMipTrackingProcessor : public framework::Producer {
    * @returns Vector of parameters for a propagated recoil track
    */
 
-
  private:
   int nevents_{0};
   double processing_time_{0.};
 
   std::map<std::string, double> profiling_map_;
-
 
   double linreg_radius_{0};
   bool verbose_{false};
@@ -135,7 +133,6 @@ class EcalMipTrackingProcessor : public framework::Producer {
   float epDot_{0};
   /// Number of hits in the photon territory
   int photonTerritoryHits_{0};
-
 
   std::string mip_collection_name_{"EcalMipCollection"};
 

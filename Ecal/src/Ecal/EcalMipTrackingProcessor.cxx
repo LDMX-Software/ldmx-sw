@@ -1,7 +1,7 @@
 #include "Ecal/EcalMipTrackingProcessor.h"
 // #include "Ecal/EcalVetoProcessor.h"
 
-// LDMX 
+// LDMX
 
 #include "DetDescr/EcalGeometry.h"
 #include "DetDescr/SimSpecialID.h"
@@ -30,21 +30,22 @@
 
 namespace ecal {
 
-
 void EcalMipTrackingProcessor::onNewRun(const ldmx::RunHeader &rh) {
   profiling_map_["straight_tracks"] = 0.;
   profiling_map_["linreg_tracks"] = 0.;
   profiling_map_["processing_time_"] = 0;
 }
-void EcalMipTrackingProcessor::configure(framework::config::Parameters &parameters) {
+void EcalMipTrackingProcessor::configure(
+    framework::config::Parameters &parameters) {
   verbose_ = parameters.getParameter<bool>("verbose");
   nEcalLayers_ = parameters.getParameter<int>("num_ecal_layers");
   linreg_radius_ = parameters.getParameter<double>("linreg_radius");
-  mip_collection_name_ = parameters.getParameter<std::string>("mip_collection_name");
+  mip_collection_name_ =
+      parameters.getParameter<std::string>("mip_collection_name");
 }
 
 void EcalMipTrackingProcessor::clearProcessor() {
-   // MIP tracking
+  // MIP tracking
   nStraightTracks_ = 0;
   nLinregTracks_ = 0;
   firstNearPhLayer_ = 0;
@@ -56,25 +57,24 @@ void EcalMipTrackingProcessor::clearProcessor() {
 }
 
 void EcalMipTrackingProcessor::produce(framework::Event &event) {
+  auto start = std::chrono::high_resolution_clock::now();
 
-auto start = std::chrono::high_resolution_clock::now();
+  clearProcessor();
 
-clearProcessor();
+  // Read in hits near photon from EcalVetoProcessor
 
-
-// Read in hits near photon from EcalVetoProcessor
-
-auto ecal_mip_collection = event.getObject<ldmx::EcalMipCollection>(mip_collection_name_,"");
-std::vector<XYCoords> ele_trajectory;
-std::vector<XYCoords> photon_trajectory;
-std::vector<ldmx::HitData> trackingHitList;
+  auto ecal_mip_collection =
+      event.getObject<ldmx::EcalMipCollection>(mip_collection_name_, "");
+  std::vector<XYCoords> ele_trajectory;
+  std::vector<XYCoords> photon_trajectory;
+  std::vector<ldmx::HitData> trackingHitList;
   ele_trajectory = ecal_mip_collection.getEleTrajectory();
   photon_trajectory = ecal_mip_collection.getPhotonTrajectory();
   trackingHitList = ecal_mip_collection.getTrackingHitList();
-// };
-nevents_++;
-// Now inputting Lines 753-1178 of the original EcalVetoProcessor
-// ------------------------------------------------------
+  // };
+  nevents_++;
+  // Now inputting Lines 753-1178 of the original EcalVetoProcessor
+  // ------------------------------------------------------
   // MIP tracking starts here
 
   /* Goal:  Calculate
@@ -162,13 +162,12 @@ nevents_++;
     photonTerritoryHits_ = nReadoutHits_;
   }
 
-
-
   // ------------------------------------------------------
   // Find straight MIP tracks:
 
-  std::sort(trackingHitList.begin(), trackingHitList.end(),
-            [](ldmx::HitData ha, ldmx::HitData hb) { return ha.layer > hb.layer; });
+  std::sort(
+      trackingHitList.begin(), trackingHitList.end(),
+      [](ldmx::HitData ha, ldmx::HitData hb) { return ha.layer > hb.layer; });
   // For merging tracks:  Need to keep track of existing tracks
   // Candidate tracks to merge in will always be in front of the current track
   // (lower z), so only store the last hit 3-layer vector:  each track = vector
@@ -301,7 +300,8 @@ nevents_++;
     // for each track, check the remainder of the track list for compatible
     // tracks
     std::vector<ldmx::HitData> base_track = track_list[track_i];
-    ldmx::HitData tail_hitdata = base_track.back();  // xylayer of last hit in track
+    ldmx::HitData tail_hitdata =
+        base_track.back();  // xylayer of last hit in track
     if (verbose_) ldmx_log(debug) << "  Considering track " << track_i;
     for (int track_j = track_i + 1; track_j < track_list.size(); track_j++) {
       std::vector<ldmx::HitData> checking_track = track_list[track_j];
@@ -350,7 +350,8 @@ nevents_++;
 
   auto straight_tracks = std::chrono::high_resolution_clock::now();
   profiling_map_["straight_tracks"] +=
-      std::chrono::duration<double, std::milli>(straight_tracks - start).count();
+      std::chrono::duration<double, std::milli>(straight_tracks - start)
+          .count();
   // ------------------------------------------------------
   // Linreg tracking:
   ldmx_log(info) << "Finding linreg tracks from a total of "
@@ -358,8 +359,8 @@ nevents_++;
                  << linreg_radius_ << " mm";
 
   for (int iHit = 0; iHit < 0; iHit++) {
-  //for (int iHit = 0; iHit < trackingHitList.size(); iHit++) {
-    // Hits being considered at a given time
+    // for (int iHit = 0; iHit < trackingHitList.size(); iHit++) {
+    //  Hits being considered at a given time
     std::vector<int> hitsInRegion;
     TMatrixD Vm(3, 3);
     TMatrixD hdt(3, 3);
@@ -470,7 +471,7 @@ nevents_++;
           }
         }
       }  // end loop on hits in the region
-    }    // end 2nd loop on hits in the region
+    }  // end 2nd loop on hits in the region
 
     // Continue early if not hits on track
     if (!bestLinRegFound) continue;
@@ -494,8 +495,8 @@ nevents_++;
     iHit--;
   }  // end loop on all hits
   ldmx_log(info) << " MIP tracking completed; found " << nStraightTracks_
-                  << " straight tracks and " << nLinregTracks_
-                  << " lin-reg tracks";
+                 << " straight tracks and " << nLinregTracks_
+                 << " lin-reg tracks";
 
   auto linreg_tracks = std::chrono::high_resolution_clock::now();
   profiling_map_["linreg_tracks"] +=
@@ -508,10 +509,6 @@ nevents_++;
       std::chrono::duration<double, std::milli>(time_diff).count();
 }
 
-  
-
-  
-
 void EcalMipTrackingProcessor::onProcessEnd() {
   ldmx_log(info) << "AVG Time/Event: " << std::fixed << std::setprecision(2)
                  << processing_time_ / nevents_ << " ms";
@@ -519,8 +516,8 @@ void EcalMipTrackingProcessor::onProcessEnd() {
   ldmx_log(info) << "Breakdown::";
 
   ldmx_log(info) << "straight_tracks        Avg Time/Event = " << std::fixed
-                 << std::setprecision(3) << profiling_map_["straight_tracks"] / nevents_
-                 << " ms";
+                 << std::setprecision(3)
+                 << profiling_map_["straight_tracks"] / nevents_ << " ms";
 
   ldmx_log(info) << "linreg_tracks        Avg Time/Event = " << std::fixed
                  << std::setprecision(3)
@@ -528,8 +525,8 @@ void EcalMipTrackingProcessor::onProcessEnd() {
 }
 // MIP tracking functions:
 
-float EcalMipTrackingProcessor::distTwoLines(TVector3 v1, TVector3 v2, TVector3 w1,
-                                      TVector3 w2) {
+float EcalMipTrackingProcessor::distTwoLines(TVector3 v1, TVector3 v2,
+                                             TVector3 w1, TVector3 w2) {
   TVector3 e1 = v1 - v2;
   TVector3 e2 = w1 - w2;
   TVector3 crs = e1.Cross(e2);
@@ -541,15 +538,11 @@ float EcalMipTrackingProcessor::distTwoLines(TVector3 v1, TVector3 v2, TVector3 
   }
 }
 
-float EcalMipTrackingProcessor::distPtToLine(TVector3 h1, TVector3 p1, TVector3 p2) {
+float EcalMipTrackingProcessor::distPtToLine(TVector3 h1, TVector3 p1,
+                                             TVector3 p2) {
   return ((h1 - p1).Cross(h1 - p2)).Mag() / (p1 - p2).Mag();
 }
 
-
-
-
-
-
-} // namespace ecal
+}  // namespace ecal
 
 DECLARE_PRODUCER(ecal::EcalMipTrackingProcessor);

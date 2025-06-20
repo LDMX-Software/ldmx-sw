@@ -812,8 +812,7 @@ void EcalVetoProcessor::produce(framework::Event &event) {
 
   auto mip_tracking_setup = std::chrono::high_resolution_clock::now();
   profiling_map_["mip_tracking_setup"] +=
-      std::chrono::duration<double, std::milli>(mip_tracking_setup -
-                                                start)
+      std::chrono::duration<double, std::milli>(mip_tracking_setup - start)
           .count();
   result.setVariables(
       nReadoutHits_, deepestLayerHit_, summedDet_, summedTightIso_, maxCellDep_,
@@ -829,9 +828,9 @@ void EcalVetoProcessor::produce(framework::Event &event) {
       oContLayerStd, ecalLayerEdepReadout_, recoilP, recoilPos);
 
   auto set_variables = std::chrono::high_resolution_clock::now();
-  profiling_map_["set_variables"] +=
-      std::chrono::duration<double, std::milli>(set_variables - mip_tracking_setup)
-          .count();
+  profiling_map_["set_variables"] += std::chrono::duration<double, std::milli>(
+                                         set_variables - mip_tracking_setup)
+                                         .count();
 
   buildBDTFeatureVector(result);
   ldmx::Ort::FloatArrays inputs({bdtFeatures_});
