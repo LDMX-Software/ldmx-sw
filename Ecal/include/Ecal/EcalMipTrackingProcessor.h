@@ -1,7 +1,7 @@
 /**
  * @file EcalMipTrackingProcessor.h
  * @brief Class that determines MIP tracking information using ECAL hit information
- * @author Owen Colegrove, Danyi Zhang, Tamas Vami (UCSB)
+ * @author Owen Colegrove, Danyi Zhang, Jihoon Yoo, Tamas Vami (UCSB)
  */
 
 
@@ -29,11 +29,6 @@
 #include <memory>
 
 namespace ecal {
-    /**
- * @class EcalMipTrackingProcessor
- * @brief Determines MIP tracking information using ECAL hit information
- * @author Owen Colegrove, Danyi Zhang, Tamas Vami (UCSB)
- */
 class EcalMipTrackingProcessor : public framework::Producer {
  public:
   typedef std::pair<ldmx::EcalID, float> CellEnergyPair;
@@ -43,7 +38,7 @@ class EcalMipTrackingProcessor : public framework::Producer {
   EcalMipTrackingProcessor(const std::string& name, framework::Process& process)
       : Producer(name, process) {}
 
-  virtual ~EcalMipTrackingProcessor() {}
+  virtual ~EcalMipTrackingProcessor() = default;
 
   /**
    * onNewRun is the first function called for each processor
@@ -147,8 +142,6 @@ class EcalMipTrackingProcessor : public framework::Producer {
   /// handle to current geometry (to share with member functions)
   const ldmx::EcalGeometry* geometry_;
 };
-
-
 
 }  // namespace ecal
 

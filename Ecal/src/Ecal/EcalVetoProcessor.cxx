@@ -144,9 +144,6 @@ void EcalVetoProcessor::configure(framework::config::Parameters &parameters) {
   ecalLayerTime_.resize(nEcalLayers_, 0);
 
   beamEnergyMeV_ = parameters.getParameter<double>("beam_energy");
-  run_lin_reg_ = parameters.getParameter<bool>("run_lin_reg");
-  linreg_radius_ = parameters.getParameter<double>("linreg_radius");
-
   // Set the collection name as defined in the configuration
   sp_pass_name_ = parameters.getParameter<std::string>("sp_pass_name");
   collectionName_ = parameters.getParameter<std::string>("collection_name");

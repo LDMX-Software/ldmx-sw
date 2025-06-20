@@ -44,7 +44,7 @@ class EcalMipProcessor(ldmxcfg.Producer) :
     """Configuration for the ECal MIP processor"""
 
     def __init__(self,name = 'ecalMipTracking') :
-        super().__init__(name,"ecal::EcalMipProcessor",'Ecal')
+        super().__init__(name,"ecal::EcalMipTrackingProcessor",'Ecal')
 
         self.verbose = False
         self.num_ecal_layers = 34

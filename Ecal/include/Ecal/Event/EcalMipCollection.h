@@ -1,3 +1,10 @@
+/**
+ * @file EcalMipCollection.h
+ * @brief Class that determines MIP tracking information using ECAL hit information
+ * @author Jihoon Yoo, Tamas Vami (UCSB)
+ */
+
+
 #ifndef EVENT_ECALMIPCOLLECTION_H_
 #define EVENT_ECALMIPCOLLECTION_H_
 
@@ -24,7 +31,7 @@ typedef std::pair<float, float> XYCoords;
  // convenient way
 struct HitData {
     int layer;
-   TVector3 pos;
+    TVector3 pos;
   };
 
 class EcalMipCollection {

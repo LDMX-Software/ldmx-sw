@@ -1,5 +1,5 @@
 #include "Ecal/EcalMipTrackingProcessor.h"
-#include "Ecal/EcalVetoProcessor.h"
+// #include "Ecal/EcalVetoProcessor.h"
 
 // LDMX 
 
@@ -64,7 +64,7 @@ clearProcessor();
 
 // Read in hits near photon from EcalVetoProcessor
 
-auto ecal_mip_collection = event.getObject<ldmx::EcalMipCollection>(mip_collection_name_);
+auto ecal_mip_collection = event.getObject<ldmx::EcalMipCollection>(mip_collection_name_,"");
 std::vector<XYCoords> ele_trajectory;
 std::vector<XYCoords> photon_trajectory;
 std::vector<ldmx::HitData> trackingHitList;
@@ -552,4 +552,4 @@ float EcalMipTrackingProcessor::distPtToLine(TVector3 h1, TVector3 p1, TVector3 
 
 } // namespace ecal
 
-DECLARE_PRODUCER_NS(ecal, EcalMipTrackingProcessor);
+DECLARE_PRODUCER(ecal::EcalMipTrackingProcessor);
