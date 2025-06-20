@@ -78,9 +78,7 @@ void NtuplizeHgcrocDigiCollection::analyze(const framework::Event& event) {
 
   ldmxsw_event_ = event.getEventNumber();
 
-  const ldmx::EventHeader* header =
-      const_cast<framework::Event&>(event).getEventHeaderPtr();
-  bool is_simulation = not(header->isRealData());
+  bool is_simulation = not event.getEventHeader().isRealData();
 
   if (not is_simulation) {
     if (already_aligned_) {
