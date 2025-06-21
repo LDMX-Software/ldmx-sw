@@ -145,7 +145,7 @@ p.sequence.extend([
         rSeedTracking,
         rTracking,
         rTracking_dqm,
-	ecalWAB,
-	ecalWAB_dqm])
+        ecalWAB,
+        ecalWAB_dqm])
 
 p.sequence.extend(dqm.all_dqm)
