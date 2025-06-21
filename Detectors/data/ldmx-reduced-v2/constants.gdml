@@ -197,7 +197,9 @@
 <variable name="hcal_dz" value="num_layers * layer_thickness"/>
 
 <!-- Positional constants -->
-<position name="hadron_calorimeter_pos" x="0.0" y="0.0" z="0.0"/>
+<variable name="support_box_shift" value="12.7*1.5" />
+<constant name="hadron_calorimeter_pos_z" value="ecal_front_z + hcal_dz/2." />
+<position name="hadron_calorimeter_pos" x="0.0" y="support_box_shift" z="hadron_calorimeter_pos_z"/>
 <variable name="first_layer_zpos" value="-hcal_dz/2"/>
 <variable name="first_layer_absorber_zpos"
           value="first_layer_zpos + absorber_thickness/2"/>
