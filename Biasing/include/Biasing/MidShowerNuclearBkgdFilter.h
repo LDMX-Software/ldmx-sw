@@ -4,7 +4,7 @@
 /*~~~~~~~~~~~~*/
 /*   SimCore  */
 /*~~~~~~~~~~~~*/
-#include "SimCore/UserAction.h"
+#include "SimCore/G4User/UserAction.h"
 
 /// Forward declaration of virtual process class
 class G4VProcess;

@@ -39,7 +39,7 @@
 //-------------//
 #include "Framework/EventHeader.h"
 #include "SimCore/Generators/PrimaryGenerator.h"
-#include "SimCore/UserPrimaryParticleInformation.h"
+#include "SimCore/G4User/UserPrimaryParticleInformation.h"
 
 namespace simcore {
 namespace generators {

@@ -10,7 +10,8 @@
 #include <iostream>
 
 #include "SimCore/PhotoNuclearModels/PhotoNuclearModel.h"
-#include "SimCore/UserEventInformation.h"
+#include "SimCore/G4User/UserEventInformation.h"
+
 namespace simcore {
 
 /*
