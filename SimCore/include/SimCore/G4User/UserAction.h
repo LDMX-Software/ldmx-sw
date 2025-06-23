@@ -27,7 +27,7 @@
 #include "Framework/Factory.h"
 #include "Framework/Logger.h"
 #include "SimCore/Event/SimParticle.h"
-#include "SimCore/UserEventInformation.h"
+#include "SimCore/G4User/UserEventInformation.h"
 
 // Forward Declarations
 class G4Event;
