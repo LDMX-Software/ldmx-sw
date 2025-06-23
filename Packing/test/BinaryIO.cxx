@@ -119,19 +119,6 @@ TEST_CASE("BinaryIO", "[Packing][functionality]") {
     ps.add<std::string>("pass_name", "");
     ps.add("skip_unavailable", true);
     ps.add("verify_checksum", false);
-    ps.add<std::string>("ecal_object_passname", "");
-    ps.add<std::string>("hcal_object_passname", "");
-    ps.add<std::string>("triggerpad_object_passname", "");
-    ps.add<std::string>("tracker_object_event_passname", "");
-
-    std::string ecal_object_passname_ =
-        ps.get<std::string>("ecal_object_passname", "");
-    std::string hcal_object_passname_ =
-        ps.get<std::string>("hcal_object_passname", "");
-    std::string triggerpad_object_passname_ =
-        ps.get<std::string>("triggerpad_object_passname", "");
-    std::string tracker_object_event_passname_ =
-        ps.get<std::string>("tracker_object_event_passname", "");
 
     std::vector<uint32_t> data = {0xAAAAAAAA, 0xBBBBBBBB, 0xCCCCCCCC,
                                   0xDDDDDDDD, 0xDEDEDEDE, 0xFEDCBA98};
@@ -183,14 +170,11 @@ TEST_CASE("BinaryIO", "[Packing][functionality]") {
         REQUIRE(f.nextEvent());
 
         CHECK(event.getEventNumber() == i_event + i);
-        CHECK(data == event.getCollection<uint32_t>(ecal_object_name,
-                                                    ecal_object_passname_));
-        CHECK(data == event.getCollection<uint32_t>(hcal_object_name,
-                                                    hcal_object_passname_));
-        CHECK(data == event.getCollection<uint32_t>(
-                          triggerpad_object_name, triggerpad_object_passname_));
-        CHECK_FALSE(
-            event.exists(tracker_object_name, tracker_object_event_passname_));
+        CHECK(data == event.getCollection<uint32_t>(ecal_object_name, ""));
+        CHECK(data == event.getCollection<uint32_t>(hcal_object_name, ""));
+        CHECK(data ==
+              event.getCollection<uint32_t>(triggerpad_object_name, ""));
+        CHECK_FALSE(event.exists(tracker_object_name, ""));
 
         event.Clear();
         event.onEndOfEvent();
