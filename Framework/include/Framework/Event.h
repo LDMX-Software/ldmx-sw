@@ -59,7 +59,17 @@ class Event {
   ldmx::EventHeader &getEventHeader() { return eventHeader_; }
 
   /**
+   * Get the event header.
+   * @return A constant reference to the event header.
+   */
+  const ldmx::EventHeader &getEventHeader() const { return eventHeader_; }
+
+  /**
    * Get the event header as a pointer
+   *
+   * @note This is only helpful for the internal workings of the framework
+   * and should not be used by processors. Use getEventHeader instead.
+   *
    * @return A const pointer to the event header.
    */
   const ldmx::EventHeader *getEventHeaderPtr() { return &eventHeader_; }
