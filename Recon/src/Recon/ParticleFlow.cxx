@@ -133,8 +133,7 @@ void ParticleFlow::fillCandCalo(ldmx::PFCandidate& cand,
 void ParticleFlow::produce(framework::Event& event) {
   if (!event.exists(inputTrackCollName_, input_track_passname_)) {
     ldmx_log(error) << "Unable to find (one) collection named "
-                    << inputTrackCollName_ << "_"
-                    << input_track_passname_;
+                    << inputTrackCollName_ << "_" << input_track_passname_;
     return;
   }
   if (!event.exists(inputEcalCollName_, input_ecal_passname_)) {
@@ -157,7 +156,7 @@ void ParticleFlow::produce(framework::Event& event) {
   // here allow for using existing clusters of different type (EcalCluster)
   const auto ecalClusters =
       useExistingEcalClusters_
-          ? getEcalClusters(event, inputEcalCollName_,input_ecal_passname_)
+          ? getEcalClusters(event, inputEcalCollName_, input_ecal_passname_)
           : event.getCollection<ldmx::CaloCluster>(inputEcalCollName_,
                                                    input_ecal_passname_);
 
