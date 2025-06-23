@@ -10,18 +10,10 @@ void ParticleFlow::configure(framework::config::Parameters& ps) {
   inputHcalCollName_ = ps.getParameter<std::string>("inputHcalCollName");
   inputTrackCollName_ = ps.getParameter<std::string>("inputTrackCollName");
   outputCollName_ = ps.getParameter<std::string>("outputCollName");
-
   input_ecal_passname_ = ps.getParameter<std::string>("input_ecal_passname");
   input_hcal_passname_ = ps.getParameter<std::string>("input_hcal_passname");
   input_tracks_passname_ =
       ps.getParameter<std::string>("input_tracks_passname");
-
-  input_track_event_passname_ =
-      ps.getParameter<std::string>("input_track_event_passname");
-  input_ecal_event_passname_ =
-      ps.getParameter<std::string>("input_ecal_event_passname");
-  input_hcal_event_passname_ =
-      ps.getParameter<std::string>("input_hcal_event_passname");
 
   // Algorithm configuration
   singleParticle_ = ps.getParameter<bool>("singleParticle");
@@ -139,22 +131,22 @@ void ParticleFlow::fillCandCalo(ldmx::PFCandidate& cand,
 
 // produce track, ecal, and hcal linking
 void ParticleFlow::produce(framework::Event& event) {
-  if (!event.exists(inputTrackCollName_, input_track_event_passname_)) {
+  if (!event.exists(inputTrackCollName_, input_track_passname_)) {
     ldmx_log(error) << "Unable to find (one) collection named "
                     << inputTrackCollName_ << "_"
-                    << input_track_event_passname_;
+                    << input_track_passname_;
     return;
   }
-  if (!event.exists(inputEcalCollName_, input_ecal_event_passname_)) {
+  if (!event.exists(inputEcalCollName_, input_ecal_passname_)) {
     ldmx_log(error) << "Unable to find (one) collection named "
                     << inputEcalCollName_;
-    << "_" << input_ecal_event_passname_;
+    << "_" << input_ecal_passname_;
     return;
   }
-  if (!event.exists(inputHcalCollName_, input_hcal_event_passname_)) {
+  if (!event.exists(inputHcalCollName_, input_hcal_passname_)) {
     ldmx_log(error) << "Unable to find (one) collection named "
                     << inputHcalCollName_;
-    << "_" << input_hcal_event_passname_;
+    << "_" << input_hcal_passname_;
     return;
   }
   // get the track and clustering info
@@ -165,9 +157,9 @@ void ParticleFlow::produce(framework::Event& event) {
   // here allow for using existing clusters of different type (EcalCluster)
   const auto ecalClusters =
       useExistingEcalClusters_
-          ? getEcalClusters(event, inputEcalCollName_)
+          ? getEcalClusters(event, inputEcalCollName_,input_ecal_passname_)
           : event.getCollection<ldmx::CaloCluster>(inputEcalCollName_,
-                                                   input_ecal_event_passname_);
+                                                   input_ecal_passname_);
 
   std::vector<ldmx::PFCandidate> pfCands;
   // multi-particle case
