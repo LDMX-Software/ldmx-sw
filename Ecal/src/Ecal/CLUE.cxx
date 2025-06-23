@@ -157,7 +157,7 @@ std::vector<std::shared_ptr<CLUE::Density>> CLUE::setup(
       if (y < 0) {
         j = -j;
         y = (j + 0.5) * dc_;
-      } else
+      } else // TODO i think this 1 should be a j 
         y = (1 - 0.5) * dc_;  // set x,y to middle of box
       coords = {i, j};
       ldmx_log(trace) << "    Index " << i << ", " << j << "; x: " << x
