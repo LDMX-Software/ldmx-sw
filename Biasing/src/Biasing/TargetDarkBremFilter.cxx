@@ -9,8 +9,8 @@
 
 #include "Biasing/TargetDarkBremFilter.h"
 
-#include "G4DarkBreM/G4APrime.h"           //checking if particles match A'
-#include "G4Electron.hh"                   //to check if track is electron
+#include "G4DarkBreM/G4APrime.h"  //checking if particles match A'
+#include "G4Electron.hh"          //to check if track is electron
 #include "SimCore/G4User/UserTrackInformation.h"  //make sure A' is saved
 
 namespace biasing {
