@@ -113,8 +113,8 @@ void ParticleFlow::fillCandHadCalo(ldmx::PFCandidate& cand,
 
 // produce candidate calorimeter info (any type)
 void ParticleFlow::fillCandCalo(ldmx::PFCandidate& cand,
-				const ldmx::CaloCluster& cl,
-				TGraph gResponse, int PIDnb) {
+                                const ldmx::CaloCluster& cl, TGraph gResponse,
+                                int PIDnb) {
   float corr = 1.;
   float e = cl.getEnergy();
   // update energy: use min or max factor if outside calibration range
@@ -134,23 +134,26 @@ void ParticleFlow::fillCandCalo(ldmx::PFCandidate& cand,
   cand.setEcalClusterDYDZ(cl.getDYDZ());
   cand.setEcalClusterEDXDZ(cl.getEDXDZ());
   cand.setEcalClusterEDYDZ(cl.getEDYDZ());
-  cand.setPID(cand.getPID() | PIDnb);  // set calo PID number bit 
+  cand.setPID(cand.getPID() | PIDnb);  // set calo PID number bit
 }
-  
+
 // produce track, ecal, and hcal linking
 void ParticleFlow::produce(framework::Event& event) {
   if (!event.exists(inputTrackCollName_, input_track_event_passname_)) {
-    ldmx_log(error) << "Unable to find (one) collection named " << inputTrackCollName_ 
-      << "_" << input_track_event_passname_;
-      return;
+    ldmx_log(error) << "Unable to find (one) collection named "
+                    << inputTrackCollName_ << "_"
+                    << input_track_event_passname_;
+    return;
   }
   if (!event.exists(inputEcalCollName_, input_ecal_event_passname_)) {
-    ldmx_log(error) << "Unable to find (one) collection named " << inputEcalCollName_ ;
+    ldmx_log(error) << "Unable to find (one) collection named "
+                    << inputEcalCollName_;
     << "_" << input_ecal_event_passname_;
     return;
   }
   if (!event.exists(inputHcalCollName_, input_hcal_event_passname_)) {
-    ldmx_log(error) << "Unable to find (one) collection named " << inputHcalCollName_ ;
+    ldmx_log(error) << "Unable to find (one) collection named "
+                    << inputHcalCollName_;
     << "_" << input_hcal_event_passname_;
     return;
   }
@@ -160,7 +163,11 @@ void ParticleFlow::produce(framework::Event& event) {
   const auto tracks = event.getCollection<ldmx::SimTrackerHit>(
       inputTrackCollName_, input_tracks_passname_);
   // here allow for using existing clusters of different type (EcalCluster)
-  const auto ecalClusters = useExistingEcalClusters_? getEcalClusters(event, inputEcalCollName_) : event.getCollection<ldmx::CaloCluster>(inputEcalCollName_,input_ecal_event_passname_);
+  const auto ecalClusters =
+      useExistingEcalClusters_
+          ? getEcalClusters(event, inputEcalCollName_)
+          : event.getCollection<ldmx::CaloCluster>(inputEcalCollName_,
+                                                   input_ecal_event_passname_);
 
   std::vector<ldmx::PFCandidate> pfCands;
   // multi-particle case
@@ -447,20 +454,22 @@ void ParticleFlow::produce(framework::Event& event) {
 
   event.add(outputCollName_, pfCands);
 }
-  //stupid function to type cast from ecal to calo cluster 
-  const std::vector<ldmx::CaloCluster> ParticleFlow::getEcalClusters(framework::Event& event, std::string inputClusterCollName, std::string inputClusterPassName) {
-    const auto tmpClusters = event.getCollection<ldmx::EcalCluster>(inputClusterCollName,inputClusterPassName);
-    std::string newName=inputClusterCollName+"Cast";
-      std::vector<ldmx::CaloCluster> newClusters;
-    for (auto cl: tmpClusters) {
-      newClusters.emplace_back(cl);
-    }
-    event.add(newName, newClusters);
-    const auto caloClusters =  event.getCollection<ldmx::CaloCluster>(newName,"");
-    return caloClusters;
+// stupid function to type cast from ecal to calo cluster
+const std::vector<ldmx::CaloCluster> ParticleFlow::getEcalClusters(
+    framework::Event& event, std::string inputClusterCollName,
+    std::string inputClusterPassName) {
+  const auto tmpClusters = event.getCollection<ldmx::EcalCluster>(
+      inputClusterCollName, inputClusterPassName);
+  std::string newName = inputClusterCollName + "Cast";
+  std::vector<ldmx::CaloCluster> newClusters;
+  for (auto cl : tmpClusters) {
+    newClusters.emplace_back(cl);
   }
-  
-  
+  event.add(newName, newClusters);
+  const auto caloClusters = event.getCollection<ldmx::CaloCluster>(newName, "");
+  return caloClusters;
+}
+
 void ParticleFlow::onProcessEnd() {
   ldmx_log(debug) << "Process ends!";
   delete eCorr_;
