@@ -12,6 +12,7 @@ void ParticleFlow::configure(framework::config::Parameters& ps) {
   outputCollName_ = ps.getParameter<std::string>("outputCollName");
   // Algorithm configuration
   singleParticle_ = ps.getParameter<bool>("singleParticle");
+  useExistingEcalClusters_ = ps.getParameter<bool>("useExistingEcalClusters");
 
   // Calibration factors, from jason, temperary
   std::vector<float> em1{250.0,  750.0,  1250.0, 1750.0, 2250.0, 2750.0,
@@ -97,18 +98,53 @@ void ParticleFlow::fillCandHadCalo(ldmx::PFCandidate& cand,
   cand.setPID(cand.getPID() | 4);  // OR with 100
 }
 
+// produce candidate calorimeter info (any type)
+void ParticleFlow::fillCandCalo(ldmx::PFCandidate& cand,
+				const ldmx::CaloCluster& cl,
+				TGraph gResponse, int PIDnb) {
+  float corr = 1.;
+  float e = cl.getEnergy();
+  // update energy: use min or max factor if outside calibration range
+  if (e < gResponse_->GetX()[0]) {
+    corr = gResponse_->GetY()[0];
+  } else if (e > gResponse_->GetX()[gResponse_->GetN() - 1]) {
+    corr = gResponse_->GetY()[gResponse_->GetN() - 1];
+  } else {  // else look up calibration factor
+    corr = gResponse_->Eval(e);
+  }
+  cand.setEcalEnergy(e * corr);
+  cand.setEcalRawEnergy(e);
+  cand.setEcalClusterXYZ(cl.getCentroidX(), cl.getCentroidY(),
+                         cl.getCentroidZ());
+  cand.setEcalClusterEXYZ(cl.getRMSX(), cl.getRMSY(), cl.getRMSZ());
+  cand.setEcalClusterDXDZ(cl.getDXDZ());
+  cand.setEcalClusterDYDZ(cl.getDYDZ());
+  cand.setEcalClusterEDXDZ(cl.getEDXDZ());
+  cand.setEcalClusterEDYDZ(cl.getEDYDZ());
+  cand.setPID(cand.getPID() | PIDnb);  // set calo PID number bit 
+}
+  
 // produce track, ecal, and hcal linking
 void ParticleFlow::produce(framework::Event& event) {
-  if (!event.exists(inputTrackCollName_)) return;
-  if (!event.exists(inputEcalCollName_)) return;
-  if (!event.exists(inputHcalCollName_)) return;
+  if (!event.exists(inputTrackCollName_)) {
+    ldmx_log(error) << "Unable to find (one) collection named " << inputTrackCollName_ ;
+      return;
+  }
+  if (!event.exists(inputEcalCollName_)) {
+    ldmx_log(error) << "Unable to find (one) collection named " << inputEcalCollName_ ;
+      return;
+  }
+  if (!event.exists(inputHcalCollName_)) {
+    ldmx_log(error) << "Unable to find (one) collection named " << inputHcalCollName_ ;
+      return;
+  }
   // get the track and clustering info
-  const auto ecalClusters =
-      event.getCollection<ldmx::CaloCluster>(inputEcalCollName_);
   const auto hcalClusters =
       event.getCollection<ldmx::CaloCluster>(inputHcalCollName_);
   const auto tracks =
       event.getCollection<ldmx::SimTrackerHit>(inputTrackCollName_);
+  // here allow for using existing clusters of different type (EcalCluster)
+  const auto ecalClusters = useExistingEcalClusters_? getEcalClusters(event, inputEcalCollName_) : event.getCollection<ldmx::CaloCluster>(inputEcalCollName_);
 
   std::vector<ldmx::PFCandidate> pfCands;
   // multi-particle case
@@ -395,7 +431,20 @@ void ParticleFlow::produce(framework::Event& event) {
 
   event.add(outputCollName_, pfCands);
 }
-
+  //stupid function to type cast from ecal to calo cluster 
+  const std::vector<ldmx::CaloCluster> ParticleFlow::getEcalClusters(framework::Event& event, std::string inputClusterCollName) {
+    const auto tmpClusters = event.getCollection<ldmx::EcalCluster>(inputClusterCollName);
+    std::string newName=inputClusterCollName+"Cast";
+      std::vector<ldmx::CaloCluster> newClusters;
+    for (auto cl: tmpClusters) {
+      newClusters.emplace_back(cl);
+    }
+    event.add(newName, newClusters);
+    const auto caloClusters =  event.getCollection<ldmx::CaloCluster>(newName);
+    return caloClusters;
+  }
+  
+  
 void ParticleFlow::onProcessEnd() {
   ldmx_log(debug) << "Process ends!";
   delete eCorr_;

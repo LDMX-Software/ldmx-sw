@@ -17,6 +17,8 @@ class pfEcalClusterProducer(ldmxcfg.Producer) :
         self.hitCollName     = 'EcalRecHits'
         self.hitPassName     = ''
         self.clusterCollName = 'PFEcalClusters'
+        #self.inputClusterCollName = ''
+        #self.inputClusterPassName = ''
         self.doSingleCluster = False
         self.logEnergyWeight = True
         self.minClusterHitMult = 2
@@ -54,6 +56,7 @@ class pfProducer(ldmxcfg.Producer) :
         self.inputEcalCollName  = 'PFEcalClusters'
         self.inputHcalCollName  = 'PFHcalClusters'
         self.inputTrackCollName = 'PFTracks'
+        self.useExistingEcalClusters = False
         self.outputCollName     = 'PFCandidates'
         self.singleParticle     = False
   
