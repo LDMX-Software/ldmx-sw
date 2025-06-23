@@ -51,18 +51,14 @@ def photo_nuclear( detector, generator ) :
     sim.setDetector( detector , True )
 
     # Set run parameters
+    xsec_bias_threshold = 0.625 * generator.energy * 1000.
+    tagger_threshold = 0.95 * generator.energy * 1000.
+    recoil_max_p = 0.375 * generator.energy * 1000.
+    brem_min_e = 0.625 * generator.energy * 1000.
     if generator.energy == 8.0:
           xsec_bias = 550.
-          xsec_bias_threshold = 5000.
-          tagger_threshold = 7600.
-          recoil_max_p = 3000.
-          brem_min_e = 5000. 
     else:
           xsec_bias = 450.
-          xsec_bias_threshold = 2500.
-          tagger_threshold = 3800.
-          recoil_max_p = 1500. 
-          brem_min_e = 2500.
 
     sim.description = "ECal photo-nuclear, xsec bias " + str(xsec_bias) + " xsec threshold " + str(xsec_bias_threshold) + " GeV"
     sim.beamSpotSmear = [20., 80., 0.] #mm
@@ -98,18 +94,14 @@ def nonfiducial_photo_nuclear( detector, generator ) :
     sim.setDetector( detector , True )
     
     # Set run parameters
+    xsec_bias_threshold = 0.625 * generator.energy * 1000.
+    tagger_threshold = 0.95 * generator.energy * 1000.
+    recoil_max_p = 0.375 * generator.energy * 1000.
+    brem_min_e = 0.625 * generator.energy * 1000.
     if generator.energy == 8.0:
-          xsec_bias = 550.
-          xsec_bias_threshold = 5000.
-          tagger_threshold = 7600.
-          recoil_max_p = 3000.
-          brem_min_e = 5000.
+          xsec_bias = 550.    
     else:
           xsec_bias = 450.
-          xsec_bias_threshold = 2500.
-          tagger_threshold = 3800.
-          recoil_max_p = 1500.
-          brem_min_e = 2500.
 
     sim.description = "Non-fiducial ECal photo-nuclear, xsec bias " + str(xsec_bias) + " xsec threshold " + str(xsec_bias_threshold) + " GeV" 
     sim.generators.append( generator )
@@ -126,7 +118,7 @@ def nonfiducial_photo_nuclear( detector, generator ) :
             # Only consider events where a hard brem occurs
             filters.TargetBremFilter(recoil_max_p = recoil_max_p, brem_min_e = brem_min_e),
             # Only considers events that are Non-Fiducial (Doesn't enter an ECal volume)
-            filters.NonFiducialFilter(),
+            filters.NonFiducialFilter(recoil_max_momentum = recoil_max_p),
             # Only consider events where a PN reaction happens in the ECal
             filters.EcalProcessFilter(),     
             # Tag all photo-nuclear tracks to persist them to the event.
@@ -167,18 +159,15 @@ def gamma_mumu(detector, generator) :
     sim.setDetector( detector, True )
 
     # Set run parameters
+    xsec_bias_threshold = 0.625 * generator.energy * 1000.
+    tagger_threshold = 0.95 * generator.energy * 1000.
+    recoil_max_p = 0.375 * generator.energy * 1000.
+    brem_min_e = 0.625 * generator.energy * 1000.
     if generator.energy == 8.0:
           xsec_bias = 1.E5
-          xsec_bias_threshold = 5000.
-          tagger_threshold = 7600.
-          recoil_max_p = 3000.
-          brem_min_e = 5000.
+          
     else:
           xsec_bias = 3.E4
-          xsec_bias_threshold = 2500.
-          tagger_threshold = 3800.
-          recoil_max_p = 1500.
-          brem_min_e = 2500.
 
     sim.description = "gamma --> mu+ mu-, xsec bias " + str(xsec_bias) + " xsec threshold " + str(xsec_bias_threshold) + " GeV"
     sim.generators.append(generator)
@@ -210,12 +199,11 @@ def deep_photo_nuclear( detector, generator, bias_threshold, processes, ecal_min
     
     # Set run parameters
     # Set run parameters
+    xsec_bias_threshold = 0.625 * generator.energy * 1000.
     if generator.energy == 8.0:
           xsec_bias = 550.
-          xsec_bias_threshold = 5000.
     else:
           xsec_bias = 450.
-          xsec_bias_threshold = 2500.
 
     sim.description = "deep ECal photo-nuclear, xsec bias " + str(xsec_bias) + " xsec threshold " + str(xsec_bias_threshold) + " GeV" 
     sim.beamSpotSmear = [20., 80., 0.] #mm

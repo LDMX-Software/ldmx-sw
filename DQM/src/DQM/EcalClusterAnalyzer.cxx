@@ -29,6 +29,9 @@ void EcalClusterAnalyzer::configure(framework::config::Parameters& ps) {
 
   cluster_coll_name_ = ps.getParameter<std::string>("cluster_coll_name");
   cluster_pass_name_ = ps.getParameter<std::string>("cluster_pass_name");
+
+  ecal_sp_hits_passname_ =
+      ps.getParameter<std::string>("ecal_sp_hits_passname");
   return;
 }
 
@@ -59,8 +62,8 @@ void EcalClusterAnalyzer::analyze(const framework::Event& event) {
     bool p1 = false;
     bool p2 = false;
 
-    const auto& ecal_sp_hits{
-        event.getCollection<ldmx::SimTrackerHit>("EcalScoringPlaneHits")};
+    const auto& ecal_sp_hits{event.getCollection<ldmx::SimTrackerHit>(
+        "EcalScoringPlaneHits", ecal_sp_hits_passname_)};
     for (const ldmx::SimTrackerHit& spHit : ecal_sp_hits) {
       if (spHit.getTrackID() == 1) {
         pos1 = spHit.getPosition();

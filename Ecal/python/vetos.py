@@ -19,18 +19,28 @@ class EcalVetoProcessor(ldmxcfg.Producer) :
         self.verbose = False
         self.feature_list_name = "input"
         self.bdt_file = makeBDTPath( "segmip" )
-        self.roc_file = makeRoCPath( 'RoC_v14_8gev' )
+        self.roc_file = makeRoCPath( "RoC_v14_8gev" )
         self.beam_energy = 8000.0  # in MeV
         self.run_lin_reg = False
         self.linreg_radius = 35.0 # in mm
         self.disc_cut = 0.99741
+        
+        self.sp_pass_name = ""
         self.collection_name = "EcalVeto"
-        self.rec_coll_name = 'EcalRecHits'
-        self.rec_pass_name = ''
+        self.rec_pass_name = ""
+        self.rec_coll_name = "EcalRecHits"
         self.recoil_from_tracking = True
-        self.track_collection = 'RecoilTracksClean'
+        self.track_collection = "RecoilTracksClean"
         self.inverse_skim = False
 
+        self.sp_pass_name = ""
+        self.sim_particles_passname = ""
+        self.track_pass_name = ""
+        
+        self.ecal_simhits_passname = ""
+        self.ecal_digis_passname = ""
+        self.ecal_rechits_passname = ""
+        self.ecal_trig_digis_passname = ""
 
 class DNNEcalVetoProcessor(ldmxcfg.Producer) :
     """Configuration for DNN Ecal Veto
@@ -47,6 +57,8 @@ class DNNEcalVetoProcessor(ldmxcfg.Producer) :
         self.model_path = makeBDTPath("particle-net_ecal_v9")
         self.disc_cut = -1.
         self.collection_name = "EcalVetoDNN"
+        self.ecal_rec_hits_passname = ""
+        
 
 
 

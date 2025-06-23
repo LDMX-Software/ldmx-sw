@@ -1,3 +1,11 @@
+/**
+ * @file Python.cxx
+ * Implementation of parameter extraction from Python interpreter
+ *
+ * We need to define a documentation header for this file so that
+ * the functions defined within this file are also documented in
+ * doxygen.
+ */
 
 #include "Framework/Configure/Python.h"
 

@@ -10,6 +10,19 @@ void ParticleFlow::configure(framework::config::Parameters& ps) {
   inputHcalCollName_ = ps.getParameter<std::string>("inputHcalCollName");
   inputTrackCollName_ = ps.getParameter<std::string>("inputTrackCollName");
   outputCollName_ = ps.getParameter<std::string>("outputCollName");
+
+  input_ecal_passname_ = ps.getParameter<std::string>("input_ecal_passname");
+  input_hcal_passname_ = ps.getParameter<std::string>("input_hcal_passname");
+  input_tracks_passname_ =
+      ps.getParameter<std::string>("input_tracks_passname");
+
+  input_track_event_passname_ =
+      ps.getParameter<std::string>("input_track_event_passname");
+  input_ecal_event_passname_ =
+      ps.getParameter<std::string>("input_ecal_event_passname");
+  input_hcal_event_passname_ =
+      ps.getParameter<std::string>("input_hcal_event_passname");
+
   // Algorithm configuration
   singleParticle_ = ps.getParameter<bool>("singleParticle");
   useExistingEcalClusters_ = ps.getParameter<bool>("useExistingEcalClusters");
@@ -126,25 +139,28 @@ void ParticleFlow::fillCandCalo(ldmx::PFCandidate& cand,
   
 // produce track, ecal, and hcal linking
 void ParticleFlow::produce(framework::Event& event) {
-  if (!event.exists(inputTrackCollName_)) {
-    ldmx_log(error) << "Unable to find (one) collection named " << inputTrackCollName_ ;
+  if (!event.exists(inputTrackCollName_, input_track_event_passname_)) {
+    ldmx_log(error) << "Unable to find (one) collection named " << inputTrackCollName_ 
+      << "_" << input_track_event_passname_;
       return;
   }
-  if (!event.exists(inputEcalCollName_)) {
+  if (!event.exists(inputEcalCollName_, input_ecal_event_passname_)) {
     ldmx_log(error) << "Unable to find (one) collection named " << inputEcalCollName_ ;
-      return;
+    << "_" << input_ecal_event_passname_;
+    return;
   }
-  if (!event.exists(inputHcalCollName_)) {
+  if (!event.exists(inputHcalCollName_, input_hcal_event_passname_)) {
     ldmx_log(error) << "Unable to find (one) collection named " << inputHcalCollName_ ;
-      return;
+    << "_" << input_hcal_event_passname_;
+    return;
   }
   // get the track and clustering info
-  const auto hcalClusters =
-      event.getCollection<ldmx::CaloCluster>(inputHcalCollName_);
-  const auto tracks =
-      event.getCollection<ldmx::SimTrackerHit>(inputTrackCollName_);
+  const auto hcalClusters = event.getCollection<ldmx::CaloCluster>(
+      inputHcalCollName_, input_hcal_passname_);
+  const auto tracks = event.getCollection<ldmx::SimTrackerHit>(
+      inputTrackCollName_, input_tracks_passname_);
   // here allow for using existing clusters of different type (EcalCluster)
-  const auto ecalClusters = useExistingEcalClusters_? getEcalClusters(event, inputEcalCollName_) : event.getCollection<ldmx::CaloCluster>(inputEcalCollName_);
+  const auto ecalClusters = useExistingEcalClusters_? getEcalClusters(event, inputEcalCollName_) : event.getCollection<ldmx::CaloCluster>(inputEcalCollName_,input_ecal_event_passname_);
 
   std::vector<ldmx::PFCandidate> pfCands;
   // multi-particle case
@@ -432,15 +448,15 @@ void ParticleFlow::produce(framework::Event& event) {
   event.add(outputCollName_, pfCands);
 }
   //stupid function to type cast from ecal to calo cluster 
-  const std::vector<ldmx::CaloCluster> ParticleFlow::getEcalClusters(framework::Event& event, std::string inputClusterCollName) {
-    const auto tmpClusters = event.getCollection<ldmx::EcalCluster>(inputClusterCollName);
+  const std::vector<ldmx::CaloCluster> ParticleFlow::getEcalClusters(framework::Event& event, std::string inputClusterCollName, std::string inputClusterPassName) {
+    const auto tmpClusters = event.getCollection<ldmx::EcalCluster>(inputClusterCollName,inputClusterPassName);
     std::string newName=inputClusterCollName+"Cast";
       std::vector<ldmx::CaloCluster> newClusters;
     for (auto cl: tmpClusters) {
       newClusters.emplace_back(cl);
     }
     event.add(newName, newClusters);
-    const auto caloClusters =  event.getCollection<ldmx::CaloCluster>(newName);
+    const auto caloClusters =  event.getCollection<ldmx::CaloCluster>(newName,"");
     return caloClusters;
   }
   

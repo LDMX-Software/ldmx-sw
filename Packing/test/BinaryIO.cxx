@@ -119,6 +119,23 @@ TEST_CASE("BinaryIO", "[Packing][functionality]") {
     ps.addParameter("pass_name", std::string());
     ps.addParameter("skip_unavailable", true);
     ps.addParameter("verify_checksum", false);
+    ps.addParameter("ecal_object_passname_",
+                    std::string("ecal_object_passname", ""));
+    ps.addParameter("hcal_object_passname_",
+                    std::string("hcal_object_passname", ""));
+    ps.addParameter("triggerpad_object_passname_",
+                    std::string("triggerpad_object_passname", ""));
+    ps.addParameter("tracker_object_event_passname_",
+                    std::string("tracker_object_event_passname", ""));
+
+    std::string ecal_object_passname_ =
+        ps.getParameter<std::string>("ecal_object_passname", "");
+    std::string hcal_object_passname_ =
+        ps.getParameter<std::string>("hcal_object_passname", "");
+    std::string triggerpad_object_passname_ =
+        ps.getParameter<std::string>("triggerpad_object_passname", "");
+    std::string tracker_object_event_passname_ =
+        ps.getParameter<std::string>("tracker_object_event_passname", "");
 
     std::vector<uint32_t> data = {0xAAAAAAAA, 0xBBBBBBBB, 0xCCCCCCCC,
                                   0xDDDDDDDD, 0xDEDEDEDE, 0xFEDCBA98};
@@ -170,10 +187,14 @@ TEST_CASE("BinaryIO", "[Packing][functionality]") {
         REQUIRE(f.nextEvent());
 
         CHECK(event.getEventNumber() == i_event + i);
-        CHECK(data == event.getCollection<uint32_t>(ecal_object_name));
-        CHECK(data == event.getCollection<uint32_t>(hcal_object_name));
-        CHECK(data == event.getCollection<uint32_t>(triggerpad_object_name));
-        CHECK_FALSE(event.exists(tracker_object_name));
+        CHECK(data == event.getCollection<uint32_t>(ecal_object_name,
+                                                    ecal_object_passname_));
+        CHECK(data == event.getCollection<uint32_t>(hcal_object_name,
+                                                    hcal_object_passname_));
+        CHECK(data == event.getCollection<uint32_t>(
+                          triggerpad_object_name, triggerpad_object_passname_));
+        CHECK_FALSE(
+            event.exists(tracker_object_name, tracker_object_event_passname_));
 
         event.Clear();
         event.onEndOfEvent();

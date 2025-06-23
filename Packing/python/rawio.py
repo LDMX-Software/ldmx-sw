@@ -15,6 +15,11 @@ class RawDataFile() :
         self.triggerpad_object_name = "TriggerPadRaw"
         self.pass_name = ""
         self.skip_unavailable = True
+        
+        self.ecal_object_passname_ = ''
+        self.hcal_object_passname_ = ''
+        self.triggerpad_object_passname_ = ''
+        self.tracker_object_event_passname_ = ''
 
 class RawIO(ldmxcfg.Producer) :
     """Producer which runs a single raw data file for input/output

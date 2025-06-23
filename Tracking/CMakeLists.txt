@@ -70,6 +70,7 @@ if (NOT Acts_FOUND)
       Acts
       URL https://github.com/acts-project/acts/archive/refs/tags/v36.0.0.tar.gz
       URL_HASH MD5=f543dd8ba030bea2e4ee2f1b07dbe7c0
+      DOWNLOAD_EXTRACT_TIMESTAMP TRUE
   )
   FetchContent_MakeAvailable(Acts)
   FetchContent_GetProperties(Acts)

@@ -57,9 +57,11 @@ def electro_nuclear( detector, generator ) :
     includeBiasing.library()
 
     # Configure the sequence in which user actions should be called.
+    recoil_thresh = 0.625 * generator.energy * 1000.
+    tagger_threshold = 0.95 * generator.energy * 1000.
     sim.actions.extend([
-            filters.TaggerVetoFilter(),
-            filters.TargetENFilter(2500.),
+            filters.TaggerVetoFilter(thresh = tagger_threshold),
+            filters.TargetENFilter(recoil_thresh),
             util.TrackProcessFilter.electro_nuclear()
     ])
 
@@ -100,20 +102,17 @@ def photo_nuclear( detector, generator ) :
     sim.setDetector( detector , True )
 
     # Set run parameters
+    xsec_bias_threshold = 0.625 * generator.energy * 1000.
+    tagger_threshold = 0.95 * generator.energy * 1000.
+    recoil_max_p = 0.375 * generator.energy * 1000.
+    brem_min_e = 0.625 * generator.energy * 1000.
     if generator.energy == 8.0:
           xsec_bias = 550.
-          xsec_bias_threshold = 5000.
-          tagger_threshold = 7600.
-          recoil_max_p = 3000.
-          brem_min_e = 5000.
+          
     else:
           xsec_bias = 450.
-          xsec_bias_threshold = 2500.
-          tagger_threshold = 3800.
-          recoil_max_p = 1500.
-          brem_min_e = 2500.
     
-    sim.description = "ECal photo-nuclear, xsec bias " + str(xsec_bias) + " xsec threshold " + str(xsec_bias_threshold) + " GeV"
+    sim.description = "Target photo-nuclear, xsec bias " + str(xsec_bias) + " xsec threshold " + str(xsec_bias_threshold) + " GeV"
     sim.beamSpotSmear = [20., 80., 0.]
 
     sim.generators.append(generator)
@@ -139,9 +138,9 @@ def photo_nuclear( detector, generator ) :
 def gamma_mumu( detector, generator ) :
     """Example configuration for biasing gamma to mu+ mu- conversions in the target.
 
-    In this particular example, 4 GeV electrons are fired upstream of the
+    In this particular example, 8 GeV electrons are fired upstream of the
     tagger tracker.  The TargetBremFilter filters out all events that don't
-    produced a brem in the target with an energy greater than 2.5 GeV. 
+    produced a brem in the target with an energy greater than 5 GeV. 
 
     Parameters
     ----------
@@ -171,6 +170,15 @@ def gamma_mumu( detector, generator ) :
     sim.description = "gamma -> mu+ mu-, xsec bias 10e9"
     sim.beamSpotSmear = [20., 80., 0.]
 
+    tagger_threshold = 0.95 * generator.energy * 1000.
+    recoil_max_p = 0.375 * generator.energy * 1000.
+    brem_min_e = 0.625 * generator.energy * 1000.
+    if generator.energy == 8.0:
+          xsec_bias = 550.
+          
+    else:
+          xsec_bias = 450.
+
     sim.generators.append(generator)
 
     # Enable and configure the biasing
@@ -182,8 +190,8 @@ def gamma_mumu( detector, generator ) :
     # Configure the sequence in which user actions should be called.
     sim.actions.extend([
             # Only consider events where a hard brem occurs
-            filters.TaggerVetoFilter(),
-            filters.TargetBremFilter(),
+            filters.TaggerVetoFilter(thresh = tagger_threshold),
+            filters.TargetBremFilter(recoil_max_p = recoil_max_p, brem_min_e = brem_min_e),
             filters.TargetGammaMuMuFilter(),
             util.TrackProcessFilter.gamma_mumu()
     ])
@@ -193,7 +201,7 @@ def gamma_mumu( detector, generator ) :
 def dark_brem( ap_mass , lhe, detector) :
     """Example configuration for producing dark brem interactions in the target.
 
-    This configures the sim to fire a 4 GeV electron upstream of the
+    This configures the sim to fire a 8 GeV electron upstream of the
     tagger tracker.  The dark-photon production cross-section is biased up in
     the target.  Only events that result in a dark-photon being produced in the
     target are kept.
@@ -246,9 +254,9 @@ def dark_brem( ap_mass , lhe, detector) :
             ]
 
     sim.actions.extend([
-        #make sure electron reaches target with 3.5GeV
+        #make sure electron reaches target with 7 GeV
         filters.TaggerVetoFilter(7000.),
-        #make sure dark brem occurs in the target where A' has at least 2GeV
+        #make sure dark brem occurs in the target where A' has at least 4GeV
         filters.TargetDarkBremFilter(4000.),
         #keep all prodcuts of dark brem(A' and recoil electron)
         util.TrackProcessFilter.dark_brem()

@@ -81,8 +81,14 @@ void SeedFinderProcessor::configure(framework::config::Parameters& parameters) {
 
   bfield_ = parameters.getParameter<double>("bfield", 1.5);
 
-  input_pass_name_ =
-      parameters.getParameter<std::string>("input_pass_name", "");
+  input_pass_name_ = parameters.getParameter<std::string>("input_pass_name");
+
+  sim_particles_passname_ =
+      parameters.getParameter<std::string>("sim_particles_passname");
+  tagger_trks_event_collection_passname_ = parameters.getParameter<std::string>(
+      "tagger_trks_event_collection_passname");
+  sim_particles_event_passname_ =
+      parameters.getParameter<std::string>("sim_particles_event_passname");
 }
 
 void SeedFinderProcessor::produce(framework::Event& event) {
@@ -101,7 +107,8 @@ void SeedFinderProcessor::produce(framework::Event& event) {
                                              input_pass_name_);
 
   std::vector<ldmx::Track> tagger_tracks;
-  if (event.exists(tagger_trks_collection_)) {
+  if (event.exists(tagger_trks_collection_,
+                   tagger_trks_event_collection_passname_)) {
     tagger_tracks = event.getCollection<ldmx::Track>(tagger_trks_collection_,
                                                      input_pass_name_);
   }
@@ -149,8 +156,9 @@ void SeedFinderProcessor::produce(framework::Event& event) {
     }
   }
 
-  if (event.exists("SimParticles")) {
-    particleMap = event.getMap<int, ldmx::SimParticle>("SimParticles");
+  if (event.exists("SimParticles", sim_particles_event_passname_)) {
+    particleMap = event.getMap<int, ldmx::SimParticle>("SimParticles",
+                                                       sim_particles_passname_);
     truthMatchingTool_->setup(particleMap, measurements);
   }
 

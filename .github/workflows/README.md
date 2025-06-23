@@ -63,19 +63,18 @@ plots in the "fail" directory.
 When validating, this action is roughly equivalent to the following procedure.
 (Look at the `.github/actions/validate` directory for the details.)
 
-- Set-up ldmx to use `dev latest`: `ldmx pull dev latest`
-- Compile and Install ldmx-sw: `mkdir build; cd build; ldmx 'cmake .. && make install'`
-- Go to the sample of your choosing: `cd ../.github/pr_validation_samples/<sample>/`
-- Run the configuration: `ldmx 'LDMX_RUN_NUMBER=1 LDMX_NUM_EVENTS=10000 fire config.py'`
-  - Since the configurations require certain environment variables, we need to define those variables _inside the container_ but before we run `fire`.
-- Generate comparison plots: `ldmx python3 ${LDMX_BASE}/ldmx-sw/.github/actions/validate/compare.py gold.root gold hist.root <branch>`
+- Download the latest `ci-data`: `git clone https://github.com/LDMX-Software/ci-data.git`
+- Set-up ldmx to use `dev latest`: `just pull dev latest`
+- Compile and Install ldmx-sw: `just compile`
+- Go to the sample of your choosing: `cd .github/validation_samples/<sample>/`
+- Run the configuration: `just setenv LDMX_RUN_NUMBER=1; just setenv LDMX_NUM_EVENTS=10000; just fire config.py`
+- Generate comparison plots: `denv python3 ../../actions/validate/compare.py ../../../ci-data/gold.root $(cat ../../../ci-data/label) ../../../ci-data/hist.root <branch>`
   - `<branch>` is your current branch or whatever label you want your developments to be called
 
 ## Generate PR Gold Histograms
 
 This action is run when a release is "released", i.e. we only run this action for _actual_ stable releases (no pre-releases).
-When this action is run, we run the `validate` action on the samples 
-and then use the `commit-gold` action to commit the newly-generated histogram files `hist.root` as the new `gold.root` files and push them to the repo.
+When this action is run, we run the `validate` action on the samples, copy the histogram and log files into `ci-data`, and then push the updated files to the `ci-data` repository.
 
 **This relies heavily on the naming conventions assumed in the `validate` action, so changes to that action should also be checked here.**
 
@@ -90,10 +89,8 @@ which would generate validation histograms to look at and upload those histogram
 
 ## Code Formatting
 
-**To be developed**
-
-After a PR is merged, format code according to our style.
-This seems simple, but hasn't been developed yet because commiting and pushing to submodules within an action is complicated.
+The `format-check.yml` workflow runs on all pushes to `trunk` and any pushes to an open pull request.
+It checks that the format is respected and, if being run on a PR, pushes any format fixes.
 
 ### Extra Detail
 
