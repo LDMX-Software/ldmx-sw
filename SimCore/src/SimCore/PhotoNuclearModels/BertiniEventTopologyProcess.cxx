@@ -6,7 +6,8 @@ void BertiniEventTopologyProcess::cleanupSecondaries() {
   // Geant4 won't clean up this memory for us by default
   for (int i{0}; i < secondaries; ++i) {
     auto secondary{theParticleChange.GetSecondary(i)->GetParticle()};
-    delete secondary;
+    pDynamicParticleAllocator->FreeSingle(secondary);
+    pDynamicParticleAllocator->destroy(secondary);
   }
 }
 
