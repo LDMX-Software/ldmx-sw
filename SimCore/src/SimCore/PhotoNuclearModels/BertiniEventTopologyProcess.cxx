@@ -5,9 +5,14 @@ void BertiniEventTopologyProcess::cleanupSecondaries() {
   int secondaries{theParticleChange.GetNumberOfSecondaries()};
   // Geant4 won't clean up this memory for us by default
   for (int i{0}; i < secondaries; ++i) {
+    // disable clang's use-after-free warning for this delete
+    // as far as we (@tomeichlersmith and @EinarElen) can tell,
+    // this is correct and clang is just getting confused since
+    // Geant4's inlined delete method is written in a wacky way
+#ifndef __clang_analyzer__
     auto secondary{theParticleChange.GetSecondary(i)->GetParticle()};
-    pDynamicParticleAllocator->FreeSingle(secondary);
-    pDynamicParticleAllocator->destroy(secondary);
+    delete secondary;
+#endif
   }
 }
 
