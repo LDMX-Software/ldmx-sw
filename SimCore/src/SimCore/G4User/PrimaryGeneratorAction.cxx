@@ -15,9 +15,9 @@
 /*~~~~~~~~~~~~~*/
 /*   SimCore   */
 /*~~~~~~~~~~~~~*/
+#include "SimCore/G4User/UserEventInformation.h"
+#include "SimCore/G4User/UserPrimaryParticleInformation.h"
 #include "SimCore/Generators/PrimaryGenerator.h"
-#include "SimCore/UserEventInformation.h"
-#include "SimCore/UserPrimaryParticleInformation.h"
 
 /*~~~~~~~~~~*/
 /*   ROOT   */

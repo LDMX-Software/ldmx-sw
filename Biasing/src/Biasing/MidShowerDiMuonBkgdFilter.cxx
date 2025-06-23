@@ -5,7 +5,7 @@
 #include "G4RunManager.hh"
 #include "G4Step.hh"
 #include "SimCore/G4User/PtrRetrieval.h"
-#include "SimCore/UserTrackInformation.h"
+#include "SimCore/G4User/UserTrackInformation.h"
 
 namespace biasing {
 

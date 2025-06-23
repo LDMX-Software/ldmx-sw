@@ -1,4 +1,4 @@
-#include "SimCore/UserRegionInformation.h"
+#include "SimCore/G4User/UserRegionInformation.h"
 
 namespace simcore {
 

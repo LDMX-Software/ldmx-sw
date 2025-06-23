@@ -247,11 +247,12 @@ TEST_CASE("Conditions", "[Conditions]") {
     const conditions::DoubleTableCondition& fTable1 =
         hp->getConditions().getCondition<conditions::DoubleTableCondition>(
             "test_table_file");
+    matchesAll(dtable, fTable1);
+
     cxt.setRun(119);
     const conditions::DoubleTableCondition& fTable2 =
         hp->getConditions().getCondition<conditions::DoubleTableCondition>(
             "test_table_file");
-    matchesAll(dtable, fTable1);
     matchesAll(dtable, fTable2);
   }
 
