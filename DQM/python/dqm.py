@@ -408,49 +408,49 @@ class EcalWABRecResults(ldmxcfg.Analyzer) :
         self.ecal_WAB_rec_pass = ''
 
         self.build2DHistogram("ThetaDiffElectronPhoton", 
-                            "Reco #theta Difference between Photon and Electron (Degrees)",
+                            "Reco #theta Difference between Photon and Electron [Degrees]",
                             92, -1, 91,
-                            "True #theta Difference between Photon and Electron (Degrees)",
+                            "True #theta Difference between Photon and Electron [Degrees]",
                             92, -1, 91)
         self.build2DHistogram("ThetaElectron", 
-                            "Electron Reco #theta (Degrees)",
+                            "Electron Reco #theta [Degrees]",
                             92, -1, 91, 
-                            "Electron True #theta (Degrees)",
+                            "Electron True #theta [Degrees]",
                             92, -1, 91)
         self.build2DHistogram("ThetaPhoton", 
-                            "Photon Reco #theta (Degrees)",
+                            "Photon Reco #theta [Degrees]",
                             92, -1, 91, 
-                            "Photon True #theta (Degrees)",
+                            "Photon True #theta [Degrees]",
                             92, -1, 91)
         self.build2DHistogram("PhiDiffElectronPhoton", 
-                            "Reco #phi Difference between Photon and Electron (Degrees)",
+                            "Reco #phi Difference between Photon and Electron [Degrees]",
                             92, -1, 91,
-                            "True #phi Difference between Photon and Electron (Degrees)",
+                            "True #phi Difference between Photon and Electron [Degrees]",
                             92, -1, 91)
         self.build2DHistogram("PhiElectron", 
-                            "Electron Reco #phi (Degrees)",
+                            "Electron Reco #phi [Degrees]",
                             92, -1, 91, 
-                            "Electron True #phi (Degrees)",
+                            "Electron True #phi [Degrees]",
                             92, -1, 91)
         self.build2DHistogram("PhiPhoton", 
-                            "Photon Reco #phi (Degrees)",
+                            "Photon Reco #phi [Degrees]",
                             92, -1, 91, 
-                            "Photon True #phi (Degrees)",
+                            "Photon True #phi [Degrees]",
                             92, -1, 91)
         self.build2DHistogram("ElectronEnergy", 
-                            "Reconstructed Recoil Electron Shower Energy (MeV)",
+                            "Reconstructed Recoil Electron Shower Energy [MeV]",
                             80, 0, 4000,
-                            "True Recoil Electron Energy (MeV)",
+                            "True Recoil Electron Energy [MeV]",
                             80, 0, 4000)
         self.build2DHistogram("PhotonEnergy", 
-                            "Reconstructed Photon Shower Energy (MeV)",
+                            "Reconstructed Photon Shower Energy [MeV]",
                             80, 0, 4000, 
-                            "True Photon Energy (MeV)",
+                            "True Photon Energy [MeV]",
                             80, 0, 4000)
-        self.build1DHistogram("ElectronThetaDiff", "Electron True and Reconstruction #theta Difference (Degrees)", 181, 0, 181)
-        self.build1DHistogram("PhotonThetaDiff", "Photon True and Reconstruction #theta Difference (Degrees)", 181, 0, 181)
-        self.build1DHistogram("ElectronPhiDiff", "Electron True and Reconstruction #phi Difference (Degrees)", 181, 0, 181)
-        self.build1DHistogram("PhotonPhiDiff", "Photon True and Reconstruction #phi Difference (Degrees)", 181, 0, 181)
+        self.build1DHistogram("ElectronThetaDiff", "Electron True and Reconstruction #theta Difference [Degrees]", 181, 0, 181)
+        self.build1DHistogram("PhotonThetaDiff", "Photon True and Reconstruction #theta Difference [Degrees]", 181, 0, 181)
+        self.build1DHistogram("ElectronPhiDiff", "Electron True and Reconstruction #phi Difference [Degrees]", 181, 0, 181)
+        self.build1DHistogram("PhotonPhiDiff", "Photon True and Reconstruction #phi Difference [Degrees]", 181, 0, 181)
         self.build1DHistogram("ProgressNum", "Reconstruction Progress", 4, 0, 4)
 
 class SimObjects(ldmxcfg.Analyzer) :
@@ -581,77 +581,77 @@ class PhotoNuclearDQM(ldmxcfg.Analyzer) :
         self.build1DHistogram("pn_interaction_material"    , "", 10,  -0.5, 9.5)
         self.build1DHistogram("pn_particle_mult"   , "Photo-nuclear Multiplicity", 200, 0, 200)
         self.build1DHistogram("pn_neutron_mult"    , "Photo-nuclear Neutron Multiplicity", 200,0, 200)
-        self.build1DHistogram("pn_gamma_energy"    , "#gamma Energy (MeV)", 100, 0, 10000)
-        self.build1DHistogram("pn_total_ke"        , "Total Kineitc Energy of Photo-Nuclear Products (MeV)", 100, 0, 10000)
-        self.build1DHistogram("pn_total_neutron_ke", "Total Kineitc Energy of Photo-Nuclear Neutrons  (MeV)", 100, 0, 10000)
-        self.build1DHistogram("1n_neutron_energy"  , "Neutron Energy (MeV)", 100, 0, 10000)
-        self.build1DHistogram("1n_energy_diff"     , "E(#gamma_{PN}) - E(n) (MeV)", 100, 0, 10000)
-        self.build1DHistogram("1n_energy_frac"     , "E(n)/E(#gamma_{PN}) (MeV)", 100, 0, 1)
-        self.build1DHistogram("2n_n2_energy"       , "Energy of second hardest neutron (MeV)", 100, 0, 10000)
-        self.build1DHistogram("2n_energy_frac"     , "E(n)/E(#gamma_{PN}) (MeV)", 100, 0, 1)
-        self.build1DHistogram("2n_energy_other"    , "E_{other} (MeV)", 100, 0, 10000)
-        self.build1DHistogram("1kp_energy"         , "Charged Kaon Energy (MeV)", 100, 0, 10000)
-        self.build1DHistogram("1kp_energy_diff"    , "E(#gamma_{PN}) - E(K#pm) (MeV)", 100, 0, 100000)
-        self.build1DHistogram("1kp_energy_frac"    , "E(K#pm)/E(#gamma_{PN}) (MeV)", 100, 0, 1)
-        self.build1DHistogram("1k0_energy"         , "K0 Energy (MeV)", 100, 0, 10000)
-        self.build1DHistogram("1k0_energy_diff"    , "E(#gamma_{PN}) - E(K0) (MeV)", 100, 0, 10000)
-        self.build1DHistogram("1k0_energy_frac"    , "E(K0)/E(#gamma_{PN}) (MeV)", 100, 0, 1)
+        self.build1DHistogram("pn_gamma_energy"    , "#gamma Energy [MeV]", 100, 0, 10000)
+        self.build1DHistogram("pn_total_ke"        , "Total Kineitc Energy of Photo-Nuclear Products [MeV]", 100, 0, 10000)
+        self.build1DHistogram("pn_total_neutron_ke", "Total Kineitc Energy of Photo-Nuclear Neutrons  [MeV]", 100, 0, 10000)
+        self.build1DHistogram("1n_neutron_energy"  , "Neutron Energy [MeV]", 100, 0, 10000)
+        self.build1DHistogram("1n_energy_diff"     , "E(#gamma_{PN}) - E(n) [MeV]", 100, 0, 10000)
+        self.build1DHistogram("1n_energy_frac"     , "E(n)/E(#gamma_{PN}) [MeV]", 100, 0, 1)
+        self.build1DHistogram("2n_n2_energy"       , "Energy of second hardest neutron [MeV]", 100, 0, 10000)
+        self.build1DHistogram("2n_energy_frac"     , "E(n)/E(#gamma_{PN}) [MeV]", 100, 0, 1)
+        self.build1DHistogram("2n_energy_other"    , "E_{other} [MeV]", 100, 0, 10000)
+        self.build1DHistogram("1kp_energy"         , "Charged Kaon Energy [MeV]", 100, 0, 10000)
+        self.build1DHistogram("1kp_energy_diff"    , "E(#gamma_{PN}) - E(K#pm) [MeV]", 100, 0, 100000)
+        self.build1DHistogram("1kp_energy_frac"    , "E(K#pm)/E(#gamma_{PN}) [MeV]", 100, 0, 1)
+        self.build1DHistogram("1k0_energy"         , "K0 Energy [MeV]", 100, 0, 10000)
+        self.build1DHistogram("1k0_energy_diff"    , "E(#gamma_{PN}) - E(K0) [MeV]", 100, 0, 10000)
+        self.build1DHistogram("1k0_energy_frac"    , "E(K0)/E(#gamma_{PN}) [MeV]", 100, 0, 1)
 
-        self.build1DHistogram("recoil_vertex_x",   "Recoil e^{-} Vertex - x (mm)", 40, -40, 40)
-        self.build1DHistogram("recoil_vertex_y",   "Recoil e^{-} Vertex - y (mm)", 80, -80, 80)
-        self.build1DHistogram("recoil_vertex_z",   "Recoil e^{-} Vertex - z (mm)", 20, -950, -850)
+        self.build1DHistogram("recoil_vertex_x",   "Recoil e^{-} Vertex - x [mm]", 40, -40, 40)
+        self.build1DHistogram("recoil_vertex_y",   "Recoil e^{-} Vertex - y [mm]", 80, -80, 80)
+        self.build1DHistogram("recoil_vertex_z",   "Recoil e^{-} Vertex - z [mm]", 20, -950, -850)
 
-        self.build1DHistogram("pn_gamma_int_x",    "#gamma Interaction Vertex - x (mm)", 50, -250, 250)
-        self.build1DHistogram("pn_gamma_int_y",    "#gamma Interaction Vertex - y (mm)", 50, -250, 250)
-        self.build1DHistogram("pn_gamma_int_z",    "#gamma Interaction Vertex - z (mm)", 40, 200, 400)
+        self.build1DHistogram("pn_gamma_int_x",    "#gamma Interaction Vertex - x [mm]", 50, -250, 250)
+        self.build1DHistogram("pn_gamma_int_y",    "#gamma Interaction Vertex - y [mm]", 50, -250, 250)
+        self.build1DHistogram("pn_gamma_int_z",    "#gamma Interaction Vertex - z [mm]", 40, 200, 400)
 
-        self.build1DHistogram("pn_gamma_vertex_x", "#gamma Vertex - y (mm)", 40,  -40, 40)
-        self.build1DHistogram("pn_gamma_vertex_y", "#gamma Vertex - y (mm)", 80,  -80, 80)
-        self.build1DHistogram("pn_gamma_vertex_z", "#gamma Vertex - z (mm)", 10, -5,  5)
+        self.build1DHistogram("pn_gamma_vertex_x", "#gamma Vertex - y [mm]", 40,  -40, 40)
+        self.build1DHistogram("pn_gamma_vertex_y", "#gamma Vertex - y [mm]", 80,  -80, 80)
+        self.build1DHistogram("pn_gamma_vertex_z", "#gamma Vertex - z [mm]", 10, -5,  5)
 
-        self.build1DHistogram("hardest_ke",       "Kinetic Energy Hardest Photo-nuclear Particle (MeV)", 200, 0, 8000)
-        self.build1DHistogram("hardest_theta",    "#theta of Hardest Photo-nuclear Particle (Degrees)", 180, 0, 180)
-        self.build1DHistogram("hardest_p_ke",     "Kinetic Energy Hardest Photo-nuclear Proton (MeV)", 200, 0, 8000)
-        self.build1DHistogram("hardest_p_theta",  "#theta of Hardest Photo-nuclear Proton (Degrees)", 180, 0, 180)
-        self.build1DHistogram("hardest_n_ke",     "Kinetic Energy Hardest Photo-nuclear Neutron (MeV)", 200, 0, 8000)
-        self.build1DHistogram("hardest_n_theta",  "#theta of Hardest Photo-nuclear Neutron (Degrees)", 180, 0, 180)
-        self.build1DHistogram("hardest_pi_ke",    "Kinetic Energy Hardest Photo-nuclear #pi (MeV)", 200, 0, 8000)
-        self.build1DHistogram("hardest_pi_theta", "#theta of Hardest Photo-nuclear #pi (Degrees)", 180, 0, 180)
+        self.build1DHistogram("hardest_ke",       "Kinetic Energy Hardest Photo-nuclear Particle [MeV]", 200, 0, 8000)
+        self.build1DHistogram("hardest_theta",    "#theta of Hardest Photo-nuclear Particle [Degrees]", 180, 0, 180)
+        self.build1DHistogram("hardest_p_ke",     "Kinetic Energy Hardest Photo-nuclear Proton [MeV]", 200, 0, 8000)
+        self.build1DHistogram("hardest_p_theta",  "#theta of Hardest Photo-nuclear Proton [Degrees]", 180, 0, 180)
+        self.build1DHistogram("hardest_n_ke",     "Kinetic Energy Hardest Photo-nuclear Neutron [MeV]", 200, 0, 8000)
+        self.build1DHistogram("hardest_n_theta",  "#theta of Hardest Photo-nuclear Neutron [Degrees]", 180, 0, 180)
+        self.build1DHistogram("hardest_pi_ke",    "Kinetic Energy Hardest Photo-nuclear #pi [MeV]", 200, 0, 8000)
+        self.build1DHistogram("hardest_pi_theta", "#theta of Hardest Photo-nuclear #pi [Degrees]", 180, 0, 180)
 
         self.build2DHistogram("h_ke_h_theta", 
-                            "Kinetic Energy Hardest Photo-nuclear Particle (MeV)",
+                            "Kinetic Energy Hardest Photo-nuclear Particle [MeV]",
                             200, 0, 8000, 
-                            "#theta of Hardest Photo-nuclear Particle (Degrees)",
+                            "#theta of Hardest Photo-nuclear Particle [Degrees]",
                             180, 0, 180)
         
         self.build2DHistogram("1n_ke:2nd_h_ke", 
-                            "Kinetic Energy of Leading Neutron (MeV)",
+                            "Kinetic Energy of Leading Neutron [MeV]",
                             200, 0, 8000, 
-                            "Kinetic Energy of 2nd Hardest Particle (MeV)",
+                            "Kinetic Energy of 2nd Hardest Particle [MeV]",
                             200, 0, 8000)
         
         self.build2DHistogram("1kp_ke:2nd_h_ke", 
-                            "Kinetic Energy of Leading Charged Kaon (MeV)",
+                            "Kinetic Energy of Leading Charged Kaon [MeV]",
                             200, 0, 8000, 
-                            "Kinetic Energy of 2nd Hardest Particle (MeV)",
+                            "Kinetic Energy of 2nd Hardest Particle [MeV]",
                             200, 0, 8000)
         
         self.build2DHistogram("1k0_ke:2nd_h_ke", 
-                            "Kinetic Energy of Leading K0 (MeV)",
+                            "Kinetic Energy of Leading K0 [MeV]",
                             200, 0, 8000, 
-                            "Kinetic Energy of 2nd Hardest Particle (MeV)",
+                            "Kinetic Energy of 2nd Hardest Particle [MeV]",
                             200, 0, 8000)
         
         self.build2DHistogram("recoil_vertex_x:recoil_vertex_y", 
-                           "Recoil electron vertex x (mm)", 
+                           "Recoil electron vertex x [mm]", 
                            80, -40, 40, 
-                           "Recoil electron vertex y (mm)", 
+                           "Recoil electron vertex y [mm]", 
                            160, -80, 80)
         
         self.build2DHistogram("pn_gamma_int_x:pn_gamma_int_y", 
-                           "PN gamma interaction vertex x (mm)", 
+                           "PN gamma interaction vertex x [mm]", 
                            50, -250, 250, 
-                           "PN gamma interaction vertex y (mm)", 
+                           "PN gamma interaction vertex y [mm]", 
                            50, -250, 250)
         
 
@@ -678,10 +678,10 @@ class TrkDeDxMassEstFeatures(ldmxcfg.Analyzer) :
         momentum_bins = [90.,100.,125.,150.,175.,200.,250.,300.,350.,400.,450.,500., 600.,700.,800.,900.,1000.,1300.,2000.,3000.,4000.,6000.,8000.]
         low_momentum_bins = [50.,70.,90.,100.,125.,150.,175.,200.,250.,300.,350.,400.,450.,500., 600.,700.,800.,900.,1000.,2000.]
         self.build2DHistogram('momentum:harmonic_mean_dedx' ,
-                xlabel='Momentum (MeV)', xbins=momentum_bins,
+                xlabel='Momentum [MeV]', xbins=momentum_bins,
                 ylabel='I_{h} [MeV/cm]', ybins=50, ymin=0., ymax=30. )
         self.build2DHistogram('momentum_low:harmonic_mean_dedx' ,
-                xlabel='Momentum (MeV)', xbins=low_momentum_bins,
+                xlabel='Momentum [MeV]', xbins=low_momentum_bins,
                 ylabel='I_{h} [MeV/cm]', ybins=50, ymin=0., ymax=30. )
         self.build1DHistogram("harmonic_mean_dedx", "I_{h} [MeV/cm]", 50, 0., 30.)
         self.build1DHistogram("mass_estimate", "Mass Estimate [MeV]", 100, 0., 2000.)
@@ -830,7 +830,10 @@ class SampleValidation(ldmxcfg.Analyzer) :
         self.build1DHistogram("hardbremdaughters_startZ", "Start z position of hard brem daughters  [mm]", 200, -1000, 1000)
         self.build1DHistogram("hardbremdaughters_endZ", "End z position of hard brem daughters  [mm]", 70, -1000, 6000)
         self.build1DHistogram("hardbremdaughters_energy", "Energy of hard brem daughters  [MeV]", 170, 0, 8500)
-        
+
+sample_validation_dqm = [
+        SampleValidation()
+        ]
         
 class EcalClusterAnalyzer(ldmxcfg.Analyzer) :
     """Analyze clustering"""
@@ -917,4 +920,4 @@ trigger_dqm = [
         ]
 
 
-all_dqm = ecal_dqm + hcal_dqm + trigScint_dqm + trigger_dqm
+all_dqm = sample_validation_dqm + ecal_dqm + hcal_dqm + trigScint_dqm + trigger_dqm
