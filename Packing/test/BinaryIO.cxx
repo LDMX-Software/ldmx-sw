@@ -120,13 +120,13 @@ TEST_CASE("BinaryIO", "[Packing][functionality]") {
     ps.addParameter("skip_unavailable", true);
     ps.addParameter("verify_checksum", false);
     ps.addParameter("ecal_object_passname_",
-                    std::string("ecal_object_passname", ""));
+                    std::string("ecal_object_passname"));
     ps.addParameter("hcal_object_passname_",
-                    std::string("hcal_object_passname", ""));
+                    std::string("hcal_object_passname"));
     ps.addParameter("triggerpad_object_passname_",
-                    std::string("triggerpad_object_passname", ""));
+                    std::string("triggerpad_object_passname"));
     ps.addParameter("tracker_object_event_passname_",
-                    std::string("tracker_object_event_passname", ""));
+                    std::string("tracker_object_event_passname"));
 
     std::string ecal_object_passname_ =
         ps.getParameter<std::string>("ecal_object_passname", "");
