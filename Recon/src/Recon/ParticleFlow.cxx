@@ -131,9 +131,9 @@ void ParticleFlow::fillCandCalo(ldmx::PFCandidate& cand,
 
 // produce track, ecal, and hcal linking
 void ParticleFlow::produce(framework::Event& event) {
-  if (!event.exists(inputTrackCollName_, input_track_passname_)) {
+  if (!event.exists(inputTrackCollName_, input_tracks_passname_)) {
     ldmx_log(error) << "Unable to find (one) collection named "
-                    << inputTrackCollName_ << "_" << input_track_passname_;
+                    << inputTrackCollName_ << "_" << input_tracks_passname_;
     return;
   }
   if (!event.exists(inputEcalCollName_, input_ecal_passname_)) {
