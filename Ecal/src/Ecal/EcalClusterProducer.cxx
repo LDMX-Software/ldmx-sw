@@ -72,7 +72,7 @@ void EcalClusterProducer::produce(framework::Event& event) {
       cluster.addHits(wcVec[aWC].getHits());
       cluster.addFirstLayerHits(fWcVec[aWC].getHits());
 
-      float e(0), x(0), y(0), z(0), xx(0), yy(0), zz(0), n(0);
+      float x(0), y(0), z(0), xx(0), yy(0), zz(0), n(0);
       float w = 1;  // weight
       float sumw = 0;
   
