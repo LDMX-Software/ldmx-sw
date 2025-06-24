@@ -37,7 +37,8 @@ class ParticleFlow : public framework::Producer {
   virtual void onProcessEnd();
 
   void fillCandTrack(ldmx::PFCandidate& cand, const ldmx::SimTrackerHit& tk);
-  void fillCandCalo(ldmx::PFCandidate& cand, const ldmx::CaloCluster& cl, TGraph gResponse,int PIDnb);
+  void fillCandCalo(ldmx::PFCandidate& cand, const ldmx::CaloCluster& cl,
+                    TGraph gResponse, int PIDnb);
   void fillCandEMCalo(ldmx::PFCandidate& cand, const ldmx::CaloCluster& em);
   void fillCandHadCalo(ldmx::PFCandidate& cand, const ldmx::CaloCluster& had);
 
