@@ -35,7 +35,7 @@ class ONNXRuntime {
               const ::Ort::SessionOptions* session_options = nullptr);
   ONNXRuntime(const ONNXRuntime&) = delete;
   ONNXRuntime& operator=(const ONNXRuntime&) = delete;
-  ~ONNXRuntime();
+  ~ONNXRuntime() = default;
 
   /**
    * Run model inference and get outputs.

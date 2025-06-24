@@ -61,8 +61,7 @@ class DNNEcalVetoProcessor(ldmxcfg.Producer) :
     def __init__(self,name = 'dnnEcalVeto') :
         super().__init__(name,"ecal::DNNEcalVetoProcessor",'Ecal')
 
-        self.debug = True
-        self.max_num_hits = 200
+        self.max_num_hits = 300
         from LDMX.Ecal.makePath import makeBDTPath
         self.model_path = makeBDTPath("particle_net_ecal_v10")
         self.disc_cut = 0.74

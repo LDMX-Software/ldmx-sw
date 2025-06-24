@@ -7,7 +7,7 @@
 
 namespace ecal {
 
-const std::vector<std::string> DNNEcalVetoProcessor::input_names_{"coordinates",
+const std::vector<std::string> DNNEcalVetoProcessor::input_names_{"points",
                                                                   "features"};
 const std::vector<unsigned int> DNNEcalVetoProcessor::input_sizes_{
     n_coordinate_dim_ * max_num_hits_, n_feature_dim_* max_num_hits_};
@@ -25,9 +25,6 @@ void DNNEcalVetoProcessor::configure(
   disc_cut_ = parameters.getParameter<double>("disc_cut");
   rt_ = std::make_unique<ldmx::Ort::ONNXRuntime>(
       parameters.getParameter<std::string>("model_path"));
-
-  // debug mode
-  debug_ = parameters.getParameter<bool>("debug");
 
   // max number of hits that this veto looks at
   // max_num_hits_ = parameters.getParameter<int>("max_num_hits");
@@ -53,7 +50,7 @@ void DNNEcalVetoProcessor::produce(framework::Event& event) {
       ecalRecHits.begin(), ecalRecHits.end(),
       [](const ldmx::EcalHit& hit) { return hit.getEnergy() > 0; });
 
-  ldmx_log(info) << "nhits = " << nhits << " max_num_hits_ = " << max_num_hits_;
+  ldmx_log(trace) << "nhits = " << nhits << " max_num_hits_ = " << max_num_hits_;
 
   if (nhits < max_num_hits_) {
     // make inputs
@@ -92,7 +89,6 @@ void DNNEcalVetoProcessor::make_inputs(
     if (hit.getEnergy() <= 0) continue;
     ldmx::EcalID id(hit.getID());
     auto [x, y, z] = geom.getPosition(id);
-    std::cout << " y = " << y << " z = " << z << std::endl;
 
     data_[0].at(coordinate_x_offset_ + idx) = x;
     data_[0].at(coordinate_y_offset_ + idx) = y;
@@ -107,18 +103,15 @@ void DNNEcalVetoProcessor::make_inputs(
     ++idx;
   }
 
-  if (debug_) {
-    for (unsigned iname = 0; iname < input_names_.size(); ++iname) {
-      std::cout << "=== " << input_names_[iname] << " ===" << std::endl;
-      for (unsigned i = 0; i < input_sizes_[iname]; ++i) {
-        std::cout << data_[iname].at(i) << ", ";
-        if ((i + 1) % max_num_hits_ == 0) {
-          std::cout << std::endl;
-          std::cout << std::endl;
-        }
+  for (unsigned iname = 0; iname < input_names_.size(); ++iname) {
+    ldmx_log(trace)  << "=== " << input_names_[iname] << " ===";
+    for (unsigned i = 0; i < input_sizes_[iname]; ++i) {
+      ldmx_log(trace) << data_[iname].at(i) << ", ";
+      if ((i + 1) % max_num_hits_ == 0) {
+        ldmx_log(trace) << "\n\n";
       }
     }
-  }  // debug
+  }
 }
 
 }  // namespace ecal
