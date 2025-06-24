@@ -111,12 +111,12 @@ void ParticleFlow::fillCandCalo(ldmx::PFCandidate& cand,
   float corr = 1.;
   float energy = cl.getEnergy();
   // update energy: use min or max factor if outside calibration range
-  if (energy < gResponse->GetX()[0]) {
-    corr = gResponse->GetY()[0];
-  } else if (energy > gResponse->GetX()[gResponse->GetN() - 1]) {
-    corr = gResponse->GetY()[gResponse->GetN() - 1];
+  if (energy < gResponse.GetX()[0]) {
+    corr = gResponse.GetY()[0];
+  } else if (energy > gResponse.GetX()[gResponse.GetN() - 1]) {
+    corr = gResponse.GetY()[gResponse.GetN() - 1];
   } else {  // else look up calibration factor
-    corr = gResponse->Eval(energy);
+    corr = gResponse.Eval(energy);
   }
   cand.setEcalEnergy(energy * corr);
   cand.setEcalRawEnergy(energy);
