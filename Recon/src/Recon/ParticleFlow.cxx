@@ -17,7 +17,7 @@ void ParticleFlow::configure(framework::config::Parameters& ps) {
 
   // Algorithm configuration
   singleParticle_ = ps.getParameter<bool>("singleParticle");
-  useExistingEcalClusters_ = ps.getParameter<bool>("useExistingEcalClusters");
+  use_existing_ecal_clusters_ = ps.getParameter<bool>("use_existing_ecal_clusters");
 
   // Calibration factors, from jason, temperary
   std::vector<float> em1{250.0,  750.0,  1250.0, 1750.0, 2250.0, 2750.0,
@@ -59,17 +59,17 @@ void ParticleFlow::fillCandTrack(ldmx::PFCandidate& cand,
 void ParticleFlow::fillCandEMCalo(ldmx::PFCandidate& cand,
                                   const ldmx::CaloCluster& em) {
   float corr = 1.;
-  float e = em.getEnergy();
+  float energy = em.getEnergy();
   // update energy: use min or max factor if outside calibration range
-  if (e < eCorr_->GetX()[0]) {
+  if (energy < eCorr_->GetX()[0]) {
     corr = eCorr_->GetY()[0];
-  } else if (e > eCorr_->GetX()[eCorr_->GetN() - 1]) {
+  } else if (energy > eCorr_->GetX()[eCorr_->GetN() - 1]) {
     corr = eCorr_->GetY()[eCorr_->GetN() - 1];
   } else {  // else look up calibration factor
-    corr = eCorr_->Eval(e);
+    corr = eCorr_->Eval(energy);
   }
-  cand.setEcalEnergy(e * corr);
-  cand.setEcalRawEnergy(e);
+  cand.setEcalEnergy(energy * corr);
+  cand.setEcalRawEnergy(energy);
   cand.setEcalClusterXYZ(em.getCentroidX(), em.getCentroidY(),
                          em.getCentroidZ());
   cand.setEcalClusterEXYZ(em.getRMSX(), em.getRMSY(), em.getRMSZ());
@@ -83,16 +83,16 @@ void ParticleFlow::fillCandEMCalo(ldmx::PFCandidate& cand,
 void ParticleFlow::fillCandHadCalo(ldmx::PFCandidate& cand,
                                    const ldmx::CaloCluster& had) {
   float corr = 1.;
-  float e = had.getEnergy();
-  if (e < hCorr_->GetX()[0]) {
+  float energy = had.getEnergy();
+  if (energy< hCorr_->GetX()[0]) {
     corr = hCorr_->GetY()[0];
-  } else if (e > hCorr_->GetX()[hCorr_->GetN() - 1]) {
+  } else if (energy > hCorr_->GetX()[hCorr_->GetN() - 1]) {
     corr = hCorr_->GetY()[hCorr_->GetN() - 1];
   } else {
     corr = hCorr_->Eval(e);
   }
-  cand.setHcalEnergy(e * corr);
-  cand.setHcalRawEnergy(e);
+  cand.setHcalEnergy(energy * corr);
+  cand.setHcalRawEnergy(energy);
   cand.setHcalClusterXYZ(had.getCentroidX(), had.getCentroidY(),
                          had.getCentroidZ());
   cand.setHcalClusterEXYZ(had.getRMSX(), had.getRMSY(), had.getRMSZ());
@@ -108,17 +108,17 @@ void ParticleFlow::fillCandCalo(ldmx::PFCandidate& cand,
                                 const ldmx::CaloCluster& cl, TGraph gResponse,
                                 int PIDnb) {
   float corr = 1.;
-  float e = cl.getEnergy();
+  float energy = cl.getEnergy();
   // update energy: use min or max factor if outside calibration range
-  if (e < gResponse_->GetX()[0]) {
+  if (energy < gResponse_->GetX()[0]) {
     corr = gResponse_->GetY()[0];
-  } else if (e > gResponse_->GetX()[gResponse_->GetN() - 1]) {
+  } else if (energy > gResponse_->GetX()[gResponse_->GetN() - 1]) {
     corr = gResponse_->GetY()[gResponse_->GetN() - 1];
   } else {  // else look up calibration factor
     corr = gResponse_->Eval(e);
   }
-  cand.setEcalEnergy(e * corr);
-  cand.setEcalRawEnergy(e);
+  cand.setEcalEnergy(energy * corr);
+  cand.setEcalRawEnergy(energy);
   cand.setEcalClusterXYZ(cl.getCentroidX(), cl.getCentroidY(),
                          cl.getCentroidZ());
   cand.setEcalClusterEXYZ(cl.getRMSX(), cl.getRMSY(), cl.getRMSZ());
@@ -153,7 +153,7 @@ void ParticleFlow::produce(framework::Event& event) {
       inputTrackCollName_, input_tracks_passname_);
   // here allow for using existing clusters of different type (EcalCluster)
   const auto ecalClusters =
-      useExistingEcalClusters_
+      use_existing_ecal_clusters_
           ? getEcalClusters(event, inputEcalCollName_, input_ecal_passname_)
           : event.getCollection<ldmx::CaloCluster>(inputEcalCollName_,
                                                    input_ecal_passname_);
