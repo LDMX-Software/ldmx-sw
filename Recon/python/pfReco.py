@@ -56,7 +56,7 @@ class pfProducer(ldmxcfg.Producer) :
         self.inputEcalCollName  = 'PFEcalClusters'
         self.inputHcalCollName  = 'PFHcalClusters'
         self.inputTrackCollName = 'PFTracks'
-        self.useExistingEcalClusters = False
+        self.use_existing_ecal_clusters = False
         self.outputCollName     = 'PFCandidates'
         self.singleParticle     = False
         self.input_ecal_passname  = ''
