@@ -156,6 +156,8 @@ ecalMipTrackingFeatures.ecal_veto_pass = thisPassName
 # EcalVetoResults
 ecalVetoResults = dqm.EcalVetoResults()
 ecalVetoResults.ecal_veto_pass = thisPassName
+ecal_veto_pnet =  ecal_vetos.DNNEcalVetoProcessor()
+ecal_veto_pnet.ecal_rec_hits_passname = thisPassName
 
 # HCAL DQM
 hcalDQM = [
@@ -196,7 +198,12 @@ p.sequence.extend(full_tracking_sequence.sequence)
 p.sequence.extend(full_tracking_sequence.dqm_sequence)
 
 p.sequence.extend([
-    ecalDigi, ecalReco, ecalVeto, ecalMip, ecal_cluster.EcalClusterProducer(),
+    ecalDigi,
+    ecalReco, 
+    ecalVeto, 
+    ecalMip, 
+    ecal_veto_pnet,
+    ecal_cluster.EcalClusterProducer(),
     hcal_digi_reco, 
     hcal_veto,
     *ts_digis,

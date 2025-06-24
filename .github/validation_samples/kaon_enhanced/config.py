@@ -115,6 +115,7 @@ ecalReco   =eDigi.EcalRecProducer()
 ecalDigi = eDigi.EcalDigiProducer()
 ecalVeto = vetos.EcalVetoProcessor()
 ecalMip = vetos.EcalMipProcessor()
+ecal_veto_pnet =  ecal_vetos.DNNEcalVetoProcessor()
 
 # HCAL part
 hcal_digi_reco = hDigi.HcalSimpleDigiAndRecProducer()
@@ -143,6 +144,7 @@ p.sequence.extend([
         ecalReco, 
         ecalVeto,
         ecalMip,
+        ecal_veto_pnet,
         *ts_digis,
         *ts_clusters, 
         trigScintTrack, 

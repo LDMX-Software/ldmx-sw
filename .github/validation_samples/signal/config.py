@@ -73,6 +73,7 @@ from LDMX.DQM import dqm
 # Load ecal veto and use tracking in it
 ecalVeto = ecal_vetos.EcalVetoProcessor()
 ecalMip = ecal_vetos.EcalMipProcessor()
+ecal_veto_pnet =  ecal_vetos.DNNEcalVetoProcessor()
 
 # Load HCAL veto
 import LDMX.Hcal.hcal as hcal
@@ -92,6 +93,7 @@ p.sequence.extend([
         ecal_digi.EcalRecProducer(), 
         ecalVeto,
         ecalMip,
+        ecal_veto_pnet,
         hcal_digi_reco,
         hcal_veto,
         *ts_digis,
