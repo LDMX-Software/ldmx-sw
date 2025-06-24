@@ -24,9 +24,9 @@
 #include "SimCore/Event/HepMC3GenEvent.h"
 #include "SimCore/G4Session.h"
 #include "SimCore/G4User/TrackingAction.h"
+#include "SimCore/G4User/UserEventInformation.h"
 #include "SimCore/Generators/PrimaryGenerator.h"
 #include "SimCore/SDs/SensitiveDetector.h"
-#include "SimCore/UserEventInformation.h"
 
 /*~~~~~~~~~~~~~~*/
 /*    Geant4    */

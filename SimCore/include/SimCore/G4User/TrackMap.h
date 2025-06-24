@@ -10,8 +10,8 @@
 
 // LDMX
 #include "SimCore/Event/SimParticle.h"
-#include "SimCore/UserPrimaryParticleInformation.h"
-#include "SimCore/UserTrackInformation.h"
+#include "SimCore/G4User/UserPrimaryParticleInformation.h"
+#include "SimCore/G4User/UserTrackInformation.h"
 
 namespace simcore {
 

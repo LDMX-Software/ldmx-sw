@@ -14,7 +14,7 @@ def sample_validation(d: Differ, out_dir=None):
              out_dir=out_dir,
              density=True)
 
-    d.plot1d("SampleValidation/SampleValidation_primaries_energy", "Energy of primaries (MeV)",
+    d.plot1d("SampleValidation/SampleValidation_primaries_energy", "Energy of primaries [MeV]",
              out_dir=out_dir,
              density=True)
 
@@ -22,7 +22,7 @@ def sample_validation(d: Differ, out_dir=None):
              tick_labels=pdgid_labels,
              out_dir=out_dir,
              density=True)
-    d.plot1d("SampleValidation/SampleValidation_daughterphoton_energy", "Energy spectrum of all photons from primary",
+    d.plot1d("SampleValidation/SampleValidation_daughterphoton_energy", "Energy spectrum of all photons from primary [MeV]",
              out_dir=out_dir,
              density=True)
 
