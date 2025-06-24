@@ -138,14 +138,12 @@ void ParticleFlow::produce(framework::Event& event) {
   }
   if (!event.exists(inputEcalCollName_, input_ecal_passname_)) {
     ldmx_log(error) << "Unable to find (one) collection named "
-                    << inputEcalCollName_
-                    << "_" << input_ecal_passname_;
+                    << inputEcalCollName_ << "_" << input_ecal_passname_;
     return;
   }
   if (!event.exists(inputHcalCollName_, input_hcal_passname_)) {
     ldmx_log(error) << "Unable to find (one) collection named "
-                    << inputHcalCollName_
-                    << "_" << input_hcal_passname_;
+                    << inputHcalCollName_ << "_" << input_hcal_passname_;
     return;
   }
   // get the track and clustering info
