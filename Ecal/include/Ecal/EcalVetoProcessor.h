@@ -150,15 +150,18 @@ class EcalVetoProcessor : public framework::Producer {
   float avgLayerHit_{0};
   float stdLayerHit_{0};
   float ecalBackEnergy_{0};
-  // MIP tracking
+  // MIP tracking (Keeping here for now for BDT variables)
   /// Number of "straight" tracks found in the event
-  int nStraightTracks_{0};
+  int n_straight_tracks_{0};
   /// Number of "linreg" tracks found in the event
-  int nLinregTracks_{0};
-  /// First ECal layer in which a hit is found near the photon
-  int firstNearPhLayer_{0};
+  int n_linreg_tracks_{0};
+  /// Earliest ECal layer in which a hit is found near the projected photon
+  /// trajectory
+  int first_near_ph_layer_{0};
   /// Number of hits near the photon trajectory
-  int nNearPhHits_{0};
+  int n_near_ph_hits_{0};
+  /// Number of hits in the photon territory
+  int photon_territory_hits_{0};
   /// Angular separation between the projected photon and electron trajectories
   /// as projected at ECAL
   float epAng_{0};

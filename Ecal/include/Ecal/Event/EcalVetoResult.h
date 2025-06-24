@@ -37,7 +37,8 @@ class EcalVetoResult {
   void setVariables(int nReadoutHits, int deepestLayerHit, float summedDet,
                     float summedTightIso, float maxCellDep, float showerRMS,
                     float xStd, float yStd, float avgLayerHit,
-                    float stdLayerHit, float ecalBackEnergy,
+                    float stdLayerHit, float ecalBackEnergy, float epAng, 
+                    float epAngAtTarget,float epSep, float epDot, float epDotAtTarget,
 
                     std::vector<float> electronContainmentEnergy,
                     std::vector<float> photonContainmentEnergy,
@@ -108,6 +109,16 @@ class EcalVetoResult {
   float getStdLayerHit() const { return stdLayerHit_; }
 
   float getEcalBackEnergy() const { return ecalBackEnergy_; }
+
+  float getEPAng() const { return epAng_; }
+
+  float getEPAngAtTarget() const { return epAngAtTarget_; }
+
+  float getEPSep() const { return epSep_; }
+
+  float getEPDot() const { return epDot_; }
+
+  float getEPDotAtTarget() const { return epDotAtTarget_; }
 
   const std::vector<float>& getElectronContainmentEnergy() const {
     return electronContainmentEnergy_;
@@ -304,9 +315,22 @@ class EcalVetoResult {
   /** y position of recoil electron at the Ecal face. */
   float recoilY_{-9999};
 
+  float epAng_{0};
+  /// Angular separation between the projected photon and electron trajectories
+  /// as projected at the target
+  float epAngAtTarget_{0};
+
+  /// Distance between the projected photon and electron trajectories at the
+  /// ECal face
+  float epSep_{0};
+  /// Dot product of the photon and electron momenta unit vectors as at ECAL
+  float epDot_{0};
+  /// Dot product of the photon and electron momenta unit vectors as at Target
+  float epDotAtTarget_{0};
+
   std::vector<float> ecalLayerEdepReadout_;
 
-  ClassDef(EcalVetoResult, 9);
+  ClassDef(EcalVetoResult, 10);
 };
 }  // namespace ldmx
 

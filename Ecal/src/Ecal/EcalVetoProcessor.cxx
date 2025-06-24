@@ -62,8 +62,8 @@ void EcalVetoProcessor::buildBDTFeatureVector(
   // bdtFeatures_.push_back(result.getFirstNearPhLayer());
   // bdtFeatures_.push_back(result.getNNearPhHits());
   // bdtFeatures_.push_back(result.getPhotonTerritoryHits());
-  // bdtFeatures_.push_back(result.getEPSep());
-  // bdtFeatures_.push_back(result.getEPDot());
+  bdtFeatures_.push_back(result.getEPSep());
+  bdtFeatures_.push_back(result.getEPDot());
   // Longitudinal segment variables
   bdtFeatures_.push_back(result.getEnergySeg()[0]);
   bdtFeatures_.push_back(result.getXMeanSeg()[0]);
@@ -172,6 +172,11 @@ void EcalVetoProcessor::clearProcessor() {
   stdLayerHit_ = 0;
   deepestLayerHit_ = 0;
   ecalBackEnergy_ = 0;  
+  epAng_ = 0;
+  epAngAtTarget_ = 0;
+  epSep_ = 0;
+  epDot_ = 0;
+  epDotAtTarget_ = 0;
 
   std::fill(ecalLayerEdepRaw_.begin(), ecalLayerEdepRaw_.end(), 0);
   std::fill(ecalLayerEdepReadout_.begin(), ecalLayerEdepReadout_.end(), 0);
@@ -791,8 +796,72 @@ void EcalVetoProcessor::produce(framework::Event &event) {
 
   ldmx_log(info) << "   Is this event is fiducial in ECAL? "
                  << inside_ecal_cell;
+  TVector3 e_traj_start;
+  TVector3 e_traj_end;
+  TVector3 e_traj_target_start;
+  TVector3 e_traj_target_end;
+  TVector3 p_traj_start;
+  TVector3 p_traj_end;
+  if (!ele_trajectory.empty() && !photon_trajectory.empty()) {
+    // Create TVector3s marking the start and endpoints of each projected
+    // trajectory
+    e_traj_start.SetXYZ(ele_trajectory[0].first, ele_trajectory[0].second,
+                        geometry_->getZPosition(0));
+    e_traj_end.SetXYZ(ele_trajectory[(nEcalLayers_ - 1)].first,
+                      ele_trajectory[(nEcalLayers_ - 1)].second,
+                      geometry_->getZPosition((nEcalLayers_ - 1)));
+    p_traj_start.SetXYZ(photon_trajectory[0].first, photon_trajectory[0].second,
+                        geometry_->getZPosition(0));
+    p_traj_end.SetXYZ(photon_trajectory[(nEcalLayers_ - 1)].first,
+                      photon_trajectory[(nEcalLayers_ - 1)].second,
+                      geometry_->getZPosition((nEcalLayers_ - 1)));
 
-  // Took out MIP tracking here
+    TVector3 evec = e_traj_end - e_traj_start;
+    TVector3 e_norm = evec.Unit();
+    TVector3 pvec = p_traj_end - p_traj_start;
+    TVector3 p_norm = pvec.Unit();
+
+    // Calculate the angle between the projected electron at Ecal and the photon
+    // (at target)
+    epDot_ = e_norm.Dot(p_norm);
+    epAng_ = acos(epDot_) * 180.0 / M_PI;
+    epSep_ = sqrt(pow(e_traj_start.X() - p_traj_start.X(), 2) +
+                  pow(e_traj_start.Y() - p_traj_start.Y(), 2));
+    // Calculate the electron trajectory with positions and momentum as measured
+    // at the target
+    if (!ele_trajectory_at_target.empty()) {
+      e_traj_target_start.SetXYZ(ele_trajectory_at_target[0].first,
+                                 ele_trajectory_at_target[0].second,
+                                 geometry_->getZPosition(0));
+      e_traj_target_end.SetXYZ(ele_trajectory_at_target[(0)].first,
+                               ele_trajectory_at_target[(0)].second,
+                               geometry_->getZPosition((nEcalLayers_ - 1)));
+      // Now calculate the ep angle at the target
+      TVector3 evec_target = e_traj_target_end - e_traj_target_start;
+      TVector3 e_norm_target = evec_target.Unit();
+      epDotAtTarget_ = e_norm_target.Dot(p_norm);
+      epAngAtTarget_ = acos(epDotAtTarget_) * 180.0 / M_PI;
+    }
+    ldmx_log(trace) << "   Electron trajectory calculated";
+  } else {
+    // Electron trajectory is missing, so all hits in the Ecal are fair game.
+    // Pick e/ptraj so that they won't restrict the tracking algorithm (place
+    // them far outside the ECal).
+    ldmx_log(trace) << "   Electron trajectory is missing";
+    e_traj_start = TVector3(999, 999, geometry_->getZPosition(0));
+    e_traj_end =
+        TVector3(999, 999, geometry_->getZPosition((nEcalLayers_ - 1)));
+    p_traj_start = TVector3(1000, 1000, geometry_->getZPosition(0));
+    p_traj_end =
+        TVector3(1000, 1000, geometry_->getZPosition((nEcalLayers_ - 1)));
+    /*ensures event will not be vetoed by angle/separation cut */
+    epAng_ = 999.;
+    epAngAtTarget_ = 999.;
+    epSep_ = 999.;
+    epDot_ = 999.;
+    epDotAtTarget_ = 999.;
+  }
+  // Took out MIP tracking here (starting at near photon hits)
   ldmx::EcalTrajectoryInfo ecal_mip_collection;
   ldmx_log(trace) << "   Set up input info  for MIP tracking";
   ecal_mip_collection.setEleTrajectory(ele_trajectory);
@@ -806,7 +875,8 @@ void EcalVetoProcessor::produce(framework::Event &event) {
           .count();
   result.setVariables(
       nReadoutHits_, deepestLayerHit_, summedDet_, summedTightIso_, maxCellDep_,
-      showerRMS_, xStd_, yStd_, avgLayerHit_, stdLayerHit_, ecalBackEnergy_,
+      showerRMS_, xStd_, yStd_, avgLayerHit_, stdLayerHit_, ecalBackEnergy_, 
+      epAng_, epAngAtTarget_, epSep_, epDot_, epDotAtTarget_,
       electronContainmentEnergy, photonContainmentEnergy,
       outsideContainmentEnergy, outsideContainmentNHits, outsideContainmentXstd,
       outsideContainmentYstd, energySeg, xMeanSeg, yMeanSeg, xStdSeg, yStdSeg,
@@ -820,14 +890,14 @@ void EcalVetoProcessor::produce(framework::Event &event) {
                                          set_variables - mip_tracking_setup)
                                          .count();
 
-  buildBDTFeatureVector(result); // Problematic???
+  buildBDTFeatureVector(result);
   ldmx::Ort::FloatArrays inputs({bdtFeatures_});
   float pred = rt_->run({featureListName_}, inputs, {"probabilities"})[0].at(1);
   ldmx_log(info) << " BDT was ran, score is " << pred;
   // Other considerations were (nLinregTracks_ == 0)  && (firstNearPhLayer_ >=
   // 6)
   // && (epAng_ > 3.0 && epAng_ < 900 || epSep_ > 10.0 && epSep_ < 900)
-  bool passesTrackingVeto = (nStraightTracks_ < 3);
+  bool passesTrackingVeto = (n_straight_tracks_ < 3);
   result.setVetoResult(pred > bdtCutVal_ && passesTrackingVeto);
   result.setDiscValue(pred);
   ldmx_log(info) << " The pred > bdtCutVal = " << (pred > bdtCutVal_)

@@ -22,6 +22,11 @@ void EcalVetoResult::Clear() {
   stdLayerHit_ = 0;
   deepestLayerHit_ = 0;
   ecalBackEnergy_ = 0;
+  epAng_ = 0;
+  epAngAtTarget_ = 0;
+  epSep_ = 0;
+  epDot_ = 0;
+  epDotAtTarget_ = 0;
 
   electronContainmentEnergy_.clear();
   photonContainmentEnergy_.clear();
@@ -69,6 +74,7 @@ void EcalVetoResult::setVariables(
     int nReadoutHits, int deepestLayerHit, float summedDet,
     float summedTightIso, float maxCellDep, float showerRMS, float xStd,
     float yStd, float avgLayerHit, float stdLayerHit, float ecalBackEnergy,
+    float epAng, float epAngAtTarget, float epSep, float epDot, float epDotAtTarget,
 
     std::vector<float> electronContainmentEnergy,
     std::vector<float> photonContainmentEnergy,
@@ -111,6 +117,11 @@ void EcalVetoResult::setVariables(
   stdLayerHit_ = stdLayerHit;
   deepestLayerHit_ = deepestLayerHit;
   ecalBackEnergy_ = ecalBackEnergy;
+  epAng_ = epAng;
+  epAngAtTarget_ = epAngAtTarget;
+  epSep_ = epSep;
+  epDot_ = epDot;
+  epDotAtTarget_ = epDotAtTarget;
 
   electronContainmentEnergy_ = electronContainmentEnergy;
   photonContainmentEnergy_ = photonContainmentEnergy;

@@ -24,8 +24,8 @@ void EcalMipTrackingFeatures::analyze(const framework::Event &event) {
   histograms_.fill("n_straight_tracks", mip_result.getNStraightTracks());
   histograms_.fill("n_linreg_segments", mip_result.getNLinRegTracks());
   histograms_.fill("first_near_photon_layer", mip_result.getFirstNearPhLayer());
-  histograms_.fill("ep_ang", mip_result.getEPAng());
-  histograms_.fill("ep_sep", mip_result.getEPSep());
+  histograms_.fill("ep_ang", veto.getEPAng());
+  histograms_.fill("ep_sep", veto.getEPSep());
   auto recoil_mom = veto.getRecoilMomentum();
   histograms_.fill("recoil_pz", recoil_mom[2]);
   histograms_.fill("recoil_pt", std::sqrt(recoil_mom[0] * recoil_mom[0] +
