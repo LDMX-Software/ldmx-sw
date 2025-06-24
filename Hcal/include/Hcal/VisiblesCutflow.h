@@ -26,6 +26,7 @@ namespace hcal {
     std::string featureListName_;
 
     double beamEnergyMeV_{0.};
+    bool isEaT_{false};
 
     std::string hcal_rec_collection_;
     std::string hcal_rec_pass_name_;
