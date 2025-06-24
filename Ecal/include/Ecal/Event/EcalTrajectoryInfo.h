@@ -1,5 +1,5 @@
 /**
- * @file EcalMipCollection.h
+ * @file EcalTrajectoryInfo.h
  * @brief Class that determines MIP tracking information using ECAL hit
  * information
  * @author Jihoon Yoo, Tamas Vami (UCSB)
@@ -33,13 +33,13 @@ struct HitData {
   TVector3 pos;
 };
 
-class EcalMipCollection {
+class EcalTrajectoryInfo {
  public:
   /** Constructor */
-  EcalMipCollection() = default;
+  EcalTrajectoryInfo() = default;
 
   /** Destructor */
-  virtual ~EcalMipCollection() = default;
+  virtual ~EcalTrajectoryInfo() = default;
 
   /**
    * Print the string representation of this object.
@@ -75,8 +75,8 @@ class EcalMipCollection {
   std::vector<XYCoords> photon_trajectory_;
   std::vector<HitData> tracking_hit_list_;
 
-  ClassDef(EcalMipCollection, 1);
-};  // EcalMipCollection
+  ClassDef(EcalTrajectoryInfo, 1);
+};  // EcalTrajectoryInfo
 
 }  // namespace ldmx
 

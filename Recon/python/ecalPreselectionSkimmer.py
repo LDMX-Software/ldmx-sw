@@ -55,6 +55,8 @@ class EcalPreselectionSkimmer(ldmxcfg.Producer) :
 
         self.ecal_veto_name = "EcalVeto"
         self.ecal_veto_pass = ""
+        self.ecal_mip_name = 'EcalMipInfo'
+        self.ecal_mip_pass = ''
         self.summed_det_max = 9999.
         self.summed_tight_iso_max = 9999.
         self.ecal_back_energy_max = 9999.

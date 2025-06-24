@@ -1,0 +1,8 @@
+denv_name="ldmx-sw-1306-new"
+denv_image="ldmx/dev:latest"
+denv_shell="/bin/bash -i"
+denv_mounts=""
+denv_env_var_copy_all="true"
+denv_env_var_copy=""
+denv_env_var_set=""
+denv_network="true"

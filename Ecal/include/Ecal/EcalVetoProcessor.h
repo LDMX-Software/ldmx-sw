@@ -18,7 +18,7 @@
 #include "Tools/ONNXRuntime.h"
 
 // ROOT (MIP tracking)
-#include "Ecal/Event/EcalMipCollection.h"
+#include "Ecal/Event/EcalTrajectoryInfo.h"
 
 // For recoil tracking
 #include "Tracking/Event/Track.h"

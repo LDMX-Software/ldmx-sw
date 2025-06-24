@@ -22,17 +22,6 @@ void EcalVetoResult::Clear() {
   stdLayerHit_ = 0;
   deepestLayerHit_ = 0;
   ecalBackEnergy_ = 0;
-  // MIP tracking
-  nStraightTracks_ = 0;
-  nLinregTracks_ = 0;
-  firstNearPhLayer_ = 0;
-  nNearPhHits_ = 0;
-  photonTerritoryHits_ = 0;
-  epAng_ = 0;
-  epAngAtTarget_ = 0;
-  epSep_ = 0;
-  epDot_ = 0;
-  epDotAtTarget_ = 0;
 
   electronContainmentEnergy_.clear();
   photonContainmentEnergy_.clear();
@@ -80,9 +69,6 @@ void EcalVetoResult::setVariables(
     int nReadoutHits, int deepestLayerHit, float summedDet,
     float summedTightIso, float maxCellDep, float showerRMS, float xStd,
     float yStd, float avgLayerHit, float stdLayerHit, float ecalBackEnergy,
-    int nStraightTracks, int nLinregTracks, int firstNearPhLayer,
-    int nNearPhHits, int photonTerritoryHits, float epAng, float epAngAtTarget,
-    float epSep, float epDot, float epDotAtTarget,
 
     std::vector<float> electronContainmentEnergy,
     std::vector<float> photonContainmentEnergy,
@@ -125,17 +111,6 @@ void EcalVetoResult::setVariables(
   stdLayerHit_ = stdLayerHit;
   deepestLayerHit_ = deepestLayerHit;
   ecalBackEnergy_ = ecalBackEnergy;
-  // MIP tracking
-  nStraightTracks_ = nStraightTracks;
-  nLinregTracks_ = nLinregTracks;
-  firstNearPhLayer_ = firstNearPhLayer;
-  nNearPhHits_ = nNearPhHits;
-  photonTerritoryHits_ = photonTerritoryHits;
-  epAng_ = epAng;
-  epAngAtTarget_ = epAngAtTarget;
-  epSep_ = epSep;
-  epDot_ = epDot;
-  epDotAtTarget_ = epDotAtTarget;
 
   electronContainmentEnergy_ = electronContainmentEnergy;
   photonContainmentEnergy_ = photonContainmentEnergy;

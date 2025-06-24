@@ -1,5 +1,5 @@
 #include "Ecal/EcalMipTrackingProcessor.h"
-#
+
 namespace ecal {
 
 void EcalMipTrackingProcessor::onNewRun(const ldmx::RunHeader &rh) {
@@ -15,6 +15,8 @@ void EcalMipTrackingProcessor::configure(
   mip_collection_name_ =
       parameters.getParameter<std::string>("mip_collection_name");
   mip_pass_name_ = parameters.getParameter<std::string>("mip_pass_name");
+  mip_result_name_ = 
+      parameters.getParameter<std::string>("mip_result_name");
 }
 
 void EcalMipTrackingProcessor::clearProcessor() {
@@ -24,14 +26,18 @@ void EcalMipTrackingProcessor::clearProcessor() {
   firstNearPhLayer_ = 0;
   nNearPhHits_ = 0;
   epAng_ = 0;
+  epAngAtTarget_ = 0;
   epSep_ = 0;
   epDot_ = 0;
+  epDotAtTarget_ = 0;
   photonTerritoryHits_ = 0;
 }
 
 void EcalMipTrackingProcessor::produce(framework::Event &event) {
   auto start = std::chrono::high_resolution_clock::now();
 
+
+  ldmx::EcalMipResult mip_result;
   clearProcessor();
 
   // Get the Ecal Geometry
@@ -40,15 +46,14 @@ void EcalMipTrackingProcessor::produce(framework::Event &event) {
 
   // Read in hits near photon from EcalVetoProcessor
 
-  auto ecal_mip_collection = event.getObject<ldmx::EcalMipCollection>(
+  auto ecal_trajectory_info = event.getObject<ldmx::EcalTrajectoryInfo>(
       mip_collection_name_, mip_pass_name_);
-  std::vector<XYCoords> ele_trajectory;
-  std::vector<XYCoords> photon_trajectory;
+  std::vector<XYCoords> ele_trajectory, photon_trajectory, ele_trajectory_at_target;
   std::vector<ldmx::HitData> trackingHitList;
   ldmx_log(trace) << "EcalMipTrackingProcessor::produce() called";
-  ele_trajectory = ecal_mip_collection.getEleTrajectory();
-  photon_trajectory = ecal_mip_collection.getPhotonTrajectory();
-  trackingHitList = ecal_mip_collection.getTrackingHitList();
+  ele_trajectory = ecal_trajectory_info.getEleTrajectory();
+  photon_trajectory = ecal_trajectory_info.getPhotonTrajectory();
+  trackingHitList = ecal_trajectory_info.getTrackingHitList();
   nevents_++;
   // Now inputting Lines 753-1178 of the original EcalVetoProcessor
   // ------------------------------------------------------
@@ -62,6 +67,8 @@ void EcalMipTrackingProcessor::produce(framework::Event &event) {
   // Find epAng and epSep, and prepare EP trajectory vectors:
   TVector3 e_traj_start;
   TVector3 e_traj_end;
+  TVector3 e_traj_target_start;
+  TVector3 e_traj_target_end;
   TVector3 p_traj_start;
   TVector3 p_traj_end;
   ldmx_log(trace) << "Calculating epAng and epSep";
@@ -85,26 +92,46 @@ void EcalMipTrackingProcessor::produce(framework::Event &event) {
     TVector3 e_norm = evec.Unit();
     TVector3 pvec = p_traj_end - p_traj_start;
     TVector3 p_norm = pvec.Unit();
+
+    // Calculate the angle between the projected electron at Ecal and the photon
+    // (at target)
     epDot_ = e_norm.Dot(p_norm);
     epAng_ = acos(epDot_) * 180.0 / M_PI;
     epSep_ = sqrt(pow(e_traj_start.X() - p_traj_start.X(), 2) +
                   pow(e_traj_start.Y() - p_traj_start.Y(), 2));
-    ldmx_log(trace) << epAng_ << " degrees between electron and photon "
-                    << "trajectories, with separation of " << epSep_ << " mm";
+    // Calculate the electron trajectory with positions and momentum as measured
+    // at the target
+    if (!ele_trajectory_at_target.empty()) {
+      e_traj_target_start.SetXYZ(ele_trajectory_at_target[0].first,
+                                 ele_trajectory_at_target[0].second,
+                                 geometry_->getZPosition(0));
+      e_traj_target_end.SetXYZ(ele_trajectory_at_target[(0)].first,
+                               ele_trajectory_at_target[(0)].second,
+                               geometry_->getZPosition((nEcalLayers_ - 1)));
+      // Now calculate the ep angle at the target
+      TVector3 evec_target = e_traj_target_end - e_traj_target_start;
+      TVector3 e_norm_target = evec_target.Unit();
+      epDotAtTarget_ = e_norm_target.Dot(p_norm);
+      epAngAtTarget_ = acos(epDotAtTarget_) * 180.0 / M_PI;
+    }
+    ldmx_log(trace) << "   Electron trajectory calculated";
   } else {
     // Electron trajectory is missing, so all hits in the Ecal are fair game.
     // Pick e/ptraj so that they won't restrict the tracking algorithm (place
     // them far outside the ECal).
-    e_traj_start = TVector3(999, 999, geometry_->getZPosition(0));  // 0);
-    e_traj_end = TVector3(
-        999, 999, geometry_->getZPosition((nEcalLayers_ - 1)));       // 999);
-    p_traj_start = TVector3(1000, 1000, geometry_->getZPosition(0));  // 0);
-    p_traj_end = TVector3(
-        1000, 1000, geometry_->getZPosition((nEcalLayers_ - 1)));  // 1000);
+    ldmx_log(trace) << "   Electron trajectory is missing";
+    e_traj_start = TVector3(999, 999, geometry_->getZPosition(0));
+    e_traj_end =
+        TVector3(999, 999, geometry_->getZPosition((nEcalLayers_ - 1)));
+    p_traj_start = TVector3(1000, 1000, geometry_->getZPosition(0));
+    p_traj_end =
+        TVector3(1000, 1000, geometry_->getZPosition((nEcalLayers_ - 1)));
     /*ensures event will not be vetoed by angle/separation cut */
     epAng_ = 999.;
+    epAngAtTarget_ = 999.;
     epSep_ = 999.;
     epDot_ = 999.;
+    epDotAtTarget_ = 999.;
   }
 
   // Near photon step:  Find the first layer of the ECal where a hit near the
@@ -479,6 +506,13 @@ void EcalMipTrackingProcessor::produce(framework::Event &event) {
   profiling_map_["linreg_tracks"] +=
       std::chrono::duration<double, std::milli>(linreg_tracks - straight_tracks)
           .count();
+
+
+  mip_result.setVariables(nStraightTracks_, nLinregTracks_, firstNearPhLayer_,
+  nNearPhHits_, photonTerritoryHits_, epAng_, epAngAtTarget_,
+    epSep_, epDot_, epDotAtTarget_);
+
+  event.add(mip_result_name_, mip_result);
 
   auto end = std::chrono::high_resolution_clock::now();
   auto time_diff = end - start;

@@ -4,7 +4,7 @@
 #include "DetDescr/EcalGeometry.h"
 #include "DetDescr/SimSpecialID.h"
 #include "Ecal/Event/EcalHit.h"
-#include "Ecal/Event/EcalMipCollection.h"
+#include "Ecal/Event/EcalTrajectoryInfo.h"
 #include "Recon/Event/EventConstants.h"
 #include "SimCore/Event/SimParticle.h"
 #include "SimCore/Event/SimTrackerHit.h"
@@ -59,11 +59,11 @@ void EcalVetoProcessor::buildBDTFeatureVector(
   bdtFeatures_.push_back(-1.);
   // bdtFeatures_.push_back(result.getNStraightTracks());
   // bdtFeatures_.push_back(result.getNLinregTracks());
-  bdtFeatures_.push_back(result.getFirstNearPhLayer());
-  bdtFeatures_.push_back(result.getNNearPhHits());
-  bdtFeatures_.push_back(result.getPhotonTerritoryHits());
-  bdtFeatures_.push_back(result.getEPSep());
-  bdtFeatures_.push_back(result.getEPDot());
+  // bdtFeatures_.push_back(result.getFirstNearPhLayer());
+  // bdtFeatures_.push_back(result.getNNearPhHits());
+  // bdtFeatures_.push_back(result.getPhotonTerritoryHits());
+  // bdtFeatures_.push_back(result.getEPSep());
+  // bdtFeatures_.push_back(result.getEPDot());
   // Longitudinal segment variables
   bdtFeatures_.push_back(result.getEnergySeg()[0]);
   bdtFeatures_.push_back(result.getXMeanSeg()[0]);
@@ -171,18 +171,7 @@ void EcalVetoProcessor::clearProcessor() {
   avgLayerHit_ = 0;
   stdLayerHit_ = 0;
   deepestLayerHit_ = 0;
-  ecalBackEnergy_ = 0;
-  // MIP tracking
-  nStraightTracks_ = 0;
-  nLinregTracks_ = 0;
-  firstNearPhLayer_ = 0;
-  nNearPhHits_ = 0;
-  epAng_ = 0;
-  epAngAtTarget_ = 0;
-  epSep_ = 0;
-  epDot_ = 0;
-  epDotAtTarget_ = 0;
-  photonTerritoryHits_ = 0;
+  ecalBackEnergy_ = 0;  
 
   std::fill(ecalLayerEdepRaw_.begin(), ecalLayerEdepRaw_.end(), 0);
   std::fill(ecalLayerEdepReadout_.begin(), ecalLayerEdepReadout_.end(), 0);
@@ -804,12 +793,12 @@ void EcalVetoProcessor::produce(framework::Event &event) {
                  << inside_ecal_cell;
 
   // Took out MIP tracking here
-  ldmx::EcalMipCollection ecal_mip_collection;
+  ldmx::EcalTrajectoryInfo ecal_mip_collection;
   ldmx_log(trace) << "   Set up input info  for MIP tracking";
   ecal_mip_collection.setEleTrajectory(ele_trajectory);
   ecal_mip_collection.setPhotonTrajectory(photon_trajectory);
   ecal_mip_collection.setTrackingHitList(trackingHitList);
-  event.add("EcalMipCollection", ecal_mip_collection);
+  event.add("EcalTrajectoryInfo", ecal_mip_collection);
 
   auto mip_tracking_setup = std::chrono::high_resolution_clock::now();
   profiling_map_["mip_tracking_setup"] +=
@@ -818,9 +807,7 @@ void EcalVetoProcessor::produce(framework::Event &event) {
   result.setVariables(
       nReadoutHits_, deepestLayerHit_, summedDet_, summedTightIso_, maxCellDep_,
       showerRMS_, xStd_, yStd_, avgLayerHit_, stdLayerHit_, ecalBackEnergy_,
-      nStraightTracks_, nLinregTracks_, firstNearPhLayer_, nNearPhHits_,
-      photonTerritoryHits_, epAng_, epAngAtTarget_, epSep_, epDot_,
-      epDotAtTarget_, electronContainmentEnergy, photonContainmentEnergy,
+      electronContainmentEnergy, photonContainmentEnergy,
       outsideContainmentEnergy, outsideContainmentNHits, outsideContainmentXstd,
       outsideContainmentYstd, energySeg, xMeanSeg, yMeanSeg, xStdSeg, yStdSeg,
       layerMeanSeg, layerStdSeg, eContEnergy, eContXMean, eContYMean,
@@ -833,7 +820,7 @@ void EcalVetoProcessor::produce(framework::Event &event) {
                                          set_variables - mip_tracking_setup)
                                          .count();
 
-  buildBDTFeatureVector(result);
+  buildBDTFeatureVector(result); // Problematic???
   ldmx::Ort::FloatArrays inputs({bdtFeatures_});
   float pred = rt_->run({featureListName_}, inputs, {"probabilities"})[0].at(1);
   ldmx_log(info) << " BDT was ran, score is " << pred;

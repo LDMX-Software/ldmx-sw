@@ -48,8 +48,9 @@ class EcalMipProcessor(ldmxcfg.Producer) :
 
         self.num_ecal_layers = 34
         self.linreg_radius = 35.0 # in mm
-        self.mip_collection_name = "EcalMipCollection"
+        self.mip_collection_name = "EcalTrajectoryInfo"
         self.mip_pass_name = ""
+        self.mip_result_name = "EcalMipInfo"
 
 class DNNEcalVetoProcessor(ldmxcfg.Producer) :
     """Configuration for DNN Ecal Veto

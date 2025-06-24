@@ -12,8 +12,9 @@
 #include "DetDescr/EcalGeometry.h"
 #include "DetDescr/EcalID.h"
 #include "Ecal/Event/EcalHit.h"
-#include "Ecal/Event/EcalMipCollection.h"
+#include "Ecal/Event/EcalTrajectoryInfo.h"
 // #include "Ecal/Event/EcalVetoResult.h"
+#include "Ecal/Event/EcalMipResult.h"
 #include "DetDescr/SimSpecialID.h"
 #include "Framework/Configure/Parameters.h"
 #include "Framework/EventProcessor.h"
@@ -140,16 +141,22 @@ class EcalMipTrackingProcessor : public framework::Producer {
   /// Angular separation between the projected photon and electron trajectories
   /// (currently unused)
   float epAng_{0};
+  /// Angular separation between the projected photon and electron trajectories
+  /// as at Target
+  float epAngAtTarget_{0};
   /// Distance between the projected photon and electron trajectories at the
   /// ECal face
   float epSep_{0};
   /// Dot product of the photon and electron momenta unit vectors
   float epDot_{0};
+  /// Dot product of the photon and electron momenta unit vectors at Target
+  float epDotAtTarget_{0};
   /// Number of hits in the photon territory
   int photonTerritoryHits_{0};
 
-  std::string mip_collection_name_{"EcalMipCollection"};
+  std::string mip_collection_name_{"EcalTrajectoryInfo"};
   std::string mip_pass_name_{""};
+  std::string mip_result_name_{"EcalMipResult"};
 
   /// handle to current geometry (to share with member functions)
   const ldmx::EcalGeometry* geometry_;
