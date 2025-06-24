@@ -17,7 +17,8 @@ void ParticleFlow::configure(framework::config::Parameters& ps) {
 
   // Algorithm configuration
   singleParticle_ = ps.getParameter<bool>("singleParticle");
-  use_existing_ecal_clusters_ = ps.getParameter<bool>("use_existing_ecal_clusters");
+  use_existing_ecal_clusters_ =
+      ps.getParameter<bool>("use_existing_ecal_clusters");
 
   // Calibration factors, from jason, temperary
   std::vector<float> em1{250.0,  750.0,  1250.0, 1750.0, 2250.0, 2750.0,
@@ -84,7 +85,7 @@ void ParticleFlow::fillCandHadCalo(ldmx::PFCandidate& cand,
                                    const ldmx::CaloCluster& had) {
   float corr = 1.;
   float energy = had.getEnergy();
-  if (energy< hCorr_->GetX()[0]) {
+  if (energy < hCorr_->GetX()[0]) {
     corr = hCorr_->GetY()[0];
   } else if (energy > hCorr_->GetX()[hCorr_->GetN() - 1]) {
     corr = hCorr_->GetY()[hCorr_->GetN() - 1];
@@ -455,7 +456,8 @@ const std::vector<ldmx::CaloCluster> ParticleFlow::getEcalClusters(
     newClusters.emplace_back(cl);
   }
   event.add(newName, newClusters);
-  const auto calo_clusters = event.getCollection<ldmx::CaloCluster>(newName, "");
+  const auto calo_clusters =
+      event.getCollection<ldmx::CaloCluster>(newName, "");
   return calo_clusters;
 }
 
