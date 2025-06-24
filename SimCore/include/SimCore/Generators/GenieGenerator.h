@@ -27,7 +27,7 @@
 //------------//
 #include "Framework/Logger.h"
 #include "SimCore/Generators/PrimaryGenerator.h"
-#include "SimCore/UserEventInformation.h"
+#include "SimCore/G4User/UserEventInformation.h"
 
 // Forward declarations
 class G4Event;

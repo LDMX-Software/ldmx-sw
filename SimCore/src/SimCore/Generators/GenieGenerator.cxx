@@ -6,7 +6,7 @@
 
 #include "SimCore/Generators/GenieGenerator.h"
 
-#include "SimCore/UserPrimaryParticleInformation.h"
+#include "SimCore/G4USer/UserPrimaryParticleInformation.h"
 
 // GENIE
 #include "Framework/Conventions/Controls.h"
