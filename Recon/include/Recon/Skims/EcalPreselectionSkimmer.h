@@ -10,8 +10,8 @@
 //----------//
 //   LDMX   //
 //----------//
-#include "Ecal/Event/EcalVetoResult.h"
 #include "Ecal/Event/EcalMipResult.h"
+#include "Ecal/Event/EcalVetoResult.h"
 #include "Framework/EventProcessor.h"
 
 namespace recon {

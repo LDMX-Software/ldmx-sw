@@ -32,7 +32,7 @@ class EcalMipTrackingFeatures : public framework::Analyzer {
   virtual void analyze(const framework::Event& event);
 
  private:
- /// Collection Name for veto object
+  /// Collection Name for veto object
   std::string ecal_veto_name_;
 
   /// Pass Name for veto object

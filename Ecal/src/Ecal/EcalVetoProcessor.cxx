@@ -171,7 +171,7 @@ void EcalVetoProcessor::clearProcessor() {
   avgLayerHit_ = 0;
   stdLayerHit_ = 0;
   deepestLayerHit_ = 0;
-  ecalBackEnergy_ = 0;  
+  ecalBackEnergy_ = 0;
   epAng_ = 0;
   epAngAtTarget_ = 0;
   epSep_ = 0;
@@ -875,7 +875,7 @@ void EcalVetoProcessor::produce(framework::Event &event) {
           .count();
   result.setVariables(
       nReadoutHits_, deepestLayerHit_, summedDet_, summedTightIso_, maxCellDep_,
-      showerRMS_, xStd_, yStd_, avgLayerHit_, stdLayerHit_, ecalBackEnergy_, 
+      showerRMS_, xStd_, yStd_, avgLayerHit_, stdLayerHit_, ecalBackEnergy_,
       epAng_, epAngAtTarget_, epSep_, epDot_, epDotAtTarget_,
       electronContainmentEnergy, photonContainmentEnergy,
       outsideContainmentEnergy, outsideContainmentNHits, outsideContainmentXstd,

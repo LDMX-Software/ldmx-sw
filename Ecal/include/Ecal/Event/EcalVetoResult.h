@@ -37,8 +37,9 @@ class EcalVetoResult {
   void setVariables(int nReadoutHits, int deepestLayerHit, float summedDet,
                     float summedTightIso, float maxCellDep, float showerRMS,
                     float xStd, float yStd, float avgLayerHit,
-                    float stdLayerHit, float ecalBackEnergy, float epAng, 
-                    float epAngAtTarget,float epSep, float epDot, float epDotAtTarget,
+                    float stdLayerHit, float ecalBackEnergy, float epAng,
+                    float epAngAtTarget, float epSep, float epDot,
+                    float epDotAtTarget,
 
                     std::vector<float> electronContainmentEnergy,
                     std::vector<float> photonContainmentEnergy,
@@ -241,7 +242,6 @@ class EcalVetoResult {
 
   /** Return the y position of the recoil at the Ecal face. */
   float getRecoilY() const { return recoilY_; };
-
 
  private:
   /** Flag indicating whether the event is vetoed by the Ecal. */

@@ -15,8 +15,7 @@ void EcalMipTrackingProcessor::configure(
   mip_collection_name_ =
       parameters.getParameter<std::string>("mip_collection_name");
   mip_pass_name_ = parameters.getParameter<std::string>("mip_pass_name");
-  mip_result_name_ = 
-      parameters.getParameter<std::string>("mip_result_name");
+  mip_result_name_ = parameters.getParameter<std::string>("mip_result_name");
 }
 
 void EcalMipTrackingProcessor::clearProcessor() {
@@ -31,7 +30,6 @@ void EcalMipTrackingProcessor::clearProcessor() {
 void EcalMipTrackingProcessor::produce(framework::Event &event) {
   auto start = std::chrono::high_resolution_clock::now();
 
-
   ldmx::EcalMipResult mip_result;
   clearProcessor();
 
@@ -43,7 +41,8 @@ void EcalMipTrackingProcessor::produce(framework::Event &event) {
 
   auto ecal_trajectory_info = event.getObject<ldmx::EcalTrajectoryInfo>(
       mip_collection_name_, mip_pass_name_);
-  std::vector<XYCoords> ele_trajectory, photon_trajectory, ele_trajectory_at_target;
+  std::vector<XYCoords> ele_trajectory, photon_trajectory,
+      ele_trajectory_at_target;
   std::vector<ldmx::HitData> trackingHitList;
   ldmx_log(trace) << "EcalMipTrackingProcessor::produce() called";
   ele_trajectory = ecal_trajectory_info.getEleTrajectory();
@@ -66,7 +65,6 @@ void EcalMipTrackingProcessor::produce(framework::Event &event) {
   TVector3 e_traj_target_end;
   TVector3 p_traj_start;
   TVector3 p_traj_end;
-  
 
   // Near photon step:  Find the first layer of the ECal where a hit near the
   // projected photon trajectory is found Currently unusued pending further
@@ -441,9 +439,9 @@ void EcalMipTrackingProcessor::produce(framework::Event &event) {
       std::chrono::duration<double, std::milli>(linreg_tracks - straight_tracks)
           .count();
 
-
-  mip_result.setVariables(n_straight_tracks_, n_linreg_tracks_, first_near_ph_layer_,
-  n_near_ph_hits_, photon_territory_hits_);
+  mip_result.setVariables(n_straight_tracks_, n_linreg_tracks_,
+                          first_near_ph_layer_, n_near_ph_hits_,
+                          photon_territory_hits_);
 
   event.add(mip_result_name_, mip_result);
 
