@@ -26,8 +26,8 @@
 //   LDMX     //
 //------------//
 #include "Framework/Logger.h"
-#include "SimCore/Generators/PrimaryGenerator.h"
 #include "SimCore/G4User/UserEventInformation.h"
+#include "SimCore/Generators/PrimaryGenerator.h"
 
 // Forward declarations
 class G4Event;
