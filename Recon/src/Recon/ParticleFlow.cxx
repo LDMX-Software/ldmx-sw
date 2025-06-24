@@ -90,7 +90,7 @@ void ParticleFlow::fillCandHadCalo(ldmx::PFCandidate& cand,
   } else if (energy > hCorr_->GetX()[hCorr_->GetN() - 1]) {
     corr = hCorr_->GetY()[hCorr_->GetN() - 1];
   } else {
-    corr = hCorr_->Eval(e);
+    corr = hCorr_->Eval(energy);
   }
   cand.setHcalEnergy(energy * corr);
   cand.setHcalRawEnergy(energy);
@@ -116,7 +116,7 @@ void ParticleFlow::fillCandCalo(ldmx::PFCandidate& cand,
   } else if (energy > gResponse_->GetX()[gResponse_->GetN() - 1]) {
     corr = gResponse_->GetY()[gResponse_->GetN() - 1];
   } else {  // else look up calibration factor
-    corr = gResponse_->Eval(e);
+    corr = gResponse_->Eval(energy);
   }
   cand.setEcalEnergy(energy * corr);
   cand.setEcalRawEnergy(energy);
