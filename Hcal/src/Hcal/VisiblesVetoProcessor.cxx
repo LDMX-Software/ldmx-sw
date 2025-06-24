@@ -45,11 +45,15 @@ namespace hcal {
     collectionName_ = parameters.getParameter<std::string>("collection_name");
     rec_pass_name_ = parameters.getParameter<std::string>("rec_pass_name");
     rec_coll_name_ = parameters.getParameter<std::string>("rec_coll_name");
+
     recoil_from_tracking_ = parameters.getParameter<bool>("recoil_from_tracking");
-    track_pass_name_ = parameters.getParameter<std::string>("track_pass_name");
     track_collection_ = parameters.getParameter<std::string>("track_collection");
-    sp_coll_name_ = parameters.getParameter<std::string>("sp_coll_name");
+    track_pass_name_ = parameters.getParameter<std::string>("track_pass_name");
+
+    sp_collection_ = parameters.getParameter<std::string>("sp_coll_name");
     sp_pass_name_ = parameters.getParameter<std::string>("sp_pass_name");
+    sim_particles_pass_name_ = parameters.getParameter<std::string>("sim_particles_pass_name");
+
   }
 
   bool VisiblesVetoProcessor::in_list(std::vector<int> parents, int a) {
@@ -85,7 +89,7 @@ namespace hcal {
 
     clearProcessor();
 
-    auto particle_map{event.getMap<int, ldmx::SimParticle>("SimParticles")};
+    auto particle_map{event.getMap<int, ldmx::SimParticle>("SimParticles", sim_particles_pass_name_)};
     
     // Get target scoring plane hits for recoil electron
     // Use this to calculate the projected photon line vector
@@ -94,7 +98,7 @@ namespace hcal {
     std::vector<double> gamma_p(3);
     std::vector<double> gamma_x0(3);
     if (recoil_from_tracking_) {
-      auto recoilTracks{event.getCollection<ldmx::Track>(track_collection_)};
+      auto recoilTracks{event.getCollection<ldmx::Track>(track_collection_, track_pass_name_)};
       // Fill this in later when you know how to use it
       for (auto &track : recoilTracks) {
 	// need to figure out how to best isolate candidate electron track
@@ -107,9 +111,9 @@ namespace hcal {
       }
     }
     else {
-      if (event.exists(sp_coll_name_)) {
+      if (event.exists(sp_collection_, sp_pass_name_)) {
 	std::vector<ldmx::SimTrackerHit> targetSPHits =
-	  event.getCollection<ldmx::SimTrackerHit>(sp_coll_name_);
+	  event.getCollection<ldmx::SimTrackerHit>(sp_collection_, sp_pass_name_);
 	for (auto const &it : particle_map) {
 	  for (auto const &sphit : targetSPHits) {
 	    if (sphit.getPosition()[2] > 0) {
@@ -251,3 +255,5 @@ namespace hcal {
   }
   
 }
+
+DECLARE_PRODUCER(hcal::VisiblesVetoProcessor);

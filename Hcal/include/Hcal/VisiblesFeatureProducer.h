@@ -33,10 +33,15 @@ namespace hcal {
     double beamEnergyMeV_{0.};
 
     std::string hcal_rec_collection_;
+    std::string hcal_rec_pass_name_;
     std::string ecal_rec_collection_;
+    std::string ecal_rec_pass_name_;
     bool recoil_from_tracking_{false};
     std::string track_collection_;
+    std::string track_pass_name_;
     std::string sp_collection_;
+    std::string sp_pass_name_;
+    std::string sim_particles_pass_name_;
 
     bool in_list(std::vector<int> parents, int a);
 

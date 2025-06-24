@@ -66,8 +66,9 @@ namespace hcal {
     bool recoil_from_tracking_;
     std::string track_pass_name_;
     std::string track_collection_;
-    std::string sp_coll_name_;
+    std::string sp_collection_;
     std::string sp_pass_name_;
+    std::string sim_particles_pass_name_;
 
     std::string collectionName_{"VisiblesVeto"};
 

@@ -27,10 +27,18 @@ namespace hcal {
 
     // collection names
     hcal_rec_collection_ = parameters.getParameter<std::string>("hcal_rec_coll_name");
+    hcal_rec_pass_name_ = parameters.getParameter<std::string>("hcal_rec_pass_name");
+
     ecal_rec_collection_ = parameters.getParameter<std::string>("ecal_rec_coll_name");
+    ecal_rec_pass_name_ = parameters.getParameter<std::string>("ecal_rec_pass_name");
+
     recoil_from_tracking_ = parameters.getParameter<bool>("recoil_from_tracking");
     track_collection_ = parameters.getParameter<std::string>("track_collection");
+    track_pass_name_ = parameters.getParameter<std::string>("track_pass_name");
+
     sp_collection_ = parameters.getParameter<std::string>("sp_coll_name");
+    sp_pass_name_ = parameters.getParameter<std::string>("sp_pass_name");
+    sim_particles_pass_name_ = parameters.getParameter<std::string>("sim_particles_pass_name");
     
   }
 
@@ -49,7 +57,7 @@ namespace hcal {
 
     std::vector<double> bdtFeatures_;
     
-    auto particle_map{event.getMap<int, ldmx::SimParticle>("SimParticles")};
+    auto particle_map{event.getMap<int, ldmx::SimParticle>("SimParticles", sim_particles_pass_name_)};
     
     // Get target scoring plane hits for recoil electron
     // Use this to calculate the projected photon line vector
@@ -62,7 +70,7 @@ namespace hcal {
     bool foundRecoile = false;
     
     if (recoil_from_tracking_) {
-      auto recoilTracks{event.getCollection<ldmx::Track>(track_collection_)};
+      auto recoilTracks{event.getCollection<ldmx::Track>(track_collection_, track_pass_name_)};
       // Fill this in later when you know how to use it
       for (auto &track : recoilTracks) {
 	// need to figure out how to best isolate candidate electron track
@@ -75,14 +83,16 @@ namespace hcal {
       }
     }
     else{
-      if (event.exists(sp_collection_)) {
+      if (event.exists(sp_collection_, sp_pass_name_)) {
 	std::vector<ldmx::SimTrackerHit> targetSPHits =
-	  event.getCollection<ldmx::SimTrackerHit>(sp_collection_);
+	  event.getCollection<ldmx::SimTrackerHit>(sp_collection_, sp_pass_name_);
 	bool foundRec = false;
 	for (auto const &it : particle_map) {
+	  std::cout << "PDG ID: " << it.second.getPdgID() << " , Energy: " << it.second.getEnergy() << std::endl;
 	  for (auto const &sphit : targetSPHits) {
 	    if (sphit.getPosition()[2] > 0) {
 	      if (it.first == sphit.getTrackID()) {
+		//std::cout << "PDG ID: " << it.second.getPdgID() << ", Energy: " << sphit.getEnergy() << std::endl;
 		if (it.second.getPdgID() == 622) {
 		  std::vector<float> x0f = sphit.getPosition();
 		  std::vector<double> x0d(x0f.begin(), x0f.end());
@@ -99,6 +109,7 @@ namespace hcal {
 		    gamma_p[1] = -1.*sphit.getMomentum()[1];
 		    gamma_p[2] = beamEnergyMeV_ - sphit.getMomentum()[2];
 		    foundRec = true;
+		    
 		  }
 		  recoil_p = sphit.getMomentum();
 		  foundRecoile = true;
@@ -109,6 +120,7 @@ namespace hcal {
 	}
       }
     }
+    std::cout << "-----------------------------------------------\n";
 
     double pMag = 0.;
     if (foundRecoile) {
@@ -116,12 +128,13 @@ namespace hcal {
     }
 
     // Get EcalRecHits, check that trigger is passed
-    std::vector<ldmx::EcalHit> ecalRecHits = event.getCollection<ldmx::EcalHit>(ecal_rec_collection_);
-    std::vector<ldmx::HcalHit> hcalRecHits = event.getCollection<ldmx::HcalHit>(hcal_rec_collection_);
+    std::vector<ldmx::EcalHit> ecalRecHits = event.getCollection<ldmx::EcalHit>(ecal_rec_collection_, ecal_rec_pass_name_);
+    std::vector<ldmx::HcalHit> hcalRecHits = event.getCollection<ldmx::HcalHit>(hcal_rec_collection_, hcal_rec_pass_name_);
 
     double ecalE = 0.;
     double hcalE = 0.;
     bool hcalContainment = true;
+    double sidehcalE = 0.;
 
     for (const ldmx::EcalHit & hit : ecalRecHits) {
       if (hit.getEnergy() > 0.) {
@@ -132,7 +145,8 @@ namespace hcal {
       if (hit.getEnergy() > 0.) {
 	ldmx::HcalID detID(hit.getID());
 	if (detID.getSection() != 0) {
-            continue;
+	  sidehcalE += 12.*hit.getEnergy();
+	  continue;
 	}
 	if (detID.getLayerID() == 1 && hit.getPE() > 5) {
 	  hcalContainment = false;
@@ -141,9 +155,10 @@ namespace hcal {
       }
     }
 
+    //std::cout << ecalE << " MeV in ECal, " << hcalE << " MeV in back HCal, " << pMag << " MeV/c momentum recoil e, " << sidehcalE << " MeV in side HCal" << std::endl;
     // If trigger requirement is met
     if (ecalE < 3160 && hcalE > 4840 && hcalContainment && pMag < 2400) {
-
+      //if (ecalE < 3160 && hcalContainment && pMag < 2400) {
       // initialize all of the features
       int nLayersHit_ = 0;
       double xStd_ = 0.;
@@ -160,6 +175,9 @@ namespace hcal {
 
       double zMean = 0.; // need this when calculating zStd_
       std::vector<int> layersHit;
+
+      std::map<int, double> energymap;
+      
       for (const ldmx::HcalHit & hit : hcalRecHits) {
 	if (hit.getEnergy() > 0.) {
 	  ldmx::HcalID detID(hit.getID());
@@ -169,6 +187,7 @@ namespace hcal {
 	  if (abs(hit.getXPos()) > 1000 || abs(hit.getYPos()) > 1000) {
 	    continue;
 	  }
+	  
 	  nReadoutHits_ += 1;
 	  double x = hit.getXPos();
 	  double y = hit.getYPos();
@@ -181,6 +200,8 @@ namespace hcal {
 	  yMean_ += y*hit.getEnergy();
 	  zMean  += z*hit.getEnergy();
 	  rMean_ += r*hit.getEnergy();
+
+	  energymap[detID.getLayerID()] += hit.getEnergy();
 	  
 	  // check if this is a new layer in the collection
 	  if (!(std::find(layersHit.begin(), layersHit.end(), detID.getLayerID()) != layersHit.end())) {
@@ -259,6 +280,8 @@ namespace hcal {
 	zStd_ = sqrt(zStd_/summedDet_);
       }
 
+      auto it = energymap.begin();
+
       // Fill histograms
       histograms_.fill("layershit", nLayersHit_);
       histograms_.fill("xStd", xStd_);
@@ -272,6 +295,9 @@ namespace hcal {
       histograms_.fill("nHits", nReadoutHits_);
       histograms_.fill("Etot", hcalE);
       histograms_.fill("photonProj", rMeanFromPhotonProj_);
+      histograms_.fill("firstdEdx", it->second);
+      ++it;
+      histograms_.fill("seconddEdx", it->second);
 
       bdtFeatures_.push_back(nLayersHit_);
       bdtFeatures_.push_back(xStd_);
@@ -304,4 +330,4 @@ namespace hcal {
   
 } // namespace hcal
 
-DECLARE_ANALYZER_NS(hcal, VisiblesFeatureProducer);
+DECLARE_ANALYZER(hcal::VisiblesFeatureProducer);

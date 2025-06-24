@@ -54,6 +54,7 @@ class VisiblesVetoProcessor(ldmxcfg.Producer) :
         self.track_pass_name = ''
         self.sp_coll_name = 'TargetScoringPlaneHits'
         self.sp_pass_name = ''
+        self.sim_particles_pass_name = ''
 
 class VisiblesFeatureProducer(ldmxcfg.Analyzer) :
     """Just plot the visibles features"""
@@ -68,10 +69,15 @@ class VisiblesFeatureProducer(ldmxcfg.Analyzer) :
         ## A few other useful parameters ##
         self.beam_energy = 8000.0 # in MeV
         self.hcal_rec_coll_name = "HcalRecHits"
+        self.hcal_rec_pass_name = ''
         self.ecal_rec_coll_name = "EcalRecHits"
+        self.ecal_rec_pass_name = ''
         self.recoil_from_tracking = False
         self.track_collection = 'RecoilTracks'
+        self.track_pass_name = ''
         self.sp_coll_name = 'TargetScoringPlaneHits'
+        self.sp_pass_name = ''
+        self.sim_particles_pass_name = ''
         
         ## Define histograms ##
 
@@ -87,6 +93,8 @@ class VisiblesFeatureProducer(ldmxcfg.Analyzer) :
         self.build1DHistogram("nHits", "nHits", 200, 0, 200)
         self.build1DHistogram("Etot", "Etot", 100, 4800, 9800)
         self.build1DHistogram("photonProj", "photonProj", 80, 0, 800)
+        self.build1DHistogram("firstdEdx", "firstdEdx", 50, 0, 500)
+        self.build1DHistogram("seconddEdx", "seconddEdx", 50, 0, 500)
 
 class VisiblesCutflow(ldmxcfg.Analyzer) :
     """Just plot the visibles features"""
@@ -101,10 +109,15 @@ class VisiblesCutflow(ldmxcfg.Analyzer) :
         self.beam_energy = 8000.0
         
         self.hcal_rec_coll_name = "HcalRecHits"
+        self.hcal_rec_pass_name = ''
         self.ecal_rec_coll_name = "EcalRecHits"
+        self.ecal_rec_pass_name = ''
         self.recoil_from_tracking = False
         self.track_collection = 'RecoilTracks'
+        self.track_pass_name = ''
         self.sp_coll_name = 'TargetScoringPlaneHits'
+        self.sp_pass_name = ''
+        self.sim_particles_pass_name = ''
 
         self.ecal_veto_coll_name = "EcalVeto"
         self.ecal_veto_pass_name = ''

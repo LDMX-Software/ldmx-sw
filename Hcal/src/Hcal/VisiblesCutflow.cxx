@@ -31,10 +31,19 @@ namespace hcal {
 
     // collection names
     hcal_rec_collection_ = parameters.getParameter<std::string>("hcal_rec_coll_name");
+    hcal_rec_pass_name_ = parameters.getParameter<std::string>("hcal_rec_pass_name");
+
     ecal_rec_collection_ = parameters.getParameter<std::string>("ecal_rec_coll_name");
+    ecal_rec_pass_name_ = parameters.getParameter<std::string>("ecal_rec_pass_name");
+
     recoil_from_tracking_ = parameters.getParameter<bool>("recoil_from_tracking");
     track_collection_ = parameters.getParameter<std::string>("track_collection");
+    track_pass_name_ = parameters.getParameter<std::string>("track_pass_name");
+
     sp_collection_ = parameters.getParameter<std::string>("sp_coll_name");
+    sp_pass_name_ = parameters.getParameter<std::string>("sp_pass_name");
+    sim_particles_pass_name_ = parameters.getParameter<std::string>("sim_particles_pass_name");
+
     ecal_veto_collection_ = parameters.getParameter<std::string>("ecal_veto_coll_name");
     ecal_veto_pass_ = parameters.getParameter<std::string>("ecal_veto_pass_name");
     
@@ -57,7 +66,7 @@ namespace hcal {
 
     double decayz_;
     
-    auto particle_map{event.getMap<int, ldmx::SimParticle>("SimParticles")};
+    auto particle_map{event.getMap<int, ldmx::SimParticle>("SimParticles", sim_particles_pass_name_)};
 
     for (auto const &it : particle_map) {
       if (it.second.getPdgID() == 622) {
@@ -86,7 +95,7 @@ namespace hcal {
     bool foundRecoilE = false;
     
     if (recoil_from_tracking_) {
-      auto recoilTracks{event.getCollection<ldmx::Track>(track_collection_)};
+      auto recoilTracks{event.getCollection<ldmx::Track>(track_collection_, track_pass_name_)};
       // Fill this in later when you know how to use it
       for (auto &track : recoilTracks) {
 	// need to figure out how to best isolate candidate electron track
@@ -99,9 +108,9 @@ namespace hcal {
       }
     }
     else{
-      if (event.exists(sp_collection_)) {
+      if (event.exists(sp_collection_, sp_pass_name_)) {
 	std::vector<ldmx::SimTrackerHit> targetSPHits =
-	  event.getCollection<ldmx::SimTrackerHit>(sp_collection_);
+	  event.getCollection<ldmx::SimTrackerHit>(sp_collection_, sp_pass_name_);
 	bool foundRec = false;
 	for (auto const &it : particle_map) {
 	  for (auto const &sphit : targetSPHits) {
@@ -145,8 +154,8 @@ namespace hcal {
     histograms_.fill("acceptance", decayz_);
 
     // Get EcalRecHits, check that trigger is passed
-    std::vector<ldmx::EcalHit> ecalRecHits = event.getCollection<ldmx::EcalHit>(ecal_rec_collection_);
-    std::vector<ldmx::HcalHit> hcalRecHits = event.getCollection<ldmx::HcalHit>(hcal_rec_collection_);
+    std::vector<ldmx::EcalHit> ecalRecHits = event.getCollection<ldmx::EcalHit>(ecal_rec_collection_, ecal_rec_pass_name_);
+    std::vector<ldmx::HcalHit> hcalRecHits = event.getCollection<ldmx::HcalHit>(hcal_rec_collection_, hcal_rec_pass_name_);
 
     double trigger = 0.;
     double ecalE = 0.;
@@ -375,4 +384,4 @@ namespace hcal {
   
 } // namespace hcal
 
-DECLARE_ANALYZER_NS(hcal, VisiblesCutflow);
+DECLARE_ANALYZER(hcal::VisiblesCutflow);
