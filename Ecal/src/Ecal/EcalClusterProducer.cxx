@@ -78,7 +78,7 @@ void EcalClusterProducer::produce(framework::Event& event) {
 
       for (auto hit : wcVec[aWC].getHits()) {
         if (hit->getEnergy() < minHitEnergy_) continue;
-        cl_w = log(hit->getEnergy() - log(minHitEnergy_));
+        cl_w = log(hit->getEnergy()) - log(minHitEnergy_);
         cl_x += cl_w * hit->getXPos();
         cl_y += cl_w * hit->getYPos();
         cl_z += cl_w * hit->getZPos();
