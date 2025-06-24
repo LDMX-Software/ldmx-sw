@@ -50,7 +50,8 @@ void DNNEcalVetoProcessor::produce(framework::Event& event) {
       ecalRecHits.begin(), ecalRecHits.end(),
       [](const ldmx::EcalHit& hit) { return hit.getEnergy() > 0; });
 
-  ldmx_log(trace) << "nhits = " << nhits << " max_num_hits_ = " << max_num_hits_;
+  ldmx_log(trace) << "nhits = " << nhits
+                  << " max_num_hits_ = " << max_num_hits_;
 
   if (nhits < max_num_hits_) {
     // make inputs
@@ -104,7 +105,7 @@ void DNNEcalVetoProcessor::make_inputs(
   }
 
   for (unsigned iname = 0; iname < input_names_.size(); ++iname) {
-    ldmx_log(trace)  << "=== " << input_names_[iname] << " ===";
+    ldmx_log(trace) << "=== " << input_names_[iname] << " ===";
     for (unsigned i = 0; i < input_sizes_[iname]; ++i) {
       ldmx_log(trace) << data_[iname].at(i) << ", ";
       if ((i + 1) % max_num_hits_ == 0) {

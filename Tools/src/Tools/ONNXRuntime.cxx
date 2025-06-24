@@ -120,7 +120,8 @@ FloatArrays ONNXRuntime::run(const std::vector<std::string>& input_names,
     auto expected_len = std::accumulate(input_dims.begin(), input_dims.end(), 1,
                                         std::multiplies<int64_t>());
     if (expected_len != (int64_t)value->size()) {
-      throw std::runtime_error("Input array '" + name + "' has a wrong size of " +
+      throw std::runtime_error("Input array '" + name +
+                               "' has a wrong size of " +
                                std::to_string(value->size()) + ", expected " +
                                std::to_string(expected_len));
     }
