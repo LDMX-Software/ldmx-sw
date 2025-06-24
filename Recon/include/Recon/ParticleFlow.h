@@ -56,7 +56,7 @@ class ParticleFlow : public framework::Producer {
   std::string input_hcal_passname_;
   std::string input_tracks_passname_;
   // bool to toggle using pre-existing clusters instead of making new
-  bool useExistingEcalClusters_;
+  bool use_existing_ecal_clusters_;
   // name of collection for PF outputs
   std::string outputCollName_;
   // configuration
