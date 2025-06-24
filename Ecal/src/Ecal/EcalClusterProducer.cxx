@@ -72,7 +72,7 @@ void EcalClusterProducer::produce(framework::Event& event) {
       cluster.addHits(wcVec[aWC].getHits());
       cluster.addFirstLayerHits(fWcVec[aWC].getHits());
 
-      float cl_x(0), cl_y(0), cl_z(0), cl_xx(0), cl_yy(0), cl_zz(0), cl_n(0);
+      float cl_x(0), cl_y(0), cl_z(0), cl_xx(0), cl_yy(0), cl_zz(0);
       float cl_w = 1;  // weight
       float sumw = 0;
 
@@ -85,7 +85,6 @@ void EcalClusterProducer::produce(framework::Event& event) {
         cl_xx += cl_w * hit->getXPos() * hit->getXPos();
         cl_yy += cl_w * hit->getYPos() * hit->getYPos();
         cl_zz += cl_w * hit->getZPos() * hit->getZPos();
-        cl_n += 1;
         sumw += cl_w;
       }  // over hits
       // could probably get this as cluster.getCentroidX() instead
