@@ -28,6 +28,7 @@ namespace hcal {
     ecalbdtCutVal_ = parameters.getParameter<double>("ecal_disc_cut");
 
     beamEnergyMeV_ = parameters.getParameter<double>("beam_energy");
+    isEaT_ = parameters.getParameter<bool>("is_EaT");
 
     // collection names
     hcal_rec_collection_ = parameters.getParameter<std::string>("hcal_rec_coll_name");
@@ -193,14 +194,14 @@ namespace hcal {
     }
     histograms_.fill("ecalenergy", decayz_);
 
-    if (pMag > 2400.) {
+    if (pMag > 2400. && !isEaT_) {
       return;
     }
     histograms_.fill("passTrackerVeto", decayz_);
 
     auto ecalVeto{
 		  event.getObject<ldmx::EcalVetoResult>(ecal_veto_collection_, ecal_veto_pass_)};
-    if (ecalVeto.getDisc() < ecalbdtCutVal_) {
+    if (ecalVeto.getDisc() < ecalbdtCutVal_ && isEaT_) {
       return;
     }
     histograms_.fill("passEcalBDT", decayz_);

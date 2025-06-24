@@ -107,6 +107,7 @@ class VisiblesCutflow(ldmxcfg.Analyzer) :
         self.disc_cut = 0.999965
        
         self.beam_energy = 8000.0
+        self.is_EaT = False
         
         self.hcal_rec_coll_name = "HcalRecHits"
         self.hcal_rec_pass_name = ''
