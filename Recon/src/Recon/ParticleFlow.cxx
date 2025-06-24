@@ -455,8 +455,8 @@ const std::vector<ldmx::CaloCluster> ParticleFlow::getEcalClusters(
     newClusters.emplace_back(cl);
   }
   event.add(newName, newClusters);
-  const auto caloClusters = event.getCollection<ldmx::CaloCluster>(newName, "");
-  return caloClusters;
+  const auto calo_clusters = event.getCollection<ldmx::CaloCluster>(newName, "");
+  return calo_clusters;
 }
 
 void ParticleFlow::onProcessEnd() {
