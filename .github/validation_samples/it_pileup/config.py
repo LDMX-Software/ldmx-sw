@@ -156,7 +156,7 @@ ecalMipTrackingFeatures.ecal_veto_pass = thisPassName
 # EcalVetoResults
 ecalVetoResults = dqm.EcalVetoResults()
 ecalVetoResults.ecal_veto_pass = thisPassName
-ecal_veto_pnet =  ecal_vetos.DNNEcalVetoProcessor()
+ecal_veto_pnet =  ecal_vetos.EcalPnetVetoProcessor()
 ecal_veto_pnet.ecal_rec_hits_passname = thisPassName
 
 # HCAL DQM

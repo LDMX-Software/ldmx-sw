@@ -403,6 +403,25 @@ class EcalVetoResults(ldmxcfg.Analyzer) :
         self.build1DHistogram('bdt_pass',
                 'Event passed the ECal BDT',2,-0.5,1.5)
 
+
+
+class EcalPnetVetoResults(ldmxcfg.Analyzer) :
+    """Configured DNNEcalMipTrackingFeatures python object """
+
+    def __init__(self,name="EcalPnetVetoResults") :
+        super().__init__(name,'dqm::EcalPnetVetoResults','DQM')
+
+        self.ecal_pnet_veto_name = 'EcalPnetVeto'
+        self.ecal_pnet_veto_pass = ''
+
+        self.build1DHistogram('pnet_disc',
+                'ParticleNet discriminating score',100,0.,1.)
+        self.build1DHistogram('pnet_disc_log',
+                '-log(1-ParticleNet discriminating score)',100,0.,5.)
+        self.build1DHistogram('pnet_pass',
+                'Event passed the ECal ParticleNet',2,-0.5,1.5)
+
+
 class EcalWABRecResults(ldmxcfg.Analyzer) :
     """Configured EcalWABRec python object """
 
@@ -924,7 +943,8 @@ ecal_dqm = [
         EcalDigiVerify(),
         EcalShowerFeatures(),
         EcalMipTrackingFeatures(),
-        EcalVetoResults()
+        EcalVetoResults(),
+        EcalPnetVetoResults()
         ]
 
 hcal_dqm = [

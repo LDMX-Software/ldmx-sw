@@ -1,14 +1,17 @@
 /**
- * @file DNNDNNEcalVetoProcessor.h
+ * @file EcalPnetVetoProcessor.h
  * @brief Class that determines if event is vetoable using ECAL hit information
  * w/ a deep neural network
- * @author Huilin Qu, UCSB
+ * @author Huilin Qu, Tamas Almos Vami (UCSB)
  */
 
-#ifndef EVENTPROC_DNNECALVETOPROCESSOR_H_
-#define EVENTPROC_DNNECALVETOPROCESSOR_H_
+#ifndef EVENTPROC_ECALPNETVETOPROCESSOR_H_
+#define EVENTPROC_ECALPNETVETOPROCESSOR_H_
 
 // LDMX
+#include <algorithm>
+#include <numeric>
+
 #include "DetDescr/EcalGeometry.h"
 #include "Ecal/Event/EcalHit.h"
 #include "Ecal/Event/EcalVetoResult.h"
@@ -19,14 +22,14 @@
 namespace ecal {
 
 /**
- * @class DNNEcalVetoProcessor
+ * @class EcalPnetVetoProcessor
  * @brief Determines if event is vetoable using ECAL hit information w/ a deep
  * neural network
  */
-class DNNEcalVetoProcessor : public framework::Producer {
+class EcalPnetVetoProcessor : public framework::Producer {
  public:
-  DNNEcalVetoProcessor(const std::string& name, framework::Process& process);
-  virtual ~DNNEcalVetoProcessor() = default;
+  EcalPnetVetoProcessor(const std::string& name, framework::Process& process);
+  virtual ~EcalPnetVetoProcessor() = default;
   void configure(framework::config::Parameters& parameters) override;
   void produce(framework::Event& event) override;
 
@@ -37,6 +40,13 @@ class DNNEcalVetoProcessor : public framework::Producer {
    */
   void make_inputs(const ldmx::EcalGeometry& geom,
                    const std::vector<ldmx::EcalHit>& ecalRecHits);
+
+  /**
+   * Transfor logits to a probability
+   * @param logits: Vector of logits
+   * @returns
+   */
+  std::vector<float> log_softmax(const std::vector<float>& logits);
 
  private:
   /** Maximum number of hits allowed in ECAL. Events with more hits will be
@@ -63,7 +73,7 @@ class DNNEcalVetoProcessor : public framework::Producer {
   std::unique_ptr<ldmx::Ort::ONNXRuntime> rt_;
 
   /** Name of the collection which will containt the results. */
-  std::string collectionName_{"DNNEcalVeto"};
+  std::string collectionName_{"EcalPnetVeto"};
 
   std::string ecal_rec_hits_passname_;
 

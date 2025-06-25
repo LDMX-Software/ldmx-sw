@@ -68,8 +68,12 @@ from LDMX.DQM import dqm
 
 # Define ecal veto and use tracking in it
 ecal_veto = ecal_vetos.EcalVetoProcessor()
+<<<<<<< HEAD
 ecal_mip = ecal_vetos.EcalMipProcessor()
 ecal_veto_pnet =  ecal_vetos.DNNEcalVetoProcessor()
+=======
+ecal_veto_pnet =  ecal_vetos.EcalPnetVetoProcessor()
+>>>>>>> 2f655947 (Rename the processor, add log_softmax, and DQM plots)
 
 # Load hcal veto
 import LDMX.Hcal.hcal as hcal

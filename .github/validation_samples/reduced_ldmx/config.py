@@ -46,8 +46,12 @@ ecalVeto = ecal_vetos.EcalVetoProcessor()
 ecalVeto.num_ecal_layers = 6
 ecalVeto.beam_energy = 4000.
 ecalVeto.recoil_from_tracking = False
+<<<<<<< HEAD
 ecalMip = ecal_vetos.EcalMipProcessor()
 ecalMip.num_ecal_layers = 6
+=======
+ecal_veto_pnet =  ecal_vetos.EcalPnetVetoProcessor()
+>>>>>>> 2f655947 (Rename the processor, add log_softmax, and DQM plots)
 
 ecalWAB = ecal_WAB.EcalWABRecProcessor()
 
@@ -131,7 +135,11 @@ p.sequence.extend([
         ecal_digi.EcalDigiProducer(),
         ecal_digi.EcalRecProducer(), 
         ecalVeto,
+<<<<<<< HEAD
         ecalMip,
+=======
+        ecal_veto_pnet,
+>>>>>>> 2f655947 (Rename the processor, add log_softmax, and DQM plots)
         hcal_digi_reco,
         hcal_veto,
         *ts_digis,

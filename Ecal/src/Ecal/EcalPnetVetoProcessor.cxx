@@ -1,18 +1,13 @@
-#include "Ecal/DNNEcalVetoProcessor.h"
-
-// LDMX
-#include <algorithm>
-
-#include "Ecal/Event/EcalHit.h"
+#include "Ecal/EcalPnetVetoProcessor.h"
 
 namespace ecal {
 
-const std::vector<std::string> DNNEcalVetoProcessor::input_names_{"points",
+const std::vector<std::string> EcalPnetVetoProcessor::input_names_{"points",
                                                                   "features"};
-const std::vector<unsigned int> DNNEcalVetoProcessor::input_sizes_{
+const std::vector<unsigned int> EcalPnetVetoProcessor::input_sizes_{
     n_coordinate_dim_ * max_num_hits_, n_feature_dim_* max_num_hits_};
 
-DNNEcalVetoProcessor::DNNEcalVetoProcessor(const std::string& name,
+EcalPnetVetoProcessor::EcalPnetVetoProcessor(const std::string& name,
                                            framework::Process& process)
     : Producer(name, process) {
   for (const auto& s : input_sizes_) {
@@ -20,7 +15,7 @@ DNNEcalVetoProcessor::DNNEcalVetoProcessor(const std::string& name,
   }
 }
 
-void DNNEcalVetoProcessor::configure(
+void EcalPnetVetoProcessor::configure(
     framework::config::Parameters& parameters) {
   disc_cut_ = parameters.getParameter<double>("disc_cut");
   rt_ = std::make_unique<ldmx::Ort::ONNXRuntime>(
@@ -36,7 +31,7 @@ void DNNEcalVetoProcessor::configure(
       parameters.getParameter<std::string>("ecal_rec_hits_passname");
 }
 
-void DNNEcalVetoProcessor::produce(framework::Event& event) {
+void EcalPnetVetoProcessor::produce(framework::Event& event) {
   ldmx::EcalVetoResult result;
 
   // Get the Ecal Geometry
@@ -57,8 +52,9 @@ void DNNEcalVetoProcessor::produce(framework::Event& event) {
     // make inputs
     make_inputs(ecal_geometry, ecalRecHits);
     // run the DNN
-    auto outputs = rt_->run(input_names_, data_)[0];
-    result.setDiscValue(outputs.at(1));
+    auto logits = rt_->run(input_names_, data_)[0];
+    auto prob = log_softmax(logits);
+    result.setDiscValue(prob[0]);
   } else {
     result.setDiscValue(-99);
   }
@@ -77,7 +73,7 @@ void DNNEcalVetoProcessor::produce(framework::Event& event) {
   event.add(collectionName_, result);
 }
 
-void DNNEcalVetoProcessor::make_inputs(
+void EcalPnetVetoProcessor::make_inputs(
     const ldmx::EcalGeometry& geom,
     const std::vector<ldmx::EcalHit>& ecalRecHits) {
   // clear data
@@ -113,8 +109,31 @@ void DNNEcalVetoProcessor::make_inputs(
       }
     }
   }
+}  // end of make inputs
+
+std::vector<float> EcalPnetVetoProcessor::log_softmax(
+    const std::vector<float>& logits) {
+  // Find max for numerical stability
+  auto max_val = *std::max_element(logits.begin(), logits.end());
+
+  // Compute shifted exponentials and their sum
+  std::vector<float> exp_vals(logits.size());
+  for (size_t i = 0; i < logits.size(); ++i) {
+    exp_vals[i] = std::exp(logits[i] - max_val);
+  }
+
+  float sum_exp = std::accumulate(exp_vals.begin(), exp_vals.end(), 0.0);
+  float log_sum_exp = max_val + std::log(sum_exp);
+
+  // Compute log_softmax
+  std::vector<float> result(logits.size());
+  for (size_t i = 0; i < logits.size(); ++i) {
+    result[i] = logits[i] - log_sum_exp;
+  }
+
+  return result;
 }
 
 }  // namespace ecal
 
-DECLARE_PRODUCER(ecal::DNNEcalVetoProcessor);
+DECLARE_PRODUCER(ecal::EcalPnetVetoProcessor);
