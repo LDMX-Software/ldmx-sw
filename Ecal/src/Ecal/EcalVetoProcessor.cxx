@@ -1,32 +1,5 @@
 #include "Ecal/EcalVetoProcessor.h"
 
-// LDMX
-#include "DetDescr/EcalGeometry.h"
-#include "DetDescr/SimSpecialID.h"
-#include "Ecal/Event/EcalHit.h"
-#include "Ecal/Event/EcalTrajectoryInfo.h"
-#include "Recon/Event/EventConstants.h"
-#include "SimCore/Event/SimParticle.h"
-#include "SimCore/Event/SimTrackerHit.h"
-
-/*~~~~~~~~~~~*/
-/*   Tools   */
-/*~~~~~~~~~~~*/
-#include "Tools/AnalysisUtils.h"
-
-// C++
-#include <stdlib.h>
-
-#include <algorithm>
-#include <cmath>
-#include <fstream>
-#include <iomanip>
-
-// ROOT (MIP tracking)
-#include "TDecompSVD.h"
-#include "TMatrixD.h"
-#include "TVector3.h"
-
 namespace ecal {
 
 void EcalVetoProcessor::onNewRun(const ldmx::RunHeader &rh) {

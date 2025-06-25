@@ -1,21 +1,5 @@
 #include "Ecal/EcalMipTrackingProcessor.h"
 
-// LDMX
-#include "Ecal/Event/EcalMipResult.h"
-#include "Ecal/Event/EcalTrajectoryInfo.h"
-#include "Ecal/Event/EcalVetoResult.h"
-
-// C++
-#include <algorithm>
-#include <chrono>
-#include <cmath>
-#include <iomanip>
-#include <vector>
-
-// ROOT
-#include "TDecompSVD.h"
-#include "TMatrixD.h"
-
 namespace ecal {
 
 void EcalMipTrackingProcessor::onNewRun(const ldmx::RunHeader &rh) {
@@ -175,9 +159,9 @@ void EcalMipTrackingProcessor::produce(framework::Event &event) {
                trackingHitList[currenthit].layer - 1 ||
            trackingHitList[jHit].layer ==
                trackingHitList[currenthit].layer - 2) &&
-          abs(trackingHitList[jHit].pos.X() -
+          std::abs(trackingHitList[jHit].pos.X() -
               trackingHitList[currenthit].pos.X()) <= 0.5 * cellWidth &&
-          abs(trackingHitList[jHit].pos.Y() -
+          std::abs(trackingHitList[jHit].pos.Y() -
               trackingHitList[currenthit].pos.Y()) <= 0.5 * cellWidth) {
         track[trackLen] = jHit;
         trackLen++;

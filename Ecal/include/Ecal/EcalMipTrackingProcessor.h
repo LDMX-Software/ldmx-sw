@@ -8,22 +8,31 @@
 #ifndef EVENTPROC_ECALMIPTRACKINGPROCESSOR_H_
 #define EVENTPROC_ECALMIPTRACKINGPROCESSOR_H_
 
-// LDMX Framework
+// LDMX
 #include "DetDescr/EcalGeometry.h"
 #include "DetDescr/EcalID.h"
+#include "Ecal/Event/EcalMipResult.h"
+#include "Ecal/Event/EcalTrajectoryInfo.h"
+#include "Ecal/Event/EcalVetoResult.h"
 #include "Framework/Configure/Parameters.h"
 #include "Framework/EventProcessor.h"
 
-// C++ Standard Library
-#include <map>
-#include <string>
-#include <utility>
 
-// ROOT
+// C++ Standard Library
+#include <algorithm>
+#include <chrono>
+#include <cmath>
+#include <iomanip>
+#include <map>
 #include <memory>
 #include <utility>
+#include <string>
+#include <vector>
 
+// ROOT
 #include "TVector3.h"
+#include "TDecompSVD.h"
+#include "TMatrixD.h"
 
 namespace ecal {
 class EcalMipTrackingProcessor : public framework::Producer {

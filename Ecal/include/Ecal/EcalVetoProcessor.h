@@ -11,19 +11,30 @@
 // LDMX
 #include "DetDescr/EcalGeometry.h"
 #include "DetDescr/EcalID.h"
+#include "DetDescr/SimSpecialID.h"
 #include "Ecal/Event/EcalHit.h"
 #include "Ecal/Event/EcalTrajectoryInfo.h"
 #include "Ecal/Event/EcalVetoResult.h"
 #include "Framework/Configure/Parameters.h"
 #include "Framework/EventProcessor.h"
+#include "SimCore/Event/SimParticle.h"
+#include "SimCore/Event/SimTrackerHit.h"
+#include "Tools/AnalysisUtils.h"
 #include "Tools/ONNXRuntime.h"
-
-// For recoil tracking
 #include "Tracking/Event/Track.h"
 
 // C++
+#include <algorithm>
+#include <cmath>
+#include <fstream>
+#include <iomanip>
 #include <map>
 #include <memory>
+#include <stdlib.h>
+
+// ROOT (for anle calculations)
+#include "TVector3.h"
+
 
 namespace ecal {
 
