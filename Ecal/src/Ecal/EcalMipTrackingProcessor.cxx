@@ -1,13 +1,11 @@
 #include "Ecal/EcalMipTrackingProcessor.h"
 
-#include "Ecal/EcalMipTrackingProcessor.h"
-
-// LDMX 
-#include "Ecal/Event/EcalVetoResult.h"
+// LDMX
 #include "Ecal/Event/EcalMipResult.h"
 #include "Ecal/Event/EcalTrajectoryInfo.h"
+#include "Ecal/Event/EcalVetoResult.h"
 
-// C++ 
+// C++
 #include <algorithm>
 #include <chrono>
 #include <cmath>
@@ -37,7 +35,6 @@ void EcalMipTrackingProcessor::configure(
       parameters.getParameter<std::string>("mip_collection_name");
   mip_pass_name_ = parameters.getParameter<std::string>("mip_pass_name");
   mip_result_name_ = parameters.getParameter<std::string>("mip_result_name");
-  
 }
 
 void EcalMipTrackingProcessor::clearProcessor() {

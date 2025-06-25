@@ -20,9 +20,10 @@
 #include <utility>
 
 // ROOT
-#include "TVector3.h"
 #include <memory>
 #include <utility>
+
+#include "TVector3.h"
 
 namespace ecal {
 class EcalMipTrackingProcessor : public framework::Producer {
@@ -123,7 +124,6 @@ class EcalMipTrackingProcessor : public framework::Producer {
   /// Number of hits in the photon territory
   int photon_territory_hits_{0};
 
-  
   std::string ecal_collection_name_{"EcalVeto"};
   std::string ecal_pass_name_{""};
   std::string mip_collection_name_{"EcalTrajectoryInfo"};
