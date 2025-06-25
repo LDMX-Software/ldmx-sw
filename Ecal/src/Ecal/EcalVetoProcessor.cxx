@@ -901,11 +901,9 @@ void EcalVetoProcessor::produce(framework::Event &event) {
   // Other considerations were (nLinregTracks_ == 0)  && (firstNearPhLayer_ >=
   // 6)
   // && (epAng_ > 3.0 && epAng_ < 900 || epSep_ > 10.0 && epSep_ < 900)
-  bool passesTrackingVeto = (n_straight_tracks_ < 3);
-  result.setVetoResult(pred > bdtCutVal_ && passesTrackingVeto);
+  result.setVetoResult(pred > bdtCutVal_);
   result.setDiscValue(pred);
-  ldmx_log(info) << " The pred > bdtCutVal = " << (pred > bdtCutVal_)
-                 << " and MIP tracking passed = " << passesTrackingVeto;
+  ldmx_log(info) << " The pred > bdtCutVal = " << (pred > bdtCutVal_);
 
   // Persist in the event if the recoil ele is fiducial
   result.setFiducial(inside_ecal_cell);
