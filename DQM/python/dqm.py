@@ -95,7 +95,7 @@ class HCalDQM(ldmxcfg.Analyzer) :
         self.rec_pass_name = ''
         self.sim_coll_name = 'HcalSimHits'
         self.sim_pass_name = ''
-        
+
         self.particle_passname = ''
         self.ecal_sp_hits_passname = ''
         self.hcal_veto_passname = ''
@@ -465,16 +465,16 @@ class SimObjects(ldmxcfg.Analyzer) :
     def __init__(self,name='sim_dqm',sim_pass='') :
         super().__init__(name,'dqm::SimObjects','DQM')
         self.sim_pass = sim_pass
-        
+
         self.sim_particles_passname = ''
         self.sim_particles_map_passname = ''
-        
+
 
 
 class DarkBremInteraction(ldmxcfg.Producer) :
     def __init__(self) :
         super().__init__('db_kinematics','dqm::DarkBremInteraction','DQM')
-        
+
         self.particle_passname = ''
 
         self.build1DHistogram('aprime_energy',
@@ -564,10 +564,10 @@ class PhotoNuclearDQM(ldmxcfg.Analyzer) :
 
     def __init__(self,name='PN', count_light_ions=True) :
         super().__init__(name,'dqm::PhotoNuclearDQM','DQM')
-        
-        
+
+
         self.sim_particles_passname = ''
-        
+
 
         self.count_light_ions=count_light_ions
         self.build1DHistogram("event_type"         , "", 24, -1, 23)
@@ -808,7 +808,7 @@ class SampleValidation(ldmxcfg.Analyzer) :
     """
     def __init__(self, name='SampleValidation') :
         super().__init__(name, 'dqm::SampleValidation', 'DQM')
-        
+
         self.sim_particles_passname = ''
         self.target_scoring_plane_passname = ''
 
@@ -831,6 +831,26 @@ class SampleValidation(ldmxcfg.Analyzer) :
         self.build1DHistogram("hardbremdaughters_endZ", "End z position of hard brem daughters  [mm]", 70, -1000, 6000)
         self.build1DHistogram("hardbremdaughters_energy", "Energy of hard brem daughters  [MeV]", 170, 0, 8500)
 
+
+class GenieTruthDQM(ldmxcfg.Analyzer) :
+    """Configured GenieTruthDQM python object
+
+    Contains an instance of GenieTruthDQM that
+    has already been configured.
+
+    Examples
+    --------
+        from LDMX.DQM import dqm
+        p.sequence.append( dqm.GenieTruthDQM() )
+    """
+
+    def __init__(self,name='GenieTruthDQM',coll_name="",pass_name="") :
+        super().__init__(name,'dqm::GenieTruthDQM','DQM')
+
+        self.hepmc3CollName = coll_name
+        self.hepmc3PassName = pass_name
+        
+
 sample_validation_dqm = [
         SampleValidation()
         ]
@@ -852,9 +872,9 @@ class EcalClusterAnalyzer(ldmxcfg.Analyzer) :
 
         self.cluster_coll_name = 'ecalClusters'
         self.cluster_pass_name = ''
-        
+
         self.ecal_sp_hits_passname = ''
-        
+
         # Need to mod for more than two electrons
         self.build1DHistogram("ancestors", "Ancestors of particles", 4, 0, 3)
 

@@ -14,8 +14,12 @@ find_package(ROOT CONFIG REQUIRED)
 # Search for Boost
 find_package(Boost REQUIRED COMPONENTS log)
 
+include_directories( /usr/local/include/GENIE )
+
 option(BUILD_EVENT_ONLY "Build the event library." ON)
 if(BUILD_EVENT_ONLY)
+
+  install(FILES /usr/local/lib/libHepMC3rootIO_rdict.pcm DESTINATION lib)
 
   register_event_object(module_path "SimCore/Event" namespace "ldmx" 
                         class "SimCalorimeterHit" type "collection")
@@ -23,10 +27,15 @@ if(BUILD_EVENT_ONLY)
                         class "SimTrackerHit" type "collection")
   register_event_object(module_path "SimCore/Event" namespace "ldmx"
                         class "SimParticle" type "map" key "int")
+  register_event_object(module_path "SimCore/Event" namespace "ldmx"
+      class "EventWeights")
+
+  register_event_object(module_path "SimCore/Event" namespace "ldmx"
+      class "HepMC3GenEvent" type "collection")
 
   # Generate the files needed to build the event classes.
   setup_library(module SimCore name Event
-                dependencies ROOT::Core
+                dependencies ROOT::Core ${GENIE_LIBS} HepMC3 HepMC3rootIO
                 register_target)
 
   return()
@@ -35,6 +44,9 @@ endif()
 
 # Configure Geant4
 setup_geant4_target()
+
+#Configure Genie
+setup_genie_target()
 
 # include dark brem simulation
 add_subdirectory(G4DarkBreM)
@@ -72,7 +84,20 @@ setup_library(module SimCore
 setup_library(module SimCore
               name Generators
               dependencies SimCore::LHE
-                           SimCore::G4User)
+                           SimCore::G4User
+			   SimCore::Event
+                           ${GENIE_LIBS}
+                           HepMC3)
+			   
+# Reweight Library
+setup_library(module SimCore
+              name Reweight
+              dependencies SimCore::Generators
+                           SimCore::Event
+                           Framework::Configure
+                           Framework::Framework
+                           ${GENIE_LIBS}
+                           HepMC3)
 
 # Sensitive Detectors library
 setup_library(module SimCore
@@ -88,10 +113,13 @@ setup_library(module SimCore
 # Setup the library
 setup_library(module SimCore
               dependencies ROOT::Physics
+                           ROOT::MathMore
+                           HepMC3
                            SimCore::Geo
                            SimCore::PhotoNuclearModels
                            SimCore::BiasOperators
                            SimCore::Generators
+                           SimCore::Reweight
                            SimCore::SDs)
                            
 # Set some target properties
