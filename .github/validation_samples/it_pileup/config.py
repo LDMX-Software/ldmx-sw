@@ -82,6 +82,7 @@ trigScintTrack.input_pass_name = thisPassName
 ecalDigi   = eDigi.EcalDigiProducer('ecalDigis')
 ecalReco   = eDigi.EcalRecProducer('ecalRecon')
 ecalVeto   = vetos.EcalVetoProcessor('ecalVetoBDT')
+ecalMip = vetos.EcalMipProcessor('ecalMip')
 
 # The newly produced, overlayed simhits
 ecalDigi.inputCollName += overlayStr
@@ -195,7 +196,7 @@ p.sequence.extend(full_tracking_sequence.sequence)
 p.sequence.extend(full_tracking_sequence.dqm_sequence)
 
 p.sequence.extend([
-    ecalDigi, ecalReco, ecalVeto, ecal_cluster.EcalClusterProducer(),
+    ecalDigi, ecalReco, ecalVeto, ecalMip, ecal_cluster.EcalClusterProducer(),
     hcal_digi_reco, 
     hcal_veto,
     *ts_digis,

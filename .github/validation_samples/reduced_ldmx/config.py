@@ -46,6 +46,7 @@ ecalVeto = ecal_vetos.EcalVetoProcessor()
 ecalVeto.num_ecal_layers = 6
 ecalVeto.beam_energy = 4000.
 ecalVeto.recoil_from_tracking = False
+ecalMip = ecal_vetos.EcalMipProcessor()
 
 ecalWAB = ecal_WAB.EcalWABRecProcessor()
 
@@ -129,6 +130,7 @@ p.sequence.extend([
         ecal_digi.EcalDigiProducer(),
         ecal_digi.EcalRecProducer(), 
         ecalVeto,
+        ecalMip,
         hcal_digi_reco,
         hcal_veto,
         *ts_digis,
