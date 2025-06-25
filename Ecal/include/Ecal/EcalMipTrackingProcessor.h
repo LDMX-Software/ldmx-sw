@@ -8,40 +8,21 @@
 #ifndef EVENTPROC_ECALMIPTRACKINGPROCESSOR_H_
 #define EVENTPROC_ECALMIPTRACKINGPROCESSOR_H_
 
-// LDMX
+// LDMX Framework
 #include "DetDescr/EcalGeometry.h"
 #include "DetDescr/EcalID.h"
-#include "Ecal/Event/EcalHit.h"
-#include "Ecal/Event/EcalTrajectoryInfo.h"
-// #include "Ecal/Event/EcalVetoResult.h"
-#include "DetDescr/SimSpecialID.h"
-#include "Ecal/Event/EcalMipResult.h"
 #include "Framework/Configure/Parameters.h"
 #include "Framework/EventProcessor.h"
-#include "Recon/Event/EventConstants.h"
-#include "SimCore/Event/SimParticle.h"
-#include "SimCore/Event/SimTrackerHit.h"
-#include "Tools/AnalysisUtils.h"
-#include "Tools/ONNXRuntime.h"
-#include "Tracking/Event/Track.h"
 
-// C++
-#include <stdlib.h>
-
-#include <algorithm>
-#include <cmath>
-#include <fstream>
-#include <iomanip>
-#include <iostream>
+// C++ Standard Library
 #include <map>
-#include <memory>
+#include <string>
 #include <utility>
 
-// ROOT (MIP tracking)
-#include "TDecompSVD.h"
-#include "TMatrixD.h"
-#include "TObject.h"
+// ROOT
 #include "TVector3.h"
+#include <memory>
+#include <utility>
 
 namespace ecal {
 class EcalMipTrackingProcessor : public framework::Producer {
@@ -126,8 +107,8 @@ class EcalMipTrackingProcessor : public framework::Producer {
 
   double linreg_radius_{0};
 
-  int nEcalLayers_{0};
-  int nReadoutHits_{0};
+  int n_ecal_layers_{0};
+  int n_readout_hits_{0};
 
   // MIP tracking
   /// Number of "straight" tracks found in the event
@@ -142,6 +123,9 @@ class EcalMipTrackingProcessor : public framework::Producer {
   /// Number of hits in the photon territory
   int photon_territory_hits_{0};
 
+  
+  std::string ecal_collection_name_{"EcalVeto"};
+  std::string ecal_pass_name_{""};
   std::string mip_collection_name_{"EcalTrajectoryInfo"};
   std::string mip_pass_name_{""};
   std::string mip_result_name_{"EcalMipResult"};

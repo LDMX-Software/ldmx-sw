@@ -12,13 +12,11 @@
 #include "DetDescr/EcalGeometry.h"
 #include "DetDescr/EcalID.h"
 #include "Ecal/Event/EcalHit.h"
+#include "Ecal/Event/EcalTrajectoryInfo.h"
 #include "Ecal/Event/EcalVetoResult.h"
 #include "Framework/Configure/Parameters.h"
 #include "Framework/EventProcessor.h"
 #include "Tools/ONNXRuntime.h"
-
-// ROOT (MIP tracking)
-#include "Ecal/Event/EcalTrajectoryInfo.h"
 
 // For recoil tracking
 #include "Tracking/Event/Track.h"

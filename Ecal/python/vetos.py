@@ -48,6 +48,8 @@ class EcalMipProcessor(ldmxcfg.Producer) :
 
         self.num_ecal_layers = 34
         self.linreg_radius = 35.0 # in mm
+        self.ecal_collection_name = "EcalVeto"
+        self.ecal_pass_name = ""
         self.mip_collection_name = "EcalTrajectoryInfo"
         self.mip_pass_name = ""
         self.mip_result_name = "EcalMipInfo"

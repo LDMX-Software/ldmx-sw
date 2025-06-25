@@ -1,5 +1,23 @@
 #include "Ecal/EcalMipTrackingProcessor.h"
 
+#include "Ecal/EcalMipTrackingProcessor.h"
+
+// LDMX 
+#include "Ecal/Event/EcalVetoResult.h"
+#include "Ecal/Event/EcalMipResult.h"
+#include "Ecal/Event/EcalTrajectoryInfo.h"
+
+// C++ 
+#include <algorithm>
+#include <chrono>
+#include <cmath>
+#include <iomanip>
+#include <vector>
+
+// ROOT
+#include "TDecompSVD.h"
+#include "TMatrixD.h"
+
 namespace ecal {
 
 void EcalMipTrackingProcessor::onNewRun(const ldmx::RunHeader &rh) {
@@ -10,12 +28,16 @@ void EcalMipTrackingProcessor::onNewRun(const ldmx::RunHeader &rh) {
 
 void EcalMipTrackingProcessor::configure(
     framework::config::Parameters &parameters) {
-  nEcalLayers_ = parameters.getParameter<int>("num_ecal_layers");
+  n_ecal_layers_ = parameters.getParameter<int>("num_ecal_layers");
   linreg_radius_ = parameters.getParameter<double>("linreg_radius");
+  ecal_collection_name_ =
+      parameters.getParameter<std::string>("ecal_collection_name");
+  ecal_pass_name_ = parameters.getParameter<std::string>("ecal_pass_name");
   mip_collection_name_ =
       parameters.getParameter<std::string>("mip_collection_name");
   mip_pass_name_ = parameters.getParameter<std::string>("mip_pass_name");
   mip_result_name_ = parameters.getParameter<std::string>("mip_result_name");
+  
 }
 
 void EcalMipTrackingProcessor::clearProcessor() {
@@ -38,7 +60,8 @@ void EcalMipTrackingProcessor::produce(framework::Event &event) {
       ldmx::EcalGeometry::CONDITIONS_OBJECT_NAME);
 
   // Read in hits near photon from EcalVetoProcessor
-
+  auto ecal_veto_result = event.getObject<ldmx::EcalVetoResult>(
+      ecal_collection_name_, ecal_pass_name_);
   auto ecal_trajectory_info = event.getObject<ldmx::EcalTrajectoryInfo>(
       mip_collection_name_, mip_pass_name_);
   std::vector<XYCoords> ele_trajectory, photon_trajectory,
@@ -48,6 +71,7 @@ void EcalMipTrackingProcessor::produce(framework::Event &event) {
   ele_trajectory = ecal_trajectory_info.getEleTrajectory();
   photon_trajectory = ecal_trajectory_info.getPhotonTrajectory();
   trackingHitList = ecal_trajectory_info.getTrackingHitList();
+  n_readout_hits_ = ecal_veto_result.getNReadoutHits();
   nevents_++;
   // Now inputting Lines 753-1178 of the original EcalVetoProcessor
   // ------------------------------------------------------
@@ -70,7 +94,7 @@ void EcalMipTrackingProcessor::produce(framework::Event &event) {
   // projected photon trajectory is found Currently unusued pending further
   // study; performance has dropped between v9 and v12. Currently used in
   // segmipBDT
-  first_near_ph_layer_ = nEcalLayers_ - 1;
+  first_near_ph_layer_ = n_ecal_layers_ - 1;
 
   // If no photon trajectory, leave this at the default (ECal back)
   ldmx_log(trace) << "Finding first near photon layer";
@@ -107,7 +131,7 @@ void EcalMipTrackingProcessor::produce(framework::Event &event) {
     }
     ldmx_log(trace) << "Photon territory hits: " << photon_territory_hits_;
   } else {
-    photon_territory_hits_ = nReadoutHits_;
+    photon_territory_hits_ = n_readout_hits_;
   }
 
   // ------------------------------------------------------
