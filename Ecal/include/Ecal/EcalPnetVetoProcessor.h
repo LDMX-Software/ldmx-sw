@@ -50,7 +50,7 @@ class EcalPnetVetoProcessor : public framework::Producer {
 
  private:
   /** Maximum number of hits allowed in ECAL. Events with more hits will be
-   * marked as BKG directly without running the DNN. */
+   * marked as BKG directly without running ParticleNet. */
   constexpr static unsigned int max_num_hits_ = 300;
 
   constexpr static unsigned int n_coordinate_dim_ = 3;
@@ -76,8 +76,6 @@ class EcalPnetVetoProcessor : public framework::Producer {
   std::string collectionName_{"EcalPnetVeto"};
 
   std::string ecal_rec_hits_passname_;
-
-  bool debug_ = false;
 };
 
 }  // namespace ecal
