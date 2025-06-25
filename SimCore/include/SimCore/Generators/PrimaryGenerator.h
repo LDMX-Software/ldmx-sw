@@ -68,6 +68,8 @@ class PrimaryGenerator : public G4VPrimaryGenerator {
    */
   virtual void RecordConfig(const std::string& id, ldmx::RunHeader& rh) = 0;
 
+  std::string Name() { return name_; }
+
  protected:
   /// Name of the PrimaryGenerator
   std::string name_{""};
