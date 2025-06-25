@@ -17,7 +17,6 @@
 #include "Framework/Configure/Parameters.h"
 #include "Framework/EventProcessor.h"
 
-
 // C++ Standard Library
 #include <algorithm>
 #include <chrono>
@@ -25,14 +24,14 @@
 #include <iomanip>
 #include <map>
 #include <memory>
-#include <utility>
 #include <string>
+#include <utility>
 #include <vector>
 
 // ROOT
-#include "TVector3.h"
 #include "TDecompSVD.h"
 #include "TMatrixD.h"
+#include "TVector3.h"
 
 namespace ecal {
 class EcalMipTrackingProcessor : public framework::Producer {

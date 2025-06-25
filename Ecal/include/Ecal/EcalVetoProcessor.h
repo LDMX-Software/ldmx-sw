@@ -24,17 +24,17 @@
 #include "Tracking/Event/Track.h"
 
 // C++
+#include <stdlib.h>
+
 #include <algorithm>
 #include <cmath>
 #include <fstream>
 #include <iomanip>
 #include <map>
 #include <memory>
-#include <stdlib.h>
 
 // ROOT (for anle calculations)
 #include "TVector3.h"
-
 
 namespace ecal {
 

@@ -160,9 +160,9 @@ void EcalMipTrackingProcessor::produce(framework::Event &event) {
            trackingHitList[jHit].layer ==
                trackingHitList[currenthit].layer - 2) &&
           std::abs(trackingHitList[jHit].pos.X() -
-              trackingHitList[currenthit].pos.X()) <= 0.5 * cellWidth &&
+                   trackingHitList[currenthit].pos.X()) <= 0.5 * cellWidth &&
           std::abs(trackingHitList[jHit].pos.Y() -
-              trackingHitList[currenthit].pos.Y()) <= 0.5 * cellWidth) {
+                   trackingHitList[currenthit].pos.Y()) <= 0.5 * cellWidth) {
         track[trackLen] = jHit;
         trackLen++;
         currenthit = jHit;
