@@ -66,11 +66,31 @@ void EcalMipTrackingProcessor::produce(framework::Event &event) {
   // Find epAng and epSep, and prepare EP trajectory vectors:
   TVector3 e_traj_start;
   TVector3 e_traj_end;
-  TVector3 e_traj_target_start;
-  TVector3 e_traj_target_end;
   TVector3 p_traj_start;
   TVector3 p_traj_end;
-
+  if (!ele_trajectory.empty() && !photon_trajectory.empty()) {
+    // Create TVector3s marking the start and endpoints of each projected
+    // trajectory
+    e_traj_start.SetXYZ(ele_trajectory[0].first, ele_trajectory[0].second,
+                        geometry_->getZPosition(0));
+    e_traj_end.SetXYZ(ele_trajectory[(n_ecal_layers_ - 1)].first,
+                      ele_trajectory[(n_ecal_layers_ - 1)].second,
+                      geometry_->getZPosition((n_ecal_layers_ - 1)));
+    p_traj_start.SetXYZ(photon_trajectory[0].first, photon_trajectory[0].second,
+                        geometry_->getZPosition(0));
+    p_traj_end.SetXYZ(photon_trajectory[(n_ecal_layers_ - 1)].first,
+                      photon_trajectory[(n_ecal_layers_ - 1)].second,
+                      geometry_->getZPosition((n_ecal_layers_ - 1)));
+  } else {
+    // Electron trajectory is missing, so place trajectories far outside the ECal
+    // to ensure they don't interfere with tracking.
+    e_traj_start = TVector3(999, 999, geometry_->getZPosition(0));
+    e_traj_end =
+        TVector3(999, 999, geometry_->getZPosition((n_ecal_layers_ - 1)));
+    p_traj_start = TVector3(1000, 1000, geometry_->getZPosition(0));
+    p_traj_end =
+        TVector3(1000, 1000, geometry_->getZPosition((n_ecal_layers_ - 1)));
+  }
   // Near photon step:  Find the first layer of the ECal where a hit near the
   // projected photon trajectory is found Currently unusued pending further
   // study; performance has dropped between v9 and v12. Currently used in
