@@ -1,5 +1,6 @@
 
 #include "DQM/EcalPnetVetoResults.h"
+
 #include "Ecal/Event/EcalVetoResult.h"
 
 namespace dqm {
@@ -12,8 +13,8 @@ void EcalPnetVetoResults::configure(framework::config::Parameters &ps) {
 }
 
 void EcalPnetVetoResults::analyze(const framework::Event &event) {
-  auto veto{
-      event.getObject<ldmx::EcalVetoResult>(ecal_pnet_veto_name_, ecal_pnet_veto_pass_)};
+  auto veto{event.getObject<ldmx::EcalVetoResult>(ecal_pnet_veto_name_,
+                                                  ecal_pnet_veto_pass_)};
 
   histograms_.fill("pnet_disc", veto.getDisc());
   histograms_.fill("pnet_disc_log", -std::log10(1 - veto.getDisc()));

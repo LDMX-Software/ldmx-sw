@@ -3,12 +3,12 @@
 namespace ecal {
 
 const std::vector<std::string> EcalPnetVetoProcessor::input_names_{"points",
-                                                                  "features"};
+                                                                   "features"};
 const std::vector<unsigned int> EcalPnetVetoProcessor::input_sizes_{
     n_coordinate_dim_ * max_num_hits_, n_feature_dim_* max_num_hits_};
 
 EcalPnetVetoProcessor::EcalPnetVetoProcessor(const std::string& name,
-                                           framework::Process& process)
+                                             framework::Process& process)
     : Producer(name, process) {
   for (const auto& s : input_sizes_) {
     data_.emplace_back(s, 0);

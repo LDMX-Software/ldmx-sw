@@ -5,7 +5,6 @@
 #include "Framework/Configure/Parameters.h"
 #include "Framework/EventProcessor.h"
 
-
 namespace dqm {
 
 /**
