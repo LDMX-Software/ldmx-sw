@@ -167,8 +167,6 @@ class EcalVetoProcessor : public framework::Producer {
   float epDot_{0};
   /// Dot product of the photon and electron momenta unit vectors at Target
   float epDotAtTarget_{0};
-  /// Number of hits in the photon territory
-  int photonTerritoryHits_{0};
 
   float bdtCutVal_{0};
 
