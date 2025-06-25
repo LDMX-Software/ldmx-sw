@@ -148,9 +148,6 @@ class EcalVetoProcessor : public framework::Producer {
   float avgLayerHit_{0};
   float stdLayerHit_{0};
   float ecalBackEnergy_{0};
-  // MIP tracking (Keeping here for now for BDT variables)
-  /// Number of "straight" tracks found in the event
-  int n_straight_tracks_{0};
 
   /// Angular separation between the projected photon and electron trajectories
   /// as projected at ECAL
