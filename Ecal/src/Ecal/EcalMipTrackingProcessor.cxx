@@ -82,8 +82,8 @@ void EcalMipTrackingProcessor::produce(framework::Event &event) {
                       photon_trajectory[(n_ecal_layers_ - 1)].second,
                       geometry_->getZPosition((n_ecal_layers_ - 1)));
   } else {
-    // Electron trajectory is missing, so place trajectories far outside the ECal
-    // to ensure they don't interfere with tracking.
+    // Electron trajectory is missing, so place trajectories far outside the
+    // ECal to ensure they don't interfere with tracking.
     e_traj_start = TVector3(999, 999, geometry_->getZPosition(0));
     e_traj_end =
         TVector3(999, 999, geometry_->getZPosition((n_ecal_layers_ - 1)));
