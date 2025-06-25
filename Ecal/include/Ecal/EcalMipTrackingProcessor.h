@@ -125,7 +125,7 @@ class EcalMipTrackingProcessor : public framework::Producer {
   std::map<std::string, double> profiling_map_;
 
   double linreg_radius_{0};
-  bool verbose_{false};
+
   int nEcalLayers_{0};
   int nReadoutHits_{0};
 
