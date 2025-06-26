@@ -38,7 +38,7 @@ class EcalMipTrackingProcessor : public framework::Producer {
  public:
   typedef std::pair<ldmx::EcalID, float> CellEnergyPair;
 
-using XYCoords = ldmx::XYCoords;
+  using XYCoords = ldmx::XYCoords;
 
   EcalMipTrackingProcessor(const std::string& name, framework::Process& process)
       : Producer(name, process) {}
