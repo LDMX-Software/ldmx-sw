@@ -126,12 +126,17 @@ void NtupleWriter::produce(framework::Event& event) {
   inTag = "ecalTrigMIPs";
   if (writeEcalTrigMIPS_ && event.exists(inTag)) {
     const auto mips = event.getCollection<TrigMip>(inTag);
+    std::vector<int> lengths;
+    std::vector<int> nHoles;
+    std::vector<float> isoEnergies;
     for (const auto& mip : mips) {
-        n.setVar("Ecal_mip_length", mip.length());
-        n.setVar("Ecal_mip_nHoles", mip.nHoles());
-        n.setVar("Ecal_mip_isolationEnergy", mip.SumEinIsolationRegion());
-
+        lengths.push_back(mip.length());
+        nHoles.push_back(mip.nHoles());
+        isoEnergies.push_back(mip.SumEinIsolationRegion());
     }
+    n.setVar("Ecal_mip_length", lengths);
+    n.setVar("Ecal_mip_nHoles", nHoles);
+    n.setVar("Ecal_mip_isolationEnergy", isoEnergies);
   }
 
   inTag = "trigElectrons";
@@ -239,9 +244,9 @@ void NtupleWriter::onProcessStart() {
     n.addVar<int>(tag_, "TruthEcal_pdgId");
   }
   if (writeEcalTrigMIPS_) {
-    n.addVar<int>(tag_, "Ecal_mip_length");
-    n.addVar<int>(tag_, "Ecal_mip_nHoles");
-    n.addVar<float>(tag_, "Ecal_mip_isolationEnergy");
+    n.addVar<std::vector<int>>(tag_, "Ecal_mip_length");
+    n.addVar<std::vector<int>>(tag_, "Ecal_mip_nHoles");
+    n.addVar<std::vector<float>>(tag_, "Ecal_mip_isolationEnergy");
   }
   if (writeEcalSums_) {
     n.addVar<vector<float> >(tag_, "Ecal_e_afterLayer");

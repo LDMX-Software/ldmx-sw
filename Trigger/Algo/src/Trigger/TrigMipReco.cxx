@@ -144,17 +144,22 @@ void TrigMipReco::produce(framework::Event& event) {
             // if (holes > 5) break; // break if six or more holes
           }
         }
+
+        // std::cout << "  [DEBUG] Mip num holes = " << holes
+        //         << "; Mip length = " << track.size()
+        //         << "; Mip hole fraction = " << static_cast<float>(holes) / track.size() << "\n";
         // std::cout << "\n[DEBUG] This is a new track\n";
         bool isIsolated = true;
         float isolationECut = 20; // MeV
         float isolationRadius2 = radiusCut*radiusCut;
-        if (track.size() >= minTrackLength) {
+        if ((track.size() >= minTrackLength)) {
+          //  && ((static_cast<float>(holes) / track.size()) <= 0.2)
           // bool isIsolated = true;
           // float isolationECut = 5; // MeV
           // float isolationRadius2 = radiusCut*radiusCut;
           // float totalIsolationESum = 0.0f;
 
-          for (const auto* hit : track) {
+          for (const auto* hit : track) { // Isolation area energy check
             int layer = hit->layer();
             float hitx = hit->x();
             float hity = hit->y();
@@ -233,6 +238,11 @@ void TrigMipReco::produce(framework::Event& event) {
       mip.setNHits(track.size());
       mip.setLength(track.back()->layer() - track.front()->layer());
       mip.setNHoles(mip.length() - mip.nHits());
+
+      // std::cout << "  \n[DEBUG] Mip num holes = " << mip.nHoles()
+      //           << "; Mip length = " << mip.length()
+      //           << "; Mip hole fraction = " << static_cast<float>(mip.nHoles()) / mip.length() << "\n";
+      if ((static_cast<float>(mip.nHoles()) / mip.length()) >= 0.2) continue; // remove mips with hole fraction > 0.2
 
       float totalIsolationESum = 0.0f;
       for (const auto* hit : track) {
