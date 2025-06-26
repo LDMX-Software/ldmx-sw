@@ -1,42 +1,41 @@
 #ifndef RECON_EVENT_HGCROCPULSETRUTH_H_
 #define RECON_EVENT_HGCROCPULSETRUTH_H_
 
-#include "TObject.h"  //for ClassDef
-#include "Recon/Event/CompositePulse.h"
-
-#include <vector>
 #include <iostream>
 #include <optional>
+#include <vector>
+
+#include "Recon/Event/CompositePulse.h"
+#include "TObject.h"  //for ClassDef
 
 namespace ldmx {
 
 class HgcrocPulseTruth;
 typedef std::vector<HgcrocPulseTruth> HgcrocPulseTruthCollection;
 
-class HgcrocPulseTruth{
-public:
-  HgcrocPulseTruth(unsigned int id, ldmx::CompositePulse p) : id_(id), compositePulse_(p) {};
+class HgcrocPulseTruth {
+ public:
+  HgcrocPulseTruth(unsigned int id, ldmx::CompositePulse p)
+      : id_(id), compositePulse_(p){};
 
-  HgcrocPulseTruth() {}; // Default constructor needed, because ROOT will call std::vector<HgcrocPulseTruth>::resize
+  HgcrocPulseTruth(){};  // Default constructor needed, because ROOT will call
+                         // std::vector<HgcrocPulseTruth>::resize
 
-  virtual ~HgcrocPulseTruth() {};
+  virtual ~HgcrocPulseTruth(){};
 
   void Clear();
 
   double getMax() const;
 
-  unsigned int getID() const {
-    return id_;
-  }
+  unsigned int getID() const { return id_; }
 
-private:
+ private:
   unsigned int id_;
   ldmx::CompositePulse compositePulse_;
 
   ClassDef(HgcrocPulseTruth, 1);
 };
 
-} // namespace ldmx
+}  // namespace ldmx
 
 #endif
-

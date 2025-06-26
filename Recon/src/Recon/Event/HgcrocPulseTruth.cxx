@@ -2,8 +2,7 @@
 
 ClassImp(ldmx::HgcrocPulseTruth)
 
-namespace ldmx {
-
+    namespace ldmx {
   void HgcrocPulseTruth::Clear() {}
 
   // Could be improved...
@@ -11,20 +10,20 @@ namespace ldmx {
     auto hits = compositePulse_.hits();
 
     std::sort(
-      hits.begin(), hits.end(),
-      [](const std::pair<double, double> &a,
-         const std::pair<double, double> &b) { return a.second < b.second; });
+        hits.begin(), hits.end(),
+        [](const std::pair<double, double> &a,
+           const std::pair<double, double> &b) { return a.second < b.second; });
     double starttime = hits.at(0).second - 100;
-    double endtime = hits.at(hits.size()-1).second + 200;
+    double endtime = hits.at(hits.size() - 1).second + 200;
 
     double peak = -9999.0;
-    for(int i = 0; i < 100; i++){
-      double time = starttime+(endtime-starttime)/100.0*i;
+    for (int i = 0; i < 100; i++) {
+      double time = starttime + (endtime - starttime) / 100.0 * i;
       double v = compositePulse_.at(time);
-      if(v > peak) peak = v;
+      if (v > peak) peak = v;
+    }
+
+    return peak;
   }
 
-  return peak;
-}
-
-} // namespace ldmx
+}  // namespace ldmx

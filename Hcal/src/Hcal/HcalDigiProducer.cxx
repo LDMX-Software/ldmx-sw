@@ -116,7 +116,7 @@ void HcalDigiProducer::produce(framework::Event& event) {
   }
 
   ldmx::HgcrocPulseTruthCollection hcalPulseTruthColl;
-  if(savePulseTruthInfo_){
+  if (savePulseTruthInfo_) {
     hgcroc_->pulseTruthColl_ = &hcalPulseTruthColl;
     hgcroc_->savePulseTruthInfo_ = true;
   }
@@ -442,7 +442,7 @@ void HcalDigiProducer::produce(framework::Event& event) {
   }  // if we should add noise
 
   event.add(digiCollName_, hcalDigis);
-  if(savePulseTruthInfo_) event.add(pulseTruthCollName_, hcalPulseTruthColl);
+  if (savePulseTruthInfo_) event.add(pulseTruthCollName_, hcalPulseTruthColl);
 
   return;
 }  // produce

@@ -7,16 +7,15 @@
 #include "Framework/Configure/Parameters.h"
 #include "Framework/Event.h"
 #include "Framework/EventProcessor.h"
-#include "Tools/AnalysisUtils.h"
-
 #include "TGraph.h"
+#include "Tools/AnalysisUtils.h"
 
 namespace dqm {
 
 class HgcrocPulseTruth : public framework::Analyzer {
-public:
+ public:
   HgcrocPulseTruth(const std::string& name, framework::Process& process)
-    : framework::Analyzer(name, process) {}
+      : framework::Analyzer(name, process) {}
 
   ~HgcrocPulseTruth() {}
 
@@ -28,7 +27,7 @@ public:
 
   void analyze(const framework::Event& event) override;
 
-private:
+ private:
   std::string input_digi_name_;
   std::string input_digi_pass_;
   std::string input_truth_name_;
@@ -38,6 +37,6 @@ private:
   TGraph* vpeak_TOT_graph_;
 };
 
-} // namespace dqm
+}  // namespace dqm
 
 #endif

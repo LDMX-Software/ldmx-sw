@@ -1,10 +1,10 @@
 #ifndef RECON_EVENT_COMPOSITEPULSE_H_
 #define RECON_EVENT_COMPOSITEPULSE_H_
 
-#include "TObject.h"  //for ClassDef
-#include "TF1.h"
-
 #include <vector>
+
+#include "TF1.h"
+#include "TObject.h"  //for ClassDef
 
 namespace ldmx {
 
@@ -29,7 +29,7 @@ class CompositePulse {
 
   CompositePulse() = default;
 
-  virtual ~CompositePulse() {};
+  virtual ~CompositePulse(){};
 
   void Clear() {};
 
@@ -57,7 +57,8 @@ class CompositePulse {
    * @param[in] prec precision with which to look [mV]
    * @returns time [ns] at which the pulse cross level
    */
-  double findCrossing(double low, double high, double level, double prec = 0.01);
+  double findCrossing(double low, double high, double level,
+                      double prec = 0.01);
 
   /// Configure the pulses for the current chip
   void setGainPedestal(double gain, double pedestal) {
@@ -92,7 +93,7 @@ class CompositePulse {
   /// Get list of individual pulses that are entering the chip
   const std::vector<std::pair<double, double>>& hits() const { return hits_; }
 
-private:
+ private:
   /**
    * pulses entering the chip
    *
@@ -113,6 +114,6 @@ private:
 
 };  // CompositePulse
 
-} // namespace ldmx
+}  // namespace ldmx
 
 #endif

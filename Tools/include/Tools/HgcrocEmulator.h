@@ -5,9 +5,9 @@
 #include "Conditions/SimpleTableCondition.h"
 #include "Framework/Configure/Parameters.h"
 #include "Framework/EventProcessor.h"
+#include "Recon/Event/CompositePulse.h"
 #include "Recon/Event/HgcrocDigiCollection.h"
 #include "Recon/Event/HgcrocPulseTruth.h"
-#include "Recon/Event/CompositePulse.h"
 #include "SimCore/Event/SimCalorimeterHit.h"
 #include "Tools/NoiseGenerator.h"
 

@@ -221,8 +221,8 @@ bool HgcrocEmulator::digitize(
     }  // TOT or ADC Mode
   }  // sampling baskets
 
-
-  if(savePulseTruthInfo_) pulseTruthColl_->push_back(ldmx::HgcrocPulseTruth(channelID, pulse));
+  if (savePulseTruthInfo_)
+    pulseTruthColl_->push_back(ldmx::HgcrocPulseTruth(channelID, pulse));
 
   // we only get here if we never went into TOT mode
   // check the SOI to see if we should read out
