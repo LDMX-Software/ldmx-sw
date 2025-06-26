@@ -512,6 +512,15 @@ class HCalRawDigi(ldmxcfg.Analyzer) :
         self.input_name = input_name
         self.input_pass = ''
 
+class HgcrocPulseTruth(ldmxcfg.Analyzer) :
+    def __init__(self, input_digi_name, input_truth_name) :
+        super().__init__('hgcroc_pulse_truth', 'dqm::HgcrocPulseTruth', 'DQM')
+        self.input_digi_name = input_digi_name
+        self.input_digi_pass = ''
+        self.input_truth_name = input_truth_name
+        self.input_truth_pass = ''
+
+
 class NtuplizeHgcrocDigiCollection(ldmxcfg.Analyzer) :
     def __init__(self,input_name, pedestal_table = None, input_pass = '', 
             using_eid = None, already_aligned = False,

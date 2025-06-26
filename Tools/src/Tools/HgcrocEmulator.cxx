@@ -73,7 +73,7 @@ bool HgcrocEmulator::digitize(
 
   // step 1: gather voltages into groups separated by (programmable) ns, single
   // pass
-  CompositePulse pulse(pulseFunc_, gain, pedestal);
+  ldmx::CompositePulse pulse(pulseFunc_, gain, pedestal);
 
   for (auto hit : arriving_pulses) pulse.addOrMerge(hit, hit_merge_ns_);
 
@@ -220,6 +220,9 @@ bool HgcrocEmulator::digitize(
       digiToAdd.emplace_back(false, false, adc_t_minus1, adc, toa);
     }  // TOT or ADC Mode
   }  // sampling baskets
+
+
+  if(savePulseTruthInfo_) pulseTruthColl_->push_back(ldmx::HgcrocPulseTruth(channelID, pulse));
 
   // we only get here if we never went into TOT mode
   // check the SOI to see if we should read out

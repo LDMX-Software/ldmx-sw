@@ -25,6 +25,11 @@ if(BUILD_EVENT_ONLY)
   register_event_object( module_path "Recon/Event" namespace "ldmx" 
                          class "HgcrocDigiCollection" )
   register_event_object( module_path "Recon/Event" 
+                         namespace "ldmx" class "HgcrocPulseTruth" 
+                         type "collection")
+  register_event_object( module_path "Recon/Event" namespace "ldmx" 
+                         class "CompositePulse" )
+  register_event_object( module_path "Recon/Event" 
                          namespace "ldmx" class "HgcrocTrigDigi" 
                          type "collection" )
   register_event_object( module_path "Recon/Event" 

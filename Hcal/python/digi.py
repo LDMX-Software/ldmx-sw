@@ -94,6 +94,8 @@ class HcalDigiProducer(Producer) :
         # avg noise set to 0.02PE
         self.avgNoiseRMS = self.hgcroc.calculateVoltageHcal(0.02)/self.avgGain
 
+        self.savePulseTruthInfo = False
+
         # If false, digitize every channel, by not dropping any pulses
         # to e.g. simulate a pedestal measurement
         self.zeroSuppression = True
@@ -102,6 +104,7 @@ class HcalDigiProducer(Producer) :
         self.inputCollName = 'HcalSimHits'
         self.inputPassName = ''
         self.digiCollName = 'HcalDigis'
+        self.pulseTruthCollName = 'HcalPulseTruth'
 
 class HcalRecProducer(Producer) :
     """Configuration for the HcalRecProducer
