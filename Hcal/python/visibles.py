@@ -107,7 +107,6 @@ class VisiblesCutflow(ldmxcfg.Analyzer) :
         self.disc_cut = 0.999965
        
         self.beam_energy = 8000.0
-        self.is_EaT = False
         
         self.hcal_rec_coll_name = "HcalRecHits"
         self.hcal_rec_pass_name = ''
@@ -139,6 +138,9 @@ class VisiblesCutflow(ldmxcfg.Analyzer) :
         self.build1DHistogram("visiblesDiscHigh", "visiblesDiscHigh", 10000, 0.999, 1)
         self.build1DHistogram("visiblesDiscHighNorm", "visiblesDiscHighNorm", 10000, 0.999, 1)
         self.build2DHistogram("ecalDiscvsVisDisc", "visDisc", 1000, 0.9999, 1, "ecalDisc", 1000, 0.999, 1)
+        
+        self.build1DHistogram("ROC", "ROC", 10000, 0.99, 1)
+        self.build1DHistogram("nevents", "nevents", 1, 0, 2)
 
         self.build1DHistogram("beamEnergyFrac", "beamEnergyFrac", 100, 0.5, 1)
         self.build1DHistogram("beamAngle", "beamAngle", 100, 0, 0.5)
