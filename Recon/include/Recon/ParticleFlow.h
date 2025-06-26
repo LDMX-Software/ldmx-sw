@@ -37,10 +37,16 @@ class ParticleFlow : public framework::Producer {
   virtual void onProcessEnd();
 
   void fillCandTrack(ldmx::PFCandidate& cand, const ldmx::SimTrackerHit& tk);
+  void fillCandCalo(ldmx::PFCandidate& cand, const ldmx::CaloCluster& cl,
+                    TGraph gResponse, int PIDnb);
   void fillCandEMCalo(ldmx::PFCandidate& cand, const ldmx::CaloCluster& em);
   void fillCandHadCalo(ldmx::PFCandidate& cand, const ldmx::CaloCluster& had);
 
  private:
+  const std::vector<ldmx::CaloCluster> getEcalClusters(
+      framework::Event& event, std::string inputClusterCollName,
+      std::string inputClusterPassName);
+
   TGraph* eCorr_{0};
   TGraph* hCorr_{0};
 
@@ -48,15 +54,11 @@ class ParticleFlow : public framework::Producer {
   std::string inputEcalCollName_;
   std::string inputHcalCollName_;
   std::string inputTrackCollName_;
-
   std::string input_ecal_passname_;
   std::string input_hcal_passname_;
   std::string input_tracks_passname_;
-
-  std::string input_track_event_passname_;
-  std::string input_ecal_event_passname_;
-  std::string input_hcal_event_passname_;
-
+  // bool to toggle using pre-existing clusters instead of making new
+  bool use_existing_ecal_clusters_;
   // name of collection for PF outputs
   std::string outputCollName_;
   // configuration

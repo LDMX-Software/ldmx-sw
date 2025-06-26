@@ -54,16 +54,13 @@ class pfProducer(ldmxcfg.Producer) :
         self.inputEcalCollName  = 'PFEcalClusters'
         self.inputHcalCollName  = 'PFHcalClusters'
         self.inputTrackCollName = 'PFTracks'
+        self.use_existing_ecal_clusters = False
         self.outputCollName     = 'PFCandidates'
         self.singleParticle     = False
-        
         self.input_ecal_passname  = ''
         self.input_hcal_passname  = ''
         self.input_tracks_passname  = ''
-        self.input_track_event_passname  = ''
-        self.input_ecal_event_passname  = ''
-        self.input_hcal_event_passname  = ''
-  
+
 class pfTruthProducer(ldmxcfg.Producer) :
     """Configuration for track selector for particle reco"""
     def __init__(self, name='PFTruth') :
