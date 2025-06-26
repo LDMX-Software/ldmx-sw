@@ -38,7 +38,7 @@ class EcalMipTrackingProcessor : public framework::Producer {
  public:
   typedef std::pair<ldmx::EcalID, float> CellEnergyPair;
 
-  typedef std::pair<float, float> XYCoords;
+using XYCoords = ldmx::XYCoords;
 
   EcalMipTrackingProcessor(const std::string& name, framework::Process& process)
       : Producer(name, process) {}
@@ -67,12 +67,7 @@ class EcalMipTrackingProcessor : public framework::Producer {
 
   void produce(framework::Event& event) override;
 
-  // MIP tracking:  Class for storing hit information for tracking in a
-  // convenient way
-  struct HitData {
-    int layer;
-    TVector3 pos;
-  };
+  using HitData = ldmx::HitData;
 
  private:
   void clearProcessor();
