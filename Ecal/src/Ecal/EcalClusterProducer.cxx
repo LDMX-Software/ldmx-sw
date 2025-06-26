@@ -31,7 +31,6 @@ void EcalClusterProducer::configure(framework::config::Parameters& parameters) {
   algo_name_ = parameters.getParameter<std::string>("algo_name");
   cluster_coll_name_ =
       parameters.getParameter<std::string>("cluster_coll_name");
-
   CLUE_ = parameters.getParameter<bool>("CLUE");
   nbr_of_layers_ = parameters.getParameter<int>("nbr_of_layers");
   reclustering_ = parameters.getParameter<bool>("reclustering");
@@ -72,6 +71,34 @@ void EcalClusterProducer::produce(framework::Event& event) {
       cluster.setNHits(wcVec[aWC].getHits().size());
       cluster.addHits(wcVec[aWC].getHits());
       cluster.addFirstLayerHits(fWcVec[aWC].getHits());
+
+      float cl_x(0), cl_y(0), cl_z(0), cl_xx(0), cl_yy(0), cl_zz(0);
+      float cl_w = 1;  // weight
+      float sumw = 0;
+
+      for (auto hit : wcVec[aWC].getHits()) {
+        if (hit->getEnergy() < minHitEnergy_) continue;
+        cl_w = log(hit->getEnergy()) - log(minHitEnergy_);
+        cl_x += cl_w * hit->getXPos();
+        cl_y += cl_w * hit->getYPos();
+        cl_z += cl_w * hit->getZPos();
+        cl_xx += cl_w * hit->getXPos() * hit->getXPos();
+        cl_yy += cl_w * hit->getYPos() * hit->getYPos();
+        cl_zz += cl_w * hit->getZPos() * hit->getZPos();
+        sumw += cl_w;
+      }  // over hits
+      // could probably get this as cluster.getCentroidX() instead
+      cl_x /= sumw;  // now is <x>
+      cl_y /= sumw;
+      cl_z /= sumw;
+      cl_xx /= sumw;  // now is <x^2>
+      cl_yy /= sumw;
+      cl_zz /= sumw;
+      cl_xx = sqrt(cl_xx - cl_x * cl_x);  // now is sqrt(<x^2>-<x>^2)
+      cl_yy = sqrt(cl_yy - cl_y * cl_y);
+      cl_zz = sqrt(cl_zz - cl_z * cl_z);
+
+      cluster.setRMSXYZ(cl_xx, cl_yy, cl_zz);
 
       histograms_.fill("nHits", wcVec[aWC].getHits().size());
       histograms_.fill("cluster_energy", wcVec[aWC].centroid().E());
