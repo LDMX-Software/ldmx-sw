@@ -18,7 +18,9 @@ p.sequence = [ mySim ]
 import os
 import sys
 
-p.maxEvents = int(os.environ['LDMX_NUM_EVENTS'])
+# this sample takes about 5 times more than the other CI wfs
+# so we divide with 5 to get the same ballpark in time
+p.maxEvents = int(os.environ['LDMX_NUM_EVENTS']) // 5
 p.run = int(os.environ['LDMX_RUN_NUMBER'])
 
 p.histogramFile = f'hist.root'
