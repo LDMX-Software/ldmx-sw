@@ -110,11 +110,13 @@ void TrigMipReco::produce(framework::Event& event) {
         track.push_back(&seed);
 
         const TrigCaloHit* last = &seed;  // Most recent hit in track
+        int holes = 0;
+        float growthFactor = 1.0f;
 
         // Look layer by layer for next hit within dR
         for (int l = seed.layer() + 1; l <= maxLayer; ++l) {
           const TrigCaloHit* bestHit = nullptr;
-          float bestdR2 = radiusCut2;
+          float bestdR2 = radiusCut2 * (growthFactor * growthFactor); // Grow search window if there is a hole
 
           for (const auto& cand : layerHits[l]) {
             if (usedHits.count(&cand) || cand.energy() < minEnergy_ || cand.energy() > maxEnergy_) continue;
@@ -135,6 +137,11 @@ void TrigMipReco::produce(framework::Event& event) {
           if (bestHit) {
             track.push_back(bestHit);  // Builds track from best hits
             last = bestHit;
+            holes = 0;
+            growthFactor = 1.0f; // Reset search window
+          } else {
+            holes++; // Maybe not needed since holes are calculated in a different way below
+            growthFactor = (holes + 1); // Keep expanding
           }
         }
 
