@@ -6,8 +6,6 @@ TrigScintHitDQM::TrigScintHitDQM(const std::string &name,
                                  framework::Process &process)
     : framework::Analyzer(name, process) {}
 
-TrigScintHitDQM::~TrigScintHitDQM() {}
-
 void TrigScintHitDQM::onProcessStart() {
   ldmx_log(debug) << "Process starts!";
 
