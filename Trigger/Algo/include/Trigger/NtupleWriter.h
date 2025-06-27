@@ -29,7 +29,8 @@ class NtupleWriter : public framework::Producer {
   bool writeEle_{true};
   bool writeEcalSums_{true};
   bool writeHcalSums_{true};
-  bool writeEcalTrigMIPS_{true};
+  bool writeEcalTrigMIPs_{true};
+  bool writeHcalTrigMIPs_{true};
 };
 }  // namespace trigger
 

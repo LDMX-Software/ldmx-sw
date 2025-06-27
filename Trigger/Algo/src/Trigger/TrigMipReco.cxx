@@ -18,7 +18,7 @@ void TrigMipReco::produce(framework::Event& event) {
   if (!event.exists(hitCollName_)) return;
   auto caloHits{event.getObject<TrigCaloHitCollection>(hitCollName_)};
 
-  if (calorimeterTypeIsHcal_) {  // HCAL MIP Reconstruction
+  if (calorimeterTypeIsHcal_) { //////////////////////////// HCAL MIP Reconstruction ///////////////////////////////////
     TrigCaloHitCollection sortedHits;
     int evenMatrix[24][5] = {};
     int evenStart[5] = {99, 99, 99, 99, 99};
@@ -81,7 +81,7 @@ void TrigMipReco::produce(framework::Event& event) {
     std::sort(mips.begin(), mips.end());
 
     event.add(passCollName_, mips);
-  } else {                 // ECAL MIP Reconstruction
+  } else { ///////////////////////////////////// ECAL MIP Reconstruction ///////////////////////////////////////////////
     float radiusCut = 50;  // mm
     int maxLayer = 32;
     int minTrackLength = 5;  // example
