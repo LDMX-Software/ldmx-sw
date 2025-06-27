@@ -98,7 +98,7 @@ void EcalVetoProcessor::configure(framework::config::Parameters &parameters) {
   if (!std::ifstream(rocFileName_).good()) {
     EXCEPTION_RAISE(
         "EcalVetoProcessor",
-        "The specified RoC file '" + rocFileName_ + "' does not exist!");
+        "The specified RoC file '" + rocFileName_ + "' does not exist!"); 
   } else {
     std::ifstream rocfile(rocFileName_);
     std::string line, value;
@@ -168,7 +168,7 @@ void EcalVetoProcessor::clearProcessor() {
 void EcalVetoProcessor::produce(framework::Event &event) {
   // Get the Ecal Geometry
   geometry_ = &getCondition<ldmx::EcalGeometry>(
-      ldmx::EcalGeometry::CONDITIONS_OBJECT_NAME);
+      ldmx::EcalGeometry::CONDITIONS_OBJECT_NAME); 
 
   ldmx::EcalVetoResult result;
 

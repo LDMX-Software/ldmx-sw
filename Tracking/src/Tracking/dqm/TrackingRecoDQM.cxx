@@ -488,7 +488,7 @@ void TrackingRecoDQM::TrackStateMonitoring(const ldmx::Tracks& tracks,
     [[maybe_unused]] double sigmatheta = sqrt(
         cov(Acts::BoundIndices::eBoundTheta, Acts::BoundIndices::eBoundTheta));
     [[maybe_unused]] double sigmaqop = sqrt(cov(
-        Acts::BoundIndices::eBoundQOverP, Acts::BoundIndices::eBoundQOverP));
+        Acts::BoundIndices::eBoundQOverP, Acts::BoundIndices::eBoundQOverP)); 
 
     double trk_qop = track.getQoP();
     double trk_p = 1. / abs(trk_qop);

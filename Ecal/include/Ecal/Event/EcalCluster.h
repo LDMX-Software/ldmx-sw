@@ -70,6 +70,7 @@ class EcalCluster : public ldmx::CaloCluster {
 
   std::vector<unsigned int> firstLayerHitIDs_;
   std::vector<unsigned int> hitOriginIDs_;
+  std::vector<unsigned int> hitIncidentIDs_;
 
   std::vector<double> densities_;
   std::vector<double> densities_secondaries_;

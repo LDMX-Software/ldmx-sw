@@ -91,6 +91,22 @@ EcalGeometry::EcalGeometry(const framework::config::Parameters& ps)
     std::cout << "[EcalGeometry] : fully constructed" << std::endl;
 }
 
+int EcalGeometry::getClosestID(double x, double y, double z) const {
+  static const double tolerance = 0.3;  // thickness of Si
+  int layer_id{-1};
+  float min_dist = 1000;
+  for (const auto& [lid, layer_xyz] : layer_pos_xy_) {
+    float dist = abs(std::get<2>(layer_xyz) - z);
+    if (dist < min_dist) {
+        layer_id = lid;
+        min_dist = dist;
+    }
+  }
+  return layer_id;
+}
+
+
+
 EcalID EcalGeometry::getID(double x, double y, double z, bool fallible) const {
   static const double tolerance = 0.3;  // thickness of Si
   int layer_id{-1};

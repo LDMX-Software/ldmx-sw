@@ -67,7 +67,7 @@ void EcalClusterProducer::produce(framework::Event& event) {
     for (auto& density: densities) {
        density->findHitOrigins(ecalSimHits);
        densities_energy.push_back(density->totalEnergy);
-       std::cout << density->totalEnergy << std::endl;
+       //std::cout << density->totalEnergy << std::endl;
        auto count = std::count_if(density->hit_origins.begin(), density->hit_origins.end(),[&](auto const& val){ return val >= 10; });
        if (count >= 1) {densities_secondaries_energy.push_back(density->totalEnergy);}
     }

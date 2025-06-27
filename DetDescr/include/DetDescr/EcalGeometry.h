@@ -176,6 +176,16 @@ class EcalGeometry : public framework::ConditionsObject {
                bool fallible = false) const;
 
   /**
+   * Get the closest cell's layer number from its position
+   *
+   * @param[in] x global x position [mm]
+   * @param[in] y global y position [mm]
+   * @param[in] z global z position [mm]
+   * @return layer number of the cell
+   */
+  int getClosestID(double x, double y, double z) const;
+
+  /**
    * Get a cell's position from its ID number
    *
    * std::tuple is useful here because you can use C++17's pattern

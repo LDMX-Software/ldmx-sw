@@ -50,12 +50,26 @@ class pfProducer(ldmxcfg.Producer) :
         self.inputTrackCollName = 'PFTracks'
         self.outputCollName     = 'PFCandidates'
         self.singleParticle     = False
+
+class pfProducerBrem(ldmxcfg.Producer) :
+    """Configuration for particle reco"""
+    def __init__(self, name='PFlow') :
+        super().__init__(name, 'recon::ParticleFlowBrem','Recon')
+        self.inputEcalCollName  = 'ECalClusters'
+        self.inputHcalCollName  = 'PFHcalClusters'
+        self.inputTaggerTrackCollName = 'TaggerTruthTracks'
+        self.inputRecoilTrackCollName = 'RecoilTruthTracks'
+        self.outputCollName     = 'PFCandidates'
+        self.beam_energy     = 8.0
+        self.roc_file = '/fs/ddn/sdf/group/ldmx/users/eberzin/multi_electron/ldmx-sw/Ecal/data/RoC_v14_8gev.csv'
+        self.singleParticle     = False
   
 class pfTruthProducer(ldmxcfg.Producer) :
     """Configuration for track selector for particle reco"""
     def __init__(self, name='PFTruth') :
-        super().__init__(name, 'recon::PFTruthProducer','Recon')
+        super().__init__(name, 'recon::PFTruthProducerBrem','Recon')
         self.outputPrimaryCollName = 'PFTruth'
         self.outputTargetCollName  = 'PFTruthTarget'
         self.outputEcalCollName    = 'PFTruthEcal'
         self.outputHcalCollName    = 'PFTruthHcal'
+        self.outputCollName    = 'PFTruthCands'
