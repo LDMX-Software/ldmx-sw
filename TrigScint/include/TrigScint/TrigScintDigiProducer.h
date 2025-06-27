@@ -13,6 +13,7 @@
 
 #include "DetDescr/TrigScintID.h"
 #include "Framework/Configure/Parameters.h"
+#include "Framework/Event.h"
 #include "Framework/EventProcessor.h"
 #include "Framework/Exception/Exception.h"
 #include "Framework/RandomNumberSeedService.h"
@@ -27,6 +28,7 @@ enum TrigScintSection {
   UPSTREAM_TAGGER = 1,
   UPSTREAM_TARGET,
   DOWNSTREAM_TARGET,
+  ACTIVE_TARGET,
   NUM_SECTIONS
 };
 
@@ -67,10 +69,6 @@ class TrigScintDigiProducer : public framework::Producer {
 
   /// Generate noise hits given the number of channels and mean noise.
   std::unique_ptr<ldmx::NoiseGenerator> noiseGenerator_{nullptr};
-
-  /// Class to set the verbosity level.
-  // TODO: Make use of the global verbose parameter.
-  bool verbose_{false};
 
   /// Name of the input collection containing the sim hits
   std::string inputCollection_;
