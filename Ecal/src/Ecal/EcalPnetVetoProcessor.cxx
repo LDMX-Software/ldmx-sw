@@ -53,8 +53,10 @@ void EcalPnetVetoProcessor::produce(framework::Event& event) {
     make_inputs(ecal_geometry, ecalRecHits);
     // run the DNN
     auto logits = rt_->run(input_names_, data_)[0];
-    auto prob = log_softmax(logits);
-    result.setDiscValue(prob[0]);
+    // make a log softmax of the logits then transform back
+    // to a probability with an exponential
+    auto prob = std::exp((log_softmax(logits)[1]));
+    result.setDiscValue(prob);
   } else {
     result.setDiscValue(-99);
   }

@@ -80,7 +80,7 @@ from LDMX.Tracking import full_tracking_sequence
 import LDMX.Ecal.EcalGeometry
 import LDMX.Ecal.ecal_hardcoded_conditions
 from LDMX.Ecal import digi as eDigi
-from LDMX.Ecal import vetos
+from LDMX.Ecal import ecal_vetos
 
 # Load the HCAL modules
 import LDMX.Hcal.HcalGeometry
