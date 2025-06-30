@@ -1,5 +1,6 @@
-# file storing git VERSION for build
+# file storing git VERSION and COMMIT_SHA for build
 VERSION
+COMMIT_SHA
 
 # Byte-compiled files
 __pycache__/

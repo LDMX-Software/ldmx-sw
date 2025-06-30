@@ -52,6 +52,7 @@ install-denv:
 [private]
 prep-version:
     git fetch --tags && git describe --tags | cut -f 1 -d '-' > VERSION
+    git rev-parse HEAD > COMMIT_SHA
 
 # configure how ldmx-sw will be built
 # added ADDITIONAL_WARNINGS and CLANG_TIDY to help improve code quality
