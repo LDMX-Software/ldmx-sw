@@ -25,13 +25,6 @@ help_message := "shared recipes for ldmx-sw development
   COMMANDS:
 "
 
-# inherited from ldmx-env bash functions
-# we could look into removing this and instead having the denv_workspace be
-# the justfile_directory() itself but that is a larger change than introducing just
-# the denv workspace is colloquially known as LDMX_BASE
-
-export LDMX_BASE := parent_directory(justfile_directory())
-
 # tell denv where the workspace is
 # usually, denv deduces where the workspace is by finding the .denv directory,
 # but we want to set where the denv is within the justfile so users could (for example)
@@ -39,13 +32,13 @@ export LDMX_BASE := parent_directory(justfile_directory())
 #   just -f path/to/ldmx-sw/justfile fire config.py
 # would run this denv even if there is a denv in the directory where config.py is.
 
-export denv_workspace := LDMX_BASE
+export denv_workspace := justfile_directory()
 
 # make sure APPTAINER_CACHEDIR is not in the home directory
 # unless the user has already defined it
 #   just 1.15
 
-export APPTAINER_CACHEDIR := env("APPTAINER_CACHEDIR", LDMX_BASE / ".apptainer")
+export APPTAINER_CACHEDIR := env("APPTAINER_CACHEDIR", denv_workspace / ".apptainer")
 
 _default:
     @just --list --justfile {{ justfile() }} --list-heading "{{ help_message }}"
@@ -128,12 +121,12 @@ init:
       if denv check --workspace --quiet; then
         echo "\033[32mWorkspace already initialized.\033[0m"
       else
-        denv init --clean-env --name ldmx ldmx/dev:latest "${LDMX_BASE}"
+        denv init --clean-env --name ldmx ldmx/dev:latest
       fi
     else
       # denv v1.1.0 and later has updated denv init to allow us
       # to avoid overwriting quietly
-      denv init --clean-env --no-over --no-mkdir --name ldmx ldmx/dev:latest "${LDMX_BASE}"
+      denv init --clean-env --no-over --no-mkdir --name ldmx ldmx/dev:latest
     fi
     denv config print
 
