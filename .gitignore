@@ -27,3 +27,8 @@ EventDisplay/include/EventDisplay/EventDisplayLinkDef.h
 *.root
 # except special files storing test results
 !.github/validation_samples/**.root
+
+# denv stuff
+.bash*
+.profile
+.denv
