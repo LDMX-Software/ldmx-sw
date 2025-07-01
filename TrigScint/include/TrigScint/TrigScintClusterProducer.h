@@ -8,7 +8,6 @@
 #define TRIGSCINT_TRIGSCINTCLUSTERPRODUCER_H
 
 // LDMX Framework
-#include <iterator>  // std::next
 #include <map>
 
 #include "Framework/Configure/Parameters.h"  // Needed to import parameters from configuration file

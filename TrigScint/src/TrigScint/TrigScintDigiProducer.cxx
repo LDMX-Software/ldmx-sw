@@ -67,7 +67,7 @@ void TrigScintDigiProducer::produce(framework::Event &event) {
     // it within the loop shouldn't matter.
     module = id.module();
     std::vector<float> position = simHit.getPosition();
-    ldmx_log(trace) << " Modedule ID = " << id.raw();
+    ldmx_log(trace) << " Module ID = " << id.raw();
 
     // check if hits is from beam electron and, if so, add to beamFrac
     for (int i = 0; i < simHit.getNumberOfContribs(); i++) {
