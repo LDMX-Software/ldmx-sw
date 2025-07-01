@@ -46,8 +46,13 @@ class TrackersTrackingGeometryProvider(ldmxcfg.ConditionsObjectProvider):
             raise Exception('TrackersTrackingGeometryProvider is a singleton class and should only be retrieved using get_instance()')
         else: 
             super().__init__('TrackersTrackingGeometry', 'tracking::geo::TrackersTrackingGeometryProvider', 'Tracking')
-            self.debug = False
             self.setDetector('ldmx-det-v14-8gev-no-cals')
+            #  acts x = global z
+            #   // global z:  -200 - 900/2 = -650 to -200 + 900/2 = 250 mm
+            #   // global y: -70 to 70
+            #   // global x: -240 to 240
+            self.tracker_y_length = 480.0 # in mm
+            self.tracker_z_length = 240.0 # in mm
             TrackersTrackingGeometryProvider.__instance = self
 
 TrackersTrackingGeometryProvider.get_instance()
