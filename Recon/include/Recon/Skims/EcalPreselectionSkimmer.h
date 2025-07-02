@@ -10,6 +10,7 @@
 //----------//
 //   LDMX   //
 //----------//
+#include "Ecal/Event/EcalMipResult.h"
 #include "Ecal/Event/EcalVetoResult.h"
 #include "Framework/EventProcessor.h"
 
@@ -38,6 +39,10 @@ class EcalPreselectionSkimmer : public framework::Producer {
   std::string ecal_veto_name_;
   /// Pass Name for veto object
   std::string ecal_veto_pass_;
+  /// Collection Name for mip result object
+  std::string ecal_mip_name_;
+  /// Pass Name for mip result object
+  std::string ecal_mip_pass_;
   /// Max value for summed det
   double summed_det_max_;
   /// Max value for summed tigh iso

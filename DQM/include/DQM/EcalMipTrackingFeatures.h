@@ -37,6 +37,12 @@ class EcalMipTrackingFeatures : public framework::Analyzer {
 
   /// Pass Name for veto object
   std::string ecal_veto_pass_;
+
+  /// Collection Name for mip result object
+  std::string ecal_mip_name_;
+
+  /// Pass Name for mip result object
+  std::string ecal_mip_pass_;
 };
 }  // namespace dqm
 
