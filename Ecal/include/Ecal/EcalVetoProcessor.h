@@ -1,3 +1,4 @@
+
 /**
  * @file EcalVetoProcessor.h
  * @brief Class that determines if event is vetoable using ECAL hit information
@@ -10,21 +11,30 @@
 // LDMX
 #include "DetDescr/EcalGeometry.h"
 #include "DetDescr/EcalID.h"
+#include "DetDescr/SimSpecialID.h"
 #include "Ecal/Event/EcalHit.h"
+#include "Ecal/Event/EcalTrajectoryInfo.h"
 #include "Ecal/Event/EcalVetoResult.h"
 #include "Framework/Configure/Parameters.h"
 #include "Framework/EventProcessor.h"
+#include "SimCore/Event/SimParticle.h"
+#include "SimCore/Event/SimTrackerHit.h"
+#include "Tools/AnalysisUtils.h"
 #include "Tools/ONNXRuntime.h"
-
-// ROOT (MIP tracking)
-#include "TVector3.h"
-
-// For recoil tracking
 #include "Tracking/Event/Track.h"
 
 // C++
+#include <stdlib.h>
+
+#include <algorithm>
+#include <cmath>
+#include <fstream>
+#include <iomanip>
 #include <map>
 #include <memory>
+
+// ROOT (for anle calculations)
+#include "TVector3.h"
 
 namespace ecal {
 
@@ -64,13 +74,6 @@ class EcalVetoProcessor : public framework::Producer {
   void configure(framework::config::Parameters& parameters) override;
 
   void produce(framework::Event& event) override;
-
-  // MIP tracking:  Class for storing hit information for tracking in a
-  // convenient way
-  struct HitData {
-    int layer;
-    TVector3 pos;
-  };
 
  private:
   void clearProcessor();
@@ -156,15 +159,7 @@ class EcalVetoProcessor : public framework::Producer {
   float avgLayerHit_{0};
   float stdLayerHit_{0};
   float ecalBackEnergy_{0};
-  // MIP tracking
-  /// Number of "straight" tracks found in the event
-  int nStraightTracks_{0};
-  /// Number of "linreg" tracks found in the event
-  int nLinregTracks_{0};
-  /// First ECal layer in which a hit is found near the photon
-  int firstNearPhLayer_{0};
-  /// Number of hits near the photon trajectory
-  int nNearPhHits_{0};
+
   /// Angular separation between the projected photon and electron trajectories
   /// as projected at ECAL
   float epAng_{0};
@@ -178,14 +173,10 @@ class EcalVetoProcessor : public framework::Producer {
   float epDot_{0};
   /// Dot product of the photon and electron momenta unit vectors at Target
   float epDotAtTarget_{0};
-  /// Number of hits in the photon territory
-  int photonTerritoryHits_{0};
 
   float bdtCutVal_{0};
 
   float beamEnergyMeV_{0};
-  bool run_lin_reg_{true};
-  float linreg_radius_{0};
 
   std::string bdtFileName_;
   std::string rocFileName_;

@@ -68,7 +68,7 @@ count.input_pass_name = ''
 
 # Load ecal veto and use tracking in it
 ecalVeto = ecal_vetos.EcalVetoProcessor()
-
+ecalMip = ecal_vetos.EcalMipProcessor()
 # Load HCAL veto
 import LDMX.Hcal.hcal as hcal
 hcal_veto = hcal.HcalVetoProcessor()
@@ -86,6 +86,7 @@ p.sequence.extend([
         ecal_digi.EcalRecProducer(), 
         ecal_cluster.EcalClusterProducer(),
         ecalVeto,
+        ecalMip,
         hcal_digi_reco,
         hcal_veto,
         *ts_digis,

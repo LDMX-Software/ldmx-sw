@@ -15,6 +15,8 @@ EcalPreselectionSkimmer::EcalPreselectionSkimmer(const std::string &name,
 void EcalPreselectionSkimmer::configure(framework::config::Parameters &ps) {
   ecal_veto_name_ = ps.getParameter<std::string>("ecal_veto_name");
   ecal_veto_pass_ = ps.getParameter<std::string>("ecal_veto_pass");
+  ecal_mip_name_ = ps.getParameter<std::string>("ecal_mip_name");
+  ecal_mip_pass_ = ps.getParameter<std::string>("ecal_mip_pass");
   summed_det_max_ = ps.getParameter<double>("summed_det_max");  // MeV
   summed_tight_iso_max_ =
       ps.getParameter<double>("summed_tight_iso_max");  // MeV
@@ -38,7 +40,8 @@ void EcalPreselectionSkimmer::produce(framework::Event &event) {
   bool fiducialDecision{true};
   const auto &ecalVeto{
       event.getObject<ldmx::EcalVetoResult>(ecal_veto_name_, ecal_veto_pass_)};
-
+  const auto &mip_result{
+      event.getObject<ldmx::EcalMipResult>(ecal_mip_name_, ecal_mip_pass_)};
   // Boolean to if we skim for fiducial / nonfiducial
   fiducialDecision = (fiducial_level_ == 0 ||
                       (fiducial_level_ == 1 && ecalVeto.getFiducial()) ||
@@ -55,7 +58,7 @@ void EcalPreselectionSkimmer::produce(framework::Event &event) {
       (ecalVeto.getXStd() < shower_x_std_max_) &&
       (ecalVeto.getMaxCellDep() < max_cell_dep_max_) &&
       (ecalVeto.getStdLayerHit() < std_layer_hit_max_) &&
-      (ecalVeto.getNStraightTracks() < n_straight_tracks_max_) &&
+      (mip_result.getNStraightTracks() < n_straight_tracks_max_) &&
       (ecalVeto.getDisc() > bdt_disc_min_) && fiducialDecision;
 
   // Tell the skimmer to keep or drop the event based on whether preselection

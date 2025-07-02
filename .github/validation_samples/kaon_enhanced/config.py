@@ -113,7 +113,8 @@ ts_clusters = [
 # ECAL part
 ecalReco   =eDigi.EcalRecProducer()
 ecalDigi = eDigi.EcalDigiProducer()
-ecalVeto   =vetos.EcalVetoProcessor()
+ecalVeto = vetos.EcalVetoProcessor()
+ecalMip = vetos.EcalMipProcessor()
 
 # HCAL part
 hcal_digi_reco = hDigi.HcalSimpleDigiAndRecProducer()
@@ -141,6 +142,7 @@ p.sequence.extend([
         ecalDigi, 
         ecalReco, 
         ecalVeto,
+        ecalMip,
         *ts_digis,
         *ts_clusters, 
         trigScintTrack, 
