@@ -17,10 +17,8 @@ void TrigScintDigiProducer::configure(
   inputCollection_ = parameters.getParameter<std::string>("input_collection");
   inputPassName_ = parameters.getParameter<std::string>("input_pass_name");
   outputCollection_ = parameters.getParameter<std::string>("output_collection");
-
   sim_particles_passname_ =
       parameters.getParameter<std::string>("sim_particles_passname");
-  verbose_ = parameters.getParameter<bool>("verbose");
 }
 
 void TrigScintDigiProducer::onNewRun(const ldmx::RunHeader &) {
@@ -69,23 +67,20 @@ void TrigScintDigiProducer::produce(framework::Event &event) {
     // it within the loop shouldn't matter.
     module = id.module();
     std::vector<float> position = simHit.getPosition();
-
-    if (verbose_) {
-      std::cout << id << std::endl;
-    }
+    ldmx_log(trace) << " Module ID = " << id.raw();
 
     // check if hits is from beam electron and, if so, add to beamFrac
     for (int i = 0; i < simHit.getNumberOfContribs(); i++) {
       auto contrib = simHit.getContrib(i);
-      if (verbose_) {
-        std::cout << "contrib " << i << " trackID: " << contrib.trackID
-                  << " pdgID: " << contrib.pdgCode << " edep: " << contrib.edep
-                  << std::endl;
-        std::cout << "\t particle id: "
-                  << particleMap[contrib.trackID].getPdgID()
-                  << " particle status: "
-                  << particleMap[contrib.trackID].getGenStatus() << std::endl;
-      }
+
+      ldmx_log(trace) << "contrib " << i << " trackID: " << contrib.trackID
+                      << " pdgID: " << contrib.pdgCode
+                      << " edep: " << contrib.edep;
+      ldmx_log(trace) << "\t particle id: "
+                      << particleMap[contrib.trackID].getPdgID()
+                      << " particle status: "
+                      << particleMap[contrib.trackID].getGenStatus();
+
       if (particleMap[contrib.trackID].getPdgID() == 11 &&
           particleMap[contrib.trackID].getGenStatus() == 1) {
         if (beamFrac.find(id) == beamFrac.end()) {
@@ -160,15 +155,10 @@ void TrigScintDigiProducer::produce(framework::Event &event) {
       trigScintHits.push_back(hit);
     }
 
-    if (verbose_) {
-      std::cout << id << std::endl;
-      std::cout << "Edep: " << Edep[id] << std::endl;
-      std::cout << "numPEs: " << cellPEs[id] << std::endl;
-      std::cout << "time: " << Time[id] << std::endl;
-      std::cout << "z: " << Zpos[id] << std::endl;
-      std::cout << "\t X: " << Xpos[id] << "\t Y: " << Ypos[id]
-                << "\t Z: " << Zpos[id] << std::endl;
-    }  // end verbose
+    ldmx_log(trace) << " ID = " << id.raw() << " Edep: " << Edep[id]
+                    << " numPEs: " << cellPEs[id] << " time: " << Time[id]
+                    << " z: " << Zpos[id] << "\t X: " << Xpos[id]
+                    << " Y: " << Ypos[id] << " Z: " << Zpos[id];
   }
 
   // ------------------------------- Noise simulation -----------------------//

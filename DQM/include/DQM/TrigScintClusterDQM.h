@@ -22,7 +22,7 @@ class TrigScintClusterDQM : public framework::Analyzer {
   TrigScintClusterDQM(const std::string &name, framework::Process &process);
 
   /** Destructor */
-  ~TrigScintClusterDQM();
+  ~TrigScintClusterDQM() = default;
 
   /**
    * Configure the processor using the given user specified parameters.

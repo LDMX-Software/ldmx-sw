@@ -8,33 +8,29 @@ namespace dqm {
 TrigScintDQM::TrigScintDQM(const std::string &name, framework::Process &process)
     : framework::Analyzer(name, process) {}
 
-TrigScintDQM::~TrigScintDQM() {}
-
 void TrigScintDQM::onProcessStart() {
   ldmx_log(debug) << "Process starts!";
 
   getHistoDirectory();
 
   histograms_.create("id", "Channel ID of sim hit", 100, 0, 100);
-  histograms_.create("total_energy", "Total energy deposition in the pad/event",
-                     1000, 0, 3000);
-  histograms_.create("n_hits", "TrigScint hit multiplicity in the pad/event",
-                     100, 0, 100);
-  histograms_.create("x", "Hit x position", 1000, -100, 100);
-  histograms_.create("y", "Hit y position", 1000, -100, 100);
+  histograms_.create("total_energy",
+                     "Total energy deposition in the pad/event [MeV]", 1000, 0,
+                     3000);
+  histograms_.create("n_hits", "Hit multiplicity in the pad/event [MeV]", 100,
+                     0, 100);
+  histograms_.create("x", "Hit x position [mm]", 1000, -100, 100);
+  histograms_.create("y", "Hit y position [mm]", 1000, -100, 100);
   histograms_.create("z", "Hit z position", 1000, -900, 100);
 
-  histograms_.create("energy", "Energy deposition in a TrigScint bar", 250, 0,
-                     1500);
-  histograms_.create("hit_time", "TrigScint hit time (ns)", 1600, -100, 1500);
+  histograms_.create("energy", "Energy deposition in a bar", 250, 0, 1500);
+  histograms_.create("hit_time", "Hit time [ns]", 1600, -100, 1500);
 
-  histograms_.create("max_pe:time", "Max Photoelectrons in a TrigScint bar",
-                     1500, 0, 1500, "TrigScint max PE hit time (ns)", 1500, 0,
-                     1500);
+  histograms_.create("max_pe:time", "Max Photoelectrons in a bar", 1500, 0,
+                     1500, "Max PE hit time [ns]", 1500, 0, 1500);
 
-  histograms_.create("min_time_hit_above_thresh:pe",
-                     "Photoelectrons in a TrigScint bar", 1500, 0, 1500,
-                     "Earliest time of TrigScint hit above threshold (ns)",
+  histograms_.create("min_time_hit_above_thresh:pe", "Photoelectrons in a bar",
+                     1500, 0, 1500, "Earliest time of hit above threshold [ns]",
                      1600, -100, 1500);
 }
 
@@ -43,8 +39,8 @@ void TrigScintDQM::configure(framework::config::Parameters &ps) {
   padName_ = ps.getParameter<std::string>("pad");
   hit_passname_ = ps.getParameter<std::string>("hit_passname");
 
-  ldmx_log(debug) << "In TrigScintDQM::configure, got parameters "
-                  << hitCollectionName_ << " and " << padName_;
+  ldmx_log(debug) << " Collection name = " << hitCollectionName_
+                  << " pad name = " << padName_;
 }
 
 void TrigScintDQM::analyze(const framework::Event &event) {

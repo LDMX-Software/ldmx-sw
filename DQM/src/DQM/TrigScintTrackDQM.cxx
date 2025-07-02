@@ -6,8 +6,6 @@ TrigScintTrackDQM::TrigScintTrackDQM(const std::string &name,
                                      framework::Process &process)
     : framework::Analyzer(name, process) {}
 
-TrigScintTrackDQM::~TrigScintTrackDQM() {}
-
 void TrigScintTrackDQM::onProcessStart() {
   getHistoDirectory();
 
@@ -19,9 +17,9 @@ void TrigScintTrackDQM::onProcessStart() {
   histograms_.create("beamEfrac",
                      "Track edep fraction associated with beam electron", 101,
                      0., 1.01);
-  histograms_.create("x", "Track x position", 1000, -100, 100);
-  histograms_.create("y", "Track y position", 1000, -100, 100);
-  histograms_.create("z", "Track z position", 1000, -900, 100);
+  histograms_.create("x", "Track x position [mm]", 1000, -100, 100);
+  histograms_.create("y", "Track y position [mm]", 1000, -100, 100);
+  histograms_.create("z", "Track z position [mm]", 1000, -900, 100);
 
   // TODO: implement getting a list of the constructed histograms, to iterate
   // through and set overflow boolean.
@@ -31,8 +29,8 @@ void TrigScintTrackDQM::configure(framework::config::Parameters &ps) {
   trackCollectionName_ = ps.getParameter<std::string>("track_collection");
   passName_ = ps.getParameter<std::string>("passName").c_str();
 
-  ldmx_log(info) << "In TrigScintTrackDQM::configure, got parameters "
-                 << trackCollectionName_ << " and " << passName_;
+  ldmx_log(debug) << "Collection name = " << trackCollectionName_
+                  << " pass name =" << passName_;
 }
 
 void TrigScintTrackDQM::analyze(const framework::Event &event) {
