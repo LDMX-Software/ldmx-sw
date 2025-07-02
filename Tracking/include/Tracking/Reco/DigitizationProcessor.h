@@ -9,12 +9,14 @@
 #include "Acts/Surfaces/Surface.hpp"
 
 //--- LDMX ---//
+#include "Tracking/Event/Measurement.h"
 #include "Tracking/Sim/TrackingUtils.h"
 
 //--- ACTS ---//
 #include "Acts/Definitions/Units.hpp"
 
 //--- C++ ---//
+#include <chrono>
 #include <random>
 
 namespace ldmx {

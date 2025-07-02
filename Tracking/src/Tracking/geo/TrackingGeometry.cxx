@@ -1,11 +1,6 @@
 
 #include "Tracking/geo/TrackingGeometry.h"
 
-#include "G4RunManager.hh"
-#include "G4UIsession.hh"
-#include "G4strstreambuf.hh"
-#include "Tracking/geo/GeoUtils.h"
-
 namespace tracking::geo {
 
 /**
@@ -24,11 +19,8 @@ class SilentG4 : public G4UIsession {
 
 TrackingGeometry::TrackingGeometry(const std::string& name,
                                    const Acts::GeometryContext& gctx,
-                                   const std::string& gdml, bool debug)
-    : framework::ConditionsObject(name),
-      gctx_{gctx},
-      gdml_{gdml},
-      debug_{debug} {
+                                   const std::string& gdml)
+    : framework::ConditionsObject(name), gctx_{gctx}, gdml_{gdml} {
   // Build The rotation matrix to the tracking frame
   // Rotate the sensors to be orthogonal to X
   double rotationAngle = M_PI * 0.5;
@@ -88,7 +80,7 @@ TrackingGeometry::TrackingGeometry(const std::string& name,
   if (silence) {
     // we created the session and silenced G4
     // undo that now incase others have use for G4
-    // nullptr => standard (std::cout and std::cerr)
+    // nullptr => standard (ldmx_log(trace) and std::cerr)
     G4coutbuf.SetDestination(nullptr);
     G4cerrbuf.SetDestination(nullptr);
   }
@@ -110,23 +102,19 @@ G4VPhysicalVolume* TrackingGeometry::findDaughterByName(G4VPhysicalVolume* pvol,
 void TrackingGeometry::getAllDaughters(G4VPhysicalVolume* pvol) {
   G4LogicalVolume* lvol = pvol->GetLogicalVolume();
 
-  if (debug_)
-    std::cout << "Checking daughters of ::" << pvol->GetName() << std::endl;
+  ldmx_log(trace) << "Checking daughters of ::" << pvol->GetName();
 
   for (G4int i = 0; i < lvol->GetNoDaughters(); i++) {
     G4VPhysicalVolume* fDaughterPhysVol = lvol->GetDaughter(i);
 
-    if (debug_) {
-      std::cout << "name::" << fDaughterPhysVol->GetName() << std::endl;
-      std::cout << "pos::" << fDaughterPhysVol->GetTranslation() << std::endl;
-      std::cout << "n_dau::"
-                << fDaughterPhysVol->GetLogicalVolume()->GetNoDaughters()
-                << std::endl;
-      std::cout << "replica::" << fDaughterPhysVol->IsReplicated() << std::endl;
-      std::cout << "copyNR::" << fDaughterPhysVol->GetCopyNo() << std::endl;
+    ldmx_log(trace) << "name::" << fDaughterPhysVol->GetName();
+    ldmx_log(trace) << "pos::" << fDaughterPhysVol->GetTranslation();
+    ldmx_log(trace) << "n_dau::"
+                    << fDaughterPhysVol->GetLogicalVolume()->GetNoDaughters();
+    ldmx_log(trace) << "replica::" << fDaughterPhysVol->IsReplicated();
+    ldmx_log(trace) << "copyNR::" << fDaughterPhysVol->GetCopyNo();
 
-      getAllDaughters(fDaughterPhysVol);
-    }
+    getAllDaughters(fDaughterPhysVol);
   }
 }
 
@@ -148,18 +136,17 @@ void TrackingGeometry::dumpGeometry(const std::string& outputDir,
                                     const Acts::GeometryContext& gctx) const {
   if (!tGeometry_) return;
 
-  if (debug_) {
-    std::cout << __PRETTY_FUNCTION__ << std::endl;
+  {
+    ldmx_log(trace) << __PRETTY_FUNCTION__;
 
     for (auto const& surfaceId : layer_surface_map_) {
-      std::cout << " " << surfaceId.first << std::endl;
-      std::cout << " Check the surface" << std::endl;
-      //      surfaceId.second->toStream(gctx, std::cout);
+      ldmx_log(trace) << " " << surfaceId.first;
+      ldmx_log(trace) << " Check the surface";
+      //      surfaceId.second->toStream(gctx, ldmx_log(trace));
       surfaceId.second->toStream(gctx);
-      std::cout << " GeometryID::" << surfaceId.second->geometryId()
-                << std::endl;
-      std::cout << " GeometryID::" << surfaceId.second->geometryId().value()
-                << std::endl;
+      ldmx_log(trace) << " GeometryID: " << surfaceId.second->geometryId();
+      ldmx_log(trace) << " GeometryID value: "
+                      << surfaceId.second->geometryId().value();
     }
   }
 
@@ -249,10 +236,9 @@ void TrackingGeometry::ConvertG4Rot(const G4RotationMatrix* g4rot,
 Acts::Vector3 TrackingGeometry::ConvertG4Pos(const G4ThreeVector& g4pos) const {
   Acts::Vector3 trans{g4pos.x(), g4pos.y(), g4pos.z()};
 
-  if (debug_) {
-    std::cout << std::endl;
-    std::cout << "g4pos::" << g4pos << std::endl;
-    std::cout << trans << std::endl;
+  {
+    ldmx_log(trace) << "g4pos::" << g4pos;
+    ldmx_log(trace) << "trans" << trans;
   }
 
   return trans;
@@ -299,9 +285,8 @@ void TrackingGeometry::makeLayerSurfacesMap() {
         1;  // set sensor ID from 0 to 1 for the tagger and from 0 to 9 for the
             // axial sensors in the back layers of the recoil
 
-    if (debug_)
-      std::cout << "VolumeID " << volumeId << " LayerId " << layerId
-                << " sensorId " << sensorId << std::endl;
+    ldmx_log(trace) << "VolumeID " << volumeId << " LayerId " << layerId
+                    << " sensorId " << sensorId;
 
     // surface ID = vol * 1000 + ly * 100 + sensor
     unsigned int surfaceId = volumeId * 1000 + layerId * 100 + sensorId;

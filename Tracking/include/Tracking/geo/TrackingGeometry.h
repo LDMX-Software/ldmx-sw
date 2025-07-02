@@ -30,7 +30,12 @@
 #include "Framework/ConditionsObject.h"
 #include "Framework/Configure/Parameters.h"
 #include "Framework/Exception/Exception.h"
+#include "Framework/Logger.h"
+#include "G4RunManager.hh"
+#include "G4UIsession.hh"
+#include "G4strstreambuf.hh"
 #include "Tracking/geo/DetectorElement.h"
+#include "Tracking/geo/GeoUtils.h"
 
 namespace tracking::geo {
 
@@ -52,10 +57,9 @@ class TrackingGeometry : public framework::ConditionsObject {
    * @param[in] name the name of this geometry condition object
    * @param[in] gctx the geometry context for this geometry
    * @param[in] gdml the path to the detector GDML to load
-   * @param[in] debug whether to print extra information or nah
    */
   TrackingGeometry(const std::string& name, const Acts::GeometryContext& gctx,
-                   const std::string& gdml, bool debug);
+                   const std::string& gdml);
 
   /// Destructor.
   virtual ~TrackingGeometry() = default;
@@ -102,15 +106,14 @@ class TrackingGeometry : public framework::ConditionsObject {
   std::vector<std::shared_ptr<DetectorElement>> detElements;
 
  protected:
-  // This is not actually used anywhere
-  // TODO:: Remove this.
   const Acts::GeometryContext& gctx_;
-
   std::string gdml_{""};
-  bool debug_{false};
   // The rotation matrices to go from global to tracking frame.
   Acts::RotationMatrix3 x_rot_, y_rot_;
   std::shared_ptr<const Acts::TrackingGeometry> tGeometry_{nullptr};
   G4VPhysicalVolume* fWorldPhysVol_{nullptr};
+
+ private:
+  enableLogging("TrackingGeometry")
 };
 }  // namespace tracking::geo
