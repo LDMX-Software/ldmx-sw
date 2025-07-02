@@ -1,28 +1,22 @@
 #include "Tracking/geo/TrackersTrackingGeometry.h"
 
-#include "Tracking/geo/GeoUtils.h"
-
 namespace tracking::geo {
 
 const std::string TrackersTrackingGeometry::NAME = "TrackersTrackingGeometry";
 
 TrackersTrackingGeometry::TrackersTrackingGeometry(
-    const Acts::GeometryContext& gctx, const std::string& gdml, bool debug)
-    : TrackingGeometry(NAME, gctx, gdml, debug) {
-  if (debug_) std::cout << "Looking for Tagger and Recoil volumes" << std::endl;
+    const Acts::GeometryContext& gctx, const std::string& gdml,
+    double tracker_y_length, double tracker_z_length)
+    : TrackingGeometry(NAME, gctx, gdml) {
+  tagger_ = findDaughterByName(fWorldPhysVol_, "tagger_PV");
+  buildTaggerLayoutMap(tagger_, "tagger");
+  Acts::CuboidVolumeBuilder::VolumeConfig tagger_volume_cfg = buildVolumeConfig(
+      tagger_, tagger_layout, tracker_y_length, tracker_z_length, "Tagger");
 
-  Tagger_ = findDaughterByName(fWorldPhysVol_, "tagger_PV");
-  // v12
-  // BuildTaggerLayoutMap(Tagger_, "LDMXTaggerModuleVolume_physvol");
-  // v14
-  BuildTaggerLayoutMap(Tagger_, "tagger");
-  Acts::CuboidVolumeBuilder::VolumeConfig tagger_volume_cfg =
-      buildTrackerVolume();
-
-  Recoil_ = findDaughterByName(fWorldPhysVol_, "recoil_PV");
-  BuildRecoilLayoutMap(Recoil_, "recoil");
-  Acts::CuboidVolumeBuilder::VolumeConfig recoil_volume_cfg =
-      buildRecoilVolume();
+  recoil_ = findDaughterByName(fWorldPhysVol_, "recoil_PV");
+  buildRecoilLayoutMap(recoil_, "recoil");
+  Acts::CuboidVolumeBuilder::VolumeConfig recoil_volume_cfg = buildVolumeConfig(
+      recoil_, recoil_layout, tracker_y_length, tracker_z_length, "Recoil");
 
   std::vector<Acts::CuboidVolumeBuilder::VolumeConfig> volBuilderConfigs{
       tagger_volume_cfg, recoil_volume_cfg};
@@ -32,7 +26,11 @@ TrackersTrackingGeometry::TrackersTrackingGeometry(
 
   Acts::CuboidVolumeBuilder::Config config;
   config.position = {-200, 0., 0.};
-  config.length = {900, 480, 240};
+  // acts x = global z
+  // global z:  -200 - 900/2 = -650 to -200 + 900/2 = 250 mm
+  // global y: -70 to 70
+  // global x: -240 to 240
+  config.length = {900, tracker_y_length, tracker_z_length};
   config.volumeCfg = volBuilderConfigs;
 
   cvb.setConfig(config);
@@ -50,180 +48,11 @@ TrackersTrackingGeometry::TrackersTrackingGeometry(
   makeLayerSurfacesMap();
 }
 
-// This is basically a copy of the Tagger. TODO:: Make a single method!
-Acts::CuboidVolumeBuilder::VolumeConfig
-TrackersTrackingGeometry::buildRecoilVolume() {
-  Acts::CuboidVolumeBuilder::VolumeConfig subDetVolumeConfig;
-  Acts::Transform3 subDet_transform = GetTransform(*Recoil_, true);
-  if (debug_) {
-    std::cout << subDet_transform.translation() << std::endl;
-    std::cout << subDet_transform.rotation() << std::endl;
-  }
-
-  // Add 1mm to not make it sit on the first layer surface  -  Ask Omar if it's
-  // OK
-  Acts::Vector3 sub_det_position = {
-      subDet_transform.translation()(0) - 1,
-      subDet_transform.translation()(1),
-      subDet_transform.translation()(2),
-  };
-
-  // Get the size of the volume
-  G4Box* subDetBox = (G4Box*)(Recoil_->GetLogicalVolume()->GetSolid());
-
-  // In tracker coordinates. I add 1mm so that it compensates with the 1mm
-  // movement of above
-  double x_length =
-      2 * (subDetBox->GetZHalfLength() + 1) * Acts::UnitConstants::mm;
-
-  // double y_length  = 2*subDetBox->GetXHalfLength() * Acts::UnitConstants::mm;
-  // double z_length  = 2*subDetBox->GetYHalfLength() * Acts::UnitConstants::mm;
-
-  // The bField is defined only between -70, 70 along ACTS Z Axis (-130,130 in
-  // the extended version)
-  double y_length = TrackerYLength_;
-  double z_length = TrackerZLength_;
-
-  if (debug_) {
-    std::cout << Recoil_->GetName() << std::endl;
-    std::cout << "position" << std::endl;
-    std::cout << sub_det_position << std::endl;
-    std::cout << "x_length " << x_length << " y_length " << y_length
-              << " z_length " << z_length << std::endl;
-  }
-
-  subDetVolumeConfig.position = sub_det_position;
-  subDetVolumeConfig.length = {x_length, y_length, z_length};
-  subDetVolumeConfig.name = "Recoil";
-
-  // Vacuum material
-  Acts::Material subdet_mat = Acts::Material();
-  subDetVolumeConfig.volumeMaterial =
-      std::make_shared<Acts::HomogeneousVolumeMaterial>(subdet_mat);
-
-  std::vector<Acts::CuboidVolumeBuilder::LayerConfig> layerConfig;
-
-  // Prepare the layers
-  for (auto& layer : recoil_layout) {
-    if (debug_) {
-      std::cout << layer.first << " : surfaces==>" << layer.second.size()
-                << std::endl;
-    }
-
-    Acts::CuboidVolumeBuilder::LayerConfig lcfg;
-    lcfg.surfaces = layer.second;
-    // Get the surface thickness
-    double clearance = 0.01;
-    double thickness = layer.second.front()
-                           ->surfaceMaterial()
-                           ->materialSlab(Acts::Vector2{0., 0.})
-                           .thickness();
-
-    // std::cout<<"Sensor Thickness from Material slab "<< thickness<<std::endl;
-
-    lcfg.envelopeX = std::array<double, 2>{thickness / 2. + clearance,
-                                           thickness / 2. + clearance};
-    lcfg.active = true;
-    layerConfig.push_back(lcfg);
-  }
-
-  subDetVolumeConfig.layerCfg = layerConfig;
-
-  return subDetVolumeConfig;
-}
-
-Acts::CuboidVolumeBuilder::VolumeConfig
-TrackersTrackingGeometry::buildTrackerVolume() {
-  Acts::CuboidVolumeBuilder::VolumeConfig subDetVolumeConfig;
-
-  // Get the transform wrt the world volume in tracker frame
-  Acts::Transform3 subDet_transform = GetTransform(*Tagger_, true);
-
-  // Add 1mm to not make it sit on the first layer surface  -  Ask Omar if it's
-  // OK
-  Acts::Vector3 sub_det_position = {
-      subDet_transform.translation()(0) - 1,
-      subDet_transform.translation()(1),
-      subDet_transform.translation()(2),
-  };
-
-  // Get the size of the volume
-  G4Box* subDetBox = (G4Box*)(Tagger_->GetLogicalVolume()->GetSolid());
-
-  // In tracker coordinates. I add 1mm so that it compensates with the 1mm
-  // movement of above
-  double x_length =
-      2 * (subDetBox->GetZHalfLength() + 1) * Acts::UnitConstants::mm;
-
-  // double y_length  = 2*subDetBox->GetXHalfLength() * Acts::UnitConstants::mm;
-  // double z_length  = 2*subDetBox->GetYHalfLength() * Acts::UnitConstants::mm;
-
-  // The bField is defined only between -70, 70 along ACTS Z Axis (-130,130 in
-  // the extended version)
-  double y_length = TrackerYLength_;
-  double z_length = TrackerZLength_;
-
-  if (debug_) {
-    std::cout << Tagger_->GetName() << std::endl;
-    std::cout << "position" << std::endl;
-    std::cout << sub_det_position << std::endl;
-    std::cout << "x_length " << x_length << " y_length " << y_length
-              << " z_length " << z_length << std::endl;
-
-    std::cout << subDet_transform.translation() << std::endl;
-    std::cout << subDet_transform.rotation() << std::endl;
-  }
-
-  subDetVolumeConfig.position = sub_det_position;
-  subDetVolumeConfig.length = {x_length, y_length, z_length};
-  subDetVolumeConfig.name = "Tagger";
-
-  // Vacuum material
-  Acts::Material subdet_mat = Acts::Material();
-  subDetVolumeConfig.volumeMaterial =
-      std::make_shared<Acts::HomogeneousVolumeMaterial>(subdet_mat);
-
-  std::vector<Acts::CuboidVolumeBuilder::LayerConfig> layerConfig;
-
-  // Prepare the layers
-  for (auto& layer : tagger_layout) {
-    if (debug_) {
-      std::cout << layer.first << " : surfaces==>" << layer.second.size()
-                << std::endl;
-      //      for (auto& surface : layer.second) surface->toStreamImpl(gctx_,
-      //      std::cout);
-      for (auto& surface : layer.second) surface->toStream(gctx_);
-    }
-
-    Acts::CuboidVolumeBuilder::LayerConfig lcfg;
-    lcfg.surfaces = layer.second;
-    // Get the surface thickness
-    double clearance = 0.01;
-    double thickness = layer.second.front()
-                           ->surfaceMaterial()
-                           ->materialSlab(Acts::Vector2{0., 0.})
-                           .thickness();
-
-    // std::cout<<"Sensor Thickness from Material slab "<< thickness<<std::endl;
-
-    lcfg.envelopeX = std::array<double, 2>{thickness / 2. + clearance,
-                                           thickness / 2. + clearance};
-    lcfg.active = true;
-    layerConfig.push_back(lcfg);
-  }
-
-  subDetVolumeConfig.layerCfg = layerConfig;
-
-  return subDetVolumeConfig;
-}
-
-void TrackersTrackingGeometry::BuildRecoilLayoutMap(G4VPhysicalVolume* pvol,
+void TrackersTrackingGeometry::buildRecoilLayoutMap(G4VPhysicalVolume* pvol,
                                                     std::string surfacename) {
-  if (debug_) {
-    std::cout << "Building layout for the " << pvol->GetName() << " tracker"
-              << std::endl;
-    getAllDaughters(pvol);
-  }
+  ldmx_log(trace) << "Building layout for the " << pvol->GetName()
+                  << " tracker";
+  getAllDaughters(pvol);
 
   // Get the global transform
   Acts::Transform3 tracker_transform = GetTransform(*pvol);
@@ -332,13 +161,11 @@ void TrackersTrackingGeometry::BuildRecoilLayoutMap(G4VPhysicalVolume* pvol,
 // This function gets the surfaces from the trackers and orders them in
 // ascending z.
 
-void TrackersTrackingGeometry::BuildTaggerLayoutMap(G4VPhysicalVolume* pvol,
+void TrackersTrackingGeometry::buildTaggerLayoutMap(G4VPhysicalVolume* pvol,
                                                     std::string surfacename) {
-  if (debug_) {
-    std::cout << "Building layout for the " << pvol->GetName() << " tracker"
-              << std::endl;
-    getAllDaughters(pvol);
-  }
+  ldmx_log(trace) << "Building layout for the " << pvol->GetName()
+                  << " tracker";
+  // getAllDaughters(pvol);
 
   // Get the global transform
   Acts::Transform3 tracker_transform = GetTransform(*pvol);
@@ -358,7 +185,7 @@ void TrackersTrackingGeometry::BuildTaggerLayoutMap(G4VPhysicalVolume* pvol,
       // LDMXTaggerModuleVolume_component0Sensor0Box, this is the sensor itself
       // (active region)
 
-      // Tagger_ -> LDMXTaggerModuleVolume_physvol1 ->
+      // tagger_ -> LDMXTaggerModuleVolume_physvol1 ->
       // LDMXTaggerModuleVolume_component0_physvol
       // ->LDMXTaggerModuleVolume_component0Sensor0_physvol
       //         -> Get Box for the dimension: GetLogical->GetSolid
@@ -397,8 +224,8 @@ void TrackersTrackingGeometry::BuildTaggerLayoutMap(G4VPhysicalVolume* pvol,
       }
 
       if (!_ActiveSensor) {
-        throw std::runtime_error(
-            "Could not find the ActiveSensor from Component0Volume");
+        ldmx_log(fatal) << "Could not find the ActiveSensor for tagger volume "
+                        << l_vol->GetDaughter(i)->GetName();
       }
 
       // Get the surface
@@ -446,9 +273,9 @@ void TrackersTrackingGeometry::BuildTaggerLayoutMap(G4VPhysicalVolume* pvol,
 
 std::shared_ptr<Acts::PlaneSurface> TrackersTrackingGeometry::GetSurface(
     G4VPhysicalVolume* pvol, Acts::Transform3 ref_trans) {
-  if (!pvol)
-    throw std::runtime_error(
-        "TrackersTrackingGeometry::GetSurface:: pvol is nullptr");
+  if (!pvol) {
+    ldmx_log(fatal) << "pvol is nullptr";
+  }
 
   // Get the surface transform
   Acts::Transform3 surface_transform = GetTransform(*pvol);
@@ -458,37 +285,34 @@ std::shared_ptr<Acts::PlaneSurface> TrackersTrackingGeometry::GetSurface(
   // Now transform to the tracker frame
   Acts::Transform3 surface_transform_tracker = toTracker(surface_transform);
 
-  if (debug_) {
-    std::cout << "THE SENSOR TRANSFORM - TRANSLATION" << std::endl;
-    std::cout << surface_transform.translation()(0) << std::endl;
-    std::cout << surface_transform.translation()(1) << std::endl;
-    std::cout << surface_transform.translation()(2) << std::endl;
-    std::cout << "THE SENSOR TRANSFORM - ROTATION" << std::endl;
-    std::cout << surface_transform.rotation() << std::endl;
+  ldmx_log(trace) << "THE SENSOR TRANSFORM - TRANSLATION";
+  ldmx_log(trace) << surface_transform.translation()(0);
+  ldmx_log(trace) << surface_transform.translation()(1);
+  ldmx_log(trace) << surface_transform.translation()(2);
+  ldmx_log(trace) << "THE SENSOR TRANSFORM - ROTATION";
+  ldmx_log(trace) << surface_transform.rotation();
 
-    std::cout << "TO THE TRACKER FRAME" << std::endl;
-    std::cout << surface_transform_tracker.translation()(0) << std::endl;
-    std::cout << surface_transform_tracker.translation()(1) << std::endl;
-    std::cout << surface_transform_tracker.translation()(2) << std::endl;
-    std::cout << "THE SENSOR TRANSFORM - ROTATION" << std::endl;
-    std::cout << surface_transform_tracker.rotation() << std::endl;
-  }
+  ldmx_log(trace) << "TO THE TRACKER FRAME";
+  ldmx_log(trace) << surface_transform_tracker.translation()(0);
+  ldmx_log(trace) << surface_transform_tracker.translation()(1);
+  ldmx_log(trace) << surface_transform_tracker.translation()(2);
+  ldmx_log(trace) << "THE SENSOR TRANSFORM - ROTATION";
+  ldmx_log(trace) << surface_transform_tracker.rotation();
 
   // This material is defined in different units with respect what acts expects.
   // I decided to hardcode here. TODO: fix this
 
   /*
     G4Material* sens_mat = _ActiveSensor->GetLogicalVolume()->GetMaterial();
-    if (debug_) {
-    std::cout<<"Checking the material of
-    "<<l_vol->GetDaughter(i)->GetName()<<std::endl; std::cout<<"With
+    ldmx_log(trace)<<"Checking the material of
+    "<<l_vol->GetDaughter(i)->GetName()<<std::endl; ldmx_log(trace)<<"With
     sensor::"<<_ActiveSensor->GetName()<<std::endl;
-    std::cout<<sens_mat->GetName()<<std::endl;
-    std::cout<<"RL="<<sens_mat->GetRadlen()<<"
+    ldmx_log(trace)<<sens_mat->GetName()<<std::endl;
+    ldmx_log(trace)<<"RL="<<sens_mat->GetRadlen()<<"
     lambda="<<sens_mat->GetNuclearInterLength()<<std::endl;
-    std::cout<<"A="<<sens_mat->GetA()<<" Z="<<sens_mat->GetZ()<<"
+    ldmx_log(trace)<<"A="<<sens_mat->GetA()<<" Z="<<sens_mat->GetZ()<<"
     rho="<<sens_mat->GetDensity()<<std::endl;
-    }
+
 
     Acts::Material silicon =
     Acts::Material::fromMassDensity(sens_mat->GetRadlen(),
@@ -506,12 +330,10 @@ std::shared_ptr<Acts::PlaneSurface> TrackersTrackingGeometry::GetSurface(
   // Get the active sensor box
   G4Box* surfaceSolid = (G4Box*)(pvol->GetLogicalVolume()->GetSolid());
 
-  if (debug_) {
-    std::cout << "Sensor Dimensions" << std::endl;
-    std::cout << surfaceSolid->GetXHalfLength() << " "
-              << surfaceSolid->GetYHalfLength() << " "
-              << surfaceSolid->GetZHalfLength() << " " << std::endl;
-  }
+  ldmx_log(trace) << "Sensor Dimensions";
+  ldmx_log(trace) << surfaceSolid->GetXHalfLength() << " "
+                  << surfaceSolid->GetYHalfLength() << " "
+                  << surfaceSolid->GetZHalfLength() << " ";
 
   // Form the material slab
   double thickness =
@@ -545,6 +367,73 @@ std::shared_ptr<Acts::PlaneSurface> TrackersTrackingGeometry::GetSurface(
   detElements.push_back(detElement);
 
   return surface;
+}
+
+Acts::CuboidVolumeBuilder::VolumeConfig
+TrackersTrackingGeometry::buildVolumeConfig(
+    const G4VPhysicalVolume* detector,
+    const std::map<std::string,
+                   std::vector<std::shared_ptr<const Acts::Surface>>>
+        layout,
+    double tracker_y_length, double tracker_z_length,
+    const std::string& volumeName) {
+  Acts::CuboidVolumeBuilder::VolumeConfig subDetVolumeConfig;
+
+  // Get the transform wrt the world volume in tracker frame
+  Acts::Transform3 subDet_transform = GetTransform(*detector, true);
+
+  // Add 1mm to not make it sit on the first layer surface
+  Acts::Vector3 sub_det_position = {
+      subDet_transform.translation()(0) - 1,
+      subDet_transform.translation()(1),
+      subDet_transform.translation()(2),
+  };
+
+  ldmx_log(trace) << sub_det_position;
+  // Get the size of the volume
+  G4Box* subDetBox = (G4Box*)(detector->GetLogicalVolume()->GetSolid());
+
+  // In tracker coordinates. Add 1mm to compensate for the movement above
+  double x_length =
+      2 * (subDetBox->GetZHalfLength() + 1) * Acts::UnitConstants::mm;
+  ldmx_log(info) << "x_length = " << x_length
+                 << " y_length = " << tracker_y_length
+                 << " z_length = " << tracker_z_length;
+
+  subDetVolumeConfig.position = sub_det_position;
+  subDetVolumeConfig.length = {x_length, tracker_y_length, tracker_z_length};
+  subDetVolumeConfig.name = volumeName;
+
+  // Vacuum material
+  Acts::Material subdet_mat = Acts::Material();
+  subDetVolumeConfig.volumeMaterial =
+      std::make_shared<Acts::HomogeneousVolumeMaterial>(subdet_mat);
+
+  std::vector<Acts::CuboidVolumeBuilder::LayerConfig> layerConfig;
+
+  // Prepare the layers
+  for (auto& layer : layout) {
+    ldmx_log(trace) << layer.first << " : surfaces==>" << layer.second.size();
+
+    Acts::CuboidVolumeBuilder::LayerConfig lcfg;
+    lcfg.surfaces = layer.second;
+
+    // Get the surface thickness
+    double clearance = 0.01;
+    double thickness = layer.second.front()
+                           ->surfaceMaterial()
+                           ->materialSlab(Acts::Vector2{0., 0.})
+                           .thickness();
+
+    lcfg.envelopeX = std::array<double, 2>{thickness / 2. + clearance,
+                                           thickness / 2. + clearance};
+    lcfg.active = true;
+    layerConfig.push_back(lcfg);
+  }
+
+  subDetVolumeConfig.layerCfg = layerConfig;
+
+  return subDetVolumeConfig;
 }
 
 }  // namespace tracking::geo
