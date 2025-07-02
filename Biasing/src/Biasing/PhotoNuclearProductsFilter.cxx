@@ -15,7 +15,7 @@
 /*~~~~~~~~~~~~~*/
 /*   SimCore   */
 /*~~~~~~~~~~~~~*/
-#include "SimCore/UserTrackInformation.h"
+#include "SimCore/G4User/UserTrackInformation.h"
 
 namespace biasing {
 
@@ -78,4 +78,4 @@ void PhotoNuclearProductsFilter::stepping(const G4Step* step) {
 }
 }  // namespace biasing
 
-DECLARE_ACTION(biasing, PhotoNuclearProductsFilter)
+DECLARE_ACTION(biasing::PhotoNuclearProductsFilter)

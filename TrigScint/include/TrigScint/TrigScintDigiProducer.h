@@ -2,28 +2,25 @@
  * @file TrigScintDigiProducer.h
  * @brief Class that performs digitization of simulated trigger sctintillator
  * @author Andrew Whitbeck, TTU
+ * @author Tamas Almos Vami, UCSB
  */
 
 #ifndef EVENTPROC_TRIGSCINTDIGIPRODUCER_H
 #define EVENTPROC_TRIGSCINTDIGIPRODUCER_H
 
-/*~~~~~~~~~~*/
-/*   ROOT   */
-/*~~~~~~~~~~*/
-#include "TRandom3.h"
+#include <iostream>
+#include <random>  //for random num generators
 
-// LDMX
 #include "DetDescr/TrigScintID.h"
+#include "Framework/Configure/Parameters.h"
+#include "Framework/Event.h"
+#include "Framework/EventProcessor.h"
+#include "Framework/Exception/Exception.h"
+#include "Framework/RandomNumberSeedService.h"
 #include "Recon/Event/EventConstants.h"
 #include "SimCore/Event/SimCalorimeterHit.h"
 #include "Tools/NoiseGenerator.h"
 #include "TrigScint/Event/TrigScintHit.h"
-
-/*~~~~~~~~~~~~~~~*/
-/*   Framework   */
-/*~~~~~~~~~~~~~~~*/
-#include "Framework/Configure/Parameters.h"
-#include "Framework/EventProcessor.h"
 
 namespace trigscint {
 
@@ -31,6 +28,7 @@ enum TrigScintSection {
   UPSTREAM_TAGGER = 1,
   UPSTREAM_TARGET,
   DOWNSTREAM_TARGET,
+  ACTIVE_TARGET,
   NUM_SECTIONS
 };
 
@@ -58,18 +56,19 @@ class TrigScintDigiProducer : public framework::Producer {
 
   void produce(framework::Event& event) override;
 
+  /**
+   * Random number generation
+   */
+  virtual void onNewRun(const ldmx::RunHeader& runHeader) override;
+
   ldmx::TrigScintID generateRandomID(int module);
 
  private:
   /// Random number generator
-  std::unique_ptr<TRandom3> random_{nullptr};
+  std::mt19937 rng_;
 
   /// Generate noise hits given the number of channels and mean noise.
   std::unique_ptr<ldmx::NoiseGenerator> noiseGenerator_{nullptr};
-
-  /// Class to set the verbosity level.
-  // TODO: Make use of the global verbose parameter.
-  bool verbose_{false};
 
   /// Name of the input collection containing the sim hits
   std::string inputCollection_;
@@ -81,6 +80,8 @@ class TrigScintDigiProducer : public framework::Producer {
   /// Name of the output collection that will be used to stored the
   /// digitized trigger scintillator hits
   std::string outputCollection_;
+
+  std::string sim_particles_passname_;
 
   /// Number of strips per array
   int stripsPerArray_{50};

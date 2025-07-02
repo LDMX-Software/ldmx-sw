@@ -9,7 +9,7 @@
 /*~~~~~~~~~~~~~*/
 /*   SimCore   */
 /*~~~~~~~~~~~~~*/
-#include "SimCore/UserTrackInformation.h"
+#include "SimCore/G4User/UserTrackInformation.h"
 
 namespace biasing {
 namespace utility {
@@ -33,4 +33,4 @@ void TrackProcessFilter::PostUserTrackingAction(const G4Track* track) {
 }  // namespace utility
 }  // namespace biasing
 
-DECLARE_ACTION(biasing::utility, TrackProcessFilter)
+DECLARE_ACTION(biasing::utility::TrackProcessFilter)

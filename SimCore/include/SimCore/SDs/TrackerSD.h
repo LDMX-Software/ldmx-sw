@@ -3,7 +3,7 @@
 
 #include "DetDescr/TrackerID.h"
 #include "SimCore/Event/SimTrackerHit.h"
-#include "SimCore/SensitiveDetector.h"
+#include "SimCore/SDs/SensitiveDetector.h"
 
 namespace simcore {
 

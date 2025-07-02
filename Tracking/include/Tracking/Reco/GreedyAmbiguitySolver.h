@@ -101,6 +101,8 @@ class GreedyAmbiguitySolver final : public TrackingGeometryUser {
 
   std::string meas_collection_{"DigiTaggerSimHits"};
 
+  std::string input_pass_name_{""};
+
   struct State {
     std::size_t number_of_tracks{};
 
@@ -137,7 +139,7 @@ class GreedyAmbiguitySolver final : public TrackingGeometryUser {
   ///
   /// @param state A state object that was previously filled by the
   /// initialization.
-  void resolve(State& state) const;
+  void resolve(State& state);
 
   /// @param state A state object that was previously filled by the
   /// initialization.

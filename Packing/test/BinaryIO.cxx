@@ -111,14 +111,14 @@ TEST_CASE("BinaryIO", "[Packing][functionality]") {
         tracker_object_name("trackerDummyRaw"),
         triggerpad_object_name("triggerpadDummyRaw");
     framework::config::Parameters ps;
-    ps.addParameter("filename", std::string("file_test.raw"));
-    ps.addParameter("ecal_object_name", ecal_object_name);
-    ps.addParameter("hcal_object_name", hcal_object_name);
-    ps.addParameter("tracker_object_name", tracker_object_name);
-    ps.addParameter("triggerpad_object_name", triggerpad_object_name);
-    ps.addParameter("pass_name", std::string());
-    ps.addParameter("skip_unavailable", true);
-    ps.addParameter("verify_checksum", false);
+    ps.add<std::string>("filename", "file_test.raw");
+    ps.add("ecal_object_name", ecal_object_name);
+    ps.add("hcal_object_name", hcal_object_name);
+    ps.add("tracker_object_name", tracker_object_name);
+    ps.add("triggerpad_object_name", triggerpad_object_name);
+    ps.add<std::string>("pass_name", "");
+    ps.add("skip_unavailable", true);
+    ps.add("verify_checksum", false);
 
     std::vector<uint32_t> data = {0xAAAAAAAA, 0xBBBBBBBB, 0xCCCCCCCC,
                                   0xDDDDDDDD, 0xDEDEDEDE, 0xFEDCBA98};
@@ -170,10 +170,11 @@ TEST_CASE("BinaryIO", "[Packing][functionality]") {
         REQUIRE(f.nextEvent());
 
         CHECK(event.getEventNumber() == i_event + i);
-        CHECK(data == event.getCollection<uint32_t>(ecal_object_name));
-        CHECK(data == event.getCollection<uint32_t>(hcal_object_name));
-        CHECK(data == event.getCollection<uint32_t>(triggerpad_object_name));
-        CHECK_FALSE(event.exists(tracker_object_name));
+        CHECK(data == event.getCollection<uint32_t>(ecal_object_name, ""));
+        CHECK(data == event.getCollection<uint32_t>(hcal_object_name, ""));
+        CHECK(data ==
+              event.getCollection<uint32_t>(triggerpad_object_name, ""));
+        CHECK_FALSE(event.exists(tracker_object_name, ""));
 
         event.Clear();
         event.onEndOfEvent();

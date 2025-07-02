@@ -100,4 +100,4 @@ void ReSimVerifier::analyze(const framework::Event& event) {
 
 }  // Analyze
 }  // namespace dqm
-DECLARE_ANALYZER_NS(dqm, ReSimVerifier);
+DECLARE_ANALYZER(dqm::ReSimVerifier);

@@ -131,4 +131,4 @@ void HcalSingleEndRecProducer::produce(framework::Event& event) {
 }
 
 }  // namespace hcal
-DECLARE_PRODUCER_NS(hcal, HcalSingleEndRecProducer);
+DECLARE_PRODUCER(hcal::HcalSingleEndRecProducer);

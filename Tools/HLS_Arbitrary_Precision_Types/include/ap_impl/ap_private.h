@@ -5918,9 +5918,9 @@ std::ostream& operator<<(std::ostream& os, const ap_private<_AP_W, _AP_S>& x) {
 // ----------------------------------------------------------------
 // template <int _AP_W1, typename _AP_T1, int _AP_W2, typename _AP_T2>
 // struct ap_concat_ref {
-//#ifdef _MSC_VER
-//#pragma warning(disable : 4521 4522)
-//#endif
+// #ifdef _MSC_VER
+// #pragma warning(disable : 4521 4522)
+// #endif
 //  enum {
 //    _AP_WR = _AP_W1 + _AP_W2,
 //  };
@@ -6800,14 +6800,14 @@ struct _private_bit_ref {
 // avoid ambiguous errors
 #define OP_BIN_MIX_PTR(BIN_OP)                                           \
   template <typename PTR_TYPE, int _AP_W, bool _AP_S>                    \
-  INLINE PTR_TYPE* operator BIN_OP(PTR_TYPE* i_op,                       \
+  INLINE PTR_TYPE* operator BIN_OP(PTR_TYPE * i_op,                      \
                                    const ap_private<_AP_W, _AP_S>& op) { \
     typename ap_private<_AP_W, _AP_S>::ValType op2 = op;                 \
     return i_op BIN_OP op2;                                              \
   }                                                                      \
   template <typename PTR_TYPE, int _AP_W, bool _AP_S>                    \
   INLINE PTR_TYPE* operator BIN_OP(const ap_private<_AP_W, _AP_S>& op,   \
-                                   PTR_TYPE* i_op) {                     \
+                                   PTR_TYPE * i_op) {                    \
     typename ap_private<_AP_W, _AP_S>::ValType op2 = op;                 \
     return op2 BIN_OP i_op;                                              \
   }
@@ -7121,8 +7121,7 @@ OP_REL_MIX_BIT(!=)
   INLINE bool operator REL_OP(const _private_range_ref<_AP_W, _AP_S>& op,   \
                               C_TYPE op2) {                                 \
     return (ap_private<_AP_W, false>(op))                                   \
-        .                                                                   \
-        operator REL_OP(ap_private<_AP_W2, _AP_S2>(op2));                   \
+        .operator REL_OP(ap_private<_AP_W2, _AP_S2>(op2));                  \
   }                                                                         \
   template <int _AP_W, bool _AP_S>                                          \
   INLINE bool operator REL_OP(C_TYPE op2,                                   \
@@ -7171,8 +7170,7 @@ REF_REL_MIX_INT(ap_ulong, sizeof(ap_ulong) * 8, false)
       operator BIN_OP(const _private_range_ref<_AP_W, _AP_S>& op,              \
                       C_TYPE op2) {                                            \
     return (ap_private<_AP_W, false>(op))                                      \
-        .                                                                      \
-        operator BIN_OP(ap_private<_AP_W2, _AP_S2>(op2));                      \
+        .operator BIN_OP(ap_private<_AP_W2, _AP_S2>(op2));                     \
   }                                                                            \
   template <int _AP_W, bool _AP_S>                                             \
   INLINE                                                                       \

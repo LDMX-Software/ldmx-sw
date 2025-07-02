@@ -100,7 +100,7 @@ class half;
 // Attribute only for synthesis
 #ifdef __SYNTHESIS__
 #define INLINE inline __attribute__((always_inline))
-//#define INLINE inline __attribute__((noinline))
+// #define INLINE inline __attribute__((noinline))
 #else
 #define INLINE inline
 #endif

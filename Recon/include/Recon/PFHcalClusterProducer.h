@@ -38,6 +38,8 @@ class PFHcalClusterProducer : public framework::Producer {
 
   // name of collection for hits to be passed as input
   std::string hitCollName_;
+  // pass name of hit collection to be passed as input
+  std::string hitPassName_;
   // name of collection for pfCluster to be output
   std::string clusterCollName_;
   std::string suffix_;

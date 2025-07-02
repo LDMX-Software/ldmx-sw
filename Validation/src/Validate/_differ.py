@@ -7,6 +7,7 @@ import re
 # external dependencies
 import matplotlib
 import uproot
+import numpy as np
 # us
 from ._file import File
 
@@ -138,7 +139,7 @@ class Differ :
         for values, _bins, art in raw_histograms[1:]:
             ratio_ax.scatter(
                 bin_centers,
-                values/denominator,
+                np.divide(values, np.where(denominator == 0, np.nan, denominator)),
                 color = art[0].get_edgecolor()
             )
 

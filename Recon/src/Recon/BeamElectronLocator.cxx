@@ -72,8 +72,8 @@ void BeamElectronLocator::produce(framework::Event &event) {
         }
         isMatched = true;
         break;  // finding a match means Move on
-      }         // if coordinates match something we already found
-    }           // over found electrons
+      }  // if coordinates match something we already found
+    }  // over found electrons
     if (!isMatched) {
       if (verbose_) {
         ldmx_log(info) << "\tHit at (x = " << pos[0] << ", y = " << pos[1]
@@ -118,4 +118,4 @@ int BeamElectronLocator::bin(float coordinate, double binWidth, double min,
 
 }  // namespace recon
 
-DECLARE_PRODUCER_NS(recon, BeamElectronLocator)
+DECLARE_PRODUCER(recon::BeamElectronLocator)

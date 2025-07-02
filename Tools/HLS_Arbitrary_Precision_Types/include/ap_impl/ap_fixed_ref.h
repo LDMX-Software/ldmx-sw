@@ -113,21 +113,21 @@ struct af_bit_ref {
   //  @{
   template <int _AP_W2, int _AP_S2>
   INLINE ap_concat_ref<1, af_bit_ref, _AP_W2, ap_int_base<_AP_W2, _AP_S2> >
-  operator,(ap_int_base<_AP_W2, _AP_S2>&op) {
+  operator,(ap_int_base<_AP_W2, _AP_S2>& op) {
     return ap_concat_ref<1, af_bit_ref, _AP_W2, ap_int_base<_AP_W2, _AP_S2> >(
         *this, op);
   }
 
   template <int _AP_W2, int _AP_S2>
   INLINE ap_concat_ref<1, af_bit_ref, 1, ap_bit_ref<_AP_W2, _AP_S2> > operator,(
-      const ap_bit_ref<_AP_W2, _AP_S2>&op) {
+      const ap_bit_ref<_AP_W2, _AP_S2>& op) {
     return ap_concat_ref<1, af_bit_ref, 1, ap_bit_ref<_AP_W2, _AP_S2> >(*this,
                                                                         op);
   }
 
   template <int _AP_W2, int _AP_S2>
   INLINE ap_concat_ref<1, af_bit_ref, _AP_W2, ap_range_ref<_AP_W2, _AP_S2> >
-  operator,(const ap_range_ref<_AP_W2, _AP_S2>&op) {
+  operator,(const ap_range_ref<_AP_W2, _AP_S2>& op) {
     return ap_concat_ref<1, af_bit_ref, _AP_W2, ap_range_ref<_AP_W2, _AP_S2> >(
         *this, op);
   }
@@ -135,7 +135,7 @@ struct af_bit_ref {
   template <int _AP_W2, typename _AP_T2, int _AP_W3, typename _AP_T3>
   INLINE ap_concat_ref<1, af_bit_ref, _AP_W2 + _AP_W3,
                        ap_concat_ref<_AP_W2, _AP_T2, _AP_W3, _AP_T3> >
-  operator,(const ap_concat_ref<_AP_W2, _AP_T2, _AP_W3, _AP_T3>&op) {
+  operator,(const ap_concat_ref<_AP_W2, _AP_T2, _AP_W3, _AP_T3>& op) {
     return ap_concat_ref<1, af_bit_ref, _AP_W2 + _AP_W3,
                          ap_concat_ref<_AP_W2, _AP_T2, _AP_W3, _AP_T3> >(*this,
                                                                          op);
@@ -147,7 +147,7 @@ struct af_bit_ref {
       1, af_bit_ref, _AP_W2,
       af_range_ref<_AP_W2, _AP_I2, _AP_S2, _AP_Q2, _AP_O2, _AP_N2> >
   operator,(
-      const af_range_ref<_AP_W2, _AP_I2, _AP_S2, _AP_Q2, _AP_O2, _AP_N2>&op) {
+      const af_range_ref<_AP_W2, _AP_I2, _AP_S2, _AP_Q2, _AP_O2, _AP_N2>& op) {
     return ap_concat_ref<
         1, af_bit_ref, _AP_W2,
         af_range_ref<_AP_W2, _AP_I2, _AP_S2, _AP_Q2, _AP_O2, _AP_N2> >(*this,
@@ -159,8 +159,8 @@ struct af_bit_ref {
   INLINE
       ap_concat_ref<1, af_bit_ref, 1,
                     af_bit_ref<_AP_W2, _AP_I2, _AP_S2, _AP_Q2, _AP_O2, _AP_N2> >
-      operator,(
-          const af_bit_ref<_AP_W2, _AP_I2, _AP_S2, _AP_Q2, _AP_O2, _AP_N2>&op) {
+      operator,(const af_bit_ref<_AP_W2, _AP_I2, _AP_S2, _AP_Q2, _AP_O2, _AP_N2>
+                    & op) {
     return ap_concat_ref<
         1, af_bit_ref, 1,
         af_bit_ref<_AP_W2, _AP_I2, _AP_S2, _AP_Q2, _AP_O2, _AP_N2> >(
@@ -462,7 +462,7 @@ struct af_range_ref {
   template <int _AP_W2, int _AP_S2>
   INLINE
       ap_concat_ref<_AP_W, af_range_ref, _AP_W2, ap_int_base<_AP_W2, _AP_S2> >
-      operator,(ap_int_base<_AP_W2, _AP_S2>&op) {
+      operator,(ap_int_base<_AP_W2, _AP_S2>& op) {
     return ap_concat_ref<_AP_W, af_range_ref, _AP_W2,
                          ap_int_base<_AP_W2, _AP_S2> >(*this, op);
   }
@@ -470,7 +470,7 @@ struct af_range_ref {
   /// concatenate with ap_bit_ref.
   template <int _AP_W2, int _AP_S2>
   INLINE ap_concat_ref<_AP_W, af_range_ref, 1, ap_bit_ref<_AP_W2, _AP_S2> >
-  operator,(const ap_bit_ref<_AP_W2, _AP_S2>&op) {
+  operator,(const ap_bit_ref<_AP_W2, _AP_S2>& op) {
     return ap_concat_ref<_AP_W, af_range_ref, 1, ap_bit_ref<_AP_W2, _AP_S2> >(
         *this, const_cast<ap_bit_ref<_AP_W2, _AP_S2>&>(op));
   }
@@ -479,7 +479,7 @@ struct af_range_ref {
   template <int _AP_W2, int _AP_S2>
   INLINE
       ap_concat_ref<_AP_W, af_range_ref, _AP_W2, ap_range_ref<_AP_W2, _AP_S2> >
-      operator,(const ap_range_ref<_AP_W2, _AP_S2>&op) {
+      operator,(const ap_range_ref<_AP_W2, _AP_S2>& op) {
     return ap_concat_ref<_AP_W, af_range_ref, _AP_W2,
                          ap_range_ref<_AP_W2, _AP_S2> >(
         *this, const_cast<ap_range_ref<_AP_W2, _AP_S2>&>(op));
@@ -489,7 +489,7 @@ struct af_range_ref {
   template <int _AP_W2, typename _AP_T2, int _AP_W3, typename _AP_T3>
   INLINE ap_concat_ref<_AP_W, af_range_ref, _AP_W2 + _AP_W3,
                        ap_concat_ref<_AP_W2, _AP_T2, _AP_W3, _AP_T3> >
-  operator,(const ap_concat_ref<_AP_W2, _AP_T2, _AP_W3, _AP_T3>&op) {
+  operator,(const ap_concat_ref<_AP_W2, _AP_T2, _AP_W3, _AP_T3>& op) {
     return ap_concat_ref<_AP_W, af_range_ref, _AP_W2 + _AP_W3,
                          ap_concat_ref<_AP_W2, _AP_T2, _AP_W3, _AP_T3> >(
         *this, const_cast<ap_concat_ref<_AP_W2, _AP_T2, _AP_W3, _AP_T3>&>(op));
@@ -502,7 +502,7 @@ struct af_range_ref {
       _AP_W, af_range_ref, _AP_W2,
       af_range_ref<_AP_W2, _AP_I2, _AP_S2, _AP_Q2, _AP_O2, _AP_N2> >
   operator,(
-      const af_range_ref<_AP_W2, _AP_I2, _AP_S2, _AP_Q2, _AP_O2, _AP_N2>&op) {
+      const af_range_ref<_AP_W2, _AP_I2, _AP_S2, _AP_Q2, _AP_O2, _AP_N2>& op) {
     return ap_concat_ref<
         _AP_W, af_range_ref, _AP_W2,
         af_range_ref<_AP_W2, _AP_I2, _AP_S2, _AP_Q2, _AP_O2, _AP_N2> >(
@@ -517,8 +517,8 @@ struct af_range_ref {
   INLINE
       ap_concat_ref<_AP_W, af_range_ref, 1,
                     af_bit_ref<_AP_W2, _AP_I2, _AP_S2, _AP_Q2, _AP_O2, _AP_N2> >
-      operator,(
-          const af_bit_ref<_AP_W2, _AP_I2, _AP_S2, _AP_Q2, _AP_O2, _AP_N2>&op) {
+      operator,(const af_bit_ref<_AP_W2, _AP_I2, _AP_S2, _AP_Q2, _AP_O2, _AP_N2>
+                    & op) {
     return ap_concat_ref<
         _AP_W, af_range_ref, 1,
         af_bit_ref<_AP_W2, _AP_I2, _AP_S2, _AP_Q2, _AP_O2, _AP_N2> >(

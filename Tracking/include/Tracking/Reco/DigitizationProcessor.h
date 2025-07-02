@@ -9,12 +9,14 @@
 #include "Acts/Surfaces/Surface.hpp"
 
 //--- LDMX ---//
+#include "Tracking/Event/Measurement.h"
 #include "Tracking/Sim/TrackingUtils.h"
 
 //--- ACTS ---//
 #include "Acts/Definitions/Units.hpp"
 
 //--- C++ ---//
+#include <chrono>
 #include <random>
 
 namespace ldmx {
@@ -26,7 +28,7 @@ namespace tracking::reco {
 class DigitizationProcessor : public TrackingGeometryUser {
  public:
   DigitizationProcessor(const std::string& name, framework::Process& process);
-  ~DigitizationProcessor() = default;
+  virtual ~DigitizationProcessor() = default;
 
   void onProcessStart() override;
 
@@ -65,6 +67,7 @@ class DigitizationProcessor : public TrackingGeometryUser {
   std::string hit_collection_;
   /// Output hit collection name.
   std::string out_collection_;
+
   /// Minimum energy deposition cut.
   double min_e_dep_;
   /// Select a particular track ID
@@ -77,6 +80,8 @@ class DigitizationProcessor : public TrackingGeometryUser {
   double sigma_u_{0};
   /// v-direction sigma
   double sigma_v_{0};
+  /// Pass Name
+  std::string tracker_hit_passname_;
 
   //--- Smearing ---//
 

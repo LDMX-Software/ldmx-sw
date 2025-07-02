@@ -12,6 +12,9 @@ namespace trigger {
 void TrigEcalClusterProducer::configure(framework::config::Parameters& ps) {
   hitCollName_ = ps.getParameter<std::string>("hitCollName");
   clusterCollName_ = ps.getParameter<std::string>("clusterCollName");
+  hit_coll_passname_ = ps.getParameter<std::string>("hit_coll_passname");
+  hit_coll_name_events_passname_ =
+      ps.getParameter<std::string>("hit_coll_name_events_passname");
 }
 
 void TrigEcalClusterProducer::produce(framework::Event& event) {
@@ -19,9 +22,9 @@ void TrigEcalClusterProducer::produce(framework::Event& event) {
       getCondition<ecal::EcalTriggerGeometry>(
           ecal::EcalTriggerGeometry::CONDITIONS_OBJECT_NAME);
 
-  if (!event.exists(hitCollName_)) return;
-  auto ecalTrigDigis{
-      event.getObject<ldmx::HgcrocTrigDigiCollection>(hitCollName_)};
+  if (!event.exists(hitCollName_, hit_coll_name_events_passname_)) return;
+  auto ecalTrigDigis{event.getObject<ldmx::HgcrocTrigDigiCollection>(
+      hitCollName_, hit_coll_passname_)};
 
   std::vector<Hit> hits{};
   ecalTpToE cvt;
@@ -101,4 +104,4 @@ void TrigEcalClusterProducer::produce(framework::Event& event) {
 }
 }  // namespace trigger
 
-DECLARE_PRODUCER_NS(trigger, TrigEcalClusterProducer);
+DECLARE_PRODUCER(trigger::TrigEcalClusterProducer);

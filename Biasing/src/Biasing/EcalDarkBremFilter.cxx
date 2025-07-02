@@ -12,7 +12,7 @@
 #include "G4DarkBreM/G4APrime.h"              //checking if particles match A'
 #include "G4DarkBreM/G4DarkBremsstrahlung.h"  //checking for dark brem secondaries
 #include "G4LogicalVolumeStore.hh"            //for the store
-#include "SimCore/UserTrackInformation.h"     //make sure A' is saved
+#include "SimCore/G4User/UserTrackInformation.h"  //make sure A' is saved
 
 namespace biasing {
 
@@ -38,8 +38,7 @@ EcalDarkBremFilter::EcalDarkBremFilter(
   }
 
   if (G4RunManager::GetRunManager()->GetVerboseLevel() > 0) {
-    std::cout << "[ EcalDarkBremFilter ]: "
-              << "Looking for A' in: ";
+    std::cout << "[ EcalDarkBremFilter ]: " << "Looking for A' in: ";
     for (auto const& volume : volumes_) std::cout << volume->GetName() << ", ";
     std::cout << std::endl;
   }
@@ -109,8 +108,8 @@ void EcalDarkBremFilter::PostUserTrackingAction(const G4Track* track) {
       if (not inDesiredVolume(track)) {
         AbortEvent("A' wasn't produced inside of the requested volume.");
       }  // A' was made in desired volume and has the minimum energy
-    }    // track was A'
-  }      // track created by dark brem process
+    }  // track was A'
+  }  // track created by dark brem process
 
   return;
 }
@@ -131,8 +130,7 @@ bool EcalDarkBremFilter::inDesiredVolume(const G4Track* track) const {
 
 void EcalDarkBremFilter::AbortEvent(const std::string& reason) const {
   if (G4RunManager::GetRunManager()->GetVerboseLevel() > 1) {
-    std::cout << "[ EcalDarkBremFilter ]: "
-              << "("
+    std::cout << "[ EcalDarkBremFilter ]: " << "("
               << G4EventManager::GetEventManager()
                      ->GetConstCurrentEvent()
                      ->GetEventID()
@@ -143,4 +141,4 @@ void EcalDarkBremFilter::AbortEvent(const std::string& reason) const {
 }
 }  // namespace biasing
 
-DECLARE_ACTION(biasing, EcalDarkBremFilter)
+DECLARE_ACTION(biasing::EcalDarkBremFilter)

@@ -2,7 +2,7 @@
 
 #include "Hcal/HcalRawDecoder.h"
 // un comment for HcalRawDecoder-specific debug printouts to std::cout
-//#define DEBUG
+// #define DEBUG
 
 namespace hcal {
 
@@ -179,4 +179,4 @@ void HcalRawDecoder::produce(framework::Event& event) {
 }  // produce
 
 }  // namespace hcal
-DECLARE_PRODUCER_NS(hcal, HcalRawDecoder);
+DECLARE_PRODUCER(hcal::HcalRawDecoder);

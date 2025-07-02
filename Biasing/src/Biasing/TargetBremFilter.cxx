@@ -1,17 +1,21 @@
-
+/*~~~~~~~~~~~~~*/
+/*   Biasing   */
+/*~~~~~~~~~~~~~*/
 #include "Biasing/TargetBremFilter.h"
 
 /*~~~~~~~~~~~~*/
 /*   Geant4   */
 /*~~~~~~~~~~~~*/
+#include "G4Electron.hh"
 #include "G4EventManager.hh"
 #include "G4RunManager.hh"
 
 /*~~~~~~~~~~~~~*/
 /*   SimCore   */
 /*~~~~~~~~~~~~~*/
-#include "SimCore/UserEventInformation.h"
-#include "SimCore/UserTrackInformation.h"
+#include "SimCore/G4User/PtrRetrieval.h"
+#include "SimCore/G4User/UserEventInformation.h"
+#include "SimCore/G4User/UserTrackInformation.h"
 
 namespace biasing {
 
@@ -60,10 +64,15 @@ void TargetBremFilter::stepping(const G4Step* step) {
 
   // Get the region the particle is currently in.  Continue processing
   // the particle only if it's in the target region.
-  if (auto region{
-          track->GetVolume()->GetLogicalVolume()->GetRegion()->GetName()};
-      region.compareTo("target") != 0)
-    return;
+  static auto target_region =
+      simcore::g4user::ptrretrieval::getRegion("target");
+  if (!target_region) {
+    ldmx_log(warn) << "Region 'target' not found in Geant4 region store";
+  }
+  auto phy_vol{track->GetVolume()};
+  auto log_vol{phy_vol ? phy_vol->GetLogicalVolume() : nullptr};
+  auto track_region{log_vol ? log_vol->GetRegion() : nullptr};
+  if (track_region != target_region) return;
 
   /*
   std::cout << "[TargetBremFilter] : Stepping primary electron in 'target'
@@ -84,8 +93,19 @@ void TargetBremFilter::stepping(const G4Step* step) {
    * We also check if the next volume is World_PV because in some geometries
    * (e.g. v14), there is a air-gap between the target region and the recoil.
    */
-  if (auto volume{track->GetNextVolume()->GetName()};
-      volume.compareTo("recoil_PV") == 0 or volume.compareTo("World_PV") == 0) {
+  auto recoil_physical_volume =
+      simcore::g4user::ptrretrieval::getPhysicalVolume("recoil_PV");
+  auto world_physical_volume =
+      simcore::g4user::ptrretrieval::getPhysicalVolume("World_PV");
+  if (!recoil_physical_volume) {
+    ldmx_log(warn) << "Volume 'recoil_PV' not found in Geant4 volume store";
+  }
+  if (!world_physical_volume) {
+    ldmx_log(warn) << "Volume 'World_PV' not found in Geant4 volume store";
+  }
+  auto track_volume = track->GetNextVolume();
+  if (track_volume == recoil_physical_volume or
+      track_volume == world_physical_volume) {
     // If the recoil electron
     if (track->GetMomentum().mag() >= recoilMaxPThreshold_) {
       track->SetTrackStatus(fKillTrackAndSecondaries);
@@ -101,10 +121,14 @@ void TargetBremFilter::stepping(const G4Step* step) {
       return;
     } else {
       for (auto& secondary_track : *secondaries) {
-        G4String processName =
-            secondary_track->GetCreatorProcess()->GetProcessName();
+        auto electron = G4Electron::Definition();
+        auto ebrem_process =
+            simcore::g4user::ptrretrieval::getProcess(electron, "eBrem");
+        if (!ebrem_process) {
+          ldmx_log(warn) << "Process 'eBrem' not found in Geant4 process store";
+        }
 
-        if (processName.compareTo("eBrem") == 0 &&
+        if (ebrem_process &&
             secondary_track->GetKineticEnergy() > bremEnergyThreshold_) {
           auto trackInfo{simcore::UserTrackInformation::get(secondary_track)};
           trackInfo->tagBremCandidate();
@@ -143,4 +167,4 @@ void TargetBremFilter::stepping(const G4Step* step) {
 void TargetBremFilter::EndOfEventAction(const G4Event*) {}
 }  // namespace biasing
 
-DECLARE_ACTION(biasing, TargetBremFilter)
+DECLARE_ACTION(biasing::TargetBremFilter)

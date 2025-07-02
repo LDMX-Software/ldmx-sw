@@ -111,6 +111,7 @@ class EcalSD(simcfg.SensitiveDetector) :
         super().__init__('ecal_sd', 'simcore::EcalSD','SimCore_SDs')
         self.enableHitContribs = True
         self.compressHitContribs = True
+        self.max_origin_track_id = 6
 
 class TrigScintSD(simcfg.SensitiveDetector) :
     """Trigger Scintillaotr Sensitive Detector

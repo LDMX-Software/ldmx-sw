@@ -164,7 +164,7 @@ void EcalRawEncoder::produce(framework::Event& event) {
                       (link_lengths.at(i_link) & packing::utility::mask<6>))
                      << 8 * i_linklen);
           }  // do we have a link for this linklen subword?
-        }    // loop through subwords in this word
+        }  // loop through subwords in this word
         buffer.push_back(word);
         fpga_crc << word;
       }  // loop through words
@@ -249,4 +249,4 @@ void EcalRawEncoder::produce(framework::Event& event) {
 
 }  // namespace ecal
 
-DECLARE_PRODUCER_NS(ecal, EcalRawEncoder);
+DECLARE_PRODUCER(ecal::EcalRawEncoder);

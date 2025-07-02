@@ -136,7 +136,7 @@ class EventProcessor:
             import subprocess
             libs_to_link = set(['Framework']+needs)
             subprocess.run([
-                'g++', '-fPIC', '-shared', # construct a shared library for dynamic loading
+                'g++', '-std=c++20', '-fPIC', '-shared', # construct a shared library for dynamic loading
                 '-o', str(lib), str(src), # define output file and input source file
             ]+[
                 f'-l{lib}' for lib in libs_to_link
@@ -442,11 +442,12 @@ class Logger:
 
     The "severity level" of messages correspond to the following integers.
 
-        - 0 : Debug
-        - 1 : Information
-        - 2 : Warning
-        - 3 : Error
-        - 4 : Fatal (reserved for program-ending exceptions)
+        - -1: Trace
+        - 0  : Debug
+        - 1  : Information
+        - 2  : Warning
+        - 3  : Error
+        - 4  : Fatal (reserved for program-ending exceptions)
 
     Whenever a level is specified, messages for that level and any level above
     it (corresponding to a larger integer) are including when printing out
@@ -489,6 +490,9 @@ class Logger:
             name = name.instanceName
         self.logRules.append(_LogRule(name, level))
 
+    def trace(self, name):
+        """drop the input channel to the trace level"""
+        self.custom(name, level = -1)
 
     def debug(self, name):
         """drop the input channel to the debug level"""
@@ -521,6 +525,11 @@ class Process:
     maxEvents : int
         Maximum number events to process.
         If totalEvents is set, this will be ignored.
+    minEvents : int
+        Index of the first events to process.
+        The skipping process is relatively slow, if used for anything outside of debugging
+        make a  skim to a new file and then run again rather than use this.
+        Note: this skips events of *each* input file, you a single file only.
     maxTriesPerEvent : int
         Maximum number of attempts to make in a row before giving up on an event
         Only used in Production Mode (no input files)
@@ -570,6 +579,7 @@ class Process:
 
         self.passName=passName
         self.maxEvents=-1
+        self.minEvents=-1
         self.maxTriesPerEvent=1
         self.run=-1
         self.inputFiles=[]
@@ -919,4 +929,15 @@ class Process:
 
         return msg
 
-    
+class RunHeaderAna(Analyzer) :
+    """                                                                                                                  
+    Contains an instance of RunHeaderAnalyzer that
+    has already been configured.
+
+    Examples
+    --------
+        p.sequence.append( ldmxcfg.RunHeaderAna() )
+    """
+
+    def __init__(self, name='RunHeaderAnalyzer'):
+        super().__init__(name, 'framework::RunHeaderAnalyzer', 'Framework')

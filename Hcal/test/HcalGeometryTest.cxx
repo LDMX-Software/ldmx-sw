@@ -5,7 +5,7 @@ using Catch::Approx;
 
 #include "DetDescr/HcalGeometry.h"
 #include "DetDescr/HcalID.h"  //creating unique cell IDs
-#include "Framework/ConfigurePython.h"
+#include "Framework/Configure/Python.h"
 #include "Framework/EventProcessor.h"
 #include "Framework/Process.h"
 #include "SimCore/Event/SimCalorimeterHit.h"
@@ -21,16 +21,24 @@ namespace test {
  * consistency.
  */
 class HcalCheckPositionMap : public framework::Analyzer {
+ private:
+  std::string hcal_sim_hits_pass_name_{""};
+
  public:
   HcalCheckPositionMap(const std::string &name, framework::Process &p)
       : framework::Analyzer(name, p) {}
   ~HcalCheckPositionMap() {}
 
+  void configure(framework::config::Parameters &parameters) override {
+    hcal_sim_hits_pass_name_ =
+        parameters.getParameter<std::string>("hcal_sim_hits_pass_name", "");
+  }
+
   void onProcessStart() final override {}
 
   void analyze(const framework::Event &event) final override {
-    const auto simHits =
-        event.getCollection<ldmx::SimCalorimeterHit>("HcalSimHits");
+    const auto simHits = event.getCollection<ldmx::SimCalorimeterHit>(
+        "HcalSimHits", hcal_sim_hits_pass_name_);
 
     CHECK(simHits.size() > 0);
     return;
@@ -40,18 +48,16 @@ class HcalCheckPositionMap : public framework::Analyzer {
 }  // namespace test
 }  // namespace hcal
 
-DECLARE_ANALYZER_NS(hcal::test, HcalCheckPositionMap)
+DECLARE_ANALYZER(hcal::test::HcalCheckPositionMap)
 
 /**
  * Test for the Hcal Geometry ID map
  */
 TEST_CASE("Hcal Geometry test", "[Hcal][functionality]") {
   const std::string config_file{"hcal_geometry_test_config.py"};
-
   char **args{nullptr};
-  framework::ProcessHandle p;
-
-  framework::ConfigurePython cfg(config_file, args, 0);
-  REQUIRE_NOTHROW(p = cfg.makeProcess());
+  auto cfg{framework::config::run("ldmxcfg.Process.lastProcess", config_file,
+                                  args, 0)};
+  auto p{std::make_unique<framework::Process>(cfg)};
   p->run();
 }

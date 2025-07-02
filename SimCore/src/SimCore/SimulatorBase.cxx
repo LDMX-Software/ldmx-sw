@@ -178,13 +178,19 @@ void SimulatorBase::saveSDHits(framework::Event& event) {
 void SimulatorBase::buildGeometry() {
   // Instantiate the GDML parser and corresponding messenger owned and
   // managed by DetectorConstruction
-  auto parser{simcore::geo::ParserFactory::getInstance().createParser(
-      "gdml", parameters_, conditionsIntf_)};
+  auto parser{simcore::geo::Parser::Factory::get().make("gdml", parameters_,
+                                                        conditionsIntf_)};
+  if (not parser) {
+    EXCEPTION_RAISE(
+        "UnableToCreate",
+        "Unable to find a parser registered under the name 'gdml'.");
+  }
+  auto parser_ptr{parser.value()};
 
   // Set the DetectorConstruction instance used to build the detector
   // from the GDML description.
   runManager_->SetUserInitialization(
-      new DetectorConstruction(parser, parameters_, conditionsIntf_));
+      new DetectorConstruction(parser_ptr, parameters_, conditionsIntf_));
 
   // Parse the detector geometry and validate if specified.
   auto detectorPath{parameters_.getParameter<std::string>("detector")};
@@ -193,7 +199,7 @@ void SimulatorBase::buildGeometry() {
               << "'... " << std::flush;
   }
   G4GeometryManager::GetInstance()->OpenGeometry();
-  parser->read();
-  runManager_->DefineWorldVolume(parser->GetWorldVolume());
+  parser_ptr->read();
+  runManager_->DefineWorldVolume(parser_ptr->GetWorldVolume());
 }
 }  // namespace simcore

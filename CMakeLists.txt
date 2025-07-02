@@ -33,10 +33,9 @@ list(APPEND CMAKE_MODULE_PATH ${LDMX_SW_SOURCE_DIR}/cmake/)
 # is set to NOTFOUND.
 include(BuildMacros RESULT_VARIABLE build_macros_found)
 
-# Adding ROOT, ACTS, HLS arb prec as "SYSTEM" 
+# Adding ROOT as "SYSTEM" 
 # which will silence compiler warnings from these 3rd party softwares
 include_directories(SYSTEM /usr/local/include/root)
-include_directories(SYSTEM Tracking/acts/Core/include)
 
 # FunctionalCoreTest.cxx doesnt comply with clang-tidy but that's ok
 set_source_files_properties(Framework/test/FunctionalCoreTest.cxx PROPERTIES COMPILE_OPTIONS "-Wno-null-dereference")
@@ -46,12 +45,6 @@ set_source_files_properties(Framework/test/FunctionalCoreTest.cxx PROPERTIES COM
 if (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
     set(CMAKE_INSTALL_PREFIX ${CMAKE_CURRENT_SOURCE_DIR}/install CACHE PATH "" FORCE)
     message(STATUS "Install directory set to ${CMAKE_INSTALL_PREFIX}")
-endif()
-
-# If a user is building outside of a Docker or Singularity environment, 
-# warn them. 
-if (NOT EXISTS /.dockerenv AND NOT EXISTS /singularity)
-    message(WARNING "You are not inside a container; you may be working in an untested environment.")
 endif()
 
 # Set the default release type to "Release". If a release type is specified 

@@ -17,7 +17,7 @@ class AlignmentTestProcessor final : public TrackingGeometryUser {
  public:
   AlignmentTestProcessor(const std::string& name, framework::Process& process);
 
-  ~AlignmentTestProcessor();
+  virtual ~AlignmentTestProcessor() = default;
 
   void onProcessStart() override;
 

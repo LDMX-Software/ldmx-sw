@@ -66,6 +66,9 @@ class SimCalorimeterHit {
 
     /// Time this contributor made the hit (global Geant4 time)
     float time{0};
+
+    /// Saves ID of electron incident particle came from
+    int originID{-1};
   };
 
   /**
@@ -241,7 +244,7 @@ class SimCalorimeterHit {
    * @param time The time of the hit [ns].
    */
   void addContrib(int incidentID, int trackID, int pdgCode, float edep,
-                  float time);
+                  float time, int originID = -1);
 
   /**
    * Get a hit contribution by index.
@@ -358,6 +361,11 @@ class SimCalorimeterHit {
   std::vector<float> timeContribs_;
 
   /**
+   * The list of origin IDs contributing to the hit.
+   */
+  std::vector<int> originContribs_;
+
+  /**
    * The number of hit contributions.
    */
   unsigned nContribs_{0};
@@ -404,7 +412,7 @@ class SimCalorimeterHit {
   /**
    * ROOT class definition.
    */
-  ClassDef(SimCalorimeterHit, 5)
+  ClassDef(SimCalorimeterHit, 6)
 };
 }  // namespace ldmx
 

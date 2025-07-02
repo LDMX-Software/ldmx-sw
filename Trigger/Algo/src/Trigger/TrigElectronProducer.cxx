@@ -15,16 +15,25 @@ void TrigElectronProducer::configure(framework::config::Parameters& ps) {
   clusterCollName_ = ps.getParameter<std::string>("clusterCollName");
   eleCollName_ = ps.getParameter<std::string>("eleCollName");
   propMapName_ = ps.getParameter<std::string>("propMapName");
+  target_sp_passname_ = ps.getParameter<std::string>("target_sp_passname");
+  cluster_coll_passname_ =
+      ps.getParameter<std::string>("cluster_coll_passname");
+  cluster_collname_events_passname_ =
+      ps.getParameter<std::string>("cluster_collname_events_passname");
+  sp_collname_events_passname_ =
+      ps.getParameter<std::string>("sp_collname_events_passname_");
 }
 
 void TrigElectronProducer::produce(framework::Event& event) {
-  if (!event.exists(clusterCollName_)) return;
-  auto ecalClusters{
-      event.getObject<TrigCaloClusterCollection>(clusterCollName_)};
+  if (!event.exists(clusterCollName_, cluster_collname_events_passname_))
+    return;
+  auto ecalClusters{event.getObject<TrigCaloClusterCollection>(
+      clusterCollName_, cluster_coll_passname_)};
 
-  if (!event.exists(spCollName_)) return;
+  if (!event.exists(spCollName_, sp_collname_events_passname_)) return;
   const std::vector<ldmx::SimTrackerHit> TargetSPHit =
-      event.getCollection<ldmx::SimTrackerHit>(spCollName_);
+      event.getCollection<ldmx::SimTrackerHit>(spCollName_,
+                                               target_sp_passname_);
   // ldmx::SimTrackerHit targetPrimary;
   // std::map<int,int> tk_to_iTargetSPHit;
   float xT = 0, yT = 0;
@@ -155,8 +164,9 @@ float TrigElectronProducer::getP(bool isX, float e, float d) {
     printf("%f %f %f %f :: %f %f %f \n", d, e,
            prof->GetXaxis()->GetBinCenter(bin1),
            prof->GetXaxis()->GetBinCenter(bin2), res1, res2,
-           abs(frac / diff) * res2 + (1 - abs(frac / diff)) * res1);
-  return e * (abs(frac / diff) * res2 + (1 - abs(frac / diff)) * res1);
+           std::abs(frac / diff) * res2 + (1 - std::abs(frac / diff)) * res1);
+  return e *
+         (std::abs(frac / diff) * res2 + (1 - std::abs(frac / diff)) * res1);
 }
 
 void TrigElectronProducer::onProcessStart() {
@@ -187,4 +197,4 @@ void TrigElectronProducer::onProcessEnd() {
 
 }  // namespace trigger
 
-DECLARE_PRODUCER_NS(trigger, TrigElectronProducer);
+DECLARE_PRODUCER(trigger::TrigElectronProducer);

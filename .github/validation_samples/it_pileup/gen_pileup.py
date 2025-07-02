@@ -1,10 +1,10 @@
 from LDMX.Framework import ldmxcfg
-p = ldmxcfg.Process('test')
+p = ldmxcfg.Process('pileup')
 
 import os
 p.run = int(os.environ['LDMX_RUN_NUMBER'])
 # slightly less than the others to test wrapping
-p.maxEvents = int(int(os.environ['LDMX_NUM_EVENTS'])*0.95)
+p.maxEvents = int(int(os.environ['LDMX_NUM_EVENTS'])*0.95) // 2
 
 from LDMX.SimCore import simulator as sim
 mySim = sim.simulator( "mySim" )

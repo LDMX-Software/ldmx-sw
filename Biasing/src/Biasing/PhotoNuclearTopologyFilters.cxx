@@ -77,5 +77,5 @@ void PhotoNuclearTopologyFilter::stepping(const G4Step* step) {
 
 }  // namespace biasing
 
-DECLARE_ACTION(biasing, NothingHardFilter)
-DECLARE_ACTION(biasing, SingleNeutronFilter)
+DECLARE_ACTION(biasing::NothingHardFilter)
+DECLARE_ACTION(biasing::SingleNeutronFilter)

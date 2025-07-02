@@ -5,7 +5,7 @@
 /*   SimCore   */
 /*~~~~~~~~~~~~~*/
 #include "SimCore/G4User/TrackingAction.h"
-#include "SimCore/UserAction.h"
+#include "SimCore/G4User/UserAction.h"
 
 namespace biasing {
 namespace utility {

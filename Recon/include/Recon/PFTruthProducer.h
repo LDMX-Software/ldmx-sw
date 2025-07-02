@@ -24,6 +24,7 @@ class PFTruthProducer : public framework::Producer {
       : framework::Producer(name, process) {}
 
   virtual void configure(framework::config::Parameters& ps);
+  // void configure(framework::config::Parameters& parameters) override;
 
   virtual void produce(framework::Event& event);
 
@@ -33,6 +34,12 @@ class PFTruthProducer : public framework::Producer {
   std::string targetCollName_;
   std::string ecalCollName_;
   std::string hcalCollName_;
+  std::string target_sp_passname_;
+  std::string ecal_sp_passname_;
+  std::string sim_particles_passname_;
+  std::string target_sp_hits_event_passname_;
+  std::string ecal_sp_hits_event_passname_;
+  std::string sim_particles_event_passname_;
 };
 }  // namespace recon
 

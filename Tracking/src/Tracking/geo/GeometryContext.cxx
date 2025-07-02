@@ -100,4 +100,4 @@ class GeometryContextProvider : public framework::ConditionsObjectProvider {
 
 }  // namespace tracking::geo
 
-DECLARE_CONDITIONS_PROVIDER_NS(tracking::geo, GeometryContextProvider)
+DECLARE_CONDITIONS_PROVIDER(tracking::geo::GeometryContextProvider)

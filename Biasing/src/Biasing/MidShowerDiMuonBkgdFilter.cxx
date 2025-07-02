@@ -4,7 +4,8 @@
 #include "G4Gamma.hh"
 #include "G4RunManager.hh"
 #include "G4Step.hh"
-#include "SimCore/UserTrackInformation.h"
+#include "SimCore/G4User/PtrRetrieval.h"
+#include "SimCore/G4User/UserTrackInformation.h"
 
 namespace biasing {
 
@@ -86,12 +87,17 @@ void MidShowerDiMuonBkgdFilter::NewStage() {
 
 bool MidShowerDiMuonBkgdFilter::isOutsideCalorimeterRegion(
     const G4Step* step) const {
+  static auto calorimeter_region =
+      simcore::g4user::ptrretrieval::getRegion("CalorimeterRegion");
+  if (!calorimeter_region) {
+    ldmx_log(warn)
+        << "Region 'CalorimeterRegion' not found in Geant4 region store";
+  }
   // the pointers in this chain are assumed to be always valid
-  auto reg{step->GetTrack()->GetVolume()->GetLogicalVolume()->GetRegion()};
-  if (reg) return (reg->GetName() != "CalorimeterRegion");
-  // region is nullptr ==> no region defined for current volume
-  //  ==> outside CalorimeterRegion
-  return true;
+  auto phys_vol{step->GetTrack()->GetVolume()};
+  auto log_vol{phys_vol ? phys_vol->GetLogicalVolume() : nullptr};
+  auto reg{log_vol ? log_vol->GetRegion() : nullptr};
+  return (reg != calorimeter_region);
 }
 
 void MidShowerDiMuonBkgdFilter::save(const G4Track* track) const {
@@ -102,8 +108,7 @@ void MidShowerDiMuonBkgdFilter::save(const G4Track* track) const {
 
 void MidShowerDiMuonBkgdFilter::AbortEvent(const std::string& reason) const {
   if (G4RunManager::GetRunManager()->GetVerboseLevel() > 1) {
-    std::cout << "[ MidShowerDiMuonBkgdFilter ]: "
-              << "("
+    std::cout << "[ MidShowerDiMuonBkgdFilter ]: " << "("
               << G4EventManager::GetEventManager()
                      ->GetConstCurrentEvent()
                      ->GetEventID()
@@ -114,4 +119,4 @@ void MidShowerDiMuonBkgdFilter::AbortEvent(const std::string& reason) const {
 }
 }  // namespace biasing
 
-DECLARE_ACTION(biasing, MidShowerDiMuonBkgdFilter)
+DECLARE_ACTION(biasing::MidShowerDiMuonBkgdFilter)

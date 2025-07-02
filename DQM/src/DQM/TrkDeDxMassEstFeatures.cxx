@@ -16,9 +16,34 @@ void TrkDeDxMassEstFeatures::analyze(const framework::Event &event) {
   auto mass_estimates_{event.getCollection<ldmx::TrackDeDxMassEstimate>(
       mass_estimate_name_, mass_estimate_pass_)};
 
-  for (const auto &mass_est_ : mass_estimates_) {
-    histograms_.fill("mass_estimate", mass_est_.getMass());
-    histograms_.fill("track_type", mass_est_.getTrackType());
+  for (const auto &mass_est : mass_estimates_) {
+    auto momentum = mass_est.getMomentum();
+    histograms_.fill("momentum:harmonic_mean_dedx", momentum, mass_est.getIh());
+    if (momentum < 2000.)
+      histograms_.fill("momentum_low:harmonic_mean_dedx", momentum,
+                       mass_est.getIh());
+    histograms_.fill("harmonic_mean_dedx", mass_est.getIh());
+    histograms_.fill("mass_estimate", mass_est.getMass());
+    if (momentum < 1000.) {
+      histograms_.fill("mass_estimate_low_p", mass_est.getMass());
+    }
+    if (momentum < 500.) {
+      histograms_.fill("mass_estimate_very_low_p", mass_est.getMass());
+      if ((mass_est.getPdgId() == 11) || (mass_est.getPdgId() == -11)) {
+        histograms_.fill("mass_estimate_very_low_p_electron",
+                         mass_est.getMass());
+      }
+      if ((mass_est.getPdgId() == 211) || (mass_est.getPdgId() == -211)) {
+        histograms_.fill("mass_estimate_very_low_p_pion", mass_est.getMass());
+      }
+      if ((mass_est.getPdgId() == 321) || (mass_est.getPdgId() == -321)) {
+        histograms_.fill("mass_estimate_very_low_p_kaon", mass_est.getMass());
+      }
+      if ((mass_est.getPdgId() == 2212) || (mass_est.getPdgId() == -2212)) {
+        histograms_.fill("mass_estimate_very_low_p_proton", mass_est.getMass());
+      }
+    }
+    histograms_.fill("track_type", mass_est.getTrackType());
   }
 
   return;
@@ -37,4 +62,4 @@ void TrkDeDxMassEstFeatures::onProcessStart() {
 
 }  // namespace dqm
 
-DECLARE_ANALYZER_NS(dqm, TrkDeDxMassEstFeatures);
+DECLARE_ANALYZER(dqm::TrkDeDxMassEstFeatures);

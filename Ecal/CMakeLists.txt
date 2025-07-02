@@ -16,14 +16,18 @@ if(BUILD_EVENT_ONLY)
     
     register_event_object( module_path "Ecal/Event" namespace "ldmx" class "ClusterAlgoResult" )
     register_event_object( module_path "Ecal/Event" namespace "ldmx" class "EcalVetoResult" )
+    register_event_object( module_path "Ecal/Event" namespace "ldmx" class "EcalWABResult" )
     register_event_object( module_path "Ecal/Event" namespace "ldmx" class "EcalDigiCollection" )
+    register_event_object( module_path "Ecal/Event" namespace "ldmx" class "EcalTrajectoryInfo")
+    register_event_object( module_path "Ecal/Event" namespace "ldmx" class "EcalMipResult")
     register_event_object( module_path "Ecal/Event" namespace "ldmx" class "EcalCluster" type "collection" )
     register_event_object( module_path "Ecal/Event" namespace "ldmx" class "EcalHit"     type "collection" )
-   
+
+    
     # Generate the files needed to build the event classes.
     setup_library(module Ecal
                   name Event
-                  dependencies ROOT::Core 
+                  dependencies ROOT::Core ROOT::Hist ROOT::Physics
                                Recon::Event SimCore::Event 
                   register_target)
 
@@ -35,10 +39,13 @@ endif()
 # to an external folder and create the targets.
 find_package(ONNXRuntime 1.2.0)
 
+find_package(Eigen3 CONFIG REQUIRED)
+
 setup_library(module Ecal
               dependencies ROOT::Physics 
                            Framework::Framework Recon::Event Tools::Tools DetDescr::DetDescr 
-                           ONNXRuntime::Interface
+                           ONNXRuntime::Interface Ecal::Event
+                           Eigen3::Eigen
 )
 
 setup_test(dependencies Ecal::Ecal)
@@ -51,7 +58,7 @@ setup_data(module Ecal)
 add_executable(print-ecal-hex-readout ${PROJECT_SOURCE_DIR}/src/Ecal/print_ecal_hex_readout.cxx)
 
 # Link to the Framework library
-target_link_libraries(print-ecal-hex-readout PRIVATE DetDescr Ecal)
+target_link_libraries(print-ecal-hex-readout PRIVATE DetDescr Ecal ROOT::Physics)
 
 # Install the fire executable
 install(TARGETS print-ecal-hex-readout DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)

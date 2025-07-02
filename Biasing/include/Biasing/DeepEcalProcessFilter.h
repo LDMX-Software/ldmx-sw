@@ -18,7 +18,7 @@
 /*~~~~~~~~~~~~~*/
 /*   SimCore   */
 /*~~~~~~~~~~~~~*/
-#include "SimCore/UserAction.h"
+#include "SimCore/G4User/UserAction.h"
 
 /*~~~~~~~~~~~~~~~*/
 /*   Framework   */
@@ -74,10 +74,8 @@ class DeepEcalProcessFilter : public simcore::UserAction {
   double ecal_min_Z_{400.};
   /// Require that the hard brem photon originates from the target
   bool require_photon_fromTarget_{false};
-  /// Enable logging
-  enableLogging("DeepEcalProcessFilter")
-      /// member used to help tag events where the photon comes from the target
-      bool photonFromTarget_{false};
+  /// member used to help tag events where the photon comes from the target
+  bool photonFromTarget_{false};
   /// member used to help tag events that have a deep-ecal process ocurr
   bool hasDeepEcalProcess_{false};
 };  // DeepEcalProcessFilter

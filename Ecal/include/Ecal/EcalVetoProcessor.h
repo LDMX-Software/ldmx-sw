@@ -1,3 +1,4 @@
+
 /**
  * @file EcalVetoProcessor.h
  * @brief Class that determines if event is vetoable using ECAL hit information
@@ -10,21 +11,30 @@
 // LDMX
 #include "DetDescr/EcalGeometry.h"
 #include "DetDescr/EcalID.h"
+#include "DetDescr/SimSpecialID.h"
 #include "Ecal/Event/EcalHit.h"
+#include "Ecal/Event/EcalTrajectoryInfo.h"
 #include "Ecal/Event/EcalVetoResult.h"
 #include "Framework/Configure/Parameters.h"
 #include "Framework/EventProcessor.h"
+#include "SimCore/Event/SimParticle.h"
+#include "SimCore/Event/SimTrackerHit.h"
+#include "Tools/AnalysisUtils.h"
 #include "Tools/ONNXRuntime.h"
-
-// ROOT (MIP tracking)
-#include "TVector3.h"
-
-// For recoil tracking
 #include "Tracking/Event/Track.h"
 
 // C++
+#include <stdlib.h>
+
+#include <algorithm>
+#include <cmath>
+#include <fstream>
+#include <iomanip>
 #include <map>
 #include <memory>
+
+// ROOT (for anle calculations)
+#include "TVector3.h"
 
 namespace ecal {
 
@@ -44,6 +54,19 @@ class EcalVetoProcessor : public framework::Producer {
   virtual ~EcalVetoProcessor() {}
 
   /**
+   * onNewRun is the first function called for each processor
+   * *after* the conditions are fully configured and accessible.
+   * This is where you could create single-processors, multi-event
+   * calculation objects.
+   */
+  void onNewRun(const ldmx::RunHeader& rh) override;
+
+  /**
+   *
+   */
+  void onProcessEnd() override;
+
+  /**
    * Configure the processor using the given user specified parameters.
    *
    * @param parameters Set of parameters used to configure this processor.
@@ -52,19 +75,12 @@ class EcalVetoProcessor : public framework::Producer {
 
   void produce(framework::Event& event) override;
 
-  // MIP tracking:  Class for storing hit information for tracking in a
-  // convenient way
-  struct HitData {
-    int layer;
-    TVector3 pos;
-  };
-
  private:
   void clearProcessor();
 
   /* Function to calculate the energy weighted shower centroid */
   ldmx::EcalID GetShowerCentroidIDAndRMS(
-      const std::vector<ldmx::EcalHit>& ecalRecHits, double& showerRMS);
+      const std::vector<ldmx::EcalHit>& ecalRecHits, float& showerRMS);
 
   /* Function to load up empty vector of hit maps */
   void fillHitMap(const std::vector<ldmx::EcalHit>& ecalRecHits,
@@ -77,8 +93,8 @@ class EcalVetoProcessor : public framework::Producer {
                           std::map<ldmx::EcalID, float>& cellMapIso,
                           bool doTight = false);
 
-  std::vector<XYCoords> getTrajectory(std::vector<double> momentum,
-                                      std::vector<float> position);
+  std::vector<XYCoords> getTrajectory(std::array<float, 3> momentum,
+                                      std::array<float, 3> position);
 
   void buildBDTFeatureVector(const ldmx::EcalVetoResult& result);
 
@@ -117,6 +133,10 @@ class EcalVetoProcessor : public framework::Producer {
                                const std::string& ts_title);
 
  private:
+  int nevents_{0};
+  float processing_time_{0.};
+
+  std::map<std::string, float> profiling_map_;
   std::map<ldmx::EcalID, float> cellMap_;
   std::map<ldmx::EcalID, float> cellMapTightIso_;
 
@@ -124,57 +144,54 @@ class EcalVetoProcessor : public framework::Producer {
   std::vector<float> ecalLayerEdepReadout_;
   std::vector<float> ecalLayerTime_;
 
-  std::vector<std::vector<double>> roc_range_values_;
+  std::vector<std::vector<float>> roc_range_values_;
 
   int nEcalLayers_{0};
   int nReadoutHits_{0};
   int deepestLayerHit_{0};
 
-  double summedDet_{0};
-  double summedTightIso_{0};
-  double maxCellDep_{0};
-  double showerRMS_{0};
-  double xStd_{0};
-  double yStd_{0};
-  double avgLayerHit_{0};
-  double stdLayerHit_{0};
-  double ecalBackEnergy_{0};
-  // MIP tracking
-  /// Number of "straight" tracks found in the event
-  int nStraightTracks_{0};
-  /// Number of "linreg" tracks found in the event
-  int nLinregTracks_{0};
-  /// First ECal layer in which a hit is found near the photon
-  int firstNearPhLayer_{0};
-  /// Number of hits near the photon trajectory
-  int nNearPhHits_{0};
+  float summedDet_{0};
+  float summedTightIso_{0};
+  float maxCellDep_{0};
+  float showerRMS_{0};
+  float xStd_{0};
+  float yStd_{0};
+  float avgLayerHit_{0};
+  float stdLayerHit_{0};
+  float ecalBackEnergy_{0};
+
   /// Angular separation between the projected photon and electron trajectories
-  /// (currently unused)
+  /// as projected at ECAL
   float epAng_{0};
+  /// Angular separation between the projected photon and electron trajectories
+  /// as at Target
+  float epAngAtTarget_{0};
   /// Distance between the projected photon and electron trajectories at the
   /// ECal face
   float epSep_{0};
-  /// Dot product of the photon and electron momenta unit vectors
+  /// Dot product of the photon and electron momenta unit vectors at Ecal
   float epDot_{0};
-  /// Number of hits in the photon territory
-  int photonTerritoryHits_{0};
+  /// Dot product of the photon and electron momenta unit vectors at Target
+  float epDotAtTarget_{0};
 
-  double bdtCutVal_{0};
+  float bdtCutVal_{0};
 
-  double beamEnergyMeV_{0};
-  double linreg_radius_{0};
-
-  bool verbose_{false};
+  float beamEnergyMeV_{0};
 
   std::string bdtFileName_;
   std::string rocFileName_;
   std::vector<float> bdtFeatures_;
   std::string featureListName_;
 
+  // Pass and collection names
+  std::string sp_pass_name_;
   std::string rec_pass_name_;
   std::string rec_coll_name_;
   bool recoil_from_tracking_;
+  std::string track_pass_name_;
   std::string track_collection_;
+
+  std::string sim_particles_passname_;
   bool inverse_skim_{false};
 
   /** Name of the collection which will containt the results. */

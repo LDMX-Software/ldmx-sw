@@ -20,6 +20,7 @@ void TrigScintFirmwareTracker::configure(framework::config::Parameters &ps) {
   verbose_ = ps.getParameter<int>("verbosity");
   timeTolerance_ = ps.getParameter<double>("time_tolerance");
   padTime_ = ps.getParameter<double>("pad_time");
+
   if (verbose_) {
     ldmx_log(info) << "In TrigScintFirmwareTracker: configure done!";
     ldmx_log(info) << "\nClustering threshold: " << minThr_
@@ -311,4 +312,4 @@ ldmx::TrigScintTrack TrigScintFirmwareTracker::makeTrack(Track outTrk) {
 
 }  // namespace trigscint
 
-DECLARE_PRODUCER_NS(trigscint, TrigScintFirmwareTracker);
+DECLARE_PRODUCER(trigscint::TrigScintFirmwareTracker);

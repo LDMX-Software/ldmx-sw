@@ -69,14 +69,14 @@ void LHEParticle::setMother(int i, LHEParticle* mother) {
 LHEParticle* LHEParticle::getMother(int i) const { return mothers_[i]; }
 
 void LHEParticle::print(std::ostream& stream) const {
-  stream << "LHEParticle { "
-         << "IDUP: " << getIDUP() << ", ISTUP: " << getISTUP()
-         << ", MOTHUP[0]: " << getMOTHUP(0) << ", MOTHUP[1]: " << getMOTHUP(1)
-         << ", ICOLUP[0]: " << getICOLUP(0) << ", ICOLUP[1]: " << getICOLUP(1)
-         << ", PUP[0]: " << getPUP(0) << ", PUP[1]: " << getPUP(1)
-         << ", PUP[2]: " << getPUP(2) << ", PUP[3]: " << getPUP(3)
-         << ", PUP[4]: " << getPUP(4) << ", VTIMUP: " << getVTIMUP()
-         << ", SPINUP: " << getSPINUP() << " }" << std::endl;
+  stream << "LHEParticle { " << "IDUP: " << getIDUP()
+         << ", ISTUP: " << getISTUP() << ", MOTHUP[0]: " << getMOTHUP(0)
+         << ", MOTHUP[1]: " << getMOTHUP(1) << ", ICOLUP[0]: " << getICOLUP(0)
+         << ", ICOLUP[1]: " << getICOLUP(1) << ", PUP[0]: " << getPUP(0)
+         << ", PUP[1]: " << getPUP(1) << ", PUP[2]: " << getPUP(2)
+         << ", PUP[3]: " << getPUP(3) << ", PUP[4]: " << getPUP(4)
+         << ", VTIMUP: " << getVTIMUP() << ", SPINUP: " << getSPINUP() << " }"
+         << std::endl;
 }
 
 std::ostream& operator<<(std::ostream& stream, const LHEParticle& particle) {

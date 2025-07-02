@@ -6,12 +6,17 @@
 
 namespace trigger {
 
-void DumpFileWriter::configure(framework::config::Parameters& ps) {}
+void DumpFileWriter::configure(framework::config::Parameters& ps) {
+  ecal_trig_digis_passname_ =
+      ps.getParameter<std::string>("ecal_trig_digis_passname");
+  ecal_trig_digis_event_passname_ =
+      ps.getParameter<std::string>("ecal_trig_digis_event_passname");
+}
 
 void DumpFileWriter::analyze(const framework::Event& event) {
-  if (!event.exists("ecalTrigDigis")) return;
-  auto ecalTrigDigis{
-      event.getObject<ldmx::HgcrocTrigDigiCollection>("ecalTrigDigis")};
+  if (!event.exists("ecalTrigDigis", ecal_trig_digis_event_passname_)) return;
+  auto ecalTrigDigis{event.getObject<ldmx::HgcrocTrigDigiCollection>(
+      "ecalTrigDigis", ecal_trig_digis_passname_)};
 
   // clear event to write
   myEvent.event = evtNo;
@@ -24,14 +29,12 @@ void DumpFileWriter::analyze(const framework::Event& event) {
     // compressed ECal digis are 8xADCs (HCal will be 4x)
     ecalTpToE cvt;
     float e = cvt.calc(trigDigi.linearPrimitive(), tid.layer());
-    // float sie = 8 * trigDigi.linearPrimitive() * gain *
-    //             mVtoMeV;  // in MeV, before layer corrections
-    // float e = (sie / mipSiEnergy * layerWeights.at(tid.layer()) + sie) *
-    //           secondOrderEnergyCorrection;
 
     ldmx_int::EcalTP tp;
     // tp.fill( trigDigi.getId(), trigDigi.getPrimitive() );
-    tp.fill(trigDigi.getId(), e);  // store linearized E
+    // store complete information for firmware studies
+    tp.fill(trigDigi.getId(), trigDigi.getPrimitive(), tid.layer(),
+            tid.module(), tid.triggercell(), int(e));
     myEvent.EcalTPs.push_back(tp);
   }
 
@@ -57,4 +60,4 @@ void DumpFileWriter::onProcessEnd() {
 
 }  // namespace trigger
 
-DECLARE_ANALYZER_NS(trigger, DumpFileWriter);
+DECLARE_ANALYZER(trigger::DumpFileWriter);

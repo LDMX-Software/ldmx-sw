@@ -52,7 +52,7 @@ jobs:
         ref: ${{ env.HEAD_REF }}
 
     - name: Install just
-      uses: extractions/setup-just@v2
+      uses: extractions/setup-just@v3
       with:
           just-version: 1.26.0
  
@@ -62,12 +62,8 @@ jobs:
         just build
       shell: bash
 
-    - name: Git Gold Histograms from trunk
-      run: git checkout origin/trunk -- .github/validation_samples/*/gold.root VERSION
-      shell: bash
-
     - name: Package ldmx-sw Into Artifact
-      run: tar cf ldmx-sw-package.tar install/ .github/ VERSION
+      run: tar cf ldmx-sw-package.tar install/ .github/
 
     - name: Upload ldmx-sw Package
       uses: actions/upload-artifact@v4
@@ -88,6 +84,27 @@ jobs:
       matrix: ${{fromJson(needs.compile-ldmx-sw.outputs.job_matrix)}}
       fail-fast: false
     steps:
+
+    - name: Get PR Info for Validation Job
+      id: get_pr_again
+      run: |
+        if [[ "${{ github.event_name }}" == "issue_comment" ]]; then
+          PR_DATA=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            "https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.issue.number }}")
+          HEAD_REF=$(echo "$PR_DATA" | jq -r .head.ref)
+        else
+          HEAD_REF=${{ github.ref }}
+        fi
+        echo "HEAD_REF=$HEAD_REF" >> $GITHUB_ENV
+
+    # need clone of ldmx-sw for getting gold tag
+    - name: Checkout ldmx-sw
+      uses: actions/checkout@v4
+      with:
+        submodules: 'recursive'
+        fetch-depth: 0
+        ref: ${{ env.HEAD_REF }}
+
     - name: Download ldmx-sw Package
       uses: actions/download-artifact@v4
       with:
@@ -97,6 +114,12 @@ jobs:
       run: |
         cd ${GITHUB_WORKSPACE}
         tar xf ldmx-sw-package.tar
+
+    - name: Download CI Gold Data
+      uses: actions/checkout@v4
+      with:
+        repository: LDMX-Software/ci-data
+        path: ci-data
 
     - name: Run Validation
       id: validation

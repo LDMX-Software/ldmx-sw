@@ -21,8 +21,8 @@ void EventReadoutProducer::configure(
   fiberToShift_ = parameters.getParameter<int>("fiber_to_shift");
   verbose_ = parameters.getParameter<bool>("verbose");
 
-  ldmx_log(debug) << "In configure, got parameters:"
-                  << "\noutput_collection = " << outputCollection_
+  ldmx_log(debug) << "In configure, got parameters:" << "\noutput_collection = "
+                  << outputCollection_
                   << "\ninput_collection = " << inputCollection_
                   << "\ninput_pass_name  = " << inputPassName_
                   << "\nnumber_pedestal_samples  = " << nPedSamples_
@@ -61,7 +61,7 @@ void EventReadoutProducer::produce(framework::Event &event) {
     float avgQ = 0;
     float totPosQ = 0;
     int iS = 0;
-    int nPos = 0;
+    [[maybe_unused]] int nPos = 0;
     float earlyPed = 0;
     for (auto &val : adc) {
       float Q = qie.ADC2Q(val);
@@ -285,4 +285,4 @@ flips and long weird pulses
 }
 }  // namespace trigscint
 
-DECLARE_PRODUCER_NS(trigscint, EventReadoutProducer);
+DECLARE_PRODUCER(trigscint::EventReadoutProducer);

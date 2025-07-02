@@ -23,6 +23,10 @@ class PropagationMapWriter : public framework::Producer {
  private:
   TFile* outFile_{nullptr};
   std::string outPath_{"./propagationMap.root"};
+  std::string ecal_scoring_plane_passname_;
+  std::string target_scoring_plane_passname_;
+  std::string target_sp_hits_events_passname_;
+  std::string ecal_sp_hits_events_passname_;
   TProfile2D* profx_{nullptr};
   TProfile2D* profy_{nullptr};
 };

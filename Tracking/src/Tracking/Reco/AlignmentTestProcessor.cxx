@@ -7,8 +7,6 @@ AlignmentTestProcessor::AlignmentTestProcessor(const std::string& name,
 
     : TrackingGeometryUser(name, process) {}
 
-AlignmentTestProcessor::~AlignmentTestProcessor() {}
-
 void AlignmentTestProcessor::configure(
     framework::config::Parameters& parameters) {}
 
@@ -63,4 +61,4 @@ void AlignmentTestProcessor::onProcessEnd() {}
 
 }  // namespace tracking::reco
 
-DECLARE_PRODUCER_NS(tracking::reco, AlignmentTestProcessor)
+DECLARE_PRODUCER(tracking::reco::AlignmentTestProcessor)

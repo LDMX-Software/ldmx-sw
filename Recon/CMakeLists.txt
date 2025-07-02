@@ -36,6 +36,8 @@ if(BUILD_EVENT_ONLY)
   			class "BeamElectronTruth" type "collection" )
   register_event_object( module_path "Recon/Event" namespace "ldmx" 
                          class "TrackDeDxMassEstimate" type "collection" )
+  register_event_object( module_path "Recon/Event" namespace "ldmx" 
+                         class "FiducialFlag" )
  setup_library(module Recon name Event
                  dependencies ROOT::Core
                  register_target)

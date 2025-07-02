@@ -6,8 +6,6 @@ TrigScintClusterDQM::TrigScintClusterDQM(const std::string &name,
                                          framework::Process &process)
     : framework::Analyzer(name, process) {}
 
-TrigScintClusterDQM::~TrigScintClusterDQM() {}
-
 void TrigScintClusterDQM::onProcessStart() {
   getHistoDirectory();
 
@@ -19,13 +17,13 @@ void TrigScintClusterDQM::onProcessStart() {
   histograms_.create("seed", "Cluster seed hit channel ID", 100, 0, 100);
   histograms_.create("beamEfrac", "Cluster edep fraction from beam electron",
                      101, 0., 1.01);
-  histograms_.create("x", "Cluster x position", 1000, -100, 100);
-  histograms_.create("y", "Cluster y position", 1000, -100, 100);
-  histograms_.create("z", "Cluster z position", 1000, -900, 100);
+  histograms_.create("x", "Cluster x position [mm]", 1000, -100, 100);
+  histograms_.create("y", "Cluster y position [mm]", 1000, -100, 100);
+  histograms_.create("z", "Cluster z position [mm]", 1000, -900, 100);
 
   histograms_.create("pe", "PE in a cluster", 250, 0, 1000);
   histograms_.create("energy", "Energy dep in a cluster [MeV]", 500, 0, 1500);
-  histograms_.create("cluster_time", "Cluster time (ns)", 600, -150, 150);
+  histograms_.create("cluster_time", "Cluster time [ns]", 600, -150, 150);
 
   // TODO: implement getting a list of the constructed histograms, to iterate
   // through and set overflow boolean.
@@ -36,9 +34,8 @@ void TrigScintClusterDQM::configure(framework::config::Parameters &ps) {
   padName_ = ps.getParameter<std::string>("pad").c_str();
   passName_ = ps.getParameter<std::string>("passName").c_str();
 
-  ldmx_log(info) << "In TrigScintClusterDQM::configure, got parameters "
-                 << clusterCollectionName_ << ", pad = " << padName_
-                 << ", pass = " << passName_;
+  ldmx_log(debug) << "Collection name =  " << clusterCollectionName_
+                  << ", pad = " << padName_ << ", pass = " << passName_;
 }
 
 void TrigScintClusterDQM::analyze(const framework::Event &event) {
@@ -72,4 +69,4 @@ void TrigScintClusterDQM::analyze(const framework::Event &event) {
 
 }  // namespace dqm
 
-DECLARE_ANALYZER_NS(dqm, TrigScintClusterDQM)
+DECLARE_ANALYZER(dqm::TrigScintClusterDQM)

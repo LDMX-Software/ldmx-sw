@@ -47,7 +47,7 @@
 
 // Kalman Filter
 
-//#include "Acts/EventData/Measurement.hpp"
+// #include "Acts/EventData/Measurement.hpp"
 #include "Acts/EventData/MultiTrajectory.hpp"
 #include "Acts/EventData/MultiTrajectoryHelpers.hpp"
 #include "Acts/EventData/VectorTrackContainer.hpp"
@@ -62,7 +62,7 @@
 #include "Acts/TrackFitting/KalmanFitter.hpp"
 
 // GSF
-//#include "Acts/TrackFitting/GaussianSumFitter.hpp"
+// #include "Acts/TrackFitting/GaussianSumFitter.hpp"
 #include "Acts/Propagator/MultiEigenStepperLoop.hpp"
 
 //--- Tracking ---//
@@ -101,7 +101,7 @@ class CKFProcessor final : public TrackingGeometryUser {
   CKFProcessor(const std::string &name, framework::Process &process);
 
   /// Destructor
-  ~CKFProcessor();
+  virtual ~CKFProcessor() = default;
 
   /**
    *
@@ -192,6 +192,9 @@ class CKFProcessor final : public TrackingGeometryUser {
   // The measurement collection to use for track reconstruction
   std::string measurement_collection_{"TaggerMeasurements"};
 
+  std::string simParticles_passName_;
+  std::string sim_particles_event_passname_;
+
   // Outlier removal pvalue
   // The Chi2Cut is applied at filtering stage.
   // 1DOF pvalues: 0.1 = 2.706 0.05 = 3.841 0.025 = 5.024 0.01 = 6.635 0.005
@@ -207,6 +210,8 @@ class CKFProcessor final : public TrackingGeometryUser {
 
   // The interpolated bfield
   std::string field_map_{""};
+
+  std::string input_pass_name_{""};
 
   // The Propagator
   std::unique_ptr<const CkfPropagator> propagator_;

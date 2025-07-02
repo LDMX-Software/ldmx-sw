@@ -24,6 +24,7 @@
 #include "DetDescr/TrigScintID.h"
 #include "Framework/Event.h"
 #include "Framework/EventProcessor.h"
+#include "SimCore/Event/SimCalorimeterHit.h"
 #include "Tools/AnalysisUtils.h"
 
 namespace dqm {
@@ -34,7 +35,7 @@ class TrigScintDQM : public framework::Analyzer {
   TrigScintDQM(const std::string &name, framework::Process &process);
 
   /** Destructor */
-  ~TrigScintDQM();
+  ~TrigScintDQM() = default;
 
   /**
    * Configure the processor using the given user specified parameters.
@@ -59,6 +60,7 @@ class TrigScintDQM : public framework::Analyzer {
 
   /// Name of Pad
   std::string padName_{"_up"};
+  std::string hit_passname_;
 };
 
 }  // namespace dqm

@@ -1,4 +1,6 @@
-
+/*~~~~~~~~~~~~~*/
+/*   Biasing   */
+/*~~~~~~~~~~~~~*/
 #include "Biasing/EcalProcessFilter.h"
 
 /*~~~~~~~~~~~~*/
@@ -12,7 +14,8 @@
 /*~~~~~~~~~~~~~*/
 /*   SimCore   */
 /*~~~~~~~~~~~~~*/
-#include "SimCore/UserTrackInformation.h"
+#include "SimCore/G4User/PtrRetrieval.h"
+#include "SimCore/G4User/UserTrackInformation.h"
 
 namespace biasing {
 
@@ -21,8 +24,6 @@ EcalProcessFilter::EcalProcessFilter(const std::string& name,
     : simcore::UserAction(name, parameters) {
   process_ = parameters.getParameter<std::string>("process");
 }
-
-EcalProcessFilter::~EcalProcessFilter() {}
 
 G4ClassificationOfNewTrack EcalProcessFilter::ClassifyNewTrack(
     const G4Track* track, const G4ClassificationOfNewTrack& currentTrackClass) {
@@ -47,6 +48,12 @@ G4ClassificationOfNewTrack EcalProcessFilter::ClassifyNewTrack(
 }
 
 void EcalProcessFilter::stepping(const G4Step* step) {
+  static auto calorimeter_region =
+      simcore::g4user::ptrretrieval::getRegion("CalorimeterRegion");
+  if (!calorimeter_region) {
+    ldmx_log(warn)
+        << "Region 'CalorimeterRegion' not found in Geant4 region store";
+  }
   // Get the track associated with this step.
   auto track{step->GetTrack()};
 
@@ -62,9 +69,10 @@ void EcalProcessFilter::stepping(const G4Step* step) {
 
   // Get the region the particle is currently in.  Continue processing
   // the particle only if it's in the calorimeter region.
-  if (auto region{
-          track->GetVolume()->GetLogicalVolume()->GetRegion()->GetName()};
-      region.compareTo("CalorimeterRegion") != 0) {
+  auto phys_vol{track->GetVolume()};
+  auto lv{phys_vol ? phys_vol->GetLogicalVolume() : nullptr};
+  auto region{lv ? lv->GetRegion() : nullptr};
+  if (region != calorimeter_region) {
     // If secondaries were produced outside of the volume of interest,
     // and there aren't additional brems to process, abort the
     // event.  Otherwise, suspend the track and move on to the next
@@ -101,14 +109,18 @@ void EcalProcessFilter::stepping(const G4Step* step) {
     /**
      * Check if the photon will be exiting the ecal
      *
-     * The 'hcal_PV' volume name is automatically constructed by Geant4's
-     * GDML parser and was found by inspecting the geometry using a
-     * visualization. This Physical Volume (PV) is associated with the
-     * hcal parent volume and so it will break if the hcal parent volume
-     * changes its name.
+     * The 'hadronic_calorimeter' logical volume name is the parent
+     * volume to all of the HCal components.
      */
-    if (auto volume{track->GetNextVolume()->GetName()};
-        volume.compareTo("hcal_PV") == 0) {
+    static auto volume_after_exiting_ecal =
+        simcore::g4user::ptrretrieval::getLogicalVolume("hadronic_calorimeter");
+    if (!volume_after_exiting_ecal) {
+      ldmx_log(warn) << "Unable to find 'hadronic_calorimeter' logical volume.";
+    }
+    auto next_phys_vol = track->GetNextVolume();
+    auto next_log_vol{next_phys_vol ? next_phys_vol->GetLogicalVolume()
+                                    : nullptr};
+    if (next_log_vol == volume_after_exiting_ecal) {
       /*
       std::cout << "[ EcalProcessFilter ]: "
             <<
@@ -166,12 +178,8 @@ void EcalProcessFilter::stepping(const G4Step* step) {
       return;
     }
 
-    ldmx_log(info) << "There were "
-                   << G4EventManager::GetEventManager()
-                          ->GetConstCurrentEvent()
-                          ->GetEventID()
-                   << " Brem photon produced " << secondaries->size()
-                   << " particle via " << processName << " process.";
+    ldmx_log(info) << " Brem photon produced " << secondaries->size()
+                   << " particles via " << processName << " process.";
     trackInfo->tagBremCandidate(false);
     trackInfo->setSaveFlag(true);
     trackInfo->tagPNGamma();
@@ -180,4 +188,4 @@ void EcalProcessFilter::stepping(const G4Step* step) {
 }
 }  // namespace biasing
 
-DECLARE_ACTION(biasing, EcalProcessFilter)
+DECLARE_ACTION(biasing::EcalProcessFilter)

@@ -19,14 +19,14 @@
 /*   SimCore   */
 /*~~~~~~~~~~~~~*/
 #include "SimCore/APrimePhysics.h"
+#include "SimCore/BiasOperators/XsecBiasingOperator.h"
 #include "SimCore/DetectorConstruction.h"
+#include "SimCore/Event/HepMC3GenEvent.h"
 #include "SimCore/G4Session.h"
 #include "SimCore/G4User/TrackingAction.h"
-#include "SimCore/Geo/ParserFactory.h"
-#include "SimCore/PrimaryGenerator.h"
-#include "SimCore/SensitiveDetector.h"
-#include "SimCore/UserEventInformation.h"
-#include "SimCore/XsecBiasingOperator.h"
+#include "SimCore/G4User/UserEventInformation.h"
+#include "SimCore/Generators/PrimaryGenerator.h"
+#include "SimCore/SDs/SensitiveDetector.h"
 
 /*~~~~~~~~~~~~~~*/
 /*    Geant4    */
@@ -113,8 +113,8 @@ void Simulator::beforeNewRun(ldmx::RunHeader& header) {
                       "G4 Version string.";
   }
 
-  header.setStringParameter("ldmx-sw version", LDMXSW_VERSION);
-  header.setStringParameter("ldmx-sw revision", GIT_SHA1);
+  header.setStringParameter("SIM version", LDMXSW_VERSION);
+  header.setStringParameter("SIM revision", GIT_SHA1);
 }
 
 void Simulator::onNewRun(const ldmx::RunHeader& runHeader) {
@@ -158,6 +158,15 @@ void Simulator::produce(framework::Event& event) {
 
   event_header.setStringParameter("eventSeed", stream.str());
 
+  auto event_info = static_cast<UserEventInformation*>(
+      runManager_->GetCurrentEvent()->GetUserInformation());
+
+  auto hepmc3_events = event_info->getHepMC3GenEvents();
+  for (auto& hepmc3ev : hepmc3_events) {
+    hepmc3ev.event_number = event.getEventHeader().getEventNumber();
+  }
+  if (hepmc3_events.size() > 0) event.add("SimHepMC3Events", hepmc3_events);
+
   saveTracks(event);
 
   saveSDHits(event);
@@ -169,9 +178,9 @@ void Simulator::produce(framework::Event& event) {
 
 void Simulator::onProcessEnd() {
   SimulatorBase::onProcessEnd();
-  std::cout << "[ Simulator ] : "
-            << "Started " << numEventsBegan_ << " events to produce "
-            << numEventsCompleted_ << " events." << std::endl;
+  std::cout << "[ Simulator ] : " << "Started " << numEventsBegan_
+            << " events to produce " << numEventsCompleted_ << " events."
+            << std::endl;
 }
 
 void Simulator::setSeeds(std::vector<int> seeds) {
@@ -203,4 +212,4 @@ void Simulator::setSeeds(std::vector<int> seeds) {
 
 }  // namespace simcore
 
-DECLARE_PRODUCER_NS(simcore, Simulator)
+DECLARE_PRODUCER(simcore::Simulator)

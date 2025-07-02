@@ -3,7 +3,8 @@
 #include "G4EventManager.hh"
 #include "G4RunManager.hh"
 #include "G4Step.hh"
-#include "SimCore/UserTrackInformation.h"
+#include "SimCore/G4User/PtrRetrieval.h"
+#include "SimCore/G4User/UserTrackInformation.h"
 
 namespace biasing {
 
@@ -73,12 +74,17 @@ void MidShowerNuclearBkgdFilter::NewStage() {
 
 bool MidShowerNuclearBkgdFilter::isOutsideCalorimeterRegion(
     const G4Step* step) const {
+  static auto calorimeter_region =
+      simcore::g4user::ptrretrieval::getRegion("CalorimeterRegion");
+  if (!calorimeter_region) {
+    ldmx_log(warn)
+        << "Region 'CalorimeterRegion' not found in Geant4 region store";
+  }
   // the pointers in this chain are assumed to be always valid
-  auto reg{step->GetTrack()->GetVolume()->GetLogicalVolume()->GetRegion()};
-  if (reg) return (reg->GetName() != "CalorimeterRegion");
-  // region is nullptr ==> no region defined for current volume
-  //  ==> outside CalorimeterRegion
-  return true;
+  auto phys_vol{step->GetTrack()->GetVolume()};
+  auto log_vol{phys_vol ? phys_vol->GetLogicalVolume() : nullptr};
+  auto reg{log_vol ? log_vol->GetRegion() : nullptr};
+  return (reg != calorimeter_region);
 }
 
 bool MidShowerNuclearBkgdFilter::isNuclearProcess(
@@ -88,7 +94,7 @@ bool MidShowerNuclearBkgdFilter::isNuclearProcess(
     for (auto const& option : nuclear_processes_) {
       if (proc_name.contains(option)) return true;
     }  // loop over nuclear processes
-  }    // pointer exists
+  }  // pointer exists
   return false;
 }
 
@@ -100,8 +106,7 @@ void MidShowerNuclearBkgdFilter::save(const G4Track* track) const {
 
 void MidShowerNuclearBkgdFilter::AbortEvent(const std::string& reason) const {
   if (G4RunManager::GetRunManager()->GetVerboseLevel() > 1) {
-    std::cout << "[ MidShowerNuclearBkgdFilter ]: "
-              << "("
+    std::cout << "[ MidShowerNuclearBkgdFilter ]: " << "("
               << G4EventManager::GetEventManager()
                      ->GetConstCurrentEvent()
                      ->GetEventID()
@@ -112,4 +117,4 @@ void MidShowerNuclearBkgdFilter::AbortEvent(const std::string& reason) const {
 }
 }  // namespace biasing
 
-DECLARE_ACTION(biasing, MidShowerNuclearBkgdFilter)
+DECLARE_ACTION(biasing::MidShowerNuclearBkgdFilter)

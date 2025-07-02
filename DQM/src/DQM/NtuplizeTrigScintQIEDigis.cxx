@@ -58,4 +58,4 @@ void NtuplizeTrigScintQIEDigis::analyze(const framework::Event& event) {
 
 }  // namespace dqm
 
-DECLARE_ANALYZER_NS(dqm, NtuplizeTrigScintQIEDigis);
+DECLARE_ANALYZER(dqm::NtuplizeTrigScintQIEDigis);

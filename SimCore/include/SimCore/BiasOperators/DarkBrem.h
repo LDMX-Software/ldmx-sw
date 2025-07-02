@@ -5,7 +5,7 @@
 //   LDMX   //
 //----------//
 #include "G4DarkBreM/G4DarkBremsstrahlung.h"
-#include "SimCore/XsecBiasingOperator.h"
+#include "SimCore/BiasOperators/XsecBiasingOperator.h"
 
 namespace simcore {
 namespace biasoperators {

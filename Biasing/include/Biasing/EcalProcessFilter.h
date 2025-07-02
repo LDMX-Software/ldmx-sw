@@ -9,7 +9,7 @@
 /*~~~~~~~~~~~~~*/
 /*   SimCore   */
 /*~~~~~~~~~~~~~*/
-#include "SimCore/UserAction.h"
+#include "SimCore/G4User/UserAction.h"
 
 /*~~~~~~~~~~~~~~~*/
 /*   Framework   */
@@ -36,7 +36,7 @@ class EcalProcessFilter : public simcore::UserAction {
                     framework::config::Parameters& parameters);
 
   /// Destructor
-  ~EcalProcessFilter();
+  virtual ~EcalProcessFilter() = default;
 
   void stepping(const G4Step* step) override;
 
@@ -63,9 +63,6 @@ class EcalProcessFilter : public simcore::UserAction {
 
   /// Process to filter
   std::string process_{""};
-
-  /// Enable logging
-  enableLogging("EcalProcessFilter")
 
 };  // EcalProcessFilter
 }  // namespace biasing

@@ -12,6 +12,7 @@
 //----------------//
 //   C++ StdLib   //
 //----------------//
+#include <array>
 #include <iostream>
 #include <map>
 
@@ -36,11 +37,9 @@ class EcalVetoResult {
   void setVariables(int nReadoutHits, int deepestLayerHit, float summedDet,
                     float summedTightIso, float maxCellDep, float showerRMS,
                     float xStd, float yStd, float avgLayerHit,
-                    float stdLayerHit, float ecalBackEnergy,
-                    int nStraightTracks, int nLinregTracks,
-                    int firstNearPhLayer, int nNearPhHits,
-                    int photonTerritoryHits, float epAng, float epSep,
-                    float epDot,
+                    float stdLayerHit, float ecalBackEnergy, float epAng,
+                    float epAngAtTarget, float epSep, float epDot,
+                    float epDotAtTarget,
 
                     std::vector<float> electronContainmentEnergy,
                     std::vector<float> photonContainmentEnergy,
@@ -71,7 +70,8 @@ class EcalVetoResult {
                     std::vector<std::vector<float>> oContLayerStd,
 
                     std::vector<float> EcalLayerEdepReadout,
-                    std::vector<double> recoilP, std::vector<float> recoilPos);
+                    std::array<float, 3> recoilP,
+                    std::array<float, 3> recoilPos);
 
   /** Reset the object. */
   void Clear();
@@ -87,6 +87,9 @@ class EcalVetoResult {
   bool getFiducial() const { return fiducial_; }
 
   int getDeepestLayerHit() const { return deepestLayerHit_; }
+
+  // Did ACTS find a recoil track in the tracker?
+  bool getTrackingFiducial() const { return tracking_fiducial_; }
 
   int getNReadoutHits() const { return nReadoutHits_; }
 
@@ -107,6 +110,16 @@ class EcalVetoResult {
   float getStdLayerHit() const { return stdLayerHit_; }
 
   float getEcalBackEnergy() const { return ecalBackEnergy_; }
+
+  float getEPAng() const { return epAng_; }
+
+  float getEPAngAtTarget() const { return epAngAtTarget_; }
+
+  float getEPSep() const { return epSep_; }
+
+  float getEPDot() const { return epDot_; }
+
+  float getEPDotAtTarget() const { return epDotAtTarget_; }
 
   const std::vector<float>& getElectronContainmentEnergy() const {
     return electronContainmentEnergy_;
@@ -214,29 +227,21 @@ class EcalVetoResult {
   void setDiscValue(float discValue) { discValue_ = discValue; }
   void setFiducial(bool fiducial) { fiducial_ = fiducial; }
 
+  // Fiducial from the recoil tracking point of view
+  void setTrackingFiducial(bool tracking_fiducial) {
+    tracking_fiducial_ = tracking_fiducial;
+  }
+
   /** Return the momentum of the recoil at the Ecal face. */
-  const std::vector<double> getRecoilMomentum() const {
+  const std::vector<float> getRecoilMomentum() const {
     return {recoilPx_, recoilPy_, recoilPz_};
   };
 
   /** Return the x position of the recoil at the Ecal face. */
-  double getRecoilX() const { return recoilX_; };
+  float getRecoilX() const { return recoilX_; };
 
   /** Return the y position of the recoil at the Ecal face. */
-  double getRecoilY() const { return recoilY_; };
-
-  /// Number of straight tracks found
-  int getNStraightTracks() const { return nStraightTracks_; }
-
-  /// Number of linear-regression tracks found
-  int getNLinRegTracks() const { return nLinregTracks_; }
-
-  int getFirstNearPhLayer() const { return firstNearPhLayer_; }
-  int getNNearPhHits() const { return nNearPhHits_; }
-  int getPhotonTerritoryHits() const { return photonTerritoryHits_; }
-  float getEPAng() const { return epAng_; }
-  float getEPSep() const { return epSep_; }
-  float getEPDot() const { return epDot_; }
+  float getRecoilY() const { return recoilY_; };
 
  private:
   /** Flag indicating whether the event is vetoed by the Ecal. */
@@ -254,26 +259,6 @@ class EcalVetoResult {
   float avgLayerHit_{0};
   float stdLayerHit_{0};
   float ecalBackEnergy_{0};
-  // MIP tracking
-  /// Number of "straight" tracks found in the event
-  int nStraightTracks_{0};
-  /// Number of "linreg" tracks found in the event
-  int nLinregTracks_{0};
-  /// Earliest ECal layer in which a hit is found near the projected photon
-  /// trajectory
-  int firstNearPhLayer_{0};
-  /// Number of hits near the photon trajectory
-  int nNearPhHits_{0};
-  /// Number of hits in the photon territory
-  int photonTerritoryHits_{0};
-  /// Angular separation between the projected photon and electron trajectories
-  /// (currently unused)
-  float epAng_{0};
-  /// Distance between the projected photon and electron trajectories at the
-  /// ECal face
-  float epSep_{0};
-  /// Dot product of the photon and electron momenta unit vectors
-  float epDot_{0};
 
   std::vector<float> electronContainmentEnergy_;
   std::vector<float> photonContainmentEnergy_;
@@ -312,14 +297,17 @@ class EcalVetoResult {
   /** is the recoil electron fiducial in ECAL?*/
   bool fiducial_{false};
 
+  /** is the recoil electron fiducial in Tracker?*/
+  bool tracking_fiducial_{false};
+
   /** px of recoil electron at the Ecal face. */
-  double recoilPx_{-9999};
+  float recoilPx_{-9999};
 
   /** py of recoil electron at the Ecal face. */
-  double recoilPy_{-9999};
+  float recoilPy_{-9999};
 
   /** py of recoil electron at the Ecal face. */
-  double recoilPz_{-9999};
+  float recoilPz_{-9999};
 
   /** x position of recoil electron at the Ecal face. */
   float recoilX_{-9999};
@@ -327,9 +315,22 @@ class EcalVetoResult {
   /** y position of recoil electron at the Ecal face. */
   float recoilY_{-9999};
 
+  float epAng_{0};
+  /// Angular separation between the projected photon and electron trajectories
+  /// as projected at the target
+  float epAngAtTarget_{0};
+
+  /// Distance between the projected photon and electron trajectories at the
+  /// ECal face
+  float epSep_{0};
+  /// Dot product of the photon and electron momenta unit vectors as at ECAL
+  float epDot_{0};
+  /// Dot product of the photon and electron momenta unit vectors as at Target
+  float epDotAtTarget_{0};
+
   std::vector<float> ecalLayerEdepReadout_;
 
-  ClassDef(EcalVetoResult, 7);
+  ClassDef(EcalVetoResult, 10);
 };
 }  // namespace ldmx
 

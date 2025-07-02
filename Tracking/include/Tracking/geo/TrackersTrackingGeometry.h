@@ -46,16 +46,21 @@ class TrackersTrackingGeometryProvider;
 class TrackersTrackingGeometry : public TrackingGeometry {
  public:
   static const std::string NAME;
-  void BuildTaggerLayoutMap(G4VPhysicalVolume* pvol, std::string surfacename);
+  void buildTaggerLayoutMap(G4VPhysicalVolume* pvol, std::string surfacename);
 
-  void BuildRecoilLayoutMap(G4VPhysicalVolume* pvol, std::string surfacename);
+  void buildRecoilLayoutMap(G4VPhysicalVolume* pvol, std::string surfacename);
 
   // Provided a physical volume, extract a silicon rectangular plane surface
   std::shared_ptr<Acts::PlaneSurface> GetSurface(G4VPhysicalVolume* pvol,
                                                  Acts::Transform3 ref_trans);
 
-  Acts::CuboidVolumeBuilder::VolumeConfig buildTrackerVolume();
-  Acts::CuboidVolumeBuilder::VolumeConfig buildRecoilVolume();
+  Acts::CuboidVolumeBuilder::VolumeConfig buildVolumeConfig(
+      const G4VPhysicalVolume* detector,
+      const std::map<std::string,
+                     std::vector<std::shared_ptr<const Acts::Surface>>>
+          layout,
+      double tracker_y_length, double tracker_z_length,
+      const std::string& volumeName);
 
   // TODO Implement these
   Acts::CuboidVolumeBuilder::VolumeConfig buildTSVolume() { return {}; }
@@ -64,10 +69,11 @@ class TrackersTrackingGeometry : public TrackingGeometry {
  private:
   friend TrackersTrackingGeometryProvider;
   TrackersTrackingGeometry(const Acts::GeometryContext& gctx,
-                           const std::string& gdml, bool debug);
+                           const std::string& gdml, double tracker_y_length,
+                           double tracker_z_length);
 
-  G4VPhysicalVolume* Tagger_;
-  G4VPhysicalVolume* Recoil_;
+  G4VPhysicalVolume* tagger_;
+  G4VPhysicalVolume* recoil_;
 
   // I store the layout as a map to distinguish layers/sides
   // They are not too many modules, so it should be ok to use this data
@@ -82,8 +88,8 @@ class TrackersTrackingGeometry : public TrackingGeometry {
   std::map<std::string, std::vector<std::shared_ptr<const Acts::Surface>>>
       recoil_layout;
 
-  float TrackerYLength_{480.};
-  float TrackerZLength_{240.};
+ private:
+  enableLogging("TrackersTrackingGeometry")
 };
 
 }  // namespace tracking::geo

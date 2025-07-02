@@ -15,9 +15,9 @@
 /*~~~~~~~~~~~~~*/
 /*   SimCore   */
 /*~~~~~~~~~~~~~*/
-#include "SimCore/PrimaryGenerator.h"
-#include "SimCore/UserEventInformation.h"
-#include "SimCore/UserPrimaryParticleInformation.h"
+#include "SimCore/G4User/UserEventInformation.h"
+#include "SimCore/G4User/UserPrimaryParticleInformation.h"
+#include "SimCore/Generators/PrimaryGenerator.h"
 
 /*~~~~~~~~~~*/
 /*   ROOT   */
@@ -50,9 +50,13 @@ PrimaryGeneratorAction::PrimaryGeneratorAction(
   }
 
   for (auto& generator : generators) {
-    PrimaryGenerator::Factory::get().make(
-        generator.getParameter<std::string>("class_name"),
-        generator.getParameter<std::string>("instance_name"), generator);
+    if (not PrimaryGenerator::Factory::get().make(
+            generator.getParameter<std::string>("class_name"),
+            generator.getParameter<std::string>("instance_name"), generator)) {
+      EXCEPTION_RAISE("UnableToCreate",
+                      "Unable to create a PrimaryGenerator of type " +
+                          generator.getParameter<std::string>("class_name"));
+    }
   }
 }
 
@@ -70,7 +74,7 @@ void PrimaryGeneratorAction::GeneratePrimaries(G4Event* event) {
   }
 
   // Make our information container and give it to geant4
-  //    G4Event owns the event information and will delete it
+  // G4Event owns the event information and will delete it
   auto event_info = new UserEventInformation;
   event->SetUserInformation(event_info);
 
@@ -85,11 +89,23 @@ void PrimaryGeneratorAction::GeneratePrimaries(G4Event* event) {
     for (int iPV = 0; iPV < nPV; ++iPV) {
       G4PrimaryVertex* primary_vertex = event->GetPrimaryVertex(iPV);
 
+      if (not primary_vertex) {
+        EXCEPTION_RAISE(
+            "BadGen",
+            "One of the primary generators created a NULL primary vertex.");
+      }
+
       // Loop over all particle associated with the primary vertex and
       // set the generator status to 1.
       for (int iparticle = 0; iparticle < primary_vertex->GetNumberOfParticle();
            ++iparticle) {
         G4PrimaryParticle* primary = primary_vertex->GetPrimary(iparticle);
+
+        if (not primary) {
+          EXCEPTION_RAISE(
+              "BadGen",
+              "One of the primary generators created a NULL primary particle.");
+        }
 
         auto primary_info{dynamic_cast<UserPrimaryParticleInformation*>(
             primary->GetUserInformation())};

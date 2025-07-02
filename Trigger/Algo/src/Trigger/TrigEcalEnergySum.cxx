@@ -10,12 +10,15 @@ namespace trigger {
 
 void TrigEcalEnergySum::configure(framework::config::Parameters& ps) {
   hitCollName_ = ps.getParameter<std::string>("hitCollName");
+  hit_coll_passname_ = ps.getParameter<std::string>("hit_coll_passname");
+  hit_collname_events_passname_ =
+      ps.getParameter<std::string>("hit_collname_events_passname");
 }
 
 void TrigEcalEnergySum::produce(framework::Event& event) {
-  if (!event.exists(hitCollName_)) return;
-  auto ecalTrigDigis{
-      event.getObject<ldmx::HgcrocTrigDigiCollection>(hitCollName_)};
+  if (!event.exists(hitCollName_, hit_collname_events_passname_)) return;
+  auto ecalTrigDigis{event.getObject<ldmx::HgcrocTrigDigiCollection>(
+      hitCollName_, hit_coll_passname_)};
 
   // floating point algorithm
   // float total_e = 0;
@@ -54,4 +57,4 @@ void TrigEcalEnergySum::produce(framework::Event& event) {
 
 }  // namespace trigger
 
-DECLARE_PRODUCER_NS(trigger, TrigEcalEnergySum);
+DECLARE_PRODUCER(trigger::TrigEcalEnergySum);

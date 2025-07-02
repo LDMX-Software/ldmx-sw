@@ -33,8 +33,8 @@
 
 #include "Acts/Propagator/EigenStepper.hpp"
 #include "Acts/Propagator/Propagator.hpp"
-//#include "Acts/Propagator/Navigator.hpp"
-//#include "Acts/Propagator/StandardAborters.hpp"
+// #include "Acts/Propagator/Navigator.hpp"
+// #include "Acts/Propagator/StandardAborters.hpp"
 
 // Geometry
 #include "Acts/Surfaces/PerigeeSurface.hpp"
@@ -76,6 +76,7 @@ class Vertexer : public framework::Producer {
 
   std::string trk_c_name_1{"TaggerTracks"};
   std::string trk_c_name_2{"RecoilTracks"};
+  std::string input_pass_name_{""};
   std::shared_ptr<VoidPropagator> propagator_;
 
   // Monitoring histograms

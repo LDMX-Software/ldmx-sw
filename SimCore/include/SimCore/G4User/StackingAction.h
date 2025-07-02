@@ -20,7 +20,7 @@
 /*~~~~~~~~~~~~~*/
 /*   SimCore   */
 /*~~~~~~~~~~~~~*/
-#include "SimCore/UserAction.h"
+#include "SimCore/G4User/UserAction.h"
 
 namespace simcore {
 namespace g4user {
@@ -59,13 +59,13 @@ class StackingAction : public G4UserStackingAction {
    *
    * @param action  User action of type StackingAction
    */
-  void registerAction(UserAction* stackingAction) {
+  void registerAction(std::shared_ptr<UserAction> stackingAction) {
     stackingActions_.push_back(stackingAction);
   }
 
  private:
   /// Collection of user stacking actions
-  std::vector<UserAction*> stackingActions_;
+  std::vector<std::shared_ptr<UserAction>> stackingActions_;
 
 };  // StackingAction
 

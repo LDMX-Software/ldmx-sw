@@ -5,12 +5,15 @@ on:
       - 'trunk'
   pull_request:
 
+permissions:
+  contents: write
+
 jobs:
   clang-format:
     runs-on: ubuntu-latest
     steps:
     - name: Install just
-      uses: extractions/setup-just@v2
+      uses: extractions/setup-just@v3
       with:
           just-version: 1.26.0
 

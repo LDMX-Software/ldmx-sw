@@ -1,10 +1,5 @@
 #include "Tracking/Reco/DigitizationProcessor.h"
 
-#include <chrono>
-
-#include "Tracking/Event/Measurement.h"
-#include "Tracking/Sim/TrackingUtils.h"
-
 // Use this instead of CartesianSegmeter I think
 //  BinUtility(std::size_t bins, float min, float max, BinningOption opt = open,
 //              BinningValue value = BinningValue::binX,
@@ -19,13 +14,15 @@ DigitizationProcessor::DigitizationProcessor(const std::string& name,
 
 void DigitizationProcessor::onProcessStart() {
   normal_ = std::make_shared<std::normal_distribution<float>>(0., 1.);
-  ldmx_log(info) << "Initialization done" << std::endl;
 }
 
 void DigitizationProcessor::configure(
     framework::config::Parameters& parameters) {
   hit_collection_ =
       parameters.getParameter<std::string>("hit_collection", "TaggerSimHits");
+
+  tracker_hit_passname_ =
+      parameters.getParameter<std::string>("tracker_hit_passname");
   out_collection_ = parameters.getParameter<std::string>("out_collection",
                                                          "OutputMeasuements");
   min_e_dep_ = parameters.getParameter<double>("min_e_dep", 0.05);
@@ -43,13 +40,14 @@ void DigitizationProcessor::onNewRun(const ldmx::RunHeader& runHeader) {
 }
 
 void DigitizationProcessor::produce(framework::Event& event) {
-  ldmx_log(debug) << " Getting the tracking geometry:" << geometry().getTG();
+  ldmx_log(trace) << " Getting the tracking geometry:" << geometry().getTG();
 
   // Mode 0: Load simulated hits and produce smeared 1d measurements
   // Mode 1: Load simulated hits and produce digitized 1d measurements
 
   const std::vector<ldmx::SimTrackerHit> sim_hits =
-      event.getCollection<ldmx::SimTrackerHit>(hit_collection_);
+      event.getCollection<ldmx::SimTrackerHit>(hit_collection_,
+                                               tracker_hit_passname_);
 
   std::vector<ldmx::SimTrackerHit> merged_hits;
 
@@ -57,9 +55,7 @@ void DigitizationProcessor::produce(framework::Event& event) {
   if (merge_hits_) {
     mergeSimHits(sim_hits, merged_hits);
     measurements = digitizeHits(merged_hits);
-  }
-
-  else {
+  } else {
     measurements = digitizeHits(sim_hits);
   }
 
@@ -132,7 +128,6 @@ bool DigitizationProcessor::mergeHits(
   return true;
 }
 
-// TODO avoid copies and use references
 bool DigitizationProcessor::mergeSimHits(
     const std::vector<ldmx::SimTrackerHit>& sim_hits,
     std::vector<ldmx::SimTrackerHit>& merged_hits) {
@@ -140,12 +135,12 @@ bool DigitizationProcessor::mergeSimHits(
   // track_id
   std::map<int, std::map<int, std::vector<ldmx::SimTrackerHit>>> hitmap;
 
-  for (auto hit : sim_hits) {
+  for (const auto& hit : sim_hits) {
     unsigned int index = tracking::sim::utils::getSensorID(hit);
     unsigned int trackid = hit.getTrackID();
     hitmap[index][trackid].push_back(hit);
 
-    ldmx_log(debug) << "hitmap being filled, size::[" << index << "]["
+    ldmx_log(trace) << "hitmap being filled, size::[" << index << "]["
                     << trackid << "] size " << hitmap[index][trackid].size();
   }
 
@@ -153,25 +148,27 @@ bool DigitizationProcessor::mergeSimHits(
                    std::map<int, std::vector<ldmx::SimTrackerHit>>>::iterator
       hitmap_it1;
   typedef std::map<int, std::vector<ldmx::SimTrackerHit>>::iterator hitmap_it2;
+
   for (hitmap_it1 it = hitmap.begin(); it != hitmap.end(); it++) {
     for (hitmap_it2 it2 = it->second.begin(); it2 != it->second.end(); it2++) {
       mergeHits(it2->second, merged_hits);
     }
   }
 
-  ldmx_log(debug) << "Sim_hits Size=" << sim_hits.size()
-                  << "Merged_hits Size=" << merged_hits.size();
+  ldmx_log(debug) << "Sim_hits Size = " << sim_hits.size()
+                  << " Merged_hits Size = " << merged_hits.size();
 
-  // for (auto hit : sim_hits) hit.Print();
-  // for (auto mhit : merged_hits) mhit.Print();
+  // for (const auto& hit : sim_hits) hit.Print();
+  // for (const auto& mhit : merged_hits) mhit.Print();
 
   return true;
 }
 
 std::vector<ldmx::Measurement> DigitizationProcessor::digitizeHits(
     const std::vector<ldmx::SimTrackerHit>& sim_hits) {
-  ldmx_log(debug) << "Found:" << sim_hits.size() << " sim hits in the "
-                  << hit_collection_;
+  ldmx_log(debug) << "Found: " << sim_hits.size() << " sim hits in the '"
+                  << hit_collection_ << "' with passname '"
+                  << tracker_hit_passname_ << "'";
 
   std::vector<ldmx::Measurement> measurements;
 
@@ -198,14 +195,14 @@ std::vector<ldmx::Measurement> DigitizationProcessor::digitizeHits(
       if (hit_surface) {
         // Transform from global to local coordinates.
         // hit_surface->toStream(geometry_context(), std::cout);
-        ldmx_log(debug)
-            << "Local to global" << std::endl
-            << hit_surface->transform(geometry_context()).rotation()
-            << std::endl
+        ldmx_log(trace)
+            << "Local to global\n"
+            << hit_surface->transform(geometry_context()).rotation() << "\n"
             << hit_surface->transform(geometry_context()).translation();
 
         Acts::Vector3 dummy_momentum;
         Acts::Vector2 local_pos;
+        // TODO: where is 0.320 mm coming from?
         double surface_thickness = 0.320 * Acts::UnitConstants::mm;
         Acts::Vector3 global_pos(measurement.getGlobalPosition()[0],
                                  measurement.getGlobalPosition()[1],
@@ -246,11 +243,11 @@ std::vector<ldmx::Measurement> DigitizationProcessor::digitizeHits(
       }  // hit_surface exists
 
     }  // energy cut
-  }    // loop on sim-hits
+  }  // loop on sim-hits
 
   return measurements;
 
 }  // digitizeHits
 }  // namespace tracking::reco
 
-DECLARE_PRODUCER_NS(tracking::reco, DigitizationProcessor)
+DECLARE_PRODUCER(tracking::reco::DigitizationProcessor)

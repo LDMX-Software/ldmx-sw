@@ -18,7 +18,9 @@ class TrackersTrackingGeometryProvider
       const std::string& name, const std::string& tag_name,
       const framework::config::Parameters& parameters,
       framework::Process& process);
+
   ~TrackersTrackingGeometryProvider() = default;
+
   /**
    * create the tracking geometry as configured by the input parameters,
    * using the input context to update any run-dependent constants
@@ -32,8 +34,10 @@ class TrackersTrackingGeometryProvider
  private:
   /// the path to the detector we will use for tracking
   std::string detector_;
+  double tracker_y_length_;
+  double tracker_z_length_;
+
   /// whether to have debug information or not
-  bool debug_;
 };
 
 TrackersTrackingGeometryProvider::TrackersTrackingGeometryProvider(
@@ -42,7 +46,8 @@ TrackersTrackingGeometryProvider::TrackersTrackingGeometryProvider(
     framework::Process& process)
     : framework::ConditionsObjectProvider(name, tag_name, parameters, process) {
   detector_ = parameters.getParameter<std::string>("detector");
-  debug_ = parameters.getParameter<bool>("debug");
+  tracker_y_length_ = parameters.getParameter<double>("tracker_y_length");
+  tracker_z_length_ = parameters.getParameter<double>("tracker_z_length");
 }
 
 std::pair<const framework::ConditionsObject*, framework::ConditionsIOV>
@@ -69,8 +74,10 @@ TrackersTrackingGeometryProvider::getCondition(
    * currently-designed conditions system.
    */
   return std::make_pair(
-      new TrackersTrackingGeometry(the_context->get(), detector_, debug_), iov);
+      new TrackersTrackingGeometry(the_context->get(), detector_,
+                                   tracker_y_length_, tracker_z_length_),
+      iov);
 }
 }  // namespace tracking::geo
 
-DECLARE_CONDITIONS_PROVIDER_NS(tracking::geo, TrackersTrackingGeometryProvider);
+DECLARE_CONDITIONS_PROVIDER(tracking::geo::TrackersTrackingGeometryProvider);

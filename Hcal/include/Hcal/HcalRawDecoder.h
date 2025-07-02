@@ -361,8 +361,8 @@ class HcalRawDecoder : public framework::Producer {
             // copy data into EID->sample map
             eid_to_samples[eid].emplace_back(w);
           }  // type of channel
-        }    // loop over channels (j in Table 4)
-      }      // loop over links
+        }  // loop over channels (j in Table 4)
+      }  // loop over links
 
       // another CRC checksum from FPGA
       i_event++;

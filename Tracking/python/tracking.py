@@ -37,12 +37,13 @@ class DigitizationProcessor(Producer):
                          'tracking::reco::DigitizationProcessor', 'Tracking')
         self.merge_hits = True
         self.do_smearing = True
-        self.sigma_u = 0.06
-        self.sigma_v = 0.0
+        self.sigma_u = 0.006
+        self.sigma_v = 0.000001
         self.track_id = -1
         self.min_e_dep = 0.05
         self.hit_collection = 'TaggerSimHits'
-        self.out_collection = 'OutputMeasurements'
+        self.out_collection = 'OutputMeasurements' 
+        self.tracker_hit_passname = ''
                 
 class SeedFinderProcessor(Producer):
     """ Producer to find Seeds for the KF-based track finding.
@@ -86,8 +87,14 @@ class SeedFinderProcessor(Producer):
         self.phicut = 0.1
         self.thetacut = 0.2
         self.strategies = []
+        self.bfield = 1.5
         self.input_hits_collection = 'TaggerSimHits'
-        self.out_seed_collection = 'SeedTracks' 
+        self.out_seed_collection = 'SeedTracks'
+        self.input_pass_name = ''
+        self.sim_particles_passname = ''
+        self.tagger_trks_event_collection_passname = ''
+        self.sim_particles_event_passname = ''
+        
         
 
 class CKFProcessor(Producer):
@@ -169,13 +176,12 @@ class CKFProcessor(Producer):
                          'Tracking')
 
         self.dumpobj = False
+        self.debug_acts = False
         self.pionstates = 0
-        self.track_id = -1
-        self.pdg_id = 11
-        self.bfield = 0.
-        self.const_b_field = True
+        self.bfield = -1.5 
+        self.const_b_field = False
         self.field_map = makeFieldMapPath()
-        self.propagator_step_size = 200.
+        self.propagator_step_size = 1000.
         self.propagator_maxSteps = 10000
         self.hit_collection = 'RecoilSimHits'
         self.remove_stereo = False
@@ -184,16 +190,11 @@ class CKFProcessor(Producer):
         self.use_seed_perigee = False
         self.seed_coll_name = 'SeedTracks'
         self.out_trk_collection = 'Tracks'
-        self.do_smearing = False
-        self.sigma_u = 0.01
-        self.sigma_v = 0.
-        self.kf_refit = False
-        self.gsf_refit = False
         self.min_hits = 6
-        self.debug = False
-        self.use_score_based_solver = False
         self.outlier_pval_ = 3.84
-
+        self.sim_particles_event_passname = ''
+        self.input_pass_name = ''
+        
 class GSFProcessor(Producer):
     """ Producer that runs Gaussian Sum Fitter on a specific track collection
 
@@ -228,8 +229,6 @@ class GSFProcessor(Producer):
         super().__init__(instance_name, 'tracking::reco::GSFProcessor',
                          'Tracking')
         
-        self.trackCollection = "TaggerTracks"
-        self.measCollection  = "DigiTaggerSimHits"
         self.maxComponent    = 12
         self.abortOnError    = False
         self.disableAllMaterialHandling = False
@@ -241,6 +240,15 @@ class GSFProcessor(Producer):
         self.field_map = makeFieldMapPath()
         self.taggerTracking = True
         self.out_trk_collection = "GSFTracks"
+        self.trackCollection = "TaggerTracks"
+        self.measCollection = "DigiTaggerSimHits"
+        
+        
+        self.track_passname = ""
+        self.meas_passname = "" 
+        self.track_collection_event_passname = ""
+        self.meas_collection_event_passname = ""
+        
 
         
 
@@ -309,6 +317,12 @@ class TruthSeedProcessor(Producer):
         self.skip_tagger = False
         self.skip_recoil = False
         self.max_track_id = 5
+        
+        self.sp_pass_name = ''
+        self.input_pass_name = ''
+        self.sim_particles_passname = ''
+        
+        
 
 
 class GreedyAmbiguitySolver(Producer):
@@ -335,9 +349,76 @@ class GreedyAmbiguitySolver(Producer):
         super().__init__(instance_name, 'tracking::reco::GreedyAmbiguitySolver',
                          'Tracking')
 
-        self.maximumSharedHits = 1
+        self.maximumSharedHits = 2 
         self.maximumIterations = 1000
-        self.nMeasurementsMin = 7
+        self.nMeasurementsMin = 5
         self.out_trk_collection = "TaggerTracksClean"
         self.trackCollection = "TaggerTracks"
         self.measCollection = "DigiTaggerSimHits"
+        
+        self.input_pass_name = ""
+
+class TrackerVetoProcessor(Producer):
+    """ Class that flags events that pass the tracker veto
+        This processor evaluates tracker events based on recoil and tagger track properties,
+    applying configurable selection criteria to determine whether an event should be flagged.
+    
+    Parameters
+    ----------
+    instance_name : str
+        Unique name for this instance.
+    
+    Attributes
+    ----------
+    max_d0 : float
+        Maximum allowed d0 impact parameter for tracks.
+    max_z0 : float
+        Maximum allowed z0 impact parameter for tracks.
+    max_chi2_per_ndf: float
+        Max chi2/ndf required for tracks.
+    min_recoil_n : int
+        Minimum number of recoil tracks required.
+    max_recoil_n : int
+        Maximum number of recoil tracks allowed.
+    min_tagger_momentum : float
+        Minimum required momentum for tagger tracks.
+    min_tagger_hits: int
+          Min number of hits for tagger tracks required.
+    min_recoil_hits: int
+          Min number of hits for recoild tracks required.
+    tagger_track_collection : str
+        The name of the tagger track collection.
+    recoil_track_collection : str
+        The name of the recoil track collection.
+    input_tagger_pass_name : str
+        The pass name of the input tagger collections.
+    input_recoil_pass_name : str
+        The pass name of the input recoil collections.
+    inverse_skim : bool
+        Boolean flag to invert the selection criteria for skimming purposes.
+    output_collection : str
+        The name of the new collection.
+    """
+
+    def __init__(self, instance_name = "TrackerVetoProcessor"):
+        super().__init__(instance_name, 'tracking::TrackerVetoProcessor','Tracking')
+
+
+        self.max_d0 = 10.
+        self.max_z0 = 40.0
+        self.max_z0 = 40.0
+        self.min_recoil_n = 1
+        self.max_chi2_per_ndf = 5.0
+        self.min_tagger_momentum = 5600.
+        self.min_tagger_hits = 4
+        self.min_recoil_hits = 4
+        self.tagger_track_collection = "TaggerTracks"
+        self.recoil_track_collection = "RecoilTracks"
+        self.input_tagger_pass_name = ""
+        self.input_recoil_pass_name = ""
+        self.inverse_skim = False
+        self.output_collection = "TrackerVeto"
+        
+        self.sim_particles_passname = ""
+        self.input_collection_events_passname = ""
+        

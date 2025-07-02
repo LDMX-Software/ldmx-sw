@@ -55,7 +55,7 @@ bool doesParticleHavePNDaughters(
       if (processType == ldmx::SimParticle::ProcessType::photonNuclear) {
         return true;
       }  // Was it PN?
-    }    // Was it in the map?
+    }  // Was it in the map?
   }
 
   return false;

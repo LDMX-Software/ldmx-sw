@@ -11,9 +11,6 @@
 #include "DetDescr/EcalGeometry.h"
 #include "Ecal/Event/EcalCluster.h"
 #include "Ecal/Event/EcalHit.h"
-#include "Ecal/MyClusterWeight.h"
-#include "Ecal/TemplatedClusterFinder.h"
-#include "Ecal/WorkingCluster.h"
 #include "Framework/Configure/Parameters.h"  // Needed to import parameters from configuration file
 #include "Framework/Event.h"
 #include "Framework/EventProcessor.h"  //Needed to declare processor
@@ -46,6 +43,8 @@ class PFEcalClusterProducer : public framework::Producer {
 
   // name of collection for hits to be passed as input
   std::string hitCollName_;
+  // pass name of hit collection to be passed as input
+  std::string hitPassName_;
   // name of collection for pfCluster to be output
   std::string clusterCollName_;
   std::string suffix_;

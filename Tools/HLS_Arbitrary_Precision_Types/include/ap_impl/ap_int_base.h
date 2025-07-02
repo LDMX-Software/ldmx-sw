@@ -1082,7 +1082,7 @@ struct ap_int_base : public _AP_ROOT_TYPE<_AP_W, _AP_S> {
   template <int _AP_W2, bool _AP_S2>
   INLINE
       ap_concat_ref<_AP_W, ap_int_base, _AP_W2, ap_range_ref<_AP_W2, _AP_S2> >
-      operator,(const ap_range_ref<_AP_W2, _AP_S2>&a2) const {
+      operator,(const ap_range_ref<_AP_W2, _AP_S2>& a2) const {
     return ap_concat_ref<_AP_W, ap_int_base, _AP_W2,
                          ap_range_ref<_AP_W2, _AP_S2> >(
         const_cast<ap_int_base<_AP_W, _AP_S>&>(*this),
@@ -1092,14 +1092,14 @@ struct ap_int_base : public _AP_ROOT_TYPE<_AP_W, _AP_S> {
   template <int _AP_W2, bool _AP_S2>
   INLINE
       ap_concat_ref<_AP_W, ap_int_base, _AP_W2, ap_range_ref<_AP_W2, _AP_S2> >
-      operator,(ap_range_ref<_AP_W2, _AP_S2>&a2) {
+      operator,(ap_range_ref<_AP_W2, _AP_S2>& a2) {
     return ap_concat_ref<_AP_W, ap_int_base, _AP_W2,
                          ap_range_ref<_AP_W2, _AP_S2> >(*this, a2);
   }
 
   template <int _AP_W2, bool _AP_S2>
   INLINE ap_concat_ref<_AP_W, ap_int_base, _AP_W2, ap_int_base<_AP_W2, _AP_S2> >
-  operator,(const ap_int_base<_AP_W2, _AP_S2>&a2) {
+  operator,(const ap_int_base<_AP_W2, _AP_S2>& a2) {
     return ap_concat_ref<_AP_W, ap_int_base, _AP_W2,
                          ap_int_base<_AP_W2, _AP_S2> >(
         *this, const_cast<ap_int_base<_AP_W2, _AP_S2>&>(a2));
@@ -1107,7 +1107,7 @@ struct ap_int_base : public _AP_ROOT_TYPE<_AP_W, _AP_S> {
 
   template <int _AP_W2, bool _AP_S2>
   INLINE ap_concat_ref<_AP_W, ap_int_base, _AP_W2, ap_int_base<_AP_W2, _AP_S2> >
-  operator,(ap_int_base<_AP_W2, _AP_S2>&a2) const {
+  operator,(ap_int_base<_AP_W2, _AP_S2>& a2) const {
     return ap_concat_ref<_AP_W, ap_int_base, _AP_W2,
                          ap_int_base<_AP_W2, _AP_S2> >(
         const_cast<ap_int_base<_AP_W, _AP_S>&>(*this), a2);
@@ -1115,7 +1115,7 @@ struct ap_int_base : public _AP_ROOT_TYPE<_AP_W, _AP_S> {
 
   template <int _AP_W2, bool _AP_S2>
   INLINE ap_concat_ref<_AP_W, ap_int_base, _AP_W2, ap_int_base<_AP_W2, _AP_S2> >
-  operator,(const ap_int_base<_AP_W2, _AP_S2>&a2) const {
+  operator,(const ap_int_base<_AP_W2, _AP_S2>& a2) const {
     return ap_concat_ref<_AP_W, ap_int_base, _AP_W2,
                          ap_int_base<_AP_W2, _AP_S2> >(
         const_cast<ap_int_base<_AP_W, _AP_S>&>(*this),
@@ -1124,14 +1124,14 @@ struct ap_int_base : public _AP_ROOT_TYPE<_AP_W, _AP_S> {
 
   template <int _AP_W2, bool _AP_S2>
   INLINE ap_concat_ref<_AP_W, ap_int_base, _AP_W2, ap_int_base<_AP_W2, _AP_S2> >
-  operator,(ap_int_base<_AP_W2, _AP_S2>&a2) {
+  operator,(ap_int_base<_AP_W2, _AP_S2>& a2) {
     return ap_concat_ref<_AP_W, ap_int_base, _AP_W2,
                          ap_int_base<_AP_W2, _AP_S2> >(*this, a2);
   }
 
   template <int _AP_W2, bool _AP_S2>
   INLINE ap_concat_ref<_AP_W, ap_int_base, 1, ap_bit_ref<_AP_W2, _AP_S2> >
-  operator,(const ap_bit_ref<_AP_W2, _AP_S2>&a2) const {
+  operator,(const ap_bit_ref<_AP_W2, _AP_S2>& a2) const {
     return ap_concat_ref<_AP_W, ap_int_base, 1, ap_bit_ref<_AP_W2, _AP_S2> >(
         const_cast<ap_int_base<_AP_W, _AP_S>&>(*this),
         const_cast<ap_bit_ref<_AP_W2, _AP_S2>&>(a2));
@@ -1139,7 +1139,7 @@ struct ap_int_base : public _AP_ROOT_TYPE<_AP_W, _AP_S> {
 
   template <int _AP_W2, bool _AP_S2>
   INLINE ap_concat_ref<_AP_W, ap_int_base, 1, ap_bit_ref<_AP_W2, _AP_S2> >
-  operator,(ap_bit_ref<_AP_W2, _AP_S2>&a2) {
+  operator,(ap_bit_ref<_AP_W2, _AP_S2>& a2) {
     return ap_concat_ref<_AP_W, ap_int_base, 1, ap_bit_ref<_AP_W2, _AP_S2> >(
         *this, a2);
   }
@@ -1147,7 +1147,7 @@ struct ap_int_base : public _AP_ROOT_TYPE<_AP_W, _AP_S> {
   template <int _AP_W2, typename _AP_T2, int _AP_W3, typename _AP_T3>
   INLINE ap_concat_ref<_AP_W, ap_int_base, _AP_W2 + _AP_W3,
                        ap_concat_ref<_AP_W2, _AP_T2, _AP_W3, _AP_T3> >
-  operator,(const ap_concat_ref<_AP_W2, _AP_T2, _AP_W3, _AP_T3>&a2) {
+  operator,(const ap_concat_ref<_AP_W2, _AP_T2, _AP_W3, _AP_T3>& a2) {
     return ap_concat_ref<_AP_W, ap_int_base, _AP_W2 + _AP_W3,
                          ap_concat_ref<_AP_W2, _AP_T2, _AP_W3, _AP_T3> >(
         const_cast<ap_int_base<_AP_W, _AP_S>&>(*this),
@@ -1157,7 +1157,7 @@ struct ap_int_base : public _AP_ROOT_TYPE<_AP_W, _AP_S> {
   template <int _AP_W2, typename _AP_T2, int _AP_W3, typename _AP_T3>
   INLINE ap_concat_ref<_AP_W, ap_int_base, _AP_W2 + _AP_W3,
                        ap_concat_ref<_AP_W2, _AP_T2, _AP_W3, _AP_T3> >
-  operator,(ap_concat_ref<_AP_W2, _AP_T2, _AP_W3, _AP_T3>&a2) {
+  operator,(ap_concat_ref<_AP_W2, _AP_T2, _AP_W3, _AP_T3>& a2) {
     return ap_concat_ref<_AP_W, ap_int_base, _AP_W2 + _AP_W3,
                          ap_concat_ref<_AP_W2, _AP_T2, _AP_W3, _AP_T3> >(*this,
                                                                          a2);
@@ -1169,7 +1169,7 @@ struct ap_int_base : public _AP_ROOT_TYPE<_AP_W, _AP_S> {
       _AP_W, ap_int_base, _AP_W2,
       af_range_ref<_AP_W2, _AP_I2, _AP_S2, _AP_Q2, _AP_O2, _AP_N2> >
   operator,(const af_range_ref<_AP_W2, _AP_I2, _AP_S2, _AP_Q2, _AP_O2, _AP_N2>
-                &a2) const {
+                & a2) const {
     return ap_concat_ref<
         _AP_W, ap_int_base, _AP_W2,
         af_range_ref<_AP_W2, _AP_I2, _AP_S2, _AP_Q2, _AP_O2, _AP_N2> >(
@@ -1183,7 +1183,7 @@ struct ap_int_base : public _AP_ROOT_TYPE<_AP_W, _AP_S> {
   INLINE ap_concat_ref<
       _AP_W, ap_int_base, _AP_W2,
       af_range_ref<_AP_W2, _AP_I2, _AP_S2, _AP_Q2, _AP_O2, _AP_N2> >
-  operator,(af_range_ref<_AP_W2, _AP_I2, _AP_S2, _AP_Q2, _AP_O2, _AP_N2>&a2) {
+  operator,(af_range_ref<_AP_W2, _AP_I2, _AP_S2, _AP_Q2, _AP_O2, _AP_N2>& a2) {
     return ap_concat_ref<
         _AP_W, ap_int_base, _AP_W2,
         af_range_ref<_AP_W2, _AP_I2, _AP_S2, _AP_Q2, _AP_O2, _AP_N2> >(*this,
@@ -1196,7 +1196,7 @@ struct ap_int_base : public _AP_ROOT_TYPE<_AP_W, _AP_S> {
       ap_concat_ref<_AP_W, ap_int_base, 1,
                     af_bit_ref<_AP_W2, _AP_I2, _AP_S2, _AP_Q2, _AP_O2, _AP_N2> >
       operator,(const af_bit_ref<_AP_W2, _AP_I2, _AP_S2, _AP_Q2, _AP_O2, _AP_N2>
-                    &a2) const {
+                    & a2) const {
     return ap_concat_ref<
         _AP_W, ap_int_base, 1,
         af_bit_ref<_AP_W2, _AP_I2, _AP_S2, _AP_Q2, _AP_O2, _AP_N2> >(
@@ -1210,7 +1210,8 @@ struct ap_int_base : public _AP_ROOT_TYPE<_AP_W, _AP_S> {
   INLINE
       ap_concat_ref<_AP_W, ap_int_base, 1,
                     af_bit_ref<_AP_W2, _AP_I2, _AP_S2, _AP_Q2, _AP_O2, _AP_N2> >
-      operator,(af_bit_ref<_AP_W2, _AP_I2, _AP_S2, _AP_Q2, _AP_O2, _AP_N2>&a2) {
+      operator,(
+          af_bit_ref<_AP_W2, _AP_I2, _AP_S2, _AP_Q2, _AP_O2, _AP_N2>& a2) {
     return ap_concat_ref<
         _AP_W, ap_int_base, 1,
         af_bit_ref<_AP_W2, _AP_I2, _AP_S2, _AP_Q2, _AP_O2, _AP_N2> >(*this, a2);
@@ -1360,14 +1361,14 @@ OP_BIN_AP2(%, mod)
  */
 #define OP_BIN_WITH_PTR(BIN_OP)                                           \
   template <typename PTR_TYPE, int _AP_W, bool _AP_S>                     \
-  INLINE PTR_TYPE* operator BIN_OP(PTR_TYPE* i_op,                        \
+  INLINE PTR_TYPE* operator BIN_OP(PTR_TYPE * i_op,                       \
                                    const ap_int_base<_AP_W, _AP_S>& op) { \
     ap_slong op2 = op.to_int64(); /* Not all implementation */            \
     return i_op BIN_OP op2;                                               \
   }                                                                       \
   template <typename PTR_TYPE, int _AP_W, bool _AP_S>                     \
   INLINE PTR_TYPE* operator BIN_OP(const ap_int_base<_AP_W, _AP_S>& op,   \
-                                   PTR_TYPE* i_op) {                      \
+                                   PTR_TYPE * i_op) {                     \
     ap_slong op2 = op.to_int64(); /* Not all implementation */            \
     return op2 BIN_OP i_op;                                               \
   }
