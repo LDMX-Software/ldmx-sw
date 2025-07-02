@@ -107,6 +107,7 @@ jobs:
           sample=$(basename ${sample_d})
           sample=${sample%%-new-gold}
           echo ${sample}
+          mkdir -p ci-data/${sample}
           mv ${sample_d}/hist.root ci-data/${sample}/gold.root
           mv ${sample_d}/output.log ci-data/${sample}/gold.log
         done
