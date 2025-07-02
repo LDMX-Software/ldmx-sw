@@ -107,9 +107,9 @@
     <!-- detector version -->
     <auxiliary auxtype="DetectorVersion" auxvalue="14">
       <auxiliary auxtype="DetectorName" auxvalue="ldmx-lyso-r2-v14"/>
-      <auxiliary auxtype="Author" auxvalue="Tamas Almos Vami, Art Espinoza (UCSB)"/>
+      <auxiliary auxtype="Author" auxvalue="Weilong (Sam) Zhou, James Oyang"/>
       <auxiliary auxtype="Description" 
-                 auxvalue="The Late 2022 Design Report Geometry with LYSO target"/>
+                 auxvalue="Updated Geometry with LYSO target"/>
     </auxiliary>
 
     <!-- magnetic field with global field map definition -->     

@@ -34,6 +34,7 @@ collaborators understand what the detector is meant to describe.
 - `ldmx-hcal-prototype-v2.0` : version 2.0 the HCal prototype detector used during testbeam
 - `ldmx-ti-v9` : version 9 of the full LDMX detector for the 4GeV beam but with a Ti target (instead of W)
 - `ldmx-det-v14-8gev` : version 14 of the full LDMX detector updated for an 8GeV beam
+- `ldmx-lyso-r2-v14-8gev` : version 14 of the full LDMX detector updated for an 8GeV beam, but with the target changed to 2 layers of LYSO bars
 - `ldmx-det-v15-8gev` : like version 14 but contains air instead of vacuum
 
 ### Archived geometries
