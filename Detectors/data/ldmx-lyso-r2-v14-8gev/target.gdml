@@ -60,7 +60,7 @@
 
   <structure>
     <!-- LYSO target -->
-    <volume name="lvTargetBar">
+    <volume name="target">
       <materialref ref="LYSO"/>
       <solidref ref="target_bar"/>
     </volume>
@@ -69,7 +69,7 @@
       <solidref ref="target_array1"/>
       <loop for="x" from="1" to="number_of_target_bars1" step="1">
         <physvol>
-          <volumeref ref="lvTargetBar"/>
+          <volumeref ref="target"/>
           <position name="posTargetBar1" unit="mm" x="0" y="target_array1_first_bar_y + (x-1) * (target_bar_dy + target_bar_gap)" z="0"/>
           <rotation name="rotTargetBar1" unit="deg" x="0" y="0" z="0"/>
         </physvol>
@@ -80,7 +80,7 @@
       <solidref ref="target_array2"/>
       <loop for="x" from="1" to="number_of_target_bars2" step="1">
         <physvol>
-          <volumeref ref="lvTargetBar"/>
+          <volumeref ref="target"/>
           <position name="posTargetBar2" unit="mm" x="0" y="target_array2_first_bar_y + (x-1) * (target_bar_dy + target_bar_gap)" z="0"/>
           <rotation name="rotTargetBar2" unit="deg" x="0" y="0" z="0"/>
         </physvol> 
