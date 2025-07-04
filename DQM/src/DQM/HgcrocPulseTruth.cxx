@@ -12,7 +12,6 @@ void HgcrocPulseTruth::configure(framework::config::Parameters& ps) {
   input_truth_pass_ = ps.getParameter<std::string>("input_truth_pass");
 }
 
-
 void HgcrocPulseTruth::onProcessStart() {}
 
 void HgcrocPulseTruth::onProcessEnd() {}
