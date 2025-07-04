@@ -18,10 +18,10 @@ class HgcrocPulseTruth {
   HgcrocPulseTruth(unsigned int id, ldmx::CompositePulse p)
       : id_(id), compositePulse_(p){};
 
-  HgcrocPulseTruth(){};  // Default constructor needed, because ROOT will call
-                         // std::vector<HgcrocPulseTruth>::resize
+  /// default constructor needed for std::vector::resize
+  HgcrocPulseTruth() = default;
 
-  virtual ~HgcrocPulseTruth(){};
+  virtual ~HgcrocPulseTruth() = default;
 
   void Clear();
 

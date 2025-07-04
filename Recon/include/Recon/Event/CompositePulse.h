@@ -29,7 +29,7 @@ class CompositePulse {
 
   CompositePulse() = default;
 
-  virtual ~CompositePulse(){};
+  virtual ~CompositePulse() = default;
 
   void Clear() {};
 

@@ -1,6 +1,6 @@
 #include "Recon/Event/CompositePulse.h"
 
-ClassImp(ldmx::CompositePulse)
+ClassImp(ldmx::CompositePulse);
 
     namespace ldmx {
   void CompositePulse::addOrMerge(const std::pair<double, double>& hit,

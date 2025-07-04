@@ -1,6 +1,6 @@
 #include "Recon/Event/HgcrocPulseTruth.h"
 
-ClassImp(ldmx::HgcrocPulseTruth)
+ClassImp(ldmx::HgcrocPulseTruth);
 
     namespace ldmx {
   void HgcrocPulseTruth::Clear() {}
