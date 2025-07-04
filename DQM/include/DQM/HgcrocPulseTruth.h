@@ -32,9 +32,6 @@ class HgcrocPulseTruth : public framework::Analyzer {
   std::string input_digi_pass_;
   std::string input_truth_name_;
   std::string input_truth_pass_;
-
-  TGraph* vpeak_sumADC_graph_;
-  TGraph* vpeak_TOT_graph_;
 };
 
 }  // namespace dqm
