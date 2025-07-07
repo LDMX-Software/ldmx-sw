@@ -312,7 +312,7 @@ void ParticleFlow::produce(framework::Event& event) {
     for (int i = 0; i < tracks.size(); i++) {
       ldmx::PFCandidate cand;
       fillCandTrack(cand, tracks[i]);  // append track info to candidate
-
+      cand.setTrackIndex(i);
       if (!tkIsEMLinked[i]) {
         // chargedUnmatch.push_back(cand);
       } else {  // if track is linked with ECal cluster
@@ -334,6 +334,7 @@ void ParticleFlow::produce(framework::Event& event) {
 
       ldmx::PFCandidate cand;
       fillCandEMCalo(cand, ecalClusters[i]);
+      cand.setEcalIndex(i);
       if (EMIsHadLinked[tkEMPairs[i]]) {
         fillCandHadCalo(cand, hcalClusters[EMHadPairs[i]]);
         // emMatch.push_back(cand);
@@ -347,6 +348,7 @@ void ParticleFlow::produce(framework::Event& event) {
       if (HadIsEMLinked[i]) continue;
       ldmx::PFCandidate cand;
       fillCandHadCalo(cand, hcalClusters[i]);
+      cand.setHcalIndex(i);
       // hadOnly.push_back(cand);
       pfCands.push_back(cand);
     }
