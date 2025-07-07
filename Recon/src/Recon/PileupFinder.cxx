@@ -52,23 +52,23 @@ void PileupFinder::produce(framework::Event& event) {
   for (const auto& pf_cand : pf_cands){
     if(pf_cand.getPID()==3 || pf_cand.getPID()==7){
 
-      double mom_vec = pf_cand.getTrackPxPyPz();
+      std::vector<float> mom_vec = pf_cand.getTrackPxPyPz();
       float mom = mom_vec[0]*mom_vec[0]+mom_vec[1]*mom_vec[1]+mom_vec[2]*mom_vec[2];
       mom = sqrt(mom);
 
       if (mom < min_mom_)
 	continue;
-      ldmx_log(trace) << "Got pileup candidate with PID = " << pf_cand.getPID() << " and momentum = " << mom << " MeV."
-
-	// now! use the hit-candidate association to get the associated ecal hits. 
-
-	
-	// TODO:
-	// write a header for this file --> DONE 
-	// clean up all the methods below here --> DONE 
-	// compile, possibly incrememnt particleflow candidate class imp nb
-	// try out hit association (print list?)
-	int pf_cl_idx = pf_cand.getEcalIndex();
+      ldmx_log(trace) << "Got pileup candidate with PID = " << pf_cand.getPID() << " and momentum = " << mom << " MeV." ;
+      
+      // now! use the hit-candidate association to get the associated ecal hits. 
+      
+      
+      // TODO:
+      // write a header for this file --> DONE 
+      // clean up all the methods below here --> DONE 
+      // compile, possibly incrememnt particleflow candidate class imp nb
+      // try out hit association (print list?)
+      int pf_cl_idx = pf_cand.getEcalIndex();
       auto cl = clusters[pf_cl_idx];
       auto hitIDs = cl.getHitIDs();
       // make a collection without pileup hits
@@ -86,8 +86,6 @@ void PileupFinder::produce(framework::Event& event) {
 }
 void PileupFinder::onProcessEnd() {
   ldmx_log(debug) << "Process ends!";
-  delete eCorr_;
-  delete hCorr_;
 
   return;
 }
