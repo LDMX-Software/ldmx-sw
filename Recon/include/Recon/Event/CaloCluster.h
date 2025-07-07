@@ -124,7 +124,7 @@ class CaloCluster {
 
   double getEDYDZ() const { return errDYDZ_; }
 
-  // get hit rawIDs (unused)
+  // get hit rawIDs 
   const std::vector<unsigned int>& getHitIDs() const { return hitIDs_; }
 
   // ability to store limited hit info
