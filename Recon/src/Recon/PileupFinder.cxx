@@ -20,18 +20,18 @@ void PileupFinder::configure(framework::config::Parameters& ps) {
 // get pileup candidates from PFlow and make a cleaned-up hit collection
 void PileupFinder::produce(framework::Event& event) {
   if (!event.exists(rec_hit_coll_name_,rec_hit_pass_name_)) { //ecal rechits 
-    ldmx_log(error) << "Unable to find (one) collection named " << rec_hit_coll_name <<
-      "_" << rec_hit_pass_name; 
+    ldmx_log(error) << "Unable to find (one) collection named " << rec_hit_coll_name_ <<
+      "_" << rec_hit_pass_name_; 
       return;
   }
   if (!event.exists(pf_cand_coll_name_, pf_cand_pass_name_ )) {
-    ldmx_log(error) << "Unable to find (one) collection named " << pf_cand_coll_name <<
-      "_" << pf_cand_pass_name; 
+    ldmx_log(error) << "Unable to find (one) collection named " << pf_cand_coll_name_ <<
+      "_" << pf_cand_pass_name_; 
       return;
   }
   if (!event.exists(cluster_coll_name_, cluster_pass_name_ )) {
-    ldmx_log(error) << "Unable to find (one) collection named " << cluster_coll_name <<
-      "_" << cluster_pass_name; 
+    ldmx_log(error) << "Unable to find (one) collection named " << cluster_coll_name_ <<
+      "_" << cluster_pass_name_; 
       return;
   }
 
@@ -49,7 +49,7 @@ void PileupFinder::produce(framework::Event& event) {
   // if a rechit is not on that list, add to output collection.
   std::vector<ldmx::EcalHit> output_hits;
 
-  for (const auto& pf_cand : pfCandidates){
+  for (const auto& pf_cand : pf_cands){
     if(pf_cand.getPID()==3 || pf_cand.getPID()==7){
 
       double mom_vec = pf_cand.getTrackPxPyPz();
@@ -70,20 +70,20 @@ void PileupFinder::produce(framework::Event& event) {
 	// try out hit association (print list?)
 	int pf_cl_idx = pf_cand.getEcalIndex();
       auto cl = clusters[pf_cl_idx];
-      auto hitIds = cl.getHitIDs();
+      auto hitIDs = cl.getHitIDs();
       // make a collection without pileup hits
       for (auto hit : ecal_hits ) {
-
-	int *foundIndex = std::find(std::begin(hitIDs), std::end(hitIDs), hit.id());
+	
+	int *foundIndex = std::find(std::begin(hitIDs), std::end(hitIDs), hit.getID());
 	// When the element is not found, std::find returns the end of the range
 	if (foundIndex == std::end(hitIDs)) { //hit not found in the pileup cluster
 	  output_hits.emplace_back(hit); //keep it 
- 	}
-	}// if trk/ecal matched
+	}
+      }// over hits 
+    }// if trk/ecal matched
   }// over PF objects 
-  
-  }
-  
+    
+}
 void PileupFinder::onProcessEnd() {
   ldmx_log(debug) << "Process ends!";
   delete eCorr_;
