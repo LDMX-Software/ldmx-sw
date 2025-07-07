@@ -1,0 +1,97 @@
+#include "Recon/PileupFinder.h"
+
+#include <vector>
+
+namespace recon {
+
+void PileupFinder::configure(framework::config::Parameters& ps) {
+  // I/O
+  rec_hit_coll_name_ = ps.getParameter<std::string>("rec_hit_coll_name");
+  rec_hit_pass_name_ = ps.getParameter<std::string>("rec_hit_pass_name");
+  pf_cand_coll_name_ = ps.getParameter<std::string>("pf_cand_coll_name");
+  pf_cand_pass_name_ = ps.getParameter<std::string>("pf_cand_pass_name");
+  cluster_coll_name_ = ps.getParameter<std::string>("cluster_coll_name");
+  cluster_pass_name_ = ps.getParameter<std::string>("cluster_pass_name");
+  output_rec_hit_coll_name_ = ps.getParameter<std::string>("output_rec_hit_coll_name");
+  // Algorithm configuration
+  min_mom_ =  ps.getParameter<float>("min_momentum");
+}
+
+// get pileup candidates from PFlow and make a cleaned-up hit collection
+void PileupFinder::produce(framework::Event& event) {
+  if (!event.exists(rec_hit_coll_name_,rec_hit_pass_name_)) { //ecal rechits 
+    ldmx_log(error) << "Unable to find (one) collection named " << rec_hit_coll_name <<
+      "_" << rec_hit_pass_name; 
+      return;
+  }
+  if (!event.exists(pf_cand_coll_name_, pf_cand_pass_name_ )) {
+    ldmx_log(error) << "Unable to find (one) collection named " << pf_cand_coll_name <<
+      "_" << pf_cand_pass_name; 
+      return;
+  }
+  if (!event.exists(cluster_coll_name_, cluster_pass_name_ )) {
+    ldmx_log(error) << "Unable to find (one) collection named " << cluster_coll_name <<
+      "_" << cluster_pass_name; 
+      return;
+  }
+
+  const auto& ecal_hits{event.getCollection<ldmx::EcalHit>(rec_hit_coll_name_,
+                                                           rec_hit_pass_name_)};
+
+  const auto& pf_cands{event.getCollection<ldmx::PFCandidate>(pf_cand_coll_name_,
+                                                           pf_cand_pass_name_)};
+
+  const auto& clusters{event.getCollection<ldmx::CaloCluster>(cluster_coll_name_,
+							      cluster_pass_name_)};
+  // get PID 3 and 7 -- the ones with track and ecal matching
+  // get the high-momentum track ones from there -- pileup candidate!
+  // get the list of hits associated with pileup candidates
+  // if a rechit is not on that list, add to output collection.
+  std::vector<ldmx::EcalHit> output_hits;
+
+  for (const auto& pf_cand : pfCandidates){
+    if(pf_cand.getPID()==3 || pf_cand.getPID()==7){
+
+      double mom_vec = pf_cand.getTrackPxPyPz();
+      float mom = mom_vec[0]*mom_vec[0]+mom_vec[1]*mom_vec[1]+mom_vec[2]*mom_vec[2];
+      mom = sqrt(mom);
+
+      if (mom < min_mom_)
+	continue;
+      ldmx_log(trace) << "Got pileup candidate with PID = " << pf_cand.getPID() << " and momentum = " << mom << " MeV."
+
+	// now! use the hit-candidate association to get the associated ecal hits. 
+
+	
+	// TODO:
+	// write a header for this file --> DONE 
+	// clean up all the methods below here --> DONE 
+	// compile, possibly incrememnt particleflow candidate class imp nb
+	// try out hit association (print list?)
+	int pf_cl_idx = pf_cand.getEcalIndex();
+      auto cl = clusters[pf_cl_idx];
+      auto hitIds = cl.getHitIDs();
+      // make a collection without pileup hits
+      for (auto hit : ecal_hits ) {
+
+	int *foundIndex = std::find(std::begin(hitIDs), std::end(hitIDs), hit.id());
+	// When the element is not found, std::find returns the end of the range
+	if (foundIndex == std::end(hitIDs)) { //hit not found in the pileup cluster
+	  output_hits.emplace_back(hit); //keep it 
+ 	}
+	}// if trk/ecal matched
+  }// over PF objects 
+  
+  }
+  
+void PileupFinder::onProcessEnd() {
+  ldmx_log(debug) << "Process ends!";
+  delete eCorr_;
+  delete hCorr_;
+
+  return;
+}
+
+}  // namespace recon
+
+DECLARE_PRODUCER(recon::PileupFinder);
