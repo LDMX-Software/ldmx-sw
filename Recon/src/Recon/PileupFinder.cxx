@@ -51,7 +51,7 @@ void PileupFinder::produce(framework::Event& event) {
 
   for (const auto& pf_cand : pf_cands){
     if(pf_cand.getPID()==3 || pf_cand.getPID()==7){
-
+      //we have both ecal cluster and track 
       std::vector<float> mom_vec = pf_cand.getTrackPxPyPz();
       float mom = mom_vec[0]*mom_vec[0]+mom_vec[1]*mom_vec[1]+mom_vec[2]*mom_vec[2];
       mom = sqrt(mom);
@@ -83,6 +83,8 @@ void PileupFinder::produce(framework::Event& event) {
     }// if trk/ecal matched
   }// over PF objects 
     
+  event.add(output_rec_hit_coll_name_, output_hits);
+
 }
 void PileupFinder::onProcessEnd() {
   ldmx_log(debug) << "Process ends!";
