@@ -141,9 +141,9 @@ class PFCandidate {
     return {pos_hcal_x_, pos_hcal_y_, pos_hcal_z_};
   }
   // associate component indices to the pf candidate
-  int getTrackIndex() { return track_idx_; }
-  int getEcalIndex() { return ecal_idx_ ; }
-  int getHcalIndex() { return hcal_idx_ ; }
+  int getTrackIndex() const { return track_idx_; }
+  int getEcalIndex() const { return ecal_idx_ ; }
+  int getHcalIndex() const { return hcal_idx_ ; }
 
   std::vector<float> getTrackPxPyPz() const {
     return {track_px_, track_py_, track_pz_};
