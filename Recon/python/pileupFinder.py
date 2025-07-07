@@ -21,4 +21,4 @@ class pileupFinder(ldmxcfg.Producer) :
         self.pf_cand_coll_name = 'PFCandidates'
         self.pf_cand_pass_name = ''
         self.output_rec_hit_coll_name  = 'EcalRecHitsNoPileup'
-        self.min_mom = 4000.
+        self.min_momentum = 4000.
