@@ -17,6 +17,7 @@ class pileupFinder(ldmxcfg.Producer) :
         self.rec_hit_coll_name = 'EcalRecHits'
         self.rec_hit_pass_name = ''
         self.cluster_coll_name = 'PFEcalClusters'
+        self.cluster_pass_name = ''
         self.pf_cand_coll_name = 'PFCandidates'
         self.pf_cand_pass_name = ''
         self.output_rec_hit_coll_name  = 'EcalRecHitsNoPileup'
