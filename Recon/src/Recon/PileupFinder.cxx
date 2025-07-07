@@ -74,7 +74,7 @@ void PileupFinder::produce(framework::Event& event) {
       // make a collection without pileup hits
       for (auto hit : ecal_hits ) {
 	
-	int *foundIndex = std::find(std::begin(hitIDs), std::end(hitIDs), hit.getID());
+	auto foundIndex = std::find(std::begin(hitIDs), std::end(hitIDs), hit.getID());
 	// When the element is not found, std::find returns the end of the range
 	if (foundIndex == std::end(hitIDs)) { //hit not found in the pileup cluster
 	  output_hits.emplace_back(hit); //keep it 
