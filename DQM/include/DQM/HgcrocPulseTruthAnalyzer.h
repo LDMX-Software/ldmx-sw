@@ -1,5 +1,5 @@
-#ifndef _DQM_HGCROCPULSETRUTH_H_
-#define _DQM_HGCROCPULSETRUTH_H_
+#ifndef _DQM_HGCROCPULSETRUTHANALYZER_H_
+#define _DQM_HGCROCPULSETRUTHANALYZER_H_
 
 /*~~~~~~~~~~~~~~~*/
 /*   Framework   */
@@ -12,18 +12,12 @@
 
 namespace dqm {
 
-class HgcrocPulseTruth : public framework::Analyzer {
+class HgcrocPulseTruthAnalyzer : public framework::Analyzer {
  public:
-  HgcrocPulseTruth(const std::string& name, framework::Process& process)
-      : framework::Analyzer(name, process) {}
-
-  ~HgcrocPulseTruth() {}
+  HgcrocPulseTruthAnalyzer(const std::string& name, framework::Process& process) 
+     : framework::Analyzer(name, process) {};
 
   void configure(framework::config::Parameters& parameters) override;
-
-  void onProcessStart() override;
-
-  void onProcessEnd() override;
 
   void analyze(const framework::Event& event) override;
 

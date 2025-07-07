@@ -1,22 +1,18 @@
-#include "DQM/HgcrocPulseTruth.h"
+#include "DQM/HgcrocPulseTruthAnalyzer.h"
 
 #include "Recon/Event/HgcrocDigiCollection.h"
 #include "Recon/Event/HgcrocPulseTruth.h"
 
 namespace dqm {
 
-void HgcrocPulseTruth::configure(framework::config::Parameters& ps) {
+void HgcrocPulseTruthAnalyzer::configure(framework::config::Parameters& ps) {
   input_digi_name_ = ps.getParameter<std::string>("input_digi_name");
   input_digi_pass_ = ps.getParameter<std::string>("input_digi_pass");
   input_truth_name_ = ps.getParameter<std::string>("input_truth_name");
   input_truth_pass_ = ps.getParameter<std::string>("input_truth_pass");
 }
 
-void HgcrocPulseTruth::onProcessStart() {}
-
-void HgcrocPulseTruth::onProcessEnd() {}
-
-void HgcrocPulseTruth::analyze(const framework::Event& event) {
+void HgcrocPulseTruthAnalyzer::analyze(const framework::Event& event) {
   auto digis{event.getObject<ldmx::HgcrocDigiCollection>(input_digi_name_,
                                                          input_digi_pass_)};
   auto truths{event.getObject<ldmx::HgcrocPulseTruthCollection>(
@@ -46,4 +42,4 @@ void HgcrocPulseTruth::analyze(const framework::Event& event) {
 
 }  // namespace dqm
 
-DECLARE_ANALYZER(dqm::HgcrocPulseTruth)
+DECLARE_ANALYZER(dqm::HgcrocPulseTruthAnalyzer)
