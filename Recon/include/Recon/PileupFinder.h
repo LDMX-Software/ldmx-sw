@@ -49,7 +49,7 @@ class PileupFinder : public framework::Producer {
   std::string output_rec_hit_coll_name_;
   // configuration
 
-  float min_mom_{0.}; //MeV 
+  double min_mom_{0.}; //MeV 
 };
 }  // namespace recon
 

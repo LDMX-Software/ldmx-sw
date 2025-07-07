@@ -14,7 +14,7 @@ void PileupFinder::configure(framework::config::Parameters& ps) {
   cluster_pass_name_ = ps.getParameter<std::string>("cluster_pass_name");
   output_rec_hit_coll_name_ = ps.getParameter<std::string>("output_rec_hit_coll_name");
   // Algorithm configuration
-  min_mom_ =  ps.getParameter<float>("min_momentum");
+  min_mom_ =  ps.getParameter<double>("min_momentum");
 }
 
 // get pileup candidates from PFlow and make a cleaned-up hit collection
