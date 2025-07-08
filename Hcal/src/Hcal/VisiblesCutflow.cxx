@@ -369,10 +369,15 @@ namespace hcal {
     for (int i = 0; i < 10000; i++) {
       double disc = 0.999 + (double(i)/10000.)*(1. - 0.999);
       histograms_.fill("visiblesDiscHighNorm", 0.999 + ((double(i)+0.5)/10000.)*(1. - 0.999));
+      double discroc = 0.99 + (double(i)/10000.)*(1. - 0.99);
       if (pred >= disc) {
 	histograms_.fill("visiblesDiscHigh", 0.999 + ((double(i)+0.5)/10000.)*(1.-0.999));
       }
+      if (pred >= discroc) {
+	histograms_.fill("ROC", discroc);
+      }
     }
+    histograms_.fill("nevents", 1.);
 
     histograms_.fill("ecalDiscvsVisDisc", pred, ecalVeto.getDisc());
     
