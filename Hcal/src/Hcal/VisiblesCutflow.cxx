@@ -196,9 +196,6 @@ namespace hcal {
     if (pMag > 2400.) {
       return;
     }
-    if (pMag < 7600.) {
-      return;
-    }
     histograms_.fill("passTrackerVeto", decayz_);
 
     auto ecalVeto{
