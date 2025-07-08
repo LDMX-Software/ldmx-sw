@@ -38,10 +38,14 @@ void HcalDigiProducer::configure(framework::config::Parameters& ps) {
   // and generate pedestal noise digis in every empty channel
   zeroSuppression_ = ps.getParameter<bool>("zeroSuppression");
 
+  // Save full analog pulse shapes from the HGCROC emulation
+  savePulseTruthInfo_ = ps.getParameter<bool>("savePulseTruthInfo");
+
   // collection names
   inputCollName_ = ps.getParameter<std::string>("inputCollName");
   inputPassName_ = ps.getParameter<std::string>("inputPassName");
   digiCollName_ = ps.getParameter<std::string>("digiCollName");
+  pulseTruthCollName_ = ps.getParameter<std::string>("pulseTruthCollName");
 
   // physical constants
   //  used to calculate unit conversions
@@ -109,6 +113,12 @@ void HcalDigiProducer::produce(framework::Event& event) {
     } else {
       idh->second.push_back(&simHit);
     }
+  }
+
+  ldmx::HgcrocPulseTruthCollection hcalPulseTruthColl;
+  if (savePulseTruthInfo_) {
+    hgcroc_->pulseTruthColl_ = &hcalPulseTruthColl;
+    hgcroc_->savePulseTruthInfo_ = true;
   }
 
   /******************************************************************************************
@@ -432,6 +442,7 @@ void HcalDigiProducer::produce(framework::Event& event) {
   }  // if we should add noise
 
   event.add(digiCollName_, hcalDigis);
+  if (savePulseTruthInfo_) event.add(pulseTruthCollName_, hcalPulseTruthColl);
 
   return;
 }  // produce
