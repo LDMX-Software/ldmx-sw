@@ -18,6 +18,7 @@
 #include "Framework/RandomNumberSeedService.h"
 #include "Recon/Event/EventConstants.h"
 #include "Recon/Event/HgcrocDigiCollection.h"
+#include "Recon/Event/HgcrocPulseTruth.h"
 #include "SimCore/Event/SimCalorimeterHit.h"
 #include "Tools/HgcrocEmulator.h"
 #include "Tools/NoiseGenerator.h"
@@ -69,6 +70,9 @@ class HcalDigiProducer : public framework::Producer {
   /// output hit collection name
   std::string digiCollName_;
 
+  /// output pulse truth collection name
+  std::string pulseTruthCollName_;
+
   /// Time interval for chip clock in ns
   double clockCycle_;
 
@@ -90,6 +94,10 @@ class HcalDigiProducer : public framework::Producer {
   /// Put noise into empty channels, not configurable, only helpful in
   /// development
   bool noise_{true};
+
+  /// If true, save the "analog" composite pulse shape in the HGCROC emulator
+  /// before it gets digitized
+  bool savePulseTruthInfo_{false};
 
   /// If false, save digis from all channels, even pure noise in empty bars
   /// Helpful when comparing with test beam data
