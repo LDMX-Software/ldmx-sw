@@ -275,7 +275,6 @@ void ParticleFlow::produce(framework::Event& event) {
             EMIsTkLinked[em_idx] = true;
             tkIsEMLinked[i] = true;
             tkEMPairs[i] = em_idx;
-	    cand.setEcalIndex(em_idx);
             break;
           }
         }
@@ -318,6 +317,7 @@ void ParticleFlow::produce(framework::Event& event) {
         // chargedUnmatch.push_back(cand);
       } else {  // if track is linked with ECal cluster
         fillCandEMCalo(cand, ecalClusters[tkEMPairs[i]]);
+	cand.setEcalIndex(tkEMPairs[i]);
         if (EMIsHadLinked[tkEMPairs[i]]) {  // if ECal is linked with HCal
                                             // cluster
           fillCandHadCalo(cand, hcalClusters[EMHadPairs[tkEMPairs[i]]]);
@@ -332,7 +332,6 @@ void ParticleFlow::produce(framework::Event& event) {
     for (int i = 0; i < ecalClusters.size(); i++) {
       // already linked with ECal in the previous step
       if (EMIsTkLinked[i]) continue;
-
       ldmx::PFCandidate cand;
       fillCandEMCalo(cand, ecalClusters[i]);
       cand.setEcalIndex(i);
