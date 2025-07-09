@@ -275,6 +275,7 @@ void ParticleFlow::produce(framework::Event& event) {
             EMIsTkLinked[em_idx] = true;
             tkIsEMLinked[i] = true;
             tkEMPairs[i] = em_idx;
+	    cand.setEcalIndex(em_idx);
             break;
           }
         }
