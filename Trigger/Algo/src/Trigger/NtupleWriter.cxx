@@ -2,8 +2,8 @@
 
 #include "SimCore/Event/SimTrackerHit.h"
 #include "Trigger/Event/TrigEnergySum.h"
-#include "Trigger/Event/TrigParticle.h"
 #include "Trigger/Event/TrigMip.h"
+#include "Trigger/Event/TrigParticle.h"
 
 namespace trigger {
 NtupleWriter::NtupleWriter(const std::string& name, framework::Process& process)
@@ -130,9 +130,9 @@ void NtupleWriter::produce(framework::Event& event) {
     std::vector<int> nHoles;
     std::vector<float> isoEnergies;
     for (const auto& mip : mips) {
-        lengths.push_back(mip.length());
-        nHoles.push_back(mip.nHoles());
-        isoEnergies.push_back(mip.SumEinIsolationRegion());
+      lengths.push_back(mip.length());
+      nHoles.push_back(mip.nHoles());
+      isoEnergies.push_back(mip.SumEinIsolationRegion());
     }
     n.setVar("Ecal_mip_length", lengths);
     n.setVar("Ecal_mip_nHoles", nHoles);
@@ -146,15 +146,14 @@ void NtupleWriter::produce(framework::Event& event) {
     std::vector<int> nHoles;
     // std::vector<float> isoEnergies;
     for (const auto& mip : mips) {
-        lengths.push_back(mip.length());
-        nHoles.push_back(mip.nHoles());
-        // isoEnergies.push_back(mip.SumEinIsolationRegion());
+      lengths.push_back(mip.length());
+      nHoles.push_back(mip.nHoles());
+      // isoEnergies.push_back(mip.SumEinIsolationRegion());
     }
     n.setVar("Hcal_mip_length", lengths);
     n.setVar("Hcal_mip_nHoles", nHoles);
     // n.setVar("Hcal_mip_isolationEnergy", isoEnergies);
   }
-
 
   inTag = "trigElectrons";
   if (writeEle_ && event.exists(inTag)) {
@@ -231,18 +230,18 @@ void NtupleWriter::onProcessStart() {
     n.addVar<int>(tag_, "n" + coll);
     n.addVar<int>(tag_, "maxE");
     n.addVar<int>(tag_, "maxPt");
-    n.addVar<vector<float> >(tag_, coll + "_e");
-    n.addVar<vector<float> >(tag_, coll + "_eClus");
-    n.addVar<vector<float> >(tag_, coll + "_zClus");
-    n.addVar<vector<float> >(tag_, coll + "_px");
-    n.addVar<vector<float> >(tag_, coll + "_py");
-    n.addVar<vector<float> >(tag_, coll + "_pz");
-    n.addVar<vector<float> >(tag_, coll + "_dx");
-    n.addVar<vector<float> >(tag_, coll + "_dy");
-    n.addVar<vector<float> >(tag_, coll + "_x");  // at target
-    n.addVar<vector<float> >(tag_, coll + "_y");
-    n.addVar<vector<int> >(tag_, coll + "_tp");
-    n.addVar<vector<int> >(tag_, coll + "_depth");
+    n.addVar<vector<float>>(tag_, coll + "_e");
+    n.addVar<vector<float>>(tag_, coll + "_eClus");
+    n.addVar<vector<float>>(tag_, coll + "_zClus");
+    n.addVar<vector<float>>(tag_, coll + "_px");
+    n.addVar<vector<float>>(tag_, coll + "_py");
+    n.addVar<vector<float>>(tag_, coll + "_pz");
+    n.addVar<vector<float>>(tag_, coll + "_dx");
+    n.addVar<vector<float>>(tag_, coll + "_dy");
+    n.addVar<vector<float>>(tag_, coll + "_x");  // at target
+    n.addVar<vector<float>>(tag_, coll + "_y");
+    n.addVar<vector<int>>(tag_, coll + "_tp");
+    n.addVar<vector<int>>(tag_, coll + "_depth");
   }
   if (writeTruth_) {
     n.addVar<float>(tag_, "Truth_x");
@@ -271,11 +270,11 @@ void NtupleWriter::onProcessStart() {
     // n.addVar<std::vector<float>>(tag_, "Hcal_mip_isolationEnergy");
   }
   if (writeEcalSums_) {
-    n.addVar<vector<float> >(tag_, "Ecal_e_afterLayer");
+    n.addVar<vector<float>>(tag_, "Ecal_e_afterLayer");
     n.addVar<int>(tag_, "Ecal_e_nLayer");
   };
   if (writeHcalSums_) {
-    n.addVar<vector<float> >(tag_, "Hcal_e_afterLayer");
+    n.addVar<vector<float>>(tag_, "Hcal_e_afterLayer");
     n.addVar<int>(tag_, "Hcal_e_nLayer");
     n.addVar<float>(tag_, "SideHcal_e");
   };

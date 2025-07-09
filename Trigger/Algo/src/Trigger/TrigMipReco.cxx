@@ -7,9 +7,9 @@ void TrigMipReco::configure(framework::config::Parameters& ps) {
   passCollName_ = ps.getParameter<std::string>("passCollName");
   calorimeterTypeIsHcal_ = ps.getParameter<bool>("calorimeterTypeIsHcal");
   if (calorimeterTypeIsHcal_) {
-    minEnergy_ = 8.0f;  // mip peak is 10-11
-  } else {
-    minEnergy_ = 3.0f;
+    minEnergy_ = 8.0f;  // MIP peak is 10-11
+  } else {              // ECAL
+    minEnergy_ = 3.0f;  // MIP peak around 17
     maxEnergy_ = 26.0f;
   }
 }
@@ -18,7 +18,7 @@ void TrigMipReco::produce(framework::Event& event) {
   if (!event.exists(hitCollName_)) return;
   auto caloHits{event.getObject<TrigCaloHitCollection>(hitCollName_)};
 
-  if (calorimeterTypeIsHcal_) { //////////////////////////// HCAL MIP Reconstruction ///////////////////////////////////
+  if (calorimeterTypeIsHcal_) {  // HCAL MIP Reconstruction
     TrigCaloHitCollection sortedHits;
     int evenMatrix[24][5] = {};
     int evenStart[5] = {99, 99, 99, 99, 99};
@@ -81,12 +81,11 @@ void TrigMipReco::produce(framework::Event& event) {
     std::sort(mips.begin(), mips.end());
 
     event.add(passCollName_, mips);
-  } else { ///////////////////////////////////// ECAL MIP Reconstruction ///////////////////////////////////////////////
+  } else {                 // ECAL MIP Reconstruction
     float radiusCut = 50;  // mm
     int maxLayer = 32;
     int minTrackLength = 5;  // Adjustable
     const float radiusCut2 = radiusCut * radiusCut;
-
 
     std::map<int, std::vector<TrigCaloHit>> layerHits;
     std::set<const TrigCaloHit*> usedHits;
@@ -95,8 +94,7 @@ void TrigMipReco::produce(framework::Event& event) {
 
     // Filter for section = 0 and hits < 33 layers
     for (const auto& hit : caloHits) {
-      if (hit.section() > 0 || hit.layer() > maxLayer)
-        continue;
+      if (hit.section() > 0 || hit.layer() > maxLayer) continue;
       layerHits[hit.layer()].push_back(hit);
     }
 
@@ -104,7 +102,9 @@ void TrigMipReco::produce(framework::Event& event) {
     for (const auto& [seedLayer, seeds] : layerHits) {
       for (const auto& seed : seeds) {
         // Skip if hit already used or outside mip energy range
-        if (usedHits.count(&seed) || seed.energy() < minEnergy_ || seed.energy() > maxEnergy_) continue;
+        if (usedHits.count(&seed) || seed.energy() < minEnergy_ ||
+            seed.energy() > maxEnergy_)
+          continue;
 
         std::vector<const TrigCaloHit*> track;
         track.push_back(&seed);
@@ -116,16 +116,23 @@ void TrigMipReco::produce(framework::Event& event) {
         // Look layer by layer for next hit within dR
         for (int l = seed.layer() + 1; l <= maxLayer; ++l) {
           const TrigCaloHit* bestHit = nullptr;
-          float bestdR2 = radiusCut2 * (growthFactor * growthFactor); // Grow search window if there is a hole
+          float bestdR2 =
+              radiusCut2 *
+              (growthFactor *
+               growthFactor);  // Grow search window if there is a hole
 
           for (const auto& cand : layerHits[l]) {
-            if (usedHits.count(&cand) || cand.energy() < minEnergy_ || cand.energy() > maxEnergy_) continue;
+            if (usedHits.count(&cand) || cand.energy() < minEnergy_ ||
+                cand.energy() > maxEnergy_)
+              continue;
 
-            // Corrects for layer shift in x-direction which we calculated is 4.82 mm
+            // Corrects for layer shift in x-direction which we calculated
+            // is 4.82 mm
             float layerShiftLast = (last->layer() % 2 == 0) ? 0.0f : 4.82f;
             float layerShiftCand = (cand.layer() % 2 == 0) ? 0.0f : 4.82f;
 
-            float dx = (cand.x() - layerShiftCand) - (last->x() - layerShiftLast);
+            float dx =
+                (cand.x() - layerShiftCand) - (last->x() - layerShiftLast);
             float dy = cand.y() - last->y();
             float dR2 = dx * dx + dy * dy;
             if (dR2 < bestdR2) {
@@ -138,51 +145,55 @@ void TrigMipReco::produce(framework::Event& event) {
             track.push_back(bestHit);  // Builds track from best hits
             last = bestHit;
             holes = 0;
-            growthFactor = 1.0f; // Reset search window
+            growthFactor = 1.0f;  // Reset search window
           } else {
-            holes++; // Maybe not needed since holes are calculated in a different way below
-            growthFactor = (holes + 1); // Keep expanding
+            holes++;
+            growthFactor = (holes + 1);  // Keep expanding
           }
         }
 
         bool isIsolated = true;
-        float isolationECut = 180; // MeV
-        float isolationRadius2 = radiusCut*radiusCut;
+        float isolationECut = 180;  // MeV; Change as needed
+        float isolationRadius2 = radiusCut * radiusCut;
         if ((track.size() >= minTrackLength)) {
-          for (const auto* hit : track) { // Isolation area energy check
+          for (const auto* hit : track) {  // Isolation area energy check
             int layer = hit->layer();
             float hitx = hit->x();
             float hity = hit->y();
             float sumE = 0.0f;
 
             for (const auto& cand : layerHits[layer]) {
-                if (&cand == hit) continue; // Skips self
-                float dx = cand.x() - hitx;
-                float dy = cand.y() - hity;
-                float dR2 = dx * dx + dy * dy;
+              if (&cand == hit) continue;  // Skips self
+              float dx = cand.x() - hitx;
+              float dy = cand.y() - hity;
+              float dR2 = dx * dx + dy * dy;
 
-                if (dR2 < isolationRadius2) {
-                    sumE += cand.energy();
-                }
+              if (dR2 < isolationRadius2) {
+                sumE += cand.energy();
+              }
             }
 
             if (sumE >= isolationECut) {
-            isIsolated = false;
-            usedHits.insert(hit);  // Adds used hits to vector so they cannot be used again
-            break;
+              isIsolated = false;
+              usedHits.insert(hit);  // Adds used hits to vector so they cannot
+                                     // be used again
+              break;
             }
           }
           if (!isIsolated) {
-            continue; // Reject track if any hit is not isolated
+            continue;  // Reject track if any hit is not isolated
           }
 
           size_t i = candidateTracks.size();
           candidateTracks.push_back(track);
 
           for (const auto* hit : track) {
-            if (!hitToBestTrack.count(hit) || candidateTracks[i].size() > candidateTracks[hitToBestTrack[hit]].size()) {
+            if (!hitToBestTrack.count(hit) ||
+                candidateTracks[i].size() >
+                    candidateTracks[hitToBestTrack[hit]].size()) {
               hitToBestTrack[hit] = i;
-              usedHits.insert(hit);  // Adds used hits to vector so they cannot be used again
+              usedHits.insert(hit);  // Adds used hits to vector so they cannot
+                                     // be used again
             }
           }
         }
@@ -195,7 +206,8 @@ void TrigMipReco::produce(framework::Event& event) {
     }
 
     TrigMipCollection mips;
-    // Converts tracks to MIP objects
+    float max_hole_fraction = 0.2f;  // No more than 20% hole fraction ; Change
+                                     // as needed Converts tracks to MIP objects
     for (size_t idx : validTrackIDs) {
       const auto& track = candidateTracks[idx];
 
@@ -206,7 +218,9 @@ void TrigMipReco::produce(framework::Event& event) {
       mip.setLength(track.back()->layer() - track.front()->layer());
       mip.setNHoles(mip.length() - mip.nHits());
 
-      if ((static_cast<float>(mip.nHoles()) / mip.length()) >= 0.2) continue; // Remove mips with hole fraction > 0.2
+      float hole_fraction = (static_cast<float>(mip.nHoles()) / mip.length());
+      // Remove mip tracks with hole fraction > 0.2
+      if (hole_fraction >= max_hole_fraction) continue;
 
       float totalIsolationESum = 0.0f;
       for (const auto* hit : track) {
@@ -214,13 +228,13 @@ void TrigMipReco::produce(framework::Event& event) {
         float hitx = hit->x();
         float hity = hit->y();
         for (const auto& cand : layerHits[layer]) {
-            if (&cand == hit) continue;
-            float dx = cand.x() - hitx;
-            float dy = cand.y() - hity;
-            float dR2 = dx * dx + dy * dy;
-            if (dR2 < radiusCut * radiusCut) {
-                totalIsolationESum += cand.energy();
-            }
+          if (&cand == hit) continue;
+          float dx = cand.x() - hitx;
+          float dy = cand.y() - hity;
+          float dR2 = dx * dx + dy * dy;
+          if (dR2 < radiusCut * radiusCut) {
+            totalIsolationESum += cand.energy();
+          }
         }
       }
       mip.setSumEinIsolationRegion(totalIsolationESum);
