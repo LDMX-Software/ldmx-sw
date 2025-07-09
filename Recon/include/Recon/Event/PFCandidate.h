@@ -269,7 +269,7 @@ class PFCandidate {
   int hcal_idx_{-1};
   
   /* The ROOT class definition. */
-  ClassDef(PFCandidate, 1);
+  ClassDef(PFCandidate, 2);
 };
 }  // namespace ldmx
 
