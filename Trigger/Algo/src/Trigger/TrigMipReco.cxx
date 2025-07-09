@@ -146,7 +146,7 @@ void TrigMipReco::produce(framework::Event& event) {
         }
 
         bool isIsolated = true;
-        float isolationECut = 20; // MeV
+        float isolationECut = 180; // MeV
         float isolationRadius2 = radiusCut*radiusCut;
         if ((track.size() >= minTrackLength)) {
           for (const auto* hit : track) { // Isolation area energy check
