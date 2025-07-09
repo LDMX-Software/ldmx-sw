@@ -66,9 +66,12 @@ void PileupFinder::produce(framework::Event& event) {
       // TODO:
       // write a header for this file --> DONE 
       // clean up all the methods below here --> DONE 
-      // compile, possibly incrememnt particleflow candidate class imp nb
+      // compile, possibly increment particleflow candidate class imp nb --> DONE
       // try out hit association (print list?)
       int pf_cl_idx = pf_cand.getEcalIndex();
+      ldmx_log(trace) << "Got Ecal cluster with index " << pf_cl_idx << " while cluster array length is " << clusters.size();
+      if (pf_cl_idx < 0 ) // was never set
+	continue;
       auto cl = clusters[pf_cl_idx];
       auto hitIDs = cl.getHitIDs();
       // make a collection without pileup hits
@@ -78,6 +81,7 @@ void PileupFinder::produce(framework::Event& event) {
 	// When the element is not found, std::find returns the end of the range
 	if (foundIndex == std::end(hitIDs)) { //hit not found in the pileup cluster
 	  output_hits.emplace_back(hit); //keep it 
+	  ldmx_log(trace) << "Got no-pileup hit! ";
 	}
       }// over hits 
     }// if trk/ecal matched
