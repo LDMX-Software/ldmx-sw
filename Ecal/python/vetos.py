@@ -23,7 +23,7 @@ class EcalVetoProcessor(ldmxcfg.Producer) :
         self.beam_energy = 8000.0  # in MeV
         self.disc_cut = 0.99741
         
-        self.sp_pass_name = "resim"
+        self.sp_pass_name = ""
         self.collection_name = "EcalVeto"
         self.rec_pass_name = ""
         self.rec_coll_name = "EcalRecHits"
