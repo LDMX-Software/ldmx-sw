@@ -160,7 +160,7 @@ class EcalVetoProcessor : public framework::Producer {
   float stdLayerHit_{0};
   float ecalBackEnergy_{0};
 
-  /// Number of hits outside of the electron roc in the Ecal 
+  /// Number of hits outside of the electron roc in the Ecal
   /// or if the electron trajectory is missing, all the hits in the Ecal
   int n_tracking_hits_{0};
   /// Angular separation between the projected photon and electron trajectories

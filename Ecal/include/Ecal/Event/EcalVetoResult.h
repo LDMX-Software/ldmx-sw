@@ -35,7 +35,7 @@ class EcalVetoResult {
    * Set the sim particle and 'is findable' flag.
    */
   void setVariables(int nReadoutHits, int deepestLayerHit, int n_tracking_hits,
-                    float summedDet, float summedTightIso, float maxCellDep, 
+                    float summedDet, float summedTightIso, float maxCellDep,
                     float showerRMS, float xStd, float yStd, float avgLayerHit,
                     float stdLayerHit, float ecalBackEnergy, float epAng,
                     float epAngAtTarget, float epSep, float epDot,
@@ -317,7 +317,7 @@ class EcalVetoResult {
   /** y position of recoil electron at the Ecal face. */
   float recoilY_{-9999};
 
-  /// Number of hits outside of the electron roc in the Ecal 
+  /// Number of hits outside of the electron roc in the Ecal
   /// or if the electron trajectory is missing, all the hits in the Ecal
   int n_tracking_hits_{0};
   /// Angular separation between the projected photon and electron trajectories

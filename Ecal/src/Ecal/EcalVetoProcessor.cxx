@@ -29,11 +29,11 @@ void EcalVetoProcessor::buildBDTFeatureVector(
   bdtFeatures_.push_back(result.getDeepestLayerHit());
   bdtFeatures_.push_back(result.getEcalBackEnergy());
   // MIP tracking
-  
-  bdtFeatures_.push_back(-1.); // NStraight
-  bdtFeatures_.push_back(-1.); // FirstNearPHLayer
-  bdtFeatures_.push_back(-1.); // NNearPHHits
-  bdtFeatures_.push_back(-1.); // PhotonTerritoryHits
+
+  bdtFeatures_.push_back(-1.);  // NStraight
+  bdtFeatures_.push_back(-1.);  // FirstNearPHLayer
+  bdtFeatures_.push_back(-1.);  // NNearPHHits
+  bdtFeatures_.push_back(-1.);  // PhotonTerritoryHits
 
   // bdtFeatures_.push_back(result.getNStraightTracks());
   // bdtFeatures_.push_back(result.getFirstNearPhLayer());
@@ -855,10 +855,10 @@ void EcalVetoProcessor::produce(framework::Event &event) {
       std::chrono::duration<double, std::milli>(mip_tracking_setup - start)
           .count();
   result.setVariables(
-      nReadoutHits_, deepestLayerHit_, n_tracking_hits_, summedDet_, summedTightIso_, 
-      maxCellDep_, showerRMS_, xStd_, yStd_, avgLayerHit_, stdLayerHit_, 
-      ecalBackEnergy_, epAng_, epAngAtTarget_, epSep_, epDot_, epDotAtTarget_,
-      electronContainmentEnergy, photonContainmentEnergy,
+      nReadoutHits_, deepestLayerHit_, n_tracking_hits_, summedDet_,
+      summedTightIso_, maxCellDep_, showerRMS_, xStd_, yStd_, avgLayerHit_,
+      stdLayerHit_, ecalBackEnergy_, epAng_, epAngAtTarget_, epSep_, epDot_,
+      epDotAtTarget_, electronContainmentEnergy, photonContainmentEnergy,
       outsideContainmentEnergy, outsideContainmentNHits, outsideContainmentXstd,
       outsideContainmentYstd, energySeg, xMeanSeg, yMeanSeg, xStdSeg, yStdSeg,
       layerMeanSeg, layerStdSeg, eContEnergy, eContXMean, eContYMean,
@@ -870,7 +870,7 @@ void EcalVetoProcessor::produce(framework::Event &event) {
   profiling_map_["set_variables"] += std::chrono::duration<double, std::milli>(
                                          set_variables - mip_tracking_setup)
                                          .count();
-  std::cout<<'debug 1'<<std::endl;
+  std::cout << 'debug 1' << std::endl;
   buildBDTFeatureVector(result);
   ldmx::Ort::FloatArrays inputs({bdtFeatures_});
   float pred = rt_->run({featureListName_}, inputs, {"probabilities"})[0].at(1);
