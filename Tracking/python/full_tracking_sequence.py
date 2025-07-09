@@ -37,6 +37,7 @@ digi_recoil.out_collection = "DigiRecoilSimHits"
 # parabola+linear fit. Compatibility with expected particles is checked by looking at the track
 # parameters and the impact parameters at the target or generation point. For the tagger one should look
 # for compatibility with the beam orbit / beam spot
+print('debugging tagger seeds')
 seeder_tagger = tracking.SeedFinderProcessor("SeedTagger")
 seeder_tagger.input_hits_collection =  digi_tagger.out_collection
 seeder_tagger.out_seed_collection = "TaggerRecoSeeds"

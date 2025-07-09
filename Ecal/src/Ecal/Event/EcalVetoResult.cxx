@@ -22,6 +22,7 @@ void EcalVetoResult::Clear() {
   stdLayerHit_ = 0;
   deepestLayerHit_ = 0;
   ecalBackEnergy_ = 0;
+  n_tracking_hits_ = 0;
   epAng_ = 0;
   epAngAtTarget_ = 0;
   epSep_ = 0;
@@ -71,7 +72,7 @@ void EcalVetoResult::Clear() {
 }
 
 void EcalVetoResult::setVariables(
-    int nReadoutHits, int deepestLayerHit, float summedDet,
+    int nReadoutHits, int deepestLayerHit, int n_tracking_hits, float summedDet,
     float summedTightIso, float maxCellDep, float showerRMS, float xStd,
     float yStd, float avgLayerHit, float stdLayerHit, float ecalBackEnergy,
     float epAng, float epAngAtTarget, float epSep, float epDot,
@@ -118,6 +119,7 @@ void EcalVetoResult::setVariables(
   stdLayerHit_ = stdLayerHit;
   deepestLayerHit_ = deepestLayerHit;
   ecalBackEnergy_ = ecalBackEnergy;
+  n_tracking_hits_ = n_tracking_hits;
   epAng_ = epAng;
   epAngAtTarget_ = epAngAtTarget;
   epSep_ = epSep;
