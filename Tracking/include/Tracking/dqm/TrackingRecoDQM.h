@@ -1,5 +1,8 @@
 #pragma once
 
+#include <algorithm>
+#include <iostream>
+
 #include "Framework/Configure/Parameters.h"
 #include "Framework/Event.h"
 #include "Framework/EventProcessor.h"
@@ -7,6 +10,7 @@
 #include "Tracking/Event/Measurement.h"
 #include "Tracking/Event/Track.h"
 #include "Tracking/Event/TruthTrack.h"
+#include "Tracking/Sim/TrackingUtils.h"
 
 namespace tracking::dqm {
 
@@ -32,12 +36,12 @@ class TrackingRecoDQM : public framework::Analyzer {
 
   void analyze(const framework::Event& event) override;
 
-  void TrackMonitoring(const std::vector<ldmx::Track>& tracks,
+  void trackMonitoring(const std::vector<ldmx::Track>& tracks,
                        const std::vector<ldmx::Measurement>& measurements,
                        const std::string title, const bool& doDetail,
                        const bool& doTruth);
 
-  void EfficiencyPlots(const std::vector<ldmx::Track>& tracks,
+  void efficiencyPlots(const std::vector<ldmx::Track>& tracks,
                        const std::vector<ldmx::Measurement>& measurements,
                        const std::string& title);
 
@@ -48,7 +52,7 @@ class TrackingRecoDQM : public framework::Analyzer {
    *
    */
 
-  void TrackStateMonitoring(const ldmx::Tracks& tracks,
+  void trackStateMonitoring(const ldmx::Tracks& tracks,
                             ldmx::TrackStateType ts_type,
                             const std::string& ts_title);
   /**
@@ -84,8 +88,7 @@ class TrackingRecoDQM : public framework::Analyzer {
   std::string title_{"tagger_trk_"};
   double trackProb_cut_{0.5};
   std::string subdetector_{"Tagger"};
-  bool doTruthComparison{false};
-  bool debug_{false};
+  bool doTruthComparison_{false};
   std::vector<std::string> trackStates_;
 
   // Truth Track collection

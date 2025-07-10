@@ -14,8 +14,12 @@ find_package(ROOT CONFIG REQUIRED)
 # Search for Boost
 find_package(Boost REQUIRED COMPONENTS log)
 
+include_directories( /usr/local/include/GENIE )
+
 option(BUILD_EVENT_ONLY "Build the event library." ON)
 if(BUILD_EVENT_ONLY)
+
+  install(FILES /usr/local/lib/libHepMC3rootIO_rdict.pcm DESTINATION lib)
 
   register_event_object(module_path "SimCore/Event" namespace "ldmx" 
                         class "SimCalorimeterHit" type "collection")
@@ -23,10 +27,15 @@ if(BUILD_EVENT_ONLY)
                         class "SimTrackerHit" type "collection")
   register_event_object(module_path "SimCore/Event" namespace "ldmx"
                         class "SimParticle" type "map" key "int")
+  register_event_object(module_path "SimCore/Event" namespace "ldmx"
+      class "EventWeights")
+
+  register_event_object(module_path "SimCore/Event" namespace "ldmx"
+      class "HepMC3GenEvent" type "collection")
 
   # Generate the files needed to build the event classes.
   setup_library(module SimCore name Event
-                dependencies ROOT::Core
+                dependencies ROOT::Core ${GENIE_LIBS} HepMC3 HepMC3rootIO
                 register_target)
 
   return()
@@ -36,24 +45,25 @@ endif()
 # Configure Geant4
 setup_geant4_target()
 
+#Configure Genie
+setup_genie_target()
+
 # include dark brem simulation
 add_subdirectory(G4DarkBreM)
 
+# Library of our interactions with G4
 setup_library(module SimCore
-              name PhotoNuclearModels
-              dependencies Geant4::Interface
-                           Framework::Configure)
+              name G4User
+              dependencies Framework::Configure
+                           Framework::Exception
+                           Framework::Framework
+                           Geant4::Interface)
+
 
 # Set the LHE Reading Library
 setup_library(module SimCore 
               name LHE
               dependencies Framework::Exception
-                           Geant4::Interface)
-
-# Library of our interactions with G4
-setup_library(module SimCore
-              name G4User
-              dependencies Framework::Framework
                            Geant4::Interface)
 
 # Setup the biasing operators library
@@ -64,44 +74,54 @@ setup_library(module SimCore
                            Framework::Framework
                            G4DarkBreM)
 
-# Primary Generators library
+# PN models library needs access to G4User
+setup_library(module SimCore
+              name PhotoNuclearModels
+              dependencies SimCore::G4User)
+
+
+# Primary Generators library needs G4User and LHE
 setup_library(module SimCore
               name Generators
-              dependencies Geant4::Interface
+              dependencies SimCore::LHE
+                           SimCore::G4User
+			   SimCore::Event
+                           ${GENIE_LIBS}
+                           HepMC3)
+			   
+# Reweight Library
+setup_library(module SimCore
+              name Reweight
+              dependencies SimCore::Generators
+                           SimCore::Event
                            Framework::Configure
                            Framework::Framework
-                           SimCore::LHE)
+                           ${GENIE_LIBS}
+                           HepMC3)
 
 # Sensitive Detectors library
 setup_library(module SimCore
               name SDs
-              dependencies Geant4::Interface
-                           Framework::Configure
-                           Framework::Framework
-                           DetDescr::DetDescr
+              dependencies DetDescr::DetDescr
                            SimCore::G4User)
 
 setup_library(module SimCore
               name Geo
-              dependencies Geant4::Interface
-                           Framework::Configure
-                           Framework::Framework
+              dependencies SimCore::G4User
                            DetDescr::DetDescr)
 
 # Setup the library
 setup_library(module SimCore
-              dependencies Geant4::Interface
-                           ROOT::Physics
-                           Framework::Configure
-                           Framework::Framework
+              dependencies ROOT::Physics
+                           ROOT::MathMore
+                           HepMC3
                            SimCore::Geo
-                           SimCore::G4User
                            SimCore::PhotoNuclearModels
                            SimCore::BiasOperators
                            SimCore::Generators
+                           SimCore::Reweight
                            SimCore::SDs)
                            
-
 # Set some target properties
 set_target_properties(SimCore
                       PROPERTIES CXX_STANDARD 17

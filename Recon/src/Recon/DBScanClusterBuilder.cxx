@@ -93,7 +93,7 @@ void DBScanClusterBuilder::fillClusterInfoFromHits(
 
   for (const ldmx::CalorimeterHit *h : hits) {
     if (h->getEnergy() < minHitEnergy_) continue;
-    if (logEnergyWeight) w = log(h->getEnergy() - log(minHitEnergy_));
+    if (logEnergyWeight) w = log(h->getEnergy()) - log(minHitEnergy_);
     e += h->getEnergy();
     x += w * h->getXPos();
     y += w * h->getYPos();

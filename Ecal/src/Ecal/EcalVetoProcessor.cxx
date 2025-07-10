@@ -1,31 +1,5 @@
 #include "Ecal/EcalVetoProcessor.h"
 
-// LDMX
-#include "DetDescr/EcalGeometry.h"
-#include "DetDescr/SimSpecialID.h"
-#include "Ecal/Event/EcalHit.h"
-#include "Recon/Event/EventConstants.h"
-#include "SimCore/Event/SimParticle.h"
-#include "SimCore/Event/SimTrackerHit.h"
-
-/*~~~~~~~~~~~*/
-/*   Tools   */
-/*~~~~~~~~~~~*/
-#include "Tools/AnalysisUtils.h"
-
-// C++
-#include <stdlib.h>
-
-#include <algorithm>
-#include <cmath>
-#include <fstream>
-#include <iomanip>
-
-// ROOT (MIP tracking)
-#include "TDecompSVD.h"
-#include "TMatrixD.h"
-#include "TVector3.h"
-
 namespace ecal {
 
 void EcalVetoProcessor::onNewRun(const ldmx::RunHeader &rh) {
@@ -36,8 +10,6 @@ void EcalVetoProcessor::onNewRun(const ldmx::RunHeader &rh) {
   profiling_map_["fill_hitmaps"] = 0.;
   profiling_map_["containment_var"] = 0.;
   profiling_map_["mip_tracking_setup"] = 0.;
-  profiling_map_["straight_tracks"] = 0.;
-  profiling_map_["linreg_tracks"] = 0.;
   profiling_map_["set_variables"] = 0.;
   profiling_map_["bdt_variables"] = 0.;
 }
@@ -57,11 +29,16 @@ void EcalVetoProcessor::buildBDTFeatureVector(
   bdtFeatures_.push_back(result.getDeepestLayerHit());
   bdtFeatures_.push_back(result.getEcalBackEnergy());
   // MIP tracking
-  bdtFeatures_.push_back(result.getNStraightTracks());
+  bdtFeatures_.push_back(-1.);
+  bdtFeatures_.push_back(-1.);
+  bdtFeatures_.push_back(-1.);
+  bdtFeatures_.push_back(-1.);
+
+  // bdtFeatures_.push_back(result.getNStraightTracks());
   // bdtFeatures_.push_back(result.getNLinregTracks());
-  bdtFeatures_.push_back(result.getFirstNearPhLayer());
-  bdtFeatures_.push_back(result.getNNearPhHits());
-  bdtFeatures_.push_back(result.getPhotonTerritoryHits());
+  // bdtFeatures_.push_back(result.getFirstNearPhLayer());
+  // bdtFeatures_.push_back(result.getNNearPhHits());
+  // bdtFeatures_.push_back(result.getPhotonTerritoryHits());
   bdtFeatures_.push_back(result.getEPSep());
   bdtFeatures_.push_back(result.getEPDot());
   // Longitudinal segment variables
@@ -144,9 +121,6 @@ void EcalVetoProcessor::configure(framework::config::Parameters &parameters) {
   ecalLayerTime_.resize(nEcalLayers_, 0);
 
   beamEnergyMeV_ = parameters.getParameter<double>("beam_energy");
-  run_lin_reg_ = parameters.getParameter<bool>("run_lin_reg");
-  linreg_radius_ = parameters.getParameter<double>("linreg_radius");
-
   // Set the collection name as defined in the configuration
   sp_pass_name_ = parameters.getParameter<std::string>("sp_pass_name");
   collectionName_ = parameters.getParameter<std::string>("collection_name");
@@ -175,17 +149,11 @@ void EcalVetoProcessor::clearProcessor() {
   stdLayerHit_ = 0;
   deepestLayerHit_ = 0;
   ecalBackEnergy_ = 0;
-  // MIP tracking
-  nStraightTracks_ = 0;
-  nLinregTracks_ = 0;
-  firstNearPhLayer_ = 0;
-  nNearPhHits_ = 0;
   epAng_ = 0;
   epAngAtTarget_ = 0;
   epSep_ = 0;
   epDot_ = 0;
   epDotAtTarget_ = 0;
-  photonTerritoryHits_ = 0;
 
   std::fill(ecalLayerEdepRaw_.begin(), ecalLayerEdepRaw_.end(), 0);
   std::fill(ecalLayerEdepReadout_.begin(), ecalLayerEdepReadout_.end(), 0);
@@ -502,7 +470,7 @@ void EcalVetoProcessor::produce(framework::Event &event) {
   // MIP tracking:  vector of hits to be used in the MIP tracking algorithm. All
   // hits inside the electron ROC (or all hits in the ECal if the event is
   // missing an electron) will be included.
-  std::vector<HitData> trackingHitList;
+  std::vector<ldmx::HitData> trackingHitList;
 
   ldmx_log(trace)
       << "   Loop over the hits from the event to calculate the BDT features";
@@ -604,7 +572,7 @@ void EcalVetoProcessor::produce(framework::Event &event) {
     // If inside e- RoC or if etraj is missing, use the hit for tracking:
     if (distance_ele_trajectory >= ele_radii[id.layer()] ||
         distance_ele_trajectory == -1.0) {
-      HitData hd;
+      ldmx::HitData hd;
       hd.pos = TVector3(xy_pair.first, xy_pair.second,
                         geometry_->getZPosition(id.layer()));
       hd.layer = id.layer();
@@ -805,16 +773,6 @@ void EcalVetoProcessor::produce(framework::Event &event) {
 
   ldmx_log(info) << "   Is this event is fiducial in ECAL? "
                  << inside_ecal_cell;
-
-  // ------------------------------------------------------
-  // MIP tracking starts here
-
-  /* Goal:  Calculate
-   *  nStraightTracks (self-explanatory),
-   *  nLinregTracks (tracks found by linreg algorithm),
-   */
-
-  // Find epAng and epSep, and prepare EP trajectory vectors:
   TVector3 e_traj_start;
   TVector3 e_traj_end;
   TVector3 e_traj_target_start;
@@ -880,387 +838,23 @@ void EcalVetoProcessor::produce(framework::Event &event) {
     epDot_ = 999.;
     epDotAtTarget_ = 999.;
   }
-
-  // Near photon step:  Find the first layer of the ECal where a hit near the
-  // projected photon trajectory is found Currently unusued pending further
-  // study; performance has dropped between v9 and v12. Currently used in
-  // segmipBDT
-  firstNearPhLayer_ = nEcalLayers_ - 1;
-
-  // If no photon trajectory, leave this at the default (ECal back)
-  if (!photon_trajectory.empty()) {
-    for (std::vector<HitData>::iterator it = trackingHitList.begin();
-         it != trackingHitList.end(); ++it) {
-      float ehDist =
-          sqrt(pow((*it).pos.X() - photon_trajectory[(*it).layer].first, 2) +
-               pow((*it).pos.Y() - photon_trajectory[(*it).layer].second, 2));
-      if (ehDist < 8.7) {
-        nNearPhHits_++;
-        if ((*it).layer < firstNearPhLayer_) {
-          firstNearPhLayer_ = (*it).layer;
-        }
-      }
-    }
-  }
-
-  // Territories limited to trackingHitList
-  TVector3 gToe = (e_traj_start - p_traj_start).Unit();
-  TVector3 origin = p_traj_start + 0.5 * 8.7 * gToe;
-  if (!ele_trajectory.empty()) {
-    for (auto &hitData : trackingHitList) {
-      TVector3 hitPos = hitData.pos;
-      TVector3 hitPrime = hitPos - origin;
-      if (hitPrime.Dot(gToe) <= 0) {
-        photonTerritoryHits_++;
-      }
-    }
-  } else {
-    photonTerritoryHits_ = nReadoutHits_;
-  }
+  // Took out MIP tracking here (starting at near photon hits)
+  ldmx::EcalTrajectoryInfo ecal_mip_collection;
+  ldmx_log(trace) << "   Set up input info  for MIP tracking";
+  ecal_mip_collection.setEleTrajectory(ele_trajectory);
+  ecal_mip_collection.setPhotonTrajectory(photon_trajectory);
+  ecal_mip_collection.setTrackingHitList(trackingHitList);
+  event.add("EcalTrajectoryInfo", ecal_mip_collection);
 
   auto mip_tracking_setup = std::chrono::high_resolution_clock::now();
   profiling_map_["mip_tracking_setup"] +=
-      std::chrono::duration<float, std::milli>(mip_tracking_setup -
-                                               containment_var)
+      std::chrono::duration<double, std::milli>(mip_tracking_setup - start)
           .count();
-
-  // ------------------------------------------------------
-  // Find straight MIP tracks:
-
-  std::sort(trackingHitList.begin(), trackingHitList.end(),
-            [](HitData ha, HitData hb) { return ha.layer > hb.layer; });
-  // For merging tracks:  Need to keep track of existing tracks
-  // Candidate tracks to merge in will always be in front of the current track
-  // (lower z), so only store the last hit 3-layer vector:  each track = vector
-  // of 3-tuples (xy+layer).
-  std::vector<std::vector<HitData>> track_list;
-
-  // print trackingHitList
-
-  ldmx_log(trace) << "====== Tracking hit list (original) length "
-                  << trackingHitList.size() << " ======";
-  for (int i = 0; i < trackingHitList.size(); i++) {
-    ldmx_log(trace) << "   [" << trackingHitList[i].pos.X() << ", "
-                    << trackingHitList[i].pos.Y() << ", "
-                    << trackingHitList[i].layer << "]";
-  }
-  ldmx_log(trace) << "====== END OF Tracking hit list ======";
-
-  // in v14 minR is 4.17 mm
-  // while maxR is 4.81 mm
-  float cellWidth = 2 * geometry_->getCellMaxR();
-  for (int iHit = 0; iHit < trackingHitList.size(); iHit++) {
-    // list of hit numbers in track (34 = maximum theoretical length)
-    int track[34];
-    int currenthit{iHit};
-    int trackLen{1};
-
-    track[0] = iHit;
-
-    // Search for hits to add to the track:
-    // repeatedly find hits in the front two layers with same x & y positions
-    // but since v14 the odd layers are offset, so we allow half a cellWidth
-    // deviation and then add to track until no more hits are found
-    int jHit = iHit;
-    while (jHit < trackingHitList.size()) {
-      if ((trackingHitList[jHit].layer ==
-               trackingHitList[currenthit].layer - 1 ||
-           trackingHitList[jHit].layer ==
-               trackingHitList[currenthit].layer - 2) &&
-          abs(trackingHitList[jHit].pos.X() -
-              trackingHitList[currenthit].pos.X()) <= 0.5 * cellWidth &&
-          abs(trackingHitList[jHit].pos.Y() -
-              trackingHitList[currenthit].pos.Y()) <= 0.5 * cellWidth) {
-        track[trackLen] = jHit;
-        trackLen++;
-        currenthit = jHit;
-      }
-      jHit++;
-    }
-
-    // Confirm that the track is valid:
-    if (trackLen < 2) continue;  // Track must contain at least 2 hits
-    float closest_e = distTwoLines(trackingHitList[track[0]].pos,
-                                   trackingHitList[track[trackLen - 1]].pos,
-                                   e_traj_start, e_traj_end);
-    float closest_p = distTwoLines(trackingHitList[track[0]].pos,
-                                   trackingHitList[track[trackLen - 1]].pos,
-                                   p_traj_start, p_traj_end);
-    // Make sure that the track is near the photon trajectory and away from the
-    // electron trajectory Details of these constraints may be revised
-    if (closest_p > cellWidth and closest_e < 2 * cellWidth) continue;
-    if (trackLen < 4 and closest_e > closest_p) continue;
-    ldmx_log(trace) << "====== After rejection for MIP tracking ======";
-    ldmx_log(trace) << "current hit: [" << trackingHitList[iHit].pos.X() << ", "
-                    << trackingHitList[iHit].pos.Y() << ", "
-                    << trackingHitList[iHit].layer << "]";
-
-    for (int k = 0; k < trackLen; k++) {
-      ldmx_log(trace) << "   track[" << k << "] position = ["
-                      << trackingHitList[track[k]].pos.X() << ", "
-                      << trackingHitList[track[k]].pos.Y() << ", "
-                      << trackingHitList[track[k]].layer << "]";
-    }
-
-    // if track found, increment nStraightTracks and remove all hits in track
-    // from future consideration
-    if (trackLen >= 2) {
-      std::vector<HitData> temp_track_list;
-      int n_remove = 0;
-      for (int kHit = 0; kHit < trackLen; kHit++) {
-        temp_track_list.push_back(trackingHitList[track[kHit] - n_remove]);
-        trackingHitList.erase(trackingHitList.begin() + track[kHit] - n_remove);
-        n_remove++;
-      }
-      // print trackingHitList
-      ldmx_log(trace) << "====== Tracking hit list (after erase) length "
-                      << trackingHitList.size() << " ======";
-      for (int i = 0; i < trackingHitList.size(); i++) {
-        ldmx_log(trace) << "   [" << trackingHitList[i].pos.X() << ", "
-                        << trackingHitList[i].pos.Y() << ", "
-                        << trackingHitList[i].layer << "] ";
-      }
-      ldmx_log(trace) << "====== END OF Tracking hit list ======";
-
-      track_list.push_back(temp_track_list);
-      // The *current* hit will have been removed, so iHit is currently pointing
-      // to the next hit. Decrement iHit so no hits will get skipped by iHit++
-      iHit--;
-    }
-  }
-
-  ldmx_log(debug) << "Straight tracks found (before merge): "
-                  << track_list.size();
-  for (int iTrack = 0; iTrack < track_list.size(); iTrack++) {
-    ldmx_log(trace) << "Track " << iTrack << ":";
-    for (int iHit = 0; iHit < track_list[iTrack].size(); iHit++) {
-      ldmx_log(trace) << "  Hit " << iHit << ": ["
-                      << track_list[iTrack][iHit].pos.X() << ", "
-                      << track_list[iTrack][iHit].pos.Y() << ", "
-                      << track_list[iTrack][iHit].layer << "]";
-    }
-  }
-
-  // Optional addition:  Merge nearby straight tracks.  Not necessary for veto.
-  // Criteria:  consider tail of track.  Merge if head of next track is 1/2
-  // layers behind, within 1 cell of xy position.
-  ldmx_log(debug) << "Beginning track merging using " << track_list.size()
-                  << " tracks";
-
-  for (int track_i = 0; track_i < track_list.size(); track_i++) {
-    // for each track, check the remainder of the track list for compatible
-    // tracks
-    std::vector<HitData> base_track = track_list[track_i];
-    HitData tail_hitdata = base_track.back();  // xylayer of last hit in track
-    ldmx_log(trace) << "  Considering track " << track_i;
-    for (int track_j = track_i + 1; track_j < track_list.size(); track_j++) {
-      std::vector<HitData> checking_track = track_list[track_j];
-      HitData head_hitdata = checking_track.front();
-      // if 1-2 layers behind, and xy within one cell...
-      if ((head_hitdata.layer == tail_hitdata.layer + 1 ||
-           head_hitdata.layer == tail_hitdata.layer + 2) &&
-          pow(pow(head_hitdata.pos.X() - tail_hitdata.pos.X(), 2) +
-                  pow(head_hitdata.pos.Y() - tail_hitdata.pos.Y(), 2),
-              0.5) <= cellWidth) {
-        // ...then append the second track to the first one and delete it
-        // NOTE:  TO ADD:  (trackingHitList[iHit].pos -
-        // trackingHitList[jHit].pos).Mag()
-        ldmx_log(trace) << "     ** Compatible track found at index "
-                        << track_j;
-        ldmx_log(trace) << "     Tail xylayer: " << head_hitdata.pos.X() << ","
-                        << head_hitdata.pos.Y() << "," << head_hitdata.layer;
-        ldmx_log(trace) << "     Head xylayer: " << tail_hitdata.pos.X() << ","
-                        << tail_hitdata.pos.Y() << "," << tail_hitdata.layer;
-
-        for (int hit_k = 0; hit_k < checking_track.size(); hit_k++) {
-          base_track.push_back(track_list[track_j][hit_k]);
-        }
-        track_list[track_i] = base_track;
-        track_list.erase(track_list.begin() + track_j);
-        break;
-      }
-    }
-  }
-  nStraightTracks_ = track_list.size();
-  // print the track list
-  ldmx_log(debug) << "Straight tracks found (after merge): "
-                  << nStraightTracks_;
-  for (int track_i = 0; track_i < track_list.size(); track_i++) {
-    ldmx_log(debug) << "Track " << track_i << ":";
-    for (int hit_i = 0; hit_i < track_list[track_i].size(); hit_i++) {
-      ldmx_log(debug) << "  Hit " << hit_i << ": ["
-                      << track_list[track_i][hit_i].pos.X() << ", "
-                      << track_list[track_i][hit_i].pos.Y() << ", "
-                      << track_list[track_i][hit_i].layer << "]";
-    }
-  }
-
-  auto straight_tracks = std::chrono::high_resolution_clock::now();
-  profiling_map_["straight_tracks"] += std::chrono::duration<float, std::milli>(
-                                           straight_tracks - mip_tracking_setup)
-                                           .count();
-
-  // ------------------------------------------------------
-  // Linreg tracking:
-  ldmx_log(info) << "Finding linreg tracks from a total of "
-                 << trackingHitList.size() << " hits using a radius of "
-                 << linreg_radius_ << " mm";
-
-  int max_lin_reg_hit{0};
-  if (run_lin_reg_) max_lin_reg_hit = trackingHitList.size();
-  for (int iHit = 0; iHit < max_lin_reg_hit; iHit++) {
-    // Hits being considered at a given time
-    std::vector<int> hitsInRegion;
-    TMatrixD Vm(3, 3);
-    TMatrixD hdt(3, 3);
-    TVector3 slopeVec;
-    TVector3 hmean;
-    TVector3 hpoint;
-    float r_corr_best{0.0};
-    // Temp array having 3 potential hits
-    int hitNums[3];
-    // From the above which are passing the correlation reqs
-    int bestHitNums[3];
-
-    hitsInRegion.push_back(iHit);
-    // Find all hits within 2 cells of the primary hit:
-    for (int jHit = 0; jHit < trackingHitList.size(); jHit++) {
-      // Dont try to put hits on the same layer to the lin-reg track
-      if (trackingHitList[iHit].pos(2) == trackingHitList[jHit].pos(2)) {
-        continue;
-      }
-      float dstToHit =
-          (trackingHitList[iHit].pos - trackingHitList[jHit].pos).Mag();
-      // This distance optimized to give the best significance
-      // it used to be 2*cellWidth, i.e. 4.81 mm
-      // note, the layers in the back have a separation of 22.3
-      if (dstToHit <= 2 * linreg_radius_) {
-        hitsInRegion.push_back(jHit);
-      }
-    }
-    // Found a track that passed the lin-reg reqs
-    bool bestLinRegFound{false};
-
-    ldmx_log(trace) << "There are " << hitsInRegion.size()
-                    << " hits within a radius of " << linreg_radius_ << " mm";
-
-    // Look at combinations of hits within the region (do not consider the same
-    // combination twice):
-    hitNums[0] = iHit;
-    for (int jHitInReg = 1; jHitInReg < hitsInRegion.size() - 1; jHitInReg++) {
-      // We require (exactly) 3 hits for the lin-reg track building
-      if (hitsInRegion.size() < 3) break;
-      hitNums[1] = hitsInRegion[jHitInReg];
-      for (int kHitReg = jHitInReg + 1; kHitReg < hitsInRegion.size();
-           kHitReg++) {
-        hitNums[2] = hitsInRegion[kHitReg];
-        for (int hInd = 0; hInd < 3; hInd++) {
-          // hmean = geometric mean, subtract off from hits to improve SVD
-          // performance
-          hmean(hInd) = (trackingHitList[hitNums[0]].pos(hInd) +
-                         trackingHitList[hitNums[1]].pos(hInd) +
-                         trackingHitList[hitNums[2]].pos(hInd)) /
-                        3.0;
-        }
-        for (int hInd = 0; hInd < 3; hInd++) {
-          for (int lInd = 0; lInd < 3; lInd++) {
-            hdt(hInd, lInd) =
-                trackingHitList[hitNums[hInd]].pos(lInd) - hmean(lInd);
-          }
-        }
-
-        // Perform "linreg" on selected points
-        // Calculate the determinant of the matrix
-        float determinant =
-            hdt(0, 0) * (hdt(1, 1) * hdt(2, 2) - hdt(1, 2) * hdt(2, 1)) -
-            hdt(0, 1) * (hdt(1, 0) * hdt(2, 2) - hdt(1, 2) * hdt(2, 0)) +
-            hdt(0, 2) * (hdt(1, 0) * hdt(2, 1) - hdt(1, 1) * hdt(2, 0));
-        // Exit early if the matrix is singular (i.e. det = 0)
-        if (determinant == 0) continue;
-        // Perform matrix decomposition with SVD
-        TDecompSVD svdObj(hdt);
-        bool decomposed = svdObj.Decompose();
-        if (!decomposed) continue;
-
-        // First col of V matrix is the slope of the best-fit line
-        Vm = svdObj.GetV();
-        for (int hInd = 0; hInd < 3; hInd++) {
-          slopeVec(hInd) = Vm[0][hInd];
-        }
-        // hmean, hpoint are points on the best-fit line
-        hpoint = slopeVec + hmean;
-        // linreg complete:  Now have best-fit line for 3 hits under
-        // consideration Check whether the track is valid:  r^2 must be high,
-        // and the track must plausibly originate from the photon
-        float closest_e = distTwoLines(hmean, hpoint, e_traj_start, e_traj_end);
-        float closest_p = distTwoLines(hmean, hpoint, p_traj_start, p_traj_end);
-        // Projected track must be close to the photon; details may change after
-        // future study.
-        if (closest_p > cellWidth or closest_e < 1.5 * cellWidth) continue;
-        // find r^2
-        // ~variance
-        float vrnc = (trackingHitList[hitNums[0]].pos - hmean).Mag() +
-                     (trackingHitList[hitNums[1]].pos - hmean).Mag() +
-                     (trackingHitList[hitNums[2]].pos - hmean).Mag();
-        // sum of |errors|
-        float sumerr =
-            distPtToLine(trackingHitList[hitNums[0]].pos, hmean, hpoint) +
-            distPtToLine(trackingHitList[hitNums[1]].pos, hmean, hpoint) +
-            distPtToLine(trackingHitList[hitNums[2]].pos, hmean, hpoint);
-        float r_corr = 1 - sumerr / vrnc;
-        // Check whether r^2 exceeds a low minimum r_corr:  "Fake" tracks are
-        // still much more common in background, so making the algorithm
-        // oversensitive doesn't lower performance significantly
-        if (r_corr > r_corr_best and r_corr > .6) {
-          r_corr_best = r_corr;
-          // Only looking for 3-hit tracks currently
-          bestLinRegFound = true;
-          for (int k = 0; k < 3; k++) {
-            bestHitNums[k] = hitNums[k];
-          }
-        }
-      }  // end loop on hits in the region
-    }  // end 2nd loop on hits in the region
-
-    // Continue early if not hits on track
-    if (!bestLinRegFound) continue;
-    // Otherwise increase the number of lin-reg tracks
-    nLinregTracks_++;
-    ldmx_log(debug) << " Lin-reg track " << nLinregTracks_;
-    for (int finalHitIndx = 0; finalHitIndx < 3; finalHitIndx++) {
-      ldmx_log(debug) << "   Hit " << finalHitIndx << " ["
-                      << trackingHitList[bestHitNums[finalHitIndx]].pos(0)
-                      << ", "
-                      << trackingHitList[bestHitNums[finalHitIndx]].pos(1)
-                      << ", "
-                      << trackingHitList[bestHitNums[finalHitIndx]].pos(2)
-                      << "] ";
-    }
-
-    // Exclude all hits in a found track from further consideration:
-    for (int lHit = 0; lHit < 3; lHit++) {
-      if (!trackingHitList.empty()) {
-        trackingHitList.erase(trackingHitList.begin() + bestHitNums[lHit]);
-      }
-    }
-    iHit--;
-  }  // end loop on all hits
-
-  auto linreg_tracks = std::chrono::high_resolution_clock::now();
-  profiling_map_["linreg_tracks"] +=
-      std::chrono::duration<float, std::milli>(linreg_tracks - straight_tracks)
-          .count();
-
-  ldmx_log(info) << " MIP tracking completed; found " << nStraightTracks_
-                 << " straight tracks and " << nLinregTracks_
-                 << " lin-reg tracks";
-
   result.setVariables(
       nReadoutHits_, deepestLayerHit_, summedDet_, summedTightIso_, maxCellDep_,
       showerRMS_, xStd_, yStd_, avgLayerHit_, stdLayerHit_, ecalBackEnergy_,
-      nStraightTracks_, nLinregTracks_, firstNearPhLayer_, nNearPhHits_,
-      photonTerritoryHits_, epAng_, epAngAtTarget_, epSep_, epDot_,
-      epDotAtTarget_, electronContainmentEnergy, photonContainmentEnergy,
+      epAng_, epAngAtTarget_, epSep_, epDot_, epDotAtTarget_,
+      electronContainmentEnergy, photonContainmentEnergy,
       outsideContainmentEnergy, outsideContainmentNHits, outsideContainmentXstd,
       outsideContainmentYstd, energySeg, xMeanSeg, yMeanSeg, xStdSeg, yStdSeg,
       layerMeanSeg, layerStdSeg, eContEnergy, eContXMean, eContYMean,
@@ -1269,9 +863,9 @@ void EcalVetoProcessor::produce(framework::Event &event) {
       oContLayerStd, ecalLayerEdepReadout_, recoilP, recoilPos);
 
   auto set_variables = std::chrono::high_resolution_clock::now();
-  profiling_map_["set_variables"] +=
-      std::chrono::duration<float, std::milli>(set_variables - linreg_tracks)
-          .count();
+  profiling_map_["set_variables"] += std::chrono::duration<double, std::milli>(
+                                         set_variables - mip_tracking_setup)
+                                         .count();
 
   buildBDTFeatureVector(result);
   ldmx::Ort::FloatArrays inputs({bdtFeatures_});
@@ -1280,11 +874,9 @@ void EcalVetoProcessor::produce(framework::Event &event) {
   // Other considerations were (nLinregTracks_ == 0)  && (firstNearPhLayer_ >=
   // 6)
   // && (epAng_ > 3.0 && epAng_ < 900 || epSep_ > 10.0 && epSep_ < 900)
-  bool passesTrackingVeto = (nStraightTracks_ < 3);
-  result.setVetoResult(pred > bdtCutVal_ && passesTrackingVeto);
+  result.setVetoResult(pred > bdtCutVal_);
   result.setDiscValue(pred);
-  ldmx_log(info) << " The pred > bdtCutVal = " << (pred > bdtCutVal_)
-                 << " and MIP tracking passed = " << passesTrackingVeto;
+  ldmx_log(info) << " The pred > bdtCutVal = " << (pred > bdtCutVal_);
 
   // Persist in the event if the recoil ele is fiducial
   result.setFiducial(inside_ecal_cell);
@@ -1350,14 +942,6 @@ void EcalVetoProcessor::onProcessEnd() {
   ldmx_log(info) << "mip_tracking_setup     Avg Time/Event = " << std::fixed
                  << std::setprecision(3)
                  << profiling_map_["mip_tracking_setup"] / nevents_ << " ms";
-
-  ldmx_log(info) << "straight_tracks        Avg Time/Event = " << std::fixed
-                 << std::setprecision(3)
-                 << profiling_map_["straight_tracks"] / nevents_ << " ms";
-
-  ldmx_log(info) << "linreg_tracks          Avg Time/Event = " << std::fixed
-                 << std::setprecision(3)
-                 << profiling_map_["linreg_tracks"] / nevents_ << " ms";
 
   ldmx_log(info) << "set_variables           Avg Time/Event = " << std::fixed
                  << std::setprecision(3)

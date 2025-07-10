@@ -4,9 +4,9 @@
 
 // LDMX
 #include "Framework/Exception/Exception.h"
+#include "SimCore/G4User/UserRegionInformation.h"
 #include "SimCore/MagneticFieldMap3D.h"
 #include "SimCore/MagneticFieldStore.h"
-#include "SimCore/UserRegionInformation.h"
 #include "SimCore/VisAttributesStore.h"
 
 // Geant4

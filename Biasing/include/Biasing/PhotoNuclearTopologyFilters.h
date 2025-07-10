@@ -4,8 +4,8 @@
 /*~~~~~~~~~~~~~*/
 /*   SimCore   */
 /*~~~~~~~~~~~~~*/
-#include "SimCore/UserAction.h"
-#include "SimCore/UserTrackInformation.h"
+#include "SimCore/G4User/UserAction.h"
+#include "SimCore/G4User/UserTrackInformation.h"
 /*~~~~~~~~~~~~~~~*/
 /*   Framework   */
 /*~~~~~~~~~~~~~~~*/

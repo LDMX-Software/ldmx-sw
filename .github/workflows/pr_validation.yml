@@ -62,14 +62,6 @@ jobs:
         just build
       shell: bash
 
-    - name: Git Gold Histograms from trunk
-      if: github.event_name == 'issue_comment'
-      run: |
-        git checkout origin/trunk \
-          -- .github/validation_samples/*/**.root .github/validation_samples/*/**.log
-        git status
-      shell: bash
-
     - name: Package ldmx-sw Into Artifact
       run: tar cf ldmx-sw-package.tar install/ .github/
 
@@ -122,6 +114,12 @@ jobs:
       run: |
         cd ${GITHUB_WORKSPACE}
         tar xf ldmx-sw-package.tar
+
+    - name: Download CI Gold Data
+      uses: actions/checkout@v4
+      with:
+        repository: LDMX-Software/ci-data
+        path: ci-data
 
     - name: Run Validation
       id: validation

@@ -192,8 +192,6 @@ class CKFProcessor(Producer):
         self.out_trk_collection = 'Tracks'
         self.min_hits = 6
         self.outlier_pval_ = 3.84
-        
-        self.simParticles_passName = ''
         self.sim_particles_event_passname = ''
         self.input_pass_name = ''
         

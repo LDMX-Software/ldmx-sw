@@ -22,7 +22,7 @@ class TrigScintHitDQM : public framework::Analyzer {
   TrigScintHitDQM(const std::string &name, framework::Process &process);
 
   /** Destructor */
-  ~TrigScintHitDQM();
+  ~TrigScintHitDQM() = default;
 
   /**
    * Configure the processor using the given user specified parameters.

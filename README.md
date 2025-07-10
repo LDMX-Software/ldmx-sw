@@ -40,14 +40,6 @@ denv help
 The above should printout a help message instead of a "command not found"
 message.
 
-Additionally, many folks have gotten used to using `ldmx` as the command
-to put programs into the containerized environment in which case you can
-use the following to add this symlink to your `denv` installation.
-(Note: This requires `denv` to be in your `PATH`!).
-```
-ln -s $(which denv) $(dirname $(which denv))/ldmx
-```
-
 ### Using
 In order to use ldmx-sw, no more dependencies are required!
 Simply choose the version of ldmx-sw you wish to use with your project.
@@ -110,7 +102,8 @@ git clone --recursive git@github.com:LDMX-Software/ldmx-sw.git
 cd ldmx-sw
 just # no arguments prints out the possible options
 just init # initialize a new development environment (once per clone)
-just configure build test # configure ldmx-sw, build it, then test it
+just compile #configure and build ldmx-sw
+just test # then test it
 ```
 
 ## Maintainer 

@@ -21,11 +21,12 @@
 #include "SimCore/APrimePhysics.h"
 #include "SimCore/BiasOperators/XsecBiasingOperator.h"
 #include "SimCore/DetectorConstruction.h"
+#include "SimCore/Event/HepMC3GenEvent.h"
 #include "SimCore/G4Session.h"
 #include "SimCore/G4User/TrackingAction.h"
+#include "SimCore/G4User/UserEventInformation.h"
 #include "SimCore/Generators/PrimaryGenerator.h"
 #include "SimCore/SDs/SensitiveDetector.h"
-#include "SimCore/UserEventInformation.h"
 
 /*~~~~~~~~~~~~~~*/
 /*    Geant4    */
@@ -156,6 +157,15 @@ void Simulator::produce(framework::Event& event) {
   updateEventHeader(event_header);
 
   event_header.setStringParameter("eventSeed", stream.str());
+
+  auto event_info = static_cast<UserEventInformation*>(
+      runManager_->GetCurrentEvent()->GetUserInformation());
+
+  auto hepmc3_events = event_info->getHepMC3GenEvents();
+  for (auto& hepmc3ev : hepmc3_events) {
+    hepmc3ev.event_number = event.getEventHeader().getEventNumber();
+  }
+  if (hepmc3_events.size() > 0) event.add("SimHepMC3Events", hepmc3_events);
 
   saveTracks(event);
 

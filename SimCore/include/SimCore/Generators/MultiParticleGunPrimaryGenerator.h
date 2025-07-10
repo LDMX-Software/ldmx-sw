@@ -38,8 +38,8 @@
 //   LDMX-SW   //
 //-------------//
 #include "Framework/EventHeader.h"
+#include "SimCore/G4User/UserPrimaryParticleInformation.h"
 #include "SimCore/Generators/PrimaryGenerator.h"
-#include "SimCore/UserPrimaryParticleInformation.h"
 
 namespace simcore {
 namespace generators {

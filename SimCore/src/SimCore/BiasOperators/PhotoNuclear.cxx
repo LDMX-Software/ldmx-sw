@@ -68,9 +68,15 @@ G4VBiasingOperation* PhotoNuclear::ProposeOccurenceBiasingOperation(
 
     double emXsecBiased = std::max(
         emXsecUnbiased + pnXsecUnbiased_ - pnXsecBiased_, pnXsecUnbiased_);
-    if (emXsecBiased == pnXsecUnbiased_) {
-      ldmx_log(debug) << "EM XS = PN unbiased XS! The biasing factor ("
-                      << factor_ << ") is too large";
+    static auto material_tungsten =
+        simcore::g4user::ptrretrieval::getMaterial("G4_W");
+    auto interaction_material = track->GetMaterial();
+    if ((emXsecBiased == pnXsecUnbiased_) &&
+        (interaction_material == material_tungsten)) {
+      ldmx_log(warn) << "EM XS = PN unbiased XS! The biasing factor ("
+                     << factor_ << ") is too large for particle with energy "
+                     << track->GetKineticEnergy()
+                     << " and material = " << interaction_material->GetName();
     }
 
     emXsecOperation->SetBiasedCrossSection(emXsecBiased);
