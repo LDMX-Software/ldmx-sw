@@ -134,24 +134,21 @@ void NtupleWriter::produce(framework::Event& event) {
   }
 
   inTag = "hcalTrigQuadsSideLayerSums";
-  if (writeHcalSums_ && event.exists(inTag)) {
-    const auto sums = event.getCollection<TrigEnergySum>(inTag);
+  if (writeHcalSums_ && event.exists(inTag, hcal_trig_quads_events_passname_)) {
+    const auto sums = event.getCollection<TrigEnergySum>(inTag, hcal_trig_quads_passname_);
     float energyInSideHcal = 0.f;
     for (const auto& sum : sums) {
       if (!(sum.hwEnergy() > 0)) continue;
-      // if (sum.layer() >= energyAfterLayer.size())
-      //   energyAfterLayer.resize(sum.layer() + 1);
       for (int i = 0; i <= sum.layer(); i++) {
         energyInSideHcal += sum.hwEnergy();
       }
     }
     n.setVar("SideHcal_e", energyInSideHcal);
-    // n.setVar("Hcal_e_nLayer", int(energyAfterLayer.size()));
   }
 
   inTag = "ecalTrigMIPs";
-  if (writeEcalTrigMIPs_ && event.exists(inTag)) {
-    const auto mips = event.getCollection<TrigMip>(inTag);
+  if (writeEcalTrigMIPs_ && event.exists(inTag, ecal_trig_sums_event_passname_)) {
+    const auto mips = event.getCollection<TrigMip>(inTag, ecal_trig_sums_passname_);
     std::vector<int> lengths;
     std::vector<int> nHoles;
     std::vector<float> isoEnergies;
@@ -166,8 +163,8 @@ void NtupleWriter::produce(framework::Event& event) {
   }
 
   inTag = "hcalTrigMIPs";
-  if (writeHcalTrigMIPs_ && event.exists(inTag)) {
-    const auto mips = event.getCollection<TrigMip>(inTag);
+  if (writeHcalTrigMIPs_ && event.exists(inTag, hcal_trig_quads_events_passname_)) {
+    const auto mips = event.getCollection<TrigMip>(inTag, hcal_trig_quads_passname_);
     std::vector<int> lengths;
     std::vector<int> nHoles;
     // std::vector<float> isoEnergies;

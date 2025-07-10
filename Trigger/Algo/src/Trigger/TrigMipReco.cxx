@@ -15,8 +15,8 @@ void TrigMipReco::configure(framework::config::Parameters& ps) {
 }
 
 void TrigMipReco::produce(framework::Event& event) {
-  if (!event.exists(hitCollName_)) return;
-  auto caloHits{event.getObject<TrigCaloHitCollection>(hitCollName_)};
+  if (!event.exists(hitCollName_, passCollName_)) return;
+  auto caloHits{event.getObject<TrigCaloHitCollection>(hitCollName_, passCollName_)};
 
   if (calorimeterTypeIsHcal_) {  // HCAL MIP Reconstruction
     TrigCaloHitCollection sortedHits;
@@ -248,4 +248,4 @@ void TrigMipReco::produce(framework::Event& event) {
 
 }  // namespace trigger
 
-DECLARE_PRODUCER_NS(trigger, TrigMipReco);
+DECLARE_PRODUCER(trigger::TrigMipReco);

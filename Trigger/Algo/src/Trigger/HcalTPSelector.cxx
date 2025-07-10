@@ -10,9 +10,9 @@ void HcalTPSelector::configure(framework::config::Parameters& ps) {
 }
 
 void HcalTPSelector::produce(framework::Event& event) {
-  if (!event.exists(combinedQuadCollName_)) return;
+  if (!event.exists(combinedQuadCollName_, passCollName_)) return;
   auto hcalTPs{
-      event.getObject<ldmx::CaloTrigPrimCollection>(combinedQuadCollName_)};
+      event.getObject<ldmx::CaloTrigPrimCollection>(combinedQuadCollName_, passCollName_)};
 
   // Should move the TP building itself here
   // In the meantime, create the "analysis object" hits
@@ -36,4 +36,4 @@ void HcalTPSelector::produce(framework::Event& event) {
 
 }  // namespace trigger
 
-DECLARE_PRODUCER_NS(trigger, HcalTPSelector);
+DECLARE_PRODUCER(trigger::HcalTPSelector);
