@@ -9,172 +9,172 @@ EcalVetoResult::EcalVetoResult() {}
 EcalVetoResult::~EcalVetoResult() { Clear(); }
 
 void EcalVetoResult::Clear() {
-  passesVeto_ = false;
+  passes_veto_ = false;
 
-  nReadoutHits_ = 0;
-  summedDet_ = 0;
-  summedTightIso_ = 0;
-  maxCellDep_ = 0;
-  showerRMS_ = 0;
-  xStd_ = 0;
-  yStd_ = 0;
-  avgLayerHit_ = 0;
-  stdLayerHit_ = 0;
-  deepestLayerHit_ = 0;
-  ecalBackEnergy_ = 0;
+  n_readout_hits_ = 0;
+  summed_det_ = 0;
+  summed_tight_iso_ = 0;
+  max_cell_dep_ = 0;
+  shower_rms_ = 0;
+  x_std_ = 0;
+  y_std_ = 0;
+  avg_layer_hit_ = 0;
+  std_layer_hit_ = 0;
+  deepest_layer_hit_ = 0;
+  ecal_back_energy_ = 0;
   n_tracking_hits_ = 0;
-  epAng_ = 0;
-  epAngAtTarget_ = 0;
-  epSep_ = 0;
-  epDot_ = 0;
-  epDotAtTarget_ = 0;
+  ep_ang_ = 0;
+  ep_ang_at_target_ = 0;
+  ep_sep_ = 0;
+  ep_dot_ = 0;
+  ep_dot_at_target_ = 0;
 
-  electronContainmentEnergy_.clear();
-  photonContainmentEnergy_.clear();
-  outsideContainmentEnergy_.clear();
-  outsideContainmentNHits_.clear();
-  outsideContainmentXStd_.clear();
-  outsideContainmentYStd_.clear();
+  electron_containment_energy_.clear();
+  photon_containment_energy_.clear();
+  outside_containment_energy_.clear();
+  outside_containment_n_hits_.clear();
+  outside_containment_x_std_.clear();
+  outside_containment_y_std_.clear();
 
-  energySeg_.clear();
-  xMeanSeg_.clear();
-  yMeanSeg_.clear();
-  xStdSeg_.clear();
-  yStdSeg_.clear();
-  layerMeanSeg_.clear();
-  layerStdSeg_.clear();
+  energy_seg_.clear();
+  x_mean_seg_.clear();
+  y_mean_seg_.clear();
+  x_std_seg_.clear();
+  y_std_seg_.clear();
+  layer_mean_seg_.clear();
+  layer_std_seg_.clear();
 
-  eContEnergy_.clear();
-  eContXMean_.clear();
-  eContYMean_.clear();
-  gContEnergy_.clear();
-  gContNHits_.clear();
-  gContXMean_.clear();
-  gContYMean_.clear();
-  oContEnergy_.clear();
-  oContNHits_.clear();
-  oContXMean_.clear();
-  oContYMean_.clear();
-  oContXStd_.clear();
-  oContYStd_.clear();
-  oContLayerMean_.clear();
-  oContLayerStd_.clear();
+  e_cont_energy_.clear();
+  e_cont_x_mean_.clear();
+  e_cont_y_mean_.clear();
+  g_cont_energy_.clear();
+  g_cont_n_hits_.clear();
+  g_cont_x_mean_.clear();
+  g_cont_y_mean_.clear();
+  o_cont_energy_.clear();
+  o_cont_n_hits_.clear();
+  o_cont_x_mean_.clear();
+  o_cont_y_mean_.clear();
+  o_cont_x_std_.clear();
+  o_cont_y_std_.clear();
+  o_cont_layer_mean_.clear();
+  o_cont_layer_std_.clear();
 
-  discValue_ = 0;
+  disc_value_ = 0;
 
-  recoilPx_ = -9999;
-  recoilPy_ = -9999;
-  recoilPz_ = -9999;
-  recoilX_ = -9999;
-  recoilY_ = -9999;
+  recoil_px_ = -9999;
+  recoil_py_ = -9999;
+  recoil_pz_ = -9999;
+  recoil_x_ = -9999;
+  recoil_y_ = -9999;
 
-  ecalLayerEdepReadout_.clear();
+  ecal_layer_edep_readout_.clear();
 }
 
 void EcalVetoResult::setVariables(
-    int nReadoutHits, int deepestLayerHit, int n_tracking_hits, float summedDet,
-    float summedTightIso, float maxCellDep, float showerRMS, float xStd,
-    float yStd, float avgLayerHit, float stdLayerHit, float ecalBackEnergy,
-    float epAng, float epAngAtTarget, float epSep, float epDot,
-    float epDotAtTarget,
+    int n_readout_hits, int deepest_layer_hit, int n_tracking_hits, float summed_det,
+    float summed_tight_iso, float max_cell_dep, float shower_rms, float x_std,
+    float y_std, float avg_layer_hit, float std_layer_hit, float ecal_back_energy,
+    float ep_ang, float ep_ang_at_target, float ep_sep, float ep_dot,
+    float ep_dot_at_target,
 
-    std::vector<float> electronContainmentEnergy,
-    std::vector<float> photonContainmentEnergy,
-    std::vector<float> outsideContainmentEnergy,
-    std::vector<int> outsideContainmentNHits,
-    std::vector<float> outsideContainmentXStd,
-    std::vector<float> outsideContainmentYStd,
+    std::vector<float> electron_containment_energy,
+    std::vector<float> photon_containment_energy,
+    std::vector<float> outside_containment_energy,
+    std::vector<int> outside_containment_n_hits,
+    std::vector<float> outside_containment_x_std,
+    std::vector<float> outside_containment_y_std,
 
-    std::vector<float> energySeg, std::vector<float> xMeanSeg,
-    std::vector<float> yMeanSeg, std::vector<float> xStdSeg,
-    std::vector<float> yStdSeg, std::vector<float> layerMeanSeg,
-    std::vector<float> layerStdSeg,
+    std::vector<float> energy_seg, std::vector<float> x_mean_seg,
+    std::vector<float> y_mean_seg, std::vector<float> x_std_seg,
+    std::vector<float> y_std_seg, std::vector<float> layer_mean_seg,
+    std::vector<float> layer_std_seg,
 
-    std::vector<std::vector<float>> eContEnergy,
-    std::vector<std::vector<float>> eContXMean,
-    std::vector<std::vector<float>> eContYMean,
-    std::vector<std::vector<float>> gContEnergy,
-    std::vector<std::vector<int>> gContNHits,
-    std::vector<std::vector<float>> gContXMean,
-    std::vector<std::vector<float>> gContYMean,
-    std::vector<std::vector<float>> oContEnergy,
-    std::vector<std::vector<int>> oContNHits,
-    std::vector<std::vector<float>> oContXMean,
-    std::vector<std::vector<float>> oContYMean,
-    std::vector<std::vector<float>> oContXStd,
-    std::vector<std::vector<float>> oContYStd,
-    std::vector<std::vector<float>> oContLayerMean,
-    std::vector<std::vector<float>> oContLayerStd,
+    std::vector<std::vector<float>> e_cont_energy,
+    std::vector<std::vector<float>> e_cont_x_mean,
+    std::vector<std::vector<float>> e_cont_y_mean,
+    std::vector<std::vector<float>> g_cont_energy,
+    std::vector<std::vector<int>> g_cont_n_hits,
+    std::vector<std::vector<float>> g_cont_x_mean,
+    std::vector<std::vector<float>> g_cont_y_mean,
+    std::vector<std::vector<float>> o_cont_energy,
+    std::vector<std::vector<int>> o_cont_n_hits,
+    std::vector<std::vector<float>> o_cont_x_mean,
+    std::vector<std::vector<float>> o_cont_y_mean,
+    std::vector<std::vector<float>> o_cont_x_std,
+    std::vector<std::vector<float>> o_cont_y_std,
+    std::vector<std::vector<float>> o_cont_layer_mean,
+    std::vector<std::vector<float>> o_cont_layer_std,
 
-    std::vector<float> EcalLayerEdepReadout, std::array<float, 3> recoilP,
-    std::array<float, 3> recoilPos) {
-  nReadoutHits_ = nReadoutHits;
-  summedDet_ = summedDet;
-  summedTightIso_ = summedTightIso;
-  maxCellDep_ = maxCellDep;
-  showerRMS_ = showerRMS;
-  xStd_ = xStd;
-  yStd_ = yStd;
-  avgLayerHit_ = avgLayerHit;
-  stdLayerHit_ = stdLayerHit;
-  deepestLayerHit_ = deepestLayerHit;
-  ecalBackEnergy_ = ecalBackEnergy;
+    std::vector<float> ecal_layer_edep_readout, std::array<float, 3> recoil_p,
+    std::array<float, 3> recoil_pos) {
+  n_readout_hits_ = n_readout_hits;
+  summed_det_ = summed_det;
+  summed_tight_iso_ = summed_tight_iso;
+  max_cell_dep_ = max_cell_dep;
+  shower_rms_ = shower_rms;
+  x_std_ = x_std;
+  y_std_ = y_std;
+  avg_layer_hit_ = avg_layer_hit;
+  std_layer_hit_ = std_layer_hit;
+  deepest_layer_hit_ = deepest_layer_hit;
+  ecal_back_energy_ = ecal_back_energy;
   n_tracking_hits_ = n_tracking_hits;
-  epAng_ = epAng;
-  epAngAtTarget_ = epAngAtTarget;
-  epSep_ = epSep;
-  epDot_ = epDot;
-  epDotAtTarget_ = epDotAtTarget;
+  ep_ang_ = ep_ang;
+  ep_ang_at_target_ = ep_ang_at_target;
+  ep_sep_ = ep_sep;
+  ep_dot_ = ep_dot;
+  ep_dot_at_target_ = ep_dot_at_target;
 
-  electronContainmentEnergy_ = electronContainmentEnergy;
-  photonContainmentEnergy_ = photonContainmentEnergy;
-  outsideContainmentEnergy_ = outsideContainmentEnergy;
-  outsideContainmentNHits_ = outsideContainmentNHits;
-  outsideContainmentXStd_ = outsideContainmentXStd;
-  outsideContainmentYStd_ = outsideContainmentYStd;
+  electron_containment_energy_ = electron_containment_energy;
+  photon_containment_energy_ = photon_containment_energy;
+  outside_containment_energy_ = outside_containment_energy;
+  outside_containment_n_hits_ = outside_containment_n_hits;
+  outside_containment_x_std_ = outside_containment_x_std;
+  outside_containment_y_std_ = outside_containment_y_std;
 
-  energySeg_ = energySeg;
-  xMeanSeg_ = xMeanSeg;
-  yMeanSeg_ = yMeanSeg;
-  xStdSeg_ = xStdSeg;
-  yStdSeg_ = yStdSeg;
-  layerMeanSeg_ = layerMeanSeg;
-  layerStdSeg_ = layerStdSeg;
+  energy_seg_ = energy_seg;
+  x_mean_seg_ = x_mean_seg;
+  y_mean_seg_ = y_mean_seg;
+  x_std_seg_ = x_std_seg;
+  y_std_seg_ = y_std_seg;
+  layer_mean_seg_ = layer_mean_seg;
+  layer_std_seg_ = layer_std_seg;
 
-  eContEnergy_ = eContEnergy;
-  eContXMean_ = eContXMean;
-  eContYMean_ = eContYMean;
-  gContEnergy_ = gContEnergy;
-  gContNHits_ = gContNHits;
-  gContXMean_ = gContXMean;
-  gContYMean_ = gContYMean;
-  oContEnergy_ = oContEnergy;
-  oContNHits_ = oContNHits;
-  oContXMean_ = oContXMean;
-  oContYMean_ = oContYMean;
-  oContXStd_ = oContXStd;
-  oContYStd_ = oContYStd;
-  oContLayerMean_ = oContLayerMean;
-  oContLayerStd_ = oContLayerStd;
+  e_cont_energy_ = e_cont_energy;
+  e_cont_x_mean_ = e_cont_x_mean;
+  e_cont_y_mean_ = e_cont_y_mean;
+  g_cont_energy_ = g_cont_energy;
+  g_cont_n_hits_ = g_cont_n_hits;
+  g_cont_x_mean_ = g_cont_x_mean;
+  g_cont_y_mean_ = g_cont_y_mean;
+  o_cont_energy_ = o_cont_energy;
+  o_cont_n_hits_ = o_cont_n_hits;
+  o_cont_x_mean_ = o_cont_x_mean;
+  o_cont_y_mean_ = o_cont_y_mean;
+  o_cont_x_std_ = o_cont_x_std;
+  o_cont_y_std_ = o_cont_y_std;
+  o_cont_layer_mean_ = o_cont_layer_mean;
+  o_cont_layer_std_ = o_cont_layer_std;
 
   // discvalue not set here
 
-  if (!recoilP.empty()) {
-    recoilPx_ = recoilP[0];
-    recoilPy_ = recoilP[1];
-    recoilPz_ = recoilP[2];
+  if (!recoil_p.empty()) {
+    recoil_px_ = recoil_p[0];
+    recoil_py_ = recoil_p[1];
+    recoil_pz_ = recoil_p[2];
   }
-  if (!recoilPos.empty()) {
-    recoilX_ = recoilPos[0];
-    recoilY_ = recoilPos[1];
+  if (!recoil_pos.empty()) {
+    recoil_x_ = recoil_pos[0];
+    recoil_y_ = recoil_pos[1];
   }
 
-  ecalLayerEdepReadout_ = EcalLayerEdepReadout;
+  ecal_layer_edep_readout_ = ecal_layer_edep_readout;
 }
 
 void EcalVetoResult::Print() const {
   std::cout << "[ EcalVetoResult ]:\n"
-            << "\t Passes veto : " << passesVeto_ << "\n"
+            << "\t Passes veto : " << passes_veto_ << "\n"
             << std::endl;
 }
 }  // namespace ldmx

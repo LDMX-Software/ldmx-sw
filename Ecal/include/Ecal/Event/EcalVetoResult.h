@@ -34,44 +34,44 @@ class EcalVetoResult {
   /**
    * Set the sim particle and 'is findable' flag.
    */
-  void setVariables(int nReadoutHits, int deepestLayerHit, int n_tracking_hits,
-                    float summedDet, float summedTightIso, float maxCellDep,
-                    float showerRMS, float xStd, float yStd, float avgLayerHit,
-                    float stdLayerHit, float ecalBackEnergy, float epAng,
-                    float epAngAtTarget, float epSep, float epDot,
-                    float epDotAtTarget,
+  void setVariables(int n_readout_hits, int deepest_layer_hit, int n_tracking_hits,
+                    float summed_det, float summed_tight_iso, float max_cell_dep,
+                    float shower_rms, float x_std, float y_std, float avg_layer_hit,
+                    float std_layer_hit, float ecal_back_energy, float ep_ang,
+                    float ep_ang_at_target, float ep_sep, float ep_dot,
+                    float ep_dot_at_target,
 
-                    std::vector<float> electronContainmentEnergy,
-                    std::vector<float> photonContainmentEnergy,
-                    std::vector<float> outsideContainmentEnergy,
-                    std::vector<int> outsideContainmentNHits,
-                    std::vector<float> outsideContainmentXStd,
-                    std::vector<float> outsideContainmentYStd,
+                    std::vector<float> electron_containment_energy,
+                    std::vector<float> photon_containment_energy,
+                    std::vector<float> outside_containment_energy,
+                    std::vector<int> outside_containment_n_hits,
+                    std::vector<float> outside_containment_x_std,
+                    std::vector<float> outside_containment_y_std,
 
-                    std::vector<float> energySeg, std::vector<float> xMeanSeg,
-                    std::vector<float> yMeanSeg, std::vector<float> xStdSeg,
-                    std::vector<float> yStdSeg, std::vector<float> layerMeanSeg,
-                    std::vector<float> layerStdSeg,
+                    std::vector<float> energy_seg, std::vector<float> x_mean_seg,
+                    std::vector<float> y_mean_seg, std::vector<float> x_std_seg,
+                    std::vector<float> y_std_seg, std::vector<float> layer_mean_seg,
+                    std::vector<float> layer_std_seg,
 
-                    std::vector<std::vector<float>> eContEnergy,
-                    std::vector<std::vector<float>> eContXMean,
-                    std::vector<std::vector<float>> eContYMean,
-                    std::vector<std::vector<float>> gContEnergy,
-                    std::vector<std::vector<int>> gContNHits,
-                    std::vector<std::vector<float>> gContXMean,
-                    std::vector<std::vector<float>> gContYMean,
-                    std::vector<std::vector<float>> oContEnergy,
-                    std::vector<std::vector<int>> oContNHits,
-                    std::vector<std::vector<float>> oContXMean,
-                    std::vector<std::vector<float>> oContYMean,
-                    std::vector<std::vector<float>> oContXStd,
-                    std::vector<std::vector<float>> oContYStd,
-                    std::vector<std::vector<float>> oContLayerMean,
-                    std::vector<std::vector<float>> oContLayerStd,
+                    std::vector<std::vector<float>> e_cont_energy,
+                    std::vector<std::vector<float>> e_cont_x_mean,
+                    std::vector<std::vector<float>> e_cont_y_mean,
+                    std::vector<std::vector<float>> g_cont_energy,
+                    std::vector<std::vector<int>> g_cont_n_hits,
+                    std::vector<std::vector<float>> g_cont_x_mean,
+                    std::vector<std::vector<float>> g_cont_y_mean,
+                    std::vector<std::vector<float>> o_cont_energy,
+                    std::vector<std::vector<int>> o_cont_n_hits,
+                    std::vector<std::vector<float>> o_cont_x_mean,
+                    std::vector<std::vector<float>> o_cont_y_mean,
+                    std::vector<std::vector<float>> o_cont_x_std,
+                    std::vector<std::vector<float>> o_cont_y_std,
+                    std::vector<std::vector<float>> o_cont_layer_mean,
+                    std::vector<std::vector<float>> o_cont_layer_std,
 
-                    std::vector<float> EcalLayerEdepReadout,
-                    std::array<float, 3> recoilP,
-                    std::array<float, 3> recoilPos);
+                    std::vector<float> ecal_layer_edep_readout,
+                    std::array<float, 3> recoil_p,
+                    std::array<float, 3> recoil_pos);
 
   /** Reset the object. */
   void Clear();
@@ -80,153 +80,153 @@ class EcalVetoResult {
   void Print() const;
 
   /** Checks if the event passes the Ecal veto. */
-  bool passesVeto() const { return passesVeto_; }
+  bool passesVeto() const { return passes_veto_; }
 
-  float getDisc() const { return discValue_; }
+  float getDisc() const { return disc_value_; }
 
   bool getFiducial() const { return fiducial_; }
 
-  int getDeepestLayerHit() const { return deepestLayerHit_; }
+  int getDeepestLayerHit() const { return deepest_layer_hit_; }
 
   // Did ACTS find a recoil track in the tracker?
   bool getTrackingFiducial() const { return tracking_fiducial_; }
 
-  int getNReadoutHits() const { return nReadoutHits_; }
+  int getNReadoutHits() const { return n_readout_hits_; }
 
-  float getSummedDet() const { return summedDet_; }
+  float getSummedDet() const { return summed_det_; }
 
-  float getSummedTightIso() const { return summedTightIso_; }
+  float getSummedTightIso() const { return summed_tight_iso_; }
 
-  float getMaxCellDep() const { return maxCellDep_; }
+  float getMaxCellDep() const { return max_cell_dep_; }
 
-  float getShowerRMS() const { return showerRMS_; }
+  float getShowerRMS() const { return shower_rms_; }
 
-  float getXStd() const { return xStd_; }
+  float getXStd() const { return x_std_; }
 
-  float getYStd() const { return yStd_; }
+  float getYStd() const { return y_std_; }
 
-  float getAvgLayerHit() const { return avgLayerHit_; }
+  float getAvgLayerHit() const { return avg_layer_hit_; }
 
-  float getStdLayerHit() const { return stdLayerHit_; }
+  float getStdLayerHit() const { return std_layer_hit_; }
 
-  float getEcalBackEnergy() const { return ecalBackEnergy_; }
+  float getEcalBackEnergy() const { return ecal_back_energy_; }
 
   int getNTrackingHits() const { return n_tracking_hits_; }
 
-  float getEPAng() const { return epAng_; }
+  float getEPAng() const { return ep_ang_; }
 
-  float getEPAngAtTarget() const { return epAngAtTarget_; }
+  float getEPAngAtTarget() const { return ep_ang_at_target_; }
 
-  float getEPSep() const { return epSep_; }
+  float getEPSep() const { return ep_sep_; }
 
-  float getEPDot() const { return epDot_; }
+  float getEPDot() const { return ep_dot_; }
 
-  float getEPDotAtTarget() const { return epDotAtTarget_; }
+  float getEPDotAtTarget() const { return ep_dot_at_target_; }
 
   const std::vector<float>& getElectronContainmentEnergy() const {
-    return electronContainmentEnergy_;
+    return electron_containment_energy_;
   }
 
   const std::vector<float>& getPhotonContainmentEnergy() const {
-    return photonContainmentEnergy_;
+    return photon_containment_energy_;
   }
 
   const std::vector<float>& getOutsideContainmentEnergy() const {
-    return outsideContainmentEnergy_;
+    return outside_containment_energy_;
   }
 
   const std::vector<int>& getOutsideContainmentNHits() const {
-    return outsideContainmentNHits_;
+    return outside_containment_n_hits_;
   }
 
   const std::vector<float>& getOutsideContainmentXStd() const {
-    return outsideContainmentXStd_;
+    return outside_containment_x_std_;
   }
 
   const std::vector<float>& getOutsideContainmentYStd() const {
-    return outsideContainmentYStd_;
+    return outside_containment_y_std_;
   }
 
   const std::vector<float>& getEcalLayerEdepReadout() const {
-    return ecalLayerEdepReadout_;
+    return ecal_layer_edep_readout_;
   }
 
-  const std::vector<float>& getEnergySeg() const { return energySeg_; }
+  const std::vector<float>& getEnergySeg() const { return energy_seg_; }
 
-  const std::vector<float>& getXMeanSeg() const { return xMeanSeg_; }
+  const std::vector<float>& getXMeanSeg() const { return x_mean_seg_; }
 
-  const std::vector<float>& getYMeanSeg() const { return yMeanSeg_; }
+  const std::vector<float>& getYMeanSeg() const { return y_mean_seg_; }
 
-  const std::vector<float>& getXStdSeg() const { return xStdSeg_; }
+  const std::vector<float>& getXStdSeg() const { return x_std_seg_; }
 
-  const std::vector<float>& getYStdSeg() const { return yStdSeg_; }
+  const std::vector<float>& getYStdSeg() const { return y_std_seg_; }
 
-  const std::vector<float>& getLayerMeanSeg() const { return layerMeanSeg_; }
+  const std::vector<float>& getLayerMeanSeg() const { return layer_mean_seg_; }
 
-  const std::vector<float>& getLayerStdSeg() const { return layerStdSeg_; }
+  const std::vector<float>& getLayerStdSeg() const { return layer_std_seg_; }
 
   const std::vector<std::vector<float>>& getEleContEnergy() const {
-    return eContEnergy_;
+    return e_cont_energy_;
   }
 
   const std::vector<std::vector<float>>& getEleContXMean() const {
-    return eContXMean_;
+    return e_cont_x_mean_;
   }
 
   const std::vector<std::vector<float>>& getEleContYMean() const {
-    return eContYMean_;
+    return e_cont_y_mean_;
   }
 
   const std::vector<std::vector<float>>& getPhContEnergy() const {
-    return gContEnergy_;
+    return g_cont_energy_;
   }
 
   const std::vector<std::vector<int>>& getPhContNHits() const {
-    return gContNHits_;
+    return g_cont_n_hits_;
   }
 
   const std::vector<std::vector<float>>& getPhContXMean() const {
-    return gContXMean_;
+    return g_cont_x_mean_;
   }
 
   const std::vector<std::vector<float>>& getPhContYMean() const {
-    return gContYMean_;
+    return g_cont_y_mean_;
   }
 
   const std::vector<std::vector<float>>& getOutContEnergy() const {
-    return oContEnergy_;
+    return o_cont_energy_;
   }
 
   const std::vector<std::vector<int>>& getOutContNHits() const {
-    return oContNHits_;
+    return o_cont_n_hits_;
   }
 
   const std::vector<std::vector<float>>& getOutContXMean() const {
-    return oContXMean_;
+    return o_cont_x_mean_;
   }
 
   const std::vector<std::vector<float>>& getOutContYMean() const {
-    return oContYMean_;
+    return o_cont_y_mean_;
   }
 
   const std::vector<std::vector<float>>& getOutContXStd() const {
-    return oContXStd_;
+    return o_cont_x_std_;
   }
 
   const std::vector<std::vector<float>>& getOutContYStd() const {
-    return oContYStd_;
+    return o_cont_y_std_;
   }
 
   const std::vector<std::vector<float>>& getOutContLayerMean() const {
-    return oContLayerMean_;
+    return o_cont_layer_mean_;
   }
 
   const std::vector<std::vector<float>>& getOutContLayerStd() const {
-    return oContLayerStd_;
+    return o_cont_layer_std_;
   }
 
-  void setVetoResult(bool passesVeto) { passesVeto_ = passesVeto; }
-  void setDiscValue(float discValue) { discValue_ = discValue; }
+  void setVetoResult(bool passes_veto) { passes_veto_ = passes_veto; }
+  void setDiscValue(float disc_value) { disc_value_ = disc_value; }
   void setFiducial(bool fiducial) { fiducial_ = fiducial; }
 
   // Fiducial from the recoil tracking point of view
@@ -236,65 +236,65 @@ class EcalVetoResult {
 
   /** Return the momentum of the recoil at the Ecal face. */
   const std::vector<float> getRecoilMomentum() const {
-    return {recoilPx_, recoilPy_, recoilPz_};
+    return {recoil_px_, recoil_py_, recoil_pz_};
   };
 
   /** Return the x position of the recoil at the Ecal face. */
-  float getRecoilX() const { return recoilX_; };
+  float getRecoilX() const { return recoil_x_; };
 
   /** Return the y position of the recoil at the Ecal face. */
-  float getRecoilY() const { return recoilY_; };
+  float getRecoilY() const { return recoil_y_; };
 
  private:
   /** Flag indicating whether the event is vetoed by the Ecal. */
-  bool passesVeto_{false};
+  bool passes_veto_{false};
 
-  int nReadoutHits_{0};
-  int deepestLayerHit_{0};
+  int n_readout_hits_{0};
+  int deepest_layer_hit_{0};
 
-  float summedDet_{0};
-  float summedTightIso_{0};
-  float maxCellDep_{0};
-  float showerRMS_{0};
-  float xStd_{0};
-  float yStd_{0};
-  float avgLayerHit_{0};
-  float stdLayerHit_{0};
-  float ecalBackEnergy_{0};
+  float summed_det_{0};
+  float summed_tight_iso_{0};
+  float max_cell_dep_{0};
+  float shower_rms_{0};
+  float x_std_{0};
+  float y_std_{0};
+  float avg_layer_hit_{0};
+  float std_layer_hit_{0};
+  float ecal_back_energy_{0};
 
-  std::vector<float> electronContainmentEnergy_;
-  std::vector<float> photonContainmentEnergy_;
-  std::vector<float> outsideContainmentEnergy_;
-  std::vector<int> outsideContainmentNHits_;
-  std::vector<float> outsideContainmentXStd_;
-  std::vector<float> outsideContainmentYStd_;
+  std::vector<float> electron_containment_energy_;
+  std::vector<float> photon_containment_energy_;
+  std::vector<float> outside_containment_energy_;
+  std::vector<int> outside_containment_n_hits_;
+  std::vector<float> outside_containment_x_std_;
+  std::vector<float> outside_containment_y_std_;
 
-  std::vector<float> energySeg_;
-  std::vector<float> xMeanSeg_;
-  std::vector<float> yMeanSeg_;
-  std::vector<float> xStdSeg_;
-  std::vector<float> yStdSeg_;
-  std::vector<float> layerMeanSeg_;
-  std::vector<float> layerStdSeg_;
+  std::vector<float> energy_seg_;
+  std::vector<float> x_mean_seg_;
+  std::vector<float> y_mean_seg_;
+  std::vector<float> x_std_seg_;
+  std::vector<float> y_std_seg_;
+  std::vector<float> layer_mean_seg_;
+  std::vector<float> layer_std_seg_;
 
-  std::vector<std::vector<float>> eContEnergy_;
-  std::vector<std::vector<float>> eContXMean_;
-  std::vector<std::vector<float>> eContYMean_;
-  std::vector<std::vector<float>> gContEnergy_;
-  std::vector<std::vector<int>> gContNHits_;
-  std::vector<std::vector<float>> gContXMean_;
-  std::vector<std::vector<float>> gContYMean_;
-  std::vector<std::vector<float>> oContEnergy_;
-  std::vector<std::vector<int>> oContNHits_;
-  std::vector<std::vector<float>> oContXMean_;
-  std::vector<std::vector<float>> oContYMean_;
-  std::vector<std::vector<float>> oContXStd_;
-  std::vector<std::vector<float>> oContYStd_;
-  std::vector<std::vector<float>> oContLayerMean_;
-  std::vector<std::vector<float>> oContLayerStd_;
+  std::vector<std::vector<float>> e_cont_energy_;
+  std::vector<std::vector<float>> e_cont_x_mean_;
+  std::vector<std::vector<float>> e_cont_y_mean_;
+  std::vector<std::vector<float>> g_cont_energy_;
+  std::vector<std::vector<int>> g_cont_n_hits_;
+  std::vector<std::vector<float>> g_cont_x_mean_;
+  std::vector<std::vector<float>> g_cont_y_mean_;
+  std::vector<std::vector<float>> o_cont_energy_;
+  std::vector<std::vector<int>> o_cont_n_hits_;
+  std::vector<std::vector<float>> o_cont_x_mean_;
+  std::vector<std::vector<float>> o_cont_y_mean_;
+  std::vector<std::vector<float>> o_cont_x_std_;
+  std::vector<std::vector<float>> o_cont_y_std_;
+  std::vector<std::vector<float>> o_cont_layer_mean_;
+  std::vector<std::vector<float>> o_cont_layer_std_;
 
   /** discriminator value from the BDT */
-  float discValue_{0};
+  float disc_value_{0};
 
   /** is the recoil electron fiducial in ECAL?*/
   bool fiducial_{false};
@@ -303,39 +303,39 @@ class EcalVetoResult {
   bool tracking_fiducial_{false};
 
   /** px of recoil electron at the Ecal face. */
-  float recoilPx_{-9999};
+  float recoil_px_{-9999};
 
   /** py of recoil electron at the Ecal face. */
-  float recoilPy_{-9999};
+  float recoil_py_{-9999};
 
-  /** py of recoil electron at the Ecal face. */
-  float recoilPz_{-9999};
+  /** pz of recoil electron at the Ecal face. */
+  float recoil_pz_{-9999};
 
   /** x position of recoil electron at the Ecal face. */
-  float recoilX_{-9999};
+  float recoil_x_{-9999};
 
   /** y position of recoil electron at the Ecal face. */
-  float recoilY_{-9999};
+  float recoil_y_{-9999};
 
   /// Number of hits outside of the electron roc in the Ecal
   /// or if the electron trajectory is missing, all the hits in the Ecal
   int n_tracking_hits_{0};
   /// Angular separation between the projected photon and electron trajectories
   /// as projected at the ECAL
-  float epAng_{0};
+  float ep_ang_{0};
   /// Angular separation between the projected photon and electron trajectories
   /// as projected at the target
-  float epAngAtTarget_{0};
+  float ep_ang_at_target_{0};
 
   /// Distance between the projected photon and electron trajectories at the
   /// ECal face
-  float epSep_{0};
+  float ep_sep_{0};
   /// Dot product of the photon and electron momenta unit vectors as at ECAL
-  float epDot_{0};
+  float ep_dot_{0};
   /// Dot product of the photon and electron momenta unit vectors as at Target
-  float epDotAtTarget_{0};
+  float ep_dot_at_target_{0};
 
-  std::vector<float> ecalLayerEdepReadout_;
+  std::vector<float> ecal_layer_edep_readout_;
 
   ClassDef(EcalVetoResult, 10);
 };

@@ -80,17 +80,17 @@ class EcalVetoProcessor : public framework::Producer {
 
   /* Function to calculate the energy weighted shower centroid */
   ldmx::EcalID GetShowerCentroidIDAndRMS(
-      const std::vector<ldmx::EcalHit>& ecalRecHits, float& showerRMS);
+      const std::vector<ldmx::EcalHit>& ecal_rec_hits, float& shower_rms);
 
   /* Function to load up empty vector of hit maps */
-  void fillHitMap(const std::vector<ldmx::EcalHit>& ecalRecHits,
-                  std::map<ldmx::EcalID, float>& cellMap_);
+  void fillHitMap(const std::vector<ldmx::EcalHit>& ecal_rec_hits,
+                  std::map<ldmx::EcalID, float>& cell_map_);
 
   /* Function to take loaded hit maps and find isolated hits in them */
-  void fillIsolatedHitMap(const std::vector<ldmx::EcalHit>& ecalRecHits,
-                          ldmx::EcalID globalCentroid,
-                          std::map<ldmx::EcalID, float>& cellMap,
-                          std::map<ldmx::EcalID, float>& cellMapIso,
+  void fillIsolatedHitMap(const std::vector<ldmx::EcalHit>& ecal_rec_hits,
+                          ldmx::EcalID global_centroid,
+                          std::map<ldmx::EcalID, float>& cell_map,
+                          std::map<ldmx::EcalID, float>& cell_map_iso,
                           bool doTight = false);
 
   std::vector<XYCoords> getTrajectory(std::array<float, 3> momentum,
@@ -137,54 +137,54 @@ class EcalVetoProcessor : public framework::Producer {
   float processing_time_{0.};
 
   std::map<std::string, float> profiling_map_;
-  std::map<ldmx::EcalID, float> cellMap_;
-  std::map<ldmx::EcalID, float> cellMapTightIso_;
+  std::map<ldmx::EcalID, float> cell_map_;
+  std::map<ldmx::EcalID, float> cell_map_tight_iso_;
 
-  std::vector<float> ecalLayerEdepRaw_;
-  std::vector<float> ecalLayerEdepReadout_;
-  std::vector<float> ecalLayerTime_;
+  std::vector<float> ecal_layer_edep_raw_;
+  std::vector<float> ecal_layer_edep_readout_;
+  std::vector<float> ecal_layer_time_;
 
   std::vector<std::vector<float>> roc_range_values_;
 
-  int nEcalLayers_{0};
-  int nReadoutHits_{0};
-  int deepestLayerHit_{0};
+  int n_ecal_layers_{0};
+  int n_readout_hits_{0};
+  int deepest_layer_hit_{0};
 
-  float summedDet_{0};
-  float summedTightIso_{0};
-  float maxCellDep_{0};
-  float showerRMS_{0};
-  float xStd_{0};
-  float yStd_{0};
-  float avgLayerHit_{0};
-  float stdLayerHit_{0};
-  float ecalBackEnergy_{0};
+  float summed_det_{0};
+  float summed_tight_iso_{0};
+  float max_cell_dep_{0};
+  float shower_rms_{0};
+  float x_std_{0};
+  float y_std_{0};
+  float avg_layer_hit_{0};
+  float std_layer_hit_{0};
+  float ecal_back_energy_{0};
 
   /// Number of hits outside of the electron roc in the Ecal
   /// or if the electron trajectory is missing, all the hits in the Ecal
   int n_tracking_hits_{0};
   /// Angular separation between the projected photon and electron trajectories
   /// as projected at ECAL
-  float epAng_{0};
+  float ep_ang_{0};
   /// Angular separation between the projected photon and electron trajectories
   /// as at Target
-  float epAngAtTarget_{0};
+  float ep_ang_at_target_{0};
   /// Distance between the projected photon and electron trajectories at the
   /// ECal face
-  float epSep_{0};
+  float ep_sep_{0};
   /// Dot product of the photon and electron momenta unit vectors at Ecal
-  float epDot_{0};
+  float ep_dot_{0};
   /// Dot product of the photon and electron momenta unit vectors at Target
-  float epDotAtTarget_{0};
+  float ep_dot_at_target_{0};
 
-  float bdtCutVal_{0};
+  float bdt_cut_val_{0};
 
-  float beamEnergyMeV_{0};
+  float beam_energy_mev_{0};
 
-  std::string bdtFileName_;
-  std::string rocFileName_;
-  std::vector<float> bdtFeatures_;
-  std::string featureListName_;
+  std::string bdt_file_name_;
+  std::string roc_file_name_;
+  std::vector<float> bdt_features_;
+  std::string feature_list_name_;
 
   // Pass and collection names
   std::string sp_pass_name_;
@@ -198,7 +198,7 @@ class EcalVetoProcessor : public framework::Producer {
   bool inverse_skim_{false};
 
   /** Name of the collection which will containt the results. */
-  std::string collectionName_{"EcalVeto"};
+  std::string collection_name_{"EcalVeto"};
 
   std::unique_ptr<ldmx::Ort::ONNXRuntime> rt_;
 
