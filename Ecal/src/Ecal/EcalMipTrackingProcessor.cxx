@@ -180,9 +180,11 @@ void EcalMipTrackingProcessor::produce(framework::Event &event) {
            tracking_hit_list[j_hit].layer ==
                tracking_hit_list[current_hit].layer - 2) &&
           std::abs(tracking_hit_list[j_hit].pos.X() -
-                   tracking_hit_list[current_hit].pos.X()) <= 0.5 * cell_width &&
+                   tracking_hit_list[current_hit].pos.X()) <=
+              0.5 * cell_width &&
           std::abs(tracking_hit_list[j_hit].pos.Y() -
-                   tracking_hit_list[current_hit].pos.Y()) <= 0.5 * cell_width) {
+                   tracking_hit_list[current_hit].pos.Y()) <=
+              0.5 * cell_width) {
         track[track_len] = j_hit;
         track_len++;
         current_hit = j_hit;
@@ -204,8 +206,8 @@ void EcalMipTrackingProcessor::produce(framework::Event &event) {
     if (track_len < 4 and closest_e > closest_p) continue;
 
     ldmx_log(debug) << "====== After rejection for MIP tracking ======";
-    ldmx_log(debug) << "current hit: [" << tracking_hit_list[i_hit].pos.X() << ", "
-                    << tracking_hit_list[i_hit].pos.Y() << ", "
+    ldmx_log(debug) << "current hit: [" << tracking_hit_list[i_hit].pos.X()
+                    << ", " << tracking_hit_list[i_hit].pos.Y() << ", "
                     << tracking_hit_list[i_hit].layer << "]";
 
     for (int k = 0; k < track_len; k++) {
@@ -222,7 +224,8 @@ void EcalMipTrackingProcessor::produce(framework::Event &event) {
       int n_remove = 0;
       for (int kHit = 0; kHit < track_len; kHit++) {
         temp_track_list.push_back(tracking_hit_list[track[kHit] - n_remove]);
-        tracking_hit_list.erase(tracking_hit_list.begin() + track[kHit] - n_remove);
+        tracking_hit_list.erase(tracking_hit_list.begin() + track[kHit] -
+                                n_remove);
         n_remove++;
       }
       // print tracking_hit_list
@@ -237,8 +240,9 @@ void EcalMipTrackingProcessor::produce(framework::Event &event) {
       ldmx_log(trace) << "====== END OF Tracking hit list ======";
 
       track_list.push_back(temp_track_list);
-      // The *current* hit will have been removed, so i_hit is currently pointing
-      // to the next hit. Decrement i_hit so no hits will get skipped by i_hit++
+      // The *current* hit will have been removed, so i_hit is currently
+      // pointing to the next hit. Decrement i_hit so no hits will get skipped
+      // by i_hit++
       i_hit--;
     }
   }
@@ -359,7 +363,8 @@ void EcalMipTrackingProcessor::produce(framework::Event &event) {
     // Look at combinations of hits within the region (do not consider the same
     // combination twice):
     hit_nums[0] = i_hit;
-    for (int j_hit_in_reg = 1; j_hit_in_reg < hits_in_region.size() - 1; j_hit_in_reg++) {
+    for (int j_hit_in_reg = 1; j_hit_in_reg < hits_in_region.size() - 1;
+         j_hit_in_reg++) {
       // We require (exactly) 3 hits for the lin-reg track building
       if (hits_in_region.size() < 3) break;
       hit_nums[1] = hits_in_region[j_hit_in_reg];
@@ -370,9 +375,9 @@ void EcalMipTrackingProcessor::produce(framework::Event &event) {
           // h_mean = geometric mean, subtract off from hits to improve SVD
           // performance
           h_mean(h_ind) = (tracking_hit_list[hit_nums[0]].pos(h_ind) +
-                         tracking_hit_list[hit_nums[1]].pos(h_ind) +
-                         tracking_hit_list[hit_nums[2]].pos(h_ind)) /
-                        3.0;
+                           tracking_hit_list[hit_nums[1]].pos(h_ind) +
+                           tracking_hit_list[hit_nums[2]].pos(h_ind)) /
+                          3.0;
         }
         for (int h_ind = 0; h_ind < 3; h_ind++) {
           for (int l_ind = 0; l_ind < 3; l_ind++) {
@@ -404,8 +409,10 @@ void EcalMipTrackingProcessor::produce(framework::Event &event) {
         // linreg complete:  Now have best-fit line for 3 hits under
         // consideration Check whether the track is valid:  r^2 must be high,
         // and the track must plausibly originate from the photon
-        float closest_e = distTwoLines(h_mean, h_point, e_traj_start, e_traj_end);
-        float closest_p = distTwoLines(h_mean, h_point, p_traj_start, p_traj_end);
+        float closest_e =
+            distTwoLines(h_mean, h_point, e_traj_start, e_traj_end);
+        float closest_p =
+            distTwoLines(h_mean, h_point, p_traj_start, p_traj_end);
         // Projected track must be close to the photon; details may change after
         // future study.
         if (closest_p > cell_width or closest_e < 1.5 * cell_width) continue;

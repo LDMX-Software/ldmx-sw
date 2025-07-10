@@ -72,11 +72,11 @@ void EcalVetoResult::Clear() {
 }
 
 void EcalVetoResult::setVariables(
-    int n_readout_hits, int deepest_layer_hit, int n_tracking_hits, float summed_det,
-    float summed_tight_iso, float max_cell_dep, float shower_rms, float x_std,
-    float y_std, float avg_layer_hit, float std_layer_hit, float ecal_back_energy,
-    float ep_ang, float ep_ang_at_target, float ep_sep, float ep_dot,
-    float ep_dot_at_target,
+    int n_readout_hits, int deepest_layer_hit, int n_tracking_hits,
+    float summed_det, float summed_tight_iso, float max_cell_dep,
+    float shower_rms, float x_std, float y_std, float avg_layer_hit,
+    float std_layer_hit, float ecal_back_energy, float ep_ang,
+    float ep_ang_at_target, float ep_sep, float ep_dot, float ep_dot_at_target,
 
     std::vector<float> electron_containment_energy,
     std::vector<float> photon_containment_energy,
