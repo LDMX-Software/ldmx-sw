@@ -52,7 +52,7 @@ class TrackersTrackingGeometryProvider(ldmxcfg.ConditionsObjectProvider):
             #   // global y: -70 to 70
             #   // global x: -240 to 240
             self.tracker_y_length = 480.0 # in mm
-            self.tracker_z_length = 140.0 # in mm
+            self.tracker_z_length = 340.0 # in mm
             TrackersTrackingGeometryProvider.__instance = self
 
 TrackersTrackingGeometryProvider.get_instance()
