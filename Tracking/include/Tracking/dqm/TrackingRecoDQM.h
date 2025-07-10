@@ -23,6 +23,7 @@ enum PIDBins {
 
 class TrackingRecoDQM : public framework::Analyzer {
  public:
+
   TrackingRecoDQM(const std::string& name, framework::Process& process)
       : framework::Analyzer(name, process){};
 

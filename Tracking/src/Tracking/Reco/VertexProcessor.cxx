@@ -1,5 +1,7 @@
 #include "Tracking/Reco/VertexProcessor.h"
 #include "Tracking/Event/Vertex.h"
+#include "Tracking/Sim/TrackingUtils.h"
+
 #include <chrono>
 
 #include "Acts/MagneticField/ConstantBField.hpp"
@@ -96,62 +98,42 @@ void VertexProcessor::produce(framework::Event &event) {
   const std::vector<ldmx::Track> seeds =
       event.getCollection<ldmx::Track>("RecoilTruthSeeds", input_pass_name_);
 
-  if (tracks.size() < 1) return;
-
+  //check the number of tracks
+  if (tracks.size() >10 ||tracks.size() <2) {
+    ldmx_log(info)<<" bailing because we found "<<tracks.size()
+		  <<" tracks";
+    return;
+  }
   // Transform the EDM ldmx::tracks to the format needed by ACTS
   //  std::vector<Acts::BoundTrackParameters> billoir_tracks;
   std::vector<Acts::BoundTrackParameters> billoir_tracks;
-
-  // TODO:: The perigee surface should be common between all tracks.
-  // So should only be created once in principle.
-  // There should be no perigeeSurface2
-
+ 
   std::shared_ptr<Acts::PerigeeSurface> perigeeSurface =
       Acts::Surface::makeShared<Acts::PerigeeSurface>(Acts::Vector3(
           tracks.front().getPerigeeX(), tracks.front().getPerigeeY(),
           tracks.front().getPerigeeZ()));
   int pionPdgId = 211;  // pi+
-
-  for (unsigned int iTrack = 0; iTrack < tracks.size(); iTrack++) {
-    Acts::BoundVector paramVec;
-    paramVec << tracks.at(iTrack).getD0(), tracks.at(iTrack).getZ0(),
-        tracks.at(iTrack).getPhi(), tracks.at(iTrack).getTheta(),
-        tracks.at(iTrack).getQoP(), tracks.at(iTrack).getT();
-
-    Acts::BoundSquareMatrix covMat =
-        tracking::sim::utils::unpackCov(tracks.at(iTrack).getPerigeeCov());
-    //use pion hypothsis for now. 
-    auto part{Acts::GenericParticleHypothesis(Acts::ParticleHypothesis(Acts::PdgParticle(pionPdgId)))};
-    //    Acts::PdgParticle(tracks.at(iTrack).getPdgID())))};
-
-    billoir_tracks.push_back(Acts::BoundTrackParameters(perigeeSurface, paramVec, std::move(covMat), part));
-  }
-
-  // Select exactly 2 tracks
-  //  if (billoir_tracks.size() != 2) {
-
-  //check the number of tracks
-  if (billoir_tracks.size() >10 || billoir_tracks.size() <2) {
-    ldmx_log(info)<<" bailing because we found "<<billoir_tracks.size()
-		  <<" tracks";
-    return;
-  }
-
-  //loop over all pairs or tracks
+  //just use pion hypothesis
+  Acts::GenericParticleHypothesis pionGPH{Acts::GenericParticleHypothesis(Acts::ParticleHypothesis(Acts::PdgParticle(pionPdgId)))};
   std::vector<ldmx::Vertex> foundVerts; 
-  for (int iBtp = 0; iBtp<billoir_tracks.size(); iBtp++){
-    for (int kBtp = iBtp+1; kBtp<billoir_tracks.size(); kBtp++){
+  for (unsigned int iTrack = 0; iTrack < tracks.size(); iTrack++) {
+    for (unsigned int kTrack = iTrack+1; kTrack < tracks.size(); kTrack++) { 
 
-      if (billoir_tracks.at(iBtp).charge() * billoir_tracks.at(kBtp).charge() > 0) {
+      if (tracks.at(iTrack).q() * tracks.at(kTrack).q() > 0) {
 	ldmx_log(info)<<" bailing on this pair because tracks have same sign "; 
 	continue;
       }
 
+      Acts::BoundTrackParameters ibts=
+	tracking::sim::utils::btp(tracks.at(iTrack),perigeeSurface, pionPdgId); 
+      Acts::BoundTrackParameters kbts=
+	tracking::sim::utils::btp(tracks.at(kTrack),perigeeSurface, pionPdgId); 
+      //      billoir_tracks.push_back(bts);
+
       std::vector<Acts::InputTrack> in_tracks;
 
-      in_tracks.push_back(Acts::InputTrack(&billoir_tracks.at(iBtp))); 
-      in_tracks.push_back(Acts::InputTrack(&billoir_tracks.at(kBtp))); 
-      ldmx_log(info)<<"Fitting vertex of two tracks";
+      in_tracks.push_back(Acts::InputTrack(&ibts)); 
+      in_tracks.push_back(Acts::InputTrack(&kbts)); 
       Acts::Result<Acts::Vertex> vertRes=billoirFitter.fit(in_tracks,vfOptions, fieldCache);
 
       if (vertRes.ok()){
@@ -166,16 +148,26 @@ void VertexProcessor::produce(framework::Event &event) {
 		      <<vert.fitQuality().second;
 	//fill in the ldmx::vertex
 	ldmx::Vertex ldmxVert=ldmx::Vertex();
-	ldmxVert.setPosition(std::vector<double>{vert.position()[0],vert.position()[1], vert.position()[2]}); 
+	ldmxVert.setPosition(tracking::sim::utils::Acts2LdmxStdVec(vert.position()));
 	ldmxVert.setTime(vert.time());
 	ldmxVert.setChi2(vert.fitQuality().first); 
-	ldmxVert.setNDF(vert.fitQuality().second); 
-	//check if TrackAtVertex are the fitted tracks
+	ldmxVert.setNDF(vert.fitQuality().second);
+	ldmxVert.addTrack(tracks.at(iTrack));
+	ldmxVert.addTrack(tracks.at(kTrack));
+	//get the fitted track information
+	std::vector<Acts::TrackAtVertex> fitTrks=vert.tracks();
+	ldmx::Vertex::FittedTrack ft1=makeFittedTrack(fitTrks.at(0),pionPdgId);
+	ldmx::Vertex::FittedTrack ft2=makeFittedTrack(fitTrks.at(1),pionPdgId);
+	ldmxVert.addFittedTrack(ft1); 
+	ldmxVert.addFittedTrack(ft2);
+	//set the V0 momentum as sum of fitted track momentum
+	ldmxVert.setMomentum(tracking::sim::utils::addStdVecs(ft1.momentum,ft2.momentum));
+	ldmxVert.setMass(calculateFittedInvariantMass(ldmxVert)); 
 	foundVerts.push_back(ldmxVert);
       } else{
 	ldmx_log(info)<<"vertex fit failed"; 
       }
-      //  h_m_->Fill((p1 + p2).M());
+    
     }
   }
   
@@ -183,6 +175,22 @@ void VertexProcessor::produce(framework::Event &event) {
   ldmx_log(info)<<"adding "<<foundVerts.size()<<" to event in collection name "<<out_vtx_collection_; 
   event.add(out_vtx_collection_, foundVerts);
   // Pion mass hypothesis
+
+  /*
+    Acts::BoundVector paramVec;
+    paramVec << tracks.at(iTrack).getD0(), tracks.at(iTrack).getZ0(),
+        tracks.at(iTrack).getPhi(), tracks.at(iTrack).getTheta(),
+        tracks.at(iTrack).getQoP(), tracks.at(iTrack).getT();
+    Acts::BoundSquareMatrix covMat =
+        tracking::sim::utils::unpackCov(tracks.at(iTrack).getPerigeeCov());
+    Acts::GenericParticleHypothesis part{Acts::GenericParticleHypothesis(Acts::ParticleHypothesis(Acts::PdgParticle(pionPdgId)))};
+    Acts::BoundTrackParameters bts{perigeeSurface, paramVec, std::move(covMat), part};
+    billoir_tracks.push_back(bts);
+    billoirTrkToLdmxTrk[bts]=tracks.at(iTrack);
+    */
+    //assume they are pions for now.  
+  
+
   /*
   double pion_mass = 139.570 * Acts::UnitConstants::MeV;
 
@@ -260,7 +268,7 @@ void VertexProcessor::onProcessEnd() {
   ldmx_log(info) << "AVG Time/Event: " << std::fixed << std::setprecision(3)
                  << processing_time_ / nevents_ << " ms";
 }
-
+					
 }  // namespace reco
 }  // namespace tracking
 

@@ -53,8 +53,9 @@ class VertexingDQM : public framework::Analyzer {
   std::string target_sp_passname_;
   std::string vertex_collection_events_passname_;
   std::string vertex_passname_;
-  std::string track_collection_events_passname_;
+  std::string track_events_passname_;
   std::string track_passname_;
+  std::string simparticle_passname_;
   std::string truth_events_passname_;
   std::string truth_passname_;
 
@@ -66,6 +67,9 @@ class VertexingDQM : public framework::Analyzer {
 
   // Truth Track collection
   std::shared_ptr<ldmx::Tracks> truthTrackCollection_{nullptr};
+
+  // Recon Track collection
+  std::shared_ptr<ldmx::Tracks> recoTrackCollection_{nullptr};
 
   // Target  scoring plane hits
   std::shared_ptr<std::vector<ldmx::SimTrackerHit>> target_scoring_hits_{nullptr}; 
@@ -81,6 +85,10 @@ class VertexingDQM : public framework::Analyzer {
   // fake tracks (truth_prob < cut)
   std::vector<ldmx::Track> fakeTracks_;
 
+  int pionPdgId_=211; 
+  int kshortPdgId_=310;
+
+  ldmx::Track* getTrackFromSimParticleID(std::shared_ptr<ldmx::Tracks> trk_coll, int trkID);
   
 };
 }  // namespace tracking::dqm

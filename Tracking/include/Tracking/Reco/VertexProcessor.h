@@ -33,14 +33,16 @@
 // Geometry
 #include "Acts/Surfaces/PerigeeSurface.hpp"
 
+// Particle Data
+#include "Acts/Definitions/ParticleData.hpp"
+
 // Root
 #include "TFile.h"
 #include "TH1F.h"
-#include "TLorentzVector.h"
-
+#include "Math/GenVector/LorentzVector.h"
 // Propagator with void navigator
 using VoidPropagator = Acts::Propagator<Acts::EigenStepper<>>;
-
+using  LorentzVector = ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double>>;
 namespace tracking {
   namespace reco {
     
@@ -115,8 +117,38 @@ namespace tracking {
       TH1F *h_m_;
       TH1F *h_m_truthFilter_;
       TH1F *h_m_truth_;
-    };
-    
+
+      ldmx::Vertex::FittedTrack makeFittedTrack(Acts::TrackAtVertex trkOnVtx,int pdgId=0){
+	ldmx::Vertex::FittedTrack fittrk; 
+	Acts::BoundTrackParameters fitPars=trkOnVtx.fittedParams;
+	fittrk.momentum=tracking::sim::utils::Acts2LdmxStdVec(fitPars.momentum());
+	fittrk.params=tracking::sim::utils::convertActsToLdmxPars(fitPars.parameters());
+	const Acts::BoundMatrix& trk_cov = *fitPars.covariance();
+	tracking::sim::utils::flatCov(trk_cov, fittrk.cov);     
+	fittrk.chiSqContrib=trkOnVtx.chi2Track;
+	fittrk.distToVtx=trkOnVtx.vertexCompatibility;
+	fittrk.pdgId=pdgId; 
+	return fittrk;
+      };   
+      double calculateFittedInvariantMass(ldmx::Vertex vtx){
+	LorentzVector pTot;
+	std::vector<ldmx::Vertex::FittedTrack> fittrks=vtx.getFittedTracks();
+	for(int iFt=0; iFt<fittrks.size(); iFt++){
+	  std::vector<double> mom=fittrks.at(iFt).momentum;
+	  int pdgId=fittrks.at(iFt).pdgId;
+	  //make an Acts::PdgParticle
+	  Acts::PdgParticle  pdgPart{pdgId};
+	  double mass=-666.666; 
+	  if(Acts::findMass(pdgPart).has_value()){
+	    mass=Acts::findMass(pdgPart).value();	    
+	  }
+	  double E=sqrt( mom[0]*mom[0]+mom[1]*mom[1]+mom[2]*mom[2]+mass*mass); 
+	  pTot+=LorentzVector{mom[0], mom[1], mom[2], E}; 
+	}	
+	return  pTot.mass(); 
+      };
+      
+    };  // class Vertex    
   }  // namespace reco
 }  // namespace tracking
 

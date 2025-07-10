@@ -30,6 +30,7 @@
 
 // --- Tracking ---//
 #include "Tracking/Event/Track.h"
+#include "Tracking/Event/Vertex.h"
 
 // --- < ACTS > --- //
 #include "Acts/Definitions/Algebra.hpp"
@@ -64,7 +65,6 @@ SubdetectorID::SD_TRACKER_RECOIL) {
 mal-formed IDs
 }
 */
-
 // This method returns the sensor ID
 inline int getSensorID(const ldmx::SimTrackerHit& hit) {
   bool debug = false;
@@ -178,7 +178,20 @@ inline Acts::Vector3 Ldmx2Acts(Acts::Vector3 ldmx_v) {
 
   return acts_rot * ldmx_v;
 }
+ // Rotate to ACTS frame
+// z->x, x->y, y->z
 
+//(0 1 0) x  = y
+//(0 0 1) y  = z
+//(1 0 0) z  = x
+
+  inline std::vector<double> Acts2LdmxStdVec(Acts::Vector3 acts_v) {
+  // TODO::Move it to a static member
+  Acts::SquareMatrix3 ldmx_rot;
+  ldmx_rot << 0., 1., 0., 0., 0., 1., 1., 0., 0.;
+  Acts::Vector3 ldmx_v=ldmx_rot * acts_v;
+  return std::vector<double>{ldmx_v[0],ldmx_v[1],ldmx_v[2]};
+}
 // Transform position, momentum and charge to free parameters
 
 inline Acts::FreeVector toFreeParameters(Acts::Vector3 pos, Acts::Vector3 mom,
@@ -222,31 +235,45 @@ inline Acts::BoundVector boundState(const ldmx::Track::TrackState& ts) {
   return paramVec;
 }
 
-inline Acts::BoundTrackParameters boundTrackParameters(
-    const ldmx::Track& trk, std::shared_ptr<Acts::PerigeeSurface> perigee) {
-  Acts::BoundVector paramVec = boundState(trk);
-  Acts::BoundSquareMatrix covMat = unpackCov(trk.getPerigeeCov());
-  auto partHypo{Acts::SinglyChargedParticleHypothesis::electron()};
-  //  auto
-  //  part{Acts::GenericParticleHypothesis(Acts::ParticleHypothesis(Acts::PdgParticle(trk.getPdgID())))};
-  //  return Acts::BoundTrackParameters(perigee, paramVec, std::move(covMat));
-  // need to add particle hypothesis
-  return Acts::BoundTrackParameters(perigee, paramVec, std::move(covMat),
-                                    partHypo);
-}
+  
+  //make bound track parameters from ldmx::track
+  //note:  this assumes particle hypothesis is electron
+  //
+  inline Acts::BoundTrackParameters boundTrackParameters(
+							 const ldmx::Track& trk, std::shared_ptr<Acts::PerigeeSurface> perigee) {
+    Acts::BoundVector paramVec = boundState(trk);
+    Acts::BoundSquareMatrix covMat = unpackCov(trk.getPerigeeCov());
+    auto partHypo{Acts::SinglyChargedParticleHypothesis::electron()};
+    return Acts::BoundTrackParameters(perigee, paramVec, std::move(covMat),
+				      partHypo);
+  }
 
+
+  //make bound track parameters from ldmx::track::trackstate
+  //note:  this allows for user-supplied pdgid
 inline Acts::BoundTrackParameters btp(const ldmx::Track::TrackState& ts,
                                       std::shared_ptr<Acts::Surface> surf,
                                       int pdgid) {
   Acts::BoundVector paramVec = boundState(ts);
   Acts::BoundSquareMatrix covMat = unpackCov(ts.cov);
-  auto partHypo{Acts::SinglyChargedParticleHypothesis::electron()};
-  //  auto
-  //  part{Acts::GenericParticleHypothesis(Acts::ParticleHypothesis(Acts::PdgParticle(pdgid)))};
+  auto
+    part{Acts::GenericParticleHypothesis(Acts::ParticleHypothesis(Acts::PdgParticle(pdgid)))};
   return Acts::BoundTrackParameters(surf, paramVec, std::move(covMat),
-                                    partHypo);
+                                    part);
 }
 
+  //make bound track parameters from ldmx::track
+  //note:  this allows for user-supplied pdgid
+  inline Acts::BoundTrackParameters btp(const ldmx::Track& trk,
+                                      std::shared_ptr<Acts::Surface> surf,
+                                      int pdgid) {
+  Acts::BoundVector paramVec = boundState(trk);
+  Acts::BoundSquareMatrix covMat = unpackCov(trk.getPerigeeCov());
+  auto
+    part{Acts::GenericParticleHypothesis(Acts::ParticleHypothesis(Acts::PdgParticle(pdgid)))};
+  return Acts::BoundTrackParameters(surf, paramVec, std::move(covMat),
+                                    part);
+}
 // Return an unbound surface
 inline const std::shared_ptr<Acts::PlaneSurface> unboundSurface(
     double xloc, double yloc = 0., double zloc = 0.) {
@@ -288,6 +315,10 @@ inline bool sourceLinkEquality(const Acts::SourceLink& a,
          b.get<ActsExamples::IndexSourceLink>().index();
 }
 
+  inline std::vector<double> addStdVecs(std::vector<double> v1,std::vector<double> v2){
+    return std::vector<double>{v1.at(0)+v2.at(0) ,v1.at(1)+v2.at(1), v1.at(2)+v2.at(2)};
+  }
+  
 }  // namespace utils
 }  // namespace sim
 }  // namespace tracking
