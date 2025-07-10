@@ -8,17 +8,14 @@
 ###############################################################################
 
 start_group Produce Dark Brem Library
-wget https://raw.githubusercontent.com/LDMX-Software/dark-brem-lib-gen/main/env.sh
-source env.sh
-# commented out lines are dbgen's defaults for reference
-dbgen use v5.0
-#dbgen cache ${HOME} <- only matters for apptainer/singularity
-#dbgen work /tmp
-#dbgen dest $PWD
-mkdir scratch
-dbgen work scratch
-dbgen run \
+curl -s https://tomeichlersmith.github.io/denv/install | sh
+# use docker so we don't have to tell podman to look at the docker.io registry
+export DENV_RUNNER=docker
+denv init ldmx/dark-brem-lib-gen:v5.1.0
+denv dark-brem-lib-gen \
   --run 1 \
-  --max_energy 8.0 \
+  --max-energy 8.0 \
   --apmass 0.01
+# cleanup denv
+rm -r .denv
 end_group

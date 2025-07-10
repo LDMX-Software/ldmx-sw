@@ -45,4 +45,4 @@ void EcalWABRecResults::analyze(const framework::Event &event) {
 
 }  // namespace dqm
 
-DECLARE_ANALYZER_NS(dqm, EcalWABRecResults);
+DECLARE_ANALYZER(dqm::EcalWABRecResults);

@@ -16,9 +16,9 @@
 /*   SimCore   */
 /*~~~~~~~~~~~~~*/
 #include "SimCore/G4User/PtrRetrieval.h"
+#include "SimCore/G4User/UserEventInformation.h"
+#include "SimCore/G4User/UserTrackInformation.h"
 #include "SimCore/G4User/VolumeChecks.h"
-#include "SimCore/UserEventInformation.h"
-#include "SimCore/UserTrackInformation.h"
 
 namespace biasing {
 
@@ -108,4 +108,4 @@ void NonFiducialFilter::EndOfEventAction(const G4Event*) {
 }
 }  // namespace biasing
 
-DECLARE_ACTION(biasing, NonFiducialFilter)
+DECLARE_ACTION(biasing::NonFiducialFilter)

@@ -519,4 +519,4 @@ void TrigScintClusterProducer::onProcessEnd() {
 
 }  // namespace trigscint
 
-DECLARE_PRODUCER_NS(trigscint, TrigScintClusterProducer);
+DECLARE_PRODUCER(trigscint::TrigScintClusterProducer);

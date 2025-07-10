@@ -382,4 +382,4 @@ void HcalRecProducer::produce(framework::Event& event) {
 
 }  // namespace hcal
 
-DECLARE_PRODUCER_NS(hcal, HcalRecProducer);
+DECLARE_PRODUCER(hcal::HcalRecProducer);

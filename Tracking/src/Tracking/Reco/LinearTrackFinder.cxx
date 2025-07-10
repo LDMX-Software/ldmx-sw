@@ -24,8 +24,7 @@ void LinearTrackFinder::configure(framework::config::Parameters& parameters) {
   out_trk_collection_ = parameters.getParameter<std::string>(
       "out_trk_collection", "LinearRecoilTracks");
 
-  input_pass_name_ =
-      parameters.getParameter<std::string>("input_pass_name", "");
+  input_pass_name_ = parameters.getParameter<std::string>("input_pass_name");
 
 }  // configure
 
@@ -165,4 +164,4 @@ bool LinearTrackFinder::isPositionUsed(
 }  // namespace reco
 }  // namespace tracking
 
-DECLARE_PRODUCER_NS(tracking::reco, LinearTrackFinder)
+DECLARE_PRODUCER(tracking::reco::LinearTrackFinder)

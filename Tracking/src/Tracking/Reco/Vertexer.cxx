@@ -85,8 +85,7 @@ void Vertexer::configure(framework::config::Parameters& parameters) {
       parameters.getParameter<std::string>("trk_c_name_1", "TaggerTracks");
   trk_c_name_2 =
       parameters.getParameter<std::string>("trk_c_name_2", "RecoilTracks");
-  input_pass_name_ =
-      parameters.getParameter<std::string>("input_pass_name", "");
+  input_pass_name_ = parameters.getParameter<std::string>("input_pass_name");
 }
 
 void Vertexer::produce(framework::Event& event) {
@@ -277,4 +276,4 @@ void Vertexer::TaggerRecoilMonitoring(
 }  // namespace reco
 }  // namespace tracking
 
-DECLARE_PRODUCER_NS(tracking::reco, Vertexer)
+DECLARE_PRODUCER(tracking::reco::Vertexer)

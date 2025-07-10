@@ -14,10 +14,11 @@
 #include "SimCore/DetectorConstruction.h"
 #include "SimCore/G4Session.h"
 #include "SimCore/G4User/TrackingAction.h"
-#include "SimCore/Geo/ParserFactory.h"
+#include "SimCore/G4User/UserEventInformation.h"
+#include "SimCore/Geo/Parser.h"
 #include "SimCore/RunManager.h"
-#include "SimCore/SensitiveDetector.h"
-#include "SimCore/UserEventInformation.h"
+#include "SimCore/SDs/SensitiveDetector.h"
+
 namespace simcore {
 class SimulatorBase : public framework::Producer {
  public:

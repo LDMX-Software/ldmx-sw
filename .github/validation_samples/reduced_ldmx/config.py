@@ -46,6 +46,8 @@ ecalVeto = ecal_vetos.EcalVetoProcessor()
 ecalVeto.num_ecal_layers = 6
 ecalVeto.beam_energy = 4000.
 ecalVeto.recoil_from_tracking = False
+ecalMip = ecal_vetos.EcalMipProcessor()
+ecalMip.num_ecal_layers = 6
 
 ecalWAB = ecal_WAB.EcalWABRecProcessor()
 
@@ -111,6 +113,7 @@ rSeedTracking.out_seed_collection = "LinearRecoilSeedTracks"
 rSeedTracking.layer12_midpoint = layer12_mid
 rSeedTracking.layer23_midpoint = layer23_mid
 rSeedTracking.layer34_midpoint = layer34_mid
+rSeedTracking.recoil_uncertainty = [0.006, 0.085]
 rSeedTracking.ecal_distance_threshold = 15.0
 
 rTracking = reducedTracking.LinearTrackFinder("LinearTrackFinder")
@@ -128,6 +131,7 @@ p.sequence.extend([
         ecal_digi.EcalDigiProducer(),
         ecal_digi.EcalRecProducer(), 
         ecalVeto,
+        ecalMip,
         hcal_digi_reco,
         hcal_veto,
         *ts_digis,

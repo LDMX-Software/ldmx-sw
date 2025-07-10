@@ -50,7 +50,7 @@ class Conditions {
   /**
    * Class destructor.
    */
-  ~Conditions() { ; }
+  ~Conditions() = default;
 
   /**
    * Primary request action for a conditions object If the
@@ -119,7 +119,7 @@ class Conditions {
   Process& process_;
 
   /** Map of who provides which condition */
-  std::map<std::string, ConditionsObjectProvider*> providerMap_;
+  std::map<std::string, std::shared_ptr<ConditionsObjectProvider>> providerMap_;
 
   /**
    * An entry to store an already loaded conditions object
@@ -128,7 +128,7 @@ class Conditions {
     /// Interval Of Validity for this entry in the cache
     ConditionsIOV iov;
     /// Provider that gave us the conditions object
-    ConditionsObjectProvider* provider;
+    std::shared_ptr<ConditionsObjectProvider> provider;
     /// Const pointer to the retrieved conditions object
     const ConditionsObject* obj;
   };

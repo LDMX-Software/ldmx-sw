@@ -9,6 +9,9 @@ void PFTrackProducer::configure(framework::config::Parameters& ps) {
   inputTrackCollName_ = ps.getParameter<std::string>("inputTrackCollName");
   input_pass_name_ = ps.getParameter<std::string>("input_pass_name");
   outputTrackCollName_ = ps.getParameter<std::string>("outputTrackCollName");
+  doElectronTracking_ = ps.getParameter<bool>("doElectronTracking");
+  minElectronMomentumZ_ = ps.getParameter<double>("minElectronMomentumZ");
+  maxElectronTrackID_ = ps.getParameter<int>("maxElectronTrackID");
 }
 
 double getP(const ldmx::SimTrackerHit& tk) {
@@ -28,14 +31,41 @@ void PFTrackProducer::produce(framework::Event& event) {
   std::vector<ldmx::SimTrackerHit> pfTracks;
   if (truthTracking_) {
     for (const auto& spHit : ecalSpHits) {
-      if (spHit.getTrackID() != 1 || fabs(240 - spHit.getPosition()[2]) > 0.1 ||
-          spHit.getMomentum()[2] <= 0)
-        continue;
       if (spHit.getPdgID() == 22 || spHit.getPdgID() == 2112) continue;
-      pfTracks.push_back(spHit);
-      break;
-    }
-  }
+      if (fabs(240 - spHit.getPosition()[2]) > 0.1) continue;
+      if (doElectronTracking_) {  // only select electron SP hits
+        if (spHit.getPdgID() != 11) continue;
+        if (spHit.getTrackID() < 2 &&
+            spHit.getMomentum()[2] > minElectronMomentumZ_) {
+          // this is almost guaranteed to be a pileup beam electron! keep it
+          pfTracks.push_back(spHit);
+          ldmx_log(debug) << "Added beam electron SP hit: trackID="
+                          << spHit.getTrackID()
+                          << ", pz = " << spHit.getMomentum()[2];
+        } else if (spHit.getTrackID() <= maxElectronTrackID_ &&
+                   spHit.getMomentum()[2] > 5) {
+          // require more than minimum forward momentum to catch recoil electron
+          // candidates
+          pfTracks.push_back(spHit);
+          ldmx_log(debug) << "Adding SP hit: trackID=" << spHit.getTrackID()
+                          << ", pdgID= " << spHit.getPdgID()
+                          << ", pz = " << spHit.getMomentum()[2];
+          continue;
+        }
+      }  // if electron tracking
+      else {
+        if (spHit.getTrackID() != 1 ||
+            fabs(240 - spHit.getPosition()[2]) > 0.1 ||
+            spHit.getMomentum()[2] < 0)
+          continue;
+        pfTracks.push_back(spHit);
+        ldmx_log(debug) << "Adding SP hit: trackID=" << spHit.getTrackID()
+                        << ", pdgID= " << spHit.getPdgID()
+                        << ", pz = " << spHit.getMomentum()[2];
+        break;
+      }
+    }  // over SP hits
+  }  // do truth tracking
   std::sort(pfTracks.begin(), pfTracks.end(),
             [](ldmx::SimTrackerHit a, ldmx::SimTrackerHit b) {
               return getP(a) > getP(b);
@@ -44,4 +74,4 @@ void PFTrackProducer::produce(framework::Event& event) {
 }
 }  // namespace recon
 
-DECLARE_PRODUCER_NS(recon, PFTrackProducer);
+DECLARE_PRODUCER(recon::PFTrackProducer);

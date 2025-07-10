@@ -173,4 +173,4 @@ void EcalRecProducer::produce(framework::Event& event) {
 
 }  // namespace ecal
 
-DECLARE_PRODUCER_NS(ecal, EcalRecProducer);
+DECLARE_PRODUCER(ecal::EcalRecProducer);

@@ -285,4 +285,4 @@ flips and long weird pulses
 }
 }  // namespace trigscint
 
-DECLARE_PRODUCER_NS(trigscint, EventReadoutProducer);
+DECLARE_PRODUCER(trigscint::EventReadoutProducer);

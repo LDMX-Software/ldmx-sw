@@ -208,12 +208,7 @@ void IdealClusterBuilder::Build2dClusters() {
   // first partition hits by layer
   std::map<int, std::vector<Hit> > layer_hits;  // id(xy) to Hit
   for (const auto hit : all_hits) {
-    auto l = hit.layer;
-    if (layer_hits.count(l)) {
-      layer_hits[l].push_back(hit);
-    } else {
-      layer_hits[l] = {hit};
-    }
+    layer_hits[hit.layer].push_back(hit);
   }
 
   // run clustering in each layer and add to the list

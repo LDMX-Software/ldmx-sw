@@ -106,4 +106,4 @@ void TaggerHitFilter::checkAbortEvent(G4Track* track) {
 
 }  // namespace biasing
 
-DECLARE_ACTION(biasing, TaggerHitFilter)
+DECLARE_ACTION(biasing::TaggerHitFilter)

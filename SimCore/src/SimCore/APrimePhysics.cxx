@@ -9,7 +9,7 @@
 
 #include "G4DarkBreM/G4APrime.h"
 #include "G4DarkBreM/G4DarkBreMModel.h"
-#include "SimCore/UserEventInformation.h"
+#include "SimCore/G4User/UserEventInformation.h"
 
 // Geant4
 #include "G4Electron.hh"

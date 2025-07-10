@@ -118,4 +118,4 @@ int BeamElectronLocator::bin(float coordinate, double binWidth, double min,
 
 }  // namespace recon
 
-DECLARE_PRODUCER_NS(recon, BeamElectronLocator)
+DECLARE_PRODUCER(recon::BeamElectronLocator)

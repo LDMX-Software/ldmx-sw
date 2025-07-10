@@ -16,6 +16,9 @@ import matplotlib.pyplot as plt
 import mplhep
 plt.style.use(mplhep.style.ROOT)
 
+# DejaVu Sans supports most Unicode characters
+matplotlib.rcParams['font.family'] = 'DejaVu Sans'
+
 # us
 from ._differ import Differ
 from ._file import File

@@ -13,7 +13,7 @@
 #include <vector>
 
 // LDMX
-#include "SimCore/TrackMap.h"
+#include "SimCore/G4User/TrackMap.h"
 
 // Geant4
 #include "G4RunManager.hh"
@@ -22,7 +22,7 @@
 /*~~~~~~~~~~~~~*/
 /*   SimCore   */
 /*~~~~~~~~~~~~~*/
-#include "SimCore/UserAction.h"
+#include "SimCore/G4User/UserAction.h"
 
 namespace simcore::g4user {
 
@@ -123,13 +123,13 @@ class TrackingAction : public G4UserTrackingAction {
    *
    * @param action  User action of type RunAction
    */
-  void registerAction(UserAction* trackingAction) {
+  void registerAction(std::shared_ptr<UserAction> trackingAction) {
     trackingActions_.push_back(trackingAction);
   }
 
  private:
   /// custom user actions to be called before and after processing a track
-  std::vector<UserAction*> trackingActions_;
+  std::vector<std::shared_ptr<UserAction>> trackingActions_;
 
   /** Stores parentage information for all tracks in the event. */
   TrackMap trackMap_;

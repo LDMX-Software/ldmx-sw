@@ -42,7 +42,8 @@ class DigitizationProcessor(Producer):
         self.track_id = -1
         self.min_e_dep = 0.05
         self.hit_collection = 'TaggerSimHits'
-        self.out_collection = 'OutputMeasurements'
+        self.out_collection = 'OutputMeasurements' 
+        self.tracker_hit_passname = ''
                 
 class SeedFinderProcessor(Producer):
     """ Producer to find Seeds for the KF-based track finding.
@@ -88,7 +89,12 @@ class SeedFinderProcessor(Producer):
         self.strategies = []
         self.bfield = 1.5
         self.input_hits_collection = 'TaggerSimHits'
-        self.out_seed_collection = 'SeedTracks' 
+        self.out_seed_collection = 'SeedTracks'
+        self.input_pass_name = ''
+        self.sim_particles_passname = ''
+        self.tagger_trks_event_collection_passname = ''
+        self.sim_particles_event_passname = ''
+        
         
 
 class CKFProcessor(Producer):
@@ -186,7 +192,9 @@ class CKFProcessor(Producer):
         self.out_trk_collection = 'Tracks'
         self.min_hits = 6
         self.outlier_pval_ = 3.84
-
+        self.sim_particles_event_passname = ''
+        self.input_pass_name = ''
+        
 class GSFProcessor(Producer):
     """ Producer that runs Gaussian Sum Fitter on a specific track collection
 
@@ -221,8 +229,6 @@ class GSFProcessor(Producer):
         super().__init__(instance_name, 'tracking::reco::GSFProcessor',
                          'Tracking')
         
-        self.trackCollection = "TaggerTracks"
-        self.measCollection  = "DigiTaggerSimHits"
         self.maxComponent    = 12
         self.abortOnError    = False
         self.disableAllMaterialHandling = False
@@ -234,6 +240,15 @@ class GSFProcessor(Producer):
         self.field_map = makeFieldMapPath()
         self.taggerTracking = True
         self.out_trk_collection = "GSFTracks"
+        self.trackCollection = "TaggerTracks"
+        self.measCollection = "DigiTaggerSimHits"
+        
+        
+        self.track_passname = ""
+        self.meas_passname = "" 
+        self.track_collection_event_passname = ""
+        self.meas_collection_event_passname = ""
+        
 
         
 
@@ -302,6 +317,12 @@ class TruthSeedProcessor(Producer):
         self.skip_tagger = False
         self.skip_recoil = False
         self.max_track_id = 5
+        
+        self.sp_pass_name = ''
+        self.input_pass_name = ''
+        self.sim_particles_passname = ''
+        
+        
 
 
 class GreedyAmbiguitySolver(Producer):
@@ -334,6 +355,8 @@ class GreedyAmbiguitySolver(Producer):
         self.out_trk_collection = "TaggerTracksClean"
         self.trackCollection = "TaggerTracks"
         self.measCollection = "DigiTaggerSimHits"
+        
+        self.input_pass_name = ""
 
 class TrackerVetoProcessor(Producer):
     """ Class that flags events that pass the tracker veto
@@ -395,3 +418,7 @@ class TrackerVetoProcessor(Producer):
         self.input_recoil_pass_name = ""
         self.inverse_skim = False
         self.output_collection = "TrackerVeto"
+        
+        self.sim_particles_passname = ""
+        self.input_collection_events_passname = ""
+        

@@ -60,4 +60,4 @@ void PrimaryToEcalFilter::stepping(const G4Step* step) {
 
 }  // namespace biasing
 
-DECLARE_ACTION(biasing, PrimaryToEcalFilter)
+DECLARE_ACTION(biasing::PrimaryToEcalFilter)

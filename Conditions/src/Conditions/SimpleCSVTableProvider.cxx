@@ -4,7 +4,7 @@
 #include "Conditions/SimpleTableStreamers.h"
 #include "Conditions/URLStreamer.h"
 
-DECLARE_CONDITIONS_PROVIDER_NS(conditions, SimpleCSVTableProvider);
+DECLARE_CONDITIONS_PROVIDER(conditions::SimpleCSVTableProvider);
 
 namespace conditions {
 

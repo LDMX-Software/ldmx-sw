@@ -15,7 +15,7 @@
 /*   SimCore   */
 /*~~~~~~~~~~~~~*/
 #include "SimCore/G4User/PtrRetrieval.h"
-#include "SimCore/UserTrackInformation.h"
+#include "SimCore/G4User/UserTrackInformation.h"
 
 namespace biasing {
 
@@ -188,4 +188,4 @@ void EcalProcessFilter::stepping(const G4Step* step) {
 }
 }  // namespace biasing
 
-DECLARE_ACTION(biasing, EcalProcessFilter)
+DECLARE_ACTION(biasing::EcalProcessFilter)

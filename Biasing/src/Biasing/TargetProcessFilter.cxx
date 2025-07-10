@@ -16,7 +16,7 @@
 /*   SimCore   */
 /*~~~~~~~~~~~~~*/
 #include "SimCore/G4User/PtrRetrieval.h"
-#include "SimCore/UserTrackInformation.h"
+#include "SimCore/G4User/UserTrackInformation.h"
 
 namespace biasing {
 
@@ -167,4 +167,4 @@ void TargetProcessFilter::stepping(const G4Step* step) {
 void TargetProcessFilter::EndOfEventAction(const G4Event*) {}
 }  // namespace biasing
 
-DECLARE_ACTION(biasing, TargetProcessFilter)
+DECLARE_ACTION(biasing::TargetProcessFilter)

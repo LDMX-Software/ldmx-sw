@@ -195,4 +195,4 @@ class EcalTriggerGeometryProvider : public framework::ConditionsObjectProvider {
 };
 
 }  // namespace ecal
-DECLARE_CONDITIONS_PROVIDER_NS(ecal, EcalTriggerGeometryProvider);
+DECLARE_CONDITIONS_PROVIDER(ecal::EcalTriggerGeometryProvider);

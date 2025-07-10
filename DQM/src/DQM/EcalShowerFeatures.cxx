@@ -42,4 +42,4 @@ void EcalShowerFeatures::analyze(const framework::Event &event) {
 
 }  // namespace dqm
 
-DECLARE_ANALYZER_NS(dqm, EcalShowerFeatures);
+DECLARE_ANALYZER(dqm::EcalShowerFeatures);

@@ -12,9 +12,9 @@
 /*~~~~~~~~~~~~~*/
 /*   SimCore   */
 /*~~~~~~~~~~~~~*/
+#include "SimCore/G4User/UserEventInformation.h"
+#include "SimCore/G4User/UserTrackInformation.h"
 #include "SimCore/G4User/VolumeChecks.h"
-#include "SimCore/UserEventInformation.h"
-#include "SimCore/UserTrackInformation.h"
 
 namespace biasing {
 
@@ -120,4 +120,4 @@ void DeepEcalProcessFilter::NewStage() {
 }
 }  // namespace biasing
 
-DECLARE_ACTION(biasing, DeepEcalProcessFilter)
+DECLARE_ACTION(biasing::DeepEcalProcessFilter)

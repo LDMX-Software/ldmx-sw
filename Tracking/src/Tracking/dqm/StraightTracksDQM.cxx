@@ -17,8 +17,12 @@ void StraightTracksDQM::configure(framework::config::Parameters& parameters) {
   subdetector_ = parameters.getParameter<std::string>("subdetector", "Recoil");
   measurement_collection_ = parameters.getParameter<std::string>(
       "measurement_collection", "DigiRecoilSimHits");
-  input_pass_name_ =
-      parameters.getParameter<std::string>("input_pass_name", "");
+
+  track_collection_events_passname_ =
+      parameters.getParameter<std::string>("track_collection_events_passname");
+  truth_collection_events_passname_ =
+      parameters.getParameter<std::string>("truth_collection_events_passname");
+  input_pass_name_ = parameters.getParameter<std::string>("input_pass_name");
 
   ldmx_log(info) << "Track Collection " << track_collection_;
   ldmx_log(info) << "Truth Collection " << truth_collection_;
@@ -27,7 +31,7 @@ void StraightTracksDQM::configure(framework::config::Parameters& parameters) {
 void StraightTracksDQM::analyze(const framework::Event& event) {
   ldmx_log(debug) << "DQM Reading in::" << track_collection_;
 
-  if (!event.exists(track_collection_)) {
+  if (!event.exists(track_collection_, track_collection_events_passname_)) {
     ldmx_log(error) << "trackCollection " << track_collection_
                     << " not in event";
     return;
@@ -41,7 +45,7 @@ void StraightTracksDQM::analyze(const framework::Event& event) {
                                              input_pass_name_);
 
   // Get the truth track collection
-  if (event.exists(truth_collection_)) {
+  if (event.exists(truth_collection_, truth_collection_events_passname_)) {
     truth_track_collection_ =
         std::make_shared<std::vector<ldmx::StraightTrack>>(
             event.getCollection<ldmx::StraightTrack>(truth_collection_,
@@ -382,4 +386,4 @@ double StraightTracksDQM::locError(double var_slope, double var_intercept,
 
 }  // namespace tracking::dqm
 
-DECLARE_ANALYZER_NS(tracking::dqm, StraightTracksDQM)
+DECLARE_ANALYZER(tracking::dqm::StraightTracksDQM)

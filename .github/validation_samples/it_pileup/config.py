@@ -48,6 +48,7 @@ import LDMX.Hcal.hcal_hardcoded_conditions
 
 from LDMX.Ecal import digi as eDigi
 from LDMX.Ecal import vetos
+import LDMX.Ecal.ecalClusters as ecal_cluster
 from LDMX.Hcal import digi as hDigi
 
 # this is hardwired into the code to be appended to the sim hits collections
@@ -81,6 +82,7 @@ trigScintTrack.input_pass_name = thisPassName
 ecalDigi   = eDigi.EcalDigiProducer('ecalDigis')
 ecalReco   = eDigi.EcalRecProducer('ecalRecon')
 ecalVeto   = vetos.EcalVetoProcessor('ecalVetoBDT')
+ecalMip = vetos.EcalMipProcessor('ecalMip')
 
 # The newly produced, overlayed simhits
 ecalDigi.inputCollName += overlayStr
@@ -194,7 +196,7 @@ p.sequence.extend(full_tracking_sequence.sequence)
 p.sequence.extend(full_tracking_sequence.dqm_sequence)
 
 p.sequence.extend([
-    ecalDigi, ecalReco, ecalVeto,
+    ecalDigi, ecalReco, ecalVeto, ecalMip, ecal_cluster.EcalClusterProducer(),
     hcal_digi_reco, 
     hcal_veto,
     *ts_digis,
@@ -202,6 +204,7 @@ p.sequence.extend([
     trigScintTrack,
     count, TriggerProcessor('trigger', 8000.),
     dqm.PhotoNuclearDQM(),
+    dqm.EcalClusterAnalyzer()
 ])
 
 p.sequence.extend(dqm_with_overlay)

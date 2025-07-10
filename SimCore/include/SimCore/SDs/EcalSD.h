@@ -11,9 +11,9 @@
 // LDMX
 #include "DetDescr/EcalID.h"
 #include "SimCore/Event/SimCalorimeterHit.h"
+#include "SimCore/G4User/TrackMap.h"
 #include "SimCore/G4User/TrackingAction.h"
-#include "SimCore/SensitiveDetector.h"
-#include "SimCore/TrackMap.h"
+#include "SimCore/SDs/SensitiveDetector.h"
 
 // ROOT
 #include "TMath.h"
@@ -83,6 +83,8 @@ class EcalSD : public SensitiveDetector {
   bool enableHitContribs_;
   /// compress hit contribs
   bool compressHitContribs_;
+  /// maximum track ID to be considered an "origin"
+  int max_origin_track_id_;
 };
 
 }  // namespace simcore

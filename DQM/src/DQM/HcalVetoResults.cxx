@@ -7,6 +7,7 @@ namespace dqm {
 void HcalVetoResults::configure(framework::config::Parameters &ps) {
   hcal_veto_name_ = ps.getParameter<std::string>("hcal_veto_name");
   hcal_veto_pass_ = ps.getParameter<std::string>("hcal_veto_pass");
+  hcal_veto_passname_ = ps.getParameter<std::string>("hcal_veto_passname");
 }
 
 void HcalVetoResults::onProcessStart() {
@@ -30,7 +31,8 @@ void HcalVetoResults::onProcessStart() {
 
 void HcalVetoResults::analyze(const framework::Event &event) {
   // Get the veto object
-  auto hcal_veto{event.getObject<ldmx::HcalVetoResult>("HcalVeto")};
+  auto hcal_veto{
+      event.getObject<ldmx::HcalVetoResult>("HcalVeto", hcal_veto_passname_)};
 
   // Get variables to be plotted
   auto veto_passed = hcal_veto.passesVeto();
@@ -54,4 +56,4 @@ void HcalVetoResults::analyze(const framework::Event &event) {
 
 }  // namespace dqm
 
-DECLARE_ANALYZER_NS(dqm, HcalVetoResults)
+DECLARE_ANALYZER(dqm::HcalVetoResults)

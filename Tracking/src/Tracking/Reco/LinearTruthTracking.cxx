@@ -20,8 +20,7 @@ void LinearTruthTracking::configure(framework::config::Parameters& parameters) {
   input_rec_hits_collection_ = parameters.getParameter<std::string>(
       "input_recHits_collection", "EcalRecHits");
 
-  input_pass_name_ =
-      parameters.getParameter<std::string>("input_pass_name", "");
+  input_pass_name_ = parameters.getParameter<std::string>("input_pass_name");
 
   ecal_first_layer_z_threshold_ =
       parameters.getParameter<double>("ecal_first_layer_z_threshold");
@@ -221,4 +220,4 @@ double LinearTruthTracking::globalChiSquare(
 }  // namespace reco
 }  // namespace tracking
 
-DECLARE_PRODUCER_NS(tracking::reco, LinearTruthTracking);
+DECLARE_PRODUCER(tracking::reco::LinearTruthTracking);

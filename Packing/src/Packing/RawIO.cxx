@@ -23,4 +23,4 @@ void RawIO::onProcessEnd() { raw_file_->close(); }
 
 }  // namespace packing
 
-DECLARE_PRODUCER_NS(packing, RawIO)
+DECLARE_PRODUCER(packing::RawIO)

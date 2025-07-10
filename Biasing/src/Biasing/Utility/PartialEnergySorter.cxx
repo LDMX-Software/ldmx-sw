@@ -75,4 +75,4 @@ void PartialEnergySorter::stepping(const G4Step* step) {
 }  // namespace utility
 }  // namespace biasing
 
-DECLARE_ACTION(biasing::utility, PartialEnergySorter)
+DECLARE_ACTION(biasing::utility::PartialEnergySorter)

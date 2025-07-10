@@ -54,6 +54,7 @@ class HcalClusterProducer : public framework::Producer {
   double EminCluster_{0.};
   double cutOff_{0.};
   std::string clusterCollName_;
+  std::string hcal_hits_pass_name_;
 };
 
 }  // namespace hcal

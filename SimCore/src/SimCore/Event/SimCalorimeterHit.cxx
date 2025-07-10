@@ -35,12 +35,13 @@ ClassImp(ldmx::SimCalorimeterHit)
   }
 
   void SimCalorimeterHit::addContrib(int incidentID, int trackID, int pdgCode,
-                                     float edep, float time) {
+                                     float edep, float time, int originID) {
     incidentIDContribs_.push_back(incidentID);
     trackIDContribs_.push_back(trackID);
     pdgCodeContribs_.push_back(pdgCode);
     edepContribs_.push_back(edep);
     timeContribs_.push_back(time);
+    originContribs_.push_back(originID);
     edep_ += edep;
     if (time < time_ || time_ == 0) {
       time_ = time;
@@ -55,6 +56,7 @@ ClassImp(ldmx::SimCalorimeterHit)
     contrib.edep = edepContribs_.at(i);
     contrib.time = timeContribs_.at(i);
     contrib.pdgCode = pdgCodeContribs_.at(i);
+    contrib.originID = originContribs_.at(i);
     return contrib;
   }
 

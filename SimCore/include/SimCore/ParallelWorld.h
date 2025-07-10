@@ -20,6 +20,7 @@
 //-------------//
 //   ldmx-sw   //
 //-------------//
+#include "Framework/Logger.h"
 #include "SimCore/Geo/AuxInfoReader.h"
 
 namespace simcore {
@@ -46,7 +47,7 @@ class ParallelWorld : public G4VUserParallelWorld {
   geo::AuxInfoReader* auxInfoReader_{nullptr};
 
   /// Enable logging
-  enableLogging("ParallelWorld")
+  enableLogging("ParallelWorld");
 
 };  // ParallelWorld
 }  // namespace simcore

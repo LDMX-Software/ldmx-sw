@@ -10,6 +10,8 @@ namespace dqm {
 
 void SimObjects::configure(framework::config::Parameters& ps) {
   sim_pass_ = ps.getParameter<std::string>("sim_pass");
+  sim_particles_map_passname_ =
+      ps.getParameter<std::string>("sim_particles_map_passname");
   return;
 }
 
@@ -147,8 +149,8 @@ void SimObjects::analyze(const framework::Event& event) {
     for (auto pt : track_colls) createTrackerHists(pt.name());
   }
 
-  auto const& particle_map{
-      event.getMap<int, ldmx::SimParticle>("SimParticles")};
+  auto const& particle_map{event.getMap<int, ldmx::SimParticle>(
+      "SimParticles", sim_particles_map_passname_)};
   for (auto const& [track_id, particle] : particle_map) {
     auto const& momentum{particle.getMomentum()};
     auto const& vertex{particle.getVertex()};
@@ -235,4 +237,4 @@ void SimObjects::analyze(const framework::Event& event) {
 
 }  // namespace dqm
 
-DECLARE_ANALYZER_NS(dqm, SimObjects);
+DECLARE_ANALYZER(dqm::SimObjects);

@@ -61,4 +61,4 @@ void AlignmentTestProcessor::onProcessEnd() {}
 
 }  // namespace tracking::reco
 
-DECLARE_PRODUCER_NS(tracking::reco, AlignmentTestProcessor)
+DECLARE_PRODUCER(tracking::reco::AlignmentTestProcessor)

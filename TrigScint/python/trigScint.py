@@ -30,6 +30,8 @@ class TrigScintDigiProducer(ldmxcfg.Producer) :
         import time
         self.randomSeed = int(time.time())
         self.verbose = False
+        
+        self.sim_particles_passname = ""
 
     def pad1() :
         """Get the digitizer for the trigger pad most upstream of tagger"""
@@ -50,6 +52,13 @@ class TrigScintDigiProducer(ldmxcfg.Producer) :
         digi = TrigScintDigiProducer( 'trigScintDigisPad3' )
         digi.input_collection = 'TriggerPad3SimHits'
         digi.output_collection= 'trigScintDigisPad3'
+        return digi
+
+    def target() :
+        """Get the digitizer for the active target"""
+        digi = TrigScintDigiProducer( 'TargetDigis' )
+        digi.input_collection = 'TargetSimHits'
+        digi.output_collection= 'TargetDigis'
         return digi
 
 
@@ -299,6 +308,14 @@ class TrigScintClusterProducer(ldmxcfg.Producer) :
         cluster = TrigScintClusterProducer( 'trigScintClustersPad3' )
         cluster.input_collection = 'trigScintDigisPad3'
         cluster.output_collection= 'TriggerPad3Clusters'
+        cluster.pad_time= 0.
+        return cluster
+
+    def target() :
+        """Get the cluster producer for the active target"""
+        cluster = TrigScintClusterProducer( 'TargetClusters' )
+        cluster.input_collection = 'TargetDigis'
+        cluster.output_collection= 'TargetClusters'
         cluster.pad_time= 0.
         return cluster
 

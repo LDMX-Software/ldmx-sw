@@ -128,6 +128,13 @@ void GSFProcessor::configure(framework::config::Parameters& parameters) {
   measCollection_ = parameters.getParameter<std::string>("measCollection",
                                                          "DigiTaggerSimHits");
 
+  track_passname_ = parameters.getParameter<std::string>("track_passname");
+  meas_passname_ = parameters.getParameter<std::string>("meas_passname");
+  track_collection_event_passname_ =
+      parameters.getParameter<std::string>("track_collection_event_passname");
+  meas_collection_event_passname_ =
+      parameters.getParameter<std::string>("meas_collection_event_passname");
+
   maxComponents_ = parameters.getParameter<int>("maxComponents", 4);
   abortOnError_ = parameters.getParameter<bool>("abortOnError", false);
   disableAllMaterialHandling_ =
@@ -154,12 +161,14 @@ void GSFProcessor::produce(framework::Event& event) {
   auto tg{geometry()};
 
   // Retrieve the tracks
-  if (!event.exists(trackCollection_)) return;
-  auto tracks{event.getCollection<ldmx::Track>(trackCollection_)};
+  if (!event.exists(trackCollection_, track_collection_event_passname_)) return;
+  auto tracks{
+      event.getCollection<ldmx::Track>(trackCollection_, track_passname_)};
 
   // Retrieve the measurements
-  if (!event.exists(measCollection_)) return;
-  auto measurements{event.getCollection<ldmx::Measurement>(measCollection_)};
+  if (!event.exists(measCollection_, meas_collection_event_passname_)) return;
+  auto measurements{
+      event.getCollection<ldmx::Measurement>(measCollection_, meas_passname_)};
 
   tracking::sim::LdmxMeasurementCalibrator calibrator{measurements};
 
@@ -452,4 +461,4 @@ void GSFProcessor::onProcessEnd() {};
 }  // namespace reco
 }  // namespace tracking
 
-DECLARE_PRODUCER_NS(tracking::reco, GSFProcessor)
+DECLARE_PRODUCER(tracking::reco::GSFProcessor)

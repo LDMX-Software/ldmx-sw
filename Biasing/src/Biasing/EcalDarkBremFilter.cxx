@@ -12,7 +12,7 @@
 #include "G4DarkBreM/G4APrime.h"              //checking if particles match A'
 #include "G4DarkBreM/G4DarkBremsstrahlung.h"  //checking for dark brem secondaries
 #include "G4LogicalVolumeStore.hh"            //for the store
-#include "SimCore/UserTrackInformation.h"     //make sure A' is saved
+#include "SimCore/G4User/UserTrackInformation.h"  //make sure A' is saved
 
 namespace biasing {
 
@@ -141,4 +141,4 @@ void EcalDarkBremFilter::AbortEvent(const std::string& reason) const {
 }
 }  // namespace biasing
 
-DECLARE_ACTION(biasing, EcalDarkBremFilter)
+DECLARE_ACTION(biasing::EcalDarkBremFilter)

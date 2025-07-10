@@ -32,6 +32,7 @@ import LDMX.Ecal.EcalGeometry
 import LDMX.Ecal.ecal_hardcoded_conditions
 import LDMX.Ecal.digi as ecal_digi
 import LDMX.Ecal.vetos as ecal_vetos
+import LDMX.Ecal.ecalClusters as ecal_cluster
 
 # Load the HCAL modules
 import LDMX.Hcal.HcalGeometry
@@ -67,6 +68,7 @@ from LDMX.DQM import dqm
 
 # Load ecal veto and use tracking in it
 ecal_veto = ecal_vetos.EcalVetoProcessor()
+ecal_mip = ecal_vetos.EcalMipProcessor()
 
 # Load hcal veto
 import LDMX.Hcal.hcal as hcal
@@ -83,7 +85,9 @@ p.sequence.extend(full_tracking_sequence.dqm_sequence)
 p.sequence.extend([
         ecal_digi.EcalDigiProducer(),
         ecal_digi.EcalRecProducer(), 
+        ecal_cluster.EcalClusterProducer(),
         ecal_veto,
+        ecal_mip,
         hcal_digi_reco,
         hcal_veto,
         *ts_digis,
@@ -91,6 +95,7 @@ p.sequence.extend([
         trigScintTrack,
         count, TriggerProcessor('trigger', 8000.),
         dqm.PhotoNuclearDQM(),
+        dqm.EcalClusterAnalyzer()
         ])
 
 p.sequence.extend(dqm.all_dqm)

@@ -77,4 +77,4 @@ void TaggerVetoFilter::stepping(const G4Step *step) {
 
 }  // namespace biasing
 
-DECLARE_ACTION(biasing, TaggerVetoFilter)
+DECLARE_ACTION(biasing::TaggerVetoFilter)

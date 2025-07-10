@@ -25,7 +25,7 @@
 //    LDMX    //
 //------------//
 #include "SimCore/G4User/PtrRetrieval.h"
-#include "SimCore/UserAction.h"
+#include "SimCore/G4User/UserAction.h"
 
 /*~~~~~~~~~~*/
 /*   Core   */

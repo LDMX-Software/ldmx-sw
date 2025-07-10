@@ -112,4 +112,4 @@ void TargetENProcessFilter::EndOfEventAction(const G4Event*) {
 }
 }  // namespace biasing
 
-DECLARE_ACTION(biasing, TargetENProcessFilter)
+DECLARE_ACTION(biasing::TargetENProcessFilter)

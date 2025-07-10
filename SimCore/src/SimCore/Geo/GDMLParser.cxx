@@ -26,3 +26,9 @@ void GDMLParser::read() {
 
 }  // namespace geo
 }  // namespace simcore
+
+namespace {
+auto v =
+    ::simcore::geo::Parser::Factory::get().declare<::simcore::geo::GDMLParser>(
+        "gdml");
+}

@@ -9,7 +9,7 @@
 /*~~~~~~~~~~~~~*/
 /*   SimCore   */
 /*~~~~~~~~~~~~~*/
-#include "SimCore/UserTrackInformation.h"
+#include "SimCore/G4User/UserTrackInformation.h"
 
 namespace biasing {
 namespace utility {
@@ -38,4 +38,4 @@ void DecayChildrenKeeper::PostUserTrackingAction(const G4Track* track) {
 }  // namespace utility
 }  // namespace biasing
 
-DECLARE_ACTION(biasing::utility, DecayChildrenKeeper)
+DECLARE_ACTION(biasing::utility::DecayChildrenKeeper)

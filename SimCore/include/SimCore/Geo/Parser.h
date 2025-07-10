@@ -1,11 +1,9 @@
 #ifndef SIMCORE_GEO_GEOPARSER_H_
 #define SIMCORE_GEO_GEOPARSER_H_
 
-//---< C++ >---//
-#include <functional>
-
 //---< Framework >---//
 #include "Framework/Configure/Parameters.h"
+#include "Framework/Factory.h"
 
 //---< SimCore >---//
 #include "SimCore/ConditionsInterface.h"
@@ -49,11 +47,10 @@ class Parser {
 
   virtual ~Parser() = default;
 
+  DECLARE_FACTORY(Parser, std::shared_ptr<Parser>,
+                  framework::config::Parameters &,
+                  simcore::ConditionsInterface &);
 };  // Parser
-
-using createFunc =
-    std::function<Parser *(framework::config::Parameters &parameters,
-                           simcore::ConditionsInterface &ci)>;
 
 }  // namespace geo
 }  // namespace simcore

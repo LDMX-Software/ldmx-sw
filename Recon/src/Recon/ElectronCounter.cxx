@@ -72,4 +72,4 @@ void ElectronCounter::produce(framework::Event& event) {
 }
 }  // namespace recon
 
-DECLARE_PRODUCER_NS(recon, ElectronCounter)
+DECLARE_PRODUCER(recon::ElectronCounter)
