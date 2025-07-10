@@ -476,7 +476,7 @@ class SimObjects(ldmxcfg.Analyzer) :
 
 class DarkBremInteraction(ldmxcfg.Producer) :
     def __init__(self) :
-        super().__init__('db_kinematics','dqm::DarkBremInteraction','DQM')
+        super().__init__('DarkBremDQM','dqm::DarkBremInteraction','DQM')
 
         self.particle_passname = ''
 
@@ -484,11 +484,16 @@ class DarkBremInteraction(ldmxcfg.Producer) :
             'Dark Photon Energy [MeV]',101,0,8080)
         self.build1DHistogram('aprime_pt',
             'Dark Photon pT [MeV]',100,0,2000)
+        self.build1DHistogram('aprime_theta',
+            'Dark Photon Theta [degree]',50,0.,100.)
 
         self.build1DHistogram('recoil_energy',
             'Recoil Electron Energy [MeV]',101,0,8080)
         self.build1DHistogram('recoil_pt',
             'Recoil Electron pT [MeV]',100,0,2000)
+        self.build1DHistogram('recoil_theta',
+            'Recoil Electron Theta [degree]',50,0.,100.)
+            
 
         self.build1DHistogram('incident_energy',
             'Incident Electron Energy [MeV]',101,0,8080)
@@ -497,12 +502,11 @@ class DarkBremInteraction(ldmxcfg.Producer) :
 
         # weird binning so we can see the target and trigger pads
         self.build1DHistogram('dark_brem_z',
-            'Z Location of Dark Brem [mm]',
-            [-5.0, -4.6752, -3.5502, -2.4252, -1.3002, -0.1752, 0.1752, 1.]) 
+            'Z Location of Dark Brem [mm]', 120, -5., 1.)
         # elements are hydrogen and carbon (for trigger pads) and tungsten target
         self.build1DHistogram('dark_brem_element',
             'Element in which Dark Brem Occurred',
-            10, 0, 10)
+            13, 0, 13)
         self.build1DHistogram('dark_brem_material',
             'Material in which Dark Brem Occurred',
             8, 0, 8)
