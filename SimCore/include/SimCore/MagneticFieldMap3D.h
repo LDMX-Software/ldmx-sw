@@ -9,6 +9,7 @@
 #define SIMCORE_MAGNETICFIELDMAP3D_H_
 
 // Geant4
+#include "Framework/Logger.h"
 #include "G4MagneticField.hh"
 
 // STL
@@ -111,6 +112,11 @@ class MagneticFieldMap3D : public G4MagneticField {
    * Flags for inverting dimensions.
    */
   bool invertX_, invertY_, invertZ_;
+
+  /**
+   * Enable logging for this class.
+   */
+  enableLogging("MagneticFieldMap3D")
 };
 
 }  // namespace simcore

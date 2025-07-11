@@ -30,23 +30,21 @@ void ReSimulator::produce(framework::Event& event) {
   auto& eventHeader{event.getEventHeader()};
   const auto eventNumber{eventHeader.getEventNumber()};
   if (skip(event)) {
-    if (verbosity_ > 1) {
-      ldmx_log(trace) << "Skipping event: " << eventNumber
-                      << " since it wasn't part of the requested events...";
-    }
+    ldmx_log(trace) << "Skipping event: " << eventNumber
+                    << " since it wasn't part of the requested events...";
+
     this->abortEvent();  // get out of processors loop
     return;
   }
-  if (verbosity_ > 0) {
-    ldmx_log(trace) << "Resimulating " << eventNumber;
-  }
+
+  ldmx_log(trace) << "Resimulating " << eventNumber;
 
   std::istringstream iss(eventHeader.getStringParameter("eventSeed"));
   G4Random::restoreFullState(iss);
   runManager_->ProcessOneEvent(eventNumber);
-  if (verbosity_ > 1) {
-    ldmx_log(trace) << "Finished with event number " << eventNumber;
-  }
+
+  ldmx_log(trace) << "Finished with event number " << eventNumber;
+
   if (runManager_->GetCurrentEvent()->IsAborted()) {
     runManager_->TerminateOneEvent();
     SensitiveDetector::Factory::get().apply(

@@ -121,8 +121,7 @@ void APrimePhysics::ConstructProcess() {
       EXCEPTION_RAISE("BadConf",
                       "Unrecognized model name '" + model_name + "'.");
     }
-    G4cout << "[ APrimePhysics ] : Initialization of dark brem complete"
-           << G4endl;
+    ldmx_log(trace) << "Initialization of dark brem complete";
   }
 }
 

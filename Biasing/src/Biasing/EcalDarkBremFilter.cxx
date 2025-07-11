@@ -32,11 +32,9 @@ EcalDarkBremFilter::EcalDarkBremFilter(
     }
   }
 
-  if (G4RunManager::GetRunManager()->GetVerboseLevel() > 0) {
-    ldmx_log(trace) << "Looking for A' in: ";
-    for (auto const& volume : volumes_) {
-      ldmx_log(trace) << "\t" << volume->GetName() << ", ";
-    }
+  ldmx_log(trace) << "Looking for A' in: ";
+  for (auto const& volume : volumes_) {
+    ldmx_log(trace) << "\t" << volume->GetName() << ", ";
   }
 }
 

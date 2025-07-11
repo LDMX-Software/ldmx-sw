@@ -42,11 +42,6 @@ void SimulatorBase::onProcessEnd() {
   //  processing are put there because ROOT)
   //  2. When Simulator is deleted because runManager_ is a unique_ptr
   runManager_.reset(nullptr);
-
-  // Delete the G4UIsession
-  // I don't think this needs to happen here, but since we are cleaning up
-  // loose ends...
-  sessionHandle_.reset(nullptr);
 };
 void SimulatorBase::onProcessStart() {
   // initialize run
@@ -108,8 +103,6 @@ void SimulatorBase::verifyParameters() const {
 void SimulatorBase::configure(framework::config::Parameters& parameters) {
   // parameters used to configure the simulation
   parameters_ = parameters;
-  // Set the verbosity level.  The default level  is 0.
-  verbosity_ = parameters_.getParameter<int>("verbosity");
 
   preInitCommands_ =
       parameters_.getParameter<std::vector<std::string>>("preInitCommands", {});
@@ -127,9 +120,6 @@ void SimulatorBase::configure(framework::config::Parameters& parameters) {
         "one of them can be present in a given run. To run the resimulator, "
         "use a an existing eventFile as input.");
   }
-  // Set up logging before creating the run manager so that output from the
-  // creation of the runManager goes to the appropriate place.
-  createLogging();
   runManager_ = std::make_unique<RunManager>(parameters_, conditionsIntf_);
   // Instantiate the class so cascade parameters can be set.
   // TODO: Are we actually using this?
@@ -145,21 +135,6 @@ void SimulatorBase::configure(framework::config::Parameters& parameters) {
                           std::to_string(g4Ret));
     }
   }
-}
-
-void SimulatorBase::createLogging() {
-  auto loggingPrefix = parameters_.getParameter<std::string>("logging_prefix");
-  if (verbosity_ == 0)
-    sessionHandle_ = std::make_unique<BatchSession>();
-  else if (verbosity_ > 1) {
-    if (loggingPrefix.empty())
-      sessionHandle_ = std::make_unique<LoggedSession>();
-    else
-      sessionHandle_ = std::make_unique<LoggedSession>(
-          loggingPrefix + "_G4cout.log", loggingPrefix + "_G4cerr.log");
-  }
-  if (sessionHandle_ != nullptr)
-    uiManager_->SetCoutDestination(sessionHandle_.get());
 }
 
 void SimulatorBase::saveTracks(framework::Event& event) {
@@ -194,10 +169,8 @@ void SimulatorBase::buildGeometry() {
 
   // Parse the detector geometry and validate if specified.
   auto detectorPath{parameters_.getParameter<std::string>("detector")};
-  if (verbosity_ > 0) {
-    std::cout << "[ Simulator ] : Reading in geometry from '" << detectorPath
-              << "'... " << std::flush;
-  }
+  ldmx_log(trace) << "Reading in geometry from '" << detectorPath;
+
   G4GeometryManager::GetInstance()->OpenGeometry();
   parser_ptr->read();
   runManager_->DefineWorldVolume(parser_ptr->GetWorldVolume());
