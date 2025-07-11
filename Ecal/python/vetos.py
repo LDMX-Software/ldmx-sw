@@ -31,7 +31,6 @@ class EcalVetoProcessor(ldmxcfg.Producer) :
         self.track_collection = "RecoilTracksClean"
         self.inverse_skim = False
 
-        self.sp_pass_name = ""
         self.sim_particles_passname = ""
         self.track_pass_name = ""
         

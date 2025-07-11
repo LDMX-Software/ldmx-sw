@@ -381,6 +381,8 @@ class EcalMipTrackingFeatures(ldmxcfg.Analyzer) :
                 'Recoil electron x [mm]',100,-300.,300.)
         self.build1DHistogram('recoil_y',
                 'Recoil electron y [mm]',100,-300.,300.)
+        self.build1DHistogram('n_tracking_hits',
+                'Num Tracking Hits',300,0.,300.)
         
 
 class EcalVetoResults(ldmxcfg.Analyzer) :
