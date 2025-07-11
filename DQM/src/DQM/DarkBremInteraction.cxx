@@ -104,8 +104,8 @@ void DarkBremInteraction::produce(framework::Event& event) {
 
   const auto& recoil_p = recoil->getMomentum();
   const auto& aprime_p = aprime->getMomentum();
-  TVector3 recoil_pvec(recoil_p[0], recoil_p[1], recoil_p[2]);
-  TVector3 aprime_pvec(aprime_p[0], aprime_p[1], aprime_p[2]);
+  ROOT::Math::XYZVector recoil_pvec(recoil_p[0], recoil_p[1], recoil_p[2]);
+  ROOT::Math::XYZVector aprime_pvec(aprime_p[0], aprime_p[1], aprime_p[2]);
 
   std::vector<double> incident_p = recoil_p;
   for (std::size_t i{0}; i < recoil_p.size(); ++i)

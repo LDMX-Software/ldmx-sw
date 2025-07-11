@@ -1,6 +1,5 @@
-#include <TVector3.h>
-
 #include "Framework/EventProcessor.h"
+#include "Math/Vector3D.h"
 #include "SimCore/Event/SimParticle.h"
 
 namespace dqm {
