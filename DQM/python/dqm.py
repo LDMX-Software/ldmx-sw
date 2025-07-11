@@ -506,7 +506,7 @@ class DarkBremInteraction(ldmxcfg.Producer) :
         # elements are hydrogen and carbon (for trigger pads) and tungsten target
         self.build1DHistogram('dark_brem_element',
             'Element in which Dark Brem Occurred',
-            13, 0, 13)
+            12, 0, 12)
         self.build1DHistogram('dark_brem_material',
             'Material in which Dark Brem Occurred',
             8, 0, 8)
