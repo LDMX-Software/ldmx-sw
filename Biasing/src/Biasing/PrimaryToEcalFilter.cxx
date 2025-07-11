@@ -1,19 +1,4 @@
-/*~~~~~~~~~~~~~*/
-/*   Biasing   */
-/*~~~~~~~~~~~~~*/
 #include "Biasing/PrimaryToEcalFilter.h"
-
-/*~~~~~~~~~~~~*/
-/*   Geant4   */
-/*~~~~~~~~~~~~*/
-#include "G4EventManager.hh"
-#include "G4RunManager.hh"
-#include "G4Step.hh"
-
-/*~~~~~~~~~~~~~*/
-/*   SimCore   */
-/*~~~~~~~~~~~~~*/
-#include "SimCore/G4User/PtrRetrieval.h"
 
 namespace biasing {
 
@@ -46,12 +31,11 @@ void PrimaryToEcalFilter::stepping(const G4Step* step) {
   // event.
   if (auto energy{step->GetPostStepPoint()->GetTotalEnergy()};
       energy < threshold_) {
-    /*
-    std::cout << "[ PrimaryToEcalFilter ] : Aborting "
-        <<
-    G4EventManager::GetEventManager()->GetConstCurrentEvent()->GetEventID() <<
-    std::endl;
-    */
+    ldmx_log(trace) << "Aborting "
+                    << G4EventManager::GetEventManager()
+                           ->GetConstCurrentEvent()
+                           ->GetEventID();
+
     step->GetTrack()->SetTrackStatus(fKillTrackAndSecondaries);
     G4RunManager::GetRunManager()->AbortEvent();
     return;

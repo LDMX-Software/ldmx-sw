@@ -18,8 +18,6 @@ EcalRecProducer::EcalRecProducer(const std::string& name,
                                  framework::Process& process)
     : Producer(name, process) {}
 
-EcalRecProducer::~EcalRecProducer() {}
-
 void EcalRecProducer::configure(framework::config::Parameters& ps) {
   // collection names
   digiCollName_ = ps.getParameter<std::string>("digiCollName");
@@ -67,11 +65,9 @@ void EcalRecProducer::produce(framework::Event& event) {
     // get the estimated charge deposited from digi samples
     double charge(0.);
 
-    /* debug printout
-    std::cout << "Recon { "
-        << "ID: " << id << ", "
-        << "TOA: " << hitTime << "ns } ";
-        */
+    ldmx_log(trace) << "Recon { "
+                    // << "ID: " << id.raw() << ", "
+                    << "TOA: " << hitTime << " ns } ";
     if (digi.isTOT()) {
       // TOT - number of clock ticks that pulse was over threshold
       //  this is related to the amplitude of the pulse approximately through a
@@ -84,9 +80,8 @@ void EcalRecProducer::produce(framework::Event& event) {
       charge = (digi.tot() - the_conditions.totPedestal(id)) *
                the_conditions.totGain(id);
 
-      /* debug printout
-      std::cout << "TOT Mode -> " << digi.tot() << "TDC -> " << charge << " fC";
-       */
+      ldmx_log(trace) << "TOT Mode -> " << digi.tot() << "TDC -> " << charge
+                      << " fC";
     } else {
       // ADC mode of readout
       // ADC - voltage measurement at a specific time of the pulse
@@ -107,9 +102,7 @@ void EcalRecProducer::produce(framework::Event& event) {
       charge = (digi.soi().adc_t() - the_conditions.adcPedestal(id)) *
                the_conditions.adcGain(id);
 
-      /* debug printout
-      std::cout << "ADC Mode -> " << charge << " fC";
-       */
+      ldmx_log(trace) << "ADC Mode -> " << charge << " fC";
     }
 
     /** Negative Electron (charge) count
@@ -128,11 +121,8 @@ void EcalRecProducer::produce(framework::Event& event) {
     double num_mips_equivalent = charge / charge_per_mip_;
     double energy_deposited_in_Si = num_mips_equivalent * mip_si_energy_;
 
-    /* debug printout
-    std::cout << " -> " << num_mips_equivalent
-        << " equiv MIPs -> " << energy_deposited_in_Si << " MeV"
-        << std::endl;
-     */
+    ldmx_log(trace) << " -> " << num_mips_equivalent << " equiv MIPs -> "
+                    << energy_deposited_in_Si << " MeV";
 
     // incorporate layer weights
     double reconstructed_energy =
