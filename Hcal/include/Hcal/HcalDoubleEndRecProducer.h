@@ -40,8 +40,6 @@ class HcalDoubleEndRecProducer : public framework::Producer {
   /// length of clock cycle [ns]
   double clock_cycle_;
 
-  enableLogging("HcalDoubleEndRecProducer")
-
 };  // HcalDoubleEndRecProducer
 }  // namespace hcal
 

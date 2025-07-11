@@ -111,13 +111,11 @@ bool EcalDarkBremFilter::inDesiredVolume(const G4Track* track) const {
 }
 
 void EcalDarkBremFilter::AbortEvent(const std::string& reason) const {
-  if (G4RunManager::GetRunManager()->GetVerboseLevel() > 1) {
-    ldmx_log(trace) << "("
-                    << G4EventManager::GetEventManager()
-                           ->GetConstCurrentEvent()
-                           ->GetEventID()
-                    << ") " << reason << " Aborting event.";
-  }
+  ldmx_log(trace)
+      << "("
+      << G4EventManager::GetEventManager()->GetConstCurrentEvent()->GetEventID()
+      << ") " << reason << " Aborting event.";
+
   G4RunManager::GetRunManager()->AbortEvent();
   return;
 }
