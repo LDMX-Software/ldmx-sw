@@ -21,9 +21,11 @@ void EcalMipTrackingFeatures::analyze(const framework::Event &event) {
       event.getObject<ldmx::EcalMipResult>(ecal_mip_name_, ecal_mip_pass_)};
   const auto &veto{
       event.getObject<ldmx::EcalVetoResult>(ecal_veto_name_, ecal_veto_pass_)};
+
   histograms_.fill("n_straight_tracks", mip_result.getNStraightTracks());
   histograms_.fill("n_linreg_segments", mip_result.getNLinRegTracks());
   histograms_.fill("first_near_photon_layer", mip_result.getFirstNearPhLayer());
+  histograms_.fill("n_tracking_hits", veto.getNTrackingHits());
   histograms_.fill("ep_ang", veto.getEPAng());
   histograms_.fill("ep_sep", veto.getEPSep());
   auto recoil_mom = veto.getRecoilMomentum();
