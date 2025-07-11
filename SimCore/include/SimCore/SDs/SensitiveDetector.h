@@ -3,6 +3,7 @@
 
 #include "Framework/Configure/Parameters.h"
 #include "Framework/Factory.h"
+#include "Framework/Logger.h"
 #include "Framework/RunHeader.h"
 #include "SimCore/ConditionsInterface.h"
 #include "SimCore/G4User/TrackMap.h"
@@ -138,6 +139,11 @@ class SensitiveDetector : public G4VSensitiveDetector {
   const TrackMap& getTrackMap() const {
     return simcore::g4user::TrackingAction::get()->getTrackMap();
   }
+
+  /**
+   * Enable logging for this class
+   */
+  enableLogging("SensitiveDetector");
 
  private:
   /// Handle to our interface to conditions objects

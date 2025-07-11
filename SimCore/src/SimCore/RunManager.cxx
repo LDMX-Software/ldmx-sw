@@ -48,6 +48,7 @@ RunManager::RunManager(framework::config::Parameters& parameters,
 
 void RunManager::setupPhysics() {
   auto pList{physicsListFactory_.GetReferencePhysList("FTFP_BERT")};
+  pList->SetVerboseLevel(0);
 
   parallelWorldPath_ = parameters_.getParameter<std::string>("scoringPlanes");
   isPWEnabled_ = !parallelWorldPath_.empty();
@@ -193,10 +194,7 @@ void RunManager::TerminateOneEvent() {
   };
 
   reactivate_dark_brem(G4Electron::Definition()->GetProcessManager());
-
-  if (this->GetVerboseLevel() > 1) {
-    ldmx_log(debug) << "Reset the dark brem process (if it was activated)";
-  }
+  ldmx_log(debug) << "Reset the dark brem process (if it was activated)";
 }
 
 DetectorConstruction* RunManager::getDetectorConstruction() {

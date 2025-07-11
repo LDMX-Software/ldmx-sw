@@ -93,16 +93,16 @@ void HcalDoubleEndRecProducer::produce(framework::Event& event) {
     }
 
     // update position in strip according to time measurement
-    double v =
-        299.792 / 1.6;  // velocity of light in polystyrene, n = 1.6 = c/v
+    // velocity of light in polystyrene, n = 1.6 = c/v
+    double v = 299.792 / 1.6;
     double hitTimeDiff = pos_time - neg_time;
 
-    // std::cout << "\n new hit " << std::endl;
-    // std::cout << "strip " << id.strip() << " layer " << id.layer() << "
-    // center position " << position.X() << " " << position.Y() << " " <<
-    // position.Z() << std::endl; std::cout << "hittime pos " << pos_time << "
-    // neg " << neg_time << " bar sign " << " diff " << hitTimeDiff <<
-    // std::endl;
+    ldmx_log(trace) << "\n new hit ";
+    ldmx_log(trace) << "strip " << id.strip() << " layer " << id.layer()
+                    << "center position X = " << position.X()
+                    << " Y =" << position.Y() << " Z = " << position.Z();
+    ldmx_log(trace) << "hittime pos " << pos_time << "neg " << neg_time
+                    << " bar sign " << " diff " << hitTimeDiff;
 
     int position_bar_sign = hitTimeDiff > 0 ? 1 : -1;
     double position_unchanged = 0;
@@ -115,9 +115,10 @@ void HcalDoubleEndRecProducer::produce(framework::Event& event) {
       position_unchanged = position.Y();
       position.SetY(position_bar);
     }
-    // std::cout << "position unchanged " << position_unchanged << " orientation
-    // " << orientation_int << std::endl; std::cout << "newposition " <<
-    // position.X() << " " << position.Y() << " " << position.Z() << std::endl;
+    ldmx_log(trace) << "position unchanged " << position_unchanged
+                    << " orientation = " << orientation_int;
+    ldmx_log(trace) << "newposition X = " << position.X()
+                    << " Y = " << position.Y() << " Z = " << position.Z();
 
     // TODO: switch unique hit time for this pulse
     [[maybe_unused]] double hitTime =

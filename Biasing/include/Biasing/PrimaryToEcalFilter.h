@@ -9,12 +9,19 @@
 /*~~~~~~~~~~~~~*/
 /*   SimCore   */
 /*~~~~~~~~~~~~~*/
+#include "SimCore/G4User/PtrRetrieval.h"
 #include "SimCore/G4User/UserAction.h"
 
 /*~~~~~~~~~~~~~~~*/
 /*   Framework   */
 /*~~~~~~~~~~~~~~~*/
 #include "Framework/Logger.h"
+/*~~~~~~~~~~~~*/
+/*   Geant4   */
+/*~~~~~~~~~~~~*/
+#include "G4EventManager.hh"
+#include "G4RunManager.hh"
+#include "G4Step.hh"
 
 // Forward declarations
 class G4Step;

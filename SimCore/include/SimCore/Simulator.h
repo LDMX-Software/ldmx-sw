@@ -26,6 +26,39 @@
 #include "SimCore/RunManager.h"
 #include "SimCore/SimulatorBase.h"
 
+/*~~~~~~~~~~~~~~~*/
+/*   Framework   */
+/*~~~~~~~~~~~~~~~*/
+#include "Framework/EventFile.h"
+#include "Framework/Process.h"
+#include "Framework/RandomNumberSeedService.h"
+#include "Framework/Version.h"  //for LDMX_INSTALL path
+
+/*~~~~~~~~~~~~~*/
+/*   SimCore   */
+/*~~~~~~~~~~~~~*/
+#include "SimCore/APrimePhysics.h"
+#include "SimCore/BiasOperators/XsecBiasingOperator.h"
+#include "SimCore/DetectorConstruction.h"
+#include "SimCore/Event/HepMC3GenEvent.h"
+#include "SimCore/G4Session.h"
+#include "SimCore/G4User/TrackingAction.h"
+#include "SimCore/G4User/UserEventInformation.h"
+#include "SimCore/Generators/PrimaryGenerator.h"
+#include "SimCore/SDs/SensitiveDetector.h"
+
+/*~~~~~~~~~~~~~~*/
+/*    Geant4    */
+/*~~~~~~~~~~~~~~*/
+#include "G4BiasingProcessInterface.hh"
+#include "G4CascadeParameters.hh"
+#include "G4Electron.hh"
+#include "G4GDMLParser.hh"
+#include "G4GeometryManager.hh"
+#include "G4UImanager.hh"
+#include "G4UIsession.hh"
+#include "Randomize.hh"
+
 namespace genie {
 class Interaction;
 }

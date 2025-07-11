@@ -82,8 +82,8 @@ void ReSimVerifier::analyze(const framework::Event& event) {
     }
   }
   if (skipped) {
-    std::cout << "Skipping event " << eventNumber
-              << "since it was not resimulated" << std::endl;
+    ldmx_log(info) << "Skipping event " << eventNumber
+                   << "since it was not resimulated";
   }
   if (!verifySimParticles(event)) {
     passing = false;
@@ -94,7 +94,7 @@ void ReSimVerifier::analyze(const framework::Event& event) {
     if (stop_on_error) {
       EXCEPTION_RAISE("ReSimVerify", ss.str());
     } else {
-      std::cout << ss.str();
+      ldmx_log(info) << ss.str();
     }
   }
 

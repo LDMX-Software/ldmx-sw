@@ -10,7 +10,11 @@
 //----------------//
 //   LDMX Core    //
 //----------------//
+#include "Ecal/EcalTriggerGeometry.h"
 #include "Framework/EventProcessor.h"
+#include "Recon/Event/HgcrocDigiCollection.h"
+#include "Recon/Event/HgcrocTrigDigi.h"
+#include "Tools/HgcrocTriggerCalculations.h"
 
 namespace ecal {
 

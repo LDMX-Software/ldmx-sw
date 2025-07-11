@@ -108,8 +108,6 @@ void SimulatorBase::verifyParameters() const {
 void SimulatorBase::configure(framework::config::Parameters& parameters) {
   // parameters used to configure the simulation
   parameters_ = parameters;
-  // Set the verbosity level.  The default level  is 0.
-  verbosity_ = parameters_.getParameter<int>("verbosity");
 
   preInitCommands_ =
       parameters_.getParameter<std::vector<std::string>>("preInitCommands", {});
@@ -146,18 +144,13 @@ void SimulatorBase::configure(framework::config::Parameters& parameters) {
     }
   }
 }
-
 void SimulatorBase::createLogging() {
   auto loggingPrefix = parameters_.getParameter<std::string>("logging_prefix");
-  if (verbosity_ == 0)
-    sessionHandle_ = std::make_unique<BatchSession>();
-  else if (verbosity_ > 1) {
-    if (loggingPrefix.empty())
-      sessionHandle_ = std::make_unique<LoggedSession>();
-    else
-      sessionHandle_ = std::make_unique<LoggedSession>(
-          loggingPrefix + "_G4cout.log", loggingPrefix + "_G4cerr.log");
-  }
+  // For now dont print out anything from GEANT
+  // Next step is to modify G4Session to print everything into our logging
+  // system
+  sessionHandle_ = std::make_unique<BatchSession>();
+
   if (sessionHandle_ != nullptr)
     uiManager_->SetCoutDestination(sessionHandle_.get());
 }
@@ -194,10 +187,7 @@ void SimulatorBase::buildGeometry() {
 
   // Parse the detector geometry and validate if specified.
   auto detectorPath{parameters_.getParameter<std::string>("detector")};
-  if (verbosity_ > 0) {
-    std::cout << "[ Simulator ] : Reading in geometry from '" << detectorPath
-              << "'... " << std::flush;
-  }
+  ldmx_log(trace) << "Reading in geometry from '" << detectorPath << "'";
   G4GeometryManager::GetInstance()->OpenGeometry();
   parser_ptr->read();
   runManager_->DefineWorldVolume(parser_ptr->GetWorldVolume());

@@ -1,17 +1,5 @@
 #include "SimCore/SDs/EcalSD.h"
 
-// Geant4
-#include "G4Polyhedron.hh"
-#include "G4Step.hh"
-#include "G4StepPoint.hh"
-#include "G4VSolid.hh"
-
-/*~~~~~~~~~~~~~~*/
-/*   DetDescr   */
-/*~~~~~~~~~~~~~~*/
-#include "DetDescr/EcalGeometry.h"
-#include "DetDescr/EcalID.h"
-
 namespace simcore {
 
 const std::string EcalSD::COLLECTION_NAME = "EcalSimHits";
@@ -34,10 +22,7 @@ G4bool EcalSD::ProcessHits(G4Step* aStep, G4TouchableHistory*) {
 
   // Skip steps with no energy dep which come from non-Geantino particles.
   if (edep == 0.0 and not isGeantino(aStep)) {
-    if (verboseLevel > 2) {
-      G4cout << "CalorimeterSD skipping step with zero edep." << G4endl
-             << G4endl;
-    }
+    ldmx_log(trace) << "CalorimeterSD skipping step with zero edep.";
     return false;
   }
 
