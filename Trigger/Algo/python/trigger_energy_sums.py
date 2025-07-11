@@ -7,7 +7,6 @@ class EcalTPSelector(Producer) :
         super().__init__(instance_name , 'trigger::EcalTPSelector','Trigger')
         self.tpCollName = "ecalTrigDigis"
         self.passCollName = "ecalTrig"
-        
         self.tp_coll_pass_name = ""
         self.tp_coll_event_passname = ""
 
@@ -16,8 +15,10 @@ class HcalTPSelector(Producer) :
     """
     def __init__(self, instance_name = 'myHcalTPSelector') :
         super().__init__(instance_name , 'trigger::HcalTPSelector','Trigger')
-        self.combinedQuadCollName = "hcalTrigQuads"
-        self.passCollName = "hcalTrig"
+        self.combined_quad_coll_name = "hcalTrigQuads"
+        self.pass_coll_name = "hcalTrig"
+        self.tp_coll_pass_name = ""
+        self.tp_coll_event_passname = ""
 
 class TrigEcalEnergySum(Producer) :
     """Configuration for TrigEcalEnergySum
@@ -42,18 +43,20 @@ class HCalTrigMipReco(Producer) :
     """
     def __init__(self, instance_name = 'myHCalTrigMipReco') :
         super().__init__(instance_name , 'trigger::TrigMipReco','Trigger')
-        self.hitCollName = "hcalTrigHits"
-        self.passCollName = "hcalTrigMIPs"
-        self.calorimeterTypeIsHcal = True
+        self.hit_coll_name = "hcalTrigHits"
+        self.pass_coll_name = "hcalTrigMIPs"
+        self.hit_coll_passname = ""
+        self.calorimeter_type_is_hcal = True
 
 class ECalTrigMipReco(Producer) :
     """Configuration for TrigMipReco in Ecal
     """
     def __init__(self, instance_name = 'myECalTrigMipReco') :
         super().__init__(instance_name , 'trigger::TrigMipReco','Trigger')
-        self.hitCollName = "ecalTrigHits"
-        self.passCollName = "ecalTrigMIPs"
-        self.calorimeterTypeIsHcal = False
+        self.hit_coll_name = "ecalTrigHits"
+        self.pass_coll_name = "ecalTrigMIPs"
+        self.hit_coll_passname = ""
+        self.calorimeter_type_is_hcal = False
 
 class TrigEcalClusterProducer(Producer) :
     """Configuration for TrigEcalClusterProducer

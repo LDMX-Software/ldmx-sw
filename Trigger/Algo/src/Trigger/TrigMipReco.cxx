@@ -3,22 +3,24 @@
 namespace trigger {
 
 void TrigMipReco::configure(framework::config::Parameters& ps) {
-  hitCollName_ = ps.getParameter<std::string>("hitCollName");
-  passCollName_ = ps.getParameter<std::string>("passCollName");
-  calorimeterTypeIsHcal_ = ps.getParameter<bool>("calorimeterTypeIsHcal");
-  if (calorimeterTypeIsHcal_) {
-    minEnergy_ = 8.0f;  // MIP peak is 10-11
-  } else {              // ECAL
-    minEnergy_ = 3.0f;  // MIP peak around 17
-    maxEnergy_ = 26.0f;
+  hit_coll_name_ = ps.getParameter<std::string>("hit_coll_name");
+  pass_coll_name_ = ps.getParameter<std::string>("pass_coll_name");
+  hit_coll_passname_ = ps.getParameter<std::string>("hit_coll_passname");
+  calorimeter_type_is_hcal_ = ps.getParameter<bool>("calorimeter_type_is_hcal");
+  if (calorimeter_type_is_hcal_) {
+    min_energy_ = 8.0f;  // MIP peak is 10-11
+  } else {               // ECAL
+    min_energy_ = 3.0f;  // MIP peak around 17
+    max_energy_ = 26.0f;
   }
 }
 
 void TrigMipReco::produce(framework::Event& event) {
-  if (!event.exists(hitCollName_, passCollName_)) return;
-  auto caloHits{event.getObject<TrigCaloHitCollection>(hitCollName_, passCollName_)};
+  if (!event.exists(hit_coll_name_, hit_coll_passname_)) return;
+  auto caloHits{event.getObject<TrigCaloHitCollection>(hit_coll_name_,
+                                                       hit_coll_passname_)};
 
-  if (calorimeterTypeIsHcal_) {  // HCAL MIP Reconstruction
+  if (calorimeter_type_is_hcal_) {  // HCAL MIP Reconstruction
     TrigCaloHitCollection sortedHits;
     int evenMatrix[24][5] = {};
     int evenStart[5] = {99, 99, 99, 99, 99};
@@ -29,7 +31,7 @@ void TrigMipReco::produce(framework::Event& event) {
     int oddEnd[5] = {};
     int oddCounts[5] = {};
     for (const auto& tp : caloHits) {
-      if (tp.section() > 0 || tp.energy() < minEnergy_ || tp.layer() > 47)
+      if (tp.section() > 0 || tp.energy() < min_energy_ || tp.layer() > 47)
         continue;
       sortedHits.push_back(tp);
       if (tp.layer() % 2) {
@@ -80,7 +82,7 @@ void TrigMipReco::produce(framework::Event& event) {
 
     std::sort(mips.begin(), mips.end());
 
-    event.add(passCollName_, mips);
+    event.add(pass_coll_name_, mips);
   } else {                 // ECAL MIP Reconstruction
     float radiusCut = 50;  // mm
     int maxLayer = 32;
@@ -102,8 +104,8 @@ void TrigMipReco::produce(framework::Event& event) {
     for (const auto& [seedLayer, seeds] : layerHits) {
       for (const auto& seed : seeds) {
         // Skip if hit already used or outside mip energy range
-        if (usedHits.count(&seed) || seed.energy() < minEnergy_ ||
-            seed.energy() > maxEnergy_)
+        if (usedHits.count(&seed) || seed.energy() < min_energy_ ||
+            seed.energy() > max_energy_)
           continue;
 
         std::vector<const TrigCaloHit*> track;
@@ -122,8 +124,8 @@ void TrigMipReco::produce(framework::Event& event) {
                growthFactor);  // Grow search window if there is a hole
 
           for (const auto& cand : layerHits[l]) {
-            if (usedHits.count(&cand) || cand.energy() < minEnergy_ ||
-                cand.energy() > maxEnergy_)
+            if (usedHits.count(&cand) || cand.energy() < min_energy_ ||
+                cand.energy() > max_energy_)
               continue;
 
             // Corrects for layer shift in x-direction which we calculated
@@ -242,7 +244,7 @@ void TrigMipReco::produce(framework::Event& event) {
     }
     std::sort(mips.begin(), mips.end());
 
-    event.add(passCollName_, mips);
+    event.add(pass_coll_name_, mips);
   }
 }
 

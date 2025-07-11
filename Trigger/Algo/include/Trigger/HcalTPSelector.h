@@ -4,12 +4,10 @@
  * @author Christian Herwig, Michigan
  */
 
-#ifndef HCALTPSELECTOR_H
-#define HCALTPSELECTOR_H
+#ifndef TRIGGER_HCALTPSELECTOR_H
+#define TRIGGER_HCALTPSELECTOR_H
 
 // LDMX Framework
-// #include "DetDescr/HcalGeometry.h"
-// #include "Hcal/HcalTriggerGeometry.h"
 #include "DetDescr/HcalTriggerID.h"
 #include "Framework/Configure/Parameters.h"  // Needed to import parameters from configuration file
 #include "Framework/Event.h"
@@ -34,19 +32,15 @@ class HcalTPSelector : public framework::Producer {
 
   virtual void produce(framework::Event& event);
 
-  // helpers
-  // void decodeTP(ldmx::CaloTrigPrim tp, double& x, double& y, double& z,
-  //               double& e);
-  /* double primitiveToEnergy(int tp, int layer); */
-
  private:
   // name of collection for HcalTPs to be passed as input
-  std::string combinedQuadCollName_;
+  std::string combined_quad_coll_name_;
   // name of output collection
-  std::string passCollName_;
+  std::string pass_coll_name_;
 
-  // unsigned int maxCentralTPs_{12};
-  // unsigned int maxOuterTPs_{8};
+  std::string tp_coll_passname_;
+
+  std::string tp_coll_event_passname_;
 };
 }  // namespace trigger
 

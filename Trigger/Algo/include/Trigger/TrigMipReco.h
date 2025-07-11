@@ -4,8 +4,8 @@
  * @author Christian Herwig, Michigan
  */
 
-#ifndef HCALTPSELECTOR_H
-#define HCALTPSELECTOR_H
+#ifndef TRIGGER_TRIGMIPRECO_H
+#define TRIGGER_TRIGMIPRECO_H
 
 // LDMX Framework
 #include "DetDescr/HcalTriggerID.h"
@@ -32,14 +32,15 @@ class TrigMipReco : public framework::Producer {
 
  private:
   // name of collection for Hcal TP hits to be passed as input
-  std::string hitCollName_;
+  std::string hit_coll_name_;
+  std::string hit_coll_passname_;
   // name of output collection
-  std::string passCollName_;
-  // calorimeterTypeIsHcal boolean
-  bool calorimeterTypeIsHcal_;
+  std::string pass_coll_name_;
+  // calorimeter_type_is_hcal_ boolean
+  bool calorimeter_type_is_hcal_;
 
-  float minEnergy_;  // set in configure()
-  float maxEnergy_;  // set in configure()
+  float min_energy_;  // set in configure()
+  float max_energy_;  // set in configure()
 };
 }  // namespace trigger
 

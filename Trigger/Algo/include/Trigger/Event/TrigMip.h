@@ -17,40 +17,36 @@ class TrigMip {
  public:
   TrigMip() = default;
 
-  // TrigMip(float x, float y, float z, float e = 0);
-
   virtual ~TrigMip() = default;
 
-  bool operator<(const TrigMip &h) { return length_ < h.length_; }
+  bool operator<(const TrigMip &h) const { return length_ < h.length_; }
 
-  // void Clear();
-
-  void setStartLayer(int startLayer) { startLayer_ = startLayer; }
-  void setEndLayer(int endLayer) { endLayer_ = endLayer; }
-  void setNHits(int nHits) { nHits_ = nHits; }
-  void setNHoles(int nHoles) { nHoles_ = nHoles; }
+  void setStartLayer(int startLayer) { start_layer_ = startLayer; }
+  void setEndLayer(int endLayer) { end_layer_ = endLayer; }
+  void setNHits(int nHits) { n_hits_ = nHits; }
+  void setNHoles(int nHoles) { n_holes_ = nHoles; }
   void setLength(int length) { length_ = length; }
-  void setSumEinIsolationRegion(float sum) { SumEinIsolationRegion_ = sum; }
+  void setSumEinIsolationRegion(float sum) { sum_e_in_isolation_region_ = sum; }
 
-  int startLayer() const { return startLayer_; }
-  int endLayer() const { return endLayer_; }
-  int nHits() const { return nHits_; }
-  int nHoles() const { return nHoles_; }
+  int startLayer() const { return start_layer_; }
+  int endLayer() const { return end_layer_; }
+  int nHits() const { return n_hits_; }
+  int nHoles() const { return n_holes_; }
   int length() const { return length_; }
-  float SumEinIsolationRegion() const { return SumEinIsolationRegion_; }
+  float SumEinIsolationRegion() const { return sum_e_in_isolation_region_; }
 
  private:
   // first draft based on hcal
-  int startLayer_{0};
-  int endLayer_{0};
-  int nHits_{0};
-  int nHoles_{0};
+  int start_layer_{0};
+  int end_layer_{0};
+  int n_hits_{0};
+  int n_holes_{0};
   int length_{0};
-  float SumEinIsolationRegion_{0.0f};
+  float sum_e_in_isolation_region_{0.0f};
 
   /// ROOT Dictionary class definition macro
   ClassDef(TrigMip, 1);
 };
 }  // namespace trigger
 
-#endif  // TRIGGER_EVENT_TRIGCALOCLUSTER_H
+#endif  // TRIGGER_EVENT_TRIGMIP_H

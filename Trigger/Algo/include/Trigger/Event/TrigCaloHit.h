@@ -31,7 +31,7 @@ class TrigCaloHit {
     e_ = 0;
     layer_ = 0;
     strip_ = 0;
-    modulesection_ = 0;
+    module_section_ = 0;
   }
 
   void setEnergy(float e) { e_ = e; }
@@ -40,10 +40,10 @@ class TrigCaloHit {
     y_ = y;
     z_ = z;
   }
-  void setLayer(int x) { layer_ = x; }
-  void setStrip(int x) { strip_ = x; }
-  void setModule(int x) { modulesection_ = x; }
-  void setSection(int x) { modulesection_ = x; }
+  void setLayer(int layer) { layer_ = layer; }
+  void setStrip(int strip) { strip_ = strip; }
+  void setModule(int module) { module_section_ = module; }
+  void setSection(int modulesection) { module_section_ = modulesection; }
 
   float x() const { return x_; }
   float y() const { return y_; }
@@ -53,8 +53,8 @@ class TrigCaloHit {
 
   int layer() const { return layer_; }
   int strip() const { return strip_; }
-  int module() const { return modulesection_; }
-  int section() const { return modulesection_; }
+  int module() const { return module_section_; }
+  int section() const { return module_section_; }
 
  private:
   float x_{0};
@@ -63,7 +63,7 @@ class TrigCaloHit {
   float e_{0};
   int layer_{0};
   int strip_{0};
-  int modulesection_{0};
+  int module_section_{0};
 
   /// ROOT Dictionary class definition macro
   ClassDef(TrigCaloHit, 1);

@@ -7,7 +7,7 @@ ClassImp(trigger::TrigCaloHit)
       : x_(x), y_(y), z_(z), e_(e) {
     layer_ = 0;
     strip_ = 0;
-    modulesection_ = 0;
+    module_section_ = 0;
   }
 
 }  // namespace trigger
