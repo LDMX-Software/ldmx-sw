@@ -1,4 +1,5 @@
 #include "Framework/EventProcessor.h"
+#include "Math/Vector3D.h"
 #include "SimCore/Event/SimParticle.h"
 
 namespace dqm {
@@ -135,12 +136,15 @@ class DarkBremInteraction : public framework::Producer {
    *      5 : 'Si 14',
    *      6 : 'Ca 20',
    *      7 : 'Cu 29',
-   *      8 : 'W 74',
-   *      9 : 'unlisted'
+   *      8 : 'Y 39',
+   *      9 : 'Lu 71',
+   *      10 : 'W 74',
+   *      11 : 'unlisted'
    *    }
    */
   std::map<int, int> known_elements_ = {{1, 1},  {6, 2},  {8, 3},  {11, 4},
-                                        {14, 5}, {20, 6}, {29, 7}, {74, 8}};
+                                        {14, 5}, {20, 6}, {29, 7}, {39, 8},
+                                        {71, 9}, {74, 10}};
 
   std::string particle_passname_;
 };
