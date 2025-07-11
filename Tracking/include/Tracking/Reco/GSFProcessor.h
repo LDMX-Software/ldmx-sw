@@ -3,6 +3,7 @@
 //--- Framework ---//
 #include "Framework/Configure/Parameters.h"
 #include "Framework/EventProcessor.h"
+#include "Framework/Logger.h"
 #include "Framework/RandomNumberSeedService.h"
 
 //--- C++ ---//

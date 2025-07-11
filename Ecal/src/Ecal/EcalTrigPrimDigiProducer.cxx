@@ -1,10 +1,5 @@
 #include "Ecal/EcalTrigPrimDigiProducer.h"
 
-#include "Ecal/EcalTriggerGeometry.h"
-#include "Recon/Event/HgcrocDigiCollection.h"
-#include "Recon/Event/HgcrocTrigDigi.h"
-#include "Tools/HgcrocTriggerCalculations.h"
-
 namespace ecal {
 EcalTrigPrimDigiProducer::EcalTrigPrimDigiProducer(const std::string& name,
                                                    framework::Process& process)
@@ -34,7 +29,6 @@ void EcalTrigPrimDigiProducer::produce(framework::Event& event) {
   // Loop over the digis
   for (unsigned int ix = 0; ix < ecalDigis.getNumDigis(); ix++) {
     const ldmx::HgcrocDigiCollection::HgcrocDigi pdigi = ecalDigis.getDigi(ix);
-    // std::cout << EcalID(pdigi.id()) << pdigi << std::endl;
 
     ldmx::EcalTriggerID tid = geom.belongsTo(ldmx::EcalID(pdigi.id()));
 
@@ -54,12 +48,11 @@ void EcalTrigPrimDigiProducer::produce(framework::Event& event) {
   for (auto result : results) {
     if (result.second > 0) {
       tdigis.push_back(ldmx::HgcrocTrigDigi(result.first, result.second));
-      // std::cout << EcalTriggerID(result.first) << "  " << tdigis.back() <<
-      // std::endl;
     }
   }
 
-  // std::cout << ecalDigis.size() << " " << tdigis.size() << std::endl;
+  ldmx_log(trace) << " Ecal digi size = " << ecalDigis.size()
+                  << " trigger digi size = " << tdigis.size();
   event.add(getName(), tdigis);
 }
 }  // namespace ecal

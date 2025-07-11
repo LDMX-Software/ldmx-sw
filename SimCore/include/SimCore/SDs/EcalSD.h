@@ -9,17 +9,23 @@
 #define SIMCORE_ECALSD_H_
 
 // LDMX
+#include "DetDescr/EcalGeometry.h"
 #include "DetDescr/EcalID.h"
 #include "SimCore/Event/SimCalorimeterHit.h"
 #include "SimCore/G4User/TrackMap.h"
 #include "SimCore/G4User/TrackingAction.h"
 #include "SimCore/SDs/SensitiveDetector.h"
 
+// Geant4
+// TODO: do we really need both the G4Polyhedron and G4Polyhedra includes?
+#include "G4Polyhedra.hh"
+#include "G4Polyhedron.hh"
+#include "G4Step.hh"
+#include "G4StepPoint.hh"
+#include "G4VSolid.hh"
+
 // ROOT
 #include "TMath.h"
-
-// Geant4
-#include "G4Polyhedra.hh"
 
 namespace simcore {
 

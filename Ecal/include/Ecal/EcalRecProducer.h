@@ -40,7 +40,7 @@ class EcalRecProducer : public framework::Producer {
   /**
    * Destructor
    */
-  virtual ~EcalRecProducer();
+  virtual ~EcalRecProducer() = default;
 
   /**
    * Grabs configure parameters from the python config file.

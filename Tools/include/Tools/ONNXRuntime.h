@@ -2,8 +2,14 @@
 #ifndef TOOLS_ONNXRUNTIME_H
 #define TOOLS_ONNXRUNTIME_H
 
+#include <algorithm>
+#include <cassert>
+#include <exception>
+#include <functional>
+#include <iostream>
 #include <map>
 #include <memory>
+#include <numeric>
 #include <string>
 #include <vector>
 

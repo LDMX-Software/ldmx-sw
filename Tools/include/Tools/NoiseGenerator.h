@@ -23,6 +23,8 @@
 //----------//
 //   ROOT   //
 //----------//
+#include "Framework/Exception/Exception.h"
+#include "Framework/Logger.h"
 #include "Math/DistFunc.h"
 #include "TRandom3.h"
 
@@ -34,7 +36,7 @@ class NoiseGenerator {
   NoiseGenerator(double noiseValue = 0.0001, bool gauss = true);
 
   /** Destructor */
-  ~NoiseGenerator();
+  ~NoiseGenerator() = default;
 
   /** Seed the generator */
   void seedGenerator(uint64_t seed);
@@ -80,6 +82,8 @@ class NoiseGenerator {
 
   /** pdf for poisson errors */
   std::unique_ptr<boost::math::poisson_distribution<> > poisson_dist_;
+
+  enableLogging("NoiseGenerator")
 };  // NoiseGenerator
 
 }  // namespace ldmx

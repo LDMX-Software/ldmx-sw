@@ -34,15 +34,15 @@ MagneticFieldMap3D::MagneticFieldMap3D(const char* filename, double xOffset,
                                    "' does not exist!");
   }
 
-  G4cout << "-----------------------------------------------------------"
-         << G4endl;
-  G4cout << "    Magnetic Field Map 3D" << G4endl;
-  G4cout << "-----------------------------------------------------------"
-         << G4endl << G4endl;
+  ldmx_log(trace)
+      << "-----------------------------------------------------------";
+  ldmx_log(trace) << "    Magnetic Field Map 3D";
+  ldmx_log(trace)
+      << "-----------------------------------------------------------";
 
-  G4cout << "Reading the field grid from " << filename << " ... " << endl;
-  G4cout << "  Offsets: " << xOffset << " " << yOffset << " " << zOffset
-         << G4endl;
+  ldmx_log(trace) << "Reading the field grid from " << filename << " ... ";
+  ldmx_log(trace) << "  Offsets: " << xOffset << " " << yOffset << " "
+                  << zOffset;
 
   // Ignore first blank line
   char buffer[256];
@@ -51,7 +51,7 @@ MagneticFieldMap3D::MagneticFieldMap3D(const char* filename, double xOffset,
   // Read table dimensions
   file >> nx_ >> ny_ >> nz_;  // Note dodgy order
 
-  G4cout << "  Number of values: " << nx_ << " " << ny_ << " " << nz_ << G4endl;
+  ldmx_log(trace) << "  Number of values: " << nx_ << " " << ny_ << " " << nz_;
 
   // Set up storage space for table
   xField_.resize(nx_);
@@ -99,15 +99,15 @@ MagneticFieldMap3D::MagneticFieldMap3D(const char* filename, double xOffset,
   maxy_ = yval;
   maxz_ = zval;
 
-  G4cout << "  ... done reading " << G4endl << G4endl;
-  G4cout << "Read values of field from file " << filename << G4endl;
-  G4cout << "  Assumed the order: x, y, z, Bx, By, Bz" << G4endl;
-  G4cout << "  Min values: " << minx_ << " " << miny_ << " " << minz_ << " mm "
-         << G4endl;
-  G4cout << "  Max values: " << maxx_ << " " << maxy_ << " " << maxz_ << " mm "
-         << G4endl;
-  G4cout << "  Field offsets: " << xOffset_ << " " << yOffset_ << " "
-         << zOffset_ << " mm " << G4endl << G4endl;
+  ldmx_log(trace) << "  ... done reading ";
+  ldmx_log(trace) << "Read values of field from file " << filename;
+  ldmx_log(trace) << "  Assumed the order: x, y, z, Bx, By, Bz";
+  ldmx_log(trace) << "  Min values: " << minx_ << " " << miny_ << " " << minz_
+                  << " mm ";
+  ldmx_log(trace) << "  Max values: " << maxx_ << " " << maxy_ << " " << maxz_
+                  << " mm ";
+  ldmx_log(trace) << "  Field offsets: " << xOffset_ << " " << yOffset_ << " "
+                  << zOffset_ << " mm ";
 
   // Should really check that the limits are not the wrong way around.
   if (maxx_ < minx_) {
@@ -123,22 +123,22 @@ MagneticFieldMap3D::MagneticFieldMap3D(const char* filename, double xOffset,
     invertZ_ = true;
   }
 
-  G4cout << "After reordering if necessary" << G4endl;
-  G4cout << "  Min values: " << minx_ << " " << miny_ << " " << minz_ << " mm "
-         << G4endl;
-  G4cout << "  Max values: " << maxx_ << " " << maxy_ << " " << maxz_ << " mm "
-         << G4endl;
+  ldmx_log(trace) << "After reordering if necessary";
+  ldmx_log(trace) << "  Min values: " << minx_ << " " << miny_ << " " << minz_
+                  << " mm ";
+  ldmx_log(trace) << "  Max values: " << maxx_ << " " << maxy_ << " " << maxz_
+                  << " mm ";
   ;
 
   dx_ = maxx_ - minx_;
   dy_ = maxy_ - miny_;
   dz_ = maxz_ - minz_;
 
-  G4cout << "  Range of values: " << dx_ << " " << dy_ << " " << dz_ << " mm"
-         << G4endl << G4endl;
-  G4cout << "Done loading field map" << G4endl << G4endl;
-  G4cout << "-----------------------------------------------------------"
-         << G4endl << G4endl;
+  ldmx_log(trace) << "  Range of values: " << dx_ << " " << dy_ << " " << dz_
+                  << " mm";
+  ldmx_log(trace) << "Done loading field map";
+  ldmx_log(trace)
+      << "-----------------------------------------------------------";
 }
 
 void MagneticFieldMap3D::GetFieldValue(const double point[4],
@@ -184,10 +184,10 @@ void MagneticFieldMap3D::GetFieldValue(const double point[4],
     int zindex = static_cast<int>(zdindex);
 
 #ifdef DEBUG_INTERPOLATING_FIELD
-    G4cout << "Local x,y,z: " << xlocal << " " << ylocal << " " << zlocal
-           << G4endl;
-    G4cout << "Index x,y,z: " << xindex << " " << yindex << " " << zindex
-           << G4endl;
+    ldmx_log(trace) << "Local x,y,z: " << xlocal << " " << ylocal << " "
+                    << zlocal;
+    ldmx_log(trace) << "Index x,y,z: " << xindex << " " << yindex << " "
+                    << zindex;
     double valx0z0, mulx0z0, valx1z0, mulx1z0;
     double valx0z1, mulx0z1, valx1z1, mulx1z1;
     valx0z0 = table[xindex][0][zindex];

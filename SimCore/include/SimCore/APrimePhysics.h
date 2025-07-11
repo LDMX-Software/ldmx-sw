@@ -8,12 +8,19 @@
 #ifndef SIMCORE_DARKBREM_APRIMEPHYSICS_H_
 #define SIMCORE_DARKBREM_APRIMEPHYSICS_H_
 
-// Geant4
-#include "G4VPhysicsConstructor.hh"
-
 // LDMX
 #include "Framework/Configure/Parameters.h"
+#include "Framework/Logger.h"
+#include "G4DarkBreM/G4APrime.h"
+#include "G4DarkBreM/G4DarkBreMModel.h"
 #include "G4DarkBreM/G4DarkBremsstrahlung.h"
+#include "SimCore/G4User/UserEventInformation.h"
+
+// Geant4
+#include "G4Electron.hh"
+#include "G4EventManager.hh"
+#include "G4ProcessManager.hh"
+#include "G4VPhysicsConstructor.hh"
 
 namespace simcore {
 
@@ -55,7 +62,7 @@ class APrimePhysics : public G4VPhysicsConstructor {
    *
    * Nothing right now.
    */
-  virtual ~APrimePhysics() {}
+  virtual ~APrimePhysics() = default;
 
   /**
    * Construct particle.
@@ -101,6 +108,11 @@ class APrimePhysics : public G4VPhysicsConstructor {
   framework::config::Parameters parameters_;
 
   std::unique_ptr<G4DarkBremsstrahlung> process_;
+
+  /**
+   * Enable logging for this class.
+   */
+  enableLogging("APrimePhysics")
 };
 
 }  // namespace simcore

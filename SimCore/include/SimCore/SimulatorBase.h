@@ -10,6 +10,7 @@
 #include "Framework/EventFile.h"
 #include "Framework/EventHeader.h"
 #include "Framework/EventProcessor.h"
+#include "Framework/Logger.h"
 #include "SimCore/ConditionsInterface.h"
 #include "SimCore/DetectorConstruction.h"
 #include "SimCore/G4Session.h"
@@ -57,9 +58,6 @@ class SimulatorBase : public framework::Producer {
   /*********************************************************
    * Python Configuration Parameters
    *********************************************************/
-
-  /// Vebosity for the simulation
-  int verbosity_{1};
   /// The parameters used to configure the simulation
   framework::config::Parameters parameters_;
 
@@ -97,6 +95,7 @@ class SimulatorBase : public framework::Producer {
    *  the log message.
    **/
   void createLogging();
+
   /*
    * Create the GDML parser and load the detector geometry during
    * initialization.
@@ -111,6 +110,12 @@ class SimulatorBase : public framework::Producer {
    * @see invalidCommands_
    */
   void verifyParameters() const;
+
+ protected:
+  /*
+   * Enable logging
+   */
+  enableLogging("SimulatorBase")
 };
 }  // namespace simcore
 

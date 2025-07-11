@@ -1,13 +1,6 @@
 
 #include "Tools/ONNXRuntime.h"
 
-#include <algorithm>
-#include <cassert>
-#include <exception>
-#include <functional>
-#include <iostream>
-#include <numeric>
-
 namespace ldmx::Ort {
 
 using namespace ::Ort;

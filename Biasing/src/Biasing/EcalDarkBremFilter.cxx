@@ -9,11 +9,6 @@
 
 #include "Biasing/EcalDarkBremFilter.h"
 
-#include "G4DarkBreM/G4APrime.h"              //checking if particles match A'
-#include "G4DarkBreM/G4DarkBremsstrahlung.h"  //checking for dark brem secondaries
-#include "G4LogicalVolumeStore.hh"            //for the store
-#include "SimCore/G4User/UserTrackInformation.h"  //make sure A' is saved
-
 namespace biasing {
 
 EcalDarkBremFilter::EcalDarkBremFilter(
@@ -37,22 +32,13 @@ EcalDarkBremFilter::EcalDarkBremFilter(
     }
   }
 
-  if (G4RunManager::GetRunManager()->GetVerboseLevel() > 0) {
-    std::cout << "[ EcalDarkBremFilter ]: " << "Looking for A' in: ";
-    for (auto const& volume : volumes_) std::cout << volume->GetName() << ", ";
-    std::cout << std::endl;
+  ldmx_log(trace) << "Looking for A' in: ";
+  for (auto const& volume : volumes_) {
+    ldmx_log(trace) << "\t" << volume->GetName() << ", ";
   }
 }
 
 void EcalDarkBremFilter::BeginOfEventAction(const G4Event*) {
-  /* Debug message
-  std::cout << "[ EcalDarkBremFilter ]: "
-      << "(" <<
-  G4EventManager::GetEventManager()->GetConstCurrentEvent()->GetEventID() << ")
-  "
-      << "Beginning event."
-      << std::endl;
-  */
   foundAp_ = false;
   return;
 }
@@ -61,12 +47,9 @@ G4ClassificationOfNewTrack EcalDarkBremFilter::ClassifyNewTrack(
     const G4Track* aTrack, const G4ClassificationOfNewTrack& cl) {
   if (aTrack->GetParticleDefinition() == G4APrime::APrime()) {
     // there is an A'! Yay!
-    /* Debug message
-    std::cout << "[ EcalDarkBremFilter ]: "
-              << "Found A', still need to check if it originated in requested
-    volume."
-              << std::endl;
-    */
+    ldmx_log(trace) << "Found A', still need to check if it originated in "
+                       "requested volume.";
+
     if (not foundAp_ and aTrack->GetTotalEnergy() > threshold_) {
       // The A' is the first one created in this event and is above the energy
       // threshold
@@ -88,12 +71,9 @@ void EcalDarkBremFilter::NewStage() {
 }
 
 void EcalDarkBremFilter::PostUserTrackingAction(const G4Track* track) {
-  /* Check that generational stacking is working
-  std::cout << "[ EcalDarkBremFilter ]:"
-      << track->GetTrackID() << " " <<
-  track->GetParticleDefinition()->GetPDGEncoding()
-      << std::endl;
-  */
+  // Check that generational stacking is working
+  ldmx_log(trace) << track->GetTrackID() << " "
+                  << track->GetParticleDefinition()->GetPDGEncoding();
 
   const G4VProcess* creator = track->GetCreatorProcess();
   if (creator and
@@ -129,13 +109,11 @@ bool EcalDarkBremFilter::inDesiredVolume(const G4Track* track) const {
 }
 
 void EcalDarkBremFilter::AbortEvent(const std::string& reason) const {
-  if (G4RunManager::GetRunManager()->GetVerboseLevel() > 1) {
-    std::cout << "[ EcalDarkBremFilter ]: " << "("
-              << G4EventManager::GetEventManager()
-                     ->GetConstCurrentEvent()
-                     ->GetEventID()
-              << ") " << reason << " Aborting event." << std::endl;
-  }
+  ldmx_log(trace)
+      << "("
+      << G4EventManager::GetEventManager()->GetConstCurrentEvent()->GetEventID()
+      << ") " << reason << " Aborting event.";
+
   G4RunManager::GetRunManager()->AbortEvent();
   return;
 }
