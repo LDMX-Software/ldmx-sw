@@ -54,7 +54,7 @@ void DarkBremInteraction::onProcessStart() {
 
   setHistLabels("dark_brem_element",
                 {"did not happen", "H 1", "C 6", "O 8", "Na 11", "Si 14",
-                 "Ca 20", "Cu 29", "W / LYSO 74", "unlisted"});
+                 "Ca 20", "Cu 29", "Y 39", "Lu 71", "W 74", "unlisted"});
 }
 
 void DarkBremInteraction::produce(framework::Event& event) {
@@ -83,31 +83,29 @@ void DarkBremInteraction::produce(framework::Event& event) {
      *    exhausted the maximum number of tries to get a dark brem
      *    to occur. We just leave early so that the entries in the
      *    ntuple are the unphysical numeric minimum.
-     *
-     * This can also happen during development, so I leave a debug
-     * printout here to be uncommented when developing the dark
-     * brem simulation.
-    std::cout << "Event " << e.getEventNumber()
-      << " did not have a dark brem occur within it." << std::endl;
      */
+    ldmx_log(error) << " No dark brem occured in this event";
     return;
   }
 
   if (recoil == nullptr or aprime == nullptr or beam == nullptr) {
     // we are going to end processing so let's take our time to
     // construct a nice error message
-    std::stringstream err_msg;
-    err_msg
+    ldmx_log(fatal)
         << "Unable to find all necessary particles for DarkBrem interaction."
-        << " Missing: [ " << (recoil == nullptr ? "recoil " : "")
-        << (aprime == nullptr ? "aprime " : "")
-        << (beam == nullptr ? "beam " : "") << "]" << std::endl;
-    EXCEPTION_RAISE("BadEvent", err_msg.str());
+        << " Missing: [ " << (recoil == nullptr ? " recoil " : "")
+        << (aprime == nullptr ? " aprime " : "")
+        << (beam == nullptr ? " beam " : "") << "]";
+    EXCEPTION_RAISE(
+        "BadEvent",
+        "Unable to find all necessary particles for DarkBrem interaction.");
     return;
   }
 
   const auto& recoil_p = recoil->getMomentum();
   const auto& aprime_p = aprime->getMomentum();
+  ROOT::Math::XYZVector recoil_pvec(recoil_p[0], recoil_p[1], recoil_p[2]);
+  ROOT::Math::XYZVector aprime_pvec(aprime_p[0], aprime_p[1], aprime_p[2]);
 
   std::vector<double> incident_p = recoil_p;
   for (std::size_t i{0}; i < recoil_p.size(); ++i)
@@ -126,6 +124,11 @@ void DarkBremInteraction::produce(framework::Event& event) {
   int ap_vertex_material = (ap_vertex_material_it != known_materials_.end())
                                ? ap_vertex_material_it->second
                                : 0;
+
+  if (ap_vertex_material == 0) {
+    ldmx_log(warn) << "Dark brem interaction occurred in an unknown material: "
+                   << ap_vertex_volume;
+  }
 
   int ap_parent_id{-1};
   if (aprime->getParents().size() > 0) {
@@ -147,6 +150,7 @@ void DarkBremInteraction::produce(framework::Event& event) {
 
   histograms_.fill("aprime_energy", aprime_energy);
   histograms_.fill("aprime_pt", quadsum({aprime_px, aprime_py}));
+  histograms_.fill("aprime_theta", aprime_pvec.Theta() * (180 / 3.14159));
 
   int recoil_genstatus = recoil->getGenStatus();
   double recoil_px{recoil_p.at(0)}, recoil_py{recoil_p.at(1)},
@@ -159,6 +163,7 @@ void DarkBremInteraction::produce(framework::Event& event) {
 
   histograms_.fill("recoil_energy", recoil_energy);
   histograms_.fill("recoil_pt", quadsum({recoil_px, recoil_py}));
+  histograms_.fill("recoil_theta", recoil_pvec.Theta() * (180 / 3.14159));
 
   event.add("IncidentEnergy", incident_energy);
   double incident_px{incident_p.at(0)}, incident_py{incident_p.at(1)},
@@ -187,6 +192,10 @@ void DarkBremInteraction::produce(framework::Event& event) {
     if (known_elements_.find(static_cast<int>(db_material_z)) ==
         known_elements_.end()) {
       i_element = known_elements_.size();
+      ldmx_log(warn)
+          << "Dark brem interaction occurred in an unknown element with Z = "
+          << db_material_z << ". Using index " << i_element
+          << " for this element.";
     } else {
       i_element = known_elements_.at(static_cast<int>(db_material_z));
     }
