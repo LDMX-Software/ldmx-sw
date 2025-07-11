@@ -48,6 +48,9 @@ class SimulatorBase : public framework::Producer {
   /// Manager controlling G4 simulation run
   std::unique_ptr<RunManager> runManager_;
 
+  /// Handle to the G4Session -> how to deal with G4cout and G4cerr
+  std::unique_ptr<G4UIsession> sessionHandle_;
+
   /// Commands not allowed to be passed from python config file
   ///     This is because Simulator already runs them.
   static const std::vector<std::string> invalidCommands_;
@@ -83,6 +86,16 @@ class SimulatorBase : public framework::Producer {
   virtual void produce(framework::Event& event) override = 0;
 
  private:
+  /*
+   * Set up logging for Geant4 during initialization
+   *
+   *  If the verbosity level is set to 0, create a batch session
+   *  If the verbosity level is > 1, log everything to a file.
+   *  Otherwise, dump the output. If a prefix has been specified, append it ot
+   *  the log message.
+   **/
+  void createLogging();
+
   /*
    * Create the GDML parser and load the detector geometry during
    * initialization.
