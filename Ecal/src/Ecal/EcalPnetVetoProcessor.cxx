@@ -21,16 +21,13 @@ void EcalPnetVetoProcessor::configure(
   rt_ = std::make_unique<ldmx::Ort::ONNXRuntime>(
       parameters.getParameter<std::string>("model_path"));
 
-  // max number of hits that this veto looks at
-  // max_num_hits_ = parameters.getParameter<int>("max_num_hits");
-
   // Set the collection name as defined in the configuration
   collectionName_ = parameters.getParameter<std::string>("collection_name");
 
   ecal_rec_hits_passname_ =
       parameters.getParameter<std::string>("ecal_rec_hits_passname");
-  ecal_sp_hits_passname_ = "test";
-  // parameters.getParameter<std::string>("sp_pass_name");
+  ecal_sp_hits_passname_ =
+      parameters.getParameter<std::string>("ecal_sp_hits_passname");
 }
 
 void EcalPnetVetoProcessor::produce(framework::Event& event) {
@@ -41,60 +38,21 @@ void EcalPnetVetoProcessor::produce(framework::Event& event) {
       ldmx::EcalGeometry::CONDITIONS_OBJECT_NAME);
 
   // Get the collection of digitized Ecal hits from the event.
-  const auto ecalRecHits = event.getCollection<ldmx::EcalHit>(
-      "EcalRecHits", ecal_rec_hits_passname_);
+  const auto ecal_rec_hits = event.getCollection<ldmx::EcalHit>(
+      "ecal_rec_hits", ecal_rec_hits_passname_);
   auto nhits = std::count_if(
-      ecalRecHits.begin(), ecalRecHits.end(),
+      ecal_rec_hits.begin(), ecal_rec_hits.end(),
       [](const ldmx::EcalHit& hit) { return hit.getEnergy() > 0; });
   // Get the collection of EcalScroingPlane hits
   auto const& spHits = event.getCollection<ldmx::SimTrackerHit>(
-      "EcalScoringPlaneHits", ecal_sp_hits_passname_);
+      "EcalScoringPlanelectron_hits", ecal_sp_hits_passname_);
 
   ldmx_log(trace) << "nhits = " << nhits
                   << " max_num_hits_ = " << max_num_hits_;
 
   if (nhits < max_num_hits_) {
     // make inputs
-    make_inputs(ecal_geometry, ecalRecHits, spHits);
-
-    // save inputs
-    std::vector<float> pts_x(max_num_hits_), pts_y(max_num_hits_),
-        pts_z(max_num_hits_);
-    for (unsigned i = 0; i < max_num_hits_; ++i) {
-      pts_x[i] = data_[0][coordinate_x_offset_ + i];
-      pts_y[i] = data_[0][coordinate_y_offset_ + i];
-      pts_z[i] = data_[0][coordinate_z_offset_ + i];
-    }
-    event.add("Pnetx", pts_x);
-    event.add("Pnety", pts_y);
-    event.add("Pnetz", pts_z);
-
-    std::vector<float> fts_x(max_num_hits_), fts_y(max_num_hits_),
-        fts_z(max_num_hits_), fts_lay(max_num_hits_), fts_e(max_num_hits_);
-
-    for (unsigned i = 0; i < max_num_hits_; ++i) {
-      fts_x[i] = data_[1][feature_x_offset_ + i];
-      fts_y[i] = data_[1][feature_y_offset_ + i];
-      fts_z[i] = data_[1][feature_z_offset_ + i];
-      fts_lay[i] = data_[1][feature_layerid_offset_ + i];
-      fts_e[i] = data_[1][feature_energy_offset_ + i];
-      // if(fts_x[i]!=0){
-      //   ldmx_log(info)<<"x="<<fts_x[i];
-      // }
-      // //ldmx_log(info)<<"y="<<fts_y[i];
-      // if(fts_z[i]!=0){
-      //   //ldmx_log(info)<<"z="<<fts_z[i];
-      // }
-      // if(fts_e[i]!=0){
-      //  // ldmx_log(info)<<"e="<<fts_e[i];
-      // }
-    }
-
-    event.add("Pnetfeatsx", fts_x);
-    event.add("Pnetfeatsy", fts_y);
-    event.add("Pnetfeatsz", fts_z);
-    event.add("Pnetfeatslayerid", fts_lay);
-    event.add("PnetfeatslogE", fts_e);
+    make_inputs(ecal_geometry, ecal_rec_hits, spHits);
 
     // run the DNN
     auto logits = rt_->run(input_names_, data_)[0];
@@ -103,12 +61,11 @@ void EcalPnetVetoProcessor::produce(framework::Event& event) {
     // to a probability with an exponential
     auto prob = std::exp((log_softmax(logits)[1]));
     result.setDiscValue(prob);
-    // result.setDiscValue(logits[1]);
   } else {
     result.setDiscValue(-99);
   }
 
-  // ldmx_log(info) << "ParticleNet disc valu = " << result.getDisc();
+  ldmx_log(info) << "ParticleNet disc value = " << result.getDisc();
 
   result.setVetoResult(result.getDisc() > disc_cut_);
 
@@ -124,28 +81,31 @@ void EcalPnetVetoProcessor::produce(framework::Event& event) {
 
 void EcalPnetVetoProcessor::make_inputs(
     const ldmx::EcalGeometry& geom,
-    const std::vector<ldmx::EcalHit>& ecalRecHits,
-    const std::vector<ldmx::SimTrackerHit>& ecalSPHits) {
+    const std::vector<ldmx::EcalHit>& ecal_rec_hits,
+    const std::vector<ldmx::SimTrackerHit>& ecal_sp_hits) {
   // Compute electron trajectory
   std::array<double, 3> etraj_sp = {-999., -999., -999.};
   std::array<double, 3> enorm_sp = {-999., -999., -999.};
 
-  const ldmx::SimTrackerHit* eHit = nullptr;
-  double ePz = -1.0;
-  for (auto const& hit : ecalSPHits) {
+  const ldmx::SimTrackerHit* electron_hit = nullptr;
+  double electron_pz = -1.0;
+  for (auto const& hit : ecal_sp_hits) {
+    // Look at the electron only
     if (hit.getPdgID() != 11) continue;
-    double ez = hit.getPosition()[2];
-    if (ez <= 239.0 || ez >= 240.0) continue;
-    double epz = hit.getMomentum()[2];
-    if (epz > ePz) {
-      ePz = epz;
-      eHit = &hit;
+    double electron_z = hit.getPosition()[2];
+    // Look at the SP in front of the ECAL
+    if (electron_z <= 239.0 || electron_z >= 240.0) continue;
+    double electron_pz = hit.getMomentum()[2];
+    // Find the highest pz electron
+    if (electron_pz > electron_pz) {
+      electron_pz = electron_pz;
+      electron_hit = &hit;
     }
   }
-  if (eHit) {
-    ldmx_log(info) << "Electron Found!";
-    auto pos = eHit->getPosition();
-    auto mom = eHit->getMomentum();
+  if (electron_hit) {
+    ldmx_log(trace) << "Electron Found!";
+    auto pos = electron_hit->getPosition();
+    auto mom = electron_hit->getMomentum();
     etraj_sp = {pos[0], pos[1], pos[2]};
 
     double pz = mom[2];
@@ -158,8 +118,10 @@ void EcalPnetVetoProcessor::make_inputs(
   for (auto& v : data_) {
     std::fill(v.begin(), v.end(), 0);
   }
+
+  // Loop on the rechits
   unsigned idx = 0;
-  for (const auto& hit : ecalRecHits) {
+  for (const auto& hit : ecal_rec_hits) {
     if (hit.getEnergy() <= 0) continue;
     ldmx::EcalID id(hit.getID());
     auto [x, y, z] = geom.getPosition(id);
@@ -167,13 +129,11 @@ void EcalPnetVetoProcessor::make_inputs(
     // Compute relative position
     double etraj_x = -999.;
     double etraj_y = -999.;
-    if (eHit) {
-      // ldmx_log(info)<<"Electron Found!";
+    if (electron_hit) {
       double delta_z = z - etraj_sp[2];
       etraj_x = etraj_sp[0] + enorm_sp[0] * delta_z;
       etraj_y = etraj_sp[1] + enorm_sp[1] * delta_z;
     }
-    // ldmx_log(info)<<"delx"<<etraj_x;
     data_[0].at(coordinate_x_offset_ + idx) = x - etraj_x;
     data_[0].at(coordinate_y_offset_ + idx) = y - etraj_y;
     data_[0].at(coordinate_z_offset_ + idx) = z;
@@ -187,15 +147,17 @@ void EcalPnetVetoProcessor::make_inputs(
     ++idx;
   }
 
+  std::stringstream ss;
   for (unsigned iname = 0; iname < input_names_.size(); ++iname) {
-    ldmx_log(trace) << "=== " << input_names_[iname] << " ===";
+    ss << "=== " << input_names_[iname] << " ===";
     for (unsigned i = 0; i < input_sizes_[iname]; ++i) {
-      ldmx_log(trace) << data_[iname].at(i) << ", ";
+      ss << data_[iname].at(i) << ", ";
       if ((i + 1) % max_num_hits_ == 0) {
-        ldmx_log(trace) << "\n\n";
+        ss << "\n\n";
       }
     }
   }
+  ldmx_log(trace) << ss.str();
 }  // end of make inputs
 
 std::vector<float> EcalPnetVetoProcessor::log_softmax(

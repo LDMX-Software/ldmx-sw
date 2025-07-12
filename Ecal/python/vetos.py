@@ -61,12 +61,13 @@ class EcalPnetVetoProcessor(ldmxcfg.Producer) :
     def __init__(self,name = 'EcalPnetVeto') :
         super().__init__(name,"ecal::EcalPnetVetoProcessor",'Ecal')
 
-        self.max_num_hits = 300
         from LDMX.Ecal.makePath import makeBDTPath
         self.model_path = makeBDTPath("particle_net_ecal_v10")
         self.disc_cut = 0.74
         self.collection_name = "EcalPnetVeto"
         self.ecal_rec_hits_passname = ""
+        self.ecal_sp_hits_passname = ""
+        
         
 
 
