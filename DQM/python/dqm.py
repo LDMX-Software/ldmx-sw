@@ -406,7 +406,7 @@ class EcalVetoResults(ldmxcfg.Analyzer) :
 
 
 class EcalPnetVetoResults(ldmxcfg.Analyzer) :
-    """Configured DNNEcalMipTrackingFeatures python object """
+    """Configured EcalMipTrackingFeatures python object """
 
     def __init__(self,name="EcalPnetVetoResults") :
         super().__init__(name,'dqm::EcalPnetVetoResults','DQM')

@@ -115,7 +115,7 @@ ecalReco   =eDigi.EcalRecProducer()
 ecalDigi = eDigi.EcalDigiProducer()
 ecalVeto = vetos.EcalVetoProcessor()
 ecalMip = vetos.EcalMipProcessor()
-ecal_veto_pnet =  ecal_vetos.DNNEcalVetoProcessor()
+ecal_veto_pnet = ecal_vetos.EcalPnetVetoProcessor()
 
 # HCAL part
 hcal_digi_reco = hDigi.HcalSimpleDigiAndRecProducer()
