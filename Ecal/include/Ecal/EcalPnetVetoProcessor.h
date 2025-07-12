@@ -17,8 +17,8 @@
 #include "Ecal/Event/EcalVetoResult.h"
 #include "Framework/Configure/Parameters.h"
 #include "Framework/EventProcessor.h"
-#include "Tools/ONNXRuntime.h"
 #include "SimCore/Event/SimTrackerHit.h"
+#include "Tools/ONNXRuntime.h"
 
 namespace ecal {
 
@@ -77,7 +77,7 @@ class EcalPnetVetoProcessor : public framework::Producer {
   /** Name of the collection which will containt the results. */
   std::string collectionName_{"EcalPnetVeto"};
 
-  std::string ecal_rec_hits_passname_; 
+  std::string ecal_rec_hits_passname_;
   std::string ecal_sp_hits_passname_;
 };
 

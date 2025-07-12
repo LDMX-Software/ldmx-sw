@@ -29,8 +29,8 @@ void EcalPnetVetoProcessor::configure(
 
   ecal_rec_hits_passname_ =
       parameters.getParameter<std::string>("ecal_rec_hits_passname");
-  ecal_sp_hits_passname_ ="test";
-      //parameters.getParameter<std::string>("sp_pass_name");
+  ecal_sp_hits_passname_ = "test";
+  // parameters.getParameter<std::string>("sp_pass_name");
 }
 
 void EcalPnetVetoProcessor::produce(framework::Event& event) {
@@ -46,21 +46,20 @@ void EcalPnetVetoProcessor::produce(framework::Event& event) {
   auto nhits = std::count_if(
       ecalRecHits.begin(), ecalRecHits.end(),
       [](const ldmx::EcalHit& hit) { return hit.getEnergy() > 0; });
-  //Get the collection of EcalScroingPlane hits
+  // Get the collection of EcalScroingPlane hits
   auto const& spHits = event.getCollection<ldmx::SimTrackerHit>(
-    "EcalScoringPlaneHits", ecal_sp_hits_passname_);
+      "EcalScoringPlaneHits", ecal_sp_hits_passname_);
 
   ldmx_log(trace) << "nhits = " << nhits
-                  << " max_num_hits_ = " << max_num_hits_; 
+                  << " max_num_hits_ = " << max_num_hits_;
 
   if (nhits < max_num_hits_) {
     // make inputs
     make_inputs(ecal_geometry, ecalRecHits, spHits);
 
-    //save inputs
-    std::vector<float> pts_x(max_num_hits_), 
-                   pts_y(max_num_hits_), 
-                   pts_z(max_num_hits_);
+    // save inputs
+    std::vector<float> pts_x(max_num_hits_), pts_y(max_num_hits_),
+        pts_z(max_num_hits_);
     for (unsigned i = 0; i < max_num_hits_; ++i) {
       pts_x[i] = data_[0][coordinate_x_offset_ + i];
       pts_y[i] = data_[0][coordinate_y_offset_ + i];
@@ -70,18 +69,15 @@ void EcalPnetVetoProcessor::produce(framework::Event& event) {
     event.add("Pnety", pts_y);
     event.add("Pnetz", pts_z);
 
-    std::vector<float> fts_x(max_num_hits_),
-                   fts_y(max_num_hits_),
-                   fts_z(max_num_hits_),
-                   fts_lay(max_num_hits_),
-                   fts_e(max_num_hits_);
+    std::vector<float> fts_x(max_num_hits_), fts_y(max_num_hits_),
+        fts_z(max_num_hits_), fts_lay(max_num_hits_), fts_e(max_num_hits_);
 
     for (unsigned i = 0; i < max_num_hits_; ++i) {
-      fts_x[i]   = data_[1][feature_x_offset_   + i];
-      fts_y[i]   = data_[1][feature_y_offset_   + i];
-      fts_z[i]   = data_[1][feature_z_offset_   + i];
+      fts_x[i] = data_[1][feature_x_offset_ + i];
+      fts_y[i] = data_[1][feature_y_offset_ + i];
+      fts_z[i] = data_[1][feature_z_offset_ + i];
       fts_lay[i] = data_[1][feature_layerid_offset_ + i];
-      fts_e[i]   = data_[1][feature_energy_offset_  + i];
+      fts_e[i] = data_[1][feature_energy_offset_ + i];
       // if(fts_x[i]!=0){
       //   ldmx_log(info)<<"x="<<fts_x[i];
       // }
@@ -93,13 +89,12 @@ void EcalPnetVetoProcessor::produce(framework::Event& event) {
       //  // ldmx_log(info)<<"e="<<fts_e[i];
       // }
     }
-    
 
-    event.add("Pnetfeatsx",       fts_x);
-    event.add("Pnetfeatsy",       fts_y);
-    event.add("Pnetfeatsz",       fts_z);
+    event.add("Pnetfeatsx", fts_x);
+    event.add("Pnetfeatsy", fts_y);
+    event.add("Pnetfeatsz", fts_z);
     event.add("Pnetfeatslayerid", fts_lay);
-    event.add("PnetfeatslogE",    fts_e);
+    event.add("PnetfeatslogE", fts_e);
 
     // run the DNN
     auto logits = rt_->run(input_names_, data_)[0];
@@ -108,12 +103,12 @@ void EcalPnetVetoProcessor::produce(framework::Event& event) {
     // to a probability with an exponential
     auto prob = std::exp((log_softmax(logits)[1]));
     result.setDiscValue(prob);
-    //result.setDiscValue(logits[1]);
+    // result.setDiscValue(logits[1]);
   } else {
     result.setDiscValue(-99);
   }
 
-  //ldmx_log(info) << "ParticleNet disc valu = " << result.getDisc();
+  // ldmx_log(info) << "ParticleNet disc valu = " << result.getDisc();
 
   result.setVetoResult(result.getDisc() > disc_cut_);
 
@@ -130,34 +125,34 @@ void EcalPnetVetoProcessor::produce(framework::Event& event) {
 void EcalPnetVetoProcessor::make_inputs(
     const ldmx::EcalGeometry& geom,
     const std::vector<ldmx::EcalHit>& ecalRecHits,
-    const std::vector<ldmx::SimTrackerHit>& ecalSPHits){
-  //Compute electron trajectory
-  std::array<double,3> etraj_sp={-999.,-999.,-999.};
-  std::array<double,3> enorm_sp={-999.,-999.,-999.};
+    const std::vector<ldmx::SimTrackerHit>& ecalSPHits) {
+  // Compute electron trajectory
+  std::array<double, 3> etraj_sp = {-999., -999., -999.};
+  std::array<double, 3> enorm_sp = {-999., -999., -999.};
 
-  const ldmx::SimTrackerHit* eHit=nullptr;
-  double ePz=-1.0;
-  for(auto const& hit:ecalSPHits){
-    if(hit.getPdgID()!=11)continue;
-    double ez=hit.getPosition()[2];
-    if (ez<=239.0 || ez>=240.0)continue;
-    double epz=hit.getMomentum()[2];
-    if(epz>ePz){
-      ePz=epz;
-      eHit=&hit;
+  const ldmx::SimTrackerHit* eHit = nullptr;
+  double ePz = -1.0;
+  for (auto const& hit : ecalSPHits) {
+    if (hit.getPdgID() != 11) continue;
+    double ez = hit.getPosition()[2];
+    if (ez <= 239.0 || ez >= 240.0) continue;
+    double epz = hit.getMomentum()[2];
+    if (epz > ePz) {
+      ePz = epz;
+      eHit = &hit;
     }
   }
-  if(eHit){
-    ldmx_log(info)<<"Electron Found!";
-    auto pos=eHit->getPosition();
-    auto mom=eHit->getMomentum();
-    etraj_sp={pos[0], pos[1], pos[2]};
+  if (eHit) {
+    ldmx_log(info) << "Electron Found!";
+    auto pos = eHit->getPosition();
+    auto mom = eHit->getMomentum();
+    etraj_sp = {pos[0], pos[1], pos[2]};
 
-    double pz=mom[2];
-    if(pz!=0){
-      enorm_sp={mom[0]/pz,mom[1]/pz,1.0};
+    double pz = mom[2];
+    if (pz != 0) {
+      enorm_sp = {mom[0] / pz, mom[1] / pz, 1.0};
     }
-  } 
+  }
 
   // clear data
   for (auto& v : data_) {
@@ -169,22 +164,22 @@ void EcalPnetVetoProcessor::make_inputs(
     ldmx::EcalID id(hit.getID());
     auto [x, y, z] = geom.getPosition(id);
 
-    //Compute relative position
-    double etraj_x=-999.;
-    double etraj_y=-999.;
-    if(eHit){
-      //ldmx_log(info)<<"Electron Found!";
-      double delta_z=z-etraj_sp[2];
-      etraj_x=etraj_sp[0]+enorm_sp[0]*delta_z;
-      etraj_y=etraj_sp[1]+enorm_sp[1]*delta_z;
+    // Compute relative position
+    double etraj_x = -999.;
+    double etraj_y = -999.;
+    if (eHit) {
+      // ldmx_log(info)<<"Electron Found!";
+      double delta_z = z - etraj_sp[2];
+      etraj_x = etraj_sp[0] + enorm_sp[0] * delta_z;
+      etraj_y = etraj_sp[1] + enorm_sp[1] * delta_z;
     }
-    //ldmx_log(info)<<"delx"<<etraj_x;
-    data_[0].at(coordinate_x_offset_ + idx) = x-etraj_x;
-    data_[0].at(coordinate_y_offset_ + idx) = y-etraj_y;
+    // ldmx_log(info)<<"delx"<<etraj_x;
+    data_[0].at(coordinate_x_offset_ + idx) = x - etraj_x;
+    data_[0].at(coordinate_y_offset_ + idx) = y - etraj_y;
     data_[0].at(coordinate_z_offset_ + idx) = z;
 
-    data_[1].at(feature_x_offset_ + idx) = x-etraj_x;
-    data_[1].at(feature_y_offset_ + idx) = y-etraj_y;
+    data_[1].at(feature_x_offset_ + idx) = x - etraj_x;
+    data_[1].at(feature_y_offset_ + idx) = y - etraj_y;
     data_[1].at(feature_z_offset_ + idx) = z;
     data_[1].at(feature_layerid_offset_ + idx) = id.layer();
     data_[1].at(feature_energy_offset_ + idx) = std::log(hit.getEnergy());
