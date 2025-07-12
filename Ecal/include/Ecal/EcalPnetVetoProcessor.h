@@ -18,6 +18,7 @@
 #include "Framework/Configure/Parameters.h"
 #include "Framework/EventProcessor.h"
 #include "Tools/ONNXRuntime.h"
+#include "SimCore/Event/SimTrackerHit.h"
 
 namespace ecal {
 
@@ -39,7 +40,8 @@ class EcalPnetVetoProcessor : public framework::Producer {
    * @param ecalRecHits The EcalHit collection.
    */
   void make_inputs(const ldmx::EcalGeometry& geom,
-                   const std::vector<ldmx::EcalHit>& ecalRecHits);
+                   const std::vector<ldmx::EcalHit>& ecalRecHits,
+                   const std::vector<ldmx::SimTrackerHit>& ecalSPHits);
 
   /**
    * Transfor logits to a probability
@@ -62,8 +64,8 @@ class EcalPnetVetoProcessor : public framework::Producer {
   constexpr static unsigned int feature_x_offset_ = 0;
   constexpr static unsigned int feature_y_offset_ = max_num_hits_;
   constexpr static unsigned int feature_z_offset_ = 2 * max_num_hits_;
-  constexpr static unsigned int feature_layerid_offset_ = 3 * max_num_hits_;
-  constexpr static unsigned int feature_energy_offset_ = 4 * max_num_hits_;
+  constexpr static unsigned int feature_layerid_offset_ = 4 * max_num_hits_;
+  constexpr static unsigned int feature_energy_offset_ = 3 * max_num_hits_;
 
   const static std::vector<std::string> input_names_;
   const static std::vector<unsigned int> input_sizes_;
@@ -75,7 +77,8 @@ class EcalPnetVetoProcessor : public framework::Producer {
   /** Name of the collection which will containt the results. */
   std::string collectionName_{"EcalPnetVeto"};
 
-  std::string ecal_rec_hits_passname_;
+  std::string ecal_rec_hits_passname_; 
+  std::string ecal_sp_hits_passname_;
 };
 
 }  // namespace ecal
