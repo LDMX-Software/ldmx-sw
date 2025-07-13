@@ -24,6 +24,7 @@ void EcalPnetVetoProcessor::configure(
   // Set the collection name as defined in the configuration
   collectionName_ = parameters.getParameter<std::string>("collection_name");
 
+  rec_coll_name_ = parameters.getParameter<std::string>("rec_coll_name");
   ecal_rec_hits_passname_ =
       parameters.getParameter<std::string>("ecal_rec_hits_passname");
   ecal_sp_hits_passname_ =
@@ -39,7 +40,7 @@ void EcalPnetVetoProcessor::produce(framework::Event& event) {
 
   // Get the collection of digitized Ecal hits from the event.
   const auto ecal_rec_hits = event.getCollection<ldmx::EcalHit>(
-      "ecal_rec_hits", ecal_rec_hits_passname_);
+      rec_coll_name_, ecal_rec_hits_passname_);
   auto nhits = std::count_if(
       ecal_rec_hits.begin(), ecal_rec_hits.end(),
       [](const ldmx::EcalHit& hit) { return hit.getEnergy() > 0; });
@@ -88,7 +89,7 @@ void EcalPnetVetoProcessor::make_inputs(
   std::array<double, 3> enorm_sp = {-999., -999., -999.};
 
   const ldmx::SimTrackerHit* electron_hit = nullptr;
-  double electron_pz = -1.0;
+  double electron_pz_max = -1.0;
   for (auto const& hit : ecal_sp_hits) {
     // Look at the electron only
     if (hit.getPdgID() != 11) continue;
@@ -97,7 +98,7 @@ void EcalPnetVetoProcessor::make_inputs(
     if (electron_z <= 239.0 || electron_z >= 240.0) continue;
     double electron_pz = hit.getMomentum()[2];
     // Find the highest pz electron
-    if (electron_pz > electron_pz) {
+    if (electron_pz > electron_pz_max) {
       electron_pz = electron_pz;
       electron_hit = &hit;
     }

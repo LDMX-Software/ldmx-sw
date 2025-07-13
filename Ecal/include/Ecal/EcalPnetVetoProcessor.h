@@ -77,6 +77,7 @@ class EcalPnetVetoProcessor : public framework::Producer {
   /** Name of the collection which will containt the results. */
   std::string collectionName_{"EcalPnetVeto"};
 
+  std::string rec_coll_name_;
   std::string ecal_rec_hits_passname_;
   std::string ecal_sp_hits_passname_;
 };
