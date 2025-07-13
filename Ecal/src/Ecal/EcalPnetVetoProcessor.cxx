@@ -46,7 +46,7 @@ void EcalPnetVetoProcessor::produce(framework::Event& event) {
       [](const ldmx::EcalHit& hit) { return hit.getEnergy() > 0; });
   // Get the collection of EcalScroingPlane hits
   auto const& spHits = event.getCollection<ldmx::SimTrackerHit>(
-      "EcalScoringPlanelectron_hits", ecal_sp_hits_passname_);
+      "EcalScoringPlaneHits", ecal_sp_hits_passname_);
 
   ldmx_log(trace) << "nhits = " << nhits
                   << " max_num_hits_ = " << max_num_hits_;
@@ -99,7 +99,7 @@ void EcalPnetVetoProcessor::make_inputs(
     double electron_pz = hit.getMomentum()[2];
     // Find the highest pz electron
     if (electron_pz > electron_pz_max) {
-      electron_pz = electron_pz;
+      electron_pz_max = electron_pz;
       electron_hit = &hit;
     }
   }
