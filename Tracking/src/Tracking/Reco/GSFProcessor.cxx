@@ -87,6 +87,7 @@ void GSFProcessor::onNewRun(const ldmx::RunHeader& rh) {
   //      map, reductionMethod,
   //      Acts::getDefaultLogger("GSF_STEP", acts_loggingLevel));
 
+  const auto stepper = Acts::EigenStepper<>{map};
   Acts::MultiEigenStepperLoop multi_stepper(map);
   // Detailed Stepper
 
@@ -111,9 +112,11 @@ void GSFProcessor::onNewRun(const ldmx::RunHeader& rh) {
       std::move(gsf_propagator), std::move(betheHeitler),
       Acts::getDefaultLogger("GSF", acts_loggingLevel));
 
-  const auto stepper = Acts::EigenStepper<>{map};
+  // Introduce a second propagator for the extrapolation
+  // TODO: Check if this could work with the multi_stepper too?
   propagator_ = std::make_unique<Propagator>(
-      stepper, navigator, Acts::getDefaultLogger("PROP", acts_loggingLevel));
+      stepper, navigator,
+      Acts::getDefaultLogger("GSF_PROP_EXTRAP", acts_loggingLevel));
 
   trk_extrap_ = std::make_shared<std::decay_t<decltype(*trk_extrap_)>>(
       *propagator_, geometry_context(), magnetic_field_context());
@@ -319,6 +322,22 @@ void GSFProcessor::produce(framework::Event& event) {
     std::shared_ptr<Acts::Surface> beamOrigin_surface =
         tracking::sim::utils::unboundSurface(-700);
 
+    // TODO:
+    /*
+      surf_rotation = Acts::RotationMatrix3::Zero();
+        // u direction along +Y
+        surf_rotation(1, 0) = 1;
+        // v direction along +Z
+        surf_rotation(2, 1) = 1;
+        // w direction along +X
+        surf_rotation(0, 2) = 1;
+
+        Acts::Vector3 target_pos(0., 0., 0.);
+        Acts::Translation3 target_translation(target_pos);
+        Acts::Transform3 target_transform(target_translation * surf_rotation);
+      target_surface =
+      Acts::Surface::makeShared<Acts::PlaneSurface>(target_transform);
+    */
     const std::shared_ptr<Acts::Surface> target_surface =
         tracking::sim::utils::unboundSurface(0.);
 
