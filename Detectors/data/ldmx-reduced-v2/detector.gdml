@@ -62,7 +62,7 @@
     
   <structure>
     <volume name="World">
-      <materialref ref="Vacuum"/>
+      <materialref ref="Air"/>
       <solidref ref="world_box"/>
       <physvol copynumber="1">
         <file name="tagger.gdml"/>
