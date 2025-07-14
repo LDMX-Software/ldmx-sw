@@ -29,8 +29,6 @@ void CKFProcessor::onNewRun(const ldmx::RunHeader& rh) {
 
   // Generate a constant magnetic field
   Acts::Vector3 b_field(0., 0., bfield_ * Acts::UnitConstants::T);
-
-  // Setup a constant magnetic field
   const auto constBField = std::make_shared<Acts::ConstantBField>(b_field);
 
   // Define the target surface - be careful:
@@ -119,13 +117,13 @@ void CKFProcessor::onNewRun(const ldmx::RunHeader& rh) {
                         // default_transformBField));
                         transformPos, transformBField));
 
-  auto acts_loggingLevel = Acts::Logging::FATAL;
+  auto acts_loggingLevel = Acts::Logging::ERROR;
   if (debug_acts_) acts_loggingLevel = Acts::Logging::VERBOSE;
 
   // Setup the steppers
   const auto stepper = Acts::EigenStepper<>{map};
   const auto const_stepper = Acts::EigenStepper<>{constBField};
-  const auto multi_stepper = Acts::MultiEigenStepperLoop{map};
+  // const auto multi_stepper = Acts::MultiEigenStepperLoop{map};
 
   // Setup the navigator
   Acts::Navigator::Config navCfg{geometry().getTG()};
@@ -140,7 +138,7 @@ void CKFProcessor::onNewRun(const ldmx::RunHeader& rh) {
           ? std::make_unique<CkfPropagator>(const_stepper, navigator)
           : std::make_unique<CkfPropagator>(
                 stepper, navigator,
-                Acts::getDefaultLogger("ACTS_PROP", acts_loggingLevel));
+                Acts::getDefaultLogger("CKF_PROP", acts_loggingLevel));
 
   // Setup the finder / fitters
   ckf_ = std::make_unique<std::decay_t<decltype(*ckf_)>>(
