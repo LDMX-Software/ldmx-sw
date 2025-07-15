@@ -2,17 +2,6 @@
 
 namespace trigger {
 
-// constexpr int max_layer = 32;
-// constexpr int min_track_length = 5;
-// float hcal_min_energy = 8.0f;    // MIP peak is 10-11 MeV
-// float ecal_min_energy = 3.0f;    // MIP peak around 17 MeV
-// float ecal_max_energy = 26.0f;   // MeV
-// float search_radius = 50.0f;     // mm
-// float isolation_e_cut = 180.0f;  // MeV; Change as needed
-// float hole_fraction_max =
-//     0.2f;  // No more than 20% hole fraction ; Change
-//            // as needed Converts tracks to MIP objects
-
 void TrigMipReco::configure(framework::config::Parameters& ps) {
   hit_coll_name_ = ps.getParameter<std::string>("hit_coll_name");
   pass_coll_name_ = ps.getParameter<std::string>("pass_coll_name");
