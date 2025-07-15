@@ -8,6 +8,8 @@
 #define TRIGGER_TRIGMIPRECO_H
 
 // LDMX Framework
+#include <chrono>
+
 #include "DetDescr/HcalTriggerID.h"
 #include "Framework/Configure/Parameters.h"
 #include "Framework/Event.h"
@@ -26,11 +28,27 @@ class TrigMipReco : public framework::Producer {
   TrigMipReco(const std::string& name, framework::Process& process)
       : framework::Producer(name, process) {}
 
-  virtual void configure(framework::config::Parameters& ps);
+  void configure(framework::config::Parameters& ps) override;
 
-  virtual void produce(framework::Event& event);
+  void produce(framework::Event& event) override;
+
+  /**
+   * onNewRun is the first function called for each processor
+   * *after* the conditions are fully configured and accessible.
+   * This is where you could create single-processors, multi-event
+   * calculation objects.
+   */
+  void onNewRun(const ldmx::RunHeader& rh) override;
+
+  /**
+   *
+   */
+  void onProcessEnd() override;
 
  private:
+  int nevents_{0};
+  double processing_time_{0.};
+  std::map<std::string, double> profiling_map_;
   // name of collection for Hcal TP hits to be passed as input
   std::string hit_coll_name_;
   std::string hit_coll_passname_;

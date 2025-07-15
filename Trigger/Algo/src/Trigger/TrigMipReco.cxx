@@ -2,6 +2,10 @@
 
 namespace trigger {
 
+void TrigMipReco::onNewRun(const ldmx::RunHeader& rh) {
+  profiling_map_["processing_time_"] = 0;
+}
+
 void TrigMipReco::configure(framework::config::Parameters& ps) {
   hit_coll_name_ = ps.getParameter<std::string>("hit_coll_name");
   pass_coll_name_ = ps.getParameter<std::string>("pass_coll_name");
@@ -26,6 +30,9 @@ void TrigMipReco::configure(framework::config::Parameters& ps) {
 }
 
 void TrigMipReco::produce(framework::Event& event) {
+  auto start = std::chrono::high_resolution_clock::now();
+  nevents_++;
+
   if (!event.exists(hit_coll_name_, hit_coll_passname_)) return;
 
   const auto calo_hits = event.getObject<TrigCaloHitCollection>(
@@ -107,6 +114,12 @@ void TrigMipReco::produce(framework::Event& event) {
 
     std::sort(mips.begin(), mips.end());
     event.add(pass_coll_name_, mips);
+
+    auto end = std::chrono::high_resolution_clock::now();
+    auto time_diff = end - start;
+    processing_time_ +=
+        std::chrono::duration<double, std::milli>(time_diff).count();
+
     return;
   } else {  // ECAL MIP Reconstruction
     const float radius_cut_2 = search_radius_ * search_radius_;
@@ -270,6 +283,16 @@ void TrigMipReco::produce(framework::Event& event) {
     std::sort(mips.begin(), mips.end());
     event.add(pass_coll_name_, mips);
   }
+
+  auto end = std::chrono::high_resolution_clock::now();
+  auto time_diff = end - start;
+  processing_time_ +=
+      std::chrono::duration<double, std::milli>(time_diff).count();
+}
+
+void TrigMipReco::onProcessEnd() {
+  ldmx_log(info) << "AVG Time/Event: " << std::fixed << std::setprecision(3)
+                 << processing_time_ / nevents_ << " ms";
 }
 
 }  // namespace trigger
