@@ -1,32 +1,36 @@
 /**
- * @file DNNDNNEcalVetoProcessor.h
+ * @file EcalPnetVetoProcessor.h
  * @brief Class that determines if event is vetoable using ECAL hit information
  * w/ a deep neural network
- * @author Huilin Qu, UCSB
+ * @author Huilin Qu, Tamas Almos Vami (UCSB)
  */
 
-#ifndef EVENTPROC_DNNECALVETOPROCESSOR_H_
-#define EVENTPROC_DNNECALVETOPROCESSOR_H_
+#ifndef EVENTPROC_ECALPNETVETOPROCESSOR_H_
+#define EVENTPROC_ECALPNETVETOPROCESSOR_H_
 
 // LDMX
+#include <algorithm>
+#include <numeric>
+
 #include "DetDescr/EcalGeometry.h"
 #include "Ecal/Event/EcalHit.h"
 #include "Ecal/Event/EcalVetoResult.h"
 #include "Framework/Configure/Parameters.h"
 #include "Framework/EventProcessor.h"
+#include "SimCore/Event/SimTrackerHit.h"
 #include "Tools/ONNXRuntime.h"
 
 namespace ecal {
 
 /**
- * @class DNNEcalVetoProcessor
+ * @class EcalPnetVetoProcessor
  * @brief Determines if event is vetoable using ECAL hit information w/ a deep
  * neural network
  */
-class DNNEcalVetoProcessor : public framework::Producer {
+class EcalPnetVetoProcessor : public framework::Producer {
  public:
-  DNNEcalVetoProcessor(const std::string& name, framework::Process& process);
-  virtual ~DNNEcalVetoProcessor() {}
+  EcalPnetVetoProcessor(const std::string& name, framework::Process& process);
+  virtual ~EcalPnetVetoProcessor() = default;
   void configure(framework::config::Parameters& parameters) override;
   void produce(framework::Event& event) override;
 
@@ -36,12 +40,20 @@ class DNNEcalVetoProcessor : public framework::Producer {
    * @param ecalRecHits The EcalHit collection.
    */
   void make_inputs(const ldmx::EcalGeometry& geom,
-                   const std::vector<ldmx::EcalHit>& ecalRecHits);
+                   const std::vector<ldmx::EcalHit>& ecalRecHits,
+                   const std::vector<ldmx::SimTrackerHit>& ecalSPHits);
+
+  /**
+   * Transfor logits to a probability
+   * @param logits: Vector of logits
+   * @returns
+   */
+  std::vector<float> log_softmax(const std::vector<float>& logits);
 
  private:
   /** Maximum number of hits allowed in ECAL. Events with more hits will be
-   * marked as BKG directly without running the DNN. */
-  constexpr static unsigned int max_num_hits_ = 50;
+   * marked as BKG directly without running ParticleNet. */
+  constexpr static unsigned int max_num_hits_ = 300;
 
   constexpr static unsigned int n_coordinate_dim_ = 3;
   constexpr static unsigned int coordinate_x_offset_ = 0;
@@ -52,8 +64,8 @@ class DNNEcalVetoProcessor : public framework::Producer {
   constexpr static unsigned int feature_x_offset_ = 0;
   constexpr static unsigned int feature_y_offset_ = max_num_hits_;
   constexpr static unsigned int feature_z_offset_ = 2 * max_num_hits_;
-  constexpr static unsigned int feature_layerid_offset_ = 3 * max_num_hits_;
-  constexpr static unsigned int feature_energy_offset_ = 4 * max_num_hits_;
+  constexpr static unsigned int feature_energy_offset_ = 3 * max_num_hits_;
+  constexpr static unsigned int feature_layerid_offset_ = 4 * max_num_hits_;
 
   const static std::vector<std::string> input_names_;
   const static std::vector<unsigned int> input_sizes_;
@@ -63,11 +75,11 @@ class DNNEcalVetoProcessor : public framework::Producer {
   std::unique_ptr<ldmx::Ort::ONNXRuntime> rt_;
 
   /** Name of the collection which will containt the results. */
-  std::string collectionName_{"DNNEcalVeto"};
+  std::string collectionName_{"EcalPnetVeto"};
 
+  std::string rec_coll_name_;
   std::string ecal_rec_hits_passname_;
-
-  bool debug_ = false;
+  std::string ecal_sp_hits_passname_;
 };
 
 }  // namespace ecal

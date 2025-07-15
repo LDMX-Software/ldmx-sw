@@ -80,7 +80,7 @@ from LDMX.Tracking import full_tracking_sequence
 import LDMX.Ecal.EcalGeometry
 import LDMX.Ecal.ecal_hardcoded_conditions
 from LDMX.Ecal import digi as eDigi
-from LDMX.Ecal import vetos
+from LDMX.Ecal import ecal_vetos
 
 # Load the HCAL modules
 import LDMX.Hcal.HcalGeometry
@@ -115,6 +115,7 @@ ecalReco   =eDigi.EcalRecProducer()
 ecalDigi = eDigi.EcalDigiProducer()
 ecalVeto = vetos.EcalVetoProcessor()
 ecalMip = vetos.EcalMipProcessor()
+ecal_veto_pnet = ecal_vetos.EcalPnetVetoProcessor()
 
 # HCAL part
 hcal_digi_reco = hDigi.HcalSimpleDigiAndRecProducer()
@@ -143,6 +144,7 @@ p.sequence.extend([
         ecalReco, 
         ecalVeto,
         ecalMip,
+        ecal_veto_pnet,
         *ts_digis,
         *ts_clusters, 
         trigScintTrack, 

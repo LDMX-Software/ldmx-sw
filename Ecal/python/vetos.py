@@ -53,22 +53,22 @@ class EcalMipProcessor(ldmxcfg.Producer) :
         self.mip_pass_name = ""
         self.mip_result_name = "EcalMipInfo"
 
-class DNNEcalVetoProcessor(ldmxcfg.Producer) :
-    """Configuration for DNN Ecal Veto
-
-    By default, sets the disct_cut to negative 1 so
-    the user is forced to decide on the cut.
+class EcalPnetVetoProcessor(ldmxcfg.Producer) :
+    """Configuration for ParticleNet Ecal Veto
+        ParticleNet trained on v14 geometry ecalPN + signal
     """
 
-    def __init__(self,name = 'dnnEcalVeto') :
-        super().__init__(name,"ecal::DNNEcalVetoProcessor",'Ecal')
+    def __init__(self,name = 'EcalPnetVeto') :
+        super().__init__(name,"ecal::EcalPnetVetoProcessor",'Ecal')
 
-        self.debug = False
         from LDMX.Ecal.makePath import makeBDTPath
-        self.model_path = makeBDTPath("particle-net_ecal_v9")
-        self.disc_cut = -1.
-        self.collection_name = "EcalVetoDNN"
+        self.model_path = makeBDTPath("particle_net_ecal_v10")
+        self.disc_cut = 0.74
+        self.collection_name = "EcalPnetVeto"
+        self.rec_coll_name = "EcalRecHits"
         self.ecal_rec_hits_passname = ""
+        self.ecal_sp_hits_passname = ""
+        
         
 
 
