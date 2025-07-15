@@ -47,7 +47,7 @@ from LDMX.Hcal import HcalGeometry
 import LDMX.Hcal.hcal_hardcoded_conditions
 
 from LDMX.Ecal import digi as eDigi
-from LDMX.Ecal import vetos
+from LDMX.Ecal import vetos as ecal_vetos
 import LDMX.Ecal.ecalClusters as ecal_cluster
 from LDMX.Hcal import digi as hDigi
 
