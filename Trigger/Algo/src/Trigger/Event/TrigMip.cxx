@@ -3,15 +3,12 @@
 ClassImp(trigger::TrigMip)
 
     namespace trigger {
-  // TrigMip::TrigMip(float x, float y, float z, float e)
-  //     : x_(x), y_(y), z_(z), e_(e) {}
-
-  // void TrigMip::Clear() {
-  //   startLayer_ = 0;
-  //   endLayer_ = 0;
-  //   nHits_ = 0;
-  //   nHoles_ = 0;
-  //   length_ = 0;
-  // }
+  void TrigMip::Clear() {
+    start_layer_ = 0;
+    end_layer_ = 0;
+    n_hits_ = 0;
+    n_holes_ = 0;
+    length_ = 0;
+  }
 
 }  // namespace trigger

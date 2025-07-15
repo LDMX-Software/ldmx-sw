@@ -2,248 +2,283 @@
 
 namespace trigger {
 
+// constexpr int max_layer = 32;
+// constexpr int min_track_length = 5;
+// float hcal_min_energy = 8.0f;    // MIP peak is 10-11 MeV
+// float ecal_min_energy = 3.0f;    // MIP peak around 17 MeV
+// float ecal_max_energy = 26.0f;   // MeV
+// float search_radius = 50.0f;     // mm
+// float isolation_e_cut = 180.0f;  // MeV; Change as needed
+// float hole_fraction_max =
+//     0.2f;  // No more than 20% hole fraction ; Change
+//            // as needed Converts tracks to MIP objects
+
 void TrigMipReco::configure(framework::config::Parameters& ps) {
   hit_coll_name_ = ps.getParameter<std::string>("hit_coll_name");
   pass_coll_name_ = ps.getParameter<std::string>("pass_coll_name");
   hit_coll_passname_ = ps.getParameter<std::string>("hit_coll_passname");
   calorimeter_type_is_hcal_ = ps.getParameter<bool>("calorimeter_type_is_hcal");
+
+  max_layer_ = ps.getParameter<int>("max_layer", 32);
+  search_radius_ = ps.getParameter<float>("search_radius", 50.0f);  // mm
+  min_track_length_ = ps.getParameter<int>("min_track_length", 5);
+  isolation_e_cut_ = ps.getParameter<float>("isolation_e_cut",
+                                            180.0f);  // MeV; Change as needed
+  hole_fraction_max_ = ps.getParameter<float>("hole_fraction_max", 0.2f);  // mm
+
   if (calorimeter_type_is_hcal_) {
-    min_energy_ = 8.0f;  // MIP peak is 10-11
-  } else {               // ECAL
-    min_energy_ = 3.0f;  // MIP peak around 17
-    max_energy_ = 26.0f;
+    hcal_min_energy_ = ps.getParameter<float>("hcal_min_energy",
+                                              8.0f);  // MIP peak is 10-11 MeV
+  } else {                                            // ECAL
+    ecal_min_energy_ = ps.getParameter<float>("ecal_min_energy",
+                                              3.0f);  // MIP peak around 17 MeV
+    ecal_max_energy_ = ps.getParameter<float>("ecal_max_energy", 26.0f);
   }
 }
 
 void TrigMipReco::produce(framework::Event& event) {
   if (!event.exists(hit_coll_name_, hit_coll_passname_)) return;
-  auto caloHits{event.getObject<TrigCaloHitCollection>(hit_coll_name_,
-                                                       hit_coll_passname_)};
+
+  const auto calo_hits = event.getObject<TrigCaloHitCollection>(
+      hit_coll_name_, hit_coll_passname_);
 
   if (calorimeter_type_is_hcal_) {  // HCAL MIP Reconstruction
-    TrigCaloHitCollection sortedHits;
-    int evenMatrix[24][5] = {};
-    int evenStart[5] = {99, 99, 99, 99, 99};
-    int evenEnd[5] = {};
-    int evenCounts[5] = {};
-    int oddMatrix[24][5] = {};
-    int oddStart[5] = {99, 99, 99, 99, 99};
-    int oddEnd[5] = {};
-    int oddCounts[5] = {};
-    for (const auto& tp : caloHits) {
-      if (tp.section() > 0 || tp.energy() < min_energy_ || tp.layer() > 47)
+    TrigCaloHitCollection sorted_hits;
+    int even_matrix[24][5] = {};
+    int even_start[5] = {99, 99, 99, 99, 99};
+    int even_end[5] = {};
+    int even_counts[5] = {};
+    int odd_matrix[24][5] = {};
+    int odd_start[5] = {99, 99, 99, 99, 99};
+    int odd_end[5] = {};
+    int odd_counts[5] = {};
+    constexpr int layer_start = 80;  // start in first 5 layers
+
+    for (const auto& tp : calo_hits) {
+      if (tp.section() > 0 || tp.energy() < hcal_min_energy_ ||
+          tp.layer() > 47) {
         continue;
-      sortedHits.push_back(tp);
+      }
+
+      sorted_hits.push_back(tp);
+      const int layer_index = tp.layer() / 2;
+      const int strip = tp.strip();
       if (tp.layer() % 2) {
-        oddMatrix[tp.layer() / 2][tp.strip()] = 1;
-        if (tp.layer() < oddStart[tp.strip()])
-          oddStart[tp.strip()] = tp.layer();
-        if (tp.layer() > oddEnd[tp.strip()]) oddEnd[tp.strip()] = tp.layer();
+        odd_matrix[layer_index][strip] = 1;
+        odd_start[strip] = std::min(odd_start[strip], tp.layer());
+        odd_end[strip] = std::max(odd_end[strip], tp.layer());
       } else {
-        evenMatrix[tp.layer() / 2][tp.strip()] = 1;
-        if (tp.layer() < evenStart[tp.strip()])
-          evenStart[tp.strip()] = tp.layer();
-        if (tp.layer() > evenEnd[tp.strip()]) evenEnd[tp.strip()] = tp.layer();
+        even_matrix[layer_index][strip] = 1;
+        even_start[strip] = std::min(even_start[strip], tp.layer());
+        even_end[strip] = std::max(even_end[strip], tp.layer());
       }
     }
+
     for (int i = 0; i < 24; i++) {
       for (int j = 0; j < 5; j++) {
-        if (evenMatrix[i][j]) {
-          evenCounts[j]++;
+        if (even_matrix[i][j]) {
+          even_counts[j]++;
         }
-        if (oddMatrix[i][j]) {
-          oddCounts[j]++;
+        if (odd_matrix[i][j]) {
+          odd_counts[j]++;
         }
       }
     }
 
     // straight MIP reco
     TrigMipCollection mips;
-    for (int i = 0; i < 5; i++) {
-      if (oddStart[i] < 80) {  // start in first 5 layers
+    for (int i = 0; i < 5; i++) {  // 5 elements in the even/odd_start matrices
+      if (odd_start[i] < layer_start) {
         TrigMip m;
-        m.setStartLayer(oddStart[i]);
-        m.setEndLayer(oddEnd[i]);
-        m.setNHits(oddCounts[i]);
-        m.setLength(oddEnd[i] - oddStart[i] + 1);
-        m.setNHoles(m.length() / 2 - m.nHits());
+        m.setStartLayer(odd_start[i]);
+        m.setEndLayer(odd_end[i]);
+        m.setNHits(odd_counts[i]);
+        m.setLength(odd_end[i] - odd_start[i] + 1);
+        int holes = m.length() / 2 - m.nHits();
+        if (holes < 0) {
+          holes = 0;
+        }
+        m.setNHoles(holes);
         mips.push_back(m);
       }
-      if (evenStart[i] < 80) {  // start in first 5 layers
+      if (even_start[i] < layer_start) {
         TrigMip m;
-        m.setStartLayer(evenStart[i]);
-        m.setEndLayer(evenEnd[i]);
-        m.setNHits(evenCounts[i]);
-        m.setLength(evenEnd[i] - evenStart[i] + 1);
-        m.setNHoles(m.length() / 2 - m.nHits());
+        m.setStartLayer(even_start[i]);
+        m.setEndLayer(even_end[i]);
+        m.setNHits(even_counts[i]);
+        m.setLength(even_end[i] - even_start[i] + 1);
+        int holes = m.length() / 2 - m.nHits();
+        if (holes < 0) {
+          holes = 0;
+        }
+        m.setNHoles(holes);
         mips.push_back(m);
       }
     }
 
     std::sort(mips.begin(), mips.end());
-
     event.add(pass_coll_name_, mips);
-  } else {                 // ECAL MIP Reconstruction
-    float radiusCut = 50;  // mm
-    int maxLayer = 32;
-    int minTrackLength = 5;  // Adjustable
-    const float radiusCut2 = radiusCut * radiusCut;
-
-    std::map<int, std::vector<TrigCaloHit>> layerHits;
-    std::set<const TrigCaloHit*> usedHits;
-    std::vector<std::vector<const TrigCaloHit*>> candidateTracks;
-    std::map<const TrigCaloHit*, size_t> hitToBestTrack;
+    return;
+  } else {  // ECAL MIP Reconstruction
+    const float radius_cut_2 = search_radius_ * search_radius_;
+    std::map<int, std::vector<TrigCaloHit>> layer_hits;
+    std::set<const TrigCaloHit*> used_hits;
+    std::vector<std::vector<const TrigCaloHit*>> candidate_tracks;
+    std::map<const TrigCaloHit*, size_t> hit_to_best_track;
 
     // Filter for section = 0 and hits < 33 layers
-    for (const auto& hit : caloHits) {
-      if (hit.section() > 0 || hit.layer() > maxLayer) continue;
-      layerHits[hit.layer()].push_back(hit);
+    for (const auto& hit : calo_hits) {
+      if (hit.section() > 0 || hit.layer() > max_layer_) continue;
+      layer_hits[hit.layer()].push_back(hit);
     }
 
     // Find mip seeds
-    for (const auto& [seedLayer, seeds] : layerHits) {
+    for (const auto& [seed_layer, seeds] : layer_hits) {
       for (const auto& seed : seeds) {
         // Skip if hit already used or outside mip energy range
-        if (usedHits.count(&seed) || seed.energy() < min_energy_ ||
-            seed.energy() > max_energy_)
+        if (used_hits.count(&seed) || seed.energy() < ecal_min_energy_ ||
+            seed.energy() > ecal_max_energy_) {
           continue;
+        }
 
-        std::vector<const TrigCaloHit*> track;
-        track.push_back(&seed);
-
+        std::vector<const TrigCaloHit*> track{&seed};
         const TrigCaloHit* last = &seed;  // Most recent hit in track
         int holes = 0;
-        float growthFactor = 1.0f;
+        float growth_factor = 1.0f;
 
         // Look layer by layer for next hit within dR
-        for (int l = seed.layer() + 1; l <= maxLayer; ++l) {
-          const TrigCaloHit* bestHit = nullptr;
-          float bestdR2 =
-              radiusCut2 *
-              (growthFactor *
-               growthFactor);  // Grow search window if there is a hole
+        for (int l = seed.layer() + 1; l <= max_layer_; ++l) {
+          const TrigCaloHit* best_hit = nullptr;
+          float best_dR_2 =
+              radius_cut_2 * growth_factor *
+              growth_factor;  // Grow search window if there is a hole
 
-          for (const auto& cand : layerHits[l]) {
-            if (usedHits.count(&cand) || cand.energy() < min_energy_ ||
-                cand.energy() > max_energy_)
+          for (const auto& cand : layer_hits[l]) {
+            if (used_hits.count(&cand) || cand.energy() < ecal_min_energy_ ||
+                cand.energy() > ecal_max_energy_) {
               continue;
+            }
 
             // Corrects for layer shift in x-direction which we calculated
             // is 4.82 mm
-            float layerShiftLast = (last->layer() % 2 == 0) ? 0.0f : 4.82f;
-            float layerShiftCand = (cand.layer() % 2 == 0) ? 0.0f : 4.82f;
+            const float layer_shift_last =
+                (last->layer() % 2 == 0) ? 0.0f : 4.82f;
+            const float layer_shift_cand =
+                (cand.layer() % 2 == 0) ? 0.0f : 4.82f;
+            const float dx = (cand.position_x() - layer_shift_cand) -
+                             (last->position_x() - layer_shift_last);
+            const float dy = cand.position_y() - last->position_y();
+            const float dR_2 = dx * dx + dy * dy;
 
-            float dx =
-                (cand.x() - layerShiftCand) - (last->x() - layerShiftLast);
-            float dy = cand.y() - last->y();
-            float dR2 = dx * dx + dy * dy;
-            if (dR2 < bestdR2) {
-              bestdR2 = dR2;
-              bestHit = &cand;  // Closest unused hit in next layer
+            if (dR_2 < best_dR_2) {
+              best_dR_2 = dR_2;
+              best_hit = &cand;  // Closest unused hit in next layer
             }
           }
 
-          if (bestHit) {
-            track.push_back(bestHit);  // Builds track from best hits
-            last = bestHit;
+          if (best_hit) {
+            track.push_back(best_hit);  // Builds track from best hits
+            last = best_hit;
             holes = 0;
-            growthFactor = 1.0f;  // Reset search window
+            growth_factor = 1.0f;  // Reset search window
           } else {
             holes++;
-            growthFactor = (holes + 1);  // Keep expanding
+            growth_factor = static_cast<float>(holes + 1);  // Keep expanding
           }
         }
 
-        bool isIsolated = true;
-        float isolationECut = 180;  // MeV; Change as needed
-        float isolationRadius2 = radiusCut * radiusCut;
-        if ((track.size() >= minTrackLength)) {
+        bool is_isolated = true;
+        if (track.size() >= min_track_length_) {
           for (const auto* hit : track) {  // Isolation area energy check
-            int layer = hit->layer();
-            float hitx = hit->x();
-            float hity = hit->y();
-            float sumE = 0.0f;
+            const int layer = hit->layer();
+            const float hit_x = hit->position_x();
+            const float hit_y = hit->position_y();
+            float sum_e = 0.0f;
 
-            for (const auto& cand : layerHits[layer]) {
+            for (const auto& cand : layer_hits[layer]) {
               if (&cand == hit) continue;  // Skips self
-              float dx = cand.x() - hitx;
-              float dy = cand.y() - hity;
-              float dR2 = dx * dx + dy * dy;
 
-              if (dR2 < isolationRadius2) {
-                sumE += cand.energy();
+              const float dx = cand.position_x() - hit_x;
+              const float dy = cand.position_y() - hit_y;
+              const float dR_2 = dx * dx + dy * dy;
+
+              if (dR_2 < radius_cut_2) {
+                sum_e += cand.energy();
               }
             }
 
-            if (sumE >= isolationECut) {
-              isIsolated = false;
-              usedHits.insert(hit);  // Adds used hits to vector so they cannot
-                                     // be used again
+            if (sum_e >= isolation_e_cut_) {
+              is_isolated = false;
+              used_hits.insert(hit);  // Adds used hits to vector so they cannot
+                                      // be used again
               break;
             }
           }
-          if (!isIsolated) {
+
+          if (!is_isolated) {
             continue;  // Reject track if any hit is not isolated
           }
 
-          size_t i = candidateTracks.size();
-          candidateTracks.push_back(track);
+          const size_t i = candidate_tracks.size();
+          candidate_tracks.push_back(track);
 
           for (const auto* hit : track) {
-            if (!hitToBestTrack.count(hit) ||
-                candidateTracks[i].size() >
-                    candidateTracks[hitToBestTrack[hit]].size()) {
-              hitToBestTrack[hit] = i;
-              usedHits.insert(hit);  // Adds used hits to vector so they cannot
-                                     // be used again
+            if (!hit_to_best_track.count(hit) ||
+                candidate_tracks[i].size() >
+                    candidate_tracks[hit_to_best_track[hit]].size()) {
+              hit_to_best_track[hit] = i;
+              used_hits.insert(hit);  // Adds used hits to vector so they cannot
+                                      // be used again
             }
           }
         }
       }
     }
 
-    std::set<size_t> validTrackIDs;
-    for (const auto& [hit, idx] : hitToBestTrack) {
-      validTrackIDs.insert(idx);
+    std::set<size_t> valid_track_IDs;
+    for (const auto& [hit, idx] : hit_to_best_track) {
+      valid_track_IDs.insert(idx);
     }
 
     TrigMipCollection mips;
-    float max_hole_fraction = 0.2f;  // No more than 20% hole fraction ; Change
-                                     // as needed Converts tracks to MIP objects
-    for (size_t idx : validTrackIDs) {
-      const auto& track = candidateTracks[idx];
-
+    for (const size_t idx : valid_track_IDs) {
+      const auto& track = candidate_tracks[idx];
       TrigMip mip;
       mip.setStartLayer(track.front()->layer());
       mip.setEndLayer(track.back()->layer());
       mip.setNHits(track.size());
       mip.setLength(track.back()->layer() - track.front()->layer());
-      mip.setNHoles(mip.length() - mip.nHits());
+      int holes = mip.length() - mip.nHits();
+      if (holes < 0) {
+        holes = 0;
+      }
+      mip.setNHoles(holes);
 
-      float hole_fraction = (static_cast<float>(mip.nHoles()) / mip.length());
+      const float hole_fraction =
+          static_cast<float>(mip.nHoles()) / mip.length();
       // Remove mip tracks with hole fraction > 0.2
-      if (hole_fraction >= max_hole_fraction) continue;
+      if (hole_fraction >= hole_fraction_max_) continue;
 
-      float totalIsolationESum = 0.0f;
+      float total_isolation_e_sum = 0.0f;
       for (const auto* hit : track) {
-        int layer = hit->layer();
-        float hitx = hit->x();
-        float hity = hit->y();
-        for (const auto& cand : layerHits[layer]) {
+        const int layer = hit->layer();
+        const float hit_x = hit->position_x();
+        const float hit_y = hit->position_y();
+        for (const auto& cand : layer_hits[layer]) {
           if (&cand == hit) continue;
-          float dx = cand.x() - hitx;
-          float dy = cand.y() - hity;
-          float dR2 = dx * dx + dy * dy;
-          if (dR2 < radiusCut * radiusCut) {
-            totalIsolationESum += cand.energy();
+          const float dx = cand.position_x() - hit_x;
+          const float dy = cand.position_y() - hit_y;
+          const float dR_2 = dx * dx + dy * dy;
+          if (dR_2 < radius_cut_2) {
+            total_isolation_e_sum += cand.energy();
           }
         }
       }
-      mip.setSumEinIsolationRegion(totalIsolationESum);
+      mip.setSumEinIsolationRegion(total_isolation_e_sum);
       mips.push_back(mip);
     }
-    std::sort(mips.begin(), mips.end());
 
+    std::sort(mips.begin(), mips.end());
     event.add(pass_coll_name_, mips);
   }
 }

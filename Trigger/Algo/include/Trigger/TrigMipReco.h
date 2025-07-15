@@ -39,8 +39,15 @@ class TrigMipReco : public framework::Producer {
   // calorimeter_type_is_hcal_ boolean
   bool calorimeter_type_is_hcal_;
 
-  float min_energy_;  // set in configure()
-  float max_energy_;  // set in configure()
+  int max_layer_;
+  int min_track_length_;
+  float hcal_min_energy_;    // MIP peak is 10-11 MeV
+  float ecal_min_energy_;    // MIP peak around 17 MeV
+  float ecal_max_energy_;    // MeV
+  float search_radius_;      // mm
+  float isolation_e_cut_;    // MeV; Change as needed
+  float hole_fraction_max_;  // No more than 20% hole fraction ; Change
+                             // as needed ; Converts tracks to MIP objects
 };
 }  // namespace trigger
 

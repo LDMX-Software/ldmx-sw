@@ -35,6 +35,8 @@ class TrigMip {
   int length() const { return length_; }
   float SumEinIsolationRegion() const { return sum_e_in_isolation_region_; }
 
+  void Clear();
+
  private:
   // first draft based on hcal
   int start_layer_{0};
