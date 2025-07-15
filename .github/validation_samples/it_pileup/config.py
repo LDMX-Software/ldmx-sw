@@ -81,8 +81,8 @@ trigScintTrack.input_pass_name = thisPassName
 # Load the ECAL modules                           
 ecalDigi   = eDigi.EcalDigiProducer('ecalDigis')
 ecalReco   = eDigi.EcalRecProducer('ecalRecon')
-ecalVeto   = vetos.EcalVetoProcessor('ecalVetoBDT')
-ecalMip = vetos.EcalMipProcessor('ecalMip')
+ecalVeto   = ecal_vetos.EcalVetoProcessor('ecalVetoBDT')
+ecalMip = ecal_vetos.EcalMipProcessor('ecalMip')
 
 # The newly produced, overlayed simhits
 ecalDigi.inputCollName += overlayStr
