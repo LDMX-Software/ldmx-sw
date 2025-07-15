@@ -98,8 +98,6 @@ ONNXRuntime::ONNXRuntime(const std::string& model_path,
   }
 }
 
-ONNXRuntime::~ONNXRuntime() {}
-
 FloatArrays ONNXRuntime::run(const std::vector<std::string>& input_names,
                              FloatArrays& input_values,
                              const std::vector<std::string>& output_names,
@@ -114,7 +112,7 @@ FloatArrays ONNXRuntime::run(const std::vector<std::string>& input_names,
   for (const auto& name : input_node_strings_) {
     auto iter = std::find(input_names.begin(), input_names.end(), name);
     if (iter == input_names.end()) {
-      throw std::runtime_error("Input " + name + " is not provided!");
+      throw std::runtime_error("Input '" + name + "' is not provided!");
     }
     auto value = input_values.begin() + (iter - input_names.begin());
     auto input_dims = input_node_dims_.at(name);
@@ -122,7 +120,8 @@ FloatArrays ONNXRuntime::run(const std::vector<std::string>& input_names,
     auto expected_len = std::accumulate(input_dims.begin(), input_dims.end(), 1,
                                         std::multiplies<int64_t>());
     if (expected_len != (int64_t)value->size()) {
-      throw std::runtime_error("Input array " + name + " has a wrong size of " +
+      throw std::runtime_error("Input array '" + name +
+                               "' has a wrong size of " +
                                std::to_string(value->size()) + ", expected " +
                                std::to_string(expected_len));
     }
@@ -179,7 +178,7 @@ const std::vector<int64_t>& ONNXRuntime::getOutputShape(
     const std::string& output_name) const {
   auto iter = output_node_dims_.find(output_name);
   if (iter == output_node_dims_.end()) {
-    throw std::runtime_error("Output name " + output_name + " is invalid!");
+    throw std::runtime_error("Output name '" + output_name + "' is invalid!");
   } else {
     return iter->second;
   }
