@@ -1,5 +1,13 @@
 #include "DetDescr/EcalGeometry.h"
 
+// Class specific imports
+#include "TGeoPolygon.h"
+#include "TGraph.h"
+#include "TH2Poly.h"
+#include "TList.h"
+#include "TMath.h"
+// #include "TMultiGraph.h"
+
 namespace ldmx {
 
 static double distance(const std::pair<double, double>& p1,
@@ -60,11 +68,10 @@ EcalGeometry::EcalGeometry(const framework::config::Parameters& ps)
   cellR_ = 2 * moduler_ / nCellRHeight_;
   cellr_ = (sqrt(3.) / 2.) * cellR_;
 
-  ldmx_log(debug) << "     Building module map with gap "
-                  << std::setprecision(2) << gap_ << ", nCellRHeight "
-                  << nCellRHeight_ << ",  min/max radii of cell " << cellr_
-                  << " / " << cellR_ << ", and module " << moduler_ << " / "
-                  << moduleR_;
+  ldmx_log(debug) << "Building module map with gap " << std::setprecision(2)
+                  << gap_ << ", nCellRHeight " << nCellRHeight_
+                  << ",  min/max radii of cell " << cellr_ << " / " << cellR_
+                  << ", and module " << moduler_ << " / " << moduleR_;
 
   buildLayerMap();
   buildModuleMap();
@@ -183,18 +190,16 @@ std::pair<double, double> EcalGeometry::getPositionInModule(int cell_id) const {
 }
 
 void EcalGeometry::buildLayerMap() {
-  ldmx_log(debug) << " Building layer map with " << layerZPositions_.size()
+  ldmx_log(debug) << "Building layer map with " << layerZPositions_.size()
                   << " layers";
   if (layer_shift_odd_ or layer_shift_odd_bilayer_) {
-    ldmx_log(debug) << "  shifting odd ";
-    if (layer_shift_odd_)
-      ldmx_log(debug) << "layers";
-    else
-      ldmx_log(debug) << "bilayers";
-    ldmx_log(debug) << " by (x,y) = (" << layer_shift_x_ << ", "
-                    << layer_shift_y_ << ") mm";
-  } else {
-    ldmx_log(debug) << "  without any shifting";
+    if (layer_shift_odd_) {
+      ldmx_log(debug) << "Shifting odd layers by (x,y) = (" << layer_shift_x_
+                      << ", " << layer_shift_y_ << ") mm";
+    } else {
+      ldmx_log(debug) << "Shifting odd bilayers by (x,y) = (" << layer_shift_x_
+                      << ", " << layer_shift_y_ << ") mm";
+    }
   }
 
   for (std::size_t i_layer{0}; i_layer < layerZPositions_.size(); ++i_layer) {
@@ -215,11 +220,7 @@ void EcalGeometry::buildLayerMap() {
 }
 
 void EcalGeometry::buildModuleMap() {
-  // or TMath::Pi(), #define, atan(), ...
   static const double C_PI = 3.14159265358979323846;
-
-  ldmx_log(debug) << "Building module position map for module min r of "
-                  << moduler_ << " and gap of " << gap_;
 
   // the center module (module_id == 0) has always been (and will always be?)
   //  centered with respect to the layer position
@@ -240,7 +241,7 @@ void EcalGeometry::buildModuleMap() {
       y = -(2. * moduler_ + gap_) * sin((id - 1) * (C_PI / 3.));
     }
     module_pos_xy_[id] = std::pair<double, double>(x, y);
-    ldmx_log(debug) << "    Module " << id << " is centered at (x,y) = " << "("
+    ldmx_log(trace) << "    Module " << id << " is centered at (x,y) = " << "("
                     << x << ", " << y << ") mm";
   }
 }
@@ -294,8 +295,8 @@ void EcalGeometry::buildCellMap() {
 
   gridMap.Honeycomb(gridMinP, gridMinQ, cellR_, numPCells, numQCells);
 
-  ldmx_log(debug) << std::setprecision(2)
-                  << "[EcalGeometry::buildCellMap] cell rmin: " << cellr_
+  ldmx_log(trace) << std::setprecision(2)
+                  << "Building buildCellMap with cell rmin: " << cellr_
                   << " cell rmax: " << cellR_ << " (gridMinP,gridMinQ) = ("
                   << gridMinP << "," << gridMinQ << ")"
                   << " (numPCells,numQCells) = (" << numPCells << ","
@@ -337,7 +338,7 @@ void EcalGeometry::buildCellMap() {
         // This cell is stradling the edge of the module
         // and is NOT cleanly cut by module edge
 
-        ldmx_log(debug) << "    Polygon " << cell_id
+        ldmx_log(trace) << "    Polygon " << cell_id
                         << " has vertices poking out of module hexagon.";
 
         // loop through vertices
@@ -444,7 +445,7 @@ void EcalGeometry::buildCellMap() {
       double p = (polyBin->GetXMax() + polyBin->GetXMin()) / 2.;
       double q = (polyBin->GetYMax() + polyBin->GetYMin()) / 2.;
 
-      ldmx_log(debug) << "    Copying poly with ID " << polyBin->GetBinNumber()
+      ldmx_log(trace) << "    Copying poly with ID " << polyBin->GetBinNumber()
                       << " and (p,q) (" << std::setprecision(2) << p << "," << q
                       << ")";
       // save cell location as center of ENTIRE hexagon
@@ -456,7 +457,7 @@ void EcalGeometry::buildCellMap() {
 }
 
 void EcalGeometry::buildCellModuleMap() {
-  ldmx_log(debug) << "Building cellModule position map";
+  ldmx_log(trace) << "Building cellModule position map";
   /// construct map of cell centers relative to layer center
   for (auto const& [module_id, module_xy] : module_pos_xy_) {
     for (auto const& [cell_id, cell_pq] : cell_pos_in_module_) {
@@ -488,7 +489,8 @@ void EcalGeometry::buildCellModuleMap() {
     }
   }
 
-  ldmx_log(debug) << "  contained " << cell_global_pos_.size() << " entries. ";
+  ldmx_log(trace) << "Cell module map contains " << cell_global_pos_.size()
+                  << " entries. ";
   return;
 }
 
@@ -506,7 +508,7 @@ void EcalGeometry::buildNeighborMaps() {
    * case, centers are at 2*cell_ (NN), and at 3*cellR_=3.46*cellr_ and 4*cellr_
    * (NNN).
    */
-  ldmx_log(debug) << "Building Nearest and Next-Nearest Neighbor maps";
+  ldmx_log(trace) << "Building Nearest and Next-Nearest Neighbor maps";
 
   NNMap_.clear();
   NNNMap_.clear();
@@ -520,44 +522,10 @@ void EcalGeometry::buildNeighborMaps() {
         NNNMap_[center_id].push_back(probe_id);
       }
     }
+    // Keeping this commented out until the SimIDs string method is implemented
     // ldmx_log(debug) << "  Found " << NNMap_[center_id].size() << " NN and "
-    // << NNNMap_[center_id].size() << " NNN for cell " << center_id
-    ;
+    // << NNNMap_[center_id].size() << " NNN for cell " << center_id;
   }
-  /*
-   * DEBUG CHECK HERE
-   *  this is double checking that NN and NNN can cross modules
-  if (verbose_ > 2) {
-    double specialX =
-        0.5 * moduleR_ - 0.5 * cellr_;  // center of cell which is upper-right
-                                        // corner of center module
-    double specialY = moduler_ - 0.5 * cellR_;
-    EcalID specialCellModuleID = getCellModuleID(specialX, specialY);
-    ldmx_log(debug) << "The neighbors of the bin in the upper-right corner of
-  the " "center module, with cellModuleID "
-              << specialCellModuleID << " include " ;
-    for (auto centerNN : NNMap_.at(specialCellModuleID)) {
-      ldmx_log(debug) << " NN " << centerNN
-                << (" (x,y) (%.2f, %.2f)",
-                                   getCellCenterAbsolute(centerNN).first,
-                                   getCellCenterAbsolute(centerNN).second)
-                ;
-    }
-    for (auto centerNNN : NNNMap_.at(specialCellModuleID)) {
-      ldmx_log(debug) << " NNN " << centerNNN
-                << (" (x,y) (%.2f, %.2f)",
-                                   getCellCenterAbsolute(centerNNN).first,
-                                   getCellCenterAbsolute(centerNNN).second)
-                ;
-    }
-    ldmx_log(debug) << (
-                     "This bin is a distance of %.2f away from a module edge. "
-                     "Decision isEdge %d.",
-                     distanceToEdge(specialCellModuleID),
-                     isEdgeCell(specialCellModuleID))
-              ;
-  }
-  */
   return;
 }
 
