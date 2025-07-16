@@ -265,8 +265,8 @@ TEST_CASE("Conditions", "[Conditions]") {
         "columns=[\"A\",\"Q\",\"V\"]\n"
         "cop=SimpleCSVTableProvider.SimpleCSVIntegerTableProvider(\"test_table_"
         "http\",columns)\n"
-        "cop.validForever(\"http://www-users.cse.umn.edu/~jmmans/"
-        "test_table.csv\")\n";
+        "cop.validForever(\"https://raw.githubusercontent.com/LDMX-Software/"
+        "ci-data/refs/heads/main/conditions-test/test_table.csv\")\n";
 
     FILE* f = fopen("/tmp/test_cond.py", "w");
     fputs(cfgpy, f);
@@ -293,9 +293,10 @@ TEST_CASE("Conditions", "[Conditions]") {
         "columns=[\"PEDESTAL_ADC\"]\n"
         "cop=SimpleCSVTableProvider.SimpleCSVDoubleTableProvider(\"testbeam22_"
         "pedestals\",columns)\n"
-        "cop.conditions_baseURL='http://www-users.cse.umn.edu/~jmmans/ldmx/"
-        "condtest/'\n"
-        "cop.entriesURL='${LDMX_CONDITION_BASEURL}/testbeam22_pedestals.csv'\n";
+        "cop.conditions_baseURL='https://raw.githubusercontent.com/"
+        "LDMX-Software/conditions-data/refs/heads/main/'\n"
+        "cop.entriesURL='${LDMX_CONDITION_BASEURL}/Hcal/testbeam04-2022/"
+        "pedestals/index_v1_0_0.csv'\n";
 
     FILE* f = fopen("/tmp/test_cond.py", "w");
     fputs(cfgpy, f);
