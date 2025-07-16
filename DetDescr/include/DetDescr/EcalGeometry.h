@@ -16,13 +16,6 @@
 #define DETDESCR_ECALGEOMETRY_H_
 
 // LDMX
-#include "DetDescr/EcalID.h"
-#include "Framework/ConditionsObject.h"
-#include "Framework/Configure/Parameters.h"
-#include "Framework/Exception/Exception.h"
-#include "Framework/Logger.h"
-
-// STL
 #include <assert.h>
 
 #include <algorithm>
@@ -30,8 +23,19 @@
 #include <iostream>
 #include <map>
 
+#include "DetDescr/EcalID.h"
+#include "Framework/ConditionsObject.h"
+#include "Framework/Configure/Parameters.h"
+#include "Framework/Exception/Exception.h"
+#include "Framework/Logger.h"
+
 // ROOT
+#include "TGeoPolygon.h"
+#include "TGraph.h"
 #include "TH2Poly.h"
+#include "TList.h"
+#include "TMath.h"
+#include "TMultiGraph.h"
 
 namespace ecal {
 class EcalGeometryProvider;
