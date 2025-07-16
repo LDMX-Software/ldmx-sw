@@ -149,4 +149,12 @@ p.sequence.extend([
 	ecalWAB,
 	ecalWAB_dqm])
 
-p.sequence.extend(dqm.all_dqm)
+reduced_ecal_dqm = [
+        dqm.EcalDigiVerify(),
+        dqm.EcalShowerFeatures(),
+        dqm.EcalMipTrackingFeatures(),
+        dqm.EcalVetoResults()
+        ]
+
+reduced_dqm = [dqm.sample_validation_dqm + reduced_ecal_dqm +  dqm.hcal_dqm +  dqm.trigScint_dqm +  dqm.trigger_dqm]
+p.sequence.extend(*reduced_dqm)
