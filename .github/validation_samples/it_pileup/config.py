@@ -47,7 +47,7 @@ from LDMX.Hcal import HcalGeometry
 import LDMX.Hcal.hcal_hardcoded_conditions
 
 from LDMX.Ecal import digi as eDigi
-from LDMX.Ecal import vetos
+from LDMX.Ecal import vetos as ecal_vetos
 import LDMX.Ecal.ecalClusters as ecal_cluster
 from LDMX.Hcal import digi as hDigi
 
@@ -81,8 +81,8 @@ trigScintTrack.input_pass_name = thisPassName
 # Load the ECAL modules                           
 ecalDigi   = eDigi.EcalDigiProducer('ecalDigis')
 ecalReco   = eDigi.EcalRecProducer('ecalRecon')
-ecalVeto   = vetos.EcalVetoProcessor('ecalVetoBDT')
-ecalMip = vetos.EcalMipProcessor('ecalMip')
+ecalVeto   = ecal_vetos.EcalVetoProcessor('ecalVetoBDT')
+ecalMip = ecal_vetos.EcalMipProcessor('ecalMip')
 
 # The newly produced, overlayed simhits
 ecalDigi.inputCollName += overlayStr
