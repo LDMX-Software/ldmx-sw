@@ -1,13 +1,5 @@
 #include "DetDescr/EcalGeometry.h"
 
-// Class specific imports
-#include "TGeoPolygon.h"
-#include "TGraph.h"
-#include "TH2Poly.h"
-#include "TList.h"
-#include "TMath.h"
-// #include "TMultiGraph.h"
-
 namespace ldmx {
 
 static double distance(const std::pair<double, double>& p1,

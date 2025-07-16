@@ -29,6 +29,7 @@
 #include "Framework/Logger.h"
 
 // ROOT
+#include "TGeoPolygon.h"
 #include "TGraph.h"
 #include "TH2Poly.h"
 #include "TList.h"
