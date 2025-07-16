@@ -21,6 +21,8 @@ class EcalGeometry() :
         Shift the odd-numbered layers
     layer_shift_odd_bilayer : bool
         Shift the odd-numbered bi-layers
+    si_thickness : float
+        Thickness of the silicon sensor [mm]
     detectors_valid : array of strings
         Regular expressions identifying which detectors are valid for this geometry
     moduleMinR : float
@@ -41,6 +43,7 @@ class EcalGeometry() :
             layer_shift_y = 0.,
             layer_shift_odd = False,
             layer_shift_odd_bilayer = False,
+            si_thickness = 0.3, 
             nCellRHeight = 35.3,
             moduleMinR = 85.0) :
 
@@ -53,6 +56,7 @@ class EcalGeometry() :
         self.layer_shift_y = layer_shift_y
         self.layer_shift_odd = layer_shift_odd
         self.layer_shift_odd_bilayer = layer_shift_odd_bilayer
+        self.si_thickness = si_thickness  
         self.moduleMinR = moduleMinR
         self.detectors_valid = detectors_valid
 

@@ -196,7 +196,6 @@ std::pair<double, double> EcalGeometry::getPositionInModule(int cell_id) const {
 void EcalGeometry::buildLayerMap() {
   ldmx_log(debug) << " Building layer map with " << layerZPositions_.size()
                   << " layers";
-  ;
   if (layer_shift_odd_ or layer_shift_odd_bilayer_) {
     ldmx_log(debug) << "  shifting odd ";
     if (layer_shift_odd_)
@@ -228,7 +227,7 @@ void EcalGeometry::buildLayerMap() {
 
 void EcalGeometry::buildModuleMap() {
   // or TMath::Pi(), #define, atan(), ...
-  static double C_PI = 3.14159265358979323846;
+  static const double C_PI = 3.14159265358979323846;
 
   ldmx_log(debug) << "Building module position map for module min r of "
                   << moduler_ << " and gap of " << gap_;
@@ -550,19 +549,19 @@ void EcalGeometry::buildNeighborMaps() {
               << specialCellModuleID << " include " ;
     for (auto centerNN : NNMap_.at(specialCellModuleID)) {
       ldmx_log(debug) << " NN " << centerNN
-                << TString::Format(" (x,y) (%.2f, %.2f)",
+                << (" (x,y) (%.2f, %.2f)",
                                    getCellCenterAbsolute(centerNN).first,
                                    getCellCenterAbsolute(centerNN).second)
                 ;
     }
     for (auto centerNNN : NNNMap_.at(specialCellModuleID)) {
       ldmx_log(debug) << " NNN " << centerNNN
-                << TString::Format(" (x,y) (%.2f, %.2f)",
+                << (" (x,y) (%.2f, %.2f)",
                                    getCellCenterAbsolute(centerNNN).first,
                                    getCellCenterAbsolute(centerNNN).second)
                 ;
     }
-    ldmx_log(debug) << TString::Format(
+    ldmx_log(debug) << (
                      "This bin is a distance of %.2f away from a module edge. "
                      "Decision isEdge %d.",
                      distanceToEdge(specialCellModuleID),
@@ -588,20 +587,20 @@ double EcalGeometry::distanceToEdge(EcalID id) const {
 }
 
 bool EcalGeometry::isInside(double normX, double normY) const {
-  ldmx_log(trace) << TString::Format(
-      "[isInside] Checking if normXY=(%.2f,%.2f) is inside.", normX, normY);
+  ldmx_log(trace) << std::fixed << std::setprecision(2)
+                  << "Checking if normXY=(" << normX << "," << normY
+                  << ") is inside.";
   normX = fabs(normX), normY = fabs(normY);
   double xvec = -1, yvec = -1. / sqrt(3);
   double xref = 0.5, yref = sqrt(3) / 2.;
   if ((normX > 1.) || (normY > yref)) {
-    ldmx_log(trace) << "they are outside quadrant.";
+    ldmx_log(trace) << "They are outside quadrant.";
     return false;
   }
   double dotProd = (xvec * (normX - xref) + yvec * (normY - yref));
-  ldmx_log(trace) << TString::Format(
-      "[isInside] they are inside quadrant. Dot product (>0 is "
-      "inside): %.2f ",
-      dotProd);
+  ldmx_log(trace) << std::fixed << std::setprecision(2)
+                  << "They are inside quadrant. Dot product (>0 is inside): "
+                  << dotProd;
   return (dotProd > 0.);
 }
 
