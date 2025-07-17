@@ -6,10 +6,6 @@
 
 namespace trigger {
 
-// Forward declaration needed by typedef
-// class TrigCaloHit;
-// typedef std::vector<TrigCaloHit> TrigCaloHitCollection;
-
 /**
  * @class TrigCaloHit
  * @brief Class for calo hits used in trigger computations
