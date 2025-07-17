@@ -128,9 +128,10 @@ class EcalVetoProcessor : public framework::Producer {
    * @param[in] ts_title The track state title, most likely "ecal"
    * @returns Vector of parameters for a propagated recoil track
    */
-  std::vector<float> trackProp(const ldmx::Tracks& tracks,
-                               ldmx::TrackStateType ts_type,
-                               const std::string& ts_title);
+ public:
+  static std::vector<float> trackProp(const ldmx::Tracks& tracks,
+                                      ldmx::TrackStateType ts_type,
+                                      const std::string& ts_title);
 
  private:
   int nevents_{0};

@@ -29,12 +29,16 @@ void EcalPnetVetoProcessor::configure(
       parameters.getParameter<std::string>("ecal_rec_hits_passname");
   ecal_sp_hits_passname_ =
       parameters.getParameter<std::string>("ecal_sp_hits_passname");
+  track_pass_name_ =
+      parameters.getParameter<std::string>("track_pass_name", "");
+  track_collection_ = parameters.getParameter<std::string>("track_collection");
+  recoil_from_tracking_ = parameters.getParameter<bool>("recoil_from_tracking");
 }
 
 void EcalPnetVetoProcessor::produce(framework::Event& event) {
   ldmx::EcalVetoResult result;
-
-  // Get the Ecal Geometry
+  // ecal::EcalVetoProcessor proc;
+  //  Get the Ecal Geometry
   const auto& ecal_geometry = getCondition<ldmx::EcalGeometry>(
       ldmx::EcalGeometry::CONDITIONS_OBJECT_NAME);
 
@@ -44,20 +48,15 @@ void EcalPnetVetoProcessor::produce(framework::Event& event) {
   auto nhits = std::count_if(
       ecal_rec_hits.begin(), ecal_rec_hits.end(),
       [](const ldmx::EcalHit& hit) { return hit.getEnergy() > 0; });
-  // Get the collection of EcalScroingPlane hits
-  auto const& spHits = event.getCollection<ldmx::SimTrackerHit>(
-      "EcalScoringPlaneHits", ecal_sp_hits_passname_);
 
+  // check number of hits
   ldmx_log(trace) << "nhits = " << nhits
                   << " max_num_hits_ = " << max_num_hits_;
-
   if (nhits < max_num_hits_) {
     // make inputs
-    make_inputs(ecal_geometry, ecal_rec_hits, spHits);
-
+    make_inputs(ecal_geometry, ecal_rec_hits, event);
     // run the DNN
     auto logits = rt_->run(input_names_, data_)[0];
-
     // make a log softmax of the logits then transform back
     // to a probability with an exponential
     auto prob = std::exp((log_softmax(logits)[1]));
@@ -83,35 +82,71 @@ void EcalPnetVetoProcessor::produce(framework::Event& event) {
 void EcalPnetVetoProcessor::make_inputs(
     const ldmx::EcalGeometry& geom,
     const std::vector<ldmx::EcalHit>& ecal_rec_hits,
-    const std::vector<ldmx::SimTrackerHit>& ecal_sp_hits) {
+    const framework::Event& event) {
   // Compute electron trajectory
   std::array<double, 3> etraj_sp = {-999., -999., -999.};
   std::array<double, 3> enorm_sp = {-999., -999., -999.};
-
   const ldmx::SimTrackerHit* electron_hit = nullptr;
-  double electron_pz_max = -1.0;
-  for (auto const& hit : ecal_sp_hits) {
-    // Look at the electron only
-    if (hit.getPdgID() != 11) continue;
-    double electron_z = hit.getPosition()[2];
-    // Look at the SP in front of the ECAL
-    if (electron_z <= 239.0 || electron_z >= 240.0) continue;
-    double electron_pz = hit.getMomentum()[2];
-    // Find the highest pz electron
-    if (electron_pz > electron_pz_max) {
-      electron_pz_max = electron_pz;
-      electron_hit = &hit;
+  // Use Scoring Plane or Tracking
+  if (!recoil_from_tracking_ &&
+      event.exists("EcalScoringPlaneHits", ecal_sp_hits_passname_)) {
+    auto const& ecal_sp_hits = event.getCollection<ldmx::SimTrackerHit>(
+        "EcalScoringPlaneHits", ecal_sp_hits_passname_);
+    double electron_pz_max = -1.0;
+    for (auto const& hit : ecal_sp_hits) {
+      // Look at the electron only
+      if (hit.getPdgID() != 11) continue;
+      double electron_z = hit.getPosition()[2];
+      // Look at the SP in front of the ECAL
+      if (electron_z <= 239.0 || electron_z >= 240.0) continue;
+      double electron_pz = hit.getMomentum()[2];
+      // Find the highest pz electron
+      if (electron_pz > electron_pz_max) {
+        electron_pz_max = electron_pz;
+        electron_hit = &hit;
+      }
     }
-  }
-  if (electron_hit) {
-    ldmx_log(trace) << "Electron Found!";
-    auto pos = electron_hit->getPosition();
-    auto mom = electron_hit->getMomentum();
-    etraj_sp = {pos[0], pos[1], pos[2]};
-
-    double pz = mom[2];
-    if (pz != 0) {
-      enorm_sp = {mom[0] / pz, mom[1] / pz, 1.0};
+    if (electron_hit) {
+      // Get electron hit position/momentum at Ecal surface
+      ldmx_log(trace) << "Electron Found!";
+      auto pos = electron_hit->getPosition();
+      auto mom = electron_hit->getMomentum();
+      ldmx_log(info) << "SPpos=(" << pos[0] << "," << pos[1] << "," << pos[2]
+                     << ")";
+      ldmx_log(info) << "SPmom=(" << mom[0] << "," << mom[1] << "," << mom[2]
+                     << ")";
+      etraj_sp = {pos[0], pos[1], pos[2]};
+      double pz = mom[2];
+      if (pz != 0) {
+        // z-normalized momentum
+        enorm_sp = {mom[0] / pz, mom[1] / pz, 1.0};
+      }
+    }
+  } else {
+    // Use tracking to get electron hit position/momentum at Ecal surface
+    auto recoil_tracks{
+        event.getCollection<ldmx::Track>(track_collection_, track_pass_name_)};
+    ldmx::TrackStateType ts_type = ldmx::TrackStateType::AtECAL;
+    auto recoil_track_states_ecal =
+        ecal::EcalVetoProcessor::trackProp(recoil_tracks, ts_type, "ecal");
+    if (!recoil_track_states_ecal.empty()) {
+      std::array<double, 3> pos = {recoil_track_states_ecal[0],
+                                   recoil_track_states_ecal[1],
+                                   recoil_track_states_ecal[2]};
+      std::array<double, 3> mom = {(recoil_track_states_ecal[3]),
+                                   (recoil_track_states_ecal[4]),
+                                   (recoil_track_states_ecal[5])};
+      ldmx_log(info) << "Electron track pos=(" << pos[0] << "," << pos[1] << ","
+                     << pos[2] << ")";
+      ldmx_log(info) << "Electron track mom=(" << mom[0] << "," << mom[1] << ","
+                     << mom[2] << ")";
+      etraj_sp = pos;
+      double pz = mom[2];
+      if (pz != 0) {
+        enorm_sp = {mom[0] / pz, mom[1] / pz, 1.0};
+      }
+    } else {
+      ldmx_log(info) << "  No recoil track at ECAL";
     }
   }
 

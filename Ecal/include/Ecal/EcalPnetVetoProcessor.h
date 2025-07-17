@@ -13,12 +13,14 @@
 #include <numeric>
 
 #include "DetDescr/EcalGeometry.h"
+#include "Ecal/EcalVetoProcessor.h"
 #include "Ecal/Event/EcalHit.h"
 #include "Ecal/Event/EcalVetoResult.h"
 #include "Framework/Configure/Parameters.h"
 #include "Framework/EventProcessor.h"
 #include "SimCore/Event/SimTrackerHit.h"
 #include "Tools/ONNXRuntime.h"
+#include "Tracking/Event/Track.h"
 
 namespace ecal {
 
@@ -41,7 +43,7 @@ class EcalPnetVetoProcessor : public framework::Producer {
    */
   void make_inputs(const ldmx::EcalGeometry& geom,
                    const std::vector<ldmx::EcalHit>& ecalRecHits,
-                   const std::vector<ldmx::SimTrackerHit>& ecalSPHits);
+                   const framework::Event& event);
 
   /**
    * Transfor logits to a probability
@@ -80,6 +82,9 @@ class EcalPnetVetoProcessor : public framework::Producer {
   std::string rec_coll_name_;
   std::string ecal_rec_hits_passname_;
   std::string ecal_sp_hits_passname_;
+  std::string track_pass_name_;
+  std::string track_collection_;
+  bool recoil_from_tracking_;
 };
 
 }  // namespace ecal
