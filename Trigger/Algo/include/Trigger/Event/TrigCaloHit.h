@@ -7,8 +7,8 @@
 namespace trigger {
 
 // Forward declaration needed by typedef
-class TrigCaloHit;
-typedef std::vector<TrigCaloHit> TrigCaloHitCollection;
+// class TrigCaloHit;
+// typedef std::vector<TrigCaloHit> TrigCaloHitCollection;
 
 /**
  * @class TrigCaloHit

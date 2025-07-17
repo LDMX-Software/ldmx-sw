@@ -5,10 +5,6 @@
 
 namespace trigger {
 
-// Forward declaration needed by typedef
-class TrigMip;
-typedef std::vector<TrigMip> TrigMipCollection;
-
 /**
  * @class TrigMip
  * @brief Class for clusters built from trigger calo hits

@@ -59,13 +59,19 @@ class TrigMipReco : public framework::Producer {
 
   int max_layer_;
   int min_track_length_;
-  float hcal_min_energy_;    // MIP peak is 10-11 MeV
-  float ecal_min_energy_;    // MIP peak around 17 MeV
-  float ecal_max_energy_;    // MeV
-  float search_radius_;      // mm
-  float isolation_e_cut_;    // MeV; Change as needed
-  float hole_fraction_max_;  // No more than 20% hole fraction ; Change
-                             // as needed ; Converts tracks to MIP objects
+  // MIP peak is 10-11 MeV usually
+  float hcal_min_energy_;
+  // MIP peak around 17 MeV usually
+  float ecal_min_energy_;
+  // MeV
+  float ecal_max_energy_;
+  // mm
+  float search_radius_;
+  // MeV; Change as needed
+  float isolation_e_cut_;
+  // No more than 20% hole fraction ; Change as needed ; Converts tracks to MIP
+  // objects
+  float hole_fraction_max_;
 };
 }  // namespace trigger
 

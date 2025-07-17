@@ -96,7 +96,7 @@ void EcalTPSelector::produce(framework::Event& event) {
   }
 
   // collections to record (corrected to MeV)
-  TrigCaloHitCollection passTrigHits;
+  std::vector<TrigCaloHit> passTrigHits;
   for (const auto& tp : passTPs) {
     double x, y, z, e;
     decodeTP(tp, x, y, z, e);

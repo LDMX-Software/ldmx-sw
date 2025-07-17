@@ -21,7 +21,7 @@ void HcalTPSelector::produce(framework::Event& event) {
   // Should move the TP building itself here
   // In the meantime, create the "analysis object" hits
 
-  TrigCaloHitCollection passTrigHits;
+  std::vector<TrigCaloHit> passTrigHits;
   for (const auto& tp : hcalTPs) {
     double x{0}, y{0}, z{0};  // todo
     ldmx::HcalTriggerID combo_id(tp.getId());

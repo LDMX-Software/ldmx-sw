@@ -13,18 +13,19 @@ void TrigMipReco::configure(framework::config::Parameters& ps) {
   calorimeter_type_is_hcal_ = ps.getParameter<bool>("calorimeter_type_is_hcal");
 
   max_layer_ = ps.getParameter<int>("max_layer", 32);
-  search_radius_ = ps.getParameter<float>("search_radius", 50.0f);  // mm
+  // mm
+  search_radius_ = ps.getParameter<float>("search_radius", 50.0f);
   min_track_length_ = ps.getParameter<int>("min_track_length", 5);
-  isolation_e_cut_ = ps.getParameter<float>("isolation_e_cut",
-                                            180.0f);  // MeV; Change as needed
-  hole_fraction_max_ = ps.getParameter<float>("hole_fraction_max", 0.2f);  // mm
+  // MeV; Change as needed
+  isolation_e_cut_ = ps.getParameter<float>("isolation_e_cut", 180.0f);
+  hole_fraction_max_ = ps.getParameter<float>("hole_fraction_max", 0.2f);
 
   if (calorimeter_type_is_hcal_) {
-    hcal_min_energy_ = ps.getParameter<float>("hcal_min_energy",
-                                              8.0f);  // MIP peak is 10-11 MeV
-  } else {                                            // ECAL
-    ecal_min_energy_ = ps.getParameter<float>("ecal_min_energy",
-                                              3.0f);  // MIP peak around 17 MeV
+    // MIP peak is 10-11 MeV
+    hcal_min_energy_ = ps.getParameter<float>("hcal_min_energy", 8.0f);
+  } else {  // ECAL
+    // MIP peak around 17 MeV
+    ecal_min_energy_ = ps.getParameter<float>("ecal_min_energy", 3.0f);
     ecal_max_energy_ = ps.getParameter<float>("ecal_max_energy", 26.0f);
   }
 }
@@ -35,11 +36,11 @@ void TrigMipReco::produce(framework::Event& event) {
 
   if (!event.exists(hit_coll_name_, hit_coll_passname_)) return;
 
-  const auto calo_hits = event.getObject<TrigCaloHitCollection>(
+  const auto calo_hits = event.getObject<std::vector<TrigCaloHit>>(
       hit_coll_name_, hit_coll_passname_);
 
   if (calorimeter_type_is_hcal_) {  // HCAL MIP Reconstruction
-    TrigCaloHitCollection sorted_hits;
+    std::vector<TrigCaloHit> sorted_hits;
     int even_matrix[24][5] = {};
     int even_start[5] = {99, 99, 99, 99, 99};
     int even_end[5] = {};
@@ -48,7 +49,8 @@ void TrigMipReco::produce(framework::Event& event) {
     int odd_start[5] = {99, 99, 99, 99, 99};
     int odd_end[5] = {};
     int odd_counts[5] = {};
-    constexpr int layer_start = 80;  // start in first 5 layers
+    // Start in first 5 layers
+    constexpr int layer_start = 80;
 
     for (const auto& tp : calo_hits) {
       if (tp.section() > 0 || tp.energy() < hcal_min_energy_ ||
@@ -82,8 +84,9 @@ void TrigMipReco::produce(framework::Event& event) {
     }
 
     // straight MIP reco
-    TrigMipCollection mips;
-    for (int i = 0; i < 5; i++) {  // 5 elements in the even/odd_start matrices
+    std::vector<TrigMip> mips;
+    // 5 elements in the even/odd_start matrices
+    for (int i = 0; i < 5; i++) {
       if (odd_start[i] < layer_start) {
         TrigMip m;
         m.setStartLayer(odd_start[i]);
@@ -121,7 +124,8 @@ void TrigMipReco::produce(framework::Event& event) {
         std::chrono::duration<double, std::milli>(time_diff).count();
 
     return;
-  } else {  // ECAL MIP Reconstruction
+    // ECAL MIP Reconstruction
+  } else {
     const float radius_cut_2 = search_radius_ * search_radius_;
     std::map<int, std::vector<TrigCaloHit>> layer_hits;
     std::set<const TrigCaloHit*> used_hits;
@@ -144,16 +148,16 @@ void TrigMipReco::produce(framework::Event& event) {
         }
 
         std::vector<const TrigCaloHit*> track{&seed};
-        const TrigCaloHit* last = &seed;  // Most recent hit in track
+        // Most recent hit in track
+        const TrigCaloHit* last = &seed;
         int holes = 0;
         float growth_factor = 1.0f;
 
         // Look layer by layer for next hit within dR
         for (int l = seed.layer() + 1; l <= max_layer_; ++l) {
           const TrigCaloHit* best_hit = nullptr;
-          float best_dR_2 =
-              radius_cut_2 * growth_factor *
-              growth_factor;  // Grow search window if there is a hole
+          // Grow search window if there is a hole
+          float best_dR_2 = radius_cut_2 * growth_factor * growth_factor;
 
           for (const auto& cand : layer_hits[l]) {
             if (used_hits.count(&cand) || cand.energy() < ecal_min_energy_ ||
@@ -161,8 +165,7 @@ void TrigMipReco::produce(framework::Event& event) {
               continue;
             }
 
-            // Corrects for layer shift in x-direction which we calculated
-            // is 4.82 mm
+            // Corrects for layer shift in x-direction, calculated as 4.82 mm
             const float layer_shift_last =
                 (last->layer() % 2 == 0) ? 0.0f : 4.82f;
             const float layer_shift_cand =
@@ -174,31 +177,37 @@ void TrigMipReco::produce(framework::Event& event) {
 
             if (dR_2 < best_dR_2) {
               best_dR_2 = dR_2;
-              best_hit = &cand;  // Closest unused hit in next layer
+              // Closest unused hit in next layer
+              best_hit = &cand;
             }
           }
 
           if (best_hit) {
-            track.push_back(best_hit);  // Builds track from best hits
+            // Builds track from best hits
+            track.push_back(best_hit);
             last = best_hit;
             holes = 0;
-            growth_factor = 1.0f;  // Reset search window
+            // Reset search window
+            growth_factor = 1.0f;
           } else {
             holes++;
-            growth_factor = static_cast<float>(holes + 1);  // Keep expanding
+            // Keep expanding
+            growth_factor = static_cast<float>(holes + 1);
           }
         }
 
         bool is_isolated = true;
         if (track.size() >= min_track_length_) {
-          for (const auto* hit : track) {  // Isolation area energy check
+          // Isolation area energy check
+          for (const auto* hit : track) {
             const int layer = hit->layer();
             const float hit_x = hit->position_x();
             const float hit_y = hit->position_y();
             float sum_e = 0.0f;
 
             for (const auto& cand : layer_hits[layer]) {
-              if (&cand == hit) continue;  // Skips self
+              // Skips self
+              if (&cand == hit) continue;
 
               const float dx = cand.position_x() - hit_x;
               const float dy = cand.position_y() - hit_y;
@@ -211,14 +220,15 @@ void TrigMipReco::produce(framework::Event& event) {
 
             if (sum_e >= isolation_e_cut_) {
               is_isolated = false;
-              used_hits.insert(hit);  // Adds used hits to vector so they cannot
-                                      // be used again
+              // Adds used hits to vector so they cannot be used again
+              used_hits.insert(hit);
               break;
             }
           }
 
           if (!is_isolated) {
-            continue;  // Reject track if any hit is not isolated
+            // Reject track if any hit is not isolated
+            continue;
           }
 
           const size_t i = candidate_tracks.size();
@@ -229,8 +239,8 @@ void TrigMipReco::produce(framework::Event& event) {
                 candidate_tracks[i].size() >
                     candidate_tracks[hit_to_best_track[hit]].size()) {
               hit_to_best_track[hit] = i;
-              used_hits.insert(hit);  // Adds used hits to vector so they cannot
-                                      // be used again
+              // Adds used hits to vector so they cannot be used again
+              used_hits.insert(hit);
             }
           }
         }
@@ -242,7 +252,7 @@ void TrigMipReco::produce(framework::Event& event) {
       valid_track_IDs.insert(idx);
     }
 
-    TrigMipCollection mips;
+    std::vector<TrigMip> mips;
     for (const size_t idx : valid_track_IDs) {
       const auto& track = candidate_tracks[idx];
       TrigMip mip;
