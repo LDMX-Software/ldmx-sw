@@ -8,38 +8,31 @@ TruthHitProducer::TruthHitProducer(const std::string &name,
     : Producer(name, process) {}
 
 void TruthHitProducer::configure(framework::config::Parameters &parameters) {
-  inputCollection_ = parameters.getParameter<std::string>("input_collection");
-  inputPassName_ = parameters.getParameter<std::string>("input_pass_name");
-  outputCollection_ = parameters.getParameter<std::string>("output_collection");
-  sim_particles_passname_ =
-      parameters.getParameter<std::string>("sim_particles_passname");
-  input_collection_events_passname_ =
-      parameters.getParameter<std::string>("input_collection_events_passname");
+  input_collection_ = parameters.getParameter<std::string>("input_collection");
+  input_pass_name_ = parameters.getParameter<std::string>("input_pass_name");
+  output_collection_ = parameters.getParameter<std::string>("output_collection");
+  sim_particles_pass_name_ =
+      parameters.getParameter<std::string>("sim_particles_pass_name");
 
-  verbose_ = parameters.getParameter<bool>("verbose");
-
-  if (verbose_) {
     ldmx_log(info) << "In TruthHitProducer: configure done!";
     ldmx_log(info) << "Got parameters:  " << "\nInput collection:     "
-                   << inputCollection_
-                   << "\nInput pass name:     " << inputPassName_
-                   << "\nOutput collection:    " << outputCollection_
-                   << "\nVerbose: " << verbose_;
-  }
+                   << input_collection_
+                   << "\nInput pass name:     " << input_pass_name_
+                   << "\nOutput collection:    " << output_collection_;
 }
 
 void TruthHitProducer::produce(framework::Event &event) {
   // Check if the collection exists.  If not, don't bother processing the event.
-  if (!event.exists(inputCollection_, input_collection_events_passname_)) {
-    ldmx_log(error) << "No input collection called " << inputCollection_
+  if (!event.exists(input_collection_, input_pass_name_)) {
+    ldmx_log(error) << "No input collection called " << input_collection_
                     << " found; skipping!";
     return;
   }
   // looper over sim hits and aggregate energy depositions for each detID
   const auto simHits{event.getCollection<ldmx::SimCalorimeterHit>(
-      inputCollection_, inputPassName_)};
+      input_collection_, input_pass_name_)};
   auto particleMap{event.getMap<int, ldmx::SimParticle>(
-      "SimParticles", sim_particles_passname_)};
+      "SimParticles", sim_particles_pass_name_)};
 
   std::vector<ldmx::SimCalorimeterHit> truthBeamElectrons;
 
@@ -49,15 +42,14 @@ void TruthHitProducer::produce(framework::Event &event) {
     // check if hit is from beam electron and, if so, add to output collection
     for (int i = 0; i < simHit.getNumberOfContribs(); i++) {
       auto contrib = simHit.getContrib(i);
-      if (verbose_) {
-        ldmx_log(debug) << "contrib " << i << " trackID: " << contrib.trackID
-                        << " pdgID: " << contrib.pdgCode
-                        << " edep: " << contrib.edep;
-        ldmx_log(debug) << "\t particle id: "
-                        << particleMap[contrib.trackID].getPdgID()
-                        << " particle status: "
-                        << particleMap[contrib.trackID].getGenStatus();
-      }
+      ldmx_log(trace) << "contrib " << i << " trackID: " << contrib.trackID
+		      << " pdgID: " << contrib.pdgCode
+		      << " edep: " << contrib.edep;
+      ldmx_log(trace) << "\t particle id: "
+		      << particleMap[contrib.trackID].getPdgID()
+		      << " particle status: "
+		      << particleMap[contrib.trackID].getGenStatus();
+      
       // if the trackID is in the map
       if (particleMap.find(contrib.trackID) != particleMap.end()) {
         // beam electron (PDGID = 11, genStatus == 1)
@@ -67,9 +59,9 @@ void TruthHitProducer::produce(framework::Event &event) {
         }
       }
       if (keep) truthBeamElectrons.push_back(simHit);
-    }
-  }
-  event.add(outputCollection_, truthBeamElectrons);
+    }//over simhit contribs 
+  }//over simhits 
+  event.add(output_collection_, truthBeamElectrons);
 }
 }  // namespace trigscint
 
