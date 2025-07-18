@@ -15,7 +15,6 @@
 // STL
 #include <fstream>
 #include <iostream>
-#include <memory>
 
 namespace simcore::lhe {
 

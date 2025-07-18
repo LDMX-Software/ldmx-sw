@@ -19,35 +19,34 @@ LHEEvent::LHEEvent(std::string& line) {
                     "Wrong number of tokens in LHE event information record.");
   }
 
-  // Number of particles in the event
-  nup_ = atoi(tokens[0].c_str());
+  num_particles_ = atoi(tokens[0].c_str());
   // The physics process ID
-  idprup_ = atoi(tokens[1].c_str());
+  process_id_ = atoi(tokens[1].c_str());
   // The event weight
-  xwgtup_ = atof(tokens[2].c_str());
+  event_weight_ = atof(tokens[2].c_str());
   // Scale Q of parton distributions
-  scalup_ = atof(tokens[3].c_str());
+  scale_q_ = atof(tokens[3].c_str());
   // QED coupling value
-  aqedup_ = atof(tokens[4].c_str());
+  coupling_qed_ = atof(tokens[4].c_str());
   // QCD coupling value
-  aqcdup_ = atof(tokens[5].c_str());
+  coupling_qcd_ = atof(tokens[5].c_str());
 
   vtx_[0] = 0;
   vtx_[1] = 0;
   vtx_[2] = 0;
 }
 
-int LHEEvent::getNUP() const { return nup_; }
+int LHEEvent::getNumParticles() const { return num_particles_; }
 
-int LHEEvent::getIDPRUP() const { return idprup_; }
+int LHEEvent::getProcessID() const { return process_id_; }
 
-double LHEEvent::getXWGTUP() const { return xwgtup_; }
+double LHEEvent::getEventWeight() const { return event_weight_; }
 
-double LHEEvent::getSCALUP() const { return scalup_; }
+double LHEEvent::getScaleQ() const { return scale_q_; }
 
-double LHEEvent::getAQEDUP() const { return aqedup_; }
+double LHEEvent::getCouplingQed() const { return coupling_qed_; }
 
-double LHEEvent::getAQCDUP() const { return aqcdup_; }
+double LHEEvent::getCouplingQcd() const { return coupling_qcd_; }
 
 const double* LHEEvent::getVertex() const { return vtx_; }
 

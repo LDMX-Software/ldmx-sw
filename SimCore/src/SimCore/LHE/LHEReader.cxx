@@ -1,10 +1,16 @@
 #include "SimCore/LHE/LHEReader.h"
 
-namespace simcore::lhe {
+namespace simcore {
+namespace lhe {
 
 LHEReader::LHEReader(std::string& filename) {
   ldmx_log(info) << "Opening LHE file " << filename;
   ifs_.open(filename.c_str(), std::ifstream::in);
+
+  if (!ifs_.is_open()) {
+    ldmx_log(fatal) << "Failed to open LHE file: " << filename;
+    throw std::runtime_error("Failed to open LHE file: " + filename);
+  }
 }
 
 std::unique_ptr<LHEEvent> LHEReader::readNextEvent() {
@@ -47,9 +53,9 @@ std::unique_ptr<LHEEvent> LHEReader::readNextEvent() {
   const std::vector<std::unique_ptr<LHEParticle>>& particles =
       nextEvent->getParticles();
   for (const auto& particle : particles) {
-    if (particle->getMOTHUP(0) != 0) {
-      int mother1 = particle->getMOTHUP(0);
-      int mother2 = particle->getMOTHUP(1);
+    if (particle->getMother(0) != 0) {
+      int mother1 = particle->getMother(0);
+      int mother2 = particle->getMother(1);
       if (mother1 > 0) {
         particle->setMother(0, particles[mother1 - 1].get());
       }
@@ -62,4 +68,5 @@ std::unique_ptr<LHEEvent> LHEReader::readNextEvent() {
   return nextEvent;
 }
 
-}  // namespace simcore::lhe
+}  // namespace lhe
+}  // namespace simcore

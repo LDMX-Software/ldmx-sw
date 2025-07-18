@@ -8,12 +8,6 @@ LHEPrimaryGenerator::LHEPrimaryGenerator(
     : PrimaryGenerator(name, parameters) {
   file_path_ = parameters.getParameter<std::string>("filePath");
   reader_ = std::make_unique<simcore::lhe::LHEReader>(file_path_);
-
-  // // Validate the reader
-  // if (!reader_) {
-  //   EXCEPTION_RAISE("EventGenerator","LHEReader failed to initialize with
-  //   file path: " + file_path_);
-  // }
 }
 
 void LHEPrimaryGenerator::GeneratePrimaryVertex(G4Event* anEvent) {
@@ -23,15 +17,19 @@ void LHEPrimaryGenerator::GeneratePrimaryVertex(G4Event* anEvent) {
     auto vertex = std::make_unique<G4PrimaryVertex>();
     vertex->SetPosition(lheEvent->getVertex()[0], lheEvent->getVertex()[1],
                         lheEvent->getVertex()[2]);
-    vertex->SetWeight(lheEvent->getXWGTUP());
+    vertex->SetWeight(lheEvent->getEventWeight());
 
     std::map<simcore::lhe::LHEParticle*, G4PrimaryParticle*> particleMap;
 
     const auto& particles = lheEvent->getParticles();
     for (const auto& particle : particles) {
-      if (particle->getISTUP() > 0) {
+      // Check if the particle has a valid, outgoing particle status
+      if (particle->getStatus() > 0) {
+        // Create a primary particle for the Geant4
         auto primary = std::make_unique<G4PrimaryParticle>();
-        if (particle->getIDUP() == -623) { /* Tungsten ion */
+        // Tungsten ion in the LHE files
+        // TODO: can this never be +623?
+        if (particle->getPdgId() == -623) {
           G4ParticleDefinition* tungstenIonDef =
               G4IonTable::GetIonTable()->GetIon(74, 184, 0.);
           if (tungstenIonDef != nullptr) {
@@ -41,17 +39,20 @@ void LHEPrimaryGenerator::GeneratePrimaryVertex(G4Event* anEvent) {
                             "Failed to find particle definition for W ion.");
           }
         } else {
-          primary->SetPDGcode(particle->getIDUP());
+          primary->SetPDGcode(particle->getPdgId());
         }
 
-        primary->Set4Momentum(
-            particle->getPUP(0) * GeV, particle->getPUP(1) * GeV,
-            particle->getPUP(2) * GeV, particle->getPUP(3) * GeV);
-        primary->SetProperTime(particle->getVTIMUP() * nanosecond);
+        // TODO: should we not require that the primary is an electron?
+        // for example the WAB LHE events will have the wide photon as primary
 
-        auto primaryInfo = std::make_unique<UserPrimaryParticleInformation>();
-        primaryInfo->setHepEvtStatus(particle->getISTUP());
-        primary->SetUserInformation(primaryInfo.release());
+        primary->Set4Momentum(
+            particle->getMomentum(0) * GeV, particle->getMomentum(1) * GeV,
+            particle->getMomentum(2) * GeV, particle->getMomentum(3) * GeV);
+        primary->SetProperTime(particle->getLifetime() * nanosecond);
+
+        auto primary_info = std::make_unique<UserPrimaryParticleInformation>();
+        primary_info->setHepEvtStatus(particle->getStatus());
+        primary->SetUserInformation(primary_info.release());
 
         particleMap[particle.get()] = primary.get();
 
@@ -59,16 +60,17 @@ void LHEPrimaryGenerator::GeneratePrimaryVertex(G4Event* anEvent) {
          * Assign primary as daughter but only if the mother is not a DOC
          * particle->
          */
-        if (particle->getMother(0) != nullptr &&
-            particle->getMother(0)->getISTUP() > 0) {
-          G4PrimaryParticle* primaryMom = particleMap[particle->getMother(0)];
-          if (primaryMom != nullptr) {
-            primaryMom->SetDaughter(primary.release());
+        if (particle->getMotherParticle(0) != nullptr &&
+            particle->getMotherParticle(0)->getStatus() > 0) {
+          G4PrimaryParticle* primary_mom =
+              particleMap[particle->getMotherParticle(0)];
+          if (primary_mom != nullptr) {
+            primary_mom->SetDaughter(primary.release());
           }
         } else {
           vertex->SetPrimary(primary.release());
         }
-      }
+      }  // end condition for valid, outgoing particle status
     }
 
     anEvent->AddPrimaryVertex(vertex.release());
