@@ -8,10 +8,7 @@
 #ifndef SIMCORE_LHEPARTICLE_H_
 #define SIMCORE_LHEPARTICLE_H_
 
-// STL
-#include <string>
-#include <vector>
-
+// LDMX
 #include "Framework/Exception/Exception.h"
 
 // STL
@@ -19,6 +16,8 @@
 
 #include <iostream>
 #include <sstream>
+#include <string>
+#include <vector>
 
 // Geant4
 #include "globals.hh"

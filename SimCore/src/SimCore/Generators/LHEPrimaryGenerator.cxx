@@ -5,18 +5,21 @@ namespace generators {
 
 LHEPrimaryGenerator::LHEPrimaryGenerator(
     const std::string& name, const framework::config::Parameters& parameters)
-    : PrimaryGenerator(name, parameters) {
-  file_path_ = parameters.getParameter<std::string>("filePath");
-  reader_ = std::make_unique<simcore::lhe::LHEReader>(file_path_);
-}
+    : PrimaryGenerator(name, parameters),
+      file_path_{parameters.get<std::string>("filePath")},
+      reader_{file_path_},
+      vertex_{parameters.get<std::vector<double>>("vertex")} {}
 
 void LHEPrimaryGenerator::GeneratePrimaryVertex(G4Event* anEvent) {
-  std::unique_ptr<simcore::lhe::LHEEvent> lheEvent = reader_->readNextEvent();
+  std::unique_ptr<simcore::lhe::LHEEvent> lheEvent = reader_.readNextEvent();
 
   if (lheEvent != nullptr) {
-    auto vertex = std::make_unique<G4PrimaryVertex>();
-    vertex->SetPosition(lheEvent->getVertex()[0], lheEvent->getVertex()[1],
-                        lheEvent->getVertex()[2]);
+    // Create a primary vertex for the Geant4 event
+    // This is a raw pointer, and GEANT4 will delete it
+    G4PrimaryVertex* vertex = new G4PrimaryVertex();
+    vertex->SetPosition(lheEvent->getVertex()[0] + vertex_[0],
+                        lheEvent->getVertex()[1] + vertex_[1],
+                        lheEvent->getVertex()[2] + vertex_[2]);
     vertex->SetWeight(lheEvent->getEventWeight());
 
     std::map<simcore::lhe::LHEParticle*, G4PrimaryParticle*> particleMap;
@@ -26,7 +29,8 @@ void LHEPrimaryGenerator::GeneratePrimaryVertex(G4Event* anEvent) {
       // Check if the particle has a valid, outgoing particle status
       if (particle->getStatus() > 0) {
         // Create a primary particle for the Geant4
-        auto primary = std::make_unique<G4PrimaryParticle>();
+        // This is a raw pointer, and GEANT4 will delete it
+        G4PrimaryParticle* primary = new G4PrimaryParticle();
         // Tungsten ion in the LHE files
         // TODO: can this never be +623?
         if (particle->getPdgId() == -623) {
@@ -54,7 +58,7 @@ void LHEPrimaryGenerator::GeneratePrimaryVertex(G4Event* anEvent) {
         primary_info->setHepEvtStatus(particle->getStatus());
         primary->SetUserInformation(primary_info.release());
 
-        particleMap[particle.get()] = primary.get();
+        particleMap[particle.get()] = primary;
 
         /*
          * Assign primary as daughter but only if the mother is not a DOC
@@ -65,15 +69,15 @@ void LHEPrimaryGenerator::GeneratePrimaryVertex(G4Event* anEvent) {
           G4PrimaryParticle* primary_mom =
               particleMap[particle->getMotherParticle(0)];
           if (primary_mom != nullptr) {
-            primary_mom->SetDaughter(primary.release());
+            primary_mom->SetDaughter(primary);
           }
         } else {
-          vertex->SetPrimary(primary.release());
+          vertex->SetPrimary(primary);
         }
       }  // end condition for valid, outgoing particle status
     }
 
-    anEvent->AddPrimaryVertex(vertex.release());
+    anEvent->AddPrimaryVertex(vertex);
 
   } else {
     ldmx_log(info) << "Ran out of input events so run will be aborted!";

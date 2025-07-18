@@ -1,6 +1,6 @@
 /**
- * @file LHEPrimaryGenerator.cxx
- * @brief Implementation file for LHEPrimaryGenerator
+ * @file LHEPrimaryGenerator
+ * @brief Class for generating a Geant4 event from LHE event data
  * @author Jeremy McCormick, SLAC National Accelerator Laboratory
  * @author Tom Eichlersmith, University of Minnesota
  * @author Tamas Almos Vami, UCSB
@@ -22,9 +22,6 @@
 #include "G4PhysicalConstants.hh"
 #include "G4RunManager.hh"
 #include "G4SystemOfUnits.hh"
-
-// LDMX
-
 class G4Event;
 
 namespace simcore {
@@ -64,12 +61,20 @@ class LHEPrimaryGenerator : public simcore::PrimaryGenerator {
 
  private:
   /**
-   * The LHE reader with the event data, managed by a smart pointer.
+   * The file path to the LHE file.
    */
-  std::unique_ptr<simcore::lhe::LHEReader> reader_;
-
-  /// Path to the LHE file.
   std::string file_path_;
+
+  /**
+   * The LHE reader with the event data
+   */
+
+  lhe::LHEReader reader_;
+
+  /**
+   * The vertex offset to apply to the LHE event vertex.
+   */
+  std::vector<double> vertex_;
 
   // enable logging
   enableLogging("LHEPrimaryGenerator")
