@@ -3,15 +3,23 @@
  * @brief Class defining an LHE event with a list of particles and information
  * from the header block
  * @author Jeremy McCormick, SLAC National Accelerator Laboratory
+ * @author Tamas Almos Vami, UCSB
  */
 
 #ifndef SIMCORE_LHEEVENT_H_
 #define SIMCORE_LHEEVENT_H_
 
 // LDMX
+#include "Framework/Exception/Exception.h"
 #include "SimCore/LHE/LHEParticle.h"
 
+// Geant4
+#include "globals.hh"
+
 // STL
+#include <iostream>
+#include <memory>
+#include <sstream>
 #include <vector>
 
 namespace simcore::lhe {
@@ -37,7 +45,7 @@ class LHEEvent {
   /**
    * Class destructor.
    */
-  virtual ~LHEEvent();
+  virtual ~LHEEvent() = default;
 
   /**
    * Get the number of particles (NUP) in the event.
@@ -101,13 +109,13 @@ class LHEEvent {
    * Add a particle to the event.
    * @particle The particle to add.
    */
-  void addParticle(LHEParticle* particle);
+  void addParticle(std::unique_ptr<LHEParticle> particle);
 
   /**
    * Get the list of particles in the event.
    * @return The list of particles in the event.
    */
-  const std::vector<LHEParticle*>& getParticles();
+  const std::vector<std::unique_ptr<LHEParticle>>& getParticles() const;
 
  private:
   /**
@@ -153,7 +161,7 @@ class LHEEvent {
   /**
    * The list of particles.
    */
-  std::vector<LHEParticle*> particles_;
+  std::vector<std::unique_ptr<LHEParticle>> particles_;
 };
 
 }  // namespace simcore::lhe

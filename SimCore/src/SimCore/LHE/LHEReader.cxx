@@ -1,18 +1,13 @@
 #include "SimCore/LHE/LHEReader.h"
 
-// STL
-#include <iostream>
-
 namespace simcore::lhe {
 
 LHEReader::LHEReader(std::string& filename) {
-  std::cout << "Opening LHE file " << filename << std::endl;
+  ldmx_log(info) << "Opening LHE file " << filename;
   ifs_.open(filename.c_str(), std::ifstream::in);
 }
 
-LHEReader::~LHEReader() { ifs_.close(); }
-
-LHEEvent* LHEReader::readNextEvent() {
+std::unique_ptr<LHEEvent> LHEReader::readNextEvent() {
   std::string line;
   bool foundEventElement = false;
   while (getline(ifs_, line)) {
@@ -23,14 +18,14 @@ LHEEvent* LHEReader::readNextEvent() {
   }
 
   if (!foundEventElement) {
-    std::cerr << "WARNING: No next <event> element was found by the LHE reader."
-              << std::endl;
+    ldmx_log(warn) << "No next <event> element was found by the LHE reader.";
     return nullptr;
   }
 
   getline(ifs_, line);
 
-  LHEEvent* nextEvent = new LHEEvent(line);
+  // Create the LHEEvent using std::make_unique
+  auto nextEvent = std::make_unique<LHEEvent>(line);
 
   while (getline(ifs_, line)) {
     if (line == "</event>" || line == "<mgrwt>") {
@@ -39,8 +34,9 @@ LHEEvent* LHEReader::readNextEvent() {
     }
 
     if (line.find("#") == std::string::npos) {  // not a comment line
-      LHEParticle* particle = new LHEParticle(line);
-      nextEvent->addParticle(particle);
+      // Create LHEParticle using std::make_unique and add it to the event
+      auto particle = std::make_unique<LHEParticle>(line);
+      nextEvent->addParticle(std::move(particle));
     } else {
       if (line.find("#vertex") != std::string::npos) {
         nextEvent->setVertex(line);
@@ -48,16 +44,17 @@ LHEEvent* LHEReader::readNextEvent() {
     }
   }
 
-  const std::vector<LHEParticle*>& particles = nextEvent->getParticles();
-  for (LHEParticle* particle : particles) {
+  const std::vector<std::unique_ptr<LHEParticle>>& particles =
+      nextEvent->getParticles();
+  for (const auto& particle : particles) {
     if (particle->getMOTHUP(0) != 0) {
       int mother1 = particle->getMOTHUP(0);
       int mother2 = particle->getMOTHUP(1);
       if (mother1 > 0) {
-        particle->setMother(0, particles[mother1 - 1]);
+        particle->setMother(0, particles[mother1 - 1].get());
       }
       if (mother2 > 0) {
-        particle->setMother(1, particles[mother2 - 1]);
+        particle->setMother(1, particles[mother2 - 1].get());
       }
     }
   }

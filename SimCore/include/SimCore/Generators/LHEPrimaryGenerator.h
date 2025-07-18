@@ -1,16 +1,29 @@
 /**
- * @file LHEPrimaryGenerator.h
- * @brief Class for generating a Geant4 event from LHE event data
+ * @file LHEPrimaryGenerator.cxx
+ * @brief Implementation file for LHEPrimaryGenerator
  * @author Jeremy McCormick, SLAC National Accelerator Laboratory
  * @author Tom Eichlersmith, University of Minnesota
+ * @author Tamas Almos Vami, UCSB
  */
 
 #ifndef SIMCORE_LHEPRIMARYGENERATOR_H
 #define SIMCORE_LHEPRIMARYGENERATOR_H
 
 // LDMX
+#include "Framework/Configure/Parameters.h"
+#include "Framework/Exception/Exception.h"
+#include "SimCore/G4User/UserPrimaryParticleInformation.h"
 #include "SimCore/Generators/PrimaryGenerator.h"
 #include "SimCore/LHE/LHEReader.h"
+
+// Geant4
+#include "G4Event.hh"
+#include "G4IonTable.hh"
+#include "G4PhysicalConstants.hh"
+#include "G4RunManager.hh"
+#include "G4SystemOfUnits.hh"
+
+// LDMX
 
 class G4Event;
 
@@ -25,7 +38,8 @@ class LHEPrimaryGenerator : public simcore::PrimaryGenerator {
  public:
   /**
    * Class constructor.
-   * @param reader The LHE reader with the event data.
+   * @param name The name of the generator.
+   * @param parameters Configuration parameters.
    */
   LHEPrimaryGenerator(const std::string& name,
                       const framework::config::Parameters& parameters);
@@ -33,7 +47,7 @@ class LHEPrimaryGenerator : public simcore::PrimaryGenerator {
   /**
    * Class destructor.
    */
-  virtual ~LHEPrimaryGenerator();
+  virtual ~LHEPrimaryGenerator() = default;
 
   /**
    * Generate vertices in the Geant4 event.
@@ -41,15 +55,24 @@ class LHEPrimaryGenerator : public simcore::PrimaryGenerator {
    */
   void GeneratePrimaryVertex(G4Event* anEvent) override;
 
+  /**
+   * Record configuration information.
+   * @param id The configuration ID.
+   * @param rh The run header.
+   */
   void RecordConfig(const std::string& id, ldmx::RunHeader& rh) override;
 
  private:
   /**
-   * The LHE reader with the event data.
+   * The LHE reader with the event data, managed by a smart pointer.
    */
-  simcore::lhe::LHEReader* reader_;
-  /// path to LHE file
+  std::unique_ptr<simcore::lhe::LHEReader> reader_;
+
+  /// Path to the LHE file.
   std::string file_path_;
+
+  // enable logging
+  enableLogging("LHEPrimaryGenerator")
 };
 
 }  // namespace generators

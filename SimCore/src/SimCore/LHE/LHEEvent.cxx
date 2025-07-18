@@ -1,15 +1,7 @@
 #include "SimCore/LHE/LHEEvent.h"
 
-#include "Framework/Exception/Exception.h"
-
-// Geant4
-#include "globals.hh"
-
-// STL
-#include <iostream>
-#include <sstream>
-
-namespace simcore::lhe {
+namespace simcore {
+namespace lhe {
 
 LHEEvent::LHEEvent(std::string& line) {
   std::istringstream iss(line);
@@ -27,24 +19,22 @@ LHEEvent::LHEEvent(std::string& line) {
                     "Wrong number of tokens in LHE event information record.");
   }
 
+  // Number of particles in the event
   nup_ = atoi(tokens[0].c_str());
+  // The physics process ID
   idprup_ = atoi(tokens[1].c_str());
+  // The event weight
   xwgtup_ = atof(tokens[2].c_str());
+  // Scale Q of parton distributions
   scalup_ = atof(tokens[3].c_str());
+  // QED coupling value
   aqedup_ = atof(tokens[4].c_str());
+  // QCD coupling value
   aqcdup_ = atof(tokens[5].c_str());
 
   vtx_[0] = 0;
   vtx_[1] = 0;
   vtx_[2] = 0;
-}
-
-LHEEvent::~LHEEvent() {
-  for (std::vector<LHEParticle*>::iterator it = particles_.begin();
-       it != particles_.end(); it++) {
-    delete (*it);
-  }
-  particles_.clear();
 }
 
 int LHEEvent::getNUP() const { return nup_; }
@@ -63,11 +53,14 @@ const double* LHEEvent::getVertex() const { return vtx_; }
 
 double LHEEvent::getVertexTime() const { return vtxt_; }
 
-void LHEEvent::addParticle(LHEParticle* particle) {
-  particles_.push_back(particle);
+void LHEEvent::addParticle(std::unique_ptr<LHEParticle> particle) {
+  particles_.push_back(std::move(particle));
 }
 
-const std::vector<LHEParticle*>& LHEEvent::getParticles() { return particles_; }
+const std::vector<std::unique_ptr<LHEParticle>>& LHEEvent::getParticles()
+    const {
+  return particles_;
+}
 
 void LHEEvent::setVertex(double x, double y, double z) {
   vtx_[0] = x;
@@ -103,4 +96,5 @@ void LHEEvent::setVertex(const std::string& line) {
   }
 }
 
-}  // namespace simcore::lhe
+}  // namespace lhe
+}  // namespace simcore

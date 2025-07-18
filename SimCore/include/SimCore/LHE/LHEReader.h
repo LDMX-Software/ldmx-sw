@@ -2,16 +2,20 @@
  * @file LHEReader.h
  * @brief Class for reading LHE event data
  * @author Jeremy McCormick, SLAC National Accelerator Laboratory
+ * @author Tamas Almos Vami, UCSB
  */
 
 #ifndef SIMCORE_LHEREADER_H_
 #define SIMCORE_LHEREADER_H_
 
 // LDMX
+#include "Framework/Logger.h"
 #include "SimCore/LHE/LHEEvent.h"
 
 // STL
 #include <fstream>
+#include <iostream>
+#include <memory>
 
 namespace simcore::lhe {
 
@@ -30,19 +34,22 @@ class LHEReader {
   /**
    * Class destructor.
    */
-  virtual ~LHEReader();
+  virtual ~LHEReader() = default;
 
   /**
    * Read the next event.
    * @return The next LHE event.
    */
-  LHEEvent* readNextEvent();
+  std::unique_ptr<LHEEvent> readNextEvent();
 
  private:
   /**
    * The input file stream.
    */
   std::ifstream ifs_;
+
+  // enable logging
+  enableLogging("LHEReader")
 };
 
 }  // namespace simcore::lhe
