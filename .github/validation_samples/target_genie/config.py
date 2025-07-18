@@ -101,6 +101,9 @@ en_trigger = [
         trigger_energy_sums.TrigHcalEnergySum(),
         trigger_energy_sums.TrigEcalClusterProducer(),
         trigger_energy_sums.TrigElectronProducer('propagationMap.root'),
+        trigger_energy_sums.HcalTPSelector(),
+        trigger_energy_sums.HCalTrigMipReco(),
+        trigger_energy_sums.ECalTrigMipReco(),
 
         ]
 
