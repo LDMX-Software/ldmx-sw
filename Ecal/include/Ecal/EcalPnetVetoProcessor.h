@@ -13,7 +13,6 @@
 #include <numeric>
 
 #include "DetDescr/EcalGeometry.h"
-#include "Ecal/EcalVetoProcessor.h"
 #include "Ecal/Event/EcalHit.h"
 #include "Ecal/Event/EcalVetoResult.h"
 #include "Ecal/TrackPropagator.h"
@@ -21,7 +20,6 @@
 #include "Framework/EventProcessor.h"
 #include "SimCore/Event/SimTrackerHit.h"
 #include "Tools/ONNXRuntime.h"
-#include "Tracking/Event/Track.h"
 
 namespace ecal {
 
@@ -42,16 +40,16 @@ class EcalPnetVetoProcessor : public framework::Producer {
    * Make inputs to the DNN from ECAL RecHits.
    * @param ecalRecHits The EcalHit collection.
    */
-  void make_inputs(const ldmx::EcalGeometry& geom,
-                   const std::vector<ldmx::EcalHit>& ecalRecHits,
-                   const framework::Event& event);
+  void makeInputs(const ldmx::EcalGeometry& geom,
+                  const std::vector<ldmx::EcalHit>& ecalRecHits,
+                  std::array<double, 3> etraj, std::array<double, 3> enorm);
 
   /**
-   * Transfor logits to a probability
+   * Transform logits to a probability
    * @param logits: Vector of logits
-   * @returns
+   * @returns Vector of log softmax probabilities
    */
-  std::vector<float> log_softmax(const std::vector<float>& logits);
+  std::vector<float> logSoftmax(const std::vector<float>& logits);
 
  private:
   /** Maximum number of hits allowed in ECAL. Events with more hits will be
