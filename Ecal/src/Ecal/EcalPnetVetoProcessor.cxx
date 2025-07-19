@@ -17,27 +17,24 @@ EcalPnetVetoProcessor::EcalPnetVetoProcessor(const std::string& name,
 
 void EcalPnetVetoProcessor::configure(
     framework::config::Parameters& parameters) {
-  disc_cut_ = parameters.getParameter<double>("disc_cut");
+  disc_cut_ = parameters.get<double>("disc_cut");
   rt_ = std::make_unique<ldmx::Ort::ONNXRuntime>(
-      parameters.getParameter<std::string>("model_path"));
+      parameters.get<std::string>("model_path"));
 
   // Set the collection name as defined in the configuration
-  collectionName_ = parameters.getParameter<std::string>("collection_name");
+  collectionName_ = parameters.get<std::string>("collection_name");
 
-  rec_coll_name_ = parameters.getParameter<std::string>("rec_coll_name");
+  rec_coll_name_ = parameters.get<std::string>("rec_coll_name");
   ecal_rec_hits_passname_ =
-      parameters.getParameter<std::string>("ecal_rec_hits_passname");
-  ecal_sp_hits_passname_ =
-      parameters.getParameter<std::string>("ecal_sp_hits_passname");
-  track_pass_name_ =
-      parameters.getParameter<std::string>("track_pass_name", "");
-  track_collection_ = parameters.getParameter<std::string>("track_collection");
-  recoil_from_tracking_ = parameters.getParameter<bool>("recoil_from_tracking");
+      parameters.get<std::string>("ecal_rec_hits_passname");
+  ecal_sp_hits_passname_ = parameters.get<std::string>("ecal_sp_hits_passname");
+  track_pass_name_ = parameters.get<std::string>("track_pass_name", "");
+  track_collection_ = parameters.get<std::string>("track_collection");
+  recoil_from_tracking_ = parameters.get<bool>("recoil_from_tracking");
 }
 
 void EcalPnetVetoProcessor::produce(framework::Event& event) {
   ldmx::EcalVetoResult result;
-  // ecal::EcalVetoProcessor proc;
   //  Get the Ecal Geometry
   const auto& ecal_geometry = getCondition<ldmx::EcalGeometry>(
       ldmx::EcalGeometry::CONDITIONS_OBJECT_NAME);
@@ -128,7 +125,7 @@ void EcalPnetVetoProcessor::make_inputs(
         event.getCollection<ldmx::Track>(track_collection_, track_pass_name_)};
     ldmx::TrackStateType ts_type = ldmx::TrackStateType::AtECAL;
     auto recoil_track_states_ecal =
-        ecal::EcalVetoProcessor::trackProp(recoil_tracks, ts_type, "ecal");
+        ecal::TrackPropagator::trackProp(recoil_tracks, ts_type, "ecal");
     if (!recoil_track_states_ecal.empty()) {
       std::array<double, 3> pos = {recoil_track_states_ecal[0],
                                    recoil_track_states_ecal[1],
