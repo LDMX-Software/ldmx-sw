@@ -15,13 +15,13 @@
 #include "Ecal/Event/EcalHit.h"
 #include "Ecal/Event/EcalTrajectoryInfo.h"
 #include "Ecal/Event/EcalVetoResult.h"
+#include "Ecal/TrackPropagator.h"
 #include "Framework/Configure/Parameters.h"
 #include "Framework/EventProcessor.h"
 #include "SimCore/Event/SimParticle.h"
 #include "SimCore/Event/SimTrackerHit.h"
 #include "Tools/AnalysisUtils.h"
 #include "Tools/ONNXRuntime.h"
-#include "Tracking/Event/Track.h"
 
 // C++
 #include <stdlib.h>
@@ -33,7 +33,8 @@
 #include <map>
 #include <memory>
 
-// ROOT (for anle calculations)
+// ROOT (for angle calculations)
+// TODO: Should be moved to the XYZ vector class
 #include "TVector3.h"
 
 namespace ecal {
@@ -120,17 +121,6 @@ class EcalVetoProcessor : public framework::Producer {
    * @returns Minimum distance between h1 and the line
    */
   float distPtToLine(TVector3 h1, TVector3 p1, TVector3 p2);
-
-  /**
-   * Return a vector of parameters for a propagated recoil track
-   * @param[in] tracks The track collection
-   * @param[in] ts_type The track state type, i.e. tracks state at the ECAL face
-   * @param[in] ts_title The track state title, most likely "ecal"
-   * @returns Vector of parameters for a propagated recoil track
-   */
-  std::vector<float> trackProp(const ldmx::Tracks& tracks,
-                               ldmx::TrackStateType ts_type,
-                               const std::string& ts_title);
 
  private:
   int nevents_{0};

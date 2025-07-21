@@ -79,18 +79,17 @@ void EcalVetoProcessor::buildBDTFeatureVector(
 }
 
 void EcalVetoProcessor::configure(framework::config::Parameters &parameters) {
-  feature_list_name_ =
-      parameters.getParameter<std::string>("feature_list_name");
+  feature_list_name_ = parameters.get<std::string>("feature_list_name");
 
   sim_particles_passname_ =
-      parameters.getParameter<std::string>("sim_particles_passname");
+      parameters.get<std::string>("sim_particles_passname");
   // Load BDT ONNX file
   rt_ = std::make_unique<ldmx::Ort::ONNXRuntime>(
-      parameters.getParameter<std::string>("bdt_file"));
+      parameters.get<std::string>("bdt_file"));
 
   // Read in arrays holding 68% containment radius per layer
   // for different bins in momentum/angle
-  roc_file_name_ = parameters.getParameter<std::string>("roc_file");
+  roc_file_name_ = parameters.get<std::string>("roc_file");
   if (!std::ifstream(roc_file_name_).good()) {
     EXCEPTION_RAISE(
         "EcalVetoProcessor",
@@ -115,24 +114,23 @@ void EcalVetoProcessor::configure(framework::config::Parameters &parameters) {
     }
   }
 
-  n_ecal_layers_ = parameters.getParameter<int>("num_ecal_layers");
+  n_ecal_layers_ = parameters.get<int>("num_ecal_layers");
 
-  bdt_cut_val_ = parameters.getParameter<double>("disc_cut");
+  bdt_cut_val_ = parameters.get<double>("disc_cut");
   ecal_layer_edep_raw_.resize(n_ecal_layers_, 0);
   ecal_layer_edep_readout_.resize(n_ecal_layers_, 0);
   ecal_layer_time_.resize(n_ecal_layers_, 0);
 
-  beam_energy_mev_ = parameters.getParameter<double>("beam_energy");
+  beam_energy_mev_ = parameters.get<double>("beam_energy");
   // Set the collection name as defined in the configuration
-  sp_pass_name_ = parameters.getParameter<std::string>("sp_pass_name");
-  collection_name_ = parameters.getParameter<std::string>("collection_name");
-  rec_pass_name_ = parameters.getParameter<std::string>("rec_pass_name");
-  rec_coll_name_ = parameters.getParameter<std::string>("rec_coll_name");
-  recoil_from_tracking_ = parameters.getParameter<bool>("recoil_from_tracking");
-  track_collection_ = parameters.getParameter<std::string>("track_collection");
-  track_pass_name_ =
-      parameters.getParameter<std::string>("track_pass_name", "");
-  inverse_skim_ = parameters.getParameter<bool>("inverse_skim");
+  sp_pass_name_ = parameters.get<std::string>("sp_pass_name");
+  collection_name_ = parameters.get<std::string>("collection_name");
+  rec_pass_name_ = parameters.get<std::string>("rec_pass_name");
+  rec_coll_name_ = parameters.get<std::string>("rec_coll_name");
+  recoil_from_tracking_ = parameters.get<bool>("recoil_from_tracking");
+  track_collection_ = parameters.get<std::string>("track_collection");
+  track_pass_name_ = parameters.get<std::string>("track_pass_name", "");
+  inverse_skim_ = parameters.get<bool>("inverse_skim");
 }
 
 void EcalVetoProcessor::clearProcessor() {
@@ -272,11 +270,12 @@ void EcalVetoProcessor::produce(framework::Event &event) {
 
     ldmx_log(trace) << "  Propagate the recoil ele to the ECAL";
     ldmx::TrackStateType ts_type = ldmx::TrackStateType::AtECAL;
-    auto recoil_track_states_ecal = trackProp(recoil_tracks, ts_type, "ecal");
+    auto recoil_track_states_ecal =
+        ecal::trackProp(recoil_tracks, ts_type, "ecal");
     ldmx_log(trace) << "  Propagate the recoil ele to the Target";
     ldmx::TrackStateType ts_type_target = ldmx::TrackStateType::AtTarget;
     auto recoil_track_states_target =
-        trackProp(recoil_tracks, ts_type_target, "target");
+        ecal::trackProp(recoil_tracks, ts_type_target, "target");
 
     ldmx_log(trace) << "  Set recoil_pos and recoil_p";
     // Redefining recoil_pos now to come from the track state
@@ -1099,67 +1098,6 @@ float EcalVetoProcessor::distTwoLines(TVector3 v1, TVector3 v2, TVector3 w1,
 
 float EcalVetoProcessor::distPtToLine(TVector3 h1, TVector3 p1, TVector3 p2) {
   return ((h1 - p1).Cross(h1 - p2)).Mag() / (p1 - p2).Mag();
-}
-
-std::vector<float> EcalVetoProcessor::trackProp(const ldmx::Tracks &tracks,
-                                                ldmx::TrackStateType ts_type,
-                                                const std::string &ts_title) {
-  // Vector to hold the new track state variables
-  std::vector<float> new_track_states;
-
-  // Return if no tracks
-  if (tracks.empty()) return new_track_states;
-
-  // Otherwise loop on the tracks
-  for (auto &track : tracks) {
-    // Get track state for ts_type
-    auto trk_ts = track.getTrackState(ts_type);
-    // Continue if there's no value
-    if (!trk_ts.has_value()) continue;
-    ldmx::Track::TrackState &ecal_track_state = trk_ts.value();
-
-    // Check that the track state is filled
-    if (ecal_track_state.params.size() < 5) continue;
-
-    float track_state_loc0 = static_cast<float>(ecal_track_state.params[0]);
-    float track_state_loc1 = static_cast<float>(ecal_track_state.params[1]);
-    // param 2 = phi (azimuthal), param 3 = theta (polar)
-    // param 4 = QoP
-    // ACTS (local)  to  LDMX (global) coordinates: (y,z,x)->  (x,y,z)
-    // convert qop [1/GeV] to p [MeV]
-    float p_track_state = (-1 / ecal_track_state.params[4]) * 1000;
-    // p * sin(theta) * sin(phi)
-    float recoil_mom_x = p_track_state * sin(ecal_track_state.params[3]) *
-                         sin(ecal_track_state.params[2]);
-    // p * cos(theta)
-    float recoil_mom_y = p_track_state * cos(ecal_track_state.params[3]);
-    // p * sin(theta) * cos(phi)
-    float recoil_mom_z = p_track_state * sin(ecal_track_state.params[3]) *
-                         cos(ecal_track_state.params[2]);
-
-    // Store the new track state variables
-    new_track_states.push_back(track_state_loc0);
-    new_track_states.push_back(track_state_loc1);
-    // z-position at the ECAL (4) or Target (1)
-    if (ts_type == 4) {
-      // this should match `ECAL_SCORING_PLANE` in CKFProcessor
-      new_track_states.push_back(240.5);
-    } else if (ts_type == 1) {
-      // This should match `target_surface` in CKFProcessor
-      new_track_states.push_back(0.0);
-    }
-
-    new_track_states.push_back(recoil_mom_x);
-    new_track_states.push_back(recoil_mom_y);
-    new_track_states.push_back(recoil_mom_z);
-
-    // Break after getting the first valid track state
-    // TODO: interface this with CLUE to make sure the propageted track
-    //       has an associated cluster in the ECAL
-    break;
-  }
-
-  return new_track_states;
 }
 
 }  // namespace ecal

@@ -63,12 +63,14 @@ class EcalPnetVetoProcessor(ldmxcfg.Producer) :
 
         from LDMX.Ecal.makePath import makeBDTPath
         self.model_path = makeBDTPath("particle_net_ecal_v10")
-        self.disc_cut = 0.74
+        self.disc_cut = 0.65
         self.collection_name = "EcalPnetVeto"
         self.rec_coll_name = "EcalRecHits"
         self.ecal_rec_hits_passname = ""
         self.ecal_sp_hits_passname = ""
-        
+        self.track_collection = "RecoilTracksClean"
+        self.track_pass_name = ""
+        self.recoil_from_tracking = True
         
 
 
