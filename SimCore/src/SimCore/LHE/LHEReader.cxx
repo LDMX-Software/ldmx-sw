@@ -8,8 +8,7 @@ LHEReader::LHEReader(std::string& filename) {
   ifs_.open(filename.c_str(), std::ifstream::in);
 
   if (!ifs_.is_open()) {
-    ldmx_log(fatal) << "Failed to open LHE file: " << filename;
-    throw std::runtime_error("Failed to open LHE file: " + filename);
+    EXCEPTION_RAISE("BadFile", "Failed to open LHE file: " + filename);
   }
 }
 

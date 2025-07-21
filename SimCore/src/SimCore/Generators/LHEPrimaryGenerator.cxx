@@ -46,9 +46,7 @@ void LHEPrimaryGenerator::GeneratePrimaryVertex(G4Event* anEvent) {
           primary->SetPDGcode(particle->getPdgId());
         }
 
-        // TODO: should we not require that the primary is an electron?
-        // for example the WAB LHE events will have the wide photon as primary
-
+        // Set the primary particle's momentum and lifetime
         primary->Set4Momentum(
             particle->getMomentum(0) * GeV, particle->getMomentum(1) * GeV,
             particle->getMomentum(2) * GeV, particle->getMomentum(3) * GeV);
@@ -62,7 +60,7 @@ void LHEPrimaryGenerator::GeneratePrimaryVertex(G4Event* anEvent) {
 
         /*
          * Assign primary as daughter but only if the mother is not a DOC
-         * particle->
+         * particle.
          */
         if (particle->getMotherParticle(0) != nullptr &&
             particle->getMotherParticle(0)->getStatus() > 0) {
@@ -80,7 +78,7 @@ void LHEPrimaryGenerator::GeneratePrimaryVertex(G4Event* anEvent) {
     anEvent->AddPrimaryVertex(vertex);
 
   } else {
-    ldmx_log(info) << "Ran out of input events so run will be aborted!";
+    ldmx_log(error) << "Ran out of input events so run will be aborted!";
     G4RunManager::GetRunManager()->AbortRun(true);
     anEvent->SetEventAborted();
   }
