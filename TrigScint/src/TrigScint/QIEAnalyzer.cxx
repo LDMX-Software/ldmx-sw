@@ -128,7 +128,7 @@ void QIEAnalyzer::onProcessStart() {
             << std::endl;
   getHistoDirectory();
 
-  int nTimeSamp = 40;
+  int nTimeSamp = 68;  // 40
   int PEmax = 100;
   int nPEbins = 5 * PEmax;
   float Qmax = PEmax / (6250. / 4.e6);

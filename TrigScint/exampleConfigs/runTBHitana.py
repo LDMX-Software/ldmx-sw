@@ -45,4 +45,6 @@ p.logFileName=outname.replace(".root",".log")
 p.termLogLevel = 2
 p.logFileLevel=1#0
 
+p.logger.debug(tsEv)
+
 json.dumps(p.parameterDump(), indent=2)

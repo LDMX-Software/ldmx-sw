@@ -89,38 +89,42 @@ void EventReadoutProducer::produce(framework::Event &event) {
     // normalization the same numbers are repeated, it's an oscillation edge
     // case: multiple single PE peaks with that repetition. we probably don't
     // need to keep those anyway
-    if (verbose_) ldmx_log(debug) << "going into oscillations check ";
     std::vector<float> chargeCheck = {NULL};
     float minCharge =
         10;  // no point in looking at oscillations just around the pedestal.
              // nearest edge is 10.35 fC  //ADC=0 corresponds to -16 fC.
-    for (int i = 3; i < charge.size() - 4; i++) {
-      float maxSamp = minCharge;
-      for (int iQ = 0; iQ < 4; iQ++) {  // find the local max in the 4 samples
-        //		ldmx_log(debug) << "got charge " << charge[i+iQ];
-        if (charge[i + iQ] > maxSamp) maxSamp = charge[i + iQ];
-      }
-      if (verbose_) ldmx_log(debug) << "got max charge " << maxSamp;
-      for (int iQ = 0; iQ < 4;
-           iQ++)  // store the locally normalized numbers. even if the period is
-                  // 5 this should work for a while
-        chargeCheck.push_back(charge[i + iQ] / maxSamp);
-      i += 3;  // to increment by 4, do 3 here and 1 in the loop
-    }
-
-    // now calculate the pedestal as the average of the middle half of the
-    // sorted vector
     float ped = 0;
-    std::sort(charge.begin(), charge.end());
     int pedLength = (int)charge.size() /
                     5;  // actually pulse can be up to 12 samples = 2/5*30
     int pedOffset = 2;  // but still skip the lowest (and highest) few
-    //	for (int i = pedLength; i < 3*pedLength ; i++) { //use 2nd and third 5th
-    for (int i = pedOffset; i < 2 * pedLength + pedOffset;
-         i++) {  // use 1st and 2nd 5th
-      ped += charge[i];
+                        //	for (int i = pedLength; i < 3*pedLength ; i++) {
+                        ////use 2nd and third 5th
+    if (charge.size() > 8) {
+      if (verbose_) ldmx_log(debug) << "going into oscillations check ";
+      for (int i = 3; i < charge.size() - 4; i++) {
+        float maxSamp = minCharge;
+        for (int iQ = 0; iQ < 4; iQ++) {  // find the local max in the 4 samples
+          //		ldmx_log(debug) << "got charge " << charge[i+iQ];
+          if (charge[i + iQ] > maxSamp) maxSamp = charge[i + iQ];
+        }
+        if (verbose_) ldmx_log(debug) << "got max charge " << maxSamp;
+        for (int iQ = 0; iQ < 4; iQ++)  // store the locally normalized numbers.
+                                        // even if the period is
+          // 5 this should work for a while
+          chargeCheck.push_back(charge[i + iQ] / maxSamp);
+        i += 3;  // to increment by 4, do 3 here and 1 in the loop
+      }
     }
-    ped /= 2 * pedLength;
+    if (pedLength > 4) {
+      // now calculate the pedestal as the average of the middle half of the
+      // sorted vector
+      std::sort(charge.begin(), charge.end());
+      for (int i = pedOffset; i < 2 * pedLength + pedOffset;
+           i++) {  // use 1st and 2nd 5th
+        ped += charge[i];
+      }
+      ped /= 2 * pedLength;
+    }
     // median: technically only true for odd number of elements but good enough
     float medQ = charge[(int)charge.size() / 2];
     float minQ = charge[0];
@@ -143,79 +147,83 @@ void EventReadoutProducer::produce(framework::Event &event) {
     // and the noise as the RMSE of that, same interval as pedestal
     float diffSq = 0;
     //    for (int i = pedLength; i < 3*pedLength ; i++) {
-    for (int i = pedOffset; i < 2 * pedLength + pedOffset; i++) {
-      diffSq += (charge[i] - ped) * (charge[i] - ped);
+    if (charge.size() > 8) {
+      for (int i = pedOffset; i < 2 * pedLength + pedOffset; i++) {
+        diffSq += (charge[i] - ped) * (charge[i] - ped);
+      }
+      diffSq /= 2 * pedLength;  // adc.size();
     }
-    diffSq /= 2 * pedLength;  // adc.size();
     outEvent.setNoise(sqrt(diffSq));
 
     // oscillation check
     uint flagOscillation = 0;
-    // no need to run tedious oscillation check for all-neg channels
-    if (maxQ > minCharge) {
-      int maxID = 0;
-      // find the first occurence of a local max
-      for (int i = 0; i < chargeCheck.size() - 4; i++) {
-        if (chargeCheck[i] ==
-            1) {  // an actual local max has been normalised by its own value
-          maxID = i;
-          //		  ldmx_log(debug) << "storing max index " <<maxID <<"
-          // and size of vector is " << chargeCheck.size()-4;
-          break;
-        }
-      }
-      int lastMatchSample = 0;
-      // start from local max
-      bool doBreak = false;
-      for (int i = maxID; i < chargeCheck.size() - 4; i++) {
-        if (verbose_)
-          ldmx_log(debug) << "Checking how many matching groups of four we can "
-                             "find, starting at index "
-                          << i;
-
-        for (int iQ = 0; iQ < 4; iQ++) {  // check if they are consistently
-                                          // close
-          if (verbose_)
-            ldmx_log(debug)
-                << "Comparing " << chargeCheck[i + iQ] << " (sample " << i + iQ
-                << ") to " << chargeCheck[i + 4 + iQ] << " (sample "
-                << i + 4 + iQ << "), ratio is "
-                << chargeCheck[i + iQ] / chargeCheck[i + 4 + iQ];
-          // we can be generous in these crietira since we will require an
-          // unbroken suite of 8 matches to call it oscillation
-          if (fabs(chargeCheck[i + iQ] / chargeCheck[i + 4 + iQ] - 1) <
-                  0.5 ||  // need this tolerance to be kind of large, most
-                          // actual peaks won't pass it by far anyway.
-              (chargeCheck[i + 4 + iQ] < 0.01 &&
-               fabs(chargeCheck[i + iQ] / chargeCheck[i + 4 + iQ]) <
-                   5))  // for very small numbers, one ADC difference can be a
-                        // factor 3 so add some margin
-            lastMatchSample = i + iQ;
-          else {
-            if (verbose_)
-              ldmx_log(debug)
-                  << "Oscillation check for channel " << digi.getChanID()
-                  << " breaking at time sample " << i + iQ;
-            doBreak = true;  // break outer loop
-            break;           // break this loop
+    if (charge.size() > 8) {
+      // no need to run tedious oscillation check for all-neg channels
+      if (maxQ > minCharge) {
+        int maxID = 0;
+        // find the first occurence of a local max
+        for (int i = 0; i < chargeCheck.size() - 4; i++) {
+          if (chargeCheck[i] ==
+              1) {  // an actual local max has been normalised by its own value
+            maxID = i;
+            //		  ldmx_log(debug) << "storing max index " <<maxID <<"
+            // and size of vector is " << chargeCheck.size()-4;
+            break;
           }
         }
-        if (doBreak) {
-          break;
-        }
-        if (verbose_)
-          ldmx_log(debug) << "Current lastMatchSample " << lastMatchSample;
-        if (lastMatchSample - maxID >=
-            2 * 4) {  // we had at least a couple of oscillations (2nd period
-                      // was fully matched by third)
-          flagOscillation = 1;  // there is another check possible later too,
-                                // commented for now
-          break;                // we've seen what we need to see
-        }
-        i += 3;
-      }
-    }  // if positive maxQ
+        int lastMatchSample = 0;
+        // start from local max
+        bool doBreak = false;
+        for (int i = maxID; i < chargeCheck.size() - 4; i++) {
+          if (verbose_)
+            ldmx_log(debug)
+                << "Checking how many matching groups of four we can "
+                   "find, starting at index "
+                << i;
 
+          for (int iQ = 0; iQ < 4; iQ++) {  // check if they are consistently
+            // close
+            if (verbose_)
+              ldmx_log(debug)
+                  << "Comparing " << chargeCheck[i + iQ] << " (sample "
+                  << i + iQ << ") to " << chargeCheck[i + 4 + iQ] << " (sample "
+                  << i + 4 + iQ << "), ratio is "
+                  << chargeCheck[i + iQ] / chargeCheck[i + 4 + iQ];
+            // we can be generous in these crietira since we will require an
+            // unbroken suite of 8 matches to call it oscillation
+            if (fabs(chargeCheck[i + iQ] / chargeCheck[i + 4 + iQ] - 1) <
+                    0.5 ||  // need this tolerance to be kind of large, most
+                // actual peaks won't pass it by far anyway.
+                (chargeCheck[i + 4 + iQ] < 0.01 &&
+                 fabs(chargeCheck[i + iQ] / chargeCheck[i + 4 + iQ]) <
+                     5))  // for very small numbers, one ADC difference can be a
+              // factor 3 so add some margin
+              lastMatchSample = i + iQ;
+            else {
+              if (verbose_)
+                ldmx_log(debug)
+                    << "Oscillation check for channel " << digi.getChanID()
+                    << " breaking at time sample " << i + iQ;
+              doBreak = true;  // break outer loop
+              break;           // break this loop
+            }
+          }
+          if (doBreak) {
+            break;
+          }
+          if (verbose_)
+            ldmx_log(debug) << "Current lastMatchSample " << lastMatchSample;
+          if (lastMatchSample - maxID >=
+              2 * 4) {  // we had at least a couple of oscillations (2nd period
+            // was fully matched by third)
+            flagOscillation = 1;  // there is another check possible later too,
+            // commented for now
+            break;  // we've seen what we need to see
+          }
+          i += 3;
+        }
+      }  // if positive maxQ
+    }
     // //use the top and bottom ends of the sorted q as another oscillation
     // catcher: we don't expect that the top values will be high and basically
     // identical unless they are from an oscillation
