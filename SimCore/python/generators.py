@@ -28,6 +28,8 @@ class gun(simcfg.PrimaryGenerator) :
         Position to shoot from [mm]
     direction : list of float
         Unit vector direction to shoot from
+    vertex : list of float, optional
+        Vertex position to shoot from [mm]. Defaults to [0.0, 0.0, 0.0]
 
     Examples
     --------
@@ -47,6 +49,7 @@ class gun(simcfg.PrimaryGenerator) :
         self.energy = 0.
         self.position = [ ]
         self.direction = [ ]
+        self.vertex = [0.0, 0.0, 0.0]
 
 class multi(simcfg.PrimaryGenerator) :
     """New multi particle gun primary generator
