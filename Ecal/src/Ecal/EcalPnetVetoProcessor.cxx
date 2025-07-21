@@ -96,7 +96,7 @@ void EcalPnetVetoProcessor::produce(framework::Event& event) {
                                                           track_pass_name_)};
       ldmx::TrackStateType ts_at_ecal = ldmx::TrackStateType::AtECAL;
       auto recoil_track_states_ecal =
-          ecal::TrackPropagator::trackProp(recoil_tracks, ts_at_ecal, "ecal");
+          ecal::trackProp(recoil_tracks, ts_at_ecal, "ecal");
       if (!recoil_track_states_ecal.empty()) {
         std::array<double, 3> pos = {recoil_track_states_ecal[0],
                                      recoil_track_states_ecal[1],

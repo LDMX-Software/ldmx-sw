@@ -2,9 +2,9 @@
 
 namespace ecal {
 
-std::vector<float> TrackPropagator::trackProp(const ldmx::Tracks &tracks,
-                                              ldmx::TrackStateType ts_type,
-                                              const std::string &ts_title) {
+std::vector<float> trackProp(const ldmx::Tracks &tracks,
+                             ldmx::TrackStateType ts_type,
+                             const std::string &ts_title) {
   // Vector to hold the new track state variables
   std::vector<float> new_track_states;
 

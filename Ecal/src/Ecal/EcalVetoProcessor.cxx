@@ -271,11 +271,11 @@ void EcalVetoProcessor::produce(framework::Event &event) {
     ldmx_log(trace) << "  Propagate the recoil ele to the ECAL";
     ldmx::TrackStateType ts_type = ldmx::TrackStateType::AtECAL;
     auto recoil_track_states_ecal =
-        ecal::TrackPropagator::trackProp(recoil_tracks, ts_type, "ecal");
+        ecal::trackProp(recoil_tracks, ts_type, "ecal");
     ldmx_log(trace) << "  Propagate the recoil ele to the Target";
     ldmx::TrackStateType ts_type_target = ldmx::TrackStateType::AtTarget;
-    auto recoil_track_states_target = ecal::TrackPropagator::trackProp(
-        recoil_tracks, ts_type_target, "target");
+    auto recoil_track_states_target =
+        ecal::trackProp(recoil_tracks, ts_type_target, "target");
 
     ldmx_log(trace) << "  Set recoil_pos and recoil_p";
     // Redefining recoil_pos now to come from the track state
