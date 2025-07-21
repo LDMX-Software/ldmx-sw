@@ -13,8 +13,14 @@
 #include <iostream>
 #include <fstream>
 
+TCanvas * c1;
+// global, to allow drawing of dark current Lambda estimates 
+TCanvas * cLambda;
+bool hasDrawnLambda=false;
+TGraphErrors *gLambdaCorr;
+TGraphErrors *gXi;
 
-TGraphErrors * isolateAndFitPeaks( TH1F * hIn, float width, bool verbose, bool isSim, int nSamples);
+TGraphErrors * isolateAndFitPeaks( TH1F * hIn, float width, bool verbose, bool isSim, int nSamples, int channelNb);
 TGraphErrors * findAndFitPeaks( TH1F * hIn, float width, bool verbose, bool isSim);
 
 
@@ -69,8 +75,9 @@ void extractPedsAndGains(string inFile, int deadChannel=-1, string decodePassNam
   vector <int> minVals = {-500};  // should cover most negative pedestals 
   vector <float> binFactor = {0.05}; // histogram binning 
 
-  TCanvas * c1 = new TCanvas("c1", "plot canvas", 600, 500);
-
+  //  if (!c1)
+  c1 = new TCanvas("c1", "plot canvas", 600, 500);
+    
   vector<string> cuts;
   vector<TH1F*> v_hOut;
 
@@ -83,7 +90,7 @@ void extractPedsAndGains(string inFile, int deadChannel=-1, string decodePassNam
 	cuts.push_back( Form("%s %s_%s.chanID_==%i", cleanStr.c_str(), digiName.c_str(),decodePassName.c_str(), iC));
 
   c1->SetRightMargin( 1.5*c1->GetRightMargin());
-
+    
   for (unsigned int iV = 0; iV < vars.size(); iV++) {
 	for (unsigned int iC = 0; iC < cuts.size(); iC++) {
 	  string cut =cuts[iC];
@@ -96,6 +103,7 @@ void extractPedsAndGains(string inFile, int deadChannel=-1, string decodePassNam
 	  string nSamp = Form("%i", nSamples);
 	  std::cout<<"At channel " << bin << std::endl;
 	  std::cout<<"Using cut " << cut << std::endl;
+	  c1->cd();
 	  tree->Draw( (nSamp+"*("+digiName+"_"+decodePassName+"."+vars[iV]+"_) >> h"+bin+"("+bins+")").c_str(), cut.c_str() );
 	  //get them each and keep for later
 	  TH1F *hOut = (TH1F*)gDirectory->Get(Form("h%i", iC)); 
@@ -119,6 +127,15 @@ void extractPedsAndGains(string inFile, int deadChannel=-1, string decodePassNam
   // it is reasonable to assume that we will have a hunch how wide each PE peak will be.
   // we can pass that param to the fitting function. 
 
+
+  //draw lambda points (peak count ratios) for every channel
+  cLambda=new TCanvas("cLambda", "Lambda canvas", 1200, 1500);
+  cLambda->Divide(nChannels/4, 4);
+  //store some noise parameter values too 
+  gLambdaCorr = new TGraphErrors(nChannels);
+  gXi = new TGraphErrors(nChannels);
+
+  
   float fitRangeWidth=125.; // take this window to either side of mean to catch peak 
   vector <TGraphErrors*> v_g;
   TGraphErrors* gGains = new TGraphErrors(nChannels);
@@ -132,7 +149,7 @@ void extractPedsAndGains(string inFile, int deadChannel=-1, string decodePassNam
 	//do the actual peak fitting 
 	std::cout<< "----> Fitting gain for channel " << iH << std::endl;
 	//	TGraphErrors * g= findAndFitPeaks( v_hOut.at(iH), fitRangeWidth, verbosePrint, isSim); 
-	TGraphErrors * g= isolateAndFitPeaks( v_hOut.at(iH), fitRangeWidth, verbosePrint, isSim, nSamples); 
+	TGraphErrors * g= isolateAndFitPeaks( v_hOut.at(iH), fitRangeWidth, verbosePrint, isSim, nSamples, iH); 
 	if (!g) { //null pointer returned --> didn't get enough peaks to fit; skip this channel
 	  std::cout<< "----> No gain curve for channel " << iH << std::endl;
 	  skippedGraphs.push_back(iH);
@@ -141,6 +158,7 @@ void extractPedsAndGains(string inFile, int deadChannel=-1, string decodePassNam
 	  continue;
 	}
 	nChanToWrite++;
+	c1->cd();
 	g->Draw("ap");
 	g->SetTitle(";Peak nb;Total charge [fC]");
 	g->SetName(Form("g_gainChan%i", iH));
@@ -163,6 +181,21 @@ void extractPedsAndGains(string inFile, int deadChannel=-1, string decodePassNam
 	v_g.push_back( g );
   }
 
+  TCanvas * cLambdaCorr = new TCanvas("cLam", "corrected lambda canvas", 500, 600);
+  gLambdaCorr->Draw("ap"); // draw lambda vs channel nb
+  
+  TCanvas * cXi = new TCanvas("cXi", "xi*exp(-xi) canvas", 500, 600);
+  TF1 * fXiexi=new TF1("fXiexi", "x*TMath::Exp(-x)", -2, 2);
+  fXiexi->Draw();
+  for (int iC=0; iC<gXi->GetN(); iC++){
+    TF1 * fLine=new TF1("fLine", "[0]", -2, 2);
+    double point, val;
+    gXi->GetPoint(iC, point, val);
+    fLine->SetParameter(0, val);
+    fLine->SetLineColor( iC+1);
+    fLine->DrawCopy("same");
+  }
+  
   //store this to a root file for later plotting
   TString outFile = inFile;
   outFile=outFile.ReplaceAll(".root", "_gain.root");
@@ -217,11 +250,17 @@ void extractPedsAndGains(string inFile, int deadChannel=-1, string decodePassNam
 }
 
 
-TGraphErrors* isolateAndFitPeaks( TH1F * hIn, float width, bool verbose, bool isSim, int nSamples )
+TGraphErrors* isolateAndFitPeaks( TH1F * hIn, float width, bool verbose, bool isSim, int nSamples, int channelNb )
 {
   float mean = hIn->GetBinCenter( hIn->GetMaximumBin() );
 //make a clone where we can iteratively remove what is to the left of peak of interest 
   TH1F * hToFit = (TH1F*)hIn->Clone();
+
+  if ( hToFit->GetEntries()==0) {
+    std::cerr << "Charge histogram is empty! Exiting" << std::endl;
+    return NULL;
+  }
+  
   float oldMean = hIn->GetXaxis()->GetXmin()+5;
   float maxVal = hIn->GetXaxis()->GetXmax();
   float minVal = oldMean;
@@ -242,13 +281,15 @@ TGraphErrors* isolateAndFitPeaks( TH1F * hIn, float width, bool verbose, bool is
   int norm = 0;
   float sigma=0;                                                                                                        
   bool hasAdjustedWidth=false;
-
+  vector<float> peakIntegrals;
+  vector<float> peakIntegralErrors;
+  
   while ( max <= maxVal ) {
     if (verbose) {
       std::cout<<"Fitting for peak " << iP << ": around mean=" << mean
                << " between " << minVal << " and " << max
                <<  std::endl;
-    }
+    }//if verbose
     TFitResultPtr ptr = hToFit->Fit(fGaus, "QRS", "same", minVal, max);//mean-width, mean+width);     
 	if (ptr || ptr->Parameter(1) < oldMean || ptr->Parameter(2) < 0.2*sigma) {//ptr is not 0 --> not converged, try again with narrower range, given that we probably nailed the peak already                                                    
       minVal=mean-0.4*width;
@@ -257,7 +298,7 @@ TGraphErrors* isolateAndFitPeaks( TH1F * hIn, float width, bool verbose, bool is
         std::cout<<"\tFitting again for peak " << iP << ": around mean=" << mean
                  << " between " << minVal << " and " << max
                  <<  std::endl;
-      }
+      }//if verbose
       ptr = hToFit->Fit(fGaus, "RS", "same",  minVal, max);// mean-0.8*width, mean+0.8*width);                                                                    
     }
    
@@ -268,10 +309,13 @@ TGraphErrors* isolateAndFitPeaks( TH1F * hIn, float width, bool verbose, bool is
 	   std::cout<<"\tUpdating width to " << width
 				<<  std::endl;
 	 }
-   }
+   }//adjust initial width guess 
 
    mean=ptr->Parameter(1);
    sigma=ptr->Parameter(2);
+   peakIntegrals.emplace_back( fGaus->Integral( mean-3*sigma, mean+3*sigma) );
+   peakIntegralErrors.emplace_back( fGaus->IntegralError( mean-3*sigma, mean+3*sigma) );
+
    fGaus->DrawCopy("same");
    //could keep track of last bin which was reset, for some speed gain
    for (int iB=1; iB<hToFit->FindBin( mean+TMath::Min(width,float(7*sigma)) ); iB++)
@@ -279,7 +323,6 @@ TGraphErrors* isolateAndFitPeaks( TH1F * hIn, float width, bool verbose, bool is
       
    oldMean=mean;
    mean=hToFit->GetBinCenter( hToFit->GetMaximumBin() );
-
    minVal=TMath::Max(minVal, float(mean-1.25*width));
    max=mean+1.25*width;     								
    norm+=ptr->Parameter(0);   //keep track of how much stats we have left to work with
@@ -301,25 +344,28 @@ TGraphErrors* isolateAndFitPeaks( TH1F * hIn, float width, bool verbose, bool is
    if (!isSim)
 	 bkgLevel=fBkg->Eval(ptr->Parameter(1));
    //   if (hIn->GetEntries()-norm < 0.05*hIn->GetEntries() || ptr->Parameter(0)-bkgLevel< 8) { //don't fit peaks with just a few entries                          
-   if (hToFit->Integral() < 0.01*hIn->Integral() || ptr->Parameter(0)-bkgLevel< 8 || hToFit->Integral() < 10) { //don't fit peaks with just a few entries                          
+   if (hToFit->Integral() < 0.001*hIn->Integral() || ptr->Parameter(0)-bkgLevel< 8 || hToFit->Integral() < 10) { //don't fit peaks with just a few entries                          
 	 std::cout<<"\tHitting stats break factor at peak integral " << ptr->Parameter(0)
 			  << " and (in data) fitted background level " << bkgLevel
 			  << " and histogram entries " << hToFit->Integral()
 			  << " out of total from start " << hIn->Integral()
 			  <<  std::endl;
 	 break;
-   }
+   }//if stats too low 
    
-  } 
-  const int nPoints = vPtrs.size();
+  }
+  const int nPoints = TMath::Min(int(vPtrs.size()), 6);
 
   if (nPoints < 3 ) {// this is too few to fit. probably there was a problem with this channel
-    std::cout<<"\tOnly got " << nPoints << " peaks for this channel . Breaking"
+    std::cout<<"\tOnly got " << nPoints << " peaks for this channel. Breaking before gain fit"
 	                <<  std::endl;
 	return NULL;
   }
  
-	
+
+  
+  TGraphErrors *gLambda = new TGraphErrors((const int) nPoints-1); //always combination of two peak counts 
+    
   double x[(const int) nPoints];
   double ex[(const int) nPoints];
   double y[(const int) nPoints];
@@ -330,13 +376,41 @@ TGraphErrors* isolateAndFitPeaks( TH1F * hIn, float width, bool verbose, bool is
 	ex[iP] = 0;
 	y[iP] = vPtrs.at(iP)->Parameter(1);
 	ey[iP] = vPtrs.at(iP)->Parameter(2);
-	if ( iP > 0 ) { //extract the noise level from relative size of peaks
+	if ( iP > 0 ) { //extract the noise level from relative size of peaks (ratio of counts this/previous)
+	  float relHeight=vPtrs.at(iP)->Parameter(0)/vPtrs.at(iP-1)->Parameter(0);							       
+	  std::cout << "\tEstimate n_"<< iP << iP-1 << " from height = " <<relHeight << " +/- " <<  relHeight*sqrt( TMath::Power(vPtrs.at(iP)->ParError(0)/vPtrs.at(iP)->Parameter(0), 2) + TMath::Power(vPtrs.at(iP-1)->ParError(0)/vPtrs.at(iP-1)->Parameter(0),2)) << std::endl;
+	  float relIntegral=peakIntegrals.at(iP)/peakIntegrals.at(iP-1);
+	  gLambda->SetPoint(iP-1, iP-1, relIntegral );
+	  gLambda->SetPointError(iP-1, 0, relIntegral*sqrt( TMath::Power(peakIntegralErrors.at(iP)/peakIntegrals.at(iP), 2) + TMath::Power(peakIntegralErrors.at(iP-1)/peakIntegrals.at(iP-1), 2) ) );
+	  std::cout << "\tEstimate n_"<< iP << iP-1 << " from peak integrals = " << relIntegral << " +/- " << gLambda->GetErrorY(iP-1)  << std::endl;
 	  std::cout << "Estimate Lambda(peak " << iP << ") = " << vPtrs.at(iP)->Parameter(0)/vPtrs.at(iP-1)->Parameter(0)/(iP*nSamples) << std::endl;
 	  noise+=vPtrs.at(iP)->Parameter(0)/vPtrs.at(iP-1)->Parameter(0)/(iP*nSamples);
 	}
   }
   std::cout<<"Average noise/time sample from all used peaks = " << noise/(nPoints-1) <<std::endl;
   std::cout<<"Average noise/event from all used peaks = " << noise/(nPoints-1)*nSamples <<std::endl;
+
+  cLambda->cd(channelNb+1);
+  //  if (!hasDrawnLambda) {
+  //  gLambda->Draw("ap");
+  //  hasDrawnLambda=true;
+  //}
+  gLambda->Draw("ap");
+  gLambda->SetTitle(Form("Channel %i; numerator peak number; #lambda estimate", channelNb) );
+  gLambda->SetMarkerStyle(kFullTriangleUp);
+  gLambda->Draw("ap");
+
+  //stored on the denominator index so second number
+  double n21, n32, pointNb;
+  gLambda->GetPoint( 1, pointNb, n21);
+  gLambda->GetPoint( 2, pointNb, n32);
+  float xiexi=sqrt( n21*(n32-n21/2));//xi*exp(-xi)
+  float lambda= n21-xiexi;
+  cout << "\t\t--> Found xi*exp(-xi) = " << xiexi << " and corrected Lambda = " << lambda << " for channel " << channelNb << std::endl;
+  cout<<"\t\t    amounting to DCR of " << lambda/(25*nSamples)*1000 << " kHz" << std::endl;
+
+  gLambdaCorr->SetPoint(channelNb, channelNb, lambda);
+  gXi->SetPoint(channelNb, channelNb, xiexi);
   
   TGraphErrors * g= new TGraphErrors( nPoints, x, y, ex, ey);
   
@@ -411,6 +485,7 @@ TGraphErrors* findAndFitPeaks( TH1F * hIn, float width, bool verbose, bool isSim
 				   <<  std::endl;
 		}
 	  }
+	  c1->cd();
 	  fGaus->DrawCopy("same");
 	}
 	oldMean=ptr->Parameter(1);
