@@ -15,17 +15,24 @@
 #ifndef DETDESCR_ECALGEOMETRY_H_
 #define DETDESCR_ECALGEOMETRY_H_
 
-// LDMX
+#include <assert.h>
+
+#include <algorithm>
+#include <iomanip>
+#include <iostream>
+#include <map>
+
 #include "DetDescr/EcalID.h"
 #include "Framework/ConditionsObject.h"
 #include "Framework/Configure/Parameters.h"
 #include "Framework/Exception/Exception.h"
-
-// STL
-#include <map>
+#include "Framework/Logger.h"
 
 // ROOT
+#include "TGeoPolygon.h"
+#include "TGraph.h"
 #include "TH2Poly.h"
+#include "TList.h"
 
 namespace ecal {
 class EcalGeometryProvider;
@@ -533,6 +540,14 @@ class EcalGeometry : public framework::ConditionsObject {
   bool layer_shift_odd_bilayer_;
 
   /**
+   * Thickness of the Si sensitive layer [mm]
+   *
+   * This is used to determine if a hit is within a layer
+   * when the z-coordinate is given.
+   */
+  double si_thickness_;
+
+  /**
    * Number of cell center-to-corner radii (one side of the cell)
    * from the bottom to the top of the module
    *
@@ -548,9 +563,6 @@ class EcalGeometry : public framework::ConditionsObject {
   std::vector<double> layerZPositions_;
 
  private:
-  /// verbosity
-  int verbose_;
-
   /**
    * Position of layer centers in world coordinates
    * (uses layer ID as key)
@@ -618,6 +630,8 @@ class EcalGeometry : public framework::ConditionsObject {
    * the module in p,q space.
    */
   mutable TH2Poly cell_id_in_module_;
+
+  enableLogging("EcalGeometry")
 };
 
 }  // namespace ldmx
