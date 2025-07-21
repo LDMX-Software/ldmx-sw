@@ -1,16 +1,5 @@
 #include "DetDescr/EcalGeometry.h"
 
-#include <assert.h>
-
-#include <iomanip>
-#include <iostream>
-
-#include "TGeoPolygon.h"
-#include "TGraph.h"
-#include "TList.h"
-#include "TMath.h"
-#include "TMultiGraph.h"
-
 namespace ldmx {
 
 static double distance(const std::pair<double, double>& p1,
@@ -55,12 +44,12 @@ EcalGeometry::EcalGeometry(const framework::config::Parameters& ps)
   moduler_ = ps.getParameter<double>("moduleMinR");
   gap_ = ps.getParameter<double>("gap");
   nCellRHeight_ = ps.getParameter<double>("nCellRHeight");
-  verbose_ = ps.getParameter<int>("verbose");
   cornersSideUp_ = ps.getParameter<bool>("cornersSideUp");
   layer_shift_x_ = ps.getParameter<double>("layer_shift_x");
   layer_shift_y_ = ps.getParameter<double>("layer_shift_y");
   layer_shift_odd_ = ps.getParameter<bool>("layer_shift_odd");
   layer_shift_odd_bilayer_ = ps.getParameter<bool>("layer_shift_odd_bilayer");
+  si_thickness_ = ps.getParameter<double>("si_thickness");
 
   if (layer_shift_odd_ and layer_shift_odd_bilayer_) {
     EXCEPTION_RAISE("BadConf",
@@ -71,15 +60,10 @@ EcalGeometry::EcalGeometry(const framework::config::Parameters& ps)
   cellR_ = 2 * moduler_ / nCellRHeight_;
   cellr_ = (sqrt(3.) / 2.) * cellR_;
 
-  if (verbose_ > 0) {
-    std::cout << std::endl
-              << "[EcalGeometry] Verbosity set in header to " << verbose_
-              << std::endl;
-    std::cout << "     Building module map with gap " << std::setprecision(2)
-              << gap_ << ", nCellRHeight " << nCellRHeight_
-              << ",  min/max radii of cell " << cellr_ << " / " << cellR_
-              << ", and module " << moduler_ << " / " << moduleR_ << std::endl;
-  }
+  ldmx_log(debug) << "Building module map with gap " << std::setprecision(2)
+                  << gap_ << ", nCellRHeight " << nCellRHeight_
+                  << ",  min/max radii of cell " << cellr_ << " / " << cellR_
+                  << ", and module " << moduler_ << " / " << moduleR_;
 
   buildLayerMap();
   buildModuleMap();
@@ -87,15 +71,14 @@ EcalGeometry::EcalGeometry(const framework::config::Parameters& ps)
   buildCellModuleMap();
   buildNeighborMaps();
 
-  if (verbose_ > 0)
-    std::cout << "[EcalGeometry] : fully constructed" << std::endl;
+  ldmx_log(trace) << "Geometry fully constructed";
 }
 
 EcalID EcalGeometry::getID(double x, double y, double z, bool fallible) const {
-  static const double tolerance = 0.3;  // thickness of Si
   int layer_id{-1};
   for (const auto& [lid, layer_xyz] : layer_pos_xy_) {
-    if (std::abs(std::get<2>(layer_xyz) - z) < tolerance) {
+    // check if the z coordinate is within the layer thickness
+    if (std::abs(std::get<2>(layer_xyz) - z) < si_thickness_) {
       layer_id = lid;
       break;
     }
@@ -199,22 +182,18 @@ std::pair<double, double> EcalGeometry::getPositionInModule(int cell_id) const {
 }
 
 void EcalGeometry::buildLayerMap() {
-  if (verbose_ > 0) {
-    std::cout << "[EcalGeometry::buildLayerMap] " << " Building layer map with "
-              << layerZPositions_.size() << " layers" << std::endl;
-    ;
-    if (layer_shift_odd_ or layer_shift_odd_bilayer_) {
-      std::cout << "  shifting odd ";
-      if (layer_shift_odd_)
-        std::cout << "layers";
-      else
-        std::cout << "bilayers";
-      std::cout << " by (x,y) = (" << layer_shift_x_ << ", " << layer_shift_y_
-                << ") mm" << std::endl;
+  ldmx_log(debug) << "Building layer map with " << layerZPositions_.size()
+                  << " layers";
+  if (layer_shift_odd_ or layer_shift_odd_bilayer_) {
+    if (layer_shift_odd_) {
+      ldmx_log(debug) << "Shifting odd layers by (x,y) = (" << layer_shift_x_
+                      << ", " << layer_shift_y_ << ") mm";
     } else {
-      std::cout << "  without any shifting" << std::endl;
+      ldmx_log(debug) << "Shifting odd bilayers by (x,y) = (" << layer_shift_x_
+                      << ", " << layer_shift_y_ << ") mm";
     }
   }
+
   for (std::size_t i_layer{0}; i_layer < layerZPositions_.size(); ++i_layer) {
     // default is centered on z-axis
     double x{0}, y{0}, z{ecalFrontZ_ + layerZPositions_.at(i_layer)};
@@ -225,22 +204,15 @@ void EcalGeometry::buildLayerMap() {
       x += layer_shift_x_;
       y += layer_shift_y_;
     }
-    if (verbose_ > 2) {
-      std::cout << "    Layer " << i_layer << " has center at (" << x << ", "
-                << y << ", " << z << ") mm" << std::endl;
-    }
+    ldmx_log(trace) << "    Layer " << i_layer << " has center at (" << x
+                    << ", " << y << ", " << z << ") mm";
+
     layer_pos_xy_[i_layer] = std::make_tuple(x, y, z);
   }
 }
 
 void EcalGeometry::buildModuleMap() {
-  static double C_PI =
-      3.14159265358979323846;  // or TMath::Pi(), #define, atan(), ...
-  if (verbose_ > 0) {
-    std::cout << "[EcalGeometry::buildModuleMap] "
-              << "Building module position map for module min r of " << moduler_
-              << " and gap of " << gap_ << std::endl;
-  }
+  static const double C_PI = 3.14159265358979323846;
 
   // the center module (module_id == 0) has always been (and will always be?)
   //  centered with respect to the layer position
@@ -261,9 +233,8 @@ void EcalGeometry::buildModuleMap() {
       y = -(2. * moduler_ + gap_) * sin((id - 1) * (C_PI / 3.));
     }
     module_pos_xy_[id] = std::pair<double, double>(x, y);
-    if (verbose_ > 2)
-      std::cout << "    Module " << id << " is centered at (x,y) = " << "(" << x
-                << ", " << y << ") mm" << std::endl;
+    ldmx_log(trace) << "    Module " << id << " is centered at (x,y) = " << "("
+                    << x << ", " << y << ") mm";
   }
 }
 
@@ -316,14 +287,12 @@ void EcalGeometry::buildCellMap() {
 
   gridMap.Honeycomb(gridMinP, gridMinQ, cellR_, numPCells, numQCells);
 
-  if (verbose_ > 0) {
-    std::cout << std::setprecision(2)
-              << "[EcalGeometry::buildCellMap] cell rmin: " << cellr_
-              << " cell rmax: " << cellR_ << " (gridMinP,gridMinQ) = ("
-              << gridMinP << "," << gridMinQ << ")"
-              << " (numPCells,numQCells) = (" << numPCells << "," << numQCells
-              << ")" << std::endl;
-  }
+  ldmx_log(trace) << std::setprecision(2)
+                  << "Building buildCellMap with cell rmin: " << cellr_
+                  << " cell rmax: " << cellR_ << " (gridMinP,gridMinQ) = ("
+                  << gridMinP << "," << gridMinQ << ")"
+                  << " (numPCells,numQCells) = (" << numPCells << ","
+                  << numQCells << ")";
 
   // copy cells lying within module boundaries to a module grid
   TListIter next(gridMap.GetBins());  // a TH2Poly is a TList of TH2PolyBin
@@ -342,14 +311,12 @@ void EcalGeometry::buildCellMap() {
     int numVerticesInside = 0;
     double vertex_p[6], vertex_q[6];  // vertices of the cell
     bool isinside[6];                 // which vertices are inside
-    if (verbose_ > 2) std::cout << "    Cell vertices" << std::endl;
+    ldmx_log(trace) << "    Cell vertices";
     for (unsigned i = 0; i < 6; i++) {
       poly->GetPoint(i, vertex_p[i], vertex_q[i]);
-      if (verbose_ > 2) {
-        std::cout << "      vtx # " << i << std::endl;
-        std::cout << "      vtx p,q " << vertex_p[i] << " " << vertex_q[i]
-                  << std::endl;
-      }
+      ldmx_log(trace) << "      vtx # " << i;
+      ldmx_log(trace) << "      vtx p,q " << vertex_p[i] << " " << vertex_q[i];
+
       isinside[i] = isInside(vertex_p[i] / moduleR_, vertex_q[i] / moduleR_);
       if (isinside[i]) numVerticesInside++;
     }
@@ -363,11 +330,8 @@ void EcalGeometry::buildCellMap() {
         // This cell is stradling the edge of the module
         // and is NOT cleanly cut by module edge
 
-        if (verbose_ > 1) {
-          std::cout << "    Polygon " << cell_id
-                    << " has vertices poking out of module hexagon."
-                    << std::endl;
-        }
+        ldmx_log(trace) << "    Polygon " << cell_id
+                        << " has vertices poking out of module hexagon.";
 
         // loop through vertices
         for (int i = 0; i < 6; i++) {
@@ -411,16 +375,12 @@ void EcalGeometry::buildCellMap() {
             double edge_slope_p = edge_dest_p - edge_origin_p;
             double edge_slope_q = edge_dest_q - edge_origin_q;
 
-            if (verbose_ > 2) {
-              std::cout
-                  << "Vertex " << i
-                  << " is inside and adjacent to a vertex outside the module."
-                  << std::endl;
-              std::cout << "Working on edge with slope (" << edge_slope_p << ","
-                        << edge_slope_q << ")" << " and origin ("
-                        << edge_origin_p << "," << edge_origin_q << ")"
-                        << std::endl;
-            }
+            ldmx_log(trace)
+                << "Vertex " << i
+                << " is inside and adjacent to a vertex outside the module.";
+            ldmx_log(trace) << "Working on edge with slope (" << edge_slope_p
+                            << "," << edge_slope_q << ")" << " and origin ("
+                            << edge_origin_p << "," << edge_origin_q << ")";
 
             // project vertices adjacent to the vertex outside the module onto
             // the module edge
@@ -447,10 +407,9 @@ void EcalGeometry::buildCellMap() {
             }
             num_vertices += 2;
 
-            if (verbose_ > 2) {
-              std::cout << "New Vertex " << i << " : (" << vertex_p[i] << ","
-                        << vertex_q[i] << ")" << std::endl;
-            }
+            ldmx_log(trace) << "New Vertex " << i << " : (" << vertex_p[i]
+                            << "," << vertex_q[i] << ")";
+
           } else {
             actual_p[num_vertices] = vertex_p[i];
             actual_q[num_vertices] = vertex_q[i];
@@ -477,11 +436,10 @@ void EcalGeometry::buildCellMap() {
        */
       double p = (polyBin->GetXMax() + polyBin->GetXMin()) / 2.;
       double q = (polyBin->GetYMax() + polyBin->GetYMin()) / 2.;
-      if (verbose_ > 1) {
-        std::cout << "    Copying poly with ID " << polyBin->GetBinNumber()
-                  << " and (p,q) (" << std::setprecision(2) << p << "," << q
-                  << ")" << std::endl;
-      }
+
+      ldmx_log(trace) << "    Copying poly with ID " << polyBin->GetBinNumber()
+                      << " and (p,q) (" << std::setprecision(2) << p << "," << q
+                      << ")";
       // save cell location as center of ENTIRE hexagon
       cell_pos_in_module_[cell_id] = std::pair<double, double>(p, q);
       ++cell_id;  // incrememnt cell ID
@@ -491,10 +449,7 @@ void EcalGeometry::buildCellMap() {
 }
 
 void EcalGeometry::buildCellModuleMap() {
-  if (verbose_ > 0)
-    std::cout
-        << "[EcalGeometry::buildCellModuleMap] Building cellModule position map"
-        << std::endl;
+  ldmx_log(trace) << "Building cellModule position map";
   /// construct map of cell centers relative to layer center
   for (auto const& [module_id, module_xy] : module_pos_xy_) {
     for (auto const& [cell_id, cell_pq] : cell_pos_in_module_) {
@@ -526,9 +481,8 @@ void EcalGeometry::buildCellModuleMap() {
     }
   }
 
-  if (verbose_ > 0)
-    std::cout << "  contained " << cell_global_pos_.size() << " entries. "
-              << std::endl;
+  ldmx_log(trace) << "Cell module map contains " << cell_global_pos_.size()
+                  << " entries. ";
   return;
 }
 
@@ -546,9 +500,7 @@ void EcalGeometry::buildNeighborMaps() {
    * case, centers are at 2*cell_ (NN), and at 3*cellR_=3.46*cellr_ and 4*cellr_
    * (NNN).
    */
-  if (verbose_ > 0)
-    std::cout << "[EcalGeometry::buildNeighborMaps] : "
-              << "Building Nearest and Next-Nearest Neighbor maps" << std::endl;
+  ldmx_log(trace) << "Building Nearest and Next-Nearest Neighbor maps";
 
   NNMap_.clear();
   NNNMap_.clear();
@@ -562,45 +514,10 @@ void EcalGeometry::buildNeighborMaps() {
         NNNMap_[center_id].push_back(probe_id);
       }
     }
-    if (verbose_ > 1)
-      std::cout << "  Found " << NNMap_[center_id].size() << " NN and "
-                << NNNMap_[center_id].size() << " NNN for cell " << center_id
-                << std::endl;
+    // Keeping this commented out until the SimIDs string method is implemented
+    // ldmx_log(debug) << "  Found " << NNMap_[center_id].size() << " NN and "
+    // << NNNMap_[center_id].size() << " NNN for cell " << center_id;
   }
-  /*
-   * DEBUG CHECK HERE
-   *  this is double checking that NN and NNN can cross modules
-  if (verbose_ > 2) {
-    double specialX =
-        0.5 * moduleR_ - 0.5 * cellr_;  // center of cell which is upper-right
-                                        // corner of center module
-    double specialY = moduler_ - 0.5 * cellR_;
-    EcalID specialCellModuleID = getCellModuleID(specialX, specialY);
-    std::cout << "The neighbors of the bin in the upper-right corner of the "
-                 "center module, with cellModuleID "
-              << specialCellModuleID << " include " << std::endl;
-    for (auto centerNN : NNMap_.at(specialCellModuleID)) {
-      std::cout << " NN " << centerNN
-                << TString::Format(" (x,y) (%.2f, %.2f)",
-                                   getCellCenterAbsolute(centerNN).first,
-                                   getCellCenterAbsolute(centerNN).second)
-                << std::endl;
-    }
-    for (auto centerNNN : NNNMap_.at(specialCellModuleID)) {
-      std::cout << " NNN " << centerNNN
-                << TString::Format(" (x,y) (%.2f, %.2f)",
-                                   getCellCenterAbsolute(centerNNN).first,
-                                   getCellCenterAbsolute(centerNNN).second)
-                << std::endl;
-    }
-    std::cout << TString::Format(
-                     "This bin is a distance of %.2f away from a module edge. "
-                     "Decision isEdge %d.",
-                     distanceToEdge(specialCellModuleID),
-                     isEdgeCell(specialCellModuleID))
-              << std::endl;
-  }
-  */
   return;
 }
 
@@ -619,26 +536,20 @@ double EcalGeometry::distanceToEdge(EcalID id) const {
 }
 
 bool EcalGeometry::isInside(double normX, double normY) const {
-  if (verbose_ > 2)
-    std::cout << TString::Format(
-                     "[isInside] Checking if normXY=(%.2f,%.2f) is inside.",
-                     normX, normY)
-              << std::endl;
+  ldmx_log(trace) << std::fixed << std::setprecision(2)
+                  << "Checking if normXY=(" << normX << "," << normY
+                  << ") is inside.";
   normX = fabs(normX), normY = fabs(normY);
   double xvec = -1, yvec = -1. / sqrt(3);
   double xref = 0.5, yref = sqrt(3) / 2.;
   if ((normX > 1.) || (normY > yref)) {
-    if (verbose_ > 2)
-      std::cout << "[isInside]   they are outside quadrant." << std::endl;
+    ldmx_log(trace) << "They are outside quadrant.";
     return false;
   }
   double dotProd = (xvec * (normX - xref) + yvec * (normY - yref));
-  if (verbose_ > 2)
-    std::cout << TString::Format(
-                     "[isInside] they are inside quadrant. Dot product (>0 is "
-                     "inside): %.2f ",
-                     dotProd)
-              << std::endl;
+  ldmx_log(trace) << std::fixed << std::setprecision(2)
+                  << "They are inside quadrant. Dot product (>0 is inside): "
+                  << dotProd;
   return (dotProd > 0.);
 }
 
