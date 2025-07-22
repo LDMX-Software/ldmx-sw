@@ -69,7 +69,8 @@ class HcalGeometry : public framework::ConditionsObject {
    * @throw std::out_of_range if HcalID is not on map.
    *
    * @param HcalID
-   * @return A ROOT::Math::XYZVector with the X, Y and Z position of the center of the bar.
+   * @return A ROOT::Math::XYZVector with the X, Y and Z position of the center
+   * of the bar.
    */
   ROOT::Math::XYZVector getStripCenterPosition(ldmx::HcalID id) const {
     return strip_position_map_.at(id);

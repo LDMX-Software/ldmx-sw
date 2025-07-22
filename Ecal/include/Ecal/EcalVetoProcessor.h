@@ -109,7 +109,8 @@ class EcalVetoProcessor : public framework::Producer {
    * @param[in] w2 A second, distinct point on line w
    * @returns Closest distance of approach of lines u and v
    */
-  float distTwoLines(ROOT::Math::XYZVector v1, ROOT::Math::XYZVector v2, ROOT::Math::XYZVector w1, ROOT::Math::XYZVector w2);
+  float distTwoLines(ROOT::Math::XYZVector v1, ROOT::Math::XYZVector v2,
+                     ROOT::Math::XYZVector w1, ROOT::Math::XYZVector w2);
   /**
    * Return the minimum distance between the point h1 and the line passing
    * through points p1 and p2.
@@ -119,7 +120,8 @@ class EcalVetoProcessor : public framework::Producer {
    * @param[in] p2 A second, distinct point on the line
    * @returns Minimum distance between h1 and the line
    */
-  float distPtToLine(ROOT::Math::XYZVector h1, ROOT::Math::XYZVector p1, ROOT::Math::XYZVector p2);
+  float distPtToLine(ROOT::Math::XYZVector h1, ROOT::Math::XYZVector p1,
+                     ROOT::Math::XYZVector p2);
 
  private:
   int nevents_{0};

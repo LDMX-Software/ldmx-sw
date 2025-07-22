@@ -580,7 +580,7 @@ void EcalVetoProcessor::produce(framework::Event &event) {
         distance_ele_trajectory == -1.0) {
       ldmx::HitData hd;
       hd.pos = ROOT::Math::XYZVector(xy_pair.first, xy_pair.second,
-                        geometry_->getZPosition(id.layer()));
+                                     geometry_->getZPosition(id.layer()));
       hd.layer = id.layer();
       tracking_hit_list.push_back(hd);
     }
@@ -824,7 +824,8 @@ void EcalVetoProcessor::produce(framework::Event &event) {
                                ele_trajectory_at_target[(0)].second,
                                geometry_->getZPosition((n_ecal_layers_ - 1)));
       // Now calculate the ep angle at the target
-      ROOT::Math::XYZVector evec_target = e_traj_target_end - e_traj_target_start;
+      ROOT::Math::XYZVector evec_target =
+          e_traj_target_end - e_traj_target_start;
       ROOT::Math::XYZVector e_norm_target = evec_target.Unit();
       ep_dot_at_target_ = e_norm_target.Dot(p_norm);
       ep_ang_at_target_ = acos(ep_dot_at_target_) * 180.0 / M_PI;
@@ -836,11 +837,12 @@ void EcalVetoProcessor::produce(framework::Event &event) {
     // them far outside the ECal).
     ldmx_log(trace) << "   Electron trajectory is missing";
     e_traj_start = ROOT::Math::XYZVector(999, 999, geometry_->getZPosition(0));
-    e_traj_end =
-        ROOT::Math::XYZVector(999, 999, geometry_->getZPosition((n_ecal_layers_ - 1)));
-    p_traj_start = ROOT::Math::XYZVector(1000, 1000, geometry_->getZPosition(0));
-    p_traj_end =
-        ROOT::Math::XYZVector(1000, 1000, geometry_->getZPosition((n_ecal_layers_ - 1)));
+    e_traj_end = ROOT::Math::XYZVector(
+        999, 999, geometry_->getZPosition((n_ecal_layers_ - 1)));
+    p_traj_start =
+        ROOT::Math::XYZVector(1000, 1000, geometry_->getZPosition(0));
+    p_traj_end = ROOT::Math::XYZVector(
+        1000, 1000, geometry_->getZPosition((n_ecal_layers_ - 1)));
     /*ensures event will not be vetoed by angle/separation cut */
     ep_ang_ = 999.;
     ep_ang_at_target_ = 999.;
@@ -1083,7 +1085,9 @@ std::vector<std::pair<float, float>> EcalVetoProcessor::getTrajectory(
 
 // MIP tracking functions:
 
-float EcalVetoProcessor::distTwoLines(ROOT::Math::XYZVector v1, ROOT::Math::XYZVector v2, ROOT::Math::XYZVector w1,
+float EcalVetoProcessor::distTwoLines(ROOT::Math::XYZVector v1,
+                                      ROOT::Math::XYZVector v2,
+                                      ROOT::Math::XYZVector w1,
                                       ROOT::Math::XYZVector w2) {
   ROOT::Math::XYZVector e1 = v1 - v2;
   ROOT::Math::XYZVector e2 = w1 - w2;
@@ -1096,7 +1100,9 @@ float EcalVetoProcessor::distTwoLines(ROOT::Math::XYZVector v1, ROOT::Math::XYZV
   }
 }
 
-float EcalVetoProcessor::distPtToLine(ROOT::Math::XYZVector h1, ROOT::Math::XYZVector p1, ROOT::Math::XYZVector p2) {
+float EcalVetoProcessor::distPtToLine(ROOT::Math::XYZVector h1,
+                                      ROOT::Math::XYZVector p1,
+                                      ROOT::Math::XYZVector p2) {
   return ((h1 - p1).Cross(h1 - p2)).R() / (p1 - p2).R();
 }
 
