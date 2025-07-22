@@ -159,9 +159,9 @@ void HcalGeometry::printPositionMap(int section) const {
     for (int strip = 0; strip < getNumStrips(section, layer); ++strip) {
       HcalID id(section, layer, strip);
       auto centerPosition = getStripCenterPosition(id);
-      auto x = centerPosition[0];
-      auto y = centerPosition[1];
-      auto z = centerPosition[2];
+      auto x = centerPosition.X();
+      auto y = centerPosition.Y();
+      auto z = centerPosition.Z();
       std::cout << id << ": Center position: (" << x << ", " << y << ", " << z
                 << ")\n";
     }
@@ -320,7 +320,7 @@ void HcalGeometry::buildStripPositionMap() {
         }
 
         y += y_offset_;
-        TVector3 pos;
+        ROOT::Math::XYZVector pos;
         pos.SetXYZ(x, y, z);
         strip_position_map_[ldmx::HcalID(section, layer, strip)] = pos;
       }  // loop over strips

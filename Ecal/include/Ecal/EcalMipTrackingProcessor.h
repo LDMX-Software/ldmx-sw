@@ -31,7 +31,7 @@
 // ROOT
 #include "TDecompSVD.h"
 #include "TMatrixD.h"
-#include "TVector3.h"
+#include "Math/Vector3D.h"
 
 namespace ecal {
 class EcalMipTrackingProcessor : public framework::Producer {
@@ -83,7 +83,7 @@ class EcalMipTrackingProcessor : public framework::Producer {
    * @param[in] w2 A second, distinct point on line w
    * @returns Closest distance of approach of lines u and v
    */
-  float distTwoLines(TVector3 v1, TVector3 v2, TVector3 w1, TVector3 w2);
+  float distTwoLines(ROOT::Math::XYZVector v1, ROOT::Math::XYZVector v2, ROOT::Math::XYZVector w1, ROOT::Math::XYZVector w2);
   /**
    * Return the minimum distance between the point h1 and the line passing
    * through points p1 and p2.
@@ -93,7 +93,7 @@ class EcalMipTrackingProcessor : public framework::Producer {
    * @param[in] p2 A second, distinct point on the line
    * @returns Minimum distance between h1 and the line
    */
-  float distPtToLine(TVector3 h1, TVector3 p1, TVector3 p2);
+  float distPtToLine(ROOT::Math::XYZVector h1, ROOT::Math::XYZVector p1, ROOT::Math::XYZVector p2);
 
   /**
    * Return a vector of parameters for a propagated recoil track

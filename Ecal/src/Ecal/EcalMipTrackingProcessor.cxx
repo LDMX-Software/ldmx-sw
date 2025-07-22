@@ -64,10 +64,10 @@ void EcalMipTrackingProcessor::produce(framework::Event &event) {
    */
 
   // Find epAng and epSep, and prepare EP trajectory vectors:
-  TVector3 e_traj_start;
-  TVector3 e_traj_end;
-  TVector3 p_traj_start;
-  TVector3 p_traj_end;
+  ROOT::Math::XYZVector e_traj_start;
+  ROOT::Math::XYZVector e_traj_end;
+  ROOT::Math::XYZVector p_traj_start;
+  ROOT::Math::XYZVector p_traj_end;
   if (!ele_trajectory.empty() && !photon_trajectory.empty()) {
     // Create TVector3s marking the start and endpoints of each projected
     // trajectory
@@ -84,12 +84,12 @@ void EcalMipTrackingProcessor::produce(framework::Event &event) {
   } else {
     // Electron trajectory is missing, so place trajectories far outside the
     // ECal to ensure they don't interfere with tracking.
-    e_traj_start = TVector3(999, 999, geometry_->getZPosition(0));
+    e_traj_start = ROOT::Math::XYZVector(999, 999, geometry_->getZPosition(0));
     e_traj_end =
-        TVector3(999, 999, geometry_->getZPosition((n_ecal_layers_ - 1)));
-    p_traj_start = TVector3(1000, 1000, geometry_->getZPosition(0));
+        ROOT::Math::XYZVector(999, 999, geometry_->getZPosition((n_ecal_layers_ - 1)));
+    p_traj_start = ROOT::Math::XYZVector(1000, 1000, geometry_->getZPosition(0));
     p_traj_end =
-        TVector3(1000, 1000, geometry_->getZPosition((n_ecal_layers_ - 1)));
+        ROOT::Math::XYZVector(1000, 1000, geometry_->getZPosition((n_ecal_layers_ - 1)));
   }
   // Near photon step:  Find the first layer of the ECal where a hit near the
   // projected photon trajectory is found Currently unusued pending further
@@ -117,15 +117,15 @@ void EcalMipTrackingProcessor::produce(framework::Event &event) {
   }
 
   // Territories limited to tracking_hit_list
-  TVector3 gToe = (e_traj_start - p_traj_start).Unit();
+  ROOT::Math::XYZVector gToe = (e_traj_start - p_traj_start).Unit();
   // TODO what is this 8.7 here???
-  TVector3 origin = p_traj_start + 0.5 * 8.7 * gToe;
+  ROOT::Math::XYZVector origin = p_traj_start + 0.5 * 8.7 * gToe;
   ldmx_log(trace) << "Origin of photon territory: " << origin.X() << ", "
                   << origin.Y() << ", " << origin.Z();
   if (!ele_trajectory.empty()) {
     for (auto &hitData : tracking_hit_list) {
-      TVector3 hitPos = hitData.pos;
-      TVector3 hitPrime = hitPos - origin;
+      ROOT::Math::XYZVector hitPos = hitData.pos;
+      ROOT::Math::XYZVector hitPrime = hitPos - origin;
       if (hitPrime.Dot(gToe) <= 0) {
         photon_territory_hits_++;
       }
@@ -284,7 +284,7 @@ void EcalMipTrackingProcessor::produce(framework::Event &event) {
               0.5) <= cell_width) {
         // ...then append the second track to the first one and delete it
         // NOTE:  TO ADD:  (tracking_hit_list[i_hit].pos -
-        // tracking_hit_list[j_hit].pos).Mag()
+        // tracking_hit_list[j_hit].pos).R()
         ldmx_log(trace) << "     ** Compatible track found at index "
                         << track_j;
         ldmx_log(trace) << "     Tail xylayer: " << head_hitdata.pos.X() << ","
@@ -330,9 +330,9 @@ void EcalMipTrackingProcessor::produce(framework::Event &event) {
     std::vector<int> hits_in_region;
     TMatrixD Vm(3, 3);
     TMatrixD hdt(3, 3);
-    TVector3 slope_vec;
-    TVector3 h_mean;
-    TVector3 h_point;
+    ROOT::Math::XYZVector slope_vec;
+    ROOT::Math::XYZVector h_mean;
+    ROOT::Math::XYZVector h_point;
     float r_corr_best{0.0};
     // Temp array having 3 potential hits
     int hit_nums[3];
@@ -343,11 +343,11 @@ void EcalMipTrackingProcessor::produce(framework::Event &event) {
     // Find all hits within 2 cells of the primary hit:
     for (int j_hit = 0; j_hit < tracking_hit_list.size(); j_hit++) {
       // Dont try to put hits on the same layer to the lin-reg track
-      if (tracking_hit_list[i_hit].pos(2) == tracking_hit_list[j_hit].pos(2)) {
+      if (tracking_hit_list[i_hit].pos.Z() == tracking_hit_list[j_hit].pos.Z()) {
         continue;
       }
       float dist_to_hit =
-          (tracking_hit_list[i_hit].pos - tracking_hit_list[j_hit].pos).Mag();
+          (tracking_hit_list[i_hit].pos - tracking_hit_list[j_hit].pos).R();
       // This distance optimized to give the best significance
       // it used to be 2*cell_width, i.e. 4.81 mm
       // note, the layers in the back have a separation of 22.3
@@ -371,20 +371,32 @@ void EcalMipTrackingProcessor::produce(framework::Event &event) {
       for (int k_hit_reg = j_hit_in_reg + 1; k_hit_reg < hits_in_region.size();
            k_hit_reg++) {
         hit_nums[2] = hits_in_region[k_hit_reg];
-        for (int h_ind = 0; h_ind < 3; h_ind++) {
-          // h_mean = geometric mean, subtract off from hits to improve SVD
-          // performance
-          h_mean(h_ind) = (tracking_hit_list[hit_nums[0]].pos(h_ind) +
-                           tracking_hit_list[hit_nums[1]].pos(h_ind) +
-                           tracking_hit_list[hit_nums[2]].pos(h_ind)) /
-                          3.0;
-        }
-        for (int h_ind = 0; h_ind < 3; h_ind++) {
-          for (int l_ind = 0; l_ind < 3; l_ind++) {
-            hdt(h_ind, l_ind) =
-                tracking_hit_list[hit_nums[h_ind]].pos(l_ind) - h_mean(l_ind);
-          }
-        }
+        const auto& p0 = tracking_hit_list[hit_nums[0]].pos;
+        const auto& p1 = tracking_hit_list[hit_nums[1]].pos;
+        const auto& p2 = tracking_hit_list[hit_nums[2]].pos;
+
+        // Compute mean in an indexable array
+        double mean_arr[3] = {
+            (p0.X() + p1.X() + p2.X()) / 3.0,
+            (p0.Y() + p1.Y() + p2.Y()) / 3.0,
+            (p0.Z() + p1.Z() + p2.Z()) / 3.0
+        };
+
+        // Put back into h_mean (XYZVector)
+        h_mean.SetX(mean_arr[0]);
+        h_mean.SetY(mean_arr[1]);
+        h_mean.SetZ(mean_arr[2]);
+        double p_arr[3][3] = {
+          {p0.X(), p0.Y(), p0.Z()},
+          {p1.X(), p1.Y(), p1.Z()},
+          {p2.X(), p2.Y(), p2.Z()}
+      };
+
+for (int h_ind = 0; h_ind < 3; ++h_ind) {
+  for (int l_ind = 0; l_ind < 3; ++l_ind) {
+    hdt(h_ind, l_ind) = p_arr[h_ind][l_ind] - mean_arr[l_ind];
+  }
+}
 
         // Perform "linreg" on selected points
         // Calculate the determinant of the matrix
@@ -401,9 +413,9 @@ void EcalMipTrackingProcessor::produce(framework::Event &event) {
 
         // First col of V matrix is the slope of the best-fit line
         Vm = svdObj.GetV();
-        for (int h_ind = 0; h_ind < 3; h_ind++) {
-          slope_vec(h_ind) = Vm[0][h_ind];
-        }
+        slope_vec.SetX(Vm[0][0]);
+        slope_vec.SetY(Vm[0][1]);
+        slope_vec.SetZ(Vm[0][2]);
         // h_mean, h_point are points on the best-fit line
         h_point = slope_vec + h_mean;
         // linreg complete:  Now have best-fit line for 3 hits under
@@ -418,9 +430,9 @@ void EcalMipTrackingProcessor::produce(framework::Event &event) {
         if (closest_p > cell_width or closest_e < 1.5 * cell_width) continue;
         // find r^2
         // ~variance
-        float vrnc = (tracking_hit_list[hit_nums[0]].pos - h_mean).Mag() +
-                     (tracking_hit_list[hit_nums[1]].pos - h_mean).Mag() +
-                     (tracking_hit_list[hit_nums[2]].pos - h_mean).Mag();
+        float vrnc = (tracking_hit_list[hit_nums[0]].pos - h_mean).R() +
+                     (tracking_hit_list[hit_nums[1]].pos - h_mean).R() +
+                     (tracking_hit_list[hit_nums[2]].pos - h_mean).R();
         // sum of |errors|
         float sumerr =
             distPtToLine(tracking_hit_list[hit_nums[0]].pos, h_mean, h_point) +
@@ -448,12 +460,12 @@ void EcalMipTrackingProcessor::produce(framework::Event &event) {
     ldmx_log(debug) << " Lin-reg track " << n_linreg_tracks_;
     for (int final_hit_index = 0; final_hit_index < 3; final_hit_index++) {
       ldmx_log(debug) << "   Hit " << final_hit_index << " ["
-                      << tracking_hit_list[bestHitNums[final_hit_index]].pos(0)
-                      << ", "
-                      << tracking_hit_list[bestHitNums[final_hit_index]].pos(1)
-                      << ", "
-                      << tracking_hit_list[bestHitNums[final_hit_index]].pos(2)
-                      << "] ";
+                << tracking_hit_list[bestHitNums[final_hit_index]].pos.X()
+                << ", "
+                << tracking_hit_list[bestHitNums[final_hit_index]].pos.Y()
+                << ", "
+                << tracking_hit_list[bestHitNums[final_hit_index]].pos.Z()
+                << "] ";
     }
 
     // Exclude all hits in a found track from further consideration:
@@ -499,22 +511,22 @@ void EcalMipTrackingProcessor::onProcessEnd() {
 }
 // MIP tracking functions:
 
-float EcalMipTrackingProcessor::distTwoLines(TVector3 v1, TVector3 v2,
-                                             TVector3 w1, TVector3 w2) {
-  TVector3 e1 = v1 - v2;
-  TVector3 e2 = w1 - w2;
-  TVector3 crs = e1.Cross(e2);
-  if (crs.Mag() == 0) {
+float EcalMipTrackingProcessor::distTwoLines(ROOT::Math::XYZVector v1, ROOT::Math::XYZVector v2,
+                                             ROOT::Math::XYZVector w1, ROOT::Math::XYZVector w2) {
+  ROOT::Math::XYZVector e1 = v1 - v2;
+  ROOT::Math::XYZVector e2 = w1 - w2;
+  ROOT::Math::XYZVector crs = e1.Cross(e2);
+  if (crs.R() == 0) {
     return 100.0;  // arbitrary large number; edge case that shouldn't cause
                    // problems.
   } else {
-    return std::abs(crs.Dot(v1 - w1) / crs.Mag());
+    return std::abs(crs.Dot(v1 - w1) / crs.R());
   }
 }
 
-float EcalMipTrackingProcessor::distPtToLine(TVector3 h1, TVector3 p1,
-                                             TVector3 p2) {
-  return ((h1 - p1).Cross(h1 - p2)).Mag() / (p1 - p2).Mag();
+float EcalMipTrackingProcessor::distPtToLine(ROOT::Math::XYZVector h1, ROOT::Math::XYZVector p1,
+                                             ROOT::Math::XYZVector p2) {
+  return ((h1 - p1).Cross(h1 - p2)).R() / (p1 - p2).R();
 }
 
 }  // namespace ecal

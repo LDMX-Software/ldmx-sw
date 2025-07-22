@@ -42,7 +42,7 @@ find_package(ONNXRuntime 1.2.0)
 find_package(Eigen3 CONFIG REQUIRED)
 
 setup_library(module Ecal
-              dependencies ROOT::Physics 
+              dependencies ROOT::Physics
                            Framework::Framework Recon::Event Tools::Tools DetDescr::DetDescr 
                            ONNXRuntime::Interface Ecal::Event
                            Eigen3::Eigen

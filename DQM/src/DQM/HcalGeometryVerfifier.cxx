@@ -70,7 +70,8 @@ bool HcalGeometryVerifier::hit_ok(const ldmx::HcalID id,
   const auto &geometry = getCondition<ldmx::HcalGeometry>(
       ldmx::HcalGeometry::CONDITIONS_OBJECT_NAME);
   auto [index_along, index_across, index_through]{determine_indices(id)};
-  const auto center{geometry.getStripCenterPosition(id)};
+  const auto center_vec = geometry.getStripCenterPosition(id);
+  const std::array<double,3> center{center_vec.X(), center_vec.Y(), center_vec.Z()};  
   const auto length{geometry.getScintillatorLength(id)};
   bool outside_bounds_along{
       std::abs(position[index_along] - center[index_along]) >

@@ -8,7 +8,7 @@
 #include "DetDescr/HcalGeometry.h"
 #include "Hcal/Event/HcalHit.h"
 #include "TLorentzVector.h"
-#include "TVector3.h"
+#include "Math/Vector3D.h"
 
 namespace hcal {
 

@@ -47,7 +47,7 @@
 // ROOT
 #include <TLorentzVector.h>
 #include <TParticle.h>
-#include <TVector3.h>
+#include <Math/Vector3D.h>
 
 #include "Math/Interpolator.h"
 

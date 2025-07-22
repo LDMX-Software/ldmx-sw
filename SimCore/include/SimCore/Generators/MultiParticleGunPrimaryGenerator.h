@@ -32,7 +32,7 @@
 #include "TLorentzVector.h"
 #include "TRandom.h"
 #include "TTree.h"
-#include "TVector3.h"
+#include "Math/Vector3D.h"
 
 //-------------//
 //   LDMX-SW   //

@@ -18,7 +18,7 @@
 //----------//
 //   ROOT   //
 //----------//
-#include <TVector3.h>
+#include <Math/Vector3D.h>
 
 #include "TObject.h"
 
@@ -30,7 +30,7 @@ typedef std::pair<float, float> XYCoords;
 // convenient way
 struct HitData {
   int layer;
-  TVector3 pos;
+  ROOT::Math::XYZVector pos;
 };
 
 class EcalTrajectoryInfo {
