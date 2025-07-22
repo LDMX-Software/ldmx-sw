@@ -14,10 +14,6 @@ import json
 class PDGMaterial:
     """a material copied down from the PDG's Atomic and Nuclear Properties site
 
-    This class also has the ability to be multiplied by weights and added to other
-    instances of this class, but that is purely implemented so that the `mixture`
-    function below can be used.
-
     Attributes
     ----------
     density: float
@@ -49,12 +45,6 @@ class PDGMaterial:
     def nuclear_interaction_length_mm(self):
         """resolve the nuclear interaction length into mm"""
         return (self.nuclear_interaction_length / self.density) * 10
-
-
-    @classmethod
-    def zero(cls):
-        """we need a zero-object to start summing from in the mixture function"""
-        return cls(0,0,0,0)
 
 
 class PDGMaterialEncoder(json.JSONEncoder):
@@ -165,6 +155,8 @@ def pdg_material(*, scale_weights=False, **kwargs):
 
         pdg_material(Cu = 0.5, Si = 0.5)
 
+    If the input weights do not sum to 1.0, then a ValueError is raised (if scale_weights is False)
+    or the weights are all divided by their sum.
     """
     
     weight_sum = sum(weight for weight in kwargs.values())
@@ -194,13 +186,26 @@ def pdg_material(*, scale_weights=False, **kwargs):
 
 
 def print_gdml_list(**kwargs) :
+    """print a list (or lists) into GDML format to stdout
+
+    The key-word arguments are 'name = l' where 'name' is the name
+    of the list as it should appear in the GDML and 'l' is the python list
+    that will be injected into the GDML.
+    """
+
     for name, l in kwargs.items() :
         newline_list = f'{l[0]:.1f}\n' + '\n'.join([f'                {v:.1f}' for v in l[1:]])
         print(f'<matrix name="{name}"')
         print( '        coldim="1"')
         print(f'        values="{newline_list}"/>')
 
+
 def enumerate_absorber_dz(sections) :
+    """go through layers and keep track of the longitudinal depth (dz) of the absorber
+
+    The input sections is a list of 4-tuples (name, num_bilayers, front, cooling).
+    """
+
     cooling_tungsten_dz = []
     front_tungsten_dz = []
     bilayer_absorber_cumulative = [0.]
@@ -210,6 +215,7 @@ def enumerate_absorber_dz(sections) :
             front_tungsten_dz.append(front)
             bilayer_absorber_cumulative.append(bilayer_absorber_cumulative[-1] + 2*cooling + front)
     return cooling_tungsten_dz, front_tungsten_dz, bilayer_absorber_cumulative
+
 
 class Layer :
     """class representing a single layer of a single material
@@ -484,8 +490,6 @@ def ldmx_ecal_v14():
     weights = calc_weights(mbs)
     print_weights(*weights)
 
-#    for l in layers :
-#        print(l)
 
 @command
 def minildmx():
