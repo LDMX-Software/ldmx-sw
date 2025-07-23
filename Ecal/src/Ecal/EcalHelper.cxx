@@ -65,10 +65,8 @@ std::vector<float> trackProp(const ldmx::Tracks &tracks,
 
 // MIP tracking functions:
 
-float distTwoLines(ROOT::Math::XYZVector v1,
-                                             ROOT::Math::XYZVector v2,
-                                             ROOT::Math::XYZVector w1,
-                                             ROOT::Math::XYZVector w2) {
+float distTwoLines(ROOT::Math::XYZVector v1, ROOT::Math::XYZVector v2,
+                   ROOT::Math::XYZVector w1, ROOT::Math::XYZVector w2) {
   ROOT::Math::XYZVector e1 = v1 - v2;
   ROOT::Math::XYZVector e2 = w1 - w2;
   ROOT::Math::XYZVector crs = e1.Cross(e2);
@@ -80,12 +78,9 @@ float distTwoLines(ROOT::Math::XYZVector v1,
   }
 }
 
-float distPtToLine(ROOT::Math::XYZVector h1,
-                                             ROOT::Math::XYZVector p1,
-                                             ROOT::Math::XYZVector p2) {
+float distPtToLine(ROOT::Math::XYZVector h1, ROOT::Math::XYZVector p1,
+                   ROOT::Math::XYZVector p2) {
   return ((h1 - p1).Cross(h1 - p2)).R() / (p1 - p2).R();
 }
-
-
 
 }  // namespace ecal
