@@ -28,11 +28,11 @@
 //----------//
 //   ROOT   //
 //----------//
+#include "Math/Vector3D.h"
 #include "TFile.h"
 #include "TLorentzVector.h"
 #include "TRandom.h"
 #include "TTree.h"
-#include "TVector3.h"
 
 //-------------//
 //   LDMX-SW   //

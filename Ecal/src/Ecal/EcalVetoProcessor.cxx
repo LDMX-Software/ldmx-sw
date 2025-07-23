@@ -579,8 +579,8 @@ void EcalVetoProcessor::produce(framework::Event &event) {
     if (distance_ele_trajectory >= ele_radii[id.layer()] ||
         distance_ele_trajectory == -1.0) {
       ldmx::HitData hd;
-      hd.pos = TVector3(xy_pair.first, xy_pair.second,
-                        geometry_->getZPosition(id.layer()));
+      hd.pos = ROOT::Math::XYZVector(xy_pair.first, xy_pair.second,
+                                     geometry_->getZPosition(id.layer()));
       hd.layer = id.layer();
       tracking_hit_list.push_back(hd);
     }
@@ -783,12 +783,12 @@ void EcalVetoProcessor::produce(framework::Event &event) {
 
   ldmx_log(info) << "   Is this event is fiducial in ECAL? "
                  << inside_ecal_cell;
-  TVector3 e_traj_start;
-  TVector3 e_traj_end;
-  TVector3 e_traj_target_start;
-  TVector3 e_traj_target_end;
-  TVector3 p_traj_start;
-  TVector3 p_traj_end;
+  ROOT::Math::XYZVector e_traj_start;
+  ROOT::Math::XYZVector e_traj_end;
+  ROOT::Math::XYZVector e_traj_target_start;
+  ROOT::Math::XYZVector e_traj_target_end;
+  ROOT::Math::XYZVector p_traj_start;
+  ROOT::Math::XYZVector p_traj_end;
   if (!ele_trajectory.empty() && !photon_trajectory.empty()) {
     // Create TVector3s marking the start and endpoints of each projected
     // trajectory
@@ -803,10 +803,10 @@ void EcalVetoProcessor::produce(framework::Event &event) {
                       photon_trajectory[(n_ecal_layers_ - 1)].second,
                       geometry_->getZPosition((n_ecal_layers_ - 1)));
 
-    TVector3 evec = e_traj_end - e_traj_start;
-    TVector3 e_norm = evec.Unit();
-    TVector3 pvec = p_traj_end - p_traj_start;
-    TVector3 p_norm = pvec.Unit();
+    ROOT::Math::XYZVector evec = e_traj_end - e_traj_start;
+    ROOT::Math::XYZVector e_norm = evec.Unit();
+    ROOT::Math::XYZVector pvec = p_traj_end - p_traj_start;
+    ROOT::Math::XYZVector p_norm = pvec.Unit();
 
     // Calculate the angle between the projected electron at Ecal and the photon
     // (at target)
@@ -824,8 +824,9 @@ void EcalVetoProcessor::produce(framework::Event &event) {
                                ele_trajectory_at_target[(0)].second,
                                geometry_->getZPosition((n_ecal_layers_ - 1)));
       // Now calculate the ep angle at the target
-      TVector3 evec_target = e_traj_target_end - e_traj_target_start;
-      TVector3 e_norm_target = evec_target.Unit();
+      ROOT::Math::XYZVector evec_target =
+          e_traj_target_end - e_traj_target_start;
+      ROOT::Math::XYZVector e_norm_target = evec_target.Unit();
       ep_dot_at_target_ = e_norm_target.Dot(p_norm);
       ep_ang_at_target_ = acos(ep_dot_at_target_) * 180.0 / M_PI;
     }
@@ -835,12 +836,13 @@ void EcalVetoProcessor::produce(framework::Event &event) {
     // Pick e/ptraj so that they won't restrict the tracking algorithm (place
     // them far outside the ECal).
     ldmx_log(trace) << "   Electron trajectory is missing";
-    e_traj_start = TVector3(999, 999, geometry_->getZPosition(0));
-    e_traj_end =
-        TVector3(999, 999, geometry_->getZPosition((n_ecal_layers_ - 1)));
-    p_traj_start = TVector3(1000, 1000, geometry_->getZPosition(0));
-    p_traj_end =
-        TVector3(1000, 1000, geometry_->getZPosition((n_ecal_layers_ - 1)));
+    e_traj_start = ROOT::Math::XYZVector(999, 999, geometry_->getZPosition(0));
+    e_traj_end = ROOT::Math::XYZVector(
+        999, 999, geometry_->getZPosition((n_ecal_layers_ - 1)));
+    p_traj_start =
+        ROOT::Math::XYZVector(1000, 1000, geometry_->getZPosition(0));
+    p_traj_end = ROOT::Math::XYZVector(
+        1000, 1000, geometry_->getZPosition((n_ecal_layers_ - 1)));
     /*ensures event will not be vetoed by angle/separation cut */
     ep_ang_ = 999.;
     ep_ang_at_target_ = 999.;
@@ -1079,25 +1081,6 @@ std::vector<std::pair<float, float>> EcalVetoProcessor::getTrajectory(
     positions.push_back(std::make_pair(posX, posY));
   }
   return positions;
-}
-
-// MIP tracking functions:
-
-float EcalVetoProcessor::distTwoLines(TVector3 v1, TVector3 v2, TVector3 w1,
-                                      TVector3 w2) {
-  TVector3 e1 = v1 - v2;
-  TVector3 e2 = w1 - w2;
-  TVector3 crs = e1.Cross(e2);
-  if (crs.Mag() == 0) {
-    return 100.0;  // arbitrary large number; edge case that shouldn't cause
-                   // problems.
-  } else {
-    return std::abs(crs.Dot(v1 - w1) / crs.Mag());
-  }
-}
-
-float EcalVetoProcessor::distPtToLine(TVector3 h1, TVector3 p1, TVector3 p2) {
-  return ((h1 - p1).Cross(h1 - p2)).Mag() / (p1 - p2).Mag();
 }
 
 }  // namespace ecal

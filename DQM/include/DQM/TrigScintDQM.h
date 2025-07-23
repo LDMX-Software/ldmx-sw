@@ -16,7 +16,7 @@
 //----------//
 //   ROOT   //
 //----------//
-#include "TVector3.h"
+#include "Math/Vector3D.h"
 
 //----------//
 //   LDMX   //

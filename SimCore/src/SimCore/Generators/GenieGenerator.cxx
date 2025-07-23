@@ -45,9 +45,9 @@
 #include "Randomize.hh"
 
 // ROOT
+#include <Math/Vector3D.h>
 #include <TLorentzVector.h>
 #include <TParticle.h>
-#include <TVector3.h>
 
 #include "Math/Interpolator.h"
 

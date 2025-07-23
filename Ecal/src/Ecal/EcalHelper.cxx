@@ -1,4 +1,4 @@
-#include "Ecal/TrackPropagator.h"
+#include "Ecal/EcalHelper.h"
 
 namespace ecal {
 
@@ -61,6 +61,26 @@ std::vector<float> trackProp(const ldmx::Tracks &tracks,
   }
 
   return new_track_states;
+}
+
+// MIP tracking functions:
+
+float distTwoLines(ROOT::Math::XYZVector v1, ROOT::Math::XYZVector v2,
+                   ROOT::Math::XYZVector w1, ROOT::Math::XYZVector w2) {
+  ROOT::Math::XYZVector e1 = v1 - v2;
+  ROOT::Math::XYZVector e2 = w1 - w2;
+  ROOT::Math::XYZVector crs = e1.Cross(e2);
+  if (crs.R() == 0) {
+    return 100.0;  // arbitrary large number; edge case that shouldn't cause
+                   // problems.
+  } else {
+    return std::abs(crs.Dot(v1 - w1) / crs.R());
+  }
+}
+
+float distPtToLine(ROOT::Math::XYZVector h1, ROOT::Math::XYZVector p1,
+                   ROOT::Math::XYZVector p2) {
+  return ((h1 - p1).Cross(h1 - p2)).R() / (p1 - p2).R();
 }
 
 }  // namespace ecal
