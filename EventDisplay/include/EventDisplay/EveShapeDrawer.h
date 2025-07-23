@@ -12,11 +12,11 @@
 #include <iostream>
 
 #include "EventDisplay/DetectorGeometry.h"  //for BoundingBox
+#include "Math/TVector3D.h"
 #include "TEveGeoShape.h"
 #include "TGeoMatrix.h"
 #include "TGeoShape.h"
 #include "TGeoTube.h"
-#include "TVector3.h"
 
 namespace eventdisplay {
 

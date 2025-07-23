@@ -68,7 +68,7 @@ void PhotoNuclearDQM::findParticleKinematics(
     total_ke += ke;
 
     std::vector<double> vec{daughter->getMomentum()};
-    TVector3 pvec(vec[0], vec[1], vec[2]);
+    ROOT::Math::XYZVector pvec(vec[0], vec[1], vec[2]);
 
     //  Calculate the polar angle
     auto theta{pvec.Theta() * (180 / 3.14159)};

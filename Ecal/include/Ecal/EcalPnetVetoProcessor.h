@@ -13,9 +13,9 @@
 #include <numeric>
 
 #include "DetDescr/EcalGeometry.h"
+#include "Ecal/EcalHelper.h"
 #include "Ecal/Event/EcalHit.h"
 #include "Ecal/Event/EcalVetoResult.h"
-#include "Ecal/TrackPropagator.h"
 #include "Framework/Configure/Parameters.h"
 #include "Framework/EventProcessor.h"
 #include "SimCore/Event/SimTrackerHit.h"

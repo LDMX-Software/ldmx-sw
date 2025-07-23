@@ -13,7 +13,7 @@ WorkingCluster::WorkingCluster(const ldmx::HcalHit* eh,
 void WorkingCluster::add(const ldmx::HcalHit* eh,
                          const ldmx::HcalGeometry& hex) {
   double hitE = eh->getEnergy();
-  TVector3 hitpos = hex.getStripCenterPosition(eh->getID());
+  ROOT::Math::XYZVector hitpos = hex.getStripCenterPosition(eh->getID());
   double hitX = hitpos.x();
   double hitY = hitpos.y();
   double hitZ = hitpos.z();
