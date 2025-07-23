@@ -16,7 +16,7 @@
 #include "TGeoMatrix.h"
 #include "TGeoShape.h"
 #include "TGeoTube.h"
-#include "TVector3D.h"
+#include "Math/TVector3D.h"
 
 namespace eventdisplay {
 

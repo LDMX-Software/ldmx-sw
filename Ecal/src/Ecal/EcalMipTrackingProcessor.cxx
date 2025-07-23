@@ -195,10 +195,10 @@ void EcalMipTrackingProcessor::produce(framework::Event &event) {
 
     // Confirm that the track is valid:
     if (track_len < 2) continue;  // Track must contain at least 2 hits
-    float closest_e = distTwoLines(tracking_hit_list[track[0]].pos,
+    float closest_e = ecal::distTwoLines(tracking_hit_list[track[0]].pos,
                                    tracking_hit_list[track[track_len - 1]].pos,
                                    e_traj_start, e_traj_end);
-    float closest_p = distTwoLines(tracking_hit_list[track[0]].pos,
+    float closest_p = ecal::distTwoLines(tracking_hit_list[track[0]].pos,
                                    tracking_hit_list[track[track_len - 1]].pos,
                                    p_traj_start, p_traj_end);
     // Make sure that the track is near the photon trajectory and away from the
@@ -377,18 +377,19 @@ void EcalMipTrackingProcessor::produce(framework::Event &event) {
         const auto &p1 = tracking_hit_list[hit_nums[1]].pos;
         const auto &p2 = tracking_hit_list[hit_nums[2]].pos;
 
+        
+        h_mean = (p0 + p1 + p2) / 3.0;
+
+        double p_arr[3][3] = {{p0.X(), p0.Y(), p0.Z()},
+                              {p1.X(), p1.Y(), p1.Z()},
+                              {p2.X(), p2.Y(), p2.Z()}};
+
+
         // Compute mean in an indexable array
         double mean_arr[3] = {(p0.X() + p1.X() + p2.X()) / 3.0,
                               (p0.Y() + p1.Y() + p2.Y()) / 3.0,
                               (p0.Z() + p1.Z() + p2.Z()) / 3.0};
 
-        // Put back into h_mean (XYZVector)
-        h_mean.SetX(mean_arr[0]);
-        h_mean.SetY(mean_arr[1]);
-        h_mean.SetZ(mean_arr[2]);
-        double p_arr[3][3] = {{p0.X(), p0.Y(), p0.Z()},
-                              {p1.X(), p1.Y(), p1.Z()},
-                              {p2.X(), p2.Y(), p2.Z()}};
 
         for (int h_ind = 0; h_ind < 3; ++h_ind) {
           for (int l_ind = 0; l_ind < 3; ++l_ind) {
@@ -420,9 +421,9 @@ void EcalMipTrackingProcessor::produce(framework::Event &event) {
         // consideration Check whether the track is valid:  r^2 must be high,
         // and the track must plausibly originate from the photon
         float closest_e =
-            distTwoLines(h_mean, h_point, e_traj_start, e_traj_end);
+            ecal::distTwoLines(h_mean, h_point, e_traj_start, e_traj_end);
         float closest_p =
-            distTwoLines(h_mean, h_point, p_traj_start, p_traj_end);
+            ecal::distTwoLines(h_mean, h_point, p_traj_start, p_traj_end);
         // Projected track must be close to the photon; details may change after
         // future study.
         if (closest_p > cell_width or closest_e < 1.5 * cell_width) continue;
@@ -433,9 +434,9 @@ void EcalMipTrackingProcessor::produce(framework::Event &event) {
                      (tracking_hit_list[hit_nums[2]].pos - h_mean).R();
         // sum of |errors|
         float sumerr =
-            distPtToLine(tracking_hit_list[hit_nums[0]].pos, h_mean, h_point) +
-            distPtToLine(tracking_hit_list[hit_nums[1]].pos, h_mean, h_point) +
-            distPtToLine(tracking_hit_list[hit_nums[2]].pos, h_mean, h_point);
+            ecal::distPtToLine(tracking_hit_list[hit_nums[0]].pos, h_mean, h_point) +
+            ecal::distPtToLine(tracking_hit_list[hit_nums[1]].pos, h_mean, h_point) +
+            ecal::distPtToLine(tracking_hit_list[hit_nums[2]].pos, h_mean, h_point);
         float r_corr = 1 - sumerr / vrnc;
         // Check whether r^2 exceeds a low minimum r_corr:  "Fake" tracks are
         // still much more common in background, so making the algorithm
@@ -506,28 +507,6 @@ void EcalMipTrackingProcessor::onProcessEnd() {
   ldmx_log(info) << "linreg_tracks        Avg Time/Event = " << std::fixed
                  << std::setprecision(3)
                  << profiling_map_["linreg_tracks"] / nevents_ << " ms";
-}
-// MIP tracking functions:
-
-float EcalMipTrackingProcessor::distTwoLines(ROOT::Math::XYZVector v1,
-                                             ROOT::Math::XYZVector v2,
-                                             ROOT::Math::XYZVector w1,
-                                             ROOT::Math::XYZVector w2) {
-  ROOT::Math::XYZVector e1 = v1 - v2;
-  ROOT::Math::XYZVector e2 = w1 - w2;
-  ROOT::Math::XYZVector crs = e1.Cross(e2);
-  if (crs.R() == 0) {
-    return 100.0;  // arbitrary large number; edge case that shouldn't cause
-                   // problems.
-  } else {
-    return std::abs(crs.Dot(v1 - w1) / crs.R());
-  }
-}
-
-float EcalMipTrackingProcessor::distPtToLine(ROOT::Math::XYZVector h1,
-                                             ROOT::Math::XYZVector p1,
-                                             ROOT::Math::XYZVector p2) {
-  return ((h1 - p1).Cross(h1 - p2)).R() / (p1 - p2).R();
 }
 
 }  // namespace ecal

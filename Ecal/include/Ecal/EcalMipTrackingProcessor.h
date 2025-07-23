@@ -11,6 +11,7 @@
 // LDMX
 #include "DetDescr/EcalGeometry.h"
 #include "DetDescr/EcalID.h"
+#include "Ecal/EcalHelper.h"
 #include "Ecal/Event/EcalMipResult.h"
 #include "Ecal/Event/EcalTrajectoryInfo.h"
 #include "Ecal/Event/EcalVetoResult.h"

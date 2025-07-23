@@ -1083,29 +1083,6 @@ std::vector<std::pair<float, float>> EcalVetoProcessor::getTrajectory(
   return positions;
 }
 
-// MIP tracking functions:
-
-float EcalVetoProcessor::distTwoLines(ROOT::Math::XYZVector v1,
-                                      ROOT::Math::XYZVector v2,
-                                      ROOT::Math::XYZVector w1,
-                                      ROOT::Math::XYZVector w2) {
-  ROOT::Math::XYZVector e1 = v1 - v2;
-  ROOT::Math::XYZVector e2 = w1 - w2;
-  ROOT::Math::XYZVector crs = e1.Cross(e2);
-  if (crs.R() == 0) {
-    return 100.0;  // arbitrary large number; edge case that shouldn't cause
-                   // problems.
-  } else {
-    return std::abs(crs.Dot(v1 - w1) / crs.R());
-  }
-}
-
-float EcalVetoProcessor::distPtToLine(ROOT::Math::XYZVector h1,
-                                      ROOT::Math::XYZVector p1,
-                                      ROOT::Math::XYZVector p2) {
-  return ((h1 - p1).Cross(h1 - p2)).R() / (p1 - p2).R();
-}
-
 }  // namespace ecal
 
 DECLARE_PRODUCER(ecal::EcalVetoProcessor);
