@@ -183,40 +183,6 @@ def pdg_material(*, scale_weights=False, **kwargs):
             for material, weight in kwargs.items())
         )
     )
-
-
-def print_gdml_list(**kwargs) :
-    """print a list (or lists) into GDML format to stdout
-
-    The key-word arguments are 'name = l' where 'name' is the name
-    of the list as it should appear in the GDML and 'l' is the python list
-    that will be injected into the GDML.
-    """
-
-    for name, l in kwargs.items() :
-        newline_list = f'{l[0]:.1f}\n' + '\n'.join([f'                {v:.1f}' for v in l[1:]])
-        print(f'<matrix name="{name}"')
-        print( '        coldim="1"')
-        print(f'        values="{newline_list}"/>')
-
-
-def enumerate_absorber_dz(sections) :
-    """go through layers and keep track of the longitudinal depth (dz) of the absorber
-
-    The input sections is a list of 4-tuples (name, num_bilayers, front, cooling).
-    """
-
-    cooling_tungsten_dz = []
-    front_tungsten_dz = []
-    bilayer_absorber_cumulative = [0.]
-    for name, num_bilayers, front, cooling in sections :
-        for bilayer in range(num_bilayers) :
-            cooling_tungsten_dz.append(cooling)
-            front_tungsten_dz.append(front)
-            bilayer_absorber_cumulative.append(bilayer_absorber_cumulative[-1] + 2*cooling + front)
-    return cooling_tungsten_dz, front_tungsten_dz, bilayer_absorber_cumulative
-
-
 class Layer :
     """class representing a single layer of a single material
 
@@ -343,44 +309,112 @@ class Layer :
     def carbon(t) :
         return Layer('Carbon',t)
 
-    def enumerate_full_stack(sections) :
+
+@dataclass
+class BiLayerSandwich:
+    """A "bilayer" in the ECal consists of two (hence 'bi-') sensitive
+    silicon layers mounted onto a central carbon cooling plane.
+
+    There are additional layers of air, PCBs, and potentially absorber.
+    The absorber layers are separated into two areas:
+    - "cooling": these absrobers are mounted between the carbon cooling plane
+        and the hexaboards
+    - "front": these absorbers are put "in front" (upstream/lower z) of the
+        bilayer so that there is absorber between the downstream sensitive
+        hexamodule of the upstream bilayer and the upstream sensitive hexamodule
+        of this bilayer. For many bi-layers, the "front" absorber is twice the
+        thickness of the "cooling" so that approximately the same absorber is
+        between the sensitive hexamodules. In the real detector, the "front" absorber
+        will actually be just two copies of the "cooling" absorber plates in
+        this case.
+
+    The full implementation is given below, but a diagram might be helpful.
+
+       ↓ beam ↓ going down
+
+      | front absorber (W)            |
+      | Readout Motherboard (PCB)     |
+      | Air                           |
+      | Hexamodule (Si, Glue, PCB, C) |
+      | Cooling Absorber (W)          |
+      | Carbon Cooling Plane (Carbon) |
+      | Cooling Absorber (W)          |
+      | Hexaboard (Si, Glue, PCB)     |
+      | Air                           |
+      | Readout Motherboard (PCB)     |
+
+    """
+
+    front: float = 0.0
+    cooling: float = 0.0
+
+    def material_stack(self):
         layers = []
-        for name, num_bilayers, front, cooling in sections :
-            for bilayer in range(num_bilayers) :
-                layers.append(Layer.air(0.5)) #Front_Tolerance
-                if front > 0 :
-                    layers.append(Layer.tungsten(front))
-                    layers.append(Layer.air(0.5))
-                if front == 0:
-                    layers.append(Layer.air(0.15)) # correction
-                layers.append(Layer.pcb()) # PCB_dz
-                layers.append(Layer.air(3.5)) # PCB_Motherboard_Gap
-                layers.append(Layer.pcb()) # PCB_dz
-                layers.append(Layer.glue(0.1)) # Glue_dz
-                layers.append(Layer.silicon()) # Si_dz
-                layers.append(Layer.glue(0.2)) # GlueThick_dz
-                layers.append(Layer.carbon(0.79)) # CarbonBasePlate_dz
-                if cooling == 0 :
-                    layers.append(Layer.air(0.5)) # preshower_extra_air
-                if cooling > 0 :
-                    layers.append(Layer.tungsten(cooling))
-                layers.append(Layer.carbon(5.7)) # CarbonCoolingPlane_dz
-                if cooling > 0 :
-                    layers.append(Layer.tungsten(cooling))
-                layers.append(Layer.carbon(0.79)) # CarbonBasePlate_dz
-                layers.append(Layer.glue(0.2)) # GlueThick_dz
-                layers.append(Layer.silicon()) # Si_dz
-                layers.append(Layer.glue(0.1)) # Glue_dz
-                layers.append(Layer.pcb()) # PCB_dz
-                layers.append(Layer.air(3.5)) # PCB_Motherboard_Gap
-                if cooling == 0 : # sampling_section_offset
-                    layers.append(Layer.air(0.5))
-                    layers.append(Layer.air(0.5))
-                layers.append(Layer.pcb()) # PCB_dz
-    
+        layers.append(Layer.air(0.5)) #Front_Tolerance
+        if self.front > 0 :
+            layers.append(Layer.tungsten(self.front))
+            layers.append(Layer.air(0.5))
+        if self.front == 0:
+            layers.append(Layer.air(0.15)) # correction
+        layers.append(Layer.pcb()) # PCB_dz
+        layers.append(Layer.air(3.5)) # PCB_Motherboard_Gap
+        layers.append(Layer.pcb()) # PCB_dz
+        layers.append(Layer.glue(0.1)) # Glue_dz
+        layers.append(Layer.silicon()) # Si_dz
+        layers.append(Layer.glue(0.2)) # GlueThick_dz
+        layers.append(Layer.carbon(0.79)) # CarbonBasePlate_dz
+        if self.cooling == 0 :
+            layers.append(Layer.air(0.5)) # preshower_extra_air
+        if self.cooling > 0 :
+            layers.append(Layer.tungsten(self.cooling))
+        layers.append(Layer.carbon(5.7)) # CarbonCoolingPlane_dz
+        if self.cooling > 0 :
+            layers.append(Layer.tungsten(self.cooling))
+        layers.append(Layer.carbon(0.79)) # CarbonBasePlate_dz
+        layers.append(Layer.glue(0.2)) # GlueThick_dz
+        layers.append(Layer.silicon()) # Si_dz
+        layers.append(Layer.glue(0.1)) # Glue_dz
+        layers.append(Layer.pcb()) # PCB_dz
+        layers.append(Layer.air(3.5)) # PCB_Motherboard_Gap
+        if self.cooling == 0 : # sampling_section_offset
+            layers.append(Layer.air(0.5))
+            layers.append(Layer.air(0.5))
+        layers.append(Layer.pcb()) # PCB_dz
         return layers
 
+
+def print_gdml_list(**kwargs) :
+    """print a list (or lists) into GDML format to stdout
+
+    The key-word arguments are 'name = l' where 'name' is the name
+    of the list as it should appear in the GDML and 'l' is the python list
+    that will be injected into the GDML.
+    """
+
+    for name, l in kwargs.items() :
+        newline_list = f'{l[0]:.1f}\n' + '\n'.join([f'                {v:.1f}' for v in l[1:]])
+        print(f'<matrix name="{name}"')
+        print( '        coldim="1"')
+        print(f'        values="{newline_list}"/>')
+
+
+def enumerate_absorber_dz(bilayers) :
+    """go through layers and keep track of the longitudinal depth (dz) of the absorber"""
+
+    cooling_tungsten_dz = []
+    front_tungsten_dz = []
+    bilayer_absorber_cumulative = [0.]
+    for bilayer in bilayers:
+        cooling_tungsten_dz.append(bilayer.cooling)
+        front_tungsten_dz.append(bilayer.front)
+        bilayer_absorber_cumulative.append(
+            bilayer_absorber_cumulative[-1] + 2*bilayer.cooling + bilayer.front
+        )
+    return cooling_tungsten_dz, front_tungsten_dz, bilayer_absorber_cumulative
+
+
 def average(raw_weights) :
+    """rolling average of the weights between adjacent layers"""
     averaged = []
     # first to (n-1)th layers where n is the total number of layers
     for i_layer in range(0,len(raw_weights)-1) :
@@ -388,7 +422,15 @@ def average(raw_weights) :
     averaged.append(raw_weights[-1])
     return averaged
 
+
 def materials_between_sensdet(layer_stack) :
+    """partition the input layer stack by the sensitive layers
+
+    The returned object is a list of lists such that the sub-lists
+    are the layer stacks between adjacent sensitive layers.
+    The sensitive layers are left out of these sub-lists.
+    """
+
     mbs = []
     current = []
     for layer in layer_stack :
@@ -403,6 +445,23 @@ def materials_between_sensdet(layer_stack) :
 
 
 def calc_weights(layers_partitioned_by_sensdet) :
+    """calculate different material properties for the layer stacks between sensitive layers
+
+    These material properties do not include the sensitive layers themselves since
+    the partitioning drops them out (see materials_between_sensdet).
+    The returned lists are in the same order as the list of lists provided so they
+    can be mapped onto the sensitive layers that follow them.
+    We keep track of
+    - dE: average energy loss
+    - X0: radiation length
+    - L: nuclear interaction length
+    - Z: longitudinal depth
+
+    The dE, X0, and L arrays are then updated with a the rolling average to "smooth out"
+    the weights. Without this rolling average, the weights "oscillate" up and down
+    due to design of the bilayer.
+    """
+
     # Does not include sensitive detector layers
     dE_between_sensdet = [ ]
     X0_between_sensdet = [ ]
@@ -410,20 +469,13 @@ def calc_weights(layers_partitioned_by_sensdet) :
     # Does include sensitive detector layers
     Zpos_layer = [ ]
     for section in layers_partitioned_by_sensdet :
-        dE_section, X0_section, L_section, Zdepth_section = 0., 0., 0., 0.
-        for l in section :
-            dE_section += l.thickness * l.dEdx
-            X0_section += l.thickness / l.x0
-            L_section  += l.thickness / l.nuclen
-            Zdepth_section += l.thickness
-        dE_between_sensdet.append(dE_section)
-        X0_between_sensdet.append(X0_section)
-        L_between_sensdet.append(L_section)
-    
+        dE_between_sensdet.append(sum(l.thickness * l.dEdx for l in section))
+        X0_between_sensdet.append(sum(l.thickness / l.x0 for l in section))
+        L_between_sensdet.append(sum(l.thickness / l.nuclen for l in section))
         last_layer_pos = 0.0
         if len(Zpos_layer) > 0:
             last_layer_pos = Zpos_layer[-1] + Layer.SensDetThickness
-        Zpos_layer.append( last_layer_pos + Zdepth_section )
+        Zpos_layer.append(last_layer_pos + sum(l.thickness for l in section))
     #endfor - sections
 
     dE_between_sensdet = average(dE_between_sensdet)
@@ -433,9 +485,23 @@ def calc_weights(layers_partitioned_by_sensdet) :
     return dE_between_sensdet, X0_between_sensdet, L_between_sensdet, Zpos_layer
 
 
-def print_weights(dE_between_sensdet, X0_between_sensdet, L_between_sensdet, Zpos_layer, 
-            output = sys.stdout) :
-    output.write('{0:>5s} {1:>7s} {2:>6s} {3:>6s} {4:>6s}\n'.format('Layer', 'dE', 'X0', 'Lambda', 'Zpos'))
+def print_weights(
+    dE_between_sensdet,
+    X0_between_sensdet,
+    L_between_sensdet,
+    Zpos_layer, 
+    output = sys.stdout
+):
+    """print the weights in a nice-ly formatted table
+
+    The order of inputs to this function is the same as the outputs of the calc_weights
+    function so they can be called directly following each other.
+    """
+    output.write(
+        '{0:>5s} {1:>7s} {2:>6s} {3:>6s} {4:>6s}\n'.format(
+            'Layer', 'dE', 'X0', 'Lambda', 'Zpos'
+        )
+    )
     for layer in range(len(dE_between_sensdet)-1):
         output.write('{0:5d} {1:7.3f} {2:6.3f} {3:6.3f} {4:6.3f}\n'.format(
             layer+1, dE_between_sensdet[layer], X0_between_sensdet[layer], L_between_sensdet[layer], Zpos_layer[layer]))
@@ -448,8 +514,10 @@ def print_weights(dE_between_sensdet, X0_between_sensdet, L_between_sensdet, Zpo
 
 
 def command(func):
+    """register a function as a command line command"""
     command.__list__[func.__name__] = func
     return func
+
 
 command.__list__ = {}
 
@@ -472,20 +540,26 @@ def print_layer_materials():
 @command
 def ldmx_ecal_v14():
     """full LDMX Ecal v14 geometry"""
-    # section, bilayers, front, cooling
-    absorber_sections = [
-            ('a',1,1,1),
-            ('b',1,2,1.5),
-            ('c',9,3.5,1.8),
-            ('d',5,7,3.5)
-            ]
 
-    ct, ft, bac = enumerate_absorber_dz(absorber_sections)
+    bilayers = (
+        [BiLayerSandwich(front = 0.0, cooling = 0.0)] # absorber-less Pre-Shower
+        +[BiLayerSandwich(front = 1.0, cooling = 1.0)] # Section A
+        +[BiLayerSandwich(front = 2.0, cooling = 1.5)] # Section B
+        +9*[BiLayerSandwich(front = 3.5, cooling = 1.8)] # Section C
+        +5*[BiLayerSandwich(front = 7.0, cooling = 3.5)] # Section D
+    )
+
+    # the way I designed the GDML did not include the Pre-Shower bilayer
+    # in these lists because the Pre-Shower bilayer doesn't have any absorber
+    ct, ft, bac = enumerate_absorber_dz(bilayers[1:])
     print_gdml_list(cooling_tungsten_dz = ct,
                     front_tungsten_dz = ft,
                     bilayer_absorber_cumulative = bac)
 
-    layers = Layer.enumerate_full_stack([('ps',1,0,0)]+absorber_sections)
+    # adding two lists together just appends them, so I "sum" all the
+    # bilayer material stacks into a single materal stack for the entire detector
+    layers = sum((bilayer.material_stack() for bilayer in bilayers), [])
+    # partition the material stack into groups separated by sensitive silicon
     mbs = materials_between_sensdet(layers)
     weights = calc_weights(mbs)
     print_weights(*weights)
@@ -493,16 +567,35 @@ def ldmx_ecal_v14():
 
 @command
 def minildmx():
-    # section, bilayers, front, cooling
     print('            |     Depth     |')
     print('N Bi-Layers | X0    | mm    |')
     for n in range(1,4):
-        layers = Layer.enumerate_full_stack([('a',n,0,0)])
+        layers = n*BiLayerSandwich(front=0, cooling=0).material_stack()
         print('{n:>11} | {x0:<5.3g} | {z:<5.3g} |'.format(
             n = n,
             x0 = sum(layer.thickness / layer.x0 for layer in layers),
             z = sum(layer.thickness for layer in layers)
         ))
+
+
+@command
+def bilayer_spec():
+    layers = BiLayerSandwich(front=0, cooling=0).material_stack()
+    totals_by_material = {}
+
+    print('Full Layer Stack')
+    print('Material, Depth / mm')
+    for layer in layers:
+        print(layer.name, layer.thickness, sep=', ')
+        if layer.name not in totals_by_material:
+            totals_by_material[layer.name] = 0.0
+        totals_by_material[layer.name] += layer.thickness
+
+    print()
+    print('Total Depths')
+    print('Material, Depth / mm')
+    for material, depth in totals_by_material.items():
+        print(material, depth, sep=', ')
 
 
 def main():
