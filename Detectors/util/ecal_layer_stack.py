@@ -183,6 +183,8 @@ def pdg_material(*, scale_weights=False, **kwargs):
             for material, weight in kwargs.items())
         )
     )
+
+
 class Layer :
     """class representing a single layer of a single material
 
@@ -193,11 +195,13 @@ class Layer :
     Class Attributes
     ----------------
     We keep a few reference tables stored within the class so that all layers
-    can access the properties of their materials. The materials that are single elements,
-    we obtain their properties from [Atomic and Nuclear Properties](https://pdg.lbl.gov/2023/AtomicNuclearProperties/index.html)
-    from the PDG. The composite materials are also found from this link, but we may
-    be forced to use a similar material rather than one that perfectly matches our
-    GDML definiton. The unit-conversion calculations is left here for transparency.
+    can access the properties of their materials.
+    The materials that are copied from the PDG
+    [Atomic and Nuclear Properties](https://pdg.lbl.gov/2023/AtomicNuclearProperties/index.html)
+    are kept as PDGMaterial in the __materials__ dictionary.
+    Some composite materials are also found in the PDG, but we have to estimate the PCB
+    material properties ourselves.
+    The unit-conversion calculations are left in PDGMaterial for transparency.
 
     Natalia found [this study of the ALICE TRD](https://www-physics.lbl.gov/~gilg/PixelUpgradeMechanicsCooling/Material/Radiationlength.pdf)
     which is a helpful source of comparison to make sure we aren't wildly off.
@@ -206,7 +210,7 @@ class Layer :
     -------|-----
     Al     | Al
     Air    | Mixtures -> Air (dry, 1 atm)
-    PCB    | weighted mix of elements
+    PCB    | weighted mix of materials
     Si     | Si
     W      | W
     Carbon | C -> 6 C carbon (amorphous) with lower density to represent carbon fiber
@@ -316,17 +320,23 @@ class BiLayerSandwich:
     silicon layers mounted onto a central carbon cooling plane.
 
     There are additional layers of air, PCBs, and potentially absorber.
-    The absorber layers are separated into two areas:
-    - "cooling": these absrobers are mounted between the carbon cooling plane
-        and the hexaboards
-    - "front": these absorbers are put "in front" (upstream/lower z) of the
-        bilayer so that there is absorber between the downstream sensitive
-        hexamodule of the upstream bilayer and the upstream sensitive hexamodule
-        of this bilayer. For many bi-layers, the "front" absorber is twice the
-        thickness of the "cooling" so that approximately the same absorber is
-        between the sensitive hexamodules. In the real detector, the "front" absorber
-        will actually be just two copies of the "cooling" absorber plates in
-        this case.
+    Since the thickness of the absorber varies, its thickness is stored
+    as members in this class.
+
+    Attributes
+    ----------
+    cooling: float
+        thickness in mm of absorber mounted between carbon cooling plane and
+        hexamodules
+    front: float
+        thickness in mm of absorber put "in front" (upstream/lower z) of the
+        bilayer so that there is absorber between adjacent bilayers
+
+    For many bi-layers, the "front" absorber is twice the
+    thickness of the "cooling" so that approximately the same absorber is
+    between the sensitive hexamodules. In the real detector, the "front" absorber
+    will actually be just two copies of the "cooling" absorber plates in
+    this case.
 
     The full implementation is given below, but a diagram might be helpful.
 
@@ -339,7 +349,7 @@ class BiLayerSandwich:
       | Cooling Absorber (W)          |
       | Carbon Cooling Plane (Carbon) |
       | Cooling Absorber (W)          |
-      | Hexaboard (Si, Glue, PCB)     |
+      | Hexamodule (Si, Glue, PCB, C) |
       | Air                           |
       | Readout Motherboard (PCB)     |
 
