@@ -332,7 +332,7 @@ class BiLayerSandwich:
         thickness in mm of absorber put "in front" (upstream/lower z) of the
         bilayer so that there is absorber between adjacent bilayers
 
-    For many bi-layers, the "front" absorber is twice the
+    For many bilayers, the "front" absorber is twice the
     thickness of the "cooling" so that approximately the same absorber is
     between the sensitive hexamodules. In the real detector, the "front" absorber
     will actually be just two copies of the "cooling" absorber plates in
