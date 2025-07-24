@@ -206,6 +206,10 @@ class EcalRecProducer(Producer) :
 
         #self.secondOrderEnergyCorrection = 4000. / 3940.5;
         self.secondOrderEnergyCorrection = 8000. / 7998.3;
+        # these layer weights were the 'dE' column of the table output by Detetectors/util/ecal_layer_stack.py
+        # See https://github.com/LDMX-Software/ldmx-sw/issues/1725
+        # TLDR: these are wrong but only off by an absolute value of ~0.2, future detector versions
+        # use the newer script with fixed material properties
         self.layerWeights = [ 
                 2.329, 4.339, 6.495, 7.490, 8.595, 10.253, 10.915, 10.915, 10.915, 10.915, 10.915,
                 10.915, 10.915, 10.915, 10.915, 10.915, 10.915, 10.915, 10.915, 10.915, 10.915,
