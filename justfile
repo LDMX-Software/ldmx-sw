@@ -30,9 +30,16 @@ help_message := "shared recipes for ldmx-sw development
 # but we want to set where the denv is within the justfile so users could (for example)
 # run their ldmx-sw build from within some other denv by invoking fire from just
 #   just -f path/to/ldmx-sw/justfile fire config.py
+# or
+#   just path/to/ldmx-sw/fire config.py
 # would run this denv even if there is a denv in the directory where config.py is.
 
-export denv_workspace := justfile_directory()
+denv_workspace_in_ldmx_sw := path_exists(justfile_directory() / ".denv")
+export denv_workspace := if denv_workspace_in_ldmx_sw == "true" {
+  justfile_directory()
+} else {
+  parent_directory(justfile_directory())
+}
 
 # make sure APPTAINER_CACHEDIR is not in the home directory
 # unless the user has already defined it
