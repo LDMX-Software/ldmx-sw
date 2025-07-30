@@ -34,6 +34,9 @@ class EcalClusterAnalyzer : public framework::Analyzer {
   ~EcalClusterAnalyzer() override = default;
   void configure(framework::config::Parameters& ps) override;
   void analyze(const framework::Event& event) override;
+  void onProcessStart() override;
+  void setHistLabels(const std::string& name,
+                     const std::vector<std::string>& labels);
 
  private:
   /// Use the number of simulated electrons

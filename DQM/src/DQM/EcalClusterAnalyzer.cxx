@@ -254,6 +254,20 @@ void EcalClusterAnalyzer::analyze(const framework::Event& event) {
       100. * (ecal_rec_hits.size() - clustered_hits) / ecal_rec_hits.size());
 }
 
+void EcalClusterAnalyzer::setHistLabels(
+    const std::string& name, const std::vector<std::string>& labels) {
+  auto histo{histograms_.get(name)};
+  for (std::size_t ibin{1}; ibin <= labels.size(); ibin++) {
+    histo->GetXaxis()->SetBinLabel(ibin, labels[ibin - 1].c_str());
+  }
+}
+
+void EcalClusterAnalyzer::onProcessStart() {
+  setHistLabels("correctly_predicted_events",
+                {"Underpredicted", "Correct", "Overpredicted"});
+
+}  // end of onProcessStart
+
 }  // namespace dqm
 
 DECLARE_ANALYZER(dqm::EcalClusterAnalyzer)
