@@ -4,13 +4,11 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "Validation"
-version = "0.0.1"
+version = "0.0.2"
 description = "LDMX Data Validation"
 readme = "README.md"
 requires-python = ">=3.7"
 dependencies = [
-  "mplhep",
-  "matplotlib",
-  "pandas",
-  "uproot"
+  "scikit-hep",
+  "numpy>=1.24,<2.3"
 ]

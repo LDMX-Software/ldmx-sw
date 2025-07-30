@@ -129,3 +129,4 @@ if __name__ == '__main__' :
         else :
             logging.warn(f'Not running {syst} since it was not registered properly.')
 
+    print("Plots are created under the directory '" + out_dir + "'")

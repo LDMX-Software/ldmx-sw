@@ -3,6 +3,8 @@
 import uproot
 import os
 import logging
+import hist
+import mplhep
 
 class File :
     """File entry in Differ object
@@ -73,7 +75,7 @@ class File :
         fn = os.path.basename(filepath).replace('.root','')
         l = fn.split('_')
         if len(l)%2 != 0 :
-            raise ValueError(f'The filename provided {fn} cannot be split into key_val pairs.')
+            raise ValueError(f'The filename provided {fn} cannot be split into key_val pairs. \n\tWorking example: hist_new.root')
         file_params =  { l[i] : l[i+1] for i in range(len(l)-1) if i%2 == 0 }
         File.log.debug(f'Deduced File Parameters: {file_params}')
         
@@ -184,37 +186,48 @@ class File :
         obj : str or function
             object to plot
         hist_kwargs : dict
-            All other key-word arguments are passed to plt.hist
+            All other key-word arguments are passed to plot1d
         """
 
-        for k, v in self.__hist_kwargs.items() :
-            if k not in hist_kwargs :
+        # Merge default and user-provided histogram kwargs
+        for k, v in self.__hist_kwargs.items():
+            if k not in hist_kwargs:
                 hist_kwargs[k] = v
-              
-        if not isinstance(obj, str) :
-            if self.__df is None :
-                return ax.hist(obj(self.__file), **hist_kwargs)
-            else :
-                return ax.hist(obj(self.__df), **hist_kwargs)
 
-        if self.__df is not None and obj in self.__df :
-            return ax.hist(self.__df[obj], **hist_kwargs)
-        
+        hist_kwargs.pop('bins', None)
+
+         # If obj is a callable, use it to compute the data
+        if not isinstance(obj, str):
+            if self.__df is None:
+                data = obj(self.__file)
+            else:
+                data = obj(self.__df)
+            h = hist.Hist.new.Reg(hist_kwargs.get('bins', 'auto'), name="x").Double()
+            h.fill(data)
+            plot_art = mplhep.histplot(h, ax=ax, **hist_kwargs)
+            return h, h.axes[0].edges, plot_art
+
+        # If obj is a string, check if it's a DataFrame column or uproot object
+        if self.__df is not None and obj in self.__df:
+            data = self.__df[obj]
+            h = hist.Hist.new.Reg(hist_kwargs.get('bins', 'auto'), name="x").Double()
+            h.fill(data)
+            plot_art = mplhep.histplot(h, ax=ax, **hist_kwargs)
+            return h, h.axes[0].edges, plot_art
+
+        # Handle uproot object
         uproot_obj_path = obj
-        if self.__colmod is not None :
+        if self.__colmod is not None:
             uproot_obj_path = self.__colmod(obj)
 
         uproot_obj = self.__file[uproot_obj_path]
 
-        if issubclass(type(uproot_obj), uproot.behaviors.TH1.Histogram) :
+        if issubclass(type(uproot_obj), uproot.behaviors.TH1.Histogram):
+            # Convert uproot histogram to hist.Hist
             edges = uproot_obj.axis('x').edges()
-            dim = len(edges.shape)
-            if dim > 1 :
-                raise KeyError(f'Attempted to do a 1D plot of a {dim} dimension histogram.')
-            # overwrite bins and weights with what the serialized histogram has
-            hist_kwargs['bins'] = edges
-            hist_kwargs['weights'] = uproot_obj.values()
-            return ax.hist((edges[1:]+edges[:-1])/2, **hist_kwargs)
-        else :
-            return ax.hist(uproot_obj.array(library='pd').values, **hist_kwargs)
+            values = uproot_obj.values()
+            h = hist.Hist.new.Var(edges, name="x").Double()
+            h[...] = values
+            plot_art = mplhep.histplot(h, ax=ax, **hist_kwargs)
+            return h, edges, plot_art
 

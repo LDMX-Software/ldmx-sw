@@ -137,10 +137,11 @@ class Differ :
         denominator, bins, _denominator_art = raw_histograms[0]
         bin_centers = (bins[1:]+bins[:-1])/2
         for values, _bins, art in raw_histograms[1:]:
-            ratio_ax.scatter(
-                bin_centers,
-                np.divide(values, np.where(denominator == 0, np.nan, denominator)),
-                color = art[0].get_edgecolor()
+            with np.errstate(invalid='ignore', divide='ignore'):
+                ratio_ax.scatter(
+                    bin_centers,
+                    np.divide(values, np.where(denominator == 0, np.nan, denominator)),
+                    # color = art[0].get_edgecolor()[0] if isinstance(art, list) else art.get_edgecolor()[0]
             )
 
         ratio_ax.set_ylabel('Ratio')
