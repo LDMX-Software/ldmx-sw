@@ -2,14 +2,24 @@
  * @file EcalClusterAnalyzer.h
  * @brief Analysis of cluster performance
  * @author Ella Viirola, Lund University
+ * @author Tamas Almos Vami, UCSB
  */
 
 #ifndef DQM_ECALCLUSTERANALYZER_H
 #define DQM_ECALCLUSTERANALYZER_H
 
+#include <algorithm>
+#include <fstream>
+#include <iostream>
+
 // LDMX Framework
+#include "DetDescr/SimSpecialID.h"
+#include "Ecal/Event/EcalCluster.h"
+#include "Ecal/Event/EcalHit.h"
 #include "Framework/Configure/Parameters.h"
 #include "Framework/EventProcessor.h"
+#include "SimCore/Event/SimCalorimeterHit.h"
+#include "SimCore/Event/SimTrackerHit.h"
 
 namespace dqm {
 
@@ -24,8 +34,16 @@ class EcalClusterAnalyzer : public framework::Analyzer {
   ~EcalClusterAnalyzer() override = default;
   void configure(framework::config::Parameters& ps) override;
   void analyze(const framework::Event& event) override;
+  void onProcessStart() override;
+  void setHistLabels(const std::string& name,
+                     const std::vector<std::string>& labels);
 
  private:
+  /// Use the number of simulated electrons
+  /// instead of the number of determined by the TS track counting
+  bool use_simulated_electron_number_;
+
+  /// What is the number of electrons in the event?
   int nbr_of_electrons_;
 
   // Collection Name for SimHits
