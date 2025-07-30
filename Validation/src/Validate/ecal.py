@@ -110,6 +110,34 @@ def veto_results(d : Differ, out_dir = None) :
         log.info(f'plotting {col}')
         d.plot1d(col, name, out_dir = out_dir)
 
+@plotter(hist=True,event=False)
+def clue_cluster(d : Differ, out_dir = None) :
+    """
+    Plot ECal CLUE cluster features from the already created DQM histograms
+    Parameters
+    ----------
+    d : Differ
+        Differ containing files that are not event files (presumably histogram files)
+    """
+
+    prediction_type_labels = ['Underpredicted', 'Correct', 'Overpredicted']
+    d.plot1d("EcalClusterAnalyzer/EcalClusterAnalyzer_correctly_predicted_events",  "",
+            tick_labels=prediction_type_labels,
+            out_dir=out_dir,
+            )
+
+    features = [
+        ('EcalClusterAnalyzer/EcalClusterAnalyzer_number_of_clusters', 'Number of CLUE clusters'),
+        ('EcalClusterAnalyzer/EcalClusterAnalyzer_energy_percentage', 'Percentage of energy in cluster'),
+        ('EcalClusterAnalyzer/EcalClusterAnalyzer_clusterless_hits_percentage', 'Percentage of hits not in a cluster'),
+        ('EcalClusterAnalyzer/EcalClusterAnalyzer_sp_clue_distance', 'CLUE centroid to SP ele distance in xy-plane [mm]'),
+        ('EcalClusterAnalyzer/EcalClusterAnalyzer_sp_clue_x_residual', 'CLUE centroid X - SP ele X [mm]'),
+        ('EcalClusterAnalyzer/EcalClusterAnalyzer_sp_clue_y_residual', 'CLUE centroid Y - SP ele Y [mm]'),
+    ]
+    for col, name in features :
+        log.info(f'plotting {col}')
+        d.plot1d(col, name, out_dir = out_dir)
+
 @plotter(hist=False,event=True)
 def sim_hits(d : Differ, out_dir = None) :
     """Plot ECal-related validation plots

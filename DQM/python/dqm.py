@@ -910,6 +910,7 @@ class EcalClusterAnalyzer(ldmxcfg.Analyzer) :
     def __init__(self,name='EcalClusterAnalyzer') :
         super().__init__(name, "dqm::EcalClusterAnalyzer", 'DQM')
 
+        self.use_simulated_electron_number = False
         self.nbr_of_electrons = 2
 
         self.ecal_sim_hit_coll = "EcalSimHits"
@@ -924,20 +925,28 @@ class EcalClusterAnalyzer(ldmxcfg.Analyzer) :
 
         self.ecal_sp_hits_passname = ''
 
+
+        self.build1DHistogram("number_of_clusters", "Number of CLUE clusters", 5, -0.5, 4.5)
+        self.build1DHistogram("correctly_predicted_events", "Correct Cluster Count", 3, 0., 3.)
+
         # Need to mod for more than two electrons
-        self.build1DHistogram("ancestors", "Ancestors of particles", 4, 0, 3)
+        self.build1DHistogram("ancestors", "Ancestors of particles", 4, 0., 4.)
 
-        self.build1DHistogram("same_ancestor", "Percentage of hits in cluster coming from the electron that produced most hits", 21, 0, 105)
-        self.build1DHistogram("energy_percentage", "Percentage of energy in cluster coming from the electron that produced most of energy", 21, 0, 105)
-        self.build1DHistogram("mixed_hit_energy", "Percentage of total energy coming from hits with energy contributions from more than one electron", 21, 0, 105)
-        self.build1DHistogram("clusterless_hits", "Number of hits not in a cluster", 10, 0, 200)
-        self.build1DHistogram("clusterless_hits_percentage", "Percentage of hits not in a cluster", 21, 0, 105)
-        self.build1DHistogram("total_rechits_in_event", "Rechits per event", 20, 0, 500)
-        self.build1DHistogram("correctly_predicted_events", "Correctly predicted events", 3, 0, 3)
+        self.build1DHistogram("same_ancestor", "Percentage of hits in cluster coming from the electron that produced most hits", 21, 0., 105.)
+        self.build1DHistogram("energy_percentage", "Percentage of energy in cluster coming from the electron that produced most of energy", 21, 0., 105.)
+        self.build1DHistogram("mixed_hit_energy", "Percentage of total energy coming from hits with energy contributions from more than one electron", 21, 0., 105.)
+        self.build1DHistogram("clusterless_hits", "Number of hits not in a cluster", 10, 0., 200.)
+        self.build1DHistogram("clusterless_hits_percentage", "Percentage of hits not in a cluster", 21, 0., 105.)
+        self.build1DHistogram("total_rechits_in_event", "Number of RecHits", 20, 0., 500.)
 
-        self.build2DHistogram("total_energy_vs_hits", "Total energy (edep)", 30, 0, 150, "Hits in cluster", 20, 0, 200)
-        self.build2DHistogram("total_energy_vs_purity", "Total energy (edep)", 30, 0, 150, "Energy purity %", 21, 0, 105)
-        self.build2DHistogram("distance_energy_purity", "Distance in xy-plane", 20, 0, 220, "Energy purity %", 21, 0, 105)
+
+        self.build2DHistogram("total_energy_vs_hits", "Total energy (edep) [MeV]", 30, 0, 150, "Hits in cluster", 20, 0, 200)
+        self.build2DHistogram("total_energy_vs_purity", "Total energy (edep) [MeV]", 30, 0, 150, "Energy purity %", 21, 0, 105)
+        self.build2DHistogram("sp_ele_distance_vs_purity", "SP ele distance in xy-plane [mm]", 50, 0, 250, "Energy purity %", 21, 0, 105)
+        
+        self.build1DHistogram("sp_clue_distance", "CLUE centroid to SP ele distance in xy-plane [mm]", 125, 0., 250.)
+        self.build1DHistogram("sp_clue_x_residual", "CLUE centroid X - SP ele X [mm]", 250, -250., 250.)
+        self.build1DHistogram("sp_clue_y_residual", "CLUE centroid Y - SP ele Y [mm]", 250, -250., 250.)
 
 ecal_dqm = [
         EcalDigiVerify(),
