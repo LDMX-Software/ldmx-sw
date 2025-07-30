@@ -39,10 +39,6 @@ def dqm(d: Differ, out_dir=None):
     d.plot1d('HcalInefficiencyAnalyzer/HcalInefficiencyAnalyzer_efficiency',
              'Hcal part involved in veto',
              'Efficiency',
-             tick_labels=['', 'Back', 'Top', 'Bottom',
-                          'Right', 'Left', 'Any',
-                          'Both', 'Back only', 'Side only',
-                          'Neither', ''],
              out_dir=out_dir,
              yscale='linear',
 )

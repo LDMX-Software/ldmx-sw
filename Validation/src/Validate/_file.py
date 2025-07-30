@@ -170,14 +170,12 @@ class File :
         augment the name if necessary).
 
         Now, if the uproot object is a subclass of uproot's Histogram class,
-        we retrieve the bin edges from it, check that its dimension is one,
-        and plot the histogram using its values as the entry weights and the
-        loaded bin edges (the key-word arguments 'bins' and 'weights' are 
-        overwritten by the values read in from the file).
+        we convert it into a hist.Hist.
 
         If the uproot object is not a subclass of uproot's Histogram,
         then we assume that it is a branch and we extract a flattened
-        array of values from it using uproot.array and pandas.
+        array of values from it using uproot.array and then fill
+        a hist.Hist.
 
         Parameters
         ----------
@@ -204,7 +202,7 @@ class File :
                 data = obj(self.__df)
             h = hist.Hist.new.Reg(hist_kwargs.get('bins', 'auto'), name="x").Double()
             h.fill(data)
-            plot_art = mplhep.histplot(h, ax=ax, **hist_kwargs)
+            plot_art = h.plot1d(ax=ax, **hist_kwargs)
             return h, h.axes[0].edges, plot_art
 
         # If obj is a string, check if it's a DataFrame column or uproot object
@@ -212,7 +210,7 @@ class File :
             data = self.__df[obj]
             h = hist.Hist.new.Reg(hist_kwargs.get('bins', 'auto'), name="x").Double()
             h.fill(data)
-            plot_art = mplhep.histplot(h, ax=ax, **hist_kwargs)
+            plot_art = h.plot1d(ax=ax, **hist_kwargs)
             return h, h.axes[0].edges, plot_art
 
         # Handle uproot object
@@ -224,10 +222,7 @@ class File :
 
         if issubclass(type(uproot_obj), uproot.behaviors.TH1.Histogram):
             # Convert uproot histogram to hist.Hist
-            edges = uproot_obj.axis('x').edges()
-            values = uproot_obj.values()
-            h = hist.Hist.new.Var(edges, name="x").Double()
-            h[...] = values
-            plot_art = mplhep.histplot(h, ax=ax, **hist_kwargs)
+            h = uproot_obj.to_hist()
+            plot_art = h.plot1d(ax=ax, **hist_kwargs)
             return h, edges, plot_art
 
