@@ -245,6 +245,10 @@ compile-quick ncpu=num_cpus() *CONFIG='': (configure-quick) (build ncpu)
 # re-build ldmx-sw and then run a config
 recompFire config_py *ARGS: compile (fire config_py ARGS)
 
+# print out the environment configuration
+print-config:
+    denv config print
+
 # install the dependencies of the plotting module
 install-compare-plots-deps:
     denv python3 -m pip install -r ComparePlots/requirements.txt --no-cache --break-system-packages
