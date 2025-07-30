@@ -37,8 +37,6 @@ void EcalClusterAnalyzer::analyze(const framework::Event& event) {
   }
 
   int n_ecal_clusters = ecal_clusters.size();
-  ldmx_log(info) << "Number of ECal CLUE clusters: " << n_ecal_clusters
-                 << ", Number of electrons: " << nbr_of_electrons;
   // Fill histograms with the number of clusters
   histograms_.fill("number_of_clusters", n_ecal_clusters);
   // Fill simplied 3-bin histogram to check the prediction
@@ -67,15 +65,35 @@ void EcalClusterAnalyzer::analyze(const framework::Event& event) {
               return a.getTrackID() < b.getTrackID();
             });
 
-  // Collect positions of all electrons on the SP
+  ldmx_log(trace) << "Number of ECal Scoring Plane Hits: "
+                  << sorted_sp_hits.size();
+
+  // Collect positions of all recoil electrons on the SP
+  // relying on the track ID to identify them
+  unsigned int n_filled = 0;
   for (const ldmx::SimTrackerHit& sp_hit : sorted_sp_hits) {
-    if (sp_hit.getTrackID() <= nbr_of_electrons) {
+    if (sp_hit.getPdgID() != 11) continue;
+    if (sp_hit.getMomentum()[2] <= 0) continue;
+    ldmx::SimSpecialID hit_id(sp_hit.getID());
+    // Ecal scoring plane is plane 31
+    if (hit_id.plane() != 31) continue;
+    if (n_filled < nbr_of_electrons) {
+      ldmx_log(trace) << "\tSP Hit to be added with Track ID : "
+                      << sp_hit.getTrackID() << ", SP Hit Position ("
+                      << sp_hit.getPosition()[0] << ", "
+                      << sp_hit.getPosition()[1] << ", "
+                      << sp_hit.getPosition()[2] << ") mm";
       sp_electron_positions.push_back(sp_hit.getPosition());
+      n_filled++;
     }
   }
 
+  ldmx_log(info) << "Number of ECal CLUE clusters: " << n_ecal_clusters
+                 << ", TS counted electrons: " << nbr_of_electrons
+                 << ", SP electrons: " << sp_electron_positions.size();
+
   double sp_ele_dist{9999.};
-  if (nbr_of_electrons == 2) {
+  if (nbr_of_electrons == 2 && sp_electron_positions.size() > 1) {
     // Measures sp_ele_distance between two electrons in the ECal scoring plane
     // TODO: generalize for n electrons
     std::vector<float> pos1;
@@ -87,7 +105,11 @@ void EcalClusterAnalyzer::analyze(const framework::Event& event) {
 
   }  // end block about the scoring plane hits
 
+  ldmx_log(trace) << "Distance between the two e- in the ECal scoring plane: "
+                  << sp_ele_dist << " mm";
+
   // Loop over the rechits and find the matching simhits
+  ldmx_log(trace) << "Loop over the rechits and find the matching simhits";
   for (const auto& hit : ecal_rec_hits) {
     auto it = std::find_if(
         ecal_sim_hits.begin(), ecal_sim_hits.end(),
@@ -126,6 +148,7 @@ void EcalClusterAnalyzer::analyze(const framework::Event& event) {
 
   // Loop over the clusters
   int clustered_hits = 0;
+  ldmx_log(trace) << "Loop over the clusters, N = " << n_ecal_clusters;
   for (const auto& cl : ecal_clusters) {
     auto cluster_centroid_x = cl.getFirstLayerCentroidX();
     auto cluster_centroid_y = cl.getFirstLayerCentroidY();
@@ -143,11 +166,12 @@ void EcalClusterAnalyzer::analyze(const framework::Event& event) {
         sp_clue_x_residuals = sp_pos[0] - cluster_centroid_x;
         sp_clue_y_residuals = sp_pos[1] - cluster_centroid_y;
       }
-    }
+    }  // end loop on the scoring plane electron positions
     // Fill histogram with the distance to the closest scoring plane electron
-    ldmx_log(trace) << "Cluster centroid: (" << cluster_centroid_x << ", "
+    ldmx_log(trace) << "\tCluster centroid: (" << cluster_centroid_x << ", "
                     << cluster_centroid_y
-                    << "), min distance to SP electron: " << min_distance;
+                    << ") mm, min distance to SP electron: " << min_distance
+                    << " mm";
     histograms_.fill("sp_clue_distance", min_distance);
     histograms_.fill("sp_clue_x_residual", sp_clue_x_residuals);
     histograms_.fill("sp_clue_y_residual", sp_clue_y_residuals);
@@ -211,9 +235,10 @@ void EcalClusterAnalyzer::analyze(const framework::Event& event) {
       histograms_.fill("total_energy_vs_purity", energy_sum,
                        100. * (max_energy_contribution / energy_sum));
 
-      if (nbr_of_electrons == 2)
-        histograms_.fill("sp_ele_distance_energy_purity", sp_ele_dist,
+      if (nbr_of_electrons == 2) {
+        histograms_.fill("sp_ele_distance_vs_purity", sp_ele_dist,
                          100. * (max_energy_contribution / energy_sum));
+      }
     }
     if (n_sum > 0) {
       double n_max = *max_element(n_hits_from_electron.begin(),
