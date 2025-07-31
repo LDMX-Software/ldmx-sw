@@ -86,7 +86,7 @@ namespace hcal {
     // This currently uses truth-level information, but it should be replaced
     // by reconstructed tracker information, when available
     std::vector<double> gamma_p(3);
-    double gamma_E;
+    double gamma_E = 90000.;
     std::vector<double> gamma_x0(3);
 
     std::vector<double> recoil_p(3);
