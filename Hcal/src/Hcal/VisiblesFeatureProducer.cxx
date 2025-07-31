@@ -92,7 +92,6 @@ namespace hcal {
 	  for (auto const &sphit : targetSPHits) {
 	    if (sphit.getPosition()[2] > 0) {
 	      if (it.first == sphit.getTrackID()) {
-		//std::cout << "PDG ID: " << it.second.getPdgID() << ", Energy: " << sphit.getEnergy() << std::endl;
 		if (it.second.getPdgID() == 622) {
 		  std::vector<float> x0f = sphit.getPosition();
 		  std::vector<double> x0d(x0f.begin(), x0f.end());
@@ -120,7 +119,6 @@ namespace hcal {
 	}
       }
     }
-    std::cout << "-----------------------------------------------\n";
 
     double pMag = 0.;
     if (foundRecoile) {
@@ -134,7 +132,6 @@ namespace hcal {
     double ecalE = 0.;
     double hcalE = 0.;
     bool hcalContainment = true;
-    double sidehcalE = 0.;
 
     for (const ldmx::EcalHit & hit : ecalRecHits) {
       if (hit.getEnergy() > 0.) {
@@ -145,7 +142,6 @@ namespace hcal {
       if (hit.getEnergy() > 0.) {
 	ldmx::HcalID detID(hit.getID());
 	if (detID.getSection() != 0) {
-	  sidehcalE += 12.*hit.getEnergy();
 	  continue;
 	}
 	if (detID.getLayerID() == 1 && hit.getPE() > 5) {
@@ -155,10 +151,8 @@ namespace hcal {
       }
     }
 
-    //std::cout << ecalE << " MeV in ECal, " << hcalE << " MeV in back HCal, " << pMag << " MeV/c momentum recoil e, " << sidehcalE << " MeV in side HCal" << std::endl;
     // If trigger requirement is met
     if (ecalE < 3160 && hcalE > 4840 && hcalContainment && pMag < 2400) {
-      //if (ecalE < 3160 && hcalContainment && pMag < 2400) {
       // initialize all of the features
       int nLayersHit_ = 0;
       double xStd_ = 0.;
@@ -175,8 +169,6 @@ namespace hcal {
 
       double zMean = 0.; // need this when calculating zStd_
       std::vector<int> layersHit;
-
-      std::map<int, double> energymap;
       
       for (const ldmx::HcalHit & hit : hcalRecHits) {
 	if (hit.getEnergy() > 0.) {
@@ -184,7 +176,7 @@ namespace hcal {
 	  if (detID.getSection() != 0) { // skip hits that aren't in main Hcal
 	    continue;
 	  }
-	  if (abs(hit.getXPos()) > 1000 || abs(hit.getYPos()) > 1000) {
+	  if (fabs(hit.getXPos()) > 1000 || fabs(hit.getYPos()) > 1000) {
 	    continue;
 	  }
 	  
@@ -200,8 +192,6 @@ namespace hcal {
 	  yMean_ += y*hit.getEnergy();
 	  zMean  += z*hit.getEnergy();
 	  rMean_ += r*hit.getEnergy();
-
-	  energymap[detID.getLayerID()] += hit.getEnergy();
 	  
 	  // check if this is a new layer in the collection
 	  if (!(std::find(layersHit.begin(), layersHit.end(), detID.getLayerID()) != layersHit.end())) {
@@ -218,7 +208,7 @@ namespace hcal {
 	  for (const ldmx::HcalHit &hit2 : hcalRecHits) {
 	    if (hit2.getEnergy() > 0.) {
 	      ldmx::HcalID detID2(hit2.getID());
-	      if (abs(hit2.getXPos()) > 1000 || abs(hit2.getYPos()) > 1000) {
+	      if (fabs(hit2.getXPos()) > 1000 || fabs(hit2.getYPos()) > 1000) {
 		continue;
 	      }
 	      if (detID2.getLayerID() == detID.getLayerID()) {
@@ -226,16 +216,16 @@ namespace hcal {
 		// Odd layers have horizontal strips
 		// Even layers have vertical strips
 		if (detID2.getLayerID() % 2 == 0) {
-		  if (abs(hit2.getYPos() - y) > 0) {
-		    if (abs(hit2.getYPos() - y) < closestpoint) {
+		  if (fabs(hit2.getYPos() - y) > 0) {
+		    if (fabs(hit2.getYPos() - y) < closestpoint) {
 		      closestpoint = abs(hit2.getYPos() - y);
 		    }
 		  }
 		}
 		else {
-		  if (abs(hit2.getXPos() - x) > 0) {
-		    if (abs(hit2.getXPos() - x) < closestpoint) {
-		      closestpoint = abs(hit2.getXPos() - x);
+		  if (fabs(hit2.getXPos() - x) > 0) {
+		    if (fabs(hit2.getXPos() - x) < closestpoint) {
+		      closestpoint = fabs(hit2.getXPos() - x);
 		    }
 		  }
 		}
@@ -262,7 +252,7 @@ namespace hcal {
 
       for (const ldmx::HcalHit &hit : hcalRecHits) {
 	if (hit.getEnergy() > 0.) {
-	  if (abs(hit.getXPos()) > 1000 || abs(hit.getYPos()) > 1000) {
+	  if (fabs(hit.getXPos()) > 1000 || fabs(hit.getYPos()) > 1000) {
             continue;
           }
 	  ldmx::HcalID detID(hit.getID());
@@ -280,7 +270,6 @@ namespace hcal {
 	zStd_ = sqrt(zStd_/summedDet_);
       }
 
-      auto it = energymap.begin();
 
       // Fill histograms
       histograms_.fill("layershit", nLayersHit_);
@@ -295,9 +284,6 @@ namespace hcal {
       histograms_.fill("nHits", nReadoutHits_);
       histograms_.fill("Etot", hcalE);
       histograms_.fill("photonProj", rMeanFromPhotonProj_);
-      histograms_.fill("firstdEdx", it->second);
-      ++it;
-      histograms_.fill("seconddEdx", it->second);
 
       bdtFeatures_.push_back(nLayersHit_);
       bdtFeatures_.push_back(xStd_);

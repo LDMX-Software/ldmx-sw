@@ -121,10 +121,9 @@ class VisiblesCutflow(ldmxcfg.Analyzer) :
 
         self.ecal_veto_coll_name = "EcalVeto"
         self.ecal_veto_pass_name = ''
-        self.ecal_disc_cut = 0.99741
+        self.ecal_disc_cut = 0.99741 # assumes SegMip disc
 
-        ## Define histograms ##
-
+        ## Histograms for efficiency ##
         self.build1DHistogram("totalevents", "totalevents", 40, 0, 2000)
         self.build1DHistogram("acceptance", "acceptance", 40, 0, 2000)
         self.build1DHistogram("passtrigger", "passtrigger", 40, 0, 2000)
@@ -134,17 +133,20 @@ class VisiblesCutflow(ldmxcfg.Analyzer) :
         self.build1DHistogram("hcalEnergyReq", "hcalEnergyReq", 40, 0, 2000)
         self.build1DHistogram("containment", "containment", 40, 0, 2000)
         self.build1DHistogram("passVisiblesBDT", "passVisiblesBDT", 40, 0, 2000)
+
+        ## Histograms for BDT performance plots ##
         self.build1DHistogram("visiblesDisc", "visiblesDisc", 100, 0, 1)
         self.build1DHistogram("visiblesDiscHigh", "visiblesDiscHigh", 10000, 0.999, 1)
         self.build1DHistogram("visiblesDiscHighNorm", "visiblesDiscHighNorm", 10000, 0.999, 1)
         self.build2DHistogram("ecalDiscvsVisDisc", "visDisc", 1000, 0.9999, 1, "ecalDisc", 1000, 0.999, 1)
-        
         self.build1DHistogram("ROC", "ROC", 10000, 0.99, 1)
         self.build1DHistogram("nevents", "nevents", 1, 0, 2)
 
+        ## LLP kinematics histograms ##
         self.build1DHistogram("beamEnergyFrac", "beamEnergyFrac", 100, 0.5, 1)
         self.build1DHistogram("beamAngle", "beamAngle", 100, 0, 0.5)
 
+        ## BDT feature histograms ##
         self.build1DHistogram("layershit", "layershit", 100, 0, 100);
         self.build1DHistogram("xStd", "xStd", 80, 0, 800);
         self.build1DHistogram("yStd", "yStd", 80, 0, 800);
