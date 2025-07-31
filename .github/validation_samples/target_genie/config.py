@@ -6,7 +6,7 @@ p.maxTriesPerEvent = 10000
 from LDMX.Biasing import ecal
 from LDMX.SimCore import generators as gen
 from LDMX.SimCore import simulator as sim
-det = 'ldmx-det-v14-8gev'
+det = 'ldmx-det-v15-8gev'
 mySim = sim.simulator('sim')
 mySim.setDetector(det, True)
 genie = gen.genie(name=f'genie_G18_02a_02_11b',
