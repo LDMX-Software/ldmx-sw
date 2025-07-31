@@ -6,7 +6,7 @@ import logging
 
 log = logging.getLogger('performance')
 
-@plotter(hist=True,event=False)
+@plotter
 def event_timing(d : Differ, out_dir = None) :
     """Plot time it took to process events
 

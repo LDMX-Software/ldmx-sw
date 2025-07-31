@@ -108,25 +108,13 @@ if __name__ == '__main__' :
 
     logging.debug(f'ROOT Files: {root_files}')
 
-    hd = Differ(label, output_type, *[f for f in root_files if not f.is_events()])
-    ed = Differ(label, output_type, *[f for f in root_files if f.is_events()])
+    hd = Differ(label, output_type, *[f for f in root_files])
 
     logging.debug(f'histogram differ = {hd}')
-    logging.debug(f'event differ = {ed}')
 
     for syst in arg.systems :
         logging.info(f'running {syst}')
-        h, e, plot = plotter.__registry__[syst]
-        if h and e :
-            logging.debug('both hist and event plotter')
-            plot(hd, ed, out_dir = out_dir)
-        elif h :
-            logging.debug('both hist-only plotter')
-            plot(hd, out_dir = out_dir)
-        elif e :
-            logging.debug('both event-only plotter')
-            plot(ed, out_dir = out_dir)
-        else :
-            logging.warn(f'Not running {syst} since it was not registered properly.')
+        plot = plotter.__registry__[syst]
+        plot(hd, out_dir = out_dir)
 
     print("Plots are created under the directory '" + out_dir + "'")

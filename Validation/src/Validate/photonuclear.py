@@ -6,7 +6,7 @@ import logging
 
 log = logging.getLogger('photonuclear')
 
-@plotter(hist=True, event=False)
+@plotter
 def pndqm(d: Differ, out_dir=None):
     event_type_labels = ['', 'Nothing hard', 'n', 'nn', '≥ 3n', 'π', 'ππ',
                'π₀', 'πA', 'π2A', 'ππA', 'π₀A',

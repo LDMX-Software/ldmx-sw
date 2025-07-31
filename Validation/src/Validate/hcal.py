@@ -5,7 +5,7 @@ import logging
 
 log = logging.getLogger('hcal')
 
-@plotter(hist=True, event=False)
+@plotter
 def dqm(d: Differ, out_dir=None):
     sections = ['back', 'top', 'bottom', 'left', 'right']
     histogram_name_format = 'hcal_dqm_{0}/hcal_dqm_{0}_{1}'

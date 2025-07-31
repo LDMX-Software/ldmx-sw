@@ -6,7 +6,7 @@ import logging
 
 log = logging.getLogger('dark_brem')
 
-@plotter(hist=True,event=False)
+@plotter
 def kinematics(d : Differ, out_dir = None) :
     """Plot Dark Brem interaction histograms
 
