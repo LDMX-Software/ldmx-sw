@@ -240,7 +240,7 @@ namespace hcal {
 	if (detID.getSection() != 0) { // skip hits that aren't in main Hcal
 	  continue;
 	}
-	if (abs(hit.getXPos()) > 1000 || abs(hit.getYPos()) > 1000) {
+	if (fabs(hit.getXPos()) > 1000 || fabs(hit.getYPos()) > 1000) {
 	  continue;
 	}
 	nReadoutHits_ += 1;
@@ -271,7 +271,7 @@ namespace hcal {
 	for (const ldmx::HcalHit &hit2 : hcalRecHits) {
 	  if (hit2.getEnergy() > 0.) {
 	    ldmx::HcalID detID2(hit2.getID());
-	    if (abs(hit2.getXPos()) > 1000 || abs(hit2.getYPos()) > 1000) {
+	    if (fabs(hit2.getXPos()) > 1000 || fabs(hit2.getYPos()) > 1000) {
 	      continue;
 	    }
 	    if (detID2.getLayerID() == detID.getLayerID()) {
@@ -279,16 +279,16 @@ namespace hcal {
 	      // Odd layers have horizontal strips
 	      // Even layers have vertical strips
 	      if (detID2.getLayerID() % 2 == 0) {
-		if (abs(hit2.getYPos() - y) > 0) {
-		  if (abs(hit2.getYPos() - y) < closestpoint) {
+		if (fabs(hit2.getYPos() - y) > 0) {
+		  if (fabs(hit2.getYPos() - y) < closestpoint) {
 		    closestpoint = abs(hit2.getYPos() - y);
 		  }
 		}
 	      }
 	      else {
-		if (abs(hit2.getXPos() - x) > 0) {
-		  if (abs(hit2.getXPos() - x) < closestpoint) {
-		    closestpoint = abs(hit2.getXPos() - x);
+		if (fabs(hit2.getXPos() - x) > 0) {
+		  if (fabs(hit2.getXPos() - x) < closestpoint) {
+		    closestpoint = fabs(hit2.getXPos() - x);
 		  }
 		}
 	      }
@@ -315,7 +315,7 @@ namespace hcal {
     
     for (const ldmx::HcalHit &hit : hcalRecHits) {
       if (hit.getEnergy() > 0.) {
-	if (abs(hit.getXPos()) > 1000 || abs(hit.getYPos()) > 1000) {
+	if (fabs(hit.getXPos()) > 1000 || fabs(hit.getYPos()) > 1000) {
 	  continue;
 	}
 	ldmx::HcalID detID(hit.getID());
