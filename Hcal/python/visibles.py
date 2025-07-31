@@ -43,9 +43,9 @@ class VisiblesVetoProcessor(ldmxcfg.Producer) :
 
         self.verbose = False
         self.feature_list_name = "input"
-        self.bdt_file = makeBDTPath("visibles_v1")
+        self.bdt_file = makeBDTPath("visibles_v2")
         self.beam_energy = 8000.0 # in MeV
-        self.disc_cut = 0.9999825
+        self.disc_cut = 0.999965
         self.collection_name = "VisiblesVeto"
         self.rec_coll_name = "HcalRecHits"
         self.rec_pass_name = ''
@@ -63,6 +63,7 @@ class VisiblesFeatureProducer(ldmxcfg.Analyzer) :
         super().__init__(name, 'hcal::VisiblesFeatureProducer', 'Hcal')
 
         ## Parameters choose whether to save features to .txt file ##
+        ## Useful for training a Python-based BDT                  ##
         self.training = False
         self.training_file = ""
 
