@@ -11,6 +11,8 @@
 #include "SimCore/Event/SimCalorimeterHit.h"
 #include "Ecal/Event/EcalVetoResult.h"
 
+#include "DetDescr/EcalID.h"
+
 // C++
 #include <iostream>
 #include <fstream>
@@ -69,11 +71,6 @@ namespace hcal {
     auto particle_map{event.getMap<int, ldmx::SimParticle>("SimParticles", sim_particles_pass_name_)};
 
     for (auto const &it : particle_map) {
-      if (it.second.getPdgID() == 622) {
-	std::vector<double> p = it.second.getMomentum();
-	histograms_.fill("beamEnergyFrac", it.second.getEnergy()/8000.);
-	histograms_.fill("beamAngle", std::acos(p[2]/std::sqrt(p[0]*p[0] + p[1]*p[1] + p[2]*p[2])));;
-      }
       std::vector<int> parents = it.second.getParents();
       for (int trackid : parents) {
 	if (trackid == 0 && it.second.getPdgID() == -11) {
@@ -89,6 +86,7 @@ namespace hcal {
     // This currently uses truth-level information, but it should be replaced
     // by reconstructed tracker information, when available
     std::vector<double> gamma_p(3);
+    double gamma_E;
     std::vector<double> gamma_x0(3);
 
     std::vector<double> recoil_p(3);
@@ -121,6 +119,7 @@ namespace hcal {
 		  std::vector<double> x0d(x0f.begin(), x0f.end());
 		  gamma_x0 = x0d;
 		  gamma_p = sphit.getMomentum();
+		  gamma_E = sphit.getEnergy();
 		  foundRec = true;
 		}
 		if (it.second.getPdgID() == 11 && in_list(it.second.getParents(), 0)) {
@@ -131,6 +130,7 @@ namespace hcal {
 		    gamma_p[0] = -1.*sphit.getMomentum()[0];
 		    gamma_p[1] = -1.*sphit.getMomentum()[1];
 		    gamma_p[2] = beamEnergyMeV_ - sphit.getMomentum()[2];
+		    gamma_E = beamEnergyMeV_ - sphit.getEnergy();
 		    foundRec = true;
 		  }
 		  recoil_p = sphit.getMomentum();
@@ -142,6 +142,8 @@ namespace hcal {
 	}
       }
     }
+    histograms_.fill("beamEnergyFrac", gamma_E/8000.);
+    histograms_.fill("beamAngle", std::acos(gamma_p[2]/std::sqrt(gamma_p[0]*gamma_p[0] + gamma_p[1]*gamma_p[1] + gamma_p[2]*gamma_p[2])));;
 
     double pMag = 0.;
     if (foundRecoilE) {
