@@ -14,39 +14,37 @@
 
 namespace hcal {
 
-  class VisiblesFeatureProducer : public framework::Analyzer {
-  public:
-    VisiblesFeatureProducer(const std::string& name, framework::Process& process)
+class VisiblesFeatureProducer : public framework::Analyzer {
+ public:
+  VisiblesFeatureProducer(const std::string& name, framework::Process& process)
       : Analyzer(name, process) {}
 
-    ~VisiblesFeatureProducer() override = default;
+  ~VisiblesFeatureProducer() override = default;
 
-    void configure(framework::config::Parameters& parameters) override;
+  void configure(framework::config::Parameters& parameters) override;
 
-    void analyze(const framework::Event& event) override;
+  void analyze(const framework::Event& event) override;
 
-  private:
+ private:
+  bool training_{false};
+  std::string trainingFile_;
 
-    bool training_{false};
-    std::string trainingFile_;
+  double beamEnergyMeV_{0.};
 
-    double beamEnergyMeV_{0.};
+  std::string hcal_rec_collection_;
+  std::string hcal_rec_pass_name_;
+  std::string ecal_rec_collection_;
+  std::string ecal_rec_pass_name_;
+  bool recoil_from_tracking_{false};
+  std::string track_collection_;
+  std::string track_pass_name_;
+  std::string sp_collection_;
+  std::string sp_pass_name_;
+  std::string sim_particles_pass_name_;
 
-    std::string hcal_rec_collection_;
-    std::string hcal_rec_pass_name_;
-    std::string ecal_rec_collection_;
-    std::string ecal_rec_pass_name_;
-    bool recoil_from_tracking_{false};
-    std::string track_collection_;
-    std::string track_pass_name_;
-    std::string sp_collection_;
-    std::string sp_pass_name_;
-    std::string sim_particles_pass_name_;
+  bool in_list(std::vector<int> parents, int a);
+};
 
-    bool in_list(std::vector<int> parents, int a);
-
-  };
-  
-} // namespace hcal
+}  // namespace hcal
 
 #endif
