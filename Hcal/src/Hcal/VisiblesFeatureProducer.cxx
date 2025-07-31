@@ -218,7 +218,7 @@ namespace hcal {
 		if (detID2.getLayerID() % 2 == 0) {
 		  if (fabs(hit2.getYPos() - y) > 0) {
 		    if (fabs(hit2.getYPos() - y) < closestpoint) {
-		      closestpoint = abs(hit2.getYPos() - y);
+		      closestpoint = fabs(hit2.getYPos() - y);
 		    }
 		  }
 		}
