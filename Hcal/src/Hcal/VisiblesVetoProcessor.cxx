@@ -33,7 +33,6 @@ void VisiblesVetoProcessor::buildBDTFeatureVector(
 
 void VisiblesVetoProcessor::configure(
     framework::config::Parameters &parameters) {
-  verbose_ = parameters.get<bool>("verbose");
   feature_list_name_ = parameters.get<std::string>("feature_list_name");
   // Load BDT ONNX file
   rt_ = std::make_unique<ldmx::Ort::ONNXRuntime>(
@@ -153,17 +152,17 @@ void VisiblesVetoProcessor::produce(framework::Event &event) {
         continue;
       }
       n_readout_hits_ += 1;
-      double x = hit.getXPos();
-      double y = hit.getYPos();
-      double z = hit.getZPos();
-      double r = sqrt(pow(x, 2) + pow(y, 2));
+      double hit_x = hit.getXPos();
+      double hit_y = hit.getYPos();
+      double hit_z = hit.getZPos();
+      double hit_r = sqrt(hit_x * hit_x + hit_y * hit_y);
 
       summed_det_ += hit.getEnergy();
 
-      x_mean_ += x * hit.getEnergy();
-      y_mean_ += y * hit.getEnergy();
-      z_mean += z * hit.getEnergy();
-      r_mean_ += r * hit.getEnergy();
+      x_mean_ += hit_x * hit.getEnergy();
+      y_mean_ += hit_y * hit.getEnergy();
+      z_mean += hit_z * hit.getEnergy();
+      r_mean_ += hit_r * hit.getEnergy();
 
       // check if this is a new layer in the collection
       if (!(std::find(layers_hit.begin(), layers_hit.end(),
@@ -171,11 +170,11 @@ void VisiblesVetoProcessor::produce(framework::Event &event) {
         layers_hit.push_back(detID.getLayerID());
       }
 
-      double x_proj = gamma_x0[0] + (z - gamma_x0[2]) * gamma_p[0] / gamma_p[2];
-      double y_proj = gamma_x0[1] + (z - gamma_x0[2]) * gamma_p[1] / gamma_p[2];
+      double proj_x = gamma_x0[0] + (hit_z - gamma_x0[2]) * gamma_p[0] / gamma_p[2];
+      double proj_y = gamma_x0[1] + (hit_z - gamma_x0[2]) * gamma_p[1] / gamma_p[2];
 
       r_mean_from_photon_track_ +=
-          hit.getEnergy() * sqrt(pow(x - x_proj, 2) + pow(y - y_proj, 2));
+	hit.getEnergy() * sqrt((hit_x - proj_x) * (hit_x - proj_x) + (hit_y - proj_y) * (hit_y - proj_y));
 
       // Calculate isolated hits
       double closest_point = 9999.;
@@ -187,15 +186,15 @@ void VisiblesVetoProcessor::produce(framework::Event &event) {
             // (along x-axis) Odd layers have horizontal strips Even layers have
             // vertical strips
             if (detID2.getLayerID() % 2 == 0) {
-              if (abs(hit2.getYPos() - y) > 0) {
-                if (abs(hit2.getYPos() - y) < closest_point) {
-                  closest_point = abs(hit2.getYPos() - y);
+              if (abs(hit2.getYPos() - hit_y) > 0) {
+                if (abs(hit2.getYPos() - hit_y) < closest_point) {
+                  closest_point = abs(hit2.getYPos() - hit_y);
                 }
               }
             } else {
-              if (abs(hit2.getXPos() - x) > 0) {
-                if (abs(hit2.getXPos() - x) < closest_point) {
-                  closest_point = abs(hit2.getXPos() - x);
+              if (abs(hit2.getXPos() - hit_x) > 0) {
+                if (abs(hit2.getXPos() - hit_x) < closest_point) {
+                  closest_point = abs(hit2.getXPos() - hit_x);
                 }
               }
             }
@@ -224,9 +223,9 @@ void VisiblesVetoProcessor::produce(framework::Event &event) {
     if (hit.getEnergy() > 0.) {
       ldmx::HcalID detID(hit.getID());
       if (detID.getSection() == 0) {
-        x_std_ += hit.getEnergy() * pow(hit.getXPos() - x_mean_, 2);
-        y_std_ += hit.getEnergy() * pow(hit.getYPos() - y_mean_, 2);
-        z_std_ += hit.getEnergy() * pow(hit.getZPos() - z_mean, 2);
+        x_std_ += hit.getEnergy() * (hit.getXPos() - x_mean_) * (hit.getXPos() - x_mean_);
+        y_std_ += hit.getEnergy() * (hit.getYPos() - y_mean_) * (hit.getYPos() - y_mean_);
+        z_std_ += hit.getEnergy() * (hit.getZPos() - z_mean) * (hit.getZPos() - z_mean);
       }
     }
   }
