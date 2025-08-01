@@ -27,9 +27,9 @@ class VisiblesFeatureProducer : public framework::Analyzer {
 
  private:
   bool training_{false};
-  std::string trainingFile_;
+  std::string training_file_;
 
-  double beamEnergyMeV_{0.};
+  double beam_energy_mev_{0.};
 
   std::string hcal_rec_collection_;
   std::string hcal_rec_pass_name_;
@@ -42,7 +42,7 @@ class VisiblesFeatureProducer : public framework::Analyzer {
   std::string sp_pass_name_;
   std::string sim_particles_pass_name_;
 
-  bool in_list(std::vector<int> parents, int a);
+  bool inList(std::vector<int> parents, int track_id);
 };
 
 }  // namespace hcal

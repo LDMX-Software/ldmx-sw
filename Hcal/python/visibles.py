@@ -43,7 +43,7 @@ class VisiblesVetoProcessor(ldmxcfg.Producer) :
 
         self.verbose = False
         self.feature_list_name = "input"
-        self.bdt_file = makeBDTPath("visibles_v2")
+        self.bdt_file = makeBDTPath("visibles")
         self.beam_energy = 8000.0 # in MeV
         self.disc_cut = 0.999965
         self.collection_name = "VisiblesVeto"
@@ -82,20 +82,18 @@ class VisiblesFeatureProducer(ldmxcfg.Analyzer) :
         
         ## Define histograms ##
 
-        self.build1DHistogram("layershit", "layershit", 100, 0, 100);
-        self.build1DHistogram("xStd", "xStd", 80, 0, 800);
-        self.build1DHistogram("yStd", "yStd", 80, 0, 800);
-        self.build1DHistogram("zStd", "zStd", 100, 0, 1000)
-        self.build1DHistogram("xMean", "xMeean", 80, -800, 800)
-        self.build1DHistogram("yMean", "yMean", 80, -800, 800)
-        self.build1DHistogram("rMean", "rMean", 80, 0, 800)
-        self.build1DHistogram("isoHits", "isoHits", 100, 0, 100)
-        self.build1DHistogram("isoE", "isoE", 80, 0, 800)
-        self.build1DHistogram("nHits", "nHits", 200, 0, 200)
-        self.build1DHistogram("Etot", "Etot", 100, 4800, 9800)
-        self.build1DHistogram("photonProj", "photonProj", 80, 0, 800)
-        self.build1DHistogram("firstdEdx", "firstdEdx", 50, 0, 500)
-        self.build1DHistogram("seconddEdx", "seconddEdx", 50, 0, 500)
+        self.build1DHistogram("layers_hit", "layers_hit", 100, 0, 100);
+        self.build1DHistogram("x_std", "x_std", 80, 0, 800);
+        self.build1DHistogram("y_std", "y_std", 80, 0, 800);
+        self.build1DHistogram("z_std", "z_std", 100, 0, 1000)
+        self.build1DHistogram("x_mean", "x_meean", 80, -800, 800)
+        self.build1DHistogram("y_mean", "y_mean", 80, -800, 800)
+        self.build1DHistogram("r_mean", "r_mean", 80, 0, 800)
+        self.build1DHistogram("iso_hits", "iso_hits", 100, 0, 100)
+        self.build1DHistogram("iso_energy", "iso_energy", 80, 0, 800)
+        self.build1DHistogram("n_hits", "n_hits", 200, 0, 200)
+        self.build1DHistogram("total_energy", "total_energy", 100, 4800, 9800)
+        self.build1DHistogram("photon_track", "photon_track", 80, 0, 800)
 
 class VisiblesCutflow(ldmxcfg.Analyzer) :
     """Just plot the visibles features"""
@@ -125,38 +123,37 @@ class VisiblesCutflow(ldmxcfg.Analyzer) :
         self.ecal_disc_cut = 0.99741 # assumes SegMip disc
 
         ## Histograms for efficiency ##
-        self.build1DHistogram("totalevents", "totalevents", 40, 0, 2000)
-        self.build1DHistogram("acceptance", "acceptance", 40, 0, 2000)
-        self.build1DHistogram("passtrigger", "passtrigger", 40, 0, 2000)
-        self.build1DHistogram("ecalenergy", "ecalenergy", 40, 0, 2000)
-        self.build1DHistogram("passTrackerVeto", "passTrackerVeto", 40, 0, 2000)
-        self.build1DHistogram("passEcalBDT", "passEcalBDT", 40, 0, 2000)
-        self.build1DHistogram("hcalEnergyReq", "hcalEnergyReq", 40, 0, 2000)
-        self.build1DHistogram("containment", "containment", 40, 0, 2000)
-        self.build1DHistogram("passVisiblesBDT", "passVisiblesBDT", 40, 0, 2000)
+        self.build1DHistogram("total_events", "total_events", 40, 0, 2000)
+        self.build1DHistogram("pass_acceptance", "pass_acceptance", 40, 0, 2000)
+        self.build1DHistogram("pass_trigger", "pass_trigger", 40, 0, 2000)
+        self.build1DHistogram("pass_ecal_energy", "pass_ecal_energy", 40, 0, 2000)
+        self.build1DHistogram("pass_tracker_veto", "pass_tracker_veto", 40, 0, 2000)
+        self.build1DHistogram("pass_ecal_bdt", "pass_ecal_bdt", 40, 0, 2000)
+        self.build1DHistogram("pass_hcal_energy", "pass_hcal_energy", 40, 0, 2000)
+        self.build1DHistogram("pass_hcal_containment", "pass_hcal_containment", 40, 0, 2000)
+        self.build1DHistogram("pass_visibles_bdt", "pass_visibles_bdt", 40, 0, 2000)
 
         ## Histograms for BDT performance plots ##
-        self.build1DHistogram("visiblesDisc", "visiblesDisc", 100, 0, 1)
-        self.build1DHistogram("visiblesDiscHigh", "visiblesDiscHigh", 10000, 0.999, 1)
-        self.build1DHistogram("visiblesDiscHighNorm", "visiblesDiscHighNorm", 10000, 0.999, 1)
-        self.build2DHistogram("ecalDiscvsVisDisc", "visDisc", 1000, 0.9999, 1, "ecalDisc", 1000, 0.999, 1)
-        self.build1DHistogram("ROC", "ROC", 10000, 0.99, 1)
-        self.build1DHistogram("nevents", "nevents", 1, 0, 2)
+        self.build1DHistogram("visibles_disc", "visibles_disc", 100, 0, 1)
+        self.build1DHistogram("visibles_disc_high", "visibles_disc_high", 10000, 0.999, 1)
+        self.build1DHistogram("visibles_disc_high_norm", "visibles_disc_high_norm", 10000, 0.999, 1)
+        self.build2DHistogram("ecal_disc_vs_vis_disc", "vis_disc", 1000, 0.9999, 1, "ecal_disc", 1000, 0.999, 1)
+        self.build1DHistogram("roc", "roc", 10000, 0.99, 1)
 
         ## LLP kinematics histograms ##
-        self.build1DHistogram("beamEnergyFrac", "beamEnergyFrac", 100, 0.5, 1)
-        self.build1DHistogram("beamAngle", "beamAngle", 100, 0, 0.5)
+        self.build1DHistogram("beam_energy_frac", "beam_energy_frac", 100, 0.5, 1)
+        self.build1DHistogram("beam_angle", "beam_angle", 100, 0, 0.5)
 
         ## BDT feature histograms ##
-        self.build1DHistogram("layershit", "layershit", 100, 0, 100);
-        self.build1DHistogram("xStd", "xStd", 80, 0, 800);
-        self.build1DHistogram("yStd", "yStd", 80, 0, 800);
-        self.build1DHistogram("zStd", "zStd", 100, 0, 1000)
-        self.build1DHistogram("xMean", "xMeean", 80, -800, 800)
-        self.build1DHistogram("yMean", "yMean", 80, -800, 800)
-        self.build1DHistogram("rMean", "rMean", 80, 0, 800)
-        self.build1DHistogram("isoHits", "isoHits", 100, 0, 100)
-        self.build1DHistogram("isoE", "isoE", 80, 0, 800)
-        self.build1DHistogram("nHits", "nHits", 200, 0, 200)
-        self.build1DHistogram("Etot", "Etot", 100, 4800, 9800)
-        self.build1DHistogram("photonProj", "photonProj", 80, 0, 800)
+        self.build1DHistogram("layers_hit", "layers_hit", 100, 0, 100);
+        self.build1DHistogram("x_std", "x_std", 80, 0, 800);
+        self.build1DHistogram("y_std", "y_std", 80, 0, 800);
+        self.build1DHistogram("z_std", "z_std", 100, 0, 1000)
+        self.build1DHistogram("x_mean", "x_mean", 80, -800, 800)
+        self.build1DHistogram("y_mean", "y_mean", 80, -800, 800)
+        self.build1DHistogram("r_mean", "r_mean", 80, 0, 800)
+        self.build1DHistogram("iso_hits", "iso_hits", 100, 0, 100)
+        self.build1DHistogram("iso_energy", "iso_energy", 80, 0, 800)
+        self.build1DHistogram("n_hits", "n_hits", 200, 0, 200)
+        self.build1DHistogram("total_energy", "total_energy", 100, 4800, 9800)
+        self.build1DHistogram("photon_track", "photon_track", 80, 0, 800)
