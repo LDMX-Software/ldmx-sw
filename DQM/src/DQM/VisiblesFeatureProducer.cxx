@@ -208,7 +208,8 @@ void VisiblesFeatureProducer::analyze(const framework::Event &event) {
             gamma_x0[1] + (hit_z - gamma_x0[2]) * gamma_p[1] / gamma_p[2];
 
         r_mean_from_photon_track +=
-	  hit.getEnergy() * sqrt((hit_x - proj_x) * (hit_x - proj_x) + (hit_y - proj_y) * (hit_y - proj_y));
+            hit.getEnergy() * sqrt((hit_x - proj_x) * (hit_x - proj_x) +
+                                   (hit_y - proj_y) * (hit_y - proj_y));
 
         // Calculate isolated hits
         double closest_point = 9999.;
@@ -229,7 +230,7 @@ void VisiblesFeatureProducer::analyze(const framework::Event &event) {
                   }
                 }
               }
-	      if (hit.isOrientationY()) {
+              if (hit.isOrientationY()) {
                 if (fabs(hit2.getXPos() - hit_x) > 0) {
                   if (fabs(hit2.getXPos() - hit_x) < closest_point) {
                     closest_point = fabs(hit2.getXPos() - hit_x);
@@ -264,9 +265,12 @@ void VisiblesFeatureProducer::analyze(const framework::Event &event) {
         }
         ldmx::HcalID detID(hit.getID());
         if (detID.getSection() == 0) {
-          x_std += hit.getEnergy() * (hit.getXPos() - x_mean) * (hit.getXPos() - x_mean);
-          y_std += hit.getEnergy() * (hit.getYPos() - y_mean) * (hit.getYPos() - y_mean);
-          z_std += hit.getEnergy() * (hit.getZPos() - z_mean) * (hit.getZPos() - z_mean);
+          x_std += hit.getEnergy() * (hit.getXPos() - x_mean) *
+                   (hit.getXPos() - x_mean);
+          y_std += hit.getEnergy() * (hit.getYPos() - y_mean) *
+                   (hit.getYPos() - y_mean);
+          z_std += hit.getEnergy() * (hit.getZPos() - z_mean) *
+                   (hit.getZPos() - z_mean);
         }
       }
     }
