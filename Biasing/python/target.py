@@ -198,7 +198,10 @@ def gamma_mumu( detector, generator ) :
 
     return sim
 
-def dark_brem( ap_mass , lhe, detector) :
+def dark_brem( ap_mass , lhe, detector, generator,
+             scale_APrime = False, decay_mode = 'no_decay', 
+             ap_tau = -1.0, dist_decay_min = 0.0,
+             dist_decay_max = 1.0) :
     """Example configuration for producing dark brem interactions in the target.
 
     This configures the sim to fire a 8 GeV electron upstream of the
@@ -243,6 +246,11 @@ def dark_brem( ap_mass , lhe, detector) :
     db_model = dark_brem.G4DarkBreMModel(lhe)
     db_model.threshold = 4. #GeV - minimum energy electron needs to have to dark brem
     db_model.epsilon   = 0.01 #decrease epsilon from one to help with Geant4 biasing calculations
+    db_model.scale_APrime = scale_APrime
+    db_model.decay_mode = decay_mode
+    db_model.ap_tau = ap_tau
+    db_model.dist_decay_min = dist_decay_min
+    db_model.dist_decay_max = dist_decay_max
     sim.dark_brem.activate( ap_mass , db_model )
 
     import math
