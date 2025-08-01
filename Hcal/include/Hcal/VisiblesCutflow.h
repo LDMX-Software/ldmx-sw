@@ -21,10 +21,10 @@ class VisiblesCutflow : public framework::Analyzer {
 
  private:
   std::unique_ptr<ldmx::Ort::ONNXRuntime> rt_;
-  double bdtCutVal_{0.};
-  std::string featureListName_;
+  double bdt_cut_val_{0.};
+  std::string feature_list_name_;
 
-  double beamEnergyMeV_{0.};
+  double beam_energy_mev_{0.};
 
   std::string hcal_rec_collection_;
   std::string hcal_rec_pass_name_;
@@ -38,9 +38,9 @@ class VisiblesCutflow : public framework::Analyzer {
   std::string sim_particles_pass_name_;
   std::string ecal_veto_collection_;
   std::string ecal_veto_pass_;
-  double ecalbdtCutVal_{0.};
+  double ecal_bdt_cut_val_{0.};
 
-  bool in_list(std::vector<int> parents, int a);
+  bool inList(std::vector<int> parents, int track_id);
 };
 
 }  // namespace hcal
