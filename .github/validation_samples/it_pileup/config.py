@@ -12,7 +12,7 @@ pileupFilePassName="pileup"
 thisPassName="overlay"
 p=ldmxcfg.Process(thisPassName)
 
-det = 'ldmx-det-v14-8gev'
+det = 'ldmx-det-v15-8gev'
 p.run = int(os.environ['LDMX_RUN_NUMBER'])
 p.maxEvents = int(os.environ['LDMX_NUM_EVENTS']) // 2
 
