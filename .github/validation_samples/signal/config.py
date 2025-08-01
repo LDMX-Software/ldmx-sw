@@ -4,6 +4,7 @@ p = ldmxcfg.Process('test')
 p.maxTriesPerEvent = 10000
 
 from LDMX.Biasing import target
+from LDMX.SimCore import generators
 det = 'ldmx-det-v15-8gev'
 mySim = target.dark_brem(
     #A' mass in MeV - set in init.sh to same value in GeV
@@ -12,7 +13,8 @@ mySim = target.dark_brem(
     #   easiest way to find this path out is by running `. init.sh` locally to see what
     #   is produced
     'electron_tungsten_MaxE_8.0_MinE_4.0_RelEStep_0.1_UndecayedAP_mA_0.01_run_1',
-    det
+    det,
+    generators.single_8gev_e_upstream_tagger()
 )
 
 p.sequence = [ mySim ]
