@@ -27,15 +27,11 @@ void VisiblesFeatureProducer::configure(
   beam_energy_mev_ = parameters.get<double>("beam_energy");
 
   // collection names
-  hcal_rec_collection_ =
-      parameters.get<std::string>("hcal_rec_coll_name");
-  hcal_rec_pass_name_ =
-      parameters.get<std::string>("hcal_rec_pass_name");
+  hcal_rec_collection_ = parameters.get<std::string>("hcal_rec_coll_name");
+  hcal_rec_pass_name_ = parameters.get<std::string>("hcal_rec_pass_name");
 
-  ecal_rec_collection_ =
-      parameters.get<std::string>("ecal_rec_coll_name");
-  ecal_rec_pass_name_ =
-      parameters.get<std::string>("ecal_rec_pass_name");
+  ecal_rec_collection_ = parameters.get<std::string>("ecal_rec_coll_name");
+  ecal_rec_pass_name_ = parameters.get<std::string>("ecal_rec_pass_name");
 
   recoil_from_tracking_ = parameters.get<bool>("recoil_from_tracking");
   track_collection_ = parameters.get<std::string>("track_collection");
@@ -107,7 +103,8 @@ void VisiblesFeatureProducer::analyze(const framework::Event &event) {
                   inList(it.second.getParents(), 0)) {
                 if (!found_rec) {
                   std::vector<float> x0_float = sphit.getPosition();
-                  std::vector<double> x0_double(x0_float.begin(), x0_float.end());
+                  std::vector<double> x0_double(x0_float.begin(),
+                                                x0_float.end());
                   gamma_x0 = x0_double;
                   gamma_p[0] = -1. * sphit.getMomentum()[0];
                   gamma_p[1] = -1. * sphit.getMomentum()[1];
@@ -157,7 +154,8 @@ void VisiblesFeatureProducer::analyze(const framework::Event &event) {
     }
   }
 
-  if (ecal_energy < 3160 && hcal_energy > 4840 && hcal_containment && p_mag < 2400) {
+  if (ecal_energy < 3160 && hcal_energy > 4840 && hcal_containment &&
+      p_mag < 2400) {
     // initialize all of the features
     int n_layers_hit = 0;
     double x_std = 0.;
