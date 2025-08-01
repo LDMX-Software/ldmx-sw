@@ -26,11 +26,11 @@ void VisiblesVetoResult::Clear() {
   disc_value_ = 0.;
 }
 
-void VisiblesVetoResult::setVariables(int n_layers_hit, double x_std, double y_std,
-                                      double z_std, double x_mean, double y_mean,
-                                      double r_mean, int iso_hits,
-                                      double iso_energy, int n_readout_hits,
-                                      double summed_det,
+void VisiblesVetoResult::setVariables(int n_layers_hit, double x_std,
+                                      double y_std, double z_std, double x_mean,
+                                      double y_mean, double r_mean,
+                                      int iso_hits, double iso_energy,
+                                      int n_readout_hits, double summed_det,
                                       double r_mean_from_photon_track) {
   n_layers_hit_ = n_layers_hit;
   x_std_ = x_std;
