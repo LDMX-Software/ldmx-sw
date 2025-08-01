@@ -1,28 +1,33 @@
-#ifndef HCAL_VISIBLESCUTFLOW_H_
-#define HCAL_VISIBLESCUTFLOW_H_
+/*
+ * @file VisiblesFeatureProducer.h
+ * @brief Class used to get features for visibles BDT,
+ *        and can save features to a .txt file.
+ * @author Tyler Horoho, University of Virginia
+ */
+
+#ifndef DQM_VISIBLESFEATUREPRODUCER_H_
+#define DQM_VISIBLESFEATUREPRODUCER_H_
 
 // LDMX
 #include "Framework/Configure/Parameters.h"
 #include "Framework/EventProcessor.h"
-#include "Tools/ONNXRuntime.h"
 
-namespace hcal {
+namespace dqm {
 
-class VisiblesCutflow : public framework::Analyzer {
+class VisiblesFeatureProducer : public framework::Analyzer {
  public:
-  VisiblesCutflow(const std::string& name, framework::Process& process)
+  VisiblesFeatureProducer(const std::string& name, framework::Process& process)
       : Analyzer(name, process) {}
 
-  ~VisiblesCutflow() override = default;
+  ~VisiblesFeatureProducer() override = default;
 
   void configure(framework::config::Parameters& parameters) override;
 
   void analyze(const framework::Event& event) override;
 
  private:
-  std::unique_ptr<ldmx::Ort::ONNXRuntime> rt_;
-  double bdt_cut_val_{0.};
-  std::string feature_list_name_;
+  bool training_{false};
+  std::string training_file_;
 
   double beam_energy_mev_{0.};
 
@@ -36,13 +41,10 @@ class VisiblesCutflow : public framework::Analyzer {
   std::string sp_collection_;
   std::string sp_pass_name_;
   std::string sim_particles_pass_name_;
-  std::string ecal_veto_collection_;
-  std::string ecal_veto_pass_;
-  double ecal_bdt_cut_val_{0.};
 
   bool inList(std::vector<int> parents, int track_id);
 };
 
-}  // namespace hcal
+}  // namespace dqm
 
 #endif

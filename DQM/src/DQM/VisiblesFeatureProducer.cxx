@@ -1,4 +1,4 @@
-#include "Hcal/VisiblesFeatureProducer.h"
+#include "DQM/VisiblesFeatureProducer.h"
 
 // LDMX
 #include "DetDescr/HcalID.h"
@@ -17,7 +17,7 @@
 #include <iostream>
 #include <numeric>
 
-namespace hcal {
+namespace dqm {
 
 void VisiblesFeatureProducer::configure(
     framework::config::Parameters &parameters) {
@@ -318,6 +318,6 @@ void VisiblesFeatureProducer::analyze(const framework::Event &event) {
   return;
 }
 
-}  // namespace hcal
+}  // namespace dqm
 
-DECLARE_ANALYZER(hcal::VisiblesFeatureProducer);
+DECLARE_ANALYZER(dqm::VisiblesFeatureProducer);

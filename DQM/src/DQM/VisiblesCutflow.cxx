@@ -1,4 +1,4 @@
-#include "Hcal/VisiblesCutflow.h"
+#include "DQM/VisiblesCutflow.h"
 
 // LDMX
 #include "DetDescr/EcalID.h"
@@ -19,7 +19,7 @@
 #include <iostream>
 #include <numeric>
 
-namespace hcal {
+namespace dqm {
 
 void VisiblesCutflow::configure(framework::config::Parameters &parameters) {
   rt_ = std::make_unique<ldmx::Ort::ONNXRuntime>(
@@ -397,6 +397,6 @@ void VisiblesCutflow::analyze(const framework::Event &event) {
   return;
 }
 
-}  // namespace hcal
+}  // namespace dqm
 
-DECLARE_ANALYZER(hcal::VisiblesCutflow);
+DECLARE_ANALYZER(dqm::VisiblesCutflow);
