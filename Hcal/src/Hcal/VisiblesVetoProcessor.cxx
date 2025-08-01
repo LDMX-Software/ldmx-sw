@@ -170,11 +170,14 @@ void VisiblesVetoProcessor::produce(framework::Event &event) {
         layers_hit.push_back(detID.getLayerID());
       }
 
-      double proj_x = gamma_x0[0] + (hit_z - gamma_x0[2]) * gamma_p[0] / gamma_p[2];
-      double proj_y = gamma_x0[1] + (hit_z - gamma_x0[2]) * gamma_p[1] / gamma_p[2];
+      double proj_x =
+          gamma_x0[0] + (hit_z - gamma_x0[2]) * gamma_p[0] / gamma_p[2];
+      double proj_y =
+          gamma_x0[1] + (hit_z - gamma_x0[2]) * gamma_p[1] / gamma_p[2];
 
       r_mean_from_photon_track_ +=
-	hit.getEnergy() * sqrt((hit_x - proj_x) * (hit_x - proj_x) + (hit_y - proj_y) * (hit_y - proj_y));
+          hit.getEnergy() * sqrt((hit_x - proj_x) * (hit_x - proj_x) +
+                                 (hit_y - proj_y) * (hit_y - proj_y));
 
       // Calculate isolated hits
       double closest_point = 9999.;
@@ -192,7 +195,7 @@ void VisiblesVetoProcessor::produce(framework::Event &event) {
                 }
               }
             }
-	    if (hit.isOrientationY()) {
+            if (hit.isOrientationY()) {
               if (abs(hit2.getXPos() - hit_x) > 0) {
                 if (abs(hit2.getXPos() - hit_x) < closest_point) {
                   closest_point = abs(hit2.getXPos() - hit_x);
@@ -224,9 +227,12 @@ void VisiblesVetoProcessor::produce(framework::Event &event) {
     if (hit.getEnergy() > 0.) {
       ldmx::HcalID detID(hit.getID());
       if (detID.getSection() == 0) {
-        x_std_ += hit.getEnergy() * (hit.getXPos() - x_mean_) * (hit.getXPos() - x_mean_);
-        y_std_ += hit.getEnergy() * (hit.getYPos() - y_mean_) * (hit.getYPos() - y_mean_);
-        z_std_ += hit.getEnergy() * (hit.getZPos() - z_mean) * (hit.getZPos() - z_mean);
+        x_std_ += hit.getEnergy() * (hit.getXPos() - x_mean_) *
+                  (hit.getXPos() - x_mean_);
+        y_std_ += hit.getEnergy() * (hit.getYPos() - y_mean_) *
+                  (hit.getYPos() - y_mean_);
+        z_std_ += hit.getEnergy() * (hit.getZPos() - z_mean) *
+                  (hit.getZPos() - z_mean);
       }
     }
   }
