@@ -166,8 +166,8 @@ void VisiblesVetoProcessor::produce(framework::Event &event) {
       r_mean_ += r * hit.getEnergy();
 
       // check if this is a new layer in the collection
-      if (!(std::find(layers_hit.begin(), layers_hit.end(), detID.getLayerID()) !=
-            layers_hit.end())) {
+      if (!(std::find(layers_hit.begin(), layers_hit.end(),
+                      detID.getLayerID()) != layers_hit.end())) {
         layers_hit.push_back(detID.getLayerID());
       }
 
@@ -237,14 +237,15 @@ void VisiblesVetoProcessor::produce(framework::Event &event) {
     z_std_ = sqrt(z_std_ / summed_det_);
   }
 
-  result.setVariables(n_layers_hit_, x_std_, y_std_, z_std_, x_mean_, y_mean_, r_mean_,
-                      iso_hits_, iso_energy_, n_readout_hits_, summed_det_,
-                      r_mean_from_photon_track_);
+  result.setVariables(n_layers_hit_, x_std_, y_std_, z_std_, x_mean_, y_mean_,
+                      r_mean_, iso_hits_, iso_energy_, n_readout_hits_,
+                      summed_det_, r_mean_from_photon_track_);
 
   buildBDTFeatureVector(result);
 
   ldmx::Ort::FloatArrays inputs({bdt_features_});
-  float pred = rt_->run({feature_list_name_}, inputs, {"probabilities"})[0].at(1);
+  float pred =
+      rt_->run({feature_list_name_}, inputs, {"probabilities"})[0].at(1);
   ldmx_log(info) << " Visibles BDT was ran, score is " << pred;
 
   event.add(collection_name_, result);

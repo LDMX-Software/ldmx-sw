@@ -31,15 +31,11 @@ void VisiblesCutflow::configure(framework::config::Parameters &parameters) {
   beam_energy_mev_ = parameters.get<double>("beam_energy");
 
   // collection names
-  hcal_rec_collection_ =
-      parameters.get<std::string>("hcal_rec_coll_name");
-  hcal_rec_pass_name_ =
-      parameters.get<std::string>("hcal_rec_pass_name");
+  hcal_rec_collection_ = parameters.get<std::string>("hcal_rec_coll_name");
+  hcal_rec_pass_name_ = parameters.get<std::string>("hcal_rec_pass_name");
 
-  ecal_rec_collection_ =
-      parameters.get<std::string>("ecal_rec_coll_name");
-  ecal_rec_pass_name_ =
-      parameters.get<std::string>("ecal_rec_pass_name");
+  ecal_rec_collection_ = parameters.get<std::string>("ecal_rec_coll_name");
+  ecal_rec_pass_name_ = parameters.get<std::string>("ecal_rec_pass_name");
 
   recoil_from_tracking_ = parameters.get<bool>("recoil_from_tracking");
   track_collection_ = parameters.get<std::string>("track_collection");
@@ -50,8 +46,7 @@ void VisiblesCutflow::configure(framework::config::Parameters &parameters) {
   sim_particles_pass_name_ =
       parameters.get<std::string>("sim_particles_pass_name");
 
-  ecal_veto_collection_ =
-      parameters.get<std::string>("ecal_veto_coll_name");
+  ecal_veto_collection_ = parameters.get<std::string>("ecal_veto_coll_name");
   ecal_veto_pass_ = parameters.get<std::string>("ecal_veto_pass_name");
 }
 
@@ -129,7 +124,8 @@ void VisiblesCutflow::analyze(const framework::Event &event) {
                   inList(it.second.getParents(), 0)) {
                 if (!found_rec) {
                   std::vector<float> x0_float = sphit.getPosition();
-                  std::vector<double> x0_double(x0_float.begin(), x0_float.end());
+                  std::vector<double> x0_double(x0_float.begin(),
+                                                x0_float.end());
                   gamma_x0 = x0_double;
                   gamma_p[0] = -1. * sphit.getMomentum()[0];
                   gamma_p[1] = -1. * sphit.getMomentum()[1];
@@ -156,7 +152,7 @@ void VisiblesCutflow::analyze(const framework::Event &event) {
   double p_mag = 0.;
   if (found_recoil_e) {
     p_mag = std::sqrt(recoil_p[0] * recoil_p[0] + recoil_p[1] * recoil_p[1] +
-                     recoil_p[2] * recoil_p[2]);
+                      recoil_p[2] * recoil_p[2]);
   }
 
   if (p_mag < 50.) {
@@ -212,7 +208,7 @@ void VisiblesCutflow::analyze(const framework::Event &event) {
   histograms_.fill("pass_tracker_veto", decay_z);
 
   auto ecal_veto{event.getObject<ldmx::EcalVetoResult>(ecal_veto_collection_,
-                                                      ecal_veto_pass_)};
+                                                       ecal_veto_pass_)};
   if (ecal_veto.getDisc() < ecal_bdt_cut_val_) {
     return;
   }
@@ -267,8 +263,8 @@ void VisiblesCutflow::analyze(const framework::Event &event) {
       r_mean += r * hit.getEnergy();
 
       // check if this is a new layer in the collection
-      if (!(std::find(layers_hit.begin(), layers_hit.end(), detID.getLayerID()) !=
-            layers_hit.end())) {
+      if (!(std::find(layers_hit.begin(), layers_hit.end(),
+                      detID.getLayerID()) != layers_hit.end())) {
         layers_hit.push_back(detID.getLayerID());
       }
 
@@ -372,7 +368,8 @@ void VisiblesCutflow::analyze(const framework::Event &event) {
   bdt_features.push_back(r_mean_from_photon_track);
 
   ldmx::Ort::FloatArrays inputs({bdt_features});
-  float pred = rt_->run({feature_list_name_}, inputs, {"probabilities"})[0].at(1);
+  float pred =
+      rt_->run({feature_list_name_}, inputs, {"probabilities"})[0].at(1);
 
   histograms_.fill("visibles_disc", pred);
 
