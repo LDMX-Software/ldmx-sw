@@ -226,16 +226,16 @@ void VisiblesCutflow::analyze(const framework::Event &event) {
 
   // initialize all of the features
   int n_layers_hit = 0;
-  double x_std_ = 0.;
-  double y_std_ = 0.;
-  double z_std_ = 0.;
-  double x_mean_ = 0.;
-  double y_mean_ = 0.;
-  double r_mean_ = 0.;
-  int iso_hits_ = 0;
-  double iso_energy_ = 0.;
-  int n_readout_hits_ = 0;
-  double summed_det_ = 0.;
+  double x_std = 0.;
+  double y_std = 0.;
+  double z_std = 0.;
+  double x_mean = 0.;
+  double y_mean = 0.;
+  double r_mean = 0.;
+  int iso_hits = 0;
+  double iso_energy = 0.;
+  int n_readout_hits = 0;
+  double summed_det = 0.;
   double r_mean_from_photon_track = 0.;
 
   double z_mean = 0.;  // need this when calculating z_std

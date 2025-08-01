@@ -245,7 +245,7 @@ void VisiblesFeatureProducer::analyze(const framework::Event &event) {
       }
     }
 
-    n_layers_hit = layersHit.size();
+    n_layers_hit = layers_hit.size();
 
     if (summed_det > 0.) {
       x_mean /= summed_det;

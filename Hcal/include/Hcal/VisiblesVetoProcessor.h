@@ -53,7 +53,7 @@ class VisiblesVetoProcessor : public framework::Producer {
 
   double bdt_cut_val_{0};
 
-  double beam_energy_meV_{0};
+  double beam_energy_mev_{0};
 
   bool verbose_{false};
 
