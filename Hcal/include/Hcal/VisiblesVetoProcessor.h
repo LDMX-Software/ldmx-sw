@@ -55,8 +55,6 @@ class VisiblesVetoProcessor : public framework::Producer {
 
   double beam_energy_mev_{0};
 
-  bool verbose_{false};
-
   std::vector<float> bdt_features_;
   std::string feature_list_name_;
 
