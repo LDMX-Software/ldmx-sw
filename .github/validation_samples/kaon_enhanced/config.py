@@ -24,7 +24,7 @@ from LDMX.Biasing import particle_filter
 from LDMX.Biasing import util
 from LDMX.Biasing import include as includeBiasing
 
-detector = 'ldmx-det-v14-8gev'
+detector = 'ldmx-det-v15-8gev'
 generator=gen.single_8gev_e_upstream_tagger()
 bias_factor = 550.
 bias_treshold = 5000.

@@ -5,7 +5,7 @@ p.maxTriesPerEvent = 10000
 
 from LDMX.Biasing import target
 from LDMX.SimCore import generators
-det = 'ldmx-det-v14-8gev'
+det = 'ldmx-det-v15-8gev'
 mySim = target.dark_brem(
     #A' mass in MeV - set in init.sh to same value in GeV
     10.0,
