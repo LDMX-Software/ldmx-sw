@@ -21,44 +21,44 @@ namespace hcal {
 
 void VisiblesFeatureProducer::configure(
     framework::config::Parameters &parameters) {
-  training_ = parameters.getParameter<bool>("training");
-  trainingFile_ = parameters.getParameter<std::string>("training_file");
+  training_ = parameters.get<bool>("training");
+  training_file_ = parameters.get<std::string>("training_file");
 
-  beamEnergyMeV_ = parameters.getParameter<double>("beam_energy");
+  beam_energy_mev_ = parameters.get<double>("beam_energy");
 
   // collection names
   hcal_rec_collection_ =
-      parameters.getParameter<std::string>("hcal_rec_coll_name");
+      parameters.get<std::string>("hcal_rec_coll_name");
   hcal_rec_pass_name_ =
-      parameters.getParameter<std::string>("hcal_rec_pass_name");
+      parameters.get<std::string>("hcal_rec_pass_name");
 
   ecal_rec_collection_ =
-      parameters.getParameter<std::string>("ecal_rec_coll_name");
+      parameters.get<std::string>("ecal_rec_coll_name");
   ecal_rec_pass_name_ =
-      parameters.getParameter<std::string>("ecal_rec_pass_name");
+      parameters.get<std::string>("ecal_rec_pass_name");
 
-  recoil_from_tracking_ = parameters.getParameter<bool>("recoil_from_tracking");
-  track_collection_ = parameters.getParameter<std::string>("track_collection");
-  track_pass_name_ = parameters.getParameter<std::string>("track_pass_name");
+  recoil_from_tracking_ = parameters.get<bool>("recoil_from_tracking");
+  track_collection_ = parameters.get<std::string>("track_collection");
+  track_pass_name_ = parameters.get<std::string>("track_pass_name");
 
-  sp_collection_ = parameters.getParameter<std::string>("sp_coll_name");
-  sp_pass_name_ = parameters.getParameter<std::string>("sp_pass_name");
+  sp_collection_ = parameters.get<std::string>("sp_coll_name");
+  sp_pass_name_ = parameters.get<std::string>("sp_pass_name");
   sim_particles_pass_name_ =
-      parameters.getParameter<std::string>("sim_particles_pass_name");
+      parameters.get<std::string>("sim_particles_pass_name");
 }
 
-bool VisiblesFeatureProducer::in_list(std::vector<int> parents, int a) {
-  bool inlist = false;
+bool VisiblesFeatureProducer::inList(std::vector<int> parents, int track_id) {
+  bool in_list = false;
   for (const int &i : parents) {
-    if (i == a) {
-      inlist = true;
+    if (i == track_id) {
+      in_list = true;
     }
   }
-  return inlist;
+  return in_list;
 }
 
 void VisiblesFeatureProducer::analyze(const framework::Event &event) {
-  std::vector<double> bdtFeatures_;
+  std::vector<double> bdt_features;
 
   auto particle_map{event.getMap<int, ldmx::SimParticle>(
       "SimParticles", sim_particles_pass_name_)};
@@ -71,53 +71,51 @@ void VisiblesFeatureProducer::analyze(const framework::Event &event) {
   std::vector<double> gamma_x0(3);
 
   std::vector<double> recoil_p(3);
-  bool foundRecoile = false;
+  bool found_recoil_e = false;
 
   if (recoil_from_tracking_) {
-    auto recoilTracks{
+    auto recoil_tracks{
         event.getCollection<ldmx::Track>(track_collection_, track_pass_name_)};
     // Fill this in later when you know how to use it
-    for (auto &track : recoilTracks) {
+    for (auto &track : recoil_tracks) {
       // need to figure out how to best isolate candidate electron track
       if (track.q() == 1 && track.getNhits() == 5) {
         gamma_x0 = track.getPosition();
         gamma_p[0] = -1. * track.getMomentum()[0];
         gamma_p[1] = -1. * track.getMomentum()[1];
-        gamma_p[2] = 8000. - track.getMomentum()[2];
+        gamma_p[2] = beam_energy_mev_ - track.getMomentum()[2];
       }
     }
   } else {
     if (event.exists(sp_collection_, sp_pass_name_)) {
-      std::vector<ldmx::SimTrackerHit> targetSPHits =
+      std::vector<ldmx::SimTrackerHit> target_sp_hits =
           event.getCollection<ldmx::SimTrackerHit>(sp_collection_,
                                                    sp_pass_name_);
-      bool foundRec = false;
+      bool found_rec = false;
       for (auto const &it : particle_map) {
-        std::cout << "PDG ID: " << it.second.getPdgID()
-                  << " , Energy: " << it.second.getEnergy() << std::endl;
-        for (auto const &sphit : targetSPHits) {
+        for (auto const &sphit : target_sp_hits) {
           if (sphit.getPosition()[2] > 0) {
             if (it.first == sphit.getTrackID()) {
               if (it.second.getPdgID() == 622) {
-                std::vector<float> x0f = sphit.getPosition();
-                std::vector<double> x0d(x0f.begin(), x0f.end());
-                gamma_x0 = x0d;
+                std::vector<float> x0_float = sphit.getPosition();
+                std::vector<double> x0_double(x0_float.begin(), x0_float.end());
+                gamma_x0 = x0_double;
                 gamma_p = sphit.getMomentum();
-                foundRec = true;
+                found_rec = true;
               }
               if (it.second.getPdgID() == 11 &&
-                  in_list(it.second.getParents(), 0)) {
-                if (!foundRec) {
-                  std::vector<float> x0f = sphit.getPosition();
-                  std::vector<double> x0d(x0f.begin(), x0f.end());
-                  gamma_x0 = x0d;
+                  inList(it.second.getParents(), 0)) {
+                if (!found_rec) {
+                  std::vector<float> x0_float = sphit.getPosition();
+                  std::vector<double> x0_double(x0_float.begin(), x0_float.end());
+                  gamma_x0 = x0_double;
                   gamma_p[0] = -1. * sphit.getMomentum()[0];
                   gamma_p[1] = -1. * sphit.getMomentum()[1];
-                  gamma_p[2] = beamEnergyMeV_ - sphit.getMomentum()[2];
-                  foundRec = true;
+                  gamma_p[2] = beam_energy_mev_ - sphit.getMomentum()[2];
+                  found_rec = true;
                 }
                 recoil_p = sphit.getMomentum();
-                foundRecoile = true;
+                found_recoil_e = true;
               }
             }
           }
@@ -126,60 +124,58 @@ void VisiblesFeatureProducer::analyze(const framework::Event &event) {
     }
   }
 
-  double pMag = 0.;
-  if (foundRecoile) {
-    pMag = std::sqrt(recoil_p[0] * recoil_p[0] + recoil_p[1] * recoil_p[1] +
-                     recoil_p[2] * recoil_p[2]);
+  double p_mag = 0.;
+  if (found_recoil_e) {
+    p_mag = std::sqrt(recoil_p[0] * recoil_p[0] + recoil_p[1] * recoil_p[1] +
+                      recoil_p[2] * recoil_p[2]);
   }
 
-  // Get EcalRecHits, check that trigger is passed
-  std::vector<ldmx::EcalHit> ecalRecHits = event.getCollection<ldmx::EcalHit>(
+  std::vector<ldmx::EcalHit> ecal_rec_hits = event.getCollection<ldmx::EcalHit>(
       ecal_rec_collection_, ecal_rec_pass_name_);
-  std::vector<ldmx::HcalHit> hcalRecHits = event.getCollection<ldmx::HcalHit>(
+  std::vector<ldmx::HcalHit> hcal_rec_hits = event.getCollection<ldmx::HcalHit>(
       hcal_rec_collection_, hcal_rec_pass_name_);
 
-  double ecalE = 0.;
-  double hcalE = 0.;
-  bool hcalContainment = true;
+  double ecal_energy = 0.;
+  double hcal_energy = 0.;
+  bool hcal_containment = true;
 
-  for (const ldmx::EcalHit &hit : ecalRecHits) {
+  for (const ldmx::EcalHit &hit : ecal_rec_hits) {
     if (hit.getEnergy() > 0.) {
-      ecalE += hit.getEnergy();
+      ecal_energy += hit.getEnergy();
     }
   }
-  for (const ldmx::HcalHit &hit : hcalRecHits) {
+  for (const ldmx::HcalHit &hit : hcal_rec_hits) {
     if (hit.getEnergy() > 0.) {
       ldmx::HcalID detID(hit.getID());
       if (detID.getSection() != 0) {
         continue;
       }
       if (detID.getLayerID() == 1 && hit.getPE() > 5) {
-        hcalContainment = false;
+        hcal_containment = false;
       }
-      hcalE += 12. * hit.getEnergy();
+      hcal_energy += 12. * hit.getEnergy();
     }
   }
 
-  // If trigger requirement is met
-  if (ecalE < 3160 && hcalE > 4840 && hcalContainment && pMag < 2400) {
+  if (ecal_energy < 3160 && hcal_energy > 4840 && hcal_containment && p_mag < 2400) {
     // initialize all of the features
-    int nLayersHit_ = 0;
-    double xStd_ = 0.;
-    double yStd_ = 0.;
-    double zStd_ = 0.;
-    double xMean_ = 0.;
-    double yMean_ = 0.;
-    double rMean_ = 0.;
-    int isoHits_ = 0;
-    double isoEnergy_ = 0.;
-    int nReadoutHits_ = 0;
-    double summedDet_ = 0.;
-    double rMeanFromPhotonProj_ = 0.;
+    int n_layers_hit = 0;
+    double x_std = 0.;
+    double y_std = 0.;
+    double z_std = 0.;
+    double x_mean = 0.;
+    double y_mean = 0.;
+    double r_mean = 0.;
+    int iso_hits = 0;
+    double iso_energy = 0.;
+    int n_readout_hits = 0;
+    double summed_det = 0.;
+    double r_mean_from_photon_track = 0.;
 
-    double zMean = 0.;  // need this when calculating zStd_
-    std::vector<int> layersHit;
+    double z_mean = 0.;  // need this when calculating z_std
+    std::vector<int> layers_hit;
 
-    for (const ldmx::HcalHit &hit : hcalRecHits) {
+    for (const ldmx::HcalHit &hit : hcal_rec_hits) {
       if (hit.getEnergy() > 0.) {
         ldmx::HcalID detID(hit.getID());
         if (detID.getSection() != 0) {  // skip hits that aren't in main Hcal
@@ -189,23 +185,23 @@ void VisiblesFeatureProducer::analyze(const framework::Event &event) {
           continue;
         }
 
-        nReadoutHits_ += 1;
+        n_readout_hits += 1;
         double x = hit.getXPos();
         double y = hit.getYPos();
         double z = hit.getZPos();
         double r = sqrt(pow(x, 2) + pow(y, 2));
 
-        summedDet_ += hit.getEnergy();
+        summed_det += hit.getEnergy();
 
-        xMean_ += x * hit.getEnergy();
-        yMean_ += y * hit.getEnergy();
-        zMean += z * hit.getEnergy();
-        rMean_ += r * hit.getEnergy();
+        x_mean += x * hit.getEnergy();
+        y_mean += y * hit.getEnergy();
+        z_mean += z * hit.getEnergy();
+        r_mean += r * hit.getEnergy();
 
         // check if this is a new layer in the collection
-        if (!(std::find(layersHit.begin(), layersHit.end(),
-                        detID.getLayerID()) != layersHit.end())) {
-          layersHit.push_back(detID.getLayerID());
+        if (!(std::find(layers_hit.begin(), layers_hit.end(),
+                        detID.getLayerID()) != layers_hit.end())) {
+          layers_hit.push_back(detID.getLayerID());
         }
 
         double x_proj =
@@ -213,12 +209,12 @@ void VisiblesFeatureProducer::analyze(const framework::Event &event) {
         double y_proj =
             gamma_x0[1] + (z - gamma_x0[2]) * gamma_p[1] / gamma_p[2];
 
-        rMeanFromPhotonProj_ +=
+        r_mean_from_photon_track +=
             hit.getEnergy() * sqrt(pow(x - x_proj, 2) + pow(y - y_proj, 2));
 
         // Calculate isolated hits
-        double closestpoint = 9999.;
-        for (const ldmx::HcalHit &hit2 : hcalRecHits) {
+        double closest_point = 9999.;
+        for (const ldmx::HcalHit &hit2 : hcal_rec_hits) {
           if (hit2.getEnergy() > 0.) {
             ldmx::HcalID detID2(hit2.getID());
             if (fabs(hit2.getXPos()) > 1000 || fabs(hit2.getYPos()) > 1000) {
@@ -230,94 +226,93 @@ void VisiblesFeatureProducer::analyze(const framework::Event &event) {
               // have vertical strips
               if (detID2.getLayerID() % 2 == 0) {
                 if (fabs(hit2.getYPos() - y) > 0) {
-                  if (fabs(hit2.getYPos() - y) < closestpoint) {
-                    closestpoint = fabs(hit2.getYPos() - y);
+                  if (fabs(hit2.getYPos() - y) < closest_point) {
+                    closest_point = fabs(hit2.getYPos() - y);
                   }
                 }
               } else {
                 if (fabs(hit2.getXPos() - x) > 0) {
-                  if (fabs(hit2.getXPos() - x) < closestpoint) {
-                    closestpoint = fabs(hit2.getXPos() - x);
+                  if (fabs(hit2.getXPos() - x) < closest_point) {
+                    closest_point = fabs(hit2.getXPos() - x);
                   }
                 }
               }
             }
           }
         }
-        if (closestpoint > 50.) {
-          isoHits_ += 1;
-          isoEnergy_ += hit.getEnergy();
+        if (closest_point > 50.) {
+          iso_hits += 1;
+          iso_energy += hit.getEnergy();
         }
       }
     }
 
-    nLayersHit_ = layersHit.size();
+    n_layers_hit = layersHit.size();
 
-    if (summedDet_ > 0.) {
-      xMean_ /= summedDet_;
-      yMean_ /= summedDet_;
-      zMean /= summedDet_;
-      rMean_ /= summedDet_;
+    if (summed_det > 0.) {
+      x_mean /= summed_det;
+      y_mean /= summed_det;
+      z_mean /= summed_det;
+      r_mean /= summed_det;
 
-      rMeanFromPhotonProj_ /= summedDet_;
+      r_mean_from_photon_track /= summed_det;
     }
 
-    for (const ldmx::HcalHit &hit : hcalRecHits) {
+    for (const ldmx::HcalHit &hit : hcal_rec_hits) {
       if (hit.getEnergy() > 0.) {
         if (fabs(hit.getXPos()) > 1000 || fabs(hit.getYPos()) > 1000) {
           continue;
         }
         ldmx::HcalID detID(hit.getID());
         if (detID.getSection() == 0) {
-          xStd_ += hit.getEnergy() * pow(hit.getXPos() - xMean_, 2);
-          yStd_ += hit.getEnergy() * pow(hit.getYPos() - yMean_, 2);
-          zStd_ += hit.getEnergy() * pow(hit.getZPos() - zMean, 2);
+          x_std += hit.getEnergy() * pow(hit.getXPos() - x_mean, 2);
+          y_std += hit.getEnergy() * pow(hit.getYPos() - y_mean, 2);
+          z_std += hit.getEnergy() * pow(hit.getZPos() - z_mean, 2);
         }
       }
     }
 
-    if (summedDet_ > 0.) {
-      xStd_ = sqrt(xStd_ / summedDet_);
-      yStd_ = sqrt(yStd_ / summedDet_);
-      zStd_ = sqrt(zStd_ / summedDet_);
+    if (summed_det > 0.) {
+      x_std = sqrt(x_std / summed_det);
+      y_std = sqrt(y_std / summed_det);
+      z_std = sqrt(z_std / summed_det);
     }
 
     // Fill histograms
-    histograms_.fill("layershit", nLayersHit_);
-    histograms_.fill("xStd", xStd_);
-    histograms_.fill("yStd", yStd_);
-    histograms_.fill("zStd", zStd_);
-    histograms_.fill("xMean", xMean_);
-    histograms_.fill("yMean", yMean_);
-    histograms_.fill("rMean", rMean_);
-    histograms_.fill("isoHits", isoHits_);
-    histograms_.fill("isoE", isoEnergy_);
-    histograms_.fill("nHits", nReadoutHits_);
-    histograms_.fill("Etot", hcalE);
-    histograms_.fill("photonProj", rMeanFromPhotonProj_);
+    histograms_.fill("layers_hit", n_layers_hit);
+    histograms_.fill("x_std", x_std);
+    histograms_.fill("y_std", y_std);
+    histograms_.fill("z_std", z_std);
+    histograms_.fill("x_mean", x_mean);
+    histograms_.fill("y_mean", y_mean);
+    histograms_.fill("r_mean", r_mean);
+    histograms_.fill("iso_hits", iso_hits);
+    histograms_.fill("iso_energy", iso_energy);
+    histograms_.fill("n_hits", n_readout_hits);
+    histograms_.fill("total_energy", hcal_energy);
+    histograms_.fill("photon_track", r_mean_from_photon_track);
 
-    bdtFeatures_.push_back(nLayersHit_);
-    bdtFeatures_.push_back(xStd_);
-    bdtFeatures_.push_back(yStd_);
-    bdtFeatures_.push_back(zStd_);
-    bdtFeatures_.push_back(xMean_);
-    bdtFeatures_.push_back(yMean_);
-    bdtFeatures_.push_back(rMean_);
-    bdtFeatures_.push_back(isoHits_);
-    bdtFeatures_.push_back(isoEnergy_);
-    bdtFeatures_.push_back(nReadoutHits_);
-    bdtFeatures_.push_back(hcalE);
-    bdtFeatures_.push_back(rMeanFromPhotonProj_);
+    bdt_features.push_back(n_layers_hit);
+    bdt_features.push_back(x_std);
+    bdt_features.push_back(y_std);
+    bdt_features.push_back(z_std);
+    bdt_features.push_back(x_mean);
+    bdt_features.push_back(y_mean);
+    bdt_features.push_back(r_mean);
+    bdt_features.push_back(iso_hits);
+    bdt_features.push_back(iso_energy);
+    bdt_features.push_back(n_readout_hits);
+    bdt_features.push_back(hcal_energy);
+    bdt_features.push_back(r_mean_from_photon_track);
 
     if (training_) {
-      std::ofstream file(trainingFile_, std::ios::app);
+      std::ofstream file(training_file_, std::ios::app);
       if (!file.is_open()) {
-        std::cerr << "Error: Could not open file " << trainingFile_
-                  << std::endl;
+        ldmx_log(fatal) << "Error: Could not open file " << training_file_;
         return;
       }
-      for (int i = 0; i < bdtFeatures_.size(); ++i) {
-        file << bdtFeatures_[i] << (i + 1 == bdtFeatures_.size() ? "\n" : ", ");
+      for (int i = 0; i < bdt_features.size(); ++i) {
+        file << bdt_features[i] << (i + 1 == bdt_features.size() ? "\n" : ", ");
       }
     }
   }

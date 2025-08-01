@@ -36,29 +36,29 @@ class VisiblesVetoProcessor : public framework::Producer {
   void buildBDTFeatureVector(const ldmx::VisiblesVetoResult& result);
 
   /* a function for finding track IDs for truth-level tracking */
-  bool in_list(std::vector<int> parents, int a);
+  bool inList(std::vector<int> parents, int track_id);
 
-  int nLayersHit_{0};
-  double xStd_{0};
-  double yStd_{0};
-  double zStd_{0};
-  double xMean_{0};
-  double yMean_{0};
-  double rMean_{0};
-  int isoHits_{0};
-  double isoEnergy_{0};
-  int nReadoutHits_{0};
-  double summedDet_{0};
-  double rMeanFromPhotonProj_{0};
+  int n_layers_hit_{0};
+  double x_std_{0};
+  double y_std_{0};
+  double z_std_{0};
+  double x_mean_{0};
+  double y_mean_{0};
+  double r_mean_{0};
+  int iso_hits_{0};
+  double iso_energy_{0};
+  int n_readout_hits_{0};
+  double summed_det_{0};
+  double r_mean_from_photon_track_{0};
 
-  double bdtCutVal_{0};
+  double bdt_cut_val_{0};
 
-  double beamEnergyMeV_{0};
+  double beam_energy_meV_{0};
 
   bool verbose_{false};
 
-  std::vector<float> bdtFeatures_;
-  std::string featureListName_;
+  std::vector<float> bdt_features_;
+  std::string feature_list_name_;
 
   // Pass and collection names
   std::string rec_pass_name_;
@@ -70,7 +70,7 @@ class VisiblesVetoProcessor : public framework::Producer {
   std::string sp_pass_name_;
   std::string sim_particles_pass_name_;
 
-  std::string collectionName_{"VisiblesVeto"};
+  std::string collection_name_{"VisiblesVeto"};
 
   std::unique_ptr<ldmx::Ort::ONNXRuntime> rt_;
 };
