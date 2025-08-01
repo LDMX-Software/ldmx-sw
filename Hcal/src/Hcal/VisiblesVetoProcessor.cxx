@@ -185,13 +185,14 @@ void VisiblesVetoProcessor::produce(framework::Event &event) {
             // Determine if a bar is vertical (along y-axis) or horizontal
             // (along x-axis) Odd layers have horizontal strips Even layers have
             // vertical strips
-            if (detID2.getLayerID() % 2 == 0) {
+            if (hit.isOrientationX()) {
               if (abs(hit2.getYPos() - hit_y) > 0) {
                 if (abs(hit2.getYPos() - hit_y) < closest_point) {
                   closest_point = abs(hit2.getYPos() - hit_y);
                 }
               }
-            } else {
+            }
+	    if (hit.isOrientationY()) {
               if (abs(hit2.getXPos() - hit_x) > 0) {
                 if (abs(hit2.getXPos() - hit_x) < closest_point) {
                   closest_point = abs(hit2.getXPos() - hit_x);
