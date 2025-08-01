@@ -58,33 +58,26 @@ void OverlayProducer::configure(framework::config::Parameters &parameters) {
 
 void OverlayProducer::onNewRun(const ldmx::RunHeader &) {
   /// set up random seeds
-  if (rndm_.get() == nullptr) {
-    // not been seeded yet, get it from RNSS
-    const auto &rnss = getCondition<framework::RandomNumberSeedService>(
-        framework::RandomNumberSeedService::CONDITIONS_OBJECT_NAME);
-    rndm_ = std::make_unique<TRandom2>(rnss.getSeed("OverlayProducer::rndm"));
-  }
+  const auto &rnss = getCondition<framework::RandomNumberSeedService>(
+      framework::RandomNumberSeedService::CONDITIONS_OBJECT_NAME);
+  rndm_ = std::make_unique<TRandom2>(rnss.getSeed("OverlayProducer::rndm"));
+  rndm_time_ =
+      std::make_unique<TRandom2>(rnss.getSeed("OverlayProducer::rndmTime"));
+
   // Pick a random event from the Pileup file
   int start_event = rndm_->Uniform(start_event_min_, start_event_max_);
   // EventFile::skipToEvent handles actual number of events in file
-  int evNb = overlay_file_->skipToEvent(start_event);
-  if (evNb < 0) {
+  int ev_number = overlay_file_->skipToEvent(start_event);
+  if (ev_number < 0) {
     EXCEPTION_RAISE("BadRead", "Couldn't read to starting offset.");
   }
-  overlay_event_.getEventHeader().setEventNumber(evNb);
-  ldmx_log(info) << "Starting overlay process with pileup event number " << evNb
-                 << " (random event number picked was " << start_event << ").";
+  overlay_event_.getEventHeader().setEventNumber(ev_number);
+  ldmx_log(info) << "Starting overlay process with pileup event number "
+                 << ev_number << " (random event number picked was "
+                 << start_event << ").";
 }  // end onNewRun()
 
 void OverlayProducer::produce(framework::Event &event) {
-  if (rndm_time_.get() == nullptr) {
-    // not been seeded yet, get it from RNSS
-    const auto &rnss = getCondition<framework::RandomNumberSeedService>(
-        framework::RandomNumberSeedService::CONDITIONS_OBJECT_NAME);
-    rndm_time_ =
-        std::make_unique<TRandom2>(rnss.getSeed("OverlayProducer::rndmTime"));
-  }
-
   // using nextEvent to loop, we need to loop over overlay events and in an
   // inner loop, loop over collections, and store them. after all pileup events
   // have been added, the vector of collections is iterated over and added to
@@ -160,8 +153,8 @@ void OverlayProducer::produce(framework::Event &event) {
   // we could shift these by a random number, effectively placing the
   // sim event at random positions in the interval, preserving the
   // overall interval length
-  // int simBunch= (int)rndm_time_->Uniform(
-  //				   -(n_earlier_+1) , n_later_+1);  // +1 to get
+  // int simBunch=  static_cast<int>(rndm_time_->Uniform(
+  //				   -(n_earlier_+1) , n_later_+1));  // +1 to get
   // inclusive interval
   int start_bunch = -n_earlier_;
   int end_bunch = n_later_;
@@ -173,13 +166,15 @@ void OverlayProducer::produce(framework::Event &event) {
        bunch_offset++) {
     // sample a poisson distribution, or use mu as fixed number of overlay
     // events
-    int n_events_overlay = do_poisson_out_of_time_ ? rndm_->Poisson(poisson_mu_)
-                                                   : (int)poisson_mu_;
+    int n_events_overlay = do_poisson_out_of_time_
+                               ? rndm_->Poisson(poisson_mu_)
+                               : static_cast<int>(poisson_mu_);
 
     // special case: in-time pileup at bunch 0
     if (bunch_offset == 0) {
       if (!do_poisson_in_time_) {
-        n_events_overlay = (int)poisson_mu_;  // fix it to the average
+        // fix it to the average
+        n_events_overlay = static_cast<int>(poisson_mu_);
       } else if (do_poisson_in_time_ && !do_poisson_out_of_time_) {
         // then we haven't set this yet
         n_events_overlay = rndm_->Poisson(poisson_mu_);
