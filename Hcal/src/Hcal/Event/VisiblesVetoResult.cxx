@@ -48,7 +48,7 @@ void VisiblesVetoResult::setVariables(int n_layers_hit, double x_std,
 
 void VisiblesVetoResult::Print() const {
   std::cout << "[ VisiblesVetoResult ]:\n"
-            << "\t Passes veto : " << passesVeto_ << "\n"
+            << "\t Passes veto : " << passes_veto_ << "\n"
             << std::endl;
 }
 }  // namespace ldmx

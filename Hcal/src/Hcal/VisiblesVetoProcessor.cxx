@@ -34,7 +34,7 @@ void VisiblesVetoProcessor::buildBDTFeatureVector(
 void VisiblesVetoProcessor::configure(
     framework::config::Parameters &parameters) {
   verbose_ = parameters.get<bool>("verbose");
-  featureListName_ = parameters.get<std::string>("feature_list_name");
+  feature_list_name_ = parameters.get<std::string>("feature_list_name");
   // Load BDT ONNX file
   rt_ = std::make_unique<ldmx::Ort::ONNXRuntime>(
       parameters.get<std::string>("bdt_file"));
