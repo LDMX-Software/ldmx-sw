@@ -21,20 +21,8 @@ from LDMX.Tracking import full_tracking_sequence
 
 from LDMX.Recon.overlay import OverlayProducer
 overlay=OverlayProducer('pileup.root')
-overlay.passName = simPassName                  #sim input event pass name
-overlay.overlayPassName = pileupFilePassName    #pileup input event pass name
-overlay.totalNumberOfInteractions = 2.
-overlay.doPoissonIntime = False
-overlay.doPoissonOutoftime = False
-overlay.nEarlierBunchesToSample = 0
-overlay.bunchSpacing = 26.9      #ns = 1000./37.2 ; 5.4 = 1000./186.
-overlay.timeSpread = 0.       # <-- realistically, 30 ps; 
-overlay.timeMean   = 0.       # <-- here set the in-bunch average pu time offset to no time shift whatsoever; useful for validation though
-overlay.overlayCaloHitCollections=[ 
-        "TriggerPad1SimHits", "TriggerPad2SimHits", "TriggerPad3SimHits", "TargetSimHits", 
-        "EcalSimHits", "HcalSimHits"]
-overlay.overlayTrackerHitCollections=[ "TaggerSimHits", "RecoilSimHits" ]
-overlay.verbosity=0 #1 #3 #
+overlay.sim_passname = simPassName                  #sim input event pass name
+overlay.overlay_passname = pileupFilePassName    #pileup input event pass name
 
 p.sequence = [overlay]
 
