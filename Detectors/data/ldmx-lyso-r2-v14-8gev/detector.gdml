@@ -106,7 +106,7 @@
   <userinfo>
     <!-- detector version -->
     <auxiliary auxtype="DetectorVersion" auxvalue="14">
-      <auxiliary auxtype="DetectorName" auxvalue="ldmx-lyso-r1-v14"/>
+      <auxiliary auxtype="DetectorName" auxvalue="ldmx-lyso-r2-v14"/>
       <auxiliary auxtype="Author" auxvalue="Tamas Almos Vami, Art Espinoza (UCSB)"/>
       <auxiliary auxtype="Description" 
                  auxvalue="The Late 2022 Design Report Geometry with LYSO target"/>

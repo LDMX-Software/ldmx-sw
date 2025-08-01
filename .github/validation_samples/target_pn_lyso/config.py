@@ -5,7 +5,7 @@ p.maxTriesPerEvent = 10000
 
 from LDMX.Biasing import target
 from LDMX.SimCore import generators as gen
-det = 'ldmx-lyso-r1-v14-8gev'
+det = 'ldmx-lyso-r2-v14-8gev'
 mySim = target.photo_nuclear(det, gen.single_8gev_e_upstream_tagger())
 mySim.beamSpotSmear = [20.,80.,0.]
 mySim.description = 'LYSO Target PN Simulation'
