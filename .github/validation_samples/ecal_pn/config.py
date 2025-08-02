@@ -75,6 +75,11 @@ ecal_veto_pnet =  ecal_vetos.EcalPnetVetoProcessor()
 import LDMX.Hcal.hcal as hcal
 hcal_veto = hcal.HcalVetoProcessor()
 
+# Load visibles veto and turn off all
+# cuts except the visibles BDT
+visibles_veto = dqm.VisiblesCutflow()
+visibles_veto.all_cuts = False
+
 p.logger.termLevel = 1
 # Example to show trace level logging for ecal veto (only)
 # p.logger.custom(ecal_veto, level = -1)
@@ -97,7 +102,8 @@ p.sequence.extend([
         trigScintTrack,
         count, TriggerProcessor('trigger', 8000.),
         dqm.PhotoNuclearDQM(),
-        dqm.EcalClusterAnalyzer()
+        dqm.EcalClusterAnalyzer(),
+        visibles_veto
         ])
 
 p.sequence.extend(dqm.all_dqm)
