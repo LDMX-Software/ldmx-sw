@@ -524,6 +524,7 @@ class VisiblesCutflow(ldmxcfg.Analyzer) :
         self.bdt_file = makeBDTPath("visibles")
         self.feature_list_name = "float_input"
         self.disc_cut = 0.999965
+        self.all_cuts = True
 
         self.beam_energy = 8000.0
 
