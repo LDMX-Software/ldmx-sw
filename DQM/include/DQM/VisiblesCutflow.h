@@ -31,7 +31,7 @@ class VisiblesCutflow : public framework::Analyzer {
   std::string feature_list_name_;
 
   bool all_cuts_{true};
-  
+
   double beam_energy_mev_{0.};
 
   std::string hcal_rec_collection_;
