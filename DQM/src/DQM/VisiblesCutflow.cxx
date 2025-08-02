@@ -27,6 +27,7 @@ void VisiblesCutflow::configure(framework::config::Parameters &parameters) {
   feature_list_name_ = parameters.get<std::string>("feature_list_name");
   bdt_cut_val_ = parameters.get<double>("disc_cut");
   ecal_bdt_cut_val_ = parameters.get<double>("ecal_disc_cut");
+  all_cuts_ = parameters.get<bool>("all_cuts");
 
   beam_energy_mev_ = parameters.get<double>("beam_energy");
 
@@ -155,7 +156,7 @@ void VisiblesCutflow::analyze(const framework::Event &event) {
                       recoil_p[2] * recoil_p[2]);
   }
 
-  if (p_mag < 50.) {
+  if (p_mag < 50. && all_cuts_) {
     return;
   }
   histograms_.fill("pass_acceptance", decay_z);
@@ -192,34 +193,34 @@ void VisiblesCutflow::analyze(const framework::Event &event) {
     }
   }
 
-  if (trigger > 3160.) {
+  if (trigger > 3160. && all_cuts_) {
     return;
   }
   histograms_.fill("pass_trigger", decay_z);
 
-  if (ecal_energy > 3160.) {
+  if (ecal_energy > 3160. && all_cuts_) {
     return;
   }
   histograms_.fill("pass_ecal_energy", decay_z);
 
-  if (p_mag > 2400.) {
+  if (p_mag > 2400. && all_cuts_) {
     return;
   }
   histograms_.fill("pass_tracker_veto", decay_z);
 
   auto ecal_veto{event.getObject<ldmx::EcalVetoResult>(ecal_veto_collection_,
                                                        ecal_veto_pass_)};
-  if (ecal_veto.getDisc() < ecal_bdt_cut_val_) {
+  if (ecal_veto.getDisc() < ecal_bdt_cut_val_ && all_cuts_) {
     return;
   }
   histograms_.fill("pass_ecal_bdt", decay_z);
 
-  if (hcal_energy < 4840) {
+  if (hcal_energy < 4840 && all_cuts_) {
     return;
   }
   histograms_.fill("pass_hcal_energy", decay_z);
 
-  if (!hcal_containment) {
+  if (!hcal_containment && all_cuts_) {
     return;
   }
   histograms_.fill("pass_hcal_containment", decay_z);
