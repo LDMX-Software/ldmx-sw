@@ -112,7 +112,25 @@ class EcalGeometry() :
                 )
 
     def v14() :
-        eg = EcalGeometry(detectors_valid = ["ldmx-det-v14","ldmx-det-v14.*","ldmx-lyso-r1-v14", "ldmx-lyso-r1-v14.*", "ldmx-det-v15","ldmx-det-v15.*"],
+        eg = EcalGeometry(detectors_valid = ["ldmx-det-v14","ldmx-det-v14.*","ldmx-lyso-r2-v14", "ldmx-lyso-r2-v14.*"],
+                gap = 1.5,
+                layerZPositions = [
+                      7.582, 16.062, 33.226, 43.206, 60.370, 71.350, 90.014, 101.594, 
+                      120.258, 131.838, 150.502, 162.082, 180.746, 192.326, 210.990, 
+                      222.570, 241.234, 252.814, 271.478, 283.058, 301.722, 313.302, 
+                      331.966, 343.546, 365.710, 380.690, 402.854, 417.834, 439.998,
+                      454.978, 477.142, 492.122, 514.286, 529.266
+			],
+                ecalFrontZ = 240.0,
+                cornersSideUp = True,
+                layer_shift_odd = True,
+                )
+        # shift by a single cell diameter
+        eg.layer_shift_x = 2*eg.moduleMinR / eg.nCellRHeight
+        return eg
+
+    def v15() :
+        eg = EcalGeometry(detectors_valid = ["ldmx-det-v15","ldmx-det-v15.*"],
                 gap = 1.5,
                 layerZPositions = [
                       7.582, 16.062, 33.226, 43.206, 60.370, 71.350, 90.014, 101.594, 
@@ -158,4 +176,4 @@ class EcalGeometry() :
         return eg
 
     def geometries() :
-        return [EcalGeometry.v9(), EcalGeometry.v12(), EcalGeometry.v13(), EcalGeometry.v14(), EcalGeometry.reduced(), EcalGeometry.reduced_v2()]
+        return [EcalGeometry.v9(), EcalGeometry.v12(), EcalGeometry.v13(), EcalGeometry.v14(), EcalGeometry.v15(), EcalGeometry.reduced(), EcalGeometry.reduced_v2()]
