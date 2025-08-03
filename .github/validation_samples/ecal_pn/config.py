@@ -103,7 +103,8 @@ p.sequence.extend([
         count, TriggerProcessor('trigger', 8000.),
         dqm.PhotoNuclearDQM(),
         dqm.EcalClusterAnalyzer(),
-        visibles_veto
+        visibles_veto,
+        dqm.VisiblesFeatureProducer()
         ])
 
 p.sequence.extend(dqm.all_dqm)
