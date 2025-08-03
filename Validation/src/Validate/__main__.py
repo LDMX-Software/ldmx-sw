@@ -98,7 +98,7 @@ if __name__ == '__main__' :
                       for f in input_files]
     else:
         root_files = [ File.from_path(os.path.join(data,f), legendlabel_parameter = arg.param)
-                       for f in os.listdir(data) if f.endswith('.root') ]
+                       for f in sorted(os.listdir(data)) if f.endswith('.root')]
 
     if arg.input_file_filter:
         # Not sure if this can be done in one step so doing it in two
