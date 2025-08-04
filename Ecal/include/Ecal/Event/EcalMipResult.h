@@ -64,7 +64,7 @@ class EcalMipResult {
   /// Angular separation between the projected photon and electron trajectories
   /// as projected at the ECAL
 
-  ClassDef(EcalMipResult, 1);
+  ClassDef(EcalMipResult, 2);
 };
 
 }  // namespace ldmx

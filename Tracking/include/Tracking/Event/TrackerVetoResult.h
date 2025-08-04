@@ -82,7 +82,7 @@ class TrackerVetoResult {
 
   bool passes_recoil_veto_{false};
 
-  ClassDef(TrackerVetoResult, 1);
+  ClassDef(TrackerVetoResult, 2);
 };
 }  // namespace ldmx
 

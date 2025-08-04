@@ -104,7 +104,7 @@ class TrigParticle {
   int emClusDepth_{0};
 
   /// ROOT Dictionary class definition macro
-  ClassDef(TrigParticle, 1);
+  ClassDef(TrigParticle, 2);
 };
 }  // namespace trigger
 

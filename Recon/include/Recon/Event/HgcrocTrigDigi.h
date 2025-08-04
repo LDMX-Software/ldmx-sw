@@ -132,7 +132,7 @@ class HgcrocTrigDigi {
   /// the compressed 7bit trigger primitive value for this channel
   uint8_t tp_{0};
   /// ROOT Dictionary class definition macro
-  ClassDef(HgcrocTrigDigi, 1);
+  ClassDef(HgcrocTrigDigi, 2);
 };
 }  // namespace ldmx
 

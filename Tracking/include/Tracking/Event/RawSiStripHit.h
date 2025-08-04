@@ -119,7 +119,7 @@ class RawSiStripHit {
   long time_{0};
 
   /// Class declaration needed by the ROOT dictionary.
-  ClassDef(RawSiStripHit, 1);
+  ClassDef(RawSiStripHit, 2);
 
 };  // RawSiStripHit
 }  // namespace ldmx
