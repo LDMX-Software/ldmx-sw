@@ -1,6 +1,6 @@
 # ComparePlots
 
-Python module focused on comparing two or more "similar" LDMX event or histogram files.
+Python module focused on comparing two or more "similar" LDMX histogram files.
 
 ## Installation
 One may use this python module either inside or outside the ldmx-sw development container.
@@ -42,6 +42,6 @@ For example if you would like to compare the ECAL shower features, put the input
 e.g. `compareDir` with names that are separated with an underscore, e.g. `histo_new.root` and `histo_ref.root`,
 then run the following command.
 ```
-just validate compareDir/  --systems ecal.shower_feats
+just compare-plots compareDir/  --systems ecal.shower_feats
 ```
 This will produce plots in the `compareDir` directory and will include "new" and "ref" in the plot legend.
