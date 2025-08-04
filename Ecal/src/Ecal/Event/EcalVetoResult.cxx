@@ -171,6 +171,6 @@ void EcalVetoResult::setVariables(
 }
 
 std::ostream& operator<<(std::ostream& o, const EcalVetoResult& c) {
-  return o << "\t Passes veto : " << c.passes_veto_ << "\n";
+  return o << "EcalVetoResult { Passes veto : " << c.passes_veto_ << " }";
 }
 }  // namespace ldmx

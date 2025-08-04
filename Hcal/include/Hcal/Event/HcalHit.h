@@ -41,7 +41,7 @@ class HcalHit : public ldmx::CalorimeterHit {
   /**
    * Print out the object.
    */
-  friend std::ostream &operator<<(std::ostream &o, const CalorimeterHit &d);
+  friend std::ostream &operator<<(std::ostream &o, const HcalHit &d);
 
   /**
    * Get the number of photoelectrons estimated for this hit.
