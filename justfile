@@ -242,3 +242,8 @@ recompFire config_py *ARGS: compile (fire config_py ARGS)
 # install the python Validation plotting module
 install-validation:
     denv python3 -m pip install -r Validation/requirements.txt --no-cache --break-system-packages
+
+# run the Validation plotting module
+[no-cd]
+validate *args:
+    denv 'PYTHONPATH={{ justfile_directory() }}:${PYTHONPATH} python3 -m Validation {{ args }}'
