@@ -7,8 +7,8 @@ namespace ldmx {
 EcalMipResult::~EcalMipResult() { Clear(); }
 
 std::ostream& operator<<(std::ostream& o, const EcalMipResult& c) {
-  return o << "EcalMipResult { n_straight_tracks : " << c.n_straight_tracks_ << ", "
-           << "n_linreg_tracks : " << c.n_linreg_tracks_ << ", "
+  return o << "EcalMipResult { n_straight_tracks : " << c.n_straight_tracks_
+           << ", " << "n_linreg_tracks : " << c.n_linreg_tracks_ << ", "
            << "first_near_ph_layer : " << c.first_near_ph_layer_ << ", "
            << "n_near_ph_hits : " << c.n_near_ph_hits_ << ", "
            << "photon_territory_hits : " << c.photon_territory_hits_ << "}";
