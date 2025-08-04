@@ -20,9 +20,8 @@ class TrigScintQIEDigis {
 
   /**
    * Print ifo about the class
-   * @note required by EventDef.h
    */
-  void Print(Option_t *option = "") const;
+  friend std::ostream &operator<<(std::ostream &o, const TrigScintQIEDigis &d);
 
   /**
    * A dummy function
@@ -124,7 +123,7 @@ class TrigScintQIEDigis {
   /// capacitor IDs
   std::vector<int> cids_;
 
-  ClassDef(TrigScintQIEDigis, 1);
+  ClassDef(TrigScintQIEDigis, 2);
 };
 }  // namespace trigscint
 #endif

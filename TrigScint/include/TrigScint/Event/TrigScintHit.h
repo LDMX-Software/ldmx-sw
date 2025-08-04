@@ -26,7 +26,7 @@ class TrigScintHit : public ldmx::HcalHit {
   /**
    * Class constructor.
    */
-  TrigScintHit() {}
+  TrigScintHit() = default;
 
   /**
    * Class destructor.
@@ -41,7 +41,7 @@ class TrigScintHit : public ldmx::HcalHit {
   /**
    * Print out the object.
    */
-  void Print(Option_t *option = "") const;
+  friend std::ostream &operator<<(std::ostream &o, const TrigScintHit &d);
 
   /**
    * Set hit bar ID.
@@ -93,7 +93,7 @@ class TrigScintHit : public ldmx::HcalHit {
   float beamEfrac_{0};
 
   float pe_{0};
-  ClassDef(TrigScintHit, 3);
+  ClassDef(TrigScintHit, 4);
 
 };  // TrigScintHit
 

@@ -43,9 +43,8 @@ class EcalTrajectoryInfo {
 
   /**
    * Print the string representation of this object.
-   * This class is needed by ROOT when building the dictionary.
    */
-  void Print() const;
+  friend std::ostream& operator<<(std::ostream& o, const EcalTrajectoryInfo& d);
 
   void Clear();
 
@@ -75,7 +74,7 @@ class EcalTrajectoryInfo {
   std::vector<XYCoords> photon_trajectory_;
   std::vector<HitData> tracking_hit_list_;
 
-  ClassDef(EcalTrajectoryInfo, 1);
+  ClassDef(EcalTrajectoryInfo, 2);
 };  // EcalTrajectoryInfo
 
 }  // namespace ldmx

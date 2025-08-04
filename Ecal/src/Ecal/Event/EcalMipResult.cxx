@@ -3,18 +3,15 @@
 ClassImp(ldmx::EcalMipResult);
 
 namespace ldmx {
-EcalMipResult::EcalMipResult() {}
 
 EcalMipResult::~EcalMipResult() { Clear(); }
 
-void EcalMipResult::Print() const {
-  std::cout << "[ EcalMipResult ]:\n"
-            << "\t n_straight_tracks : " << n_straight_tracks_ << "\n"
-            << "\t n_linreg_tracks : " << n_linreg_tracks_ << "\n"
-            << "\t first_near_ph_layer : " << first_near_ph_layer_ << "\n"
-            << "\t n_near_ph_hits : " << n_near_ph_hits_ << "\n"
-            << "\t photon_territory_hits : " << photon_territory_hits_
-            << std::endl;
+std::ostream& operator<<(std::ostream& o, const EcalMipResult& c) {
+  return o << "EcalMipResult { n_straight_tracks : " << c.n_straight_tracks_
+           << ", " << "n_linreg_tracks : " << c.n_linreg_tracks_ << ", "
+           << "first_near_ph_layer : " << c.first_near_ph_layer_ << ", "
+           << "n_near_ph_hits : " << c.n_near_ph_hits_ << ", "
+           << "photon_territory_hits : " << c.photon_territory_hits_ << "}";
 }
 
 void EcalMipResult::Clear() {

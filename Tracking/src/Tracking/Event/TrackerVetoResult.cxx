@@ -3,7 +3,6 @@
 ClassImp(ldmx::TrackerVetoResult);
 
 namespace ldmx {
-TrackerVetoResult::TrackerVetoResult() {}
 
 void TrackerVetoResult::Clear() {
   passes_veto_ = false;
@@ -11,11 +10,10 @@ void TrackerVetoResult::Clear() {
   passes_recoil_veto_ = false;
 }
 
-void TrackerVetoResult::Print() const {
-  std::cout << "TrackerVetoResult { "
-            << "passes_tagger_veto: " << passes_tagger_veto_ << ", "
-            << "passes_tagger_veto: " << passes_tagger_veto_ << ", "
-            << "passes_recoil_veto_: " << passes_recoil_veto_ << " }"
-            << std::endl;
+std::ostream& operator<<(std::ostream& o, const TrackerVetoResult& c) {
+  return o << "TrackerVetoResult { "
+           << "passes_tagger_veto: " << c.passes_tagger_veto_ << ", "
+           << "passes_tagger_veto: " << c.passes_tagger_veto_ << ", "
+           << "passes_recoil_veto_: " << c.passes_recoil_veto_ << " }";
 }
 }  // namespace ldmx

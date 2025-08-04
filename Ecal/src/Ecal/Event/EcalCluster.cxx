@@ -4,8 +4,6 @@ ClassImp(ldmx::EcalCluster);
 
 namespace ldmx {
 
-EcalCluster::EcalCluster() {}
-
 EcalCluster::~EcalCluster() { Clear(); }
 
 void EcalCluster::addHits(const std::vector<const EcalHit*>& hits) {

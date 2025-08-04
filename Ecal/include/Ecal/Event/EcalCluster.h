@@ -22,7 +22,7 @@ class EcalCluster : public ldmx::CaloCluster {
   /**
    * Class constructor.
    */
-  EcalCluster();
+  EcalCluster() = default;
 
   /**
    * Class destructor.

@@ -338,8 +338,8 @@ class HgcrocDigiCollection {
    * Prints out the lengths of the stored vectors and
    * the other settings of this collection.
    */
-  void Print() const;
-
+  friend std::ostream& operator<<(std::ostream& o,
+                                  const HgcrocDigiCollection& d);
   /**
    * Get the version of ROC we have read
    * @return int version number of ROC
@@ -526,7 +526,7 @@ class HgcrocDigiCollection {
   /**
    * The ROOT class definition.
    */
-  ClassDef(HgcrocDigiCollection, 5);
+  ClassDef(HgcrocDigiCollection, 6);
 };
 }  // namespace ldmx
 

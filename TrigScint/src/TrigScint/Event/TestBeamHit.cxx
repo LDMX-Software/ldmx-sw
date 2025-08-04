@@ -12,22 +12,22 @@
 /*~~~~~~~~~~~~~~~~*/
 #include <iostream>
 
-ClassImp(trigscint::TestBeamHit)
+ClassImp(trigscint::TestBeamHit);
 
-    namespace trigscint {
-  void TestBeamHit::Clear(Option_t * option) {
-    earlyPedestal_ = -999;
-    pedestal_ = -999;
-    pulseQ_ = -999;
-    startSample_ = -1;
-    pulseWidth_ = -1;
-    sampAboveThr_ = -1;
-  }
+namespace trigscint {
+void TestBeamHit::Clear(Option_t* option) {
+  earlyPedestal_ = -999;
+  pedestal_ = -999;
+  pulseQ_ = -999;
+  startSample_ = -1;
+  pulseWidth_ = -1;
+  sampAboveThr_ = -1;
+}
 
-  void TestBeamHit::Print(Option_t * option) const {
-    std::cout << "TestBeamHit { " << "Total charge: " << getQ()
-              << " fC, start time sample: " << getStartSample()
-              << ", bar: " << getBarID() << ", pulseWidth: " << getPulseWidth()
-              << "}" << std::endl;
-  }
+std::ostream& operator<<(std::ostream& o, const TestBeamHit& c) {
+  return o << "TestBeamHit { " << "Total charge: " << c.getQ()
+           << " fC, start time sample: " << c.getStartSample()
+           << ", bar: " << c.getBarID() << ", pulseWidth: " << c.getPulseWidth()
+           << "}";
+}
 }  // namespace trigscint

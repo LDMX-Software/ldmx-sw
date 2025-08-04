@@ -63,10 +63,10 @@ class TrackerID : public DetectorID {
    */
   int layer() const { return (id_ >> LAYER_SHIFT) & LAYER_MASK; }
 
+  friend std::ostream& operator<<(std::ostream& o, const ldmx::TrackerID& d);
+
   static void createInterpreters();
 };
 }  // namespace ldmx
-
-std::ostream& operator<<(std::ostream&, const ldmx::TrackerID&);
 
 #endif

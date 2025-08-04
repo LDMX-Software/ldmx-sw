@@ -430,7 +430,7 @@ void TrigScintClusterProducer::produce(framework::Event &event) {
 
       trigScintClusters.push_back(cluster);
 
-      if (verbose_) cluster.Print();
+      ldmx_log(trace) << cluster;
 
       centroid_ = 0;
       centroidX_ = -1;

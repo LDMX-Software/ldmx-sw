@@ -158,8 +158,13 @@ bool DigitizationProcessor::mergeSimHits(
   ldmx_log(debug) << "Sim_hits Size = " << sim_hits.size()
                   << " Merged_hits Size = " << merged_hits.size();
 
-  // for (const auto& hit : sim_hits) hit.Print();
-  // for (const auto& mhit : merged_hits) mhit.Print();
+  for (const auto& hit : sim_hits) {
+    ldmx_log(trace) << hit;
+  }
+
+  for (const auto& mhit : merged_hits) {
+    ldmx_log(trace) << mhit;
+  }
 
   return true;
 }

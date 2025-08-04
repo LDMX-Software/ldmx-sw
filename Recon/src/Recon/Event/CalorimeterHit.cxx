@@ -17,9 +17,9 @@ void CalorimeterHit::Clear() {
   isNoise_ = false;
 }
 
-void CalorimeterHit::Print() const {
-  std::cout << "CalorimeterHit { " << "id: " << std::hex << id_ << std::dec
-            << ",  energy: " << energy_ << "MeV, time: " << time_
-            << "ns, amplitude: " << amplitude_ << "}" << std::endl;
+std::ostream& operator<<(std::ostream& o, const CalorimeterHit& c) {
+  return o << "CalorimeterHit { " << "id: " << std::hex << c.id_ << std::dec
+           << ",  energy: " << c.energy_ << "MeV, time: " << c.time_
+           << "ns, amplitude: " << c.amplitude_ << "}";
 }
 }  // namespace ldmx

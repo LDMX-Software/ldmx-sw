@@ -107,10 +107,10 @@ class HcalID : public HcalAbstractID {
    */
   unsigned int strip() const { return (id_ >> STRIP_SHIFT) & STRIP_MASK; }
 
+  friend std::ostream& operator<<(std::ostream& o, const ldmx::HcalID& d);
+
   static void createInterpreters();
 };
 }  // namespace ldmx
-
-std::ostream& operator<<(std::ostream&, const ldmx::HcalID&);
 
 #endif

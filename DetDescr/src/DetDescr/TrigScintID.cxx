@@ -2,12 +2,13 @@
 
 #include "DetDescr/DetectorIDInterpreter.h"
 
+namespace ldmx {
+
 std::ostream& operator<<(std::ostream& s, const ldmx::TrigScintID& id) {
   s << "TrigScint(" << id.module() << ',' << id.bar() << ')';
   return s;
 }
 
-namespace ldmx {
 void TrigScintID::createInterpreters() {
   IDField::IDFieldList fields;
   fields.push_back(new IDField("subdetector", 0, SUBDETECTORID_SHIFT, 31));

@@ -32,7 +32,7 @@ class HcalVetoResult {
   void Clear();
 
   /** Print out the object */
-  void Print() const;
+  friend std::ostream &operator<<(std::ostream &o, const HcalVetoResult &d);
 
   /** Checks if the event passes the Hcal veto. */
   bool passesVeto() const { return passes_veto_; };
@@ -51,7 +51,7 @@ class HcalVetoResult {
    *
    * @param passes_veto Veto result.
    */
-  void setVetoResult(const bool& passes_veto = true) {
+  void setVetoResult(const bool &passes_veto = true) {
     passes_veto_ = passes_veto;
   }
 
@@ -91,7 +91,7 @@ class HcalVetoResult {
   /** Flag indicating whether the event passes the Hcal veto. */
   bool passes_veto_{false};
 
-  ClassDef(HcalVetoResult, 3);
+  ClassDef(HcalVetoResult, 4);
 
 };  // HcalVetoResult
 }  // namespace ldmx

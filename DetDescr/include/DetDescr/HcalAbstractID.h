@@ -71,10 +71,11 @@ class HcalAbstractID : public DetectorID {
    * @return The value of the payload field.
    */
   int payload() const { return id_ & HCAL_PAYLOAD_MASK; }
+
+  friend std::ostream& operator<<(std::ostream& s,
+                                  const ldmx::HcalAbstractID& id);
 };
 
 }  // namespace ldmx
-
-std::ostream& operator<<(std::ostream& s, const ldmx::HcalAbstractID& id);
 
 #endif

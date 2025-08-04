@@ -101,11 +101,6 @@ class HgcrocTrigDigi {
   static uint32_t compressed2Linear(uint8_t comp);
 
   /**
-   * Print a description of this object.
-   */
-  void Print() const;
-
-  /**
    * Stream the input digi
    *
    * In one line, prints out the ID (in hex),
@@ -137,7 +132,7 @@ class HgcrocTrigDigi {
   /// the compressed 7bit trigger primitive value for this channel
   uint8_t tp_{0};
   /// ROOT Dictionary class definition macro
-  ClassDef(HgcrocTrigDigi, 1);
+  ClassDef(HgcrocTrigDigi, 2);
 };
 }  // namespace ldmx
 

@@ -117,10 +117,10 @@ void OverlayProducer::produce(framework::Event &event) {
     // we don't need to touch the hard process sim hits, really... but we
     // might need the simhits in the hit map.
     if (needs_contribs_added) {
-      for (const ldmx::SimCalorimeterHit &simHit : simhits_calo) {
-        // ldmx_log(trace) simHit.Print();
+      for (const ldmx::SimCalorimeterHit &simhit : simhits_calo) {
+        ldmx_log(trace) << simhit;
         // this copies the hit, its ID and its coordinates directly
-        hit_map[simHit.getID()] = simHit;
+        hit_map[simhit.getID()] = simhit;
 
       }  // over calo simhit collection
     }  // if needContribs
@@ -143,9 +143,9 @@ void OverlayProducer::produce(framework::Event &event) {
     ldmx_log(debug) << "in loop: start of collection " << coll_name
                     << "in loop: printing current sim event: ";
 
-    // for (const ldmx::SimTrackerHit &simHit : simhits_tracker) {
-    // ldmx_log(debug) <<simHit.Print();
-    // }
+    for (const ldmx::SimTrackerHit &simhit : simhits_tracker) {
+      ldmx_log(trace) << simhit;
+    }
   }  // over tracker collections for sim event
 
   /* ----------- now do the pileup overlay ----------- */
@@ -239,7 +239,7 @@ void OverlayProducer::produce(framework::Event &event) {
         ldmx_log(trace) << "in loop: printing overlay event: ";
 
         for (ldmx::SimCalorimeterHit &overlay_hit : overlay_hits) {
-          // ldmx_log(trace) overlay_hit.Print();
+          ldmx_log(trace) << overlay_hit;
 
           const float overlay_time = overlay_hit.getTime() + time_offset;
           overlay_hit.setTime(overlay_time);
@@ -296,7 +296,7 @@ void OverlayProducer::produce(framework::Event &event) {
           overlay_hit.setTime(overlay_time);
           tracker_collection_map[out_coll_name_tracker].push_back(overlay_hit);
 
-          // ldmx_log(trace) overlay_hit.Print();
+          ldmx_log(trace) << overlay_hit;
           ldmx_log(trace) << "Adding tracker overlay hit to outhit vector "
                           << out_coll_name_tracker;
         }  // over overlay tracker simhit collection
@@ -320,7 +320,7 @@ void OverlayProducer::produce(framework::Event &event) {
                       << calo_collections_[i_coll] << "Overlay :";
 
       for (auto &map_hit : hit_map) {
-        // ldmx_log(trace) << map_hit.second.Print();
+        ldmx_log(trace) << map_hit.second;
 
         if (calo_collection_map.find(calo_collections_[i_coll] +
                                      out_coll_postfix_) ==
@@ -345,20 +345,20 @@ void OverlayProducer::produce(framework::Event &event) {
   for (auto &[name, coll] : calo_collection_map) {
     ldmx_log(debug) << "Writing " << name << " to event bus.";
 
-    // ldmx_log(debug) << "List of hits added: ";
-    // for (auto &hit : coll) {
-    // ldmx_log(trace) << hit.Print();
-    // }
+    ldmx_log(trace) << "List of hits added: ";
+    for (auto &hit : coll) {
+      ldmx_log(trace) << hit;
+    }
     event.add(name, coll);
   }
 
   // and now for the tracker hits
   for (auto &[name, coll] : tracker_collection_map) {
     ldmx_log(debug) << "Writing " << name << " to event bus.";
-    // ldmx_log(debug) << "List of hits added: ";
-    // for (auto &hit : coll) {
-    // ldmx_log(trace) << hit.Print();
-    // }
+    ldmx_log(trace) << "List of hits added: ";
+    for (auto &hit : coll) {
+      ldmx_log(trace) << hit;
+    }
     event.add(name, coll);
   }
   return;

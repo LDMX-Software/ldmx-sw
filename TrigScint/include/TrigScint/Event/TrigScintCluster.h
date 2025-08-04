@@ -33,7 +33,7 @@ class TrigScintCluster {
   /**
    * Print a description of this object.
    */
-  void Print(Option_t *option = "") const;  // override;
+  friend std::ostream &operator<<(std::ostream &o, const TrigScintCluster &d);
 
   /**
    * Reset the TrigScintCluster object.
@@ -178,7 +178,7 @@ class TrigScintCluster {
   /**
    * The ROOT class definition.
    */
-  ClassDef(TrigScintCluster, 1);
+  ClassDef(TrigScintCluster, 2);
 };
 }  // namespace ldmx
 

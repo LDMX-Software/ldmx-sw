@@ -26,7 +26,7 @@ namespace ldmx {
 class EcalVetoResult {
  public:
   /** Constructor */
-  EcalVetoResult();
+  EcalVetoResult() = default;
 
   /** Destructor */
   virtual ~EcalVetoResult();
@@ -77,7 +77,7 @@ class EcalVetoResult {
   void Clear();
 
   /** Print the object */
-  void Print() const;
+  friend std::ostream& operator<<(std::ostream& o, const EcalVetoResult& d);
 
   /** Checks if the event passes the Ecal veto. */
   bool passesVeto() const { return passes_veto_; }
@@ -337,7 +337,7 @@ class EcalVetoResult {
 
   std::vector<float> ecal_layer_edep_readout_;
 
-  ClassDef(EcalVetoResult, 11);
+  ClassDef(EcalVetoResult, 12);
 };
 }  // namespace ldmx
 
