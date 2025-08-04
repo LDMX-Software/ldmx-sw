@@ -145,6 +145,7 @@ class Differ :
         raw_ax.legend(**legend_kw)
 
         den_h, _den_art = raw_histograms[0]
+        bins = den_h.axes[0].edges
         for num_h, num_art in raw_histograms[1:]:
             (den_h/num_h).plot1d(
                 ax = ratio_ax,
