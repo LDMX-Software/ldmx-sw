@@ -27,7 +27,7 @@ def plotter(func):
     __registry__ : dict
         Dictionary of registered plotters
     """
-    func_name = func.__module__.replace('Validate.','')+'.'+func.__name__
+    func_name = func.__module__.replace('Validation.','')+'.'+func.__name__
     plotter.__registry__[func_name] = func
     return func
 
