@@ -36,20 +36,6 @@ def kinematics(d : Differ, out_dir = None) :
         'DarkBremDQM/DarkBremDQM_dark_brem_element', 
         'Element in which Dark Brem Occurred',
         out_dir = out_dir,
-        tick_labels = [
-            "did not happen",
-            "H 1",
-            "C 6",
-            "O 8",
-            "Na 11",
-            "Si 14",
-            "Ca 20",
-            "Cu 29",
-            "Y 39",
-            "W 74",
-            "Lu 71",
-            "unlisted",
-        ],
         density=True,
         ylabel='Weighted Fraction'
     )
@@ -59,16 +45,6 @@ def kinematics(d : Differ, out_dir = None) :
         'DarkBremDQM/DarkBremDQM_dark_brem_material',
         'Material in which Dark Brem Occurred',
         out_dir = out_dir,
-        tick_labels = [
-            "Unknown",
-            "C",
-            "PCB",
-            "Glue",
-            "Si",
-            "Al",
-            "W / LYSO",
-            "PVT"
-        ],
         density=True,
         ylabel='Weighted Fraction'
     )
