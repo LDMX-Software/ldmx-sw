@@ -5,6 +5,8 @@
 #include "DetDescr/HcalDigiID.h"
 #include "DetDescr/HcalID.h"
 
+namespace ldmx {
+
 std::ostream& operator<<(std::ostream& s, const ldmx::HcalAbstractID& id) {
   switch (id.bar_type()) {
     case (ldmx::HcalAbstractID::Global):
@@ -19,3 +21,4 @@ std::ostream& operator<<(std::ostream& s, const ldmx::HcalAbstractID& id) {
                << id.payload();
   }
 }
+}  // namespace ldmx

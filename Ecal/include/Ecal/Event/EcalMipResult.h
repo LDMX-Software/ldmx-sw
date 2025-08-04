@@ -25,12 +25,12 @@ namespace ldmx {
 class EcalMipResult {
  public:
   /** Constructor */
-  EcalMipResult();
+  EcalMipResult() = default;
 
   /** Destructor */
   virtual ~EcalMipResult();
 
-  void Print() const;
+  friend std::ostream &operator<<(std::ostream &o, const EcalMipResult &d);
 
   void Clear();
 
@@ -64,7 +64,7 @@ class EcalMipResult {
   /// Angular separation between the projected photon and electron trajectories
   /// as projected at the ECAL
 
-  ClassDef(EcalMipResult, 1);
+  ClassDef(EcalMipResult, 2);
 };
 
 }  // namespace ldmx

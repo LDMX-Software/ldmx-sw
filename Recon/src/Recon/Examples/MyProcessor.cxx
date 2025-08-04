@@ -13,14 +13,14 @@ void MyProcessor::configure(framework::config::Parameters &parameters) {
    * python member variable.
    */
 
-  int my_parameter = parameters.getParameter<int>("my_parameter");
+  int my_parameter = parameters.get<int>("my_parameter");
 
-  ecal_rechits_passname_ =
-      parameters.getParameter<std::string>("ecal_rechits_passname");
+  ldmx_log(info) << "MyProcessor configured with my_parameter = "
+                 << my_parameter;
+
+  ecal_rechits_passname_ = parameters.get<std::string>("ecal_rechits_passname");
   ecal_rec_hits_event_passname_ =
-      parameters.getParameter<std::string>("ecal_rec_hits_event_passname");
-
-  std::cout << "MyProcessor has my_parameter = " << my_parameter << std::endl;
+      parameters.get<std::string>("ecal_rec_hits_event_passname");
 }
 
 void MyProcessor::produce(framework::Event &event) {
@@ -33,9 +33,9 @@ void MyProcessor::produce(framework::Event &event) {
       event.getCollection<ldmx::EcalHit>("EcalRecHits", ecal_rechits_passname_);
 
   // Loop over the collection of hits and print the hit details
-  for (const ldmx::EcalHit &hit : hits) {
+  for (const auto &hit : hits) {
     // Print the hit
-    hit.Print();
+    ldmx_log(info) << hit;
   }
 }
 }  // namespace recon

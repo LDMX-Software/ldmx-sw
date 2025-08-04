@@ -57,7 +57,7 @@ class RawSiStripHit {
    *
    * This class is needed by ROOT when building the dictionary.
    */
-  void Print() const { std::cout << this; }
+  friend std::ostream &operator<<(std::ostream &o, const RawSiStripHit &d);
 
   /**
    * Get the digitized (ADC) samples composing this hit.
@@ -119,7 +119,7 @@ class RawSiStripHit {
   long time_{0};
 
   /// Class declaration needed by the ROOT dictionary.
-  ClassDef(RawSiStripHit, 1);
+  ClassDef(RawSiStripHit, 2);
 
 };  // RawSiStripHit
 }  // namespace ldmx

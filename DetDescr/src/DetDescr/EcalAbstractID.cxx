@@ -5,6 +5,8 @@
 #include "DetDescr/EcalID.h"
 #include "DetDescr/EcalTriggerID.h"
 
+namespace ldmx {
+
 std::ostream& operator<<(std::ostream& s, const ldmx::EcalAbstractID& id) {
   switch (id.cell_type()) {
     case (ldmx::EcalAbstractID::PrecisionGlobal):
@@ -17,3 +19,5 @@ std::ostream& operator<<(std::ostream& s, const ldmx::EcalAbstractID& id) {
                << id.payload();
   }
 }
+
+}  // namespace ldmx

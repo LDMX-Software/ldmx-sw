@@ -27,7 +27,7 @@ class FiducialFlag {
   /**
    * Class constructor.
    */
-  FiducialFlag();
+  FiducialFlag() = default;
 
   /**
    * Class destructor.
@@ -37,7 +37,7 @@ class FiducialFlag {
   /**
    * Print a description of this object.
    */
-  void Print() const;
+  friend std::ostream &operator<<(std::ostream &o, const FiducialFlag &d);
 
   /**
    * Reset the FiducialFlag object.
@@ -202,7 +202,7 @@ class FiducialFlag {
   /* Variable results from the fiduciality decision. */
   TArrayD variables_;
 
-  ClassDef(FiducialFlag, 1);
+  ClassDef(FiducialFlag, 2);
 };
 }  // namespace ldmx
 

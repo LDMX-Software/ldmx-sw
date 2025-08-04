@@ -23,7 +23,7 @@ class TrackerVetoResult {
   /**
    * Class constructor.
    */
-  TrackerVetoResult();
+  TrackerVetoResult() = default;
 
   /**
    * Class destructor.
@@ -38,7 +38,7 @@ class TrackerVetoResult {
   /**
    * Print the TrackerVetoResult object.
    */
-  void Print() const;
+  friend std::ostream &operator<<(std::ostream &o, const TrackerVetoResult &d);
 
   /** Checks if the event passes the Tracker veto. */
   bool passesVeto() const { return passes_veto_; };
@@ -82,7 +82,7 @@ class TrackerVetoResult {
 
   bool passes_recoil_veto_{false};
 
-  ClassDef(TrackerVetoResult, 1);
+  ClassDef(TrackerVetoResult, 2);
 };
 }  // namespace ldmx
 

@@ -84,11 +84,6 @@ class TrigEnergySum {
   // hwEnergy_*pe_per_adc_*mev_per_pe_*had_sample_frac_; }
 
   /**
-   * Print a description of this object.
-   */
-  void Print() const;
-
-  /**
    * Stream the input digi
    *
    * In one line, prints out the ID (in hex),
@@ -130,7 +125,7 @@ class TrigEnergySum {
   // half-bar
 
   /// ROOT Dictionary class definition macro
-  ClassDef(TrigEnergySum, 1);
+  ClassDef(TrigEnergySum, 2);
 };
 }  // namespace trigger
 

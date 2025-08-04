@@ -36,7 +36,7 @@ class SimTrackerHit {
   /**
    * Print a description of this object.
    */
-  void Print() const;
+  friend std::ostream &operator<<(std::ostream &o, const SimTrackerHit &d);
 
   /**
    * Reset the SimTrackerHit object.
@@ -270,7 +270,7 @@ class SimTrackerHit {
   /**
    * The ROOT class definition.
    */
-  ClassDef(SimTrackerHit, 3);
+  ClassDef(SimTrackerHit, 4);
 
 };  // SimTrackerHit
 }  // namespace ldmx

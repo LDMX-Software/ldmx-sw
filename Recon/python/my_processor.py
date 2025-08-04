@@ -20,7 +20,7 @@ class MyProcessor(ldmxcfg.Producer) :
 
     defines a integer parameter for this class which can be accessed
     in the configure method with
-        int my_parameter = parameters.getParameter<int>("my_parameter");
+        int my_parameter = parameters.get<int>("my_parameter");
 
     Examples
     --------

@@ -122,11 +122,11 @@ class EcalID : public EcalAbstractID {
    */
   std::pair<unsigned int, unsigned int> getCellUV() const;
 
+  friend std::ostream& operator<<(std::ostream& o, const ldmx::EcalID& d);
+
   static void createInterpreters();
 };
 
 }  // namespace ldmx
-
-std::ostream& operator<<(std::ostream&, const ldmx::EcalID&);
 
 #endif

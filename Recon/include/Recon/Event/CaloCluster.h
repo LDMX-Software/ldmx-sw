@@ -28,7 +28,7 @@ class CaloCluster {
   /**
    * Class constructor.
    */
-  CaloCluster();
+  CaloCluster() = default;
 
   /**
    * Class destructor.
@@ -38,7 +38,7 @@ class CaloCluster {
   /**
    * Print a description of this object.
    */
-  void Print() const;
+  friend std::ostream& operator<<(std::ostream& o, const CaloCluster& d);
 
   /**
    * Reset the CaloCluster object.
@@ -157,7 +157,7 @@ class CaloCluster {
   std::vector<float> hitE_;
 
  private:
-  ClassDef(CaloCluster, 1);
+  ClassDef(CaloCluster, 2);
 };
 }  // namespace ldmx
 

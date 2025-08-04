@@ -129,10 +129,11 @@ class HcalTriggerID : public HcalAbstractID {
    */
   bool isComposite() const { return end() == 2; }
 
+  friend std::ostream& operator<<(std::ostream& o,
+                                  const ldmx::HcalTriggerID& d);
+
   static void createInterpreters();
 };
 }  // namespace ldmx
-
-std::ostream& operator<<(std::ostream&, const ldmx::HcalTriggerID&);
 
 #endif

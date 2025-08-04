@@ -2,6 +2,8 @@
 
 #include "DetDescr/DetectorIDInterpreter.h"
 
+namespace ldmx {
+
 std::ostream& operator<<(std::ostream& s, const ldmx::TrackerID& id) {
   if (id.null())
     s << "NULL";
@@ -14,8 +16,6 @@ std::ostream& operator<<(std::ostream& s, const ldmx::TrackerID& id) {
   s << id.layer() << ',' << id.module() << ')';
   return s;
 }
-
-namespace ldmx {
 
 void TrackerID::createInterpreters() {
   IDField::IDFieldList fields;

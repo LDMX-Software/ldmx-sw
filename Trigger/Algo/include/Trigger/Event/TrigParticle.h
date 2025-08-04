@@ -2,11 +2,9 @@
 #define TRIGGER_EVENT_TRIGPARTICLE_H
 
 // ROOT
-#include "TObject.h"  //For ClassDef
-// #include "TrigCaloCluster.h"
-// #include "TLorentzVector.h"
 #include "Math/GenVector/LorentzVector.h"
 #include "Math/GenVector/PositionVector3D.h"
+#include "TObject.h"  //For ClassDef
 
 namespace trigger {
 
@@ -106,7 +104,7 @@ class TrigParticle {
   int emClusDepth_{0};
 
   /// ROOT Dictionary class definition macro
-  ClassDef(TrigParticle, 1);
+  ClassDef(TrigParticle, 2);
 };
 }  // namespace trigger
 

@@ -21,10 +21,10 @@ ClassImp(ldmx::TrigScintHit)
     beamEfrac_ = 0;
   }
 
-  void TrigScintHit::Print(Option_t * option) const {
-    std::cout << "TrigScintHit { " << "id: " << std::hex << getID() << std::dec
-              << ",  energy: " << getEnergy() << "MeV, time: " << getTime()
-              << "ns, amplitude: " << getAmplitude() << ", pe: " << getPE()
-              << "}" << std::endl;
+  std::ostream& operator<<(std::ostream& o, const TrigScintHit& c) {
+    return o << "TrigScintHit { " << "id: " << std::hex << c.getID() << std::dec
+             << ",  energy: " << c.getEnergy() << "MeV, time: " << c.getTime()
+             << "ns, amplitude: " << c.getAmplitude() << ", pe: " << c.getPE()
+             << "}";
   }
 }  // namespace ldmx

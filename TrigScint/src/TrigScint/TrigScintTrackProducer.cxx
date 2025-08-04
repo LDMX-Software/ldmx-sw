@@ -290,7 +290,7 @@ break;
       tracks_.push_back(trackCandidates.at(keepIdx));
       if (verbose_) {
         ldmx_log(debug) << "Kept track at index " << keepIdx;
-        (trackCandidates.at(keepIdx)).Print();
+        ldmx_log(trace) << trackCandidates.at(keepIdx);
       }
       //}
     }  // over seeds
@@ -355,8 +355,8 @@ break;
             if (verbose_ > 1) {
               ldmx_log(debug) << "Found overlap! Tracks at index " << idx
                               << " and " << idxComp;
-              (tracks_.at(idx)).Print();
-              (tracks_.at(idxComp)).Print();
+              ldmx_log(trace) << tracks_.at(idx);
+              ldmx_log(trace) << tracks_.at(idxComp);
             }
 
             if ((tracks_.at(idx)).getResidual() <
@@ -401,19 +401,18 @@ break;
                           << (tracks_.at(idx)).getCentroidX()
                           << "; CentroidY = "
                           << (tracks_.at(idx)).getCentroidY()
-                          << "; track PE = " << (tracks_.at(idx)).getPE();
-          //          (tracks_.at(idx)).Print();
+                          << "; track PE = " << (tracks_.at(idx)).getPE()
+                          << tracks_.at(idx);
         }
       }  // if index flagged for keeping
     }  // over all (uniquely seeded) tracks in the event
-    /*
-      if (verbose_ ) {
-      for (uint idx=0; idx < tracks_.size(); idx++){
-      ldmx_log(debug)<< "Keeping track at index " << idx << ":";
-      (tracks_.at(idx)).Print();
+
+    if (verbose_) {
+      for (uint idx = 0; idx < tracks_.size(); idx++) {
+        ldmx_log(debug) << "Keeping track at index " << idx << ":"
+                        << tracks_.at(idx);
       }
-      }
-    */
+    }
 
     if (verbose_) {
       ldmx_log(debug) << "Running track x,y matching ";

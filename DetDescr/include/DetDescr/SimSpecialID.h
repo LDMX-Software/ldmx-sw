@@ -85,10 +85,10 @@ class SimSpecialID : public DetectorID {
    */
   RawValue subtypePayload() const { return id_ & SUBTYPE_DATA_MASK; }
 
+  friend std::ostream& operator<<(std::ostream& o, const ldmx::SimSpecialID& d);
+
   static void createInterpreters();
 };
 }  // namespace ldmx
-
-std::ostream& operator<<(std::ostream&, const ldmx::SimSpecialID&);
 
 #endif

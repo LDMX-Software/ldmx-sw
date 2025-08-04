@@ -27,7 +27,7 @@ class ClusterAlgoResult {
   /**
    * Class constructor.
    */
-  ClusterAlgoResult();
+  ClusterAlgoResult() = default;
 
   /**
    * Class destructor.
@@ -37,7 +37,7 @@ class ClusterAlgoResult {
   /**
    * Print a description of this object.
    */
-  void Print() const;
+  friend std::ostream& operator<<(std::ostream& o, const ClusterAlgoResult& d);
 
   /**
    * Reset the ClusterAlgoResult object.
@@ -149,7 +149,7 @@ class ClusterAlgoResult {
   /* Array of weights when a certain number of clusters is reached. */
   TArrayD weights_;
 
-  ClassDef(ClusterAlgoResult, 1);
+  ClassDef(ClusterAlgoResult, 2);
 };
 }  // namespace ldmx
 

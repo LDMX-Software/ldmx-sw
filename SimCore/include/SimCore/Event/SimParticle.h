@@ -62,7 +62,7 @@ class SimParticle {
   void Clear();
 
   /// Print a string representation of this object.
-  void Print() const;
+  friend std::ostream& operator<<(std::ostream& o, const SimParticle& d);
 
   /**
    * Get the energy of this particle [MeV].
