@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE gdml [
 <!ENTITY constants SYSTEM "constants.gdml">
-<!ENTITY materials SYSTEM "materials.gdml">
 ]>
 <gdml xmlns:gdml="http://cern.ch/2001/Schemas/GDML" 
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
@@ -32,8 +31,6 @@
   </solids>
 
   <materials>
-
-    &materials;
 
     <material name="Vacuum" state="gas">
       <MEE unit="eV" value="19.2"/>
