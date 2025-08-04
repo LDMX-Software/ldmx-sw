@@ -124,7 +124,7 @@ int main(int argc, char* argv[]) try {
                     << e.function();
     ldmx_log(debug) << e.stackTrace();
     framework::logging::close();
-    return 1;  // return non-zero error-status
+    return 2;  // return non-zero error-status
   }
 
   std::cout << "---- LDMXSW: Event processing complete  --------" << std::endl;
