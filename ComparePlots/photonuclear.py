@@ -6,54 +6,28 @@ import logging
 
 log = logging.getLogger('photonuclear')
 
-@plotter(hist=True, event=False)
+@plotter
 def pndqm(d: Differ, out_dir=None):
-    event_type_labels = ['', 'Nothing hard', 'n', 'nn', '≥ 3n', 'π', 'ππ',
-               'π₀', 'πA', 'π2A', 'ππA', 'π₀A',
-               'π₀2A', 'π₀πA', 'p', 'pp', 'pn', 'K_L⁰X', 'KX',
-                         'K_S⁰X', 'exotics', 'multi-body', '', '']
-
-    compact_event_type_labels = ['', 'n', 'K^{±}X', 'K⁰', 'nn', 'soft', 'other', '']
-    neutron_event_type_labels = ['', '', 'nn', 'pn', 'π^+n', 'π⁰n', '']
-    pn_interaction_material_labels= ['Did not happen', 'Else', 'Si', 'W', 'FR4', 'Steel', 'Epoxy',
-      'PVT', 'Glue', 'Air']
     pn_vertex_volume_labels= ['Did not happen', 'Else', 'W Cooling', 'C Cooling', 'PCB',
        'CarbonBasePlate', 'Absorber', 'Sensor', 'Glue', 'Motherboard', '', '', '',]
 
     d.plot1d("PN/PN_event_type",  "Event category (200 MeV cut)",
-             tick_labels=event_type_labels,
              out_dir=out_dir,
              density=True
              )
     d.plot1d("PN/PN_event_type_500mev",  "Event category (500 MeV cut)",
-             tick_labels=event_type_labels,
              out_dir=out_dir,
              density=True
              )
     d.plot1d("PN/PN_event_type_2000mev",  "Event category (2000 MeV cut)",
-             tick_labels=event_type_labels,
              out_dir=out_dir,
-             density=True
-
-             )
-    d.plot1d("PN/PN_event_type_compact", "",
-             tick_labels=compact_event_type_labels,
-             out_dir=out_dir)
-    d.plot1d("PN/PN_event_type_compact_500mev", "",
-             tick_labels=compact_event_type_labels,
-             out_dir=out_dir)
-    d.plot1d("PN/PN_event_type_compact_2000mev", "",
-             tick_labels=compact_event_type_labels,
-             out_dir=out_dir)
-    d.plot1d("PN/PN_1n_event_type", "",
-             tick_labels=neutron_event_type_labels,
-             out_dir=out_dir) 
-    d.plot1d("PN/PN_pn_interaction_material", "",
-             tick_labels=pn_interaction_material_labels,
-             out_dir=out_dir)
-    d.plot1d("PN/PN_pn_vertex_volume", "",
-             tick_labels=pn_vertex_volume_labels,
-             out_dir=out_dir)
+             density=True)
+    d.plot1d("PN/PN_event_type_compact", "", out_dir=out_dir)
+    d.plot1d("PN/PN_event_type_compact_500mev", "", out_dir=out_dir)
+    d.plot1d("PN/PN_event_type_compact_2000mev", "", out_dir=out_dir)
+    d.plot1d("PN/PN_1n_event_type", "", out_dir=out_dir) 
+    d.plot1d("PN/PN_pn_interaction_material", "", out_dir=out_dir)
+    d.plot1d("PN/PN_pn_vertex_volume", "", out_dir=out_dir)
     d.plot1d("PN/PN_pn_particle_mult", "Photo-nuclear Multiplicity", out_dir=out_dir)
     d.plot1d("PN/PN_pn_neutron_mult", "Photo-nuclear Neutron Multiplicity", out_dir=out_dir)
     d.plot1d("PN/PN_pn_gamma_energy", "γ Energy [MeV]", out_dir=out_dir)
