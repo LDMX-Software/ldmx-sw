@@ -3,7 +3,7 @@
 from ._differ import Differ
 from ._plotter import plotter
 
-@plotter(hist=True,event=False)
+@plotter
 def dqm(d : Differ, out_dir = None) :
     """Plot TrigScint-related validation plots
 

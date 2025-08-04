@@ -5,7 +5,7 @@ import logging
 
 log = logging.getLogger('hcal')
 
-@plotter(hist=True, event=False)
+@plotter
 def dqm(d: Differ, out_dir=None):
     sections = ['back', 'top', 'bottom', 'left', 'right']
     histogram_name_format = 'hcal_dqm_{0}/hcal_dqm_{0}_{1}'
@@ -39,10 +39,6 @@ def dqm(d: Differ, out_dir=None):
     d.plot1d('HcalInefficiencyAnalyzer/HcalInefficiencyAnalyzer_efficiency',
              'Hcal part involved in veto',
              'Efficiency',
-             tick_labels=['', 'Back', 'Top', 'Bottom',
-                          'Right', 'Left', 'Any',
-                          'Both', 'Back only', 'Side only',
-                          'Neither', ''],
              out_dir=out_dir,
              yscale='linear',
 )

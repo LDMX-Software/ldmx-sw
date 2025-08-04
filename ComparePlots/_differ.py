@@ -8,6 +8,8 @@ import re
 import matplotlib
 import uproot
 import numpy as np
+import hist.intervals
+
 # us
 from ._file import File
 
@@ -55,7 +57,7 @@ class Differ :
             elif isinstance(arg, File) :
                 return arg
             else :
-                raise KeyError(f'Argument provided {arg} is not a Validation.File or a tuple of arguments for its constructor')
+                raise KeyError(f'Argument provided {arg} is not a ComparePlots.File or a tuple of arguments for its constructor')
                 
         self.grp_name = grp_name
         self.files = list(map(open_file, args))
@@ -65,15 +67,19 @@ class Differ :
         """Short form representation of a Differ"""
         return f'Differ ({self.grp_name}) {self.files}'
 
-    def plot1d(self, column, xlabel,
-              ylabel = 'Count',
-              yscale = 'log',
-              ylim = (None,None),
-              out_dir = None,
-              file_name = None,
-              tick_labels = None,
-              legend_kw = dict(),
-              **hist_kwargs) :
+    def plot1d(
+        self,
+        histname,
+        xlabel,
+        ylabel = 'Count',
+        yscale = 'log',
+        ylim = (None,None),
+        out_dir = None,
+        file_name = None,
+        legend_kw = dict(),
+        rebin = 1,
+        **hist_kwargs
+    ):
         """Plot a 1D histogram, overlaying the File entries
 
         We overlay the same 'column' of data of each File onto
@@ -88,7 +94,7 @@ class Differ :
 
         Parameters
         ----------
-        column : str or Callable
+        histname : str or Callable
             Determines the array of data from each File to histogram and plot
         xlabel : str
             Label of X axis
@@ -100,10 +106,8 @@ class Differ :
             Limits to set for the y-axis (default: deduced by matplotlib)
         out_dir : str
             Directory in which to write the plotting file
-        tick_labels: list, optional
-            Tick labels for the x-axis
         file_name : str
-            Name of file, no extension (default: column name with directory separators removed)
+            Name of file, no extension (default: histname name with directory separators removed)
         hist_kwargs : dict
             All other key-word arguments are passed into each File.plot1d
         """
@@ -120,11 +124,14 @@ class Differ :
         raw_histograms = []
         for f in self.files :
             try:
-                raw_histograms.append(f.plot1d(raw_ax, column, **hist_kwargs))
+                h = f.get(histname)
+                art = h[hist.rebin(rebin)].plot1d(ax=raw_ax, **f.hist_kwargs, **hist_kwargs)
+                raw_histograms.append((h, art))
             except uproot.KeyInFileError:
-                f.log.warn(f"Key {column} doesn't exist in {self}, skipping")
+                f.log.warn(f"Key {histname} doesn't exist in {self}, skipping")
                 continue
 
+        raw_ax.set_xlabel(None)
         raw_ax.set_ylabel(ylabel)
         raw_ax.set_yscale(yscale)
         raw_ax.set_ylim(*ylim)
@@ -134,52 +141,26 @@ class Differ :
 
         raw_ax.legend(**legend_kw)
 
-        denominator, bins, _denominator_art = raw_histograms[0]
-        bin_centers = (bins[1:]+bins[:-1])/2
-        for values, _bins, art in raw_histograms[1:]:
-            ratio_ax.scatter(
-                bin_centers,
-                np.divide(values, np.where(denominator == 0, np.nan, denominator)),
-                color = art[0].get_edgecolor()
+        den_h, _den_art = raw_histograms[0]
+        bins = den_h.axes[0].edges
+        for num_h, num_art in raw_histograms[1:]:
+            (den_h/num_h).plot1d(
+                ax = ratio_ax,
+                yerr = hist.intervals.ratio_uncertainty(
+                    num = num_h.values(),
+                    denom = den_h.values()
+                ),
+                histtype='errorbar',
+                color = num_art[0].stairs.get_edgecolor()
             )
 
         ratio_ax.set_ylabel('Ratio')
         ratio_ax.set_xlabel(xlabel)
-        if tick_labels is not None:
-            ratio_ax.set_xticks((bins[1:]+bins[:-1])/2)
-            ratio_ax.set_xticklabels(tick_labels)
-            ratio_ax.tick_params(axis='x', rotation=90)
 
         if out_dir is None :
             matplotlib.pyplot.show()
         else :
             if file_name is None :
-                if isinstance(column, str) :
-                    file_name = re.sub(r'^.*/','',column)
-                else :
-                    # assume column is a function meaning the '__name__'
-                    #   parameter is defined by Python for us
-                    file_name = column.__name__
+                file_name = re.sub(r'^.*/','',histname)
             fig.savefig(os.path.join(out_dir,file_name)+ self.output_type, bbox_inches='tight')
             fig.clf()
-
-    def load(self, **kwargs) :
-        """Load all of the event data frames into memory
-        
-        The key-word arguments are used in each File's events call
-        to specify which branches (if not all of them) should be loaded
-        into memory and what manipulation (if any) to do.
-        """
-        for f in self.files :
-            f.load(**kwargs)
-            
-    def manipulate(self, manipulation) :
-        """Manipulate all of the File data frames
-
-        Parameters
-        ----------
-        manipulation : Callable (e.g. a function)
-            Function operating on the data frame to manipuate it **in place**
-        """
-        for f in self.files :
-            f.manipulate(manipulation)
