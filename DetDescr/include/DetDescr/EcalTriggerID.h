@@ -110,11 +110,12 @@ class EcalTriggerID : public EcalAbstractID {
    */
   std::pair<unsigned int, unsigned int> getCellUV() const;
 
+  friend std::ostream& operator<<(std::ostream& o,
+                                  const ldmx::EcalTriggerID& d);
+
   static void createInterpreters();
 };
 
 }  // namespace ldmx
-
-std::ostream& operator<<(std::ostream&, const ldmx::EcalTriggerID&);
 
 #endif

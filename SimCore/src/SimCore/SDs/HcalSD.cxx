@@ -208,9 +208,7 @@ G4bool HcalSD::ProcessHits(G4Step* aStep, G4TouchableHistory* ROhist) {
   hit.setPreStepTime(prePoint->GetGlobalTime());
   hit.setPostStepTime(postPoint->GetGlobalTime());
 
-  if (this->verboseLevel > 2) {
-    hit.Print();
-  }
+  ldmx_log(trace) << hit;
 
   return true;
 }

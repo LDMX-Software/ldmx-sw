@@ -94,10 +94,11 @@ class HcalElectronicsID : public DetectorID {
    * Get the compact index value
    */
   unsigned int index() const { return id_ & INDEX_MASK; }
+
+  friend std::ostream& operator<<(std::ostream& s,
+                                  const ldmx::HcalElectronicsID& id);
 };
 
 }  // namespace ldmx
-
-std::ostream& operator<<(std::ostream& s, const ldmx::HcalElectronicsID& id);
 
 #endif  // DETDESCR_HCALELECTRONICSID_H_

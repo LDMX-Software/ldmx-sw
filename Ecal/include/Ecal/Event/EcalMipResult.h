@@ -25,12 +25,12 @@ namespace ldmx {
 class EcalMipResult {
  public:
   /** Constructor */
-  EcalMipResult();
+  EcalMipResult() = default;
 
   /** Destructor */
   virtual ~EcalMipResult();
 
-  void Print() const;
+  friend std::ostream &operator<<(std::ostream &o, const EcalMipResult &d);
 
   void Clear();
 

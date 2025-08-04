@@ -4,14 +4,11 @@ ClassImp(ldmx::EcalTrajectoryInfo);
 
 namespace ldmx {
 
-void EcalTrajectoryInfo::Print() const {
-  std::cout << "[ EcalTrajectoryInfo ]:\n"
-            << "\t ele_trajectory size : " << ele_trajectory_.size() << "\n"
-            << "\t photon_trajectory size : " << photon_trajectory_.size()
-            << "\n"
-            << "\t tracking_hit_list size : " << tracking_hit_list_.size()
-            << "\n"
-            << std::endl;
+std::ostream& operator<<(std::ostream& o, const EcalTrajectoryInfo& c) {
+  return o << "\t ele_trajectory size : " << c.ele_trajectory_.size() << "\n"
+           << "\t photon_trajectory size : " << c.photon_trajectory_.size()
+           << "\n"
+           << "\t tracking_hit_list size : " << c.tracking_hit_list_.size();
 }
 
 void EcalTrajectoryInfo::Clear() {

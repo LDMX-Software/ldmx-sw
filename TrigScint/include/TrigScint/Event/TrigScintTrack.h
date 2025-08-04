@@ -33,7 +33,7 @@ class TrigScintTrack {
   /**
    * Print a description of this object.
    */
-  void Print() const;  // Option_t *option) const;
+  friend std::ostream &operator<<(std::ostream &o, const TrigScintTrack &d);
 
   /**
    * Reset the TrigScintTrack object.
@@ -359,7 +359,7 @@ class TrigScintTrack {
   /**
    * The ROOT class definition.
    */
-  ClassDef(TrigScintTrack, 2);
+  ClassDef(TrigScintTrack, 3);
 
 };  // TrigScintTrack
 

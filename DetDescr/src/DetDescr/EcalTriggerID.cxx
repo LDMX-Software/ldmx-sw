@@ -2,13 +2,13 @@
 
 #include "DetDescr/DetectorIDInterpreter.h"
 
+namespace ldmx {
+
 std::ostream& operator<<(std::ostream& s, const ldmx::EcalTriggerID& id) {
   s << "EcalTrig(" << id.layer() << ',' << id.module() << ','
     << id.triggercell() << ')';
   return s;
 }
-
-namespace ldmx {
 
 void EcalTriggerID::createInterpreters() {
   IDField::IDFieldList fields;

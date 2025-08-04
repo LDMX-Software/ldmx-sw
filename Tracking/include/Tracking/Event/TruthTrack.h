@@ -23,7 +23,7 @@ class TruthTrack {
    */
   // TruthTrack(const ldmx::SimParticle &particle);
 
-  void Print() const {};
+  friend std::ostream& operator<<(std::ostream& o, const TruthTrack& d);
 
   /**
    * Use the scoring plane hit at the target to extract

@@ -89,19 +89,20 @@ ClassImp(ldmx::SimParticle)
     vertexVolume_ = "";
   }
 
-  void SimParticle::Print() const {
-    std::cout << "SimParticle { " << "energy: " << energy_ << ", "
-              << "PDG ID: " << pdgID_ << ", " << "genStatus: " << genStatus_
-              << ", " << "time: " << time_ << ", " << "vertex: ( " << x_ << ", "
-              << y_ << ", " << z_ << " ), " << "endPoint: ( " << endX_ << ", "
-              << endY_ << ", " << endZ_ << " ), " << "momentum: ( " << px_
-              << ", " << py_ << ", " << pz_ << " ), " << "endPointMomentum: ( "
-              << endpx_ << ", " << endpy_ << ", " << endpz_ << " ), "
-              << "mass: " << mass_ << ", "
-              << "nDaughters: " << daughters_.size() << ", "
-              << "nParents: " << parents_.size() << ", "
-              << "processType: " << processType_ << ", "
-              << "vertex volume: " << vertexVolume_ << " }" << std::endl;
+  std::ostream& operator<<(std::ostream& o, const SimParticle& sp) {
+    return o << "SimParticle { " << "energy: " << sp.energy_ << ", "
+             << "PDG ID: " << sp.pdgID_ << ", "
+             << "genStatus: " << sp.genStatus_ << ", " << "time: " << sp.time_
+             << ", " << "vertex: ( " << sp.x_ << ", " << sp.y_ << ", " << sp.z_
+             << " ), " << "endPoint: ( " << sp.endX_ << ", " << sp.endY_ << ", "
+             << sp.endZ_ << " ), " << "momentum: ( " << sp.px_ << ", " << sp.py_
+             << ", " << sp.pz_ << " ), " << "endPointMomentum: ( " << sp.endpx_
+             << ", " << sp.endpy_ << ", " << sp.endpz_ << " ), "
+             << "mass: " << sp.mass_ << ", "
+             << "nDaughters: " << sp.daughters_.size() << ", "
+             << "nParents: " << sp.parents_.size() << ", "
+             << "processType: " << sp.processType_ << ", "
+             << "vertex volume: " << sp.vertexVolume_ << " }";
   }
 
   SimParticle::ProcessType SimParticle::findProcessType(

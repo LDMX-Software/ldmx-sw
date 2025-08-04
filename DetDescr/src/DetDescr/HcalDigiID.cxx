@@ -2,15 +2,15 @@
 
 #include "DetDescr/DetectorIDInterpreter.h"
 
+// Section: 0 Back Hcal, > 0 Side Hcal
+// End: 0 Top/Left (positive y/x), 1 Bottom/Right (negative y/x)
+namespace ldmx {
+
 std::ostream& operator<<(std::ostream& s, const ldmx::HcalDigiID& id) {
   s << "Hcal(" << id.section() << ',' << id.layer() << ',' << id.strip() << ','
     << id.end() << ')';
   return s;
 }
-
-// Section: 0 Back Hcal, > 0 Side Hcal
-// End: 0 Top/Left (positive y/x), 1 Bottom/Right (negative y/x)
-namespace ldmx {
 
 void HcalDigiID::createInterpreters() {
   IDField::IDFieldList fields;

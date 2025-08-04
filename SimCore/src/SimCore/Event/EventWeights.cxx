@@ -34,6 +34,4 @@ std::ostream &operator<<(std::ostream &o, const EventWeights &ew) {
   return o;
 }
 
-void EventWeights::Print() { std::cout << *this; }
-
 }  // namespace ldmx

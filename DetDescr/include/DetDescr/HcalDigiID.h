@@ -115,21 +115,21 @@ class HcalDigiID : public HcalAbstractID {
       return false;
   }
 
+  /**
+   * Overload the stream insertion operator to output a string representation
+   * of this HcalDigiID.
+   *
+   * @param[in] output The output stream where the string representation will
+   *    be inserted.
+   * @param[in] id The HcalDigiID object.
+   *
+   * @return[out] An ostream object with the string representation of
+   *    HcalDigiID inserted.
+   */
+  friend std::ostream &operator<<(std::ostream &o, const ldmx::HcalDigiID &id);
+
   static void createInterpreters();
 };
 }  // namespace ldmx
-
-/**
- * Overload the stream insertion operator to output a string representation
- * of this HcalDigiID.
- *
- * @param[in] output The output stream where the string representation will
- *    be inserted.
- * @param[in] id The HcalDigiID object.
- *
- * @return[out] An ostream object with the string representation of
- *    HcalDigiID inserted.
- */
-std::ostream &operator<<(std::ostream &, const ldmx::HcalDigiID &id);
 
 #endif

@@ -44,7 +44,6 @@ class EventWeights {
       : variations_map_(var_map) {}
 
   void Clear();
-  void Print();
 
   friend std::ostream &operator<<(std::ostream &o, const EventWeights &ew);
 

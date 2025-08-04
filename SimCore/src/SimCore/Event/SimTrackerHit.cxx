@@ -6,13 +6,14 @@ namespace ldmx {
 
 SimTrackerHit::~SimTrackerHit() { Clear(); }
 
-void SimTrackerHit::Print() const {
-  std::cout << "SimTrackerHit { " << "id: " << id_ << ", "
-            << "layerID: " << layerID_ << ", " << "moduleID: " << moduleID_
-            << ", " << "position: ( " << x_ << ", " << y_ << ", " << z_
-            << " ), " << "edep: " << edep_ << ", " << "time: " << time_ << ", "
-            << "momentum: ( " << px_ << ", " << py_ << ", " << pz_ << " )"
-            << " }" << std::endl;
+std::ostream& operator<<(std::ostream& o, const SimTrackerHit& hit) {
+  return o << "SimTrackerHit { " << "id: " << hit.id_ << ", "
+           << "layerID: " << hit.layerID_ << ", "
+           << "moduleID: " << hit.moduleID_ << ", " << "position: ( " << hit.x_
+           << ", " << hit.y_ << ", " << hit.z_ << " ), "
+           << "edep: " << hit.edep_ << ", " << "time: " << hit.time_ << ", "
+           << "momentum: ( " << hit.px_ << ", " << hit.py_ << ", " << hit.pz_
+           << " )" << " }";
 }
 
 void SimTrackerHit::Clear() {

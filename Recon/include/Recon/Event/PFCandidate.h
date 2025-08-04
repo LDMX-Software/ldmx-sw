@@ -18,10 +18,11 @@ namespace ldmx {
  */
 class PFCandidate {
  public:
-  PFCandidate() {}
+  PFCandidate() = default;
   virtual ~PFCandidate() {}
 
-  void print() const;
+  friend std::ostream &operator<<(std::ostream &o, const PFCandidate &d);
+
   bool operator<(const PFCandidate &rhs) const {
     return this->getEnergy() < rhs.getEnergy();
   }
@@ -224,7 +225,7 @@ class PFCandidate {
   int truthPdgId_{0};
 
   /* The ROOT class definition. */
-  ClassDef(PFCandidate, 1);
+  ClassDef(PFCandidate, 2);
 };
 }  // namespace ldmx
 

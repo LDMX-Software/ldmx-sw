@@ -81,7 +81,7 @@ class EcalDigiCollection {
    * Prints out the lengths of the stored vectors and the number of samples per
    * digi setting.
    */
-  void Print() const;
+  friend std::ostream &operator<<(std::ostream &o, const EcalDigiCollection &d);
 
   /**
    * Get number of samples per digi
@@ -159,7 +159,7 @@ class EcalDigiCollection {
   /**
    * The ROOT class definition.
    */
-  ClassDef(EcalDigiCollection, 1);
+  ClassDef(EcalDigiCollection, 2);
 };
 }  // namespace ldmx
 

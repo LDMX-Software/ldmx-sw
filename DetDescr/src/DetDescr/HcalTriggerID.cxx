@@ -2,13 +2,13 @@
 
 #include "DetDescr/DetectorIDInterpreter.h"
 
+namespace ldmx {
+
 std::ostream& operator<<(std::ostream& s, const ldmx::HcalTriggerID& id) {
   s << "HcalTrig(" << id.section() << ',' << id.layer() << ','
     << id.superstrip() << ',' << id.end() << ')';
   return s;
 }
-
-namespace ldmx {
 
 void HcalTriggerID::createInterpreters() {
   IDField::IDFieldList fields;

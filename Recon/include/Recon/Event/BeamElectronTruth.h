@@ -36,7 +36,7 @@ class BeamElectronTruth {
   /**
    * Print a description of this object.
    */
-  void Print() const;
+  friend std::ostream &operator<<(std::ostream &o, const BeamElectronTruth &d);
 
   /**
    * Clear the data in the object.
@@ -229,7 +229,7 @@ class BeamElectronTruth {
   /** z momentum component **/
   double pz_{-999};
 
-  ClassDef(BeamElectronTruth, 1);
+  ClassDef(BeamElectronTruth, 2);
 };  // class BeamElectronTruth
 }  // namespace ldmx
 

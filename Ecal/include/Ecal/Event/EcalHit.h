@@ -19,7 +19,7 @@ namespace ldmx {
 class EcalHit : public ldmx::CalorimeterHit {
  public:
   /** Constructor. */
-  EcalHit() {}
+  EcalHit() = default;
 
   /** Destructor. */
   virtual ~EcalHit() {}
@@ -28,11 +28,11 @@ class EcalHit : public ldmx::CalorimeterHit {
   void Clear();
 
   /** Print a text representation of this object. */
-  void Print() const;
+  friend std::ostream &operator<<(std::ostream &o, const EcalHit &d);
 
  private:
   /** The ROOT class definition. */
-  ClassDef(EcalHit, 3);
+  ClassDef(EcalHit, 4);
 };
 }  // namespace ldmx
 

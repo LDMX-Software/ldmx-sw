@@ -3,13 +3,13 @@
 // STL
 #include <iostream>
 
-ClassImp(ldmx::PFCandidate)
+ClassImp(ldmx::PFCandidate);
 
-    namespace ldmx {
-  void PFCandidate::print() const {
-    std::cout << "PFCandidate ( " << "id: " << pid_ << "), " << "Pxyz: ("
-              << trackPx_ << ", " << trackPy_ << ", " << trackPz_ << ") MeV/c, "
-              << "Ecal energy: " << ecalEnergy_ << " MeV, "
-              << "Hcal energy: " << hcalEnergy_ << " MeV, " << std::endl;
-  }
+namespace ldmx {
+std::ostream& operator<<(std::ostream& o, const PFCandidate& c) {
+  return o << "PFCandidate ( " << "id: " << c.pid_ << "), " << "Pxyz: ("
+           << c.trackPx_ << ", " << c.trackPy_ << ", " << c.trackPz_
+           << ") MeV/c, " << "Ecal energy: " << c.ecalEnergy_ << " MeV, "
+           << "Hcal energy: " << c.hcalEnergy_ << " MeV, ";
+}
 }  // namespace ldmx

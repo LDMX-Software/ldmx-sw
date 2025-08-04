@@ -32,9 +32,8 @@ class QIEStream {
 
   /**
    * Print ifo about the class
-   * @note required by EventDef.h
    */
-  void Print(Option_t *option = "") const;
+  friend std::ostream &operator<<(std::ostream &o, const QIEStream &d);
 
   /**
    * A dummy function
@@ -146,7 +145,7 @@ class QIEStream {
   /// Capacitor IDs
   std::vector<int> cids_;
 
-  ClassDef(QIEStream, 1);
+  ClassDef(QIEStream, 2);
 };
 }  // namespace trigscint
 #endif

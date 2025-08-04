@@ -33,7 +33,7 @@ class StraightTrack {
    *
    * This class is needed by ROOT when building the dictionary.
    */
-  void Print() const;
+  friend std::ostream& operator<<(std::ostream& o, const StraightTrack& d);
 
   // To match the Framework Bus clear. It's doing nothing
   void Clear() {};

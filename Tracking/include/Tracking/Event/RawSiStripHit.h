@@ -57,7 +57,7 @@ class RawSiStripHit {
    *
    * This class is needed by ROOT when building the dictionary.
    */
-  void Print() const { std::cout << this; }
+  friend std::ostream &operator<<(std::ostream &o, const RawSiStripHit &d);
 
   /**
    * Get the digitized (ADC) samples composing this hit.

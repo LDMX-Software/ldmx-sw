@@ -41,7 +41,7 @@ class TestBeamHit : public ldmx::TrigScintHit {
   /**
    * Print out the object.
    */
-  void Print(Option_t *option = "") const;
+  friend std::ostream &operator<<(std::ostream &o, const TestBeamHit &d);
 
   /**
    * Set channel (linearized. charge) pedestal
@@ -200,7 +200,7 @@ class TestBeamHit : public ldmx::TrigScintHit {
   property
   */
 
-  ClassDef(TestBeamHit, 3);
+  ClassDef(TestBeamHit, 4);
 
 };  // TestBeamHit
 

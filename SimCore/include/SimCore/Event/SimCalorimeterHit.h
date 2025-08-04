@@ -89,7 +89,7 @@ class SimCalorimeterHit {
   /**
    * Print out the object.
    */
-  void Print() const;
+  friend std::ostream &operator<<(std::ostream &o, const SimCalorimeterHit &d);
 
   /**
    * Get the detector ID.

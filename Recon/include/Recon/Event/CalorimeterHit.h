@@ -42,7 +42,7 @@ class CalorimeterHit {
   /**
    * Print out the object.
    */
-  void Print() const;
+  friend std::ostream &operator<<(std::ostream &o, const CalorimeterHit &d);
 
   /**
    * Get the detector ID.
@@ -181,7 +181,7 @@ class CalorimeterHit {
   /**
    * The ROOT class definition.
    */
-  ClassDef(CalorimeterHit, 2);
+  ClassDef(CalorimeterHit, 3);
 };
 }  // namespace ldmx
 

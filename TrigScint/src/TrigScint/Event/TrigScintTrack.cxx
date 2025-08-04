@@ -5,16 +5,16 @@
 /*~~~~~~~~~~~~~~~~*/
 #include <iostream>
 
-ClassImp(ldmx::TrigScintTrack)
+ClassImp(ldmx::TrigScintTrack);
 
-    namespace ldmx {
-  void TrigScintTrack::Clear() {
-    centroid_ = 0;
-    residual_ = 0;
-  }
+namespace ldmx {
+void TrigScintTrack::Clear() {
+  centroid_ = 0;
+  residual_ = 0;
+}
 
-  void TrigScintTrack::Print() const {
-    std::cout << "TrigScintTrack { " << " channel centroid: " << getCentroid()
-              << ",  residual: " << getResidual() << " }" << std::endl;
-  }
+std::ostream& operator<<(std::ostream& o, const TrigScintTrack& c) {
+  return o << "TrigScintTrack { " << " channel centroid: " << c.getCentroid()
+           << ",  residual: " << c.getResidual() << " }";
+}
 }  // namespace ldmx
