@@ -119,13 +119,7 @@ def clue_cluster(d : Differ, out_dir = None) :
     d : Differ
         Differ containing files that are not event files (presumably histogram files)
     """
-
-    prediction_type_labels = ['Underpredicted', 'Correct', 'Overpredicted']
-    d.plot1d("EcalClusterAnalyzer/EcalClusterAnalyzer_correctly_predicted_events",  "",
-            tick_labels=prediction_type_labels,
-            out_dir=out_dir,
-            )
-
+    
     features = [
         ('EcalClusterAnalyzer/EcalClusterAnalyzer_number_of_clusters', 'Number of CLUE clusters'),
         ('EcalClusterAnalyzer/EcalClusterAnalyzer_energy_percentage', 'Percentage of energy in cluster'),
@@ -133,6 +127,7 @@ def clue_cluster(d : Differ, out_dir = None) :
         ('EcalClusterAnalyzer/EcalClusterAnalyzer_sp_clue_distance', 'CLUE centroid to SP ele distance in xy-plane [mm]'),
         ('EcalClusterAnalyzer/EcalClusterAnalyzer_sp_clue_x_residual', 'CLUE centroid X - SP ele X [mm]'),
         ('EcalClusterAnalyzer/EcalClusterAnalyzer_sp_clue_y_residual', 'CLUE centroid Y - SP ele Y [mm]'),
+        ('EcalClusterAnalyzer/EcalClusterAnalyzer_correctly_predicted_events', ''),
     ]
     for col, name in features :
         log.info(f'plotting {col}')

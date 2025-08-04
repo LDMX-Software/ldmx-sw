@@ -76,7 +76,6 @@ class Differ :
         ylim = (None,None),
         out_dir = None,
         file_name = None,
-        tick_labels = None,
         legend_kw = dict(),
         rebin = 1,
         **hist_kwargs
@@ -107,8 +106,6 @@ class Differ :
             Limits to set for the y-axis (default: deduced by matplotlib)
         out_dir : str
             Directory in which to write the plotting file
-        tick_labels: list, optional
-            Tick labels for the x-axis
         file_name : str
             Name of file, no extension (default: histname name with directory separators removed)
         hist_kwargs : dict
@@ -159,10 +156,6 @@ class Differ :
 
         ratio_ax.set_ylabel('Ratio')
         ratio_ax.set_xlabel(xlabel)
-        if tick_labels is not None:
-            ratio_ax.set_xticks((bins[1:]+bins[:-1])/2)
-            ratio_ax.set_xticklabels(tick_labels)
-            ratio_ax.tick_params(axis='x', rotation=90)
 
         if out_dir is None :
             matplotlib.pyplot.show()
