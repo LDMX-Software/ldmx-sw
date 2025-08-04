@@ -236,7 +236,7 @@ install-compare-plots-deps:
 # alias for install-compare-plots-deps
 install-validation: install-compare-plots-deps
 
-# run the Validation plotting module
+# run the ComparePlots plotting module
 [no-cd]
 compare-plots *args:
     denv 'PYTHONPATH={{ justfile_directory() }}:${PYTHONPATH} python3 -m ComparePlots {{ args }}'
