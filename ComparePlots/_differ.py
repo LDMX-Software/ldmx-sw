@@ -57,7 +57,7 @@ class Differ :
             elif isinstance(arg, File) :
                 return arg
             else :
-                raise KeyError(f'Argument provided {arg} is not a Validate.File or a tuple of arguments for its constructor')
+                raise KeyError(f'Argument provided {arg} is not a ComparePlots.File or a tuple of arguments for its constructor')
                 
         self.grp_name = grp_name
         self.files = list(map(open_file, args))
