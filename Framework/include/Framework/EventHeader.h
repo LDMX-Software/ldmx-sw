@@ -63,7 +63,7 @@ class EventHeader {
    *
    * @param[in] o ROOT-style Option (ignored)
    */
-  void Clear(Option_t* o = "");
+  void clear(Option_t* o = "");
 
   /**
    * Print this object.

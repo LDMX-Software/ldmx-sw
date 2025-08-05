@@ -38,7 +38,7 @@ class TrigScintCluster {
   /**
    * Reset the TrigScintCluster object.
    */
-  void Clear(Option_t *option = "");  // override;
+  void clear();
 
   /**
    * Take in the hits that make up the cluster.

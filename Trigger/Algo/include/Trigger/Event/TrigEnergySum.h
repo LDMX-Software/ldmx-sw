@@ -61,7 +61,7 @@ class TrigEnergySum {
    */
   bool operator<(const TrigEnergySum &sum) { return hwEnergy_ < sum.hwEnergy_; }
 
-  void Clear() {
+  void clear() {
     energy_ = 0;
     hwEnergy_ = 0;
     layer_ = 0;

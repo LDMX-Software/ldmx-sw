@@ -5,7 +5,7 @@
 
 namespace framework::performance {
 
-std::string to_name(Callback c) {
+std::string toName(Callback c) {
   switch (c) {
     case Callback::onProcessStart:
       return "onProcessStart";

@@ -23,7 +23,7 @@ class HgcrocPulseTruth {
 
   virtual ~HgcrocPulseTruth() = default;
 
-  void Clear();
+  void clear();
 
   double getMax() const;
 

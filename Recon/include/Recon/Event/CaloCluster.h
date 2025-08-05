@@ -43,7 +43,7 @@ class CaloCluster {
   /**
    * Reset the CaloCluster object.
    */
-  void Clear();
+  void clear();
 
   /**
    * Take in the hits that make up the cluster.

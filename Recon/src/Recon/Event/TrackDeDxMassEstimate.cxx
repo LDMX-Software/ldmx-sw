@@ -4,7 +4,7 @@ ClassImp(ldmx::TrackDeDxMassEstimate);
 
 namespace ldmx {
 
-void TrackDeDxMassEstimate::Clear() {
+void TrackDeDxMassEstimate::clear() {
   the_ih_ = -1.0;
   momentum_ = 9999.0;
   mass_ = 0.;

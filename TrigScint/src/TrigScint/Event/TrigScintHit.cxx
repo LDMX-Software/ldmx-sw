@@ -14,8 +14,8 @@
 ClassImp(ldmx::TrigScintHit)
 
     namespace ldmx {
-  void TrigScintHit::Clear(Option_t * option) {
-    ldmx::HcalHit::Clear();
+  void TrigScintHit::clear(Option_t * option) {
+    ldmx::HcalHit::clear();
     barID_ = -1;
     moduleID_ = -1;
     beamEfrac_ = 0;

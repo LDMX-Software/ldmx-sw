@@ -38,16 +38,16 @@ void XsecBiasingOperator::StartRun() {
 bool XsecBiasingOperator::processIsBiased(std::string process) {
   // Loop over all processes and check if the given process is being
   // biased.
-  const G4BiasingProcessSharedData* sharedData =
+  const G4BiasingProcessSharedData* shared_data =
       G4BiasingProcessInterface::GetSharedData(processManager_);
-  if (sharedData) {
+  if (shared_data) {
     for (size_t iprocess = 0;
-         iprocess < (sharedData->GetPhysicsBiasingProcessInterfaces()).size();
+         iprocess < (shared_data->GetPhysicsBiasingProcessInterfaces()).size();
          ++iprocess) {
-      const G4BiasingProcessInterface* wrapperProcess =
-          (sharedData->GetPhysicsBiasingProcessInterfaces())[iprocess];
+      const G4BiasingProcessInterface* wrapper_process =
+          (shared_data->GetPhysicsBiasingProcessInterfaces())[iprocess];
 
-      if (wrapperProcess->GetWrappedProcess()->GetProcessName().compareTo(
+      if (wrapper_process->GetWrappedProcess()->GetProcessName().compareTo(
               process) == 0) {
         return true;
       }

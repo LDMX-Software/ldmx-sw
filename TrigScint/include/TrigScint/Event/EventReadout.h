@@ -36,7 +36,7 @@ class EventReadout : public trigscint::TrigScintQIEDigis {
   /**
    * Clear the data in the object.
    */
-  void Clear(Option_t *option = "");
+  void clear(Option_t *option = "");
 
   /**
    * Print out the object.

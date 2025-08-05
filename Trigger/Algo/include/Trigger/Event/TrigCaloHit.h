@@ -21,7 +21,7 @@ class TrigCaloHit {
 
   bool operator<(const TrigCaloHit &h) { return energy_ < h.energy_; }
 
-  void Clear() {
+  void clear() {
     position_x_ = 0;
     position_y_ = 0;
     position_z_ = 0;

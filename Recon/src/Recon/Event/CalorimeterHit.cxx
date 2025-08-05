@@ -6,7 +6,7 @@
 ClassImp(ldmx::CalorimeterHit);
 
 namespace ldmx {
-void CalorimeterHit::Clear() {
+void CalorimeterHit::clear() {
   id_ = 0;
   amplitude_ = 0;
   energy_ = 0;

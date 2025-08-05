@@ -38,7 +38,7 @@ class TrigScintTrack {
   /**
    * Reset the TrigScintTrack object.
    */
-  void Clear();  // Option_t *option);
+  void clear();  // Option_t *option);
 
   /**
    * Get the detector ID centroid of the track.

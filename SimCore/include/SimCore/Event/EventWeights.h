@@ -43,7 +43,7 @@ class EventWeights {
   EventWeights(std::map<VariationType, std::vector<double> > var_map)
       : variations_map_(var_map) {}
 
-  void Clear();
+  void clear();
 
   friend std::ostream &operator<<(std::ostream &o, const EventWeights &ew);
 

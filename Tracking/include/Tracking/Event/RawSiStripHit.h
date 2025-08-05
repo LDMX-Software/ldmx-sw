@@ -50,7 +50,7 @@ class RawSiStripHit {
    *
    * This class is needed by ROOT when building the dictionary.
    */
-  void Clear();
+  void clear();
 
   /**
    * Print the string representation of this object.

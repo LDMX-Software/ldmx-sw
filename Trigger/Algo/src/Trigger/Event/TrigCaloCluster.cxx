@@ -6,7 +6,7 @@ ClassImp(trigger::TrigCaloCluster)
   TrigCaloCluster::TrigCaloCluster(float x, float y, float z, float e)
       : x_(x), y_(y), z_(z), e_(e) {}
 
-  void TrigCaloCluster::Clear() {
+  void TrigCaloCluster::clear() {
     x_ = 0;
     y_ = 0;
     z_ = 0;

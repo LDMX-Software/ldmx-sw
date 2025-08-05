@@ -19,5 +19,5 @@ void EventReadout::Print(Option_t* option) const {
             << "}\n";
 }
 
-void EventReadout::Clear(Option_t* option) {}
+void EventReadout::clear(Option_t* option) {}
 }  // namespace trigscint

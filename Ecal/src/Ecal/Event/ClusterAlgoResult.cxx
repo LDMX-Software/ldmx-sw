@@ -4,7 +4,7 @@ ClassImp(ldmx::ClusterAlgoResult);
 
 namespace ldmx {
 
-ClusterAlgoResult::~ClusterAlgoResult() { Clear(); }
+ClusterAlgoResult::~ClusterAlgoResult() { clear(); }
 
 std::ostream& operator<<(std::ostream& o, const ClusterAlgoResult& c) {
   return o << "ClusterAlgoResult { " << "name: " << c.name_ << " }";
@@ -14,7 +14,7 @@ std::ostream& operator<<(std::ostream& o, const ClusterAlgoResult& c) {
   }
 }
 
-void ClusterAlgoResult::Clear() {
+void ClusterAlgoResult::clear() {
   name_ = "";
 
   for (int i = 0; i < variables_.GetSize(); ++i) {

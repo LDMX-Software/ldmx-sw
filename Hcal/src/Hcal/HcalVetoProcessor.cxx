@@ -28,7 +28,7 @@ void HcalVetoProcessor::configure(framework::config::Parameters &parameters) {
   //
   // Default constructed hits have nonsense-but predictable values and are
   // harder to mistake for real hits
-  default_max_hit_.Clear();
+  default_max_hit_.clear();
   default_max_hit_.setPE(-9999);
   default_max_hit_.setMinPE(-9999);
   default_max_hit_.setSection(-9999);

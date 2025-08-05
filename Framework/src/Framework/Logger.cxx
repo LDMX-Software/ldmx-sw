@@ -36,7 +36,7 @@ logger makeLogger(const std::string& name) {
 }
 
 template <typename T>
-const T& safe_extract(log::attribute_value attr) {
+const T& safeExtract(log::attribute_value attr) {
   static const T empty_value = {};
   auto attr_val = log::extract<T>(attr);
   if (attr_val) {
@@ -75,12 +75,12 @@ void open(const framework::config::Parameters& p) {
   typedef sinks::text_ostream_backend ourSinkBack_t;
   typedef sinks::synchronous_sink<ourSinkBack_t> ourSinkFront_t;
 
-  level fileLevel{convertLevel(p.getParameter<int>("fileLevel", 0))};
-  std::string filePath{p.getParameter<std::string>("filePath", "")};
+  level file_level{convertLevel(p.getParameter<int>("fileLevel", 0))};
+  std::string file_path{p.getParameter<std::string>("filePath", "")};
 
-  level termLevel{convertLevel(p.getParameter<int>("termLevel", 4))};
+  level term_level{convertLevel(p.getParameter<int>("termLevel", 4))};
   std::vector<framework::config::Parameters> empty{};
-  const auto& logRules{
+  const auto& log_rules{
       p.get<std::vector<framework::config::Parameters>>("logRules", empty)};
   std::unordered_map<std::string, level> custom_levels;
   for (const auto& logRule : logRules) {
@@ -100,17 +100,17 @@ void open(const framework::config::Parameters& p) {
 
   // file sink is optional
   //  don't even make it if no filePath is provided
-  if (not filePath.empty()) {
-    boost::shared_ptr<ourSinkBack_t> fileBack =
+  if (not file_path.empty()) {
+    boost::shared_ptr<ourSinkBack_t> file_back =
         boost::make_shared<ourSinkBack_t>();
     fileBack->add_stream(boost::make_shared<std::ofstream>(filePath));
 
-    boost::shared_ptr<ourSinkFront_t> fileSink =
+    boost::shared_ptr<ourSinkFront_t> file_sink =
         boost::make_shared<ourSinkFront_t>(fileBack);
 
     // this is where the logging level is set
-    fileSink->set_filter(Filter(fileLevel, custom_levels));
-    fileSink->set_formatter(
+    file_sink->set_filter(Filter(fileLevel, custom_levels));
+    file_sink->set_formatter(
         [](const log::record_view& view, log::formatting_ostream& os) {
           Formatter::get()(view, os);
         });
@@ -118,22 +118,22 @@ void open(const framework::config::Parameters& p) {
   }  // file set to pass something
 
   // terminal sink is always created
-  boost::shared_ptr<ourSinkBack_t> termBack =
+  boost::shared_ptr<ourSinkBack_t> term_back =
       boost::make_shared<ourSinkBack_t>();
-  termBack->add_stream(boost::shared_ptr<std::ostream>(
+  term_back->add_stream(boost::shared_ptr<std::ostream>(
       &std::cout,            // point this stream to std::cout
       boost::null_deleter()  // don't let boost delete std::cout
       ));
   // flushes message to screen **after each message**
-  termBack->auto_flush(true);
+  term_back->auto_flush(true);
 
-  boost::shared_ptr<ourSinkFront_t> termSink =
+  boost::shared_ptr<ourSinkFront_t> term_sink =
       boost::make_shared<ourSinkFront_t>(termBack);
 
   // translate integer level to enum
-  termSink->set_filter(Filter(termLevel, custom_levels));
+  term_sink->set_filter(Filter(termLevel, custom_levels));
   // need to wrap formatter in lambda to enforce singleton formatter
-  termSink->set_formatter(
+  term_sink->set_formatter(
       [](const log::record_view& view, log::formatting_ostream& os) {
         Formatter::get()(view, os);
       });

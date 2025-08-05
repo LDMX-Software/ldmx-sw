@@ -41,7 +41,7 @@ class BeamElectronTruth {
   /**
    * Clear the data in the object.
    */
-  void Clear();
+  void clear();
 
   /**
    * Set x coordinate of the found beam electron.

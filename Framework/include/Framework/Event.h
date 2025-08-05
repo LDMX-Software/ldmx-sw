@@ -460,7 +460,7 @@ class Event {
   /**
    * Clear this object's data (including passengers).
    */
-  void Clear();
+  void clear();
 
   /**
    * Perform end of event action (doesn't do anything right now).

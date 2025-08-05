@@ -6,7 +6,7 @@
 ClassImp(ldmx::EcalHit);
 
 namespace ldmx {
-void EcalHit::Clear() { CalorimeterHit::Clear(); }
+void EcalHit::clear() { CalorimeterHit::clear(); }
 
 std::ostream& operator<<(std::ostream& o, const EcalHit& hit) {
   return o << "EcalHit { " << "id: " << std::hex << hit.getID() << std::dec

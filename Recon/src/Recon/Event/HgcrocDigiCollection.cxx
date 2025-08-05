@@ -40,7 +40,7 @@ HgcrocDigiCollection::Sample::Sample(bool tot_progress, bool tot_complete,
   }
 }
 
-void HgcrocDigiCollection::Clear() {
+void HgcrocDigiCollection::clear() {
   channelIDs_.clear();
   samples_.clear();
 

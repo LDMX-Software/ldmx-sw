@@ -31,7 +31,7 @@ class CompositePulse {
 
   virtual ~CompositePulse() = default;
 
-  void Clear() {};
+  void clear() {};
 
   /**
    * Put another hit into this composite pulse.

@@ -18,5 +18,5 @@ std::ostream& operator<<(std::ostream& o, const TrigScintQIEDigis& c) {
            << ", " << "CID[0]= " << c.tdcs_[0] << ", " << "}\n";
 }
 
-void TrigScintQIEDigis::Clear(Option_t* option) {}
+void TrigScintQIEDigis::clear(Option_t* option) {}
 }  // namespace trigscint

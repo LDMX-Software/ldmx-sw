@@ -42,7 +42,7 @@ class FiducialFlag {
   /**
    * Reset the FiducialFlag object.
    */
-  void Clear();
+  void clear();
 
   /**
    * Return true/false if event is fiducial.

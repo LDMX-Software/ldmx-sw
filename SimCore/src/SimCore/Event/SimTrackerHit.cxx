@@ -4,7 +4,7 @@ ClassImp(ldmx::SimTrackerHit);
 
 namespace ldmx {
 
-SimTrackerHit::~SimTrackerHit() { Clear(); }
+SimTrackerHit::~SimTrackerHit() { clear(); }
 
 std::ostream& operator<<(std::ostream& o, const SimTrackerHit& hit) {
   return o << "SimTrackerHit { " << "id: " << hit.id_ << ", "
@@ -16,7 +16,7 @@ std::ostream& operator<<(std::ostream& o, const SimTrackerHit& hit) {
            << " )" << " }";
 }
 
-void SimTrackerHit::Clear() {
+void SimTrackerHit::clear() {
   id_ = 0;
   layerID_ = 0;
   moduleID_ = 0;

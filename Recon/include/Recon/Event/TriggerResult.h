@@ -42,7 +42,7 @@ class TriggerResult {
   /**
    * Reset the TriggerResult object.
    */
-  void Clear();
+  void clear();
 
   /**
    * Return the name of the trigger.

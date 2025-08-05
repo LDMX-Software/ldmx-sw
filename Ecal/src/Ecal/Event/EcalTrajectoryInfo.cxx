@@ -12,7 +12,7 @@ std::ostream& operator<<(std::ostream& o, const EcalTrajectoryInfo& c) {
            << " }";
 }
 
-void EcalTrajectoryInfo::Clear() {
+void EcalTrajectoryInfo::clear() {
   ele_trajectory_.clear();
   photon_trajectory_.clear();
   tracking_hit_list_.clear();

@@ -4,7 +4,7 @@ ClassImp(ldmx::EcalCluster);
 
 namespace ldmx {
 
-EcalCluster::~EcalCluster() { Clear(); }
+EcalCluster::~EcalCluster() { clear(); }
 
 void EcalCluster::addHits(const std::vector<const EcalHit*>& hits) {
   std::vector<unsigned int> ids;
@@ -16,10 +16,10 @@ void EcalCluster::addHits(const std::vector<const EcalHit*>& hits) {
 }
 
 void EcalCluster::addFirstLayerHits(const std::vector<const EcalHit*>& hits) {
-  first_layer_hit_IDs_.clear();
-  first_layer_hit_IDs_.reserve(hits.size());
+  first_layer_hit_ids_.clear();
+  first_layer_hit_ids_.reserve(hits.size());
   for (const auto& h : hits) {
-    first_layer_hit_IDs_.push_back(h->getID());
+    first_layer_hit_ids_.push_back(h->getID());
   }
 }
 

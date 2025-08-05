@@ -44,7 +44,7 @@ void Event::addDrop(const std::string& exp) {
  * @return generated regex structure, expecting user to call regfree on it when
  * done
  */
-static regex_t construct_regex(const std::string& pattern,
+static regex_t constructRegex(const std::string& pattern,
                                bool full_string_match) {
   std::string pattern_regex{pattern};
   if (pattern_regex.empty())
@@ -162,7 +162,7 @@ void Event::beforeFill() {
   }
 }
 
-void Event::Clear() {
+void Event::clear() {
   branchesFilled_.clear();  // forget names of branches we filled
   bus_.clear();  // clear the event objects individually but leave them on bus
 }

@@ -3,7 +3,7 @@
 ClassImp(trigger::TrigMip);
 
 namespace trigger {
-void TrigMip::Clear() {
+void TrigMip::clear() {
   start_layer_ = 0;
   end_layer_ = 0;
   n_hits_ = 0;

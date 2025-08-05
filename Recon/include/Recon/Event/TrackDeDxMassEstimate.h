@@ -41,7 +41,7 @@ class TrackDeDxMassEstimate {
   /**
    * Clear the data in the object.
    */
-  void Clear();
+  void clear();
 
   /**
    * Print out the object.

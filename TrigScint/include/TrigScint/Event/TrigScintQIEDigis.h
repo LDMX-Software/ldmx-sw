@@ -27,7 +27,7 @@ class TrigScintQIEDigis {
    * A dummy function
    * @note required by Event/include/Event/EventDef.h
    */
-  void Clear(Option_t *option = "");
+  void clear(Option_t *option = "");
 
   /**
    * A dummy operator overloading

@@ -41,7 +41,7 @@ class SimTrackerHit {
   /**
    * Reset the SimTrackerHit object.
    */
-  void Clear();
+  void clear();
 
   /**
    * Get the detector ID of the hit.

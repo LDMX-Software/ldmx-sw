@@ -57,7 +57,7 @@ namespace framework::config {
  */
 static std::string getPyString(PyObject* pyObj) {
   std::string retval;
-  PyObject* pyStr = PyUnicode_AsEncodedString(pyObj, "utf-8", "Error ~");
+  PyObject* py_str = PyUnicode_AsEncodedString(pyObj, "utf-8", "Error ~");
   retval = PyBytes_AS_STRING(pyStr);
   Py_XDECREF(pyStr);
   return retval;

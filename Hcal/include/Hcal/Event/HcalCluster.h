@@ -33,7 +33,7 @@ class HcalCluster : public ldmx::CaloCluster {
   /**
    * Reset the HcalCluster object.
    */
-  void Clear();
+  void clear();
 
   /**
    * Take in the hits that make up the cluster.

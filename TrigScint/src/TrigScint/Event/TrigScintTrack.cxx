@@ -8,7 +8,7 @@
 ClassImp(ldmx::TrigScintTrack);
 
 namespace ldmx {
-void TrigScintTrack::Clear() {
+void TrigScintTrack::clear() {
   centroid_ = 0;
   residual_ = 0;
 }

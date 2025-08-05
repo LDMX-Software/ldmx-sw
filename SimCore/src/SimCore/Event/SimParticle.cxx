@@ -63,7 +63,7 @@ ClassImp(ldmx::SimParticle)
   SimParticle::ProcessTypeMap SimParticle::PROCESS_MAP =
       SimParticle::createProcessTypeMap();
 
-  void SimParticle::Clear() {
+  void SimParticle::clear() {
     daughters_.clear();
     parents_.clear();
 

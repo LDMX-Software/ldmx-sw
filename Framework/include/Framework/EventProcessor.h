@@ -27,7 +27,7 @@
 #include <any>
 #include <map>
 
-class TDirectory;
+class t_directory;
 
 namespace framework {
 

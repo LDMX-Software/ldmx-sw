@@ -59,7 +59,7 @@ class SimParticle {
   virtual ~SimParticle() = default;
 
   /// Reset an instance of this class by clearing all of its data.
-  void Clear();
+  void clear();
 
   /// Print a string representation of this object.
   friend std::ostream& operator<<(std::ostream& o, const SimParticle& d);

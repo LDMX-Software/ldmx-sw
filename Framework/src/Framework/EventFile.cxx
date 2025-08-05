@@ -222,7 +222,7 @@ bool EventFile::nextEvent(bool storeCurrentEvent) {
     //  for this file if we are input file and
     //  there is an output file during this run
     if (event_) {
-      event_->Clear();
+      event_->clear();
       event_->onEndOfEvent();
     }  // event bus defined
   }  // first or not first entry in this file

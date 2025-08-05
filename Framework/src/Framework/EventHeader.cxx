@@ -8,7 +8,7 @@ ClassImp(ldmx::EventHeader);
 namespace ldmx {
 const std::string EventHeader::BRANCH = "EventHeader";
 
-void EventHeader::Clear(Option_t*) {
+void EventHeader::clear(Option_t*) {
   eventNumber_ = -1;
   run_ = -1;
   timestamp_ = TTimeStamp(0, 0);

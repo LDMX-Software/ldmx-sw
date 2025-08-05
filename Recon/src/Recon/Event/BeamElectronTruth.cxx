@@ -6,7 +6,7 @@
 ClassImp(ldmx::BeamElectronTruth);
 
 namespace ldmx {
-void BeamElectronTruth::Clear() {
+void BeamElectronTruth::clear() {
   x_ = -999;
   y_ = -999;
   z_ = -999;

@@ -20,8 +20,8 @@
 #include <memory>
 #include <vector>
 
-class TFile;
-class TDirectory;
+class t_file;
+class t_directory;
 
 namespace framework {
 

@@ -29,7 +29,7 @@ class HcalVetoResult {
   virtual ~HcalVetoResult() = default;
 
   /** Reset the object. */
-  void Clear();
+  void clear();
 
   /** Print out the object */
   friend std::ostream &operator<<(std::ostream &o, const HcalVetoResult &d);

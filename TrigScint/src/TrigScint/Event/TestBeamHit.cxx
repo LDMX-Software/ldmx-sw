@@ -15,7 +15,7 @@
 ClassImp(trigscint::TestBeamHit);
 
 namespace trigscint {
-void TestBeamHit::Clear(Option_t* option) {
+void TestBeamHit::clear(Option_t* option) {
   earlyPedestal_ = -999;
   pedestal_ = -999;
   pulseQ_ = -999;

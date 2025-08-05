@@ -170,11 +170,12 @@ format-just:
     @just --fmt --unstable --justfile {{ justfile() }}
 
 # Now do the same but with clang tidy
-tidy-cpp *ARGS='-p build -quiet --fix':
+# 
+tidy-cpp *ARGS='-p build --fix -fix-errors --quiet ':
     #!/usr/bin/env sh
     set -exu
     format_list=$(mktemp)
-    git ls-tree -r HEAD --name-only | egrep '(\.h|\.cxx)$'  | grep 'Biasing' > ${format_list}
+    git ls-tree -r HEAD --name-only | egrep '(\.h|\.cxx)$'  | grep '/Framework/' > ${format_list}
     denv clang-tidy $(cat ${format_list}) {{ ARGS }}
     rm ${format_list}
 
@@ -234,6 +235,9 @@ setenv +ENVVAR:
 
 # configure and build ldmx-sw
 compile ncpu=num_cpus() *CONFIG='': (configure CONFIG) (build ncpu)
+
+# configure and build ldmx-sw the quick way
+compile-quick ncpu=num_cpus() *CONFIG='': (configure-quick) (build ncpu)
 
 # re-build ldmx-sw and then run a config
 recompFire config_py *ARGS: compile (fire config_py ARGS)

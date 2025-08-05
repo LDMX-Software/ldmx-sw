@@ -277,7 +277,7 @@ class Bus {
    *
    * ## Possible Types
    *  - BSILFD - bool, short, int, long, float, double
-   *  - class with Clear() method defined
+   *  - class with clear() method defined
    *  - std::vector of type with operator< defined
    *  - std::map with key type that has operator< defined
    *
@@ -685,7 +685,7 @@ class Bus {
      */
     template <typename T>
     void clear(the_type<T> t) {
-      baggage_->Clear();
+      baggage_->clear();
     }
 
     /**

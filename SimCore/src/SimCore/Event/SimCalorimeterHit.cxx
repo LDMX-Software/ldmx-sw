@@ -10,7 +10,7 @@ const std::string SimCalorimeterHit::ECAL_COLLECTION = "EcalSimHits";
 
 const std::string SimCalorimeterHit::HCAL_COLLECTION = "HcalSimHits";
 
-void SimCalorimeterHit::Clear() {
+void SimCalorimeterHit::clear() {
   incidentIDContribs_.clear();
   trackIDContribs_.clear();
   pdgCodeContribs_.clear();
