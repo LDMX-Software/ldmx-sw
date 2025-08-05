@@ -22,21 +22,22 @@ help_message := "shared recipes for ldmx-sw development
   COMMANDS:
 "
 
-# tell denv where the workspace is
-# usually, denv deduces where the workspace is by finding the .denv directory,
-# but we want to set where the denv is within the justfile so users could (for example)
+# deduce the denv_workspace corresponding to this justfile
+# usually, denv deduces where the workspace is on its own by finding the .denv directory,
+# but we want to set where the denv is within the some recipes so users could (for example)
 # run their ldmx-sw build from within some other denv by invoking fire from just
 #   just -f path/to/ldmx-sw/justfile fire config.py
 # or
 #   just path/to/ldmx-sw/fire config.py
-# would run this denv even if there is a denv in the directory where config.py is.
+# would run this denv even if there is a denv in the directory where config.py is because
+# those [no-cd] recipes set denv_workspace={{ this_denv_workspace }}
 # supporting either the old (parent_directory, LDMX_BASE path) and the new (ldmx-sw itself)
 # forces a decision to be made now when just is invoked
 # we default to the new path (ldmx-sw itself) for new invocations while supporting the
 # old location only if it exists.
 
 denv_workspace_in_ldmx_sw_parent := path_exists(parent_directory(justfile_directory()) / ".denv")
-export denv_workspace := if denv_workspace_in_ldmx_sw_parent == "true" {
+this_denv_workspace := if denv_workspace_in_ldmx_sw_parent == "true" {
   parent_directory(justfile_directory())
 } else {
   justfile_directory()
@@ -46,7 +47,7 @@ export denv_workspace := if denv_workspace_in_ldmx_sw_parent == "true" {
 # unless the user has already defined it
 #   just 1.15
 
-export APPTAINER_CACHEDIR := env("APPTAINER_CACHEDIR", denv_workspace / ".apptainer")
+export APPTAINER_CACHEDIR := env("APPTAINER_CACHEDIR", this_denv_workspace / ".apptainer")
 
 _default:
     @just --list --justfile {{ justfile() }} --list-heading "{{ help_message }}"
@@ -104,12 +105,12 @@ test *ARGS:
 # run ldmx-sw with the input configuration script
 [no-cd]
 fire config_py *ARGS:
-    denv fire {{ config_py }} {{ ARGS }}
+    denv_workspace={{ this_denv_workspace }} denv fire {{ config_py }} {{ ARGS }}
 
 # run gdb on a config file
 [no-cd]
 debug config_py *ARGS:
-    denv gdb --args fire {{ config_py }} {{ ARGS }}
+    denv_workspace={{ this_denv_workspace }} denv gdb --args fire {{ config_py }} {{ ARGS }}
 
 # initialize a containerized development environment
 init:
@@ -260,4 +261,4 @@ install-validation: install-compare-plots-deps
 # run the ComparePlots plotting module
 [no-cd]
 compare-plots *args:
-    denv 'PYTHONPATH={{ justfile_directory() }}:${PYTHONPATH} python3 -m ComparePlots {{ args }}'
+    denv_workspace={{ this_denv_workspace }} denv 'PYTHONPATH={{ justfile_directory() }}:${PYTHONPATH} python3 -m ComparePlots {{ args }}'
