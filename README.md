@@ -41,6 +41,10 @@ The above should printout a help message instead of a "command not found"
 message.
 
 ### Using
+"Using" ldmx-sw refers to running simulations and other processors that
+are already written. If you want to change the ldmx-sw C++, you will need
+to see the "Developing" instructions below.
+
 In order to use ldmx-sw, no more dependencies are required!
 Simply choose the version of ldmx-sw you wish to use with your project.
 ```
@@ -105,8 +109,6 @@ just init # initialize a new development environment (once per clone)
 just compile #configure and build ldmx-sw
 just test # then test it
 ```
-
-## Maintainer 
 
 ## Contributors
 
