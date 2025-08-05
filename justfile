@@ -33,12 +33,16 @@ help_message := "shared recipes for ldmx-sw development
 # or
 #   just path/to/ldmx-sw/fire config.py
 # would run this denv even if there is a denv in the directory where config.py is.
+# supporting either the old (parent_directory, LDMX_BASE path) and the new (ldmx-sw itself)
+# forces a decision to be made now when just is invoked
+# we default to the new path (ldmx-sw itself) for new invocations while supporting the
+# old location only if it exists.
 
-denv_workspace_in_ldmx_sw := path_exists(justfile_directory() / ".denv")
-export denv_workspace := if denv_workspace_in_ldmx_sw == "true" {
-  justfile_directory()
-} else {
+denv_workspace_in_ldmx_sw_parent := path_exists(parent_directory(justfile_directory()) / ".denv")
+export denv_workspace := if denv_workspace_in_ldmx_sw_parent == "true" {
   parent_directory(justfile_directory())
+} else {
+  justfile_directory()
 }
 
 # make sure APPTAINER_CACHEDIR is not in the home directory
