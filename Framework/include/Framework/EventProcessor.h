@@ -215,7 +215,7 @@ class EventProcessor {
    *
    * Skip the rest of the sequence and don't save anything in the event bus.
    */
-  void AbortEvent() { throw AbortEventException(); }
+  void abortEvent() { throw AbortEventException(); }
 
   /// Interface class for making and filling histograms
   HistogramHelper histograms_;
@@ -224,7 +224,7 @@ class EventProcessor {
   NtupleManager &ntuple_{NtupleManager::getInstance()};
 
   /// The logger for this EventProcessor
-  logging::logger theLog_;
+  logging::logger the_log_;
 
  private:
   /**
@@ -244,7 +244,7 @@ class EventProcessor {
   std::string name_;
 
   /** Histogram directory */
-  TDirectory *histoDir_{0};
+  TDirectory *histo_dir_{0};
 };
 
 /**

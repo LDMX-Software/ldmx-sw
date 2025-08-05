@@ -83,9 +83,9 @@ void open(const framework::config::Parameters& p) {
   const auto& log_rules{
       p.get<std::vector<framework::config::Parameters>>("logRules", empty)};
   std::unordered_map<std::string, level> custom_levels;
-  for (const auto& logRule : log_rules) {
-    custom_levels[logRule.getParameter<std::string>("name")] =
-        convertLevel(logRule.getParameter<int>("level"));
+  for (const auto& log_rule : log_rules) {
+    custom_levels[log_rule.getParameter<std::string>("name")] =
+        convertLevel(log_rule.getParameter<int>("level"));
   }
 
   // allow our logs to access common attributes, the ones availabe are

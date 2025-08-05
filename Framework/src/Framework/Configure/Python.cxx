@@ -169,11 +169,11 @@ PyObject* extractDictionary(PyObject* obj) {
 static Parameters getMembers(PyObject* object) {
   PyObject* dictionary{extractDictionary(object)};
   PyObject *key(0), *value(0);
-  Py_ssize_t pos_ = 0;
+  Py_ssize_t pos = 0;
 
   Parameters params;
 
-  while (PyDict_Next(dictionary, &pos_, &key, &value)) {
+  while (PyDict_Next(dictionary, &pos, &key, &value)) {
     std::string skey{getPyString(key)};
 
     if (PyLong_Check(value)) {

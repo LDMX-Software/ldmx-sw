@@ -44,16 +44,16 @@ void EventProcessor::createHistograms(
     const std::vector<framework::config::Parameters> &histos) {
   for (auto const &h : histos) {
     auto name{h.getParameter<std::string>("name")};
-    auto xLabel{h.getParameter<std::string>("xlabel")};
+    auto x_label{h.getParameter<std::string>("xlabel")};
     auto xbins{h.getParameter<std::vector<double>>("xbins")};
-    auto yLabel{h.getParameter<std::string>("ylabel")};
+    auto y_label{h.getParameter<std::string>("ylabel")};
     auto ybins{h.getParameter<std::vector<double>>("ybins", {})};
     if (ybins.empty()) {
       // assume 1D histogram
-      histograms_.create(name, xLabel, xbins);
+      histograms_.create(name, x_label, xbins);
     } else {
       // assume 2D histogram
-      histograms_.create(name, xLabel, xbins, yLabel, ybins);
+      histograms_.create(name, x_label, xbins, y_label, ybins);
     }
   }
 }

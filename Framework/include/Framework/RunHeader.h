@@ -74,19 +74,19 @@ class RunHeader {
   virtual ~RunHeader() {}
 
   /** @return The run number. */
-  int getRunNumber() const { return runNumber_; }
+  int getRunNumber() const { return run_number_; }
 
   /** @return The name of the detector used to create the events. */
-  const std::string &getDetectorName() const { return detectorName_; }
+  const std::string &getDetectorName() const { return detector_name_; }
 
   /** Set the name of the detector that was used in this run */
-  void setDetectorName(const std::string &det) { detectorName_ = det; }
+  void setDetectorName(const std::string &det) { detector_name_ = det; }
 
   /**
    * @return The git SHA-1 associated with the software tag used
    * to generate this file.
    */
-  const std::string &getSoftwareTag() const { return softwareTag_; }
+  const std::string &getSoftwareTag() const { return software_tag_; }
 
   /**
    * @return The ldmx-sw version used to generate this file
@@ -105,28 +105,28 @@ class RunHeader {
    * @return The start time of the run.
    *
    */
-  int getRunStart() const { return runStart_; }
+  int getRunStart() const { return run_start_; }
 
   /**
    * Set the run start time in seconds since epoch.
    *
    * @param[in] runStart the start time of the run.
    */
-  void setRunStart(const int runStart) { runStart_ = runStart; }
+  void setRunStart(const int runStart) { run_start_ = runStart; }
 
   /**
    * Get the end time of the run in seconds since epoch.
    *
    * @return The end time of the run.
    */
-  int getRunEnd() const { return runEnd_; }
+  int getRunEnd() const { return run_end_; }
 
   /**
    * Set the end time of the run in seconds since epoch
    *
    * @param[in] runEnd the end time of the run.
    */
-  void setRunEnd(const int runEnd) { runEnd_ = runEnd; }
+  void setRunEnd(const int runEnd) { run_end_ = runEnd; }
 
   /**
    * Get the total number of tries that were done during the production
@@ -134,7 +134,7 @@ class RunHeader {
    *
    * @return the number of tries
    */
-  int getNumTries() const { return numTries_; }
+  int getNumTries() const { return num_tries_; }
 
   /**
    * Set the total number of tries that were done during the production
@@ -146,7 +146,7 @@ class RunHeader {
    *
    * @param[in] numTries the number of tries in this run
    */
-  void setNumTries(const int numTries) { numTries_ = numTries; }
+  void setNumTries(const int numTries) { num_tries_ = numTries; }
 
   /**
    * Get an int parameter value.
@@ -155,12 +155,12 @@ class RunHeader {
    * @return The parameter value.
    */
   int getIntParameter(const std::string &name) const {
-    return intParameters_.at(name);
+    return int_parameters_.at(name);
   }
 
   /// Get a const reference to all int parameters
   const std::map<std::string, int> &getIntParameters() const {
-    return intParameters_;
+    return int_parameters_;
   }
 
   /**
@@ -170,7 +170,7 @@ class RunHeader {
    * @param value The value of the parameter.
    */
   void setIntParameter(const std::string &name, int value) {
-    intParameters_[name] = value;
+    int_parameters_[name] = value;
   }
 
   /**
@@ -180,12 +180,12 @@ class RunHeader {
    * @return value The parameter value.
    */
   float getFloatParameter(const std::string &name) const {
-    return floatParameters_.at(name);
+    return float_parameters_.at(name);
   }
 
   /// Get a const reference to all float parameters
   const std::map<std::string, float> &getFloatParameters() const {
-    return floatParameters_;
+    return float_parameters_;
   }
 
   /**
@@ -195,7 +195,7 @@ class RunHeader {
    * @param value The parameter value.
    */
   void setFloatParameter(const std::string &name, float value) {
-    floatParameters_[name] = value;
+    float_parameters_[name] = value;
   }
 
   /**
@@ -205,12 +205,12 @@ class RunHeader {
    * @return value The parameter value.
    */
   std::string getStringParameter(const std::string &name) const {
-    return stringParameters_.at(name);
+    return string_parameters_.at(name);
   }
 
   /// Get a const reference to all string parameters
   const std::map<std::string, std::string> &getStringParameters() const {
-    return stringParameters_;
+    return string_parameters_;
   }
 
   /**
@@ -220,7 +220,7 @@ class RunHeader {
    * @param value The parameter value.
    */
   void setStringParameter(const std::string &name, std::string value) {
-    stringParameters_[name] = value;
+    string_parameters_[name] = value;
   }
 
   /**
@@ -233,7 +233,7 @@ class RunHeader {
   void stream(std::ostream &s) const;
 
   /** Print a string desciption of this object. */
-  void Print() const;
+  void print() const;
 
   /**
    * Stream this object to an output stream
@@ -253,19 +253,19 @@ class RunHeader {
 
  private:
   /** Run number. */
-  int runNumber_{0};
+  int run_number_{0};
 
   /** Detector name. */
-  std::string detectorName_{""};
+  std::string detector_name_{""};
 
   /** Run description. */
   std::string description_{""};
 
   /// Run start in seconds since epoch
-  int runStart_{0};
+  int run_start_{0};
 
   /// Run end in seconds since epoch
-  int runEnd_{0};
+  int run_end_{0};
 
   /**
    * Total number of events that were begun during the production
@@ -281,13 +281,13 @@ class RunHeader {
    *
    * maxEvents <= numTries <= maxEvents*maxTriesPerEvent
    */
-  int numTries_{0};
+  int num_tries_{0};
 
   /**
    * git SHA-1 hash associated with the software tag used to generate
    * this file.
    */
-  std::string softwareTag_{GIT_SHA1};
+  std::string software_tag_{GIT_SHA1};
 
   /**
    * ldmx-sw software version
@@ -295,13 +295,13 @@ class RunHeader {
   std::string ldmxsw_version_{LDMXSW_VERSION};
 
   /** Map of int parameters. */
-  std::map<std::string, int> intParameters_;
+  std::map<std::string, int> int_parameters_;
 
   /** Map of float parameters. */
-  std::map<std::string, float> floatParameters_;
+  std::map<std::string, float> float_parameters_;
 
   /** Map of string parameters. */
-  std::map<std::string, std::string> stringParameters_;
+  std::map<std::string, std::string> string_parameters_;
 
   ClassDef(RunHeader, 5);
 

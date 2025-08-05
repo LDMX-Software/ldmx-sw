@@ -56,13 +56,13 @@ class Event {
    * Get the event header.
    * @return A reference to the event header.
    */
-  ldmx::EventHeader &getEventHeader() { return eventHeader_; }
+  ldmx::EventHeader &getEventHeader() { return event_header_; }
 
   /**
    * Get the event header.
    * @return A constant reference to the event header.
    */
-  const ldmx::EventHeader &getEventHeader() const { return eventHeader_; }
+  const ldmx::EventHeader &getEventHeader() const { return event_header_; }
 
   /**
    * Get the event header as a pointer
@@ -72,26 +72,26 @@ class Event {
    *
    * @return A const pointer to the event header.
    */
-  const ldmx::EventHeader *getEventHeaderPtr() { return &eventHeader_; }
+  const ldmx::EventHeader *getEventHeaderPtr() { return &event_header_; }
 
   /**
    * Get the event number.
    * @return the event index_/number
    */
-  int getEventNumber() const { return eventHeader_.getEventNumber(); }
+  int getEventNumber() const { return event_header_.getEventNumber(); }
 
   /**
    * Get the event weight
    * @return weight from the EventHeader
    */
-  double getEventWeight() const { return eventHeader_.getWeight(); }
+  double getEventWeight() const { return event_header_.getWeight(); }
 
   /**
    * Print event bus
    *
    * Prints the list of products using the current stored product tags.
    */
-  void Print() const;
+  void print() const;
 
   /**
    * Get a list of products which match the given POSIX-Extended,
@@ -189,53 +189,53 @@ class Event {
     }
 
     // determine the branch name
-    std::string branchName;
+    std::string branch_name;
     if (collectionName == ldmx::EventHeader::BRANCH)
-      branchName = collectionName;
+      branch_name = collectionName;
     else
-      branchName = makeBranchName(collectionName);
+      branch_name = makeBranchName(collectionName);
 
-    if (branchesFilled_.find(branchName) != branchesFilled_.end()) {
+    if (branches_filled_.find(branch_name) != branches_filled_.end()) {
       EXCEPTION_RAISE("ProductExists",
                       "A product named '" + collectionName +
                           "' already exists in the event (has been loaded by a "
                           "previous producer in this process).");
     }
-    branchesFilled_.insert(branchName);
+    branches_filled_.insert(branch_name);
     // MEMORY add is leaking memory when given a vector (possible upon
     // destruction of Event?) MEMORY add is 'conditional jump or move depends on
     // uninitialised values' for all types of objects
     //  TTree::BranchImpRef or TTree::BronchExec
-    if (not bus_.isOnBoard(branchName)) {
+    if (not bus_.isOnBoard(branch_name)) {
       // create a new branch for this collection
 
       // have type T board bus under name 'branchName'
-      bus_.board<T>(branchName);
+      bus_.board<T>(branch_name);
 
       // type name (want to use branch element if possible)
       std::string tname = typeid(obj).name();
 
-      if (outputTree_ and not shouldDrop(branchName)) {
+      if (output_tree_ and not shouldDrop(branch_name)) {
         // we are writing this branch to an output file, so let's
         //  attach this passenger to the output tree
-        TBranch *outBranch = bus_.attach(outputTree_, branchName, true);
+        TBranch *out_branch = bus_.attach(output_tree_, branch_name, true);
         // get type name from branch if possible,
         //  otherwise use compiler level type name (above)
-        std::string class_name{outBranch->GetClassName()};
+        std::string class_name{out_branch->GetClassName()};
         if (not class_name.empty()) tname = class_name;
       }  // output tree exists or not
 
       // check for cache entry to remove
-      auto it_known{knownLookups_.find(collectionName)};
-      if (it_known != knownLookups_.end()) knownLookups_.erase(it_known);
+      auto it_known{known_lookups_.find(collectionName)};
+      if (it_known != known_lookups_.end()) known_lookups_.erase(it_known);
 
       // add us to list of products
-      products_.emplace_back(collectionName, passName_, tname);
+      products_.emplace_back(collectionName, pass_name_, tname);
     }
 
     // copy input contents into bus passenger
     try {
-      bus_.update(branchName, obj);
+      bus_.update(branch_name, obj);
     } catch (const std::bad_cast &) {
       EXCEPTION_RAISE("TypeMismatch",
                       "Attempting to add an object whose type '" +
@@ -288,12 +288,12 @@ class Event {
   const T &getObject(const std::string &collectionName,
                      const std::string &passName) const {
     // get branch name
-    std::string branchName;
+    std::string branch_name;
     if (collectionName == ldmx::EventHeader::BRANCH) {
-      branchName = collectionName;
+      branch_name = collectionName;
     } else if (passName.empty()) {
       // if no passName, then find branchName by looking over known products
-      if (knownLookups_.find(collectionName) == knownLookups_.end()) {
+      if (known_lookups_.find(collectionName) == known_lookups_.end()) {
         // this collectionName hasn't been found before
         //   this collection name is the whole name and not a partial name
         //   so we search products with a full-string match required
@@ -314,32 +314,32 @@ class Event {
                               "' without specified pass name :" + names.str());
         } else {
           // exactly one branch found -> cache for later
-          knownLookups_[collectionName] =
+          known_lookups_[collectionName] =
               makeBranchName(collectionName, matches.at(0).passname());
         }  // different options for number of possible branch matches
       }  // collection not in known lookups
-      branchName = knownLookups_.at(collectionName);
+      branch_name = known_lookups_.at(collectionName);
     } else {
-      branchName = makeBranchName(collectionName, passName);
+      branch_name = makeBranchName(collectionName, passName);
     }
 
     // now we have determined the unique branch name to look for
     //  so we can start looking on the bus and the input tree
     //  (if it exists) for it
-    bool already_on_board{bus_.isOnBoard(branchName)};
-    if (not already_on_board and inputTree_) {
+    bool already_on_board{bus_.isOnBoard(branch_name)};
+    if (not already_on_board and input_tree_) {
       // branch is not on the bus but there is an input tree
       //  -> let's look for a new branch to load
 
       // default construct a new passenger
-      bus_.board<T>(branchName);
+      bus_.board<T>(branch_name);
 
       // attempt to attach the new passenger to the input tree
-      TBranch *branch = bus_.attach(inputTree_, branchName, false);
+      TBranch *branch = bus_.attach(input_tree_, branch_name, false);
       if (branch == 0) {
         // inputTree doesn't have that branch
         EXCEPTION_RAISE("ProductNotFound", "No product found for branch '" +
-                                               branchName + "' on input tree.");
+                                               branch_name + "' on input tree.");
       }
       // ooh, new branch!
       branch->SetStatus(1);  // overrides any 'ignore' rules
@@ -353,13 +353,13 @@ class Event {
        *    We shouldn't end up here before inputTree's read entry is unset,
        *    but we check anyways because ROOT will just seg-fault like a chump.
        */
-      long long int ientry{inputTree_->GetReadEntry()};
+      long long int ientry{input_tree_->GetReadEntry()};
       if (ientry < 0) {
         // reached getObject without initializing inputTree's read entry
         EXCEPTION_RAISE("InTreeInit",
                         "The input tree was un-initialized with read entry " +
                             std::to_string(ientry) +
-                            " when attempting to get '" + branchName + "'.");
+                            " when attempting to get '" + branch_name + "'.");
       }
       branch->GetEntry(ientry);
     } else if (not already_on_board) {
@@ -367,7 +367,7 @@ class Event {
       // so no hope of finding an unloaded object
       EXCEPTION_RAISE("ProductNotFound", "No product found for name '" +
                                              collectionName + "' and pass '" +
-                                             passName_ + "'");
+                                             pass_name_ + "'");
     }
 
     // we've made sure the passenger is on the bus
@@ -375,11 +375,11 @@ class Event {
     //  has been updated
     // let's return the object that the passenger is carrying
     try {
-      const T &obj = bus_.get<T>(branchName);
+      const T &obj = bus_.get<T>(branch_name);
       return obj;
     } catch (const std::bad_cast &) {
       EXCEPTION_RAISE("BadType",
-                      "Trying to get product from '" + branchName +
+                      "Trying to get product from '" + branch_name +
                           "' but asking for wrong type: " + typeid(T).name());
     }
   }  // getObject
@@ -479,10 +479,10 @@ class Event {
    * Get the current/default pass name.
    * @return The current/default pass name.
    */
-  std::string getPassName() { return passName_; }
+  std::string getPassName() { return pass_name_; }
 
   /** @return The beam electron count. */
-  int getElectronCount() const { return electronCount_; }
+  int getElectronCount() const { return electron_count_; }
 
   /**
    * Set the beam electron count.
@@ -490,7 +490,7 @@ class Event {
    * @param electronCount The beam electron count.
    */
   void setElectronCount(const int &electronCount) {
-    electronCount_ = electronCount;
+    electron_count_ = electronCount;
   }
 
  private:
@@ -517,32 +517,32 @@ class Event {
    * @param collectionName The collection name.
    */
   std::string makeBranchName(const std::string &collectionName) const {
-    return makeBranchName(collectionName, passName_);
+    return makeBranchName(collectionName, pass_name_);
   }
 
  private:
   /**
    * The event header object.
    */
-  ldmx::EventHeader eventHeader_;
+  ldmx::EventHeader event_header_;
 
   /**
    * The default pass name.
    */
-  std::string passName_;
+  std::string pass_name_;
 
   /**
    * The output tree for writing a new file.
    */
-  TTree *outputTree_{nullptr};
+  TTree *output_tree_{nullptr};
 
   /**
    * The input tree for reading existing data.
    */
-  TTree *inputTree_{nullptr};
+  TTree *input_tree_{nullptr};
 
   /// The total number of electrons in the event
-  int electronCount_{1};
+  int electron_count_{1};
 
   /**
    * The Bus
@@ -562,17 +562,17 @@ class Event {
    * sure the event header is updated if it wasn't updated
    * manually.
    */
-  std::set<std::string> branchesFilled_;
+  std::set<std::string> branches_filled_;
 
   /**
    * Regex of collection names to *not* store in event.
    */
-  std::vector<regex_t> regexDropCollections_;
+  std::vector<regex_t> regex_drop_collections_;
 
   /**
    * Efficiency cache for empty pass name lookups.
    */
-  mutable std::map<std::string, std::string> knownLookups_;
+  mutable std::map<std::string, std::string> known_lookups_;
 
   /**
    * List of all the event products

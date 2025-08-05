@@ -65,12 +65,12 @@ class Process {
   /**
    * Get the pointer to the current event header, if defined
    */
-  const ldmx::EventHeader *getEventHeader() const { return eventHeader_; }
+  const ldmx::EventHeader *getEventHeader() const { return event_header_; }
 
   /**
    * Get the pointer to the current run header, if defined
    */
-  const ldmx::RunHeader *getRunHeader() const { return runHeader_; }
+  const ldmx::RunHeader *getRunHeader() const { return run_header_; }
 
   /**
    * Get a reference to the conditions system
@@ -81,7 +81,7 @@ class Process {
    * Get the frequency with which the event information is printed.
    * @return integer log frequency (negative if turned off)
    */
-  int getLogFrequency() const { return logFrequency_; }
+  int getLogFrequency() const { return log_frequency_; }
 
   /**
    * Run the process.
@@ -91,7 +91,7 @@ class Process {
   /**
    * Request that the processing finish with this event
    */
-  void requestFinish() { eventLimit_ = 0; }
+  void requestFinish() { event_limit_ = 0; }
 
   /**
    * Construct a TDirectory* for the given module_
@@ -106,12 +106,12 @@ class Process {
   /**
    * Access the storage control unit for this process
    */
-  StorageControl &getStorageController() { return storageController_; }
+  StorageControl &getStorageController() { return storage_controller_; }
 
   /**
    * Set the pointer to the current event header, used only for tests
    */
-  void setEventHeader(ldmx::EventHeader *h) { eventHeader_ = h; }
+  void setEventHeader(ldmx::EventHeader *h) { event_header_ = h; }
 
  private:
   /**
@@ -154,29 +154,29 @@ class Process {
   std::string pass_name_;
 
   /** Limit on events to process. */
-  int eventLimit_;
+  int event_limit_;
 
   /** When reading a file in, what's the first event to read */
-  int minEvents_;
+  int min_events_;
 
   /** Number of events we'd like to produce
    independetly of the number of tries it would take.
    Be warned about infinite loops!*/
-  int totalEvents_;
+  int total_events_;
 
   /** The frequency with which event info is printed. */
-  int logFrequency_;
+  int log_frequency_;
 
   /** Maximum number of attempts to make before giving up on an event */
-  int maxTries_;
+  int max_tries_;
 
   /**
    * allow the Process to skip input files that are corrupted
    */
-  bool skipCorruptedInputFiles_;
+  bool skip_corrupted_input_files_;
 
   /** Storage controller */
-  StorageControl storageController_;
+  StorageControl storage_controller_;
 
   /** Ordered list of EventProcessors to execute. */
   std::vector<EventProcessor *> sequence_;
@@ -186,10 +186,10 @@ class Process {
 
   /** List of input files to process.  May be empty if this Process will
    * generate new events. */
-  std::vector<std::string> inputFiles_;
+  std::vector<std::string> input_files_;
 
   /** List of output file names.  If empty, no output file will be created. */
-  std::vector<std::string> outputFiles_;
+  std::vector<std::string> output_files_;
 
   /** Compression setting to pass to output files
    *
@@ -198,25 +198,25 @@ class Process {
    * setting = 100*algo + level
    * with algo = 0 being the global default.
    */
-  int compressionSetting_;
+  int compression_setting_;
 
   /** Set of drop/keep rules. */
-  std::vector<std::string> dropKeepRules_;
+  std::vector<std::string> drop_keep_rules_;
 
   /** Run number to use if generating events. */
-  int runForGeneration_{1};
+  int run_for_generation_{1};
 
   /** Filename for histograms and other user products */
-  std::string histoFilename_;
+  std::string histo_filename_;
 
   /** Pointer to the current EventHeader, used for Conditions information */
-  const ldmx::EventHeader *eventHeader_{0};
+  const ldmx::EventHeader *event_header_{0};
 
   /** Pointer to the current RunHeader, used for Conditions information */
-  ldmx::RunHeader *runHeader_{0};
+  ldmx::RunHeader *run_header_{0};
 
   /** TFile for histograms and other user products */
-  TFile *histoTFile_{0};
+  TFile *histo_t_file_{0};
 
   /** class with calls backs to track performance measurements of software */
   performance::Tracker *performance_{0};

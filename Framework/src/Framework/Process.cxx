@@ -74,10 +74,10 @@ Process::Process(const framework::config::Parameters &configuration)
 
   storageController_.setDefaultKeep(
       configuration.getParameter<bool>("skimDefaultIsKeep", true));
-  auto skimRules{
+  auto skim_rules{
       configuration.getParameter<std::vector<std::string>>("skimRules", {})};
-  for (size_t i = 0; i < skimRules.size(); i += 2) {
-    storageController_.addRule(skimRules[i], skimRules[i + 1]);
+  for (size_t i = 0; i < skim_rules.size(); i += 2) {
+    storageController_.addRule(skim_rules[i], skim_rules[i + 1]);
   }
 
   auto sequence{
@@ -91,14 +91,14 @@ Process::Process(const framework::config::Parameters &configuration)
         "p.sequence to tell me what processors to run.");
   }
   for (auto proc : sequence) {
-    auto className{proc.getParameter<std::string>("className")};
-    auto instanceName{proc.getParameter<std::string>("instanceName")};
+    auto class_name{proc.getParameter<std::string>("className")};
+    auto instance_name{proc.getParameter<std::string>("instanceName")};
     auto ep{
-        EventProcessor::Factory::get().make(className, instanceName, *this)};
+        EventProcessor::Factory::get().make(class_name, instance_name, *this)};
     if (not ep) {
       EXCEPTION_RAISE("UnableToCreate",
                       "The EventProcessor Factory was unable to create " +
-                          instanceName + " of type " + className +
+                          instance_name + " of type " + class_name +
                           ". Did you inherit from framework::Producer or "
                           "framework::Analyzer? "
                           "Did you DECLARE_PRODUCER or DECLARE_ANALYZER in the "
@@ -119,20 +119,20 @@ Process::Process(const framework::config::Parameters &configuration)
     sequence_.push_back(ep.value());
   }
 
-  auto conditionsObjectProviders{
+  auto conditions_object_providers{
       configuration.getParameter<std::vector<framework::config::Parameters>>(
           "conditionsObjectProviders", {})};
-  for (auto cop : conditionsObjectProviders) {
-    auto className{cop.getParameter<std::string>("className")};
-    auto objectName{cop.getParameter<std::string>("objectName")};
-    auto tagName{cop.getParameter<std::string>("tagName")};
-    conditions_.createConditionsObjectProvider(className, objectName, tagName,
+  for (auto cop : conditions_object_providers) {
+    auto class_name{cop.getParameter<std::string>("className")};
+    auto object_name{cop.getParameter<std::string>("objectName")};
+    auto tag_name{cop.getParameter<std::string>("tagName")};
+    conditions_.createConditionsObjectProvider(class_name, object_name, tag_name,
                                                cop);
   }
 
-  bool logPerformance =
+  bool log_performance =
       configuration.getParameter<bool>("logPerformance", false);
-  if (logPerformance) {
+  if (log_performance) {
     std::vector<std::string> names{sequence_.size()};
     for (std::size_t i{0}; i < sequence_.size(); i++) {
       names[i] = sequence_[i]->getName();
@@ -167,12 +167,12 @@ void Process::run() {
   NtupleManager::getInstance().reset();
 
   // event bus for this process
-  Event theEvent(pass_name_);
+  Event the_event(pass_name_);
   // the EventHeader object is created with the event bus as
   // one of its members, we obtain a pointer for the header
   // here so we can share it with the conditions system
-  eventHeader_ = theEvent.getEventHeaderPtr();
-  theEvent.getEventHeader().setRun(runForGeneration_);
+  eventHeader_ = the_event.getEventHeaderPtr();
+  the_event.getEventHeader().setRun(runForGeneration_);
 
   // Start by notifying everyone that modules processing is beginning
   std::size_t i_proc{0};
@@ -201,57 +201,57 @@ void Process::run() {
                      << "Only the first output file '" << outputFiles_.at(0)
                      << "' will be used.";
     }
-    std::string outputFileName = outputFiles_.at(0);
+    std::string output_file_name = outputFiles_.at(0);
 
     // Configure the event file to create an output file with no parent. This
     // requires setting the parameters isOutputFile and isSingleOutput to true.
-    EventFile outFile(config_, outputFileName, nullptr, true, true, false);
-    onFileOpen(outFile);
-    outFile.setupEvent(&theEvent);
+    EventFile out_file(config_, output_file_name, nullptr, true, true, false);
+    onFileOpen(out_file);
+    out_file.setupEvent(&the_event);
 
-    for (auto rule : dropKeepRules_) outFile.addDrop(rule);
+    for (auto rule : dropKeepRules_) out_file.addDrop(rule);
 
-    ldmx::RunHeader runHeader(runForGeneration_);
-    runHeader.setRunStart(std::time(nullptr));  // set run starting
-    runHeader_ = &runHeader;            // give handle to run header to process
-    outFile.writeRunHeader(runHeader);  // add run header to file
+    ldmx::RunHeader run_header(runForGeneration_);
+    run_header.setRunStart(std::time(nullptr));  // set run starting
+    runHeader_ = &run_header;            // give handle to run header to process
+    out_file.writeRunHeader(run_header);  // add run header to file
 
-    newRun(runHeader);
+    newRun(run_header);
 
-    int totalTries = 0;  // total number of tries for entire run
-    int numTries = 0;    // number of tries for the current event number
+    int total_tries = 0;  // total number of tries for entire run
+    int num_tries = 0;    // number of tries for the current event number
     int event_limit = eventLimit_;
     if (totalEvents_ > 0) {
       // Have a warning at the first event
-      if (numTries == 0)
+      if (num_tries == 0)
         ldmx_log(warn) << "The totalEvents was set, so maxEvents and "
                           "maxTriesPerEvent will be ignored!";
       event_limit = totalEvents_;
     }
     while (n_events_processed < event_limit) {
-      totalTries++;
-      numTries++;
+      total_tries++;
+      num_tries++;
 
-      ldmx::EventHeader &eh = theEvent.getEventHeader();
+      ldmx::EventHeader &eh = the_event.getEventHeader();
       eh.setRun(runForGeneration_);
       eh.setEventNumber(n_events_processed + 1);
       eh.setTimestamp(TTimeStamp());
 
       // reset the storage controller state
       storageController_.resetEventState();
-      logging::Formatter::set(theEvent.getEventNumber());
+      logging::Formatter::set(the_event.getEventNumber());
 
-      bool completed = process(n_events_processed, numTries, theEvent);
+      bool completed = process(n_events_processed, num_tries, the_event);
 
-      outFile.nextEvent(storageController_.keepEvent(completed));
+      out_file.nextEvent(storageController_.keepEvent(completed));
 
       // reset try counter only on successfully completed events
-      if (completed) numTries = 0;
+      if (completed) num_tries = 0;
 
       // we use modulo here insetad of >= because we want to carry
       // the number of tries across the number of events processed boundary
       // totalEvents_ is set let's not exit until that's reached
-      if (completed or (totalEvents_ < 0 and numTries % maxTries_ == 0)) {
+      if (completed or (totalEvents_ < 0 and num_tries % maxTries_ == 0)) {
         n_events_processed++;                 // increment events made
         NtupleManager::getInstance().fill();  // fill ntuples
       }
@@ -259,14 +259,14 @@ void Process::run() {
       NtupleManager::getInstance().clear();
     }
 
-    onFileClose(outFile);
+    onFileClose(out_file);
 
-    runHeader.setRunEnd(std::time(nullptr));
-    runHeader.setNumTries(totalTries);
-    outFile.writeRunTree();
+    run_header.setRunEnd(std::time(nullptr));
+    run_header.setNumTries(total_tries);
+    out_file.writeRunTree();
 
     // Give a warning that this filter has very low efficiency
-    if (n_events_processed < totalTries / 10000) {  // integer division is okay
+    if (n_events_processed < total_tries / 10000) {  // integer division is okay
       ldmx_log(warn)
           << "Less than 1 event out of every 10k events tried was accepted!";
       ldmx_log(warn)
@@ -277,11 +277,11 @@ void Process::run() {
   } else {
     // there are input files
 
-    EventFile *outFile(0);
+    EventFile *out_file(0);
 
-    bool singleOutput = false;
+    bool single_output = false;
     if (outputFiles_.size() == 1) {
-      singleOutput = true;
+      single_output = true;
     } else if (!outputFiles_.empty() and
                outputFiles_.size() != inputFiles_.size()) {
       EXCEPTION_RAISE("Process",
@@ -291,10 +291,10 @@ void Process::run() {
 
     // next, loop through the files
     int ifile = 0;
-    int wasRun = -1;
+    int was_run = -1;
     for (auto infilename : inputFiles_) {
-      EventFile inFile(config_, infilename);
-      if (inFile.isCorrupted()) {
+      EventFile in_file(config_, infilename);
+      if (in_file.isCorrupted()) {
         if (skipCorruptedInputFiles_) {
           ldmx_log(warn) << "Input file '" << infilename
                          << "' was found to be corrupted. Skipping.";
@@ -309,74 +309,74 @@ void Process::run() {
       }
 
       ldmx_log(info) << "Opening file " << infilename;
-      onFileOpen(inFile);
+      onFileOpen(in_file);
 
       // configure event file that will be iterated over
-      EventFile *masterFile;
+      EventFile *master_file;
       if (!outputFiles_.empty()) {
         // setup new output file if either
         // 1) we are not in single output mode
         // 2) this is the first input file
-        if (!singleOutput or ifile == 0) {
+        if (!single_output or ifile == 0) {
           // setup new output file
-          outFile = new EventFile(config_, outputFiles_[ifile], &inFile,
-                                  singleOutput);
+          out_file = new EventFile(config_, outputFiles_[ifile], &in_file,
+                                  single_output);
           ifile++;
 
           // setup theEvent we will iterate over
-          if (outFile) {
-            outFile->setupEvent(&theEvent);
-            masterFile = outFile;
+          if (out_file) {
+            out_file->setupEvent(&the_event);
+            master_file = out_file;
           } else {
             EXCEPTION_RAISE("Process", "Unable to construct output file for " +
                                            outputFiles_[ifile]);
           }
 
-          for (auto rule : dropKeepRules_) outFile->addDrop(rule);
+          for (auto rule : dropKeepRules_) out_file->addDrop(rule);
 
         } else {
           // all other input files
-          outFile->updateParent(&inFile);
-          masterFile = outFile;
+          out_file->updateParent(&in_file);
+          master_file = out_file;
 
         }  // check if in singleOutput mode
 
       } else {
         // empty output file list, use inputFile as master file
-        inFile.setupEvent(&theEvent);
-        masterFile = &inFile;
+        in_file.setupEvent(&the_event);
+        master_file = &in_file;
       }
 
       // In case we'd like to skip up to the event of minEvents_
       while (n_events_processed < (minEvents_ - 1) &&
-             masterFile->nextEvent(false)) {
+             master_file->nextEvent(false)) {
         n_events_processed++;
       }
 
       bool event_completed = true;
-      while (masterFile->nextEvent(
+      while (master_file->nextEvent(
                  storageController_.keepEvent(event_completed)) &&
              (eventLimit_ < 0 || (n_events_processed) < eventLimit_)) {
         // clean up for storage control calculation
         storageController_.resetEventState();
-        logging::Formatter::set(theEvent.getEventNumber());
+        logging::Formatter::set(the_event.getEventNumber());
 
         // notify for new run if necessary
-        if (theEvent.getEventHeader().getRun() != wasRun) {
-          wasRun = theEvent.getEventHeader().getRun();
-          ldmx::RunHeader *rh{masterFile->getRunHeaderPtr(wasRun)};
+        if (the_event.getEventHeader().getRun() != was_run) {
+          was_run = the_event.getEventHeader().getRun();
+          ldmx::RunHeader *rh{master_file->getRunHeaderPtr(was_run)};
           if (rh != nullptr) {
             runHeader_ = rh;
             ldmx_log(info) << "Got new run header from '"
-                           << masterFile->getFileName() << "'";
+                           << master_file->getFileName() << "'";
             newRun(*runHeader_);
           } else {
-            ldmx_log(warn) << "Run header for run " << wasRun
+            ldmx_log(warn) << "Run header for run " << was_run
                            << " was not found!";
           }
         }
 
-        event_completed = process(n_events_processed, 1, theEvent);
+        event_completed = process(n_events_processed, 1, the_event);
 
         if (event_completed) NtupleManager::getInstance().fill();
         NtupleManager::getInstance().clear();
@@ -396,15 +396,15 @@ void Process::run() {
       }
 
       ldmx_log(info) << "Closing file " << infilename;
-      onFileClose(inFile);
+      onFileClose(in_file);
 
       // Reset the event in case of multiple input files
-      theEvent.onEndOfFile();
+      the_event.onEndOfFile();
 
-      if (outFile and !singleOutput) {
-        outFile->writeRunTree();
-        delete outFile;
-        outFile = nullptr;
+      if (out_file and !single_output) {
+        out_file->writeRunTree();
+        delete out_file;
+        out_file = nullptr;
       }
 
       if (leave_early) {
@@ -412,12 +412,12 @@ void Process::run() {
       }
     }  // loop through input files
 
-    if (outFile) {
+    if (out_file) {
       // close outFile
       //  outFile would survive to here in single output mode
-      outFile->writeRunTree();
-      delete outFile;
-      outFile = nullptr;
+      out_file->writeRunTree();
+      delete out_file;
+      out_file = nullptr;
     }
 
   }  // are there input files? if-else tree

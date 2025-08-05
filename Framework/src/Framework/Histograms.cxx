@@ -55,10 +55,10 @@ TH1* HistogramPool::get(const std::string& name) {
 void HistogramHelper::create(const std::string& name, const std::string& xLabel,
                              const double& bins, const double& xmin,
                              const double& xmax) {
-  std::string fullName = name_ + "_" + name;
+  std::string full_name = name_ + "_" + name;
 
   // Create a histogram of type T
-  auto hist = new TH1F(fullName.c_str(), fullName.c_str(), bins, xmin, xmax);
+  auto hist = new TH1F(full_name.c_str(), full_name.c_str(), bins, xmin, xmax);
 
   // Set the title
   hist->SetTitle("");
@@ -68,22 +68,22 @@ void HistogramHelper::create(const std::string& name, const std::string& xLabel,
   hist->GetXaxis()->CenterTitle();
 
   // Insert it into the pool of histograms for later use
-  HistogramPool::getInstance().insert(fullName, hist);
+  HistogramPool::getInstance().insert(full_name, hist);
 }
 
 void HistogramHelper::create(const std::string& name, const std::string& xLabel,
                              const std::vector<double>& bins) {
-  std::string fullName = name_ + "_" + name;
+  std::string full_name = name_ + "_" + name;
 
   // copy bin edges into a C98 form acceptable by ROOT
   int nbins = bins.size() - 1;
-  double* binEdges = new double[bins.size()];
-  for (unsigned int iBin = 0; iBin < bins.size(); iBin++)
-    binEdges[iBin] = bins.at(iBin);
+  double* bin_edges = new double[bins.size()];
+  for (unsigned int i_bin = 0; i_bin < bins.size(); i_bin++)
+    bin_edges[i_bin] = bins.at(i_bin);
 
-  auto hist = new TH1F(fullName.c_str(), fullName.c_str(), nbins, binEdges);
+  auto hist = new TH1F(full_name.c_str(), full_name.c_str(), nbins, bin_edges);
 
-  delete[] binEdges;  // cleanup
+  delete[] bin_edges;  // cleanup
 
   // Set the title
   hist->SetTitle("");
@@ -93,7 +93,7 @@ void HistogramHelper::create(const std::string& name, const std::string& xLabel,
   hist->GetXaxis()->CenterTitle();
 
   // Insert it into the pool of histograms for later use
-  HistogramPool::getInstance().insert(fullName, hist);
+  HistogramPool::getInstance().insert(full_name, hist);
 }
 
 void HistogramHelper::create(const std::string& name, const std::string& xLabel,
@@ -101,10 +101,10 @@ void HistogramHelper::create(const std::string& name, const std::string& xLabel,
                              const double& xmax, const std::string& yLabel,
                              const double& ybins, const double& ymin,
                              const double& ymax) {
-  std::string fullName = name_ + "_" + name;
+  std::string full_name = name_ + "_" + name;
 
   // Create a histogram of type T
-  auto hist = new TH2F(fullName.c_str(), fullName.c_str(), xbins, xmin, xmax,
+  auto hist = new TH2F(full_name.c_str(), full_name.c_str(), xbins, xmin, xmax,
                        ybins, ymin, ymax);
 
   // Set the title
@@ -119,31 +119,31 @@ void HistogramHelper::create(const std::string& name, const std::string& xLabel,
   hist->GetYaxis()->CenterTitle();
 
   // Insert it into the pool of histograms for later use
-  HistogramPool::getInstance().insert(fullName, hist);
+  HistogramPool::getInstance().insert(full_name, hist);
 }
 
 void HistogramHelper::create(const std::string& name, const std::string& xLabel,
                              const std::vector<double>& xbins,
                              const std::string& yLabel,
                              const std::vector<double>& ybins) {
-  std::string fullName = name_ + "_" + name;
+  std::string full_name = name_ + "_" + name;
 
   // copy bin edges into a C98 form acceptable by ROOT
-  int xNBins = xbins.size() - 1;
-  double* xBinEdges = new double[xbins.size()];
-  for (unsigned int iBin = 0; iBin < xbins.size(); iBin++)
-    xBinEdges[iBin] = xbins.at(iBin);
+  int x_n_bins = xbins.size() - 1;
+  double* x_bin_edges = new double[xbins.size()];
+  for (unsigned int i_bin = 0; i_bin < xbins.size(); i_bin++)
+    x_bin_edges[i_bin] = xbins.at(i_bin);
 
-  int yNBins = ybins.size() - 1;
-  double* yBinEdges = new double[ybins.size()];
-  for (unsigned int iBin = 0; iBin < ybins.size(); iBin++)
-    yBinEdges[iBin] = ybins.at(iBin);
+  int y_n_bins = ybins.size() - 1;
+  double* y_bin_edges = new double[ybins.size()];
+  for (unsigned int i_bin = 0; i_bin < ybins.size(); i_bin++)
+    y_bin_edges[i_bin] = ybins.at(i_bin);
 
-  auto hist = new TH2F(fullName.c_str(), fullName.c_str(), xNBins, xBinEdges,
-                       yNBins, yBinEdges);
+  auto hist = new TH2F(full_name.c_str(), full_name.c_str(), x_n_bins, x_bin_edges,
+                       y_n_bins, y_bin_edges);
 
-  delete[] xBinEdges;  // cleanup
-  delete[] yBinEdges;  // cleanup
+  delete[] x_bin_edges;  // cleanup
+  delete[] y_bin_edges;  // cleanup
 
   // Set the title
   hist->SetTitle("");
@@ -157,6 +157,6 @@ void HistogramHelper::create(const std::string& name, const std::string& xLabel,
   hist->GetYaxis()->CenterTitle();
 
   // Insert it into the pool of histograms for later use
-  HistogramPool::getInstance().insert(fullName, hist);
+  HistogramPool::getInstance().insert(full_name, hist);
 }
 }  // namespace framework

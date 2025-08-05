@@ -39,11 +39,11 @@ ldmx::HcalID HcalSD::decodeCopyNumber(const std::uint32_t copyNumber,
       ldmx::HcalGeometry::CONDITIONS_OBJECT_NAME);
   unsigned int stripID = 0;
   const unsigned int section = copyNumber / 1000;
-  const unsigned int layer_ = copyNumber % 1000;
+  const unsigned int layer = copyNumber % 1000;
 
   // 5cm wide bars are HARD-CODED
   if (section == ldmx::HcalID::BACK) {
-    if (geometry.backLayerIsHorizontal(layer_)) {
+    if (geometry.backLayerIsHorizontal(layer)) {
       stripID = int((localPosition.y() + scint->GetYHalfLength()) / 50.0);
     } else {
       stripID = int((localPosition.x() + scint->GetXHalfLength()) / 50.0);
@@ -51,7 +51,7 @@ ldmx::HcalID HcalSD::decodeCopyNumber(const std::uint32_t copyNumber,
   } else {
     stripID = int((localPosition.z() + scint->GetZHalfLength()) / 50.0);
   }
-  return ldmx::HcalID{section, layer_, stripID};
+  return ldmx::HcalID{section, layer, stripID};
 }
 
 G4bool HcalSD::ProcessHits(G4Step* aStep, G4TouchableHistory* ROhist) {

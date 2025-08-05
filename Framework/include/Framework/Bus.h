@@ -342,7 +342,7 @@ class Bus {
      */
     virtual TBranch* attach(TTree* tree, const std::string& branch_name,
                             bool can_create) {
-      return attach(the_type<BaggageType>{}, tree, branch_name, can_create);
+      return attach(TheType<BaggageType>{}, tree, branch_name, can_create);
     }
 
     /**
@@ -364,7 +364,7 @@ class Bus {
      */
     void update(const BaggageType& updated_obj) {
       *baggage_ = updated_obj;
-      post_update(the_type<BaggageType>());
+      post_update(TheType<BaggageType>());
     }
 
     /**
@@ -374,7 +374,7 @@ class Bus {
      * allows the compiler to deduce which implementation
      * to use depending on the type of baggage we are carrying.
      */
-    virtual void clear() { clear(the_type<BaggageType>{}); }
+    virtual void clear() { clear(TheType<BaggageType>{}); }
 
     /**
      * Stream the passenger's object to the input ostream
@@ -384,7 +384,7 @@ class Bus {
      * to use depending on the type of baggage we are carrying.
      */
     virtual void stream(std::ostream& s) const {
-      stream(the_type<BaggageType>{}, s);
+      stream(TheType<BaggageType>{}, s);
     }
 
     /**
@@ -409,7 +409,7 @@ class Bus {
      * of baggage to functions as a parameter.
      */
     template <typename>
-    struct the_type {};
+    struct TheType {};
 
    private:  // specializations of attach
     /**
@@ -455,7 +455,7 @@ class Bus {
      * @returns pointer to branch that we attached to (maybe be null)
      */
     template <typename T>
-    TBranch* attach(the_type<T> t, TTree* tree, const std::string& branch_name,
+    TBranch* attach(TheType<T> t, TTree* tree, const std::string& branch_name,
                     bool can_create) {
       TBranch* branch = tree->GetBranch(branch_name.c_str());
       if (branch) {
@@ -541,7 +541,7 @@ class Bus {
      * @param[in] can_create allow us to create a branch on tree if needed
      * @returns pointer to branch that we attached to (maybe be null)
      */
-    TBranch* attach(the_type<bool> t, TTree* tree,
+    TBranch* attach(TheType<bool> t, TTree* tree,
                     const std::string& branch_name, bool can_create) {
       return attachBasic(tree, branch_name, can_create);
     }
@@ -557,7 +557,7 @@ class Bus {
      * @param[in] can_create allow us to create a branch on tree if needed
      * @returns pointer to branch that we attached to (maybe be null)
      */
-    TBranch* attach(the_type<short> t, TTree* tree,
+    TBranch* attach(TheType<short> t, TTree* tree,
                     const std::string& branch_name, bool can_create) {
       return attachBasic(tree, branch_name, can_create);
     }
@@ -573,7 +573,7 @@ class Bus {
      * @param[in] can_create allow us to create a branch on tree if needed
      * @returns pointer to branch that we attached to (maybe be null)
      */
-    TBranch* attach(the_type<int> t, TTree* tree,
+    TBranch* attach(TheType<int> t, TTree* tree,
                     const std::string& branch_name, bool can_create) {
       return attachBasic(tree, branch_name, can_create);
     }
@@ -589,7 +589,7 @@ class Bus {
      * @param[in] can_create allow us to create a branch on tree if needed
      * @returns pointer to branch that we attached to (maybe be null)
      */
-    TBranch* attach(the_type<long> t, TTree* tree,
+    TBranch* attach(TheType<long> t, TTree* tree,
                     const std::string& branch_name, bool can_create) {
       return attachBasic(tree, branch_name, can_create);
     }
@@ -605,7 +605,7 @@ class Bus {
      * @param[in] can_create allow us to create a branch on tree if needed
      * @returns pointer to branch that we attached to (maybe be null)
      */
-    TBranch* attach(the_type<float> t, TTree* tree,
+    TBranch* attach(TheType<float> t, TTree* tree,
                     const std::string& branch_name, bool can_create) {
       return attachBasic(tree, branch_name, can_create);
     }
@@ -621,7 +621,7 @@ class Bus {
      * @param[in] can_create allow us to create a branch on tree if needed
      * @returns pointer to branch that we attached to (maybe be null)
      */
-    TBranch* attach(the_type<double> t, TTree* tree,
+    TBranch* attach(TheType<double> t, TTree* tree,
                     const std::string& branch_name, bool can_create) {
       return attachBasic(tree, branch_name, can_create);
     }
@@ -631,13 +631,13 @@ class Bus {
      * Clear bool by setting it to false.
      * @param t Unused, only helping compiler choose the correct method
      */
-    void clear(the_type<bool> t) { *baggage_ = false; }
+    void clear(TheType<bool> t) { *baggage_ = false; }
 
     /**
      * Clear short by setting it to the minimum defined by the compiler.
      * @param t Unused, only helping compiler choose the correct method
      */
-    void clear(the_type<short> t) {
+    void clear(TheType<short> t) {
       *baggage_ = std::numeric_limits<BaggageType>::min();
     }
 
@@ -645,7 +645,7 @@ class Bus {
      * Clear int by setting it to the minimum defined by the compiler.
      * @param t Unused, only helping compiler choose the correct method
      */
-    void clear(the_type<int> t) {
+    void clear(TheType<int> t) {
       *baggage_ = std::numeric_limits<BaggageType>::min();
     }
 
@@ -653,7 +653,7 @@ class Bus {
      * Clear long by setting it to the minimum defined by the compiler.
      * @param t Unused, only helping compiler choose the correct method
      */
-    void clear(the_type<long> t) {
+    void clear(TheType<long> t) {
       *baggage_ = std::numeric_limits<BaggageType>::min();
     }
 
@@ -661,7 +661,7 @@ class Bus {
      * Clear float by setting it to the minimum defined by the compiler.
      * @param t Unused, only helping compiler choose the correct method
      */
-    void clear(the_type<float> t) {
+    void clear(TheType<float> t) {
       *baggage_ = std::numeric_limits<BaggageType>::min();
     }
 
@@ -669,7 +669,7 @@ class Bus {
      * Clear double by setting it to the minimum defined by the compiler.
      * @param t Unused, only helping compiler choose the correct method
      */
-    void clear(the_type<double> t) {
+    void clear(TheType<double> t) {
       *baggage_ = std::numeric_limits<BaggageType>::min();
     }
 
@@ -684,7 +684,7 @@ class Bus {
      * @param t Unused, only helping compiler choose the correct method
      */
     template <typename T>
-    void clear(the_type<T> t) {
+    void clear(TheType<T> t) {
       baggage_->clear();
     }
 
@@ -693,7 +693,7 @@ class Bus {
      * @param t Unused, only helping compiler choose the correct method
      */
     template <typename Content>
-    void clear(the_type<std::vector<Content>> t) {
+    void clear(TheType<std::vector<Content>> t) {
       baggage_->clear();
     }
 
@@ -702,7 +702,7 @@ class Bus {
      * @param t Unused, only helping compiler choose the correct method
      */
     template <typename Key, typename Val>
-    void clear(the_type<std::map<Key, Val>> t) {
+    void clear(TheType<std::map<Key, Val>> t) {
       baggage_->clear();
     }
 
@@ -712,7 +712,7 @@ class Bus {
      * @param t Unused, only helping compiler choose the correct method
      */
     template <typename T>
-    void post_update(the_type<T> t) {}
+    void postUpdate(TheType<T> t) {}
 
     /**
      * For std::vector, use the sort method after the contents are updated.
@@ -740,7 +740,7 @@ class Bus {
      * @param s ostream to write to
      */
     template <typename T>
-    void stream(the_type<T> t, std::ostream& s) const {
+    void stream(TheType<T> t, std::ostream& s) const {
       // s << *baggagage_;
     }
 
@@ -754,7 +754,7 @@ class Bus {
      * @param s ostream to write to
      */
     template <typename Content>
-    void stream(the_type<std::vector<Content>> t, std::ostream& s) const {
+    void stream(TheType<std::vector<Content>> t, std::ostream& s) const {
       s << baggage_->size();
       /*
       s << "[ ";
@@ -774,7 +774,7 @@ class Bus {
      * @param s ostream to write to
      */
     template <typename Key, typename Val>
-    void stream(the_type<std::map<Key, Val>> t, std::ostream& s) const {
+    void stream(TheType<std::map<Key, Val>> t, std::ostream& s) const {
       s << baggage_->size();
       /*
       s << "{ ";

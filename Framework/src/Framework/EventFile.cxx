@@ -122,25 +122,25 @@ bool EventFile::isCorrupted() const {
 
 void EventFile::addDrop(const std::string &rule) {
   int offset;
-  bool isKeep = false, isDrop = false, isIgnore = false;
+  bool is_keep = false, is_drop = false, is_ignore = false;
   size_t i = rule.find("keep");
   if (i != std::string::npos) {
     offset = i + 4;
-    isKeep = true;
+    is_keep = true;
   }
   i = rule.find("drop");
   if (i != std::string::npos) {
     offset = i + 4;
-    isDrop = true;
+    is_drop = true;
   }
   i = rule.find("ignore");
   if (i != std::string::npos) {
     offset = i + 6;
-    isIgnore = true;
+    is_ignore = true;
   }
 
   // more than one of (keep,drop,ignore) was provided => not valid rule
-  if (int(isKeep) + int(isDrop) + int(isIgnore) != 1) return;
+  if (int(is_keep) + int(is_drop) + int(is_ignore) != 1) return;
 
   std::string srule = rule.substr(offset);
   for (i = srule.find_first_of(" \t\n\r"); i != std::string::npos;
@@ -153,19 +153,19 @@ void EventFile::addDrop(const std::string &rule) {
   // add wild card at end for matching purposes
   if (srule.back() != '*') srule += ".*";  // add wildcard to back
 
-  if (isKeep) {
+  if (is_keep) {
     // turn both the input and output tree's on
     // root needs . removed otherwise it gets cranky
     srule.erase(std::remove(srule.begin(), srule.end(), '.'), srule.end());
     preCloneRules_.emplace_back(srule, true);
     // this branch will then be copied over into output tree and be active
-  } else if (isIgnore) {
+  } else if (is_ignore) {
     // don't even read it from the input file
     // root needs . removed otherwise it gets cranky
     srule.erase(std::remove(srule.begin(), srule.end(), '.'), srule.end());
     preCloneRules_.emplace_back(srule, false);
     // these branches won't be copied over into output tree
-  } else if (isDrop) {
+  } else if (is_drop) {
     // drop means allowing it on reading but not writing
     // pass these regex to event bus so Event::add knows
     event_->addDrop(srule);  // requires event_ to be set
@@ -197,9 +197,9 @@ bool EventFile::nextEvent(bool storeCurrentEvent) {
 
         file_->cd();  // go into output file
 
-        for (auto const &rulePair : preCloneRules_)
-          parent_->tree_->SetBranchStatus(rulePair.first.c_str(),
-                                          rulePair.second);
+        for (auto const &rule_pair : preCloneRules_)
+          parent_->tree_->SetBranchStatus(rule_pair.first.c_str(),
+                                          rule_pair.second);
 
         tree_ = parent_->tree_->CloneTree(0);
 
@@ -307,8 +307,8 @@ void EventFile::updateParent(EventFile *parent) {
   file_->cd();
 
   // need to turn on/off the same branches as in the initial setup...
-  for (auto const &rulePair : preCloneRules_)
-    parent_->tree_->SetBranchStatus(rulePair.first.c_str(), rulePair.second);
+  for (auto const &rule_pair : preCloneRules_)
+    parent_->tree_->SetBranchStatus(rule_pair.first.c_str(), rule_pair.second);
 
   // Copy over addresses from the new parent
   parent_->tree_->CopyAddresses(tree_);
@@ -336,8 +336,8 @@ void EventFile::writeRunTree() {
   // Check for the existence of the run tree in the file.
   // If it already exists, throw an exception.
   // TODO: Tree name shouldn't be hardcoded. Is this check really necessary?
-  auto runTree{static_cast<TTree *>(file_->Get("LDMX_Run"))};
-  if (runTree) {
+  auto run_tree{static_cast<TTree *>(file_->Get("LDMX_Run"))};
+  if (run_tree) {
     EXCEPTION_RAISE("RunTree",
                     "RunTree 'LDMX_Run' already exists in output file '" +
                         fileName_ + "'.");
@@ -354,31 +354,31 @@ void EventFile::writeRunTree() {
    * in the correct location.
    */
   file_->cd();
-  runTree = new TTree("LDMX_Run", "LDMX run header");
+  run_tree = new TTree("LDMX_Run", "LDMX run header");
 
   // create the branch on this tree
-  ldmx::RunHeader *theHandle = nullptr;
-  runTree->Branch("RunHeader", "ldmx::RunHeader", &theHandle, 32000, 3);
+  ldmx::RunHeader *the_handle = nullptr;
+  run_tree->Branch("RunHeader", "ldmx::RunHeader", &the_handle, 32000, 3);
 
   // copy over the run headers into the tree
   for (auto &[num, header_pair] : runMap_) {
-    theHandle = header_pair.second;
-    runTree->Fill();
+    the_handle = header_pair.second;
+    run_tree->Fill();
     if (header_pair.first) delete header_pair.second;
   }
 
-  runTree->Write();
+  run_tree->Write();
 }
 
 void EventFile::writeRunHeader(ldmx::RunHeader &runHeader) {
-  int runNumber = runHeader.getRunNumber();
+  int run_number = runHeader.getRunNumber();
 
-  if (runMap_.find(runNumber) != runMap_.end()) {
+  if (runMap_.find(run_number) != runMap_.end()) {
     EXCEPTION_RAISE("RunMap", "Run map already contains a run with number '" +
-                                  std::to_string(runNumber) + "'.");
+                                  std::to_string(run_number) + "'.");
   }
 
-  runMap_[runNumber] = std::make_pair(false, &runHeader);
+  runMap_[run_number] = std::make_pair(false, &runHeader);
 
   return;
 }
@@ -401,24 +401,24 @@ ldmx::RunHeader &EventFile::getRunHeader(int runNumber) {
 
 void EventFile::importRunHeaders() {
   // choose which file to import from
-  auto theImportFile{file_};  // if this is an input file
+  auto the_import_file{file_};  // if this is an input file
   if (isOutputFile_ and parent_ and parent_->file_)
-    theImportFile = parent_->file_;  // output file with input parent
+    the_import_file = parent_->file_;  // output file with input parent
   else if (isOutputFile_)
     return;  // output file, no input parent to read from
 
-  if (theImportFile) {
+  if (the_import_file) {
     // the file exist
-    TTreeReader oldRunTree("LDMX_Run", theImportFile);
-    TTreeReaderValue<ldmx::RunHeader> oldRunHeader(oldRunTree, "RunHeader");
+    TTreeReader old_run_tree("LDMX_Run", the_import_file);
+    TTreeReaderValue<ldmx::RunHeader> old_run_header(old_run_tree, "RunHeader");
     // TODO check that setup went correctly
-    while (oldRunTree.Next()) {
-      auto *oldRunHeaderPtr = oldRunHeader.Get();
-      if (oldRunHeaderPtr != nullptr) {
+    while (old_run_tree.Next()) {
+      auto *old_run_header_ptr = old_run_header.Get();
+      if (old_run_header_ptr != nullptr) {
         // copy input run tree into run map
         // We should consider moving to a shared_ptr instead of 'new'
-        runMap_[oldRunHeaderPtr->getRunNumber()] =
-            std::make_pair(true, new ldmx::RunHeader(*oldRunHeaderPtr));
+        runMap_[old_run_header_ptr->getRunNumber()] =
+            std::make_pair(true, new ldmx::RunHeader(*old_run_header_ptr));
       }
     }
   }

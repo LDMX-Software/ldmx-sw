@@ -52,21 +52,21 @@ bool StorageControl::keepEvent(bool event_completed) const {
   /**
    * loop over the hints provided by processors we are listening to.
    */
-  int votesKeep(0), votesDrop(0);
-  bool mustDrop{false}, mustKeep{false};
+  int votes_keep(0), votes_drop(0);
+  bool must_drop{false}, must_keep{false};
   for (auto hint : hints_) {
     switch (hint) {
       case Hint::MustDrop:
-        mustDrop = true;
+        must_drop = true;
         break;
       case Hint::MustKeep:
-        mustKeep = true;
+        must_keep = true;
         break;
       case Hint::ShouldDrop:
-        votesDrop++;
+        votes_drop++;
         break;
       case Hint::ShouldKeep:
-        votesKeep++;
+        votes_keep++;
         break;
       case Hint::Undefined:
       case Hint::NoOpinion:
@@ -84,20 +84,20 @@ bool StorageControl::keepEvent(bool event_completed) const {
   /**
    * mustDrop is highest priority, if it exists the event is dropped
    */
-  if (mustDrop) return false;
+  if (must_drop) return false;
 
   /**
    * mustKeep is second highest, if it exists when mustDrop does not, the event
    * is kept
    */
-  if (mustKeep) return true;
+  if (must_keep) return true;
 
   /**
    * If we don't have any 'must' hints, we tally votes
    * and follow the choice made by a simple majority.
    */
-  if (votesKeep > votesDrop) return true;
-  if (votesDrop > votesKeep) return false;
+  if (votes_keep > votes_drop) return true;
+  if (votes_drop > votes_keep) return false;
 
   /**
    * If there is a tie in the vote (including the case
