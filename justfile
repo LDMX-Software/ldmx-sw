@@ -12,15 +12,12 @@
 
 help_message := "shared recipes for ldmx-sw development
 
-    Some folks use 'ldmx' as an alias for 'just' in which case you can
-    replace 'just' with 'ldmx' in the examples below.
-
   USAGE:
     just <cmd> [arguments...]
 
-  Multiple commands can be provided at once and they will be run in sequence.
+  Multiple commands can be provided at once if they don't require arguments.
 
-    just init configure build test
+    just init configure-force-error build
 
   COMMANDS:
 "
