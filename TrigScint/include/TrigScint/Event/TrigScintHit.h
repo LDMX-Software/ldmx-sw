@@ -64,13 +64,13 @@ class TrigScintHit : public ldmx::HcalHit {
   float getPE() const { return pe_; }
 
   /**
-   * Set hit module ID.
+   * Set hit module_ ID.
    *
-   * @param moduleID The module ID of the hit.
+   * @param moduleID The module_ ID of the hit.
    */
   void setModuleID(const int moduleID) { moduleID_ = moduleID; };
 
-  /// Get the module ID
+  /// Get the module_ ID
   int getModuleID() const { return moduleID_; }
 
   /**
@@ -86,7 +86,7 @@ class TrigScintHit : public ldmx::HcalHit {
  private:
   // bar/channel number associated with the hit
   int barID_{-1};
-  // module/pad number associated with the hit
+  // module_/pad number associated with the hit
   int moduleID_{-1};
 
   /// The fraction of energy associated with beam electrons.

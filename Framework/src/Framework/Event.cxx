@@ -68,9 +68,9 @@ std::vector<ProductTag> Event::searchProducts(const std::string& namematch,
                                               const std::string& typematch,
                                               bool full_string_match) const {
   std::vector<ProductTag> retval;
-  regex_t reg_name{construct_regex(namematch, full_string_match)},
-      reg_pass{construct_regex(passmatch, full_string_match)},
-      reg_type{construct_regex(typematch, full_string_match)};
+  regex_t reg_name{constructRegex(namematch, full_string_match)},
+      reg_pass{constructRegex(passmatch, full_string_match)},
+      reg_type{constructRegex(typematch, full_string_match)};
 
   // all passed expressions are valid regular expressions
   const std::vector<ProductTag>& products = getProducts();

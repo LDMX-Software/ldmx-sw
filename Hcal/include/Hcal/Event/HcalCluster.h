@@ -36,13 +36,13 @@ class HcalCluster : public ldmx::CaloCluster {
   void clear();
 
   /**
-   * Take in the hits that make up the cluster.
+   * Take in the hits_ that make up the cluster.
    * @param hit The digi hit's entry number in the events digi
    * collection.
    */
   void addHits(const std::vector<const ldmx::HcalHit*> hitsVec);
 
-  void setTime(double x) { time_ = x; }
+  void setTime(double x_) { time_ = x_; }
 
   double getTime() const { return time_; }
 

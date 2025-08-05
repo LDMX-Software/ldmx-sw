@@ -9,7 +9,7 @@ TruthHitProducer::TruthHitProducer(const std::string &name,
 
 void TruthHitProducer::configure(framework::config::Parameters &parameters) {
   inputCollection_ = parameters.getParameter<std::string>("input_collection");
-  inputPassName_ = parameters.getParameter<std::string>("input_pass_name");
+  input_pass_name_ = parameters.getParameter<std::string>("input_pass_name");
   outputCollection_ = parameters.getParameter<std::string>("output_collection");
   sim_particles_passname_ =
       parameters.getParameter<std::string>("sim_particles_passname");
@@ -22,7 +22,7 @@ void TruthHitProducer::configure(framework::config::Parameters &parameters) {
     ldmx_log(info) << "In TruthHitProducer: configure done!";
     ldmx_log(info) << "Got parameters:  " << "\nInput collection:     "
                    << inputCollection_
-                   << "\nInput pass name:     " << inputPassName_
+                   << "\nInput pass name:     " << input_pass_name_
                    << "\nOutput collection:    " << outputCollection_
                    << "\nVerbose: " << verbose_;
   }
@@ -35,9 +35,9 @@ void TruthHitProducer::produce(framework::Event &event) {
                     << " found; skipping!";
     return;
   }
-  // looper over sim hits and aggregate energy depositions for each detID
+  // looper over sim hits_ and aggregate energy depositions for each detID
   const auto simHits{event.getCollection<ldmx::SimCalorimeterHit>(
-      inputCollection_, inputPassName_)};
+      inputCollection_, input_pass_name_)};
   auto particleMap{event.getMap<int, ldmx::SimParticle>(
       "SimParticles", sim_particles_passname_)};
 

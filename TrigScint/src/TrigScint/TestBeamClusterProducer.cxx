@@ -44,7 +44,7 @@ void TestBeamClusterProducer::produce(framework::Event &event) {
   //
 
   // steps.
-  // 1. get an input collection of digi hits. at most one entry per channel.
+  // 1. get an input collection of digi hits_. at most one entry per channel.
   // 2. access them by channel number
   // 3. clustering:
   //       a. add first hit > seedThr to cluster(ling) . store content as
@@ -58,7 +58,7 @@ void TestBeamClusterProducer::produce(framework::Event &event) {
 
 
     //Procedure: keep going until there is a seed. walk back at most 2 steps
-    // add all the hits. clusters of up to 3 is fine.
+    // add all the hits_. clusters of up to 3 is fine.
     // if the cluster is > 3, then we need to do something.
     // if it's == 4, we'd want to split in the middle if there are two potential
     seeds. retain only the first half, cases are (seed = s, n - no/noise)
@@ -81,7 +81,7 @@ void TestBeamClusterProducer::produce(framework::Event &event) {
     // 3b. else if seed+3 exists, stop here.
     // 3c. else addHit(seed+1), addHit(seed+2)
     // 4. if seed+1 and !seed+2 --> addHit(seed+1)
-    // 5. at this point, if clusterSize is 2 hits and seed+1 didn't exist, we
+    // 5. at this point, if clusterSize is 2 hits_ and seed+1 didn't exist, we
     can afford to walk back one more step and add whatever junk was there (we
     know it's not a seed)
 
@@ -94,7 +94,7 @@ void TestBeamClusterProducer::produce(framework::Event &event) {
         << event.getEventHeader().getEventNumber();
   }
 
-  // looper over digi hits and aggregate energy depositions for each detID
+  // looper over digi hits_ and aggregate energy depositions for each detID
 
   const auto digis{event.getCollection<trigscint::TestBeamHit>(
       input_collection_, passName_)};
@@ -110,13 +110,13 @@ void TestBeamClusterProducer::produce(framework::Event &event) {
   // 1. store all the channel digi content in channel order
   auto iDigi{0};
   for (const auto &digi : digis) {
-    // these are unordered hits, and this collection is zero-suppressed
-    // map the index of the digi to the channel index
+    // these are unordered hits_, and this collection is zero-suppressed
+    // map the index_ of the digi to the channel index_
     ldmx_log(debug) << "Digi has PE count " << digi.getPE() << " and energy "
                     << digi.getEnergy();
 
     if (doCleanHits_ && digi.getQualityFlag() && digi.getQualityFlag() != 4) {
-      // allow for long pulse hits
+      // allow for long pulse hits_
       ldmx_log(debug) << "Skipping hit with non-zero quality flag  "
                       << digi.getQualityFlag();
       continue;
@@ -156,11 +156,11 @@ void TestBeamClusterProducer::produce(framework::Event &event) {
         }
       }
 
-      // don't add in late hits
+      // don't add in late hits_
       if (digi.getTime() > padTime_ + timeTolerance_) continue;
 
       hitChannelMap_.insert(std::pair<int, int>(ID, iDigi));
-      // the channel number is the key, the digi list index is the value
+      // the channel number is the key, the digi list index_ is the value
 
       if (verbose_) {
         ldmx_log(debug) << "Mapping digi hit nb " << iDigi
@@ -172,11 +172,11 @@ void TestBeamClusterProducer::produce(framework::Event &event) {
     iDigi++;
   }
 
-  // 2. now step through all the channels in the map and cluster the hits
+  // 2. now step through all the channels in the map and cluster the hits_
 
   std::map<int, int>::iterator itr;
 
-  // Create the container to hold the digitized trigger scintillator hits.
+  // Create the container to hold the digitized trigger scintillator hits_.
   std::vector<ldmx::TrigScintCluster> trigScintClusters;
 
   // loop over channels
@@ -191,12 +191,12 @@ void TestBeamClusterProducer::produce(framework::Event &event) {
     }
 
     // i don't like this but for now, erasing elements in the map leads, as it
-    // turns out, to edge cases where i miss out on hits or run into
+    // turns out, to edge cases where i miss out on hits_ or run into
     // non-existing indices. so while what i do below means that i don't need to
-    // erase hits, i'd rather find a way to do that and skip this book keeping:
+    // erase hits_, i'd rather find a way to do that and skip this book keeping:
     bool hasUsed = false;
-    for (const auto &index : v_usedIndices_) {
-      if (index == itr->first) {
+    for (const auto &index_ : v_usedIndices_) {
+      if (index_ == itr->first) {
         if (verbose_ > 1) {
           ldmx_log(warn) << "Attempting to re-use hit at channel " << itr->first
                          << "; skipping.";
@@ -252,10 +252,10 @@ void TestBeamClusterProducer::produce(framework::Event &event) {
         // but it wasn't enough to seed a cluster. so, unambiguous that it
         // should be added here because it's its only chance to get in.
 
-        // need to check again for backwards hits
+        // need to check again for backwards hits_
         hasUsed = false;
-        for (const auto &index : v_usedIndices_) {
-          if (index == itrBack->first) {
+        for (const auto &index_ : v_usedIndices_) {
+          if (index_ == itrBack->first) {
             if (verbose_ > 1) {
               ldmx_log(warn) << "Attempting to re-use hit at channel "
                              << itrBack->first << "; skipping.";
@@ -353,7 +353,7 @@ void TestBeamClusterProducer::produce(framework::Event &event) {
             }
           }
         }  // if seed+1 exists
-        // 5. at this point, if clusterSize is 2 hits and seed+1 didn't exist,
+        // 5. at this point, if clusterSize is 2 hits_ and seed+1 didn't exist,
         // we can afford to walk back one more step and add whatever junk was
         // there (we know it's not a seed)
         else if (hasBacked &&
@@ -378,7 +378,7 @@ void TestBeamClusterProducer::produce(framework::Event &event) {
 
       }  // if adding another hit, going forward, was allowed
 
-      // done adding hits to cluster. calculate centroid
+      // done adding hits_ to cluster. calculate centroid
       centroid_ /= val_;  // final weighting step: divide by total
       centroid_ -= 1;     // shift back to actual channel center
 
@@ -386,7 +386,7 @@ void TestBeamClusterProducer::produce(framework::Event &event) {
 
       if (verbose_ > 1) {
         ldmx_log(debug) << "Now have " << v_addedIndices_.size()
-                        << " hits in the cluster ";
+                        << " hits_ in the cluster ";
       }
       cluster.setSeed(v_addedIndices_.at(0));
       cluster.setIDs(v_addedIndices_);
@@ -465,7 +465,7 @@ void TestBeamClusterProducer::addHit(uint idx, trigscint::TestBeamHit hit) {
                     << " with amplitude " << ampl
                     << ", updating cluster to current centroid "
                     << centroid_ / val_ - 1 << " and energy " << val_
-                    << ". index vector now ends with "
+                    << ". index_ vector now ends with "
                     << v_addedIndices_.back();
   }
 

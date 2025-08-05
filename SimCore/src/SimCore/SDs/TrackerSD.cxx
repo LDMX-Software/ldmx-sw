@@ -74,12 +74,12 @@ G4bool TrackerSD::ProcessHits(G4Step* aStep, G4TouchableHistory*) {
    */
   int copyNum =
       prePoint->GetTouchableHandle()->GetHistory()->GetVolume(2)->GetCopyNo();
-  int layer = copyNum / 10;
-  int module = copyNum % 10;
-  ldmx::TrackerID id(subDetID_, layer, module);
+  int layer_ = copyNum / 10;
+  int module_ = copyNum % 10;
+  ldmx::TrackerID id(subDetID_, layer_, module_);
   hit.setID(id.raw());
-  hit.setLayerID(layer);
-  hit.setModuleID(module);
+  hit.setLayerID(layer_);
+  hit.setModuleID(module_);
 
   // Set energy and pdg code of SimParticle (common things requested)
   hit.setEnergy(postPoint->GetTotalEnergy());

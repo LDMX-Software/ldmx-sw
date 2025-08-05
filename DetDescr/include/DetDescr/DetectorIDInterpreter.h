@@ -14,7 +14,7 @@ namespace ldmx {
 /**
  * @class DetectorIDInterpreter
  * @brief Class provides an "introspection" capability for the 32-bit packed IDs
- * used for uniquely identifying hits and detector components
+ * used for uniquely identifying hits_ and detector components
  *
  * @note
  * Represents an ID in the detector with a raw, 32-bit value which can
@@ -53,13 +53,13 @@ class DetectorIDInterpreter {
 
   /**
    * Decode and return a field's value from the raw ID.
-   * @param i The index of the field value.
+   * @param i The index_ of the field value.
    */
   FieldValue getFieldValue(int i) const;
 
   /**
-   * Set a field value by index in the field value list.
-   * @param i The index of the field value.
+   * Set a field value by index_ in the field value list.
+   * @param i The index_ of the field value.
    * @param value The new field value.
    */
   void setFieldValue(int i, FieldValue value);
@@ -93,7 +93,7 @@ class DetectorIDInterpreter {
   const IDField* getField(const std::string& fieldName) const;
 
   /**
-   * Decode and return a field's value by name (e.g. "layer").
+   * Decode and return a field's value by name (e.g. "layer_").
    * @return The value of the field.
    */
   FieldValue getFieldValue(const std::string& fieldName) const;

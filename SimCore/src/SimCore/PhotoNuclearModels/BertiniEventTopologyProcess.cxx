@@ -25,7 +25,7 @@ G4HadFinalState* BertiniEventTopologyProcess::ApplyYourself(
   }
 
   while (true) {
-    theParticleChange.clear();
+    theParticleChange.Clear();
     theParticleChange.SetStatusChange(stopAndKill);
     G4CascadeInterface::ApplyYourself(projectile, targetNucleus);
     if (acceptEvent()) {

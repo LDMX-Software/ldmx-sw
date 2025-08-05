@@ -30,22 +30,22 @@ void RecoilFiducialityProcessor::produce(framework::Event &event) {
   // Search for the recoil electron
   auto [recoil_track_id, recoil_electron] = Analysis::getRecoil(particleMap);
 
-  // Get the collection of simulated Ecal hits from the event.
+  // Get the collection of simulated Ecal hits_ from the event.
   const std::vector<ldmx::SimCalorimeterHit> ecal_sim_hits =
       event.getCollection<ldmx::SimCalorimeterHit>(ecal_collection_,
                                                    input_pass_name_);
 
-  // Get the collection of simulated Ecal hits from the event.
+  // Get the collection of simulated Ecal hits_ from the event.
   const std::vector<ldmx::SimCalorimeterHit> hcal_sim_hits =
       event.getCollection<ldmx::SimCalorimeterHit>(hcal_collection_,
                                                    input_pass_name_);
 
-  // Get the collection of simulated tracker hits from the event.
+  // Get the collection of simulated tracker hits_ from the event.
   const std::vector<ldmx::SimTrackerHit> recoil_sim_hits =
       event.getCollection<ldmx::SimTrackerHit>(recoil_collection_,
                                                input_pass_name_);
 
-  // Loop through the Ecal hits and check if the recoil electron is
+  // Loop through the Ecal hits_ and check if the recoil electron is
   // associated with any of them.
   bool has_ecal_hit = false;
   int ecal_hit_id = -1;
@@ -61,7 +61,7 @@ void RecoilFiducialityProcessor::produce(framework::Event &event) {
     }
   }
 
-  // Loop through the Hcal hits and check if the recoil electron is
+  // Loop through the Hcal hits_ and check if the recoil electron is
   // associated with any of them.
   bool has_hcal_hit = false;
   int hcal_hit_id = -1;
@@ -77,7 +77,7 @@ void RecoilFiducialityProcessor::produce(framework::Event &event) {
     }
   }
 
-  // Loop through the recoil tracker hits and count how many
+  // Loop through the recoil tracker hits_ and count how many
   // the recoil electron is associated with
   std::set<int> layers_hit;
   for (const ldmx::SimTrackerHit &sim_hit : recoil_sim_hits) {

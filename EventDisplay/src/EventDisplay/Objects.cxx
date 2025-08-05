@@ -63,16 +63,16 @@ void Objects::ColorClusters() {
   }
 }
 
-void Objects::draw(std::vector<ldmx::EcalHit> hits) {
+void Objects::draw(std::vector<ldmx::EcalHit> hits_) {
   TEveRGBAPalette* palette = new TEveRGBAPalette(0, 500.0);
 
-  std::sort(hits.begin(), hits.end(),
+  std::sort(hits_.begin(), hits_.end(),
             [](const ldmx::EcalHit& a, const ldmx::EcalHit& b) {
               return a.getEnergy() < b.getEnergy();
             });
 
   auto ecal_hits = new TEveElementList("ECAL RecHits");
-  for (const ldmx::EcalHit& hit : hits) {
+  for (const ldmx::EcalHit& hit : hits_) {
     double energy = hit.getEnergy();
 
     if (energy == 0) {
@@ -98,16 +98,16 @@ void Objects::draw(std::vector<ldmx::EcalHit> hits) {
   rec_objects_->AddElement(ecal_hits);
 }
 
-void Objects::draw(std::vector<ldmx::HcalHit> hits) {
+void Objects::draw(std::vector<ldmx::HcalHit> hits_) {
   TEveRGBAPalette* palette = new TEveRGBAPalette(0, 100.0);
 
-  std::sort(hits.begin(), hits.end(),
+  std::sort(hits_.begin(), hits_.end(),
             [](const ldmx::HcalHit& a, const ldmx::HcalHit& b) {
               return a.getEnergy() < b.getEnergy();
             });
 
   auto hcal_hits = new TEveElementList("HCAL Rec Hits");
-  for (const ldmx::HcalHit& hit : hits) {
+  for (const ldmx::HcalHit& hit : hits_) {
     int pe = hit.getPE();
     if (pe == 0) {
       continue;
@@ -184,18 +184,18 @@ void Objects::draw(std::vector<ldmx::EcalCluster> clusters) {
   rec_objects_->AddElement(eve_clusters);
 }
 
-void Objects::draw(std::vector<ldmx::SimTrackerHit> hits) {
+void Objects::draw(std::vector<ldmx::SimTrackerHit> hits_) {
   // need at least one hit for subdet ID
-  if (hits.empty()) return;
+  if (hits_.empty()) return;
 
   // get id for determining subdet
-  ldmx::DetectorID id(hits.at(0).getID());
+  ldmx::DetectorID id(hits_.at(0).getID());
 
   if (id.subdet() == ldmx::SubdetectorIDType::SD_TRACKER_RECOIL) {
     // recoil tracker ID
     int iter = 0;
     auto recoil_tracker_hits = new TEveElementList("Recoil Tracker Hits");
-    for (const ldmx::SimTrackerHit& hit : hits) {
+    for (const ldmx::SimTrackerHit& hit : hits_) {
       std::vector<float> xyzPos = hit.getPosition();
       double energy = hit.getEdep();
 
@@ -216,22 +216,22 @@ void Objects::draw(std::vector<ldmx::SimTrackerHit> hits) {
   } else if (id.subdet() == ldmx::SubdetectorIDType::SD_SIM_SPECIAL) {
     // scoring plane ID
 
-    std::sort(hits.begin(), hits.end(),
+    std::sort(hits_.begin(), hits_.end(),
               [](const ldmx::SimTrackerHit& a, const ldmx::SimTrackerHit& b) {
                 return a.getTrackID() < b.getTrackID();
               });
 
     auto lastUniqueEntry =
-        std::unique(hits.begin(), hits.end(),
+        std::unique(hits_.begin(), hits_.end(),
                     [](ldmx::SimTrackerHit& a, ldmx::SimTrackerHit& b) {
                       return a.getTrackID() == b.getTrackID();
                     });
 
-    hits.erase(lastUniqueEntry, hits.end());
+    hits_.erase(lastUniqueEntry, hits_.end());
 
     auto leaving_ecal_sim_particles =
         new TEveElementList("SimParticles leaving ECAL");
-    for (const ldmx::SimTrackerHit& spHit : hits) {
+    for (const ldmx::SimTrackerHit& spHit : hits_) {
       std::vector<double> pVec = spHit.getMomentum();
       double p = pow(pow(pVec[0], 2) + pow(pVec[1], 2) + pow(pVec[2], 2), 0.5);
 
@@ -288,24 +288,24 @@ void Objects::draw(std::vector<ldmx::SimTrackerHit> hits) {
   }
 }
 
-void Objects::draw(std::vector<ldmx::SimCalorimeterHit> hits) {
+void Objects::draw(std::vector<ldmx::SimCalorimeterHit> hits_) {
   // need at least one hit for subdet ID
-  if (hits.empty()) return;
+  if (hits_.empty()) return;
 
   // get id for determining subdet
-  ldmx::DetectorID id(hits.at(0).getID());
+  ldmx::DetectorID id(hits_.at(0).getID());
 
   TEveRGBAPalette* palette = new TEveRGBAPalette(0, 100.0);
 
   std::sort(
-      hits.begin(), hits.end(),
+      hits_.begin(), hits_.end(),
       [](const ldmx::SimCalorimeterHit& a, const ldmx::SimCalorimeterHit& b) {
         return a.getEdep() < b.getEdep();
       });
 
   if (id.subdet() == ldmx::SubdetectorIDType::SD_HCAL) {
     auto hcal_hits = new TEveElementList("HCAL Sim Hits");
-    for (const ldmx::SimCalorimeterHit& hit : hits) {
+    for (const ldmx::SimCalorimeterHit& hit : hits_) {
       ldmx::HcalID id(hit.getID());
 
       float edep = hit.getEdep();
@@ -337,7 +337,7 @@ void Objects::draw(std::vector<ldmx::SimCalorimeterHit> hits) {
 
   } else if (id.subdet() == ldmx::SubdetectorIDType::SD_ECAL) {
     auto ecal_hits = new TEveElementList("ECAL Sim Hits");
-    for (const ldmx::SimCalorimeterHit& hit : hits) {
+    for (const ldmx::SimCalorimeterHit& hit : hits_) {
       ldmx::EcalID id(hit.getID());
 
       float edep = hit.getEdep();

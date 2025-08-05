@@ -106,7 +106,7 @@ class SeedFinderProcessor : public TrackingGeometryUser {
 
   /// The name of the output collection of seeds to be stored.
   std::string out_seed_collection_{"SeedTracks"};
-  /// The name of the input hits collection to use in finding seeds..
+  /// The name of the input hits_ collection to use in finding seeds..
   std::string input_hits_collection_{"TaggerSimHits"};
   /// The name of the tagger Tracks (only for Recoil Seeding)
   std::string tagger_trks_collection_{"TaggerTracks"};

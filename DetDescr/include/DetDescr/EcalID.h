@@ -21,9 +21,9 @@ class EcalID : public EcalAbstractID {
  public:
   static const RawValue LAYER_MASK{0x3F};  // space for up to 64 layers
   static const RawValue LAYER_SHIFT{17};
-  static const RawValue MODULE_MASK{0x1F};  // space for up to 32 modules/layer
+  static const RawValue MODULE_MASK{0x1F};  // space for up to 32 modules/layer_
   static const RawValue MODULE_SHIFT{12};
-  static const RawValue CELL_MASK{0xFFF};  // space for 4096 cells/module (!)
+  static const RawValue CELL_MASK{0xFFF};  // space for 4096 cells/module_ (!)
   static const RawValue CELL_SHIFT{0};
 
   /**
@@ -60,47 +60,47 @@ class EcalID : public EcalAbstractID {
   /**
    * Create from pieces
    */
-  EcalID(unsigned int layer, unsigned int module, unsigned int cell)
+  EcalID(unsigned int layer_, unsigned int module_, unsigned int cell)
       : EcalAbstractID(PrecisionGlobal, 0) {
-    id_ |= (layer & LAYER_MASK) << LAYER_SHIFT;
-    id_ |= (module & MODULE_MASK) << MODULE_SHIFT;
+    id_ |= (layer_ & LAYER_MASK) << LAYER_SHIFT;
+    id_ |= (module_ & MODULE_MASK) << MODULE_SHIFT;
     id_ |= (cell & CELL_MASK) << CELL_SHIFT;
   }
 
   /**
    * Create from pieces including u/v cell
    */
-  EcalID(unsigned int layer, unsigned int module, unsigned int u,
+  EcalID(unsigned int layer_, unsigned int module_, unsigned int u,
          unsigned int v);
 
   /**
    * Create from pieces including u/v cell
    */
-  EcalID(unsigned int layer, unsigned int module,
+  EcalID(unsigned int layer_, unsigned int module_,
          std::pair<unsigned int, unsigned int> uv)
-      : EcalID(layer, module, uv.first, uv.second) {}
+      : EcalID(layer_, module_, uv.first, uv.second) {}
 
   /**
-   * Get the value of the module field from the ID.
-   * @return The value of the module field.
+   * Get the value of the module_ field from the ID.
+   * @return The value of the module_ field.
    */
   int module() const { return (id_ >> MODULE_SHIFT) & MODULE_MASK; }
 
   /**
-   * Get the value of the module field from the ID.
-   * @return The value of the module field.
+   * Get the value of the module_ field from the ID.
+   * @return The value of the module_ field.
    */
   int getModuleID() const { return (id_ >> MODULE_SHIFT) & MODULE_MASK; }
 
   /**
-   * Get the value of the layer field from the ID.
-   * @return The value of the layer field.
+   * Get the value of the layer_ field from the ID.
+   * @return The value of the layer_ field.
    */
   int layer() const { return (id_ >> LAYER_SHIFT) & LAYER_MASK; }
 
   /**
-   * Get the value of the layer field from the ID.
-   * @return The value of the layer field.
+   * Get the value of the layer_ field from the ID.
+   * @return The value of the layer_ field.
    */
   int getLayerID() const { return (id_ >> LAYER_SHIFT) & LAYER_MASK; }
 
@@ -117,8 +117,8 @@ class EcalID : public EcalAbstractID {
   int getCellID() const { return (id_ >> CELL_SHIFT) & CELL_MASK; }
 
   /**
-   * Get the cell u,v index assuming a CMS-standard 432-cell sensor
-   * @return Pair providing a U/V index
+   * Get the cell u,v index_ assuming a CMS-standard 432-cell sensor
+   * @return Pair providing a U/V index_
    */
   std::pair<unsigned int, unsigned int> getCellUV() const;
 

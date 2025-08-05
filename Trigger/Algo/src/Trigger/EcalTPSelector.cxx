@@ -23,34 +23,34 @@ void EcalTPSelector::produce(framework::Event& event) {
   std::map<int, int> cSums;                              // center
   for (const auto& trigDigi : ecalTrigDigis) {
     ldmx::EcalTriggerID tid(trigDigi.getId());
-    int module = tid.module();
-    int layer = tid.layer();
-    if (module > 3) {
-      auto ptr = lDigis.find(layer);
+    int module_ = tid.module();
+    int layer_ = tid.layer();
+    if (module_ > 3) {
+      auto ptr = lDigis.find(layer_);
       if (ptr == lDigis.end()) {
-        lDigis[layer] = {trigDigi};
-        lSums[layer] = trigDigi.linearPrimitive();
+        lDigis[layer_] = {trigDigi};
+        lSums[layer_] = trigDigi.linearPrimitive();
       } else {
-        lDigis[layer].push_back(trigDigi);
-        lSums[layer] += trigDigi.linearPrimitive();
+        lDigis[layer_].push_back(trigDigi);
+        lSums[layer_] += trigDigi.linearPrimitive();
       }
-    } else if (module > 0) {
-      auto ptr = rDigis.find(layer);
+    } else if (module_ > 0) {
+      auto ptr = rDigis.find(layer_);
       if (ptr == rDigis.end()) {
-        rDigis[layer] = {trigDigi};
-        rSums[layer] = trigDigi.linearPrimitive();
+        rDigis[layer_] = {trigDigi};
+        rSums[layer_] = trigDigi.linearPrimitive();
       } else {
-        rDigis[layer].push_back(trigDigi);
-        rSums[layer] += trigDigi.linearPrimitive();
+        rDigis[layer_].push_back(trigDigi);
+        rSums[layer_] += trigDigi.linearPrimitive();
       }
     } else {
-      auto ptr = cDigis.find(layer);
+      auto ptr = cDigis.find(layer_);
       if (ptr == cDigis.end()) {
-        cDigis[layer] = {trigDigi};
-        cSums[layer] = trigDigi.linearPrimitive();
+        cDigis[layer_] = {trigDigi};
+        cSums[layer_] = trigDigi.linearPrimitive();
       } else {
-        cDigis[layer].push_back(trigDigi);
-        cSums[layer] += trigDigi.linearPrimitive();
+        cDigis[layer_].push_back(trigDigi);
+        cSums[layer_] += trigDigi.linearPrimitive();
       }
     }
   }
@@ -98,9 +98,9 @@ void EcalTPSelector::produce(framework::Event& event) {
   // collections to record (corrected to MeV)
   std::vector<TrigCaloHit> passTrigHits;
   for (const auto& tp : passTPs) {
-    double x, y, z, e;
-    decodeTP(tp, x, y, z, e);
-    passTrigHits.emplace_back(x, y, z, e);
+    double x_, y_, z_, e;
+    decodeTP(tp, x_, y_, z_, e);
+    passTrigHits.emplace_back(x_, y_, z_, e);
 
     ldmx::EcalTriggerID tid(tp.getId());
     passTrigHits.back().setLayer(tid.layer());
@@ -129,15 +129,15 @@ void EcalTPSelector::produce(framework::Event& event) {
   event.add(passCollName_ + "Sums", passTrigSums);
 }
 
-// double EcalTPSelector::primitiveToEnergy(int tp, int layer){
+// double EcalTPSelector::primitiveToEnergy(int tp, int layer_){
 //   float sie = hgc_compression_factor_ * tp *
-//     gain_ * mVtoMeV_;  // in MeV, before layer corrections
-//   return (sie / mipSiEnergy_ * layerWeights.at(layer) + sie) *
-//     secondOrderEnergyCorrection_ * adHoc_;
+//     gain_ * mVtoMeV_;  // in MeV, before layer_ corrections
+//   return (sie / mipSiEnergy_ * layerWeights.at(layer_) + sie) *
+//     second_order_energy_correction_ * adHoc_;
 // }
 
-void EcalTPSelector::decodeTP(ldmx::HgcrocTrigDigi tp, double& x, double& y,
-                              double& z, double& e) {
+void EcalTPSelector::decodeTP(ldmx::HgcrocTrigDigi tp, double& x_, double& y_,
+                              double& z_, double& e) {
   ldmx::EcalTriggerID tid(tp.getId());
   const ecal::EcalTriggerGeometry& geom =
       getCondition<ecal::EcalTriggerGeometry>(
@@ -145,8 +145,8 @@ void EcalTPSelector::decodeTP(ldmx::HgcrocTrigDigi tp, double& x, double& y,
   // const auto center_ecalID = geom.centerInTriggerCell(tid);
   //  const ldmx::EcalGeometry& hexReadout = getCondition<ldmx::EcalGeometry>(
   //  ldmx::EcalGeometry::CONDITIONS_OBJECT_NAME);
-  // hexReadout.getCellAbsolutePosition(center_ecalID,x,y,z);
-  std::tie(x, y, z) = geom.globalPosition(tid);
+  // hexReadout.getCellAbsolutePosition(center_ecalID,x_,y_,z_);
+  std::tie(x_, y_, z_) = geom.globalPosition(tid);
   // e = primitiveToEnergy(tp.linearPrimitive(), tid.layer());
   ecalTpToE cvt;
   e = cvt.calc(tp.linearPrimitive(), tid.layer());

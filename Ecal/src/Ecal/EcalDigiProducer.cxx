@@ -18,51 +18,51 @@ void EcalDigiProducer::configure(framework::config::Parameters& ps) {
   //  used  in actual digitization
   auto hgcroc_params = ps.getParameter<framework::config::Parameters>("hgcroc");
   hgcroc_ = std::make_unique<ldmx::HgcrocEmulator>(hgcroc_params);
-  clockCycle_ = hgcroc_params.getParameter<double>("clockCycle");
-  nADCs_ = hgcroc_params.getParameter<int>("nADCs");
-  iSOI_ = hgcroc_params.getParameter<int>("iSOI");
+  clock_cycle_ = hgcroc_params.getParameter<double>("clockCycle");
+  n_adcs_ = hgcroc_params.getParameter<int>("nADCs");
+  i_soi_ = hgcroc_params.getParameter<int>("iSOI");
   noise_ = hgcroc_params.getParameter<bool>("noise");
 
   // collection names
-  inputCollName_ = ps.getParameter<std::string>("inputCollName");
-  inputPassName_ = ps.getParameter<std::string>("inputPassName");
-  digiCollName_ = ps.getParameter<std::string>("digiCollName");
+  input_coll_name_ = ps.getParameter<std::string>("inputCollName");
+  input_pass_name_ = ps.getParameter<std::string>("inputPassName");
+  digi_coll_name_ = ps.getParameter<std::string>("digiCollName");
 
   zero_suppression_ = ps.getParameter<bool>("zero_suppression");
 
   // physical constants
   //  used to calculate unit conversions
-  MeV_ = ps.getParameter<double>("MeV");
+  mev_ = ps.getParameter<double>("MeV");
 
   // Time -> clock counts conversion
   //  time [ns] * ( 2^10 / max time in ns ) = clock counts
-  ns_ = 1024. / clockCycle_;
+  ns_ = 1024. / clock_cycle_;
 
-  readoutThreshold_ = ps.getParameter<double>("avgReadoutThreshold");
+  readout_threshold_ = ps.getParameter<double>("avgReadoutThreshold");
   pedestal_ = ps.getParameter<double>("avgPedestal");
-  noiseRMS_ = ps.getParameter<double>("avgNoiseRMS");
+  noise_rms_ = ps.getParameter<double>("avgNoiseRMS");
 }
 
 void EcalDigiProducer::onNewRun(const ldmx::RunHeader&) {
   // noise generator by default uses a Gausian model for noise
   //  i.e. It assumes the noise is distributed around a mean (setPedestal)
   //  with a certain RMS (setNoise) and then calculates
-  //  how many hits should be generated for a given number of empty
+  //  how many hits_ should be generated for a given number of empty
   //  channels and a minimum readout value (setNoiseThreshold)
-  noiseGenerator_ = std::make_unique<ldmx::NoiseGenerator>();
-  // Configure generator that will produce noise hits in empty channels
+  noise_generator_ = std::make_unique<ldmx::NoiseGenerator>();
+  // Configure generator that will produce noise hits_ in empty channels
   // rms noise in mV
-  noiseGenerator_->setNoise(noiseRMS_);
+  noise_generator_->setNoise(noise_rms_);
   // mean noise amplitude (if using Gaussian Model for the noise) in mV
-  noiseGenerator_->setPedestal(pedestal_);
+  noise_generator_->setPedestal(pedestal_);
   // threshold for readout in mV
-  noiseGenerator_->setNoiseThreshold(readoutThreshold_);
+  noise_generator_->setNoiseThreshold(readout_threshold_);
   // Set up seeds
   const auto& rseed = getCondition<framework::RandomNumberSeedService>(
       framework::RandomNumberSeedService::CONDITIONS_OBJECT_NAME);
-  noiseGenerator_->seedGenerator(
+  noise_generator_->seedGenerator(
       rseed.getSeed("EcalDigiProducer::NoiseGenerator"));
-  // Random number generator for layer / module / cell
+  // Random number generator for layer_ / module_ / cell
   rng_.seed(rseed.getSeed("EcalDigiProducer"));
   // Setting up the read-out chip
   hgcroc_->seedGenerator(rseed.getSeed("EcalDigiProducer::HgcrocEmulator"));
@@ -73,8 +73,8 @@ void EcalDigiProducer::onNewRun(const ldmx::RunHeader&) {
 void EcalDigiProducer::produce(framework::Event& event) {
   // Empty collection to be filled
   ldmx::HgcrocDigiCollection ecal_digis;
-  ecal_digis.setNumSamplesPerDigi(nADCs_);
-  ecal_digis.setSampleOfInterestIndex(iSOI_);
+  ecal_digis.setNumSamplesPerDigi(n_adcs_);
+  ecal_digis.setSampleOfInterestIndex(i_soi_);
 
   // detector IDs that already have a hit in them
   std::set<unsigned int> filled_det_i_ds;
@@ -83,16 +83,16 @@ void EcalDigiProducer::produce(framework::Event& event) {
    * HGCROC Emulation on Simulated Hits
    *****************************************************************************************/
   // std::cout << "Sim Hits" << std::endl;
-  // get simulated ecal hits from Geant4
-  //  the class EcalHitIO in the SimApplication module handles the translation
+  // get simulated ecal hits_ from Geant4
+  //  the class EcalHitIO in the SimApplication module_ handles the translation
   //  from G4CalorimeterHits to SimCalorimeterHits this class ensures that only
   //  one SimCalorimeterHit is generated per cell, but multiple "contributions"
   //  are still handled within SimCalorimeterHit
   auto ecal_sim_hits{event.getCollection<ldmx::SimCalorimeterHit>(
-      inputCollName_, inputPassName_)};
+      input_coll_name_, input_pass_name_)};
 
   /* debug printout
-  std::cout << "Energy to Voltage Conversion: " << MeV_ << " mV/MeV" <<
+  std::cout << "Energy to Voltage Conversion: " << mev_ << " mV/MeV" <<
   std::endl;
    */
 
@@ -110,10 +110,10 @@ void EcalDigiProducer::produce(framework::Event& event) {
        * to target), so the time shifting should be at the emulator level.
        */
       pulses_at_chip.emplace_back(
-          sim_hit.getContrib(i_contrib).edep * MeV_,
+          sim_hit.getContrib(i_contrib).edep * mev_,
           sim_hit.getContrib(i_contrib).time  // global time (t=0ns at target)
               - sim_hit.getPosition().at(2) /
-                    299.702547  // shift light-speed particle traveling along z
+                    299.702547  // shift light-speed particle traveling along z_
       );
     }
 
@@ -161,7 +161,7 @@ void EcalDigiProducer::produce(framework::Event& event) {
       // noise generator gives us a list of noise amplitudes [mV] that randomly
       // populate the empty channels and are above the readout threshold
       auto noise_hit_amplitudes{
-          noiseGenerator_->generateNoiseHits(num_empty_channels)};
+          noise_generator_->generateNoiseHits(num_empty_channels)};
       std::vector<std::pair<double, double>> fake_pulse(1, {0., 0.});
       for (double noise_hit : noise_hit_amplitudes) {
         // generate detector ID for noise hit
@@ -188,21 +188,21 @@ void EcalDigiProducer::produce(framework::Event& event) {
     } else {
       // no zero suppression, put some noise emulation in **all** empty channels
       // loop through all channels
-      for (int layer{0}; layer < n_ecal_layers; layer++) {
-        for (int module{0}; module < n_modules_per_layer; module++) {
+      for (int layer_{0}; layer_ < n_ecal_layers; layer_++) {
+        for (int module_{0}; module_ < n_modules_per_layer; module_++) {
           for (int cell{0}; cell < n_cells_per_module; cell++) {
-            unsigned int channel{ldmx::EcalID(layer, module, cell).raw()};
+            unsigned int channel{ldmx::EcalID(layer_, module_, cell).raw()};
             // check if channel already has a (real) hit in it
             if (filled_det_i_ds.find(channel) != filled_det_i_ds.end()) continue;
             // create a digi as put it into the collection
             ecal_digis.addDigi(channel, hgcroc_->noiseDigi(channel));
-          }  // cells in each module
-        }  // modules in each layer
+          }  // cells in each module_
+        }  // modules in each layer_
       }  // layers in ECal
     }  // yes or no zero suppression
   }  // if we should do the noise
 
-  event.add(digiCollName_, ecal_digis);
+  event.add(digi_coll_name_, ecal_digis);
 
   return;
 }  // produce

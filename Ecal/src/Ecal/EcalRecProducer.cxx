@@ -20,14 +20,14 @@ EcalRecProducer::EcalRecProducer(const std::string& name,
 
 void EcalRecProducer::configure(framework::config::Parameters& ps) {
   // collection names
-  digiCollName_ = ps.getParameter<std::string>("digiCollName");
-  digiPassName_ = ps.getParameter<std::string>("digiPassName");
-  simHitCollName_ = ps.getParameter<std::string>("simHitCollName");
-  simHitPassName_ = ps.getParameter<std::string>("simHitPassName");
-  recHitCollName_ = ps.getParameter<std::string>("recHitCollName");
+  digi_coll_name_ = ps.getParameter<std::string>("digiCollName");
+  digi_pass_name_ = ps.getParameter<std::string>("digiPassName");
+  sim_hit_coll_name_ = ps.getParameter<std::string>("simHitCollName");
+  sim_hit_pass_name_ = ps.getParameter<std::string>("simHitPassName");
+  rec_hit_coll_name_ = ps.getParameter<std::string>("recHitCollName");
 
-  layerWeights_ = ps.getParameter<std::vector<double>>("layerWeights");
-  secondOrderEnergyCorrection_ =
+  layer_weights_ = ps.getParameter<std::vector<double>>("layerWeights");
+  second_order_energy_correction_ =
       ps.getParameter<double>("secondOrderEnergyCorrection");
 
   mip_si_energy_ = ps.getParameter<double>("mip_si_energy");
@@ -47,7 +47,7 @@ void EcalRecProducer::produce(framework::Event& event) {
 
   std::vector<ldmx::EcalHit> ecal_rec_hits;
   auto ecal_digis =
-      event.getObject<ldmx::HgcrocDigiCollection>(digiCollName_, digiPassName_);
+      event.getObject<ldmx::HgcrocDigiCollection>(digi_coll_name_, digi_pass_name_);
   // loop through digis
   for (auto digi : ecal_digis) {
     // ID from first digi sample
@@ -55,7 +55,7 @@ void EcalRecProducer::produce(framework::Event& event) {
     ldmx::EcalID id(digi.id());
 
     // ID to real space position
-    auto [x, y, z] = geometry.getPosition(id);
+    auto [x_, y_, z_] = geometry.getPosition(id);
 
     // TOA is the time of arrival with respect to the 25ns clock window
     //  TODO what to do if hit NOT in first clock cycle?
@@ -124,21 +124,21 @@ void EcalRecProducer::produce(framework::Event& event) {
     ldmx_log(trace) << " -> " << num_mips_equivalent << " equiv MIPs -> "
                     << energy_deposited_in_si << " MeV";
 
-    // incorporate layer weights
+    // incorporate layer_ weights
     double reconstructed_energy =
         (num_mips_equivalent *
-             layerWeights_.at(
+             layer_weights_.at(
                  id.layer())       // energy lost in non-sensitive layers
          + energy_deposited_in_si  // energy deposited in Si itself
          ) *
-        secondOrderEnergyCorrection_;
+        second_order_energy_correction_;
 
     // copy over information to rec hit structure in new collection
     ldmx::EcalHit rec_hit;
     rec_hit.setID(id.raw());
-    rec_hit.setXPos(x);
-    rec_hit.setYPos(y);
-    rec_hit.setZPos(z);
+    rec_hit.setXPos(x_);
+    rec_hit.setYPos(y_);
+    rec_hit.setZPos(z_);
     rec_hit.setAmplitude(energy_deposited_in_si);
     rec_hit.setEnergy(reconstructed_energy);
     rec_hit.setTime(hit_time);
@@ -146,11 +146,11 @@ void EcalRecProducer::produce(framework::Event& event) {
     ecal_rec_hits.push_back(rec_hit);
   }
 
-  if (event.exists(simHitCollName_, simHitPassName_)) {
-    // ecal sim hits exist ==> label which hits are real and which are pure
+  if (event.exists(sim_hit_coll_name_, sim_hit_pass_name_)) {
+    // ecal sim hits_ exist ==> label which hits_ are real and which are pure
     // noise
     auto ecal_sim_hits{event.getCollection<ldmx::SimCalorimeterHit>(
-        simHitCollName_, simHitPassName_)};
+        sim_hit_coll_name_, sim_hit_pass_name_)};
     std::set<int> real_hits;
     for (auto const& sim_hit : ecal_sim_hits) real_hits.insert(sim_hit.getID());
     for (auto& hit : ecal_rec_hits)
@@ -158,7 +158,7 @@ void EcalRecProducer::produce(framework::Event& event) {
   }
 
   // add collection to event bus
-  event.add(recHitCollName_, ecal_rec_hits);
+  event.add(rec_hit_coll_name_, ecal_rec_hits);
 }
 
 }  // namespace ecal

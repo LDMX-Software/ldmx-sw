@@ -28,7 +28,7 @@ class HcalSingleEndRecProducer : public framework::Producer {
   double mip_energy_;
   /// length of clock cycle [ns]
   double clock_cycle_;
-  /// sample of interest index
+  /// sample of interest index_
   unsigned int isoi_;
 
  private:

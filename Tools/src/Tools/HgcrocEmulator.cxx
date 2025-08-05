@@ -13,29 +13,29 @@ HgcrocEmulator::HgcrocEmulator(const framework::config::Parameters &ps) {
   rateDnSlope_ = ps.getParameter<double>("rateDnSlope");
   timeDnSlope_ = ps.getParameter<double>("timeDnSlope");
   timePeak_ = ps.getParameter<double>("timePeak");
-  clockCycle_ = ps.getParameter<double>("clockCycle");
+  clock_cycle_ = ps.getParameter<double>("clockCycle");
   nADCs_ = ps.getParameter<int>("nADCs");
-  iSOI_ = ps.getParameter<int>("iSOI");
+  i_soi_ = ps.getParameter<int>("iSOI");
 
   // Time -> clock counts conversion
   //  time [ns] * ( 2^10 / max time in ns ) = clock counts
-  ns_ = 1024. / clockCycle_;
+  ns_ = 1024. / clock_cycle_;
 
   hit_merge_ns_ = 0.05;  // combine at 50 ps level
 
   // Configure the pulse shape function
-  pulseFunc_ =
+  pulse_func_ =
       TF1("pulseFunc",
           "[0]*((1.0+exp([1]*(-[2]+[3])))*(1.0+exp([5]*(-[6]+[3]))))/"
           "((1.0+exp([1]*(x-[2]+[3]-[4])))*(1.0+exp([5]*(x-[6]+[3]-[4]))))",
-          0.0, (double)nADCs_ * clockCycle_);
-  pulseFunc_.FixParameter(0, 1.0);  // amplitude is set externally
-  pulseFunc_.FixParameter(1, rateUpSlope_);
-  pulseFunc_.FixParameter(2, timeUpSlope_);
-  pulseFunc_.FixParameter(3, timePeak_);
-  pulseFunc_.FixParameter(4, 0);  // not using time offset in this way
-  pulseFunc_.FixParameter(5, rateDnSlope_);
-  pulseFunc_.FixParameter(6, timeDnSlope_);
+          0.0, (double)nADCs_ * clock_cycle_);
+  pulse_func_.FixParameter(0, 1.0);  // amplitude is set externally
+  pulse_func_.FixParameter(1, rateUpSlope_);
+  pulse_func_.FixParameter(2, timeUpSlope_);
+  pulse_func_.FixParameter(3, timePeak_);
+  pulse_func_.FixParameter(4, 0);  // not using time offset in this way
+  pulse_func_.FixParameter(5, rateDnSlope_);
+  pulse_func_.FixParameter(6, timeDnSlope_);
 }
 
 void HgcrocEmulator::seedGenerator(uint64_t seed) {
@@ -73,7 +73,7 @@ bool HgcrocEmulator::digitize(
 
   // step 1: gather voltages into groups separated by (programmable) ns, single
   // pass
-  ldmx::CompositePulse pulse(pulseFunc_, gain, pedestal);
+  ldmx::CompositePulse pulse(pulse_func_, gain, pedestal);
 
   for (auto hit : arriving_pulses) pulse.addOrMerge(hit, hit_merge_ns_);
 
@@ -85,7 +85,7 @@ bool HgcrocEmulator::digitize(
   // step 3: go through each BX sample one by one
   bool wasTOA = false;
   for (int iADC = 0; iADC < nADCs_; iADC++) {
-    double startBX = (iADC - iSOI_) * clockCycle_ - measTime;
+    double startBX = (iADC - i_soi_) * clock_cycle_ - measTime;
     ldmx_log(trace) << "  iADC = " << iADC << " at startBX = " << startBX;
 
     // step 3b: check each merged hit to see if it peaks in this BX.  If so,
@@ -95,7 +95,7 @@ bool HgcrocEmulator::digitize(
     double toverTOA = -1;
     double toverTOT = -1;
     for (auto hit : pulse.hits()) {
-      int hitBX = int((hit.second + measTime) / clockCycle_ + iSOI_);
+      int hitBX = int((hit.second + measTime) / clock_cycle_ + i_soi_);
       // if this hit wasn't in the current BX, continue...
       if (hitBX != iADC) {
         continue;
@@ -116,15 +116,15 @@ bool HgcrocEmulator::digitize(
         overTOA = true;
       }
 
-    }  // loop over sim hits
+    }  // loop over sim hits_
 
     // check for the case of a TOA even though the peak is in the next BX
-    if (!overTOA && pulse(startBX + clockCycle_) > toaThreshold) {
+    if (!overTOA && pulse(startBX + clock_cycle_) > toaThreshold) {
       if (pulse(startBX) < toaThreshold) {
         // pulse crossed TOA threshold somewhere between the start of this
         // basket and the end
         overTOA = true;
-        toverTOA = startBX + clockCycle_;
+        toverTOA = startBX + clock_cycle_;
       }
     }
 
@@ -142,9 +142,9 @@ bool HgcrocEmulator::digitize(
       //  2. Translate this into DIGI samples
 
       // Assume linear drain with slope drain rate:
-      //      y-intercept = pulse amplitude
+      //      y_-intercept = pulse amplitude
       //      slope       = drain rate
-      //  ==> x-intercept = amplitude / rate
+      //  ==> x_-intercept = amplitude / rate
       // actual time over threshold using the real signal voltage amplitude
       double tot = charge_deposited / drainRate;
       ldmx_log(trace) << "    we are in TOT read-out mode, TOT = " << tot;
@@ -181,7 +181,7 @@ bool HgcrocEmulator::digitize(
 
       // TODO: properly handle saturation and recovery, eventually.
       // Now just kill everything...
-      ldmx_log(trace) << "   Adding further hits with ADC [t-1] = 0x3FF, toa = "
+      ldmx_log(trace) << "   Adding further hits_ with ADC [t-1] = 0x3FF, toa = "
                          "0x3FF, until digiToAdd.size() = "
                       << digiToAdd.size() << " < nADCs_(" << nADCs_ << ")";
       while (digiToAdd.size() < nADCs_) {
@@ -189,10 +189,10 @@ bool HgcrocEmulator::digitize(
         digiToAdd.emplace_back(true, false, 0x3FF, 0x3FF, 0);
       }
       // Read out if the toa is within one Bx after nominal
-      return (i_tot_sample <= iSOI_ + 1);
+      return (i_tot_sample <= i_soi_ + 1);
     } else {
       // determine the voltage at the sampling time
-      double bxvolts = pulse((iADC - iSOI_) * clockCycle_);
+      double bxvolts = pulse((iADC - i_soi_) * clock_cycle_);
       // add noise if requested
       if (noise_) bxvolts += noise(channelID);
       // convert to integer and keep in range (handle low and high saturation)
@@ -226,10 +226,10 @@ bool HgcrocEmulator::digitize(
 
   // we only get here if we never went into TOT mode
   // check the SOI to see if we should read out
-  ldmx_log(trace) << "  we are adding the hit IFF iSOI= " << iSOI_
-                  << "'s adc_t = " << digiToAdd.at(iSOI_).adc_t()
+  ldmx_log(trace) << "  we are adding the hit IFF iSOI= " << i_soi_
+                  << "'s adc_t = " << digiToAdd.at(i_soi_).adc_t()
                   << " >= thresh (" << readoutThreshold << ")";
-  return digiToAdd.at(iSOI_).adc_t() >= readoutThreshold;
+  return digiToAdd.at(i_soi_).adc_t() >= readoutThreshold;
 }  // HgcrocEmulator::digitize
 
 std::vector<ldmx::HgcrocDigiCollection::Sample> HgcrocEmulator::noiseDigi(
@@ -251,7 +251,7 @@ std::vector<ldmx::HgcrocDigiCollection::Sample> HgcrocEmulator::noiseDigi(
     // ADC at t
     int adc_t{static_cast<int>(pedestal + noise(channel) / gain)};
 
-    if (iADC == iSOI_) adc_t += soi_amplitude / gain;
+    if (iADC == i_soi_) adc_t += soi_amplitude / gain;
 
     // set toa to 0 (not determined)
     // put new sample into noise digi

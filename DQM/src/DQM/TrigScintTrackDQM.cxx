@@ -17,9 +17,9 @@ void TrigScintTrackDQM::onProcessStart() {
   histograms_.create("beamEfrac",
                      "Track edep fraction associated with beam electron", 101,
                      0., 1.01);
-  histograms_.create("x", "Track x position [mm]", 1000, -100, 100);
-  histograms_.create("y", "Track y position [mm]", 1000, -100, 100);
-  histograms_.create("z", "Track z position [mm]", 1000, -900, 100);
+  histograms_.create("x_", "Track x_ position [mm]", 1000, -100, 100);
+  histograms_.create("y_", "Track y_ position [mm]", 1000, -100, 100);
+  histograms_.create("z_", "Track z_ position [mm]", 1000, -900, 100);
 
   // TODO: implement getting a list of the constructed histograms, to iterate
   // through and set overflow boolean.
@@ -46,9 +46,9 @@ void TrigScintTrackDQM::analyze(const framework::Event &event) {
     histograms_.fill("n_clusters", track.getNclusters());
     histograms_.fill("beamEfrac", track.getBeamEfrac());
 
-    histograms_.fill("x", track.getCentroidX());
-    histograms_.fill("y", track.getCentroidY());
-    histograms_.fill("z", track.getCentroidZ());
+    histograms_.fill("x_", track.getCentroidX());
+    histograms_.fill("y_", track.getCentroidY());
+    histograms_.fill("z_", track.getCentroidZ());
   }
 
   histograms_.fill("n_tracks", TrigScintTracks.size());

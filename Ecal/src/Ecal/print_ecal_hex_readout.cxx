@@ -11,7 +11,7 @@
 #include "Ecal/EcalTriggerGeometry.h"
 #include "Framework/Configure/Parameters.h"
 #include "TCanvas.h"  //for dumping map to file
-#include "TLine.h"    //for module hex border
+#include "TLine.h"    //for module_ hex border
 #include "TStyle.h"   //for no stats box
 #include "TText.h"
 

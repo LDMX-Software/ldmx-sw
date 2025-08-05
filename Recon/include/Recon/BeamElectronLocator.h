@@ -16,7 +16,7 @@ namespace recon {
  * Electron counting processor.
  *
  * This processor uses calo simhits in e.g. the target to get truth info
- * about beam electrons. The hits associated with beam electrons can already
+ * about beam electrons. The hits_ associated with beam electrons can already
  * be isolated by the truth hit collection producer. However, the simhits
  * have approximately infinite resolution. This processor's raison d'être
  * is to run some sort of  grouping, to ensure we have at most one
@@ -69,7 +69,7 @@ class BeamElectronLocator : public framework::Producer {
   /**
    * The pass name of the input collection used for counting electrons
    */
-  std::string inputPassName_;
+  std::string input_pass_name_;
 
   /**
    * The name of the output collection used to save some electron counting

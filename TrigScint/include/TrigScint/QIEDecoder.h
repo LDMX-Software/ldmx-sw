@@ -44,7 +44,7 @@ class QIEDecoder : public framework::Producer {
   // input/output collection and pass name
   std::string inputCollection_;
   std::string outputCollection_;
-  std::string inputPassName_;
+  std::string input_pass_name_;
 
   // verbosity for very specific printouts that don't play well with logger
   // format

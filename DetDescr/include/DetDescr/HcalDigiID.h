@@ -18,7 +18,7 @@ class HcalDigiID : public HcalAbstractID {
   static const RawValue SECTION_SHIFT{16};
   static const RawValue LAYER_MASK{0xFF};  // space for up to 255 layers
   static const RawValue LAYER_SHIFT{8};
-  static const RawValue STRIP_MASK{0xFF};  // space for 255 strips/layer
+  static const RawValue STRIP_MASK{0xFF};  // space for 255 strips/layer_
   static const RawValue STRIP_SHIFT{0};
 
   /**
@@ -53,11 +53,11 @@ class HcalDigiID : public HcalAbstractID {
   /**
    * Create from pieces
    */
-  HcalDigiID(unsigned int section, unsigned int layer, unsigned int strip,
+  HcalDigiID(unsigned int section, unsigned int layer_, unsigned int strip,
              unsigned int end)
       : HcalAbstractID(Digi, 0) {
     id_ |= (section & SECTION_MASK) << SECTION_SHIFT;
-    id_ |= (layer & LAYER_MASK) << LAYER_SHIFT;
+    id_ |= (layer_ & LAYER_MASK) << LAYER_SHIFT;
     id_ |= (strip & STRIP_MASK) << STRIP_SHIFT;
     id_ |= (end & END_MASK) << END_SHIFT;
   }
@@ -75,14 +75,14 @@ class HcalDigiID : public HcalAbstractID {
   int section() const { return (id_ >> SECTION_SHIFT) & SECTION_MASK; }
 
   /**
-   * Get the value of the layer field from the ID.
-   * @return The value of the layer field.
+   * Get the value of the layer_ field from the ID.
+   * @return The value of the layer_ field.
    */
   int layer() const { return (id_ >> LAYER_SHIFT) & LAYER_MASK; }
 
   /**
-   * Get the value of the layer field from the ID.
-   * @return The value of the layer field.
+   * Get the value of the layer_ field from the ID.
+   * @return The value of the layer_ field.
    */
   int getLayerID() const { return (id_ >> LAYER_SHIFT) & LAYER_MASK; }
 

@@ -25,11 +25,11 @@ namespace test {
  * on the event bus.
  *
  * The pattern this producer creates is the following:
- * - The vector of Calorimeter hits has the same number of entries as the event
+ * - The vector of Calorimeter hits_ has the same number of entries as the event
  * number
- * - The IDs of the calorimeter hits are set to 10*eventNumber+their_index
- * - The input object is an HcalVetoResult where events with an event index pass
- * - The max PE hit in the HcalVetoResult has an ID equal to the event index
+ * - The IDs of the calorimeter hits_ are set to 10*eventNumber+their_index
+ * - The input object is an HcalVetoResult where events with an event index_ pass
+ * - The max PE hit in the HcalVetoResult has an ID equal to the event index_
  * - If a run header is created, the event count and the run number are equal
  *
  * Checks

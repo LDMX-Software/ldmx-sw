@@ -45,7 +45,7 @@ class TrackerSD : public SensitiveDetector {
   G4bool ProcessHits(G4Step* step, G4TouchableHistory* history) override;
 
   /**
-   * Add the hits to the event and then reset the container
+   * Add the hits_ to the event and then reset the container
    */
   virtual void saveHits(framework::Event& event) override {
     event.add(collection_name_, hits_);
@@ -60,7 +60,7 @@ class TrackerSD : public SensitiveDetector {
   /// The name of the output collection
   std::string collection_name_;
 
-  /// The collection of hits
+  /// The collection of hits_
   std::vector<ldmx::SimTrackerHit> hits_;
 
   /// The detector ID

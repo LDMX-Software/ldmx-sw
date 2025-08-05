@@ -86,7 +86,7 @@ void close();
 /**
  * Our logging formatter
  *
- * We use a singleton formatter so that it can hold the current event index
+ * We use a singleton formatter so that it can hold the current event index_
  * as an attribute and include it within the logs. This is easier than
  * attempting to update the event number in all of the different logging
  * sources floating around ldmx-sw.

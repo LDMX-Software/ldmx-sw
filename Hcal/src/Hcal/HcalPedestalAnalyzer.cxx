@@ -74,7 +74,7 @@ void HcalPedestalAnalyzer::create_and_fill(Channel& chan,
     chan.hist = new TH1D(hname, hname, 30, int(mean) - 15, int(mean) + 15);
   else
     chan.hist = new TH1D(hname, hname, 100, mean - 5 * rms, mean + 5 * rms);
-  for (auto x : chan.adcs) chan.hist->Fill(x);
+  for (auto x_ : chan.adcs) chan.hist->Fill(x_);
   chan.adcs.clear();
 }
 

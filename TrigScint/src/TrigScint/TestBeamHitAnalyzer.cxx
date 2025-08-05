@@ -15,13 +15,13 @@ TestBeamHitAnalyzer::TestBeamHitAnalyzer(const std::string& name,
 
 void TestBeamHitAnalyzer::configure(framework::config::Parameters& parameters) {
   inputCol_ = parameters.getParameter<std::string>("inputCollection");
-  inputPassName_ = parameters.getParameter<std::string>("inputPassName");
+  input_pass_name_ = parameters.getParameter<std::string>("inputPassName");
   peds_ = parameters.getParameter<std::vector<double> >("pedestals");
   startSample_ = parameters.getParameter<int>("startSample");
 
   std::cout << " [ TestBeamHitAnalyzer ] In configure(), got parameters "
             << "\n\t inputCollection = " << inputCol_
-            << "\n\t inputPassName = " << inputPassName_
+            << "\n\t inputPassName = " << input_pass_name_
             << "\n\t startSample = " << startSample_
             << "\n\t pedestals[0] = " << peds_[0] << "\t." << std::endl;
 
@@ -30,7 +30,7 @@ void TestBeamHitAnalyzer::configure(framework::config::Parameters& parameters) {
 
 void TestBeamHitAnalyzer::analyze(const framework::Event& event) {
   const auto channels{
-      event.getCollection<trigscint::TestBeamHit>(inputCol_, inputPassName_)};
+      event.getCollection<trigscint::TestBeamHit>(inputCol_, input_pass_name_)};
 
   int evNb = event.getEventNumber();
   // int nChan = channels.size();
@@ -89,7 +89,7 @@ void TestBeamHitAnalyzer::analyze(const framework::Event& event) {
   hPEVsDelta[leadBar]->Fill(leadBar - subleadBar, peLead);
   hDeltaPEVsDelta[leadBar]->Fill(leadBar - subleadBar, peLead - peSublead);
 
-  //	if ( (subleadBar%2) == (leadBar%2) ) // in same layer (or even, hit).
+  //	if ( (subleadBar%2) == (leadBar%2) ) // in same layer_ (or even, hit).
   // skip if we're not seeing a max across layers
   //  return;  -- on the other hand this is evident from the plot: delta is even
 

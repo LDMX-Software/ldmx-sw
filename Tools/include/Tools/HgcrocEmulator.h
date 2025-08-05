@@ -79,17 +79,17 @@ class HgcrocEmulator {
   }
 
   /**
-   * Digitize the signals from the simulated hits
+   * Digitize the signals from the simulated hits_
    *
    * This is where the hefty amount of work is done.
    *
    * 0. Prepare for Emulation
    *    - Clear input list of digi samples
    *    - Get conditions for the current chip
-   *    - Sort the input sim voltage hits by amplitude
+   *    - Sort the input sim voltage hits_ by amplitude
    *
-   * 1. Combine input simulated hits into one CompositePulse to digitize.
-   *    - This composite pulse decides whether to merge two simulated hits
+   * 1. Combine input simulated hits_ into one CompositePulse to digitize.
+   *    - This composite pulse decides whether to merge two simulated hits_
    *      into one larger pulse depending on how close they are in time.
    *
    * 2. Add a timing jitter TODO
@@ -112,7 +112,7 @@ class HgcrocEmulator {
    * the point the pulse crosses the toaThreshold_ with
    * respect to the current clock window.
    * The time measurements are converted to clock counts
-   * using 2^10=1024 and clockCycle_.
+   * using 2^10=1024 and clock_cycle_.
    *
    * Both the tot_complete_ and tot_progress_ flags are set
    * to false for all the samples.
@@ -145,7 +145,7 @@ class HgcrocEmulator {
    * before digitizing.
    *
    * @param[in] channelID raw integer ID for this readout channel
-   * @param[in] arriving_pulses pairs of (voltage,time) of hits arriving at the
+   * @param[in] arriving_pulses pairs of (voltage,time) of hits_ arriving at the
    * chip
    * @param[out] digiToAdd digi that will be filled with the samples from the
    * chip
@@ -223,7 +223,7 @@ class HgcrocEmulator {
                       "HGC ROC Emulator was not given a conditions table.");
     }
 
-    // cache column index for the input name
+    // cache column index_ for the input name
     if (conditionNamesToIndex_.count(name) == 0)
       conditionNamesToIndex_[name] = chipConditions_->getColumnNumber(name);
 
@@ -243,10 +243,10 @@ class HgcrocEmulator {
   int nADCs_;
 
   /// Index for the Sample Of Interest in the list of digi samples
-  int iSOI_;
+  int i_soi_;
 
   /// Time interval for chip clock [ns]
-  double clockCycle_;
+  double clock_cycle_;
 
   /// Jitter of timing mechanism in the chip [ns]
   double timingJitter_;
@@ -296,7 +296,7 @@ class HgcrocEmulator {
    * Helpful Member Objects
    *************************************************************************************/
 
-  /// Generates Gaussian noise on top of real hits
+  /// Generates Gaussian noise on top of real hits_
   std::unique_ptr<TRandom3> noiseInjector_;
 
   /**
@@ -304,7 +304,7 @@ class HgcrocEmulator {
    *
    * Shape parameters are hardcoded into the function currently.
    *  Pulse Shape:
-   *  [0]*((1.0+exp([1]*(-[2]+[3])))*(1.0+exp([5]*(-[6]+[3]))))/((1.0+exp([1]*(x-[2]+[3]-[4])))*(1.0+exp([5]*(x-[6]+[3]-[4]))))
+   *  [0]*((1.0+exp([1]*(-[2]+[3])))*(1.0+exp([5]*(-[6]+[3]))))/((1.0+exp([1]*(x_-[2]+[3]-[4])))*(1.0+exp([5]*(x_-[6]+[3]-[4]))))
    *   p[0] = amplitude (height of peak in mV)
    *   p[1] = rate of up slope - rateUpSlope_
    *   p[2] = time of up slope relative to shape fit - timeUpSlope_
@@ -319,7 +319,7 @@ class HgcrocEmulator {
    *          {(1+\exp(p_1(t-p_2+p_3-p_4)))(1+\exp(p_5*(t-p_6+p_3-p_4)))}
    * @f]
    */
-  mutable TF1 pulseFunc_;
+  mutable TF1 pulse_func_;
 
   /// Enable logging
   enableLogging("HgcrocEmulator")

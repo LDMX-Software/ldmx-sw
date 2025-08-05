@@ -40,8 +40,8 @@ class TrigEnergySum {
    * @param[in] tid raw trigger group ID
    * @param[in] tp trigger primitive value
    */
-  TrigEnergySum(int layer, int hwEnergy = 0);
-  TrigEnergySum(int layer, int module, float energy);
+  TrigEnergySum(int layer_, int hwEnergy = 0);
+  TrigEnergySum(int layer_, int module_, float energy);
 
   /**
    * Destructor

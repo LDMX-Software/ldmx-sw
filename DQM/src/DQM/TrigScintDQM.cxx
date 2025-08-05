@@ -19,9 +19,9 @@ void TrigScintDQM::onProcessStart() {
                      3000);
   histograms_.create("n_hits", "Hit multiplicity in the pad/event [MeV]", 100,
                      0, 100);
-  histograms_.create("x", "Hit x position [mm]", 1000, -100, 100);
-  histograms_.create("y", "Hit y position [mm]", 1000, -100, 100);
-  histograms_.create("z", "Hit z position", 1000, -900, 100);
+  histograms_.create("x_", "Hit x_ position [mm]", 1000, -100, 100);
+  histograms_.create("y_", "Hit y_ position [mm]", 1000, -100, 100);
+  histograms_.create("z_", "Hit z_ position", 1000, -900, 100);
 
   histograms_.create("energy", "Energy deposition in a bar", 250, 0, 1500);
   histograms_.create("hit_time", "Hit time [ns]", 1600, -100, 1500);
@@ -63,9 +63,9 @@ void TrigScintDQM::analyze(const framework::Event &event) {
     histograms_.fill("id", bar);
 
     std::vector<float> posvec = hit.getPosition();
-    histograms_.fill("x", posvec.at(0));
-    histograms_.fill("y", posvec.at(1));
-    histograms_.fill("z", posvec.at(2));
+    histograms_.fill("x_", posvec.at(0));
+    histograms_.fill("y_", posvec.at(1));
+    histograms_.fill("z_", posvec.at(2));
 
     totalEnergy += hit.getEdep();
   }

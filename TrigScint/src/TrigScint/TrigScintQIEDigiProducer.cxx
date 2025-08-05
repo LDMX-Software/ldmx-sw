@@ -21,7 +21,7 @@ void TrigScintQIEDigiProducer::configure(
   mevPerMip_ = parameters.getParameter<double>("mev_per_mip");
   pePerMip_ = parameters.getParameter<double>("pe_per_mip");
   inputCollection_ = parameters.getParameter<std::string>("input_collection");
-  inputPassName_ = parameters.getParameter<std::string>("input_pass_name");
+  input_pass_name_ = parameters.getParameter<std::string>("input_pass_name");
   outputCollection_ = parameters.getParameter<std::string>("output_collection");
   verbose_ = parameters.getParameter<bool>("verbose");
 
@@ -93,9 +93,9 @@ void TrigScintQIEDigiProducer::produce(framework::Event& event) {
     TrueEdep[i] = 0;
   }
 
-  // loop over sim hits and aggregate energy depositions for each detID
+  // loop over sim hits_ and aggregate energy depositions for each detID
   const auto simHits{event.getCollection<ldmx::SimCalorimeterHit>(
-      inputCollection_, inputPassName_)};
+      inputCollection_, input_pass_name_)};
 
   for (const auto& simHit : simHits) {
     ldmx::TrigScintID id(simHit.getID());
@@ -116,7 +116,7 @@ void TrigScintQIEDigiProducer::produce(framework::Event& event) {
     TrueEdep[id.bar()] += simHit.getEdep();
   }
 
-  // A container to hold the digitized trigger scintillator hits.
+  // A container to hold the digitized trigger scintillator hits_.
   std::vector<trigscint::TrigScintQIEDigis> QDigis;
 
   double TotalNoise = meanNoise_ * maxts_;

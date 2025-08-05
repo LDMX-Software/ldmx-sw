@@ -38,7 +38,7 @@ class ElectronCounter : public framework::Producer {
    *
    * The user specified parameters that are availabed are defined
    * in the python configuration class. Look at the my_processor.py
-   * module of the EventProc python for the python structure.
+   * module_ of the EventProc python for the python structure.
    *
    * @param parameters Set of parameters used to configure this processor.
    */
@@ -60,7 +60,7 @@ class ElectronCounter : public framework::Producer {
   /**
    * The pass name of the input collection used for counting electrons
    */
-  std::string inputPassName_;
+  std::string input_pass_name_;
 
   /**
    * The name of the output collection used to save some electron counting

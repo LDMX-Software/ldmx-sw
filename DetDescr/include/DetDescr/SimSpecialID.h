@@ -9,7 +9,7 @@ namespace ldmx {
 
 /**
  * @class SimSpecialID
- * @brief Implements detector ids for special simulation-derived hits like
+ * @brief Implements detector ids for special simulation-derived hits_ like
  * scoring planes
  */
 class SimSpecialID : public DetectorID {

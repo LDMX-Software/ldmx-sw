@@ -1,6 +1,6 @@
 /**
  * @file HcalGeometry.h
- * @brief Class that translates HCal ID into positions of strip hits
+ * @brief Class that translates HCal ID into positions of strip hits_
  */
 
 #ifndef DETDESCR_HCALGEOMETRY_H_
@@ -43,9 +43,9 @@ class HcalGeometry : public framework::ConditionsObject {
 
   /**
    * Encodes the orientation of a bar.
-   *  horizontal : The length of the bar is along the x-axis
-   *  vertical   : The length of the bar is along the y-axis
-   *  depth      : The length of the bar is along the z-axis
+   *  horizontal : The length of the bar is along the x_-axis
+   *  vertical   : The length of the bar is along the y_-axis
+   *  depth      : The length of the bar is along the z_-axis
    */
   enum class ScintillatorOrientation {
     horizontal = 0,
@@ -83,23 +83,23 @@ class HcalGeometry : public framework::ConditionsObject {
     return strip_position_map_;
   }
 
-  /** Check whether a given layer corresponds to a horizontal (scintillator
-   * length along the x-axis) or vertical layer in the back HCal. See the
+  /** Check whether a given layer_ corresponds to a horizontal (scintillator
+   * length along the x_-axis) or vertical layer_ in the back HCal. See the
    * back_horizontal_parity_ member for details.
    */
-  bool backLayerIsHorizontal(const int layer) const {
-    return layer % 2 == back_horizontal_parity_;
+  bool backLayerIsHorizontal(const int layer_) const {
+    return layer_ % 2 == back_horizontal_parity_;
   }
   /**
-   * Get the half total width of a layer for a given section(strip) for
+   * Get the half total width of a layer_ for a given section(strip) for
    * back(side) Hcal.
    * @param section
-   * @param layer
+   * @param layer_
    * @return half total width [mm]
    */
-  double getHalfTotalWidth(int isection, int layer = 1) const {
+  double getHalfTotalWidth(int isection, int layer_ = 1) const {
     // Layer numbering starts at 1, but a vector is zero-indexed
-    auto layer_index = layer - 1;
+    auto layer_index = layer_ - 1;
     return half_total_width_.at(isection).at(layer_index);
   }
 
@@ -132,28 +132,28 @@ class HcalGeometry : public framework::ConditionsObject {
   int getNumLayers(int isection) const { return num_layers_.at(isection); }
 
   /**
-   * Get the number of strips per layer for that section and layer.
+   * Get the number of strips per layer_ for that section and layer_.
    */
-  int getNumStrips(int isection, int layer = 1) const {
-    auto layer_index = layer - 1;
+  int getNumStrips(int isection, int layer_ = 1) const {
+    auto layer_index = layer_ - 1;
     return num_strips_.at(isection).at(layer_index);
   }
 
   /**
-   * Get the location of the zeroStrip in a given section and layer
+   * Get the location of the zeroStrip in a given section and layer_
    * */
-  int getZeroStrip(int isection, int layer = 1) const {
-    auto layer_index = layer - 1;
+  int getZeroStrip(int isection, int layer_ = 1) const {
+    auto layer_index = layer_ - 1;
     return zero_strip_.at(isection).at(layer_index);
   }
 
   /**
-   * Get the length of the Ecal in (x) for the side Hcal.
+   * Get the length of the Ecal in (x_) for the side Hcal.
    */
   double getEcalDx() const { return ecal_dx_; }
 
   /**
-   * Get the length of the Ecal in (y) for the side Hcal
+   * Get the length of the Ecal in (y_) for the side Hcal
    */
   double getEcalDy() const { return ecal_dy_; }
 
@@ -161,7 +161,7 @@ class HcalGeometry : public framework::ConditionsObject {
    * Does the Side Hcal have 3D readout?
    *
    * In other words, does the side hcal layers alter in scintillator direction
-   * (z vs x/y).
+   * (z_ vs x_/y_).
    */
   bool hasSide3DReadout() const { return side_3d_readout_; }
 
@@ -180,9 +180,9 @@ class HcalGeometry : public framework::ConditionsObject {
    * step positions in local coordinates of the volume in HcalSD.
    *
    * the logic below does the rotation to the local coordiates where
-   *  x : short transverse side of bar
-   *  y : long transverse side of bar
-   *  z : along length of bar
+   *  x_ : short transverse side of bar
+   *  y_ : long transverse side of bar
+   *  z_ : along length of bar
    *
    * @note This logic only applies to the v14 and prototype detector; however,
    * support for v12 is not broken because no studies using these pre/post step
@@ -258,22 +258,22 @@ class HcalGeometry : public framework::ConditionsObject {
   /// Number of sections
   int num_sections_;
 
-  /// Lenght of the Ecal (in x and y)
+  /// Lenght of the Ecal (in x_ and y_)
   double ecal_dx_;
   double ecal_dy_;
 
-  // Offset of the entire Hcal geometry in y (mm)
+  // Offset of the entire Hcal geometry in y_ (mm)
   double y_offset_;
 
-  // Defines what parity (0/1, i.e. even/odd parity) of a layer number in the
-  // geometry that corresponds to a horizontal layer (scintillator bar length
-  // along the x-axis) in the back HCal.
+  // Defines what parity (0/1, i.e. even/odd parity) of a layer_ number in the
+  // geometry that corresponds to a horizontal layer_ (scintillator bar length
+  // along the x_-axis) in the back HCal.
   int back_horizontal_parity_{};
 
   // 3D readout for side Hcal
   int side_3d_readout_{};
 
-  /// Number of strips per layer in each section and each layer
+  /// Number of strips per layer_ in each section and each layer_
   std::vector<std::vector<int>> num_strips_;
   /// The plane of the zero'th strip of each section [mm]
   std::vector<std::vector<double>> zero_strip_;

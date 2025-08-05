@@ -31,7 +31,7 @@ void EcalClusterProducer::configure(framework::config::Parameters& parameters) {
   algo_name_ = parameters.getParameter<std::string>("algo_name");
   cluster_coll_name_ =
       parameters.getParameter<std::string>("cluster_coll_name");
-  CLUE_ = parameters.getParameter<bool>("CLUE");
+  clue_ = parameters.getParameter<bool>("CLUE");
   nbr_of_layers_ = parameters.getParameter<int>("nbr_of_layers");
   reclustering_ = parameters.getParameter<bool>("reclustering");
 }
@@ -40,11 +40,11 @@ void EcalClusterProducer::produce(framework::Event& event) {
   const auto& ecal_hits{event.getCollection<ldmx::EcalHit>(rec_hit_coll_name_,
                                                            rec_hit_pass_name_)};
   if (ecal_hits.size() == 0) {
-    // don't do anything if there are no ECal hits
+    // don't do anything if there are no ECal hits_
     return;
   }
 
-  if (CLUE_) {
+  if (clue_) {
     CLUE cf;
     cf.cluster(ecal_hits, dc_, rhoc_, deltac_, deltao_, nbr_of_layers_,
                reclustering_);
@@ -77,8 +77,8 @@ void EcalClusterProducer::produce(framework::Event& event) {
       float sumw = 0;
 
       for (auto hit : wc_vec[a_wc].getHits()) {
-        if (hit->getEnergy() < minHitEnergy_) continue;
-        cl_w = log(hit->getEnergy()) - log(minHitEnergy_);
+        if (hit->getEnergy() < min_hit_energy_) continue;
+        cl_w = log(hit->getEnergy()) - log(min_hit_energy_);
         cl_x += cl_w * hit->getXPos();
         cl_y += cl_w * hit->getYPos();
         cl_z += cl_w * hit->getZPos();
@@ -86,15 +86,15 @@ void EcalClusterProducer::produce(framework::Event& event) {
         cl_yy += cl_w * hit->getYPos() * hit->getYPos();
         cl_zz += cl_w * hit->getZPos() * hit->getZPos();
         sumw += cl_w;
-      }  // over hits
+      }  // over hits_
       // could probably get this as cluster.getCentroidX() instead
-      cl_x /= sumw;  // now is <x>
+      cl_x /= sumw;  // now is <x_>
       cl_y /= sumw;
       cl_z /= sumw;
-      cl_xx /= sumw;  // now is <x^2>
+      cl_xx /= sumw;  // now is <x_^2>
       cl_yy /= sumw;
       cl_zz /= sumw;
-      cl_xx = sqrt(cl_xx - cl_x * cl_x);  // now is sqrt(<x^2>-<x>^2)
+      cl_xx = sqrt(cl_xx - cl_x * cl_x);  // now is sqrt(<x_^2>-<x_>^2)
       cl_yy = sqrt(cl_yy - cl_y * cl_y);
       cl_zz = sqrt(cl_zz - cl_z * cl_z);
 

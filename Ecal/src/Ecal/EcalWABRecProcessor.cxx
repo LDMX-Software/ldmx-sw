@@ -117,7 +117,7 @@ void EcalWABRecProcessor::produce(framework::Event& event) {
   float rec_electron_shower_energy = -999.;
   float rec_photon_shower_energy = -999.;
 
-  // Create lists for rec hits and electron/photon shower hits
+  // Create lists for rec hits_ and electron/photon shower hits_
   std::vector<std::array<float, 6>> rec_hit_list;
   std::vector<std::array<float, 6>> ele_hit_list;
   std::vector<std::array<float, 6>> phot_hit_list;
@@ -125,16 +125,16 @@ void EcalWABRecProcessor::produce(framework::Event& event) {
   // Save rec hit info to rec_hit_list
   for (const ldmx::EcalHit& hit : ecal_rec_hits) {
     ldmx::EcalID id(hit.getID());
-    auto pos = geometry->getPosition(id);
-    auto [x, y, z] = std::apply(
+    auto pos_ = geometry->getPosition(id);
+    auto [x_, y_, z_] = std::apply(
         [](double a, double b, double c) {
           return std::make_tuple(static_cast<float>(a), static_cast<float>(b),
                                  static_cast<float>(c));
         },
-        pos);
+        pos_);
     float energy = hit.getEnergy();
     float layer_num = id.layer();
-    rec_hit_list.push_back({x, y, z, layer_num, 0, energy});
+    rec_hit_list.push_back({x_, y_, z_, layer_num, 0, energy});
   }
 
   if (event.exists("TargetScoringPlaneHits", sp_pass_name_)) {
@@ -261,7 +261,7 @@ void EcalWABRecProcessor::produce(framework::Event& event) {
   std::get<1>(best_x_result) = 10e99;
   std::get<1>(best_y_result) = 10e99;
 
-  // Looping over tracks to find best fit to hits
+  // Looping over tracks to find best fit to hits_
   std::vector<float> ele_roc = RADIUS_68_THETA_30_TO_90;
   for (const ldmx::StraightTrack& track : linear_tracks) {
     progress_num = 1;
@@ -283,7 +283,7 @@ void EcalWABRecProcessor::produce(framework::Event& event) {
       ele_roc = RADIUS_68_THETA_20_TO_30;
     }
 
-    // Labeling hits as electron (1) or photon (0)
+    // Labeling hits_ as electron (1) or photon (0)
     for (std::array<float, 6>& hit : rec_hit_list) {
       if (std::sqrt(
               (hit[0] - (track.getSlopeX() * hit[2] + track.getInterceptX())) *
@@ -295,11 +295,11 @@ void EcalWABRecProcessor::produce(framework::Event& event) {
         hit[4] = 1;
       }
     }
-    // Create vectors to hold electron/photon hits specifically
+    // Create vectors to hold electron/photon hits_ specifically
     std::vector<float> ele_hit_list_x, ele_hit_list_y, ele_hit_list_z;
     std::vector<float> phot_hit_list_x, phot_hit_list_y, phot_hit_list_z;
 
-    // Use labels to sort hits as electron/photon and calculate shower energies
+    // Use labels to sort hits_ as electron/photon and calculate shower energies
     for (const auto& hit : rec_hit_list) {
       if (hit[4] == 1) {
         ele_hit_list.push_back(hit);
@@ -314,7 +314,7 @@ void EcalWABRecProcessor::produce(framework::Event& event) {
       }
     }
 
-    // Fit both photon/electron or just electron hits based on # of viable
+    // Fit both photon/electron or just electron hits_ based on # of viable
     // showers
     if (phot_hit_list.size() >= 3 && ele_hit_list.size() >= 3) {
       progress_num =
@@ -581,16 +581,16 @@ EcalWABRecProcessor::fit2DTracksConstrained(
   int n2 = x2.size();
   int n = n1 + n2;
 
-  // Concatenate x, y, and s into Eigen vectors of size n.
-  Eigen::VectorXd x(n), y(n), s(n);
+  // Concatenate x_, y_, and s into Eigen vectors of size n.
+  Eigen::VectorXd x_(n), y_(n), s(n);
   for (int i = 0; i < n1; ++i) {
-    x(i) = x1[i];
-    y(i) = y1[i];
+    x_(i) = x1[i];
+    y_(i) = y1[i];
     s(i) = s1[i];
   }
   for (int i = 0; i < n2; ++i) {
-    x(n1 + i) = x2[i];
-    y(n1 + i) = y2[i];
+    x_(n1 + i) = x2[i];
+    y_(n1 + i) = y2[i];
     s(n1 + i) = s2[i];
   }
 
@@ -609,7 +609,7 @@ EcalWABRecProcessor::fit2DTracksConstrained(
   for (int iter = 0; iter < max_iter; ++iter) {
     n_iter = iter + 1;
 
-    // Compute fitted y coordinates for each track using the current parameters.
+    // Compute fitted y_ coordinates for each track using the current parameters.
     // For track 1: y1_fit = par[0] * x1 + abs_lim * tanh(par[2]/abs_lim)
     // For track 2: y2_fit = par[1] * x2 + abs_lim * tanh(par[2]/abs_lim)
     Eigen::VectorXd y1_fit(n1), y2_fit(n2);
@@ -630,10 +630,10 @@ EcalWABRecProcessor::fit2DTracksConstrained(
       y_fit(n1 + i) = y2_fit(i);
     }
 
-    // Compute chi-squared: sum_i [ (y_fit[i]-y[i])^2 / s[i]^2 ]
+    // Compute chi-squared: sum_i [ (y_fit[i]-y_[i])^2 / s[i]^2 ]
     chi_sq = 0.0;
     for (int i = 0; i < n; ++i) {
-      float diff = y_fit(i) - y(i);
+      float diff = y_fit(i) - y_(i);
       chi_sq += (diff * diff) / ((s(i)) * (s(i)));
     }
 
@@ -686,21 +686,21 @@ EcalWABRecProcessor::fit2DTracksConstrained(
       dy_dpar_2(n1 + i) = dy2_dpar_2(i);
     }
 
-    // Build the "A" matrix (the Jacobian) in its transposed form (3 x n)
+    // Build the "A" matrix (the Jacobian) in its transposed form (3 x_ n)
     Eigen::MatrixXd a_trans(3, n);
     a_trans.row(0) = dy_dpar_0.transpose();
     a_trans.row(1) = dy_dpar_1.transpose();
     a_trans.row(2) = dy_dpar_2.transpose();
 
-    // The Jacobian (n x 3) is the transpose of a_trans.
+    // The Jacobian (n x_ 3) is the transpose of a_trans.
     Eigen::MatrixXd a = a_trans.transpose();
 
-    // The residual vector (difference between measured and fitted y values)
-    Eigen::VectorXd dy_vec = y - y_fit;
+    // The residual vector (difference between measured and fitted y_ values)
+    Eigen::VectorXd dy_vec = y_ - y_fit;
 
-    // Compute the (3 x 3) matrix: M = a_trans * W * a
-    Eigen::MatrixXd temp = a_trans * w;  // 3 x n
-    Eigen::MatrixXd temp2 = temp * a;    // 3 x 3
+    // Compute the (3 x_ 3) matrix: M = a_trans * W * a
+    Eigen::MatrixXd temp = a_trans * w;  // 3 x_ n
+    Eigen::MatrixXd temp2 = temp * a;    // 3 x_ 3
 
     // Add a regularization term to ensure numerical stability.
     Eigen::MatrixXd reg =
@@ -711,14 +711,14 @@ EcalWABRecProcessor::fit2DTracksConstrained(
     cov = temp2_reg.inverse();
 
     // Compute the parameter correction: dpar = cov * a_trans * W * dy_vec
-    Eigen::MatrixXd temp4 = cov * a_trans;  // 3 x n
-    Eigen::MatrixXd temp5 = temp4 * w;      // 3 x n
-    Eigen::VectorXd dpar = temp5 * dy_vec;  // 3 x 1
+    Eigen::MatrixXd temp4 = cov * a_trans;  // 3 x_ n
+    Eigen::MatrixXd temp5 = temp4 * w;      // 3 x_ n
+    Eigen::VectorXd dpar = temp5 * dy_vec;  // 3 x_ 1
 
     // Update the parameters
     par += dpar;
 
-    // After the update, the fitted y values are recalculated with a different
+    // After the update, the fitted y_ values are recalculated with a different
     // formula:
     //   y1_fit = par[0]*(x1 - par[2])
     //   y2_fit = par[1]*(x2 - par[2])
@@ -738,7 +738,7 @@ EcalWABRecProcessor::fit2DTracksConstrained(
     // Recompute chi-squared with the updated fitted values.
     float new_chi_sq = 0.0;
     for (int i = 0; i < n; ++i) {
-      float diff = y_fit(i) - y(i);
+      float diff = y_fit(i) - y_(i);
       new_chi_sq += (diff * diff) / ((s(i)) * (s(i)));
     }
     chi_sq = new_chi_sq;
@@ -771,52 +771,52 @@ EcalWABRecProcessor::fit2DTracksConstrained(
 }
 
 std::pair<Eigen::VectorXd, Eigen::VectorXd> EcalWABRecProcessor::polyfitXYvsZ(
-    const std::vector<float>& x, const std::vector<float>& y,
-    const std::vector<float>& z, int degree) {
+    const std::vector<float>& x_, const std::vector<float>& y_,
+    const std::vector<float>& z_, int degree) {
   /*
-    Function that fits two polynomials (x vs. z and y vs. z) to 3D hit position
-    data using a least-squares method. The fitted models are defined as: x = a₀
-    + a₁ * z + a₂ * z² + ... + aₙ * zⁿ
-    y = b₀ + b₁ * z + b₂ * z² + ... + bₙ * zⁿ
+    Function that fits two polynomials (x_ vs. z_ and y_ vs. z_) to 3D hit position
+    data using a least-squares method. The fitted models are defined as: x_ = a₀
+    + a₁ * z_ + a₂ * z_² + ... + aₙ * zⁿ
+    y_ = b₀ + b₁ * z_ + b₂ * z_² + ... + bₙ * zⁿ
     where n is the specified polynomial degree.
 
     Inputs:
-      x, y, z : measured coordinates for the tracks;
-                x and y are the dependent variables, and z is the independent
+      x_, y_, z_ : measured coordinates for the tracks;
+                x_ and y_ are the dependent variables, and z_ is the independent
     variable (all provided as std::vector<float>) degree  : degree of the
     polynomial to be fitted (int)
 
     Returns:
       A pair containing:
-        first  : polynomial coefficients for the x vs. z fit (Eigen::VectorXd)
-        second : polynomial coefficients for the y vs. z fit (Eigen::VectorXd)
+        first  : polynomial coefficients for the x_ vs. z_ fit (Eigen::VectorXd)
+        second : polynomial coefficients for the y_ vs. z_ fit (Eigen::VectorXd)
 
     Notes:
       The polynomial is represented with the constant term first (i.e., [a₀, a₁,
-    ..., aₙ]), so the linear term (slope) is located at index 1.
+    ..., aₙ]), so the linear term (slope) is located at index_ 1.
   */
-  const size_t n = z.size();
-  if (n == 0 || x.size() != n || y.size() != n) {
+  const size_t n = z_.size();
+  if (n == 0 || x_.size() != n || y_.size() != n) {
     throw std::invalid_argument(
-        "Vectors x, y, and z must be non-empty and have the same size.");
+        "Vectors x_, y_, and z_ must be non-empty and have the same size.");
   }
 
-  // Construct the Vandermonde (design) matrix A (n x (degree + 1)):
-  // Each row i: [1, z[i], z[i]^2, ..., z[i]^degree]
+  // Construct the Vandermonde (design) matrix A (n x_ (degree + 1)):
+  // Each row i: [1, z_[i], z_[i]^2, ..., z_[i]^degree]
   Eigen::MatrixXd a(n, degree + 1);
   for (size_t i = 0; i < n; ++i) {
     float term = 1.0;
     for (int j = 0; j <= degree; ++j) {
       a(i, j) = term;
-      term *= z[i];
+      term *= z_[i];
     }
   }
 
-  // Map the x and y data into Eigen vectors.
+  // Map the x_ and y_ data into Eigen vectors.
   Eigen::VectorXd bx(n), by(n);
   for (size_t i = 0; i < n; ++i) {
-    bx(i) = x[i];
-    by(i) = y[i];
+    bx(i) = x_[i];
+    by(i) = y_[i];
   }
 
   // Solve the least-squares problems:

@@ -61,7 +61,7 @@ class File {
  private:
   /// number of entries in the file
   uint32_t entries_{0};
-  /// current entry index (may not be same as event number)
+  /// current entry index_ (may not be same as event number)
   uint32_t i_entry_{0};
   /// handle to the event bus we are reading from or writing to
   framework::Event* event_{nullptr};

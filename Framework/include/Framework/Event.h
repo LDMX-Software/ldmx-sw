@@ -76,7 +76,7 @@ class Event {
 
   /**
    * Get the event number.
-   * @return the event index/number
+   * @return the event index_/number
    */
   int getEventNumber() const { return eventHeader_.getEventNumber(); }
 

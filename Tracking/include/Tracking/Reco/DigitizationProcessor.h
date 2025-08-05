@@ -72,7 +72,7 @@ class DigitizationProcessor : public TrackingGeometryUser {
   double min_e_dep_;
   /// Select a particular track ID
   int track_id_;
-  /// Merge the sim hits before digitizing.
+  /// Merge the sim hits_ before digitizing.
   bool merge_hits_{false};
   /// Flag to enable/disable smearing.
   bool do_smearing_{true};

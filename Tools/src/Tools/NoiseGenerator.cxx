@@ -1,6 +1,6 @@
 /**
  * @file NoiseGenerator.cxx
- * @brief Utility used to generate noise hits.
+ * @brief Utility used to generate noise hits_.
  * @author Omar Moreno, SLAC National Accelerator Laboratory
  */
 
@@ -36,7 +36,7 @@ std::vector<double> NoiseGenerator::generateNoiseHits(int emptyChannels) {
   ldmx_log(trace) << "Integral: " << integral;
 
   double noiseHitCount = random_->Binomial(emptyChannels, integral);
-  ldmx_log(trace) << "# Noise hits: " << noiseHitCount;
+  ldmx_log(trace) << "# Noise hits_: " << noiseHitCount;
 
   std::vector<double> noiseHits;
   for (int hitIndex = 0; hitIndex < noiseHitCount; ++hitIndex) {

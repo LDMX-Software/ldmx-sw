@@ -50,15 +50,15 @@ class SimTrackerHit {
   int getID() const { return id_; };
 
   /**
-   * Get the geometric layer ID of the hit.
-   * @return The layer ID of the hit.
+   * Get the geometric layer_ ID of the hit.
+   * @return The layer_ ID of the hit.
    */
   int getLayerID() const { return layerID_; };
 
   /**
-   * Get the module ID associated with a hit.  This is used to
-   * uniquely identify a sensor within a layer.
-   * @return The module ID associated with a hit.
+   * Get the module_ ID associated with a hit.  This is used to
+   * uniquely identify a sensor within a layer_.
+   * @return The module_ ID associated with a hit.
    */
   int getModuleID() const { return moduleID_; };
 
@@ -104,7 +104,7 @@ class SimTrackerHit {
    * Get the Sim particle track ID of the hit.
    * @return The Sim particle track ID of the hit.
    */
-  int getTrackID() const { return trackID_; };
+  int getTrackID() const { return track_id_; };
 
   /**
    * Get the Sim particle track ID of the hit.
@@ -119,25 +119,25 @@ class SimTrackerHit {
   void setID(const long id) { this->id_ = id; };
 
   /**
-   * Set the geometric layer ID of the hit.
-   * @param layerID The layer ID of the hit.
+   * Set the geometric layer_ ID of the hit.
+   * @param layerID The layer_ ID of the hit.
    */
   void setLayerID(const int layerID) { this->layerID_ = layerID; };
 
   /**
-   * Set the module ID associated with a hit.  This is used to
-   * uniquely identify a sensor within a layer.
-   * @return moduleID The module ID associated with a hit.
+   * Set the module_ ID associated with a hit.  This is used to
+   * uniquely identify a sensor within a layer_.
+   * @return moduleID The module_ ID associated with a hit.
    */
   void setModuleID(const int moduleID) { this->moduleID_ = moduleID; };
 
   /**
    * Set the position of the hit [mm].
-   * @param x The X position.
-   * @param y The Y position.
-   * @param z The Z position.
+   * @param x_ The X position.
+   * @param y_ The Y position.
+   * @param z_ The Z position.
    */
-  void setPosition(const float x, const float y, const float z);
+  void setPosition(const float x_, const float y_, const float z_);
 
   /**
    * Set the energy deposited on the hit [MeV].
@@ -178,7 +178,7 @@ class SimTrackerHit {
    * Set the Sim particle track ID of the hit.
    * @return The Sim particle track ID of the hit.
    */
-  void setTrackID(const int simTrackID) { this->trackID_ = simTrackID; };
+  void setTrackID(const int simTrackID) { this->track_id_ = simTrackID; };
 
   /**
    * Set the Sim particle track ID of the hit.
@@ -200,11 +200,11 @@ class SimTrackerHit {
   int id_{0};
 
   /**
-   * The layer ID.
+   * The layer_ ID.
    */
   int layerID_{0};
 
-  /** The module ID. */
+  /** The module_ ID. */
   int moduleID_{0};
 
   /**
@@ -260,7 +260,7 @@ class SimTrackerHit {
   /**
    * The Sim Track ID.
    */
-  int trackID_{0};
+  int track_id_{0};
 
   /**
    * The Sim PDG ID.

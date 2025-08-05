@@ -52,10 +52,10 @@ struct af_bit_ref {
 #endif
   }
 
-  INLINE af_bit_ref(ref_type* bv, int index = 0) : d_bv(*bv), d_index(index) {}
+  INLINE af_bit_ref(ref_type* bv, int index_ = 0) : d_bv(*bv), d_index(index_) {}
 
-  INLINE af_bit_ref(const ref_type* bv, int index = 0)
-      : d_bv(*const_cast<ref_type*>(bv)), d_index(index) {}
+  INLINE af_bit_ref(const ref_type* bv, int index_ = 0)
+      : d_bv(*const_cast<ref_type*>(bv)), d_index(index_) {}
 
   /// convert operators.
   INLINE operator bool() const { return _AP_ROOT_op_get_bit(d_bv.V, d_index); }
@@ -211,8 +211,8 @@ template <int _AP_W, int _AP_I, bool _AP_S, ap_q_mode _AP_Q, ap_o_mode _AP_O,
           int _AP_N>
 INLINE std::ostream& operator<<(
     std::ostream& os,
-    const af_bit_ref<_AP_W, _AP_I, _AP_S, _AP_Q, _AP_O, _AP_N>& x) {
-  os << x.to_string();
+    const af_bit_ref<_AP_W, _AP_I, _AP_S, _AP_Q, _AP_O, _AP_N>& x_) {
+  os << x_.to_string();
   return os;
 }
 #endif  // ifndef __SYNTHESIS__
@@ -609,8 +609,8 @@ template <int _AP_W, int _AP_I, bool _AP_S, ap_q_mode _AP_Q, ap_o_mode _AP_O,
           int _AP_N>
 INLINE std::ostream& operator<<(
     std::ostream& os,
-    const af_range_ref<_AP_W, _AP_I, _AP_S, _AP_Q, _AP_O, _AP_N>& x) {
-  os << x.to_string();
+    const af_range_ref<_AP_W, _AP_I, _AP_S, _AP_Q, _AP_O, _AP_N>& x_) {
+  os << x_.to_string();
   return os;
 }
 #endif

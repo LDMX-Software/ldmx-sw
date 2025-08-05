@@ -93,10 +93,10 @@ class TrackingRecoDQM : public framework::Analyzer {
   // Truth Track collection
   std::shared_ptr<ldmx::Tracks> truthTrackCollection_{nullptr};
 
-  // Ecal scoring plane hits
+  // Ecal scoring plane hits_
   std::shared_ptr<std::vector<ldmx::SimTrackerHit>> ecal_scoring_hits_{nullptr};
 
-  // Target  scoring plane hits
+  // Target  scoring plane hits_
   std::shared_ptr<std::vector<ldmx::SimTrackerHit>> target_scoring_hits_{
       nullptr};
 

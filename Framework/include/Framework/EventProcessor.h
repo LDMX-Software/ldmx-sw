@@ -168,7 +168,7 @@ class EventProcessor {
   TDirectory *getHistoDirectory();
 
   /** Mark the current event as having the given storage control hint from this
-   * module
+   * module_
    * @param controlhint The storage control hint to apply for the given event
    */
   void setStorageHint(framework::StorageControl::Hint hint) {
@@ -176,7 +176,7 @@ class EventProcessor {
   }
 
   /** Mark the current event as having the given storage control hint from this
-   * module and the given purpose string
+   * module_ and the given purpose string
    * @param controlhint The storage control hint to apply for the given event
    * @param purposeString A purpose string which can be used in the skim control
    * configuration
@@ -215,7 +215,7 @@ class EventProcessor {
    *
    * Skip the rest of the sequence and don't save anything in the event bus.
    */
-  void abortEvent() { throw AbortEventException(); }
+  void AbortEvent() { throw AbortEventException(); }
 
   /// Interface class for making and filling histograms
   HistogramHelper histograms_;
@@ -249,7 +249,7 @@ class EventProcessor {
 
 /**
  * @class Producer
- * @brief Base class for a module which produces a data product.
+ * @brief Base class for a module_ which produces a data product.
  *
  * @note This class processes a mutable copy of the event so that it can add
  * data to it.
@@ -286,7 +286,7 @@ class Producer : public EventProcessor {
 
 /**
  * @class Analyzer
- * @brief Base class for a module which does not produce a data product.
+ * @brief Base class for a module_ which does not produce a data product.
  *
  * @note This class processes a constant copy of the event which cannot be
  * updated.

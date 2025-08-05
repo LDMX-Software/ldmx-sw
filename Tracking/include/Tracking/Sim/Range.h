@@ -19,7 +19,7 @@ namespace ActsExamples {
 /// a sub-range. This wrapper simplifies the iteration and should be used as
 /// follows:
 ///
-///     for (auto x : makeRange(std::equal_range(...)) {
+///     for (auto x_ : makeRange(std::equal_range(...)) {
 ///         ...
 ///     }
 ///

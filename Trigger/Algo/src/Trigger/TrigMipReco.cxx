@@ -132,7 +132,7 @@ void TrigMipReco::produce(framework::Event& event) {
     std::vector<std::vector<const TrigCaloHit*>> candidate_tracks;
     std::map<const TrigCaloHit*, size_t> hit_to_best_track;
 
-    // Filter for section = 0 and hits < 33 layers
+    // Filter for section = 0 and hits_ < 33 layers
     for (const auto& hit : calo_hits) {
       if (hit.section() > 0 || hit.layer() > max_layer_) continue;
       layer_hits[hit.layer()].push_back(hit);
@@ -153,7 +153,7 @@ void TrigMipReco::produce(framework::Event& event) {
         int holes = 0;
         float growth_factor = 1.0f;
 
-        // Look layer by layer for next hit within dR
+        // Look layer_ by layer_ for next hit within dR
         for (int l = seed.layer() + 1; l <= max_layer_; ++l) {
           const TrigCaloHit* best_hit = nullptr;
           // Grow search window if there is a hole
@@ -165,7 +165,7 @@ void TrigMipReco::produce(framework::Event& event) {
               continue;
             }
 
-            // Corrects for layer shift in x-direction, calculated as 4.82 mm
+            // Corrects for layer_ shift in x_-direction, calculated as 4.82 mm
             const float layer_shift_last =
                 (last->layer() % 2 == 0) ? 0.0f : 4.82f;
             const float layer_shift_cand =
@@ -177,13 +177,13 @@ void TrigMipReco::produce(framework::Event& event) {
 
             if (dR_2 < best_dR_2) {
               best_dR_2 = dR_2;
-              // Closest unused hit in next layer
+              // Closest unused hit in next layer_
               best_hit = &cand;
             }
           }
 
           if (best_hit) {
-            // Builds track from best hits
+            // Builds track from best hits_
             track.push_back(best_hit);
             last = best_hit;
             holes = 0;
@@ -200,12 +200,12 @@ void TrigMipReco::produce(framework::Event& event) {
         if (track.size() >= min_track_length_) {
           // Isolation area energy check
           for (const auto* hit : track) {
-            const int layer = hit->layer();
+            const int layer_ = hit->layer();
             const float hit_x = hit->position_x();
             const float hit_y = hit->position_y();
             float sum_e = 0.0f;
 
-            for (const auto& cand : layer_hits[layer]) {
+            for (const auto& cand : layer_hits[layer_]) {
               // Skips self
               if (&cand == hit) continue;
 
@@ -220,7 +220,7 @@ void TrigMipReco::produce(framework::Event& event) {
 
             if (sum_e >= isolation_e_cut_) {
               is_isolated = false;
-              // Adds used hits to vector so they cannot be used again
+              // Adds used hits_ to vector so they cannot be used again
               used_hits.insert(hit);
               break;
             }
@@ -239,7 +239,7 @@ void TrigMipReco::produce(framework::Event& event) {
                 candidate_tracks[i].size() >
                     candidate_tracks[hit_to_best_track[hit]].size()) {
               hit_to_best_track[hit] = i;
-              // Adds used hits to vector so they cannot be used again
+              // Adds used hits_ to vector so they cannot be used again
               used_hits.insert(hit);
             }
           }
@@ -273,10 +273,10 @@ void TrigMipReco::produce(framework::Event& event) {
 
       float total_isolation_e_sum = 0.0f;
       for (const auto* hit : track) {
-        const int layer = hit->layer();
+        const int layer_ = hit->layer();
         const float hit_x = hit->position_x();
         const float hit_y = hit->position_y();
-        for (const auto& cand : layer_hits[layer]) {
+        for (const auto& cand : layer_hits[layer_]) {
           if (&cand == hit) continue;
           const float dx = cand.position_x() - hit_x;
           const float dy = cand.position_y() - hit_y;

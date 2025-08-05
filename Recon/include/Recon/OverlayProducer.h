@@ -53,7 +53,7 @@ class OverlayProducer : public framework::Producer {
    * SimCalorimeterHit collections and a list of SimTrackerHit collections.
    *
    * The collection name is parsed for "Ecal" to be flagged as a collection
-   * which needs overlay hits to be added as contribs. This is currently
+   * which needs overlay hits_ to be added as contribs. This is currently
    * hardwired.
    *
    * The resulting collections inherit the input collection name, with an
@@ -86,13 +86,13 @@ class OverlayProducer : public framework::Producer {
   framework::Event overlay_event_;
 
   /**
-   * List of SimCalorimeterHit collection(s) to loop over and add hits from,
+   * List of SimCalorimeterHit collection(s) to loop over and add hits_ from,
    * combining sim and pileup
    */
   std::vector<std::string> calo_collections_;
 
   /**
-   * List of SimTrackerHit collection(s) to loop over and add hits from,
+   * List of SimTrackerHit collection(s) to loop over and add hits_ from,
    * combining sim and pileup
    */
   std::vector<std::string> tracker_collections_;
@@ -189,7 +189,7 @@ class OverlayProducer : public framework::Producer {
   int start_event_max_{10000};
 
   /**
-   * For Ecal, overlay hits should be added as contribs.
+   * For Ecal, overlay hits_ should be added as contribs.
    * But these are required to be unique, by the Ecal rconstruction code.
    * So assign a nonsensical trackID, incidentID, and PDG ID to the contribs
    * from overlay. These are hardwired right here.

@@ -178,7 +178,7 @@ class CKFProcessor final : public TrackingGeometryUser {
   // Use 2d measurements instead of 1D
   bool use1Dmeasurements_{true};
 
-  // Minimum number of hits on tracks
+  // Minimum number of hits_ on tracks
   int min_hits_{7};
 
   // Stepping size (in mm)

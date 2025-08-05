@@ -23,7 +23,7 @@ namespace ldmx {
  * @brief Represents the estimated mass of a particle
  * using tracker dE/dx information
  * @note This class represents the estimated mass information
- * from a tracker including mass, track index, and the track type
+ * from a tracker including mass, track index_, and the track type
  */
 
 class TrackDeDxMassEstimate {
@@ -68,8 +68,8 @@ class TrackDeDxMassEstimate {
   void setMass(float mass) { mass_ = mass; }
 
   /**
-   * Set the index of the track.
-   * @param track_index The index of the track.
+   * Set the index_ of the track.
+   * @param track_index The index_ of the track.
    */
   void setTrackIndex(int track_index) { track_index_ = track_index; }
 
@@ -107,8 +107,8 @@ class TrackDeDxMassEstimate {
   float getMass() const { return mass_; }
 
   /**
-   * Get the index of the track.
-   * @return The index of the track.
+   * Get the index_ of the track.
+   * @return The index_ of the track.
    */
   int getTrackIndex() const { return track_index_; }
 
@@ -134,7 +134,7 @@ class TrackDeDxMassEstimate {
   /* The estimated mass of the particle/track */
   float mass_{0.};
 
-  /* The index of the track */
+  /* The index_ of the track */
   int track_index_{-1};
 
   /* The type of the track */

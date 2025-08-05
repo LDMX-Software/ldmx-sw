@@ -65,8 +65,8 @@ class EcalTrajectoryInfo {
   const std::vector<HitData>& getTrackingHitList() const {
     return tracking_hit_list_;
   }
-  void setTrackingHitList(const std::vector<HitData>& hits) {
-    tracking_hit_list_ = hits;
+  void setTrackingHitList(const std::vector<HitData>& hits_) {
+    tracking_hit_list_ = hits_;
   }
 
  private:

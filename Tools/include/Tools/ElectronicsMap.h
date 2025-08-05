@@ -1,7 +1,7 @@
 /**
  * @file ElectronicsMap.h
  * @brief Class designed for efficient mapping between electronics ids (using
- * packed index techniques) and detector ids (which are generally arbitrary in
+ * packed index_ techniques) and detector ids (which are generally arbitrary in
  * format)
  * @author Jeremiah Mans, University of Minnesota
  */
@@ -18,7 +18,7 @@ namespace ldmx {
 /**
  * ElectronicsMap
  *
- * A class for efficient mapping between electronics IDs (using packed index
+ * A class for efficient mapping between electronics IDs (using packed index_
  * techniques) and detector IDs which are arbitrarily formatted.
  *
  * @tparam[in] ElectronicsID class of electronics ID
@@ -42,14 +42,14 @@ class ElectronicsMap {
    * Add an entry to the map
    */
   void addEntry(ElectronicsID eid, DetID did) {
-    unsigned int index = eid.index();
-    if (index >= eid2did_.size()) {
+    unsigned int index_ = eid.index();
+    if (index_ >= eid2did_.size()) {
       EXCEPTION_RAISE("ElectronicsMapOverflow",
-                      "Attempted to insert electronics with index " +
-                          std::to_string(index) +
+                      "Attempted to insert electronics with index_ " +
+                          std::to_string(index_) +
                           " which is larger than allowed in this map");
     }
-    eid2did_[index] = did.raw();
+    eid2did_[index_] = did.raw();
     if (makeD2E_) did2eid_.insert(std::make_pair(did.raw(), eid));
   }
 
@@ -113,7 +113,7 @@ class ElectronicsMap {
 
  private:
   /**
-   * Linear-time map for electronics (packed index) to raw detector id
+   * Linear-time map for electronics (packed index_) to raw detector id
    */
   std::vector<DetectorID::RawValue> eid2did_;
   /**

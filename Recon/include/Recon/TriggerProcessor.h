@@ -24,7 +24,7 @@ namespace recon {
  * @note
  * TriggerProcessor takes in a set of parameters to be used in defining
  * the trigger algorithm. An event is passed to the processor and the relevant
- * algorithms are then run on the event (ECAL layer sum). A trigger decision is
+ * algorithms are then run on the event (ECAL layer_ sum). A trigger decision is
  * executed and the decision along with the algorithm name and relevant
  * variables are stored in a TriggerResult object which is added to the
  * collection.
@@ -67,29 +67,29 @@ class TriggerProcessor : public framework::Producer {
 
   /**
    * The trigger mode to run in. Mode zero sums over
-   * all cells in layer, while in mode 1 only cells in
-   * center module are summed over. (TODO)
+   * all cells in layer_, while in mode 1 only cells in
+   * center module_ are summed over. (TODO)
    */
   int mode_{0};
 
-  /** The first layer of layer sum. */
+  /** The first layer_ of layer_ sum. */
   int startLayer_{0};
 
   /**
-   * The endpoint layer of layer sum.
+   * The endpoint layer_ of layer_ sum.
    *
-   * **not inclusive** - i.e. this is the last layer that
-   * is included in the layer sum.
+   * **not inclusive** - i.e. this is the last layer_ that
+   * is included in the layer_ sum.
    */
   int endLayer_{0};
 
   /** The name of the trigger algorithm used. */
   TString algoName_;
 
-  /** The name of the input collection (the Ecal hits). */
+  /** The name of the input collection (the Ecal hits_). */
   std::string inputColl_;
 
-  /** The pass name of the input (the Ecal hits). */
+  /** The pass name of the input (the Ecal hits_). */
   std::string inputPass_;
 
   /** The name of the output collection (the trigger decision). */

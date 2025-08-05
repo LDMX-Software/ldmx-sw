@@ -16,25 +16,25 @@ namespace hcal {
  */
 class HcalReconConditions : public framework::ConditionsObject {
  public:
-  /// index of m_adc_i in tot_calib table
+  /// index_ of m_adc_i in tot_calib table
   static const unsigned int i_m_adc_i = 0;
-  /// index of cut_point_tot in tot_calib table
+  /// index_ of cut_point_tot in tot_calib table
   static const unsigned int i_cut_point_tot = 1;
-  /// index of high_slope in tot_calib table
+  /// index_ of high_slope in tot_calib table
   static const unsigned int i_high_slope = 2;
-  /// index of high_offset in tot_calib table
+  /// index_ of high_offset in tot_calib table
   static const unsigned int i_high_offset = 3;
-  /// index of low_slope in tot_calib table
+  /// index_ of low_slope in tot_calib table
   static const unsigned int i_low_slope = 4;
-  /// index of low_power in tot_calib table
+  /// index_ of low_power in tot_calib table
   static const unsigned int i_low_power = 5;
-  /// index of lower_offset in tot_calib table
+  /// index_ of lower_offset in tot_calib table
   static const unsigned int i_lower_offset = 6;
-  /// index of tot_not in tot_calib table
+  /// index_ of tot_not in tot_calib table
   static const unsigned int i_tot_not = 7;
-  /// index of channel in tot_calib table
+  /// index_ of channel in tot_calib table
   static const unsigned int i_channel = 8;
-  /// index of flagged in tot_calib table
+  /// index_ of flagged in tot_calib table
   static const unsigned int i_flagged = 9;
   /// the name of the HcalReconConditions table
   /// (must match python registration name)
@@ -57,7 +57,7 @@ class HcalReconConditions : public framework::ConditionsObject {
    * get the ADC pedestal
    *
    * @param[in] id HCal Digi ID for specific chip
-   * @param[in] index of column in condition file
+   * @param[in] index_ of column in condition file
    * @returns the ADC pedestal for that chip in counts
    */
   double adcPedestal(const ldmx::HcalDigiID& id, int idx = 0) const {
@@ -107,7 +107,7 @@ class HcalReconConditions : public framework::ConditionsObject {
    * The column indices are stored as static members of this class.
    *
    * @param[in] id HCal Digi ID for specific chip
-   * @param[in] index of column in condition file
+   * @param[in] index_ of column in condition file
    * @returns the TOT calibration for that i
    */
   double totCalib(const ldmx::HcalDigiID& id, int idx = 0) const {
@@ -118,7 +118,7 @@ class HcalReconConditions : public framework::ConditionsObject {
    * get a TOA calibration value
    *
    * @param[in] id HCal Digi ID for specific chip
-   * @param[in] index of column in condition file
+   * @param[in] index_ of column in condition file
    * @returns the TOA calibration for that i
    */
   double toaCalib(const ldmx::HcalDigiID& id, int idx = 0) const {

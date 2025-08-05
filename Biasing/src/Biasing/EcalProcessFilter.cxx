@@ -30,13 +30,13 @@ G4ClassificationOfNewTrack EcalProcessFilter::ClassifyNewTrack(
   // Get the particle type.
   G4String particle_name = track->GetParticleDefinition()->GetParticleName();
 
-  if (track == currentTrack_) {
+  if (track == current_track_) {
     /*
     std::cout << "[ EcalProcessFilter ]: "
         << "Putting track " << track->GetTrackID()
         << " onto waiting stack." << std::endl;
     */
-    currentTrack_ = nullptr;
+    current_track_ = nullptr;
     return fWaiting;
   }
 
@@ -88,14 +88,14 @@ void EcalProcessFilter::stepping(const G4Step* step) {
         // std::cout << "aborting the event." << std::endl;
         track->SetTrackStatus(fKillTrackAndSecondaries);
         G4RunManager::GetRunManager()->AbortEvent();
-        currentTrack_ = nullptr;
+        current_track_ = nullptr;
       } else {
         /*
         std::cout << "suspending the track " << track->GetTrackID()
             << " , " << getEventInfo()->bremCandidateCount() << " brems left."
             << std::endl;
         */
-        currentTrack_ = track;
+        current_track_ = track;
         track->SetTrackStatus(fSuspend);
         getEventInfo()->decBremCandidateCount();
         track_info->tagBremCandidate(false);
@@ -131,14 +131,14 @@ void EcalProcessFilter::stepping(const G4Step* step) {
         // std::cout << "aborting the event." << std::endl;
         track->SetTrackStatus(fKillTrackAndSecondaries);
         G4RunManager::GetRunManager()->AbortEvent();
-        currentTrack_ = nullptr;
+        current_track_ = nullptr;
       } else {
         /*
         std::cout << "suspending the track " << track->GetTrackID()
             << " , " << getEventInfo()->bremCandidateCount() << " brems left."
             << std::endl;
         */
-        currentTrack_ = track;
+        current_track_ = track;
         track->SetTrackStatus(fSuspend);
         getEventInfo()->decBremCandidateCount();
         track_info->tagBremCandidate(false);
@@ -163,14 +163,14 @@ void EcalProcessFilter::stepping(const G4Step* step) {
         // std::cout << "aborting the event." << std::endl;
         track->SetTrackStatus(fKillTrackAndSecondaries);
         G4RunManager::GetRunManager()->AbortEvent();
-        currentTrack_ = nullptr;
+        current_track_ = nullptr;
       } else {
         /*
         std::cout << "suspending the track " << track->GetTrackID()
             << " , " << getEventInfo()->bremCandidateCount() << " brems left."
             << std::endl;
         */
-        currentTrack_ = track;
+        current_track_ = track;
         track->SetTrackStatus(fSuspend);
         getEventInfo()->decBremCandidateCount();
         track_info->tagBremCandidate(false);

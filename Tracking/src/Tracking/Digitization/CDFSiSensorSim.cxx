@@ -64,9 +64,9 @@ Acts::Vector3(0.,0.,0.));
 
   //Acts::Transform3 global_to_sensor     =
 sensor_.getGeometry().getGlobalToLocal();
-  //std::vector<ldmx::SimTrackerHit> hits = sensor_.getReadout().getHits();
+  //std::vector<ldmx::SimTrackerHit> hits_ = sensor_.getReadout().getHits();
 
-  for (auto& hit : hits) {
+  for (auto& hit : hits_) {
 
     Acts::Vector3
 hitPosition(hit.getPosition()[0],hit.getPosition()[1],hit.getPosition()[2]);
@@ -138,7 +138,7 @@ electrodes.computeElectrodeData(charge_distribution);
         } // has electrodes
       }//loop on carriers
     }// loop on segments
-  }//loop on hits
+  }//loop on hits_
 }//deposit charge on sense
 
 

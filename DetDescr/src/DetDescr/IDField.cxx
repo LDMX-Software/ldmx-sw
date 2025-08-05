@@ -2,10 +2,10 @@
 
 namespace ldmx {
 
-IDField::IDField(std::string fieldName, unsigned index, unsigned startBit,
+IDField::IDField(std::string fieldName, unsigned index_, unsigned startBit,
                  unsigned endBit)
     : fieldName_(fieldName),
-      index_(index),
+      index_(index_),
       startBit_(startBit),
       endBit_(endBit) {
   // Create bit mask for the field.

@@ -22,7 +22,7 @@ void EcalDigiVerifier::analyze(const framework::Event &event) {
       event.getCollection<ldmx::SimCalorimeterHit>(ecalSimHitColl_,
                                                    ecalSimHitPass_);
 
-  // sort sim hits by ID
+  // sort sim hits_ by ID
   std::sort(ecalSimHits.begin(), ecalSimHits.end(),
             [](const ldmx::SimCalorimeterHit &lhs,
                const ldmx::SimCalorimeterHit &rhs) {
@@ -32,7 +32,7 @@ void EcalDigiVerifier::analyze(const framework::Event &event) {
   std::vector<ldmx::EcalHit> ecalRecHits =
       event.getCollection<ldmx::EcalHit>(ecalRecHitColl_, ecalRecHitPass_);
 
-  // sort rec hits by ID
+  // sort rec hits_ by ID
   std::sort(ecalRecHits.begin(), ecalRecHits.end(),
             [](const ldmx::EcalHit &lhs, const ldmx::EcalHit &rhs) {
               return lhs.getID() < rhs.getID();
@@ -53,11 +53,11 @@ void EcalDigiVerifier::analyze(const framework::Event &event) {
   for (const ldmx::EcalHit &recHit : ecalRecHits) {
     numRecHits++;
 
-    // Building up an ID that has layer + module information
+    // Building up an ID that has layer_ + module_ information
     ldmx::EcalID ecal_id(recHit.getID());
-    int layer = ecal_id.layer() + 1;
+    int layer_ = ecal_id.layer() + 1;
     int moduleID = ecal_id.getModuleID() + 1;
-    int myModConstumID = layer * 100 + moduleID;
+    int myModConstumID = layer_ * 100 + moduleID;
 
     myCostumModIDs.push_back(myModConstumID);
     myCostumModIDsSet.insert(myModConstumID);
@@ -89,7 +89,7 @@ void EcalDigiVerifier::analyze(const framework::Event &event) {
         histograms_.fill("rec_sim_hit_residual_y", residualY);
         histograms_.fill("rec_sim_hit_residual_z", residualZ);
       } else if (rawID < simHit.getID()) {
-        // later sim hits - all done
+        // later sim hits_ - all done
         break;
       }
     }
@@ -124,7 +124,7 @@ void EcalDigiVerifier::analyze(const framework::Event &event) {
   histograms_.fill("total_rec_energy", totalRecEnergy);
 
   histograms_.fill("num_mod_with_0hits", numModWith0Hits);
-  // only fill the histograms in the case there are hits, otherwise it goes to
+  // only fill the histograms in the case there are hits_, otherwise it goes to
   // the other categories
   if (numModWith1Hits > 0)
     histograms_.fill("num_mod_with_1hits", numModWith1Hits);

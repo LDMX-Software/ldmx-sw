@@ -706,14 +706,14 @@ struct ap_range_ref {
 #ifndef __SYNTHESIS__
 template <int _AP_W, bool _AP_S>
 INLINE std::ostream& operator<<(std::ostream& os,
-                                const ap_range_ref<_AP_W, _AP_S>& x) {
+                                const ap_range_ref<_AP_W, _AP_S>& x_) {
   std::ios_base::fmtflags ff = std::cout.flags();
   if (ff & std::cout.hex) {
-    os << x.to_string(16);  // don't print sign
+    os << x_.to_string(16);  // don't print sign
   } else if (ff & std::cout.oct) {
-    os << x.to_string(8);  // don't print sign
+    os << x_.to_string(8);  // don't print sign
   } else {
-    os << x.to_string(10);
+    os << x_.to_string(10);
   }
   return os;
 }
@@ -748,10 +748,10 @@ struct ap_bit_ref {
   INLINE ap_bit_ref(const ap_bit_ref<_AP_W, _AP_S>& ref)
       : d_bv(ref.d_bv), d_index(ref.d_index) {}
 
-  INLINE ap_bit_ref(ref_type* bv, int index = 0) : d_bv(*bv), d_index(index) {}
+  INLINE ap_bit_ref(ref_type* bv, int index_ = 0) : d_bv(*bv), d_index(index_) {}
 
-  INLINE ap_bit_ref(const ref_type* bv, int index = 0)
-      : d_bv(*const_cast<ref_type*>(bv)), d_index(index) {}
+  INLINE ap_bit_ref(const ref_type* bv, int index_ = 0)
+      : d_bv(*const_cast<ref_type*>(bv)), d_index(index_) {}
 
   INLINE operator bool() const { return _AP_ROOT_op_get_bit(d_bv.V, d_index); }
   INLINE bool to_bool() const { return _AP_ROOT_op_get_bit(d_bv.V, d_index); }

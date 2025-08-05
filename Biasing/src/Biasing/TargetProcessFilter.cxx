@@ -28,8 +28,8 @@ TargetProcessFilter::TargetProcessFilter(
 
 G4ClassificationOfNewTrack TargetProcessFilter::ClassifyNewTrack(
     const G4Track* track, const G4ClassificationOfNewTrack& currentTrackClass) {
-  if (track == currentTrack_) {
-    currentTrack_ = nullptr;
+  if (track == current_track_) {
+    current_track_ = nullptr;
     // std::cout << "[ TargetBremFilter ]: Pushing track to waiting stack." <<
     // std::endl;
     return fWaiting;
@@ -74,9 +74,9 @@ void TargetProcessFilter::stepping(const G4Step* step) {
       if (getEventInfo()->bremCandidateCount() == 1) {
         track->SetTrackStatus(fKillTrackAndSecondaries);
         G4RunManager::GetRunManager()->AbortEvent();
-        currentTrack_ = nullptr;
+        current_track_ = nullptr;
       } else {
-        currentTrack_ = track;
+        current_track_ = track;
         track->SetTrackStatus(fSuspend);
         getEventInfo()->decBremCandidateCount();
         track_info->tagBremCandidate(false);
@@ -119,9 +119,9 @@ void TargetProcessFilter::stepping(const G4Step* step) {
       if (getEventInfo()->bremCandidateCount() == 1) {
         track->SetTrackStatus(fKillTrackAndSecondaries);
         G4RunManager::GetRunManager()->AbortEvent();
-        currentTrack_ = nullptr;
+        current_track_ = nullptr;
       } else {
-        currentTrack_ = track;
+        current_track_ = track;
         track->SetTrackStatus(fSuspend);
         getEventInfo()->decBremCandidateCount();
         track_info->tagBremCandidate(false);
@@ -139,9 +139,9 @@ void TargetProcessFilter::stepping(const G4Step* step) {
       if (getEventInfo()->bremCandidateCount() == 1) {
         track->SetTrackStatus(fKillTrackAndSecondaries);
         G4RunManager::GetRunManager()->AbortEvent();
-        currentTrack_ = nullptr;
+        current_track_ = nullptr;
       } else {
-        currentTrack_ = track;
+        current_track_ = track;
         track->SetTrackStatus(fSuspend);
         getEventInfo()->decBremCandidateCount();
         track_info->tagBremCandidate(false);

@@ -19,7 +19,7 @@ namespace ldmx {
  * For transient use only i.e. we use this ID to help translate the digitized
  * data coming off the detector into spatially-important HcalDigiIDs.
  *
- * TODO update the ranges in the packed index template.
+ * TODO update the ranges in the packed index_ template.
  * These were originally copied from the EcalElectronicsID implementation
  * and may not align with the Hcal readout design.
  */
@@ -28,7 +28,7 @@ class HcalElectronicsID : public DetectorID {
   static const RawValue INDEX_MASK{0xFFFFFF};
   // PackedIndex for channel (field 0) and elink (field 1), fiber (field 2)
   typedef PackedIndex<38, 48, 97> Index;
-  // Maximum value of any packed index here
+  // Maximum value of any packed index_ here
   static const unsigned int MAX_INDEX{38 * 48 * 200};
 
   /**
@@ -56,21 +56,21 @@ class HcalElectronicsID : public DetectorID {
   HcalElectronicsID(unsigned int fiber, unsigned int elink,
                     unsigned int channel)
       : DetectorID(EID_HCAL, 0) {
-    Index index(channel, elink, fiber);
-    id_ |= index.value();
+    Index index_(channel, elink, fiber);
+    id_ |= index_.value();
   }
 
   /**
-   * Construct an electronics id from an index
+   * Construct an electronics id from an index_
    *
    * This looks ugly (and it is) because we already have a constructor
    * that uses the unsigned int type. This means we need a different
-   * static method for translating something we know to be an EID index
+   * static method for translating something we know to be an EID index_
    * rather than a full DetID raw value.
    */
-  static HcalElectronicsID idFromIndex(unsigned int index) {
+  static HcalElectronicsID idFromIndex(unsigned int index_) {
     HcalElectronicsID eid;
-    eid.id_ |= index;
+    eid.id_ |= index_;
     return eid;
   }
 
@@ -91,7 +91,7 @@ class HcalElectronicsID : public DetectorID {
   int channel() const { return Index(id_ & INDEX_MASK).field0(); }
 
   /**
-   * Get the compact index value
+   * Get the compact index_ value
    */
   unsigned int index() const { return id_ & INDEX_MASK; }
 

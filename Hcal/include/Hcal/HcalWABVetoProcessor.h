@@ -54,7 +54,7 @@ class HcalWABVetoProcessor : public framework::Producer {
   double mintotalEnergyCompare_{0.};
   // Maximum number of clusters in an event
   double maxnClusters_{0.};
-  // Maximum allowed mean average number of hits in the event's clusters
+  // Maximum allowed mean average number of hits_ in the event's clusters
   double maxMeanHitsPerCluster_{0.};
   // Maimum allowed mean average energy in event's clusters
   double maxMeanEnergyPerCluster_{0.};

@@ -36,7 +36,7 @@ void TrigEcalEnergySum::produce(framework::Event& event) {
     float e = cvt.calc(trigDigi.linearPrimitive(), tid.layer());
     // // compressed ECal digis are 8xADCs (HCal will be 4x)
     // float sie = 8 * trigDigi.linearPrimitive() * gain *
-    //             mVtoMeV;  // in MeV, before layer corrections
+    //             mVtoMeV;  // in MeV, before layer_ corrections
     // float e = (sie / mipSiEnergy * layerWeights.at(tid.layer()) + sie) *
     //           secondOrderEnergyCorrection;
     // total_e += e;

@@ -145,7 +145,7 @@ class GSFProcessor final : public TrackingGeometryUser {
   void produce(framework::Event &event) override;
 
  private:
-  // Forms the layer to acts map
+  // Forms the layer_ to acts map
   // auto makeLayerSurfacesMap(std::shared_ptr<const Acts::TrackingGeometry>
   // trackingGeometry) const -> std::unordered_map<unsigned int, const
   // Acts::Surface*>;
@@ -189,7 +189,7 @@ class GSFProcessor final : public TrackingGeometryUser {
   // Use 2d measurements instead of 1D
   // bool use1Dmeasurements_{true};
 
-  // Minimum number of hits on tracks
+  // Minimum number of hits_ on tracks
   // int min_hits_{7};
 
   // The extrapolation surface
@@ -205,7 +205,7 @@ class GSFProcessor final : public TrackingGeometryUser {
   // The output track collection
   std::string out_trk_collection_{"GSFTracks"};
 
-  // Select the hits using TrackID and pdg_id__
+  // Select the hits_ using TrackID and pdg_id__
 
   // int track_id_{-1};
   // int pdg_id_{11};

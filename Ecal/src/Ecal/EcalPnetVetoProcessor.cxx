@@ -22,7 +22,7 @@ void EcalPnetVetoProcessor::configure(
       parameters.get<std::string>("model_path"));
 
   // Set the collection name as defined in the configuration
-  collectionName_ = parameters.get<std::string>("collection_name");
+  collection_name_ = parameters.get<std::string>("collection_name");
 
   rec_coll_name_ = parameters.get<std::string>("rec_coll_name");
   ecal_rec_hits_passname_ =
@@ -39,14 +39,14 @@ void EcalPnetVetoProcessor::produce(framework::Event& event) {
   const auto& ecal_geometry = getCondition<ldmx::EcalGeometry>(
       ldmx::EcalGeometry::CONDITIONS_OBJECT_NAME);
 
-  // Get the collection of digitized Ecal hits from the event.
+  // Get the collection of digitized Ecal hits_ from the event.
   const auto ecal_rec_hits = event.getCollection<ldmx::EcalHit>(
       rec_coll_name_, ecal_rec_hits_passname_);
   auto nhits = std::count_if(
       ecal_rec_hits.begin(), ecal_rec_hits.end(),
       [](const ldmx::EcalHit& hit) { return hit.getEnergy() > 0; });
 
-  // check number of hits
+  // check number of hits_
   ldmx_log(debug) << "nhits = " << nhits
                   << " max_num_hits_ = " << max_num_hits_;
   if (nhits < max_num_hits_) {
@@ -77,16 +77,16 @@ void EcalPnetVetoProcessor::produce(framework::Event& event) {
       if (electron_hit) {
         // Get electron hit position/momentum at Ecal surface
         ldmx_log(debug) << "Electron Found in the Ecal SP!";
-        auto pos = electron_hit->getPosition();
+        auto pos_ = electron_hit->getPosition();
         auto mom = electron_hit->getMomentum();
-        ldmx_log(debug) << "ECAL SP pos=(" << pos[0] << "," << pos[1] << ","
-                        << pos[2] << ")";
+        ldmx_log(debug) << "ECAL SP pos_=(" << pos_[0] << "," << pos_[1] << ","
+                        << pos_[2] << ")";
         ldmx_log(debug) << "ECAL SP mom=(" << mom[0] << "," << mom[1] << ","
                         << mom[2] << ")";
-        etraj = {pos[0], pos[1], pos[2]};
+        etraj = {pos_[0], pos_[1], pos_[2]};
         double pz = mom[2];
         if (pz != 0) {
-          // z-normalized momentum
+          // z_-normalized momentum
           enorm = {mom[0] / pz, mom[1] / pz, 1.0};
         }
       }
@@ -98,17 +98,17 @@ void EcalPnetVetoProcessor::produce(framework::Event& event) {
       auto recoil_track_states_ecal =
           ecal::trackProp(recoil_tracks, ts_at_ecal, "ecal");
       if (!recoil_track_states_ecal.empty()) {
-        std::array<double, 3> pos = {recoil_track_states_ecal[0],
+        std::array<double, 3> pos_ = {recoil_track_states_ecal[0],
                                      recoil_track_states_ecal[1],
                                      recoil_track_states_ecal[2]};
         std::array<double, 3> mom = {(recoil_track_states_ecal[3]),
                                      (recoil_track_states_ecal[4]),
                                      (recoil_track_states_ecal[5])};
-        ldmx_log(debug) << "Electron track pos=(" << pos[0] << "," << pos[1]
-                        << "," << pos[2] << ")";
+        ldmx_log(debug) << "Electron track pos_=(" << pos_[0] << "," << pos_[1]
+                        << "," << pos_[2] << ")";
         ldmx_log(debug) << "Electron track mom=(" << mom[0] << "," << mom[1]
                         << "," << mom[2] << ")";
-        etraj = pos;
+        etraj = pos_;
         double pz = mom[2];
         if (pz != 0) {
           enorm = {mom[0] / pz, mom[1] / pz, 1.0};
@@ -143,7 +143,7 @@ void EcalPnetVetoProcessor::produce(framework::Event& event) {
     setStorageHint(framework::hint_shouldDrop);
   }
 
-  event.add(collectionName_, result);
+  event.add(collection_name_, result);
 }
 
 void EcalPnetVetoProcessor::makeInputs(
@@ -176,7 +176,7 @@ void EcalPnetVetoProcessor::makeInputs(
     data_[1].at(feature_x_offset_ + idx) = hit_x - etraj_x;
     data_[1].at(feature_y_offset_ + idx) = hit_y - etraj_y;
     data_[1].at(feature_z_offset_ + idx) = hit_z;
-    data_[1].at(feature_layerid_offset_ + idx) = id.layer();
+    data_[1].at(feature_layer_id_offset_ + idx) = id.layer();
     data_[1].at(feature_energy_offset_ + idx) = std::log(hit.getEnergy());
 
     ++idx;

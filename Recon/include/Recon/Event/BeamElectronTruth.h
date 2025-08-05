@@ -50,8 +50,8 @@ class BeamElectronTruth {
   void setX(double x) { x_ = x; }
 
   /**
-   * Set y coordinate of the found beam electron.
-   * @param y The y coordinate of the found beam electron.
+   * Set y_ coordinate of the found beam electron.
+   * @param y_ The y_ coordinate of the found beam electron.
    */
   void setY(double y) { y_ = y; }
 
@@ -81,14 +81,14 @@ class BeamElectronTruth {
   double getX() { return x_; }
 
   /**
-   * Get y coordinate of the beam electron.
-   * @return y The y coordinate of the found beam electron.
+   * Get y_ coordinate of the beam electron.
+   * @return y_ The y_ coordinate of the found beam electron.
    */
   double getY() { return y_; }
 
   /**
-   * Get z coordinate of the beam electron.
-   * @return z The z coordinate of the found beam electron.
+   * Get z_ coordinate of the beam electron.
+   * @return z_ The z_ coordinate of the found beam electron.
    */
   double getZ() { return z_; }
 
@@ -123,8 +123,8 @@ class BeamElectronTruth {
   double getBinnedX() { return binnedX_; }
 
   /**
-   * GetBinned y coordinate of the beam electron.
-   * @return y The y coordinate of the found beam electron.
+   * GetBinned y_ coordinate of the beam electron.
+   * @return y_ The y_ coordinate of the found beam electron.
    */
   double getBinnedY() { return binnedY_; }
 
@@ -137,8 +137,8 @@ class BeamElectronTruth {
   void setBarX(double x) { barX_ = x; }
 
   /**
-   * Set y bar number of the found beam electron.
-   * @param y The y (horizontal) bar number of the found beam electron.
+   * Set y_ bar number of the found beam electron.
+   * @param y_ The y_ (horizontal) bar number of the found beam electron.
    */
   void setBarY(double y) { barY_ = y; }
 
@@ -159,8 +159,8 @@ class BeamElectronTruth {
   double getBarX() { return barX_; }
 
   /**
-   * Get y bar number of the found beam electron.
-   * @return y The y (horizontal) bar number of the found beam electron.
+   * Get y_ bar number of the found beam electron.
+   * @return y_ The y_ (horizontal) bar number of the found beam electron.
    */
   double getBarY() { return barY_; }
 
@@ -201,32 +201,32 @@ class BeamElectronTruth {
  private:
   /* Algorithm variable results from simhit associations. */
 
-  /** x coordinate ("truth" resolution, but within merging tolerance) **/
+  /** x_ coordinate ("truth" resolution, but within merging tolerance) **/
   double x_{-999};
 
-  /** y coordinate ("truth" resolution, but within merging tolerance) **/
+  /** y_ coordinate ("truth" resolution, but within merging tolerance) **/
   double y_{-999};
 
-  /** z coordinate ("truth" resolution, in practice, set to taget z = 0 **/
+  /** z_ coordinate ("truth" resolution, in practice, set to taget z_ = 0 **/
   double z_{-9999};
 
-  /** x coordinate (with TS resolution) **/
+  /** x_ coordinate (with TS resolution) **/
   double binnedX_{-999};
 
-  /** y coordinate (with TS resolution) **/
+  /** y_ coordinate (with TS resolution) **/
   double binnedY_{-999};
 
-  /** TS vertical bar number overlapping with x coordinate **/
+  /** TS vertical bar number overlapping with x_ coordinate **/
   double barX_{-1};
 
-  /** TS horizontal bar number overlapping with y coordinate **/
+  /** TS horizontal bar number overlapping with y_ coordinate **/
   double barY_{-1};
 
-  /** x momentum component **/
+  /** x_ momentum component **/
   double px_{-999};
-  /** y momentum component **/
+  /** y_ momentum component **/
   double py_{-999};
-  /** z momentum component **/
+  /** z_ momentum component **/
   double pz_{-999};
 
   ClassDef(BeamElectronTruth, 2);

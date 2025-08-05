@@ -22,7 +22,7 @@ namespace ldmx {
 
 /**
  * @class HgcrocDigiCollection
- * @brief Represents a collection of the digi hits readout by an HGCROC
+ * @brief Represents a collection of the digi hits_ readout by an HGCROC
  *
  * @note This class represents the digitized signal information
  * in the form of a series of samples for each channel of readout.
@@ -285,7 +285,7 @@ class HgcrocDigiCollection {
       return soi().tot();
     }
 
-    /// get the sample at a specific index in the digi
+    /// get the sample at a specific index_ in the digi
     HgcrocDigiCollection::Sample at(unsigned int i_sample) const {
       return Sample(*(first_ + i_sample), collection_.getVersion());
     }
@@ -370,18 +370,18 @@ class HgcrocDigiCollection {
   }
 
   /**
-   * Get index of sample of interest
-   * @return unsigned int index for SOI
+   * Get index_ of sample of interest
+   * @return unsigned int index_ for SOI
    */
   unsigned int getSampleOfInterestIndex() const { return sampleOfInterest_; }
 
   /**
-   * Set index of sample of interest
+   * Set index_ of sample of interest
    *
-   * @note Does not check if input is a valid index!
+   * @note Does not check if input is a valid index_!
    * (i.e. input less than numSamplesPerDigi_)
    *
-   * @param[in] n index for the sample of interest
+   * @param[in] n index_ for the sample of interest
    */
   void setSampleOfInterestIndex(unsigned int n) {
     sampleOfInterest_ = n;
@@ -389,7 +389,7 @@ class HgcrocDigiCollection {
   }
 
   /**
-   * Get samples for the input digi index
+   * Get samples for the input digi index_
    *
    * Each "digi" is numSamplesPerDigi_ samples.
    * The sample is a single 32-bit word that is then translated into
@@ -398,7 +398,7 @@ class HgcrocDigiCollection {
    * @sa Sample for how the valid measurements depend on the flags.
    * @sa HgcrocDigi for how to use the object returned from this function
    *
-   * @param[in] digiIndex index of digi to decode
+   * @param[in] digiIndex index_ of digi to decode
    * @return HgcrocDigi package with accessors
    */
   const HgcrocDigi getDigi(unsigned int digiIndex) const;
@@ -433,40 +433,40 @@ class HgcrocDigiCollection {
    * We inherit from the standard iterator class and tag this iterator
    * as one that de-references to an HgcrocDigi.
    *
-   * Internally, we are merely keeping track of the index of the digi
+   * Internally, we are merely keeping track of the index_ of the digi
    * in the collection and only getting the digi when the iterator is
    * asked to de-reference.
    */
   class iterator {
    public:
-    /// Connect the parent collection with an index to this iterator
-    explicit iterator(HgcrocDigiCollection& c, long index = 0)
-        : digi_index_{index}, coll_{c} {}
-    /// Increment the digi index and return the iterator afterwards
+    /// Connect the parent collection with an index_ to this iterator
+    explicit iterator(HgcrocDigiCollection& c, long index_ = 0)
+        : digi_index_{index_}, coll_{c} {}
+    /// Increment the digi index_ and return the iterator afterwards
     iterator& operator++() {
       digi_index_++;
       return *this;
     }
-    /// Increment the digi index and return the iterator before
+    /// Increment the digi index_ and return the iterator before
     iterator operator++(int) {
       iterator retval = *this;
       ++(*this);
       return retval;
     }
-    /// Check if two iterators are on the same index
+    /// Check if two iterators are on the same index_
     bool operator==(iterator other) const {
       return digi_index_ == other.digi_index_;
     }
-    /// Check if two iterators are not on the same index
+    /// Check if two iterators are not on the same index_
     bool operator!=(iterator other) const { return !(*this == other); }
     /**
      * De-reference this iterator by using the parent collection to get the
-     * actual digi at the index
+     * actual digi at the index_
      */
     const HgcrocDigi operator*() const { return coll_.getDigi(digi_index_); }
 
    private:
-    /// the index of the digi this iterator represents
+    /// the index_ of the digi this iterator represents
     long digi_index_{0};
     /// the parent collection this iterator is looping over
     HgcrocDigiCollection& coll_;
@@ -517,7 +517,7 @@ class HgcrocDigiCollection {
   /** number of samples for each digi */
   unsigned int numSamplesPerDigi_;
 
-  /** index for the sample of interest in the samples list */
+  /** index_ for the sample of interest in the samples list */
   unsigned int sampleOfInterest_;
 
   /** version of the ROC we have read */

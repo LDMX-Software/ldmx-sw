@@ -50,21 +50,21 @@ class LHEParticle {
   int getStatus() const;
 
   /**
-   * Get a mother particle index (MOTHUP) by index.
-   * @return The mother particle by index.
+   * Get a mother particle index_ (MOTHUP) by index_.
+   * @return The mother particle by index_.
    */
   int getMother(int) const;
 
   /**
-   * Get the particle color (ICOLUP) by index.
-   * @return The particle color by index.
+   * Get the particle color (ICOLUP) by index_.
+   * @return The particle color by index_.
    */
   int getColor(int) const;
 
   /**
-   * Get a momentum component (PUP) by index.
+   * Get a momentum component (PUP) by index_.
    * Defined in order: E/C, Px, Py, Pz, mass
-   * @return The momentum component by index.
+   * @return The momentum component by index_.
    */
   double getMomentum(int) const;
 
@@ -81,15 +81,15 @@ class LHEParticle {
   double getSpin() const;
 
   /**
-   * Set a mother particle by index.
-   * @param i The mother index.
+   * Set a mother particle by index_.
+   * @param i The mother index_.
    * @param particle The mother particle.
    */
   void setMother(int i, LHEParticle* particle);
 
   /**
-   * Get a mother particle by index.
-   * @return The mother particle at the index.
+   * Get a mother particle by index_.
+   * @return The mother particle at the index_.
    */
   LHEParticle* getMotherParticle(int) const;
 

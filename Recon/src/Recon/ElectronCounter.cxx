@@ -10,7 +10,7 @@ ElectronCounter::~ElectronCounter() {}
 
 void ElectronCounter::configure(framework::config::Parameters& parameters) {
   inputColl_ = parameters.getParameter<std::string>("input_collection");
-  inputPassName_ = parameters.getParameter<std::string>("input_pass_name");
+  input_pass_name_ = parameters.getParameter<std::string>("input_pass_name");
   outputColl_ = parameters.getParameter<std::string>("output_collection");
   nElectronsSim_ = parameters.getParameter<int>("simulated_electron_number");
   useSimElectronCount_ =
@@ -25,7 +25,7 @@ void ElectronCounter::configure(framework::config::Parameters& parameters) {
   */
   ldmx_log(debug) << "ElectronCounter is using parameters: "
                   << " \n\tinput_collection = " << inputColl_
-                  << " \n\tinput_pass_name = " << inputPassName_
+                  << " \n\tinput_pass_name = " << input_pass_name_
                   << " \n\toutput_collection = " << outputColl_
                   << " \n\tsimulated_electron_number = " << nElectronsSim_
                   << " \n\tuse_simulated_electron_number = "
@@ -48,9 +48,9 @@ void ElectronCounter::produce(framework::Event& event) {
   // Check if the collection of trig scint tracks exist.  If not,
   // don't bother processing the event.
   else {
-    if (!event.exists(inputColl_, inputPassName_)) {
+    if (!event.exists(inputColl_, input_pass_name_)) {
       ldmx_log(fatal) << "Attemping to use non-existing input collection "
-                      << inputColl_ << "_" << inputPassName_
+                      << inputColl_ << "_" << input_pass_name_
                       << " to count electrons! Exiting.";
       return;
     }
@@ -59,12 +59,12 @@ void ElectronCounter::produce(framework::Event& event) {
 
     // Get the collection of TS tracks
     const std::vector<ldmx::TrigScintTrack> tracks =
-        event.getCollection<ldmx::TrigScintTrack>(inputColl_, inputPassName_);
+        event.getCollection<ldmx::TrigScintTrack>(inputColl_, input_pass_name_);
 
     nElectrons = tracks.size();
     ldmx_log(info) << "Found " << tracks.size()
                    << " electrons (tracks) using input collection "
-                   << inputColl_ << "_" << inputPassName_;
+                   << inputColl_ << "_" << input_pass_name_;
   }
   // add number of electrons to event header. allow for it to be unset (-1)
   event.getEventHeader().setIntParameter("nElectrons", nElectrons);

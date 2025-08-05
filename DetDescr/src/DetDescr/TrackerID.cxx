@@ -21,10 +21,10 @@ void TrackerID::createInterpreters() {
   IDField::IDFieldList fields;
   fields.push_back(new IDField("subdetector", 0, SUBDETECTORID_SHIFT, 31));
   fields.push_back(
-      new IDField("layer", 1, LAYER_SHIFT,
+      new IDField("layer_", 1, LAYER_SHIFT,
                   LAYER_SHIFT + IDField::countOnes(LAYER_MASK) - 1));
   fields.push_back(
-      new IDField("module", 2, MODULE_SHIFT,
+      new IDField("module_", 2, MODULE_SHIFT,
                   MODULE_SHIFT + IDField::countOnes(MODULE_MASK) - 1));
 
   DetectorIDInterpreter::registerInterpreter(SD_TRACKER_TAGGER, fields);

@@ -40,7 +40,7 @@ class TrigScintSD : public SensitiveDetector {
   }
 
   /**
-   * Process steps to create hits.
+   * Process steps to create hits_.
    *
    * @param[in] step The step information.
    * @param[in] history The readout history.
@@ -48,7 +48,7 @@ class TrigScintSD : public SensitiveDetector {
   G4bool ProcessHits(G4Step* step, G4TouchableHistory* history) override;
 
   /**
-   * Save our hits collection into the event bus and reset it.
+   * Save our hits_ collection into the event bus and reset it.
    */
   virtual void saveHits(framework::Event& event) override {
     event.add(collection_name_, hits_);
@@ -57,13 +57,13 @@ class TrigScintSD : public SensitiveDetector {
   virtual void OnFinishedEvent() override { hits_.clear(); }
 
  private:
-  /// our collection of hits in this SD
+  /// our collection of hits_ in this SD
   std::vector<ldmx::SimCalorimeterHit> hits_;
   /// name of the hit collection for this SD
   std::string collection_name_;
   /// name of trigger pad volume this SD is capturing
   std::string vol_name_;
-  /// the ID number for the module we are gathering hits from
+  /// the ID number for the module_ we are gathering hits_ from
   int module_id_;
 };
 

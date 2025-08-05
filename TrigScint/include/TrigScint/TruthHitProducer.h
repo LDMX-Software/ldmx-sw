@@ -39,7 +39,7 @@ class TruthHitProducer : public framework::Producer {
    *
    * The user specified parameters that are availabed are defined
    * in the python configuration class. Look at the my_processor.py
-   * module of the EventProc python for the python structure.
+   * module_ of the EventProc python for the python structure.
    *
    * @param parameters Set of parameters used to configure this processor.
    */
@@ -56,15 +56,15 @@ class TruthHitProducer : public framework::Producer {
   // TODO: Make use of the global verbose parameter.
   bool verbose_{false};
 
-  /// Name of the input collection containing the sim hits
+  /// Name of the input collection containing the sim hits_
   std::string inputCollection_;
 
   /// Name of the pass that the input collection is on (empty string means take
   /// any pass)
-  std::string inputPassName_;
+  std::string input_pass_name_;
 
   /// Name of the output collection that will be used to store the
-  /// selected sim hits
+  /// selected sim hits_
   std::string outputCollection_;
 
  private:

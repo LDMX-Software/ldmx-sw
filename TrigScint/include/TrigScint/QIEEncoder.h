@@ -42,7 +42,7 @@ class QIEEncoder : public framework::Producer {
 
   // input collection name and pass name
   std::string inputCollection_;
-  std::string inputPassName_;
+  std::string input_pass_name_;
   // and output
   std::string outputCollection_;
 

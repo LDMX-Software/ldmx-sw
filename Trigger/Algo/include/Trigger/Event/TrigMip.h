@@ -7,7 +7,7 @@ namespace trigger {
 
 /**
  * @class TrigMip
- * @brief Class for clusters built from trigger calo hits
+ * @brief Class for clusters built from trigger calo hits_
  */
 class TrigMip {
  public:

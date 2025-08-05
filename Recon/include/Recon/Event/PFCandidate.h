@@ -30,79 +30,79 @@ class PFCandidate {
   /*
      Setters
    */
-  void setPID(int x) { pid_ = x; }
-  void setMass(float x) { mass_ = x; }
-  void setEnergy(float x) { energy_ = x; }
+  void setPID(int x_) { pid_ = x_; }
+  void setMass(float x_) { mass_ = x_; }
+  void setEnergy(float x_) { energy_ = x_; }
 
-  void setTargetPositionXYZ(float x, float y, float z) {
-    posTargX_ = x;
-    posTargY_ = y;
-    posTargZ_ = z;
+  void setTargetPositionXYZ(float x_, float y_, float z_) {
+    posTargX_ = x_;
+    posTargY_ = y_;
+    posTargZ_ = z_;
   }
-  void setEcalPositionXYZ(float x, float y, float z) {
-    posEcalX_ = x;
-    posEcalY_ = y;
-    posEcalZ_ = z;
+  void setEcalPositionXYZ(float x_, float y_, float z_) {
+    posEcalX_ = x_;
+    posEcalY_ = y_;
+    posEcalZ_ = z_;
   }
-  void setHcalPositionXYZ(float x, float y, float z) {
-    posHcalX_ = x;
-    posHcalY_ = y;
-    posHcalZ_ = z;
-  }
-
-  void setTrackPxPyPz(float x, float y, float z) {
-    trackPx_ = x;
-    trackPy_ = y;
-    trackPz_ = z;
+  void setHcalPositionXYZ(float x_, float y_, float z_) {
+    posHcalX_ = x_;
+    posHcalY_ = y_;
+    posHcalZ_ = z_;
   }
 
-  void setEcalEnergy(float x) { ecalEnergy_ = x; }
-  void setEcalRawEnergy(float x) { ecalRawEnergy_ = x; }
-  void setEcalClusterXYZ(float x, float y, float z) {
-    ecalClusterX_ = x;
-    ecalClusterY_ = y;
-    ecalClusterZ_ = z;
+  void setTrackPxPyPz(float x_, float y_, float z_) {
+    trackPx_ = x_;
+    trackPy_ = y_;
+    trackPz_ = z_;
   }
-  void setEcalClusterEXYZ(float x, float y, float z) {
-    ecalClusterEX_ = x;
-    ecalClusterEY_ = y;
-    ecalClusterEZ_ = z;
-  }
-  void setEcalClusterDXDZ(float x) { ecalClusterDXDZ_ = x; }
-  void setEcalClusterDYDZ(float x) { ecalClusterDYDZ_ = x; }
-  void setEcalClusterEDXDZ(float x) { ecalClusterEDXDZ_ = x; }
-  void setEcalClusterEDYDZ(float x) { ecalClusterEDYDZ_ = x; }
 
-  void setHcalEnergy(float x) { hcalEnergy_ = x; }
-  void setHcalRawEnergy(float x) { hcalRawEnergy_ = x; }
-  void setHcalClusterXYZ(float x, float y, float z) {
-    hcalClusterX_ = x;
-    hcalClusterY_ = y;
-    hcalClusterZ_ = z;
+  void setEcalEnergy(float x_) { ecalEnergy_ = x_; }
+  void setEcalRawEnergy(float x_) { ecalRawEnergy_ = x_; }
+  void setEcalClusterXYZ(float x_, float y_, float z_) {
+    ecalClusterX_ = x_;
+    ecalClusterY_ = y_;
+    ecalClusterZ_ = z_;
   }
-  void setHcalClusterEXYZ(float x, float y, float z) {
-    hcalClusterEX_ = x;
-    hcalClusterEY_ = y;
-    hcalClusterEZ_ = z;
+  void setEcalClusterEXYZ(float x_, float y_, float z_) {
+    ecalClusterEX_ = x_;
+    ecalClusterEY_ = y_;
+    ecalClusterEZ_ = z_;
   }
-  void setHcalClusterDXDZ(float x) { hcalClusterDXDZ_ = x; }
-  void setHcalClusterDYDZ(float x) { hcalClusterDYDZ_ = x; }
-  void setHcalClusterEDXDZ(float x) { hcalClusterEDXDZ_ = x; }
-  void setHcalClusterEDYDZ(float x) { hcalClusterEDYDZ_ = x; }
+  void setEcalClusterDXDZ(float x_) { ecalClusterDXDZ_ = x_; }
+  void setEcalClusterDYDZ(float x_) { ecalClusterDYDZ_ = x_; }
+  void setEcalClusterEDXDZ(float x_) { ecalClusterEDXDZ_ = x_; }
+  void setEcalClusterEDYDZ(float x_) { ecalClusterEDYDZ_ = x_; }
 
-  void setTruthEcalXYZ(double x, double y, double z) {
-    truthEcalX_ = x;
-    truthEcalY_ = y;
-    truthEcalZ_ = z;
+  void setHcalEnergy(float x_) { hcalEnergy_ = x_; }
+  void setHcalRawEnergy(float x_) { hcalRawEnergy_ = x_; }
+  void setHcalClusterXYZ(float x_, float y_, float z_) {
+    hcalClusterX_ = x_;
+    hcalClusterY_ = y_;
+    hcalClusterZ_ = z_;
   }
-  void setTruthPxPyPz(double x, double y, double z) {
-    truthPx_ = x;
-    truthPy_ = y;
-    truthPz_ = z;
+  void setHcalClusterEXYZ(float x_, float y_, float z_) {
+    hcalClusterEX_ = x_;
+    hcalClusterEY_ = y_;
+    hcalClusterEZ_ = z_;
   }
-  void setTruthMass(double x) { truthMass_ = x; }
-  void setTruthEnergy(double x) { truthEnergy_ = x; }
-  void setTruthPdgId(int x) { truthPdgId_ = x; }
+  void setHcalClusterDXDZ(float x_) { hcalClusterDXDZ_ = x_; }
+  void setHcalClusterDYDZ(float x_) { hcalClusterDYDZ_ = x_; }
+  void setHcalClusterEDXDZ(float x_) { hcalClusterEDXDZ_ = x_; }
+  void setHcalClusterEDYDZ(float x_) { hcalClusterEDYDZ_ = x_; }
+
+  void setTruthEcalXYZ(double x_, double y_, double z_) {
+    truthEcalX_ = x_;
+    truthEcalY_ = y_;
+    truthEcalZ_ = z_;
+  }
+  void setTruthPxPyPz(double x_, double y_, double z_) {
+    truthPx_ = x_;
+    truthPy_ = y_;
+    truthPz_ = z_;
+  }
+  void setTruthMass(double x_) { truthMass_ = x_; }
+  void setTruthEnergy(double x_) { truthEnergy_ = x_; }
+  void setTruthPdgId(int x_) { truthPdgId_ = x_; }
 
   /*
      Getters

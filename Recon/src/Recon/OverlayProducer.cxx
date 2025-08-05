@@ -92,7 +92,7 @@ void OverlayProducer::produce(framework::Event &event) {
 
   /* ----------- first do the SimCalorimeterHits ----------- */
 
-  // get the calo hits collections that we want to overlay, by looping over
+  // get the calo hits_ collections that we want to overlay, by looping over
   // the list of collections passed to the producer : calo_collections_
   for (const auto &coll_name : calo_collections_) {
     // for now, Ecal and only Ecal uses contribs instead of multiple
@@ -100,10 +100,10 @@ void OverlayProducer::produce(framework::Event &event) {
     auto needs_contribs_added{
         coll_name.find("Ecal") != std::string::npos ? true : false};
 
-    // start out by just copying the sim hits, unaltered.
+    // start out by just copying the sim hits_, unaltered.
     auto simhits_calo =
         event.getCollection<ldmx::SimCalorimeterHit>(coll_name, sim_passname_);
-    // but don't copy ecal hits immediately: for them, wait until overlay
+    // but don't copy ecal hits_ immediately: for them, wait until overlay
     // contribs have been added. then add everything through the hit_map
     if (!needs_contribs_added) {
       calo_collection_map[coll_name + out_coll_postfix_] = simhits_calo;
@@ -111,10 +111,10 @@ void OverlayProducer::produce(framework::Event &event) {
 
     ldmx_log(debug) << "in loop: start of collection " << coll_name
                     << "in loop: printing current sim event: ";
-    ldmx_log(debug) << "in loop: size of sim hits vector " << coll_name
+    ldmx_log(debug) << "in loop: size of sim hits_ vector " << coll_name
                     << " is " << simhits_calo.size();
 
-    // we don't need to touch the hard process sim hits, really... but we
+    // we don't need to touch the hard process sim hits_, really... but we
     // might need the simhits in the hit map.
     if (needs_contribs_added) {
       for (const ldmx::SimCalorimeterHit &simhit : simhits_calo) {
@@ -137,7 +137,7 @@ void OverlayProducer::produce(framework::Event &event) {
     tracker_collection_map[coll_name + out_coll_postfix_] = simhits_tracker;
 
     // the rest is printouts for debugging
-    ldmx_log(debug) << "in loop: size of sim hits vector " << coll_name
+    ldmx_log(debug) << "in loop: size of sim hits_ vector " << coll_name
                     << " is " << simhits_tracker.size();
 
     ldmx_log(debug) << "in loop: start of collection " << coll_name
@@ -205,7 +205,7 @@ void OverlayProducer::produce(framework::Event &event) {
         return;
       }
 
-      // a pileup event wide time offset to be applied to all its hits.
+      // a pileup event wide time offset to be applied to all its hits_.
       float time_offset = rndm_time_->Gaus(time_mean_, time_sigma_);
       time_offset += bunchtime_offset;
 
@@ -218,7 +218,7 @@ void OverlayProducer::produce(framework::Event &event) {
 
       /* ----------- first do the SimCalorimeterHits overlay ----------- */
 
-      // again get the calo hits collections that we want to overlay
+      // again get the calo hits_ collections that we want to overlay
       for (uint i_coll = 0; i_coll < calo_collections_.size(); i_coll++) {
         // for now, Ecal and only Ecal uses contribs
         bool needs_contribs_added = false;
@@ -230,7 +230,7 @@ void OverlayProducer::produce(framework::Event &event) {
             overlay_event_.getCollection<ldmx::SimCalorimeterHit>(
                 calo_collections_[i_coll], overlay_passname_);
 
-        ldmx_log(debug) << "in loop: size of overlay hits vector is "
+        ldmx_log(debug) << "in loop: size of overlay hits_ vector is "
                         << overlay_hits.size();
 
         std::string out_coll_name =
@@ -276,7 +276,7 @@ void OverlayProducer::produce(framework::Event &event) {
 
       }  // over caloCollections
 
-      /* ----------- now do simtracker hits overlay ----------- */
+      /* ----------- now do simtracker hits_ overlay ----------- */
 
       // get the SimTrackerHit collections that we want to overlay
       for (const auto &coll : tracker_collections_) {
@@ -284,7 +284,7 @@ void OverlayProducer::produce(framework::Event &event) {
             overlay_event_.getCollection<ldmx::SimTrackerHit>(
                 coll, overlay_passname_)};
 
-        ldmx_log(debug) << "in loop: size of overlay hits vector is "
+        ldmx_log(debug) << "in loop: size of overlay hits_ vector is "
                         << overlay_tracker_hits.size();
 
         std::string out_coll_name_tracker{coll + out_coll_postfix_};
@@ -313,7 +313,7 @@ void OverlayProducer::produce(framework::Event &event) {
   // to the event output
   for (uint i_coll = 0; i_coll < calo_collections_.size(); i_coll++) {
     // loop through collection names to find the right collection name
-    // add overlaid ecal hits as contribs/from hit_map rather than as copied
+    // add overlaid ecal hits_ as contribs/from hit_map rather than as copied
     // simhits
     if (strstr(calo_collections_[i_coll].c_str(), "Ecal")) {
       ldmx_log(trace) << "Hits in hit_map after overlay of "
@@ -337,25 +337,25 @@ void OverlayProducer::produce(framework::Event &event) {
       break;  // for now we only have one hit_map: for Ecal. so no need
               // looking further after we got a match
     }  // isEcal
-  }  // second loop over collections, to collect hits from hit_map
+  }  // second loop over collections, to collect hits_ from hit_map
 
-  // done collecting hits.
+  // done collecting hits_.
 
   // now we can write the calo collections to the event bus
   for (auto &[name, coll] : calo_collection_map) {
     ldmx_log(debug) << "Writing " << name << " to event bus.";
 
-    ldmx_log(trace) << "List of hits added: ";
+    ldmx_log(trace) << "List of hits_ added: ";
     for (auto &hit : coll) {
       ldmx_log(trace) << hit;
     }
     event.add(name, coll);
   }
 
-  // and now for the tracker hits
+  // and now for the tracker hits_
   for (auto &[name, coll] : tracker_collection_map) {
     ldmx_log(debug) << "Writing " << name << " to event bus.";
-    ldmx_log(trace) << "List of hits added: ";
+    ldmx_log(trace) << "List of hits_ added: ";
     for (auto &hit : coll) {
       ldmx_log(trace) << hit;
     }

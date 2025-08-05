@@ -36,7 +36,7 @@ class TrigScintFirmwareTracker : public framework::Producer {
   ldmx::TrigScintTrack makeTrack(Track outTrk);
 
   /**
-   * add a hit at index idx to a cluster
+   * add a hit at index_ idx to a cluster
    */
 
  private:
@@ -46,16 +46,16 @@ class TrigScintFirmwareTracker : public framework::Producer {
   // specific verbosity of this producer
   int verbose_{0};
 
-  // expected arrival time of hits in the pad [ns]
+  // expected arrival time of hits_ in the pad [ns]
   double padTime_{0.};
 
-  // maximum allowed delay for hits to be considered for clustering
+  // maximum allowed delay for hits_ to be considered for clustering
   double timeTolerance_{0.};
 
   // output collection (clusters)
   std::string output_collection_;
 
-  // input collection (hits)
+  // input collection (hits_)
   std::string digis1_collection_;
   std::string digis2_collection_;
   std::string digis3_collection_;

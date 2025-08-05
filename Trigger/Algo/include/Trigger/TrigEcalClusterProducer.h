@@ -56,7 +56,7 @@ class TrigEcalClusterProducer : public framework::Producer {
   /*     9.630,  9.630,  9.630,  9.630,  9.630,  13.497, 17.364, 17.364, 17.364,
    */
   /*     17.364, 17.364, 17.364, 17.364, 17.364, 17.364, 8.990}; */
-  /* float secondOrderEnergyCorrection_ = 4000. / 4010.; */
+  /* float second_order_energy_correction_ = 4000. / 4010.; */
   /* float mipSiEnergy_ = 0.130; */
   /* int hgc_compression_factor_ = 8; */
 

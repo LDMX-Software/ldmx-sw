@@ -1,6 +1,6 @@
 /**
  * @file TestBeamClusterProducer.h
- * @brief Clustering of TS testbeam hits
+ * @brief Clustering of TS testbeam hits_
  * @author Lene Kristian Bryngemark, Stanford University
  */
 
@@ -31,7 +31,7 @@ class TestBeamClusterProducer : public framework::Producer {
   virtual void produce(framework::Event& event);
 
   /**
-   * add a hit at index idx to a cluster
+   * add a hit at index_ idx to a cluster
    */
   virtual void addHit(uint idx, trigscint::TestBeamHit hit);
 
@@ -49,7 +49,7 @@ class TestBeamClusterProducer : public framework::Producer {
   // min threshold for adding a hit to a cluster
   double minThr_{0.};
 
-  // max number of neighboring hits to combine when forming a cluster
+  // max number of neighboring hits_ to combine when forming a cluster
   int maxWidth_{2};
 
   // max channel number (to avoid unused channels)
@@ -58,13 +58,13 @@ class TestBeamClusterProducer : public framework::Producer {
   // specific verbosity of this producer
   int verbose_{0};
 
-  // expected arrival time of hits in the pad [ns]
+  // expected arrival time of hits_ in the pad [ns]
   double padTime_{0.};
 
-  // maximum allowed delay for hits to be considered for clustering
+  // maximum allowed delay for hits_ to be considered for clustering
   double timeTolerance_{0.};
 
-  // input collection (hits)
+  // input collection (hits_)
   std::string input_collection_;
 
   // output collection (clusters)
@@ -89,9 +89,9 @@ class TestBeamClusterProducer : public framework::Producer {
   std::vector<unsigned int> v_usedIndices_;
 
   // fraction of cluster energy deposition associated with beam electron sim
-  // hits
+  // hits_
   // -- could convert this to instead be a "cleanb frac"; fraction of cluster
-  // energy coming from clean hits
+  // energy coming from clean hits_
   float beamE_{0.};
 
   /// boolean indicating whether we want to apply quality criteria from hit

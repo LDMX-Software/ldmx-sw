@@ -30,7 +30,7 @@ class Exception : public std::exception {
    * Class constructor.
    * @param name Name of the exception.
    * @param message Extended message describing the exception.
-   * @param module Filename in the source code where the exception occurred.
+   * @param module_ Filename in the source code where the exception occurred.
    * @param line Line in the source code where the exception occurred.
    * @param function Function in which the exception occurred.
    */

@@ -210,7 +210,7 @@ static inline unsigned char guess_radix(const char* s) {
       rd = 2;
     } else if (p[1] == 'o' || p[1] == 'O') {
       rd = 8;
-    } else if (p[1] == 'x' || p[1] == 'X') {
+    } else if (p[1] == 'x_' || p[1] == 'X') {
       rd = 16;
     } else if (p[1] == 'd' || p[1] == 'D') {
       rd = 10;
@@ -261,7 +261,7 @@ inline _Tp1& _AP_ROOT_op_set_bit(_Tp1& Val, const _Tp2& Bit, const _Tp3& Repl) {
   (Val).set_bit((Bit), (Repl));
   return Val;
 }
-// notice the order of high and low index is different in ssdm call and
+// notice the order of high and low index_ is different in ssdm call and
 // ap_private.range()...
 #define _AP_ROOT_op_get_range(Val, Lo, Hi) (Val).range((Hi), (Lo))
 template <typename _Tp1, typename _Tp2, typename _Tp3, typename _Tp4>

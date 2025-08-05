@@ -18,10 +18,10 @@ HcalDigiProducer::HcalDigiProducer(const std::string& name,
    * Noise generator by default uses a Gausian model for noise
    * i.e. It assumes the noise is distributed around a mean (setPedestal)
    * with a certain RMS (setNoise) and then calculates
-   * how many hits should be generated for a given number of empty
+   * how many hits_ should be generated for a given number of empty
    * channels and a minimum readout value (setNoiseThreshold)
    */
-  noiseGenerator_ = std::make_unique<ldmx::NoiseGenerator>();
+  noise_generator_ = std::make_unique<ldmx::NoiseGenerator>();
 }
 
 void HcalDigiProducer::configure(framework::config::Parameters& ps) {
@@ -29,7 +29,7 @@ void HcalDigiProducer::configure(framework::config::Parameters& ps) {
   //  used  in actual digitization
   auto hgcrocParams = ps.getParameter<framework::config::Parameters>("hgcroc");
   hgcroc_ = std::make_unique<ldmx::HgcrocEmulator>(hgcrocParams);
-  clockCycle_ = hgcrocParams.getParameter<double>("clockCycle");
+  clock_cycle_ = hgcrocParams.getParameter<double>("clockCycle");
   nADCs_ = hgcrocParams.getParameter<int>("nADCs");
   iSOI_ = hgcrocParams.getParameter<int>("iSOI");
   noise_ = hgcrocParams.getParameter<bool>("noise");
@@ -42,9 +42,9 @@ void HcalDigiProducer::configure(framework::config::Parameters& ps) {
   savePulseTruthInfo_ = ps.getParameter<bool>("savePulseTruthInfo");
 
   // collection names
-  inputCollName_ = ps.getParameter<std::string>("inputCollName");
-  inputPassName_ = ps.getParameter<std::string>("inputPassName");
-  digiCollName_ = ps.getParameter<std::string>("digiCollName");
+  input_coll_name_ = ps.getParameter<std::string>("inputCollName");
+  input_pass_name_ = ps.getParameter<std::string>("inputPassName");
+  digi_coll_name_ = ps.getParameter<std::string>("digiCollName");
   pulseTruthCollName_ = ps.getParameter<std::string>("pulseTruthCollName");
 
   // physical constants
@@ -54,30 +54,30 @@ void HcalDigiProducer::configure(framework::config::Parameters& ps) {
 
   // Time -> clock counts conversion
   //  time [ns] * ( 2^10 / max time in ns ) = clock counts
-  ns_ = 1024. / clockCycle_;
+  ns_ = 1024. / clock_cycle_;
 
-  // Configure generator that will produce noise hits in empty channels
+  // Configure generator that will produce noise hits_ in empty channels
   gain_ = ps.getParameter<double>("avgGain");
-  readoutThreshold_ = ps.getParameter<double>("avgReadoutThreshold");
+  readout_threshold_ = ps.getParameter<double>("avgReadoutThreshold");
   pedestal_ = ps.getParameter<double>("avgPedestal");
-  noiseRMS_ = ps.getParameter<double>("avgNoiseRMS");
+  noise_rms_ = ps.getParameter<double>("avgNoiseRMS");
 }
 
 void HcalDigiProducer::onNewRun(const ldmx::RunHeader&) {
   // rms noise in mV
-  noiseGenerator_->setNoise(gain_ * noiseRMS_);
+  noise_generator_->setNoise(gain_ * noise_rms_);
   // mean noise amplitude (if using Gaussian Model for the noise) in mV
-  noiseGenerator_->setPedestal(gain_ * pedestal_);
+  noise_generator_->setPedestal(gain_ * pedestal_);
   // threshold for readout in mV
-  noiseGenerator_->setNoiseThreshold(gain_ * readoutThreshold_);
+  noise_generator_->setNoiseThreshold(gain_ * readout_threshold_);
 
   // Set up seeds
   const auto& rseed = getCondition<framework::RandomNumberSeedService>(
       framework::RandomNumberSeedService::CONDITIONS_OBJECT_NAME);
-  noiseGenerator_->seedGenerator(
+  noise_generator_->seedGenerator(
       rseed.getSeed("HcalDigiProducer::NoiseGenerator"));
 
-  // Random number generator for layer / module / cell
+  // Random number generator for layer_ / module_ / cell
   rng_.seed(rseed.getSeed("HcalDigiProducer"));
   // Setting up the read-out chip
   hgcroc_->seedGenerator(rseed.getSeed("HcalDigiProducer::HgcrocEmulator"));
@@ -99,9 +99,9 @@ void HcalDigiProducer::produce(framework::Event& event) {
 
   std::map<unsigned int, std::vector<const ldmx::SimCalorimeterHit*>> hitsByID;
 
-  // get simulated hcal hits from Geant4 and group them by id
+  // get simulated hcal hits_ from Geant4 and group them by id
   auto hcalSimHits{event.getCollection<ldmx::SimCalorimeterHit>(
-      inputCollName_, inputPassName_)};
+      input_coll_name_, input_pass_name_)};
 
   for (auto const& simHit : hcalSimHits) {
     // get ID
@@ -127,11 +127,11 @@ void HcalDigiProducer::produce(framework::Event& event) {
   for (auto const& simBar : hitsByID) {
     ldmx::HcalID detID(simBar.first);
     int section = detID.section();
-    int layer = detID.layer();
+    int layer_ = detID.layer();
     int strip = detID.strip();
 
     // get position
-    double half_total_width = hcalGeometry.getHalfTotalWidth(section, layer);
+    double half_total_width = hcalGeometry.getHalfTotalWidth(section, layer_);
     double ecal_dx = hcalGeometry.getEcalDx();
     double ecal_dy = hcalGeometry.getEcalDy();
 
@@ -148,11 +148,11 @@ void HcalDigiProducer::produce(framework::Event& event) {
        * Define two pulses: with positive and negative ends.
        * For this we need to:
        * (1) Find the position along the bar:
-       *     For back Hcal: x (y) for horizontal (vertical) layers.
-       *     For side Hcal: x (top,bottom) and y (left,right).
+       *     For back Hcal: x_ (y_) for horizontal (vertical) layers.
+       *     For side Hcal: x_ (top,bottom) and y_ (left,right).
        *
        * (2) Define the end of the bar:
-       *     The end of an HcalDigiID is based on its distance (x,y) along the
+       *     The end of an HcalDigiID is based on its distance (x_,y_) along the
        *     bar.
        *     - A positive end (endID=0), corresponds to top,left.
        *     - A negative end (endID=1), corresponds to bottom,right.
@@ -169,8 +169,8 @@ void HcalDigiProducer::produce(framework::Event& event) {
        *     For the back Hcal, the half point of the bar coincides with the
        *     coordinates of the origin.
        *     For the side Hcal, the length of the bar from the origin is:
-       *     - 2 *(half_width) - Ecal_dx(y)/2 away from the positive end, and,
-       *     - Ecal_dx(y) away from the negative end.
+       *     - 2 *(half_width) - Ecal_dx(y_)/2 away from the positive end, and,
+       *     - Ecal_dx(y_) away from the negative end.
        */
       float distance_along_bar, distance_ecal;
       float distance_close, distance_far;
@@ -230,7 +230,7 @@ void HcalDigiProducer::produce(framework::Event& event) {
         double voltage = simHit.getContrib(iContrib).edep * MeV_;
         // global time (t=0ns at target)
         double time = simHit.getContrib(iContrib).time;
-        // shift light-speed particle traveling along z
+        // shift light-speed particle traveling along z_
         time -= position.at(2) / 299.702547;
 
         if (end_close == 0) {
@@ -244,7 +244,7 @@ void HcalDigiProducer::produce(framework::Event& event) {
     }
 
     /**
-     * Now we have all the sub-hits from all the simhits
+     * Now we have all the sub-hits_ from all the simhits
      * Digitize:
      * For back Hcal return two digis.
      * For side Hcal we choose which pulse to readout based on
@@ -255,8 +255,8 @@ void HcalDigiProducer::produce(framework::Event& event) {
     if (section == ldmx::HcalID::HcalSection::BACK) {
       std::vector<ldmx::HgcrocDigiCollection::Sample> digiToAddPosend,
           digiToAddNegend;
-      ldmx::HcalDigiID posendID(section, layer, strip, 0);
-      ldmx::HcalDigiID negendID(section, layer, strip, 1);
+      ldmx::HcalDigiID posendID(section, layer_, strip, 0);
+      ldmx::HcalDigiID negendID(section, layer_, strip, 1);
 
       bool posEndActivity =
           hgcroc_->digitize(posendID.raw(), pulses_posend, digiToAddPosend);
@@ -297,7 +297,7 @@ void HcalDigiProducer::produce(framework::Event& event) {
         is_posend = false;
       }
       if (is_posend) {
-        ldmx::HcalDigiID digiID(section, layer, strip, 0);
+        ldmx::HcalDigiID digiID(section, layer_, strip, 0);
         if (hgcroc_->digitize(digiID.raw(), pulses_posend, digiToAdd)) {
           hcalDigis.addDigi(digiID.raw(), digiToAdd);
         } else if (!zeroSuppression_) {
@@ -306,7 +306,7 @@ void HcalDigiProducer::produce(framework::Event& event) {
           hcalDigis.addDigi(digiID.raw(), digi);
         }
       } else {
-        ldmx::HcalDigiID digiID(section, layer, strip, 1);
+        ldmx::HcalDigiID digiID(section, layer_, strip, 1);
         if (hgcroc_->digitize(digiID.raw(), pulses_negend, digiToAdd)) {
           hcalDigis.addDigi(digiID.raw(), digiToAdd);
         } else if (!zeroSuppression_) {
@@ -325,19 +325,19 @@ void HcalDigiProducer::produce(framework::Event& event) {
     std::vector<ldmx::HcalDigiID> channelMap;
     int numChannels = 0;
     for (int section = 0; section < hcalGeometry.getNumSections(); section++) {
-      for (int layer = 1; layer <= hcalGeometry.getNumLayers(section);
-           layer++) {
+      for (int layer_ = 1; layer_ <= hcalGeometry.getNumLayers(section);
+           layer_++) {
         // Note zero-indexed strip numbering...
-        for (int strip = 0; strip < hcalGeometry.getNumStrips(section, layer);
+        for (int strip = 0; strip < hcalGeometry.getNumStrips(section, layer_);
              strip++) {
           if (section == ldmx::HcalID::HcalSection::BACK) {
-            auto digiIDend0 = ldmx::HcalDigiID(section, layer, strip, 0);
-            auto digiIDend1 = ldmx::HcalDigiID(section, layer, strip, 1);
+            auto digiIDend0 = ldmx::HcalDigiID(section, layer_, strip, 0);
+            auto digiIDend1 = ldmx::HcalDigiID(section, layer_, strip, 1);
             channelMap.push_back(digiIDend0);
             channelMap.push_back(digiIDend1);
             numChannels += 2;
           } else {
-            auto digiID = ldmx::HcalDigiID(section, layer, strip, 0);
+            auto digiID = ldmx::HcalDigiID(section, layer_, strip, 0);
             channelMap.push_back(digiID);
             numChannels++;
           }
@@ -349,7 +349,7 @@ void HcalDigiProducer::produce(framework::Event& event) {
     std::uniform_int_distribution<int> section_dist(
         0, hcalGeometry.getNumSections() - 1);
     std::uniform_int_distribution<int> end_dist(0, 1);
-    std::uniform_int_distribution<int> clock_dist(0, clockCycle_);
+    std::uniform_int_distribution<int> clock_dist(0, clock_cycle_);
 
     // Fast noise sim
     if (zeroSuppression_) {
@@ -357,7 +357,7 @@ void HcalDigiProducer::produce(framework::Event& event) {
       // noise generator gives us a list of noise amplitudes [mV] that randomly
       // populate the empty channels and are above the readout threshold
       auto noiseHitAmplitudes{
-          noiseGenerator_->generateNoiseHits(numEmptyChannels)};
+          noise_generator_->generateNoiseHits(numEmptyChannels)};
       std::vector<std::pair<double, double>> fake_pulse(1, {0., 0.});
 
       for (double noiseHit : noiseHitAmplitudes) {
@@ -369,11 +369,11 @@ void HcalDigiProducer::produce(framework::Event& event) {
           // Get a random section value
           sectionID = section_dist(rng_);
 
-          // Get a random value for the layer
+          // Get a random value for the layer_
           std::uniform_int_distribution<int> layer_dist(
               0, hcalGeometry.getNumLayers(sectionID) - 1);
           layerID = layer_dist(rng_);
-          // set layer to 1 if the generator says it is 0 (geometry map starts
+          // set layer_ to 1 if the generator says it is 0 (geometry map starts
           // from 1)
           if (layerID == 0) layerID = 1;
 
@@ -441,7 +441,7 @@ void HcalDigiProducer::produce(framework::Event& event) {
     }
   }  // if we should add noise
 
-  event.add(digiCollName_, hcalDigis);
+  event.add(digi_coll_name_, hcalDigis);
   if (savePulseTruthInfo_) event.add(pulseTruthCollName_, hcalPulseTruthColl);
 
   return;

@@ -61,7 +61,7 @@ void HcalWABVetoProcessor::produce(framework::Event &event) {
       event.getCollection<ldmx::HcalCluster>(inputHCALClusterCollName_,
                                              hcal_cluster_passname_);
 
-  // Loop over all of the Hcal hits and calculate to total photoelectrons
+  // Loop over all of the Hcal hits_ and calculate to total photoelectrons
   // in the event.
   float totalHCALEnergy{0};
   float totalECALEnergy{0};

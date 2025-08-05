@@ -272,7 +272,7 @@ class HcalRawDecoder : public framework::Producer {
         ro_map |= w;
         // loop through channels on this link,
         //  since some channels may have been suppressed because of low
-        //  amplitude the channel ID is not the same as the index it
+        //  amplitude the channel ID is not the same as the index_ it
         //  is listed in.
         int j{-1};
         for (uint32_t i_word{2}; i_word < length_per_link.at(i_link);

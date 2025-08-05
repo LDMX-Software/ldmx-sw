@@ -16,7 +16,7 @@ TestBeamHitProducer::TestBeamHitProducer(const std::string& name,
 void TestBeamHitProducer::configure(framework::config::Parameters& parameters) {
   inputCol_ = parameters.getParameter<std::string>("inputCollection");
   outputCollection_ = parameters.getParameter<std::string>("outputCollection");
-  inputPassName_ = parameters.getParameter<std::string>("inputPassName");
+  input_pass_name_ = parameters.getParameter<std::string>("inputPassName");
   MIPresponse_ = parameters.getParameter<std::vector<double> >("MIPresponse");
   peds_ = parameters.getParameter<std::vector<double> >("pedestals");
   gain_ =
@@ -30,7 +30,7 @@ void TestBeamHitProducer::configure(framework::config::Parameters& parameters) {
 
   std::cout << " [ TestBeamHitProducer ] In configure(), got parameters "
             << "\n\t inputCollection = " << inputCol_
-            << "\n\t inputPassName = " << inputPassName_
+            << "\n\t inputPassName = " << input_pass_name_
             << "\n\t outputCollection = " << outputCollection_
             << "\n\t startSample = " << startSample_
             << "\n\t pulseWidth = " << pulseWidth_
@@ -91,10 +91,10 @@ void TestBeamHitProducer::produce(framework::Event& event) {
   float pePerMip = 100;
 
   const auto channels{
-      event.getCollection<trigscint::EventReadout>(inputCol_, inputPassName_)};
+      event.getCollection<trigscint::EventReadout>(inputCol_, input_pass_name_)};
 
   int evNb = event.getEventNumber();
-  std::vector<trigscint::TestBeamHit> hits;
+  std::vector<trigscint::TestBeamHit> hits_;
   for (auto chan : channels) {
     trigscint::TestBeamHit hit;
     int bar = chan.getChanID();
@@ -187,11 +187,11 @@ void TestBeamHitProducer::produce(framework::Event& event) {
     hit.setEnergy(hit.getPE() * mevPerMip / pePerMip);
 
     // add hit
-    hits.push_back(hit);
+    hits_.push_back(hit);
   }  // over channels
 
-  // at end of event, write the collection of trigger scintillator hits.
-  event.add(outputCollection_, hits);
+  // at end of event, write the collection of trigger scintillator hits_.
+  event.add(outputCollection_, hits_);
 
   return;
 }

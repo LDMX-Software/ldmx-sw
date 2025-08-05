@@ -239,10 +239,10 @@ class EcalVetoResult {
     return {recoil_px_, recoil_py_, recoil_pz_};
   };
 
-  /** Return the x position of the recoil at the Ecal face. */
+  /** Return the x_ position of the recoil at the Ecal face. */
   float getRecoilX() const { return recoil_x_; };
 
-  /** Return the y position of the recoil at the Ecal face. */
+  /** Return the y_ position of the recoil at the Ecal face. */
   float getRecoilY() const { return recoil_y_; };
 
  private:
@@ -311,14 +311,14 @@ class EcalVetoResult {
   /** pz of recoil electron at the Ecal face. */
   float recoil_pz_{-9999};
 
-  /** x position of recoil electron at the Ecal face. */
+  /** x_ position of recoil electron at the Ecal face. */
   float recoil_x_{-9999};
 
-  /** y position of recoil electron at the Ecal face. */
+  /** y_ position of recoil electron at the Ecal face. */
   float recoil_y_{-9999};
 
-  /// Number of hits outside of the electron roc in the Ecal
-  /// or if the electron trajectory is missing, all the hits in the Ecal
+  /// Number of hits_ outside of the electron roc in the Ecal
+  /// or if the electron trajectory is missing, all the hits_ in the Ecal
   int n_tracking_hits_{0};
   /// Angular separation between the projected photon and electron trajectories
   /// as projected at the ECAL

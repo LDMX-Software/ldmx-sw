@@ -91,4 +91,4 @@ RandomNumberSeedService::getCondition(const ldmx::EventHeader& context) {
 }
 
 }  // namespace framework
-DECLARE_CONDITIONS_PROVIDER(framework::random_number_seed_service)
+DECLARE_CONDITIONS_PROVIDER(framework::RandomNumberSeedService)

@@ -153,6 +153,6 @@ static std::string backtrace(int skip = 1) throw() {
 
 namespace framework {
 namespace exception {
-void Exception::buildStackTrace() throw() { stackTrace_ = Backtrace(2); }
+void Exception::buildStackTrace() throw() { stackTrace_ = backtrace(2); }
 }  // namespace exception
 }  // namespace framework

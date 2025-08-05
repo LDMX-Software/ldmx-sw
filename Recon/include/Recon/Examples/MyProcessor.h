@@ -14,7 +14,7 @@ namespace recon {
 /**
  * Minimal example of a processor.
  *
- * This processor will loop over all of the ECal hits in an event and
+ * This processor will loop over all of the ECal hits_ in an event and
  * print out their details.
  */
 class MyProcessor : public framework::Producer {
@@ -36,7 +36,7 @@ class MyProcessor : public framework::Producer {
    *
    * The user specified parameters that are availabed are defined
    * in the python configuration class. Look at the my_processor.py
-   * module of the EventProc python for the python structure.
+   * module_ of the EventProc python for the python structure.
    *
    * @param parameters Set of parameters used to configure this processor.
    */

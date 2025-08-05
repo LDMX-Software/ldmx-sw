@@ -82,20 +82,20 @@ class EcalDigiProducer : public framework::Producer {
   double clock_cycle_;
 
   /// Depth of ADC buffer.
-  int n_ad_cs_;
+  int n_adcs_;
 
   /// Index for the Sample Of Interest in the list of digi samples
   int i_soi_;
 
   /// Conversion from energy in MeV to voltage in mV
-  double me_v_;
+  double mev_;
 
   /**
    * When emulating noise in empty channels, do we zero suppress?
    *
    * There are two ways to emulate the noise in the chip:
    *  1) (with zero suppression) Use the NoiseGenerator to get a list of
-   *     amplitudes (about 3-5 on avg) and put those noise hits which are
+   *     amplitudes (about 3-5 on avg) and put those noise hits_ which are
    *     above the readout threshold in random empty channels.
    *  2) (without zero suppresion) Go through all channels and put
    *     noise in each channel that doesn't have a real hit in it.
@@ -124,7 +124,7 @@ class EcalDigiProducer : public framework::Producer {
   /// Noise RMS
   double noise_rms_;
 
-  /// Generates noise hits based off of number of cells that are not hit
+  /// Generates noise hits_ based off of number of cells that are not hit
   std::unique_ptr<ldmx::NoiseGenerator> noise_generator_;
 
   /// Generates random numbers for which channels to fill up with noise

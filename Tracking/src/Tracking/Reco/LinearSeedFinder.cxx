@@ -18,7 +18,7 @@ void LinearSeedFinder::configure(framework::config::Parameters& parameters) {
   out_seed_collection_ = parameters.getParameter<std::string>(
       "out_seed_collection", getName() + "LinearRecoilSeedTracks");
 
-  // Input strip hits
+  // Input strip hits_
   input_hits_collection_ = parameters.getParameter<std::string>(
       "input_hits_collection", "DigiRecoilSimHits");
   input_rec_hits_collection_ = parameters.getParameter<std::string>(
@@ -63,12 +63,12 @@ void LinearSeedFinder::produce(framework::Event& event) {
 
   std::vector<std::array<double, 3>> first_layer_ecal_rec_hits;
 
-  // Find RecHits at first layer of ECal
+  // Find RecHits at first layer_ of ECal
   for (const auto& x_ecal : ecal_rec_hit) {
     if (x_ecal.getZPos() < ecal_first_layer_z_threshold_) {
       first_layer_ecal_rec_hits.push_back(
           {x_ecal.getZPos(), x_ecal.getXPos(), x_ecal.getYPos()});
-    }  // if first layer of Ecal
+    }  // if first layer_ of Ecal
   }  // for positions in ecalRecHit
 
   // Check if we would fit empty seeds, if so: end tracking
@@ -102,23 +102,23 @@ void LinearSeedFinder::produce(framework::Event& event) {
       event.getCollection<ldmx::SimTrackerHit>("TargetScoringPlaneHits",
                                                input_pass_name_);
 
-  // Index all sim hits by track ID
+  // Index all sim hits_ by track ID
   std::unordered_map<int, std::vector<const ldmx::SimTrackerHit*>>
       sim_hits_by_track_id;
   for (const auto& hit : recoil_sim_hits) {
     sim_hits_by_track_id[hit.getTrackID()].push_back(&hit);
-  }  // for sim hits
+  }  // for sim hits_
 
-  // Index scoring hits by track ID (one positive scoring plane hit per trackID)
+  // Index scoring hits_ by track ID (one positive scoring plane hit per trackID)
   std::unordered_map<int, const ldmx::SimTrackerHit*> scoring_hit_map;
   for (const auto& sp_hit : scoring_hits) {
     if (sp_hit.getPosition()[2] > 0)
       scoring_hit_map[sp_hit.getTrackID()] = &sp_hit;
-  }  // for sp hits
+  }  // for sp hits_
 
   for (const auto& point : recoil_hits) {
-    // x is in tracking coordinates, z is in ldmx coordinates
-    float x = point.getGlobalPosition()[0];
+    // x_ is in tracking coordinates, z_ is in ldmx coordinates
+    float x_ = point.getGlobalPosition()[0];
     int track_id = point.getTrackIds()[0];
 
     // get the key value = track_id
@@ -129,44 +129,44 @@ void LinearSeedFinder::produce(framework::Event& event) {
     const auto& sim_hits = sim_range_it->second;
 
     for (const auto* sim_hit : sim_hits) {
-      float z = sim_hit->getPosition()[2];
+      float z_ = sim_hit->getPosition()[2];
 
-      if (x < layer12_midpoint_) {
-        if (z < layer12_midpoint_) {
+      if (x_ < layer12_midpoint_) {
+        if (z_ < layer12_midpoint_) {
           auto sp_it = scoring_hit_map.find(track_id);
           if (sp_it != scoring_hit_map.end()) {
             first_two_layers.emplace_back(point, *sim_hit, *sp_it->second);
             break;
           }  // add the associated scoring plane hit (will be needed for 3D
              // reconstruction)
-        }  // associate 1st layer sim hit
-      }  // check if recoil hit is 1st layer
-      else if (x < layer23_midpoint_) {
-        if (z > layer12_midpoint_ && z < layer23_midpoint_) {
+        }  // associate 1st layer_ sim hit
+      }  // check if recoil hit is 1st layer_
+      else if (x_ < layer23_midpoint_) {
+        if (z_ > layer12_midpoint_ && z_ < layer23_midpoint_) {
           first_two_layers.emplace_back(point, *sim_hit, ldmx::SimTrackerHit());
           break;
-        }  // associate 2nd layer sim hit
-      }  // check if recoil hit is 2nd layer
-      else if (x < layer34_midpoint_) {
-        if (z > layer23_midpoint_ && z < layer34_midpoint_) {
+        }  // associate 2nd layer_ sim hit
+      }  // check if recoil hit is 2nd layer_
+      else if (x_ < layer34_midpoint_) {
+        if (z_ > layer23_midpoint_ && z_ < layer34_midpoint_) {
           auto sp_it = scoring_hit_map.find(track_id);
           if (sp_it != scoring_hit_map.end()) {
             second_two_layers.emplace_back(point, *sim_hit, *sp_it->second);
             break;
           }  // add the associated scoring plane hit (will be needed for 3D
              // reconstruction)
-        }  // associate 3rd layer sim hits
-      }  // check if recoil hit is 3rd layer
+        }  // associate 3rd layer_ sim hits_
+      }  // check if recoil hit is 3rd layer_
       else {
-        if (z > layer34_midpoint_) {
+        if (z_ > layer34_midpoint_) {
           second_two_layers.emplace_back(point, *sim_hit,
                                          ldmx::SimTrackerHit());
           break;
-        }  // associate 4th layer sim hits
-      }  // check if recoil hits is 4th layer
+        }  // associate 4th layer_ sim hits_
+      }  // check if recoil hits_ is 4th layer_
 
     }  // loop through simhits
-  }  // loop through recoil hits
+  }  // loop through recoil hits_
 
   // Reconstruct 3D sensor points on which to do fitting
   auto first_sensor_combos = processMeasurements(first_two_layers, tg);
@@ -187,7 +187,7 @@ void LinearSeedFinder::produce(framework::Event& event) {
       first_sensor_point = {first_combo_3d_point,
                             std::get<ldmx::Measurement>(first_layer_one),
                             std::nullopt};
-    }  //...we are taking only one layer as the measurement (axial or stereo)
+    }  //...we are taking only one layer_ as the measurement (axial or stereo)
 
     for (const auto& [second_combo_3d_point, second_layer_one,
                       second_layer_two] : second_sensor_combos) {
@@ -203,7 +203,7 @@ void LinearSeedFinder::produce(framework::Event& event) {
         second_sensor_point = {second_combo_3d_point,
                                std::get<ldmx::Measurement>(second_layer_one),
                                std::nullopt};
-      }  //...we are taking only one layer as the measurement (axial or stereo)
+      }  //...we are taking only one layer_ as the measurement (axial or stereo)
 
       for (const auto& rec_hit : first_layer_ecal_rec_hits) {
         // Do fitting on 2 sensor + 1 recHit combinations = 1 degree of freedom
@@ -244,11 +244,11 @@ ldmx::StraightTrack LinearSeedFinder::SeedTracker(
   auto [sensor2, layer3, layer4] = recoil_two;
   std::vector<ldmx::Measurement> all_points;
 
-  // TODO: in the case where we don't have all 4 hits, we will be fitting a
-  // sensor (weighted average of two layers) + single layer
-  // TODO: or fitting two single layers. Currently, the single layer point has
+  // TODO: in the case where we don't have all 4 hits_, we will be fitting a
+  // sensor (weighted average of two layers) + single layer_
+  // TODO: or fitting two single layers. Currently, the single layer_ point has
   // the uncertainty of a sensor assigned to it,
-  // TODO: but this is not a realistic uncertainty for a single layer...
+  // TODO: but this is not a realistic uncertainty for a single layer_...
   // IF all layers are well-defined, this sequence will add layer1, 2, 3, 4 to
   // the allPoints vector
   all_points.push_back(layer1);
@@ -267,7 +267,7 @@ ldmx::StraightTrack LinearSeedFinder::SeedTracker(
     all_points.push_back(*layer4);
   }
 
-  // Fit the 3 points to a 3D straight line, find track location at first layer
+  // Fit the 3 points to a 3D straight line, find track location at first layer_
   // of Ecal, check distance to recHit used in fitting
   // m = slope ; b = intercept
   auto [m_x, b_x, m_y, b_y, seed_cov] = fit3DLine(sensor1, sensor2, ecal_one);
@@ -372,7 +372,7 @@ LinearSeedFinder::processMeasurements(
     }
   }
 
-  // If there are measurements in both axial and stereo layer:
+  // If there are measurements in both axial and stereo layer_:
   // Iterate over axial and stereo measurements to compute 3D points
   if (!axial_measurements.empty() && !stereo_measurements.empty()) {
     for (const auto& axial : axial_measurements) {
@@ -428,7 +428,7 @@ LinearSeedFinder::processMeasurements(
   return points_with_measurement;
 }
 
-// ACTS saves its arrays like (x, y, z)
+// ACTS saves its arrays like (x_, y_, z_)
 std::array<double, 3> LinearSeedFinder::convertToLdmxStdArray(
     const Acts::Vector3& vec) {
   return {vec.x(), vec.y(), vec.z()};
@@ -450,14 +450,14 @@ LinearSeedFinder::getSurfaceVectors(const Acts::Surface& surface) {
 }
 
 //  estimate the 3d position of the particle as it passes through a stereo/axial
-//  pair currently this uses the sim hits from the target and the axial sensor
+//  pair currently this uses the sim hits_ from the target and the axial sensor
 //  to calculate the angle of the particle, which is needed to project the two
-//  sensors to the same z For real data, we could use the position at the target
+//  sensors to the same z_ For real data, we could use the position at the target
 //  for the tagger and the axial u position of the measured hit (we only project
-//  in x, which, in MC, is identically x) assumptions:   axial u-direction is
-//  identically global-x (tracking-global y)
-//                 sensors' w-directions are aligned with beam (global-z,
-//                 tracking-global x)
+//  in x_, which, in MC, is identically x_) assumptions:   axial u-direction is
+//  identically global-x_ (tracking-global y_)
+//                 sensors' w-directions are aligned with beam (global-z_,
+//                 tracking-global x_)
 Acts::Vector3 LinearSeedFinder::simple3DHitV2(
     const ldmx::Measurement& axial, const Acts::Surface& axial_surface,
     const ldmx::Measurement& stereo, const Acts::Surface& stereo_surface,
@@ -466,7 +466,7 @@ Acts::Vector3 LinearSeedFinder::simple3DHitV2(
   Acts::Vector3 dummy{0., 0., 0.};
   Acts::Vector3 hitOnTarget{target_sp.getPosition()[0],
                             target_sp.getPosition()[1],
-                            target_sp.getPosition()[2]};  // x,y,z
+                            target_sp.getPosition()[2]};  // x_,y_,z_
 
   Acts::Vector3 axial_true_global{pair_sim_hits[0].getPosition()[0],
                                   pair_sim_hits[0].getPosition()[1],
@@ -488,14 +488,14 @@ Acts::Vector3 LinearSeedFinder::simple3DHitV2(
   // centers
   Acts::Vector3 deltaSensors = stereo_origin - axial_origin;
 
-  // calculate the displacement in tracking global x (need to generalize) by
-  // going from tracking x=axial to x=stereo
+  // calculate the displacement in tracking global x_ (need to generalize) by
+  // going from tracking x_=axial to x_=stereo
   double dx_proj =
       (simpart_unit[0] / simpart_unit[2]) *
       deltaSensors[0];  // this looks weird because simpart_unit is in
                         // global-global and delta sensors is in tracking-global
 
-  // Compute unit vectors for both hits
+  // Compute unit vectors for both hits_
   auto [axial_u, axial_v, axial_w] = getSurfaceVectors(axial_surface);
   auto [stereo_u, stereo_v, stereo_w] = getSurfaceVectors(stereo_surface);
   double salpha = dotProduct(axial_v, stereo_u);
@@ -511,7 +511,7 @@ Acts::Vector3 LinearSeedFinder::simple3DHitV2(
   stereo_v_value = 0.0;
 
   // use the dx_proj as the displacement in u of the axial measurement
-  // it's axial_u_value - dx_proj because u is in the -x direction
+  // it's axial_u_value - dx_proj because u is in the -x_ direction
   //  this calculation is in the axial frame
   double v_intercept_useproj =
       (stereo_u_value - (axial_u_value - dx_proj) * cosalpha) / salpha;
@@ -525,7 +525,7 @@ Acts::Vector3 LinearSeedFinder::simple3DHitV2(
       geometry_context(),
       Acts::Vector2(u_intercept_useproj, v_intercept_useproj), dummy);
 
-  // we want the reconstructed hit to be at the z of the stereo layer
+  // we want the reconstructed hit to be at the z_ of the stereo layer_
   Acts::Vector3 reconstructed_hit{dummy_stereo_proj[0], axst_global_useproj[1],
                                   axst_global_useproj[2]};
 
@@ -560,11 +560,11 @@ LinearSeedFinder::fit3DLine(const std::array<double, 3>& first_recoil,
   Eigen::Matrix<double, 6, 4> A_mat;
   Eigen::Matrix<double, 6, 1> d_vec, w_vec;
 
-  // Fill the A matrix (z, 1, 0, 0) for x and (0, 0, z, 1) for y
+  // Fill the A matrix (z_, 1, 0, 0) for x_ and (0, 0, z_, 1) for y_
   A_mat << z_pos1, 1, 0, 0, 0, 0, z_pos1, 1, z_pos2, 1, 0, 0, 0, 0, z_pos2, 1,
       z_pos3, 1, 0, 0, 0, 0, z_pos3, 1;
 
-  // Fill the d vector with x and y values
+  // Fill the d vector with x_ and y_ values
   d_vec << x_pos1, y_pos1, x_pos2, y_pos2, x_pos3, y_pos3;
 
   // Fill the weights vector
@@ -625,21 +625,21 @@ int LinearSeedFinder::uniqueLayersHit(
     const std::vector<ldmx::Measurement>& digi_points) {
   std::vector<ldmx::Measurement> sorted_points = digi_points;
 
-  // Sort by z position in the Recoil
+  // Sort by z_ position in the Recoil
   std::sort(sorted_points.begin(), sorted_points.end(),
             [](const ldmx::Measurement& meas1, const ldmx::Measurement& meas2) {
               return meas1.getGlobalPosition()[0] <
                      meas2.getGlobalPosition()[0];
             });
 
-  // Remove duplicates to ensure we only keep unique z positions
+  // Remove duplicates to ensure we only keep unique z_ positions
   auto last = std::unique(
       sorted_points.begin(), sorted_points.end(),
       [](const ldmx::Measurement& meas1, const ldmx::Measurement& meas2) {
         return meas1.getGlobalPosition()[0] == meas2.getGlobalPosition()[0];
       });
 
-  // return the number of unique layer hits
+  // return the number of unique layer_ hits_
   return std::distance(sorted_points.begin(), last);
 }  // uniqueLayersHit
 

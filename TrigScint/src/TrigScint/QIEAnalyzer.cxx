@@ -14,14 +14,14 @@ QIEAnalyzer::QIEAnalyzer(const std::string& name, framework::Process& process)
 
 void QIEAnalyzer::configure(framework::config::Parameters& parameters) {
   inputCol_ = parameters.getParameter<std::string>("inputCollection");
-  inputPassName_ = parameters.getParameter<std::string>("inputPassName");
+  input_pass_name_ = parameters.getParameter<std::string>("inputPassName");
   peds_ = parameters.getParameter<std::vector<double> >("pedestals");
   gain_ = parameters.getParameter<std::vector<double> >("gain");
   startSample_ = parameters.getParameter<int>("startSample");
 
   std::cout << " [ QIEAnalyzer ] In configure(), got parameters "
             << "\n\t inputCollection = " << inputCol_
-            << "\n\t inputPassName = " << inputPassName_
+            << "\n\t inputPassName = " << input_pass_name_
             << "\n\t startSample = " << startSample_
             << "\n\t pedestals[0] = " << peds_[0]
             << "\n\t gain[0] = " << gain_[0] << "\t." << std::endl;
@@ -31,7 +31,7 @@ void QIEAnalyzer::configure(framework::config::Parameters& parameters) {
 
 void QIEAnalyzer::analyze(const framework::Event& event) {
   const auto channels{
-      event.getCollection<trigscint::EventReadout>(inputCol_, inputPassName_)};
+      event.getCollection<trigscint::EventReadout>(inputCol_, input_pass_name_)};
 
   int evNb = event.getEventNumber();
   //	while (evNb < 0 ) {

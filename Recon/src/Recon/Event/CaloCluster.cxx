@@ -8,7 +8,7 @@ CaloCluster::~CaloCluster() { clear(); }
 
 std::ostream& operator<<(std::ostream& o, const CaloCluster& c) {
   return o << "CaloCluster { " << "Energy: " << c.energy_ << ", "
-           << "Number of hits: " << c.nHits_ << " }";
+           << "Number of hits_: " << c.nHits_ << " }";
 }
 
 void CaloCluster::clear() {

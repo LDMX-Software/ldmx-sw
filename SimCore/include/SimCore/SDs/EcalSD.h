@@ -1,7 +1,7 @@
 /**
  * @file EcalSD.h
  * @brief Class defining an ECal sensitive detector using an EcalHexReadout to
- * create the hits
+ * create the hits_
  * @author Jeremy McCormick, SLAC National Accelerator Laboratory
  */
 
@@ -31,17 +31,17 @@ namespace simcore {
 
 /**
  * @class EcalSD
- * @brief ECal sensitive detector that uses an EcalHexReadout to create the hits
+ * @brief ECal sensitive detector that uses an EcalHexReadout to create the hits_
  */
 class EcalSD : public SensitiveDetector {
  public:
-  /// Name of output collection of hits
+  /// Name of output collection of hits_
   static const std::string COLLECTION_NAME;
 
   /**
    * Class constructor.
    * @param name The name of the sensitive detector.
-   * @param theCollectionName The name of the hits collection.
+   * @param theCollectionName The name of the hits_ collection.
    * @param subDetID The subdetector ID.
    */
   EcalSD(const std::string& name, simcore::ConditionsInterface& ci,
@@ -66,24 +66,24 @@ class EcalSD : public SensitiveDetector {
   }
 
   /**
-   * Process steps to create hits.
+   * Process steps to create hits_.
    * @param aStep The step information.
    * @param ROhist The readout history.
    */
   G4bool ProcessHits(G4Step* aStep, G4TouchableHistory* ROhist) override;
 
   /**
-   * Add our hits to the event bus.
+   * Add our hits_ to the event bus.
    */
   virtual void saveHits(framework::Event& event) override;
 
   /**
-   * Clear the map of hits we have accumulated
+   * Clear the map of hits_ we have accumulated
    */
   virtual void OnFinishedEvent() override { hits_.clear(); }
 
  private:
-  /// map of hits to add to the event (will be squashed)
+  /// map of hits_ to add to the event (will be squashed)
   std::map<ldmx::EcalID, ldmx::SimCalorimeterHit> hits_;
   /// enable hit contribs
   bool enableHitContribs_;

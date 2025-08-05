@@ -79,7 +79,7 @@ class SimulatorBase : public framework::Producer {
   virtual void saveTracks(framework::Event& event);
 
   /*
-   * Save hits from sensitive detectors.
+   * Save hits_ from sensitive detectors.
    */
   virtual void saveSDHits(framework::Event& event);
 

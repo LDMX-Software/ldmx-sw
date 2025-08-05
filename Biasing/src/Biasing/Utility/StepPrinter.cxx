@@ -12,8 +12,8 @@ namespace utility {
 StepPrinter::StepPrinter(const std::string& name,
                          framework::config::Parameters& parameters)
     : simcore::UserAction(name, parameters) {
-  trackID_ = parameters.getParameter<int>("track_id");
-  processName_ = parameters.getParameter<std::string>("process_name");
+  track_id_ = parameters.getParameter<int>("track_id");
+  process_name_ = parameters.getParameter<std::string>("process_name");
   depth_ = parameters.getParameter<int>("depth");
 }
 
@@ -25,26 +25,26 @@ void StepPrinter::stepping(const G4Step* step) {
   const auto parent{track->GetParentID()};
   // Don't bother filling the map if we aren't going to use it
   if (depth_ > 0) {
-    trackParents_[track_id] = parent;
+    track_parents_[track_id] = parent;
   }
 
   auto process{track->GetCreatorProcess()};
   std::string process_name{process ? process->GetProcessName() : "Primary"};
   // Unwrap biasing part of process name if present
   if (process_name.find("biasWrapper") != std::string::npos) {
-    std::size_t pos = process_name.find_first_of("(") + 1;
-    process_name = process_name.substr(pos, process_name.size() - pos - 1);
+    std::size_t pos_ = process_name.find_first_of("(") + 1;
+    process_name = process_name.substr(pos_, process_name.size() - pos_ - 1);
   }
 
   // This could be a negated condition, but it is easier to read this way
   //
   auto track_map{simcore::g4user::TrackingAction::get()->getTrackMap()};
-  if (track_id == trackID_ ||  // We are the track of interest
+  if (track_id == track_id_ ||  // We are the track of interest
       track_map.isDescendant(
-          track_id, trackID_,
+          track_id, track_id_,
           depth_) ||  // We are a descendent of the track of interest
       process_name ==
-          processName_  // The parent process was the process of interest
+          process_name_  // The parent process was the process of interest
   ) {
     // This is an interesting track -> Carry on processing
   } else {

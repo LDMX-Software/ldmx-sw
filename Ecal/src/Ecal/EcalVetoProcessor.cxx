@@ -87,7 +87,7 @@ void EcalVetoProcessor::configure(framework::config::Parameters &parameters) {
   rt_ = std::make_unique<ldmx::Ort::ONNXRuntime>(
       parameters.get<std::string>("bdt_file"));
 
-  // Read in arrays holding 68% containment radius per layer
+  // Read in arrays holding 68% containment radius_ per layer_
   // for different bins in momentum/angle
   roc_file_name_ = parameters.get<std::string>("roc_file");
   if (!std::ifstream(roc_file_name_).good()) {
@@ -174,7 +174,7 @@ void EcalVetoProcessor::produce(framework::Event &event) {
 
   clearProcessor();
 
-  // Get the collection of Ecal scoring plane hits. If it doesn't exist,
+  // Get the collection of Ecal scoring plane hits_. If it doesn't exist,
   // don't bother adding any truth tracking information.
 
   std::array<float, 3> recoil_p = {0., 0., 0.};
@@ -255,7 +255,7 @@ void EcalVetoProcessor::produce(framework::Event &event) {
                         (recoil_p_at_target[2] * recoil_p_at_target[2]));
           }
         }
-      }  // end loop on target SP hits
+      }  // end loop on target SP hits_
     }  // end condition on target SP
   }  // end condition on ecal SP
 
@@ -321,7 +321,7 @@ void EcalVetoProcessor::produce(framework::Event &event) {
   // Get projected trajectories for electron and photon
   std::vector<XYCoords> ele_trajectory, photon_trajectory,
       ele_trajectory_at_target;
-  // Require that z-momentum is positive (which will also exclude the default
+  // Require that z_-momentum is positive (which will also exclude the default
   // initializaton) Require that the positions are not the default initializaton
   if ((recoil_p[2] > 0.) && (recoil_p_at_target[2] > 0.) &&
       (recoil_pos[0] != -9999.) && (recoil_pos_at_target[0] != -9999.)) {
@@ -393,12 +393,12 @@ void EcalVetoProcessor::produce(framework::Event &event) {
   profiling_map_["roc_var"] +=
       std::chrono::duration<float, std::milli>(roc_var - trajectories).count();
 
-  // Get the collection of digitized Ecal hits from the event.
+  // Get the collection of digitized Ecal hits_ from the event.
   const std::vector<ldmx::EcalHit> ecal_rec_hits =
       event.getCollection<ldmx::EcalHit>(rec_coll_name_, rec_pass_name_);
 
   ldmx::EcalID global_centroid =
-      GetShowerCentroidIDAndRMS(ecal_rec_hits, shower_rms_);
+      getShowerCentroidIdAndRms(ecal_rec_hits, shower_rms_);
   /* ~~ Fill the hit map ~~ O(n)  */
   fillHitMap(ecal_rec_hits, cell_map_);
   bool do_tight = true;
@@ -410,7 +410,7 @@ void EcalVetoProcessor::produce(framework::Event &event) {
   profiling_map_["fill_hitmaps"] +=
       std::chrono::duration<float, std::milli>(fill_hitmaps - roc_var).count();
 
-  // Loop over the hits from the event to calculate the rest of the important
+  // Loop over the hits_ from the event to calculate the rest of the important
   // quantities
 
   float w_avg_layer_hit = 0;
@@ -473,13 +473,13 @@ void EcalVetoProcessor::produce(framework::Event &event) {
       std::chrono::duration<float, std::milli>(containment_var - fill_hitmaps)
           .count();
 
-  // MIP tracking:  vector of hits to be used in the MIP tracking algorithm. All
-  // hits inside the electron ROC (or all hits in the ECal if the event is
+  // MIP tracking:  vector of hits_ to be used in the MIP tracking algorithm. All
+  // hits_ inside the electron ROC (or all hits_ in the ECal if the event is
   // missing an electron) will be included.
   std::vector<ldmx::HitData> tracking_hit_list;
 
   ldmx_log(trace)
-      << "   Loop over the hits from the event to calculate the BDT features";
+      << "   Loop over the hits_ from the event to calculate the BDT features";
 
   for (const ldmx::EcalHit &hit : ecal_rec_hits) {
     // Layer-wise quantities
@@ -497,15 +497,15 @@ void EcalVetoProcessor::produce(framework::Event &event) {
     n_readout_hits_++;
     ecal_layer_edep_readout_[id.layer()] += hit.getEnergy();
     ecal_layer_time_[id.layer()] += (hit.getEnergy()) * hit.getTime();
-    auto [x, y, z] = geometry_->getPosition(id);
-    x_mean += x * hit.getEnergy();
-    y_mean += y * hit.getEnergy();
+    auto [x_, y_, z_] = geometry_->getPosition(id);
+    x_mean += x_ * hit.getEnergy();
+    y_mean += y_ * hit.getEnergy();
     avg_layer_hit_ += id.layer();
     w_avg_layer_hit += id.layer() * hit.getEnergy();
     if (deepest_layer_hit_ < id.layer()) {
       deepest_layer_hit_ = id.layer();
     }
-    XYCoords xy_pair = std::make_pair(x, y);
+    XYCoords xy_pair = std::make_pair(x_, y_);
     float distance_ele_trajectory =
         ele_trajectory.size()
             ? sqrt(pow((xy_pair.first - ele_trajectory[id.layer()].first), 2) +
@@ -579,9 +579,9 @@ void EcalVetoProcessor::produce(framework::Event &event) {
     if (distance_ele_trajectory >= ele_radii[id.layer()] ||
         distance_ele_trajectory == -1.0) {
       ldmx::HitData hd;
-      hd.pos = ROOT::Math::XYZVector(xy_pair.first, xy_pair.second,
+      hd.pos_ = ROOT::Math::XYZVector(xy_pair.first, xy_pair.second,
                                      geometry_->getZPosition(id.layer()));
-      hd.layer = id.layer();
+      hd.layer_ = id.layer();
       tracking_hit_list.push_back(hd);
     }
   }  // end loop over rechits
@@ -641,17 +641,17 @@ void EcalVetoProcessor::produce(framework::Event &event) {
     }
   }
 
-  // Loop over hits a second time to find the standard deviations.
+  // Loop over hits_ a second time to find the standard deviations.
   for (const ldmx::EcalHit &hit : ecal_rec_hits) {
     ldmx::EcalID id(hit.getID());
-    auto [x, y, z] = geometry_->getPosition(id);
+    auto [x_, y_, z_] = geometry_->getPosition(id);
     if (hit.getEnergy() > 0) {
-      x_std_ += pow((x - x_mean), 2) * hit.getEnergy();
-      y_std_ += pow((y - y_mean), 2) * hit.getEnergy();
+      x_std_ += pow((x_ - x_mean), 2) * hit.getEnergy();
+      y_std_ += pow((y_ - y_mean), 2) * hit.getEnergy();
       std_layer_hit_ +=
           pow((id.layer() - w_avg_layer_hit), 2) * hit.getEnergy();
     }
-    XYCoords xy_pair = std::make_pair(x, y);
+    XYCoords xy_pair = std::make_pair(x_, y_);
     float distance_ele_trajectory =
         ele_trajectory.size()
             ? sqrt(pow((xy_pair.first - ele_trajectory[id.layer()].first), 2) +
@@ -748,7 +748,7 @@ void EcalVetoProcessor::produce(framework::Event &event) {
   ldmx_log(trace) << "   Find out if the recoil electron is fiducial";
 
   // Find the location of the recoil electron
-  // Ecal face is not where the first layer starts,
+  // Ecal face is not where the first layer_ starts,
   // defined in DetDescr/python/EcalGeometry.py
   const float dz_from_face{7.932};
   float drifted_recoil_x{-9999.};
@@ -768,11 +768,11 @@ void EcalVetoProcessor::produce(framework::Event &event) {
 
   // Check if it's fiducial
   bool inside_ecal_cell{false};
-  // At module level
+  // At module_ level
   const auto ecal_id = geometry_->getID(drifted_recoil_x, drifted_recoil_y,
                                         recoil_layer_index, true);
   if (!ecal_id.null()) {
-    // If fiducial at module level, check at cell level
+    // If fiducial at module_ level, check at cell level
     const auto cell_id =
         geometry_->getID(drifted_recoil_x, drifted_recoil_y, recoil_layer_index,
                          ecal_id.getModuleID(), true);
@@ -832,7 +832,7 @@ void EcalVetoProcessor::produce(framework::Event &event) {
     }
     ldmx_log(trace) << "   Electron trajectory calculated";
   } else {
-    // Electron trajectory is missing, so all hits in the Ecal are fair game.
+    // Electron trajectory is missing, so all hits_ in the Ecal are fair game.
     // Pick e/ptraj so that they won't restrict the tracking algorithm (place
     // them far outside the ECal).
     ldmx_log(trace) << "   Electron trajectory is missing";
@@ -850,7 +850,7 @@ void EcalVetoProcessor::produce(framework::Event &event) {
     ep_dot_ = 999.;
     ep_dot_at_target_ = 999.;
   }
-  // Took out MIP tracking here (starting at near photon hits)
+  // Took out MIP tracking here (starting at near photon hits_)
   ldmx::EcalTrajectoryInfo ecal_mip_collection;
   ldmx_log(trace) << "   Set up input info  for MIP tracking";
   ecal_mip_collection.setEleTrajectory(ele_trajectory);
@@ -967,7 +967,7 @@ void EcalVetoProcessor::onProcessEnd() {
                  << profiling_map_["bdt_variables"] / nevents_ << " ms";
 }
 /* Function to calculate the energy weighted shower centroid */
-ldmx::EcalID EcalVetoProcessor::GetShowerCentroidIDAndRMS(
+ldmx::EcalID EcalVetoProcessor::getShowerCentroidIdAndRms(
     const std::vector<ldmx::EcalHit> &ecal_rec_hits, float &shower_rms) {
   auto wgt_centroid_coords = std::make_pair<float, float>(0., 0.);
   float sum_edep = 0;
@@ -977,8 +977,8 @@ ldmx::EcalID EcalVetoProcessor::GetShowerCentroidIDAndRMS(
   for (const ldmx::EcalHit &hit : ecal_rec_hits) {
     ldmx::EcalID id(hit.getID());
     CellEnergyPair cell_energy_pair = std::make_pair(id, hit.getEnergy());
-    auto [x, y, z] = geometry_->getPosition(id);
-    XYCoords centroid_coords = std::make_pair(x, y);
+    auto [x_, y_, z_] = geometry_->getPosition(id);
+    XYCoords centroid_coords = std::make_pair(x_, y_);
     wgt_centroid_coords.first = wgt_centroid_coords.first +
                                 centroid_coords.first * cell_energy_pair.second;
     wgt_centroid_coords.second =
@@ -995,8 +995,8 @@ ldmx::EcalID EcalVetoProcessor::GetShowerCentroidIDAndRMS(
   // Find Nearest Cell to Centroid
   float max_dist = 1e6;
   for (const ldmx::EcalHit &hit : ecal_rec_hits) {
-    auto [x, y, z] = geometry_->getPosition(hit.getID());
-    XYCoords centroid_coords = std::make_pair(x, y);
+    auto [x_, y_, z_] = geometry_->getPosition(hit.getID());
+    XYCoords centroid_coords = std::make_pair(x_, y_);
 
     float delta_r =
         pow(pow((centroid_coords.first - wgt_centroid_coords.first), 2) +
@@ -1033,23 +1033,23 @@ void EcalVetoProcessor::fillIsolatedHitMap(
     auto isolated_hit = std::make_pair(true, ldmx::EcalID());
     ldmx::EcalID id(hit.getID());
     if (do_tight) {
-      // Disregard hits that are on the centroid.
+      // Disregard hits_ that are on the centroid.
       if (id == global_centroid) continue;
 
-      // Skip hits that are on centroid inner ring
+      // Skip hits_ that are on centroid inner ring
       if (geometry_->isNN(global_centroid, id)) {
         continue;
       }
     }
 
-    // Skip hits that have a readout neighbor
+    // Skip hits_ that have a readout neighbor
     // Get neighboring cell id's and try to look them up in the full cell map
     // (constant speed algo.)
-    //  these ideas are only cell/module (must ignore layer)
+    //  these ideas are only cell/module_ (must ignore layer_)
     std::vector<ldmx::EcalID> cell_nbr_ids = geometry_->getNN(id);
 
     for (int k = 0; k < cell_nbr_ids.size(); k++) {
-      // update neighbor ID to the current layer
+      // update neighbor ID to the current layer_
       cell_nbr_ids[k] = ldmx::EcalID(id.layer(), cell_nbr_ids[k].module(),
                                    cell_nbr_ids[k].cell());
       // look in cell hit map to see if it is there

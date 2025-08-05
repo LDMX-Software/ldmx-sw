@@ -53,7 +53,7 @@ void TaggerHitFilter::stepping(const G4Step* step) {
     return;
   }
 
-  // A particle will only leave hits in the active silicon so other volumes can
+  // A particle will only leave hits_ in the active silicon so other volumes can
   // be skipped for now.
   auto current_volume = (track->GetVolume());
   static auto tagger_physical_volume =
@@ -63,7 +63,7 @@ void TaggerHitFilter::stepping(const G4Step* step) {
   }
   if (current_volume == tagger_physical_volume) return;
 
-  // The copy number is used to identify which layer energy was deposited into.
+  // The copy number is used to identify which layer_ energy was deposited into.
   int copy_number{0};
   // Get the pre-step point
   auto* pre_step_point = step->GetPreStepPoint();

@@ -43,7 +43,7 @@ namespace reco {
 /**
  * Minimal example of a processor.
  *
- * This processor will loop over all of the ECal hits in an event and
+ * This processor will loop over all of the ECal hits_ in an event and
  * print out their details.
  */
 class GreedyAmbiguitySolver final : public TrackingGeometryUser {
@@ -73,7 +73,7 @@ class GreedyAmbiguitySolver final : public TrackingGeometryUser {
    *
    * The user specified parameters that are availabed are defined
    * in the python configuration class. Look at the my_processor.py
-   * module of the EventProc python for the python structure.
+   * module_ of the EventProc python for the python structure.
    *
    * @param parameters Set of parameters used to configure this processor.
    */
@@ -87,7 +87,7 @@ class GreedyAmbiguitySolver final : public TrackingGeometryUser {
   void produce(framework::Event& event) override;
 
  private:
-  /// Maximum amount of shared hits per track.
+  /// Maximum amount of shared hits_ per track.
   std::uint32_t maximum_shared_hits_{1};
   /// Maximum number of iterations
   std::uint32_t maximum_iterations_{1000};

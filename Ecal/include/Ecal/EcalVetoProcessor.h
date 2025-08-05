@@ -86,7 +86,7 @@ class EcalVetoProcessor : public framework::Producer {
   void fillHitMap(const std::vector<ldmx::EcalHit>& ecal_rec_hits,
                   std::map<ldmx::EcalID, float>& cell_map_);
 
-  /* Function to take loaded hit maps and find isolated hits in them */
+  /* Function to take loaded hit maps and find isolated hits_ in them */
   void fillIsolatedHitMap(const std::vector<ldmx::EcalHit>& ecal_rec_hits,
                           ldmx::EcalID global_centroid,
                           std::map<ldmx::EcalID, float>& cell_map,
@@ -126,8 +126,8 @@ class EcalVetoProcessor : public framework::Producer {
   float std_layer_hit_{0};
   float ecal_back_energy_{0};
 
-  /// Number of hits outside of the electron roc in the Ecal
-  /// or if the electron trajectory is missing, all the hits in the Ecal
+  /// Number of hits_ outside of the electron roc in the Ecal
+  /// or if the electron trajectory is missing, all the hits_ in the Ecal
   int n_tracking_hits_{0};
   /// Angular separation between the projected photon and electron trajectories
   /// as projected at ECAL

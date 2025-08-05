@@ -43,20 +43,20 @@ void SimObjects::onProcessStart() {
   // create sim particles histograms
   histograms_.create("SimParticles.E", "Vertex Total Energy [MeV]", 800, 0.,
                      8000.);
-  histograms_.create("SimParticles.px", "Vertex Momentum in x-Direction [MeV]",
+  histograms_.create("SimParticles.px", "Vertex Momentum in x_-Direction [MeV]",
                      50, 0., 500.);
-  histograms_.create("SimParticles.py", "Vertex Momentum in y-Direction [MeV]",
+  histograms_.create("SimParticles.py", "Vertex Momentum in y_-Direction [MeV]",
                      50, 0., 500.);
-  histograms_.create("SimParticles.pz", "Vertex Momentum in z-Direction [MeV]",
+  histograms_.create("SimParticles.pz", "Vertex Momentum in z_-Direction [MeV]",
                      400, 0., 4000.);
   histograms_.create("SimParticles.time", "Global Time of Creation [ns]", 50,
                      0., 10.);
   histograms_.create("SimParticles.pdg", "PDG ID of Particle", 201, -100, 100);
-  histograms_.create("SimParticles.x", "Vertex x-Position [mm]", 401, -200,
+  histograms_.create("SimParticles.x_", "Vertex x_-Position [mm]", 401, -200,
                      200);
-  histograms_.create("SimParticles.y", "Vertex y-Position [mm]", 401, -200,
+  histograms_.create("SimParticles.y_", "Vertex y_-Position [mm]", 401, -200,
                      200);
-  histograms_.create("SimParticles.z", "Vertex z-Position [mm]", 171, -700,
+  histograms_.create("SimParticles.z_", "Vertex z_-Position [mm]", 171, -700,
                      1000.);
   histograms_.create("SimParticles.process", "Creator Process Type", 20, 0, 20);
   histograms_.create("SimParticles.track_id", "Track ID of Particle", 100, 0,
@@ -67,18 +67,18 @@ void SimObjects::onProcessStart() {
 
   // create pn children histograms
   histograms_.create("pn_child.E", "Vertex Total Energy [MeV]", 800, 0., 8000.);
-  histograms_.create("pn_child.px", "Vertex Momentum in x-Direction [MeV]", 50,
+  histograms_.create("pn_child.px", "Vertex Momentum in x_-Direction [MeV]", 50,
                      0., 500.);
-  histograms_.create("pn_child.py", "Vertex Momentum in y-Direction [MeV]", 50,
+  histograms_.create("pn_child.py", "Vertex Momentum in y_-Direction [MeV]", 50,
                      0., 500.);
-  histograms_.create("pn_child.pz", "Vertex Momentum in z-Direction [MeV]", 400,
+  histograms_.create("pn_child.pz", "Vertex Momentum in z_-Direction [MeV]", 400,
                      0., 4000.);
   histograms_.create("pn_child.time", "Global Time of Creation [ns]", 50, 0.,
                      10.);
   histograms_.create("pn_child.pdg", "PDG ID of Particle", 201, -100, 100);
-  histograms_.create("pn_child.x", "Vertex x-Position [mm]", 401, -200, 200);
-  histograms_.create("pn_child.y", "Vertex y-Position [mm]", 401, -200, 200);
-  histograms_.create("pn_child.z", "Vertex z-Position [mm]", 171, -700, 1000.);
+  histograms_.create("pn_child.x_", "Vertex x_-Position [mm]", 401, -200, 200);
+  histograms_.create("pn_child.y_", "Vertex y_-Position [mm]", 401, -200, 200);
+  histograms_.create("pn_child.z_", "Vertex z_-Position [mm]", 171, -700, 1000.);
   histograms_.create("pn_child.track_id", "Track ID of Particle", 100, 0, 1000);
   histograms_.create("pn_child.parent", "Track ID of Parent", 100, 0, 1000);
   histograms_.create("pn_child.children", "Track IDs of Children", 100, 0,
@@ -102,9 +102,9 @@ void SimObjects::createCalorimeterHists(const std::string& coll_name) {
                      200);
   histograms_.create(coll_name + ".edep", "Energy Deposited [MeV]", 100, 0,
                      200);
-  histograms_.create(coll_name + ".x", "Hit x-Position [mm]", 401, -200, 200);
-  histograms_.create(coll_name + ".y", "Hit y-Position [mm]", 401, -200, 200);
-  histograms_.create(coll_name + ".z", "Hit z-Position [mm]", 171, -700, 1000.);
+  histograms_.create(coll_name + ".x_", "Hit x_-Position [mm]", 401, -200, 200);
+  histograms_.create(coll_name + ".y_", "Hit y_-Position [mm]", 401, -200, 200);
+  histograms_.create(coll_name + ".z_", "Hit z_-Position [mm]", 171, -700, 1000.);
   histograms_.create(coll_name + ".time", "Hit Time [ns]", 50, 0., 10.);
   histograms_.create(coll_name + ".n_contribs", "Number of Contributors", 20,
                      0., 20.);
@@ -115,18 +115,18 @@ void SimObjects::createTrackerHists(const std::string& coll_name) {
   getHistoDirectory();
   histograms_.create(coll_name + ".particle_E", "Particle E at Hit [MeV]", 400,
                      0, 4000);
-  histograms_.create(coll_name + ".particle_px", "Particle Momentum in x [MeV]",
+  histograms_.create(coll_name + ".particle_px", "Particle Momentum in x_ [MeV]",
                      50, 0., 500.);
-  histograms_.create(coll_name + ".particle_py", "Particle Momentum in y [MeV]",
+  histograms_.create(coll_name + ".particle_py", "Particle Momentum in y_ [MeV]",
                      50, 0., 500.);
-  histograms_.create(coll_name + ".particle_pz", "Particle Momentum in z [MeV]",
+  histograms_.create(coll_name + ".particle_pz", "Particle Momentum in z_ [MeV]",
                      400, 0., 4000.);
   histograms_.create(coll_name + ".edep", "Energy Deposited [MeV]", 100, 0,
                      200);
   histograms_.create(coll_name + ".time", "Hit Time [ns]", 50, 0., 10.);
-  histograms_.create(coll_name + ".x", "Hit x-Position [mm]", 401, -200, 200);
-  histograms_.create(coll_name + ".y", "Hit y-Position [mm]", 401, -200, 200);
-  histograms_.create(coll_name + ".z", "Hit z-Position [mm]", 171, -700, 1000.);
+  histograms_.create(coll_name + ".x_", "Hit x_-Position [mm]", 401, -200, 200);
+  histograms_.create(coll_name + ".y_", "Hit y_-Position [mm]", 401, -200, 200);
+  histograms_.create(coll_name + ".z_", "Hit z_-Position [mm]", 171, -700, 1000.);
   histograms_.create(coll_name + ".track", "Particle Track ID", 100, 0, 1000);
   histograms_.create(coll_name + ".pdg", "Particle PDG ID", 401, -200, 200);
   return;
@@ -160,9 +160,9 @@ void SimObjects::analyze(const framework::Event& event) {
     histograms_.fill("SimParticles.pz", momentum.at(2));
     histograms_.fill("SimParticles.time", particle.getTime());
     histograms_.fill("SimParticles.pdg", particle.getPdgID());
-    histograms_.fill("SimParticles.x", vertex.at(0));
-    histograms_.fill("SimParticles.y", vertex.at(1));
-    histograms_.fill("SimParticles.z", vertex.at(2));
+    histograms_.fill("SimParticles.x_", vertex.at(0));
+    histograms_.fill("SimParticles.y_", vertex.at(1));
+    histograms_.fill("SimParticles.z_", vertex.at(2));
     histograms_.fill("SimParticles.process", particle.getProcessType());
     histograms_.fill("SimParticles.track_id", track_id);
     for (auto const& parent : particle.getParents())
@@ -179,9 +179,9 @@ void SimObjects::analyze(const framework::Event& event) {
       histograms_.fill("pn_child.pz", momentum.at(2));
       histograms_.fill("pn_child.time", particle.getTime());
       histograms_.fill("pn_child.pdg", particle.getPdgID());
-      histograms_.fill("pn_child.x", vertex.at(0));
-      histograms_.fill("pn_child.y", vertex.at(1));
-      histograms_.fill("pn_child.z", vertex.at(2));
+      histograms_.fill("pn_child.x_", vertex.at(0));
+      histograms_.fill("pn_child.y_", vertex.at(1));
+      histograms_.fill("pn_child.z_", vertex.at(2));
       histograms_.fill("pn_child.track_id", track_id);
       for (auto const& parent : particle.getParents())
         histograms_.fill("pn_child.parent", parent);
@@ -204,12 +204,12 @@ void SimObjects::analyze(const framework::Event& event) {
       }
 
       histograms_.fill(pt.name() + ".edep", hit.getEdep());
-      auto pos{hit.getPosition()};
-      histograms_.fill(pt.name() + ".x", pos.at(0));
-      histograms_.fill(pt.name() + ".y", pos.at(1));
-      histograms_.fill(pt.name() + ".z", pos.at(2));
+      auto pos_{hit.getPosition()};
+      histograms_.fill(pt.name() + ".x_", pos_.at(0));
+      histograms_.fill(pt.name() + ".y_", pos_.at(1));
+      histograms_.fill(pt.name() + ".z_", pos_.at(2));
       histograms_.fill(pt.name() + ".time", hit.getTime());
-    }  // loop over hits in the calorimeter collection
+    }  // loop over hits_ in the calorimeter collection
   }  // loop over different calorimeter hit collections
 
   for (auto const& pt : track_colls) {
@@ -223,13 +223,13 @@ void SimObjects::analyze(const framework::Event& event) {
       histograms_.fill(pt.name() + ".particle_pz", momentum.at(2));
       histograms_.fill(pt.name() + ".edep", hit.getEdep());
       histograms_.fill(pt.name() + ".time", hit.getTime());
-      auto pos{hit.getPosition()};
-      histograms_.fill(pt.name() + ".x", pos.at(0));
-      histograms_.fill(pt.name() + ".y", pos.at(1));
-      histograms_.fill(pt.name() + ".z", pos.at(2));
+      auto pos_{hit.getPosition()};
+      histograms_.fill(pt.name() + ".x_", pos_.at(0));
+      histograms_.fill(pt.name() + ".y_", pos_.at(1));
+      histograms_.fill(pt.name() + ".z_", pos_.at(2));
       histograms_.fill(pt.name() + ".track", hit.getTrackID());
       histograms_.fill(pt.name() + ".pdg", hit.getPdgID());
-    }  // loop over hits in the tracker collection
+    }  // loop over hits_ in the tracker collection
   }  // loop over different tracker hit collections
 
   return;

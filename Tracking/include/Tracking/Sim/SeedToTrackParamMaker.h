@@ -132,9 +132,9 @@ class SeedToTrackParamMaker {
     }
 
     // Define a new coordinate frame with its origin at the bottom space point,
-    // z axis along the magnetic field direction and y axis perpendicular to
+    // z_ axis along the magnetic field direction and y_ axis perpendicular to
     // vector from the bottom to middle space point. Hence, the projection of
-    // the middle space point on the tranverse plane will be located at the x
+    // the middle space point on the tranverse plane will be located at the x_
     // axis of the new frame.
     Acts::Vector3 relVec = spGlobalPositions[1] - spGlobalPositions[0];
     Acts::Vector3 newZAxis = bField.normalized();
@@ -214,7 +214,7 @@ class SeedToTrackParamMaker {
     // diretion
     Acts::ActsScalar v = pInGeV / std::hypot(pInGeV, massInGeV);
     Acts::ActsScalar vz = pzInGeV / std::hypot(pInGeV, massInGeV);
-    // The z coordinate of the bottom space point along the magnetic field
+    // The z_ coordinate of the bottom space point along the magnetic field
     // direction
     Acts::ActsScalar pathz = spGlobalPositions[0].dot(bField) / bField.norm();
     // The estimated time (use path length along magnetic field only if it's not

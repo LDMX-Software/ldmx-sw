@@ -26,7 +26,7 @@ typedef enum SubdetectorIDTypeEnum {
 
 /**
  * @class DetectorID
- * @brief Defines a 32-bit packed ID for uniquely identifying hits and
+ * @brief Defines a 32-bit packed ID for uniquely identifying hits_ and
  *  detector components
  *
  * @note This class has a memory footprint of a single 32-bit integer, so
@@ -86,15 +86,15 @@ class DetectorID {
 
 }  // namespace ldmx
 
-#define SUBDETECTORID_TEST(a, x)                                           \
-  if (!null() && !(subdet() == x)) {                                       \
+#define SUBDETECTORID_TEST(a, x_)                                           \
+  if (!null() && !(subdet() == x_)) {                                       \
     EXCEPTION_RAISE("DetectorIDMismatch", "Attempted to create " +         \
                                               std::string(a) +             \
                                               " from mismatched source " + \
                                               std::to_string(subdet()));   \
   }
-#define SUBDETECTORID_TEST2(a, x, y)                                       \
-  if (!null() && !(subdet() == x || subdet() == y)) {                      \
+#define SUBDETECTORID_TEST2(a, x_, y_)                                       \
+  if (!null() && !(subdet() == x_ || subdet() == y_)) {                      \
     EXCEPTION_RAISE("DetectorIDMismatch", "Attempted to create " +         \
                                               std::string(a) +             \
                                               " from mismatched source " + \

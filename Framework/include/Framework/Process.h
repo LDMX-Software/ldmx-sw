@@ -94,7 +94,7 @@ class Process {
   void requestFinish() { eventLimit_ = 0; }
 
   /**
-   * Construct a TDirectory* for the given module
+   * Construct a TDirectory* for the given module_
    */
   TDirectory *makeHistoDirectory(const std::string &dirName);
 

@@ -21,7 +21,7 @@ class HcalGeometryVerifier : public framework::Analyzer {
   void configure(framework::config::Parameters &parameters) override;
   /*
    *
-   * Determine which of x/y/z corresponds to the direction along, across, and
+   * Determine which of x_/y_/z_ corresponds to the direction along, across, and
    * through the bar respectively. Along corresponding to the length of the bar,
    * across to the width of the bar, and through to the thickness of the bar.
    *

@@ -27,11 +27,11 @@ using GenericTransformBField =
 /**
  * The default mapping transformation from the tracking space to the bfield
  * space The offset at 400. is the default to place the magnetic field map in
- * the correct location Create the transformation for the position map (z,x,y)
- * -> (x,y,z)
+ * the correct location Create the transformation for the position map (z_,x_,y_)
+ * -> (x_,y_,z_)
  */
 
-Acts::Vector3 default_transformPos(const Acts::Vector3& pos);
+Acts::Vector3 default_transformPos(const Acts::Vector3& pos_);
 
 /**
  * The dafault mapping transformation from the field space to the tracking space
@@ -40,7 +40,7 @@ Acts::Vector3 default_transformPos(const Acts::Vector3& pos);
  */
 
 Acts::Vector3 default_transformBField(const Acts::Vector3& field,
-                                      const Acts::Vector3& /*pos*/);
+                                      const Acts::Vector3& /*pos_*/);
 
 void testField(const std::shared_ptr<Acts::MagneticFieldProvider> bfield,
                const Acts::Vector3& eval_pos,
@@ -161,15 +161,15 @@ inline InterpolatedMagneticField3 rotateFieldMapXYZ(
   grid.setExteriorBins(Acts::Vector3::Zero());
 
   // [3] Create the transformation for the position
-  // map (z,x,y) -> (x,y,z)
+  // map (z_,x_,y_) -> (x_,y_,z_)
 
   /*
-  auto transformPos = [](const Acts::Vector3& pos, float offset=400.) {
+  auto transformPos = [](const Acts::Vector3& pos_, float offset=400.) {
 
     Acts::Vector3 rot_pos;
-    rot_pos(0)=pos(1);
-    rot_pos(1)=pos(2);
-    rot_pos(2)=pos(0) + offset;
+    rot_pos(0)=pos_(1);
+    rot_pos(1)=pos_(2);
+    rot_pos(2)=pos_(0) + offset;
 
     return rot_pos;
   };
@@ -180,7 +180,7 @@ inline InterpolatedMagneticField3 rotateFieldMapXYZ(
   // map (Bx,By,Bz) -> (Bx,By,Bz)
 
   // auto transformBField = [](const Acts::Vector3& field,
-  //                           const Acts::Vector3& /*pos*/) {
+  //                           const Acts::Vector3& /*pos_*/) {
   //
   //
   //   Acts::Vector3 rot_field;
@@ -212,7 +212,7 @@ inline InterpolatedMagneticField3 makeMagneticFieldMapXyzFromText(
     const std::string& fieldMapFile, Acts::ActsScalar lengthUnit,
     Acts::ActsScalar BFieldUnit, bool firstOctant, bool rotateAxes) {
   /// [1] Read in field map file
-  // Grid position points in x, y and z
+  // Grid position points in x_, y_ and z_
   std::vector<double> xPos;
   std::vector<double> yPos;
   std::vector<double> zPos;
@@ -228,7 +228,7 @@ inline InterpolatedMagneticField3 makeMagneticFieldMapXyzFromText(
   // [1] Read in file and fill values
   std::ifstream map_file(fieldMapFile.c_str(), std::ios::in);
   std::string line;
-  double x = 0., y = 0., z = 0.;
+  double x_ = 0., y_ = 0., z_ = 0.;
   double bx = 0., by = 0., bz = 0.;
 
   bool headerFound = false;
@@ -240,11 +240,11 @@ inline InterpolatedMagneticField3 makeMagneticFieldMapXyzFromText(
       continue;
     }
     std::istringstream tmp(line);
-    tmp >> x >> y >> z >> bx >> by >> bz;
+    tmp >> x_ >> y_ >> z_ >> bx >> by >> bz;
 
-    xPos.push_back(x);
-    yPos.push_back(y);
-    zPos.push_back(z);
+    xPos.push_back(x_);
+    yPos.push_back(y_);
+    zPos.push_back(z_);
     bField.push_back(Acts::Vector3(bx, by, bz));
   }
   map_file.close();

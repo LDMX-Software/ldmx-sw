@@ -22,8 +22,8 @@ namespace biasing {
 PhotoNuclearProductsFilter::PhotoNuclearProductsFilter(
     const std::string& name, framework::config::Parameters& parameters)
     : simcore::UserAction(name, parameters) {
-  productsPdgID_ = parameters.getParameter<std::vector<int> >("pdg_ids");
-  min_e = parameters.getParameter<double>("min_e");
+  products_pdg_id_ = parameters.getParameter<std::vector<int> >("pdg_ids");
+  min_e_ = parameters.getParameter<double>("min_e_");
 }
 
 PhotoNuclearProductsFilter::~PhotoNuclearProductsFilter() {}
@@ -53,9 +53,9 @@ void PhotoNuclearProductsFilter::stepping(const G4Step* step) {
     auto pdg_id{std::abs(secondary->GetParticleDefinition()->GetPDGEncoding())};
 
     // Check if the PDG ID is in the list of products of interest
-    if (std::find(productsPdgID_.begin(), productsPdgID_.end(), pdg_id) !=
-        productsPdgID_.end()) {
-      if (secondary->GetKineticEnergy() > min_e) {
+    if (std::find(products_pdg_id_.begin(), products_pdg_id_.end(), pdg_id) !=
+        products_pdg_id_.end()) {
+      if (secondary->GetKineticEnergy() > min_e_) {
         product_found = true;
       }
       break;

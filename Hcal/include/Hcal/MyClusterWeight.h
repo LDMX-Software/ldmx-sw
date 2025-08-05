@@ -15,7 +15,7 @@ class MyClusterWeight {
       const WorkingCluster& b) {  // returns weighting function, where smallest
                                   // weights will be combined first
 
-    double rmol = 10.00;    // Moliere radius of detector, roughly. In mm TODO
+    double rmol = 10.00;    // Moliere radius_ of detector, roughly. In mm TODO
     double dzchar = 100.0;  // lateral shower development in mm TODO
 
     double aE = a.centroid().E();

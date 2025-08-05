@@ -39,7 +39,7 @@ EcalDarkBremFilter::EcalDarkBremFilter(
 }
 
 void EcalDarkBremFilter::BeginOfEventAction(const G4Event*) {
-  foundAp_ = false;
+  found_ap_ = false;
   return;
 }
 
@@ -50,11 +50,11 @@ G4ClassificationOfNewTrack EcalDarkBremFilter::ClassifyNewTrack(
     ldmx_log(trace) << "Found A', still need to check if it originated in "
                        "requested volume.";
 
-    if (not foundAp_ and aTrack->GetTotalEnergy() > threshold_) {
+    if (not found_ap_ and aTrack->GetTotalEnergy() > threshold_) {
       // The A' is the first one created in this event and is above the energy
       // threshold
-      foundAp_ = true;
-    } else if (foundAp_) {
+      found_ap_ = true;
+    } else if (found_ap_) {
       AbortEvent("Found more than one A' during filtering.");
     } else {
       AbortEvent("A' was not produced above the required threshold.");
@@ -65,7 +65,7 @@ G4ClassificationOfNewTrack EcalDarkBremFilter::ClassifyNewTrack(
 }
 
 void EcalDarkBremFilter::NewStage() {
-  if (not foundAp_) AbortEvent("A' wasn't produced.");
+  if (not found_ap_) AbortEvent("A' wasn't produced.");
 
   return;
 }

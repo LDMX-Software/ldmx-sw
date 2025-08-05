@@ -58,7 +58,7 @@ void EventProcessor::createHistograms(
   }
 }
 
-DEFINE_FACTORY(event_processor);
+DEFINE_FACTORY(EventProcessor);
 
 Producer::Producer(const std::string &name, Process &process)
     : EventProcessor(name, process) {}

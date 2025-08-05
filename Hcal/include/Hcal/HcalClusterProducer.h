@@ -1,6 +1,6 @@
 /**
  * @file HcalClusterProducer.h
- * @brief Class that performs clustering of HCal hits
+ * @brief Class that performs clustering of HCal hits_
  * @author Sophie Middleton, Caltech
  */
 
@@ -29,7 +29,7 @@ namespace hcal {
 
 /**
  * @class HcalClusterProducer
- * @brief Make clusters from hits in the HCAL
+ * @brief Make clusters from hits_ in the HCAL
  */
 class HcalClusterProducer : public framework::Producer {
  public:

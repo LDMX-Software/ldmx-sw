@@ -16,9 +16,9 @@ void TrigScintHitDQM::onProcessStart() {
                      2000);
   histograms_.create("n_hits", "TrigScint hit multiplicity in the pad/event",
                      100, 0, 100);
-  histograms_.create("x", "Hit x position", 1000, -100, 100);
-  histograms_.create("y", "Hit y position", 1000, -100, 100);
-  histograms_.create("z", "Hit z position", 1000, -900, 100);
+  histograms_.create("x_", "Hit x_ position", 1000, -100, 100);
+  histograms_.create("y_", "Hit y_ position", 1000, -100, 100);
+  histograms_.create("z_", "Hit z_ position", 1000, -900, 100);
 
   histograms_.create("pe", "Pe deposition in a TrigScint bar", 250, 0, 1000);
   histograms_.create("hit_time", "TrigScint hit time (ns)", 600, -150, 150);
@@ -54,7 +54,7 @@ void TrigScintHitDQM::configure(framework::config::Parameters &ps) {
 }
 
 void TrigScintHitDQM::analyze(const framework::Event &event) {
-  // Get the collection of TrigScintHit digitized hits if the exists
+  // Get the collection of TrigScintHit digitized hits_ if the exists
   const std::vector<ldmx::TrigScintHit> TrigScintHits =
       event.getCollection<ldmx::TrigScintHit>(hitCollectionName_,
                                               trig_scint_passname_);
@@ -66,9 +66,9 @@ void TrigScintHitDQM::analyze(const framework::Event &event) {
   double totalPE{0};
   int noiseHitCount = 0;
 
-  ldmx_log(debug) << "Looping over hits in " << hitCollectionName_;
+  ldmx_log(debug) << "Looping over hits_ in " << hitCollectionName_;
 
-  // Loop through all TrigScint hits in the event
+  // Loop through all TrigScint hits_ in the event
 
   for (const ldmx::TrigScintHit &hit : TrigScintHits) {
     histograms_.fill("pe", hit.getPE());
@@ -80,10 +80,10 @@ void TrigScintHitDQM::analyze(const framework::Event &event) {
       noiseHitCount++;
       histograms_.fill("pe_noise", hit.getPE());
       histograms_.fill("id_noise", hit.getBarID());
-    } else {  // x, y, z not set for noise hits
-      histograms_.fill("x", hit.getXPos());
-      histograms_.fill("y", hit.getYPos());
-      histograms_.fill("z", hit.getZPos());
+    } else {  // x_, y_, z_ not set for noise hits_
+      histograms_.fill("x_", hit.getXPos());
+      histograms_.fill("y_", hit.getYPos());
+      histograms_.fill("z_", hit.getZPos());
     }
   }
 

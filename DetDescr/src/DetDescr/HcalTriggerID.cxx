@@ -17,7 +17,7 @@ void HcalTriggerID::createInterpreters() {
       new IDField("section", 1, SECTION_SHIFT,
                   SECTION_SHIFT + IDField::countOnes(SECTION_MASK) - 1));
   fields.push_back(
-      new IDField("layer", 2, LAYER_SHIFT,
+      new IDField("layer_", 2, LAYER_SHIFT,
                   LAYER_SHIFT + IDField::countOnes(LAYER_MASK) - 1));
   fields.push_back(
       new IDField("superstrip", 3, SUPERSTRIP_SHIFT,

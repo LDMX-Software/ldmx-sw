@@ -198,7 +198,7 @@ class EventFile {
    * 1. We have a parent file - Just follow the parent's lead
    *    by calling the parent's nextEvent.
    * 2. We are an output file (and we don't have a parent file).
-   *    Just increment the number of entries and the entry index.
+   *    Just increment the number of entries and the entry index_.
    * 3. We are an input file. Now we need to load the next entry
    *    of the our tree into the event bus objects.
    *    If we are configured to be "loopable", then we will

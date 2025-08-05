@@ -41,7 +41,7 @@ class TrigScintCluster {
   void clear();
 
   /**
-   * Take in the hits that make up the cluster.
+   * Take in the hits_ that make up the cluster.
    * @param idx The digi hit's entry number in the event's digi
    * collection.
    * @param hit The digi hit
@@ -50,7 +50,7 @@ class TrigScintCluster {
   void addHit(uint idx, const ldmx::TrigScintHit *hit);
 
   /**
-   * @param idx The digi collection index of the hit seeding the cluster
+   * @param idx The digi collection index_ of the hit seeding the cluster
    */
   void setSeed(int idx) { seed_ = idx; }
 
@@ -67,27 +67,27 @@ class TrigScintCluster {
   void setPE(float PE) { PE_ = PE; }
 
   /**
-   *The number of hits forming the cluster
-   * @param nHits Number of hits forming the cluster
+   *The number of hits_ forming the cluster
+   * @param nHits Number of hits_ forming the cluster
    */
   void setNHits(int nHits) { nHits_ = nHits; }
 
   /**
-   *The channel numbers of hits forming the cluster
-   * @param hitIDs vector of channel numbers of hits forming the cluster
+   *The channel numbers of hits_ forming the cluster
+   * @param hitIDs vector of channel numbers of hits_ forming the cluster
    */
   void setIDs(std::vector<unsigned int> &hitIDs) { hitIDs_ = hitIDs; }
 
   /**
-   *The cluster centroid in x,y,z
-   * @param x Cluster x coordinate
-   * @param y Cluster y coordinate
-   * @param z Cluster z coordinate (not implemented)
+   *The cluster centroid in x_,y_,z_
+   * @param x_ Cluster x_ coordinate
+   * @param y_ Cluster y_ coordinate
+   * @param z_ Cluster z_ coordinate (not implemented)
    */
-  void setCentroidXYZ(double x, double y, double z) {
-    centroidX_ = x;
-    centroidY_ = y;
-    centroidZ_ = z;
+  void setCentroidXYZ(double x_, double y_, double z_) {
+    centroidX_ = x_;
+    centroidY_ = y_;
+    centroidZ_ = z_;
   }
 
   /**
@@ -116,19 +116,19 @@ class TrigScintCluster {
   /** Get cluster total photoelectron count */
   double getPE() const { return PE_; }
 
-  /** Get the number of hits constituting the cluster */
+  /** Get the number of hits_ constituting the cluster */
   int getNHits() const { return nHits_; }
 
-  /** Get cluster centroid in x [mm] (not implmented) */
+  /** Get cluster centroid in x_ [mm] (not implmented) */
   double getCentroidX() const { return centroidX_; }
 
-  /** Get cluster centroid in y [mm] (not implmented) */
+  /** Get cluster centroid in y_ [mm] (not implmented) */
   double getCentroidY() const { return centroidY_; }
 
-  /** Get cluster centroid in z [mm] (not implmented) */
+  /** Get cluster centroid in z_ [mm] (not implmented) */
   double getCentroidZ() const { return centroidZ_; }
 
-  /** Get vector of channel IDs of hits forming the cluster */
+  /** Get vector of channel IDs of hits_ forming the cluster */
   const std::vector<unsigned int> &getHitIDs() const { return hitIDs_; }
 
   /** Get the cluster centroid in units of channel nb */
@@ -139,39 +139,39 @@ class TrigScintCluster {
   }
 
  private:
-  // hits forming the cluster
+  // hits_ forming the cluster
   std::vector<unsigned int> hitIDs_;
 
   // total cluster energy depostion
   double energy_{0};
 
-  // number of hits forming the cluster
+  // number of hits_ forming the cluster
   int nHits_{0};
 
   // total cluster photoelectron count
   float PE_{0};
 
-  // index of cluster seeding hit
+  // index_ of cluster seeding hit
   int seed_{-1};
 
   // hit centroid in units of channel nb: energy weighted average of the IDs of
-  // the hits forming the cluster
+  // the hits_ forming the cluster
   double centroid_{-1};
 
-  // hit centroid in x [mm] (not implemented)
+  // hit centroid in x_ [mm] (not implemented)
   double centroidX_{0};
 
-  // hit centroid in y [mm] (not implemented)
+  // hit centroid in y_ [mm] (not implemented)
   double centroidY_{0};
 
-  // hit centroid in z [mm] (not implemented)
+  // hit centroid in z_ [mm] (not implemented)
   double centroidZ_{0};
 
   // fraction of cluster energy deposited in a sim hit associated with beam
   // electrons
   float beamEfrac_{0.};
 
-  // cluster time: energy weighted average of the times of the hits forming the
+  // cluster time: energy weighted average of the times of the hits_ forming the
   // cluster
   float time_{0.};
 

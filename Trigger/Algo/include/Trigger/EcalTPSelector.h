@@ -35,9 +35,9 @@ class EcalTPSelector : public framework::Producer {
   virtual void produce(framework::Event& event);
 
   // helpers
-  void decodeTP(ldmx::HgcrocTrigDigi tp, double& x, double& y, double& z,
+  void decodeTP(ldmx::HgcrocTrigDigi tp, double& x_, double& y_, double& z_,
                 double& e);
-  /* double primitiveToEnergy(int tp, int layer); */
+  /* double primitiveToEnergy(int tp, int layer_); */
 
  private:
   // name of collection for EcalTPs to be passed as input
@@ -68,7 +68,7 @@ class EcalTPSelector : public framework::Producer {
   /*     10.915, 10.915, 14.783, 18.539, 18.539, 18.539, 18.539, 18.539, 18.539, 18.539,
    */
   /*     18.539, 18.539, 9.938}; */
-  /* float secondOrderEnergyCorrection_ = 4000. / 3940.5; */
+  /* float second_order_energy_correction_ = 4000. / 3940.5; */
   /* float mipSiEnergy_ = 0.130; */
   /* float adHoc_ = 1.0; // my adhoc correction factor, to match v14 :( */
   /* int hgc_compression_factor_ = 8; */

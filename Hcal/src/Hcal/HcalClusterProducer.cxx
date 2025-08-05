@@ -66,10 +66,10 @@ void HcalClusterProducer::produce(framework::Event& event) {
                            wcVec[c].centroid().Pz());
     cluster.setNHits(wcVec[c].getHits().size());
     cluster.addHits(wcVec[c].getHits());
-    std::vector<const ldmx::HcalHit*> hits = wcVec[c].getHits();
-    if (hits.size() > 0) {
-      std::sort(hits.begin(), hits.end(), compHitTimes);
-      cluster.setTime(hits[0]->getTime());
+    std::vector<const ldmx::HcalHit*> hits_ = wcVec[c].getHits();
+    if (hits_.size() > 0) {
+      std::sort(hits_.begin(), hits_.end(), compHitTimes);
+      cluster.setTime(hits_[0]->getTime());
     }
     hcalClusters.push_back(cluster);
   }

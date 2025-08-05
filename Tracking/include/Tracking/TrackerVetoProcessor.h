@@ -77,10 +77,10 @@ class TrackerVetoProcessor : public framework::Producer {
   /** Maximum number of recoil tracks allowed. */
   int max_recoil_n_;
 
-  /** Min number of hits for tagger tracks required. */
+  /** Min number of hits_ for tagger tracks required. */
   int min_tagger_hits_;
 
-  /** Min number of hits for recoil tracks required. */
+  /** Min number of hits_ for recoil tracks required. */
   int min_recoil_hits_;
 
   /** The name of the tagger track collection. */

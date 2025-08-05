@@ -180,7 +180,7 @@ void EcalRawDecoder::produce(framework::Event& event) {
       // std::cout << "Start looping through channels..." << std::endl;
       // loop through channels on this link,
       //  since some channels may have been suppressed because of low
-      //  amplitude the channel ID is not the same as the index it
+      //  amplitude the channel ID is not the same as the index_ it
       //  is listed in.
       int channel_id{-1};
       for (uint32_t j{0}; j < length_per_link.at(i_link) - 2; j++) {
@@ -260,7 +260,7 @@ void EcalRawDecoder::produce(framework::Event& event) {
            * TODO fix hardcoded starting value
            *
            *  roc_id-256 is the ssame as i_link = is this a coincidence?
-           *  or should we change the second input to be the link index
+           *  or should we change the second input to be the link index_
            */
           ldmx::EcalElectronicsID eid(fpga - 1, roc_id - 256, channel_id);
           // std::cout << eid.index();
@@ -316,7 +316,7 @@ void EcalRawDecoder::produce(framework::Event& event) {
         digis.addDigi(did_raw, digi);
       } else {
         /** DO NOTHING
-         *  skip hits where the EID aren't in the detector mapping
+         *  skip hits_ where the EID aren't in the detector mapping
          *  no zero supp during test beam on the front-end,
          *  so channels that aren't connected to anything are still
          *  being readout.

@@ -101,7 +101,7 @@ MagneticFieldMap3D::MagneticFieldMap3D(const char* filename, double xOffset,
 
   ldmx_log(trace) << "  ... done reading ";
   ldmx_log(trace) << "Read values of field from file " << filename;
-  ldmx_log(trace) << "  Assumed the order: x, y, z, Bx, By, Bz";
+  ldmx_log(trace) << "  Assumed the order: x_, y_, z_, Bx, By, Bz";
   ldmx_log(trace) << "  Min values: " << minx_ << " " << miny_ << " " << minz_
                   << " mm ";
   ldmx_log(trace) << "  Max values: " << maxx_ << " " << maxy_ << " " << maxz_
@@ -143,19 +143,19 @@ MagneticFieldMap3D::MagneticFieldMap3D(const char* filename, double xOffset,
 
 void MagneticFieldMap3D::GetFieldValue(const double point[4],
                                        double* bfield) const {
-  double x = point[0] - xOffset_;
-  double y = point[1] - yOffset_;
-  double z = point[2] - zOffset_;
+  double x_ = point[0] - xOffset_;
+  double y_ = point[1] - yOffset_;
+  double z_ = point[2] - zOffset_;
   double eps = 1E-6;
 
   // Check that the point is within the defined region
-  if (x >= minx_ && x < maxx_ - eps && y >= miny_ && y < maxy_ - eps &&
-      z >= minz_ && z < maxz_ - eps) {
+  if (x_ >= minx_ && x_ < maxx_ - eps && y_ >= miny_ && y_ < maxy_ - eps &&
+      z_ >= minz_ && z_ < maxz_ - eps) {
     // Position of given point within region, normalized to the range
     // [0,1]
-    double xfraction = (x - minx_) / dx_;
-    double yfraction = (y - miny_) / dy_;
-    double zfraction = (z - minz_) / dz_;
+    double xfraction = (x_ - minx_) / dx_;
+    double yfraction = (y_ - miny_) / dy_;
+    double zfraction = (z_ - minz_) / dz_;
 
     if (invertX_) {
       xfraction = 1 - xfraction;
@@ -184,9 +184,9 @@ void MagneticFieldMap3D::GetFieldValue(const double point[4],
     int zindex = static_cast<int>(zdindex);
 
 #ifdef DEBUG_INTERPOLATING_FIELD
-    ldmx_log(trace) << "Local x,y,z: " << xlocal << " " << ylocal << " "
+    ldmx_log(trace) << "Local x_,y_,z_: " << xlocal << " " << ylocal << " "
                     << zlocal;
-    ldmx_log(trace) << "Index x,y,z: " << xindex << " " << yindex << " "
+    ldmx_log(trace) << "Index x_,y_,z_: " << xindex << " " << yindex << " "
                     << zindex;
     double valx0z0, mulx0z0, valx1z0, mulx1z0;
     double valx0z1, mulx0z1, valx1z1, mulx1z1;

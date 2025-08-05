@@ -16,7 +16,7 @@ void HCalDQM::configure(framework::config::Parameters &ps) {
 }
 
 void HCalDQM::analyze(const framework::Event &event) {
-  // Get the collection of HCalDQM digitized hits if the exists
+  // Get the collection of HCalDQM digitized hits_ if the exists
   const auto &hcalHits{
       event.getCollection<ldmx::HcalHit>(rec_coll_name_, rec_pass_name_)};
 
@@ -25,14 +25,14 @@ void HCalDQM::analyze(const framework::Event &event) {
   analyzeSimHits(hcalSimHits);
   analyzeRecHits(hcalHits);
 }
-void HCalDQM::analyzeSimHits(const std::vector<ldmx::SimCalorimeterHit> &hits) {
+void HCalDQM::analyzeSimHits(const std::vector<ldmx::SimCalorimeterHit> &hits_) {
   const auto &geometry = getCondition<ldmx::HcalGeometry>(
       ldmx::HcalGeometry::CONDITIONS_OBJECT_NAME);
 
   std::map<ldmx::HcalID, double> simEnergyPerBar;
   int hitMultiplicity{0};
 
-  for (const auto &hit : hits) {
+  for (const auto &hit : hits_) {
     ldmx::HcalID id(hit.getID());
     if (skipHit(id)) {
       continue;
@@ -46,10 +46,10 @@ void HCalDQM::analyzeSimHits(const std::vector<ldmx::SimCalorimeterHit> &hits) {
     const auto orientation{geometry.getScintillatorOrientation(id)};
     const auto layer{id.layer()};
     const auto strip{id.strip()};
-    const auto pos{hit.getPosition()};
-    const auto x{pos[0]};
-    const auto y{pos[1]};
-    const auto z{pos[2]};
+    const auto pos_{hit.getPosition()};
+    const auto x{pos_[0]};
+    const auto y{pos_[1]};
+    const auto z{pos_[2]};
     const auto t{hit.getTime()};
     hitMultiplicity++;
     histograms_.fill("sim_hit_time", t);
@@ -79,7 +79,7 @@ void HCalDQM::analyzeSimHits(const std::vector<ldmx::SimCalorimeterHit> &hits) {
   }
   histograms_.fill("sim_total_energy", total_energy);
 }
-void HCalDQM::analyzeRecHits(const std::vector<ldmx::HcalHit> &hits) {
+void HCalDQM::analyzeRecHits(const std::vector<ldmx::HcalHit> &hits_) {
   const auto &geometry = getCondition<ldmx::HcalGeometry>(
       ldmx::HcalGeometry::CONDITIONS_OBJECT_NAME);
 
@@ -90,7 +90,7 @@ void HCalDQM::analyzeRecHits(const std::vector<ldmx::HcalHit> &hits) {
   int vetoableHitMultiplicity{0};
   int hitMultiplicity{0};
 
-  for (const ldmx::HcalHit &hit : hits) {
+  for (const ldmx::HcalHit &hit : hits_) {
     ldmx::HcalID id(hit.getID());
     const auto orientation{geometry.getScintillatorOrientation(id)};
     const auto section{id.section()};

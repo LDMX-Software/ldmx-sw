@@ -48,9 +48,9 @@ void Simulator::beforeNewRun(ldmx::RunHeader& header) {
   // lambda function for dumping vectors of strings to the run header
   auto stringVectorDump = [&header](const std::string& name,
                                     const std::vector<std::string>& vec) {
-    int index = 0;
+    int index_ = 0;
     for (auto const& val : vec) {
-      header.setStringParameter(name + " " + std::to_string(++index), val);
+      header.setStringParameter(name + " " + std::to_string(++index_), val);
     }
   };
 
@@ -112,7 +112,7 @@ void Simulator::produce(framework::Event& event) {
     runManager_->TerminateOneEvent();  // clean up event objects
     SensitiveDetector::Factory::get().apply(
         [](auto sd) { sd->OnFinishedEvent(); });
-    this->abortEvent();  // get out of processors loop
+    this->AbortEvent();  // get out of processors loop
   }
 
   // Terminate the event.  This checks if an event is to be stored or
@@ -169,8 +169,8 @@ void Simulator::setSeeds(std::vector<int> seeds) {
 
   constexpr int max_number_of_seeds{100};
   std::vector<long> seedVec(max_number_of_seeds, 0);
-  for (std::size_t index{0}; index < seeds.size(); ++index) {
-    seedVec[index] = static_cast<long>(seeds[index]);
+  for (std::size_t index_{0}; index_ < seeds.size(); ++index_) {
+    seedVec[index_] = static_cast<long>(seeds[index_]);
   }
 
   // Pass the array of seeds to the random engine.

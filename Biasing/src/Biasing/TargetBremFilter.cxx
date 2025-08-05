@@ -22,11 +22,11 @@ namespace biasing {
 TargetBremFilter::TargetBremFilter(const std::string& name,
                                    framework::config::Parameters& parameters)
     : simcore::UserAction(name, parameters) {
-  recoilMaxPThreshold_ =
+  recoil_max_p_threshold_ =
       parameters.getParameter<double>("recoil_max_p_threshold");
-  bremEnergyThreshold_ =
+  brem_energy_threshold_ =
       parameters.getParameter<double>("brem_min_energy_threshold");
-  killRecoil_ = parameters.getParameter<bool>("kill_recoil_track");
+  kill_recoil_ = parameters.getParameter<bool>("kill_recoil_track");
 }
 
 TargetBremFilter::~TargetBremFilter() {}
@@ -107,7 +107,7 @@ void TargetBremFilter::stepping(const G4Step* step) {
   if (track_volume == recoil_physical_volume or
       track_volume == world_physical_volume) {
     // If the recoil electron
-    if (track->GetMomentum().mag() >= recoilMaxPThreshold_) {
+    if (track->GetMomentum().mag() >= recoil_max_p_threshold_) {
       track->SetTrackStatus(fKillTrackAndSecondaries);
       G4RunManager::GetRunManager()->AbortEvent();
       return;
@@ -129,7 +129,7 @@ void TargetBremFilter::stepping(const G4Step* step) {
         }
 
         if (ebrem_process &&
-            secondary_track->GetKineticEnergy() > bremEnergyThreshold_) {
+            secondary_track->GetKineticEnergy() > brem_energy_threshold_) {
           auto track_info{simcore::UserTrackInformation::get(secondary_track)};
           track_info->tagBremCandidate();
 
@@ -152,7 +152,7 @@ void TargetBremFilter::stepping(const G4Step* step) {
 
     // Check if the recoil electron should be killed.  If not, postpone
     // its processing until the brem gamma has been processed.
-    if (killRecoil_)
+    if (kill_recoil_)
       track->SetTrackStatus(fStopAndKill);
     else
       track->SetTrackStatus(fSuspend);

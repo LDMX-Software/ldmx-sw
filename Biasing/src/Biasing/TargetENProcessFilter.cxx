@@ -24,13 +24,13 @@ namespace biasing {
 TargetENProcessFilter::TargetENProcessFilter(
     const std::string& name, framework::config::Parameters& parameters)
     : simcore::UserAction(name, parameters) {
-  recoilEnergyThreshold_ = parameters.getParameter<double>("recoilThreshold");
+  recoil_energy_threshold_ = parameters.getParameter<double>("recoilThreshold");
 }
 
 TargetENProcessFilter::~TargetENProcessFilter() {}
 
 void TargetENProcessFilter::stepping(const G4Step* step) {
-  if (reactionOccurred_) return;
+  if (reaction_occurred_) return;
 
   // Get the track associated with this step.
   G4Track* track = step->GetTrack();
@@ -58,7 +58,7 @@ void TargetENProcessFilter::stepping(const G4Step* step) {
   std::cout << "*   Step " << track->GetCurrentStepNumber() << std::endl;
   std::cout << "********************************" << std::endl;*/
 
-  if (track->GetMomentum().mag() > recoilEnergyThreshold_) {
+  if (track->GetMomentum().mag() > recoil_energy_threshold_) {
     track->SetTrackStatus(fKillTrackAndSecondaries);
     G4RunManager::GetRunManager()->AbortEvent();
     return;
@@ -103,12 +103,12 @@ void TargetENProcessFilter::stepping(const G4Step* step) {
               << "Electronuclear reaction resulted in " << secondaries->size()
               << " particles via " << process_name << " process." << std::endl;
     // BiasingMessenger::setEventWeight(track->GetWeight());
-    reactionOccurred_ = true;
+    reaction_occurred_ = true;
   }
 }
 
 void TargetENProcessFilter::EndOfEventAction(const G4Event*) {
-  reactionOccurred_ = false;
+  reaction_occurred_ = false;
 }
 }  // namespace biasing
 

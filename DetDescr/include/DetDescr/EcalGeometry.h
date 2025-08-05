@@ -1,6 +1,6 @@
 /**
  * @file EcalGeometry.h
- * @brief Class that translates raw positions of ECal module hits into cells in
+ * @brief Class that translates raw positions of ECal module_ hits_ into cells in
  * a hexagonal readout
  * @author Owen Colegro, UCSB
  *  past code sources:
@@ -62,7 +62,7 @@ namespace ldmx {
  *   - r (half of flat-to-flat width) and R (half of corner-to-corner width).
  *   - r = (sqrt(3)/2)R and s = R, where s is the length of an edge.
  * - for seven ecal modules oriented flat-side-down,
- *   maximum x and y extents are:
+ *   maximum x_ and y_ extents are:
  *   - deltaY = 6r' + 2g = 3sqrt(3)R' + 2g
  *   - deltaX = 4R' + s' + 2g/cos(30 deg) = 5R' + 4g/sqrt(3)
  *   - where g is uniform gap width between modules,
@@ -72,8 +72,8 @@ namespace ldmx {
  * versions of the detector (which we wish to still support), I am defining an
  * extra set of axes with respect to the flower itself. Below I have drawn the
  * ECal hexagon i flower and defined two axes: p (through the "pointy sides")
- * and q (through the "flat sides"). In some versions of the ECal flower, p == x
- * and q == y while in others p == -y and q == x.
+ * and q (through the "flat sides"). In some versions of the ECal flower, p == x_
+ * and q == y_ while in others p == -y_ and q == x_.
  *
  *          ^
  *          | q axis
@@ -86,24 +86,24 @@ namespace ldmx {
  *        \__/
  *
  * Now we can define a process for determining the cellular IDs.
- * - Define a mapping of cell IDs within a module (center of module is the
+ * - Define a mapping of cell IDs within a module_ (center of module_ is the
  * origin)
  *   - Use TH2Poly to do the Hexagon tiling in p,q space
- * - Define center of modules with respect to center of layer in p,q space
+ * - Define center of modules with respect to center of layer_ in p,q space
  *   - currently this is assumed to be the same within all layers BUT will
  *     depend on geometry parameters like the gap between modules
- * - Define center of layers (INCLUDING x,y position)
- *   - some versions of the geometry shift layers off the z axis to
+ * - Define center of layers (INCLUDING x_,y_ position)
+ *   - some versions of the geometry shift layers off the z_ axis to
  *     cover the gaps between modules
- *   - Will need to handle the conversion between x,y and p,q axes
+ *   - Will need to handle the conversion between x_,y_ and p,q axes
  *
  * ## THIS GRID:
  * - column-to-column distance in a grid such as ours is 2r = sqrt(3)R.
  * - row-to-row distance is 1.5R (easy to observe that twice that distance = 3R)
  *
- * The cell radius is calculated from the total number of center-to-corner cell
- * radii that span the module height. This count can have fractional counts to
- * account for the fractions of cell radii at the module edges.
+ * The cell radius_ is calculated from the total number of center-to-corner cell
+ * radii that span the module_ height. This count can have fractional counts to
+ * account for the fractions of cell radii at the module_ edges.
  */
 class EcalGeometry : public framework::ConditionsObject {
  public:
@@ -120,66 +120,66 @@ class EcalGeometry : public framework::ConditionsObject {
   /**
    * Get a cell's ID number from its position
    *
-   * @param[in] x global x position [mm]
-   * @param[in] y global y position [mm]
-   * @param[in] z global z position [mm]
+   * @param[in] x_ global x_ position [mm]
+   * @param[in] y_ global y_ position [mm]
+   * @param[in] z_ global z_ position [mm]
    * @param[in] fallible bool to decide if the function should fail
    * @return EcalID of the cell (null-id if fallible)
    * Example for fallible use case
    * ```cpp
-   * auto id = geometry.getID(x, y, z, true);
+   * auto id = geometry.getID(x_, y_, z_, true);
    * if (id.null()) {
-   *   // position (x,y) is not contained within a cell in layer at z
+   *   // position (x_,y_) is not contained within a cell in layer_ at z_
    * }
    * ```
    */
-  EcalID getID(double x, double y, double z, bool fallible = false) const;
+  EcalID getID(double x_, double y_, double z_, bool fallible = false) const;
 
   /**
-   * Get a cell's ID from its x,y global position and layer number
+   * Get a cell's ID from its x_,y_ global position and layer_ number
    *
-   * This is faster as long as we trust that the layer positions between
+   * This is faster as long as we trust that the layer_ positions between
    * GDML and the configured parameters of this class match.
    *
-   * @param[in] x global x position [mm]
-   * @param[in] y global y position [mm]
-   * @param[in] layer_id integer ID of the layer the hit is in
+   * @param[in] x_ global x_ position [mm]
+   * @param[in] y_ global y_ position [mm]
+   * @param[in] layer_id integer ID of the layer_ the hit is in
    * @param[in] fallible bool to decide if the function should fail
    * @return EcalID of the cell (null-id if fallible)
    * Example for fallible use case
    * ```cpp
-   * auto id = geometry.getID(x, y, ilayer, true);
+   * auto id = geometry.getID(x_, y_, ilayer, true);
    * if (id.null()) {
-   *    // position (x,y) is not contained within a cell in layer ilayer
+   *    // position (x_,y_) is not contained within a cell in layer_ ilayer
    * }
    * ```
    */
-  EcalID getID(double x, double y, int layer_id, bool fallible = false) const;
+  EcalID getID(double x_, double y_, int layer_id, bool fallible = false) const;
 
   /**
-   * Get a cell's ID from its x,y global position and layer/module numbers
+   * Get a cell's ID from its x_,y_ global position and layer_/module_ numbers
    * as deduced from GDML copy numbers.
    *
    * This is the fastest option but we need to carefully validated that the
-   * layer and module positions between the GDML and the configured parameters
+   * layer_ and module_ positions between the GDML and the configured parameters
    * of this class match.
    *
-   * @param[in] x global x position [mm]
-   * @param[in] y global y position [mm]
-   * @param[in] layer_id integer ID of the layer the hit is in
-   * @param[in] module_id integer ID of the module the hit is in
+   * @param[in] x_ global x_ position [mm]
+   * @param[in] y_ global y_ position [mm]
+   * @param[in] layer_id integer ID of the layer_ the hit is in
+   * @param[in] module_id integer ID of the module_ the hit is in
    * @param[in] fallible bool to decide if the function should fail
    * @return EcalID of the cell (null-id if fallible)
    * Example for fallible use case
    * ```cpp
-   * auto id = geometry.getID(x, y, ilayer, imodule, true);
+   * auto id = geometry.getID(x_, y_, ilayer, imodule, true);
    * if (id.null()) {
-   *    // position (x,y) is not contained within a cell in layer ilayer in
-   * module imodule
+   *    // position (x_,y_) is not contained within a cell in layer_ ilayer in
+   * module_ imodule
    * }
    * ```
    */
-  EcalID getID(double x, double y, int layer_id, int module_id,
+  EcalID getID(double x_, double y_, int layer_id, int module_id,
                bool fallible = false) const;
 
   /**
@@ -188,24 +188,24 @@ class EcalGeometry : public framework::ConditionsObject {
    * std::tuple is useful here because you can use C++17's pattern
    * matching to use code like the following
    * ```cpp
-   * auto [x,y,z] = geometry.getPosition(id);
+   * auto [x_,y_,z_] = geometry.getPosition(id);
    * ```
    */
   std::tuple<double, double, double> getPosition(EcalID id) const;
 
   /**
-   * Get a cell's position within a module
+   * Get a cell's position within a module_
    */
   std::pair<double, double> getPositionInModule(int cell_id) const;
 
   /**
-   * Get the z-coordinate given the layer id
+   * Get the z_-coordinate given the layer_ id
    *
-   * @param[in] layer int layer id
-   * @return z-coordinate of the input sensitive layer
+   * @param[in] layer_ int layer_ id
+   * @return z_-coordinate of the input sensitive layer_
    */
-  double getZPosition(int layer) const {
-    return std::get<2>(layer_pos_xy_.at(layer));
+  double getZPosition(int layer_) const {
+    return std::get<2>(layer_pos_xy_.at(layer_));
   }
 
   /**
@@ -230,7 +230,7 @@ class EcalGeometry : public framework::ConditionsObject {
   int getNumModulesPerLayer() const { return 7; }
 
   /**
-   * Get the number of cells in each module of the Ecal Geometry
+   * Get the number of cells in each module_ of the Ecal Geometry
    *
    * @note This assumes that all modules are the full high-density
    * hexagons from CMS (no triangles!)
@@ -295,30 +295,30 @@ class EcalGeometry : public framework::ConditionsObject {
   }
 
   /**
-   * Get the center-to-flat radius of the module hexagons
+   * Get the center-to-flat radius_ of the module_ hexagons
    *
-   * @return module min radius [mm]
+   * @return module_ min radius_ [mm]
    */
   double getModuleMinR() const { return moduler_; }
 
   /**
-   * Get the center-to-corner radius of the module hexagons
+   * Get the center-to-corner radius_ of the module_ hexagons
    *
-   * @return module max radius [mm]
+   * @return module_ max radius_ [mm]
    */
   double getModuleMaxR() const { return moduleR_; }
 
   /**
-   * Get the center-to-flat radius of the cell hexagons
+   * Get the center-to-flat radius_ of the cell hexagons
    *
-   * @return cell min radius [mm]
+   * @return cell min radius_ [mm]
    */
   double getCellMinR() const { return cellr_; }
 
   /**
-   * Get the center-to-corner radius of the cell hexagons
+   * Get the center-to-corner radius_ of the cell hexagons
    *
-   * @return cell max radius [mm]
+   * @return cell max radius_ [mm]
    */
   double getCellMaxR() const { return cellR_; }
 
@@ -360,17 +360,17 @@ class EcalGeometry : public framework::ConditionsObject {
    * Constructs the positions of the seven modules (moduleID) relative to the
    * ecal center
    *
-   * Sets modulePositionMap_ using the module IDs for keys and the centers of
-   * the module hexagons for values.
+   * Sets modulePositionMap_ using the module_ IDs for keys and the centers of
+   * the module_ hexagons for values.
    *
-   * The module IDs are set in the ecal.gdml file and are replicated here.
-   *  - 0 for center module
+   * The module_ IDs are set in the ecal.gdml file and are replicated here.
+   *  - 0 for center module_
    *  - 1 on top (12 o'clock)
    *  - clockwise till 6 at 11 o'clock
    *
-   * @param[in] gap_ separation between module flat-sides
-   * @param[in] moduler_ center-to-flat module radius
-   * @param[out] modulePositionMap_ map of module IDs to module centers relative
+   * @param[in] gap_ separation between module_ flat-sides
+   * @param[in] moduler_ center-to-flat module_ radius_
+   * @param[out] modulePositionMap_ map of module_ IDs to module_ centers relative
    * to ecal
    */
   void buildModuleMap();
@@ -380,46 +380,46 @@ class EcalGeometry : public framework::ConditionsObject {
    * hexagonal cells.
    *
    * Sets ecalMap_ with the defined bins being the ecal cells in coordinates
-   * with respect to the module center. Also sets cellPostionMap_ with the keys
+   * with respect to the module_ center. Also sets cellPostionMap_ with the keys
    * being the cell ID and the values being the position of the cell with
-   * respect to the module center.
+   * respect to the module_ center.
    *
    * ## Strategy
    * Use ROOT's TH2Poly::HoneyComb method to build a large hexagonal grid,
-   * then copy the polygons from it which overlap with the module with
+   * then copy the polygons from it which overlap with the module_ with
    * more than one vertex.
    *
    * A vertex between three cells is placed at the origin,
-   * then the bottom left corner of the honeycomb and the number of x and y
+   * then the bottom left corner of the honeycomb and the number of x_ and y_
    * cells across the honeycomb is calculated by continuing to decrement
-   * the grid x/y point until the module center-to-flat distance is reached.
+   * the grid x_/y_ point until the module_ center-to-flat distance is reached.
    *
-   * The hexagons that only have one vertex outside the module hexagon leave
+   * The hexagons that only have one vertex outside the module_ hexagon leave
    * a small space un-covered by the tiling, so the vertices adjacent to the
-   * external vertex are projected onto the module edge.
+   * external vertex are projected onto the module_ edge.
    *
-   * @param[in] cellr_ the center-to-flat cell radius
-   * @param[in] cellR_ the center-to-corner cell radius
-   * @param[in] moduler_ the center-to-flat module radius
-   * @param[in] moduleR_ the center-to-flat module radius
+   * @param[in] cellr_ the center-to-flat cell radius_
+   * @param[in] cellR_ the center-to-corner cell radius_
+   * @param[in] moduler_ the center-to-flat module_ radius_
+   * @param[in] moduleR_ the center-to-flat module_ radius_
    * @param[out] ecalMap_ TH2Poly with local cell ID to local cell position
    * mapping
    * @param[out] cellPostionMap_ map of local cell ID to cell center position
-   * relative to module
+   * relative to module_
    */
   void buildCellMap();
 
   /**
-   * Constructs the positions of all the cells in a layer relative to the ecal
+   * Constructs the positions of all the cells in a layer_ relative to the ecal
    * center.
    *
    * This uses the modulePostionMap_ and cellPositionMap_ to calculate the
    * center of all cells relative to the ecal center.
    *
-   * @param[in] modulePositionMap_ map of module IDs to module centers relative
+   * @param[in] modulePositionMap_ map of module_ IDs to module_ centers relative
    * to ecal
    * @param[in] cellPositionMap_ map of cell IDs to cell centers relative to
-   * module
+   * module_
    * @param[out]
    */
   void buildCellModuleMap();
@@ -429,10 +429,10 @@ class EcalGeometry : public framework::ConditionsObject {
    *
    * Since this only occurs once during processing, we can be wasteful.
    * We do a nested loop over the entire cellular position map and calculate
-   * neighbors by seeing which cells are within multiples of the cellular radius
+   * neighbors by seeing which cells are within multiples of the cellular radius_
    * of each other.
    *
-   * @note We require two cells to be in the same layer in order to be nearest
+   * @note We require two cells to be in the same layer_ in order to be nearest
    * neighbors or next-nearest neighbors.
    *
    * @param[in] cellModulePostionMap_ map of cells to cell centers relative to
@@ -445,58 +445,58 @@ class EcalGeometry : public framework::ConditionsObject {
   void buildNeighborMaps();
 
   /**
-   * Distance to module edge, and whether cell is on edge of module.
+   * Distance to module_ edge, and whether cell is on edge of module_.
    *
    * @TODO Use getNN()/getNNN() + isEdgeCell() to expand functionality.
    *
-   * @param[in] cellModuleID EcalId where all we care about is module and cell
-   * @return distance to edge of the module
+   * @param[in] cellModuleID EcalId where all we care about is module_ and cell
+   * @return distance to edge of the module_
    */
   double distanceToEdge(EcalID id) const;
 
   /**
-   * Check if input cell is on the edge of a module.
+   * Check if input cell is on the edge of a module_.
    *
    * @sa distanceToEdge
    *
-   * @param[in] cellModuleID EcalId where all we care about is module and cell
-   * return true if distance to edge is less than max cell radius
+   * @param[in] cellModuleID EcalId where all we care about is module_ and cell
+   * return true if distance to edge is less than max cell radius_
    */
   bool isEdgeCell(EcalID cellModuleID) const {
     return (distanceToEdge(cellModuleID) < cellR_);
   }
 
   /**
-   * Determines if point (x,y), already normed to max hexagon radius, lies
+   * Determines if point (x_,y_), already normed to max hexagon radius_, lies
    * within a hexagon. Corners are (1,0) and (0.5,sqrt(3)/2). Uses "<", not
    * "<=".
    *
    * @note This function is in p,q space so any rotations need to be performed
    * before calling this function.
    *
-   * @param[in] normX X-coordinate relative to module hexagon divided by maximum
-   * hexagon radius
-   * @param[in] normY Y-coordinate relative to module hexagon divided by maximum
-   * hexagon radius
+   * @param[in] normX X-coordinate relative to module_ hexagon divided by maximum
+   * hexagon radius_
+   * @param[in] normY Y-coordinate relative to module_ hexagon divided by maximum
+   * hexagon radius_
    * @return true if (normX,normY) is within the hexagon centered at the origin
-   * with maximum radius 1.
+   * with maximum radius_ 1.
    */
   bool isInside(double normX, double normY) const;
 
  private:
-  /// Gap between module flat sides [mm]
+  /// Gap between module_ flat sides [mm]
   double gap_;
 
   /// Center-to-Flat Radius of cell hexagon [mm]
   double cellr_{0};
 
-  /// Center-to-Flat Radius of module hexagon [mm]
+  /// Center-to-Flat Radius of module_ hexagon [mm]
   double moduler_{0};
 
   /// Center-to-Corner Radius of cell hexagon [mm]
   double cellR_{0};
 
-  /// Center-to-Corner Radius of module hexagon [mm]
+  /// Center-to-Corner Radius of module_ hexagon [mm]
   double moduleR_{0};
 
   /**
@@ -507,19 +507,19 @@ class EcalGeometry : public framework::ConditionsObject {
   bool cornersSideUp_;
 
   /**
-   * shift of layers in the x-direction [mm]
+   * shift of layers in the x_-direction [mm]
    */
   double layer_shift_x_;
 
   /**
-   * shift of layers in the y-direction [mm]
+   * shift of layers in the y_-direction [mm]
    */
   double layer_shift_y_;
 
   /**
    * shift odd layers
    *
-   * odd layers are the high-z layer in each bi-layer
+   * odd layers are the high-z_ layer_ in each bi-layer_
    *
    * i.e. We will shift if layer_id_ % 2 == 1
    */
@@ -530,7 +530,7 @@ class EcalGeometry : public framework::ConditionsObject {
    *
    * NOT IMPLEMENTED IN GDML
    *
-   * This shifts the bi-layer grouping of two sensitive
+   * This shifts the bi-layer_ grouping of two sensitive
    * layers together.
    *
    * i.e. We will shift if (layer_id_ / 2) % 2 == 1
@@ -540,45 +540,45 @@ class EcalGeometry : public framework::ConditionsObject {
   bool layer_shift_odd_bilayer_;
 
   /**
-   * Thickness of the Si sensitive layer [mm]
+   * Thickness of the Si sensitive layer_ [mm]
    *
-   * This is used to determine if a hit is within a layer
-   * when the z-coordinate is given.
+   * This is used to determine if a hit is within a layer_
+   * when the z_-coordinate is given.
    */
   double si_thickness_;
 
   /**
    * Number of cell center-to-corner radii (one side of the cell)
-   * from the bottom to the top of the module
+   * from the bottom to the top of the module_
    *
    * Could be fractional depending on how many fractions of a radii are spanning
-   * between the center of the top/bottom cell row and the edge of the module
+   * between the center of the top/bottom cell row and the edge of the module_
    */
   double nCellRHeight_{0};
 
   /// Front of ECal relative to world geometry [mm]
   double ecalFrontZ_{0};
 
-  /// The layer Z postions are with respect to the front of the ECal [mm]
+  /// The layer_ Z postions are with respect to the front of the ECal [mm]
   std::vector<double> layerZPositions_;
 
  private:
   /**
-   * Position of layer centers in world coordinates
-   * (uses layer ID as key)
+   * Position of layer_ centers in world coordinates
+   * (uses layer_ ID as key)
    */
   std::map<int, std::tuple<double, double, double>> layer_pos_xy_;
 
   /**
-   * Postion of module centers relative to the center of the layer
+   * Postion of module_ centers relative to the center of the layer_
    * in world coordinates
    *
-   * (uses module ID as key)
+   * (uses module_ ID as key)
    */
   std::map<int, std::pair<double, double>> module_pos_xy_;
 
   /**
-   * Position of cell centers relative to center of module in
+   * Position of cell centers relative to center of module_ in
    * p,q space.
    *
    * use cell ID as key
@@ -586,38 +586,38 @@ class EcalGeometry : public framework::ConditionsObject {
   std::map<int, std::pair<double, double>> cell_pos_in_module_;
 
   /**
-   * Position of cell centers relative to center of layer in world
+   * Position of cell centers relative to center of layer_ in world
    * coordinates.
    *
    * @note Layer shifts are NOT included in this map since they depend
-   * on the layer number!!
+   * on the layer_ number!!
    *
-   * Uses EcalID with layer set to zero as key.
+   * Uses EcalID with layer_ set to zero as key.
    */
   std::map<EcalID, std::pair<double, double>> cell_pos_in_layer_;
 
   /**
    * Position of cell centers relative to world geometry
    *
-   * This is where we convert p,q (flower) space into x,y (world) space
-   * by calculating the z-location as well as including rotations and
-   * shifts when converting from p,q to x,y.
+   * This is where we convert p,q (flower) space into x_,y_ (world) space
+   * by calculating the z_-location as well as including rotations and
+   * shifts when converting from p,q to x_,y_.
    *
-   * The key is the full EcalID and the value is the x,y,z tuple.
+   * The key is the full EcalID and the value is the x_,y_,z_ tuple.
    */
   std::map<EcalID, std::tuple<double, double, double>> cell_global_pos_;
 
   /**
    * Map of cell ID to neighboring cells
    *
-   * The EcalID's in this map all have layer ID set to zero.
+   * The EcalID's in this map all have layer_ ID set to zero.
    */
   std::map<EcalID, std::vector<EcalID>> NNMap_;
 
   /**
    * Map of cell ID to neighbors of neighbor cells
    *
-   * The EcalID's in this map all have layer ID set to zero.
+   * The EcalID's in this map all have layer_ ID set to zero.
    */
   std::map<EcalID, std::vector<EcalID>> NNNMap_;
 
@@ -627,7 +627,7 @@ class EcalGeometry : public framework::ConditionsObject {
    * Needs to be mutable because ROOT doesn't have good const handling
    *
    * Lookup a cell ID using its position relative to the center of
-   * the module in p,q space.
+   * the module_ in p,q space.
    */
   mutable TH2Poly cell_id_in_module_;
 

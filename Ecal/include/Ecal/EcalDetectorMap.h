@@ -25,19 +25,19 @@ namespace ecal {
  * The class is loaded from three tables, currently in the form of CSV objects,
  * using the EcalDetectorMapLoader declared and defined in the source.
  *
- * CellMap gives the information for a single Ecal module and has the following
- * columns CELLID -- EcalDetectorID cell id ROCID -- which ROC on the module
+ * CellMap gives the information for a single Ecal module_ and has the following
+ * columns CELLID -- EcalDetectorID cell id ROCID -- which ROC on the module_
  *   ROC_ELINK_NUMBER -- which elink on the ROC (0/1)
  *   ROC_ELINK_CHANNEL -- which channel on the elink (0-35)
  *
  * MotherboardMap gives information about how the modules plug into a given type
- * of motherboard ROCID -- which ROC on the module ROC_ELINK_NUMBER -- which
- * elink on the ROC (0/1) MODULE -- which module on the layer POLARFIRE_ELINK --
+ * of motherboard ROCID -- which ROC on the module_ ROC_ELINK_NUMBER -- which
+ * elink on the ROC (0/1) MODULE -- which module_ on the layer_ POLARFIRE_ELINK --
  * elink input number on the Polarfire MOTHERBOARD_TYPE -- what type of
  * motherboard is this
  *
  * LayerMap gives information about how the motherboards are used on the various
- * layers LAYER -- layer number MOTHERBOARD_TYPE OLINK -- DAQ optical link
+ * layers LAYER -- layer_ number MOTHERBOARD_TYPE OLINK -- DAQ optical link
  * number
  *
  * We inherit from two classes: (1) the ConditionsObject because we are a
@@ -70,20 +70,20 @@ class EcalDetectorMap
   void loadCellMap(conditions::GeneralCSVLoader& loader);
   /// import motherboard map from the provided CSV loader
   void loadMotherboardMap(conditions::GeneralCSVLoader& loader);
-  /// import layer map from the provided CSV loader
+  /// import layer_ map from the provided CSV loader
   void loadLayerMap(conditions::GeneralCSVLoader& loader);
 
   /// build the electronics map from loaded maps
   void buildElectronicsMap();
 
   /**
-   * Table of per-module cell information
+   * Table of per-module_ cell information
    */
   struct CellInformation {
     /// precision information
     /** cellid */
     int module_cellid_;
-    /** hgcroc id on the module (which of the six) */
+    /** hgcroc id on the module_ (which of the six) */
     int rocid_;
     /** roc elink number */
     int roc_elink_number_;
@@ -100,20 +100,20 @@ class EcalDetectorMap
     int motherboard_type_;
     /** elink id */
     int polarfire_elink_;
-    /** module number */
+    /** module_ number */
     int module_;
-    /** hgcroc id on the module (which of the six) */
+    /** hgcroc id on the module_ (which of the six) */
     int rocid_;
-    /** hgcroc link id on the module (which of the two) */
+    /** hgcroc link id on the module_ (which of the two) */
     int roc_elink_number_;
   };
   std::vector<MotherboardLinksInformation> elinks_;
 
   /**
-   * Table of per-layer motherboard layouts
+   * Table of per-layer_ motherboard layouts
    */
   struct MotherboardsPerLayer {
-    /** layer number */
+    /** layer_ number */
     int layer_;
     /** mother board type */
     int motherboard_type_;

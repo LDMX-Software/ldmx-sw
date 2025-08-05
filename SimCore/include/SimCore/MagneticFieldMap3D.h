@@ -54,7 +54,7 @@ namespace simcore {
  *
  * N_x*N_y*N_z+9
  *
- * x y z B_x B_y B_z
+ * x_ y_ z_ B_x B_y B_z
  *
  * Original PurgMagTabulatedField3D code developed by: S.Larsson and J.
  * Generowicz.

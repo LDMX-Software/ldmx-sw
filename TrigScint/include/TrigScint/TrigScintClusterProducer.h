@@ -1,6 +1,6 @@
 /**
  * @file TrigScintClusterProducer.h
- * @brief Clustering of trigger scintillator hits
+ * @brief Clustering of trigger scintillator hits_
  * @author Lene Kristian Bryngemark, Stanford University
  */
 
@@ -33,7 +33,7 @@ class TrigScintClusterProducer : public framework::Producer {
   void produce(framework::Event& event) override;
 
   /**
-   * add a hit at index idx to a cluster
+   * add a hit at index_ idx to a cluster
    */
   virtual void addHit(uint idx, ldmx::TrigScintHit hit);
 
@@ -51,19 +51,19 @@ class TrigScintClusterProducer : public framework::Producer {
   // min threshold for adding a hit to a cluster
   double minThr_{0.};
 
-  // max number of neighboring hits to combine when forming a cluster
+  // max number of neighboring hits_ to combine when forming a cluster
   int maxWidth_{2};
 
   // specific verbosity of this producer
   int verbose_{0};
 
-  // expected arrival time of hits in the pad [ns]
+  // expected arrival time of hits_ in the pad [ns]
   double padTime_{0.};
 
-  // maximum allowed delay for hits to be considered for clustering
+  // maximum allowed delay for hits_ to be considered for clustering
   double timeTolerance_{0.};
 
-  // input collection (hits)
+  // input collection (hits_)
   std::string input_collection_;
 
   // output collection (clusters)
@@ -72,7 +72,7 @@ class TrigScintClusterProducer : public framework::Producer {
   // specific pass name to use for track making
   std::string passName_{""};
 
-  // vertical bar start index
+  // vertical bar start index_
   int vertBarStartIdx_{52};
 
   // cluster channel nb centroid (will be content weighted)
@@ -97,7 +97,7 @@ class TrigScintClusterProducer : public framework::Producer {
   std::vector<unsigned int> v_usedIndices_;
 
   // fraction of cluster energy deposition associated with beam electron sim
-  // hits
+  // hits_
   float beamE_{0.};
 
   // cluster time (energy weighted based on hit time)

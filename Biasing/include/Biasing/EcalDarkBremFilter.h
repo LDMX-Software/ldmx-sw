@@ -86,7 +86,7 @@ class EcalDarkBremFilter : public simcore::UserAction {
    * energy.
    *
    * Checks a new track for being an A' above threshold_
-   *  if it is an A', sets the foundAp_ member
+   *  if it is an A', sets the found_ap_ member
    *
    * @see PartialEnergySort::ClassifyNewTrack
    * @param aTrack The Geant4 track.
@@ -138,7 +138,7 @@ class EcalDarkBremFilter : public simcore::UserAction {
    *
    * @param[in] reason reason for aborting the event
    */
-  void abortEvent(const std::string& reason) const;
+  void AbortEvent(const std::string& reason) const;
 
  private:
   /**

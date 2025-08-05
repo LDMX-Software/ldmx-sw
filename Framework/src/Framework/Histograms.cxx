@@ -63,7 +63,7 @@ void HistogramHelper::create(const std::string& name, const std::string& xLabel,
   // Set the title
   hist->SetTitle("");
 
-  // Set the x-axis label
+  // Set the x_-axis label
   hist->GetXaxis()->SetTitle(xLabel.c_str());
   hist->GetXaxis()->CenterTitle();
 
@@ -88,7 +88,7 @@ void HistogramHelper::create(const std::string& name, const std::string& xLabel,
   // Set the title
   hist->SetTitle("");
 
-  // Set the x-axis label
+  // Set the x_-axis label
   hist->GetXaxis()->SetTitle(xLabel.c_str());
   hist->GetXaxis()->CenterTitle();
 
@@ -110,11 +110,11 @@ void HistogramHelper::create(const std::string& name, const std::string& xLabel,
   // Set the title
   hist->SetTitle("");
 
-  // Set the x-axis label
+  // Set the x_-axis label
   hist->GetXaxis()->SetTitle(xLabel.c_str());
   hist->GetXaxis()->CenterTitle();
 
-  // Set the x-axis label
+  // Set the x_-axis label
   hist->GetYaxis()->SetTitle(yLabel.c_str());
   hist->GetYaxis()->CenterTitle();
 
@@ -148,11 +148,11 @@ void HistogramHelper::create(const std::string& name, const std::string& xLabel,
   // Set the title
   hist->SetTitle("");
 
-  // Set the x-axis label
+  // Set the x_-axis label
   hist->GetXaxis()->SetTitle(xLabel.c_str());
   hist->GetXaxis()->CenterTitle();
 
-  // Set the x-axis label
+  // Set the x_-axis label
   hist->GetYaxis()->SetTitle(yLabel.c_str());
   hist->GetYaxis()->CenterTitle();
 

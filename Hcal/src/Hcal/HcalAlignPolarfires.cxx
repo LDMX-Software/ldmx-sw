@@ -79,7 +79,7 @@ void HcalAlignPolarfires::produce(framework::Event& event) {
     setStorageHint(framework::hint_shouldDrop);
   } else {
     // no more events, both decoders are returning empty events
-    abortEvent();
+    AbortEvent();
   }
 
   event.add(output_name_, merged);

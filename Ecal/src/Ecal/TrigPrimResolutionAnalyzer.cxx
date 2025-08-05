@@ -6,9 +6,10 @@
 #include "Recon/Event/HgcrocDigiCollection.h"
 #include "Recon/Event/HgcrocTrigDigi.h"
 
-namespace ldmx::ecal {
+namespace ldmx {
+namespace ecal {
 /**
- * Analyze the trigger primitives by comparing them to the precision hits
+ * Analyze the trigger primitives by comparing them to the precision hits_
  *
  * This analyzer goes through and compares differents sums between the
  * trigger primitive level (groups of 9 cells for the ECal) and the
@@ -22,9 +23,9 @@ class TrigPrimResolutionAnalyzer : public framework::Analyzer {
   double total_trigger_mean_ = 876.28120;
   double total_ampl_mean_ = 48.805244;
   double nominal_{1.0};
-  double secondOrderEnergyCorrection_ = 4000. / 3940.5;
+  double second_order_energy_correction_ = 4000. / 3940.5;
   double mip_si_energy_ = 0.13;
-  std::vector<double> layerWeights_ = {
+  std::vector<double> layer_weights_ = {
       2.312,  4.312,  6.522,  7.490,  8.595,  10.253, 10.915, 10.915, 10.915,
       10.915, 10.915, 10.915, 10.915, 10.915, 10.915, 10.915, 10.915, 10.915,
       10.915, 10.915, 10.915, 10.915, 10.915, 14.783, 18.539, 18.539, 18.539,
@@ -42,11 +43,11 @@ class TrigPrimResolutionAnalyzer : public framework::Analyzer {
   /**
    * Calculate the energy deposited estimate from a hit's amplitude
    *
-   * We scale the amplitude by the layer weight with a few other factors.
+   * We scale the amplitude by the layer_ weight with a few other factors.
    */
-  double calculateEnergy(int layer, double amplitude) {
-    return (1 + layerWeights_[layer] / mip_si_energy_) * amplitude *
-           secondOrderEnergyCorrection_;
+  double calculateEnergy(int layer_, double amplitude) {
+    return (1 + layer_weights_[layer_] / mip_si_energy_) * amplitude *
+           second_order_energy_correction_;
   }
 };
 
@@ -70,9 +71,9 @@ void TrigPrimResolutionAnalyzer::configure(
   optional_update(hit_pass_name);
   optional_update(total_trigger_mean);
   optional_update(total_ampl_mean);
-  optional_update(secondOrderEnergyCorrection);
+  optional_update(second_order_energy_correction);
   optional_update(mip_si_energy);
-  optional_update(layerWeights);
+  optional_update(layer_weights);
 
   // nominal scale separation between trigger and precision would be
   // determined experimentally by comparing their values
@@ -121,38 +122,38 @@ void TrigPrimResolutionAnalyzer::onProcessStart() {
                      1.15);
   histograms_.create("module_id", "Module id", 7, 0, 7);
   histograms_.create("layer_id", "Layer id", 34, 0, 34);
-  histograms_.create("trig_sum_per_module", "module trigger sum [MeV]", 100, 0,
+  histograms_.create("trig_sum_per_module", "module_ trigger sum [MeV]", 100, 0,
                      2000);
-  histograms_.create("ampl_sum_per_module", "module precision ampl sum [MeV]",
+  histograms_.create("ampl_sum_per_module", "module_ precision ampl sum [MeV]",
                      100, 0, 2000);
   histograms_.create("trig_v_ampl_module", "Module-sum full readout [MeV]", 100,
                      0, 2000, "Module-sum trigger [MeV]", 100, 0, 2000);
-  histograms_.create("trig_sum_per_layer", "layer trigger sum [MeV]", 100, 0,
+  histograms_.create("trig_sum_per_layer", "layer_ trigger sum [MeV]", 100, 0,
                      2000);
-  histograms_.create("ampl_sum_per_layer", "layer precision ampl sum [MeV]",
+  histograms_.create("ampl_sum_per_layer", "layer_ precision ampl sum [MeV]",
                      100, 0, 2000);
   histograms_.create("trig_v_ampl_layer", "Layer trigger total [MeV]", 100, 0,
                      2500, "Layer ampl total [MeV]", 100, 0, 2500);
-  histograms_.create("trig_ampl_v_ampl", "module precision ampl sum [MeV]", 100,
-                     0, 1000, "module trigger / module precision ampl", 100,
+  histograms_.create("trig_ampl_v_ampl", "module_ precision ampl sum [MeV]", 100,
+                     0, 1000, "module_ trigger / module_ precision ampl", 100,
                      0.4, 1.2);
   histograms_.create("trig_ampl_v_ampl_binadjust",
-                     "module precision trig sum [MeV]", 100, 0, 2000,
-                     "module trigger / module precision ampl", 100, 0.4, 1.2);
-  histograms_.create("trig_ampl_v_ampl_layer", "layer precision ampl sum [MeV]",
-                     100, 0, 1000, "layer trigger / layer precision ampl", 100,
+                     "module_ precision trig sum [MeV]", 100, 0, 2000,
+                     "module_ trigger / module_ precision ampl", 100, 0.4, 1.2);
+  histograms_.create("trig_ampl_v_ampl_layer", "layer_ precision ampl sum [MeV]",
+                     100, 0, 1000, "layer_ trigger / layer_ precision ampl", 100,
                      0.4, 1.2);
   histograms_.create("trig_ampl_v_ampl_total", "total precision ampl sum [MeV]",
                      100, 0, 8000, "total trigger / total precision ampl", 100,
                      0.9, 1.1);
   histograms_.create("trig_ampl_v_ampl_total_first20", "Full readout sum [MeV]",
                      100, 0, 6000, "Trigger / Full readout", 100, 0.95, 1.05);
-  histograms_.create("trig_group", "trigger group total precision hits [MeV]",
+  histograms_.create("trig_group", "trigger group total precision hits_ [MeV]",
                      100, 0, 2000);
   histograms_.create("trig_group_trigger", "trigger group trigger [MeV]", 100,
                      0, 8000);
   histograms_.create("trig_group_v_trig",
-                     "trigger group total precision hits [MeV]", 100, 0, 2000,
+                     "trigger group total precision hits_ [MeV]", 100, 0, 2000,
                      "trigger group trigger [MeV]", 100, 0, 8000);
   histograms_.create("trig_group_ampl_v_ampl",
                      "Trigger group full readout [MeV]", 100, 0, 1000,
@@ -161,10 +162,10 @@ void TrigPrimResolutionAnalyzer::onProcessStart() {
                      "Trigger group full readout [MeV]", binsx,
                      "Trigger group ratio / nominal", binsy);
   histograms_.create("trig_group_ampl_unweight",
-                     "unweighted trigger group total precision hits [MeV]", 100,
+                     "unweighted trigger group total precision hits_ [MeV]", 100,
                      0, 20,
                      "trigger group trigger / unweighted trigger group total "
-                     "prec hits / nominal",
+                     "prec hits_ / nominal",
                      200, 0.6, 1.4);
   histograms_.create("trig_group_ampl_v_ampl_varbin_fin",
                      "Trigger group full readout [MeV]", binsx_fin,
@@ -172,10 +173,10 @@ void TrigPrimResolutionAnalyzer::onProcessStart() {
 }
 
 /**
- * structure holding data uniquely identifying a specific module in the ECal
+ * structure holding data uniquely identifying a specific module_ in the ECal
  *
- * This is helpful for doing module sums where we want to sum over all trigger
- * or precision cells within a specific module. It acts like a key that can be
+ * This is helpful for doing module_ sums where we want to sum over all trigger
+ * or precision cells within a specific module_. It acts like a key that can be
  * constructed from either a trigger cell ID or a precision cell ID.
  */
 struct UniqueModule {
@@ -210,7 +211,7 @@ bool operator<(const UniqueModule& lhs, const UniqueModule& rhs) {
  * to shift the estimate up by 0.5 if the value is below 15.
  *
  * This also re-casts the integer into a float which is more readily comparable
- * to the float energy estimate stored within the reconstructed precision hits.
+ * to the float energy estimate stored within the reconstructed precision hits_.
  */
 float getEstimate(const HgcrocTrigDigi& trig) {
   uint32_t prim{trig.linearPrimitive()};
@@ -225,9 +226,9 @@ void TrigPrimResolutionAnalyzer::analyze(const framework::Event& event) {
   const auto& trigs = event.getCollection<ldmx::HgcrocTrigDigi>(
       trig_collection_name_, trig_pass_name_);
   // trigs are a std::vector<ldmx::HgcrocTrigDigi>
-  const auto& hits =
+  const auto& hits_ =
       event.getCollection<ldmx::EcalHit>(hit_collection_name_, hit_pass_name_);
-  // hits are a std::vector<ldmx::EcalHit>
+  // hits_ are a std::vector<ldmx::EcalHit>
   const ::ecal::EcalTriggerGeometry& geom =
       getCondition<::ecal::EcalTriggerGeometry>(
           ::ecal::EcalTriggerGeometry::CONDITIONS_OBJECT_NAME);
@@ -241,7 +242,7 @@ void TrigPrimResolutionAnalyzer::analyze(const framework::Event& event) {
     double trig_ampl = getEstimate(trig);
     double trig_energy = calculateEnergy(mod.layer_, trig_ampl) / nominal_;
 
-    /// add this trigger primitive to module sums
+    /// add this trigger primitive to module_ sums
     if (module_sums.find(mod) == module_sums.end()) {
       module_sums[mod] = {0, 0.0};
     }
@@ -252,12 +253,12 @@ void TrigPrimResolutionAnalyzer::analyze(const framework::Event& event) {
       trig_prim_total_first20 += trig_energy;
     }
 
-    // calculate the sum of precision hits for the 9 cells in this
+    // calculate the sum of precision hits_ for the 9 cells in this
     // trigger grouping
     double trig_group_prec_total{0};
     double trig_group_prec_total_unweight{0};
     for (auto& prec_id : geom.contentsOfTriggerCell(tid)) {
-      for (const auto& hit : hits) {
+      for (const auto& hit : hits_) {
         if (prec_id == hit.getID()) {
           trig_group_prec_total +=
               calculateEnergy(mod.layer_, hit.getAmplitude());
@@ -266,7 +267,7 @@ void TrigPrimResolutionAnalyzer::analyze(const framework::Event& event) {
       }
     }
 
-    // have trig_group_prec_total which is the sum of the precision hits
+    // have trig_group_prec_total which is the sum of the precision hits_
     // in that trigger group and trig_ampl is the sum
     // as reported by the trigger itself
     double ratio_energy = trig_energy / trig_group_prec_total,
@@ -287,7 +288,7 @@ void TrigPrimResolutionAnalyzer::analyze(const framework::Event& event) {
 
   double prec_ampl_total{0.};
   double prec_ampl_total_first20{0.};
-  for (const auto& hit : hits) {
+  for (const auto& hit : hits_) {
     EcalID id{static_cast<unsigned int>(hit.getID())};
     UniqueModule mod{id};
     if (module_sums.find(mod) == module_sums.end()) {
@@ -304,10 +305,10 @@ void TrigPrimResolutionAnalyzer::analyze(const framework::Event& event) {
   std::map<int, std::pair<int, double>> layer_sums;
   for (const auto& [unique_module, sum_pair] : module_sums) {
     if (layer_sums.find(unique_module.layer_) == layer_sums.end()) {
-      // layer is not found in layer_sums map so start the sum at 0
+      // layer_ is not found in layer_sums map so start the sum at 0
       layer_sums[unique_module.layer_] = {0, 0.0};
     }
-    // add this module total to running total for the layer
+    // add this module_ total to running total for the layer_
     layer_sums[unique_module.layer_].first += sum_pair.first;
     layer_sums[unique_module.layer_].second += sum_pair.second;
   }
@@ -315,7 +316,7 @@ void TrigPrimResolutionAnalyzer::analyze(const framework::Event& event) {
   int layer_id_tmp = {0};
   int module_id_tmp = {0};
   for (const auto& [mod_id, sum_pair] : module_sums) {
-    /*    std::cout << " layer id " << mod_id.layer_ << " mod id " <<
+    /*    std::cout << " layer_ id " << mod_id.layer_ << " mod id " <<
      * mod_id.module_ << std::endl; */
     layer_id_tmp = mod_id.layer_;
     module_id_tmp = mod_id.module_;
@@ -330,7 +331,7 @@ void TrigPrimResolutionAnalyzer::analyze(const framework::Event& event) {
                      sum_pair.first / sum_pair.second);
   }
 
-  for (const auto& [layer, layer_sum_pair] : layer_sums) {
+  for (const auto& [layer_, layer_sum_pair] : layer_sums) {
     histograms_.fill("trig_sum_per_layer", layer_sum_pair.first);
     histograms_.fill("ampl_sum_per_layer", layer_sum_pair.second);
     histograms_.fill("trig_v_ampl_layer", layer_sum_pair.first,
@@ -349,6 +350,7 @@ void TrigPrimResolutionAnalyzer::analyze(const framework::Event& event) {
                    trig_prim_total_first20 / prec_ampl_total_first20);
 }
 
-}  // namespace ldmx::ecal
+}  // namespace ecal
+} // namespace ldmx
 
 DECLARE_ANALYZER(ldmx::ecal::TrigPrimResolutionAnalyzer);

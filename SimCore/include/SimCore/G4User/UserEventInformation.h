@@ -31,9 +31,9 @@ class UserEventInformation : public G4VUserEventInformation {
   /**
    * Set the Z of the element in which the dark brem ocurred
    *
-   * @param[in] z atomic Z of element in which the dark brem ocurred
+   * @param[in] z_ atomic Z of element in which the dark brem ocurred
    */
-  void setDarkBremMaterialZ(double z) { db_material_z_ = z; }
+  void setDarkBremMaterialZ(double z_) { db_material_z_ = z_; }
 
   /**
    * Get the Z of the element in which the dark brem ocurred
@@ -41,7 +41,7 @@ class UserEventInformation : public G4VUserEventInformation {
    * @note This will return -1 if no dark brem ocurred within
    * this event.
    *
-   * @param[in] z atomic Z of element in which the dark brem ocurred
+   * @param[in] z_ atomic Z of element in which the dark brem ocurred
    */
   double getDarkBremMaterialZ() const { return db_material_z_; }
 

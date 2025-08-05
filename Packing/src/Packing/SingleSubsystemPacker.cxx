@@ -10,7 +10,7 @@ void SingleSubsystemPacker::configure(framework::config::Parameters& ps) {
 }
 
 void SingleSubsystemPacker::analyze(const framework::Event& event) {
-  if (!writer_) abortEvent();
+  if (!writer_) AbortEvent();
 
   auto buff{event.getCollection<uint8_t>(input_name_, input_pass_)};
   writer_ << buff;

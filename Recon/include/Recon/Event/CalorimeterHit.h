@@ -100,37 +100,37 @@ class CalorimeterHit {
 
   /**
    * Get the X position of the hit [mm].
-   * @return the x position of the hit
+   * @return the x_ position of the hit
    */
   float getXPos() const { return xpos_; }
 
   /**
    * Set the X position of the hit [mm].
-   * @param xpos the x position of the hit
+   * @param xpos the x_ position of the hit
    */
   void setXPos(float xpos) { xpos_ = xpos; }
 
   /**
    * Get the Y position of the hit [mm].
-   * @return the y position of the hit
+   * @return the y_ position of the hit
    */
   float getYPos() const { return ypos_; }
 
   /**
    * Set the Y position of the hit [mm].
-   * @param ypos the y position of the hit
+   * @param ypos the y_ position of the hit
    */
   void setYPos(float ypos) { ypos_ = ypos; }
 
   /**
    * Get the Z position of the hit [mm].
-   * @return the z position of the hit
+   * @return the z_ position of the hit
    */
   float getZPos() const { return zpos_; }
 
   /**
    * Set the Z position of the hit [mm].
-   * @param zpos the z position of the hit
+   * @param zpos the z_ position of the hit
    */
   void setZPos(float zpos) { zpos_ = zpos; }
 

@@ -13,13 +13,13 @@
 #include "Tracking/Sim/LdmxSpacePoint.h"
 
 /** The measurement calibrator can be a function or a class/struct able to
- retrieve the sim hits container.
+ retrieve the sim hits_ container.
  *  It gets by CKF passing the propagated TrackState. The measurement calibrator
  gets called for every propagation and a new track state is passed which
  contains the source link.
  *  The measurement calibrator unpacks the source link from the TrackState and
  casts to the implemented source link (in ldmx case we use an IndexSourceLink).
- *  Retrieve the index from the source link and look up the hit in the sim
+ *  Retrieve the index_ from the source link and look up the hit in the sim
  container. Then fill up the trackState with the projected measurement
 
  //ts.calibrated().block<2>(0) = surface.globalToLocal(simHit.position)
@@ -31,7 +31,7 @@
  //(0 1 0 0 0 0)
  */
 
-/// Calibrator to convert an index source link to a measurement.
+/// Calibrator to convert an index_ source link to a measurement.
 /// The measurement could be a space point or a local cluster on surface.
 /// TODO: use local measurements instead of global space points.
 
@@ -65,7 +65,7 @@ class LdmxMeasurementCalibrator {
     assert(m_measurements and
            "Undefined measurement container in LdmxMeasurementCalibrator");
     assert((sourceLink.index() < m_measurements->size()) and
-           "Source link index is outside the container bounds in "
+           "Source link index_ is outside the container bounds in "
            "LdmxMeasurementCalibrator");
 
     auto meas = m_measurements->at(sourceLink.index());
@@ -108,7 +108,7 @@ class LdmxMeasurementCalibrator {
     assert(m_measurements and
            "Undefined measurement container in LdmxMeasurementCalibrator");
     assert((sourceLink.index() < m_measurements->size()) and
-           "Source link index is outside the container bounds in "
+           "Source link index_ is outside the container bounds in "
            "LdmxMeasurementCalibrator");
 
     auto meas = m_measurements->at(sourceLink.index());

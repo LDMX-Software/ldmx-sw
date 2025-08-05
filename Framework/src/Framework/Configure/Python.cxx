@@ -58,8 +58,8 @@ namespace framework::config {
 static std::string getPyString(PyObject* pyObj) {
   std::string retval;
   PyObject* py_str = PyUnicode_AsEncodedString(pyObj, "utf-8", "Error ~");
-  retval = PyBytes_AS_STRING(pyStr);
-  Py_XDECREF(pyStr);
+  retval = PyBytes_AS_STRING(py_str);
+  Py_XDECREF(py_str);
   return retval;
 }
 
@@ -169,11 +169,11 @@ PyObject* extractDictionary(PyObject* obj) {
 static Parameters getMembers(PyObject* object) {
   PyObject* dictionary{extractDictionary(object)};
   PyObject *key(0), *value(0);
-  Py_ssize_t pos = 0;
+  Py_ssize_t pos_ = 0;
 
   Parameters params;
 
-  while (PyDict_Next(dictionary, &pos, &key, &value)) {
+  while (PyDict_Next(dictionary, &pos_, &key, &value)) {
     std::string skey{getPyString(key)};
 
     if (PyLong_Check(value)) {
@@ -335,7 +335,7 @@ Parameters run(const std::string& root_object, const std::string& pythonScript,
   // The third argument to PySys_SetArgvEx tells python to import
   // the args and add the directory of the first argument to
   // the PYTHONPATH
-  // This way, the command to import the module just needs to be
+  // This way, the command to import the module_ just needs to be
   // the name of the python script
   PySys_SetArgvEx(nargs + 1, targs, 1);
 #else
@@ -399,7 +399,7 @@ Parameters run(const std::string& root_object, const std::string& pythonScript,
 
   // running a python script effectively imports the script into the top-level
   // code environment called '__main__'
-  //  we "import" this module which is already imported to get a handle
+  //  we "import" this module_ which is already imported to get a handle
   //  on the necessary objects
   PyObject* py_root_obj = PyImport_ImportModule("__main__");
   if (!py_root_obj) {

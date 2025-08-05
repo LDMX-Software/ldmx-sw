@@ -52,15 +52,15 @@ class EventReadoutProducer : public framework::Producer {
   // TODO: Make use of the global verbose parameter.
   bool verbose_{false};
 
-  /// Name of the input collection containing the sim hits
+  /// Name of the input collection containing the sim hits_
   std::string inputCollection_;
 
   /// Name of the pass that the input collection is on (empty string means take
   /// any pass)
-  std::string inputPassName_;
+  std::string input_pass_name_;
 
   /// Name of the output collection that will be used to stored the
-  /// digitized trigger scintillator hits
+  /// digitized trigger scintillator hits_
   std::string outputCollection_;
 
   /// Number of initial time samples averaged over in the pedestal calculation

@@ -6,15 +6,15 @@ namespace ldmx {
 Measurement::Measurement(const ldmx::SimTrackerHit& hit, const float& sigma_u,
                          const float& sigma_v) {
   // Set the global positions
-  x_ = hit.getPosition()[2];
-  y_ = hit.getPosition()[0];
-  z_ = hit.getPosition()[1];
+  meas_x_ = hit.getPosition()[2];
+  meas_y_ = hit.getPosition()[0];
+  meas_z_ = hit.getPosition()[1];
 
   // Set the energy deposited
   edep_ = hit.getEdep();
 
   // Set the measurement time
-  t_ = hit.getTime();
+  meas_t_ = hit.getTime();
 
   // Set the measurement ID
   id_ = hit.getID();
@@ -29,12 +29,12 @@ Measurement::Measurement(const ldmx::SimTrackerHit& hit, const float& sigma_u,
 
 std::ostream& operator<<(std::ostream& output, const Measurement& measurement) {
   return output << "[ Measurement ]:\n\tGlobal position (mm): [ "
-                << measurement.x_ << ", " << measurement.y_ << ", "
-                << measurement.z_ << " ]\n\tLocal position (mm): [ "
-                << measurement.u_ << ", " << measurement.v_ << "]\n\tcov(U,U) "
+                << measurement.meas_x_ << ", " << measurement.meas_y_ << ", "
+                << measurement.meas_z_ << " ]\n\tLocal position (mm): [ "
+                << measurement.meas_u_ << ", " << measurement.meas_v_ << "]\n\tcov(U,U) "
                 << measurement.cov_uu_ << " cov(V,V) " << measurement.cov_vv_
-                << "\n\tTime: " << measurement.t_
-                << " ns \n\tLayer ID: " << measurement.layerid_
+                << "\n\tTime: " << measurement.meas_t_
+                << " ns \n\tLayer ID: " << measurement.layer_id_
                 << "\n\tLayer: " << measurement.layer_
                 << "\n\tEnergy Deposition: " << measurement.edep_ << " MeV";
 

@@ -49,7 +49,7 @@ class TrigMipReco : public framework::Producer {
   int nevents_{0};
   double processing_time_{0.};
   std::map<std::string, double> profiling_map_;
-  // name of collection for Hcal TP hits to be passed as input
+  // name of collection for Hcal TP hits_ to be passed as input
   std::string hit_coll_name_;
   std::string hit_coll_passname_;
   // name of output collection

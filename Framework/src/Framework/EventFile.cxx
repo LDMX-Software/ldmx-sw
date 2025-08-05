@@ -238,7 +238,7 @@ bool EventFile::nextEvent(bool storeCurrentEvent) {
     // we don't have a parent and we
     //  are an output file
     // Just increment the number of entries
-    //  and the index of the current entry
+    //  and the index_ of the current entry
     ientry_++;
     entries_++;
   } else {
@@ -317,7 +317,7 @@ void EventFile::updateParent(EventFile *parent) {
   for (auto const &rule : reactivateRules_)
     parent_->tree_->SetBranchStatus(rule.c_str(), 1);
 
-  // Reset the entry index with the new parent index
+  // Reset the entry index_ with the new parent index_
   ientry_ = parent_->ientry_;
 
   // import run headers from new input file

@@ -15,7 +15,7 @@ class MyClusterWeight {
                         b) {  // returns weighting function, where smallest
                               // weights will be combined first
 
-    double rmol = 10.00;    // Moliere radius of detector, roughly. In mm
+    double rmol = 10.00;    // Moliere radius_ of detector, roughly. In mm
     double dzchar = 100.0;  // Characteristic cluster longitudinal variable TO
                             // BE DETERMINED! in mm
 

@@ -17,18 +17,18 @@
 
 namespace ActsExamples {
 
-/// A source link that stores just an index.
+/// A source link that stores just an index_.
 ///
 /// This is intentionally kept as barebones as possible. The source link
 /// is just a reference and will be copied, moved around, etc. often.
 /// Keeping it small and separate from the actual, potentially large,
 /// measurement data should result in better overall performance.
-/// Using an index instead of e.g. a pointer, means source link and
+/// Using an index_ instead of e.g. a pointer, means source link and
 /// measurement are decoupled and the measurement represenation can be
 /// easily changed without having to also change the source link.
 class IndexSourceLink final {
  public:
-  /// Construct from geometry identifier and index.
+  /// Construct from geometry identifier and index_.
   constexpr IndexSourceLink(Acts::GeometryIdentifier gid, Index idx)
       : m_geometryId(gid), m_index(idx) {}
 
@@ -40,7 +40,7 @@ class IndexSourceLink final {
   IndexSourceLink& operator=(const IndexSourceLink&) = default;
   IndexSourceLink& operator=(IndexSourceLink&&) = default;
 
-  /// Access the index.
+  /// Access the index_.
   constexpr Index index() const { return m_index; }
 
   Acts::GeometryIdentifier geometryId() const { return m_geometryId; }
@@ -60,7 +60,7 @@ class IndexSourceLink final {
   }
 };
 
-/// Container of index source links.
+/// Container of index_ source links.
 ///
 /// Since the source links provide a `.geometryId()` accessor, they can be
 /// stored in an ordered geometry container.

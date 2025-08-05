@@ -37,14 +37,14 @@ class EveShapeDrawer {
   /**
    * Draw a hexagonal prism.
    *
-   * @param xPos x coordinate for center of prism [mm]
-   * @param yPos y coordinate for center of prism [mm]
-   * @param zPos z coordinate for center of prism [mm]
-   * @param xRot rotation around x-axis [degrees]
-   * @param yRot rotation around y-axis [degrees]
-   * @param zRot rotation around z-axis [degrees]
+   * @param xPos x_ coordinate for center of prism [mm]
+   * @param yPos y_ coordinate for center of prism [mm]
+   * @param zPos z_ coordinate for center of prism [mm]
+   * @param xRot rotation around x_-axis [degrees]
+   * @param yRot rotation around y_-axis [degrees]
+   * @param zRot rotation around z_-axis [degrees]
    * @param h height of prism [mm]
-   * @param r radius of prism (center to corner) [mm]
+   * @param r radius_ of prism (center to corner) [mm]
    * @param color color of prism
    * @param transparency transparency of prism
    * @param name name of prism
@@ -72,9 +72,9 @@ class EveShapeDrawer {
    * Draw a hexagonal prism.
    *
    * @param HexPrism description of hexagonal prism geometry
-   * @param xRot rotation around x-axis [degrees]
-   * @param yRot rotation around y-axis [degrees]
-   * @param zRot rotation around z-axis [degrees]
+   * @param xRot rotation around x_-axis [degrees]
+   * @param yRot rotation around y_-axis [degrees]
+   * @param zRot rotation around z_-axis [degrees]
    * @param color color of prism
    * @param transparency transparency of prism
    * @param name name of prism
@@ -82,22 +82,22 @@ class EveShapeDrawer {
   TEveGeoShape* drawHexPrism(HexPrism prism, Double_t xRot, Double_t yRot,
                              Double_t zRot, Int_t color, Int_t transparency,
                              TString name) {
-    return drawHexPrism(prism.x, prism.y, prism.z, xRot, yRot, zRot,
-                        prism.height, prism.radius, color, transparency, name);
+    return drawHexPrism(prism.x_, prism.y_, prism.z_, xRot, yRot, zRot,
+                        prism.height, prism.radius_, color, transparency, name);
   }
 
   /**
    * Draw a rectangular prism
    *
-   * @param xPos x coordinate for center of prism [mm]
-   * @param yPos y coordinate for center of prism [mm]
-   * @param zPos z coordinate for center of prism [mm]
-   * @param dX width in x direction [mm]
-   * @param dY width in y direction [mm]
-   * @param dZ width in z direction [mm]
-   * @param xRot rotation around x-axis [degrees]
-   * @param yRot rotation around y-axis [degrees]
-   * @param zRot rotation around z-axis [degrees]
+   * @param xPos x_ coordinate for center of prism [mm]
+   * @param yPos y_ coordinate for center of prism [mm]
+   * @param zPos z_ coordinate for center of prism [mm]
+   * @param dX width in x_ direction [mm]
+   * @param dY width in y_ direction [mm]
+   * @param dZ width in z_ direction [mm]
+   * @param xRot rotation around x_-axis [degrees]
+   * @param yRot rotation around y_-axis [degrees]
+   * @param zRot rotation around z_-axis [degrees]
    * @param color color of prism
    * @param transparency transparency of prism
    * @param name name of prism
@@ -124,9 +124,9 @@ class EveShapeDrawer {
    * Draw a rectangular prism
    *
    * @param boundingbox containing description of rectangular prism
-   * @param xRot rotation around x-axis [degrees]
-   * @param yRot rotation around y-axis [degrees]
-   * @param zRot rotation around z-axis [degrees]
+   * @param xRot rotation around x_-axis [degrees]
+   * @param yRot rotation around y_-axis [degrees]
+   * @param zRot rotation around z_-axis [degrees]
    * @param color color of prism
    * @param transparency transparency of prism
    * @param name name of prism

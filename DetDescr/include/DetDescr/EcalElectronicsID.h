@@ -29,7 +29,7 @@ class EcalElectronicsID : public DetectorID {
   static const RawValue INDEX_MASK{0xFFFFFF};
   // PackedIndex for channel (field 0) and elink (field 1), fiber (field 2)
   typedef PackedIndex<38, 48, 97> Index;
-  // Maximum value of any packed index here
+  // Maximum value of any packed index_ here
   static const unsigned int MAX_INDEX{38 * 48 * 200};
 
   /**
@@ -60,21 +60,21 @@ class EcalElectronicsID : public DetectorID {
   EcalElectronicsID(unsigned int fiber, unsigned int elink,
                     unsigned int channel)
       : DetectorID(EID_ECAL, 0) {
-    Index index(channel, elink, fiber);
-    id_ |= index.value();
+    Index index_(channel, elink, fiber);
+    id_ |= index_.value();
   }
 
   /**
-   * Construct an electronics id from an index
+   * Construct an electronics id from an index_
    *
    * This looks ugly (and it is) because we already have a constructor
    * that uses the unsigned int type. This means we need a different
-   * static method for translating something we know to be an EID index
+   * static method for translating something we know to be an EID index_
    * rather than a full DetID raw value.
    */
-  static EcalElectronicsID idFromIndex(unsigned int index) {
+  static EcalElectronicsID idFromIndex(unsigned int index_) {
     EcalElectronicsID eid;
-    eid.id_ |= index;
+    eid.id_ |= index_;
     return eid;
   }
 
@@ -95,7 +95,7 @@ class EcalElectronicsID : public DetectorID {
   int channel() const { return Index(id_ & INDEX_MASK).field0(); }
 
   /**
-   * Get the compact index value
+   * Get the compact index_ value
    */
   unsigned int index() const { return id_ & INDEX_MASK; }
 };

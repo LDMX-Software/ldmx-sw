@@ -16,7 +16,7 @@ EcalTriggerGeometry::EcalTriggerGeometry(int symmetry,
                                          const ldmx::EcalGeometry* ecalGeom)
     : ConditionsObject(CONDITIONS_OBJECT_NAME),
       symmetry_{symmetry},
-      ecalGeometry_{ecalGeom} {
+      ecal_geometry_{ecalGeom} {
   if ((symmetry_ & MODULES_MASK) == INPLANE_IDENTICAL) {
     // first set is the same regardless of alignment...
     int tcell = 0;
@@ -130,16 +130,16 @@ ldmx::EcalTriggerID EcalTriggerGeometry::belongsTo(
 // as it happens, the fifth precision cell in the list is the center cell
 std::tuple<double, double, double> EcalTriggerGeometry::globalPosition(
     ldmx::EcalTriggerID triggerCell) const {
-  if (!ecalGeometry_) return std::make_tuple(0, 0, 0);
+  if (!ecal_geometry_) return std::make_tuple(0, 0, 0);
   ldmx::EcalID pid = centerInTriggerCell(triggerCell);
-  return ecalGeometry_->getPosition(pid);
+  return ecal_geometry_->getPosition(pid);
 }
 
 std::pair<double, double> EcalTriggerGeometry::localPosition(
     ldmx::EcalTriggerID triggerCell) const {
-  if (!ecalGeometry_) return std::make_pair(0, 0);
+  if (!ecal_geometry_) return std::make_pair(0, 0);
   ldmx::EcalID pid = centerInTriggerCell(triggerCell);
-  return ecalGeometry_->getPositionInModule(pid.cell());
+  return ecal_geometry_->getPositionInModule(pid.cell());
 }
 
 class EcalTriggerGeometryProvider : public framework::ConditionsObjectProvider {

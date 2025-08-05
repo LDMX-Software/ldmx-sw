@@ -21,7 +21,7 @@ void TrigScintRecHitProducer::configure(
   mevPerMip_ = parameters.getParameter<double>("mev_per_mip");
   pePerMip_ = parameters.getParameter<double>("pe_per_mip");
   inputCollection_ = parameters.getParameter<std::string>("input_collection");
-  inputPassName_ = parameters.getParameter<std::string>("input_pass_name");
+  input_pass_name_ = parameters.getParameter<std::string>("input_pass_name");
   outputCollection_ = parameters.getParameter<std::string>("output_collection");
   verbose_ = parameters.getParameter<bool>("verbose");
   sample_of_interest_ = parameters.getParameter<int>("sample_of_interest");
@@ -41,10 +41,10 @@ void TrigScintRecHitProducer::produce(framework::Event &event) {
   }
   */
 
-  // looper over sim hits and aggregate energy depositions
+  // looper over sim hits_ and aggregate energy depositions
   // for each detID
   const auto digis{event.getCollection<trigscint::TrigScintQIEDigis>(
-      inputCollection_, inputPassName_)};
+      inputCollection_, input_pass_name_)};
 
   std::vector<ldmx::TrigScintHit> trigScintHits;
   for (const auto &digi : digis) {
@@ -78,7 +78,7 @@ void TrigScintRecHitProducer::produce(framework::Event &event) {
     trigScintHits.push_back(hit);
   }
   // Create the container to hold the
-  // digitized trigger scintillator hits.
+  // digitized trigger scintillator hits_.
 
   event.add(outputCollection_, trigScintHits);
 }

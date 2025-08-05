@@ -43,7 +43,7 @@ class HcalVetoResult {
   /** @return The total number of PE. */
   float getTotalPE() const { return total_PE_; }
 
-  /** @return The number of valid hits. */
+  /** @return The number of valid hits_. */
   float getNumValidHits() const { return num_valid_hits_; }
 
   /**
@@ -70,9 +70,9 @@ class HcalVetoResult {
   void setTotalPE(const float total_PE) { total_PE_ = total_PE; }
 
   /**
-   * Set the number of valid hits.
+   * Set the number of valid hits_.
    *
-   * @param num_valid_hits The number of valid hits
+   * @param num_valid_hits The number of valid hits_
    */
   void setNumValidHits(const float num_valid_hits) {
     num_valid_hits_ = num_valid_hits;
@@ -85,7 +85,7 @@ class HcalVetoResult {
   // Total number of PE
   float total_PE_{0.0};
 
-  // Number of hits above threshold
+  // Number of hits_ above threshold
   int num_valid_hits_{0};
 
   /** Flag indicating whether the event passes the Hcal veto. */

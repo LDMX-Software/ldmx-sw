@@ -115,7 +115,7 @@ class MidShowerDiMuonBkgdFilter : public simcore::UserAction {
    *
    * @param[in] reason reason for aborting the event
    */
-  void abortEvent(const std::string& reason) const;
+  void AbortEvent(const std::string& reason) const;
 
  private:
   /**

@@ -27,9 +27,9 @@ bool ReSimVerifier::verifySimCalorimeterHits(
     if (hit.getNumberOfContribs() != rehit.getNumberOfContribs()) {
       return false;
     }
-    auto pos{hit.getPosition()};
+    auto pos_{hit.getPosition()};
     auto repos{rehit.getPosition()};
-    if (pos[0] != repos[0] || pos[1] != repos[1] || pos[2] != repos[2]) {
+    if (pos_[0] != repos[0] || pos_[1] != repos[1] || pos_[2] != repos[2]) {
       return false;
     }
   }

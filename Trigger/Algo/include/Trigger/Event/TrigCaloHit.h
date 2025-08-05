@@ -8,7 +8,7 @@ namespace trigger {
 
 /**
  * @class TrigCaloHit
- * @brief Class for calo hits used in trigger computations
+ * @brief Class for calo hits_ used in trigger computations
  */
 class TrigCaloHit {
  public:

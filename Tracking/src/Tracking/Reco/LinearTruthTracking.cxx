@@ -14,7 +14,7 @@ void LinearTruthTracking::configure(framework::config::Parameters& parameters) {
   out_trk_collection_ = parameters.getParameter<std::string>(
       "out_trk_collection", "LinearRecoilTruthTracks");
 
-  // Input strip hits
+  // Input strip hits_
   input_hits_collection_ = parameters.getParameter<std::string>(
       "input_hits_collection", "RecoilSimHits");
   input_rec_hits_collection_ = parameters.getParameter<std::string>(
@@ -44,7 +44,7 @@ void LinearTruthTracking::produce(framework::Event& event) {
     if (x_ecal.getZPos() < ecal_first_layer_z_threshold_) {
       first_layer_ecal_rec_hits.push_back(
           {x_ecal.getZPos(), x_ecal.getXPos(), x_ecal.getYPos()});
-    }  // if first layer of Ecal
+    }  // if first layer_ of Ecal
   }  // for positions in ecalRecHit
 
   // Check if we would fit empty seeds.
@@ -53,7 +53,7 @@ void LinearTruthTracking::produce(framework::Event& event) {
     n_truth_ += straight_truth_tracks.size();
     event.add(out_trk_collection_, straight_truth_tracks);
     return;
-  }  // if not enough hits
+  }  // if not enough hits_
 
   std::vector<ldmx::SimTrackerHit> truth_points;
 
@@ -92,7 +92,7 @@ ldmx::StraightTrack LinearTruthTracking::truthTracker(
     std::vector<std::array<double, 3>>& ecal_points) {
   ldmx::StraightTrack trk = ldmx::StraightTrack();
 
-  // We have pre-selected hits corresponding to the Recoil e-, so we only fit
+  // We have pre-selected hits_ corresponding to the Recoil e-, so we only fit
   // these (no RecHit)
   auto [m_x, b_x, m_y, b_y] = fit3DLine(points);
 
@@ -118,7 +118,7 @@ ldmx::StraightTrack LinearTruthTracking::truthTracker(
   if (ecal_points.size() > 0) {
     double ecal_first_layer_z = ecal_points[0][0];
 
-    // Extrapolate track to first layer of Ecal
+    // Extrapolate track to first layer_ of Ecal
     std::array<double, 3> extrapolated_point = {ecal_first_layer_z,
                                                 m_x * ecal_first_layer_z + b_x,
                                                 m_y * ecal_first_layer_z + b_y};

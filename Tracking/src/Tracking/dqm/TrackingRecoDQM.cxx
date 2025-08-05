@@ -62,7 +62,7 @@ void TrackingRecoDQM::analyze(const framework::Event& event) {
     doTruthComparison_ = true;
   }
 
-  // The scoring plane hits
+  // The scoring plane hits_
   if (event.exists("EcalScoringPlaneHits", ecal_sp_events_passname_)) {
     ecal_scoring_hits_ = std::make_shared<std::vector<ldmx::SimTrackerHit>>(
         event.getCollection<ldmx::SimTrackerHit>("EcalScoringPlaneHits",

@@ -35,7 +35,7 @@ void PropagationMapWriter::produce(framework::Event& event) {
       event.getCollection<ldmx::SimTrackerHit>(inTag,
                                                ecal_scoring_plane_passname_);
 
-  ldmx::SimTrackerHit h1, h2;  // the desired truth hits
+  ldmx::SimTrackerHit h1, h2;  // the desired truth hits_
   for (const auto& hit : hitsTarg) {
     if (!(hit.getTrackID() == 1)) continue;
     if (!(hit.getPdgID() == 11)) continue;

@@ -108,7 +108,7 @@ void TrackingGeometry::getAllDaughters(G4VPhysicalVolume* pvol) {
     G4VPhysicalVolume* fDaughterPhysVol = lvol->GetDaughter(i);
 
     ldmx_log(trace) << "name::" << fDaughterPhysVol->GetName();
-    ldmx_log(trace) << "pos::" << fDaughterPhysVol->GetTranslation();
+    ldmx_log(trace) << "pos_::" << fDaughterPhysVol->GetTranslation();
     ldmx_log(trace) << "n_dau::"
                     << fDaughterPhysVol->GetLogicalVolume()->GetNoDaughters();
     ldmx_log(trace) << "replica::" << fDaughterPhysVol->IsReplicated();
@@ -171,7 +171,7 @@ void TrackingGeometry::dumpGeometry(const std::string& outputDir,
 // This method gets the transform from the physical volume to the tracking frame
 Acts::Transform3 TrackingGeometry::GetTransform(const G4VPhysicalVolume& phex,
                                                 bool toTrackingFrame) const {
-  Acts::Vector3 pos(phex.GetTranslation().x(), phex.GetTranslation().y(),
+  Acts::Vector3 pos_(phex.GetTranslation().x(), phex.GetTranslation().y(),
                     phex.GetTranslation().z());
 
   Acts::RotationMatrix3 rotation;
@@ -179,30 +179,30 @@ Acts::Transform3 TrackingGeometry::GetTransform(const G4VPhysicalVolume& phex,
 
   // rotate to the tracking frame
   if (toTrackingFrame) {
-    pos(0) = phex.GetTranslation().z();
-    pos(1) = phex.GetTranslation().x();
-    pos(2) = phex.GetTranslation().y();
+    pos_(0) = phex.GetTranslation().z();
+    pos_(1) = phex.GetTranslation().x();
+    pos_(2) = phex.GetTranslation().y();
     rotation = x_rot_ * y_rot_ * rotation;
   }
 
-  Acts::Translation3 translation(pos);
+  Acts::Translation3 translation(pos_);
 
   Acts::Transform3 transform(translation * rotation);
 
   return transform;
 }
 
-// This method returns the transformation to the tracker coordinates z->x x->y
-// y->z
+// This method returns the transformation to the tracker coordinates z_->x_ x_->y_
+// y_->z_
 Acts::Transform3 TrackingGeometry::toTracker(
     const Acts::Transform3& trans) const {
-  Acts::Vector3 pos{trans.translation()(2), trans.translation()(0),
+  Acts::Vector3 pos_{trans.translation()(2), trans.translation()(0),
                     trans.translation()(1)};
 
   Acts::RotationMatrix3 rotation = trans.rotation();
   rotation = x_rot_ * y_rot_ * rotation;
 
-  Acts::Translation3 translation(pos);
+  Acts::Translation3 translation(pos_);
   Acts::Transform3 transform(translation * rotation);
 
   return transform;
@@ -253,9 +253,9 @@ void TrackingGeometry::getSurfaces(
   if (tVolume->confinedVolumes()) {
     for (auto volume : tVolume->confinedVolumes()->arrayObjects()) {
       if (volume->confinedLayers()) {
-        for (const auto& layer : volume->confinedLayers()->arrayObjects()) {
-          if (layer->layerType() == Acts::navigation) continue;
-          for (auto surface : layer->surfaceArray()->surfaces()) {
+        for (const auto& layer_ : volume->confinedLayers()->arrayObjects()) {
+          if (layer_->layerType() == Acts::navigation) continue;
+          for (auto surface : layer_->surfaceArray()->surfaces()) {
             if (surface) {
               surfaces.push_back(surface);
 
@@ -274,11 +274,11 @@ void TrackingGeometry::makeLayerSurfacesMap() {
   for (auto& surface : surfaces) {
     // Layers from 1 to 14 - for the tagger
     // unsigned int layerId = (surface->geometryId().layer() / 2) ;  // Old 1
-    // sensor per layer
+    // sensor per layer_
 
     unsigned int volumeId = surface->geometryId().volume();
     unsigned int layerId = (surface->geometryId().layer() /
-                            2);  // set layer ID  from 1 to 7 for the tagger and
+                            2);  // set layer_ ID  from 1 to 7 for the tagger and
                                  // from 1 to 6 for the recoil
     unsigned int sensorId =
         surface->geometryId().sensitive() -
