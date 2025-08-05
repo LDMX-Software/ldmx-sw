@@ -205,13 +205,13 @@ void EcalVetoProcessor::produce(framework::Event &event) {
     auto ecal_sp_hits{event.getCollection<ldmx::SimTrackerHit>(
         "EcalScoringPlaneHits", sp_pass_name_)};
     float pmax = 0;
-    for (ldmx::SimTrackerHit &spHit : ecal_sp_hits) {
-      ldmx::SimSpecialID hit_id(spHit.getID());
-      auto ecal_sp_momentum = spHit.getMomentum();
-      auto ecal_sp_position = spHit.getPosition();
+    for (ldmx::SimTrackerHit &sp_hit : ecal_sp_hits) {
+      ldmx::SimSpecialID hit_id(sp_hit.getID());
+      auto ecal_sp_momentum = sp_hit.getMomentum();
+      auto ecal_sp_position = sp_hit.getPosition();
       if (hit_id.plane() != 31 || ecal_sp_momentum[2] <= 0) continue;
 
-      if (spHit.getTrackID() == recoil_track_id) {
+      if (sp_hit.getTrackID() == recoil_track_id) {
         // A*A is faster than pow(A,2)
         if (sqrt((ecal_sp_momentum[0] * ecal_sp_momentum[0]) +
                  (ecal_sp_momentum[1] * ecal_sp_momentum[1]) +
@@ -233,13 +233,13 @@ void EcalVetoProcessor::produce(framework::Event &event) {
           event.getCollection<ldmx::SimTrackerHit>("TargetScoringPlaneHits",
                                                    sp_pass_name_);
       pmax = 0;
-      for (ldmx::SimTrackerHit &spHit : target_sp_hits) {
-        ldmx::SimSpecialID hit_id(spHit.getID());
-        auto target_sp_momentum = spHit.getMomentum();
-        auto target_sp_position = spHit.getPosition();
+      for (ldmx::SimTrackerHit &sp_hit : target_sp_hits) {
+        ldmx::SimSpecialID hit_id(sp_hit.getID());
+        auto target_sp_momentum = sp_hit.getMomentum();
+        auto target_sp_position = sp_hit.getPosition();
         if (hit_id.plane() != 1 || target_sp_momentum[2] <= 0) continue;
 
-        if (spHit.getTrackID() == recoil_track_id) {
+        if (sp_hit.getTrackID() == recoil_track_id) {
           if (sqrt((target_sp_momentum[0] * target_sp_momentum[0]) +
                    (target_sp_momentum[1] * target_sp_momentum[1]) +
                    (target_sp_momentum[2] * target_sp_momentum[2])) > pmax) {
@@ -592,10 +592,10 @@ void EcalVetoProcessor::produce(framework::Event &event) {
     if (energy > 0) summed_tight_iso_ += energy;
   }
 
-  for (int iLayer = 0; iLayer < ecal_layer_edep_readout_.size(); iLayer++) {
-    ecal_layer_time_[iLayer] =
-        ecal_layer_time_[iLayer] / ecal_layer_edep_readout_[iLayer];
-    summed_det_ += ecal_layer_edep_readout_[iLayer];
+  for (int i_layer = 0; i_layer < ecal_layer_edep_readout_.size(); i_layer++) {
+    ecal_layer_time_[i_layer] =
+        ecal_layer_time_[i_layer] / ecal_layer_edep_readout_[i_layer];
+    summed_det_ += ecal_layer_edep_readout_[i_layer];
   }
 
   if (n_readout_hits_ > 0) {
@@ -970,47 +970,47 @@ void EcalVetoProcessor::onProcessEnd() {
 ldmx::EcalID EcalVetoProcessor::GetShowerCentroidIDAndRMS(
     const std::vector<ldmx::EcalHit> &ecal_rec_hits, float &shower_rms) {
   auto wgt_centroid_coords = std::make_pair<float, float>(0., 0.);
-  float sumEdep = 0;
-  ldmx::EcalID returnCellId;
+  float sum_edep = 0;
+  ldmx::EcalID return_cell_id;
 
   // Calculate Energy Weighted Centroid
   for (const ldmx::EcalHit &hit : ecal_rec_hits) {
     ldmx::EcalID id(hit.getID());
     CellEnergyPair cell_energy_pair = std::make_pair(id, hit.getEnergy());
     auto [x, y, z] = geometry_->getPosition(id);
-    XYCoords centroidCoords = std::make_pair(x, y);
+    XYCoords centroid_coords = std::make_pair(x, y);
     wgt_centroid_coords.first = wgt_centroid_coords.first +
-                                centroidCoords.first * cell_energy_pair.second;
+                                centroid_coords.first * cell_energy_pair.second;
     wgt_centroid_coords.second =
         wgt_centroid_coords.second +
-        centroidCoords.second * cell_energy_pair.second;
-    sumEdep += cell_energy_pair.second;
+        centroid_coords.second * cell_energy_pair.second;
+    sum_edep += cell_energy_pair.second;
   }
-  wgt_centroid_coords.first = (sumEdep > 1E-6)
-                                  ? wgt_centroid_coords.first / sumEdep
+  wgt_centroid_coords.first = (sum_edep > 1E-6)
+                                  ? wgt_centroid_coords.first / sum_edep
                                   : wgt_centroid_coords.first;
-  wgt_centroid_coords.second = (sumEdep > 1E-6)
-                                   ? wgt_centroid_coords.second / sumEdep
+  wgt_centroid_coords.second = (sum_edep > 1E-6)
+                                   ? wgt_centroid_coords.second / sum_edep
                                    : wgt_centroid_coords.second;
   // Find Nearest Cell to Centroid
-  float maxDist = 1e6;
+  float max_dist = 1e6;
   for (const ldmx::EcalHit &hit : ecal_rec_hits) {
     auto [x, y, z] = geometry_->getPosition(hit.getID());
-    XYCoords centroidCoords = std::make_pair(x, y);
+    XYCoords centroid_coords = std::make_pair(x, y);
 
-    float deltaR =
-        pow(pow((centroidCoords.first - wgt_centroid_coords.first), 2) +
-                pow((centroidCoords.second - wgt_centroid_coords.second), 2),
+    float delta_r =
+        pow(pow((centroid_coords.first - wgt_centroid_coords.first), 2) +
+                pow((centroid_coords.second - wgt_centroid_coords.second), 2),
             .5);
-    shower_rms += deltaR * hit.getEnergy();
-    if (deltaR < maxDist) {
-      maxDist = deltaR;
-      returnCellId = ldmx::EcalID(hit.getID());
+    shower_rms += delta_r * hit.getEnergy();
+    if (delta_r < max_dist) {
+      max_dist = delta_r;
+      return_cell_id = ldmx::EcalID(hit.getID());
     }
   }
-  if (sumEdep > 0) shower_rms = shower_rms / sumEdep;
+  if (sum_edep > 0) shower_rms = shower_rms / sum_edep;
   // flatten
-  return ldmx::EcalID(0, returnCellId.module(), returnCellId.cell());
+  return ldmx::EcalID(0, return_cell_id.module(), return_cell_id.cell());
 }
 
 /**
@@ -1030,7 +1030,7 @@ void EcalVetoProcessor::fillIsolatedHitMap(
     ldmx::EcalID global_centroid, std::map<ldmx::EcalID, float> &cellMap,
     std::map<ldmx::EcalID, float> &cellMapIso, bool do_tight) {
   for (const ldmx::EcalHit &hit : ecal_rec_hits) {
-    auto isolatedHit = std::make_pair(true, ldmx::EcalID());
+    auto isolated_hit = std::make_pair(true, ldmx::EcalID());
     ldmx::EcalID id(hit.getID());
     if (do_tight) {
       // Disregard hits that are on the centroid.
@@ -1046,19 +1046,19 @@ void EcalVetoProcessor::fillIsolatedHitMap(
     // Get neighboring cell id's and try to look them up in the full cell map
     // (constant speed algo.)
     //  these ideas are only cell/module (must ignore layer)
-    std::vector<ldmx::EcalID> cellNbrIds = geometry_->getNN(id);
+    std::vector<ldmx::EcalID> cell_nbr_ids = geometry_->getNN(id);
 
-    for (int k = 0; k < cellNbrIds.size(); k++) {
+    for (int k = 0; k < cell_nbr_ids.size(); k++) {
       // update neighbor ID to the current layer
-      cellNbrIds[k] = ldmx::EcalID(id.layer(), cellNbrIds[k].module(),
-                                   cellNbrIds[k].cell());
+      cell_nbr_ids[k] = ldmx::EcalID(id.layer(), cell_nbr_ids[k].module(),
+                                   cell_nbr_ids[k].cell());
       // look in cell hit map to see if it is there
-      if (cellMap.find(cellNbrIds[k]) != cellMap.end()) {
-        isolatedHit = std::make_pair(false, cellNbrIds[k]);
+      if (cellMap.find(cell_nbr_ids[k]) != cellMap.end()) {
+        isolated_hit = std::make_pair(false, cell_nbr_ids[k]);
         break;
       }
     }
-    if (!isolatedHit.first) {
+    if (!isolated_hit.first) {
       continue;
     }
     // Insert isolated hit
@@ -1071,14 +1071,14 @@ void EcalVetoProcessor::fillIsolatedHitMap(
 std::vector<std::pair<float, float>> EcalVetoProcessor::getTrajectory(
     std::array<float, 3> momentum, std::array<float, 3> position) {
   std::vector<XYCoords> positions;
-  for (int iLayer = 0; iLayer < n_ecal_layers_; iLayer++) {
-    float posX =
+  for (int i_layer = 0; i_layer < n_ecal_layers_; i_layer++) {
+    float pos_x =
         position[0] + (momentum[0] / momentum[2]) *
-                          (geometry_->getZPosition(iLayer) - position[2]);
-    float posY =
+                          (geometry_->getZPosition(i_layer) - position[2]);
+    float pos_y =
         position[1] + (momentum[1] / momentum[2]) *
-                          (geometry_->getZPosition(iLayer) - position[2]);
-    positions.push_back(std::make_pair(posX, posY));
+                          (geometry_->getZPosition(i_layer) - position[2]);
+    positions.push_back(std::make_pair(pos_x, pos_y));
   }
   return positions;
 }

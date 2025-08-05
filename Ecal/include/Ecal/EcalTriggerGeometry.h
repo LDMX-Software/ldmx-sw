@@ -82,7 +82,7 @@ class EcalTriggerGeometry : public framework::ConditionsObject {
   */
   int symmetry_;
   /** Reference to the Ecal geometry used for trigger geometry information */
-  const ldmx::EcalGeometry* ecalGeometry_;
+  const ldmx::EcalGeometry* ecal_geometry_;
   /** Map of precision cells to trigger cells, under symmetry assumptions
    */
   std::map<ldmx::EcalID, ldmx::EcalTriggerID> precision2trigger_;

@@ -16,7 +16,7 @@ void EcalTrigPrimDigiProducer::produce(framework::Event& event) {
   const EcalTriggerGeometry& geom = getCondition<EcalTriggerGeometry>(
       EcalTriggerGeometry::CONDITIONS_OBJECT_NAME);
 
-  const ldmx::HgcrocDigiCollection& ecalDigis =
+  const ldmx::HgcrocDigiCollection& ecal_digis =
       event.getObject<ldmx::HgcrocDigiCollection>(digiCollName_, digiPassName_);
 
   // get the calibration object
@@ -27,8 +27,8 @@ void EcalTrigPrimDigiProducer::produce(framework::Event& event) {
   ldmx::HgcrocTriggerCalculations calc(conditions);
 
   // Loop over the digis
-  for (unsigned int ix = 0; ix < ecalDigis.getNumDigis(); ix++) {
-    const ldmx::HgcrocDigiCollection::HgcrocDigi pdigi = ecalDigis.getDigi(ix);
+  for (unsigned int ix = 0; ix < ecal_digis.getNumDigis(); ix++) {
+    const ldmx::HgcrocDigiCollection::HgcrocDigi pdigi = ecal_digis.getDigi(ix);
 
     ldmx::EcalTriggerID tid = geom.belongsTo(ldmx::EcalID(pdigi.id()));
 
@@ -51,7 +51,7 @@ void EcalTrigPrimDigiProducer::produce(framework::Event& event) {
     }
   }
 
-  ldmx_log(trace) << " Ecal digi size = " << ecalDigis.size()
+  ldmx_log(trace) << " Ecal digi size = " << ecal_digis.size()
                   << " trigger digi size = " << tdigis.size();
   event.add(getName(), tdigis);
 }

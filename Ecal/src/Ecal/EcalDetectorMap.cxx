@@ -113,17 +113,17 @@ void EcalDetectorMap::buildElectronicsMap() {
           continue;
 
         // now, we have only cells which are relevant
-        ldmx::EcalID precisionId(olink.layer, elink.module, cell.module_cellid);
-        ldmx::EcalElectronicsID elecId(olink.daq_opticallink,
+        ldmx::EcalID precision_id(olink.layer, elink.module, cell.module_cellid);
+        ldmx::EcalElectronicsID elec_id(olink.daq_opticallink,
                                        elink.polarfire_elink,
                                        cell.roc_elink_channel);
 
-        if (this->exists(elecId)) {
+        if (this->exists(elec_id)) {
           std::stringstream ss;
-          ss << "Two different mappings for electronics channel " << elecId;
+          ss << "Two different mappings for electronics channel " << elec_id;
           EXCEPTION_RAISE("DuplicateMapping", ss.str());
         }
-        this->addEntry(elecId, precisionId);
+        this->addEntry(elec_id, precision_id);
       }
     }
   }

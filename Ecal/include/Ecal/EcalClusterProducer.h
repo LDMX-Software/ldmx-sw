@@ -64,14 +64,14 @@ class EcalClusterProducer : public framework::Producer {
   double deltac_{0};
   double deltao_{0};
   // cutoff for log-e weighting in RMS calculation
-  float minHitEnergy_{1.};
+  float min_hit_energy_{1.};
 
   std::string rec_hit_coll_name_;
   std::string rec_hit_pass_name_;
   std::string algo_coll_name_;
   std::string cluster_coll_name_;
 
-  bool CLUE_;
+  bool clue_;
   int nbr_of_layers_;
   bool reclustering_;
 

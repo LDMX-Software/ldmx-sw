@@ -59,19 +59,19 @@ class EcalRecProducer : public framework::Producer {
 
  private:
   /** Digi Collection Name to use as input */
-  std::string digiCollName_;
+  std::string digi_coll_name_;
 
   /** Digi Pass Name to use as input */
-  std::string digiPassName_;
+  std::string digi_pass_name_;
 
   /// simhit collection name
-  std::string simHitCollName_;
+  std::string sim_hit_coll_name_;
 
   /// simhit pass name
-  std::string simHitPassName_;
+  std::string sim_hit_pass_name_;
 
   /// output hit collection name
-  std::string recHitCollName_;
+  std::string rec_hit_coll_name_;
 
   /// Energy [MeV] deposited by a MIP in Si 0.5mm thick
   double mip_si_energy_;
@@ -90,7 +90,7 @@ class EcalRecProducer : public framework::Producer {
    * These are determined by calculating the average amount of energy lost
    * by a MIP passing through the extra material between sensitive layers.
    */
-  std::vector<double> layerWeights_;
+  std::vector<double> layer_weights_;
 
   /**
    * Second Order Energy Correction to use for this reconstruction
@@ -100,7 +100,7 @@ class EcalRecProducer : public framework::Producer {
    * This is less physically motivated than the layer weights and is more
    * of a calibration number.
    */
-  double secondOrderEnergyCorrection_;
+  double second_order_energy_correction_;
 };
 }  // namespace ecal
 

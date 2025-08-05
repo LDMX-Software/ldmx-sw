@@ -80,12 +80,12 @@ EcalTriggerGeometry::EcalTriggerGeometry(int symmetry,
 
 std::vector<ldmx::EcalID> EcalTriggerGeometry::contentsOfTriggerCell(
     ldmx::EcalTriggerID triggerCell) const {
-  ldmx::EcalTriggerID effId;
+  ldmx::EcalTriggerID eff_id;
   std::vector<ldmx::EcalID> retval;
   if ((symmetry_ & MODULES_MASK) == INPLANE_IDENTICAL) {
-    effId = ldmx::EcalTriggerID(0, 0, triggerCell.triggercell());
+    eff_id = ldmx::EcalTriggerID(0, 0, triggerCell.triggercell());
   }
-  auto ptr = trigger2precision_.find(effId);
+  auto ptr = trigger2precision_.find(eff_id);
   if (ptr != trigger2precision_.end()) {
     for (auto idz : ptr->second) {
       retval.push_back(
@@ -97,11 +97,11 @@ std::vector<ldmx::EcalID> EcalTriggerGeometry::contentsOfTriggerCell(
 
 ldmx::EcalID EcalTriggerGeometry::centerInTriggerCell(
     ldmx::EcalTriggerID triggerCell) const {
-  ldmx::EcalTriggerID effId;
+  ldmx::EcalTriggerID eff_id;
   if ((symmetry_ & MODULES_MASK) == INPLANE_IDENTICAL) {
-    effId = ldmx::EcalTriggerID(0, 0, triggerCell.triggercell());
+    eff_id = ldmx::EcalTriggerID(0, 0, triggerCell.triggercell());
   }
-  auto ptr = trigger2precision_.find(effId);
+  auto ptr = trigger2precision_.find(eff_id);
   if (ptr == trigger2precision_.end()) {
     std::stringstream ss;
     ss << "Unable to find trigger cell " << triggerCell;
@@ -114,11 +114,11 @@ ldmx::EcalID EcalTriggerGeometry::centerInTriggerCell(
 
 ldmx::EcalTriggerID EcalTriggerGeometry::belongsTo(
     ldmx::EcalID precisionCell) const {
-  ldmx::EcalID effId;
+  ldmx::EcalID eff_id;
   if ((symmetry_ & MODULES_MASK) == INPLANE_IDENTICAL) {
-    effId = ldmx::EcalID(0, 0, precisionCell.cell());
+    eff_id = ldmx::EcalID(0, 0, precisionCell.cell());
   }
-  auto ptr = precision2trigger_.find(effId);
+  auto ptr = precision2trigger_.find(eff_id);
   if (ptr == precision2trigger_.end()) {
     return ldmx::EcalTriggerID(0, 0, 0);  // not ideal
   } else {
@@ -153,12 +153,12 @@ class EcalTriggerGeometryProvider : public framework::ConditionsObjectProvider {
                               framework::Process& process)
       : ConditionsObjectProvider(EcalTriggerGeometry::CONDITIONS_OBJECT_NAME,
                                  tagname, parameters, process),
-        ecalTriggerGeometry_{nullptr} {}
+        ecal_trigger_geometry_{nullptr} {}
 
   /** Destructor */
   virtual ~EcalTriggerGeometryProvider() {
-    if (ecalTriggerGeometry_ != nullptr) delete ecalTriggerGeometry_;
-    ecalTriggerGeometry_ = nullptr;
+    if (ecal_trigger_geometry_ != nullptr) delete ecal_trigger_geometry_;
+    ecal_trigger_geometry_ = nullptr;
   }
 
   /**
@@ -170,16 +170,16 @@ class EcalTriggerGeometryProvider : public framework::ConditionsObjectProvider {
   virtual std::pair<const framework::ConditionsObject*,
                     framework::ConditionsIOV>
   getCondition(const ldmx::EventHeader& context) {
-    if (ecalTriggerGeometry_ == nullptr) {
+    if (ecal_trigger_geometry_ == nullptr) {
       std::pair<const framework::ConditionsObject*, framework::ConditionsIOV>
           cond_ecal_geom = requestParentCondition(
               ldmx::EcalGeometry::CONDITIONS_OBJECT_NAME, context);
       const ldmx::EcalGeometry* ecalgeom =
           dynamic_cast<const ldmx::EcalGeometry*>(cond_ecal_geom.first);
-      ecalTriggerGeometry_ = new EcalTriggerGeometry(
+      ecal_trigger_geometry_ = new EcalTriggerGeometry(
           INPLANE_IDENTICAL | LAYERS_IDENTICAL, ecalgeom);
     }
-    return std::make_pair(ecalTriggerGeometry_,
+    return std::make_pair(ecal_trigger_geometry_,
                           framework::ConditionsIOV(
                               context.getRun(), context.getRun(), true, true));
   }
@@ -191,7 +191,7 @@ class EcalTriggerGeometryProvider : public framework::ConditionsObjectProvider {
   virtual void releaseConditionsObject(const framework::ConditionsObject* co) {}
 
  private:
-  EcalTriggerGeometry* ecalTriggerGeometry_;
+  EcalTriggerGeometry* ecal_trigger_geometry_;
 };
 
 }  // namespace ecal

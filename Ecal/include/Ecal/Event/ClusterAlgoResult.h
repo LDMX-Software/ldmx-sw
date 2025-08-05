@@ -42,7 +42,7 @@ class ClusterAlgoResult {
   /**
    * Reset the ClusterAlgoResult object.
    */
-  void Clear();
+  void clear();
 
   /**
    * Return the name of the cluster algo.

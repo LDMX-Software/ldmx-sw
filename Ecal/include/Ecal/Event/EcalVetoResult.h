@@ -74,7 +74,7 @@ class EcalVetoResult {
       std::array<float, 3> recoil_pos);
 
   /** Reset the object. */
-  void Clear();
+  void clear();
 
   /** Print the object */
   friend std::ostream& operator<<(std::ostream& o, const EcalVetoResult& d);

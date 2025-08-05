@@ -29,37 +29,37 @@ class CLUE {
 
  public:
   struct Density {
-    float x;
-    float y;
-    float z;
-    double total_energy;
-    int index;
+    float x_;
+    float y_;
+    float z_;
+    double total_energy_;
+    int index_;
 
     // index of density this density is follower of
     // set to index of spatially closest density with higher energy; -1 if seed
-    int follower_of;
+    int follower_of_;
     // separation distance to density that this is follower of
-    float delta;
-    float z_delta;
+    float delta_;
+    float z_delta_;
 
-    int cluster_id;  // 2D cluster ID
+    int cluster_id_;  // 2D cluster ID
 
-    int layer;
+    int layer_;
 
-    std::vector<const ldmx::EcalHit*> hits;
+    std::vector<const ldmx::EcalHit*> hits_;
 
     Density() {}
 
-    Density(float xx, float yy) : x(xx), y(yy) {
-      total_energy = 0.;
-      index = -1;
-      follower_of = -1;
-      delta = std::numeric_limits<float>::max();
-      z_delta = std::numeric_limits<float>::max();
-      cluster_id = -1;
-      layer = -1;
-      z = 0.;
-      hits = {};
+    Density(float xx, float yy) : x_(xx), y_(yy) {
+      total_energy_ = 0.;
+      index_ = -1;
+      follower_of_ = -1;
+      delta_ = std::numeric_limits<float>::max();
+      z_delta_ = std::numeric_limits<float>::max();
+      cluster_id_ = -1;
+      layer_ = -1;
+      z_ = 0.;
+      hits_ = {};
     }
   };
 
@@ -127,9 +127,9 @@ class CLUE {
                                           5.3,  5.3,  5.3,  5.3, 5.3, 10.5,
                                           10.5, 10.5, 10.5, 10.5};
   std::vector<double> layer_rho_c_;
-  std::vector<double> layer_delta_c;
+  std::vector<double> layer_delta_c_;
   // containment radius for the different layers of the ECal
-  std::vector<double> radius{
+  std::vector<double> radius_{
       5.723387467629167,  5.190678018534044,  5.927290663506518,
       6.182560329200212,  7.907549398117859,  8.606100542857211,
       10.93381822596916,  12.043201938160239, 14.784548371508041,

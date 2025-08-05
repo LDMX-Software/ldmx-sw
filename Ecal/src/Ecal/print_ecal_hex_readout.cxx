@@ -26,14 +26,14 @@ int main() {
 
   // These are the v12 parameters
   //  all distances in mm
-  std::vector<double> ecalSensLayersZ = {
+  std::vector<double> ecal_sens_layers_z = {
       7.850,   13.300,  26.400,  33.500,  47.950,  56.550,  72.250,
       81.350,  97.050,  106.150, 121.850, 130.950, 146.650, 155.750,
       171.450, 180.550, 196.250, 205.350, 221.050, 230.150, 245.850,
       254.950, 270.650, 279.750, 298.950, 311.550, 330.750, 343.350,
       362.550, 375.150, 394.350, 406.950, 426.150, 438.750};
   framework::config::Parameters params;
-  params.addParameter("layerZPositions", ecalSensLayersZ);
+  params.addParameter("layerZPositions", ecal_sens_layers_z);
   params.addParameter("ecalFrontZ", 220.);
   params.addParameter("moduleMinR", 85.0);
   params.addParameter("nCellRHeight", 35.3);
@@ -50,52 +50,52 @@ int main() {
 
   /// fills the poly map with the corresponding IDs and then returns a handle to
   /// it
-  auto polyMap = geometry.getCellPolyMap();
+  auto poly_map = geometry.getCellPolyMap();
 
   TCanvas* c = new TCanvas("c", "c", 900, 900);  // make square canvas
   c->SetMargin(0.15, 0.05, 0.1, 0.1);
   gStyle->SetOptStat(0);  // no stat box
-  polyMap->SetTitle(
+  poly_map->SetTitle(
       "Local Cell ID to Local Cell Position Map;"
       "P Position Relative to Module [mm];"
       "Q Position Relative to Module [mm]");
-  polyMap->GetXaxis()->SetTickLength(0.);
-  polyMap->GetYaxis()->SetTickLength(0.);
-  polyMap->Draw("TEXT");  // print with bin context labeled as text
+  poly_map->GetXaxis()->SetTickLength(0.);
+  poly_map->GetYaxis()->SetTickLength(0.);
+  poly_map->Draw("TEXT");  // print with bin context labeled as text
 
-  double hexCornerRadius = 85.0 * (2 / sqrt(3));
-  std::vector<std::pair<double, double> > hexCorners = {
-      std::make_pair(+1. * hexCornerRadius, 0.),
-      std::make_pair(+1. * hexCornerRadius * cos(M_PI / 3),
-                     +1. * hexCornerRadius * sin(M_PI / 3)),
-      std::make_pair(-1. * hexCornerRadius * cos(M_PI / 3),
-                     +1. * hexCornerRadius * sin(M_PI / 3)),
-      std::make_pair(-1. * hexCornerRadius, 0.),
-      std::make_pair(-1. * hexCornerRadius * cos(M_PI / 3),
-                     -1. * hexCornerRadius * sin(M_PI / 3)),
-      std::make_pair(+1. * hexCornerRadius * cos(M_PI / 3),
-                     -1. * hexCornerRadius * sin(M_PI / 3)),
-      std::make_pair(+1. * hexCornerRadius, 0.)};
-  TLine moduleHexBorder{0., 0., 0., 0.};
-  moduleHexBorder.SetLineColorAlpha(kRed, 0.5);
-  moduleHexBorder.SetLineWidth(2);
-  for (int i = 1; i < hexCorners.size(); i++) {
-    moduleHexBorder.DrawLine(hexCorners.at(i - 1).first,
-                             hexCorners.at(i - 1).second,
-                             hexCorners.at(i).first, hexCorners.at(i).second);
+  double hex_corner_radius = 85.0 * (2 / sqrt(3));
+  std::vector<std::pair<double, double> > hex_corners = {
+      std::make_pair(+1. * hex_corner_radius, 0.),
+      std::make_pair(+1. * hex_corner_radius * cos(M_PI / 3),
+                     +1. * hex_corner_radius * sin(M_PI / 3)),
+      std::make_pair(-1. * hex_corner_radius * cos(M_PI / 3),
+                     +1. * hex_corner_radius * sin(M_PI / 3)),
+      std::make_pair(-1. * hex_corner_radius, 0.),
+      std::make_pair(-1. * hex_corner_radius * cos(M_PI / 3),
+                     -1. * hex_corner_radius * sin(M_PI / 3)),
+      std::make_pair(+1. * hex_corner_radius * cos(M_PI / 3),
+                     -1. * hex_corner_radius * sin(M_PI / 3)),
+      std::make_pair(+1. * hex_corner_radius, 0.)};
+  TLine module_hex_border{0., 0., 0., 0.};
+  module_hex_border.SetLineColorAlpha(kRed, 0.5);
+  module_hex_border.SetLineWidth(2);
+  for (int i = 1; i < hex_corners.size(); i++) {
+    module_hex_border.DrawLine(hex_corners.at(i - 1).first,
+                             hex_corners.at(i - 1).second,
+                             hex_corners.at(i).first, hex_corners.at(i).second);
   }
 
   c->Update();
   c->SaveAs("Cell_ID_Cell_Position_Map.pdf");
 
-  polyMap->SetTitle(
+  poly_map->SetTitle(
       "Local Cell U,V to Local Cell Position Map;X Position Relative to Module "
       "[mm];Y Position Relative to Module [mm]");
-  polyMap->GetXaxis()->SetTickLength(0.);
-  polyMap->GetYaxis()->SetTickLength(0.);
-  polyMap->SetMaximum(1000);
-  polyMap->SetMinimum(500);
-  polyMap->Draw("hist");  // print with bin context labeled as text
+  poly_map->GetXaxis()->SetTickLength(0.);
+  poly_map->GetYaxis()->SetTickLength(0.);
+  poly_map->SetMaximum(1000);
+  poly_map->SetMinimum(500);
+  poly_map->Draw("hist");  // print with bin context labeled as text
 
   for (int icell = 0; icell < 432; icell++) {
     ldmx::EcalID id(0, 0, icell);
@@ -113,19 +113,19 @@ int main() {
   c->SaveAs("Cell_UV_Cell_Position_Map.pdf");
 
   // and now for triggers
-  ecal::EcalTriggerGeometry trigG(0x100, geometry_ptr);
-  polyMap->SetTitle(
+  ecal::EcalTriggerGeometry trig_g(0x100, geometry_ptr);
+  poly_map->SetTitle(
       "Trigger Cell Summing Map;"
       "P Position Relative to Module [mm];"
       "Q Position Relative to Module [mm]");
-  polyMap->GetXaxis()->SetTickLength(0.);
-  polyMap->GetYaxis()->SetTickLength(0.);
-  polyMap->SetMaximum(4);
-  polyMap->SetMinimum(0);
+  poly_map->GetXaxis()->SetTickLength(0.);
+  poly_map->GetYaxis()->SetTickLength(0.);
+  poly_map->SetMaximum(4);
+  poly_map->SetMinimum(0);
 
   for (int icell = 0; icell < 432; icell++) {
     ldmx::EcalID id(0, 0, icell);
-    ldmx::EcalTriggerID tid = trigG.belongsTo(id);
+    ldmx::EcalTriggerID tid = trig_g.belongsTo(id);
 
     std::cout << id << "->" << tid << std::endl;
 
@@ -195,14 +195,14 @@ int main() {
       }
     }
 
-    polyMap->SetBinContent(icell + 1, ival);
+    poly_map->SetBinContent(icell + 1, ival);
   }
 
-  polyMap->Draw("COL");  // print with bin context labeled as text
+  poly_map->Draw("COL");  // print with bin context labeled as text
 
   for (int tcell = 0; tcell < 48; tcell++) {
     ldmx::EcalTriggerID tid(0, 0, tcell);
-    std::pair<double, double> pt = trigG.localPosition(tid);
+    std::pair<double, double> pt = trig_g.localPosition(tid);
 
     char text[100];
     sprintf(text, "(%d)", tcell);

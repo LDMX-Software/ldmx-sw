@@ -68,7 +68,7 @@ class TemplatedClusterFinder {
       }
 
       nseeds_ = nseeds;
-      transitionWeights_.insert(std::pair<int, double>(ncluster, minwgt));
+      transition_weights_.insert(std::pair<int, double>(ncluster, minwgt));
 
       if (any && minwgt < cutoff) {
         // put the bigger one in mi
@@ -86,7 +86,7 @@ class TemplatedClusterFinder {
     finalwgt_ = minwgt;
     for (const auto& cl : clusters_) {
       if (!cl.empty() && cl.centroid().E() >= seed_threshold)
-        finalClusters_.push_back(cl);
+        final_clusters_.push_back(cl);
       else if (cl.centroid().E() < seed_threshold)
         break;  // clusters are sorted, so should be safe to break
     }
@@ -98,10 +98,10 @@ class TemplatedClusterFinder {
 
   int getNLoops() const { return loops_; }
 
-  std::map<int, double> getWeights() const { return transitionWeights_; }
+  std::map<int, double> getWeights() const { return transition_weights_; }
 
   std::vector<IntermediateCluster> getClusters() const {
-    return finalClusters_;
+    return final_clusters_;
   }
 
  private:
@@ -109,9 +109,9 @@ class TemplatedClusterFinder {
   double finalwgt_;
   int nseeds_;
   int loops_;
-  std::map<int, double> transitionWeights_;
+  std::map<int, double> transition_weights_;
   std::vector<IntermediateCluster> clusters_;
-  std::vector<IntermediateCluster> finalClusters_;
+  std::vector<IntermediateCluster> final_clusters_;
 };
 }  // namespace ecal
 

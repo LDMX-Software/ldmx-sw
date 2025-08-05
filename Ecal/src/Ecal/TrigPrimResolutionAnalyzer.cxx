@@ -44,7 +44,7 @@ class TrigPrimResolutionAnalyzer : public framework::Analyzer {
    *
    * We scale the amplitude by the layer weight with a few other factors.
    */
-  double calculate_energy(int layer, double amplitude) {
+  double calculateEnergy(int layer, double amplitude) {
     return (1 + layerWeights_[layer] / mip_si_energy_) * amplitude *
            secondOrderEnergyCorrection_;
   }
@@ -212,7 +212,7 @@ bool operator<(const UniqueModule& lhs, const UniqueModule& rhs) {
  * This also re-casts the integer into a float which is more readily comparable
  * to the float energy estimate stored within the reconstructed precision hits.
  */
-float get_estimate(const HgcrocTrigDigi& trig) {
+float getEstimate(const HgcrocTrigDigi& trig) {
   uint32_t prim{trig.linearPrimitive()};
   if (prim < 15) {
     return (static_cast<float>(prim) + 0.5);
@@ -238,8 +238,8 @@ void TrigPrimResolutionAnalyzer::analyze(const framework::Event& event) {
   for (const auto& trig : trigs) {
     EcalTriggerID tid{trig.getId()};
     UniqueModule mod{tid};
-    double trig_ampl = get_estimate(trig);
-    double trig_energy = calculate_energy(mod.layer_, trig_ampl) / nominal_;
+    double trig_ampl = getEstimate(trig);
+    double trig_energy = calculateEnergy(mod.layer_, trig_ampl) / nominal_;
 
     /// add this trigger primitive to module sums
     if (module_sums.find(mod) == module_sums.end()) {
@@ -260,7 +260,7 @@ void TrigPrimResolutionAnalyzer::analyze(const framework::Event& event) {
       for (const auto& hit : hits) {
         if (prec_id == hit.getID()) {
           trig_group_prec_total +=
-              calculate_energy(mod.layer_, hit.getAmplitude());
+              calculateEnergy(mod.layer_, hit.getAmplitude());
           trig_group_prec_total_unweight += hit.getAmplitude();
         }
       }
@@ -293,7 +293,7 @@ void TrigPrimResolutionAnalyzer::analyze(const framework::Event& event) {
     if (module_sums.find(mod) == module_sums.end()) {
       module_sums[mod] = {0, 0.0};
     }
-    double prec_energy = calculate_energy(mod.layer_, hit.getAmplitude());
+    double prec_energy = calculateEnergy(mod.layer_, hit.getAmplitude());
     module_sums[mod].second += prec_energy;
     prec_ampl_total += prec_energy;
     if (mod.layer_ <= 20) {

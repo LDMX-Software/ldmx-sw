@@ -82,13 +82,13 @@ class EcalDetectorMap
   struct CellInformation {
     /// precision information
     /** cellid */
-    int module_cellid;
+    int module_cellid_;
     /** hgcroc id on the module (which of the six) */
-    int rocid;
+    int rocid_;
     /** roc elink number */
-    int roc_elink_number;
+    int roc_elink_number_;
     /** roc elink channel */
-    int roc_elink_channel;
+    int roc_elink_channel_;
   };
   std::vector<CellInformation> cells_;
 
@@ -97,15 +97,15 @@ class EcalDetectorMap
    */
   struct MotherboardLinksInformation {
     /** motherboard type */
-    int motherboard_type;
+    int motherboard_type_;
     /** elink id */
-    int polarfire_elink;
+    int polarfire_elink_;
     /** module number */
-    int module;
+    int module_;
     /** hgcroc id on the module (which of the six) */
-    int rocid;
+    int rocid_;
     /** hgcroc link id on the module (which of the two) */
-    int roc_elink_number;
+    int roc_elink_number_;
   };
   std::vector<MotherboardLinksInformation> elinks_;
 
@@ -114,11 +114,11 @@ class EcalDetectorMap
    */
   struct MotherboardsPerLayer {
     /** layer number */
-    int layer;
+    int layer_;
     /** mother board type */
-    int motherboard_type;
+    int motherboard_type_;
     /** mother global optical link number */
-    int daq_opticallink;
+    int daq_opticallink_;
   };
   std::vector<MotherboardsPerLayer> layers_;
 };

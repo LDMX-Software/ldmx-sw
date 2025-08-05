@@ -118,16 +118,16 @@ void EcalMipTrackingProcessor::produce(framework::Event &event) {
   }
 
   // Territories limited to tracking_hit_list
-  ROOT::Math::XYZVector gToe = (e_traj_start - p_traj_start).Unit();
+  ROOT::Math::XYZVector g_toe = (e_traj_start - p_traj_start).Unit();
   // TODO what is this 8.7 here???
-  ROOT::Math::XYZVector origin = p_traj_start + 0.5 * 8.7 * gToe;
+  ROOT::Math::XYZVector origin = p_traj_start + 0.5 * 8.7 * g_toe;
   ldmx_log(trace) << "Origin of photon territory: " << origin.X() << ", "
                   << origin.Y() << ", " << origin.Z();
   if (!ele_trajectory.empty()) {
-    for (auto &hitData : tracking_hit_list) {
-      ROOT::Math::XYZVector hitPos = hitData.pos;
-      ROOT::Math::XYZVector hitPrime = hitPos - origin;
-      if (hitPrime.Dot(gToe) <= 0) {
+    for (auto &hit_data : tracking_hit_list) {
+      ROOT::Math::XYZVector hit_pos = hit_data.pos;
+      ROOT::Math::XYZVector hit_prime = hit_pos - origin;
+      if (hit_prime.Dot(g_toe) <= 0) {
         photon_territory_hits_++;
       }
     }
@@ -223,9 +223,9 @@ void EcalMipTrackingProcessor::produce(framework::Event &event) {
     if (track_len >= 2) {
       std::vector<ldmx::HitData> temp_track_list;
       int n_remove = 0;
-      for (int kHit = 0; kHit < track_len; kHit++) {
-        temp_track_list.push_back(tracking_hit_list[track[kHit] - n_remove]);
-        tracking_hit_list.erase(tracking_hit_list.begin() + track[kHit] -
+      for (int k_hit = 0; k_hit < track_len; k_hit++) {
+        temp_track_list.push_back(tracking_hit_list[track[k_hit] - n_remove]);
+        tracking_hit_list.erase(tracking_hit_list.begin() + track[k_hit] -
                                 n_remove);
         n_remove++;
       }
@@ -251,13 +251,13 @@ void EcalMipTrackingProcessor::produce(framework::Event &event) {
   ldmx_log(debug) << "Straight tracks found (before merge): "
                   << track_list.size();
 
-  for (int iTrack = 0; iTrack < track_list.size(); iTrack++) {
-    ldmx_log(trace) << "Track " << iTrack << ":";
-    for (int i_hit = 0; i_hit < track_list[iTrack].size(); i_hit++) {
+  for (int i_track = 0; i_track < track_list.size(); i_track++) {
+    ldmx_log(trace) << "Track " << i_track << ":";
+    for (int i_hit = 0; i_hit < track_list[i_track].size(); i_hit++) {
       ldmx_log(trace) << "  Hit " << i_hit << ": ["
-                      << track_list[iTrack][i_hit].pos.X() << ", "
-                      << track_list[iTrack][i_hit].pos.Y() << ", "
-                      << track_list[iTrack][i_hit].layer << "]" << std::endl;
+                      << track_list[i_track][i_hit].pos.X() << ", "
+                      << track_list[i_track][i_hit].pos.Y() << ", "
+                      << track_list[i_track][i_hit].layer << "]" << std::endl;
     }
   }
 
@@ -329,7 +329,7 @@ void EcalMipTrackingProcessor::produce(framework::Event &event) {
     // for (int i_hit = 0; i_hit < tracking_hit_list.size(); i_hit++) {
     //  Hits being considered at a given time
     std::vector<int> hits_in_region;
-    TMatrixD Vm(3, 3);
+    TMatrixD vm(3, 3);
     TMatrixD hdt(3, 3);
     ROOT::Math::XYZVector slope_vec;
     ROOT::Math::XYZVector h_mean;
@@ -338,7 +338,7 @@ void EcalMipTrackingProcessor::produce(framework::Event &event) {
     // Temp array having 3 potential hits
     int hit_nums[3];
     // From the above which are passing the correlation reqs
-    int bestHitNums[3];
+    int best_hit_nums[3];
 
     hits_in_region.push_back(i_hit);
     // Find all hits within 2 cells of the primary hit:
@@ -403,15 +403,15 @@ void EcalMipTrackingProcessor::produce(framework::Event &event) {
         // Exit early if the matrix is singular (i.e. det = 0)
         if (determinant == 0) continue;
         // Perform matrix decomposition with SVD
-        TDecompSVD svdObj(hdt);
-        bool decomposed = svdObj.Decompose();
+        TDecompSVD svd_obj(hdt);
+        bool decomposed = svd_obj.Decompose();
         if (!decomposed) continue;
 
         // First col of V matrix is the slope of the best-fit line
-        Vm = svdObj.GetV();
-        slope_vec.SetX(Vm[0][0]);
-        slope_vec.SetY(Vm[0][1]);
-        slope_vec.SetZ(Vm[0][2]);
+        vm = svd_obj.GetV();
+        slope_vec.SetX(vm[0][0]);
+        slope_vec.SetY(vm[0][1]);
+        slope_vec.SetZ(vm[0][2]);
         // h_mean, h_point are points on the best-fit line
         h_point = slope_vec + h_mean;
         // linreg complete:  Now have best-fit line for 3 hits under
@@ -445,7 +445,7 @@ void EcalMipTrackingProcessor::produce(framework::Event &event) {
           // Only looking for 3-hit tracks currently
           best_lin_reg_found = true;
           for (int k = 0; k < 3; k++) {
-            bestHitNums[k] = hit_nums[k];
+            best_hit_nums[k] = hit_nums[k];
           }
         }
       }  // end loop on hits in the region
@@ -458,17 +458,17 @@ void EcalMipTrackingProcessor::produce(framework::Event &event) {
     ldmx_log(debug) << " Lin-reg track " << n_linreg_tracks_;
     for (int final_hit_index = 0; final_hit_index < 3; final_hit_index++) {
       ldmx_log(debug) << "   Hit " << final_hit_index << " ["
-                      << tracking_hit_list[bestHitNums[final_hit_index]].pos.X()
+                      << tracking_hit_list[best_hit_nums[final_hit_index]].pos.X()
                       << ", "
-                      << tracking_hit_list[bestHitNums[final_hit_index]].pos.Y()
+                      << tracking_hit_list[best_hit_nums[final_hit_index]].pos.Y()
                       << ", "
-                      << tracking_hit_list[bestHitNums[final_hit_index]].pos.Z()
+                      << tracking_hit_list[best_hit_nums[final_hit_index]].pos.Z()
                       << "] ";
     }
 
     // Exclude all hits in a found track from further consideration:
     for (int l_hit = 0; l_hit < 3; l_hit++) {
-      tracking_hit_list.erase(tracking_hit_list.begin() + bestHitNums[l_hit]);
+      tracking_hit_list.erase(tracking_hit_list.begin() + best_hit_nums[l_hit]);
     }
     i_hit--;
   }  // end loop on all hits
