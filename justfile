@@ -140,6 +140,7 @@ init:
       # to avoid overwriting quietly
       denv init --clean-env --no-over --no-mkdir --name ldmx ldmx/dev:latest
     fi
+    denv config print
 
 # check that the necessary programs for running ldmx-sw are present
 check:
