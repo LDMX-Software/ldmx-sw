@@ -56,8 +56,8 @@ jobs:
  
     - name: Compile and Install ldmx-sw
       run: |
-        just install-denv init configure-force-error
-        just build
+        just install-denv init
+        just configure-force-error build
       shell: bash
 
     - name: Package ldmx-sw Into Artifact

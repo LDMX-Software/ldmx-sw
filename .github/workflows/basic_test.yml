@@ -24,8 +24,9 @@ jobs:
 
     - name: Compile and Install ldmx-sw
       run: | 
-        just install-denv init print-config configure-force-error
-        just build
+        just install-denv init
+        just print-config
+        just configure-force-error build
       shell: bash
 
     - name: Basic Tests for Functionality
