@@ -25,8 +25,8 @@ jobs:
  
     - name: Compile and Install ldmx-sw
       run: |
-        just install-denv init
-        just configure-asan-ubsan build
+        just install-denv init configure-asan-ubsan 
+        just build
       shell: bash
 
     - name: Run ecal_pn config
