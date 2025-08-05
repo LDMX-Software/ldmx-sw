@@ -159,7 +159,7 @@ check:
 # remove the build and install directories of ldmx-sw
 [confirm("This will remove the build and install directories. Are you sure?")]
 clean:
-    rm -r build install VERSION
+    rm -r build install VERSION COMMIT_SHA
 
 # format the ldmx-sw source code
 format: format-cpp format-just
