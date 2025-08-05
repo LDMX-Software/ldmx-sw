@@ -169,6 +169,15 @@ format-cpp *ARGS='-i':
 format-just:
     @just --fmt --unstable --justfile {{ justfile() }}
 
+# Now do the same but with clang tidy
+tidy-cpp *ARGS='-p build -quiet --fix':
+    #!/usr/bin/env sh
+    set -exu
+    format_list=$(mktemp)
+    git ls-tree -r HEAD --name-only | egrep '(\.h|\.cxx)$'  | grep 'Biasing' > ${format_list}
+    denv clang-tidy $(cat ${format_list}) {{ ARGS }}
+    rm ${format_list}
+
 # shellcheck doesn't have a "apply-formatting" option
 # because it really is more of a tidier (its changes could affect code meaning)
 # so only a check is implemented here
