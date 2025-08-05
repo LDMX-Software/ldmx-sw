@@ -34,16 +34,16 @@ TargetBremFilter::~TargetBremFilter() {}
 G4ClassificationOfNewTrack TargetBremFilter::ClassifyNewTrack(
     const G4Track* track, const G4ClassificationOfNewTrack& currentTrackClass) {
   // get the PDGID of the track.
-  G4int pdgID = track->GetParticleDefinition()->GetPDGEncoding();
+  G4int pdg_id = track->GetParticleDefinition()->GetPDGEncoding();
 
   // Get the particle type.
-  G4String particleName = track->GetParticleDefinition()->GetParticleName();
+  G4String particle_name = track->GetParticleDefinition()->GetParticleName();
 
   // Use current classification by default so values from other plugins are not
   // overridden.
   G4ClassificationOfNewTrack classification = currentTrackClass;
 
-  if (track->GetTrackID() == 1 && pdgID == 11) {
+  if (track->GetTrackID() == 1 && pdg_id == 11) {
     return fWaiting;
   }
 
@@ -59,7 +59,7 @@ void TargetBremFilter::stepping(const G4Step* step) {
 
   // Get the PDG ID of the track and make sure it's an electron. If
   // another particle type is found, thrown an exception.
-  if (auto pdgID{track->GetParticleDefinition()->GetPDGEncoding()}; pdgID != 11)
+  if (auto pdg_id{track->GetParticleDefinition()->GetPDGEncoding()}; pdg_id != 11)
     return;
 
   // Get the region the particle is currently in.  Continue processing
@@ -114,7 +114,7 @@ void TargetBremFilter::stepping(const G4Step* step) {
     }
 
     // Get the electron secondries
-    bool hasBremCandidate = false;
+    bool has_brem_candidate = false;
     if (auto secondaries = step->GetSecondary(); secondaries->size() == 0) {
       track->SetTrackStatus(fKillTrackAndSecondaries);
       G4RunManager::GetRunManager()->AbortEvent();
@@ -130,17 +130,17 @@ void TargetBremFilter::stepping(const G4Step* step) {
 
         if (ebrem_process &&
             secondary_track->GetKineticEnergy() > bremEnergyThreshold_) {
-          auto trackInfo{simcore::UserTrackInformation::get(secondary_track)};
-          trackInfo->tagBremCandidate();
+          auto track_info{simcore::UserTrackInformation::get(secondary_track)};
+          track_info->tagBremCandidate();
 
           getEventInfo()->incBremCandidateCount();
 
-          hasBremCandidate = true;
+          has_brem_candidate = true;
         }
       }
     }
 
-    if (!hasBremCandidate) {
+    if (!has_brem_candidate) {
       track->SetTrackStatus(fKillTrackAndSecondaries);
       G4RunManager::GetRunManager()->AbortEvent();
       return;

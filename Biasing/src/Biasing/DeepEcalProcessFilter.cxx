@@ -38,14 +38,14 @@ void DeepEcalProcessFilter::stepping(const G4Step* step) {
   auto track{step->GetTrack()};
 
   // Check the creation process and PDG ID of the particle
-  auto processName = track->GetCreatorProcess()
+  auto process_name = track->GetCreatorProcess()
                          ? track->GetCreatorProcess()->GetProcessName()
                          : "unknown";
-  auto PDGid = track->GetParticleDefinition()->GetPDGEncoding();
+  auto pd_gid = track->GetParticleDefinition()->GetPDGEncoding();
 
   // Skip the steps that are for the recoil electron
   // PrimaryToEcalFilter made sure there is a fiducial e-
-  if (processName.contains("unknown")) return;
+  if (process_name.contains("unknown")) return;
 
   // Energy of the particle is below threshold, move to next step
   if (track->GetKineticEnergy() < bias_threshold_) {
@@ -57,12 +57,12 @@ void DeepEcalProcessFilter::stepping(const G4Step* step) {
   auto volume{phys_vol ? phys_vol->GetLogicalVolume() : nullptr};
   auto volume_name{volume ? volume->GetName() : "undefined"};
 
-  auto trackInfo{simcore::UserTrackInformation::get(track)};
+  auto track_info{simcore::UserTrackInformation::get(track)};
   // Tag the brem photon from the primary electron
-  if (processName.contains("eBrem") and (track->GetParentID() == 1)) {
-    trackInfo->tagBremCandidate();
+  if (process_name.contains("eBrem") and (track->GetParentID() == 1)) {
+    track_info->tagBremCandidate();
     getEventInfo()->incBremCandidateCount();
-    trackInfo->setSaveFlag(true);
+    track_info->setSaveFlag(true);
     if (volume_name.contains("target")) {
       photonFromTarget_ = true;
     }
@@ -75,17 +75,17 @@ void DeepEcalProcessFilter::stepping(const G4Step* step) {
   }
 
   // Tag if the event has the processes we are looking for
-  bool hasProcessNeeded{false};
+  bool has_process_needed{false};
   for (auto& process : processes_) {
     // ldmx_log(debug) << "Allowed processed " << process << " now we have " <<
     // processName;
-    if (processName.contains(process)) {
-      hasProcessNeeded = true;
+    if (process_name.contains(process)) {
+      has_process_needed = true;
       break;
     }
   }
   // skip this step if it does not have any of the processes needed
-  if (not hasProcessNeeded) return;
+  if (not has_process_needed) return;
 
   auto is_in_ecal =
       simcore::g4user::volumechecks::isInEcal(volume, volume_name);
@@ -96,13 +96,13 @@ void DeepEcalProcessFilter::stepping(const G4Step* step) {
 
   // Check the z position of the particle, and
   // flag if it is deeper than the min Z we are considering (but in ECAL)
-  auto zPosition = step->GetPreStepPoint()->GetPosition().z();
+  auto z_position = step->GetPreStepPoint()->GetPosition().z();
   // Printout for testing
-  if (zPosition > (0.75 * ecal_min_Z_)) {
-    ldmx_log(debug) << " Particle ID " << PDGid << " with energy "
+  if (z_position > (0.75 * ecal_min_Z_)) {
+    ldmx_log(debug) << " Particle ID " << pd_gid << " with energy "
                     << track->GetKineticEnergy() << " on " << volume << " from "
-                    << processName << " at Z = " << zPosition;
-    if (zPosition > ecal_min_Z_) {
+                    << process_name << " at Z = " << z_position;
+    if (z_position > ecal_min_Z_) {
       hasDeepEcalProcess_ = true;
     }
   }

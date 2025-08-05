@@ -50,8 +50,8 @@ void TargetProcessFilter::stepping(const G4Step* step) {
     return;
 
   // Get the track info and check if this track is a brem candidate
-  auto trackInfo{simcore::UserTrackInformation::get(track)};
-  if ((trackInfo != nullptr) && !trackInfo->isBremCandidate()) return;
+  auto track_info{simcore::UserTrackInformation::get(track)};
+  if ((track_info != nullptr) && !track_info->isBremCandidate()) return;
 
   // Get the particles daughters.
   auto secondaries{step->GetSecondary()};
@@ -79,7 +79,7 @@ void TargetProcessFilter::stepping(const G4Step* step) {
         currentTrack_ = track;
         track->SetTrackStatus(fSuspend);
         getEventInfo()->decBremCandidateCount();
-        trackInfo->tagBremCandidate(false);
+        track_info->tagBremCandidate(false);
       }
     }
     return;
@@ -124,18 +124,18 @@ void TargetProcessFilter::stepping(const G4Step* step) {
         currentTrack_ = track;
         track->SetTrackStatus(fSuspend);
         getEventInfo()->decBremCandidateCount();
-        trackInfo->tagBremCandidate(false);
+        track_info->tagBremCandidate(false);
       }
     }
     return;
   } else {
     // If the brem gamma interacts and produced secondaries, get the
     // process used to create them.
-    G4String processName =
+    G4String process_name =
         secondaries->at(0)->GetCreatorProcess()->GetProcessName();
 
     // Only record the process that is being biased
-    if (!processName.contains(process_)) {
+    if (!process_name.contains(process_)) {
       if (getEventInfo()->bremCandidateCount() == 1) {
         track->SetTrackStatus(fKillTrackAndSecondaries);
         G4RunManager::GetRunManager()->AbortEvent();
@@ -144,7 +144,7 @@ void TargetProcessFilter::stepping(const G4Step* step) {
         currentTrack_ = track;
         track->SetTrackStatus(fSuspend);
         getEventInfo()->decBremCandidateCount();
-        trackInfo->tagBremCandidate(false);
+        track_info->tagBremCandidate(false);
       }
       return;
     }
@@ -155,11 +155,11 @@ void TargetProcessFilter::stepping(const G4Step* step) {
                        ->GetConstCurrentEvent()
                        ->GetEventID()
                 << " Brem photon produced " << secondaries->size()
-                << " particle via " << processName << " process." << std::endl;
+                << " particle via " << process_name << " process." << std::endl;
     }
-    trackInfo->tagBremCandidate(false);
-    trackInfo->setSaveFlag(true);
-    trackInfo->tagPNGamma();
+    track_info->tagBremCandidate(false);
+    track_info->setSaveFlag(true);
+    track_info->tagPNGamma();
     getEventInfo()->decBremCandidateCount();
   }
 }

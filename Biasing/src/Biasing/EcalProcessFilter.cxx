@@ -28,7 +28,7 @@ EcalProcessFilter::EcalProcessFilter(const std::string& name,
 G4ClassificationOfNewTrack EcalProcessFilter::ClassifyNewTrack(
     const G4Track* track, const G4ClassificationOfNewTrack& currentTrackClass) {
   // Get the particle type.
-  G4String particleName = track->GetParticleDefinition()->GetParticleName();
+  G4String particle_name = track->GetParticleDefinition()->GetParticleName();
 
   if (track == currentTrack_) {
     /*
@@ -61,8 +61,8 @@ void EcalProcessFilter::stepping(const G4Step* step) {
     return;
 
   // Get the track info and check if this track is a brem candidate
-  auto trackInfo{simcore::UserTrackInformation::get(track)};
-  if ((trackInfo != nullptr) && !trackInfo->isBremCandidate()) return;
+  auto track_info{simcore::UserTrackInformation::get(track)};
+  if ((track_info != nullptr) && !track_info->isBremCandidate()) return;
 
   // Get the particles daughters.
   auto secondaries{step->GetSecondary()};
@@ -98,7 +98,7 @@ void EcalProcessFilter::stepping(const G4Step* step) {
         currentTrack_ = track;
         track->SetTrackStatus(fSuspend);
         getEventInfo()->decBremCandidateCount();
-        trackInfo->tagBremCandidate(false);
+        track_info->tagBremCandidate(false);
       }
     }
     return;
@@ -141,7 +141,7 @@ void EcalProcessFilter::stepping(const G4Step* step) {
         currentTrack_ = track;
         track->SetTrackStatus(fSuspend);
         getEventInfo()->decBremCandidateCount();
-        trackInfo->tagBremCandidate(false);
+        track_info->tagBremCandidate(false);
       }
     }
 
@@ -149,10 +149,10 @@ void EcalProcessFilter::stepping(const G4Step* step) {
   } else {
     // If the brem gamma interacts and produces secondaries, get the
     // process used to create them.
-    auto processName{secondaries->at(0)->GetCreatorProcess()->GetProcessName()};
+    auto process_name{secondaries->at(0)->GetCreatorProcess()->GetProcessName()};
 
     // Only record the process that is being biased
-    if (!processName.contains(process_)) {
+    if (!process_name.contains(process_)) {
       /*
       std::cout << "[ EcalProcessFilter ]: "
             <<
@@ -173,16 +173,16 @@ void EcalProcessFilter::stepping(const G4Step* step) {
         currentTrack_ = track;
         track->SetTrackStatus(fSuspend);
         getEventInfo()->decBremCandidateCount();
-        trackInfo->tagBremCandidate(false);
+        track_info->tagBremCandidate(false);
       }
       return;
     }
 
     ldmx_log(info) << " Brem photon produced " << secondaries->size()
-                   << " particles via " << processName << " process.";
-    trackInfo->tagBremCandidate(false);
-    trackInfo->setSaveFlag(true);
-    trackInfo->tagPNGamma();
+                   << " particles via " << process_name << " process.";
+    track_info->tagBremCandidate(false);
+    track_info->setSaveFlag(true);
+    track_info->tagPNGamma();
     getEventInfo()->decBremCandidateCount();
   }
 }

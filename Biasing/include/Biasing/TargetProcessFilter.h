@@ -64,7 +64,7 @@ class TargetProcessFilter : public simcore::UserAction {
 
  private:
   /** Pointer to the current track being processed. */
-  G4Track *currentTrack_{nullptr};
+  G4Track *current_track_{nullptr};
 
   /// The process to bias
   std::string process_{""};

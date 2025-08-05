@@ -138,7 +138,7 @@ class EcalDarkBremFilter : public simcore::UserAction {
    *
    * @param[in] reason reason for aborting the event
    */
-  void AbortEvent(const std::string& reason) const;
+  void abortEvent(const std::string& reason) const;
 
  private:
   /**
@@ -161,7 +161,7 @@ class EcalDarkBremFilter : public simcore::UserAction {
    *
    * Reset to false in BeginOfEventAction
    */
-  bool foundAp_;
+  bool found_ap_;
 
 };  // EcalDarkBremFilter
 }  // namespace biasing

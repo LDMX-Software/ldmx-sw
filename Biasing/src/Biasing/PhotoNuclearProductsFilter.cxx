@@ -37,8 +37,8 @@ void PhotoNuclearProductsFilter::stepping(const G4Step* step) {
   // tagged as PN photos will be processed. The track is currently only
   // tagged by the UserAction ECalProcessFilter which needs to be run
   // before this UserAction.
-  auto trackInfo{simcore::UserTrackInformation::get(track)};
-  if ((trackInfo != nullptr) && !trackInfo->isPNGamma()) return;
+  auto track_info{simcore::UserTrackInformation::get(track)};
+  if ((track_info != nullptr) && !track_info->isPNGamma()) return;
 
   // Get the PN photon daughters.
   auto secondaries{step->GetSecondary()};
@@ -47,16 +47,16 @@ void PhotoNuclearProductsFilter::stepping(const G4Step* step) {
   // interest.  This is done by getting the PDG ID of a daughter and
   // checking that it's in the vector of PDG IDs passed to this
   // UserAction.
-  bool productFound{false};
+  bool product_found{false};
   for (const auto& secondary : *secondaries) {
     // Get the PDG ID of the track
-    auto pdgID{std::abs(secondary->GetParticleDefinition()->GetPDGEncoding())};
+    auto pdg_id{std::abs(secondary->GetParticleDefinition()->GetPDGEncoding())};
 
     // Check if the PDG ID is in the list of products of interest
-    if (std::find(productsPdgID_.begin(), productsPdgID_.end(), pdgID) !=
+    if (std::find(productsPdgID_.begin(), productsPdgID_.end(), pdg_id) !=
         productsPdgID_.end()) {
       if (secondary->GetKineticEnergy() > min_e) {
-        productFound = true;
+        product_found = true;
       }
       break;
     }
@@ -64,7 +64,7 @@ void PhotoNuclearProductsFilter::stepping(const G4Step* step) {
 
   // If the product of interest was not found, kill the track and abort
   // the event.
-  if (!productFound) {
+  if (!product_found) {
     track->SetTrackStatus(fKillTrackAndSecondaries);
     G4RunManager::GetRunManager()->AbortEvent();
     return;
@@ -72,8 +72,8 @@ void PhotoNuclearProductsFilter::stepping(const G4Step* step) {
 
   // Once the PN gamma has been procesed, untag it so its not reprocessed
   // again.
-  if (trackInfo) {
-    trackInfo->tagPNGamma(false);
+  if (track_info) {
+    track_info->tagPNGamma(false);
   }
 }
 }  // namespace biasing

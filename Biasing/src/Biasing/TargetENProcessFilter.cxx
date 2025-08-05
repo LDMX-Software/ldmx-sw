@@ -39,10 +39,10 @@ void TargetENProcessFilter::stepping(const G4Step* step) {
   if (track->GetParentID() != 0) return;
 
   // get the PDGID of the track.
-  G4int pdgID = track->GetParticleDefinition()->GetPDGEncoding();
+  G4int pdg_id = track->GetParticleDefinition()->GetPDGEncoding();
 
   // Make sure that the particle being processed is an electron.
-  if (pdgID != 11) return;  // Throw an exception
+  if (pdg_id != 11) return;  // Throw an exception
 
   // Get the volume the particle is in.
   G4VPhysicalVolume* track_volume = track->GetVolume();
@@ -79,7 +79,7 @@ void TargetENProcessFilter::stepping(const G4Step* step) {
     G4RunManager::GetRunManager()->AbortEvent();
     return;
   } else {
-    G4String processName =
+    G4String process_name =
         secondaries->at(0)->GetCreatorProcess()->GetProcessName();
 
     /*std::cout << "[ TargetENProcessFilter ]: "
@@ -88,7 +88,7 @@ void TargetENProcessFilter::stepping(const G4Step* step) {
               << std::endl;*/
 
     // Only record the process that is being biased
-    if (!processName.contains(process_)) {
+    if (!process_name.contains(process_)) {
       /*std::cout << "[ TargetENProcessFilter ]: "
                 << "Process was not " << BiasingMessenger::getProcess() << "-->
          Killing all tracks!"
@@ -101,7 +101,7 @@ void TargetENProcessFilter::stepping(const G4Step* step) {
 
     std::cout << "[ TargetENProcessFilter ]: "
               << "Electronuclear reaction resulted in " << secondaries->size()
-              << " particles via " << processName << " process." << std::endl;
+              << " particles via " << process_name << " process." << std::endl;
     // BiasingMessenger::setEventWeight(track->GetWeight());
     reactionOccurred_ = true;
   }

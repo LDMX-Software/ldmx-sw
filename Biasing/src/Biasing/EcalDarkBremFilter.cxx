@@ -22,12 +22,12 @@ EcalDarkBremFilter::EcalDarkBremFilter(
    *  - 'Si' OR 'W' OR 'CFMix' OR 'PCB' are in the name
    */
   for (G4LogicalVolume* volume : *G4LogicalVolumeStore::GetInstance()) {
-    G4String volumeName = volume->GetName();
+    G4String volume_name = volume->GetName();
     // looking for ecal volumes
-    if (volumeName.contains("volume") and
-        (volumeName.contains("Si") or volumeName.contains("W") or
-         volumeName.contains("CFMix") or volumeName.contains("PCB") or
-         volumeName.contains("Al"))) {
+    if (volume_name.contains("volume") and
+        (volume_name.contains("Si") or volume_name.contains("W") or
+         volume_name.contains("CFMix") or volume_name.contains("PCB") or
+         volume_name.contains("Al"))) {
       volumes_.push_back(volume);
     }
   }
@@ -79,10 +79,10 @@ void EcalDarkBremFilter::PostUserTrackingAction(const G4Track* track) {
   if (creator and
       creator->GetProcessName().contains(G4DarkBremsstrahlung::PROCESS_NAME)) {
     // make sure all secondaries of dark brem process are saved
-    simcore::UserTrackInformation* userInfo =
+    simcore::UserTrackInformation* user_info =
         simcore::UserTrackInformation::get(track);
     // make sure A' is persisted into output file
-    userInfo->setSaveFlag(true);
+    user_info->setSaveFlag(true);
     if (track->GetParticleDefinition() == G4APrime::APrime()) {
       // check if A' was made in the desired volume and has the minimum energy
       if (not inDesiredVolume(track)) {
@@ -100,9 +100,9 @@ bool EcalDarkBremFilter::inDesiredVolume(const G4Track* track) const {
    * TODO find a better way to do this
    */
 
-  auto inVol = track->GetLogicalVolumeAtVertex();
+  auto in_vol = track->GetLogicalVolumeAtVertex();
   for (auto const& volume : volumes_) {
-    if (inVol == volume) return true;
+    if (in_vol == volume) return true;
   }
 
   return false;
