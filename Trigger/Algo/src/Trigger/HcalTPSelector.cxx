@@ -19,11 +19,11 @@ void HcalTPSelector::produce(framework::Event& event) {
       combined_quad_coll_name_, tp_coll_passname_)};
 
   // Should move the TP building itself here
-  // In the meantime, create the "analysis object" hits_
+  // In the meantime, create the "analysis object" hits
 
   std::vector<TrigCaloHit> passTrigHits;
   for (const auto& tp : hcalTPs) {
-    double x_{0}, y_{0}, z_{0};  // todo
+    double x{0}, y{0}, z{0};  // todo
     ldmx::HcalTriggerID combo_id(tp.getId());
 
     int adc = tp.getPrimitive();
@@ -34,7 +34,7 @@ void HcalTPSelector::produce(framework::Event& event) {
     // mV/MeV: 72.961 (= 5*68/4.66)
     double energy =
         adc * 1.2 / 72.961;  // ADC to MeV based on values just above
-    passTrigHits.emplace_back(x_, y_, z_, energy);
+    passTrigHits.emplace_back(x, y, z, energy);
 
     passTrigHits.back().setLayer(combo_id.layer());
     passTrigHits.back().setStrip(combo_id.superstrip());

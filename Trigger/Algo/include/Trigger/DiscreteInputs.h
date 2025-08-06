@@ -15,8 +15,8 @@ struct EcalTP {
   uint32_t tid;
   // extra data for added convenience
   uint32_t tp_lin;
-  uint32_t layer_;
-  uint32_t module_;
+  uint32_t layer;
+  uint32_t module;
   uint32_t cell;
 
   bool operator<(const EcalTP &other) const { return tp > other.tp; }
@@ -24,8 +24,8 @@ struct EcalTP {
     tid = _tid;
     tp = _tp;
     // derived data, optional
-    layer_ = 0;
-    module_ = 0;
+    layer = 0;
+    module = 0;
     cell = 0;
     tp_lin = 0;
   }
@@ -33,24 +33,24 @@ struct EcalTP {
             int _tp_lin) {
     tid = _tid;
     tp = _tp;
-    layer_ = _layer;
-    module_ = _module;
+    layer = _layer;
+    module = _module;
     cell = _cell;
     tp_lin = _tp_lin;
   }
   void writeToFile(FILE *file) const {
     fwrite(&tp, sizeof(uint8_t), 1, file);
     fwrite(&tid, sizeof(uint32_t), 1, file);
-    fwrite(&layer_, sizeof(uint32_t), 1, file);
-    fwrite(&module_, sizeof(uint32_t), 1, file);
+    fwrite(&layer, sizeof(uint32_t), 1, file);
+    fwrite(&module, sizeof(uint32_t), 1, file);
     fwrite(&cell, sizeof(uint32_t), 1, file);
     fwrite(&tp_lin, sizeof(uint32_t), 1, file);
   }
   void readFromFile(FILE *file) {
     fread(&tp, sizeof(uint8_t), 1, file);
     fread(&tid, sizeof(uint32_t), 1, file);
-    fread(&layer_, sizeof(uint32_t), 1, file);
-    fread(&module_, sizeof(uint32_t), 1, file);
+    fread(&layer, sizeof(uint32_t), 1, file);
+    fread(&module, sizeof(uint32_t), 1, file);
     fread(&cell, sizeof(uint32_t), 1, file);
     fread(&tp_lin, sizeof(uint32_t), 1, file);
   }

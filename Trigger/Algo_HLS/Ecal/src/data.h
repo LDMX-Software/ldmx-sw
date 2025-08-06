@@ -21,8 +21,8 @@ struct EcalTP {
 
 struct Ecal2dCluster {
   e_t e;
-  xy_t x_;
-  xy_t y_;
+  xy_t x;
+  xy_t y;
 };
 
 #endif

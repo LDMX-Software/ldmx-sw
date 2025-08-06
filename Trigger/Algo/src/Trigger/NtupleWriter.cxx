@@ -37,9 +37,9 @@ void NtupleWriter::configure(framework::config::Parameters& ps) {
 }
 
 // precision-limiting function
-// inline float prec(float x_, unsigned int nBits=22){ return
-// float(int(x_*(1<<nBits)))/(1<<nBits);}
-inline float prec(float x_) { return x_; }
+// inline float prec(float x, unsigned int nBits=22){ return
+// float(int(x*(1<<nBits)))/(1<<nBits);}
+inline float prec(float x) { return x; }
 
 void NtupleWriter::produce(framework::Event& event) {
   framework::NtupleManager& n{framework::NtupleManager::getInstance()};
@@ -47,11 +47,11 @@ void NtupleWriter::produce(framework::Event& event) {
   std::string inTag;
   inTag = "TargetScoringPlaneHits";
   if (writeTruth_ && event.exists(inTag, target_sp_hits_event_passname_)) {
-    const std::vector<ldmx::SimTrackerHit> hits_ =
+    const std::vector<ldmx::SimTrackerHit> hits =
         event.getCollection<ldmx::SimTrackerHit>(inTag, target_sp_passname_);
 
-    ldmx::SimTrackerHit h, hMaxEle;  // the desired truth hits_
-    for (const auto& hit : hits_) {
+    ldmx::SimTrackerHit h, hMaxEle;  // the desired truth hits
+    for (const auto& hit : hits) {
       auto xyz = hit.getPosition();
       if (xyz[2] > 0 && xyz[2] < 1) {
         if (hit.getTrackID() == 1) h = hit;
@@ -74,10 +74,10 @@ void NtupleWriter::produce(framework::Event& event) {
   }
   inTag = "EcalScoringPlaneHits";
   if (writeTruth_ && event.exists(inTag, ecal_sp_hits_events_passname_)) {
-    const std::vector<ldmx::SimTrackerHit> hits_ =
+    const std::vector<ldmx::SimTrackerHit> hits =
         event.getCollection<ldmx::SimTrackerHit>(inTag, ecal_sp_passname_);
-    ldmx::SimTrackerHit h, hMaxEle;  // the desired truth hits_
-    for (const auto& hit : hits_) {
+    ldmx::SimTrackerHit h, hMaxEle;  // the desired truth hits
+    for (const auto& hit : hits) {
       auto xyz = hit.getPosition();
       if (xyz[2] > 239.99 && xyz[2] < 240.01) {
         if (hit.getTrackID() == 1) h = hit;

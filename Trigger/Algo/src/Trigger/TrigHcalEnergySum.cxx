@@ -72,7 +72,7 @@ void TrigHcalEnergySum::produce(framework::Event& event) {
   event.add(combinedQuadCollName_, twoEndedQuads);
 
   //
-  // Produce the layer_-by-layer_ energy sums
+  // Produce the layer-by-layer energy sums
   const unsigned int LayerMax = 50;
   const unsigned int SideLayerMax = 16;
   trigger::TrigEnergySumCollection backLayerSums;
@@ -91,7 +91,7 @@ void TrigHcalEnergySum::produce(framework::Event& event) {
     ldmx::HcalTriggerID combo_id(tp.getId());
     int ilayer = combo_id.layer();
     if (ilayer >= backLayerSums.size()) {
-      std::cout << "[TrigHcalEnergySum.cxx] Warning(!), layer_ " << ilayer
+      std::cout << "[TrigHcalEnergySum.cxx] Warning(!), layer " << ilayer
                 << " is out-of-bounds.\n";
       continue;
     }

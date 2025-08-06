@@ -223,7 +223,7 @@ class HgcrocEmulator {
                       "HGC ROC Emulator was not given a conditions table.");
     }
 
-    // cache column index_ for the input name
+    // cache column index for the input name
     if (conditionNamesToIndex_.count(name) == 0)
       conditionNamesToIndex_[name] = chipConditions_->getColumnNumber(name);
 
@@ -304,7 +304,7 @@ class HgcrocEmulator {
    *
    * Shape parameters are hardcoded into the function currently.
    *  Pulse Shape:
-   *  [0]*((1.0+exp([1]*(-[2]+[3])))*(1.0+exp([5]*(-[6]+[3]))))/((1.0+exp([1]*(x_-[2]+[3]-[4])))*(1.0+exp([5]*(x_-[6]+[3]-[4]))))
+   *  [0]*((1.0+exp([1]*(-[2]+[3])))*(1.0+exp([5]*(-[6]+[3]))))/((1.0+exp([1]*(x-[2]+[3]-[4])))*(1.0+exp([5]*(x-[6]+[3]-[4]))))
    *   p[0] = amplitude (height of peak in mV)
    *   p[1] = rate of up slope - rateUpSlope_
    *   p[2] = time of up slope relative to shape fit - timeUpSlope_

@@ -2,11 +2,11 @@
 
 namespace trigger {
 
-void ClusterGeometry::AddTP(int tid, int cell_id, int module_id, float x_,
-                            float y_) {
+void ClusterGeometry::AddTP(int tid, int cell_id, int module_id, float x,
+                            float y) {
   id_map[tid] = std::make_pair(cell_id, module_id);
   reverse_id_map[std::make_pair(cell_id, module_id)] = tid;
-  positions[tid] = std::make_pair(x_, y_);
+  positions[tid] = std::make_pair(x, y);
 }
 void ClusterGeometry::AddNeighbor(int id1, int id2) {
   if (neighbors.count(id1))
@@ -54,12 +54,12 @@ void ClusterGeometry::Initialize() {
 }
 
 /* std::vector<Cluster>  */
-/* IdealClusterBuilder::Build2dClustersLayer(std::vector<Hit> hits_){ */
+/* IdealClusterBuilder::Build2dClustersLayer(std::vector<Hit> hits){ */
 std::vector<Cluster> IdealClusterBuilder::Build2dClustersLayer(
-    std::vector<Hit> hits_) {
-  // Re-index_ by id
+    std::vector<Hit> hits) {
+  // Re-index by id
   std::map<int, Hit> hits_by_id;
-  for (auto &hit : hits_) hits_by_id[hit.id] = hit;
+  for (auto &hit : hits) hits_by_id[hit.id] = hit;
 
   if (debug) {
     cout << "--------\nBuild2dClustersLayer Input Hits" << endl;
@@ -76,18 +76,18 @@ std::vector<Cluster> IdealClusterBuilder::Build2dClustersLayer(
       if (hits_by_id.count(n) && hits_by_id[n].e > hit.e) isLocalMax = false;
     }
     // if(debug) cout << hit.e << " " << hit.id << " "
-    //  << hit.layer_ << " isMax=" << isLocalMax << endl;
+    //  << hit.layer << " isMax=" << isLocalMax << endl;
     if (isLocalMax && (hit.e > seed_thresh)) {
       hit.used = true;
       Cluster c;
-      c.hits_.push_back(hit);
+      c.hits.push_back(hit);
       c.e = hit.e;
-      c.x_ = hit.x_;
-      c.y_ = hit.y_;
-      c.z_ = hit.z_;
+      c.x = hit.x;
+      c.y = hit.y;
+      c.z = hit.z;
       c.seed = hit.id;
-      c.module_ = g->id_map[hit.id].second;
-      c.layer_ = hit.layer_;
+      c.module = g->id_map[hit.id].second;
+      c.layer = hit.layer;
       clusters.push_back(c);
     }
   }
@@ -106,7 +106,7 @@ std::vector<Cluster> IdealClusterBuilder::Build2dClustersLayer(
     for (int iclus = 0; iclus < clusters.size(); iclus++) {
       auto &clus = clusters[iclus];
       std::vector<int> neighbors;
-      for (const auto &hit : clus.hits_) {
+      for (const auto &hit : clus.hits) {
         for (auto n : g->neighbors[hit.id]) {
           if (hits_by_id.count(n) && !hits_by_id[n].used &&
               hits_by_id[n].e > neighb_thresh) {
@@ -130,7 +130,7 @@ std::vector<Cluster> IdealClusterBuilder::Build2dClustersLayer(
       }
     }
 
-    // add associated hits_ to clusters
+    // add associated hits to clusters
     //   (w/ optional e-splitting)
     for (auto hitID2clusters : assoc_hitID2clusters) {
       auto hitID = hitID2clusters.first;
@@ -140,7 +140,7 @@ std::vector<Cluster> IdealClusterBuilder::Build2dClustersLayer(
         auto &hit = hits_by_id[hitID];
         auto iclus = iclusters[0];
         hit.used = true;
-        clusters[iclus].hits_.push_back(hit);
+        clusters[iclus].hits.push_back(hit);
         clusters[iclus].e += hit.e;
       } else {
         auto &hit = hits_by_id[hitID];
@@ -152,7 +152,7 @@ std::vector<Cluster> IdealClusterBuilder::Build2dClustersLayer(
         for (auto iclus : iclusters) {
           Hit newHit = hit;
           if (split_energy) newHit.e = hit.e * clusters[iclus].e / esum;
-          clusters[iclus].hits_.push_back(newHit);
+          clusters[iclus].hits.push_back(newHit);
           clusters[iclus].e += newHit.e;
         }
       }
@@ -161,35 +161,35 @@ std::vector<Cluster> IdealClusterBuilder::Build2dClustersLayer(
     // rebuild the clusters and return
     for (auto &c : clusters) {
       c.e = 0;
-      c.x_ = 0;
-      c.y_ = 0;
-      c.z_ = 0;
+      c.x = 0;
+      c.y = 0;
+      c.z = 0;
       c.xx = 0;
       c.yy = 0;
       c.zz = 0;
       float sumw = 0;
-      for (auto hit : c.hits_) {
-        // if(debug) cout << hit.x_ << " " << hit.y_ << " " << hit.z_ << endl;
+      for (auto hit : c.hits) {
+        // if(debug) cout << hit.x << " " << hit.y << " " << hit.z << endl;
         c.e += hit.e;
         // cout << "2d: " << h.e << " " << log(h.e/MIN_TP_ENERGY) << endl;
         float w = std::max(0., log(hit.e / MIN_TP_ENERGY));  // use log-e wgt
-        c.x_ += hit.x_ * w;
-        c.y_ += hit.y_ * w;
-        c.z_ += hit.z_ * w;
-        c.xx += hit.x_ * hit.x_ * w;
-        c.yy += hit.y_ * hit.y_ * w;
-        c.zz += hit.z_ * hit.z_ * w;
+        c.x += hit.x * w;
+        c.y += hit.y * w;
+        c.z += hit.z * w;
+        c.xx += hit.x * hit.x * w;
+        c.yy += hit.y * hit.y * w;
+        c.zz += hit.z * hit.z * w;
         sumw += w;
       }
-      c.x_ /= sumw;
-      c.y_ /= sumw;
-      c.z_ /= sumw;
-      c.xx /= sumw;  // now is <x_^2>
+      c.x /= sumw;
+      c.y /= sumw;
+      c.z /= sumw;
+      c.xx /= sumw;  // now is <x^2>
       c.yy /= sumw;
       c.zz /= sumw;
-      c.xx = sqrt(c.xx - c.x_ * c.x_);  // now is sqrt(<x_^2>-<x_>^2)
-      c.yy = sqrt(c.yy - c.y_ * c.y_);
-      c.zz = sqrt(c.zz - c.z_ * c.z_);
+      c.xx = sqrt(c.xx - c.x * c.x);  // now is sqrt(<x^2>-<x>^2)
+      c.yy = sqrt(c.yy - c.y * c.y);
+      c.zz = sqrt(c.zz - c.z * c.z);
     }
 
     i_neighbor++;
@@ -205,17 +205,17 @@ std::vector<Cluster> IdealClusterBuilder::Build2dClustersLayer(
 }
 
 void IdealClusterBuilder::Build2dClusters() {
-  // first partition hits_ by layer_
+  // first partition hits by layer
   std::map<int, std::vector<Hit> > layer_hits;  // id(xy) to Hit
   for (const auto hit : all_hits) {
-    layer_hits[hit.layer_].push_back(hit);
+    layer_hits[hit.layer].push_back(hit);
   }
 
-  // run clustering in each layer_ and add to the list
+  // run clustering in each layer and add to the list
   for (auto &pair : layer_hits) {
     if (debug) {
-      cout << "Found " << pair.second.size() << " hits_ in layer_ "
-           << pair.first << endl;
+      cout << "Found " << pair.second.size() << " hits in layer " << pair.first
+           << endl;
     }
     auto clus = Build2dClustersLayer(pair.second);
     all_clusters.insert(all_clusters.end(), clus.begin(), clus.end());
@@ -227,14 +227,14 @@ void IdealClusterBuilder::Build3dClusters() {
     cout << "--------\nBuilding 3d clusters" << endl;
   }
 
-  // first partition 2d clusters by layer_
+  // first partition 2d clusters by layer
   std::vector<std::vector<Cluster> > layer_clusters;
   layer_clusters.resize(LAYER_MAX);  // first 20 layers
   for (auto &clus : all_clusters) {
-    layer_clusters[clus.layer_].push_back(clus);
+    layer_clusters[clus.layer].push_back(clus);
   }
 
-  // sort by layer_
+  // sort by layer
   for (auto &clusters : layer_clusters) ESort(clusters);
 
   if (debug) {
@@ -243,7 +243,7 @@ void IdealClusterBuilder::Build3dClusters() {
       for (auto &c : clusters) c.Print(g);
   }
 
-  // Pass through clusters from layer_ 0 to last,
+  // Pass through clusters from layer 0 to last,
   //   starting with highest energy
   bool building = true;
   std::vector<Cluster> clusters3d;
@@ -318,7 +318,7 @@ void IdealClusterBuilder::Build3dClusters() {
               cluster3d.last_layer = test_layer;
             // remove from list
             clusters2d.erase(clusters2d.begin() + iclus2d);
-            // proceed to next layer_
+            // proceed to next layer
             break;
           }
         }
@@ -336,9 +336,9 @@ void IdealClusterBuilder::Build3dClusters() {
   // post-process 3d clusters here
   for (auto &c : clusters3d) {
     c.e = 0;
-    c.x_ = 0;
-    c.y_ = 0;
-    c.z_ = 0;
+    c.x = 0;
+    c.y = 0;
+    c.z = 0;
     c.xx = 0;
     c.yy = 0;
     c.zz = 0;
@@ -347,26 +347,26 @@ void IdealClusterBuilder::Build3dClusters() {
       c.e += c2.e;
       // cout << "3d: " << c2.e << " " << log(c2.e/MIN_TP_ENERGY) << endl;
       float w = std::max(0., log(c2.e / MIN_TP_ENERGY));  // use log-e wgt
-      c.x_ += c2.x_ * w;
-      c.y_ += c2.y_ * w;
-      c.z_ += c2.z_ * w;
-      c.xx += c2.x_ * c2.x_ * w;
-      c.yy += c2.y_ * c2.y_ * w;
-      c.zz += c2.z_ * c2.z_ * w;
+      c.x += c2.x * w;
+      c.y += c2.y * w;
+      c.z += c2.z * w;
+      c.xx += c2.x * c2.x * w;
+      c.yy += c2.y * c2.y * w;
+      c.zz += c2.z * c2.z * w;
       sumw += w;
     }
     // cout << "sum: " << sumw << endl;
-    // cout << "x_: " << c.x_ << endl;
-    c.x_ /= sumw;
-    // cout << "x_: " << c.x_ << endl;
-    c.y_ /= sumw;
-    c.z_ /= sumw;
-    c.xx /= sumw;  // now is <x_^2>
+    // cout << "x: " << c.x << endl;
+    c.x /= sumw;
+    // cout << "x: " << c.x << endl;
+    c.y /= sumw;
+    c.z /= sumw;
+    c.xx /= sumw;  // now is <x^2>
     c.yy /= sumw;
     c.zz /= sumw;
-    c.xx = sqrt(c.xx - c.x_ * c.x_);  // now is sqrt(<x_^2>-<x_>^2)
-    c.yy = sqrt(c.yy - c.y_ * c.y_);
-    c.zz = sqrt(c.zz - c.z_ * c.z_);
+    c.xx = sqrt(c.xx - c.x * c.x);  // now is sqrt(<x^2>-<x>^2)
+    c.yy = sqrt(c.yy - c.y * c.y);
+    c.zz = sqrt(c.zz - c.z * c.z);
     Fit(c);  // calc dx/dz, dy/dz
   }
 
@@ -377,14 +377,14 @@ void IdealClusterBuilder::Build3dClusters() {
 
   // std::map<int, std::vector<Cluster> > layer_clusters; // id(xy) to Hit
   // for(const auto clus : all_clusters){
-  //     auto l = clus.layer_;
+  //     auto l = clus.layer;
   //     if (layer_clusters.count(l)){
   // 	layer_clusters[l].push_back(clus);
   //     } else {
   // 	layer_clusters[l]={clus};
   //     }
   // }
-  // // sort by layer_
+  // // sort by layer
   // for(auto &pair : layer_clusters){
   //     auto &clusters = pair.second;
 
@@ -406,12 +406,12 @@ void IdealClusterBuilder::Build3dClusters() {
 
 void IdealClusterBuilder::BuildClusters() {
   if (debug) {
-    cout << "--------\nAll hits_" << endl;
+    cout << "--------\nAll hits" << endl;
     for (auto &hit : all_hits) hit.Print();
   }
 
   if (use_towers) {
-    // project hits_ in z_ to form towers
+    // project hits in z to form towers
     std::map<int, Hit> towers;  // id(xy) to Hit
     for (const auto hit : all_hits) {
       if (towers.count(hit.id)) {
@@ -419,8 +419,8 @@ void IdealClusterBuilder::BuildClusters() {
         towers[hit.id].nSubHit++;
       } else {
         towers[hit.id] = hit;
-        towers[hit.id].layer_ = 0;
-        towers[hit.id].z_ = 0;
+        towers[hit.id].layer = 0;
+        towers[hit.id].z = 0;
         towers[hit.id].nSubHit = 1;
       }
     }
@@ -433,7 +433,7 @@ void IdealClusterBuilder::BuildClusters() {
     }
   }
 
-  // Cluster the hits_ in each plane
+  // Cluster the hits in each plane
   Build2dClusters();
 
   if (!use_towers) {
@@ -444,28 +444,28 @@ void IdealClusterBuilder::BuildClusters() {
 
 void IdealClusterBuilder::Fit(Cluster &c3) {
   // TODO: think about whether to incorporate uncertainties
-  //   into the fit (RMSs), or weight each layer_ in the fit.
+  //   into the fit (RMSs), or weight each layer in the fit.
 
   // skip short clusters
   if (c3.clusters2d.size() < 4) return;
 
   // std::vector logE;
-  std::vector<float> x_;
-  std::vector<float> y_;
-  std::vector<float> z_;
+  std::vector<float> x;
+  std::vector<float> y;
+  std::vector<float> z;
   for (const auto &c2 : c3.clusters2d) {
     // logE.push_back( log(c2.e) );
-    x_.push_back(c2.x_);
-    y_.push_back(c2.y_);
-    z_.push_back(c2.z_);
+    x.push_back(c2.x);
+    y.push_back(c2.y);
+    z.push_back(c2.z);
   }
-  TGraph gxz(z_.size(), z_.data(), x_.data());
-  auto r_xz = gxz.Fit("pol1", "SQ");  // p0 + x_*p1
+  TGraph gxz(z.size(), z.data(), x.data());
+  auto r_xz = gxz.Fit("pol1", "SQ");  // p0 + x*p1
   c3.dxdz = r_xz->Value(1);
   c3.dxdze = r_xz->ParError(1);
 
-  TGraph gyz(z_.size(), z_.data(), y_.data());
-  auto r_yz = gyz.Fit("pol1", "SQ");  // p0 + x_*p1
+  TGraph gyz(z.size(), z.data(), y.data());
+  auto r_yz = gyz.Fit("pol1", "SQ");  // p0 + x*p1
   c3.dydz = r_yz->Value(1);
   c3.dydze = r_yz->ParError(1);
 }

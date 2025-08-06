@@ -7,7 +7,7 @@ namespace trigger {
 
 /**
  * @class TrigMip
- * @brief Class for clusters built from trigger calo hits_
+ * @brief Class for clusters built from trigger calo hits
  */
 class TrigMip {
  public:
@@ -31,7 +31,7 @@ class TrigMip {
   int length() const { return length_; }
   float SumEinIsolationRegion() const { return sum_e_in_isolation_region_; }
 
-  void clear();
+  void Clear();
 
  private:
   // first draft based on hcal
