@@ -125,13 +125,13 @@ void EcalWABRecProcessor::produce(framework::Event& event) {
   // Save rec hit info to rec_hit_list
   for (const ldmx::EcalHit& hit : ecal_rec_hits) {
     ldmx::EcalID id(hit.getID());
-    auto pos_ = geometry->getPosition(id);
+    auto pos = geometry->getPosition(id);
     auto [x_, y_, z_] = std::apply(
         [](double a, double b, double c) {
           return std::make_tuple(static_cast<float>(a), static_cast<float>(b),
                                  static_cast<float>(c));
         },
-        pos_);
+        pos);
     float energy = hit.getEnergy();
     float layer_num = id.layer();
     rec_hit_list.push_back({x_, y_, z_, layer_num, 0, energy});
@@ -582,15 +582,15 @@ EcalWABRecProcessor::fit2DTracksConstrained(
   int n = n1 + n2;
 
   // Concatenate x_, y_, and s into Eigen vectors of size n.
-  Eigen::VectorXd x_(n), y_(n), s(n);
+  Eigen::VectorXd x(n), y(n), s(n);
   for (int i = 0; i < n1; ++i) {
-    x_(i) = x1[i];
-    y_(i) = y1[i];
+    x(i) = x1[i];
+    y(i) = y1[i];
     s(i) = s1[i];
   }
   for (int i = 0; i < n2; ++i) {
-    x_(n1 + i) = x2[i];
-    y_(n1 + i) = y2[i];
+    x(n1 + i) = x2[i];
+    y(n1 + i) = y2[i];
     s(n1 + i) = s2[i];
   }
 
@@ -634,7 +634,7 @@ EcalWABRecProcessor::fit2DTracksConstrained(
     // Compute chi-squared: sum_i [ (y_fit[i]-y_[i])^2 / s[i]^2 ]
     chi_sq = 0.0;
     for (int i = 0; i < n; ++i) {
-      float diff = y_fit(i) - y_(i);
+      float diff = y_fit(i) - y(i);
       chi_sq += (diff * diff) / ((s(i)) * (s(i)));
     }
 
@@ -697,7 +697,7 @@ EcalWABRecProcessor::fit2DTracksConstrained(
     Eigen::MatrixXd a = a_trans.transpose();
 
     // The residual vector (difference between measured and fitted y_ values)
-    Eigen::VectorXd dy_vec = y_ - y_fit;
+    Eigen::VectorXd dy_vec = y - y_fit;
 
     // Compute the (3 x_ 3) matrix: M = a_trans * W * a
     Eigen::MatrixXd temp = a_trans * w;  // 3 x_ n
@@ -739,7 +739,7 @@ EcalWABRecProcessor::fit2DTracksConstrained(
     // Recompute chi-squared with the updated fitted values.
     float new_chi_sq = 0.0;
     for (int i = 0; i < n; ++i) {
-      float diff = y_fit(i) - y_(i);
+      float diff = y_fit(i) - y(i);
       new_chi_sq += (diff * diff) / ((s(i)) * (s(i)));
     }
     chi_sq = new_chi_sq;

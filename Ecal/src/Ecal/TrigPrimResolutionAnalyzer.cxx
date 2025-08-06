@@ -226,7 +226,7 @@ void TrigPrimResolutionAnalyzer::analyze(const framework::Event& event) {
   const auto& trigs = event.getCollection<ldmx::HgcrocTrigDigi>(
       trig_collection_name_, trig_pass_name_);
   // trigs are a std::vector<ldmx::HgcrocTrigDigi>
-  const auto& hits_ =
+  const auto& hits =
       event.getCollection<ldmx::EcalHit>(hit_collection_name_, hit_pass_name_);
   // hits_ are a std::vector<ldmx::EcalHit>
   const ::ecal::EcalTriggerGeometry& geom =
@@ -258,7 +258,7 @@ void TrigPrimResolutionAnalyzer::analyze(const framework::Event& event) {
     double trig_group_prec_total{0};
     double trig_group_prec_total_unweight{0};
     for (auto& prec_id : geom.contentsOfTriggerCell(tid)) {
-      for (const auto& hit : hits_) {
+      for (const auto& hit : hits) {
         if (prec_id == hit.getID()) {
           trig_group_prec_total +=
               calculateEnergy(mod.layer_, hit.getAmplitude());
@@ -288,7 +288,7 @@ void TrigPrimResolutionAnalyzer::analyze(const framework::Event& event) {
 
   double prec_ampl_total{0.};
   double prec_ampl_total_first20{0.};
-  for (const auto& hit : hits_) {
+  for (const auto& hit : hits) {
     EcalID id{static_cast<unsigned int>(hit.getID())};
     UniqueModule mod{id};
     if (module_sums.find(mod) == module_sums.end()) {

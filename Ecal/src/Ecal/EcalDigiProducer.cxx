@@ -189,10 +189,10 @@ void EcalDigiProducer::produce(framework::Event& event) {
     } else {
       // no zero suppression, put some noise emulation in **all** empty channels
       // loop through all channels
-      for (int layer_{0}; layer_ < n_ecal_layers; layer_++) {
-        for (int module_{0}; module_ < n_modules_per_layer; module_++) {
+      for (int layer{0}; layer < n_ecal_layers; layer++) {
+        for (int module{0}; module < n_modules_per_layer; module++) {
           for (int cell{0}; cell < n_cells_per_module; cell++) {
-            unsigned int channel{ldmx::EcalID(layer_, module_, cell).raw()};
+            unsigned int channel{ldmx::EcalID(layer, module, cell).raw()};
             // check if channel already has a (real) hit in it
             if (filled_det_i_ds.find(channel) != filled_det_i_ds.end())
               continue;

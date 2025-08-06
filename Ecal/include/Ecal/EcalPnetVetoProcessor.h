@@ -54,22 +54,22 @@ class EcalPnetVetoProcessor : public framework::Producer {
  private:
   /** Maximum number of hits allowed in ECAL. Events with more hits will be
    * marked as BKG directly without running ParticleNet. */
-  constexpr static unsigned int max_num_hits_ = 300;
+  constexpr static unsigned int MAX_NUM_HITS = 300;
 
-  constexpr static unsigned int n_coordinate_dim_ = 3;
-  constexpr static unsigned int coordinate_x_offset_ = 0;
-  constexpr static unsigned int coordinate_y_offset_ = max_num_hits_;
-  constexpr static unsigned int coordinate_z_offset_ = 2 * max_num_hits_;
+  constexpr static unsigned int N_COORDINATE_DIM = 3;
+  constexpr static unsigned int COORDINATE_X_OFFSET = 0;
+  constexpr static unsigned int COORDINATE_Y_OFFSET = MAX_NUM_HITS;
+  constexpr static unsigned int COORDINATE_Z_OFFSET = 2 * MAX_NUM_HITS;
 
-  constexpr static unsigned int n_feature_dim_ = 5;
-  constexpr static unsigned int feature_x_offset_ = 0;
-  constexpr static unsigned int feature_y_offset_ = max_num_hits_;
-  constexpr static unsigned int feature_z_offset_ = 2 * max_num_hits_;
-  constexpr static unsigned int feature_energy_offset_ = 3 * max_num_hits_;
-  constexpr static unsigned int feature_layer_id_offset_ = 4 * max_num_hits_;
+  constexpr static unsigned int N_FEATURE_DIM = 5;
+  constexpr static unsigned int FEATURE_X_OFFSET = 0;
+  constexpr static unsigned int FEATURE_Y_OFFSET = MAX_NUM_HITS;
+  constexpr static unsigned int FEATURE_Z_OFFSET = 2 * MAX_NUM_HITS;
+  constexpr static unsigned int FEATURE_ENERGY_OFFSET = 3 * MAX_NUM_HITS;
+  constexpr static unsigned int FEATURE_LAYER_ID_OFFSET = 4 * MAX_NUM_HITS;
 
-  const static std::vector<std::string> input_names_;
-  const static std::vector<unsigned int> input_sizes_;
+  const static std::vector<std::string> INPUT_NAMES;
+  const static std::vector<unsigned int> INPUT_SIZES;
 
   float disc_cut_ = -99;
   std::vector<std::vector<float>> data_;

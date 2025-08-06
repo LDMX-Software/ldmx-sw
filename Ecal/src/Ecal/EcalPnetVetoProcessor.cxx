@@ -77,13 +77,13 @@ void EcalPnetVetoProcessor::produce(framework::Event& event) {
       if (electron_hit) {
         // Get electron hit position/momentum at Ecal surface
         ldmx_log(debug) << "Electron Found in the Ecal SP!";
-        auto pos_ = electron_hit->getPosition();
+        auto pos = electron_hit->getPosition();
         auto mom = electron_hit->getMomentum();
-        ldmx_log(debug) << "ECAL SP pos_=(" << pos_[0] << "," << pos_[1] << ","
-                        << pos_[2] << ")";
+        ldmx_log(debug) << "ECAL SP pos_=(" << pos[0] << "," << pos[1] << ","
+                        << pos[2] << ")";
         ldmx_log(debug) << "ECAL SP mom=(" << mom[0] << "," << mom[1] << ","
                         << mom[2] << ")";
-        etraj = {pos_[0], pos_[1], pos_[2]};
+        etraj = {pos[0], pos[1], pos[2]};
         double pz = mom[2];
         if (pz != 0) {
           // z_-normalized momentum
@@ -98,17 +98,17 @@ void EcalPnetVetoProcessor::produce(framework::Event& event) {
       auto recoil_track_states_ecal =
           ecal::trackProp(recoil_tracks, ts_at_ecal, "ecal");
       if (!recoil_track_states_ecal.empty()) {
-        std::array<double, 3> pos_ = {recoil_track_states_ecal[0],
-                                      recoil_track_states_ecal[1],
-                                      recoil_track_states_ecal[2]};
+        std::array<double, 3> pos = {recoil_track_states_ecal[0],
+                                     recoil_track_states_ecal[1],
+                                     recoil_track_states_ecal[2]};
         std::array<double, 3> mom = {(recoil_track_states_ecal[3]),
                                      (recoil_track_states_ecal[4]),
                                      (recoil_track_states_ecal[5])};
-        ldmx_log(debug) << "Electron track pos_=(" << pos_[0] << "," << pos_[1]
-                        << "," << pos_[2] << ")";
+        ldmx_log(debug) << "Electron track pos_=(" << pos[0] << "," << pos[1]
+                        << "," << pos[2] << ")";
         ldmx_log(debug) << "Electron track mom=(" << mom[0] << "," << mom[1]
                         << "," << mom[2] << ")";
-        etraj = pos_;
+        etraj = pos;
         double pz = mom[2];
         if (pz != 0) {
           enorm = {mom[0] / pz, mom[1] / pz, 1.0};
