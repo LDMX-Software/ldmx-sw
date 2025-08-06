@@ -53,7 +53,7 @@ class ClusterAlgoResult {
   /**
    * Return algorithm variable i (see algorithm code for details).
    * @param element The index of the variable.
-   * @return Algorithm variable at the index_.
+   * @return Algorithm variable at the index.
    */
   double getAlgoVar(int element) const { return variables_[element]; }
 

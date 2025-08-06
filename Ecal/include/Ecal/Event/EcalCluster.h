@@ -34,18 +34,18 @@ class EcalCluster : public ldmx::CaloCluster {
    * @param hit The digi hit's entry number in the events digi
    * collection.
    */
-  void addHits(const std::vector<const ldmx::EcalHit*>& hits_);
+  void addHits(const std::vector<const ldmx::EcalHit*>& hits);
 
-  void addFirstLayerHits(const std::vector<const ldmx::EcalHit*>& hits_);
+  void addFirstLayerHits(const std::vector<const ldmx::EcalHit*>& hits);
 
   bool operator<(const EcalCluster& rhs) const {
     return this->getEnergy() < rhs.getEnergy();
   }
 
-  void setFirstLayerCentroidXYZ(double x_, double y_, double z_) {
-    first_layer_centroid_x_ = x_;
-    first_layer_centroid_y_ = y_;
-    first_layer_centroid_z_ = z_;
+  void setFirstLayerCentroidXYZ(double x, double y, double z) {
+    first_layer_centroid_x_ = x;
+    first_layer_centroid_y_ = y;
+    first_layer_centroid_z_ = z;
   }
 
   double getFirstLayerCentroidX() const { return first_layer_centroid_x_; }

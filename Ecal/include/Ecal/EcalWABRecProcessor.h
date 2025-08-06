@@ -67,8 +67,8 @@ class EcalWABRecProcessor : public framework::Producer {
                          int verbosity, float dchisq, float abs_lim);
 
   std::pair<Eigen::VectorXd, Eigen::VectorXd> polyfitXYvsZ(
-      const std::vector<float>& x_, const std::vector<float>& y_,
-      const std::vector<float>& z_, int degree);
+      const std::vector<float>& x, const std::vector<float>& y,
+      const std::vector<float>& z, int degree);
 
   /** Name of the collection which will contain the results. */
   std::string collection_name_{"EcalWABRec"};
