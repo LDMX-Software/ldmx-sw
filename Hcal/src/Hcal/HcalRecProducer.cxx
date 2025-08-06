@@ -44,7 +44,7 @@ void HcalRecProducer::configure(framework::config::Parameters& ps) {
   pulseFunc_ =
       TF1("pulseFunc",
           "[0]*((1.0+exp([1]*(-[2]+[3])))*(1.0+exp([5]*(-[6]+[3]))))/"
-          "((1.0+exp([1]*(x_-[2]+[3]-[4])))*(1.0+exp([5]*(x_-[6]+[3]-[4]))))",
+          "((1.0+exp([1]*(x-[2]+[3]-[4])))*(1.0+exp([5]*(x-[6]+[3]-[4]))))",
           (double)nADCs_ * clock_cycle_ * -1, (double)nADCs_ * clock_cycle_);
   pulseFunc_.FixParameter(1, rateUpSlope_);
   pulseFunc_.FixParameter(2, timeUpSlope_);
@@ -126,7 +126,7 @@ void HcalRecProducer::produce(framework::Event& event) {
                                                                digi_pass_name_);
   int numDigiHits = hcalDigis.getNumDigis();
 
-  // get sample of interest index_
+  // get sample of interest index
   unsigned int iSOI = hcalDigis.getSampleOfInterestIndex();
 
   // loop through digis
@@ -230,7 +230,7 @@ void HcalRecProducer::produce(framework::Event& event) {
         TOA_negend = correctionTOA_.Eval(amplT_negend) - TOA_negend;
       }
 
-      // get x_(y_) coordinate from TOA measurement = (dt*v/2)
+      // get x(y) coordinate from TOA measurement = (dt*v/2)
       // if time_posend < time_negend: position is positive
       // velocity of light in polystyrene, n = 1.6 = c/v
       double v = 299.792 / 1.6;

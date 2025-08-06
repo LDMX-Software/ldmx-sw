@@ -144,7 +144,7 @@ bool HgcrocEmulator::digitize(
       // Assume linear drain with slope drain rate:
       //      y_-intercept = pulse amplitude
       //      slope       = drain rate
-      //  ==> x_-intercept = amplitude / rate
+      //  ==> x-intercept = amplitude / rate
       // actual time over threshold using the real signal voltage amplitude
       double tot = charge_deposited / drainRate;
       ldmx_log(trace) << "    we are in TOT read-out mode, TOT = " << tot;
