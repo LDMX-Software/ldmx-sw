@@ -2,15 +2,15 @@
 
 namespace ecal {
 
-const std::vector<std::string> EcalPnetVetoProcessor::input_names_{"points",
+const std::vector<std::string> EcalPnetVetoProcessor::INPUT_NAMES{"points",
                                                                    "features"};
-const std::vector<unsigned int> EcalPnetVetoProcessor::input_sizes_{
-    n_coordinate_dim_ * max_num_hits_, n_feature_dim_* max_num_hits_};
+const std::vector<unsigned int> EcalPnetVetoProcessor::INPUT_SIZES{
+    N_COORDINATE_DIM * MAX_NUM_HITS, N_FEATURE_DIM* MAX_NUM_HITS};
 
 EcalPnetVetoProcessor::EcalPnetVetoProcessor(const std::string& name,
                                              framework::Process& process)
     : Producer(name, process) {
-  for (const auto& s : input_sizes_) {
+  for (const auto& s : INPUT_SIZES) {
     data_.emplace_back(s, 0);
   }
 }
@@ -48,8 +48,8 @@ void EcalPnetVetoProcessor::produce(framework::Event& event) {
 
   // check number of hits_
   ldmx_log(debug) << "nhits = " << nhits
-                  << " max_num_hits_ = " << max_num_hits_;
-  if (nhits < max_num_hits_) {
+                  << " MAX_NUM_HITS = " << MAX_NUM_HITS;
+  if (nhits < MAX_NUM_HITS) {
     std::array<double, 3> etraj = {-999., -999., -999.};
     std::array<double, 3> enorm = {-999., -999., -999.};
     // Compute electron trajectory}
@@ -123,7 +123,7 @@ void EcalPnetVetoProcessor::produce(framework::Event& event) {
     // make inputs
     makeInputs(ecal_geometry, ecal_rec_hits, etraj, enorm);
     // run the DNN
-    auto logits = rt_->run(input_names_, data_)[0];
+    auto logits = rt_->run(INPUT_NAMES, data_)[0];
     // make a log softmax of the logits then transform back
     // to a probability with an exponential
     auto prob = std::exp((logSoftmax(logits)[1]));
@@ -169,25 +169,25 @@ void EcalPnetVetoProcessor::makeInputs(
     double delta_z = hit_z - etraj[2];
     double etraj_x = etraj[0] + enorm[0] * delta_z;
     double etraj_y = etraj[1] + enorm[1] * delta_z;
-    data_[0].at(coordinate_x_offset_ + idx) = hit_x - etraj_x;
-    data_[0].at(coordinate_y_offset_ + idx) = hit_y - etraj_y;
-    data_[0].at(coordinate_z_offset_ + idx) = hit_z;
+    data_[0].at(COORDINATE_X_OFFSET + idx) = hit_x - etraj_x;
+    data_[0].at(COORDINATE_Y_OFFSET + idx) = hit_y - etraj_y;
+    data_[0].at(COORDINATE_Z_OFFSET + idx) = hit_z;
 
-    data_[1].at(feature_x_offset_ + idx) = hit_x - etraj_x;
-    data_[1].at(feature_y_offset_ + idx) = hit_y - etraj_y;
-    data_[1].at(feature_z_offset_ + idx) = hit_z;
-    data_[1].at(feature_layer_id_offset_ + idx) = id.layer();
-    data_[1].at(feature_energy_offset_ + idx) = std::log(hit.getEnergy());
+    data_[1].at(FEATURE_X_OFFSET + idx) = hit_x - etraj_x;
+    data_[1].at(FEATURE_Y_OFFSET + idx) = hit_y - etraj_y;
+    data_[1].at(FEATURE_Z_OFFSET + idx) = hit_z;
+    data_[1].at(FEATURE_LAYER_ID_OFFSET + idx) = id.layer();
+    data_[1].at(FEATURE_ENERGY_OFFSET + idx) = std::log(hit.getEnergy());
 
     ++idx;
   }
 
   std::stringstream ss;
-  for (unsigned iname = 0; iname < input_names_.size(); ++iname) {
-    ss << "=== " << input_names_[iname] << " ===";
-    for (unsigned i = 0; i < input_sizes_[iname]; ++i) {
+  for (unsigned iname = 0; iname < INPUT_NAMES.size(); ++iname) {
+    ss << "=== " << INPUT_NAMES[iname] << " ===";
+    for (unsigned i = 0; i < INPUT_SIZES[iname]; ++i) {
       ss << data_[iname].at(i) << ", ";
-      if ((i + 1) % max_num_hits_ == 0) {
+      if ((i + 1) % MAX_NUM_HITS == 0) {
         ss << "\n\n";
       }
     }
