@@ -99,9 +99,8 @@ void VisiblesCutflow::analyze(const framework::Event &event) {
     }
   } else {
     if (event.exists(sp_collection_, sp_pass_name_)) {
-      const auto &target_sp_hits =
-          event.getCollection<ldmx::SimTrackerHit>(sp_collection_,
-                                                   sp_pass_name_);
+      const auto &target_sp_hits = event.getCollection<ldmx::SimTrackerHit>(
+          sp_collection_, sp_pass_name_);
       bool found_rec = false;
       for (auto const &it : particle_map) {
         for (auto const &sphit : target_sp_hits) {
@@ -201,8 +200,8 @@ void VisiblesCutflow::analyze(const framework::Event &event) {
   }
   histograms_.fill("pass_tracker_veto", decay_z);
 
-  const auto &ecal_veto{event.getObject<ldmx::EcalVetoResult>(ecal_veto_collection_,
-                                                       ecal_veto_pass_)};
+  const auto &ecal_veto{event.getObject<ldmx::EcalVetoResult>(
+      ecal_veto_collection_, ecal_veto_pass_)};
   if (ecal_veto.getDisc() < ecal_bdt_cut_val_ && all_cuts_) {
     return;
   }

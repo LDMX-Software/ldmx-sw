@@ -78,9 +78,8 @@ void VisiblesFeatureProducer::analyze(const framework::Event &event) {
     }
   } else {
     if (event.exists(sp_collection_, sp_pass_name_)) {
-      const auto &target_sp_hits =
-          event.getCollection<ldmx::SimTrackerHit>(sp_collection_,
-                                                   sp_pass_name_);
+      const auto &target_sp_hits = event.getCollection<ldmx::SimTrackerHit>(
+          sp_collection_, sp_pass_name_);
       bool found_rec = false;
       for (auto const &it : particle_map) {
         for (auto const &sphit : target_sp_hits) {
