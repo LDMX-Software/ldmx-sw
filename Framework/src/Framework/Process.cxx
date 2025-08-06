@@ -27,7 +27,8 @@ Process::Process(const framework::config::Parameters &configuration)
   config_ = configuration;
 
   pass_name_ = configuration.getParameter<std::string>("passName", "");
-  histo_filename_ = configuration.getParameter<std::string>("histogramFile", "");
+  histo_filename_ =
+      configuration.getParameter<std::string>("histogramFile", "");
 
   max_tries_ = configuration.getParameter<int>("maxTriesPerEvent", 1);
   event_limit_ = configuration.getParameter<int>("maxEvents", -1);
@@ -126,8 +127,8 @@ Process::Process(const framework::config::Parameters &configuration)
     auto class_name{cop.getParameter<std::string>("className")};
     auto object_name{cop.getParameter<std::string>("objectName")};
     auto tag_name{cop.getParameter<std::string>("tagName")};
-    conditions_.createConditionsObjectProvider(class_name, object_name, tag_name,
-                                               cop);
+    conditions_.createConditionsObjectProvider(class_name, object_name,
+                                               tag_name, cop);
   }
 
   bool log_performance =
@@ -213,7 +214,7 @@ void Process::run() {
 
     ldmx::RunHeader run_header(run_for_generation_);
     run_header.setRunStart(std::time(nullptr));  // set run starting
-    run_header_ = &run_header;            // give handle to run header to process
+    run_header_ = &run_header;  // give handle to run header to process
     out_file.writeRunHeader(run_header);  // add run header to file
 
     newRun(run_header);
@@ -320,7 +321,7 @@ void Process::run() {
         if (!single_output or ifile == 0) {
           // setup new output file
           out_file = new EventFile(config_, output_files_[ifile], &in_file,
-                                  single_output);
+                                   single_output);
           ifile++;
 
           // setup theEvent we will iterate over
@@ -386,7 +387,8 @@ void Process::run() {
 
       bool leave_early{false};
       if (event_limit_ > 0 && n_events_processed == event_limit_) {
-        ldmx_log(info) << "Reached event limit of " << event_limit_ << " events";
+        ldmx_log(info) << "Reached event limit of " << event_limit_
+                       << " events";
         leave_early = true;
       }
 
@@ -473,7 +475,7 @@ TDirectory *Process::openHistoFile() {
   return owner;
 }
 
-void Process::newRun(ldmx::RunHeader  &header) {
+void Process::newRun(ldmx::RunHeader &header) {
   // Producers are allowed to put parameters into
   // the run header through 'beforeNewRun' method
 
@@ -509,7 +511,8 @@ void Process::newRun(ldmx::RunHeader  &header) {
 }
 
 bool Process::process(int n, int n_try, Event &event) const {
-  if ((log_frequency_ != -1) && ((n + 1) % log_frequency_ == 0) && (n_try < 2)) {
+  if ((log_frequency_ != -1) && ((n + 1) % log_frequency_ == 0) &&
+      (n_try < 2)) {
     // only printout event counter if we've enabled log frequency, the event
     // matches the frequency and we are on the first try
     TTimeStamp t;

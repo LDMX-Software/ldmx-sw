@@ -31,9 +31,9 @@ std::ostream& operator<<(std::ostream& output, const Measurement& measurement) {
   return output << "[ Measurement ]:\n\tGlobal position (mm): [ "
                 << measurement.meas_x_ << ", " << measurement.meas_y_ << ", "
                 << measurement.meas_z_ << " ]\n\tLocal position (mm): [ "
-                << measurement.meas_u_ << ", " << measurement.meas_v_ << "]\n\tcov(U,U) "
-                << measurement.cov_uu_ << " cov(V,V) " << measurement.cov_vv_
-                << "\n\tTime: " << measurement.meas_t_
+                << measurement.meas_u_ << ", " << measurement.meas_v_
+                << "]\n\tcov(U,U) " << measurement.cov_uu_ << " cov(V,V) "
+                << measurement.cov_vv_ << "\n\tTime: " << measurement.meas_t_
                 << " ns \n\tLayer ID: " << measurement.layer_id_
                 << "\n\tLayer: " << measurement.layer_
                 << "\n\tEnergy Deposition: " << measurement.edep_ << " MeV";

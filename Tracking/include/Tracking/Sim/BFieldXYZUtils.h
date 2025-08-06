@@ -27,7 +27,8 @@ using GenericTransformBField =
 /**
  * The default mapping transformation from the tracking space to the bfield
  * space The offset at 400. is the default to place the magnetic field map in
- * the correct location Create the transformation for the position map (z_,x_,y_)
+ * the correct location Create the transformation for the position map
+ * (z_,x_,y_)
  * -> (x_,y_,z_)
  */
 

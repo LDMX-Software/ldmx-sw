@@ -162,8 +162,8 @@ void HcalGeometry::printPositionMap(int section) const {
       auto x_ = centerPosition.X();
       auto y_ = centerPosition.Y();
       auto z_ = centerPosition.Z();
-      std::cout << id << ": Center position: (" << x_ << ", " << y_ << ", " << z_
-                << ")\n";
+      std::cout << id << ": Center position: (" << x_ << ", " << y_ << ", "
+                << z_ << ")\n";
     }
   }
 }
@@ -185,8 +185,8 @@ void HcalGeometry::buildStripPositionMap() {
         const auto orientation{getScintillatorOrientation(id)};
         // the center of a layer_: (layer_-1) * (layer_thickness) +
         // scint_thickness/2
-        double layercenter =
-            (layer_ - 1) * layer_thickness_.at(section) + 0.5 * scint_thickness_;
+        double layercenter = (layer_ - 1) * layer_thickness_.at(section) +
+                             0.5 * scint_thickness_;
 
         // the center of a strip: (strip + 0.5) * (strip_dx)
         double stripcenter = (strip + 0.5) * scint_width_;
@@ -205,10 +205,10 @@ void HcalGeometry::buildStripPositionMap() {
           /**
             Now compute, y_(x_) position for horizontal(vertical) layers,
             relative to the center of detector. Strips enumeration starts from
-            -y_(-x_) stripcenter will be large for +y_(+x_) and the half width of
-            the strip needs to be subtracted The halfwidth of the scintillator
-            is given by half_total_width_. The x_(y_) position is set to the
-            center of the strip (0).
+            -y_(-x_) stripcenter will be large for +y_(+x_) and the half width
+            of the strip needs to be subtracted The halfwidth of the
+            scintillator is given by half_total_width_. The x_(y_) position is
+            set to the center of the strip (0).
           */
           if (orientation == ScintillatorOrientation::horizontal) {
             y_ = stripcenter - getZeroStrip(section, layer_);
@@ -225,7 +225,8 @@ void HcalGeometry::buildStripPositionMap() {
              * - odd layers have strips in z_
              * - even layers have strips in x_(y_) for top-bottom (left-right)
              * sections
-             * - odd layers have strips occupying width of scintillator in x_(y_)
+             * - odd layers have strips occupying width of scintillator in
+             * x_(y_)
              * - even layers have strips occupying width of scintillator in z_
              *
              */
@@ -236,19 +237,19 @@ void HcalGeometry::buildStripPositionMap() {
               case ldmx::HcalID::HcalSection::RIGHT:
                 if (orientation == ScintillatorOrientation::vertical) {
                   x_ = zero_layer_[section] + 0.5 * scint_thickness_ +
-                      (layer_ - 1) * layer_thickness_[section];
+                       (layer_ - 1) * layer_thickness_[section];
                   y_ = ecal_dy_ -
-                      (getScintillatorLength({id.section(), 2, id.strip()}) -
-                       getScintillatorLength(id)) /
-                          2;
+                       (getScintillatorLength({id.section(), 2, id.strip()}) -
+                        getScintillatorLength(id)) /
+                           2;
                   z_ = getZeroStrip(section, layer_) +
-                      (strip + 0.5) * getScintillatorWidth();
+                       (strip + 0.5) * getScintillatorWidth();
                 } else if (orientation == ScintillatorOrientation::depth) {
                   x_ = zero_layer_[section] + 0.5 * scint_thickness_ +
-                      layer_thickness_[section] * (layer_ - 1);
+                       layer_thickness_[section] * (layer_ - 1);
                   y_ = -ecal_dy_ / 2 + (strip + 0.5) * getScintillatorWidth();
                   z_ = getZeroStrip(section, layer_ + 1) +
-                      getScintillatorLength(id) / 2;
+                       getScintillatorLength(id) / 2;
                 }
                 if (section == ldmx::HcalID::HcalSection::LEFT) {
                   y_ *= -1;
@@ -265,20 +266,20 @@ void HcalGeometry::buildStripPositionMap() {
                   //
                   // 22 mm extra for space for 1 absorber and one air box
                   x_ = -ecal_dx_ / 2 - 2 - 20 +
-                      (getScintillatorLength({id.section(), 2, id.strip()}) -
-                       getScintillatorLength(id)) /
-                          2;
+                       (getScintillatorLength({id.section(), 2, id.strip()}) -
+                        getScintillatorLength(id)) /
+                           2;
                   y_ = zero_layer_[section] + 0.5 * scint_thickness_ +
-                      (layer_ - 1) * layer_thickness_[section];
+                       (layer_ - 1) * layer_thickness_[section];
                   z_ = getZeroStrip(section, layer_) +
-                      (strip + 0.5) * getScintillatorWidth();
+                       (strip + 0.5) * getScintillatorWidth();
                 }
                 if (orientation == ScintillatorOrientation::depth) {
                   x_ = (ecal_dx_ / 2) - (strip + 0.5) * getScintillatorWidth();
                   y_ = zero_layer_[section] + 0.5 * scint_thickness_ +
-                      layer_thickness_[section] * (layer_ - 1);
+                       layer_thickness_[section] * (layer_ - 1);
                   z_ = getZeroStrip(section, layer_ + 1) +
-                      getScintillatorLength(id) / 2;
+                       getScintillatorLength(id) / 2;
                 }
                 if (section == ldmx::HcalID::HcalSection::BOTTOM) {
                   y_ *= -1;

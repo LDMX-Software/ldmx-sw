@@ -25,7 +25,8 @@ void HCalDQM::analyze(const framework::Event &event) {
   analyzeSimHits(hcalSimHits);
   analyzeRecHits(hcalHits);
 }
-void HCalDQM::analyzeSimHits(const std::vector<ldmx::SimCalorimeterHit> &hits_) {
+void HCalDQM::analyzeSimHits(
+    const std::vector<ldmx::SimCalorimeterHit> &hits_) {
   const auto &geometry = getCondition<ldmx::HcalGeometry>(
       ldmx::HcalGeometry::CONDITIONS_OBJECT_NAME);
 

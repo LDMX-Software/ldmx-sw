@@ -38,8 +38,8 @@ void TrigScintFirmwareHitProducer::produce(framework::Event &event) {
   // purpose is to emulate existing reconstruction software in firmware for
   // triggering. I will more fully explain the operation and choices made in
   // hitproducer_hw in hitproducer_hw
-  const auto rechits{
-      event.getCollection<ldmx::TrigScintHit>(testCollection_, input_pass_name_)};
+  const auto rechits{event.getCollection<ldmx::TrigScintHit>(testCollection_,
+                                                             input_pass_name_)};
   for (const auto &hit : rechits) {
     ldmx_log(debug) << "Analysis barID: " << hit.getBarID()
                     << ", PE Number: " << hit.getPE();

@@ -22,7 +22,9 @@ class TrigCaloCluster {
 
   virtual ~TrigCaloCluster() = default;
 
-  bool operator<(const TrigCaloCluster &h) { return clus_energy_ < h.clus_energy_; }
+  bool operator<(const TrigCaloCluster &h) {
+    return clus_energy_ < h.clus_energy_;
+  }
 
   void clear();
 
@@ -46,7 +48,9 @@ class TrigCaloCluster {
   void setFirstLayer(int layer) { first_layer_ = layer; }
   void setLastLayer(int layer) { last_layer_ = layer; }
   void setDepth(int depth) { depth_ = depth; }
-  void setNTP(int num_trigger_primitives) { num_trigger_primitives_ = num_trigger_primitives; }
+  void setNTP(int num_trigger_primitives) {
+    num_trigger_primitives_ = num_trigger_primitives;
+  }
 
   float x() const { return clus_x_; }
   float y() const { return clus_y_; }

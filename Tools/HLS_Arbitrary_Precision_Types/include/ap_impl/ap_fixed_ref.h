@@ -52,7 +52,8 @@ struct af_bit_ref {
 #endif
   }
 
-  INLINE af_bit_ref(ref_type* bv, int index_ = 0) : d_bv(*bv), d_index(index_) {}
+  INLINE af_bit_ref(ref_type* bv, int index_ = 0)
+      : d_bv(*bv), d_index(index_) {}
 
   INLINE af_bit_ref(const ref_type* bv, int index_ = 0)
       : d_bv(*const_cast<ref_type*>(bv)), d_index(index_) {}

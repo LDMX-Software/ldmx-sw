@@ -39,8 +39,8 @@ void DeepEcalProcessFilter::stepping(const G4Step* step) {
 
   // Check the creation process and PDG ID of the particle
   auto process_name = track->GetCreatorProcess()
-                         ? track->GetCreatorProcess()->GetProcessName()
-                         : "unknown";
+                          ? track->GetCreatorProcess()->GetProcessName()
+                          : "unknown";
   auto pd_gid = track->GetParticleDefinition()->GetPDGEncoding();
 
   // Skip the steps that are for the recoil electron

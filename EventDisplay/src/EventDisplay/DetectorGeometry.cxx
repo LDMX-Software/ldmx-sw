@@ -108,15 +108,15 @@ DetectorGeometry::DetectorGeometry() {
   //          layer_  = copyNum / 10 (integer division)
   //          module_ = copyNum % 10
   //      The first 8 layer_ IDs are the first 4 layers of stereo sensors.
-  //          Each stereo layer_ contains a front layer_ that is not tilted at an
-  //          angle and a back layer_ that is tilted.
+  //          Each stereo layer_ contains a front layer_ that is not tilted at
+  //          an angle and a back layer_ that is tilted.
   //      The last 2 layer_ IDs correspond to the 2 layers of mono sensors.
   //          Each mono layer_ contains 10 modules (ids 0 - 9) that have a
   //          complicated position arrangement.
   //
-  //      In order to avoid mistakes, the position and angle of each module_ will
-  //      be hard coded here instead of calculated from design specifications
-  //      like the HCAL case.
+  //      In order to avoid mistakes, the position and angle of each module_
+  //      will be hard coded here instead of calculated from design
+  //      specifications like the HCAL case.
 
   recoilStereoStripLength_ = 98.0;
 
@@ -449,7 +449,8 @@ BoundingBox DetectorGeometry::getBoundingBox(
 
 HexPrism DetectorGeometry::getHexPrism(const ldmx::EcalID &id) const {
   HexPrism hexpris;
-  ecalHexReader_->getCellAbsolutePosition(id, hexpris.x_, hexpris.y_, hexpris.z_);
+  ecalHexReader_->getCellAbsolutePosition(id, hexpris.x_, hexpris.y_,
+                                          hexpris.z_);
   hexpris.height = ecalSiThickness_;
   hexpris.radius_ = ecalHexReader_->getCellMaxR();
 

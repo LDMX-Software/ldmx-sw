@@ -47,8 +47,8 @@ void BeamElectronLocator::produce(framework::Event &event) {
   }
 
   std::vector<ldmx::BeamElectronTruth> beamElectronInfo;
-  const auto simHits{
-      event.getCollection<ldmx::SimCalorimeterHit>(inputColl_, input_pass_name_)};
+  const auto simHits{event.getCollection<ldmx::SimCalorimeterHit>(
+      inputColl_, input_pass_name_)};
 
   if (verbose_) {
     ldmx_log(info) << "Looping through simhits in event "
@@ -64,7 +64,8 @@ void BeamElectronLocator::produce(framework::Event &event) {
       if (fabs(pos_[0] - foundElectrons.getX()) < tolerance_ &&
           fabs(pos_[1] - foundElectrons.getY()) < tolerance_) {
         if (verbose_) {
-          ldmx_log(debug) << "\tHit at (x_ = " << pos_[0] << ", y_ = " << pos_[1]
+          ldmx_log(debug) << "\tHit at (x_ = " << pos_[0]
+                          << ", y_ = " << pos_[1]
                           << " matches electron found at (x_ = "
                           << foundElectrons.getX()
                           << ", y_ = " << foundElectrons.getY()

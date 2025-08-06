@@ -49,8 +49,9 @@ class BaseTableCondition : public framework::ConditionsObject {
    */
   const std::string& getColumnName(unsigned int icol) const {
     if (icol >= columnCount_) {
-      EXCEPTION_RAISE("ConditionsException",
-                      std::string("Column index_ out of range in ") + getName());
+      EXCEPTION_RAISE(
+          "ConditionsException",
+          std::string("Column index_ out of range in ") + getName());
     }
     return columns_[icol];
   }

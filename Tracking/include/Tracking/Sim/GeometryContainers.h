@@ -205,7 +205,8 @@ selectLowestNonZeroGeometryObject(const GeometryIdMultiset<T>& container,
   }
 }
 
-/// Iterate over groups of elements belonging to each module_/ sensitive surface.
+/// Iterate over groups of elements belonging to each module_/ sensitive
+/// surface.
 template <typename T>
 inline GroupBy<typename GeometryIdMultiset<T>::const_iterator,
                detail::GeometryIdGetter>

@@ -211,7 +211,8 @@ class SimParticle {
    * @param[in] y_ The vertex y_ position.
    * @param[in] z_ The vertex z_ position.
    */
-  void setVertex(const double& vtx_x, const double& vtx_y, const double& vtx_z) {
+  void setVertex(const double& vtx_x, const double& vtx_y,
+                 const double& vtx_z) {
     vtx_x_ = vtx_x;
     vtx_y_ = vtx_y;
     vtx_z_ = vtx_z;
@@ -244,7 +245,8 @@ class SimParticle {
    * @param[in] end_y The y_ position of the end point.
    * @param[in] end_z The z_ position of the end point.
    */
-  void setEndPoint(const double& end_x, const double& end_y, const double& end_z) {
+  void setEndPoint(const double& end_x, const double& end_y,
+                   const double& end_z) {
     end_x_ = end_x;
     end_y_ = end_y;
     end_z_ = end_z;

@@ -134,15 +134,15 @@ void TrigPrimResolutionAnalyzer::onProcessStart() {
                      100, 0, 2000);
   histograms_.create("trig_v_ampl_layer", "Layer trigger total [MeV]", 100, 0,
                      2500, "Layer ampl total [MeV]", 100, 0, 2500);
-  histograms_.create("trig_ampl_v_ampl", "module_ precision ampl sum [MeV]", 100,
-                     0, 1000, "module_ trigger / module_ precision ampl", 100,
-                     0.4, 1.2);
+  histograms_.create("trig_ampl_v_ampl", "module_ precision ampl sum [MeV]",
+                     100, 0, 1000, "module_ trigger / module_ precision ampl",
+                     100, 0.4, 1.2);
   histograms_.create("trig_ampl_v_ampl_binadjust",
                      "module_ precision trig sum [MeV]", 100, 0, 2000,
                      "module_ trigger / module_ precision ampl", 100, 0.4, 1.2);
-  histograms_.create("trig_ampl_v_ampl_layer", "layer_ precision ampl sum [MeV]",
-                     100, 0, 1000, "layer_ trigger / layer_ precision ampl", 100,
-                     0.4, 1.2);
+  histograms_.create("trig_ampl_v_ampl_layer",
+                     "layer_ precision ampl sum [MeV]", 100, 0, 1000,
+                     "layer_ trigger / layer_ precision ampl", 100, 0.4, 1.2);
   histograms_.create("trig_ampl_v_ampl_total", "total precision ampl sum [MeV]",
                      100, 0, 8000, "total trigger / total precision ampl", 100,
                      0.9, 1.1);
@@ -162,8 +162,8 @@ void TrigPrimResolutionAnalyzer::onProcessStart() {
                      "Trigger group full readout [MeV]", binsx,
                      "Trigger group ratio / nominal", binsy);
   histograms_.create("trig_group_ampl_unweight",
-                     "unweighted trigger group total precision hits_ [MeV]", 100,
-                     0, 20,
+                     "unweighted trigger group total precision hits_ [MeV]",
+                     100, 0, 20,
                      "trigger group trigger / unweighted trigger group total "
                      "prec hits_ / nominal",
                      200, 0.6, 1.4);
@@ -351,6 +351,6 @@ void TrigPrimResolutionAnalyzer::analyze(const framework::Event& event) {
 }
 
 }  // namespace ecal
-} // namespace ldmx
+}  // namespace ldmx
 
 DECLARE_ANALYZER(ldmx::ecal::TrigPrimResolutionAnalyzer);

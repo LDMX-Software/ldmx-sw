@@ -59,7 +59,8 @@ void TargetBremFilter::stepping(const G4Step* step) {
 
   // Get the PDG ID of the track and make sure it's an electron. If
   // another particle type is found, thrown an exception.
-  if (auto pdg_id{track->GetParticleDefinition()->GetPDGEncoding()}; pdg_id != 11)
+  if (auto pdg_id{track->GetParticleDefinition()->GetPDGEncoding()};
+      pdg_id != 11)
     return;
 
   // Get the region the particle is currently in.  Continue processing

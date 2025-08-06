@@ -34,7 +34,8 @@ void SimTrackerHit::clear() {
   pdgID_ = 0;
 }
 
-void SimTrackerHit::setPosition(const float x_, const float y_, const float z_) {
+void SimTrackerHit::setPosition(const float x_, const float y_,
+                                const float z_) {
   this->x_ = x_;
   this->y_ = y_;
   this->z_ = z_;

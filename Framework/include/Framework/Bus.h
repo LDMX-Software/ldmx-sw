@@ -573,8 +573,8 @@ class Bus {
      * @param[in] can_create allow us to create a branch on tree if needed
      * @returns pointer to branch that we attached to (maybe be null)
      */
-    TBranch* attach(TheType<int> t, TTree* tree,
-                    const std::string& branch_name, bool can_create) {
+    TBranch* attach(TheType<int> t, TTree* tree, const std::string& branch_name,
+                    bool can_create) {
       return attachBasic(tree, branch_name, can_create);
     }
 

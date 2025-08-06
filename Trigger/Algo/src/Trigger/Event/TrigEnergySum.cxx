@@ -18,7 +18,7 @@ std::ostream &operator<<(std::ostream &s, const trigger::TrigEnergySum &sum) {
 
 std::ostream &operator<<(std::ostream &s,
                          const trigger::TrigEnergySumCollection &sums) {
-  s << " [ TrigEnergySumCollection ] { " ;
+  s << " [ TrigEnergySumCollection ] { ";
   for (auto sum : sums) s << "  " << sum << ", ";
   s << "}";
   return s;

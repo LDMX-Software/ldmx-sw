@@ -122,8 +122,8 @@ void HcalRecProducer::produce(framework::Event& event) {
       getCondition<HcalReconConditions>(HcalReconConditions::CONDITIONS_NAME)};
 
   std::vector<ldmx::HcalHit> hcalRecHits;
-  auto hcalDigis =
-      event.getObject<ldmx::HgcrocDigiCollection>(digi_coll_name_, digi_pass_name_);
+  auto hcalDigis = event.getObject<ldmx::HgcrocDigiCollection>(digi_coll_name_,
+                                                               digi_pass_name_);
   int numDigiHits = hcalDigis.getNumDigis();
 
   // get sample of interest index_

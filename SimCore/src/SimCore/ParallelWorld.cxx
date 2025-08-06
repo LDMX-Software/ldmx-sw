@@ -22,7 +22,8 @@ void ParallelWorld::ConstructSD() {
       parser_->GetWorldVolume()->GetLogicalVolume();
   auxInfoReader_->readGlobalAuxInfo();
 
-  for (int index_ = 0; index_ < parallelWorldLogical->GetNoDaughters(); index_++) {
+  for (int index_ = 0; index_ < parallelWorldLogical->GetNoDaughters();
+       index_++) {
     G4VPhysicalVolume *physicalVol = parallelWorldLogical->GetDaughter(index_);
     ldmx_log(debug) << "Adding : " << physicalVol->GetName()
                     << " to parallel world.";

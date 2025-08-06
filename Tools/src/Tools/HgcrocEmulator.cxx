@@ -181,9 +181,10 @@ bool HgcrocEmulator::digitize(
 
       // TODO: properly handle saturation and recovery, eventually.
       // Now just kill everything...
-      ldmx_log(trace) << "   Adding further hits_ with ADC [t-1] = 0x3FF, toa = "
-                         "0x3FF, until digiToAdd.size() = "
-                      << digiToAdd.size() << " < nADCs_(" << nADCs_ << ")";
+      ldmx_log(trace)
+          << "   Adding further hits_ with ADC [t-1] = 0x3FF, toa = "
+             "0x3FF, until digiToAdd.size() = "
+          << digiToAdd.size() << " < nADCs_(" << nADCs_ << ")";
       while (digiToAdd.size() < nADCs_) {
         // flags to mark type of sample
         digiToAdd.emplace_back(true, false, 0x3FF, 0x3FF, 0);

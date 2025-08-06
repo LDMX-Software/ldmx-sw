@@ -139,8 +139,8 @@ void HistogramHelper::create(const std::string& name, const std::string& xLabel,
   for (unsigned int i_bin = 0; i_bin < ybins.size(); i_bin++)
     y_bin_edges[i_bin] = ybins.at(i_bin);
 
-  auto hist = new TH2F(full_name.c_str(), full_name.c_str(), x_n_bins, x_bin_edges,
-                       y_n_bins, y_bin_edges);
+  auto hist = new TH2F(full_name.c_str(), full_name.c_str(), x_n_bins,
+                       x_bin_edges, y_n_bins, y_bin_edges);
 
   delete[] x_bin_edges;  // cleanup
   delete[] y_bin_edges;  // cleanup

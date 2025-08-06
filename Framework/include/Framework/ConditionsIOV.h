@@ -37,7 +37,10 @@ class ConditionsIOV {
    * Constructor for null validity
    */
   ConditionsIOV()
-      : first_run_{0}, last_run_{0}, valid_for_data_{false}, valid_for_mc_{false} {}
+      : first_run_{0},
+        last_run_{0},
+        valid_for_data_{false},
+        valid_for_mc_{false} {}
 
   /**
    * Constructor for a unlimited validity

@@ -1,7 +1,7 @@
 /**
  * @file EcalGeometry.h
- * @brief Class that translates raw positions of ECal module_ hits_ into cells in
- * a hexagonal readout
+ * @brief Class that translates raw positions of ECal module_ hits_ into cells
+ * in a hexagonal readout
  * @author Owen Colegro, UCSB
  *  past code sources:
  *           https://cms-hgcal.github.io/TestBeam/HGCSSGeometryConversion_8cc_source.html
@@ -72,8 +72,8 @@ namespace ldmx {
  * versions of the detector (which we wish to still support), I am defining an
  * extra set of axes with respect to the flower itself. Below I have drawn the
  * ECal hexagon i flower and defined two axes: p (through the "pointy sides")
- * and q (through the "flat sides"). In some versions of the ECal flower, p == x_
- * and q == y_ while in others p == -y_ and q == x_.
+ * and q (through the "flat sides"). In some versions of the ECal flower, p ==
+ * x_ and q == y_ while in others p == -y_ and q == x_.
  *
  *          ^
  *          | q axis
@@ -370,8 +370,8 @@ class EcalGeometry : public framework::ConditionsObject {
    *
    * @param[in] gap_ separation between module_ flat-sides
    * @param[in] moduler_ center-to-flat module_ radius_
-   * @param[out] modulePositionMap_ map of module_ IDs to module_ centers relative
-   * to ecal
+   * @param[out] modulePositionMap_ map of module_ IDs to module_ centers
+   * relative to ecal
    */
   void buildModuleMap();
 
@@ -416,8 +416,8 @@ class EcalGeometry : public framework::ConditionsObject {
    * This uses the modulePostionMap_ and cellPositionMap_ to calculate the
    * center of all cells relative to the ecal center.
    *
-   * @param[in] modulePositionMap_ map of module_ IDs to module_ centers relative
-   * to ecal
+   * @param[in] modulePositionMap_ map of module_ IDs to module_ centers
+   * relative to ecal
    * @param[in] cellPositionMap_ map of cell IDs to cell centers relative to
    * module_
    * @param[out]
@@ -429,8 +429,8 @@ class EcalGeometry : public framework::ConditionsObject {
    *
    * Since this only occurs once during processing, we can be wasteful.
    * We do a nested loop over the entire cellular position map and calculate
-   * neighbors by seeing which cells are within multiples of the cellular radius_
-   * of each other.
+   * neighbors by seeing which cells are within multiples of the cellular
+   * radius_ of each other.
    *
    * @note We require two cells to be in the same layer_ in order to be nearest
    * neighbors or next-nearest neighbors.
@@ -474,10 +474,10 @@ class EcalGeometry : public framework::ConditionsObject {
    * @note This function is in p,q space so any rotations need to be performed
    * before calling this function.
    *
-   * @param[in] normX X-coordinate relative to module_ hexagon divided by maximum
-   * hexagon radius_
-   * @param[in] normY Y-coordinate relative to module_ hexagon divided by maximum
-   * hexagon radius_
+   * @param[in] normX X-coordinate relative to module_ hexagon divided by
+   * maximum hexagon radius_
+   * @param[in] normY Y-coordinate relative to module_ hexagon divided by
+   * maximum hexagon radius_
    * @return true if (normX,normY) is within the hexagon centered at the origin
    * with maximum radius_ 1.
    */

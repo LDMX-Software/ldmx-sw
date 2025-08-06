@@ -78,7 +78,7 @@ Tracker::~Tracker() {
         storage_directory_->mkdir(toName(callback).c_str());
     for (std::size_t i_proc{0}; i_proc < names_.size(); i_proc++) {
       processor_timers_[toIndex(callback)][i_proc].write(callback_d,
-                                                          names_[i_proc]);
+                                                         names_[i_proc]);
     }
   }
 }

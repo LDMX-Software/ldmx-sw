@@ -81,8 +81,8 @@ void TruthSeedProcessor::createTruthTrack(
     const ldmx::SimParticle& particle, const ldmx::SimTrackerHit& hit,
     ldmx::Track& trk, const std::shared_ptr<Acts::Surface>& target_surface) {
   std::vector<double> pos_{static_cast<double>(hit.getPosition()[0]),
-                          static_cast<double>(hit.getPosition()[1]),
-                          static_cast<double>(hit.getPosition()[2])};
+                           static_cast<double>(hit.getPosition()[1]),
+                           static_cast<double>(hit.getPosition()[2])};
   createTruthTrack(pos_, hit.getMomentum(), particle.getCharge(), trk,
                    target_surface);
 
@@ -578,8 +578,8 @@ void TruthSeedProcessor::produce(framework::Event& event) {
   std::vector<int> tagger_sh_idxs;
   std::unordered_map<int, std::vector<int>> tagger_sh_count_map;
 
-  // Target scoring hits_ for Tagger will have Z<0, Recoil scoring hits_ will have
-  // Z>0
+  // Target scoring hits_ for Tagger will have Z<0, Recoil scoring hits_ will
+  // have Z>0
   for (unsigned int i_sh = 0; i_sh < scoring_hits.size(); i_sh++) {
     const ldmx::SimTrackerHit& hit = scoring_hits.at(i_sh);
     double zhit = hit.getPosition()[2];

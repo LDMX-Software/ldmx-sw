@@ -32,8 +32,8 @@ namespace ecal {
  *
  * MotherboardMap gives information about how the modules plug into a given type
  * of motherboard ROCID -- which ROC on the module_ ROC_ELINK_NUMBER -- which
- * elink on the ROC (0/1) MODULE -- which module_ on the layer_ POLARFIRE_ELINK --
- * elink input number on the Polarfire MOTHERBOARD_TYPE -- what type of
+ * elink on the ROC (0/1) MODULE -- which module_ on the layer_ POLARFIRE_ELINK
+ * -- elink input number on the Polarfire MOTHERBOARD_TYPE -- what type of
  * motherboard is this
  *
  * LayerMap gives information about how the motherboards are used on the various

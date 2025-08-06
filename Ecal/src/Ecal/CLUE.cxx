@@ -157,7 +157,7 @@ std::vector<std::shared_ptr<CLUE::Density>> CLUE::setup(
       if (y_ < 0) {
         j = -j;
         y_ = (j + 0.5) * dc_;
-      } else                  // TODO i think this 1 should be a j
+      } else                   // TODO i think this 1 should be a j
         y_ = (1 - 0.5) * dc_;  // set x_,y_ to middle of box
       coords = {i, j};
       ldmx_log(trace) << "    Index " << i << ", " << j << "; x_: " << x_
@@ -171,7 +171,8 @@ std::vector<std::shared_ptr<CLUE::Density>> CLUE::setup(
       density_map.emplace(coords, std::make_shared<CLUE::Density>(x_, y_));
       ldmx_log(trace) << "    New density created";
     } else {
-      ldmx_log(trace) << "    Found density with x_: " << density_map[coords]->x_
+      ldmx_log(trace) << "    Found density with x_: "
+                      << density_map[coords]->x_
                       << " y_: " << density_map[coords]->y_;
     }
     density_map[coords]->hits_.push_back(hit);
@@ -196,7 +197,7 @@ std::vector<std::shared_ptr<CLUE::Density>> CLUE::setup(
 
   // decide delta_ and followerOf
   for (int i = 0; i < densities.size(); i++) {
-    densities[i]->index_= i;
+    densities[i]->index_ = i;
     densities[i]->z_ =
         densities[i]->z_ / densities[i]->hits_.size();  // avg z_ position
     ldmx_log(trace) << "  Index: " << i << "; x_: " << densities[i]->x_
@@ -298,7 +299,8 @@ std::vector<std::vector<const ldmx::EcalHit*>> CLUE::clustering(
                       << "; Delta: " << densities[i]->delta_;
 
       bool is_seed;
-      if (delta_c_mod != deltac_ && merged_densities[densities[i]->cluster_id_] &&
+      if (delta_c_mod != deltac_ &&
+          merged_densities[densities[i]->cluster_id_] &&
           floatDist(densities[i]->x_, densities[i]->y_,
                     event_centroid_.centroid().x(),
                     event_centroid_.centroid().y()) < centroid_radius) {
@@ -306,10 +308,10 @@ std::vector<std::vector<const ldmx::EcalHit*>> CLUE::clustering(
         // that was overloaded and this density is close enough to event
         // centroid use modded delta_ c
         is_seed = densities[i]->total_energy_ > rhoc_ &&
-                 densities[i]->delta_ > delta_c_mod;
+                  densities[i]->delta_ > delta_c_mod;
       } else
-        is_seed =
-            densities[i]->total_energy_ > rhoc_ && densities[i]->delta_ > deltac_;
+        is_seed = densities[i]->total_energy_ > rhoc_ &&
+                  densities[i]->delta_ > deltac_;
 
       if (is_seed) {
         ldmx_log(trace) << "  Distance to centroid: "
@@ -332,8 +334,8 @@ std::vector<std::vector<const ldmx::EcalHit*>> CLUE::clustering(
         layer_seeds.push_back(densities[i]);
       } else if (!is_outlier) {
         ldmx_log(trace) << "  Follower";
-        int& parent_index_= densities[i]->follower_of_;
-        if (parent_index_!= -1) followers[parent_index_].push_back(i);
+        int& parent_index_ = densities[i]->follower_of_;
+        if (parent_index_ != -1) followers[parent_index_].push_back(i);
       } else {
         ldmx_log(trace) << "  Outlier";
       }
@@ -386,7 +388,7 @@ std::vector<std::vector<const ldmx::EcalHit*>> CLUE::clustering(
       seed->delta_ = std::numeric_limits<float>::max();
       seed->hits_ = clusters[seed->cluster_id_];
       seed->total_energy_ = cluster_energies[seed->cluster_id_];
-      seed->index_= seed_index_;
+      seed->index_ = seed_index_;
       seed_index_++;
     }
     // Sort seeds in layer_ based on energy
@@ -426,11 +428,14 @@ std::vector<std::shared_ptr<CLUE::Density>> CLUE::layerSetup() {
           auto d = floatDist(current_layer[i]->x_, current_layer[i]->y_,
                              previous_layer[j]->x_, previous_layer[j]->y_);
           auto dz = std::abs(current_layer[i]->z_ - previous_layer[i]->z_);
-          ldmx_log(trace) << "      Delta to index_" << previous_layer[j]->index_
-                          << ": " << std::setprecision(20) << d;
-          ldmx_log(trace) << "      DeltaZ to index_" << previous_layer[j]->index_
-                          << ": " << std::setprecision(20) << dz << std::endl;
-          if (previous_layer[j]->total_energy_ > current_layer[i]->total_energy_ &&
+          ldmx_log(trace) << "      Delta to index_"
+                          << previous_layer[j]->index_ << ": "
+                          << std::setprecision(20) << d;
+          ldmx_log(trace) << "      DeltaZ to index_"
+                          << previous_layer[j]->index_ << ": "
+                          << std::setprecision(20) << dz << std::endl;
+          if (previous_layer[j]->total_energy_ >
+                  current_layer[i]->total_energy_ &&
               d < current_layer[i]->delta_ && dz < current_layer[i]->z_delta_) {
             ldmx_log(trace)
                 << "      New parent: index_" << previous_layer[j]->index_
@@ -461,9 +466,10 @@ std::vector<std::shared_ptr<CLUE::Density>> CLUE::layerSetup() {
                           << ": " << std::setprecision(20) << dz;
           if (next_layer[j]->total_energy_ > current_layer[i]->total_energy_ &&
               d < current_layer[i]->delta_ && dz < current_layer[i]->z_delta_) {
-            ldmx_log(trace) << "      New parent: index_" << next_layer[j]->index_
-                            << " on layer_ " << layer_ + depth << "; energy "
-                            << next_layer[j]->total_energy_;
+            ldmx_log(trace)
+                << "      New parent: index_" << next_layer[j]->index_
+                << " on layer_ " << layer_ + depth << "; energy "
+                << next_layer[j]->total_energy_;
             ldmx_log(trace)
                 << "      New delta_: " << std::setprecision(20) << d;
             ldmx_log(trace)

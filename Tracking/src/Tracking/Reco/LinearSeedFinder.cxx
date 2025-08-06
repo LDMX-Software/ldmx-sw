@@ -109,7 +109,8 @@ void LinearSeedFinder::produce(framework::Event& event) {
     sim_hits_by_track_id[hit.getTrackID()].push_back(&hit);
   }  // for sim hits_
 
-  // Index scoring hits_ by track ID (one positive scoring plane hit per trackID)
+  // Index scoring hits_ by track ID (one positive scoring plane hit per
+  // trackID)
   std::unordered_map<int, const ldmx::SimTrackerHit*> scoring_hit_map;
   for (const auto& sp_hit : scoring_hits) {
     if (sp_hit.getPosition()[2] > 0)
@@ -452,10 +453,10 @@ LinearSeedFinder::getSurfaceVectors(const Acts::Surface& surface) {
 //  estimate the 3d position of the particle as it passes through a stereo/axial
 //  pair currently this uses the sim hits_ from the target and the axial sensor
 //  to calculate the angle of the particle, which is needed to project the two
-//  sensors to the same z_ For real data, we could use the position at the target
-//  for the tagger and the axial u position of the measured hit (we only project
-//  in x_, which, in MC, is identically x_) assumptions:   axial u-direction is
-//  identically global-x_ (tracking-global y_)
+//  sensors to the same z_ For real data, we could use the position at the
+//  target for the tagger and the axial u position of the measured hit (we only
+//  project in x_, which, in MC, is identically x_) assumptions:   axial
+//  u-direction is identically global-x_ (tracking-global y_)
 //                 sensors' w-directions are aligned with beam (global-z_,
 //                 tracking-global x_)
 Acts::Vector3 LinearSeedFinder::simple3DHitV2(

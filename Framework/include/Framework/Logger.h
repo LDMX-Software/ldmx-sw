@@ -135,7 +135,7 @@ class Formatter {
  * Makes the_log_ mutable so that the log can be used
  * in any class functions.
  */
-#define enableLogging(name)                     \
+#define enableLogging(name)                      \
   mutable ::framework::logging::logger the_log_{ \
       ::framework::logging::makeLogger(name)};
 

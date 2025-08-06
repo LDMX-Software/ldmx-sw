@@ -80,9 +80,9 @@ int main() {
   module_hex_border.SetLineColorAlpha(kRed, 0.5);
   module_hex_border.SetLineWidth(2);
   for (int i = 1; i < hex_corners.size(); i++) {
-    module_hex_border.DrawLine(hex_corners.at(i - 1).first,
-                             hex_corners.at(i - 1).second,
-                             hex_corners.at(i).first, hex_corners.at(i).second);
+    module_hex_border.DrawLine(
+        hex_corners.at(i - 1).first, hex_corners.at(i - 1).second,
+        hex_corners.at(i).first, hex_corners.at(i).second);
   }
 
   c->Update();

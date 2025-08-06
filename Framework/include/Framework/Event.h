@@ -338,8 +338,9 @@ class Event {
       TBranch *branch = bus_.attach(input_tree_, branch_name, false);
       if (branch == 0) {
         // inputTree doesn't have that branch
-        EXCEPTION_RAISE("ProductNotFound", "No product found for branch '" +
-                                               branch_name + "' on input tree.");
+        EXCEPTION_RAISE(
+            "ProductNotFound",
+            "No product found for branch '" + branch_name + "' on input tree.");
       }
       // ooh, new branch!
       branch->SetStatus(1);  // overrides any 'ignore' rules

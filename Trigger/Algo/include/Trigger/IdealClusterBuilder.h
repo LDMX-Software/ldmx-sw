@@ -69,7 +69,7 @@ class Hit {
   int cell_id = -1;
   int module_id = -1;
   int id = -1;      // encodes x_,y_
-  int layer_ = 0;    // z_
+  int layer_ = 0;   // z_
   int nSubHit = 0;  // for towers
   bool used = false;
   void Print() {
@@ -92,7 +92,7 @@ class Cluster {
   float yy = 0;
   float zz = 0;
   float e = 0;
-  int seed = -1;    // id(xy)
+  int seed = -1;     // id(xy)
   int module_ = -1;  // uses seed
   int layer_ = -1;
 
@@ -110,9 +110,9 @@ class Cluster {
   void Print(ClusterGeometry* g = 0) {
     // ClusterGeometry* g;
     if (g == 0) {
-      cout << "Cluster (" << "e= " << e << ", seed id=" << seed << ", x_= " << x_
-           << ", y_= " << y_ << ", z_= " << z_ << ", nHit= " << hits_.size() << ")"
-           << endl;
+      cout << "Cluster (" << "e= " << e << ", seed id=" << seed
+           << ", x_= " << x_ << ", y_= " << y_ << ", z_= " << z_
+           << ", nHit= " << hits_.size() << ")" << endl;
     } else {
       auto idpair = g->id_map[seed];
       cout << "Cluster (" << "e= " << e << ", seed id=" << seed
@@ -123,7 +123,8 @@ class Cluster {
   }
   void Print3d() {
     cout << "Cluster (" << "e= " << e << ", seed id=" << seed << ", x_= " << x_
-         << ", y_= " << y_ << ", z_= " << z_ << ", n2dClus= " << clusters2d.size()
+         << ", y_= " << y_ << ", z_= " << z_
+         << ", n2dClus= " << clusters2d.size()
          << ", first_layer=" << first_layer << ", depth=" << depth << ")"
          << endl;
   }

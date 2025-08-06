@@ -74,7 +74,8 @@ EcalGeometry::EcalGeometry(const framework::config::Parameters& ps)
   ldmx_log(trace) << "Geometry fully constructed";
 }
 
-EcalID EcalGeometry::getID(double x_, double y_, double z_, bool fallible) const {
+EcalID EcalGeometry::getID(double x_, double y_, double z_,
+                           bool fallible) const {
   int layer_id{-1};
   for (const auto& [lid, layer_xyz] : layer_pos_xy_) {
     // check if the z_ coordinate is within the layer_ thickness
@@ -189,8 +190,8 @@ void EcalGeometry::buildLayerMap() {
       ldmx_log(debug) << "Shifting odd layers by (x_,y_) = (" << layer_shift_x_
                       << ", " << layer_shift_y_ << ") mm";
     } else {
-      ldmx_log(debug) << "Shifting odd bilayers by (x_,y_) = (" << layer_shift_x_
-                      << ", " << layer_shift_y_ << ") mm";
+      ldmx_log(debug) << "Shifting odd bilayers by (x_,y_) = ("
+                      << layer_shift_x_ << ", " << layer_shift_y_ << ") mm";
     }
   }
 
@@ -233,8 +234,9 @@ void EcalGeometry::buildModuleMap() {
       y_ = -(2. * moduler_ + gap_) * sin((id - 1) * (C_PI / 3.));
     }
     module_pos_xy_[id] = std::pair<double, double>(x_, y_);
-    ldmx_log(trace) << "    Module " << id << " is centered at (x_,y_) = " << "("
-                    << x_ << ", " << y_ << ") mm";
+    ldmx_log(trace) << "    Module " << id
+                    << " is centered at (x_,y_) = " << "(" << x_ << ", " << y_
+                    << ") mm";
   }
 }
 
@@ -322,8 +324,8 @@ void EcalGeometry::buildCellMap() {
     }
 
     if (numVerticesInside > 1) {
-      // Include this cell if more than one of its vertices is inside the module_
-      // hexagon
+      // Include this cell if more than one of its vertices is inside the
+      // module_ hexagon
       double actual_p[8], actual_q[8];
       int num_vertices{0};
       if (numVerticesInside < 6) {
@@ -493,12 +495,12 @@ void EcalGeometry::buildNeighborMaps() {
    * can be wasteful here. Gaps may be nonzero, so we simply apply an anulus
    * requirement (r < point <= r+dr) using total x_,y_ positions relative to the
    * ecal center (cell+module_ positions). This makes the routine portable to
-   * future cell layouts. Note that the module_ centers already take into account
-   * a nonzero gap. The number of neighbors is not simple because: edges, and
-   * that module_ edges have cutoff cells. (NN) Center within [1*cellr_,
-   * 3*cellr_] (NNN) Center within [3*cellr_, 4.5*cellr_] Chosen b/c in ideal
-   * case, centers are at 2*cell_ (NN), and at 3*cellR_=3.46*cellr_ and 4*cellr_
-   * (NNN).
+   * future cell layouts. Note that the module_ centers already take into
+   * account a nonzero gap. The number of neighbors is not simple because:
+   * edges, and that module_ edges have cutoff cells. (NN) Center within
+   * [1*cellr_, 3*cellr_] (NNN) Center within [3*cellr_, 4.5*cellr_] Chosen b/c
+   * in ideal case, centers are at 2*cell_ (NN), and at 3*cellR_=3.46*cellr_ and
+   * 4*cellr_ (NNN).
    */
   ldmx_log(trace) << "Building Nearest and Next-Nearest Neighbor maps";
 

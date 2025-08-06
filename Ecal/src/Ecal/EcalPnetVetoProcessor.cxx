@@ -99,8 +99,8 @@ void EcalPnetVetoProcessor::produce(framework::Event& event) {
           ecal::trackProp(recoil_tracks, ts_at_ecal, "ecal");
       if (!recoil_track_states_ecal.empty()) {
         std::array<double, 3> pos_ = {recoil_track_states_ecal[0],
-                                     recoil_track_states_ecal[1],
-                                     recoil_track_states_ecal[2]};
+                                      recoil_track_states_ecal[1],
+                                      recoil_track_states_ecal[2]};
         std::array<double, 3> mom = {(recoil_track_states_ecal[3]),
                                      (recoil_track_states_ecal[4]),
                                      (recoil_track_states_ecal[5])};

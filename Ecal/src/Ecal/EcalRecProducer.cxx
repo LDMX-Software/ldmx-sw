@@ -46,8 +46,8 @@ void EcalRecProducer::produce(framework::Event& event) {
           EcalReconConditions::CONDITIONS_NAME));
 
   std::vector<ldmx::EcalHit> ecal_rec_hits;
-  auto ecal_digis =
-      event.getObject<ldmx::HgcrocDigiCollection>(digi_coll_name_, digi_pass_name_);
+  auto ecal_digis = event.getObject<ldmx::HgcrocDigiCollection>(
+      digi_coll_name_, digi_pass_name_);
   // loop through digis
   for (auto digi : ecal_digis) {
     // ID from first digi sample

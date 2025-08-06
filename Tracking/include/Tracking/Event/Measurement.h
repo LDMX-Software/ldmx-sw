@@ -37,7 +37,8 @@ class Measurement {
    * @param y Position in y in mm.
    * @param z Position in z in mm.
    */
-  void setGlobalPosition(const float& meas_x, const float& meas_y, const float& meas_z) {
+  void setGlobalPosition(const float& meas_x, const float& meas_y,
+                         const float& meas_z) {
     meas_x_ = meas_x;
     meas_y_ = meas_y;
     meas_z_ = meas_z;
@@ -95,7 +96,8 @@ class Measurement {
   /**
    * Set the layer_ ID of the sensor where this measurement took place.
    *
-   * @param layer_id The layer_ ID of the sensor associated with this measurement.
+   * @param layer_id The layer_ ID of the sensor associated with this
+   * measurement.
    */
   void setLayerID(const int& layer_id) {
     layer_id_ = layer_id;

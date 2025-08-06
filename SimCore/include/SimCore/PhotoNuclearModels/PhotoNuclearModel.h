@@ -18,8 +18,8 @@
  *
  * Allows for replacing the default Bertini model from Geant4 with any other
  * G4HadronicInteraction process. The library is used from within the
- * GammaPhysics module_ in SimCore which ensures that the removeExistingModel and
- * ConstructModel functions are called in the right order and that the
+ * GammaPhysics module_ in SimCore which ensures that the removeExistingModel
+ * and ConstructModel functions are called in the right order and that the
  * photonNuclear process is located in the right part of the G4Gamma process
  * list.
  */

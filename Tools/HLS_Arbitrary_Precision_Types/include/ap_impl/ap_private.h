@@ -496,9 +496,10 @@ static INLINE std::string parseString(const std::string& input,
 
 /// sub_1 - This function subtracts a single "digit" (64-bit word), y_, from
 /// the multi-digit integer array, x_[], propagating the borrowed 1 value until
-/// no further borrowing is neeeded or it runs out of "digits" in x_.  The result
-/// is 1 if "borrowing" exhausted the digits in x_, or 0 if x_ was not exhausted.
-/// In other words, if y_ > x_ then this function returns 1, otherwise 0.
+/// no further borrowing is neeeded or it runs out of "digits" in x_.  The
+/// result is 1 if "borrowing" exhausted the digits in x_, or 0 if x_ was not
+/// exhausted. In other words, if y_ > x_ then this function returns 1,
+/// otherwise 0.
 /// @returns the borrow out of the subtraction
 static INLINE bool sub_1(uint64_t x_[], uint32_t len, uint64_t y_) {
   for (uint32_t i = 0; i < len; ++i) {
@@ -508,7 +509,7 @@ static INLINE bool sub_1(uint64_t x_[], uint32_t len, uint64_t y_) {
       y_ = 1;  // We have to "borrow 1" from next "digit"
     else {
       y_ = 0;  // No need to borrow
-      break;  // Remaining digits are unchanged so exit early
+      break;   // Remaining digits are unchanged so exit early
     }
   }
   return (y_ != 0);
@@ -601,8 +602,8 @@ static INLINE bool sub(uint64_t* dest, const uint64_t* x_, const uint64_t* y_,
 /// @returns this, after subtraction
 /// @brief Subtraction assignment operator.
 
-/// Multiplies an integer array, x_ by a a uint64_t integer and places the result
-/// into dest.
+/// Multiplies an integer array, x_ by a a uint64_t integer and places the
+/// result into dest.
 /// @returns the carry out of the multiplication.
 /// @brief Multiply a multi-digit ap_private by a single digit (64-bit) integer.
 static INLINE uint64_t mul_1(uint64_t dest[], const uint64_t x_[], uint32_t len,

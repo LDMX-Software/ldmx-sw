@@ -67,7 +67,7 @@ class EcalPnetVetoProcessor : public framework::Producer {
   constexpr static unsigned int feature_z_offset_ = 2 * max_num_hits_;
   constexpr static unsigned int feature_energy_offset_ = 3 * max_num_hits_;
   constexpr static unsigned int feature_layer_id_offset_ = 4 * max_num_hits_;
-  
+
   const static std::vector<std::string> input_names_;
   const static std::vector<unsigned int> input_sizes_;
 

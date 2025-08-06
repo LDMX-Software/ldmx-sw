@@ -172,7 +172,7 @@ void TrackingGeometry::dumpGeometry(const std::string& outputDir,
 Acts::Transform3 TrackingGeometry::GetTransform(const G4VPhysicalVolume& phex,
                                                 bool toTrackingFrame) const {
   Acts::Vector3 pos_(phex.GetTranslation().x(), phex.GetTranslation().y(),
-                    phex.GetTranslation().z());
+                     phex.GetTranslation().z());
 
   Acts::RotationMatrix3 rotation;
   ConvertG4Rot(phex.GetRotation(), rotation);
@@ -192,12 +192,12 @@ Acts::Transform3 TrackingGeometry::GetTransform(const G4VPhysicalVolume& phex,
   return transform;
 }
 
-// This method returns the transformation to the tracker coordinates z_->x_ x_->y_
-// y_->z_
+// This method returns the transformation to the tracker coordinates z_->x_
+// x_->y_ y_->z_
 Acts::Transform3 TrackingGeometry::toTracker(
     const Acts::Transform3& trans) const {
   Acts::Vector3 pos_{trans.translation()(2), trans.translation()(0),
-                    trans.translation()(1)};
+                     trans.translation()(1)};
 
   Acts::RotationMatrix3 rotation = trans.rotation();
   rotation = x_rot_ * y_rot_ * rotation;
@@ -278,8 +278,8 @@ void TrackingGeometry::makeLayerSurfacesMap() {
 
     unsigned int volumeId = surface->geometryId().volume();
     unsigned int layerId = (surface->geometryId().layer() /
-                            2);  // set layer_ ID  from 1 to 7 for the tagger and
-                                 // from 1 to 6 for the recoil
+                            2);  // set layer_ ID  from 1 to 7 for the tagger
+                                 // and from 1 to 6 for the recoil
     unsigned int sensorId =
         surface->geometryId().sensitive() -
         1;  // set sensor ID from 0 to 1 for the tagger and from 0 to 9 for the

@@ -30,8 +30,8 @@ void QIEAnalyzer::configure(framework::config::Parameters& parameters) {
 }
 
 void QIEAnalyzer::analyze(const framework::Event& event) {
-  const auto channels{
-      event.getCollection<trigscint::EventReadout>(inputCol_, input_pass_name_)};
+  const auto channels{event.getCollection<trigscint::EventReadout>(
+      inputCol_, input_pass_name_)};
 
   int evNb = event.getEventNumber();
   //	while (evNb < 0 ) {

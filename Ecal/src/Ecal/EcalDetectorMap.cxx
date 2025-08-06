@@ -113,10 +113,11 @@ void EcalDetectorMap::buildElectronicsMap() {
           continue;
 
         // now, we have only cells which are relevant
-        ldmx::EcalID precision_id(olink.layer_, elink.module_, cell.module_cellid_);
+        ldmx::EcalID precision_id(olink.layer_, elink.module_,
+                                  cell.module_cellid_);
         ldmx::EcalElectronicsID elec_id(olink.daq_opticallink_,
-                                       elink.polarfire_elink_,
-                                       cell.roc_elink_channel_);
+                                        elink.polarfire_elink_,
+                                        cell.roc_elink_channel_);
 
         if (this->exists(elec_id)) {
           std::stringstream ss;

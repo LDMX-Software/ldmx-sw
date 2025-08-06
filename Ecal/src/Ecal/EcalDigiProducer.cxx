@@ -149,8 +149,9 @@ void EcalDigiProducer::produce(framework::Event& event) {
     int n_ecal_layers = geom.getNumLayers();
     int n_modules_per_layer = geom.getNumModulesPerLayer();
     int n_cells_per_module = geom.getNumCellsPerModule();
-    int num_empty_channels = n_ecal_layers * n_modules_per_layer * n_cells_per_module -
-                           ecal_digis.getNumDigis();
+    int num_empty_channels =
+        n_ecal_layers * n_modules_per_layer * n_cells_per_module -
+        ecal_digis.getNumDigis();
 
     // Uniform distributions for integer generation
     std::uniform_int_distribution<int> layer_dist(0, n_ecal_layers - 1);
@@ -193,7 +194,8 @@ void EcalDigiProducer::produce(framework::Event& event) {
           for (int cell{0}; cell < n_cells_per_module; cell++) {
             unsigned int channel{ldmx::EcalID(layer_, module_, cell).raw()};
             // check if channel already has a (real) hit in it
-            if (filled_det_i_ds.find(channel) != filled_det_i_ds.end()) continue;
+            if (filled_det_i_ds.find(channel) != filled_det_i_ds.end())
+              continue;
             // create a digi as put it into the collection
             ecal_digis.addDigi(channel, hgcroc_->noiseDigi(channel));
           }  // cells in each module_

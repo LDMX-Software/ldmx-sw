@@ -748,7 +748,8 @@ struct ap_bit_ref {
   INLINE ap_bit_ref(const ap_bit_ref<_AP_W, _AP_S>& ref)
       : d_bv(ref.d_bv), d_index(ref.d_index) {}
 
-  INLINE ap_bit_ref(ref_type* bv, int index_ = 0) : d_bv(*bv), d_index(index_) {}
+  INLINE ap_bit_ref(ref_type* bv, int index_ = 0)
+      : d_bv(*bv), d_index(index_) {}
 
   INLINE ap_bit_ref(const ref_type* bv, int index_ = 0)
       : d_bv(*const_cast<ref_type*>(bv)), d_index(index_) {}

@@ -246,7 +246,7 @@ class RunHeader {
    * @param[in] h RunHeader to write out
    * @return modified ostream
    */
-	  friend std::ostream &operator<<(std::ostream &s, const ldmx::RunHeader &h) {
+  friend std::ostream &operator<<(std::ostream &s, const ldmx::RunHeader &h) {
     h.stream(s);
     return s;
   }

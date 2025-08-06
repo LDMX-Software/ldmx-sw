@@ -119,7 +119,8 @@ class Conditions {
   Process& process_;
 
   /** Map of who provides which condition */
-  std::map<std::string, std::shared_ptr<ConditionsObjectProvider>> provider_map_;
+  std::map<std::string, std::shared_ptr<ConditionsObjectProvider>>
+      provider_map_;
 
   /**
    * An entry to store an already loaded conditions object

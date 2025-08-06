@@ -161,8 +161,8 @@ void TrigScintTrackProducer::produce(framework::Event &event) {
         if (fabs(cluster1.getCentroid() - centroid) < maxDelta_ ||
             (centroid >= vertBarStartIdx_  // then in vertical bars
              && seed.getCentroidX() == cluster1.getCentroidX())) {
-          // use geometry y_ overlap scheme to see if this is really a match in x_
-          // should be done in a map
+          // use geometry y_ overlap scheme to see if this is really a match in
+          // x_ should be done in a map
 
           if (centroid >= vertBarStartIdx_ &&
               seed.getCentroidY() < cluster1.getCentroidY()) {
@@ -361,8 +361,8 @@ break;
 
             if ((tracks_.at(idx)).getResidual() <
                 (tracks_.at(idxComp)).getResidual()) {
-              // next track (lower index_) is a worse choice, remove its flag for
-              // keeping
+              // next track (lower index_) is a worse choice, remove its flag
+              // for keeping
               keepIndices.at(idxComp) = 0;
             } else  // prefer next track over current. remove current track's
                     // keep
@@ -514,8 +514,8 @@ ldmx::TrigScintTrack TrigScintTrackProducer::makeTrack(
     // and then a factor 2 for the zig-zag pattern
     centroidY = (centroidY + 1) * 2 * nBarsY_ / 8.;
     // TODO: here we could instead just use quadrant indices 0-3 by dividing by
-    // 2 but that would mean that in the raw, x_ and y_ track centroidY would mean
-    // different things
+    // 2 but that would mean that in the raw, x_ and y_ track centroidY would
+    // mean different things
     if (verbose_) ldmx_log(debug) << " --  new centroidY = " << centroidY;
   } else
     centroidY /= clusters.size();
@@ -611,13 +611,14 @@ void TrigScintTrackProducer::matchXYTracks(
   for (auto yitr = yQuadMap.begin(); yitr != yQuadMap.end(); ++yitr) {
     int nYinQuad = yQuadMap.count((*yitr).first);
     int nXinQuad = xQuadMap.count((*yitr).first);
-    float y_{-9999.}, sy{-9999.}, x_{-9999.}, x1{-9999.}, x2{-9999.}, sx1{-9999.},
-        sx2{-9999.}, y1{-9999.}, y2{-9999.}, sy1{-9999.}, sy2{-9999.};
+    float y_{-9999.}, sy{-9999.}, x_{-9999.}, x1{-9999.}, x2{-9999.},
+        sx1{-9999.}, sx2{-9999.}, y1{-9999.}, y2{-9999.}, sy1{-9999.},
+        sy2{-9999.};
     // quad midpoint:
     float y0 = (*yitr).first * 8 + sy0;
-    float sx =
-        1. / 2 * xConvFactor_;  // rely on x_ precision being one single bar
-                                // width; always used unless x_ is undeterminable
+    float sx = 1. / 2 *
+               xConvFactor_;  // rely on x_ precision being one single bar
+                              // width; always used unless x_ is undeterminable
 
     // check all x_ first
     // do the easiest first:
@@ -696,8 +697,8 @@ void TrigScintTrackProducer::matchXYTracks(
 
     if (verbose_)
       ldmx_log(debug) << "\t\t in quad " << (*yitr).first
-                      << ", not single x_,y_ tracks: " << nXinQuad << " of x_ and "
-                      << nYinQuad << " of y_";
+                      << ", not single x_,y_ tracks: " << nXinQuad
+                      << " of x_ and " << nYinQuad << " of y_";
 
     if (nYinQuad == 2) {  // let's start here and see if we can do >= 2 later
       // here one could do sth to avoid checking the other y_ track again in the
@@ -712,16 +713,16 @@ void TrigScintTrackProducer::matchXYTracks(
       y_ = (y1 + y2) / 2.;
       sy = fabs(y1 - y2) / 2 * yConvFactor_;
       if (verbose_)
-        ldmx_log(debug)
-            << "\t\t -- 2 y_ in quad: setting x_ track y_ coordinate to midpoint";
+        ldmx_log(debug) << "\t\t -- 2 y_ in quad: setting x_ track y_ "
+                           "coordinate to midpoint";
     }  // 2y in quad
 
     if (nYinQuad == 1 &&
         nXinQuad == 2) {  // don't think we want to experiment with discerning
                           // three overlapping tracks, so not >= 2
 
-      // first: set the y_ track coordinates to x_  = the mid of x_ tracks, y_ = y_
-      // of y_ track
+      // first: set the y_ track coordinates to x_  = the mid of x_ tracks, y_ =
+      // y_ of y_ track
       auto yidx = yIdxQuadMap.find((*yitr).first);
       tracks.at((*yidx).second).setPosition(x_, y_);
       tracks.at((*yidx).second).setSigmaXY(sx, sy);
@@ -729,14 +730,16 @@ void TrigScintTrackProducer::matchXYTracks(
       int minOverlapPE_ = 250;
       if (((*yitr).second).getPE() < minOverlapPE_) {
         // can't tell, really, that either of these belong to the y_ track. so.
-        // let them keep their own x_ coordinate but set y_ to quadrant midpoint,
-        // with uncertainty +/- half quadrant width (1/8 of pad height)
+        // let them keep their own x_ coordinate but set y_ to quadrant
+        // midpoint, with uncertainty +/- half quadrant width (1/8 of pad
+        // height)
         y_ = y0;
         sy = sy0;
         if (verbose_)
-          ldmx_log(debug) << "\t\t -- Can't tell which x_ track should be "
-                             "matched to single y_ track. Setting both x_ track "
-                             "coordinates to y_ quadrant value:";
+          ldmx_log(debug)
+              << "\t\t -- Can't tell which x_ track should be "
+                 "matched to single y_ track. Setting both x_ track "
+                 "coordinates to y_ quadrant value:";
       }  // if can't assume overlap
       else if (verbose_)
         ldmx_log(debug) << "\t\t -- Found large PE count ("
@@ -750,8 +753,8 @@ void TrigScintTrackProducer::matchXYTracks(
       // electron counting
       if (verbose_)
         ldmx_log(debug) << "\t\t --  (x1, x2, y_) = (" << x1 << ", " << x2
-                        << ", " << y_ << ") and (sx1, sx2, sy) = " << sx1 << ", "
-                        << sx2 << ", " << sy << ")";
+                        << ", " << y_ << ") and (sx1, sx2, sy) = " << sx1
+                        << ", " << sx2 << ", " << sy << ")";
 
       // now set x_ track coordinates according to overlap check result
       auto xidx1 = xIdxQuadMap.lower_bound((*yitr).first);
@@ -766,8 +769,8 @@ void TrigScintTrackProducer::matchXYTracks(
     else if (nYinQuad == 2 && nXinQuad == 1) {
       // 5b) if there are more y_ than x_: could be an overlap
 
-      // first: set the x_ track coordinates to x_ = x_ of x_ track, y_ = the mid of
-      // y_ tracks
+      // first: set the x_ track coordinates to x_ = x_ of x_ track, y_ = the
+      // mid of y_ tracks
       auto xidx = xIdxQuadMap.find((*yitr).first);
       tracks.at((*xidx).second).setPosition(x_, y_);
       tracks.at((*xidx).second).setSigmaXY(sx, sy);
@@ -776,27 +779,27 @@ void TrigScintTrackProducer::matchXYTracks(
       int minOverlapPE_ = 300;
       if (((*xitr).second).getPE() < minOverlapPE_) {
         if (verbose_)
-          ldmx_log(debug)
-              << "\t\t just 1 x_ track with not-unusual PE in the quad -- can't "
-                 "match; setting mid-point values for x_ ";
+          ldmx_log(debug) << "\t\t just 1 x_ track with not-unusual PE in the "
+                             "quad -- can't "
+                             "match; setting mid-point values for x_ ";
         x_ = x0;
         sx = sx0;
       }  // if can't assume overlap
       else {
-        // consider making two x_ tracks out if this one, and, anyway have to set
-        // their average as the y_ track x_ cocordinate
-        // EXPERIMENTAL : apply only to x_ tracks, which can be disregarded for
-        // electron counting
+        // consider making two x_ tracks out if this one, and, anyway have to
+        // set their average as the y_ track x_ cocordinate EXPERIMENTAL : apply
+        // only to x_ tracks, which can be disregarded for electron counting
         if (verbose_)
-          ldmx_log(debug) << "\t\t -- Found large PE count ("
-                          << ((*xitr).second).getPE() << " > " << minOverlapPE_
-                          << ") in x_ track, suggesting overlap! Setting both y_ "
-                             "track coordinates to x_ track value:";
+          ldmx_log(debug)
+              << "\t\t -- Found large PE count (" << ((*xitr).second).getPE()
+              << " > " << minOverlapPE_
+              << ") in x_ track, suggesting overlap! Setting both y_ "
+                 "track coordinates to x_ track value:";
       }  // if can assume overlap
       if (verbose_)
-        ldmx_log(debug) << "\t\t --  (x_, y1, y2) = (" << x_ << ", " << y1 << ", "
-                        << y2 << ") and (sx, sy1, sy2) = " << sx << ", " << sy1
-                        << ", " << sy2 << ")";
+        ldmx_log(debug) << "\t\t --  (x_, y1, y2) = (" << x_ << ", " << y1
+                        << ", " << y2 << ") and (sx, sy1, sy2) = " << sx << ", "
+                        << sy1 << ", " << sy2 << ")";
 
       auto yidx1 = yIdxQuadMap.lower_bound((*yitr).first);
       auto yidx2 = yIdxQuadMap.upper_bound((*yitr).first);
@@ -835,23 +838,25 @@ void TrigScintTrackProducer::matchXYTracks(
         tracks.at((*yidx2).second).setSigmaXY(sx, sy2);
 
         if (verbose_)
-          ldmx_log(debug) << "\t\t -- in a 2 x_ 2 situaiton; midpoint y_: " << y_
-                          << " for both x_ tracks, midpoint x_: " << x_
+          ldmx_log(debug) << "\t\t -- in a 2 x_ 2 situaiton; midpoint y_: "
+                          << y_ << " for both x_ tracks, midpoint x_: " << x_
                           << " for both y_ tracks";
       }
     }  // if 2 y_, 2 x_ tracks
 
     if (nXinQuad > 2) {
       if (verbose_)
-        ldmx_log(debug) << "\t\t -*-*-*- more than 2 x_ tracks in the same quad "
-                           "-- nothing done about the x_,y_ coordinates in this "
-                           "situation -- implement if needed!!";
+        ldmx_log(debug)
+            << "\t\t -*-*-*- more than 2 x_ tracks in the same quad "
+               "-- nothing done about the x_,y_ coordinates in this "
+               "situation -- implement if needed!!";
     }
     if (nYinQuad > 2) {
       if (verbose_)
-        ldmx_log(debug) << "\t\t -*-*-*- more than 2 y_ tracks in the same quad "
-                           "-- nothing done about the x_,y_ coordinates in this "
-                           "situation -- implement if needed!!";
+        ldmx_log(debug)
+            << "\t\t -*-*-*- more than 2 y_ tracks in the same quad "
+               "-- nothing done about the x_,y_ coordinates in this "
+               "situation -- implement if needed!!";
     }
 
   }  // over y_ tracks

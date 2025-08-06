@@ -31,7 +31,8 @@ class IDField {
    * @param startBit The start bit of the field.
    * @param endBit The end bit of the field.
    */
-  IDField(std::string name, unsigned index_, unsigned startBit, unsigned endBit);
+  IDField(std::string name, unsigned index_, unsigned startBit,
+          unsigned endBit);
 
   /**
    * Get the name of the field.

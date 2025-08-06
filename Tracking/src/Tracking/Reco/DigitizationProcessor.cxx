@@ -79,7 +79,8 @@ bool DigitizationProcessor::mergeHits(
   }
 
   ldmx::SimTrackerHit mergedHit;
-  // Since all the hits_ will be on the same sensor, just use the ID of the first
+  // Since all the hits_ will be on the same sensor, just use the ID of the
+  // first
   mergedHit.setLayerID(sihits[0].getLayerID());
   mergedHit.setModuleID(sihits[0].getModuleID());
   mergedHit.setID(sihits[0].getID());

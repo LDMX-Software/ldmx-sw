@@ -149,7 +149,8 @@ void EcalProcessFilter::stepping(const G4Step* step) {
   } else {
     // If the brem gamma interacts and produces secondaries, get the
     // process used to create them.
-    auto process_name{secondaries->at(0)->GetCreatorProcess()->GetProcessName()};
+    auto process_name{
+        secondaries->at(0)->GetCreatorProcess()->GetProcessName()};
 
     // Only record the process that is being biased
     if (!process_name.contains(process_)) {

@@ -609,9 +609,10 @@ EcalWABRecProcessor::fit2DTracksConstrained(
   for (int iter = 0; iter < max_iter; ++iter) {
     n_iter = iter + 1;
 
-    // Compute fitted y_ coordinates for each track using the current parameters.
-    // For track 1: y1_fit = par[0] * x1 + abs_lim * tanh(par[2]/abs_lim)
-    // For track 2: y2_fit = par[1] * x2 + abs_lim * tanh(par[2]/abs_lim)
+    // Compute fitted y_ coordinates for each track using the current
+    // parameters. For track 1: y1_fit = par[0] * x1 + abs_lim *
+    // tanh(par[2]/abs_lim) For track 2: y2_fit = par[1] * x2 + abs_lim *
+    // tanh(par[2]/abs_lim)
     Eigen::VectorXd y1_fit(n1), y2_fit(n2);
     float tanh_term = std::tanh(par(2) / abs_lim);
     for (int i = 0; i < n1; ++i) {
@@ -774,8 +775,9 @@ std::pair<Eigen::VectorXd, Eigen::VectorXd> EcalWABRecProcessor::polyfitXYvsZ(
     const std::vector<float>& x_, const std::vector<float>& y_,
     const std::vector<float>& z_, int degree) {
   /*
-    Function that fits two polynomials (x_ vs. z_ and y_ vs. z_) to 3D hit position
-    data using a least-squares method. The fitted models are defined as: x_ = a₀
+    Function that fits two polynomials (x_ vs. z_ and y_ vs. z_) to 3D hit
+    position data using a least-squares method. The fitted models are defined
+    as: x_ = a₀
     + a₁ * z_ + a₂ * z_² + ... + aₙ * zⁿ
     y_ = b₀ + b₁ * z_ + b₂ * z_² + ... + bₙ * zⁿ
     where n is the specified polynomial degree.

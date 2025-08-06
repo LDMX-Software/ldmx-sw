@@ -165,7 +165,8 @@ class Track {
     perigee_ = perigee;
   }
 
-  void setPerigeeLocation(const double& x_, const double& y_, const double& z_) {
+  void setPerigeeLocation(const double& x_, const double& y_,
+                          const double& z_) {
     perigee_[0] = x_;
     perigee_[1] = y_;
     perigee_[2] = z_;

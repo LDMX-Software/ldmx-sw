@@ -86,15 +86,15 @@ class DetectorID {
 
 }  // namespace ldmx
 
-#define SUBDETECTORID_TEST(a, x_)                                           \
-  if (!null() && !(subdet() == x_)) {                                       \
+#define SUBDETECTORID_TEST(a, x_)                                          \
+  if (!null() && !(subdet() == x_)) {                                      \
     EXCEPTION_RAISE("DetectorIDMismatch", "Attempted to create " +         \
                                               std::string(a) +             \
                                               " from mismatched source " + \
                                               std::to_string(subdet()));   \
   }
-#define SUBDETECTORID_TEST2(a, x_, y_)                                       \
-  if (!null() && !(subdet() == x_ || subdet() == y_)) {                      \
+#define SUBDETECTORID_TEST2(a, x_, y_)                                     \
+  if (!null() && !(subdet() == x_ || subdet() == y_)) {                    \
     EXCEPTION_RAISE("DetectorIDMismatch", "Attempted to create " +         \
                                               std::string(a) +             \
                                               " from mismatched source " + \

@@ -21,7 +21,8 @@ void IntermediateCluster::add(const ldmx::EcalHit& eh) {
   double new_e = hit_e + centroid_.E();
   centroid_.SetXYZT((centroid_.x() * centroid_.E() + hit_e * hit_x) / new_e,
                     (centroid_.y() * centroid_.E() + hit_e * hit_y) / new_e,
-                    (centroid_.z() * centroid_.E() + hit_e * hit_z) / new_e, new_e);
+                    (centroid_.z() * centroid_.E() + hit_e * hit_z) / new_e,
+                    new_e);
 }
 
 void IntermediateCluster::add(const ldmx::EcalHit* eh) {

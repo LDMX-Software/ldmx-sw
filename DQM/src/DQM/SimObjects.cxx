@@ -71,14 +71,15 @@ void SimObjects::onProcessStart() {
                      0., 500.);
   histograms_.create("pn_child.py", "Vertex Momentum in y_-Direction [MeV]", 50,
                      0., 500.);
-  histograms_.create("pn_child.pz", "Vertex Momentum in z_-Direction [MeV]", 400,
-                     0., 4000.);
+  histograms_.create("pn_child.pz", "Vertex Momentum in z_-Direction [MeV]",
+                     400, 0., 4000.);
   histograms_.create("pn_child.time", "Global Time of Creation [ns]", 50, 0.,
                      10.);
   histograms_.create("pn_child.pdg", "PDG ID of Particle", 201, -100, 100);
   histograms_.create("pn_child.x_", "Vertex x_-Position [mm]", 401, -200, 200);
   histograms_.create("pn_child.y_", "Vertex y_-Position [mm]", 401, -200, 200);
-  histograms_.create("pn_child.z_", "Vertex z_-Position [mm]", 171, -700, 1000.);
+  histograms_.create("pn_child.z_", "Vertex z_-Position [mm]", 171, -700,
+                     1000.);
   histograms_.create("pn_child.track_id", "Track ID of Particle", 100, 0, 1000);
   histograms_.create("pn_child.parent", "Track ID of Parent", 100, 0, 1000);
   histograms_.create("pn_child.children", "Track IDs of Children", 100, 0,
@@ -104,7 +105,8 @@ void SimObjects::createCalorimeterHists(const std::string& coll_name) {
                      200);
   histograms_.create(coll_name + ".x_", "Hit x_-Position [mm]", 401, -200, 200);
   histograms_.create(coll_name + ".y_", "Hit y_-Position [mm]", 401, -200, 200);
-  histograms_.create(coll_name + ".z_", "Hit z_-Position [mm]", 171, -700, 1000.);
+  histograms_.create(coll_name + ".z_", "Hit z_-Position [mm]", 171, -700,
+                     1000.);
   histograms_.create(coll_name + ".time", "Hit Time [ns]", 50, 0., 10.);
   histograms_.create(coll_name + ".n_contribs", "Number of Contributors", 20,
                      0., 20.);
@@ -115,18 +117,19 @@ void SimObjects::createTrackerHists(const std::string& coll_name) {
   getHistoDirectory();
   histograms_.create(coll_name + ".particle_E", "Particle E at Hit [MeV]", 400,
                      0, 4000);
-  histograms_.create(coll_name + ".particle_px", "Particle Momentum in x_ [MeV]",
-                     50, 0., 500.);
-  histograms_.create(coll_name + ".particle_py", "Particle Momentum in y_ [MeV]",
-                     50, 0., 500.);
-  histograms_.create(coll_name + ".particle_pz", "Particle Momentum in z_ [MeV]",
-                     400, 0., 4000.);
+  histograms_.create(coll_name + ".particle_px",
+                     "Particle Momentum in x_ [MeV]", 50, 0., 500.);
+  histograms_.create(coll_name + ".particle_py",
+                     "Particle Momentum in y_ [MeV]", 50, 0., 500.);
+  histograms_.create(coll_name + ".particle_pz",
+                     "Particle Momentum in z_ [MeV]", 400, 0., 4000.);
   histograms_.create(coll_name + ".edep", "Energy Deposited [MeV]", 100, 0,
                      200);
   histograms_.create(coll_name + ".time", "Hit Time [ns]", 50, 0., 10.);
   histograms_.create(coll_name + ".x_", "Hit x_-Position [mm]", 401, -200, 200);
   histograms_.create(coll_name + ".y_", "Hit y_-Position [mm]", 401, -200, 200);
-  histograms_.create(coll_name + ".z_", "Hit z_-Position [mm]", 171, -700, 1000.);
+  histograms_.create(coll_name + ".z_", "Hit z_-Position [mm]", 171, -700,
+                     1000.);
   histograms_.create(coll_name + ".track", "Particle Track ID", 100, 0, 1000);
   histograms_.create(coll_name + ".pdg", "Particle PDG ID", 401, -200, 200);
   return;

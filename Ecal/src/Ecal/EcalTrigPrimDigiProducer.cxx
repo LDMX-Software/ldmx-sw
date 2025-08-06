@@ -17,7 +17,8 @@ void EcalTrigPrimDigiProducer::produce(framework::Event& event) {
       EcalTriggerGeometry::CONDITIONS_OBJECT_NAME);
 
   const ldmx::HgcrocDigiCollection& ecal_digis =
-      event.getObject<ldmx::HgcrocDigiCollection>(digi_coll_name_, digi_pass_name_);
+      event.getObject<ldmx::HgcrocDigiCollection>(digi_coll_name_,
+                                                  digi_pass_name_);
 
   // get the calibration object
   const conditions::IntegerTableCondition& conditions =

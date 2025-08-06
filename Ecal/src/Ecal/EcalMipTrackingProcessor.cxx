@@ -144,8 +144,8 @@ void EcalMipTrackingProcessor::produce(framework::Event &event) {
       [](ldmx::HitData ha, ldmx::HitData hb) { return ha.layer_ > hb.layer_; });
   // For merging tracks:  Need to keep track of existing tracks
   // Candidate tracks to merge in will always be in front of the current track
-  // (lower z_), so only store the last hit 3-layer_ vector:  each track = vector
-  // of 3-tuples (xy+layer_).
+  // (lower z_), so only store the last hit 3-layer_ vector:  each track =
+  // vector of 3-tuples (xy+layer_).
   std::vector<std::vector<ldmx::HitData>> track_list;
 
   // print tracking_hit_list
@@ -457,13 +457,11 @@ void EcalMipTrackingProcessor::produce(framework::Event &event) {
     n_linreg_tracks_++;
     ldmx_log(debug) << " Lin-reg track " << n_linreg_tracks_;
     for (int final_hit_index = 0; final_hit_index < 3; final_hit_index++) {
-      ldmx_log(debug) << "   Hit " << final_hit_index << " ["
-                      << tracking_hit_list[best_hit_nums[final_hit_index]].pos_.X()
-                      << ", "
-                      << tracking_hit_list[best_hit_nums[final_hit_index]].pos_.Y()
-                      << ", "
-                      << tracking_hit_list[best_hit_nums[final_hit_index]].pos_.Z()
-                      << "] ";
+      ldmx_log(debug)
+          << "   Hit " << final_hit_index << " ["
+          << tracking_hit_list[best_hit_nums[final_hit_index]].pos_.X() << ", "
+          << tracking_hit_list[best_hit_nums[final_hit_index]].pos_.Y() << ", "
+          << tracking_hit_list[best_hit_nums[final_hit_index]].pos_.Z() << "] ";
     }
 
     // Exclude all hits_ in a found track from further consideration:

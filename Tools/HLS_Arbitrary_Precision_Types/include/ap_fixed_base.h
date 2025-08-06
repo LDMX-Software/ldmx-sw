@@ -55,7 +55,8 @@
 
 #ifdef __SYNTHESIS__
 #define _AP_ctype_op_get_bit(var, index_) _AP_ROOT_op_get_bit(var, index_)
-#define _AP_ctype_op_set_bit(var, index_, x_) _AP_ROOT_op_set_bit(var, index_, x_)
+#define _AP_ctype_op_set_bit(var, index_, x_) \
+  _AP_ROOT_op_set_bit(var, index_, x_)
 #define _AP_ctype_op_get_range(var, low, high) \
   _AP_ROOT_op_get_range(var, low, high)
 #define _AP_ctype_op_set_range(var, low, high, x_) \
@@ -66,7 +67,8 @@ inline bool _AP_ctype_op_get_bit(_Tp1& var, const _Tp2& index_) {
   return !!(var & (1ull << (index_)));
 }
 template <typename _Tp1, typename _Tp2, typename _Tp3>
-inline _Tp1 _AP_ctype_op_set_bit(_Tp1& var, const _Tp2& index_, const _Tp3& x_) {
+inline _Tp1 _AP_ctype_op_set_bit(_Tp1& var, const _Tp2& index_,
+                                 const _Tp3& x_) {
   var |= (((x_) ? 1ull : 0ull) << (index_));
   return var;
 }
@@ -493,9 +495,9 @@ struct ap_fixed_base : _AP_ROOT_TYPE<_AP_W, _AP_S> {
   // ctors from c types.
   // make a temp ap_fixed_base first, and use ap_fixed_base.operator=
 #define CTOR_FROM_INT(C_TYPE, _AP_W2, _AP_S2)        \
-  INLINE ap_fixed_base(const C_TYPE x_) {             \
+  INLINE ap_fixed_base(const C_TYPE x_) {            \
     ap_fixed_base<(_AP_W2), (_AP_W2), (_AP_S2)> tmp; \
-    tmp.V = x_;                                       \
+    tmp.V = x_;                                      \
     *this = tmp;                                     \
   }
 
@@ -1501,8 +1503,8 @@ struct ap_fixed_base : _AP_ROOT_TYPE<_AP_W, _AP_S> {
       const ap_int_base<_AP_W2, _AP_S2>& index_) {
     _AP_WARNING(index_ < 0, "Attempting to read bit with negative index_");
     _AP_WARNING(index_ >= _AP_W, "Attempting to read bit beyond MSB");
-    return af_bit_ref<_AP_W, _AP_I, _AP_S, _AP_Q, _AP_O, _AP_N>(this,
-                                                                index_.to_int());
+    return af_bit_ref<_AP_W, _AP_I, _AP_S, _AP_Q, _AP_O, _AP_N>(
+        this, index_.to_int());
   }
 
   INLINE bool operator[](unsigned index_) const {
@@ -1521,8 +1523,8 @@ struct ap_fixed_base : _AP_ROOT_TYPE<_AP_W, _AP_S> {
       const ap_int_base<_AP_W2, _AP_S2>& index_) {
     _AP_WARNING(index_ < 0, "Attempting to read bit with negative index_");
     _AP_WARNING(index_ >= _AP_W, "Attempting to read bit beyond MSB");
-    return af_bit_ref<_AP_W, _AP_I, _AP_S, _AP_Q, _AP_O, _AP_N>(this,
-                                                                index_.to_int());
+    return af_bit_ref<_AP_W, _AP_I, _AP_S, _AP_Q, _AP_O, _AP_N>(
+        this, index_.to_int());
   }
 
   INLINE bool bit(unsigned index_) const {

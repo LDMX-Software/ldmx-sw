@@ -64,7 +64,7 @@ void QualityFlagAnalyzer::analyze(const framework::Event& event) {
     int flag = chan.getQualityFlag();
 
     // check if this is messing up flag
-    for (auto hit : hits_) {         // we will be ok even if there is no match
+    for (auto hit : hits_) {        // we will be ok even if there is no match
       if (hit.getBarID() == bar) {  //
         flag = hit.getQualityFlag();
         hitPEs[bar] = hit.getPE();

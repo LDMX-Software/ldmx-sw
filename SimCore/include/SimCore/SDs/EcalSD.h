@@ -31,7 +31,8 @@ namespace simcore {
 
 /**
  * @class EcalSD
- * @brief ECal sensitive detector that uses an EcalHexReadout to create the hits_
+ * @brief ECal sensitive detector that uses an EcalHexReadout to create the
+ * hits_
  */
 class EcalSD : public SensitiveDetector {
  public:

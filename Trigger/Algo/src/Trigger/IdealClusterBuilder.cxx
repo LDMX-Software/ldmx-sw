@@ -214,8 +214,8 @@ void IdealClusterBuilder::Build2dClusters() {
   // run clustering in each layer_ and add to the list
   for (auto &pair : layer_hits) {
     if (debug) {
-      cout << "Found " << pair.second.size() << " hits_ in layer_ " << pair.first
-           << endl;
+      cout << "Found " << pair.second.size() << " hits_ in layer_ "
+           << pair.first << endl;
     }
     auto clus = Build2dClustersLayer(pair.second);
     all_clusters.insert(all_clusters.end(), clus.begin(), clus.end());

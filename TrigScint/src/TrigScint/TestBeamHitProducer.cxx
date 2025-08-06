@@ -90,8 +90,8 @@ void TestBeamHitProducer::produce(framework::Event& event) {
   float mevPerMip = 0.3;
   float pePerMip = 100;
 
-  const auto channels{
-      event.getCollection<trigscint::EventReadout>(inputCol_, input_pass_name_)};
+  const auto channels{event.getCollection<trigscint::EventReadout>(
+      inputCol_, input_pass_name_)};
 
   int evNb = event.getEventNumber();
   std::vector<trigscint::TestBeamHit> hits_;

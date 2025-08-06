@@ -395,8 +395,8 @@ ldmx::RunHeader &EventFile::getRunHeader(int run_number) {
   if (rh != nullptr) {
     return *rh;
   }
-  EXCEPTION_RAISE("RunHeader",
-                  "Unable to find header for run " + std::to_string(run_number));
+  EXCEPTION_RAISE("RunHeader", "Unable to find header for run " +
+                                   std::to_string(run_number));
 }
 
 void EventFile::importRunHeaders() {

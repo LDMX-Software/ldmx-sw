@@ -45,7 +45,7 @@ void Event::addDrop(const std::string& exp) {
  * done
  */
 static regex_t constructRegex(const std::string& pattern,
-                               bool full_string_match) {
+                              bool full_string_match) {
   std::string pattern_regex{pattern};
   if (pattern_regex.empty())
     pattern_regex = ".*";
@@ -155,7 +155,7 @@ bool Event::nextEvent() {
 
 void Event::beforeFill() {
   if (input_tree_ == 0 && branches_filled_.find(ldmx::EventHeader::BRANCH) ==
-                             branches_filled_.end()) {
+                              branches_filled_.end()) {
     // Event Header not copied from input and hasn't been added yet, need to put
     // it in
     add(ldmx::EventHeader::BRANCH, event_header_);
@@ -175,7 +175,7 @@ void Event::onEndOfFile() {
   if (input_tree_)
     input_tree_ = nullptr;  // detach old input_tree (owned by EventFile)
   known_lookups_.clear();   // reset caching of empty pass requests
-  bus_.everybodyOff();     // delete buffer objects
+  bus_.everybodyOff();      // delete buffer objects
 }
 
 bool Event::shouldDrop(const std::string& branch_name) const {

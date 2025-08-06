@@ -473,8 +473,8 @@ void EcalVetoProcessor::produce(framework::Event &event) {
       std::chrono::duration<float, std::milli>(containment_var - fill_hitmaps)
           .count();
 
-  // MIP tracking:  vector of hits_ to be used in the MIP tracking algorithm. All
-  // hits_ inside the electron ROC (or all hits_ in the ECal if the event is
+  // MIP tracking:  vector of hits_ to be used in the MIP tracking algorithm.
+  // All hits_ inside the electron ROC (or all hits_ in the ECal if the event is
   // missing an electron) will be included.
   std::vector<ldmx::HitData> tracking_hit_list;
 
@@ -580,7 +580,7 @@ void EcalVetoProcessor::produce(framework::Event &event) {
         distance_ele_trajectory == -1.0) {
       ldmx::HitData hd;
       hd.pos_ = ROOT::Math::XYZVector(xy_pair.first, xy_pair.second,
-                                     geometry_->getZPosition(id.layer()));
+                                      geometry_->getZPosition(id.layer()));
       hd.layer_ = id.layer();
       tracking_hit_list.push_back(hd);
     }
@@ -1051,7 +1051,7 @@ void EcalVetoProcessor::fillIsolatedHitMap(
     for (int k = 0; k < cell_nbr_ids.size(); k++) {
       // update neighbor ID to the current layer_
       cell_nbr_ids[k] = ldmx::EcalID(id.layer(), cell_nbr_ids[k].module(),
-                                   cell_nbr_ids[k].cell());
+                                     cell_nbr_ids[k].cell());
       // look in cell hit map to see if it is there
       if (cellMap.find(cell_nbr_ids[k]) != cellMap.end()) {
         isolated_hit = std::make_pair(false, cell_nbr_ids[k]);

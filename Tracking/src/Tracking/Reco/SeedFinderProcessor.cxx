@@ -204,8 +204,9 @@ void SeedFinderProcessor::produce(framework::Event& event) {
   // measurements from:
   //  - raw hits_ in data
   //  - sim hits_ in MC
-  // Step 0: Get the sim hits_ and project them on the surfaces to mimic 2d hits_
-  // Step 1: Smear the hits_ and associate an uncertainty to those measurements.
+  // Step 0: Get the sim hits_ and project them on the surfaces to mimic 2d
+  // hits_ Step 1: Smear the hits_ and associate an uncertainty to those
+  // measurements.
 
   xhit_.clear();
   yhit_.clear();

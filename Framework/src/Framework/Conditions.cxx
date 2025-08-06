@@ -45,8 +45,7 @@ ConditionsIOV Conditions::getConditionIOV(
   auto cacheptr = cache_.find(condition_name);
   if (cacheptr == cache_.end()) {
     return ConditionsIOV();
-  }
-  else {
+  } else {
     return cacheptr->second.iov_;
   }
 }
@@ -84,10 +83,10 @@ const ConditionsObject* Conditions::getConditionPtr(
     /// if still valid, we return what we have
     if (cacheptr->second.iov_.validForEvent(context)) {
       return cacheptr->second.obj_;
-    }
-    else {
+    } else {
       // if not, we release the old object
-      cacheptr->second.provider_->releaseConditionsObject(cacheptr->second.obj_);
+      cacheptr->second.provider_->releaseConditionsObject(
+          cacheptr->second.obj_);
       // now ask for a new one
       std::pair<const ConditionsObject*, ConditionsIOV> cond =
           cacheptr->second.provider_->getCondition(context);
@@ -96,12 +95,11 @@ const ConditionsObject* Conditions::getConditionPtr(
         std::stringstream s;
         s << "Unable to update condition '" << condition_name << "' for event "
           << context.getEventNumber() << " run " << context.getRun();
-        if (context.isRealData()){
+        if (context.isRealData()) {
           s << " DATA";
-	}
-        else {
+        } else {
           s << " MC";
-	}
+        }
         EXCEPTION_RAISE("ConditionUnavailable", s.str());
       }
       cacheptr->second.iov_ = cond.second;

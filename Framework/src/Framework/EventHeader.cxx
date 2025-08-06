@@ -25,8 +25,7 @@ void EventHeader::print(Option_t*) const {
             << ", weight: " << weight_;
   if (is_real_data_) {
     std::cout << ", DATA";
-  }
-  else {
+  } else {
     std::cout << ", MC";
   }
   std::cout << " }" << std::endl;
