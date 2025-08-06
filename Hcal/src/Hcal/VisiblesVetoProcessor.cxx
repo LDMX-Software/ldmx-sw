@@ -83,7 +83,7 @@ void VisiblesVetoProcessor::produce(framework::Event &event) {
 
   clearProcessor();
 
-  auto particle_map{event.getMap<int, ldmx::SimParticle>(
+  const auto &particle_map{event.getMap<int, ldmx::SimParticle>(
       "SimParticles", sim_particles_pass_name_)};
 
   // Get target scoring plane hits for recoil electron
@@ -93,7 +93,7 @@ void VisiblesVetoProcessor::produce(framework::Event &event) {
   std::vector<double> gamma_p(3);
   std::vector<double> gamma_x0(3);
   if (recoil_from_tracking_) {
-    auto recoil_tracks{
+    const auto &recoil_tracks{
         event.getCollection<ldmx::Track>(track_collection_, track_pass_name_)};
     // Fill this in later when you know how to use it
     for (auto &track : recoil_tracks) {
@@ -107,7 +107,7 @@ void VisiblesVetoProcessor::produce(framework::Event &event) {
     }
   } else {
     if (event.exists(sp_collection_, sp_pass_name_)) {
-      std::vector<ldmx::SimTrackerHit> target_sp_hits =
+      const auto &target_sp_hits =
           event.getCollection<ldmx::SimTrackerHit>(sp_collection_,
                                                    sp_pass_name_);
       for (auto const &it : particle_map) {
@@ -134,7 +134,7 @@ void VisiblesVetoProcessor::produce(framework::Event &event) {
   }
 
   // Get Hcal reconstructed hits and loop through them to build features
-  const std::vector<ldmx::HcalHit> hcal_rec_hits =
+  const auto &hcal_rec_hits =
       event.getCollection<ldmx::HcalHit>(rec_coll_name_, rec_pass_name_);
 
   double z_mean = 0.;  // need this when calculating z_std_
