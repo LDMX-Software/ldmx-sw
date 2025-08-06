@@ -85,7 +85,7 @@ class BufferReader {
   static const std::size_t n_bytes_{sizeof(WordType)};
   // current buffer we are reading
   const std::vector<uint8_t>& buffer_;
-  // current index_ in buffer we are reading
+  // current index in buffer we are reading
   std::size_t i_word_;
 };  // BufferReader
 

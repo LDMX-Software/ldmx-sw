@@ -23,7 +23,7 @@ namespace ActsExamples {
 /// is just a reference and will be copied, moved around, etc. often.
 /// Keeping it small and separate from the actual, potentially large,
 /// measurement data should result in better overall performance.
-/// Using an index_ instead of e.g. a pointer, means source link and
+/// Using an index instead of e.g. a pointer, means source link and
 /// measurement are decoupled and the measurement represenation can be
 /// easily changed without having to also change the source link.
 class IndexSourceLink final {
@@ -60,7 +60,7 @@ class IndexSourceLink final {
   }
 };
 
-/// Container of index_ source links.
+/// Container of index source links.
 ///
 /// Since the source links provide a `.geometryId()` accessor, they can be
 /// stored in an ordered geometry container.

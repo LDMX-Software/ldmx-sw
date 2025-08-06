@@ -21,9 +21,9 @@ using Index = uint32_t;
 
 /// Store elements that are identified by an index_, e.g. in another container.
 ///
-/// Each index_ can have zero or more associated elements. A typical case could
+/// Each index can have zero or more associated elements. A typical case could
 /// be to store all generating particles for a hit where the hit is identified
-/// by its index_ in the hit container.
+/// by its index in the hit container.
 template <typename value_t>
 using IndexMultimap = boost::container::flat_multimap<Index, value_t>;
 
@@ -41,7 +41,7 @@ inline boost::container::flat_multimap<value_t, Index> invertIndexMultimap(
   typename InverseMultimap::sequence_type unordered;
   unordered.reserve(multimap.size());
   for (auto&& [index_, value] : multimap) {
-    // value is now the key and the index_ is now the value
+    // value is now the key and the index is now the value
     unordered.emplace_back(value, index_);
   }
 

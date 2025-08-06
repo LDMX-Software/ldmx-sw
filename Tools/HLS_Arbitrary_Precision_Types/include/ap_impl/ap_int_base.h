@@ -193,11 +193,11 @@ struct ap_int_base : public _AP_ROOT_TYPE<_AP_W, _AP_S> {
 // XXX C++11 feature.
 // The explicit specifier specifies that a constructor or conversion function
 // (since C++11) doesn't allow implicit conversions or copy-initialization.
-//   ap_int_base<W,S> x_ = 1;
+//   ap_int_base<W,S> x = 1;
 //   ap_int_base<W,S> foo() { return 1; }
 // but allows
-//   ap_int_base<W,S> x_(1);
-//   ap_int_base<W,S> y_ {1};
+//   ap_int_base<W,S> x(1);
+//   ap_int_base<W,S> y {1};
 
 /// from all c types.
 #define CTOR_FROM_INT(Type, Size, Signed) \
@@ -560,7 +560,7 @@ struct ap_int_base : public _AP_ROOT_TYPE<_AP_W, _AP_S> {
   /*Return true if the value of ap_int_base instance is zero*/
   INLINE bool is_zero() const { return Base::V == 0; }
 
-  /* x_ < 0 */
+  /* x < 0 */
   INLINE bool sign() const {
     if (_AP_S && _AP_ROOT_op_get_bit(Base::V, _AP_W - 1))
       return true;
@@ -568,13 +568,13 @@ struct ap_int_base : public _AP_ROOT_TYPE<_AP_W, _AP_S> {
       return false;
   }
 
-  /* x_[i] = 0 */
+  /* x[i] = 0 */
   INLINE void clear(int i) {
     AP_ASSERT(i >= 0 && i < _AP_W, "position out of range");
     Base::V = _AP_ROOT_op_set_bit(Base::V, i, 0);
   }
 
-  /* x_[i] = !x_[i]*/
+  /* x[i] = !x[i]*/
   INLINE void invert(int i) {
     AP_ASSERT(i >= 0 && i < _AP_W, "position out of range");
     bool val = _AP_ROOT_op_get_bit(Base::V, i);
@@ -955,67 +955,67 @@ struct ap_int_base : public _AP_ROOT_TYPE<_AP_W, _AP_S> {
   }
 #endif
 
-  INLINE ap_bit_ref<_AP_W, _AP_S> operator[](int index_) {
-    AP_ASSERT(index_ >= 0, "Attempting to read bit with negative index_");
-    AP_ASSERT(index_ < _AP_W, "Attempting to read bit beyond MSB");
-    ap_bit_ref<_AP_W, _AP_S> bvh(this, index_);
+  INLINE ap_bit_ref<_AP_W, _AP_S> operator[](int index) {
+    AP_ASSERT(index >= 0, "Attempting to read bit with negative index");
+    AP_ASSERT(index < _AP_W, "Attempting to read bit beyond MSB");
+    ap_bit_ref<_AP_W, _AP_S> bvh(this, index);
     return bvh;
   }
 
   template <int _AP_W2, bool _AP_S2>
   INLINE ap_bit_ref<_AP_W, _AP_S> operator[](
-      const ap_int_base<_AP_W2, _AP_S2>& index_) {
-    AP_ASSERT(index_ >= 0, "Attempting to read bit with negative index_");
-    AP_ASSERT(index_ < _AP_W, "Attempting to read bit beyond MSB");
-    ap_bit_ref<_AP_W, _AP_S> bvh(this, index_.to_int());
+      const ap_int_base<_AP_W2, _AP_S2>& index) {
+    AP_ASSERT(index >= 0, "Attempting to read bit with negative index");
+    AP_ASSERT(index < _AP_W, "Attempting to read bit beyond MSB");
+    ap_bit_ref<_AP_W, _AP_S> bvh(this, index.to_int());
     return bvh;
   }
 
-  INLINE bool operator[](int index_) const {
-    AP_ASSERT(index_ >= 0, "Attempting to read bit with negative index_");
-    AP_ASSERT(index_ < _AP_W, "Attempting to read bit beyond MSB");
-    ap_bit_ref<_AP_W, _AP_S> br(this, index_);
+  INLINE bool operator[](int index) const {
+    AP_ASSERT(index >= 0, "Attempting to read bit with negative index");
+    AP_ASSERT(index < _AP_W, "Attempting to read bit beyond MSB");
+    ap_bit_ref<_AP_W, _AP_S> br(this, index);
     return br.to_bool();
   }
   template <int _AP_W2, bool _AP_S2>
-  INLINE bool operator[](const ap_int_base<_AP_W2, _AP_S2>& index_) const {
-    AP_ASSERT(index_ < _AP_W, "Attempting to read bit beyond MSB");
-    ap_bit_ref<_AP_W, _AP_S> br(this, index_.to_int());
+  INLINE bool operator[](const ap_int_base<_AP_W2, _AP_S2>& index) const {
+    AP_ASSERT(index < _AP_W, "Attempting to read bit beyond MSB");
+    ap_bit_ref<_AP_W, _AP_S> br(this, index.to_int());
     return br.to_bool();
   }
 
-  INLINE ap_bit_ref<_AP_W, _AP_S> bit(int index_) {
-    AP_ASSERT(index_ >= 0, "Attempting to read bit with negative index_");
-    AP_ASSERT(index_ < _AP_W, "Attempting to read bit beyond MSB");
-    ap_bit_ref<_AP_W, _AP_S> bvh(this, index_);
+  INLINE ap_bit_ref<_AP_W, _AP_S> bit(int index) {
+    AP_ASSERT(index >= 0, "Attempting to read bit with negative index");
+    AP_ASSERT(index < _AP_W, "Attempting to read bit beyond MSB");
+    ap_bit_ref<_AP_W, _AP_S> bvh(this, index);
     return bvh;
   }
   template <int _AP_W2, bool _AP_S2>
   INLINE ap_bit_ref<_AP_W, _AP_S> bit(
-      const ap_int_base<_AP_W2, _AP_S2>& index_) {
-    AP_ASSERT(index_ >= 0, "Attempting to read bit with negative index_");
-    AP_ASSERT(index_ < _AP_W, "Attempting to read bit beyond MSB");
-    ap_bit_ref<_AP_W, _AP_S> bvh(this, index_.to_int());
+      const ap_int_base<_AP_W2, _AP_S2>& index) {
+    AP_ASSERT(index >= 0, "Attempting to read bit with negative index");
+    AP_ASSERT(index < _AP_W, "Attempting to read bit beyond MSB");
+    ap_bit_ref<_AP_W, _AP_S> bvh(this, index.to_int());
     return bvh;
   }
 
-  INLINE bool bit(int index_) const {
-    AP_ASSERT(index_ >= 0, "Attempting to read bit with negative index_");
-    AP_ASSERT(index_ < _AP_W, "Attempting to read bit beyond MSB");
-    ap_bit_ref<_AP_W, _AP_S> br(this, index_);
+  INLINE bool bit(int index) const {
+    AP_ASSERT(index >= 0, "Attempting to read bit with negative index");
+    AP_ASSERT(index < _AP_W, "Attempting to read bit beyond MSB");
+    ap_bit_ref<_AP_W, _AP_S> br(this, index);
     return br.to_bool();
   }
 
   template <int _AP_W2, bool _AP_S2>
-  INLINE bool bit(const ap_int_base<_AP_W2, _AP_S2>& index_) const {
-    return bit(index_.to_int());
+  INLINE bool bit(const ap_int_base<_AP_W2, _AP_S2>& index) const {
+    return bit(index.to_int());
   }
 
 #if 0
   template<typename _AP_T>
-  INLINE bool operator[](_AP_T index_) const {
-    AP_ASSERT(index_ < _AP_W, "Attempting to read bit beyond MSB");
-    ap_bit_ref<_AP_W,_AP_S> br = operator[](index_);
+  INLINE bool operator[](_AP_T index) const {
+    AP_ASSERT(index < _AP_W, "Attempting to read bit beyond MSB");
+    ap_bit_ref<_AP_W,_AP_S> br = operator[](index);
     return br.to_bool();
   }
 #endif
@@ -1025,15 +1025,15 @@ struct ap_int_base : public _AP_ROOT_TYPE<_AP_W, _AP_S> {
   INLINE int countLeadingZeros() {
 #ifdef __SYNTHESIS__
     if (_AP_W <= 32) {
-      ap_int_base<32, false> t(-1UL), x_;
-      x_.V = _AP_ROOT_op_get_range(this->V, _AP_W - 1, 0);  // reverse
-      t.V = _AP_ROOT_op_set_range(t.V, 0, _AP_W - 1, x_.V);
+      ap_int_base<32, false> t(-1UL), x;
+      x.V = _AP_ROOT_op_get_range(this->V, _AP_W - 1, 0);  // reverse
+      t.V = _AP_ROOT_op_set_range(t.V, 0, _AP_W - 1, x.V);
       return __builtin_ctz(t.V);  // count trailing zeros.
     } else if (_AP_W <= 64) {
       ap_int_base<64, false> t(-1ULL);
-      ap_int_base<64, false> x_;
-      x_.V = _AP_ROOT_op_get_range(this->V, _AP_W - 1, 0);  // reverse
-      t.V = _AP_ROOT_op_set_range(t.V, 0, _AP_W - 1, x_.V);
+      ap_int_base<64, false> x;
+      x.V = _AP_ROOT_op_get_range(this->V, _AP_W - 1, 0);  // reverse
+      t.V = _AP_ROOT_op_set_range(t.V, 0, _AP_W - 1, x.V);
       return __builtin_ctzll(t.V);  // count trailing zeros.
     } else {
       enum {__N = (_AP_W + 63) / 64};
@@ -1051,9 +1051,9 @@ struct ap_int_base : public _AP_ROOT_TYPE<_AP_W, _AP_S> {
       if (!hitNonZero) {
         ap_int_base<64, false> t(-1ULL);
         enum {REST = (_AP_W - 1) % 64};
-        ap_int_base<64, false> x_;
-        x_.V = _AP_ROOT_op_get_range(this->V, 0, REST);
-        t.V = _AP_ROOT_op_set_range(t.V, 63 - REST, 63, x_.V);
+        ap_int_base<64, false> x;
+        x.V = _AP_ROOT_op_get_range(this->V, 0, REST);
+        t.V = _AP_ROOT_op_set_range(t.V, 63 - REST, 63, x.V);
         NZeros += __builtin_clzll(t.V);
       }
       return NZeros;
@@ -1275,14 +1275,14 @@ struct ap_int_base : public _AP_ROOT_TYPE<_AP_W, _AP_S> {
 #ifndef __SYNTHESIS__
 template <int _AP_W, bool _AP_S>
 INLINE std::ostream& operator<<(std::ostream& os,
-                                const ap_int_base<_AP_W, _AP_S>& x_) {
+                                const ap_int_base<_AP_W, _AP_S>& x) {
   std::ios_base::fmtflags ff = std::cout.flags();
   if (ff & std::cout.hex) {
-    os << x_.to_string(16);  // don't print sign
+    os << x.to_string(16);  // don't print sign
   } else if (ff & std::cout.oct) {
-    os << x_.to_string(8);  // don't print sign
+    os << x.to_string(8);  // don't print sign
   } else {
-    os << x_.to_string(10);
+    os << x.to_string(10);
   }
   return os;
 }

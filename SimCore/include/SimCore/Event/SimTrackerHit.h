@@ -50,15 +50,15 @@ class SimTrackerHit {
   int getID() const { return id_; };
 
   /**
-   * Get the geometric layer_ ID of the hit.
-   * @return The layer_ ID of the hit.
+   * Get the geometric layer ID of the hit.
+   * @return The layer ID of the hit.
    */
   int getLayerID() const { return layerID_; };
 
   /**
-   * Get the module_ ID associated with a hit.  This is used to
+   * Get the module ID associated with a hit.  This is used to
    * uniquely identify a sensor within a layer_.
-   * @return The module_ ID associated with a hit.
+   * @return The module ID associated with a hit.
    */
   int getModuleID() const { return moduleID_; };
 
@@ -119,15 +119,15 @@ class SimTrackerHit {
   void setID(const long id) { this->id_ = id; };
 
   /**
-   * Set the geometric layer_ ID of the hit.
-   * @param layerID The layer_ ID of the hit.
+   * Set the geometric layer ID of the hit.
+   * @param layerID The layer ID of the hit.
    */
   void setLayerID(const int layerID) { this->layerID_ = layerID; };
 
   /**
-   * Set the module_ ID associated with a hit.  This is used to
+   * Set the module ID associated with a hit.  This is used to
    * uniquely identify a sensor within a layer_.
-   * @return moduleID The module_ ID associated with a hit.
+   * @return moduleID The module ID associated with a hit.
    */
   void setModuleID(const int moduleID) { this->moduleID_ = moduleID; };
 
@@ -200,11 +200,11 @@ class SimTrackerHit {
   int id_{0};
 
   /**
-   * The layer_ ID.
+   * The layer ID.
    */
   int layerID_{0};
 
-  /** The module_ ID. */
+  /** The module ID. */
   int moduleID_{0};
 
   /**

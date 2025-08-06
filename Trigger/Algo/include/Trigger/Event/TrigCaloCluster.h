@@ -42,7 +42,7 @@ class TrigCaloCluster {
   void setdxdze(float dxdze) { dxdze_ = dxdze; }
   void setdydze(float dydze) { dydze_ = dydze; }
   void set3D(bool x) { is3D_ = x; }
-  void setLayer(int l) { layer_ = l; }
+  void setLayer(int layer) { layer_ = layer; }
   void setFirstLayer(int l) { firstLayer_ = l; }
   void setLastLayer(int l) { lastLayer_ = l; }
   void setDepth(int d) { depth_ = d; }

@@ -60,7 +60,7 @@ class PropagatorStepWriter {
 
   //  std::vector<int> m_volumeID;     ///< volume identifier
   std::vector<int> m_boundaryID;   ///< boundary identifier
-  std::vector<int> m_layerID;      ///< layer_ identifier if
+  std::vector<int> m_layerID;      ///< layer identifier if
   std::vector<int> m_approachID;   ///< surface identifier
   std::vector<int> m_sensitiveID;  ///< surface identifier
   std::vector<float> m_x;          ///< global x_

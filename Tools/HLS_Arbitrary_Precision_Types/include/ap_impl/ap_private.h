@@ -494,50 +494,49 @@ static INLINE std::string parseString(const std::string& input,
   return ans;
 }
 
-/// sub_1 - This function subtracts a single "digit" (64-bit word), y_, from
-/// the multi-digit integer array, x_[], propagating the borrowed 1 value until
-/// no further borrowing is neeeded or it runs out of "digits" in x_.  The
-/// result is 1 if "borrowing" exhausted the digits in x_, or 0 if x_ was not
-/// exhausted. In other words, if y_ > x_ then this function returns 1,
-/// otherwise 0.
+/// sub_1 - This function subtracts a single "digit" (64-bit word), y, from
+/// the multi-digit integer array, x[], propagating the borrowed 1 value until
+/// no further borrowing is neeeded or it runs out of "digits" in x.  The result
+/// is 1 if "borrowing" exhausted the digits in x, or 0 if x was not exhausted.
+/// In other words, if y > x then this function returns 1, otherwise 0.
 /// @returns the borrow out of the subtraction
-static INLINE bool sub_1(uint64_t x_[], uint32_t len, uint64_t y_) {
+static INLINE bool sub_1(uint64_t x[], uint32_t len, uint64_t y) {
   for (uint32_t i = 0; i < len; ++i) {
-    uint64_t __X = x_[i];
-    x_[i] -= y_;
-    if (y_ > __X)
-      y_ = 1;  // We have to "borrow 1" from next "digit"
+    uint64_t __X = x[i];
+    x[i] -= y;
+    if (y > __X)
+      y = 1;  // We have to "borrow 1" from next "digit"
     else {
-      y_ = 0;  // No need to borrow
-      break;   // Remaining digits are unchanged so exit early
+      y = 0;  // No need to borrow
+      break;  // Remaining digits are unchanged so exit early
     }
   }
-  return (y_ != 0);
+  return (y != 0);
 }
 
-/// add_1 - This function adds a single "digit" integer, y_, to the multiple
-/// "digit" integer array,  x_[]. x_[] is modified to reflect the addition and
+/// add_1 - This function adds a single "digit" integer, y, to the multiple
+/// "digit" integer array,  x[]. x[] is modified to reflect the addition and
 /// 1 is returned if there is a carry out, otherwise 0 is returned.
 /// @returns the carry of the addition.
-static INLINE bool add_1(uint64_t dest[], uint64_t x_[], uint32_t len,
-                         uint64_t y_) {
+static INLINE bool add_1(uint64_t dest[], uint64_t x[], uint32_t len,
+                         uint64_t y) {
   for (uint32_t i = 0; i < len; ++i) {
-    dest[i] = y_ + x_[i];
-    if (dest[i] < y_)
-      y_ = 1;  // Carry one to next digit.
+    dest[i] = y + x[i];
+    if (dest[i] < y)
+      y = 1;  // Carry one to next digit.
     else {
-      y_ = 0;  // No need to carry so exit early
+      y = 0;  // No need to carry so exit early
       break;
     }
   }
-  return (y_ != 0);
+  return (y != 0);
 }
 
-/// add - This function adds the integer array x_ to the integer array Y and
+/// add - This function adds the integer array x to the integer array Y and
 /// places the result in dest.
 /// @returns the carry out from the addition
 /// @brief General addition of 64-bit integer arrays
-static INLINE bool add(uint64_t* dest, const uint64_t* x_, const uint64_t* y_,
+static INLINE bool add(uint64_t* dest, const uint64_t* x, const uint64_t* y,
                        uint32_t destlen, uint32_t xlen, uint32_t ylen,
                        bool xsigned, bool ysigned) {
   bool carry = false;
@@ -545,22 +544,22 @@ static INLINE bool add(uint64_t* dest, const uint64_t* x_, const uint64_t* y_,
   uint32_t i;
   for (i = 0; i < len && i < destlen; ++i) {
     uint64_t limit =
-        AESL_std::min(x_[i], y_[i]);  // must come first in case dest == x_
-    dest[i] = x_[i] + y_[i] + carry;
+        AESL_std::min(x[i], y[i]);  // must come first in case dest == x
+    dest[i] = x[i] + y[i] + carry;
     carry = dest[i] < limit || (carry && dest[i] == limit);
   }
   if (xlen > ylen) {
-    const uint64_t yext = ysigned && int64_t(y_[ylen - 1]) < 0 ? -1 : 0;
+    const uint64_t yext = ysigned && int64_t(y[ylen - 1]) < 0 ? -1 : 0;
     for (i = ylen; i < xlen && i < destlen; i++) {
-      uint64_t limit = AESL_std::min(x_[i], yext);
-      dest[i] = x_[i] + yext + carry;
+      uint64_t limit = AESL_std::min(x[i], yext);
+      dest[i] = x[i] + yext + carry;
       carry = (dest[i] < limit) || (carry && dest[i] == limit);
     }
   } else if (ylen > xlen) {
-    const uint64_t xext = xsigned && int64_t(x_[xlen - 1]) < 0 ? -1 : 0;
+    const uint64_t xext = xsigned && int64_t(x[xlen - 1]) < 0 ? -1 : 0;
     for (i = xlen; i < ylen && i < destlen; i++) {
-      uint64_t limit = AESL_std::min(xext, y_[i]);
-      dest[i] = xext + y_[i] + carry;
+      uint64_t limit = AESL_std::min(xext, y[i]);
+      dest[i] = xext + y[i] + carry;
       carry = (dest[i] < limit) || (carry && dest[i] == limit);
     }
   }
@@ -569,30 +568,30 @@ static INLINE bool add(uint64_t* dest, const uint64_t* x_, const uint64_t* y_,
 
 /// @returns returns the borrow out.
 /// @brief Generalized subtraction of 64-bit integer arrays.
-static INLINE bool sub(uint64_t* dest, const uint64_t* x_, const uint64_t* y_,
+static INLINE bool sub(uint64_t* dest, const uint64_t* x, const uint64_t* y,
                        uint32_t destlen, uint32_t xlen, uint32_t ylen,
                        bool xsigned, bool ysigned) {
   bool borrow = false;
   uint32_t i;
   uint32_t len = AESL_std::min(xlen, ylen);
   for (i = 0; i < len && i < destlen; ++i) {
-    uint64_t x_tmp = borrow ? x_[i] - 1 : x_[i];
-    borrow = y_[i] > x_tmp || (borrow && x_[i] == 0);
-    dest[i] = x_tmp - y_[i];
+    uint64_t x_tmp = borrow ? x[i] - 1 : x[i];
+    borrow = y[i] > x_tmp || (borrow && x[i] == 0);
+    dest[i] = x_tmp - y[i];
   }
   if (xlen > ylen) {
-    const uint64_t yext = ysigned && int64_t(y_[ylen - 1]) < 0 ? -1 : 0;
+    const uint64_t yext = ysigned && int64_t(y[ylen - 1]) < 0 ? -1 : 0;
     for (i = ylen; i < xlen && i < destlen; i++) {
-      uint64_t x_tmp = borrow ? x_[i] - 1 : x_[i];
-      borrow = yext > x_tmp || (borrow && x_[i] == 0);
+      uint64_t x_tmp = borrow ? x[i] - 1 : x[i];
+      borrow = yext > x_tmp || (borrow && x[i] == 0);
       dest[i] = x_tmp - yext;
     }
   } else if (ylen > xlen) {
-    const uint64_t xext = xsigned && int64_t(x_[xlen - 1]) < 0 ? -1 : 0;
+    const uint64_t xext = xsigned && int64_t(x[xlen - 1]) < 0 ? -1 : 0;
     for (i = xlen; i < ylen && i < destlen; i++) {
       uint64_t x_tmp = borrow ? xext - 1 : xext;
-      borrow = y_[i] > x_tmp || (borrow && xext == 0);
-      dest[i] = x_tmp - y_[i];
+      borrow = y[i] > x_tmp || (borrow && xext == 0);
+      dest[i] = x_tmp - y[i];
     }
   }
   return borrow;
@@ -602,21 +601,21 @@ static INLINE bool sub(uint64_t* dest, const uint64_t* x_, const uint64_t* y_,
 /// @returns this, after subtraction
 /// @brief Subtraction assignment operator.
 
-/// Multiplies an integer array, x_ by a a uint64_t integer and places the
-/// result into dest.
+/// Multiplies an integer array, x by a a uint64_t integer and places the result
+/// into dest.
 /// @returns the carry out of the multiplication.
 /// @brief Multiply a multi-digit ap_private by a single digit (64-bit) integer.
-static INLINE uint64_t mul_1(uint64_t dest[], const uint64_t x_[], uint32_t len,
-                             uint64_t y_) {
-  // Split y_ into high 32-bit part (hy)  and low 32-bit part (ly)
-  uint64_t ly = y_ & 0xffffffffULL, hy = (y_) >> 32;
+static INLINE uint64_t mul_1(uint64_t dest[], const uint64_t x[], uint32_t len,
+                             uint64_t y) {
+  // Split y into high 32-bit part (hy)  and low 32-bit part (ly)
+  uint64_t ly = y & 0xffffffffULL, hy = (y) >> 32;
   uint64_t carry = 0;
   static const uint64_t two_power_32 = 1ULL << 32;
-  // For each digit of x_.
+  // For each digit of x.
   for (uint32_t i = 0; i < len; ++i) {
-    // Split x_ into high and low words
-    uint64_t lx = x_[i] & 0xffffffffULL;
-    uint64_t hx = (x_[i]) >> 32;
+    // Split x into high and low words
+    uint64_t lx = x[i] & 0xffffffffULL;
+    uint64_t hx = (x[i]) >> 32;
     // hasCarry - A flag to indicate if there is a carry to the next digit.
     // hasCarry == 0, no carry
     // hasCarry == 1, has carry
@@ -638,24 +637,24 @@ static INLINE uint64_t mul_1(uint64_t dest[], const uint64_t x_[], uint32_t len,
   return carry;
 }
 
-/// Multiplies integer array x_ by integer array y_ and stores the result into
+/// Multiplies integer array x by integer array y and stores the result into
 /// the integer array dest. Note that dest's size must be >= xlen + ylen in
 /// order to
 /// do a full precision computation. If it is not, then only the low-order words
 /// are returned.
 /// @brief Generalized multiplicate of integer arrays.
-static INLINE void mul(uint64_t dest[], const uint64_t x_[], uint32_t xlen,
-                       const uint64_t y_[], uint32_t ylen, uint32_t destlen) {
+static INLINE void mul(uint64_t dest[], const uint64_t x[], uint32_t xlen,
+                       const uint64_t y[], uint32_t ylen, uint32_t destlen) {
   assert(xlen > 0);
   assert(ylen > 0);
   assert(destlen >= xlen + ylen);
-  if (xlen < destlen) dest[xlen] = mul_1(dest, x_, xlen, y_[0]);
+  if (xlen < destlen) dest[xlen] = mul_1(dest, x, xlen, y[0]);
   for (uint32_t i = 1; i < ylen; ++i) {
-    uint64_t ly = y_[i] & 0xffffffffULL, hy = (y_[i]) >> 32;
+    uint64_t ly = y[i] & 0xffffffffULL, hy = (y[i]) >> 32;
     uint64_t carry = 0, lx = 0, hx = 0;
     for (uint32_t j = 0; j < xlen; ++j) {
-      lx = x_[j] & 0xffffffffULL;
-      hx = (x_[j]) >> 32;
+      lx = x[j] & 0xffffffffULL;
+      hx = (x[j]) >> 32;
       // hasCarry - A flag to indicate if has carry.
       // hasCarry == 0, no carry
       // hasCarry == 1, has carry
@@ -1504,7 +1503,7 @@ ASSIGN_OP_FROM_INT(double)
       strStart += 2;
       slen -= 2;
     } else if (strStart[0] == '0' &&
-               (strStart[1] == 'x_' || strStart[1] == 'X')) {
+               (strStart[1] == 'x' || strStart[1] == 'X')) {
       // if (radix == 0) radix = 16;
       _AP_WARNING(radix != 16, "%s seems to have base %d, but %d given.",
                   strStart, 16, radix);
@@ -1657,9 +1656,9 @@ ASSIGN_OP_FROM_INT(double)
     unsigned char radix = 10;
     std::string str =
         ap_private_ops::parseString(val, radix);  // will set radix.
-    std::string::size_type pos_ = str.find('.');
+    std::string::size_type pos = str.find('.');
     // trunc all fraction part
-    if (pos_ != std::string::npos) str = str.substr(pos_);
+    if (pos != std::string::npos) str = str.substr(pos);
 
     ap_private<_AP_W, _AP_S> ap_private_val(str, radix);
     operator=(ap_private_val);
@@ -1671,9 +1670,9 @@ ASSIGN_OP_FROM_INT(double)
     unsigned char radix = rd;
     std::string str =
         ap_private_ops::parseString(val, radix);  // will set radix.
-    std::string::size_type pos_ = str.find('.');
+    std::string::size_type pos = str.find('.');
     // trunc all fraction part
-    if (pos_ != std::string::npos) str = str.substr(pos_);
+    if (pos != std::string::npos) str = str.substr(pos);
 
     ap_private<_AP_W, _AP_S> ap_private_val(str, radix);
     operator=(ap_private_val);
@@ -2323,22 +2322,22 @@ ASSIGN_OP_FROM_INT(double)
 
   INLINE bool to_bool() const { return !iszero(); }
 
-  /* x_ < 0 */
+  /* x < 0 */
   INLINE bool sign() const {
     if (isNegative()) return true;
     return false;
   }
 
-  /* x_[i] = !x_[i] */
+  /* x[i] = !x[i] */
   INLINE void invert(int i) {
-    assert(i >= 0 && "Attempting to read bit with negative index_");
+    assert(i >= 0 && "Attempting to read bit with negative index");
     assert(i < _AP_W && "Attempting to read bit beyond MSB");
     flip(i);
   }
 
-  /* x_[i] */
+  /* x[i] */
   INLINE bool test(int i) const {
-    assert(i >= 0 && "Attempting to read bit with negative index_");
+    assert(i >= 0 && "Attempting to read bit with negative index");
     assert(i < _AP_W && "Attempting to read bit beyond MSB");
     return operator[](i);
   }
@@ -2346,7 +2345,7 @@ ASSIGN_OP_FROM_INT(double)
   // This is used for sc_lv and sc_bv, which is implemented by sc_uint
   // Rotate an ap_private object n places to the left
   INLINE void lrotate(int n) {
-    assert(n >= 0 && "Attempting to shift negative index_");
+    assert(n >= 0 && "Attempting to shift negative index");
     assert(n < _AP_W && "Shift value larger than bit width");
     operator=(shl(n) | lshr(_AP_W - n));
   }
@@ -2354,28 +2353,28 @@ ASSIGN_OP_FROM_INT(double)
   // This is used for sc_lv and sc_bv, which is implemented by sc_uint
   // Rotate an ap_private object n places to the right
   INLINE void rrotate(int n) {
-    assert(n >= 0 && "Attempting to shift negative index_");
+    assert(n >= 0 && "Attempting to shift negative index");
     assert(n < _AP_W && "Shift value larger than bit width");
     operator=(lshr(n) | shl(_AP_W - n));
   }
 
   // Set the ith bit into v
   INLINE void set(int i, bool v) {
-    assert(i >= 0 && "Attempting to write bit with negative index_");
+    assert(i >= 0 && "Attempting to write bit with negative index");
     assert(i < _AP_W && "Attempting to write bit beyond MSB");
     v ? set(i) : clear(i);
   }
 
   // Set the ith bit into v
   INLINE void set_bit(int i, bool v) {
-    assert(i >= 0 && "Attempting to write bit with negative index_");
+    assert(i >= 0 && "Attempting to write bit with negative index");
     assert(i < _AP_W && "Attempting to write bit beyond MSB");
     v ? set(i) : clear(i);
   }
 
   // Get the value of ith bit
   INLINE bool get_bit(int i) const {
-    assert(i >= 0 && "Attempting to read bit with negative index_");
+    assert(i >= 0 && "Attempting to read bit with negative index");
     assert(i < _AP_W && "Attempting to read bit beyond MSB");
     return (((1ULL << i) & VAL) != 0);
   }
@@ -2679,48 +2678,48 @@ ASSIGN_OP_FROM_INT(double)
     return _private_range_ref<_AP_W, _AP_S>(this, Hi, Lo);
   }
 
-  INLINE _private_bit_ref<_AP_W, _AP_S> operator[](int index_) {
-    return _private_bit_ref<_AP_W, _AP_S>(*this, index_);
+  INLINE _private_bit_ref<_AP_W, _AP_S> operator[](int index) {
+    return _private_bit_ref<_AP_W, _AP_S>(*this, index);
   }
 
   template <int _AP_W2, bool _AP_S2>
   INLINE _private_bit_ref<_AP_W, _AP_S> operator[](
-      const ap_private<_AP_W2, _AP_S2>& index_) {
-    return _private_bit_ref<_AP_W, _AP_S>(*this, index_.to_int());
+      const ap_private<_AP_W2, _AP_S2>& index) {
+    return _private_bit_ref<_AP_W, _AP_S>(*this, index.to_int());
   }
 
-  INLINE const _private_bit_ref<_AP_W, _AP_S> operator[](int index_) const {
+  INLINE const _private_bit_ref<_AP_W, _AP_S> operator[](int index) const {
     return _private_bit_ref<_AP_W, _AP_S>(
-        const_cast<ap_private<_AP_W, _AP_S>&>(*this), index_);
+        const_cast<ap_private<_AP_W, _AP_S>&>(*this), index);
   }
 
   template <int _AP_W2, bool _AP_S2>
   INLINE const _private_bit_ref<_AP_W, _AP_S> operator[](
-      const ap_private<_AP_W2, _AP_S2>& index_) const {
+      const ap_private<_AP_W2, _AP_S2>& index) const {
     return _private_bit_ref<_AP_W, _AP_S>(
-        const_cast<ap_private<_AP_W, _AP_S>&>(*this), index_.to_int());
+        const_cast<ap_private<_AP_W, _AP_S>&>(*this), index.to_int());
   }
 
-  INLINE _private_bit_ref<_AP_W, _AP_S> bit(int index_) {
-    return _private_bit_ref<_AP_W, _AP_S>(*this, index_);
+  INLINE _private_bit_ref<_AP_W, _AP_S> bit(int index) {
+    return _private_bit_ref<_AP_W, _AP_S>(*this, index);
   }
 
   template <int _AP_W2, bool _AP_S2>
   INLINE _private_bit_ref<_AP_W, _AP_S> bit(
-      const ap_private<_AP_W2, _AP_S2>& index_) {
-    return _private_bit_ref<_AP_W, _AP_S>(*this, index_.to_int());
+      const ap_private<_AP_W2, _AP_S2>& index) {
+    return _private_bit_ref<_AP_W, _AP_S>(*this, index.to_int());
   }
 
-  INLINE const _private_bit_ref<_AP_W, _AP_S> bit(int index_) const {
+  INLINE const _private_bit_ref<_AP_W, _AP_S> bit(int index) const {
     return _private_bit_ref<_AP_W, _AP_S>(
-        const_cast<ap_private<_AP_W, _AP_S>&>(*this), index_);
+        const_cast<ap_private<_AP_W, _AP_S>&>(*this), index);
   }
 
   template <int _AP_W2, bool _AP_S2>
   INLINE const _private_bit_ref<_AP_W, _AP_S> bit(
-      const ap_private<_AP_W2, _AP_S2>& index_) const {
+      const ap_private<_AP_W2, _AP_S2>& index) const {
     return _private_bit_ref<_AP_W, _AP_S>(
-        const_cast<ap_private<_AP_W, _AP_S>&>(*this), index_.to_int());
+        const_cast<ap_private<_AP_W, _AP_S>&>(*this), index.to_int());
   }
 
   //  template <int _AP_W2, bool _AP_S2>
@@ -3178,12 +3177,12 @@ class ap_private<_AP_W, _AP_S, false> {
   INLINE uint64_t get_VAL(void) const { return pVal[0]; }
   INLINE uint64_t get_VAL(void) const volatile { return pVal[0]; }
   INLINE void set_VAL(uint64_t value) { pVal[0] = value; }
-  INLINE uint64_t& get_pVal(int index_) { return pVal[index_]; }
+  INLINE uint64_t& get_pVal(int index) { return pVal[index]; }
   INLINE uint64_t* get_pVal() { return pVal; }
   INLINE const uint64_t* get_pVal() const { return pVal; }
-  INLINE uint64_t get_pVal(int index_) const { return pVal[index_]; }
+  INLINE uint64_t get_pVal(int index) const { return pVal[index]; }
   INLINE uint64_t* get_pVal() const volatile { return pVal; }
-  INLINE uint64_t get_pVal(int index_) const volatile { return pVal[index_]; }
+  INLINE uint64_t get_pVal(int index) const volatile { return pVal[index]; }
   INLINE void set_pVal(int i, uint64_t value) { pVal[i] = value; }
 
   /// This enum is used to hold the constants we needed for ap_private.
@@ -3206,8 +3205,8 @@ class ap_private<_AP_W, _AP_S, false> {
     unsigned char radix = 10;
     std::string str =
         ap_private_ops::parseString(val, radix);  // determine radix.
-    std::string::size_type pos_ = str.find('.');
-    if (pos_ != std::string::npos) str = str.substr(pos_);
+    std::string::size_type pos = str.find('.');
+    if (pos != std::string::npos) str = str.substr(pos);
     ap_private ap_private_val(str, radix);
     operator=(ap_private_val);
     report();
@@ -3219,8 +3218,8 @@ class ap_private<_AP_W, _AP_S, false> {
     unsigned char radix = rd;
     std::string str =
         ap_private_ops::parseString(val, radix);  // determine radix.
-    std::string::size_type pos_ = str.find('.');
-    if (pos_ != std::string::npos) str = str.substr(pos_);
+    std::string::size_type pos = str.find('.');
+    if (pos != std::string::npos) str = str.substr(pos);
     ap_private ap_private_val(str, radix);
     operator=(ap_private_val);
     report();
@@ -3462,7 +3461,7 @@ class ap_private<_AP_W, _AP_S, false> {
                   radix);
       str += 2;
       slen -= 2;
-    } else if (str[0] == '0' && (str[1] == 'x_' || str[1] == 'X')) {
+    } else if (str[0] == '0' && (str[1] == 'x' || str[1] == 'X')) {
       // if (radix == 0) radix = 16;
       _AP_WARNING(radix != 16, "%s seems to have base %d, but %d given.", str,
                   16, radix);
@@ -3611,36 +3610,36 @@ class ap_private<_AP_W, _AP_S, false> {
 
   INLINE bool to_bool() const { return !iszero(); }
 
-  /* x_ < 0 */
+  /* x < 0 */
   INLINE bool sign() const {
     if (isNegative()) return true;
     return false;
   }
 
-  /* x_[i] = !x_[i] */
+  /* x[i] = !x[i] */
   INLINE void invert(int i) {
-    assert(i >= 0 && "Attempting to read bit with negative index_");
+    assert(i >= 0 && "Attempting to read bit with negative index");
     assert(i < _AP_W && "Attempting to read bit beyond MSB");
     flip(i);
   }
 
-  /* x_[i] */
+  /* x[i] */
   INLINE bool test(int i) const {
-    assert(i >= 0 && "Attempting to read bit with negative index_");
+    assert(i >= 0 && "Attempting to read bit with negative index");
     assert(i < _AP_W && "Attempting to read bit beyond MSB");
     return operator[](i);
   }
 
   // Set the ith bit into v
   INLINE void set(int i, bool v) {
-    assert(i >= 0 && "Attempting to write bit with negative index_");
+    assert(i >= 0 && "Attempting to write bit with negative index");
     assert(i < _AP_W && "Attempting to write bit beyond MSB");
     v ? set(i) : clear(i);
   }
 
   // Set the ith bit into v
   INLINE void set_bit(int i, bool v) {
-    assert(i >= 0 && "Attempting to write bit with negative index_");
+    assert(i >= 0 && "Attempting to write bit with negative index");
     assert(i < _AP_W && "Attempting to write bit beyond MSB");
     v ? set(i) : clear(i);
   }
@@ -3659,14 +3658,14 @@ class ap_private<_AP_W, _AP_S, false> {
 
   // Get the value of ith bit
   INLINE bool get(int i) const {
-    assert(i >= 0 && "Attempting to read bit with negative index_");
+    assert(i >= 0 && "Attempting to read bit with negative index");
     assert(i < _AP_W && "Attempting to read bit beyond MSB");
     return ((maskBit(i) & (pVal[whichWord(i)])) != 0);
   }
 
   // Get the value of ith bit
   INLINE bool get_bit(int i) const {
-    assert(i >= 0 && "Attempting to read bit with negative index_");
+    assert(i >= 0 && "Attempting to read bit with negative index");
     assert(i < _AP_W && "Attempting to read bit beyond MSB");
     return ((maskBit(i) & (pVal[whichWord(i)])) != 0);
   }
@@ -3674,7 +3673,7 @@ class ap_private<_AP_W, _AP_S, false> {
   // This is used for sc_lv and sc_bv, which is implemented by sc_uint
   // Rotate an ap_private object n places to the left
   INLINE void lrotate(int n) {
-    assert(n >= 0 && "Attempting to shift negative index_");
+    assert(n >= 0 && "Attempting to shift negative index");
     assert(n < _AP_W && "Shift value larger than bit width");
     operator=(shl(n) | lshr(_AP_W - n));
   }
@@ -3682,7 +3681,7 @@ class ap_private<_AP_W, _AP_S, false> {
   // This is used for sc_lv and sc_bv, which is implemented by sc_uint
   // Rotate an ap_private object n places to the right
   INLINE void rrotate(int n) {
-    assert(n >= 0 && "Attempting to shift negative index_");
+    assert(n >= 0 && "Attempting to shift negative index");
     assert(n < _AP_W && "Shift value larger than bit width");
     operator=(lshr(n) | shl(_AP_W - n));
   }
@@ -4221,48 +4220,48 @@ class ap_private<_AP_W, _AP_S, false> {
     return this->range(Hi, Lo);
   }
 
-  INLINE _private_bit_ref<_AP_W, _AP_S> operator[](int index_) {
-    return _private_bit_ref<_AP_W, _AP_S>(*this, index_);
+  INLINE _private_bit_ref<_AP_W, _AP_S> operator[](int index) {
+    return _private_bit_ref<_AP_W, _AP_S>(*this, index);
   }
 
   template <int _AP_W2, bool _AP_S2>
   INLINE _private_bit_ref<_AP_W, _AP_S> operator[](
-      const ap_private<_AP_W2, _AP_S2>& index_) {
-    return _private_bit_ref<_AP_W, _AP_S>(*this, index_.to_int());
+      const ap_private<_AP_W2, _AP_S2>& index) {
+    return _private_bit_ref<_AP_W, _AP_S>(*this, index.to_int());
   }
 
   template <int _AP_W2, bool _AP_S2>
   INLINE const _private_bit_ref<_AP_W, _AP_S> operator[](
-      const ap_private<_AP_W2, _AP_S2>& index_) const {
+      const ap_private<_AP_W2, _AP_S2>& index) const {
     return _private_bit_ref<_AP_W, _AP_S>(
-        const_cast<ap_private<_AP_W, _AP_S>&>(*this), index_.to_int());
+        const_cast<ap_private<_AP_W, _AP_S>&>(*this), index.to_int());
   }
 
-  INLINE const _private_bit_ref<_AP_W, _AP_S> operator[](int index_) const {
+  INLINE const _private_bit_ref<_AP_W, _AP_S> operator[](int index) const {
     return _private_bit_ref<_AP_W, _AP_S>(
-        const_cast<ap_private<_AP_W, _AP_S>&>(*this), index_);
+        const_cast<ap_private<_AP_W, _AP_S>&>(*this), index);
   }
 
-  INLINE _private_bit_ref<_AP_W, _AP_S> bit(int index_) {
-    return _private_bit_ref<_AP_W, _AP_S>(*this, index_);
+  INLINE _private_bit_ref<_AP_W, _AP_S> bit(int index) {
+    return _private_bit_ref<_AP_W, _AP_S>(*this, index);
   }
 
   template <int _AP_W2, bool _AP_S2>
   INLINE _private_bit_ref<_AP_W, _AP_S> bit(
-      const ap_private<_AP_W2, _AP_S2>& index_) {
-    return _private_bit_ref<_AP_W, _AP_S>(*this, index_.to_int());
+      const ap_private<_AP_W2, _AP_S2>& index) {
+    return _private_bit_ref<_AP_W, _AP_S>(*this, index.to_int());
   }
 
-  INLINE const _private_bit_ref<_AP_W, _AP_S> bit(int index_) const {
+  INLINE const _private_bit_ref<_AP_W, _AP_S> bit(int index) const {
     return _private_bit_ref<_AP_W, _AP_S>(
-        const_cast<ap_private<_AP_W, _AP_S>&>(*this), index_);
+        const_cast<ap_private<_AP_W, _AP_S>&>(*this), index);
   }
 
   template <int _AP_W2, bool _AP_S2>
   INLINE const _private_bit_ref<_AP_W, _AP_S> bit(
-      const ap_private<_AP_W2, _AP_S2>& index_) const {
+      const ap_private<_AP_W2, _AP_S2>& index) const {
     return _private_bit_ref<_AP_W, _AP_S>(
-        const_cast<ap_private<_AP_W, _AP_S>&>(*this), index_.to_int());
+        const_cast<ap_private<_AP_W, _AP_S>&>(*this), index.to_int());
   }
 
   //  template <int _AP_W2, bool _AP_S2>
@@ -5707,10 +5706,10 @@ INLINE bool operator!=(uint64_t V1, const ap_private<_AP_W, _AP_S>& V2) {
   return V2 != V1;
 }
 
-template <int _AP_W, bool _AP_S, int index_>
+template <int _AP_W, bool _AP_S, int index>
 INLINE bool get(const ap_private<_AP_W, _AP_S>& a) {
-  static const uint64_t mask = 1ULL << (index_ & 0x3f);
-  return ((mask & a.get_pVal((index_) >> 6)) != 0);
+  static const uint64_t mask = 1ULL << (index & 0x3f);
+  return ((mask & a.get_pVal((index) >> 6)) != 0);
 }
 
 template <int _AP_W, bool _AP_S, int msb_index, int lsb_index>
@@ -5780,21 +5779,21 @@ INLINE void clear(ap_private<_AP_W, _AP_S>& a,
   a.clearUnusedBits();
 }
 
-template <int _AP_W, bool _AP_S, int index_>
+template <int _AP_W, bool _AP_S, int index>
 INLINE void set(ap_private<_AP_W, _AP_S>& a,
-                const ap_private<AP_MAX(index_, 1), true>& mark = 0) {
-  enum { APINT_BITS_PER_WORD = 64, word = index_ / APINT_BITS_PER_WORD };
-  static const uint64_t mask = 1ULL << (index_ % APINT_BITS_PER_WORD);
+                const ap_private<AP_MAX(index, 1), true>& mark = 0) {
+  enum { APINT_BITS_PER_WORD = 64, word = index / APINT_BITS_PER_WORD };
+  static const uint64_t mask = 1ULL << (index % APINT_BITS_PER_WORD);
   // a.set_pVal(word, a.get_pVal(word) | mask);
   a.get_pVal(word) |= mask;
   a.clearUnusedBits();
 }
 
-template <int _AP_W, bool _AP_S, int index_>
+template <int _AP_W, bool _AP_S, int index>
 INLINE void clear(ap_private<_AP_W, _AP_S>& a,
-                  const ap_private<AP_MAX(index_, 1), true>& mark = 0) {
-  enum { APINT_BITS_PER_WORD = 64, word = index_ / APINT_BITS_PER_WORD };
-  static const uint64_t mask = ~(1ULL << (index_ % APINT_BITS_PER_WORD));
+                  const ap_private<AP_MAX(index, 1), true>& mark = 0) {
+  enum { APINT_BITS_PER_WORD = 64, word = index / APINT_BITS_PER_WORD };
+  static const uint64_t mask = ~(1ULL << (index % APINT_BITS_PER_WORD));
   // a.set_pVal(word, a.get_pVal(word) & mask);
   a.get_pVal(word) &= mask;
   a.clearUnusedBits();
@@ -5897,14 +5896,14 @@ INLINE std::string ap_private<_AP_W, _AP_S, false>::toString(
 }  // End of ap_private<_AP_W, _AP_S, false>::toString()
 
 template <int _AP_W, bool _AP_S>
-std::ostream& operator<<(std::ostream& os, const ap_private<_AP_W, _AP_S>& x_) {
+std::ostream& operator<<(std::ostream& os, const ap_private<_AP_W, _AP_S>& x) {
   std::ios_base::fmtflags ff = std::cout.flags();
   if (ff & std::cout.hex) {
-    os << x_.toString(16, false);  // don't print sign
+    os << x.toString(16, false);  // don't print sign
   } else if (ff & std::cout.oct) {
-    os << x_.toString(8, false);  // don't print sign
+    os << x.toString(8, false);  // don't print sign
   } else {
-    os << x_.toString(10, _AP_S);
+    os << x.toString(10, _AP_S);
   }
   return os;
 }
@@ -6656,8 +6655,8 @@ struct _private_bit_ref {
       : d_bv(ref.d_bv), d_index(ref.d_index) {}
 
   // director ctor.
-  INLINE _private_bit_ref(ap_private<_AP_W, _AP_S>& bv, int index_ = 0)
-      : d_bv(bv), d_index(index_) {
+  INLINE _private_bit_ref(ap_private<_AP_W, _AP_S>& bv, int index = 0)
+      : d_bv(bv), d_index(index) {
     _AP_WARNING(d_index < 0, "Index of bit vector  (%d) cannot be negative.\n",
                 d_index);
     _AP_WARNING(d_index >= _AP_W,

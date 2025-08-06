@@ -175,7 +175,7 @@ class StraightTrack {
 
   // The target location
   std::array<double, 3> target_pos_;
-  // The ecal first layer_ position
+  // The ecal first layer position
   std::array<double, 3> ecal_layer1_pos_;
 
   // ID of the matched particle in the SimParticles map

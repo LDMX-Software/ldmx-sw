@@ -25,7 +25,7 @@ namespace recon {
  * @note
  * TriggerProcessor takes in a set of parameters to determine whether, upon an
  * input collection of triggers, an OR or AND descision will be made. Each
- * trigger layer_ is obtained after TriggerProcessor is run, and then running
+ * trigger layer is obtained after TriggerProcessor is run, and then running
  * through the array the first pass returns true for doOR_ and the first fail
  * false for doAND_. Once at worst all triggers are run through, we set the
  * keep event flag to the resultant doOR or doAND result. If doVAL is set to

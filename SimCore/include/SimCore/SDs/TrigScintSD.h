@@ -63,7 +63,7 @@ class TrigScintSD : public SensitiveDetector {
   std::string collection_name_;
   /// name of trigger pad volume this SD is capturing
   std::string vol_name_;
-  /// the ID number for the module_ we are gathering hits from
+  /// the ID number for the module we are gathering hits from
   int module_id_;
 };
 

@@ -64,13 +64,13 @@ class TrigScintHit : public ldmx::HcalHit {
   float getPE() const { return pe_; }
 
   /**
-   * Set hit module_ ID.
+   * Set hit module ID.
    *
-   * @param moduleID The module_ ID of the hit.
+   * @param moduleID The module ID of the hit.
    */
   void setModuleID(const int moduleID) { moduleID_ = moduleID; };
 
-  /// Get the module_ ID
+  /// Get the module ID
   int getModuleID() const { return moduleID_; }
 
   /**

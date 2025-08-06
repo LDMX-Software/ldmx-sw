@@ -23,7 +23,7 @@ enum class Callback {
 };
 
 /**
- * Convert the Callback enum into an index_ for lookup
+ * Convert the Callback enum into an index for lookup
  */
 constexpr std::size_t toIndex(Callback c) {
   return static_cast<std::size_t>(c);

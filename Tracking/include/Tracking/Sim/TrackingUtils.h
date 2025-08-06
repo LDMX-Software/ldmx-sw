@@ -104,16 +104,16 @@ inline int getSensorID(const ldmx::SimTrackerHit& hit) {
   }
 
   // vol * 1000 + ly * 100 + sensor
-  unsigned int index_ = vol * 1000 + layerId * 100 + sensorId;
+  unsigned int index = vol * 1000 + layerId * 100 + sensorId;
 
   if (debug) {
-    std::cout << "LdmxSpacePointConverter::Check index_::" << vol << "--"
-              << layerId << "--" << sensorId << "==>" << index_ << std::endl;
+    std::cout << "LdmxSpacePointConverter::Check index::" << vol << "--"
+              << layerId << "--" << sensorId << "==>" << index << std::endl;
     std::cout << vol << "===" << hit.getLayerID() << "===" << hit.getModuleID()
               << std::endl;
   }
 
-  return index_;
+  return index;
 }
 
 // This method converts a SimHit in a LdmxSpacePoint for the Acts seeder.
@@ -129,7 +129,7 @@ inline int getSensorID(const ldmx::SimTrackerHit& hit) {
 inline ldmx::LdmxSpacePoint* convertSimHitToLdmxSpacePoint(
     const ldmx::SimTrackerHit& hit, unsigned int vol = 2, double sigma_u = 0.05,
     double sigma_v = 1.) {
-  unsigned int index_ = getSensorID(hit);
+  unsigned int index = getSensorID(hit);
 
   // Rotate position
   float ldmxsp_x = hit.getPosition()[2];
@@ -137,7 +137,7 @@ inline ldmx::LdmxSpacePoint* convertSimHitToLdmxSpacePoint(
   float ldmxsp_z = hit.getPosition()[1];
 
   return new ldmx::LdmxSpacePoint(ldmxsp_x, ldmxsp_y, ldmxsp_z, hit.getTime(),
-                                  index_, hit.getEdep(), sigma_u * sigma_u,
+                                  index, hit.getEdep(), sigma_u * sigma_u,
                                   sigma_v * sigma_v, hit.getID());
 }
 
@@ -275,13 +275,13 @@ inline const std::shared_ptr<Acts::PlaneSurface> unboundSurface(
   return Acts::Surface::makeShared<Acts::PlaneSurface>(surf_transform);
 }
 
-// This method returns a source link index_
+// This method returns a source link index
 inline std::size_t sourceLinkHash(const Acts::SourceLink& a) {
   return static_cast<std::size_t>(
       a.get<ActsExamples::IndexSourceLink>().index());
 }
 
-// This method checks if two source links are equal by index_
+// This method checks if two source links are equal by index
 inline bool sourceLinkEquality(const Acts::SourceLink& a,
                                const Acts::SourceLink& b) {
   return a.get<ActsExamples::IndexSourceLink>().index() ==

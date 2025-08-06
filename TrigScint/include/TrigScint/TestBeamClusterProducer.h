@@ -31,7 +31,7 @@ class TestBeamClusterProducer : public framework::Producer {
   virtual void produce(framework::Event& event);
 
   /**
-   * add a hit at index_ idx to a cluster
+   * add a hit at index idx to a cluster
    */
   virtual void addHit(uint idx, trigscint::TestBeamHit hit);
 

@@ -82,7 +82,7 @@ class EcalDetectorMap
   struct CellInformation {
     /// precision information
     /** cellid */
-    int modulecellid_;
+    int module_cellid_;
     /** hgcroc id on the module (which of the six) */
     int rocid_;
     /** roc elink number */

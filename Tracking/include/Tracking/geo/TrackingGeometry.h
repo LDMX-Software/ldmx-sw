@@ -88,8 +88,8 @@ class TrackingGeometry : public framework::ConditionsObject {
 
   Acts::Transform3 toTracker(const Acts::Transform3& trans) const;
 
-  // Tagger tracker: vol=2 , layer_ = [2,4,6,8,10,12,14], sensor=[1,2]
-  // Recoil tracker: vol=3 , layer_ = [2,4,6,8,10,12],
+  // Tagger tracker: vol=2 , layer = [2,4,6,8,10,12,14], sensor=[1,2]
+  // Recoil tracker: vol=3 , layer = [2,4,6,8,10,12],
   // sensor=[1,2,3,4,5,6,7,8,9,10]
   void makeLayerSurfacesMap();
 

@@ -80,9 +80,9 @@ class TrackersTrackingGeometry : public TrackingGeometry {
   // structure
 
   // Tracker mapping.
-  // Each key represent the layer_ index_ and each entry is the vector of
-  // surfaces that one wants to add to the same layer_ In this way we can pass
-  // multiple surfaces to the same layer_ to the builder.
+  // Each key represent the layer index and each entry is the vector of
+  // surfaces that one wants to add to the same layer In this way we can pass
+  // multiple surfaces to the same layer to the builder.
   std::map<std::string, std::vector<std::shared_ptr<const Acts::Surface>>>
       tagger_layout;
   std::map<std::string, std::vector<std::shared_ptr<const Acts::Surface>>>

@@ -48,7 +48,7 @@ class TrigScintFirmwareHitProducer : public framework::Producer {
   void produce(framework::Event& event) override;
 
   /**
-   * add a hit at index_ idx to a cluster
+   * add a hit at index idx to a cluster
    */
 
  private:

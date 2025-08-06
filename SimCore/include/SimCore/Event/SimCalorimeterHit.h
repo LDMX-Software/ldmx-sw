@@ -248,23 +248,23 @@ class SimCalorimeterHit {
 
   /**
    * Get a hit contribution by index_.
-   * @param i The index_ of the hit contribution.
+   * @param i The index of the hit contribution.
    * @return The hit contribution at the index_.
    */
   Contrib getContrib(int i) const;
 
   /**
-   * Find the index_ of a hit contribution from a SimParticle and PDG code.
+   * Find the index of a hit contribution from a SimParticle and PDG code.
    * @param trackID the track ID of the particle causing the hit
    * @param pdgCode The PDG code of the contribution.
-   * @return The index_ of the contribution or -1 if none exists.
+   * @return The index of the contribution or -1 if none exists.
    */
   int findContribIndex(int trackID, int pdgCode) const;
 
   /**
    * Update an existing hit contribution by incrementing its edep and setting
    * the time if the new time is less than the old one.
-   * @param i The index_ of the contribution.
+   * @param i The index of the contribution.
    * @param edep The additional energy contribution [MeV].
    * @param time The time of the contribution [ns].
    */

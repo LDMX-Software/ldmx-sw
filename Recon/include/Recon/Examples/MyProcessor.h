@@ -36,7 +36,7 @@ class MyProcessor : public framework::Producer {
    *
    * The user specified parameters that are availabed are defined
    * in the python configuration class. Look at the my_processor.py
-   * module_ of the EventProc python for the python structure.
+   * module of the EventProc python for the python structure.
    *
    * @param parameters Set of parameters used to configure this processor.
    */

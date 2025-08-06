@@ -33,7 +33,7 @@ class TrigScintClusterProducer : public framework::Producer {
   void produce(framework::Event& event) override;
 
   /**
-   * add a hit at index_ idx to a cluster
+   * add a hit at index idx to a cluster
    */
   virtual void addHit(uint idx, ldmx::TrigScintHit hit);
 

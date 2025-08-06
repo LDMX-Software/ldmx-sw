@@ -59,7 +59,7 @@ class EcalPreselectionSkimmer : public framework::Producer {
   double shower_x_std_max_;
   /// Max value for maximal cell deposition
   double max_cell_dep_max_;
-  /// Max value for std layer_ hits_
+  /// Max value for std layer hits_
   int std_layer_hit_max_;
   /// Max value for num straight tracks
   int n_straight_tracks_max_;

@@ -54,22 +54,20 @@
 // Helper function in conversion to floating point types.
 
 #ifdef __SYNTHESIS__
-#define _AP_ctype_op_get_bit(var, index_) _AP_ROOT_op_get_bit(var, index_)
-#define _AP_ctype_op_set_bit(var, index_, x_) \
-  _AP_ROOT_op_set_bit(var, index_, x_)
+#define _AP_ctype_op_get_bit(var, index) _AP_ROOT_op_get_bit(var, index)
+#define _AP_ctype_op_set_bit(var, index, x) _AP_ROOT_op_set_bit(var, index, x)
 #define _AP_ctype_op_get_range(var, low, high) \
   _AP_ROOT_op_get_range(var, low, high)
-#define _AP_ctype_op_set_range(var, low, high, x_) \
-  _AP_ROOT_op_set_range(var, low, high, x_)
+#define _AP_ctype_op_set_range(var, low, high, x) \
+  _AP_ROOT_op_set_range(var, low, high, x)
 #else   // ifdef __SYNTHESIS__
 template <typename _Tp1, typename _Tp2>
-inline bool _AP_ctype_op_get_bit(_Tp1& var, const _Tp2& index_) {
-  return !!(var & (1ull << (index_)));
+inline bool _AP_ctype_op_get_bit(_Tp1& var, const _Tp2& index) {
+  return !!(var & (1ull << (index)));
 }
 template <typename _Tp1, typename _Tp2, typename _Tp3>
-inline _Tp1 _AP_ctype_op_set_bit(_Tp1& var, const _Tp2& index_,
-                                 const _Tp3& x_) {
-  var |= (((x_) ? 1ull : 0ull) << (index_));
+inline _Tp1 _AP_ctype_op_set_bit(_Tp1& var, const _Tp2& index, const _Tp3& x) {
+  var |= (((x) ? 1ull : 0ull) << (index));
   return var;
 }
 template <typename _Tp1, typename _Tp2, typename _Tp3>
@@ -84,11 +82,11 @@ inline _Tp1 _AP_ctype_op_get_range(_Tp1& var, const _Tp2& low,
 }
 template <typename _Tp1, typename _Tp2, typename _Tp3, typename _Tp4>
 inline _Tp1 _AP_ctype_op_set_range(_Tp1& var, const _Tp2& low, const _Tp3& high,
-                                   const _Tp4& x_) {
+                                   const _Tp4& x) {
   ap_ulong mask = -1ll;
   mask >>= (_AP_SIZE_ap_slong - ((high) - (low) + 1));
   var &= ~(mask << (low));
-  var |= ((mask & x_) << (low));
+  var |= ((mask & x) << (low));
   return var;
 }
 #endif  // ifdef __SYNTHESIS__
@@ -495,9 +493,9 @@ struct ap_fixed_base : _AP_ROOT_TYPE<_AP_W, _AP_S> {
   // ctors from c types.
   // make a temp ap_fixed_base first, and use ap_fixed_base.operator=
 #define CTOR_FROM_INT(C_TYPE, _AP_W2, _AP_S2)        \
-  INLINE ap_fixed_base(const C_TYPE x_) {            \
+  INLINE ap_fixed_base(const C_TYPE x) {             \
     ap_fixed_base<(_AP_W2), (_AP_W2), (_AP_S2)> tmp; \
-    tmp.V = x_;                                      \
+    tmp.V = x;                                       \
     *this = tmp;                                     \
   }
 
@@ -1493,78 +1491,78 @@ struct ap_fixed_base : _AP_ROOT_TYPE<_AP_W, _AP_S> {
 
   // Bit and Slice Select
   INLINE af_bit_ref<_AP_W, _AP_I, _AP_S, _AP_Q, _AP_O, _AP_N> operator[](
-      unsigned index_) {
-    _AP_WARNING(index_ >= _AP_W, "Attempting to read bit beyond MSB");
-    return af_bit_ref<_AP_W, _AP_I, _AP_S, _AP_Q, _AP_O, _AP_N>(this, index_);
+      unsigned index) {
+    _AP_WARNING(index >= _AP_W, "Attempting to read bit beyond MSB");
+    return af_bit_ref<_AP_W, _AP_I, _AP_S, _AP_Q, _AP_O, _AP_N>(this, index);
   }
 
   template <int _AP_W2, bool _AP_S2>
   INLINE af_bit_ref<_AP_W, _AP_I, _AP_S, _AP_Q, _AP_O, _AP_N> operator[](
-      const ap_int_base<_AP_W2, _AP_S2>& index_) {
-    _AP_WARNING(index_ < 0, "Attempting to read bit with negative index_");
-    _AP_WARNING(index_ >= _AP_W, "Attempting to read bit beyond MSB");
-    return af_bit_ref<_AP_W, _AP_I, _AP_S, _AP_Q, _AP_O, _AP_N>(
-        this, index_.to_int());
+      const ap_int_base<_AP_W2, _AP_S2>& index) {
+    _AP_WARNING(index < 0, "Attempting to read bit with negative index");
+    _AP_WARNING(index >= _AP_W, "Attempting to read bit beyond MSB");
+    return af_bit_ref<_AP_W, _AP_I, _AP_S, _AP_Q, _AP_O, _AP_N>(this,
+                                                                index.to_int());
   }
 
-  INLINE bool operator[](unsigned index_) const {
-    _AP_WARNING(index_ >= _AP_W, "Attempting to read bit beyond MSB");
-    return _AP_ROOT_op_get_bit(const_cast<ap_fixed_base*>(this)->V, index_);
+  INLINE bool operator[](unsigned index) const {
+    _AP_WARNING(index >= _AP_W, "Attempting to read bit beyond MSB");
+    return _AP_ROOT_op_get_bit(const_cast<ap_fixed_base*>(this)->V, index);
   }
 
   INLINE af_bit_ref<_AP_W, _AP_I, _AP_S, _AP_Q, _AP_O, _AP_N> bit(
-      unsigned index_) {
-    _AP_WARNING(index_ >= _AP_W, "Attempting to read bit beyond MSB");
-    return af_bit_ref<_AP_W, _AP_I, _AP_S, _AP_Q, _AP_O, _AP_N>(this, index_);
+      unsigned index) {
+    _AP_WARNING(index >= _AP_W, "Attempting to read bit beyond MSB");
+    return af_bit_ref<_AP_W, _AP_I, _AP_S, _AP_Q, _AP_O, _AP_N>(this, index);
   }
 
   template <int _AP_W2, bool _AP_S2>
   INLINE af_bit_ref<_AP_W, _AP_I, _AP_S, _AP_Q, _AP_O, _AP_N> bit(
-      const ap_int_base<_AP_W2, _AP_S2>& index_) {
-    _AP_WARNING(index_ < 0, "Attempting to read bit with negative index_");
-    _AP_WARNING(index_ >= _AP_W, "Attempting to read bit beyond MSB");
-    return af_bit_ref<_AP_W, _AP_I, _AP_S, _AP_Q, _AP_O, _AP_N>(
-        this, index_.to_int());
+      const ap_int_base<_AP_W2, _AP_S2>& index) {
+    _AP_WARNING(index < 0, "Attempting to read bit with negative index");
+    _AP_WARNING(index >= _AP_W, "Attempting to read bit beyond MSB");
+    return af_bit_ref<_AP_W, _AP_I, _AP_S, _AP_Q, _AP_O, _AP_N>(this,
+                                                                index.to_int());
   }
 
-  INLINE bool bit(unsigned index_) const {
-    _AP_WARNING(index_ >= _AP_W, "Attempting to read bit beyond MSB");
-    return _AP_ROOT_op_get_bit(const_cast<ap_fixed_base*>(this)->V, index_);
+  INLINE bool bit(unsigned index) const {
+    _AP_WARNING(index >= _AP_W, "Attempting to read bit beyond MSB");
+    return _AP_ROOT_op_get_bit(const_cast<ap_fixed_base*>(this)->V, index);
   }
 
   template <int _AP_W2>
   INLINE af_bit_ref<_AP_W, _AP_I, _AP_S, _AP_Q, _AP_O, _AP_N> get_bit(
-      const ap_int_base<_AP_W2, true>& index_) {
-    _AP_WARNING(index_ < _AP_I - _AP_W,
-                "Attempting to read bit with negative index_");
-    _AP_WARNING(index_ >= _AP_I, "Attempting to read bit beyond MSB");
+      const ap_int_base<_AP_W2, true>& index) {
+    _AP_WARNING(index < _AP_I - _AP_W,
+                "Attempting to read bit with negative index");
+    _AP_WARNING(index >= _AP_I, "Attempting to read bit beyond MSB");
     return af_bit_ref<_AP_W, _AP_I, _AP_S, _AP_Q, _AP_O, _AP_N>(
-        this, index_.to_int() + _AP_W - _AP_I);
+        this, index.to_int() + _AP_W - _AP_I);
   }
 
-  INLINE bool get_bit(int index_) const {
-    _AP_WARNING(index_ >= _AP_I, "Attempting to read bit beyond MSB");
-    _AP_WARNING(index_ < _AP_I - _AP_W, "Attempting to read bit beyond MSB");
+  INLINE bool get_bit(int index) const {
+    _AP_WARNING(index >= _AP_I, "Attempting to read bit beyond MSB");
+    _AP_WARNING(index < _AP_I - _AP_W, "Attempting to read bit beyond MSB");
     return _AP_ROOT_op_get_bit(const_cast<ap_fixed_base*>(this)->V,
-                               index_ + _AP_W - _AP_I);
+                               index + _AP_W - _AP_I);
   }
 #if 0
   INLINE af_bit_ref<_AP_W, _AP_I, _AP_S, _AP_Q, _AP_O, _AP_N> get_bit(
-      int index_) {
-    _AP_WARNING(index_ < _AP_I - _AP_W,
-              "Attempting to read bit with negative index_");
-    _AP_WARNING(index_ >= _AP_I, "Attempting to read bit beyond MSB");
+      int index) {
+    _AP_WARNING(index < _AP_I - _AP_W,
+              "Attempting to read bit with negative index");
+    _AP_WARNING(index >= _AP_I, "Attempting to read bit beyond MSB");
     return af_bit_ref<_AP_W, _AP_I, _AP_S, _AP_Q, _AP_O, _AP_N>(
-        this, index_ + _AP_W - _AP_I);
+        this, index + _AP_W - _AP_I);
   }
 #endif
 
   template <int _AP_W2>
-  INLINE bool get_bit(const ap_int_base<_AP_W2, true>& index_) const {
-    _AP_WARNING(index_ >= _AP_I, "Attempting to read bit beyond MSB");
-    _AP_WARNING(index_ < _AP_I - _AP_W, "Attempting to read bit beyond MSB");
+  INLINE bool get_bit(const ap_int_base<_AP_W2, true>& index) const {
+    _AP_WARNING(index >= _AP_I, "Attempting to read bit beyond MSB");
+    _AP_WARNING(index < _AP_I - _AP_W, "Attempting to read bit beyond MSB");
     return _AP_ROOT_op_get_bit(const_cast<ap_fixed_base*>(this)->V,
-                               index_.to_int() + _AP_W - _AP_I);
+                               index.to_int() + _AP_W - _AP_I);
   }
 
   INLINE af_range_ref<_AP_W, _AP_I, _AP_S, _AP_Q, _AP_O, _AP_N> range(int Hi,
@@ -1842,8 +1840,8 @@ INLINE void rshift(
 //// FIXME
 //// These partial specialization ctors allow code like
 ////   char c = 'a';
-////   ap_fixed_base<8, 8, true> x_(c);
-//// but what bout ap_fixed_base<9, 9, true> y_(c) ?
+////   ap_fixed_base<8, 8, true> x(c);
+//// but what bout ap_fixed_base<9, 9, true> y(c) ?
 //
 
 #ifndef __SYNTHESIS__
@@ -2028,10 +2026,10 @@ INLINE std::string reduceToPrecision(std::string& input, int precision) {
 template <int _AP_W, int _AP_I, bool _AP_S, ap_q_mode _AP_Q, ap_o_mode _AP_O,
           int _AP_N>
 INLINE void print(
-    const ap_fixed_base<_AP_W, _AP_I, _AP_S, _AP_Q, _AP_O, _AP_N>& x_) {
+    const ap_fixed_base<_AP_W, _AP_I, _AP_S, _AP_Q, _AP_O, _AP_N>& x) {
   if (_AP_I > 0) {
     ap_int_base<_AP_I, _AP_S> p1;
-    p1.V = x_.V >> (_AP_W - _AP_I);
+    p1.V = x.V >> (_AP_W - _AP_I);
     print(p1.V);  // print overlaod for .V should exit
   } else {
     printf("0");
@@ -2039,7 +2037,7 @@ INLINE void print(
   printf(".");
   if (_AP_I < _AP_W) {
     ap_int_base<_AP_W - _AP_I, false> p2;
-    p2.V = _AP_ROOT_op_get_range(x_.V, 0, _AP_W - _AP_I);
+    p2.V = _AP_ROOT_op_get_range(x.V, 0, _AP_W - _AP_I);
     print(p2.V, false);  // print overlaod for .V should exit
   }
 }
@@ -2058,12 +2056,12 @@ template <int _AP_W, int _AP_I, bool _AP_S, ap_q_mode _AP_Q, ap_o_mode _AP_O,
           int _AP_N>
 INLINE std::ostream& operator<<(
     std::ostream& out,
-    const ap_fixed_base<_AP_W, _AP_I, _AP_S, _AP_Q, _AP_O, _AP_N>& x_) {
+    const ap_fixed_base<_AP_W, _AP_I, _AP_S, _AP_Q, _AP_O, _AP_N>& x) {
   // TODO support std::ios_base::fmtflags
   unsigned width = out.width();
   unsigned precision = out.precision();
   char fill = out.fill();
-  std::string str = x_.to_string(10, _AP_S);
+  std::string str = x.to_string(10, _AP_S);
   str = reduceToPrecision(str, precision);
   if (width > str.length()) {
     for (unsigned i = 0; i < width - str.length(); ++i) out << fill;
@@ -2080,10 +2078,10 @@ template <int _AP_W, int _AP_I, bool _AP_S, ap_q_mode _AP_Q, ap_o_mode _AP_O,
           int _AP_N>
 INLINE std::istream& operator>>(
     std::istream& in,
-    ap_fixed_base<_AP_W, _AP_I, _AP_S, _AP_Q, _AP_O, _AP_N>& x_) {
+    ap_fixed_base<_AP_W, _AP_I, _AP_S, _AP_Q, _AP_O, _AP_N>& x) {
   double d;
   in >> d;
-  x_ = ap_fixed_base<_AP_W, _AP_I, _AP_S, _AP_Q, _AP_O, _AP_N>(d);
+  x = ap_fixed_base<_AP_W, _AP_I, _AP_S, _AP_Q, _AP_O, _AP_N>(d);
   return in;
 }
 #endif

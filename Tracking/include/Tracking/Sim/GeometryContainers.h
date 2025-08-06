@@ -77,7 +77,7 @@ struct CompareGeometryId {
 /// id. Elements can be retrieved via the geometry id; elements can be selected
 /// for a specific geometry id or for a larger range, e.g. a volume or a layer
 /// within the geometry hierachy using the helper functions below. Elements can
-/// also be accessed by index_ that uniquely identifies each element regardless
+/// also be accessed by index that uniquely identifies each element regardless
 /// of geometry id.
 template <typename T>
 using GeometryIdMultiset =
@@ -151,15 +151,15 @@ inline auto selectLayer(const GeometryIdMultiset<T>& container,
   return selectLayer(container, id.volume(), id.layer());
 }
 
-/// Select all elements for the given module_ / sensitive surface.
+/// Select all elements for the given module / sensitive surface.
 template <typename T>
 inline Range<typename GeometryIdMultiset<T>::const_iterator> selectModule(
     const GeometryIdMultiset<T>& container, Acts::GeometryIdentifier geoId) {
-  // module_ is the lowest level and defines a single geometry id value
+  // module is the lowest level and defines a single geometry id value
   return makeRange(container.equal_range(geoId));
 }
 
-/// Select all elements for the given module_ / sensitive surface.
+/// Select all elements for the given module / sensitive surface.
 template <typename T>
 inline auto selectModule(const GeometryIdMultiset<T>& container,
                          Acts::GeometryIdentifier::Value volume,

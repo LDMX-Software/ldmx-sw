@@ -19,13 +19,13 @@ class EcalReconConditions {
   /// the name of the EcalReconConditions table (must match python registration
   /// name)
   static const std::string CONDITIONS_NAME;
-  /// column index_ for ADC pedestal
+  /// column index for ADC pedestal
   static const unsigned int IADC_PEDESTAL = 0;
-  /// column index_ for ADC threshold
+  /// column index for ADC threshold
   static const unsigned int IADC_GAIN = 1;
-  /// column index_ for TOT pedestal
+  /// column index for TOT pedestal
   static const unsigned int ITOT_PEDESTAL = 2;
-  /// column index_ for TOT gain
+  /// column index for TOT gain
   static const unsigned int ITOT_GAIN = 3;
   /// expected order of column names matching the above indices (must match the
   /// indices above)

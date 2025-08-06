@@ -36,7 +36,7 @@ class TrigScintFirmwareTracker : public framework::Producer {
   ldmx::TrigScintTrack makeTrack(Track outTrk);
 
   /**
-   * add a hit at index_ idx to a cluster
+   * add a hit at index idx to a cluster
    */
 
  private:

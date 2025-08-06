@@ -14,7 +14,7 @@ namespace hcal {
  * - assuming spill numbering is NOT the same between the two DPMs
  */
 class HcalAlignPolarfires : public framework::Producer {
-  /// input decoded objects (vector index_ == polarfire index_)
+  /// input decoded objects (vector index == polarfire index_)
   std::vector<std::string> input_names_;
   /// pass name for decoded objects
   std::string input_pass_;

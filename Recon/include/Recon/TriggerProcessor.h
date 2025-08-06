@@ -24,7 +24,7 @@ namespace recon {
  * @note
  * TriggerProcessor takes in a set of parameters to be used in defining
  * the trigger algorithm. An event is passed to the processor and the relevant
- * algorithms are then run on the event (ECAL layer_ sum). A trigger decision is
+ * algorithms are then run on the event (ECAL layer sum). A trigger decision is
  * executed and the decision along with the algorithm name and relevant
  * variables are stored in a TriggerResult object which is added to the
  * collection.
@@ -68,18 +68,18 @@ class TriggerProcessor : public framework::Producer {
   /**
    * The trigger mode to run in. Mode zero sums over
    * all cells in layer_, while in mode 1 only cells in
-   * center module_ are summed over. (TODO)
+   * center module are summed over. (TODO)
    */
   int mode_{0};
 
-  /** The first layer_ of layer_ sum. */
+  /** The first layer of layer sum. */
   int startLayer_{0};
 
   /**
-   * The endpoint layer_ of layer_ sum.
+   * The endpoint layer of layer sum.
    *
-   * **not inclusive** - i.e. this is the last layer_ that
-   * is included in the layer_ sum.
+   * **not inclusive** - i.e. this is the last layer that
+   * is included in the layer sum.
    */
   int endLayer_{0};
 

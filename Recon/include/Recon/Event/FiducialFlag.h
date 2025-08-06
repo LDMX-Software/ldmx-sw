@@ -82,7 +82,7 @@ class FiducialFlag {
 
   /**
    * Return algorithm variable i (see algorithm code for details).
-   * @param element The index_ of the variable.
+   * @param element The index of the variable.
    * @return Algorithm variable at the index_.
    */
   double getAlgoVar(int element) const { return variables_[element]; }
@@ -175,7 +175,7 @@ class FiducialFlag {
 
   /**
    * Set an algorithm variable.
-   * @param element The index_ of the variable.
+   * @param element The index of the variable.
    * @param value The variable's new value.
    */
   void setAlgoVar(int element, double value);

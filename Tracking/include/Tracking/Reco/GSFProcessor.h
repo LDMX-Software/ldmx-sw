@@ -145,7 +145,7 @@ class GSFProcessor final : public TrackingGeometryUser {
   void produce(framework::Event &event) override;
 
  private:
-  // Forms the layer_ to acts map
+  // Forms the layer to acts map
   // auto makeLayerSurfacesMap(std::shared_ptr<const Acts::TrackingGeometry>
   // trackingGeometry) const -> std::unordered_map<unsigned int, const
   // Acts::Surface*>;

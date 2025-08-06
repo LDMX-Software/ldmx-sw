@@ -50,7 +50,7 @@ class TrigScintCluster {
   void addHit(uint idx, const ldmx::TrigScintHit *hit);
 
   /**
-   * @param idx The digi collection index_ of the hit seeding the cluster
+   * @param idx The digi collection index of the hit seeding the cluster
    */
   void setSeed(int idx) { seed_ = idx; }
 
@@ -151,7 +151,7 @@ class TrigScintCluster {
   // total cluster photoelectron count
   float PE_{0};
 
-  // index_ of cluster seeding hit
+  // index of cluster seeding hit
   int seed_{-1};
 
   // hit centroid in units of channel nb: energy weighted average of the IDs of

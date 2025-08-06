@@ -23,15 +23,15 @@ namespace ldmx {
  */
 class HgcrocTriggerConditions {
  public:
-  /// column index_ for ADC pedestal
+  /// column index for ADC pedestal
   static const unsigned int IADC_PEDESTAL = 0;
-  /// column index_ for ADC threshold
+  /// column index for ADC threshold
   static const unsigned int IADC_THRESHOLD = 1;
-  /// column index_ for TOT pedestal
+  /// column index for TOT pedestal
   static const unsigned int ITOT_PEDESTAL = 2;
-  /// column index_ for TOT threshold
+  /// column index for TOT threshold
   static const unsigned int ITOT_THRESHOLD = 3;
-  /// column index_ for TOT gain
+  /// column index for TOT gain
   static const unsigned int ITOT_GAIN = 4;
 
   /**

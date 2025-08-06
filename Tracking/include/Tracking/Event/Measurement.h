@@ -94,9 +94,9 @@ class Measurement {
   [[nodiscard]] float getTime() const { return meas_t_; };
 
   /**
-   * Set the layer_ ID of the sensor where this measurement took place.
+   * Set the layer ID of the sensor where this measurement took place.
    *
-   * @param layer_id The layer_ ID of the sensor associated with this
+   * @param layer_id The layer ID of the sensor associated with this
    * measurement.
    */
   void setLayerID(const int& layer_id) {
@@ -104,10 +104,10 @@ class Measurement {
     layer_ = ((layer_id_ / 100) % 10 - 1) * 2 + layer_id % 2;
   };
 
-  /// @return The layer_ ID of the sensor associated with this measurement.
+  /// @return The layer ID of the sensor associated with this measurement.
   [[nodiscard]] int getLayerID() const { return layer_id_; };
 
-  /// @return The layer_ number internal to the tracker.
+  /// @return The layer number internal to the tracker.
   int getLayer() const { return layer_; }
 
   /// Add a trackId to the internal vector
@@ -149,7 +149,7 @@ class Measurement {
   float meas_v_{0.};
   /// The ID of the sensor where the measurement took place.
   int layer_id_{0};
-  /// The layer_ number internal to the tracker.
+  /// The layer number internal to the tracker.
   int layer_{0};
   /// The energy deposited in the sensor where the measurement took place.
   float edep_{0.};

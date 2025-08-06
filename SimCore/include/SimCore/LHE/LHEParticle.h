@@ -50,7 +50,7 @@ class LHEParticle {
   int getStatus() const;
 
   /**
-   * Get a mother particle index_ (MOTHUP) by index_.
+   * Get a mother particle index (MOTHUP) by index_.
    * @return The mother particle by index_.
    */
   int getMother(int) const;

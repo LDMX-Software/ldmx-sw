@@ -15,7 +15,7 @@ namespace ecal {
 
 class IntermediateCluster {
  public:
-  IntermediateCluster(const ldmx::EcalHit& eh, int layer_ = -1);
+  IntermediateCluster(const ldmx::EcalHit& eh, int layer = -1);
   IntermediateCluster() = default;
   ~IntermediateCluster() = default;
   void add(const ldmx::EcalHit& eh);
