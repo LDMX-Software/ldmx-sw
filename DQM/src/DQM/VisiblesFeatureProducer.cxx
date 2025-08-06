@@ -50,7 +50,7 @@ bool VisiblesFeatureProducer::inList(std::vector<int> parents, int track_id) {
 void VisiblesFeatureProducer::analyze(const framework::Event &event) {
   std::vector<double> bdt_features;
 
-  auto particle_map{event.getMap<int, ldmx::SimParticle>(
+  const auto &particle_map{event.getMap<int, ldmx::SimParticle>(
       "SimParticles", sim_particles_pass_name_)};
 
   // Get target scoring plane hits for recoil electron
@@ -64,7 +64,7 @@ void VisiblesFeatureProducer::analyze(const framework::Event &event) {
   bool found_recoil_e = false;
 
   if (recoil_from_tracking_) {
-    auto recoil_tracks{
+    const auto &recoil_tracks{
         event.getCollection<ldmx::Track>(track_collection_, track_pass_name_)};
     // Fill this in later when you know how to use it
     for (auto &track : recoil_tracks) {
@@ -78,7 +78,7 @@ void VisiblesFeatureProducer::analyze(const framework::Event &event) {
     }
   } else {
     if (event.exists(sp_collection_, sp_pass_name_)) {
-      std::vector<ldmx::SimTrackerHit> target_sp_hits =
+      const auto &target_sp_hits =
           event.getCollection<ldmx::SimTrackerHit>(sp_collection_,
                                                    sp_pass_name_);
       bool found_rec = false;
@@ -121,9 +121,9 @@ void VisiblesFeatureProducer::analyze(const framework::Event &event) {
                       recoil_p[2] * recoil_p[2]);
   }
 
-  std::vector<ldmx::EcalHit> ecal_rec_hits = event.getCollection<ldmx::EcalHit>(
+  const auto &ecal_rec_hits = event.getCollection<ldmx::EcalHit>(
       ecal_rec_collection_, ecal_rec_pass_name_);
-  std::vector<ldmx::HcalHit> hcal_rec_hits = event.getCollection<ldmx::HcalHit>(
+  const auto &hcal_rec_hits = event.getCollection<ldmx::HcalHit>(
       hcal_rec_collection_, hcal_rec_pass_name_);
 
   double ecal_energy = 0.;
