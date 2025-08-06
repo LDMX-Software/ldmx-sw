@@ -107,9 +107,8 @@ void VisiblesVetoProcessor::produce(framework::Event &event) {
     }
   } else {
     if (event.exists(sp_collection_, sp_pass_name_)) {
-      const auto &target_sp_hits =
-          event.getCollection<ldmx::SimTrackerHit>(sp_collection_,
-                                                   sp_pass_name_);
+      const auto &target_sp_hits = event.getCollection<ldmx::SimTrackerHit>(
+          sp_collection_, sp_pass_name_);
       for (auto const &it : particle_map) {
         for (auto const &sphit : target_sp_hits) {
           if (sphit.getPosition()[2] > 0) {
