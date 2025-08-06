@@ -58,13 +58,7 @@ void VisiblesVetoProcessor::configure(
 }
 
 bool VisiblesVetoProcessor::inList(std::vector<int> parents, int track_id) {
-  bool in_list = false;
-  for (const int &i : parents) {
-    if (i == track_id) {
-      in_list = true;
-    }
-  }
-  return in_list;
+  return std::find(parents.begin(), parents.end(), track_id) != parents.end();
 }
 
 void VisiblesVetoProcessor::clearProcessor() {
