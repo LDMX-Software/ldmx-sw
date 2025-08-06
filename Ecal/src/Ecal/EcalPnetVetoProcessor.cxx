@@ -3,7 +3,7 @@
 namespace ecal {
 
 const std::vector<std::string> EcalPnetVetoProcessor::INPUT_NAMES{"points",
-                                                                   "features"};
+                                                                  "features"};
 const std::vector<unsigned int> EcalPnetVetoProcessor::INPUT_SIZES{
     N_COORDINATE_DIM * MAX_NUM_HITS, N_FEATURE_DIM* MAX_NUM_HITS};
 
@@ -47,8 +47,7 @@ void EcalPnetVetoProcessor::produce(framework::Event& event) {
       [](const ldmx::EcalHit& hit) { return hit.getEnergy() > 0; });
 
   // check number of hits_
-  ldmx_log(debug) << "nhits = " << nhits
-                  << " MAX_NUM_HITS = " << MAX_NUM_HITS;
+  ldmx_log(debug) << "nhits = " << nhits << " MAX_NUM_HITS = " << MAX_NUM_HITS;
   if (nhits < MAX_NUM_HITS) {
     std::array<double, 3> etraj = {-999., -999., -999.};
     std::array<double, 3> enorm = {-999., -999., -999.};
