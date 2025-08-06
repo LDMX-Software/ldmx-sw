@@ -56,15 +56,15 @@ class TruthHitProducer : public framework::Producer {
   // TODO: Make use of the global verbose parameter.
   bool verbose_{false};
 
-  /// Name of the input collection containing the sim hits_
+  /// Name of the input collection containing the sim hits
   std::string inputCollection_;
 
   /// Name of the pass that the input collection is on (empty string means take
   /// any pass)
-  std::string input_pass_name_;
+  std::string inputPassName_;
 
   /// Name of the output collection that will be used to store the
-  /// selected sim hits_
+  /// selected sim hits
   std::string outputCollection_;
 
  private:

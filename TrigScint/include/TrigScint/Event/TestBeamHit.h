@@ -36,7 +36,7 @@ class TestBeamHit : public ldmx::TrigScintHit {
   /**
    * Clear the data in the object.
    */
-  void clear(Option_t *option = "");
+  void Clear(Option_t *option = "");
 
   /**
    * Print out the object.

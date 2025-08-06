@@ -86,7 +86,7 @@ class TrigScintHit : public ldmx::HcalHit {
  private:
   // bar/channel number associated with the hit
   int barID_{-1};
-  // module_/pad number associated with the hit
+  // module/pad number associated with the hit
   int moduleID_{-1};
 
   /// The fraction of energy associated with beam electrons.

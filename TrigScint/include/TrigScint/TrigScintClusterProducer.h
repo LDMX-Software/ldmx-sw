@@ -1,6 +1,6 @@
 /**
  * @file TrigScintClusterProducer.h
- * @brief Clustering of trigger scintillator hits_
+ * @brief Clustering of trigger scintillator hits
  * @author Lene Kristian Bryngemark, Stanford University
  */
 
@@ -63,7 +63,7 @@ class TrigScintClusterProducer : public framework::Producer {
   // maximum allowed delay for hits to be considered for clustering
   double timeTolerance_{0.};
 
-  // input collection (hits_)
+  // input collection (hits)
   std::string input_collection_;
 
   // output collection (clusters)
@@ -72,7 +72,7 @@ class TrigScintClusterProducer : public framework::Producer {
   // specific pass name to use for track making
   std::string passName_{""};
 
-  // vertical bar start index_
+  // vertical bar start index
   int vertBarStartIdx_{52};
 
   // cluster channel nb centroid (will be content weighted)
@@ -97,7 +97,7 @@ class TrigScintClusterProducer : public framework::Producer {
   std::vector<unsigned int> v_usedIndices_;
 
   // fraction of cluster energy deposition associated with beam electron sim
-  // hits_
+  // hits
   float beamE_{0.};
 
   // cluster time (energy weighted based on hit time)

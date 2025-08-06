@@ -10,7 +10,7 @@ void QIEDecoder::configure(framework::config::Parameters &ps) {
   // Configure this instance of the encoder
   outputCollection_ = ps.getParameter<std::string>("output_collection");
   inputCollection_ = ps.getParameter<std::string>("input_collection");
-  input_pass_name_ = ps.getParameter<std::string>("input_pass_name");
+  inputPassName_ = ps.getParameter<std::string>("input_pass_name");
   channelMapFileName_ = ps.getParameter<std::string>("channel_map_file");
   nChannels_ = ps.getParameter<int>("number_channels");
   nSamples_ = ps.getParameter<int>("number_time_samples");
@@ -20,7 +20,7 @@ void QIEDecoder::configure(framework::config::Parameters &ps) {
   ldmx_log(debug) << "In configure, got parameters:" << "\noutput_collection = "
                   << outputCollection_
                   << "\ninput_collection = " << inputCollection_
-                  << "\ninput_pass_name  = " << input_pass_name_
+                  << "\ninput_pass_name  = " << inputPassName_
                   << "\nchannel_map_file = " << channelMapFileName_
                   << "\nnumber_channels  = " << nChannels_
                   << "\nnumber_time_samples  = " << nSamples_
@@ -68,19 +68,19 @@ void QIEDecoder::produce(framework::Event &event) {
   ldmx_log(debug) << "num samples = " << nSamp;
 
   ldmx_log(debug) << "Looking up input collection " << inputCollection_ << "_"
-                  << input_pass_name_;
+                  << inputPassName_;
   const auto eventStream{
-      event.getCollection<uint8_t>(inputCollection_, input_pass_name_)};
+      event.getCollection<uint8_t>(inputCollection_, inputPassName_)};
   ldmx_log(debug) << "Got input collection" << inputCollection_ << "_"
-                  << input_pass_name_;
+                  << inputPassName_;
 
   uint32_t timeEpoch = 0;
   // these don't have to be in any particular order, position is anyway looked
   // up from definition in header
   for (int iW = 0; iW < QIEStream::TIMESTAMP_LEN_BYTES; iW++) {
-    int pos_ = QIEStream::TIMESTAMP_POS + iW;
-    uint8_t timeWord = eventStream.at(pos_);
-    ldmx_log(debug) << "time stamp word at position " << pos_
+    int pos = QIEStream::TIMESTAMP_POS + iW;
+    uint8_t timeWord = eventStream.at(pos);
+    ldmx_log(debug) << "time stamp word at position " << pos
                     << " (with iW = " << iW
                     << ") = " << std::bitset<8>(timeWord);
     timeEpoch |= (timeWord << iW * 8);  // shift by a byte at a time
@@ -88,9 +88,9 @@ void QIEDecoder::produce(framework::Event &event) {
 
   uint32_t timeClock = 0;
   for (int iW = 0; iW < QIEStream::TIMESTAMPCLOCK_LEN_BYTES; iW++) {
-    int pos_ = QIEStream::TIMESTAMPCLOCK_POS + iW;
-    uint8_t timeWord = eventStream.at(pos_);
-    ldmx_log(debug) << "time stamp ns word at position " << pos_
+    int pos = QIEStream::TIMESTAMPCLOCK_POS + iW;
+    uint8_t timeWord = eventStream.at(pos);
+    ldmx_log(debug) << "time stamp ns word at position " << pos
                     << " (with iW = " << iW
                     << ") = " << std::bitset<8>(timeWord);
     timeClock |= (timeWord << iW * 8);  // shift by a byte at a time
@@ -102,9 +102,9 @@ void QIEDecoder::produce(framework::Event &event) {
                   << timeSpill << std::dec << ") counts since start of spill";
 
   for (int iW = 0; iW < QIEStream::TIMESINCESPILL_LEN_BYTES; iW++) {
-    int pos_ = QIEStream::TIMESINCESPILL_POS + iW;
-    uint8_t timeWord = eventStream.at(pos_);
-    ldmx_log(debug) << "time since spill word at position " << pos_
+    int pos = QIEStream::TIMESINCESPILL_POS + iW;
+    uint8_t timeWord = eventStream.at(pos);
+    ldmx_log(debug) << "time since spill word at position " << pos
                     << " (with iW = " << iW
                     << ") = " << std::bitset<8>(timeWord);
     timeSpill |= (timeWord << iW * 8);  // shift by a byte at a time
@@ -134,9 +134,9 @@ void QIEDecoder::produce(framework::Event &event) {
 
   for (int iW = 0; iW < QIEStream::TRIGID_LEN_BYTES; iW++) {
     // assume the whole 3B are written as a single 24 bits word
-    int pos_ = QIEStream::TRIGID_POS + iW;
-    uint8_t tIDword = eventStream.at(pos_);
-    ldmx_log(debug) << "trigger word at position " << pos_
+    int pos = QIEStream::TRIGID_POS + iW;
+    uint8_t tIDword = eventStream.at(pos);
+    ldmx_log(debug) << "trigger word at position " << pos
                     << " (with iW = " << iW
                     << ") = " << std::bitset<8>(tIDword);
     triggerID |= (tIDword << iW * 8);  // shift by a byte at a time

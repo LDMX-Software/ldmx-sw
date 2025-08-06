@@ -9,7 +9,7 @@ void QIEEncoder::configure(framework::config::Parameters &ps) {
   // Configure this instance of the encoder
   outputCollection_ = ps.getParameter<std::string>("output_collection");
   inputCollection_ = ps.getParameter<std::string>("input_collection");
-  input_pass_name_ = ps.getParameter<std::string>("input_pass_name");
+  inputPassName_ = ps.getParameter<std::string>("input_pass_name");
   channelMapFileName_ = ps.getParameter<std::string>("channel_map_file");
   nChannels_ = ps.getParameter<int>("number_channels");
   verbose_ = ps.getParameter<bool>("verbose");
@@ -17,7 +17,7 @@ void QIEEncoder::configure(framework::config::Parameters &ps) {
   ldmx_log(debug) << "In configure, got parameters:" << "\noutput_collection = "
                   << outputCollection_
                   << "\ninput_collection = " << inputCollection_
-                  << "\ninput_pass_name  = " << input_pass_name_
+                  << "\ninput_pass_name  = " << inputPassName_
                   << "\nchannel_map_file = " << channelMapFileName_
                   << "\nnumber_channels  = " << nChannels_
                   << "\nverbose          = " << verbose_;
@@ -71,17 +71,17 @@ void QIEEncoder::produce(framework::Event &event) {
     qieOut.setADC(initVec);
     qieOut.setTDC(initVec);
     qieOut.setCID(initVec);
-    qieOut.setElectronicsID(iQ);  // assume id is index_
+    qieOut.setElectronicsID(iQ);  // assume id is index
 
     qieOuts.push_back(qieOut);
   }
 
   ldmx_log(debug) << "Looking up input collection " << inputCollection_ << "_"
-                  << input_pass_name_;
+                  << inputPassName_;
   const auto digis{event.getCollection<trigscint::TrigScintQIEDigis>(
-      inputCollection_, input_pass_name_)};
+      inputCollection_, inputPassName_)};
   ldmx_log(debug) << "Got input collection" << inputCollection_ << "_"
-                  << input_pass_name_;
+                  << inputPassName_;
 
   bool isCIDunsync = false;  // mismatch between CID reported by channels within
                              // the same time sample

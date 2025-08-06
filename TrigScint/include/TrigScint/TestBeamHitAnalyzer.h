@@ -39,7 +39,7 @@ class TestBeamHitAnalyzer : public framework::Analyzer {
 
   // configurable parameters
   std::string inputCol_;
-  std::string input_pass_name_{""};
+  std::string inputPassName_{""};
   std::vector<double> peds_;
   int startSample_{0};
 

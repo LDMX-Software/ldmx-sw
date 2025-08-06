@@ -37,7 +37,7 @@ class TestBeamClusterAnalyzer : public framework::Analyzer {
  private:
   // configurable parameters
   std::string inputCol_;  // input coll. containing 2-hit clusters (standard)
-  std::string input_pass_name_{""};
+  std::string inputPassName_{""};
   //  std::string wideInputCol_;   // input coll. containing 3-hit clusters
   //  std::string wideInputPassName_{inputPassName};  // default to same pass
 

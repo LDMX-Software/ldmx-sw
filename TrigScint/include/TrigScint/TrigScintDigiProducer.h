@@ -38,7 +38,7 @@ enum TrigScintSection {
  */
 class TrigScintDigiProducer : public framework::Producer {
  public:
-  typedef int layer_;
+  typedef int layer;
 
   typedef std::pair<double, double> zboundaries;
 
@@ -61,24 +61,24 @@ class TrigScintDigiProducer : public framework::Producer {
    */
   virtual void onNewRun(const ldmx::RunHeader& runHeader) override;
 
-  ldmx::TrigScintID generateRandomID(int module_);
+  ldmx::TrigScintID generateRandomID(int module);
 
  private:
   /// Random number generator
   std::mt19937 rng_;
 
   /// Generate noise hits given the number of channels and mean noise.
-  std::unique_ptr<ldmx::NoiseGenerator> noise_generator_{nullptr};
+  std::unique_ptr<ldmx::NoiseGenerator> noiseGenerator_{nullptr};
 
-  /// Name of the input collection containing the sim hits_
+  /// Name of the input collection containing the sim hits
   std::string inputCollection_;
 
   /// Name of the pass that the input collection is on (empty string means take
   /// any pass)
-  std::string input_pass_name_;
+  std::string inputPassName_;
 
   /// Name of the output collection that will be used to stored the
-  /// digitized trigger scintillator hits_
+  /// digitized trigger scintillator hits
   std::string outputCollection_;
 
   std::string sim_particles_passname_;

@@ -24,7 +24,7 @@ class TrigCaloCluster {
 
   bool operator<(const TrigCaloCluster &h) { return e_ < h.e_; }
 
-  void Clear();
+  void clear();
 
   void setEnergy(float e) { e_ = e; }
   void setXYZ(float x, float y, float z) {

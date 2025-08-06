@@ -47,22 +47,22 @@ class TrigScintTrack {
   float getCentroid() const { return centroid_; };
 
   /**
-   * Get the x_ centroid of the track.
-   * @return The x_ centroid of the track in units of bars.
+   * Get the x centroid of the track.
+   * @return The x centroid of the track in units of bars.
    */
-  float getCentroidX() const { return centroid_x_; };
+  float getCentroidX() const { return centroidX_; };
 
   /**
-   * Get the y_ centroid of the track.
-   * @return The y_ centroid of the track in units of bars.
+   * Get the y centroid of the track.
+   * @return The y centroid of the track in units of bars.
    */
-  float getCentroidY() const { return centroid_y_; };
+  float getCentroidY() const { return centroidY_; };
 
   /**
-   * Get the z_ centroid of the track.
-   * @return The z_ centroid of the track.
+   * Get the z centroid of the track.
+   * @return The z centroid of the track.
    */
-  float getCentroidZ() const { return centroid_z_; };
+  float getCentroidZ() const { return centroidZ_; };
 
   /**
    * Get the detector ID residual of the track.
@@ -71,56 +71,56 @@ class TrigScintTrack {
   float getResidual() const { return residual_; };
 
   /**
-   * Get the x_ residual of the track.
-   * @return The x_ residual of the track.
+   * Get the x residual of the track.
+   * @return The x residual of the track.
    */
-  float getResidualX() const { return residual_x_; };
+  float getResidualX() const { return residualX_; };
 
   /**
-   * Get the y_ residual of the track.
-   * @return The y_ residual of the track.
+   * Get the y residual of the track.
+   * @return The y residual of the track.
    */
-  float getResidualY() const { return residual_y_; };
+  float getResidualY() const { return residualY_; };
 
   /**
-   * Get the z_ residual of the track.
-   * @return The z_ residual of the track.
+   * Get the z residual of the track.
+   * @return The z residual of the track.
    */
-  float getResidualZ() const { return residual_z_; };
+  float getResidualZ() const { return residualZ_; };
 
   /**
    * Get the (average) pe of the track.
    * @return The cluster pe count averaged over the track.
    */
-  float getPE() const { return pe_; };
+  float getPE() const { return PE_; };
 
   /**
    * Get the number of clusters forming the track.
    * @return The number of clusters in the track.
    */
-  int getNclusters() const { return n_clusters_; };
+  int getNclusters() const { return nClusters_; };
 
   /**
-   * Get the x_ coordinate of the track.
-   * @return The x_ coordinate of the track in mm [mm].
+   * Get the x coordinate of the track.
+   * @return The x coordinate of the track in mm [mm].
    */
-  float getX() const { return track_x_; };
+  float getX() const { return x_; };
 
   /**
-   * Get the y_ coordinate of the track.
-   * @return The y_ coordinate of the track [mm].
+   * Get the y coordinate of the track.
+   * @return The y coordinate of the track [mm].
    */
-  float getY() const { return track_y_; };
+  float getY() const { return y_; };
 
   /**
-   * Get the uncertainty on the x_ coordinate of the track.
-   * @return The uncertainty on the x_ coordinate of the track in mm [mm].
+   * Get the uncertainty on the x coordinate of the track.
+   * @return The uncertainty on the x coordinate of the track in mm [mm].
    */
   float getSigmaX() const { return sx_; };
 
   /**
-   * Get the uncertainty on the y_ coordinate of the track.
-   * @return The uncertainty on the y_ coordinate of the track in mm [mm].
+   * Get the uncertainty on the y coordinate of the track.
+   * @return The uncertainty on the y coordinate of the track in mm [mm].
    */
   float getSigmaY() const { return sy_; };
 
@@ -140,12 +140,12 @@ class TrigScintTrack {
   std::vector<double> getMomentum() const { return {px_, py_, pz_}; };
 
   /** Get beam energy fraction of hit. */
-  float getBeamEfrac() const { return beam_efrac_; }
+  float getBeamEfrac() const { return beamEfrac_; }
 
   // setters
 
   /** Set beam energy fraction of hit. */
-  void setBeamEfrac(float e) { beam_efrac_ = e; }
+  void setBeamEfrac(float e) { beamEfrac_ = e; }
 
   /**
    * Set the detector ID centroid of the track.
@@ -153,19 +153,19 @@ class TrigScintTrack {
   void setCentroid(float centroid) { centroid_ = centroid; };
 
   /**
-   * Set the x_ centroid of the track.
+   * Set the x centroid of the track.
    */
-  void setCentroidX(float centroid) { centroid_x_ = centroid; };
+  void setCentroidX(float centroid) { centroidX_ = centroid; };
 
   /**
-   * Set the y_ centroid of the track.
+   * Set the y centroid of the track.
    */
-  void setCentroidY(float centroid) { centroid_y_ = centroid; };
+  void setCentroidY(float centroid) { centroidY_ = centroid; };
 
   /**
-   * Set the z_ centroid of the track.
+   * Set the z centroid of the track.
    */
-  void setCentroidZ(float centroid) { centroid_z_ = centroid; };
+  void setCentroidZ(float centroid) { centroidZ_ = centroid; };
 
   /**
    * Set the detector ID residual of the track.
@@ -173,29 +173,29 @@ class TrigScintTrack {
   void setResidual(float resid) { residual_ = resid; };
 
   /**
-   * Set the x_ residual of the track.
+   * Set the x residual of the track.
    */
-  void setResidualX(float resid) { residual_x_ = resid; };
+  void setResidualX(float resid) { residualX_ = resid; };
 
   /**
-   * Set the y_ residual of the track.
+   * Set the y residual of the track.
    */
-  void setResidualY(float resid) { residual_y_ = resid; };
+  void setResidualY(float resid) { residualY_ = resid; };
 
   /**
-   * Set the z_ residual of the track.
+   * Set the z residual of the track.
    */
-  void setResidualZ(float resid) { residual_z_ = resid; };
+  void setResidualZ(float resid) { residualZ_ = resid; };
 
   /**
    * Set the average cluster pe of  the track.
    */
-  void setPE(float pe) { pe_ = pe; };
+  void setPE(float pe) { PE_ = pe; };
 
   /**
    * Set the number of clusters forming the track.
    */
-  void setNclusters(uint n_cl) { n_clusters_ = n_cl; };
+  void setNclusters(uint nCl) { nClusters_ = nCl; };
 
   /**
    * Add a cluster to the list of track constituents.
@@ -204,18 +204,18 @@ class TrigScintTrack {
 
   /**
    * Set the position of the track [mm].
-   * @param track_x_ The X position.
-   * @param track_y_ The Y position.
+   * @param x The X position.
+   * @param y The Y position.
    */
-  void setPosition(const float track_x, const float track_y) {
-    track_x_ = track_x;
-    track_y_ = track_y;
+  void setPosition(const float x, const float y) {
+    x_ = x;
+    y_ = y;
   };
 
   /**
    * Set the uncertainty on the position of the track [mm].
-   * @param x_ The X position uncertainty.
-   * @param y_ The Y position uncertainty.
+   * @param x The X position uncertainty.
+   * @param y The Y position uncertainty.
    */
   void setSigmaXY(const float sx, const float sy) {
     sx_ = sx;
@@ -224,13 +224,13 @@ class TrigScintTrack {
 
   /**
    * Set the uncertainty on the position of the track [mm].
-   * @param x_ The X position uncertainty.
+   * @param x The X position uncertainty.
    */
   void setSigmaX(const float sx) { sx_ = sx; }
 
   /**
    * Set the uncertainty on the position of the track [mm].
-   * @param sy The Y position uncertainty.
+   * @param y The Y position uncertainty.
    */
   void setSigmaY(const float sy) { sy_ = sy; }
 
@@ -257,19 +257,19 @@ class TrigScintTrack {
   float centroid_{-1};
 
   /**
-   * The detector x_ coordinate centroid.
+   * The detector x coordinate centroid.
    */
-  float centroid_x_{-1};
+  float centroidX_{-1};
 
   /**
-   * The detector y_ coordinate centroid.
+   * The detector y coordinate centroid.
    */
-  float centroid_y_{-1};
+  float centroidY_{-1};
 
   /**
-   * The detector z_ coordinate centroid.
+   * The detector z coordinate centroid.
    */
-  float centroid_z_{-99999};
+  float centroidZ_{-99999};
 
   /**
    * The detector residual.
@@ -277,24 +277,24 @@ class TrigScintTrack {
   float residual_{0};
 
   /**
-   * The x_ coordinate residual.
+   * The x coordinate residual.
    */
-  float residual_x_{0};
+  float residualX_{0};
 
   /**
-   * The y_ coordinate residual.
+   * The y coordinate residual.
    */
-  float residual_y_{0};
+  float residualY_{0};
 
   /**
-   * The z_ coordinate residual.
+   * The z coordinate residual.
    */
-  float residual_z_{0};
+  float residualZ_{0};
 
   /**
    * The number of clusters forming the track.
    */
-  int n_clusters_{0};
+  int nClusters_{0};
 
   /**
    * The list of clusters constituting the track.
@@ -307,22 +307,22 @@ class TrigScintTrack {
    * WARNING: this is a "truth" variable and will never be
    * measureable in actual data.
    */
-  float beam_efrac_{0.};
+  float beamEfrac_{0.};
 
   /**
    * The average pe count of the clusters making up the track.
    */
-  float pe_{0.};
+  float PE_{0.};
 
   /**
    * The X position.
    */
-  float track_x_{-99999.};
+  float x_{-99999.};
 
   /**
    * The Y position.
    */
-  float track_y_{-99999.};
+  float y_{-99999.};
 
   /**
    * The uncertainty on the X position.
@@ -354,7 +354,7 @@ class TrigScintTrack {
   /**
    * The Z position.
    */
-  float track_z_{0};
+  float z_{0};
 
   /**
    * The ROOT class definition.

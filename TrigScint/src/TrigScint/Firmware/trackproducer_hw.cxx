@@ -21,11 +21,11 @@ void trackproducer_hw(Cluster Pad1[NTRK], Cluster Pad2[NCLUS],
 #pragma HLS ARRAY_PARTITION variable = test complete
 #endif
 
-  // This firmware module_ loops over first the Pad1 seeds (NTRK) and then the
+  // This firmware module loops over first the Pad1 seeds (NTRK) and then the
   // patterns (COMBO) For each seed it check 9 combinations of tracks. These
   // combinations, which depend on alignment essentially consist of the clusters
   // that have channels immediattely above or below the Pad1 cluster in the
-  // first layer_, which you may observe from the LUT if you printed it. I would
+  // first layer, which you may observe from the LUT if you printed it. I would
   // only need to check the pattern without all these continue statements, but
   // the continue statements further reduce the pattern collection size by only
   // applying certain patterns iff a secondary hit is there Thats why this looks
@@ -104,7 +104,7 @@ void trackproducer_hw(Cluster Pad1[NTRK], Cluster Pad2[NCLUS],
     }
   }
   // While we ultimately envision having the firmware do duplicate track removal
-  // in the other two layers in a separate firmware module_, they are done here
+  // in the other two layers in a separate firmware module, they are done here
   // so as to not have track over counting and to validate the processor. Thats
   // what occurs here below.
   for (int i = 1; i < NTRK - 1; i++) {

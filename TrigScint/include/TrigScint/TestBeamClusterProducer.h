@@ -1,6 +1,6 @@
 /**
  * @file TestBeamClusterProducer.h
- * @brief Clustering of TS testbeam hits_
+ * @brief Clustering of TS testbeam hits
  * @author Lene Kristian Bryngemark, Stanford University
  */
 
@@ -64,7 +64,7 @@ class TestBeamClusterProducer : public framework::Producer {
   // maximum allowed delay for hits to be considered for clustering
   double timeTolerance_{0.};
 
-  // input collection (hits_)
+  // input collection (hits)
   std::string input_collection_;
 
   // output collection (clusters)
@@ -89,9 +89,9 @@ class TestBeamClusterProducer : public framework::Producer {
   std::vector<unsigned int> v_usedIndices_;
 
   // fraction of cluster energy deposition associated with beam electron sim
-  // hits_
+  // hits
   // -- could convert this to instead be a "cleanb frac"; fraction of cluster
-  // energy coming from clean hits_
+  // energy coming from clean hits
   float beamE_{0.};
 
   /// boolean indicating whether we want to apply quality criteria from hit

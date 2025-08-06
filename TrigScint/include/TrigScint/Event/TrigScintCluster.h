@@ -38,7 +38,7 @@ class TrigScintCluster {
   /**
    * Reset the TrigScintCluster object.
    */
-  void clear();
+  void Clear(Option_t *option = "");  // override;
 
   /**
    * Take in the hits that make up the cluster.
@@ -79,15 +79,15 @@ class TrigScintCluster {
   void setIDs(std::vector<unsigned int> &hitIDs) { hitIDs_ = hitIDs; }
 
   /**
-   *The cluster centroid in x_,y_,z_
-   * @param x_ Cluster x_ coordinate
-   * @param y_ Cluster y_ coordinate
-   * @param z_ Cluster z_ coordinate (not implemented)
+   *The cluster centroid in x,y,z
+   * @param x Cluster x coordinate
+   * @param y Cluster y coordinate
+   * @param z Cluster z coordinate (not implemented)
    */
-  void setCentroidXYZ(double x_, double y_, double z_) {
-    centroidX_ = x_;
-    centroidY_ = y_;
-    centroidZ_ = z_;
+  void setCentroidXYZ(double x, double y, double z) {
+    centroidX_ = x;
+    centroidY_ = y;
+    centroidZ_ = z;
   }
 
   /**
@@ -119,13 +119,13 @@ class TrigScintCluster {
   /** Get the number of hits constituting the cluster */
   int getNHits() const { return nHits_; }
 
-  /** Get cluster centroid in x_ [mm] (not implmented) */
+  /** Get cluster centroid in x [mm] (not implmented) */
   double getCentroidX() const { return centroidX_; }
 
-  /** Get cluster centroid in y_ [mm] (not implmented) */
+  /** Get cluster centroid in y [mm] (not implmented) */
   double getCentroidY() const { return centroidY_; }
 
-  /** Get cluster centroid in z_ [mm] (not implmented) */
+  /** Get cluster centroid in z [mm] (not implmented) */
   double getCentroidZ() const { return centroidZ_; }
 
   /** Get vector of channel IDs of hits forming the cluster */
@@ -158,13 +158,13 @@ class TrigScintCluster {
   // the hits forming the cluster
   double centroid_{-1};
 
-  // hit centroid in x_ [mm] (not implemented)
+  // hit centroid in x [mm] (not implemented)
   double centroidX_{0};
 
-  // hit centroid in y_ [mm] (not implemented)
+  // hit centroid in y [mm] (not implemented)
   double centroidY_{0};
 
-  // hit centroid in z_ [mm] (not implemented)
+  // hit centroid in z [mm] (not implemented)
   double centroidZ_{0};
 
   // fraction of cluster energy deposited in a sim hit associated with beam

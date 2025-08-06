@@ -17,7 +17,7 @@ void TrigScintFirmwareHitProducer::configure(
   pePerMip_ = ps.getParameter<double>("pe_per_mip");
   inputCollection_ = ps.getParameter<std::string>("input_collection");
   testCollection_ = ps.getParameter<std::string>("test_collection");
-  input_pass_name_ = ps.getParameter<std::string>("input_pass_name");
+  inputPassName_ = ps.getParameter<std::string>("input_pass_name");
   outputCollection_ = ps.getParameter<std::string>("output_collection");
   sample_of_interest_ = ps.getParameter<int>("sample_of_interest");
   ldmx_log(debug) << "In TrigScintFirmwareHitProducer: configure done!";
@@ -27,7 +27,7 @@ void TrigScintFirmwareHitProducer::configure(
                   << "\ninput collection:     " << inputCollection_
                   << "\ntest collection:	" << testCollection_
                   << "\nAre we testing:        " << doTest_
-                  << "\nInput pass name:     " << input_pass_name_
+                  << "\nInput pass name:     " << inputPassName_
                   << "\nOutput collection:    " << outputCollection_;
   return;
 }
@@ -38,14 +38,14 @@ void TrigScintFirmwareHitProducer::produce(framework::Event &event) {
   // purpose is to emulate existing reconstruction software in firmware for
   // triggering. I will more fully explain the operation and choices made in
   // hitproducer_hw in hitproducer_hw
-  const auto rechits{event.getCollection<ldmx::TrigScintHit>(testCollection_,
-                                                             input_pass_name_)};
+  const auto rechits{
+      event.getCollection<ldmx::TrigScintHit>(testCollection_, inputPassName_)};
   for (const auto &hit : rechits) {
     ldmx_log(debug) << "Analysis barID: " << hit.getBarID()
                     << ", PE Number: " << hit.getPE();
   }
   const auto digis{event.getCollection<trigscint::TrigScintQIEDigis>(
-      inputCollection_, input_pass_name_)};
+      inputCollection_, inputPassName_)};
   Hit outHit[NHITS];
   ap_uint<14> FIFO[NCHAN][NTIMES];
   ap_uint<8> Peds[NCHAN];

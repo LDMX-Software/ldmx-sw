@@ -41,7 +41,7 @@ class QIEAnalyzer : public framework::Analyzer {
 
   // configurable parameters
   std::string inputCol_;
-  std::string input_pass_name_{""};
+  std::string inputPassName_{""};
   std::vector<double> peds_;
   std::vector<double> gain_;
   int startSample_{0};

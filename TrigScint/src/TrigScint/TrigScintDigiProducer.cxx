@@ -15,30 +15,30 @@ void TrigScintDigiProducer::configure(
   mevPerMip_ = parameters.getParameter<double>("mev_per_mip");
   pePerMip_ = parameters.getParameter<double>("pe_per_mip");
   inputCollection_ = parameters.getParameter<std::string>("input_collection");
-  input_pass_name_ = parameters.getParameter<std::string>("input_pass_name");
+  inputPassName_ = parameters.getParameter<std::string>("input_pass_name");
   outputCollection_ = parameters.getParameter<std::string>("output_collection");
   sim_particles_passname_ =
       parameters.getParameter<std::string>("sim_particles_passname");
 }
 
 void TrigScintDigiProducer::onNewRun(const ldmx::RunHeader &) {
-  noise_generator_ = std::make_unique<ldmx::NoiseGenerator>(meanNoise_, false);
-  noise_generator_->setNoiseThreshold(1);
+  noiseGenerator_ = std::make_unique<ldmx::NoiseGenerator>(meanNoise_, false);
+  noiseGenerator_->setNoiseThreshold(1);
   // Set up seeds
   const auto &rseed = getCondition<framework::RandomNumberSeedService>(
       framework::RandomNumberSeedService::CONDITIONS_OBJECT_NAME);
 
-  noise_generator_->seedGenerator(
+  noiseGenerator_->seedGenerator(
       rseed.getSeed("TrigScintDigiProducer::NoiseGenerator"));
-  // Random number generator for module_ id
+  // Random number generator for module id
   rng_.seed(rseed.getSeed("TrigScintDigiProducer"));
 }
 
-ldmx::TrigScintID TrigScintDigiProducer::generateRandomID(int module_) {
+ldmx::TrigScintID TrigScintDigiProducer::generateRandomID(int module) {
   // Uniform distributions for integer generation
   std::uniform_int_distribution<int> strips_dist(0, stripsPerArray_ - 1);
-  ldmx::TrigScintID tempID(module_, strips_dist(rng_));
-  if (module_ >= TrigScintSection::NUM_SECTIONS) {
+  ldmx::TrigScintID tempID(module, strips_dist(rng_));
+  if (module >= TrigScintSection::NUM_SECTIONS) {
     ldmx_log(fatal) << "TrigScintSection is not known";
   }
 
@@ -52,24 +52,24 @@ void TrigScintDigiProducer::produce(framework::Event &event) {
 
   auto numRecHits{0};
 
-  // looper over sim hits_ and aggregate energy depositions for each detID
+  // looper over sim hits and aggregate energy depositions for each detID
   const auto simHits{event.getCollection<ldmx::SimCalorimeterHit>(
-      inputCollection_, input_pass_name_)};
+      inputCollection_, inputPassName_)};
   auto particleMap{event.getMap<int, ldmx::SimParticle>(
       "SimParticles", sim_particles_passname_)};
 
-  int module_{-1};
+  int module{-1};
   for (const auto &simHit : simHits) {
     ldmx::TrigScintID id(simHit.getID());
 
-    // Just set the module_ ID to use for noise hits_ here.  Given that
-    // we are currently processing a single module_ at a time, setting
+    // Just set the module ID to use for noise hits here.  Given that
+    // we are currently processing a single module at a time, setting
     // it within the loop shouldn't matter.
-    module_ = id.module();
+    module = id.module();
     std::vector<float> position = simHit.getPosition();
     ldmx_log(trace) << " Module ID = " << id.raw();
 
-    // check if hits_ is from beam electron and, if so, add to beamFrac
+    // check if hits is from beam electron and, if so, add to beamFrac
     for (int i = 0; i < simHit.getNumberOfContribs(); i++) {
       auto contrib = simHit.getContrib(i);
 
@@ -93,8 +93,8 @@ void TrigScintDigiProducer::produce(framework::Event &event) {
 
     // for now, we take an energy weighted average of the hit in each strip to
     // simulate the hit position. AJW: these should be dropped, they are likely
-    // to lead to a problem since we can't measure them anyway except roughly y_
-    // and z_, which is encoded in the ids.
+    // to lead to a problem since we can't measure them anyway except roughly y
+    // and z, which is encoded in the ids.
     if (Edep.find(id) == Edep.end()) {
       // first hit, initialize
       Edep[id] = simHit.getEdep();
@@ -105,7 +105,7 @@ void TrigScintDigiProducer::produce(framework::Event &event) {
       numRecHits++;
 
     } else {
-      // not first hit, aggregate, and store the largest radius_ hit
+      // not first hit, aggregate, and store the largest radius hit
       Xpos[id] += position[0] * simHit.getEdep();
       Ypos[id] += position[1] * simHit.getEdep();
       Zpos[id] += position[2] * simHit.getEdep();
@@ -115,7 +115,7 @@ void TrigScintDigiProducer::produce(framework::Event &event) {
     }
   }
 
-  // Create the container to hold the digitized trigger scintillator hits_.
+  // Create the container to hold the digitized trigger scintillator hits.
   std::vector<ldmx::TrigScintHit> trigScintHits;
 
   // loop over detIDs and simulate number of PEs
@@ -147,7 +147,7 @@ void TrigScintDigiProducer::produce(framework::Event &event) {
       hit.setXPos(Xpos[id]);
       hit.setYPos(Ypos[id]);
       hit.setZPos(Zpos[id]);
-      hit.setModuleID(module_);
+      hit.setModuleID(module);
       hit.setBarID(id.bar());  // getFieldValue("bar"));
       hit.setNoise(false);
       hit.setBeamEfrac(beamFrac[id] / depEnergy);
@@ -157,7 +157,7 @@ void TrigScintDigiProducer::produce(framework::Event &event) {
 
     ldmx_log(trace) << " ID = " << id.raw() << " Edep: " << Edep[id]
                     << " numPEs: " << cellPEs[id] << " time: " << Time[id]
-                    << " z_: " << Zpos[id] << "\t X: " << Xpos[id]
+                    << " z: " << Zpos[id] << "\t X: " << Xpos[id]
                     << " Y: " << Ypos[id] << " Z: " << Zpos[id];
   }
 
@@ -167,7 +167,7 @@ void TrigScintDigiProducer::produce(framework::Event &event) {
   // all arrays are merged into one collection
   int numEmptyCells = stripsPerArray_ - numRecHits;
   std::vector<double> noiseHits_PE =
-      noise_generator_->generateNoiseHits(numEmptyCells);
+      noiseGenerator_->generateNoiseHits(numEmptyCells);
 
   ldmx::TrigScintID tempID;
 
@@ -175,7 +175,7 @@ void TrigScintDigiProducer::produce(framework::Event &event) {
     ldmx::TrigScintHit hit;
     // generate random ID from remaining cells
     do {
-      tempID = generateRandomID(module_);
+      tempID = generateRandomID(module);
     } while (Edep.find(tempID) != Edep.end() ||
              noiseHitIDs.find(tempID) != noiseHitIDs.end());
 
@@ -191,7 +191,7 @@ void TrigScintDigiProducer::produce(framework::Event &event) {
     hit.setXPos(0.);
     hit.setYPos(0.);
     hit.setZPos(0.);
-    hit.setModuleID(module_);
+    hit.setModuleID(module);
     hit.setBarID(noiseID.bar());
     hit.setNoise(true);
     hit.setBeamEfrac(0.);

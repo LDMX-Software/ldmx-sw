@@ -14,7 +14,7 @@ void EventReadoutProducer::configure(
     framework::config::Parameters &parameters) {
   // Configure this instance of the producer
   inputCollection_ = parameters.getParameter<std::string>("input_collection");
-  input_pass_name_ = parameters.getParameter<std::string>("input_pass_name");
+  inputPassName_ = parameters.getParameter<std::string>("input_pass_name");
   outputCollection_ = parameters.getParameter<std::string>("output_collection");
   nPedSamples_ = parameters.getParameter<int>("number_pedestal_samples");
   timeShift_ = parameters.getParameter<int>("time_shift");
@@ -24,7 +24,7 @@ void EventReadoutProducer::configure(
   ldmx_log(debug) << "In configure, got parameters:" << "\noutput_collection = "
                   << outputCollection_
                   << "\ninput_collection = " << inputCollection_
-                  << "\ninput_pass_name  = " << input_pass_name_
+                  << "\ninput_pass_name  = " << inputPassName_
                   << "\nnumber_pedestal_samples  = " << nPedSamples_
                   << "\ntime_shift = " << timeShift_
                   << "\nfiber_to_shift  = " << fiberToShift_
@@ -36,7 +36,7 @@ void EventReadoutProducer::produce(framework::Event &event) {
   SimQIE qie;
 
   const auto digis{event.getCollection<trigscint::TrigScintQIEDigis>(
-      inputCollection_, input_pass_name_)};
+      inputCollection_, inputPassName_)};
 
   std::vector<trigscint::EventReadout> channelReadoutEvents;
   for (const auto &digi : digis) {
@@ -166,7 +166,7 @@ void EventReadoutProducer::produce(framework::Event &event) {
           if (chargeCheck[i] ==
               1) {  // an actual local max has been normalised by its own value
             maxID = i;
-            //		  ldmx_log(debug) << "storing max index_ " <<maxID <<"
+            //		  ldmx_log(debug) << "storing max index " <<maxID <<"
             // and size of vector is " << chargeCheck.size()-4;
             break;
           }
@@ -178,7 +178,7 @@ void EventReadoutProducer::produce(framework::Event &event) {
           if (verbose_)
             ldmx_log(debug)
                 << "Checking how many matching groups of four we can "
-                   "find, starting at index_ "
+                   "find, starting at index "
                 << i;
 
           for (int iQ = 0; iQ < 4; iQ++) {  // check if they are consistently
@@ -230,7 +230,7 @@ void EventReadoutProducer::produce(framework::Event &event) {
     int nHigh = 0;
     int quartLength = (int)charge.size() / 4;
     for (int i = 4 * quartLength - 2; i >= 3 * quartLength;
-         i--) {  // maxQ is already at last index_
+         i--) {  // maxQ is already at last index
       if (charge[i] / maxQ > 0.66) nHigh++;
     }
 
@@ -239,7 +239,7 @@ void EventReadoutProducer::produce(framework::Event &event) {
     */
     uint flagSpike = (maxQ / outEvent.getTotQ() > 0.95) ||
                      (charge[charge.size() - 2] / maxQ <
-                      0.05);  // skip "unnaturally" narrow hits_ (all charge in
+                      0.05);  // skip "unnaturally" narrow hits (all charge in
                               // one sample or huge drop to second highest)
     uint flagPlateau =
         (ped > 15 || nHigh >= 5);  //( fabs(ped) > 15 ); //threshold //   //skip
@@ -286,7 +286,7 @@ flips and long weird pulses
     channelReadoutEvents.push_back(outEvent);
   }
   // Create the container to hold the
-  // digitized trigger scintillator hits_.
+  // digitized trigger scintillator hits.
 
   event.add(outputCollection_, channelReadoutEvents);
   ldmx_log(debug) << "\n";

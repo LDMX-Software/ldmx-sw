@@ -16,7 +16,7 @@ TestBeamClusterAnalyzer::TestBeamClusterAnalyzer(const std::string& name,
 void TestBeamClusterAnalyzer::configure(
     framework::config::Parameters& parameters) {
   inputCol_ = parameters.getParameter<std::string>("inputCollection");
-  input_pass_name_ = parameters.getParameter<std::string>("inputPassName");
+  inputPassName_ = parameters.getParameter<std::string>("inputPassName");
   //  wideInputCol_ =
   //  parameters.getParameter<std::string>("3hitInputCollection");
   // wideInputPassName_ =
@@ -24,7 +24,7 @@ void TestBeamClusterAnalyzer::configure(
 
   std::cout << " [ TestBeamClusterAnalyzer ] In configure(), got parameters "
             << "\n\t inputCollection = " << inputCol_
-            << "\n\t inputPassName = " << input_pass_name_ << std::endl;
+            << "\n\t inputPassName = " << inputPassName_ << std::endl;
   //        << "\n\t 3hitInputCollection = " << wideInputCol_
   //        << "\n\t 3hitInputPassName = " << wideInputPassName_
 
@@ -32,14 +32,14 @@ void TestBeamClusterAnalyzer::configure(
 }
 
 void TestBeamClusterAnalyzer::analyze(const framework::Event& event) {
-  if (!event.exists(inputCol_, input_pass_name_)) {
+  if (!event.exists(inputCol_, inputPassName_)) {
     ldmx_log(info) << "No cluster collection " << inputCol_ << "_"
-                   << input_pass_name_ << " found. Skipping analysis of event";
+                   << inputPassName_ << " found. Skipping analysis of event";
     return;
   }
 
   const auto clusters{
-      event.getCollection<ldmx::TrigScintCluster>(inputCol_, input_pass_name_)};
+      event.getCollection<ldmx::TrigScintCluster>(inputCol_, inputPassName_)};
 
   int n1hit = 0;
   int n2hit = 0;
@@ -63,9 +63,9 @@ void TestBeamClusterAnalyzer::analyze(const framework::Event& event) {
 
     /* // this requires different implementation. use getHitIDs and use the
     indices in there
-       // in a loop over hits_ in the event to extract the PEs
+       // in a loop over hits in the event to extract the PEs
        // -- later.
-    for (auto hits_ : cluster.getConstituents() )
+    for (auto hits : cluster.getConstituents() )
       hPEinHits[seed]->Fill(PE);
     */
     // instead of always checking distance between the first two, instead, fill
@@ -128,7 +128,7 @@ void TestBeamClusterAnalyzer::onProcessStart() {
   hDeltaCentroids = new TH1F("hDeltaCentroids", ";#Delta_{centroid}",
                              5 * nChannels, -0.5, nChannels - 0.5);
 
-  hNHits = new TH1F("hNHits", "Number of hits_ in the event; N_{hits_}; Events",
+  hNHits = new TH1F("hNHits", "Number of hits in the event; N_{hits}; Events",
                     10, 0, 10);
   hNClusters = new TH1F("hNClusters",
                         "Number of clusters in the event; N_{clusters}; Events",

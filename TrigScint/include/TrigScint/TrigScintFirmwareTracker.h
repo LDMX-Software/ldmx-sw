@@ -55,7 +55,7 @@ class TrigScintFirmwareTracker : public framework::Producer {
   // output collection (clusters)
   std::string output_collection_;
 
-  // input collection (hits_)
+  // input collection (hits)
   std::string digis1_collection_;
   std::string digis2_collection_;
   std::string digis3_collection_;

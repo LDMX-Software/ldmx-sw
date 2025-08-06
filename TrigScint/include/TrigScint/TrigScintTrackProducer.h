@@ -35,7 +35,7 @@ class TrigScintTrackProducer : public framework::Producer {
   // add a cluster to a track
   ldmx::TrigScintTrack makeTrack(std::vector<ldmx::TrigScintCluster> clusters);
 
-  // match x_, y_ tracks and set their x_,y_ spatial coordinates
+  // match x, y tracks and set their x,y spatial coordinates
   void matchXYTracks(std::vector<ldmx::TrigScintTrack> &tracks);
   // std::vector<ldmx::TrigScintTrack> matchXYTracks(
   // std::vector<ldmx::TrigScintTrack> &tracks);
@@ -62,10 +62,10 @@ class TrigScintTrackProducer : public framework::Producer {
   // allow forming tracks without match in the last collection
   bool skipLast_{false};
 
-  // vertical bar start index_
+  // vertical bar start index
   int vertBarStartIdx_{52};
 
-  // number of horizontal bars (one layer_) in geometry
+  // number of horizontal bars (one layer) in geometry
   int nBarsY_{16};
 
   // number of vertical bars (one row) in geometry

@@ -38,7 +38,7 @@ void QualityFlagAnalyzer::configure(framework::config::Parameters& parameters) {
 void QualityFlagAnalyzer::analyze(const framework::Event& event) {
   const auto channels{event.getCollection<trigscint::EventReadout>(
       inputEventCol_, inputEventPassName_)};
-  const auto hits_{event.getCollection<trigscint::TestBeamHit>(
+  const auto hits{event.getCollection<trigscint::TestBeamHit>(
       inputHitCol_, inputHitPassName_)};
 
   int evNb = event.getEventNumber();
@@ -64,7 +64,7 @@ void QualityFlagAnalyzer::analyze(const framework::Event& event) {
     int flag = chan.getQualityFlag();
 
     // check if this is messing up flag
-    for (auto hit : hits_) {        // we will be ok even if there is no match
+    for (auto hit : hits) {         // we will be ok even if there is no match
       if (hit.getBarID() == bar) {  //
         flag = hit.getQualityFlag();
         hitPEs[bar] = hit.getPE();

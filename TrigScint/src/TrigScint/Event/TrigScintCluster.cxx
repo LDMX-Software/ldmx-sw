@@ -3,11 +3,11 @@
 ClassImp(ldmx::TrigScintCluster);
 
 namespace ldmx {
-TrigScintCluster::~TrigScintCluster() { clear(); }
+TrigScintCluster::~TrigScintCluster() { Clear(); }
 
 std::ostream& operator<<(std::ostream& o, const TrigScintCluster& c) {
   o << "TrigScintCluster { " << "Energy: " << c.energy_ << ", "
-    << "Number of hits_: " << c.nHits_ << ", " << "Seed channel " << c.seed_
+    << "Number of hits: " << c.nHits_ << ", " << "Seed channel " << c.seed_
     << ", Channel centroid: " << c.centroid_ << " }";
   o << "  --  Constituent hit channel ids: {  ";
   for (const auto& idx : c.getHitIDs()) {
@@ -18,7 +18,7 @@ std::ostream& operator<<(std::ostream& o, const TrigScintCluster& c) {
   return o;
 };
 
-void TrigScintCluster::clear() {
+void TrigScintCluster::Clear(Option_t*) {
   hitIDs_.clear();
 
   centroidX_ = 0;

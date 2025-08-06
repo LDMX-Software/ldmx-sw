@@ -71,7 +71,7 @@ void TrigScintFirmwareTracker::produce(framework::Event &event) {
   // This line fills in the LOOKUP table used for patter matching latter. The
   // array takes in as its first argument the centroid of a first pad cluster,
   // then the next two take on which track pattern (of ~9) we are matching to
-  // and the last if we are matching to a cluster with two hits_
+  // and the last if we are matching to a cluster with two hits
   for (int i = 0; i < NCENT; i++) {
     for (int j = 0; j < COMBO; j++) {
       LOOKUP[i][j][0] = (i - A[1] + A[0]);
@@ -220,7 +220,7 @@ void TrigScintFirmwareTracker::produce(framework::Event &event) {
     }
   }
   // These next lines here calls clusterproducer_sw(HPad1), which is just the
-  // validated firmware module_. Since ap_* class is messy, I had to do some
+  // validated firmware module. Since ap_* class is messy, I had to do some
   // post-call cleanup before looping over the clusters and putting them into
   // Point i which is feed into track producer
   int counterN = 0;

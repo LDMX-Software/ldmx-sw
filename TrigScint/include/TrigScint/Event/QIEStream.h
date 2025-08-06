@@ -39,7 +39,7 @@ class QIEStream {
    * A dummy function
    * @note required by Event/include/Event/EventDef.h
    */
-  void clear(Option_t *option = "");
+  void Clear(Option_t *option = "");
 
   /**
    * A dummy operator overloading
