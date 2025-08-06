@@ -42,7 +42,7 @@ class EcalSD : public SensitiveDetector {
   /**
    * Class constructor.
    * @param name The name of the sensitive detector.
-   * @param theCollectionName The name of the hits_ collection.
+   * @param theCollectionName The name of the hits collection.
    * @param subDetID The subdetector ID.
    */
   EcalSD(const std::string& name, simcore::ConditionsInterface& ci,
@@ -74,17 +74,17 @@ class EcalSD : public SensitiveDetector {
   G4bool ProcessHits(G4Step* aStep, G4TouchableHistory* ROhist) override;
 
   /**
-   * Add our hits_ to the event bus.
+   * Add our hits to the event bus.
    */
   virtual void saveHits(framework::Event& event) override;
 
   /**
-   * Clear the map of hits_ we have accumulated
+   * Clear the map of hits we have accumulated
    */
   virtual void OnFinishedEvent() override { hits_.clear(); }
 
  private:
-  /// map of hits_ to add to the event (will be squashed)
+  /// map of hits to add to the event (will be squashed)
   std::map<ldmx::EcalID, ldmx::SimCalorimeterHit> hits_;
   /// enable hit contribs
   bool enableHitContribs_;

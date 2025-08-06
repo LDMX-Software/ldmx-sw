@@ -12,7 +12,7 @@ namespace ldmx {
  * CompositePulse
  *
  * An emulator for a pulse that the chip needs to read.
- * This handles merging two hits_ that are "close-enough"
+ * This handles merging two hits that are "close-enough"
  * to one another.
  */
 class CompositePulse {

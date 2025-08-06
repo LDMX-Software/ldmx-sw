@@ -30,7 +30,7 @@ class EcalCluster : public ldmx::CaloCluster {
   virtual ~EcalCluster();
 
   /**
-   * Take in the hits_ that make up the cluster.
+   * Take in the hits that make up the cluster.
    * @param hit The digi hit's entry number in the events digi
    * collection.
    */

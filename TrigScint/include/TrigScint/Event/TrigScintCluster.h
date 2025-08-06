@@ -41,7 +41,7 @@ class TrigScintCluster {
   void clear();
 
   /**
-   * Take in the hits_ that make up the cluster.
+   * Take in the hits that make up the cluster.
    * @param idx The digi hit's entry number in the event's digi
    * collection.
    * @param hit The digi hit
@@ -67,14 +67,14 @@ class TrigScintCluster {
   void setPE(float PE) { PE_ = PE; }
 
   /**
-   *The number of hits_ forming the cluster
-   * @param nHits Number of hits_ forming the cluster
+   *The number of hits forming the cluster
+   * @param nHits Number of hits forming the cluster
    */
   void setNHits(int nHits) { nHits_ = nHits; }
 
   /**
-   *The channel numbers of hits_ forming the cluster
-   * @param hitIDs vector of channel numbers of hits_ forming the cluster
+   *The channel numbers of hits forming the cluster
+   * @param hitIDs vector of channel numbers of hits forming the cluster
    */
   void setIDs(std::vector<unsigned int> &hitIDs) { hitIDs_ = hitIDs; }
 
@@ -116,7 +116,7 @@ class TrigScintCluster {
   /** Get cluster total photoelectron count */
   double getPE() const { return PE_; }
 
-  /** Get the number of hits_ constituting the cluster */
+  /** Get the number of hits constituting the cluster */
   int getNHits() const { return nHits_; }
 
   /** Get cluster centroid in x_ [mm] (not implmented) */
@@ -128,7 +128,7 @@ class TrigScintCluster {
   /** Get cluster centroid in z_ [mm] (not implmented) */
   double getCentroidZ() const { return centroidZ_; }
 
-  /** Get vector of channel IDs of hits_ forming the cluster */
+  /** Get vector of channel IDs of hits forming the cluster */
   const std::vector<unsigned int> &getHitIDs() const { return hitIDs_; }
 
   /** Get the cluster centroid in units of channel nb */
@@ -139,13 +139,13 @@ class TrigScintCluster {
   }
 
  private:
-  // hits_ forming the cluster
+  // hits forming the cluster
   std::vector<unsigned int> hitIDs_;
 
   // total cluster energy depostion
   double energy_{0};
 
-  // number of hits_ forming the cluster
+  // number of hits forming the cluster
   int nHits_{0};
 
   // total cluster photoelectron count
@@ -155,7 +155,7 @@ class TrigScintCluster {
   int seed_{-1};
 
   // hit centroid in units of channel nb: energy weighted average of the IDs of
-  // the hits_ forming the cluster
+  // the hits forming the cluster
   double centroid_{-1};
 
   // hit centroid in x_ [mm] (not implemented)
@@ -171,7 +171,7 @@ class TrigScintCluster {
   // electrons
   float beamEfrac_{0.};
 
-  // cluster time: energy weighted average of the times of the hits_ forming the
+  // cluster time: energy weighted average of the times of the hits forming the
   // cluster
   float time_{0.};
 

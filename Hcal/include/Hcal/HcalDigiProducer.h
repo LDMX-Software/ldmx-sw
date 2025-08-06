@@ -118,7 +118,7 @@ class HcalDigiProducer : public framework::Producer {
   /// Noise RMS
   double noise_rms_;
 
-  /// Generates noise hits_ based off of number of cells that are not hit
+  /// Generates noise hits based off of number of cells that are not hit
   std::unique_ptr<ldmx::NoiseGenerator> noise_generator_;
 
   /// Generates Gaussian noise on top of real hits_

@@ -46,7 +46,7 @@ class CaloCluster {
   void clear();
 
   /**
-   * Take in the hits_ that make up the cluster.
+   * Take in the hits that make up the cluster.
    * @param hit The digi hit's entry number in the events digi
    * collection.
    */
@@ -59,7 +59,7 @@ class CaloCluster {
   void setEnergy(double energy) { energy_ = energy; }
 
   /**
-   * Sets total number of hits_ in the cluster.
+   * Sets total number of hits in the cluster.
    * @param nHits The total number of hits_.
    */
   void setNHits(int nHits) { nHits_ = nHits; }
@@ -105,7 +105,7 @@ class CaloCluster {
   // energy of cluster
   double getEnergy() const { return energy_; }
 
-  // number of hits_ - equivalent to number of strips
+  // number of hits - equivalent to number of strips
   int getNHits() const { return nHits_; }
 
   // position (weighted by energy)

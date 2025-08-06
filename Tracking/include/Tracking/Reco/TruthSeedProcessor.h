@@ -36,7 +36,7 @@ namespace tracking::reco {
  * to create the seed from the parameters (x_, y_, z_, px, py, pz, q) at the
  * vertex. For the Recoil tracker, since the electron is produced
  * upstream, the SimParticle can't be used to get any parameters at the target.
- * In this case, the target scoring plane hits_ are used to extract the
+ * In this case, the target scoring plane hits are used to extract the
  * parameters above.
  */
 class TruthSeedProcessor : public TrackingGeometryUser {
@@ -91,9 +91,9 @@ class TruthSeedProcessor : public TrackingGeometryUser {
  private:
   /**
    * Create a mapping from the selected scoring plane hit objects to the number
-   * of hits_ they associated particle creates in the tracker.
+   * of hits they associated particle creates in the tracker.
    * @param sim_hits vector
-   * @param hit_count_map filled with the hits_ lefts by each track
+   * @param hit_count_map filled with the hits lefts by each track
    */
 
   void makeHitCountMap(const std::vector<ldmx::SimTrackerHit>& sim_hits,
@@ -136,11 +136,11 @@ class TruthSeedProcessor : public TrackingGeometryUser {
 
   /**
    * Filter that checks if a scoring plane passes specified momentum cuts as
-   * well as if the associated SimParticle hits_ the ECal.
+   * well as if the associated SimParticle hits the ECal.
    *
    * @param hit The target scoring plane hit to check.
    * @param ecal_sp_hits The ECal scoring plane hit used to check if the
-   * associated particle hits_ the ECal.
+   * associated particle hits the ECal.
    */
   bool scoringPlaneHitFilter(
       const ldmx::SimTrackerHit& hit,
@@ -169,7 +169,7 @@ class TruthSeedProcessor : public TrackingGeometryUser {
    * ts_smeared      : the truth smeared perigee state at the beam origin
    * ts_truth_target : the truth on-surface state at the target
    * Linear extrapolations are done from the origin of the particle to the
-   * reference surfaces This track also contains the list of hits_ belonging to
+   * reference surfaces This track also contains the list of hits belonging to
    * the beam electron on the sensitive surfaces on the tagger tracker, for
    * acceptance studies
    * @param beam_electron  : the beam electron particle
@@ -194,14 +194,14 @@ class TruthSeedProcessor : public TrackingGeometryUser {
   /// pdg_ids of the particles we want to select for the seeds
   std::vector<int> pdg_ids_{11};
 
-  /// Which scoring plane hits_ to use for the truth seeds generation
+  /// Which scoring plane hits to use for the truth seeds generation
   std::string scoring_hits_coll_name_{"TargetScoringPlaneHits"};
   std::string sp_pass_name_{""};
 
-  /// Sim hits_ to check if the truth seed is findable
+  /// Sim hits to check if the truth seed is findable
   std::string tagger_sim_hits_coll_name_{"TaggerSimHits"};
 
-  /// Sim hits_ to check if the truth seed is findable
+  /// Sim hits to check if the truth seed is findable
   std::string recoil_sim_hits_coll_name_{"RecoilSimHits"};
 
   /// Pass name for the sim hit collections
@@ -210,20 +210,20 @@ class TruthSeedProcessor : public TrackingGeometryUser {
   std::string sim_particles_passname_;
 
   /**
-   * Minimum number of hits_ left in the recoil tracker to consider the seed
+   * Minimum number of hits left in the recoil tracker to consider the seed
    * as findable
    */
   int n_min_hits_tagger_{7};
 
   /**
-   * Minimum number of hits_ left in the recoil tracker to consider the seed
+   * Minimum number of hits left in the recoil tracker to consider the seed
    * as findable
    */
   int n_min_hits_recoil_{7};
 
   /**
    * Min cut on the z_ of the scoring hit. It could be used to clean the scoring
-   * hits_ if desired.
+   * hits if desired.
    */
   float z_min_{-999};
 

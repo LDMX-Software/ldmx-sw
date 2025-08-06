@@ -13,7 +13,7 @@
 #include "Tracking/Sim/LdmxSpacePoint.h"
 
 /** The measurement calibrator can be a function or a class/struct able to
- retrieve the sim hits_ container.
+ retrieve the sim hits container.
  *  It gets by CKF passing the propagated TrackState. The measurement calibrator
  gets called for every propagation and a new track state is passed which
  contains the source link.

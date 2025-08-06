@@ -317,8 +317,8 @@ class EcalVetoResult {
   /** y_ position of recoil electron at the Ecal face. */
   float recoil_y_{-9999};
 
-  /// Number of hits_ outside of the electron roc in the Ecal
-  /// or if the electron trajectory is missing, all the hits_ in the Ecal
+  /// Number of hits outside of the electron roc in the Ecal
+  /// or if the electron trajectory is missing, all the hits in the Ecal
   int n_tracking_hits_{0};
   /// Angular separation between the projected photon and electron trajectories
   /// as projected at the ECAL

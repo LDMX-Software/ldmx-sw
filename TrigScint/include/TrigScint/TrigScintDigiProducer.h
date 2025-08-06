@@ -67,7 +67,7 @@ class TrigScintDigiProducer : public framework::Producer {
   /// Random number generator
   std::mt19937 rng_;
 
-  /// Generate noise hits_ given the number of channels and mean noise.
+  /// Generate noise hits given the number of channels and mean noise.
   std::unique_ptr<ldmx::NoiseGenerator> noise_generator_{nullptr};
 
   /// Name of the input collection containing the sim hits_

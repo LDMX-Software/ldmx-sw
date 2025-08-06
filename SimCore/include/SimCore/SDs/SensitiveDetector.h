@@ -18,7 +18,7 @@ namespace simcore {
 
 /**
  * Dynamically loaded Geant4 SensitiveDetector for saving
- * hits_ in specific volumes within the simulation
+ * hits in specific volumes within the simulation
  */
 class SensitiveDetector : public G4VSensitiveDetector {
  public:

@@ -16,7 +16,7 @@ class HcalPedestalAnalyzer : public framework::Analyzer {
 
   struct Channel {
     Channel() : hist{0}, sum{0}, sum_sq{0}, entries{0}, rejects{4, 0} {}
-    /// collection of hits_ accumulated to produce appropriately-binned
+    /// collection of hits accumulated to produce appropriately-binned
     /// histograms
     std::vector<int> adcs;
     /// Histogram, if used

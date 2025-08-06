@@ -49,7 +49,7 @@ class TestBeamClusterProducer : public framework::Producer {
   // min threshold for adding a hit to a cluster
   double minThr_{0.};
 
-  // max number of neighboring hits_ to combine when forming a cluster
+  // max number of neighboring hits to combine when forming a cluster
   int maxWidth_{2};
 
   // max channel number (to avoid unused channels)
@@ -58,10 +58,10 @@ class TestBeamClusterProducer : public framework::Producer {
   // specific verbosity of this producer
   int verbose_{0};
 
-  // expected arrival time of hits_ in the pad [ns]
+  // expected arrival time of hits in the pad [ns]
   double padTime_{0.};
 
-  // maximum allowed delay for hits_ to be considered for clustering
+  // maximum allowed delay for hits to be considered for clustering
   double timeTolerance_{0.};
 
   // input collection (hits_)

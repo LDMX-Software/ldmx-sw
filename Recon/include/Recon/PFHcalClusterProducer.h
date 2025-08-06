@@ -36,7 +36,7 @@ class PFHcalClusterProducer : public framework::Producer {
   float clusterZBias_{1.};  // private parameter for z_ bias
   int minClusterHitMult_{2};
 
-  // name of collection for hits_ to be passed as input
+  // name of collection for hits to be passed as input
   std::string hitCollName_;
   // pass name of hit collection to be passed as input
   std::string hitPassName_;

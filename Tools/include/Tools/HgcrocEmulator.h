@@ -86,9 +86,9 @@ class HgcrocEmulator {
    * 0. Prepare for Emulation
    *    - Clear input list of digi samples
    *    - Get conditions for the current chip
-   *    - Sort the input sim voltage hits_ by amplitude
+   *    - Sort the input sim voltage hits by amplitude
    *
-   * 1. Combine input simulated hits_ into one CompositePulse to digitize.
+   * 1. Combine input simulated hits into one CompositePulse to digitize.
    *    - This composite pulse decides whether to merge two simulated hits_
    *      into one larger pulse depending on how close they are in time.
    *
@@ -145,7 +145,7 @@ class HgcrocEmulator {
    * before digitizing.
    *
    * @param[in] channelID raw integer ID for this readout channel
-   * @param[in] arriving_pulses pairs of (voltage,time) of hits_ arriving at the
+   * @param[in] arriving_pulses pairs of (voltage,time) of hits arriving at the
    * chip
    * @param[out] digiToAdd digi that will be filled with the samples from the
    * chip

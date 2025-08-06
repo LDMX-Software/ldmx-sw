@@ -371,7 +371,7 @@ class SimCalorimeterHit {
   unsigned nContribs_{0};
 
   /*
-   * Parameters used only for hits_ corresponding to a single interactions
+   * Parameters used only for hits corresponding to a single interactions
    * (currently Hcal and TS).
    */
 

@@ -52,7 +52,7 @@ class EcalPnetVetoProcessor : public framework::Producer {
   std::vector<float> logSoftmax(const std::vector<float>& logits);
 
  private:
-  /** Maximum number of hits_ allowed in ECAL. Events with more hits_ will be
+  /** Maximum number of hits allowed in ECAL. Events with more hits will be
    * marked as BKG directly without running ParticleNet. */
   constexpr static unsigned int max_num_hits_ = 300;
 

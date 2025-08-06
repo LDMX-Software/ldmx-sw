@@ -29,7 +29,7 @@ namespace hcal {
 
 /**
  * @class HcalClusterProducer
- * @brief Make clusters from hits_ in the HCAL
+ * @brief Make clusters from hits in the HCAL
  */
 class HcalClusterProducer : public framework::Producer {
  public:

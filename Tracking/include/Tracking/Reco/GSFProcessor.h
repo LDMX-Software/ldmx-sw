@@ -189,7 +189,7 @@ class GSFProcessor final : public TrackingGeometryUser {
   // Use 2d measurements instead of 1D
   // bool use1Dmeasurements_{true};
 
-  // Minimum number of hits_ on tracks
+  // Minimum number of hits on tracks
   // int min_hits_{7};
 
   // The extrapolation surface
@@ -205,7 +205,7 @@ class GSFProcessor final : public TrackingGeometryUser {
   // The output track collection
   std::string out_trk_collection_{"GSFTracks"};
 
-  // Select the hits_ using TrackID and pdg_id__
+  // Select the hits using TrackID and pdg_id__
 
   // int track_id_{-1};
   // int pdg_id_{11};

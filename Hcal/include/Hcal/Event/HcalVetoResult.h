@@ -85,7 +85,7 @@ class HcalVetoResult {
   // Total number of PE
   float total_PE_{0.0};
 
-  // Number of hits_ above threshold
+  // Number of hits above threshold
   int num_valid_hits_{0};
 
   /** Flag indicating whether the event passes the Hcal veto. */

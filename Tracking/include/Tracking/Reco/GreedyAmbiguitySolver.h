@@ -43,7 +43,7 @@ namespace reco {
 /**
  * Minimal example of a processor.
  *
- * This processor will loop over all of the ECal hits_ in an event and
+ * This processor will loop over all of the ECal hits in an event and
  * print out their details.
  */
 class GreedyAmbiguitySolver final : public TrackingGeometryUser {
@@ -87,7 +87,7 @@ class GreedyAmbiguitySolver final : public TrackingGeometryUser {
   void produce(framework::Event& event) override;
 
  private:
-  /// Maximum amount of shared hits_ per track.
+  /// Maximum amount of shared hits per track.
   std::uint32_t maximum_shared_hits_{1};
   /// Maximum number of iterations
   std::uint32_t maximum_iterations_{1000};

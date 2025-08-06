@@ -14,7 +14,7 @@ namespace recon {
 /**
  * Minimal example of a processor.
  *
- * This processor will loop over all of the ECal hits_ in an event and
+ * This processor will loop over all of the ECal hits in an event and
  * print out their details.
  */
 class MyProcessor : public framework::Producer {

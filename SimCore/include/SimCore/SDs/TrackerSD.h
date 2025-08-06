@@ -45,7 +45,7 @@ class TrackerSD : public SensitiveDetector {
   G4bool ProcessHits(G4Step* step, G4TouchableHistory* history) override;
 
   /**
-   * Add the hits_ to the event and then reset the container
+   * Add the hits to the event and then reset the container
    */
   virtual void saveHits(framework::Event& event) override {
     event.add(collection_name_, hits_);

@@ -81,7 +81,7 @@ class HcalSD : public SensitiveDetector {
                              G4TouchableHistory* ROhist) override;
 
   /**
-   * Add our hits_ to the event bus and then reset the container
+   * Add our hits to the event bus and then reset the container
    */
   virtual void saveHits(framework::Event& event) override {
     event.add(COLLECTION_NAME, hits_);
@@ -102,7 +102,7 @@ class HcalSD : public SensitiveDetector {
   // TODO: document!
   double birksc2_;
 
-  // collection of hits_ to write to event bus
+  // collection of hits to write to event bus
   std::vector<ldmx::SimCalorimeterHit> hits_;
 
 };  // HcalSD

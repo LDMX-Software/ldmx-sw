@@ -57,9 +57,9 @@ class EcalMipResult {
   /// Earliest ECal layer_ in which a hit is found near the projected photon
   /// trajectory
   int first_near_ph_layer_{0};
-  /// Number of hits_ near the photon trajectory
+  /// Number of hits near the photon trajectory
   int n_near_ph_hits_{0};
-  /// Number of hits_ in the photon territory
+  /// Number of hits in the photon territory
   int photon_territory_hits_{0};
   /// Angular separation between the projected photon and electron trajectories
   /// as projected at the ECAL

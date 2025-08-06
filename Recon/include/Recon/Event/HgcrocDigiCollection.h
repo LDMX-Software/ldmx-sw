@@ -22,7 +22,7 @@ namespace ldmx {
 
 /**
  * @class HgcrocDigiCollection
- * @brief Represents a collection of the digi hits_ readout by an HGCROC
+ * @brief Represents a collection of the digi hits readout by an HGCROC
  *
  * @note This class represents the digitized signal information
  * in the form of a series of samples for each channel of readout.

@@ -16,7 +16,7 @@ namespace recon {
  * Electron counting processor.
  *
  * This processor uses calo simhits in e.g. the target to get truth info
- * about beam electrons. The hits_ associated with beam electrons can already
+ * about beam electrons. The hits associated with beam electrons can already
  * be isolated by the truth hit collection producer. However, the simhits
  * have approximately infinite resolution. This processor's raison d'être
  * is to run some sort of  grouping, to ensure we have at most one
