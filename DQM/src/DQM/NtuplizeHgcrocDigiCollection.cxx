@@ -57,10 +57,10 @@ class NtuplizeHgcrocDigiCollection : public framework::Analyzer {
       flat_tree_->Branch("fpga", &fpga_);
       flat_tree_->Branch("link", &link_);
       flat_tree_->Branch("channel", &channel_);
-      flat_tree_->Branch("index_", &index_);
+      flat_tree_->Branch("index", &index_);
     } else {
       flat_tree_->Branch("section", &section_);
-      flat_tree_->Branch("layer_", &layer_);
+      flat_tree_->Branch("layer", &layer_);
       flat_tree_->Branch("strip", &strip_);
       flat_tree_->Branch("end", &end_);
     }

@@ -104,7 +104,7 @@ void SimpleCSVTableProvider::entriesFromCSV() {
     if (!found) {
       EXCEPTION_RAISE("CSVNoSuchColumn", "No such column '" +
                                              std::string(column_names[i]) +
-                                             "' reading index_ CSV");
+                                             "' reading index CSV");
     }
   }
   // ok, we're good on that...

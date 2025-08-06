@@ -140,7 +140,7 @@ TEST_CASE("Conditions", "[Conditions]") {
 
     std::string image1 = ss.str();
     const char* expected1 =
-        "\"DetID\",id:\"subdetector\",id:\"layer_\",id:\"module_\",id:\"cell\","
+        "\"DetID\",id:\"subdetector\",id:\"layer\",id:\"module\",id:\"cell\","
         "\"A\",\"Q\",\"V\"\n0x1402100a,5,1,1,10,20,5,100\n0x14021014,5,1,1,20,"
         "40,10,400\n0x1402101e,5,1,1,30,60,15,900\n0x14021028,5,1,1,40,80,20,"
         "1600\n0x14021032,5,1,1,50,100,25,2500\n0x1402103c,5,1,1,60,120,30,"

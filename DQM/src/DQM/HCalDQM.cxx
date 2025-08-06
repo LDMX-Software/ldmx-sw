@@ -16,7 +16,7 @@ void HCalDQM::configure(framework::config::Parameters &ps) {
 }
 
 void HCalDQM::analyze(const framework::Event &event) {
-  // Get the collection of HCalDQM digitized hits_ if the exists
+  // Get the collection of HCalDQM digitized hits if the exists
   const auto &hcalHits{
       event.getCollection<ldmx::HcalHit>(rec_coll_name_, rec_pass_name_)};
 

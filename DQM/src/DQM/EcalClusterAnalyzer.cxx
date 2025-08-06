@@ -103,7 +103,7 @@ void EcalClusterAnalyzer::analyze(const framework::Event& event) {
     sp_ele_dist = std::sqrt((pos1[0] - pos2[0]) * (pos1[0] - pos2[0]) +
                             (pos1[1] - pos2[1]) * (pos1[1] - pos2[1]));
 
-  }  // end block about the scoring plane hits_
+  }  // end block about the scoring plane hits
 
   ldmx_log(trace) << "Distance between the two e- in the ECal scoring plane: "
                   << sp_ele_dist << " mm";
@@ -127,7 +127,7 @@ void EcalClusterAnalyzer::analyze(const framework::Event& event) {
         const auto& contrib = it->getContrib(i);
         // get origin electron ID
         ancestor = contrib.originID;
-        // store energy from this contrib at index_ = origin electron ID
+        // store energy from this contrib at index = origin electron ID
         if (ancestor <= nbr_of_electrons) edep[ancestor] += contrib.edep;
         if (!tagged && i != 0 && prevAncestor != ancestor) {
           // if origin electron ID does not match previous origin electron ID
@@ -177,10 +177,10 @@ void EcalClusterAnalyzer::analyze(const framework::Event& event) {
     histograms_.fill("sp_clue_y_residual", sp_clue_y_residuals);
 
     // for each cluster
-    // total number of hits_ coming from electron, index_ = electron ID
+    // total number of hits coming from electron, index = electron ID
     std::vector<double> n_hits_from_electron;
     n_hits_from_electron.resize(nbr_of_electrons + 1);
-    // total number of energy coming from electron, index_ = electron ID
+    // total number of energy coming from electron, index = electron ID
     std::vector<double> energy_from_electron;
     energy_from_electron.resize(nbr_of_electrons + 1);
     double energy_sum = 0.;
@@ -196,7 +196,7 @@ void EcalClusterAnalyzer::analyze(const framework::Event& event) {
         auto id_electron = t.first;
         // energy vector
         auto energies = t.second;
-        // increment number of hits_ coming from this electron
+        // increment number of hits coming from this electron
         n_hits_from_electron[id_electron]++;
         n_sum++;
 

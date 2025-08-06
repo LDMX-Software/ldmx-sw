@@ -53,8 +53,8 @@ class HCalDQM : public framework::Analyzer {
     const auto section{id.section()};
     return (section != section_ && section_ != -1);
   }
-  void analyzeRecHits(const std::vector<ldmx::HcalHit> &hits_);
-  void analyzeSimHits(const std::vector<ldmx::SimCalorimeterHit> &hits_);
+  void analyzeRecHits(const std::vector<ldmx::HcalHit> &hits);
+  void analyzeSimHits(const std::vector<ldmx::SimCalorimeterHit> &hits);
 
   bool hitPassesVeto(const ldmx::HcalHit &hit, int section) {
     if (hit.getPE() < pe_veto_threshold || hit.getTime() > max_hit_time_) {

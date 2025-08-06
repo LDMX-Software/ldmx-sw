@@ -43,20 +43,20 @@ void SimObjects::onProcessStart() {
   // create sim particles histograms
   histograms_.create("SimParticles.E", "Vertex Total Energy [MeV]", 800, 0.,
                      8000.);
-  histograms_.create("SimParticles.px", "Vertex Momentum in x_-Direction [MeV]",
+  histograms_.create("SimParticles.px", "Vertex Momentum in x-Direction [MeV]",
                      50, 0., 500.);
-  histograms_.create("SimParticles.py", "Vertex Momentum in y_-Direction [MeV]",
+  histograms_.create("SimParticles.py", "Vertex Momentum in y-Direction [MeV]",
                      50, 0., 500.);
-  histograms_.create("SimParticles.pz", "Vertex Momentum in z_-Direction [MeV]",
+  histograms_.create("SimParticles.pz", "Vertex Momentum in z-Direction [MeV]",
                      400, 0., 4000.);
   histograms_.create("SimParticles.time", "Global Time of Creation [ns]", 50,
                      0., 10.);
   histograms_.create("SimParticles.pdg", "PDG ID of Particle", 201, -100, 100);
-  histograms_.create("SimParticles.x_", "Vertex x_-Position [mm]", 401, -200,
+  histograms_.create("SimParticles.x", "Vertex x-Position [mm]", 401, -200,
                      200);
-  histograms_.create("SimParticles.y_", "Vertex y_-Position [mm]", 401, -200,
+  histograms_.create("SimParticles.y", "Vertex y-Position [mm]", 401, -200,
                      200);
-  histograms_.create("SimParticles.z_", "Vertex z_-Position [mm]", 171, -700,
+  histograms_.create("SimParticles.z", "Vertex z-Position [mm]", 171, -700,
                      1000.);
   histograms_.create("SimParticles.process", "Creator Process Type", 20, 0, 20);
   histograms_.create("SimParticles.track_id", "Track ID of Particle", 100, 0,

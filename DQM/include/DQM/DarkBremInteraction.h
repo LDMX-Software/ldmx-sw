@@ -22,7 +22,7 @@ namespace dqm {
  * Incident{Px,Py,Pz} - 3-vector momentum of electron incident to dark brem
  * IncidentEnergy   - energy of incident electron at dark brem
  * APrimeParentID - TrackID of A' parent
- * DarkBremVertexMaterial - integer corresponding to index_ of known_materials
+ * DarkBremVertexMaterial - integer corresponding to index_of known_materials
  *                          parameter OR -1 if not found in known_materials
  * DarkBremVertexMaterialZ - elemental Z value for element chosen by random from
  *                           the elements in the material

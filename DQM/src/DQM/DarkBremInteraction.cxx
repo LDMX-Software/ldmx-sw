@@ -194,7 +194,7 @@ void DarkBremInteraction::produce(framework::Event& event) {
       i_element = known_elements_.size();
       ldmx_log(warn)
           << "Dark brem interaction occurred in an unknown element with Z = "
-          << db_material_z << ". Using index_ " << i_element
+          << db_material_z << ". Using index " << i_element
           << " for this element.";
     } else {
       i_element = known_elements_.at(static_cast<int>(db_material_z));

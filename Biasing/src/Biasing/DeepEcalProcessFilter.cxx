@@ -94,7 +94,7 @@ void DeepEcalProcessFilter::stepping(const G4Step* step) {
   // or if it's not in the ECAL
   if (not is_in_ecal) return;
 
-  // Check the z_ position of the particle, and
+  // Check the z position of the particle, and
   // flag if it is deeper than the min Z we are considering (but in ECAL)
   auto z_position = step->GetPreStepPoint()->GetPosition().z();
   // Printout for testing

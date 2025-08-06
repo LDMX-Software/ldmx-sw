@@ -59,7 +59,7 @@ class TaggerHitFilter : public simcore::UserAction {
 
   /// Set used to keep track which layers were hit by a particle.
   std::set<int> layer_count_;
-  /// Total number of hits_ required to persist an event.
+  /// Total number of hits required to persist an event.
   int layers_hit_{8};
 
 };  // TaggerHitFilter

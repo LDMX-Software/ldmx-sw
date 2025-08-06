@@ -18,10 +18,10 @@ void HcalInefficiencyAnalyzer::analyze(const framework::Event &event) {
   for (const auto &hit : hcalRecHits) {
     const ldmx::HcalID id{static_cast<ldmx::DetectorID::RawValue>(hit.getID())};
     const auto section{id.section()};
-    const auto layer_{id.layer()};
+    const auto layer{id.layer()};
     if (hitPassesVeto(hit, section)) {
-      if (layer_ < firstLayersHit[section]) {
-        firstLayersHit[section] = layer_;
+      if (layer < firstLayersHit[section]) {
+        firstLayersHit[section] = layer;
       }
     }
   }
@@ -40,10 +40,10 @@ void HcalInefficiencyAnalyzer::analyze(const framework::Event &event) {
                     vetoedByLeft};
 
   for (int section{0}; section < firstLayersHit.size(); ++section) {
-    const auto layer_{firstLayersHit[section]};
+    const auto layer{firstLayersHit[section]};
     const auto sectionName{sectionNames[section]};
-    if (layer_ != failedVeto) {
-      histograms_.fill("inefficiency_" + sectionName, layer_);
+    if (layer != failedVeto) {
+      histograms_.fill("inefficiency_" + sectionName, layer);
       histograms_.fill("efficiency", section);
     }
   }
