@@ -79,12 +79,12 @@ void EveDetectorGeometry::drawRecoilTracker() {
     TString name;
     name.Form("Stereo_%d", layerID);
 
-    TEveGeoShape* layer_ = EveShapeDrawer::getInstance().drawRectPrism(
+    TEveGeoShape* layer = EveShapeDrawer::getInstance().drawRectPrism(
         DetectorGeometry::getInstance().getBoundingBox(layerID, 0), 0, 0,
         DetectorGeometry::getInstance().getRotAngle(layerID, 0) * 180 / M_PI,
         kRed - 10, 90, name);
 
-    recoilTracker_->AddElement(layer_);
+    recoilTracker_->AddElement(layer);
   }
 
   for (int layerID = 9; layerID < 11; layerID++) {
@@ -92,14 +92,14 @@ void EveDetectorGeometry::drawRecoilTracker() {
       TString name;
       name.Form("Mono_%d_%d", layerID, moduleID);
 
-      TEveGeoShape* layer_ = EveShapeDrawer::getInstance().drawRectPrism(
+      TEveGeoShape* layer = EveShapeDrawer::getInstance().drawRectPrism(
           DetectorGeometry::getInstance().getBoundingBox(layerID, moduleID), 0,
           0,
           DetectorGeometry::getInstance().getRotAngle(layerID, moduleID) * 180 /
               M_PI,
           kRed - 10, 90, name);
 
-      recoilTracker_->AddElement(layer_);
+      recoilTracker_->AddElement(layer);
     }
   }
 

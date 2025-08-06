@@ -13,13 +13,13 @@ void TrigScintClusterDQM::onProcessStart() {
   histograms_.create("total_pe", "Total cluster PEs in the pad/event", 500, 0,
                      2000);
   histograms_.create("n_clusters", "Clusters in the pad/event", 25, 0, 25);
-  histograms_.create("n_hits", "N_{hits_} forming the clusters", 4, 0, 4);
+  histograms_.create("n_hits", "N_{hits} forming the clusters", 4, 0, 4);
   histograms_.create("seed", "Cluster seed hit channel ID", 100, 0, 100);
   histograms_.create("beamEfrac", "Cluster edep fraction from beam electron",
                      101, 0., 1.01);
-  histograms_.create("x_", "Cluster x_ position [mm]", 1000, -100, 100);
-  histograms_.create("y_", "Cluster y_ position [mm]", 1000, -100, 100);
-  histograms_.create("z_", "Cluster z_ position [mm]", 1000, -900, 100);
+  histograms_.create("x", "Cluster x position [mm]", 1000, -100, 100);
+  histograms_.create("y", "Cluster y position [mm]", 1000, -100, 100);
+  histograms_.create("z", "Cluster z position [mm]", 1000, -900, 100);
 
   histograms_.create("pe", "PE in a cluster", 250, 0, 1000);
   histograms_.create("energy", "Energy dep in a cluster [MeV]", 500, 0, 1500);
@@ -56,9 +56,9 @@ void TrigScintClusterDQM::analyze(const framework::Event &event) {
     histograms_.fill("seed", cluster.getSeed());
     histograms_.fill("beamEfrac", cluster.getBeamEfrac());
 
-    histograms_.fill("x_", cluster.getCentroidX());
-    histograms_.fill("y_", cluster.getCentroidY());
-    histograms_.fill("z_", cluster.getCentroidZ());
+    histograms_.fill("x", cluster.getCentroidX());
+    histograms_.fill("y", cluster.getCentroidY());
+    histograms_.fill("z", cluster.getCentroidZ());
 
     totalPE += cluster.getPE();
   }

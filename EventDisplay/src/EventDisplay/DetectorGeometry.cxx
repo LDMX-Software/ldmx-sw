@@ -103,20 +103,20 @@ DetectorGeometry::DetectorGeometry() {
   /////////////////////////////////////////////////////////////
   // RECOIL TRACKER
   //      The gdml file for the recoil tracker is kinda opaque.
-  //      The layer_ and module_ IDs are calculated from the copy number of each
+  //      The layer and module IDs are calculated from the copy number of each
   //      of the sensor volumes.
-  //          layer_  = copyNum / 10 (integer division)
-  //          module_ = copyNum % 10
-  //      The first 8 layer_ IDs are the first 4 layers of stereo sensors.
-  //          Each stereo layer_ contains a front layer_ that is not tilted at
-  //          an angle and a back layer_ that is tilted.
-  //      The last 2 layer_ IDs correspond to the 2 layers of mono sensors.
-  //          Each mono layer_ contains 10 modules (ids 0 - 9) that have a
+  //          layer  = copyNum / 10 (integer division)
+  //          module = copyNum % 10
+  //      The first 8 layer IDs are the first 4 layers of stereo sensors.
+  //          Each stereo layer contains a front layer that is not tilted at an
+  //          angle and a back layer that is tilted.
+  //      The last 2 layer IDs correspond to the 2 layers of mono sensors.
+  //          Each mono layer contains 10 modules (ids 0 - 9) that have a
   //          complicated position arrangement.
   //
-  //      In order to avoid mistakes, the position and angle of each module_
-  //      will be hard coded here instead of calculated from design
-  //      specifications like the HCAL case.
+  //      In order to avoid mistakes, the position and angle of each module will
+  //      be hard coded here instead of calculated from design specifications
+  //      like the HCAL case.
 
   recoilStereoStripLength_ = 98.0;
 
@@ -253,82 +253,82 @@ BoundingBox DetectorGeometry::getBoundingBox(const ldmx::HcalHit &hit) const {
 
   ldmx::HcalID id(hit.getID());
   ldmx::HcalID::HcalSection section = (ldmx::HcalID::HcalSection)id.section();
-  int layer_ = id.layer();
+  int layer = id.layer();
   int strip = id.strip();
 
-  // calculate center of layer_,strip with respect to detector section
+  // calculate center of layer,strip with respect to detector section
   double layercenter =
-      layer_ * hcalLayerThickness_.at(section) + 0.5 * hcalThicknessScint_;
+      layer * hcalLayerThickness_.at(section) + 0.5 * hcalThicknessScint_;
   double stripcenter = (strip + 0.5) * hcalWidthScint_;
 
-  // calculate error in layer_,strip position
+  // calculate error in layer,strip position
   double elayer = 0.5 * hcalThicknessScint_;
   double estrip = 0.5 * hcalWidthScint_;
 
-  double x_, y_, z_;
+  double x, y, z;
   if (section == ldmx::HcalID::HcalSection::BACK) {
-    z_ = hcalZeroLayer_.at(section) + layercenter;
-    Z.first = z_ - elayer;
-    Z.second = z_ + elayer;
+    z = hcalZeroLayer_.at(section) + layercenter;
+    Z.first = z - elayer;
+    Z.second = z + elayer;
 
     // only horizontal layers implemented currently
-    if (false) {  //( (layer_ ^ hcalParityVertical_) & 1) == 0 ) { //checks for
+    if (false) {  //( (layer ^ hcalParityVertical_) & 1) == 0 ) { //checks for
                   // same parity
       // Vertical Layers
 
-      x_ = -hcalZeroStrip_.at(section) + stripcenter;
-      X.first = x_ - estrip;
-      X.second = x_ + estrip;
+      x = -hcalZeroStrip_.at(section) + stripcenter;
+      X.first = x - estrip;
+      X.second = x + estrip;
 
-      y_ = hit.getYPos();
-      Y.first = y_ - hcalUncertaintyTimingPos_;
-      Y.second = y_ + hcalUncertaintyTimingPos_;
+      y = hit.getYPos();
+      Y.first = y - hcalUncertaintyTimingPos_;
+      Y.second = y + hcalUncertaintyTimingPos_;
 
     } else {
       // Horizontal Layers
 
-      x_ = hit.getXPos();
-      X.first = x_ - hcalUncertaintyTimingPos_;
-      X.second = x_ + hcalUncertaintyTimingPos_;
+      x = hit.getXPos();
+      X.first = x - hcalUncertaintyTimingPos_;
+      X.second = x + hcalUncertaintyTimingPos_;
 
-      y_ = -1 * hcalZeroStrip_.at(section) + stripcenter;
-      Y.first = y_ - estrip;
-      Y.second = y_ + estrip;
+      y = -1 * hcalZeroStrip_.at(section) + stripcenter;
+      Y.first = y - estrip;
+      Y.second = y + estrip;
 
-    }  // calculate depending on layer_
+    }  // calculate depending on layer
 
   } else {
-    z_ = hcalZeroStrip_.at(section) + stripcenter;
-    Z.first = z_ - estrip;
-    Z.second = z_ + estrip;
+    z = hcalZeroStrip_.at(section) + stripcenter;
+    Z.first = z - estrip;
+    Z.second = z + estrip;
 
     if (section == ldmx::HcalID::HcalSection::TOP or
         section == ldmx::HcalID::HcalSection::BOTTOM) {
-      x_ = hit.getXPos();
-      X.first = x_ - hcalUncertaintyTimingPos_;
-      X.second = x_ + hcalUncertaintyTimingPos_;
+      x = hit.getXPos();
+      X.first = x - hcalUncertaintyTimingPos_;
+      X.second = x + hcalUncertaintyTimingPos_;
 
-      y_ = hcalZeroLayer_.at(section) + layercenter;
+      y = hcalZeroLayer_.at(section) + layercenter;
       if (section == ldmx::HcalID::HcalSection::BOTTOM) {
-        y_ *= -1;
+        y *= -1;
       }
 
-      Y.first = y_ - elayer;
-      Y.second = y_ + elayer;
+      Y.first = y - elayer;
+      Y.second = y + elayer;
 
     } else if (section == ldmx::HcalID::HcalSection::LEFT or
                section == ldmx::HcalID::HcalSection::RIGHT) {
-      y_ = hit.getYPos();
-      Y.first = y_ - hcalUncertaintyTimingPos_;
-      Y.second = y_ + hcalUncertaintyTimingPos_;
+      y = hit.getYPos();
+      Y.first = y - hcalUncertaintyTimingPos_;
+      Y.second = y + hcalUncertaintyTimingPos_;
 
-      x_ = hcalZeroLayer_.at(section) + layercenter;
+      x = hcalZeroLayer_.at(section) + layercenter;
       if (section == ldmx::HcalID::HcalSection::RIGHT) {
-        x_ *= -1;
+        x *= -1;
       }
 
-      X.first = x_ - elayer;
-      X.second = x_ + elayer;
+      X.first = x - elayer;
+      X.second = x + elayer;
 
     } else {
       std::cerr
@@ -449,10 +449,9 @@ BoundingBox DetectorGeometry::getBoundingBox(
 
 HexPrism DetectorGeometry::getHexPrism(const ldmx::EcalID &id) const {
   HexPrism hexpris;
-  ecalHexReader_->getCellAbsolutePosition(id, hexpris.x_, hexpris.y_,
-                                          hexpris.z_);
+  ecalHexReader_->getCellAbsolutePosition(id, hexpris.x, hexpris.y, hexpris.z);
   hexpris.height = ecalSiThickness_;
-  hexpris.radius_ = ecalHexReader_->getCellMaxR();
+  hexpris.radius = ecalHexReader_->getCellMaxR();
 
   return hexpris;
 }
@@ -467,11 +466,11 @@ HexPrism DetectorGeometry::getHexTower(int towerIndex) const {
     return hexpris;
   }
 
-  hexpris.x_ = ecalHexReader_->getModuleCenter(towerIndex).first;
-  hexpris.y_ = ecalHexReader_->getModuleCenter(towerIndex).second;
-  hexpris.z_ = ecalZeroLayer_ + ecalDepth_ / 2;
+  hexpris.x = ecalHexReader_->getModuleCenter(towerIndex).first;
+  hexpris.y = ecalHexReader_->getModuleCenter(towerIndex).second;
+  hexpris.z = ecalZeroLayer_ + ecalDepth_ / 2;
   hexpris.height = ecalDepth_;
-  hexpris.radius_ = ecalHexReader_->getModuleMaxR();
+  hexpris.radius = ecalHexReader_->getModuleMaxR();
 
   return hexpris;
 }
@@ -542,7 +541,7 @@ BoundingBox DetectorGeometry::getBoundingBox(
     yWidth = recoilMonoStripLength_;
   }
 
-  // we have to un-rotate the x_-position of the hit, so we can rotate it later
+  // we have to un-rotate the x-position of the hit, so we can rotate it later
   // with the drawer
   double rotAngle = this->getRotAngle(layerID, moduleID);
   double xPos = hitPos.at(0) * cos(-rotAngle) - hitPos.at(1) * sin(-rotAngle);

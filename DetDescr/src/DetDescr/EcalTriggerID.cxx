@@ -14,10 +14,10 @@ void EcalTriggerID::createInterpreters() {
   IDField::IDFieldList fields;
   fields.push_back(new IDField("subdetector", 0, SUBDETECTORID_SHIFT, 31));
   fields.push_back(
-      new IDField("layer_", 1, LAYER_SHIFT,
+      new IDField("layer", 1, LAYER_SHIFT,
                   LAYER_SHIFT + IDField::countOnes(LAYER_MASK) - 1));
   fields.push_back(
-      new IDField("module_", 2, MODULE_SHIFT,
+      new IDField("module", 2, MODULE_SHIFT,
                   MODULE_SHIFT + IDField::countOnes(MODULE_MASK) - 1));
   fields.push_back(new IDField("cell", 3, CELL_SHIFT,
                                CELL_SHIFT + IDField::countOnes(CELL_MASK) - 1));

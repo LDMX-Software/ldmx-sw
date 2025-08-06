@@ -29,7 +29,7 @@ namespace eventdisplay {
  * @class Objects
  * @brief Drawing methods for event objects.
  *
- * Both ECAL and HCAL hits_ are colored by their relative energy/pe deposits.
+ * Both ECAL and HCAL hits are colored by their relative energy/pe deposits.
  */
 class Objects {
  public:
@@ -65,12 +65,12 @@ class Objects {
   /**
    * Drawing EcalHit
    */
-  void draw(std::vector<ldmx::EcalHit> hits_);
+  void draw(std::vector<ldmx::EcalHit> hits);
 
   /**
    * Drawing HcalHit
    */
-  void draw(std::vector<ldmx::HcalHit> hits_);
+  void draw(std::vector<ldmx::HcalHit> hits);
 
   /**
    * Drawing EcalCluster
@@ -80,13 +80,13 @@ class Objects {
   /**
    * Drawing SimTrackerHit
    */
-  void draw(std::vector<ldmx::SimTrackerHit> hits_);
+  void draw(std::vector<ldmx::SimTrackerHit> hits);
 
   /**
-   * Draws the hits_ in the input collection assuming that they are
+   * Draws the hits in the input collection assuming that they are
    * SimTrackerHits that hit the recoil tracker.
    */
-  void draw(std::vector<ldmx::SimCalorimeterHit> hits_);
+  void draw(std::vector<ldmx::SimCalorimeterHit> hits);
 
   /**
    * Draws the sim particles
@@ -118,9 +118,9 @@ class Objects {
   TEveElement* getRecObjects() { return rec_objects_; }
 
  private:
-  /// Eve Element containing all hits_
+  /// Eve Element containing all hits
   TEveElement* sim_objects_;
-  /// Eve Element containing reco objects that aren't hits_
+  /// Eve Element containing reco objects that aren't hits
   TEveElement* rec_objects_;
 
   /// threshold for sim particles to be drawn

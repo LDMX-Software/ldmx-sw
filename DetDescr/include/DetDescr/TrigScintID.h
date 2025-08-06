@@ -36,9 +36,9 @@ class TrigScintID : public DetectorID {
   /**
    * Create from pieces
    */
-  TrigScintID(unsigned int module_, unsigned int bar)
+  TrigScintID(unsigned int module, unsigned int bar)
       : DetectorID(SD_TRIGGER_SCINT, 0) {
-    id_ |= (module_ & MODULE_MASK) << MODULE_SHIFT;
+    id_ |= (module & MODULE_MASK) << MODULE_SHIFT;
     id_ |= (bar & BAR_MASK) << BAR_SHIFT;
   }
 
@@ -46,14 +46,14 @@ class TrigScintID : public DetectorID {
   ~TrigScintID() {}
 
   /**
-   * Get the value of the module_ field from the ID.
-   * @return The value of the module_ field.
+   * Get the value of the module field from the ID.
+   * @return The value of the module field.
    */
   int module() const { return (id_ >> MODULE_SHIFT) & MODULE_MASK; }
 
   /**
-   * Get the value of the module_ field from the ID.
-   * @return The value of the module_ field.
+   * Get the value of the module field from the ID.
+   * @return The value of the module field.
    */
   int getModule() const { return (id_ >> MODULE_SHIFT) & MODULE_MASK; }
 

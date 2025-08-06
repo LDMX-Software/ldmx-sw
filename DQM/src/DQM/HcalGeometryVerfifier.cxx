@@ -98,10 +98,10 @@ bool HcalGeometryVerifier::hit_ok(const ldmx::HcalID id,
       ss.precision(-std::log10(tolerance) + 1);
     }
     ss << std::boolalpha;
-    double x_{position[0]};
-    double y_{position[1]};
-    double z_{position[2]};
-    ss << id << " has hit position at (" << x_ << ", " << y_ << ", " << z_
+    double x{position[0]};
+    double y{position[1]};
+    double z{position[2]};
+    ss << id << " has hit position at (" << x << ", " << y << ", " << z
        << ")\nwhich is not within the bounds of the Hcal strip center ("
        << center[0] << ", " << center[1] << ", " << center[2]
        << ") with tolerance " << tolerance << std::endl;
@@ -136,52 +136,52 @@ std::array<int, 3> HcalGeometryVerifier::determine_indices(
   int index_across{};
   int index_through{};
   if (id.section() == ldmx::HcalID::HcalSection::BACK) {
-    index_through = 2;  // z_
+    index_through = 2;  // z
     if (orientation ==
         ldmx::HcalGeometry::ScintillatorOrientation::horizontal) {
-      index_along = 0;   // x_
-      index_across = 1;  // y_
+      index_along = 0;   // x
+      index_across = 1;  // y
     } else {
-      index_across = 0;  // x_
-      index_along = 1;   // y_
+      index_across = 0;  // x
+      index_along = 1;   // y
     }
   } else if (geometry.hasSide3DReadout()) {
     switch (orientation) {
       case ldmx::HcalGeometry::ScintillatorOrientation::horizontal:
-        index_across = 2;   // z_
-        index_along = 0;    // x_
-        index_through = 1;  // y_
-        // Horizontal bar in side hcal -> x_ length, z_ width, y_ thick
+        index_across = 2;   // z
+        index_along = 0;    // x
+        index_through = 1;  // y
+        // Horizontal bar in side hcal -> x length, z width, y thick
         break;
       case ldmx::HcalGeometry::ScintillatorOrientation::vertical:
-        // Vertical bar in side hcal -> y_ length, z_ width, x_ thick
-        index_across = 2;   // z_
-        index_along = 1;    // y_
-        index_through = 0;  // x_
+        // Vertical bar in side hcal -> y length, z width, x thick
+        index_across = 2;   // z
+        index_along = 1;    // y
+        index_through = 0;  // x
         break;
       case ldmx::HcalGeometry::ScintillatorOrientation::depth:
-        index_along = 2;  // z_
+        index_along = 2;  // z
         if (isLR) {
-          // Depth bar in side hcal (LR) -> z_ length, x_ thick, y_ width
-          index_through = 0;  // x_
-          index_across = 1;   // y_
+          // Depth bar in side hcal (LR) -> z length, x thick, y width
+          index_through = 0;  // x
+          index_across = 1;   // y
         } else {
-          // Depth bar in side hcal (TB) -> z_ length, y_ thick, x_ width
-          index_through = 1;  // y_
-          index_across = 0;   // x_
+          // Depth bar in side hcal (TB) -> z length, y thick, x width
+          index_through = 1;  // y
+          index_across = 0;   // x
         }
         break;
     }
   } else {
     // v12 Side hcal
-    index_across = 2;  // z_
+    index_across = 2;  // z
     if (orientation ==
         ldmx::HcalGeometry::ScintillatorOrientation::horizontal) {
-      index_along = 0;    // x_
-      index_through = 1;  // y_
+      index_along = 0;    // x
+      index_through = 1;  // y
     } else {
-      index_along = 1;    // y_
-      index_through = 0;  // x_
+      index_along = 1;    // y
+      index_through = 0;  // x
     }
   }
   return {index_along, index_across, index_through};

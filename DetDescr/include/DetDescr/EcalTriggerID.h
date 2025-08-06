@@ -21,10 +21,10 @@ class EcalTriggerID : public EcalAbstractID {
  public:
   static const RawValue LAYER_MASK{0x3F};  // space for up to 64 layers
   static const RawValue LAYER_SHIFT{12};
-  static const RawValue MODULE_MASK{0x1F};  // space for up to 32 modules/layer_
+  static const RawValue MODULE_MASK{0x1F};  // space for up to 32 modules/layer
   static const RawValue MODULE_SHIFT{7};
   static const RawValue CELL_MASK{
-      0x7F};  // space for 128 trigger cells/module_ (!)
+      0x7F};  // space for 128 trigger cells/module (!)
   static const RawValue CELL_SHIFT{0};
 
   /**
@@ -59,34 +59,34 @@ class EcalTriggerID : public EcalAbstractID {
   /**
    * Create from pieces
    */
-  EcalTriggerID(unsigned int layer_, unsigned int module_, unsigned int cell)
+  EcalTriggerID(unsigned int layer, unsigned int module, unsigned int cell)
       : EcalAbstractID(TriggerCell, 0) {
-    id_ |= (layer_ & LAYER_MASK) << LAYER_SHIFT;
-    id_ |= (module_ & MODULE_MASK) << MODULE_SHIFT;
+    id_ |= (layer & LAYER_MASK) << LAYER_SHIFT;
+    id_ |= (module & MODULE_MASK) << MODULE_SHIFT;
     id_ |= (cell & CELL_MASK) << CELL_SHIFT;
   }
 
   /**
-   * Get the value of the module_ field from the ID.
-   * @return The value of the module_ field.
+   * Get the value of the module field from the ID.
+   * @return The value of the module field.
    */
   int module() const { return (id_ >> MODULE_SHIFT) & MODULE_MASK; }
 
   /**
-   * Get the value of the module_ field from the ID.
-   * @return The value of the module_ field.
+   * Get the value of the module field from the ID.
+   * @return The value of the module field.
    */
   int getModuleID() const { return (id_ >> MODULE_SHIFT) & MODULE_MASK; }
 
   /**
-   * Get the value of the layer_ field from the ID.
-   * @return The value of the layer_ field.
+   * Get the value of the layer field from the ID.
+   * @return The value of the layer field.
    */
   int layer() const { return (id_ >> LAYER_SHIFT) & LAYER_MASK; }
 
   /**
-   * Get the value of the layer_ field from the ID.
-   * @return The value of the layer_ field.
+   * Get the value of the layer field from the ID.
+   * @return The value of the layer field.
    */
   int getLayerID() const { return (id_ >> LAYER_SHIFT) & LAYER_MASK; }
 
@@ -105,8 +105,8 @@ class EcalTriggerID : public EcalAbstractID {
   // Note: When this function is implemented, it can be added to
   // DetectorIDBindings
   /**
-   * Get the cell u,v index_ assuming a CMS-standard 432-cell sensor
-   * @return Pair providing a U/V index_
+   * Get the cell u,v index assuming a CMS-standard 432-cell sensor
+   * @return Pair providing a U/V index
    */
   std::pair<unsigned int, unsigned int> getCellUV() const;
 

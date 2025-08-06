@@ -25,15 +25,14 @@ void HCalDQM::analyze(const framework::Event &event) {
   analyzeSimHits(hcalSimHits);
   analyzeRecHits(hcalHits);
 }
-void HCalDQM::analyzeSimHits(
-    const std::vector<ldmx::SimCalorimeterHit> &hits_) {
+void HCalDQM::analyzeSimHits(const std::vector<ldmx::SimCalorimeterHit> &hits) {
   const auto &geometry = getCondition<ldmx::HcalGeometry>(
       ldmx::HcalGeometry::CONDITIONS_OBJECT_NAME);
 
   std::map<ldmx::HcalID, double> simEnergyPerBar;
   int hitMultiplicity{0};
 
-  for (const auto &hit : hits_) {
+  for (const auto &hit : hits) {
     ldmx::HcalID id(hit.getID());
     if (skipHit(id)) {
       continue;
@@ -47,10 +46,10 @@ void HCalDQM::analyzeSimHits(
     const auto orientation{geometry.getScintillatorOrientation(id)};
     const auto layer{id.layer()};
     const auto strip{id.strip()};
-    const auto pos_{hit.getPosition()};
-    const auto x{pos_[0]};
-    const auto y{pos_[1]};
-    const auto z{pos_[2]};
+    const auto pos{hit.getPosition()};
+    const auto x{pos[0]};
+    const auto y{pos[1]};
+    const auto z{pos[2]};
     const auto t{hit.getTime()};
     hitMultiplicity++;
     histograms_.fill("sim_hit_time", t);
@@ -80,7 +79,7 @@ void HCalDQM::analyzeSimHits(
   }
   histograms_.fill("sim_total_energy", total_energy);
 }
-void HCalDQM::analyzeRecHits(const std::vector<ldmx::HcalHit> &hits_) {
+void HCalDQM::analyzeRecHits(const std::vector<ldmx::HcalHit> &hits) {
   const auto &geometry = getCondition<ldmx::HcalGeometry>(
       ldmx::HcalGeometry::CONDITIONS_OBJECT_NAME);
 
@@ -91,7 +90,7 @@ void HCalDQM::analyzeRecHits(const std::vector<ldmx::HcalHit> &hits_) {
   int vetoableHitMultiplicity{0};
   int hitMultiplicity{0};
 
-  for (const ldmx::HcalHit &hit : hits_) {
+  for (const ldmx::HcalHit &hit : hits) {
     ldmx::HcalID id(hit.getID());
     const auto orientation{geometry.getScintillatorOrientation(id)};
     const auto section{id.section()};

@@ -27,12 +27,11 @@ class IDField {
   /**
    * Class constructor.
    * @param name The name of the field.
-   * @param index_ The index_ of the field in the ID.
+   * @param index The index of the field in the ID.
    * @param startBit The start bit of the field.
    * @param endBit The end bit of the field.
    */
-  IDField(std::string name, unsigned index_, unsigned startBit,
-          unsigned endBit);
+  IDField(std::string name, unsigned index, unsigned startBit, unsigned endBit);
 
   /**
    * Get the name of the field.
@@ -41,8 +40,8 @@ class IDField {
   const std::string& getFieldName();
 
   /**
-   * Get the index_ of the field.
-   * @return The index_ of the field.
+   * Get the index of the field.
+   * @return The index of the field.
    */
   unsigned getIndex();
 
@@ -85,7 +84,7 @@ class IDField {
   std::string fieldName_;
 
   /**
-   * The index_ of the field.
+   * The index of the field.
    */
   unsigned index_;
 

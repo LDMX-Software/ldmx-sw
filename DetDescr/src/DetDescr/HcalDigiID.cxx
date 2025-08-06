@@ -3,7 +3,7 @@
 #include "DetDescr/DetectorIDInterpreter.h"
 
 // Section: 0 Back Hcal, > 0 Side Hcal
-// End: 0 Top/Left (positive y_/x_), 1 Bottom/Right (negative y_/x_)
+// End: 0 Top/Left (positive y/x), 1 Bottom/Right (negative y/x)
 namespace ldmx {
 
 std::ostream& operator<<(std::ostream& s, const ldmx::HcalDigiID& id) {
@@ -19,7 +19,7 @@ void HcalDigiID::createInterpreters() {
       new IDField("section", 1, SECTION_SHIFT,
                   SECTION_SHIFT + IDField::countOnes(SECTION_MASK) - 1));
   fields.push_back(
-      new IDField("layer_", 2, LAYER_SHIFT,
+      new IDField("layer", 2, LAYER_SHIFT,
                   LAYER_SHIFT + IDField::countOnes(LAYER_MASK) - 1));
   fields.push_back(
       new IDField("strip", 3, STRIP_SHIFT,

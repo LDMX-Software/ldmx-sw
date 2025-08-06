@@ -29,7 +29,7 @@ class HcalTriggerID : public HcalAbstractID {
   static const RawValue SECTION_SHIFT{16};
   static const RawValue LAYER_MASK{0xFF};  // space for up to 255 layers
   static const RawValue LAYER_SHIFT{8};
-  static const RawValue SUPERSTRIP_MASK{0xFF};  // space for 255 strips/layer_
+  static const RawValue SUPERSTRIP_MASK{0xFF};  // space for 255 strips/layer
   static const RawValue SUPERSTRIP_SHIFT{0};
 
   /**
@@ -64,11 +64,11 @@ class HcalTriggerID : public HcalAbstractID {
   /**
    * Create from pieces
    */
-  HcalTriggerID(unsigned int section, unsigned int layer_,
+  HcalTriggerID(unsigned int section, unsigned int layer,
                 unsigned int superstrip, unsigned int end)
       : HcalAbstractID(Trigger, 0) {
     id_ |= (section & SECTION_MASK) << SECTION_SHIFT;
-    id_ |= (layer_ & LAYER_MASK) << LAYER_SHIFT;
+    id_ |= (layer & LAYER_MASK) << LAYER_SHIFT;
     id_ |= (superstrip & SUPERSTRIP_MASK) << SUPERSTRIP_SHIFT;
     id_ |= (end & END_MASK) << END_SHIFT;
   }
@@ -86,14 +86,14 @@ class HcalTriggerID : public HcalAbstractID {
   int section() const { return (id_ >> SECTION_SHIFT) & SECTION_MASK; }
 
   /**
-   * Get the value of the layer_ field from the ID.
-   * @return The value of the layer_ field.
+   * Get the value of the layer field from the ID.
+   * @return The value of the layer field.
    */
   int layer() const { return (id_ >> LAYER_SHIFT) & LAYER_MASK; }
 
   /**
-   * Get the value of the layer_ field from the ID.
-   * @return The value of the layer_ field.
+   * Get the value of the layer field from the ID.
+   * @return The value of the layer field.
    */
   int getLayerID() const { return (id_ >> LAYER_SHIFT) & LAYER_MASK; }
 

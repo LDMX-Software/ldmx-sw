@@ -1,6 +1,6 @@
 /**
  * @file PackedIndex.h
- * @brief Class which represents a maximally-packed index_ of up to four fields
+ * @brief Class which represents a maximally-packed index of up to four fields
  * @author Jeremiah Mans, University of Minnesota
  */
 
@@ -13,9 +13,9 @@ namespace ldmx {
 
 /**
  * @class PackedIndex
- * A maximally-packed index_ of up to four different fields.
+ * A maximally-packed index of up to four different fields.
  *
- * We can pack an index_ with different fields by knowing each
+ * We can pack an index with different fields by knowing each
  * field's modulus or the number of different values the field can have.
  *
  * For example, if a field has values 0, 1, 2, 3 then its
@@ -50,7 +50,7 @@ class PackedIndex {
     index_ = v0 + v1 * m0 + v2 * m0 * m1 + v3 * m0 * m1 * m2;
   }
 
-  /// Constructor from index_ value
+  /// Constructor from index value
   PackedIndex(uint32_t value) : index_{value} {}
 
   /// Get the value of field 0
@@ -62,7 +62,7 @@ class PackedIndex {
   /// Get the value of field 3
   unsigned int field3() const { return (index_ / (m0 * m1 * m2)); }
 
-  /// Get the fully packed index_
+  /// Get the fully packed index
   uint32_t value() const { return index_; }
 
  private:

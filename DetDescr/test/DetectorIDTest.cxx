@@ -66,12 +66,12 @@ TEST_CASE("DetectorID", "[DetDescr][functionality]") {
 
     DetectorIDInterpreter dii(eid);
 
-    CHECK(dii.getFieldValue("layer_") == 50);
-    CHECK(dii.getFieldValue("module_") == 15);
+    CHECK(dii.getFieldValue("layer") == 50);
+    CHECK(dii.getFieldValue("module") == 15);
     CHECK(dii.getFieldValue("cell") == 500);
 
-    dii.setFieldValue("layer_", 23);
-    dii.setFieldValue("module_", 13);
+    dii.setFieldValue("layer", 23);
+    dii.setFieldValue("module", 13);
     dii.setFieldValue("cell", 223);
 
     eid = EcalID(dii.getId());
@@ -108,11 +108,11 @@ TEST_CASE("DetectorID", "[DetDescr][functionality]") {
 
     DetectorIDInterpreter dii(hid);
 
-    CHECK(dii.getFieldValue("layer_") == 250);
+    CHECK(dii.getFieldValue("layer") == 250);
     CHECK(dii.getFieldValue("section") == 4);
     CHECK(dii.getFieldValue("strip") == 245);
 
-    dii.setFieldValue("layer_", 23);
+    dii.setFieldValue("layer", 23);
     dii.setFieldValue("section", 1);
     dii.setFieldValue("strip", 223);
 
@@ -153,11 +153,11 @@ TEST_CASE("DetectorID", "[DetDescr][functionality]") {
 
     DetectorIDInterpreter dii(tid);
 
-    CHECK(dii.getFieldValue("layer_") == 250);
-    CHECK(dii.getFieldValue("module_") == 30);
+    CHECK(dii.getFieldValue("layer") == 250);
+    CHECK(dii.getFieldValue("module") == 30);
 
-    dii.setFieldValue("layer_", 213);
-    dii.setFieldValue("module_", 23);
+    dii.setFieldValue("layer", 213);
+    dii.setFieldValue("module", 23);
 
     tid = TrackerID(dii.getId());
 
@@ -191,10 +191,10 @@ TEST_CASE("DetectorID", "[DetDescr][functionality]") {
     DetectorIDInterpreter dii(ts_id);
 
     CHECK(dii.getFieldValue("bar") == 245);
-    CHECK(dii.getFieldValue("module_") == 250);
+    CHECK(dii.getFieldValue("module") == 250);
 
     dii.setFieldValue("bar", 213);
-    dii.setFieldValue("module_", 23);
+    dii.setFieldValue("module", 23);
 
     ts_id = TrigScintID(dii.getId());
 

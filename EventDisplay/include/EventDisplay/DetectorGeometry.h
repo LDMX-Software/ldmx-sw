@@ -21,7 +21,7 @@
 #include "DetDescr/HcalID.h"
 #include "Ecal/Event/EcalHit.h"
 #include "Hcal/Event/HcalHit.h"
-#include "SimCore/Event/SimTrackerHit.h"  //recoil hits_
+#include "SimCore/Event/SimTrackerHit.h"  //recoil hits
 
 namespace eventdisplay {
 
@@ -39,16 +39,16 @@ typedef std::vector<std::pair<double, double> > BoundingBox;
  * @brief Stores the necessary geometry details for a hexagonal prism.
  */
 struct HexPrism {
-  double x_;
-  double y_;
-  double z_;
+  double x;
+  double y;
+  double z;
   double height;
-  double radius_;
+  double radius;
 };
 
 /**
  * @class DetectorGeometry
- * @brief Class to translated between detector location (section, layer_, strip)
+ * @brief Class to translated between detector location (section, layer, strip)
  * and real space.
  */
 class DetectorGeometry {
@@ -70,7 +70,7 @@ class DetectorGeometry {
   BoundingBox getBoundingBox(const ldmx::HcalHit &hit) const;
 
   /**
-   * Calculate real space coordinates of a cluster of hits_.
+   * Calculate real space coordinates of a cluster of hits.
    *
    * Determines cluster's coordinates by a weighted mean of the individuals.
    *
@@ -98,28 +98,28 @@ class DetectorGeometry {
   /**
    * Get HexPrism for a tower
    *
-   * @param towerIndex int index_ of hexagonal tower
+   * @param towerIndex int index of hexagonal tower
    * @return HexPrism
    */
   HexPrism getHexTower(int towerIndex) const;
 
   /**
-   * Get Rotation Angle around z_-axis for the input layerID and moduleID
+   * Get Rotation Angle around z-axis for the input layerID and moduleID
    *
-   * @param layerID index_ for layer_ of recoil module_
-   * @param moduleID index_ for module_ of recoil module_
+   * @param layerID index for layer of recoil module
+   * @param moduleID index for module of recoil module
    * @return rotation angle in radians
    */
   double getRotAngle(int layerID, int moduleID) const;
 
   /**
-   * Get Bounding Box for input recoil module_
+   * Get Bounding Box for input recoil module
    * NOTE: This does not take into account any rotation! Use getRotAngle as
    * well!
    *
-   * @param layerID index_ for layer_ of module_
-   * @param moduleID index_ for module_
-   * @return BoundingBox that bounds the module_
+   * @param layerID index for layer of module
+   * @param moduleID index for module
+   * @return BoundingBox that bounds the module
    */
   BoundingBox getBoundingBox(int layerID, int moduleID) const;
 
@@ -149,13 +149,13 @@ class DetectorGeometry {
   /** Number of layers in each section */
   std::map<ldmx::HcalID::HcalSection, int> hcalNLayers_;
 
-  /** Number of strips per layer_ in each section */
+  /** Number of strips per layer in each section */
   std::map<ldmx::HcalID::HcalSection, int> hcalNStrips_;
 
   /** Length of Scintillator Strip [mm] */
   std::map<ldmx::HcalID::HcalSection, double> hcalLengthScint_;
 
-  /** The plane of the zero'th layer_ of each section [mm] */
+  /** The plane of the zero'th layer of each section [mm] */
   std::map<ldmx::HcalID::HcalSection, double> hcalZeroLayer_;
 
   /** The plane of the zero'th strip of each section [mm] */
@@ -164,7 +164,7 @@ class DetectorGeometry {
   /** Thickness of the layers in each seciton [mm] */
   std::map<ldmx::HcalID::HcalSection, double> hcalLayerThickness_;
 
-  /** an example layer_ number of a vertical layer_ */
+  /** an example layer number of a vertical layer */
   int hcalParityVertical_;
 
   /** Uncertainty in timing position along a bar/strip [mm] */
@@ -185,10 +185,10 @@ class DetectorGeometry {
   /** Total depth of ECAL (length in Z direction) */
   double ecalDepth_;
 
-  /** z_-coordinate of plane for first ecal layer_ [mm] */
+  /** z-coordinate of plane for first ecal layer [mm] */
   double ecalZeroLayer_;
 
-  /** Helper class to calculate (x_,y_) coordinate from hexagons */
+  /** Helper class to calculate (x,y) coordinate from hexagons */
   std::unique_ptr<ldmx::EcalHexReadout> ecalHexReader_;
 
   /////////////////////////////////////////////////////////////
@@ -214,12 +214,12 @@ class DetectorGeometry {
 
   double recoilSensorThickness_;
 
-  /** position of each module_ in recoil detector
+  /** position of each module in recoil detector
    * The key in this map is 10*layerID+moduleID
    */
   std::map<int, std::vector<double> > recoilModulePos_;
 
-  /** angular tilt for each module_ in recoil detector
+  /** angular tilt for each module in recoil detector
    * The key in this map is 10*layerID+moduleID
    */
   std::map<int, double> recoilModuleAngle_;

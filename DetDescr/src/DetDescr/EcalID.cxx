@@ -15,10 +15,10 @@ void EcalID::createInterpreters() {
   IDField::IDFieldList fields;
   fields.push_back(new IDField("subdetector", 0, SUBDETECTORID_SHIFT, 31));
   fields.push_back(
-      new IDField("layer_", 1, LAYER_SHIFT,
+      new IDField("layer", 1, LAYER_SHIFT,
                   LAYER_SHIFT + IDField::countOnes(LAYER_MASK) - 1));
   fields.push_back(
-      new IDField("module_", 2, MODULE_SHIFT,
+      new IDField("module", 2, MODULE_SHIFT,
                   MODULE_SHIFT + IDField::countOnes(MODULE_MASK) - 1));
   fields.push_back(new IDField("cell", 3, CELL_SHIFT,
                                CELL_SHIFT + IDField::countOnes(CELL_MASK) - 1));
@@ -39,11 +39,11 @@ static const unsigned int base_row_w = 13;
 static const unsigned int v_middle = 11;
 static const unsigned int max_v = 23;
 
-EcalID::EcalID(unsigned int layer_, unsigned int module_, unsigned int u,
+EcalID::EcalID(unsigned int layer, unsigned int module, unsigned int u,
                unsigned int v)
     : EcalAbstractID(EcalAbstractID::PrecisionGlobal, 0) {
-  id_ |= (layer_ & LAYER_MASK) << LAYER_SHIFT;
-  id_ |= (module_ & MODULE_MASK) << MODULE_SHIFT;
+  id_ |= (layer & LAYER_MASK) << LAYER_SHIFT;
+  id_ |= (module & MODULE_MASK) << MODULE_SHIFT;
 
   unsigned int cell = 0;
   if (v > max_v) {

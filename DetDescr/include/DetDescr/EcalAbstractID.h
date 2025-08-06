@@ -20,7 +20,7 @@ class EcalAbstractID : public DetectorID {
  public:
   enum EcalCellType {
     PrecisionGlobal = 0,  // full-granularity cells, transformed to a uniform
-                          // grid not alternating by layer_
+                          // grid not alternating by layer
     PrecisionLocal = 1,   // full-granularity cells, labelled by their local
                           // coordinatate system as from DAQ
     TriggerCell = 2,      // trigger cells

@@ -35,8 +35,8 @@ class CLUE {
     double total_energy_;
     int index_;
 
-    // index_ of density this density is follower of
-    // set to index_ of spatially closest density with higher energy; -1 if seed
+    // index of density this density is follower of
+    // set to index of spatially closest density with higher energy; -1 if seed
     int follower_of_;
     // separation distance to density that this is follower of
     float delta_;
@@ -67,13 +67,13 @@ class CLUE {
   float floatDist(float x1, float y1, float x2, float y2);
   float floatDist(float x1, float y1, float z1, float x2, float y2, float z2);
   std::vector<std::vector<const ldmx::EcalHit*>> createLayers(
-      const std::vector<const ldmx::EcalHit*>& hits_);
-  float roundToDecimal(float x_, int num_decimal_precision_digits);
+      const std::vector<const ldmx::EcalHit*>& hits);
+  float roundToDecimal(float x, int num_decimal_precision_digits);
   std::vector<std::shared_ptr<Density>> setup(
-      const std::vector<const ldmx::EcalHit*>& hits_);
+      const std::vector<const ldmx::EcalHit*>& hits);
 
   // connectingLayers marks if we're currently doing 3D clustering (i.e.
-  // connecting seeds between layers) otherwise, layerTag tells us which layer_
+  // connecting seeds between layers) otherwise, layerTag tells us which layer
   // number we're working on
   std::vector<std::vector<const ldmx::EcalHit*>> clustering(
       std::vector<std::shared_ptr<Density>>& densities, bool connectingLayers,
@@ -84,7 +84,7 @@ class CLUE {
   void convertToIntermediateClusters(
       std::vector<std::vector<const ldmx::EcalHit*>>& clusters);
 
-  void cluster(const std::vector<ldmx::EcalHit>& hits_, double dc, double rc,
+  void cluster(const std::vector<ldmx::EcalHit>& hits, double dc, double rc,
                double deltac, double deltao, int nbrOfLayers,
                bool reclustering);
 
@@ -100,7 +100,7 @@ class CLUE {
     return final_clusters_;
   }
 
-  // First layer_ centroids are available for potential future combination with
+  // First layer centroids are available for potential future combination with
   // TS
   std::vector<IntermediateCluster> getFirstLayerCentroids() const {
     return first_layer_centroids_;
@@ -128,7 +128,7 @@ class CLUE {
                                           10.5, 10.5, 10.5, 10.5};
   std::vector<double> layer_rho_c_;
   std::vector<double> layer_delta_c_;
-  // containment radius_ for the different layers of the ECal
+  // containment radius for the different layers of the ECal
   std::vector<double> radius_{
       5.723387467629167,  5.190678018534044,  5.927290663506518,
       6.182560329200212,  7.907549398117859,  8.606100542857211,

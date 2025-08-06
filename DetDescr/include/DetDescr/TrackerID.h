@@ -1,6 +1,6 @@
 /**
  * @file TrackerID.h
- * @brief Class that defines a Tracker detector ID with a module_ number
+ * @brief Class that defines a Tracker detector ID with a module number
  * @author Jeremy McCormick, SLAC National Accelerator Laboratory
  */
 
@@ -14,7 +14,7 @@ namespace ldmx {
 
 /**
  * @class TrackerID
- * @brief Extension of DetectorID providing access to layer_ and module_ number
+ * @brief Extension of DetectorID providing access to layer and module number
  * for tracker IDs
  */
 class TrackerID : public DetectorID {
@@ -45,21 +45,21 @@ class TrackerID : public DetectorID {
 
   /** Create from values
    */
-  TrackerID(SubdetectorIDType system, unsigned int layer_, unsigned int module_)
+  TrackerID(SubdetectorIDType system, unsigned int layer, unsigned int module)
       : DetectorID(system, 0) {
-    id_ |= (layer_ & LAYER_MASK) << LAYER_SHIFT;
-    id_ |= (module_ & MODULE_MASK) << MODULE_SHIFT;
+    id_ |= (layer & LAYER_MASK) << LAYER_SHIFT;
+    id_ |= (module & MODULE_MASK) << MODULE_SHIFT;
   }
 
   /**
-   * Get the value of the module_ field from the ID.
-   * @return The value of the module_ field.
+   * Get the value of the module field from the ID.
+   * @return The value of the module field.
    */
   int module() const { return (id_ >> MODULE_SHIFT) & MODULE_MASK; }
 
   /**
-   * Get the value of the layer_ field from the ID.
-   * @return The value of the layer_ field.
+   * Get the value of the layer field from the ID.
+   * @return The value of the layer field.
    */
   int layer() const { return (id_ >> LAYER_SHIFT) & LAYER_MASK; }
 
