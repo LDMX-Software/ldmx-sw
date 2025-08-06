@@ -134,9 +134,9 @@ void EcalDigiVerifier::analyze(const framework::Event &event) {
     histograms_.fill("num_mod_with_more_than_2hits", numModWithMoreThan2Hits);
 
   if (totalRecEnergy > 6000.) {
-    setStorageHint(framework::hint_shouldKeep);
+    setStorageHint(framework::hint_should_keep);
   } else {
-    setStorageHint(framework::hint_shouldDrop);
+    setStorageHint(framework::hint_should_drop);
   }
 
   return;

@@ -8,9 +8,9 @@ namespace framework {
 ConditionsObjectProvider::ConditionsObjectProvider(
     const std::string& objname, const std::string& tagname,
     const framework::config::Parameters& params, Process& process)
-    : theLog_{logging::makeLogger(objname)},
+    : the_log_{logging::makeLogger(objname)},
       process_{process},
-      objectName_{objname},
+      object_name_{objname},
       tagname_{tagname} {}
 
 std::pair<const ConditionsObject*, ConditionsIOV>

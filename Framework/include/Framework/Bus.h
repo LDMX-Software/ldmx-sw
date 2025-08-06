@@ -265,7 +265,7 @@ class Bus {
    *
    * ## Basic Structure
    *
-   * The method of specializing the clear, post_update, and attach methods
+   * The method of specializing the clear, postUpdate, and attach methods
    * to the different types of passenger's baggage is derived from
    * <a
    * href="https://www.fluentcpp.com/2017/08/15/function-templates-partial-specialization-cpp/"
@@ -354,17 +354,17 @@ class Bus {
     /**
      * Update this passenger's baggage.
      *
-     * @see post_update
+     * @see postUpdate
      * to allow the different types to take actions after the
      * baggage is updated. For example, the vector specialization
-     * of post_update uses this opportunity to sort the
+     * of postUpdate uses this opportunity to sort the
      * list of objects.
      *
      * @param[in] updated_obj BaggageType to copy into our object
      */
     void update(const BaggageType& updated_obj) {
       *baggage_ = updated_obj;
-      post_update(TheType<BaggageType>());
+      postUpdate(TheType<BaggageType>());
     }
 
     /**
@@ -706,7 +706,7 @@ class Bus {
       baggage_->clear();
     }
 
-   private:  // specializations of post_update
+   private:  // specializations of postUpdate
     /**
      * In general, don't do anything after an object has been updated.
      * @param t Unused, only helping compiler choose the correct method
@@ -722,7 +722,7 @@ class Bus {
      *
      * @param t Unused, only helping compiler choose the correct method
     template <typename Content>
-    void post_update(the_type<std::vector<Content>> t) {
+    void postUpdate(the_type<std::vector<Content>> t) {
       std::sort(baggage_->begin(), baggage_->end());
     }
      */

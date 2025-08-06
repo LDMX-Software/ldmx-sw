@@ -65,9 +65,9 @@ void EcalPreselectionSkimmer::produce(framework::Event &event) {
   // passed
   if (passedPreselection) {
     ldmx_log(debug) << "This event passed preselection!";
-    setStorageHint(framework::hint_shouldKeep);
+    setStorageHint(framework::hint_should_keep);
   } else {
-    setStorageHint(framework::hint_shouldDrop);
+    setStorageHint(framework::hint_should_drop);
   }
   // Add the boolean to the event
   event.add("EcalPreselectionDecision", passedPreselection);

@@ -4,15 +4,15 @@
 
 namespace framework {
 
-Event::Event(const std::string& thePassName) : passName_(thePassName) {}
+Event::Event(const std::string& thePassName) : pass_name_(thePassName) {}
 
 Event::~Event() {
-  for (regex_t& reg : regexDropCollections_) {
+  for (regex_t& reg : regex_drop_collections_) {
     regfree(&reg);
   }
 }
 
-void Event::Print() const {
+void Event::print() const {
   for (const ProductTag& tag : getProducts()) {
     std::cout << tag << std::endl;
   }
@@ -21,7 +21,7 @@ void Event::Print() const {
 void Event::addDrop(const std::string& exp) {
   regex_t reg;
   if (!regcomp(&reg, exp.c_str(), REG_EXTENDED | REG_ICASE | REG_NOSUB)) {
-    regexDropCollections_.push_back(reg);
+    regex_drop_collections_.push_back(reg);
   } else {
     EXCEPTION_RAISE("InvalidRegex", "The passed drop rule regex '" + exp +
                                         "' is not a valid regex.");
@@ -100,27 +100,27 @@ bool Event::exists(const std::string& name, const std::string& passName,
 }
 
 TTree* Event::createTree() {
-  outputTree_ = new TTree("LDMX_Events", "LDMX Events");
+  output_tree_ = new TTree("LDMX_Events", "LDMX Events");
 
-  return outputTree_;
+  return output_tree_;
 }
 
-void Event::setOutputTree(TTree* tree) { outputTree_ = tree; }
+void Event::setOutputTree(TTree* tree) { output_tree_ = tree; }
 
 void Event::setInputTree(TTree* tree) {
-  inputTree_ = tree;
+  input_tree_ = tree;
 
   // in some cases, setInputTree is called more than once,
   // so reset branch listing before starting
   products_.clear();
-  knownLookups_.clear();  // reset caching of empty pass requests
+  known_lookups_.clear();  // reset caching of empty pass requests
   bus_.everybodyOff();
 
   // put in EventHeader (only one without pass name)
   products_.emplace_back(ldmx::EventHeader::BRANCH, "", "ldmx::EventHeader");
 
   // find the names of all the existing branches
-  TObjArray* branches = inputTree_->GetListOfBranches();
+  TObjArray* branches = input_tree_->GetListOfBranches();
   if (!branches) {
     EXCEPTION_RAISE(
         "BadInputFile",
@@ -149,38 +149,38 @@ void Event::setInputTree(TTree* tree) {
 }
 
 bool Event::nextEvent() {
-  eventHeader_ = getObject<ldmx::EventHeader>(ldmx::EventHeader::BRANCH, "");
+  event_header_ = getObject<ldmx::EventHeader>(ldmx::EventHeader::BRANCH, "");
   return true;
 }
 
 void Event::beforeFill() {
-  if (inputTree_ == 0 && branchesFilled_.find(ldmx::EventHeader::BRANCH) ==
-                             branchesFilled_.end()) {
+  if (input_tree_ == 0 && branches_filled_.find(ldmx::EventHeader::BRANCH) ==
+                             branches_filled_.end()) {
     // Event Header not copied from input and hasn't been added yet, need to put
     // it in
-    add(ldmx::EventHeader::BRANCH, eventHeader_);
+    add(ldmx::EventHeader::BRANCH, event_header_);
   }
 }
 
 void Event::clear() {
-  branchesFilled_.clear();  // forget names of branches we filled
+  branches_filled_.clear();  // forget names of branches we filled
   bus_.clear();  // clear the event objects individually but leave them on bus
 }
 
 void Event::onEndOfEvent() {}
 
 void Event::onEndOfFile() {
-  if (outputTree_)
-    outputTree_->ResetBranchAddresses();  // reset addresses for output branch
-  if (inputTree_)
-    inputTree_ = nullptr;  // detach old inputTree (owned by EventFile)
-  knownLookups_.clear();   // reset caching of empty pass requests
+  if (output_tree_)
+    output_tree_->ResetBranchAddresses();  // reset addresses for output branch
+  if (input_tree_)
+    input_tree_ = nullptr;  // detach old input_tree (owned by EventFile)
+  known_lookups_.clear();   // reset caching of empty pass requests
   bus_.everybodyOff();     // delete buffer objects
 }
 
-bool Event::shouldDrop(const std::string& branchName) const {
-  for (const regex_t& exp : regexDropCollections_) {
-    if (!regexec(&exp, branchName.c_str(), 0, 0, 0)) return true;
+bool Event::shouldDrop(const std::string& branch_name) const {
+  for (const regex_t& exp : regex_drop_collections_) {
+    if (!regexec(&exp, branch_name.c_str(), 0, 0, 0)) return true;
   }
   return false;
 }

@@ -7,10 +7,10 @@ namespace framework {
 void StorageControl::resetEventState() { hints_.clear(); }
 
 void StorageControl::addHint(const std::string& processor_name, Hint hint,
-                             const std::string& purposeString) {
+                             const std::string& purpose_string) {
   for (const auto& [processor_rule, purpose_rule] : rules_) {
     if (std::regex_match(processor_name, processor_rule) and
-        std::regex_match(purposeString, purpose_rule)) {
+        std::regex_match(purpose_string, purpose_rule)) {
       // cache hints that matched a rule for later tallying
       hints_.push_back(hint);
       // leave after first match to avoid double-counting
@@ -104,6 +104,6 @@ bool StorageControl::keepEvent(bool event_completed) const {
    * where there were no votes), then we use the default
    * decision.
    */
-  return defaultIsKeep_;
+  return default_is_keep_;
 }
 }  // namespace framework

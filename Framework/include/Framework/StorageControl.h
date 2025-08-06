@@ -130,13 +130,13 @@ class StorageControl {
 /**
  * storage control hint alias for backwards compatibility
  */
-constexpr StorageControl::Hint HINT_SHOULD_KEEP =
+constexpr StorageControl::Hint hint_should_keep =
     StorageControl::Hint::ShouldKeep;
 
 /**
  * storage control hint alias for backwards compatibility
  */
-constexpr StorageControl::Hint HINT_SHOULD_DROP =
+constexpr StorageControl::Hint hint_should_drop =
     StorageControl::Hint::ShouldDrop;
 
 }  // namespace framework

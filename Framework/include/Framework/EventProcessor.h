@@ -102,14 +102,14 @@ class EventProcessor {
    * Callback for Producers to add parameters to the run header before
    * conditions are initialized.
    */
-  virtual void beforeNewRun(ldmx::RunHeader &runHeader) {}
+  virtual void beforeNewRun(ldmx::RunHeader &run_header) {}
 
   /**
    * Callback for the EventProcessor to take any necessary
    * action when the run being processed changes.
-   * @param runHeader The RunHeader containing run information.
+   * @param run_header The RunHeader containing run information.
    */
-  virtual void onNewRun(const ldmx::RunHeader &runHeader) {}
+  virtual void onNewRun(const ldmx::RunHeader &run_header) {}
 
   /**
    * Callback for the EventProcessor to take any necessary
@@ -117,7 +117,7 @@ class EventProcessor {
    * @param filename Input event ROOT file name.
    * @note This callback is rarely used.
    */
-  virtual void onFileOpen(EventFile &eventFile) {}
+  virtual void onFileOpen(EventFile &event_file) {}
 
   /**
    * Callback for the EventProcessor to take any necessary
@@ -125,7 +125,7 @@ class EventProcessor {
    * @param filename Input event ROOT file name
    * @note This callback is rarely used.
    */
-  virtual void onFileClose(EventFile &eventFile) {}
+  virtual void onFileClose(EventFile &event_file) {}
 
   /**
    * Callback for the EventProcessor to take any necessary
@@ -322,7 +322,7 @@ class Analyzer : public EventProcessor {
    * that any derived Analyzer will not be able to compile an
    * override of the beforeNewRun callback.
    */
-  virtual void beforeNewRun(ldmx::RunHeader &runHeader) final {}
+  virtual void beforeNewRun(ldmx::RunHeader &run_header) final {}
 
   /**
    * Process the event and make histograms or summaries

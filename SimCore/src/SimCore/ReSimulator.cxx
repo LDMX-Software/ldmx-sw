@@ -33,7 +33,7 @@ void ReSimulator::produce(framework::Event& event) {
     ldmx_log(trace) << "Skipping event: " << eventNumber
                     << " since it wasn't part of the requested events...";
 
-    this->AbortEvent();  // get out of processors loop
+    this->abortEvent();  // get out of processors loop
     return;
   }
 

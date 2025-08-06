@@ -188,7 +188,7 @@ class UserAction {
   framework::config::Parameters parameters_;
 
   /// the logging channel user actions can use `ldmx_log` with
-  mutable ::framework::logging::logger theLog_;
+  mutable ::framework::logging::logger the_log_;
 
 };  // UserAction
 

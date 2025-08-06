@@ -131,15 +131,15 @@ void RecoilFiducialityProcessor::produce(framework::Event &event) {
 
   if (!inverse_skim_) {
     if (is_fiducial) {
-      setStorageHint(framework::hint_shouldKeep);
+      setStorageHint(framework::hint_should_keep);
     } else {
-      setStorageHint(framework::hint_shouldDrop);
+      setStorageHint(framework::hint_should_drop);
     }
   } else {
     if (is_fiducial) {
-      setStorageHint(framework::hint_shouldDrop);
+      setStorageHint(framework::hint_should_drop);
     } else {
-      setStorageHint(framework::hint_shouldKeep);
+      setStorageHint(framework::hint_should_keep);
     }
   }
 }

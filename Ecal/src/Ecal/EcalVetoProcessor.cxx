@@ -901,16 +901,16 @@ void EcalVetoProcessor::produce(framework::Event &event) {
   // drop the event.
   if (!inverse_skim_) {
     if (result.passesVeto()) {
-      setStorageHint(framework::hint_shouldKeep);
+      setStorageHint(framework::hint_should_keep);
     } else {
-      setStorageHint(framework::hint_shouldDrop);
+      setStorageHint(framework::hint_should_drop);
     }
   } else {
     // Invert the skimming logic
     if (result.passesVeto()) {
-      setStorageHint(framework::hint_shouldDrop);
+      setStorageHint(framework::hint_should_drop);
     } else {
-      setStorageHint(framework::hint_shouldKeep);
+      setStorageHint(framework::hint_should_keep);
     }
   }
 

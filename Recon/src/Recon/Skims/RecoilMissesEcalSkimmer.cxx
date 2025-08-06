@@ -63,9 +63,9 @@ void RecoilMissesEcalSkimmer::produce(framework::Event &event) {
   // Tell the skimmer to keep or drop the event based on whether there
   // were recoil electron hits_ found in the Ecal.
   if (hasRecoilElectronHits) {
-    setStorageHint(framework::hint_shouldDrop);
+    setStorageHint(framework::hint_should_drop);
   } else {
-    setStorageHint(framework::hint_shouldKeep);
+    setStorageHint(framework::hint_should_keep);
   }
 }
 }  // namespace recon

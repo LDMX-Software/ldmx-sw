@@ -138,9 +138,9 @@ void EcalPnetVetoProcessor::produce(framework::Event& event) {
 
   // If the event passes the veto, keep it. Otherwise, drop the event.
   if (result.passesVeto()) {
-    setStorageHint(framework::hint_shouldKeep);
+    setStorageHint(framework::hint_should_keep);
   } else {
-    setStorageHint(framework::hint_shouldDrop);
+    setStorageHint(framework::hint_should_drop);
   }
 
   event.add(collection_name_, result);

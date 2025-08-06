@@ -9,7 +9,7 @@ namespace framework {
 
 EventProcessor::EventProcessor(const std::string &name, Process &process)
     : histograms_{name},
-      theLog_{logging::makeLogger(name)},
+      the_log_{logging::makeLogger(name)},
       process_{process},
       name_{name} {}
 
@@ -22,11 +22,11 @@ const ldmx::EventHeader &EventProcessor::getEventHeader() const {
 }
 
 TDirectory *EventProcessor::getHistoDirectory() {
-  if (!histoDir_) {
-    histoDir_ = process_.makeHistoDirectory(name_);
+  if (!histo_dir_) {
+    histo_dir_ = process_.makeHistoDirectory(name_);
   }
-  histoDir_->cd();  // make this the current directory
-  return histoDir_;
+  histo_dir_->cd();  // make this the current directory
+  return histo_dir_;
 }
 
 void EventProcessor::setStorageHint(framework::StorageControl::Hint hint,

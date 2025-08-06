@@ -129,22 +129,22 @@ class Formatter {
  * Should be put in the 'private' section of the class
  * and before the closing bracket '};'
  *
- * Defines the member variable theLog_ with the input
+ * Defines the member variable the_log_ with the input
  * name as the channel name.
  *
- * Makes theLog_ mutable so that the log can be used
+ * Makes the_log_ mutable so that the log can be used
  * in any class functions.
  */
 #define enableLogging(name)                     \
-  mutable ::framework::logging::logger theLog_{ \
+  mutable ::framework::logging::logger the_log_{ \
       ::framework::logging::makeLogger(name)};
 
 /**
  * @macro ldmx_log
  *
- * Assumes to have access to a variable named theLog_ of type logger.
+ * Assumes to have access to a variable named the_log_ of type logger.
  * Input logging level (without namespace or enum).
  */
-#define ldmx_log(lvl) BOOST_LOG_SEV(theLog_, ::framework::logging::level::lvl)
+#define ldmx_log(lvl) BOOST_LOG_SEV(the_log_, ::framework::logging::level::lvl)
 
 #endif  // FRAMEWORK_LOGGER_H

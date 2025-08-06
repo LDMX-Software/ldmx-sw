@@ -97,9 +97,9 @@ void TriggerProcessor::produce(framework::Event& event) {
 
   // mark the event
   if (pass)
-    setStorageHint(framework::hint_shouldKeep);
+    setStorageHint(framework::hint_should_keep);
   else
-    setStorageHint(framework::hint_shouldDrop);
+    setStorageHint(framework::hint_should_drop);
 }
 }  // namespace recon
 

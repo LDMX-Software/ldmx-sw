@@ -112,7 +112,7 @@ void Simulator::produce(framework::Event& event) {
     runManager_->TerminateOneEvent();  // clean up event objects
     SensitiveDetector::Factory::get().apply(
         [](auto sd) { sd->OnFinishedEvent(); });
-    this->AbortEvent();  // get out of processors loop
+    this->abortEvent();  // get out of processors loop
   }
 
   // Terminate the event.  This checks if an event is to be stored or

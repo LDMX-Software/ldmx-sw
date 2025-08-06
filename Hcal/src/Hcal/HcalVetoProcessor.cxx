@@ -184,16 +184,16 @@ void HcalVetoProcessor::produce(framework::Event &event) {
   // Skimming rules
   if (!inverse_skim_) {
     if (passes_veto) {
-      setStorageHint(framework::hint_shouldKeep);
+      setStorageHint(framework::hint_should_keep);
     } else {
-      setStorageHint(framework::hint_shouldDrop);
+      setStorageHint(framework::hint_should_drop);
     }
   } else {
     // Inverse skimming rules
     if (passes_veto) {
-      setStorageHint(framework::hint_shouldDrop);
+      setStorageHint(framework::hint_should_drop);
     } else {
-      setStorageHint(framework::hint_shouldKeep);
+      setStorageHint(framework::hint_should_keep);
     }
   }
 

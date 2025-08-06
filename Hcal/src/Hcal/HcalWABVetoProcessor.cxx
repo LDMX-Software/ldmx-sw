@@ -112,10 +112,10 @@ void HcalWABVetoProcessor::produce(framework::Event &event) {
   result.setVetoResult(passesVeto);
   result.setMaxPEHit(*maxPEHit);
   if (passesVeto) {
-    setStorageHint(framework::hint_shouldKeep);
+    setStorageHint(framework::hint_should_keep);
 
   } else {
-    setStorageHint(framework::hint_shouldDrop);
+    setStorageHint(framework::hint_should_drop);
   }
 
   event.add(outputCollName_, result);

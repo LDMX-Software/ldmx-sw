@@ -15,7 +15,7 @@ void SingleSubsystemUnpacker::configure(framework::config::Parameters& ps) {
 }
 
 void SingleSubsystemUnpacker::produce(framework::Event& event) {
-  if (!reader_ or reader_.eof()) AbortEvent();
+  if (!reader_ or reader_.eof()) abortEvent();
 
   std::vector<uint8_t> buff;
   if (!reader_.read(buff, num_bytes_per_event_)) {
