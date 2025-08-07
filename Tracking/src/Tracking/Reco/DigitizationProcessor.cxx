@@ -42,8 +42,8 @@ void DigitizationProcessor::onNewRun(const ldmx::RunHeader& runHeader) {
 void DigitizationProcessor::produce(framework::Event& event) {
   ldmx_log(trace) << " Getting the tracking geometry:" << geometry().getTG();
 
-  // Mode 0: Load simulated hits_ and produce smeared 1d measurements
-  // Mode 1: Load simulated hits_ and produce digitized 1d measurements
+  // Mode 0: Load simulated hits and produce smeared 1d measurements
+  // Mode 1: Load simulated hits and produce digitized 1d measurements
 
   const std::vector<ldmx::SimTrackerHit> sim_hits =
       event.getCollection<ldmx::SimTrackerHit>(hit_collection_,
@@ -62,10 +62,10 @@ void DigitizationProcessor::produce(framework::Event& event) {
   event.add(out_collection_, measurements);
 }
 
-// This method merges hits_ that have the same track_id on the same layer_.
-// The energy of the merged hit is the sum of the energy of the single sub-hits_
+// This method merges hits that have the same track_id on the same layer_.
+// The energy of the merged hit is the sum of the energy of the single sub-hits
 // The position/momentum of the merged hit is the energy-weighted average
-// sihits = vector of hits_ to merge
+// sihits = vector of hits to merge
 // mergedHits = total merged collection
 
 bool DigitizationProcessor::mergeHits(
@@ -79,7 +79,7 @@ bool DigitizationProcessor::mergeHits(
   }
 
   ldmx::SimTrackerHit mergedHit;
-  // Since all the hits_ will be on the same sensor, just use the ID of the
+  // Since all the hits will be on the same sensor, just use the ID of the
   // first
   mergedHit.setLayerID(sihits[0].getLayerID());
   mergedHit.setModuleID(sihits[0].getModuleID());
@@ -107,7 +107,7 @@ bool DigitizationProcessor::mergeHits(
 
     if (hit.getPdgID() != pdgID) {
       ldmx_log(error)
-          << "ERROR:: Found hits_ with compatible sensorID and track_id "
+          << "ERROR:: Found hits with compatible sensorID and track_id "
              "but different PDGID";
       ldmx_log(error) << "TRACKID ==" << hit.getTrackID() << " vs "
                       << sihits[0].getTrackID();
@@ -172,7 +172,7 @@ bool DigitizationProcessor::mergeSimHits(
 
 std::vector<ldmx::Measurement> DigitizationProcessor::digitizeHits(
     const std::vector<ldmx::SimTrackerHit>& sim_hits) {
-  ldmx_log(debug) << "Found: " << sim_hits.size() << " sim hits_ in the '"
+  ldmx_log(debug) << "Found: " << sim_hits.size() << " sim hits in the '"
                   << hit_collection_ << "' with passname '"
                   << tracker_hit_passname_ << "'";
 
@@ -185,7 +185,7 @@ std::vector<ldmx::Measurement> DigitizationProcessor::digitizeHits(
   //   coordinates.
   // * Create a Measurement object.
   for (auto& sim_hit : sim_hits) {
-    // Remove low energy deposit hits_
+    // Remove low energy deposit hits
     if (sim_hit.getEdep() > min_e_dep_) {
       if (track_id_ > 0 && sim_hit.getTrackID() != track_id_) continue;
 
@@ -249,7 +249,7 @@ std::vector<ldmx::Measurement> DigitizationProcessor::digitizeHits(
       }  // hit_surface exists
 
     }  // energy cut
-  }  // loop on sim-hits_
+  }  // loop on sim-hits
 
   return measurements;
 

@@ -40,7 +40,7 @@ void EcalMipTrackingProcessor::produce(framework::Event &event) {
   geometry_ = &getCondition<ldmx::EcalGeometry>(
       ldmx::EcalGeometry::CONDITIONS_OBJECT_NAME);
 
-  // Read in hits_ near photon from EcalVetoProcessor
+  // Read in hits near photon from EcalVetoProcessor
   auto ecal_veto_result = event.getObject<ldmx::EcalVetoResult>(
       ecal_collection_name_, ecal_pass_name_);
   auto ecal_trajectory_info = event.getObject<ldmx::EcalTrajectoryInfo>(
@@ -131,7 +131,7 @@ void EcalMipTrackingProcessor::produce(framework::Event &event) {
         photon_territory_hits_++;
       }
     }
-    ldmx_log(trace) << "Photon territory hits_: " << photon_territory_hits_;
+    ldmx_log(trace) << "Photon territory hits: " << photon_territory_hits_;
   } else {
     photon_territory_hits_ = n_readout_hits_;
   }
@@ -170,10 +170,10 @@ void EcalMipTrackingProcessor::produce(framework::Event &event) {
 
     track[0] = i_hit;
 
-    // Search for hits_ to add to the track:
-    // repeatedly find hits_ in the front two layers with same x_ & y_ positions
+    // Search for hits to add to the track:
+    // repeatedly find hits in the front two layers with same x_ & y_ positions
     // but since v14 the odd layers are offset, so we allow half a cell_width
-    // deviation and then add to track until no more hits_ are found
+    // deviation and then add to track until no more hits are found
     int j_hit = i_hit;
     while (j_hit < tracking_hit_list.size()) {
       if ((tracking_hit_list[j_hit].layer_ ==
@@ -194,7 +194,7 @@ void EcalMipTrackingProcessor::produce(framework::Event &event) {
     }
 
     // Confirm that the track is valid:
-    if (track_len < 2) continue;  // Track must contain at least 2 hits_
+    if (track_len < 2) continue;  // Track must contain at least 2 hits
     float closest_e = ecal::distTwoLines(
         tracking_hit_list[track[0]].pos_,
         tracking_hit_list[track[track_len - 1]].pos_, e_traj_start, e_traj_end);
@@ -218,7 +218,7 @@ void EcalMipTrackingProcessor::produce(framework::Event &event) {
                       << tracking_hit_list[track[k]].layer_ << "]";
     }
 
-    // if track found, increment n_straight_tracks and remove all hits_ in track
+    // if track found, increment n_straight_tracks and remove all hits in track
     // from future consideration
     if (track_len >= 2) {
       std::vector<ldmx::HitData> temp_track_list;
@@ -242,7 +242,7 @@ void EcalMipTrackingProcessor::produce(framework::Event &event) {
 
       track_list.push_back(temp_track_list);
       // The *current* hit will have been removed, so i_hit is currently
-      // pointing to the next hit. Decrement i_hit so no hits_ will get skipped
+      // pointing to the next hit. Decrement i_hit so no hits will get skipped
       // by i_hit++
       i_hit--;
     }
@@ -322,7 +322,7 @@ void EcalMipTrackingProcessor::produce(framework::Event &event) {
   // ------------------------------------------------------
   // Linreg tracking:
   ldmx_log(info) << "Finding linreg tracks from a total of "
-                 << tracking_hit_list.size() << " hits_ using a radius_ of "
+                 << tracking_hit_list.size() << " hits using a radius of "
                  << linreg_radius_ << " mm";
 
   for (int i_hit = 0; i_hit < 0; i_hit++) {
@@ -335,15 +335,15 @@ void EcalMipTrackingProcessor::produce(framework::Event &event) {
     ROOT::Math::XYZVector h_mean;
     ROOT::Math::XYZVector h_point;
     float r_corr_best{0.0};
-    // Temp array having 3 potential hits_
+    // Temp array having 3 potential hits
     int hit_nums[3];
     // From the above which are passing the correlation reqs
     int best_hit_nums[3];
 
     hits_in_region.push_back(i_hit);
-    // Find all hits_ within 2 cells of the primary hit:
+    // Find all hits within 2 cells of the primary hit:
     for (int j_hit = 0; j_hit < tracking_hit_list.size(); j_hit++) {
-      // Dont try to put hits_ on the same layer_ to the lin-reg track
+      // Dont try to put hits on the same layer_ to the lin-reg track
       if (tracking_hit_list[i_hit].pos_.Z() ==
           tracking_hit_list[j_hit].pos_.Z()) {
         continue;
@@ -361,13 +361,13 @@ void EcalMipTrackingProcessor::produce(framework::Event &event) {
     bool best_lin_reg_found{false};
 
     ldmx_log(debug) << "There are " << hits_in_region.size()
-                    << " hits_ within a radius_ of " << linreg_radius_ << " mm";
-    // Look at combinations of hits_ within the region (do not consider the same
+                    << " hits within a radius of " << linreg_radius_ << " mm";
+    // Look at combinations of hits within the region (do not consider the same
     // combination twice):
     hit_nums[0] = i_hit;
     for (int j_hit_in_reg = 1; j_hit_in_reg < hits_in_region.size() - 1;
          j_hit_in_reg++) {
-      // We require (exactly) 3 hits_ for the lin-reg track building
+      // We require (exactly) 3 hits for the lin-reg track building
       if (hits_in_region.size() < 3) break;
       hit_nums[1] = hits_in_region[j_hit_in_reg];
       for (int k_hit_reg = j_hit_in_reg + 1; k_hit_reg < hits_in_region.size();
@@ -414,7 +414,7 @@ void EcalMipTrackingProcessor::produce(framework::Event &event) {
         slope_vec.SetZ(vm[0][2]);
         // h_mean, h_point are points on the best-fit line
         h_point = slope_vec + h_mean;
-        // linreg complete:  Now have best-fit line for 3 hits_ under
+        // linreg complete:  Now have best-fit line for 3 hits under
         // consideration Check whether the track is valid:  r^2 must be high,
         // and the track must plausibly originate from the photon
         float closest_e =
@@ -448,10 +448,10 @@ void EcalMipTrackingProcessor::produce(framework::Event &event) {
             best_hit_nums[k] = hit_nums[k];
           }
         }
-      }  // end loop on hits_ in the region
-    }  // end 2nd loop on hits_ in the region
+      }  // end loop on hits in the region
+    }  // end 2nd loop on hits in the region
 
-    // Continue early if not hits_ on track
+    // Continue early if not hits on track
     if (!best_lin_reg_found) continue;
     // Otherwise increase the number of lin-reg tracks
     n_linreg_tracks_++;
@@ -464,12 +464,12 @@ void EcalMipTrackingProcessor::produce(framework::Event &event) {
           << tracking_hit_list[best_hit_nums[final_hit_index]].pos_.Z() << "] ";
     }
 
-    // Exclude all hits_ in a found track from further consideration:
+    // Exclude all hits in a found track from further consideration:
     for (int l_hit = 0; l_hit < 3; l_hit++) {
       tracking_hit_list.erase(tracking_hit_list.begin() + best_hit_nums[l_hit]);
     }
     i_hit--;
-  }  // end loop on all hits_
+  }  // end loop on all hits
   ldmx_log(info) << " MIP tracking completed; found " << n_straight_tracks_
                  << " straight tracks and " << n_linreg_tracks_
                  << " lin-reg tracks";

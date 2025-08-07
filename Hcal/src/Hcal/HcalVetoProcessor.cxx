@@ -26,8 +26,8 @@ void HcalVetoProcessor::configure(framework::config::Parameters &parameters) {
   // A fake-hit that gets added for the rare case where no hit actually reaches
   // the maxPE < pe check to avoid producing uninitialized memory
   //
-  // Default constructed hits_ have nonsense-but predictable values and are
-  // harder to mistake for real hits_
+  // Default constructed hits have nonsense-but predictable values and are
+  // harder to mistake for real hits
   default_max_hit_.clear();
   default_max_hit_.setPE(-9999);
   default_max_hit_.setMinPE(-9999);
@@ -94,7 +94,7 @@ void HcalVetoProcessor::produce(framework::Event &event) {
     }
   }
 
-  // Loop over all of the Hcal hits_ and calculate to total photoelectrons
+  // Loop over all of the Hcal hits and calculate to total photoelectrons
   // in the event.
   float total_PE{0.0};
   float max_PE{-1000};
@@ -168,7 +168,7 @@ void HcalVetoProcessor::produce(framework::Event &event) {
   }
 
   ldmx_log(info) << "There are " << num_valid_hits << " / " << num_total_hits
-                 << " HCal hits_ read out. " << num_non_recoil_hits
+                 << " HCal hits read out. " << num_non_recoil_hits
                  << " are not associated with the recoil ele. Total PE of "
                  << total_PE;
   // If the maximum PE found is below threshold, it passes the veto.

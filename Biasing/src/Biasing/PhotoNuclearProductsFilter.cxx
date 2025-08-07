@@ -23,7 +23,7 @@ PhotoNuclearProductsFilter::PhotoNuclearProductsFilter(
     const std::string& name, framework::config::Parameters& parameters)
     : simcore::UserAction(name, parameters) {
   products_pdg_id_ = parameters.getParameter<std::vector<int> >("pdg_ids");
-  min_e_ = parameters.getParameter<double>("min_e_");
+  min_e_ = parameters.getParameter<double>("min_e");
 }
 
 PhotoNuclearProductsFilter::~PhotoNuclearProductsFilter() {}

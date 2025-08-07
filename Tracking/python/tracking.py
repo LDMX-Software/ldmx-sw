@@ -1,7 +1,5 @@
 from LDMX.Framework.ldmxcfg import Producer
 from LDMX.Tracking.make_path import makeFieldMapPath
-#from LDMX.Tracking.make_path import makeDetectorPath
-
 
 class DigitizationProcessor(Producer):
     """ Producer that smears simulated tracker hits.
