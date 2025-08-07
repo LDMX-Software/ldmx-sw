@@ -171,7 +171,7 @@ void EcalMipTrackingProcessor::produce(framework::Event &event) {
     track[0] = i_hit;
 
     // Search for hits to add to the track:
-    // repeatedly find hits in the front two layers with same x_ & y_ positions
+    // repeatedly find hits in the front two layers with same x- & y-positions
     // but since v14 the odd layers are offset, so we allow half a cell_width
     // deviation and then add to track until no more hits are found
     int j_hit = i_hit;

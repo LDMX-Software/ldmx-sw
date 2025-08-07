@@ -207,9 +207,9 @@ class SimParticle {
   /**
    * Set the vertex of this particle [mm].
    *
-   * @param[in] x_ The vertex x_ position.
-   * @param[in] y_ The vertex y_ position.
-   * @param[in] z_ The vertex z_ position.
+   * @param[in] x The vertex x position.
+   * @param[in] y The vertex y position.
+   * @param[in] z The vertex z position.
    */
   void setVertex(const double& vtx_x, const double& vtx_y,
                  const double& vtx_z) {
@@ -241,9 +241,9 @@ class SimParticle {
   /**
    * Set the end point position of this particle [mm].
    *
-   * @param[in] end_x The x_ position of the end point.
-   * @param[in] end_y The y_ position of the end point.
-   * @param[in] end_z The z_ position of the end point.
+   * @param[in] end_x The x position of the end point.
+   * @param[in] end_y The y position of the end point.
+   * @param[in] end_z The z position of the end point.
    */
   void setEndPoint(const double& end_x, const double& end_y,
                    const double& end_z) {
@@ -255,9 +255,9 @@ class SimParticle {
   /**
    * Set the momentum of this particle [MeV].
    *
-   * @param[in] px The x_ momentum component.
-   * @param[in] py The y_ momentum component.
-   * @param[in] pz The z_ momentum component.
+   * @param[in] px The momentum x-component.
+   * @param[in] py The momentum y-component.
+   * @param[in] pz The momentum z-component.
    */
   void setMomentum(const double& px, const double& py, const double& pz) {
     px_ = px;

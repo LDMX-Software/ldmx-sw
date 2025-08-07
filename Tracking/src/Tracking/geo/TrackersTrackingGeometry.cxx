@@ -26,10 +26,10 @@ TrackersTrackingGeometry::TrackersTrackingGeometry(
 
   Acts::CuboidVolumeBuilder::Config config;
   config.position = {-200, 0., 0.};
-  // acts x_ = global z_
-  // global z_:  -200 - 900/2 = -650 to -200 + 900/2 = 250 mm
-  // global y_: -70 to 70
-  // global x_: -240 to 240
+  // acts x = global z
+  // global z:  -200 - 900/2 = -650 to -200 + 900/2 = 250 mm
+  // global y: -70 to 70
+  // global x: -240 to 240
   config.length = {900, tracker_y_length, tracker_z_length};
   config.volumeCfg = volBuilderConfigs;
 

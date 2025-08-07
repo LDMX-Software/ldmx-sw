@@ -143,19 +143,19 @@ MagneticFieldMap3D::MagneticFieldMap3D(const char* filename, double xOffset,
 
 void MagneticFieldMap3D::GetFieldValue(const double point[4],
                                        double* bfield) const {
-  double x_ = point[0] - xOffset_;
-  double y_ = point[1] - yOffset_;
-  double z_ = point[2] - zOffset_;
+  double x = point[0] - xOffset_;
+  double y = point[1] - yOffset_;
+  double z = point[2] - zOffset_;
   double eps = 1E-6;
 
   // Check that the point is within the defined region
-  if (x_ >= minx_ && x_ < maxx_ - eps && y_ >= miny_ && y_ < maxy_ - eps &&
-      z_ >= minz_ && z_ < maxz_ - eps) {
+  if ((x >= minx_ && (x < maxx_ - eps)) && (y >= miny_ && (y < maxy_ - eps)) &&
+      (z >= minz_ && (z < maxz_ - eps))) {
     // Position of given point within region, normalized to the range
     // [0,1]
-    double xfraction = (x_ - minx_) / dx_;
-    double yfraction = (y_ - miny_) / dy_;
-    double zfraction = (z_ - minz_) / dz_;
+    double xfraction = (x - minx_) / dx_;
+    double yfraction = (y - miny_) / dy_;
+    double zfraction = (z - minz_) / dz_;
 
     if (invertX_) {
       xfraction = 1 - xfraction;

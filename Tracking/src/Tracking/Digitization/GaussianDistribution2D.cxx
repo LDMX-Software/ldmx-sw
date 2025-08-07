@@ -45,11 +45,11 @@ double GaussianDistribution2D::covxy(const Acts::Vector3& xaxis,
   if (std::abs(xaxis.dot(yaxis) > 1e-9))
     std::cout << "ERROR:: Pixel axes are not orthogonal" << std::endl;
 
-  // Find the sin and cos of the angle between the x_ axis and the major axis
+  // Find the sin and cos of the angle between the x axis and the major axis
   double cth = (xaxis / xaxis.norm()).dot((major_axis_ / major_axis_.norm()));
   double sth = (yaxis / yaxis.norm()).dot((major_axis_ / major_axis_.norm()));
 
-  // Calculate the x_-y_ covariance matrix element
+  // Calculate the x-y covariance matrix element
   return sth * cth * (major_axis_.squaredNorm() - minor_axis_.squaredNorm());
 }
 

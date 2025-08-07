@@ -609,7 +609,7 @@ EcalWABRecProcessor::fit2DTracksConstrained(
   for (int iter = 0; iter < max_iter; ++iter) {
     n_iter = iter + 1;
 
-    // Compute fitted y_ coordinates for each track using the current
+    // Compute fitted y coordinates for each track using the current
     // parameters. For track 1: y1_fit = par[0] * x1 + abs_lim *
     // tanh(par[2]/abs_lim) For track 2: y2_fit = par[1] * x2 + abs_lim *
     // tanh(par[2]/abs_lim)
@@ -687,21 +687,21 @@ EcalWABRecProcessor::fit2DTracksConstrained(
       dy_dpar_2(n1 + i) = dy2_dpar_2(i);
     }
 
-    // Build the "A" matrix (the Jacobian) in its transposed form (3 x_ n)
+    // Build the "A" matrix (the Jacobian) in its transposed form (3 x n)
     Eigen::MatrixXd a_trans(3, n);
     a_trans.row(0) = dy_dpar_0.transpose();
     a_trans.row(1) = dy_dpar_1.transpose();
     a_trans.row(2) = dy_dpar_2.transpose();
 
-    // The Jacobian (n x_ 3) is the transpose of a_trans.
+    // The Jacobian (n x 3) is the transpose of a_trans.
     Eigen::MatrixXd a = a_trans.transpose();
 
-    // The residual vector (difference between measured and fitted y_ values)
+    // The residual vector (difference between measured and fitted y values)
     Eigen::VectorXd dy_vec = y - y_fit;
 
-    // Compute the (3 x_ 3) matrix: M = a_trans * W * a
-    Eigen::MatrixXd temp = a_trans * w;  // 3 x_ n
-    Eigen::MatrixXd temp2 = temp * a;    // 3 x_ 3
+    // Compute the (3 x 3) matrix: M = a_trans * W * a
+    Eigen::MatrixXd temp = a_trans * w;  // 3 x n
+    Eigen::MatrixXd temp2 = temp * a;    // 3 x 3
 
     // Add a regularization term to ensure numerical stability.
     Eigen::MatrixXd reg =
@@ -712,14 +712,14 @@ EcalWABRecProcessor::fit2DTracksConstrained(
     cov = temp2_reg.inverse();
 
     // Compute the parameter correction: dpar = cov * a_trans * W * dy_vec
-    Eigen::MatrixXd temp4 = cov * a_trans;  // 3 x_ n
-    Eigen::MatrixXd temp5 = temp4 * w;      // 3 x_ n
-    Eigen::VectorXd dpar = temp5 * dy_vec;  // 3 x_ 1
+    Eigen::MatrixXd temp4 = cov * a_trans;  // 3 x n
+    Eigen::MatrixXd temp5 = temp4 * w;      // 3 x n
+    Eigen::VectorXd dpar = temp5 * dy_vec;  // 3 x 1
 
     // Update the parameters
     par += dpar;
 
-    // After the update, the fitted y_ values are recalculated with a different
+    // After the update, the fitted y values are recalculated with a different
     // formula:
     //   y1_fit = par[0]*(x1 - par[2])
     //   y2_fit = par[1]*(x2 - par[2])
@@ -775,23 +775,23 @@ std::pair<Eigen::VectorXd, Eigen::VectorXd> EcalWABRecProcessor::polyfitXYvsZ(
     const std::vector<float>& x_, const std::vector<float>& y_,
     const std::vector<float>& z_, int degree) {
   /*
-    Function that fits two polynomials (x_ vs. z_ and y_ vs. z_) to 3D hit
+    Function that fits two polynomials (x_ vs. z and y vs. z_) to 3D hit
     position data using a least-squares method. The fitted models are defined
-    as: x_ = a₀
-    + a₁ * z_ + a₂ * z_² + ... + aₙ * zⁿ
-    y_ = b₀ + b₁ * z_ + b₂ * z_² + ... + bₙ * zⁿ
+    as: x = a₀
+    + a₁ * z + a₂ * z_² + ... + aₙ * zⁿ
+    y = b₀ + b₁ * z + b₂ * z_² + ... + bₙ * zⁿ
     where n is the specified polynomial degree.
 
     Inputs:
-      x_, y_, z_ : measured coordinates for the tracks;
-                x_ and y_ are the dependent variables, and z_ is the independent
+      x_, y_, z : measured coordinates for the tracks;
+                x and y are the dependent variables, and z is the independent
     variable (all provided as std::vector<float>) degree  : degree of the
     polynomial to be fitted (int)
 
     Returns:
       A pair containing:
-        first  : polynomial coefficients for the x_ vs. z_ fit (Eigen::VectorXd)
-        second : polynomial coefficients for the y_ vs. z_ fit (Eigen::VectorXd)
+        first  : polynomial coefficients for the x vs. z fit (Eigen::VectorXd)
+        second : polynomial coefficients for the y vs. z fit (Eigen::VectorXd)
 
     Notes:
       The polynomial is represented with the constant term first (i.e., [a₀, a₁,
@@ -800,10 +800,10 @@ std::pair<Eigen::VectorXd, Eigen::VectorXd> EcalWABRecProcessor::polyfitXYvsZ(
   const size_t n = z_.size();
   if (n == 0 || x_.size() != n || y_.size() != n) {
     throw std::invalid_argument(
-        "Vectors x_, y_, and z_ must be non-empty and have the same size.");
+        "Vectors x_, y_, and z must be non-empty and have the same size.");
   }
 
-  // Construct the Vandermonde (design) matrix A (n x_ (degree + 1)):
+  // Construct the Vandermonde (design) matrix A (n x (degree + 1)):
   // Each row i: [1, z_[i], z_[i]^2, ..., z_[i]^degree]
   Eigen::MatrixXd a(n, degree + 1);
   for (size_t i = 0; i < n; ++i) {
@@ -814,7 +814,7 @@ std::pair<Eigen::VectorXd, Eigen::VectorXd> EcalWABRecProcessor::polyfitXYvsZ(
     }
   }
 
-  // Map the x_ and y_ data into Eigen vectors.
+  // Map the x and y data into Eigen vectors.
   Eigen::VectorXd bx(n), by(n);
   for (size_t i = 0; i < n; ++i) {
     bx(i) = x_[i];

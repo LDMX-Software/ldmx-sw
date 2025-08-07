@@ -81,8 +81,8 @@ G4bool HcalSD::ProcessHits(G4Step* aStep, G4TouchableHistory* ROhist) {
   //                               1 + C1*(dE/dr)
   //              with:
   //                    S=1
-  //                    C1 = 1.29 x_ 10^-2  g*cm^-2*MeV^-1
-  //                    C2 = 9.59 x_ 10^-6  g^2*cm^-4*MeV^-2
+  //                    C1 = 1.29 x 10^-2  g*cm^-2*MeV^-1
+  //                    C2 = 9.59 x 10^-6  g^2*cm^-4*MeV^-2
   //              These are the same values used by ATLAS TileCal
   //              and CMS HCAL (and also the default in Geant3).
   //              You can try different values for these parameters,
@@ -193,7 +193,7 @@ G4bool HcalSD::ProcessHits(G4Step* aStep, G4TouchableHistory* ROhist) {
       topTransform.TransformPoint(postPoint->GetPosition())};
 
   // And rotate them to a local coordinate system for the bar that always has
-  // the same x_/y_/z_ definitions (see HcalGeometry for details)
+  // the same x/y/z definitions (see HcalGeometry for details)
   auto localPrePositionRotated{geometry.rotateGlobalToLocalBarPosition(
       {localPreStepPoint[0], localPreStepPoint[1], localPreStepPoint[2]}, id)};
 

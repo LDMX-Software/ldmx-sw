@@ -148,11 +148,11 @@ void HcalDigiProducer::produce(framework::Event& event) {
        * Define two pulses: with positive and negative ends.
        * For this we need to:
        * (1) Find the position along the bar:
-       *     For back Hcal: x_ (y_) for horizontal (vertical) layers.
-       *     For side Hcal: x_ (top,bottom) and y_ (left,right).
+       *     For back Hcal: x (y) for horizontal (vertical) layers.
+       *     For side Hcal: x (top,bottom) and y (left,right).
        *
        * (2) Define the end of the bar:
-       *     The end of an HcalDigiID is based on its distance (x_,y_) along the
+       *     The end of an HcalDigiID is based on its distance (x,y) along the
        *     bar.
        *     - A positive end (endID=0), corresponds to top,left.
        *     - A negative end (endID=1), corresponds to bottom,right.

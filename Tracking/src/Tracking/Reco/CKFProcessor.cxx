@@ -34,9 +34,9 @@ void CKFProcessor::onNewRun(const ldmx::RunHeader& rh) {
   const auto constBField = std::make_shared<Acts::ConstantBField>(b_field);
 
   // Define the target surface - be careful:
-  //  x_ - downstream
-  //  y_ - left (when looking along x_)
-  //  z_ - up
+  //  x - downstream
+  //  y - left (when looking along x)
+  //  z - up
   //  Passing identity here means that your target surface is oriented in the
   //  same way
   surf_rotation = Acts::RotationMatrix3::Zero();

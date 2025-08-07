@@ -97,7 +97,7 @@ class HistogramHelper {
    *
    * @param name Name of the histogram. This will also be used as a
    *             title.
-   * @param xLabel Title of the x_ axis.
+   * @param xLabel Title of the x axis.
    * @param bins Total number of histogram bins.
    * @param xmin The lower histogram limit.
    * @param xmax The upper histogram limit.
@@ -112,7 +112,7 @@ class HistogramHelper {
    *
    * @param name Name of the histogram. This will also be used as a
    *             title.
-   * @param xLabel Title of the x_ axis.
+   * @param xLabel Title of the x axis.
    * @param bins vector of bin edges
    */
   void create(const std::string& name, const std::string& xLabel,
@@ -125,11 +125,11 @@ class HistogramHelper {
    *
    * @param name Name of the histogram. This will also be used as a
    *             title.
-   * @param xLabel Title of the x_ axis.
+   * @param xLabel Title of the x axis.
    * @param xbins Total number of histogram bins in x_.
    * @param xmin The lower histogram limit in x_.
    * @param xmax The upper histogram limit in x_.
-   * @param yLabel Title of the x_ axis.
+   * @param yLabel Title of the x axis.
    * @param ybins Total number of histogram bins in y_.
    * @param ymin The lower histogram limit in y_.
    * @param ymax The upper histogram limit in y_.
@@ -146,10 +146,10 @@ class HistogramHelper {
    *
    * @param name Name of the histogram. This will also be used as a
    *             title.
-   * @param xLabel Title of the x_ axis.
-   * @param xbins Bin edges on x_ axis
-   * @param yLabel Title of the y_ axis.
-   * @param ybins Bin edges on y_ axis
+   * @param xLabel Title of the x axis.
+   * @param xbins Bin edges on x axis
+   * @param yLabel Title of the y axis.
+   * @param ybins Bin edges on y axis
    */
   void create(const std::string& name, const std::string& xLabel,
               const std::vector<double>& xbins, const std::string& yLabel,
@@ -176,8 +176,8 @@ class HistogramHelper {
    * Uses the current setting of theWeight_.
    *
    * @param name name of the histogram to fill
-   * @param valx x_ value to fill
-   * @param valy y_ value to fill
+   * @param valx x value to fill
+   * @param valy y value to fill
    */
   void fill(const std::string& name, const double& valx, const double& valy) {
     auto hist = dynamic_cast<TH2F*>(this->get(name));

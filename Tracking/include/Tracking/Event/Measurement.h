@@ -33,7 +33,7 @@ class Measurement {
    * Set the global position i.e. position of the measurement in the detector
    * frame.
    *
-   * @param x Position in x_ in mm.
+   * @param x Position in x in mm.
    * @param y Position in y in mm.
    * @param z Position in z in mm.
    */
@@ -135,11 +135,11 @@ class Measurement {
                                   const Measurement& measurement);
 
  private:
-  /// The global position in x_ (mm).
+  /// The global position in x (mm).
   float meas_x_{0.};
-  /// The global position in x_ (mm).
+  /// The global position in x (mm).
   float meas_y_{0.};
-  /// The global position in x_ (mm).
+  /// The global position in x (mm).
   float meas_z_{0.};
   /// Measurement time (ns).
   float meas_t_{0.};
