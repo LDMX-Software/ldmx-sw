@@ -21,7 +21,7 @@ CKFProcessor::CKFProcessor(const std::string& name, framework::Process& process)
 
 void CKFProcessor::onNewRun(const ldmx::RunHeader& rh) {
   profiling_map_["setup"] = 0.;
-  profiling_map_["hits_"] = 0.;
+  profiling_map_["hits"] = 0.;
   profiling_map_["seeds"] = 0.;
   profiling_map_["ckf_setup"] = 0.;
   profiling_map_["ckf_run"] = 0.;
@@ -224,9 +224,9 @@ void CKFProcessor::produce(framework::Event& event) {
   // and the IndexsourceLink that points to the hit
   const auto geoId_sl_map = makeGeoIdSourceLinkMap(tg, measurements);
 
-  auto hits_ = std::chrono::high_resolution_clock::now();
-  profiling_map_["hits_"] +=
-      std::chrono::duration<double, std::milli>(hits_ - setup).count();
+  auto hits = std::chrono::high_resolution_clock::now();
+  profiling_map_["hits"] +=
+      std::chrono::duration<double, std::milli>(hits - setup).count();
 
   // ============   Setup the CKF  ============
 
@@ -285,7 +285,7 @@ void CKFProcessor::produce(framework::Event& event) {
 
   auto seeds = std::chrono::high_resolution_clock::now();
   profiling_map_["seeds"] +=
-      std::chrono::duration<double, std::milli>(seeds - hits_).count();
+      std::chrono::duration<double, std::milli>(seeds - hits).count();
 
   Acts::GainMatrixUpdater kfUpdater;
 
@@ -504,7 +504,7 @@ void CKFProcessor::produce(framework::Event& event) {
       trk.setMomentum(track.momentum()[0], track.momentum()[1],
                       track.momentum()[2]);
 
-      // At least min_hits_ hits_ and p > 50 MeV
+      // At least min_hits hits and p > 50 MeV
       if ((trk.getNhits() <= min_hits_) || (abs(1. / trk.getQoP()) <= 0.05)) {
         ldmx_log(debug)
             << "  > Track candidate did NOT meet the requirements: Nhits = "
@@ -672,8 +672,8 @@ void CKFProcessor::onProcessEnd() {
   ldmx_log(info) << "setup       Avg Time/Event = " << std::fixed
                  << std::setprecision(3) << profiling_map_["setup"] / nevents_
                  << " ms";
-  ldmx_log(info) << "hits_        Avg Time/Event = " << std::fixed
-                 << std::setprecision(2) << profiling_map_["hits_"] / nevents_
+  ldmx_log(info) << "hits        Avg Time/Event = " << std::fixed
+                 << std::setprecision(2) << profiling_map_["hits"] / nevents_
                  << " ms";
   ldmx_log(info) << "seeds       Avg Time/Event = " << std::fixed
                  << std::setprecision(3) << profiling_map_["seeds"] / nevents_
@@ -750,7 +750,7 @@ auto CKFProcessor::makeGeoIdSourceLinkMap(
   ldmx_log(debug) << "The makeGeoIdSourceLinkMap has " << measurements.size()
                   << " measurements";
 
-  // Check the hits_ associated to the surfaces
+  // Check the hits associated to the surfaces
   for (unsigned int i_meas = 0; i_meas < measurements.size(); i_meas++) {
     ldmx::Measurement meas = measurements.at(i_meas);
     unsigned int layerid = meas.getLayerID();
@@ -804,7 +804,7 @@ std::vector<std::vector<std::size_t>> CKFProcessor::computeSharedHits(
 
   // Iterate through all input tracks, collect their properties like measurement
   // count and chi2 and fill the measurement map in order to relate tracks to
-  // each other if they have shared hits_.
+  // each other if they have shared hits.
   for (const auto& track : tracks) {
     // Kick out tracks that do not fulfill our initial requirements
     // if (track.getNhits() < nMeasurementsMin_) {

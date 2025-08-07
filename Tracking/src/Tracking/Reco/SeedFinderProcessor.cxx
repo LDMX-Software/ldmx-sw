@@ -47,7 +47,7 @@ void SeedFinderProcessor::configure(framework::config::Parameters& parameters) {
   out_seed_collection_ = parameters.getParameter<std::string>(
       "out_seed_collection", getName() + "SeedTracks");
 
-  // Input strip hits_
+  // Input strip hits
   input_hits_collection_ = parameters.getParameter<std::string>(
       "input_hits_collection", "TaggerSimHits");
 
@@ -197,15 +197,15 @@ void SeedFinderProcessor::produce(framework::Event& event) {
   processing_time_ += std::chrono::duration<double, std::milli>(diff).count();
 
   // Seed finding using 2D Hits
-  //  - The hits_ should keep track if they are already associated to a track or
+  //  - The hits should keep track if they are already associated to a track or
   //  not. This can be used for subsequent passes of seed-finding
 
   // This should go into a digitization producer, which takes care of producing
   // measurements from:
-  //  - raw hits_ in data
-  //  - sim hits_ in MC
-  // Step 0: Get the sim hits_ and project them on the surfaces to mimic 2d
-  // hits_ Step 1: Smear the hits_ and associate an uncertainty to those
+  //  - raw hits in data
+  //  - sim hits in MC
+  // Step 0: Get the sim hits and project them on the surfaces to mimic 2d
+  // hits Step 1: Smear the hits and associate an uncertainty to those
   // measurements.
 
   xhit_.clear();
@@ -427,7 +427,7 @@ void SeedFinderProcessor::onProcessEnd() {
   ldmx_log(info) << "AVG Time/Event: " << std::fixed << std::setprecision(1)
                  << processing_time_ / nevents_ << " ms";
   ldmx_log(info) << "Total Seeds/Events: " << ntracks_ << "/" << nevents_;
-  ldmx_log(info) << "Seeds discarded due to multiple hits_ on layers "
+  ldmx_log(info) << "Seeds discarded due to multiple hits on layers "
                  << ndoubles_;
   ldmx_log(info) << "not enough seed points " << nmissing_;
   ldmx_log(info) << " nfailpmin=" << nfailpmin_;
@@ -439,9 +439,9 @@ void SeedFinderProcessor::onProcessEnd() {
   ldmx_log(info) << "   nfailz0max=" << nfailz0max_;
 }
 
-// Given a strategy, group the hits_ according to some options
-// Not a good algorithm. The best would be to organize all the hits_ in sensors
-// *first* then only select the hits_ that we are interested into. TODO!
+// Given a strategy, group the hits according to some options
+// Not a good algorithm. The best would be to organize all the hits in sensors
+// *first* then only select the hits that we are interested into. TODO!
 
 bool SeedFinderProcessor::GroupStrips(
     const std::vector<ldmx::Measurement>& measurements,

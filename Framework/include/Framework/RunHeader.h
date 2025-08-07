@@ -303,7 +303,7 @@ class RunHeader {
   /** Map of string parameters. */
   std::map<std::string, std::string> string_parameters_;
 
-  ClassDef(RunHeader, 5);
+  ClassDef(RunHeader, 6);
 
 };  // RunHeader
 

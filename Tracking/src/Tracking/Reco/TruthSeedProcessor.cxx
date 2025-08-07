@@ -228,7 +228,7 @@ ldmx::Track TruthSeedProcessor::RecoilFullSeed(
   ts_truth_ecal.ts_type = ldmx::TrackStateType::AtECAL;
   smearedTruthTrack.addTrackState(ts_truth_ecal);
 
-  // Add the hits_
+  // Add the hits
   int nhits = 0;
 
   for (auto sim_hit_idx : hit_count_map.at(smearedTruthTrack.getTrackID())) {
@@ -308,7 +308,7 @@ ldmx::Track TruthSeedProcessor::TaggerFullSeed(
   ldmx_log(debug) << std::endl;
 
   // assign the sim hit indices
-  // TODO this is not fully correct as the sim hits_
+  // TODO this is not fully correct as the sim hits
   // might be duplicated on sensors
   // and should be merged if that is the case
 
@@ -465,19 +465,19 @@ void TruthSeedProcessor::makeHitCountMap(
           foundHit = true;
           break;
         }
-      }  // loop on the already recorded hits_
+      }  // loop on the already recorded hits
 
       if (!foundHit) {
         hit_count_map[sim_hit.getTrackID()].push_back(i_sim_hit);
       }
     }
-  }  // loop on sim hits_
+  }  // loop on sim hits
 }
 
 bool TruthSeedProcessor::scoringPlaneHitFilter(
     const ldmx::SimTrackerHit& hit,
     const std::vector<ldmx::SimTrackerHit>& ecal_sp_hits) {
-  // Clean some of the hits_ we don't want
+  // Clean some of the hits we don't want
   if (hit.getPosition()[2] < z_min_) return false;
 
   // Check if the track_id was requested
@@ -514,13 +514,13 @@ bool TruthSeedProcessor::scoringPlaneHitFilter(
 
         if (e_sp_p.norm() < p_cut_ecal_) pass_ecal_scoring_plane = false;
 
-        // Skip the rest of the scoring plane hits_ since we already found the
+        // Skip the rest of the scoring plane hits since we already found the
         // track we care about
         break;
 
       }  // check that the hit belongs to the inital particle from the target
          // scoring plane hit
-    }  // loop on Ecal scoring plane hits_
+    }  // loop on Ecal scoring plane hits
   }  // pcutEcal
 
   if (!pass_ecal_scoring_plane) return false;
@@ -533,7 +533,7 @@ void TruthSeedProcessor::produce(framework::Event& event) {
   auto particleMap{event.getMap<int, ldmx::SimParticle>(
       "SimParticles", sim_particles_passname_)};
 
-  // Retrieve the target scoring hits_
+  // Retrieve the target scoring hits
   // Information is extracted using the
   // scoring plane hit left by the particle at the target.
 
@@ -541,44 +541,44 @@ void TruthSeedProcessor::produce(framework::Event& event) {
       event.getCollection<ldmx::SimTrackerHit>(scoring_hits_coll_name_,
                                                sp_pass_name_)};
 
-  // Retrieve the scoring plane hits_ at the ECAL
+  // Retrieve the scoring plane hits at the ECAL
   const std::vector<ldmx::SimTrackerHit> scoring_hits_ecal{
       event.getCollection<ldmx::SimTrackerHit>("EcalScoringPlaneHits",
                                                sp_pass_name_)};
 
-  // Retrieve the sim hits_ in the tagger tracker
+  // Retrieve the sim hits in the tagger tracker
   const std::vector<ldmx::SimTrackerHit> tagger_sim_hits =
       event.getCollection<ldmx::SimTrackerHit>(tagger_sim_hits_coll_name_,
                                                input_pass_name_);
 
-  // Retrieve the sim hits_ in the recoil tracker
+  // Retrieve the sim hits in the recoil tracker
   const std::vector<ldmx::SimTrackerHit> recoil_sim_hits =
       event.getCollection<ldmx::SimTrackerHit>(recoil_sim_hits_coll_name_,
                                                input_pass_name_);
 
   // If sim hit collections are empty throw a warning
   if (tagger_sim_hits.size() == 0 && !skip_tagger_) {
-    ldmx_log(error) << "Tagger sim hits_ collection empty for event ";
+    ldmx_log(error) << "Tagger sim hits collection empty for event ";
   }
   if (recoil_sim_hits.size() == 0 && !skip_recoil_) {
-    ldmx_log(error) << "Recoil sim hits_ collection empty for event ";
+    ldmx_log(error) << "Recoil sim hits collection empty for event ";
   }
 
-  // The map stores which track leaves which sim hits_
+  // The map stores which track leaves which sim hits
   std::map<int, std::vector<int>> hit_count_map_recoil;
   makeHitCountMap(recoil_sim_hits, hit_count_map_recoil);
 
   std::map<int, std::vector<int>> hit_count_map_tagger;
   makeHitCountMap(tagger_sim_hits, hit_count_map_tagger);
 
-  // to keep track of how many sim particles leave hits_ on the scoring plane
+  // to keep track of how many sim particles leave hits on the scoring plane
   std::vector<int> recoil_sh_idxs;
   std::unordered_map<int, std::vector<int>> recoil_sh_count_map;
 
   std::vector<int> tagger_sh_idxs;
   std::unordered_map<int, std::vector<int>> tagger_sh_count_map;
 
-  // Target scoring hits_ for Tagger will have Z<0, Recoil scoring hits_ will
+  // Target scoring hits for Tagger will have Z<0, Recoil scoring hits will
   // have Z>0
   for (unsigned int i_sh = 0; i_sh < scoring_hits.size(); i_sh++) {
     const ldmx::SimTrackerHit& hit = scoring_hits.at(i_sh);
@@ -602,7 +602,7 @@ void TruthSeedProcessor::produce(framework::Event& event) {
       }
     }  // Tagger loop
 
-    // Check the recoil hits_
+    // Check the recoil hits
     else {
       // Recoil selection cuts
       // Positive scoring plane hit, forward direction with momentum > p_cut
@@ -614,7 +614,7 @@ void TruthSeedProcessor::produce(framework::Event& event) {
       recoil_sh_count_map[hit.getTrackID()].push_back(i_sh);
 
     }  // Recoil
-  }  // loop on Target scoring plane hits_
+  }  // loop on Target scoring plane hits
 
   for (std::pair<int, std::vector<int>> element : recoil_sh_count_map) {
     std::sort(
@@ -632,7 +632,7 @@ void TruthSeedProcessor::produce(framework::Event& event) {
         });
   }
 
-  // Sort tagger hits_.
+  // Sort tagger hits.
   for (auto& [_track_id, hit_indices] : tagger_sh_count_map) {
     std::sort(
         hit_indices.begin(), hit_indices.end(),
@@ -694,11 +694,11 @@ void TruthSeedProcessor::produce(framework::Event& event) {
     }
   }
 
-  // Recover the EcalScoring hits_
+  // Recover the EcalScoring hits
   std::vector<ldmx::SimTrackerHit> ecal_spHits =
       event.getCollection<ldmx::SimTrackerHit>("EcalScoringPlaneHits",
                                                sp_pass_name_);
-  // Select ECAL hits_
+  // Select ECAL hits
   std::vector<ldmx::SimTrackerHit> sel_ecal_spHits;
 
   for (auto sp_hit : ecal_spHits) {

@@ -20,8 +20,8 @@
 #include <memory>
 #include <vector>
 
-class t_file;
-class t_directory;
+class TFile;
+class TDirectory;
 
 namespace framework {
 
@@ -94,7 +94,7 @@ class Process {
   void requestFinish() { event_limit_ = 0; }
 
   /**
-   * Construct a TDirectory* for the given module_
+   * Construct a TDirectory* for the given module
    */
   TDirectory *makeHistoDirectory(const std::string &dirName);
 
