@@ -73,6 +73,8 @@ jobs:
         cd ${GITHUB_WORKSPACE}
         tar xf ldmx-sw-package.tar
 
+    - uses: extractions/setup-just@v3
+
     - run: just install-denv init
 
     - name: Run ${{matrix.sample}} ${{matrix.run}}
@@ -101,6 +103,8 @@ jobs:
       run: |
         cd ${GITHUB_WORKSPACE}
         tar xf ldmx-sw-build-${GITHUB_SHA}/ldmx-sw-package.tar
+
+    - uses: extractions/setup-just@v3
 
     - run: just install-denv init
 
