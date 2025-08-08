@@ -13,9 +13,9 @@ HcalTrigPrimDigiProducer::HcalTrigPrimDigiProducer(const std::string& name,
     : Producer(name, process) {}
 
 void HcalTrigPrimDigiProducer::configure(framework::config::Parameters& ps) {
-  digiCollName_ = ps.getParameter<std::string>("digiCollName");
-  digiPassName_ = ps.getParameter<std::string>("digiPassName");
-  condObjName_ =
+  digi_coll_name_ = ps.getParameter<std::string>("digiCollName");
+  digi_pass_name_ = ps.getParameter<std::string>("digiPassName");
+  cond_obj_name_ =
       ps.getParameter<std::string>("condObjName", "HcalTrigPrimDigiConditions");
 }
 
@@ -24,11 +24,12 @@ void HcalTrigPrimDigiProducer::produce(framework::Event& event) {
       HcalTriggerGeometry::CONDITIONS_OBJECT_NAME);
 
   const ldmx::HgcrocDigiCollection& hcalDigis =
-      event.getObject<ldmx::HgcrocDigiCollection>(digiCollName_, digiPassName_);
+      event.getObject<ldmx::HgcrocDigiCollection>(digi_coll_name_,
+                                                  digi_pass_name_);
 
   // get the calibration object
   const conditions::IntegerTableCondition& conditions =
-      getCondition<conditions::IntegerTableCondition>(condObjName_);
+      getCondition<conditions::IntegerTableCondition>(cond_obj_name_);
 
   // construct the calculator...
   ldmx::HgcrocTriggerCalculations calc(conditions);

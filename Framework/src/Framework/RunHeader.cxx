@@ -10,24 +10,24 @@ ClassImp(ldmx::RunHeader);
 
 namespace ldmx {
 
-RunHeader::RunHeader(int runNumber) : runNumber_(runNumber) {}
+RunHeader::RunHeader(int run_number) : run_number_(run_number) {}
 
 void RunHeader::stream(std::ostream &s) const {
   s << "RunHeader { run: " << getRunNumber() << ", numTries: " << getNumTries()
     << ", detectorName: " << getDetectorName()
     << ", description: " << getDescription() << "\n";
   s << "  intParameters: " << "\n";
-  for (const auto &[key, val] : intParameters_)
+  for (const auto &[key, val] : int_parameters_)
     s << "    " << key << " = " << val << "\n";
   s << "  floatParameters: " << "\n";
-  for (const auto &[key, val] : floatParameters_)
+  for (const auto &[key, val] : float_parameters_)
     s << "    " << key << " = " << val << "\n";
   s << "  stringParameters: " << "\n";
-  for (const auto &[key, val] : stringParameters_)
+  for (const auto &[key, val] : string_parameters_)
     s << "    " << key << " = " << val << "\n";
   s << "}";
 }
 
-void RunHeader::Print() const { stream(std::cout); }
+void RunHeader::print() const { stream(std::cout); }
 
 }  // namespace ldmx

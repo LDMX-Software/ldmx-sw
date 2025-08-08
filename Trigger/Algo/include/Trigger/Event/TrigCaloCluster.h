@@ -24,7 +24,7 @@ class TrigCaloCluster {
 
   bool operator<(const TrigCaloCluster &h) { return e_ < h.e_; }
 
-  void Clear();
+  void clear();
 
   void setEnergy(float e) { e_ = e; }
   void setXYZ(float x, float y, float z) {
@@ -42,7 +42,7 @@ class TrigCaloCluster {
   void setdxdze(float dxdze) { dxdze_ = dxdze; }
   void setdydze(float dydze) { dydze_ = dydze; }
   void set3D(bool x) { is3D_ = x; }
-  void setLayer(int l) { layer_ = l; }
+  void setLayer(int layer) { layer_ = layer; }
   void setFirstLayer(int l) { firstLayer_ = l; }
   void setLastLayer(int l) { lastLayer_ = l; }
   void setDepth(int d) { depth_ = d; }

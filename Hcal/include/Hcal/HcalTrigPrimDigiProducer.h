@@ -39,13 +39,13 @@ class HcalTrigPrimDigiProducer : public framework::Producer {
 
  private:
   /** Digi Collection Name to use as input */
-  std::string digiCollName_;
+  std::string digi_coll_name_;
 
   /** Digi Pass Name to use as input */
-  std::string digiPassName_;
+  std::string digi_pass_name_;
 
   /** Conditions object for the calibration information */
-  std::string condObjName_;
+  std::string cond_obj_name_;
 
   /** map of digis to the super trigger primitives */
   std::map<unsigned int, unsigned int> stq_tps;

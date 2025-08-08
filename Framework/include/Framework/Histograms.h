@@ -72,7 +72,7 @@ class HistogramPool {
 class HistogramHelper {
  private:
   /// The weight to fill histograms with
-  double theWeight_{1.};
+  double the_weight_{1.};
 
   /// The name of the processor that this helper is assigned to
   std::string name_;
@@ -88,7 +88,7 @@ class HistogramHelper {
   /**
    * Set the weight for filling the histograms
    */
-  void setWeight(double w) { theWeight_ = w; }
+  void setWeight(double w) { the_weight_ = w; }
 
   /**
    * Create a ROOT 1D histogram of type TH1F and pool it for later use.
@@ -126,13 +126,13 @@ class HistogramHelper {
    * @param name Name of the histogram. This will also be used as a
    *             title.
    * @param xLabel Title of the x axis.
-   * @param xbins Total number of histogram bins in x.
-   * @param xmin The lower histogram limit in x.
-   * @param xmax The upper histogram limit in x.
+   * @param xbins Total number of histogram bins in x_.
+   * @param xmin The lower histogram limit in x_.
+   * @param xmax The upper histogram limit in x_.
    * @param yLabel Title of the x axis.
-   * @param ybins Total number of histogram bins in y.
-   * @param ymin The lower histogram limit in y.
-   * @param ymax The upper histogram limit in y.
+   * @param ybins Total number of histogram bins in y_.
+   * @param ymin The lower histogram limit in y_.
+   * @param ymax The upper histogram limit in y_.
    */
   void create(const std::string& name, const std::string& xLabel,
               const double& xbins, const double& xmin, const double& xmax,
@@ -166,7 +166,7 @@ class HistogramHelper {
   void fill(const std::string& name, const double& val) {
     auto hist = dynamic_cast<TH1F*>(this->get(name));
     if (hist) {
-      hist->Fill(val, theWeight_);
+      hist->Fill(val, the_weight_);
     }
   }
 
@@ -182,7 +182,7 @@ class HistogramHelper {
   void fill(const std::string& name, const double& valx, const double& valy) {
     auto hist = dynamic_cast<TH2F*>(this->get(name));
     if (hist) {
-      hist->Fill(valx, valy, theWeight_);
+      hist->Fill(valx, valy, the_weight_);
     }
   }
 

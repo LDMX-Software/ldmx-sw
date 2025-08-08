@@ -36,7 +36,7 @@ class StraightTrack {
   friend std::ostream& operator<<(std::ostream& o, const StraightTrack& d);
 
   // To match the Framework Bus clear. It's doing nothing
-  void Clear() {};
+  void clear() {};
 
   void setNhits(int nhits) { n_hits_ = nhits; }
   int getNhits() const { return n_hits_; }

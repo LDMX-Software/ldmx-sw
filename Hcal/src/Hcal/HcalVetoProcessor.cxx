@@ -28,7 +28,7 @@ void HcalVetoProcessor::configure(framework::config::Parameters &parameters) {
   //
   // Default constructed hits have nonsense-but predictable values and are
   // harder to mistake for real hits
-  default_max_hit_.Clear();
+  default_max_hit_.clear();
   default_max_hit_.setPE(-9999);
   default_max_hit_.setMinPE(-9999);
   default_max_hit_.setSection(-9999);
@@ -184,16 +184,16 @@ void HcalVetoProcessor::produce(framework::Event &event) {
   // Skimming rules
   if (!inverse_skim_) {
     if (passes_veto) {
-      setStorageHint(framework::hint_shouldKeep);
+      setStorageHint(framework::hint_should_keep);
     } else {
-      setStorageHint(framework::hint_shouldDrop);
+      setStorageHint(framework::hint_should_drop);
     }
   } else {
     // Inverse skimming rules
     if (passes_veto) {
-      setStorageHint(framework::hint_shouldDrop);
+      setStorageHint(framework::hint_should_drop);
     } else {
-      setStorageHint(framework::hint_shouldKeep);
+      setStorageHint(framework::hint_should_keep);
     }
   }
 
@@ -225,7 +225,7 @@ std::vector<float> HcalVetoProcessor::trackProp(const ldmx::Tracks &tracks,
 
     // param 2 = phi (azimuthal), param 3 = theta (polar)
     // param 4 = QoP
-    // ACTS (local)  to  LDMX (global) coordinates: (y,z,x)->  (x,y,z)
+    // ACTS (local)  to  LDMX (global) coordinates: (y_,z_,x_)->  (x_,y_,z_)
     // convert qop [1/GeV] to p [MeV]
     double p_track_state = (-1 / hcal_track_state.params[4]) * 1000;
     // p * sin(theta) * sin(phi)
@@ -240,7 +240,7 @@ std::vector<float> HcalVetoProcessor::trackProp(const ldmx::Tracks &tracks,
     // Store the new track state variables
     new_track_states.push_back(track_state_loc0);
     new_track_states.push_back(track_state_loc1);
-    // z-position as in the tracking exptrapolation
+    // z_-position as in the tracking exptrapolation
     new_track_states.push_back(240.5);
     new_track_states.push_back(recoil_mom_x);
     new_track_states.push_back(recoil_mom_y);

@@ -70,25 +70,25 @@ class EcalDigiProducer : public framework::Producer {
   // Python Configuration Parameters
 
   /// input hit collection name
-  std::string inputCollName_;
+  std::string input_coll_name_;
 
   /// input pass name
-  std::string inputPassName_;
+  std::string input_pass_name_;
 
   /// output hit collection name
-  std::string digiCollName_;
+  std::string digi_coll_name_;
 
   /// Time interval for chip clock in ns
-  double clockCycle_;
+  double clock_cycle_;
 
   /// Depth of ADC buffer.
-  int nADCs_;
+  int n_adcs_;
 
   /// Index for the Sample Of Interest in the list of digi samples
-  int iSOI_;
+  int i_soi_;
 
   /// Conversion from energy in MeV to voltage in mV
-  double MeV_;
+  double mev_;
 
   /**
    * When emulating noise in empty channels, do we zero suppress?
@@ -118,14 +118,14 @@ class EcalDigiProducer : public framework::Producer {
   double ns_;
 
   /// Read out threshold
-  double readoutThreshold_;
+  double readout_threshold_;
   /// Read out pedestal
   double pedestal_;
   /// Noise RMS
-  double noiseRMS_;
+  double noise_rms_;
 
   /// Generates noise hits based off of number of cells that are not hit
-  std::unique_ptr<ldmx::NoiseGenerator> noiseGenerator_;
+  std::unique_ptr<ldmx::NoiseGenerator> noise_generator_;
 
   /// Generates random numbers for which channels to fill up with noise
   std::mt19937 rng_;

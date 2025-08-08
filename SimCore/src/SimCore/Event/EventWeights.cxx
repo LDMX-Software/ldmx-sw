@@ -16,7 +16,7 @@ EventWeights::getVariationsNthWeight(size_t i_w) const {
   return i_weights_map;
 }
 
-void EventWeights::Clear() {
+void EventWeights::clear() {
   weights_.clear();
   variations_map_.clear();
 }

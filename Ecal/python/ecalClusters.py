@@ -18,7 +18,7 @@ class EcalClusterProducer(ldmxcfg.Producer) :
         self.rec_hit_pass_name = ''
 
         # Name of the cluster collection to make
-        self.cluster_coll_name = "ecalClusters"
+        self.cluster_coll_name = "EcalClusters"
 
         # --- EXISTING ALGORITHM ---
         self.cutoff = 10.

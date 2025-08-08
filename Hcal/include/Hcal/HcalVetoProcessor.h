@@ -83,7 +83,7 @@ class HcalVetoProcessor : public framework::Producer {
    * this.
    *
    * It contains nonsense values but since they are predictable, they are harder
-   * to mistake for real hits. See constructor for the actual values.
+   * to mistake for real hits_. See constructor for the actual values.
    */
   ldmx::HcalHit default_max_hit_;
 

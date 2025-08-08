@@ -10,7 +10,7 @@ BeamElectronLocator::~BeamElectronLocator() {}
 
 void BeamElectronLocator::configure(framework::config::Parameters &parameters) {
   inputColl_ = parameters.getParameter<std::string>("input_collection");
-  inputPassName_ = parameters.getParameter<std::string>("input_pass_name");
+  input_pass_name_ = parameters.getParameter<std::string>("input_pass_name");
   outputColl_ = parameters.getParameter<std::string>("output_collection");
   granularityXmm_ = parameters.getParameter<double>("granularity_X_mm");
   granularityYmm_ = parameters.getParameter<double>("granularity_Y_mm");
@@ -24,7 +24,7 @@ void BeamElectronLocator::configure(framework::config::Parameters &parameters) {
 void BeamElectronLocator::onProcessStart() {
   ldmx_log(debug) << "BeamElectronLocator is using parameters: "
                   << " \n\tinput_collection = " << inputColl_
-                  << " \n\tinput_pass_name = " << inputPassName_
+                  << " \n\tinput_pass_name = " << input_pass_name_
                   << " \n\toutput_collection = " << outputColl_
                   << " \n\tgranularity_X_mm = " << granularityXmm_
                   << " \n\tgranularity_Y_mm = " << granularityYmm_
@@ -39,16 +39,16 @@ void BeamElectronLocator::onProcessStart() {
 void BeamElectronLocator::produce(framework::Event &event) {
   // Check if the input collection exists. If not,
   // don't bother processing the event.
-  if (!event.exists(inputColl_, inputPassName_)) {
+  if (!event.exists(inputColl_, input_pass_name_)) {
     ldmx_log(fatal) << "Attemping to use non-existing input collection "
-                    << inputColl_ << "_" << inputPassName_
+                    << inputColl_ << "_" << input_pass_name_
                     << " to locate electrons! Exiting.";
     return;
   }
 
   std::vector<ldmx::BeamElectronTruth> beamElectronInfo;
-  const auto simHits{
-      event.getCollection<ldmx::SimCalorimeterHit>(inputColl_, inputPassName_)};
+  const auto simHits{event.getCollection<ldmx::SimCalorimeterHit>(
+      inputColl_, input_pass_name_)};
 
   if (verbose_) {
     ldmx_log(info) << "Looping through simhits in event "
@@ -58,16 +58,17 @@ void BeamElectronLocator::produce(framework::Event &event) {
   for (const auto &simHit : simHits) {
     // check if we already caught this position, else, add it
     bool isMatched = false;
-    std::vector<float> pos = simHit.getPosition();
+    std::vector<float> pos_ = simHit.getPosition();
     for (auto foundElectrons : beamElectronInfo) {
       // this check makes it square rather than a dR circle
-      if (fabs(pos[0] - foundElectrons.getX()) < tolerance_ &&
-          fabs(pos[1] - foundElectrons.getY()) < tolerance_) {
+      if (fabs(pos_[0] - foundElectrons.getX()) < tolerance_ &&
+          fabs(pos_[1] - foundElectrons.getY()) < tolerance_) {
         if (verbose_) {
-          ldmx_log(debug) << "\tHit at (x = " << pos[0] << ", y = " << pos[1]
-                          << " matches electron found at (x = "
+          ldmx_log(debug) << "\tHit at (x_ = " << pos_[0]
+                          << ", y_ = " << pos_[1]
+                          << " matches electron found at (x_ = "
                           << foundElectrons.getX()
-                          << ", y = " << foundElectrons.getY()
+                          << ", y_ = " << foundElectrons.getY()
                           << "); skip this simhit";
         }
         isMatched = true;
@@ -76,17 +77,17 @@ void BeamElectronLocator::produce(framework::Event &event) {
     }  // over found electrons
     if (!isMatched) {
       if (verbose_) {
-        ldmx_log(info) << "\tHit at (x = " << pos[0] << ", y = " << pos[1]
+        ldmx_log(info) << "\tHit at (x_ = " << pos_[0] << ", y_ = " << pos_[1]
                        << " not formerly matched. Adding to collection.";
       }
       ldmx::BeamElectronTruth electronInfo;
-      electronInfo.setXYZ(pos[0], pos[1], pos[2]);
+      electronInfo.setXYZ(pos_[0], pos_[1], pos_[2]);
       // find a way to do this later
       // electronInfo.setThreeMomentum(simHit.getPx(), simHit.getPy(),
       // simHit.getPz());
 
-      electronInfo.setBarX(bin(pos[0], granularityXmm_, minXmm_, maxXmm_));
-      electronInfo.setBarY(bin(pos[1], granularityYmm_, minYmm_, maxYmm_));
+      electronInfo.setBarX(bin(pos_[0], granularityXmm_, minXmm_, maxXmm_));
+      electronInfo.setBarY(bin(pos_[1], granularityYmm_, minYmm_, maxYmm_));
       // set coordinates to bin center
       electronInfo.setBinnedX(minXmm_ +
                               (electronInfo.getBarX() + 0.5) * granularityXmm_);

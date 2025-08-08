@@ -37,16 +37,19 @@ class ConditionsIOV {
    * Constructor for null validity
    */
   ConditionsIOV()
-      : firstRun_{0}, lastRun_{0}, validForData_{false}, validForMC_{false} {}
+      : first_run_{0},
+        last_run_{0},
+        valid_for_data_{false},
+        valid_for_mc_{false} {}
 
   /**
    * Constructor for a unlimited validity
    */
   ConditionsIOV(bool validForData, bool validForMC)
-      : firstRun_(-1),
-        lastRun_(-1),
-        validForData_{validForData},
-        validForMC_{validForMC} {}
+      : first_run_(-1),
+        last_run_(-1),
+        valid_for_data_{validForData},
+        valid_for_mc_{validForMC} {}
 
   /**
    * Constructor for a run-limited validity
@@ -55,10 +58,10 @@ class ConditionsIOV {
    */
   ConditionsIOV(int firstRun, int lastRun, bool validForData = true,
                 bool validForMC = true)
-      : firstRun_(firstRun),
-        lastRun_(lastRun),
-        validForData_{validForData},
-        validForMC_{validForMC} {}
+      : first_run_(firstRun),
+        last_run_(lastRun),
+        valid_for_data_{validForData},
+        valid_for_mc_{validForMC} {}
 
   /** Checks to see if this condition is valid for the given event using
    * information from the header */
@@ -70,12 +73,12 @@ class ConditionsIOV {
   /**
    * Print the object to std::cout
    */
-  void Print() const;
+  void print() const;
 
   /**
    * Print the object to a string
    */
-  std::string ToString() const;
+  std::string toString() const;
 
   /**
    * Stream the object contents to an output stream
@@ -84,16 +87,16 @@ class ConditionsIOV {
 
  private:
   /** First run for which this condition is valid */
-  int firstRun_;
+  int first_run_;
 
   /** Last run for which this condition is valid or -1 for infinite validity */
-  int lastRun_;
+  int last_run_;
 
   /** Is this Condition valid for real data? */
-  bool validForData_;
+  bool valid_for_data_;
 
   /** Is this Condition valid for simulation? */
-  bool validForMC_;
+  bool valid_for_mc_;
 };
 }  // namespace framework
 

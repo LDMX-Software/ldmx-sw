@@ -33,7 +33,7 @@ class HcalCluster : public ldmx::CaloCluster {
   /**
    * Reset the HcalCluster object.
    */
-  void Clear();
+  void clear();
 
   /**
    * Take in the hits that make up the cluster.
@@ -42,7 +42,7 @@ class HcalCluster : public ldmx::CaloCluster {
    */
   void addHits(const std::vector<const ldmx::HcalHit*> hitsVec);
 
-  void setTime(double x) { time_ = x; }
+  void setTime(double time) { time_ = time; }
 
   double getTime() const { return time_; }
 

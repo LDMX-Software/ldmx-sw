@@ -14,7 +14,7 @@ ClassImp(ldmx::HcalVetoResult);
 
 namespace ldmx {
 
-void HcalVetoResult::Clear() { passes_veto_ = false; }
+void HcalVetoResult::clear() { passes_veto_ = false; }
 
 std::ostream& operator<<(std::ostream& o, const HcalVetoResult& c) {
   return o << "HcalVetoResult { passes veto : " << c.passes_veto_

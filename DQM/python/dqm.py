@@ -1022,7 +1022,7 @@ class EcalClusterAnalyzer(ldmxcfg.Analyzer) :
         self.rec_hit_coll_name = 'EcalRecHits'
         self.rec_hit_pass_name = ''
 
-        self.cluster_coll_name = 'ecalClusters'
+        self.cluster_coll_name = 'EcalClusters'
         self.cluster_pass_name = ''
 
         self.ecal_sp_hits_passname = ''

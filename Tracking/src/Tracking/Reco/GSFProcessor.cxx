@@ -13,11 +13,11 @@ GSFProcessor::GSFProcessor(const std::string& name, framework::Process& process)
 void GSFProcessor::onNewRun(const ldmx::RunHeader& rh) {
   // Custom transformation of the interpolated bfield map
   bool debugTransform = false;
-  auto transformPos = [debugTransform](const Acts::Vector3& pos) {
+  auto transformPos = [debugTransform](const Acts::Vector3& pos_) {
     Acts::Vector3 rot_pos;
-    rot_pos(0) = pos(1);
-    rot_pos(1) = pos(2);
-    rot_pos(2) = pos(0) + DIPOLE_OFFSET;
+    rot_pos(0) = pos_(1);
+    rot_pos(1) = pos_(2);
+    rot_pos(2) = pos_(0) + DIPOLE_OFFSET;
 
     // Apply A rotation around the center of the magnet. (I guess offset first
     // and then rotation)
@@ -25,7 +25,7 @@ void GSFProcessor::onNewRun(const ldmx::RunHeader& rh) {
     if (debugTransform) {
       std::cout << "PF::DEFAULT3 TRANSFORM" << std::endl;
       std::cout << "PF::Check:: transforming Pos" << std::endl;
-      std::cout << pos << std::endl;
+      std::cout << pos_ << std::endl;
       std::cout << "TO" << std::endl;
       std::cout << rot_pos << std::endl;
     }
@@ -38,7 +38,7 @@ void GSFProcessor::onNewRun(const ldmx::RunHeader& rh) {
 
   auto transformBField = [rotation, scale, debugTransform](
                              const Acts::Vector3& field,
-                             const Acts::Vector3& /*pos*/) {
+                             const Acts::Vector3& /*pos_*/) {
     // Rotate the field in tracking coordinates
     Acts::Vector3 rot_field;
     rot_field(0) = field(2);
@@ -292,7 +292,7 @@ void GSFProcessor::produce(framework::Event& event) {
 
       const Acts::Surface* hit_surface = tg.getSurface(meas.getLayerID());
 
-      // Store the index source link
+      // Store the index_ source link
       ActsExamples::IndexSourceLink idx_sl(hit_surface->geometryId(), imeas);
       fit_trackSourceLinks.push_back(Acts::SourceLink(idx_sl));
     }

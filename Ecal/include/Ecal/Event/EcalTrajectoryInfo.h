@@ -29,8 +29,8 @@ typedef std::pair<float, float> XYCoords;
 // MIP tracking:  Class for storing hit information for tracking in a
 // convenient way
 struct HitData {
-  int layer;
-  ROOT::Math::XYZVector pos;
+  int layer_;
+  ROOT::Math::XYZVector pos_;
 };
 
 class EcalTrajectoryInfo {
@@ -46,7 +46,7 @@ class EcalTrajectoryInfo {
    */
   friend std::ostream& operator<<(std::ostream& o, const EcalTrajectoryInfo& d);
 
-  void Clear();
+  void clear();
 
   const std::vector<XYCoords>& getEleTrajectory() const {
     return ele_trajectory_;

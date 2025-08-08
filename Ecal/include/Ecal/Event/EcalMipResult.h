@@ -32,7 +32,7 @@ class EcalMipResult {
 
   friend std::ostream &operator<<(std::ostream &o, const EcalMipResult &d);
 
-  void Clear();
+  void clear();
 
   // Large Setter for all mip elements
   void setVariables(int n_straight_tracks, int n_linreg_tracks,

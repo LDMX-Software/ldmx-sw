@@ -59,7 +59,7 @@ class EcalProcessFilter : public simcore::UserAction {
 
  private:
   /** Pointer to the current track being processed. */
-  G4Track* currentTrack_{nullptr};
+  G4Track* current_track_{nullptr};
 
   /// Process to filter
   std::string process_{""};

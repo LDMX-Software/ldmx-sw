@@ -6,8 +6,8 @@
 ClassImp(ldmx::HcalHit);
 
 namespace ldmx {
-void HcalHit::Clear() {
-  ldmx::CalorimeterHit::Clear();
+void HcalHit::clear() {
+  ldmx::CalorimeterHit::clear();
   pe_ = 0;
   minpe_ = -99;
 }

@@ -4,7 +4,7 @@ ClassImp(ldmx::TrackerVetoResult);
 
 namespace ldmx {
 
-void TrackerVetoResult::Clear() {
+void TrackerVetoResult::clear() {
   passes_veto_ = false;
   passes_tagger_veto_ = false;
   passes_recoil_veto_ = false;

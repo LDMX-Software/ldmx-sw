@@ -159,7 +159,7 @@ void TrackersTrackingGeometry::buildRecoilLayoutMap(G4VPhysicalVolume* pvol,
 }  // BuildRecoilLayoutMap
 
 // This function gets the surfaces from the trackers and orders them in
-// ascending z.
+// ascending z_.
 
 void TrackersTrackingGeometry::buildTaggerLayoutMap(G4VPhysicalVolume* pvol,
                                                     std::string surfacename) {
@@ -178,7 +178,7 @@ void TrackersTrackingGeometry::buildTaggerLayoutMap(G4VPhysicalVolume* pvol,
     if (sln.find(surfacename) != std::string::npos) {
       // v12
 
-      // Box for the module (slightly bigger than the sensor)
+      // Box for the module_ (slightly bigger than the sensor)
       // LDMXTaggerModuleVolume_physvol -> LDMXTaggerModuleVolume_component0Box,
       // this is the sensor + inactive region
       // LDMXTaggerModuleVolume_component0Box->
@@ -382,7 +382,7 @@ TrackersTrackingGeometry::buildVolumeConfig(
   // Get the transform wrt the world volume in tracker frame
   Acts::Transform3 subDet_transform = GetTransform(*detector, true);
 
-  // Add 1mm to not make it sit on the first layer surface
+  // Add 1mm to not make it sit on the first layer_ surface
   Acts::Vector3 sub_det_position = {
       subDet_transform.translation()(0) - 1,
       subDet_transform.translation()(1),
@@ -412,15 +412,15 @@ TrackersTrackingGeometry::buildVolumeConfig(
   std::vector<Acts::CuboidVolumeBuilder::LayerConfig> layerConfig;
 
   // Prepare the layers
-  for (auto& layer : layout) {
-    ldmx_log(trace) << layer.first << " : surfaces==>" << layer.second.size();
+  for (auto& layer_ : layout) {
+    ldmx_log(trace) << layer_.first << " : surfaces==>" << layer_.second.size();
 
     Acts::CuboidVolumeBuilder::LayerConfig lcfg;
-    lcfg.surfaces = layer.second;
+    lcfg.surfaces = layer_.second;
 
     // Get the surface thickness
     double clearance = 0.01;
-    double thickness = layer.second.front()
+    double thickness = layer_.second.front()
                            ->surfaceMaterial()
                            ->materialSlab(Acts::Vector2{0., 0.})
                            .thickness();

@@ -17,10 +17,10 @@ static const int SEED_TIME = 4;
 
 void RandomNumberSeedService::stream(std::ostream& s) const {
   s << "RandomNumberSeedService(";
-  if (seedMode_ == SEED_RUN) s << "Seed on RUN";
-  if (seedMode_ == SEED_TIME) s << "Seed on TIME";
-  if (seedMode_ == SEED_EXTERNAL) s << "Seeded EXTERNALLY";
-  s << ") Master seed = " << masterSeed_ << std::endl;
+  if (seed_mode_ == SEED_RUN) s << "Seed on RUN";
+  if (seed_mode_ == SEED_TIME) s << "Seed on TIME";
+  if (seed_mode_ == SEED_EXTERNAL) s << "Seeded EXTERNALLY";
+  s << ") Master seed = " << master_seed_ << std::endl;
   for (auto i : seeds_) {
     s << " " << i.first << "=>" << i.second << std::endl;
   }
@@ -34,25 +34,25 @@ RandomNumberSeedService::RandomNumberSeedService(
                                process) {
   auto seeding = parameters.getParameter<std::string>("seedMode", "run");
   if (!strcasecmp(seeding.c_str(), "run")) {
-    seedMode_ = SEED_RUN;
+    seed_mode_ = SEED_RUN;
   } else if (!strcasecmp(seeding.c_str(), "external")) {
-    seedMode_ = SEED_EXTERNAL;
-    masterSeed_ = parameters.getParameter<int>("masterSeed");
+    seed_mode_ = SEED_EXTERNAL;
+    master_seed_ = parameters.getParameter<int>("masterSeed");
     initialized_ = true;
   } else if (!strcasecmp(seeding.c_str(), "time")) {
-    masterSeed_ = time(0);
-    seedMode_ = SEED_TIME;
+    master_seed_ = time(0);
+    seed_mode_ = SEED_TIME;
     initialized_ = true;
   }
 }
 
 void RandomNumberSeedService::onNewRun(ldmx::RunHeader& rh) {
-  if (seedMode_ == SEED_RUN) {
-    masterSeed_ = rh.getRunNumber();
+  if (seed_mode_ == SEED_RUN) {
+    master_seed_ = rh.getRunNumber();
     initialized_ = true;
   }
   std::string key = "RandomNumberMasterSeed[" + process().getPassName() + "]";
-  rh.setIntParameter(key, int(masterSeed_));
+  rh.setIntParameter(key, int(master_seed_));
 }
 
 uint64_t RandomNumberSeedService::getSeed(const std::string& name) const {
@@ -62,7 +62,7 @@ uint64_t RandomNumberSeedService::getSeed(const std::string& name) const {
     // hash is sum of characters shifted by position, mod 8
     for (size_t j = 0; j < name.size(); j++)
       seed += (uint64_t(name[j]) << (j % 8));
-    seed += masterSeed_;
+    seed += master_seed_;
     // break const here only to cache the seed
     seeds_[name] = seed;
   } else
@@ -81,8 +81,8 @@ std::vector<std::string> RandomNumberSeedService::getSeedNames() const {
 std::pair<const ConditionsObject*, ConditionsIOV>
 RandomNumberSeedService::getCondition(const ldmx::EventHeader& context) {
   if (!initialized_) {
-    if (seedMode_ == SEED_RUN) {
-      masterSeed_ = context.getRun();
+    if (seed_mode_ == SEED_RUN) {
+      master_seed_ = context.getRun();
     }
     initialized_ = true;
   }

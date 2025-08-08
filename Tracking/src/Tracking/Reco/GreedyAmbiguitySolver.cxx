@@ -52,7 +52,7 @@ void GreedyAmbiguitySolver::computeInitialState(
   // auto tg{geometry()};
   // Iterate through all input tracks, collect their properties like measurement
   // count and chi2 and fill the measurement map in order to relate tracks to
-  // each other if they have shared hits.
+  // each other if they have shared hits_.
   state.number_of_tracks = 0;
   for (const auto& track : tracks) {
     // Kick out tracks that do not fulfill our initial requirements
@@ -64,7 +64,7 @@ void GreedyAmbiguitySolver::computeInitialState(
     for (auto imeas : track.getMeasurementsIdxs()) {
       auto meas = meas_coll.at(imeas);
       const Acts::Surface* hit_surface = tg.getSurface(meas.getLayerID());
-      // Store the index source link
+      // Store the index_ source link
       ActsExamples::IndexSourceLink idx_sl(hit_surface->geometryId(), imeas);
       Acts::SourceLink sourceLink = Acts::SourceLink(idx_sl);
 

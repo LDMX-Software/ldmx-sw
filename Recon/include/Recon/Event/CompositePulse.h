@@ -24,14 +24,14 @@ class CompositePulse {
    * shape function already configured by the chip
    * emulator.
    */
-  CompositePulse(TF1 func, const double& g, const double& p)
-      : pulseFunc_{func}, gain_{g}, pedestal_{p} {}
+  CompositePulse(TF1 func, const double& gain, const double& pedestal)
+      : pulse_func_{func}, gain_{gain}, pedestal_{pedestal} {}
 
   CompositePulse() = default;
 
   virtual ~CompositePulse() = default;
 
-  void Clear() {};
+  void clear() {};
 
   /**
    * Put another hit into this composite pulse.
@@ -41,7 +41,7 @@ class CompositePulse {
    * it is included as its own hit.
    *
    * @param[in] hit voltage,time pair representing a sime hit
-   * @param[in] hit_merge_ns maximum time separation [ns] to merge two hits
+   * @param[in] hit_merge_ns maximum time separation [ns] to merge two hits_
    */
   void addOrMerge(const std::pair<double, double>& hit, double hit_merge_ns);
 
@@ -86,7 +86,7 @@ class CompositePulse {
   double at(double time) const {
     double signal = gain_ * pedestal_;
     for (auto hit : hits_)
-      signal += hit.first * pulseFunc_.Eval(time - hit.second);
+      signal += hit.first * pulse_func_.Eval(time - hit.second);
     return signal;
   };
 
@@ -102,7 +102,7 @@ class CompositePulse {
   std::vector<std::pair<double, double>> hits_;
 
   /// reference to pulse shape function shared by all pulses
-  TF1 pulseFunc_;
+  TF1 pulse_func_;
 
   /// gain for current chip we are emulating
   double gain_;
@@ -110,7 +110,7 @@ class CompositePulse {
   /// pedestal for current chip we are emulating
   double pedestal_;
 
-  ClassDef(CompositePulse, 1);
+  ClassDef(CompositePulse, 2);
 
 };  // CompositePulse
 

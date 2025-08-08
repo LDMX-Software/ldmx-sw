@@ -39,7 +39,7 @@ class PFTrackProducer : public framework::Producer {
   // boolean to cheat to select only electron tracks
   //  in this cheating truth tracker
   bool doElectronTracking_{};
-  // minimum z momentum component allowed for beam electron selection
+  // minimum z_ momentum component allowed for beam electron selection
   double minElectronMomentumZ_{};
   // maximum trackID allowed for beam electron selection
   int maxElectronTrackID_{};

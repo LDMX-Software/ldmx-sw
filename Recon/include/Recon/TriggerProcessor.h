@@ -67,7 +67,7 @@ class TriggerProcessor : public framework::Producer {
 
   /**
    * The trigger mode to run in. Mode zero sums over
-   * all cells in layer, while in mode 1 only cells in
+   * all cells in layer_, while in mode 1 only cells in
    * center module are summed over. (TODO)
    */
   int mode_{0};
@@ -86,10 +86,10 @@ class TriggerProcessor : public framework::Producer {
   /** The name of the trigger algorithm used. */
   TString algoName_;
 
-  /** The name of the input collection (the Ecal hits). */
+  /** The name of the input collection (the Ecal hits_). */
   std::string inputColl_;
 
-  /** The pass name of the input (the Ecal hits). */
+  /** The pass name of the input (the Ecal hits_). */
   std::string inputPass_;
 
   /** The name of the output collection (the trigger decision). */

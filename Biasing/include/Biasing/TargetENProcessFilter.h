@@ -53,10 +53,10 @@ class TargetENProcessFilter : public simcore::UserAction {
 
  private:
   /** Flag indicating if the reaction of intereset occurred. */
-  bool reactionOccurred_{false};
+  bool reaction_occurred_{false};
 
   /** Energy that the recoil electron must not surpass. */
-  double recoilEnergyThreshold_{1500};
+  double recoil_energy_threshold_{1500};
 
   /// Process to filter on
   std::string process_{"electronNuclear"};

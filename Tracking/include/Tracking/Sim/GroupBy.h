@@ -125,8 +125,8 @@ class GroupBy {
     }
     // search the first element that does not share a key with the start.
     return std::find_if_not(std::next(start), m_end,
-                            [this, start](const auto& x) {
-                              return m_keyGetter(x) == m_keyGetter(*start);
+                            [this, start](const auto& x_) {
+                              return m_keyGetter(x_) == m_keyGetter(*start);
                             });
   }
 };

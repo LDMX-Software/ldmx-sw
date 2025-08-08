@@ -330,7 +330,7 @@ class HgcrocDigiCollection {
    * Clears the vectors of channel IDs and samples,
    * but does not change the other settings of this collection.
    */
-  void Clear();
+  void clear();
 
   /**
    * Print out the object.

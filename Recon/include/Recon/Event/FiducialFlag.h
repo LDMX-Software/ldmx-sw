@@ -42,7 +42,7 @@ class FiducialFlag {
   /**
    * Reset the FiducialFlag object.
    */
-  void Clear();
+  void clear();
 
   /**
    * Return true/false if event is fiducial.
@@ -69,8 +69,8 @@ class FiducialFlag {
   bool hasHcalHit() const { return has_hcal_hit_; }
 
   /**
-   * Return true/false if event has min. number of tracker hits.
-   * @return True if >= min tracker hits.
+   * Return true/false if event has min. number of tracker hits_.
+   * @return True if >= min tracker hits_.
    */
   bool hasMinTrackerHits() const { return has_min_tracker_hits_; }
 
@@ -83,7 +83,7 @@ class FiducialFlag {
   /**
    * Return algorithm variable i (see algorithm code for details).
    * @param element The index of the variable.
-   * @return Algorithm variable at the index.
+   * @return Algorithm variable at the index_.
    */
   double getAlgoVar(int element) const { return variables_[element]; }
 
@@ -159,7 +159,7 @@ class FiducialFlag {
 
   /**
    * Set tracker hit flag.
-   * @param has_min_tracker_hits True/false if event has >= min. tracker hits.
+   * @param has_min_tracker_hits True/false if event has >= min. tracker hits_.
    */
   void setHasMinTrackerHits(bool has_min_tracker_hits) {
     has_min_tracker_hits_ = has_min_tracker_hits;
@@ -193,7 +193,7 @@ class FiducialFlag {
   /* True if recoil electron has hcal hit. */
   bool has_hcal_hit_{false};
 
-  /* True if recoil electron has >= min tracker hits. */
+  /* True if recoil electron has >= min tracker hits_. */
   bool has_min_tracker_hits_{false};
 
   /* True if recoil electron has >= min energy at production. */

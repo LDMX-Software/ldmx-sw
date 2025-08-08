@@ -86,7 +86,7 @@ class EcalDarkBremFilter : public simcore::UserAction {
    * energy.
    *
    * Checks a new track for being an A' above threshold_
-   *  if it is an A', sets the foundAp_ member
+   *  if it is an A', sets the found_ap_ member
    *
    * @see PartialEnergySort::ClassifyNewTrack
    * @param aTrack The Geant4 track.
@@ -161,7 +161,7 @@ class EcalDarkBremFilter : public simcore::UserAction {
    *
    * Reset to false in BeginOfEventAction
    */
-  bool foundAp_;
+  bool found_ap_;
 
 };  // EcalDarkBremFilter
 }  // namespace biasing

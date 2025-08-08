@@ -40,7 +40,7 @@ void HcalDoubleEndRecProducer::produce(framework::Event& event) {
 
   // make pairs of hcal rechits indices that belong to the same pulse
   // @TODO: for now we just take the first two indices that have opposite-ends
-  //        we do not cover the case where two hits come separated in time
+  //        we do not cover the case where two hits_ come separated in time
   std::map<ldmx::HcalID, std::pair<int, int>> indicesByID;
   for (auto const& hcalBar : hitsByID) {
     auto id = hcalBar.first;
@@ -63,7 +63,7 @@ void HcalDoubleEndRecProducer::produce(framework::Event& event) {
     indicesByID[id] = indices;
   }
 
-  // reconstruct double-ended hits
+  // reconstruct double-ended hits_
   for (auto const& hcalBar : hitsByID) {
     auto id = hcalBar.first;
 
@@ -75,7 +75,7 @@ void HcalDoubleEndRecProducer::produce(framework::Event& event) {
     // skip non-double-ended layers
     if (id.section() != ldmx::HcalID::HcalSection::BACK) continue;
 
-    // get two hits to reconstruct
+    // get two hits_ to reconstruct
     auto hitPosEnd = hcalBar.second.at(indicesByID[id].first);
     auto hitNegEnd = hcalBar.second.at(indicesByID[id].second);
 
@@ -98,10 +98,10 @@ void HcalDoubleEndRecProducer::produce(framework::Event& event) {
     double hitTimeDiff = pos_time - neg_time;
 
     ldmx_log(trace) << "\n new hit ";
-    ldmx_log(trace) << "strip " << id.strip() << " layer " << id.layer()
+    ldmx_log(trace) << "strip " << id.strip() << " layer_ " << id.layer()
                     << "center position X = " << position.X()
                     << " Y =" << position.Y() << " Z = " << position.Z();
-    ldmx_log(trace) << "hittime pos " << pos_time << "neg " << neg_time
+    ldmx_log(trace) << "hittime pos_ " << pos_time << "neg " << neg_time
                     << " bar sign " << " diff " << hitTimeDiff;
 
     int position_bar_sign = hitTimeDiff > 0 ? 1 : -1;

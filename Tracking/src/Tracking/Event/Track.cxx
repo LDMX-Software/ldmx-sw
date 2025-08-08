@@ -6,7 +6,7 @@ ClassImp(ldmx::Track);
 
 namespace ldmx {
 std::ostream& operator<<(std::ostream& o, const Track& c) {
-  return o << "Track { " << "TrackID: " << c.trackID_
+  return o << "Track { " << "TrackID: " << c.track_id_
            << ", n_hits: " << c.n_hits_ << ", n_outliers: " << c.n_outliers_
            << ", ndf: " << c.ndf_ << ", chi2: " << c.chi2_
            << ", truthProb: " << c.truthProb_ << ", pdgID: " << c.pdgID_

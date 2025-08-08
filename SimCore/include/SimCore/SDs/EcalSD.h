@@ -1,7 +1,7 @@
 /**
  * @file EcalSD.h
  * @brief Class defining an ECal sensitive detector using an EcalHexReadout to
- * create the hits
+ * create the hits_
  * @author Jeremy McCormick, SLAC National Accelerator Laboratory
  */
 
@@ -31,11 +31,12 @@ namespace simcore {
 
 /**
  * @class EcalSD
- * @brief ECal sensitive detector that uses an EcalHexReadout to create the hits
+ * @brief ECal sensitive detector that uses an EcalHexReadout to create the
+ * hits_
  */
 class EcalSD : public SensitiveDetector {
  public:
-  /// Name of output collection of hits
+  /// Name of output collection of hits_
   static const std::string COLLECTION_NAME;
 
   /**
@@ -66,7 +67,7 @@ class EcalSD : public SensitiveDetector {
   }
 
   /**
-   * Process steps to create hits.
+   * Process steps to create hits_.
    * @param aStep The step information.
    * @param ROhist The readout history.
    */

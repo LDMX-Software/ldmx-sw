@@ -40,7 +40,7 @@ class TrigScintSD : public SensitiveDetector {
   }
 
   /**
-   * Process steps to create hits.
+   * Process steps to create hits_.
    *
    * @param[in] step The step information.
    * @param[in] history The readout history.

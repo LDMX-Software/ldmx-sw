@@ -155,7 +155,7 @@ class KaonPhysics : public G4VPhysicsConstructor {
   void ConstructProcess() override {};
 
  private:
-  mutable framework::logging::logger theLog_{
+  mutable framework::logging::logger the_log_{
       framework::logging::makeLogger("KaonPhysics")};
 };
 }  // namespace simcore

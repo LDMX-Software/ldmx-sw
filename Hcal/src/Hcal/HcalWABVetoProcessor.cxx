@@ -61,7 +61,7 @@ void HcalWABVetoProcessor::produce(framework::Event &event) {
       event.getCollection<ldmx::HcalCluster>(inputHCALClusterCollName_,
                                              hcal_cluster_passname_);
 
-  // Loop over all of the Hcal hits and calculate to total photoelectrons
+  // Loop over all of the Hcal hits_ and calculate to total photoelectrons
   // in the event.
   float totalHCALEnergy{0};
   float totalECALEnergy{0};
@@ -112,10 +112,10 @@ void HcalWABVetoProcessor::produce(framework::Event &event) {
   result.setVetoResult(passesVeto);
   result.setMaxPEHit(*maxPEHit);
   if (passesVeto) {
-    setStorageHint(framework::hint_shouldKeep);
+    setStorageHint(framework::hint_should_keep);
 
   } else {
-    setStorageHint(framework::hint_shouldDrop);
+    setStorageHint(framework::hint_should_drop);
   }
 
   event.add(outputCollName_, result);

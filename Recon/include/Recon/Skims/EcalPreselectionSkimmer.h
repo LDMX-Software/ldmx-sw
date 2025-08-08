@@ -49,7 +49,7 @@ class EcalPreselectionSkimmer : public framework::Producer {
   double summed_tight_iso_max_;
   /// Max value for ecal back energy
   double ecal_back_energy_max_;
-  /// Max value for num readout hits
+  /// Max value for num readout hits_
   int n_readout_hits_max_;
   /// Max value for shower rms
   double shower_rms_max_;
@@ -59,7 +59,7 @@ class EcalPreselectionSkimmer : public framework::Producer {
   double shower_x_std_max_;
   /// Max value for maximal cell deposition
   double max_cell_dep_max_;
-  /// Max value for std layer hits
+  /// Max value for std layer hits_
   int std_layer_hit_max_;
   /// Max value for num straight tracks
   int n_straight_tracks_max_;

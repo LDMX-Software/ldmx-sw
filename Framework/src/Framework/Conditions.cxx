@@ -20,33 +20,34 @@ void Conditions::createConditionsObjectProvider(
   }
 
   std::string provides = cop.value()->getConditionObjectName();
-  if (providerMap_.find(provides) != providerMap_.end()) {
+  if (provider_map_.find(provides) != provider_map_.end()) {
     EXCEPTION_RAISE(
         "ConditionAmbiguityException",
         "Multiple ConditonsObjectProviders configured to provide " + provides);
   }
-  providerMap_[provides] = cop.value();
+  provider_map_[provides] = cop.value();
 }
 
 void Conditions::onProcessStart() {
-  for (auto ptr : providerMap_) ptr.second->onProcessStart();
+  for (auto ptr : provider_map_) ptr.second->onProcessStart();
 }
 
 void Conditions::onProcessEnd() {
-  for (auto ptr : providerMap_) ptr.second->onProcessEnd();
+  for (auto ptr : provider_map_) ptr.second->onProcessEnd();
 }
 
 void Conditions::onNewRun(ldmx::RunHeader& rh) {
-  for (auto ptr : providerMap_) ptr.second->onNewRun(rh);
+  for (auto ptr : provider_map_) ptr.second->onNewRun(rh);
 }
 
 ConditionsIOV Conditions::getConditionIOV(
     const std::string& condition_name) const {
   auto cacheptr = cache_.find(condition_name);
-  if (cacheptr == cache_.end())
+  if (cacheptr == cache_.end()) {
     return ConditionsIOV();
-  else
-    return cacheptr->second.iov;
+  } else {
+    return cacheptr->second.iov_;
+  }
 }
 
 const ConditionsObject* Conditions::getConditionPtr(
@@ -55,9 +56,9 @@ const ConditionsObject* Conditions::getConditionPtr(
   auto cacheptr = cache_.find(condition_name);
 
   if (cacheptr == cache_.end()) {
-    auto copptr = providerMap_.find(condition_name);
+    auto copptr = provider_map_.find(condition_name);
 
-    if (copptr == providerMap_.end()) {
+    if (copptr == provider_map_.end()) {
       EXCEPTION_RAISE("ConditionUnavailable",
                       "No provider is available for : " + condition_name);
     }
@@ -73,34 +74,36 @@ const ConditionsObject* Conditions::getConditionPtr(
 
     // first request, create a cache entry
     CacheEntry ce;
-    ce.iov = cond.second;
-    ce.obj = cond.first;
-    ce.provider = copptr->second;
+    ce.iov_ = cond.second;
+    ce.obj_ = cond.first;
+    ce.provider_ = copptr->second;
     cache_[condition_name] = ce;
-    return ce.obj;
+    return ce.obj_;
   } else {
     /// if still valid, we return what we have
-    if (cacheptr->second.iov.validForEvent(context))
-      return cacheptr->second.obj;
-    else {
+    if (cacheptr->second.iov_.validForEvent(context)) {
+      return cacheptr->second.obj_;
+    } else {
       // if not, we release the old object
-      cacheptr->second.provider->releaseConditionsObject(cacheptr->second.obj);
+      cacheptr->second.provider_->releaseConditionsObject(
+          cacheptr->second.obj_);
       // now ask for a new one
       std::pair<const ConditionsObject*, ConditionsIOV> cond =
-          cacheptr->second.provider->getCondition(context);
+          cacheptr->second.provider_->getCondition(context);
 
       if (!cond.first) {
         std::stringstream s;
         s << "Unable to update condition '" << condition_name << "' for event "
           << context.getEventNumber() << " run " << context.getRun();
-        if (context.isRealData())
+        if (context.isRealData()) {
           s << " DATA";
-        else
+        } else {
           s << " MC";
+        }
         EXCEPTION_RAISE("ConditionUnavailable", s.str());
       }
-      cacheptr->second.iov = cond.second;
-      cacheptr->second.obj = cond.first;
+      cacheptr->second.iov_ = cond.second;
+      cacheptr->second.obj_ = cond.first;
       return cond.first;
     }
   }

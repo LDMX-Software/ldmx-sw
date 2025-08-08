@@ -88,7 +88,7 @@ class Exception : public std::exception {
   /**
    * Get the full stack trace
    */
-  const std::string &stackTrace() const throw() { return stackTrace_; }
+  const std::string &stackTrace() const throw() { return stack_trace_; }
 
  private:
   void buildStackTrace() throw();
@@ -109,7 +109,7 @@ class Exception : public std::exception {
   int line_{0};
 
   /** The stack trace */
-  std::string stackTrace_;
+  std::string stack_trace_;
 };
 }  // namespace exception
 }  // namespace framework

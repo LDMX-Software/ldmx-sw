@@ -86,16 +86,16 @@ class LHEEvent {
   /**
    * Set the vertex location (careful to match units as expected!)
    */
-  void setVertex(double x, double y, double z);
+  void setVertex(double x_, double y_, double z_);
 
   /**
-   * Parse the vertex from a line of the form "#vertex [x] [y] [z]"
+   * Parse the vertex from a line of the form "#vertex [x_] [y_] [z_]"
    */
   void setVertex(const std::string& line);
 
   /**
    * Get the vertex location (careful to match units as expected!)
-   * @return Array double[3] with x,y,z ordering
+   * @return Array double[3] with x_,y_,z_ ordering
    */
   const double* getVertex() const;
 

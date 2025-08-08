@@ -117,7 +117,7 @@ HcalDetectorMap::HcalDetectorMap(const std::string& connections_table,
       strip = (4 - BarNumber) +
               4 * (QuadBar - 1);  // Plane 2 is backward by mistake
     ldmx::HcalDigiID detid(0 /*section - only one section during test beam*/,
-                           csv.getInteger("Plane") /*layer*/, strip /*strip*/,
+                           csv.getInteger("Plane") /*layer_*/, strip /*strip*/,
                            end /*end*/);
     ldmx::HcalElectronicsID eleid(polarfire /*polarfire fpga*/, link /*elink*/,
                                   chan /*channel*/);

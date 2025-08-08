@@ -12,7 +12,7 @@
 
 namespace ldmx {
 
-void HepMC3GenEvent::Clear() {
+void HepMC3GenEvent::clear() {
   this->particles.clear();
   this->vertices.clear();
   this->links1.clear();

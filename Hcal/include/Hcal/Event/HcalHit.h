@@ -36,7 +36,7 @@ class HcalHit : public ldmx::CalorimeterHit {
   /**
    * Clear the data in the object.
    */
-  void Clear();
+  void clear();
 
   /**
    * Print out the object.
@@ -178,7 +178,7 @@ class HcalHit : public ldmx::CalorimeterHit {
   void setStrip(int strip) { strip_ = strip; }
 
   /**
-   * Set the end (0 neg, 1 pos side).
+   * Set the end (0 neg, 1 pos_ side).
    * @param end
    */
   void setEnd(int end) { end_ = end; }

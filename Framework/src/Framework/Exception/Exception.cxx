@@ -110,15 +110,15 @@ static char *addr2line(const char *image, void *addr, bool color_output) {
 
 // This function produces a stack backtrace with demangled function & method
 // names.
-static std::string Backtrace(int skip = 1) throw() {
+static std::string backtrace(int skip = 1) throw() {
   void *callstack[128];
-  const int nMaxFrames = sizeof(callstack) / sizeof(callstack[0]);
+  const int n_max_frames = sizeof(callstack) / sizeof(callstack[0]);
   char buf[1024];
-  int nFrames = backtrace(callstack, nMaxFrames);
-  char **symbols = backtrace_symbols(callstack, nFrames);
+  int n_frames = backtrace(callstack, n_max_frames);
+  char **symbols = backtrace_symbols(callstack, n_frames);
 
   std::ostringstream trace_buf;
-  for (int i = skip; i < nFrames - 2; i++) {
+  for (int i = skip; i < n_frames - 2; i++) {
     // printf("%s\n", symbols[i]);
 
     Dl_info info;
@@ -145,7 +145,7 @@ static std::string Backtrace(int skip = 1) throw() {
     trace_buf << buf;
   }
   free(symbols);
-  if (nFrames == nMaxFrames) trace_buf << "[truncated]\n";
+  if (n_frames == n_max_frames) trace_buf << "[truncated]\n";
   return trace_buf.str();
 }
 
@@ -153,6 +153,6 @@ static std::string Backtrace(int skip = 1) throw() {
 
 namespace framework {
 namespace exception {
-void Exception::buildStackTrace() throw() { stackTrace_ = Backtrace(2); }
+void Exception::buildStackTrace() throw() { stack_trace_ = backtrace(2); }
 }  // namespace exception
 }  // namespace framework

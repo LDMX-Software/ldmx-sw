@@ -53,8 +53,8 @@ ldmx::HcalTriggerID HcalTriggerGeometry::belongsToSTQ(
   // 2x2 groups of quads, with "superlayers" like:
   // 0 1 0 1 2 3 2 3 ...
   // V H V H V H V H ...
-  int layer = precisionCell.layer();
-  int superlayer = 2 * (layer / 4) + (layer % 4) % 2;
+  int layer_ = precisionCell.layer();
+  int superlayer = 2 * (layer_ / 4) + (layer_ % 4) % 2;
   return ldmx::HcalTriggerID(precisionCell.section(), superlayer,
                              precisionCell.strip() / 8, precisionCell.end());
 }

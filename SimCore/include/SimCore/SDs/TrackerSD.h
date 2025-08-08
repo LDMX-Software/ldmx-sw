@@ -60,7 +60,7 @@ class TrackerSD : public SensitiveDetector {
   /// The name of the output collection
   std::string collection_name_;
 
-  /// The collection of hits
+  /// The collection of hits_
   std::vector<ldmx::SimTrackerHit> hits_;
 
   /// The detector ID

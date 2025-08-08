@@ -66,7 +66,7 @@ void TruthSeedProcessor::configure(framework::config::Parameters& parameters) {
   // In tracking frame: where do these numbers come from?
   // These numbers come from approximating the path of the beam up
   // until it is about to enter the first detector volume (TriggerPad1).
-  // In detector coordinates, (x,y,z) = (-21.7, -883) is
+  // In detector coordinates, (x_,y_,z_) = (-21.7, -883) is
   // where the beam arrives (if no smearing is applied) and we simply
   // reorder these values so that they are in tracking coordinates.
   beamOrigin_ = parameters.getParameter<std::vector<double>>(
@@ -80,10 +80,10 @@ void TruthSeedProcessor::configure(framework::config::Parameters& parameters) {
 void TruthSeedProcessor::createTruthTrack(
     const ldmx::SimParticle& particle, const ldmx::SimTrackerHit& hit,
     ldmx::Track& trk, const std::shared_ptr<Acts::Surface>& target_surface) {
-  std::vector<double> pos{static_cast<double>(hit.getPosition()[0]),
-                          static_cast<double>(hit.getPosition()[1]),
-                          static_cast<double>(hit.getPosition()[2])};
-  createTruthTrack(pos, hit.getMomentum(), particle.getCharge(), trk,
+  std::vector<double> pos_{static_cast<double>(hit.getPosition()[0]),
+                           static_cast<double>(hit.getPosition()[1]),
+                           static_cast<double>(hit.getPosition()[2])};
+  createTruthTrack(pos_, hit.getMomentum(), particle.getCharge(), trk,
                    target_surface);
 
   trk.setTrackID(hit.getTrackID());
@@ -110,11 +110,11 @@ void TruthSeedProcessor::createTruthTrack(
   // this version of the method can also be used.
   // These are just Eigen vectors defined as
   // Eigen::Matrix<double, kSize, 1>;
-  Acts::Vector3 pos{pos_vec[0], pos_vec[1], pos_vec[2]};
+  Acts::Vector3 pos_{pos_vec[0], pos_vec[1], pos_vec[2]};
   Acts::Vector3 mom{p_vec[0], p_vec[1], p_vec[2]};
 
   // Rotate the position and momentum into the ACTS frame.
-  pos = tracking::sim::utils::Ldmx2Acts(pos);
+  pos_ = tracking::sim::utils::Ldmx2Acts(pos_);
   mom = tracking::sim::utils::Ldmx2Acts(mom);
 
   // Get the charge of the particle.
@@ -127,7 +127,7 @@ void TruthSeedProcessor::createTruthTrack(
   // BoundTrackState there.
 
   // Transform the position, momentum and charge to free parameters.
-  auto free_params{tracking::sim::utils::toFreeParameters(pos, mom, q)};
+  auto free_params{tracking::sim::utils::toFreeParameters(pos_, mom, q)};
 
   // Create a line surface at the perigee.  The perigee position is extracted
   // from a particle's vertex or the particle's position at a specific
@@ -179,7 +179,7 @@ void TruthSeedProcessor::createTruthTrack(
   trk.setPerigeeParameters(
       tracking::sim::utils::convertActsToLdmxPars(propBoundVec));
 
-  trk.setPosition(pos(0), pos(1), pos(2));
+  trk.setPosition(pos_(0), pos_(1), pos_(2));
   trk.setMomentum(mom(0), mom(1), mom(2));
 }
 
@@ -578,8 +578,8 @@ void TruthSeedProcessor::produce(framework::Event& event) {
   std::vector<int> tagger_sh_idxs;
   std::unordered_map<int, std::vector<int>> tagger_sh_count_map;
 
-  // Target scoring hits for Tagger will have Z<0, Recoil scoring hits will have
-  // Z>0
+  // Target scoring hits for Tagger will have Z<0, Recoil scoring hits will
+  // have Z>0
   for (unsigned int i_sh = 0; i_sh < scoring_hits.size(); i_sh++) {
     const ldmx::SimTrackerHit& hit = scoring_hits.at(i_sh);
     double zhit = hit.getPosition()[2];

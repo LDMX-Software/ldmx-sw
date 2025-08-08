@@ -43,7 +43,7 @@ class CaloCluster {
   /**
    * Reset the CaloCluster object.
    */
-  void Clear();
+  void clear();
 
   /**
    * Take in the hits that make up the cluster.
@@ -60,45 +60,45 @@ class CaloCluster {
 
   /**
    * Sets total number of hits in the cluster.
-   * @param nHits The total number of hits.
+   * @param nHits The total number of hits_.
    */
   void setNHits(int nHits) { nHits_ = nHits; }
 
   /**
-   * Sets a sorted vector for the IDs of the hits
+   * Sets a sorted vector for the IDs of the hits_
    * that make up the cluster.
    * @param IDs Sorted vector of hit IDs.
    */
   void setIDs(std::vector<unsigned int>& hitIDs) { hitIDs_ = hitIDs; }
 
-  void setHitValsX(std::vector<float>& x) { hitX_ = x; }
-  void setHitValsY(std::vector<float>& x) { hitY_ = x; }
-  void setHitValsZ(std::vector<float>& x) { hitZ_ = x; }
-  void setHitValsE(std::vector<float>& x) { hitE_ = x; }
+  void setHitValsX(std::vector<float>& x_) { hitX_ = x_; }
+  void setHitValsY(std::vector<float>& x_) { hitY_ = x_; }
+  void setHitValsZ(std::vector<float>& x_) { hitZ_ = x_; }
+  void setHitValsE(std::vector<float>& x_) { hitE_ = x_; }
 
   /**
    * Sets the three coordinates of the cluster centroid
-   * @param x The x coordinate.
-   * @param y The y coordinate.
-   * @param z The z coordinate.
+   * @param x_ The x_ coordinate.
+   * @param y_ The y_ coordinate.
+   * @param z_ The z_ coordinate.
    */
-  void setCentroidXYZ(double x, double y, double z) {
-    centroidX_ = x;
-    centroidY_ = y;
-    centroidZ_ = z;
+  void setCentroidXYZ(double x_, double y_, double z_) {
+    centroidX_ = x_;
+    centroidY_ = y_;
+    centroidZ_ = z_;
   }
-  void setRMSXYZ(double x, double y, double z) {
-    rmsX_ = x;
-    rmsY_ = y;
-    rmsZ_ = z;
+  void setRMSXYZ(double x_, double y_, double z_) {
+    rmsX_ = x_;
+    rmsY_ = y_;
+    rmsZ_ = z_;
   }
-  void setDXDZ(double x) { DXDZ_ = x; }
+  void setDXDZ(double x_) { DXDZ_ = x_; }
 
-  void setDYDZ(double x) { DYDZ_ = x; }
+  void setDYDZ(double x_) { DYDZ_ = x_; }
 
-  void setEDXDZ(double x) { errDXDZ_ = x; }
+  void setEDXDZ(double x_) { errDXDZ_ = x_; }
 
-  void setEDYDZ(double x) { errDYDZ_ = x; }
+  void setEDYDZ(double x_) { errDYDZ_ = x_; }
 
   /////////////////////////////////////////////
 

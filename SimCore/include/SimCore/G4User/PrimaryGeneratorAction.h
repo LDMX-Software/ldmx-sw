@@ -87,18 +87,18 @@ class PrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction {
    */
   bool useBeamspot_{false};
 
-  /** Extent of the beamspot in x. */
+  /** Extent of the beamspot in x_. */
   double beamspotXSize_{0};
 
-  /** Extent of the beamspot in y. */
+  /** Extent of the beamspot in y_. */
   double beamspotYSize_{0};
 
-  /** Extent of the beamspot in y. */
+  /** Extent of the beamspot in y_. */
   double beamspotZSize_{0.};
 
   /**
    * Should we time-shift so that the primary vertices arrive (or originate)
-   * at t=0ns at z=0mm?
+   * at t=0ns at z_=0mm?
    *
    * @note This should remain true unless the user knows what they are doing!
    */

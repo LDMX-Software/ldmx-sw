@@ -33,7 +33,7 @@ namespace tracking::reco {
  * Create a track seed using truth information extracted from the corresponding
  * SimParticle or SimTrackerHit. When creating seeds in the Tagger tracker,
  * the SimParticle associated with the incident electron (trackID == 1) is used
- * to create the seed from the parameters (x, y, z, px, py, pz, q) at the
+ * to create the seed from the parameters (x_, y_, z_, px, py, pz, q) at the
  * vertex. For the Recoil tracker, since the electron is produced
  * upstream, the SimParticle can't be used to get any parameters at the target.
  * In this case, the target scoring plane hits are used to extract the
@@ -101,7 +101,7 @@ class TruthSeedProcessor : public TrackingGeometryUser {
 
   /**
    * Use the vertex position of the SimParticle to extract
-   * (x, y, z, px, py, pz, q) and create a track seed.
+   * (x_, y_, z_, px, py, pz, q) and create a track seed.
    *
    * @param particle The SimParticle to make a seed from.
    */
@@ -110,7 +110,7 @@ class TruthSeedProcessor : public TrackingGeometryUser {
 
   /**
    * Use the scoring plane hit at the target to extract
-   * (x, y, z, px, py, pz) and create a track seed. In this case, the
+   * (x_, y_, z_, px, py, pz) and create a track seed. In this case, the
    * SimParticle is used to extract the charge of the particle.
    *
    * @param particle The SimParticle to extract the charge from.
@@ -123,7 +123,7 @@ class TruthSeedProcessor : public TrackingGeometryUser {
   /**
    * Create a seed track from the given position, momentum and charge.
    *
-   * @param pos The position at which the particle was created.
+   * @param pos_ The position at which the particle was created.
    * @param p The momentum of the particle at the point of creation.
    * @param charge The charge of the particle.
    * @param target_surface the surface to where to express the truth track
@@ -222,7 +222,7 @@ class TruthSeedProcessor : public TrackingGeometryUser {
   int n_min_hits_recoil_{7};
 
   /**
-   * Min cut on the z of the scoring hit. It could be used to clean the scoring
+   * Min cut on the z_ of the scoring hit. It could be used to clean the scoring
    * hits if desired.
    */
   float z_min_{-999};

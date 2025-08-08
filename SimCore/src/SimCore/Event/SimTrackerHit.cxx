@@ -4,7 +4,7 @@ ClassImp(ldmx::SimTrackerHit);
 
 namespace ldmx {
 
-SimTrackerHit::~SimTrackerHit() { Clear(); }
+SimTrackerHit::~SimTrackerHit() { clear(); }
 
 std::ostream& operator<<(std::ostream& o, const SimTrackerHit& hit) {
   return o << "SimTrackerHit { " << "id: " << hit.id_ << ", "
@@ -16,7 +16,7 @@ std::ostream& operator<<(std::ostream& o, const SimTrackerHit& hit) {
            << " )" << " }";
 }
 
-void SimTrackerHit::Clear() {
+void SimTrackerHit::clear() {
   id_ = 0;
   layerID_ = 0;
   moduleID_ = 0;
@@ -30,14 +30,15 @@ void SimTrackerHit::Clear() {
   z_ = 0;
   energy_ = 0;
   pathLength_ = 0;
-  trackID_ = -1;
+  track_id_ = -1;
   pdgID_ = 0;
 }
 
-void SimTrackerHit::setPosition(const float x, const float y, const float z) {
-  this->x_ = x;
-  this->y_ = y;
-  this->z_ = z;
+void SimTrackerHit::setPosition(const float x_, const float y_,
+                                const float z_) {
+  this->x_ = x_;
+  this->y_ = y_;
+  this->z_ = z_;
 }
 
 void SimTrackerHit::setMomentum(const float px, const float py,

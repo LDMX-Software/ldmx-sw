@@ -32,8 +32,8 @@ namespace ecal {
  *
  * MotherboardMap gives information about how the modules plug into a given type
  * of motherboard ROCID -- which ROC on the module ROC_ELINK_NUMBER -- which
- * elink on the ROC (0/1) MODULE -- which module on the layer POLARFIRE_ELINK --
- * elink input number on the Polarfire MOTHERBOARD_TYPE -- what type of
+ * elink on the ROC (0/1) MODULE -- which module on the layer POLARFIRE_ELINK
+ * -- elink input number on the Polarfire MOTHERBOARD_TYPE -- what type of
  * motherboard is this
  *
  * LayerMap gives information about how the motherboards are used on the various
@@ -60,7 +60,7 @@ class EcalDetectorMap
    */
   EcalDetectorMap(const std::string& cell_map,
                   const std::string& motherboard_map,
-                  const std::string& layer_map, bool want_d2e);
+                  const std::string& layermap, bool want_d2e);
 
   /// Provider which loads the map
   friend class EcalDetectorMapLoader;
@@ -82,13 +82,13 @@ class EcalDetectorMap
   struct CellInformation {
     /// precision information
     /** cellid */
-    int module_cellid;
+    int module_cellid_;
     /** hgcroc id on the module (which of the six) */
-    int rocid;
+    int rocid_;
     /** roc elink number */
-    int roc_elink_number;
+    int roc_elink_number_;
     /** roc elink channel */
-    int roc_elink_channel;
+    int roc_elink_channel_;
   };
   std::vector<CellInformation> cells_;
 
@@ -97,15 +97,15 @@ class EcalDetectorMap
    */
   struct MotherboardLinksInformation {
     /** motherboard type */
-    int motherboard_type;
+    int motherboard_type_;
     /** elink id */
-    int polarfire_elink;
+    int polarfire_elink_;
     /** module number */
-    int module;
+    int module_;
     /** hgcroc id on the module (which of the six) */
-    int rocid;
+    int rocid_;
     /** hgcroc link id on the module (which of the two) */
-    int roc_elink_number;
+    int roc_elink_number_;
   };
   std::vector<MotherboardLinksInformation> elinks_;
 
@@ -114,11 +114,11 @@ class EcalDetectorMap
    */
   struct MotherboardsPerLayer {
     /** layer number */
-    int layer;
+    int layer_;
     /** mother board type */
-    int motherboard_type;
+    int motherboard_type_;
     /** mother global optical link number */
-    int daq_opticallink;
+    int daq_opticallink_;
   };
   std::vector<MotherboardsPerLayer> layers_;
 };

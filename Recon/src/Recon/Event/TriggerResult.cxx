@@ -4,7 +4,7 @@ ClassImp(ldmx::TriggerResult);
 
 namespace ldmx {
 
-TriggerResult::~TriggerResult() { Clear(); }
+TriggerResult::~TriggerResult() { clear(); }
 
 std::ostream& operator<<(std::ostream& o, const TriggerResult& c) {
   return o << "TriggerResult { " << "name: " << c.name_ << ", "
@@ -15,7 +15,7 @@ std::ostream& operator<<(std::ostream& o, const TriggerResult& c) {
   }
 }
 
-void TriggerResult::Clear() {
+void TriggerResult::clear() {
   name_ = "";
   pass_ = false;
 

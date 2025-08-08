@@ -10,7 +10,7 @@
 namespace ecal {
 
 // 68% Electron Radii of Containment for various theta ranges
-const std::vector<float> radius_68_theta_0_to_10 = {
+const std::vector<float> RADIUS_68_THETA_0_TO_10 = {
     10.12233413, 9.921772,    11.38255086, 11.67991867, 13.14337347,
     13.17120624, 16.80994665, 17.83787244, 22.44684374, 23.74239886,
     28.60564083, 30.27889678, 34.86404888, 36.39009394, 41.29309474,
@@ -18,7 +18,7 @@ const std::vector<float> radius_68_theta_0_to_10 = {
     60.64828824, 65.51760517, 68.26709803, 76.32877518, 84.61219467,
     98.21320491, 110.9880892, 120.6762931, 140.6174478, 136.4979268,
     145.579465,  154.9803228, 164.7005,    174.7399968};
-const std::vector<float> radius_68_theta_10_to_15 = {
+const std::vector<float> RADIUS_68_THETA_10_TO_15 = {
     10.82307758, 11.17850518, 16.2185281,  18.62488713, 22.63408229,
     24.71769042, 30.11217538, 32.69939046, 37.99753196, 40.81619543,
     45.89054775, 49.03066318, 54.00440948, 59.31733555, 63.40789682,
@@ -27,7 +27,7 @@ const std::vector<float> radius_68_theta_10_to_15 = {
     128.0220711, 145.4137195, 210.3582819, 199.6355662, 184.2513208,
     195.076552,  206.2322029, 217.7182737, 229.5347642};
 
-const std::vector<float> radius_68_theta_15_to_20 = {
+const std::vector<float> RADIUS_68_THETA_15_TO_20 = {
     12.79450901, 13.02698578, 21.27450933, 25.66008312, 31.78592103,
     35.99689874, 44.37101115, 48.82709363, 55.05972458, 59.68948687,
     65.39866214, 70.59280337, 76.06007787, 82.22695257, 87.50371819,
@@ -36,7 +36,7 @@ const std::vector<float> radius_68_theta_15_to_20 = {
     175.4329544, 184.3003543, 259.8415751, 215.0165,    231.1288534,
     243.4440277, 256.085458,  269.0531444, 282.3470868};
 
-const std::vector<float> radius_68_theta_20_to_30 = {
+const std::vector<float> RADIUS_68_THETA_20_TO_30 = {
     14.16989595, 15.4488322,  28.31044668, 37.54285657, 48.57288885,
     57.04243339, 68.99836079, 75.33388728, 85.00572867, 91.52574074,
     102.5044698, 106.5315986, 116.2341378, 127.1121442, 133.8866375,
@@ -45,7 +45,7 @@ const std::vector<float> radius_68_theta_20_to_30 = {
     251.7701385, 293.9351568, 310.521898,  344.1455457, 293.3518953,
     303.2401036, 313.128312,  323.0165203, 332.9047287};
 
-const std::vector<float> radius_68_theta_30_to_90 = {
+const std::vector<float> RADIUS_68_THETA_30_TO_90 = {
     22.50983127, 26.44537503, 58.24642887, 90.59076279, 130.0592014,
     157.4611392, 184.2187293, 202.6994588, 225.3488816, 243.3454167,
     269.2456428, 280.6119298, 303.8591523, 322.0522722, 335.1780181,
@@ -77,7 +77,7 @@ void EcalWABRecProcessor::produce(framework::Event& event) {
   int progress_num = 0;
 
   // Get the Ecal Geometry
-  const ldmx::EcalGeometry* geometry_ = &getCondition<ldmx::EcalGeometry>(
+  const ldmx::EcalGeometry* geometry = &getCondition<ldmx::EcalGeometry>(
       ldmx::EcalGeometry::CONDITIONS_OBJECT_NAME);
 
   // Get the collection of ecal_rec_hits and tracks
@@ -117,7 +117,7 @@ void EcalWABRecProcessor::produce(framework::Event& event) {
   float rec_electron_shower_energy = -999.;
   float rec_photon_shower_energy = -999.;
 
-  // Create lists for rec hits and electron/photon shower hits
+  // Create lists for rec hits_ and electron/photon shower hits_
   std::vector<std::array<float, 6>> rec_hit_list;
   std::vector<std::array<float, 6>> ele_hit_list;
   std::vector<std::array<float, 6>> phot_hit_list;
@@ -125,8 +125,8 @@ void EcalWABRecProcessor::produce(framework::Event& event) {
   // Save rec hit info to rec_hit_list
   for (const ldmx::EcalHit& hit : ecal_rec_hits) {
     ldmx::EcalID id(hit.getID());
-    auto pos = geometry_->getPosition(id);
-    auto [x, y, z] = std::apply(
+    auto pos = geometry->getPosition(id);
+    auto [x_, y_, z_] = std::apply(
         [](double a, double b, double c) {
           return std::make_tuple(static_cast<float>(a), static_cast<float>(b),
                                  static_cast<float>(c));
@@ -134,7 +134,7 @@ void EcalWABRecProcessor::produce(framework::Event& event) {
         pos);
     float energy = hit.getEnergy();
     float layer_num = id.layer();
-    rec_hit_list.push_back({x, y, z, layer_num, 0, energy});
+    rec_hit_list.push_back({x_, y_, z_, layer_num, 0, energy});
   }
 
   if (event.exists("TargetScoringPlaneHits", sp_pass_name_)) {
@@ -261,8 +261,8 @@ void EcalWABRecProcessor::produce(framework::Event& event) {
   std::get<1>(best_x_result) = 10e99;
   std::get<1>(best_y_result) = 10e99;
 
-  // Looping over tracks to find best fit to hits
-  std::vector<float> ele_roc = radius_68_theta_30_to_90;
+  // Looping over tracks to find best fit to hits_
+  std::vector<float> ele_roc = RADIUS_68_THETA_30_TO_90;
   for (const ldmx::StraightTrack& track : linear_tracks) {
     progress_num = 1;
     // Determining the RoC value to use based on recoil electron (track) theta
@@ -274,16 +274,16 @@ void EcalWABRecProcessor::produce(framework::Event& event) {
                   std::sqrt((track_vec[0]) * (track_vec[0]) +
                             (track_vec[1]) * (track_vec[1]) + 1));
     if (track_theta <= 10) {
-      ele_roc = radius_68_theta_0_to_10;
+      ele_roc = RADIUS_68_THETA_0_TO_10;
     } else if (track_theta > 10 && track_theta <= 15) {
-      ele_roc = radius_68_theta_10_to_15;
+      ele_roc = RADIUS_68_THETA_10_TO_15;
     } else if (track_theta > 15 && track_theta <= 20) {
-      ele_roc = radius_68_theta_15_to_20;
+      ele_roc = RADIUS_68_THETA_15_TO_20;
     } else if (track_theta > 20 && track_theta <= 30) {
-      ele_roc = radius_68_theta_20_to_30;
+      ele_roc = RADIUS_68_THETA_20_TO_30;
     }
 
-    // Labeling hits as electron (1) or photon (0)
+    // Labeling hits_ as electron (1) or photon (0)
     for (std::array<float, 6>& hit : rec_hit_list) {
       if (std::sqrt(
               (hit[0] - (track.getSlopeX() * hit[2] + track.getInterceptX())) *
@@ -295,11 +295,11 @@ void EcalWABRecProcessor::produce(framework::Event& event) {
         hit[4] = 1;
       }
     }
-    // Create vectors to hold electron/photon hits specifically
+    // Create vectors to hold electron/photon hits_ specifically
     std::vector<float> ele_hit_list_x, ele_hit_list_y, ele_hit_list_z;
     std::vector<float> phot_hit_list_x, phot_hit_list_y, phot_hit_list_z;
 
-    // Use labels to sort hits as electron/photon and calculate shower energies
+    // Use labels to sort hits_ as electron/photon and calculate shower energies
     for (const auto& hit : rec_hit_list) {
       if (hit[4] == 1) {
         ele_hit_list.push_back(hit);
@@ -314,7 +314,7 @@ void EcalWABRecProcessor::produce(framework::Event& event) {
       }
     }
 
-    // Fit both photon/electron or just electron hits based on # of viable
+    // Fit both photon/electron or just electron hits_ based on # of viable
     // showers
     if (phot_hit_list.size() >= 3 && ele_hit_list.size() >= 3) {
       progress_num =
@@ -581,7 +581,7 @@ EcalWABRecProcessor::fit2DTracksConstrained(
   int n2 = x2.size();
   int n = n1 + n2;
 
-  // Concatenate x, y, and s into Eigen vectors of size n.
+  // Concatenate x_, y_, and s into Eigen vectors of size n.
   Eigen::VectorXd x(n), y(n), s(n);
   for (int i = 0; i < n1; ++i) {
     x(i) = x1[i];
@@ -595,9 +595,9 @@ EcalWABRecProcessor::fit2DTracksConstrained(
   }
 
   // Build the weight matrix W = diag(1/s_i^2)
-  Eigen::MatrixXd W = Eigen::MatrixXd::Zero(n, n);
+  Eigen::MatrixXd w = Eigen::MatrixXd::Zero(n, n);
   for (int i = 0; i < n; ++i) {
-    W(i, i) = 1.0 / ((s(i)) * (s(i)));
+    w(i, i) = 1.0 / ((s(i)) * (s(i)));
   }
 
   float chi_sq = 0.0;
@@ -609,9 +609,10 @@ EcalWABRecProcessor::fit2DTracksConstrained(
   for (int iter = 0; iter < max_iter; ++iter) {
     n_iter = iter + 1;
 
-    // Compute fitted y coordinates for each track using the current parameters.
-    // For track 1: y1_fit = par[0] * x1 + abs_lim * tanh(par[2]/abs_lim)
-    // For track 2: y2_fit = par[1] * x2 + abs_lim * tanh(par[2]/abs_lim)
+    // Compute fitted y coordinates for each track using the current
+    // parameters. For track 1: y1_fit = par[0] * x1 + abs_lim *
+    // tanh(par[2]/abs_lim) For track 2: y2_fit = par[1] * x2 + abs_lim *
+    // tanh(par[2]/abs_lim)
     Eigen::VectorXd y1_fit(n1), y2_fit(n2);
     float tanh_term = std::tanh(par(2) / abs_lim);
     for (int i = 0; i < n1; ++i) {
@@ -630,7 +631,7 @@ EcalWABRecProcessor::fit2DTracksConstrained(
       y_fit(n1 + i) = y2_fit(i);
     }
 
-    // Compute chi-squared: sum_i [ (y_fit[i]-y[i])^2 / s[i]^2 ]
+    // Compute chi-squared: sum_i [ (y_fit[i]-y_[i])^2 / s[i]^2 ]
     chi_sq = 0.0;
     for (int i = 0; i < n; ++i) {
       float diff = y_fit(i) - y(i);
@@ -699,7 +700,7 @@ EcalWABRecProcessor::fit2DTracksConstrained(
     Eigen::VectorXd dy_vec = y - y_fit;
 
     // Compute the (3 x 3) matrix: M = a_trans * W * a
-    Eigen::MatrixXd temp = a_trans * W;  // 3 x n
+    Eigen::MatrixXd temp = a_trans * w;  // 3 x n
     Eigen::MatrixXd temp2 = temp * a;    // 3 x 3
 
     // Add a regularization term to ensure numerical stability.
@@ -712,7 +713,7 @@ EcalWABRecProcessor::fit2DTracksConstrained(
 
     // Compute the parameter correction: dpar = cov * a_trans * W * dy_vec
     Eigen::MatrixXd temp4 = cov * a_trans;  // 3 x n
-    Eigen::MatrixXd temp5 = temp4 * W;      // 3 x n
+    Eigen::MatrixXd temp5 = temp4 * w;      // 3 x n
     Eigen::VectorXd dpar = temp5 * dy_vec;  // 3 x 1
 
     // Update the parameters
@@ -771,17 +772,18 @@ EcalWABRecProcessor::fit2DTracksConstrained(
 }
 
 std::pair<Eigen::VectorXd, Eigen::VectorXd> EcalWABRecProcessor::polyfitXYvsZ(
-    const std::vector<float>& x, const std::vector<float>& y,
-    const std::vector<float>& z, int degree) {
+    const std::vector<float>& x_, const std::vector<float>& y_,
+    const std::vector<float>& z_, int degree) {
   /*
-    Function that fits two polynomials (x vs. z and y vs. z) to 3D hit position
-    data using a least-squares method. The fitted models are defined as: x = a₀
-    + a₁ * z + a₂ * z² + ... + aₙ * zⁿ
-    y = b₀ + b₁ * z + b₂ * z² + ... + bₙ * zⁿ
+    Function that fits two polynomials (x_ vs. z and y vs. z_) to 3D hit
+    position data using a least-squares method. The fitted models are defined
+    as: x = a₀
+    + a₁ * z + a₂ * z_² + ... + aₙ * zⁿ
+    y = b₀ + b₁ * z + b₂ * z_² + ... + bₙ * zⁿ
     where n is the specified polynomial degree.
 
     Inputs:
-      x, y, z : measured coordinates for the tracks;
+      x_, y_, z : measured coordinates for the tracks;
                 x and y are the dependent variables, and z is the independent
     variable (all provided as std::vector<float>) degree  : degree of the
     polynomial to be fitted (int)
@@ -793,38 +795,38 @@ std::pair<Eigen::VectorXd, Eigen::VectorXd> EcalWABRecProcessor::polyfitXYvsZ(
 
     Notes:
       The polynomial is represented with the constant term first (i.e., [a₀, a₁,
-    ..., aₙ]), so the linear term (slope) is located at index 1.
+    ..., aₙ]), so the linear term (slope) is located at index_ 1.
   */
-  const size_t n = z.size();
-  if (n == 0 || x.size() != n || y.size() != n) {
+  const size_t n = z_.size();
+  if (n == 0 || x_.size() != n || y_.size() != n) {
     throw std::invalid_argument(
-        "Vectors x, y, and z must be non-empty and have the same size.");
+        "Vectors x_, y_, and z must be non-empty and have the same size.");
   }
 
   // Construct the Vandermonde (design) matrix A (n x (degree + 1)):
-  // Each row i: [1, z[i], z[i]^2, ..., z[i]^degree]
-  Eigen::MatrixXd A(n, degree + 1);
+  // Each row i: [1, z_[i], z_[i]^2, ..., z_[i]^degree]
+  Eigen::MatrixXd a(n, degree + 1);
   for (size_t i = 0; i < n; ++i) {
     float term = 1.0;
     for (int j = 0; j <= degree; ++j) {
-      A(i, j) = term;
-      term *= z[i];
+      a(i, j) = term;
+      term *= z_[i];
     }
   }
 
   // Map the x and y data into Eigen vectors.
   Eigen::VectorXd bx(n), by(n);
   for (size_t i = 0; i < n; ++i) {
-    bx(i) = x[i];
-    by(i) = y[i];
+    bx(i) = x_[i];
+    by(i) = y_[i];
   }
 
   // Solve the least-squares problems:
   // A * coeffsX ≈ bx and A * coeffsY ≈ by
-  Eigen::VectorXd coeffsX = A.colPivHouseholderQr().solve(bx);
-  Eigen::VectorXd coeffsY = A.colPivHouseholderQr().solve(by);
+  Eigen::VectorXd coeffs_x = a.colPivHouseholderQr().solve(bx);
+  Eigen::VectorXd coeffs_y = a.colPivHouseholderQr().solve(by);
 
-  return {coeffsX, coeffsY};
+  return {coeffs_x, coeffs_y};
 }
 }  // namespace ecal
 
