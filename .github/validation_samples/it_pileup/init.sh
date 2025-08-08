@@ -9,9 +9,9 @@
 ###############################################################################
 
 start_group Generate Main Events
-ldmx fire gen_main.py
+denv fire gen_main.py
 end_group
 
 start_group Generate Pileup Events
-ldmx fire gen_pileup.py
+denv fire gen_pileup.py
 end_group

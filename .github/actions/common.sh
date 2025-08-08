@@ -30,19 +30,6 @@ ldmx_gold_label() {
     cut -f 1 -d -
 }
 
-# container running command
-#   - Assume LDMX_DOCKER_TAG is the image we run in
-#   - Full command needs to be provided
-#   - Runs inside the present working directory
-ldmx() {
-  docker run \
-    -i -v ${LDMX_BASE}:${LDMX_BASE} -e LDMX_BASE \
-    -e LDMX_NUM_EVENTS -e LDMX_RUN_NUMBER \
-    -u $(id -u $USER):$(id -g $USER) \
-    ${LDMX_DOCKER_TAG} $(pwd) $@
-  return $?
-}
-
 # GitHub workflow command to set an output key,val pair
 set_output() {
   local _key="$1"

@@ -73,6 +73,8 @@ jobs:
         cd ${GITHUB_WORKSPACE}
         tar xf ldmx-sw-package.tar
 
+    - run: just install-denv init
+
     - name: Run ${{matrix.sample}} ${{matrix.run}}
       id: validation
       uses: ./.github/actions/validate
@@ -100,6 +102,8 @@ jobs:
         cd ${GITHUB_WORKSPACE}
         tar xf ldmx-sw-build-${GITHUB_SHA}/ldmx-sw-package.tar
 
+    - run: just install-denv init
+
     - name: Package Histograms together for Release
       id: packaging
       run: |
@@ -108,7 +112,7 @@ jobs:
         _hists=$(pwd)/hists-out
         set_output hists "${_hists}/*"
         for s in inclusive ecal_pn it_pileup; do
-          ldmx hadd ${_hists}/${s}.root ${s}-*-hists/*
+          denv hadd ${_hists}/${s}.root ${s}-*-hists/*
         done
       shell: bash
 

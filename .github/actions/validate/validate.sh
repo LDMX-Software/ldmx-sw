@@ -39,7 +39,7 @@ __main__() {
 
   # assume sample directory has its config called 'config.py'
   start_group Run config.py
-  ldmx fire config.py | tee output.log || return $?
+  denv fire config.py | tee output.log || return $?
   end_group
 
   start_group Compare to Golden Histograms
@@ -47,7 +47,7 @@ __main__() {
     # assume sample directory has its gold histogram called 'gold.root'
     #   compare has 4 CLI inputs:
     #    gold_f, gold_label, test_f, test_label
-    ldmx python3 $GITHUB_ACTION_PATH/compare.py \
+    denv python3 $GITHUB_ACTION_PATH/compare.py \
       ${_ref_dir}/gold.root \
       $(cat ${GITHUB_WORKSPACE}/ci-data/label) \
       hist.root \
