@@ -27,6 +27,7 @@ __main__() {
   echo "Sample Name: ${_sample}"
   echo "Sample Dir: ${_sample_dir}"
   echo "Not Running Comparison? ${_no_comp}"
+  denv config env copy LDMX_NUM_EVENTS LDMX_RUN_NUMBER
   end_group
 
   start_group Sample-Specific Initialization
