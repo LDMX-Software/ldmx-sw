@@ -3,7 +3,7 @@
 ClassImp(ldmx::HgcrocPulseTruth);
 
 namespace ldmx {
-void HgcrocPulseTruth::Clear() {}
+void HgcrocPulseTruth::clear() {}
 
 // Could be improved...
 double HgcrocPulseTruth::getMax() const {

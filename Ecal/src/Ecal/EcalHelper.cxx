@@ -26,7 +26,7 @@ std::vector<float> trackProp(const ldmx::Tracks &tracks,
     float track_state_loc1 = static_cast<float>(ecal_track_state.params[1]);
     // param 2 = phi (azimuthal), param 3 = theta (polar)
     // param 4 = QoP
-    // ACTS (local)  to  LDMX (global) coordinates: (y,z,x)->  (x,y,z)
+    // ACTS (local)  to  LDMX (global) coordinates: (y_,z_,x_)->  (x_,y_,z_)
     // convert qop [1/GeV] to p [MeV]
     float p_track_state = (-1 / ecal_track_state.params[4]) * 1000;
     // p * sin(theta) * sin(phi)
@@ -41,7 +41,7 @@ std::vector<float> trackProp(const ldmx::Tracks &tracks,
     // Store the new track state variables
     new_track_states.push_back(track_state_loc0);
     new_track_states.push_back(track_state_loc1);
-    // z-position at the ECAL (4) or Target (1)
+    // z_-position at the ECAL (4) or Target (1)
     if (ts_type == 4) {
       // this should match `ECAL_SCORING_PLANE` in CKFProcessor
       new_track_states.push_back(240.5);

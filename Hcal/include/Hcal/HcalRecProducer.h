@@ -75,19 +75,19 @@ class HcalRecProducer : public framework::Producer {
 
  private:
   /// Digi Collection Name to use as input
-  std::string digiCollName_;
+  std::string digi_coll_name_;
 
   /// Digi Pass Name to use as input
-  std::string digiPassName_;
+  std::string digi_pass_name_;
 
   /// simhit collection name
-  std::string simHitCollName_;
+  std::string sim_hit_coll_name_;
 
   /// simhit pass name
-  std::string simHitPassName_;
+  std::string sim_hit_pass_name_;
 
   /// output hit collection name
-  std::string recHitCollName_;
+  std::string rec_hit_coll_name_;
 
   /// Energy [MeV] deposited by a MIP
   double mip_energy_;

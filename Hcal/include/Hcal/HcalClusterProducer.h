@@ -1,6 +1,6 @@
 /**
  * @file HcalClusterProducer.h
- * @brief Class that performs clustering of HCal hits
+ * @brief Class that performs clustering of HCal hits_
  * @author Sophie Middleton, Caltech
  */
 

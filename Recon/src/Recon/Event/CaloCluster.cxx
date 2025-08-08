@@ -4,14 +4,14 @@ ClassImp(ldmx::CaloCluster);
 
 namespace ldmx {
 
-CaloCluster::~CaloCluster() { Clear(); }
+CaloCluster::~CaloCluster() { clear(); }
 
 std::ostream& operator<<(std::ostream& o, const CaloCluster& c) {
   return o << "CaloCluster { " << "Energy: " << c.energy_ << ", "
-           << "Number of hits: " << c.nHits_ << " }";
+           << "Number of hits_: " << c.nHits_ << " }";
 }
 
-void CaloCluster::Clear() {
+void CaloCluster::clear() {
   hitIDs_.clear();
   energy_ = 0;
   nHits_ = 0;

@@ -36,9 +36,9 @@ class PFEcalClusterProducer : public framework::Producer {
   bool singleCluster_{true};
   bool logEnergyWeight_{true};
 
-  float minHitEnergy_{0};
+  float min_hit_energy_{0};
   float clusterHitDist_{100.};
-  float clusterZBias_{1.};  // private parameter for z bias
+  float clusterZBias_{1.};  // private parameter for z_ bias
   int minClusterHitMult_{2};
 
   // name of collection for hits to be passed as input

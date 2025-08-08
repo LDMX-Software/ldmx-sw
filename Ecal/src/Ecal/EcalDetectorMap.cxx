@@ -66,10 +66,10 @@ void EcalDetectorMap::loadCellMap(conditions::GeneralCSVLoader& loader) {
   cells_.clear();
   while (loader.nextRow()) {
     CellInformation ci;
-    ci.module_cellid = loader.getInteger("CELLID");
-    ci.rocid = loader.getInteger("ROCID");
-    ci.roc_elink_number = loader.getInteger("ROC_ELINK_NUMBER");
-    ci.roc_elink_channel = loader.getInteger("ROC_ELINK_CHANNEL");
+    ci.module_cellid_ = loader.getInteger("CELLID");
+    ci.rocid_ = loader.getInteger("ROCID");
+    ci.roc_elink_number_ = loader.getInteger("ROC_ELINK_NUMBER");
+    ci.roc_elink_channel_ = loader.getInteger("ROC_ELINK_CHANNEL");
     cells_.push_back(ci);
   }
 }
@@ -78,11 +78,11 @@ void EcalDetectorMap::loadMotherboardMap(conditions::GeneralCSVLoader& loader) {
   elinks_.clear();
   while (loader.nextRow()) {
     MotherboardLinksInformation mli;
-    mli.motherboard_type = loader.getInteger("MOTHERBOARD_TYPE");
-    mli.module = loader.getInteger("MODULE");
-    mli.rocid = loader.getInteger("ROCID");
-    mli.roc_elink_number = loader.getInteger("ROC_ELINK_NUMBER");
-    mli.polarfire_elink = loader.getInteger("POLARFIRE_ELINK");
+    mli.motherboard_type_ = loader.getInteger("MOTHERBOARD_TYPE");
+    mli.module_ = loader.getInteger("MODULE");
+    mli.rocid_ = loader.getInteger("ROCID");
+    mli.roc_elink_number_ = loader.getInteger("ROC_ELINK_NUMBER");
+    mli.polarfire_elink_ = loader.getInteger("POLARFIRE_ELINK");
     elinks_.push_back(mli);
   }
 }
@@ -91,9 +91,9 @@ void EcalDetectorMap::loadLayerMap(conditions::GeneralCSVLoader& loader) {
   layers_.clear();
   while (loader.nextRow()) {
     MotherboardsPerLayer mpl;
-    mpl.motherboard_type = loader.getInteger("MOTHERBOARD_TYPE");
-    mpl.layer = loader.getInteger("LAYER");
-    mpl.daq_opticallink = loader.getInteger("OLINK");
+    mpl.motherboard_type_ = loader.getInteger("MOTHERBOARD_TYPE");
+    mpl.layer_ = loader.getInteger("LAYER");
+    mpl.daq_opticallink_ = loader.getInteger("OLINK");
     layers_.push_back(mpl);
   }
 }
@@ -104,26 +104,27 @@ void EcalDetectorMap::buildElectronicsMap() {
   for (auto olink : layers_) {
     for (auto elink : elinks_) {
       // select only matching motherboard types
-      if (elink.motherboard_type != olink.motherboard_type) continue;
+      if (elink.motherboard_type_ != olink.motherboard_type_) continue;
 
       for (auto cell : cells_) {
         // select only cells which are associated with the appropriate elink
-        if (elink.rocid != cell.rocid ||
-            elink.roc_elink_number != cell.roc_elink_number)
+        if (elink.rocid_ != cell.rocid_ ||
+            elink.roc_elink_number_ != cell.roc_elink_number_)
           continue;
 
         // now, we have only cells which are relevant
-        ldmx::EcalID precisionId(olink.layer, elink.module, cell.module_cellid);
-        ldmx::EcalElectronicsID elecId(olink.daq_opticallink,
-                                       elink.polarfire_elink,
-                                       cell.roc_elink_channel);
+        ldmx::EcalID precision_id(olink.layer_, elink.module_,
+                                  cell.module_cellid_);
+        ldmx::EcalElectronicsID elec_id(olink.daq_opticallink_,
+                                        elink.polarfire_elink_,
+                                        cell.roc_elink_channel_);
 
-        if (this->exists(elecId)) {
+        if (this->exists(elec_id)) {
           std::stringstream ss;
-          ss << "Two different mappings for electronics channel " << elecId;
+          ss << "Two different mappings for electronics channel " << elec_id;
           EXCEPTION_RAISE("DuplicateMapping", ss.str());
         }
-        this->addEntry(elecId, precisionId);
+        this->addEntry(elec_id, precision_id);
       }
     }
   }

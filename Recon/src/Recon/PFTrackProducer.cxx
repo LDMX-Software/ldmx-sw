@@ -33,7 +33,7 @@ void PFTrackProducer::produce(framework::Event& event) {
     for (const auto& spHit : ecalSpHits) {
       if (spHit.getPdgID() == 22 || spHit.getPdgID() == 2112) continue;
       if (fabs(240 - spHit.getPosition()[2]) > 0.1) continue;
-      if (doElectronTracking_) {  // only select electron SP hits
+      if (doElectronTracking_) {  // only select electron SP hits_
         if (spHit.getPdgID() != 11) continue;
         if (spHit.getTrackID() < 2 &&
             spHit.getMomentum()[2] > minElectronMomentumZ_) {
@@ -64,7 +64,7 @@ void PFTrackProducer::produce(framework::Event& event) {
                         << ", pz = " << spHit.getMomentum()[2];
         break;
       }
-    }  // over SP hits
+    }  // over SP hits_
   }  // do truth tracking
   std::sort(pfTracks.begin(), pfTracks.end(),
             [](ldmx::SimTrackerHit a, ldmx::SimTrackerHit b) {

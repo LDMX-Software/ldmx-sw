@@ -69,13 +69,16 @@ configure-base *CONFIG: prep-version
     denv cmake -B build -S . {{ CONFIG }}
 
 # default configure of build when developing
-configure *CONFIG: (configure-base "-DADDITIONAL_WARNINGS=ON -DENABLE_CLANG_TIDY=ON" CONFIG)
+configure *CONFIG: (configure-base "-DADDITIONAL_WARNINGS=ON" CONFIG)
 
 # configure minimal option for faster compilation
 configure-quick: configure-base
 
 # configure with Address Sanitizer (ASAN) and  UndefinedBehaviorSanitizer (UBSan)
 configure-asan-ubsan: (configure-base "-DENABLE_SANITIZER_UNDEFINED_BEHAVIOR=ON -DENABLE_SANITIZER_ADDRESS=ON")
+
+# configure with clang-tidy ON
+configure-clang-tidy:  (configure-base "-DENABLE_CLANG_TIDY=ON")
 
 # This is the same as just configure but reports all (non-3rd-party) warnings as errors
 configure-force-error: (configure "-DWARNINGS_AS_ERRORS=ON")
@@ -169,6 +172,15 @@ format-cpp *ARGS='-i':
 format-just:
     @just --fmt --unstable --justfile {{ justfile() }}
 
+# Now do the same but with clang tidy
+tidy-cpp *ARGS='-p build --fix --quiet ':
+    #!/usr/bin/env sh
+    set -exu
+    format_list=$(mktemp)
+    git ls-tree -r HEAD --name-only | egrep '(\.h|\.cxx)$'  | grep '/Ecal/' > ${format_list}
+    denv clang-tidy $(cat ${format_list}) {{ ARGS }}
+    rm ${format_list}
+
 # shellcheck doesn't have a "apply-formatting" option
 # because it really is more of a tidier (its changes could affect code meaning)
 # so only a check is implemented here
@@ -225,6 +237,9 @@ setenv +ENVVAR:
 
 # configure and build ldmx-sw
 compile ncpu=num_cpus() *CONFIG='': (configure CONFIG) (build ncpu)
+
+# configure and build ldmx-sw the quick way
+compile-quick ncpu=num_cpus() *CONFIG='': (configure-quick) (build ncpu)
 
 # re-build ldmx-sw and then run a config
 recompFire config_py *ARGS: compile (fire config_py ARGS)

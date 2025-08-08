@@ -117,8 +117,8 @@ int main(int argc, char* argv[]) try {
     //  if an Exception is thrown, we haven't gotten to the end of Process::run
     //  where logging is closed, so we can do one more error message and then
     //  close it.
-    // ldmx_log macro needs this variable to be named 'theLog_'
-    auto theLog_{framework::logging::makeLogger("fire")};
+    // ldmx_log macro needs this variable to be named 'the_log_'
+    auto the_log_{framework::logging::makeLogger("fire")};
     ldmx_log(fatal) << "[" << e.name() << "] : " << e.message() << "\n"
                     << "  at " << e.module() << ":" << e.line() << " in "
                     << e.function();

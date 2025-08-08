@@ -47,12 +47,12 @@ static const double MAX_PE_ERROR_DAQ = 40;
 static const double MAX_PE_PERCENT_ERROR_DAQ = 0.4;
 
 /**
- * Number of sim hits to create.
+ * Number of sim hits_ to create.
  *
  * In this test, we create one sim hit per event,
  * run it through the digi pipeline, and then
  * check it. This parameter tells us how many
- * sim hits to create and then (combined with
+ * sim hits_ to create and then (combined with
  * the parameters of HcalFakeSimHits), we know
  * how "fine-grained" the test is.
  */
@@ -114,7 +114,7 @@ class isCloseEnough : public Catch::Matchers::MatcherBase<double> {
  * @class FakeSimHits
  *
  * Fills the event bus with an HcalSimHits collection with
- * a range of energy hits. These hits are put into unique
+ * a range of energy hits_. These hits_ are put into unique
  * bars so that we can compare them to the correct energy
  * in one event.
  */
@@ -133,7 +133,7 @@ class HcalFakeSimHits : public framework::Producer {
   const double minEnergy_ = 4 * PE_ENERGY;
   /**
    * The step between energies is calculated depending on the min, max energy
-   * and the total number of sim hits you desire.
+   * and the total number of sim hits_ you desire.
    * [MeV]
    */
   const double energyStep_ = (maxEnergy_ - minEnergy_) / NUM_TEST_SIM_HITS;
@@ -154,7 +154,7 @@ class HcalFakeSimHits : public framework::Producer {
     // put in a single sim hit
     std::vector<ldmx::SimCalorimeterHit> pretendSimHits(1);
 
-    // We hard-code the position of one hit: back hcal, layer 1, strip 31
+    // We hard-code the position of one hit: back hcal, layer_ 1, strip 31
     // This real simHit position is obtained by looking at calorimeter
     // SimHits of a 4 GeV muon shoot through the beamline
     ldmx::HcalID id(0, 1, 31);
@@ -299,7 +299,7 @@ class HcalCheckReconstruction : public framework::Analyzer {
             truth_pos = simHits.at(0).getPosition()[1];
             rec_pos = hit.getYPos();
           }
-          // std::cout << "rec pos " << rec_pos << " truth " << truth_pos <<
+          // std::cout << "rec pos_ " << rec_pos << " truth " << truth_pos <<
           // std::endl;
           // comment position check for now
           // CHECK_THAT(rec_pos, isCloseEnough(truth_pos,

@@ -79,7 +79,7 @@ class Track {
   friend std::ostream& operator<<(std::ostream& o, const Track& d);
 
   // To match the Framework Bus clear. It's doing nothing
-  void Clear() {};
+  void clear() {};
 
   void setNhits(int nhits) { n_hits_ = nhits; }
   int getNhits() const { return n_hits_; }
@@ -106,8 +106,8 @@ class Track {
   void setChi2(double chi2) { chi2_ = chi2; }
   double getChi2() const { return chi2_; }
 
-  void setTrackID(int trackid) { trackID_ = trackid; };
-  int getTrackID() const { return trackID_; };
+  void setTrackID(int trackid) { track_id_ = trackid; };
+  int getTrackID() const { return track_id_; };
 
   void setTruthProb(double truthProb) { truthProb_ = truthProb; };
   double getTruthProb() const { return truthProb_; };
@@ -165,10 +165,11 @@ class Track {
     perigee_ = perigee;
   }
 
-  void setPerigeeLocation(const double& x, const double& y, const double& z) {
-    perigee_[0] = x;
-    perigee_[1] = y;
-    perigee_[2] = z;
+  void setPerigeeLocation(const double& x_, const double& y_,
+                          const double& z_) {
+    perigee_[0] = x_;
+    perigee_[1] = y_;
+    perigee_[2] = z_;
   }
 
   void setMomentum(const double& px, const double& py, const double& pz) {
@@ -177,10 +178,10 @@ class Track {
     momentum_[2] = pz;
   }
 
-  void setPosition(const double& x, const double& y, const double& z) {
-    position_[0] = x;
-    position_[1] = y;
-    position_[2] = z;
+  void setPosition(const double& x_, const double& y_, const double& z_) {
+    position_[0] = x_;
+    position_[1] = y_;
+    position_[2] = z_;
   }
 
   std::vector<double> getPerigeeLocation() const { return perigee_; };
@@ -257,7 +258,7 @@ class Track {
   std::vector<unsigned int> shared_idxs_{};
 
   // ID of the matched particle in the SimParticles map
-  int trackID_{-1};
+  int track_id_{-1};
 
   // Truth probability
   double truthProb_{0.};

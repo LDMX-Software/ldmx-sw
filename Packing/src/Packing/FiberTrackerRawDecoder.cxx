@@ -91,7 +91,7 @@ class FiberTrackerField {
   /**
    * long split across two ints
    *
-   * i is index of field value to start from
+   * i is index_ of field value to start from
    */
   long int to_long(const std::size_t i = 0) const {
     return ((uint64_t)field_value_.at(i + 1) << 32) |
@@ -174,7 +174,7 @@ struct FiberTrackerBinaryPacket {
    * This is the actual event data in which we are interested
    */
   std::vector<FiberTrackerEvent> eventsData;
-  /// index of event we are on (for next)
+  /// index_ of event we are on (for next)
   int i_event{0};
 
   double meanSNew;

@@ -79,7 +79,7 @@ class HgcrocEmulator {
   }
 
   /**
-   * Digitize the signals from the simulated hits
+   * Digitize the signals from the simulated hits_
    *
    * This is where the hefty amount of work is done.
    *
@@ -89,7 +89,7 @@ class HgcrocEmulator {
    *    - Sort the input sim voltage hits by amplitude
    *
    * 1. Combine input simulated hits into one CompositePulse to digitize.
-   *    - This composite pulse decides whether to merge two simulated hits
+   *    - This composite pulse decides whether to merge two simulated hits_
    *      into one larger pulse depending on how close they are in time.
    *
    * 2. Add a timing jitter TODO
@@ -112,7 +112,7 @@ class HgcrocEmulator {
    * the point the pulse crosses the toaThreshold_ with
    * respect to the current clock window.
    * The time measurements are converted to clock counts
-   * using 2^10=1024 and clockCycle_.
+   * using 2^10=1024 and clock_cycle_.
    *
    * Both the tot_complete_ and tot_progress_ flags are set
    * to false for all the samples.
@@ -243,10 +243,10 @@ class HgcrocEmulator {
   int nADCs_;
 
   /// Index for the Sample Of Interest in the list of digi samples
-  int iSOI_;
+  int i_soi_;
 
   /// Time interval for chip clock [ns]
-  double clockCycle_;
+  double clock_cycle_;
 
   /// Jitter of timing mechanism in the chip [ns]
   double timingJitter_;
@@ -296,7 +296,7 @@ class HgcrocEmulator {
    * Helpful Member Objects
    *************************************************************************************/
 
-  /// Generates Gaussian noise on top of real hits
+  /// Generates Gaussian noise on top of real hits_
   std::unique_ptr<TRandom3> noiseInjector_;
 
   /**
@@ -319,7 +319,7 @@ class HgcrocEmulator {
    *          {(1+\exp(p_1(t-p_2+p_3-p_4)))(1+\exp(p_5*(t-p_6+p_3-p_4)))}
    * @f]
    */
-  mutable TF1 pulseFunc_;
+  mutable TF1 pulse_func_;
 
   /// Enable logging
   enableLogging("HgcrocEmulator")

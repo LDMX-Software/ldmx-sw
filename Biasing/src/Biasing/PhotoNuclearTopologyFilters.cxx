@@ -6,9 +6,9 @@ bool NothingHardFilter::rejectEvent(
     const std::vector<G4Track*>& secondaries) const {
   for (const auto& secondary : secondaries) {
     // Get the PDG ID of the track
-    const auto pdgID{
+    const auto pdg_id{
         std::abs(secondary->GetParticleDefinition()->GetPDGEncoding())};
-    if (skipCountingParticle(pdgID)) {
+    if (skipCountingParticle(pdg_id)) {
       continue;
     }
     auto energy{secondary->GetKineticEnergy()};
@@ -24,15 +24,15 @@ bool SingleNeutronFilter::rejectEvent(
   int hard_neutrons{0};
   for (const auto& secondary : secondaries) {
     // Get the PDG ID of the track
-    const auto pdgID{
+    const auto pdg_id{
         std::abs(secondary->GetParticleDefinition()->GetPDGEncoding())};
-    if (skipCountingParticle(pdgID)) {
+    if (skipCountingParticle(pdg_id)) {
       continue;
     }
     auto energy{secondary->GetKineticEnergy()};
     if (energy > hard_particle_threshold_) {
       hard_particles++;
-      if (isNeutron(pdgID)) {
+      if (isNeutron(pdg_id)) {
         hard_neutrons++;
       }
     }
@@ -57,8 +57,8 @@ void PhotoNuclearTopologyFilter::stepping(const G4Step* step) {
   // tagged as PN photos will be processed. The track is currently only
   // tagged by the UserAction ECalProcessFilter which needs to be run
   // before this UserAction.
-  auto trackInfo{simcore::UserTrackInformation::get(track)};
-  if ((trackInfo != nullptr) && !trackInfo->isPNGamma()) return;
+  auto track_info{simcore::UserTrackInformation::get(track)};
+  if ((track_info != nullptr) && !track_info->isPNGamma()) return;
 
   // Get the PN photon daughters.
   auto secondaries{step->GetSecondary()};
@@ -70,8 +70,8 @@ void PhotoNuclearTopologyFilter::stepping(const G4Step* step) {
 
   // Once the PN gamma has been procesed, untag it so its not reprocessed
   // again.
-  if (trackInfo) {
-    trackInfo->tagPNGamma(false);
+  if (track_info) {
+    track_info->tagPNGamma(false);
   }
 }
 

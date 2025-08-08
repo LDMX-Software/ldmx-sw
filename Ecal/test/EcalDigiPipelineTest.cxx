@@ -76,12 +76,12 @@ static const double MAX_ENERGY_ERROR_DAQ = MIP_SI_ENERGY / 2;
 static const double MAX_ENERGY_ERROR_TP = 2 * MIP_SI_ENERGY;
 
 /**
- * Number of sim hits to create.
+ * Number of sim hits_ to create.
  *
  * In this test, we create one sim hit per event,
  * run it through the digi pipeline, and then
  * check it. This parameter tells us how many
- * sim hits to create and then (combined with
+ * sim hits_ to create and then (combined with
  * the parameters of EcalFakeSimHits), we know
  * how "fine-grained" the test is.
  */
@@ -143,7 +143,7 @@ class isCloseEnough : public Catch::Matchers::MatcherBase<double> {
  * @class FakeSimHits
  *
  * Fills the event bus with an EcalSimHits collection with
- * a range of energy hits. These hits are put into unique
+ * a range of energy hits_. These hits_ are put into unique
  * cells so that we can compare them to the correct energy
  * in one event.
  */
@@ -166,7 +166,7 @@ class EcalFakeSimHits : public framework::Producer {
 
   /**
    * The step between energies is calculated depending on the min, max energy
-   * and the total number of sim hits you desire.
+   * and the total number of sim hits_ you desire.
    * [MeV]
    */
   const double energyStep_ = (maxEnergy_ - minEnergy_) / NUM_TEST_SIM_HITS;
@@ -323,7 +323,7 @@ DECLARE_ANALYZER(ecal::test::EcalCheckEnergyReconstruction)
  *  - Keep estimated energy at TP level close to simulated value
  *
  * @TODO still need to expand to multiple contribs in a single sim hit
- * @TODO check layer weights are being calculated correctly somehow
+ * @TODO check layer_ weights are being calculated correctly somehow
  */
 TEST_CASE("Ecal Digi Pipeline test", "[Ecal][functionality]") {
   const std::string config_file{"ecal_digi_pipeline_test_config.py"};

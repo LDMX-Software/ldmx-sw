@@ -7,10 +7,10 @@ namespace framework {
 void StorageControl::resetEventState() { hints_.clear(); }
 
 void StorageControl::addHint(const std::string& processor_name, Hint hint,
-                             const std::string& purposeString) {
+                             const std::string& purpose_string) {
   for (const auto& [processor_rule, purpose_rule] : rules_) {
     if (std::regex_match(processor_name, processor_rule) and
-        std::regex_match(purposeString, purpose_rule)) {
+        std::regex_match(purpose_string, purpose_rule)) {
       // cache hints that matched a rule for later tallying
       hints_.push_back(hint);
       // leave after first match to avoid double-counting
@@ -52,21 +52,21 @@ bool StorageControl::keepEvent(bool event_completed) const {
   /**
    * loop over the hints provided by processors we are listening to.
    */
-  int votesKeep(0), votesDrop(0);
-  bool mustDrop{false}, mustKeep{false};
+  int votes_keep(0), votes_drop(0);
+  bool must_drop{false}, must_keep{false};
   for (auto hint : hints_) {
     switch (hint) {
       case Hint::MustDrop:
-        mustDrop = true;
+        must_drop = true;
         break;
       case Hint::MustKeep:
-        mustKeep = true;
+        must_keep = true;
         break;
       case Hint::ShouldDrop:
-        votesDrop++;
+        votes_drop++;
         break;
       case Hint::ShouldKeep:
-        votesKeep++;
+        votes_keep++;
         break;
       case Hint::Undefined:
       case Hint::NoOpinion:
@@ -84,26 +84,26 @@ bool StorageControl::keepEvent(bool event_completed) const {
   /**
    * mustDrop is highest priority, if it exists the event is dropped
    */
-  if (mustDrop) return false;
+  if (must_drop) return false;
 
   /**
    * mustKeep is second highest, if it exists when mustDrop does not, the event
    * is kept
    */
-  if (mustKeep) return true;
+  if (must_keep) return true;
 
   /**
    * If we don't have any 'must' hints, we tally votes
    * and follow the choice made by a simple majority.
    */
-  if (votesKeep > votesDrop) return true;
-  if (votesDrop > votesKeep) return false;
+  if (votes_keep > votes_drop) return true;
+  if (votes_drop > votes_keep) return false;
 
   /**
    * If there is a tie in the vote (including the case
    * where there were no votes), then we use the default
    * decision.
    */
-  return defaultIsKeep_;
+  return default_is_keep_;
 }
 }  // namespace framework

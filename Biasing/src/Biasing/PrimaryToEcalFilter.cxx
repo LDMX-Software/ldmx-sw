@@ -10,7 +10,7 @@ PrimaryToEcalFilter::PrimaryToEcalFilter(
 
 void PrimaryToEcalFilter::stepping(const G4Step* step) {
   // Only process the primary electron track
-  if (int parentID{step->GetTrack()->GetParentID()}; parentID != 0) return;
+  if (int parent_id{step->GetTrack()->GetParentID()}; parent_id != 0) return;
 
   if (G4EventManager::GetEventManager()->GetConstCurrentEvent()->IsAborted())
     return;

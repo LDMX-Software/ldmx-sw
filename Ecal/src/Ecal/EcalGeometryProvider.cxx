@@ -45,17 +45,17 @@ class EcalGeometryProvider : public framework::ConditionsObjectProvider {
   virtual void releaseConditionsObject(const framework::ConditionsObject* co) {}
 
   virtual void onNewRun(ldmx::RunHeader& rh) {
-    if (detectorGeometry_.empty())
-      detectorGeometry_ = rh.getDetectorName();
-    else if (ecalGeometry_ != nullptr &&
-             detectorGeometry_ != rh.getDetectorName()) {
+    if (detector_geometry_.empty())
+      detector_geometry_ = rh.getDetectorName();
+    else if (ecal_geometry_ != nullptr &&
+             detector_geometry_ != rh.getDetectorName()) {
       EXCEPTION_RAISE(
           "GeometryException",
           "Attempting to run a single job with multiple geometries " +
-              detectorGeometry_ + " and '" + rh.getDetectorName() + "'");
+              detector_geometry_ + " and '" + rh.getDetectorName() + "'");
     }
     // make sure detector name has been set
-    if (detectorGeometry_.empty())
+    if (detector_geometry_.empty())
       EXCEPTION_RAISE("GeometryException",
                       "EcalGeometryProvider unable to get the name of the "
                       "detector from the RunHeader.");
@@ -65,8 +65,8 @@ class EcalGeometryProvider : public framework::ConditionsObjectProvider {
   /** parameters for the various geometry versions we can support */
   std::vector<framework::config::Parameters> geometries_;
   /** Geometry as last used */
-  std::string detectorGeometry_;
-  ldmx::EcalGeometry* ecalGeometry_;
+  std::string detector_geometry_;
+  ldmx::EcalGeometry* ecal_geometry_;
 };
 
 EcalGeometryProvider::EcalGeometryProvider(
@@ -79,30 +79,30 @@ EcalGeometryProvider::EcalGeometryProvider(
   geometries_ =
       parameters.getParameter<std::vector<framework::config::Parameters>>(
           "geometries");
-  ecalGeometry_ = 0;
+  ecal_geometry_ = 0;
 }
 
 EcalGeometryProvider::~EcalGeometryProvider() {
-  if (ecalGeometry_) delete ecalGeometry_;
-  ecalGeometry_ = 0;
+  if (ecal_geometry_) delete ecal_geometry_;
+  ecal_geometry_ = 0;
 }
 
 std::pair<const framework::ConditionsObject*, framework::ConditionsIOV>
 EcalGeometryProvider::getCondition(const ldmx::EventHeader& context) {
-  static const std::string KEYNAME("detectors_valid");
+  static const std::string keyname("detectors_valid");
 
-  if (!ecalGeometry_) {
+  if (!ecal_geometry_) {
     // search through the subtrees
     for (auto pver : geometries_) {
-      if (!pver.exists(KEYNAME)) {
-        ldmx_log(warn) << "No parameter " << KEYNAME
+      if (!pver.exists(keyname)) {
+        ldmx_log(warn) << "No parameter " << keyname
                        << " found one of the detector vesrsions.";
         // log strange situation and continue
         continue;
       }
 
       std::vector<std::string> dets_valid =
-          pver.getParameter<std::vector<std::string>>(KEYNAME);
+          pver.getParameter<std::vector<std::string>>(keyname);
       for (auto detregex : dets_valid) {
         std::string regex(detregex);
         if (regex.empty()) continue;  // no empty regex allowed
@@ -119,22 +119,22 @@ EcalGeometryProvider::getCondition(const ldmx::EventHeader& context) {
               "GeometryException",
               "Invalid detector regular expression : '" + regex + "' " + err);
         }
-        int nmatch = regexec(&reg, detectorGeometry_.c_str(), 0, 0, 0);
+        int nmatch = regexec(&reg, detector_geometry_.c_str(), 0, 0, 0);
         regfree(&reg);
         if (!nmatch) {
-          ecalGeometry_ = new ldmx::EcalGeometry(pver);
+          ecal_geometry_ = new ldmx::EcalGeometry(pver);
           break;
         }
       }
-      if (ecalGeometry_) break;
+      if (ecal_geometry_) break;
     }
-    if (!ecalGeometry_) {
+    if (!ecal_geometry_) {
       EXCEPTION_RAISE("GeometryException", "Unable to create EcalGeometry");
     }
   }
 
   return std::make_pair(
-      ecalGeometry_,
+      ecal_geometry_,
       framework::ConditionsIOV(context.getRun(), context.getRun(), true, true));
 }
 

@@ -57,9 +57,9 @@ namespace framework::config {
  */
 static std::string getPyString(PyObject* pyObj) {
   std::string retval;
-  PyObject* pyStr = PyUnicode_AsEncodedString(pyObj, "utf-8", "Error ~");
-  retval = PyBytes_AS_STRING(pyStr);
-  Py_XDECREF(pyStr);
+  PyObject* py_str = PyUnicode_AsEncodedString(pyObj, "utf-8", "Error ~");
+  retval = PyBytes_AS_STRING(py_str);
+  Py_XDECREF(py_str);
   return retval;
 }
 
@@ -335,7 +335,7 @@ Parameters run(const std::string& root_object, const std::string& pythonScript,
   // The third argument to PySys_SetArgvEx tells python to import
   // the args and add the directory of the first argument to
   // the PYTHONPATH
-  // This way, the command to import the module just needs to be
+  // This way, the command to import the module_ just needs to be
   // the name of the python script
   PySys_SetArgvEx(nargs + 1, targs, 1);
 #else
@@ -399,7 +399,7 @@ Parameters run(const std::string& root_object, const std::string& pythonScript,
 
   // running a python script effectively imports the script into the top-level
   // code environment called '__main__'
-  //  we "import" this module which is already imported to get a handle
+  //  we "import" this module_ which is already imported to get a handle
   //  on the necessary objects
   PyObject* py_root_obj = PyImport_ImportModule("__main__");
   if (!py_root_obj) {

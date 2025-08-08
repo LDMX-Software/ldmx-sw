@@ -167,7 +167,7 @@ void SeedFinderProcessor::produce(framework::Event& event) {
   groups_map.clear();
   //  set the seeding strategy
   //  strategy is a list of layers from which to  make the seed
-  //  this must include 5 layers; layer numbering starts at 0.
+  //  this must include 5 layers; layer_ numbering starts at 0.
   //  std::vector<int> strategy = {9,10,11,12,13};
   std::vector<int> strategy = {0, 1, 2, 3, 4};
   bool success = GroupStrips(measurements, strategy);
@@ -204,8 +204,9 @@ void SeedFinderProcessor::produce(framework::Event& event) {
   // measurements from:
   //  - raw hits in data
   //  - sim hits in MC
-  // Step 0: Get the sim hits and project them on the surfaces to mimic 2d hits
-  // Step 1: Smear the hits and associate an uncertainty to those measurements.
+  // Step 0: Get the sim hits and project them on the surfaces to mimic 2d
+  // hits Step 1: Smear the hits and associate an uncertainty to those
+  // measurements.
 
   xhit_.clear();
   yhit_.clear();
@@ -456,7 +457,7 @@ bool SeedFinderProcessor::GroupStrips(
 
     if (std::find(strategy.begin(), strategy.end(), meas.getLayer()) !=
         strategy.end()) {
-      ldmx_log(debug) << "Adding measurement from layer = " << meas.getLayer();
+      ldmx_log(debug) << "Adding measurement from layer_ = " << meas.getLayer();
       groups_map[meas.getLayer()].push_back(&meas);
     }
 

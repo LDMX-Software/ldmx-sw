@@ -21,13 +21,13 @@ void HcalSimpleDigiAndRecProducer::configure(
 }
 
 void HcalSimpleDigiAndRecProducer::onNewRun(const ldmx::RunHeader&) {
-  noiseGenerator_ = std::make_unique<ldmx::NoiseGenerator>(mean_noise_, false);
-  // hard-code this number, create noise hits for non-zero PEs!
-  noiseGenerator_->setNoiseThreshold(1);
+  noise_generator_ = std::make_unique<ldmx::NoiseGenerator>(mean_noise_, false);
+  // hard-code this number, create noise hits_ for non-zero PEs!
+  noise_generator_->setNoiseThreshold(1);
   const framework::RandomNumberSeedService& rseed =
       getCondition<framework::RandomNumberSeedService>(
           framework::RandomNumberSeedService::CONDITIONS_OBJECT_NAME);
-  noiseGenerator_->seedGenerator(
+  noise_generator_->seedGenerator(
       rseed.getSeed("HcalSimpleDigiAndRecProducer::NoiseGenerator"));
   rng_.seed(rseed.getSeed("HcalSimpleDigiAndRecProducer"));
 }
@@ -57,23 +57,23 @@ void HcalSimpleDigiAndRecProducer::produce(framework::Event& event) {
     ldmx::HcalHit& recHit = hcalRecHits.emplace_back();
     double edep{};
     double time{};
-    std::vector<double> pos{0, 0, 0};
+    std::vector<double> pos_{0, 0, 0};
     for (auto hit : simhits_in_bar) {
       edep += hit->getEdep();
       double edep_hit = hit->getEdep();
       time += hit->getTime() * edep_hit;
       auto hitPos{hit->getPosition()};
-      pos[0] += hitPos[0] * edep_hit;
-      pos[1] += hitPos[1] * edep_hit;
-      pos[2] += hitPos[2] * edep_hit;
+      pos_[0] += hitPos[0] * edep_hit;
+      pos_[1] += hitPos[1] * edep_hit;
+      pos_[2] += hitPos[2] * edep_hit;
     }
     ldmx::HcalID hitID{barID};
 
     // Position smearing
     double mean_pe{(edep / mev_per_mip_) * pe_per_mip_};
-    double xpos{pos[0] / edep};
-    double ypos{pos[1] / edep};
-    double zpos{pos[2] / edep};
+    double xpos{pos_[0] / edep};
+    double ypos{pos_[1] / edep};
+    double zpos{pos_[2] / edep};
     time /= edep;
 
     auto orientation{hcalGeometry.getScintillatorOrientation(barID)};

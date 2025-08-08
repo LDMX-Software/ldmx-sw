@@ -3,7 +3,7 @@
 
 // TODO:: MAKE A CXX!!
 
-// Recoil back layers numbering scheme for module
+// Recoil back layers numbering scheme for module_
 
 //    +Y  /\   4  3  2  1  0
 //        |
@@ -11,7 +11,7 @@
 //    -Y  \/   9  8  7  6  5
 //          -X <----  ----> +X
 
-// ModN (x,    y,   z)
+// ModN (x_,    y_,   z_)
 // 0    (96,   40,  z2)
 // 1    (48,   40,  z1)
 // 2    (0,    40,  z2)
@@ -118,9 +118,9 @@ inline int getSensorID(const ldmx::SimTrackerHit& hit) {
 
 // This method converts a SimHit in a LdmxSpacePoint for the Acts seeder.
 //  (1) Rotate the coordinates into acts::seedFinder coordinates defined by
-//  B-Field along z axis [Z_ldmx -> X_acts, X_ldmx->Y_acts, Y_ldmx->Z_acts] (2)
+//  B-Field along z_ axis [Z_ldmx -> X_acts, X_ldmx->Y_acts, Y_ldmx->Z_acts] (2)
 //  Saves the error information. At the moment the errors are fixed. They should
-//  be obtained from the digitized hits.
+//  be obtained from the digitized hits_.
 
 // TODO::Move to shared pointers?!
 // TODO::Pass to instances?
@@ -165,11 +165,11 @@ inline Acts::BoundSquareMatrix unpackCov(const std::vector<double>& v_cov) {
 }
 
 // Rotate to ACTS frame
-// z->x, x->y, y->z
+// z_->x_, x_->y_, y_->z_
 
-//(0 0 1) x  = z
-//(1 0 0) y  = x
-//(0 1 0) z  = y
+//(0 0 1) x_  = z_
+//(1 0 0) y_  = x_
+//(0 1 0) z_  = y_
 
 inline Acts::Vector3 Ldmx2Acts(Acts::Vector3 ldmx_v) {
   // TODO::Move it to a static member
@@ -181,14 +181,14 @@ inline Acts::Vector3 Ldmx2Acts(Acts::Vector3 ldmx_v) {
 
 // Transform position, momentum and charge to free parameters
 
-inline Acts::FreeVector toFreeParameters(Acts::Vector3 pos, Acts::Vector3 mom,
+inline Acts::FreeVector toFreeParameters(Acts::Vector3 pos_, Acts::Vector3 mom,
                                          Acts::ActsScalar q) {
   Acts::FreeVector free_params;
   Acts::ActsScalar p = mom.norm() * Acts::UnitConstants::MeV;
 
-  free_params[Acts::eFreePos0] = pos(Acts::ePos0) * Acts::UnitConstants::mm;
-  free_params[Acts::eFreePos1] = pos(Acts::ePos1) * Acts::UnitConstants::mm;
-  free_params[Acts::eFreePos2] = pos(Acts::ePos2) * Acts::UnitConstants::mm;
+  free_params[Acts::eFreePos0] = pos_(Acts::ePos0) * Acts::UnitConstants::mm;
+  free_params[Acts::eFreePos1] = pos_(Acts::ePos1) * Acts::UnitConstants::mm;
+  free_params[Acts::eFreePos2] = pos_(Acts::ePos2) * Acts::UnitConstants::mm;
   free_params[Acts::eFreeTime] = 0.;
   free_params[Acts::eFreeDir0] = mom(0) / mom.norm();
   free_params[Acts::eFreeDir1] = mom(1) / mom.norm();
@@ -251,9 +251,9 @@ inline Acts::BoundTrackParameters btp(const ldmx::Track::TrackState& ts,
 inline const std::shared_ptr<Acts::PlaneSurface> unboundSurface(
     double xloc, double yloc = 0., double zloc = 0.) {
   // Define the target surface - be careful:
-  //  x - downstream
-  //  y - left (when looking along x)
-  //  z - up
+  //  x_ - downstream
+  //  y_ - left (when looking along x_)
+  //  z_ - up
   //  Passing identity here means that your target surface is oriented in the
   //  same way
   Acts::RotationMatrix3 surf_rotation = Acts::RotationMatrix3::Zero();
@@ -264,8 +264,8 @@ inline const std::shared_ptr<Acts::PlaneSurface> unboundSurface(
   // w direction along +X
   surf_rotation(0, 2) = 1;
 
-  Acts::Vector3 pos(xloc, yloc, zloc);
-  Acts::Translation3 surf_translation(pos);
+  Acts::Vector3 pos_(xloc, yloc, zloc);
+  Acts::Translation3 surf_translation(pos_);
   Acts::Transform3 surf_transform(surf_translation * surf_rotation);
 
   // Unbounded surface

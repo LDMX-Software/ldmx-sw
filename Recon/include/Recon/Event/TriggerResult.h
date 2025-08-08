@@ -42,7 +42,7 @@ class TriggerResult {
   /**
    * Reset the TriggerResult object.
    */
-  void Clear();
+  void clear();
 
   /**
    * Return the name of the trigger.
@@ -59,7 +59,7 @@ class TriggerResult {
   /**
    * Return algorithm variable i (see algorithm code for details).
    * @param element The index of the variable.
-   * @return Algorithm variable at the index.
+   * @return Algorithm variable at the index_.
    */
   double getAlgoVar(int element) const { return variables_[element]; }
 

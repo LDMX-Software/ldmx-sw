@@ -2,15 +2,15 @@
 
 namespace ecal {
 
-const std::vector<std::string> EcalPnetVetoProcessor::input_names_{"points",
-                                                                   "features"};
-const std::vector<unsigned int> EcalPnetVetoProcessor::input_sizes_{
-    n_coordinate_dim_ * max_num_hits_, n_feature_dim_* max_num_hits_};
+const std::vector<std::string> EcalPnetVetoProcessor::INPUT_NAMES{"points",
+                                                                  "features"};
+const std::vector<unsigned int> EcalPnetVetoProcessor::INPUT_SIZES{
+    N_COORDINATE_DIM * MAX_NUM_HITS, N_FEATURE_DIM* MAX_NUM_HITS};
 
 EcalPnetVetoProcessor::EcalPnetVetoProcessor(const std::string& name,
                                              framework::Process& process)
     : Producer(name, process) {
-  for (const auto& s : input_sizes_) {
+  for (const auto& s : INPUT_SIZES) {
     data_.emplace_back(s, 0);
   }
 }
@@ -22,7 +22,7 @@ void EcalPnetVetoProcessor::configure(
       parameters.get<std::string>("model_path"));
 
   // Set the collection name as defined in the configuration
-  collectionName_ = parameters.get<std::string>("collection_name");
+  collection_name_ = parameters.get<std::string>("collection_name");
 
   rec_coll_name_ = parameters.get<std::string>("rec_coll_name");
   ecal_rec_hits_passname_ =
@@ -39,17 +39,16 @@ void EcalPnetVetoProcessor::produce(framework::Event& event) {
   const auto& ecal_geometry = getCondition<ldmx::EcalGeometry>(
       ldmx::EcalGeometry::CONDITIONS_OBJECT_NAME);
 
-  // Get the collection of digitized Ecal hits from the event.
+  // Get the collection of digitized Ecal hits_ from the event.
   const auto ecal_rec_hits = event.getCollection<ldmx::EcalHit>(
       rec_coll_name_, ecal_rec_hits_passname_);
   auto nhits = std::count_if(
       ecal_rec_hits.begin(), ecal_rec_hits.end(),
       [](const ldmx::EcalHit& hit) { return hit.getEnergy() > 0; });
 
-  // check number of hits
-  ldmx_log(debug) << "nhits = " << nhits
-                  << " max_num_hits_ = " << max_num_hits_;
-  if (nhits < max_num_hits_) {
+  // check number of hits_
+  ldmx_log(debug) << "nhits = " << nhits << " MAX_NUM_HITS = " << MAX_NUM_HITS;
+  if (nhits < MAX_NUM_HITS) {
     std::array<double, 3> etraj = {-999., -999., -999.};
     std::array<double, 3> enorm = {-999., -999., -999.};
     // Compute electron trajectory}
@@ -79,14 +78,14 @@ void EcalPnetVetoProcessor::produce(framework::Event& event) {
         ldmx_log(debug) << "Electron Found in the Ecal SP!";
         auto pos = electron_hit->getPosition();
         auto mom = electron_hit->getMomentum();
-        ldmx_log(debug) << "ECAL SP pos=(" << pos[0] << "," << pos[1] << ","
+        ldmx_log(debug) << "ECAL SP pos_=(" << pos[0] << "," << pos[1] << ","
                         << pos[2] << ")";
         ldmx_log(debug) << "ECAL SP mom=(" << mom[0] << "," << mom[1] << ","
                         << mom[2] << ")";
         etraj = {pos[0], pos[1], pos[2]};
         double pz = mom[2];
         if (pz != 0) {
-          // z-normalized momentum
+          // z_-normalized momentum
           enorm = {mom[0] / pz, mom[1] / pz, 1.0};
         }
       }
@@ -104,7 +103,7 @@ void EcalPnetVetoProcessor::produce(framework::Event& event) {
         std::array<double, 3> mom = {(recoil_track_states_ecal[3]),
                                      (recoil_track_states_ecal[4]),
                                      (recoil_track_states_ecal[5])};
-        ldmx_log(debug) << "Electron track pos=(" << pos[0] << "," << pos[1]
+        ldmx_log(debug) << "Electron track pos_=(" << pos[0] << "," << pos[1]
                         << "," << pos[2] << ")";
         ldmx_log(debug) << "Electron track mom=(" << mom[0] << "," << mom[1]
                         << "," << mom[2] << ")";
@@ -123,7 +122,7 @@ void EcalPnetVetoProcessor::produce(framework::Event& event) {
     // make inputs
     makeInputs(ecal_geometry, ecal_rec_hits, etraj, enorm);
     // run the DNN
-    auto logits = rt_->run(input_names_, data_)[0];
+    auto logits = rt_->run(INPUT_NAMES, data_)[0];
     // make a log softmax of the logits then transform back
     // to a probability with an exponential
     auto prob = std::exp((logSoftmax(logits)[1]));
@@ -138,12 +137,12 @@ void EcalPnetVetoProcessor::produce(framework::Event& event) {
 
   // If the event passes the veto, keep it. Otherwise, drop the event.
   if (result.passesVeto()) {
-    setStorageHint(framework::hint_shouldKeep);
+    setStorageHint(framework::hint_should_keep);
   } else {
-    setStorageHint(framework::hint_shouldDrop);
+    setStorageHint(framework::hint_should_drop);
   }
 
-  event.add(collectionName_, result);
+  event.add(collection_name_, result);
 }
 
 void EcalPnetVetoProcessor::makeInputs(
@@ -169,25 +168,25 @@ void EcalPnetVetoProcessor::makeInputs(
     double delta_z = hit_z - etraj[2];
     double etraj_x = etraj[0] + enorm[0] * delta_z;
     double etraj_y = etraj[1] + enorm[1] * delta_z;
-    data_[0].at(coordinate_x_offset_ + idx) = hit_x - etraj_x;
-    data_[0].at(coordinate_y_offset_ + idx) = hit_y - etraj_y;
-    data_[0].at(coordinate_z_offset_ + idx) = hit_z;
+    data_[0].at(COORDINATE_X_OFFSET + idx) = hit_x - etraj_x;
+    data_[0].at(COORDINATE_Y_OFFSET + idx) = hit_y - etraj_y;
+    data_[0].at(COORDINATE_Z_OFFSET + idx) = hit_z;
 
-    data_[1].at(feature_x_offset_ + idx) = hit_x - etraj_x;
-    data_[1].at(feature_y_offset_ + idx) = hit_y - etraj_y;
-    data_[1].at(feature_z_offset_ + idx) = hit_z;
-    data_[1].at(feature_layerid_offset_ + idx) = id.layer();
-    data_[1].at(feature_energy_offset_ + idx) = std::log(hit.getEnergy());
+    data_[1].at(FEATURE_X_OFFSET + idx) = hit_x - etraj_x;
+    data_[1].at(FEATURE_Y_OFFSET + idx) = hit_y - etraj_y;
+    data_[1].at(FEATURE_Z_OFFSET + idx) = hit_z;
+    data_[1].at(FEATURE_LAYER_ID_OFFSET + idx) = id.layer();
+    data_[1].at(FEATURE_ENERGY_OFFSET + idx) = std::log(hit.getEnergy());
 
     ++idx;
   }
 
   std::stringstream ss;
-  for (unsigned iname = 0; iname < input_names_.size(); ++iname) {
-    ss << "=== " << input_names_[iname] << " ===";
-    for (unsigned i = 0; i < input_sizes_[iname]; ++i) {
+  for (unsigned iname = 0; iname < INPUT_NAMES.size(); ++iname) {
+    ss << "=== " << INPUT_NAMES[iname] << " ===";
+    for (unsigned i = 0; i < INPUT_SIZES[iname]; ++i) {
       ss << data_[iname].at(i) << ", ";
-      if ((i + 1) % max_num_hits_ == 0) {
+      if ((i + 1) % MAX_NUM_HITS == 0) {
         ss << "\n\n";
       }
     }

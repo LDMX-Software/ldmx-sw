@@ -1,6 +1,6 @@
 /**
  * @file NoiseGenerator.h
- * @brief Utility used to generate noise hits.
+ * @brief Utility used to generate noise hits_.
  * @author Omar Moreno, SLAC National Accelerator Laboratory
  */
 
@@ -45,11 +45,11 @@ class NoiseGenerator {
   bool hasSeed() const { return random_.get() != nullptr; }
 
   /**
-   * Generate noise hits.
+   * Generate noise hits_.
    *
    * @param emptyChannels The total number of channels without a hit
    *                      on them.
-   * @return A vector containing the amplitude of the noise hits.
+   * @return A vector containing the amplitude of the noise hits_.
    */
   std::vector<double> generateNoiseHits(int emptyChannels);
 

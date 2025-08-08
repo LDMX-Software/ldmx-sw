@@ -5,9 +5,9 @@ ClassImp(ldmx::VisiblesVetoResult);
 namespace ldmx {
 VisiblesVetoResult::VisiblesVetoResult() {}
 
-VisiblesVetoResult::~VisiblesVetoResult() { Clear(); }
+VisiblesVetoResult::~VisiblesVetoResult() { clear(); }
 
-void VisiblesVetoResult::Clear() {
+void VisiblesVetoResult::clear() {
   passes_veto_ = false;
 
   n_layers_hit_ = 0;
@@ -46,9 +46,8 @@ void VisiblesVetoResult::setVariables(int n_layers_hit, double x_std,
   r_mean_from_photon_track_ = r_mean_from_photon_track;
 }
 
-void VisiblesVetoResult::Print() const {
-  std::cout << "[ VisiblesVetoResult ]:\n"
-            << "\t Passes veto : " << passes_veto_ << "\n"
-            << std::endl;
+std::ostream& operator<<(std::ostream& s, const VisiblesVetoResult& p) {
+  return s << "[ VisiblesVetoResult ]:\n"
+           << "\t Passes veto : " << p.passes_veto_ << "\n";
 }
 }  // namespace ldmx

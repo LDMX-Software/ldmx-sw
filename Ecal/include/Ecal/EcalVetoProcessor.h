@@ -79,7 +79,7 @@ class EcalVetoProcessor : public framework::Producer {
   void clearProcessor();
 
   /* Function to calculate the energy weighted shower centroid */
-  ldmx::EcalID GetShowerCentroidIDAndRMS(
+  ldmx::EcalID getShowerCentroidIdAndRms(
       const std::vector<ldmx::EcalHit>& ecal_rec_hits, float& shower_rms);
 
   /* Function to load up empty vector of hit maps */

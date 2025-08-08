@@ -29,7 +29,7 @@ class HcalVetoResult {
   virtual ~HcalVetoResult() = default;
 
   /** Reset the object. */
-  void Clear();
+  void clear();
 
   /** Print out the object */
   friend std::ostream &operator<<(std::ostream &o, const HcalVetoResult &d);
@@ -43,7 +43,7 @@ class HcalVetoResult {
   /** @return The total number of PE. */
   float getTotalPE() const { return total_PE_; }
 
-  /** @return The number of valid hits. */
+  /** @return The number of valid hits_. */
   float getNumValidHits() const { return num_valid_hits_; }
 
   /**
@@ -70,9 +70,9 @@ class HcalVetoResult {
   void setTotalPE(const float total_PE) { total_PE_ = total_PE; }
 
   /**
-   * Set the number of valid hits.
+   * Set the number of valid hits_.
    *
-   * @param num_valid_hits The number of valid hits
+   * @param num_valid_hits The number of valid hits_
    */
   void setNumValidHits(const float num_valid_hits) {
     num_valid_hits_ = num_valid_hits;

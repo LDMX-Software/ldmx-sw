@@ -71,13 +71,13 @@ class DeepEcalProcessFilter : public simcore::UserAction {
   ///  conversion (conv) and photoelectron (photo)
   std::vector<std::string> processes_{"conv", "phot"};
   /// Minimum Z location where the deep process should happen
-  double ecal_min_Z_{400.};
+  double ecal_min_z_{400.};
   /// Require that the hard brem photon originates from the target
-  bool require_photon_fromTarget_{false};
+  bool require_photon_from_target_{false};
   /// member used to help tag events where the photon comes from the target
-  bool photonFromTarget_{false};
+  bool photon_from_target_{false};
   /// member used to help tag events that have a deep-ecal process ocurr
-  bool hasDeepEcalProcess_{false};
+  bool has_deep_ecal_process_{false};
 };  // DeepEcalProcessFilter
 }  // namespace biasing
 

@@ -61,14 +61,14 @@ const std::vector<std::unique_ptr<LHEParticle>>& LHEEvent::getParticles()
   return particles_;
 }
 
-void LHEEvent::setVertex(double x, double y, double z) {
-  vtx_[0] = x;
-  vtx_[1] = y;
-  vtx_[2] = z;
+void LHEEvent::setVertex(double x_, double y_, double z_) {
+  vtx_[0] = x_;
+  vtx_[1] = y_;
+  vtx_[2] = z_;
 }
 
 /**
- * Parse the vertex from a line of the form "#vertex [x] [y] [z] [t]"
+ * Parse the vertex from a line of the form "#vertex [x_] [y_] [z_] [t]"
  * Where [t] is assumed zero if not specified
  */
 void LHEEvent::setVertex(const std::string& line) {

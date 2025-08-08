@@ -24,16 +24,16 @@ void MyProcessor::configure(framework::config::Parameters &parameters) {
 }
 
 void MyProcessor::produce(framework::Event &event) {
-  // Check if the collection of reconstructed ECal hits exist.  If not,
+  // Check if the collection of reconstructed ECal hits_ exist.  If not,
   // don't bother processing the event.
   if (!event.exists("EcalRecHits", ecal_rec_hits_event_passname_)) return;
 
-  // Get the collection of digitized ECal hits from the event
-  const std::vector<ldmx::EcalHit> hits =
+  // Get the collection of digitized ECal hits_ from the event
+  const std::vector<ldmx::EcalHit> hits_ =
       event.getCollection<ldmx::EcalHit>("EcalRecHits", ecal_rechits_passname_);
 
-  // Loop over the collection of hits and print the hit details
-  for (const auto &hit : hits) {
+  // Loop over the collection of hits_ and print the hit details
+  for (const auto &hit : hits_) {
     // Print the hit
     ldmx_log(info) << hit;
   }

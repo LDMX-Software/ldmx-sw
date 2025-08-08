@@ -23,7 +23,7 @@ namespace ldmx {
  * @brief Represents the estimated mass of a particle
  * using tracker dE/dx information
  * @note This class represents the estimated mass information
- * from a tracker including mass, track index, and the track type
+ * from a tracker including mass, track index_, and the track type
  */
 
 class TrackDeDxMassEstimate {
@@ -41,7 +41,7 @@ class TrackDeDxMassEstimate {
   /**
    * Clear the data in the object.
    */
-  void Clear();
+  void clear();
 
   /**
    * Print out the object.

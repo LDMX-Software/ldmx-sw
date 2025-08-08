@@ -178,7 +178,7 @@ class XsecBiasingOperator : public G4VBiasingOperator {
     return nullptr;
   }
   /// Enable logging
-  framework::logging::logger theLog_;
+  framework::logging::logger the_log_;
 
 };  // XsecBiasingOperator
 }  // namespace simcore

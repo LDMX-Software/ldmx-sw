@@ -84,7 +84,7 @@ class SimCalorimeterHit {
   /**
    * Clear the data in the object.
    */
-  void Clear();
+  void clear();
 
   /**
    * Print out the object.
@@ -247,9 +247,9 @@ class SimCalorimeterHit {
                   float time, int originID = -1);
 
   /**
-   * Get a hit contribution by index.
+   * Get a hit contribution by index_.
    * @param i The index of the hit contribution.
-   * @return The hit contribution at the index.
+   * @return The hit contribution at the index_.
    */
   Contrib getContrib(int i) const;
 

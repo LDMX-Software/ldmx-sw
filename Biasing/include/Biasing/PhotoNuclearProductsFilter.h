@@ -57,8 +57,8 @@ class PhotoNuclearProductsFilter : public simcore::UserAction {
 
  private:
   /// Container to hold the PDG IDs of products of interest
-  std::vector<int> productsPdgID_;
-  double min_e;
+  std::vector<int> products_pdg_id_;
+  double min_e_;
 
 };  // PhotoNuclearProductsFilter
 

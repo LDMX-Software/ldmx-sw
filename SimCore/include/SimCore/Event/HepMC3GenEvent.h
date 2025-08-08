@@ -18,7 +18,7 @@ class HepMC3GenEvent : public HepMC3::GenEventData {
  public:
   virtual ~HepMC3GenEvent() = default;
 
-  void Clear();
+  void clear();
   void Print() const;
 
   HepMC3::GenEvent getHepMCGenEvent() const;

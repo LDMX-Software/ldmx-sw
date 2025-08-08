@@ -38,7 +38,7 @@ class EcalWABResult {
   friend std::ostream &operator<<(std::ostream &o, const EcalWABResult &d);
 
   // To match the Framework Bus clear. It's doing nothing.
-  void Clear() {}
+  void clear() {}
 
   void setVariables(
       float true_theta_electron, float true_theta_photon,

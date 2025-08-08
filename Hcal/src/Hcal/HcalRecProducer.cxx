@@ -20,11 +20,11 @@ HcalRecProducer::HcalRecProducer(const std::string& name,
 
 void HcalRecProducer::configure(framework::config::Parameters& ps) {
   // collection names
-  digiCollName_ = ps.getParameter<std::string>("digiCollName");
-  digiPassName_ = ps.getParameter<std::string>("digiPassName");
-  simHitCollName_ = ps.getParameter<std::string>("simHitCollName");
-  simHitPassName_ = ps.getParameter<std::string>("simHitPassName");
-  recHitCollName_ = ps.getParameter<std::string>("recHitCollName");
+  digi_coll_name_ = ps.getParameter<std::string>("digiCollName");
+  digi_pass_name_ = ps.getParameter<std::string>("digiPassName");
+  sim_hit_coll_name_ = ps.getParameter<std::string>("simHitCollName");
+  sim_hit_pass_name_ = ps.getParameter<std::string>("simHitPassName");
+  rec_hit_coll_name_ = ps.getParameter<std::string>("recHitCollName");
 
   // parameters
   mip_energy_ = ps.getParameter<double>("mip_energy");
@@ -122,8 +122,8 @@ void HcalRecProducer::produce(framework::Event& event) {
       getCondition<HcalReconConditions>(HcalReconConditions::CONDITIONS_NAME)};
 
   std::vector<ldmx::HcalHit> hcalRecHits;
-  auto hcalDigis =
-      event.getObject<ldmx::HgcrocDigiCollection>(digiCollName_, digiPassName_);
+  auto hcalDigis = event.getObject<ldmx::HgcrocDigiCollection>(digi_coll_name_,
+                                                               digi_pass_name_);
   int numDigiHits = hcalDigis.getNumDigis();
 
   // get sample of interest index
@@ -324,11 +324,11 @@ void HcalRecProducer::produce(framework::Event& event) {
     double num_mips_equivalent = voltage / voltage_per_mip_;
     double energy_deposited = num_mips_equivalent * mip_energy_;
 
-    // reconstructed energy in the layer (approximate)
+    // reconstructed energy in the layer_ (approximate)
     // TODO: need to incorporate corrections if necessary
     /**
      * Simple calculation of sampling fraction:
-     * Thickness per layer: scintillator (0.2cm) + steel (0.25cm)
+     * Thickness per layer_: scintillator (0.2cm) + steel (0.25cm)
      * Radiation length and nuclear interaction length:
      *  scintillator: X0 = 41.31cm, Lambda = 77.07cm
      *https://pdg.lbl.gov/2017/AtomicNuclearProperties/HTML/polystyrene.html
@@ -365,11 +365,11 @@ void HcalRecProducer::produce(framework::Event& event) {
     hcalRecHits.push_back(recHit);
   }
 
-  if (event.exists(simHitCollName_, simHitPassName_)) {
-    // hcal sim hits exist ==> label which hits are real and which are pure
+  if (event.exists(sim_hit_coll_name_, sim_hit_pass_name_)) {
+    // hcal sim hits_ exist ==> label which hits_ are real and which are pure
     // noise
     auto hcalSimHits{event.getCollection<ldmx::SimCalorimeterHit>(
-        simHitCollName_, simHitPassName_)};
+        sim_hit_coll_name_, sim_hit_pass_name_)};
     std::set<int> real_hits;
     for (auto const& sim_hit : hcalSimHits) real_hits.insert(sim_hit.getID());
     for (auto& hit : hcalRecHits)
@@ -377,7 +377,7 @@ void HcalRecProducer::produce(framework::Event& event) {
   }
 
   // add collection to event bus
-  event.add(recHitCollName_, hcalRecHits);
+  event.add(rec_hit_coll_name_, hcalRecHits);
 }
 
 }  // namespace hcal

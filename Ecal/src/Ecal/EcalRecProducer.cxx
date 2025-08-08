@@ -20,14 +20,14 @@ EcalRecProducer::EcalRecProducer(const std::string& name,
 
 void EcalRecProducer::configure(framework::config::Parameters& ps) {
   // collection names
-  digiCollName_ = ps.getParameter<std::string>("digiCollName");
-  digiPassName_ = ps.getParameter<std::string>("digiPassName");
-  simHitCollName_ = ps.getParameter<std::string>("simHitCollName");
-  simHitPassName_ = ps.getParameter<std::string>("simHitPassName");
-  recHitCollName_ = ps.getParameter<std::string>("recHitCollName");
+  digi_coll_name_ = ps.getParameter<std::string>("digiCollName");
+  digi_pass_name_ = ps.getParameter<std::string>("digiPassName");
+  sim_hit_coll_name_ = ps.getParameter<std::string>("simHitCollName");
+  sim_hit_pass_name_ = ps.getParameter<std::string>("simHitPassName");
+  rec_hit_coll_name_ = ps.getParameter<std::string>("recHitCollName");
 
-  layerWeights_ = ps.getParameter<std::vector<double>>("layerWeights");
-  secondOrderEnergyCorrection_ =
+  layer_weights_ = ps.getParameter<std::vector<double>>("layerWeights");
+  second_order_energy_correction_ =
       ps.getParameter<double>("secondOrderEnergyCorrection");
 
   mip_si_energy_ = ps.getParameter<double>("mip_si_energy");
@@ -45,29 +45,29 @@ void EcalRecProducer::produce(framework::Event& event) {
       getCondition<conditions::DoubleTableCondition>(
           EcalReconConditions::CONDITIONS_NAME));
 
-  std::vector<ldmx::EcalHit> ecalRecHits;
-  auto ecalDigis =
-      event.getObject<ldmx::HgcrocDigiCollection>(digiCollName_, digiPassName_);
+  std::vector<ldmx::EcalHit> ecal_rec_hits;
+  auto ecal_digis = event.getObject<ldmx::HgcrocDigiCollection>(
+      digi_coll_name_, digi_pass_name_);
   // loop through digis
-  for (auto digi : ecalDigis) {
+  for (auto digi : ecal_digis) {
     // ID from first digi sample
     //  assuming rest of samples have same ID
     ldmx::EcalID id(digi.id());
 
     // ID to real space position
-    auto [x, y, z] = geometry.getPosition(id);
+    auto [x_, y_, z_] = geometry.getPosition(id);
 
     // TOA is the time of arrival with respect to the 25ns clock window
     //  TODO what to do if hit NOT in first clock cycle?
-    double timeRelClock25 = digi.soi().toa() * (clock_cycle_ / 1024);  // ns
-    double hitTime = timeRelClock25;
+    double time_rel_clock25 = digi.soi().toa() * (clock_cycle_ / 1024);  // ns
+    double hit_time = time_rel_clock25;
 
     // get the estimated charge deposited from digi samples
     double charge(0.);
 
     ldmx_log(trace) << "Recon { "
                     // << "ID: " << id.raw() << ", "
-                    << "TOA: " << hitTime << " ns } ";
+                    << "TOA: " << hit_time << " ns } ";
     if (digi.isTOT()) {
       // TOT - number of clock ticks that pulse was over threshold
       //  this is related to the amplitude of the pulse approximately through a
@@ -119,46 +119,46 @@ void EcalRecProducer::produce(framework::Event& event) {
     if (charge < 0) continue;
 
     double num_mips_equivalent = charge / charge_per_mip_;
-    double energy_deposited_in_Si = num_mips_equivalent * mip_si_energy_;
+    double energy_deposited_in_si = num_mips_equivalent * mip_si_energy_;
 
     ldmx_log(trace) << " -> " << num_mips_equivalent << " equiv MIPs -> "
-                    << energy_deposited_in_Si << " MeV";
+                    << energy_deposited_in_si << " MeV";
 
-    // incorporate layer weights
+    // incorporate layer_ weights
     double reconstructed_energy =
         (num_mips_equivalent *
-             layerWeights_.at(
+             layer_weights_.at(
                  id.layer())       // energy lost in non-sensitive layers
-         + energy_deposited_in_Si  // energy deposited in Si itself
+         + energy_deposited_in_si  // energy deposited in Si itself
          ) *
-        secondOrderEnergyCorrection_;
+        second_order_energy_correction_;
 
     // copy over information to rec hit structure in new collection
-    ldmx::EcalHit recHit;
-    recHit.setID(id.raw());
-    recHit.setXPos(x);
-    recHit.setYPos(y);
-    recHit.setZPos(z);
-    recHit.setAmplitude(energy_deposited_in_Si);
-    recHit.setEnergy(reconstructed_energy);
-    recHit.setTime(hitTime);
+    ldmx::EcalHit rec_hit;
+    rec_hit.setID(id.raw());
+    rec_hit.setXPos(x_);
+    rec_hit.setYPos(y_);
+    rec_hit.setZPos(z_);
+    rec_hit.setAmplitude(energy_deposited_in_si);
+    rec_hit.setEnergy(reconstructed_energy);
+    rec_hit.setTime(hit_time);
 
-    ecalRecHits.push_back(recHit);
+    ecal_rec_hits.push_back(rec_hit);
   }
 
-  if (event.exists(simHitCollName_, simHitPassName_)) {
-    // ecal sim hits exist ==> label which hits are real and which are pure
+  if (event.exists(sim_hit_coll_name_, sim_hit_pass_name_)) {
+    // ecal sim hits_ exist ==> label which hits_ are real and which are pure
     // noise
-    auto ecalSimHits{event.getCollection<ldmx::SimCalorimeterHit>(
-        simHitCollName_, simHitPassName_)};
+    auto ecal_sim_hits{event.getCollection<ldmx::SimCalorimeterHit>(
+        sim_hit_coll_name_, sim_hit_pass_name_)};
     std::set<int> real_hits;
-    for (auto const& sim_hit : ecalSimHits) real_hits.insert(sim_hit.getID());
-    for (auto& hit : ecalRecHits)
+    for (auto const& sim_hit : ecal_sim_hits) real_hits.insert(sim_hit.getID());
+    for (auto& hit : ecal_rec_hits)
       hit.setNoise(real_hits.find(hit.getID()) == real_hits.end());
   }
 
   // add collection to event bus
-  event.add(recHitCollName_, ecalRecHits);
+  event.add(rec_hit_coll_name_, ecal_rec_hits);
 }
 
 }  // namespace ecal

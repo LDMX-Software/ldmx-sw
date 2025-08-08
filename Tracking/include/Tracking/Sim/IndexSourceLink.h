@@ -17,7 +17,7 @@
 
 namespace ActsExamples {
 
-/// A source link that stores just an index.
+/// A source link that stores just an index_.
 ///
 /// This is intentionally kept as barebones as possible. The source link
 /// is just a reference and will be copied, moved around, etc. often.
@@ -28,7 +28,7 @@ namespace ActsExamples {
 /// easily changed without having to also change the source link.
 class IndexSourceLink final {
  public:
-  /// Construct from geometry identifier and index.
+  /// Construct from geometry identifier and index_.
   constexpr IndexSourceLink(Acts::GeometryIdentifier gid, Index idx)
       : m_geometryId(gid), m_index(idx) {}
 
@@ -40,7 +40,7 @@ class IndexSourceLink final {
   IndexSourceLink& operator=(const IndexSourceLink&) = default;
   IndexSourceLink& operator=(IndexSourceLink&&) = default;
 
-  /// Access the index.
+  /// Access the index_.
   constexpr Index index() const { return m_index; }
 
   Acts::GeometryIdentifier geometryId() const { return m_geometryId; }

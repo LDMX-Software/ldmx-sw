@@ -17,7 +17,7 @@ class TruthTrack {
   /**
    *
    * Use the vertex position of the SimParticle to extract
-   * (x, y, z, px, py, pz, q) and create a track seed.
+   * (x_, y_, z_, px, py, pz, q) and create a track seed.
    *
    * @param particle The SimParticle to make a seed from.
    */
@@ -27,7 +27,7 @@ class TruthTrack {
 
   /**
    * Use the scoring plane hit at the target to extract
-   * (x, y, z, px, py, pz) and create a track seed. In this case, the
+   * (x_, y_, z_, px, py, pz) and create a track seed. In this case, the
    * SimParticle is used to extract the charge of the particle.
    *
    * @param particle The SimParticle to extract the charge from.
@@ -39,7 +39,7 @@ class TruthTrack {
   /**
    * Create a truth track from the given position, momentum and charge.
    *
-   * @param pos The position at which the particle was created.
+   * @param pos_ The position at which the particle was created.
    * @param p The momentum of the particle at the point of creation.
    * @param charge The charge of the particle.
    */
@@ -48,12 +48,12 @@ class TruthTrack {
   //           const std::vector<double> &p_vec, int charge){};
 
   /*
-    Acts::Vector3 pos{pos_vec.data()};
+    Acts::Vector3 pos_{pos_vec.data()};
     Acts::Vector3 mom{p_vec.data()};
     double time{0.};
 
     // Rotate the position and momentum into the ACTS frame.
-    pos = tracking::sim::utils::Ldmx2Acts(pos);
+    pos_ = tracking::sim::utils::Ldmx2Acts(pos_);
     mom = tracking::sim::utils::Ldmx2Acts(mom);
 
     // Get the charge of the particle.
@@ -61,7 +61,7 @@ class TruthTrack {
     double q{charge * Acts::UnitConstants::e};
 
     // Transform the position, momentum and charge to free parameters.
-    auto free_params{tracking::sim::utils::toFreeParameters(pos, mom, q)};
+    auto free_params{tracking::sim::utils::toFreeParameters(pos_, mom, q)};
 
     // Create a line surface at the perigee.  The perigee position is extracted
     // from a particle's vertex or the particle's position at a specific
@@ -89,8 +89,8 @@ class TruthTrack {
   };
   */
 
-  void setTrackID(int trackid) { trackID_ = trackid; };
-  int getTrackID() const { return trackID_; };
+  void setTrackID(int trackid) { track_id_ = trackid; };
+  int getTrackID() const { return track_id_; };
 
   void setPdgID(int pdgID) { pdgID_ = pdgID; };
   int getPdgID() const { return pdgID_; };
@@ -111,10 +111,11 @@ class TruthTrack {
     perigee_ = perigee;
   }
 
-  void setPerigeeLocation(const double& x, const double& y, const double& z) {
-    perigee_[0] = x;
-    perigee_[1] = y;
-    perigee_[2] = z;
+  void setPerigeeLocation(const double& x_, const double& y_,
+                          const double& z_) {
+    perigee_[0] = x_;
+    perigee_[1] = y_;
+    perigee_[2] = z_;
   }
 
   void setMomentum(const double& px, const double& py, const double& pz) {
@@ -123,10 +124,10 @@ class TruthTrack {
     momentum_[2] = pz;
   }
 
-  void setPosition(const double& x, const double& y, const double& z) {
-    position_[0] = x;
-    position_[1] = y;
-    position_[2] = z;
+  void setPosition(const double& x_, const double& y_, const double& z_) {
+    position_[0] = x_;
+    position_[1] = y_;
+    position_[2] = z_;
   }
 
   std::vector<double> getPerigeeLocation() const { return perigee_; };
@@ -162,11 +163,11 @@ class TruthTrack {
   // The 3-position at the perigee
   std::vector<double> position_{0., 0., 0.};
 
-  // N hits
+  // N hits_
   int nHits_{0};
 
   // ID of the matched particle in the SimParticles map
-  int trackID_{-1};
+  int track_id_{-1};
 
   // pdgID
   int pdgID_{0};

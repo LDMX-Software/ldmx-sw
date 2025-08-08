@@ -17,7 +17,7 @@ std::ostream& operator<<(std::ostream& o, const FiducialFlag& c) {
   }
 }
 
-void FiducialFlag::Clear() {
+void FiducialFlag::clear() {
   fiducial_flag_ = 0;
   is_fiducial_ = false;
   has_ecal_hit_ = false;

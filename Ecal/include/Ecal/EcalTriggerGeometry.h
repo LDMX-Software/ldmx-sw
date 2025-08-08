@@ -60,15 +60,15 @@ class EcalTriggerGeometry : public framework::ConditionsObject {
    *
    * C++17's structured bindings is helpful here
    * ```cpp
-   * auto [x,y,z] = trig_geom.globalPosition(triggerCell);
-   * // x,y,z are the world coordinates of the center of the trigger cell
+   * auto [x_,y_,z_] = trig_geom.globalPosition(triggerCell);
+   * // x_,y_,z_ are the world coordinates of the center of the trigger cell
    * ```
    */
   std::tuple<double, double, double> globalPosition(
       ldmx::EcalTriggerID triggerCell) const;
 
   /**
-   * Returns the local (within module) center of the given trigger cell
+   * Returns the local (within module_) center of the given trigger cell
    *
    * depends on Ecal Geometry (ldmx::EcalGeometry)
    */
@@ -82,7 +82,7 @@ class EcalTriggerGeometry : public framework::ConditionsObject {
   */
   int symmetry_;
   /** Reference to the Ecal geometry used for trigger geometry information */
-  const ldmx::EcalGeometry* ecalGeometry_;
+  const ldmx::EcalGeometry* ecal_geometry_;
   /** Map of precision cells to trigger cells, under symmetry assumptions
    */
   std::map<ldmx::EcalID, ldmx::EcalTriggerID> precision2trigger_;

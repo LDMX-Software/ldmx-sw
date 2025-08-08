@@ -57,11 +57,11 @@ void CKFProcessor::onNewRun(const ldmx::RunHeader& rh) {
 
   // Custom transformation of the interpolated bfield map
   bool debugTransform = false;
-  auto transformPos = [this, debugTransform](const Acts::Vector3& pos) {
+  auto transformPos = [this, debugTransform](const Acts::Vector3& pos_) {
     Acts::Vector3 rot_pos;
-    rot_pos(0) = pos(1);
-    rot_pos(1) = pos(2);
-    rot_pos(2) = pos(0) + DIPOLE_OFFSET;
+    rot_pos(0) = pos_(1);
+    rot_pos(1) = pos_(2);
+    rot_pos(2) = pos_(0) + DIPOLE_OFFSET;
 
     // Systematic effect
     rot_pos(0) += this->map_offset_[0];
@@ -74,7 +74,7 @@ void CKFProcessor::onNewRun(const ldmx::RunHeader& rh) {
     if (debugTransform) {
       std::cout << "PF::DEFAULT3 TRANSFORM" << std::endl;
       std::cout << "PF::Check:: transforming Pos" << std::endl;
-      std::cout << pos << std::endl;
+      std::cout << pos_ << std::endl;
       std::cout << "TO" << std::endl;
       std::cout << rot_pos << std::endl;
     }
@@ -87,7 +87,7 @@ void CKFProcessor::onNewRun(const ldmx::RunHeader& rh) {
 
   auto transformBField = [rotation, scale, debugTransform](
                              const Acts::Vector3& field,
-                             const Acts::Vector3& /*pos*/) {
+                             const Acts::Vector3& /*pos_*/) {
     // Rotate the field in tracking coordinates
     Acts::Vector3 rot_field;
     rot_field(0) = field(2);
@@ -262,7 +262,7 @@ void CKFProcessor::produce(framework::Event& event) {
     Acts::BoundSquareMatrix covMat =
         tracking::sim::utils::unpackCov(seed.getPerigeeCov());
 
-    ldmx_log(debug) << "  For seed index = " << seed_track_index
+    ldmx_log(debug) << "  For seed index_ = " << seed_track_index
                     << ": Perigee X / Y / Z = " << seed.getPerigeeX() << " / "
                     << seed.getPerigeeY() << " / " << seed.getPerigeeZ()
                     << ", D0 = " << paramVec[0] << ", Z0 = " << paramVec[1]
@@ -279,7 +279,7 @@ void CKFProcessor::produce(framework::Event& event) {
 
     // This is a global variable for performance checks
     nseeds_++;
-    // This is just to index the seed we are looking at
+    // This is just to index_ the seed we are looking at
     seed_track_index++;
   }  // loop on seeds
 
@@ -504,7 +504,7 @@ void CKFProcessor::produce(framework::Event& event) {
       trk.setMomentum(track.momentum()[0], track.momentum()[1],
                       track.momentum()[2]);
 
-      // At least min_hits_ hits and p > 50 MeV
+      // At least min_hits hits and p > 50 MeV
       if ((trk.getNhits() <= min_hits_) || (abs(1. / trk.getQoP()) <= 0.05)) {
         ldmx_log(debug)
             << "  > Track candidate did NOT meet the requirements: Nhits = "
@@ -523,7 +523,7 @@ void CKFProcessor::produce(framework::Event& event) {
       int trk_state_index{0};
       for (const auto ts : track.trackStatesReversed()) {
         // Check TrackStates Quality
-        ldmx_log(debug) << "    Checking Track State index = "
+        ldmx_log(debug) << "    Checking Track State index_ = "
                         << trk_state_index << " at location "
                         << ts.referenceSurface()
                                .transform(geometry_context())
@@ -548,7 +548,7 @@ void CKFProcessor::produce(framework::Event& event) {
 
           ldmx::Measurement ldmx_meas = measurements.at(sl.index());
           ldmx_log(debug) << "    Adding measurement to ldmx::track with "
-                             "source link index = "
+                             "source link index_ = "
                           << sl.index();
           ldmx_log(trace) << "    Measurement:\n" << ldmx_meas;
           trk.addMeasurementIndex(sl.index());
@@ -562,8 +562,8 @@ void CKFProcessor::produce(framework::Event& event) {
       // Extrapolations
       // To ECAL
       const double ECAL_SCORING_PLANE = 240.5;
-      Acts::Vector3 pos(ECAL_SCORING_PLANE, 0., 0.);
-      Acts::Translation3 surf_translation(pos);
+      Acts::Vector3 pos_(ECAL_SCORING_PLANE, 0., 0.);
+      Acts::Translation3 surf_translation(pos_);
       Acts::Transform3 surf_transform(surf_translation * surf_rotation);
       const std::shared_ptr<Acts::PlaneSurface> ecal_surface =
           Acts::Surface::makeShared<Acts::PlaneSurface>(surf_transform);
@@ -776,7 +776,7 @@ auto CKFProcessor::makeGeoIdSourceLinkMap(
       geoId_sl_map.insert(std::make_pair(hit_surface->geometryId(), idx_sl));
 
     } else
-      ldmx_log(debug) << getName() << "::HIT " << i_meas << " at layer"
+      ldmx_log(debug) << getName() << "::HIT " << i_meas << " at layer_"
                       << (measurements.at(i_meas)).getLayerID()
                       << " is not associated to any surface?!";
   }
@@ -815,7 +815,7 @@ std::vector<std::vector<std::size_t>> CKFProcessor::computeSharedHits(
     for (auto imeas : track.getMeasurementsIdxs()) {
       auto meas = meas_coll.at(imeas);
       const Acts::Surface* hit_surface = tg.getSurface(meas.getLayerID());
-      // Store the index source link
+      // Store the index_ source link
       ActsExamples::IndexSourceLink idx_sl(hit_surface->geometryId(), imeas);
       Acts::SourceLink sourceLink = Acts::SourceLink(idx_sl);
 

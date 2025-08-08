@@ -143,7 +143,7 @@ void HcalRawDecoder::produce(framework::Event& event) {
         digis.addDigi(did_raw, digi);
       } else {
         /** DO NOTHING
-         *  skip hits where the EID aren't in the detector mapping
+         *  skip hits_ where the EID aren't in the detector mapping
          *  no zero supp during test beam on the front-end,
          *  so channels that aren't connected to anything are still
          *  being readout.

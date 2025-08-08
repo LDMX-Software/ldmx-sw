@@ -33,7 +33,7 @@ class TrackerVetoResult {
   /**
    * Reset the TrackerVetoResult object.
    */
-  void Clear();
+  void clear();
 
   /**
    * Print the TrackerVetoResult object.

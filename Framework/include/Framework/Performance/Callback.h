@@ -25,14 +25,14 @@ enum class Callback {
 /**
  * Convert the Callback enum into an index for lookup
  */
-constexpr std::size_t to_index(Callback c) {
+constexpr std::size_t toIndex(Callback c) {
   return static_cast<std::size_t>(c);
 }
 
 /**
  * Convert the Callback enum into a human-readable name
  */
-std::string to_name(Callback c);
+std::string toName(Callback c);
 
 }  // namespace framework::performance
 

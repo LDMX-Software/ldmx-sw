@@ -53,30 +53,30 @@ void HcalAlignPolarfires::produce(framework::Event& event) {
       aligned = true;
       pf0_queue.pop();
       pf1_queue.pop();
-      setStorageHint(framework::hint_shouldKeep);
+      setStorageHint(framework::hint_should_keep);
     } else if (pf0_queue.front().earlier_event(pf1_queue.front())) {
       // should add pf0 but signal event is unmerged
       merged = pf0_queue.front().digis;
       pf0_queue.pop();
-      setStorageHint(framework::hint_shouldDrop);
+      setStorageHint(framework::hint_should_drop);
     } else {
       // should add pf1 but signal event is unmerged
       merged = pf1_queue.front().digis;
       pf1_queue.pop();
-      setStorageHint(framework::hint_shouldDrop);
+      setStorageHint(framework::hint_should_drop);
     }
   } else if (pf0_queue.size() > 0) {
     // only pf0 has non-empty events left
     // should add pf0 but signal event is unmerged
     merged = pf0_queue.front().digis;
     pf0_queue.pop();
-    setStorageHint(framework::hint_shouldDrop);
+    setStorageHint(framework::hint_should_drop);
   } else if (pf1_queue.size() > 0) {
     // only pf1 has non-empty events left
     // should add pf1 but signal event is unmerged
     merged = pf1_queue.front().digis;
     pf1_queue.pop();
-    setStorageHint(framework::hint_shouldDrop);
+    setStorageHint(framework::hint_should_drop);
   } else {
     // no more events, both decoders are returning empty events
     abortEvent();

@@ -25,7 +25,7 @@ class EcalHit : public ldmx::CalorimeterHit {
   virtual ~EcalHit() {}
 
   /** Clear the data in the object. */
-  void Clear();
+  void clear();
 
   /** Print a text representation of this object. */
   friend std::ostream &operator<<(std::ostream &o, const EcalHit &d);

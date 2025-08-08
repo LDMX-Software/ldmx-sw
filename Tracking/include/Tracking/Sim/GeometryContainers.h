@@ -69,7 +69,7 @@ struct CompareGeometryId {
 
 }  // namespace detail
 
-/// Store elements that know their detector geometry id, e.g. simulation hits.
+/// Store elements that know their detector geometry id, e.g. simulation hits_.
 ///
 /// @tparam T type to be stored, must be compatible with `CompareGeometryId`
 ///
@@ -164,11 +164,11 @@ template <typename T>
 inline auto selectModule(const GeometryIdMultiset<T>& container,
                          Acts::GeometryIdentifier::Value volume,
                          Acts::GeometryIdentifier::Value layer,
-                         Acts::GeometryIdentifier::Value module) {
+                         Acts::GeometryIdentifier::Value module_) {
   return selectModule(
       container,
       Acts::GeometryIdentifier().setVolume(volume).setLayer(layer).setSensitive(
-          module));
+          module_));
 }
 
 /// Select all elements for the lowest non-zero identifier component.
@@ -178,9 +178,9 @@ inline auto selectModule(const GeometryIdMultiset<T>& container,
 /// applies to the lower components and not to intermediate zeros.
 ///
 /// Examples:
-/// - volume=2,layer=0,module=3 -> select all elements in the module
-/// - volume=1,layer=2,module=0 -> select all elements in the layer
-/// - volume=3,layer=0,module=0 -> select all elements in the volume
+/// - volume=2,layer=0,module_=3 -> select all elements in the module_
+/// - volume=1,layer=2,module_=0 -> select all elements in the layer
+/// - volume=3,layer=0,module_=0 -> select all elements in the volume
 ///
 /// @note An identifier with all components set to zero selects the whole input
 ///   container.
@@ -205,7 +205,8 @@ selectLowestNonZeroGeometryObject(const GeometryIdMultiset<T>& container,
   }
 }
 
-/// Iterate over groups of elements belonging to each module/ sensitive surface.
+/// Iterate over groups of elements belonging to each module_/ sensitive
+/// surface.
 template <typename T>
 inline GroupBy<typename GeometryIdMultiset<T>::const_iterator,
                detail::GeometryIdGetter>

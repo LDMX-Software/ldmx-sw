@@ -31,7 +31,7 @@ void EcalClusterProducer::configure(framework::config::Parameters& parameters) {
   algo_name_ = parameters.getParameter<std::string>("algo_name");
   cluster_coll_name_ =
       parameters.getParameter<std::string>("cluster_coll_name");
-  CLUE_ = parameters.getParameter<bool>("CLUE");
+  clue_ = parameters.getParameter<bool>("CLUE");
   nbr_of_layers_ = parameters.getParameter<int>("nbr_of_layers");
   reclustering_ = parameters.getParameter<bool>("reclustering");
 }
@@ -40,45 +40,45 @@ void EcalClusterProducer::produce(framework::Event& event) {
   const auto& ecal_hits{event.getCollection<ldmx::EcalHit>(rec_hit_coll_name_,
                                                            rec_hit_pass_name_)};
   if (ecal_hits.size() == 0) {
-    // don't do anything if there are no ECal hits
+    // don't do anything if there are no ECal hits_
     return;
   }
 
-  if (CLUE_) {
+  if (clue_) {
     CLUE cf;
     cf.cluster(ecal_hits, dc_, rhoc_, deltac_, deltao_, nbr_of_layers_,
                reclustering_);
-    std::vector<IntermediateCluster> wcVec = cf.getClusters();
-    std::vector<IntermediateCluster> fWcVec = cf.getFirstLayerCentroids();
+    std::vector<IntermediateCluster> wc_vec = cf.getClusters();
+    std::vector<IntermediateCluster> f_wc_vec = cf.getFirstLayerCentroids();
 
-    auto nLoops = cf.getNLoops();
-    histograms_.fill("nLoops", nLoops);
-    histograms_.fill("nClusters", wcVec.size());
+    auto n_loops = cf.getNLoops();
+    histograms_.fill("nLoops", n_loops);
+    histograms_.fill("nClusters", wc_vec.size());
     if (reclustering_)
-      histograms_.fill("recluster", cf.getInitialClusterNbr(), wcVec.size());
+      histograms_.fill("recluster", cf.getInitialClusterNbr(), wc_vec.size());
 
-    std::vector<ldmx::EcalCluster> ecalClusters;
-    for (int aWC = 0; aWC < wcVec.size(); aWC++) {
+    std::vector<ldmx::EcalCluster> ecal_clusters;
+    for (int a_wc = 0; a_wc < wc_vec.size(); a_wc++) {
       ldmx::EcalCluster cluster;
 
-      cluster.setEnergy(wcVec[aWC].centroid().E());
-      cluster.setCentroidXYZ(wcVec[aWC].centroid().Px(),
-                             wcVec[aWC].centroid().Py(),
-                             wcVec[aWC].centroid().Pz());
-      cluster.setFirstLayerCentroidXYZ(fWcVec[aWC].centroid().Px(),
-                                       fWcVec[aWC].centroid().Py(),
-                                       fWcVec[aWC].centroid().Pz());
-      cluster.setNHits(wcVec[aWC].getHits().size());
-      cluster.addHits(wcVec[aWC].getHits());
-      cluster.addFirstLayerHits(fWcVec[aWC].getHits());
+      cluster.setEnergy(wc_vec[a_wc].centroid().E());
+      cluster.setCentroidXYZ(wc_vec[a_wc].centroid().Px(),
+                             wc_vec[a_wc].centroid().Py(),
+                             wc_vec[a_wc].centroid().Pz());
+      cluster.setFirstLayerCentroidXYZ(f_wc_vec[a_wc].centroid().Px(),
+                                       f_wc_vec[a_wc].centroid().Py(),
+                                       f_wc_vec[a_wc].centroid().Pz());
+      cluster.setNHits(wc_vec[a_wc].getHits().size());
+      cluster.addHits(wc_vec[a_wc].getHits());
+      cluster.addFirstLayerHits(f_wc_vec[a_wc].getHits());
 
       float cl_x(0), cl_y(0), cl_z(0), cl_xx(0), cl_yy(0), cl_zz(0);
       float cl_w = 1;  // weight
       float sumw = 0;
 
-      for (auto hit : wcVec[aWC].getHits()) {
-        if (hit->getEnergy() < minHitEnergy_) continue;
-        cl_w = log(hit->getEnergy()) - log(minHitEnergy_);
+      for (auto hit : wc_vec[a_wc].getHits()) {
+        if (hit->getEnergy() < min_hit_energy_) continue;
+        cl_w = log(hit->getEnergy()) - log(min_hit_energy_);
         cl_x += cl_w * hit->getXPos();
         cl_y += cl_w * hit->getYPos();
         cl_z += cl_w * hit->getZPos();
@@ -86,27 +86,27 @@ void EcalClusterProducer::produce(framework::Event& event) {
         cl_yy += cl_w * hit->getYPos() * hit->getYPos();
         cl_zz += cl_w * hit->getZPos() * hit->getZPos();
         sumw += cl_w;
-      }  // over hits
+      }  // over hits_
       // could probably get this as cluster.getCentroidX() instead
-      cl_x /= sumw;  // now is <x>
+      cl_x /= sumw;  // now is <x_>
       cl_y /= sumw;
       cl_z /= sumw;
-      cl_xx /= sumw;  // now is <x^2>
+      cl_xx /= sumw;  // now is <x_^2>
       cl_yy /= sumw;
       cl_zz /= sumw;
-      cl_xx = sqrt(cl_xx - cl_x * cl_x);  // now is sqrt(<x^2>-<x>^2)
+      cl_xx = sqrt(cl_xx - cl_x * cl_x);  // now is sqrt(<x_^2>-<x_>^2)
       cl_yy = sqrt(cl_yy - cl_y * cl_y);
       cl_zz = sqrt(cl_zz - cl_z * cl_z);
 
       cluster.setRMSXYZ(cl_xx, cl_yy, cl_zz);
 
-      histograms_.fill("nHits", wcVec[aWC].getHits().size());
-      histograms_.fill("cluster_energy", wcVec[aWC].centroid().E());
+      histograms_.fill("nHits", wc_vec[a_wc].getHits().size());
+      histograms_.fill("cluster_energy", wc_vec[a_wc].centroid().E());
 
-      ecalClusters.push_back(cluster);
+      ecal_clusters.push_back(cluster);
     }
 
-    event.add(cluster_coll_name_, ecalClusters);
+    event.add(cluster_coll_name_, ecal_clusters);
   } else {
     TemplatedClusterFinder<MyClusterWeight> cf;
 
@@ -119,45 +119,45 @@ void EcalClusterProducer::produce(framework::Event& event) {
     }
 
     cf.cluster(seed_threshold_, cutoff_);
-    std::vector<IntermediateCluster> wcVec = cf.getClusters();
+    std::vector<IntermediateCluster> wc_vec = cf.getClusters();
 
-    auto nLoops = cf.getNLoops();
-    histograms_.fill("nLoops", nLoops);
-    histograms_.fill("nClusters", wcVec.size());
+    auto n_loops = cf.getNLoops();
+    histograms_.fill("nLoops", n_loops);
+    histograms_.fill("nClusters", wc_vec.size());
 
-    std::map<int, double> cWeights = cf.getWeights();
+    std::map<int, double> c_weights = cf.getWeights();
 
-    ldmx::ClusterAlgoResult algoResult;
-    algoResult.set(algo_name_, 3, cWeights.rbegin()->first);
-    algoResult.setAlgoVar(0, cutoff_);
-    algoResult.setAlgoVar(1, seed_threshold_);
-    algoResult.setAlgoVar(2, cf.getNSeeds());
+    ldmx::ClusterAlgoResult algo_result;
+    algo_result.set(algo_name_, 3, c_weights.rbegin()->first);
+    algo_result.setAlgoVar(0, cutoff_);
+    algo_result.setAlgoVar(1, seed_threshold_);
+    algo_result.setAlgoVar(2, cf.getNSeeds());
 
-    std::map<int, double>::iterator it = cWeights.begin();
-    for (it = cWeights.begin(); it != cWeights.end(); it++) {
-      algoResult.setWeight(it->first, it->second / 100);
+    std::map<int, double>::iterator it = c_weights.begin();
+    for (it = c_weights.begin(); it != c_weights.end(); it++) {
+      algo_result.setWeight(it->first, it->second / 100);
       histograms_.fill("seed_weights", it->first, it->second);
     }
 
-    std::vector<ldmx::EcalCluster> ecalClusters;
-    for (int aWC = 0; aWC < wcVec.size(); aWC++) {
+    std::vector<ldmx::EcalCluster> ecal_clusters;
+    for (int a_wc = 0; a_wc < wc_vec.size(); a_wc++) {
       ldmx::EcalCluster cluster;
 
-      cluster.setEnergy(wcVec[aWC].centroid().E());
-      cluster.setCentroidXYZ(wcVec[aWC].centroid().Px(),
-                             wcVec[aWC].centroid().Py(),
-                             wcVec[aWC].centroid().Pz());
-      cluster.setNHits(wcVec[aWC].getHits().size());
-      cluster.addHits(wcVec[aWC].getHits());
+      cluster.setEnergy(wc_vec[a_wc].centroid().E());
+      cluster.setCentroidXYZ(wc_vec[a_wc].centroid().Px(),
+                             wc_vec[a_wc].centroid().Py(),
+                             wc_vec[a_wc].centroid().Pz());
+      cluster.setNHits(wc_vec[a_wc].getHits().size());
+      cluster.addHits(wc_vec[a_wc].getHits());
 
-      histograms_.fill("nHits", wcVec[aWC].getHits().size());
-      histograms_.fill("cluster_energy", wcVec[aWC].centroid().E());
+      histograms_.fill("nHits", wc_vec[a_wc].getHits().size());
+      histograms_.fill("cluster_energy", wc_vec[a_wc].centroid().E());
 
-      ecalClusters.push_back(cluster);
+      ecal_clusters.push_back(cluster);
     }
 
-    event.add(cluster_coll_name_, ecalClusters);
-    event.add(algo_coll_name_, algoResult);
+    event.add(cluster_coll_name_, ecal_clusters);
+    event.add(algo_coll_name_, algo_result);
   }
 }
 }  // namespace ecal

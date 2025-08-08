@@ -82,7 +82,7 @@ bool PropagatorStepWriter::WriteSteps(
   // we get the event number
   m_eventNr = event.getEventNumber();
 
-  // fill the hits
+  // fill the hits_
   m_hit_x.clear();
   m_hit_y.clear();
   m_hit_z.clear();

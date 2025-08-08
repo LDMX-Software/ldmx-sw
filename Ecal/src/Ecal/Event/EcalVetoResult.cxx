@@ -4,9 +4,9 @@
 ClassImp(ldmx::EcalVetoResult);
 
 namespace ldmx {
-EcalVetoResult::~EcalVetoResult() { Clear(); }
+EcalVetoResult::~EcalVetoResult() { clear(); }
 
-void EcalVetoResult::Clear() {
+void EcalVetoResult::clear() {
   passes_veto_ = false;
 
   n_readout_hits_ = 0;

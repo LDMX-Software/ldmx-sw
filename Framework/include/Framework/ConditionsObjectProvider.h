@@ -111,7 +111,7 @@ class ConditionsObjectProvider {
   /**
    * Get the list of conditions objects available from this provider.
    */
-  const std::string& getConditionObjectName() const { return objectName_; }
+  const std::string& getConditionObjectName() const { return object_name_; }
 
   /**
    * Access the tag name
@@ -124,7 +124,7 @@ class ConditionsObjectProvider {
       const std::string& name, const ldmx::EventHeader& context);
 
   /// The logger for this ConditionsObjectProvider
-  logging::logger theLog_;
+  logging::logger the_log_;
 
   /** Get the process handle */
   const Process& process() const { return process_; }
@@ -134,7 +134,7 @@ class ConditionsObjectProvider {
   Process& process_;
 
   /** The name of the object provided by this provider. */
-  std::string objectName_;
+  std::string object_name_;
 
   /** The tag name for the ConditionsObjectProvider. */
   std::string tagname_;

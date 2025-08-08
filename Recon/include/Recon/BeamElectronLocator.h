@@ -69,7 +69,7 @@ class BeamElectronLocator : public framework::Producer {
   /**
    * The pass name of the input collection used for counting electrons
    */
-  std::string inputPassName_;
+  std::string input_pass_name_;
 
   /**
    * The name of the output collection used to save some electron counting

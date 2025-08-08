@@ -296,8 +296,8 @@ void GenieGenerator::GeneratePrimaryVertex(G4Event* event) {
   auto z_pos = position_[2] +
                (G4Random::getTheGenerator()->flat() - 0.5) * target_thickness_;
 
-  ldmx_log(debug) << "Generating interaction at (x,y,z)=" << "(" << x_pos << ","
-                  << y_pos << "," << z_pos << ")";
+  ldmx_log(debug) << "Generating interaction at (x_,y_,z_)=" << "(" << x_pos
+                  << "," << y_pos << "," << z_pos << ")";
 
   genie::InitialState initial_state(targets_.at(nucl_target_i), 11);
   evg_driver_.Configure(initial_state);

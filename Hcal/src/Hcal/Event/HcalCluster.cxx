@@ -3,10 +3,10 @@
 ClassImp(ldmx::HcalCluster);
 
 namespace ldmx {
-HcalCluster::~HcalCluster() { Clear(); }
+HcalCluster::~HcalCluster() { clear(); }
 
-void HcalCluster::Clear() {
-  ldmx::CaloCluster::Clear();
+void HcalCluster::clear() {
+  ldmx::CaloCluster::clear();
   time_ = 0;
 }
 

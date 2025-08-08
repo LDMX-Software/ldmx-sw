@@ -28,9 +28,10 @@ class VisiblesVetoResult {
                     double iso_energy, int n_readout_hits, double summed_det,
                     double r_mean_from_photon_track);
 
-  void Clear();
+  friend std::ostream& operator<<(std::ostream& s,
+                                  const ldmx::VisiblesVetoResult& p);
 
-  void Print() const;
+  void clear();
 
   bool passesVeto() const { return passes_veto_; }
 
