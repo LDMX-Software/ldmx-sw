@@ -69,13 +69,16 @@ configure-base *CONFIG: prep-version
     denv cmake -B build -S . {{ CONFIG }}
 
 # default configure of build when developing
-configure *CONFIG: (configure-base "-DADDITIONAL_WARNINGS=ON -DENABLE_CLANG_TIDY=ON" CONFIG)
+configure *CONFIG: (configure-base "-DADDITIONAL_WARNINGS=ON" CONFIG)
 
 # configure minimal option for faster compilation
 configure-quick: configure-base
 
 # configure with Address Sanitizer (ASAN) and  UndefinedBehaviorSanitizer (UBSan)
 configure-asan-ubsan: (configure-base "-DENABLE_SANITIZER_UNDEFINED_BEHAVIOR=ON -DENABLE_SANITIZER_ADDRESS=ON")
+
+# configure with clang-tidy ON
+configure-clang-tidy:  (configure-base "-DENABLE_CLANG_TIDY=ON")
 
 # This is the same as just configure but reports all (non-3rd-party) warnings as errors
 configure-force-error: (configure "-DWARNINGS_AS_ERRORS=ON")
