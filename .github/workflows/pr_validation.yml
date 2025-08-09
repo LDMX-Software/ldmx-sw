@@ -104,6 +104,10 @@ jobs:
         submodules: 'recursive'
         fetch-depth: 0
         ref: ${{ env.HEAD_REF }}
+          
+    - uses: extractions/setup-just@v3
+
+    - run: just install-denv init
 
     - name: Download ldmx-sw Package
       uses: actions/download-artifact@v4

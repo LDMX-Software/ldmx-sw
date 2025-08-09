@@ -64,7 +64,7 @@ When validating, this action is roughly equivalent to the following procedure.
 (Look at the `.github/actions/validate` directory for the details.)
 
 - Download the latest `ci-data`: `git clone https://github.com/LDMX-Software/ci-data.git`
-- Set-up ldmx to use `dev latest`: `just pull dev latest`
+- Set-up ldmx to use `dev latest`: `just pull ldmx/dev:latest`
 - Compile and Install ldmx-sw: `just compile`
 - Go to the sample of your choosing: `cd .github/validation_samples/<sample>/`
 - Run the configuration: `just setenv LDMX_RUN_NUMBER=1; just setenv LDMX_NUM_EVENTS=10000; just fire config.py`
