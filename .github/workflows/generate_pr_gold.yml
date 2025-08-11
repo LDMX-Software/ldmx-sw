@@ -16,7 +16,7 @@ jobs:
       job_matrix: ${{steps.gen-mat.outputs.job_matrix}}
     steps:
     - name: Checkout ldmx-sw
-      uses: actions/checkout@v4
+      uses: actions/checkout@v5
       with:
         submodules: 'recursive'
         fetch-depth: 0
@@ -53,7 +53,7 @@ jobs:
     strategy:
       matrix: ${{fromJson(needs.compile-ldmx-sw.outputs.job_matrix)}}
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v5
     - uses: extractions/setup-just@v3
     - run: just install-denv init
     - name: Download ldmx-sw Package
@@ -90,7 +90,7 @@ jobs:
       uses: actions/download-artifact@v4
 
     - name: Checkout ci-data
-      uses: actions/checkout@v4
+      uses: actions/checkout@v5
       with:
         repository: LDMX-Software/ci-data
         path: ci-data
