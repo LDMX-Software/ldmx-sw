@@ -32,7 +32,7 @@ G4bool TrigScintSD::ProcessHits(G4Step* step, G4TouchableHistory* history) {
   // If a non-Geantino particle doesn't deposit energy during the step,
   // skip processing it.
   if (energy == 0 and not isGeantino(step)) {
-    ldmx_log(debug) << "No energy deposited in step, skipping.";
+    ldmx_log(trace) << "No energy deposited in step, skipping.";
     return false;
   }
 
