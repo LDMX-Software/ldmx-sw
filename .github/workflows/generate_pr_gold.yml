@@ -53,6 +53,9 @@ jobs:
     strategy:
       matrix: ${{fromJson(needs.compile-ldmx-sw.outputs.job_matrix)}}
     steps:
+    - uses: actions/checkout@v4
+    - uses: extractions/setup-just@v3
+    - run: just install-denv init
     - name: Download ldmx-sw Package
       uses: actions/download-artifact@v4
       with:
