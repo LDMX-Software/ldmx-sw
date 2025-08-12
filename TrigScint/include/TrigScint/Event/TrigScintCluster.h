@@ -178,7 +178,7 @@ class TrigScintCluster {
   /**
    * The ROOT class definition.
    */
-  ClassDef(TrigScintCluster, 2);
+  ClassDef(TrigScintCluster, 3);
 };
 }  // namespace ldmx
 

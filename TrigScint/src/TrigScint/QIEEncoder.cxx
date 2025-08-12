@@ -83,8 +83,8 @@ void QIEEncoder::produce(framework::Event &event) {
   ldmx_log(debug) << "Got input collection" << inputCollection_ << "_"
                   << inputPassName_;
 
-  bool is_ci_dunsync = false;  // mismatch between CID reported by channels within
-                             // the same time sample
+  bool is_ci_dunsync = false;  // mismatch between CID reported by channels
+                               // within the same time sample
   bool is_ci_dskipped = false;     // a gap in the CID increment
   bool is_cr_c0malformed = false;  // an issue with CRC from fiber0
   bool is_cr_c1malformed = false;  // an issue with CRC from fiber1

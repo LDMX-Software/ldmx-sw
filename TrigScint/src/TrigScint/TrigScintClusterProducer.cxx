@@ -322,9 +322,9 @@ void TrigScintClusterProducer::produce(framework::Event &event) {
           if (hitChannelMap_.find(itr_neighb->first + 1) !=
               hitChannelMap_.end()) {  // a hit with that key exists, so seed+1
                                        // and seed+2 exist
-            if (!has_backed) {  // there is no seed-1 in the cluster. room for at
-                               // least seed+1, and for seed+2 only if there is
-                               // no seed+3
+            if (!has_backed) {  // there is no seed-1 in the cluster. room for
+                                // at least seed+1, and for seed+2 only if there
+                                // is no seed+3
               // 3b
               digi = (ldmx::TrigScintHit)digis.at(itr_neighb->second);
               addHit(itr_neighb->first, digi);
@@ -361,7 +361,7 @@ void TrigScintClusterProducer::produce(framework::Event &event) {
           else {  // so: if not, then we need to add seed+1 here. (step 4)
             digi = (ldmx::TrigScintHit)digis.at(
                 itr_neighb->second);  // itrNeighb hasn't moved since there was
-                                     // no seed+2
+                                      // no seed+2
             addHit(itr_neighb->first, digi);
 
             if (verbose_ > 1) {

@@ -94,33 +94,34 @@ void QualityFlagAnalyzer::analyze(const framework::Event& event) {
       int fill_nb = nEvDrawn[nFlags - 1];
       for (int i_t = 0; i_t < q.size(); i_t++) {  // fill this plot with all q
         hOutFlag[nFlags - 1][fill_nb][bar]->SetBinContent(i_t + startSample_,
-                                                         q.at(i_t));
+                                                          q.at(i_t));
         hOutFlag[nFlags - 1][fill_nb][bar]->SetBinError(i_t + startSample_,
-                                                       fabs(q_err.at(i_t)));
+                                                        fabs(q_err.at(i_t)));
       }
       // keep track of actual event number
       hOutFlag[nFlags - 1][fill_nb][bar]->GetYaxis()->SetTitle(
           Form("Q, flag 0, chan %i, ev %i [fC]", bar, ev_nb));
       nEvDrawn[nFlags - 1]++;  // update filled event counter for this flag (0)
     }  // if nothing was flagged
-    else {                                       // hit was flagged somehow
+    else {                                          // hit was flagged somehow
       for (int i_f = 0; i_f < nFlags - 1; i_f++) {  // do all but the last
         int fill_nb = nEvDrawn[i_f];
         ldmx_log(debug) << "Checking flag " << flags[i_f];
         // we're starting from the high numbers and iteratively subtracting
         if (flag >= flags[i_f]) {
           ldmx_log(debug) << "Checking flag " << flags[i_f];
-          if (fill_nb < nEv) {  // then 1. this flag must be raised 2. draw if we
-                               // haven't collected enough
-            for (int i_t = 0; i_t < q.size(); i_t++) {  // fill this plot with all
-                                                     // q
+          if (fill_nb < nEv) {  // then 1. this flag must be raised 2. draw if
+                                // we haven't collected enough
+            for (int i_t = 0; i_t < q.size();
+                 i_t++) {  // fill this plot with all
+                           // q
               hOutFlag[i_f][fill_nb][bar]->SetBinContent(i_t + startSample_,
-                                                       q.at(i_t));
+                                                         q.at(i_t));
               hOutFlag[i_f][fill_nb][bar]->SetBinError(i_t + startSample_,
-                                                     fabs(q_err.at(i_t)));
+                                                       fabs(q_err.at(i_t)));
             }  // over time samples
-            hOutFlag[i_f][fill_nb][bar]->GetYaxis()->SetTitle(
-                Form("Q, flag %i, chan %i, ev %i [fC]", flags[i_f], bar, ev_nb));
+            hOutFlag[i_f][fill_nb][bar]->GetYaxis()->SetTitle(Form(
+                "Q, flag %i, chan %i, ev %i [fC]", flags[i_f], bar, ev_nb));
             nEvDrawn[i_f]++;  // update filled event counter for this flag
           }
           flag -= flags[i_f];  // subtract that flag from sum
@@ -170,8 +171,8 @@ void QualityFlagAnalyzer::onProcessStart() {
   ldmx_log(debug) << "Setting up histograms... ";
 
   for (int i_b = 0; i_b < nChannels; i_b++) {
-    hPE[i_b] = new TH1F(Form("hPE_chan%i", i_b), Form(";PE, chan%i", i_b), n_p_ebins,
-                       0, p_emax);
+    hPE[i_b] = new TH1F(Form("hPE_chan%i", i_b), Form(";PE, chan%i", i_b),
+                        n_p_ebins, 0, p_emax);
   }
 
   for (int i_e = 0; i_e < nEv; i_e++) {
@@ -187,7 +188,8 @@ void QualityFlagAnalyzer::onProcessStart() {
       for (int i_f = 0; i_f < nFlags; i_f++) {
         hOutFlag[i_f][i_e][i_b] = new TH1F(
             Form("hCharge_flag%i_chan%i_nb%i", flags[i_f], i_b, i_e),
-            Form(";time sample; Q, flag %i, chan %i, ev %i [fC]", i_f, i_b, i_e),
+            Form(";time sample; Q, flag %i, chan %i, ev %i [fC]", i_f, i_b,
+                 i_e),
             n_time_samp, -0.5,
             n_time_samp - 0.5);  // less confusing to name them upon actual use
         // hOutFlag[iF][iE][iB] = new TH1F("hCharge_flag",  "",

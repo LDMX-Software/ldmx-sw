@@ -125,11 +125,10 @@ class QIEStream {
   const static int CRC1_ERR_POS{1};
   const static int CID_UNSYNC_POS{2};
   const static int CID_SKIP_POS{3};
-  const static int CHECKSUM_POS{
-      CID_SKIP_POS +
-      FLAG_SIZE_BITS};  //+ERROR_LEN_BYTES}; //included it in the error word
-  const static int CHECKSUM_SIZE_BITS{
-      4};  //+ERROR_LEN_BYTES}; //included it in the error word
+  const static int CHECKSUM_POS{CID_SKIP_POS + FLAG_SIZE_BITS};
+  //+ERROR_LEN_BYTES}; //included it in the error word
+  const static int CHECKSUM_SIZE_BITS{4};
+  //+ERROR_LEN_BYTES}; //included it in the error word
   // the number of time samples making up a readout event
   const static int NUM_SAMPLES{5};
 

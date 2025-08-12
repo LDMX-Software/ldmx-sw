@@ -170,23 +170,23 @@ class TestBeamHit : public ldmx::TrigScintHit {
   }
 
  private:
-  float pedestal_{
-      -999.};  // assumed/average channel pedestal used in subtraction [fC]
-  float early_pedestal_{
-      -999.};  // early pedestal (average over first 5 time samples)   [fC]
+  float pedestal_{-999.};
+  // assumed/average channel pedestal used in subtraction [fC]
+  float early_pedestal_{-999.};
+  // early pedestal (average over first 5 time samples)   [fC]
   float pulse_q_{-999.};  // integrated, ped subtracted charge over pulse [fC]
   // float PE_{-1.};       // number of photoelectrons in the hit (override from
   // trigscinthit which seems unreliable)
-  int start_sample_{-1};   // start sample
-  int pulse_width_{-1};    // specified pulse width (in number of samples)
-  int samp_above_ped_{-1};  // actual number of consecutive samples above pedestal
-                          // after start sample
+  int start_sample_{-1};    // start sample
+  int pulse_width_{-1};     // specified pulse width (in number of samples)
+  int samp_above_ped_{-1};  // actual number of consecutive samples above
+                            // pedestal after start sample
   int samp_above_thr_{-1};  // actual number of consecutive samples above
-                          // threshold after start sample
+                            // threshold after start sample
   //  bool passHitQuality_{false};  //track if hit has been checked for and
   //  passed quality criteria
-  int pass_hit_quality_{
-      0};  // track if hit has been checked for and passed quality criteria
+  int pass_hit_quality_{0};
+  // track if hit has been checked for and passed quality criteria
 
   uint flag_{0};  // more elaborate quality flag (binary sum)
 
@@ -200,7 +200,7 @@ class TestBeamHit : public ldmx::TrigScintHit {
   property
   */
 
-  ClassDef(TestBeamHit, 4);
+  ClassDef(TestBeamHit, 5);
 
 };  // TestBeamHit
 

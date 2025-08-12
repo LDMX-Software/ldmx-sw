@@ -85,11 +85,11 @@ void hitproducer_hw(ap_uint<14> FIFO[NHITS][5], Hit outHit[NHITS],
 
   /// Charge lower limit of all the 16 subranges
   ap_uint<14> edges[17] = {0,     34,    158,    419,    517,   915,
-                            1910,  3990,  4780,   7960,   15900, 32600,
-                            38900, 64300, 128000, 261000, 350000};
+                           1910,  3990,  4780,   7960,   15900, 32600,
+                           38900, 64300, 128000, 261000, 350000};
   /// sensitivity of the subranges (Total charge/no. of bins)
   ap_uint<14> sense[16] = {3,   6,   12,  25,   25,   50,   99,   198,
-                            198, 397, 794, 1587, 1587, 3174, 6349, 12700};
+                           198, 397, 794, 1587, 1587, 3174, 6349, 12700};
 
   for (int i = 0; i < NHITS; i++) {
     outHit[i].bID = -1;

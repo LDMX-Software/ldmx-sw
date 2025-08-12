@@ -68,8 +68,6 @@ class TrigScintQIEDigis {
   void setTimeSinceSpill(const uint32_t timeSpill) {
     time_since_spill_counter_ = timeSpill;
   }
-  //  void setTimeSinceSpill(const int timeSpill) { timeSinceSpillCounter_ =
-  //  timeSpill; }
 
   /**
    * Store the event time since spill counter
@@ -123,7 +121,7 @@ class TrigScintQIEDigis {
   /// capacitor IDs
   std::vector<int> cids_;
 
-  ClassDef(TrigScintQIEDigis, 2);
+  ClassDef(TrigScintQIEDigis, 3);
 };
 }  // namespace trigscint
 #endif

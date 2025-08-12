@@ -116,9 +116,10 @@ void TestBeamClusterAnalyzer::onProcessStart() {
 
   for (int i_b = 0; i_b < nChannels; i_b++) {
     hPEinHits[i_b] = new TH1F(Form("hPE_chan%i", i_b), Form(";PE, chan%i", i_b),
-                             n_p_ebins, 0, p_emax);
-    hPEinClusters[i_b] = new TH1F(Form("hPEinClusters_chan%i", i_b),
-                                 Form(";PE, chan%i", i_b), n_p_ebins, 0, p_emax);
+                              n_p_ebins, 0, p_emax);
+    hPEinClusters[i_b] =
+        new TH1F(Form("hPEinClusters_chan%i", i_b), Form(";PE, chan%i", i_b),
+                 n_p_ebins, 0, p_emax);
   }
 
   hDeltaVsSeed =

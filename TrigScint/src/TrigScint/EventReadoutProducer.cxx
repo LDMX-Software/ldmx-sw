@@ -78,7 +78,7 @@ void EventReadoutProducer::produce(framework::Event &event) {
       if (i_s < nPedSamples_) early_ped += q;
       i_s++;
     }
-    out_event.setQ(charge);          // set in proper order before sorting
+    out_event.setQ(charge);           // set in proper order before sorting
     out_event.setQError(charge_err);  // set in proper order before sorting
     early_ped /= nPedSamples_;
     out_event.setEarlyPedestal(early_ped);
@@ -95,21 +95,22 @@ void EventReadoutProducer::produce(framework::Event &event) {
              // nearest edge is 10.35 fC  //ADC=0 corresponds to -16 fC.
     float ped = 0;
     int ped_length = (int)charge.size() /
-                    5;  // actually pulse can be up to 12 samples = 2/5*30
+                     5;  // actually pulse can be up to 12 samples = 2/5*30
     int ped_offset = 2;  // but still skip the lowest (and highest) few
-                        //	for (int i = pedLength; i < 3*pedLength ; i++) {
-                        ////use 2nd and third 5th
+                         //	for (int i = pedLength; i < 3*pedLength ; i++) {
+                         ////use 2nd and third 5th
     if (charge.size() > 8) {
       if (verbose_) ldmx_log(debug) << "going into oscillations check ";
       for (int i = 3; i < charge.size() - 4; i++) {
         float max_samp = min_charge;
-        for (int i_q = 0; i_q < 4; i_q++) {  // find the local max in the 4 samples
+        for (int i_q = 0; i_q < 4;
+             i_q++) {  // find the local max in the 4 samples
           //		ldmx_log(debug) << "got charge " << charge[i+iQ];
           if (charge[i + i_q] > max_samp) max_samp = charge[i + i_q];
         }
         if (verbose_) ldmx_log(debug) << "got max charge " << max_samp;
-        for (int i_q = 0; i_q < 4; i_q++)  // store the locally normalized numbers.
-                                        // even if the period is
+        for (int i_q = 0; i_q < 4; i_q++)  // store the locally normalized
+                                           // numbers. even if the period is
           // 5 this should work for a while
           charge_check.push_back(charge[i + i_q] / max_samp);
         i += 3;  // to increment by 4, do 3 here and 1 in the loop
@@ -130,9 +131,10 @@ void EventReadoutProducer::produce(framework::Event &event) {
     float min_q = charge[0];
     float max_q = charge[charge.size() - 1];
 
-    out_event.setTotQ(tot_pos_q);  //-nPos*ped); //store (event) ped subtracted
-                                // total charge, before dividing by N  -->
-                                // actually, ped subtraction makes it confusing
+    out_event.setTotQ(
+        tot_pos_q);  //-nPos*ped); //store (event) ped subtracted
+                     // total charge, before dividing by N  -->
+                     // actually, ped subtraction makes it confusing
     //	outEvent.setTotQ(totPosQ-adc.size()*ped); //store (event) ped subtracted
     // total charge, before dividing by N
     // outEvent.setTotQ(avgQ-adc.size()*ped);
@@ -186,8 +188,8 @@ void EventReadoutProducer::produce(framework::Event &event) {
             if (verbose_)
               ldmx_log(debug)
                   << "Comparing " << charge_check[i + i_q] << " (sample "
-                  << i + i_q << ") to " << charge_check[i + 4 + i_q] << " (sample "
-                  << i + 4 + i_q << "), ratio is "
+                  << i + i_q << ") to " << charge_check[i + 4 + i_q]
+                  << " (sample " << i + 4 + i_q << "), ratio is "
                   << charge_check[i + i_q] / charge_check[i + 4 + i_q];
             // we can be generous in these crietira since we will require an
             // unbroken suite of 8 matches to call it oscillation
@@ -205,7 +207,7 @@ void EventReadoutProducer::produce(framework::Event &event) {
                     << "Oscillation check for channel " << digi.getChanID()
                     << " breaking at time sample " << i + i_q;
               do_break = true;  // break outer loop
-              break;           // break this loop
+              break;            // break this loop
             }
           }
           if (do_break) {
@@ -238,25 +240,25 @@ void EventReadoutProducer::produce(framework::Event &event) {
        all end up in 0.90-0.94, and somewhere >0.05 (at least >0.15)
     */
     uint flag_spike = (max_q / out_event.getTotQ() > 0.95) ||
-                     (charge[charge.size() - 2] / max_q <
-                      0.05);  // skip "unnaturally" narrow hits (all charge in
-                              // one sample or huge drop to second highest)
+                      (charge[charge.size() - 2] / max_q <
+                       0.05);  // skip "unnaturally" narrow hits (all charge in
+                               // one sample or huge drop to second highest)
     uint flag_plateau =
-        (ped > 15 || n_high >= 5);  //( fabs(ped) > 15 ); //threshold //   //skip
-                                   // events that have strange plateaus
+        (ped > 15 || n_high >= 5);  //( fabs(ped) > 15 ); //threshold // //skip
+                                    // events that have strange plateaus
     uint flag_long_pulse =
         0;  // easier to deal with in hit reconstruction directly. copy channel
             // flags to hit flags and add this one there
     uint flag_noise =
         (out_event.getNoise() > 3.5 ||
          out_event.getNoise() == 0);  // =0 is typically from funky events but
-                                     // could be too harsh maybe
-                                     /* //let this wait for now
-                                     //if we have many high counts, a small event pedestal (where they weren't
-                                     included), and an avgQ ~ maxQ/nHigh, then this is an oscillation                                  if (
-                                     (quartLength-nHigh<2 && ped<10) || fabs( maxQ/(avgQ*nHigh)-1 ) <0.1 )
-                                       flagOscillation=1;
-                             */
+                                      // could be too harsh maybe
+                                      /* //let this wait for now
+                                      //if we have many high counts, a small event pedestal (where they weren't
+                                      included), and an avgQ ~ maxQ/nHigh, then this is an oscillation                                   if (
+                                      (quartLength-nHigh<2 && ped<10) || fabs( maxQ/(avgQ*nHigh)-1 ) <0.1 )
+                                        flagOscillation=1;
+                              */
 
     /* //this seems to not catch what we want it to
 if ( fabs(chan.getPedestal()) < 15 //threshold //   //skip events that have

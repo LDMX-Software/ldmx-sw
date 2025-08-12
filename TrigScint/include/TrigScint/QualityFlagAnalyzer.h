@@ -56,7 +56,8 @@ class QualityFlagAnalyzer : public framework::Analyzer {
   // make sure to match constants above
   const int FLAGS[6] = {16, 8, 4,
                         2,  1, 0};  // this order just makes looping easier
-  int n_ev_drawn_[6] = {0};  // keep a counter for each flag type to get good stats
+  int n_ev_drawn_[6] = {
+      0};  // keep a counter for each flag type to get good stats
   TH1F* h_out_[200][16];
   TH1F* h_out_pe_[200][16];
   TH1F* h_out_flag_[6][200][16];  // for 4 quality flags and 0 (no flag)

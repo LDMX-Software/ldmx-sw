@@ -422,7 +422,7 @@ break;
       matchXYTracks(cleaned_tracks);
       std::vector<ldmx::TrigScintTrack> matched_tracks =
           cleaned_tracks;  // don't know why this copying needs to happen but it
-                          // does
+                           // does
       //	std::vector<ldmx::TrigScintTrack>  matchXYTracks( cleanedTracks
       //); 		std::vector<ldmx::TrigScintTrack> matchedTracks =
       // matchXYTracks( cleanedTracks );
@@ -577,13 +577,15 @@ void TrigScintTrackProducer::matchXYTracks(
       // so 2*nBarsY_/4 channels per quadrant
       y_quad_map.insert(std::make_pair((int)(trk.getCentroidY() / 8), trk));
       y_track_map[trk] = trk_idx;
-      y_idx_quad_map.insert(std::make_pair((int)(trk.getCentroidY() / 8), trk_idx));
+      y_idx_quad_map.insert(
+          std::make_pair((int)(trk.getCentroidY() / 8), trk_idx));
 
     } else {  // 3. get the remaining tracks (from vertical bars) and map them
               // (back) to (middle of) quadrants
       x_quad_map.insert(std::make_pair((int)(trk.getCentroidY() / 8), trk));
       x_track_map[trk] = trk_idx;
-      x_idx_quad_map.insert(std::make_pair((int)(trk.getCentroidY() / 8), trk_idx));
+      x_idx_quad_map.insert(
+          std::make_pair((int)(trk.getCentroidY() / 8), trk_idx));
       if (verbose_)
         ldmx_log(debug) << " --  In matchXYTracks found x track at (x,y) = ("
                         << trk.getCentroidX() << ", " << trk.getCentroidY()
@@ -644,7 +646,7 @@ void TrigScintTrackProducer::matchXYTracks(
                         << ", getting (x, sx)=(" << x << ", " << sx << ")";
     }  // 1 x track in quadrant
     else if (n_xin_quad == 2) {  // finally if we have two tracks, get x1 and x2
-                               // and decide later how to use them
+                                 // and decide later how to use them
       // don't think we want to experiment with discerning three overlapping
       // tracks, so not >= 2
       //		  continue; //debugging: skip for now -- didn't help
@@ -669,7 +671,7 @@ void TrigScintTrackProducer::matchXYTracks(
     // ok! over y:
     // can skip 0 y case by construction
     if (n_yin_quad == 1) {  // we can already now tell what the y coordinate and
-                          // its precision is
+                            // its precision is
       y = ((*yitr).second).getCentroidY() * yConvFactor_ + yStart_;
       sy = ((*yitr).second).getResidual() * yConvFactor_;
       if (sy == 0)
@@ -696,8 +698,8 @@ void TrigScintTrackProducer::matchXYTracks(
 
     if (verbose_)
       ldmx_log(debug) << "\t\t in quad " << (*yitr).first
-                      << ", not single x,y tracks: " << n_xin_quad << " of x and "
-                      << n_yin_quad << " of y";
+                      << ", not single x,y tracks: " << n_xin_quad
+                      << " of x and " << n_yin_quad << " of y";
 
     if (n_yin_quad == 2) {  // let's start here and see if we can do >= 2 later
       // here one could do sth to avoid checking the other y track again in the
@@ -718,7 +720,7 @@ void TrigScintTrackProducer::matchXYTracks(
 
     if (n_yin_quad == 1 &&
         n_xin_quad == 2) {  // don't think we want to experiment with discerning
-                          // three overlapping tracks, so not >= 2
+                            // three overlapping tracks, so not >= 2
 
       // first: set the y track coordinates to x  = the mid of x tracks, y = y
       // of y track

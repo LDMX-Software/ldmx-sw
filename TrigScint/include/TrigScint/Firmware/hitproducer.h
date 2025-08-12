@@ -10,6 +10,6 @@ void hitproducer_ref(ap_uint<14> FIFO[NHITS][5], Hit outHit[NHITS],
                      ap_uint<8> Peds[NHITS]);
 #endif
 void hitproducerHw(ap_uint<14> FIFO[NHITS][5], Hit outHit[NHITS],
-                    ap_uint<8> Peds[NHITS]);
+                   ap_uint<8> Peds[NHITS]);
 
 #endif

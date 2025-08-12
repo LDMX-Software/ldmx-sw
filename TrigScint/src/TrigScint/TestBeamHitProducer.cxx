@@ -111,7 +111,7 @@ void TestBeamHitProducer::produce(framework::Event& event) {
     float early_ped = chan.getEarlyPedestal();
     hit.setPedestal(ped);
     hit.setEarlyPedestal(early_ped);
-    int is_clean = 0;              // false;
+    int is_clean = 0;             // false;
     float threshold = fabs(ped);  // 2*fabs(peds_[ bar ]); // or sth
     if (doCleanHits_) threshold = 7 * fabs(ped);  // stricter cut
 
@@ -127,9 +127,9 @@ void TestBeamHitProducer::produce(framework::Event& event) {
                       << ", got charge[" << i_t << "] = " << q.at(i_t);
       // for the defined number of samples, subtract pedestal. if > 0, increment
       // sample counter.
-      float sub_q =
-          q.at(i_t) - ped;  // this might be addition, if ped is negative. should
-                           // see this as channel dependence in nSampAbove
+      float sub_q = q.at(i_t) -
+                    ped;  // this might be addition, if ped is negative. should
+                          // see this as channel dependence in nSampAbove
       // once beyond nSamples, want to see how long positive threshold
       // subtracted tail is --> increment sample counter in any case.
       if (sub_q > 0) n_samp_above_ped++;
@@ -142,8 +142,8 @@ void TestBeamHitProducer::produce(framework::Event& event) {
               sub_q;  // add positive subtracted Q to total pulse charge.
       } else if (sub_q < 0 ||
                  q.at(i_t) < 0)  // if after the full pulse width, subQ <
-                                // pedestal, break. special case to break at q=0
-                                // for cases where ped < 0
+                                 // pedestal, break. special case to break at
+                                 // q=0 for cases where ped < 0
         break;
       // done
     }  // over time samples

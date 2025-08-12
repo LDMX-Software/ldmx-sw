@@ -110,11 +110,11 @@ void QIEDecoder::produce(framework::Event &event) {
     time_spill |= (time_word << i_w * 8);  // shift by a byte at a time
   }
   ldmx_log(debug) << "time stamp words are : " << time_epoch << " ("
-                  << std::bitset<64>(time_epoch) << ") and " << time_clock << " ("
-                  << std::bitset<64>(time_clock) << ") clock ticks, and "
-                  << time_spill << " (" << std::bitset<64>(time_spill) << ", or, "
-                  << std::hex << time_spill << std::dec
-                  << ") counts since start of spill";
+                  << std::bitset<64>(time_epoch) << ") and " << time_clock
+                  << " (" << std::bitset<64>(time_clock)
+                  << ") clock ticks, and " << time_spill << " ("
+                  << std::bitset<64>(time_spill) << ", or, " << std::hex
+                  << time_spill << std::dec << ") counts since start of spill";
 
   int sig_bits_skip = 6;  // the first 6 bits are part of something else.
   int divisor = TMath::Power(2, 32 - sig_bits_skip);
@@ -166,9 +166,9 @@ void QIEDecoder::produce(framework::Event &event) {
   uint8_t flags = event_stream.at(QIEStream::ERROR_POS);
 
   bool is_ci_dskipped{static_cast<bool>((flags >> QIEStream::CID_SKIP_POS) &
-                                      mask8<QIEStream::FLAG_SIZE_BITS>::m)};
+                                        mask8<QIEStream::FLAG_SIZE_BITS>::m)};
   bool is_ci_dunsync{static_cast<bool>((flags >> QIEStream::CID_UNSYNC_POS) &
-                                     mask8<QIEStream::FLAG_SIZE_BITS>::m)};
+                                       mask8<QIEStream::FLAG_SIZE_BITS>::m)};
   // These are unused, should they be? FIXME
   // bool isCRC1malformed{static_cast<bool>((flags >> QIEStream::CRC1_ERR_POS) &
   //                                        mask8<QIEStream::FLAG_SIZE_BITS>::m)};
@@ -200,9 +200,9 @@ void QIEDecoder::produce(framework::Event &event) {
       std::max(std::max(QIEStream::ERROR_POS, QIEStream::CHECKSUM_POS),
                QIEStream::TRIGID_POS + (QIEStream::TRIGID_LEN_BYTES)) +
       1;  // make sure we're at end of header
-  int n_words =
-      n_samp * nChannels_ * 2 + i_wstart;  // 1 ADC, 1 TDC per channel per sample,
-                                         // + the words in the header
+  int n_words = n_samp * nChannels_ * 2 +
+                i_wstart;  // 1 ADC, 1 TDC per channel per sample,
+                           // + the words in the header
   int i_word = i_wstart;
   ldmx_log(debug) << "Event parsing starts at vector idx " << i_wstart
                   << " and nWords = " << n_words;

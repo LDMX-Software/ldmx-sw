@@ -359,7 +359,7 @@ class TrigScintTrack {
   /**
    * The ROOT class definition.
    */
-  ClassDef(TrigScintTrack, 3);
+  ClassDef(TrigScintTrack, 4);
 
 };  // TrigScintTrack
 

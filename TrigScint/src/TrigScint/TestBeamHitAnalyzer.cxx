@@ -52,8 +52,9 @@ void TestBeamHitAnalyzer::analyze(const framework::Event& event) {
       sublead_bar = lead_bar;
       pe_lead = pe;
       lead_bar = bar;
-    } else if (pe > pe_sublead) {  // need a specific check, bars not sorted in
-                                  // PE so leadPE might be found before or after
+    } else if (pe >
+               pe_sublead) {  // need a specific check, bars not sorted in
+                              // PE so leadPE might be found before or after
       pe_sublead = pe;
       sublead_bar = bar;
     }
@@ -65,7 +66,7 @@ void TestBeamHitAnalyzer::analyze(const framework::Event& event) {
     for (auto chan_probe : channels) {
       int bar_probe = chan_probe.getBarID();
       if (bar_probe >= bar)  // we don't define the lower diagonal of the matrix
-                            // of histograms
+                             // of histograms
         hCrossTalk[bar][bar_probe]->Fill(pe, chan_probe.getPE());
     }
 
@@ -113,18 +114,20 @@ void TestBeamHitAnalyzer::onProcessStart() {
   // int nQbins = (Qmax - Qmin) / 4;
 
   for (int i_b = 0; i_b < nChannels; i_b++) {
-    hPE[i_b] = new TH1F(Form("hPE_chan%i", i_b), Form(";PE, chan%i", i_b), n_p_ebins,
-                       0, p_emax);
-    hPEinClusters[i_b] = new TH1F(Form("hPEinClusters_chan%i", i_b),
-                                 Form(";PE, chan%i", i_b), n_p_ebins, 0, p_emax);
-    hPEVsDelta[i_b] = new TH2F(Form("hPEVsDelta_chan%i", i_b),
-                              Form(";#Delta_{barID};PE, chan%i has max PE", i_b),
-                              nChannels + 1, -nChannels / 2 - 0.5,
-                              nChannels / 2 + 0.5, n_p_ebins, 0, p_emax);
-    hDeltaPEVsDelta[i_b] = new TH2F(
-        Form("hDeltaPEVsDelta_chan%i", i_b),
-        Form(";#Delta_{barID};#Delta_PE, chan%i has max PE", i_b), nChannels + 1,
+    hPE[i_b] = new TH1F(Form("hPE_chan%i", i_b), Form(";PE, chan%i", i_b),
+                        n_p_ebins, 0, p_emax);
+    hPEinClusters[i_b] =
+        new TH1F(Form("hPEinClusters_chan%i", i_b), Form(";PE, chan%i", i_b),
+                 n_p_ebins, 0, p_emax);
+    hPEVsDelta[i_b] = new TH2F(
+        Form("hPEVsDelta_chan%i", i_b),
+        Form(";#Delta_{barID};PE, chan%i has max PE", i_b), nChannels + 1,
         -nChannels / 2 - 0.5, nChannels / 2 + 0.5, n_p_ebins, 0, p_emax);
+    hDeltaPEVsDelta[i_b] =
+        new TH2F(Form("hDeltaPEVsDelta_chan%i", i_b),
+                 Form(";#Delta_{barID};#Delta_PE, chan%i has max PE", i_b),
+                 nChannels + 1, -nChannels / 2 - 0.5, nChannels / 2 + 0.5,
+                 n_p_ebins, 0, p_emax);
   }
 
   // make event displays for events where there are channels with weird event

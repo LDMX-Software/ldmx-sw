@@ -215,7 +215,7 @@ class EventReadout : public trigscint::TrigScintQIEDigis {
   int fiber_nb_{-1};
 
   uint flag_{0};
-  ClassDef(EventReadout, 1);
+  ClassDef(EventReadout, 2);
 
 };  // EventReadout
 

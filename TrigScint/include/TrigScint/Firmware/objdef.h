@@ -92,10 +92,10 @@ inline void calcCent(Cluster& c) {
   }
 
   // Perform the centroid calculation if all checks passed
-  c.cent_ =
-      (ap_int<12>)(10.0f *
-                   ((float)(c.seed_.amp_ * c.seed_.b_id_ + c.sec_.amp_ * c.sec_.b_id_)) /
-                   ((float)(c.seed_.amp_ + c.sec_.amp_)));
+  c.cent_ = (ap_int<12>)(10.0f *
+                         ((float)(c.seed_.amp_ * c.seed_.b_id_ +
+                                  c.sec_.amp_ * c.sec_.b_id_)) /
+                         ((float)(c.seed_.amp_ + c.sec_.amp_)));
 }
 
 inline void cpyCluster(Cluster& c1, Cluster& c2) {
@@ -139,9 +139,9 @@ inline void calcResid(Track& c) {
   float three = (float)c.pad3_.cent_;
   float mean = (one + two + three) / 3.0;
   c.resid_ = (ap_int<12>)((int)(((one - mean) * (one - mean) +
-                                (two - mean) * (two - mean) +
-                                (three - mean) * (three - mean)) /
-                               3.0));
+                                 (two - mean) * (two - mean) +
+                                 (three - mean) * (three - mean)) /
+                                3.0));
 }
 
 inline void cpyTrack(Track& c1, Track& c2) {

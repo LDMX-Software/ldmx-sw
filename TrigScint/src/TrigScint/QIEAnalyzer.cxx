@@ -78,10 +78,12 @@ void QIEAnalyzer::analyze(const framework::Event& event) {
             hTDCfireChanvsEvent->Fill(bar, ev_nb);
         }
       }  // if within the number of events to plot individually
-      if (q.at(i_t) > 2 * fabs(peds_[bar])) {  // integrate all charge well above
-                                              // ped to convert to a PE count
+      if (q.at(i_t) >
+          2 * fabs(peds_[bar])) {  // integrate all charge well above
+                                   // ped to convert to a PE count
         q_tot += q.at(i_t);
-        q_ped_subtracted_avg += q.at(i_t) - chan.getPedestal();  // peds_[ bar ];
+        q_ped_subtracted_avg +=
+            q.at(i_t) - chan.getPedestal();  // peds_[ bar ];
         n_samp_above++;
         ldmx_log(debug) << " above channel overall pedestal: " << q.at(i_t)
                         << " > " << 2 * fabs(peds_[bar]);
@@ -138,8 +140,8 @@ void QIEAnalyzer::onProcessStart() {
   ldmx_log(debug) << "Setting up histograms... ";
 
   for (int i_b = 0; i_b < nChannels; i_b++) {
-    hPE[i_b] = new TH1F(Form("hPE_chan%i", i_b), Form(";PE, chan%i", i_b), n_p_ebins,
-                       0, p_emax);
+    hPE[i_b] = new TH1F(Form("hPE_chan%i", i_b), Form(";PE, chan%i", i_b),
+                        n_p_ebins, 0, p_emax);
     hPEvsT[i_b] = new TH2F(
         Form("hPEvsT_chan%i", i_b),
         Form(";First time sample above summing threshold;PE, chan%i", i_b),
@@ -149,7 +151,8 @@ void QIEAnalyzer::onProcessStart() {
         Form(";First time sample above threshold;Pedestal subtracted average "
              "Q, chan%i [fC]",
              i_b),
-        n_time_samp + 1, -1.5, n_time_samp - 0.5, n_qbins / 10, qmin, qmax / 10.);
+        n_time_samp + 1, -1.5, n_time_samp - 0.5, n_qbins / 10, qmin,
+        qmax / 10.);
     hPedSubtractedTotQvsPed[i_b] =
         new TH2F(Form("hPedSubtrTotQvsPed_chan%i", i_b),
                  Form(";Channel event pedestal [fC];Event pedestal subtracted "
@@ -168,22 +171,23 @@ void QIEAnalyzer::onProcessStart() {
         Form(";Channel event pedestal [fC];Event total Q, chan%i [fC]", i_b),
         1010, qmin, 1000, 10010, -10,
         10000);  // nQbins/2,Qmin,Qmax/5., nQbins,Qmin,2*Qmax);
-    hPedSubtractedPEvsN[i_b] =
-        new TH2F(Form("hPedSubtrPEvsN_chan%i", i_b),
-                 Form(";Number of time samples above threshold;Pedestal "
-                      "subtracted PE, chan%i [fC]",
-                      i_b),
-                 n_time_samp + 1, -1.5, n_time_samp - 0.5, n_p_ebins, 0, p_emax);
-    hPedSubtractedPEvsT[i_b] =
-        new TH2F(Form("hPedSubtrPEvsT_chan%i", i_b),
-                 Form(";First time sample above threshold;Pedestal subtracted "
-                      "PE, chan%i [fC]",
-                      i_b),
-                 n_time_samp + 1, -1.5, n_time_samp - 0.5, n_p_ebins, 0, p_emax);
+    hPedSubtractedPEvsN[i_b] = new TH2F(
+        Form("hPedSubtrPEvsN_chan%i", i_b),
+        Form(";Number of time samples above threshold;Pedestal "
+             "subtracted PE, chan%i [fC]",
+             i_b),
+        n_time_samp + 1, -1.5, n_time_samp - 0.5, n_p_ebins, 0, p_emax);
+    hPedSubtractedPEvsT[i_b] = new TH2F(
+        Form("hPedSubtrPEvsT_chan%i", i_b),
+        Form(";First time sample above threshold;Pedestal subtracted "
+             "PE, chan%i [fC]",
+             i_b),
+        n_time_samp + 1, -1.5, n_time_samp - 0.5, n_p_ebins, 0, p_emax);
     hAvgQvsT[i_b] = new TH2F(
         Form("hAvgQvsT_chan%i", i_b),
         Form(";First time sample above threshold;Average Q, chan%i [fC]", i_b),
-        n_time_samp + 1, -1.5, n_time_samp - 0.5, n_qbins / 10, qmin, qmax / 10);
+        n_time_samp + 1, -1.5, n_time_samp - 0.5, n_qbins / 10, qmin,
+        qmax / 10);
   }
 
   for (int i_e = 0; i_e < nEv; i_e++) {
