@@ -14,8 +14,6 @@ jobs:
     steps:
     - name: Install just
       uses: extractions/setup-just@v3
-      with:
-          just-version: 1.26.0
 
     - uses: actions/checkout@v5
  
