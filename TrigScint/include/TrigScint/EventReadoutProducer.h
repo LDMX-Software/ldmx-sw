@@ -53,25 +53,25 @@ class EventReadoutProducer : public framework::Producer {
   bool verbose_{false};
 
   /// Name of the input collection containing the sim hits
-  std::string inputCollection_;
+  std::string input_collection_;
 
   /// Name of the pass that the input collection is on (empty string means take
   /// any pass)
-  std::string inputPassName_;
+  std::string input_pass_name_;
 
   /// Name of the output collection that will be used to stored the
   /// digitized trigger scintillator hits
-  std::string outputCollection_;
+  std::string output_collection_;
 
   /// Number of initial time samples averaged over in the pedestal calculation
-  int nPedSamples_{5};
+  int n_ped_samples_{5};
 
   /// Number of time samples to shift readout by, to align fibers if there is an
   /// offset
-  int timeShift_{5};
+  int time_shift_{5};
 
   /// Which of the fibers to set the time shift for (0 or 1)
-  int fiberToShift_{1};
+  int fiber_to_shift_{1};
 };
 
 }  // namespace trigscint

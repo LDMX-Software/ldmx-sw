@@ -46,39 +46,39 @@ void TrigScintFirmwareHitProducer::produce(framework::Event &event) {
   }
   const auto digis{event.getCollection<trigscint::TrigScintQIEDigis>(
       inputCollection_, inputPassName_)};
-  Hit outHit[NHITS];
-  ap_uint<14> FIFO[NCHAN][NTIMES];
-  ap_uint<8> Peds[NCHAN];
+  Hit out_hit[NHITS];
+  ap_uint<14> fifo[NCHAN][NTIMES];
+  ap_uint<8> peds[NCHAN];
   for (int i = 0; i < NCHAN; i++) {
-    Peds[i] = 0;
-    FIFO[i][0] = (Peds[i] << 6) + 63;
-    FIFO[i][1] = (Peds[i] << 6) + 63;
-    FIFO[i][2] = (Peds[i] << 6) + 63;
-    FIFO[i][3] = (Peds[i] << 6) + 63;
-    FIFO[i][4] = (Peds[i] << 6) + 63;
+    peds[i] = 0;
+    fifo[i][0] = (peds[i] << 6) + 63;
+    fifo[i][1] = (peds[i] << 6) + 63;
+    fifo[i][2] = (peds[i] << 6) + 63;
+    fifo[i][3] = (peds[i] << 6) + 63;
+    fifo[i][4] = (peds[i] << 6) + 63;
   }
   for (const auto &digi : digis) {
     std::vector<int> adcs = digi.getADC();
     std::vector<int> tdcs = digi.getTDC();
     for (int i = 0; i < NTIMES; i++) {
-      FIFO[digi.getChanID()][i] = (ap_uint<14>)((adcs[i] << 6) + (tdcs[i]));
+      fifo[digi.getChanID()][i] = (ap_uint<14>)((adcs[i] << 6) + (tdcs[i]));
     }
   }
-  hitproducer_hw(FIFO, outHit, Peds);
-  std::vector<ldmx::TrigScintHit> trigScintHits;
+  hitproducer_hw(fifo, out_hit, peds);
+  std::vector<ldmx::TrigScintHit> trig_scint_hits;
   for (int i = 0; i < NHITS; i++) {
-    if (outHit[i].Amp >= 3) {
-      ldmx_log(debug) << "Firmware barID: " << outHit[i].bID
-                      << ", PE Number: " << outHit[i].Amp;
+    if (out_hit[i].Amp >= 3) {
+      ldmx_log(debug) << "Firmware barID: " << out_hit[i].bID
+                      << ", PE Number: " << out_hit[i].Amp;
       ldmx::TrigScintHit hit;
-      hit.setModuleID(outHit[i].mID);
-      hit.setBarID(outHit[i].bID);
-      hit.setTime(outHit[i].Time);
-      hit.setPE(outHit[i].Amp);
-      trigScintHits.push_back(hit);
+      hit.setModuleID(out_hit[i].mID);
+      hit.setBarID(out_hit[i].bID);
+      hit.setTime(out_hit[i].Time);
+      hit.setPE(out_hit[i].Amp);
+      trig_scint_hits.push_back(hit);
     }
   }
-  event.add(outputCollection_, trigScintHits);
+  event.add(outputCollection_, trig_scint_hits);
   return;
 }
 

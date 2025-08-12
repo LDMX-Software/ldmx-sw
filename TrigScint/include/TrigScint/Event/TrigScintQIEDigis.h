@@ -27,25 +27,25 @@ class TrigScintQIEDigis {
    * A dummy function
    * @note required by Event/include/Event/EventDef.h
    */
-  void Clear(Option_t *option = "");
+  void clear(Option_t *option = "");
 
   /**
    * A dummy operator overloading
    * @note required for declaring std::vector<> in EventDef.h
    */
   bool operator<(const TrigScintQIEDigis &rhs) const {
-    return this->chanID_ < rhs.chanID_;
+    return this->chan_id_ < rhs.chan_id_;
   }
 
   /**
    * Get channel ID
    */
-  int getChanID() const { return chanID_; }
+  int getChanID() const { return chan_id_; }
 
   /**
    * Get electronics ID
    */
-  int getElecID() const { return elecID_; }
+  int getElecID() const { return elec_id_; }
 
   /**
    * Get ADCs of all time samples
@@ -66,7 +66,7 @@ class TrigScintQIEDigis {
    * Store the event time since spill counter
    */
   void setTimeSinceSpill(const uint32_t timeSpill) {
-    timeSinceSpillCounter_ = timeSpill;
+    time_since_spill_counter_ = timeSpill;
   }
   //  void setTimeSinceSpill(const int timeSpill) { timeSinceSpillCounter_ =
   //  timeSpill; }
@@ -74,17 +74,17 @@ class TrigScintQIEDigis {
   /**
    * Store the event time since spill counter
    */
-  uint32_t getTimeSinceSpill() const { return timeSinceSpillCounter_; }
+  uint32_t getTimeSinceSpill() const { return time_since_spill_counter_; }
 
   /**
    * Store the channel ID
    */
-  void setChanID(const int chanid) { chanID_ = chanid; }
+  void setChanID(const int chanid) { chan_id_ = chanid; }
 
   /**
    * Store the electronics ID
    */
-  void setElecID(const int elecid) { elecID_ = elecid; }
+  void setElecID(const int elecid) { elec_id_ = elecid; }
 
   /**
    * Store adcs of all time samples
@@ -106,9 +106,9 @@ class TrigScintQIEDigis {
 
  protected:
   /// channel ID
-  int chanID_;
+  int chan_id_;
   /// channel ID
-  int elecID_{-1};
+  int elec_id_{-1};
 
   /// analog to digital counts
   std::vector<int> adcs_;
@@ -117,7 +117,7 @@ class TrigScintQIEDigis {
   std::vector<int> tdcs_;
 
   /// Time since spill (a counter, to be divided by 125e6 or so)
-  uint32_t timeSinceSpillCounter_;
+  uint32_t time_since_spill_counter_;
 
  private:
   /// capacitor IDs

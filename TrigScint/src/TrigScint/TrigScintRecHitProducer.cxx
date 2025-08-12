@@ -46,7 +46,7 @@ void TrigScintRecHitProducer::produce(framework::Event &event) {
   const auto digis{event.getCollection<trigscint::TrigScintQIEDigis>(
       inputCollection_, inputPassName_)};
 
-  std::vector<ldmx::TrigScintHit> trigScintHits;
+  std::vector<ldmx::TrigScintHit> trig_scint_hits;
   for (const auto &digi : digis) {
     ldmx::TrigScintHit hit;
     auto adc{digi.getADC()};
@@ -66,21 +66,21 @@ void TrigScintRecHitProducer::produce(framework::Event &event) {
     else
       hit.setTime(tdc[sample_of_interest_] * 0.5);
 
-    float integratedCharge = 0;
+    float integrated_charge = 0;
     // integrate pulse over all time samples. will subtract pedestal next
-    for (const auto &adcVal : adc) {
-      integratedCharge += qie.ADC2Q(adcVal);
+    for (const auto &adc_val : adc) {
+      integrated_charge += qie.ADC2Q(adc_val);
     }
-    uint nSamp = adc.size();
-    float pedSubtrQ = integratedCharge - nSamp * pedestal_;
-    hit.setEnergy(pedSubtrQ * 6250. / gain_ * mevPerMip_ / pePerMip_);  // MeV
-    hit.setPE(pedSubtrQ * 6250. / gain_);
-    trigScintHits.push_back(hit);
+    uint n_samp = adc.size();
+    float ped_subtr_q = integrated_charge - n_samp * pedestal_;
+    hit.setEnergy(ped_subtr_q * 6250. / gain_ * mevPerMip_ / pePerMip_);  // MeV
+    hit.setPE(ped_subtr_q * 6250. / gain_);
+    trig_scint_hits.push_back(hit);
   }
   // Create the container to hold the
   // digitized trigger scintillator hits.
 
-  event.add(outputCollection_, trigScintHits);
+  event.add(outputCollection_, trig_scint_hits);
 }
 }  // namespace trigscint
 

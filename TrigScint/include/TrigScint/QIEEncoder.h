@@ -36,22 +36,22 @@ class QIEEncoder : public framework::Producer {
 
  private:
   // electronics/detector ID channel map
-  std::string channelMapFileName_;
-  std::ifstream channelMapFile_;
-  std::map<int, int> channelMap_;
+  std::string channel_map_file_name_;
+  std::ifstream channel_map_file_;
+  std::map<int, int> channel_map_;
 
   // input collection name and pass name
-  std::string inputCollection_;
-  std::string inputPassName_;
+  std::string input_collection_;
+  std::string input_pass_name_;
   // and output
-  std::string outputCollection_;
+  std::string output_collection_;
 
   // verbosity for very specific printouts that don't play well with logger
   // format
   bool verbose_{false};
 
   // number of channels in the pad
-  int nChannels_{50};
+  int n_channels_{50};
 
 };  // encoder
 

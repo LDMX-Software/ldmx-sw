@@ -45,21 +45,21 @@ void TestBeamClusterAnalyzer::analyze(const framework::Event& event) {
   int n2hit = 0;
   int n3hit = 0;
 
-  int nClusters = clusters.size();
+  int n_clusters = clusters.size();
   int idx = 0;
   for (auto cluster : clusters) {
     int seed = cluster.getSeed();
-    int nHits = cluster.getNHits();
-    if (nHits == 3)
+    int n_hits = cluster.getNHits();
+    if (n_hits == 3)
       n3hit++;
-    else if (nHits == 2)
+    else if (n_hits == 2)
       n2hit++;
-    else if (nHits == 1)
+    else if (n_hits == 1)
       n1hit++;
 
-    float PE = cluster.getPE();
+    float pe = cluster.getPE();
 
-    hPEinClusters[seed]->Fill(PE);
+    hPEinClusters[seed]->Fill(pe);
 
     /* // this requires different implementation. use getHitIDs and use the
     indices in there
@@ -94,7 +94,7 @@ void TestBeamClusterAnalyzer::analyze(const framework::Event& event) {
   hN3N1->Fill(n1hit, n3hit);
   hN2N1->Fill(n1hit, n2hit);
 
-  hNClusters->Fill(nClusters);
+  hNClusters->Fill(n_clusters);
   // todo: get hit collection to fill Nhits later?
   hNHits->Fill(3 * n3hit + 2 * n2hit + n1hit);
 
@@ -108,17 +108,17 @@ void TestBeamClusterAnalyzer::onProcessStart() {
 
   getHistoDirectory();
 
-  int PEmax = 600;
-  int nPEbins = 0.25 * PEmax;
+  int p_emax = 600;
+  int n_p_ebins = 0.25 * p_emax;
   // float Qmax = PEmax / (6250. / 4.e6);
   // float Qmin = -10;
   // int nQbins = (Qmax - Qmin) / 4;
 
-  for (int iB = 0; iB < nChannels; iB++) {
-    hPEinHits[iB] = new TH1F(Form("hPE_chan%i", iB), Form(";PE, chan%i", iB),
-                             nPEbins, 0, PEmax);
-    hPEinClusters[iB] = new TH1F(Form("hPEinClusters_chan%i", iB),
-                                 Form(";PE, chan%i", iB), nPEbins, 0, PEmax);
+  for (int i_b = 0; i_b < nChannels; i_b++) {
+    hPEinHits[i_b] = new TH1F(Form("hPE_chan%i", i_b), Form(";PE, chan%i", i_b),
+                             n_p_ebins, 0, p_emax);
+    hPEinClusters[i_b] = new TH1F(Form("hPEinClusters_chan%i", i_b),
+                                 Form(";PE, chan%i", i_b), n_p_ebins, 0, p_emax);
   }
 
   hDeltaVsSeed =
@@ -141,17 +141,17 @@ void TestBeamClusterAnalyzer::onProcessStart() {
   TH1F("hN2N1", "Ratio of 2-hit to 1-hit clusters; N_{2-hit}/N_{1-hit}; Events",
   10, 0, 4);
   */
-  int nCl = 6;
+  int n_cl = 6;
 
   hN3N2 = new TH2F(
       "hN3N2", "Number of 3-hit vs 2-hit clusters; N_{2-hit};N_{3-hit}; Events",
-      nCl, -0.5, nCl - 0.5, nCl, -0.5, nCl - 0.5);
+      n_cl, -0.5, n_cl - 0.5, n_cl, -0.5, n_cl - 0.5);
   hN3N1 = new TH2F(
       "hN3N1", "Number of 3-hit vs 1-hit clusters; N_{1-hit};N_{3-hit}; Events",
-      nCl, -0.5, nCl - 0.5, nCl, -0.5, nCl - 0.5);
+      n_cl, -0.5, n_cl - 0.5, n_cl, -0.5, n_cl - 0.5);
   hN2N1 = new TH2F(
       "hN2N1", "Number of 2-hit vs 1-hit clusters; N_{1-hit};N_{2-hit}; Events",
-      nCl, -0.5, nCl - 0.5, nCl, -0.5, nCl - 0.5);
+      n_cl, -0.5, n_cl - 0.5, n_cl, -0.5, n_cl - 0.5);
 
   return;
 }

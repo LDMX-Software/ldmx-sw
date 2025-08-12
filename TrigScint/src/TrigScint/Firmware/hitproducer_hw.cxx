@@ -81,14 +81,14 @@ void hitproducer_hw(ap_uint<14> FIFO[NHITS][5], Hit outHit[NHITS],
   // and forms a hit.
 
   /// Indices of first bin of each subrange
-  ap_uint<14> nbins_[5] = {0, 16, 36, 57, 64};
+  ap_uint<14> nbins[5] = {0, 16, 36, 57, 64};
 
   /// Charge lower limit of all the 16 subranges
-  ap_uint<14> edges_[17] = {0,     34,    158,    419,    517,   915,
+  ap_uint<14> edges[17] = {0,     34,    158,    419,    517,   915,
                             1910,  3990,  4780,   7960,   15900, 32600,
                             38900, 64300, 128000, 261000, 350000};
   /// sensitivity of the subranges (Total charge/no. of bins)
-  ap_uint<14> sense_[16] = {3,   6,   12,  25,   25,   50,   99,   198,
+  ap_uint<14> sense[16] = {3,   6,   12,  25,   25,   50,   99,   198,
                             198, 397, 794, 1587, 1587, 3174, 6349, 12700};
 
   for (int i = 0; i < NHITS; i++) {
@@ -117,33 +117,33 @@ void hitproducer_hw(ap_uint<14> FIFO[NHITS][5], Hit outHit[NHITS],
     ap_uint<14> rr = (word1 >> 6) / 64;
     ap_uint<14> v1 = (word1 >> 6) % 64;
     ap_uint<14> ss =
-        1 * (v1 > nbins_[1]) + 1 * (v1 > nbins_[2]) + 1 * (v1 > nbins_[3]);
-    charge1 = edges_[4 * rr + ss] + (v1 - nbins_[ss]) * sense_[4 * rr + ss] +
-              sense_[4 * rr + ss] / 2 - 1;
+        1 * (v1 > nbins[1]) + 1 * (v1 > nbins[2]) + 1 * (v1 > nbins[3]);
+    charge1 = edges[4 * rr + ss] + (v1 - nbins[ss]) * sense[4 * rr + ss] +
+              sense[4 * rr + ss] / 2 - 1;
 
     rr = (word2 >> 6) / 64;
     v1 = (word2 >> 6) % 64;
-    ss = 1 * (v1 > nbins_[1]) + 1 * (v1 > nbins_[2]) + 1 * (v1 > nbins_[3]);
-    charge2 = edges_[4 * rr + ss] + (v1 - nbins_[ss]) * sense_[4 * rr + ss] +
-              sense_[4 * rr + ss] / 2 - 1;
+    ss = 1 * (v1 > nbins[1]) + 1 * (v1 > nbins[2]) + 1 * (v1 > nbins[3]);
+    charge2 = edges[4 * rr + ss] + (v1 - nbins[ss]) * sense[4 * rr + ss] +
+              sense[4 * rr + ss] / 2 - 1;
 
     rr = (word3 >> 6) / 64;
     v1 = (word3 >> 6) % 64;
-    ss = 1 * (v1 > nbins_[1]) + 1 * (v1 > nbins_[2]) + 1 * (v1 > nbins_[3]);
-    charge3 = edges_[4 * rr + ss] + (v1 - nbins_[ss]) * sense_[4 * rr + ss] +
-              sense_[4 * rr + ss] / 2 - 1;
+    ss = 1 * (v1 > nbins[1]) + 1 * (v1 > nbins[2]) + 1 * (v1 > nbins[3]);
+    charge3 = edges[4 * rr + ss] + (v1 - nbins[ss]) * sense[4 * rr + ss] +
+              sense[4 * rr + ss] / 2 - 1;
 
     rr = (word4 >> 6) / 64;
     v1 = (word4 >> 6) % 64;
-    ss = 1 * (v1 > nbins_[1]) + 1 * (v1 > nbins_[2]) + 1 * (v1 > nbins_[3]);
-    charge4 = edges_[4 * rr + ss] + (v1 - nbins_[ss]) * sense_[4 * rr + ss] +
-              sense_[4 * rr + ss] / 2 - 1;
+    ss = 1 * (v1 > nbins[1]) + 1 * (v1 > nbins[2]) + 1 * (v1 > nbins[3]);
+    charge4 = edges[4 * rr + ss] + (v1 - nbins[ss]) * sense[4 * rr + ss] +
+              sense[4 * rr + ss] / 2 - 1;
 
     rr = (word5 >> 6) / 64;
     v1 = (word5 >> 6) % 64;
-    ss = 1 * (v1 > nbins_[1]) + 1 * (v1 > nbins_[2]) + 1 * (v1 > nbins_[3]);
-    charge5 = edges_[4 * rr + ss] + (v1 - nbins_[ss]) * sense_[4 * rr + ss] +
-              sense_[4 * rr + ss] / 2 - 1;
+    ss = 1 * (v1 > nbins[1]) + 1 * (v1 > nbins[2]) + 1 * (v1 > nbins[3]);
+    charge5 = edges[4 * rr + ss] + (v1 - nbins[ss]) * sense[4 * rr + ss] +
+              sense[4 * rr + ss] / 2 - 1;
 
     outHit[i].bID = i;
 

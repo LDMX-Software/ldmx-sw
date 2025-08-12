@@ -36,24 +36,24 @@ class TestBeamClusterAnalyzer : public framework::Analyzer {
 
  private:
   // configurable parameters
-  std::string inputCol_;  // input coll. containing 2-hit clusters (standard)
-  std::string inputPassName_{""};
+  std::string input_col_;  // input coll. containing 2-hit clusters (standard)
+  std::string input_pass_name_{""};
   //  std::string wideInputCol_;   // input coll. containing 3-hit clusters
   //  std::string wideInputPassName_{inputPassName};  // default to same pass
 
   // plotting stuff
-  int nChannels{16};
+  int n_channels_{16};
   // match nchan above
-  TH2F* hN3N2;
-  TH2F* hN3N1;
-  TH2F* hN2N1;
-  TH1F* hNClusters;
-  TH1F* hNHits;
+  TH2F* h_n3_n2_;
+  TH2F* h_n3_n1_;
+  TH2F* h_n2_n1_;
+  TH1F* h_n_clusters_;
+  TH1F* h_n_hits_;
   // TH1F* hNhitsInClusters;
-  TH1F* hPEinHits[16];
-  TH1F* hPEinClusters[16];
-  TH1F* hDeltaCentroids;
-  TH2F* hDeltaVsSeed;
+  TH1F* h_p_ein_hits_[16];
+  TH1F* h_p_ein_clusters_[16];
+  TH1F* h_delta_centroids_;
+  TH2F* h_delta_vs_seed_;
 };
 }  // namespace trigscint
 

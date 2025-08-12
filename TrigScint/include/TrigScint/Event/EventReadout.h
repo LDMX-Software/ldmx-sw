@@ -41,7 +41,7 @@ class EventReadout : public trigscint::TrigScintQIEDigis {
   /**
    * Print out the object.
    */
-  void Print(Option_t *option = "") const;
+  void print(Option_t *option = "") const;
 
   /**
    * Set channel (linearized. charge) pedestal
@@ -52,7 +52,7 @@ class EventReadout : public trigscint::TrigScintQIEDigis {
 
   /// Get the pedestal calculated only from first N time samples
 
-  float getEarlyPedestal() const { return earlyPedestal_; }
+  float getEarlyPedestal() const { return early_pedestal_; }
 
   /**
    * Set channel (linearized. charge) pedestal calculated from beginning of
@@ -60,7 +60,7 @@ class EventReadout : public trigscint::TrigScintQIEDigis {
    *
    * @param pedestal The pedestal of the first N time samples in the channel
    */
-  void setEarlyPedestal(const float earlyPed) { earlyPedestal_ = earlyPed; };
+  void setEarlyPedestal(const float earlyPed) { early_pedestal_ = earlyPed; };
 
   /// Get the pedestal
 
@@ -107,88 +107,88 @@ class EventReadout : public trigscint::TrigScintQIEDigis {
    * Store charge quantization errors of all time samples
    * @param qErr_ array of quantization errors
    */
-  void setQError(const std::vector<float> qErr) { qErrs_ = qErr; }
+  void setQError(const std::vector<float> qErr) { q_errs_ = qErr; }
 
   /**
    * Get charges of all time samples
    */
-  std::vector<float> getQError() const { return qErrs_; }
+  std::vector<float> getQError() const { return q_errs_; }
 
   /**
    * Set channel (linearized, charge-equiv) average charge
    *
    * @param totQ The (time sample) average charge of the channel
    */
-  void setTotQ(const float totQ) { totQ_ = totQ; };
+  void setTotQ(const float totQ) { tot_q_ = totQ; };
 
   /// Get the channel totQ
-  float getTotQ() const { return totQ_; }
+  float getTotQ() const { return tot_q_; }
 
   /**
    * Set channel (linearized, charge-equiv) average charge
    *
    * @param avgQ The (time sample) average charge of the channel
    */
-  void setAvgQ(const float avgQ) { avgQ_ = avgQ; };
+  void setAvgQ(const float avgQ) { avg_q_ = avgQ; };
 
   /// Get the channel avgQ
 
-  float getAvgQ() const { return avgQ_; }
+  float getAvgQ() const { return avg_q_; }
 
   /**
    * Set channel (linearized, charge-equiv) minimum charge
    *
    * @param minQ The (time sample) minimum charge of the channel
    */
-  void setMinQ(const float minQ) { minQ_ = minQ; };
+  void setMinQ(const float minQ) { min_q_ = minQ; };
 
   /// Get the channel minQ
 
-  float getMinQ() const { return minQ_; }
+  float getMinQ() const { return min_q_; }
 
   /**
    * Set channel (linearized, charge-equiv) maximum charge
    *
    * @param maxQ The (time sample) maximum charge of the channel
    */
-  void setMaxQ(const float maxQ) { maxQ_ = maxQ; };
+  void setMaxQ(const float maxQ) { max_q_ = maxQ; };
 
   /// Get the channel maxQ
 
-  float getMaxQ() const { return maxQ_; }
+  float getMaxQ() const { return max_q_; }
 
   /**
    * Set channel (linearized, charge-equiv) median charge
    *
    * @param medQ The (time sample) median charge of the channel
    */
-  void setMedQ(const float medQ) { medQ_ = medQ; };
+  void setMedQ(const float medQ) { med_q_ = medQ; };
 
   /// Get the channel medQ
 
-  float getMedQ() const { return medQ_; }
+  float getMedQ() const { return med_q_; }
 
   /**
    * Set channel readout itme offset (in units of samples)
    *
    * @param timeOffset The (time sample) offset in channel readout
    */
-  void setTimeOffset(const int timeOffset) { timeOffset_ = timeOffset; };
+  void setTimeOffset(const int timeOffset) { time_offset_ = timeOffset; };
 
   /// Get the channel timeOffset
 
-  int getTimeOffset() const { return timeOffset_; }
+  int getTimeOffset() const { return time_offset_; }
 
   /**
    * Set channel readout fiber number
    *
    * @param fiberNb The channel readout fiber number
    */
-  void setFiberNb(const int fiberNb) { fiberNb_ = fiberNb; };
+  void setFiberNb(const int fiberNb) { fiber_nb_ = fiberNb; };
 
   /// Get the channel fiberNb
 
-  int getFiberNb() const { return fiberNb_; }
+  int getFiberNb() const { return fiber_nb_; }
 
   /**
    * A dummy operator overloading
@@ -201,18 +201,18 @@ class EventReadout : public trigscint::TrigScintQIEDigis {
  private:
   /// analog to digital counts
   std::vector<float> qs_;
-  std::vector<float> qErrs_;
+  std::vector<float> q_errs_;
 
   float pedestal_{-999.};
-  float earlyPedestal_{-999.};
+  float early_pedestal_{-999.};
   float noise_{-1.};
-  float totQ_{-999.};
-  float avgQ_{-999.};
-  float minQ_{-999.};
-  float maxQ_{-999.};
-  float medQ_{-999.};
-  int timeOffset_{0};
-  int fiberNb_{-1};
+  float tot_q_{-999.};
+  float avg_q_{-999.};
+  float min_q_{-999.};
+  float max_q_{-999.};
+  float med_q_{-999.};
+  int time_offset_{0};
+  int fiber_nb_{-1};
 
   uint flag_{0};
   ClassDef(EventReadout, 1);

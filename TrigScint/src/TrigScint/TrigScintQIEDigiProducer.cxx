@@ -83,46 +83,46 @@ void TrigScintQIEDigiProducer::produce(framework::Event& event) {
 
   // To simulate multiple pulses coming at different times, SiPMS
   // Initialize with stripsPerArray_ zeros
-  std::vector<float> TrueEdep(stripsPerArray_, 0.);
+  std::vector<float> true_edep(stripsPerArray_, 0.);
 
   // Initialize with stripsPerArray_ nullptrs
   std::vector<Expo*> ex(stripsPerArray_, nullptr);
   for (int i = 0; i < stripsPerArray_; i++) {
     // Set the pulse shape with fixed parameters given by config. file
     ex[i] = new Expo(pulse_params_[0], pulse_params_[1]);
-    TrueEdep[i] = 0;
+    true_edep[i] = 0;
   }
 
   // loop over sim hits and aggregate energy depositions for each detID
-  const auto simHits{event.getCollection<ldmx::SimCalorimeterHit>(
+  const auto sim_hits{event.getCollection<ldmx::SimCalorimeterHit>(
       inputCollection_, inputPassName_)};
 
-  for (const auto& simHit : simHits) {
-    ldmx::TrigScintID id(simHit.getID());
+  for (const auto& sim_hit : sim_hits) {
+    ldmx::TrigScintID id(sim_hit.getID());
 
     ldmx_log(debug) << "Processing sim hit with bar ID: " << id.bar();
 
     // Simulating the noise corresponding to uncertainity in
     // detecting scintillating photons.
     // Poissonian distribution with mean = mean PEs generated
-    double PulseAmp =
-        random_->Poisson(simHit.getEdep() / mevPerMip_ * pePerMip_);
+    double pulse_amp =
+        random_->Poisson(sim_hit.getEdep() / mevPerMip_ * pePerMip_);
 
     // Adding a pulse for every sim hit recorded.
     // time offset = global offset+simhit time
-    ex[id.bar()]->AddPulse(toff_overall_ + simHit.getTime(), PulseAmp);
+    ex[id.bar()]->AddPulse(toff_overall_ + sim_hit.getTime(), pulse_amp);
 
     // incrementing true energy deposited in appropriate bar.
-    TrueEdep[id.bar()] += simHit.getEdep();
+    true_edep[id.bar()] += sim_hit.getEdep();
   }
 
   // A container to hold the digitized trigger scintillator hits.
-  std::vector<trigscint::TrigScintQIEDigis> QDigis;
+  std::vector<trigscint::TrigScintQIEDigis> q_digis;
 
-  double TotalNoise = meanNoise_ * maxts_;
+  double total_noise = meanNoise_ * maxts_;
 
   // time period[ns] = 1000/sampling freq.[MHz]
-  double SamplingTime = 1000 / s_freq_;
+  double sampling_time = 1000 / s_freq_;
 
   // Loop over all the bars available.
   for (int bar_id = 0; bar_id < stripsPerArray_; bar_id++) {
@@ -131,24 +131,24 @@ void TrigScintQIEDigiProducer::produce(framework::Event& event) {
     // due to thermal fluctuations.
     // Every e- thus generated, mimicks a Photo Electron.
     // Hence we will creat 1PE pulses for each electron generated.
-    int n_noise_pulses = random_->Poisson(TotalNoise);
+    int n_noise_pulses = random_->Poisson(total_noise);
     for (int i = 0; i < n_noise_pulses; i++) {
-      ex[bar_id]->AddPulse(random_->Uniform(0, maxts_ * SamplingTime), 1);
+      ex[bar_id]->AddPulse(random_->Uniform(0, maxts_ * sampling_time), 1);
     }
 
     // Storing the "good" digis
     if (smq_->PulseCut(ex[bar_id], zeroSuppCut_)) {
-      trigscint::TrigScintQIEDigis QIEInfo;
+      trigscint::TrigScintQIEDigis qie_info;
 
-      QIEInfo.setChanID(bar_id);
-      QIEInfo.setADC(smq_->Out_ADC(ex[bar_id]));
-      QIEInfo.setTDC(smq_->Out_TDC(ex[bar_id]));
-      QIEInfo.setCID(smq_->CapID(ex[bar_id]));
+      qie_info.setChanID(bar_id);
+      qie_info.setADC(smq_->Out_ADC(ex[bar_id]));
+      qie_info.setTDC(smq_->Out_TDC(ex[bar_id]));
+      qie_info.setCID(smq_->CapID(ex[bar_id]));
 
-      QDigis.push_back(QIEInfo);
+      q_digis.push_back(qie_info);
     }
   }
-  event.add(outputCollection_, QDigis);
+  event.add(outputCollection_, q_digis);
 }
 
 }  // namespace trigscint

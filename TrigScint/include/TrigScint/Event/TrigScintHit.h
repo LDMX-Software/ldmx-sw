@@ -48,10 +48,10 @@ class TrigScintHit : public ldmx::HcalHit {
    *
    * @param barID The bar ID of the hit.
    */
-  void setBarID(const int barID) { barID_ = barID; };
+  void setBarID(const int barID) { bar_id_ = barID; };
 
   /// Get the bar ID
-  int getBarID() const { return barID_; }
+  int getBarID() const { return bar_id_; }
 
   /**
    * Set hit pe.
@@ -68,29 +68,29 @@ class TrigScintHit : public ldmx::HcalHit {
    *
    * @param moduleID The module ID of the hit.
    */
-  void setModuleID(const int moduleID) { moduleID_ = moduleID; };
+  void setModuleID(const int moduleID) { module_id_ = moduleID; };
 
   /// Get the module ID
-  int getModuleID() const { return moduleID_; }
+  int getModuleID() const { return module_id_; }
 
   /**
    * Set beam energy fraction of hit.
    *
    * @param beamEfrac The beam energy fraction of the hit.
    */
-  void setBeamEfrac(const float beamEfrac) { beamEfrac_ = beamEfrac; };
+  void setBeamEfrac(const float beamEfrac) { beam_efrac_ = beamEfrac; };
 
   /// Get the beam energy fraction
-  float getBeamEfrac() const { return beamEfrac_; }
+  float getBeamEfrac() const { return beam_efrac_; }
 
  private:
   // bar/channel number associated with the hit
-  int barID_{-1};
+  int bar_id_{-1};
   // module/pad number associated with the hit
-  int moduleID_{-1};
+  int module_id_{-1};
 
   /// The fraction of energy associated with beam electrons.
-  float beamEfrac_{0};
+  float beam_efrac_{0};
 
   float pe_{0};
   ClassDef(TrigScintHit, 4);

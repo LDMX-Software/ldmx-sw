@@ -6,14 +6,14 @@
 #include "TrigScint/Event/TrigScintQIEDigis.h"
 
 template <uint32_t N>
-struct mask {
-  static const uint32_t one{1};
-  static const uint32_t m = (one << N) - one;
+struct Mask {
+  static const uint32_t ONE{1};
+  static const uint32_t M = (ONE << N) - ONE;
 };
 template <uint8_t n>
-struct mask8 {
-  static const uint8_t one{1};
-  static const uint8_t m = (one << n) - one;
+struct Mask8 {
+  static const uint8_t ONE{1};
+  static const uint8_t M = (ONE << n) - ONE;
 };
 
 namespace trigscint {
@@ -39,25 +39,25 @@ class QIEStream {
    * A dummy function
    * @note required by Event/include/Event/EventDef.h
    */
-  void Clear(Option_t *option = "");
+  void clear(Option_t *option = "");
 
   /**
    * A dummy operator overloading
    * @note required for declaring std::vector<> in EventDef.h
    */
   bool operator<(const QIEStream &rhs) const {
-    return this->chanID_ < rhs.chanID_;
+    return this->chan_id_ < rhs.chan_id_;
   }
 
   /**
    * Get channel ID
    */
-  int getChannelID() const { return chanID_; }
+  int getChannelID() const { return chan_id_; }
 
   /**
    * Get electronics ID
    */
-  uint8_t getElectronicsID() const { return electronicsID_; }
+  uint8_t getElectronicsID() const { return electronics_id_; }
 
   /**
    * Get ADCs of all time samples
@@ -77,12 +77,12 @@ class QIEStream {
   /**
    * Store the channel ID
    */
-  void setChannelID(const int chanid) { chanID_ = chanid; }
+  void setChannelID(const int chanid) { chan_id_ = chanid; }
 
   /**
    * Store the electronics ID
    */
-  void setElectronicsID(const int elecid) { electronicsID_ = elecid; }
+  void setElectronicsID(const int elecid) { electronics_id_ = elecid; }
 
   /**
    * Store adcs of all time samples
@@ -135,9 +135,9 @@ class QIEStream {
 
  private:
   /// detector channel ID (bar nb)
-  int chanID_;
+  int chan_id_;
   /// electronics ID
-  int electronicsID_;
+  int electronics_id_;
   /// Analog to Digital counts
   std::vector<int> adcs_;
   /// Time to Digital counts

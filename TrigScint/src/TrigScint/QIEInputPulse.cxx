@@ -61,11 +61,11 @@ float Bimoid::I_Int(float T, int id) {
 
   float t = T - toff_[id];  // time relative to offset
 
-  float II =  // Integral
+  float ii =  // Integral
       rt_ * log(1 + exp((t - toff_[id]) / rt_)) -
       ft_ * log(1 + exp((t - toff_[id]) / ft_));
 
-  return II / nc;
+  return ii / nc;
 }
 
 float Bimoid::Max(int id) {
@@ -87,12 +87,12 @@ float Bimoid::Derivative(float T, int id) {
   // Normalization constant
   float nc = (ft_ - rt_) * log(2) / ampl_[id];
 
-  float T_ = T - toff_[id];
-  float E1 = exp(-T_ / rt_);
-  float E2 = exp(-T_ / ft_);
+  float t = T - toff_[id];
+  float e1 = exp(-t / rt_);
+  float e2 = exp(-t / ft_);
 
-  float v1 = E1 / (rt_ * pow(1 + E1, 2));
-  float v2 = E2 / (ft_ * pow(1 + E2, 2));
+  float v1 = e1 / (rt_ * pow(1 + e1, 2));
+  float v2 = e2 / (ft_ * pow(1 + e2, 2));
 
   return ((v1 - v2) / nc);  // Actual derivative
 }
@@ -129,11 +129,11 @@ float Expo::EvalSingle(float t_, int id) {
   // Normalization constant
   float nc = ampl_[id] / tmax_;
   // time relative to the offset
-  float T = t_ - toff_[id];
-  if (T < tmax_) {
-    return (nc * (1 - exp(-k_ * T)));
+  float t = t_ - toff_[id];
+  if (t < tmax_) {
+    return (nc * (1 - exp(-k_ * t)));
   } else {
-    return (nc * (1 - exp(-k_ * tmax_)) * exp(k_ * (tmax_ - T)));
+    return (nc * (1 - exp(-k_ * tmax_)) * exp(k_ * (tmax_ - t)));
   }
   return -1;
 }

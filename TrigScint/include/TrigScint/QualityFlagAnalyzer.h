@@ -36,33 +36,33 @@ class QualityFlagAnalyzer : public framework::Analyzer {
   void onProcessEnd() override;
 
  private:
-  std::vector<std::vector<TH1F*> > vChargeVsTime;
+  std::vector<std::vector<TH1F*> > v_charge_vs_time_;
 
   // configurable parameters
-  std::string inputEventCol_;  // full event stream input
-  std::string inputEventPassName_{""};
-  std::string inputHitCol_;  // hit collection
-  std::string inputHitPassName_{""};
+  std::string input_event_col_;  // full event stream input
+  std::string input_event_pass_name_{""};
+  std::string input_hit_col_;  // hit collection
+  std::string input_hit_pass_name_{""};
   std::vector<double> peds_;
   std::vector<double> gain_;
-  int startSample_{0};
+  int start_sample_{0};
 
   // plotting stuff
-  const int nEv{200};
-  static constexpr int nChannels{16};
-  const int nFlags{6};
-  int peFillNb{0};
+  const int N_EV{200};
+  static constexpr int N_CHANNELS{16};
+  const int N_FLAGS{6};
+  int pe_fill_nb_{0};
 
   // make sure to match constants above
-  const int flags[6] = {16, 8, 4,
+  const int FLAGS[6] = {16, 8, 4,
                         2,  1, 0};  // this order just makes looping easier
-  int nEvDrawn[6] = {0};  // keep a counter for each flag type to get good stats
-  TH1F* hOut[200][16];
-  TH1F* hOutPE[200][16];
-  TH1F* hOutFlag[6][200][16];  // for 4 quality flags and 0 (no flag)
-  TH1F* hPE[16];
+  int n_ev_drawn_[6] = {0};  // keep a counter for each flag type to get good stats
+  TH1F* h_out_[200][16];
+  TH1F* h_out_pe_[200][16];
+  TH1F* h_out_flag_[6][200][16];  // for 4 quality flags and 0 (no flag)
+  TH1F* h_pe_[16];
 
-  TH2F* hTDCfireChanvsEvent;
+  TH2F* h_td_cfire_chanvs_event_;
 };
 }  // namespace trigscint
 

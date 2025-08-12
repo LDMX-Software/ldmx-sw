@@ -36,40 +36,40 @@ void TruthHitProducer::produce(framework::Event &event) {
     return;
   }
   // looper over sim hits and aggregate energy depositions for each detID
-  const auto simHits{event.getCollection<ldmx::SimCalorimeterHit>(
+  const auto sim_hits{event.getCollection<ldmx::SimCalorimeterHit>(
       inputCollection_, inputPassName_)};
-  auto particleMap{event.getMap<int, ldmx::SimParticle>(
+  auto particle_map{event.getMap<int, ldmx::SimParticle>(
       "SimParticles", sim_particles_passname_)};
 
-  std::vector<ldmx::SimCalorimeterHit> truthBeamElectrons;
+  std::vector<ldmx::SimCalorimeterHit> truth_beam_electrons;
 
   // TODO: Convert this to using a for_each and lambda
-  for (const auto &simHit : simHits) {
+  for (const auto &sim_hit : sim_hits) {
     bool keep{false};
     // check if hit is from beam electron and, if so, add to output collection
-    for (int i = 0; i < simHit.getNumberOfContribs(); i++) {
-      auto contrib = simHit.getContrib(i);
+    for (int i = 0; i < sim_hit.getNumberOfContribs(); i++) {
+      auto contrib = sim_hit.getContrib(i);
       if (verbose_) {
         ldmx_log(debug) << "contrib " << i << " trackID: " << contrib.trackID
                         << " pdgID: " << contrib.pdgCode
                         << " edep: " << contrib.edep;
         ldmx_log(debug) << "\t particle id: "
-                        << particleMap[contrib.trackID].getPdgID()
+                        << particle_map[contrib.trackID].getPdgID()
                         << " particle status: "
-                        << particleMap[contrib.trackID].getGenStatus();
+                        << particle_map[contrib.trackID].getGenStatus();
       }
       // if the trackID is in the map
-      if (particleMap.find(contrib.trackID) != particleMap.end()) {
+      if (particle_map.find(contrib.trackID) != particle_map.end()) {
         // beam electron (PDGID = 11, genStatus == 1)
-        if (particleMap[contrib.trackID].getPdgID() == 11 &&
-            particleMap[contrib.trackID].getGenStatus() == 1) {
+        if (particle_map[contrib.trackID].getPdgID() == 11 &&
+            particle_map[contrib.trackID].getGenStatus() == 1) {
           keep = true;
         }
       }
-      if (keep) truthBeamElectrons.push_back(simHit);
+      if (keep) truth_beam_electrons.push_back(sim_hit);
     }
   }
-  event.add(outputCollection_, truthBeamElectrons);
+  event.add(outputCollection_, truth_beam_electrons);
 }
 }  // namespace trigscint
 

@@ -48,15 +48,15 @@ class TestBeamHitProducer : public framework::Producer {
   /// Set the local verbosity level.
 
   /// Name of the input collection containing the event readout samples
-  std::string inputCol_;
+  std::string input_col_;
 
   /// Name of the pass that the input collection is on (empty string means take
   /// any pass)
-  std::string inputPassName_;
+  std::string input_pass_name_;
 
   /// Name of the output collection that will be used to stored the
   /// trigger scintillator hits
-  std::string outputCollection_;
+  std::string output_collection_;
 
   /// SiPM gain, per channel (all initialized to 2e6 in default config)
   std::vector<double> gain_;
@@ -65,24 +65,24 @@ class TestBeamHitProducer : public framework::Producer {
   std::vector<double> peds_;
 
   /// channel MIP response for intercalibration
-  std::vector<double> MIPresponse_;
+  std::vector<double> mi_presponse_;
 
   /// start sample for pulse integration (not including any fiber offsets)
-  int startSample_{10};
+  int start_sample_{10};
 
   /// Total number of samples used in pulse integration
-  int pulseWidth_{5};
+  int pulse_width_{5};
 
   /// Total number of samples used in pulse integration for LYSO (long decay,
   /// might need wider window)
-  int pulseWidthLYSO_{8};
+  int pulse_width_lyso_{8};
 
   /// Number of instrumented channels in module
-  int nInstrumentedChannels_{12};
+  int n_instrumented_channels_{12};
 
   /// boolean indicating whether we want to apply quality criteria in hit
   /// reconstruction
-  bool doCleanHits_{false};
+  bool do_clean_hits_{false};
 };
 
 }  // namespace trigscint

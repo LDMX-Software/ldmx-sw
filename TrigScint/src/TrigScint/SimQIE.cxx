@@ -86,13 +86,13 @@ float SimQIE::QErr(float Q) {
 // Function that returns an array of ADCs each corresponding to
 // one time sample
 std::vector<int> SimQIE::Out_ADC(QIEInputPulse* pp) {
-  std::vector<int> OP;
+  std::vector<int> op;
 
   for (int i = 0; i < maxts_; i++) {
-    float QQ = pp->Integrate(i * tau_, i * tau_ + tau_);
-    OP.push_back(Q2ADC(QQ));
+    float qq = pp->Integrate(i * tau_, i * tau_ + tau_);
+    op.push_back(Q2ADC(qq));
   }
-  return OP;
+  return op;
 }
 
 // Function that returns the digitized time corresponding to
@@ -111,24 +111,24 @@ int SimQIE::TDC(QIEInputPulse* pp, float T0 = 0) {
 // Function that returns an array of TDCs each corresponding to
 // one time sample
 std::vector<int> SimQIE::Out_TDC(QIEInputPulse* pp) {
-  std::vector<int> OP;
+  std::vector<int> op;
 
   for (int i = 0; i < maxts_; i++) {
-    OP.push_back(TDC(pp, tau_ * i));
+    op.push_back(TDC(pp, tau_ * i));
   }
-  return OP;
+  return op;
 }
 
 // Function that returns an array of Caoacitor IDs
 // each corresponding to one time sample
 std::vector<int> SimQIE::CapID(QIEInputPulse* pp) {
-  std::vector<int> OP;
+  std::vector<int> op;
 
-  OP.push_back(trg_->Integer(4));
+  op.push_back(trg_->Integer(4));
   for (int i = 0; i < maxts_; i++) {
-    OP.push_back((OP[i] + 1) % 4);
+    op.push_back((op[i] + 1) % 4);
   }
-  return OP;
+  return op;
 }
 
 bool SimQIE::PulseCut(QIEInputPulse* pulse, float cut) {

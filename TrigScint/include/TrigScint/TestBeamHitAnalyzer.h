@@ -35,32 +35,32 @@ class TestBeamHitAnalyzer : public framework::Analyzer {
   void onProcessEnd() override;
 
  private:
-  std::vector<std::vector<TH1F*> > vChargeVsTime;
+  std::vector<std::vector<TH1F*> > v_charge_vs_time_;
 
   // configurable parameters
-  std::string inputCol_;
-  std::string inputPassName_{""};
+  std::string input_col_;
+  std::string input_pass_name_{""};
   std::vector<double> peds_;
-  int startSample_{0};
+  int start_sample_{0};
 
   // plotting stuff
-  int nEv{200};
-  int nChannels{16};
+  int n_ev_{200};
+  int n_channels_{16};
   // int nTrkMax{100};
-  TH2F* hEvDisp;
-  TH2F* hEvDispPE;
+  TH2F* h_ev_disp_;
+  TH2F* h_ev_disp_pe_;
 
-  int fillNb{0};
+  int fill_nb_{0};
 
   // match nev, nchan above
-  TH1F* hOut[200][16];
+  TH1F* h_out_[200][16];
 
-  TH1F* hPE[16];
-  TH1F* hPEinClusters[16];
-  TH2F* hPEVsDelta[16];
-  TH2F* hDeltaPEVsDelta[16];
-  TH2F* hPEmaxVsDelta;
-  TH2F* hCrossTalk[16][16];
+  TH1F* h_pe_[16];
+  TH1F* h_p_ein_clusters_[16];
+  TH2F* h_pe_vs_delta_[16];
+  TH2F* h_delta_pe_vs_delta_[16];
+  TH2F* h_p_emax_vs_delta_;
+  TH2F* h_cross_talk_[16][16];
 };
 }  // namespace trigscint
 
