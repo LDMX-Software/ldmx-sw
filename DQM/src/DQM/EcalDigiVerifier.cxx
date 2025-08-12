@@ -75,6 +75,11 @@ void EcalDigiVerifier::analyze(const framework::Event &event) {
 
     int rawID = recHit.getID();
 
+    // energy weighted positions
+    float sim_pos_x_weighted = 0.;
+    float sim_pos_y_weighted = 0.;
+    float sim_pos_z_weighted = 0.;
+
     // get information for this hit
     int numSimHits = 0;
     double totalSimEDep = 0.;
@@ -82,21 +87,33 @@ void EcalDigiVerifier::analyze(const framework::Event &event) {
       if (rawID == simHit.getID()) {
         numSimHits += simHit.getNumberOfContribs();
         totalSimEDep += simHit.getEdep();
-        auto residualX = recHit.getXPos() - simHit.getPosition()[0];
-        auto residualY = recHit.getYPos() - simHit.getPosition()[1];
-        auto residualZ = recHit.getZPos() - simHit.getPosition()[2];
-        histograms_.fill("rec_sim_hit_residual_x", residualX);
-        histograms_.fill("rec_sim_hit_residual_y", residualY);
-        histograms_.fill("rec_sim_hit_residual_z", residualZ);
+        sim_pos_x_weighted += simHit.getPosition()[0] * simHit.getEdep();
+        sim_pos_y_weighted += simHit.getPosition()[1] * simHit.getEdep();
+        sim_pos_z_weighted += simHit.getPosition()[2] * simHit.getEdep();
+
       } else if (rawID < simHit.getID()) {
         // later sim hits - all done
         break;
       }
-    }
+    } // end loop on sim hits
 
+    sim_pos_x_weighted /= totalSimEDep;
+    sim_pos_y_weighted /= totalSimEDep;
+    sim_pos_z_weighted /= totalSimEDep;
+    auto residualX = recHit.getXPos() - sim_pos_x_weighted;
+    auto residualY = recHit.getYPos() - sim_pos_y_weighted;
+    auto residualZ = recHit.getZPos() - sim_pos_z_weighted;
+    histograms_.fill("rec_sim_hit_residual_x", residualX);
+    histograms_.fill("rec_sim_hit_residual_y", residualY);
+    histograms_.fill("rec_sim_hit_residual_z", residualZ);
+    histograms_.fill("rec_sim_hit_residual_x:layer", residualX, layer);
+    histograms_.fill("rec_sim_hit_residual_y:layer", residualY, layer);
+    histograms_.fill("rec_sim_hit_residual_z:layer", residualZ, layer);
     histograms_.fill("num_sim_hits_per_cell", numSimHits);
-    histograms_.fill("sim_edep__rec_amplitude", totalSimEDep,
+    histograms_.fill("sim_edep:rec_amplitude", totalSimEDep,
                      recHit.getAmplitude());
+    histograms_.fill("sim_edep:rec_energy", totalSimEDep,
+                     recHit.getEnergy());
   }
 
   std::map<int, int> moduleHits;

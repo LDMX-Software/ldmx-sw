@@ -283,7 +283,7 @@ class Layer :
     }
 
     # 300 um for v14 and 400 um for v15
-    SensDetThickness = 0.4
+    SensDetThickness = 0.3
 
     def __init__(self, name, thickness, sensitive = False) :
         self.name = name
@@ -513,10 +513,12 @@ def print_weights(
             'Layer', 'dE', 'X0', 'Lambda', 'Zpos'
         )
     )
+    output.write('-----------------------------------\n')
     for layer in range(len(dE_between_sensdet)-1):
         output.write('{0:5d} {1:7.3f} {2:6.3f} {3:6.3f} {4:6.3f}\n'.format(
             layer+1, dE_between_sensdet[layer], X0_between_sensdet[layer], L_between_sensdet[layer], Zpos_layer[layer]))
     #endfor - layers
+    output.write('-----------------------------------\n')
     output.write('{0:>5s} {1:7.3f} {2:6.3f} {3:6.3f} {4:6.3f}\n'.format(
         'Sum', sum(dE_between_sensdet[:-1]), sum(X0_between_sensdet[:-1]), sum(L_between_sensdet[:-1]), Zpos_layer[-1] ))
     output.write('{0:>5s} {1:7.3f} {2:6.3f} {3:6.3f} {4:6.3f}\n'.format(

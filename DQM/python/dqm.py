@@ -279,6 +279,18 @@ class EcalDigiVerify(ldmxcfg.Analyzer) :
         self.build1DHistogram( "rec_sim_hit_residual_z" ,
                 "RecHit Z - SimHit Z [mm]" , 49 , -0.98 , 0.98 )
 
+        self.build2DHistogram( "rec_sim_hit_residual_x:layer" ,
+                "RecHit X - SimHit X [mm]" , 30 , -15.0 , 15.0,
+                "RecHit Layer" , 34 , 0.5 , 34.5 )
+        
+        self.build2DHistogram( "rec_sim_hit_residual_y:layer" ,
+                "RecHit Y - SimHit Y [mm]" , 30 , -15.0 , 15.0,
+                "RecHit Layer" , 34 , 0.5 , 34.5  )
+
+        self.build2DHistogram( "rec_sim_hit_residual_z:layer" ,
+                "RecHit Z - SimHit Z [mm]" , 48 , -0.6 , 0.6,
+                "RecHit Layer" , 34 , 0.5 , 34.5  )
+
         self.build1DHistogram( "num_sim_hits_per_cell" ,
                 "Number of SimHits per ECal Cell (excluding empty rec cells)" , 20 , -0.5 , 19.5 )
         
@@ -309,9 +321,13 @@ class EcalDigiVerify(ldmxcfg.Analyzer) :
         self.build1DHistogram( "num_hit_if_more_than_2hits"      ,
                 "Num of hits for modules with >2 hits" , 31 , -0.5 , 30.5 )
         
-        self.build2DHistogram( "sim_edep__rec_amplitude" ,
-                "Simulated [MeV]" , 1000 , 0. , 50. ,
-                "Reconstructed [MeV]" , 1000 , 0. , 50. )
+        self.build2DHistogram( "sim_edep:rec_amplitude" ,
+                "Simulated Energy [MeV]" , 1000 , 0. , 50. ,
+                "Reconstructed Amplitude [MeV]" , 1000 , 0. , 50. )
+
+        self.build2DHistogram( "sim_edep:rec_energy" ,
+                "Simulated Energy [MeV]" , 1000 , 0. , 50. ,
+                "Reconstructed Energy [MeV]" , 1000 , 0. , 50. )
 
 class EcalShowerFeatures(ldmxcfg.Analyzer) :
     """Configured EcalShowerFeatures python object """
