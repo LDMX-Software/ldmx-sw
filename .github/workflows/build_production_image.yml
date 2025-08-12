@@ -19,8 +19,6 @@ jobs:
     -
       name: Set up just
       uses: extractions/setup-just@v3
-      with:
-        just-version: 1.26.0
     -
       name: Login to DockerHub
       uses: docker/login-action@v3
