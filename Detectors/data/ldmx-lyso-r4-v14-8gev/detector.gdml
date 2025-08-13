@@ -106,7 +106,7 @@
   <userinfo>
     <!-- detector version -->
     <auxiliary auxtype="DetectorVersion" auxvalue="14">
-      <auxiliary auxtype="DetectorName" auxvalue="ldmx-lyso-r3-v14"/>
+      <auxiliary auxtype="DetectorName" auxvalue="ldmx-lyso-r4-v14"/>
       <auxiliary auxtype="Author" auxvalue="Weilong (Sam) Zhou, James Oyang, Tamas Almos Vami"/>
       <auxiliary auxtype="Description" 
                  auxvalue="Geometry with LYSO target with two bars"/>

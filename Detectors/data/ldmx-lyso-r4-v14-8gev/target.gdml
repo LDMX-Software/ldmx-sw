@@ -46,12 +46,26 @@
     </material>
     
     <!-- LYSO target -->
-    <material formula="L1.86Y0.14Si05" name="LYSO" >
-		  <D value="7.4" unit="g/cm3"   />
-		  <fraction n="0.7297" ref="Lu" />
-		  <fraction n="0.0279" ref="Y"  />
-		  <fraction n="0.0630" ref="Si" />
-		  <fraction n="0.1794" ref="O"  />
+    <!--
+      Molar mass calculations:
+    - Lu: 1.86 × 174.967 = 325.44 g/mol
+    - Y: 0.2 × 88.906 = 17.78 g/mol
+    - Si: 1 × 28.085 = 28.09 g/mol
+    - O: 5 × 15.999 = 80.00 g/mol
+    - Total molar mass: 325.44 + 17.78 + 28.09 + 80.00 = 451.31 g/mol
+
+    Mass fraction calculations:
+    - Lu fraction: 325.44 / 451.31 = 0.7211
+    - Y fraction: 17.78 / 451.31 = 0.0394
+    - Si fraction: 28.09 / 451.31 = 0.0623
+    - O fraction: 80.00 / 451.31 = 0.1772
+    -->
+    <material formula="Lu1.86Y0.2SiO5" name="LYSO" >
+        <D value="7.1" unit="g/cm3" />
+        <fraction n="0.7211" ref="Lu" />
+        <fraction n="0.0394" ref="Y"  />
+        <fraction n="0.0623" ref="Si" />
+        <fraction n="0.1772" ref="O"  />
     </material>
 
   </materials>
