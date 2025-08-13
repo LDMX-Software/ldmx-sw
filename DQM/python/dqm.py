@@ -264,11 +264,12 @@ class EcalDigiVerify(ldmxcfg.Analyzer) :
     def __init__(self,name="EcalDigiVerify") :
         super().__init__(name,'dqm::EcalDigiVerifier','DQM')
 
-        self.ecalSimHitColl = "EcalSimHits"
-        self.ecalSimHitPass = "" #use whatever pass is available
+        self.ecal_sim_hit_coll = "EcalSimHits"
+        self.ecal_sim_hit_pass = ""
 
-        self.ecalRecHitColl = "EcalRecHits"
-        self.ecalRecHitPass = "" #use whatever pass is available
+        self.ecal_rec_hit_coll = "EcalRecHits"
+        self.ecal_rec_hit_pass = ""
+        self.num_layers = 34
 
         self.build1DHistogram( "rec_sim_hit_residual_x" ,
                 "RecHit X - SimHit X [mm]" , 30 , -15.0 , 15.0 )

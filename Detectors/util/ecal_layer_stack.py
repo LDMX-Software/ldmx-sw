@@ -283,7 +283,7 @@ class Layer :
     }
 
     # 300 um for v14 and 400 um for v15
-    SensDetThickness = 0.3
+    SensDetThickness = 0.4
 
     def __init__(self, name, thickness, sensitive = False) :
         self.name = name
