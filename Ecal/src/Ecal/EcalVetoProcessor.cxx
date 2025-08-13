@@ -497,26 +497,28 @@ void EcalVetoProcessor::produce(framework::Event &event) {
     n_readout_hits_++;
     ecal_layer_edep_readout_[id.layer()] += hit.getEnergy();
     ecal_layer_time_[id.layer()] += (hit.getEnergy()) * hit.getTime();
-    auto [x_, y_, z_] = geometry_->getPosition(id);
-    x_mean += x_ * hit.getEnergy();
-    y_mean += y_ * hit.getEnergy();
+    auto [rechit_x, rechit_y, rechit_z] = geometry_->getPosition(id);
+    x_mean += rechit_x * hit.getEnergy();
+    y_mean += rechit_y * hit.getEnergy();
     avg_layer_hit_ += id.layer();
     w_avg_layer_hit += id.layer() * hit.getEnergy();
     if (deepest_layer_hit_ < id.layer()) {
       deepest_layer_hit_ = id.layer();
     }
-    XYCoords xy_pair = std::make_pair(x_, y_);
+    XYCoords xy_pair = std::make_pair(rechit_x, rechit_y);
     float distance_ele_trajectory =
         ele_trajectory.size()
-            ? sqrt(pow((xy_pair.first - ele_trajectory[id.layer()].first), 2) +
-                   pow((xy_pair.second - ele_trajectory[id.layer()].second), 2))
+            ? sqrt((xy_pair.first - ele_trajectory[id.layer()].first) *
+                       (xy_pair.first - ele_trajectory[id.layer()].first) +
+                   (xy_pair.second - ele_trajectory[id.layer()].second) *
+                       (xy_pair.second - ele_trajectory[id.layer()].second))
             : -1.0;
     float distance_photon_trajectory =
         photon_trajectory.size()
-            ? sqrt(pow((xy_pair.first - photon_trajectory[id.layer()].first),
-                       2) +
-                   pow((xy_pair.second - photon_trajectory[id.layer()].second),
-                       2))
+            ? sqrt((xy_pair.first - photon_trajectory[id.layer()].first) *
+                       (xy_pair.first - photon_trajectory[id.layer()].first) +
+                   (xy_pair.second - photon_trajectory[id.layer()].second) *
+                       (xy_pair.second - photon_trajectory[id.layer()].second))
             : -1.0;
 
     // Decide which longitudinal segment the hit is in and add to sums
@@ -644,14 +646,14 @@ void EcalVetoProcessor::produce(framework::Event &event) {
   // Loop over hits_ a second time to find the standard deviations.
   for (const ldmx::EcalHit &hit : ecal_rec_hits) {
     ldmx::EcalID id(hit.getID());
-    auto [x_, y_, z_] = geometry_->getPosition(id);
+    auto [rechit_x, rechit_y, rechit_z] = geometry_->getPosition(id);
     if (hit.getEnergy() > 0) {
-      x_std_ += pow((x_ - x_mean), 2) * hit.getEnergy();
-      y_std_ += pow((y_ - y_mean), 2) * hit.getEnergy();
+      x_std_ += pow((rechit_x - x_mean), 2) * hit.getEnergy();
+      y_std_ += pow((rechit_y - y_mean), 2) * hit.getEnergy();
       std_layer_hit_ +=
           pow((id.layer() - w_avg_layer_hit), 2) * hit.getEnergy();
     }
-    XYCoords xy_pair = std::make_pair(x_, y_);
+    XYCoords xy_pair = std::make_pair(rechit_x, rechit_y);
     float distance_ele_trajectory =
         ele_trajectory.size()
             ? sqrt(pow((xy_pair.first - ele_trajectory[id.layer()].first), 2) +
@@ -977,15 +979,15 @@ ldmx::EcalID EcalVetoProcessor::getShowerCentroidIdAndRms(
   for (const ldmx::EcalHit &hit : ecal_rec_hits) {
     ldmx::EcalID id(hit.getID());
     CellEnergyPair cell_energy_pair = std::make_pair(id, hit.getEnergy());
-    auto [x_, y_, z_] = geometry_->getPosition(id);
-    XYCoords centroid_coords = std::make_pair(x_, y_);
+    auto [rechit_x, rechit_y, rechit_z] = geometry_->getPosition(id);
+    XYCoords centroid_coords = std::make_pair(rechit_x, rechit_y);
     wgt_centroid_coords.first = wgt_centroid_coords.first +
                                 centroid_coords.first * cell_energy_pair.second;
     wgt_centroid_coords.second =
         wgt_centroid_coords.second +
         centroid_coords.second * cell_energy_pair.second;
     sum_edep += cell_energy_pair.second;
-  }
+  }  // end loop over rec hits
   wgt_centroid_coords.first = (sum_edep > 1E-6)
                                   ? wgt_centroid_coords.first / sum_edep
                                   : wgt_centroid_coords.first;
@@ -995,13 +997,14 @@ ldmx::EcalID EcalVetoProcessor::getShowerCentroidIdAndRms(
   // Find Nearest Cell to Centroid
   float max_dist = 1e6;
   for (const ldmx::EcalHit &hit : ecal_rec_hits) {
-    auto [x_, y_, z_] = geometry_->getPosition(hit.getID());
-    XYCoords centroid_coords = std::make_pair(x_, y_);
+    auto [rechit_x, rechit_y, rechit_z] = geometry_->getPosition(hit.getID());
+    XYCoords centroid_coords = std::make_pair(rechit_x, rechit_y);
 
     float delta_r =
-        pow(pow((centroid_coords.first - wgt_centroid_coords.first), 2) +
-                pow((centroid_coords.second - wgt_centroid_coords.second), 2),
-            .5);
+        sqrt(((centroid_coords.first - wgt_centroid_coords.first) *
+              (centroid_coords.first - wgt_centroid_coords.first)) +
+             ((centroid_coords.second - wgt_centroid_coords.second) *
+              (centroid_coords.second - wgt_centroid_coords.second)));
     shower_rms += delta_r * hit.getEnergy();
     if (delta_r < max_dist) {
       max_dist = delta_r;

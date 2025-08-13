@@ -71,7 +71,7 @@ class EcalDigiProducer(Producer) :
         Output name of digis put into event bus
     """
 
-    def __init__(self, instance_name = 'ecalDigis', si_thickness = 0.3) :
+    def __init__(self, instance_name = 'ecalDigis', si_thickness = 0.4) :
         super().__init__(instance_name , 'ecal::EcalDigiProducer','Ecal')
 
         self.hgcroc = EcalHgcrocEmulator()
@@ -157,7 +157,7 @@ class EcalRecProducer(Producer) :
         electron events with 4GeV.
         """
 
-        self.secondOrderEnergyCorrection = 0.948;
+        self.secondOrderEnergyCorrection = 0.948
         self.layerWeights = [
             1.641, 3.526, 5.184, 6.841,
             8.222, 8.775, 8.775, 8.775, 8.775, 8.775, 8.775, 8.775, 8.775, 8.775,
@@ -187,7 +187,7 @@ class EcalRecProducer(Producer) :
         electron events with 4GeV.
         """
 
-        self.secondOrderEnergyCorrection = 4000. / 4007.;
+        self.secondOrderEnergyCorrection = 4000. / 4007.
         self.layerWeights = [
             1.675, 2.724, 4.398, 6.039, 7.696, 9.077, 9.630, 9.630, 9.630, 9.630, 9.630,
             9.630, 9.630, 9.630, 9.630, 9.630, 9.630, 9.630, 9.630, 9.630, 9.630, 9.630,
@@ -204,8 +204,8 @@ class EcalRecProducer(Producer) :
         distribution (one mean, a low and high deviation) to the histogram.
         """
 
-        #self.secondOrderEnergyCorrection = 4000. / 3940.5;
-        self.secondOrderEnergyCorrection = 8000. / 7998.3;
+        #self.secondOrderEnergyCorrection = 4000. / 3940.5
+        self.secondOrderEnergyCorrection = 8000. / 7998.3
         # these layer weights were the 'dE' column of the table output by Detetectors/util/ecal_layer_stack.py
         # See https://github.com/LDMX-Software/ldmx-sw/issues/1725
         # TLDR: these are wrong but only off by an absolute value of ~0.2, future detector versions
@@ -224,7 +224,7 @@ class EcalRecProducer(Producer) :
         so unity is being used as a placeholder.
         """
 
-        self.secondOrderEnergyCorrection = 1.;
+        self.secondOrderEnergyCorrection = 1.
         self.layerWeights = [ 
                 2.312, 5.417, 9.837, 11.910, 11.910, 11.910
                 ]
