@@ -65,6 +65,12 @@ class TrigScintSD : public SensitiveDetector {
   std::string vol_name_;
   /// the ID number for the module we are gathering hits from
   int module_id_;
+  /// Whether to use Birks law for energy deposition
+  bool use_birks_law_;
+  /// Birks law constants c1
+  double birks_const_one_;
+  /// Birks law constants c2
+  double birks_const_two_;
 };
 
 }  // namespace simcore

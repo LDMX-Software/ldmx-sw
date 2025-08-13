@@ -128,11 +128,21 @@ class TrigScintSD(simcfg.SensitiveDetector) :
     vol : str
         Name of logical volume(s) that this SD should be attached to
         DEPENDS ON GDML
+    use_birks_law : bool, optional
+        Should the simulation use Birks law to estimate energy deposition?
+        Defaults to False.
+    birks_const_one : float, optional
+        First Birks constant, defaults to 1.29e-2
+    birks_const_two : float, optional
+        Second Birks constant, defaults to 9.59e-6
     """
     def __init__(self, module, name, vol) :
         super().__init__(f'trig_scint_{name}_sd', 'simcore::TrigScintSD','SimCore_SDs')
         self.module_id = module
         self.volume_name = vol
+        self.use_birks_law = False
+        self.birks_const_one = 1.29e-2
+        self.birks_const_two = 9.59e-6
 
         coll = name+'SimHits'
         if name != 'Target' :
@@ -163,5 +173,9 @@ class TrigScintSD(simcfg.SensitiveDetector) :
         return TrigScintSD(2,'Pad1','trigger_pad1_bar_volume')
 
     def target() :
-        return TrigScintSD(4,'Target','target')
+        """Target sensitive detector"""
+        active_target = TrigScintSD(4,'Target','target')
+        active_target.use_birks_law = True
+
+        return active_target
 
