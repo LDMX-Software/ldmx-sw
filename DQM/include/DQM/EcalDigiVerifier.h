@@ -2,8 +2,12 @@
 #define DQM_ECALDIGIVERIFIER_H
 
 // LDMX Framework
-#include "Framework/Configure/Parameters.h"  // Needed to import parameters from configuration file
-#include "Framework/EventProcessor.h"  //Needed to declare processor
+
+#include "DetDescr/EcalID.h"
+#include "Ecal/Event/EcalHit.h"
+#include "Framework/Configure/Parameters.h"
+#include "Framework/EventProcessor.h"
+#include "SimCore/Event/SimCalorimeterHit.h"
 
 namespace dqm {
 
@@ -33,16 +37,19 @@ class EcalDigiVerifier : public framework::Analyzer {
 
  private:
   /// Collection Name for SimHits
-  std::string ecalSimHitColl_;
+  std::string ecal_sim_hit_coll_;
 
   /// Pass Name for SimHits
-  std::string ecalSimHitPass_;
+  std::string ecal_sim_hit_pass_;
 
   /// Collection Name for RecHits
-  std::string ecalRecHitColl_;
+  std::string ecal_rec_hit_coll_;
 
   /// Pass Name for RecHits
-  std::string ecalRecHitPass_;
+  std::string ecal_rec_hit_pass_;
+
+  /// Number of layers in the ECAL
+  int num_layers_;
 };
 }  // namespace dqm
 

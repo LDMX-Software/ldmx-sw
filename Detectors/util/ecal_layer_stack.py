@@ -282,7 +282,8 @@ class Layer :
         for name, material in materials.items()
     }
 
-    SensDetThickness = 0.3
+    # 300 um for v14 and 400 um for v15
+    SensDetThickness = 0.4
 
     def __init__(self, name, thickness, sensitive = False) :
         self.name = name
@@ -512,10 +513,12 @@ def print_weights(
             'Layer', 'dE', 'X0', 'Lambda', 'Zpos'
         )
     )
+    output.write('-----------------------------------\n')
     for layer in range(len(dE_between_sensdet)-1):
         output.write('{0:5d} {1:7.3f} {2:6.3f} {3:6.3f} {4:6.3f}\n'.format(
             layer+1, dE_between_sensdet[layer], X0_between_sensdet[layer], L_between_sensdet[layer], Zpos_layer[layer]))
     #endfor - layers
+    output.write('-----------------------------------\n')
     output.write('{0:>5s} {1:7.3f} {2:6.3f} {3:6.3f} {4:6.3f}\n'.format(
         'Sum', sum(dE_between_sensdet[:-1]), sum(X0_between_sensdet[:-1]), sum(L_between_sensdet[:-1]), Zpos_layer[-1] ))
     output.write('{0:>5s} {1:7.3f} {2:6.3f} {3:6.3f} {4:6.3f}\n'.format(
@@ -574,6 +577,32 @@ def ldmx_ecal_v14():
     weights = calc_weights(mbs)
     print_weights(*weights)
 
+@command
+def ldmx_ecal_v15():
+    """full LDMX Ecal v15 geometry"""
+
+    bilayers = (
+        [BiLayerSandwich(front = 0.0, cooling = 0.0)] # absorber-less Pre-Shower
+        +[BiLayerSandwich(front = 1.0, cooling = 1.0)] # Section A
+        +[BiLayerSandwich(front = 2.0, cooling = 1.5)] # Section B
+        +9*[BiLayerSandwich(front = 3.5, cooling = 1.8)] # Section C
+        +5*[BiLayerSandwich(front = 7.0, cooling = 3.5)] # Section D
+    )
+
+    # the way I designed the GDML did not include the Pre-Shower bilayer
+    # in these lists because the Pre-Shower bilayer doesn't have any absorber
+    ct, ft, bac = enumerate_absorber_dz(bilayers[1:])
+    print_gdml_list(cooling_tungsten_dz = ct,
+                    front_tungsten_dz = ft,
+                    bilayer_absorber_cumulative = bac)
+
+    # adding two lists together just appends them, so I "sum" all the
+    # bilayer material stacks into a single materal stack for the entire detector
+    layers = sum((bilayer.material_stack() for bilayer in bilayers), [])
+    # partition the material stack into groups separated by sensitive silicon
+    mbs = materials_between_sensdet(layers)
+    weights = calc_weights(mbs)
+    print_weights(*weights)
 
 @command
 def minildmx():

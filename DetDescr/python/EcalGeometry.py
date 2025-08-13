@@ -63,8 +63,6 @@ class EcalGeometry() :
         # parameters which are somewhat independent of GDML
         self.nCellRHeight = nCellRHeight
 
-        self.verbose = 0
-
     def __str__(self) :
         """Stringify this configuration class"""
 
@@ -132,13 +130,15 @@ class EcalGeometry() :
     def v15() :
         eg = EcalGeometry(detectors_valid = ["ldmx-det-v15","ldmx-det-v15.*"],
                 gap = 1.5,
+                si_thickness = 0.4,
                 layerZPositions = [
-                      7.582, 16.062, 33.226, 43.206, 60.370, 71.350, 90.014, 101.594, 
-                      120.258, 131.838, 150.502, 162.082, 180.746, 192.326, 210.990, 
-                      222.570, 241.234, 252.814, 271.478, 283.058, 301.722, 313.302, 
-                      331.966, 343.546, 365.710, 380.690, 402.854, 417.834, 439.998,
-                      454.978, 477.142, 492.122, 514.286, 529.266
-			],
+                    # using 400 um Si thickness
+                    7.582, 16.162, 33.426, 43.506, 60.770, 71.850, 90.614, 102.294, 
+                    121.058, 132.738, 151.502, 163.182, 181.946, 193.626, 212.390, 
+                    224.070, 242.834, 254.514, 273.278, 284.958, 303.722, 315.402, 
+                    334.166, 345.846, 368.110, 383.190, 405.454, 420.534, 442.798, 
+                    457.878, 480.142, 495.222, 517.486, 532.566
+                ],
                 ecalFrontZ = 240.0,
                 cornersSideUp = True,
                 layer_shift_odd = True,
