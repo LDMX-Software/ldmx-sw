@@ -131,7 +131,7 @@ for ts_dqm in trigScint_dqm :
 
 # EcalDigiVerify
 ecalDigiVerify = dqm.EcalDigiVerify()
-ecalDigiVerify.ecalSimHitColl += overlayStr
+ecalDigiVerify.ecal_sim_hit_coll += overlayStr
 
 # EcalShowerFeatures
 ecalShowerFeatures = dqm.EcalShowerFeatures()
