@@ -69,10 +69,6 @@ class TrigScintQIEDigiProducer : public framework::Producer {
   /// Random number generator
   std::unique_ptr<TRandom3> random_{nullptr};
 
-  /// Class to set the verbosity level.
-  // TODO: Make use of the global verbose parameter.
-  bool verbose_{false};
-
   /// Name of the input collection containing the sim hits
   std::string input_collection_;
 
@@ -87,8 +83,8 @@ class TrigScintQIEDigiProducer : public framework::Producer {
   /// Number of strips per array
   int strips_per_array_{50};
 
-  /// Number of arrays
-  int number_of_arrays_{3};
+  // /// Number of arrays
+  // int number_of_arrays_{3};
 
   /// Mean readout noise
   double mean_noise_{0};

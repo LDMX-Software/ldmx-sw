@@ -232,8 +232,8 @@ void EventReadoutProducer::produce(framework::Event &event) {
     // identical unless they are from an oscillation
     int n_high = 0;
     int quart_length = (int)charge.size() / 4;
-    for (int i = 4 * quart_length - 2; i >= 3 * quart_length;
-         i--) {  // maxQ is already at last index
+    for (int i = 4 * quart_length - 2; i >= 3 * quart_length; i--) {
+      // maxQ is already at last index
       if (charge[i] / max_q > 0.66) n_high++;
     }
 
@@ -241,25 +241,24 @@ void EventReadoutProducer::produce(framework::Event &event) {
        all end up in 0.90-0.94, and somewhere >0.05 (at least >0.15)
     */
     uint flag_spike = (max_q / out_event.getTotQ() > 0.95) ||
-                      (charge[charge.size() - 2] / max_q <
-                       0.05);  // skip "unnaturally" narrow hits (all charge in
-                               // one sample or huge drop to second highest)
-    uint flag_plateau =
-        (ped > 15 || n_high >= 5);  //( fabs(ped) > 15 ); //threshold // //skip
-                                    // events that have strange plateaus
-    uint flag_long_pulse =
-        0;  // easier to deal with in hit reconstruction directly. copy channel
-            // flags to hit flags and add this one there
-    uint flag_noise =
-        (out_event.getNoise() > 3.5 ||
-         out_event.getNoise() == 0);  // =0 is typically from funky events but
-                                      // could be too harsh maybe
-                                      /* //let this wait for now
-                                      //if we have many high counts, a small event pedestal (where they weren't
-                                      included), and an avgQ ~ maxQ/nHigh, then this is an oscillation                                   if (
-                                      (quartLength-nHigh<2 && ped<10) || fabs( maxQ/(avgQ*nHigh)-1 ) <0.1 )
-                                        flagOscillation=1;
-                              */
+                      (charge[charge.size() - 2] / max_q < 0.05);
+    // skip "unnaturally" narrow hits (all charge in
+    // one sample or huge drop to second highest)
+    uint flag_plateau = (ped > 15 || n_high >= 5);
+    //( fabs(ped) > 15 ); //threshold // //skip
+    // events that have strange plateaus
+    uint flag_long_pulse = 0;
+    // easier to deal with in hit reconstruction directly. copy channel
+    // flags to hit flags and add this one there
+    uint flag_noise = (out_event.getNoise() > 3.5 || out_event.getNoise() == 0);
+    // =0 is typically from funky events but
+    // could be too harsh maybe
+    /* //let this wait for now
+    //if we have many high counts, a small event pedestal (where they weren't
+    included), and an avgQ ~ maxQ/nHigh, then this is an oscillation if (
+    (quartLength-nHigh<2 && ped<10) || fabs( maxQ/(avgQ*nHigh)-1 ) <0.1 )
+      flagOscillation=1;
+*/
 
     /* //this seems to not catch what we want it to
 if ( fabs(chan.getPedestal()) < 15 //threshold //   //skip events that have

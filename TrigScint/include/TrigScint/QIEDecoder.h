@@ -46,10 +46,6 @@ class QIEDecoder : public framework::Producer {
   std::string output_collection_;
   std::string input_pass_name_;
 
-  // verbosity for very specific printouts that don't play well with logger
-  // format
-  bool verbose_{false};
-
   // number of channels in the pad
   int n_channels_{50};
   // number of time samples making up the event

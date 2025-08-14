@@ -55,10 +55,6 @@ class TrigScintRecHitProducer : public framework::Producer {
   void produce(framework::Event& event) override;
 
  private:
-  /// Class to set the verbosity level.
-  // TODO: Make use of the global verbose parameter.
-  bool verbose_{false};
-
   /// Name of the input collection containing the sim hits
   std::string input_collection_;
 
