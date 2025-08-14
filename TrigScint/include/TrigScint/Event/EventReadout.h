@@ -36,7 +36,7 @@ class EventReadout : public trigscint::TrigScintQIEDigis {
   /**
    * Clear the data in the object.
    */
-  void Clear(Option_t *option = "");
+  void clear(Option_t *option = "");
 
   /**
    * Print out the object.
@@ -195,7 +195,7 @@ class EventReadout : public trigscint::TrigScintQIEDigis {
    * @note required for declaring std::vector<> in EventDef.h
    */
   bool operator<(const EventReadout &rhs) const {
-    return this->chanID_ < rhs.chanID_;
+    return this->chan_id_ < rhs.chan_id_;
   }
 
  private:

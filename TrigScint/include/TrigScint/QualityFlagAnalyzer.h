@@ -48,22 +48,23 @@ class QualityFlagAnalyzer : public framework::Analyzer {
   int start_sample_{0};
 
   // plotting stuff
-  const int N_EV{200};
-  static constexpr int N_CHANNELS{16};
-  const int N_FLAGS{6};
+  int n_ev_{200};
+  int n_channels_{16};
+  int n_flags_{6};
   int pe_fill_nb_{0};
 
   // make sure to match constants above
-  const int FLAGS[6] = {16, 8, 4,
-                        2,  1, 0};  // this order just makes looping easier
-  int n_ev_drawn_[6] = {
-      0};  // keep a counter for each flag type to get good stats
+  // this order just makes looping easier
+  int flags_[6] = {16, 8, 4, 2, 1, 0};
+  // keep a counter for each flag type to get good stats
+  int n_ev_drawn_[6] = {0};
+
   TH1F* h_out_[200][16];
   TH1F* h_out_pe_[200][16];
   TH1F* h_out_flag_[6][200][16];  // for 4 quality flags and 0 (no flag)
   TH1F* h_pe_[16];
 
-  TH2F* h_td_cfire_chanvs_event_;
+  TH2F* h_td_cfire_chan_vs_event_;
 };
 }  // namespace trigscint
 

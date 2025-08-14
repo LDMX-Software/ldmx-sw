@@ -5,8 +5,8 @@
 #include "TrigScint/Firmware/hitproducer.h"
 #include "TrigScint/Firmware/objdef.h"
 
-void hitproducer_hw(ap_uint<14> FIFO[NHITS][5], Hit outHit[NHITS],
-                    ap_uint<8> Peds[NHITS]) {
+void hitproducerHw(ap_uint<14> FIFO[NHITS][5], Hit outHit[NHITS],
+                   ap_uint<8> Peds[NHITS]) {
 #ifdef TS_NOT_EMULATION
 #pragma HLS ARRAY_PARTITION variable = FIFO complete
 #pragma HLS ARRAY_PARTITION variable = amplitude complete
@@ -92,10 +92,10 @@ void hitproducer_hw(ap_uint<14> FIFO[NHITS][5], Hit outHit[NHITS],
                            198, 397, 794, 1587, 1587, 3174, 6349, 12700};
 
   for (int i = 0; i < NHITS; i++) {
-    outHit[i].bID = -1;
-    outHit[i].mID = 0;
-    outHit[i].Time = 0;
-    outHit[i].Amp = 0;
+    outHit[i].b_id_ = -1;
+    outHit[i].m_id_ = 0;
+    outHit[i].time_ = 0;
+    outHit[i].amp_ = 0;
     ap_uint<14> word1 = FIFO[i][0];
     ap_uint<14> word2 = FIFO[i][1];
     ap_uint<14> word3 = FIFO[i][2];
@@ -145,14 +145,14 @@ void hitproducer_hw(ap_uint<14> FIFO[NHITS][5], Hit outHit[NHITS],
     charge5 = edges[4 * rr + ss] + (v1 - nbins[ss]) * sense[4 * rr + ss] +
               sense[4 * rr + ss] / 2 - 1;
 
-    outHit[i].bID = i;
+    outHit[i].b_id_ = i;
 
     // You now are creating an output hit. The time of the hit is determined by
     // the last part of the concatenated streamed tdc, which is 6 bits and
     // therefore you mask the word1 with 63 (which is 111111 in binary) so as
     // only to keep the tdc.
 
-    outHit[i].Time = (word1 & 63);
+    outHit[i].time_ = (word1 & 63);
 
     // The 36 remaining here is an artefact of the mapping that the charges have
     // to adcs; its not particularly meaningful except that it establishes that
@@ -160,7 +160,7 @@ void hitproducer_hw(ap_uint<14> FIFO[NHITS][5], Hit outHit[NHITS],
     // conglomerate but relates to the number of PE's produced; it will change
     // based on the number of shunts employed during a run.
 
-    outHit[i].Amp =
+    outHit[i].amp_ =
         shunt *
         ((charge1 + charge2 + charge3 + charge4 + charge5 - 36) * .00625);
   }

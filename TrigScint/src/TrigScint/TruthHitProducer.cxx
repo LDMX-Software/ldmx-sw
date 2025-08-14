@@ -8,36 +8,36 @@ TruthHitProducer::TruthHitProducer(const std::string &name,
     : Producer(name, process) {}
 
 void TruthHitProducer::configure(framework::config::Parameters &parameters) {
-  inputCollection_ = parameters.getParameter<std::string>("input_collection");
-  inputPassName_ = parameters.getParameter<std::string>("input_pass_name");
-  outputCollection_ = parameters.getParameter<std::string>("output_collection");
+  input_collection_ = parameters.get<std::string>("input_collection");
+  input_pass_name_ = parameters.get<std::string>("input_pass_name");
+  output_collection_ = parameters.get<std::string>("output_collection");
   sim_particles_passname_ =
-      parameters.getParameter<std::string>("sim_particles_passname");
+      parameters.get<std::string>("sim_particles_passname");
   input_collection_events_passname_ =
-      parameters.getParameter<std::string>("input_collection_events_passname");
+      parameters.get<std::string>("input_collection_events_passname");
 
-  verbose_ = parameters.getParameter<bool>("verbose");
+  verbose_ = parameters.get<bool>("verbose");
 
   if (verbose_) {
     ldmx_log(info) << "In TruthHitProducer: configure done!";
     ldmx_log(info) << "Got parameters:  " << "\nInput collection:     "
-                   << inputCollection_
-                   << "\nInput pass name:     " << inputPassName_
-                   << "\nOutput collection:    " << outputCollection_
+                   << input_collection_
+                   << "\nInput pass name:     " << input_pass_name_
+                   << "\nOutput collection:    " << output_collection_
                    << "\nVerbose: " << verbose_;
   }
 }
 
 void TruthHitProducer::produce(framework::Event &event) {
   // Check if the collection exists.  If not, don't bother processing the event.
-  if (!event.exists(inputCollection_, input_collection_events_passname_)) {
-    ldmx_log(error) << "No input collection called " << inputCollection_
+  if (!event.exists(input_collection_, input_collection_events_passname_)) {
+    ldmx_log(error) << "No input collection called " << input_collection_
                     << " found; skipping!";
     return;
   }
   // looper over sim hits and aggregate energy depositions for each detID
   const auto sim_hits{event.getCollection<ldmx::SimCalorimeterHit>(
-      inputCollection_, inputPassName_)};
+      input_collection_, input_pass_name_)};
   auto particle_map{event.getMap<int, ldmx::SimParticle>(
       "SimParticles", sim_particles_passname_)};
 
@@ -69,7 +69,7 @@ void TruthHitProducer::produce(framework::Event &event) {
       if (keep) truth_beam_electrons.push_back(sim_hit);
     }
   }
-  event.add(outputCollection_, truth_beam_electrons);
+  event.add(output_collection_, truth_beam_electrons);
 }
 }  // namespace trigscint
 

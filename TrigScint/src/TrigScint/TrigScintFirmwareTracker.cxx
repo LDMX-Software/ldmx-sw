@@ -11,25 +11,25 @@
 namespace trigscint {
 
 void TrigScintFirmwareTracker::configure(framework::config::Parameters &ps) {
-  minThr_ = ps.getParameter<double>("clustering_threshold");
-  digis1_collection_ = ps.getParameter<std::string>("digis1_collection");
-  digis2_collection_ = ps.getParameter<std::string>("digis2_collection");
-  digis3_collection_ = ps.getParameter<std::string>("digis3_collection");
-  passName_ = ps.getParameter<std::string>("input_pass_name");
-  output_collection_ = ps.getParameter<std::string>("output_collection");
-  verbose_ = ps.getParameter<int>("verbosity");
-  timeTolerance_ = ps.getParameter<double>("time_tolerance");
-  padTime_ = ps.getParameter<double>("pad_time");
+  min_thr_ = ps.get<double>("clustering_threshold");
+  digis1_collection_ = ps.get<std::string>("digis1_collection");
+  digis2_collection_ = ps.get<std::string>("digis2_collection");
+  digis3_collection_ = ps.get<std::string>("digis3_collection");
+  pass_name_ = ps.get<std::string>("input_pass_name");
+  output_collection_ = ps.get<std::string>("output_collection");
+  verbose_ = ps.get<int>("verbosity");
+  time_tolerance_ = ps.get<double>("time_tolerance");
+  pad_time_ = ps.get<double>("pad_time");
 
   if (verbose_) {
     ldmx_log(info) << "In TrigScintFirmwareTracker: configure done!";
-    ldmx_log(info) << "\nClustering threshold: " << minThr_
-                   << "\nExpected pad hit time: " << padTime_
-                   << "\nMax hit time delay: " << timeTolerance_
+    ldmx_log(info) << "\nClustering threshold: " << min_thr_
+                   << "\nExpected pad hit time: " << pad_time_
+                   << "\nMax hit time delay: " << time_tolerance_
                    << "\ndigis1 collection:     " << digis1_collection_
                    << "\ndigis2 collection:     " << digis2_collection_
                    << "\ndigis3 collection:     " << digis3_collection_
-                   << "\nInput pass name:     " << passName_
+                   << "\nInput pass name:     " << pass_name_
                    << "\nOutput collection:    " << output_collection_
                    << "\nVerbosity: " << verbose_;
   }
@@ -39,7 +39,7 @@ void TrigScintFirmwareTracker::configure(framework::config::Parameters &ps) {
 
 void TrigScintFirmwareTracker::produce(framework::Event &event) {
   // This processor takes in TS digis and outputs a track collection. It does so
-  // using clusterproducer_sw and trackproducer_hw, which are validated pieces
+  // using clusterproducer_sw and trackproducerHw, which are validated pieces
   // of HLS code (though clusterproducer_sw has had its instances of pragmas
   // excluded. I will comment on how clusterproducer and trackproducer work more
   // thouroughly in them respectively, but generally the clusterproducer makes
@@ -122,15 +122,15 @@ void TrigScintFirmwareTracker::produce(framework::Event &event) {
   }
   // I am reading in the three digi collections
   const auto &digis1{
-      event.getCollection<ldmx::TrigScintHit>(digis1_collection_, passName_)};
+      event.getCollection<ldmx::TrigScintHit>(digis1_collection_, pass_name_)};
   const auto &digis2{
-      event.getCollection<ldmx::TrigScintHit>(digis2_collection_, passName_)};
+      event.getCollection<ldmx::TrigScintHit>(digis2_collection_, pass_name_)};
   const auto &digis3{
-      event.getCollection<ldmx::TrigScintHit>(digis3_collection_, passName_)};
+      event.getCollection<ldmx::TrigScintHit>(digis3_collection_, pass_name_)};
 
   if (verbose_) {
     ldmx_log(debug) << "Got digi collection " << digis1_collection_ << "_"
-                    << passName_ << " with " << digis1.size() << " entries ";
+                    << pass_name_ << " with " << digis1.size() << " entries ";
   }
 
   // The next collection of things fill in the firmware hit objects from reading
@@ -142,23 +142,25 @@ void TrigScintFirmwareTracker::produce(framework::Event &event) {
   }
   int count = 0;
   for (const auto &digi : digis1) {
-    if ((digi.getPE() > minThr_) and (digi.getBarID() <= NCHAN) and
+    if ((digi.getPE() > min_thr_) and (digi.getBarID() <= NCHAN) and
         (digi.getBarID() >= 0)) {
       ap_int<12> b_id = (ap_int<12>)(digi.getBarID());
       ap_int<12> amp = (ap_int<12>)(digi.getPE());
       if (occupied[digi.getBarID()] >= 0) {
-        if (h_pad1[occupied[digi.getBarID()]].Amp < digi.getPE()) {
-          h_pad1[occupied[digi.getBarID()]].bID = (ap_int<12>)(digi.getBarID());
-          h_pad1[occupied[digi.getBarID()]].mID =
+        if (h_pad1[occupied[digi.getBarID()]].amp_ < digi.getPE()) {
+          h_pad1[occupied[digi.getBarID()]].b_id_ =
+              (ap_int<12>)(digi.getBarID());
+          h_pad1[occupied[digi.getBarID()]].m_id_ =
               (ap_int<12>)(digi.getModuleID());
-          h_pad1[occupied[digi.getBarID()]].Amp = (ap_int<12>)(digi.getPE());
-          h_pad1[occupied[digi.getBarID()]].Time = (ap_int<12>)(digi.getTime());
+          h_pad1[occupied[digi.getBarID()]].amp_ = (ap_int<12>)(digi.getPE());
+          h_pad1[occupied[digi.getBarID()]].time_ =
+              (ap_int<12>)(digi.getTime());
         }
       } else {
-        h_pad1[count].bID = (ap_int<12>)(digi.getBarID());
-        h_pad1[count].mID = (ap_int<12>)(digi.getModuleID());
-        h_pad1[count].Amp = (ap_int<12>)(digi.getPE());
-        h_pad1[count].Time = (ap_int<12>)(digi.getTime());
+        h_pad1[count].b_id_ = (ap_int<12>)(digi.getBarID());
+        h_pad1[count].m_id_ = (ap_int<12>)(digi.getModuleID());
+        h_pad1[count].amp_ = (ap_int<12>)(digi.getPE());
+        h_pad1[count].time_ = (ap_int<12>)(digi.getTime());
         occupied[digi.getBarID()] = count;
         count++;
       }
@@ -170,23 +172,25 @@ void TrigScintFirmwareTracker::produce(framework::Event &event) {
   }
   count = 0;
   for (const auto &digi : digis2) {
-    if ((digi.getPE() > minThr_) and (digi.getBarID() <= NCHAN) and
+    if ((digi.getPE() > min_thr_) and (digi.getBarID() <= NCHAN) and
         (digi.getBarID() >= 0)) {
       ap_int<12> b_id = (ap_int<12>)(digi.getBarID());
       ap_int<12> amp = (ap_int<12>)(digi.getPE());
       if (occupied[digi.getBarID()] >= 0) {
-        if (h_pad2[occupied[digi.getBarID()]].Amp < digi.getPE()) {
-          h_pad2[occupied[digi.getBarID()]].bID = (ap_int<12>)(digi.getBarID());
-          h_pad2[occupied[digi.getBarID()]].mID =
+        if (h_pad2[occupied[digi.getBarID()]].amp_ < digi.getPE()) {
+          h_pad2[occupied[digi.getBarID()]].b_id_ =
+              (ap_int<12>)(digi.getBarID());
+          h_pad2[occupied[digi.getBarID()]].m_id_ =
               (ap_int<12>)(digi.getModuleID());
-          h_pad2[occupied[digi.getBarID()]].Amp = (ap_int<12>)(digi.getPE());
-          h_pad2[occupied[digi.getBarID()]].Time = (ap_int<12>)(digi.getTime());
+          h_pad2[occupied[digi.getBarID()]].amp_ = (ap_int<12>)(digi.getPE());
+          h_pad2[occupied[digi.getBarID()]].time_ =
+              (ap_int<12>)(digi.getTime());
         }
       } else {
-        h_pad2[count].bID = (ap_int<12>)(digi.getBarID());
-        h_pad2[count].mID = (ap_int<12>)(digi.getModuleID());
-        h_pad2[count].Amp = (ap_int<12>)(digi.getPE());
-        h_pad2[count].Time = (ap_int<12>)(digi.getTime());
+        h_pad2[count].b_id_ = (ap_int<12>)(digi.getBarID());
+        h_pad2[count].m_id_ = (ap_int<12>)(digi.getModuleID());
+        h_pad2[count].amp_ = (ap_int<12>)(digi.getPE());
+        h_pad2[count].time_ = (ap_int<12>)(digi.getTime());
         occupied[digi.getBarID()] = count;
         count++;
       }
@@ -197,79 +201,82 @@ void TrigScintFirmwareTracker::produce(framework::Event &event) {
   }
   count = 0;
   for (const auto &digi : digis3) {
-    if ((digi.getPE() > minThr_) and (digi.getBarID() <= NCHAN) and
+    if ((digi.getPE() > min_thr_) and (digi.getBarID() <= NCHAN) and
         (digi.getBarID() >= 0)) {
       ap_int<12> b_id = (ap_int<12>)(digi.getBarID());
       ap_int<12> amp = (ap_int<12>)(digi.getPE());
       if (occupied[digi.getBarID()] >= 0) {
-        if (h_pad3[occupied[digi.getBarID()]].Amp < digi.getPE()) {
-          h_pad3[occupied[digi.getBarID()]].bID = (ap_int<12>)(digi.getBarID());
-          h_pad3[occupied[digi.getBarID()]].mID =
+        if (h_pad3[occupied[digi.getBarID()]].amp_ < digi.getPE()) {
+          h_pad3[occupied[digi.getBarID()]].b_id_ =
+              (ap_int<12>)(digi.getBarID());
+          h_pad3[occupied[digi.getBarID()]].m_id_ =
               (ap_int<12>)(digi.getModuleID());
-          h_pad3[occupied[digi.getBarID()]].Amp = (ap_int<12>)(digi.getPE());
-          h_pad3[occupied[digi.getBarID()]].Time = (ap_int<12>)(digi.getTime());
+          h_pad3[occupied[digi.getBarID()]].amp_ = (ap_int<12>)(digi.getPE());
+          h_pad3[occupied[digi.getBarID()]].time_ =
+              (ap_int<12>)(digi.getTime());
         }
       } else {
-        h_pad3[count].bID = (ap_int<12>)(digi.getBarID());
-        h_pad3[count].mID = (ap_int<12>)(digi.getModuleID());
-        h_pad3[count].Amp = (ap_int<12>)(digi.getPE());
-        h_pad3[count].Time = (ap_int<12>)(digi.getTime());
+        h_pad3[count].b_id_ = (ap_int<12>)(digi.getBarID());
+        h_pad3[count].m_id_ = (ap_int<12>)(digi.getModuleID());
+        h_pad3[count].amp_ = (ap_int<12>)(digi.getPE());
+        h_pad3[count].time_ = (ap_int<12>)(digi.getTime());
         occupied[digi.getBarID()] = count;
         count++;
       }
     }
   }
-  // These next lines here calls clusterproducer_sw(HPad1), which is just the
+  // These next lines here calls clusterproducerSw(HPad1), which is just the
   // validated firmware module. Since ap_* class is messy, I had to do some
   // post-call cleanup before looping over the clusters and putting them into
   // Point i which is feed into track producer
   int counter_n = 0;
-  std::array<Cluster, NCLUS> point1 = clusterproducer_sw(h_pad1);
+  std::array<Cluster, NCLUS> point1 = clusterproducerSw(h_pad1);
   int top_seed = 0;
   for (int i = 0; i < NCLUS; i++) {
-    if ((point1[i].Seed.Amp < 450) and (point1[i].Seed.Amp > 30) and
-        (point1[i].Seed.bID < (NCHAN + 1)) and (point1[i].Seed.bID >= 0) and
-        (point1[i].Sec.Amp < 450) and (counter_n < NTRK)) {
-      if (point1[i].Seed.bID >= top_seed) {
-        cpyHit(pad1[counter_n].Seed, point1[i].Seed);
-        cpyHit(pad1[counter_n].Sec, point1[i].Sec);
+    if ((point1[i].seed_.amp_ < 450) and (point1[i].seed_.amp_ > 30) and
+        (point1[i].seed_.b_id_ < (NCHAN + 1)) and
+        (point1[i].seed_.b_id_ >= 0) and (point1[i].sec_.amp_ < 450) and
+        (counter_n < NTRK)) {
+      if (point1[i].seed_.b_id_ >= top_seed) {
+        cpyHit(pad1[counter_n].seed_, point1[i].seed_);
+        cpyHit(pad1[counter_n].sec_, point1[i].sec_);
         calcCent(pad1[counter_n]);
         counter_n++;
-        top_seed = point1[i].Seed.bID;
+        top_seed = point1[i].seed_.b_id_;
       }
     }
   }
-  std::array<Cluster, NCLUS> point2 = clusterproducer_sw(h_pad2);
+  std::array<Cluster, NCLUS> point2 = clusterproducerSw(h_pad2);
   top_seed = 0;
   for (int i = 0; i < NCLUS; i++) {
-    if ((point2[i].Seed.Amp < 450) and (point2[i].Seed.Amp > 30) and
-        (point2[i].Seed.bID < (NCHAN + 1)) and (point2[i].Seed.bID >= 0) and
-        (point2[i].Sec.Amp < 450)) {
-      if (point2[i].Seed.bID >= top_seed) {
-        cpyHit(pad2[i].Seed, point2[i].Seed);
-        cpyHit(pad2[i].Sec, point2[i].Sec);
+    if ((point2[i].seed_.amp_ < 450) and (point2[i].seed_.amp_ > 30) and
+        (point2[i].seed_.b_id_ < (NCHAN + 1)) and
+        (point2[i].seed_.b_id_ >= 0) and (point2[i].sec_.amp_ < 450)) {
+      if (point2[i].seed_.b_id_ >= top_seed) {
+        cpyHit(pad2[i].seed_, point2[i].seed_);
+        cpyHit(pad2[i].sec_, point2[i].sec_);
         calcCent(pad2[i]);
-        top_seed = point2[i].Seed.bID;
+        top_seed = point2[i].seed_.b_id_;
       }
     }
   }
-  std::array<Cluster, NCLUS> point3 = clusterproducer_sw(h_pad3);
+  std::array<Cluster, NCLUS> point3 = clusterproducerSw(h_pad3);
   top_seed = 0;
   for (int i = 0; i < NCLUS; i++) {
-    if ((point3[i].Seed.Amp < 450) and (point3[i].Seed.Amp > 30) and
-        (point3[i].Seed.bID < (NCHAN + 1)) and (point3[i].Seed.bID >= 0) and
-        (point3[i].Sec.Amp < 450)) {
-      if (point3[i].Seed.bID >= top_seed) {
-        cpyHit(pad3[i].Seed, point3[i].Seed);
-        cpyHit(pad3[i].Sec, point3[i].Sec);
+    if ((point3[i].seed_.amp_ < 450) and (point3[i].seed_.amp_ > 30) and
+        (point3[i].seed_.b_id_ < (NCHAN + 1)) and
+        (point3[i].seed_.b_id_ >= 0) and (point3[i].sec_.amp_ < 450)) {
+      if (point3[i].seed_.b_id_ >= top_seed) {
+        cpyHit(pad3[i].seed_, point3[i].seed_);
+        cpyHit(pad3[i].sec_, point3[i].sec_);
         calcCent(pad3[i]);
-        top_seed = point3[i].Seed.bID;
+        top_seed = point3[i].seed_.b_id_;
       }
     }
   }
   // I have stagged the digis into firmware digi objects and paired them into
   // firmware cluster objects, so at this point I can insert them and the LUT
-  // into the trackproducer_hw to create the track collection I use makeTrack to
+  // into the trackproducerHw to create the track collection I use makeTrack to
   // revert the firmware track object back into a regular track object for
   // analysis purposes
   //
@@ -277,11 +284,11 @@ void TrigScintFirmwareTracker::produce(framework::Event &event) {
   // cannot facilitate NCLUS many tracks within its alloted bandwidth , we have
   // to put a cut on them which is facilitated by a cut on the number of
   // clusters in Pad1. Do not change this.
-  trackproducer_hw(pad1, pad2, pad3, out_trk, lookup);
+  trackproducerHw(pad1, pad2, pad3, out_trk, lookup);
   for (int i = 0; i < NTRK; i++) {
-    if (out_trk[i].Pad1.Seed.Amp > 0. && out_trk[i].Pad1.Sec.Amp >= 0. &&
-        out_trk[i].Pad2.Seed.Amp > 0. && out_trk[i].Pad2.Sec.Amp >= 0. &&
-        out_trk[i].Pad3.Seed.Amp > 0. && out_trk[i].Pad3.Sec.Amp >= 0.) {
+    if (out_trk[i].pad1_.seed_.amp_ > 0. && out_trk[i].pad1_.sec_.amp_ >= 0. &&
+        out_trk[i].pad2_.seed_.amp_ > 0. && out_trk[i].pad2_.sec_.amp_ >= 0. &&
+        out_trk[i].pad3_.seed_.amp_ > 0. && out_trk[i].pad3_.sec_.amp_ >= 0.) {
       ldmx::TrigScintTrack trk = makeTrack(out_trk[i]);
       tracks_.push_back(trk);
     }
@@ -298,12 +305,12 @@ ldmx::TrigScintTrack TrigScintFirmwareTracker::makeTrack(Track outTrk) {
   // retained in the firmware track.
   ldmx::TrigScintTrack tr;
   float pe{0.};
-  pe += static_cast<float>(outTrk.Pad1.Seed.Amp) +
-        static_cast<float>(outTrk.Pad1.Sec.Amp);
-  pe += static_cast<float>(outTrk.Pad2.Seed.Amp) +
-        static_cast<float>(outTrk.Pad2.Sec.Amp);
-  pe += static_cast<float>(outTrk.Pad3.Seed.Amp) +
-        static_cast<float>(outTrk.Pad3.Sec.Amp);
+  pe += static_cast<float>(outTrk.pad1_.seed_.amp_) +
+        static_cast<float>(outTrk.pad1_.sec_.amp_);
+  pe += static_cast<float>(outTrk.pad2_.seed_.amp_) +
+        static_cast<float>(outTrk.pad2_.sec_.amp_);
+  pe += static_cast<float>(outTrk.pad3_.seed_.amp_) +
+        static_cast<float>(outTrk.pad3_.sec_.amp_);
   tr.setCentroid(calcTCent(outTrk));
   calcResid(outTrk);
   tr.setPE(pe);

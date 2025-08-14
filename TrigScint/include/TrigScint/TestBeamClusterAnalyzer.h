@@ -50,8 +50,8 @@ class TestBeamClusterAnalyzer : public framework::Analyzer {
   TH1F* h_n_clusters_;
   TH1F* h_n_hits_;
   // TH1F* hNhitsInClusters;
-  TH1F* h_p_ein_hits_[16];
-  TH1F* h_p_ein_clusters_[16];
+  TH1F* h_pe_in_hits_[16];
+  TH1F* h_pe_in_clusters_[16];
   TH1F* h_delta_centroids_;
   TH2F* h_delta_vs_seed_;
 };

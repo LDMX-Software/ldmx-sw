@@ -65,7 +65,7 @@ class TestBeamHitProducer : public framework::Producer {
   std::vector<double> peds_;
 
   /// channel MIP response for intercalibration
-  std::vector<double> mi_presponse_;
+  std::vector<double> mip_response_;
 
   /// start sample for pulse integration (not including any fiber offsets)
   int start_sample_{10};

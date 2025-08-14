@@ -13,21 +13,21 @@ EventReadoutProducer::EventReadoutProducer(const std::string &name,
 void EventReadoutProducer::configure(
     framework::config::Parameters &parameters) {
   // Configure this instance of the producer
-  inputCollection_ = parameters.getParameter<std::string>("input_collection");
-  inputPassName_ = parameters.getParameter<std::string>("input_pass_name");
-  outputCollection_ = parameters.getParameter<std::string>("output_collection");
-  nPedSamples_ = parameters.getParameter<int>("number_pedestal_samples");
-  timeShift_ = parameters.getParameter<int>("time_shift");
-  fiberToShift_ = parameters.getParameter<int>("fiber_to_shift");
-  verbose_ = parameters.getParameter<bool>("verbose");
+  input_collection_ = parameters.get<std::string>("input_collection");
+  input_pass_name_ = parameters.get<std::string>("input_pass_name");
+  output_collection_ = parameters.get<std::string>("output_collection");
+  n_ped_samples_ = parameters.get<int>("number_pedestal_samples");
+  time_shift_ = parameters.get<int>("time_shift");
+  fiber_to_shift_ = parameters.get<int>("fiber_to_shift");
+  verbose_ = parameters.get<bool>("verbose");
 
   ldmx_log(debug) << "In configure, got parameters:" << "\noutput_collection = "
-                  << outputCollection_
-                  << "\ninput_collection = " << inputCollection_
-                  << "\ninput_pass_name  = " << inputPassName_
-                  << "\nnumber_pedestal_samples  = " << nPedSamples_
-                  << "\ntime_shift = " << timeShift_
-                  << "\nfiber_to_shift  = " << fiberToShift_
+                  << output_collection_
+                  << "\ninput_collection = " << input_collection_
+                  << "\ninput_pass_name  = " << input_pass_name_
+                  << "\nnumber_pedestal_samples  = " << n_ped_samples_
+                  << "\ntime_shift = " << time_shift_
+                  << "\nfiber_to_shift  = " << fiber_to_shift_
                   << "\nverbose          = " << verbose_;
 }
 
@@ -36,7 +36,7 @@ void EventReadoutProducer::produce(framework::Event &event) {
   SimQIE qie;
 
   const auto digis{event.getCollection<trigscint::TrigScintQIEDigis>(
-      inputCollection_, inputPassName_)};
+      input_collection_, input_pass_name_)};
 
   std::vector<trigscint::EventReadout> channel_readout_events;
   for (const auto &digi : digis) {
@@ -50,8 +50,8 @@ void EventReadoutProducer::produce(framework::Event &event) {
     out_event.setTimeSinceSpill(digi.getTimeSinceSpill());
     // elecID increases monotonically with 8 channels per fiber
     out_event.setFiberNb(digi.getElecID() / 8);
-    if (out_event.getFiberNb() == fiberToShift_)
-      out_event.setTimeOffset(timeShift_);
+    if (out_event.getFiberNb() == fiber_to_shift_)
+      out_event.setTimeOffset(time_shift_);
 
     out_event.setADC(adc);
     out_event.setTDC(tdc);
@@ -64,9 +64,9 @@ void EventReadoutProducer::produce(framework::Event &event) {
     [[maybe_unused]] int n_pos = 0;
     float early_ped = 0;
     for (auto &val : adc) {
-      float q = qie.ADC2Q(val);
+      float q = qie.adc2Q(val);
       charge.push_back(q);
-      charge_err.push_back(qie.QErr(q));
+      charge_err.push_back(qie.qErr(q));
       avg_q += q;  // charge.back();
       if (q > 0) {
         tot_pos_q += q;
@@ -75,12 +75,12 @@ void EventReadoutProducer::produce(framework::Event &event) {
       if (verbose_)
         ldmx_log(debug) << "got adc value " << val << " and charge "
                         << q;  // qie.ADC2Q(val);
-      if (i_s < nPedSamples_) early_ped += q;
+      if (i_s < n_ped_samples_) early_ped += q;
       i_s++;
     }
     out_event.setQ(charge);           // set in proper order before sorting
     out_event.setQError(charge_err);  // set in proper order before sorting
-    early_ped /= nPedSamples_;
+    early_ped /= n_ped_samples_;
     out_event.setEarlyPedestal(early_ped);
 
     // oscillation check. for this the pulse charge needs to be in order, so set
@@ -90,15 +90,16 @@ void EventReadoutProducer::produce(framework::Event &event) {
     // case: multiple single PE peaks with that repetition. we probably don't
     // need to keep those anyway
     std::vector<float> charge_check = {NULL};
-    float min_charge =
-        10;  // no point in looking at oscillations just around the pedestal.
-             // nearest edge is 10.35 fC  //ADC=0 corresponds to -16 fC.
+    float min_charge = 10;
+    // no point in looking at oscillations just around the pedestal.
+    // nearest edge is 10.35 fC  //ADC=0 corresponds to -16 fC.
     float ped = 0;
-    int ped_length = (int)charge.size() /
-                     5;  // actually pulse can be up to 12 samples = 2/5*30
-    int ped_offset = 2;  // but still skip the lowest (and highest) few
-                         //	for (int i = pedLength; i < 3*pedLength ; i++) {
-                         ////use 2nd and third 5th
+    int ped_length = (int)charge.size() / 5;
+    // actually pulse can be up to 12 samples = 2/5*30
+    int ped_offset = 2;
+    // but still skip the lowest (and highest) few
+    //	for (int i = pedLength; i < 3*pedLength ; i++) {
+    ////use 2nd and third 5th
     if (charge.size() > 8) {
       if (verbose_) ldmx_log(debug) << "going into oscillations check ";
       for (int i = 3; i < charge.size() - 4; i++) {
@@ -131,10 +132,10 @@ void EventReadoutProducer::produce(framework::Event &event) {
     float min_q = charge[0];
     float max_q = charge[charge.size() - 1];
 
-    out_event.setTotQ(
-        tot_pos_q);  //-nPos*ped); //store (event) ped subtracted
-                     // total charge, before dividing by N  -->
-                     // actually, ped subtraction makes it confusing
+    out_event.setTotQ(tot_pos_q);
+    //-nPos*ped); //store (event) ped subtracted
+    // total charge, before dividing by N  -->
+    // actually, ped subtraction makes it confusing
     //	outEvent.setTotQ(totPosQ-adc.size()*ped); //store (event) ped subtracted
     // total charge, before dividing by N
     // outEvent.setTotQ(avgQ-adc.size()*ped);
@@ -215,8 +216,8 @@ void EventReadoutProducer::produce(framework::Event &event) {
           }
           if (verbose_)
             ldmx_log(debug) << "Current lastMatchSample " << last_match_sample;
-          if (last_match_sample - max_id >=
-              2 * 4) {  // we had at least a couple of oscillations (2nd period
+          if (last_match_sample - max_id >= 2 * 4) {
+            // we had at least a couple of oscillations (2nd period
             // was fully matched by third)
             flag_oscillation = 1;  // there is another check possible later too,
             // commented for now
@@ -290,7 +291,7 @@ flips and long weird pulses
   // Create the container to hold the
   // digitized trigger scintillator hits.
 
-  event.add(outputCollection_, channel_readout_events);
+  event.add(output_collection_, channel_readout_events);
   ldmx_log(debug) << "\n";
 }
 }  // namespace trigscint

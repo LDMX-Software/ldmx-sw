@@ -76,7 +76,7 @@ class TrigScintCluster {
    *The channel numbers of hits forming the cluster
    * @param hitIDs vector of channel numbers of hits forming the cluster
    */
-  void setIDs(std::vector<unsigned int> &hitIDs) { hit_i_ds_ = hitIDs; }
+  void setIDs(std::vector<unsigned int> &hitIDs) { hit_ids_ = hitIDs; }
 
   /**
    *The cluster centroid in x,y,z
@@ -129,7 +129,7 @@ class TrigScintCluster {
   double getCentroidZ() const { return centroid_z_; }
 
   /** Get vector of channel IDs of hits forming the cluster */
-  const std::vector<unsigned int> &getHitIDs() const { return hit_i_ds_; }
+  const std::vector<unsigned int> &getHitIDs() const { return hit_ids_; }
 
   /** Get the cluster centroid in units of channel nb */
   double getCentroid() const { return centroid_; }
@@ -140,7 +140,7 @@ class TrigScintCluster {
 
  private:
   // hits forming the cluster
-  std::vector<unsigned int> hit_i_ds_;
+  std::vector<unsigned int> hit_ids_;
 
   // total cluster energy depostion
   double energy_{0};

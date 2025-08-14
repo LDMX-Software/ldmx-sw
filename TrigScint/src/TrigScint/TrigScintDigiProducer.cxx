@@ -9,26 +9,26 @@ TrigScintDigiProducer::TrigScintDigiProducer(const std::string &name,
 void TrigScintDigiProducer::configure(
     framework::config::Parameters &parameters) {
   // Configure this instance of the producer
-  stripsPerArray_ = parameters.getParameter<int>("number_of_strips");
-  numberOfArrays_ = parameters.getParameter<int>("number_of_arrays");
-  meanNoise_ = parameters.getParameter<double>("mean_noise");
-  mevPerMip_ = parameters.getParameter<double>("mev_per_mip");
-  pePerMip_ = parameters.getParameter<double>("pe_per_mip");
-  inputCollection_ = parameters.getParameter<std::string>("input_collection");
-  inputPassName_ = parameters.getParameter<std::string>("input_pass_name");
-  outputCollection_ = parameters.getParameter<std::string>("output_collection");
+  strips_per_array_ = parameters.get<int>("number_of_strips");
+  number_of_arrays_ = parameters.get<int>("number_of_arrays");
+  mean_noise_ = parameters.get<double>("mean_noise");
+  mev_per_mip_ = parameters.get<double>("mev_per_mip");
+  pe_per_mip_ = parameters.get<double>("pe_per_mip");
+  input_collection_ = parameters.get<std::string>("input_collection");
+  input_pass_name_ = parameters.get<std::string>("input_pass_name");
+  output_collection_ = parameters.get<std::string>("output_collection");
   sim_particles_passname_ =
-      parameters.getParameter<std::string>("sim_particles_passname");
+      parameters.get<std::string>("sim_particles_passname");
 }
 
 void TrigScintDigiProducer::onNewRun(const ldmx::RunHeader &) {
-  noiseGenerator_ = std::make_unique<ldmx::NoiseGenerator>(meanNoise_, false);
-  noiseGenerator_->setNoiseThreshold(1);
+  noise_generator_ = std::make_unique<ldmx::NoiseGenerator>(mean_noise_, false);
+  noise_generator_->setNoiseThreshold(1);
   // Set up seeds
   const auto &rseed = getCondition<framework::RandomNumberSeedService>(
       framework::RandomNumberSeedService::CONDITIONS_OBJECT_NAME);
 
-  noiseGenerator_->seedGenerator(
+  noise_generator_->seedGenerator(
       rseed.getSeed("TrigScintDigiProducer::NoiseGenerator"));
   // Random number generator for module id
   rng_.seed(rseed.getSeed("TrigScintDigiProducer"));
@@ -36,7 +36,7 @@ void TrigScintDigiProducer::onNewRun(const ldmx::RunHeader &) {
 
 ldmx::TrigScintID TrigScintDigiProducer::generateRandomID(int module) {
   // Uniform distributions for integer generation
-  std::uniform_int_distribution<int> strips_dist(0, stripsPerArray_ - 1);
+  std::uniform_int_distribution<int> strips_dist(0, strips_per_array_ - 1);
   ldmx::TrigScintID temp_id(module, strips_dist(rng_));
   if (module >= TrigScintSection::NUM_SECTIONS) {
     ldmx_log(fatal) << "TrigScintSection is not known";
@@ -54,7 +54,7 @@ void TrigScintDigiProducer::produce(framework::Event &event) {
 
   // looper over sim hits and aggregate energy depositions for each detID
   const auto sim_hits{event.getCollection<ldmx::SimCalorimeterHit>(
-      inputCollection_, inputPassName_)};
+      input_collection_, input_pass_name_)};
   auto particle_map{event.getMap<int, ldmx::SimParticle>(
       "SimParticles", sim_particles_passname_)};
 
@@ -128,8 +128,8 @@ void TrigScintDigiProducer::produce(framework::Event &event) {
     xpos[id] = xpos[id] / edep[id];
     ypos[id] = ypos[id] / edep[id];
     zpos[id] = zpos[id] / edep[id];
-    double mean_pe = dep_energy / mevPerMip_ * pePerMip_;
-    std::poisson_distribution<int> poisson_dist(mean_pe + meanNoise_);
+    double mean_pe = dep_energy / mev_per_mip_ * pe_per_mip_;
+    std::poisson_distribution<int> poisson_dist(mean_pe + mean_noise_);
     cell_p_es[id] = poisson_dist(rng_);
 
     // If a cell has a PE count above threshold, persit the hit.
@@ -165,9 +165,9 @@ void TrigScintDigiProducer::produce(framework::Event &event) {
   // ------------------------------------------------------------------------//
   // only simulating for single array until
   // all arrays are merged into one collection
-  int num_empty_cells = stripsPerArray_ - num_rec_hits;
+  int num_empty_cells = strips_per_array_ - num_rec_hits;
   std::vector<double> noise_hits_pe =
-      noiseGenerator_->generateNoiseHits(num_empty_cells);
+      noise_generator_->generateNoiseHits(num_empty_cells);
 
   ldmx::TrigScintID temp_id;
 
@@ -201,7 +201,7 @@ void TrigScintDigiProducer::produce(framework::Event &event) {
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   // - -
 
-  event.add(outputCollection_, trig_scint_hits);
+  event.add(output_collection_, trig_scint_hits);
 }
 }  // namespace trigscint
 

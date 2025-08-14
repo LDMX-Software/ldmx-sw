@@ -34,7 +34,7 @@ class QIEAnalyzer : public framework::Analyzer {
 
   void onProcessEnd() override;
 
-  float convertToID(float yVal) { return (yVal + y_offset_) * y_to_i_dfactor_; }
+  float convertToID(float yVal) { return (yVal + y_offset_) * y_to_id_factor_; }
 
  private:
   std::vector<std::vector<TH1F*> > v_charge_vs_time_;
@@ -54,18 +54,18 @@ class QIEAnalyzer : public framework::Analyzer {
   // match nev, nchan above
   TH1F* h_out_[200][16];
   TH1F* h_pe_[16];
-  TH2F* h_p_evs_t_[16];
-  TH2F* h_ped_subtracted_avg_qvs_t_[16];
-  TH2F* h_ped_subtracted_tot_qvs_ped_[16];
-  TH2F* h_ped_subtracted_tot_qvs_n_[16];
-  TH2F* h_tot_qvs_ped_[16];
-  TH2F* h_ped_subtracted_p_evs_n_[16];
-  TH2F* h_ped_subtracted_p_evs_t_[16];
-  TH2F* h_avg_qvs_t_[16];
+  TH2F* h_pe_vs_t_[16];
+  TH2F* h_ped_subtracted_avg_q_vs_t_[16];
+  TH2F* h_ped_subtracted_tot_q_vs_ped_[16];
+  TH2F* h_ped_subtracted_tot_q_vs_n_[16];
+  TH2F* h_tot_q_vs_ped_[16];
+  TH2F* h_ped_subtracted_pe_vs_n_[16];
+  TH2F* h_ped_subtracted_pe_vs_t_[16];
+  TH2F* h_avg_q_vs_t_[16];
 
-  TH2F* h_td_cfire_chanvs_event_;
+  TH2F* h_tdc_fire_chan_vs_event_;
   double y_offset_{35.};
-  double y_to_i_dfactor_{50. / 80.};
+  double y_to_id_factor_{50. / 80.};
 };
 }  // namespace trigscint
 

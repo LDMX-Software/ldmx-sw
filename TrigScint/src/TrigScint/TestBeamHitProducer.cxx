@@ -14,32 +14,31 @@ TestBeamHitProducer::TestBeamHitProducer(const std::string& name,
     : Producer(name, process) {}
 
 void TestBeamHitProducer::configure(framework::config::Parameters& parameters) {
-  inputCol_ = parameters.getParameter<std::string>("inputCollection");
-  outputCollection_ = parameters.getParameter<std::string>("outputCollection");
-  inputPassName_ = parameters.getParameter<std::string>("inputPassName");
-  MIPresponse_ = parameters.getParameter<std::vector<double> >("MIPresponse");
-  peds_ = parameters.getParameter<std::vector<double> >("pedestals");
-  gain_ =
-      parameters.getParameter<std::vector<double> >("gain");  // to do: vector
-  startSample_ = parameters.getParameter<int>("startSample");
-  pulseWidth_ = parameters.getParameter<int>("pulseWidth");
-  pulseWidthLYSO_ = parameters.getParameter<int>("pulseWidthLYSO");
-  nInstrumentedChannels_ =
-      parameters.getParameter<int>("nInstrumentedChannels");
-  doCleanHits_ = parameters.getParameter<bool>("doCleanHits");
+  input_col_ = parameters.get<std::string>("inputCollection");
+  output_collection_ = parameters.get<std::string>("outputCollection");
+  input_pass_name_ = parameters.get<std::string>("inputPassName");
+  mip_response_ = parameters.get<std::vector<double> >("MIPresponse");
+  peds_ = parameters.get<std::vector<double> >("pedestals");
+  gain_ = parameters.get<std::vector<double> >("gain");
+
+  start_sample_ = parameters.get<int>("startSample");
+  pulse_width_ = parameters.get<int>("pulseWidth");
+  pulse_width_lyso_ = parameters.get<int>("pulseWidthLYSO");
+  n_instrumented_channels_ = parameters.get<int>("nInstrumentedChannels");
+  do_clean_hits_ = parameters.get<bool>("doCleanHits");
 
   std::cout << " [ TestBeamHitProducer ] In configure(), got parameters "
-            << "\n\t inputCollection = " << inputCol_
-            << "\n\t inputPassName = " << inputPassName_
-            << "\n\t outputCollection = " << outputCollection_
-            << "\n\t startSample = " << startSample_
-            << "\n\t pulseWidth = " << pulseWidth_
-            << "\n\t pulseWidthLYSO = " << pulseWidthLYSO_
+            << "\n\t inputCollection = " << input_col_
+            << "\n\t inputPassName = " << input_pass_name_
+            << "\n\t outputCollection = " << output_collection_
+            << "\n\t startSample = " << start_sample_
+            << "\n\t pulseWidth = " << pulse_width_
+            << "\n\t pulseWidthLYSO = " << pulse_width_lyso_
             << "\n\t gain[0] = " << gain_[0]
-            << "\n\t nInstrumentedChannels = " << nInstrumentedChannels_
-            << "\n\t doCleanHits = " << doCleanHits_
+            << "\n\t nInstrumentedChannels = " << n_instrumented_channels_
+            << "\n\t doCleanHits = " << do_clean_hits_
             << "\n\t pedestals[0] = " << peds_[0]
-            << "\n\t MIPresponse[0] = " << MIPresponse_[0] << "\t."
+            << "\n\t MIPresponse[0] = " << mip_response_[0] << "\t."
             << std::endl;
 
   return;
@@ -90,32 +89,31 @@ void TestBeamHitProducer::produce(framework::Event& event) {
   float mev_per_mip = 0.3;
   float pe_per_mip = 100;
 
-  const auto channels{
-      event.getCollection<trigscint::EventReadout>(inputCol_, inputPassName_)};
+  const auto channels{event.getCollection<trigscint::EventReadout>(
+      input_col_, input_pass_name_)};
 
   int ev_nb = event.getEventNumber();
   std::vector<trigscint::TestBeamHit> hits;
   for (auto chan : channels) {
     trigscint::TestBeamHit hit;
     int bar = chan.getChanID();
-    if (bar >=
-        nInstrumentedChannels_)  // don't run hit reconstruction on junk signal
-      continue;
-    int width = pulseWidth_;
-    if (bar % 2 == 0) {         // LYSO channel: allow for wider pulses
-      width = pulseWidthLYSO_;  // avoid hardwiring
+    // don't run hit reconstruction on junk signal
+    if (bar >= n_instrumented_channels_) continue;
+    int width = pulse_width_;
+    if (bar % 2 == 0) {           // LYSO channel: allow for wider pulses
+      width = pulse_width_lyso_;  // avoid hardwiring
     }
     hit.setPulseWidth(width);
-    hit.setStartSample(startSample_);
+    hit.setStartSample(start_sample_);
     float ped = peds_.at(bar);  // chan.getPedestal() ;
     float early_ped = chan.getEarlyPedestal();
     hit.setPedestal(ped);
     hit.setEarlyPedestal(early_ped);
     int is_clean = 0;             // false;
     float threshold = fabs(ped);  // 2*fabs(peds_[ bar ]); // or sth
-    if (doCleanHits_) threshold = 7 * fabs(ped);  // stricter cut
+    if (do_clean_hits_) threshold = 7 * fabs(ped);  // stricter cut
 
-    int start_t = startSample_ + chan.getTimeOffset();
+    int start_t = start_sample_ + chan.getTimeOffset();
     float max_q = -999.;
     int n_samp_above_ped = 0;
     int n_samp_above_thr = 0;
@@ -150,7 +148,7 @@ void TestBeamHitProducer::produce(framework::Event& event) {
 
     // first check that hit passes any quality cuts
     uint flag = chan.getQualityFlag();
-    if (doCleanHits_) {
+    if (do_clean_hits_) {
       //		int isLongPulse=(nSampAboveThr < 2 || nSampAboveThr >
       // width + 2);
       int is_long_pulse =
@@ -167,7 +165,7 @@ void TestBeamHitProducer::produce(framework::Event& event) {
 
     float pe = tot_subtr_q * 6250. / gain_[bar];
     if (pe > 20)  // dont't want to intercalibrate the shot noise
-      pe *= MIPresponse_[bar];
+      pe *= mip_response_[bar];
 
     // set pulse properties like PE and amplitude
     hit.setSampAbovePed(n_samp_above_ped);
@@ -191,7 +189,7 @@ void TestBeamHitProducer::produce(framework::Event& event) {
   }  // over channels
 
   // at end of event, write the collection of trigger scintillator hits.
-  event.add(outputCollection_, hits);
+  event.add(output_collection_, hits);
 
   return;
 }

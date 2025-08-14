@@ -8,27 +8,25 @@ namespace trigscint {
 
 void QIEDecoder::configure(framework::config::Parameters &ps) {
   // Configure this instance of the encoder
-  outputCollection_ = ps.getParameter<std::string>("output_collection");
-  inputCollection_ = ps.getParameter<std::string>("input_collection");
-  inputPassName_ = ps.getParameter<std::string>("input_pass_name");
-  channelMapFileName_ = ps.getParameter<std::string>("channel_map_file");
-  nChannels_ = ps.getParameter<int>("number_channels");
-  nSamples_ = ps.getParameter<int>("number_time_samples");
-  isRealData_ = ps.getParameter<bool>("is_real_data");
-  verbose_ = ps.getParameter<bool>("verbose");
+  output_collection_ = ps.get<std::string>("output_collection");
+  input_collection_ = ps.get<std::string>("input_collection");
+  input_pass_name_ = ps.get<std::string>("input_pass_name");
+  channel_map_file_name_ = ps.get<std::string>("channel_map_file");
+  n_channels_ = ps.get<int>("number_channels");
+  n_samples_ = ps.get<int>("number_time_samples");
+  is_real_data_ = ps.get<bool>("is_real_data");
 
   ldmx_log(debug) << "In configure, got parameters:" << "\noutput_collection = "
-                  << outputCollection_
-                  << "\ninput_collection = " << inputCollection_
-                  << "\ninput_pass_name  = " << inputPassName_
-                  << "\nchannel_map_file = " << channelMapFileName_
-                  << "\nnumber_channels  = " << nChannels_
-                  << "\nnumber_time_samples  = " << nSamples_
-                  << "\nis_real_data  = " << isRealData_
-                  << "\nverbose          = " << verbose_;
+                  << output_collection_
+                  << "\ninput_collection = " << input_collection_
+                  << "\ninput_pass_name  = " << input_pass_name_
+                  << "\nchannel_map_file = " << channel_map_file_name_
+                  << "\nnumber_channels  = " << n_channels_
+                  << "\nnumber_time_samples  = " << n_samples_
+                  << "\nis_real_data  = " << is_real_data_;
 
-  channelMapFile_.open(channelMapFileName_, std::ios::in);
-  if (!channelMapFile_.is_open()) {
+  channel_map_file_.open(channel_map_file_name_, std::ios::in);
+  if (!channel_map_file_.is_open()) {
     EXCEPTION_RAISE(
         "BadMapFile",
         "The channel mapping file cannot be opened.");  // <-- appears this
@@ -38,8 +36,8 @@ void QIEDecoder::configure(framework::config::Parameters &ps) {
     return;
   }
   int ch_id, el_id;
-  while (!channelMapFile_.eof()) {
-    channelMapFile_ >> el_id >> ch_id;
+  while (!channel_map_file_.eof()) {
+    channel_map_file_ >> el_id >> ch_id;
     // make the map based on electronics ID, to look up channel ID.
     // the reason is, we will only know the elecID from the position
     // of the word in the stream. so these need to be strictly ordered.
@@ -48,12 +46,12 @@ void QIEDecoder::configure(framework::config::Parameters &ps) {
     // barID can always be set, or looked up, as a property of the digi.
 
     // here make the elecID the key (other way around when encoding)
-    channelMap_.insert(std::pair<int, int>(el_id, ch_id));
+    channel_map_.insert(std::pair<int, int>(el_id, ch_id));
     ldmx_log(debug) << el_id << "  chID " << ch_id;
   }
-  channelMapFile_.close();
-  if (el_id != nChannels_ - 1)
-    ldmx_log(fatal) << "The set number of channels " << nChannels_
+  channel_map_file_.close();
+  if (el_id != n_channels_ - 1)
+    ldmx_log(fatal) << "The set number of channels " << n_channels_
                     << " seems not to match the number from the map (+1) :"
                     << el_id;
   return;
@@ -64,15 +62,15 @@ void QIEDecoder::produce(framework::Event &event) {
                   << event.getEventHeader().getEventNumber();
 
   // turns out this need to be configurable for now, to read real data
-  int n_samp = nSamples_;  // QIEStream::NUM_SAMPLES ;
+  int n_samp = n_samples_;  // QIEStream::NUM_SAMPLES ;
   ldmx_log(debug) << "num samples = " << n_samp;
 
-  ldmx_log(debug) << "Looking up input collection " << inputCollection_ << "_"
-                  << inputPassName_;
+  ldmx_log(debug) << "Looking up input collection " << input_collection_ << "_"
+                  << input_pass_name_;
   const auto event_stream{
-      event.getCollection<uint8_t>(inputCollection_, inputPassName_)};
-  ldmx_log(debug) << "Got input collection" << inputCollection_ << "_"
-                  << inputPassName_;
+      event.getCollection<uint8_t>(input_collection_, input_pass_name_)};
+  ldmx_log(debug) << "Got input collection" << input_collection_ << "_"
+                  << input_pass_name_;
 
   uint32_t time_epoch = 0;
   // these don't have to be in any particular order, position is anyway looked
@@ -166,23 +164,23 @@ void QIEDecoder::produce(framework::Event &event) {
   uint8_t flags = event_stream.at(QIEStream::ERROR_POS);
 
   bool is_ci_dskipped{static_cast<bool>((flags >> QIEStream::CID_SKIP_POS) &
-                                        mask8<QIEStream::FLAG_SIZE_BITS>::m)};
+                                        Mask8<QIEStream::FLAG_SIZE_BITS>::M)};
   bool is_ci_dunsync{static_cast<bool>((flags >> QIEStream::CID_UNSYNC_POS) &
-                                       mask8<QIEStream::FLAG_SIZE_BITS>::m)};
+                                       Mask8<QIEStream::FLAG_SIZE_BITS>::M)};
   // These are unused, should they be? FIXME
   // bool isCRC1malformed{static_cast<bool>((flags >> QIEStream::CRC1_ERR_POS) &
-  //                                        mask8<QIEStream::FLAG_SIZE_BITS>::m)};
+  //                                        Mask8<QIEStream::FLAG_SIZE_BITS>::m)};
   // bool isCRC0malformed{static_cast<bool>((flags >> QIEStream::CRC0_ERR_POS) &
-  //                                       mask8<QIEStream::FLAG_SIZE_BITS>::m)};
+  //                                       Mask8<QIEStream::FLAG_SIZE_BITS>::m)};
 
   // checksum
   // really, this is just empty for now.
   // TODO: implement a checksum set/get
   uint8_t reference_checksum = 0;
   int checksum{(flags >> QIEStream::CHECKSUM_POS) &
-               mask8<QIEStream::CHECKSUM_SIZE_BITS>::
-                   m};  // eventStream.at(QIEStream::CRC0_ERR_POS)
-                        // QIEStream::CHECKSUM_POS);
+               Mask8<QIEStream::CHECKSUM_SIZE_BITS>::M};
+  // eventStream.at(QIEStream::CRC0_ERR_POS)
+  // QIEStream::CHECKSUM_POS);
   if (checksum != reference_checksum)
     ldmx_log(fatal) << "Got checksum mismatch: expected "
                     << (int)reference_checksum << ", stream says " << checksum;
@@ -199,17 +197,18 @@ void QIEDecoder::produce(framework::Event &event) {
   int i_wstart =
       std::max(std::max(QIEStream::ERROR_POS, QIEStream::CHECKSUM_POS),
                QIEStream::TRIGID_POS + (QIEStream::TRIGID_LEN_BYTES)) +
-      1;  // make sure we're at end of header
-  int n_words = n_samp * nChannels_ * 2 +
-                i_wstart;  // 1 ADC, 1 TDC per channel per sample,
-                           // + the words in the header
+      1;
+  // make sure we're at end of header
+  int n_words = n_samp * n_channels_ * 2 + i_wstart;
+  // 1 ADC, 1 TDC per channel per sample,
+  // + the words in the header
   int i_word = i_wstart;
   ldmx_log(debug) << "Event parsing starts at vector idx " << i_wstart
                   << " and nWords = " << n_words;
   // outer loop: over nSamples
   // inner loop over nChannels to get ADCs, then repeat to get TDCs
   for (int i_s = 0; i_s < n_samp; i_s++) {
-    for (int i_q = 0; i_q < nChannels_; i_q++) {
+    for (int i_q = 0; i_q < n_channels_; i_q++) {
       if (i_word >= n_words) {
         ldmx_log(fatal)
             << "More words than expected! Breaking ADC loop in sample " << i_s
@@ -228,7 +227,7 @@ void QIEDecoder::produce(framework::Event &event) {
       }
       i_word++;
     }
-    for (int i_q = 0; i_q < nChannels_; i_q++) {
+    for (int i_q = 0; i_q < n_channels_; i_q++) {
       if (i_word >= n_words) {
         ldmx_log(debug)
             << "More words than expected! Breaking TDC loop in sample " << i_s
@@ -263,13 +262,13 @@ void QIEDecoder::produce(framework::Event &event) {
        itr != ad_cmap.end(); ++itr) {
     TrigScintQIEDigis digi;
     digi.setADC(itr->second);
-    if (channelMap_.find(itr->first) == channelMap_.end()) {
+    if (channel_map_.find(itr->first) == channel_map_.end()) {
       ldmx_log(fatal)
           << "Couldn't find the bar ID corresponding to electronics ID "
           << itr->first << "!! Skipping.";
       continue;
     }
-    int bar = channelMap_[itr->first];
+    int bar = channel_map_[itr->first];
     digi.setElecID(itr->first);
     digi.setChanID(bar);
     digi.setTDC(td_cmap[itr->first]);
@@ -286,7 +285,7 @@ void QIEDecoder::produce(framework::Event &event) {
                     << digi.getTDC().at(2);
   }
 
-  event.add(outputCollection_, out_digis);
+  event.add(output_collection_, out_digis);
 }
 
 void QIEDecoder::onProcessStart() {

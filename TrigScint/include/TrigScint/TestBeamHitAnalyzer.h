@@ -56,10 +56,10 @@ class TestBeamHitAnalyzer : public framework::Analyzer {
   TH1F* h_out_[200][16];
 
   TH1F* h_pe_[16];
-  TH1F* h_p_ein_clusters_[16];
+  TH1F* h_pe_in_clusters_[16];
   TH2F* h_pe_vs_delta_[16];
   TH2F* h_delta_pe_vs_delta_[16];
-  TH2F* h_p_emax_vs_delta_;
+  TH2F* h_pe_max_vs_delta_;
   TH2F* h_cross_talk_[16][16];
 };
 }  // namespace trigscint

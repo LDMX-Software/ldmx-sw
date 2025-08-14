@@ -15,13 +15,13 @@
 ClassImp(trigscint::TestBeamHit);
 
 namespace trigscint {
-void TestBeamHit::Clear(Option_t* option) {
-  earlyPedestal_ = -999;
+void TestBeamHit::clear(Option_t* option) {
+  early_pedestal_ = -999;
   pedestal_ = -999;
-  pulseQ_ = -999;
-  startSample_ = -1;
-  pulseWidth_ = -1;
-  sampAboveThr_ = -1;
+  pulse_q_ = -999;
+  start_sample_ = -1;
+  pulse_width_ = -1;
+  samp_above_thr_ = -1;
 }
 
 std::ostream& operator<<(std::ostream& o, const TestBeamHit& c) {

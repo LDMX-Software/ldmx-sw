@@ -7,24 +7,24 @@ namespace trigscint {
 
 void QIEEncoder::configure(framework::config::Parameters &ps) {
   // Configure this instance of the encoder
-  outputCollection_ = ps.getParameter<std::string>("output_collection");
-  inputCollection_ = ps.getParameter<std::string>("input_collection");
-  inputPassName_ = ps.getParameter<std::string>("input_pass_name");
-  channelMapFileName_ = ps.getParameter<std::string>("channel_map_file");
-  nChannels_ = ps.getParameter<int>("number_channels");
-  verbose_ = ps.getParameter<bool>("verbose");
+  output_collection_ = ps.get<std::string>("output_collection");
+  input_collection_ = ps.get<std::string>("input_collection");
+  input_pass_name_ = ps.get<std::string>("input_pass_name");
+  channel_map_file_name_ = ps.get<std::string>("channel_map_file");
+  n_channels_ = ps.get<int>("number_channels");
+  verbose_ = ps.get<bool>("verbose");
 
   ldmx_log(debug) << "In configure, got parameters:" << "\noutput_collection = "
-                  << outputCollection_
-                  << "\ninput_collection = " << inputCollection_
-                  << "\ninput_pass_name  = " << inputPassName_
-                  << "\nchannel_map_file = " << channelMapFileName_
-                  << "\nnumber_channels  = " << nChannels_
+                  << output_collection_
+                  << "\ninput_collection = " << input_collection_
+                  << "\ninput_pass_name  = " << input_pass_name_
+                  << "\nchannel_map_file = " << channel_map_file_name_
+                  << "\nnumber_channels  = " << n_channels_
                   << "\nverbose          = " << verbose_;
 
   // set up channel mapping
-  channelMapFile_.open(channelMapFileName_, std::ios::in);
-  if (!channelMapFile_.is_open()) {
+  channel_map_file_.open(channel_map_file_name_, std::ios::in);
+  if (!channel_map_file_.is_open()) {
     EXCEPTION_RAISE(
         "BadMapFile",
         "The channel mapping file cannot be opened.");  // <-- appears this
@@ -34,8 +34,8 @@ void QIEEncoder::configure(framework::config::Parameters &ps) {
     return;
   }
   int ch_id, el_id;
-  while (!channelMapFile_.eof()) {
-    channelMapFile_ >> el_id >> ch_id;
+  while (!channel_map_file_.eof()) {
+    channel_map_file_ >> el_id >> ch_id;
     // for test beam, we will only know the elecID from
     // the position of the word in the stream.
     // so these need to be strictly ordered in the map.
@@ -43,14 +43,14 @@ void QIEEncoder::configure(framework::config::Parameters &ps) {
 
     // make this based on channel ID. this is like looking up the position in a
     // vector of a certain value. but it's fine
-    channelMap_.insert(std::pair<int, int>(ch_id, el_id));
+    channel_map_.insert(std::pair<int, int>(ch_id, el_id));
     ldmx_log(debug) << "elID " << el_id << "  chID " << ch_id;
   }
-  if (el_id != nChannels_ - 1)
-    ldmx_log(fatal) << "The set number of channels " << nChannels_
+  if (el_id != n_channels_ - 1)
+    ldmx_log(fatal) << "The set number of channels " << n_channels_
                     << " seems not to match the number from the map (+1) :"
                     << el_id;
-  channelMapFile_.close();
+  channel_map_file_.close();
 
   return;
 }
@@ -66,7 +66,7 @@ void QIEEncoder::produce(framework::Event &event) {
 
   // we're keeping a list ordered in elec ID since this is the order we'll use
   // to write them to stream
-  for (int i_q = 0; i_q < nChannels_; i_q++) {
+  for (int i_q = 0; i_q < n_channels_; i_q++) {
     QIEStream qie_out;
     qie_out.setADC(init_vec);
     qie_out.setTDC(init_vec);
@@ -76,15 +76,15 @@ void QIEEncoder::produce(framework::Event &event) {
     qie_outs.push_back(qie_out);
   }
 
-  ldmx_log(debug) << "Looking up input collection " << inputCollection_ << "_"
-                  << inputPassName_;
+  ldmx_log(debug) << "Looking up input collection " << input_collection_ << "_"
+                  << input_pass_name_;
   const auto digis{event.getCollection<trigscint::TrigScintQIEDigis>(
-      inputCollection_, inputPassName_)};
-  ldmx_log(debug) << "Got input collection" << inputCollection_ << "_"
-                  << inputPassName_;
+      input_collection_, input_pass_name_)};
+  ldmx_log(debug) << "Got input collection" << input_collection_ << "_"
+                  << input_pass_name_;
 
-  bool is_ci_dunsync = false;  // mismatch between CID reported by channels
-                               // within the same time sample
+  bool is_ci_dunsync = false;      // mismatch between CID reported by channels
+                                   // within the same time sample
   bool is_ci_dskipped = false;     // a gap in the CID increment
   bool is_cr_c0malformed = false;  // an issue with CRC from fiber0
   bool is_cr_c1malformed = false;  // an issue with CRC from fiber1
@@ -93,8 +93,8 @@ void QIEEncoder::produce(framework::Event &event) {
   ldmx_log(debug) << "entering loop over digis ";
   for (auto &digi : digis) {
     int bar = digi.getChanID();
-    auto itr = channelMap_.find(bar);
-    if (itr == channelMap_.end()) {  // yikes! didn't find the bar in the map
+    auto itr = channel_map_.find(bar);
+    if (itr == channel_map_.end()) {  // yikes! didn't find the bar in the map
       ldmx_log(fatal) << "Couldn't find an entry for bar " << bar
                       << "; check the (choice of) channel map!. Exiting event "
                       << event.getEventHeader().getEventNumber();
@@ -192,10 +192,10 @@ void QIEEncoder::produce(framework::Event &event) {
   // now write this in sequence: ADC of all channels, then TDC; repeat for all
   // samples
   for (int i_s = 0; i_s < n_samp; i_s++) {
-    for (int i_q = 0; i_q < nChannels_; i_q++) {
+    for (int i_q = 0; i_q < n_channels_; i_q++) {
       out_word.push_back(qie_outs.at(i_q).getADC().at(i_s));
     }  // over channels : ADC
-    for (int i_q = 0; i_q < nChannels_; i_q++) {
+    for (int i_q = 0; i_q < n_channels_; i_q++) {
       out_word.push_back(qie_outs.at(i_q).getTDC().at(i_s));
     }  // over channels: TDC
   }  // over time samples
@@ -209,8 +209,8 @@ void QIEEncoder::produce(framework::Event &event) {
                  QIEStream::TRIGID_POS + (QIEStream::TRIGID_LEN_BYTES)) +
         1;  // probably overkill :D should be 4
     for (auto word : out_word) {
-      if ((widx - i_wstart) % nChannels_ == 0) {
-        int sample = (widx - i_wstart) / nChannels_;
+      if ((widx - i_wstart) % n_channels_ == 0) {
+        int sample = (widx - i_wstart) / n_channels_;
         if (sample % 2 == 0)
           std::cout << "\n sample " << sample / 2 << " |  ";
         else
@@ -224,7 +224,7 @@ void QIEEncoder::produce(framework::Event &event) {
     std::cout << std::endl;
   }  // if verbose
 
-  event.add(outputCollection_, out_word);
+  event.add(output_collection_, out_word);
 }
 
 void QIEEncoder::onProcessStart() {

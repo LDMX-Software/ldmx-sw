@@ -75,7 +75,7 @@ class SimQIE {
    * Converting ADC back to charge
    * @param ADC = ADC count
    */
-  float adC2Q(int ADC);
+  float adc2Q(int ADC);
 
   /**
    * TDC of the input pulse
