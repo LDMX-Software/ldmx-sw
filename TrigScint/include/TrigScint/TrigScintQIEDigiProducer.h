@@ -69,35 +69,31 @@ class TrigScintQIEDigiProducer : public framework::Producer {
   /// Random number generator
   std::unique_ptr<TRandom3> random_{nullptr};
 
-  /// Class to set the verbosity level.
-  // TODO: Make use of the global verbose parameter.
-  bool verbose_{false};
-
   /// Name of the input collection containing the sim hits
-  std::string inputCollection_;
+  std::string input_collection_;
 
   /// Name of the pass that the input collection is on (empty string means take
   /// any pass)
-  std::string inputPassName_;
+  std::string input_pass_name_;
 
   /// Name of the output collection that will be used to stored the
   /// digitized trigger scintillator hits
-  std::string outputCollection_;
+  std::string output_collection_;
 
   /// Number of strips per array
-  int stripsPerArray_{50};
+  int strips_per_array_{50};
 
-  /// Number of arrays
-  int numberOfArrays_{3};
+  // /// Number of arrays
+  // int number_of_arrays_{3};
 
   /// Mean readout noise
-  double meanNoise_{0};
+  double mean_noise_{0};
 
   /// Total MeV per MIP
-  double mevPerMip_{1.40};
+  double mev_per_mip_{1.40};
 
   /// Total number of photoelectrons per MIP
-  double pePerMip_{13.5};
+  double pe_per_mip_{13.5};
 
   /// QIE Input pulse shape
   std::string input_pulse_shape_;
@@ -127,7 +123,7 @@ class TrigScintQIEDigiProducer : public framework::Producer {
   float s_freq_;
 
   /// Zero-suppression: discard any integrated pulses with PE < this number
-  float zeroSuppCut_{1.};
+  float zero_supp_cut_{1.};
 
   /// SimQIE pointer
   SimQIE* smq_{nullptr};

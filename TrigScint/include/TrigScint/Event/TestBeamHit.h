@@ -36,7 +36,7 @@ class TestBeamHit : public ldmx::TrigScintHit {
   /**
    * Clear the data in the object.
    */
-  void Clear(Option_t *option = "");
+  void clear(Option_t *option = "");
 
   /**
    * Print out the object.
@@ -52,7 +52,7 @@ class TestBeamHit : public ldmx::TrigScintHit {
 
   /// Get the pedestal calculated only from first N time samples
 
-  float getEarlyPedestal() const { return earlyPedestal_; }
+  float getEarlyPedestal() const { return early_pedestal_; }
 
   /**
    * Set channel (linearized. charge) pedestal calculated from beginning of
@@ -60,7 +60,7 @@ class TestBeamHit : public ldmx::TrigScintHit {
    *
    * @param pedestal The pedestal of the first N time samples in the channel
    */
-  void setEarlyPedestal(const float earlyPed) { earlyPedestal_ = earlyPed; };
+  void setEarlyPedestal(const float earlyPed) { early_pedestal_ = earlyPed; };
 
   /// Get the pedestal
 
@@ -70,12 +70,12 @@ class TestBeamHit : public ldmx::TrigScintHit {
    * Store total charge
    * @param q total charge in pulse making hit
    */
-  void setQ(const float q) { pulseQ_ = q; }
+  void setQ(const float q) { pulse_q_ = q; }
 
   /**
    * Get hit charge
    */
-  float getQ() const { return pulseQ_; }
+  float getQ() const { return pulse_q_; }
 
   /**
    * Store total charge
@@ -93,11 +93,11 @@ class TestBeamHit : public ldmx::TrigScintHit {
    *
    * @param startSample The start (time) sample in the pulse
    */
-  void setStartSample(const int startSample) { startSample_ = startSample; };
+  void setStartSample(const int startSample) { start_sample_ = startSample; };
 
   /// Get the pulse/hit startSample
 
-  int getStartSample() const { return startSample_; }
+  int getStartSample() const { return start_sample_; }
 
   /**
    * Set number of samples above pedestal in pulse/hit
@@ -106,11 +106,11 @@ class TestBeamHit : public ldmx::TrigScintHit {
    * continuing after) the pulse
    */
   void setSampAbovePed(const int sampAbovePed) {
-    sampAbovePed_ = sampAbovePed;
+    samp_above_ped_ = sampAbovePed;
   };
 
   /// Get the pulse/hit sampAbovePed
-  int getSampAbovePed() const { return sampAbovePed_; }
+  int getSampAbovePed() const { return samp_above_ped_; }
 
   /**
    * Set number of samples above threshold in pulse/hit
@@ -119,11 +119,11 @@ class TestBeamHit : public ldmx::TrigScintHit {
    * continuing after) the pulse
    */
   void setSampAboveThr(const int sampAboveThr) {
-    sampAboveThr_ = sampAboveThr;
+    samp_above_thr_ = sampAboveThr;
   };
 
   /// Get the pulse/hit sampAboveThr
-  int getSampAboveThr() const { return sampAboveThr_; }
+  int getSampAboveThr() const { return samp_above_thr_; }
 
   /**
    * Set whether hit has been checked for and passed quality criteria
@@ -131,10 +131,10 @@ class TestBeamHit : public ldmx::TrigScintHit {
    * @param isClean The boolean being TRUE if hit quality criteria are checkad
    * AND passed
    */
-  void setHitQuality(const int isClean) { passHitQuality_ = isClean; };
+  void setHitQuality(const int isClean) { pass_hit_quality_ = isClean; };
 
   /// Get the pulse/hit isClean
-  int getHitQuality() const { return passHitQuality_; }
+  int getHitQuality() const { return pass_hit_quality_; }
 
   /**
    * Set hit data quality flag. This is the binary
@@ -156,37 +156,37 @@ class TestBeamHit : public ldmx::TrigScintHit {
    *
    * @param pulseWidth The number of (time) samples used to make up the pulse
    */
-  void setPulseWidth(const int pulseWidth) { pulseWidth_ = pulseWidth; };
+  void setPulseWidth(const int pulseWidth) { pulse_width_ = pulseWidth; };
 
   /// Get the pulse/hit pulseWidth
-  int getPulseWidth() const { return pulseWidth_; }
+  int getPulseWidth() const { return pulse_width_; }
 
   /**
    * A dummy operator overloading
    * @note required for declaring std::vector<> in EventDef.h
    */
   bool operator<(const TestBeamHit &rhs) const {
-    return this->pulseQ_ < rhs.pulseQ_;
+    return this->pulse_q_ < rhs.pulse_q_;
   }
 
  private:
-  float pedestal_{
-      -999.};  // assumed/average channel pedestal used in subtraction [fC]
-  float earlyPedestal_{
-      -999.};  // early pedestal (average over first 5 time samples)   [fC]
-  float pulseQ_{-999.};  // integrated, ped subtracted charge over pulse [fC]
+  float pedestal_{-999.};
+  // assumed/average channel pedestal used in subtraction [fC]
+  float early_pedestal_{-999.};
+  // early pedestal (average over first 5 time samples)   [fC]
+  float pulse_q_{-999.};  // integrated, ped subtracted charge over pulse [fC]
   // float PE_{-1.};       // number of photoelectrons in the hit (override from
   // trigscinthit which seems unreliable)
-  int startSample_{-1};   // start sample
-  int pulseWidth_{-1};    // specified pulse width (in number of samples)
-  int sampAbovePed_{-1};  // actual number of consecutive samples above pedestal
-                          // after start sample
-  int sampAboveThr_{-1};  // actual number of consecutive samples above
-                          // threshold after start sample
+  int start_sample_{-1};    // start sample
+  int pulse_width_{-1};     // specified pulse width (in number of samples)
+  int samp_above_ped_{-1};  // actual number of consecutive samples above
+                            // pedestal after start sample
+  int samp_above_thr_{-1};  // actual number of consecutive samples above
+                            // threshold after start sample
   //  bool passHitQuality_{false};  //track if hit has been checked for and
   //  passed quality criteria
-  int passHitQuality_{
-      0};  // track if hit has been checked for and passed quality criteria
+  int pass_hit_quality_{0};
+  // track if hit has been checked for and passed quality criteria
 
   uint flag_{0};  // more elaborate quality flag (binary sum)
 
@@ -200,7 +200,7 @@ class TestBeamHit : public ldmx::TrigScintHit {
   property
   */
 
-  ClassDef(TestBeamHit, 4);
+  ClassDef(TestBeamHit, 5);
 
 };  // TestBeamHit
 

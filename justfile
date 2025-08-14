@@ -69,7 +69,7 @@ configure-base *CONFIG: prep-version
     denv cmake -B build -S . {{ CONFIG }}
 
 # default configure of build when developing
-configure *CONFIG: (configure-base "-DADDITIONAL_WARNINGS=ON" CONFIG)
+configure *CONFIG: (configure-base "-DADDITIONAL_WARNINGS=ON -DCMAKE_EXPORT_COMPILE_COMMANDS=ON" CONFIG)
 
 # configure minimal option for faster compilation
 configure-quick: configure-base
@@ -177,7 +177,7 @@ tidy-cpp *ARGS='-p build --fix --quiet ':
     #!/usr/bin/env sh
     set -exu
     format_list=$(mktemp)
-    git ls-tree -r HEAD --name-only | egrep '(\.h|\.cxx)$'  | grep '/Ecal/' > ${format_list}
+    git ls-tree -r HEAD --name-only | egrep '(\.h|\.cxx)$'  | grep '/TrigScint/' > ${format_list}
     denv clang-tidy $(cat ${format_list}) {{ ARGS }}
     rm ${format_list}
 

@@ -41,16 +41,16 @@ class TrigScintFirmwareTracker : public framework::Producer {
 
  private:
   // min threshold for adding a hit to a cluster
-  double minThr_{0.};
+  double min_thr_{0.};
 
   // specific verbosity of this producer
   int verbose_{0};
 
   // expected arrival time of hits in the pad [ns]
-  double padTime_{0.};
+  double pad_time_{0.};
 
   // maximum allowed delay for hits to be considered for clustering
-  double timeTolerance_{0.};
+  double time_tolerance_{0.};
 
   // output collection (clusters)
   std::string output_collection_;
@@ -63,16 +63,16 @@ class TrigScintFirmwareTracker : public framework::Producer {
   std::vector<ldmx::TrigScintTrack> tracks_;
 
   // specific pass name to use for track making
-  std::string passName_{""};
+  std::string pass_name_{""};
 
   // book keep which channels have already been added to the cluster at hand
-  std::vector<unsigned int> v_addedIndices_;
+  std::vector<unsigned int> v_added_indices_;
 
   // book keep which channels have already been added to any cluster
-  std::vector<unsigned int> v_usedIndices_;
+  std::vector<unsigned int> v_used_indices_;
 
   // empty map container
-  std::map<int, int> hitChannelMap_;
+  std::map<int, int> hit_channel_map_;
 };
 
 }  // namespace trigscint

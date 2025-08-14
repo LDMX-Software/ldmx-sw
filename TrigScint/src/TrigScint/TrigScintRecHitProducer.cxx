@@ -16,37 +16,27 @@ TrigScintRecHitProducer::~TrigScintRecHitProducer() {}
 void TrigScintRecHitProducer::configure(
     framework::config::Parameters &parameters) {
   // Configure this instance of the producer
-  pedestal_ = parameters.getParameter<double>("pedestal");
-  gain_ = parameters.getParameter<double>("gain");
-  mevPerMip_ = parameters.getParameter<double>("mev_per_mip");
-  pePerMip_ = parameters.getParameter<double>("pe_per_mip");
-  inputCollection_ = parameters.getParameter<std::string>("input_collection");
-  inputPassName_ = parameters.getParameter<std::string>("input_pass_name");
-  outputCollection_ = parameters.getParameter<std::string>("output_collection");
-  verbose_ = parameters.getParameter<bool>("verbose");
-  sample_of_interest_ = parameters.getParameter<int>("sample_of_interest");
+  pedestal_ = parameters.get<double>("pedestal");
+  gain_ = parameters.get<double>("gain");
+  mev_per_mip_ = parameters.get<double>("mev_per_mip");
+  pe_per_mip_ = parameters.get<double>("pe_per_mip");
+  input_collection_ = parameters.get<std::string>("input_collection");
+  input_pass_name_ = parameters.get<std::string>("input_pass_name");
+  output_collection_ = parameters.get<std::string>("output_collection");
+  sample_of_interest_ = parameters.get<int>("sample_of_interest");
 }
 
 void TrigScintRecHitProducer::produce(framework::Event &event) {
-  // initialize QIE object for linearizing ADCs
+  // Initialize QIE object for linearizing ADCs
   SimQIE qie;
 
-  // Ensure the sample of interest <4
-  /* // this assumes we are in well-behaved simulation land, not test beam
-  wilderness if(sample_of_interest_>3) { ldmx_log(error)<<"sample_of_interest_
-  should be one of 0,1,2,3\n"
-                   <<"Currently, sample_of_interest = "<<sample_of_interest_
-                   <<"\n";
-    return;
-  }
-  */
-
-  // looper over sim hits and aggregate energy depositions
-  // for each detID
+  // Retrieve the collection of QIE digis
   const auto digis{event.getCollection<trigscint::TrigScintQIEDigis>(
-      inputCollection_, inputPassName_)};
+      input_collection_, input_pass_name_)};
 
-  std::vector<ldmx::TrigScintHit> trigScintHits;
+  std::vector<ldmx::TrigScintHit> trig_scint_hits;
+
+  // Loop over digis and process each one
   for (const auto &digi : digis) {
     ldmx::TrigScintHit hit;
     auto adc{digi.getADC()};
@@ -56,32 +46,38 @@ void TrigScintRecHitProducer::produce(framework::Event &event) {
     hit.setBarID(digi.getChanID());
     hit.setBeamEfrac(-1.);
 
-    // leave amplitude as sum of the first two
+    // Set amplitude as the sum of the first two samples
     hit.setAmplitude(
-        qie.ADC2Q(adc[sample_of_interest_]) +
-        qie.ADC2Q(adc[sample_of_interest_ + 1]));  // femptocoulombs
+        qie.adc2Q(adc[sample_of_interest_]) +
+        qie.adc2Q(adc[sample_of_interest_ + 1]));  // femptocoulombs
 
+    // Set time based on TDC value
     if (tdc[sample_of_interest_] > 49)
       hit.setTime(-999.);
     else
       hit.setTime(tdc[sample_of_interest_] * 0.5);
 
-    float integratedCharge = 0;
-    // integrate pulse over all time samples. will subtract pedestal next
-    for (const auto &adcVal : adc) {
-      integratedCharge += qie.ADC2Q(adcVal);
-    }
-    uint nSamp = adc.size();
-    float pedSubtrQ = integratedCharge - nSamp * pedestal_;
-    hit.setEnergy(pedSubtrQ * 6250. / gain_ * mevPerMip_ / pePerMip_);  // MeV
-    hit.setPE(pedSubtrQ * 6250. / gain_);
-    trigScintHits.push_back(hit);
-  }
-  // Create the container to hold the
-  // digitized trigger scintillator hits.
+    float integrated_charge = 0;
 
-  event.add(outputCollection_, trigScintHits);
+    // Integrate pulse over all time samples and subtract pedestal
+    for (const auto &adc_val : adc) {
+      integrated_charge += qie.adc2Q(adc_val);
+    }
+    uint n_samp = adc.size();
+    float ped_subtr_q = integrated_charge - n_samp * pedestal_;
+
+    // Set energy and photoelectrons
+    hit.setEnergy(ped_subtr_q * 6250. / gain_ * mev_per_mip_ /
+                  pe_per_mip_);  // MeV
+    hit.setPE(ped_subtr_q * 6250. / gain_);
+
+    trig_scint_hits.push_back(hit);
+  }
+
+  // Add the processed hits to the event
+  event.add(output_collection_, trig_scint_hits);
 }
+
 }  // namespace trigscint
 
 DECLARE_PRODUCER(trigscint::TrigScintRecHitProducer);

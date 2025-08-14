@@ -16,9 +16,9 @@ ClassImp(ldmx::TrigScintHit);
 namespace ldmx {
 void TrigScintHit::clear(Option_t* option) {
   ldmx::HcalHit::clear();
-  barID_ = -1;
-  moduleID_ = -1;
-  beamEfrac_ = 0;
+  bar_id_ = -1;
+  module_id_ = -1;
+  beam_efrac_ = 0;
 }
 
 std::ostream& operator<<(std::ostream& o, const TrigScintHit& c) {

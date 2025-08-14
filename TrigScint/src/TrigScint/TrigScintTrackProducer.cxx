@@ -6,57 +6,54 @@
 namespace trigscint {
 
 void TrigScintTrackProducer::configure(framework::config::Parameters &ps) {
-  maxDelta_ = ps.getParameter<double>(
+  max_delta_ = ps.get<double>(
       "delta_max");  // max distance to consider adding in a cluster to track
-  seeding_collection_ = ps.getParameter<std::string>(
+  seeding_collection_ = ps.get<std::string>(
       "seeding_collection");  // probably tagger pad, "TriggerPadTagClusters"
-  input_collections_ = ps.getParameter<std::vector<std::string>>(
+  input_collections_ = ps.get<std::vector<std::string>>(
       "further_input_collections");  // {"TriggerPadUpClusters" ,
                                      // "TriggerPadDnClusters" }
-  output_collection_ = ps.getParameter<std::string>("output_collection");
-  passName_ = ps.getParameter<std::string>("input_pass_name");
-  verbose_ = ps.getParameter<int>("verbosity");
-  vertBarStartIdx_ = ps.getParameter<int>("vertical_bar_start_index");
-  nBarsY_ = ps.getParameter<int>("number_horizontal_bars");
-  barWidth_y_ = ps.getParameter<double>("horizontal_bar_width");
-  barGap_y_ = ps.getParameter<double>("horizontal_bar_gap");
-  nBarsX_ = ps.getParameter<int>("number_vertical_bars");
-  barWidth_x_ = ps.getParameter<double>("vertical_bar_width");
-  barGap_x_ = ps.getParameter<double>("vertical_bar_gap");
-  skipLast_ = ps.getParameter<bool>("allow_skip_last_collection");
+  output_collection_ = ps.get<std::string>("output_collection");
+  pass_name_ = ps.get<std::string>("input_pass_name");
+  verbose_ = ps.get<int>("verbosity");
+  vert_bar_start_idx_ = ps.get<int>("vertical_bar_start_index");
+  n_bars_y_ = ps.get<int>("number_horizontal_bars");
+  bar_width_y_ = ps.get<double>("horizontal_bar_width");
+  bar_gap_y_ = ps.get<double>("horizontal_bar_gap");
+  n_bars_x_ = ps.get<int>("number_vertical_bars");
+  bar_width_x_ = ps.get<double>("vertical_bar_width");
+  bar_gap_x_ = ps.get<double>("vertical_bar_gap");
+  skip_last_ = ps.get<bool>("allow_skip_last_collection");
 
   // TO DO: allow any number of input collections
 
   if (verbose_) {
     ldmx_log(info) << "In TrigScintTrackProducer: configure done!" << std::endl;
     ldmx_log(info) << "Got parameters: \nSeeding:   " << seeding_collection_
-                   << "\nTolerance: " << maxDelta_
+                   << "\nTolerance: " << max_delta_
                    << "\nInput:     " << input_collections_.at(0) << " and "
                    << input_collections_.at(1)
-                   << "\nInput pass name:     " << passName_
+                   << "\nInput pass name:     " << pass_name_
                    << "\nAllow tracks with no hit in last collection:     "
-                   << skipLast_
-                   << "\nVertical bar start index:     " << vertBarStartIdx_
-                   << "\nNumber of horizontal bars:     " << nBarsY_
-                   << "\nHorizontal bar width:     " << barWidth_y_
-                   << "\nHorizontal bar gap:     " << barGap_y_
-                   << "\nNumber of vertical bars:     " << nBarsX_
-                   << "\nVertical bar width:     " << barWidth_x_
-                   << "\nVertical bar gap:     " << barGap_x_
+                   << skip_last_
+                   << "\nVertical bar start index:     " << vert_bar_start_idx_
+                   << "\nNumber of horizontal bars:     " << n_bars_y_
+                   << "\nHorizontal bar width:     " << bar_width_y_
+                   << "\nHorizontal bar gap:     " << bar_gap_y_
+                   << "\nNumber of vertical bars:     " << n_bars_x_
+                   << "\nVertical bar width:     " << bar_width_x_
+                   << "\nVertical bar gap:     " << bar_gap_x_
                    << "\nOutput:    " << output_collection_
                    << "\nVerbosity: " << verbose_;
   }
-
-  yConvFactor_ =
-      (barWidth_y_ + barGap_y_) /
-      2.;  // each bar only goes half this distance up (overlap/zig-zag)
-  yStart_ = -(nBarsY_ * (barWidth_y_ + barGap_y_) - barGap_y_) /
-            2.;  // half height of pad
-  xConvFactor_ =
-      barWidth_x_ +
-      barGap_x_;  // each bar goes entire distance sideways (no overlap)
-  xStart_ = -(nBarsX_ * (barWidth_x_ + barGap_x_) - barGap_x_) /
-            2.;  // half width of pad
+  // each bar only goes half this distance up (overlap/zig-zag)
+  y_conv_factor_ = (bar_width_y_ + bar_gap_y_) / 2.;
+  // half height of pad
+  y_start_ = -(n_bars_y_ * (bar_width_y_ + bar_gap_y_) - bar_gap_y_) / 2.;
+  // each bar goes entire distance sideways (no overlap)
+  x_conv_factor_ = bar_width_x_ + bar_gap_x_;
+  // half width of pad
+  x_start_ = -(n_bars_x_ * (bar_width_x_ + bar_gap_x_) - bar_gap_x_) / 2.;
 
   return;
 }
@@ -74,29 +71,29 @@ void TrigScintTrackProducer::produce(framework::Event &event) {
         << "TrigScintTrackProducer: produce() starts! Event number: "
         << event.getEventHeader().getEventNumber();
   }
-  if (!event.exists(seeding_collection_, passName_)) {
+  if (!event.exists(seeding_collection_, pass_name_)) {
     ldmx_log(info) << "No collection called " << seeding_collection_
                    << "; skipping event";
     //                   << "; still, not skipping event";
     return;
   }
 
-  if (!event.exists(seeding_collection_, passName_)) {
+  if (!event.exists(seeding_collection_, pass_name_)) {
     ldmx_log(info) << "No collection called " << seeding_collection_
                    << "; skipping event";
     return;
   }
   const auto seeds{event.getCollection<ldmx::TrigScintCluster>(
-      seeding_collection_, passName_)};
-  uint numSeeds = seeds.size();
+      seeding_collection_, pass_name_)};
+  uint num_seeds = seeds.size();
 
   if (verbose_) {
     ldmx_log(debug) << "Got track seeding cluster collection "
-                    << seeding_collection_ << " with " << numSeeds
+                    << seeding_collection_ << " with " << num_seeds
                     << " entries ";
   }
 
-  if (!event.exists(input_collections_.at(0), passName_)) {
+  if (!event.exists(input_collections_.at(0), pass_name_)) {
     ldmx_log(info) << "No collection called " << input_collections_.at(0)
                    << "; skipping event";
     //                   << "; still, not skipping event";
@@ -104,9 +101,9 @@ void TrigScintTrackProducer::produce(framework::Event &event) {
     return;
   }
   const auto clusters_pad1{event.getCollection<ldmx::TrigScintCluster>(
-      input_collections_.at(0), passName_)};
+      input_collections_.at(0), pass_name_)};
 
-  if (!event.exists(input_collections_.at(1), passName_)) {
+  if (!event.exists(input_collections_.at(1), pass_name_)) {
     ldmx_log(info) << "No collection called "
                    << input_collections_.at(1)
                    //                   << "; still, not skipping event";
@@ -117,7 +114,7 @@ void TrigScintTrackProducer::produce(framework::Event &event) {
   }
 
   const auto clusters_pad2{event.getCollection<ldmx::TrigScintCluster>(
-      input_collections_.at(1), passName_)};
+      input_collections_.at(1), pass_name_)};
 
   if (verbose_) {
     ldmx_log(debug) << "Got the other two pad collections:"
@@ -127,14 +124,14 @@ void TrigScintTrackProducer::produce(framework::Event &event) {
                     << clusters_pad2.size() << " entries.";
   }
 
-  std::vector<ldmx::TrigScintTrack> cleanedTracks;
-  std::vector<ldmx::TrigScintTrack> cleanedTracksY;
-  std::vector<ldmx::TrigScintTrack> cleanedTracksX;
+  std::vector<ldmx::TrigScintTrack> cleaned_tracks;
+  std::vector<ldmx::TrigScintTrack> cleaned_tracks_y;
+  std::vector<ldmx::TrigScintTrack> cleaned_tracks_x;
 
   // loop over the clusters in the seeding pad collection, if there are clusters
   // in all pads
   // bool skipDn = false;
-  if (numSeeds && clusters_pad1.size()) {
+  if (num_seeds && clusters_pad1.size()) {
     // could check this explicitly here: and then just get out of all checks on
     // the dn pad immediately
     //	if (! clusters_pad2.size())
@@ -144,7 +141,7 @@ void TrigScintTrackProducer::produce(framework::Event &event) {
       // with centroids within tolerance to tracks
       float centroid = seed.getCentroid();
 
-      std::vector<ldmx::TrigScintTrack> trackCandidates;
+      std::vector<ldmx::TrigScintTrack> track_candidates;
 
       if (verbose_ > 1) {
         ldmx_log(debug) << "Got seed with centroid " << centroid;
@@ -158,13 +155,13 @@ void TrigScintTrackProducer::produce(framework::Event &event) {
           ldmx_log(debug) << "\tGot pad1 cluster with centroid "
                           << cluster1.getCentroid();
         }
-        if (fabs(cluster1.getCentroid() - centroid) < maxDelta_ ||
-            (centroid >= vertBarStartIdx_  // then in vertical bars
+        if (fabs(cluster1.getCentroid() - centroid) < max_delta_ ||
+            (centroid >= vert_bar_start_idx_  // then in vertical bars
              && seed.getCentroidX() == cluster1.getCentroidX())) {
           // use geometry y overlap scheme to see if this is really a match in x
           // should be done in a map
 
-          if (centroid >= vertBarStartIdx_ &&
+          if (centroid >= vert_bar_start_idx_ &&
               seed.getCentroidY() < cluster1.getCentroidY()) {
             // impossible combination
             if (verbose_ > 1) {
@@ -184,9 +181,9 @@ void TrigScintTrackProducer::produce(framework::Event &event) {
 
           // try making third pad clusters an optional part of track
 
-          std::vector<ldmx::TrigScintCluster> clusterVec = {seed, cluster1};
+          std::vector<ldmx::TrigScintCluster> cluster_vec = {seed, cluster1};
 
-          bool hasMatchDn = false;
+          bool has_match_dn = false;
 
           for (const auto &cluster2 : clusters_pad2) {
             if (verbose_ > 1) {
@@ -194,13 +191,13 @@ void TrigScintTrackProducer::produce(framework::Event &event) {
                               << cluster2.getCentroid();
             }
 
-            if (fabs(cluster2.getCentroid() - centroid) < maxDelta_ ||
-                (centroid >= vertBarStartIdx_  // then in vertical bars
+            if (fabs(cluster2.getCentroid() - centroid) < max_delta_ ||
+                (centroid >= vert_bar_start_idx_  // then in vertical bars
                  && seed.getCentroidX() == cluster2.getCentroidX())) {
               // use geometry y overlap scheme to see if this is really a match
               // in x
 
-              if (centroid >= vertBarStartIdx_ &&
+              if (centroid >= vert_bar_start_idx_ &&
                   (seed.getCentroidY() < cluster2.getCentroidY() ||
                    cluster1.getCentroidY() >
                        cluster2.getCentroidY())) {  // impossible
@@ -222,7 +219,7 @@ void TrigScintTrackProducer::produce(framework::Event &event) {
 
               // only make this vector now! this ensures against hanging
               // clusters with indices from earlier in the loop
-              std::vector<ldmx::TrigScintCluster> threeClusterVec = {
+              std::vector<ldmx::TrigScintCluster> three_cluster_vec = {
                   seed, cluster1, cluster2};
 
               /*
@@ -231,17 +228,17 @@ void TrigScintTrackProducer::produce(framework::Event &event) {
               iteration once there's a track made
               */
               // make a track
-              ldmx::TrigScintTrack track = makeTrack(threeClusterVec);
-              trackCandidates.push_back(track);
-              hasMatchDn = true;
+              ldmx::TrigScintTrack track = makeTrack(three_cluster_vec);
+              track_candidates.push_back(track);
+              has_match_dn = true;
             }  // if match in pad2
           }  // over clusters in pad2
           // if there was no match to this in pad 2, make a track with just
           // these two clusters
-          if (!hasMatchDn &&
-              skipLast_) {  // we allow skipping last pad if needed
-            ldmx::TrigScintTrack track = makeTrack(clusterVec);
-            trackCandidates.push_back(track);
+          if (!has_match_dn && skip_last_) {
+            // we allow skipping last pad if needed
+            ldmx::TrigScintTrack track = makeTrack(cluster_vec);
+            track_candidates.push_back(track);
           }
 
         }  // if possible (x,)y match in pad1
@@ -254,30 +251,30 @@ break;
       }  // over clusters in pad1
 
       // continue to next seed if 0 track candidates
-      if (trackCandidates.size() == 0) continue;
+      if (track_candidates.size() == 0) continue;
 
-      int keepIdx = 0;
-      float minResidual = 1000;  // some large number
+      int keep_idx = 0;
+      float min_residual = 1000;  // some large number
 
       // no need to choose between only one candidate track
-      if (trackCandidates.size() > 1) {
+      if (track_candidates.size() > 1) {
         // now for each seed, pick only the track with the smallest residual.
 
         if (verbose_) {
-          ldmx_log(debug) << "Got " << trackCandidates.size()
+          ldmx_log(debug) << "Got " << track_candidates.size()
                           << " tracks to check.";
         }
 
-        for (uint idx = 0; idx < trackCandidates.size(); idx++) {
-          if ((trackCandidates.at(idx)).getResidual() < minResidual) {
-            keepIdx = (int)idx;
-            minResidual =
-                (trackCandidates.at(idx)).getResidual();  // update minimum
+        for (uint idx = 0; idx < track_candidates.size(); idx++) {
+          if ((track_candidates.at(idx)).getResidual() < min_residual) {
+            keep_idx = (int)idx;
+            min_residual =
+                (track_candidates.at(idx)).getResidual();  // update minimum
 
             if (verbose_ > 1) {
               ldmx_log(debug)
                   << "Track at index " << idx
-                  << " has smallest residual so far: " << minResidual;
+                  << " has smallest residual so far: " << min_residual;
             }
 
           }  // finding min residual
@@ -287,10 +284,10 @@ break;
       // store the track at keepIdx, if there was one we made it this far and
       // keepIdx is 0 or has been updated to the smallest residual track idx
       //	if (keepIdx >= 0) {
-      tracks_.push_back(trackCandidates.at(keepIdx));
+      tracks_.push_back(track_candidates.at(keep_idx));
       if (verbose_) {
-        ldmx_log(debug) << "Kept track at index " << keepIdx;
-        ldmx_log(trace) << trackCandidates.at(keepIdx);
+        ldmx_log(debug) << "Kept track at index " << keep_idx;
+        ldmx_log(trace) << track_candidates.at(keep_idx);
       }
       //}
     }  // over seeds
@@ -312,30 +309,30 @@ break;
     // loop. But for now I haven't figured out how to erase elements in a fool
     // proof way. So I iterate over a vector...
 
-    std::vector keepIndices(tracks_.size(), 1);
+    std::vector keep_indices(tracks_.size(), 1);
     if (verbose_ > 1)
       ldmx_log(debug) << "vector of indices to keep has size "
-                      << keepIndices.size();
+                      << keep_indices.size();
 
     for (uint idx = tracks_.size() - 1; idx > 0; idx--) {
       // since we start in one end, we only have to check matches in one
       // direction
       ldmx::TrigScintTrack track = tracks_.at(idx);
-      for (int idxComp = idx - 1; idxComp >= 0; idxComp--) {
+      for (int idx_comp = idx - 1; idx_comp >= 0; idx_comp--) {
         if (verbose_ > 1)
           ldmx_log(debug) << "In track disambiguation loop, idx points at "
-                          << idx << " and prev idx points at " << idxComp;
+                          << idx << " and prev idx points at " << idx_comp;
 
-        ldmx::TrigScintTrack nextTrack = tracks_.at(idxComp);
+        ldmx::TrigScintTrack next_track = tracks_.at(idx_comp);
 
         // no need to start pulling constituents from tracks that are
         // ridiculously far apart
-        if (fabs(track.getCentroid() - nextTrack.getCentroid()) <
-            3 * maxDelta_) {
+        if (fabs(track.getCentroid() - next_track.getCentroid()) <
+            3 * max_delta_) {
           std::vector<ldmx::TrigScintCluster> consts_1 =
               track.getConstituents();
           std::vector<ldmx::TrigScintCluster> consts_2 =
-              nextTrack.getConstituents();
+              next_track.getConstituents();
           if (verbose_ > 1)
             ldmx_log(debug)
                 << "In track disambiguation loop, got the two tracks, "
@@ -354,20 +351,20 @@ break;
 
             if (verbose_ > 1) {
               ldmx_log(debug) << "Found overlap! Tracks at index " << idx
-                              << " and " << idxComp;
+                              << " and " << idx_comp;
               ldmx_log(trace) << tracks_.at(idx);
-              ldmx_log(trace) << tracks_.at(idxComp);
+              ldmx_log(trace) << tracks_.at(idx_comp);
             }
 
             if ((tracks_.at(idx)).getResidual() <
-                (tracks_.at(idxComp)).getResidual()) {
+                (tracks_.at(idx_comp)).getResidual()) {
               // next track (lower index) is a worse choice, remove its flag for
               // keeping
-              keepIndices.at(idxComp) = 0;
+              keep_indices.at(idx_comp) = 0;
             } else  // prefer next track over current. remove current track's
                     // keep
               // flag
-              keepIndices.at(idx) = 0;
+              keep_indices.at(idx) = 0;
             /*}
                   else {
                   tracks_.erase(itNext);
@@ -388,11 +385,11 @@ break;
     for (uint idx = 0; idx < tracks_.size(); idx++) {
       if (verbose_ > 1) {
         ldmx_log(debug) << "keep flag for idx " << idx << " is "
-                        << keepIndices.at(idx);
+                        << keep_indices.at(idx);
       }
-      if (keepIndices.at(idx)) {  // this hasn't been flagged for removal
+      if (keep_indices.at(idx)) {  // this hasn't been flagged for removal
 
-        cleanedTracks.push_back(tracks_.at(idx));
+        cleaned_tracks.push_back(tracks_.at(idx));
 
         if (verbose_) {
           ldmx_log(debug) << "After cleaning, keeping track at index " << idx
@@ -418,15 +415,15 @@ break;
       ldmx_log(debug) << "Running track x,y matching ";
     }
 
-    if (cleanedTracks.size() > 0) {
-      matchXYTracks(cleanedTracks);
-      std::vector<ldmx::TrigScintTrack> matchedTracks =
-          cleanedTracks;  // don't know why this copying needs to happen but it
-                          // does
+    if (cleaned_tracks.size() > 0) {
+      matchXYTracks(cleaned_tracks);
+      std::vector<ldmx::TrigScintTrack> matched_tracks =
+          cleaned_tracks;  // don't know why this copying needs to happen but it
+                           // does
       //	std::vector<ldmx::TrigScintTrack>  matchXYTracks( cleanedTracks
       //); 		std::vector<ldmx::TrigScintTrack> matchedTracks =
       // matchXYTracks( cleanedTracks );
-      for (auto trk : matchedTracks) {
+      for (auto trk : matched_tracks) {
         /*	for (uint idx = 0; idx < tracks_.size(); idx++) {
                       if (verbose_ > 1) {
                       ldmx_log(debug) << "keep flag for idx " << idx << " is "
@@ -435,19 +432,19 @@ break;
                                       if (keepIndices.at(idx)) {  // this hasn't
       been flagged for removal
       //check if channel nb is above that of horizontal bars
-      if (tracks_.at(idx).getCentroid() >= vertBarStartIdx_)
+      if (tracks_.at(idx).getCentroid() >= vert_bar_start_idx_)
         */
-        if (trk.getCentroid() >= vertBarStartIdx_)
-          cleanedTracksX.push_back(trk);  // acks_.at(idx));
+        if (trk.getCentroid() >= vert_bar_start_idx_)
+          cleaned_tracks_x.push_back(trk);  // acks_.at(idx));
         else
-          cleanedTracksY.push_back(trk);  // acks_.at(idx));
+          cleaned_tracks_y.push_back(trk);  // acks_.at(idx));
         //		cleanedTracksY.push_back(trk);
         if (verbose_ > 1) {
           float centr = trk.getCentroid();  // tracks_.at(idx).getCentroid(); //
-          std::string collStr = centr >= vertBarStartIdx_ ? "X" : "Y";
-          collStr = output_collection_ + collStr;
+          std::string coll_str = centr >= vert_bar_start_idx_ ? "X" : "Y";
+          coll_str = output_collection_ + coll_str;
           ldmx_log(debug) << "saving track with centroid " << centr
-                          << " to output track collection " << collStr;
+                          << " to output track collection " << coll_str;
         }
         // }
       }
@@ -463,11 +460,11 @@ break;
     ldmx_log(debug) << "Done with tracking step. ";
   }
 
-  event.add(output_collection_, cleanedTracks);
+  event.add(output_collection_, cleaned_tracks);
   //  event.add(output_collection_, matchedTracks);
 
-  event.add(output_collection_ + "Y", cleanedTracksY);
-  event.add(output_collection_ + "X", cleanedTracksX);
+  event.add(output_collection_ + "Y", cleaned_tracks_y);
+  event.add(output_collection_ + "X", cleaned_tracks_x);
 
   tracks_.resize(0);
 
@@ -482,25 +479,25 @@ ldmx::TrigScintTrack TrigScintTrackProducer::makeTrack(
   // weighted track centroid later. but no need now
   ldmx::TrigScintTrack tr;
   float centroid = 0;
-  float centroidX = 0;
-  float centroidY = 0;
-  float beamEfrac = 0;
+  float centroid_x = 0;
+  float centroid_y = 0;
+  float beam_efrac = 0;
   float pe = 0;
   for (uint i = 0; i < clusters.size(); i++) {
     centroid += (clusters.at(i)).getCentroid();
-    centroidX += (clusters.at(i)).getCentroidX();
-    centroidY += (clusters.at(i)).getCentroidY();
+    centroid_x += (clusters.at(i)).getCentroidX();
+    centroid_y += (clusters.at(i)).getCentroidY();
     tr.addConstituent(clusters.at(i));
-    beamEfrac += (clusters.at(i)).getBeamEfrac();
+    beam_efrac += (clusters.at(i)).getBeamEfrac();
     pe += (clusters.at(i)).getPE();
   }
   centroid /= clusters.size();
-  centroidX /= clusters.size();
-  if (centroid >= vertBarStartIdx_) {
+  centroid_x /= clusters.size();
+  if (centroid >= vert_bar_start_idx_) {
     if (verbose_) {
       ldmx_log(debug)
           << " --  In makeTrack made vertical bar track with centroid  "
-          << centroid << " and y flag sum " << centroidY;
+          << centroid << " and y flag sum " << centroid_y;
       // try commenting this to check if that helps with an out-of-bounds
       // problem
       //                    << " from clusters with y centroids";
@@ -512,15 +509,15 @@ ldmx::TrigScintTrack TrigScintTrackProducer::makeTrack(
     // we have 4 divisions, so, the center of it should be divNb/8
     // (or rather, that's where channel nBars/8 begins)
     // and then a factor 2 for the zig-zag pattern
-    centroidY = (centroidY + 1) * 2 * nBarsY_ / 8.;
+    centroid_y = (centroid_y + 1) * 2 * n_bars_y_ / 8.;
     // TODO: here we could instead just use quadrant indices 0-3 by dividing by
     // 2 but that would mean that in the raw, x and y track centroidY would mean
     // different things
-    if (verbose_) ldmx_log(debug) << " --  new centroidY = " << centroidY;
+    if (verbose_) ldmx_log(debug) << " --  new centroidY = " << centroid_y;
   } else
-    centroidY /= clusters.size();
+    centroid_y /= clusters.size();
 
-  beamEfrac /= clusters.size();
+  beam_efrac /= clusters.size();
   pe /= clusters.size();
 
   float residual = 0;
@@ -530,10 +527,10 @@ ldmx::TrigScintTrack TrigScintTrackProducer::makeTrack(
   residual = sqrt(residual / clusters.size());
 
   tr.setCentroid(centroid);
-  tr.setCentroidX(centroidX);
-  tr.setCentroidY(centroidY);
+  tr.setCentroidX(centroid_x);
+  tr.setCentroidY(centroid_y);
   tr.setResidual(residual);
-  tr.setBeamEfrac(beamEfrac);
+  tr.setBeamEfrac(beam_efrac);
   tr.setPE(pe);
 
   if (verbose_) {
@@ -553,42 +550,44 @@ void TrigScintTrackProducer::matchXYTracks(
     std::vector<ldmx::TrigScintTrack> &tracks) {
   // map quadrant nb to track (can be multiple per quadrant)
   std::multimap<int, int>
-      yIdxQuadMap;  // key = quad, val = track index in collection
-  std::multimap<int, int> xIdxQuadMap;
+      y_idx_quad_map;  // key = quad, val = track index in collection
+  std::multimap<int, int> x_idx_quad_map;
 
-  std::multimap<int, ldmx::TrigScintTrack> yQuadMap;
-  std::multimap<int, ldmx::TrigScintTrack> xQuadMap;
+  std::multimap<int, ldmx::TrigScintTrack> y_quad_map;
+  std::multimap<int, ldmx::TrigScintTrack> x_quad_map;
   // map track in quadrant back to index in entire track collection
   // used for updating collection track variables
-  std::map<ldmx::TrigScintTrack, int> yTrackMap;
-  std::map<ldmx::TrigScintTrack, int> xTrackMap;
+  std::map<ldmx::TrigScintTrack, int> y_track_map;
+  std::map<ldmx::TrigScintTrack, int> x_track_map;
 
-  uint trkIdx = -1;
+  uint trk_idx = -1;
   for (auto trk : tracks) {
-    trkIdx++;
+    trk_idx++;
     // 1. get the y bar tracks with centroidX = -1
     if (trk.getCentroidX() == -1) {
       if (verbose_)
         ldmx_log(debug) << " --  In matchXYTracks found y track at "
                         << trk.getCentroidY() << "; mapping to quad "
                         << (int)trk.getCentroidY() / 8 << " with trk index "
-                        << trkIdx;
+                        << trk_idx;
       // 2. order them... or map them to quadrants. note that there are 2 layers
-      // so 2*nBarsY_/4 channels per quadrant
-      yQuadMap.insert(std::make_pair((int)(trk.getCentroidY() / 8), trk));
-      yTrackMap[trk] = trkIdx;
-      yIdxQuadMap.insert(std::make_pair((int)(trk.getCentroidY() / 8), trkIdx));
+      // so 2*n_bars_y_/4 channels per quadrant
+      y_quad_map.insert(std::make_pair((int)(trk.getCentroidY() / 8), trk));
+      y_track_map[trk] = trk_idx;
+      y_idx_quad_map.insert(
+          std::make_pair((int)(trk.getCentroidY() / 8), trk_idx));
 
     } else {  // 3. get the remaining tracks (from vertical bars) and map them
               // (back) to (middle of) quadrants
-      xQuadMap.insert(std::make_pair((int)(trk.getCentroidY() / 8), trk));
-      xTrackMap[trk] = trkIdx;
-      xIdxQuadMap.insert(std::make_pair((int)(trk.getCentroidY() / 8), trkIdx));
+      x_quad_map.insert(std::make_pair((int)(trk.getCentroidY() / 8), trk));
+      x_track_map[trk] = trk_idx;
+      x_idx_quad_map.insert(
+          std::make_pair((int)(trk.getCentroidY() / 8), trk_idx));
       if (verbose_)
         ldmx_log(debug) << " --  In matchXYTracks found x track at (x,y) = ("
                         << trk.getCentroidX() << ", " << trk.getCentroidY()
                         << "); mapping to quad " << (int)trk.getCentroidY() / 8
-                        << " with trk index " << trkIdx;
+                        << " with trk index " << trk_idx;
     }
   }
 
@@ -601,27 +600,29 @@ void TrigScintTrackProducer::matchXYTracks(
   // if there is no useful matching to be done: these are the pad width wide
   // numbers
   float x0 = 0;
-  float sx0 = fabs(xStart_);  // this should be half the pad... could also set
-                              // it to full beam spot width
-  float sy0 = fabs(yStart_) /
-              4.;  // yStart_ is half the pad, so this should be half a quadrant
+  // this should be half the pad... could also set
+  // it to full beam spot width
+  float sx0 = fabs(x_start_);
+
+  // y_start_ is half the pad, so this should be half a quadrant
+  float sy0 = fabs(y_start_) / 4.;
 
   // assume at least one y track. will have to figure out if there is ever a
   // reason to use an isolated x track in its place.
-  for (auto yitr = yQuadMap.begin(); yitr != yQuadMap.end(); ++yitr) {
-    int nYinQuad = yQuadMap.count((*yitr).first);
-    int nXinQuad = xQuadMap.count((*yitr).first);
+  for (auto yitr = y_quad_map.begin(); yitr != y_quad_map.end(); ++yitr) {
+    int n_yin_quad = y_quad_map.count((*yitr).first);
+    int n_xin_quad = x_quad_map.count((*yitr).first);
     float y{-9999.}, sy{-9999.}, x{-9999.}, x1{-9999.}, x2{-9999.}, sx1{-9999.},
         sx2{-9999.}, y1{-9999.}, y2{-9999.}, sy1{-9999.}, sy2{-9999.};
     // quad midpoint:
     float y0 = (*yitr).first * 8 + sy0;
-    float sx =
-        1. / 2 * xConvFactor_;  // rely on x precision being one single bar
+    float sx = 1. / 2 *
+               x_conv_factor_;  // rely on x precision being one single bar
                                 // width; always used unless x is undeterminable
 
     // check all x first
     // do the easiest first:
-    if (nXinQuad == 0) {  // then there's no hope of setting a better x here
+    if (n_xin_quad == 0) {  // then there's no hope of setting a better x here
       // just use the beam spot width... and center of pad
       x = x0;
       sx = sx0;
@@ -631,35 +632,35 @@ void TrigScintTrackProducer::matchXYTracks(
                            "precision: set (x, sx)=("
                         << x << ", " << sx << ")";
     }  // 0 x tracks in quadrant
-    else if (nXinQuad ==
+    else if (n_xin_quad ==
              1) {  // slightly harder: 1 x track -- might be easy if
                    // it's just one y track; if several, need to
                    // think about overlaps. but in overlap case, just
                    // revert to setting x0 and sx0, when we know
-      auto xitr = xQuadMap.find((*yitr).first);
-      x = ((*xitr).second).getCentroidX() * xConvFactor_ + xStart_;
+      auto xitr = x_quad_map.find((*yitr).first);
+      x = ((*xitr).second).getCentroidX() * x_conv_factor_ + x_start_;
 
       if (verbose_)
         ldmx_log(debug) << "\t\t\t 1 x in quad " << (*yitr).first
                         << ", getting (x, sx)=(" << x << ", " << sx << ")";
     }  // 1 x track in quadrant
-    else if (nXinQuad == 2) {  // finally if we have two tracks, get x1 and x2
-                               // and decide later how to use them
+    else if (n_xin_quad == 2) {  // finally if we have two tracks, get x1 and x2
+                                 // and decide later how to use them
       // don't think we want to experiment with discerning three overlapping
       // tracks, so not >= 2
       //		  continue; //debugging: skip for now -- didn't help
-      auto xitr1 = xQuadMap.lower_bound((*yitr).first);
-      auto xitr2 = xQuadMap.upper_bound((*yitr).first);
+      auto xitr1 = x_quad_map.lower_bound((*yitr).first);
+      auto xitr2 = x_quad_map.upper_bound((*yitr).first);
       xitr2--;  // upper_bound points to next element
 
       if (xitr1 != xitr2) {  // should be true already but...
-        x1 = ((*xitr1).second).getCentroidX() * xConvFactor_ + xStart_;
-        x2 = ((*xitr2).second).getCentroidX() * xConvFactor_ + xStart_;
-        sx1 = xConvFactor_ / 2.;  // 1 bar width
+        x1 = ((*xitr1).second).getCentroidX() * x_conv_factor_ + x_start_;
+        x2 = ((*xitr2).second).getCentroidX() * x_conv_factor_ + x_start_;
+        sx1 = x_conv_factor_ / 2.;  // 1 bar width
         sx2 = sx1;
         x = (x1 + x2) / 2.;
         sx = fabs(x1 - x2) / 2 *
-             xConvFactor_;  // rely on x precision being one single pad width
+             x_conv_factor_;  // rely on x precision being one single pad width
         if (verbose_)
           ldmx_log(debug) << "\t\t -- 2 x in quad: setting y track x "
                              "coordinate to midpoint";
@@ -668,20 +669,20 @@ void TrigScintTrackProducer::matchXYTracks(
 
     // ok! over y:
     // can skip 0 y case by construction
-    if (nYinQuad == 1) {  // we can already now tell what the y coordinate and
-                          // its precision is
-      y = ((*yitr).second).getCentroidY() * yConvFactor_ + yStart_;
-      sy = ((*yitr).second).getResidual() * yConvFactor_;
-      if (sy == 0)
-        sy = 1. / 2 * yConvFactor_;  // if all clusters lined up, assign
-                                     // precision of 1 bar width
+    if (n_yin_quad == 1) {  // we can already now tell what the y coordinate and
+                            // its precision is
+      y = ((*yitr).second).getCentroidY() * y_conv_factor_ + y_start_;
+      sy = ((*yitr).second).getResidual() * y_conv_factor_;
+      // if all clusters lined up, assign
+      // precision of 1 bar width
+      if (sy == 0) sy = 1. / 2 * y_conv_factor_;
 
-      if (nXinQuad <= 1) {
+      if (n_xin_quad <= 1) {
         // 4. every quadrant which just has one of each --> done ;
         // b) set the sx, sy of the x track now, using the residuals from the
         // other b1) special case: no x tracks; then x, sx have been set above
-        auto xidx = xIdxQuadMap.find((*yitr).first);
-        auto yidx = yIdxQuadMap.find((*yitr).first);
+        auto xidx = x_idx_quad_map.find((*yitr).first);
+        auto yidx = y_idx_quad_map.find((*yitr).first);
         tracks.at((*xidx).second).setPosition(x, y);
         tracks.at((*xidx).second).setSigmaXY(sx, sy);
         tracks.at((*yidx).second).setPosition(x, y);
@@ -696,38 +697,38 @@ void TrigScintTrackProducer::matchXYTracks(
 
     if (verbose_)
       ldmx_log(debug) << "\t\t in quad " << (*yitr).first
-                      << ", not single x,y tracks: " << nXinQuad << " of x and "
-                      << nYinQuad << " of y";
+                      << ", not single x,y tracks: " << n_xin_quad
+                      << " of x and " << n_yin_quad << " of y";
 
-    if (nYinQuad == 2) {  // let's start here and see if we can do >= 2 later
+    if (n_yin_quad == 2) {  // let's start here and see if we can do >= 2 later
       // here one could do sth to avoid checking the other y track again in the
       // outermost loop over y
-      auto yitr1 = yQuadMap.lower_bound((*yitr).first);
-      auto yitr2 = yQuadMap.upper_bound((*yitr).first);
+      auto yitr1 = y_quad_map.lower_bound((*yitr).first);
+      auto yitr2 = y_quad_map.upper_bound((*yitr).first);
       yitr2--;  // back up once
-      y1 = ((*yitr1).second).getCentroidY() * yConvFactor_ + yStart_;
-      y2 = ((*yitr2).second).getCentroidY() * yConvFactor_ + yStart_;
-      sy1 = ((*yitr1).second).getResidual() * yConvFactor_;
-      sy2 = ((*yitr2).second).getResidual() * yConvFactor_;
+      y1 = ((*yitr1).second).getCentroidY() * y_conv_factor_ + y_start_;
+      y2 = ((*yitr2).second).getCentroidY() * y_conv_factor_ + y_start_;
+      sy1 = ((*yitr1).second).getResidual() * y_conv_factor_;
+      sy2 = ((*yitr2).second).getResidual() * y_conv_factor_;
       y = (y1 + y2) / 2.;
-      sy = fabs(y1 - y2) / 2 * yConvFactor_;
+      sy = fabs(y1 - y2) / 2 * y_conv_factor_;
       if (verbose_)
         ldmx_log(debug)
             << "\t\t -- 2 y in quad: setting x track y coordinate to midpoint";
     }  // 2y in quad
 
-    if (nYinQuad == 1 &&
-        nXinQuad == 2) {  // don't think we want to experiment with discerning
-                          // three overlapping tracks, so not >= 2
+    if (n_yin_quad == 1 &&
+        n_xin_quad == 2) {  // don't think we want to experiment with discerning
+                            // three overlapping tracks, so not >= 2
 
       // first: set the y track coordinates to x  = the mid of x tracks, y = y
       // of y track
-      auto yidx = yIdxQuadMap.find((*yitr).first);
+      auto yidx = y_idx_quad_map.find((*yitr).first);
       tracks.at((*yidx).second).setPosition(x, y);
       tracks.at((*yidx).second).setSigmaXY(sx, sy);
 
-      int minOverlapPE_ = 250;
-      if (((*yitr).second).getPE() < minOverlapPE_) {
+      int min_overlap_pe = 250;
+      if (((*yitr).second).getPE() < min_overlap_pe) {
         // can't tell, really, that either of these belong to the y track. so.
         // let them keep their own x coordinate but set y to quadrant midpoint,
         // with uncertainty +/- half quadrant width (1/8 of pad height)
@@ -740,7 +741,7 @@ void TrigScintTrackProducer::matchXYTracks(
       }  // if can't assume overlap
       else if (verbose_)
         ldmx_log(debug) << "\t\t -- Found large PE count ("
-                        << ((*yitr).second).getPE() << " > " << minOverlapPE_
+                        << ((*yitr).second).getPE() << " > " << min_overlap_pe
                         << "), suggesting overlap! Setting both x track "
                            "coordinates to y track value:";
 
@@ -754,8 +755,8 @@ void TrigScintTrackProducer::matchXYTracks(
                         << sx2 << ", " << sy << ")";
 
       // now set x track coordinates according to overlap check result
-      auto xidx1 = xIdxQuadMap.lower_bound((*yitr).first);
-      auto xidx2 = xIdxQuadMap.upper_bound((*yitr).first);
+      auto xidx1 = x_idx_quad_map.lower_bound((*yitr).first);
+      auto xidx2 = x_idx_quad_map.upper_bound((*yitr).first);
       xidx2--;  // upper_bound points to (last+1) element
       tracks.at((*xidx1).second).setPosition(x1, y);
       tracks.at((*xidx1).second).setSigmaXY(sx1, sy);
@@ -763,18 +764,18 @@ void TrigScintTrackProducer::matchXYTracks(
       tracks.at((*xidx2).second).setSigmaXY(sx2, sy);
 
     }  // 1 y, 2 x tracks in the quadrant
-    else if (nYinQuad == 2 && nXinQuad == 1) {
+    else if (n_yin_quad == 2 && n_xin_quad == 1) {
       // 5b) if there are more y than x: could be an overlap
 
       // first: set the x track coordinates to x = x of x track, y = the mid of
       // y tracks
-      auto xidx = xIdxQuadMap.find((*yitr).first);
+      auto xidx = x_idx_quad_map.find((*yitr).first);
       tracks.at((*xidx).second).setPosition(x, y);
       tracks.at((*xidx).second).setSigmaXY(sx, sy);
 
-      auto xitr = xQuadMap.lower_bound((*yitr).first);
-      int minOverlapPE_ = 300;
-      if (((*xitr).second).getPE() < minOverlapPE_) {
+      auto xitr = x_quad_map.lower_bound((*yitr).first);
+      int min_overlap_pe = 300;
+      if (((*xitr).second).getPE() < min_overlap_pe) {
         if (verbose_)
           ldmx_log(debug)
               << "\t\t just 1 x track with not-unusual PE in the quad -- can't "
@@ -789,7 +790,7 @@ void TrigScintTrackProducer::matchXYTracks(
         // electron counting
         if (verbose_)
           ldmx_log(debug) << "\t\t -- Found large PE count ("
-                          << ((*xitr).second).getPE() << " > " << minOverlapPE_
+                          << ((*xitr).second).getPE() << " > " << min_overlap_pe
                           << ") in x track, suggesting overlap! Setting both y "
                              "track coordinates to x track value:";
       }  // if can assume overlap
@@ -798,8 +799,8 @@ void TrigScintTrackProducer::matchXYTracks(
                         << y2 << ") and (sx, sy1, sy2) = " << sx << ", " << sy1
                         << ", " << sy2 << ")";
 
-      auto yidx1 = yIdxQuadMap.lower_bound((*yitr).first);
-      auto yidx2 = yIdxQuadMap.upper_bound((*yitr).first);
+      auto yidx1 = y_idx_quad_map.lower_bound((*yitr).first);
+      auto yidx2 = y_idx_quad_map.upper_bound((*yitr).first);
       yidx2--;  // upper_bound points to next element
       tracks.at((*yidx1).second).setPosition(x, y1);
       tracks.at((*yidx1).second).setSigmaXY(sx, sy1);
@@ -807,16 +808,16 @@ void TrigScintTrackProducer::matchXYTracks(
       tracks.at((*yidx2).second).setSigmaXY(sx, sy2);
 
     }  // 2 y and 1 x track in quad
-    else if (nYinQuad == 2 && nXinQuad == 2) {
+    else if (n_yin_quad == 2 && n_xin_quad == 2) {
       // MIDPONTS ALL OVER!
-      auto xidx1 = xIdxQuadMap.lower_bound((*yitr).first);
-      auto xidx2 = xIdxQuadMap.upper_bound((*yitr).first);
+      auto xidx1 = x_idx_quad_map.lower_bound((*yitr).first);
+      auto xidx2 = x_idx_quad_map.upper_bound((*yitr).first);
       xidx2--;
-      auto yidx1 = yIdxQuadMap.lower_bound((*yitr).first);
-      auto yidx2 = yIdxQuadMap.upper_bound((*yitr).first);
+      auto yidx1 = y_idx_quad_map.lower_bound((*yitr).first);
+      auto yidx2 = y_idx_quad_map.upper_bound((*yitr).first);
       yidx2--;
 
-      if (yIdxQuadMap.find((*yitr).first) == yIdxQuadMap.end())
+      if (y_idx_quad_map.find((*yitr).first) == y_idx_quad_map.end())
         ldmx_log(error) << "The two y tracks in the same quadrant at "
                         << (*yitr).first
                         << " appear to not be found in the y track map! "
@@ -841,13 +842,13 @@ void TrigScintTrackProducer::matchXYTracks(
       }
     }  // if 2 y, 2 x tracks
 
-    if (nXinQuad > 2) {
+    if (n_xin_quad > 2) {
       if (verbose_)
         ldmx_log(debug) << "\t\t -*-*-*- more than 2 x tracks in the same quad "
                            "-- nothing done about the x,y coordinates in this "
                            "situation -- implement if needed!!";
     }
-    if (nYinQuad > 2) {
+    if (n_yin_quad > 2) {
       if (verbose_)
         ldmx_log(debug) << "\t\t -*-*-*- more than 2 y tracks in the same quad "
                            "-- nothing done about the x,y coordinates in this "
@@ -856,8 +857,8 @@ void TrigScintTrackProducer::matchXYTracks(
 
   }  // over y tracks
 
-  yQuadMap.clear();
-  xQuadMap.clear();
+  y_quad_map.clear();
+  x_quad_map.clear();
 
   //  return tracks;
 }
