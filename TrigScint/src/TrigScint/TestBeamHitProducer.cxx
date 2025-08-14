@@ -14,32 +14,31 @@ TestBeamHitProducer::TestBeamHitProducer(const std::string& name,
     : Producer(name, process) {}
 
 void TestBeamHitProducer::configure(framework::config::Parameters& parameters) {
-  inputCol_ = parameters.getParameter<std::string>("inputCollection");
-  outputCollection_ = parameters.getParameter<std::string>("outputCollection");
-  inputPassName_ = parameters.getParameter<std::string>("inputPassName");
-  MIPresponse_ = parameters.getParameter<std::vector<double> >("MIPresponse");
-  peds_ = parameters.getParameter<std::vector<double> >("pedestals");
-  gain_ =
-      parameters.getParameter<std::vector<double> >("gain");  // to do: vector
-  startSample_ = parameters.getParameter<int>("startSample");
-  pulseWidth_ = parameters.getParameter<int>("pulseWidth");
-  pulseWidthLYSO_ = parameters.getParameter<int>("pulseWidthLYSO");
-  nInstrumentedChannels_ =
-      parameters.getParameter<int>("nInstrumentedChannels");
-  doCleanHits_ = parameters.getParameter<bool>("doCleanHits");
+  input_col_ = parameters.get<std::string>("inputCollection");
+  output_collection_ = parameters.get<std::string>("outputCollection");
+  input_pass_name_ = parameters.get<std::string>("inputPassName");
+  mip_response_ = parameters.get<std::vector<double> >("MIPresponse");
+  peds_ = parameters.get<std::vector<double> >("pedestals");
+  gain_ = parameters.get<std::vector<double> >("gain");
+
+  start_sample_ = parameters.get<int>("startSample");
+  pulse_width_ = parameters.get<int>("pulseWidth");
+  pulse_width_lyso_ = parameters.get<int>("pulseWidthLYSO");
+  n_instrumented_channels_ = parameters.get<int>("nInstrumentedChannels");
+  do_clean_hits_ = parameters.get<bool>("doCleanHits");
 
   std::cout << " [ TestBeamHitProducer ] In configure(), got parameters "
-            << "\n\t inputCollection = " << inputCol_
-            << "\n\t inputPassName = " << inputPassName_
-            << "\n\t outputCollection = " << outputCollection_
-            << "\n\t startSample = " << startSample_
-            << "\n\t pulseWidth = " << pulseWidth_
-            << "\n\t pulseWidthLYSO = " << pulseWidthLYSO_
+            << "\n\t inputCollection = " << input_col_
+            << "\n\t inputPassName = " << input_pass_name_
+            << "\n\t outputCollection = " << output_collection_
+            << "\n\t startSample = " << start_sample_
+            << "\n\t pulseWidth = " << pulse_width_
+            << "\n\t pulseWidthLYSO = " << pulse_width_lyso_
             << "\n\t gain[0] = " << gain_[0]
-            << "\n\t nInstrumentedChannels = " << nInstrumentedChannels_
-            << "\n\t doCleanHits = " << doCleanHits_
+            << "\n\t nInstrumentedChannels = " << n_instrumented_channels_
+            << "\n\t doCleanHits = " << do_clean_hits_
             << "\n\t pedestals[0] = " << peds_[0]
-            << "\n\t MIPresponse[0] = " << MIPresponse_[0] << "\t."
+            << "\n\t MIPresponse[0] = " << mip_response_[0] << "\t."
             << std::endl;
 
   return;
@@ -87,95 +86,94 @@ void TestBeamHitProducer::produce(framework::Event& event) {
             - store material assumption? isLYSO?
    */
 
-  float mevPerMip = 0.3;
-  float pePerMip = 100;
+  float mev_per_mip = 0.3;
+  float pe_per_mip = 100;
 
-  const auto channels{
-      event.getCollection<trigscint::EventReadout>(inputCol_, inputPassName_)};
+  const auto channels{event.getCollection<trigscint::EventReadout>(
+      input_col_, input_pass_name_)};
 
-  int evNb = event.getEventNumber();
+  int ev_nb = event.getEventNumber();
   std::vector<trigscint::TestBeamHit> hits;
   for (auto chan : channels) {
     trigscint::TestBeamHit hit;
     int bar = chan.getChanID();
-    if (bar >=
-        nInstrumentedChannels_)  // don't run hit reconstruction on junk signal
-      continue;
-    int width = pulseWidth_;
-    if (bar % 2 == 0) {         // LYSO channel: allow for wider pulses
-      width = pulseWidthLYSO_;  // avoid hardwiring
+    // don't run hit reconstruction on junk signal
+    if (bar >= n_instrumented_channels_) continue;
+    int width = pulse_width_;
+    if (bar % 2 == 0) {           // LYSO channel: allow for wider pulses
+      width = pulse_width_lyso_;  // avoid hardwiring
     }
     hit.setPulseWidth(width);
-    hit.setStartSample(startSample_);
+    hit.setStartSample(start_sample_);
     float ped = peds_.at(bar);  // chan.getPedestal() ;
-    float earlyPed = chan.getEarlyPedestal();
+    float early_ped = chan.getEarlyPedestal();
     hit.setPedestal(ped);
-    hit.setEarlyPedestal(earlyPed);
-    int isClean = 0;              // false;
+    hit.setEarlyPedestal(early_ped);
+    int is_clean = 0;             // false;
     float threshold = fabs(ped);  // 2*fabs(peds_[ bar ]); // or sth
-    if (doCleanHits_) threshold = 7 * fabs(ped);  // stricter cut
+    if (do_clean_hits_) threshold = 7 * fabs(ped);  // stricter cut
 
-    int startT = startSample_ + chan.getTimeOffset();
-    float maxQ = -999.;
-    int nSampAbovePed = 0;
-    int nSampAboveThr = 0;
-    float totSubtrQ = 0;
+    int start_t = start_sample_ + chan.getTimeOffset();
+    float max_q = -999.;
+    int n_samp_above_ped = 0;
+    int n_samp_above_thr = 0;
+    float tot_subtr_q = 0;
     std::vector<float> q = chan.getQ();
     // go to the start sample defined for this channel.
-    for (int iT = startT; iT < q.size(); iT++) {
-      ldmx_log(debug) << "in event " << evNb << "; channel " << bar
-                      << ", got charge[" << iT << "] = " << q.at(iT);
+    for (int i_t = start_t; i_t < q.size(); i_t++) {
+      ldmx_log(debug) << "in event " << ev_nb << "; channel " << bar
+                      << ", got charge[" << i_t << "] = " << q.at(i_t);
       // for the defined number of samples, subtract pedestal. if > 0, increment
       // sample counter.
-      float subQ =
-          q.at(iT) - ped;  // this might be addition, if ped is negative. should
-                           // see this as channel dependence in nSampAbove
+      float sub_q = q.at(i_t) -
+                    ped;  // this might be addition, if ped is negative. should
+                          // see this as channel dependence in nSampAbove
       // once beyond nSamples, want to see how long positive threshold
       // subtracted tail is --> increment sample counter in any case.
-      if (subQ > 0) nSampAbovePed++;
-      if (subQ > threshold) nSampAboveThr++;
-      if (iT - startT < width) {  // we're in the pulse integration window
-        if (subQ > maxQ)  // keep track of max Q. this is the pulse amplitude
-          maxQ = subQ;    // q.at(iT);
-        if (subQ > 0)
-          totSubtrQ +=
-              subQ;  // add positive subtracted Q to total pulse charge.
-      } else if (subQ < 0 ||
-                 q.at(iT) < 0)  // if after the full pulse width, subQ <
-                                // pedestal, break. special case to break at q=0
-                                // for cases where ped < 0
+      if (sub_q > 0) n_samp_above_ped++;
+      if (sub_q > threshold) n_samp_above_thr++;
+      if (i_t - start_t < width) {  // we're in the pulse integration window
+        if (sub_q > max_q)  // keep track of max Q. this is the pulse amplitude
+          max_q = sub_q;    // q.at(iT);
+        if (sub_q > 0)
+          tot_subtr_q +=
+              sub_q;  // add positive subtracted Q to total pulse charge.
+      } else if (sub_q < 0 ||
+                 q.at(i_t) < 0)  // if after the full pulse width, subQ <
+                                 // pedestal, break. special case to break at
+                                 // q=0 for cases where ped < 0
         break;
       // done
     }  // over time samples
 
     // first check that hit passes any quality cuts
     uint flag = chan.getQualityFlag();
-    if (doCleanHits_) {
+    if (do_clean_hits_) {
       //		int isLongPulse=(nSampAboveThr < 2 || nSampAboveThr >
       // width + 2);
-      int isLongPulse =
-          (nSampAboveThr >
+      int is_long_pulse =
+          (n_samp_above_thr >
            width);  // the short ones we'll have to single out otherwise (like
                     // spike flag or low Q) or live with
-      flag += 4 * isLongPulse;
-      if (maxQ > 2e5 && nSampAboveThr < 3 &&
+      flag += 4 * is_long_pulse;
+      if (max_q > 2e5 && n_samp_above_thr < 3 &&
           flag % 2 == 0)  // this was not flagged as a spike but is eerily
                           // narrow and with high Q; flag it as a spike.
         flag += 1;
-      if (flag == 0) isClean = 1;
+      if (flag == 0) is_clean = 1;
     }
 
-    float PE = totSubtrQ * 6250. / gain_[bar];
-    if (PE > 20)  // dont't want to intercalibrate the shot noise
-      PE *= MIPresponse_[bar];
+    float pe = tot_subtr_q * 6250. / gain_[bar];
+    if (pe > 20)  // dont't want to intercalibrate the shot noise
+      pe *= mip_response_[bar];
 
     // set pulse properties like PE and amplitude
-    hit.setSampAbovePed(nSampAbovePed);
-    hit.setSampAboveThr(nSampAboveThr);
-    hit.setQ(totSubtrQ);
-    hit.setAmplitude(maxQ);
-    hit.setPE(PE);
-    hit.setHitQuality(isClean);
+    hit.setSampAbovePed(n_samp_above_ped);
+    hit.setSampAboveThr(n_samp_above_thr);
+    hit.setQ(tot_subtr_q);
+    hit.setAmplitude(max_q);
+    hit.setPE(pe);
+    hit.setHitQuality(is_clean);
     hit.setQualityFlag(flag);
     // set bar id. set moduleNB = 0
     hit.setBarID(bar);
@@ -184,14 +182,14 @@ void TestBeamHitProducer::produce(framework::Event& event) {
     // known/different between LYSO and plastic)
     hit.setTime(-999);  // maybe?
     hit.setBeamEfrac(-1.);
-    hit.setEnergy(hit.getPE() * mevPerMip / pePerMip);
+    hit.setEnergy(hit.getPE() * mev_per_mip / pe_per_mip);
 
     // add hit
     hits.push_back(hit);
   }  // over channels
 
   // at end of event, write the collection of trigger scintillator hits.
-  event.add(outputCollection_, hits);
+  event.add(output_collection_, hits);
 
   return;
 }

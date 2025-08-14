@@ -37,25 +37,21 @@ class QIEDecoder : public framework::Producer {
 
  private:
   /// the channel mapping
-  std::string channelMapFileName_;
-  std::ifstream channelMapFile_;
-  std::map<int, int> channelMap_;
+  std::string channel_map_file_name_;
+  std::ifstream channel_map_file_;
+  std::map<int, int> channel_map_;
 
   // input/output collection and pass name
-  std::string inputCollection_;
-  std::string outputCollection_;
-  std::string inputPassName_;
-
-  // verbosity for very specific printouts that don't play well with logger
-  // format
-  bool verbose_{false};
+  std::string input_collection_;
+  std::string output_collection_;
+  std::string input_pass_name_;
 
   // number of channels in the pad
-  int nChannels_{50};
+  int n_channels_{50};
   // number of time samples making up the event
-  int nSamples_{5};
+  int n_samples_{5};
   // configurable flag, to set the isRealData bit in the event header
-  bool isRealData_{false};
+  bool is_real_data_{false};
 
 };  // encoder
 

@@ -47,22 +47,22 @@ class TestBeamClusterProducer : public framework::Producer {
   double seed_{0.};
 
   // min threshold for adding a hit to a cluster
-  double minThr_{0.};
+  double min_thr_{0.};
 
   // max number of neighboring hits to combine when forming a cluster
-  int maxWidth_{2};
+  int max_width_{2};
 
   // max channel number (to avoid unused channels)
-  int maxChannelID_{11};
+  int max_channel_id_{11};
 
   // specific verbosity of this producer
   int verbose_{0};
 
   // expected arrival time of hits in the pad [ns]
-  double padTime_{0.};
+  double pad_time_{0.};
 
   // maximum allowed delay for hits to be considered for clustering
-  double timeTolerance_{0.};
+  double time_tolerance_{0.};
 
   // input collection (hits)
   std::string input_collection_;
@@ -71,7 +71,7 @@ class TestBeamClusterProducer : public framework::Producer {
   std::string output_collection_;
 
   // specific pass name to use for track making
-  std::string passName_{""};
+  std::string pass_name_{""};
 
   // cluster channel nb centroid (will be content weighted)
   float centroid_{0.};
@@ -80,29 +80,29 @@ class TestBeamClusterProducer : public framework::Producer {
   float val_{0.};
 
   // edep content, only; leave val_ for PE
-  float valE_{0.};
+  float val_e_{0.};
 
   // book keep which channels have already been added to the cluster at hand
-  std::vector<unsigned int> v_addedIndices_;
+  std::vector<unsigned int> v_added_indices_;
 
   // book keep which channels have already been added to any cluster
-  std::vector<unsigned int> v_usedIndices_;
+  std::vector<unsigned int> v_used_indices_;
 
   // fraction of cluster energy deposition associated with beam electron sim
   // hits
   // -- could convert this to instead be a "cleanb frac"; fraction of cluster
   // energy coming from clean hits
-  float beamE_{0.};
+  float beam_e_{0.};
 
   /// boolean indicating whether we want to apply quality criteria from hit
   /// reconstruction
-  bool doCleanHits_{false};
+  bool do_clean_hits_{false};
 
   // cluster time (energy weighted based on hit time)
   float time_{0.};
 
   // empty map container
-  std::map<int, int> hitChannelMap_;
+  std::map<int, int> hit_channel_map_;
 };
 
 }  // namespace trigscint

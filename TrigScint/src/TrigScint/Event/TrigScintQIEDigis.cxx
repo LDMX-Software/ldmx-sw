@@ -13,10 +13,10 @@ ClassImp(trigscint::TrigScintQIEDigis);
 namespace trigscint {
 
 std::ostream& operator<<(std::ostream& o, const TrigScintQIEDigis& c) {
-  return o << "TrigScintQIEDigis { " << "chanID= " << c.chanID_ << ", "
+  return o << "TrigScintQIEDigis { " << "chan_id = " << c.chan_id_ << ", "
            << "ADC[0]= " << c.adcs_[0] << ", " << "TDC[0]= " << c.tdcs_[0]
            << ", " << "CID[0]= " << c.tdcs_[0] << ", " << "}\n";
 }
 
-void TrigScintQIEDigis::Clear(Option_t* option) {}
+void TrigScintQIEDigis::clear(Option_t* option) {}
 }  // namespace trigscint

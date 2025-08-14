@@ -38,7 +38,7 @@ class TrigScintCluster {
   /**
    * Reset the TrigScintCluster object.
    */
-  void Clear(Option_t *option = "");  // override;
+  void clear(Option_t *option = "");  // override;
 
   /**
    * Take in the hits that make up the cluster.
@@ -64,19 +64,19 @@ class TrigScintCluster {
    *Set the cluster photoelectron count (PE)
    * @param PE The cluster photoelectron count
    */
-  void setPE(float PE) { PE_ = PE; }
+  void setPE(float PE) { pe_ = PE; }
 
   /**
    *The number of hits forming the cluster
    * @param nHits Number of hits forming the cluster
    */
-  void setNHits(int nHits) { nHits_ = nHits; }
+  void setNHits(int nHits) { n_hits_ = nHits; }
 
   /**
    *The channel numbers of hits forming the cluster
    * @param hitIDs vector of channel numbers of hits forming the cluster
    */
-  void setIDs(std::vector<unsigned int> &hitIDs) { hitIDs_ = hitIDs; }
+  void setIDs(std::vector<unsigned int> &hitIDs) { hit_ids_ = hitIDs; }
 
   /**
    *The cluster centroid in x,y,z
@@ -85,9 +85,9 @@ class TrigScintCluster {
    * @param z Cluster z coordinate (not implemented)
    */
   void setCentroidXYZ(double x, double y, double z) {
-    centroidX_ = x;
-    centroidY_ = y;
-    centroidZ_ = z;
+    centroid_x_ = x;
+    centroid_y_ = y;
+    centroid_z_ = z;
   }
 
   /**
@@ -102,10 +102,10 @@ class TrigScintCluster {
   float getTime() const { return time_; }
 
   /** Set beam energy fraction of hit. */
-  void setBeamEfrac(float e) { beamEfrac_ = e; }
+  void setBeamEfrac(float e) { beam_efrac_ = e; }
 
   /** Get beam energy fraction of hit. */
-  float getBeamEfrac() const { return beamEfrac_; }
+  float getBeamEfrac() const { return beam_efrac_; }
 
   /** Get cluster seed channel nb */
   int getSeed() const { return seed_; }
@@ -114,22 +114,22 @@ class TrigScintCluster {
   double getEnergy() const { return energy_; }
 
   /** Get cluster total photoelectron count */
-  double getPE() const { return PE_; }
+  double getPE() const { return pe_; }
 
   /** Get the number of hits constituting the cluster */
-  int getNHits() const { return nHits_; }
+  int getNHits() const { return n_hits_; }
 
   /** Get cluster centroid in x [mm] (not implmented) */
-  double getCentroidX() const { return centroidX_; }
+  double getCentroidX() const { return centroid_x_; }
 
   /** Get cluster centroid in y [mm] (not implmented) */
-  double getCentroidY() const { return centroidY_; }
+  double getCentroidY() const { return centroid_y_; }
 
   /** Get cluster centroid in z [mm] (not implmented) */
-  double getCentroidZ() const { return centroidZ_; }
+  double getCentroidZ() const { return centroid_z_; }
 
   /** Get vector of channel IDs of hits forming the cluster */
-  const std::vector<unsigned int> &getHitIDs() const { return hitIDs_; }
+  const std::vector<unsigned int> &getHitIDs() const { return hit_ids_; }
 
   /** Get the cluster centroid in units of channel nb */
   double getCentroid() const { return centroid_; }
@@ -140,16 +140,16 @@ class TrigScintCluster {
 
  private:
   // hits forming the cluster
-  std::vector<unsigned int> hitIDs_;
+  std::vector<unsigned int> hit_ids_;
 
   // total cluster energy depostion
   double energy_{0};
 
   // number of hits forming the cluster
-  int nHits_{0};
+  int n_hits_{0};
 
   // total cluster photoelectron count
-  float PE_{0};
+  float pe_{0};
 
   // index of cluster seeding hit
   int seed_{-1};
@@ -159,17 +159,17 @@ class TrigScintCluster {
   double centroid_{-1};
 
   // hit centroid in x [mm] (not implemented)
-  double centroidX_{0};
+  double centroid_x_{0};
 
   // hit centroid in y [mm] (not implemented)
-  double centroidY_{0};
+  double centroid_y_{0};
 
   // hit centroid in z [mm] (not implemented)
-  double centroidZ_{0};
+  double centroid_z_{0};
 
   // fraction of cluster energy deposited in a sim hit associated with beam
   // electrons
-  float beamEfrac_{0.};
+  float beam_efrac_{0.};
 
   // cluster time: energy weighted average of the times of the hits forming the
   // cluster
@@ -178,7 +178,7 @@ class TrigScintCluster {
   /**
    * The ROOT class definition.
    */
-  ClassDef(TrigScintCluster, 2);
+  ClassDef(TrigScintCluster, 3);
 };
 }  // namespace ldmx
 

@@ -34,38 +34,38 @@ class QIEAnalyzer : public framework::Analyzer {
 
   void onProcessEnd() override;
 
-  float convertToID(float yVal) { return (yVal + yOffset_) * yToIDfactor_; }
+  float convertToID(float yVal) { return (yVal + y_offset_) * y_to_id_factor_; }
 
  private:
-  std::vector<std::vector<TH1F*> > vChargeVsTime;
+  std::vector<std::vector<TH1F*> > v_charge_vs_time_;
 
   // configurable parameters
-  std::string inputCol_;
-  std::string inputPassName_{""};
+  std::string input_col_;
+  std::string input_pass_name_{""};
   std::vector<double> peds_;
   std::vector<double> gain_;
-  int startSample_{0};
+  int start_sample_{0};
 
   // plotting stuff
-  int nEv{200};
-  int nChannels{16};
+  int n_ev_{200};
+  int n_channels_{16};
   // int nTrkMax{100};
 
   // match nev, nchan above
-  TH1F* hOut[200][16];
-  TH1F* hPE[16];
-  TH2F* hPEvsT[16];
-  TH2F* hPedSubtractedAvgQvsT[16];
-  TH2F* hPedSubtractedTotQvsPed[16];
-  TH2F* hPedSubtractedTotQvsN[16];
-  TH2F* hTotQvsPed[16];
-  TH2F* hPedSubtractedPEvsN[16];
-  TH2F* hPedSubtractedPEvsT[16];
-  TH2F* hAvgQvsT[16];
+  TH1F* h_out_[200][16];
+  TH1F* h_pe_[16];
+  TH2F* h_pe_vs_t_[16];
+  TH2F* h_ped_subtracted_avg_q_vs_t_[16];
+  TH2F* h_ped_subtracted_tot_q_vs_ped_[16];
+  TH2F* h_ped_subtracted_tot_q_vs_n_[16];
+  TH2F* h_tot_q_vs_ped_[16];
+  TH2F* h_ped_subtracted_pe_vs_n_[16];
+  TH2F* h_ped_subtracted_pe_vs_t_[16];
+  TH2F* h_avg_q_vs_t_[16];
 
-  TH2F* hTDCfireChanvsEvent;
-  double yOffset_{35.};
-  double yToIDfactor_{50. / 80.};
+  TH2F* h_tdc_fire_chan_vs_event_;
+  double y_offset_{35.};
+  double y_to_id_factor_{50. / 80.};
 };
 }  // namespace trigscint
 

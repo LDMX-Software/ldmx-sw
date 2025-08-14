@@ -55,20 +55,16 @@ class TrigScintRecHitProducer : public framework::Producer {
   void produce(framework::Event& event) override;
 
  private:
-  /// Class to set the verbosity level.
-  // TODO: Make use of the global verbose parameter.
-  bool verbose_{false};
-
   /// Name of the input collection containing the sim hits
-  std::string inputCollection_;
+  std::string input_collection_;
 
   /// Name of the pass that the input collection is on (empty string means take
   /// any pass)
-  std::string inputPassName_;
+  std::string input_pass_name_;
 
   /// Name of the output collection that will be used to stored the
   /// digitized trigger scintillator hits
-  std::string outputCollection_;
+  std::string output_collection_;
 
   /// SiPM gain
   double gain_{1e6};
@@ -77,10 +73,10 @@ class TrigScintRecHitProducer : public framework::Producer {
   double pedestal_{6.0};
 
   /// Total MeV per MIP
-  double mevPerMip_{1.40};
+  double mev_per_mip_{1.40};
 
   /// Total number of photoelectrons per MIP
-  double pePerMip_{13.5};
+  double pe_per_mip_{13.5};
 
   /// Total number of photoelectrons per MIP
   int sample_of_interest_{2};
