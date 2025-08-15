@@ -44,19 +44,19 @@ void TrigScintHitDQM::onProcessStart() {
 }
 
 void TrigScintHitDQM::configure(framework::config::Parameters &ps) {
-  hitCollectionName_ = ps.getParameter<std::string>("hit_collection");
-  padName_ = ps.getParameter<std::string>("pad").c_str();
+  hit_collection_name_ = ps.getParameter<std::string>("hit_collection");
+  pad_name_ = ps.getParameter<std::string>("pad").c_str();
 
   trig_scint_passname_ = ps.getParameter<std::string>("trig_scint_passname");
 
   ldmx_log(debug) << "In TrigScintHitDQM::configure, got parameters "
-                  << hitCollectionName_ << " and " << padName_;
+                  << hit_collection_name_ << " and " << pad_name_;
 }
 
 void TrigScintHitDQM::analyze(const framework::Event &event) {
   // Get the collection of TrigScintHit digitized hits if the exists
   const std::vector<ldmx::TrigScintHit> trig_scint_hits =
-      event.getCollection<ldmx::TrigScintHit>(hitCollectionName_,
+      event.getCollection<ldmx::TrigScintHit>(hit_collection_name_,
                                               trig_scint_passname_);
 
   // Get the total hit count
@@ -66,7 +66,7 @@ void TrigScintHitDQM::analyze(const framework::Event &event) {
   double total_pe{0};
   int noise_hit_count = 0;
 
-  ldmx_log(debug) << "Looping over hits in " << hitCollectionName_;
+  ldmx_log(debug) << "Looping over hits in " << hit_collection_name_;
 
   // Loop through all TrigScint hits in the event
 

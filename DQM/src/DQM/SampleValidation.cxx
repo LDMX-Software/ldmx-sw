@@ -147,8 +147,8 @@ void SampleValidation::onProcessStart() {
                                      "#pi^{0}",                 // 10
                                      "K^{+}",                   // 11
                                      "K^{-}",                   // 12
-                                     "K_{L}",                   // 13
-                                     "K_{S}",                   // 14
+                                     "k_{L}",                   // 13
+                                     "k_{S}",                   // 14
                                      "light-N",                 // 15
                                      "heavy-N",                 // 16
                                      "#Lambda / #Sigma / #Xi",  // 17

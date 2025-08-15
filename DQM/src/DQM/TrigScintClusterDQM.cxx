@@ -13,7 +13,7 @@ void TrigScintClusterDQM::onProcessStart() {
   histograms_.create("total_pe", "Total cluster PEs in the pad/event", 500, 0,
                      2000);
   histograms_.create("n_clusters", "Clusters in the pad/event", 25, 0, 25);
-  histograms_.create("n_hits", "N_{hits} forming the clusters", 4, 0, 4);
+  histograms_.create("n_hits", "n_{hits} forming the clusters", 4, 0, 4);
   histograms_.create("seed", "Cluster seed hit channel ID", 100, 0, 100);
   histograms_.create("beamEfrac", "Cluster edep fraction from beam electron",
                      101, 0., 1.01);
@@ -30,20 +30,20 @@ void TrigScintClusterDQM::onProcessStart() {
 }
 
 void TrigScintClusterDQM::configure(framework::config::Parameters &ps) {
-  clusterCollectionName_ = ps.getParameter<std::string>("cluster_collection");
-  padName_ = ps.getParameter<std::string>("pad").c_str();
-  passName_ = ps.getParameter<std::string>("passName").c_str();
+  cluster_collection_name_ = ps.getParameter<std::string>("cluster_collection");
+  pad_name_ = ps.getParameter<std::string>("pad").c_str();
+  pass_name_ = ps.getParameter<std::string>("passName").c_str();
 
-  ldmx_log(debug) << "Collection name =  " << clusterCollectionName_
-                  << ", pad = " << padName_ << ", pass = " << passName_;
+  ldmx_log(debug) << "Collection name =  " << cluster_collection_name_
+                  << ", pad = " << pad_name_ << ", pass = " << pass_name_;
 }
 
 void TrigScintClusterDQM::analyze(const framework::Event &event) {
-  if (not event.exists(clusterCollectionName_, passName_)) return;
+  if (not event.exists(cluster_collection_name_, pass_name_)) return;
   // Get the collection of TrigScintCluster digitized clusters if the exists
   const std::vector<ldmx::TrigScintCluster> trig_scint_clusters =
-      event.getCollection<ldmx::TrigScintCluster>(clusterCollectionName_,
-                                                  passName_);
+      event.getCollection<ldmx::TrigScintCluster>(cluster_collection_name_,
+                                                  pass_name_);
 
   double total_pe{0};
   // Loop through all TrigScint clusters in the event

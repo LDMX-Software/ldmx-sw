@@ -2,8 +2,8 @@
 namespace dqm {
 
 void ReSimVerifier::configure(framework::config::Parameters& parameters) {
-  simPassName_ = parameters.getParameter<std::string>("sim_pass_name");
-  reSimPassName_ = parameters.getParameter<std::string>("resim_pass_name");
+  sim_pass_name_ = parameters.getParameter<std::string>("sim_pass_name");
+  re_sim_pass_name_ = parameters.getParameter<std::string>("resim_pass_name");
   stop_on_error = parameters.getParameter<bool>("stop_on_error");
   collections =
       parameters.getParameter<std::vector<std::string>>("collections");
@@ -38,9 +38,9 @@ bool ReSimVerifier::verifySimCalorimeterHits(
 
 bool ReSimVerifier::verifySimParticles(const framework::Event& event) {
   const auto& sim_particles{
-      event.getMap<int, ldmx::SimParticle>("SimParticles", simPassName_)};
+      event.getMap<int, ldmx::SimParticle>("SimParticles", sim_pass_name_)};
   const auto& re_sim_particles{
-      event.getMap<int, ldmx::SimParticle>("SimParticles", reSimPassName_)};
+      event.getMap<int, ldmx::SimParticle>("SimParticles", re_sim_pass_name_)};
   for (auto [id, simParticle] : sim_particles) {
     if (!re_sim_particles.count(id)) {
       return false;
@@ -65,9 +65,9 @@ void ReSimVerifier::analyze(const framework::Event& event) {
   auto event_number{event.getEventNumber()};
   for (auto collection : collections) {
     const auto sim_hits =
-        event.getCollection<ldmx::SimCalorimeterHit>(collection, simPassName_);
+        event.getCollection<ldmx::SimCalorimeterHit>(collection, sim_pass_name_);
     const auto re_sim_hits = event.getCollection<ldmx::SimCalorimeterHit>(
-        collection, reSimPassName_);
+        collection, re_sim_pass_name_);
     if (re_sim_hits.size() == 0) {
       skipped = true;
       continue;

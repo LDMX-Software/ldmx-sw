@@ -12,8 +12,8 @@
 namespace dqm {
 
 void GenieTruthDQM::configure(framework::config::Parameters& ps) {
-  hepmc3CollName_ = ps.getParameter<std::string>("hepmc3CollName");
-  hepmc3PassName_ = ps.getParameter<std::string>("hepmc3PassName");
+  hepmc3_coll_name_ = ps.getParameter<std::string>("hepmc3CollName");
+  hepmc3_pass_name_ = ps.getParameter<std::string>("hepmc3PassName");
   return;
 }
 
@@ -79,7 +79,7 @@ void GenieTruthDQM::analyze(const framework::Event& event) {
   ntuple_.setVar<int>("event", event.getEventNumber());
 
   auto hepmc3_col = event.getObject<std::vector<ldmx::HepMC3GenEvent> >(
-      hepmc3CollName_, hepmc3PassName_);
+      hepmc3_coll_name_, hepmc3_pass_name_);
 
   if (hepmc3_col.size() < 1) {
     ntuple_.fill();

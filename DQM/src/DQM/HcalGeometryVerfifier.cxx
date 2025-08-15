@@ -3,20 +3,20 @@ namespace dqm {
 
 void HcalGeometryVerifier::configure(
     framework::config::Parameters &parameters) {
-  hcalSimHitsCollection_ =
+  hcal_sim_hits_collection_ =
       parameters.getParameter<std::string>("sim_coll_name");
-  hcalRecHitsCollection_ =
+  hcal_rec_hits_collection_ =
       parameters.getParameter<std::string>("rec_coll_name");
-  hcalSimHitsPassName_ = parameters.getParameter<std::string>("sim_pass_name");
-  hcalRecHitsPassName_ = parameters.getParameter<std::string>("rec_pass_name");
+  hcal_sim_hits_pass_name_ = parameters.getParameter<std::string>("sim_pass_name");
+  hcal_rec_hits_pass_name_ = parameters.getParameter<std::string>("rec_pass_name");
   stop_on_error = parameters.getParameter<bool>("stop_on_error");
   tolerance = parameters.getParameter<double>("tolerance");
 }
 void HcalGeometryVerifier::analyze(const framework::Event &event) {
   const auto hcal_sim_hits = event.getCollection<ldmx::SimCalorimeterHit>(
-      hcalSimHitsCollection_, hcalSimHitsPassName_);
+      hcal_sim_hits_collection_, hcal_sim_hits_pass_name_);
   const auto hcal_rec_hits = event.getCollection<ldmx::HcalHit>(
-      hcalRecHitsCollection_, hcalRecHitsPassName_);
+      hcal_rec_hits_collection_, hcal_rec_hits_pass_name_);
 
   for (const auto &hit : hcal_sim_hits) {
     const ldmx::HcalID id{static_cast<unsigned int>(hit.getID())};

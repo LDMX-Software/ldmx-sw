@@ -4,9 +4,9 @@
 namespace dqm {
 void HcalInefficiencyAnalyzer::analyze(const framework::Event &event) {
   const auto hcal_sim_hits = event.getCollection<ldmx::SimCalorimeterHit>(
-      hcalSimHitsCollection_, hcalSimHitsPassName_);
+      hcal_sim_hits_collection_, hcal_sim_hits_pass_name_);
   const auto hcal_rec_hits = event.getCollection<ldmx::HcalHit>(
-      hcalRecHitsCollection_, hcalRecHitsPassName_);
+      hcal_rec_hits_collection_, hcal_rec_hits_pass_name_);
 
   const int failed_veto{999};
   // Check veto for each section, combined side hcal veto
@@ -64,12 +64,12 @@ void HcalInefficiencyAnalyzer::analyze(const framework::Event &event) {
 void HcalInefficiencyAnalyzer::configure(
 
     framework::config::Parameters &parameters) {
-  hcalSimHitsCollection_ =
+  hcal_sim_hits_collection_ =
       parameters.getParameter<std::string>("sim_coll_name");
-  hcalRecHitsCollection_ =
+  hcal_rec_hits_collection_ =
       parameters.getParameter<std::string>("rec_coll_name");
-  hcalSimHitsPassName_ = parameters.getParameter<std::string>("sim_pass_name");
-  hcalRecHitsPassName_ = parameters.getParameter<std::string>("rec_pass_name");
+  hcal_sim_hits_pass_name_ = parameters.getParameter<std::string>("sim_pass_name");
+  hcal_rec_hits_pass_name_ = parameters.getParameter<std::string>("rec_pass_name");
   pe_veto_threshold = parameters.getParameter<double>("pe_veto_threshold");
   max_hit_time_ = parameters.getParameter<double>("max_hit_time");
 }

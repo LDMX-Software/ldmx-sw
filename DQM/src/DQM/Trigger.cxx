@@ -24,7 +24,7 @@ void Trigger::onProcessStart() {
   int n_bins_e = (max_e - min_e) / 100;
   histograms_.create(trigger_collName_ + ".EcalEsum", "Ecal energy sum [MeV]",
                      n_bins_e, min_e, max_e);
-  histograms_.create(trigger_collName_ + ".EcalEcut", "Ecal E_{max} cut [MeV]",
+  histograms_.create(trigger_collName_ + ".EcalEcut", "Ecal e_{max} cut [MeV]",
                      n_bins_e, min_e, max_e);
 
   int max_layer = 32;
@@ -37,7 +37,7 @@ void Trigger::onProcessStart() {
   int min_electrons = 0;
   int n_bins_electrons = (max_electrons - min_electrons);
   histograms_.create(trigger_collName_ + ".nElectrons",
-                     "N_{electrons} used for trigger decision", n_bins_electrons,
+                     "n_{electrons} used for trigger decision", n_bins_electrons,
                      min_electrons, max_electrons);
 }
 
