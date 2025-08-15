@@ -4,8 +4,8 @@ namespace dqm {
 void ReSimVerifier::configure(framework::config::Parameters& parameters) {
   sim_pass_name_ = parameters.get<std::string>("sim_pass_name");
   re_sim_pass_name_ = parameters.get<std::string>("resim_pass_name");
-  stop_on_error = parameters.get<bool>("stop_on_error");
-  collections = parameters.get<std::vector<std::string>>("collections");
+  stop_on_error_ = parameters.get<bool>("stop_on_error");
+  collections_ = parameters.get<std::vector<std::string>>("collections");
 }
 bool ReSimVerifier::verifySimCalorimeterHits(
     const std::vector<ldmx::SimCalorimeterHit>& simHits,
@@ -62,7 +62,7 @@ void ReSimVerifier::analyze(const framework::Event& event) {
   bool passing{true};
   bool skipped{false};
   auto event_number{event.getEventNumber()};
-  for (auto collection : collections) {
+  for (auto collection : collections_) {
     const auto sim_hits = event.getCollection<ldmx::SimCalorimeterHit>(
         collection, sim_pass_name_);
     const auto re_sim_hits = event.getCollection<ldmx::SimCalorimeterHit>(
@@ -90,7 +90,7 @@ void ReSimVerifier::analyze(const framework::Event& event) {
        << " has different SimParticles between the two passes" << std::endl;
   }
   if (!passing) {
-    if (stop_on_error) {
+    if (stop_on_error_) {
       EXCEPTION_RAISE("ReSimVerify", ss.str());
     } else {
       ldmx_log(info) << ss.str();

@@ -6,15 +6,15 @@
 namespace dqm {
 
 void EcalWABRecResults::configure(framework::config::Parameters &ps) {
-  ecal_WAB_rec_name_ = ps.get<std::string>("ecal_WAB_rec_name");
-  ecal_WAB_rec_pass_ = ps.get<std::string>("ecal_WAB_rec_pass");
+  ecal_wab_rec_name_ = ps.get<std::string>("ecal_WAB_rec_name");
+  ecal_wab_rec_pass_ = ps.get<std::string>("ecal_WAB_rec_pass");
 
   return;
 }
 
 void EcalWABRecResults::analyze(const framework::Event &event) {
-  auto wab_rec{event.getObject<ldmx::EcalWABResult>(ecal_WAB_rec_name_,
-                                                    ecal_WAB_rec_pass_)};
+  auto wab_rec{event.getObject<ldmx::EcalWABResult>(ecal_wab_rec_name_,
+                                                    ecal_wab_rec_pass_)};
 
   histograms_.fill("ThetaDiffElectronPhoton",
                    wab_rec.getRecThetaDiffElectronPhoton(),

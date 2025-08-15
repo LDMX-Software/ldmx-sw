@@ -177,7 +177,7 @@ tidy-cpp *ARGS='-p build --fix --quiet ':
     #!/usr/bin/env sh
     set -exu
     format_list=$(mktemp)
-    git ls-tree -r HEAD --name-only | egrep '(\.h|\.cxx)$'  | grep '/DQM/' > ${format_list}
+    git ls-tree -r HEAD --name-only | egrep '(\.h|\.cxx)$'  | grep '/Tracking/' > ${format_list}
     denv clang-tidy $(cat ${format_list}) {{ ARGS }}
     rm ${format_list}
 

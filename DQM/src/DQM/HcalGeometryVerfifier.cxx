@@ -7,8 +7,8 @@ void HcalGeometryVerifier::configure(
   hcal_rec_hits_collection_ = parameters.get<std::string>("rec_coll_name");
   hcal_sim_hits_pass_name_ = parameters.get<std::string>("sim_pass_name");
   hcal_rec_hits_pass_name_ = parameters.get<std::string>("rec_pass_name");
-  stop_on_error = parameters.get<bool>("stop_on_error");
-  tolerance = parameters.get<double>("tolerance");
+  stop_on_error_ = parameters.get<bool>("stop_on_error");
+  tolerance_ = parameters.get<double>("tolerance_");
 }
 void HcalGeometryVerifier::analyze(const framework::Event &event) {
   const auto hcal_sim_hits = event.getCollection<ldmx::SimCalorimeterHit>(
@@ -19,7 +19,7 @@ void HcalGeometryVerifier::analyze(const framework::Event &event) {
   for (const auto &hit : hcal_sim_hits) {
     const ldmx::HcalID id{static_cast<unsigned int>(hit.getID())};
     const auto position{hit.getPosition()};
-    auto ok{hit_ok(id, {position[0], position[1], position[2]})};
+    auto ok{hitOk(id, {position[0], position[1], position[2]})};
     histograms_.fill("passes_sim", ok);
     switch (id.section()) {
       case ldmx::HcalID::HcalSection::BACK:
@@ -41,7 +41,7 @@ void HcalGeometryVerifier::analyze(const framework::Event &event) {
   }
   for (const auto &hit : hcal_rec_hits) {
     const ldmx::HcalID id{static_cast<unsigned int>(hit.getID())};
-    auto ok{hit_ok(id, {hit.getXPos(), hit.getYPos(), hit.getZPos()})};
+    auto ok{hitOk(id, {hit.getXPos(), hit.getYPos(), hit.getZPos()})};
     histograms_.fill("passes_rec", ok);
     switch (id.section()) {
       case ldmx::HcalID::HcalSection::BACK:
@@ -63,37 +63,37 @@ void HcalGeometryVerifier::analyze(const framework::Event &event) {
   }
 
 }  // Analyze
-bool HcalGeometryVerifier::hit_ok(const ldmx::HcalID id,
+bool HcalGeometryVerifier::hitOk(const ldmx::HcalID id,
                                   const std::array<double, 3> &position) {
   const auto &geometry = getCondition<ldmx::HcalGeometry>(
       ldmx::HcalGeometry::CONDITIONS_OBJECT_NAME);
-  auto [index_along, index_across, index_through]{determine_indices(id)};
+  auto [index_along, index_across, index_through]{determineIndices(id)};
   const auto center_vec = geometry.getStripCenterPosition(id);
   const std::array<double, 3> center{center_vec.X(), center_vec.Y(),
                                      center_vec.Z()};
   const auto length{geometry.getScintillatorLength(id)};
   bool outside_bounds_along{
       std::abs(position[index_along] - center[index_along]) >
-      length / 2 + tolerance};
+      length / 2 + tolerance_};
 
   const auto width{geometry.getScintillatorWidth()};
   bool outside_bounds_across{
       std::abs(position[index_across] - center[index_across]) >
-      width / 2 + tolerance};
+      width / 2 + tolerance_};
 
   const auto thickness{geometry.getScintillatorThickness()};
   bool outside_bounds_through{
       std::abs(position[index_through] - center[index_through]) >
-      thickness / 2 + tolerance};
+      thickness / 2 + tolerance_};
 
   if (outside_bounds_along || outside_bounds_across || outside_bounds_through) {
     std::stringstream ss;
-    if (tolerance < 1) {
-      // Assume tolerance is of form 1e-N
+    if (tolerance_ < 1) {
+      // Assume tolerance_ is of form 1e-N
       //
       // Set precision so it will be clear if it is a floating point precision
       // issue or a problem
-      ss.precision(-std::log10(tolerance) + 1);
+      ss.precision(-std::log10(tolerance_) + 1);
     }
     ss << std::boolalpha;
     double x{position[0]};
@@ -102,7 +102,7 @@ bool HcalGeometryVerifier::hit_ok(const ldmx::HcalID id,
     ss << id << " has hit position at (" << x << ", " << y << ", " << z
        << ")\nwhich is not within the bounds of the Hcal strip center ("
        << center[0] << ", " << center[1] << ", " << center[2]
-       << ") with tolerance " << tolerance << std::endl;
+       << ") with tolerance_ " << tolerance_ << std::endl;
     ss << "Position along the bar: " << position[index_along] << " outside "
        << center[index_along] << " +- " << length / 2 << "? "
        << outside_bounds_along << std::endl;
@@ -113,7 +113,7 @@ bool HcalGeometryVerifier::hit_ok(const ldmx::HcalID id,
        << center[index_through] << " +- " << thickness / 2 << "? "
        << outside_bounds_through << std::endl;
 
-    if (stop_on_error) {
+    if (stop_on_error_) {
       EXCEPTION_RAISE("InvalidPosition", ss.str());
     } else {
       ldmx_log(warn) << ss.str();
@@ -122,7 +122,7 @@ bool HcalGeometryVerifier::hit_ok(const ldmx::HcalID id,
   }
   return true;
 }
-std::array<int, 3> HcalGeometryVerifier::determine_indices(
+std::array<int, 3> HcalGeometryVerifier::determineIndices(
     const ldmx::HcalID id) {
   const auto &geometry = getCondition<ldmx::HcalGeometry>(
       ldmx::HcalGeometry::CONDITIONS_OBJECT_NAME);

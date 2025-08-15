@@ -2,6 +2,18 @@
 #include "DQM/HcalInefficiencyDQM.h"
 
 namespace dqm {
+
+void HcalInefficiencyAnalyzer::configure(
+
+    framework::config::Parameters &parameters) {
+  hcal_sim_hits_collection_ = parameters.get<std::string>("sim_coll_name");
+  hcal_rec_hits_collection_ = parameters.get<std::string>("rec_coll_name");
+  hcal_sim_hits_pass_name_ = parameters.get<std::string>("sim_pass_name");
+  hcal_rec_hits_pass_name_ = parameters.get<std::string>("rec_pass_name");
+  pe_veto_threshold_ = parameters.get<double>("pe_veto_threshold");
+  max_hit_time_ = parameters.get<double>("max_hit_time");
+}
+
 void HcalInefficiencyAnalyzer::analyze(const framework::Event &event) {
   const auto hcal_sim_hits = event.getCollection<ldmx::SimCalorimeterHit>(
       hcal_sim_hits_collection_, hcal_sim_hits_pass_name_);
@@ -61,16 +73,6 @@ void HcalInefficiencyAnalyzer::analyze(const framework::Event &event) {
   }
 }
 
-void HcalInefficiencyAnalyzer::configure(
-
-    framework::config::Parameters &parameters) {
-  hcal_sim_hits_collection_ = parameters.get<std::string>("sim_coll_name");
-  hcal_rec_hits_collection_ = parameters.get<std::string>("rec_coll_name");
-  hcal_sim_hits_pass_name_ = parameters.get<std::string>("sim_pass_name");
-  hcal_rec_hits_pass_name_ = parameters.get<std::string>("rec_pass_name");
-  pe_veto_threshold = parameters.get<double>("pe_veto_threshold");
-  max_hit_time_ = parameters.get<double>("max_hit_time");
-}
 }  // namespace dqm
 
 DECLARE_ANALYZER(dqm::HcalInefficiencyAnalyzer);

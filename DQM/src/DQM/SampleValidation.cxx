@@ -38,7 +38,7 @@ void SampleValidation::analyze(const framework::Event& event) {
 
     for (auto const& parent_track_id : parents_track_ids) {
       if (parent_track_id == 0) {
-        histograms_.fill("primaries_pdgid", pdgid_label(pdgid));
+        histograms_.fill("primaries_pdgid", pdgidLabel(pdgid));
         histograms_.fill("primaries_energy", energy);
         hard_thresh = (2500. / 4000.) * energy;
         primary_daughters = daughters;
@@ -58,12 +58,12 @@ void SampleValidation::analyze(const framework::Event& event) {
     ldmx::SimParticle p = it.second;
     for (auto const& primary_daughter : primary_daughters) {
       if (trackid == primary_daughter) {
-        histograms_.fill("primarydaughters_pdgid", pdgid_label(p.getPdgID()));
+        histograms_.fill("primarydaughters_pdgid", pdgidLabel(p.getPdgID()));
         if (p.getPdgID() == 22) {
           histograms_.fill("daughterphoton_energy", p.getEnergy());
         }
         if (p.getEnergy() >= hard_thresh) {
-          histograms_.fill("harddaughters_pdgid", pdgid_label(p.getPdgID()));
+          histograms_.fill("harddaughters_pdgid", pdgidLabel(p.getPdgID()));
           histograms_.fill("harddaughters_startZ", p.getVertex()[2]);
           histograms_.fill("harddaughters_endZ", p.getEndPoint()[2]);
           histograms_.fill("harddaughters_energy", p.getEnergy());
@@ -80,7 +80,7 @@ void SampleValidation::analyze(const framework::Event& event) {
       for (const int& daughter_id : daughter_track_id) {
         if (trackid == daughter_id) {
           histograms_.fill("hardbremdaughters_pdgid",
-                           pdgid_label(p.getPdgID()));
+                           pdgidLabel(p.getPdgID()));
           histograms_.fill("hardbremdaughters_startZ", p.getVertex()[2]);
           histograms_.fill("hardbremdaughters_endZ", p.getEndPoint()[2]);
           histograms_.fill("hardbremdaughters_energy", p.getEnergy());
@@ -92,7 +92,7 @@ void SampleValidation::analyze(const framework::Event& event) {
   return;
 }
 
-int SampleValidation::pdgid_label(const int pdgid) {
+int SampleValidation::pdgidLabel(const int pdgid) {
   // initially assign label as "anything else"/overflow value,
   // only change if the pdg id is something of interest
   int label = 19;

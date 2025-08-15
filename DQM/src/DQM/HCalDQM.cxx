@@ -10,7 +10,7 @@ void HCalDQM::configure(framework::config::Parameters &ps) {
   rec_pass_name_ = ps.get<std::string>("rec_pass_name");
   sim_coll_name_ = ps.get<std::string>("sim_coll_name");
   sim_pass_name_ = ps.get<std::string>("sim_pass_name");
-  pe_veto_threshold = ps.get<double>("pe_veto_threshold");
+  pe_veto_threshold_ = ps.get<double>("pe_veto_threshold");
   section_ = ps.get<int>("section");
   max_hit_time_ = ps.get<double>("max_hit_time");
 }
