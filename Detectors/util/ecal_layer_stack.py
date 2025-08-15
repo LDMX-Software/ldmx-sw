@@ -585,8 +585,8 @@ def ldmx_ecal_v15():
         [BiLayerSandwich(front = 0.0, cooling = 0.0)] # absorber-less Pre-Shower
         +[BiLayerSandwich(front = 1.0, cooling = 1.0)] # Section A
         +[BiLayerSandwich(front = 2.0, cooling = 1.5)] # Section B
-        +9*[BiLayerSandwich(front = 3.5, cooling = 1.8)] # Section C
-        +5*[BiLayerSandwich(front = 7.0, cooling = 3.5)] # Section D
+        +9*[BiLayerSandwich(front = 4.0, cooling = 2.0)] # Section C
+        +4*[BiLayerSandwich(front = 8.0, cooling = 3.5)] # Section D
     )
 
     # the way I designed the GDML did not include the Pre-Shower bilayer

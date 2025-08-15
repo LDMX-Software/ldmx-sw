@@ -269,7 +269,7 @@ class EcalDigiVerify(ldmxcfg.Analyzer) :
 
         self.ecal_rec_hit_coll = "EcalRecHits"
         self.ecal_rec_hit_pass = ""
-        self.num_layers = 34
+        self.num_layers = 32
 
         self.build1DHistogram( "rec_sim_hit_residual_x" ,
                 "RecHit X - SimHit X [mm]" , 30 , -15.0 , 15.0 )
