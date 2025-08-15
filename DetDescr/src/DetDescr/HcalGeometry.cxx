@@ -10,21 +10,20 @@ namespace ldmx {
 
 HcalGeometry::HcalGeometry(const framework::config::Parameters &ps)
     : framework::ConditionsObject(HcalGeometry::CONDITIONS_OBJECT_NAME) {
-  scint_thickness_ = ps.getParameter<double>("scint_thickness");
-  scint_width_ = ps.getParameter<double>("scint_width");
-  zero_layer_ = ps.getParameter<std::vector<double>>("zero_layer");
-  layer_thickness_ = ps.getParameter<std::vector<double>>("layer_thickness");
-  num_layers_ = ps.getParameter<std::vector<int>>("num_layers");
-  num_sections_ = ps.getParameter<int>("num_sections");
-  ecal_dx_ = ps.getParameter<double>("ecal_dx");
-  ecal_dy_ = ps.getParameter<double>("ecal_dy");
-  verbose_ = ps.getParameter<int>("verbose");
-  back_horizontal_parity_ = ps.getParameter<int>("back_horizontal_parity");
-  side_3d_readout_ = ps.getParameter<int>("side_3d_readout");
-  y_offset_ = ps.getParameter<double>("y_offset");
+  scint_thickness_ = ps.get<double>("scint_thickness");
+  scint_width_ = ps.get<double>("scint_width");
+  zero_layer_ = ps.get<std::vector<double>>("zero_layer");
+  layer_thickness_ = ps.get<std::vector<double>>("layer_thickness");
+  num_layers_ = ps.get<std::vector<int>>("num_layers");
+  num_sections_ = ps.get<int>("num_sections");
+  ecal_dx_ = ps.get<double>("ecal_dx");
+  ecal_dy_ = ps.get<double>("ecal_dy");
+  verbose_ = ps.get<int>("verbose");
+  back_horizontal_parity_ = ps.get<int>("back_horizontal_parity");
+  side_3d_readout_ = ps.get<int>("side_3d_readout");
+  y_offset_ = ps.get<double>("y_offset");
 
-  auto detectors_valid =
-      ps.getParameter<std::vector<std::string>>("detectors_valid");
+  auto detectors_valid = ps.get<std::vector<std::string>>("detectors_valid");
   // If one of the strings in detectors_valid is "ldmx-hcal-prototype", we
   // will use prototype geometry initialization
   is_prototype_ = std::find_if(detectors_valid.cbegin(), detectors_valid.cend(),
@@ -33,12 +32,11 @@ HcalGeometry::HcalGeometry(const framework::config::Parameters &ps)
                                         std::string::npos;
                                }) != detectors_valid.cend();
 
-  num_strips_ = ps.getParameter<std::vector<std::vector<int>>>("num_strips");
+  num_strips_ = ps.get<std::vector<std::vector<int>>>("num_strips");
   half_total_width_ =
-      ps.getParameter<std::vector<std::vector<double>>>("half_total_width");
-  zero_strip_ = ps.getParameter<std::vector<std::vector<double>>>("zero_strip");
-  scint_length_ =
-      ps.getParameter<std::vector<std::vector<double>>>("scint_length");
+      ps.get<std::vector<std::vector<double>>>("half_total_width");
+  zero_strip_ = ps.get<std::vector<std::vector<double>>>("zero_strip");
+  scint_length_ = ps.get<std::vector<std::vector<double>>>("scint_length");
 
   buildStripPositionMap();
 

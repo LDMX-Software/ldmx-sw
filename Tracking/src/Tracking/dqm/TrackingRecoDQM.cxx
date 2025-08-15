@@ -3,32 +3,28 @@
 namespace tracking::dqm {
 
 void TrackingRecoDQM::configure(framework::config::Parameters& parameters) {
-  trackCollection_ = parameters.getParameter<std::string>("track_collection");
-  truthCollection_ = parameters.getParameter<std::string>("truth_collection");
+  trackCollection_ = parameters.get<std::string>("track_collection");
+  truthCollection_ = parameters.get<std::string>("truth_collection");
   measurementCollection_ =
-      parameters.getParameter<std::string>("measurement_collection");
-  measurement_passname_ =
-      parameters.getParameter<std::string>("measurement_passname");
+      parameters.get<std::string>("measurement_collection");
+  measurement_passname_ = parameters.get<std::string>("measurement_passname");
 
   ecal_sp_events_passname_ =
-      parameters.getParameter<std::string>("ecal_sp_events_passname");
-  ecal_sp_passname_ = parameters.getParameter<std::string>("ecal_sp_passname");
+      parameters.get<std::string>("ecal_sp_events_passname");
+  ecal_sp_passname_ = parameters.get<std::string>("ecal_sp_passname");
   target_sp_events_passname_ =
-      parameters.getParameter<std::string>("target_sp_events_passname");
-  target_sp_passname_ =
-      parameters.getParameter<std::string>("target_sp_passname");
-  truth_passname_ = parameters.getParameter<std::string>("truth_passname");
-  truth_events_passname_ =
-      parameters.getParameter<std::string>("truth_events_passname");
-  track_passname_ = parameters.getParameter<std::string>("track_passname");
+      parameters.get<std::string>("target_sp_events_passname");
+  target_sp_passname_ = parameters.get<std::string>("target_sp_passname");
+  truth_passname_ = parameters.get<std::string>("truth_passname");
+  truth_events_passname_ = parameters.get<std::string>("truth_events_passname");
+  track_passname_ = parameters.get<std::string>("track_passname");
   track_collection_events_passname_ =
-      parameters.getParameter<std::string>("track_collection_events_passname");
+      parameters.get<std::string>("track_collection_events_passname");
 
-  title_ = parameters.getParameter<std::string>("title", "tagger_trk_");
-  trackProb_cut_ = parameters.getParameter<double>("trackProb_cut", 0.5);
-  subdetector_ = parameters.getParameter<std::string>("subdetector", "Tagger");
-  trackStates_ =
-      parameters.getParameter<std::vector<std::string>>("trackStates", {});
+  title_ = parameters.get<std::string>("title", "tagger_trk_");
+  trackProb_cut_ = parameters.get<double>("trackProb_cut", 0.5);
+  subdetector_ = parameters.get<std::string>("subdetector", "Tagger");
+  trackStates_ = parameters.get<std::vector<std::string>>("trackStates", {});
 
   pidmap[-321] = PIDBins::kminus;
   pidmap[321] = PIDBins::kplus;

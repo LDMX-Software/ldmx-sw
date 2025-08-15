@@ -5,9 +5,9 @@
 namespace dqm {
 
 void HcalVetoResults::configure(framework::config::Parameters &ps) {
-  hcal_veto_name_ = ps.getParameter<std::string>("hcal_veto_name");
-  hcal_veto_pass_ = ps.getParameter<std::string>("hcal_veto_pass");
-  hcal_veto_passname_ = ps.getParameter<std::string>("hcal_veto_passname");
+  hcal_veto_name_ = ps.get<std::string>("hcal_veto_name");
+  hcal_veto_pass_ = ps.get<std::string>("hcal_veto_pass");
+  hcal_veto_passname_ = ps.get<std::string>("hcal_veto_passname");
 }
 
 void HcalVetoResults::onProcessStart() {
@@ -15,11 +15,11 @@ void HcalVetoResults::onProcessStart() {
 
   // enum HcalSection { BACK = 0, TOP = 1, BOTTOM = 2, RIGHT = 3, LEFT = 4 };
   std::vector<std::string> labels_hca_lsector = {"HCAL BACK",    // 1
-                                                "HCAL TOP",     // 2
-                                                "HCAL BOTTOM",  // 3
-                                                "HCAL RIGHT",   // 4
-                                                "HCAL LEFT",    // 5
-                                                ""};
+                                                 "HCAL TOP",     // 2
+                                                 "HCAL BOTTOM",  // 3
+                                                 "HCAL RIGHT",   // 4
+                                                 "HCAL LEFT",    // 5
+                                                 ""};
 
   for (int ilabel{1}; ilabel < labels_hca_lsector.size(); ++ilabel) {
     for (auto &hist : hists_hca_lsector) {

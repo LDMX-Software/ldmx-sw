@@ -3,14 +3,12 @@ namespace dqm {
 
 void HcalGeometryVerifier::configure(
     framework::config::Parameters &parameters) {
-  hcal_sim_hits_collection_ =
-      parameters.getParameter<std::string>("sim_coll_name");
-  hcal_rec_hits_collection_ =
-      parameters.getParameter<std::string>("rec_coll_name");
-  hcal_sim_hits_pass_name_ = parameters.getParameter<std::string>("sim_pass_name");
-  hcal_rec_hits_pass_name_ = parameters.getParameter<std::string>("rec_pass_name");
-  stop_on_error = parameters.getParameter<bool>("stop_on_error");
-  tolerance = parameters.getParameter<double>("tolerance");
+  hcal_sim_hits_collection_ = parameters.get<std::string>("sim_coll_name");
+  hcal_rec_hits_collection_ = parameters.get<std::string>("rec_coll_name");
+  hcal_sim_hits_pass_name_ = parameters.get<std::string>("sim_pass_name");
+  hcal_rec_hits_pass_name_ = parameters.get<std::string>("rec_pass_name");
+  stop_on_error = parameters.get<bool>("stop_on_error");
+  tolerance = parameters.get<double>("tolerance");
 }
 void HcalGeometryVerifier::analyze(const framework::Event &event) {
   const auto hcal_sim_hits = event.getCollection<ldmx::SimCalorimeterHit>(
@@ -130,7 +128,7 @@ std::array<int, 3> HcalGeometryVerifier::determine_indices(
       ldmx::HcalGeometry::CONDITIONS_OBJECT_NAME);
   const auto orientation{geometry.getScintillatorOrientation(id)};
   const auto is_lr{id.section() == ldmx::HcalID::HcalSection::LEFT ||
-                  id.section() == ldmx::HcalID::HcalSection::RIGHT};
+                   id.section() == ldmx::HcalID::HcalSection::RIGHT};
 
   int index_along{};
   int index_across{};

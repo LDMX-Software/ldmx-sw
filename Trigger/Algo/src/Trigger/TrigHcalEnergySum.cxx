@@ -9,9 +9,9 @@
 namespace trigger {
 
 void TrigHcalEnergySum::configure(framework::config::Parameters& ps) {
-  inProc_ = ps.getParameter<std::string>("inputProc");
-  quadCollName_ = ps.getParameter<std::string>("quadCollName");
-  combinedQuadCollName_ = ps.getParameter<std::string>("combinedQuadCollName");
+  inProc_ = ps.get<std::string>("inputProc");
+  quadCollName_ = ps.get<std::string>("quadCollName");
+  combinedQuadCollName_ = ps.get<std::string>("combinedQuadCollName");
 }
 void TrigHcalEnergySum::produce(framework::Event& event) {
   // mV/ADC: 1.2

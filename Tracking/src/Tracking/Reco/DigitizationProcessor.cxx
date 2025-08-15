@@ -19,18 +19,17 @@ void DigitizationProcessor::onProcessStart() {
 void DigitizationProcessor::configure(
     framework::config::Parameters& parameters) {
   hit_collection_ =
-      parameters.getParameter<std::string>("hit_collection", "TaggerSimHits");
+      parameters.get<std::string>("hit_collection", "TaggerSimHits");
 
-  tracker_hit_passname_ =
-      parameters.getParameter<std::string>("tracker_hit_passname");
-  out_collection_ = parameters.getParameter<std::string>("out_collection",
-                                                         "OutputMeasuements");
-  min_e_dep_ = parameters.getParameter<double>("min_e_dep", 0.05);
-  track_id_ = parameters.getParameter<int>("track_id", -1);
-  do_smearing_ = parameters.getParameter<bool>("do_smearing", true);
-  sigma_u_ = parameters.getParameter<double>("sigma_u", 0.01);
-  sigma_v_ = parameters.getParameter<double>("sigma_v", 0.);
-  merge_hits_ = parameters.getParameter<bool>("merge_hits", false);
+  tracker_hit_passname_ = parameters.get<std::string>("tracker_hit_passname");
+  out_collection_ =
+      parameters.get<std::string>("out_collection", "OutputMeasuements");
+  min_e_dep_ = parameters.get<double>("min_e_dep", 0.05);
+  track_id_ = parameters.get<int>("track_id", -1);
+  do_smearing_ = parameters.get<bool>("do_smearing", true);
+  sigma_u_ = parameters.get<double>("sigma_u", 0.01);
+  sigma_v_ = parameters.get<double>("sigma_v", 0.);
+  merge_hits_ = parameters.get<bool>("merge_hits", false);
 }
 
 void DigitizationProcessor::onNewRun(const ldmx::RunHeader& runHeader) {

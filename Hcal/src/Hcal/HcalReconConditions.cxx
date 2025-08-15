@@ -94,10 +94,10 @@ class HcalReconConditionsProvider : public framework::ConditionsObjectProvider {
                           name + " is not equal to the expected name " +
                           HcalReconConditions::CONDITIONS_NAME);
     }
-    adc_gain_ = parameters.getParameter<std::string>("adc_gain");
-    adc_ped_ = parameters.getParameter<std::string>("adc_ped");
-    tot_calib_ = parameters.getParameter<std::string>("tot_calib");
-    toa_calib_ = parameters.getParameter<std::string>("toa_calib");
+    adc_gain_ = parameters.get<std::string>("adc_gain");
+    adc_ped_ = parameters.get<std::string>("adc_ped");
+    tot_calib_ = parameters.get<std::string>("tot_calib");
+    toa_calib_ = parameters.get<std::string>("toa_calib");
   }
 
   /**

@@ -15,10 +15,10 @@ class EcalDetectorMapLoader : public framework::ConditionsObjectProvider {
       : ConditionsObjectProvider(EcalDetectorMap::CONDITIONS_OBJECT_NAME,
                                  tagname, parameters, process),
         the_map_{nullptr} {
-    want_d2e_ = parameters.getParameter<bool>("want_d2e");
-    cell_map_ = parameters.getParameter<std::string>("cell_map");
-    motherboard_map_ = parameters.getParameter<std::string>("motherboard_map");
-    layer_map_ = parameters.getParameter<std::string>("layer_map");
+    want_d2e_ = parameters.get<bool>("want_d2e");
+    cell_map_ = parameters.get<std::string>("cell_map");
+    motherboard_map_ = parameters.get<std::string>("motherboard_map");
+    layer_map_ = parameters.get<std::string>("layer_map");
   }
 
   virtual std::pair<const framework::ConditionsObject*,

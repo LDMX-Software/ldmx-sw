@@ -15,24 +15,22 @@ SimpleCSVTableProvider::SimpleCSVTableProvider(
     const framework::config::Parameters& parameters,
     framework::Process& process)
     : framework::ConditionsObjectProvider(name, tagname, parameters, process) {
-  columns_ = parameters.getParameter<std::vector<std::string>>("columns");
-  std::string dtype = parameters.getParameter<std::string>("dataType");
+  columns_ = parameters.get<std::vector<std::string>>("columns");
+  std::string dtype = parameters.get<std::string>("dataType");
   if (dtype == "int" || dtype == "integer")
     objectType_ = SimpleCSVTableProvider::OBJ_int;
   if (dtype == "double" || dtype == "float")
     objectType_ = SimpleCSVTableProvider::OBJ_double;
 
-  conditions_baseURL_ =
-      parameters.getParameter<std::string>("conditions_baseURL");
+  conditions_baseURL_ = parameters.get<std::string>("conditions_baseURL");
 
   if (parameters.exists("entries")) {
     std::vector<framework::config::Parameters> plist =
-        parameters.getParameter<std::vector<framework::config::Parameters>>(
-            "entries");
+        parameters.get<std::vector<framework::config::Parameters>>("entries");
     if (!plist.empty()) entriesFromPython(plist);
   }
 
-  entriesURL_ = parameters.getParameter<std::string>("entriesURL");
+  entriesURL_ = parameters.get<std::string>("entriesURL");
   if (!entriesURL_.empty()) entriesFromCSV();
 }
 
@@ -40,15 +38,15 @@ void SimpleCSVTableProvider::entriesFromPython(
     std::vector<framework::config::Parameters>& plist) {
   for (auto aprov : plist) {
     SimpleCSVTableProvider::Entry item;
-    int firstRun = aprov.getParameter<int>("firstRun", -1);
-    int lastRun = aprov.getParameter<int>("lastRun", -1);
-    std::string rtype = aprov.getParameter<std::string>("runType", "any");
+    int firstRun = aprov.get<int>("firstRun", -1);
+    int lastRun = aprov.get<int>("lastRun", -1);
+    std::string rtype = aprov.get<std::string>("runType", "any");
     bool isMC = (rtype == "any" || rtype == "MC");
     bool isData = (rtype == "any" || rtype == "data");
     item.iov_ = framework::ConditionsIOV(firstRun, lastRun, isData, isMC);
-    item.url_ = aprov.getParameter<std::string>("URL");
+    item.url_ = aprov.get<std::string>("URL");
     if (objectType_ == OBJ_int && aprov.exists("values")) {
-      item.ivalues_ = aprov.getParameter<std::vector<int>>("values");
+      item.ivalues_ = aprov.get<std::vector<int>>("values");
       if (item.ivalues_.size() != columns_.size()) {
         EXCEPTION_RAISE("ConditionsException",
                         "Mismatch in values vector (" +
@@ -59,7 +57,7 @@ void SimpleCSVTableProvider::entriesFromPython(
       }
     }
     if (objectType_ == OBJ_double && aprov.exists("values")) {
-      item.dvalues_ = aprov.getParameter<std::vector<double>>("values");
+      item.dvalues_ = aprov.get<std::vector<double>>("values");
       if (item.dvalues_.size() != columns_.size()) {
         EXCEPTION_RAISE("ConditionsException",
                         "Mismatch in values vector (" +

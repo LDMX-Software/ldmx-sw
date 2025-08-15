@@ -44,10 +44,10 @@ void TrigScintHitDQM::onProcessStart() {
 }
 
 void TrigScintHitDQM::configure(framework::config::Parameters &ps) {
-  hit_collection_name_ = ps.getParameter<std::string>("hit_collection");
-  pad_name_ = ps.getParameter<std::string>("pad").c_str();
+  hit_collection_name_ = ps.get<std::string>("hit_collection");
+  pad_name_ = ps.get<std::string>("pad").c_str();
 
-  trig_scint_passname_ = ps.getParameter<std::string>("trig_scint_passname");
+  trig_scint_passname_ = ps.get<std::string>("trig_scint_passname");
 
   ldmx_log(debug) << "In TrigScintHitDQM::configure, got parameters "
                   << hit_collection_name_ << " and " << pad_name_;

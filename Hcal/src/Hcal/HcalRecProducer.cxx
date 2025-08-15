@@ -20,27 +20,27 @@ HcalRecProducer::HcalRecProducer(const std::string& name,
 
 void HcalRecProducer::configure(framework::config::Parameters& ps) {
   // collection names
-  digi_coll_name_ = ps.getParameter<std::string>("digiCollName");
-  digi_pass_name_ = ps.getParameter<std::string>("digiPassName");
-  sim_hit_coll_name_ = ps.getParameter<std::string>("simHitCollName");
-  sim_hit_pass_name_ = ps.getParameter<std::string>("simHitPassName");
-  rec_hit_coll_name_ = ps.getParameter<std::string>("recHitCollName");
+  digi_coll_name_ = ps.get<std::string>("digiCollName");
+  digi_pass_name_ = ps.get<std::string>("digiPassName");
+  sim_hit_coll_name_ = ps.get<std::string>("simHitCollName");
+  sim_hit_pass_name_ = ps.get<std::string>("simHitPassName");
+  rec_hit_coll_name_ = ps.get<std::string>("recHitCollName");
 
   // parameters
-  mip_energy_ = ps.getParameter<double>("mip_energy");
-  pe_per_mip_ = ps.getParameter<double>("pe_per_mip");
-  clock_cycle_ = ps.getParameter<double>("clock_cycle");
-  voltage_per_mip_ = ps.getParameter<double>("voltage_per_mip");
-  attlength_ = ps.getParameter<double>("attenuationLength");
-  nADCs_ = ps.getParameter<int>("nADCs");
+  mip_energy_ = ps.get<double>("mip_energy");
+  pe_per_mip_ = ps.get<double>("pe_per_mip");
+  clock_cycle_ = ps.get<double>("clock_cycle");
+  voltage_per_mip_ = ps.get<double>("voltage_per_mip");
+  attlength_ = ps.get<double>("attenuationLength");
+  nADCs_ = ps.get<int>("nADCs");
 
   // configuring corrections graphs derived on the fly
   // TODO: maybe we should save these as a graph instead?
-  rateUpSlope_ = ps.getParameter<double>("rateUpSlope");
-  timeUpSlope_ = ps.getParameter<double>("timeUpSlope");
-  rateDnSlope_ = ps.getParameter<double>("rateDnSlope");
-  timeDnSlope_ = ps.getParameter<double>("timeDnSlope");
-  timePeak_ = ps.getParameter<double>("timePeak");
+  rateUpSlope_ = ps.get<double>("rateUpSlope");
+  timeUpSlope_ = ps.get<double>("timeUpSlope");
+  rateDnSlope_ = ps.get<double>("rateDnSlope");
+  timeDnSlope_ = ps.get<double>("timeDnSlope");
+  timePeak_ = ps.get<double>("timePeak");
   pulseFunc_ =
       TF1("pulseFunc",
           "[0]*((1.0+exp([1]*(-[2]+[3])))*(1.0+exp([5]*(-[6]+[3]))))/"
@@ -66,9 +66,9 @@ void HcalRecProducer::configure(framework::config::Parameters& ps) {
   }
 
   // build TOA timewalk correction with pulse-shape
-  double toaThreshold = ps.getParameter<double>("avgToaThreshold");
-  double gain = ps.getParameter<double>("avgGain");
-  double pedestal = ps.getParameter<double>("avgPedestal");
+  double toaThreshold = ps.get<double>("avgToaThreshold");
+  double gain = ps.get<double>("avgGain");
+  double pedestal = ps.get<double>("avgPedestal");
   n = 0;
   for (double ampl = toaThreshold + 0.1; ampl < 10000; ampl += 0.01) {
     pulseFunc_.FixParameter(0, ampl);

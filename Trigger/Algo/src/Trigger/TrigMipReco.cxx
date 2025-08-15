@@ -7,26 +7,26 @@ void TrigMipReco::onNewRun(const ldmx::RunHeader& rh) {
 }
 
 void TrigMipReco::configure(framework::config::Parameters& ps) {
-  hit_coll_name_ = ps.getParameter<std::string>("hit_coll_name");
-  pass_coll_name_ = ps.getParameter<std::string>("pass_coll_name");
-  hit_coll_passname_ = ps.getParameter<std::string>("hit_coll_passname");
-  calorimeter_type_is_hcal_ = ps.getParameter<bool>("calorimeter_type_is_hcal");
+  hit_coll_name_ = ps.get<std::string>("hit_coll_name");
+  pass_coll_name_ = ps.get<std::string>("pass_coll_name");
+  hit_coll_passname_ = ps.get<std::string>("hit_coll_passname");
+  calorimeter_type_is_hcal_ = ps.get<bool>("calorimeter_type_is_hcal");
 
-  max_layer_ = ps.getParameter<int>("max_layer", 32);
+  max_layer_ = ps.get<int>("max_layer", 32);
   // mm
-  search_radius_ = ps.getParameter<float>("search_radius", 50.0f);
-  min_track_length_ = ps.getParameter<int>("min_track_length", 5);
+  search_radius_ = ps.get<float>("search_radius", 50.0f);
+  min_track_length_ = ps.get<int>("min_track_length", 5);
   // MeV; Change as needed
-  isolation_e_cut_ = ps.getParameter<float>("isolation_e_cut", 180.0f);
-  hole_fraction_max_ = ps.getParameter<float>("hole_fraction_max", 0.2f);
+  isolation_e_cut_ = ps.get<float>("isolation_e_cut", 180.0f);
+  hole_fraction_max_ = ps.get<float>("hole_fraction_max", 0.2f);
 
   if (calorimeter_type_is_hcal_) {
     // MIP peak is 10-11 MeV
-    hcal_min_energy_ = ps.getParameter<float>("hcal_min_energy", 8.0f);
+    hcal_min_energy_ = ps.get<float>("hcal_min_energy", 8.0f);
   } else {  // ECAL
     // MIP peak around 17 MeV
-    ecal_min_energy_ = ps.getParameter<float>("ecal_min_energy", 3.0f);
-    ecal_max_energy_ = ps.getParameter<float>("ecal_max_energy", 26.0f);
+    ecal_min_energy_ = ps.get<float>("ecal_min_energy", 3.0f);
+    ecal_max_energy_ = ps.get<float>("ecal_max_energy", 26.0f);
   }
 }
 

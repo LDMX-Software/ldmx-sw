@@ -21,11 +21,11 @@ namespace biasing {
 DeepEcalProcessFilter::DeepEcalProcessFilter(
     const std::string& name, framework::config::Parameters& parameters)
     : simcore::UserAction(name, parameters) {
-  bias_threshold_ = parameters.getParameter<double>("bias_threshold");
-  processes_ = parameters.getParameter<std::vector<std::string>>("processes");
-  ecal_min_z_ = parameters.getParameter<double>("ecal_min_Z");
+  bias_threshold_ = parameters.get<double>("bias_threshold");
+  processes_ = parameters.get<std::vector<std::string>>("processes");
+  ecal_min_z_ = parameters.get<double>("ecal_min_Z");
   require_photon_from_target_ =
-      parameters.getParameter<bool>("require_photon_fromTarget");
+      parameters.get<bool>("require_photon_fromTarget");
 }
 
 void DeepEcalProcessFilter::BeginOfEventAction(const G4Event* event) {

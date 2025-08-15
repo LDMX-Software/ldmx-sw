@@ -16,31 +16,31 @@ namespace ecal {
 void EcalDigiProducer::configure(framework::config::Parameters& ps) {
   // settings of readout chip
   //  used  in actual digitization
-  auto hgcroc_params = ps.getParameter<framework::config::Parameters>("hgcroc");
+  auto hgcroc_params = ps.get<framework::config::Parameters>("hgcroc");
   hgcroc_ = std::make_unique<ldmx::HgcrocEmulator>(hgcroc_params);
-  clock_cycle_ = hgcroc_params.getParameter<double>("clockCycle");
-  n_adcs_ = hgcroc_params.getParameter<int>("nADCs");
-  i_soi_ = hgcroc_params.getParameter<int>("iSOI");
-  noise_ = hgcroc_params.getParameter<bool>("noise");
+  clock_cycle_ = hgcroc_params.get<double>("clockCycle");
+  n_adcs_ = hgcroc_params.get<int>("nADCs");
+  i_soi_ = hgcroc_params.get<int>("iSOI");
+  noise_ = hgcroc_params.get<bool>("noise");
 
   // collection names
-  input_coll_name_ = ps.getParameter<std::string>("inputCollName");
-  input_pass_name_ = ps.getParameter<std::string>("inputPassName");
-  digi_coll_name_ = ps.getParameter<std::string>("digiCollName");
+  input_coll_name_ = ps.get<std::string>("inputCollName");
+  input_pass_name_ = ps.get<std::string>("inputPassName");
+  digi_coll_name_ = ps.get<std::string>("digiCollName");
 
-  zero_suppression_ = ps.getParameter<bool>("zero_suppression");
+  zero_suppression_ = ps.get<bool>("zero_suppression");
 
   // physical constants
   //  used to calculate unit conversions
-  mev_ = ps.getParameter<double>("MeV");
+  mev_ = ps.get<double>("MeV");
 
   // Time -> clock counts conversion
   //  time [ns] * ( 2^10 / max time in ns ) = clock counts
   ns_ = 1024. / clock_cycle_;
 
-  readout_threshold_ = ps.getParameter<double>("avgReadoutThreshold");
-  pedestal_ = ps.getParameter<double>("avgPedestal");
-  noise_rms_ = ps.getParameter<double>("avgNoiseRMS");
+  readout_threshold_ = ps.get<double>("avgReadoutThreshold");
+  pedestal_ = ps.get<double>("avgPedestal");
+  noise_rms_ = ps.get<double>("avgNoiseRMS");
 }
 
 void EcalDigiProducer::onNewRun(const ldmx::RunHeader&) {

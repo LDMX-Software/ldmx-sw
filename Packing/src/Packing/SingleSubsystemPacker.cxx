@@ -4,9 +4,9 @@
 namespace packing {
 
 void SingleSubsystemPacker::configure(framework::config::Parameters& ps) {
-  writer_.open(ps.getParameter<std::string>("raw_file"));
-  input_name_ = ps.getParameter<std::string>("input_name");
-  input_pass_ = ps.getParameter<std::string>("input_pass");
+  writer_.open(ps.get<std::string>("raw_file"));
+  input_name_ = ps.get<std::string>("input_name");
+  input_pass_ = ps.get<std::string>("input_pass");
 }
 
 void SingleSubsystemPacker::analyze(const framework::Event& event) {

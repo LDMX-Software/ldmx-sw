@@ -2,11 +2,10 @@
 namespace dqm {
 
 void ReSimVerifier::configure(framework::config::Parameters& parameters) {
-  sim_pass_name_ = parameters.getParameter<std::string>("sim_pass_name");
-  re_sim_pass_name_ = parameters.getParameter<std::string>("resim_pass_name");
-  stop_on_error = parameters.getParameter<bool>("stop_on_error");
-  collections =
-      parameters.getParameter<std::vector<std::string>>("collections");
+  sim_pass_name_ = parameters.get<std::string>("sim_pass_name");
+  re_sim_pass_name_ = parameters.get<std::string>("resim_pass_name");
+  stop_on_error = parameters.get<bool>("stop_on_error");
+  collections = parameters.get<std::vector<std::string>>("collections");
 }
 bool ReSimVerifier::verifySimCalorimeterHits(
     const std::vector<ldmx::SimCalorimeterHit>& simHits,
@@ -64,8 +63,8 @@ void ReSimVerifier::analyze(const framework::Event& event) {
   bool skipped{false};
   auto event_number{event.getEventNumber()};
   for (auto collection : collections) {
-    const auto sim_hits =
-        event.getCollection<ldmx::SimCalorimeterHit>(collection, sim_pass_name_);
+    const auto sim_hits = event.getCollection<ldmx::SimCalorimeterHit>(
+        collection, sim_pass_name_);
     const auto re_sim_hits = event.getCollection<ldmx::SimCalorimeterHit>(
         collection, re_sim_pass_name_);
     if (re_sim_hits.size() == 0) {

@@ -11,17 +11,17 @@
 namespace recon {
 
 void PFHcalClusterProducer::configure(framework::config::Parameters& ps) {
-  hitCollName_ = ps.getParameter<std::string>("hitCollName");
-  hitPassName_ = ps.getParameter<std::string>("hitPassName");
-  clusterCollName_ = ps.getParameter<std::string>("clusterCollName");
-  suffix_ = ps.getParameter<std::string>("suffix", "");
-  singleCluster_ = ps.getParameter<bool>("doSingleCluster");
-  logEnergyWeight_ = ps.getParameter<bool>("logEnergyWeight");
+  hitCollName_ = ps.get<std::string>("hitCollName");
+  hitPassName_ = ps.get<std::string>("hitPassName");
+  clusterCollName_ = ps.get<std::string>("clusterCollName");
+  suffix_ = ps.get<std::string>("suffix", "");
+  singleCluster_ = ps.get<bool>("doSingleCluster");
+  logEnergyWeight_ = ps.get<bool>("logEnergyWeight");
   // DBScan parameters
-  minClusterHitMult_ = ps.getParameter<int>("minClusterHitMult");
-  clusterHitDist_ = ps.getParameter<double>("clusterHitDist");
-  clusterZBias_ = ps.getParameter<double>("clusterZBias", 1);
-  min_hit_energy_ = ps.getParameter<double>("minHitEnergy");
+  minClusterHitMult_ = ps.get<int>("minClusterHitMult");
+  clusterHitDist_ = ps.get<double>("clusterHitDist");
+  clusterZBias_ = ps.get<double>("clusterZBias", 1);
+  min_hit_energy_ = ps.get<double>("minHitEnergy");
 }
 
 void PFHcalClusterProducer::produce(framework::Event& event) {

@@ -35,9 +35,9 @@ void TrigScintDQM::onProcessStart() {
 }
 
 void TrigScintDQM::configure(framework::config::Parameters &ps) {
-  hit_collection_name_ = ps.getParameter<std::string>("hit_collection");
-  pad_name_ = ps.getParameter<std::string>("pad");
-  hit_passname_ = ps.getParameter<std::string>("hit_passname");
+  hit_collection_name_ = ps.get<std::string>("hit_collection");
+  pad_name_ = ps.get<std::string>("pad");
+  hit_passname_ = ps.get<std::string>("hit_passname");
 
   ldmx_log(debug) << " Collection name = " << hit_collection_name_
                   << " pad name = " << pad_name_;

@@ -218,10 +218,10 @@ void PhotoNuclearDQM::onProcessStart() {
 }  // end of onProcessStart
 
 void PhotoNuclearDQM::configure(framework::config::Parameters &parameters) {
-  count_light_ions_ = parameters.getParameter<bool>("count_light_ions", true);
+  count_light_ions_ = parameters.get<bool>("count_light_ions", true);
 
   sim_particles_passname_ =
-      parameters.getParameter<std::string>("sim_particles_passname");
+      parameters.get<std::string>("sim_particles_passname");
 }
 
 void PhotoNuclearDQM::analyze(const framework::Event &event) {
@@ -333,8 +333,10 @@ void PhotoNuclearDQM::analyze(const framework::Event &event) {
   auto event_type2000_me_v{classifyEvent(pn_daughters, 2000)};
 
   auto event_type_comp{classifyCompactEvent(pn_gamma, pn_daughters, 200)};
-  auto event_type_comp500_me_v{classifyCompactEvent(pn_gamma, pn_daughters, 500)};
-  auto event_type_comp2000_me_v{classifyCompactEvent(pn_gamma, pn_daughters, 2000)};
+  auto event_type_comp500_me_v{
+      classifyCompactEvent(pn_gamma, pn_daughters, 500)};
+  auto event_type_comp2000_me_v{
+      classifyCompactEvent(pn_gamma, pn_daughters, 2000)};
 
   histograms_.fill("event_type", static_cast<int>(event_type));
   histograms_.fill("event_type_500mev", static_cast<int>(event_type500_me_v));

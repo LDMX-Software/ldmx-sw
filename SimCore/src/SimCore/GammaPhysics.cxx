@@ -12,8 +12,9 @@ namespace simcore {
 GammaPhysics::GammaPhysics(const G4String& name,
                            const framework::config::Parameters& parameters)
     : G4VPhysicsConstructor(name),
-      modelParameters{parameters.getParameter<framework::config::Parameters>(
-          "photonuclear_model")} {}
+      modelParameters{
+          parameters.get<framework::config::Parameters>("photonuclear_model")} {
+}
 
 void GammaPhysics::ConstructParticle() {}
 
@@ -26,14 +27,12 @@ void GammaPhysics::ConstructProcess() {
   }
   // configure our PN model based on runtime parameters
   auto pn = PhotoNuclearModel::Factory::get().make(
-      modelParameters.getParameter<std::string>("class_name"),
-      modelParameters.getParameter<std::string>("instance_name"),
-      modelParameters);
+      modelParameters.get<std::string>("class_name"),
+      modelParameters.get<std::string>("instance_name"), modelParameters);
   if (not pn) {
-    EXCEPTION_RAISE(
-        "UnableToCreate",
-        "Unable to create a PhotoNuclearModel of type " +
-            modelParameters.getParameter<std::string>("class_name"));
+    EXCEPTION_RAISE("UnableToCreate",
+                    "Unable to create a PhotoNuclearModel of type " +
+                        modelParameters.get<std::string>("class_name"));
   }
   pn.value()->removeExistingModel(processManager);
   pn.value()->ConstructGammaProcess(processManager);

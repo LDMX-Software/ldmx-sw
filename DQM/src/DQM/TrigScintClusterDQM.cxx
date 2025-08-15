@@ -30,9 +30,9 @@ void TrigScintClusterDQM::onProcessStart() {
 }
 
 void TrigScintClusterDQM::configure(framework::config::Parameters &ps) {
-  cluster_collection_name_ = ps.getParameter<std::string>("cluster_collection");
-  pad_name_ = ps.getParameter<std::string>("pad").c_str();
-  pass_name_ = ps.getParameter<std::string>("passName").c_str();
+  cluster_collection_name_ = ps.get<std::string>("cluster_collection");
+  pad_name_ = ps.get<std::string>("pad").c_str();
+  pass_name_ = ps.get<std::string>("passName").c_str();
 
   ldmx_log(debug) << "Collection name =  " << cluster_collection_name_
                   << ", pad = " << pad_name_ << ", pass = " << pass_name_;

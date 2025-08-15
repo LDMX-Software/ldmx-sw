@@ -15,25 +15,22 @@ EcalClusterProducer::EcalClusterProducer(const std::string& name,
     : Producer(name, process) {}
 
 void EcalClusterProducer::configure(framework::config::Parameters& parameters) {
-  cutoff_ = parameters.getParameter<double>("cutoff");
-  seed_threshold_ = parameters.getParameter<double>("seed_threshold");
+  cutoff_ = parameters.get<double>("cutoff");
+  seed_threshold_ = parameters.get<double>("seed_threshold");
 
-  dc_ = parameters.getParameter<double>("dc");
-  rhoc_ = parameters.getParameter<double>("rhoc");
-  deltac_ = parameters.getParameter<double>("deltac");
-  deltao_ = parameters.getParameter<double>("deltao");
+  dc_ = parameters.get<double>("dc");
+  rhoc_ = parameters.get<double>("rhoc");
+  deltac_ = parameters.get<double>("deltac");
+  deltao_ = parameters.get<double>("deltao");
 
-  rec_hit_coll_name_ =
-      parameters.getParameter<std::string>("rec_hit_coll_name");
-  rec_hit_pass_name_ =
-      parameters.getParameter<std::string>("rec_hit_pass_name");
-  algo_coll_name_ = parameters.getParameter<std::string>("algo_coll_name");
-  algo_name_ = parameters.getParameter<std::string>("algo_name");
-  cluster_coll_name_ =
-      parameters.getParameter<std::string>("cluster_coll_name");
-  clue_ = parameters.getParameter<bool>("CLUE");
-  nbr_of_layers_ = parameters.getParameter<int>("nbr_of_layers");
-  reclustering_ = parameters.getParameter<bool>("reclustering");
+  rec_hit_coll_name_ = parameters.get<std::string>("rec_hit_coll_name");
+  rec_hit_pass_name_ = parameters.get<std::string>("rec_hit_pass_name");
+  algo_coll_name_ = parameters.get<std::string>("algo_coll_name");
+  algo_name_ = parameters.get<std::string>("algo_name");
+  cluster_coll_name_ = parameters.get<std::string>("cluster_coll_name");
+  clue_ = parameters.get<bool>("CLUE");
+  nbr_of_layers_ = parameters.get<int>("nbr_of_layers");
+  reclustering_ = parameters.get<bool>("reclustering");
 }
 
 void EcalClusterProducer::produce(framework::Event& event) {

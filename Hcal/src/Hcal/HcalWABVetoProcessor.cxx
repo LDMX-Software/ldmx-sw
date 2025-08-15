@@ -21,28 +21,19 @@ HcalWABVetoProcessor::HcalWABVetoProcessor(const std::string &name,
 
 void HcalWABVetoProcessor::configure(
     framework::config::Parameters &parameters) {
-  maxtotalEnergyCompare_ =
-      parameters.getParameter<double>("max_total_energy_compare");
-  mintotalEnergyCompare_ =
-      parameters.getParameter<double>("min_total_energy_compare");
-  maxnClusters_ = parameters.getParameter<double>("n_clusters");
-  maxMeanHitsPerCluster_ =
-      parameters.getParameter<double>("mean_hits_per_cluster");
-  maxMeanEnergyPerCluster_ =
-      parameters.getParameter<double>("mean_energy_per_cluster");
-  outputCollName_ = parameters.getParameter<std::string>("outputCollName");
+  maxtotalEnergyCompare_ = parameters.get<double>("max_total_energy_compare");
+  mintotalEnergyCompare_ = parameters.get<double>("min_total_energy_compare");
+  maxnClusters_ = parameters.get<double>("n_clusters");
+  maxMeanHitsPerCluster_ = parameters.get<double>("mean_hits_per_cluster");
+  maxMeanEnergyPerCluster_ = parameters.get<double>("mean_energy_per_cluster");
+  outputCollName_ = parameters.get<std::string>("outputCollName");
   inputHCALClusterCollName_ =
-      parameters.getParameter<std::string>("inputHCALClusterCollName");
-  inputHCALHitCollName_ =
-      parameters.getParameter<std::string>("inputHCALHitCollName");
-  inputECALHitCollName_ =
-      parameters.getParameter<std::string>("inputECALHitCollName");
-  hcal_hit_passname_ =
-      parameters.getParameter<std::string>("hcal_hit_passname");
-  ecal_hit_passname_ =
-      parameters.getParameter<std::string>("ecal_hit_passname");
-  hcal_cluster_passname_ =
-      parameters.getParameter<std::string>("hcal_cluster_passname");
+      parameters.get<std::string>("inputHCALClusterCollName");
+  inputHCALHitCollName_ = parameters.get<std::string>("inputHCALHitCollName");
+  inputECALHitCollName_ = parameters.get<std::string>("inputECALHitCollName");
+  hcal_hit_passname_ = parameters.get<std::string>("hcal_hit_passname");
+  ecal_hit_passname_ = parameters.get<std::string>("ecal_hit_passname");
+  hcal_cluster_passname_ = parameters.get<std::string>("hcal_cluster_passname");
 }
 
 void HcalWABVetoProcessor::produce(framework::Event &event) {

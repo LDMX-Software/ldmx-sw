@@ -8,11 +8,11 @@ const std::string PhotoNuclear::CONVERSION_PROCESS = "conv";
 PhotoNuclear::PhotoNuclear(std::string name,
                            const framework::config::Parameters& p)
     : XsecBiasingOperator(name, p) {
-  volume_ = p.getParameter<std::string>("volume");
-  threshold_ = p.getParameter<double>("threshold");
-  factor_ = p.getParameter<double>("factor");
-  down_bias_conv_ = p.getParameter<bool>("down_bias_conv");
-  only_children_of_primary_ = p.getParameter<bool>("only_children_of_primary");
+  volume_ = p.get<std::string>("volume");
+  threshold_ = p.get<double>("threshold");
+  factor_ = p.get<double>("factor");
+  down_bias_conv_ = p.get<bool>("down_bias_conv");
+  only_children_of_primary_ = p.get<bool>("only_children_of_primary");
 }
 
 void PhotoNuclear::StartRun() {

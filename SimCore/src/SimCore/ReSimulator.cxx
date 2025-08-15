@@ -4,12 +4,11 @@ namespace simcore {
 
 void ReSimulator::configure(framework::config::Parameters& parameters) {
   SimulatorBase::configure(parameters);
-  resimulate_all_events_ =
-      parameters.getParameter<bool>("resimulate_all_events");
+  resimulate_all_events_ = parameters.get<bool>("resimulate_all_events");
   if (!resimulate_all_events_) {
-    care_about_run_ = parameters.getParameter<bool>("care_about_run");
+    care_about_run_ = parameters.get<bool>("care_about_run");
     auto configured_events{
-        parameters.getParameter<std::vector<framework::config::Parameters>>(
+        parameters.get<std::vector<framework::config::Parameters>>(
             "events_to_resimulate", {})};
     if (configured_events.size() == 0) {
       EXCEPTION_RAISE(
@@ -19,8 +18,8 @@ void ReSimulator::configure(framework::config::Parameters& parameters) {
           "the events_to_resimulate parameter?\n");
     }
     for (const auto& run_event : configured_events) {
-      events_to_resimulate_.emplace_back(run_event.getParameter<int>("run"),
-                                         run_event.getParameter<int>("event"));
+      events_to_resimulate_.emplace_back(run_event.get<int>("run"),
+                                         run_event.get<int>("event"));
     }
   }
 }

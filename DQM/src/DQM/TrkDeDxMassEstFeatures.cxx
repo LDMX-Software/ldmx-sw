@@ -6,8 +6,8 @@
 namespace dqm {
 
 void TrkDeDxMassEstFeatures::configure(framework::config::Parameters &ps) {
-  mass_estimate_name_ = ps.getParameter<std::string>("mass_estimate_name");
-  mass_estimate_pass_ = ps.getParameter<std::string>("mass_estimate_pass");
+  mass_estimate_name_ = ps.get<std::string>("mass_estimate_name");
+  mass_estimate_pass_ = ps.get<std::string>("mass_estimate_pass");
 
   return;
 }

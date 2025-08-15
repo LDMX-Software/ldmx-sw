@@ -690,52 +690,49 @@ void CKFProcessor::onProcessEnd() {
 }
 
 void CKFProcessor::configure(framework::config::Parameters& parameters) {
-  dumpobj_ = parameters.getParameter<bool>("dumpobj", 0);
-  pionstates_ = parameters.getParameter<int>("pionstates", 0);
+  dumpobj_ = parameters.get<bool>("dumpobj", 0);
+  pionstates_ = parameters.get<int>("pionstates", 0);
 
-  bfield_ = parameters.getParameter<double>("bfield", -1.5);
-  const_b_field_ = parameters.getParameter<bool>("const_b_field", false);
-  field_map_ = parameters.getParameter<std::string>("field_map");
-  propagator_step_size_ =
-      parameters.getParameter<double>("propagator_step_size", 200.);
-  propagator_maxSteps_ =
-      parameters.getParameter<int>("propagator_maxSteps", 10000);
-  measurement_collection_ = parameters.getParameter<std::string>(
+  bfield_ = parameters.get<double>("bfield", -1.5);
+  const_b_field_ = parameters.get<bool>("const_b_field", false);
+  field_map_ = parameters.get<std::string>("field_map");
+  propagator_step_size_ = parameters.get<double>("propagator_step_size", 200.);
+  propagator_maxSteps_ = parameters.get<int>("propagator_maxSteps", 10000);
+  measurement_collection_ = parameters.get<std::string>(
       "measurement_collection", "TaggerMeasurements");
-  outlier_pval_ = parameters.getParameter<double>("outlier_pval_", 3.84);
+  outlier_pval_ = parameters.get<double>("outlier_pval_", 3.84);
 
-  debug_acts_ = parameters.getParameter<bool>("debug_acts", false);
+  debug_acts_ = parameters.get<bool>("debug_acts", false);
 
-  remove_stereo_ = parameters.getParameter<bool>("remove_stereo", false);
-  use1Dmeasurements_ = parameters.getParameter<bool>("use1Dmeasurements", true);
-  min_hits_ = parameters.getParameter<int>("min_hits", 7);
+  remove_stereo_ = parameters.get<bool>("remove_stereo", false);
+  use1Dmeasurements_ = parameters.get<bool>("use1Dmeasurements", true);
+  min_hits_ = parameters.get<int>("min_hits", 7);
 
   // Ckf specific options
   use_extrapolate_location_ =
-      parameters.getParameter<bool>("use_extrapolate_location", true);
-  extrapolate_location_ = parameters.getParameter<std::vector<double>>(
-      "extrapolate_location", {0., 0., 0.});
-  use_seed_perigee_ = parameters.getParameter<bool>("use_seed_perigee", false);
+      parameters.get<bool>("use_extrapolate_location", true);
+  extrapolate_location_ =
+      parameters.get<std::vector<double>>("extrapolate_location", {0., 0., 0.});
+  use_seed_perigee_ = parameters.get<bool>("use_seed_perigee", false);
 
   // seeds from the event
-  seed_coll_name_ =
-      parameters.getParameter<std::string>("seed_coll_name", "seedTracks");
+  seed_coll_name_ = parameters.get<std::string>("seed_coll_name", "seedTracks");
 
   sim_particles_event_passname_ =
-      parameters.getParameter<std::string>("sim_particles_event_passname");
+      parameters.get<std::string>("sim_particles_event_passname");
 
   // output track collection
   out_trk_collection_ =
-      parameters.getParameter<std::string>("out_trk_collection", "Tracks");
+      parameters.get<std::string>("out_trk_collection", "Tracks");
 
   // keep track on which system tracking is running
-  taggerTracking_ = parameters.getParameter<bool>("taggerTracking", true);
+  taggerTracking_ = parameters.get<bool>("taggerTracking", true);
 
   // BField Systematics
   map_offset_ =
-      parameters.getParameter<std::vector<double>>("map_offset_", {0., 0., 0.});
+      parameters.get<std::vector<double>>("map_offset_", {0., 0., 0.});
 
-  input_pass_name_ = parameters.getParameter<std::string>("input_pass_name");
+  input_pass_name_ = parameters.get<std::string>("input_pass_name");
 }
 
 auto CKFProcessor::makeGeoIdSourceLinkMap(

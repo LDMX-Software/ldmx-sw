@@ -11,19 +11,19 @@ LinearTruthTracking::LinearTruthTracking(const std::string& name,
 
 void LinearTruthTracking::configure(framework::config::Parameters& parameters) {
   // Output seed name
-  out_trk_collection_ = parameters.getParameter<std::string>(
-      "out_trk_collection", "LinearRecoilTruthTracks");
+  out_trk_collection_ = parameters.get<std::string>("out_trk_collection",
+                                                    "LinearRecoilTruthTracks");
 
   // Input strip hits_
-  input_hits_collection_ = parameters.getParameter<std::string>(
-      "input_hits_collection", "RecoilSimHits");
-  input_rec_hits_collection_ = parameters.getParameter<std::string>(
-      "input_recHits_collection", "EcalRecHits");
+  input_hits_collection_ =
+      parameters.get<std::string>("input_hits_collection", "RecoilSimHits");
+  input_rec_hits_collection_ =
+      parameters.get<std::string>("input_recHits_collection", "EcalRecHits");
 
-  input_pass_name_ = parameters.getParameter<std::string>("input_pass_name");
+  input_pass_name_ = parameters.get<std::string>("input_pass_name");
 
   ecal_first_layer_z_threshold_ =
-      parameters.getParameter<double>("ecal_first_layer_z_threshold");
+      parameters.get<double>("ecal_first_layer_z_threshold");
 }  // configure
 
 void LinearTruthTracking::produce(framework::Event& event) {

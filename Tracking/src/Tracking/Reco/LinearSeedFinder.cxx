@@ -15,37 +15,34 @@ void LinearSeedFinder::onProcessStart() {
 
 void LinearSeedFinder::configure(framework::config::Parameters& parameters) {
   // Output seed name
-  out_seed_collection_ = parameters.getParameter<std::string>(
+  out_seed_collection_ = parameters.get<std::string>(
       "out_seed_collection", getName() + "LinearRecoilSeedTracks");
 
   // Input strip hits_
-  input_hits_collection_ = parameters.getParameter<std::string>(
-      "input_hits_collection", "DigiRecoilSimHits");
-  input_rec_hits_collection_ = parameters.getParameter<std::string>(
-      "input_rec_hits_collection", "EcalRecHits");
+  input_hits_collection_ =
+      parameters.get<std::string>("input_hits_collection", "DigiRecoilSimHits");
+  input_rec_hits_collection_ =
+      parameters.get<std::string>("input_rec_hits_collection", "EcalRecHits");
 
-  input_pass_name_ =
-      parameters.getParameter<std::string>("input_pass_name", "");
+  input_pass_name_ = parameters.get<std::string>("input_pass_name", "");
 
   sim_particles_passname_ =
-      parameters.getParameter<std::string>("sim_particles_passname");
+      parameters.get<std::string>("sim_particles_passname");
 
   sim_particles_events_passname_ =
-      parameters.getParameter<std::string>("sim_particles_events_passname");
+      parameters.get<std::string>("sim_particles_events_passname");
 
   // the uncertainty is sigma_x = 6 microns and sigma_y = 20./sqrt(12)
-  recoil_uncertainty_ = parameters.getParameter<std::vector<double>>(
-      "recoil_uncertainty", {0.006, 0.085});
-  ecal_uncertainty_ =
-      parameters.getParameter<double>("ecal_uncertainty", {3.87});
-  ecal_distance_threshold_ =
-      parameters.getParameter<double>("ecal_distance_threshold");
+  recoil_uncertainty_ =
+      parameters.get<std::vector<double>>("recoil_uncertainty", {0.006, 0.085});
+  ecal_uncertainty_ = parameters.get<double>("ecal_uncertainty", {3.87});
+  ecal_distance_threshold_ = parameters.get<double>("ecal_distance_threshold");
   ecal_first_layer_z_threshold_ =
-      parameters.getParameter<double>("ecal_first_layer_z_threshold");
+      parameters.get<double>("ecal_first_layer_z_threshold");
 
-  layer12_midpoint_ = parameters.getParameter<double>("layer12_midpoint");
-  layer23_midpoint_ = parameters.getParameter<double>("layer23_midpoint");
-  layer34_midpoint_ = parameters.getParameter<double>("layer34_midpoint");
+  layer12_midpoint_ = parameters.get<double>("layer12_midpoint");
+  layer23_midpoint_ = parameters.get<double>("layer23_midpoint");
+  layer34_midpoint_ = parameters.get<double>("layer34_midpoint");
 }
 
 void LinearSeedFinder::produce(framework::Event& event) {

@@ -79,13 +79,11 @@ void Vertexer::onProcessStart() {
 
 void Vertexer::configure(framework::config::Parameters& parameters) {
   // TODO:: the bfield map should be taken automatically
-  field_map_ = parameters.getParameter<std::string>("field_map");
+  field_map_ = parameters.get<std::string>("field_map");
 
-  trk_c_name_1 =
-      parameters.getParameter<std::string>("trk_c_name_1", "TaggerTracks");
-  trk_c_name_2 =
-      parameters.getParameter<std::string>("trk_c_name_2", "RecoilTracks");
-  input_pass_name_ = parameters.getParameter<std::string>("input_pass_name");
+  trk_c_name_1 = parameters.get<std::string>("trk_c_name_1", "TaggerTracks");
+  trk_c_name_2 = parameters.get<std::string>("trk_c_name_2", "RecoilTracks");
+  input_pass_name_ = parameters.get<std::string>("input_pass_name");
 }
 
 void Vertexer::produce(framework::Event& event) {

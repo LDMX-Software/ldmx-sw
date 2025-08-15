@@ -12,9 +12,8 @@ namespace dqm {
 
 void SampleValidation::configure(framework::config::Parameters& ps) {
   target_scoring_plane_passname_ =
-      ps.getParameter<std::string>("target_scoring_plane_passname");
-  sim_particles_passname_ =
-      ps.getParameter<std::string>("sim_particles_passname");
+      ps.get<std::string>("target_scoring_plane_passname");
+  sim_particles_passname_ = ps.get<std::string>("sim_particles_passname");
 }
 
 void SampleValidation::analyze(const framework::Event& event) {

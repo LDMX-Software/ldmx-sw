@@ -19,10 +19,10 @@ EcalRawEncoder::EcalRawEncoder(const std::string& name,
 EcalRawEncoder::~EcalRawEncoder() {}
 
 void EcalRawEncoder::configure(framework::config::Parameters& ps) {
-  input_name_ = ps.getParameter<std::string>("input_name");
-  input_pass_ = ps.getParameter<std::string>("input_pass");
-  output_name_ = ps.getParameter<std::string>("output_name");
-  roc_version_ = ps.getParameter<int>("roc_version");
+  input_name_ = ps.get<std::string>("input_name");
+  input_pass_ = ps.get<std::string>("input_pass");
+  output_name_ = ps.get<std::string>("output_name");
+  roc_version_ = ps.get<int>("roc_version");
 }
 
 void EcalRawEncoder::produce(framework::Event& event) {

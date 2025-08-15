@@ -11,9 +11,9 @@ namespace biasoperators {
 
 DarkBrem::DarkBrem(std::string name, const framework::config::Parameters& p)
     : XsecBiasingOperator(name, p) {
-  volume_ = p.getParameter<std::string>("volume");
-  factor_ = p.getParameter<double>("factor");
-  bias_all_ = p.getParameter<bool>("bias_all");
+  volume_ = p.get<std::string>("volume");
+  factor_ = p.get<double>("factor");
+  bias_all_ = p.get<bool>("bias_all");
 }
 
 G4VBiasingOperation* DarkBrem::ProposeOccurenceBiasingOperation(

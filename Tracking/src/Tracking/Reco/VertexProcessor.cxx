@@ -42,12 +42,11 @@ void VertexProcessor::onProcessStart() {
 
 void VertexProcessor::configure(framework::config::Parameters &parameters) {
   // TODO:: the bfield map should be taken automatically
-  field_map_ = parameters.getParameter<std::string>("field_map");
+  field_map_ = parameters.get<std::string>("field_map");
 
-  trk_coll_name_ =
-      parameters.getParameter<std::string>("trk_coll_name", "Tracks");
+  trk_coll_name_ = parameters.get<std::string>("trk_coll_name", "Tracks");
 
-  input_pass_name_ = parameters.getParameter<std::string>("input_pass_name");
+  input_pass_name_ = parameters.get<std::string>("input_pass_name");
 }
 
 void VertexProcessor::produce(framework::Event &event) {

@@ -3,8 +3,7 @@
 namespace dqm {
 
 void DarkBremInteraction::configure(framework::config::Parameters& parameters) {
-  particle_passname_ =
-      parameters.getParameter<std::string>("particle_passname");
+  particle_passname_ = parameters.get<std::string>("particle_passname");
 }
 /**
  * calculate total energy from 3-momentum and mass

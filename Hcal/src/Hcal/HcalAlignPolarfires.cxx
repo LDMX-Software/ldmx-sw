@@ -16,10 +16,10 @@ HcalAlignPolarfires::PolarfireQueueEntry::PolarfireQueueEntry(
 }
 
 void HcalAlignPolarfires::configure(framework::config::Parameters& ps) {
-  input_names_ = ps.getParameter<std::vector<std::string>>("input_names");
-  input_pass_ = ps.getParameter<std::string>("input_pass");
-  output_name_ = ps.getParameter<std::string>("output_name");
-  max_tick_diff_ = ps.getParameter<int>("max_tick_diff");
+  input_names_ = ps.get<std::vector<std::string>>("input_names");
+  input_pass_ = ps.get<std::string>("input_pass");
+  output_name_ = ps.get<std::string>("output_name");
+  max_tick_diff_ = ps.get<int>("max_tick_diff");
 }  // configure
 
 void HcalAlignPolarfires::produce(framework::Event& event) {

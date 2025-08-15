@@ -6,10 +6,10 @@
 namespace dqm {
 
 void HgcrocPulseTruthAnalyzer::configure(framework::config::Parameters& ps) {
-  input_digi_name_ = ps.getParameter<std::string>("input_digi_name");
-  input_digi_pass_ = ps.getParameter<std::string>("input_digi_pass");
-  input_truth_name_ = ps.getParameter<std::string>("input_truth_name");
-  input_truth_pass_ = ps.getParameter<std::string>("input_truth_pass");
+  input_digi_name_ = ps.get<std::string>("input_digi_name");
+  input_digi_pass_ = ps.get<std::string>("input_digi_pass");
+  input_truth_name_ = ps.get<std::string>("input_truth_name");
+  input_truth_pass_ = ps.get<std::string>("input_truth_pass");
 }
 
 void HgcrocPulseTruthAnalyzer::analyze(const framework::Event& event) {
