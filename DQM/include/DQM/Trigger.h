@@ -38,10 +38,10 @@ class Trigger : public framework::Analyzer {
 
  private:
   /// Trigger collection name
-  std::string trigger_collName_;
+  std::string trigger_coll_name_;
 
   /// Trigger collection pass name
-  std::string trigger_passName_;
+  std::string trigger_pass_name_;
 };
 }  // namespace dqm
 

@@ -17,20 +17,20 @@ void HCalDQM::configure(framework::config::Parameters &ps) {
 
 void HCalDQM::analyze(const framework::Event &event) {
   // Get the collection of HCalDQM digitized hits if the exists
-  const auto &hcalHits{
+  const auto &hcal_hits{
       event.getCollection<ldmx::HcalHit>(rec_coll_name_, rec_pass_name_)};
 
-  const auto &hcalSimHits{event.getCollection<ldmx::SimCalorimeterHit>(
+  const auto &hcal_sim_hits{event.getCollection<ldmx::SimCalorimeterHit>(
       sim_coll_name_, sim_pass_name_)};
-  analyzeSimHits(hcalSimHits);
-  analyzeRecHits(hcalHits);
+  analyzeSimHits(hcal_sim_hits);
+  analyzeRecHits(hcal_hits);
 }
 void HCalDQM::analyzeSimHits(const std::vector<ldmx::SimCalorimeterHit> &hits) {
   const auto &geometry = getCondition<ldmx::HcalGeometry>(
       ldmx::HcalGeometry::CONDITIONS_OBJECT_NAME);
 
-  std::map<ldmx::HcalID, double> simEnergyPerBar;
-  int hitMultiplicity{0};
+  std::map<ldmx::HcalID, double> sim_energy_per_bar;
+  int hit_multiplicity{0};
 
   for (const auto &hit : hits) {
     ldmx::HcalID id(hit.getID());
@@ -38,10 +38,10 @@ void HCalDQM::analyzeSimHits(const std::vector<ldmx::SimCalorimeterHit> &hits) {
       continue;
     }
     const auto energy{hit.getEdep()};
-    if (simEnergyPerBar.count(id) == 0) {
-      simEnergyPerBar[id] = energy;
+    if (sim_energy_per_bar.count(id) == 0) {
+      sim_energy_per_bar[id] = energy;
     } else {
-      simEnergyPerBar[id] += energy;
+      sim_energy_per_bar[id] += energy;
     }
     const auto orientation{geometry.getScintillatorOrientation(id)};
     const auto layer{id.layer()};
@@ -51,7 +51,7 @@ void HCalDQM::analyzeSimHits(const std::vector<ldmx::SimCalorimeterHit> &hits) {
     const auto y{pos[1]};
     const auto z{pos[2]};
     const auto t{hit.getTime()};
-    hitMultiplicity++;
+    hit_multiplicity++;
     histograms_.fill("sim_hit_time", t);
     histograms_.fill("sim_layer", layer);
     histograms_.fill("sim_layer:strip", layer, strip);
@@ -69,11 +69,11 @@ void HCalDQM::analyzeSimHits(const std::vector<ldmx::SimCalorimeterHit> &hits) {
     }
   }
 
-  histograms_.fill("sim_hit_multiplicity", hitMultiplicity);
-  histograms_.fill("sim_num_bars_hit", simEnergyPerBar.size());
+  histograms_.fill("sim_hit_multiplicity", hit_multiplicity);
+  histograms_.fill("sim_num_bars_hit", sim_energy_per_bar.size());
 
   double total_energy{0};
-  for (const auto [id, energy] : simEnergyPerBar) {
+  for (const auto [id, energy] : sim_energy_per_bar) {
     histograms_.fill("sim_energy_per_bar", energy);
     total_energy += energy;
   }
@@ -83,12 +83,12 @@ void HCalDQM::analyzeRecHits(const std::vector<ldmx::HcalHit> &hits) {
   const auto &geometry = getCondition<ldmx::HcalGeometry>(
       ldmx::HcalGeometry::CONDITIONS_OBJECT_NAME);
 
-  float totalPE{0};
-  float maxPE{-1};
-  float maxPETime{-1};
-  float totalE{0};
-  int vetoableHitMultiplicity{0};
-  int hitMultiplicity{0};
+  float total_pe{0};
+  float max_pe{-1};
+  float max_pe_time{-1};
+  float total_e{0};
+  int vetoable_hit_multiplicity{0};
+  int hit_multiplicity{0};
 
   for (const ldmx::HcalHit &hit : hits) {
     ldmx::HcalID id(hit.getID());
@@ -106,10 +106,10 @@ void HCalDQM::analyzeRecHits(const std::vector<ldmx::HcalHit> &hits) {
       histograms_.fill("noise", 0);
     }
     if (hitPassesVeto(hit, section)) {
-      hitMultiplicity++;
+      hit_multiplicity++;
     } else {
-      hitMultiplicity++;
-      vetoableHitMultiplicity++;
+      hit_multiplicity++;
+      vetoable_hit_multiplicity++;
     }
     const auto pe{hit.getPE()};
     const auto t{hit.getTime()};
@@ -128,12 +128,12 @@ void HCalDQM::analyzeRecHits(const std::vector<ldmx::HcalHit> &hits) {
         histograms_.fill("along_z", z);
         break;
     }
-    totalE += e;
-    totalPE += pe;
+    total_e += e;
+    total_pe += pe;
 
-    if (pe > maxPE) {
-      maxPE = pe;
-      maxPETime = t;
+    if (pe > max_pe) {
+      max_pe = pe;
+      max_pe_time = t;
     }
     histograms_.fill("layer:strip", layer, strip);
     histograms_.fill("pe", pe);
@@ -143,12 +143,12 @@ void HCalDQM::analyzeRecHits(const std::vector<ldmx::HcalHit> &hits) {
     histograms_.fill("energy", e);
     histograms_.fill("hit_z", z);
   }
-  histograms_.fill("total_energy", totalE);
-  histograms_.fill("total_pe", totalPE);
-  histograms_.fill("max_pe", maxPE);
-  histograms_.fill("max_pe_time", maxPETime);
-  histograms_.fill("hit_multiplicity", hitMultiplicity);
-  histograms_.fill("vetoable_hit_multiplicity", vetoableHitMultiplicity);
+  histograms_.fill("total_energy", total_e);
+  histograms_.fill("total_pe", total_pe);
+  histograms_.fill("max_pe", max_pe);
+  histograms_.fill("max_pe_time", max_pe_time);
+  histograms_.fill("hit_multiplicity", hit_multiplicity);
+  histograms_.fill("vetoable_hit_multiplicity", vetoable_hit_multiplicity);
 }
 
 }  // namespace dqm

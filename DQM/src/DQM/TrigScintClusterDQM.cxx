@@ -41,13 +41,13 @@ void TrigScintClusterDQM::configure(framework::config::Parameters &ps) {
 void TrigScintClusterDQM::analyze(const framework::Event &event) {
   if (not event.exists(clusterCollectionName_, passName_)) return;
   // Get the collection of TrigScintCluster digitized clusters if the exists
-  const std::vector<ldmx::TrigScintCluster> TrigScintClusters =
+  const std::vector<ldmx::TrigScintCluster> trig_scint_clusters =
       event.getCollection<ldmx::TrigScintCluster>(clusterCollectionName_,
                                                   passName_);
 
-  double totalPE{0};
+  double total_pe{0};
   // Loop through all TrigScint clusters in the event
-  for (const ldmx::TrigScintCluster &cluster : TrigScintClusters) {
+  for (const ldmx::TrigScintCluster &cluster : trig_scint_clusters) {
     histograms_.fill("pe", cluster.getPE());
     histograms_.fill("energy", cluster.getEnergy());
     histograms_.fill("cluster_time", cluster.getTime());
@@ -60,11 +60,11 @@ void TrigScintClusterDQM::analyze(const framework::Event &event) {
     histograms_.fill("y", cluster.getCentroidY());
     histograms_.fill("z", cluster.getCentroidZ());
 
-    totalPE += cluster.getPE();
+    total_pe += cluster.getPE();
   }
 
-  histograms_.fill("n_clusters", TrigScintClusters.size());
-  histograms_.fill("total_pe", totalPE);
+  histograms_.fill("n_clusters", trig_scint_clusters.size());
+  histograms_.fill("total_pe", total_pe);
 }
 
 }  // namespace dqm

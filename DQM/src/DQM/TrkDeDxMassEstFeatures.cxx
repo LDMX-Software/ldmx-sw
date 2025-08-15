@@ -13,10 +13,10 @@ void TrkDeDxMassEstFeatures::configure(framework::config::Parameters &ps) {
 }
 
 void TrkDeDxMassEstFeatures::analyze(const framework::Event &event) {
-  auto mass_estimates_{event.getCollection<ldmx::TrackDeDxMassEstimate>(
+  auto mass_estimates{event.getCollection<ldmx::TrackDeDxMassEstimate>(
       mass_estimate_name_, mass_estimate_pass_)};
 
-  for (const auto &mass_est : mass_estimates_) {
+  for (const auto &mass_est : mass_estimates) {
     auto momentum = mass_est.getMomentum();
     histograms_.fill("momentum:harmonic_mean_dedx", momentum, mass_est.getIh());
     if (momentum < 2000.)

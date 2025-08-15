@@ -35,12 +35,12 @@ void TrigScintTrackDQM::configure(framework::config::Parameters &ps) {
 
 void TrigScintTrackDQM::analyze(const framework::Event &event) {
   // Get the collection of TrigScintTrack digitized tracks if the exists
-  const std::vector<ldmx::TrigScintTrack> TrigScintTracks =
+  const std::vector<ldmx::TrigScintTrack> trig_scint_tracks =
       event.getCollection<ldmx::TrigScintTrack>(trackCollectionName_,
                                                 passName_);
 
   // Loop through all TrigScint tracks in the event
-  for (const ldmx::TrigScintTrack &track : TrigScintTracks) {
+  for (const ldmx::TrigScintTrack &track : trig_scint_tracks) {
     histograms_.fill("centroid", track.getCentroid());
     histograms_.fill("residual", track.getResidual());
     histograms_.fill("n_clusters", track.getNclusters());
@@ -51,7 +51,7 @@ void TrigScintTrackDQM::analyze(const framework::Event &event) {
     histograms_.fill("z", track.getCentroidZ());
   }
 
-  histograms_.fill("n_tracks", TrigScintTracks.size());
+  histograms_.fill("n_tracks", trig_scint_tracks.size());
 }
 
 }  // namespace dqm

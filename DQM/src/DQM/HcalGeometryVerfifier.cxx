@@ -13,12 +13,12 @@ void HcalGeometryVerifier::configure(
   tolerance = parameters.getParameter<double>("tolerance");
 }
 void HcalGeometryVerifier::analyze(const framework::Event &event) {
-  const auto hcalSimHits = event.getCollection<ldmx::SimCalorimeterHit>(
+  const auto hcal_sim_hits = event.getCollection<ldmx::SimCalorimeterHit>(
       hcalSimHitsCollection_, hcalSimHitsPassName_);
-  const auto hcalRecHits = event.getCollection<ldmx::HcalHit>(
+  const auto hcal_rec_hits = event.getCollection<ldmx::HcalHit>(
       hcalRecHitsCollection_, hcalRecHitsPassName_);
 
-  for (const auto &hit : hcalSimHits) {
+  for (const auto &hit : hcal_sim_hits) {
     const ldmx::HcalID id{static_cast<unsigned int>(hit.getID())};
     const auto position{hit.getPosition()};
     auto ok{hit_ok(id, {position[0], position[1], position[2]})};
@@ -41,7 +41,7 @@ void HcalGeometryVerifier::analyze(const framework::Event &event) {
         break;
     }
   }
-  for (const auto &hit : hcalRecHits) {
+  for (const auto &hit : hcal_rec_hits) {
     const ldmx::HcalID id{static_cast<unsigned int>(hit.getID())};
     auto ok{hit_ok(id, {hit.getXPos(), hit.getYPos(), hit.getZPos()})};
     histograms_.fill("passes_rec", ok);
@@ -129,7 +129,7 @@ std::array<int, 3> HcalGeometryVerifier::determine_indices(
   const auto &geometry = getCondition<ldmx::HcalGeometry>(
       ldmx::HcalGeometry::CONDITIONS_OBJECT_NAME);
   const auto orientation{geometry.getScintillatorOrientation(id)};
-  const auto isLR{id.section() == ldmx::HcalID::HcalSection::LEFT ||
+  const auto is_lr{id.section() == ldmx::HcalID::HcalSection::LEFT ||
                   id.section() == ldmx::HcalID::HcalSection::RIGHT};
 
   int index_along{};
@@ -161,7 +161,7 @@ std::array<int, 3> HcalGeometryVerifier::determine_indices(
         break;
       case ldmx::HcalGeometry::ScintillatorOrientation::depth:
         index_along = 2;  // z
-        if (isLR) {
+        if (is_lr) {
           // Depth bar in side hcal (LR) -> z length, x thick, y width
           index_through = 0;  // x
           index_across = 1;   // y

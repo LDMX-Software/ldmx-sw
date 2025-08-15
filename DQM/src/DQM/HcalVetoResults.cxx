@@ -11,20 +11,20 @@ void HcalVetoResults::configure(framework::config::Parameters &ps) {
 }
 
 void HcalVetoResults::onProcessStart() {
-  std::vector<TH1 *> hists_HCALsector = {histograms_.get("max_section")};
+  std::vector<TH1 *> hists_hca_lsector = {histograms_.get("max_section")};
 
   // enum HcalSection { BACK = 0, TOP = 1, BOTTOM = 2, RIGHT = 3, LEFT = 4 };
-  std::vector<std::string> labels_HCALsector = {"HCAL BACK",    // 1
+  std::vector<std::string> labels_hca_lsector = {"HCAL BACK",    // 1
                                                 "HCAL TOP",     // 2
                                                 "HCAL BOTTOM",  // 3
                                                 "HCAL RIGHT",   // 4
                                                 "HCAL LEFT",    // 5
                                                 ""};
 
-  for (int ilabel{1}; ilabel < labels_HCALsector.size(); ++ilabel) {
-    for (auto &hist : hists_HCALsector) {
+  for (int ilabel{1}; ilabel < labels_hca_lsector.size(); ++ilabel) {
+    for (auto &hist : hists_hca_lsector) {
       hist->GetXaxis()->SetBinLabel(ilabel,
-                                    labels_HCALsector[ilabel - 1].c_str());
+                                    labels_hca_lsector[ilabel - 1].c_str());
     }
   }
 }

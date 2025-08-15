@@ -47,8 +47,8 @@ class GenieTruthDQM : public framework::Analyzer {
 
  private:
   /// Pass Name for genie objects
-  std::string hepmc3CollName_;
-  std::string hepmc3PassName_;
+  std::string hepmc3_coll_name_;
+  std::string hepmc3_pass_name_;
 
   int run_number_;
 };

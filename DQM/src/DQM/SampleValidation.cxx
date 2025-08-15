@@ -19,7 +19,7 @@ void SampleValidation::configure(framework::config::Parameters& ps) {
 
 void SampleValidation::analyze(const framework::Event& event) {
   // Grab the SimParticle Map and Target Scoring Plane Hits
-  auto targetSPHits(event.getCollection<ldmx::SimTrackerHit>(
+  auto target_sp_hits(event.getCollection<ldmx::SimTrackerHit>(
       "TargetScoringPlaneHits", target_scoring_plane_passname_));
   auto particle_map{event.getMap<int, ldmx::SimParticle>(
       "SimParticles", sim_particles_passname_)};
@@ -43,7 +43,7 @@ void SampleValidation::analyze(const framework::Event& event) {
         histograms_.fill("primaries_energy", energy);
         hard_thresh = (2500. / 4000.) * energy;
         primary_daughters = daughters;
-        for (const ldmx::SimTrackerHit& sphit : targetSPHits) {
+        for (const ldmx::SimTrackerHit& sphit : target_sp_hits) {
           if (sphit.getTrackID() == it.first && sphit.getPosition()[2] < 0) {
             histograms_.fill("beam_smear", vertex[0], vertex[1]);
           }

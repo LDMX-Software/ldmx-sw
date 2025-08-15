@@ -37,22 +37,22 @@ bool ReSimVerifier::verifySimCalorimeterHits(
 }
 
 bool ReSimVerifier::verifySimParticles(const framework::Event& event) {
-  const auto& simParticles{
+  const auto& sim_particles{
       event.getMap<int, ldmx::SimParticle>("SimParticles", simPassName_)};
-  const auto& reSimParticles{
+  const auto& re_sim_particles{
       event.getMap<int, ldmx::SimParticle>("SimParticles", reSimPassName_)};
-  for (auto [id, simParticle] : simParticles) {
-    if (!reSimParticles.count(id)) {
+  for (auto [id, simParticle] : sim_particles) {
+    if (!re_sim_particles.count(id)) {
       return false;
     }
-    auto reSimParticle{reSimParticles.at(id)};
-    if (simParticle.getEnergy() != reSimParticle.getEnergy()) {
+    auto re_sim_particle{re_sim_particles.at(id)};
+    if (simParticle.getEnergy() != re_sim_particle.getEnergy()) {
       return false;
     }
-    if (simParticle.getPdgID() != reSimParticle.getPdgID()) {
+    if (simParticle.getPdgID() != re_sim_particle.getPdgID()) {
       return false;
     }
-    if (simParticle.getTime() != reSimParticle.getTime()) {
+    if (simParticle.getTime() != re_sim_particle.getTime()) {
       return false;
     }
   }
@@ -62,32 +62,32 @@ void ReSimVerifier::analyze(const framework::Event& event) {
   std::stringstream ss;
   bool passing{true};
   bool skipped{false};
-  auto eventNumber{event.getEventNumber()};
+  auto event_number{event.getEventNumber()};
   for (auto collection : collections) {
-    const auto SimHits =
+    const auto sim_hits =
         event.getCollection<ldmx::SimCalorimeterHit>(collection, simPassName_);
-    const auto ReSimHits = event.getCollection<ldmx::SimCalorimeterHit>(
+    const auto re_sim_hits = event.getCollection<ldmx::SimCalorimeterHit>(
         collection, reSimPassName_);
-    if (ReSimHits.size() == 0) {
+    if (re_sim_hits.size() == 0) {
       skipped = true;
       continue;
     } else {
       skipped = false;
     }
 
-    if (!verifySimCalorimeterHits(SimHits, ReSimHits)) {
+    if (!verifySimCalorimeterHits(sim_hits, re_sim_hits)) {
       passing = false;
-      ss << "Event " << eventNumber << " has different simhits for "
+      ss << "Event " << event_number << " has different simhits for "
          << collection << std::endl;
     }
   }
   if (skipped) {
-    ldmx_log(info) << "Skipping event " << eventNumber
+    ldmx_log(info) << "Skipping event " << event_number
                    << "since it was not resimulated";
   }
   if (!verifySimParticles(event)) {
     passing = false;
-    ss << "Event " << eventNumber
+    ss << "Event " << event_number
        << " has different SimParticles between the two passes" << std::endl;
   }
   if (!passing) {

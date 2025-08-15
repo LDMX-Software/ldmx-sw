@@ -26,11 +26,11 @@ void HgcrocPulseTruthAnalyzer::analyze(const framework::Event& event) {
     for (auto const& d : digis) {
       if (d.id() == id) {
         if (d.isADC()) {
-          int sumADC = 0;
+          int sum_adc = 0;
           for (int i = 0; i < d.size(); i++) {
-            sumADC += d.at(i).adc_t();
+            sum_adc += d.at(i).adc_t();
           }
-          histograms_.fill("vpeak_sumADC", vpeak, sumADC);
+          histograms_.fill("vpeak_sumADC", vpeak, sum_adc);
         } else {
           histograms_.fill("vpeak_TOT", vpeak, d.tot());
         }
