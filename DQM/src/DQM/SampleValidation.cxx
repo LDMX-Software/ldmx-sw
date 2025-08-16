@@ -79,8 +79,7 @@ void SampleValidation::analyze(const framework::Event& event) {
     for (const std::vector<int>& daughter_track_id : hardbrem_daughters) {
       for (const int& daughter_id : daughter_track_id) {
         if (trackid == daughter_id) {
-          histograms_.fill("hardbremdaughters_pdgid",
-                           pdgidLabel(p.getPdgID()));
+          histograms_.fill("hardbremdaughters_pdgid", pdgidLabel(p.getPdgID()));
           histograms_.fill("hardbremdaughters_startZ", p.getVertex()[2]);
           histograms_.fill("hardbremdaughters_endZ", p.getEndPoint()[2]);
           histograms_.fill("hardbremdaughters_energy", p.getEnergy());

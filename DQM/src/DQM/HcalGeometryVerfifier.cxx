@@ -64,7 +64,7 @@ void HcalGeometryVerifier::analyze(const framework::Event &event) {
 
 }  // Analyze
 bool HcalGeometryVerifier::hitOk(const ldmx::HcalID id,
-                                  const std::array<double, 3> &position) {
+                                 const std::array<double, 3> &position) {
   const auto &geometry = getCondition<ldmx::HcalGeometry>(
       ldmx::HcalGeometry::CONDITIONS_OBJECT_NAME);
   auto [index_along, index_across, index_through]{determineIndices(id)};
