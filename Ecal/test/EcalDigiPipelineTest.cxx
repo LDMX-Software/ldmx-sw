@@ -229,13 +229,13 @@ class EcalCheckEnergyReconstruction : public framework::Analyzer {
 
   void configure(framework::config::Parameters &parameters) final override {
     ecal_simhits_passname_ =
-        parameters.getParameter<std::string>("ecal_simhits_passname", "");
+        parameters.get<std::string>("ecal_simhits_passname", "");
     ecal_digis_passname_ =
-        parameters.getParameter<std::string>("ecal_digis_passname", "");
+        parameters.get<std::string>("ecal_digis_passname", "");
     ecal_rechits_passname_ =
-        parameters.getParameter<std::string>("ecal_rechits_passname", "");
+        parameters.get<std::string>("ecal_rechits_passname", "");
     ecal_trig_digis_passname_ =
-        parameters.getParameter<std::string>("ecal_trig_digis_passname", "");
+        parameters.get<std::string>("ecal_trig_digis_passname", "");
   }
 
   void onProcessStart() final override {

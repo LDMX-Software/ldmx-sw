@@ -7,9 +7,8 @@ namespace tracking::dqm {
 
 void TrackerDigiDQM::configure(framework::config::Parameters& parameters) {
   output_measurements_passname_ =
-      parameters.getParameter<std::string>("output_measurements_passname");
-  measurements_passname_ =
-      parameters.getParameter<std::string>("measurements_passname");
+      parameters.get<std::string>("output_measurements_passname");
+  measurements_passname_ = parameters.get<std::string>("measurements_passname");
 }
 
 void TrackerDigiDQM::analyze(const framework::Event& event) {

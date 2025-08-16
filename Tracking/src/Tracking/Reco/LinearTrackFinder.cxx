@@ -18,13 +18,13 @@ LinearTrackFinder::LinearTrackFinder(const std::string& name,
 
 void LinearTrackFinder::configure(framework::config::Parameters& parameters) {
   // seeds from the event
-  seed_collection_ = parameters.getParameter<std::string>(
-      "seed_collection", "LinearRecoilSeedTracks");
+  seed_collection_ =
+      parameters.get<std::string>("seed_collection", "LinearRecoilSeedTracks");
   // output track collection
-  out_trk_collection_ = parameters.getParameter<std::string>(
-      "out_trk_collection", "LinearRecoilTracks");
+  out_trk_collection_ =
+      parameters.get<std::string>("out_trk_collection", "LinearRecoilTracks");
 
-  input_pass_name_ = parameters.getParameter<std::string>("input_pass_name");
+  input_pass_name_ = parameters.get<std::string>("input_pass_name");
 
 }  // configure
 

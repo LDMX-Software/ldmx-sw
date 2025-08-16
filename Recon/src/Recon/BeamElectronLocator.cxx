@@ -9,17 +9,17 @@ BeamElectronLocator::BeamElectronLocator(const std::string &name,
 BeamElectronLocator::~BeamElectronLocator() {}
 
 void BeamElectronLocator::configure(framework::config::Parameters &parameters) {
-  inputColl_ = parameters.getParameter<std::string>("input_collection");
-  input_pass_name_ = parameters.getParameter<std::string>("input_pass_name");
-  outputColl_ = parameters.getParameter<std::string>("output_collection");
-  granularityXmm_ = parameters.getParameter<double>("granularity_X_mm");
-  granularityYmm_ = parameters.getParameter<double>("granularity_Y_mm");
-  tolerance_ = parameters.getParameter<double>("min_granularity_mm");
-  minXmm_ = parameters.getParameter<double>("min_X_mm");
-  maxXmm_ = parameters.getParameter<double>("max_X_mm");
-  minYmm_ = parameters.getParameter<double>("min_Y_mm");
-  maxYmm_ = parameters.getParameter<double>("max_Y_mm");
-  verbose_ = parameters.getParameter<bool>("verbose");
+  inputColl_ = parameters.get<std::string>("input_collection");
+  input_pass_name_ = parameters.get<std::string>("input_pass_name");
+  outputColl_ = parameters.get<std::string>("output_collection");
+  granularityXmm_ = parameters.get<double>("granularity_X_mm");
+  granularityYmm_ = parameters.get<double>("granularity_Y_mm");
+  tolerance_ = parameters.get<double>("min_granularity_mm");
+  minXmm_ = parameters.get<double>("min_X_mm");
+  maxXmm_ = parameters.get<double>("max_X_mm");
+  minYmm_ = parameters.get<double>("min_Y_mm");
+  maxYmm_ = parameters.get<double>("max_Y_mm");
+  verbose_ = parameters.get<bool>("verbose");
 }
 void BeamElectronLocator::onProcessStart() {
   ldmx_log(debug) << "BeamElectronLocator is using parameters: "

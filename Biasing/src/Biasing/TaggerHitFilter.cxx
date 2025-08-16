@@ -19,7 +19,7 @@ namespace biasing {
 TaggerHitFilter::TaggerHitFilter(const std::string& name,
                                  framework::config::Parameters& parameters)
     : simcore::UserAction(name, parameters) {
-  layers_hit_ = parameters.getParameter<int>("layers_hit", 8);
+  layers_hit_ = parameters.get<int>("layers_hit", 8);
   ldmx_log(debug) << " layers_hit_ = " << layers_hit_;
 }
 

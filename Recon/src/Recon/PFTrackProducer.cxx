@@ -6,12 +6,12 @@
 namespace recon {
 
 void PFTrackProducer::configure(framework::config::Parameters& ps) {
-  inputTrackCollName_ = ps.getParameter<std::string>("inputTrackCollName");
-  input_pass_name_ = ps.getParameter<std::string>("input_pass_name");
-  outputTrackCollName_ = ps.getParameter<std::string>("outputTrackCollName");
-  doElectronTracking_ = ps.getParameter<bool>("doElectronTracking");
-  minElectronMomentumZ_ = ps.getParameter<double>("minElectronMomentumZ");
-  maxElectronTrackID_ = ps.getParameter<int>("maxElectronTrackID");
+  inputTrackCollName_ = ps.get<std::string>("inputTrackCollName");
+  input_pass_name_ = ps.get<std::string>("input_pass_name");
+  outputTrackCollName_ = ps.get<std::string>("outputTrackCollName");
+  doElectronTracking_ = ps.get<bool>("doElectronTracking");
+  minElectronMomentumZ_ = ps.get<double>("minElectronMomentumZ");
+  maxElectronTrackID_ = ps.get<int>("maxElectronTrackID");
 }
 
 double getP(const ldmx::SimTrackerHit& tk) {

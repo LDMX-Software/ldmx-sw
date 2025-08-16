@@ -10,16 +10,14 @@ namespace recon {
 
 void RecoilFiducialityProcessor::configure(
     framework::config::Parameters &parameters) {
-  min_p_mag_ = parameters.getParameter<double>("min_p_mag");
-  min_tracker_hits_ = parameters.getParameter<int>("min_tracker_hits");
-  input_pass_name_ = parameters.getParameter<std::string>("input_pass_name");
-  ecal_collection_ = parameters.getParameter<std::string>("ecal_collection");
-  hcal_collection_ = parameters.getParameter<std::string>("hcal_collection");
-  recoil_collection_ =
-      parameters.getParameter<std::string>("recoil_collection");
-  output_collection_ =
-      parameters.getParameter<std::string>("output_collection");
-  inverse_skim_ = parameters.getParameter<bool>("inverse_skim");
+  min_p_mag_ = parameters.get<double>("min_p_mag");
+  min_tracker_hits_ = parameters.get<int>("min_tracker_hits");
+  input_pass_name_ = parameters.get<std::string>("input_pass_name");
+  ecal_collection_ = parameters.get<std::string>("ecal_collection");
+  hcal_collection_ = parameters.get<std::string>("hcal_collection");
+  recoil_collection_ = parameters.get<std::string>("recoil_collection");
+  output_collection_ = parameters.get<std::string>("output_collection");
+  inverse_skim_ = parameters.get<bool>("inverse_skim");
 }
 
 void RecoilFiducialityProcessor::produce(framework::Event &event) {

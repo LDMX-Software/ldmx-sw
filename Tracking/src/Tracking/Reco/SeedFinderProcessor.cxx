@@ -44,51 +44,47 @@ void SeedFinderProcessor::onProcessStart() {
 
 void SeedFinderProcessor::configure(framework::config::Parameters& parameters) {
   // Output seed name
-  out_seed_collection_ = parameters.getParameter<std::string>(
-      "out_seed_collection", getName() + "SeedTracks");
+  out_seed_collection_ = parameters.get<std::string>("out_seed_collection",
+                                                     getName() + "SeedTracks");
 
   // Input strip hits
-  input_hits_collection_ = parameters.getParameter<std::string>(
-      "input_hits_collection", "TaggerSimHits");
+  input_hits_collection_ =
+      parameters.get<std::string>("input_hits_collection", "TaggerSimHits");
 
   // Tagger tracks - only for Recoil Seed finding
-  tagger_trks_collection_ = parameters.getParameter<std::string>(
-      "tagger_trks_collection", "TaggerTracks");
+  tagger_trks_collection_ =
+      parameters.get<std::string>("tagger_trks_collection", "TaggerTracks");
 
-  perigee_location_ = parameters.getParameter<std::vector<double>>(
-      "perigee_location", {-700, 0., 0.});
-  pmin_ =
-      parameters.getParameter<double>("pmin", 0.05 * Acts::UnitConstants::GeV);
-  pmax_ = parameters.getParameter<double>("pmax", 8 * Acts::UnitConstants::GeV);
-  d0max_ =
-      parameters.getParameter<double>("d0max", -15. * Acts::UnitConstants::mm);
-  d0min_ =
-      parameters.getParameter<double>("d0min", -45. * Acts::UnitConstants::mm);
-  z0max_ =
-      parameters.getParameter<double>("z0max", 60. * Acts::UnitConstants::mm);
+  perigee_location_ =
+      parameters.get<std::vector<double>>("perigee_location", {-700, 0., 0.});
+  pmin_ = parameters.get<double>("pmin", 0.05 * Acts::UnitConstants::GeV);
+  pmax_ = parameters.get<double>("pmax", 8 * Acts::UnitConstants::GeV);
+  d0max_ = parameters.get<double>("d0max", -15. * Acts::UnitConstants::mm);
+  d0min_ = parameters.get<double>("d0min", -45. * Acts::UnitConstants::mm);
+  z0max_ = parameters.get<double>("z0max", 60. * Acts::UnitConstants::mm);
 
-  phicut_ = parameters.getParameter<double>("phicut", 0.1);
-  thetacut_ = parameters.getParameter<double>("thetacut", 0.2);
+  phicut_ = parameters.get<double>("phicut", 0.1);
+  thetacut_ = parameters.get<double>("thetacut", 0.2);
 
-  loc0cut_ = parameters.getParameter<double>("loc0cut", 0.1);
-  loc1cut_ = parameters.getParameter<double>("loc1cut", 0.3);
+  loc0cut_ = parameters.get<double>("loc0cut", 0.1);
+  loc1cut_ = parameters.get<double>("loc1cut", 0.3);
 
-  strategies_ = parameters.getParameter<std::vector<std::string>>(
-      "strategies", {"0,1,2,3,4"});
+  strategies_ =
+      parameters.get<std::vector<std::string>>("strategies", {"0,1,2,3,4"});
 
-  inflate_factors_ = parameters.getParameter<std::vector<double>>(
+  inflate_factors_ = parameters.get<std::vector<double>>(
       "inflate_factors", {10., 10., 10., 10., 10., 10.});
 
-  bfield_ = parameters.getParameter<double>("bfield", 1.5);
+  bfield_ = parameters.get<double>("bfield", 1.5);
 
-  input_pass_name_ = parameters.getParameter<std::string>("input_pass_name");
+  input_pass_name_ = parameters.get<std::string>("input_pass_name");
 
   sim_particles_passname_ =
-      parameters.getParameter<std::string>("sim_particles_passname");
-  tagger_trks_event_collection_passname_ = parameters.getParameter<std::string>(
-      "tagger_trks_event_collection_passname");
+      parameters.get<std::string>("sim_particles_passname");
+  tagger_trks_event_collection_passname_ =
+      parameters.get<std::string>("tagger_trks_event_collection_passname");
   sim_particles_event_passname_ =
-      parameters.getParameter<std::string>("sim_particles_event_passname");
+      parameters.get<std::string>("sim_particles_event_passname");
 }
 
 void SeedFinderProcessor::produce(framework::Event& event) {

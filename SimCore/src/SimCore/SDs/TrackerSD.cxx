@@ -11,10 +11,10 @@ namespace simcore {
 TrackerSD::TrackerSD(const std::string& name, simcore::ConditionsInterface& ci,
                      const framework::config::Parameters& p)
     : SensitiveDetector(name, ci, p) {
-  subsystem_ = p.getParameter<std::string>("subsystem");
-  collection_name_ = p.getParameter<std::string>("collection_name");
+  subsystem_ = p.get<std::string>("subsystem");
+  collection_name_ = p.get<std::string>("collection_name");
 
-  subDetID_ = ldmx::SubdetectorIDType(p.getParameter<int>("subdet_id"));
+  subDetID_ = ldmx::SubdetectorIDType(p.get<int>("subdet_id"));
 }
 
 G4bool TrackerSD::ProcessHits(G4Step* aStep, G4TouchableHistory*) {

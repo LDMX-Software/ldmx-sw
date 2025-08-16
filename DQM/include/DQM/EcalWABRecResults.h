@@ -32,10 +32,10 @@ class EcalWABRecResults : public framework::Analyzer {
 
  private:
   /// Collection Name for WABRec object
-  std::string ecal_WAB_rec_name_;
+  std::string ecal_wab_rec_name_;
 
   /// Pass Name for WABRec object
-  std::string ecal_WAB_rec_pass_;
+  std::string ecal_wab_rec_pass_;
 };
 }  // namespace dqm
 

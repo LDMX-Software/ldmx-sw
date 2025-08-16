@@ -11,11 +11,11 @@
 namespace recon {
 
 void TrackDeDxMassEstimator::configure(framework::config::Parameters &ps) {
-  fit_res_C_ = ps.getParameter<double>("fit_res_C");
-  fit_res_K_ = ps.getParameter<double>("fit_res_K");
-  input_pass_name_ = ps.getParameter<std::string>("input_pass_name", "");
+  fit_res_C_ = ps.get<double>("fit_res_C");
+  fit_res_K_ = ps.get<double>("fit_res_K");
+  input_pass_name_ = ps.get<std::string>("input_pass_name", "");
   track_collection_ =
-      ps.getParameter<std::string>("track_collection", "RecoilTruthSeeds");
+      ps.get<std::string>("track_collection", "RecoilTruthSeeds");
 
   ldmx_log(info) << "Track Collection used for TrackDeDxMassEstimator "
                  << track_collection_;

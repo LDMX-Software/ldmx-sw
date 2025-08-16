@@ -27,7 +27,7 @@ class HcalGeometryVerifier : public framework::Analyzer {
    *
    *
    */
-  std::array<int, 3> determine_indices(const ldmx::HcalID id);
+  std::array<int, 3> determineIndices(const ldmx::HcalID id);
 
   /*
    *
@@ -38,20 +38,20 @@ class HcalGeometryVerifier : public framework::Analyzer {
    * is set to true or log the issue if false.
    *
    */
-  bool hit_ok(const ldmx::HcalID id, const std::array<double, 3> &position);
+  bool hitOk(const ldmx::HcalID id, const std::array<double, 3> &position);
 
   void analyze(const framework::Event &event) override;
 
  private:
-  std::string hcalSimHitsCollection_{"HcalSimHits"};
-  std::string hcalRecHitsCollection_{"HcalRecHits"};
-  std::string hcalSimHitsPassName_{""};
-  std::string hcalRecHitsPassName_{""};
+  std::string hcal_sim_hits_collection_{"HcalSimHits"};
+  std::string hcal_rec_hits_collection_{"HcalRecHits"};
+  std::string hcal_sim_hits_pass_name_{""};
+  std::string hcal_rec_hits_pass_name_{""};
 
   // Maximum difference between position and bounds of the scintillator bar that
   // will be accepted [mm]
-  double tolerance{};
-  bool stop_on_error{};
+  double tolerance_{};
+  bool stop_on_error_{};
 };
 }  // namespace dqm
 

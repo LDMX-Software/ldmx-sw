@@ -17,11 +17,10 @@ RecoilMissesEcalSkimmer::~RecoilMissesEcalSkimmer() {}
 
 void RecoilMissesEcalSkimmer::configure(
     framework::config::Parameters &parameters) {
-  ecalSimHitsPassName_ =
-      parameters.getParameter<std::string>("ecalSimHitsPassName");
+  ecalSimHitsPassName_ = parameters.get<std::string>("ecalSimHitsPassName");
 
   sim_particles_pass_name_ =
-      parameters.getParameter<std::string>("sim_particles_pass_name");
+      parameters.get<std::string>("sim_particles_pass_name");
 }
 
 void RecoilMissesEcalSkimmer::produce(framework::Event &event) {

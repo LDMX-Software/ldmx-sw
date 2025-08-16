@@ -5,12 +5,10 @@ namespace trigger {
 void HcalTPSelector::configure(framework::config::Parameters& ps) {
   // ideally, we would directly grab the TPs here instead of
   // building them in the HCal energy sum collection
-  combined_quad_coll_name_ =
-      ps.getParameter<std::string>("combined_quad_coll_name");
-  pass_coll_name_ = ps.getParameter<std::string>("pass_coll_name");
-  tp_coll_passname_ = ps.getParameter<std::string>("tp_coll_pass_name");
-  tp_coll_event_passname_ =
-      ps.getParameter<std::string>("tp_coll_event_passname");
+  combined_quad_coll_name_ = ps.get<std::string>("combined_quad_coll_name");
+  pass_coll_name_ = ps.get<std::string>("pass_coll_name");
+  tp_coll_passname_ = ps.get<std::string>("tp_coll_pass_name");
+  tp_coll_event_passname_ = ps.get<std::string>("tp_coll_event_passname");
 }
 
 void HcalTPSelector::produce(framework::Event& event) {

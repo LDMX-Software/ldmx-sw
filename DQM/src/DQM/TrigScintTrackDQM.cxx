@@ -12,7 +12,7 @@ void TrigScintTrackDQM::onProcessStart() {
   histograms_.create("centroid", "Track channel centroid", 500, 0, 100);
   histograms_.create(
       "n_tracks", "TrigScint track multiplicity in the pad/event", 25, 0, 25);
-  histograms_.create("n_clusters", "N_{clusters} forming the track", 4, 0, 4);
+  histograms_.create("n_clusters", "n_{clusters} forming the track", 4, 0, 4);
   histograms_.create("residual", "Track residual [channels]", 100, 0., 2.);
   histograms_.create("beamEfrac",
                      "Track edep fraction associated with beam electron", 101,
@@ -26,21 +26,21 @@ void TrigScintTrackDQM::onProcessStart() {
 }
 
 void TrigScintTrackDQM::configure(framework::config::Parameters &ps) {
-  trackCollectionName_ = ps.getParameter<std::string>("track_collection");
-  passName_ = ps.getParameter<std::string>("passName").c_str();
+  track_collection_name_ = ps.get<std::string>("track_collection");
+  pass_name_ = ps.get<std::string>("passName").c_str();
 
-  ldmx_log(debug) << "Collection name = " << trackCollectionName_
-                  << " pass name =" << passName_;
+  ldmx_log(debug) << "Collection name = " << track_collection_name_
+                  << " pass name =" << pass_name_;
 }
 
 void TrigScintTrackDQM::analyze(const framework::Event &event) {
   // Get the collection of TrigScintTrack digitized tracks if the exists
-  const std::vector<ldmx::TrigScintTrack> TrigScintTracks =
-      event.getCollection<ldmx::TrigScintTrack>(trackCollectionName_,
-                                                passName_);
+  const std::vector<ldmx::TrigScintTrack> trig_scint_tracks =
+      event.getCollection<ldmx::TrigScintTrack>(track_collection_name_,
+                                                pass_name_);
 
   // Loop through all TrigScint tracks in the event
-  for (const ldmx::TrigScintTrack &track : TrigScintTracks) {
+  for (const ldmx::TrigScintTrack &track : trig_scint_tracks) {
     histograms_.fill("centroid", track.getCentroid());
     histograms_.fill("residual", track.getResidual());
     histograms_.fill("n_clusters", track.getNclusters());
@@ -51,7 +51,7 @@ void TrigScintTrackDQM::analyze(const framework::Event &event) {
     histograms_.fill("z", track.getCentroidZ());
   }
 
-  histograms_.fill("n_tracks", TrigScintTracks.size());
+  histograms_.fill("n_tracks", trig_scint_tracks.size());
 }
 
 }  // namespace dqm

@@ -12,9 +12,9 @@ namespace utility {
 StepPrinter::StepPrinter(const std::string& name,
                          framework::config::Parameters& parameters)
     : simcore::UserAction(name, parameters) {
-  track_id_ = parameters.getParameter<int>("track_id");
-  process_name_ = parameters.getParameter<std::string>("process_name");
-  depth_ = parameters.getParameter<int>("depth");
+  track_id_ = parameters.get<int>("track_id");
+  process_name_ = parameters.get<std::string>("process_name");
+  depth_ = parameters.get<int>("depth");
 }
 
 void StepPrinter::stepping(const G4Step* step) {

@@ -174,11 +174,11 @@ void VisiblesCutflow::analyze(const framework::Event &event) {
   }
   for (const ldmx::HcalHit &hit : hcal_rec_hits) {
     if (hit.getEnergy() > 0.) {
-      ldmx::HcalID detID(hit.getID());
-      if (detID.getSection() != 0) {
+      ldmx::HcalID det_id(hit.getID());
+      if (det_id.getSection() != 0) {
         continue;
       }
-      if (detID.getLayerID() == 1 && hit.getPE() > 5) {
+      if (det_id.getLayerID() == 1 && hit.getPE() > 5) {
         hcal_containment = false;
       }
       hcal_energy += 12. * hit.getEnergy();
@@ -235,8 +235,8 @@ void VisiblesCutflow::analyze(const framework::Event &event) {
   std::vector<int> layers_hit;
   for (const ldmx::HcalHit &hit : hcal_rec_hits) {
     if (hit.getEnergy() > 0.) {
-      ldmx::HcalID detID(hit.getID());
-      if (detID.getSection() != 0) {  // skip hits that aren't in main Hcal
+      ldmx::HcalID det_id(hit.getID());
+      if (det_id.getSection() != 0) {  // skip hits that aren't in main Hcal
         continue;
       }
       if (fabs(hit.getXPos()) > 1000 || fabs(hit.getYPos()) > 1000) {
@@ -257,8 +257,8 @@ void VisiblesCutflow::analyze(const framework::Event &event) {
 
       // check if this is a new layer in the collection
       if (!(std::find(layers_hit.begin(), layers_hit.end(),
-                      detID.getLayerID()) != layers_hit.end())) {
-        layers_hit.push_back(detID.getLayerID());
+                      det_id.getLayerID()) != layers_hit.end())) {
+        layers_hit.push_back(det_id.getLayerID());
       }
 
       double proj_x =
@@ -274,11 +274,11 @@ void VisiblesCutflow::analyze(const framework::Event &event) {
       double closest_point = 9999.;
       for (const ldmx::HcalHit &hit2 : hcal_rec_hits) {
         if (hit2.getEnergy() > 0.) {
-          ldmx::HcalID detID2(hit2.getID());
+          ldmx::HcalID det_i_d2(hit2.getID());
           if (fabs(hit2.getXPos()) > 1000 || fabs(hit2.getYPos()) > 1000) {
             continue;
           }
-          if (detID2.getLayerID() == detID.getLayerID()) {
+          if (det_i_d2.getLayerID() == det_id.getLayerID()) {
             // Determine if a bar is vertical (along y-axis) or horizontal
             // (along x-axis) Odd layers have horizontal strips Even layers have
             // vertical strips
@@ -322,8 +322,8 @@ void VisiblesCutflow::analyze(const framework::Event &event) {
       if (fabs(hit.getXPos()) > 1000 || fabs(hit.getYPos()) > 1000) {
         continue;
       }
-      ldmx::HcalID detID(hit.getID());
-      if (detID.getSection() == 0) {
+      ldmx::HcalID det_id(hit.getID());
+      if (det_id.getSection() == 0) {
         x_std += hit.getEnergy() * (hit.getXPos() - x_mean) *
                  (hit.getXPos() - x_mean);
         y_std += hit.getEnergy() * (hit.getYPos() - y_mean) *

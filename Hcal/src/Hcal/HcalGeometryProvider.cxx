@@ -93,14 +93,13 @@ HcalGeometryProvider::getCondition(const ldmx::EventHeader& context) {
   if (!hcalGeometry_) {
     framework::config::Parameters phex =
         (params_.exists("HcalGeometry"))
-            ? (params_.getParameter<framework::config::Parameters>(
-                  "HcalGeometry"))
+            ? (params_.get<framework::config::Parameters>("HcalGeometry"))
             : (params_);
 
     // search through the subtrees
     for (auto key : phex.keys()) {
       framework::config::Parameters pver =
-          phex.getParameter<framework::config::Parameters>(key);
+          phex.get<framework::config::Parameters>(key);
 
       if (!pver.exists(KEYNAME)) {
         ldmx_log(warn) << "No parameter " << KEYNAME << " found in " << key;
@@ -109,7 +108,7 @@ HcalGeometryProvider::getCondition(const ldmx::EventHeader& context) {
       }
 
       std::vector<std::string> dets_valid =
-          pver.getParameter<std::vector<std::string> >(KEYNAME);
+          pver.get<std::vector<std::string> >(KEYNAME);
       for (auto detregex : dets_valid) {
         std::string regex(detregex);
         if (regex.empty()) continue;  // no empty regex allowed

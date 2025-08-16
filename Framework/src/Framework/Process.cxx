@@ -26,38 +26,32 @@ Process::Process(const framework::config::Parameters &configuration)
     : conditions_{*this} {
   config_ = configuration;
 
-  pass_name_ = configuration.getParameter<std::string>("passName", "");
-  histo_filename_ =
-      configuration.getParameter<std::string>("histogramFile", "");
+  pass_name_ = configuration.get<std::string>("passName", "");
+  histo_filename_ = configuration.get<std::string>("histogramFile", "");
 
-  max_tries_ = configuration.getParameter<int>("maxTriesPerEvent", 1);
-  event_limit_ = configuration.getParameter<int>("maxEvents", -1);
-  min_events_ = configuration.getParameter<int>("minEvents", -1);
-  total_events_ = configuration.getParameter<int>("totalEvents", -1);
-  log_frequency_ = configuration.getParameter<int>("logFrequency", -1);
-  compression_setting_ =
-      configuration.getParameter<int>("compressionSetting", 9);
+  max_tries_ = configuration.get<int>("maxTriesPerEvent", 1);
+  event_limit_ = configuration.get<int>("maxEvents", -1);
+  min_events_ = configuration.get<int>("minEvents", -1);
+  total_events_ = configuration.get<int>("totalEvents", -1);
+  log_frequency_ = configuration.get<int>("logFrequency", -1);
+  compression_setting_ = configuration.get<int>("compressionSetting", 9);
   skip_corrupted_input_files_ =
-      configuration.getParameter<bool>("skipCorruptedInputFiles", false);
+      configuration.get<bool>("skipCorruptedInputFiles", false);
 
-  input_files_ =
-      configuration.getParameter<std::vector<std::string>>("inputFiles", {});
+  input_files_ = configuration.get<std::vector<std::string>>("inputFiles", {});
   output_files_ =
-      configuration.getParameter<std::vector<std::string>>("outputFiles", {});
-  drop_keep_rules_ =
-      configuration.getParameter<std::vector<std::string>>("keep", {});
+      configuration.get<std::vector<std::string>>("outputFiles", {});
+  drop_keep_rules_ = configuration.get<std::vector<std::string>>("keep", {});
 
   event_header_ = 0;
 
   // set up the logging for this run
-  logging::open(
-      configuration.getParameter<framework::config::Parameters>("logger", {}));
+  logging::open(configuration.get<framework::config::Parameters>("logger", {}));
 
-  auto run{configuration.getParameter<int>("run", -1)};
+  auto run{configuration.get<int>("run", -1)};
   if (run > 0) run_for_generation_ = run;
 
-  auto libs{
-      configuration.getParameter<std::vector<std::string>>("libraries", {})};
+  auto libs{configuration.get<std::vector<std::string>>("libraries", {})};
   std::set<std::string> libraries_loaded;
   for (const auto &lib : libs) {
     if (libraries_loaded.find(lib) != libraries_loaded.end()) {
@@ -74,26 +68,23 @@ Process::Process(const framework::config::Parameters &configuration)
   }
 
   storage_controller_.setDefaultKeep(
-      configuration.getParameter<bool>("skimDefaultIsKeep", true));
-  auto skim_rules{
-      configuration.getParameter<std::vector<std::string>>("skimRules", {})};
+      configuration.get<bool>("skimDefaultIsKeep", true));
+  auto skim_rules{configuration.get<std::vector<std::string>>("skimRules", {})};
   for (size_t i = 0; i < skim_rules.size(); i += 2) {
     storage_controller_.addRule(skim_rules[i], skim_rules[i + 1]);
   }
 
-  auto sequence{
-      configuration.getParameter<std::vector<framework::config::Parameters>>(
-          "sequence", {})};
-  if (sequence.empty() &&
-      configuration.getParameter<bool>("testingMode", false)) {
+  auto sequence{configuration.get<std::vector<framework::config::Parameters>>(
+      "sequence", {})};
+  if (sequence.empty() && configuration.get<bool>("testingMode", false)) {
     EXCEPTION_RAISE(
         "NoSeq",
         "No sequence has been defined. What should I be doing?\nUse "
         "p.sequence to tell me what processors to run.");
   }
   for (auto proc : sequence) {
-    auto class_name{proc.getParameter<std::string>("className")};
-    auto instance_name{proc.getParameter<std::string>("instanceName")};
+    auto class_name{proc.get<std::string>("className")};
+    auto instance_name{proc.get<std::string>("instanceName")};
     auto ep{
         EventProcessor::Factory::get().make(class_name, instance_name, *this)};
     if (not ep) {
@@ -110,8 +101,7 @@ Process::Process(const framework::config::Parameters &configuration)
                           "correct library it is a part of?");
     }
     auto histograms{
-        proc.getParameter<std::vector<framework::config::Parameters>>(
-            "histograms", {})};
+        proc.get<std::vector<framework::config::Parameters>>("histograms", {})};
     if (!histograms.empty()) {
       ep.value()->getHistoDirectory();
       ep.value()->createHistograms(histograms);
@@ -121,18 +111,17 @@ Process::Process(const framework::config::Parameters &configuration)
   }
 
   auto conditions_object_providers{
-      configuration.getParameter<std::vector<framework::config::Parameters>>(
+      configuration.get<std::vector<framework::config::Parameters>>(
           "conditionsObjectProviders", {})};
   for (auto cop : conditions_object_providers) {
-    auto class_name{cop.getParameter<std::string>("className")};
-    auto object_name{cop.getParameter<std::string>("objectName")};
-    auto tag_name{cop.getParameter<std::string>("tagName")};
+    auto class_name{cop.get<std::string>("className")};
+    auto object_name{cop.get<std::string>("objectName")};
+    auto tag_name{cop.get<std::string>("tagName")};
     conditions_.createConditionsObjectProvider(class_name, object_name,
                                                tag_name, cop);
   }
 
-  bool log_performance =
-      configuration.getParameter<bool>("logPerformance", false);
+  bool log_performance = configuration.get<bool>("logPerformance", false);
   if (log_performance) {
     std::vector<std::string> names{sequence_.size()};
     for (std::size_t i{0}; i < sequence_.size(); i++) {

@@ -73,14 +73,14 @@ void PolarfireEventHeader::board(framework::Event& event,
 }
 
 void HcalRawDecoder::configure(framework::config::Parameters& ps) {
-  input_file_ = ps.getParameter<std::string>("input_file");
-  input_names_ = ps.getParameter<std::vector<std::string>>("input_names", {});
-  input_pass_ = ps.getParameter<std::string>("input_pass");
-  output_name_ = ps.getParameter<std::string>("output_name");
-  roc_version_ = ps.getParameter<int>("roc_version");
-  translate_eid_ = ps.getParameter<bool>("translate_eid");
-  read_from_file_ = ps.getParameter<bool>("read_from_file");
-  detector_name_ = ps.getParameter<std::string>("detector_name");
+  input_file_ = ps.get<std::string>("input_file");
+  input_names_ = ps.get<std::vector<std::string>>("input_names", {});
+  input_pass_ = ps.get<std::string>("input_pass");
+  output_name_ = ps.get<std::string>("output_name");
+  roc_version_ = ps.get<int>("roc_version");
+  translate_eid_ = ps.get<bool>("translate_eid");
+  read_from_file_ = ps.get<bool>("read_from_file");
+  detector_name_ = ps.get<std::string>("detector_name");
   if (read_from_file_) {
     file_reader_.open(input_file_);
   }

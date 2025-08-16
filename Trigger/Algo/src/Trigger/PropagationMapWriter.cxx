@@ -10,15 +10,15 @@ PropagationMapWriter::PropagationMapWriter(const std::string& name,
     : Producer(name, process) {}
 
 void PropagationMapWriter::configure(framework::config::Parameters& ps) {
-  outPath_ = ps.getParameter<std::string>("outPath");
+  outPath_ = ps.get<std::string>("outPath");
   ecal_scoring_plane_passname_ =
-      ps.getParameter<std::string>("ecal_scoring_plane_passname");
+      ps.get<std::string>("ecal_scoring_plane_passname");
   target_scoring_plane_passname_ =
-      ps.getParameter<std::string>("target_scoring_plane_passname");
+      ps.get<std::string>("target_scoring_plane_passname");
   target_sp_hits_events_passname_ =
-      ps.getParameter<std::string>("target_sp_hits_events_passname");
+      ps.get<std::string>("target_sp_hits_events_passname");
   ecal_sp_hits_events_passname_ =
-      ps.getParameter<std::string>("ecal_sp_hits_events_passname");
+      ps.get<std::string>("ecal_sp_hits_events_passname");
 }
 
 void PropagationMapWriter::produce(framework::Event& event) {

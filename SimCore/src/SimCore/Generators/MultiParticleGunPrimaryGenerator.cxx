@@ -13,11 +13,11 @@ namespace generators {
 MultiParticleGunPrimaryGenerator::MultiParticleGunPrimaryGenerator(
     const std::string& name, const framework::config::Parameters& parameters)
     : PrimaryGenerator(name, parameters), random_(new TRandom) {
-  auto stlVertex{parameters.getParameter<std::vector<double> >("vertex")};
-  auto stlMomentum{parameters.getParameter<std::vector<double> >("momentum")};
-  mpgNParticles_ = parameters.getParameter<int>("nParticles");
-  mpgPdgID_ = parameters.getParameter<int>("pdgID");
-  mpgEnablePoisson_ = parameters.getParameter<bool>("enablePoisson");
+  auto stlVertex{parameters.get<std::vector<double> >("vertex")};
+  auto stlMomentum{parameters.get<std::vector<double> >("momentum")};
+  mpgNParticles_ = parameters.get<int>("nParticles");
+  mpgPdgID_ = parameters.get<int>("pdgID");
+  mpgEnablePoisson_ = parameters.get<bool>("enablePoisson");
 
   if (stlVertex.size() != 3 or stlMomentum.size() != 3 or mpgNParticles_ <= 0) {
     EXCEPTION_RAISE("InvalideConfig",

@@ -9,10 +9,10 @@
 namespace trigger {
 
 void TrigEcalEnergySum::configure(framework::config::Parameters& ps) {
-  hitCollName_ = ps.getParameter<std::string>("hitCollName");
-  hit_coll_passname_ = ps.getParameter<std::string>("hit_coll_passname");
+  hitCollName_ = ps.get<std::string>("hitCollName");
+  hit_coll_passname_ = ps.get<std::string>("hit_coll_passname");
   hit_collname_events_passname_ =
-      ps.getParameter<std::string>("hit_collname_events_passname");
+      ps.get<std::string>("hit_collname_events_passname");
 }
 
 void TrigEcalEnergySum::produce(framework::Event& event) {

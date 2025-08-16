@@ -7,11 +7,11 @@
 namespace dqm {
 
 void EcalMipTrackingFeatures::configure(framework::config::Parameters &ps) {
-  ecal_mip_name_ = ps.getParameter<std::string>("ecal_mip_name");
-  ecal_mip_pass_ = ps.getParameter<std::string>("ecal_mip_pass");
+  ecal_mip_name_ = ps.get<std::string>("ecal_mip_name");
+  ecal_mip_pass_ = ps.get<std::string>("ecal_mip_pass");
   // Maybe create two objects for the second recoil information
-  ecal_veto_name_ = ps.getParameter<std::string>("ecal_veto_name");
-  ecal_veto_pass_ = ps.getParameter<std::string>("ecal_veto_pass");
+  ecal_veto_name_ = ps.get<std::string>("ecal_veto_name");
+  ecal_veto_pass_ = ps.get<std::string>("ecal_veto_pass");
 
   return;
 }

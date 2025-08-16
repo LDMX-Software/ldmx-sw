@@ -20,19 +20,19 @@ EcalRecProducer::EcalRecProducer(const std::string& name,
 
 void EcalRecProducer::configure(framework::config::Parameters& ps) {
   // collection names
-  digi_coll_name_ = ps.getParameter<std::string>("digiCollName");
-  digi_pass_name_ = ps.getParameter<std::string>("digiPassName");
-  sim_hit_coll_name_ = ps.getParameter<std::string>("simHitCollName");
-  sim_hit_pass_name_ = ps.getParameter<std::string>("simHitPassName");
-  rec_hit_coll_name_ = ps.getParameter<std::string>("recHitCollName");
+  digi_coll_name_ = ps.get<std::string>("digiCollName");
+  digi_pass_name_ = ps.get<std::string>("digiPassName");
+  sim_hit_coll_name_ = ps.get<std::string>("simHitCollName");
+  sim_hit_pass_name_ = ps.get<std::string>("simHitPassName");
+  rec_hit_coll_name_ = ps.get<std::string>("recHitCollName");
 
-  layer_weights_ = ps.getParameter<std::vector<double>>("layerWeights");
+  layer_weights_ = ps.get<std::vector<double>>("layerWeights");
   second_order_energy_correction_ =
-      ps.getParameter<double>("secondOrderEnergyCorrection");
+      ps.get<double>("secondOrderEnergyCorrection");
 
-  mip_si_energy_ = ps.getParameter<double>("mip_si_energy");
-  clock_cycle_ = ps.getParameter<double>("clock_cycle");
-  charge_per_mip_ = ps.getParameter<double>("charge_per_mip");
+  mip_si_energy_ = ps.get<double>("mip_si_energy");
+  clock_cycle_ = ps.get<double>("clock_cycle");
+  charge_per_mip_ = ps.get<double>("charge_per_mip");
 }
 
 void EcalRecProducer::produce(framework::Event& event) {

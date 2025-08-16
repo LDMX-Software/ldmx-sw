@@ -163,17 +163,17 @@ void GreedyAmbiguitySolver::onNewRun(const ldmx::RunHeader& rh) {}
 
 void GreedyAmbiguitySolver::configure(
     framework::config::Parameters& parameters) {
-  out_trk_collection_ = parameters.getParameter<std::string>(
-      "out_trk_collection", "TaggerTracksClean");
+  out_trk_collection_ =
+      parameters.get<std::string>("out_trk_collection", "TaggerTracksClean");
 
   track_collection_ =
-      parameters.getParameter<std::string>("trackCollection", "TaggerTracks");
+      parameters.get<std::string>("trackCollection", "TaggerTracks");
 
-  meas_collection_ = parameters.getParameter<std::string>("measCollection",
-                                                          "DigiTaggerSimHits");
-  input_pass_name_ = parameters.getParameter<std::string>("input_pass_name");
-  n_meas_min_ = parameters.getParameter<int>("nMeasurementsMin", 5);
-  maximum_shared_hits_ = parameters.getParameter<int>("maximumSharedHits", 1);
+  meas_collection_ =
+      parameters.get<std::string>("measCollection", "DigiTaggerSimHits");
+  input_pass_name_ = parameters.get<std::string>("input_pass_name");
+  n_meas_min_ = parameters.get<int>("nMeasurementsMin", 5);
+  maximum_shared_hits_ = parameters.get<int>("maximumSharedHits", 1);
 }
 
 void GreedyAmbiguitySolver::produce(framework::Event& event) {

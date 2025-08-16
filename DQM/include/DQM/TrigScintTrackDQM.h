@@ -43,8 +43,8 @@ class TrigScintTrackDQM : public framework::Analyzer {
 
  private:
   /** Name of trigger pad track  collection. */
-  std::string trackCollectionName_{"TriggerPadTracks"};
-  std::string passName_{""};
+  std::string track_collection_name_{"TriggerPadTracks"};
+  std::string pass_name_{""};
 };
 
 }  // namespace dqm

@@ -15,9 +15,8 @@ class HcalDetectorMapLoader : public framework::ConditionsObjectProvider {
       : ConditionsObjectProvider(HcalDetectorMap::CONDITIONS_OBJECT_NAME,
                                  tagname, parameters, process),
         the_map_{nullptr} {
-    want_d2e_ = parameters.getParameter<bool>("want_d2e");
-    connections_table_ =
-        parameters.getParameter<std::string>("connections_table");
+    want_d2e_ = parameters.get<bool>("want_d2e");
+    connections_table_ = parameters.get<std::string>("connections_table");
   }
 
   virtual std::pair<const framework::ConditionsObject*,

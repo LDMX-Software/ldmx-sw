@@ -12,7 +12,7 @@ namespace biasing {
 MidShowerDiMuonBkgdFilter::MidShowerDiMuonBkgdFilter(
     const std::string& name, framework::config::Parameters& parameters)
     : simcore::UserAction(name, parameters) {
-  threshold_ = parameters.getParameter<double>("threshold");
+  threshold_ = parameters.get<double>("threshold");
   /* debug printout
   std::cout
       << "[ MidShowerDiMuonBkgdFilter ]: "

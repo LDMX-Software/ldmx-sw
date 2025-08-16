@@ -6,17 +6,17 @@
 namespace dqm {
 
 void TrkDeDxMassEstFeatures::configure(framework::config::Parameters &ps) {
-  mass_estimate_name_ = ps.getParameter<std::string>("mass_estimate_name");
-  mass_estimate_pass_ = ps.getParameter<std::string>("mass_estimate_pass");
+  mass_estimate_name_ = ps.get<std::string>("mass_estimate_name");
+  mass_estimate_pass_ = ps.get<std::string>("mass_estimate_pass");
 
   return;
 }
 
 void TrkDeDxMassEstFeatures::analyze(const framework::Event &event) {
-  auto mass_estimates_{event.getCollection<ldmx::TrackDeDxMassEstimate>(
+  auto mass_estimates{event.getCollection<ldmx::TrackDeDxMassEstimate>(
       mass_estimate_name_, mass_estimate_pass_)};
 
-  for (const auto &mass_est : mass_estimates_) {
+  for (const auto &mass_est : mass_estimates) {
     auto momentum = mass_est.getMomentum();
     histograms_.fill("momentum:harmonic_mean_dedx", momentum, mass_est.getIh());
     if (momentum < 2000.)

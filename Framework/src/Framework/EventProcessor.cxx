@@ -43,11 +43,11 @@ int EventProcessor::getRunNumber() const { return process_.getRunNumber(); }
 void EventProcessor::createHistograms(
     const std::vector<framework::config::Parameters> &histos) {
   for (auto const &h : histos) {
-    auto name{h.getParameter<std::string>("name")};
-    auto x_label{h.getParameter<std::string>("xlabel")};
-    auto xbins{h.getParameter<std::vector<double>>("xbins")};
-    auto y_label{h.getParameter<std::string>("ylabel")};
-    auto ybins{h.getParameter<std::vector<double>>("ybins", {})};
+    auto name{h.get<std::string>("name")};
+    auto x_label{h.get<std::string>("xlabel")};
+    auto xbins{h.get<std::vector<double>>("xbins")};
+    auto y_label{h.get<std::string>("ylabel")};
+    auto ybins{h.get<std::vector<double>>("ybins", {})};
     if (ybins.empty()) {
       // assume 1D histogram
       histograms_.create(name, x_label, xbins);

@@ -27,40 +27,40 @@ HcalDigiProducer::HcalDigiProducer(const std::string& name,
 void HcalDigiProducer::configure(framework::config::Parameters& ps) {
   // settings of readout chip
   //  used  in actual digitization
-  auto hgcrocParams = ps.getParameter<framework::config::Parameters>("hgcroc");
+  auto hgcrocParams = ps.get<framework::config::Parameters>("hgcroc");
   hgcroc_ = std::make_unique<ldmx::HgcrocEmulator>(hgcrocParams);
-  clock_cycle_ = hgcrocParams.getParameter<double>("clockCycle");
-  nADCs_ = hgcrocParams.getParameter<int>("nADCs");
-  iSOI_ = hgcrocParams.getParameter<int>("iSOI");
-  noise_ = hgcrocParams.getParameter<bool>("noise");
+  clock_cycle_ = hgcrocParams.get<double>("clockCycle");
+  nADCs_ = hgcrocParams.get<int>("nADCs");
+  iSOI_ = hgcrocParams.get<int>("iSOI");
+  noise_ = hgcrocParams.get<bool>("noise");
 
   // If true, ignore readout threshold
   // and generate pedestal noise digis in every empty channel
-  zeroSuppression_ = ps.getParameter<bool>("zeroSuppression");
+  zeroSuppression_ = ps.get<bool>("zeroSuppression");
 
   // Save full analog pulse shapes from the HGCROC emulation
-  savePulseTruthInfo_ = ps.getParameter<bool>("savePulseTruthInfo");
+  savePulseTruthInfo_ = ps.get<bool>("savePulseTruthInfo");
 
   // collection names
-  input_coll_name_ = ps.getParameter<std::string>("inputCollName");
-  input_pass_name_ = ps.getParameter<std::string>("inputPassName");
-  digi_coll_name_ = ps.getParameter<std::string>("digiCollName");
-  pulseTruthCollName_ = ps.getParameter<std::string>("pulseTruthCollName");
+  input_coll_name_ = ps.get<std::string>("inputCollName");
+  input_pass_name_ = ps.get<std::string>("inputPassName");
+  digi_coll_name_ = ps.get<std::string>("digiCollName");
+  pulseTruthCollName_ = ps.get<std::string>("pulseTruthCollName");
 
   // physical constants
   //  used to calculate unit conversions
-  MeV_ = ps.getParameter<double>("MeV");
-  attlength_ = ps.getParameter<double>("attenuationLength");
+  MeV_ = ps.get<double>("MeV");
+  attlength_ = ps.get<double>("attenuationLength");
 
   // Time -> clock counts conversion
   //  time [ns] * ( 2^10 / max time in ns ) = clock counts
   ns_ = 1024. / clock_cycle_;
 
   // Configure generator that will produce noise hits_ in empty channels
-  gain_ = ps.getParameter<double>("avgGain");
-  readout_threshold_ = ps.getParameter<double>("avgReadoutThreshold");
-  pedestal_ = ps.getParameter<double>("avgPedestal");
-  noise_rms_ = ps.getParameter<double>("avgNoiseRMS");
+  gain_ = ps.get<double>("avgGain");
+  readout_threshold_ = ps.get<double>("avgReadoutThreshold");
+  pedestal_ = ps.get<double>("avgPedestal");
+  noise_rms_ = ps.get<double>("avgNoiseRMS");
 }
 
 void HcalDigiProducer::onNewRun(const ldmx::RunHeader&) {

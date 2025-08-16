@@ -30,8 +30,7 @@ PrimaryGeneratorAction::PrimaryGeneratorAction(
     const framework::config::Parameters& parameters)
     : G4VUserPrimaryGeneratorAction() {
   // Check whether a beamspot should be used or not.
-  auto beamSpot{
-      parameters.getParameter<std::vector<double> >("beamSpotSmear", {})};
+  auto beamSpot{parameters.get<std::vector<double> >("beamSpotSmear", {})};
   if (!beamSpot.empty()) {
     useBeamspot_ = true;
     beamspotXSize_ = beamSpot[0];
@@ -39,11 +38,10 @@ PrimaryGeneratorAction::PrimaryGeneratorAction(
     beamspotZSize_ = beamSpot[2];
   }
 
-  time_shift_primaries_ = parameters.getParameter<bool>("time_shift_primaries");
+  time_shift_primaries_ = parameters.get<bool>("time_shift_primaries");
 
-  auto generators{
-      parameters.getParameter<std::vector<framework::config::Parameters> >(
-          "generators", {})};
+  auto generators{parameters.get<std::vector<framework::config::Parameters> >(
+      "generators", {})};
   if (generators.empty()) {
     EXCEPTION_RAISE("MissingGenerator",
                     "Need to define some generator of primaries.");
@@ -51,11 +49,11 @@ PrimaryGeneratorAction::PrimaryGeneratorAction(
 
   for (auto& generator : generators) {
     if (not PrimaryGenerator::Factory::get().make(
-            generator.getParameter<std::string>("class_name"),
-            generator.getParameter<std::string>("instance_name"), generator)) {
+            generator.get<std::string>("class_name"),
+            generator.get<std::string>("instance_name"), generator)) {
       EXCEPTION_RAISE("UnableToCreate",
                       "Unable to create a PrimaryGenerator of type " +
-                          generator.getParameter<std::string>("class_name"));
+                          generator.get<std::string>("class_name"));
     }
   }
 }

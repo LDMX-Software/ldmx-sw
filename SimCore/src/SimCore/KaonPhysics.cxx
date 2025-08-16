@@ -5,20 +5,18 @@ KaonPhysics::KaonPhysics(const G4String& name,
                          const framework::config::Parameters& parameters)
     : G4VPhysicsConstructor(name) {
   kplus_branching_ratios =
-      parameters.getParameter<std::vector<double>>("kplus_branching_ratios");
+      parameters.get<std::vector<double>>("kplus_branching_ratios");
   kminus_branching_ratios =
-      parameters.getParameter<std::vector<double>>("kminus_branching_ratios");
+      parameters.get<std::vector<double>>("kminus_branching_ratios");
   k0l_branching_ratios =
-      parameters.getParameter<std::vector<double>>("k0l_branching_ratios");
+      parameters.get<std::vector<double>>("k0l_branching_ratios");
   k0s_branching_ratios =
-      parameters.getParameter<std::vector<double>>("k0s_branching_ratios");
-  kplus_lifetime_factor =
-      parameters.getParameter<double>("kplus_lifetime_factor");
-  kminus_lifetime_factor =
-      parameters.getParameter<double>("kminus_lifetime_factor");
-  k0l_lifetime_factor = parameters.getParameter<double>("k0l_lifetime_factor");
-  k0s_lifetime_factor = parameters.getParameter<double>("k0s_lifetime_factor");
-  verbosity = parameters.getParameter<int>("verbosity");
+      parameters.get<std::vector<double>>("k0s_branching_ratios");
+  kplus_lifetime_factor = parameters.get<double>("kplus_lifetime_factor");
+  kminus_lifetime_factor = parameters.get<double>("kminus_lifetime_factor");
+  k0l_lifetime_factor = parameters.get<double>("k0l_lifetime_factor");
+  k0s_lifetime_factor = parameters.get<double>("k0s_lifetime_factor");
+  verbosity = parameters.get<int>("verbosity");
 }
 void KaonPhysics::setDecayProperties(
     G4ParticleDefinition* kaon, const std::vector<double>& branching_ratios,

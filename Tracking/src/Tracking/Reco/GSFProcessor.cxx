@@ -121,38 +121,36 @@ void GSFProcessor::onNewRun(const ldmx::RunHeader& rh) {
 
 void GSFProcessor::configure(framework::config::Parameters& parameters) {
   out_trk_collection_ =
-      parameters.getParameter<std::string>("out_trk_collection", "GSFTracks");
+      parameters.get<std::string>("out_trk_collection", "GSFTracks");
 
   trackCollection_ =
-      parameters.getParameter<std::string>("trackCollection", "TaggerTracks");
-  measCollection_ = parameters.getParameter<std::string>("measCollection",
-                                                         "DigiTaggerSimHits");
+      parameters.get<std::string>("trackCollection", "TaggerTracks");
+  measCollection_ =
+      parameters.get<std::string>("measCollection", "DigiTaggerSimHits");
 
-  track_passname_ = parameters.getParameter<std::string>("track_passname");
-  meas_passname_ = parameters.getParameter<std::string>("meas_passname");
+  track_passname_ = parameters.get<std::string>("track_passname");
+  meas_passname_ = parameters.get<std::string>("meas_passname");
   track_collection_event_passname_ =
-      parameters.getParameter<std::string>("track_collection_event_passname");
+      parameters.get<std::string>("track_collection_event_passname");
   meas_collection_event_passname_ =
-      parameters.getParameter<std::string>("meas_collection_event_passname");
+      parameters.get<std::string>("meas_collection_event_passname");
 
-  maxComponents_ = parameters.getParameter<int>("maxComponents", 4);
-  abortOnError_ = parameters.getParameter<bool>("abortOnError", false);
+  maxComponents_ = parameters.get<int>("maxComponents", 4);
+  abortOnError_ = parameters.get<bool>("abortOnError", false);
   disableAllMaterialHandling_ =
-      parameters.getParameter<bool>("disableAllMaterialHandling", false);
-  weightCutoff_ = parameters.getParameter<double>("weightCutoff_", 1.0e-4);
+      parameters.get<bool>("disableAllMaterialHandling", false);
+  weightCutoff_ = parameters.get<double>("weightCutoff_", 1.0e-4);
 
-  propagator_maxSteps_ =
-      parameters.getParameter<int>("propagator_maxSteps", 10000);
-  propagator_step_size_ =
-      parameters.getParameter<double>("propagator_step_size", 200.);
-  field_map_ = parameters.getParameter<std::string>("field_map");
-  usePerigee_ = parameters.getParameter<bool>("usePerigee", false);
+  propagator_maxSteps_ = parameters.get<int>("propagator_maxSteps", 10000);
+  propagator_step_size_ = parameters.get<double>("propagator_step_size", 200.);
+  field_map_ = parameters.get<std::string>("field_map");
+  usePerigee_ = parameters.get<bool>("usePerigee", false);
 
-  debug_ = parameters.getParameter<bool>("debug", false);
-  taggerTracking_ = parameters.getParameter<bool>("taggerTracking", true);
+  debug_ = parameters.get<bool>("debug", false);
+  taggerTracking_ = parameters.get<bool>("taggerTracking", true);
 
   // finalReductionMethod_ =
-  // parameters.getParameter<double>("finalReductionMethod",);
+  // parameters.get<double>("finalReductionMethod",);
 }
 
 void GSFProcessor::produce(framework::Event& event) {

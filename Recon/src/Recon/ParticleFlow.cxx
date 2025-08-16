@@ -6,19 +6,17 @@ namespace recon {
 
 void ParticleFlow::configure(framework::config::Parameters& ps) {
   // I/O
-  inputEcalCollName_ = ps.getParameter<std::string>("inputEcalCollName");
-  inputHcalCollName_ = ps.getParameter<std::string>("inputHcalCollName");
-  inputTrackCollName_ = ps.getParameter<std::string>("inputTrackCollName");
-  outputCollName_ = ps.getParameter<std::string>("outputCollName");
-  input_ecal_passname_ = ps.getParameter<std::string>("input_ecal_passname");
-  input_hcal_passname_ = ps.getParameter<std::string>("input_hcal_passname");
-  input_tracks_passname_ =
-      ps.getParameter<std::string>("input_tracks_passname");
+  inputEcalCollName_ = ps.get<std::string>("inputEcalCollName");
+  inputHcalCollName_ = ps.get<std::string>("inputHcalCollName");
+  inputTrackCollName_ = ps.get<std::string>("inputTrackCollName");
+  outputCollName_ = ps.get<std::string>("outputCollName");
+  input_ecal_passname_ = ps.get<std::string>("input_ecal_passname");
+  input_hcal_passname_ = ps.get<std::string>("input_hcal_passname");
+  input_tracks_passname_ = ps.get<std::string>("input_tracks_passname");
 
   // Algorithm configuration
-  singleParticle_ = ps.getParameter<bool>("singleParticle");
-  use_existing_ecal_clusters_ =
-      ps.getParameter<bool>("use_existing_ecal_clusters");
+  singleParticle_ = ps.get<bool>("singleParticle");
+  use_existing_ecal_clusters_ = ps.get<bool>("use_existing_ecal_clusters");
 
   // Calibration factors, from jason, temperary
   std::vector<float> em1{250.0,  750.0,  1250.0, 1750.0, 2250.0, 2750.0,

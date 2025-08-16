@@ -7,8 +7,8 @@
 namespace dqm {
 
 void HCalRawDigi::configure(framework::config::Parameters& ps) {
-  input_name_ = ps.getParameter<std::string>("input_name");
-  input_pass_ = ps.getParameter<std::string>("input_pass");
+  input_name_ = ps.get<std::string>("input_name");
+  input_pass_ = ps.get<std::string>("input_pass");
 }
 
 void HCalRawDigi::onProcessStart() {

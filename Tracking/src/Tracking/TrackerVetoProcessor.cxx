@@ -10,23 +10,21 @@ namespace tracking {
 
 void TrackerVetoProcessor::configure(framework::config::Parameters& ps) {
   tagger_track_collection_name_ =
-      ps.getParameter<std::string>("tagger_track_collection", "TaggerTracks");
+      ps.get<std::string>("tagger_track_collection", "TaggerTracks");
   recoil_track_collection_name_ =
-      ps.getParameter<std::string>("recoil_track_collection", "RecoilTracks");
-  input_tagger_pass_name_ =
-      ps.getParameter<std::string>("input_tagger_pass_name", "");
-  input_recoil_pass_name_ =
-      ps.getParameter<std::string>("input_recoil_pass_name", "");
-  output_collection_ = ps.getParameter<std::string>("output_collection", "");
-  inverse_skim_ = ps.getParameter<bool>("inverse_skim", false);
-  max_d0_ = ps.getParameter<double>("max_d0", 10.);
-  max_z0_ = ps.getParameter<double>("max_z0", 40.);
-  max_chi2_per_ndf_ = ps.getParameter<double>("max_chi2_per_ndf", 5.);
-  min_tagger_momentum_ = ps.getParameter<double>("min_tagger_momentum", 5600.);
-  min_recoil_n_ = ps.getParameter<int>("min_recoil_n", 1);
-  max_recoil_n_ = ps.getParameter<int>("max_recoil_n", 1);
-  min_tagger_hits_ = ps.getParameter<int>("min_tagger_hits", 4);
-  min_recoil_hits_ = ps.getParameter<int>("min_recoil_hits", 4);
+      ps.get<std::string>("recoil_track_collection", "RecoilTracks");
+  input_tagger_pass_name_ = ps.get<std::string>("input_tagger_pass_name", "");
+  input_recoil_pass_name_ = ps.get<std::string>("input_recoil_pass_name", "");
+  output_collection_ = ps.get<std::string>("output_collection", "");
+  inverse_skim_ = ps.get<bool>("inverse_skim", false);
+  max_d0_ = ps.get<double>("max_d0", 10.);
+  max_z0_ = ps.get<double>("max_z0", 40.);
+  max_chi2_per_ndf_ = ps.get<double>("max_chi2_per_ndf", 5.);
+  min_tagger_momentum_ = ps.get<double>("min_tagger_momentum", 5600.);
+  min_recoil_n_ = ps.get<int>("min_recoil_n", 1);
+  max_recoil_n_ = ps.get<int>("max_recoil_n", 1);
+  min_tagger_hits_ = ps.get<int>("min_tagger_hits", 4);
+  min_recoil_hits_ = ps.get<int>("min_recoil_hits", 4);
 }
 
 void TrackerVetoProcessor::produce(framework::Event& event) {

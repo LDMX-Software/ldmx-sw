@@ -7,9 +7,9 @@ namespace biasoperators {
 GammaToMuPair::GammaToMuPair(std::string name,
                              const framework::config::Parameters& p)
     : XsecBiasingOperator(name, p) {
-  volume_ = p.getParameter<std::string>("volume");
-  factor_ = p.getParameter<double>("factor");
-  threshold_ = p.getParameter<double>("threshold");
+  volume_ = p.get<std::string>("volume");
+  factor_ = p.get<double>("factor");
+  threshold_ = p.get<double>("threshold");
 }
 
 G4VBiasingOperation* GammaToMuPair::ProposeOccurenceBiasingOperation(

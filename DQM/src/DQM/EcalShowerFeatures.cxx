@@ -6,8 +6,8 @@
 namespace dqm {
 
 void EcalShowerFeatures::configure(framework::config::Parameters &ps) {
-  ecal_veto_name_ = ps.getParameter<std::string>("ecal_veto_name");
-  ecal_veto_pass_ = ps.getParameter<std::string>("ecal_veto_pass");
+  ecal_veto_name_ = ps.get<std::string>("ecal_veto_name");
+  ecal_veto_pass_ = ps.get<std::string>("ecal_veto_pass");
 
   return;
 }

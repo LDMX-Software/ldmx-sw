@@ -2,11 +2,10 @@
 namespace dqm {
 
 void ReSimVerifier::configure(framework::config::Parameters& parameters) {
-  simPassName_ = parameters.getParameter<std::string>("sim_pass_name");
-  reSimPassName_ = parameters.getParameter<std::string>("resim_pass_name");
-  stop_on_error = parameters.getParameter<bool>("stop_on_error");
-  collections =
-      parameters.getParameter<std::vector<std::string>>("collections");
+  sim_pass_name_ = parameters.get<std::string>("sim_pass_name");
+  re_sim_pass_name_ = parameters.get<std::string>("resim_pass_name");
+  stop_on_error_ = parameters.get<bool>("stop_on_error");
+  collections_ = parameters.get<std::vector<std::string>>("collections");
 }
 bool ReSimVerifier::verifySimCalorimeterHits(
     const std::vector<ldmx::SimCalorimeterHit>& simHits,
@@ -37,22 +36,22 @@ bool ReSimVerifier::verifySimCalorimeterHits(
 }
 
 bool ReSimVerifier::verifySimParticles(const framework::Event& event) {
-  const auto& simParticles{
-      event.getMap<int, ldmx::SimParticle>("SimParticles", simPassName_)};
-  const auto& reSimParticles{
-      event.getMap<int, ldmx::SimParticle>("SimParticles", reSimPassName_)};
-  for (auto [id, simParticle] : simParticles) {
-    if (!reSimParticles.count(id)) {
+  const auto& sim_particles{
+      event.getMap<int, ldmx::SimParticle>("SimParticles", sim_pass_name_)};
+  const auto& re_sim_particles{
+      event.getMap<int, ldmx::SimParticle>("SimParticles", re_sim_pass_name_)};
+  for (auto [id, simParticle] : sim_particles) {
+    if (!re_sim_particles.count(id)) {
       return false;
     }
-    auto reSimParticle{reSimParticles.at(id)};
-    if (simParticle.getEnergy() != reSimParticle.getEnergy()) {
+    auto re_sim_particle{re_sim_particles.at(id)};
+    if (simParticle.getEnergy() != re_sim_particle.getEnergy()) {
       return false;
     }
-    if (simParticle.getPdgID() != reSimParticle.getPdgID()) {
+    if (simParticle.getPdgID() != re_sim_particle.getPdgID()) {
       return false;
     }
-    if (simParticle.getTime() != reSimParticle.getTime()) {
+    if (simParticle.getTime() != re_sim_particle.getTime()) {
       return false;
     }
   }
@@ -62,36 +61,36 @@ void ReSimVerifier::analyze(const framework::Event& event) {
   std::stringstream ss;
   bool passing{true};
   bool skipped{false};
-  auto eventNumber{event.getEventNumber()};
-  for (auto collection : collections) {
-    const auto SimHits =
-        event.getCollection<ldmx::SimCalorimeterHit>(collection, simPassName_);
-    const auto ReSimHits = event.getCollection<ldmx::SimCalorimeterHit>(
-        collection, reSimPassName_);
-    if (ReSimHits.size() == 0) {
+  auto event_number{event.getEventNumber()};
+  for (auto collection : collections_) {
+    const auto sim_hits = event.getCollection<ldmx::SimCalorimeterHit>(
+        collection, sim_pass_name_);
+    const auto re_sim_hits = event.getCollection<ldmx::SimCalorimeterHit>(
+        collection, re_sim_pass_name_);
+    if (re_sim_hits.size() == 0) {
       skipped = true;
       continue;
     } else {
       skipped = false;
     }
 
-    if (!verifySimCalorimeterHits(SimHits, ReSimHits)) {
+    if (!verifySimCalorimeterHits(sim_hits, re_sim_hits)) {
       passing = false;
-      ss << "Event " << eventNumber << " has different simhits for "
+      ss << "Event " << event_number << " has different simhits for "
          << collection << std::endl;
     }
   }
   if (skipped) {
-    ldmx_log(info) << "Skipping event " << eventNumber
+    ldmx_log(info) << "Skipping event " << event_number
                    << "since it was not resimulated";
   }
   if (!verifySimParticles(event)) {
     passing = false;
-    ss << "Event " << eventNumber
+    ss << "Event " << event_number
        << " has different SimParticles between the two passes" << std::endl;
   }
   if (!passing) {
-    if (stop_on_error) {
+    if (stop_on_error_) {
       EXCEPTION_RAISE("ReSimVerify", ss.str());
     } else {
       ldmx_log(info) << ss.str();
