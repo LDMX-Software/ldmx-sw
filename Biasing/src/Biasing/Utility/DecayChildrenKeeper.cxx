@@ -17,7 +17,7 @@ namespace utility {
 DecayChildrenKeeper::DecayChildrenKeeper(
     const std::string& name, framework::config::Parameters& parameters)
     : simcore::UserAction(name, parameters) {
-  parents_ = parameters.getParameter<std::vector<int>>("parents");
+  parents_ = parameters.get<std::vector<int>>("parents");
 }
 
 DecayChildrenKeeper::~DecayChildrenKeeper() {}

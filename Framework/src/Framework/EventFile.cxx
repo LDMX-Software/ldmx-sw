@@ -30,8 +30,7 @@ EventFile::EventFile(const framework::config::Parameters &params,
     //  Check out the TFile constructor for explanation of how this integer is
     //  built Short Reference: setting = 100*algorithem + level algorithm = 0
     //  ==> use global default
-    file_->SetCompressionSettings(
-        params.getParameter<int>("compressionSetting", 9));
+    file_->SetCompressionSettings(params.get<int>("compressionSetting", 9));
 
     if (parent_) {
       // output file when there are input files
@@ -58,8 +57,7 @@ EventFile::EventFile(const framework::config::Parameters &params,
                                        "' is not readable or does not exist.");
     }
 
-    bool skip_corrupted =
-        params.getParameter<bool>("skipCorruptedInputFiles", false);
+    bool skip_corrupted = params.get<bool>("skipCorruptedInputFiles", false);
 
     // make sure file is not a zombie file
     // (i.e. process ended without closing or the file was corrupted some other
@@ -74,7 +72,7 @@ EventFile::EventFile(const framework::config::Parameters &params,
     }
 
     // Get the tree name from the configuration
-    auto tree_name{params.getParameter<std::string>("tree_name")};
+    auto tree_name{params.get<std::string>("tree_name")};
     tree_ = static_cast<TTree *>(file_->Get(tree_name.c_str()));
     if (!tree_) {
       if (not skip_corrupted) {

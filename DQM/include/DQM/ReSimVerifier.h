@@ -38,14 +38,14 @@ class ReSimVerifier : public framework::Analyzer {
   bool verifySimParticles(const framework::Event &event);
 
  private:
-  std::vector<std::string> collections;
-  std::string simPassName_{""};
-  std::string reSimPassName_{""};
+  std::vector<std::string> collections_;
+  std::string sim_pass_name_{""};
+  std::string re_sim_pass_name_{""};
 
   /*
    * If true, abort on the first mismatch. Otherwise, report and continue.
    **/
-  bool stop_on_error{};
+  bool stop_on_error_{};
 };
 }  // namespace dqm
 

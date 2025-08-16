@@ -75,17 +75,17 @@ void open(const framework::config::Parameters& p) {
   typedef sinks::text_ostream_backend ourSinkBack_t;
   typedef sinks::synchronous_sink<ourSinkBack_t> ourSinkFront_t;
 
-  level file_level{convertLevel(p.getParameter<int>("fileLevel", 0))};
-  std::string file_path{p.getParameter<std::string>("filePath", "")};
+  level file_level{convertLevel(p.get<int>("fileLevel", 0))};
+  std::string file_path{p.get<std::string>("filePath", "")};
 
-  level term_level{convertLevel(p.getParameter<int>("termLevel", 4))};
+  level term_level{convertLevel(p.get<int>("termLevel", 4))};
   std::vector<framework::config::Parameters> empty{};
   const auto& log_rules{
       p.get<std::vector<framework::config::Parameters>>("logRules", empty)};
   std::unordered_map<std::string, level> custom_levels;
   for (const auto& log_rule : log_rules) {
-    custom_levels[log_rule.getParameter<std::string>("name")] =
-        convertLevel(log_rule.getParameter<int>("level"));
+    custom_levels[log_rule.get<std::string>("name")] =
+        convertLevel(log_rule.get<int>("level"));
   }
 
   // allow our logs to access common attributes, the ones availabe are

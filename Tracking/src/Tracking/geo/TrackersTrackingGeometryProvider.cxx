@@ -45,9 +45,9 @@ TrackersTrackingGeometryProvider::TrackersTrackingGeometryProvider(
     const framework::config::Parameters& parameters,
     framework::Process& process)
     : framework::ConditionsObjectProvider(name, tag_name, parameters, process) {
-  detector_ = parameters.getParameter<std::string>("detector");
-  tracker_y_length_ = parameters.getParameter<double>("tracker_y_length");
-  tracker_z_length_ = parameters.getParameter<double>("tracker_z_length");
+  detector_ = parameters.get<std::string>("detector");
+  tracker_y_length_ = parameters.get<double>("tracker_y_length");
+  tracker_z_length_ = parameters.get<double>("tracker_z_length");
 }
 
 std::pair<const framework::ConditionsObject*, framework::ConditionsIOV>

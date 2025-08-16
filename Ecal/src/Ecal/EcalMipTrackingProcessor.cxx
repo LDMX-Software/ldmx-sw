@@ -10,15 +10,13 @@ void EcalMipTrackingProcessor::onNewRun(const ldmx::RunHeader &rh) {
 
 void EcalMipTrackingProcessor::configure(
     framework::config::Parameters &parameters) {
-  n_ecal_layers_ = parameters.getParameter<int>("num_ecal_layers");
-  linreg_radius_ = parameters.getParameter<double>("linreg_radius");
-  ecal_collection_name_ =
-      parameters.getParameter<std::string>("ecal_collection_name");
-  ecal_pass_name_ = parameters.getParameter<std::string>("ecal_pass_name");
-  mip_collection_name_ =
-      parameters.getParameter<std::string>("mip_collection_name");
-  mip_pass_name_ = parameters.getParameter<std::string>("mip_pass_name");
-  mip_result_name_ = parameters.getParameter<std::string>("mip_result_name");
+  n_ecal_layers_ = parameters.get<int>("num_ecal_layers");
+  linreg_radius_ = parameters.get<double>("linreg_radius");
+  ecal_collection_name_ = parameters.get<std::string>("ecal_collection_name");
+  ecal_pass_name_ = parameters.get<std::string>("ecal_pass_name");
+  mip_collection_name_ = parameters.get<std::string>("mip_collection_name");
+  mip_pass_name_ = parameters.get<std::string>("mip_pass_name");
+  mip_result_name_ = parameters.get<std::string>("mip_result_name");
 }
 
 void EcalMipTrackingProcessor::clearProcessor() {

@@ -22,8 +22,7 @@ const std::string HcalSD::COLLECTION_NAME = "HcalSimHits";
 HcalSD::HcalSD(const std::string& name, simcore::ConditionsInterface& ci,
                const framework::config::Parameters& p)
     : SensitiveDetector(name, ci, p), birksc1_(1.29e-2), birksc2_(9.59e-6) {
-  gdmlIdentifiers_ = {
-      p.getParameter<std::vector<std::string>>("gdml_identifiers")};
+  gdmlIdentifiers_ = {p.get<std::vector<std::string>>("gdml_identifiers")};
 }
 
 ldmx::HcalID HcalSD::decodeCopyNumber(const std::uint32_t copyNumber,

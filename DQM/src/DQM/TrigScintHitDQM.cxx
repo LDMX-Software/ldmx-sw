@@ -44,40 +44,40 @@ void TrigScintHitDQM::onProcessStart() {
 }
 
 void TrigScintHitDQM::configure(framework::config::Parameters &ps) {
-  hitCollectionName_ = ps.getParameter<std::string>("hit_collection");
-  padName_ = ps.getParameter<std::string>("pad").c_str();
+  hit_collection_name_ = ps.get<std::string>("hit_collection");
+  pad_name_ = ps.get<std::string>("pad").c_str();
 
-  trig_scint_passname_ = ps.getParameter<std::string>("trig_scint_passname");
+  trig_scint_passname_ = ps.get<std::string>("trig_scint_passname");
 
   ldmx_log(debug) << "In TrigScintHitDQM::configure, got parameters "
-                  << hitCollectionName_ << " and " << padName_;
+                  << hit_collection_name_ << " and " << pad_name_;
 }
 
 void TrigScintHitDQM::analyze(const framework::Event &event) {
   // Get the collection of TrigScintHit digitized hits if the exists
-  const std::vector<ldmx::TrigScintHit> TrigScintHits =
-      event.getCollection<ldmx::TrigScintHit>(hitCollectionName_,
+  const std::vector<ldmx::TrigScintHit> trig_scint_hits =
+      event.getCollection<ldmx::TrigScintHit>(hit_collection_name_,
                                               trig_scint_passname_);
 
   // Get the total hit count
-  int hitCount = TrigScintHits.size();
-  histograms_.fill("n_hits", hitCount);
+  int hit_count = trig_scint_hits.size();
+  histograms_.fill("n_hits", hit_count);
 
-  double totalPE{0};
-  int noiseHitCount = 0;
+  double total_pe{0};
+  int noise_hit_count = 0;
 
-  ldmx_log(debug) << "Looping over hits in " << hitCollectionName_;
+  ldmx_log(debug) << "Looping over hits in " << hit_collection_name_;
 
   // Loop through all TrigScint hits in the event
 
-  for (const ldmx::TrigScintHit &hit : TrigScintHits) {
+  for (const ldmx::TrigScintHit &hit : trig_scint_hits) {
     histograms_.fill("pe", hit.getPE());
     histograms_.fill("hit_time", hit.getTime());
     histograms_.fill("id", hit.getBarID());
 
-    totalPE += hit.getPE();
+    total_pe += hit.getPE();
     if (hit.isNoise() > 0) {
-      noiseHitCount++;
+      noise_hit_count++;
       histograms_.fill("pe_noise", hit.getPE());
       histograms_.fill("id_noise", hit.getBarID());
     } else {  // x, y, z not set for noise hits
@@ -87,8 +87,8 @@ void TrigScintHitDQM::analyze(const framework::Event &event) {
     }
   }
 
-  histograms_.fill("total_pe", totalPE);
-  histograms_.fill("n_hits_noise", noiseHitCount);
+  histograms_.fill("total_pe", total_pe);
+  histograms_.fill("n_hits_noise", noise_hit_count);
 }
 
 }  // namespace dqm

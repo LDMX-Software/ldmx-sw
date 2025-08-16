@@ -12,14 +12,13 @@ namespace dqm {
 
 void SampleValidation::configure(framework::config::Parameters& ps) {
   target_scoring_plane_passname_ =
-      ps.getParameter<std::string>("target_scoring_plane_passname");
-  sim_particles_passname_ =
-      ps.getParameter<std::string>("sim_particles_passname");
+      ps.get<std::string>("target_scoring_plane_passname");
+  sim_particles_passname_ = ps.get<std::string>("sim_particles_passname");
 }
 
 void SampleValidation::analyze(const framework::Event& event) {
   // Grab the SimParticle Map and Target Scoring Plane Hits
-  auto targetSPHits(event.getCollection<ldmx::SimTrackerHit>(
+  auto target_sp_hits(event.getCollection<ldmx::SimTrackerHit>(
       "TargetScoringPlaneHits", target_scoring_plane_passname_));
   auto particle_map{event.getMap<int, ldmx::SimParticle>(
       "SimParticles", sim_particles_passname_)};
@@ -39,11 +38,11 @@ void SampleValidation::analyze(const framework::Event& event) {
 
     for (auto const& parent_track_id : parents_track_ids) {
       if (parent_track_id == 0) {
-        histograms_.fill("primaries_pdgid", pdgid_label(pdgid));
+        histograms_.fill("primaries_pdgid", pdgidLabel(pdgid));
         histograms_.fill("primaries_energy", energy);
         hard_thresh = (2500. / 4000.) * energy;
         primary_daughters = daughters;
-        for (const ldmx::SimTrackerHit& sphit : targetSPHits) {
+        for (const ldmx::SimTrackerHit& sphit : target_sp_hits) {
           if (sphit.getTrackID() == it.first && sphit.getPosition()[2] < 0) {
             histograms_.fill("beam_smear", vertex[0], vertex[1]);
           }
@@ -59,12 +58,12 @@ void SampleValidation::analyze(const framework::Event& event) {
     ldmx::SimParticle p = it.second;
     for (auto const& primary_daughter : primary_daughters) {
       if (trackid == primary_daughter) {
-        histograms_.fill("primarydaughters_pdgid", pdgid_label(p.getPdgID()));
+        histograms_.fill("primarydaughters_pdgid", pdgidLabel(p.getPdgID()));
         if (p.getPdgID() == 22) {
           histograms_.fill("daughterphoton_energy", p.getEnergy());
         }
         if (p.getEnergy() >= hard_thresh) {
-          histograms_.fill("harddaughters_pdgid", pdgid_label(p.getPdgID()));
+          histograms_.fill("harddaughters_pdgid", pdgidLabel(p.getPdgID()));
           histograms_.fill("harddaughters_startZ", p.getVertex()[2]);
           histograms_.fill("harddaughters_endZ", p.getEndPoint()[2]);
           histograms_.fill("harddaughters_energy", p.getEnergy());
@@ -80,8 +79,7 @@ void SampleValidation::analyze(const framework::Event& event) {
     for (const std::vector<int>& daughter_track_id : hardbrem_daughters) {
       for (const int& daughter_id : daughter_track_id) {
         if (trackid == daughter_id) {
-          histograms_.fill("hardbremdaughters_pdgid",
-                           pdgid_label(p.getPdgID()));
+          histograms_.fill("hardbremdaughters_pdgid", pdgidLabel(p.getPdgID()));
           histograms_.fill("hardbremdaughters_startZ", p.getVertex()[2]);
           histograms_.fill("hardbremdaughters_endZ", p.getEndPoint()[2]);
           histograms_.fill("hardbremdaughters_energy", p.getEnergy());
@@ -93,7 +91,7 @@ void SampleValidation::analyze(const framework::Event& event) {
   return;
 }
 
-int SampleValidation::pdgid_label(const int pdgid) {
+int SampleValidation::pdgidLabel(const int pdgid) {
   // initially assign label as "anything else"/overflow value,
   // only change if the pdg id is something of interest
   int label = 19;
@@ -147,8 +145,8 @@ void SampleValidation::onProcessStart() {
                                      "#pi^{0}",                 // 10
                                      "K^{+}",                   // 11
                                      "K^{-}",                   // 12
-                                     "K_{L}",                   // 13
-                                     "K_{S}",                   // 14
+                                     "k_{L}",                   // 13
+                                     "k_{S}",                   // 14
                                      "light-N",                 // 15
                                      "heavy-N",                 // 16
                                      "#Lambda / #Sigma / #Xi",  // 17

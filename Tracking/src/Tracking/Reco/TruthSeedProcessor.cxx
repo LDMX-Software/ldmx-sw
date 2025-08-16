@@ -23,44 +23,42 @@ void TruthSeedProcessor::onNewRun(const ldmx::RunHeader& rh) {
 
 void TruthSeedProcessor::configure(framework::config::Parameters& parameters) {
   scoring_hits_coll_name_ =
-      parameters.getParameter<std::string>("scoring_hits_coll_name");
-  sp_pass_name_ = parameters.getParameter<std::string>("sp_pass_name");
+      parameters.get<std::string>("scoring_hits_coll_name");
+  sp_pass_name_ = parameters.get<std::string>("sp_pass_name");
   recoil_sim_hits_coll_name_ =
-      parameters.getParameter<std::string>("recoil_sim_hits_coll_name");
+      parameters.get<std::string>("recoil_sim_hits_coll_name");
   tagger_sim_hits_coll_name_ =
-      parameters.getParameter<std::string>("tagger_sim_hits_coll_name");
-  input_pass_name_ = parameters.getParameter<std::string>("input_pass_name");
+      parameters.get<std::string>("tagger_sim_hits_coll_name");
+  input_pass_name_ = parameters.get<std::string>("input_pass_name");
   sim_particles_passname_ =
-      parameters.getParameter<std::string>("sim_particles_passname");
+      parameters.get<std::string>("sim_particles_passname");
 
-  n_min_hits_tagger_ = parameters.getParameter<int>("n_min_hits_tagger", 11);
-  n_min_hits_recoil_ = parameters.getParameter<int>("n_min_hits_recoil", 7);
-  pdg_ids_ = parameters.getParameter<std::vector<int>>("pdg_ids", {11});
-  z_min_ = parameters.getParameter<double>("z_min", -9999);  // mm
-  track_id_ = parameters.getParameter<int>("track_id", -9999);
-  pz_cut_ = parameters.getParameter<double>("pz_cut", -9999);  // MeV
-  p_cut_ = parameters.getParameter<double>("p_cut", 0.);
-  p_cut_max_ = parameters.getParameter<double>("p_cut_max", 100000.);  // MeV
-  p_cut_ecal_ = parameters.getParameter<double>("p_cut_ecal", -1.);    // MeV
-  recoil_sp_ = parameters.getParameter<double>("recoil_sp", true);
-  target_sp_ = parameters.getParameter<double>("tagger_sp", true);
-  seedSmearing_ = parameters.getParameter<bool>("seedSmearing", false);
-  max_track_id_ = parameters.getParameter<int>("max_track_id", 5);
+  n_min_hits_tagger_ = parameters.get<int>("n_min_hits_tagger", 11);
+  n_min_hits_recoil_ = parameters.get<int>("n_min_hits_recoil", 7);
+  pdg_ids_ = parameters.get<std::vector<int>>("pdg_ids", {11});
+  z_min_ = parameters.get<double>("z_min", -9999);  // mm
+  track_id_ = parameters.get<int>("track_id", -9999);
+  pz_cut_ = parameters.get<double>("pz_cut", -9999);  // MeV
+  p_cut_ = parameters.get<double>("p_cut", 0.);
+  p_cut_max_ = parameters.get<double>("p_cut_max", 100000.);  // MeV
+  p_cut_ecal_ = parameters.get<double>("p_cut_ecal", -1.);    // MeV
+  recoil_sp_ = parameters.get<double>("recoil_sp", true);
+  target_sp_ = parameters.get<double>("tagger_sp", true);
+  seedSmearing_ = parameters.get<bool>("seedSmearing", false);
+  max_track_id_ = parameters.get<int>("max_track_id", 5);
 
   ldmx_log(info) << "Seed Smearing is set to " << seedSmearing_;
 
-  d0smear_ = parameters.getParameter<std::vector<double>>("d0smear",
-                                                          {0.01, 0.01, 0.01});
-  z0smear_ =
-      parameters.getParameter<std::vector<double>>("z0smear", {0.1, 0.1, 0.1});
-  phismear_ = parameters.getParameter<double>("phismear", 0.001);
-  thetasmear_ = parameters.getParameter<double>("thetasmear", 0.001);
-  relpsmear_ = parameters.getParameter<double>("relpsmear", 0.1);
+  d0smear_ = parameters.get<std::vector<double>>("d0smear", {0.01, 0.01, 0.01});
+  z0smear_ = parameters.get<std::vector<double>>("z0smear", {0.1, 0.1, 0.1});
+  phismear_ = parameters.get<double>("phismear", 0.001);
+  thetasmear_ = parameters.get<double>("thetasmear", 0.001);
+  relpsmear_ = parameters.get<double>("relpsmear", 0.1);
 
   // Relative smear factor terms, only used if seedSmearing_ is true.
-  rel_smearfactors_ = parameters.getParameter<std::vector<double>>(
+  rel_smearfactors_ = parameters.get<std::vector<double>>(
       "rel_smearfactors", {0.1, 0.1, 0.1, 0.1, 0.1, 0.1});
-  inflate_factors_ = parameters.getParameter<std::vector<double>>(
+  inflate_factors_ = parameters.get<std::vector<double>>(
       "inflate_factors", {10., 10., 10., 10., 10., 10.});
 
   // In tracking frame: where do these numbers come from?
@@ -69,12 +67,12 @@ void TruthSeedProcessor::configure(framework::config::Parameters& parameters) {
   // In detector coordinates, (x_,y_,z_) = (-21.7, -883) is
   // where the beam arrives (if no smearing is applied) and we simply
   // reorder these values so that they are in tracking coordinates.
-  beamOrigin_ = parameters.getParameter<std::vector<double>>(
-      "beamOrigin", {-883.0, -21.745876, 0.0});
+  beamOrigin_ = parameters.get<std::vector<double>>("beamOrigin",
+                                                    {-883.0, -21.745876, 0.0});
 
   // Skip the tagger or recoil trackers if wanted
-  skip_tagger_ = parameters.getParameter<bool>("skip_tagger", false);
-  skip_recoil_ = parameters.getParameter<bool>("skip_recoil", false);
+  skip_tagger_ = parameters.get<bool>("skip_tagger", false);
+  skip_recoil_ = parameters.get<bool>("skip_recoil", false);
 }
 
 void TruthSeedProcessor::createTruthTrack(

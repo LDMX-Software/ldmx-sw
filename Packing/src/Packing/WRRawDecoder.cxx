@@ -72,9 +72,9 @@ class WRRawDecoder : public framework::Producer {
 };
 
 void WRRawDecoder::configure(framework::config::Parameters& ps) {
-  input_file_ = ps.getParameter<std::string>("input_file");
-  output_name_ = ps.getParameter<std::string>("output_name");
-  ntuplize_ = ps.getParameter<bool>("ntuplize");
+  input_file_ = ps.get<std::string>("input_file");
+  output_name_ = ps.get<std::string>("output_name");
+  ntuplize_ = ps.get<bool>("ntuplize");
 
   file_reader_.open(input_file_);
 }

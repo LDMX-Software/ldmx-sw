@@ -14,14 +14,12 @@ HcalVetoProcessor::HcalVetoProcessor(const std::string &name,
     : Producer(name, process) {}
 
 void HcalVetoProcessor::configure(framework::config::Parameters &parameters) {
-  total_PE_threshold_ = parameters.getParameter<double>("pe_threshold");
-  max_time_ = parameters.getParameter<double>("max_time");
-  output_coll_name_ = parameters.getParameter<std::string>("output_coll_name");
-  input_hit_coll_name_ =
-      parameters.getParameter<std::string>("input_hit_coll_name");
-  input_hit_pass_name_ =
-      parameters.getParameter<std::string>("input_hit_pass_name");
-  track_pass_name_ = parameters.getParameter<std::string>("track_pass_name");
+  total_PE_threshold_ = parameters.get<double>("pe_threshold");
+  max_time_ = parameters.get<double>("max_time");
+  output_coll_name_ = parameters.get<std::string>("output_coll_name");
+  input_hit_coll_name_ = parameters.get<std::string>("input_hit_coll_name");
+  input_hit_pass_name_ = parameters.get<std::string>("input_hit_pass_name");
+  track_pass_name_ = parameters.get<std::string>("track_pass_name");
 
   // A fake-hit that gets added for the rare case where no hit actually reaches
   // the maxPE < pe check to avoid producing uninitialized memory
@@ -41,7 +39,7 @@ void HcalVetoProcessor::configure(framework::config::Parameters &parameters) {
   default_max_hit_.setAmplitudePos(-9999);
   default_max_hit_.setAmplitudeNeg(-9999);
 
-  double max_depth_ = parameters.getParameter<double>("max_depth", 0.);
+  double max_depth_ = parameters.get<double>("max_depth", 0.);
   if (max_depth_ != 0.) {
     EXCEPTION_RAISE(
         "InvalidParam",
@@ -50,14 +48,12 @@ void HcalVetoProcessor::configure(framework::config::Parameters &parameters) {
         "parameter (max_depth) from your configuration. See "
         "https://github.com/LDMX-Software/Hcal/issues/61 for details");
   }
-  back_min_PE_ = parameters.getParameter<double>("back_min_pe");
-  exclude_recoil_ele_ =
-      parameters.getParameter<bool>("exclude_recoil_ele", false);
+  back_min_PE_ = parameters.get<double>("back_min_pe");
+  exclude_recoil_ele_ = parameters.get<bool>("exclude_recoil_ele", false);
   track_collection_ =
-      parameters.getParameter<std::string>("track_collection", "RecoilTracks");
-  dr_from_recoil_max_ =
-      parameters.getParameter<double>("dr_from_recoil_max", 100);
-  inverse_skim_ = parameters.getParameter<bool>("inverse_skim");
+      parameters.get<std::string>("track_collection", "RecoilTracks");
+  dr_from_recoil_max_ = parameters.get<double>("dr_from_recoil_max", 100);
+  inverse_skim_ = parameters.get<bool>("inverse_skim");
 }
 
 void HcalVetoProcessor::produce(framework::Event &event) {

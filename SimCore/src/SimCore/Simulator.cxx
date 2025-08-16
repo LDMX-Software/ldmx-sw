@@ -23,13 +23,12 @@ void Simulator::beforeNewRun(ldmx::RunHeader& header) {
           ->getDetectorConstruction();
 
   header.setDetectorName(detector->getDetectorName());
-  header.setDescription(parameters_.getParameter<std::string>("description"));
+  header.setDescription(parameters_.get<std::string>("description"));
   header.setIntParameter(
       "Included Scoring Planes",
-      !parameters_.getParameter<std::string>("scoringPlanes").empty());
-  header.setIntParameter(
-      "Use Random Seed from Event Header",
-      parameters_.getParameter<bool>("rootPrimaryGenUseSeed"));
+      !parameters_.get<std::string>("scoringPlanes").empty());
+  header.setIntParameter("Use Random Seed from Event Header",
+                         parameters_.get<bool>("rootPrimaryGenUseSeed"));
 
   // lambda function for dumping 3-vectors into the run header
   auto threeVectorDump = [&header](const std::string& name,
@@ -39,8 +38,7 @@ void Simulator::beforeNewRun(ldmx::RunHeader& header) {
     header.setFloatParameter(name + " Z", vec.at(2));
   };
 
-  auto beamSpotSmear{
-      parameters_.getParameter<std::vector<double>>("beamSpotSmear", {})};
+  auto beamSpotSmear{parameters_.get<std::vector<double>>("beamSpotSmear", {})};
   if (!beamSpotSmear.empty()) {
     threeVectorDump("Smear Beam Spot [mm]", beamSpotSmear);
   }
@@ -54,12 +52,12 @@ void Simulator::beforeNewRun(ldmx::RunHeader& header) {
     }
   };
 
-  stringVectorDump("Pre Init Command",
-                   parameters_.getParameter<std::vector<std::string>>(
-                       "preInitCommands", {}));
-  stringVectorDump("Post Init Command",
-                   parameters_.getParameter<std::vector<std::string>>(
-                       "postInitCommands", {}));
+  stringVectorDump(
+      "Pre Init Command",
+      parameters_.get<std::vector<std::string>>("preInitCommands", {}));
+  stringVectorDump(
+      "Post Init Command",
+      parameters_.get<std::vector<std::string>>("postInitCommands", {}));
 
   simcore::XsecBiasingOperator::Factory::get().apply(
       [&header](auto bop) { bop->RecordConfig(header); });

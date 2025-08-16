@@ -33,19 +33,17 @@ G4VPhysicalVolume* DetectorConstruction::Construct() {
 }
 
 void DetectorConstruction::ConstructSDandField() {
-  auto sens_dets{
-      parameters_.getParameter<std::vector<framework::config::Parameters>>(
-          "sensitive_detectors", {})};
+  auto sens_dets{parameters_.get<std::vector<framework::config::Parameters>>(
+      "sensitive_detectors", {})};
   for (auto& det : sens_dets) {
     // create
     auto sd = SensitiveDetector::Factory::get().make(
-        det.getParameter<std::string>("class_name"),
-        det.getParameter<std::string>("instance_name"), conditions_interface_,
-        det);
+        det.get<std::string>("class_name"),
+        det.get<std::string>("instance_name"), conditions_interface_, det);
     if (not sd) {
       EXCEPTION_RAISE("UnableToCreate",
                       "Unable to create a SensitiveDetector of type " +
-                          det.getParameter<std::string>("class_name"));
+                          det.get<std::string>("class_name"));
     }
     // attach to volumes
     for (G4LogicalVolume* volume : *G4LogicalVolumeStore::GetInstance()) {

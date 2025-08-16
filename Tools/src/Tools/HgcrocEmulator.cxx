@@ -6,16 +6,16 @@ namespace ldmx {
 HgcrocEmulator::HgcrocEmulator(const framework::config::Parameters &ps) {
   // settings of readout chip that are the same for all chips
   //  used  in actual digitization
-  noise_ = ps.getParameter<bool>("noise");
-  timingJitter_ = ps.getParameter<double>("timingJitter");
-  rateUpSlope_ = ps.getParameter<double>("rateUpSlope");
-  timeUpSlope_ = ps.getParameter<double>("timeUpSlope");
-  rateDnSlope_ = ps.getParameter<double>("rateDnSlope");
-  timeDnSlope_ = ps.getParameter<double>("timeDnSlope");
-  timePeak_ = ps.getParameter<double>("timePeak");
-  clock_cycle_ = ps.getParameter<double>("clockCycle");
-  nADCs_ = ps.getParameter<int>("nADCs");
-  i_soi_ = ps.getParameter<int>("iSOI");
+  noise_ = ps.get<bool>("noise");
+  timingJitter_ = ps.get<double>("timingJitter");
+  rateUpSlope_ = ps.get<double>("rateUpSlope");
+  timeUpSlope_ = ps.get<double>("timeUpSlope");
+  rateDnSlope_ = ps.get<double>("rateDnSlope");
+  timeDnSlope_ = ps.get<double>("timeDnSlope");
+  timePeak_ = ps.get<double>("timePeak");
+  clock_cycle_ = ps.get<double>("clockCycle");
+  nADCs_ = ps.get<int>("nADCs");
+  i_soi_ = ps.get<int>("iSOI");
 
   // Time -> clock counts conversion
   //  time [ns] * ( 2^10 / max time in ns ) = clock counts

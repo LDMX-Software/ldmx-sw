@@ -117,7 +117,7 @@ void EcalClusterAnalyzer::analyze(const framework::Event& event) {
     if (it != ecal_sim_hits.end()) {
       // if found a simhit matching this rechit
       int ancestor = 0;
-      int prevAncestor = 0;
+      int prev_ancestor = 0;
       bool tagged = false;
       int tag = 0;
       std::vector<double> edep;
@@ -129,17 +129,17 @@ void EcalClusterAnalyzer::analyze(const framework::Event& event) {
         ancestor = contrib.originID;
         // store energy from this contrib at index = origin electron ID
         if (ancestor <= nbr_of_electrons) edep[ancestor] += contrib.edep;
-        if (!tagged && i != 0 && prevAncestor != ancestor) {
+        if (!tagged && i != 0 && prev_ancestor != ancestor) {
           // if origin electron ID does not match previous origin electron ID
           // this hit has contributions from several electrons, ie mixed case
           tag = 0;
           tagged = true;
         }
-        prevAncestor = ancestor;
+        prev_ancestor = ancestor;
       }
       if (!tagged) {
         // if not tagged, hit was from a single electron
-        tag = prevAncestor;
+        tag = prev_ancestor;
       }
       histograms_.fill("ancestors", tag);
       hit_info.insert({hit.getID(), std::make_pair(tag, edep)});

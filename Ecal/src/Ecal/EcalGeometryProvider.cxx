@@ -77,8 +77,7 @@ EcalGeometryProvider::EcalGeometryProvider(
           ldmx::EcalGeometry::CONDITIONS_OBJECT_NAME, tagname, parameters,
           process} {
   geometries_ =
-      parameters.getParameter<std::vector<framework::config::Parameters>>(
-          "geometries");
+      parameters.get<std::vector<framework::config::Parameters>>("geometries");
   ecal_geometry_ = 0;
 }
 
@@ -102,7 +101,7 @@ EcalGeometryProvider::getCondition(const ldmx::EventHeader& context) {
       }
 
       std::vector<std::string> dets_valid =
-          pver.getParameter<std::vector<std::string>>(keyname);
+          pver.get<std::vector<std::string>>(keyname);
       for (auto detregex : dets_valid) {
         std::string regex(detregex);
         if (regex.empty()) continue;  // no empty regex allowed

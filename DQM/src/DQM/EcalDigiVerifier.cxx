@@ -47,11 +47,11 @@ void EcalDigiVerifier::analyze(const framework::Event &event) {
   std::set<int> my_costum_mod_ids_set;
 
   // Loop on the ecal rechits
-  for (const ldmx::EcalHit &recHit : ecal_rec_hits) {
+  for (const ldmx::EcalHit &rec_hit : ecal_rec_hits) {
     num_rec_hits++;
 
     // Building up an ID that has layer + module information
-    ldmx::EcalID ecal_id(recHit.getID());
+    ldmx::EcalID ecal_id(rec_hit.getID());
     int layer = ecal_id.layer() + 1;
     int module_id = ecal_id.getModuleID() + 1;
     int my_mod_costum_id = layer * 100 + module_id;
@@ -60,17 +60,17 @@ void EcalDigiVerifier::analyze(const framework::Event &event) {
     my_costum_mod_ids_set.insert(my_mod_costum_id);
 
     // Measure the sum energy of all rechits (inc noise)
-    total_rec_energy += recHit.getEnergy();
+    total_rec_energy += rec_hit.getEnergy();
 
     // skip anything that digi flagged as noise
-    if (recHit.isNoise()) {
+    if (rec_hit.isNoise()) {
       num_noise_hits++;
       histograms_.fill("is_noise_hit", 1.);
       continue;
     }  // end if noise
     histograms_.fill("is_noise_hit", 0.);
 
-    int raw_id = recHit.getID();
+    int raw_id = rec_hit.getID();
 
     // energy weighted sim hit positions
     double sim_pos_x_weighted = 0.;
@@ -97,20 +97,20 @@ void EcalDigiVerifier::analyze(const framework::Event &event) {
     sim_pos_x_weighted /= total_sim_energy_dep;
     sim_pos_y_weighted /= total_sim_energy_dep;
     sim_pos_z_weighted /= total_sim_energy_dep;
-    auto residualX = recHit.getXPos() - sim_pos_x_weighted;
-    auto residualY = recHit.getYPos() - sim_pos_y_weighted;
-    auto residualZ = recHit.getZPos() - sim_pos_z_weighted;
-    histograms_.fill("rec_sim_hit_residual_x", residualX);
-    histograms_.fill("rec_sim_hit_residual_y", residualY);
-    histograms_.fill("rec_sim_hit_residual_z", residualZ);
-    histograms_.fill("rec_sim_hit_residual_x:layer", residualX, layer);
-    histograms_.fill("rec_sim_hit_residual_y:layer", residualY, layer);
-    histograms_.fill("rec_sim_hit_residual_z:layer", residualZ, layer);
+    auto residual_x = rec_hit.getXPos() - sim_pos_x_weighted;
+    auto residual_y = rec_hit.getYPos() - sim_pos_y_weighted;
+    auto residual_z = rec_hit.getZPos() - sim_pos_z_weighted;
+    histograms_.fill("rec_sim_hit_residual_x", residual_x);
+    histograms_.fill("rec_sim_hit_residual_y", residual_y);
+    histograms_.fill("rec_sim_hit_residual_z", residual_z);
+    histograms_.fill("rec_sim_hit_residual_x:layer", residual_x, layer);
+    histograms_.fill("rec_sim_hit_residual_y:layer", residual_y, layer);
+    histograms_.fill("rec_sim_hit_residual_z:layer", residual_z, layer);
     histograms_.fill("num_sim_hits_per_cell", num_sim_hits);
     histograms_.fill("sim_edep:rec_amplitude", total_sim_energy_dep,
-                     recHit.getAmplitude());
+                     rec_hit.getAmplitude());
     histograms_.fill("sim_edep:rec_energy", total_sim_energy_dep,
-                     recHit.getEnergy());
+                     rec_hit.getEnergy());
   }  // end loop on rec hits
 
   std::map<int, int> module_hits;
@@ -122,13 +122,13 @@ void EcalDigiVerifier::analyze(const framework::Event &event) {
   // this would be nice if not hardcoded...
   num_mod_with_0hits = num_layers_ * 7 - my_costum_mod_ids_set.size();
 
-  for (const auto &moduleHit : module_hits) {
-    if (moduleHit.second == 1) {
+  for (const auto &module_hit : module_hits) {
+    if (module_hit.second == 1) {
       num_mod_with_1hits++;
-    } else if (moduleHit.second == 2) {
+    } else if (module_hit.second == 2) {
       num_mod_with_2hits++;
-    } else if (moduleHit.second > 2) {
-      histograms_.fill("num_hit_if_more_than_2hits", moduleHit.second);
+    } else if (module_hit.second > 2) {
+      histograms_.fill("num_hit_if_more_than_2hits", module_hit.second);
       num_mod_with_more_than_2hits++;
     }
   }

@@ -27,8 +27,8 @@ bool non_fiducial = false;
 NonFiducialFilter::NonFiducialFilter(const std::string& name,
                                      framework::config::Parameters& parameters)
     : simcore::UserAction(name, parameters) {
-  recoil_max_p_ = parameters.getParameter<double>("recoil_max_p");
-  abort_fiducial_ = parameters.getParameter<bool>("abort_fiducial");
+  recoil_max_p_ = parameters.get<double>("recoil_max_p");
+  abort_fiducial_ = parameters.get<bool>("abort_fiducial");
 }
 
 void NonFiducialFilter::stepping(const G4Step* step) {

@@ -22,7 +22,7 @@ namespace biasing {
 EcalProcessFilter::EcalProcessFilter(const std::string& name,
                                      framework::config::Parameters& parameters)
     : simcore::UserAction(name, parameters) {
-  process_ = parameters.getParameter<std::string>("process");
+  process_ = parameters.get<std::string>("process");
 }
 
 G4ClassificationOfNewTrack EcalProcessFilter::ClassifyNewTrack(

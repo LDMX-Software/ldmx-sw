@@ -6,20 +6,19 @@
 namespace recon {
 
 void PFTruthProducer::configure(framework::config::Parameters &ps) {
-  primaryCollName_ = ps.getParameter<std::string>("outputPrimaryCollName");
-  targetCollName_ = ps.getParameter<std::string>("outputTargetCollName");
-  ecalCollName_ = ps.getParameter<std::string>("outputEcalCollName");
-  hcalCollName_ = ps.getParameter<std::string>("outputHcalCollName");
-  target_sp_passname_ = ps.getParameter<std::string>("target_sp_passname");
-  ecal_sp_passname_ = ps.getParameter<std::string>("ecal_sp_passname");
-  sim_particles_passname_ =
-      ps.getParameter<std::string>("sim_particles_passname");
+  primaryCollName_ = ps.get<std::string>("outputPrimaryCollName");
+  targetCollName_ = ps.get<std::string>("outputTargetCollName");
+  ecalCollName_ = ps.get<std::string>("outputEcalCollName");
+  hcalCollName_ = ps.get<std::string>("outputHcalCollName");
+  target_sp_passname_ = ps.get<std::string>("target_sp_passname");
+  ecal_sp_passname_ = ps.get<std::string>("ecal_sp_passname");
+  sim_particles_passname_ = ps.get<std::string>("sim_particles_passname");
   sim_particles_event_passname_ =
-      ps.getParameter<std::string>("sim_particles_event_passname");
+      ps.get<std::string>("sim_particles_event_passname");
   ecal_sp_hits_event_passname_ =
-      ps.getParameter<std::string>("ecal_sp_hits_event_passname");
+      ps.get<std::string>("ecal_sp_hits_event_passname");
   target_sp_hits_event_passname_ =
-      ps.getParameter<std::string>("target_sp_hits_event_passname");
+      ps.get<std::string>("target_sp_hits_event_passname");
 }
 template <class T>
 void sortHits(std::vector<T> spHits) {

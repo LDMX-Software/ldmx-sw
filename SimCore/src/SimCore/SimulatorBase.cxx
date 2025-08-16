@@ -110,11 +110,11 @@ void SimulatorBase::configure(framework::config::Parameters& parameters) {
   parameters_ = parameters;
 
   preInitCommands_ =
-      parameters_.getParameter<std::vector<std::string>>("preInitCommands", {});
+      parameters_.get<std::vector<std::string>>("preInitCommands", {});
 
   // Get the extra simulation configuring commands
-  postInitCommands_ = parameters_.getParameter<std::vector<std::string>>(
-      "postInitCommands", {});
+  postInitCommands_ =
+      parameters_.get<std::vector<std::string>>("postInitCommands", {});
 
   verifyParameters();
   if (runManager_) {
@@ -145,7 +145,7 @@ void SimulatorBase::configure(framework::config::Parameters& parameters) {
   }
 }
 void SimulatorBase::createLogging() {
-  auto loggingPrefix = parameters_.getParameter<std::string>("logging_prefix");
+  auto loggingPrefix = parameters_.get<std::string>("logging_prefix");
   // For now dont print out anything from GEANT
   // Next step is to modify G4Session to print everything into our logging
   // system
@@ -186,7 +186,7 @@ void SimulatorBase::buildGeometry() {
       new DetectorConstruction(parser_ptr, parameters_, conditionsIntf_));
 
   // Parse the detector geometry and validate if specified.
-  auto detectorPath{parameters_.getParameter<std::string>("detector")};
+  auto detectorPath{parameters_.get<std::string>("detector")};
   ldmx_log(trace) << "Reading in geometry from '" << detectorPath << "'";
   G4GeometryManager::GetInstance()->OpenGeometry();
   parser_ptr->read();

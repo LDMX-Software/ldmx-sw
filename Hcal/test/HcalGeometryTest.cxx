@@ -31,7 +31,7 @@ class HcalCheckPositionMap : public framework::Analyzer {
 
   void configure(framework::config::Parameters &parameters) override {
     hcal_sim_hits_pass_name_ =
-        parameters.getParameter<std::string>("hcal_sim_hits_pass_name", "");
+        parameters.get<std::string>("hcal_sim_hits_pass_name", "");
   }
 
   void onProcessStart() final override {}

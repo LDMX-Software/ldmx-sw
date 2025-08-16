@@ -13,24 +13,22 @@ EcalPreselectionSkimmer::EcalPreselectionSkimmer(const std::string &name,
     : framework::Producer(name, process) {}
 
 void EcalPreselectionSkimmer::configure(framework::config::Parameters &ps) {
-  ecal_veto_name_ = ps.getParameter<std::string>("ecal_veto_name");
-  ecal_veto_pass_ = ps.getParameter<std::string>("ecal_veto_pass");
-  ecal_mip_name_ = ps.getParameter<std::string>("ecal_mip_name");
-  ecal_mip_pass_ = ps.getParameter<std::string>("ecal_mip_pass");
-  summed_det_max_ = ps.getParameter<double>("summed_det_max");  // MeV
-  summed_tight_iso_max_ =
-      ps.getParameter<double>("summed_tight_iso_max");  // MeV
-  ecal_back_energy_max_ =
-      ps.getParameter<double>("ecal_back_energy_max");  // MeV
-  n_readout_hits_max_ = ps.getParameter<int>("n_readout_hits_max");
-  shower_rms_max_ = ps.getParameter<double>("shower_rms_max");
-  shower_y_std_max_ = ps.getParameter<double>("shower_y_std_max");
-  shower_x_std_max_ = ps.getParameter<double>("shower_x_std_max");
-  max_cell_dep_max_ = ps.getParameter<double>("max_cell_dep_max");  // MeV
-  std_layer_hit_max_ = ps.getParameter<int>("std_layer_hit_max");
-  n_straight_tracks_max_ = ps.getParameter<int>("n_straight_tracks_max");
-  bdt_disc_min_ = ps.getParameter<double>("bdt_disc_min");
-  fiducial_level_ = ps.getParameter<int>("fiducial_level");
+  ecal_veto_name_ = ps.get<std::string>("ecal_veto_name");
+  ecal_veto_pass_ = ps.get<std::string>("ecal_veto_pass");
+  ecal_mip_name_ = ps.get<std::string>("ecal_mip_name");
+  ecal_mip_pass_ = ps.get<std::string>("ecal_mip_pass");
+  summed_det_max_ = ps.get<double>("summed_det_max");              // MeV
+  summed_tight_iso_max_ = ps.get<double>("summed_tight_iso_max");  // MeV
+  ecal_back_energy_max_ = ps.get<double>("ecal_back_energy_max");  // MeV
+  n_readout_hits_max_ = ps.get<int>("n_readout_hits_max");
+  shower_rms_max_ = ps.get<double>("shower_rms_max");
+  shower_y_std_max_ = ps.get<double>("shower_y_std_max");
+  shower_x_std_max_ = ps.get<double>("shower_x_std_max");
+  max_cell_dep_max_ = ps.get<double>("max_cell_dep_max");  // MeV
+  std_layer_hit_max_ = ps.get<int>("std_layer_hit_max");
+  n_straight_tracks_max_ = ps.get<int>("n_straight_tracks_max");
+  bdt_disc_min_ = ps.get<double>("bdt_disc_min");
+  fiducial_level_ = ps.get<int>("fiducial_level");
 
   return;
 }

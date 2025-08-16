@@ -56,12 +56,12 @@ const std::vector<float> RADIUS_68_THETA_30_TO_90 = {
 
 void EcalWABRecProcessor::configure(framework::config::Parameters& parameters) {
   // Set the collection name as defined in the configuration
-  sp_pass_name_ = parameters.getParameter<std::string>("sp_pass_name");
-  collection_name_ = parameters.getParameter<std::string>("collection_name");
-  rec_pass_name_ = parameters.getParameter<std::string>("rec_pass_name");
-  rec_coll_name_ = parameters.getParameter<std::string>("rec_coll_name");
-  track_pass_name_ = parameters.getParameter<std::string>("track_pass_name");
-  track_coll_name_ = parameters.getParameter<std::string>("track_coll_name");
+  sp_pass_name_ = parameters.get<std::string>("sp_pass_name");
+  collection_name_ = parameters.get<std::string>("collection_name");
+  rec_pass_name_ = parameters.get<std::string>("rec_pass_name");
+  rec_coll_name_ = parameters.get<std::string>("rec_coll_name");
+  track_pass_name_ = parameters.get<std::string>("track_pass_name");
+  track_coll_name_ = parameters.get<std::string>("track_coll_name");
 }
 
 void EcalWABRecProcessor::produce(framework::Event& event) {

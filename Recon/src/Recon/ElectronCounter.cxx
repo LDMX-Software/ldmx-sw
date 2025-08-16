@@ -9,12 +9,11 @@ ElectronCounter::ElectronCounter(const std::string& name,
 ElectronCounter::~ElectronCounter() {}
 
 void ElectronCounter::configure(framework::config::Parameters& parameters) {
-  inputColl_ = parameters.getParameter<std::string>("input_collection");
-  input_pass_name_ = parameters.getParameter<std::string>("input_pass_name");
-  outputColl_ = parameters.getParameter<std::string>("output_collection");
-  nElectronsSim_ = parameters.getParameter<int>("simulated_electron_number");
-  useSimElectronCount_ =
-      parameters.getParameter<bool>("use_simulated_electron_number");
+  inputColl_ = parameters.get<std::string>("input_collection");
+  input_pass_name_ = parameters.get<std::string>("input_pass_name");
+  outputColl_ = parameters.get<std::string>("output_collection");
+  nElectronsSim_ = parameters.get<int>("simulated_electron_number");
+  useSimElectronCount_ = parameters.get<bool>("use_simulated_electron_number");
 
   /*  // can rehash this for cluster vs track counting
   if (mode_ == 0) {

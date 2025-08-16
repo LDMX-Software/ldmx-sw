@@ -8,21 +8,21 @@
 namespace tracking::dqm {
 
 void StraightTracksDQM::configure(framework::config::Parameters& parameters) {
-  track_collection_ = parameters.getParameter<std::string>(
-      "track_collection", "LinearRecoilTracks");
-  truth_collection_ = parameters.getParameter<std::string>(
-      "truth_collection", "LinearRecoilTruthTracks");
-  title_ = parameters.getParameter<std::string>("title", "recoil_lin_trk_");
-  track_prob_cut_ = parameters.getParameter<double>("trackProb_cut", 0.5);
-  subdetector_ = parameters.getParameter<std::string>("subdetector", "Recoil");
-  measurement_collection_ = parameters.getParameter<std::string>(
+  track_collection_ =
+      parameters.get<std::string>("track_collection", "LinearRecoilTracks");
+  truth_collection_ = parameters.get<std::string>("truth_collection",
+                                                  "LinearRecoilTruthTracks");
+  title_ = parameters.get<std::string>("title", "recoil_lin_trk_");
+  track_prob_cut_ = parameters.get<double>("trackProb_cut", 0.5);
+  subdetector_ = parameters.get<std::string>("subdetector", "Recoil");
+  measurement_collection_ = parameters.get<std::string>(
       "measurement_collection", "DigiRecoilSimHits");
 
   track_collection_events_passname_ =
-      parameters.getParameter<std::string>("track_collection_events_passname");
+      parameters.get<std::string>("track_collection_events_passname");
   truth_collection_events_passname_ =
-      parameters.getParameter<std::string>("truth_collection_events_passname");
-  input_pass_name_ = parameters.getParameter<std::string>("input_pass_name");
+      parameters.get<std::string>("truth_collection_events_passname");
+  input_pass_name_ = parameters.get<std::string>("input_pass_name");
 
   ldmx_log(info) << "Track Collection " << track_collection_;
   ldmx_log(info) << "Truth Collection " << truth_collection_;

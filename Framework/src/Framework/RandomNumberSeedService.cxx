@@ -32,12 +32,12 @@ RandomNumberSeedService::RandomNumberSeedService(
     : ConditionsObject(CONDITIONS_OBJECT_NAME),
       ConditionsObjectProvider(CONDITIONS_OBJECT_NAME, tagname, parameters,
                                process) {
-  auto seeding = parameters.getParameter<std::string>("seedMode", "run");
+  auto seeding = parameters.get<std::string>("seedMode", "run");
   if (!strcasecmp(seeding.c_str(), "run")) {
     seed_mode_ = SEED_RUN;
   } else if (!strcasecmp(seeding.c_str(), "external")) {
     seed_mode_ = SEED_EXTERNAL;
-    master_seed_ = parameters.getParameter<int>("masterSeed");
+    master_seed_ = parameters.get<int>("masterSeed");
     initialized_ = true;
   } else if (!strcasecmp(seeding.c_str(), "time")) {
     master_seed_ = time(0);

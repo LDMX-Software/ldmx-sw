@@ -14,7 +14,7 @@ namespace biasing {
 TargetDarkBremFilter::TargetDarkBremFilter(
     const std::string& name, framework::config::Parameters& parameters)
     : simcore::UserAction(name, parameters) {
-  threshold_ = parameters.getParameter<double>("threshold");
+  threshold_ = parameters.get<double>("threshold");
 }
 
 void TargetDarkBremFilter::BeginOfEventAction(const G4Event*) {

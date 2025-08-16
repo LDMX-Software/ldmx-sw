@@ -39,8 +39,7 @@ RunManager::RunManager(framework::config::Parameters& parameters,
   parameters_ = parameters;
 
   // Set whether the ROOT primary generator should use the persisted seed.
-  auto rootPrimaryGenUseSeed{
-      parameters.getParameter<bool>("rootPrimaryGenUseSeed")};
+  auto rootPrimaryGenUseSeed{parameters.get<bool>("rootPrimaryGenUseSeed")};
 
   // Validate the geometry if specified.
   setUseRootSeed(rootPrimaryGenUseSeed);
@@ -50,7 +49,7 @@ void RunManager::setupPhysics() {
   auto pList{physicsListFactory_.GetReferencePhysList("FTFP_BERT")};
   pList->SetVerboseLevel(0);
 
-  parallelWorldPath_ = parameters_.getParameter<std::string>("scoringPlanes");
+  parallelWorldPath_ = parameters_.get<std::string>("scoringPlanes");
   isPWEnabled_ = !parallelWorldPath_.empty();
   if (isPWEnabled_) {
     ldmx_log(debug) << "Parallel worlds physics list has been registered";
@@ -59,13 +58,13 @@ void RunManager::setupPhysics() {
 
   pList->RegisterPhysics(new GammaPhysics{"GammaPhysics", parameters_});
   pList->RegisterPhysics(new APrimePhysics(
-      parameters_.getParameter<framework::config::Parameters>("dark_brem")));
+      parameters_.get<framework::config::Parameters>("dark_brem")));
   pList->RegisterPhysics(new KaonPhysics(
-      "KaonPhysics", parameters_.getParameter<framework::config::Parameters>(
-                         "kaon_parameters")));
+      "KaonPhysics",
+      parameters_.get<framework::config::Parameters>("kaon_parameters")));
 
   auto biasing_operators{
-      parameters_.getParameter<std::vector<framework::config::Parameters>>(
+      parameters_.get<std::vector<framework::config::Parameters>>(
           "biasing_operators", {})};
   if (!biasing_operators.empty()) {
     ldmx_log(info) << " Biasing enabled with " << biasing_operators.size()
@@ -74,11 +73,11 @@ void RunManager::setupPhysics() {
     // create all the biasing operators that will be used
     for (framework::config::Parameters& bop : biasing_operators) {
       if (not simcore::XsecBiasingOperator::Factory::get().make(
-              bop.getParameter<std::string>("class_name"),
-              bop.getParameter<std::string>("instance_name"), bop)) {
+              bop.get<std::string>("class_name"),
+              bop.get<std::string>("instance_name"), bop)) {
         EXCEPTION_RAISE("UnableToCreate",
                         "Unable to create a XsecBiasingOperator of type " +
-                            bop.getParameter<std::string>("class_name"));
+                            bop.get<std::string>("class_name"));
       }
     }
 
@@ -110,7 +109,7 @@ void RunManager::Initialize() {
   if (isPWEnabled_) {
     ldmx_log(debug) << "Parallel worlds have been enabled";
 
-    auto validateGeometry_{parameters_.getParameter<bool>("validate_detector")};
+    auto validateGeometry_{parameters_.get<bool>("validate_detector")};
     G4GDMLParser* pwParser = new G4GDMLParser();
     pwParser->Read(parallelWorldPath_, validateGeometry_);
     this->getDetectorConstruction()->RegisterParallelWorld(
@@ -139,18 +138,17 @@ void RunManager::Initialize() {
   SetUserAction(stacking_action);
 
   // Create all user actions and attch them to the corresponding G4 actions
-  auto user_actions{
-      parameters_.getParameter<std::vector<framework::config::Parameters>>(
-          "actions", {})};
+  auto user_actions{parameters_.get<std::vector<framework::config::Parameters>>(
+      "actions", {})};
   for (auto& user_action : user_actions) {
     auto ua = UserAction::Factory::get().make(
-        user_action.getParameter<std::string>("class_name"),
-        user_action.getParameter<std::string>("instance_name"), user_action);
+        user_action.get<std::string>("class_name"),
+        user_action.get<std::string>("instance_name"), user_action);
     if (not ua) {
       EXCEPTION_RAISE(
           "UnableToCreate",
           "Unable to create a UserAction of type " +
-              user_action.getParameter<std::string>("class_name") +
+              user_action.get<std::string>("class_name") +
               ". Did you inherit from simcore::UserAction? "
               "Do you have DECLARE_ACTION in your implementation (.cxx) file? "
               "Did you include the fully-specified class name in your python "

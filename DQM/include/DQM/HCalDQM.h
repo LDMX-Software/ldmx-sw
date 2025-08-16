@@ -57,7 +57,7 @@ class HCalDQM : public framework::Analyzer {
   void analyzeSimHits(const std::vector<ldmx::SimCalorimeterHit> &hits);
 
   bool hitPassesVeto(const ldmx::HcalHit &hit, int section) {
-    if (hit.getPE() < pe_veto_threshold || hit.getTime() > max_hit_time_) {
+    if (hit.getPE() < pe_veto_threshold_ || hit.getTime() > max_hit_time_) {
       return true;
     }
     if (section == ldmx::HcalID::HcalSection::BACK && hit.getMinPE() < 1) {
@@ -85,7 +85,7 @@ class HCalDQM : public framework::Analyzer {
   std::string veto_pass_;
 
   // Veto threshold for photo-electrons
-  float pe_veto_threshold;
+  float pe_veto_threshold_;
   int section_;
   double max_hit_time_;
 };

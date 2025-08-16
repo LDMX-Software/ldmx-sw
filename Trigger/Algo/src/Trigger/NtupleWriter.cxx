@@ -10,30 +10,27 @@ NtupleWriter::NtupleWriter(const std::string& name, framework::Process& process)
     : Producer(name, process) {}
 
 void NtupleWriter::configure(framework::config::Parameters& ps) {
-  outPath_ = ps.getParameter<std::string>("outPath");
+  outPath_ = ps.get<std::string>("outPath");
 
   target_sp_hits_event_passname_ =
-      ps.getParameter<std::string>("target_sp_hits_event_passname");
-  target_sp_passname_ = ps.getParameter<std::string>("target_sp_passname");
+      ps.get<std::string>("target_sp_hits_event_passname");
+  target_sp_passname_ = ps.get<std::string>("target_sp_passname");
 
   ecal_sp_hits_events_passname_ =
-      ps.getParameter<std::string>("ecal_sp_hits_events_passname");
-  ecal_sp_passname_ = ps.getParameter<std::string>("ecal_sp_passname");
+      ps.get<std::string>("ecal_sp_hits_events_passname");
+  ecal_sp_passname_ = ps.get<std::string>("ecal_sp_passname");
 
   ecal_trig_sums_event_passname_ =
-      ps.getParameter<std::string>("ecal_trig_sums_event_passname");
-  ecal_trig_sums_passname_ =
-      ps.getParameter<std::string>("ecal_trig_sums_passname");
+      ps.get<std::string>("ecal_trig_sums_event_passname");
+  ecal_trig_sums_passname_ = ps.get<std::string>("ecal_trig_sums_passname");
 
   trig_electrons_event_passname_ =
-      ps.getParameter<std::string>("trig_electrons_event_passname");
-  trig_electrons_passname_ =
-      ps.getParameter<std::string>("trig_electrons_passname");
+      ps.get<std::string>("trig_electrons_event_passname");
+  trig_electrons_passname_ = ps.get<std::string>("trig_electrons_passname");
 
   hcal_trig_quads_events_passname_ =
-      ps.getParameter<std::string>("hcal_trig_quads_events_passname");
-  hcal_trig_quads_passname_ =
-      ps.getParameter<std::string>("hcal_trig_quads_passname");
+      ps.get<std::string>("hcal_trig_quads_events_passname");
+  hcal_trig_quads_passname_ = ps.get<std::string>("hcal_trig_quads_passname");
 }
 
 // precision-limiting function

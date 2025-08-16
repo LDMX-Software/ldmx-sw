@@ -6,14 +6,14 @@
 namespace recon {
 
 void TriggerProcessor::configure(framework::config::Parameters& parameters) {
-  layerESumCuts_ = parameters.getParameter<std::vector<double>>("thresholds");
-  beamEnergy_ = parameters.getParameter<double>("beamEnergy");
-  mode_ = parameters.getParameter<int>("mode");
-  startLayer_ = parameters.getParameter<int>("start_layer");
-  endLayer_ = parameters.getParameter<int>("end_layer");
-  inputColl_ = parameters.getParameter<std::string>("input_collection");
-  inputPass_ = parameters.getParameter<std::string>("input_pass");
-  outputColl_ = parameters.getParameter<std::string>("trigger_collection");
+  layerESumCuts_ = parameters.get<std::vector<double>>("thresholds");
+  beamEnergy_ = parameters.get<double>("beamEnergy");
+  mode_ = parameters.get<int>("mode");
+  startLayer_ = parameters.get<int>("start_layer");
+  endLayer_ = parameters.get<int>("end_layer");
+  inputColl_ = parameters.get<std::string>("input_collection");
+  inputPass_ = parameters.get<std::string>("input_pass");
+  outputColl_ = parameters.get<std::string>("trigger_collection");
 
   if (mode_ == 0) {
     algoName_ = "LayerSumTrig";

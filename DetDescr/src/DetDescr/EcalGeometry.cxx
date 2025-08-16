@@ -39,17 +39,17 @@ static void unrotate(double& p, double& q) {
 
 EcalGeometry::EcalGeometry(const framework::config::Parameters& ps)
     : framework::ConditionsObject(EcalGeometry::CONDITIONS_OBJECT_NAME) {
-  layerZPositions_ = ps.getParameter<std::vector<double>>("layerZPositions");
-  ecalFrontZ_ = ps.getParameter<double>("ecalFrontZ");
-  moduler_ = ps.getParameter<double>("moduleMinR");
-  gap_ = ps.getParameter<double>("gap");
-  nCellRHeight_ = ps.getParameter<double>("nCellRHeight");
-  cornersSideUp_ = ps.getParameter<bool>("cornersSideUp");
-  layer_shift_x_ = ps.getParameter<double>("layer_shift_x");
-  layer_shift_y_ = ps.getParameter<double>("layer_shift_y");
-  layer_shift_odd_ = ps.getParameter<bool>("layer_shift_odd");
-  layer_shift_odd_bilayer_ = ps.getParameter<bool>("layer_shift_odd_bilayer");
-  si_thickness_ = ps.getParameter<double>("si_thickness");
+  layerZPositions_ = ps.get<std::vector<double>>("layerZPositions");
+  ecalFrontZ_ = ps.get<double>("ecalFrontZ");
+  moduler_ = ps.get<double>("moduleMinR");
+  gap_ = ps.get<double>("gap");
+  nCellRHeight_ = ps.get<double>("nCellRHeight");
+  cornersSideUp_ = ps.get<bool>("cornersSideUp");
+  layer_shift_x_ = ps.get<double>("layer_shift_x");
+  layer_shift_y_ = ps.get<double>("layer_shift_y");
+  layer_shift_odd_ = ps.get<bool>("layer_shift_odd");
+  layer_shift_odd_bilayer_ = ps.get<bool>("layer_shift_odd_bilayer");
+  si_thickness_ = ps.get<double>("si_thickness");
 
   if (layer_shift_odd_ and layer_shift_odd_bilayer_) {
     EXCEPTION_RAISE("BadConf",

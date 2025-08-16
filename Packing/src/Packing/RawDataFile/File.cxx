@@ -9,17 +9,16 @@ namespace packing {
 namespace rawdatafile {
 
 File::File(const framework::config::Parameters &ps) {
-  is_output_ = ps.getParameter<bool>("is_output");
-  skip_unavailable_ = ps.getParameter<bool>("skip_unavailable");
+  is_output_ = ps.get<bool>("is_output");
+  skip_unavailable_ = ps.get<bool>("skip_unavailable");
 
-  std::string fn = ps.getParameter<std::string>("filename");
+  std::string fn = ps.get<std::string>("filename");
 
-  ecal_object_name_ = ps.getParameter<std::string>("ecal_object_name");
-  hcal_object_name_ = ps.getParameter<std::string>("hcal_object_name");
-  tracker_object_name_ = ps.getParameter<std::string>("tracker_object_name");
-  triggerpad_object_name_ =
-      ps.getParameter<std::string>("triggerpad_object_name");
-  pass_name_ = ps.getParameter<std::string>("pass_name");
+  ecal_object_name_ = ps.get<std::string>("ecal_object_name");
+  hcal_object_name_ = ps.get<std::string>("hcal_object_name");
+  tracker_object_name_ = ps.get<std::string>("tracker_object_name");
+  triggerpad_object_name_ = ps.get<std::string>("triggerpad_object_name");
+  pass_name_ = ps.get<std::string>("pass_name");
 
   std::cerr << "creating file" << std::endl;
   if (is_output_) {
@@ -51,7 +50,7 @@ File::File(const framework::config::Parameters &ps) {
 
     reader_.seek<uint32_t>(1, std::ios::beg);
 
-    if (ps.getParameter<bool>("verify_checksum")) {
+    if (ps.get<bool>("verify_checksum")) {
       utility::CRC crc;
       for (auto ifile{reader_.tell<uint32_t>()}; ifile < eof; ifile++) {
         reader_ >> word;

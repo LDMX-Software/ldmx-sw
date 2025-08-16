@@ -7,17 +7,17 @@ namespace hcal {
 
 void HcalSimpleDigiAndRecProducer::configure(
     framework::config::Parameters& ps) {
-  input_coll_name_ = ps.getParameter<std::string>("input_coll_name");
-  input_pass_name_ = ps.getParameter<std::string>("input_pass_name");
-  output_coll_name_ = ps.getParameter<std::string>("output_coll_name");
-  mev_per_mip_ = ps.getParameter<double>("mev_per_mip");
-  pe_per_mip_ = ps.getParameter<double>("pe_per_mip");
-  attenuation_length_ = ps.getParameter<double>("attenuation_length");
-  readout_threshold_ = ps.getParameter<int>("readout_threshold");
-  mean_noise_ = ps.getParameter<double>("mean_noise");
+  input_coll_name_ = ps.get<std::string>("input_coll_name");
+  input_pass_name_ = ps.get<std::string>("input_pass_name");
+  output_coll_name_ = ps.get<std::string>("output_coll_name");
+  mev_per_mip_ = ps.get<double>("mev_per_mip");
+  pe_per_mip_ = ps.get<double>("pe_per_mip");
+  attenuation_length_ = ps.get<double>("attenuation_length");
+  readout_threshold_ = ps.get<int>("readout_threshold");
+  mean_noise_ = ps.get<double>("mean_noise");
   position_resolution_smear_ =
       std::make_unique<std::normal_distribution<double>>(
-          0.0, ps.getParameter<double>("position_resolution"));
+          0.0, ps.get<double>("position_resolution"));
 }
 
 void HcalSimpleDigiAndRecProducer::onNewRun(const ldmx::RunHeader&) {

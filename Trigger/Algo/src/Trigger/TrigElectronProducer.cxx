@@ -11,17 +11,16 @@
 namespace trigger {
 
 void TrigElectronProducer::configure(framework::config::Parameters& ps) {
-  spCollName_ = ps.getParameter<std::string>("scoringPlaneCollName");
-  clusterCollName_ = ps.getParameter<std::string>("clusterCollName");
-  eleCollName_ = ps.getParameter<std::string>("eleCollName");
-  propMapName_ = ps.getParameter<std::string>("propMapName");
-  target_sp_passname_ = ps.getParameter<std::string>("target_sp_passname");
-  cluster_coll_passname_ =
-      ps.getParameter<std::string>("cluster_coll_passname");
+  spCollName_ = ps.get<std::string>("scoringPlaneCollName");
+  clusterCollName_ = ps.get<std::string>("clusterCollName");
+  eleCollName_ = ps.get<std::string>("eleCollName");
+  propMapName_ = ps.get<std::string>("propMapName");
+  target_sp_passname_ = ps.get<std::string>("target_sp_passname");
+  cluster_coll_passname_ = ps.get<std::string>("cluster_coll_passname");
   cluster_collname_events_passname_ =
-      ps.getParameter<std::string>("cluster_collname_events_passname");
+      ps.get<std::string>("cluster_collname_events_passname");
   sp_collname_events_passname_ =
-      ps.getParameter<std::string>("sp_collname_events_passname_");
+      ps.get<std::string>("sp_collname_events_passname_");
 }
 
 void TrigElectronProducer::produce(framework::Event& event) {

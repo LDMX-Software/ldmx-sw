@@ -51,7 +51,7 @@ class TestProducer : public Producer {
   ~TestProducer() {}
 
   void configure(framework::config::Parameters& p) final override {
-    createRunHeader_ = p.getParameter<bool>("createRunHeader");
+    createRunHeader_ = p.get<bool>("createRunHeader");
   }
 
   void beforeNewRun(ldmx::RunHeader& header) final override {
@@ -119,15 +119,12 @@ class TestAnalyzer : public Analyzer {
 
   void configure(framework::config::Parameters& ps) override {
     test_collection_passname_ =
-        ps.getParameter<std::string>("test_collection_passname", "");
-    test_object_passname_ =
-        ps.getParameter<std::string>("test_object_passname", "");
+        ps.get<std::string>("test_collection_passname", "");
+    test_object_passname_ = ps.get<std::string>("test_object_passname", "");
     veto_test_object_passname_ =
-        ps.getParameter<std::string>("veto_test_object_passname", "");
-    tenth_event_passname_ =
-        ps.getParameter<std::string>("tenth_event_passname", "");
-    event_index_passname_ =
-        ps.getParameter<std::string>("event_index_passname", "");
+        ps.get<std::string>("veto_test_object_passname", "");
+    tenth_event_passname_ = ps.get<std::string>("tenth_event_passname", "");
+    event_index_passname_ = ps.get<std::string>("event_index_passname", "");
   }
 
   void onProcessStart() final override {

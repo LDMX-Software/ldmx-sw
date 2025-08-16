@@ -20,11 +20,11 @@ using hex = packing::utility::hex<uint32_t>;
 using BufferReader = packing::utility::BufferReader<uint32_t>;
 
 void EcalRawDecoder::configure(framework::config::Parameters& ps) {
-  input_name_ = ps.getParameter<std::string>("input_name");
-  input_pass_ = ps.getParameter<std::string>("input_pass");
-  output_name_ = ps.getParameter<std::string>("output_name");
-  roc_version_ = ps.getParameter<int>("roc_version");
-  translate_eid_ = ps.getParameter<bool>("translate_eid");
+  input_name_ = ps.get<std::string>("input_name");
+  input_pass_ = ps.get<std::string>("input_pass");
+  output_name_ = ps.get<std::string>("output_name");
+  roc_version_ = ps.get<int>("roc_version");
+  translate_eid_ = ps.get<bool>("translate_eid");
 }
 
 void EcalRawDecoder::produce(framework::Event& event) {

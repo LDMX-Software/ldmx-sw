@@ -14,7 +14,7 @@ namespace biasing {
 EcalDarkBremFilter::EcalDarkBremFilter(
     const std::string& name, framework::config::Parameters& parameters)
     : simcore::UserAction(name, parameters) {
-  threshold_ = parameters.getParameter<double>("threshold");
+  threshold_ = parameters.get<double>("threshold");
 
   /*
    * We look for the logical volumes that match the following pattern:

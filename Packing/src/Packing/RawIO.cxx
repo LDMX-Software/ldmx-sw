@@ -5,7 +5,7 @@ namespace packing {
 
 void RawIO::configure(framework::config::Parameters& ps) {
   raw_file_ = std::make_unique<rawdatafile::File>(
-      ps.getParameter<framework::config::Parameters>("raw_file"));
+      ps.get<framework::config::Parameters>("raw_file"));
 }
 
 void RawIO::beforeNewRun(ldmx::RunHeader& header) {

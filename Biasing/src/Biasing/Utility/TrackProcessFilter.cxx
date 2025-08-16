@@ -17,7 +17,7 @@ namespace utility {
 TrackProcessFilter::TrackProcessFilter(
     const std::string& name, framework::config::Parameters& parameters)
     : simcore::UserAction(name, parameters) {
-  process_ = parameters.getParameter<std::string>("process");
+  process_ = parameters.get<std::string>("process");
 }
 
 TrackProcessFilter::~TrackProcessFilter() {}
