@@ -15,7 +15,7 @@ class EcalVetoProcessor(ldmxcfg.Producer) :
         super().__init__(name,"ecal::EcalVetoProcessor",'Ecal')
 
         from LDMX.Ecal.makePath import makeBDTPath, makeRoCPath
-        self.num_ecal_layers = 34
+        self.num_ecal_layers = 32
         self.verbose = False
         self.feature_list_name = "input"
         self.bdt_file = makeBDTPath( "segmip" )
@@ -45,7 +45,7 @@ class EcalMipProcessor(ldmxcfg.Producer) :
     def __init__(self,name = 'ecalMipTracking') :
         super().__init__(name,"ecal::EcalMipTrackingProcessor",'Ecal')
 
-        self.num_ecal_layers = 34
+        self.num_ecal_layers = 32
         self.linreg_radius = 35.0 # in mm
         self.ecal_collection_name = "EcalVeto"
         self.ecal_pass_name = ""

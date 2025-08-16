@@ -110,7 +110,7 @@ class EcalGeometry() :
                 )
 
     def v14() :
-        eg = EcalGeometry(detectors_valid = ["ldmx-det-v14","ldmx-det-v14.*","ldmx-lyso-r4-v14", "ldmx-lyso-r4-v14.*"],
+        eg = EcalGeometry(detectors_valid = ["ldmx-det-v14","ldmx-det-v14.*"],
                 gap = 1.5,
                 layerZPositions = [
                       7.582, 16.062, 33.226, 43.206, 60.370, 71.350, 90.014, 101.594, 
@@ -128,16 +128,16 @@ class EcalGeometry() :
         return eg
 
     def v15() :
-        eg = EcalGeometry(detectors_valid = ["ldmx-det-v15","ldmx-det-v15.*"],
+        eg = EcalGeometry(detectors_valid = ["ldmx-det-v15","ldmx-det-v15.*","ldmx-lyso-r4-v15", "ldmx-lyso-r4-v15.*"],
                 gap = 1.5,
                 si_thickness = 0.4,
                 layerZPositions = [
                     # using 400 um Si thickness
-                    7.582, 16.162, 33.426, 43.506, 60.770, 71.850, 90.614, 102.294, 
-                    121.058, 132.738, 151.502, 163.182, 181.946, 193.626, 212.390, 
-                    224.070, 242.834, 254.514, 273.278, 284.958, 303.722, 315.402, 
-                    334.166, 345.846, 368.110, 383.190, 405.454, 420.534, 442.798, 
-                    457.878, 480.142, 495.222, 517.486, 532.566
+                    7.582, 16.162, 33.426, 43.506, 60.770, 71.850, 91.114, 103.194, 
+                    122.458, 134.538, 153.802, 165.882, 185.146, 197.226, 216.490, 
+                    228.570, 247.834, 259.914, 279.178, 291.258, 310.522, 322.602, 
+                    341.866, 353.946, 377.210, 392.290, 415.554, 430.634, 453.898, 
+                    468.978, 492.242, 507.322
                 ],
                 ecalFrontZ = 240.0,
                 cornersSideUp = True,
