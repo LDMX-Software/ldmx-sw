@@ -428,7 +428,7 @@ void EcalVetoProcessor::produce(framework::Event &event) {
   std::vector<float> outside_containment_x_std(n_regions, 0.0);
   std::vector<float> outside_containment_y_std(n_regions, 0.0);
   // Longitudinal segmentation
-  std::vector<int> seg_layers = {0, 6, 17, 34};
+  std::vector<int> seg_layers = {0, 6, 17, 32};
   unsigned int n_segments = seg_layers.size() - 1;
   std::vector<float> energy_seg(n_segments, 0.0);
   std::vector<float> x_mean_seg(n_segments, 0.0);

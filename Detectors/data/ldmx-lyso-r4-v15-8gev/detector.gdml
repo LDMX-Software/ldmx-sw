@@ -62,7 +62,7 @@
     
   <structure>
     <volume name="World">
-      <materialref ref="Vacuum"/>
+      <materialref ref="Air"/>
       <solidref ref="world_box"/>
       <physvol copynumber="1">
         <file name="tagger.gdml"/>
@@ -105,8 +105,8 @@
     
   <userinfo>
     <!-- detector version -->
-    <auxiliary auxtype="DetectorVersion" auxvalue="14">
-      <auxiliary auxtype="DetectorName" auxvalue="ldmx-lyso-r4-v14"/>
+    <auxiliary auxtype="DetectorVersion" auxvalue="15">
+      <auxiliary auxtype="DetectorName" auxvalue="ldmx-lyso-r4-v15"/>
       <auxiliary auxtype="Author" auxvalue="Weilong (Sam) Zhou, James Oyang, Tamas Almos Vami"/>
       <auxiliary auxtype="Description" 
                  auxvalue="Geometry with LYSO target with two bars"/>
