@@ -30,7 +30,7 @@ help_message := "shared recipes for ldmx-sw development
 # or
 #   just path/to/ldmx-sw/fire config.py
 # would run this denv even if there is a denv in the directory where config.py is because
-# those [no-cd] recipes set denv_workspace={{ this_denv_workspace }}
+# those [no-cd] recipes set denv_workspace="{{ this_denv_workspace }}"
 # supporting either the old (parent_directory, LDMX_BASE path) and the new (ldmx-sw itself)
 # forces a decision to be made now when just is invoked
 # we default to the new path (ldmx-sw itself) for new invocations while supporting the
@@ -105,12 +105,12 @@ test *ARGS:
 # run ldmx-sw with the input configuration script
 [no-cd]
 fire config_py *ARGS:
-    denv_workspace={{ this_denv_workspace }} denv fire {{ config_py }} {{ ARGS }}
+    denv_workspace="{{ this_denv_workspace }}" denv fire {{ config_py }} {{ ARGS }}
 
 # run gdb on a config file
 [no-cd]
 debug config_py *ARGS:
-    denv_workspace={{ this_denv_workspace }} denv gdb --args fire {{ config_py }} {{ ARGS }}
+    denv_workspace="{{ this_denv_workspace }}" denv gdb --args fire {{ config_py }} {{ ARGS }}
 
 # initialize a containerized development environment
 init:
@@ -261,4 +261,4 @@ install-validation: install-compare-plots-deps
 # run the ComparePlots plotting module
 [no-cd]
 compare-plots *args:
-    denv_workspace={{ this_denv_workspace }} denv 'PYTHONPATH={{ justfile_directory() }}:${PYTHONPATH} python3 -m ComparePlots {{ args }}'
+    denv_workspace="{{ this_denv_workspace }}" denv 'PYTHONPATH="{{ justfile_directory() }}:${PYTHONPATH}" python3 -m ComparePlots {{ args }}'
