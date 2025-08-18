@@ -11,7 +11,7 @@ namespace sim {
 /// (counter clock wise as positive)
 
 template <typename external_spacepoint_t>
-bool SeedToTrackParamMaker::KarimakiFit(
+bool SeedToTrackParamMaker::karimakiFit(
     const std::vector<external_spacepoint_t*>& sp, std::array<double, 9>& data,
     const Acts::Vector2 refPoint) {
   if (sp.size() < 3) return false;
@@ -176,7 +176,7 @@ bool SeedToTrackParamMaker::KarimakiFit(
 /// see
 /// https://acode-browser.usatlas.bnl.gov/lxr/source/athena/InnerDetector/InDetRecTools/SiTrackMakerTool_xk/src/SiTrackMaker_xk.cxx
 template <typename external_spacepoint_t>
-bool SeedToTrackParamMaker::FitSeedAtlas(
+bool SeedToTrackParamMaker::fitSeedAtlas(
     const Acts::Seed<external_spacepoint_t>& seed, std::array<double, 9>& data,
     const Acts::Transform3& Tp, const double& bFieldZ) {
   return FitSeedAtlas(seed.sp(), data, Tp, bFieldZ);
@@ -190,7 +190,7 @@ bool SeedToTrackParamMaker::FitSeedAtlas(
 /// direction with respect the origin, positive when counter clock-wise
 
 template <typename external_spacepoint_t>
-bool SeedToTrackParamMaker::FitSeedAtlas(
+bool SeedToTrackParamMaker::fitSeedAtlas(
     const std::vector<external_spacepoint_t>& sp, std::array<double, 9>& data,
     const Acts::Transform3& Tp, const double& bFieldZ) {
   double pTmin = 0.1;
@@ -273,7 +273,7 @@ bool SeedToTrackParamMaker::FitSeedAtlas(
 }
 
 template <typename external_spacepoint_t>
-bool SeedToTrackParamMaker::FitSeedLinPar(
+bool SeedToTrackParamMaker::fitSeedLinPar(
     const Acts::Seed<external_spacepoint_t>& seed, std::vector<double>& data) {
   return true;
 }

@@ -11,7 +11,7 @@
 #include <boost/container/flat_map.hpp>
 #include <cstdint>
 
-namespace ActsExamples {
+namespace acts_examples {
 
 /// Index type to reference elements in a container.
 ///

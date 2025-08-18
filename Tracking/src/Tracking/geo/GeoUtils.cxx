@@ -3,12 +3,12 @@
 namespace tracking::geo {
 
 unsigned int unpackGeometryIdentifier(const Acts::GeometryIdentifier& geoId) {
-  unsigned int volumeId = geoId.volume();
-  unsigned int layerId = geoId.layer() / 2;
-  unsigned int sensorId = geoId.sensitive() - 1;
-  unsigned int surfaceId = volumeId * 1000 + layerId * 100 + sensorId;
+  unsigned int volume_id = geoId.volume();
+  unsigned int layer_id = geoId.layer() / 2;
+  unsigned int sensor_id = geoId.sensitive() - 1;
+  unsigned int surface_id = volume_id * 1000 + layer_id * 100 + sensor_id;
 
-  return surfaceId;
+  return surface_id;
 }
 
 Acts::RotationMatrix3 deltaRot(const Acts::Vector3& deltaR) {

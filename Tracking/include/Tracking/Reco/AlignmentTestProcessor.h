@@ -30,7 +30,7 @@ class AlignmentTestProcessor final : public TrackingGeometryUser {
   void produce(framework::Event& event) override;
 
  private:
-  std::unordered_map<unsigned int, Acts::Transform3> alignmentTransforms;
+  std::unordered_map<unsigned int, Acts::Transform3> alignment_transforms_;
 
   tracking::geo::GeometryContext test_gctx_;
   // The Trackers Tracking geometry

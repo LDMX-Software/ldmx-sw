@@ -154,7 +154,7 @@ class TruthSeedProcessor : public TrackingGeometryUser {
 
   ldmx::Track seedFromTruth(const ldmx::Track& tt, bool seed_smearing);
 
-  ldmx::Track RecoilFullSeed(
+  ldmx::Track recoilFullSeed(
       const ldmx::SimParticle& particle, const int trackID,
       const ldmx::SimTrackerHit& hit, const ldmx::SimTrackerHit& ecal_hit,
       const std::map<int, std::vector<int>>& hit_count_map,
@@ -181,7 +181,7 @@ class TruthSeedProcessor : public TrackingGeometryUser {
    * @param target_surface : the target surface for the truth target state
    */
 
-  ldmx::Track TaggerFullSeed(
+  ldmx::Track taggerFullSeed(
       const ldmx::SimParticle& beam_electron, const int trackID,
       const ldmx::SimTrackerHit& hit,
       const std::map<int, std::vector<int>>& hit_count_map,
@@ -268,7 +268,7 @@ class TruthSeedProcessor : public TrackingGeometryUser {
   std::default_random_engine generator_;
   std::shared_ptr<std::normal_distribution<float>> normal_;
 
-  bool seedSmearing_{false};
+  bool seed_smearing_{false};
 
   std::vector<double> d0smear_;
   std::vector<double> z0smear_;
@@ -277,6 +277,6 @@ class TruthSeedProcessor : public TrackingGeometryUser {
   double relpsmear_;
   std::vector<double> rel_smearfactors_;
   std::vector<double> inflate_factors_;
-  std::vector<double> beamOrigin_{-880.1, -44., 0.};
+  std::vector<double> beam_origin_{-880.1, -44., 0.};
 };
 }  // namespace tracking::reco

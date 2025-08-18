@@ -93,7 +93,7 @@ void StraightTracksDQM::trackMonitoring(
     double track_state_loc1_target = track.getTargetY();
     double track_state_loc0_ecal = track.getEcalLayer1X();
     double track_state_loc1_ecal = track.getEcalLayer1Y();
-    int track_pdgID = track.getPdgID();
+    int track_pdg_id = track.getPdgID();
 
     double sigma_phi = phiAngleError(track.getSlopeX(), track.getCov());
     double sigma_theta =
@@ -105,7 +105,7 @@ void StraightTracksDQM::trackMonitoring(
     histograms_.fill(title_ + "trk_target_loc1", track_state_loc1_target);
     histograms_.fill(title_ + "trk_ecal_loc0", track_state_loc0_ecal);
     histograms_.fill(title_ + "trk_ecal_loc1", track_state_loc1_ecal);
-    histograms_.fill(title + "trk_PID", track_pdgID);
+    histograms_.fill(title + "trk_PID", track_pdg_id);
 
     if (do_detail) {
       histograms_.fill(title + "nHits", track.getNhits());
@@ -133,7 +133,7 @@ void StraightTracksDQM::trackMonitoringUnique(
     double track_state_loc1_target = track.getTargetY();
     double track_state_loc0_ecal = track.getEcalLayer1X();
     double track_state_loc1_ecal = track.getEcalLayer1Y();
-    int track_pdgID = track.getPdgID();
+    int track_pdg_id = track.getPdgID();
 
     double sigma_phi = phiAngleError(track.getSlopeX(), track.getCov());
     double sigma_theta =
@@ -153,7 +153,7 @@ void StraightTracksDQM::trackMonitoringUnique(
     histograms_.fill(title_ + "trk_target_loc1", track_state_loc1_target);
     histograms_.fill(title_ + "trk_ecal_loc0", track_state_loc0_ecal);
     histograms_.fill(title_ + "trk_ecal_loc1", track_state_loc1_ecal);
-    histograms_.fill(title + "trk_PID", track_pdgID);
+    histograms_.fill(title + "trk_PID", track_pdg_id);
 
     if (do_detail) {
       histograms_.fill(title + "nHits", track.getNhits());
@@ -198,11 +198,11 @@ void StraightTracksDQM::trackMonitoringUnique(
           double truth_state_loc1_target = truth_trk->getTargetY();
           double truth_state_loc0_ecal = truth_trk->getEcalLayer1X();
           double truth_state_loc1_ecal = truth_trk->getEcalLayer1Y();
-          int truth_pdgID = truth_trk->getPdgID();
+          int truth_pdg_id = truth_trk->getPdgID();
 
           histograms_.fill(title + "truth_phi", truth_phi);
           histograms_.fill(title + "truth_theta", truth_theta);
-          histograms_.fill(title + "truth_PID", truth_pdgID);
+          histograms_.fill(title + "truth_PID", truth_pdg_id);
 
           double res_phi = trk_phi - truth_phi;
           double res_theta = trk_theta - truth_theta;

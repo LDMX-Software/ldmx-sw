@@ -207,7 +207,7 @@ void LinearSeedFinder::produce(framework::Event& event) {
         // Do fitting on 2 sensor + 1 recHit combinations = 1 degree of freedom
         // for linear fit
         ldmx::StraightTrack seed_track =
-            SeedTracker(first_sensor_point, second_sensor_point, rec_hit);
+            seedTracker(first_sensor_point, second_sensor_point, rec_hit);
 
         // Seed passed RecHit distance check, add it
         if (seed_track.getChi2() > 0.0) {
@@ -230,7 +230,7 @@ void LinearSeedFinder::produce(framework::Event& event) {
 
 }  // produce
 
-ldmx::StraightTrack LinearSeedFinder::SeedTracker(
+ldmx::StraightTrack LinearSeedFinder::seedTracker(
     const std::tuple<std::array<double, 3>, ldmx::Measurement,
                      std::optional<ldmx::Measurement>>
         recoil_one,
@@ -300,10 +300,10 @@ ldmx::StraightTrack LinearSeedFinder::SeedTracker(
 
     // truth matching
     if (truth_matching_tool_->configured()) {
-      auto truth_info = truth_matching_tool_->TruthMatch(all_points);
+      auto truth_info = truth_matching_tool_->truthMatch(all_points);
       trk.setTrackID(truth_info.trackID);
       trk.setPdgID(truth_info.pdgID);
-      trk.setTruthProb(truth_info.truthProb);
+      trk.setTruthProb(truth_info.truth_prob_);
     }
 
     return trk;
@@ -403,7 +403,7 @@ LinearSeedFinder::processMeasurements(
           tg.getSurface(axial_meas.getLayerID());
 
       Acts::Vector3 axial_meas_hit = axial_surface->localToGlobal(
-          geometry_context(),
+          geometryContext(),
           Acts::Vector2(axial_meas.getLocalPosition()[0], 0.0), dummy);
 
       points_with_measurement.push_back(
@@ -416,7 +416,7 @@ LinearSeedFinder::processMeasurements(
           tg.getSurface(stereo_meas.getLayerID());
 
       Acts::Vector3 stereo_meas_hit = stereo_surface->localToGlobal(
-          geometry_context(),
+          geometryContext(),
           Acts::Vector2(stereo_meas.getLocalPosition()[0], 0.0), dummy);
 
       points_with_measurement.push_back(
@@ -438,11 +438,11 @@ std::tuple<Acts::Vector3, Acts::Vector3, Acts::Vector3>
 LinearSeedFinder::getSurfaceVectors(const Acts::Surface& surface) {
   Acts::Vector3 dummy{0., 0., 0.};
   Acts::Vector3 u =
-      surface.localToGlobal(geometry_context(), Acts::Vector2(1, 0), dummy) -
-      surface.center(geometry_context());
+      surface.localToGlobal(geometryContext(), Acts::Vector2(1, 0), dummy) -
+      surface.center(geometryContext());
   Acts::Vector3 v =
-      surface.localToGlobal(geometry_context(), Acts::Vector2(0, 1), dummy) -
-      surface.center(geometry_context());
+      surface.localToGlobal(geometryContext(), Acts::Vector2(0, 1), dummy) -
+      surface.center(geometryContext());
   Acts::Vector3 w = u.cross(v).normalized();
   return {u.normalized(), v.normalized(), w};
 }
@@ -462,7 +462,7 @@ Acts::Vector3 LinearSeedFinder::simple3DHitV2(
     const ldmx::SimTrackerHit& target_sp,
     std::vector<ldmx::SimTrackerHit> pair_sim_hits) {
   Acts::Vector3 dummy{0., 0., 0.};
-  Acts::Vector3 hitOnTarget{target_sp.getPosition()[0],
+  Acts::Vector3 hit_on_target{target_sp.getPosition()[0],
                             target_sp.getPosition()[1],
                             target_sp.getPosition()[2]};  // x,y,z
 
@@ -474,23 +474,23 @@ Acts::Vector3 LinearSeedFinder::simple3DHitV2(
                                    pair_sim_hits[1].getPosition()[1],
                                    pair_sim_hits[1].getPosition()[2]};
 
-  Acts::Vector3 simpart_path = axial_true_global - hitOnTarget;
+  Acts::Vector3 simpart_path = axial_true_global - hit_on_target;
   Acts::Vector3 simpart_unit = simpart_path.normalized();
 
   // Get global positions for strip origins  ....  actually these are in
   // tracking coordinates!
-  Acts::Vector3 axial_origin = axial_surface.center(geometry_context());
-  Acts::Vector3 stereo_origin = stereo_surface.center(geometry_context());
+  Acts::Vector3 axial_origin = axial_surface.center(geometryContext());
+  Acts::Vector3 stereo_origin = stereo_surface.center(geometryContext());
 
   // the tracking-global vector difference between stereo and axial sensor
   // centers
-  Acts::Vector3 deltaSensors = stereo_origin - axial_origin;
+  Acts::Vector3 delta_sensors = stereo_origin - axial_origin;
 
   // calculate the displacement in tracking global x (need to generalize) by
   // going from tracking x=axial to x=stereo
   double dx_proj =
       (simpart_unit[0] / simpart_unit[2]) *
-      deltaSensors[0];  // this looks weird because simpart_unit is in
+      delta_sensors[0];  // this looks weird because simpart_unit is in
                         // global-global and delta sensors is in tracking-global
 
   // Compute unit vectors for both hits_
@@ -517,10 +517,10 @@ Acts::Vector3 LinearSeedFinder::simple3DHitV2(
 
   // convert to tracking global
   Acts::Vector3 axst_global_useproj = axial_surface.localToGlobal(
-      geometry_context(),
+      geometryContext(),
       Acts::Vector2(u_intercept_useproj, v_intercept_useproj), dummy);
   Acts::Vector3 dummy_stereo_proj = stereo_surface.localToGlobal(
-      geometry_context(),
+      geometryContext(),
       Acts::Vector2(u_intercept_useproj, v_intercept_useproj), dummy);
 
   // we want the reconstructed hit to be at the z of the stereo layer
@@ -555,11 +555,11 @@ LinearSeedFinder::fit3DLine(const std::array<double, 3>& first_recoil,
       1 / pow(recoil_uncertainty_[0], 2), 1 / pow(recoil_uncertainty_[1], 2),
       1 / pow(ecal_uncertainty_, 2),      1 / pow(ecal_uncertainty_, 2)};
 
-  Eigen::Matrix<double, 6, 4> A_mat;
+  Eigen::Matrix<double, 6, 4> a_mat;
   Eigen::Matrix<double, 6, 1> d_vec, w_vec;
 
   // Fill the A matrix (z, 1, 0, 0) for x and (0, 0, z, 1) for y
-  A_mat << z_pos1, 1, 0, 0, 0, 0, z_pos1, 1, z_pos2, 1, 0, 0, 0, 0, z_pos2, 1,
+  a_mat << z_pos1, 1, 0, 0, 0, 0, z_pos1, 1, z_pos2, 1, 0, 0, 0, 0, z_pos2, 1,
       z_pos3, 1, 0, 0, 0, 0, z_pos3, 1;
 
   // Fill the d vector with x and y values
@@ -569,11 +569,11 @@ LinearSeedFinder::fit3DLine(const std::array<double, 3>& first_recoil,
   w_vec = Eigen::Matrix<double, 6, 1>(weights.data());
 
   // Solve the weighted least squares system
-  Eigen::MatrixXd At_W_A = A_mat.transpose() * w_vec.asDiagonal() * A_mat;
-  Eigen::MatrixXd At_W_d = A_mat.transpose() * w_vec.asDiagonal() * d_vec;
-  Eigen::VectorXd param_vec = At_W_A.ldlt().solve(At_W_d);
+  Eigen::MatrixXd at_w_a = a_mat.transpose() * w_vec.asDiagonal() * a_mat;
+  Eigen::MatrixXd at_w_d = a_mat.transpose() * w_vec.asDiagonal() * d_vec;
+  Eigen::VectorXd param_vec = at_w_a.ldlt().solve(at_w_d);
 
-  Eigen::Matrix4d covariance_matrix = At_W_A.inverse();
+  Eigen::Matrix4d covariance_matrix = at_w_a.inverse();
 
   // Store only the upper triangular part of the covariance matrix since it is
   // symmetric

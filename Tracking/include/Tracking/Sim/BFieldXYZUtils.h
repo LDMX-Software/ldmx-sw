@@ -32,7 +32,7 @@ using GenericTransformBField =
  * -> (x,y,z)
  */
 
-Acts::Vector3 default_transformPos(const Acts::Vector3& pos_);
+Acts::Vector3 defaultTransformPos(const Acts::Vector3& pos_);
 
 /**
  * The dafault mapping transformation from the field space to the tracking space
@@ -40,7 +40,7 @@ Acts::Vector3 default_transformPos(const Acts::Vector3& pos_);
  * -> (Bx,By,Bz)
  */
 
-Acts::Vector3 default_transformBField(const Acts::Vector3& field,
+Acts::Vector3 defaultTransformBField(const Acts::Vector3& field,
                                       const Acts::Vector3& /*pos_*/);
 
 void testField(const std::shared_ptr<Acts::MagneticFieldProvider> bfield,
@@ -52,7 +52,7 @@ void testField(const std::shared_ptr<Acts::MagneticFieldProvider> bfield,
  * it transforms the local xyz binning to the global binning
  */
 
-size_t localToGlobalBin_xyz(std::array<size_t, 3> bins,
+size_t localToGlobalBinXyz(std::array<size_t, 3> bins,
                             std::array<size_t, 3> sizes);
 
 inline InterpolatedMagneticField3 rotateFieldMapXYZ(
@@ -79,61 +79,61 @@ inline InterpolatedMagneticField3 rotateFieldMapXYZ(
   zPos.shrink_to_fit();
 
   // get the number of bins
-  size_t nBinsX = xPos.size();
-  size_t nBinsY = yPos.size();
-  size_t nBinsZ = zPos.size();
+  size_t n_bins_x = xPos.size();
+  size_t n_bins_y = yPos.size();
+  size_t n_bins_z = zPos.size();
 
   // get the minimum and maximum
-  auto minMaxX = std::minmax_element(xPos.begin(), xPos.end());
-  auto minMaxY = std::minmax_element(yPos.begin(), yPos.end());
-  auto minMaxZ = std::minmax_element(zPos.begin(), zPos.end());
+  auto min_max_x = std::minmax_element(xPos.begin(), xPos.end());
+  auto min_max_y = std::minmax_element(yPos.begin(), yPos.end());
+  auto min_max_z = std::minmax_element(zPos.begin(), zPos.end());
   // Create the axis for the grid
   // get minima
-  double xMin = *minMaxX.first;
-  double yMin = *minMaxY.first;
-  double zMin = *minMaxZ.first;
+  double x_min = *min_max_x.first;
+  double y_min = *min_max_y.first;
+  double z_min = *min_max_z.first;
   // get maxima
-  double xMax = *minMaxX.second;
-  double yMax = *minMaxY.second;
-  double zMax = *minMaxZ.second;
+  double x_max = *min_max_x.second;
+  double y_max = *min_max_y.second;
+  double z_max = *min_max_z.second;
   // calculate maxima (add one last bin, because bin value always corresponds to
   // left boundary)
-  double stepZ = std::fabs(zMax - zMin) / (nBinsZ - 1);
-  double stepY = std::fabs(yMax - yMin) / (nBinsY - 1);
-  double stepX = std::fabs(xMax - xMin) / (nBinsX - 1);
-  xMax += stepX;
-  yMax += stepY;
-  zMax += stepZ;
+  double step_z = std::fabs(z_max - z_min) / (n_bins_z - 1);
+  double step_y = std::fabs(y_max - y_min) / (n_bins_y - 1);
+  double step_x = std::fabs(x_max - x_min) / (n_bins_x - 1);
+  x_max += step_x;
+  y_max += step_y;
+  z_max += step_z;
 
   // If only the first octant is given
   if (firstOctant) {
-    xMin = -*minMaxX.second;
-    yMin = -*minMaxY.second;
-    zMin = -*minMaxZ.second;
-    nBinsX = 2 * nBinsX - 1;
-    nBinsY = 2 * nBinsY - 1;
-    nBinsZ = 2 * nBinsZ - 1;
+    x_min = -*min_max_x.second;
+    y_min = -*min_max_y.second;
+    z_min = -*min_max_z.second;
+    n_bins_x = 2 * n_bins_x - 1;
+    n_bins_y = 2 * n_bins_y - 1;
+    n_bins_z = 2 * n_bins_z - 1;
   }
-  Acts::Axis<Acts::AxisType::Equidistant> xAxis(xMin * lengthUnit,
-                                                xMax * lengthUnit, nBinsX);
-  Acts::Axis<Acts::AxisType::Equidistant> yAxis(yMin * lengthUnit,
-                                                yMax * lengthUnit, nBinsY);
-  Acts::Axis<Acts::AxisType::Equidistant> zAxis(zMin * lengthUnit,
-                                                zMax * lengthUnit, nBinsZ);
+  Acts::Axis<Acts::AxisType::Equidistant> x_axis(x_min * lengthUnit,
+                                                x_max * lengthUnit, n_bins_x);
+  Acts::Axis<Acts::AxisType::Equidistant> y_axis(y_min * lengthUnit,
+                                                y_max * lengthUnit, n_bins_y);
+  Acts::Axis<Acts::AxisType::Equidistant> z_axis(z_min * lengthUnit,
+                                                z_max * lengthUnit, n_bins_z);
   // Create the grid
   using Grid_t =
       Acts::Grid<Acts::Vector3, Acts::Axis<Acts::AxisType::Equidistant>,
                  Acts::Axis<Acts::AxisType::Equidistant>,
                  Acts::Axis<Acts::AxisType::Equidistant>>;
   Grid_t grid(
-      std::make_tuple(std::move(xAxis), std::move(yAxis), std::move(zAxis)));
+      std::make_tuple(std::move(x_axis), std::move(y_axis), std::move(z_axis)));
 
   // [2] Set the bField values
-  for (size_t i = 1; i <= nBinsX; ++i) {
-    for (size_t j = 1; j <= nBinsY; ++j) {
-      for (size_t k = 1; k <= nBinsZ; ++k) {
+  for (size_t i = 1; i <= n_bins_x; ++i) {
+    for (size_t j = 1; j <= n_bins_y; ++j) {
+      for (size_t k = 1; k <= n_bins_z; ++k) {
         Grid_t::index_t indices = {{i, j, k}};
-        std::array<size_t, 3> nIndices = {
+        std::array<size_t, 3> n_indices = {
             {xPos.size(), yPos.size(), zPos.size()}};
         if (firstOctant) {
           // std::vectors begin with 0 and we do not want the user needing to
@@ -142,10 +142,10 @@ inline InterpolatedMagneticField3 rotateFieldMapXYZ(
           size_t m = std::abs(int(i) - (int(xPos.size())));
           size_t n = std::abs(int(j) - (int(yPos.size())));
           size_t l = std::abs(int(k) - (int(zPos.size())));
-          Grid_t::index_t indicesFirstOctant = {{m, n, l}};
+          Grid_t::index_t indices_first_octant = {{m, n, l}};
 
           grid.atLocalBins(indices) =
-              bField.at(localToGlobalBin(indicesFirstOctant, nIndices)) *
+              bField.at(localToGlobalBin(indices_first_octant, n_indices)) *
               BFieldUnit;
 
         } else {
@@ -153,7 +153,7 @@ inline InterpolatedMagneticField3 rotateFieldMapXYZ(
           // take underflow or overflow bins in account this is why we need to
           // subtract by one
           grid.atLocalBins(indices) =
-              bField.at(localToGlobalBin({{i - 1, j - 1, k - 1}}, nIndices)) *
+              bField.at(localToGlobalBin({{i - 1, j - 1, k - 1}}, n_indices)) *
               BFieldUnit;
         }
       }
@@ -214,59 +214,59 @@ inline InterpolatedMagneticField3 makeMagneticFieldMapXyzFromText(
     Acts::ActsScalar BFieldUnit, bool firstOctant, bool rotateAxes) {
   /// [1] Read in field map file
   // Grid position points in x, y and z
-  std::vector<double> xPos;
-  std::vector<double> yPos;
-  std::vector<double> zPos;
+  std::vector<double> x_pos;
+  std::vector<double> y_pos;
+  std::vector<double> z_pos;
   // components of magnetic field on grid points
-  std::vector<Acts::Vector3> bField;
+  std::vector<Acts::Vector3> b_field;
 
-  constexpr size_t kDefaultSize = 1 << 15;
+  constexpr size_t k_default_size = 1 << 15;
   // reserve estimated size
-  xPos.reserve(kDefaultSize);
-  yPos.reserve(kDefaultSize);
-  zPos.reserve(kDefaultSize);
-  bField.reserve(kDefaultSize);
+  x_pos.reserve(k_default_size);
+  y_pos.reserve(k_default_size);
+  z_pos.reserve(k_default_size);
+  b_field.reserve(k_default_size);
   // [1] Read in file and fill values
   std::ifstream map_file(fieldMapFile.c_str(), std::ios::in);
   std::string line;
   double pos_x = 0., pos_y = 0., pos_z = 0.;
   double bx = 0., by = 0., bz = 0.;
 
-  bool headerFound = false;
+  bool header_found = false;
 
   while (std::getline(map_file, line)) {
     if (line.empty() || line[0] == '%' || line[0] == '#' || line[0] == ' ' ||
-        line.find_first_not_of(' ') == std::string::npos || !headerFound) {
-      if (line.find("Header") != std::string::npos) headerFound = true;
+        line.find_first_not_of(' ') == std::string::npos || !header_found) {
+      if (line.find("Header") != std::string::npos) header_found = true;
       continue;
     }
     std::istringstream tmp(line);
     tmp >> pos_x >> pos_y >> pos_z >> bx >> by >> bz;
 
-    xPos.push_back(pos_x);
-    yPos.push_back(pos_y);
-    zPos.push_back(pos_z);
-    bField.push_back(Acts::Vector3(bx, by, bz));
+    x_pos.push_back(pos_x);
+    y_pos.push_back(pos_y);
+    z_pos.push_back(pos_z);
+    b_field.push_back(Acts::Vector3(bx, by, bz));
   }
   map_file.close();
 
-  if (!headerFound) {
+  if (!header_found) {
     std::cout << "MAP LOADING ERROR:: line containing the word 'Header' not "
                  "found in the BMap."
               << std::endl;
   }
 
-  xPos.shrink_to_fit();
-  yPos.shrink_to_fit();
-  zPos.shrink_to_fit();
-  bField.shrink_to_fit();
+  x_pos.shrink_to_fit();
+  y_pos.shrink_to_fit();
+  z_pos.shrink_to_fit();
+  b_field.shrink_to_fit();
 
   if (rotateAxes) {
-    return rotateFieldMapXYZ(localToGlobalBin, xPos, yPos, zPos, bField,
+    return rotateFieldMapXYZ(localToGlobalBin, x_pos, y_pos, z_pos, b_field,
                              lengthUnit, BFieldUnit, firstOctant,
                              transformPosition, transformMagneticField);
   } else
-    return Acts::fieldMapXYZ(localToGlobalBin, xPos, yPos, zPos, bField,
+    return Acts::fieldMapXYZ(localToGlobalBin, x_pos, y_pos, z_pos, b_field,
                              lengthUnit, BFieldUnit, firstOctant);
 }
 
@@ -278,7 +278,7 @@ inline InterpolatedMagneticField3 loadDefaultBField(
   // Acts::Vector3&)> transformMagneticField
 
   return makeMagneticFieldMapXyzFromText(
-      std::move(localToGlobalBin_xyz), transformPosition,
+      std::move(localToGlobalBinXyz), transformPosition,
       transformMagneticField, fieldMapFile,
       1. * Acts::UnitConstants::mm,    // default scale for axes length
       1000. * Acts::UnitConstants::T,  // The map is in kT, so scale it to T

@@ -173,7 +173,7 @@ format-just:
     @just --fmt --unstable --justfile {{ justfile() }}
 
 # Now do the same but with clang tidy
-tidy-cpp *ARGS='-p build --fix --quiet ':
+tidy-cpp *ARGS='-p build --fix -fix-errors --quiet ':
     #!/usr/bin/env sh
     set -exu
     format_list=$(mktemp)
