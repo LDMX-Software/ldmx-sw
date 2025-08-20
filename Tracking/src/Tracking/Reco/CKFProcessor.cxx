@@ -31,7 +31,7 @@ void CKFProcessor::onNewRun(const ldmx::RunHeader& rh) {
   Acts::Vector3 b_field(0., 0., bfield_ * Acts::UnitConstants::T);
 
   // Setup a constant magnetic field
-  const auto constBField = std::make_shared<Acts::ConstantBField>(b_field);
+  const auto const_b_field = std::make_shared<Acts::ConstantBField>(b_field);
 
   // Define the target surface - be careful:
   //  x - downstream
@@ -39,25 +39,25 @@ void CKFProcessor::onNewRun(const ldmx::RunHeader& rh) {
   //  z - up
   //  Passing identity here means that your target surface is oriented in the
   //  same way
-  surf_rotation = Acts::RotationMatrix3::Zero();
+  surf_rotation_ = Acts::RotationMatrix3::Zero();
   // u direction along +Y
-  surf_rotation(1, 0) = 1;
+  surf_rotation_(1, 0) = 1;
   // v direction along +Z
-  surf_rotation(2, 1) = 1;
+  surf_rotation_(2, 1) = 1;
   // w direction along +X
-  surf_rotation(0, 2) = 1;
+  surf_rotation_(0, 2) = 1;
 
   Acts::Vector3 target_pos(0., 0., 0.);
   Acts::Translation3 target_translation(target_pos);
-  Acts::Transform3 target_transform(target_translation * surf_rotation);
+  Acts::Transform3 target_transform(target_translation * surf_rotation_);
 
   // Unbounded surface
-  target_surface =
+  target_surface_ =
       Acts::Surface::makeShared<Acts::PlaneSurface>(target_transform);
 
   // Custom transformation of the interpolated bfield map
-  bool debugTransform = false;
-  auto transformPos = [this, debugTransform](const Acts::Vector3& pos_) {
+  bool debug_transform = false;
+  auto transform_pos = [this, debug_transform](const Acts::Vector3& pos_) {
     Acts::Vector3 rot_pos;
     rot_pos(0) = pos_(1);
     rot_pos(1) = pos_(2);
@@ -71,7 +71,7 @@ void CKFProcessor::onNewRun(const ldmx::RunHeader& rh) {
     // Apply A rotation around the center of the magnet. (I guess offset first
     // and then rotation)
 
-    if (debugTransform) {
+    if (debug_transform) {
       std::cout << "PF::DEFAULT3 TRANSFORM" << std::endl;
       std::cout << "PF::Check:: transforming Pos" << std::endl;
       std::cout << pos_ << std::endl;
@@ -85,9 +85,9 @@ void CKFProcessor::onNewRun(const ldmx::RunHeader& rh) {
   Acts::RotationMatrix3 rotation = Acts::RotationMatrix3::Identity();
   double scale = 1.;
 
-  auto transformBField = [rotation, scale, debugTransform](
-                             const Acts::Vector3& field,
-                             const Acts::Vector3& /*pos_*/) {
+  auto transform_b_field = [rotation, scale, debug_transform](
+                               const Acts::Vector3& field,
+                               const Acts::Vector3& /*pos_*/) {
     // Rotate the field in tracking coordinates
     Acts::Vector3 rot_field;
     rot_field(0) = field(2);
@@ -101,7 +101,7 @@ void CKFProcessor::onNewRun(const ldmx::RunHeader& rh) {
     rot_field = rotation * rot_field;
 
     // A distortion scaled by position.
-    if (debugTransform) {
+    if (debug_transform) {
       std::cout << "PF::DEFAULT3 TRANSFORM" << std::endl;
       std::cout << "PF::Check:: transforming" << std::endl;
       std::cout << field << std::endl;
@@ -117,22 +117,22 @@ void CKFProcessor::onNewRun(const ldmx::RunHeader& rh) {
       loadDefaultBField(field_map_,
                         // default_transformPos,
                         // default_transformBField));
-                        transformPos, transformBField));
+                        transform_pos, transform_b_field));
 
-  auto acts_loggingLevel = Acts::Logging::FATAL;
-  if (debug_acts_) acts_loggingLevel = Acts::Logging::VERBOSE;
+  auto acts_logging_level = Acts::Logging::FATAL;
+  if (debug_acts_) acts_logging_level = Acts::Logging::VERBOSE;
 
   // Setup the steppers
   const auto stepper = Acts::EigenStepper<>{map};
-  const auto const_stepper = Acts::EigenStepper<>{constBField};
+  const auto const_stepper = Acts::EigenStepper<>{const_b_field};
   const auto multi_stepper = Acts::MultiEigenStepperLoop{map};
 
   // Setup the navigator
-  Acts::Navigator::Config navCfg{geometry().getTG()};
-  navCfg.resolveMaterial = true;
-  navCfg.resolvePassive = true;
-  navCfg.resolveSensitive = true;
-  const Acts::Navigator navigator(navCfg);
+  Acts::Navigator::Config nav_cfg{geometry().getTG()};
+  nav_cfg.resolveMaterial = true;
+  nav_cfg.resolvePassive = true;
+  nav_cfg.resolveSensitive = true;
+  const Acts::Navigator navigator(nav_cfg);
 
   // Setup the propagators
   propagator_ =
@@ -140,13 +140,13 @@ void CKFProcessor::onNewRun(const ldmx::RunHeader& rh) {
           ? std::make_unique<CkfPropagator>(const_stepper, navigator)
           : std::make_unique<CkfPropagator>(
                 stepper, navigator,
-                Acts::getDefaultLogger("ACTS_PROP", acts_loggingLevel));
+                Acts::getDefaultLogger("ACTS_PROP", acts_logging_level));
 
   // Setup the finder / fitters
   ckf_ = std::make_unique<std::decay_t<decltype(*ckf_)>>(
-      *propagator_, Acts::getDefaultLogger("CKF", acts_loggingLevel));
+      *propagator_, Acts::getDefaultLogger("CKF", acts_logging_level));
   trk_extrap_ = std::make_shared<std::decay_t<decltype(*trk_extrap_)>>(
-      *propagator_, geometry_context(), magnetic_field_context());
+      *propagator_, geometryContext(), magneticFieldContext());
 }
 
 void CKFProcessor::produce(framework::Event& event) {
@@ -162,14 +162,14 @@ void CKFProcessor::produce(framework::Event& event) {
 
   nevents_++;
 
-  auto loggingLevel = Acts::Logging::DEBUG;
+  auto logging_level = Acts::Logging::DEBUG;
   ACTS_LOCAL_LOGGER(
-      Acts::getDefaultLogger("LDMX Tracking Geometry Maker", loggingLevel));
+      Acts::getDefaultLogger("LDMX Tracking Geometry Maker", logging_level));
 
   // Move this at the start of the producer
   Acts::PropagatorOptions<Acts::StepperPlainOptions,
                           Acts::NavigatorPlainOptions, ActionList, AbortList>
-      propagator_options(geometry_context(), magnetic_field_context());
+      propagator_options(geometryContext(), magneticFieldContext());
 
   propagator_options.pathLimit = std::numeric_limits<double>::max();
   // Activate loop protection at some pt value
@@ -177,20 +177,20 @@ void CKFProcessor::produce(framework::Event& event) {
   //(startParameters.transverseMomentum() < cfg.ptLoopers);
 
   // Switch the material interaction on/off & eventually into logging mode
-  auto& mInteractor =
+  auto& m_interactor =
       propagator_options.actionList.get<Acts::MaterialInteractor>();
-  mInteractor.multipleScattering = true;
-  mInteractor.energyLoss = true;
-  mInteractor.recordInteractions = false;
+  m_interactor.multipleScattering = true;
+  m_interactor.energyLoss = true;
+  m_interactor.recordInteractions = false;
 
   // The logger can be switched to sterile, e.g. for timing logging
-  auto& sLogger =
+  auto& s_logger =
       propagator_options.actionList.get<Acts::detail::SteppingLogger>();
-  sLogger.sterile = true;
+  s_logger.sterile = true;
   // Set a maximum step size
   propagator_options.stepping.maxStepSize =
       propagator_step_size_ * Acts::UnitConstants::mm;
-  propagator_options.maxSteps = propagator_maxSteps_;
+  propagator_options.maxSteps = propagator_max_steps_;
 
   // #######################//
   // Kalman Filter algorithm//
@@ -209,20 +209,21 @@ void CKFProcessor::produce(framework::Event& event) {
                                              input_pass_name_);
 
   // check if SimParticleMap is available for truth matching
-  std::shared_ptr<tracking::sim::TruthMatchingTool> truthMatchingTool = nullptr;
-  std::map<int, ldmx::SimParticle> particleMap;
+  std::shared_ptr<tracking::sim::TruthMatchingTool> truth_matching_tool =
+      nullptr;
+  std::map<int, ldmx::SimParticle> particle_map;
 
   if (event.exists("SimParticles", sim_particles_event_passname_)) {
     ldmx_log(debug) << "Setting up track truth matching tool";
-    particleMap = event.getMap<int, ldmx::SimParticle>(
+    particle_map = event.getMap<int, ldmx::SimParticle>(
         "SimParticles", sim_particles_event_passname_);
-    truthMatchingTool = std::make_shared<tracking::sim::TruthMatchingTool>(
-        particleMap, measurements);
+    truth_matching_tool = std::make_shared<tracking::sim::TruthMatchingTool>(
+        particle_map, measurements);
   }
 
   // The mapping between the geometry identifier
   // and the IndexsourceLink that points to the hit
-  const auto geoId_sl_map = makeGeoIdSourceLinkMap(tg, measurements);
+  const auto geo_id_sl_map = makeGeoIdSourceLinkMap(tg, measurements);
 
   auto hits = std::chrono::high_resolution_clock::now();
   profiling_map_["hits"] +=
@@ -245,37 +246,39 @@ void CKFProcessor::produce(framework::Event& event) {
   }
 
   // Run the CKF on each seed and produce a track candidate
-  std::vector<Acts::BoundTrackParameters> startParameters;
+  std::vector<Acts::BoundTrackParameters> start_parameters;
 
   ldmx_log(debug) << "Transform the seed track to bound parameters";
   int seed_track_index{0};
   for (auto& seed : seed_tracks) {
     // Transform the seed track to bound parameters
-    std::shared_ptr<Acts::PerigeeSurface> perigeeSurface =
+    std::shared_ptr<Acts::PerigeeSurface> perigee_surface =
         Acts::Surface::makeShared<Acts::PerigeeSurface>(Acts::Vector3(
             seed.getPerigeeX(), seed.getPerigeeY(), seed.getPerigeeZ()));
 
-    Acts::BoundVector paramVec;
-    paramVec << seed.getD0(), seed.getZ0(), seed.getPhi(), seed.getTheta(),
+    Acts::BoundVector param_vec;
+    param_vec << seed.getD0(), seed.getZ0(), seed.getPhi(), seed.getTheta(),
         seed.getQoP(), seed.getT();
 
-    Acts::BoundSquareMatrix covMat =
+    Acts::BoundSquareMatrix cov_mat =
         tracking::sim::utils::unpackCov(seed.getPerigeeCov());
 
     ldmx_log(debug) << "  For seed index_ = " << seed_track_index
                     << ": Perigee X / Y / Z = " << seed.getPerigeeX() << " / "
                     << seed.getPerigeeY() << " / " << seed.getPerigeeZ()
-                    << ", D0 = " << paramVec[0] << ", Z0 = " << paramVec[1]
-                    << ", Phi = " << paramVec[2] << ", Theta = " << paramVec[3]
-                    << ", QoP = " << paramVec[4] << ", Time = " << paramVec[5];
+                    << ", D0 = " << param_vec[0] << ", Z0 = " << param_vec[1]
+                    << ", Phi = " << param_vec[2]
+                    << ", Theta = " << param_vec[3]
+                    << ", QoP = " << param_vec[4]
+                    << ", Time = " << param_vec[5];
 
-    ldmx_log(debug) << "  Cov matrix diagonal (" << covMat(0, 0) << ", "
-                    << covMat(1, 1) << ", " << covMat(2, 2) << ")";
+    ldmx_log(debug) << "  Cov matrix diagonal (" << cov_mat(0, 0) << ", "
+                    << cov_mat(1, 1) << ", " << cov_mat(2, 2) << ")";
 
     // need to set particle hypothesis...set to electron for now...
-    auto partHypo{Acts::SinglyChargedParticleHypothesis::electron()};
-    startParameters.push_back(
-        Acts::BoundTrackParameters(perigeeSurface, paramVec, covMat, partHypo));
+    auto part_hypo{Acts::SinglyChargedParticleHypothesis::electron()};
+    start_parameters.push_back(Acts::BoundTrackParameters(
+        perigee_surface, param_vec, cov_mat, part_hypo));
 
     // This is a global variable for performance checks
     nseeds_++;
@@ -287,25 +290,25 @@ void CKFProcessor::produce(framework::Event& event) {
   profiling_map_["seeds"] +=
       std::chrono::duration<double, std::milli>(seeds - hits).count();
 
-  Acts::GainMatrixUpdater kfUpdater;
+  Acts::GainMatrixUpdater kf_updater;
 
   // configuration for the measurement selector. Empty geometry identifier means
   // applicable to all the detector elements
 
-  Acts::MeasurementSelector::Config measurementSelectorCfg = {
+  Acts::MeasurementSelector::Config measurement_selector_cfg = {
       // global default: no chi2 cut, only one measurement per surface
       {Acts::GeometryIdentifier(), {{}, {outlier_pval_}, {1u}}},
   };
 
-  Acts::MeasurementSelector measSel{measurementSelectorCfg};
+  Acts::MeasurementSelector meas_sel{measurement_selector_cfg};
 
   tracking::sim::LdmxMeasurementCalibrator calibrator{measurements};
 
   Acts::CombinatorialKalmanFilterExtensions<TrackContainer> ckf_extensions;
 
-  if (use1Dmeasurements_) {
+  if (use1_dmeasurements_) {
     ckf_extensions.calibrator
-        .connect<&tracking::sim::LdmxMeasurementCalibrator::calibrate_1d<
+        .connect<&tracking::sim::LdmxMeasurementCalibrator::calibrate1d<
             Acts::VectorMultiTrajectory>>(&calibrator);
   } else {
     ckf_extensions.calibrator
@@ -315,18 +318,18 @@ void CKFProcessor::produce(framework::Event& event) {
 
   ckf_extensions.updater.connect<
       &Acts::GainMatrixUpdater::operator()<Acts::VectorMultiTrajectory>>(
-      &kfUpdater);
+      &kf_updater);
 
   ckf_extensions.measurementSelector
       .connect<&Acts::MeasurementSelector::select<Acts::VectorMultiTrajectory>>(
-          &measSel);
+          &meas_sel);
 
   ldmx_log(debug) << "SourceLinkAccessor...";
 
   // Create source link accessor and connect delegate
   struct SourceLinkAccIt {
-    using BaseIt = decltype(geoId_sl_map.begin());
-    BaseIt it;
+    using BaseIt = decltype(geo_id_sl_map.begin());
+    BaseIt it_;
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-local-typedefs"
@@ -340,11 +343,11 @@ void CKFProcessor::produce(framework::Event& event) {
 #pragma GCC diagnostic pop
 
     SourceLinkAccIt& operator++() {
-      ++it;
+      ++it_;
       return *this;
     }
     bool operator==(const SourceLinkAccIt& other) const {
-      return it == other.it;
+      return it_ == other.it_;
     }
     bool operator!=(const SourceLinkAccIt& other) const {
       return !(*this == other);
@@ -352,19 +355,20 @@ void CKFProcessor::produce(framework::Event& event) {
     // const value_type& operator*() const { return it->second; }
 
     // by value
-    value_type operator*() const { return value_type{it->second}; }
+    value_type operator*() const { return value_type{it_->second}; }
   };
 
-  auto sourceLinkAccessor = [&](const Acts::Surface& surface)
+  auto source_link_accessor = [&](const Acts::Surface& surface)
       -> std::pair<SourceLinkAccIt, SourceLinkAccIt> {
-    auto [begin, end] = geoId_sl_map.equal_range(surface.geometryId());
+    auto [begin, end] = geo_id_sl_map.equal_range(surface.geometryId());
     return {SourceLinkAccIt{begin}, SourceLinkAccIt{end}};
   };
 
-  Acts::SourceLinkAccessorDelegate<SourceLinkAccIt> sourceLinkAccessorDelegate;
-  sourceLinkAccessorDelegate.connect<&decltype(sourceLinkAccessor)::operator(),
-                                     decltype(sourceLinkAccessor)>(
-      &sourceLinkAccessor);
+  Acts::SourceLinkAccessorDelegate<SourceLinkAccIt>
+      source_link_accessor_delegate;
+  source_link_accessor_delegate
+      .connect<&decltype(source_link_accessor)::operator(),
+               decltype(source_link_accessor)>(&source_link_accessor);
 
   ldmx_log(debug) << "Setting up surfaces...";
 
@@ -386,26 +390,26 @@ void CKFProcessor::produce(framework::Event& event) {
   // The number of track candidates (i.e. startParameters.size()) is always
   // the same as the number of seed tracks
   ldmx_log(debug) << "Loop on the track candidates";
-  for (size_t trackId = 0u; trackId < startParameters.size(); ++trackId) {
+  for (size_t track_id = 0u; track_id < start_parameters.size(); ++track_id) {
     ldmx_log(debug) << "---------------------------";
-    ldmx_log(debug) << "Candidate Track ID = " << trackId;
+    ldmx_log(debug) << "Candidate Track ID = " << track_id;
     // Define the CKF options here:
     const Acts::CombinatorialKalmanFilterOptions<SourceLinkAccIt,
                                                  TrackContainer>
-        ckfOptions(TrackingGeometryUser::geometry_context(),
-                   TrackingGeometryUser::magnetic_field_context(),
-                   TrackingGeometryUser::calibration_context(),
-                   sourceLinkAccessorDelegate, ckf_extensions,
-                   propagator_options, true /* multiple scattering */,
-                   false /* energy loss */);
+        ckf_options(TrackingGeometryUser::geometryContext(),
+                    TrackingGeometryUser::magneticFieldContext(),
+                    TrackingGeometryUser::calibrationContext(),
+                    source_link_accessor_delegate, ckf_extensions,
+                    propagator_options, true /* multiple scattering */,
+                    false /* energy loss */);
 
     ldmx_log(debug) << "  Checking options:  multiple scattering = "
-                    << ckfOptions.multipleScattering
-                    << "  energy loss = " << ckfOptions.energyLoss;
+                    << ckf_options.multipleScattering
+                    << "  energy loss = " << ckf_options.energyLoss;
     auto results =
-        ckf_->findTracks(startParameters.at(trackId), ckfOptions, tc);
+        ckf_->findTracks(start_parameters.at(track_id), ckf_options, tc);
 
-    auto start_params = startParameters.at(trackId).parameters().transpose();
+    auto start_params = start_parameters.at(track_id).parameters().transpose();
     ldmx_log(debug)
         << "  Checking CKF success for track candidate with params: "
         << " D0 = " << start_params[0] << " Z0 = " << start_params[1]
@@ -418,33 +422,33 @@ void CKFProcessor::produce(framework::Event& event) {
       ldmx_log(debug) << "    CKF succeded!";
     }
 
-    auto& tracksFromSeed = results.value();
-    if (tracksFromSeed.size() != 1) {
-      ldmx_log(info) << "  tracksFromSeed.size = " << tracksFromSeed.size();
+    auto& tracks_from_seed = results.value();
+    if (tracks_from_seed.size() != 1) {
+      ldmx_log(info) << "  tracksFromSeed.size = " << tracks_from_seed.size();
     }
     // For now it seems this loop is only looping on a single element
-    for (auto& track : tracksFromSeed) {
+    for (auto& track : tracks_from_seed) {
       // do the track smoothing...this is not done in the CKF code anymore
-      Acts::smoothTrack(geometry_context(), track);  // from TrackHelpers
+      Acts::smoothTrack(geometryContext(), track);  // from TrackHelpers
       // make the empty ldmx::Track() and track state at target
       ldmx::Track trk = ldmx::Track();
-      ldmx::Track::TrackState tsAtTarget;
+      ldmx::Track::TrackState ts_at_target;
 
       // Extrapolate to the target
-      bool success = trk_extrap_->TrackStateAtSurface(
-          track, target_surface, tsAtTarget, ldmx::TrackStateType::AtTarget);
+      bool success = trk_extrap_->trackStateAtSurface(
+          track, target_surface_, ts_at_target, ldmx::TrackStateType::AtTarget);
       // Check if the extrapolation to target succeeded
       if (success) {
         ldmx_log(debug) << "    Successfully obtained TrackState at target";
 
         ldmx_log(debug) << "    Parameters At Target: Loc0 = "
-                        << tsAtTarget.params[0] << ", Loc1 "
-                        << tsAtTarget.params[1]
-                        << ", phi = " << tsAtTarget.params[2]
-                        << ", theta = " << tsAtTarget.params[3] << ", QoP "
-                        << tsAtTarget.params[4];
+                        << ts_at_target.params_[0] << ", Loc1 "
+                        << ts_at_target.params_[1]
+                        << ", phi = " << ts_at_target.params_[2]
+                        << ", theta = " << ts_at_target.params_[3] << ", QoP "
+                        << ts_at_target.params_[4];
 
-        trk.addTrackState(tsAtTarget);
+        trk.addTrackState(ts_at_target);
       } else {
         ldmx_log(info) << "    Could not extrapolate to target! nhits = "
                        << track.nMeasurements() << " Printing track states:  ";
@@ -468,10 +472,10 @@ void CKFProcessor::produce(framework::Event& event) {
       // from tsAtTarget...maybe useful for something?
       // -->one thing this does is allow Acts to
       // calculate the momentum 3-vector for you
-      Acts::BoundTrackParameters boundStateAtTarget =
-          tracking::sim::utils::btp(tsAtTarget, target_surface, 11);
-      track.setReferenceSurface(target_surface);
-      track.parameters() = boundStateAtTarget.parameters();
+      Acts::BoundTrackParameters bound_state_at_target =
+          tracking::sim::utils::btp(ts_at_target, target_surface_, 11);
+      track.setReferenceSurface(target_surface_);
+      track.parameters() = bound_state_at_target.parameters();
 
       // ldmx_log(debug) << "  typeid(track).name() = " << typeid(track).name();
       // These are the parameters at the target surface
@@ -488,8 +492,8 @@ void CKFProcessor::produce(framework::Event& event) {
 
       // the target...it's not really perigee anymore.
       trk.setPerigeeLocation(0, 0, 0);
-      trk.setPerigeeParameters(tsAtTarget.params);
-      trk.setPerigeeCov(tsAtTarget.cov);
+      trk.setPerigeeParameters(ts_at_target.params_);
+      trk.setPerigeeCov(ts_at_target.cov_);
 
       trk.setChi2(track.chi2());
       trk.setNhits(track.nMeasurements());
@@ -526,7 +530,7 @@ void CKFProcessor::produce(framework::Event& event) {
         ldmx_log(debug) << "    Checking Track State index_ = "
                         << trk_state_index << " at location "
                         << ts.referenceSurface()
-                               .transform(geometry_context())
+                               .transform(geometryContext())
                                .translation()
                                .transpose();
 
@@ -538,13 +542,13 @@ void CKFProcessor::produce(framework::Event& event) {
         }
 
         // Check if the track state is a measurement
-        auto typeFlags = ts.typeFlags();
+        auto type_flags = ts.typeFlags();
 
-        if (typeFlags.test(Acts::TrackStateFlag::MeasurementFlag) &&
+        if (type_flags.test(Acts::TrackStateFlag::MeasurementFlag) &&
             ts.hasUncalibratedSourceLink()) {
-          const ActsExamples::IndexSourceLink sl =
+          const acts_examples::IndexSourceLink sl =
               ts.getUncalibratedSourceLink()
-                  .template get<ActsExamples::IndexSourceLink>();
+                  .template get<acts_examples::IndexSourceLink>();
 
           ldmx::Measurement ldmx_meas = measurements.at(sl.index());
           ldmx_log(debug) << "    Adding measurement to ldmx::track with "
@@ -561,47 +565,47 @@ void CKFProcessor::produce(framework::Event& event) {
       ldmx_log(debug) << "  Starting extrapolations";
       // Extrapolations
       // To ECAL
-      const double ECAL_SCORING_PLANE = 240.5;
-      Acts::Vector3 pos_(ECAL_SCORING_PLANE, 0., 0.);
-      Acts::Translation3 surf_translation(pos_);
-      Acts::Transform3 surf_transform(surf_translation * surf_rotation);
+      const double ecal_scoring_plane = 240.5;
+      Acts::Vector3 pos(ecal_scoring_plane, 0., 0.);
+      Acts::Translation3 surf_translation(pos);
+      Acts::Transform3 surf_transform(surf_translation * surf_rotation_);
       const std::shared_ptr<Acts::PlaneSurface> ecal_surface =
           Acts::Surface::makeShared<Acts::PlaneSurface>(surf_transform);
 
       // Beam Origin unbounded surface
-      const std::shared_ptr<Acts::Surface> beamOrigin_surface =
+      const std::shared_ptr<Acts::Surface> beam_origin_surface =
           tracking::sim::utils::unboundSurface(-700);
 
-      if (taggerTracking_) {
+      if (tagger_tracking_) {
         ldmx_log(debug) << "    Beam Origin Extrapolation";
-        ldmx::Track::TrackState tsAtBeamOrigin;
-        success = trk_extrap_->TrackStateAtSurface(
-            track, beamOrigin_surface, tsAtBeamOrigin,
+        ldmx::Track::TrackState ts_at_beam_origin;
+        success = trk_extrap_->trackStateAtSurface(
+            track, beam_origin_surface, ts_at_beam_origin,
             ldmx::TrackStateType::AtBeamOrigin);
 
         if (success) {
-          trk.addTrackState(tsAtBeamOrigin);
+          trk.addTrackState(ts_at_beam_origin);
           ldmx_log(debug)
               << "  Successfully obtained TrackState at beam origin";
         }
       }
 
       // Recoil Extrapolation to ECAL only
-      if (!taggerTracking_) {
+      if (!tagger_tracking_) {
         ldmx_log(debug) << "    Ecal Extrapolation";
-        ldmx::Track::TrackState tsAtEcal;
-        success = trk_extrap_->TrackStateAtSurface(
-            track, ecal_surface, tsAtEcal, ldmx::TrackStateType::AtECAL);
+        ldmx::Track::TrackState ts_at_ecal;
+        success = trk_extrap_->trackStateAtSurface(
+            track, ecal_surface, ts_at_ecal, ldmx::TrackStateType::AtECAL);
 
         if (success) {
-          trk.addTrackState(tsAtEcal);
+          trk.addTrackState(ts_at_ecal);
           ldmx_log(debug) << "    Successfully obtained TrackState at Ecal";
           ldmx_log(debug) << "    Parameters At Ecal: Loc0 = "
-                          << tsAtEcal.params[0]
-                          << ", Loc1 = " << tsAtEcal.params[1]
-                          << ", phi = " << tsAtEcal.params[2]
-                          << ", theta = " << tsAtEcal.params[3]
-                          << ", QoP = " << tsAtEcal.params[4];
+                          << ts_at_ecal.params_[0]
+                          << ", Loc1 = " << ts_at_ecal.params_[1]
+                          << ", phi = " << ts_at_ecal.params_[2]
+                          << ", theta = " << ts_at_ecal.params_[3]
+                          << ", QoP = " << ts_at_ecal.params_[4];
         } else {
           ldmx_log(info) << "    Could not extrapolate to ECAL!! Please check "
                             "the track states";
@@ -609,11 +613,11 @@ void CKFProcessor::produce(framework::Event& event) {
       }
 
       // Truth matching
-      if (truthMatchingTool) {
-        auto truthInfo = truthMatchingTool->TruthMatch(trk);
-        trk.setTrackID(truthInfo.trackID);
-        trk.setPdgID(truthInfo.pdgID);
-        trk.setTruthProb(truthInfo.truthProb);
+      if (truth_matching_tool) {
+        auto truth_info = truth_matching_tool->truthMatch(trk);
+        trk.setTrackID(truth_info.track_id_);
+        trk.setPdgID(truth_info.pdg_id_);
+        trk.setTruthProb(truth_info.truth_prob_);
       }
 
       // Adding the track candidate to the track collection
@@ -631,13 +635,13 @@ void CKFProcessor::produce(framework::Event& event) {
       std::chrono::duration<double, std::milli>(ckf_run - ckf_setup).count();
 
   // Calculating Shared Hits
-  auto sharedHits = computeSharedHits(tracks, measurements, tg,
-                                      tracking::sim::utils::sourceLinkHash,
-                                      tracking::sim::utils::sourceLinkEquality);
-  for (std::size_t iTrack = 0; iTrack < sharedHits.size(); ++iTrack) {
-    tracks[iTrack].setNsharedHits(sharedHits[iTrack].size());
-    for (auto idx : sharedHits[iTrack]) {
-      tracks[iTrack].addSharedIndex(idx);
+  auto shared_hits = computeSharedHits(
+      tracks, measurements, tg, tracking::sim::utils::sourceLinkHash,
+      tracking::sim::utils::sourceLinkEquality);
+  for (std::size_t i_track = 0; i_track < shared_hits.size(); ++i_track) {
+    tracks[i_track].setNsharedHits(shared_hits[i_track].size());
+    for (auto idx : shared_hits[i_track]) {
+      tracks[i_track].addSharedIndex(idx);
     }
   }
 
@@ -656,9 +660,9 @@ void CKFProcessor::produce(framework::Event& event) {
 }
 
 void CKFProcessor::onProcessStart() {
-  if (use1Dmeasurements_)
+  if (use1_dmeasurements_)
     ldmx_log(debug) << "Use1Dmeasurements = " << std::boolalpha
-                    << use1Dmeasurements_;
+                    << use1_dmeasurements_;
   if (remove_stereo_)
     ldmx_log(debug) << "Remove_stereo = " << std::boolalpha << remove_stereo_;
 }
@@ -697,7 +701,7 @@ void CKFProcessor::configure(framework::config::Parameters& parameters) {
   const_b_field_ = parameters.get<bool>("const_b_field", false);
   field_map_ = parameters.get<std::string>("field_map");
   propagator_step_size_ = parameters.get<double>("propagator_step_size", 200.);
-  propagator_maxSteps_ = parameters.get<int>("propagator_maxSteps", 10000);
+  propagator_max_steps_ = parameters.get<int>("propagator_maxSteps", 10000);
   measurement_collection_ = parameters.get<std::string>(
       "measurement_collection", "TaggerMeasurements");
   outlier_pval_ = parameters.get<double>("outlier_pval_", 3.84);
@@ -705,7 +709,7 @@ void CKFProcessor::configure(framework::config::Parameters& parameters) {
   debug_acts_ = parameters.get<bool>("debug_acts", false);
 
   remove_stereo_ = parameters.get<bool>("remove_stereo", false);
-  use1Dmeasurements_ = parameters.get<bool>("use1Dmeasurements", true);
+  use1_dmeasurements_ = parameters.get<bool>("use1Dmeasurements", true);
   min_hits_ = parameters.get<int>("min_hits", 7);
 
   // Ckf specific options
@@ -726,7 +730,7 @@ void CKFProcessor::configure(framework::config::Parameters& parameters) {
       parameters.get<std::string>("out_trk_collection", "Tracks");
 
   // keep track on which system tracking is running
-  taggerTracking_ = parameters.get<bool>("taggerTracking", true);
+  tagger_tracking_ = parameters.get<bool>("taggerTracking", true);
 
   // BField Systematics
   map_offset_ =
@@ -739,10 +743,10 @@ auto CKFProcessor::makeGeoIdSourceLinkMap(
     const geo::TrackersTrackingGeometry& tg,
     const std::vector<ldmx::Measurement>& measurements)
     -> std::unordered_multimap<Acts::GeometryIdentifier,
-                               ActsExamples::IndexSourceLink> {
+                               acts_examples::IndexSourceLink> {
   std::unordered_multimap<Acts::GeometryIdentifier,
-                          ActsExamples::IndexSourceLink>
-      geoId_sl_map;
+                          acts_examples::IndexSourceLink>
+      geo_id_sl_map;
 
   ldmx_log(debug) << "The makeGeoIdSourceLinkMap has " << measurements.size()
                   << " measurements";
@@ -758,7 +762,7 @@ auto CKFProcessor::makeGeoIdSourceLinkMap(
       // Transform the ldmx space point from global to local and store the
       // information
 
-      ActsExamples::IndexSourceLink idx_sl(hit_surface->geometryId(), i_meas);
+      acts_examples::IndexSourceLink idx_sl(hit_surface->geometryId(), i_meas);
       // mg aug 2024 ... these don't print statements
       // don't compile using v36 in Acts...figure out later
       /*
@@ -770,7 +774,7 @@ auto CKFProcessor::makeGeoIdSourceLinkMap(
       ldmx_log(debug) << "Surface info::"
                       << std::tie(*hit_surface, geometry_context());
       */
-      geoId_sl_map.insert(std::make_pair(hit_surface->geometryId(), idx_sl));
+      geo_id_sl_map.insert(std::make_pair(hit_surface->geometryId(), idx_sl));
 
     } else
       ldmx_log(debug) << getName() << "::HIT " << i_meas << " at layer_"
@@ -778,7 +782,7 @@ auto CKFProcessor::makeGeoIdSourceLinkMap(
                       << " is not associated to any surface?!";
   }
 
-  return geoId_sl_map;
+  return geo_id_sl_map;
 }
 
 template <typename geometry_t, typename source_link_hash_t,
@@ -787,24 +791,24 @@ std::vector<std::vector<std::size_t>> CKFProcessor::computeSharedHits(
     std::vector<ldmx::Track> tracks, std::vector<ldmx::Measurement> meas_coll,
     geometry_t& tg, source_link_hash_t&& sourceLinkHash,
     source_link_equality_t&& sourceLinkEquality) const {
-  auto measurementIndexMap =
+  auto measurement_index_map =
       std::unordered_map<Acts::SourceLink, std::size_t, source_link_hash_t,
                          source_link_equality_t>(0, sourceLinkHash,
                                                  sourceLinkEquality);
 
-  std::vector<std::vector<std::size_t>> measurementsPerTrack;
+  std::vector<std::vector<std::size_t>> measurements_per_track;
   boost::container::flat_map<std::size_t,
                              boost::container::flat_set<std::size_t>>
-      tracksPerMeasurement;
-  std::vector<std::size_t> sharedMeasurementsPerTrack;
-  auto numberOfTracks = 0;
+      tracks_per_measurement;
+  std::vector<std::size_t> shared_measurements_per_track;
+  auto number_of_tracks = 0;
 
   // Iterate through all input tracks, collect their properties like measurement
   // count and chi2 and fill the measurement map in order to relate tracks to
   // each other if they have shared hits.
   for (const auto& track : tracks) {
     // Kick out tracks that do not fulfill our initial requirements
-    // if (track.getNhits() < nMeasurementsMin_) {
+    // if (track.getNhits() < n_measurements_min_) {
     //   continue;
     // }
 
@@ -813,41 +817,41 @@ std::vector<std::vector<std::size_t>> CKFProcessor::computeSharedHits(
       auto meas = meas_coll.at(imeas);
       const Acts::Surface* hit_surface = tg.getSurface(meas.getLayerID());
       // Store the index_ source link
-      ActsExamples::IndexSourceLink idx_sl(hit_surface->geometryId(), imeas);
-      Acts::SourceLink sourceLink = Acts::SourceLink(idx_sl);
+      acts_examples::IndexSourceLink idx_sl(hit_surface->geometryId(), imeas);
+      Acts::SourceLink source_link = Acts::SourceLink(idx_sl);
 
-      auto emplace = measurementIndexMap.try_emplace(
-          sourceLink, measurementIndexMap.size());
+      auto emplace = measurement_index_map.try_emplace(
+          source_link, measurement_index_map.size());
       measurements.push_back(emplace.first->second);
     }
 
-    measurementsPerTrack.push_back(std::move(measurements));
+    measurements_per_track.push_back(std::move(measurements));
 
-    ++numberOfTracks;
+    ++number_of_tracks;
   }
 
   // Now we relate measurements to tracks
-  for (std::size_t iTrack = 0; iTrack < numberOfTracks; ++iTrack) {
-    for (auto iMeasurement : measurementsPerTrack[iTrack]) {
-      tracksPerMeasurement[iMeasurement].insert(iTrack);
+  for (std::size_t i_track = 0; i_track < number_of_tracks; ++i_track) {
+    for (auto i_measurement : measurements_per_track[i_track]) {
+      tracks_per_measurement[i_measurement].insert(i_track);
     }
   }
 
   // Finally, we can accumulate the number of shared measurements per track
-  sharedMeasurementsPerTrack = std::vector<std::size_t>(numberOfTracks, 0);
+  shared_measurements_per_track = std::vector<std::size_t>(number_of_tracks, 0);
 
-  std::vector<std::vector<std::size_t>> sharedMeasurementIdxsPerTrack;
-  for (std::size_t iTrack = 0; iTrack < numberOfTracks; ++iTrack) {
-    std::vector<std::size_t> sharedMeasurementIdxs;
-    for (auto iMeasurement : measurementsPerTrack[iTrack]) {
-      if (tracksPerMeasurement[iMeasurement].size() > 1) {
-        ++sharedMeasurementsPerTrack[iTrack];
-        sharedMeasurementIdxs.push_back(iMeasurement);
+  std::vector<std::vector<std::size_t>> shared_measurement_idxs_per_track;
+  for (std::size_t i_track = 0; i_track < number_of_tracks; ++i_track) {
+    std::vector<std::size_t> shared_measurement_idxs;
+    for (auto i_measurement : measurements_per_track[i_track]) {
+      if (tracks_per_measurement[i_measurement].size() > 1) {
+        ++shared_measurements_per_track[i_track];
+        shared_measurement_idxs.push_back(i_measurement);
       }
     }
-    sharedMeasurementIdxsPerTrack.push_back(sharedMeasurementIdxs);
+    shared_measurement_idxs_per_track.push_back(shared_measurement_idxs);
   }
-  return sharedMeasurementIdxsPerTrack;
+  return shared_measurement_idxs_per_track;
 }
 
 }  // namespace reco

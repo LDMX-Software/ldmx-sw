@@ -26,18 +26,18 @@ class DetectorElement : public Acts::DetectorElementBase {
 
   DetectorElement(const std::shared_ptr<Acts::Surface>& surface,
                   const Acts::Transform3& default_transform, double thickness) {
-    m_surface = surface;
-    m_thickness = thickness;
+    m_surface_ = surface;
+    m_thickness_ = thickness;
 
     // This is the local to global transformation
-    m_transform = default_transform;
+    m_transform_ = default_transform;
   }
 
   ~DetectorElement() override;
 
   // This method will always return a copy to the uncorrected transformation
 
-  Acts::Transform3 uncorrectedTransform() const { return m_transform; }
+  Acts::Transform3 uncorrectedTransform() const { return m_transform_; }
 
   // This method will load the transformation from the geometry context if found
   // otherwise will return the default transform
@@ -66,19 +66,18 @@ class DetectorElement : public Acts::DetectorElementBase {
   double thickness() const override;
 
   Acts::GeometryIdentifier geometryId() const {
-    if (!m_surface)
+    if (!m_surface_)
       throw std::logic_error("DetectorElement:: surface not assigned");
 
-    return (m_surface->geometryId());
+    return (m_surface_->geometryId());
   }
 
  private:
   // cache
-  Acts::Transform3 m_transform = Acts::Transform3::Identity();
+  Acts::Transform3 m_transform_ = Acts::Transform3::Identity();
 
-  std::shared_ptr<Acts::Surface> m_surface;
-  double m_thickness;
-  bool m_debug{false};
+  std::shared_ptr<Acts::Surface> m_surface_;
+  double m_thickness_;
 };
 
 }  // namespace tracking::geo

@@ -23,7 +23,7 @@ TrackingGeometry::TrackingGeometry(const std::string& name,
     : framework::ConditionsObject(name), gctx_{gctx}, gdml_{gdml} {
   // Build The rotation matrix to the tracking frame
   // Rotate the sensors to be orthogonal to X
-  double rotationAngle = M_PI * 0.5;
+  double rotation_angle = M_PI * 0.5;
 
   // 0 0 -1
   // 0 1 0
@@ -31,22 +31,22 @@ TrackingGeometry::TrackingGeometry(const std::string& name,
 
   // This rotation is needed to have the plane orthogonal to the X direction.
   //  Rotation of the surfaces
-  Acts::Vector3 xPos1(cos(rotationAngle), 0., sin(rotationAngle));
-  Acts::Vector3 yPos1(0., 1., 0.);
-  Acts::Vector3 zPos1(-sin(rotationAngle), 0., cos(rotationAngle));
+  Acts::Vector3 x_pos1(cos(rotation_angle), 0., sin(rotation_angle));
+  Acts::Vector3 y_pos1(0., 1., 0.);
+  Acts::Vector3 z_pos1(-sin(rotation_angle), 0., cos(rotation_angle));
 
-  y_rot_.col(0) = xPos1;
-  y_rot_.col(1) = yPos1;
-  y_rot_.col(2) = zPos1;
+  y_rot_.col(0) = x_pos1;
+  y_rot_.col(1) = y_pos1;
+  y_rot_.col(2) = z_pos1;
 
   // Rotate the sensors to put them in the proper orientation in Z
-  Acts::Vector3 xPos2(1., 0., 0.);
-  Acts::Vector3 yPos2(0., cos(rotationAngle), sin(rotationAngle));
-  Acts::Vector3 zPos2(0., -sin(rotationAngle), cos(rotationAngle));
+  Acts::Vector3 x_pos2(1., 0., 0.);
+  Acts::Vector3 y_pos2(0., cos(rotation_angle), sin(rotation_angle));
+  Acts::Vector3 z_pos2(0., -sin(rotation_angle), cos(rotation_angle));
 
-  x_rot_.col(0) = xPos2;
-  x_rot_.col(1) = yPos2;
-  x_rot_.col(2) = zPos2;
+  x_rot_.col(0) = x_pos2;
+  x_rot_.col(1) = y_pos2;
+  x_rot_.col(2) = z_pos2;
 
   /**
    * We are about to use the G4GDMLParser and would like to silence
@@ -75,7 +75,7 @@ TrackingGeometry::TrackingGeometry(const std::string& name,
   // Validation requires internet
   parser.Read(gdml_, false);
 
-  fWorldPhysVol_ = parser.GetWorldVolume();
+  f_world_phys_vol_ = parser.GetWorldVolume();
 
   if (silence) {
     // we created the session and silenced G4
@@ -90,9 +90,9 @@ G4VPhysicalVolume* TrackingGeometry::findDaughterByName(G4VPhysicalVolume* pvol,
                                                         G4String name) {
   G4LogicalVolume* lvol = pvol->GetLogicalVolume();
   for (G4int i = 0; i < lvol->GetNoDaughters(); i++) {
-    G4VPhysicalVolume* fDaughterPhysVol = lvol->GetDaughter(i);
-    std::string dName = fDaughterPhysVol->GetName();
-    if (dName.find(name) != std::string::npos) return fDaughterPhysVol;
+    G4VPhysicalVolume* f_daughter_phys_vol = lvol->GetDaughter(i);
+    std::string d_name = f_daughter_phys_vol->GetName();
+    if (d_name.find(name) != std::string::npos) return f_daughter_phys_vol;
     // if (fDaughterPhysVol->GetName() == name) return fDaughterPhysVol;
   }
 
@@ -105,16 +105,17 @@ void TrackingGeometry::getAllDaughters(G4VPhysicalVolume* pvol) {
   ldmx_log(trace) << "Checking daughters of ::" << pvol->GetName();
 
   for (G4int i = 0; i < lvol->GetNoDaughters(); i++) {
-    G4VPhysicalVolume* fDaughterPhysVol = lvol->GetDaughter(i);
+    G4VPhysicalVolume* f_daughter_phys_vol = lvol->GetDaughter(i);
 
-    ldmx_log(trace) << "name::" << fDaughterPhysVol->GetName();
-    ldmx_log(trace) << "pos_::" << fDaughterPhysVol->GetTranslation();
-    ldmx_log(trace) << "n_dau::"
-                    << fDaughterPhysVol->GetLogicalVolume()->GetNoDaughters();
-    ldmx_log(trace) << "replica::" << fDaughterPhysVol->IsReplicated();
-    ldmx_log(trace) << "copyNR::" << fDaughterPhysVol->GetCopyNo();
+    ldmx_log(trace) << "name::" << f_daughter_phys_vol->GetName();
+    ldmx_log(trace) << "pos_::" << f_daughter_phys_vol->GetTranslation();
+    ldmx_log(trace)
+        << "n_dau::"
+        << f_daughter_phys_vol->GetLogicalVolume()->GetNoDaughters();
+    ldmx_log(trace) << "replica::" << f_daughter_phys_vol->IsReplicated();
+    ldmx_log(trace) << "copyNR::" << f_daughter_phys_vol->GetCopyNo();
 
-    getAllDaughters(fDaughterPhysVol);
+    getAllDaughters(f_daughter_phys_vol);
   }
 }
 
@@ -134,58 +135,58 @@ void TrackingGeometry::getAllDaughters(G4VPhysicalVolume* pvol) {
 
 void TrackingGeometry::dumpGeometry(const std::string& outputDir,
                                     const Acts::GeometryContext& gctx) const {
-  if (!tGeometry_) return;
+  if (!t_geometry_) return;
 
   {
     ldmx_log(trace) << __PRETTY_FUNCTION__;
 
-    for (auto const& surfaceId : layer_surface_map_) {
-      ldmx_log(trace) << " " << surfaceId.first;
+    for (auto const& surface_id : layer_surface_map_) {
+      ldmx_log(trace) << " " << surface_id.first;
       ldmx_log(trace) << " Check the surface";
       //      surfaceId.second->toStream(gctx, ldmx_log(trace));
-      surfaceId.second->toStream(gctx);
-      ldmx_log(trace) << " GeometryID: " << surfaceId.second->geometryId();
+      surface_id.second->toStream(gctx);
+      ldmx_log(trace) << " GeometryID: " << surface_id.second->geometryId();
       ldmx_log(trace) << " GeometryID value: "
-                      << surfaceId.second->geometryId().value();
+                      << surface_id.second->geometryId().value();
     }
   }
 
   // Should fail if already exists
   boost::filesystem::create_directory(outputDir);
 
-  double outputScalor = 1.0;
-  size_t outputPrecision = 6;
+  double output_scalor = 1.0;
+  size_t output_precision = 6;
 
-  Acts::ObjVisualization3D objVis(outputPrecision, outputScalor);
-  Acts::ViewConfig containerView = Acts::ViewConfig({220, 220, 220});
-  Acts::ViewConfig volumeView = Acts::ViewConfig({220, 220, 0});
-  Acts::ViewConfig sensitiveView = Acts::ViewConfig({0, 180, 240});
-  Acts::ViewConfig passiveView = Acts::ViewConfig({240, 280, 0});
-  Acts::ViewConfig gridView = Acts::ViewConfig({220, 0, 0});
+  Acts::ObjVisualization3D obj_vis(output_precision, output_scalor);
+  Acts::ViewConfig container_view = Acts::ViewConfig({220, 220, 220});
+  Acts::ViewConfig volume_view = Acts::ViewConfig({220, 220, 0});
+  Acts::ViewConfig sensitive_view = Acts::ViewConfig({0, 180, 240});
+  Acts::ViewConfig passive_view = Acts::ViewConfig({240, 280, 0});
+  Acts::ViewConfig grid_view = Acts::ViewConfig({220, 0, 0});
 
   Acts::GeometryView3D::drawTrackingVolume(
-      objVis, *(tGeometry_->highestTrackingVolume()), gctx, containerView,
-      volumeView, passiveView, sensitiveView, gridView, true, "", ".");
+      obj_vis, *(t_geometry_->highestTrackingVolume()), gctx, container_view,
+      volume_view, passive_view, sensitive_view, grid_view, true, "", ".");
 }
 
 // This method gets the transform from the physical volume to the tracking frame
-Acts::Transform3 TrackingGeometry::GetTransform(const G4VPhysicalVolume& phex,
+Acts::Transform3 TrackingGeometry::getTransform(const G4VPhysicalVolume& phex,
                                                 bool toTrackingFrame) const {
-  Acts::Vector3 pos_(phex.GetTranslation().x(), phex.GetTranslation().y(),
-                     phex.GetTranslation().z());
+  Acts::Vector3 pos(phex.GetTranslation().x(), phex.GetTranslation().y(),
+                    phex.GetTranslation().z());
 
   Acts::RotationMatrix3 rotation;
-  ConvertG4Rot(phex.GetRotation(), rotation);
+  convertG4Rot(phex.GetRotation(), rotation);
 
   // rotate to the tracking frame
   if (toTrackingFrame) {
-    pos_(0) = phex.GetTranslation().z();
-    pos_(1) = phex.GetTranslation().x();
-    pos_(2) = phex.GetTranslation().y();
+    pos(0) = phex.GetTranslation().z();
+    pos(1) = phex.GetTranslation().x();
+    pos(2) = phex.GetTranslation().y();
     rotation = x_rot_ * y_rot_ * rotation;
   }
 
-  Acts::Translation3 translation(pos_);
+  Acts::Translation3 translation(pos);
 
   Acts::Transform3 transform(translation * rotation);
 
@@ -196,20 +197,20 @@ Acts::Transform3 TrackingGeometry::GetTransform(const G4VPhysicalVolume& phex,
 // x_->y_ y_->z_
 Acts::Transform3 TrackingGeometry::toTracker(
     const Acts::Transform3& trans) const {
-  Acts::Vector3 pos_{trans.translation()(2), trans.translation()(0),
-                     trans.translation()(1)};
+  Acts::Vector3 pos{trans.translation()(2), trans.translation()(0),
+                    trans.translation()(1)};
 
   Acts::RotationMatrix3 rotation = trans.rotation();
   rotation = x_rot_ * y_rot_ * rotation;
 
-  Acts::Translation3 translation(pos_);
+  Acts::Translation3 translation(pos);
   Acts::Transform3 transform(translation * rotation);
 
   return transform;
 }
 
 // Convert rotation
-void TrackingGeometry::ConvertG4Rot(const G4RotationMatrix* g4rot,
+void TrackingGeometry::convertG4Rot(const G4RotationMatrix* g4rot,
                                     Acts::RotationMatrix3& rot) const {
   // If the rotation is the identity then g4rot will be a null ptr.
   // So then check it and fill rot accordingly
@@ -233,7 +234,7 @@ void TrackingGeometry::ConvertG4Rot(const G4RotationMatrix* g4rot,
 
 // Convert translation
 
-Acts::Vector3 TrackingGeometry::ConvertG4Pos(const G4ThreeVector& g4pos) const {
+Acts::Vector3 TrackingGeometry::convertG4Pos(const G4ThreeVector& g4pos) const {
   Acts::Vector3 trans{g4pos.x(), g4pos.y(), g4pos.z()};
 
   {
@@ -246,16 +247,16 @@ Acts::Vector3 TrackingGeometry::ConvertG4Pos(const G4ThreeVector& g4pos) const {
 
 void TrackingGeometry::getSurfaces(
     std::vector<const Acts::Surface*>& surfaces) const {
-  if (!tGeometry_)
+  if (!t_geometry_)
     throw std::runtime_error("TrackingGeometry::getSurfaces tGeometry is null");
 
-  const Acts::TrackingVolume* tVolume = tGeometry_->highestTrackingVolume();
-  if (tVolume->confinedVolumes()) {
-    for (auto volume : tVolume->confinedVolumes()->arrayObjects()) {
+  const Acts::TrackingVolume* t_volume = t_geometry_->highestTrackingVolume();
+  if (t_volume->confinedVolumes()) {
+    for (auto volume : t_volume->confinedVolumes()->arrayObjects()) {
       if (volume->confinedLayers()) {
-        for (const auto& layer_ : volume->confinedLayers()->arrayObjects()) {
-          if (layer_->layerType() == Acts::navigation) continue;
-          for (auto surface : layer_->surfaceArray()->surfaces()) {
+        for (const auto& layer : volume->confinedLayers()->arrayObjects()) {
+          if (layer->layerType() == Acts::navigation) continue;
+          for (auto surface : layer->surfaceArray()->surfaces()) {
             if (surface) {
               surfaces.push_back(surface);
 
@@ -276,22 +277,22 @@ void TrackingGeometry::makeLayerSurfacesMap() {
     // unsigned int layerId = (surface->geometryId().layer() / 2) ;  // Old 1
     // sensor per layer_
 
-    unsigned int volumeId = surface->geometryId().volume();
-    unsigned int layerId = (surface->geometryId().layer() /
-                            2);  // set layer_ ID  from 1 to 7 for the tagger
-                                 // and from 1 to 6 for the recoil
-    unsigned int sensorId =
+    unsigned int volume_id = surface->geometryId().volume();
+    unsigned int layer_id = (surface->geometryId().layer() /
+                             2);  // set layer_ ID  from 1 to 7 for the tagger
+                                  // and from 1 to 6 for the recoil
+    unsigned int sensor_id =
         surface->geometryId().sensitive() -
         1;  // set sensor ID from 0 to 1 for the tagger and from 0 to 9 for the
             // axial sensors in the back layers of the recoil
 
-    ldmx_log(trace) << "VolumeID " << volumeId << " LayerId " << layerId
-                    << " sensorId " << sensorId;
+    ldmx_log(trace) << "VolumeID " << volume_id << " LayerId " << layer_id
+                    << " sensorId " << sensor_id;
 
     // surface ID = vol * 1000 + ly * 100 + sensor
-    unsigned int surfaceId = volumeId * 1000 + layerId * 100 + sensorId;
+    unsigned int surface_id = volume_id * 1000 + layer_id * 100 + sensor_id;
 
-    layer_surface_map_[surfaceId] = surface;
+    layer_surface_map_[surface_id] = surface;
 
   }  // surfaces loop
 }

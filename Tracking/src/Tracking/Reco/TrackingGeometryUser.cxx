@@ -6,14 +6,13 @@ TrackingGeometryUser::TrackingGeometryUser(const std::string& name,
                                            framework::Process& p)
     : framework::Producer(name, p) {}
 
-const Acts::GeometryContext& TrackingGeometryUser::geometry_context() {
+const Acts::GeometryContext& TrackingGeometryUser::geometryContext() {
   return getNamedCondition<geo::GeometryContext>().get();
 }
-const Acts::MagneticFieldContext&
-TrackingGeometryUser::magnetic_field_context() {
+const Acts::MagneticFieldContext& TrackingGeometryUser::magneticFieldContext() {
   return getNamedCondition<geo::MagneticFieldContext>().get();
 }
-const Acts::CalibrationContext& TrackingGeometryUser::calibration_context() {
+const Acts::CalibrationContext& TrackingGeometryUser::calibrationContext() {
   return getNamedCondition<geo::CalibrationContext>().get();
 }
 const geo::TrackersTrackingGeometry& TrackingGeometryUser::geometry() {

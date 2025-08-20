@@ -20,20 +20,20 @@ void AlignmentTestProcessor::onNewRun(const ldmx::RunHeader& rh) {
   std::cout << "Storing corrections to default transformations" << std::endl;
 
   // 100um in tu
-  Acts::Vector3 deltaT{0.1, 0., 0.};
+  Acts::Vector3 delta_t{0.1, 0., 0.};
 
   // 10 mrad in rw.
   // rw is applied following the right-hand rule
   // In this case, w points towards -X.
   // Looking downstream the rotation is counterclockwise.
 
-  Acts::Vector3 deltaR{0., 0., 0.01};
-  test_gctx_.addAlignCorrection(2100, deltaT, deltaR);
-  test_gctx_.addAlignCorrection(2101, deltaT, deltaR);
+  Acts::Vector3 delta_r{0., 0., 0.01};
+  test_gctx_.addAlignCorrection(2100, delta_t, delta_r);
+  test_gctx_.addAlignCorrection(2101, delta_t, delta_r);
 
   // Try to correct back 2100
   // translate, then rotate
-  test_gctx_.addAlignCorrection(2100, -deltaT, -deltaR, false);
+  test_gctx_.addAlignCorrection(2100, -delta_t, -delta_r, false);
 }
 
 void AlignmentTestProcessor::produce(framework::Event& event) {

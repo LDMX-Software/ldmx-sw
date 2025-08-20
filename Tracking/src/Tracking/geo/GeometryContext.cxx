@@ -18,10 +18,10 @@ const Acts::GeometryContext& GeometryContext::get() const { return acts_gc_; }
 
 void GeometryContext::loadTransformations(const tgSurfMap& surf_map) {
   // Always clear the map before reloading the transformations.
-  alignment_map.clear();
+  alignment_map_.clear();
 
   for (auto entry : surf_map) {
-    alignment_map[entry.first] =
+    alignment_map_[entry.first] =
         static_cast<const DetectorElement*>(
             (entry.second)->associatedDetectorElement())
             ->uncorrectedTransform();
@@ -44,24 +44,24 @@ void GeometryContext::addAlignCorrection(unsigned int sensorId,
                                          const Acts::Vector3 deltaT,
                                          const Acts::Vector3 deltaR,
                                          bool active) {
-  Acts::Translation3 deltaTranslation{deltaT};
+  Acts::Translation3 delta_translation{deltaT};
   Acts::RotationMatrix3 rot = deltaRot(deltaR);
-  Acts::Transform3 correction(deltaTranslation * rot);
+  Acts::Transform3 correction(delta_translation * rot);
 
   // Add the correction to the alignment map
 
-  if (alignment_map.count(sensorId) < 1) {
+  if (alignment_map_.count(sensorId) < 1) {
     throw std::logic_error("GeometryContext:: could not addAlignCorrection");
   }
 
   if (active) {
     // qaligned = dR*R(t0 + dt0).
     // ==> rotate, then translate.
-    alignment_map[sensorId].rotate(correction.rotation());
-    alignment_map[sensorId].translate(correction.translation());
+    alignment_map_[sensorId].rotate(correction.rotation());
+    alignment_map_[sensorId].translate(correction.translation());
   } else {
-    alignment_map[sensorId].translate(correction.translation());
-    alignment_map[sensorId].rotate(correction.rotation());
+    alignment_map_[sensorId].translate(correction.translation());
+    alignment_map_[sensorId].rotate(correction.rotation());
   }
 }
 

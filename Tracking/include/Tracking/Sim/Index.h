@@ -11,7 +11,7 @@
 #include <boost/container/flat_map.hpp>
 #include <cstdint>
 
-namespace ActsExamples {
+namespace acts_examples {
 
 /// Index type to reference elements in a container.
 ///
@@ -51,4 +51,4 @@ inline boost::container::flat_multimap<value_t, Index> invertIndexMultimap(
   return inverse;
 }
 
-}  // namespace ActsExamples
+}  // namespace acts_examples

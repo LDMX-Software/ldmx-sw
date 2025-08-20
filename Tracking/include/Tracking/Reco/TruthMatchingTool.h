@@ -11,9 +11,9 @@ namespace sim {
 class TruthMatchingTool {
  public:
   struct TruthInfo {
-    int trackID;
-    double truthProb;
-    int pdgID;
+    int track_id_;
+    double truth_prob_;
+    int pdg_id_;
   };
 
   TruthMatchingTool() = default;
@@ -42,11 +42,11 @@ class TruthMatchingTool {
    */
   virtual ~TruthMatchingTool() = default;
 
-  TruthInfo TruthMatch(const ldmx::Track& trk);
-  TruthInfo Evaluate(
+  TruthInfo truthMatch(const ldmx::Track& trk);
+  TruthInfo evaluate(
       const std::unordered_map<unsigned int, unsigned int>& trk_trackIDs,
       int n_meas);
-  TruthInfo TruthMatch(const std::vector<ldmx::Measurement>& vmeas);
+  TruthInfo truthMatch(const std::vector<ldmx::Measurement>& vmeas);
 
   bool configured() { return configured_; }
 
@@ -54,7 +54,8 @@ class TruthMatchingTool {
   std::map<int, ldmx::SimParticle> map_;
   std::vector<ldmx::Measurement> measurements_;
   bool debug_{false};
-  std::shared_ptr<tracking::sim::TruthMatchingTool> truthMatchingTool = nullptr;
+  std::shared_ptr<tracking::sim::TruthMatchingTool> truth_matching_tool_ =
+      nullptr;
   bool configured_{false};
 };
 

@@ -92,11 +92,11 @@ class TruthTrack {
   void setTrackID(int trackid) { track_id_ = trackid; };
   int getTrackID() const { return track_id_; };
 
-  void setPdgID(int pdgID) { pdgID_ = pdgID; };
-  int getPdgID() const { return pdgID_; };
+  void setPdgID(int pdgID) { pdg_id_ = pdgID; };
+  int getPdgID() const { return pdg_id_; };
 
-  void setNhits(int nHits) { nHits_ = nHits; };
-  int getNhits() const { return nHits_; }
+  void setNhits(int nHits) { n_hits_ = nHits; };
+  int getNhits() const { return n_hits_; }
 
   // in units of e
   int q() const { return perigee_pars_[4] > 0 ? 1 : -1; }
@@ -164,13 +164,13 @@ class TruthTrack {
   std::vector<double> position_{0., 0., 0.};
 
   // N hits_
-  int nHits_{0};
+  int n_hits_{0};
 
   // ID of the matched particle in the SimParticles map
   int track_id_{-1};
 
   // pdgID
-  int pdgID_{0};
+  int pdg_id_{0};
 
   /// Class declaration needed by the ROOT dictionary.
   ClassDef(TruthTrack, 3);

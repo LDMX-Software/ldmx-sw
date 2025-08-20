@@ -104,20 +104,20 @@ class GreedyAmbiguitySolver final : public TrackingGeometryUser {
   std::string input_pass_name_{""};
 
   struct State {
-    std::size_t number_of_tracks{};
+    std::size_t number_of_tracks_{};
 
-    std::vector<int> track_tips;
-    std::vector<float> track_chi2;
-    std::vector<std::vector<std::size_t>> measurements_per_track;
+    std::vector<int> track_tips_;
+    std::vector<float> track_chi2_;
+    std::vector<std::vector<std::size_t>> measurements_per_track_;
 
     // TODO consider boost 1.81 unordered_flat_map
     boost::container::flat_map<std::size_t,
                                boost::container::flat_set<std::size_t>>
-        tracks_per_measurement;
-    std::vector<std::size_t> shared_measurements_per_track;
+        tracks_per_measurement_;
+    std::vector<std::size_t> shared_measurements_per_track_;
 
     // TODO consider boost 1.81 unordered_flat_map
-    boost::container::flat_set<std::size_t> selected_tracks;
+    boost::container::flat_set<std::size_t> selected_tracks_;
   };
 
   /// @param tracks The input track container.

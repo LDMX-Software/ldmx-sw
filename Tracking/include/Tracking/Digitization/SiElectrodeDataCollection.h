@@ -34,7 +34,7 @@ class SiElectrodeDataCollection {
 
  private:
   std::map<int, SiElectrodeData> collection_;
-  std::string electrodePassName_;
+  std::string electrode_pass_name_;
 };
 
 }  // namespace digitization

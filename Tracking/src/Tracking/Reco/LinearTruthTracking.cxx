@@ -185,12 +185,12 @@ std::tuple<double, double, double, double> LinearTruthTracking::fit3DLine(
     y_vec(i) = y_vals[i];
   }
 
-  Eigen::Matrix2d AtA = a_mat.transpose() * a_mat;
-  Eigen::Vector2d At_x = a_mat.transpose() * x_vec;
-  Eigen::Vector2d At_y = a_mat.transpose() * y_vec;
+  Eigen::Matrix2d at_a = a_mat.transpose() * a_mat;
+  Eigen::Vector2d at_x = a_mat.transpose() * x_vec;
+  Eigen::Vector2d at_y = a_mat.transpose() * y_vec;
 
-  Eigen::Vector2d x_params = AtA.ldlt().solve(At_x);
-  Eigen::Vector2d y_params = AtA.ldlt().solve(At_y);
+  Eigen::Vector2d x_params = at_a.ldlt().solve(at_x);
+  Eigen::Vector2d y_params = at_a.ldlt().solve(at_y);
 
   // Return (mx, bx, my, by)
   return {x_params(0), x_params(1), y_params(0), y_params(1)};
