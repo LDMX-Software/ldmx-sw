@@ -16,7 +16,7 @@ std::ostream& operator<<(std::ostream& output, const TruthTrack& trk) {
          << trk.position_[2] << "]\n"
          << "momentum: [" << trk.momentum_[0] << "," << trk.momentum_[1] << ","
          << trk.momentum_[2] << "]\n"
-         << "pdgID:" << trk.pdgID_ << "  trackID:" << trk.track_id_;
+         << "pdgID:" << trk.pdg_id_ << "  trackID:" << trk.track_id_;
 
   return output;
 }

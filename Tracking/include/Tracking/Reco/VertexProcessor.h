@@ -84,7 +84,7 @@ class VertexProcessor : public framework::Producer {
   int nevents_{0};
 
   // The interpolated bfield
-  std::shared_ptr<InterpolatedMagneticField3> sp_interpolated_bField_;
+  std::shared_ptr<InterpolatedMagneticField3> sp_interpolated_b_field_;
 
   /// Path to the magnetic field map.
   std::string field_map_{""};
@@ -102,7 +102,7 @@ class VertexProcessor : public framework::Producer {
   double processing_time_{0.};
 
   TH1F *h_m_;
-  TH1F *h_m_truthFilter_;
+  TH1F *h_m_truth_filter_;
   TH1F *h_m_truth_;
 };
 

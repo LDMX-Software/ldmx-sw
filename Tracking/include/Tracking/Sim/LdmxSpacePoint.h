@@ -20,57 +20,57 @@ class LdmxSpacePoint {
  public:
   // Global position constructor with fixed covariance
   LdmxSpacePoint(float x_, float y_, float z_, float t, int layer_) {
-    m_x = x_;
-    m_y = y_;
-    m_z = z_;
-    m_t = t;
-    m_edep = 0.;
-    m_layer = layer_;
-    m_id = -999;
-    m_varianceR = 0.050;
-    m_varianceZ = 0.050;
+    m_x_ = x_;
+    m_y_ = y_;
+    m_z_ = z_;
+    m_t_ = t;
+    m_edep_ = 0.;
+    m_layer_ = layer_;
+    m_id_ = -999;
+    m_variance_r_ = 0.050;
+    m_variance_z_ = 0.050;
     initialize();
   }
 
   // Global position constructor with user specified covariance
   LdmxSpacePoint(float x_, float y_, float z_, float t, int layer_, float edep,
                  float vR, float vZ, int id) {
-    m_x = x_;
-    m_y = y_;
-    m_z = z_;
-    m_t = t;
-    m_edep = edep;
-    m_varianceR = vR;
-    m_varianceZ = vZ;
-    m_layer = layer_;
-    m_id = id;
+    m_x_ = x_;
+    m_y_ = y_;
+    m_z_ = z_;
+    m_t_ = t;
+    m_edep_ = edep;
+    m_variance_r_ = vR;
+    m_variance_z_ = vZ;
+    m_layer_ = layer_;
+    m_id_ = id;
     initialize();
   }
 
   LdmxSpacePoint(const std::vector<float>& gp, float t, int layer_,
                  const std::vector<float>& cv, int id) {
-    m_x = gp[0];
-    m_y = gp[1];
-    m_z = gp[2];
-    m_t = t;
-    m_edep = 0.;
-    m_layer = layer_;
-    m_id = id;
-    m_varianceR = cv[0];
-    m_varianceZ = cv[1];
+    m_x_ = gp[0];
+    m_y_ = gp[1];
+    m_z_ = gp[2];
+    m_t_ = t;
+    m_edep_ = 0.;
+    m_layer_ = layer_;
+    m_id_ = id;
+    m_variance_r_ = cv[0];
+    m_variance_z_ = cv[1];
     initialize();
   }
 
-  float x() const { return m_x; }
-  float y() const { return m_y; }
-  float z() const { return m_z; }
-  float t() const { return m_t; }
-  float r() const { return m_r; }
-  float edep() const { return m_edep; }
-  float varianceR() const { return m_varianceR; }
-  float varianceZ() const { return m_varianceZ; }
-  int layer() const { return m_layer; }
-  int id() const { return m_id; }
+  float x() const { return m_x_; }
+  float y() const { return m_y_; }
+  float z() const { return m_z_; }
+  float t() const { return m_t_; }
+  float r() const { return m_r_; }
+  float edep() const { return m_edep_; }
+  float varianceR() const { return m_variance_r_; }
+  float varianceZ() const { return m_variance_z_; }
+  int layer() const { return m_layer_; }
+  int id() const { return m_id_; }
 
   void setGlobalPosition(float x_, float y_, float z_) {
     global_pos_.setZero();
@@ -118,22 +118,22 @@ class LdmxSpacePoint {
 
  private:
   void initialize() {
-    setGlobalPosition(m_x, m_y, m_z);
-    m_r = std::sqrt(m_x * m_x + m_y * m_y);
-    setLocalCovariance(m_varianceR, m_varianceZ);
+    setGlobalPosition(m_x_, m_y_, m_z_);
+    m_r_ = std::sqrt(m_x_ * m_x_ + m_y_ * m_y_);
+    setLocalCovariance(m_variance_r_, m_variance_z_);
     setProjector();
   };
 
-  float m_x;
-  float m_y;
-  float m_z;
-  float m_t;
-  float m_r;
-  float m_edep;
-  float m_varianceR;
-  float m_varianceZ;
-  int m_id;
-  int m_layer;
+  float m_x_;
+  float m_y_;
+  float m_z_;
+  float m_t_;
+  float m_r_;
+  float m_edep_;
+  float m_variance_r_;
+  float m_variance_z_;
+  int m_id_;
+  int m_layer_;
 };
 
 }  // namespace ldmx

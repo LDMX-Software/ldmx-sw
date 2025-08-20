@@ -36,9 +36,9 @@ class CDFSiSensorSim {
   */
 
  private:
-  std::map<ChargeCarrier, Acts::Vector3> _drift_direction;
-  std::map<ChargeCarrier, SiElectrodeDataCollection> _sense_data;
-  std::map<ChargeCarrier, SiElectrodeDataCollection> _readout_data;
+  std::map<ChargeCarrier, Acts::Vector3> drift_direction_;
+  std::map<ChargeCarrier, SiElectrodeDataCollection> sense_data_;
+  std::map<ChargeCarrier, SiElectrodeDataCollection> readout_data_;
 
   // Simple simulation of charge trapping, this is a temporary kludge.
   // Charge collection efficiency with linear drift distance dependence.

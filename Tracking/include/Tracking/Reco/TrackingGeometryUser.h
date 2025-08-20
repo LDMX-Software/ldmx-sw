@@ -18,9 +18,9 @@ class TrackingGeometryUser : public framework::Producer {
   TrackingGeometryUser(const std::string& name, framework::Process& p);
 
  protected:
-  const Acts::GeometryContext& geometry_context();
-  const Acts::MagneticFieldContext& magnetic_field_context();
-  const Acts::CalibrationContext& calibration_context();
+  const Acts::GeometryContext& geometryContext();
+  const Acts::MagneticFieldContext& magneticFieldContext();
+  const Acts::CalibrationContext& calibrationContext();
   const geo::TrackersTrackingGeometry& geometry();
 
  private:

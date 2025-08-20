@@ -60,13 +60,13 @@ class TrackExtrapolatorTool {
     auto intersection = target_surface->intersect(gctx_, pars.position(gctx_),
                                                   pars.direction());
 
-    PropagatorOptions pOptions(gctx_, mctx_);
+    PropagatorOptions p_options(gctx_, mctx_);
 
-    pOptions.direction = intersection.intersections()[0].pathLength() >= 0
-                             ? Acts::Direction::Forward
-                             : Acts::Direction::Backward;
+    p_options.direction = intersection.intersections()[0].pathLength() >= 0
+                              ? Acts::Direction::Forward
+                              : Acts::Direction::Backward;
 
-    auto result = propagator_.propagate(pars, *target_surface, pOptions);
+    auto result = propagator_.propagate(pars, *target_surface, p_options);
 
     // CHECK THE EXTRAPOLATION COVARIANCE MATRIX
 
@@ -125,22 +125,22 @@ class TrackExtrapolatorTool {
 
     const auto& surface = ts.referenceSurface();
     const auto& smoothed = ts.smoothed();
-    bool hasSmoothed = ts.hasSmoothed();
+    bool has_smoothed = ts.hasSmoothed();
     const auto& filtered = ts.filtered();
     const auto& cov = ts.smoothedCovariance();
 
     if (debug_) {
       std::cout << "Surface::" << surface.transform(gctx_).translation()
                 << std::endl;
-      if (hasSmoothed)
+      if (has_smoothed)
         std::cout << "Smoothed::" << smoothed.transpose() << std::endl;
-      std::cout << "HasSmoothed::" << hasSmoothed << std::endl;
+      std::cout << "HasSmoothed::" << has_smoothed << std::endl;
       std::cout << "Filtered::" << filtered.transpose() << std::endl;
     }
     // mg Aug 2024 ... v36 takes the particle...assume electron
-    auto partHypo{Acts::SinglyChargedParticleHypothesis::electron()};
+    auto part_hypo{Acts::SinglyChargedParticleHypothesis::electron()};
     Acts::BoundTrackParameters sp(surface.getSharedPtr(), smoothed, cov,
-                                  partHypo);
+                                  part_hypo);
     return extrapolate(sp, target_surface);
   }
 
@@ -160,15 +160,15 @@ class TrackExtrapolatorTool {
 
     // Get the BoundTrackStateParameters
     // assume electron for now
-    auto partHypo{Acts::SinglyChargedParticleHypothesis::electron()};
+    auto part_hypo{Acts::SinglyChargedParticleHypothesis::electron()};
 
     Acts::BoundTrackParameters state_parameters(surface.getSharedPtr(),
-                                                smoothed, cov, partHypo);
+                                                smoothed, cov, part_hypo);
 
     // One can also use directly the extrapolate method
-    PropagatorOptions pOptions(gctx_, mctx_);
+    PropagatorOptions p_options(gctx_, mctx_);
     auto result =
-        propagator_.propagate(state_parameters, *target_surface, pOptions);
+        propagator_.propagate(state_parameters, *target_surface, p_options);
 
     if (result.ok())
       return *result->endParameters;
@@ -187,7 +187,7 @@ class TrackExtrapolatorTool {
    */
 
   template <class track_t>
-  bool TrackStateAtSurface(track_t track,
+  bool trackStateAtSurface(track_t track,
                            const std::shared_ptr<Acts::Surface>& target_surface,
                            ldmx::Track::TrackState& ts,
                            ldmx::TrackStateType type) {
@@ -195,19 +195,19 @@ class TrackExtrapolatorTool {
     if (opt_pars) {
       // Reference point
       Acts::Vector3 surf_loc = target_surface->transform(gctx_).translation();
-      ts.refX = surf_loc(0);
-      ts.refY = surf_loc(1);
-      ts.refZ = surf_loc(2);
+      ts.ref_x_ = surf_loc(0);
+      ts.ref_y_ = surf_loc(1);
+      ts.ref_z_ = surf_loc(2);
 
       // Parameters
-      ts.params =
+      ts.params_ =
           tracking::sim::utils::convertActsToLdmxPars((*opt_pars).parameters());
 
       // Covariance
       const Acts::BoundMatrix& trk_cov = *((*opt_pars).covariance());
-      tracking::sim::utils::flatCov(trk_cov, ts.cov);
+      tracking::sim::utils::flatCov(trk_cov, ts.cov_);
 
-      ts.ts_type = type;
+      ts.ts_type_ = type;
       return true;
     } else {
       return false;

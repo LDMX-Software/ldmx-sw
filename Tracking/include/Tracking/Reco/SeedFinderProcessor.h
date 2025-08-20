@@ -75,21 +75,21 @@ class SeedFinderProcessor : public TrackingGeometryUser {
    */
   void produce(framework::Event& event) override;
 
-  bool GroupStrips(const std::vector<ldmx::Measurement>& measurements,
+  bool groupStrips(const std::vector<ldmx::Measurement>& measurements,
                    const std::vector<int> strategy);
 
-  void FindSeedsFromMap(ldmx::Tracks& seeds, const ldmx::Measurements& pmeas);
+  void findSeedsFromMap(ldmx::Tracks& seeds, const ldmx::Measurements& pmeas);
 
  private:
-  ldmx::Track SeedTracker(const ldmx::Measurements& vmeas, double xOrigin,
+  ldmx::Track seedTracker(const ldmx::Measurements& vmeas, double xOrigin,
                           const Acts::Vector3& perigee_location,
                           const ldmx::Measurements& pmeas_tgt);
 
-  void LineParabolaToHelix(const Acts::ActsVector<5> parameters,
+  void lineParabolaToHelix(const Acts::ActsVector<5> parameters,
                            Acts::ActsVector<5>& helix_parameters,
                            Acts::Vector3 ref);
 
-  Acts::Vector3 bField_;
+  Acts::Vector3 b_field_;
 
   /* This is a temporary (working) solution to estimate the track parameters out
    * of the seeds Eventually we should move to what is in ACTS (I'm not happy
@@ -170,10 +170,10 @@ class SeedFinderProcessor : public TrackingGeometryUser {
   long nfailtheta_{0};
 
   // The measurements groups
-  std::map<int, std::vector<const ldmx::Measurement*>> groups_map;
+  std::map<int, std::vector<const ldmx::Measurement*>> groups_map_;
 
   // Truth Matching tool
-  std::shared_ptr<tracking::sim::TruthMatchingTool> truthMatchingTool_ =
+  std::shared_ptr<tracking::sim::TruthMatchingTool> truth_matching_tool_ =
       nullptr;
 
 };  // SeedFinderProcessor

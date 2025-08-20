@@ -223,28 +223,28 @@ class GSFProcessor final : public TrackingGeometryUser {
 
   // Configuration
 
-  std::string trackCollection_{"TaggerTracks"};
-  std::string measCollection_{"DigiTaggerSimHits"};
+  std::string track_collection_{"TaggerTracks"};
+  std::string meas_collection_{"DigiTaggerSimHits"};
 
   std::string track_passname_;
   std::string meas_passname_;
   std::string track_collection_event_passname_;
   std::string meas_collection_event_passname_;
 
-  size_t maxComponents_{4};
-  bool abortOnError_{false};
-  bool disableAllMaterialHandling_{false};
-  double weightCutoff_{1.0e-4};
+  size_t max_components_{4};
+  bool abort_on_error_{false};
+  bool disable_all_material_handling_{false};
+  double weight_cutoff_{1.0e-4};
 
   double propagator_step_size_{200.};  // mm
-  int propagator_maxSteps_{1000};
+  int propagator_max_steps_{1000};
   std::string field_map_{""};
 
-  bool usePerigee_{false};
+  bool use_perigee_{false};
   // bool usePlaneSurface_{false};
 
   // Keep track on which system this processor is running on
-  bool taggerTracking_{true};
+  bool tagger_tracking_{true};
 
   // The Propagators
   std::unique_ptr<const Propagator> propagator_;

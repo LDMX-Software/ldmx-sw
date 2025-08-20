@@ -60,7 +60,7 @@ class LinearSeedFinder : public TrackingGeometryUser {
 
  protected:
   // Function to find seeds based on 2 Recoil points and 1 EcalRecHit
-  ldmx::StraightTrack SeedTracker(
+  ldmx::StraightTrack seedTracker(
       const std::tuple<std::array<double, 3>, ldmx::Measurement,
                        std::optional<ldmx::Measurement>>
           recoil_one,

@@ -56,10 +56,10 @@ class Track {
   // will be accessible when reading back the rootfile using for example the
   // monitoring code.
   struct TrackState {
-    double refX, refY, refZ;
-    std::vector<double> params;
-    std::vector<double> cov;
-    TrackStateType ts_type;
+    double ref_x_, ref_y_, ref_z_;
+    std::vector<double> params_;
+    std::vector<double> cov_;
+    TrackStateType ts_type_;
   };
 
   Track(){};
@@ -85,8 +85,8 @@ class Track {
   int getNhits() const { return n_hits_; }
 
   std::optional<TrackState> getTrackState(TrackStateType tstype) const {
-    for (auto ts : trackStates_)
-      if (ts.ts_type == tstype) return std::optional<TrackState>(ts);
+    for (auto ts : track_states_)
+      if (ts.ts_type_ == tstype) return std::optional<TrackState>(ts);
 
     return std::nullopt;
   }
@@ -109,11 +109,11 @@ class Track {
   void setTrackID(int trackid) { track_id_ = trackid; };
   int getTrackID() const { return track_id_; };
 
-  void setTruthProb(double truthProb) { truthProb_ = truthProb; };
-  double getTruthProb() const { return truthProb_; };
+  void setTruthProb(double truthProb) { truth_prob_ = truthProb; };
+  double getTruthProb() const { return truth_prob_; };
 
-  void setPdgID(int pdgID) { pdgID_ = pdgID; };
-  int getPdgID() const { return pdgID_; };
+  void setPdgID(int pdgID) { pdg_id_ = pdgID; };
+  int getPdgID() const { return pdg_id_; };
 
   // in units of e
   int q() const { return perigee_pars_[4] > 0 ? 1 : -1; }
@@ -202,10 +202,10 @@ class Track {
   double getT() const { return perigee_pars_[5]; };
 
   void addTrackState(const ldmx::Track::TrackState& ts) {
-    trackStates_.push_back(ts);
+    track_states_.push_back(ts);
   };
 
-  std::vector<TrackState> getTrackStates() const { return trackStates_; }
+  std::vector<TrackState> getTrackStates() const { return track_states_; }
 
  protected:
   int n_hits_{0};
@@ -261,13 +261,13 @@ class Track {
   int track_id_{-1};
 
   // Truth probability
-  double truthProb_{0.};
+  double truth_prob_{0.};
 
   // pdgID
-  int pdgID_{0};
+  int pdg_id_{0};
 
   // Track States
-  std::vector<TrackState> trackStates_;
+  std::vector<TrackState> track_states_;
 
   /// Class declaration needed by the ROOT dictionary.
   ClassDef(Track, 4);

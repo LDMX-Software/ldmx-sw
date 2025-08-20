@@ -14,7 +14,7 @@ double ChargeCarrier::muMin(double temperature) {
 }
 
 double ChargeCarrier::nRef(double temperature) {
-  return N_ref_factor_ * std::pow((temperature / TCOEFF), N_ref_exponent_);
+  return n_ref_factor_ * std::pow((temperature / TCOEFF), n_ref_exponent_);
 }
 
 double ChargeCarrier::alpha(double temperature) {
