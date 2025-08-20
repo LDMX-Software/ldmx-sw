@@ -106,8 +106,7 @@ void LinearSeedFinder::produce(framework::Event& event) {
     sim_hits_by_track_id[hit.getTrackID()].push_back(&hit);
   }  // for sim hits_
 
-  // Index scoring hits_ by track ID (one positive scoring plane hit per
-  // trackID)
+  // Index scoring hits_ by track ID (one positive scoring plane hit / ID)
   std::unordered_map<int, const ldmx::SimTrackerHit*> scoring_hit_map;
   for (const auto& sp_hit : scoring_hits) {
     if (sp_hit.getPosition()[2] > 0)
@@ -301,8 +300,8 @@ ldmx::StraightTrack LinearSeedFinder::seedTracker(
     // truth matching
     if (truth_matching_tool_->configured()) {
       auto truth_info = truth_matching_tool_->truthMatch(all_points);
-      trk.setTrackID(truth_info.trackID);
-      trk.setPdgID(truth_info.pdgID);
+      trk.setTrackID(truth_info.track_id_);
+      trk.setPdgID(truth_info.pdg_id_);
       trk.setTruthProb(truth_info.truth_prob_);
     }
 

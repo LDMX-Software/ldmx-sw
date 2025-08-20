@@ -117,7 +117,7 @@ void TrackersTrackingGeometry::buildRecoilLayoutMap(G4VPhysicalVolume* pvol,
       if (component0_volume)
         ref2_transform = getTransform(*(component0_volume));
 
-      std::shared_ptr<Acts::PlaneSurface> sensor_surface = getSurface(
+      std::shared_ptr<Acts::PlaneSurface> sensor_surface = getSurfacePtr(
           active_sensor, tracker_transform * ref1_transform * ref2_transform);
 
       // Build the layout
@@ -229,7 +229,7 @@ void TrackersTrackingGeometry::buildTaggerLayoutMap(G4VPhysicalVolume* pvol,
       }
 
       // Get the surface
-      std::shared_ptr<Acts::PlaneSurface> sensor_surface = getSurface(
+      std::shared_ptr<Acts::PlaneSurface> sensor_surface = getSurfacePtr(
           active_sensor, tracker_transform * ref1_transform * ref2_transform);
 
       if (sln == "LDMXTaggerModuleVolume_physvol1" ||
@@ -271,7 +271,7 @@ void TrackersTrackingGeometry::buildTaggerLayoutMap(G4VPhysicalVolume* pvol,
   }  // loop on daughters
 }  // build the layout
 
-std::shared_ptr<Acts::PlaneSurface> TrackersTrackingGeometry::getSurface(
+std::shared_ptr<Acts::PlaneSurface> TrackersTrackingGeometry::getSurfacePtr(
     G4VPhysicalVolume* pvol, Acts::Transform3 ref_trans) {
   if (!pvol) {
     ldmx_log(fatal) << "pvol is nullptr";
@@ -364,7 +364,7 @@ std::shared_ptr<Acts::PlaneSurface> TrackersTrackingGeometry::getSurface(
   // transformation which will take care of effectively reading the gctx
 
   surface->assignDetectorElement(std::move(*det_element));
-  det_element.push_back(det_element);
+  det_elements_.push_back(det_element);
 
   return surface;
 }

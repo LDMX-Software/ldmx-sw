@@ -214,24 +214,24 @@ std::vector<float> HcalVetoProcessor::trackProp(const ldmx::Tracks &tracks,
     ldmx::Track::TrackState &hcal_track_state = trk_ts.value();
 
     // Check that the track state is filled
-    if (hcal_track_state.params.size() < 5) continue;
+    if (hcal_track_state.params_.size() < 5) continue;
 
-    float track_state_loc0 = static_cast<float>(hcal_track_state.params[0]);
-    float track_state_loc1 = static_cast<float>(hcal_track_state.params[1]);
+    float track_state_loc0 = static_cast<float>(hcal_track_state.params_[0]);
+    float track_state_loc1 = static_cast<float>(hcal_track_state.params_[1]);
 
     // param 2 = phi (azimuthal), param 3 = theta (polar)
     // param 4 = QoP
     // ACTS (local)  to  LDMX (global) coordinates: (y_,z_,x_)->  (x_,y_,z_)
     // convert qop [1/GeV] to p [MeV]
-    double p_track_state = (-1 / hcal_track_state.params[4]) * 1000;
+    double p_track_state = (-1 / hcal_track_state.params_[4]) * 1000;
     // p * sin(theta) * sin(phi)
-    double recoil_mom_x = p_track_state * sin(hcal_track_state.params[3]) *
-                          sin(hcal_track_state.params[2]);
+    double recoil_mom_x = p_track_state * sin(hcal_track_state.params_[3]) *
+                          sin(hcal_track_state.params_[2]);
     // p * cos(theta)
-    double recoil_mom_y = p_track_state * cos(hcal_track_state.params[3]);
+    double recoil_mom_y = p_track_state * cos(hcal_track_state.params_[3]);
     // p * sin(theta) * cos(phi)
-    double recoil_mom_z = p_track_state * sin(hcal_track_state.params[3]) *
-                          cos(hcal_track_state.params[2]);
+    double recoil_mom_z = p_track_state * sin(hcal_track_state.params_[3]) *
+                          cos(hcal_track_state.params_[2]);
 
     // Store the new track state variables
     new_track_states.push_back(track_state_loc0);

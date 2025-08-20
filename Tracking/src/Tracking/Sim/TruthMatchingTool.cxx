@@ -8,8 +8,8 @@ TruthMatchingTool::TruthInfo TruthMatchingTool::evaluate(
     int n_meas) {
   TruthInfo ti;
   ti.truth_prob_ = 0.;
-  ti.trackID = -1;
-  ti.pdgID = 0;
+  ti.track_id_ = -1;
+  ti.pdg_id_ = 0;
 
   for (std::unordered_map<unsigned int, unsigned int>::const_iterator it =
            trk_trackIDs.begin();
@@ -17,11 +17,11 @@ TruthMatchingTool::TruthInfo TruthMatchingTool::evaluate(
     double current_truth_prob = (double)it->second / (double)n_meas;
     if (current_truth_prob > ti.truth_prob_) {
       ti.truth_prob_ = current_truth_prob;
-      ti.trackID = it->first;
+      ti.track_id_ = it->first;
     }
   }
 
-  if (ti.trackID > 0) ti.pdgID = map_[ti.trackID].getPdgID();
+  if (ti.track_id_ > 0) ti.pdg_id_ = map_[ti.track_id_].getPdgID();
 
   return ti;
 }

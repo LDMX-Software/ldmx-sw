@@ -204,9 +204,9 @@ ldmx::Track TruthSeedProcessor::recoilFullSeed(
   // Store the truth track state on the seed track
   ldmx::Track::TrackState ts_truth_target;
   Acts::Vector3 ref = target_surface->center(geometryContext());
-  ts_truth_target.refX = ref(0);
-  ts_truth_target.refY = ref(1);
-  ts_truth_target.refZ = ref(2);
+  ts_truth_target.ref_x_ = ref(0);
+  ts_truth_target.ref_y_ = ref(1);
+  ts_truth_target.ref_z_ = ref(2);
   ts_truth_target.params_ = truth_track_target.getPerigeeParameters();
   // empty cov
   ts_truth_target.ts_type_ = ldmx::TrackStateType::AtTarget;
@@ -218,9 +218,9 @@ ldmx::Track TruthSeedProcessor::recoilFullSeed(
 
   ldmx::Track::TrackState ts_truth_ecal;
   Acts::Vector3 ref_ecal = ecal_surface->center(geometryContext());
-  ts_truth_ecal.refX = ref_ecal(0);
-  ts_truth_ecal.refY = ref_ecal(1);
-  ts_truth_ecal.refZ = ref_ecal(2);
+  ts_truth_ecal.ref_x_ = ref_ecal(0);
+  ts_truth_ecal.ref_y_ = ref_ecal(1);
+  ts_truth_ecal.ref_z_ = ref_ecal(2);
   ts_truth_ecal.params_ = truth_track_ecal.getPerigeeParameters();
   // empty cov
   ts_truth_ecal.ts_type_ = ldmx::TrackStateType::AtECAL;
@@ -274,9 +274,9 @@ ldmx::Track TruthSeedProcessor::taggerFullSeed(
   // Store the truth track state on the seed track
   ldmx::Track::TrackState ts_truth_target;
   Acts::Vector3 ref = target_surface->center(geometryContext());
-  ts_truth_target.refX = ref(0);
-  ts_truth_target.refY = ref(1);
-  ts_truth_target.refZ = ref(2);
+  ts_truth_target.ref_x_ = ref(0);
+  ts_truth_target.ref_y_ = ref(1);
+  ts_truth_target.ref_z_ = ref(2);
   ts_truth_target.params_ = truth_track_target.getPerigeeParameters();
   // empty cov
   ts_truth_target.ts_type_ = ldmx::TrackStateType::AtTarget;
@@ -292,9 +292,9 @@ ldmx::Track TruthSeedProcessor::taggerFullSeed(
 
   ldmx::Track::TrackState ts_truth_beam_origin;
   Acts::Vector3 ref_origin = origin_surface->center(geometryContext());
-  ts_truth_beam_origin.refX = ref_origin(0);
-  ts_truth_beam_origin.refY = ref_origin(1);
-  ts_truth_beam_origin.refZ = ref_origin(2);
+  ts_truth_beam_origin.ref_x_ = ref_origin(0);
+  ts_truth_beam_origin.ref_y_ = ref_origin(1);
+  ts_truth_beam_origin.ref_z_ = ref_origin(2);
   ts_truth_beam_origin.params_ = seed_truth_track.getPerigeeParameters();
   // ts_truth_beam_origin.cov         = seedTruthTrack.getPerigeeCov();
   ts_truth_beam_origin.ts_type_ = ldmx::TrackStateType::AtBeamOrigin;
@@ -303,7 +303,6 @@ ldmx::Track TruthSeedProcessor::taggerFullSeed(
   ldmx_log(debug) << "Smeared parameters at origin" << std::endl;
   for (auto par : smeared_truth_track.getPerigeeParameters())
     ldmx_log(debug) << par << " ";
-  ldmx_log(debug) << std::endl;
 
   // assign the sim hit indices
   // TODO this is not fully correct as the sim hits

@@ -51,7 +51,7 @@ class TrackersTrackingGeometry : public TrackingGeometry {
   void buildRecoilLayoutMap(G4VPhysicalVolume* pvol, std::string surfacename);
 
   // Provided a physical volume, extract a silicon rectangular plane surface
-  std::shared_ptr<Acts::PlaneSurface> getSurface(G4VPhysicalVolume* pvol,
+  std::shared_ptr<Acts::PlaneSurface> getSurfacePtr(G4VPhysicalVolume* pvol,
                                                  Acts::Transform3 ref_trans);
 
   Acts::CuboidVolumeBuilder::VolumeConfig buildVolumeConfig(

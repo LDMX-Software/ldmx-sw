@@ -459,7 +459,7 @@ bool SeedFinderProcessor::groupStrips(
 
   }  // loop meas
 
-  if (groups_map.size() < 5)
+  if (groups_map_.size() < 5)
     return false;
   else
     return true;
@@ -590,8 +590,8 @@ void SeedFinderProcessor::findSeedsFromMap(ldmx::Tracks& seeds,
     if (!fail) {
       if (truth_matching_tool_->configured()) {
         auto truth_info = truth_matching_tool_->truthMatch(meas_for_seeds);
-        seed_track.setTrackID(truth_info.trackID);
-        seed_track.setPdgID(truth_info.pdgID);
+        seed_track.setTrackID(truth_info.track_id_);
+        seed_track.setPdgID(truth_info.pdg_id_);
         seed_track.setTruthProb(truth_info.truth_prob_);
       }
 

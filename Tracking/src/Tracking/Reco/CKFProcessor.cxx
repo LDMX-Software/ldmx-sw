@@ -41,11 +41,11 @@ void CKFProcessor::onNewRun(const ldmx::RunHeader& rh) {
   //  same way
   surf_rotation_ = Acts::RotationMatrix3::Zero();
   // u direction along +Y
-  surf_rotation(1, 0) = 1;
+  surf_rotation_(1, 0) = 1;
   // v direction along +Z
-  surf_rotation(2, 1) = 1;
+  surf_rotation_(2, 1) = 1;
   // w direction along +X
-  surf_rotation(0, 2) = 1;
+  surf_rotation_(0, 2) = 1;
 
   Acts::Vector3 target_pos(0., 0., 0.);
   Acts::Translation3 target_translation(target_pos);
@@ -392,9 +392,9 @@ void CKFProcessor::produce(framework::Event& event) {
     // Define the CKF options here:
     const Acts::CombinatorialKalmanFilterOptions<SourceLinkAccIt,
                                                  TrackContainer>
-        ckf_options(TrackingGeometryUser::geometry_context(),
-                   TrackingGeometryUser::magnetic_field_context(),
-                   TrackingGeometryUser::calibration_context(),
+        ckf_options(TrackingGeometryUser::geometryContext(),
+                   TrackingGeometryUser::magneticFieldContext(),
+                   TrackingGeometryUser::calibrationContext(),
                    source_link_accessor_delegate, ckf_extensions,
                    propagator_options, true /* multiple scattering */,
                    false /* energy loss */);
@@ -601,7 +601,7 @@ void CKFProcessor::produce(framework::Event& event) {
                           << ", Loc1 = " << ts_at_ecal.params_[1]
                           << ", phi = " << ts_at_ecal.params_[2]
                           << ", theta = " << ts_at_ecal.params_[3]
-                          << ", QoP = " << ts_at_ecal.params[4];
+                          << ", QoP = " << ts_at_ecal.params_[4];
         } else {
           ldmx_log(info) << "    Could not extrapolate to ECAL!! Please check "
                             "the track states";
@@ -610,10 +610,10 @@ void CKFProcessor::produce(framework::Event& event) {
 
       // Truth matching
       if (truth_matching_tool) {
-        auto truth_info = truth_matching_tool->TruthMatch(trk);
-        trk.setTrackID(truth_info.trackID);
-        trk.setPdgID(truth_info.pdgID);
-        trk.setTruthProb(truth_info.truthProb);
+        auto truth_info = truth_matching_tool->truthMatch(trk);
+        trk.setTrackID(truth_info.track_id_);
+        trk.setPdgID(truth_info.pdg_id_);
+        trk.setTruthProb(truth_info.truth_prob_);
       }
 
       // Adding the track candidate to the track collection
@@ -697,7 +697,7 @@ void CKFProcessor::configure(framework::config::Parameters& parameters) {
   const_b_field_ = parameters.get<bool>("const_b_field", false);
   field_map_ = parameters.get<std::string>("field_map");
   propagator_step_size_ = parameters.get<double>("propagator_step_size", 200.);
-  propagator_maxSteps_ = parameters.get<int>("propagator_maxSteps", 10000);
+  propagator_max_steps_ = parameters.get<int>("propagator_maxSteps", 10000);
   measurement_collection_ = parameters.get<std::string>(
       "measurement_collection", "TaggerMeasurements");
   outlier_pval_ = parameters.get<double>("outlier_pval_", 3.84);
@@ -739,9 +739,9 @@ auto CKFProcessor::makeGeoIdSourceLinkMap(
     const geo::TrackersTrackingGeometry& tg,
     const std::vector<ldmx::Measurement>& measurements)
     -> std::unordered_multimap<Acts::GeometryIdentifier,
-                               ActsExamples::IndexSourceLink> {
+                               acts_examples::IndexSourceLink> {
   std::unordered_multimap<Acts::GeometryIdentifier,
-                          ActsExamples::IndexSourceLink>
+                          acts_examples::IndexSourceLink>
       geo_id_sl_map;
 
   ldmx_log(debug) << "The makeGeoIdSourceLinkMap has " << measurements.size()
@@ -758,7 +758,7 @@ auto CKFProcessor::makeGeoIdSourceLinkMap(
       // Transform the ldmx space point from global to local and store the
       // information
 
-      ActsExamples::IndexSourceLink idx_sl(hit_surface->geometryId(), i_meas);
+      acts_examples::IndexSourceLink idx_sl(hit_surface->geometryId(), i_meas);
       // mg aug 2024 ... these don't print statements
       // don't compile using v36 in Acts...figure out later
       /*
@@ -813,7 +813,7 @@ std::vector<std::vector<std::size_t>> CKFProcessor::computeSharedHits(
       auto meas = meas_coll.at(imeas);
       const Acts::Surface* hit_surface = tg.getSurface(meas.getLayerID());
       // Store the index_ source link
-      ActsExamples::IndexSourceLink idx_sl(hit_surface->geometryId(), imeas);
+      acts_examples::IndexSourceLink idx_sl(hit_surface->geometryId(), imeas);
       Acts::SourceLink source_link = Acts::SourceLink(idx_sl);
 
       auto emplace = measurement_index_map.try_emplace(

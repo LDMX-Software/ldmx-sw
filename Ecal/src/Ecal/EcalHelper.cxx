@@ -20,23 +20,23 @@ std::vector<float> trackProp(const ldmx::Tracks &tracks,
     ldmx::Track::TrackState &ecal_track_state = trk_ts.value();
 
     // Check that the track state is filled
-    if (ecal_track_state.params.size() < 5) continue;
+    if (ecal_track_state.params_.size() < 5) continue;
 
-    float track_state_loc0 = static_cast<float>(ecal_track_state.params[0]);
-    float track_state_loc1 = static_cast<float>(ecal_track_state.params[1]);
+    float track_state_loc0 = static_cast<float>(ecal_track_state.params_[0]);
+    float track_state_loc1 = static_cast<float>(ecal_track_state.params_[1]);
     // param 2 = phi (azimuthal), param 3 = theta (polar)
     // param 4 = QoP
     // ACTS (local)  to  LDMX (global) coordinates: (y_,z_,x_)->  (x_,y_,z_)
     // convert qop [1/GeV] to p [MeV]
-    float p_track_state = (-1 / ecal_track_state.params[4]) * 1000;
+    float p_track_state = (-1 / ecal_track_state.params_[4]) * 1000;
     // p * sin(theta) * sin(phi)
-    float recoil_mom_x = p_track_state * sin(ecal_track_state.params[3]) *
-                         sin(ecal_track_state.params[2]);
+    float recoil_mom_x = p_track_state * sin(ecal_track_state.params_[3]) *
+                         sin(ecal_track_state.params_[2]);
     // p * cos(theta)
-    float recoil_mom_y = p_track_state * cos(ecal_track_state.params[3]);
+    float recoil_mom_y = p_track_state * cos(ecal_track_state.params_[3]);
     // p * sin(theta) * cos(phi)
-    float recoil_mom_z = p_track_state * sin(ecal_track_state.params[3]) *
-                         cos(ecal_track_state.params[2]);
+    float recoil_mom_z = p_track_state * sin(ecal_track_state.params_[3]) *
+                         cos(ecal_track_state.params_[2]);
 
     // Store the new track state variables
     new_track_states.push_back(track_state_loc0);

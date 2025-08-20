@@ -195,9 +195,9 @@ class TrackExtrapolatorTool {
     if (opt_pars) {
       // Reference point
       Acts::Vector3 surf_loc = target_surface->transform(gctx_).translation();
-      ts.refX = surf_loc(0);
-      ts.refY = surf_loc(1);
-      ts.refZ = surf_loc(2);
+      ts.ref_x_ = surf_loc(0);
+      ts.ref_y_ = surf_loc(1);
+      ts.ref_z_ = surf_loc(2);
 
       // Parameters
       ts.params_ =

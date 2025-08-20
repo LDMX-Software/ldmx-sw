@@ -174,36 +174,36 @@ void TrackingRecoDQM::efficiencyPlots(
     histograms_.fill(title + "truth_p", truth_p);
     histograms_.fill(title + "truth_beam_angle", truth_beam_angle);
 
-    if (pidmap.count(truth_trk.getPdgID()) != 0) {
+    if (pidmap_.count(truth_trk.getPdgID()) != 0) {
       histograms_.fill(title + "truth_PID", pidmap_[truth_trk.getPdgID()]);
 
       // TODO do this properly.
 
-      if (pidmap[truth_trk.getPdgID()] == PIDBins::kminus) {
+      if (pidmap_[truth_trk.getPdgID()] == PIDBins::kminus) {
         histograms_.fill(title + "truth_kminus_p", truth_p);
       }
 
-      if (pidmap[truth_trk.getPdgID()] == PIDBins::kplus) {
+      if (pidmap_[truth_trk.getPdgID()] == PIDBins::kplus) {
         histograms_.fill(title + "truth_kplus_p", truth_p);
       }
 
-      if (pidmap[truth_trk.getPdgID()] == PIDBins::piminus) {
+      if (pidmap_[truth_trk.getPdgID()] == PIDBins::piminus) {
         histograms_.fill(title + "truth_piminus_p", truth_p);
       }
 
-      if (pidmap[truth_trk.getPdgID()] == PIDBins::piplus) {
+      if (pidmap_[truth_trk.getPdgID()] == PIDBins::piplus) {
         histograms_.fill(title + "truth_piplus_p", truth_p);
       }
 
-      if (pidmap[truth_trk.getPdgID()] == PIDBins::electron) {
+      if (pidmap_[truth_trk.getPdgID()] == PIDBins::electron) {
         histograms_.fill(title + "truth_electron_p", truth_p);
       }
 
-      if (pidmap[truth_trk.getPdgID()] == PIDBins::positron) {
+      if (pidmap_[truth_trk.getPdgID()] == PIDBins::positron) {
         histograms_.fill(title + "truth_positron_p", truth_p);
       }
 
-      if (pidmap[truth_trk.getPdgID()] == PIDBins::proton) {
+      if (pidmap_[truth_trk.getPdgID()] == PIDBins::proton) {
         histograms_.fill(title + "truth_proton_p", truth_p);
       }
     }
@@ -260,36 +260,36 @@ void TrackingRecoDQM::efficiencyPlots(
 
     // For some particles
 
-    if (pidmap.count(truth_trk->getPdgID()) != 0) {
+    if (pidmap_.count(truth_trk->getPdgID()) != 0) {
       histograms_.fill(title + "match_PID", pidmap_[truth_trk->getPdgID()]);
 
       // TODO do this properly.
 
-      if (pidmap[truth_trk->getPdgID()] == PIDBins::kminus) {
+      if (pidmap_[truth_trk->getPdgID()] == PIDBins::kminus) {
         histograms_.fill(title + "match_kminus_p", truth_p);
       }
 
-      if (pidmap[truth_trk->getPdgID()] == PIDBins::kplus) {
+      if (pidmap_[truth_trk->getPdgID()] == PIDBins::kplus) {
         histograms_.fill(title + "match_kplus_p", truth_p);
       }
 
-      if (pidmap[truth_trk->getPdgID()] == PIDBins::piminus) {
+      if (pidmap_[truth_trk->getPdgID()] == PIDBins::piminus) {
         histograms_.fill(title + "match_piminus_p", truth_p);
       }
 
-      if (pidmap[truth_trk->getPdgID()] == PIDBins::piplus) {
+      if (pidmap_[truth_trk->getPdgID()] == PIDBins::piplus) {
         histograms_.fill(title + "match_piplus_p", truth_p);
       }
 
-      if (pidmap[truth_trk->getPdgID()] == PIDBins::electron) {
+      if (pidmap_[truth_trk->getPdgID()] == PIDBins::electron) {
         histograms_.fill(title + "match_electron_p", truth_p);
       }
 
-      if (pidmap[truth_trk->getPdgID()] == PIDBins::positron) {
+      if (pidmap_[truth_trk->getPdgID()] == PIDBins::positron) {
         histograms_.fill(title + "match_positron_p", truth_p);
       }
 
-      if (pidmap[truth_trk->getPdgID()] == PIDBins::proton) {
+      if (pidmap_[truth_trk->getPdgID()] == PIDBins::proton) {
         histograms_.fill(title + "match_proton_p", truth_p);
       }
     }
@@ -536,17 +536,17 @@ void TrackingRecoDQM::trackStateMonitoring(const ldmx::Tracks& tracks,
     double track_state_loc0 = target_state.params_[0];
     double track_state_loc1 = target_state.params_[1];
     [[maybe_unused]] double track_state_phi = target_state.params_[2];
-    [[maybe_unused]] double track_state_theta = target_state.params[3];
-    [[maybe_unused]] double track_state_p = target_state.params[4];
+    [[maybe_unused]] double track_state_theta = target_state.params_[3];
+    [[maybe_unused]] double track_state_p = target_state.params_[4];
 
-    double truth_state_loc0 = truth_target_state.params[0];
-    double truth_state_loc1 = truth_target_state.params[1];
-    [[maybe_unused]] double truth_state_phi = truth_target_state.params[2];
-    [[maybe_unused]] double truth_state_theta = truth_target_state.params[3];
-    [[maybe_unused]] double truth_state_p = truth_target_state.params[4];
+    double truth_state_loc0 = truth_target_state.params_[0];
+    double truth_state_loc1 = truth_target_state.params_[1];
+    [[maybe_unused]] double truth_state_phi = truth_target_state.params_[2];
+    [[maybe_unused]] double truth_state_theta = truth_target_state.params_[3];
+    [[maybe_unused]] double truth_state_p = truth_target_state.params_[4];
 
     // Check that the track state is filled
-    if (target_state.params.size() < 5) continue;
+    if (target_state.params_.size() < 5) continue;
 
     histograms_.fill(title_ + "trk_" + ts_title + "_loc0", track_state_loc0);
     histograms_.fill(title_ + "trk_" + ts_title + "_loc1", track_state_loc1);
@@ -611,7 +611,7 @@ void TrackingRecoDQM::sortTracks(const std::vector<ldmx::Track>& tracks,
 
   // Loop over the sorted vector of Track objects
   for (size_t i = 0; i < sorted_tracks.size(); i++) {
-    if (sorted_tracks[i].getTruthProb() < trackProb_cut_)
+    if (sorted_tracks[i].getTruthProb() < track_prob_cut_)
       fakeTracks.push_back(sorted_tracks[i]);
     else {  // not a fake track
       // If this is the first Track object with this trackID, add it to the
