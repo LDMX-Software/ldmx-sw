@@ -1,5 +1,6 @@
-# file storing git VERSION for build
+# file storing git VERSION and COMMIT_SHA for build
 VERSION
+COMMIT_SHA
 
 # Byte-compiled files
 __pycache__/
@@ -25,5 +26,8 @@ EventDisplay/include/EventDisplay/EventDisplayLinkDef.h
 
 # data files from running configs
 *.root
-# except special files storing test results
-!.github/validation_samples/**.root
+
+# denv stuff
+.bash*
+.profile
+.denv
