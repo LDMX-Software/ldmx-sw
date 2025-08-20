@@ -27,7 +27,7 @@ will need a method for running these containers.
   - (on Linux personal computers) [Manage docker as non-root user](https://docs.docker.com/engine/install/linux-postinstall/#manage-docker-as-a-non-root-user)
 - [Install `denv`](https://tomeichlersmith.github.io/denv/getting_started.html#installation)
 ```
-curl -s https://raw.githubusercontent.com/tomeichlersmith/denv/main/install | sh
+curl -s https://tomeichlersmith.github.io/denv/install | sh
 ```
 Some folks may see an error about something not being within your `PATH`,
 you just need to update your shell's configuration to look for `denv` within
@@ -41,6 +41,10 @@ The above should printout a help message instead of a "command not found"
 message.
 
 ### Using
+"Using" ldmx-sw refers to running simulations and other processors that
+are already written. If you want to change the ldmx-sw C++, you will need
+to see the "Developing" instructions below.
+
 In order to use ldmx-sw, no more dependencies are required!
 Simply choose the version of ldmx-sw you wish to use with your project.
 ```
@@ -105,8 +109,6 @@ just init # initialize a new development environment (once per clone)
 just compile #configure and build ldmx-sw
 just test # then test it
 ```
-
-## Maintainer 
 
 ## Contributors
 
