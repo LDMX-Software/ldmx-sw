@@ -133,10 +133,6 @@ macro(setup_genie_target)
     add_genie_target(GRwIO)
     add_genie_target(GRwClc)
     
-    add_library(blas SHARED IMPORTED GLOBAL) # or STATIC instead of SHARED
-    set_target_properties(blas PROPERTIES
-      IMPORTED_LOCATION "/usr/lib/x86_64-linux-gnu/libblas.so.3")
-    
     set(GENIE_LIBS
        log4cpp
        gsl
