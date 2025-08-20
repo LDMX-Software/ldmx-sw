@@ -193,8 +193,7 @@ macro(setup_genie_target)
        Genie::GTlGeo
        Genie::GTlFlx
        ROOT::MathCore
-       ROOT::MathMore
-       blas)
+       ROOT::MathMore)
      message(STATUS "Found GENIE")
   endif()
 endmacro()
