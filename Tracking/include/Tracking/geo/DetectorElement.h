@@ -78,7 +78,6 @@ class DetectorElement : public Acts::DetectorElementBase {
 
   std::shared_ptr<Acts::Surface> m_surface_;
   double m_thickness_;
-  bool m_debug_{false};
 };
 
 }  // namespace tracking::geo
