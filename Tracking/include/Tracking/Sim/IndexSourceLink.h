@@ -64,12 +64,14 @@ class IndexSourceLink final {
 ///
 /// Since the source links provide a `.geometryId()` accessor, they can be
 /// stored in an ordered geometry container.
-using IndexSourceLinkContainer = acts_examples::GeometryIdMultiset<IndexSourceLink>;
+using IndexSourceLinkContainer =
+    acts_examples::GeometryIdMultiset<IndexSourceLink>;
 /// Accessor for the above source link container
 ///
 /// It wraps up a few lookup methods to be used in the Combinatorial Kalman
 /// Filter
-struct IndexSourceLinkAccessor : acts_examples::GeometryIdMultisetAccessor<IndexSourceLink> {
+struct IndexSourceLinkAccessor
+    : acts_examples::GeometryIdMultisetAccessor<IndexSourceLink> {
   using BaseIterator = GeometryIdMultisetAccessor<IndexSourceLink>::Iterator;
 
   using Iterator = Acts::SourceLinkAdapterIterator<BaseIterator>;
@@ -81,4 +83,4 @@ struct IndexSourceLinkAccessor : acts_examples::GeometryIdMultisetAccessor<Index
     return {Iterator{begin}, Iterator{end}};
   }
 };
-}  // namespace ActsExamples
+}  // namespace acts_examples

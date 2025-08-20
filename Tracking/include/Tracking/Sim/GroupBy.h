@@ -138,4 +138,4 @@ auto makeGroupBy(const Container& container, KeyGetter keyGetter)
   return {std::begin(container), std::end(container), std::move(keyGetter)};
 }
 
-}  // namespace ActsExamples
+}  // namespace acts_examples

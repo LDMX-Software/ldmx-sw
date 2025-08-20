@@ -52,7 +52,7 @@ class PropagatorStepWriter {
                   const Acts::Vector3& start_mom);
 
  protected:
-  Config m_cfg_;             ///< the configuration object
+  Config m_cfg_;              ///< the configuration object
   std::mutex m_write_mutex_;  ///< protect multi-threaded writes
   TFile* m_output_file_;      ///< the output file name
   TTree* m_output_tree_;      ///< the output tree
@@ -63,20 +63,20 @@ class PropagatorStepWriter {
   std::vector<int> m_layer_id_;      ///< layer identifier if
   std::vector<int> m_approach_id_;   ///< surface identifier
   std::vector<int> m_sensitive_id_;  ///< surface identifier
-  std::vector<float> m_x_;          ///< global x_
-  std::vector<float> m_y_;          ///< global y_
-  std::vector<float> m_z_;          ///< global z_
-  std::vector<float> m_dx_;         ///< global direction x_
-  std::vector<float> m_dy_;         ///< global direction y_
-  std::vector<float> m_dz_;         ///< global direction z_
-  std::vector<int> m_step_type_;    ///< step type
-  std::vector<float> m_step_acc_;   ///< accuracy
-  std::vector<float> m_step_act_;   ///< actor check
-  std::vector<float> m_step_abt_;   ///< aborter
-  std::vector<float> m_step_usr_;   ///< user
-  std::vector<float> m_hit_x_;      ///< hit location X
-  std::vector<float> m_hit_y_;      ///< hit location Y
-  std::vector<float> m_hit_z_;      ///< hit location Z
+  std::vector<float> m_x_;           ///< global x_
+  std::vector<float> m_y_;           ///< global y_
+  std::vector<float> m_z_;           ///< global z_
+  std::vector<float> m_dx_;          ///< global direction x_
+  std::vector<float> m_dy_;          ///< global direction y_
+  std::vector<float> m_dz_;          ///< global direction z_
+  std::vector<int> m_step_type_;     ///< step type
+  std::vector<float> m_step_acc_;    ///< accuracy
+  std::vector<float> m_step_act_;    ///< actor check
+  std::vector<float> m_step_abt_;    ///< aborter
+  std::vector<float> m_step_usr_;    ///< user
+  std::vector<float> m_hit_x_;       ///< hit location X
+  std::vector<float> m_hit_y_;       ///< hit location Y
+  std::vector<float> m_hit_z_;       ///< hit location Z
   std::vector<float>
       m_start_pos_;  ///< start position of the particle propagated
   std::vector<float>

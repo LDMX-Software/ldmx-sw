@@ -41,7 +41,7 @@ Acts::Vector3 defaultTransformPos(const Acts::Vector3& pos_);
  */
 
 Acts::Vector3 defaultTransformBField(const Acts::Vector3& field,
-                                      const Acts::Vector3& /*pos_*/);
+                                     const Acts::Vector3& /*pos_*/);
 
 void testField(const std::shared_ptr<Acts::MagneticFieldProvider> bfield,
                const Acts::Vector3& eval_pos,
@@ -53,7 +53,7 @@ void testField(const std::shared_ptr<Acts::MagneticFieldProvider> bfield,
  */
 
 size_t localToGlobalBinXyz(std::array<size_t, 3> bins,
-                            std::array<size_t, 3> sizes);
+                           std::array<size_t, 3> sizes);
 
 inline InterpolatedMagneticField3 rotateFieldMapXYZ(
     const std::function<size_t(std::array<size_t, 3> binsXYZ,
@@ -115,11 +115,11 @@ inline InterpolatedMagneticField3 rotateFieldMapXYZ(
     n_bins_z = 2 * n_bins_z - 1;
   }
   Acts::Axis<Acts::AxisType::Equidistant> x_axis(x_min * lengthUnit,
-                                                x_max * lengthUnit, n_bins_x);
+                                                 x_max * lengthUnit, n_bins_x);
   Acts::Axis<Acts::AxisType::Equidistant> y_axis(y_min * lengthUnit,
-                                                y_max * lengthUnit, n_bins_y);
+                                                 y_max * lengthUnit, n_bins_y);
   Acts::Axis<Acts::AxisType::Equidistant> z_axis(z_min * lengthUnit,
-                                                z_max * lengthUnit, n_bins_z);
+                                                 z_max * lengthUnit, n_bins_z);
   // Create the grid
   using Grid_t =
       Acts::Grid<Acts::Vector3, Acts::Axis<Acts::AxisType::Equidistant>,
@@ -278,8 +278,8 @@ inline InterpolatedMagneticField3 loadDefaultBField(
   // Acts::Vector3&)> transformMagneticField
 
   return makeMagneticFieldMapXyzFromText(
-      std::move(localToGlobalBinXyz), transformPosition,
-      transformMagneticField, fieldMapFile,
+      std::move(localToGlobalBinXyz), transformPosition, transformMagneticField,
+      fieldMapFile,
       1. * Acts::UnitConstants::mm,    // default scale for axes length
       1000. * Acts::UnitConstants::T,  // The map is in kT, so scale it to T
       false,                           // not symmetrical

@@ -99,9 +99,9 @@ class LdmxMeasurementCalibrator {
   /// @param trackState The track state to calibrate
   template <typename traj_t>
   void calibrate1d(const Acts::GeometryContext& /*gctx*/,
-                    const Acts::CalibrationContext& /*cctx*/,
-                    const Acts::SourceLink& genericSourceLink /*sourceLink*/,
-                    typename traj_t::TrackStateProxy trackState) const {
+                   const Acts::CalibrationContext& /*cctx*/,
+                   const Acts::SourceLink& genericSourceLink /*sourceLink*/,
+                   typename traj_t::TrackStateProxy trackState) const {
     acts_examples::IndexSourceLink source_link{
         genericSourceLink.get<acts_examples::IndexSourceLink>()};
 

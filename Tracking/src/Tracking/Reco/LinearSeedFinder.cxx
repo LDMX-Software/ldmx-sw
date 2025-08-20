@@ -462,8 +462,8 @@ Acts::Vector3 LinearSeedFinder::simple3DHitV2(
     std::vector<ldmx::SimTrackerHit> pair_sim_hits) {
   Acts::Vector3 dummy{0., 0., 0.};
   Acts::Vector3 hit_on_target{target_sp.getPosition()[0],
-                            target_sp.getPosition()[1],
-                            target_sp.getPosition()[2]};  // x,y,z
+                              target_sp.getPosition()[1],
+                              target_sp.getPosition()[2]};  // x,y,z
 
   Acts::Vector3 axial_true_global{pair_sim_hits[0].getPosition()[0],
                                   pair_sim_hits[0].getPosition()[1],
@@ -487,10 +487,10 @@ Acts::Vector3 LinearSeedFinder::simple3DHitV2(
 
   // calculate the displacement in tracking global x (need to generalize) by
   // going from tracking x=axial to x=stereo
-  double dx_proj =
-      (simpart_unit[0] / simpart_unit[2]) *
-      delta_sensors[0];  // this looks weird because simpart_unit is in
-                        // global-global and delta sensors is in tracking-global
+  double dx_proj = (simpart_unit[0] / simpart_unit[2]) *
+                   delta_sensors[0];  // this looks weird because simpart_unit
+                                      // is in global-global and delta sensors
+                                      // is in tracking-global
 
   // Compute unit vectors for both hits_
   auto [axial_u, axial_v, axial_w] = getSurfaceVectors(axial_surface);

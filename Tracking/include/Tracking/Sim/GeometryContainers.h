@@ -102,9 +102,9 @@ using GeometryIdMultimap =
 
 /// Select all elements within the given volume.
 template <typename T>
-inline acts_examples::Range<typename GeometryIdMultiset<T>::const_iterator> selectVolume(
-    const GeometryIdMultiset<T>& container,
-    Acts::GeometryIdentifier::Value volume) {
+inline acts_examples::Range<typename GeometryIdMultiset<T>::const_iterator>
+selectVolume(const GeometryIdMultiset<T>& container,
+             Acts::GeometryIdentifier::Value volume) {
   auto cmp = Acts::GeometryIdentifier().setVolume(volume);
   auto beg = std::lower_bound(container.begin(), container.end(), cmp,
                               detail::CompareGeometryId{});
@@ -127,10 +127,10 @@ inline auto selectVolume(const GeometryIdMultiset<T>& container,
 
 /// Select all elements within the given layer.
 template <typename T>
-inline acts_examples::Range<typename GeometryIdMultiset<T>::const_iterator> selectLayer(
-    const GeometryIdMultiset<T>& container,
-    Acts::GeometryIdentifier::Value volume,
-    Acts::GeometryIdentifier::Value layer) {
+inline acts_examples::Range<typename GeometryIdMultiset<T>::const_iterator>
+selectLayer(const GeometryIdMultiset<T>& container,
+            Acts::GeometryIdentifier::Value volume,
+            Acts::GeometryIdentifier::Value layer) {
   auto cmp = Acts::GeometryIdentifier().setVolume(volume).setLayer(layer);
   auto beg = std::lower_bound(container.begin(), container.end(), cmp,
                               detail::CompareGeometryId{});
@@ -153,8 +153,9 @@ inline auto selectLayer(const GeometryIdMultiset<T>& container,
 
 /// Select all elements for the given module / sensitive surface.
 template <typename T>
-inline acts_examples::Range<typename GeometryIdMultiset<T>::const_iterator> selectModule(
-    const GeometryIdMultiset<T>& container, Acts::GeometryIdentifier geoId) {
+inline acts_examples::Range<typename GeometryIdMultiset<T>::const_iterator>
+selectModule(const GeometryIdMultiset<T>& container,
+             Acts::GeometryIdentifier geoId) {
   // module is the lowest level and defines a single geometry id value
   return makeRange(container.equal_range(geoId));
 }
@@ -209,7 +210,7 @@ selectLowestNonZeroGeometryObject(const GeometryIdMultiset<T>& container,
 /// surface.
 template <typename T>
 inline acts_examples::GroupBy<typename GeometryIdMultiset<T>::const_iterator,
-               detail::GeometryIdGetter>
+                              detail::GeometryIdGetter>
 groupByModule(const GeometryIdMultiset<T>& container) {
   return makeGroupBy(container, detail::GeometryIdGetter());
 }
@@ -229,4 +230,4 @@ struct GeometryIdMultisetAccessor {
   const Container* container_ = nullptr;
 };
 
-}  // namespace ActsExamples
+}  // namespace acts_examples

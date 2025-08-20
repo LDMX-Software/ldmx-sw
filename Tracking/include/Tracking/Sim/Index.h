@@ -51,4 +51,4 @@ inline boost::container::flat_multimap<value_t, Index> invertIndexMultimap(
   return inverse;
 }
 
-}  // namespace ActsExamples
+}  // namespace acts_examples

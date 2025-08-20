@@ -9,8 +9,7 @@ TrackingGeometryUser::TrackingGeometryUser(const std::string& name,
 const Acts::GeometryContext& TrackingGeometryUser::geometryContext() {
   return getNamedCondition<geo::GeometryContext>().get();
 }
-const Acts::MagneticFieldContext&
-TrackingGeometryUser::magneticFieldContext() {
+const Acts::MagneticFieldContext& TrackingGeometryUser::magneticFieldContext() {
   return getNamedCondition<geo::MagneticFieldContext>().get();
 }
 const Acts::CalibrationContext& TrackingGeometryUser::calibrationContext() {

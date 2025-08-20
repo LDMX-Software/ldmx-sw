@@ -153,8 +153,8 @@ void SeedFinderProcessor::produce(framework::Event& event) {
   }
 
   if (event.exists("SimParticles", sim_particles_event_passname_)) {
-    particle_map = event.getMap<int, ldmx::SimParticle>("SimParticles",
-                                                       sim_particles_passname_);
+    particle_map = event.getMap<int, ldmx::SimParticle>(
+        "SimParticles", sim_particles_passname_);
     truth_matching_tool_->setup(particle_map, measurements);
   }
 

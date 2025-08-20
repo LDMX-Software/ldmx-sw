@@ -52,7 +52,7 @@ class TrackersTrackingGeometry : public TrackingGeometry {
 
   // Provided a physical volume, extract a silicon rectangular plane surface
   std::shared_ptr<Acts::PlaneSurface> getSurfacePtr(G4VPhysicalVolume* pvol,
-                                                 Acts::Transform3 ref_trans);
+                                                    Acts::Transform3 ref_trans);
 
   Acts::CuboidVolumeBuilder::VolumeConfig buildVolumeConfig(
       const G4VPhysicalVolume* detector,

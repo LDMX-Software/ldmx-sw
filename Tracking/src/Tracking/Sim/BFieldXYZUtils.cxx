@@ -10,7 +10,7 @@ Acts::Vector3 defaultTransformPos(const Acts::Vector3& pos_) {
 }
 
 Acts::Vector3 defaultTransformBField(const Acts::Vector3& field,
-                                      const Acts::Vector3& /*pos_*/) {
+                                     const Acts::Vector3& /*pos_*/) {
   Acts::Vector3 rot_field;
 
   rot_field(0) = field(2);
@@ -27,7 +27,7 @@ Acts::Vector3 defaultTransformBField(const Acts::Vector3& field,
 }
 
 size_t localToGlobalBinXyz(std::array<size_t, 3> bins,
-                            std::array<size_t, 3> sizes) {
+                           std::array<size_t, 3> sizes) {
   return (bins[0] * (sizes[1] * sizes[2]) + bins[1] * sizes[2] +
           bins[2]);  // xyz - field space
   // return (bins[1] * (sizes[2] * sizes[0]) + bins[2] * sizes[0] + bins[0]);

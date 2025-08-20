@@ -68,7 +68,7 @@ void TruthSeedProcessor::configure(framework::config::Parameters& parameters) {
   // where the beam arrives (if no smearing is applied) and we simply
   // reorder these values so that they are in tracking coordinates.
   beam_origin_ = parameters.get<std::vector<double>>("beamOrigin",
-                                                    {-883.0, -21.745876, 0.0});
+                                                     {-883.0, -21.745876, 0.0});
 
   // Skip the tagger or recoil trackers if wanted
   skip_tagger_ = parameters.get<bool>("skip_tagger", false);
@@ -79,8 +79,8 @@ void TruthSeedProcessor::createTruthTrack(
     const ldmx::SimParticle& particle, const ldmx::SimTrackerHit& hit,
     ldmx::Track& trk, const std::shared_ptr<Acts::Surface>& target_surface) {
   std::vector<double> pos{static_cast<double>(hit.getPosition()[0]),
-                           static_cast<double>(hit.getPosition()[1]),
-                           static_cast<double>(hit.getPosition()[2])};
+                          static_cast<double>(hit.getPosition()[1]),
+                          static_cast<double>(hit.getPosition()[2])};
   createTruthTrack(pos, hit.getMomentum(), particle.getCharge(), trk,
                    target_surface);
 
@@ -147,7 +147,7 @@ void TruthSeedProcessor::createTruthTrack(
   auto part{Acts::GenericParticleHypothesis(
       Acts::ParticleHypothesis(Acts::PdgParticle(pdgid)))};
   Acts::BoundTrackParameters bound_trk_pars(gen_surface, bound_params,
-                                          std::nullopt, part);
+                                            std::nullopt, part);
 
   // CAUTION:: The target surface should be close to the gen surface
   // Linear propagation to the target surface. I assume 1mm of tolerance
@@ -162,7 +162,8 @@ void TruthSeedProcessor::createTruthTrack(
                     << "  Distance extrapolated = "
                     << (tgt_surf_center(0) - gen_surf_center(0)) << std::endl;
 
-  auto prop_bound_state = trk_extrap_->extrapolate(bound_trk_pars, target_surface);
+  auto prop_bound_state =
+      trk_extrap_->extrapolate(bound_trk_pars, target_surface);
 
   // Create the seed track object.
   Acts::Vector3 ref = target_surface->center(geometryContext());
@@ -682,9 +683,10 @@ void TruthSeedProcessor::produce(framework::Event& event) {
         tagger_truth_tracks.push_back(truth_tagger_track);
 
         if (hit.getPdgID() == 11 && hit.getTrackID() < max_track_id_) {
-          ldmx::Track beam_e_truth_seed = taggerFullSeed(
-              particle_map[hit.getTrackID()], hit.getTrackID(), hit,
-              hit_count_map_tagger, beam_origin_surface, target_unbound_surface);
+          ldmx::Track beam_e_truth_seed =
+              taggerFullSeed(particle_map[hit.getTrackID()], hit.getTrackID(),
+                             hit, hit_count_map_tagger, beam_origin_surface,
+                             target_unbound_surface);
           beam_electrons.push_back(beam_e_truth_seed);
         }
       }

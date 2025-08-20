@@ -37,8 +37,8 @@ void GSFProcessor::onNewRun(const ldmx::RunHeader& rh) {
   double scale = 1.;
 
   auto transform_b_field = [rotation, scale, debug_transform](
-                             const Acts::Vector3& field,
-                             const Acts::Vector3& /*pos_*/) {
+                               const Acts::Vector3& field,
+                               const Acts::Vector3& /*pos_*/) {
     // Rotate the field in tracking coordinates
     Acts::Vector3 rot_field;
     rot_field(0) = field(2);
@@ -159,7 +159,8 @@ void GSFProcessor::produce(framework::Event& event) {
   auto tg{geometry()};
 
   // Retrieve the tracks
-  if (!event.exists(track_collection_, track_collection_event_passname_)) return;
+  if (!event.exists(track_collection_, track_collection_event_passname_))
+    return;
   auto tracks{
       event.getCollection<ldmx::Track>(track_collection_, track_passname_)};
 
@@ -288,7 +289,8 @@ void GSFProcessor::produce(framework::Event& event) {
 
       // Retrieve the surface
 
-      const Acts::Surface* hit_surface = tg.geo::TrackingGeometry::getSurface(meas.getLayerID());
+      const Acts::Surface* hit_surface =
+          tg.geo::TrackingGeometry::getSurface(meas.getLayerID());
 
       // Store the index_ source link
       acts_examples::IndexSourceLink idx_sl(hit_surface->geometryId(), imeas);
@@ -417,8 +419,8 @@ void GSFProcessor::produce(framework::Event& event) {
     } else {
       ldmx_log(debug) << "Ecal Extrapolation";
       ldmx::Track::TrackState ts_at_ecal;
-      success = trk_extrap_->trackStateAtSurface(gsftrk, ecal_surface, ts_at_ecal,
-                                                 ldmx::TrackStateType::AtECAL);
+      success = trk_extrap_->trackStateAtSurface(
+          gsftrk, ecal_surface, ts_at_ecal, ldmx::TrackStateType::AtECAL);
 
       if (success) trk.addTrackState(ts_at_ecal);
     }

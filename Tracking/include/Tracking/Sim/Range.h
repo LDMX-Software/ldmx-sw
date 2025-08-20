@@ -53,4 +53,4 @@ Range<Iterator> makeRange(std::pair<Iterator, Iterator> range) {
   return Range<Iterator>(range.first, range.second);
 }
 
-}  // namespace ActsExamples
+}  // namespace acts_examples

@@ -31,7 +31,7 @@ const Acts::Transform3& DetectorElement::transform(
     const Acts::Transform3& c_transform = ctx->alignment_map_[element_id];
 
     if (false) {
- // TODO : Have this in the logging system
+      // TODO : Have this in the logging system
       std::cout << "Aligned transform" << std::endl;
       std::cout << c_transform.translation() << std::endl;
       std::cout << c_transform.rotation() << std::endl;

@@ -54,7 +54,8 @@ class TruthMatchingTool {
   std::map<int, ldmx::SimParticle> map_;
   std::vector<ldmx::Measurement> measurements_;
   bool debug_{false};
-  std::shared_ptr<tracking::sim::TruthMatchingTool> truth_matching_tool_ = nullptr;
+  std::shared_ptr<tracking::sim::TruthMatchingTool> truth_matching_tool_ =
+      nullptr;
   bool configured_{false};
 };
 

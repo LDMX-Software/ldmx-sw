@@ -86,8 +86,8 @@ void CKFProcessor::onNewRun(const ldmx::RunHeader& rh) {
   double scale = 1.;
 
   auto transform_b_field = [rotation, scale, debug_transform](
-                             const Acts::Vector3& field,
-                             const Acts::Vector3& /*pos_*/) {
+                               const Acts::Vector3& field,
+                               const Acts::Vector3& /*pos_*/) {
     // Rotate the field in tracking coordinates
     Acts::Vector3 rot_field;
     rot_field(0) = field(2);
@@ -209,7 +209,8 @@ void CKFProcessor::produce(framework::Event& event) {
                                              input_pass_name_);
 
   // check if SimParticleMap is available for truth matching
-  std::shared_ptr<tracking::sim::TruthMatchingTool> truth_matching_tool = nullptr;
+  std::shared_ptr<tracking::sim::TruthMatchingTool> truth_matching_tool =
+      nullptr;
   std::map<int, ldmx::SimParticle> particle_map;
 
   if (event.exists("SimParticles", sim_particles_event_passname_)) {
@@ -266,16 +267,18 @@ void CKFProcessor::produce(framework::Event& event) {
                     << ": Perigee X / Y / Z = " << seed.getPerigeeX() << " / "
                     << seed.getPerigeeY() << " / " << seed.getPerigeeZ()
                     << ", D0 = " << param_vec[0] << ", Z0 = " << param_vec[1]
-                    << ", Phi = " << param_vec[2] << ", Theta = " << param_vec[3]
-                    << ", QoP = " << param_vec[4] << ", Time = " << param_vec[5];
+                    << ", Phi = " << param_vec[2]
+                    << ", Theta = " << param_vec[3]
+                    << ", QoP = " << param_vec[4]
+                    << ", Time = " << param_vec[5];
 
     ldmx_log(debug) << "  Cov matrix diagonal (" << cov_mat(0, 0) << ", "
                     << cov_mat(1, 1) << ", " << cov_mat(2, 2) << ")";
 
     // need to set particle hypothesis...set to electron for now...
     auto part_hypo{Acts::SinglyChargedParticleHypothesis::electron()};
-    start_parameters.push_back(
-        Acts::BoundTrackParameters(perigee_surface, param_vec, cov_mat, part_hypo));
+    start_parameters.push_back(Acts::BoundTrackParameters(
+        perigee_surface, param_vec, cov_mat, part_hypo));
 
     // This is a global variable for performance checks
     nseeds_++;
@@ -361,10 +364,11 @@ void CKFProcessor::produce(framework::Event& event) {
     return {SourceLinkAccIt{begin}, SourceLinkAccIt{end}};
   };
 
-  Acts::SourceLinkAccessorDelegate<SourceLinkAccIt> source_link_accessor_delegate;
-  source_link_accessor_delegate.connect<&decltype(source_link_accessor)::operator(),
-                                     decltype(source_link_accessor)>(
-      &source_link_accessor);
+  Acts::SourceLinkAccessorDelegate<SourceLinkAccIt>
+      source_link_accessor_delegate;
+  source_link_accessor_delegate
+      .connect<&decltype(source_link_accessor)::operator(),
+               decltype(source_link_accessor)>(&source_link_accessor);
 
   ldmx_log(debug) << "Setting up surfaces...";
 
@@ -393,11 +397,11 @@ void CKFProcessor::produce(framework::Event& event) {
     const Acts::CombinatorialKalmanFilterOptions<SourceLinkAccIt,
                                                  TrackContainer>
         ckf_options(TrackingGeometryUser::geometryContext(),
-                   TrackingGeometryUser::magneticFieldContext(),
-                   TrackingGeometryUser::calibrationContext(),
-                   source_link_accessor_delegate, ckf_extensions,
-                   propagator_options, true /* multiple scattering */,
-                   false /* energy loss */);
+                    TrackingGeometryUser::magneticFieldContext(),
+                    TrackingGeometryUser::calibrationContext(),
+                    source_link_accessor_delegate, ckf_extensions,
+                    propagator_options, true /* multiple scattering */,
+                    false /* energy loss */);
 
     ldmx_log(debug) << "  Checking options:  multiple scattering = "
                     << ckf_options.multipleScattering
@@ -631,9 +635,9 @@ void CKFProcessor::produce(framework::Event& event) {
       std::chrono::duration<double, std::milli>(ckf_run - ckf_setup).count();
 
   // Calculating Shared Hits
-  auto shared_hits = computeSharedHits(tracks, measurements, tg,
-                                      tracking::sim::utils::sourceLinkHash,
-                                      tracking::sim::utils::sourceLinkEquality);
+  auto shared_hits = computeSharedHits(
+      tracks, measurements, tg, tracking::sim::utils::sourceLinkHash,
+      tracking::sim::utils::sourceLinkEquality);
   for (std::size_t i_track = 0; i_track < shared_hits.size(); ++i_track) {
     tracks[i_track].setNsharedHits(shared_hits[i_track].size());
     for (auto idx : shared_hits[i_track]) {

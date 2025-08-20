@@ -99,7 +99,8 @@ void TrackingRecoDQM::analyze(const framework::Event& event) {
                     false);
   }
   if (!fake_tracks_.empty()) {
-    ldmx_log(debug) << "Track Monitoring on " << fake_tracks_.size() << " fakes";
+    ldmx_log(debug) << "Track Monitoring on " << fake_tracks_.size()
+                    << " fakes";
     trackMonitoring(fake_tracks_, measurements, title_ + "fake_", false, false);
   }
 
@@ -214,15 +215,16 @@ void TrackingRecoDQM::efficiencyPlots(
     // Match the tracks to truth
     ldmx::Track* truth_trk = nullptr;
 
-    auto it =
-        std::find_if(truth_track_collection_->begin(),
-                     truth_track_collection_->end(), [&](const ldmx::Track& tt) {
-                       return tt.getTrackID() == track.getTrackID();
-                     });
+    auto it = std::find_if(truth_track_collection_->begin(),
+                           truth_track_collection_->end(),
+                           [&](const ldmx::Track& tt) {
+                             return tt.getTrackID() == track.getTrackID();
+                           });
 
     double track_truth_prob = track.getTruthProb();
 
-    if (it != truth_track_collection_->end() && track_truth_prob >= track_prob_cut_)
+    if (it != truth_track_collection_->end() &&
+        track_truth_prob >= track_prob_cut_)
       truth_trk = &(*it);
 
     // Match not found
@@ -489,15 +491,16 @@ void TrackingRecoDQM::trackStateMonitoring(const ldmx::Tracks& tracks,
     // Match the tracks to truth
     ldmx::Track* truth_trk = nullptr;
 
-    auto it =
-        std::find_if(truth_track_collection_->begin(),
-                     truth_track_collection_->end(), [&](const ldmx::Track& tt) {
-                       return tt.getTrackID() == track.getTrackID();
-                     });
+    auto it = std::find_if(truth_track_collection_->begin(),
+                           truth_track_collection_->end(),
+                           [&](const ldmx::Track& tt) {
+                             return tt.getTrackID() == track.getTrackID();
+                           });
 
     double track_truth_prob = track.getTruthProb();
 
-    if (it != truth_track_collection_->end() && track_truth_prob >= track_prob_cut_)
+    if (it != truth_track_collection_->end() &&
+        track_truth_prob >= track_prob_cut_)
       truth_trk = &(*it);
 
     // Match not found, skip track

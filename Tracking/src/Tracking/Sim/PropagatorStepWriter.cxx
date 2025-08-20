@@ -23,7 +23,8 @@ PropagatorStepWriter::PropagatorStepWriter(
 
   // Setup ROOT I/O
   if (m_output_file_ == nullptr) {
-    m_output_file_ = TFile::Open(m_cfg_.file_path_.c_str(), m_cfg_.file_mode_.c_str());
+    m_output_file_ =
+        TFile::Open(m_cfg_.file_path_.c_str(), m_cfg_.file_mode_.c_str());
     if (m_output_file_ == nullptr) {
       throw std::ios_base::failure("Could not open '" + m_cfg_.file_path_);
     }
@@ -31,7 +32,7 @@ PropagatorStepWriter::PropagatorStepWriter(
   m_output_file_->cd();
 
   m_output_tree_ = new TTree(m_cfg_.tree_name_.c_str(),
-                           "TTree from RootPropagationStepsWriter");
+                             "TTree from RootPropagationStepsWriter");
   if (m_output_tree_ == nullptr) throw std::bad_alloc();
 
   // Set the branches

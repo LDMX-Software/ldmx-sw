@@ -63,8 +63,8 @@ class TrackExtrapolatorTool {
     PropagatorOptions p_options(gctx_, mctx_);
 
     p_options.direction = intersection.intersections()[0].pathLength() >= 0
-                             ? Acts::Direction::Forward
-                             : Acts::Direction::Backward;
+                              ? Acts::Direction::Forward
+                              : Acts::Direction::Backward;
 
     auto result = propagator_.propagate(pars, *target_surface, p_options);
 
