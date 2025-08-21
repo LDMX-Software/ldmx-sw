@@ -6,19 +6,17 @@ TrigScintDigiProducer::TrigScintDigiProducer(const std::string &name,
                                              framework::Process &process)
     : Producer(name, process) {}
 
-void TrigScintDigiProducer::configure(
-    framework::config::Parameters &parameters) {
+void TrigScintDigiProducer::configure(framework::config::Parameters &ps) {
   // Configure this instance of the producer
-  strips_per_array_ = parameters.get<int>("number_of_strips");
-  number_of_arrays_ = parameters.get<int>("number_of_arrays");
-  mean_noise_ = parameters.get<double>("mean_noise");
-  mev_per_mip_ = parameters.get<double>("mev_per_mip");
-  pe_per_mip_ = parameters.get<double>("pe_per_mip");
-  input_collection_ = parameters.get<std::string>("input_collection");
-  input_pass_name_ = parameters.get<std::string>("input_pass_name");
-  output_collection_ = parameters.get<std::string>("output_collection");
-  sim_particles_passname_ =
-      parameters.get<std::string>("sim_particles_passname");
+  strips_per_array_ = ps.get<int>("number_of_strips");
+  number_of_arrays_ = ps.get<int>("number_of_arrays");
+  mean_noise_ = ps.get<double>("mean_noise");
+  mev_per_mip_ = ps.get<double>("mev_per_mip");
+  pe_per_mip_ = ps.get<double>("pe_per_mip");
+  input_collection_ = ps.get<std::string>("input_collection");
+  input_pass_name_ = ps.get<std::string>("input_pass_name");
+  output_collection_ = ps.get<std::string>("output_collection");
+  sim_particles_passname_ = ps.get<std::string>("sim_particles_passname");
 }
 
 void TrigScintDigiProducer::onNewRun(const ldmx::RunHeader &) {
@@ -46,7 +44,7 @@ ldmx::TrigScintID TrigScintDigiProducer::generateRandomID(int module) {
 }
 
 void TrigScintDigiProducer::produce(framework::Event &event) {
-  std::map<ldmx::TrigScintID, int> cell_p_es, cell_min_p_es;
+  std::map<ldmx::TrigScintID, int> cell_pes, cell_min_p_es;
   std::map<ldmx::TrigScintID, float> xpos, ypos, zpos, edep, time, beam_frac;
   std::set<ldmx::TrigScintID> noise_hit_i_ds;
 
@@ -73,7 +71,7 @@ void TrigScintDigiProducer::produce(framework::Event &event) {
     for (int i = 0; i < sim_hit.getNumberOfContribs(); i++) {
       auto contrib = sim_hit.getContrib(i);
 
-      ldmx_log(trace) << "contrib " << i << " trackID: " << contrib.trackID
+      ldmx_log(trace) << "Contrib " << i << " trackID: " << contrib.trackID
                       << " pdgID: " << contrib.pdgCode
                       << " edep: " << contrib.edep;
       ldmx_log(trace) << "\t particle id: "
@@ -128,21 +126,26 @@ void TrigScintDigiProducer::produce(framework::Event &event) {
     xpos[id] = xpos[id] / edep[id];
     ypos[id] = ypos[id] / edep[id];
     zpos[id] = zpos[id] / edep[id];
+    //  mean number of photoelectrons produced for the given deposited energy
     double mean_pe = dep_energy / mev_per_mip_ * pe_per_mip_;
     std::poisson_distribution<int> poisson_dist(mean_pe + mean_noise_);
-    cell_p_es[id] = poisson_dist(rng_);
+    cell_pes[id] = poisson_dist(rng_);
+    // energy corresponding to the number of PEs observed
+    // the minimum number of PEs is the mean number of PEs minus the noise
+    double energy_per_pe = mev_per_mip_ / pe_per_mip_;
+    double cell_energy = energy_per_pe * cell_pes[id];
 
     // If a cell has a PE count above threshold, persit the hit.
     // Thresholds are introduced (and configurable) in clustering.
     // the cell PE >=1 suppresses artifical noise that is below one light
     // quantum in the SiPM and unphysical.
-    if (cell_p_es[id] >= 1) {
+    if (cell_pes[id] >= 1) {
       ldmx::TrigScintHit hit;
       hit.setID(id.raw());
-      hit.setPE(cell_p_es[id]);
+      hit.setPE(cell_pes[id]);
       hit.setMinPE(cell_min_p_es[id]);
-      hit.setAmplitude(cell_p_es[id]);
-      hit.setEnergy(dep_energy);
+      hit.setAmplitude(cell_pes[id]);
+      hit.setEnergy(cell_energy);
       hit.setTime(time[id]);
       hit.setXPos(xpos[id]);
       hit.setYPos(ypos[id]);
@@ -155,11 +158,11 @@ void TrigScintDigiProducer::produce(framework::Event &event) {
       trig_scint_hits.push_back(hit);
     }
 
-    ldmx_log(trace) << " ID = " << id.raw() << " Edep: " << edep[id]
-                    << " numPEs: " << cell_p_es[id] << " time: " << time[id]
+    ldmx_log(debug) << " ID = " << id.raw() << " Edep: " << edep[id]
+                    << " numPEs: " << cell_pes[id] << " time: " << time[id]
                     << " z: " << zpos[id] << "\t X: " << xpos[id]
                     << " Y: " << ypos[id] << " Z: " << zpos[id];
-  }
+  }  // end of loop over detIDs
 
   // ------------------------------- Noise simulation -----------------------//
   // ------------------------------------------------------------------------//

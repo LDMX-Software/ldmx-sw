@@ -75,6 +75,7 @@ target_dqm = [
     dqm.TrigScintSimDQM('TargetSimHits','TargetSimHits','target'),
     dqm.TrigScintDigiDQM('TargetDigis','TargetDigis','target'),
     dqm.TrigScintClusterDQM('TargetClusters','TargetClusters','target'),
+    dqm.TrigScintDigiVerifierDQM('TrigScintDigiVerifier','TargetSimHits','TargetDigis'),
     ]
 
 
