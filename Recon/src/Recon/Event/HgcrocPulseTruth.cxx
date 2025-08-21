@@ -9,7 +9,7 @@ void HgcrocPulseTruth::clear() {}
 double HgcrocPulseTruth::getMax() const {
   auto hits = compositePulse_.hits();
 
-  std::sort(
+  std::ranges::sort(
       hits.begin(), hits.end(),
       [](const std::pair<double, double> &a,
          const std::pair<double, double> &b) { return a.second < b.second; });
