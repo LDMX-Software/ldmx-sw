@@ -31,3 +31,4 @@ EventDisplay/include/EventDisplay/EventDisplayLinkDef.h
 .bash*
 .profile
 .denv
+.apptainer
