@@ -39,12 +39,12 @@ static void unrotate(double& p, double& q) {
 
 EcalGeometry::EcalGeometry(const framework::config::Parameters& ps)
     : framework::ConditionsObject(EcalGeometry::CONDITIONS_OBJECT_NAME) {
-  layerZPositions_ = ps.get<std::vector<double>>("layerZPositions");
+  layer_z_positions_ = ps.get<std::vector<double>>("layerZPositions");
   ecalFrontZ_ = ps.get<double>("ecalFrontZ");
   moduler_ = ps.get<double>("moduleMinR");
   gap_ = ps.get<double>("gap");
   nCellRHeight_ = ps.get<double>("nCellRHeight");
-  cornersSideUp_ = ps.get<bool>("cornersSideUp");
+  corners_side_up_ = ps.get<bool>("cornersSideUp");
   layer_shift_x_ = ps.get<double>("layer_shift_x");
   layer_shift_y_ = ps.get<double>("layer_shift_y");
   layer_shift_odd_ = ps.get<bool>("layer_shift_odd");
@@ -56,14 +56,14 @@ EcalGeometry::EcalGeometry(const framework::config::Parameters& ps)
                     "Cannot shift both odd sensitive layers and odd bilayers");
   }
 
-  moduleR_ = moduler_ * (2 / sqrt(3));
-  cellR_ = 2 * moduler_ / nCellRHeight_;
-  cellr_ = (sqrt(3.) / 2.) * cellR_;
+  moduler_ = moduler_ * (2 / sqrt(3));
+  cellr_ = 2 * moduler_ / nCellRHeight_;
+  cellr_ = (sqrt(3.) / 2.) * cellr_;
 
   ldmx_log(debug) << "Building module map with gap " << std::setprecision(2)
                   << gap_ << ", nCellRHeight " << nCellRHeight_
-                  << ",  min/max radii of cell " << cellr_ << " / " << cellR_
-                  << ", and module " << moduler_ << " / " << moduleR_;
+                  << ",  min/max radii of cell " << cellr_ << " / " << cellr_
+                  << ", and module " << moduler_ << " / " << moduler_;
 
   buildLayerMap();
   buildModuleMap();
@@ -111,7 +111,7 @@ EcalID EcalGeometry::getID(double x, double y, int layer_id,
   for (auto const& [mid, module_xy] : module_pos_xy_) {
     double probe_x{p - module_xy.first}, probe_y{q - module_xy.second};
     if (cornersSideUp_) rotate(probe_x, probe_y);
-    if (isInside(probe_x / moduleR_, probe_y / moduleR_)) {
+    if (isInside(probe_x / moduler_, probe_y / moduler_)) {
       module_id = mid;
       break;
     }
@@ -182,7 +182,7 @@ std::pair<double, double> EcalGeometry::getPositionInModule(int cell_id) const {
 }
 
 void EcalGeometry::buildLayerMap() {
-  ldmx_log(debug) << "Building layer map with " << layerZPositions_.size()
+  ldmx_log(debug) << "Building layer map with " << layer_z_positions_.size()
                   << " layers";
   if (layer_shift_odd_ or layer_shift_odd_bilayer_) {
     if (layer_shift_odd_) {
@@ -196,7 +196,7 @@ void EcalGeometry::buildLayerMap() {
 
   for (std::size_t i_layer{0}; i_layer < layerZPositions_.size(); ++i_layer) {
     // default is centered on z-axis
-    double x{0}, y{0}, z{ecalFrontZ_ + layerZPositions_.at(i_layer)};
+    double x{0}, y{0}, z{ecal_front_z_ + layer_z_positions_.at(i_layer)};
     if (layer_shift_odd_ and (i_layer % 2 == 1)) {
       x += layer_shift_x_;
       y += layer_shift_y_;
@@ -212,7 +212,7 @@ void EcalGeometry::buildLayerMap() {
 }
 
 void EcalGeometry::buildModuleMap() {
-  static const double C_PI = 3.14159265358979323846;
+  static const double c_pi = 3.14159265358979323846;
 
   // the center module (module_id == 0) has always been (and will always be?)
   //  centered with respect to the layer position
@@ -225,12 +225,12 @@ void EcalGeometry::buildModuleMap() {
   // positive x-axis and then counter-clockwise until 6.
   for (unsigned id = 1; id < 7; id++) {
     // flat-side-up
-    double x = (2. * moduler_ + gap_) * sin((id - 1) * (C_PI / 3.));
-    double y = (2. * moduler_ + gap_) * cos((id - 1) * (C_PI / 3.));
+    double x = (2. * moduler_ + gap_) * sin((id - 1) * (c_pi / 3.));
+    double y = (2. * moduler_ + gap_) * cos((id - 1) * (c_pi / 3.));
     if (cornersSideUp_) {
       // re-calculating to make sure centers match GDML
-      x = (2. * moduler_ + gap_) * cos((id - 1) * (C_PI / 3.));
-      y = -(2. * moduler_ + gap_) * sin((id - 1) * (C_PI / 3.));
+      x = (2. * moduler_ + gap_) * cos((id - 1) * (c_pi / 3.));
+      y = -(2. * moduler_ + gap_) * sin((id - 1) * (c_pi / 3.));
     }
     module_pos_xy_[id] = std::pair<double, double>(x, y);
     ldmx_log(trace) << "    Module " << id << " is centered at (x,y) = " << "("
@@ -258,57 +258,57 @@ void EcalGeometry::buildCellMap() {
    *  \__/
    *
    */
-  TH2Poly gridMap;
+  TH2Poly grid_map;
 
   // make hexagonal grid [boundary is rectangle] larger than the module
-  double gridMinP = 0., gridMinQ = 0.;  // start at the origin
-  int numPCells = 0, numQCells = 0;
+  double grid_min_p = 0., grid_min_q = 0.;  // start at the origin
+  int num_p_cells = 0, num_q_cells = 0;
 
   // first x-cell is only a half
-  gridMinP -= cellr_;
-  numPCells++;
-  while (gridMinP > -1 * moduleR_) {
-    gridMinP -= 2 * cellr_;  // decrement x by cell center-to-flat diameter
-    numPCells++;
+  grid_min_p -= cellr_;
+  num_p_cells++;
+  while (grid_min_p > -1 * moduleR_) {
+    grid_min_p -= 2 * cellr_;  // decrement x by cell center-to-flat diameter
+    num_p_cells++;
   }
-  while (gridMinQ > -1 * moduler_) {
+  while (grid_min_q > -1 * moduler_) {
     // decrement y by cell center-to-corner radius
     //  alternate between a full corner-to-corner diameter
     //  and a side of a cell (center-to-corner radius)
-    if (numQCells % 2 == 0)
-      gridMinQ -= 1 * cellR_;
+    if (num_q_cells % 2 == 0)
+      grid_min_q -= 1 * cellR_;
     else
-      gridMinQ -= 2 * cellR_;
-    numQCells++;
+      grid_min_q -= 2 * cellR_;
+    num_q_cells++;
   }
   // only counted one half of the cells
-  numPCells *= 2;
-  numQCells *= 2;
+  num_p_cells *= 2;
+  num_q_cells *= 2;
 
-  gridMap.Honeycomb(gridMinP, gridMinQ, cellR_, numPCells, numQCells);
+  grid_map.Honeycomb(grid_min_p, grid_min_q, cellR_, num_p_cells, num_q_cells);
 
   ldmx_log(trace) << std::setprecision(2)
                   << "Building buildCellMap with cell rmin: " << cellr_
                   << " cell rmax: " << cellR_ << " (gridMinP,gridMinQ) = ("
-                  << gridMinP << "," << gridMinQ << ")"
-                  << " (numPCells,numQCells) = (" << numPCells << ","
-                  << numQCells << ")";
+                  << grid_min_p << "," << grid_min_q << ")"
+                  << " (numPCells,numQCells) = (" << num_p_cells << ","
+                  << num_q_cells << ")";
 
   // copy cells lying within module boundaries to a module grid
-  TListIter next(gridMap.GetBins());  // a TH2Poly is a TList of TH2PolyBin
-  TH2PolyBin* polyBin = 0;
+  TListIter next(grid_map.GetBins());  // a TH2Poly is a TList of TH2PolyBin
+  TH2PolyBin* poly_bin = 0;
   TGraph* poly = 0;  // a polygon returned by TH2Poly is a TGraph
   // cells_in_module_ IDs go from 0 to N-1, not equal to original grid cell ID
   int cell_id = 0;
-  while ((polyBin = (TH2PolyBin*)next())) {
+  while ((poly_bin = (TH2PolyBin*)next())) {
     // these bins are coming from the honeycomb
     //  grid so we assume that they are regular
     //  hexagons i.e. has 6 vertices
-    poly = (TGraph*)polyBin->GetPolygon();
+    poly = (TGraph*)poly_bin->GetPolygon();
 
     // decide whether to copy polygon to new map.
     // use all vertices in case of cut-off edge polygons.
-    int numVerticesInside = 0;
+    int num_vertices_inside = 0;
     double vertex_p[6], vertex_q[6];  // vertices of the cell
     bool isinside[6];                 // which vertices are inside
     ldmx_log(trace) << "    Cell vertices";
@@ -318,15 +318,15 @@ void EcalGeometry::buildCellMap() {
       ldmx_log(trace) << "      vtx p,q " << vertex_p[i] << " " << vertex_q[i];
 
       isinside[i] = isInside(vertex_p[i] / moduleR_, vertex_q[i] / moduleR_);
-      if (isinside[i]) numVerticesInside++;
+      if (isinside[i]) num_vertices_inside++;
     }
 
-    if (numVerticesInside > 1) {
+    if (num_vertices_inside > 1) {
       // Include this cell if more than one of its vertices is inside the module
       // hexagon
       double actual_p[8], actual_q[8];
       int num_vertices{0};
-      if (numVerticesInside < 6) {
+      if (num_vertices_inside < 6) {
         // This cell is stradling the edge of the module
         // and is NOT cleanly cut by module edge
 
@@ -434,10 +434,10 @@ void EcalGeometry::buildCellMap() {
       /**
        * TODO is this needed?
        */
-      double p = (polyBin->GetXMax() + polyBin->GetXMin()) / 2.;
-      double q = (polyBin->GetYMax() + polyBin->GetYMin()) / 2.;
+      double p = (poly_bin->GetXMax() + poly_bin->GetXMin()) / 2.;
+      double q = (poly_bin->GetYMax() + poly_bin->GetYMin()) / 2.;
 
-      ldmx_log(trace) << "    Copying poly with ID " << polyBin->GetBinNumber()
+      ldmx_log(trace) << "    Copying poly with ID " << poly_bin->GetBinNumber()
                       << " and (p,q) (" << std::setprecision(2) << p << "," << q
                       << ")";
       // save cell location as center of ENTIRE hexagon
@@ -523,9 +523,9 @@ void EcalGeometry::buildNeighborMaps() {
 
 double EcalGeometry::distanceToEdge(EcalID id) const {
   // https://math.stackexchange.com/questions/1210572/find-the-distance-to-the-edge-of-a-hexagon
-  std::pair<double, double> cellLocation = cell_pos_in_module_.at(id.cell());
-  double x = fabs(cellLocation.first);  // bring to first quadrant
-  double y = fabs(cellLocation.second);
+  std::pair<double, double> cell_location = cell_pos_in_module_.at(id.cell());
+  double x = fabs(cell_location.first);  // bring to first quadrant
+  double y = fabs(cell_location.second);
   double r = sqrt(x * x + y * y);
   double theta = (r > 1E-3) ? fabs(std::atan(y / x)) : 0;
   if (x < moduleR_ / 2.)
@@ -546,11 +546,11 @@ bool EcalGeometry::isInside(double normX, double normY) const {
     ldmx_log(trace) << "They are outside quadrant.";
     return false;
   }
-  double dotProd = (xvec * (normX - xref) + yvec * (normY - yref));
+  double dot_prod = (xvec * (normX - xref) + yvec * (normY - yref));
   ldmx_log(trace) << std::fixed << std::setprecision(2)
                   << "They are inside quadrant. Dot product (>0 is inside): "
-                  << dotProd;
-  return (dotProd > 0.);
+                  << dot_prod;
+  return (dot_prod > 0.);
 }
 
 }  // namespace ldmx

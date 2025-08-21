@@ -42,37 +42,37 @@ G4bool ScoringPlaneSD::ProcessHits(G4Step* step, G4TouchableHistory* history) {
   hit.setEdep(edep);
 
   // Set the start position.
-  G4StepPoint* prePoint = step->GetPreStepPoint();
+  G4StepPoint* pre_point = step->GetPreStepPoint();
 
   // Set the end position.
-  G4StepPoint* postPoint = step->GetPostStepPoint();
+  G4StepPoint* post_point = step->GetPostStepPoint();
 
-  G4ThreeVector start = prePoint->GetPosition();
-  G4ThreeVector end = postPoint->GetPosition();
+  G4ThreeVector start = pre_point->GetPosition();
+  G4ThreeVector end = post_point->GetPosition();
 
   // Set the mid position.
   G4ThreeVector mid = 0.5 * (start + end);
   hit.setPosition(mid.x(), mid.y(), mid.z());
 
   // Compute path length.
-  G4double pathLength =
+  G4double path_length =
       sqrt(pow(start.x() - end.x(), 2) + pow(start.y() - end.y(), 2) +
            pow(start.z() - end.z(), 2));
-  hit.setPathLength(pathLength);
+  hit.setPathLength(path_length);
 
   // Set the global time.
   hit.setTime(step->GetTrack()->GetGlobalTime());
 
   // Set the momentum
-  G4ThreeVector p = postPoint->GetMomentum();
+  G4ThreeVector p = post_point->GetMomentum();
   hit.setMomentum(p.x(), p.y(), p.z());
-  hit.setEnergy(postPoint->GetTotalEnergy());
+  hit.setEnergy(post_point->GetTotalEnergy());
 
   /*
    * Set the 32-bit ID on the hit.
    */
-  int cpNumber = prePoint->GetTouchableHandle()->GetCopyNumber();
-  ldmx::SimSpecialID id = ldmx::SimSpecialID::ScoringPlaneID(cpNumber);
+  int cp_number = pre_point->GetTouchableHandle()->GetCopyNumber();
+  ldmx::SimSpecialID id = ldmx::SimSpecialID::ScoringPlaneID(cp_number);
   hit.setID(id.raw());
 
   return true;

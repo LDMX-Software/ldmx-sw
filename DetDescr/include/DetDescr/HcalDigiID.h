@@ -30,11 +30,11 @@ class HcalDigiID : public HcalAbstractID {
    * Create from raw number
    */
   HcalDigiID(RawValue rawid) : HcalAbstractID(rawid) {
-    if (!null() && bar_type() != Digi) {
+    if (!null() && barType() != Digi) {
       EXCEPTION_RAISE(
           "DetectorIDMismatch",
           "Attempted to create HcalDigiID from mismatched Hcal bar_type " +
-              std::to_string(bar_type()));
+              std::to_string(barType()));
     }
   }
 
@@ -42,11 +42,11 @@ class HcalDigiID : public HcalAbstractID {
    * Create from a DetectorID, but check
    */
   HcalDigiID(const DetectorID id) : HcalAbstractID(id) {
-    if (!null() && bar_type() != Digi) {
+    if (!null() && barType() != Digi) {
       EXCEPTION_RAISE(
           "DetectorIDMismatch",
           "Attempted to create HcalDigiID from mismatched Hcal bar_type " +
-              std::to_string(bar_type()));
+              std::to_string(barType()));
     }
   }
 

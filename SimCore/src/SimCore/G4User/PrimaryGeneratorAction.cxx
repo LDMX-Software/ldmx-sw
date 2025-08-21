@@ -30,12 +30,12 @@ PrimaryGeneratorAction::PrimaryGeneratorAction(
     const framework::config::Parameters& parameters)
     : G4VUserPrimaryGeneratorAction() {
   // Check whether a beamspot should be used or not.
-  auto beamSpot{parameters.get<std::vector<double> >("beamSpotSmear", {})};
-  if (!beamSpot.empty()) {
-    useBeamspot_ = true;
-    beamspotXSize_ = beamSpot[0];
-    beamspotYSize_ = beamSpot[1];
-    beamspotZSize_ = beamSpot[2];
+  auto beam_spot{parameters.get<std::vector<double> >("beamSpotSmear", {})};
+  if (!beam_spot.empty()) {
+    use_beamspot_ = true;
+    beamspotXSize_ = beam_spot[0];
+    beamspotYSize_ = beam_spot[1];
+    beamspotZSize_ = beam_spot[2];
   }
 
   time_shift_primaries_ = parameters.get<bool>("time_shift_primaries");
@@ -81,11 +81,11 @@ void PrimaryGeneratorAction::GeneratePrimaries(G4Event* event) {
   });
 
   // smear all primary vertices (if activated)
-  int nPV = event->GetNumberOfPrimaryVertex();
-  if (nPV > 0) {
+  int n_pv = event->GetNumberOfPrimaryVertex();
+  if (n_pv > 0) {
     // loop over all vertices generated
-    for (int iPV = 0; iPV < nPV; ++iPV) {
-      G4PrimaryVertex* primary_vertex = event->GetPrimaryVertex(iPV);
+    for (int i_pv = 0; i_pv < n_pv; ++i_pv) {
+      G4PrimaryVertex* primary_vertex = event->GetPrimaryVertex(i_pv);
 
       if (not primary_vertex) {
         EXCEPTION_RAISE(
@@ -114,8 +114,8 @@ void PrimaryGeneratorAction::GeneratePrimaries(G4Event* event) {
           primary->SetUserInformation(primary_info);
         }  // check if primaryinfo is defined
 
-        int hepStatus = primary_info->getHepEvtStatus();
-        if (hepStatus <= 0) {
+        int hep_status = primary_info->getHepEvtStatus();
+        if (hep_status <= 0) {
           // undefined hepStatus ==> set to 1
           primary_info->setHepEvtStatus(1);
         }  // check if hepStatus defined

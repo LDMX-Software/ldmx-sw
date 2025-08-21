@@ -246,7 +246,7 @@ class EcalGeometry : public framework::ConditionsObject {
    * @return list of EcalID that are the inputs nearest neighbors
    */
   std::vector<EcalID> getNN(EcalID id) const {
-    auto list = NNMap_.at(EcalID(0, id.module(), id.cell()));
+    auto list = nn_map_.at(EcalID(0, id.module(), id.cell()));
     for (auto& flat : list)
       flat = EcalID(id.layer(), flat.module(), flat.cell());
     return list;
@@ -273,7 +273,7 @@ class EcalGeometry : public framework::ConditionsObject {
    * @return list of EcalID that are the inputs next-to-nearest neighbors
    */
   std::vector<EcalID> getNNN(EcalID id) const {
-    auto list = NNNMap_.at(EcalID(0, id.module(), id.cell()));
+    auto list = nnn_map_.at(EcalID(0, id.module(), id.cell()));
     for (auto& flat : list)
       flat = EcalID(id.layer(), flat.module(), flat.cell());
     return list;
@@ -306,7 +306,7 @@ class EcalGeometry : public framework::ConditionsObject {
    *
    * @return module max radius [mm]
    */
-  double getModuleMaxR() const { return moduleR_; }
+  double getModuleMaxR() const { return module_r_; }
 
   /**
    * Get the center-to-flat radius of the cell hexagons
@@ -320,7 +320,7 @@ class EcalGeometry : public framework::ConditionsObject {
    *
    * @return cell max radius [mm]
    */
-  double getCellMaxR() const { return cellR_; }
+  double getCellMaxR() const { return cell_r_; }
 
   /**
    * Get a reference to the TH2Poly used for Cell IDs.
@@ -463,7 +463,7 @@ class EcalGeometry : public framework::ConditionsObject {
    * return true if distance to edge is less than max cell radius
    */
   bool isEdgeCell(EcalID cellModuleID) const {
-    return (distanceToEdge(cellModuleID) < cellR_);
+    return (distanceToEdge(cellModuleID) < cell_r_);
   }
 
   /**
@@ -494,17 +494,17 @@ class EcalGeometry : public framework::ConditionsObject {
   double moduler_{0};
 
   /// Center-to-Corner Radius of cell hexagon [mm]
-  double cellR_{0};
+  double cell_r_{0};
 
   /// Center-to-Corner Radius of module hexagon [mm]
-  double moduleR_{0};
+  double module_r_{0};
 
   /**
    * indicator of geometry orientation
    * if true, flower shape's corners side (ie: side with two modules) is at the
    * top
    */
-  bool cornersSideUp_;
+  bool corners_side_up_;
 
   /**
    * shift of layers in the x-direction [mm]
@@ -554,13 +554,13 @@ class EcalGeometry : public framework::ConditionsObject {
    * Could be fractional depending on how many fractions of a radii are spanning
    * between the center of the top/bottom cell row and the edge of the module
    */
-  double nCellRHeight_{0};
+  double n_cell_r_height_{0};
 
   /// Front of ECal relative to world geometry [mm]
-  double ecalFrontZ_{0};
+  double ecal_front_z_{0};
 
   /// The layer Z postions are with respect to the front of the ECal [mm]
-  std::vector<double> layerZPositions_;
+  std::vector<double> layer_z_positions_;
 
  private:
   /**
@@ -612,14 +612,14 @@ class EcalGeometry : public framework::ConditionsObject {
    *
    * The EcalID's in this map all have layer ID set to zero.
    */
-  std::map<EcalID, std::vector<EcalID>> NNMap_;
+  std::map<EcalID, std::vector<EcalID>> nn_map_;
 
   /**
    * Map of cell ID to neighbors of neighbor cells
    *
    * The EcalID's in this map all have layer ID set to zero.
    */
-  std::map<EcalID, std::vector<EcalID>> NNNMap_;
+  std::map<EcalID, std::vector<EcalID>> nnn_map_;
 
   /**
    * Honeycomb Binning from ROOT

@@ -25,15 +25,15 @@ int main(int argc, char** argv) {
   // Parse command line options
   bool verbose = false;
   std::string file;
-  for (int iArg = 1; iArg < argc; iArg++) {
-    if (strcmp(argv[iArg], "--help") == 0 or strcmp(argv[iArg], "-h") == 0) {
+  for (int i_arg = 1; i_arg < argc; i_arg++) {
+    if (strcmp(argv[i_arg], "--help") == 0 or strcmp(argv[i_arg], "-h") == 0) {
       printHelp();
       return 0;
-    } else if (strcmp(argv[iArg], "--verbose") == 0 or
-               strcmp(argv[iArg], "-v") == 0) {
+    } else if (strcmp(argv[i_arg], "--verbose") == 0 or
+               strcmp(argv[i_arg], "-v") == 0) {
       verbose = true;
     } else if (file.empty()) {
-      file = argv[iArg];
+      file = argv[i_arg];
     } else {
       printHelp();
       return 1;
@@ -45,8 +45,8 @@ int main(int argc, char** argv) {
               << std::endl;
   }
 
-  int* dummyArgC;
-  char** dummyArgV;
+  int* dummy_arg_c;
+  char** dummy_arg_v;
   TRint* app = new TRint("app", dummyArgC, dummyArgV, 0, 0, true);
   app->SetPrompt("");  // no root[#] at beginning of each line
 

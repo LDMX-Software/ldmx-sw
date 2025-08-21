@@ -127,7 +127,7 @@ struct ap_int_base : public _AP_ROOT_TYPE<_AP_W, _AP_S> {
    */
   typedef typename retval<AP_MAX((_AP_W + 7) / 8, 8), _AP_S>::Type RetType;
 
-  static const int width = _AP_W;
+  static const int WIDTH = _AP_W;
 
   template <int _AP_W2, bool _AP_S2>
   struct RType {
@@ -228,13 +228,13 @@ struct ap_int_base : public _AP_ROOT_TYPE<_AP_W, _AP_S> {
 
   /// ctor from float.
   INLINE ap_int_base(float op) {
-    const int BITS = FLOAT_MAN + FLOAT_EXP + 1;
-    ap_int_base<BITS, false> reg;
+    const int bits = FLOAT_MAN + FLOAT_EXP + 1;
+    ap_int_base<bits, false> reg;
     reg.V = floatToRawBits(op);
-    bool is_neg = _AP_ROOT_op_get_bit(reg.V, BITS - 1);
+    bool is_neg = _AP_ROOT_op_get_bit(reg.V, bits - 1);
 
     ap_int_base<FLOAT_EXP + 1, true> exp = 0;
-    exp.V = _AP_ROOT_op_get_range(reg.V, FLOAT_MAN, BITS - 2);
+    exp.V = _AP_ROOT_op_get_range(reg.V, FLOAT_MAN, bits - 2);
     exp = exp - FLOAT_BIAS;
 
     ap_int_base<FLOAT_MAN + 2, true> man;
@@ -276,13 +276,13 @@ struct ap_int_base : public _AP_ROOT_TYPE<_AP_W, _AP_S> {
 
   /// ctor from double.
   INLINE ap_int_base(double op) {
-    const int BITS = DOUBLE_MAN + DOUBLE_EXP + 1;
-    ap_int_base<BITS, false> reg;
+    const int bits = DOUBLE_MAN + DOUBLE_EXP + 1;
+    ap_int_base<bits, false> reg;
     reg.V = doubleToRawBits(op);
-    bool is_neg = _AP_ROOT_op_get_bit(reg.V, BITS - 1);
+    bool is_neg = _AP_ROOT_op_get_bit(reg.V, bits - 1);
 
     ap_int_base<DOUBLE_EXP + 1, true> exp = 0;
-    exp.V = _AP_ROOT_op_get_range(reg.V, DOUBLE_MAN, BITS - 2);
+    exp.V = _AP_ROOT_op_get_range(reg.V, DOUBLE_MAN, bits - 2);
     exp = exp - DOUBLE_BIAS;
 
     ap_int_base<DOUBLE_MAN + 2, true> man;
@@ -515,20 +515,20 @@ struct ap_int_base : public _AP_ROOT_TYPE<_AP_W, _AP_S> {
   /* Explicit conversions to C types.
    * ----------------------------------------------------------------
    */
-  INLINE bool to_bool() const { return (bool)(Base::V); }
-  INLINE char to_char() const { return (char)(Base::V); }
-  INLINE signed char to_schar() const { return (signed char)(Base::V); }
-  INLINE unsigned char to_uchar() const { return (unsigned char)(Base::V); }
-  INLINE short to_short() const { return (short)(Base::V); }
-  INLINE unsigned short to_ushort() const { return (unsigned short)(Base::V); }
-  INLINE int to_int() const { return (int)(Base::V); }
-  INLINE unsigned to_uint() const { return (unsigned)(Base::V); }
-  INLINE long to_long() const { return (long)(Base::V); }
-  INLINE unsigned long to_ulong() const { return (unsigned long)(Base::V); }
-  INLINE ap_slong to_int64() const { return (ap_slong)(Base::V); }
-  INLINE ap_ulong to_uint64() const { return (ap_ulong)(Base::V); }
-  INLINE float to_float() const { return (float)(Base::V); }
-  INLINE double to_double() const { return (double)(Base::V); }
+  INLINE bool toBool() const { return (bool)(Base::V); }
+  INLINE char toChar() const { return (char)(Base::V); }
+  INLINE signed char toSchar() const { return (signed char)(Base::V); }
+  INLINE unsigned char toUchar() const { return (unsigned char)(Base::V); }
+  INLINE short toShort() const { return (short)(Base::V); }
+  INLINE unsigned short toUshort() const { return (unsigned short)(Base::V); }
+  INLINE int toInt() const { return (int)(Base::V); }
+  INLINE unsigned toUint() const { return (unsigned)(Base::V); }
+  INLINE long toLong() const { return (long)(Base::V); }
+  INLINE unsigned long toUlong() const { return (unsigned long)(Base::V); }
+  INLINE ap_slong toInt64() const { return (ap_slong)(Base::V); }
+  INLINE ap_ulong toUint64() const { return (ap_ulong)(Base::V); }
+  INLINE float toFloat() const { return (float)(Base::V); }
+  INLINE double toDouble() const { return (double)(Base::V); }
 
   // TODO decide if user-defined conversion should be provided.
 #if 0
@@ -558,7 +558,7 @@ struct ap_int_base : public _AP_ROOT_TYPE<_AP_W, _AP_S> {
   INLINE bool iszero() const { return Base::V == 0; }
 
   /*Return true if the value of ap_int_base instance is zero*/
-  INLINE bool is_zero() const { return Base::V == 0; }
+  INLINE bool isZero() const { return Base::V == 0; }
 
   /* x < 0 */
   INLINE bool sign() const {
@@ -642,17 +642,17 @@ struct ap_int_base : public _AP_ROOT_TYPE<_AP_W, _AP_S> {
   }
 
   // Set the ith bit into v
-  INLINE void set_bit(int i, bool v) {
+  INLINE void setBit(int i, bool v) {
     Base::V = _AP_ROOT_op_set_bit(Base::V, i, v);
   }
 
   // Get the value of ith bit
-  INLINE bool get_bit(int i) const {
+  INLINE bool getBit(int i) const {
     return (bool)_AP_ROOT_op_get_bit(Base::V, i);
   }
 
   // complements every bit
-  INLINE void b_not() { Base::V = ~Base::V; }
+  INLINE void bNot() { Base::V = ~Base::V; }
 
 #define OP_ASSIGN_AP(Sym)                                                    \
   template <int _AP_W2, bool _AP_S2>                                         \
@@ -744,9 +744,9 @@ struct ap_int_base : public _AP_ROOT_TYPE<_AP_W, _AP_S> {
   template <int _AP_W2>
   INLINE typename RType<_AP_W, _AP_S>::arg1 operator<<(
       const ap_int_base<_AP_W2, true>& op2) const {
-    bool isNeg = _AP_ROOT_op_get_bit(op2.V, _AP_W2 - 1);
+    bool is_neg = _AP_ROOT_op_get_bit(op2.V, _AP_W2 - 1);
     ap_int_base<_AP_W2, false> sh = op2;
-    if (isNeg) {
+    if (is_neg) {
       sh = -op2;
       return operator>>(sh);
     } else
@@ -764,9 +764,9 @@ struct ap_int_base : public _AP_ROOT_TYPE<_AP_W, _AP_S> {
   template <int _AP_W2>
   INLINE typename RType<_AP_W, _AP_S>::arg1 operator>>(
       const ap_int_base<_AP_W2, true>& op2) const {
-    bool isNeg = _AP_ROOT_op_get_bit(op2.V, _AP_W2 - 1);
+    bool is_neg = _AP_ROOT_op_get_bit(op2.V, _AP_W2 - 1);
     ap_int_base<_AP_W2, false> sh = op2;
-    if (isNeg) {
+    if (is_neg) {
       sh = -op2;
       return operator<<(sh);
     }
@@ -799,9 +799,9 @@ struct ap_int_base : public _AP_ROOT_TYPE<_AP_W, _AP_S> {
    */
   template <int _AP_W2>
   INLINE ap_int_base& operator<<=(const ap_int_base<_AP_W2, true>& op2) {
-    bool isNeg = _AP_ROOT_op_get_bit(op2.V, _AP_W2 - 1);
+    bool is_neg = _AP_ROOT_op_get_bit(op2.V, _AP_W2 - 1);
     ap_int_base<_AP_W2, false> sh = op2;
-    if (isNeg) {
+    if (is_neg) {
       sh = -op2;
       return operator>>=(sh);
     } else
@@ -816,9 +816,9 @@ struct ap_int_base : public _AP_ROOT_TYPE<_AP_W, _AP_S> {
 
   template <int _AP_W2>
   INLINE ap_int_base& operator>>=(const ap_int_base<_AP_W2, true>& op2) {
-    bool isNeg = _AP_ROOT_op_get_bit(op2.V, _AP_W2 - 1);
+    bool is_neg = _AP_ROOT_op_get_bit(op2.V, _AP_W2 - 1);
     ap_int_base<_AP_W2, false> sh = op2;
-    if (isNeg) {
+    if (is_neg) {
       sh = -op2;
       return operator<<=(sh);
     }
@@ -891,18 +891,18 @@ struct ap_int_base : public _AP_ROOT_TYPE<_AP_W, _AP_S> {
   INLINE ap_range_ref<_AP_W, _AP_S> range(
       const ap_int_base<_AP_W2, _AP_S2>& HiIdx,
       const ap_int_base<_AP_W3, _AP_S3>& LoIdx) {
-    int Hi = HiIdx.to_int();
-    int Lo = LoIdx.to_int();
-    return this->range(Hi, Lo);
+    int hi = HiIdx.to_int();
+    int lo = LoIdx.to_int();
+    return this->range(hi, lo);
   }
 
   template <int _AP_W2, bool _AP_S2, int _AP_W3, bool _AP_S3>
   INLINE ap_range_ref<_AP_W, _AP_S> range(
       const ap_int_base<_AP_W2, _AP_S2>& HiIdx,
       const ap_int_base<_AP_W3, _AP_S3>& LoIdx) const {
-    int Hi = HiIdx.to_int();
-    int Lo = LoIdx.to_int();
-    return this->range(Hi, Lo);
+    int hi = HiIdx.to_int();
+    int lo = LoIdx.to_int();
+    return this->range(hi, lo);
   }
 
   INLINE ap_range_ref<_AP_W, _AP_S> range() {
@@ -925,18 +925,18 @@ struct ap_int_base : public _AP_ROOT_TYPE<_AP_W, _AP_S> {
   INLINE ap_range_ref<_AP_W, _AP_S> operator()(
       const ap_int_base<_AP_W2, _AP_S2>& HiIdx,
       const ap_int_base<_AP_W3, _AP_S3>& LoIdx) {
-    int Hi = HiIdx.to_int();
-    int Lo = LoIdx.to_int();
-    return this->range(Hi, Lo);
+    int hi = HiIdx.to_int();
+    int lo = LoIdx.to_int();
+    return this->range(hi, lo);
   }
 
   template <int _AP_W2, bool _AP_S2, int _AP_W3, bool _AP_S3>
   INLINE ap_range_ref<_AP_W, _AP_S> operator()(
       const ap_int_base<_AP_W2, _AP_S2>& HiIdx,
       const ap_int_base<_AP_W3, _AP_S3>& LoIdx) const {
-    int Hi = HiIdx.to_int();
-    int Lo = LoIdx.to_int();
-    return this->range(Hi, Lo);
+    int hi = HiIdx.to_int();
+    int lo = LoIdx.to_int();
+    return this->range(hi, lo);
   }
 
 #if 0
@@ -1244,12 +1244,12 @@ struct ap_int_base : public _AP_ROOT_TYPE<_AP_W, _AP_S> {
    * ----------------------------------------------------------------
    */
   // XXX non-const version deleted.
-  INLINE bool and_reduce() const { return _AP_ROOT_op_reduce(and, Base::V); }
-  INLINE bool nand_reduce() const { return _AP_ROOT_op_reduce(nand, Base::V); }
-  INLINE bool or_reduce() const { return _AP_ROOT_op_reduce(or, Base::V); }
-  INLINE bool nor_reduce() const { return !(_AP_ROOT_op_reduce(or, Base::V)); }
-  INLINE bool xor_reduce() const { return _AP_ROOT_op_reduce(xor, Base::V); }
-  INLINE bool xnor_reduce() const {
+  INLINE bool andReduce() const { return _AP_ROOT_op_reduce(and, Base::V); }
+  INLINE bool nandReduce() const { return _AP_ROOT_op_reduce(nand, Base::V); }
+  INLINE bool orReduce() const { return _AP_ROOT_op_reduce(or, Base::V); }
+  INLINE bool norReduce() const { return !(_AP_ROOT_op_reduce(or, Base::V)); }
+  INLINE bool xorReduce() const { return _AP_ROOT_op_reduce(xor, Base::V); }
+  INLINE bool xnorReduce() const {
     return !(_AP_ROOT_op_reduce(xor, Base::V));
   }
 
@@ -1257,7 +1257,7 @@ struct ap_int_base : public _AP_ROOT_TYPE<_AP_W, _AP_S> {
    * ----------------------------------------------------------------
    */
 #ifndef __SYNTHESIS__
-  std::string to_string(signed char rd = 2, bool sign = _AP_S) const {
+  std::string toString(signed char rd = 2, bool sign = _AP_S) const {
     // XXX in autosim/autowrap.tcl "(${name}).to_string(2).c_str()" is used to
     // initialize sc_lv, which seems incapable of handling format "-0b".
     if (rd == 2) sign = false;

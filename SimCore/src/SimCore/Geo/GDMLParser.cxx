@@ -13,7 +13,7 @@ GDMLParser::GDMLParser(framework::config::Parameters &parameters,
       std::make_unique<simcore::geo::AuxInfoReader>(parser_.get(), parameters);
 }
 
-G4VPhysicalVolume *GDMLParser::GetWorldVolume() {
+G4VPhysicalVolume *GDMLParser::getWorldVolume() {
   return parser_->GetWorldVolume();
 }
 

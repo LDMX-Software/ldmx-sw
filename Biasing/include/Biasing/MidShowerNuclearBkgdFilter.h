@@ -56,7 +56,7 @@ class MidShowerNuclearBkgdFilter : public simcore::UserAction {
    *
    * @param[in] event not used
    */
-  void BeginOfEventAction(const G4Event* event) override;
+  void beginOfEventAction(const G4Event* event) ;
 
   /**
    * We follow the simulation along each step and check
@@ -88,7 +88,7 @@ class MidShowerNuclearBkgdFilter : public simcore::UserAction {
    * @see PartialEnergySort::NewStage
    * @see AbortEvent
    */
-  void NewStage() override;
+  void newStage() ;
 
  private:
   /**
@@ -127,7 +127,7 @@ class MidShowerNuclearBkgdFilter : public simcore::UserAction {
    *
    * @param[in] reason reason for aborting the event
    */
-  void AbortEvent(const std::string& reason) const;
+  void abortEvent(const std::string& reason) const;
 
  private:
   /**

@@ -39,27 +39,27 @@ RunManager::RunManager(framework::config::Parameters& parameters,
   parameters_ = parameters;
 
   // Set whether the ROOT primary generator should use the persisted seed.
-  auto rootPrimaryGenUseSeed{parameters.get<bool>("rootPrimaryGenUseSeed")};
+  auto root_primary_gen_use_seed{parameters.get<bool>("rootPrimaryGenUseSeed")};
 
   // Validate the geometry if specified.
-  setUseRootSeed(rootPrimaryGenUseSeed);
+  setUseRootSeed(root_primary_gen_use_seed);
 }
 
 void RunManager::setupPhysics() {
-  auto pList{physicsListFactory_.GetReferencePhysList("FTFP_BERT")};
-  pList->SetVerboseLevel(0);
+  auto p_list{physics_list_factory_.GetReferencePhysList("FTFP_BERT")};
+  p_list->SetVerboseLevel(0);
 
-  parallelWorldPath_ = parameters_.get<std::string>("scoringPlanes");
-  isPWEnabled_ = !parallelWorldPath_.empty();
+  parallel_world_path_ = parameters_.get<std::string>("scoringPlanes");
+  isPWEnabled_ = !parallel_world_path_.empty();
   if (isPWEnabled_) {
     ldmx_log(debug) << "Parallel worlds physics list has been registered";
-    pList->RegisterPhysics(new G4ParallelWorldPhysics("ldmxParallelWorld"));
+    p_list->RegisterPhysics(new G4ParallelWorldPhysics("ldmxParallelWorld"));
   }
 
-  pList->RegisterPhysics(new GammaPhysics{"GammaPhysics", parameters_});
-  pList->RegisterPhysics(new APrimePhysics(
+  p_list->RegisterPhysics(new GammaPhysics{"GammaPhysics", parameters_});
+  p_list->RegisterPhysics(new APrimePhysics(
       parameters_.get<framework::config::Parameters>("dark_brem")));
-  pList->RegisterPhysics(new KaonPhysics(
+  p_list->RegisterPhysics(new KaonPhysics(
       "KaonPhysics",
       parameters_.get<framework::config::Parameters>("kaon_parameters")));
 
@@ -82,23 +82,23 @@ void RunManager::setupPhysics() {
     }
 
     // Instantiate the constructor used when biasing
-    G4GenericBiasingPhysics* biasingPhysics = new G4GenericBiasingPhysics();
+    G4GenericBiasingPhysics* biasing_physics = new G4GenericBiasingPhysics();
 
     // specify which particles are going to be biased
     //  this will put a biasing interface wrapper around *all* processes
     //  associated with these particles
     simcore::XsecBiasingOperator::Factory::get().apply(
-        [this, biasingPhysics](auto bop) {
+        [this, biasing_physics](auto bop) {
           ldmx_log(info) << "Biasing operator '" << bop->GetName()
                          << "' set to bias " << bop->getParticleToBias();
-          biasingPhysics->Bias(bop->getParticleToBias());
+          biasing_physics->Bias(bop->getParticleToBias());
         });
 
     // Register the physics constructor to the physics list:
-    pList->RegisterPhysics(biasingPhysics);
+    p_list->RegisterPhysics(biasing_physics);
   }
 
-  this->SetUserInitialization(pList);
+  this->SetUserInitialization(p_list);
 }
 
 void RunManager::Initialize() {
@@ -109,11 +109,11 @@ void RunManager::Initialize() {
   if (isPWEnabled_) {
     ldmx_log(debug) << "Parallel worlds have been enabled";
 
-    auto validateGeometry_{parameters_.get<bool>("validate_detector")};
-    G4GDMLParser* pwParser = new G4GDMLParser();
-    pwParser->Read(parallelWorldPath_, validateGeometry_);
+    auto validate_geometry{parameters_.get<bool>("validate_detector")};
+    G4GDMLParser* pw_parser = new G4GDMLParser();
+    pw_parser->Read(parallel_world_path_, validate_geometry);
     this->getDetectorConstruction()->RegisterParallelWorld(
-        new ParallelWorld(pwParser, "ldmxParallelWorld"));
+        new ParallelWorld(pw_parser, "ldmxParallelWorld"));
   }
 
   // This is where the physics lists are told to construct their particles and

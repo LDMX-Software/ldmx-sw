@@ -79,12 +79,12 @@ class RunManager : public G4RunManager {
   /**
    * Tell RunManager to use the seed from the root file.
    */
-  void setUseRootSeed(bool useIt = true) { useRootSeed_ = useIt; }
+  void setUseRootSeed(bool useIt = true) { use_root_seed_ = useIt; }
 
   /**
    * Should we use the seed from the root file?
    */
-  bool useRootSeed() { return useRootSeed_; }
+  bool useRootSeed() { return use_root_seed_; }
 
  private:
   /// The set of parameters used to configure the RunManager
@@ -93,21 +93,21 @@ class RunManager : public G4RunManager {
   /**
    * Factory class for instantiating the physics list.
    */
-  G4PhysListFactory physicsListFactory_;
+  G4PhysListFactory physics_list_factory_;
 
   /**
    * Flag indicating whether a parallel world should be
    * registered
    */
-  bool isPWEnabled_{false};
+  bool is_pw_enabled_{false};
 
   /** Path to GDML description of parallel world. */
-  std::string parallelWorldPath_{""};
+  std::string parallel_world_path_{""};
 
   /**
    * Should we use random seed from root file?
    */
-  bool useRootSeed_{false};
+  bool use_root_seed_{false};
 
   /// Enable logging
   enableLogging("RunManager")

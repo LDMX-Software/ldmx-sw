@@ -52,7 +52,7 @@ class Objects {
   /**
    * Defines new Eve Element Lists for the event objects.
    */
-  void Initialize();
+  void initialize();
 
   /**
    * Not implemented
@@ -98,12 +98,12 @@ class Objects {
    *
    * @param simThresh minimum energy to be included
    */
-  void SetSimThresh(double simThresh);
+  void setSimThresh(double simThresh);
 
   /**
    * Colors ecal clusters according to colors_
    */
-  void ColorClusters();
+  void colorClusters();
 
   /**
    * Get the objects from the sim level Eve Element
@@ -124,7 +124,7 @@ class Objects {
   TEveElement* rec_objects_;
 
   /// threshold for sim particles to be drawn
-  double simThresh_ = 0;
+  double sim_thresh_ = 0;
 
   /** list of colors to use with ecal clusters */
   std::vector<Color_t> colors_ = {kRed,     kBlue,  kGreen,  kYellow,

@@ -11,13 +11,13 @@ bool BertiniExactlyNProductsProcess::acceptEvent() const {
 
   for (int i{0}; i < secondaries; ++i) {
     const auto secondary{theParticleChange.GetSecondary(i)->GetParticle()};
-    const auto pdgCode{secondary->GetDefinition()->GetPDGEncoding()};
+    const auto pdg_code{secondary->GetDefinition()->GetPDGEncoding()};
     const auto energy{secondary->GetKineticEnergy()};
 
     if (energy > threshold_) {
       ++n_hard;
       for (size_t j{0}; j < matching_count.size(); ++j) {
-        if (pdgCode == pdg_ids_[j]) ++matching_count[j];
+        if (pdg_code == pdg_ids_[j]) ++matching_count[j];
       }
     }
   }
@@ -37,7 +37,7 @@ bool BertiniExactlyNProductsProcess::acceptEvent() const {
   return false;
 }
 
-void BertiniExactlyNProductsModel::ConstructGammaProcess(
+void BertiniExactlyNProductsModel::constructGammaProcess(
     G4ProcessManager* process_manager) {
   auto photo_nuclear_process{
       new G4HadronInelasticProcess("photonNuclear", G4Gamma::Definition())};

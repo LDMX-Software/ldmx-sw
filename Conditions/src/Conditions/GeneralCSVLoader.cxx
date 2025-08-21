@@ -14,16 +14,16 @@ namespace conditions {
 const std::string& GeneralCSVLoader::get(const std::string& colname,
                                          bool ignore_case) const {
   size_t i;
-  for (i = 0; i < colNames_.size(); i++) {
-    if (ignore_case && !strcasecmp(colNames_[i].c_str(), colname.c_str()))
+  for (i = 0; i < colname.size(); i++) {
+    if (ignore_case && !strcasecmp(col_names_[i].c_str(), colname.c_str()))
       break;
-    if (colNames_[i] == colname) break;
+    if (colname[i] == colname) break;
   }
-  if (i == colNames_.size()) {
+  if (i == col_names_.size()) {
     EXCEPTION_RAISE("CSVNoSuchColumn",
                     "No such column '" + colname + "' reading CSV");
   }
-  return rowData_[i];
+  return row_data_[i];
 }
 
 int GeneralCSVLoader::getInteger(const std::string& colname,
@@ -49,16 +49,16 @@ bool GeneralCSVLoader::nextRow() {
       line_split.push_back(chunk);
     }
     if (colNames_.empty()) {
-      colNames_.swap(line_split);
+      col_names_.swap(line_split);
       continue;
     }
-    if (line_split.size() == colNames_.size()) {
-      rowData_.swap(line_split);
+    if (line_split.size() == col_names_.size()) {
+      row_data_.swap(line_split);
     } else {
       EXCEPTION_RAISE("CSVLineMismatch",
                       "Reading CSV found line with " +
                           std::to_string(line_split.size()) + " in CSV with " +
-                          std::to_string(colNames_.size()) + " columns");
+                          std::to_string(col_names_.size()) + " columns");
     }
 
     return true;
@@ -67,32 +67,32 @@ bool GeneralCSVLoader::nextRow() {
 
 StringCSVLoader::StringCSVLoader(const std::string& source,
                                  const std::string lineseparators)
-    : source_{source}, linesep_{lineseparators}, rowBegin_{0}, rowEnd_{0} {
+    : source_{source}, linesep_{lineseparators}, row_begin_{0}, row_end_{0} {
   getNextLine();
 }
 
 std::string StringCSVLoader::getNextLine() {
   std::string retval;
-  if (rowBegin_ != rowEnd_) {
+  if (rowBegin_ != row_end_) {
     if (rowEnd_ == std::string::npos) {
-      retval = source_.substr(rowBegin_, rowEnd_);
+      retval = source_.substr(row_begin_, row_end_);
     } else {
-      retval = source_.substr(rowBegin_, rowEnd_ - rowBegin_);
+      retval = source_.substr(row_begin_, row_end_ - row_begin_);
     }
   }
   // now we look for the follow on.
   // find the first non-end-of-line character
-  rowBegin_ = source_.find_first_not_of(linesep_, rowEnd_);
+  row_begin_ = source_.find_first_not_of(linesep_, rowEnd_);
   if (rowBegin_ != std::string::npos) {
-    rowEnd_ = source_.find_first_of(linesep_, rowBegin_);
+    row_end_ = source_.find_first_of(linesep_, rowBegin_);
   } else {
-    rowEnd_ = std::string::npos;
+    row_end_ = std::string::npos;
   }
   return retval;
 }
 
 StreamCSVLoader::StreamCSVLoader(const std::string& filename)
-    : source_{0}, ownStream_{true} {
+    : source_{0}, own_stream_{true} {
   std::string expanded_fname = filename;
   wordexp_t p;
 
@@ -125,7 +125,7 @@ StreamCSVLoader::StreamCSVLoader(const std::string& filename)
 }
 
 StreamCSVLoader::StreamCSVLoader(std::istream& stream)
-    : source_{&stream}, ownStream_{false} {}
+    : source_{&stream}, own_stream_{false} {}
 
 StreamCSVLoader::~StreamCSVLoader() {
   if (ownStream_ && source_) delete source_;

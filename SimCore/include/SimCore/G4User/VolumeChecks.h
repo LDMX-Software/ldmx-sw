@@ -23,13 +23,13 @@ namespace volumechecks {
  * @param[in] vol_to_bias UNUSED name of volume to bias
  */
 inline bool isInEcal(G4LogicalVolume* vol, const std::string& vol_to_bias) {
-  const G4String& volumeName = vol->GetName();
-  return ((volumeName.contains("Si") || volumeName.contains("W") ||
-           volumeName.contains("PCB") || volumeName.contains("strongback") ||
-           volumeName.contains("Glue") || volumeName.contains("CFMix") ||
-           volumeName.contains("Al") || volumeName.contains("C")) &&
-          volumeName.contains("volume")) ||
-         (volumeName.contains("nohole_motherboard"));
+  const G4String& volume_name = vol->GetName();
+  return ((volume_name.contains("Si") || volume_name.contains("W") ||
+           volume_name.contains("PCB") || volume_name.contains("strongback") ||
+           volume_name.contains("Glue") || volume_name.contains("CFMix") ||
+           volume_name.contains("Al") || volume_name.contains("C")) &&
+          volume_name.contains("volume")) ||
+         (volume_name.contains("nohole_motherboard"));
 }
 
 /**
@@ -41,10 +41,10 @@ inline bool isInEcal(G4LogicalVolume* vol, const std::string& vol_to_bias) {
  * @param[in] vol_to_bias UNUSED name of volume to bias
  */
 inline bool isInHcal(G4LogicalVolume* vol, const std::string& vol_to_bias) {
-  const G4String& volumeName = vol->GetName();
-  return ((volumeName.contains("abso") || volumeName.contains("ScintBox") ||
-           volumeName.contains("scint")) &&
-          volumeName.contains("hcal") && volumeName.contains("olume"));
+  const G4String& volume_name = vol->GetName();
+  return ((volume_name.contains("abso") || volume_name.contains("ScintBox") ||
+           volume_name.contains("scint")) &&
+          volume_name.contains("hcal") && volume_name.contains("olume"));
 }
 
 /**
@@ -59,9 +59,9 @@ inline bool isInHcal(G4LogicalVolume* vol, const std::string& vol_to_bias) {
  * @param[in] vol_to_bias UNUSED name of volume to bias
  */
 inline bool isInEcalOld(G4LogicalVolume* vol, const std::string& vol_to_bias) {
-  const G4String& volumeName = vol->GetName();
-  return ((volumeName.contains("Si") || volumeName.contains("W")) &&
-          volumeName.contains("volume"));
+  const G4String& volume_name = vol->GetName();
+  return ((volume_name.contains("Si") || volume_name.contains("W")) &&
+          volume_name.contains("volume"));
 }
 
 /**

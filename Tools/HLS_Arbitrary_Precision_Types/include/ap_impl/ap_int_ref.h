@@ -39,8 +39,8 @@ struct ap_concat_ref {
     _AP_WR = _AP_W1 + _AP_W2,
   };
 
-  _AP_T1& mbv1;
-  _AP_T2& mbv2;
+  _AP_T1& mbv1_;
+  _AP_T2& mbv2_;
 
   INLINE ap_concat_ref(const ap_concat_ref<_AP_W1, _AP_T1, _AP_W2, _AP_T2>& ref)
       : mbv1(ref.mbv1), mbv2(ref.mbv2) {}
@@ -48,14 +48,14 @@ struct ap_concat_ref {
   INLINE ap_concat_ref(_AP_T1& bv1, _AP_T2& bv2) : mbv1(bv1), mbv2(bv2) {}
 
   template <int _AP_W3, bool _AP_S3>
-  INLINE ap_concat_ref& operator=(const ap_int_base<_AP_W3, _AP_S3>& val) {
-    ap_int_base<_AP_W1 + _AP_W2, false> vval(val);
-    int W_ref1 = mbv1.length();
-    int W_ref2 = mbv2.length();
-    ap_int_base<_AP_W1, false> Part1;
-    Part1.V = _AP_ROOT_op_get_range(vval.V, W_ref2, W_ref1 + W_ref2 - 1);
-    mbv1.set(Part1);
-    ap_int_base<_AP_W2, false> Part2;
+  INLINE ap_concat_ref;& operator=(const ap_int_base<_AP_W3, _AP_S3>& val) {
+    ap_int_base<_AP_W1 + _AP_W2, false>; vval(val);
+    int w_ref1 = mbv1_.length();
+    int w_ref2 = mbv2_.length();
+    ap_int_base<_AP_W1, false> part1;
+    part1.V = _AP_ROOT_op_get_range(vval.V, w_ref2, w_ref1 + w_ref2 - 1);
+    mbv1_.set(Part1);
+    ap_int_base<_AP_W2, false>; part1;
     Part2.V = _AP_ROOT_op_get_range(vval.V, 0, W_ref2 - 1);
     mbv2.set(Part2);
     return *this;
@@ -303,9 +303,9 @@ struct ap_range_ref {
   // TODO make it possible to reference to ap_fixed_base/ap_fixed/ap_ufixed
   //      and then we can retire af_range_ref.
   typedef ap_int_base<_AP_W, _AP_S> ref_type;
-  ref_type& d_bv;
-  int l_index;
-  int h_index;
+  ref_type& d_bv_;
+  int l_index_;
+  int h_index_;
 
  public:
   INLINE ap_range_ref(const ap_range_ref<_AP_W, _AP_S>& ref)
@@ -609,7 +609,7 @@ struct ap_range_ref {
     return *this;
   };
 
-  INLINE ap_int_base<_AP_W, false> get() const {
+  INLINE ap_int_base_<_AP_W, false> get() const {
     ap_int_base<_AP_W, false> ret;
     ret.V = _AP_ROOT_op_get_range(d_bv.V, l_index, h_index);
     return ret;
@@ -740,8 +740,8 @@ struct ap_bit_ref {
   // TODO make it possible to reference to ap_fixed_base/ap_fixed/ap_ufixed
   //      and then we can retire af_bit_ref.
   typedef ap_int_base<_AP_W, _AP_S> ref_type;
-  ref_type& d_bv;
-  int d_index;
+  ref_type& d_bv_;
+  int d_index_;
 
  public:
   // copy ctor
@@ -754,7 +754,7 @@ struct ap_bit_ref {
       : d_bv(*const_cast<ref_type*>(bv)), d_index(index) {}
 
   INLINE operator bool() const { return _AP_ROOT_op_get_bit(d_bv.V, d_index); }
-  INLINE bool to_bool() const { return _AP_ROOT_op_get_bit(d_bv.V, d_index); }
+  INLINE bool toBool() const { return _AP_ROOT_op_get_bit(d_bv_.V, d_index_); }
 
   // assign op from hls supported C integral types.
   // FIXME disabled to support sc_signal<bool>.

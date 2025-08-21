@@ -64,7 +64,7 @@ class TrackerSD : public SensitiveDetector {
   std::vector<ldmx::SimTrackerHit> hits_;
 
   /// The detector ID
-  ldmx::SubdetectorIDType subDetID_;
+  ldmx::SubdetectorIDType sub_det_id_;
 
 };  // TrackerID
 

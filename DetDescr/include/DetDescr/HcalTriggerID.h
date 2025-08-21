@@ -41,11 +41,11 @@ class HcalTriggerID : public HcalAbstractID {
    * Create from raw number
    */
   HcalTriggerID(RawValue rawid) : HcalAbstractID(rawid) {
-    if (!null() && bar_type() != Trigger) {
+    if (!null() && barType() != Trigger) {
       EXCEPTION_RAISE(
           "DetectorIDMismatch",
           "Attempted to create HcalTriggerID from mismatched Hcal bar_type " +
-              std::to_string(bar_type()));
+              std::to_string(barType()));
     }
   }
 
@@ -53,11 +53,11 @@ class HcalTriggerID : public HcalAbstractID {
    * Create from a DetectorID, but check
    */
   HcalTriggerID(const HcalAbstractID id) : HcalAbstractID(id) {
-    if (!null() && bar_type() != Trigger) {
+    if (!null() && barType() != Trigger) {
       EXCEPTION_RAISE(
           "DetectorIDMismatch",
           "Attempted to create HcalTriggerID from mismatched Hcal bar_type " +
-              std::to_string(bar_type()));
+              std::to_string(barType()));
     }
   }
 

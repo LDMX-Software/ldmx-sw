@@ -37,7 +37,7 @@ class PhotoNuclear : public XsecBiasingOperator {
   std::string getVolumeToBias() const override { return volume_; }
 
   /// record the configuration into the run header
-  void RecordConfig(ldmx::RunHeader& h) const override {
+  void recordConfig(ldmx::RunHeader& h) const {
     h.setStringParameter("BiasOperators::PhotoNuclear::Volume", volume_);
     h.setFloatParameter("BiasOperators::PhotoNuclear::Threshold", threshold_);
     h.setFloatParameter("BiasOperators::PhotoNuclear::Factor", factor_);
@@ -52,13 +52,13 @@ class PhotoNuclear : public XsecBiasingOperator {
   static const std::string CONVERSION_PROCESS;
 
   /** Cross-section biasing operation for conversion process */
-  G4BOptnChangeCrossSection* emXsecOperation{nullptr};
+  G4BOptnChangeCrossSection* em_xsec_operation_{nullptr};
 
   /** Unbiased photonuclear xsec. */
-  double pnXsecUnbiased_{0};
+  double pn_xsec_unbiased_{0};
 
   /** Biased photonuclear xsec. */
-  double pnXsecBiased_{0};
+  double pn_xsec_biased_{0};
 
   /** Volume we are going to bias within */
   std::string volume_;

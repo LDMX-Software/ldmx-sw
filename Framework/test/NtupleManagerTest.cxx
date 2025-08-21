@@ -22,7 +22,7 @@
  * std::vector so that Catch2 can compare it to our correct answer.
  */
 template <typename T>
-std::vector<T> from_TTreeReaderArray(const TTreeReaderArray<T>& reader_val) {
+std::vector<T> fromTTreeReaderArray(const TTreeReaderArray<T>& reader_val) {
   std::vector<T> v;
   for (const auto& val : reader_val) {
     v.push_back(val);
@@ -137,17 +137,17 @@ TEST_CASE("Ntuple Manager Functions", "[Framework][functionality]") {
     //  in order to try to save space
     // This means we need to use unordered equals.
     // Not too much loss in efficiency becuase we keep our vectors short.
-    CHECK_THAT(from_TTreeReaderArray(root_vector_bool),
+    CHECK_THAT(fromTTreeReaderArray(root_vector_bool),
                Catch::Matchers::UnorderedEquals(vector_bools.at(i)));
-    CHECK_THAT(from_TTreeReaderArray(root_vector_short),
+    CHECK_THAT(fromTTreeReaderArray(root_vector_short),
                Catch::Matchers::UnorderedEquals(vector_shorts.at(i)));
-    CHECK_THAT(from_TTreeReaderArray(root_vector_int),
+    CHECK_THAT(fromTTreeReaderArray(root_vector_int),
                Catch::Matchers::UnorderedEquals(vector_ints.at(i)));
-    CHECK_THAT(from_TTreeReaderArray(root_vector_long),
+    CHECK_THAT(fromTTreeReaderArray(root_vector_long),
                Catch::Matchers::UnorderedEquals(vector_longs.at(i)));
-    CHECK_THAT(from_TTreeReaderArray(root_vector_float),
+    CHECK_THAT(fromTTreeReaderArray(root_vector_float),
                Catch::Matchers::UnorderedEquals(vector_floats.at(i)));
-    CHECK_THAT(from_TTreeReaderArray(root_vector_double),
+    CHECK_THAT(fromTTreeReaderArray(root_vector_double),
                Catch::Matchers::UnorderedEquals(vector_doubles.at(i)));
   }
 

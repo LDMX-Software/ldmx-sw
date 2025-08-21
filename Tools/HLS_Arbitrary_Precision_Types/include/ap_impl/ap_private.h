@@ -61,7 +61,7 @@ typedef unsigned __int64 uint64_t;
 // NOTE: The following support functions use the _32/_64 extensions instead of
 // type overloading so that signed and unsigned integers can be used without
 // ambiguity.
-namespace AESL_std {
+namespace aesl_std {
 template <class DataType>
 DataType INLINE min(DataType a, DataType b) {
   return (a >= b) ? b : a;
@@ -87,12 +87,12 @@ DataType INLINE max(DataType a, DataType b) {
 
 namespace ap_private_ops {
 /// Hi_32 - This function returns the high 32 bits of a 64 bit value.
-static INLINE uint32_t Hi_32(uint64_t Value) {
+static INLINE uint32_t hi32(uint64_t Value) {
   return static_cast<uint32_t>(Value >> 32);
 }
 
 /// Lo_32 - This function returns the low 32 bits of a 64 bit value.
-static INLINE uint32_t Lo_32(uint64_t Value) {
+static INLINE uint32_t lo32(uint64_t Value) {
   return static_cast<uint32_t>(Value);
 }
 
@@ -115,14 +115,14 @@ INLINE bool isNegative(const ap_private<_AP_W, true>& a) {
 /// counting the number of zeros from the most significant bit to the first one
 /// bit.  Ex. CountLeadingZeros_32(0x00F000FF) == 8.
 /// Returns 32 if the word is zero.
-static INLINE unsigned CountLeadingZeros_32(uint32_t Value) {
-  unsigned Count;  // result
+static INLINE unsigned countLeadingZeros32(uint32_t Value) {
+  unsigned count;  // result
 #if __GNUC__ >= 4
 // PowerPC is defined for __builtin_clz(0)
 #if !defined(__ppc__) && !defined(__ppc64__)
   if (Value == 0) return 32;
 #endif
-  Count = __builtin_clz(Value);
+  count = __builtin_clz(Value);
 #else
   if (Value == 0) return 32;
   Count = 0;
@@ -136,21 +136,21 @@ static INLINE unsigned CountLeadingZeros_32(uint32_t Value) {
     }
   }
 #endif
-  return Count;
+  return count;
 }
 
 /// CountLeadingZeros_64 - This function performs the platform optimal form
 /// of counting the number of zeros from the most significant bit to the first
 /// one bit (64 bit edition.)
 /// Returns 64 if the word is zero.
-static INLINE unsigned CountLeadingZeros_64(uint64_t Value) {
-  unsigned Count;  // result
+static INLINE unsigned countLeadingZeros64(uint64_t Value) {
+  unsigned count;  // result
 #if __GNUC__ >= 4
 // PowerPC is defined for __builtin_clzll(0)
 #if !defined(__ppc__) && !defined(__ppc64__)
   if (!Value) return 64;
 #endif
-  Count = __builtin_clzll(Value);
+  count = __builtin_clzll(Value);
 #else
   if (sizeof(long) == sizeof(int64_t)) {
     if (!Value) return 64;
@@ -180,14 +180,14 @@ static INLINE unsigned CountLeadingZeros_64(uint64_t Value) {
     }
   }
 #endif
-  return Count;
+  return count;
 }
 
 /// CountTrailingZeros_64 - This function performs the platform optimal form
 /// of counting the number of zeros from the least significant bit to the first
 /// one bit (64 bit edition.)
 /// Returns 64 if the word is zero.
-static INLINE unsigned CountTrailingZeros_64(uint64_t Value) {
+static INLINE unsigned countTrailingZeros64(uint64_t Value) {
 #if __GNUC__ >= 4
   return (Value != 0) ? __builtin_ctzll(Value) : 64;
 #else
@@ -202,7 +202,7 @@ static INLINE unsigned CountTrailingZeros_64(uint64_t Value) {
 
 /// CountPopulation_64 - this function counts the number of set bits in a value,
 /// (64 bit edition.)
-static INLINE unsigned CountPopulation_64(uint64_t Value) {
+static INLINE unsigned countPopulation64(uint64_t Value) {
 #if __GNUC__ >= 4
   return __builtin_popcountll(Value);
 #else
@@ -213,14 +213,14 @@ static INLINE unsigned CountPopulation_64(uint64_t Value) {
 #endif
 }
 
-static INLINE uint32_t countLeadingOnes_64(uint64_t __V, uint32_t skip) {
-  uint32_t Count = 0;
+static INLINE uint32_t countLeadingOnes64(uint64_t __V, uint32_t skip) {
+  uint32_t count = 0;
   if (skip) (__V) <<= (skip);
   while (__V && (__V & (1ULL << 63))) {
-    Count++;
+    count++;
     (__V) <<= 1;
   }
-  return Count;
+  return count;
 }
 
 static INLINE std::string oct2Bin(char oct) {
@@ -327,7 +327,7 @@ static INLINE std::string hex2Bin(char hex) {
   return "";
 }
 
-static INLINE uint32_t decode_digit(char cdigit, int radix) {
+static INLINE uint32_t decodeDigit(char cdigit, int radix) {
   uint32_t digit = 0;
   if (radix == 16) {
 #define isxdigit(c)                                            \
@@ -362,15 +362,15 @@ static INLINE std::string parseString(const std::string& input,
     return input;
   }
 
-  size_t startPos = 0;
+  size_t start_pos = 0;
   // Trim whitespace
-  while (input[startPos] == ' ' && startPos < len) startPos++;
-  while (input[len - 1] == ' ' && startPos < len) len--;
+  while (input[start_pos] == ' ' && start_pos < len) start_pos++;
+  while (input[len - 1] == ' ' && start_pos < len) len--;
 
-  std::string val = input.substr(startPos, len - startPos);
+  std::string val = input.substr(start_pos, len - start_pos);
   // std::cout << "val = " << val << "\n";
   len = val.length();
-  startPos = 0;
+  start_pos = 0;
 
   // If the length of the string is less than 2, then radix
   // is decimal and there is no exponent.
@@ -379,36 +379,36 @@ static INLINE std::string parseString(const std::string& input,
     return val;
   }
 
-  bool isNegative = false;
+  bool is_negative = false;
   std::string ans;
 
   // First check to see if we start with a sign indicator
   if (val[0] == '-') {
     ans = "-";
-    ++startPos;
-    isNegative = true;
+    ++start_pos;
+    is_negative = true;
   } else if (val[0] == '+')
-    ++startPos;
+    ++start_pos;
 
-  if (len - startPos < 2) {
+  if (len - start_pos < 2) {
     if (radix == 0) radix = 10;
     return val;
   }
 
-  if (val.substr(startPos, 2) == "0x" || val.substr(startPos, 2) == "0X") {
+  if (val.substr(start_pos, 2) == "0x" || val.substr(start_pos, 2) == "0X") {
     // If we start with "0x", then the radix is hex.
     radix = 16;
-    startPos += 2;
-  } else if (val.substr(startPos, 2) == "0b" ||
-             val.substr(startPos, 2) == "0B") {
+    start_pos += 2;
+  } else if (val.substr(start_pos, 2) == "0b" ||
+             val.substr(start_pos, 2) == "0B") {
     // If we start with "0b", then the radix is binary.
     radix = 2;
-    startPos += 2;
-  } else if (val.substr(startPos, 2) == "0o" ||
-             val.substr(startPos, 2) == "0O") {
+    start_pos += 2;
+  } else if (val.substr(start_pos, 2) == "0o" ||
+             val.substr(start_pos, 2) == "0O") {
     // If we start with "0o", then the radix is octal.
     radix = 8;
-    startPos += 2;
+    start_pos += 2;
   } else if (radix == 0) {
     radix = 10;
   }
@@ -417,30 +417,30 @@ static INLINE std::string parseString(const std::string& input,
   if (radix == 10) {
     // If radix is decimal, then see if there is an
     // exponent indicator.
-    size_t expPos = val.find('e');
+    size_t exp_pos = val.find('e');
     bool has_exponent = true;
-    if (expPos == std::string::npos) expPos = val.find('E');
-    if (expPos == std::string::npos) {
+    if (exp_pos == std::string::npos) exp_pos = val.find('E');
+    if (exp_pos == std::string::npos) {
       // No exponent indicator, so the mantissa goes to the end.
-      expPos = len;
+      exp_pos = len;
       has_exponent = false;
     }
     // std::cout << "startPos = " << startPos << " " << expPos << "\n";
 
-    ans += val.substr(startPos, expPos - startPos);
+    ans += val.substr(start_pos, exp_pos - start_pos);
     if (has_exponent) {
       // Parse the exponent.
-      std::istringstream iss(val.substr(expPos + 1, len - expPos - 1));
+      std::istringstream iss(val.substr(exp_pos + 1, len - exp_pos - 1));
       iss >> exp;
     }
   } else {
     // Check for a binary exponent indicator.
-    size_t expPos = val.find('p');
+    size_t exp_pos = val.find('p');
     bool has_exponent = true;
-    if (expPos == std::string::npos) expPos = val.find('P');
-    if (expPos == std::string::npos) {
+    if (exp_pos == std::string::npos) exp_pos = val.find('P');
+    if (exp_pos == std::string::npos) {
       // No exponent indicator, so the mantissa goes to the end.
-      expPos = len;
+      exp_pos = len;
       has_exponent = false;
     }
 
@@ -448,7 +448,7 @@ static INLINE std::string parseString(const std::string& input,
 
     assert(startPos <= expPos);
     // Convert to binary as we go.
-    for (size_t i = startPos; i < expPos; ++i) {
+    for (size_t i = start_pos; i < exp_pos; ++i) {
       if (radix == 16) {
         ans += hex2Bin(val[i]);
       } else if (radix == 8) {
@@ -461,36 +461,36 @@ static INLINE std::string parseString(const std::string& input,
     radix = 2;
     if (has_exponent) {
       // Parse the exponent.
-      std::istringstream iss(val.substr(expPos + 1, len - expPos - 1));
+      std::istringstream iss(val.substr(exp_pos + 1, len - exp_pos - 1));
       iss >> exp;
     }
   }
   if (exp == 0) return ans;
 
-  size_t decPos = ans.find('.');
-  if (decPos == std::string::npos) decPos = ans.length();
-  if ((int)decPos + exp >= (int)ans.length()) {
-    int i = decPos;
+  size_t dec_pos = ans.find('.');
+  if (dec_pos == std::string::npos) dec_pos = ans.length();
+  if ((int)dec_pos + exp >= (int)ans.length()) {
+    int i = dec_pos;
     for (; i < (int)ans.length() - 1; ++i) ans[i] = ans[i + 1];
     for (; i < (int)ans.length(); ++i) ans[i] = '0';
-    for (; i < (int)decPos + exp; ++i) ans += '0';
+    for (; i < (int)dec_pos + exp; ++i) ans += '0';
     return ans;
-  } else if ((int)decPos + exp < (int)isNegative) {
-    std::string dupAns = "0.";
-    if (ans[0] == '-') dupAns = "-0.";
-    for (int i = 0; i < isNegative - (int)decPos - exp; ++i) dupAns += '0';
-    for (size_t i = isNegative; i < ans.length(); ++i)
-      if (ans[i] != '.') dupAns += ans[i];
-    return dupAns;
+  } else if ((int)dec_pos + exp < (int)is_negative) {
+    std::string dup_ans = "0.";
+    if (ans[0] == '-') dup_ans = "-0.";
+    for (int i = 0; i < is_negative - (int)dec_pos - exp; ++i) dup_ans += '0';
+    for (size_t i = is_negative; i < ans.length(); ++i)
+      if (ans[i] != '.') dup_ans += ans[i];
+    return dup_ans;
   }
 
   if (exp > 0)
-    for (size_t i = decPos; i < decPos + exp; ++i) ans[i] = ans[i + 1];
+    for (size_t i = dec_pos; i < dec_pos + exp; ++i) ans[i] = ans[i + 1];
   else {
-    if (decPos == ans.length()) ans += ' ';
-    for (int i = decPos; i > (int)decPos + exp; --i) ans[i] = ans[i - 1];
+    if (dec_pos == ans.length()) ans += ' ';
+    for (int i = dec_pos; i > (int)dec_pos + exp; --i) ans[i] = ans[i - 1];
   }
-  ans[decPos + exp] = '.';
+  ans[dec_pos + exp] = '.';
   return ans;
 }
 
@@ -500,11 +500,11 @@ static INLINE std::string parseString(const std::string& input,
 /// is 1 if "borrowing" exhausted the digits in x, or 0 if x was not exhausted.
 /// In other words, if y > x then this function returns 1, otherwise 0.
 /// @returns the borrow out of the subtraction
-static INLINE bool sub_1(uint64_t x[], uint32_t len, uint64_t y) {
+static INLINE bool sub1(uint64_t x[], uint32_t len, uint64_t y) {
   for (uint32_t i = 0; i < len; ++i) {
-    uint64_t __X = x[i];
+    uint64_t x = x[i];
     x[i] -= y;
-    if (y > __X)
+    if (y > x)
       y = 1;  // We have to "borrow 1" from next "digit"
     else {
       y = 0;  // No need to borrow
@@ -518,7 +518,7 @@ static INLINE bool sub_1(uint64_t x[], uint32_t len, uint64_t y) {
 /// "digit" integer array,  x[]. x[] is modified to reflect the addition and
 /// 1 is returned if there is a carry out, otherwise 0 is returned.
 /// @returns the carry of the addition.
-static INLINE bool add_1(uint64_t dest[], uint64_t x[], uint32_t len,
+static INLINE bool add1(uint64_t dest[], uint64_t x[], uint32_t len,
                          uint64_t y) {
   for (uint32_t i = 0; i < len; ++i) {
     dest[i] = y + x[i];
@@ -540,25 +540,25 @@ static INLINE bool add(uint64_t* dest, const uint64_t* x, const uint64_t* y,
                        uint32_t destlen, uint32_t xlen, uint32_t ylen,
                        bool xsigned, bool ysigned) {
   bool carry = false;
-  uint32_t len = AESL_std::min(xlen, ylen);
+  uint32_t len = aesl_std::min(xlen, ylen);
   uint32_t i;
   for (i = 0; i < len && i < destlen; ++i) {
     uint64_t limit =
-        AESL_std::min(x[i], y[i]);  // must come first in case dest == x
+        aesl_std::min(x[i], y[i]);  // must come first in case dest == x
     dest[i] = x[i] + y[i] + carry;
     carry = dest[i] < limit || (carry && dest[i] == limit);
   }
   if (xlen > ylen) {
     const uint64_t yext = ysigned && int64_t(y[ylen - 1]) < 0 ? -1 : 0;
     for (i = ylen; i < xlen && i < destlen; i++) {
-      uint64_t limit = AESL_std::min(x[i], yext);
+      uint64_t limit = aesl_std::min(x[i], yext);
       dest[i] = x[i] + yext + carry;
       carry = (dest[i] < limit) || (carry && dest[i] == limit);
     }
   } else if (ylen > xlen) {
     const uint64_t xext = xsigned && int64_t(x[xlen - 1]) < 0 ? -1 : 0;
     for (i = xlen; i < ylen && i < destlen; i++) {
-      uint64_t limit = AESL_std::min(xext, y[i]);
+      uint64_t limit = aesl_std::min(xext, y[i]);
       dest[i] = xext + y[i] + carry;
       carry = (dest[i] < limit) || (carry && dest[i] == limit);
     }
@@ -573,7 +573,7 @@ static INLINE bool sub(uint64_t* dest, const uint64_t* x, const uint64_t* y,
                        bool xsigned, bool ysigned) {
   bool borrow = false;
   uint32_t i;
-  uint32_t len = AESL_std::min(xlen, ylen);
+  uint32_t len = aesl_std::min(xlen, ylen);
   for (i = 0; i < len && i < destlen; ++i) {
     uint64_t x_tmp = borrow ? x[i] - 1 : x[i];
     borrow = y[i] > x_tmp || (borrow && x[i] == 0);
@@ -605,7 +605,7 @@ static INLINE bool sub(uint64_t* dest, const uint64_t* x, const uint64_t* y,
 /// into dest.
 /// @returns the carry out of the multiplication.
 /// @brief Multiply a multi-digit ap_private by a single digit (64-bit) integer.
-static INLINE uint64_t mul_1(uint64_t dest[], const uint64_t x[], uint32_t len,
+static INLINE uint64_t mul1(uint64_t dest[], const uint64_t x[], uint32_t len,
                              uint64_t y) {
   // Split y into high 32-bit part (hy)  and low 32-bit part (ly)
   uint64_t ly = y & 0xffffffffULL, hy = (y) >> 32;
@@ -620,18 +620,18 @@ static INLINE uint64_t mul_1(uint64_t dest[], const uint64_t x[], uint32_t len,
     // hasCarry == 0, no carry
     // hasCarry == 1, has carry
     // hasCarry == 2, no carry and the calculation result == 0.
-    uint8_t hasCarry = 0;
+    uint8_t has_carry = 0;
     dest[i] = carry + lx * ly;
     // Determine if the add above introduces carry.
-    hasCarry = (dest[i] < carry) ? 1 : 0;
-    carry = hx * ly + ((dest[i]) >> 32) + (hasCarry ? two_power_32 : 0);
+    has_carry = (dest[i] < carry) ? 1 : 0;
+    carry = hx * ly + ((dest[i]) >> 32) + (has_carry ? two_power_32 : 0);
     // The upper limit of carry can be (2^32 - 1)(2^32 - 1) +
     // (2^32 - 1) + 2^32 = 2^64.
-    hasCarry = (!carry && hasCarry) ? 1 : (!carry ? 2 : 0);
+    has_carry = (!carry && has_carry) ? 1 : (!carry ? 2 : 0);
 
     carry += (lx * hy) & 0xffffffffULL;
     dest[i] = ((carry) << 32) | (dest[i] & 0xffffffffULL);
-    carry = (((!carry && hasCarry != 2) || hasCarry == 1) ? two_power_32 : 0) +
+    carry = (((!carry && has_carry != 2) || has_carry == 1) ? two_power_32 : 0) +
             ((carry) >> 32) + ((lx * hy) >> 32) + hx * hy;
   }
   return carry;
@@ -648,7 +648,7 @@ static INLINE void mul(uint64_t dest[], const uint64_t x[], uint32_t xlen,
   assert(xlen > 0);
   assert(ylen > 0);
   assert(destlen >= xlen + ylen);
-  if (xlen < destlen) dest[xlen] = mul_1(dest, x, xlen, y[0]);
+  if (xlen < destlen) dest[xlen] = mul1(dest, x, xlen, y[0]);
   for (uint32_t i = 1; i < ylen; ++i) {
     uint64_t ly = y[i] & 0xffffffffULL, hy = (y[i]) >> 32;
     uint64_t carry = 0, lx = 0, hx = 0;
@@ -659,16 +659,16 @@ static INLINE void mul(uint64_t dest[], const uint64_t x[], uint32_t xlen,
       // hasCarry == 0, no carry
       // hasCarry == 1, has carry
       // hasCarry == 2, no carry and the calculation result == 0.
-      uint8_t hasCarry = 0;
+      uint8_t has_carry = 0;
       uint64_t resul = carry + lx * ly;
-      hasCarry = (resul < carry) ? 1 : 0;
-      carry = (hasCarry ? (1ULL << 32) : 0) + hx * ly + ((resul) >> 32);
-      hasCarry = (!carry && hasCarry) ? 1 : (!carry ? 2 : 0);
+      has_carry = (resul < carry) ? 1 : 0;
+      carry = (has_carry ? (1ULL << 32) : 0) + hx * ly + ((resul) >> 32);
+      has_carry = (!carry && has_carry) ? 1 : (!carry ? 2 : 0);
       carry += (lx * hy) & 0xffffffffULL;
       resul = ((carry) << 32) | (resul & 0xffffffffULL);
       if (i + j < destlen) dest[i + j] += resul;
       carry =
-          (((!carry && hasCarry != 2) || hasCarry == 1) ? (1ULL << 32) : 0) +
+          (((!carry && has_carry != 2) || has_carry == 1) ? (1ULL << 32) : 0) +
           ((carry) >> 32) + (dest[i + j] < resul ? 1 : 0) + ((lx * hy) >> 32) +
           hx * hy;
     }
@@ -680,7 +680,7 @@ static INLINE void mul(uint64_t dest[], const uint64_t x[], uint32_t xlen,
 /// from "Art of Computer Programming, Volume 2", section 4.3.1, p. 272. The
 /// variables here have the same names as in the algorithm. Comments explain
 /// the algorithm and any deviation from it.
-static INLINE void KnuthDiv(uint32_t* u, uint32_t* v, uint32_t* q, uint32_t* r,
+static INLINE void knuthDiv(uint32_t* u, uint32_t* v, uint32_t* q, uint32_t* r,
                             uint32_t m, uint32_t n) {
   assert(u && "Must provide dividend");
   assert(v && "Must provide divisor");
@@ -708,7 +708,7 @@ static INLINE void KnuthDiv(uint32_t* u, uint32_t* v, uint32_t* q, uint32_t* r,
   // and v so that its high bits are shifted to the top of v's range without
   // overflow. Note that this can require an extra word in u so that u must
   // be of length m+n+1.
-  uint32_t shift = CountLeadingZeros_32(v[n - 1]);
+  uint32_t shift = countLeadingZeros32(v[n - 1]);
   uint32_t v_carry = 0;
   uint32_t u_carry = 0;
   if (shift) {
@@ -759,7 +759,7 @@ static INLINE void KnuthDiv(uint32_t* u, uint32_t* v, uint32_t* q, uint32_t* r,
     // (u[j+n]u[j+n-1]..u[j]) - qp * (v[n-1]...v[1]v[0]). This computation
     // consists of a simple multiplication by a one-place number, combined with
     // a subtraction.
-    bool isNeg = false;
+    bool is_neg = false;
     for (uint32_t i = 0; i < n; ++i) {
       uint64_t u_tmp = uint64_t(u[j + i]) | ((uint64_t(u[j + i + 1])) << 32);
       uint64_t subtrahend = uint64_t(qp) * uint64_t(v[i]);
@@ -777,7 +777,7 @@ static INLINE void KnuthDiv(uint32_t* u, uint32_t* v, uint32_t* q, uint32_t* r,
         u[k]--;
         k++;
       }
-      isNeg |= borrow;
+      is_neg |= borrow;
       /*DEBUG(cerr << "KnuthDiv: u[j+i] == " << u[j+i] << ",  u[j+i+1] == " <<
         u[j+i+1] << '\n');*/
     }
@@ -789,7 +789,7 @@ static INLINE void KnuthDiv(uint32_t* u, uint32_t* v, uint32_t* q, uint32_t* r,
     // true value plus b**(n+1), namely as the b's complement of
     // the true value, and a "borrow" to the left should be remembered.
     //
-    if (isNeg) {
+    if (is_neg) {
       bool carry = true;  // true because b's complement is "complement + 1"
       for (uint32_t i = 0; i <= m + n; ++i) {
         u[i] = ~u[i] + carry;  // b's complement
@@ -803,7 +803,7 @@ static INLINE void KnuthDiv(uint32_t* u, uint32_t* v, uint32_t* q, uint32_t* r,
     // D5. [Test remainder.] Set q[j] = qp. If the result of step D4 was
     // negative, go to step D6; otherwise go on to step D7.
     q[j] = (uint32_t)qp;
-    if (isNeg) {
+    if (is_neg) {
       // D6. [Add back]. The probability that this step is necessary is very
       // small, on the order of only 2/b. Make sure that test data accounts for
       // this possibility. Decrease q[j] by 1
@@ -813,7 +813,7 @@ static INLINE void KnuthDiv(uint32_t* u, uint32_t* v, uint32_t* q, uint32_t* r,
       // since it cancels with the borrow that occurred in D4.
       bool carry = false;
       for (uint32_t i = 0; i < n; i++) {
-        uint32_t limit = AESL_std::min(u[j + i], v[i]);
+        uint32_t limit = aesl_std::min(u[j + i], v[i]);
         u[j + i] += v[i] + carry;
         carry = u[j + i] < limit || (carry && u[j + i] == limit);
       }
@@ -876,53 +876,53 @@ void divide(const ap_private<_AP_W, _AP_S>& LHS, uint32_t lhsWords,
 
   // Allocate space for the temporary values we need either on the stack, if
   // it will fit, or on the heap if it won't.
-  uint32_t SPACE[128];
-  uint32_t* __U = 0;
-  uint32_t* __V = 0;
-  uint32_t* __Q = 0;
-  uint32_t* __R = 0;
+  uint32_t space[128];
+  uint32_t* u = 0;
+  uint32_t* v = 0;
+  uint32_t* q = 0;
+  uint32_t* r = 0;
   if ((Remainder ? 4 : 3) * n + 2 * m + 1 <= 128) {
-    __U = &SPACE[0];
-    __V = &SPACE[m + n + 1];
-    __Q = &SPACE[(m + n + 1) + n];
-    if (Remainder) __R = &SPACE[(m + n + 1) + n + (m + n)];
+    u = &space[0];
+    v = &space[m + n + 1];
+    q = &space[(m + n + 1) + n];
+    if (Remainder) r = &space[(m + n + 1) + n + (m + n)];
   } else {
-    __U = new uint32_t[m + n + 1];
-    __V = new uint32_t[n];
-    __Q = new uint32_t[m + n];
-    if (Remainder) __R = new uint32_t[n];
+    u = new uint32_t[m + n + 1];
+    v = new uint32_t[n];
+    q = new uint32_t[m + n];
+    if (Remainder) r = new uint32_t[n];
   }
 
   // Initialize the dividend
-  memset(__U, 0, (m + n + 1) * sizeof(uint32_t));
+  memset(u, 0, (m + n + 1) * sizeof(uint32_t));
   for (unsigned i = 0; i < lhsWords; ++i) {
     uint64_t tmp = LHS.get_pVal(i);
-    __U[i * 2] = (uint32_t)(tmp & mask);
-    __U[i * 2 + 1] = (tmp) >> (sizeof(uint32_t) * 8);
+    u[i * 2] = (uint32_t)(tmp & mask);
+    u[i * 2 + 1] = (tmp) >> (sizeof(uint32_t) * 8);
   }
-  __U[m + n] = 0;  // this extra word is for "spill" in the Knuth algorithm.
+  u[m + n] = 0;  // this extra word is for "spill" in the Knuth algorithm.
 
   // Initialize the divisor
-  memset(__V, 0, (n) * sizeof(uint32_t));
+  memset(v, 0, (n) * sizeof(uint32_t));
   for (unsigned i = 0; i < rhsWords; ++i) {
     uint64_t tmp = RHS.get_pVal(i);
-    __V[i * 2] = (uint32_t)(tmp & mask);
-    __V[i * 2 + 1] = (tmp) >> (sizeof(uint32_t) * 8);
+    v[i * 2] = (uint32_t)(tmp & mask);
+    v[i * 2 + 1] = (tmp) >> (sizeof(uint32_t) * 8);
   }
 
   // initialize the quotient and remainder
-  memset(__Q, 0, (m + n) * sizeof(uint32_t));
-  if (Remainder) memset(__R, 0, n * sizeof(uint32_t));
+  memset(q, 0, (m + n) * sizeof(uint32_t));
+  if (Remainder) memset(r, 0, n * sizeof(uint32_t));
 
   // Now, adjust m and n for the Knuth division. n is the number of words in
   // the divisor. m is the number of words by which the dividend exceeds the
   // divisor (i.e. m+n is the length of the dividend). These sizes must not
   // contain any zero words or the Knuth algorithm fails.
-  for (unsigned i = n; i > 0 && __V[i - 1] == 0; i--) {
+  for (unsigned i = n; i > 0 && v[i - 1] == 0; i--) {
     n--;
     m++;
   }
-  for (unsigned i = m + n; i > 0 && __U[i - 1] == 0; i--) m--;
+  for (unsigned i = m + n; i > 0 && u[i - 1] == 0; i--) m--;
 
   // If we're left with only a single word for the divisor, Knuth doesn't work
   // so we implement the short division algorithm here. This is much simpler
@@ -932,29 +932,29 @@ void divide(const ap_private<_AP_W, _AP_S>& LHS, uint32_t lhsWords,
   // are using base 2^32 instead of base 10.
   assert(n != 0 && "Divide by zero?");
   if (n == 1) {
-    uint32_t divisor = __V[0];
+    uint32_t divisor = v[0];
     uint32_t remainder = 0;
     for (int i = m + n - 1; i >= 0; i--) {
-      uint64_t partial_dividend = (uint64_t(remainder)) << 32 | __U[i];
+      uint64_t partial_dividend = (uint64_t(remainder)) << 32 | u[i];
       if (partial_dividend == 0) {
-        __Q[i] = 0;
+        q[i] = 0;
         remainder = 0;
       } else if (partial_dividend < divisor) {
-        __Q[i] = 0;
+        q[i] = 0;
         remainder = (uint32_t)partial_dividend;
       } else if (partial_dividend == divisor) {
-        __Q[i] = 1;
+        q[i] = 1;
         remainder = 0;
       } else {
-        __Q[i] = (uint32_t)(partial_dividend / divisor);
-        remainder = (uint32_t)(partial_dividend - (__Q[i] * divisor));
+        q[i] = (uint32_t)(partial_dividend / divisor);
+        remainder = (uint32_t)(partial_dividend - (q[i] * divisor));
       }
     }
-    if (__R) __R[0] = remainder;
+    if (r) r[0] = remainder;
   } else {
     // Now we're ready to invoke the Knuth classical divide algorithm. In this
     // case n > 1.
-    KnuthDiv(__U, __V, __Q, __R, m, n);
+    knuthDiv(u, v, q, r, m, n);
   }
 
   // If the caller wants the quotient
@@ -969,15 +969,15 @@ void divide(const ap_private<_AP_W, _AP_S>& LHS, uint32_t lhsWords,
     // order words.
     if (lhsWords == 1) {
       uint64_t tmp =
-          uint64_t(__Q[0]) | ((uint64_t(__Q[1])) << (APINT_BITS_PER_WORD / 2));
+          uint64_t(q[0]) | ((uint64_t(q[1])) << (APINT_BITS_PER_WORD / 2));
       Quotient->set_VAL(tmp);
     } else {
       assert(!Quotient->isSingleWord() &&
              "Quotient ap_private not large enough");
       for (unsigned i = 0; i < lhsWords; ++i)
         Quotient->set_pVal(
-            i, uint64_t(__Q[i * 2]) |
-                   ((uint64_t(__Q[i * 2 + 1])) << (APINT_BITS_PER_WORD / 2)));
+            i, uint64_t(q[i * 2]) |
+                   ((uint64_t(q[i * 2 + 1])) << (APINT_BITS_PER_WORD / 2)));
     }
     Quotient->clearUnusedBits();
   }
@@ -994,25 +994,25 @@ void divide(const ap_private<_AP_W, _AP_S>& LHS, uint32_t lhsWords,
     // order words.
     if (rhsWords == 1) {
       uint64_t tmp =
-          uint64_t(__R[0]) | ((uint64_t(__R[1])) << (APINT_BITS_PER_WORD / 2));
+          uint64_t(r[0]) | ((uint64_t(r[1])) << (APINT_BITS_PER_WORD / 2));
       Remainder->set_VAL(tmp);
     } else {
       assert(!Remainder->isSingleWord() &&
              "Remainder ap_private not large enough");
       for (unsigned i = 0; i < rhsWords; ++i)
         Remainder->set_pVal(
-            i, uint64_t(__R[i * 2]) |
-                   ((uint64_t(__R[i * 2 + 1])) << (APINT_BITS_PER_WORD / 2)));
+            i, uint64_t(r[i * 2]) |
+                   ((uint64_t(r[i * 2 + 1])) << (APINT_BITS_PER_WORD / 2)));
     }
     Remainder->clearUnusedBits();
   }
 
   // Clean up the memory we allocated.
-  if (__U != &SPACE[0]) {
-    delete[] __U;
-    delete[] __V;
-    delete[] __Q;
-    delete[] __R;
+  if (u != &space[0]) {
+    delete[] u;
+    delete[] v;
+    delete[] q;
+    delete[] r;
   }
 }
 
@@ -1020,7 +1020,7 @@ template <int _AP_W, bool _AP_S>
 void divide(const ap_private<_AP_W, _AP_S>& LHS, uint32_t lhsWords,
             uint64_t RHS, ap_private<_AP_W, _AP_S>* Quotient,
             ap_private<_AP_W, _AP_S>* Remainder) {
-  uint32_t rhsWords = 1;
+  uint32_t rhs_words = 1;
   assert(lhsWords >= rhsWords && "Fractional result");
   enum { APINT_BITS_PER_WORD = 64 };
   // First, compose the values into an array of 32-bit words instead of
@@ -1036,50 +1036,50 @@ void divide(const ap_private<_AP_W, _AP_S>& LHS, uint32_t lhsWords,
 
   // Allocate space for the temporary values we need either on the stack, if
   // it will fit, or on the heap if it won't.
-  uint32_t SPACE[128];
-  uint32_t* __U = 0;
-  uint32_t* __V = 0;
-  uint32_t* __Q = 0;
-  uint32_t* __R = 0;
+  uint32_t space[128];
+  uint32_t* u = 0;
+  uint32_t* v = 0;
+  uint32_t* q = 0;
+  uint32_t* r = 0;
   if ((Remainder ? 4 : 3) * n + 2 * m + 1 <= 128) {
-    __U = &SPACE[0];
-    __V = &SPACE[m + n + 1];
-    __Q = &SPACE[(m + n + 1) + n];
-    if (Remainder) __R = &SPACE[(m + n + 1) + n + (m + n)];
+    u = &space[0];
+    v = &space[m + n + 1];
+    q = &space[(m + n + 1) + n];
+    if (Remainder) r = &space[(m + n + 1) + n + (m + n)];
   } else {
-    __U = new uint32_t[m + n + 1];
-    __V = new uint32_t[n];
-    __Q = new uint32_t[m + n];
-    if (Remainder) __R = new uint32_t[n];
+    u = new uint32_t[m + n + 1];
+    v = new uint32_t[n];
+    q = new uint32_t[m + n];
+    if (Remainder) r = new uint32_t[n];
   }
 
   // Initialize the dividend
-  memset(__U, 0, (m + n + 1) * sizeof(uint32_t));
+  memset(u, 0, (m + n + 1) * sizeof(uint32_t));
   for (unsigned i = 0; i < lhsWords; ++i) {
     uint64_t tmp = LHS.get_pVal(i);
-    __U[i * 2] = tmp & mask;
-    __U[i * 2 + 1] = (tmp) >> (sizeof(uint32_t) * 8);
+    u[i * 2] = tmp & mask;
+    u[i * 2 + 1] = (tmp) >> (sizeof(uint32_t) * 8);
   }
-  __U[m + n] = 0;  // this extra word is for "spill" in the Knuth algorithm.
+  u[m + n] = 0;  // this extra word is for "spill" in the Knuth algorithm.
 
   // Initialize the divisor
-  memset(__V, 0, (n) * sizeof(uint32_t));
-  __V[0] = RHS & mask;
-  __V[1] = (RHS) >> (sizeof(uint32_t) * 8);
+  memset(v, 0, (n) * sizeof(uint32_t));
+  v[0] = RHS & mask;
+  v[1] = (RHS) >> (sizeof(uint32_t) * 8);
 
   // initialize the quotient and remainder
-  memset(__Q, 0, (m + n) * sizeof(uint32_t));
-  if (Remainder) memset(__R, 0, n * sizeof(uint32_t));
+  memset(q, 0, (m + n) * sizeof(uint32_t));
+  if (Remainder) memset(r, 0, n * sizeof(uint32_t));
 
   // Now, adjust m and n for the Knuth division. n is the number of words in
   // the divisor. m is the number of words by which the dividend exceeds the
   // divisor (i.e. m+n is the length of the dividend). These sizes must not
   // contain any zero words or the Knuth algorithm fails.
-  for (unsigned i = n; i > 0 && __V[i - 1] == 0; i--) {
+  for (unsigned i = n; i > 0 && v[i - 1] == 0; i--) {
     n--;
     m++;
   }
-  for (unsigned i = m + n; i > 0 && __U[i - 1] == 0; i--) m--;
+  for (unsigned i = m + n; i > 0 && u[i - 1] == 0; i--) m--;
 
   // If we're left with only a single word for the divisor, Knuth doesn't work
   // so we implement the short division algorithm here. This is much simpler
@@ -1089,29 +1089,29 @@ void divide(const ap_private<_AP_W, _AP_S>& LHS, uint32_t lhsWords,
   // are using base 2^32 instead of base 10.
   assert(n != 0 && "Divide by zero?");
   if (n == 1) {
-    uint32_t divisor = __V[0];
+    uint32_t divisor = v[0];
     uint32_t remainder = 0;
     for (int i = m + n - 1; i >= 0; i--) {
-      uint64_t partial_dividend = (uint64_t(remainder)) << 32 | __U[i];
+      uint64_t partial_dividend = (uint64_t(remainder)) << 32 | u[i];
       if (partial_dividend == 0) {
-        __Q[i] = 0;
+        q[i] = 0;
         remainder = 0;
       } else if (partial_dividend < divisor) {
-        __Q[i] = 0;
+        q[i] = 0;
         remainder = partial_dividend;
       } else if (partial_dividend == divisor) {
-        __Q[i] = 1;
+        q[i] = 1;
         remainder = 0;
       } else {
-        __Q[i] = partial_dividend / divisor;
-        remainder = partial_dividend - (__Q[i] * divisor);
+        q[i] = partial_dividend / divisor;
+        remainder = partial_dividend - (q[i] * divisor);
       }
     }
-    if (__R) __R[0] = remainder;
+    if (r) r[0] = remainder;
   } else {
     // Now we're ready to invoke the Knuth classical divide algorithm. In this
     // case n > 1.
-    KnuthDiv(__U, __V, __Q, __R, m, n);
+    knuthDiv(u, v, q, r, m, n);
   }
 
   // If the caller wants the quotient
@@ -1126,15 +1126,15 @@ void divide(const ap_private<_AP_W, _AP_S>& LHS, uint32_t lhsWords,
     // order words.
     if (lhsWords == 1) {
       uint64_t tmp =
-          uint64_t(__Q[0]) | ((uint64_t(__Q[1])) << (APINT_BITS_PER_WORD / 2));
+          uint64_t(q[0]) | ((uint64_t(q[1])) << (APINT_BITS_PER_WORD / 2));
       Quotient->set_VAL(tmp);
     } else {
       assert(!Quotient->isSingleWord() &&
              "Quotient ap_private not large enough");
       for (unsigned i = 0; i < lhsWords; ++i)
         Quotient->set_pVal(
-            i, uint64_t(__Q[i * 2]) |
-                   ((uint64_t(__Q[i * 2 + 1])) << (APINT_BITS_PER_WORD / 2)));
+            i, uint64_t(q[i * 2]) |
+                   ((uint64_t(q[i * 2 + 1])) << (APINT_BITS_PER_WORD / 2)));
     }
     Quotient->clearUnusedBits();
   }
@@ -1149,27 +1149,27 @@ void divide(const ap_private<_AP_W, _AP_S>& LHS, uint32_t lhsWords,
 
     // The remainder is in __R. Reconstitute the remainder into Remainder's low
     // order words.
-    if (rhsWords == 1) {
+    if (rhs_words == 1) {
       uint64_t tmp =
-          uint64_t(__R[0]) | ((uint64_t(__R[1])) << (APINT_BITS_PER_WORD / 2));
+          uint64_t(r[0]) | ((uint64_t(r[1])) << (APINT_BITS_PER_WORD / 2));
       Remainder->set_VAL(tmp);
     } else {
       assert(!Remainder->isSingleWord() &&
              "Remainder ap_private not large enough");
-      for (unsigned i = 0; i < rhsWords; ++i)
+      for (unsigned i = 0; i < rhs_words; ++i)
         Remainder->set_pVal(
-            i, uint64_t(__R[i * 2]) |
-                   ((uint64_t(__R[i * 2 + 1])) << (APINT_BITS_PER_WORD / 2)));
+            i, uint64_t(r[i * 2]) |
+                   ((uint64_t(r[i * 2 + 1])) << (APINT_BITS_PER_WORD / 2)));
     }
     Remainder->clearUnusedBits();
   }
 
   // Clean up the memory we allocated.
-  if (__U != &SPACE[0]) {
-    delete[] __U;
-    delete[] __V;
-    delete[] __Q;
-    delete[] __R;
+  if (u != &space[0]) {
+    delete[] u;
+    delete[] v;
+    delete[] q;
+    delete[] r;
   }
 }
 
@@ -1296,17 +1296,17 @@ struct valtype<4, true> {
 };
 
 template <bool enable>
-struct ap_private_enable_if {};
+struct ApPrivateEnableIf {};
 template <>
-struct ap_private_enable_if<true> {
-  static const bool isValid = true;
+struct ApPrivateEnableIf<true> {
+  static const bool IS_VALID = true;
 };
 
 // When bitwidth < 64
 template <int _AP_W, bool _AP_S>
 class ap_private<_AP_W, _AP_S, true> {
   // SFINAE pattern.  Only consider this class when _AP_W <= 64
-  const static bool valid = ap_private_enable_if<_AP_W <= 64>::isValid;
+  const static bool VALID = ApPrivateEnableIf<_AP_W <= 64>::isValid;
 
 #ifdef _MSC_VER
 #pragma warning(disable : 4521 4522)
@@ -1347,14 +1347,14 @@ class ap_private<_AP_W, _AP_S, true> {
                       ? APINT_BITS_PER_WORD - (_AP_W % APINT_BITS_PER_WORD)
                       : 0
   };
-  static const uint64_t mask = ((uint64_t)~0ULL >> (excess_bits));
-  static const uint64_t not_mask = ~mask;
-  static const uint64_t sign_bit_mask = 1ULL << (APINT_BITS_PER_WORD - 1);
+  static const uint64_t MASK = ((uint64_t)~0ULL >> (excess_bits));
+  static const uint64_t NOT_MASK = ~MASK;
+  static const uint64_t SIGN_BIT_MASK = 1ULL << (APINT_BITS_PER_WORD - 1);
   template <int _AP_W1>
-  struct sign_ext_mask {
-    static const uint64_t mask = ~0ULL << _AP_W1;
+  struct SignExtMask {
+    static const uint64_t MASK = ~0ULL << _AP_W1;
   };
-  static const int width = _AP_W;
+  static const int WIDTH = _AP_W;
 
   enum {
     BitWidth = _AP_W,
@@ -1370,22 +1370,22 @@ class ap_private<_AP_W, _AP_S, true> {
   void set_canary() {}
 #endif
 
-  INLINE ValType& get_VAL(void) { return VAL; }
-  INLINE ValType get_VAL(void) const { return VAL; }
-  INLINE ValType get_VAL(void) const volatile { return VAL; }
-  INLINE void set_VAL(uint64_t value) { VAL = (ValType)value; }
-  INLINE ValType& get_pVal(int i) { return VAL; }
-  INLINE ValType get_pVal(int i) const { return VAL; }
-  INLINE const uint64_t* get_pVal() const {
+  INLINE ValType& getVal(void) { return VAL; }
+  INLINE ValType getVal(void) const { return VAL; }
+  INLINE ValType getVal(void) const volatile { return VAL; }
+  INLINE void setVal(uint64_t value) { VAL = (ValType)value; }
+  INLINE ValType& getPVal(int i) { return VAL; }
+  INLINE ValType getPVal(int i) const { return VAL; }
+  INLINE const uint64_t* getPVal() const {
     assert(0 && "invalid usage");
     return 0;
   }
-  INLINE ValType get_pVal(int i) const volatile { return VAL; }
-  INLINE uint64_t* get_pVal() const volatile {
+  INLINE ValType getPVal(int i) const volatile { return VAL; }
+  INLINE uint64_t* getPVal() const volatile {
     assert(0 && "invalid usage");
     return 0;
   }
-  INLINE void set_pVal(int i, uint64_t value) { VAL = (ValType)value; }
+  INLINE void setPVal(int i, uint64_t value) { VAL = (ValType)value; }
 
   INLINE uint32_t getBitWidth() const { return BitWidth; }
 
@@ -1407,26 +1407,26 @@ class ap_private<_AP_W, _AP_S, true> {
 
   void operator=(const ap_private& RHS) volatile {
     // Don't do anything for X = X
-    VAL = RHS.get_VAL();  // No need to check because no harm done by copying.
+    VAL = RHS.getVal();  // No need to check because no harm done by copying.
     clearUnusedBits();
   }
 
   ap_private& operator=(const ap_private& RHS) {
     // Don't do anything for X = X
-    VAL = RHS.get_VAL();  // No need to check because no harm done by copying.
+    VAL = RHS.getVal();  // No need to check because no harm done by copying.
     clearUnusedBits();
     return *this;
   }
 
   void operator=(const volatile ap_private& RHS) volatile {
     // Don't do anything for X = X
-    VAL = RHS.get_VAL();  // No need to check because no harm done by copying.
+    VAL = RHS.getVal();  // No need to check because no harm done by copying.
     clearUnusedBits();
   }
 
   ap_private& operator=(const volatile ap_private& RHS) {
     // Don't do anything for X = X
-    VAL = RHS.get_VAL();  // No need to check because no harm done by copying.
+    VAL = RHS.getVal();  // No need to check because no harm done by copying.
     clearUnusedBits();
     return *this;
   }
@@ -1483,8 +1483,8 @@ ASSIGN_OP_FROM_INT(double)
 
  public:
   INLINE void fromString(const char* strStart, uint32_t slen, uint8_t radix) {
-    bool isNeg = strStart[0] == '-';
-    if (isNeg) {
+    bool is_neg = strStart[0] == '-';
+    if (is_neg) {
       strStart++;
       slen--;
     }
@@ -1526,7 +1526,7 @@ ASSIGN_OP_FROM_INT(double)
     assert(strStart && "String is null?");
 
     // Clear bits.
-    uint64_t tmpVAL = VAL = 0;
+    uint64_t tmp_val = VAL = 0;
 
     switch (radix) {
       case 2:
@@ -1535,8 +1535,8 @@ ASSIGN_OP_FROM_INT(double)
         for (; *strStart; ++strStart) {
           assert((*strStart == '0' || *strStart == '1') &&
                  ("Wrong binary number"));
-          tmpVAL <<= 1;
-          tmpVAL |= (*strStart - '0');
+          tmp_val <<= 1;
+          tmp_val |= (*strStart - '0');
         }
         break;
       case 8:
@@ -1544,7 +1544,7 @@ ASSIGN_OP_FROM_INT(double)
         sscanf_s(strStart, "%llo", &tmpVAL, slen + 1);
 #else
 #if defined(__x86_64__) && !defined(__MINGW32__) && !defined(__WIN32__)
-        sscanf(strStart, "%lo", &tmpVAL);
+        sscanf(strStart, "%lo", &tmp_val);
 #else
         sscanf(strStart, "%llo", &tmpVAL);
 #endif  //__x86_64__
@@ -1555,7 +1555,7 @@ ASSIGN_OP_FROM_INT(double)
         sscanf_s(strStart, "%llu", &tmpVAL, slen + 1);
 #else
 #if defined(__x86_64__) && !defined(__MINGW32__) && !defined(__WIN32__)
-        sscanf(strStart, "%lu", &tmpVAL);
+        sscanf(strStart, "%lu", &tmp_val);
 #else
         sscanf(strStart, "%llu", &tmpVAL);
 #endif  //__x86_64__
@@ -1566,7 +1566,7 @@ ASSIGN_OP_FROM_INT(double)
         sscanf_s(strStart, "%llx", &tmpVAL, slen + 1);
 #else
 #if defined(__x86_64__) && !defined(__MINGW32__) && !defined(__WIN32__)
-        sscanf(strStart, "%lx", &tmpVAL);
+        sscanf(strStart, "%lx", &tmp_val);
 #else
         sscanf(strStart, "%llx", &tmpVAL);
 #endif  //__x86_64__
@@ -1576,7 +1576,7 @@ ASSIGN_OP_FROM_INT(double)
         assert(true && "Unknown radix");
         // error
     }
-    VAL = isNeg ? (ValType)(-tmpVAL) : (ValType)(tmpVAL);
+    VAL = is_neg ? (ValType)(-tmp_val) : (ValType)(tmp_val);
 
     clearUnusedBits();
   }
@@ -1690,10 +1690,10 @@ ASSIGN_OP_FROM_INT(double)
 
   INLINE bool isStrictlyPositive() const { return !isNegative() && VAL != 0; }
 
-  INLINE bool isAllOnesValue() const { return (mask & VAL) == mask; }
+  INLINE bool isAllOnesValue() const { return (MASK & VAL) == MASK; }
 
   INLINE bool operator==(const ap_private<_AP_W, _AP_S>& RHS) const {
-    return VAL == RHS.get_VAL();
+    return VAL == RHS.getVal();
   }
   INLINE bool operator==(const ap_private<_AP_W, !_AP_S>& RHS) const {
     return (uint64_t)VAL == (uint64_t)RHS.get_VAL();
@@ -1702,7 +1702,7 @@ ASSIGN_OP_FROM_INT(double)
   INLINE bool operator==(uint64_t Val) const { return ((uint64_t)VAL == Val); }
   INLINE bool operator!=(uint64_t Val) const { return ((uint64_t)VAL != Val); }
   INLINE bool operator!=(const ap_private<_AP_W, _AP_S>& RHS) const {
-    return VAL != RHS.get_VAL();
+    return VAL != RHS.getVal();
   }
   INLINE bool operator!=(const ap_private<_AP_W, !_AP_S>& RHS) const {
     return (uint64_t)VAL != (uint64_t)RHS.get_VAL();
@@ -1740,9 +1740,9 @@ ASSIGN_OP_FROM_INT(double)
 
   /// one's complement.
   INLINE ap_private<_AP_W + !_AP_S, true> operator~() const {
-    ap_private<_AP_W + !_AP_S, true> Result(*this);
-    Result.flip();
-    return Result;
+    ap_private<_AP_W + !_AP_S, true> result(*this);
+    result.flip();
+    return result;
   }
 
   /// two's complement.
@@ -1779,7 +1779,7 @@ ASSIGN_OP_FROM_INT(double)
   INLINE ap_private lshr(uint32_t shiftAmt) const {
     return ap_private((shiftAmt == BitWidth)
                           ? ap_private(0)
-                          : ap_private((VAL & mask) >> (shiftAmt)));
+                          : ap_private((VAL & MASK) >> (shiftAmt)));
   }
 
   INLINE ap_private shl(uint32_t shiftAmt) const
@@ -1805,7 +1805,7 @@ ASSIGN_OP_FROM_INT(double)
   INLINE int64_t getSExtValue() const { return VAL; }
 
   // XXX XXX this function is used in CBE
-  INLINE uint64_t getZExtValue() const { return VAL & mask; }
+  INLINE uint64_t getZExtValue() const { return VAL & MASK; }
 
   template <int _AP_W2, bool _AP_S2>
   INLINE ap_private(const _private_range_ref<_AP_W2, _AP_S2>& ref) {
@@ -1857,30 +1857,30 @@ ASSIGN_OP_FROM_INT(double)
   //-----------------------------------------------------------
   INLINE operator ValType() const { return get_VAL(); }
 
-  INLINE int to_uchar() const { return (unsigned char)get_VAL(); }
+  INLINE int toUchar() const { return (unsigned char)get_VAL(); }
 
-  INLINE int to_char() const { return (signed char)get_VAL(); }
+  INLINE int toChar() const { return (signed char)get_VAL(); }
 
-  INLINE int to_ushort() const { return (unsigned short)get_VAL(); }
+  INLINE int toUshort() const { return (unsigned short)get_VAL(); }
 
-  INLINE int to_short() const { return (short)get_VAL(); }
+  INLINE int toShort() const { return (short)get_VAL(); }
 
-  INLINE int to_int() const {
+  INLINE int toInt() const {
     //      ap_private<64 /* _AP_W */, _AP_S> res(V);
     return (int)get_VAL();
   }
 
-  INLINE unsigned to_uint() const { return (unsigned)get_VAL(); }
+  INLINE unsigned toUint() const { return (unsigned)get_VAL(); }
 
-  INLINE long to_long() const { return (long)get_VAL(); }
+  INLINE long toLong() const { return (long)get_VAL(); }
 
-  INLINE unsigned long to_ulong() const { return (unsigned long)get_VAL(); }
+  INLINE unsigned long toUlong() const { return (unsigned long)get_VAL(); }
 
-  INLINE ap_slong to_int64() const { return (ap_slong)get_VAL(); }
+  INLINE ap_slong toInt64() const { return (ap_slong)get_VAL(); }
 
-  INLINE ap_ulong to_uint64() const { return (ap_ulong)get_VAL(); }
+  INLINE ap_ulong toUint64() const { return (ap_ulong)get_VAL(); }
 
-  INLINE double to_double() const {
+  INLINE double toDouble() const {
     if (isNegative())
       return roundToDouble(true);
     else
@@ -1936,12 +1936,12 @@ ASSIGN_OP_FROM_INT(double)
   INLINE typename RType<_AP_W1, _AP_S1>::logic operator&(
       const ap_private<_AP_W1, _AP_S1>& RHS) const {
     if (RType<_AP_W1, _AP_S1>::logic_w <= 64) {
-      typename RType<_AP_W1, _AP_S1>::logic Ret(((uint64_t)VAL) &
+      typename RType<_AP_W1, _AP_S1>::logic ret(((uint64_t)VAL) &
                                                 RHS.get_VAL());
-      return Ret;
+      return ret;
     } else {
-      typename RType<_AP_W1, _AP_S1>::logic Ret = *this;
-      return Ret & RHS;
+      typename RType<_AP_W1, _AP_S1>::logic ret = *this;
+      return ret & RHS;
     }
   }
 
@@ -1949,12 +1949,12 @@ ASSIGN_OP_FROM_INT(double)
   INLINE typename RType<_AP_W1, _AP_S1>::logic operator^(
       const ap_private<_AP_W1, _AP_S1>& RHS) const {
     if (RType<_AP_W1, _AP_S1>::logic_w <= 64) {
-      typename RType<_AP_W1, _AP_S1>::logic Ret(((uint64_t)VAL) ^
+      typename RType<_AP_W1, _AP_S1>::logic ret(((uint64_t)VAL) ^
                                                 RHS.get_VAL());
-      return Ret;
+      return ret;
     } else {
-      typename RType<_AP_W1, _AP_S1>::logic Ret = *this;
-      return Ret ^ RHS;
+      typename RType<_AP_W1, _AP_S1>::logic ret = *this;
+      return ret ^ RHS;
     }
   }
 
@@ -1962,51 +1962,51 @@ ASSIGN_OP_FROM_INT(double)
   INLINE typename RType<_AP_W1, _AP_S1>::logic operator|(
       const ap_private<_AP_W1, _AP_S1>& RHS) const {
     if (RType<_AP_W1, _AP_S1>::logic_w <= 64) {
-      typename RType<_AP_W1, _AP_S1>::logic Ret(((uint64_t)VAL) |
+      typename RType<_AP_W1, _AP_S1>::logic ret(((uint64_t)VAL) |
                                                 RHS.get_VAL());
-      return Ret;
+      return ret;
     } else {
-      typename RType<_AP_W1, _AP_S1>::logic Ret = *this;
-      return Ret | RHS;
+      typename RType<_AP_W1, _AP_S1>::logic ret = *this;
+      return ret | RHS;
     }
   }
 
-  INLINE ap_private And(const ap_private& RHS) const {
-    return ap_private(VAL & RHS.get_VAL());
+  INLINE ap_private and(const ap_private& RHS) const {
+    return ap_private(VAL & RHS.getVal());
   }
 
-  INLINE ap_private Or(const ap_private& RHS) const {
-    return ap_private(VAL | RHS.get_VAL());
+  INLINE ap_private or(const ap_private& RHS) const {
+    return ap_private(VAL | RHS.getVal());
   }
 
-  INLINE ap_private Xor(const ap_private& RHS) const {
-    return ap_private(VAL ^ RHS.get_VAL());
+  INLINE ap_private xor(const ap_private& RHS) const {
+    return ap_private(VAL ^ RHS.getVal());
   }
 #if 1
   template <int _AP_W1, bool _AP_S1>
   INLINE typename RType<_AP_W1, _AP_S1>::mult operator*(
       const ap_private<_AP_W1, _AP_S1>& RHS) const {
     if (RType<_AP_W1, _AP_S1>::mult_w <= 64) {
-      typename RType<_AP_W1, _AP_S1>::mult Result(((uint64_t)VAL) *
+      typename RType<_AP_W1, _AP_S1>::mult result(((uint64_t)VAL) *
                                                   RHS.get_VAL());
-      return Result;
+      return result;
     } else {
-      typename RType<_AP_W1, _AP_S1>::mult Result(*this);
-      Result *= RHS;
-      return Result;
+      typename RType<_AP_W1, _AP_S1>::mult result(*this);
+      result *= RHS;
+      return result;
     }
   }
 #endif
-  INLINE ap_private Mul(const ap_private& RHS) const {
-    return ap_private(VAL * RHS.get_VAL());
+  INLINE ap_private mul(const ap_private& RHS) const {
+    return ap_private(VAL * RHS.getVal());
   }
 
-  INLINE ap_private Add(const ap_private& RHS) const {
-    return ap_private(VAL + RHS.get_VAL());
+  INLINE ap_private add(const ap_private& RHS) const {
+    return ap_private(VAL + RHS.getVal());
   }
 
-  INLINE ap_private Sub(const ap_private& RHS) const {
-    return ap_private(VAL - RHS.get_VAL());
+  INLINE ap_private sub(const ap_private& RHS) const {
+    return ap_private(VAL - RHS.getVal());
   }
 
   INLINE ap_private& operator&=(uint64_t RHS) {
@@ -2055,9 +2055,9 @@ ASSIGN_OP_FROM_INT(double)
           RType<_AP_W1, _AP_S1>::plus_s
               ? int64_t(((uint64_t)VAL) + RHS.get_VAL())
               : uint64_t(((uint64_t)VAL) + RHS.get_VAL()));
-    typename RType<_AP_W1, _AP_S1>::plus Result = RHS;
-    Result += VAL;
-    return Result;
+    typename RType<_AP_W1, _AP_S1>::plus result = RHS;
+    result += VAL;
+    return result;
   }
 
   template <int _AP_W1, bool _AP_S1>
@@ -2066,20 +2066,20 @@ ASSIGN_OP_FROM_INT(double)
     if (RType<_AP_W1, _AP_S1>::minus_w <= 64)
       return typename RType<_AP_W1, _AP_S1>::minus(
           int64_t(((uint64_t)VAL) - RHS.get_VAL()));
-    typename RType<_AP_W1, _AP_S1>::minus Result = *this;
-    Result -= RHS;
-    return Result;
+    typename RType<_AP_W1, _AP_S1>::minus result = *this;
+    result -= RHS;
+    return result;
   }
 
   INLINE uint32_t countPopulation() const {
-    return ap_private_ops::CountPopulation_64(VAL);
+    return ap_private_ops::countPopulation64(VAL);
   }
   INLINE uint32_t countLeadingZeros() const {
     int remainder = BitWidth % 64;
-    int excessBits = (64 - remainder) % 64;
-    uint32_t Count = ap_private_ops::CountLeadingZeros_64(VAL);
-    if (Count) Count -= excessBits;
-    return AESL_std::min(Count, (uint32_t)_AP_W);
+    int excess_bits = (64 - remainder) % 64;
+    uint32_t count = ap_private_ops::countLeadingZeros64(VAL);
+    if (count) count -= excess_bits;
+    return aesl_std::min(count, (uint32_t)_AP_W);
   }
 
   /// HiBits - This function returns the high "numBits" bits of this ap_private.
@@ -2136,7 +2136,7 @@ ASSIGN_OP_FROM_INT(double)
   }
 
   INLINE ap_private udiv(const ap_private& RHS) const {
-    return ap_private((uint64_t)VAL / RHS.get_VAL());
+    return ap_private((uint64_t)VAL / RHS.getVal());
   }
 
   /// Signed divide this ap_private by ap_private RHS.
@@ -2193,10 +2193,10 @@ ASSIGN_OP_FROM_INT(double)
   template <int _AP_W1, bool _AP_S1>
   INLINE bool ult(const ap_private<_AP_W1, _AP_S1>& RHS) const {
     if (_AP_W1 <= 64) {
-      uint64_t lhsZext = ((uint64_t(VAL)) << (64 - _AP_W)) >> (64 - _AP_W);
-      uint64_t rhsZext =
+      uint64_t lhs_zext = ((uint64_t(VAL)) << (64 - _AP_W)) >> (64 - _AP_W);
+      uint64_t rhs_zext =
           ((uint64_t(RHS.get_VAL())) << (64 - _AP_W1)) >> (64 - _AP_W1);
-      return lhsZext < rhsZext;
+      return lhs_zext < rhs_zext;
     } else
       return RHS.uge(*this);
   }
@@ -2213,10 +2213,10 @@ ASSIGN_OP_FROM_INT(double)
 #endif
   {
     if (_AP_W1 <= 64) {
-      int64_t lhsSext = ((int64_t(VAL)) << (64 - _AP_W)) >> (64 - _AP_W);
-      int64_t rhsSext =
+      int64_t lhs_sext = ((int64_t(VAL)) << (64 - _AP_W)) >> (64 - _AP_W);
+      int64_t rhs_sext =
           ((int64_t(RHS.get_VAL())) << (64 - _AP_W1)) >> (64 - _AP_W1);
-      return lhsSext < rhsSext;
+      return lhs_sext < rhs_sext;
     } else
       return RHS.sge(*this);
   }
@@ -2320,7 +2320,7 @@ ASSIGN_OP_FROM_INT(double)
   /*Return true if the value of ap_private instance is zero*/
   INLINE bool iszero() const { return isMinValue(); }
 
-  INLINE bool to_bool() const { return !iszero(); }
+  INLINE bool toBool() const { return !iszero(); }
 
   /* x < 0 */
   INLINE bool sign() const {
@@ -2366,14 +2366,14 @@ ASSIGN_OP_FROM_INT(double)
   }
 
   // Set the ith bit into v
-  INLINE void set_bit(int i, bool v) {
+  INLINE void setBit(int i, bool v) {
     assert(i >= 0 && "Attempting to write bit with negative index");
     assert(i < _AP_W && "Attempting to write bit beyond MSB");
     v ? set(i) : clear(i);
   }
 
   // Get the value of ith bit
-  INLINE bool get_bit(int i) const {
+  INLINE bool getBit(int i) const {
     assert(i >= 0 && "Attempting to read bit with negative index");
     assert(i < _AP_W && "Attempting to read bit beyond MSB");
     return (((1ULL << i) & VAL) != 0);
@@ -2381,7 +2381,7 @@ ASSIGN_OP_FROM_INT(double)
 
   /// Toggle all bits.
   INLINE ap_private& flip() {
-    VAL = (ValType)((~0ULL ^ VAL) & mask);
+    VAL = (ValType)((~0ULL ^ VAL) & MASK);
     clearUnusedBits();
     return *this;
   }
@@ -2389,12 +2389,12 @@ ASSIGN_OP_FROM_INT(double)
   /// Toggles a given bit to its opposite value.
   INLINE ap_private& flip(uint32_t bitPosition) {
     assert(bitPosition < BitWidth && "Out of the bit-width range!");
-    set_bit(bitPosition, !get_bit(bitPosition));
+    setBit(bitPosition, !getBit(bitPosition));
     return *this;
   }
 
   // complements every bit
-  INLINE void b_not() { flip(); }
+  INLINE void bNot() { flip(); }
 
 // Binary Arithmetic
 //-----------------------------------------------------------
@@ -2911,25 +2911,25 @@ ASSIGN_OP_FROM_INT(double)
 
   // Reduce operation
   //-----------------------------------------------------------
-  INLINE bool and_reduce() const { return (VAL & mask) == mask; }
+  INLINE bool andReduce() const { return (VAL & MASK) == MASK; }
 
-  INLINE bool nand_reduce() const { return (VAL & mask) != mask; }
+  INLINE bool nandReduce() const { return (VAL & MASK) != MASK; }
 
-  INLINE bool or_reduce() const { return (bool)VAL; }
+  INLINE bool orReduce() const { return (bool)VAL; }
 
-  INLINE bool nor_reduce() const { return VAL == 0; }
+  INLINE bool norReduce() const { return VAL == 0; }
 
-  INLINE bool xor_reduce() const {
+  INLINE bool xorReduce() const {
     unsigned int i = countPopulation();
     return (i % 2) ? true : false;
   }
 
-  INLINE bool xnor_reduce() const {
+  INLINE bool xnorReduce() const {
     unsigned int i = countPopulation();
     return (i % 2) ? false : true;
   }
 
-  INLINE std::string to_string(uint8_t radix = 2, bool sign = false) const {
+  INLINE std::string toString(uint8_t radix = 2, bool sign = false) const {
     return toString(radix, radix == 10 ? _AP_S : sign);
   }
 };  // End of class ap_private <_AP_W, _AP_S, true>
@@ -6157,18 +6157,18 @@ struct _private_range_ref {
 #ifdef _MSC_VER
 #pragma warning(disable : 4521 4522)
 #endif
-  ap_private<_AP_W, _AP_S>& d_bv;
-  int l_index;
-  int h_index;
+  ap_private<_AP_W, _AP_S>& d_bv_;
+  int l_index_;
+  int h_index_;
 
  public:
   /// copy ctor.
   INLINE _private_range_ref(const _private_range_ref<_AP_W, _AP_S>& ref)
-      : d_bv(ref.d_bv), l_index(ref.l_index), h_index(ref.h_index) {}
+      : d_bv_(ref.d_bv_), l_index_(ref.l_index_), h_index_(ref.h_index_) {}
 
   /// direct ctor.
   INLINE _private_range_ref(ap_private<_AP_W, _AP_S>* bv, int h, int l)
-      : d_bv(*bv), l_index(l), h_index(h) {
+      : d_bv_(*bv), l_index_(l), h_index_(h) {
     _AP_WARNING(h < 0 || l < 0,
                 "Higher bound (%d) and lower bound (%d) cannot be "
                 "negative.",
@@ -6182,10 +6182,10 @@ struct _private_range_ref {
   template <int _AP_W2, bool _AP_S2>
   INLINE _private_range_ref<_AP_W, _AP_S>& operator|=(
       const _private_range_ref<_AP_W2, _AP_S2>& ref) {
-    _AP_WARNING((h_index - l_index) != (ref.h_index - ref.l_index),
+    _AP_WARNING((h_index_ - l_index_) != (ref.h_index - ref.l_index),
                 "Bitsize mismach for ap_private<>.range() &= "
                 "ap_private<>.range().");
-    this->d_bv |= ref.d_bv;
+    this->d_bv_ |= ref.d_bv;
     return *this;
   }
 
@@ -6193,9 +6193,9 @@ struct _private_range_ref {
   template <int _AP_W2, bool _AP_S2>
   INLINE _private_range_ref<_AP_W, _AP_S>& operator|=(
       const _AP_ROOT_TYPE<_AP_W2, _AP_S2>& ref) {
-    _AP_WARNING((h_index - l_index + 1) != _AP_W2,
+    _AP_WARNING((h_index_ - l_index_ + 1) != _AP_W2,
                 "Bitsize mismach for ap_private<>.range() |= _AP_ROOT_TYPE<>.");
-    this->d_bv |= ref.V;
+    this->d_bv_ |= ref.V;
     return *this;
   }
 
@@ -6203,10 +6203,10 @@ struct _private_range_ref {
   template <int _AP_W2, bool _AP_S2>
   INLINE _private_range_ref<_AP_W, _AP_S>& operator&=(
       const _private_range_ref<_AP_W2, _AP_S2>& ref) {
-    _AP_WARNING((h_index - l_index) != (ref.h_index - ref.l_index),
+    _AP_WARNING((h_index_ - l_index_) != (ref.h_index - ref.l_index),
                 "Bitsize mismach for ap_private<>.range() &= "
                 "ap_private<>.range().");
-    this->d_bv &= ref.d_bv;
+    this->d_bv_ &= ref.d_bv;
     return *this;
   };
 
@@ -6214,9 +6214,9 @@ struct _private_range_ref {
   template <int _AP_W2, bool _AP_S2>
   INLINE _private_range_ref<_AP_W, _AP_S>& operator&=(
       const _AP_ROOT_TYPE<_AP_W2, _AP_S2>& ref) {
-    _AP_WARNING((h_index - l_index + 1) != _AP_W2,
+    _AP_WARNING((h_index_ - l_index_ + 1) != _AP_W2,
                 "Bitsize mismach for ap_private<>.range() &= _AP_ROOT_TYPE<>.");
-    this->d_bv &= ref.V;
+    this->d_bv_ &= ref.V;
     return *this;
   }
 
@@ -6224,10 +6224,10 @@ struct _private_range_ref {
   template <int _AP_W2, bool _AP_S2>
   INLINE _private_range_ref<_AP_W, _AP_S>& operator^=(
       const _private_range_ref<_AP_W2, _AP_S2>& ref) {
-    _AP_WARNING((h_index - l_index) != (ref.h_index - ref.l_index),
+    _AP_WARNING((h_index_ - l_index_) != (ref.h_index - ref.l_index),
                 "Bitsize mismach for ap_private<>.range() ^= "
                 "ap_private<>.range().");
-    this->d_bv ^= ref.d_bv;
+    this->d_bv_ ^= ref.d_bv;
     return *this;
   };
 
@@ -6235,9 +6235,9 @@ struct _private_range_ref {
   template <int _AP_W2, bool _AP_S2>
   INLINE _private_range_ref<_AP_W, _AP_S>& operator^=(
       const _AP_ROOT_TYPE<_AP_W2, _AP_S2>& ref) {
-    _AP_WARNING((h_index - l_index + 1) != _AP_W2,
+    _AP_WARNING((h_index_ - l_index_ + 1) != _AP_W2,
                 "Bitsize mismach for ap_private<>.range() ^= _AP_ROOT_TYPE<>.");
-    this->d_bv ^= ref.V;
+    this->d_bv_ ^= ref.V;
     return *this;
   }
 
@@ -6245,65 +6245,65 @@ struct _private_range_ref {
   //  @{
   INLINE operator ap_private<_AP_W, false>() const {
     ap_private<_AP_W, false> val(0);
-    if (h_index >= l_index) {
+    if (h_index_ >= l_index_) {
       if (_AP_W > 64) {
-        val = d_bv;
+        val = d_bv_;
         ap_private<_AP_W, false> mask(-1);
-        mask >>= _AP_W - (h_index - l_index + 1);
-        val >>= l_index;
+        mask >>= _AP_W - (h_index_ - l_index_ + 1);
+        val >>= l_index_;
         val &= mask;
       } else {
         const static uint64_t mask = (~0ULL >> (64 > _AP_W ? (64 - _AP_W) : 0));
-        val = (d_bv >> l_index) & (mask >> (_AP_W - (h_index - l_index + 1)));
+        val = (d_bv_ >> l_index_) & (mask >> (_AP_W - (h_index_ - l_index_ + 1)));
       }
     } else {
-      for (int i = 0, j = l_index; j >= 0 && j >= h_index; j--, i++)
-        if ((d_bv)[j]) val.set(i);
+      for (int i = 0, j = l_index_; j >= 0 && j >= h_index_; j--, i++)
+        if ((d_bv_)[j]) val.set(i);
     }
     return val;
   }
 
-  INLINE operator unsigned long long() const { return to_uint64(); }
+  INLINE operator unsigned long long() const { return toUint64(); }
   //  @}
 
   template <int _AP_W2, bool _AP_S2>
   INLINE _private_range_ref& operator=(const ap_private<_AP_W2, _AP_S2>& val) {
     ap_private<_AP_W, false> vval = ap_private<_AP_W, false>(val);
-    if (l_index > h_index) {
-      for (int i = 0, j = l_index; j >= 0 && j >= h_index; j--, i++)
-        (vval)[i] ? d_bv.set(j) : d_bv.clear(j);
+    if (l_index_ > h_index_) {
+      for (int i = 0, j = l_index_; j >= 0 && j >= h_index_; j--, i++)
+        (vval)[i] ? d_bv_.set(j) : d_bv_.clear(j);
     } else {
       if (_AP_W > 64) {
         ap_private<_AP_W, false> mask(-1);
-        if (l_index > 0) {
-          mask <<= l_index;
-          vval <<= l_index;
+        if (l_index_ > 0) {
+          mask <<= l_index_;
+          vval <<= l_index_;
         }
-        if (h_index < _AP_W - 1) {
+        if (h_index_ < _AP_W - 1) {
           ap_private<_AP_W, false> mask2(-1);
-          mask2 >>= _AP_W - h_index - 1;
+          mask2 >>= _AP_W - h_index_ - 1;
           mask &= mask2;
           vval &= mask2;
         }
         mask.flip();
-        d_bv &= mask;
-        d_bv |= vval;
+        d_bv_ &= mask;
+        d_bv_ |= vval;
       } else {
         unsigned shift = 64 - _AP_W;
         uint64_t mask = ~0ULL >> (shift);
-        if (l_index > 0) {
-          vval = mask & vval << l_index;
-          mask = mask & mask << l_index;
+        if (l_index_ > 0) {
+          vval = mask & vval << l_index_;
+          mask = mask & mask << l_index_;
         }
-        if (h_index < _AP_W - 1) {
+        if (h_index_ < _AP_W - 1) {
           uint64_t mask2 = mask;
-          mask2 >>= (_AP_W - h_index - 1);
+          mask2 >>= (_AP_W - h_index_ - 1);
           mask &= mask2;
           vval &= mask2;
         }
         mask = ~mask;
-        d_bv &= mask;
-        d_bv |= vval;
+        d_bv_ &= mask;
+        d_bv_ |= vval;
       }
     }
     return *this;
@@ -6323,8 +6323,8 @@ struct _private_range_ref {
   template <int _AP_W2, bool _AP_S2>
   INLINE _private_range_ref& operator=(
       const _private_range_ref<_AP_W2, _AP_S2>& val) {
-    const ap_private<_AP_W, false> tmpVal(val);
-    return operator=(tmpVal);
+    const ap_private<_AP_W, false> tmp_val(val);
+    return operator=(tmp_val);
   }
 
   //  template <int _AP_W3, typename _AP_T3, int _AP_W4, typename _AP_T4>
@@ -6481,67 +6481,67 @@ struct _private_range_ref {
   template <int _AP_W2>
   INLINE void set(const ap_private<_AP_W2, false>& val) {
     ap_private<_AP_W, _AP_S> vval = val;
-    if (l_index > h_index) {
-      for (int i = 0, j = l_index; j >= 0 && j >= h_index; j--, i++)
-        (vval)[i] ? d_bv.set(j) : d_bv.clear(j);
+    if (l_index_ > h_index_) {
+      for (int i = 0, j = l_index_; j >= 0 && j >= h_index_; j--, i++)
+        (vval)[i] ? d_bv_.set(j) : d_bv_.clear(j);
     } else {
       if (_AP_W > 64) {
         ap_private<_AP_W, _AP_S> mask(-1);
-        if (l_index > 0) {
+        if (l_index_ > 0) {
           ap_private<_AP_W, false> mask1(-1);
-          mask1 >>= _AP_W - l_index;
+          mask1 >>= _AP_W - l_index_;
           mask1.flip();
           mask = mask1;
           // vval&=mask1;
-          vval <<= l_index;
+          vval <<= l_index_;
         }
-        if (h_index < _AP_W - 1) {
+        if (h_index_ < _AP_W - 1) {
           ap_private<_AP_W, false> mask2(-1);
-          mask2 <<= h_index + 1;
+          mask2 <<= h_index_ + 1;
           mask2.flip();
           mask &= mask2;
           vval &= mask2;
         }
         mask.flip();
-        d_bv &= mask;
-        d_bv |= vval;
+        d_bv_ &= mask;
+        d_bv_ |= vval;
       } else {
         uint64_t mask = ~0ULL >> (64 - _AP_W);
-        if (l_index > 0) {
+        if (l_index_ > 0) {
           uint64_t mask1 = mask;
-          mask1 = mask & (mask1 >> (_AP_W - l_index));
-          vval = mask & (vval << l_index);
+          mask1 = mask & (mask1 >> (_AP_W - l_index_));
+          vval = mask & (vval << l_index_);
           mask = ~mask1 & mask;
           // vval&=mask1;
         }
-        if (h_index < _AP_W - 1) {
+        if (h_index_ < _AP_W - 1) {
           uint64_t mask2 = ~0ULL >> (64 - _AP_W);
-          mask2 = mask & (mask2 << (h_index + 1));
+          mask2 = mask & (mask2 << (h_index_ + 1));
           mask &= ~mask2;
           vval &= ~mask2;
         }
-        d_bv &= (~mask & (~0ULL >> (64 - _AP_W)));
-        d_bv |= vval;
+        d_bv_ &= (~mask & (~0ULL >> (64 - _AP_W)));
+        d_bv_ |= vval;
       }
     }
   }
 
   INLINE ap_private<_AP_W, false> get() const {
     ap_private<_AP_W, false> val(0);
-    if (h_index < l_index) {
-      for (int i = 0, j = l_index; j >= 0 && j >= h_index; j--, i++)
-        if ((d_bv)[j]) val.set(i);
+    if (h_index_ < l_index_) {
+      for (int i = 0, j = l_index_; j >= 0 && j >= h_index_; j--, i++)
+        if ((d_bv_)[j]) val.set(i);
     } else {
-      val = d_bv;
-      val >>= l_index;
-      if (h_index < _AP_W - 1) {
+      val = d_bv_;
+      val >>= l_index_;
+      if (h_index_ < _AP_W - 1) {
         if (_AP_W <= 64) {
           const static uint64_t mask =
               (~0ULL >> (64 > _AP_W ? (64 - _AP_W) : 0));
-          val &= (mask >> (_AP_W - (h_index - l_index + 1)));
+          val &= (mask >> (_AP_W - (h_index_ - l_index_ + 1)));
         } else {
           ap_private<_AP_W, false> mask(-1);
-          mask >>= _AP_W - (h_index - l_index + 1);
+          mask >>= _AP_W - (h_index_ - l_index_ + 1);
           val &= mask;
         }
       }
@@ -6551,19 +6551,19 @@ struct _private_range_ref {
 
   INLINE ap_private<_AP_W, false> get() {
     ap_private<_AP_W, false> val(0);
-    if (h_index < l_index) {
-      for (int i = 0, j = l_index; j >= 0 && j >= h_index; j--, i++)
-        if ((d_bv)[j]) val.set(i);
+    if (h_index_ < l_index_) {
+      for (int i = 0, j = l_index_; j >= 0 && j >= h_index_; j--, i++)
+        if ((d_bv_)[j]) val.set(i);
     } else {
-      val = d_bv;
-      val >>= l_index;
-      if (h_index < _AP_W - 1) {
+      val = d_bv_;
+      val >>= l_index_;
+      if (h_index_ < _AP_W - 1) {
         if (_AP_W <= 64) {
           static const uint64_t mask = ~0ULL >> (64 > _AP_W ? (64 - _AP_W) : 0);
-          return val &= ((mask) >> (_AP_W - (h_index - l_index + 1)));
+          return val &= ((mask) >> (_AP_W - (h_index_ - l_index_ + 1)));
         } else {
           ap_private<_AP_W, false> mask(-1);
-          mask >>= _AP_W - (h_index - l_index + 1);
+          mask >>= _AP_W - (h_index_ - l_index_ + 1);
           val &= mask;
         }
       }
@@ -6572,67 +6572,67 @@ struct _private_range_ref {
   }
 
   INLINE int length() const {
-    return h_index >= l_index ? h_index - l_index + 1 : l_index - h_index + 1;
+    return h_index_ >= l_index_ ? h_index_ - l_index_ + 1 : l_index_ - h_index_ + 1;
   }
 
-  INLINE int to_int() const {
+  INLINE int toInt() const {
     ap_private<_AP_W, false> val = get();
     return val.to_int();
   }
 
-  INLINE unsigned int to_uint() const {
+  INLINE unsigned int toUint() const {
     ap_private<_AP_W, false> val = get();
     return val.to_uint();
   }
 
-  INLINE long to_long() const {
+  INLINE long toLong() const {
     ap_private<_AP_W, false> val = get();
     return val.to_long();
   }
 
-  INLINE unsigned long to_ulong() const {
+  INLINE unsigned long toUlong() const {
     ap_private<_AP_W, false> val = get();
     return val.to_ulong();
   }
 
-  INLINE ap_slong to_int64() const {
+  INLINE ap_slong toInt64() const {
     ap_private<_AP_W, false> val = get();
     return val.to_int64();
   }
 
-  INLINE ap_ulong to_uint64() const {
+  INLINE ap_ulong toUint64() const {
     ap_private<_AP_W, false> val = get();
     return val.to_uint64();
   }
 
-  INLINE std::string to_string(uint8_t radix = 2) const {
+  INLINE std::string toString(uint8_t radix = 2) const {
     return get().to_string(radix);
   }
 
-  INLINE bool and_reduce() {
+  INLINE bool andReduce() {
     bool ret = true;
-    bool reverse = l_index > h_index;
-    unsigned low = reverse ? h_index : l_index;
-    unsigned high = reverse ? l_index : h_index;
-    for (unsigned i = low; i != high; ++i) ret &= d_bv[i];
+    bool reverse = l_index_ > h_index_;
+    unsigned low = reverse ? h_index_ : l_index_;
+    unsigned high = reverse ? l_index_ : h_index_;
+    for (unsigned i = low; i != high; ++i) ret &= d_bv_[i];
     return ret;
   }
 
-  INLINE bool or_reduce() {
+  INLINE bool orReduce() {
     bool ret = false;
-    bool reverse = l_index > h_index;
-    unsigned low = reverse ? h_index : l_index;
-    unsigned high = reverse ? l_index : h_index;
-    for (unsigned i = low; i != high; ++i) ret |= d_bv[i];
+    bool reverse = l_index_ > h_index_;
+    unsigned low = reverse ? h_index_ : l_index_;
+    unsigned high = reverse ? l_index_ : h_index_;
+    for (unsigned i = low; i != high; ++i) ret |= d_bv_[i];
     return ret;
   }
 
-  INLINE bool xor_reduce() {
+  INLINE bool xorReduce() {
     bool ret = false;
-    bool reverse = l_index > h_index;
-    unsigned low = reverse ? h_index : l_index;
-    unsigned high = reverse ? l_index : h_index;
-    for (unsigned i = low; i != high; ++i) ret ^= d_bv[i];
+    bool reverse = l_index_ > h_index_;
+    unsigned low = reverse ? h_index_ : l_index_;
+    unsigned high = reverse ? l_index_ : h_index_;
+    for (unsigned i = low; i != high; ++i) ret ^= d_bv_[i];
     return ret;
   }
 };  // struct _private_range_ref.
@@ -6646,34 +6646,34 @@ struct _private_bit_ref {
 #ifdef _MSC_VER
 #pragma warning(disable : 4521 4522)
 #endif
-  ap_private<_AP_W, _AP_S>& d_bv;
-  int d_index;
+  ap_private<_AP_W, _AP_S>& d_bv_;
+  int d_index_;
 
  public:
   // copy ctor.
   INLINE _private_bit_ref(const _private_bit_ref<_AP_W, _AP_S>& ref)
-      : d_bv(ref.d_bv), d_index(ref.d_index) {}
+      : d_bv_(ref.d_bv_), d_index_(ref.d_index_) {}
 
   // director ctor.
   INLINE _private_bit_ref(ap_private<_AP_W, _AP_S>& bv, int index = 0)
-      : d_bv(bv), d_index(index) {
-    _AP_WARNING(d_index < 0, "Index of bit vector  (%d) cannot be negative.\n",
-                d_index);
-    _AP_WARNING(d_index >= _AP_W,
-                "Index of bit vector (%d) out of range (%d).\n", d_index,
+      : d_bv_(bv), d_index_(index) {
+    _AP_WARNING(d_index_ < 0, "Index of bit vector  (%d) cannot be negative.\n",
+                d_index_);
+    _AP_WARNING(d_index_ >= _AP_W,
+                "Index of bit vector (%d) out of range (%d).\n", d_index_,
                 _AP_W);
   }
 
-  INLINE operator bool() const { return d_bv.get_bit(d_index); }
+  INLINE operator bool() const { return d_bv_.get_bit(d_index_); }
 
-  INLINE bool to_bool() const { return operator bool(); }
+  INLINE bool toBool() const { return operator bool(); }
 
   template <typename T>
   INLINE _private_bit_ref& operator=(const T& val) {
     if (!!val)
-      d_bv.set(d_index);
+      d_bv_.set(d_index_);
     else
-      d_bv.clear(d_index);
+      d_bv_.clear(d_index_);
     return *this;
   }
 

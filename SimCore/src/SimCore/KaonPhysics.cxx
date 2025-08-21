@@ -4,19 +4,19 @@ namespace simcore {
 KaonPhysics::KaonPhysics(const G4String& name,
                          const framework::config::Parameters& parameters)
     : G4VPhysicsConstructor(name) {
-  kplus_branching_ratios =
+  kplus_branching_ratios_ =
       parameters.get<std::vector<double>>("kplus_branching_ratios");
-  kminus_branching_ratios =
+  kminus_branching_ratios_ =
       parameters.get<std::vector<double>>("kminus_branching_ratios");
-  k0l_branching_ratios =
+  k0l_branching_ratios_ =
       parameters.get<std::vector<double>>("k0l_branching_ratios");
-  k0s_branching_ratios =
+  k0s_branching_ratios_ =
       parameters.get<std::vector<double>>("k0s_branching_ratios");
-  kplus_lifetime_factor = parameters.get<double>("kplus_lifetime_factor");
-  kminus_lifetime_factor = parameters.get<double>("kminus_lifetime_factor");
-  k0l_lifetime_factor = parameters.get<double>("k0l_lifetime_factor");
-  k0s_lifetime_factor = parameters.get<double>("k0s_lifetime_factor");
-  verbosity = parameters.get<int>("verbosity");
+  kplus_lifetime_factor_ = parameters.get<double>("kplus_lifetime_factor");
+  kminus_lifetime_factor_ = parameters.get<double>("kminus_lifetime_factor");
+  k0l_lifetime_factor_ = parameters.get<double>("k0l_lifetime_factor");
+  k0s_lifetime_factor_ = parameters.get<double>("k0s_lifetime_factor");
+  verbosity_ = parameters.get<int>("verbosity");
 }
 void KaonPhysics::setDecayProperties(
     G4ParticleDefinition* kaon, const std::vector<double>& branching_ratios,
@@ -30,7 +30,7 @@ void KaonPhysics::setDecayProperties(
     ldmx_log(info) << "Decay details (" << kaon->GetParticleName()
                    << ") before setting branching ratios and lifetimes"
                    << std::endl;
-    DumpDecayDetails(kaon);
+    dumpDecayDetails(kaon);
   }
   kaon->SetPDGLifeTime(kaon->GetPDGLifeTime() * lifetime_factor);
   if (kaon == G4KaonZeroLong::Definition()) {
@@ -69,28 +69,28 @@ void KaonPhysics::setDecayProperties(
     ldmx_log(info) << "Decay details (" << kaon->GetParticleName()
                    << ") after setting branching ratios and lifetimes"
                    << std::endl;
-    DumpDecayDetails(kaon);
+    dumpDecayDetails(kaon);
   }
 }
 void KaonPhysics::ConstructParticle() {
-  auto kaonPlus{G4KaonPlus::Definition()};
-  auto kaonMinus{G4KaonMinus::Definition()};
-  auto kaonLong{G4KaonZeroLong::Definition()};
-  auto kaonShort{G4KaonZeroShort::Definition()};
+  auto kaon_plus{G4KaonPlus::Definition()};
+  auto kaon_minus{G4KaonMinus::Definition()};
+  auto kaon_long{G4KaonZeroLong::Definition()};
+  auto kaon_short{G4KaonZeroShort::Definition()};
 
-  if (!kaonPlus || !kaonMinus || !kaonLong || !kaonShort) {
+  if (!kaon_plus || !kaon_minus || !kaon_long || !kaon_short) {
     EXCEPTION_RAISE("KaonPhysics",
                     "Unable to get the charged kaon particle definitions, "
                     "something is very wrong with the configuration.");
   }
-  setDecayProperties(kaonPlus, kplus_branching_ratios, kplus_lifetime_factor);
-  setDecayProperties(kaonMinus, kminus_branching_ratios,
-                     kminus_lifetime_factor);
-  setDecayProperties(kaonLong, k0l_branching_ratios, k0l_lifetime_factor);
-  setDecayProperties(kaonShort, k0s_branching_ratios, k0s_lifetime_factor);
+  setDecayProperties(kaon_plus, kplus_branching_ratios_, kplus_lifetime_factor_);
+  setDecayProperties(kaon_minus, kminus_branching_ratios_,
+                     kminus_lifetime_factor_);
+  setDecayProperties(kaon_long, k0l_branching_ratios_, k0l_lifetime_factor_);
+  setDecayProperties(kaon_short, k0s_branching_ratios_, k0s_lifetime_factor_);
 }
 
-void KaonPhysics::DumpDecayDetails(const G4ParticleDefinition* kaon) const {
+void KaonPhysics::dumpDecayDetails(const G4ParticleDefinition* kaon) const {
   ldmx_log(info) << "Decay table details for " << kaon->GetParticleName()
                  << std::scientific << std::setprecision(15)
                  << " (PDG Lifetime " << kaon->GetPDGLifeTime() << ")"

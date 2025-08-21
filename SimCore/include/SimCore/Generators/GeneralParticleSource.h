@@ -49,7 +49,7 @@ class GeneralParticleSource : public simcore::PrimaryGenerator {
    * @param event The Geant4 event.
    */
   void GeneratePrimaryVertex(G4Event* event) override;
-  void RecordConfig(const std::string& id, ldmx::RunHeader& rh) override;
+  void recordConfig(const std::string& id, ldmx::RunHeader& rh) ;
 
  private:
   /**
@@ -58,7 +58,7 @@ class GeneralParticleSource : public simcore::PrimaryGenerator {
    * The creation of this class creates a new messenger that we can pass
    * commands to.
    */
-  G4GeneralParticleSource theG4Source_;
+  G4GeneralParticleSource the_g4_source_;
 
   /// storage of initialization commands (for config recording)
   std::vector<std::string> init_commands_;

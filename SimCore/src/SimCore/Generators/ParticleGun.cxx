@@ -33,16 +33,16 @@ ParticleGun::ParticleGun(const std::string& name,
     : PrimaryGenerator(name, parameters) {
   verbosity_ = parameters.get<int>("verbosity");
 
-  auto particleTable{G4ParticleTable::GetParticleTable()};
+  auto particle_table{G4ParticleTable::GetParticleTable()};
 
   auto particle{parameters.get<std::string>("particle")};
-  if (auto particleDef{particleTable->FindParticle(particle)};
-      particleDef != 0) {
+  if (auto particle_def{particle_table->FindParticle(particle)};
+      particle_def != 0) {
     if (verbosity_ > 1) {
       std::cout << "[ ParticleGun ] : Firing particle of type " << particle
                 << std::endl;
     }
-    theGun_.SetParticleDefinition(particleDef);
+    the_gun_.SetParticleDefinition(particle_def);
   }
 
   auto energy{parameters.get<double>("energy")};
@@ -50,15 +50,15 @@ ParticleGun::ParticleGun(const std::string& name,
     std::cout << "[ ParticleGun ] : Setting energy to " << energy * GeV
               << std::endl;
   }
-  theGun_.SetParticleEnergy(energy * GeV);
+  the_gun_.SetParticleEnergy(energy * GeV);
 
   auto position{parameters.get<std::vector<double> >("position")};
   if (!position.empty()) {
-    G4ThreeVector pVec(position[0] * mm, position[1] * mm, position[2] * mm);
+    G4ThreeVector p_vec(position[0] * mm, position[1] * mm, position[2] * mm);
     if (verbosity_ > 1) {
-      std::cout << "[ ParticleGun ] : position " << pVec << std::endl;
+      std::cout << "[ ParticleGun ] : position " << p_vec << std::endl;
     }
-    theGun_.SetParticlePosition(pVec);
+    the_gun_.SetParticlePosition(p_vec);
   }
 
   auto time{parameters.get<double>("time")};
@@ -67,38 +67,38 @@ ParticleGun::ParticleGun(const std::string& name,
     std::cout << "[ ParticleGun ] : Setting particle time  to " << time
               << std::endl;
   }
-  theGun_.SetParticleTime(time * ns);
+  the_gun_.SetParticleTime(time * ns);
 
   auto direction{parameters.get<std::vector<double> >("direction")};
   if (!direction.empty()) {
-    G4ThreeVector dVec(direction[0], direction[1], direction[2]);
+    G4ThreeVector d_vec(direction[0], direction[1], direction[2]);
     if (verbosity_ > 1) {
-      std::cout << "[ ParticleGun ] : direction " << dVec.unit() << std::endl;
+      std::cout << "[ ParticleGun ] : direction " << d_vec.unit() << std::endl;
     }
-    theGun_.SetParticleMomentumDirection(dVec);
+    the_gun_.SetParticleMomentumDirection(d_vec);
   }
 }
 
 void ParticleGun::GeneratePrimaryVertex(G4Event* event) {
   // Call G4 class method to generate primaries.
-  theGun_.GeneratePrimaryVertex(event);
+  the_gun_.GeneratePrimaryVertex(event);
 }
 
-void ParticleGun::RecordConfig(const std::string& id, ldmx::RunHeader& rh) {
+void ParticleGun::recordConfig(const std::string& id, ldmx::RunHeader& rh) {
   rh.setStringParameter(id + " Class", "simcore::generators::ParticleGun");
-  rh.setFloatParameter(id + " Time [ns]", theGun_.GetParticleTime());
-  rh.setFloatParameter(id + " Energy [GeV]", theGun_.GetParticleEnergy() / GeV);
+  rh.setFloatParameter(id + " Time [ns]", the_gun_.GetParticleTime());
+  rh.setFloatParameter(id + " Energy [GeV]", the_gun_.GetParticleEnergy() / GeV);
   rh.setStringParameter(id + " Particle",
-                        theGun_.GetParticleDefinition()->GetParticleName());
-  rh.setFloatParameter(id + " X [mm]", theGun_.GetParticlePosition().x());
-  rh.setFloatParameter(id + " Y [mm]", theGun_.GetParticlePosition().y());
-  rh.setFloatParameter(id + " Z [mm]", theGun_.GetParticlePosition().z());
+                        the_gun_.GetParticleDefinition()->GetParticleName());
+  rh.setFloatParameter(id + " X [mm]", the_gun_.GetParticlePosition().x());
+  rh.setFloatParameter(id + " Y [mm]", the_gun_.GetParticlePosition().y());
+  rh.setFloatParameter(id + " Z [mm]", the_gun_.GetParticlePosition().z());
   rh.setFloatParameter(id + " Direction X",
-                       theGun_.GetParticleMomentumDirection().x());
+                       the_gun_.GetParticleMomentumDirection().x());
   rh.setFloatParameter(id + " Direction Y",
-                       theGun_.GetParticleMomentumDirection().y());
+                       the_gun_.GetParticleMomentumDirection().y());
   rh.setFloatParameter(id + " Direction Z",
-                       theGun_.GetParticleMomentumDirection().z());
+                       the_gun_.GetParticleMomentumDirection().z());
 }
 
 }  // namespace generators

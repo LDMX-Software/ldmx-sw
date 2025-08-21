@@ -19,21 +19,21 @@ class BertiniNothingHardProcess : public BertiniEventTopologyProcess {
                             bool count_light_ions)
       : BertiniEventTopologyProcess{count_light_ions},
         threshold_{threshold},
-        Zmin_{Zmin},
-        Emin_{Emin} {}
+        zmin_{Zmin},
+        emin_{Emin} {}
   virtual ~BertiniNothingHardProcess() = default;
   bool acceptProjectile(const G4HadProjectile& projectile) const override {
-    return projectile.GetKineticEnergy() >= Emin_;
+    return projectile.GetKineticEnergy() >= emin_;
   }
   bool acceptTarget(const G4Nucleus& targetNucleus) const override {
-    return targetNucleus.GetZ_asInt() >= Zmin_;
+    return targetNucleus.GetZ_asInt() >= zmin_;
   }
   bool acceptEvent() const override;
 
  private:
   double threshold_;
-  int Zmin_;
-  double Emin_;
+  int zmin_;
+  double emin_;
 };
 
 class BertiniNothingHardModel : public PhotoNuclearModel {
@@ -42,16 +42,16 @@ class BertiniNothingHardModel : public PhotoNuclearModel {
                           const framework::config::Parameters& parameters)
       : PhotoNuclearModel{name, parameters},
         threshold_{parameters.getParameter<double>("hard_particle_threshold")},
-        Zmin_{parameters.getParameter<int>("zmin")},
-        Emin_{parameters.getParameter<double>("emin")},
+        zmin_{parameters.getParameter<int>("zmin")},
+        emin_{parameters.getParameter<double>("emin")},
         count_light_ions_{parameters.getParameter<bool>("count_light_ions")} {}
   virtual ~BertiniNothingHardModel() = default;
-  void ConstructGammaProcess(G4ProcessManager* processManager) override;
+  void constructGammaProcess(G4ProcessManager* processManager) ;
 
  private:
   double threshold_;
-  int Zmin_;
-  double Emin_;
+  int zmin_;
+  double emin_;
   bool count_light_ions_;
 };
 }  // namespace simcore

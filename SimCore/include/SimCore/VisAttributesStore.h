@@ -28,8 +28,8 @@ class VisAttributesStore {
    * @return The vis attributes store.
    */
   static VisAttributesStore* getInstance() {
-    static VisAttributesStore INSTANCE;
-    return &INSTANCE;
+    static VisAttributesStore instance;
+    return &instance;
   }
 
   /**
@@ -38,10 +38,10 @@ class VisAttributesStore {
    * Cleans up G4VisAttributes
    */
   ~VisAttributesStore() {
-    for (auto& nameAtt : visAttributesMap_) {
-      delete nameAtt.second;
+    for (auto& name_att : vis_attributes_map_) {
+      delete name_att.second;
     }
-    visAttributesMap_.clear();
+    vis_attributes_map_.clear();
   }
 
   /**
@@ -51,7 +51,7 @@ class VisAttributesStore {
    */
   G4VisAttributes* getVisAttributes(const std::string& name) {
     try {
-      return visAttributesMap_.at(name);
+      return vis_attributes_map_.at(name);
     } catch (const std::out_of_range& oor) {
       G4cout << "[ WARN ] : VisAttribute '" << name
              << "' not recognized. Ignoring." << G4endl;
@@ -66,14 +66,14 @@ class VisAttributesStore {
    */
   void addVisAttributes(const std::string& name,
                         G4VisAttributes* visAttributes) {
-    visAttributesMap_[name] = visAttributes;
+    vis_attributes_map_[name] = visAttributes;
   }
 
  private:
   /**
    * The map of names to vis attributes.
    */
-  VisAttributesMap visAttributesMap_;
+  VisAttributesMap vis_attributes_map_;
 };
 
 }  // namespace simcore

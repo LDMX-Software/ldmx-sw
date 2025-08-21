@@ -3,36 +3,36 @@
 namespace simcore {
 
 bool BertiniSingleNeutronProcess::acceptEvent() const {
-  int Nhard{0};
-  int Nhard_neutron{0};
+  int nhard{0};
+  int nhard_neutron{0};
   int secondaries{theParticleChange.GetNumberOfSecondaries()};
   for (int i{0}; i < secondaries; ++i) {
     const auto secondary{theParticleChange.GetSecondary(i)->GetParticle()};
-    const auto pdgCode{secondary->GetDefinition()->GetPDGEncoding()};
-    if (skipCountingParticle(pdgCode)) {
+    const auto pdg_code{secondary->GetDefinition()->GetPDGEncoding()};
+    if (skipCountingParticle(pdg_code)) {
       continue;
     }
     const auto energy{secondary->GetKineticEnergy()};
     if (energy > threshold_) {
-      Nhard++;
-      if (pdgCode == 2112) {
-        Nhard_neutron++;
+      nhard++;
+      if (pdg_code == 2112) {
+        nhard_neutron++;
       }
     }
   }
-  return Nhard == 1 && Nhard_neutron == 1;
+  return nhard == 1 && nhard_neutron == 1;
 }
 
-void BertiniSingleNeutronModel::ConstructGammaProcess(
+void BertiniSingleNeutronModel::constructGammaProcess(
     G4ProcessManager* processManager) {
-  auto photoNuclearProcess{
+  auto photo_nuclear_process{
       new G4HadronInelasticProcess("photonNuclear", G4Gamma::Definition())};
   auto model{new BertiniSingleNeutronProcess{threshold_, Zmin_, Emin_,
                                              count_light_ions_}};
   model->SetMaxEnergy(15 * CLHEP::GeV);
-  addPNCrossSectionData(photoNuclearProcess);
-  photoNuclearProcess->RegisterMe(model);
-  processManager->AddDiscreteProcess(photoNuclearProcess);
+  addPNCrossSectionData(photo_nuclear_process);
+  photo_nuclear_process->RegisterMe(model);
+  processManager->AddDiscreteProcess(photo_nuclear_process);
 }
 }  // namespace simcore
 

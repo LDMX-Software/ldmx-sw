@@ -52,7 +52,7 @@ class AuxInfoReader {
    * Get the detector header that was created from the userinfo block.
    * @return The detector header.
    */
-  ldmx::DetectorHeader *getDetectorHeader() { return detectorHeader_; }
+  ldmx::DetectorHeader *getDetectorHeader() { return detector_header_; }
 
  private:
   /**
@@ -100,7 +100,7 @@ class AuxInfoReader {
   /**
    * Detector header with name and version.
    */
-  ldmx::DetectorHeader *detectorHeader_{nullptr};
+  ldmx::DetectorHeader *detector_header_{nullptr};
 };
 
 }  // namespace simcore::geo

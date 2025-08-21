@@ -20,9 +20,9 @@ MagneticFieldMap3D::MagneticFieldMap3D(const char* filename, double xOffset,
     : nx_(0),
       ny_(0),
       nz_(0),
-      xOffset_(xOffset),
-      yOffset_(yOffset),
-      zOffset_(zOffset),
+      x_offset_(xOffset),
+      y_offset_(yOffset),
+      z_offset_(zOffset),
       invertX_(false),
       invertY_(false),
       invertZ_(false) {
@@ -54,18 +54,18 @@ MagneticFieldMap3D::MagneticFieldMap3D(const char* filename, double xOffset,
   ldmx_log(trace) << "  Number of values: " << nx_ << " " << ny_ << " " << nz_;
 
   // Set up storage space for table
-  xField_.resize(nx_);
-  yField_.resize(nx_);
-  zField_.resize(nx_);
+  x_field_.resize(nx_);
+  y_field_.resize(nx_);
+  z_field_.resize(nx_);
   int ix, iy, iz;
   for (ix = 0; ix < nx_; ix++) {
-    xField_[ix].resize(ny_);
-    yField_[ix].resize(ny_);
-    zField_[ix].resize(ny_);
+    x_field_[ix].resize(ny_);
+    y_field_[ix].resize(ny_);
+    z_field_[ix].resize(ny_);
     for (iy = 0; iy < ny_; iy++) {
-      xField_[ix][iy].resize(nz_);
-      yField_[ix][iy].resize(nz_);
-      zField_[ix][iy].resize(nz_);
+      x_field_[ix][iy].resize(nz_);
+      y_field_[ix][iy].resize(nz_);
+      z_field_[ix][iy].resize(nz_);
     }
   }
 
@@ -87,9 +87,9 @@ MagneticFieldMap3D::MagneticFieldMap3D(const char* filename, double xOffset,
           miny_ = yval;
           minz_ = zval;
         }
-        xField_[ix][iy][iz] = bx;
-        yField_[ix][iy][iz] = by;
-        zField_[ix][iy][iz] = bz;
+        x_field_[ix][iy][iz] = bx;
+        y_field_[ix][iy][iz] = by;
+        z_field_[ix][iy][iz] = bz;
       }
     }
   }

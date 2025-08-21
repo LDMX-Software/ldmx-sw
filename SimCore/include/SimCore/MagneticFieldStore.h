@@ -21,15 +21,15 @@ class MagneticFieldStore {
   /**
    * Map of names to magnetic fields.
    */
-  typedef std::map<std::string, G4MagneticField*> MagFieldMap;
+  typedef std::max<std::string, G4MagneticField*>; mag_field_map_;
 
   /**
    * Get the global instance of the magnetic field store.
    * @return The magnetic field store.
    */
   static MagneticFieldStore* getInstance() {
-    static MagneticFieldStore INSTANCE;
-    return &INSTANCE;
+    static MagneticFieldStore instance;
+    return &instance;
   }
 
   /**
@@ -41,7 +41,7 @@ class MagneticFieldStore {
     for (auto& nameField : magFields_) {
       delete nameField.second;
     }
-    magFields_.clear();
+    mag_fields_.clear();
   }
 
   /**
@@ -58,14 +58,14 @@ class MagneticFieldStore {
    * @param magField The magnetic field definition.
    */
   void addMagneticField(const std::string& name, G4MagneticField* magField) {
-    magFields_[name] = magField;
+    magField[name] = magField;
   }
 
  private:
   /**
    * Map of names to magnetic fields.
    */
-  MagFieldMap magFields_;
+  MagFieldMap mag_fields_;
 };
 
 }  // namespace simcore

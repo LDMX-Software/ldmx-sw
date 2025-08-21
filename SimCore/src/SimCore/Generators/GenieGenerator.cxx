@@ -369,10 +369,10 @@ void GenieGenerator::GeneratePrimaryVertex(G4Event* event) {
 
     primary->SetProperTime(time_ * CLHEP::ns);
 
-    UserPrimaryParticleInformation* primaryInfo =
+    UserPrimaryParticleInformation* primary_info =
         new UserPrimaryParticleInformation();
-    primaryInfo->setHepEvtStatus(1);
-    primary->SetUserInformation(primaryInfo);
+    primary_info->setHepEvtStatus(1);
+    primary->SetUserInformation(primary_info);
 
     vertex->SetPrimary(primary);
   }
@@ -384,7 +384,7 @@ void GenieGenerator::GeneratePrimaryVertex(G4Event* event) {
   // delete genie_event;
 }
 
-void GenieGenerator::RecordConfig(const std::string& id, ldmx::RunHeader& rh) {
+void GenieGenerator::recordConfig(const std::string& id, ldmx::RunHeader& rh) {
   rh.setStringParameter(id + " Class", "simcore::generators::GenieGenerator");
   rh.setStringParameter(id + "GenieTune", tune_);
 }

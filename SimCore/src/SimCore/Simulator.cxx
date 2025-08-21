@@ -31,31 +31,31 @@ void Simulator::beforeNewRun(ldmx::RunHeader& header) {
                          parameters_.get<bool>("rootPrimaryGenUseSeed"));
 
   // lambda function for dumping 3-vectors into the run header
-  auto threeVectorDump = [&header](const std::string& name,
+  auto three_vector_dump = [&header](const std::string& name,
                                    const std::vector<double>& vec) {
     header.setFloatParameter(name + " X", vec.at(0));
     header.setFloatParameter(name + " Y", vec.at(1));
     header.setFloatParameter(name + " Z", vec.at(2));
   };
 
-  auto beamSpotSmear{parameters_.get<std::vector<double>>("beamSpotSmear", {})};
-  if (!beamSpotSmear.empty()) {
-    threeVectorDump("Smear Beam Spot [mm]", beamSpotSmear);
+  auto beam_spot_smear{parameters_.get<std::vector<double>>("beamSpotSmear", {})};
+  if (!beam_spot_smear.empty()) {
+    three_vector_dump("Smear Beam Spot [mm]", beam_spot_smear);
   }
 
   // lambda function for dumping vectors of strings to the run header
-  auto stringVectorDump = [&header](const std::string& name,
+  auto string_vector_dump = [&header](const std::string& name,
                                     const std::vector<std::string>& vec) {
-    int index_ = 0;
+    int index = 0;
     for (auto const& val : vec) {
-      header.setStringParameter(name + " " + std::to_string(++index_), val);
+      header.setStringParameter(name + " " + std::to_string(++index), val);
     }
   };
 
-  stringVectorDump(
+  string_vector_dump(
       "Pre Init Command",
       parameters_.get<std::vector<std::string>>("preInitCommands", {}));
-  stringVectorDump(
+  string_vector_dump(
       "Post Init Command",
       parameters_.get<std::vector<std::string>>("postInitCommands", {}));
 
@@ -70,9 +70,9 @@ void Simulator::beforeNewRun(ldmx::RunHeader& header) {
 
   // Set a string parameter with the Geant4 SHA-1.
   if (G4RunManagerKernel::GetRunManagerKernel()) {
-    G4String g4Version{
+    G4String g4_version{
         G4RunManagerKernel::GetRunManagerKernel()->GetVersionString()};
-    header.setStringParameter("Geant4 revision", g4Version);
+    header.setStringParameter("Geant4 revision", g4_version);
   } else {
     ldmx_log(warn) << "Unable to access G4 RunManager Kernel. Will not store "
                       "G4 Version string.";
@@ -96,18 +96,18 @@ void Simulator::onNewRun(const ldmx::RunHeader& runHeader) {
 
 void Simulator::produce(framework::Event& event) {
   // Generate and process a Geant4 event.
-  numEventsBegan_++;
+  num_events_began_++;
   // Save the state of the random engine to an output stream. A string
   // is then extracted and saved to the event header.
   std::ostringstream stream;
   G4Random::saveFullState(stream);
-  runManager_->ProcessOneEvent(event.getEventHeader().getEventNumber());
+  run_manager_->ProcessOneEvent(event.getEventHeader().getEventNumber());
 
   // If a Geant4 event has been aborted, skip the rest of the processing
   // sequence. This will immediately force the simulation to move on to
   // the next event.
   if (runManager_->GetCurrentEvent()->IsAborted()) {
-    runManager_->TerminateOneEvent();  // clean up event objects
+    run_manager_->TerminateOneEvent();  // clean up event objects
     SensitiveDetector::Factory::get().apply(
         [](auto sd) { sd->OnFinishedEvent(); });
     this->abortEvent();  // get out of processors loop
@@ -115,7 +115,7 @@ void Simulator::produce(framework::Event& event) {
 
   // Terminate the event.  This checks if an event is to be stored or
   // stacked for later.
-  numEventsCompleted_++;
+  num_events_completed_++;
 
   // store event-wide information in EventHeader
   auto& event_header = event.getEventHeader();
@@ -124,7 +124,7 @@ void Simulator::produce(framework::Event& event) {
   event_header.setStringParameter("eventSeed", stream.str());
 
   auto event_info = static_cast<UserEventInformation*>(
-      runManager_->GetCurrentEvent()->GetUserInformation());
+      run_manager_->GetCurrentEvent()->GetUserInformation());
 
   auto hepmc3_events = event_info->getHepMC3GenEvents();
   for (auto& hepmc3ev : hepmc3_events) {
@@ -136,7 +136,7 @@ void Simulator::produce(framework::Event& event) {
 
   saveSDHits(event);
 
-  runManager_->TerminateOneEvent();
+  run_manager_->TerminateOneEvent();
 
   return;
 }
@@ -144,8 +144,8 @@ void Simulator::produce(framework::Event& event) {
 void Simulator::onProcessEnd() {
   SimulatorBase::onProcessEnd();
   // Put this to warn level, just so it's printed out for sure
-  ldmx_log(warn) << "Started " << numEventsBegan_ << " events to produce "
-                 << numEventsCompleted_ << " events.";
+  ldmx_log(warn) << "Started " << num_events_began_ << " events to produce "
+                 << num_events_completed_ << " events.";
 }
 
 void Simulator::setSeeds(std::vector<int> seeds) {
@@ -166,13 +166,13 @@ void Simulator::setSeeds(std::vector<int> seeds) {
   // seeds are specified, the remaining slots are set to 0.
 
   constexpr int max_number_of_seeds{100};
-  std::vector<long> seedVec(max_number_of_seeds, 0);
-  for (std::size_t index_{0}; index_ < seeds.size(); ++index_) {
-    seedVec[index_] = static_cast<long>(seeds[index_]);
+  std::vector<long> seed_vec(max_number_of_seeds, 0);
+  for (std::size_t index{0}; index < seeds.size(); ++index) {
+    seed_vec[index] = static_cast<long>(seeds[index]);
   }
 
   // Pass the array of seeds to the random engine.
-  G4Random::setTheSeeds(seedVec.data());
+  G4Random::setTheSeeds(seed_vec.data());
 }
 
 }  // namespace simcore

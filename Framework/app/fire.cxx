@@ -118,7 +118,7 @@ int main(int argc, char* argv[]) try {
     //  where logging is closed, so we can do one more error message and then
     //  close it.
     // ldmx_log macro needs this variable to be named 'the_log_'
-    auto the_log_{framework::logging::makeLogger("fire")};
+    auto the_log{framework::logging::makeLogger("fire")};
     ldmx_log(fatal) << "[" << e.name() << "] : " << e.message() << "\n"
                     << "  at " << e.module() << ":" << e.line() << " in "
                     << e.function();

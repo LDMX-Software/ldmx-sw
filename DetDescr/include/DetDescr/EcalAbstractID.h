@@ -64,7 +64,7 @@ class EcalAbstractID : public DetectorID {
    * Get the value of the cell field from the ID.
    * @return The value of the cell field.
    */
-  int cell_type() const { return (id_ >> CELL_TYPE_SHIFT) & CELL_TYPE_MASK; }
+  int cellType() const { return (id_ >> CELL_TYPE_SHIFT) & CELL_TYPE_MASK; }
 
   /**
    * Get the value of the payload field from the ID.

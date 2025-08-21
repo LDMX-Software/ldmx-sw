@@ -28,7 +28,7 @@ class Parser {
    *
    * @return The world volume.
    */
-  virtual G4VPhysicalVolume *GetWorldVolume() = 0;
+  virtual G4VPhysicalVolume *getWorldVolume() = 0;
 
   /**
    * Get the name of the parsed detector.

@@ -156,10 +156,10 @@ void HcalGeometry::printPositionMap(int section) const {
   for (int layer = 1; layer <= num_layers_[section]; ++layer) {
     for (int strip = 0; strip < getNumStrips(section, layer); ++strip) {
       HcalID id(section, layer, strip);
-      auto centerPosition = getStripCenterPosition(id);
-      auto x = centerPosition.X();
-      auto y = centerPosition.Y();
-      auto z = centerPosition.Z();
+      auto center_position = getStripCenterPosition(id);
+      auto x = center_position.X();
+      auto y = center_position.Y();
+      auto z = center_position.Z();
       std::cout << id << ": Center position: (" << x << ", " << y << ", " << z
                 << ")\n";
     }

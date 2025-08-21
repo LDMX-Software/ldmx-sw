@@ -100,7 +100,7 @@ void loadT(T& table, std::istream& is) {
   // first work with the header line
   std::string line;
   std::vector<std::string> split;
-  int iDetID = -1;
+  int i_det_id = -1;
   int iline = 0;
   size_t ncolin;
 
@@ -127,7 +127,7 @@ void loadT(T& table, std::istream& is) {
   std::vector<std::string>::const_iterator id = find(split, "DetID");
   if (id != split.end()) {
     // good this is simpler...
-    iDetID = int(id - split.begin());
+    i_det_id = int(id - split.begin());
   } else {
     EXCEPTION_RAISE("MissingFeatureException",
                     "Cannot actually load CSV file without valid DetID column "
@@ -159,15 +159,15 @@ void loadT(T& table, std::istream& is) {
                                                  ") on line " +
                                                  std::to_string(iline));
     }
-    unsigned int tempId(0);
+    unsigned int temp_id(0);
     std::vector<V> values(table_to_csv.size(), 0);
-    if (iDetID >= 0) tempId = strtoul(split[iDetID].c_str(), 0, 0);
+    if (i_det_id >= 0) temp_id = strtoul(split[i_det_id].c_str(), 0, 0);
     V dummy(0);
     for (auto icopy : table_to_csv) {
       values[icopy.first] = convert(split[icopy.second], dummy);
     }
-    if (tempId != 0) {
-      table.add(tempId, values);
+    if (temp_id != 0) {
+      table.add(temp_id, values);
     }
   }
 }

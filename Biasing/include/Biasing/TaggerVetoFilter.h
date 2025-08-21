@@ -47,7 +47,7 @@ class TaggerVetoFilter : public simcore::UserAction {
    * Action called at the start of an event to reset
    *
    */
-  void BeginOfEventAction(const G4Event *) override;
+  void beginOfEventAction(const G4Event *) ;
   /**
    *
    * Action called at the end of an event to veto events where the primary
@@ -55,7 +55,7 @@ class TaggerVetoFilter : public simcore::UserAction {
    *
    */
 
-  void EndOfEventAction(const G4Event *) override;
+  void endOfEventAction(const G4Event *) ;
   /**
    * Stepping action called when a step is taken during tracking of
    * a particle.

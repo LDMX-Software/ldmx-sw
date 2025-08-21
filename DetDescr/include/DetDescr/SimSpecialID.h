@@ -59,7 +59,7 @@ class SimSpecialID : public DetectorID {
   /**
    * Create a scoring id from pieces
    */
-  static SimSpecialID ScoringPlaneID(int plane) {
+  static SimSpecialID scoringPlaneId(int plane) {
     return SimSpecialID(SCORING_PLANE, (plane & PLANE_MASK) << PLANE_SHIFT);
   }
 

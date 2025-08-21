@@ -44,7 +44,7 @@ class K0LongInelastic : public XsecBiasingOperator {
    *
    * @param[in,out] header RunHeader to record to
    */
-  void RecordConfig(ldmx::RunHeader& header) const override {
+  void recordConfig(ldmx::RunHeader& header) const {
     header.setStringParameter("BiasOperator::K0LongInelastic::Volume", volume_);
     header.setFloatParameter("BiasOperator::K0LongInelastic::Factor", factor_);
     header.setFloatParameter("BiasOperator::K0LongInelastic::Threshold",

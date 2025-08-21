@@ -2,7 +2,7 @@
 
 namespace simcore {
 
-const std::vector<std::string> SimulatorBase::invalidCommands_ = {
+const std::vector<std::string> SimulatorBase::INVALID_COMMANDS = {
     "/run/initialize",        // hard coded at the right time
     "/run/beamOn",            // passed commands should only be sim setup
     "/random/setSeeds",       // handled by own config parameter (if passed)
@@ -12,12 +12,12 @@ const std::vector<std::string> SimulatorBase::invalidCommands_ = {
 };
 SimulatorBase::SimulatorBase(const std::string& name,
                              framework::Process& process)
-    : framework::Producer(name, process), conditionsIntf_(this) {
-  uiManager_ = G4UImanager::GetUIpointer();
+    : framework::Producer(name, process), conditions_intf_(this) {
+  ui_manager_ = G4UImanager::GetUIpointer();
 }
 void SimulatorBase::updateEventHeader(ldmx::EventHeader& eventHeader) const {
   auto event_info = static_cast<UserEventInformation*>(
-      runManager_->GetCurrentEvent()->GetUserInformation());
+      run_manager_->GetCurrentEvent()->GetUserInformation());
 
   eventHeader.setWeight(event_info->getWeight());
   eventHeader.setFloatParameter("total_photonuclear_energy",
@@ -28,8 +28,8 @@ void SimulatorBase::updateEventHeader(ldmx::EventHeader& eventHeader) const {
                                 event_info->getDarkBremMaterialZ());
 }
 void SimulatorBase::onProcessEnd() {
-  runManager_->TerminateEventLoop();
-  runManager_->RunTermination();
+  run_manager_->TerminateEventLoop();
+  run_manager_->RunTermination();
   // Delete Run Manager
   // From Geant4 Basic Example B01:
   //      Job termination
@@ -41,35 +41,35 @@ void SimulatorBase::onProcessEnd() {
   //  1. When the histogram file is closed (all ROOT objects created during
   //  processing are put there because ROOT)
   //  2. When Simulator is deleted because runManager_ is a unique_ptr
-  runManager_.reset(nullptr);
+  run_manager_.reset(nullptr);
 
   // Delete the G4UIsession
   // I don't think this needs to happen here, but since we are cleaning up
   // loose ends...
-  sessionHandle_.reset(nullptr);
+  session_handle_.reset(nullptr);
 };
 void SimulatorBase::onProcessStart() {
   // initialize run
-  runManager_->Initialize();
+  run_manager_->Initialize();
 
-  for (const std::string& cmd : postInitCommands_) {
-    int g4Ret = uiManager_->ApplyCommand(cmd);
-    if (g4Ret > 0) {
+  for (const std::string& cmd : post_init_commands_) {
+    int g4_ret = ui_manager_->ApplyCommand(cmd);
+    if (g4_ret > 0) {
       EXCEPTION_RAISE("PostInitCmd",
                       "Post Initialization command '" + cmd +
                           "' returned a failue status from Geant4: " +
-                          std::to_string(g4Ret));
+                          std::to_string(g4_ret));
     }
   }
 
   // Instantiate the scoring worlds including any parallel worlds.
-  runManager_->ConstructScoringWorlds();
+  run_manager_->ConstructScoringWorlds();
 
   // Initialize the current run
-  runManager_->RunInitialization();
+  run_manager_->RunInitialization();
 
   // Initialize the event processing
-  runManager_->InitializeEventLoop(1);
+  run_manager_->InitializeEventLoop(1);
 
   return;
 }
@@ -87,16 +87,16 @@ void SimulatorBase::verifyParameters() const {
   // Looks for sub-strings matching the ones listed as an invalid command.
   // These invalid commands are mostly commands where control has been handed
   // over to Simulator.
-  for (const auto& invalidCommand : invalidCommands_) {
-    for (const auto& cmd : preInitCommands_) {
-      if (cmd.find(invalidCommand) != std::string::npos) {
+  for (const auto& invalid_command : invalid_command) {
+    for (const auto& cmd : pre_init_commands_) {
+      if (cmd.find(invalid_command) != std::string::npos) {
         EXCEPTION_RAISE("PreInitCmd", "Pre Initialization command '" + cmd +
                                           "' is not allowed because another "
                                           "part of Simulator handles it.");
       }
     }
-    for (const auto& cmd : postInitCommands_) {
-      if (cmd.find(invalidCommand) != std::string::npos) {
+    for (const auto& cmd : post_init_commands_) {
+      if (cmd.find(invalid_command) != std::string::npos) {
         EXCEPTION_RAISE("PostInitCmd", "Post Initialization command '" + cmd +
                                            "' is not allowed because another "
                                            "part of Simulator handles it.");
@@ -109,15 +109,15 @@ void SimulatorBase::configure(framework::config::Parameters& parameters) {
   // parameters used to configure the simulation
   parameters_ = parameters;
 
-  preInitCommands_ =
+  pre_init_commands_ =
       parameters_.get<std::vector<std::string>>("preInitCommands", {});
 
   // Get the extra simulation configuring commands
-  postInitCommands_ =
+  post_init_commands_ =
       parameters_.get<std::vector<std::string>>("postInitCommands", {});
 
   verifyParameters();
-  if (runManager_) {
+  if (RunManager) {
     // TODO: This won't work, need to think of a better solution
     EXCEPTION_RAISE(
         "MultipleSimulators",
@@ -128,31 +128,31 @@ void SimulatorBase::configure(framework::config::Parameters& parameters) {
   // Set up logging before creating the run manager so that output from the
   // creation of the runManager goes to the appropriate place.
   createLogging();
-  runManager_ = std::make_unique<RunManager>(parameters_, conditionsIntf_);
+  run_manager_ = std::make_unique<RunManager>(parameters_, conditions_intf_);
   // Instantiate the class so cascade parameters can be set.
   // TODO: Are we actually using this?
   G4CascadeParameters::Instance();
 
   buildGeometry();
-  for (const std::string& cmd : preInitCommands_) {
-    int g4Ret = uiManager_->ApplyCommand(cmd);
-    if (g4Ret > 0) {
+  for (const std::string& cmd : pre_init_commands_) {
+    int g4_ret = ui_manager_->ApplyCommand(cmd);
+    if (g4_ret > 0) {
       EXCEPTION_RAISE("PreInitCmd",
                       "Pre Initialization command '" + cmd +
                           "' returned a failure status from Geant4: " +
-                          std::to_string(g4Ret));
+                          std::to_string(g4_ret));
     }
   }
 }
 void SimulatorBase::createLogging() {
-  auto loggingPrefix = parameters_.get<std::string>("logging_prefix");
+  auto logging_prefix = parameters_.get<std::string>("logging_prefix");
   // For now dont print out anything from GEANT
   // Next step is to modify G4Session to print everything into our logging
   // system
-  sessionHandle_ = std::make_unique<BatchSession>();
+  session_handle_ = std::make_unique<BatchSession>();
 
   if (sessionHandle_ != nullptr)
-    uiManager_->SetCoutDestination(sessionHandle_.get());
+    ui_manager_->SetCoutDestination(session_handle_.get());
 }
 
 void SimulatorBase::saveTracks(framework::Event& event) {
@@ -172,7 +172,7 @@ void SimulatorBase::buildGeometry() {
   // Instantiate the GDML parser and corresponding messenger owned and
   // managed by DetectorConstruction
   auto parser{simcore::geo::Parser::Factory::get().make("gdml", parameters_,
-                                                        conditionsIntf_)};
+                                                        conditions_intf_)};
   if (not parser) {
     EXCEPTION_RAISE(
         "UnableToCreate",
@@ -182,14 +182,14 @@ void SimulatorBase::buildGeometry() {
 
   // Set the DetectorConstruction instance used to build the detector
   // from the GDML description.
-  runManager_->SetUserInitialization(
-      new DetectorConstruction(parser_ptr, parameters_, conditionsIntf_));
+  run_manager_->SetUserInitialization(
+      new DetectorConstruction(parser_ptr, parameters_, conditions_intf_));
 
   // Parse the detector geometry and validate if specified.
-  auto detectorPath{parameters_.get<std::string>("detector")};
-  ldmx_log(trace) << "Reading in geometry from '" << detectorPath << "'";
+  auto detector_path{parameters_.get<std::string>("detector")};
+  ldmx_log(trace) << "Reading in geometry from '" << detector_path << "'";
   G4GeometryManager::GetInstance()->OpenGeometry();
   parser_ptr->read();
-  runManager_->DefineWorldVolume(parser_ptr->GetWorldVolume());
+  run_manager_->DefineWorldVolume(parser_ptr->getWorldVolume());
 }
 }  // namespace simcore

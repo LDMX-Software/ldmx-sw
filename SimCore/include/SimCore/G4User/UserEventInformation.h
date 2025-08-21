@@ -23,10 +23,10 @@ class UserEventInformation : public G4VUserEventInformation {
   void Print() const override;
 
   /// Increment the number of brem candidates in an event.
-  void incBremCandidateCount() { bremCandidateCount_ += 1; }
+  void incBremCandidateCount() { brem_candidate_count_ += 1; }
 
   /// Decrease the number of brem candidates in an event.
-  void decBremCandidateCount() { bremCandidateCount_ -= 1; }
+  void decBremCandidateCount() { brem_candidate_count_ -= 1; }
 
   /**
    * Set the Z of the element in which the dark brem ocurred
@@ -69,7 +69,7 @@ class UserEventInformation : public G4VUserEventInformation {
    * @return The total number of brem candidates that this event
    *      contains.
    */
-  int bremCandidateCount() { return bremCandidateCount_; }
+  int bremCandidateCount() { return brem_candidate_count_; }
 
   /**
    * Add energy to the photonuclear running total
@@ -130,7 +130,7 @@ class UserEventInformation : public G4VUserEventInformation {
 
  private:
   /// Total number of brem candidates in the event
-  int bremCandidateCount_{0};
+  int brem_candidate_count_{0};
 
   /**
    * The event weight

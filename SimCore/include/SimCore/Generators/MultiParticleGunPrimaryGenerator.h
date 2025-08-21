@@ -76,29 +76,29 @@ class MultiParticleGunPrimaryGenerator : public simcore::PrimaryGenerator {
    */
   void GeneratePrimaryVertex(G4Event* anEvent) override;
 
-  void RecordConfig(const std::string& id, ldmx::RunHeader& rh) override;
+  void recordConfig(const std::string& id, ldmx::RunHeader& rh) ;
 
  private:
   /** Random number generator. */
   TRandom* random_;
 
   /** The vertex position from which to fire the particles. */
-  G4ThreeVector mpgVertex_;
+  G4ThreeVector mpg_vertex_;
 
   /** The initial momentum of the particles. */
-  G4ThreeVector mpgMomentum_;
+  G4ThreeVector mpg_momentum_;
 
   /** Number of particles that will be fired by the gun per event. */
-  double mpgNParticles_{1.};
+  double mpg_n_particles_{1.};
 
   /** PDG ID of the particle used by the gun. */
-  int mpgPdgID_{99999};
+  int mpg_pdg_id_{99999};
 
   /**
    * Flag denoting whether the number of incident particles should
    * be Poisson distributed.
    */
-  bool mpgEnablePoisson_{false};
+  bool mpg_enable_poisson_{false};
 
 };  // MultiParticleGunPrimaryGenerator
 

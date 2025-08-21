@@ -21,7 +21,7 @@ const std::string APrimePhysics::NAME = "APrime";
  *
  * @param[in] element G4Element off-which the dark brem occurred
  */
-static void store_element_z(const G4Element& element) {
+static void storeElementZ(const G4Element& element) {
   static_cast<UserEventInformation*>(
       G4EventManager::GetEventManager()->GetUserInformation())
       ->setDarkBremMaterialZ(element.GetZ());
@@ -103,7 +103,7 @@ void APrimePhysics::ConstructProcess() {
           parameters_.get<bool>("only_one_per_event"),
           1., /* global bias - should use bias operator instead */
           parameters_.get<bool>("cache_xsec"));
-      process_->RegisterStorageMechanism(store_element_z);
+      process_->RegisterStorageMechanism(storeElementZ);
     } else {
       EXCEPTION_RAISE("BadConf",
                       "Unrecognized model name '" + model_name + "'.");

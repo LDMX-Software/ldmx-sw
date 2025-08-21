@@ -11,15 +11,15 @@ namespace ldmx {
 
 std::map<DetectorIDInterpreter::IDSignature,
          const DetectorIDInterpreter::SubdetectorIDFields*>
-    DetectorIDInterpreter::g_rosettaStone;
+    DetectorIDInterpreter::g_rosetta_stone;
 
 DetectorIDInterpreter::~DetectorIDInterpreter() {}
-DetectorIDInterpreter::DetectorIDInterpreter() : id_(), p_fieldInfo_(0) {
+DetectorIDInterpreter::DetectorIDInterpreter() : id_(), p_field_info_(0) {
   init();
 }
 
 DetectorIDInterpreter::DetectorIDInterpreter(DetectorID did)
-    : id_(did), p_fieldInfo_(0) {
+    : id_(did), p_field_info_(0) {
   init();
   unpack();
 }
@@ -31,68 +31,68 @@ void DetectorIDInterpreter::setRawValue(DetectorID rawValue) {
 }
 
 void DetectorIDInterpreter::unpack() {
-  std::fill(fieldValues_.begin(), fieldValues_.end(), 0);
-  if (!p_fieldInfo_) return;
-  for (auto field : p_fieldInfo_->fieldList_) {
+  std::fill(field_values_.begin(), field_values_.end(), 0);
+  if (!p_field_info_) return;
+  for (auto field : p_field_info_->field_list_) {
     unsigned result = (field->getBitMask() & id_.raw()) >> field->getStartBit();
-    this->fieldValues_[field->getIndex()] = result;
+    this->field_values_[field->getIndex()] = result;
   }
 }
 
 void DetectorIDInterpreter::pack() {
-  DetectorID::RawValue rawValue = 0;
-  for (auto field : p_fieldInfo_->fieldList_) {
-    unsigned fieldValue = fieldValues_[field->getIndex()];
-    rawValue =
-        rawValue | ((fieldValue << field->getStartBit()) & field->getBitMask());
+  DetectorID::RawValue raw_value = 0;
+  for (auto field : p_field_info_->field_list_) {
+    unsigned field_value = field_values_[field->getIndex()];
+    raw_value =
+        raw_value | ((field_value << field->getStartBit()) & field->getBitMask());
   }
-  id_.setRawValue(rawValue);
+  id_.setRawValue(raw_value);
 }
 
 DetectorIDInterpreter::FieldValue DetectorIDInterpreter::getFieldValue(
     int i) const {
-  IDField* field = p_fieldInfo_->fieldList_.at(i);
+  IDField* field = p_field_info_->field_list_.at(i);
   unsigned result = (field->getBitMask() & id_.raw()) >> field->getStartBit();
   return result;
 }
 
 void DetectorIDInterpreter::setFieldValue(int i, FieldValue val) {
-  fieldValues_[i] = val;
+  field_values_[i] = val;
   pack();  // keep packed
 }
 
 void DetectorIDInterpreter::setFieldValue(const std::string& fieldName,
                                           FieldValue fieldValue) {
-  auto byname = p_fieldInfo_->fieldMap_.find(fieldName);
-  if (byname != p_fieldInfo_->fieldMap_.end())
-    fieldValues_[byname->second->getIndex()] = fieldValue;
+  auto byname = p_field_info_->field_map_.find(fieldName);
+  if (byname != p_field_info_->field_map_.end())
+    fieldValue[byname->second->getIndex()] = fieldValue;
   pack();  // keep packed
 }
 
 const IDField* DetectorIDInterpreter::getField(
     const std::string& fieldName) const {
-  auto byname = p_fieldInfo_->fieldMap_.find(fieldName);
-  if (byname != p_fieldInfo_->fieldMap_.end()) return (byname->second);
+  auto byname = p_field_info_->field_map_.find(fieldName);
+  if (byname != p_field_info_->field_map_.end()) return (byname->second);
   return 0;
 }
 
 DetectorIDInterpreter::FieldValue DetectorIDInterpreter::getFieldValue(
     const std::string& fieldName) const {
-  auto byname = p_fieldInfo_->fieldMap_.find(fieldName);
+  auto byname = p_field_info_->field_map_.find(fieldName);
   return getFieldValue(byname->second->getIndex());
 }
 
 void DetectorIDInterpreter::init() {
-  if (g_rosettaStone.empty()) loadStandardInterpreters();
+  if (g_rosetta_stone.empty()) loadStandardInterpreters();
 
-  p_fieldInfo_ = 0;
+  p_field_info_ = 0;
 
   if (id_.null()) return;
 
-  for (auto ptr : g_rosettaStone) {
+  for (auto ptr : g_rosetta_stone) {
     if ((id_.raw() & ptr.first.mask_) == ptr.first.comparison_) {
-      p_fieldInfo_ = (ptr.second);
-      this->fieldValues_.resize(p_fieldInfo_->fieldList_.size());
+      p_field_info_ = (ptr.second);
+      this->field_values_.resize(p_field_info_->field_list_.size());
       return;
     }
   }
@@ -102,9 +102,9 @@ void DetectorIDInterpreter::init() {
   sig.comparison_ = 0;
   sig.mask_ = DetectorID::SUBDETECTORID_MASK << DetectorID::SUBDETECTORID_SHIFT;
 
-  auto ptr = g_rosettaStone.find(sig);
-  p_fieldInfo_ = (ptr->second);
-  this->fieldValues_.resize(p_fieldInfo_->fieldList_.size());
+  auto ptr = g_rosetta_stone.find(sig);
+  p_field_info_ = (ptr->second);
+  this->field_values_.resize(p_field_info_->field_list_.size());
 }
 
 void DetectorIDInterpreter::registerInterpreter(
@@ -112,15 +112,15 @@ void DetectorIDInterpreter::registerInterpreter(
   IDSignature sig;
   sig.comparison_ = idtype << DetectorID::SUBDETECTORID_SHIFT;
   sig.mask_ = DetectorID::SUBDETECTORID_MASK << DetectorID::SUBDETECTORID_SHIFT;
-  if (g_rosettaStone.find(sig) != g_rosettaStone.end()) {
+  if (g_rosetta_stone.find(sig) != g_rosetta_stone.end()) {
     EXCEPTION_RAISE("DetectorIDException",
                     "Attempted to replace interpreter for subdetector " +
                         std::to_string(idtype));
   }
   SubdetectorIDFields* fields = new SubdetectorIDFields();
-  fields->fieldList_ = fieldList;
-  for (auto it : fieldList) fields->fieldMap_[it->getFieldName()] = it;
-  g_rosettaStone[sig] = fields;
+  fields->field_list_ = fieldList;
+  for (auto it : fieldList) fields->field_map_[it->getFieldName()] = it;
+  g_rosetta_stone[sig] = fields;
 }
 
 void DetectorIDInterpreter::registerInterpreter(
@@ -131,7 +131,7 @@ void DetectorIDInterpreter::registerInterpreter(
   sig.mask_ =
       (DetectorID::SUBDETECTORID_MASK << DetectorID::SUBDETECTORID_SHIFT) |
       mask;
-  if (g_rosettaStone.find(sig) != g_rosettaStone.end()) {
+  if (g_rosetta_stone.find(sig) != g_rosetta_stone.end()) {
     EXCEPTION_RAISE("DetectorIDException",
                     "Attempted to replace interpreter for subdetector " +
                         std::to_string(idtype) + " mask " +
@@ -139,13 +139,13 @@ void DetectorIDInterpreter::registerInterpreter(
                         std::to_string(equality));
   }
   SubdetectorIDFields* fields = new SubdetectorIDFields();
-  fields->fieldList_ = fieldList;
-  for (auto it : fieldList) fields->fieldMap_[it->getFieldName()] = it;
-  g_rosettaStone[sig] = fields;
+  fields->field_list_ = fieldList;
+  for (auto it : fieldList) fields->field_map_[it->getFieldName()] = it;
+  g_rosetta_stone[sig] = fields;
 }
 
 void DetectorIDInterpreter::loadStandardInterpreters() {
-  if (!g_rosettaStone.empty()) return;
+  if (!g_rosetta_stone.empty()) return;
   IDField::IDFieldList fields;
   fields.push_back(
       new IDField("subdetector", 0, DetectorID::SUBDETECTORID_SHIFT, 31));

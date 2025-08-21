@@ -50,11 +50,11 @@ class HcalSD : public SensitiveDetector {
     auto region = volume->GetRegion();
     if (region and region->GetName().contains("CalorimeterRegion")) {
       const auto name{volume->GetName()};
-      return std::find_if(std::begin(gdmlIdentifiers_),
-                          std::end(gdmlIdentifiers_),
+      return std::find_if(std::begin(gdml_identifiers_),
+                          std::end(gdml_identifiers_),
                           [&name](const auto& identifier) {
                             return name.contains(identifier);
-                          }) != std::end(gdmlIdentifiers_);
+                          }) != std::end(gdml_identifiers_);
     }
     return false;
   }
@@ -95,7 +95,7 @@ class HcalSD : public SensitiveDetector {
   // part of the CalorimeterRegion region and has a name which contains at least
   // one of the identifiers in here will be considered a sensitive detector in
   // the Hcal.
-  std::vector<std::string> gdmlIdentifiers_;
+  std::vector<std::string> gdml_identifiers_;
   // TODO: document!
   double birksc1_;
 

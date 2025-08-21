@@ -2,7 +2,7 @@
 
 namespace simcore {
 
-void NoPhotoNuclearModel::ConstructGammaProcess(
+void NoPhotoNuclearModel::constructGammaProcess(
     G4ProcessManager* processManager) {
   // Do nothing
 }

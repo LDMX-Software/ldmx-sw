@@ -17,23 +17,23 @@ class BertiniAtLeastNProductsProcess : public BertiniEventTopologyProcess {
                                  std::vector<int> pdg_ids, int min_products)
       : BertiniEventTopologyProcess{},
         threshold_{threshold},
-        Zmin_{Zmin},
-        Emin_{Emin},
+        zmin_{Zmin},
+        emin_{Emin},
         pdg_ids_{pdg_ids},
         min_products_{min_products} {}
   virtual ~BertiniAtLeastNProductsProcess() = default;
   bool acceptProjectile(const G4HadProjectile& projectile) const override {
-    return projectile.GetKineticEnergy() >= Emin_;
+    return projectile.GetKineticEnergy() >= emin_;
   }
   bool acceptTarget(const G4Nucleus& targetNucleus) const override {
-    return targetNucleus.GetZ_asInt() >= Zmin_;
+    return targetNucleus.GetZ_asInt() >= zmin_;
   }
   bool acceptEvent() const override;
 
  private:
   double threshold_;
-  int Zmin_;
-  double Emin_;
+  int zmin_;
+  double emin_;
   std::vector<int> pdg_ids_;
   int min_products_;
 };
@@ -44,17 +44,17 @@ class BertiniAtLeastNProductsModel : public PhotoNuclearModel {
                                const framework::config::Parameters& parameters)
       : PhotoNuclearModel{name, parameters},
         threshold_{parameters.getParameter<double>("hard_particle_threshold")},
-        Zmin_{parameters.getParameter<int>("zmin")},
-        Emin_{parameters.getParameter<double>("emin")},
+        zmin_{parameters.getParameter<int>("zmin")},
+        emin_{parameters.getParameter<double>("emin")},
         pdg_ids_{parameters.getParameter<std::vector<int>>("pdg_ids")},
         min_products_{parameters.getParameter<int>("min_products")} {}
   virtual ~BertiniAtLeastNProductsModel() = default;
-  void ConstructGammaProcess(G4ProcessManager* processManager) override;
+  void constructGammaProcess(G4ProcessManager* processManager) ;
 
  private:
   double threshold_;
-  int Zmin_;
-  double Emin_;
+  int zmin_;
+  double emin_;
   std::vector<int> pdg_ids_;
   int min_products_;
 };

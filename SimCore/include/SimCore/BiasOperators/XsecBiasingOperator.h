@@ -125,7 +125,7 @@ class XsecBiasingOperator : public G4VBiasingOperator {
    *
    * @param[in,out] header RunHeader to write configuration to
    */
-  virtual void RecordConfig(ldmx::RunHeader& header) const = 0;
+  virtual void recordConfig(ldmx::RunHeader& header) const = 0;
 
  protected:
   /**
@@ -142,10 +142,10 @@ class XsecBiasingOperator : public G4VBiasingOperator {
    * @param[in] biased_xsec the biased cross section
    * @return the biasing operation with the input biased cross section
    */
-  G4VBiasingOperation* BiasedXsec(double biased_xsec) {
-    xsecOperation_->SetBiasedCrossSection(biased_xsec);
-    xsecOperation_->Sample();
-    return xsecOperation_;
+  G4VBiasingOperation* biasedXsec(double biased_xsec) {
+    xsec_operation_->SetBiasedCrossSection(biased_xsec);
+    xsec_operation_->Sample();
+    return xsec_operation_;
   }
 
   /**
@@ -157,10 +157,10 @@ class XsecBiasingOperator : public G4VBiasingOperator {
   bool processIsBiased(std::string process);
 
   /** Cross-section biasing operation. */
-  G4BOptnChangeCrossSection* xsecOperation_{nullptr};
+  G4BOptnChangeCrossSection* xsec_operation_{nullptr};
 
   /** Process manager associated with the particle of interest. */
-  G4ProcessManager* processManager_{nullptr};
+  G4ProcessManager* process_manager_{nullptr};
 
   /**
    * Do *not* propose any biasing on final states.

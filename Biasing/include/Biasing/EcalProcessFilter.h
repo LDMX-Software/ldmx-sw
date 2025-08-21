@@ -48,9 +48,9 @@ class EcalProcessFilter : public simcore::UserAction {
    * @param aTrack The Geant4 track.
    * @param currentTrackClass The current track classification.
    */
-  G4ClassificationOfNewTrack ClassifyNewTrack(
+  G4ClassificationOfNewTrack classifyNewTrack(
       const G4Track* aTrack,
-      const G4ClassificationOfNewTrack& currentTrackClass) override;
+      const G4ClassificationOfNewTrack& currentTrackClass) ;
 
   /// Retrieve the type of actions this class defines
   std::vector<simcore::TYPE> getTypes() override {

@@ -52,7 +52,7 @@ void SteppingAction::UserSteppingAction(const G4Step* step) {
   }  // secondaries list was created
   // now stepping actions can use getEventInfo()->wasLastStep{P,E}N()
   //  to determine if last step was PN or EN
-  for (auto& steppingAction : steppingActions_) steppingAction->stepping(step);
+  for (auto& stepping_action : stepping_actions_) stepping_action->stepping(step);
 }
 
 }  // namespace simcore::g4user
