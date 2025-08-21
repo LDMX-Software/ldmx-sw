@@ -904,6 +904,24 @@ class TrigScintDigiDQM(ldmxcfg.Analyzer) :
         self.pad = pad
         self.trig_scint_passname = ''
 
+class TrigScintDigiVerifierDQM(ldmxcfg.Analyzer) :
+    def __init__(self, name = 'TrigScintDigiVerifier', ts_simhit_coll = 'TriggerPadUpSimHits', ts_digi_coll = 'trigScintDigisUp') :
+        super().__init__(name,'dqm::TrigScintDigiVerifier','DQM')
+
+        self.ts_simhit_coll = ts_simhit_coll
+        self.ts_simhit_pass = ''
+        self.ts_digi_coll = ts_digi_coll
+        self.ts_digi_pass = ''
+
+        self.build2DHistogram( "sim_edep:rec_amplitude" ,
+                "Simulated Energy [MeV]" , 1000 , 0. , 50. ,
+                "Reconstructed Amplitude [MeV]" , 1000 , 0. , 50. )
+
+        self.build2DHistogram( "sim_edep:rec_energy" ,
+                "Simulated Energy [MeV]" , 1000 , 0. , 50. ,
+                "Reconstructed Energy [MeV]" , 1000 , 0. , 50. )
+
+
 class TrigScintClusterDQM(ldmxcfg.Analyzer) :
     """Configured TrigScintClusterDQM python object
     
