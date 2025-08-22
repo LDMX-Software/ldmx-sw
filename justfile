@@ -180,7 +180,8 @@ tidy-cpp *ARGS='-p build --fix -fix-errors --quiet ':
     #!/usr/bin/env sh
     set -exu
     format_list=$(mktemp)
-    git ls-tree -r HEAD --name-only | egrep '(\.h|\.cxx)$'   | grep -v '^Tools/HLS_Arbitrary_Precision_Types/' > ${format_list}
+    git diff --name-only --diff-filter=AM origin/trunk..HEAD | egrep '(\.h|\.cxx)$' | grep -v '^HLS' > ${format_list}
+    #git ls-tree -r HEAD --name-only | egrep '(\.h|\.cxx)$'   | grep -v '^HLS' > ${format_list}
     denv clang-tidy $(cat ${format_list}) {{ ARGS }}
     rm ${format_list}
 

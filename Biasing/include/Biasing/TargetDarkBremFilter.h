@@ -79,7 +79,7 @@ class TargetDarkBremFilter : public simcore::UserAction {
    *
    * @param[in] e event being started, unused
    */
-  void beginOfEventAction(const G4Event* e);
+  void beginOfEventAction(const G4Event* e) override;
 
   /**
    * Looking for A' while primary is stepping.
@@ -100,7 +100,7 @@ class TargetDarkBremFilter : public simcore::UserAction {
    *
    * @param[in] event being ended, check if it is already aborted
    */
-  void endOfEventAction(const G4Event* event);
+  void endOfEventAction(const G4Event* event) override;
 
  private:
   /**

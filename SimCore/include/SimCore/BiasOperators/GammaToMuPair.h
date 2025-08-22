@@ -44,7 +44,7 @@ class GammaToMuPair : public XsecBiasingOperator {
    *
    * @param[in,out] header RunHeader to record to
    */
-  void recordConfig(ldmx::RunHeader& header) const {
+  void recordConfig(ldmx::RunHeader& header) const override {
     header.setStringParameter("BiasOperator::GammaToMuPair::Volume", volume_);
     header.setFloatParameter("BiasOperator::GammaToMuPair::Factor", factor_);
     header.setFloatParameter("BiasOperator::GammaToMuPair::Threshold",
