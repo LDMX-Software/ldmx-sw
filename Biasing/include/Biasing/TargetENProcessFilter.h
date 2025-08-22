@@ -44,7 +44,7 @@ class TargetENProcessFilter : public simcore::UserAction {
   /**
    * End of event action.
    */
-  void endOfEventAction(const G4Event*);
+  void endOfEventAction(const G4Event*) override;
 
   /// Retrieve the type of actions this class defines
   std::vector<simcore::TYPE> getTypes() override {

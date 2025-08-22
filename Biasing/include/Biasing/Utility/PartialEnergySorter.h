@@ -62,7 +62,7 @@ class PartialEnergySorter : public simcore::UserAction {
    *
    * @param[in] event unused
    */
-  void beginOfEventAction(const G4Event* event);
+  void beginOfEventAction(const G4Event* event) override;
 
   /**
    * Classify a "new" track
@@ -83,7 +83,7 @@ class PartialEnergySorter : public simcore::UserAction {
    */
   G4ClassificationOfNewTrack classifyNewTrack(
       const G4Track* aTrack,
-      const G4ClassificationOfNewTrack& currentTrackClass);
+      const G4ClassificationOfNewTrack& currentTrackClass) override;
 
   /**
    * Checks if a particle steps from above the threshold to below it.
@@ -128,7 +128,7 @@ class PartialEnergySorter : public simcore::UserAction {
    * tracking without "stepping" from above the threshold to
    * below it.
    */
-  void newStage() {
+  void newStage() override {
     /** debug printout
     std::cout << "[ PartialEnergySorter ] : "
         << "Starting new stage with "

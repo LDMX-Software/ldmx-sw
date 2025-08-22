@@ -42,7 +42,7 @@ class DeepEcalProcessFilter : public simcore::UserAction {
   virtual ~DeepEcalProcessFilter() = default;
 
   /// Method to set flags in the beginning of the event
-  void beginOfEventAction(const G4Event* event);
+  void beginOfEventAction(const G4Event* event) override;
 
   /**
    * Implement the stepping action which performs the target volume biasing.
@@ -56,7 +56,7 @@ class DeepEcalProcessFilter : public simcore::UserAction {
   //   */
   //  void EndOfEventAction(const G4Event*) override;
 
-  void newStage();
+  void newStage() override;
 
   /// Retrieve the type of actions this class defines
   std::vector<simcore::TYPE> getTypes() override {

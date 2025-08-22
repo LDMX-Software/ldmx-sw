@@ -22,7 +22,7 @@ class BertiniModel : public PhotoNuclearModel {
   /**
    * Do nothing, the Bertini process is already present.
    */
-  void constructGammaProcess(G4ProcessManager*) {}
+  void constructGammaProcess(G4ProcessManager*) override {}
   /**
    * Do nothing, we don't want to remove the existing process.
    */

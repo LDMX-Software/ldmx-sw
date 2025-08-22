@@ -43,7 +43,7 @@ class GDMLParser : public Parser {
    *
    * @return The world volume.
    */
-  G4VPhysicalVolume *getWorldVolume();
+  G4VPhysicalVolume *getWorldVolume() override;
 
   /**
    * Get the name of the parsed detector.
