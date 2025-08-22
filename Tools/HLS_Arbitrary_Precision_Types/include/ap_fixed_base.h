@@ -62,16 +62,16 @@
   _AP_ROOT_op_set_range(var, low, high, x)
 #else   // ifdef __SYNTHESIS__
 template <typename _Tp1, typename _Tp2>
-inline bool apCtypeOpGetBit(_Tp1& var, const _Tp2& index) {
+inline bool _AP_ctype_op_get_bit(_Tp1& var, const _Tp2& index) {
   return !!(var & (1ull << (index)));
 }
 template <typename _Tp1, typename _Tp2, typename _Tp3>
-inline _Tp1 apCtypeOpSetBit(_Tp1& var, const _Tp2& index, const _Tp3& x) {
+inline _Tp1 _AP_ctype_op_set_bit(_Tp1& var, const _Tp2& index, const _Tp3& x) {
   var |= (((x) ? 1ull : 0ull) << (index));
   return var;
 }
 template <typename _Tp1, typename _Tp2, typename _Tp3>
-inline _Tp1 apCtypeOpGetRange(_Tp1& var, const _Tp2& low,
+inline _Tp1 _AP_ctype_op_get_range(_Tp1& var, const _Tp2& low,
                                    const _Tp3& high) {
   _Tp1 r = var;
   ap_ulong mask = -1ll;
@@ -81,7 +81,7 @@ inline _Tp1 apCtypeOpGetRange(_Tp1& var, const _Tp2& low,
   return r;
 }
 template <typename _Tp1, typename _Tp2, typename _Tp3, typename _Tp4>
-inline _Tp1 apCtypeOpSetRange(_Tp1& var, const _Tp2& low, const _Tp3& high,
+inline _Tp1 _AP_ctype_op_set_range(_Tp1& var, const _Tp2& low, const _Tp3& high,
                                    const _Tp4& x) {
   ap_ulong mask = -1ll;
   mask >>= (_AP_SIZE_ap_slong - ((high) - (low) + 1));
@@ -120,10 +120,10 @@ template <int _AP_W, int _AP_I, bool _AP_S, ap_q_mode _AP_Q, ap_o_mode _AP_O,
 struct ap_fixed_base : _AP_ROOT_TYPE<_AP_W, _AP_S> {
  public:
   typedef _AP_ROOT_TYPE<_AP_W, _AP_S> Base;
-  static const int WIDTH = _AP_W;
-  static const int IWIDTH = _AP_I;
-  static const ap_q_mode QMODE = _AP_Q;
-  static const ap_o_mode OMODE = _AP_O;
+  static const int width = _AP_W;
+  static const int iwidth = _AP_I;
+  static const ap_q_mode qmode = _AP_Q;
+  static const ap_o_mode omode = _AP_O;
 
   /// Return type trait.
   template <int _AP_W2, int _AP_I2, bool _AP_S2>
@@ -185,18 +185,18 @@ struct ap_fixed_base : _AP_ROOT_TYPE<_AP_W, _AP_S> {
               "ap_fixed_base::fromString(%s, %d)", val.c_str(), radix);
 
     Base::V = 0;
-    int start_pos = 0;
-    int end_pos = val.length();
-    int dec_pos = val.find(".");
-    if (dec_pos == -1) dec_pos = end_pos;
+    int startPos = 0;
+    int endPos = val.length();
+    int decPos = val.find(".");
+    if (decPos == -1) decPos = endPos;
 
     // handle sign
-    bool is_negative = false;
+    bool isNegative = false;
     if (val[0] == '-') {
-      is_negative = true;
-      ++start_pos;
+      isNegative = true;
+      ++startPos;
     } else if (val[0] == '+')
-      ++start_pos;
+      ++startPos;
 
     // If there are no integer bits, e.g.:
     // .0000XXXX, then keep at least one bit.
@@ -217,7 +217,7 @@ struct ap_fixed_base : _AP_ROOT_TYPE<_AP_W, _AP_S> {
     bool sticky_int = false;
 
     // Traverse the integer digits from the MSD, multiplying by radix as we go.
-    for (int i = start_pos; i < dec_pos; i++) {
+    for (int i = startPos; i < decPos; i++) {
       // Get a digit
       char cdigit = val[i];
       if (cdigit == '\0') continue;
@@ -246,7 +246,7 @@ struct ap_fixed_base : _AP_ROOT_TYPE<_AP_W, _AP_S> {
     bool sticky = false;
 
     // Traverse the fractional digits from the LSD, dividing by radix as we go.
-    for (int i = end_pos - 1; i >= dec_pos + 1; i--) {
+    for (int i = endPos - 1; i >= decPos + 1; i--) {
       // Get a digit
       char cdigit = val[i];
       if (cdigit == '\0') continue;
@@ -271,7 +271,7 @@ struct ap_fixed_base : _AP_ROOT_TYPE<_AP_W, _AP_S> {
 
     fractional_bits[0] = fractional_bits[0] | sticky;
 
-    if (is_negative)
+    if (isNegative)
       *this = -(integer_bits + fractional_bits);
     else
       *this = integer_bits + fractional_bits;
@@ -300,7 +300,7 @@ struct ap_fixed_base : _AP_ROOT_TYPE<_AP_W, _AP_S> {
 
   /// @name helper functions.
   //  @{
-  INLINE void overflowAdjust(bool underflow, bool overflow, bool lD,
+  INLINE void overflow_adjust(bool underflow, bool overflow, bool lD,
                               bool sign) {
     if (!underflow && !overflow) return;
     if (_AP_O == AP_WRAP) {
@@ -325,18 +325,18 @@ struct ap_fixed_base : _AP_ROOT_TYPE<_AP_W, _AP_S> {
     } else if (_AP_O == AP_SAT_ZERO) {
       Base::V = 0;
     } else if (_AP_O == AP_WRAP_SM && _AP_S) {
-      bool ro = _AP_ROOT_op_get_bit(Base::V, _AP_W - 1);
+      bool Ro = _AP_ROOT_op_get_bit(Base::V, _AP_W - 1);
       if (_AP_N == 0) {
-        if (lD != ro) {
+        if (lD != Ro) {
           Base::V = ~Base::V;
           Base::V = _AP_ROOT_op_set_bit(Base::V, _AP_W - 1, lD);
         }
       } else {
-        if (_AP_N == 1 && sign != ro) {
+        if (_AP_N == 1 && sign != Ro) {
           Base::V = ~Base::V;
         } else if (_AP_N > 1) {
-          bool l_no = _AP_ROOT_op_get_bit(Base::V, _AP_W - _AP_N);
-          if (l_no == sign) Base::V = ~Base::V;
+          bool lNo = _AP_ROOT_op_get_bit(Base::V, _AP_W - _AP_N);
+          if (lNo == sign) Base::V = ~Base::V;
           ap_int_base<_AP_W, false> mask(-1);
           if (sign) mask.V = 0;
           Base::V =
@@ -364,7 +364,7 @@ struct ap_fixed_base : _AP_ROOT_TYPE<_AP_W, _AP_S> {
     }
   }
 
-  INLINE bool quantizationAdjust(bool qb, bool r, bool s) {
+  INLINE bool quantization_adjust(bool qb, bool r, bool s) {
     bool carry = (bool)_AP_ROOT_op_get_bit(Base::V, _AP_W - 1);
     if (_AP_Q == AP_TRN) return false;
     if (_AP_Q == AP_RND_ZERO)
@@ -538,33 +538,33 @@ struct ap_fixed_base : _AP_ROOT_TYPE<_AP_W, _AP_S> {
     if ((ireg.V & 0x7fffffffffffffffLL) == 0) {
       Base::V = 0;
     } else {
-      int ap_w2 = DOUBLE_MAN + 2, ap_i2 = exp.V + 2, ap_f = _AP_W - _AP_I,
-          f2 = ap_w2 - ap_i2;
-      bool ap_s2 = true,
-           quan_inc = f2 > ap_f &&
-                      !(_AP_Q == AP_TRN || (_AP_Q == AP_TRN_ZERO && !ap_s2));
+      int _AP_W2 = DOUBLE_MAN + 2, _AP_I2 = exp.V + 2, _AP_F = _AP_W - _AP_I,
+          F2 = _AP_W2 - _AP_I2;
+      bool _AP_S2 = true,
+           QUAN_INC = F2 > _AP_F &&
+                      !(_AP_Q == AP_TRN || (_AP_Q == AP_TRN_ZERO && !_AP_S2));
       bool carry = false;
       // handle quantization
-      unsigned sh_amt = (f2 > ap_f) ? f2 - ap_f : ap_f - f2;
-      if (f2 == ap_f)
+      unsigned sh_amt = (F2 > _AP_F) ? F2 - _AP_F : _AP_F - F2;
+      if (F2 == _AP_F)
         Base::V = man.V;
-      else if (f2 > ap_f) {
+      else if (F2 > _AP_F) {
         if (sh_amt < DOUBLE_MAN + 2)
           Base::V = man.V >> sh_amt;
         else {
           Base::V = isneg ? -1 : 0;
         }
-        if ((_AP_Q != AP_TRN) && !((_AP_Q == AP_TRN_ZERO) && !ap_s2)) {
-          bool qb = (f2 - ap_f > ap_w2)
+        if ((_AP_Q != AP_TRN) && !((_AP_Q == AP_TRN_ZERO) && !_AP_S2)) {
+          bool qb = (F2 - _AP_F > _AP_W2)
                         ? isneg
-                        : (bool)_AP_ROOT_op_get_bit(man.V, f2 - ap_f - 1);
-          bool r = (f2 > ap_f + 1)
+                        : (bool)_AP_ROOT_op_get_bit(man.V, F2 - _AP_F - 1);
+          bool r = (F2 > _AP_F + 1)
                        ? _AP_ROOT_op_get_range(man.V, 0,
-                                               (f2 - ap_f - 2 < ap_w2)
-                                                   ? (f2 - ap_f - 2)
-                                                   : (ap_w2 - 1)) != 0
+                                               (F2 - _AP_F - 2 < _AP_W2)
+                                                   ? (F2 - _AP_F - 2)
+                                                   : (_AP_W2 - 1)) != 0
                        : false;
-          carry = quantizationAdjust(qb, r, isneg);
+          carry = quantization_adjust(qb, r, isneg);
         }
       } else {  // no quantization
         Base::V = man.V;
@@ -575,61 +575,61 @@ struct ap_fixed_base : _AP_ROOT_TYPE<_AP_W, _AP_S> {
       }
       // handle overflow/underflow
       if ((_AP_O != AP_WRAP || _AP_N != 0) &&
-          ((!_AP_S && ap_s2) ||
+          ((!_AP_S && _AP_S2) ||
            _AP_I - _AP_S <
-               ap_i2 - ap_s2 +
-                   (quan_inc ||
-                    (ap_s2 && (_AP_O == AP_SAT_SYM))))) {  // saturation
-        bool deleted_zeros = ap_s2 ? true : !carry, deleted_ones = true;
+               _AP_I2 - _AP_S2 +
+                   (QUAN_INC ||
+                    (_AP_S2 && (_AP_O == AP_SAT_SYM))))) {  // saturation
+        bool deleted_zeros = _AP_S2 ? true : !carry, deleted_ones = true;
         bool neg_src = isneg;
-        bool l_d = false;
-        int pos1 = f2 - ap_f + _AP_W;
-        int pos2 = f2 - ap_f + _AP_W + 1;
+        bool lD = false;
+        int pos1 = F2 - _AP_F + _AP_W;
+        int pos2 = F2 - _AP_F + _AP_W + 1;
         bool newsignbit = _AP_ROOT_op_get_bit(Base::V, _AP_W - 1);
-        if (pos1 < ap_w2 && pos1 >= 0)
+        if (pos1 < _AP_W2 && pos1 >= 0)
           // lD = _AP_ROOT_op_get_bit(man.V, pos1);
-          l_d = (man.V >> pos1) & 1;
-        if (pos1 < ap_w2) {
-          bool range1_all_ones = true;
-          bool range1_all_zeros = true;
-          bool range2_all_ones = true;
-          ap_int_base<DOUBLE_MAN + 2, false> range2;
+          lD = (man.V >> pos1) & 1;
+        if (pos1 < _AP_W2) {
+          bool Range1_all_ones = true;
+          bool Range1_all_zeros = true;
+          bool Range2_all_ones = true;
+          ap_int_base<DOUBLE_MAN + 2, false> Range2;
           ap_int_base<DOUBLE_MAN + 2, false> all_ones(-1);
 
-          if (pos2 >= 0 && pos2 < ap_w2) {
+          if (pos2 >= 0 && pos2 < _AP_W2) {
             // Range2.V = _AP_ROOT_op_get_range(man.V,
             //                        pos2, _AP_W2 - 1);
-            range2.V = man.V;
-            range2.V >>= pos2;
-            range2_all_ones = range2 == (all_ones >> pos2);
+            Range2.V = man.V;
+            Range2.V >>= pos2;
+            Range2_all_ones = Range2 == (all_ones >> pos2);
           } else if (pos2 < 0)
-            range2_all_ones = false;
-          if (pos1 >= 0 && pos2 < ap_w2) {
-            range1_all_ones = range2_all_ones && l_d;
-            range1_all_zeros = !range2.V && !l_d;
-          } else if (pos2 == ap_w2) {
-            range1_all_ones = l_d;
-            range1_all_zeros = !l_d;
+            Range2_all_ones = false;
+          if (pos1 >= 0 && pos2 < _AP_W2) {
+            Range1_all_ones = Range2_all_ones && lD;
+            Range1_all_zeros = !Range2.V && !lD;
+          } else if (pos2 == _AP_W2) {
+            Range1_all_ones = lD;
+            Range1_all_zeros = !lD;
           } else if (pos1 < 0) {
-            range1_all_zeros = !man.V;
-            range1_all_ones = false;
+            Range1_all_zeros = !man.V;
+            Range1_all_ones = false;
           }
 
           deleted_zeros =
-              deleted_zeros && (carry ? range1_all_ones : range1_all_zeros);
+              deleted_zeros && (carry ? Range1_all_ones : Range1_all_zeros);
           deleted_ones =
-              carry ? range2_all_ones && (pos1 < 0 || !l_d) : range1_all_ones;
-          neg_src = isneg && !(carry && range1_all_ones);
+              carry ? Range2_all_ones && (pos1 < 0 || !lD) : Range1_all_ones;
+          neg_src = isneg && !(carry && Range1_all_ones);
         } else
           neg_src = isneg && newsignbit;
         bool neg_trg = _AP_S && newsignbit;
         bool overflow = (neg_trg || !deleted_zeros) && !isneg;
         bool underflow = (!neg_trg || !deleted_ones) && neg_src;
-        if ((_AP_O == AP_SAT_SYM) && ap_s2 && _AP_S)
+        if ((_AP_O == AP_SAT_SYM) && _AP_S2 && _AP_S)
           underflow |= neg_src && (_AP_W > 1 ? _AP_ROOT_op_get_range(
                                                    Base::V, 0, _AP_W - 2) == 0
                                              : true);
-        overflowAdjust(underflow, overflow, l_d, neg_src);
+        overflow_adjust(underflow, overflow, lD, neg_src);
       }
     }
     report();
@@ -658,19 +658,19 @@ struct ap_fixed_base : _AP_ROOT_TYPE<_AP_W, _AP_S> {
             ap_o_mode _AP_O2, int _AP_N2>
   INLINE ap_fixed_base& operator=(
       const ap_fixed_base<_AP_W2, _AP_I2, _AP_S2, _AP_Q2, _AP_O2, _AP_N2>& op) {
-    const int ap_f = _AP_W - _AP_I;
-    const int f2 = _AP_W2 - _AP_I2;
-    const int quan_inc =
-        f2 > ap_f && !(_AP_Q == AP_TRN || (_AP_Q == AP_TRN_ZERO && !_AP_S2));
+    const int _AP_F = _AP_W - _AP_I;
+    const int F2 = _AP_W2 - _AP_I2;
+    const int QUAN_INC =
+        F2 > _AP_F && !(_AP_Q == AP_TRN || (_AP_Q == AP_TRN_ZERO && !_AP_S2));
 
     if (!op) Base::V = 0;
     bool carry = false;
     bool signbit = _AP_ROOT_op_get_bit(op.V, _AP_W2 - 1);
     bool isneg = signbit && _AP_S2;
-    if (f2 == ap_f)
+    if (F2 == _AP_F)
       Base::V = op.V;
-    else if (f2 > ap_f) {
-      unsigned int sh_amt = f2 - ap_f;
+    else if (F2 > _AP_F) {
+      unsigned int sh_amt = F2 - _AP_F;
       //  moves bits right, handle quantization.
       if (sh_amt < _AP_W2) {
         Base::V = op.V >> sh_amt;
@@ -678,19 +678,19 @@ struct ap_fixed_base : _AP_ROOT_TYPE<_AP_W, _AP_S> {
         Base::V = isneg ? -1 : 0;
       }
       if (_AP_Q != AP_TRN && !(_AP_Q == AP_TRN_ZERO && !_AP_S2)) {
-        bool qbit = _AP_ROOT_op_get_bit(op.V, f2 - ap_f - 1);
+        bool qbit = _AP_ROOT_op_get_bit(op.V, F2 - _AP_F - 1);
         // bit after LSB.
-        bool qb = (f2 - ap_f > _AP_W2) ? _AP_S2 && signbit : qbit;
+        bool qb = (F2 - _AP_F > _AP_W2) ? _AP_S2 && signbit : qbit;
         enum {
-          hi = ((f2 - ap_f - 2) < _AP_W2) ? (f2 - ap_f - 2) : (_AP_W2 - 1)
+          hi = ((F2 - _AP_F - 2) < _AP_W2) ? (F2 - _AP_F - 2) : (_AP_W2 - 1)
         };
         // bits after qb.
-        bool r = (f2 > ap_f + 1) ? (_AP_ROOT_op_get_range(op.V, 0, hi) != 0)
+        bool r = (F2 > _AP_F + 1) ? (_AP_ROOT_op_get_range(op.V, 0, hi) != 0)
                                   : false;
-        carry = quantizationAdjust(qb, r, isneg);
+        carry = quantization_adjust(qb, r, isneg);
       }
     } else {
-      unsigned sh_amt = ap_f - f2;
+      unsigned sh_amt = _AP_F - F2;
       // moves bits left, no quantization
       if (sh_amt < _AP_W) {
         if (_AP_W > _AP_W2) {
@@ -710,47 +710,47 @@ struct ap_fixed_base : _AP_ROOT_TYPE<_AP_W, _AP_S> {
         ((!_AP_S && _AP_S2) ||
          _AP_I - _AP_S <
              _AP_I2 - _AP_S2 +
-                 (quan_inc ||
+                 (QUAN_INC ||
                   (_AP_S2 && _AP_O == AP_SAT_SYM)))) {  // saturation
       bool deleted_zeros = _AP_S2 ? true : !carry;
       bool deleted_ones = true;
       bool neg_src = isneg;
       bool newsignbit = _AP_ROOT_op_get_bit(Base::V, _AP_W - 1);
-      enum { pos1 = f2 - ap_f + _AP_W, pos2 = f2 - ap_f + _AP_W + 1 };
-      bool l_d = (pos1 < _AP_W2 && pos1 >= 0) ? _AP_ROOT_op_get_bit(op.V, pos1)
+      enum { pos1 = F2 - _AP_F + _AP_W, pos2 = F2 - _AP_F + _AP_W + 1 };
+      bool lD = (pos1 < _AP_W2 && pos1 >= 0) ? _AP_ROOT_op_get_bit(op.V, pos1)
                                              : false;
       if (pos1 < _AP_W2) {
-        bool range1_all_ones = true;
-        bool range1_all_zeros = true;
-        bool range2_all_ones = true;
+        bool Range1_all_ones = true;
+        bool Range1_all_zeros = true;
+        bool Range2_all_ones = true;
         ap_int_base<_AP_W2, false> all_ones(-1);
 
         if (pos2 < _AP_W2 && pos2 >= 0) {
-          ap_int_base<_AP_W2, false> range2;
-          range2.V = _AP_ROOT_op_get_range(op.V, pos2, _AP_W2 - 1);
-          range2_all_ones = range2 == (all_ones >> pos2);
+          ap_int_base<_AP_W2, false> Range2;
+          Range2.V = _AP_ROOT_op_get_range(op.V, pos2, _AP_W2 - 1);
+          Range2_all_ones = Range2 == (all_ones >> pos2);
         } else if (pos2 < 0) {
-          range2_all_ones = false;
+          Range2_all_ones = false;
         }
 
         if (pos1 >= 0 && pos2 < _AP_W2) {
-          ap_int_base<_AP_W2, false> range1;
-          range1.V = _AP_ROOT_op_get_range(op.V, pos1, _AP_W2 - 1);
-          range1_all_ones = range1 == (all_ones >> pos1);
-          range1_all_zeros = !range1.V;
+          ap_int_base<_AP_W2, false> Range1;
+          Range1.V = _AP_ROOT_op_get_range(op.V, pos1, _AP_W2 - 1);
+          Range1_all_ones = Range1 == (all_ones >> pos1);
+          Range1_all_zeros = !Range1.V;
         } else if (pos2 == _AP_W2) {
-          range1_all_ones = l_d;
-          range1_all_zeros = !l_d;
+          Range1_all_ones = lD;
+          Range1_all_zeros = !lD;
         } else if (pos1 < 0) {
-          range1_all_zeros = !op.V;
-          range1_all_ones = false;
+          Range1_all_zeros = !op.V;
+          Range1_all_ones = false;
         }
 
         deleted_zeros =
-            deleted_zeros && (carry ? range1_all_ones : range1_all_zeros);
+            deleted_zeros && (carry ? Range1_all_ones : Range1_all_zeros);
         deleted_ones =
-            carry ? range2_all_ones && (pos1 < 0 || !l_d) : range1_all_ones;
-        neg_src = isneg && !(carry && range1_all_ones);
+            carry ? Range2_all_ones && (pos1 < 0 || !lD) : Range1_all_ones;
+        neg_src = isneg && !(carry && Range1_all_ones);
       } else
         neg_src = isneg && newsignbit;
       bool neg_trg = _AP_S && newsignbit;
@@ -761,7 +761,7 @@ struct ap_fixed_base : _AP_ROOT_TYPE<_AP_W, _AP_S> {
                                                  Base::V, 0, _AP_W - 2) == 0
                                            : true);
 
-      overflowAdjust(underflow, overflow, l_d, neg_src);
+      overflow_adjust(underflow, overflow, lD, neg_src);
     }
     return *this;
   }  // operator=
@@ -799,7 +799,7 @@ struct ap_fixed_base : _AP_ROOT_TYPE<_AP_W, _AP_S> {
   /** Captures all integer bits, in truncate mode.
    *  @param[in] Cnative follow conversion from double to int.
    */
-  INLINE ap_int_base<AP_MAX(_AP_I, 1), _AP_S> toApIntBase(
+  INLINE ap_int_base<AP_MAX(_AP_I, 1), _AP_S> to_ap_int_base(
       bool Cnative = true) const {
     ap_int_base<AP_MAX(_AP_I, 1), _AP_S> ret;
     if (_AP_I == 0) {
@@ -833,19 +833,19 @@ struct ap_fixed_base : _AP_ROOT_TYPE<_AP_W, _AP_S> {
  public:
   template <int _AP_W2, bool _AP_S2>
   INLINE operator ap_int_base<_AP_W2, _AP_S2>() const {
-    return ap_int_base<_AP_W2, _AP_S2>(toApIntBase());
+    return ap_int_base<_AP_W2, _AP_S2>(to_ap_int_base());
   }
 
   // Explicit conversion function to C built-in integral type.
-  INLINE char toChar() const { return toApIntBase().to_char(); }
+  INLINE char to_char() const { return to_ap_int_base().to_char(); }
 
-  INLINE int toInt() const { return toApIntBase().to_int(); }
+  INLINE int to_int() const { return to_ap_int_base().to_int(); }
 
-  INLINE unsigned toUint() const { return toApIntBase().to_uint(); }
+  INLINE unsigned to_uint() const { return to_ap_int_base().to_uint(); }
 
-  INLINE ap_slong toInt64() const { return toApIntBase().to_int64(); }
+  INLINE ap_slong to_int64() const { return to_ap_int_base().to_int64(); }
 
-  INLINE ap_ulong toUint64() const { return toApIntBase().to_uint64(); }
+  INLINE ap_ulong to_uint64() const { return to_ap_int_base().to_uint64(); }
 
   /// covert function to double.
   /** only round-half-to-even mode supported, does not obey FE env. */
@@ -885,13 +885,13 @@ struct ap_fixed_base : _AP_ROOT_TYPE<_AP_W, _AP_S> {
     m >>= 1;
     // std::cout << '\n' << std::hex << m << '\n'; // TODO delete this
     //  carry to MSB, increase exponent
-    if (apCtypeOpGetBit(m, DOUBLE_MAN + 1)) {
+    if (_AP_ctype_op_get_bit(m, DOUBLE_MAN + 1)) {
       e += 1;
     }
     // set sign and exponent
     m = _AP_ctype_op_set_bit(m, BITS - 1, s);
     // std::cout << m << '\n'; // TODO delete this
-    m = apCtypeOpSetRange(m, DOUBLE_MAN, DOUBLE_MAN + DOUBLE_EXP - 1, e);
+    m = _AP_ctype_op_set_range(m, DOUBLE_MAN, DOUBLE_MAN + DOUBLE_EXP - 1, e);
     // std::cout << std::hex << m << std::dec << std::endl; // TODO delete this
     //  cast to fp
     return rawBitsToDouble(m);
@@ -899,7 +899,7 @@ struct ap_fixed_base : _AP_ROOT_TYPE<_AP_W, _AP_S> {
 
   /// convert function to float.
   /** only round-half-to-even mode supported, does not obey FE env. */
-  INLINE float toFloat() const {
+  INLINE float to_float() const {
 #if defined(AP_FIXED_ENABLE_CPP_FENV)
     _AP_WARNING(std::fegetround() != FE_TONEAREST,
                 "Only FE_TONEAREST is supported");
@@ -934,12 +934,12 @@ struct ap_fixed_base : _AP_ROOT_TYPE<_AP_W, _AP_S> {
     m += a;
     m >>= 1;
     // carry to MSB, increase exponent
-    if (apCtypeOpGetBit(m, FLOAT_MAN + 1)) {
+    if (_AP_ctype_op_get_bit(m, FLOAT_MAN + 1)) {
       e += 1;
     }
     // set sign and exponent
     m = _AP_ctype_op_set_bit(m, BITS - 1, s);
-    m = apCtypeOpSetRange(m, FLOAT_MAN, FLOAT_MAN + FLOAT_EXP - 1, e);
+    m = _AP_ctype_op_set_range(m, FLOAT_MAN, FLOAT_MAN + FLOAT_EXP - 1, e);
     // cast to fp
     return rawBitsToFloat(m);
   }
@@ -998,7 +998,7 @@ struct ap_fixed_base : _AP_ROOT_TYPE<_AP_W, _AP_S> {
 
   INLINE operator double() const { return to_double(); }
 
-  INLINE operator float() const { return toFloat(); }
+  INLINE operator float() const { return to_float(); }
 
 #if _AP_ENABLE_HALF_ == 1
   INLINE operator half() const { return to_half(); }
@@ -1006,41 +1006,41 @@ struct ap_fixed_base : _AP_ROOT_TYPE<_AP_W, _AP_S> {
 
   INLINE operator bool() const { return (bool)Base::V != 0; }
 
-  INLINE operator char() const { return (char)toInt(); }
+  INLINE operator char() const { return (char)to_int(); }
 
-  INLINE operator signed char() const { return (signed char)toInt(); }
+  INLINE operator signed char() const { return (signed char)to_int(); }
 
-  INLINE operator unsigned char() const { return (unsigned char)toUint(); }
+  INLINE operator unsigned char() const { return (unsigned char)to_uint(); }
 
-  INLINE operator short() const { return (short)toInt(); }
+  INLINE operator short() const { return (short)to_int(); }
 
-  INLINE operator unsigned short() const { return (unsigned short)toUint(); }
+  INLINE operator unsigned short() const { return (unsigned short)to_uint(); }
 
-  INLINE operator int() const { return toInt(); }
+  INLINE operator int() const { return to_int(); }
 
-  INLINE operator unsigned int() const { return toUint(); }
+  INLINE operator unsigned int() const { return to_uint(); }
 
 // FIXME don't assume data width...
 #ifdef __x86_64__
-  INLINE operator long() const { return (long)toInt64(); }
+  INLINE operator long() const { return (long)to_int64(); }
 
-  INLINE operator unsigned long() const { return (unsigned long)toUint64(); }
+  INLINE operator unsigned long() const { return (unsigned long)to_uint64(); }
 #else
   INLINE operator long() const { return (long)to_int(); }
 
   INLINE operator unsigned long() const { return (unsigned long)to_uint(); }
 #endif  // ifdef __x86_64__ else
 
-  INLINE operator ap_ulong() const { return toUint64(); }
+  INLINE operator ap_ulong() const { return to_uint64(); }
 
-  INLINE operator ap_slong() const { return toInt64(); }
+  INLINE operator ap_slong() const { return to_int64(); }
 
   INLINE int length() const { return _AP_W; };
 
   // bits_to_int64 deleted.
 #ifndef __SYNTHESIS__
   // Used in autowrap, when _AP_W < 64.
-  INLINE ap_ulong bitsToUint64() const { return (Base::V).to_uint64(); }
+  INLINE ap_ulong bits_to_uint64() const { return (Base::V).to_uint64(); }
 #endif
 
   // Count the number of zeros from the most significant bit
@@ -1333,9 +1333,9 @@ struct ap_fixed_base : _AP_ROOT_TYPE<_AP_W, _AP_S> {
   // left and right shift for int
   INLINE ap_fixed_base operator<<(int sh) const {
     ap_fixed_base r;
-    bool is_neg = sh < 0;
-    unsigned int ush = is_neg ? -sh : sh;
-    if (is_neg) {
+    bool isNeg = sh < 0;
+    unsigned int ush = isNeg ? -sh : sh;
+    if (isNeg) {
       return operator>>(ush);
     } else {
       return operator<<(ush);
@@ -1343,9 +1343,9 @@ struct ap_fixed_base : _AP_ROOT_TYPE<_AP_W, _AP_S> {
   }
 
   INLINE ap_fixed_base operator>>(int sh) const {
-    bool is_neg = sh < 0;
-    unsigned int ush = is_neg ? -sh : sh;
-    if (is_neg) {
+    bool isNeg = sh < 0;
+    unsigned int ush = isNeg ? -sh : sh;
+    if (isNeg) {
       return operator<<(ush);
     } else {
       return operator>>(ush);
@@ -1531,7 +1531,7 @@ struct ap_fixed_base : _AP_ROOT_TYPE<_AP_W, _AP_S> {
   }
 
   template <int _AP_W2>
-  INLINE af_bit_ref<_AP_W, _AP_I, _AP_S, _AP_Q, _AP_O, _AP_N> getBit(
+  INLINE af_bit_ref<_AP_W, _AP_I, _AP_S, _AP_Q, _AP_O, _AP_N> get_bit(
       const ap_int_base<_AP_W2, true>& index) {
     _AP_WARNING(index < _AP_I - _AP_W,
                 "Attempting to read bit with negative index");
@@ -1540,7 +1540,7 @@ struct ap_fixed_base : _AP_ROOT_TYPE<_AP_W, _AP_S> {
         this, index.to_int() + _AP_W - _AP_I);
   }
 
-  INLINE bool getBit(int index) const {
+  INLINE bool get_bit(int index) const {
     _AP_WARNING(index >= _AP_I, "Attempting to read bit beyond MSB");
     _AP_WARNING(index < _AP_I - _AP_W, "Attempting to read bit beyond MSB");
     return _AP_ROOT_op_get_bit(const_cast<ap_fixed_base*>(this)->V,
@@ -1558,7 +1558,7 @@ struct ap_fixed_base : _AP_ROOT_TYPE<_AP_W, _AP_S> {
 #endif
 
   template <int _AP_W2>
-  INLINE bool getBit(const ap_int_base<_AP_W2, true>& index) const {
+  INLINE bool get_bit(const ap_int_base<_AP_W2, true>& index) const {
     _AP_WARNING(index >= _AP_I, "Attempting to read bit beyond MSB");
     _AP_WARNING(index < _AP_I - _AP_W, "Attempting to read bit beyond MSB");
     return _AP_ROOT_op_get_bit(const_cast<ap_fixed_base*>(this)->V,
@@ -1583,18 +1583,18 @@ struct ap_fixed_base : _AP_ROOT_TYPE<_AP_W, _AP_S> {
   INLINE af_range_ref<_AP_W, _AP_I, _AP_S, _AP_Q, _AP_O, _AP_N> range(
       const ap_int_base<_AP_W2, _AP_S2>& HiIdx,
       const ap_int_base<_AP_W3, _AP_S3>& LoIdx) {
-    int hi = HiIdx.to_int();
-    int lo = LoIdx.to_int();
-    return this->range(hi, lo);
+    int Hi = HiIdx.to_int();
+    int Lo = LoIdx.to_int();
+    return this->range(Hi, Lo);
   }
 
   template <int _AP_W2, bool _AP_S2, int _AP_W3, bool _AP_S3>
   INLINE af_range_ref<_AP_W, _AP_I, _AP_S, _AP_Q, _AP_O, _AP_N> range(
       const ap_int_base<_AP_W2, _AP_S2>& HiIdx,
       const ap_int_base<_AP_W3, _AP_S3>& LoIdx) const {
-    int hi = HiIdx.to_int();
-    int lo = LoIdx.to_int();
-    return this->range(hi, lo);
+    int Hi = HiIdx.to_int();
+    int Lo = LoIdx.to_int();
+    return this->range(Hi, Lo);
   }
 
   INLINE af_range_ref<_AP_W, _AP_I, _AP_S, _AP_Q, _AP_O, _AP_N> range() {
@@ -1619,23 +1619,23 @@ struct ap_fixed_base : _AP_ROOT_TYPE<_AP_W, _AP_S> {
   INLINE af_range_ref<_AP_W, _AP_I, _AP_S, _AP_Q, _AP_O, _AP_N> operator()(
       const ap_int_base<_AP_W2, _AP_S2>& HiIdx,
       const ap_int_base<_AP_W3, _AP_S3>& LoIdx) {
-    int hi = HiIdx.to_int();
-    int lo = LoIdx.to_int();
-    return this->range(hi, lo);
+    int Hi = HiIdx.to_int();
+    int Lo = LoIdx.to_int();
+    return this->range(Hi, Lo);
   }
 
   template <int _AP_W2, bool _AP_S2, int _AP_W3, bool _AP_S3>
   INLINE af_range_ref<_AP_W, _AP_I, _AP_S, _AP_Q, _AP_O, _AP_N> operator()(
       const ap_int_base<_AP_W2, _AP_S2>& HiIdx,
       const ap_int_base<_AP_W3, _AP_S3>& LoIdx) const {
-    int hi = HiIdx.to_int();
-    int lo = LoIdx.to_int();
-    return this->range(hi, lo);
+    int Hi = HiIdx.to_int();
+    int Lo = LoIdx.to_int();
+    return this->range(Hi, Lo);
   }
 
-  INLINE bool isZero() const { return Base::V == 0; }
+  INLINE bool is_zero() const { return Base::V == 0; }
 
-  INLINE bool isNeg() const {
+  INLINE bool is_neg() const {
     if (_AP_S && _AP_ROOT_op_get_bit(Base::V, _AP_W - 1)) return true;
     return false;
   }
@@ -1644,11 +1644,11 @@ struct ap_fixed_base : _AP_ROOT_TYPE<_AP_W, _AP_S> {
 
   INLINE int iwl() const { return _AP_I; }
 
-  INLINE ap_q_mode qMode() const { return _AP_Q; }
+  INLINE ap_q_mode q_mode() const { return _AP_Q; }
 
-  INLINE ap_o_mode oMode() const { return _AP_O; }
+  INLINE ap_o_mode o_mode() const { return _AP_O; }
 
-  INLINE int nBits() const { return _AP_N; }
+  INLINE int n_bits() const { return _AP_N; }
 
   // print a string representation of this number in the given radix.
   // Radix support is 2, 8, 10, or 16.
@@ -1658,7 +1658,7 @@ struct ap_fixed_base : _AP_ROOT_TYPE<_AP_W, _AP_S> {
   // unsigned numbers.  For non-decimal formats, this can be changed by the
   // 'sign' argument.
 #ifndef __SYNTHESIS__
-  std::string toString(unsigned char radix = 2, bool sign = _AP_S) const {
+  std::string to_string(unsigned char radix = 2, bool sign = _AP_S) const {
     // XXX in autosim/autowrap.tcl "(${name}).to_string(2).c_str()" is used to
     // initialize sc_lv, which seems incapable of handling format "-0b".
     if (radix == 2) sign = false;
@@ -1666,11 +1666,11 @@ struct ap_fixed_base : _AP_ROOT_TYPE<_AP_W, _AP_S> {
     std::string str;
     str.clear();
     char step = 0;
-    bool is_neg = sign && (Base::V < 0);
+    bool isNeg = sign && (Base::V < 0);
 
     // Extend to take care of the -MAX case.
     ap_fixed_base<_AP_W + 1, _AP_I + 1> tmp(*this);
-    if (is_neg) {
+    if (isNeg) {
       tmp = -tmp;
       str += '-';
     }
@@ -1748,7 +1748,7 @@ struct ap_fixed_base : _AP_ROOT_TYPE<_AP_W, _AP_S> {
 
 template <int _AP_W, int _AP_I, bool _AP_S, ap_q_mode _AP_Q, ap_o_mode _AP_O,
           int _AP_N>
-INLINE void bNot(
+INLINE void b_not(
     ap_fixed_base<_AP_W, _AP_I, _AP_S, _AP_Q, _AP_O, _AP_N>& ret,
     const ap_fixed_base<_AP_W, _AP_I, _AP_S, _AP_Q, _AP_O, _AP_N>& op) {
   ret.V = ~op.V;
@@ -1756,7 +1756,7 @@ INLINE void bNot(
 
 template <int _AP_W, int _AP_I, bool _AP_S, ap_q_mode _AP_Q, ap_o_mode _AP_O,
           int _AP_N>
-INLINE void bAnd(
+INLINE void b_and(
     ap_fixed_base<_AP_W, _AP_I, _AP_S, _AP_Q, _AP_O, _AP_N>& ret,
     const ap_fixed_base<_AP_W, _AP_I, _AP_S, _AP_Q, _AP_O, _AP_N>& op1,
     const ap_fixed_base<_AP_W, _AP_I, _AP_S, _AP_Q, _AP_O, _AP_N>& op2) {
@@ -1765,7 +1765,7 @@ INLINE void bAnd(
 
 template <int _AP_W, int _AP_I, bool _AP_S, ap_q_mode _AP_Q, ap_o_mode _AP_O,
           int _AP_N>
-INLINE void bOr(
+INLINE void b_or(
     ap_fixed_base<_AP_W, _AP_I, _AP_S, _AP_Q, _AP_O, _AP_N>& ret,
     const ap_fixed_base<_AP_W, _AP_I, _AP_S, _AP_Q, _AP_O, _AP_N>& op1,
     const ap_fixed_base<_AP_W, _AP_I, _AP_S, _AP_Q, _AP_O, _AP_N>& op2) {
@@ -1774,7 +1774,7 @@ INLINE void bOr(
 
 template <int _AP_W, int _AP_I, bool _AP_S, ap_q_mode _AP_Q, ap_o_mode _AP_O,
           int _AP_N>
-INLINE void bXor(
+INLINE void b_xor(
     ap_fixed_base<_AP_W, _AP_I, _AP_S, _AP_Q, _AP_O, _AP_N>& ret,
     const ap_fixed_base<_AP_W, _AP_I, _AP_S, _AP_Q, _AP_O, _AP_N>& op1,
     const ap_fixed_base<_AP_W, _AP_I, _AP_S, _AP_Q, _AP_O, _AP_N>& op2) {
@@ -1848,30 +1848,30 @@ INLINE void rshift(
 INLINE std::string scientificFormat(std::string& input) {
   if (input.length() == 0) return input;
 
-  size_t dec_position = input.find('.');
-  if (dec_position == std::string::npos) dec_position = input.length();
+  size_t decPosition = input.find('.');
+  if (decPosition == std::string::npos) decPosition = input.length();
 
-  size_t first_non_zero_pos = 0;
-  for (; input[first_non_zero_pos] > '9' || input[first_non_zero_pos] < '1';
-       first_non_zero_pos++);
+  size_t firstNonZeroPos = 0;
+  for (; input[firstNonZeroPos] > '9' || input[firstNonZeroPos] < '1';
+       firstNonZeroPos++);
 
   int exp;
-  if (first_non_zero_pos > dec_position)
-    exp = dec_position - first_non_zero_pos;
+  if (firstNonZeroPos > decPosition)
+    exp = decPosition - firstNonZeroPos;
   else
-    exp = dec_position - first_non_zero_pos - 1;
-  std::string exp_string = "";
+    exp = decPosition - firstNonZeroPos - 1;
+  std::string expString = "";
   if (exp == 0)
     ;
   else if (exp < 0) {
-    exp_string += "e-";
+    expString += "e-";
     exp = -exp;
   } else
-    exp_string += "e+";
+    expString += "e+";
 
   if (exp < 10 && exp > 0) {
-    exp_string += '0';
-    exp_string += (char)('0' + exp);
+    expString += '0';
+    expString += (char)('0' + exp);
   } else if (exp != 0) {
     std::string tmp;
 
@@ -1879,147 +1879,147 @@ INLINE std::string scientificFormat(std::string& input) {
     oss << exp;
 
     tmp = oss.str();
-    exp_string += tmp;
+    expString += tmp;
   }
 
-  int last_non_zero_pos = (int)(input.length() - 1);
-  for (; last_non_zero_pos >= 0; --last_non_zero_pos)
-    if (input[last_non_zero_pos] <= '9' && input[last_non_zero_pos] > '0') break;
+  int lastNonZeroPos = (int)(input.length() - 1);
+  for (; lastNonZeroPos >= 0; --lastNonZeroPos)
+    if (input[lastNonZeroPos] <= '9' && input[lastNonZeroPos] > '0') break;
 
   std::string ans = "";
-  ans += input[first_non_zero_pos];
-  if (first_non_zero_pos != (size_t)last_non_zero_pos) {
+  ans += input[firstNonZeroPos];
+  if (firstNonZeroPos != (size_t)lastNonZeroPos) {
     ans += '.';
-    for (int i = first_non_zero_pos + 1; i <= last_non_zero_pos; i++)
+    for (int i = firstNonZeroPos + 1; i <= lastNonZeroPos; i++)
       if (input[i] != '.') ans += input[i];
   }
 
-  ans += exp_string;
+  ans += expString;
   return ans;
 }
 
 INLINE std::string reduceToPrecision(std::string& input, int precision) {
-  bool is_zero = true;
-  size_t input_len = input.length();
-  for (size_t i = 0; i < input_len && is_zero; i++)
-    if (input[i] != '.' && input[i] != '0') is_zero = false;
-  if (is_zero) return "0";
+  bool isZero = true;
+  size_t inputLen = input.length();
+  for (size_t i = 0; i < inputLen && isZero; i++)
+    if (input[i] != '.' && input[i] != '0') isZero = false;
+  if (isZero) return "0";
 
   // Find the first valid number, skip '-'
-  int first_non_zero_pos = 0;
-  int last_non_zero_pos = (int)input_len - 1;
-  int trunc_bit_position = 0;
-  size_t dec_position = input.find('.');
-  for (; input[first_non_zero_pos] < '1' || input[first_non_zero_pos] > '9';
-       first_non_zero_pos++);
+  int FirstNonZeroPos = 0;
+  int LastNonZeroPos = (int)inputLen - 1;
+  int truncBitPosition = 0;
+  size_t decPosition = input.find('.');
+  for (; input[FirstNonZeroPos] < '1' || input[FirstNonZeroPos] > '9';
+       FirstNonZeroPos++);
 
-  for (; input[last_non_zero_pos] < '1' || input[last_non_zero_pos] > '9';
-       last_non_zero_pos--);
+  for (; input[LastNonZeroPos] < '1' || input[LastNonZeroPos] > '9';
+       LastNonZeroPos--);
 
-  if (dec_position == std::string::npos) dec_position = input_len;
+  if (decPosition == std::string::npos) decPosition = inputLen;
   // Count the valid number, to decide whether we need to truncate
-  if ((int)dec_position > last_non_zero_pos) {
-    if (last_non_zero_pos - first_non_zero_pos + 1 <= precision) return input;
-    trunc_bit_position = first_non_zero_pos + precision;
-  } else if ((int)dec_position < first_non_zero_pos) {  // This is pure decimal
-    if (last_non_zero_pos - first_non_zero_pos + 1 <= precision) {
-      if (first_non_zero_pos - dec_position - 1 < 4) {
+  if ((int)decPosition > LastNonZeroPos) {
+    if (LastNonZeroPos - FirstNonZeroPos + 1 <= precision) return input;
+    truncBitPosition = FirstNonZeroPos + precision;
+  } else if ((int)decPosition < FirstNonZeroPos) {  // This is pure decimal
+    if (LastNonZeroPos - FirstNonZeroPos + 1 <= precision) {
+      if (FirstNonZeroPos - decPosition - 1 < 4) {
         return input;
       } else {
         if (input[0] == '-') {
-          std::string tmp = input.substr(1, input_len - 1);
+          std::string tmp = input.substr(1, inputLen - 1);
           return std::string("-") + scientificFormat(tmp);
         } else
           return scientificFormat(input);
       }
     }
-    trunc_bit_position = first_non_zero_pos + precision;
+    truncBitPosition = FirstNonZeroPos + precision;
   } else {
-    if (last_non_zero_pos - first_non_zero_pos <= precision) return input;
-    trunc_bit_position = first_non_zero_pos + precision + 1;
+    if (LastNonZeroPos - FirstNonZeroPos <= precision) return input;
+    truncBitPosition = FirstNonZeroPos + precision + 1;
   }
 
   // duplicate the input string, we want to add "0" before the valid numbers
   // This is easy for quantization, since we may change 9999 to 10000
   std::string ans = "";
-  std::string dup_input = "0";
+  std::string dupInput = "0";
   if (input[0] == '-') {
     ans += '-';
-    dup_input += input.substr(1, input_len - 1);
+    dupInput += input.substr(1, inputLen - 1);
   } else {
-    dup_input += input.substr(0, input_len);
-    ++trunc_bit_position;
+    dupInput += input.substr(0, inputLen);
+    ++truncBitPosition;
   }
 
   // Add 'carry' after truncation, if necessary
-  bool carry = dup_input[trunc_bit_position] > '4';
-  for (int i = trunc_bit_position - 1; i >= 0 && carry; i--) {
-    if (dup_input[i] == '.') continue;
-    if (dup_input[i] == '9')
-      dup_input[i] = '0';
+  bool carry = dupInput[truncBitPosition] > '4';
+  for (int i = truncBitPosition - 1; i >= 0 && carry; i--) {
+    if (dupInput[i] == '.') continue;
+    if (dupInput[i] == '9')
+      dupInput[i] = '0';
     else {
-      ++dup_input[i];
+      ++dupInput[i];
       carry = false;
     }
   }
 
   // bits outside precision range should be set to 0
-  if (dup_input[0] == '1')
-    first_non_zero_pos = 0;
+  if (dupInput[0] == '1')
+    FirstNonZeroPos = 0;
   else {
-    first_non_zero_pos = 0;
-    while (dup_input[first_non_zero_pos] < '1' || dup_input[first_non_zero_pos] > '9')
-      ++first_non_zero_pos;
+    FirstNonZeroPos = 0;
+    while (dupInput[FirstNonZeroPos] < '1' || dupInput[FirstNonZeroPos] > '9')
+      ++FirstNonZeroPos;
   }
 
-  unsigned it = first_non_zero_pos;
-  int n_valid_number = 0;
-  while (it < dup_input.length()) {
-    if (dup_input[it] == '.') {
+  unsigned it = FirstNonZeroPos;
+  int NValidNumber = 0;
+  while (it < dupInput.length()) {
+    if (dupInput[it] == '.') {
       ++it;
       continue;
     }
-    ++n_valid_number;
-    if (n_valid_number > precision) dup_input[it] = '0';
+    ++NValidNumber;
+    if (NValidNumber > precision) dupInput[it] = '0';
     ++it;
   }
 
   // Here we wanted to adjust the truncate position and the value
-  dec_position = dup_input.find('.');
-  if (dec_position == std::string::npos)  // When this is integer
-    trunc_bit_position = (int)dup_input.length();
+  decPosition = dupInput.find('.');
+  if (decPosition == std::string::npos)  // When this is integer
+    truncBitPosition = (int)dupInput.length();
   else
-    for (trunc_bit_position = (int)(dup_input.length() - 1); trunc_bit_position >= 0;
-         --trunc_bit_position) {
-      if (dup_input[trunc_bit_position] == '.') break;
-      if (dup_input[trunc_bit_position] != '0') {
-        trunc_bit_position++;
+    for (truncBitPosition = (int)(dupInput.length() - 1); truncBitPosition >= 0;
+         --truncBitPosition) {
+      if (dupInput[truncBitPosition] == '.') break;
+      if (dupInput[truncBitPosition] != '0') {
+        truncBitPosition++;
         break;
       }
     }
 
-  if (dup_input[0] == '1')
-    dup_input = dup_input.substr(0, trunc_bit_position);
+  if (dupInput[0] == '1')
+    dupInput = dupInput.substr(0, truncBitPosition);
   else
-    dup_input = dup_input.substr(1, trunc_bit_position - 1);
+    dupInput = dupInput.substr(1, truncBitPosition - 1);
 
-  dec_position = dup_input.find('.');
-  if (dec_position != std::string::npos) {
+  decPosition = dupInput.find('.');
+  if (decPosition != std::string::npos) {
     size_t it = 0;
-    for (it = dec_position + 1; dup_input[it] == '0'; it++);
-    if (it - dec_position - 1 < 4) {
-      ans += dup_input;
+    for (it = decPosition + 1; dupInput[it] == '0'; it++);
+    if (it - decPosition - 1 < 4) {
+      ans += dupInput;
       return ans;
     } else {
-      ans += scientificFormat(dup_input);
+      ans += scientificFormat(dupInput);
       return ans;
     }
-  } else if ((int)(dup_input.length()) <= precision) {
-    ans += dup_input;
+  } else if ((int)(dupInput.length()) <= precision) {
+    ans += dupInput;
     return ans;
   }
 
-  ans += scientificFormat(dup_input);
+  ans += scientificFormat(dupInput);
   return ans;
 }
 

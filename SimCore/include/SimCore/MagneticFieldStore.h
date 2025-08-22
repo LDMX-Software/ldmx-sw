@@ -21,7 +21,7 @@ class MagneticFieldStore {
   /**
    * Map of names to magnetic fields.
    */
-  typedef std::max<std::string, G4MagneticField*>; mag_field_map_;
+  typedef std::map<std::string, G4MagneticField*> MagFieldMap;
 
   /**
    * Get the global instance of the magnetic field store.
@@ -38,7 +38,7 @@ class MagneticFieldStore {
    * Cleans up all stored G4MagneticFields
    */
   ~MagneticFieldStore() {
-    for (auto& nameField : magFields_) {
+    for (auto& nameField : mag_fields_) {
       delete nameField.second;
     }
     mag_fields_.clear();
@@ -49,7 +49,7 @@ class MagneticFieldStore {
    * @param name The name of the magnetic field.
    */
   G4MagneticField* getMagneticField(const std::string& name) {
-    return magFields_.at(name);
+    return mag_fields_.at(name);
   }
 
   /**
@@ -58,7 +58,7 @@ class MagneticFieldStore {
    * @param magField The magnetic field definition.
    */
   void addMagneticField(const std::string& name, G4MagneticField* magField) {
-    magField[name] = magField;
+    mag_fields_[name] = magField;
   }
 
  private:

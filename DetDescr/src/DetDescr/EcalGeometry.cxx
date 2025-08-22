@@ -40,10 +40,10 @@ static void unrotate(double& p, double& q) {
 EcalGeometry::EcalGeometry(const framework::config::Parameters& ps)
     : framework::ConditionsObject(EcalGeometry::CONDITIONS_OBJECT_NAME) {
   layer_z_positions_ = ps.get<std::vector<double>>("layerZPositions");
-  ecalFrontZ_ = ps.get<double>("ecalFrontZ");
+  ecal_front_z_ = ps.get<double>("ecalFrontZ");
   moduler_ = ps.get<double>("moduleMinR");
   gap_ = ps.get<double>("gap");
-  nCellRHeight_ = ps.get<double>("nCellRHeight");
+  n_cell_r_height_ = ps.get<double>("nCellRHeight");
   corners_side_up_ = ps.get<bool>("cornersSideUp");
   layer_shift_x_ = ps.get<double>("layer_shift_x");
   layer_shift_y_ = ps.get<double>("layer_shift_y");
@@ -57,11 +57,11 @@ EcalGeometry::EcalGeometry(const framework::config::Parameters& ps)
   }
 
   moduler_ = moduler_ * (2 / sqrt(3));
-  cellr_ = 2 * moduler_ / nCellRHeight_;
+  cellr_ = 2 * moduler_ / n_cell_r_height_;
   cellr_ = (sqrt(3.) / 2.) * cellr_;
 
   ldmx_log(debug) << "Building module map with gap " << std::setprecision(2)
-                  << gap_ << ", nCellRHeight " << nCellRHeight_
+                  << gap_ << ", nCellRHeight " << n_cell_r_height_
                   << ",  min/max radii of cell " << cellr_ << " / " << cellr_
                   << ", and module " << moduler_ << " / " << moduler_;
 
@@ -110,7 +110,7 @@ EcalID EcalGeometry::getID(double x, double y, int layer_id,
   int module_id{-1};
   for (auto const& [mid, module_xy] : module_pos_xy_) {
     double probe_x{p - module_xy.first}, probe_y{q - module_xy.second};
-    if (cornersSideUp_) rotate(probe_x, probe_y);
+    if (corners_side_up_) rotate(probe_x, probe_y);
     if (isInside(probe_x / moduler_, probe_y / moduler_)) {
       module_id = mid;
       break;
@@ -145,7 +145,7 @@ EcalID EcalGeometry::getID(double x, double y, int layer_id, int module_id,
         module_pos_xy_.at(module_id).second};
 
   // need to rotate
-  if (cornersSideUp_) rotate(p, q);
+  if (corners_side_up_) rotate(p, q);
 
   // deduce cell ID
   int cell_id = cell_id_in_module_.FindBin(p, q) - 1;
@@ -176,7 +176,7 @@ std::pair<double, double> EcalGeometry::getPositionInModule(int cell_id) const {
   auto pq = cell_pos_in_module_.at(cell_id);
 
   // going from (p,q) to (x,y) is a unrotate
-  if (cornersSideUp_) unrotate(pq.first, pq.second);
+  if (corners_side_up_) unrotate(pq.first, pq.second);
 
   return pq;
 }
@@ -194,7 +194,7 @@ void EcalGeometry::buildLayerMap() {
     }
   }
 
-  for (std::size_t i_layer{0}; i_layer < layerZPositions_.size(); ++i_layer) {
+  for (std::size_t i_layer{0}; i_layer < layer_z_positions_.size(); ++i_layer) {
     // default is centered on z-axis
     double x{0}, y{0}, z{ecal_front_z_ + layer_z_positions_.at(i_layer)};
     if (layer_shift_odd_ and (i_layer % 2 == 1)) {
@@ -227,7 +227,7 @@ void EcalGeometry::buildModuleMap() {
     // flat-side-up
     double x = (2. * moduler_ + gap_) * sin((id - 1) * (c_pi / 3.));
     double y = (2. * moduler_ + gap_) * cos((id - 1) * (c_pi / 3.));
-    if (cornersSideUp_) {
+    if (corners_side_up_) {
       // re-calculating to make sure centers match GDML
       x = (2. * moduler_ + gap_) * cos((id - 1) * (c_pi / 3.));
       y = -(2. * moduler_ + gap_) * sin((id - 1) * (c_pi / 3.));
@@ -267,7 +267,7 @@ void EcalGeometry::buildCellMap() {
   // first x-cell is only a half
   grid_min_p -= cellr_;
   num_p_cells++;
-  while (grid_min_p > -1 * moduleR_) {
+  while (grid_min_p > -1 * module_r_) {
     grid_min_p -= 2 * cellr_;  // decrement x by cell center-to-flat diameter
     num_p_cells++;
   }
@@ -276,20 +276,20 @@ void EcalGeometry::buildCellMap() {
     //  alternate between a full corner-to-corner diameter
     //  and a side of a cell (center-to-corner radius)
     if (num_q_cells % 2 == 0)
-      grid_min_q -= 1 * cellR_;
+      grid_min_q -= 1 * cell_r_;
     else
-      grid_min_q -= 2 * cellR_;
+      grid_min_q -= 2 * cell_r_;
     num_q_cells++;
   }
   // only counted one half of the cells
   num_p_cells *= 2;
   num_q_cells *= 2;
 
-  grid_map.Honeycomb(grid_min_p, grid_min_q, cellR_, num_p_cells, num_q_cells);
+  grid_map.Honeycomb(grid_min_p, grid_min_q, cell_r_, num_p_cells, num_q_cells);
 
   ldmx_log(trace) << std::setprecision(2)
                   << "Building buildCellMap with cell rmin: " << cellr_
-                  << " cell rmax: " << cellR_ << " (gridMinP,gridMinQ) = ("
+                  << " cell rmax: " << cell_r_ << " (gridMinP,gridMinQ) = ("
                   << grid_min_p << "," << grid_min_q << ")"
                   << " (numPCells,numQCells) = (" << num_p_cells << ","
                   << num_q_cells << ")";
@@ -317,7 +317,7 @@ void EcalGeometry::buildCellMap() {
       ldmx_log(trace) << "      vtx # " << i;
       ldmx_log(trace) << "      vtx p,q " << vertex_p[i] << " " << vertex_q[i];
 
-      isinside[i] = isInside(vertex_p[i] / moduleR_, vertex_q[i] / moduleR_);
+      isinside[i] = isInside(vertex_p[i] / module_r_, vertex_q[i] / module_r_);
       if (isinside[i]) num_vertices_inside++;
     }
 
@@ -346,23 +346,23 @@ void EcalGeometry::buildCellMap() {
             // determine which side of hexagon we should project onto
             double edge_origin_p, edge_origin_q;
             double edge_dest_p, edge_dest_q;
-            if (vertex_p[i] < -moduleR_ / 2.) {
+            if (vertex_p[i] < -module_r_ / 2.) {
               // sloped edge on negative-x side
-              edge_origin_p = -1. * moduleR_;
+              edge_origin_p = -1. * module_r_;
               edge_origin_q = 0.;
-              edge_dest_p = -0.5 * moduleR_;
+              edge_dest_p = -0.5 * module_r_;
               edge_dest_q = moduler_;
-            } else if (vertex_p[i] > moduleR_ / 2.) {
+            } else if (vertex_p[i] > module_r_ / 2.) {
               // sloped edge on positive-x side
-              edge_origin_p = 0.5 * moduleR_;
+              edge_origin_p = 0.5 * module_r_;
               edge_origin_q = moduler_;
-              edge_dest_p = moduleR_;
+              edge_dest_p = module_r_;
               edge_dest_q = 0.;
             } else {
               // flat edge at top
-              edge_origin_p = 0.5 * moduleR_;
+              edge_origin_p = 0.5 * module_r_;
               edge_origin_q = moduler_;
-              edge_dest_p = -0.5 * moduleR_;
+              edge_dest_p = -0.5 * module_r_;
               edge_dest_q = moduler_;
             }
             // flip to bottom half if below x-axis
@@ -457,7 +457,7 @@ void EcalGeometry::buildCellModuleMap() {
       // convert from (p,q) to (x,y) space
       // when the corners are not up, x = p and y = q
       // so no transformation needs to be done
-      if (cornersSideUp_) unrotate(cell_x, cell_y);
+      if (corners_side_up_) unrotate(cell_x, cell_y);
 
       // calculate cell's pq relative to entire layer center
       auto cell_rel_to_layer =
@@ -497,26 +497,26 @@ void EcalGeometry::buildNeighborMaps() {
    * a nonzero gap. The number of neighbors is not simple because: edges, and
    * that module edges have cutoff cells. (NN) Center within [1*cellr_,
    * 3*cellr_] (NNN) Center within [3*cellr_, 4.5*cellr_] Chosen b/c in ideal
-   * case, centers are at 2*cell_ (NN), and at 3*cellR_=3.46*cellr_ and 4*cellr_
-   * (NNN).
+   * case, centers are at 2*cell_ (NN), and at 3*cell_r_=3.46*cellr_ and
+   * 4*cellr_ (NNN).
    */
   ldmx_log(trace) << "Building Nearest and Next-Nearest Neighbor maps";
 
-  NNMap_.clear();
-  NNNMap_.clear();
+  nn_map_.clear();
+  nnn_map_.clear();
   for (auto const& [center_id, center_xyz] : cell_pos_in_layer_) {
     for (auto const& [probe_id, probe_xyz] : cell_pos_in_layer_) {
       /// do distance calculation
       double dist = distance(probe_xyz, center_xyz);
       if (dist > 1 * cellr_ && dist <= 3. * cellr_) {
-        NNMap_[center_id].push_back(probe_id);
+        nn_map_[center_id].push_back(probe_id);
       } else if (dist > 3. * cellr_ && dist <= 4.5 * cellr_) {
-        NNNMap_[center_id].push_back(probe_id);
+        nnn_map_[center_id].push_back(probe_id);
       }
     }
     // Keeping this commented out until the SimIDs string method is implemented
-    // ldmx_log(debug) << "  Found " << NNMap_[center_id].size() << " NN and "
-    // << NNNMap_[center_id].size() << " NNN for cell " << center_id;
+    // ldmx_log(debug) << "  Found " << nn_map_[center_id].size() << " NN and "
+    // << nnn_map_[center_id].size() << " NNN for cell " << center_id;
   }
   return;
 }
@@ -528,10 +528,10 @@ double EcalGeometry::distanceToEdge(EcalID id) const {
   double y = fabs(cell_location.second);
   double r = sqrt(x * x + y * y);
   double theta = (r > 1E-3) ? fabs(std::atan(y / x)) : 0;
-  if (x < moduleR_ / 2.)
+  if (x < module_r_ / 2.)
     return (moduler_ - y);  // closest line is straight vertical to top edge
   double dist =
-      sqrt(3.) * moduleR_ / (std::sin(theta) + sqrt(3.) * std::cos(theta));
+      sqrt(3.) * module_r_ / (std::sin(theta) + sqrt(3.) * std::cos(theta));
   return dist;
 }
 

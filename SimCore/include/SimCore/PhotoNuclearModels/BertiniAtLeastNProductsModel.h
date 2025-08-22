@@ -49,7 +49,7 @@ class BertiniAtLeastNProductsModel : public PhotoNuclearModel {
         pdg_ids_{parameters.getParameter<std::vector<int>>("pdg_ids")},
         min_products_{parameters.getParameter<int>("min_products")} {}
   virtual ~BertiniAtLeastNProductsModel() = default;
-  void constructGammaProcess(G4ProcessManager* processManager) ;
+  void constructGammaProcess(G4ProcessManager* processManager);
 
  private:
   double threshold_;

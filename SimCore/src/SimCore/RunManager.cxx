@@ -50,8 +50,8 @@ void RunManager::setupPhysics() {
   p_list->SetVerboseLevel(0);
 
   parallel_world_path_ = parameters_.get<std::string>("scoringPlanes");
-  isPWEnabled_ = !parallel_world_path_.empty();
-  if (isPWEnabled_) {
+  is_pw_enabled_ = !parallel_world_path_.empty();
+  if (is_pw_enabled_) {
     ldmx_log(debug) << "Parallel worlds physics list has been registered";
     p_list->RegisterPhysics(new G4ParallelWorldPhysics("ldmxParallelWorld"));
   }
@@ -106,7 +106,7 @@ void RunManager::Initialize() {
 
   // The parallel world needs to be registered before the mass world is
   // constructed i.e. before G4RunManager::Initialize() is called.
-  if (isPWEnabled_) {
+  if (is_pw_enabled_) {
     ldmx_log(debug) << "Parallel worlds have been enabled";
 
     auto validate_geometry{parameters_.get<bool>("validate_detector")};

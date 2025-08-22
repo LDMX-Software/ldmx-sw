@@ -87,7 +87,7 @@ class HcalSD : public SensitiveDetector {
     event.add(COLLECTION_NAME, hits_);
   }
 
-  virtual void OnFinishedEvent() override { hits_.clear(); }
+  virtual void onFinishedEvent() override { hits_.clear(); }
 
  private:
   // A list of identifiers used to find out whether or not a given logical

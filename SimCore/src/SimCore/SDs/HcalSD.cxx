@@ -194,12 +194,16 @@ G4bool HcalSD::ProcessHits(G4Step* aStep, G4TouchableHistory* ROhist) {
   // And rotate them to a local coordinate system for the bar that always has
   // the same x/y/z definitions (see HcalGeometry for details)
   auto local_pre_position_rotated{geometry.rotateGlobalToLocalBarPosition(
-      {local_pre_step_point[0], local_pre_step_point[1], local_pre_step_point[2]}, id)};
+      {local_pre_step_point[0], local_pre_step_point[1],
+       local_pre_step_point[2]},
+      id)};
 
   auto local_post_position_rotated{geometry.rotateGlobalToLocalBarPosition(
-      {local_post_step_point[0], local_post_step_point[1], local_post_step_point[2]},
+      {local_post_step_point[0], local_post_step_point[1],
+       local_post_step_point[2]},
       id)};
-  hit.setPreStepPosition(local_pre_position_rotated[0], local_pre_position_rotated[1],
+  hit.setPreStepPosition(local_pre_position_rotated[0],
+                         local_pre_position_rotated[1],
                          local_pre_position_rotated[2]);
   hit.setPostStepPosition(local_post_position_rotated[0],
                           local_post_position_rotated[1],

@@ -93,9 +93,9 @@ G4bool EcalSD::ProcessHits(G4Step* aStep, G4TouchableHistory*) {
   auto track_id = track->GetTrackID();
   auto pdg = track->GetParticleDefinition()->GetPDGEncoding();
 
-  if (enableHitContribs_) {
+  if (enable_hit_contribs_) {
     int contrib_i = hit.findContribIndex(track_id, pdg);
-    if (compressHitContribs_ and contrib_i != -1) {
+    if (compress_hit_contribs_ and contrib_i != -1) {
       hit.updateContrib(contrib_i, edep, time);
     } else {
       auto map{getTrackMap()};

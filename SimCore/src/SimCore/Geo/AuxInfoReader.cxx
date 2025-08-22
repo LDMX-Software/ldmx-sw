@@ -336,14 +336,14 @@ void AuxInfoReader::createDetectorHeader(const G4String& auxValue,
   }
 
   detector_header_ = new ldmx::DetectorHeader(detector_name, detector_version,
-                                             description, author);
+                                              description, author);
 
   /*G4cout << G4endl;
   G4cout << "Read detector header from userinfo: " << G4endl;
-  G4cout << "  DetectorName: " << detectorHeader_->getName() << G4endl;
-  G4cout << "  DetectorVersion: " << detectorHeader_->getVersion() << G4endl;
-  G4cout << "  Author: " << detectorHeader_->getAuthor() << G4endl;
-  G4cout << "  Description: " << detectorHeader_->getDescription() << G4endl;
+  G4cout << "  DetectorName: " << detector_header_->getName() << G4endl;
+  G4cout << "  DetectorVersion: " << detector_header_->getVersion() << G4endl;
+  G4cout << "  Author: " << detector_header_->getAuthor() << G4endl;
+  G4cout << "  Description: " << detector_header_->getDescription() << G4endl;
   G4cout << G4endl;*/
 }
 }  // namespace simcore::geo

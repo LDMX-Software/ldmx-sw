@@ -40,7 +40,7 @@ void SimulatorBase::onProcessEnd() {
   // twice:
   //  1. When the histogram file is closed (all ROOT objects created during
   //  processing are put there because ROOT)
-  //  2. When Simulator is deleted because runManager_ is a unique_ptr
+  //  2. When Simulator is deleted because run_manager_ is a unique_ptr
   run_manager_.reset(nullptr);
 
   // Delete the G4UIsession
@@ -87,7 +87,7 @@ void SimulatorBase::verifyParameters() const {
   // Looks for sub-strings matching the ones listed as an invalid command.
   // These invalid commands are mostly commands where control has been handed
   // over to Simulator.
-  for (const auto& invalid_command : invalid_command) {
+  for (const auto& invalid_command : INVALID_COMMANDS) {
     for (const auto& cmd : pre_init_commands_) {
       if (cmd.find(invalid_command) != std::string::npos) {
         EXCEPTION_RAISE("PreInitCmd", "Pre Initialization command '" + cmd +
@@ -117,7 +117,7 @@ void SimulatorBase::configure(framework::config::Parameters& parameters) {
       parameters_.get<std::vector<std::string>>("postInitCommands", {});
 
   verifyParameters();
-  if (RunManager) {
+  if (run_manager_) {
     // TODO: This won't work, need to think of a better solution
     EXCEPTION_RAISE(
         "MultipleSimulators",
@@ -151,7 +151,7 @@ void SimulatorBase::createLogging() {
   // system
   session_handle_ = std::make_unique<BatchSession>();
 
-  if (sessionHandle_ != nullptr)
+  if (session_handle_ != nullptr)
     ui_manager_->SetCoutDestination(session_handle_.get());
 }
 
@@ -164,7 +164,7 @@ void SimulatorBase::saveSDHits(framework::Event& event) {
   // Copy hit objects from SD hit collections into the output event.
   SensitiveDetector::Factory::get().apply([&event](auto sd) {
     sd->saveHits(event);
-    sd->OnFinishedEvent();
+    sd->onFinishedEvent();
   });
 }
 

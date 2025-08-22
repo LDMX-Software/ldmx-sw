@@ -23,9 +23,9 @@ MagneticFieldMap3D::MagneticFieldMap3D(const char* filename, double xOffset,
       x_offset_(xOffset),
       y_offset_(yOffset),
       z_offset_(zOffset),
-      invertX_(false),
-      invertY_(false),
-      invertZ_(false) {
+      invert_x_(false),
+      invert_y_(false),
+      invert_z_(false) {
   ifstream file(filename);  // Open the file for reading.
 
   // Throw an error if file does not exist.
@@ -106,21 +106,21 @@ MagneticFieldMap3D::MagneticFieldMap3D(const char* filename, double xOffset,
                   << " mm ";
   ldmx_log(trace) << "  Max values: " << maxx_ << " " << maxy_ << " " << maxz_
                   << " mm ";
-  ldmx_log(trace) << "  Field offsets: " << xOffset_ << " " << yOffset_ << " "
-                  << zOffset_ << " mm ";
+  ldmx_log(trace) << "  Field offsets: " << x_offset_ << " " << y_offset_ << " "
+                  << z_offset_ << " mm ";
 
   // Should really check that the limits are not the wrong way around.
   if (maxx_ < minx_) {
     swap(maxx_, minx_);
-    invertX_ = true;
+    invert_x_ = true;
   }
   if (maxy_ < miny_) {
     swap(maxy_, miny_);
-    invertY_ = true;
+    invert_y_ = true;
   }
   if (maxz_ < minz_) {
     swap(maxz_, minz_);
-    invertZ_ = true;
+    invert_z_ = true;
   }
 
   ldmx_log(trace) << "After reordering if necessary";
@@ -143,9 +143,9 @@ MagneticFieldMap3D::MagneticFieldMap3D(const char* filename, double xOffset,
 
 void MagneticFieldMap3D::GetFieldValue(const double point[4],
                                        double* bfield) const {
-  double x = point[0] - xOffset_;
-  double y = point[1] - yOffset_;
-  double z = point[2] - zOffset_;
+  double x = point[0] - x_offset_;
+  double y = point[1] - y_offset_;
+  double z = point[2] - z_offset_;
   double eps = 1E-6;
 
   // Check that the point is within the defined region
@@ -157,13 +157,13 @@ void MagneticFieldMap3D::GetFieldValue(const double point[4],
     double yfraction = (y - miny_) / dy_;
     double zfraction = (z - minz_) / dz_;
 
-    if (invertX_) {
+    if (invert_x_) {
       xfraction = 1 - xfraction;
     }
-    if (invertY_) {
+    if (invert_y_) {
       yfraction = 1 - yfraction;
     }
-    if (invertZ_) {
+    if (invert_z_) {
       zfraction = 1 - zfraction;
     }
 
@@ -202,53 +202,53 @@ void MagneticFieldMap3D::GetFieldValue(const double point[4],
 
     // Full 3-dimensional version
     bfield[0] =
-        xField_[xindex][yindex][zindex] * (1 - xlocal) * (1 - ylocal) *
+        x_field_[xindex][yindex][zindex] * (1 - xlocal) * (1 - ylocal) *
             (1 - zlocal) +
-        xField_[xindex][yindex][zindex + 1] * (1 - xlocal) * (1 - ylocal) *
+        x_field_[xindex][yindex][zindex + 1] * (1 - xlocal) * (1 - ylocal) *
             zlocal +
-        xField_[xindex][yindex + 1][zindex] * (1 - xlocal) * ylocal *
+        x_field_[xindex][yindex + 1][zindex] * (1 - xlocal) * ylocal *
             (1 - zlocal) +
-        xField_[xindex][yindex + 1][zindex + 1] * (1 - xlocal) * ylocal *
+        x_field_[xindex][yindex + 1][zindex + 1] * (1 - xlocal) * ylocal *
             zlocal +
-        xField_[xindex + 1][yindex][zindex] * xlocal * (1 - ylocal) *
+        x_field_[xindex + 1][yindex][zindex] * xlocal * (1 - ylocal) *
             (1 - zlocal) +
-        xField_[xindex + 1][yindex][zindex + 1] * xlocal * (1 - ylocal) *
+        x_field_[xindex + 1][yindex][zindex + 1] * xlocal * (1 - ylocal) *
             zlocal +
-        xField_[xindex + 1][yindex + 1][zindex] * xlocal * ylocal *
+        x_field_[xindex + 1][yindex + 1][zindex] * xlocal * ylocal *
             (1 - zlocal) +
-        xField_[xindex + 1][yindex + 1][zindex + 1] * xlocal * ylocal * zlocal;
+        x_field_[xindex + 1][yindex + 1][zindex + 1] * xlocal * ylocal * zlocal;
     bfield[1] =
-        yField_[xindex][yindex][zindex] * (1 - xlocal) * (1 - ylocal) *
+        y_field_[xindex][yindex][zindex] * (1 - xlocal) * (1 - ylocal) *
             (1 - zlocal) +
-        yField_[xindex][yindex][zindex + 1] * (1 - xlocal) * (1 - ylocal) *
+        y_field_[xindex][yindex][zindex + 1] * (1 - xlocal) * (1 - ylocal) *
             zlocal +
-        yField_[xindex][yindex + 1][zindex] * (1 - xlocal) * ylocal *
+        y_field_[xindex][yindex + 1][zindex] * (1 - xlocal) * ylocal *
             (1 - zlocal) +
-        yField_[xindex][yindex + 1][zindex + 1] * (1 - xlocal) * ylocal *
+        y_field_[xindex][yindex + 1][zindex + 1] * (1 - xlocal) * ylocal *
             zlocal +
-        yField_[xindex + 1][yindex][zindex] * xlocal * (1 - ylocal) *
+        y_field_[xindex + 1][yindex][zindex] * xlocal * (1 - ylocal) *
             (1 - zlocal) +
-        yField_[xindex + 1][yindex][zindex + 1] * xlocal * (1 - ylocal) *
+        y_field_[xindex + 1][yindex][zindex + 1] * xlocal * (1 - ylocal) *
             zlocal +
-        yField_[xindex + 1][yindex + 1][zindex] * xlocal * ylocal *
+        y_field_[xindex + 1][yindex + 1][zindex] * xlocal * ylocal *
             (1 - zlocal) +
-        yField_[xindex + 1][yindex + 1][zindex + 1] * xlocal * ylocal * zlocal;
+        y_field_[xindex + 1][yindex + 1][zindex + 1] * xlocal * ylocal * zlocal;
     bfield[2] =
-        zField_[xindex][yindex][zindex] * (1 - xlocal) * (1 - ylocal) *
+        z_field_[xindex][yindex][zindex] * (1 - xlocal) * (1 - ylocal) *
             (1 - zlocal) +
-        zField_[xindex][yindex][zindex + 1] * (1 - xlocal) * (1 - ylocal) *
+        z_field_[xindex][yindex][zindex + 1] * (1 - xlocal) * (1 - ylocal) *
             zlocal +
-        zField_[xindex][yindex + 1][zindex] * (1 - xlocal) * ylocal *
+        z_field_[xindex][yindex + 1][zindex] * (1 - xlocal) * ylocal *
             (1 - zlocal) +
-        zField_[xindex][yindex + 1][zindex + 1] * (1 - xlocal) * ylocal *
+        z_field_[xindex][yindex + 1][zindex + 1] * (1 - xlocal) * ylocal *
             zlocal +
-        zField_[xindex + 1][yindex][zindex] * xlocal * (1 - ylocal) *
+        z_field_[xindex + 1][yindex][zindex] * xlocal * (1 - ylocal) *
             (1 - zlocal) +
-        zField_[xindex + 1][yindex][zindex + 1] * xlocal * (1 - ylocal) *
+        z_field_[xindex + 1][yindex][zindex + 1] * xlocal * (1 - ylocal) *
             zlocal +
-        zField_[xindex + 1][yindex + 1][zindex] * xlocal * ylocal *
+        z_field_[xindex + 1][yindex + 1][zindex] * xlocal * ylocal *
             (1 - zlocal) +
-        zField_[xindex + 1][yindex + 1][zindex + 1] * xlocal * ylocal * zlocal;
+        z_field_[xindex + 1][yindex + 1][zindex + 1] * xlocal * ylocal * zlocal;
 
   } else {
     bfield[0] = 0.0;

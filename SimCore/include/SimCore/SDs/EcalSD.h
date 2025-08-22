@@ -81,7 +81,7 @@ class EcalSD : public SensitiveDetector {
   /**
    * Clear the map of hits we have accumulated
    */
-  virtual void OnFinishedEvent() override { hits_.clear(); }
+  virtual void onFinishedEvent() override { hits_.clear(); }
 
  private:
   /// map of hits to add to the event (will be squashed)

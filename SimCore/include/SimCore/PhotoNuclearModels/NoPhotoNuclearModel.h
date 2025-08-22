@@ -21,7 +21,7 @@ class NoPhotoNuclearModel : public PhotoNuclearModel {
                       const framework::config::Parameters& parameters)
       : PhotoNuclearModel{name, parameters} {}
   virtual ~NoPhotoNuclearModel() = default;
-  void constructGammaProcess(G4ProcessManager* processManager) ;
+  void constructGammaProcess(G4ProcessManager* processManager);
 };
 
 }  // namespace simcore

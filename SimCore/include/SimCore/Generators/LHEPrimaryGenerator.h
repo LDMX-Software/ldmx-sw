@@ -57,7 +57,7 @@ class LHEPrimaryGenerator : public simcore::PrimaryGenerator {
    * @param id The configuration ID.
    * @param rh The run header.
    */
-  void recordConfig(const std::string& id, ldmx::RunHeader& rh) ;
+  void recordConfig(const std::string& id, ldmx::RunHeader& rh);
 
  private:
   /**

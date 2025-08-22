@@ -25,7 +25,7 @@ void ReSimulator::configure(framework::config::Parameters& parameters) {
 }
 
 void ReSimulator::produce(framework::Event& event) {
-  /* numEventsBegan_++; */
+  /* num_events_began_++; */
   auto& event_header{event.getEventHeader()};
   const auto event_number{event_header.getEventNumber()};
   if (skip(event)) {
@@ -44,10 +44,10 @@ void ReSimulator::produce(framework::Event& event) {
 
   ldmx_log(trace) << "Finished with event number " << event_number;
 
-  if (runManager_->GetCurrentEvent()->IsAborted()) {
+  if (run_manager_->GetCurrentEvent()->IsAborted()) {
     run_manager_->TerminateOneEvent();
     SensitiveDetector::Factory::get().apply(
-        [](auto sd) { sd->OnFinishedEvent(); });
+        [](auto sd) { sd->onFinishedEvent(); });
     EXCEPTION_RAISE(
         "ReSimAbortedEvent",
         "Resimulation resulted in an aborted event, something is wrong with "

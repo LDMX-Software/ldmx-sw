@@ -55,7 +55,7 @@ class DecayChildrenKeeper : public simcore::UserAction {
    *
    * @param[in] track Geant4 track associated with a particle.
    */
-  void postUserTrackingAction(const G4Track* track) ;
+  void postUserTrackingAction(const G4Track* track);
 
   /// Retrieve the type of actions this class defines.
   std::vector<simcore::TYPE> getTypes() override {

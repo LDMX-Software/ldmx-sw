@@ -140,15 +140,15 @@ class half;
 enum { CHAR_IS_SIGNED = (char)-1 < 0 };
 
 // TODO we have similar traits in x_hls_utils.h, should consider unify.
-namespace ap_type {
+namespace _ap_type {
 template <typename _Tp>
-struct IsSigned {
-  static const bool VALUE = _Tp(-1) < _Tp(1);
+struct is_signed {
+  static const bool value = _Tp(-1) < _Tp(1);
 };
 
 template <typename _Tp>
 struct is_integral {
-  static const bool VALUE = false;
+  static const bool value = false;
 };
 #define DEF_IS_INTEGRAL(CTYPE)      \
   template <>                       \
@@ -170,7 +170,7 @@ DEF_IS_INTEGRAL(ap_ulong)
 #undef DEF_IS_INTEGRAL
 
 template <bool, typename _Tp = void>
-struct EnableIf {};
+struct enable_if {};
 // partial specialization for true
 template <typename _Tp>
 struct enable_if<true, _Tp> {
@@ -178,7 +178,7 @@ struct enable_if<true, _Tp> {
 };
 
 template <typename _Tp>
-struct RemoveConst {
+struct remove_const {
   typedef _Tp type;
 };
 
@@ -199,7 +199,7 @@ struct remove_const<_Tp const> {
 #define _AP_C99 false
 #endif
 
-static inline unsigned char guessRadix(const char* s) {
+static inline unsigned char guess_radix(const char* s) {
   unsigned char rd = 10;  ///< default radix
   const char* p = s;
   // skip neg sign if it exists
@@ -242,7 +242,7 @@ class ap_private;
 template <int _AP_W, bool _AP_S>
 struct ssdm_int_sim {
   /// integral type with template-specified width and signedness.
-  ap_private<_AP_W, _AP_S> v_;
+  ap_private<_AP_W, _AP_S> V;
   ssdm_int_sim() {}
 };
 #define _AP_ROOT_TYPE ssdm_int_sim
@@ -251,13 +251,13 @@ struct ssdm_int_sim {
 // XXX The C-sim model cannot use GCC-extension
 // Basic ops. Ret and Val are ap_private.
 template <typename _Tp1, typename _Tp2, typename _Tp3>
-inline _Tp1 apRootOpConcat(const _Tp1& Ret, const _Tp2& X, const _Tp3& Y) {
+inline _Tp1 _AP_ROOT_op_concat(const _Tp1& Ret, const _Tp2& X, const _Tp3& Y) {
   _Tp1 r = (X).operator,(Y);
   return r;
 }
 #define _AP_ROOT_op_get_bit(Val, Bit) (Val).get_bit((Bit))
 template <typename _Tp1, typename _Tp2, typename _Tp3>
-inline _Tp1& apRootOpSetBit(_Tp1& Val, const _Tp2& Bit, const _Tp3& Repl) {
+inline _Tp1& _AP_ROOT_op_set_bit(_Tp1& Val, const _Tp2& Bit, const _Tp3& Repl) {
   (Val).set_bit((Bit), (Repl));
   return Val;
 }
@@ -265,7 +265,7 @@ inline _Tp1& apRootOpSetBit(_Tp1& Val, const _Tp2& Bit, const _Tp3& Repl) {
 // ap_private.range()...
 #define _AP_ROOT_op_get_range(Val, Lo, Hi) (Val).range((Hi), (Lo))
 template <typename _Tp1, typename _Tp2, typename _Tp3, typename _Tp4>
-inline _Tp1& apRootOpSetRange(_Tp1& Val, const _Tp2& Lo, const _Tp3& Hi,
+inline _Tp1& _AP_ROOT_op_set_range(_Tp1& Val, const _Tp2& Lo, const _Tp3& Hi,
                                    const _Tp4& Repl) {
   (Val).range((Hi), (Lo)) = Repl;
   return (Val);
@@ -299,20 +299,20 @@ inline _Tp1& apRootOpSetRange(_Tp1& Val, const _Tp2& Lo, const _Tp3& Hi,
 
 INLINE ap_ulong doubleToRawBits(double pf) {
   union {
-    ap_ulong l_;
-    double d_;
-  } ld;
-  ld.d_ = pf;
-  return ld.l_;
+    ap_ulong __L;
+    double __D;
+  } LD;
+  LD.__D = pf;
+  return LD.__L;
 }
 
 INLINE unsigned int floatToRawBits(float pf) {
   union {
-    unsigned int l_;
-    float d_;
-  } ld;
-  ld.d_ = pf;
-  return ld.l_;
+    unsigned int __L;
+    float __D;
+  } LD;
+  LD.__D = pf;
+  return LD.__L;
 }
 
 #if _AP_ENABLE_HALF_ == 1
@@ -333,21 +333,21 @@ INLINE unsigned short halfToRawBits(half pf) {
 // usigned long long is at least 64-bit
 INLINE double rawBitsToDouble(ap_ulong pi) {
   union {
-    ap_ulong l_;
-    double d_;
-  } ld;
-  ld.l_ = pi;
-  return ld.d_;
+    ap_ulong __L;
+    double __D;
+  } LD;
+  LD.__L = pi;
+  return LD.__D;
 }
 
 // long is at least 32-bit
 INLINE float rawBitsToFloat(unsigned long pi) {
   union {
-    unsigned int l_;
-    float d_;
-  } ld;
-  ld.l_ = pi;
-  return ld.d_;
+    unsigned int __L;
+    float __D;
+  } LD;
+  LD.__L = pi;
+  return LD.__D;
 }
 
 #if _AP_ENABLE_HALF_ == 1

@@ -43,8 +43,8 @@ void DetectorIDInterpreter::pack() {
   DetectorID::RawValue raw_value = 0;
   for (auto field : p_field_info_->field_list_) {
     unsigned field_value = field_values_[field->getIndex()];
-    raw_value =
-        raw_value | ((field_value << field->getStartBit()) & field->getBitMask());
+    raw_value = raw_value |
+                ((field_value << field->getStartBit()) & field->getBitMask());
   }
   id_.setRawValue(raw_value);
 }
@@ -65,7 +65,7 @@ void DetectorIDInterpreter::setFieldValue(const std::string& fieldName,
                                           FieldValue fieldValue) {
   auto byname = p_field_info_->field_map_.find(fieldName);
   if (byname != p_field_info_->field_map_.end())
-    fieldValue[byname->second->getIndex()] = fieldValue;
+    field_values_[byname->second->getIndex()] = fieldValue;
   pack();  // keep packed
 }
 

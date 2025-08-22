@@ -21,7 +21,7 @@ void BertiniNothingHardModel::constructGammaProcess(
     G4ProcessManager* processManager) {
   auto photo_nuclear_process{
       new G4HadronInelasticProcess("photonNuclear", G4Gamma::Definition())};
-  auto model{new BertiniNothingHardProcess{threshold_, Zmin_, Emin_,
+  auto model{new BertiniNothingHardProcess{threshold_, zmin_, emin_,
                                            count_light_ions_}};
   model->SetMaxEnergy(15 * CLHEP::GeV);
   addPNCrossSectionData(photo_nuclear_process);

@@ -47,7 +47,7 @@ namespace simcore {
 GenieReweightProducer::GenieReweightProducer(const std::string& name,
                                              framework::Process& process)
     : Producer(name, process) {
-  hepMC3Converter_ = std::make_unique<genie::HepMC3Converter>();
+  hep_mc3_converter_ = std::make_unique<genie::HepMC3Converter>();
   genie_rw_ = std::make_unique<genie::rew::GReWeight>();
 }
 
@@ -175,7 +175,7 @@ void GenieReweightProducer::produce(framework::Event& event) {
       if (i_w == 0) ldmx_log(debug) << hepmc3_genev;
 
       // now convert to genie event record
-      auto genie_ev_record_ptr = hep_m_c3_converter_->RetrieveGHEP(hepmc3_genev);
+      auto genie_ev_record_ptr = hep_mc3_converter_->RetrieveGHEP(hepmc3_genev);
 
       // print that out too ...
       if (i_w == 0) ldmx_log(debug) << *genie_ev_record_ptr;

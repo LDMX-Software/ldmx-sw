@@ -68,7 +68,7 @@ class GenieReweightProducer : public framework::Producer {
       variation_map_;
 
   // hepmc3 convertor
-  std::unique_ptr<genie::HepMC3Converter> hep_m_c3_converter_;
+  std::unique_ptr<genie::HepMC3Converter> hep_mc3_converter_;
 
   std::unique_ptr<genie::rew::GReWeight> genie_rw_;
 

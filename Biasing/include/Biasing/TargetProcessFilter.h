@@ -44,7 +44,7 @@ class TargetProcessFilter : public simcore::UserAction {
   /**
    * End of event action.
    */
-  void endOfEventAction(const G4Event *) ;
+  void endOfEventAction(const G4Event *);
 
   /**
    * Classify a new track which postpones track processing.
@@ -54,7 +54,7 @@ class TargetProcessFilter : public simcore::UserAction {
    */
   G4ClassificationOfNewTrack classifyNewTrack(
       const G4Track *aTrack,
-      const G4ClassificationOfNewTrack &currentTrackClass) ;
+      const G4ClassificationOfNewTrack &currentTrackClass);
 
   /// Retrieve the type of actions this class defines
   std::vector<simcore::TYPE> getTypes() override {

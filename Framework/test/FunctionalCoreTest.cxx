@@ -148,8 +148,9 @@ class TestAnalyzer : public Analyzer {
       test_hist_->Fill(calo_hits.at(i).getID());
     }
 
-    const ldmx::HcalVetoResult& veto_res = event.getObject<ldmx::HcalVetoResult>(
-        "TestObject", veto_test_object_passname_);
+    const ldmx::HcalVetoResult& veto_res =
+        event.getObject<ldmx::HcalVetoResult>("TestObject",
+                                              veto_test_object_passname_);
 
     auto max_pe_hit{veto_res.getMaxPEHit()};
 
@@ -308,7 +309,7 @@ class IsGoodEventFile : public Catch::Matchers::MatcherBase<std::string> {
     if (exist_collection_) {
       // make sure collection matches pattern
       TTreeReaderValue<std::vector<ldmx::CalorimeterHit>> collection(
-          events, ("TestCollection_" + pass_).c_str());
+          events, ("test_collection_" + pass_).c_str());
       while (events.Next()) {
         if (collection->size() != header->getEventNumber()) {
           f->Close();
@@ -325,7 +326,7 @@ class IsGoodEventFile : public Catch::Matchers::MatcherBase<std::string> {
     } else {
       // check to make sure collection is NOT there
       auto t{(TTree*)f->Get("LDMX_Events")};
-      if (t and t->GetBranch(("TestCollection_" + pass_).c_str())) {
+      if (t and t->GetBranch(("test_collection_" + pass_).c_str())) {
         f->Close();
         return false;
       }
@@ -334,7 +335,7 @@ class IsGoodEventFile : public Catch::Matchers::MatcherBase<std::string> {
     if (exist_object_) {
       // make sure object matches pattern
       TTreeReaderValue<ldmx::HcalVetoResult> object(
-          events, ("TestObject_" + pass_).c_str());
+          events, ("test_object_" + pass_).c_str());
       while (events.Next()) {
         if (object->getMaxPEHit().getID() != header->getEventNumber()) {
           f->Close();
@@ -344,7 +345,7 @@ class IsGoodEventFile : public Catch::Matchers::MatcherBase<std::string> {
     } else {
       // check to make sure object is NOT there
       auto t{(TTree*)f->Get("LDMX_Events")};
-      if (t and t->GetBranch(("TestObject_" + pass_).c_str())) {
+      if (t and t->GetBranch(("test_object_" + pass_).c_str())) {
         f->Close();
         return false;
       }
@@ -380,13 +381,13 @@ class IsGoodEventFile : public Catch::Matchers::MatcherBase<std::string> {
     ss << "can be opened and has the correct number of entries in the event "
           "tree and the run tree.";
 
-    ss << " TestCollection_" << pass_ << " was verified to ";
+    ss << " test_collection_" << pass_ << " was verified to ";
     if (exist_collection_)
       ss << " be the correct pattern.";
     else
       ss << " not be in the file.";
 
-    ss << " TestObject_" << pass_ << " was verified to ";
+    ss << " test_object_" << pass_ << " was verified to ";
     if (exist_object_)
       ss << " be the correct pattern.";
     else
@@ -479,12 +480,12 @@ TEST_CASE("Core Framework Functionality", "[Framework][functionality]") {
 
   framework::config::Parameters producer_parameters;
   producer_parameters.add<std::string>("className",
-                                      "framework::test::TestProducer");
+                                       "framework::test::TestProducer");
   producer_parameters.add<std::string>("instanceName", "TestProducer");
 
   framework::config::Parameters analyzer_parameters;
   analyzer_parameters.add<std::string>("className",
-                                      "framework::test::TestAnalyzer");
+                                       "framework::test::TestAnalyzer");
   analyzer_parameters.add<std::string>("instanceName", "TestAnalyzer");
 
   // declare used and re-used types, not used in all branches
@@ -574,8 +575,8 @@ TEST_CASE("Core Framework Functionality", "[Framework][functionality]") {
 
   SECTION("Need Input Files") {
     input_files = {"test_needinputfiles_2_events.root",
-                  "test_needinputfiles_3_events.root",
-                  "test_needinputfiles_4_events.root"};
+                   "test_needinputfiles_3_events.root",
+                   "test_needinputfiles_4_events.root"};
 
     for (int run{2}; run < 5; run++) {
       auto make_inputs = process;
@@ -583,7 +584,7 @@ TEST_CASE("Core Framework Functionality", "[Framework][functionality]") {
       auto producer = producer_parameters;
       producer.add("createRunHeader", true);
       make_inputs.add<std::vector<framework::config::Parameters>>("sequence",
-                                                                 {producer});
+                                                                  {producer});
       output_files = {input_files.at(run - 2)};
       make_inputs.add("outputFiles", output_files);
       make_inputs.add("maxEvents", run);

@@ -16,18 +16,20 @@ MultiParticleGunPrimaryGenerator::MultiParticleGunPrimaryGenerator(
   auto stl_vertex{parameters.get<std::vector<double> >("vertex")};
   auto stl_momentum{parameters.get<std::vector<double> >("momentum")};
   mpg_n_particles_ = parameters.get<int>("nParticles");
-  mpgPdgID_ = parameters.get<int>("pdgID");
+  mpg_pdg_id_ = parameters.get<int>("pdgID");
   mpg_enable_poisson_ = parameters.get<bool>("enablePoisson");
 
-  if (stl_vertex.size() != 3 or stl_momentum.size() != 3 or mpg_n_particles_ <= 0) {
+  if (stl_vertex.size() != 3 or stl_momentum.size() != 3 or
+      mpg_n_particles_ <= 0) {
     EXCEPTION_RAISE("InvalideConfig",
                     "Parameters pass to '" + name_ + "' are not valid.");
   }
 
   mpg_vertex_ = G4ThreeVector(stl_vertex.at(0) * mm, stl_vertex.at(1) * mm,
-                             stl_vertex.at(2) * mm);
-  mpg_momentum_ = G4ThreeVector(stl_momentum.at(0) * MeV, stl_momentum.at(1) * MeV,
-                               stl_momentum.at(2) * MeV);
+                              stl_vertex.at(2) * mm);
+  mpg_momentum_ =
+      G4ThreeVector(stl_momentum.at(0) * MeV, stl_momentum.at(1) * MeV,
+                    stl_momentum.at(2) * MeV);
 }
 
 MultiParticleGunPrimaryGenerator::~MultiParticleGunPrimaryGenerator() {
@@ -35,7 +37,7 @@ MultiParticleGunPrimaryGenerator::~MultiParticleGunPrimaryGenerator() {
 }
 
 void MultiParticleGunPrimaryGenerator::GeneratePrimaryVertex(G4Event* anEvent) {
-  int cur_mpg_pdgid = mpgPdgID_;
+  int cur_mpg_pdgid = mpg_pdg_id_;
   G4ThreeVector cur_mpg_vertex = mpg_vertex_;
   G4ThreeVector cur_mpg_momentum = mpg_momentum_;
 
@@ -44,10 +46,10 @@ void MultiParticleGunPrimaryGenerator::GeneratePrimaryVertex(G4Event* anEvent) {
 
   double n_interactions_input = mpg_n_particles_;
   int n_interactions = n_interactions_input;
-  if (mpgEnablePoisson_) {
+  if (mpg_enable_poisson_) {
     n_interactions = 0;
-    while (n_interactions == 0) {  // keep generating a random poisson until > 0,
-                                  // no point in generator 0 vertices...
+    while (n_interactions == 0) {  // keep generating a random poisson until >
+                                   // 0, no point in generator 0 vertices...
       n_interactions = random_->Poisson(n_interactions_input);
     }
   }
@@ -79,7 +81,7 @@ void MultiParticleGunPrimaryGenerator::recordConfig(const std::string& id,
       id + " Class", "simcore::generators::MultiParticleGunPrimaryGenerator");
   rh.setIntParameter(id + " Poisson Enabled", mpg_enable_poisson_);
   rh.setFloatParameter(id + " N Particles", mpg_n_particles_);
-  rh.setIntParameter(id + " PDG ID", mpgPdgID_);
+  rh.setIntParameter(id + " PDG ID", mpg_pdg_id_);
   rh.setFloatParameter(id + " Vertex X [mm]", mpg_vertex_.x());
   rh.setFloatParameter(id + " Vertex Y [mm]", mpg_vertex_.y());
   rh.setFloatParameter(id + " Vertex Z [mm]", mpg_vertex_.z());

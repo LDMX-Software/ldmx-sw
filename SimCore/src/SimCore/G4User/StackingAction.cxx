@@ -16,7 +16,8 @@ G4ClassificationOfNewTrack StackingAction::ClassifyNewTrack(
         stacking_action->classifyNewTrack(track, current_track_class);
 
     // Only set the current classification if the plugin changed it.
-    if (new_track_class != current_track_class) current_track_class = new_track_class;
+    if (new_track_class != current_track_class)
+      current_track_class = new_track_class;
   }
 
   return current_track_class;

@@ -14,7 +14,7 @@ TrackerSD::TrackerSD(const std::string& name, simcore::ConditionsInterface& ci,
   subsystem_ = p.get<std::string>("subsystem");
   collection_name_ = p.get<std::string>("collection_name");
 
-  subDetID_ = ldmx::SubdetectorIDType(p.get<int>("subdet_id"));
+  sub_det_id_ = ldmx::SubdetectorIDType(p.get<int>("subdet_id"));
 }
 
 G4bool TrackerSD::ProcessHits(G4Step* aStep, G4TouchableHistory*) {
@@ -76,7 +76,7 @@ G4bool TrackerSD::ProcessHits(G4Step* aStep, G4TouchableHistory*) {
       pre_point->GetTouchableHandle()->GetHistory()->GetVolume(2)->GetCopyNo();
   int layer = copy_num / 10;
   int module = copy_num % 10;
-  ldmx::TrackerID id(subDetID_, layer, module);
+  ldmx::TrackerID id(sub_det_id_, layer, module);
   hit.setID(id.raw());
   hit.setLayerID(layer);
   hit.setModuleID(module);

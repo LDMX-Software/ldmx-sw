@@ -87,7 +87,8 @@ void ParticleGun::GeneratePrimaryVertex(G4Event* event) {
 void ParticleGun::recordConfig(const std::string& id, ldmx::RunHeader& rh) {
   rh.setStringParameter(id + " Class", "simcore::generators::ParticleGun");
   rh.setFloatParameter(id + " Time [ns]", the_gun_.GetParticleTime());
-  rh.setFloatParameter(id + " Energy [GeV]", the_gun_.GetParticleEnergy() / GeV);
+  rh.setFloatParameter(id + " Energy [GeV]",
+                       the_gun_.GetParticleEnergy() / GeV);
   rh.setStringParameter(id + " Particle",
                         the_gun_.GetParticleDefinition()->GetParticleName());
   rh.setFloatParameter(id + " X [mm]", the_gun_.GetParticlePosition().x());

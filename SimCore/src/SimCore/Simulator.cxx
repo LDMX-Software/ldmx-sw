@@ -32,20 +32,21 @@ void Simulator::beforeNewRun(ldmx::RunHeader& header) {
 
   // lambda function for dumping 3-vectors into the run header
   auto three_vector_dump = [&header](const std::string& name,
-                                   const std::vector<double>& vec) {
+                                     const std::vector<double>& vec) {
     header.setFloatParameter(name + " X", vec.at(0));
     header.setFloatParameter(name + " Y", vec.at(1));
     header.setFloatParameter(name + " Z", vec.at(2));
   };
 
-  auto beam_spot_smear{parameters_.get<std::vector<double>>("beamSpotSmear", {})};
+  auto beam_spot_smear{
+      parameters_.get<std::vector<double>>("beamSpotSmear", {})};
   if (!beam_spot_smear.empty()) {
     three_vector_dump("Smear Beam Spot [mm]", beam_spot_smear);
   }
 
   // lambda function for dumping vectors of strings to the run header
   auto string_vector_dump = [&header](const std::string& name,
-                                    const std::vector<std::string>& vec) {
+                                      const std::vector<std::string>& vec) {
     int index = 0;
     for (auto const& val : vec) {
       header.setStringParameter(name + " " + std::to_string(++index), val);
@@ -60,12 +61,12 @@ void Simulator::beforeNewRun(ldmx::RunHeader& header) {
       parameters_.get<std::vector<std::string>>("postInitCommands", {}));
 
   simcore::XsecBiasingOperator::Factory::get().apply(
-      [&header](auto bop) { bop->RecordConfig(header); });
+      [&header](auto bop) { bop->recordConfig(header); });
 
   int counter = 0;
   PrimaryGenerator::Factory::get().apply([&header, &counter](auto gen) {
     std::string gen_id = "Gen" + std::to_string(counter++);
-    gen->RecordConfig(gen_id, header);
+    gen->recordConfig(gen_id, header);
   });
 
   // Set a string parameter with the Geant4 SHA-1.
@@ -106,10 +107,10 @@ void Simulator::produce(framework::Event& event) {
   // If a Geant4 event has been aborted, skip the rest of the processing
   // sequence. This will immediately force the simulation to move on to
   // the next event.
-  if (runManager_->GetCurrentEvent()->IsAborted()) {
+  if (run_manager_->GetCurrentEvent()->IsAborted()) {
     run_manager_->TerminateOneEvent();  // clean up event objects
     SensitiveDetector::Factory::get().apply(
-        [](auto sd) { sd->OnFinishedEvent(); });
+        [](auto sd) { sd->onFinishedEvent(); });
     this->abortEvent();  // get out of processors loop
   }
 

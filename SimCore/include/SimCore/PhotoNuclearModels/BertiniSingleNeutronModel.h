@@ -44,7 +44,7 @@ class BertiniSingleNeutronModel : public PhotoNuclearModel {
         emin_{parameters.getParameter<double>("emin")},
         count_light_ions_{parameters.getParameter<bool>("count_light_ions")} {}
   virtual ~BertiniSingleNeutronModel() = default;
-  void constructGammaProcess(G4ProcessManager* processManager) ;
+  void constructGammaProcess(G4ProcessManager* processManager);
 
  private:
   double threshold_;

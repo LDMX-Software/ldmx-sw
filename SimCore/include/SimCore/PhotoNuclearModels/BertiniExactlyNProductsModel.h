@@ -58,7 +58,7 @@ class BertiniExactlyNProductsModel : public PhotoNuclearModel {
         check_allmatch_{parameters.getParameter<bool>("check_allmatch")},
         n_products_{parameters.getParameter<int>("n_products")} {}
   virtual ~BertiniExactlyNProductsModel() = default;
-  void constructGammaProcess(G4ProcessManager* processManager) ;
+  void constructGammaProcess(G4ProcessManager* processManager);
 
  private:
   double threshold_;

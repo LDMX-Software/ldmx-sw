@@ -37,8 +37,8 @@ struct af_bit_ref {
 #pragma warning(disable : 4521 4522)
 #endif
   typedef ap_fixed_base<_AP_W, _AP_I, _AP_S, _AP_Q, _AP_O, _AP_N> ref_type;
-  ref_type& d_bv_;
-  int d_index_;
+  ref_type& d_bv;
+  int d_index;
 
  public:
   INLINE af_bit_ref(
@@ -62,14 +62,14 @@ struct af_bit_ref {
 
   /// @name assign operators
   //  @{
-  INLINE af_bit_ref;& operator=(bool val) {
-    d_bv_.V = _AP_ROOT_op_set_bit(d_bv.V, d_index, val);
+  INLINE af_bit_ref& operator=(bool val) {
+    d_bv.V = _AP_ROOT_op_set_bit(d_bv.V, d_index, val);
     return *this;
   }
 
   // Be explicit to prevent it from being deleted, as field d_bv
   // is of reference type.
-  INLINE af_bit_ref;& operator=(const af_bit_ref& val) {
+  INLINE af_bit_ref& operator=(const af_bit_ref& val) {
     return operator=(bool(val));
   }
 
@@ -209,7 +209,7 @@ struct af_bit_ref {
 #ifndef __SYNTHESIS__
 template <int _AP_W, int _AP_I, bool _AP_S, ap_q_mode _AP_Q, ap_o_mode _AP_O,
           int _AP_N>
-INLINE std::ostream;& operator<<(
+INLINE std::ostream& operator<<(
     std::ostream& os,
     const af_bit_ref<_AP_W, _AP_I, _AP_S, _AP_Q, _AP_O, _AP_N>& x) {
   os << x.to_string();
@@ -226,9 +226,9 @@ struct af_range_ref {
 #pragma warning(disable : 4521 4522)
 #endif
   typedef ap_fixed_base<_AP_W, _AP_I, _AP_S, _AP_Q, _AP_O, _AP_N> ref_type;
-  ref_type& d_bv_;
-  int l_index_;
-  int h_index_;
+  ref_type& d_bv;
+  int l_index;
+  int h_index;
 
  public:
   /// copy ctor

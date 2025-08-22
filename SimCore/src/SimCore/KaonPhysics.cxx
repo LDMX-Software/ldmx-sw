@@ -16,7 +16,6 @@ KaonPhysics::KaonPhysics(const G4String& name,
   kminus_lifetime_factor_ = parameters.get<double>("kminus_lifetime_factor");
   k0l_lifetime_factor_ = parameters.get<double>("k0l_lifetime_factor");
   k0s_lifetime_factor_ = parameters.get<double>("k0s_lifetime_factor");
-  verbosity_ = parameters.get<int>("verbosity");
 }
 void KaonPhysics::setDecayProperties(
     G4ParticleDefinition* kaon, const std::vector<double>& branching_ratios,
@@ -26,12 +25,9 @@ void KaonPhysics::setDecayProperties(
     EXCEPTION_RAISE("KaonPhysics", "Unable to get the decay table from " +
                                        kaon->GetParticleName());
   }
-  if (verbosity > 1) {
-    ldmx_log(info) << "Decay details (" << kaon->GetParticleName()
-                   << ") before setting branching ratios and lifetimes"
-                   << std::endl;
-    dumpDecayDetails(kaon);
-  }
+  ldmx_log(trace) << "Decay details (" << kaon->GetParticleName()
+                  << ") before setting branching ratios and lifetimes";
+  dumpDecayDetails(kaon);
   kaon->SetPDGLifeTime(kaon->GetPDGLifeTime() * lifetime_factor);
   if (kaon == G4KaonZeroLong::Definition()) {
     (*table)[KaonZeroLongDecayChannel::pi0_pi0_pi0]->SetBR(
@@ -65,12 +61,10 @@ void KaonPhysics::setDecayProperties(
     (*table)[ChargedKaonDecayChannel::pi0_mu_nu]->SetBR(
         branching_ratios[ChargedKaonDecayChannel::pi0_mu_nu]);
   }
-  if (verbosity > 0) {
-    ldmx_log(info) << "Decay details (" << kaon->GetParticleName()
-                   << ") after setting branching ratios and lifetimes"
-                   << std::endl;
-    dumpDecayDetails(kaon);
-  }
+  ldmx_log(trace) << "Decay details (" << kaon->GetParticleName()
+                  << ") after setting branching ratios and lifetimes"
+                  << std::endl;
+  dumpDecayDetails(kaon);
 }
 void KaonPhysics::ConstructParticle() {
   auto kaon_plus{G4KaonPlus::Definition()};
@@ -83,7 +77,8 @@ void KaonPhysics::ConstructParticle() {
                     "Unable to get the charged kaon particle definitions, "
                     "something is very wrong with the configuration.");
   }
-  setDecayProperties(kaon_plus, kplus_branching_ratios_, kplus_lifetime_factor_);
+  setDecayProperties(kaon_plus, kplus_branching_ratios_,
+                     kplus_lifetime_factor_);
   setDecayProperties(kaon_minus, kminus_branching_ratios_,
                      kminus_lifetime_factor_);
   setDecayProperties(kaon_long, k0l_branching_ratios_, k0l_lifetime_factor_);

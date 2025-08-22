@@ -69,14 +69,14 @@ class GenieGenerator : public simcore::PrimaryGenerator {
    */
   void GeneratePrimaryVertex(G4Event* event) final override;
 
-  void recordConfig(const std::string& id, ldmx::RunHeader& rh) ;
+  void recordConfig(const std::string& id, ldmx::RunHeader& rh);
 
  private:
   /**
    * The GENIE event generator driver and convertor to HepMC3GenEvent
    */
   genie::GEVGDriver evg_driver_;
-  genie::HepMC3Converter hep_m_c3_converter_;
+  genie::HepMC3Converter hep_mc3_converter_;
 
   double energy_;
   std::vector<int> targets_;

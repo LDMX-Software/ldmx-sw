@@ -75,11 +75,11 @@ class EveDetectorGeometry {
   TEveElement* getDetector() { return detector_; }
 
  private:
-  TEveElement* hcal_;           //* HCAL Eve Element
-  TEveElement* sidehcal_;       //* Side HCAL Eve Element
-  TEveElement* ecal_;           //* ECAL Eve Element
+  TEveElement* hcal_;            //* HCAL Eve Element
+  TEveElement* sidehcal_;        //* Side HCAL Eve Element
+  TEveElement* ecal_;            //* ECAL Eve Element
   TEveElement* recoil_tracker_;  //* Recoil Tracker Eve Element
-  TEveElement* detector_;       //* Entire Detector Eve Element
+  TEveElement* detector_;        //* Entire Detector Eve Element
 };
 }  // namespace eventdisplay
 

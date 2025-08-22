@@ -25,8 +25,8 @@ void TrackingAction::PreUserTrackingAction(const G4Track* track) {
 
     // Get the region info for where the track was created (could be NULL)
     auto region_info = (UserRegionInformation*)track->GetLogicalVolumeAtVertex()
-                          ->GetRegion()
-                          ->GetUserInformation();
+                           ->GetRegion()
+                           ->GetUserInformation();
 
     // Get the gen status if track was primary
     int cur_gen_status = -1;
@@ -52,7 +52,8 @@ void TrackingAction::PreUserTrackingAction(const G4Track* track) {
      *  For example, this happens if the user wants to save the
      *  secondaries of a particular track.
      */
-    if (cur_gen_status == 1 or !region_info or region_info->getStoreSecondaries()) {
+    if (cur_gen_status == 1 or !region_info or
+        region_info->getStoreSecondaries()) {
       track_info->setSaveFlag(true);
     }
 

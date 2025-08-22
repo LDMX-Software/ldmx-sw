@@ -73,7 +73,7 @@ class StringCSVLoader : public GeneralCSVLoader {
   /**
    * The separators
    */
-  const std::string LINESEP;
+  const std::string linesep_;
   /**
    * The current start and end pointers
    */

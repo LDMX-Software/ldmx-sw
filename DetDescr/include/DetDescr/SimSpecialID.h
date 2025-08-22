@@ -24,8 +24,8 @@ class SimSpecialID : public DetectorID {
   static const RawValue SUBTYPE_DATA_MASK{0x3FFFFF};
 
   // scoring plane only
-  static const RawValue PLANE_MASK{
-      0xFFF};  // space for up to 4096 scoring planes
+  // space for up to 4096 scoring planes
+  static const RawValue PLANE_MASK{0xFFF};
   static const RawValue PLANE_SHIFT{0};
 
   /**

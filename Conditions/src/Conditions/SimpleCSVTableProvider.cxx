@@ -30,8 +30,8 @@ SimpleCSVTableProvider::SimpleCSVTableProvider(
     if (!plist.empty()) entriesFromPython(plist);
   }
 
-  entries_ = parameters.get<std::string>("entriesURL");
-  if (!entries_.empty()) entriesFromCSV();
+  entries_url_ = parameters.get<std::string>("entriesURL");
+  if (!entries_url_.empty()) entriesFromCSV();
 }
 
 void SimpleCSVTableProvider::entriesFromPython(
@@ -45,7 +45,7 @@ void SimpleCSVTableProvider::entriesFromPython(
     bool is_data = (rtype == "any" || rtype == "data");
     item.iov_ = framework::ConditionsIOV(first_run, last_run, is_data, is_mc);
     item.url_ = aprov.get<std::string>("URL");
-    if (objectType_ == OBJ_int && aprov.exists("values")) {
+    if (object_type_ == OBJ_int && aprov.exists("values")) {
       item.ivalues_ = aprov.get<std::vector<int>>("values");
       if (item.ivalues_.size() != columns_.size()) {
         EXCEPTION_RAISE("ConditionsException",
@@ -56,7 +56,7 @@ void SimpleCSVTableProvider::entriesFromPython(
                             getConditionObjectName());
       }
     }
-    if (objectType_ == OBJ_double && aprov.exists("values")) {
+    if (object_type_ == OBJ_double && aprov.exists("values")) {
       item.dvalues_ = aprov.get<std::vector<double>>("values");
       if (item.dvalues_.size() != columns_.size()) {
         EXCEPTION_RAISE("ConditionsException",
@@ -155,21 +155,22 @@ std::string SimpleCSVTableProvider::expandEnv(const std::string& s) const {
 std::pair<const framework::ConditionsObject*, framework::ConditionsIOV>
 SimpleCSVTableProvider::getCondition(const ldmx::EventHeader& context) {
   for (auto tabledef : entries_) {
-    //	    std::cout << condition_name << " " << tabledef.objectName_ << " " <<
+    //	    std::cout << condition_name << " " << tabledef.object_name_ << " "
+    //<<
     // tabledef.iov_ << " " << std::endl;
     if (tabledef.iov_.validForEvent(context)) {
       std::string expurl = expandEnv(tabledef.url_);
 
       if (expurl == "python:") {
         // here we just copy values...
-        if (objectType_ == OBJ_int) {
+        if (object_type_ == OBJ_int) {
           IntegerTableCondition* table =
               new IntegerTableCondition(getConditionObjectName(), columns_);
           table->setIdMask(0);  // all ids are the same...
           table->add(0, tabledef.ivalues_);
           return std::pair<const framework::ConditionsObject*,
                            framework::ConditionsIOV>(table, tabledef.iov_);
-        } else if (objectType_ == OBJ_double) {
+        } else if (object_type_ == OBJ_double) {
           conditions::DoubleTableCondition* table =
               new conditions::DoubleTableCondition(getConditionObjectName(),
                                                    columns_);
@@ -181,14 +182,14 @@ SimpleCSVTableProvider::getCondition(const ldmx::EventHeader& context) {
       } else {
         std::unique_ptr<std::istream> stream = urlstream(expurl);
 
-        if (objectType_ == OBJ_int) {
+        if (object_type_ == OBJ_int) {
           IntegerTableCondition* table =
               new IntegerTableCondition(getConditionObjectName(), columns_);
           conditions::utility::SimpleTableStreamerCSV::load(*table,
                                                             *(stream.get()));
           return std::pair<const framework::ConditionsObject*,
                            framework::ConditionsIOV>(table, tabledef.iov_);
-        } else if (objectType_ == OBJ_double) {
+        } else if (object_type_ == OBJ_double) {
           conditions::DoubleTableCondition* table =
               new conditions::DoubleTableCondition(getConditionObjectName(),
                                                    columns_);

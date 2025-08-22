@@ -72,7 +72,7 @@ G4bool ScoringPlaneSD::ProcessHits(G4Step* step, G4TouchableHistory* history) {
    * Set the 32-bit ID on the hit.
    */
   int cp_number = pre_point->GetTouchableHandle()->GetCopyNumber();
-  ldmx::SimSpecialID id = ldmx::SimSpecialID::ScoringPlaneID(cp_number);
+  ldmx::SimSpecialID id = ldmx::SimSpecialID::scoringPlaneId(cp_number);
   hit.setID(id.raw());
 
   return true;

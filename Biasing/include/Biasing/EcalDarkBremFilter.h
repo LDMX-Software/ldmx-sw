@@ -78,7 +78,7 @@ class EcalDarkBremFilter : public simcore::UserAction {
    *
    * @param event unused
    */
-  void beginOfEventAction(const G4Event* event) ;
+  void beginOfEventAction(const G4Event* event);
 
   /**
    * We return the classification of the track done by the PartialEnergySorter,
@@ -95,7 +95,7 @@ class EcalDarkBremFilter : public simcore::UserAction {
    */
   G4ClassificationOfNewTrack classifyNewTrack(
       const G4Track* aTrack,
-      const G4ClassificationOfNewTrack& currentTrackClass) ;
+      const G4ClassificationOfNewTrack& currentTrackClass);
 
   /**
    * When using the PartialEnergySorter,
@@ -107,7 +107,7 @@ class EcalDarkBremFilter : public simcore::UserAction {
    *
    * @see PartialEnergySort::NewStage
    */
-  void newStage() ;
+  void newStage();
 
   /**
    * Make sure A' is saved.
@@ -119,7 +119,7 @@ class EcalDarkBremFilter : public simcore::UserAction {
    *
    * @param track G4Track to check if it is an A'
    */
-  void postUserTrackingAction(const G4Track* track) ;
+  void postUserTrackingAction(const G4Track* track);
 
  private:
   /**

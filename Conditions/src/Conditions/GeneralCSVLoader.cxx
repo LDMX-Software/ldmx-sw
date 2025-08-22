@@ -14,10 +14,10 @@ namespace conditions {
 const std::string& GeneralCSVLoader::get(const std::string& colname,
                                          bool ignore_case) const {
   size_t i;
-  for (i = 0; i < colname.size(); i++) {
+  for (i = 0; i < col_names_.size(); i++) {
     if (ignore_case && !strcasecmp(col_names_[i].c_str(), colname.c_str()))
       break;
-    if (colname[i] == colname) break;
+    if (col_names_[i] == colname) break;
   }
   if (i == col_names_.size()) {
     EXCEPTION_RAISE("CSVNoSuchColumn",
@@ -48,7 +48,7 @@ bool GeneralCSVLoader::nextRow() {
     for (auto chunk : tok) {
       line_split.push_back(chunk);
     }
-    if (colNames_.empty()) {
+    if (col_names_.empty()) {
       col_names_.swap(line_split);
       continue;
     }
@@ -73,8 +73,8 @@ StringCSVLoader::StringCSVLoader(const std::string& source,
 
 std::string StringCSVLoader::getNextLine() {
   std::string retval;
-  if (rowBegin_ != row_end_) {
-    if (rowEnd_ == std::string::npos) {
+  if (row_begin_ != row_end_) {
+    if (row_end_ == std::string::npos) {
       retval = source_.substr(row_begin_, row_end_);
     } else {
       retval = source_.substr(row_begin_, row_end_ - row_begin_);
@@ -82,9 +82,9 @@ std::string StringCSVLoader::getNextLine() {
   }
   // now we look for the follow on.
   // find the first non-end-of-line character
-  row_begin_ = source_.find_first_not_of(linesep_, rowEnd_);
-  if (rowBegin_ != std::string::npos) {
-    row_end_ = source_.find_first_of(linesep_, rowBegin_);
+  row_begin_ = source_.find_first_not_of(linesep_, row_end_);
+  if (row_begin_ != std::string::npos) {
+    row_end_ = source_.find_first_of(linesep_, row_begin_);
   } else {
     row_end_ = std::string::npos;
   }
@@ -128,7 +128,7 @@ StreamCSVLoader::StreamCSVLoader(std::istream& stream)
     : source_{&stream}, own_stream_{false} {}
 
 StreamCSVLoader::~StreamCSVLoader() {
-  if (ownStream_ && source_) delete source_;
+  if (own_stream_ && source_) delete source_;
   source_ = 0;
 }
 

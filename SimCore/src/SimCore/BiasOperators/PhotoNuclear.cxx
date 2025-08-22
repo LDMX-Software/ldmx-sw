@@ -48,11 +48,11 @@ G4VBiasingOperation* PhotoNuclear::ProposeOccurenceBiasingOperation(
     G4double interaction_length =
         callingProcess->GetWrappedProcess()->GetCurrentInteractionLength();
 
-    pnXsecUnbiased_ = 1. / interaction_length;
+    pn_xsec_unbiased_ = 1. / interaction_length;
 
-    pn_xsec_biased_ = pnXsecUnbiased_ * factor_;
+    pn_xsec_biased_ = pn_xsec_unbiased_ * factor_;
 
-    return BiasedXsec(pnXsecBiased_);
+    return biasedXsec(pn_xsec_biased_);
   }
 
   // If the current process is conversion and we want to bias down
@@ -66,12 +66,13 @@ G4VBiasingOperation* PhotoNuclear::ProposeOccurenceBiasingOperation(
 
     double em_xsec_unbiased = 1. / interaction_length;
 
-    double em_xsec_biased = std::max(
-        em_xsec_unbiased + pnXsecUnbiased_ - pnXsecBiased_, pnXsecUnbiased_);
+    double em_xsec_biased =
+        std::max(em_xsec_unbiased + pn_xsec_unbiased_ - pn_xsec_biased_,
+                 pn_xsec_unbiased_);
     static auto material_tungsten =
         simcore::g4user::ptrretrieval::getMaterial("G4_W");
     auto interaction_material = track->GetMaterial();
-    if ((em_xsec_biased == pnXsecUnbiased_) &&
+    if ((em_xsec_biased == pn_xsec_unbiased_) &&
         (interaction_material == material_tungsten)) {
       ldmx_log(warn) << "EM XS = PN unbiased XS! The biasing factor ("
                      << factor_ << ") is too large for particle with energy "
