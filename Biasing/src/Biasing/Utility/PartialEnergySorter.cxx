@@ -17,7 +17,7 @@ PartialEnergySorter::PartialEnergySorter(
   threshold_ = parameters.get<double>("threshold");
 }
 
-void PartialEnergySorter::beginOfEventAction(const G4Event*) {
+void PartialEnergySorter::BeginOfEventAction(const G4Event*) {
   /** debug printout
   std::cout << "[ PartialEnergySorter ] : "
       << "Starting a new event."
@@ -26,7 +26,7 @@ void PartialEnergySorter::beginOfEventAction(const G4Event*) {
   below_threshold_ = false;
 }
 
-G4ClassificationOfNewTrack PartialEnergySorter::classifyNewTrack(
+G4ClassificationOfNewTrack PartialEnergySorter::ClassifyNewTrack(
     const G4Track* aTrack,
     const G4ClassificationOfNewTrack& currentTrackClassification) {
   /** debug printout

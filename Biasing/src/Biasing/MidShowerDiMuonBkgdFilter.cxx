@@ -22,7 +22,7 @@ MidShowerDiMuonBkgdFilter::MidShowerDiMuonBkgdFilter(
    */
 }
 
-void MidShowerDiMuonBkgdFilter::beginOfEventAction(const G4Event*) {
+void MidShowerDiMuonBkgdFilter::BeginOfEventAction(const G4Event*) {
   /* debug printout
   std::cout
       << "[ MidShowerDiMuonBkgdFilter ]: "
@@ -72,7 +72,7 @@ void MidShowerDiMuonBkgdFilter::stepping(const G4Step* step) {
   save(track);
 }
 
-void MidShowerDiMuonBkgdFilter::newStage() {
+void MidShowerDiMuonBkgdFilter::NewStage() {
   /* debug printout
   std::cout
       << "[ MidShowerDiMuonBkgdFilter ]: "
@@ -81,7 +81,7 @@ void MidShowerDiMuonBkgdFilter::newStage() {
       << ") " << total_process_energy_ << " MeV was muonic." << std::endl;
    */
   if (total_process_energy_ < threshold_)
-    abortEvent("Not enough energy went to the input process.");
+    AbortEvent("Not enough energy went to the input process.");
   return;
 }
 
@@ -106,7 +106,7 @@ void MidShowerDiMuonBkgdFilter::save(const G4Track* track) const {
   return;
 }
 
-void MidShowerDiMuonBkgdFilter::abortEvent(const std::string& reason) const {
+void MidShowerDiMuonBkgdFilter::AbortEvent(const std::string& reason) const {
   if (G4RunManager::GetRunManager()->GetVerboseLevel() > 1) {
     std::cout << "[ MidShowerDiMuonBkgdFilter ]: " << "("
               << G4EventManager::GetEventManager()

@@ -17,7 +17,7 @@ TargetDarkBremFilter::TargetDarkBremFilter(
   threshold_ = parameters.get<double>("threshold");
 }
 
-void TargetDarkBremFilter::beginOfEventAction(const G4Event*) {
+void TargetDarkBremFilter::BeginOfEventAction(const G4Event*) {
   found_aprime_ = false;
 }
 
@@ -47,7 +47,7 @@ void TargetDarkBremFilter::stepping(const G4Step* step) {
                 << track->GetLogicalVolumeAtVertex()->GetName() << std::endl;
        */
       if (isOutsideTargetRegion(track->GetLogicalVolumeAtVertex()))
-        abortEvent("A' was not created within target.");
+        AbortEvent("A' was not created within target.");
       // A' was found and originated in correct region
       found_aprime_ = true;
     }  // first step of A'
@@ -68,7 +68,7 @@ void TargetDarkBremFilter::stepping(const G4Step* step) {
     // Get the electron secondries
     const std::vector<G4Track*>* secondaries{step->GetSecondary()};
     if (not secondaries or secondaries->size() == 0) {
-      abortEvent("Primary electron did not create secondaries.");
+      AbortEvent("Primary electron did not create secondaries.");
       return;
     } else {
       // check secondaries to see if we made a dark brem
@@ -77,13 +77,13 @@ void TargetDarkBremFilter::stepping(const G4Step* step) {
           // we found an A', woo-hoo!
 
           if (secondary_track->GetTotalEnergy() < threshold_) {
-            abortEvent(
+            AbortEvent(
                 "A' was not created with total energy above input threshold.");
             return;
           }
 
           if (isOutsideTargetRegion(secondary_track->GetVolume())) {
-            abortEvent("A' was not created within target.");
+            AbortEvent("A' was not created within target.");
             return;
           }
 
@@ -106,7 +106,7 @@ void TargetDarkBremFilter::stepping(const G4Step* step) {
     }  // are there secondaries to loop through
 
     // got here without finding A'
-    abortEvent("Primary electron did not create A'.");
+    AbortEvent("Primary electron did not create A'.");
     return;
   }  // should check secondaries of primary
 
@@ -115,13 +115,13 @@ void TargetDarkBremFilter::stepping(const G4Step* step) {
   return;
 }
 
-void TargetDarkBremFilter::endOfEventAction(const G4Event* event) {
+void TargetDarkBremFilter::EndOfEventAction(const G4Event* event) {
   if (not event->IsAborted() and not found_aprime_) {
-    abortEvent("Did not find an A' after entire event was simulated.");
+    AbortEvent("Did not find an A' after entire event was simulated.");
   }
 }
 
-void TargetDarkBremFilter::abortEvent(const std::string& reason) const {
+void TargetDarkBremFilter::AbortEvent(const std::string& reason) const {
   if (G4RunManager::GetRunManager()->GetVerboseLevel() > 1) {
     std::cout << "[ TargetDarkBremFilter ]: " << "("
               << G4EventManager::GetEventManager()

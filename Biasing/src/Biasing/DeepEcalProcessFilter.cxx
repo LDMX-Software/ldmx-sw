@@ -28,7 +28,7 @@ DeepEcalProcessFilter::DeepEcalProcessFilter(
       parameters.get<bool>("require_photon_fromTarget");
 }
 
-void DeepEcalProcessFilter::beginOfEventAction(const G4Event* event) {
+void DeepEcalProcessFilter::BeginOfEventAction(const G4Event* event) {
   has_deep_ecal_process_ = false;
   photon_from_target_ = false;
 }
@@ -109,7 +109,7 @@ void DeepEcalProcessFilter::stepping(const G4Step* step) {
   return;
 }
 
-void DeepEcalProcessFilter::newStage() {
+void DeepEcalProcessFilter::NewStage() {
   if (has_deep_ecal_process_) {
     ldmx_log(debug) << "> Event with a hard deep conversion found, yaaay!";
     ldmx_log(debug) << "> -----------------------------------------";

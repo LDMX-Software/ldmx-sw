@@ -99,7 +99,7 @@ void NonFiducialFilter::stepping(const G4Step* step) {
   }
 }
 
-void NonFiducialFilter::endOfEventAction(const G4Event*) {
+void NonFiducialFilter::EndOfEventAction(const G4Event*) {
   if (non_fiducial) {
     ldmx_log(debug) << "  >> This event is non-fiducial in ECAL, keeping it";
   } else {

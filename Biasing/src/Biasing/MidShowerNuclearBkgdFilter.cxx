@@ -15,7 +15,7 @@ MidShowerNuclearBkgdFilter::MidShowerNuclearBkgdFilter(
   nuclear_processes_ = {"photonNuclear", "electronNuclear"};
 }
 
-void MidShowerNuclearBkgdFilter::beginOfEventAction(const G4Event*) {
+void MidShowerNuclearBkgdFilter::BeginOfEventAction(const G4Event*) {
   /* debug printout
   std::cout
       << "[ MidShowerNuclearBkgdFilter ]: "
@@ -59,7 +59,7 @@ void MidShowerNuclearBkgdFilter::stepping(const G4Step* step) {
   }
 }
 
-void MidShowerNuclearBkgdFilter::newStage() {
+void MidShowerNuclearBkgdFilter::NewStage() {
   /* debug printout
   std::cout
       << "[ MidShowerNuclearBkgdFilter ]: "
@@ -68,7 +68,7 @@ void MidShowerNuclearBkgdFilter::newStage() {
       << ") " << total_process_energy_ << " MeV went nuclear." << std::endl;
    */
   if (total_process_energy_ < threshold_)
-    abortEvent("Not enough energy went to the input process.");
+    AbortEvent("Not enough energy went to the input process.");
   return;
 }
 
@@ -104,7 +104,7 @@ void MidShowerNuclearBkgdFilter::save(const G4Track* track) const {
   return;
 }
 
-void MidShowerNuclearBkgdFilter::abortEvent(const std::string& reason) const {
+void MidShowerNuclearBkgdFilter::AbortEvent(const std::string& reason) const {
   if (G4RunManager::GetRunManager()->GetVerboseLevel() > 1) {
     std::cout << "[ MidShowerNuclearBkgdFilter ]: " << "("
               << G4EventManager::GetEventManager()

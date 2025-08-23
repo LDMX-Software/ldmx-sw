@@ -26,7 +26,7 @@ TargetProcessFilter::TargetProcessFilter(
   process_ = parameters.get<std::string>("process");
 }
 
-G4ClassificationOfNewTrack TargetProcessFilter::classifyNewTrack(
+G4ClassificationOfNewTrack TargetProcessFilter::ClassifyNewTrack(
     const G4Track* track, const G4ClassificationOfNewTrack& currentTrackClass) {
   if (track == current_track_) {
     current_track_ = nullptr;
@@ -164,7 +164,7 @@ void TargetProcessFilter::stepping(const G4Step* step) {
   }
 }
 
-void TargetProcessFilter::endOfEventAction(const G4Event*) {}
+void TargetProcessFilter::EndOfEventAction(const G4Event*) {}
 }  // namespace biasing
 
 DECLARE_ACTION(biasing::TargetProcessFilter)

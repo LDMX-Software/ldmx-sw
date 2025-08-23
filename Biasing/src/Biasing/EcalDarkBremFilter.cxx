@@ -38,12 +38,12 @@ EcalDarkBremFilter::EcalDarkBremFilter(
   }
 }
 
-void EcalDarkBremFilter::beginOfEventAction(const G4Event*) {
+void EcalDarkBremFilter::BeginOfEventAction(const G4Event*) {
   found_ap_ = false;
   return;
 }
 
-G4ClassificationOfNewTrack EcalDarkBremFilter::classifyNewTrack(
+G4ClassificationOfNewTrack EcalDarkBremFilter::ClassifyNewTrack(
     const G4Track* aTrack, const G4ClassificationOfNewTrack& cl) {
   if (aTrack->GetParticleDefinition() == G4APrime::APrime()) {
     // there is an A'! Yay!
@@ -55,22 +55,22 @@ G4ClassificationOfNewTrack EcalDarkBremFilter::classifyNewTrack(
       // threshold
       found_ap_ = true;
     } else if (found_ap_) {
-      abortEvent("Found more than one A' during filtering.");
+      AbortEvent("Found more than one A' during filtering.");
     } else {
-      abortEvent("A' was not produced above the required threshold.");
+      AbortEvent("A' was not produced above the required threshold.");
     }
   }
 
   return cl;
 }
 
-void EcalDarkBremFilter::newStage() {
-  if (not found_ap_) abortEvent("A' wasn't produced.");
+void EcalDarkBremFilter::NewStage() {
+  if (not found_ap_) AbortEvent("A' wasn't produced.");
 
   return;
 }
 
-void EcalDarkBremFilter::postUserTrackingAction(const G4Track* track) {
+void EcalDarkBremFilter::PostUserTrackingAction(const G4Track* track) {
   // Check that generational stacking is working
   ldmx_log(trace) << track->GetTrackID() << " "
                   << track->GetParticleDefinition()->GetPDGEncoding();
@@ -86,7 +86,7 @@ void EcalDarkBremFilter::postUserTrackingAction(const G4Track* track) {
     if (track->GetParticleDefinition() == G4APrime::APrime()) {
       // check if A' was made in the desired volume and has the minimum energy
       if (not inDesiredVolume(track)) {
-        abortEvent("A' wasn't produced inside of the requested volume.");
+        AbortEvent("A' wasn't produced inside of the requested volume.");
       }  // A' was made in desired volume and has the minimum energy
     }  // track was A'
   }  // track created by dark brem process
@@ -108,7 +108,7 @@ bool EcalDarkBremFilter::inDesiredVolume(const G4Track* track) const {
   return false;
 }
 
-void EcalDarkBremFilter::abortEvent(const std::string& reason) const {
+void EcalDarkBremFilter::AbortEvent(const std::string& reason) const {
   ldmx_log(trace)
       << "("
       << G4EventManager::GetEventManager()->GetConstCurrentEvent()->GetEventID()

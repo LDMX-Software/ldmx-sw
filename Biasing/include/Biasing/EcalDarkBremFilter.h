@@ -78,7 +78,7 @@ class EcalDarkBremFilter : public simcore::UserAction {
    *
    * @param event unused
    */
-  void beginOfEventAction(const G4Event* event) override;
+  void BeginOfEventAction(const G4Event* event) override;
 
   /**
    * We return the classification of the track done by the PartialEnergySorter,
@@ -93,7 +93,7 @@ class EcalDarkBremFilter : public simcore::UserAction {
    * @param currentTrackClass The current track classification.
    * @returns current track classification
    */
-  G4ClassificationOfNewTrack classifyNewTrack(
+  G4ClassificationOfNewTrack ClassifyNewTrack(
       const G4Track* aTrack,
       const G4ClassificationOfNewTrack& currentTrackClass) override;
 
@@ -107,7 +107,7 @@ class EcalDarkBremFilter : public simcore::UserAction {
    *
    * @see PartialEnergySort::NewStage
    */
-  void newStage() override;
+  void NewStage() override;
 
   /**
    * Make sure A' is saved.
@@ -119,7 +119,7 @@ class EcalDarkBremFilter : public simcore::UserAction {
    *
    * @param track G4Track to check if it is an A'
    */
-  void postUserTrackingAction(const G4Track* track) override;
+  void PostUserTrackingAction(const G4Track* track) override;
 
  private:
   /**
@@ -138,7 +138,7 @@ class EcalDarkBremFilter : public simcore::UserAction {
    *
    * @param[in] reason reason for aborting the event
    */
-  void abortEvent(const std::string& reason) const;
+  void AbortEvent(const std::string& reason) const;
 
  private:
   /**

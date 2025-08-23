@@ -22,7 +22,7 @@ DecayChildrenKeeper::DecayChildrenKeeper(
 
 DecayChildrenKeeper::~DecayChildrenKeeper() {}
 
-void DecayChildrenKeeper::postUserTrackingAction(const G4Track* track) {
+void DecayChildrenKeeper::PostUserTrackingAction(const G4Track* track) {
   const auto& particle_map{getCurrentParticleMap()};
   if (particle_map.find(track->GetParentID()) != particle_map.end()) {
     const int& parent_pdg{particle_map.at(track->GetParentID()).getPdgID()};

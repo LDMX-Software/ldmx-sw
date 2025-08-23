@@ -48,7 +48,7 @@ class EcalProcessFilter : public simcore::UserAction {
    * @param aTrack The Geant4 track.
    * @param currentTrackClass The current track classification.
    */
-  G4ClassificationOfNewTrack classifyNewTrack(
+  G4ClassificationOfNewTrack ClassifyNewTrack(
       const G4Track* aTrack,
       const G4ClassificationOfNewTrack& currentTrackClass) override;
 

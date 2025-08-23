@@ -32,8 +32,8 @@ void StepPrinter::stepping(const G4Step* step) {
   std::string process_name{process ? process->GetProcessName() : "Primary"};
   // Unwrap biasing part of process name if present
   if (process_name.find("biasWrapper") != std::string::npos) {
-    std::size_t pos = process_name.find_first_of("(") + 1;
-    process_name = process_name.substr(pos, process_name.size() - pos - 1);
+    std::size_t pos_ = process_name.find_first_of("(") + 1;
+    process_name = process_name.substr(pos_, process_name.size() - pos_ - 1);
   }
 
   // This could be a negated condition, but it is easier to read this way
