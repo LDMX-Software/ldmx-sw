@@ -28,7 +28,7 @@ void HgcrocPulseTruthAnalyzer::analyze(const framework::Event& event) {
         if (d.isADC()) {
           int sum_adc = 0;
           for (int i = 0; i < d.size(); i++) {
-            sum_adc += d.at(i).adc_t();
+            sum_adc += d.at(i).adcT();
           }
           histograms_.fill("vpeak_sumADC", vpeak, sum_adc);
         } else {

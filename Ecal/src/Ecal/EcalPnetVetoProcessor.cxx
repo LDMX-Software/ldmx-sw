@@ -18,7 +18,7 @@ EcalPnetVetoProcessor::EcalPnetVetoProcessor(const std::string& name,
 void EcalPnetVetoProcessor::configure(
     framework::config::Parameters& parameters) {
   disc_cut_ = parameters.get<double>("disc_cut");
-  rt_ = std::make_unique<ldmx::Ort::ONNXRuntime>(
+  rt_ = std::make_unique<ldmx::ort::ONNXRuntime>(
       parameters.get<std::string>("model_path"));
 
   // Set the collection name as defined in the configuration
@@ -137,9 +137,9 @@ void EcalPnetVetoProcessor::produce(framework::Event& event) {
 
   // If the event passes the veto, keep it. Otherwise, drop the event.
   if (result.passesVeto()) {
-    setStorageHint(framework::hint_should_keep);
+    setStorageHint(framework::HINT_SHOULD_KEEP);
   } else {
-    setStorageHint(framework::hint_should_drop);
+    setStorageHint(framework::HINT_SHOULD_DROP);
   }
 
   event.add(collection_name_, result);

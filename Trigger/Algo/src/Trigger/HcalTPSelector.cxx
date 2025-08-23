@@ -13,14 +13,14 @@ void HcalTPSelector::configure(framework::config::Parameters& ps) {
 
 void HcalTPSelector::produce(framework::Event& event) {
   if (!event.exists(combined_quad_coll_name_, tp_coll_event_passname_)) return;
-  auto hcalTPs{event.getObject<ldmx::CaloTrigPrimCollection>(
+  auto hcal_t_ps{event.getObject<ldmx::CaloTrigPrimCollection>(
       combined_quad_coll_name_, tp_coll_passname_)};
 
   // Should move the TP building itself here
   // In the meantime, create the "analysis object" hits
 
-  std::vector<TrigCaloHit> passTrigHits;
-  for (const auto& tp : hcalTPs) {
+  std::vector<TrigCaloHit> pass_trig_hits;
+  for (const auto& tp : hcal_t_ps) {
     double x{0}, y{0}, z{0};  // todo
     ldmx::HcalTriggerID combo_id(tp.getId());
 
@@ -32,14 +32,14 @@ void HcalTPSelector::produce(framework::Event& event) {
     // mV/MeV: 72.961 (= 5*68/4.66)
     double energy =
         adc * 1.2 / 72.961;  // ADC to MeV based on values just above
-    passTrigHits.emplace_back(x, y, z, energy);
+    pass_trig_hits.emplace_back(x, y, z, energy);
 
-    passTrigHits.back().setLayer(combo_id.layer());
-    passTrigHits.back().setStrip(combo_id.superstrip());
-    passTrigHits.back().setSection(combo_id.section());
+    pass_trig_hits.back().setLayer(combo_id.layer());
+    pass_trig_hits.back().setStrip(combo_id.superstrip());
+    pass_trig_hits.back().setSection(combo_id.section());
   }
 
-  event.add(pass_coll_name_ + "Hits", passTrigHits);
+  event.add(pass_coll_name_ + "Hits", pass_trig_hits);
 }
 
 }  // namespace trigger

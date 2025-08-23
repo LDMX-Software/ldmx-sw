@@ -22,7 +22,7 @@ void HepMC3GenEvent::clear() {
   this->attribute_string.clear();
 }
 
-void HepMC3GenEvent::Print() const {
+void HepMC3GenEvent::print() const {
   HepMC3::GenEvent ev;
   ev.read_data(*this);
   HepMC3::Print::line(ev, true);  // print attributes
@@ -34,7 +34,7 @@ HepMC3::GenEvent HepMC3GenEvent::getHepMCGenEvent() const {
   return ev;
 }
 
-std::string HepMC3GenEvent::get_as_string() const {
+std::string HepMC3GenEvent::getAsString() const {
   HepMC3::GenEvent ev;
   ev.read_data(*this);
 

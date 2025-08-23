@@ -8,8 +8,8 @@ SimTrackerHit::~SimTrackerHit() { clear(); }
 
 std::ostream& operator<<(std::ostream& o, const SimTrackerHit& hit) {
   return o << "SimTrackerHit { " << "id: " << hit.id_ << ", "
-           << "layerID: " << hit.layerID_ << ", "
-           << "moduleID: " << hit.moduleID_ << ", " << "position: ( " << hit.x_
+           << "layerID: " << hit.layer_id_ << ", "
+           << "moduleID: " << hit.module_id_ << ", " << "position: ( " << hit.x_
            << ", " << hit.y_ << ", " << hit.z_ << " ), "
            << "edep: " << hit.edep_ << ", " << "time: " << hit.time_ << ", "
            << "momentum: ( " << hit.px_ << ", " << hit.py_ << ", " << hit.pz_
@@ -18,8 +18,8 @@ std::ostream& operator<<(std::ostream& o, const SimTrackerHit& hit) {
 
 void SimTrackerHit::clear() {
   id_ = 0;
-  layerID_ = 0;
-  moduleID_ = 0;
+  layer_id_ = 0;
+  module_id_ = 0;
   edep_ = 0;
   time_ = 0;
   px_ = 0;
@@ -29,9 +29,9 @@ void SimTrackerHit::clear() {
   y_ = 0;
   z_ = 0;
   energy_ = 0;
-  pathLength_ = 0;
+  path_length_ = 0;
   track_id_ = -1;
-  pdgID_ = 0;
+  pdg_id_ = 0;
 }
 
 void SimTrackerHit::setPosition(const float x_, const float y_,

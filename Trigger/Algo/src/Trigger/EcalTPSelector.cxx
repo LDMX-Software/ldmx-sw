@@ -3,53 +3,53 @@
 namespace trigger {
 
 void EcalTPSelector::configure(framework::config::Parameters& ps) {
-  tpCollName_ = ps.get<std::string>("tpCollName");
-  passCollName_ = ps.get<std::string>("passCollName");
+  tp_coll_name_ = ps.get<std::string>("tpCollName");
+  pass_coll_name_ = ps.get<std::string>("passCollName");
   tp_coll_passname_ = ps.get<std::string>("tp_coll_pass_name");
   tp_coll_event_passname_ = ps.get<std::string>("tp_coll_event_passname");
 }
 
 void EcalTPSelector::produce(framework::Event& event) {
-  if (!event.exists(tpCollName_, tp_coll_event_passname_)) return;
-  auto ecalTrigDigis{event.getObject<ldmx::HgcrocTrigDigiCollection>(
-      tpCollName_, tp_coll_passname_)};
+  if (!event.exists(tp_coll_name_, tp_coll_event_passname_)) return;
+  auto ecal_trig_digis{event.getObject<ldmx::HgcrocTrigDigiCollection>(
+      tp_coll_name_, tp_coll_passname_)};
 
-  std::map<int, ldmx::HgcrocTrigDigiCollection> lDigis;  // left
-  std::map<int, ldmx::HgcrocTrigDigiCollection> rDigis;  // right
-  std::map<int, ldmx::HgcrocTrigDigiCollection> cDigis;  // center
-  std::map<int, int> lSums;                              // left
-  std::map<int, int> rSums;                              // right
-  std::map<int, int> cSums;                              // center
-  for (const auto& trigDigi : ecalTrigDigis) {
-    ldmx::EcalTriggerID tid(trigDigi.getId());
+  std::map<int, ldmx::HgcrocTrigDigiCollection> l_digis;  // left
+  std::map<int, ldmx::HgcrocTrigDigiCollection> r_digis;  // right
+  std::map<int, ldmx::HgcrocTrigDigiCollection> c_digis;  // center
+  std::map<int, int> l_sums;                              // left
+  std::map<int, int> r_sums;                              // right
+  std::map<int, int> c_sums;                              // center
+  for (const auto& trig_digi : ecal_trig_digis) {
+    ldmx::EcalTriggerID tid(trig_digi.getId());
     int module = tid.module();
     int layer = tid.layer();
     if (module > 3) {
-      auto ptr = lDigis.find(layer);
-      if (ptr == lDigis.end()) {
-        lDigis[layer] = {trigDigi};
-        lSums[layer] = trigDigi.linearPrimitive();
+      auto ptr = l_digis.find(layer);
+      if (ptr == l_digis.end()) {
+        l_digis[layer] = {trig_digi};
+        l_sums[layer] = trig_digi.linearPrimitive();
       } else {
-        lDigis[layer].push_back(trigDigi);
-        lSums[layer] += trigDigi.linearPrimitive();
+        l_digis[layer].push_back(trig_digi);
+        l_sums[layer] += trig_digi.linearPrimitive();
       }
     } else if (module > 0) {
-      auto ptr = rDigis.find(layer);
-      if (ptr == rDigis.end()) {
-        rDigis[layer] = {trigDigi};
-        rSums[layer] = trigDigi.linearPrimitive();
+      auto ptr = r_digis.find(layer);
+      if (ptr == r_digis.end()) {
+        r_digis[layer] = {trig_digi};
+        r_sums[layer] = trig_digi.linearPrimitive();
       } else {
-        rDigis[layer].push_back(trigDigi);
-        rSums[layer] += trigDigi.linearPrimitive();
+        r_digis[layer].push_back(trig_digi);
+        r_sums[layer] += trig_digi.linearPrimitive();
       }
     } else {
-      auto ptr = cDigis.find(layer);
-      if (ptr == cDigis.end()) {
-        cDigis[layer] = {trigDigi};
-        cSums[layer] = trigDigi.linearPrimitive();
+      auto ptr = c_digis.find(layer);
+      if (ptr == c_digis.end()) {
+        c_digis[layer] = {trig_digi};
+        c_sums[layer] = trig_digi.linearPrimitive();
       } else {
-        cDigis[layer].push_back(trigDigi);
-        cSums[layer] += trigDigi.linearPrimitive();
+        c_digis[layer].push_back(trig_digi);
+        c_sums[layer] += trig_digi.linearPrimitive();
       }
     }
   }
@@ -57,82 +57,82 @@ void EcalTPSelector::produce(framework::Event& event) {
   // Enforce truncation.
   // For outer modules, the energy sort is not possible
   // Instead, sort by ID to be deterministic.
-  ldmx::HgcrocTrigDigiCollection passTPs;
-  passTPs.reserve(ecalTrigDigis.size());
-  for (auto& pair : lDigis) {
+  ldmx::HgcrocTrigDigiCollection pass_t_ps;
+  pass_t_ps.reserve(ecal_trig_digis.size());
+  for (auto& pair : l_digis) {
     auto& digis = pair.second;
-    if (digis.size() > maxOuterTPs_) {
+    if (digis.size() > max_outer_t_ps_) {
       std::sort(digis.begin(), digis.end(),
                 [](ldmx::HgcrocTrigDigi a, ldmx::HgcrocTrigDigi b) {
                   return a.getId() > b.getId();
                 });
-      digis.resize(maxCentralTPs_);
+      digis.resize(max_central_t_ps_);
     }
-    passTPs.insert(passTPs.end(), digis.begin(), digis.end());
+    pass_t_ps.insert(pass_t_ps.end(), digis.begin(), digis.end());
   }
-  for (auto& pair : rDigis) {
+  for (auto& pair : r_digis) {
     auto& digis = pair.second;
-    if (digis.size() > maxOuterTPs_) {
+    if (digis.size() > max_outer_t_ps_) {
       std::sort(digis.begin(), digis.end(),
                 [](ldmx::HgcrocTrigDigi a, ldmx::HgcrocTrigDigi b) {
                   return a.getId() > b.getId();
                 });
-      digis.resize(maxCentralTPs_);
+      digis.resize(max_central_t_ps_);
     }
-    passTPs.insert(passTPs.end(), digis.begin(), digis.end());
+    pass_t_ps.insert(pass_t_ps.end(), digis.begin(), digis.end());
   }
   // center digis, can sort by energy
-  for (auto& pair : cDigis) {
+  for (auto& pair : c_digis) {
     auto& digis = pair.second;
-    if (digis.size() > maxCentralTPs_) {
+    if (digis.size() > max_central_t_ps_) {
       std::sort(digis.begin(), digis.end(),
                 [](ldmx::HgcrocTrigDigi a, ldmx::HgcrocTrigDigi b) {
                   return a.getPrimitive() > b.getPrimitive();
                 });
-      digis.resize(maxCentralTPs_);
+      digis.resize(max_central_t_ps_);
     }
-    passTPs.insert(passTPs.end(), digis.begin(), digis.end());
+    pass_t_ps.insert(pass_t_ps.end(), digis.begin(), digis.end());
   }
 
   // collections to record (corrected to MeV)
-  std::vector<TrigCaloHit> passTrigHits;
-  for (const auto& tp : passTPs) {
+  std::vector<TrigCaloHit> pass_trig_hits;
+  for (const auto& tp : pass_t_ps) {
     double x, y, z, e;
     decodeTP(tp, x, y, z, e);
-    passTrigHits.emplace_back(x, y, z, e);
+    pass_trig_hits.emplace_back(x, y, z, e);
 
     ldmx::EcalTriggerID tid(tp.getId());
-    passTrigHits.back().setLayer(tid.layer());
-    passTrigHits.back().setModule(tid.module());
+    pass_trig_hits.back().setLayer(tid.layer());
+    pass_trig_hits.back().setModule(tid.module());
   }
 
-  TrigEnergySumCollection passTrigSums;
-  ecalTpToE cvt;
-  for (auto& pair : lSums) {
+  TrigEnergySumCollection pass_trig_sums;
+  EcalTpToE cvt;
+  for (auto& pair : l_sums) {
     double e = cvt.calc(pair.second, pair.first);
     // TrigEnergySum s(pair.first, 4, e);
-    passTrigSums.emplace_back(pair.first, 4, e);
+    pass_trig_sums.emplace_back(pair.first, 4, e);
   }
-  for (auto& pair : rSums) {
+  for (auto& pair : r_sums) {
     double e = cvt.calc(pair.second, pair.first);
     // TrigEnergySum s(pair.first, 1, e);
-    passTrigSums.emplace_back(pair.first, 1, e);
+    pass_trig_sums.emplace_back(pair.first, 1, e);
   }
-  for (auto& pair : cSums) {
+  for (auto& pair : c_sums) {
     double e = cvt.calc(pair.second, pair.first);
     // TrigEnergySum s(pair.first, 0, e);
-    passTrigSums.emplace_back(pair.first, 0, e);
+    pass_trig_sums.emplace_back(pair.first, 0, e);
   }
 
-  event.add(passCollName_ + "Hits", passTrigHits);
-  event.add(passCollName_ + "Sums", passTrigSums);
+  event.add(pass_coll_name_ + "Hits", pass_trig_hits);
+  event.add(pass_coll_name_ + "Sums", pass_trig_sums);
 }
 
 // double EcalTPSelector::primitiveToEnergy(int tp, int layer){
 //   float sie = hgc_compression_factor_ * tp *
-//     gain_ * mVtoMeV_;  // in MeV, before layer corrections
-//   return (sie / mipSiEnergy_ * layerWeights.at(layer) + sie) *
-//     secondOrderEnergyCorrection_ * adHoc_;
+//     gain_ * m_vto_me_v_;  // in MeV, before layer corrections
+//   return (sie / mip_si_energy_ * layerWeights.at(layer) + sie) *
+//     second_order_energy_correction_ * ad_hoc_;
 // }
 
 void EcalTPSelector::decodeTP(ldmx::HgcrocTrigDigi tp, double& x, double& y,
@@ -147,7 +147,7 @@ void EcalTPSelector::decodeTP(ldmx::HgcrocTrigDigi tp, double& x, double& y,
   // hexReadout.getCellAbsolutePosition(center_ecalID,x,y,z);
   std::tie(x, y, z) = geom.globalPosition(tid);
   // e = primitiveToEnergy(tp.linearPrimitive(), tid.layer());
-  ecalTpToE cvt;
+  EcalTpToE cvt;
   e = cvt.calc(tp.linearPrimitive(), tid.layer());
 }
 

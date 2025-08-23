@@ -17,13 +17,13 @@ HcalClusterProducer::HcalClusterProducer(const std::string& name,
     : Producer(name, process) {}
 
 void HcalClusterProducer::configure(framework::config::Parameters& parameters) {
-  EnoiseCut_ = parameters.get<double>("EnoiseCut");
-  deltaTime_ = parameters.get<double>("deltaTime");
-  deltaR_ = parameters.get<double>("deltaR");
-  EminCluster_ = parameters.get<double>("EminCluster");
-  cutOff_ = parameters.get<double>("cutOff");
+  enoise_cut_ = parameters.get<double>("EnoiseCut");
+  delta_time_ = parameters.get<double>("deltaTime");
+  delta_r_ = parameters.get<double>("deltaR");
+  emin_cluster_ = parameters.get<double>("EminCluster");
+  cut_off_ = parameters.get<double>("cutOff");
 
-  clusterCollName_ = parameters.get<std::string>("clusterCollName");
+  cluster_coll_name_ = parameters.get<std::string>("clusterCollName");
   hcal_hits_pass_name_ = parameters.get<std::string>("hcal_hits_pass_name");
 }
 
@@ -32,47 +32,47 @@ static bool compHitTimes(const ldmx::HcalHit* a, const ldmx::HcalHit* b) {
 }
 
 void HcalClusterProducer::produce(framework::Event& event) {
-  const ldmx::HcalGeometry& hcalGeom = getCondition<ldmx::HcalGeometry>(
+  const ldmx::HcalGeometry& hcal_geom = getCondition<ldmx::HcalGeometry>(
       ldmx::HcalGeometry::CONDITIONS_OBJECT_NAME);
 
   TemplatedClusterFinder<MyClusterWeight> finder;
 
-  std::vector<ldmx::HcalCluster> hcalClusters;
-  std::list<const ldmx::HcalHit*> seedList;
-  std::vector<ldmx::HcalHit> hcalHits =
+  std::vector<ldmx::HcalCluster> hcal_clusters;
+  std::list<const ldmx::HcalHit*> seed_list;
+  std::vector<ldmx::HcalHit> hcal_hits =
       event.getCollection<ldmx::HcalHit>("HcalRecHits", hcal_hits_pass_name_);
 
-  if (hcalHits.empty()) {
+  if (hcal_hits.empty()) {
     return;
   }
 
-  for (ldmx::HcalHit& hit : hcalHits) {
-    if (hit.getEnergy() < EnoiseCut_) continue;
+  for (ldmx::HcalHit& hit : hcal_hits) {
+    if (hit.getEnergy() < enoise_cut_) continue;
     if (hit.getEnergy() == 0) continue;
-    finder.add(&hit, hcalGeom);
+    finder.add(&hit, hcal_geom);
   }
 
   // seedList.sort([](const ldmx::HcalHit* a, const ldmx::HcalHit* b) {return
   // a->getEnergy() > b->getEnergy();});
-  finder.cluster(EminCluster_, cutOff_, deltaTime_);
+  finder.cluster(emin_cluster_, cut_off_, delta_time_);
 
-  std::vector<WorkingCluster> wcVec = finder.getClusters();
-  for (unsigned int c = 0; c < wcVec.size(); c++) {
-    if (wcVec[c].empty()) continue;
+  std::vector<WorkingCluster> wc_vec = finder.getClusters();
+  for (unsigned int c = 0; c < wc_vec.size(); c++) {
+    if (wc_vec[c].empty()) continue;
     ldmx::HcalCluster cluster;
-    cluster.setEnergy(wcVec[c].centroid().E());
-    cluster.setCentroidXYZ(wcVec[c].centroid().Px(), wcVec[c].centroid().Py(),
-                           wcVec[c].centroid().Pz());
-    cluster.setNHits(wcVec[c].getHits().size());
-    cluster.addHits(wcVec[c].getHits());
-    std::vector<const ldmx::HcalHit*> hits_ = wcVec[c].getHits();
-    if (hits_.size() > 0) {
-      std::sort(hits_.begin(), hits_.end(), compHitTimes);
-      cluster.setTime(hits_[0]->getTime());
+    cluster.setEnergy(wc_vec[c].centroid().E());
+    cluster.setCentroidXYZ(wc_vec[c].centroid().Px(), wc_vec[c].centroid().Py(),
+                           wc_vec[c].centroid().Pz());
+    cluster.setNHits(wc_vec[c].getHits().size());
+    cluster.addHits(wc_vec[c].getHits());
+    std::vector<const ldmx::HcalHit*> hits = wc_vec[c].getHits();
+    if (hits.size() > 0) {
+      std::sort(hits.begin(), hits.end(), compHitTimes);
+      cluster.setTime(hits[0]->getTime());
     }
-    hcalClusters.push_back(cluster);
+    hcal_clusters.push_back(cluster);
   }
-  event.add(clusterCollName_, hcalClusters);
+  event.add(cluster_coll_name_, hcal_clusters);
 }
 
 }  // namespace hcal

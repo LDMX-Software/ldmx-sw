@@ -63,7 +63,7 @@ class CRC {
   template <typename WordType,
             std::enable_if_t<std::is_integral<WordType>::value, bool> = true>
   CRC& operator<<(const WordType& w) {
-    crc.process_bytes(&w, sizeof(WordType));
+    crc_.process_bytes(&w, sizeof(WordType));
     return *this;
   }
 
@@ -107,11 +107,11 @@ class CRC {
    * Get the calculate checksum from the calculator
    * @return uint32_t checksum
    */
-  uint32_t get() { return crc.checksum(); }
+  uint32_t get() { return crc_.checksum(); }
 
  private:
   /// the object from Boost doing the summing
-  boost::crc_32_type crc;
+  boost::crc_32_type crc_;
 };  // CRC
 
 }  // namespace utility

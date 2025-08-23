@@ -9,9 +9,9 @@ namespace recon {
 
 DBScanClusterBuilder::DBScanClusterBuilder() {
   min_hit_energy_ = 0;
-  clusterHitDist_ = 100;
-  clusterZBias_ = 1;  // defaults to 1
-  minClusterHitMult_ = 2;
+  cluster_hit_dist_ = 100;
+  cluster_z_bias_ = 1;  // defaults to 1
+  min_cluster_hit_mult_ = 2;
 }
 
 DBScanClusterBuilder::DBScanClusterBuilder(float minHitEnergy,
@@ -19,9 +19,9 @@ DBScanClusterBuilder::DBScanClusterBuilder(float minHitEnergy,
                                            float clusterZBias,
                                            float minClusterHitMult) {
   min_hit_energy_ = minHitEnergy;
-  clusterHitDist_ = clusterHitDist;
-  clusterZBias_ = clusterZBias;  // clustering bias in the z_ direction
-  minClusterHitMult_ = minClusterHitMult;
+  cluster_hit_dist_ = clusterHitDist;
+  cluster_z_bias_ = clusterZBias;  // clustering bias in the z_ direction
+  min_cluster_hit_mult_ = minClusterHitMult;
 }
 
 std::vector<std::vector<const ldmx::CalorimeterHit *> >
@@ -39,16 +39,16 @@ DBScanClusterBuilder::runDBSCAN(
     ldmx_log(debug) << "trying " << i;
     if (hits_[i]->getEnergy() < min_hit_energy_) continue;
     std::set<unsigned int> neighbors;
-    unsigned int nNearby = 1;
+    unsigned int n_nearby = 1;
     // find neighbors
     for (unsigned int j = 0; j < n; j++) {
       if (i != j &&
-          dist(hits_[i], hits_[j]) < clusterHitDist_) {  // pair-wise distance
+          dist(hits_[i], hits_[j]) < cluster_hit_dist_) {  // pair-wise distance
         neighbors.insert(j);
-        if (hits_[j]->getEnergy() >= min_hit_energy_) nNearby++;
+        if (hits_[j]->getEnergy() >= min_hit_energy_) n_nearby++;
       }
     }
-    if (nNearby >= minClusterHitMult_) {
+    if (n_nearby >= min_cluster_hit_mult_) {
       std::vector<const ldmx::CalorimeterHit *> idx_cluster{
           hits_[i]};  // start a cluster
       used.push_back(i);
@@ -59,7 +59,7 @@ DBScanClusterBuilder::runDBSCAN(
           ldmx_log(debug) << "== tried " << j;
           std::vector<unsigned int> neighbors2;
           for (unsigned int k = 0; k < n; k++) {
-            if (dist(hits_[k], hits_[j]) < clusterHitDist_) {
+            if (dist(hits_[k], hits_[j]) < cluster_hit_dist_) {
               neighbors2.push_back(k);
             }
           }
@@ -82,22 +82,22 @@ DBScanClusterBuilder::runDBSCAN(
 void DBScanClusterBuilder::fillClusterInfoFromHits(
     ldmx::CaloCluster *cl, std::vector<const ldmx::CalorimeterHit *> hits_,
     bool logEnergyWeight) {
-  float e(0), x_(0), y_(0), z_(0), xx(0), yy(0), zz(0), n(0);
+  float e(0), x(0), y(0), z(0), xx(0), yy(0), zz(0), n(0);
   float w = 1;  // weight
   float sumw = 0;
   std::vector<float> raw_xvals{};
   std::vector<float> raw_yvals{};
   std::vector<float> raw_zvals{};
   std::vector<float> raw_evals{};
-  std::vector<const ldmx::CalorimeterHit *> constituentHits;
+  std::vector<const ldmx::CalorimeterHit *> constituent_hits;
 
   for (const ldmx::CalorimeterHit *h : hits_) {
     if (h->getEnergy() < min_hit_energy_) continue;
     if (logEnergyWeight) w = log(h->getEnergy()) - log(min_hit_energy_);
     e += h->getEnergy();
-    x_ += w * h->getXPos();
-    y_ += w * h->getYPos();
-    z_ += w * h->getZPos();
+    x += w * h->getXPos();
+    y += w * h->getYPos();
+    z += w * h->getZPos();
     xx += w * h->getXPos() * h->getXPos();
     yy += w * h->getYPos() * h->getYPos();
     zz += w * h->getZPos() * h->getZPos();
@@ -107,36 +107,36 @@ void DBScanClusterBuilder::fillClusterInfoFromHits(
     raw_yvals.push_back(h->getYPos());
     raw_zvals.push_back(h->getZPos());
     raw_evals.push_back(h->getEnergy());
-    constituentHits.emplace_back(h);
+    constituent_hits.emplace_back(h);
   }  // over hits_
-  x_ /= sumw;  // now is <x_>
-  y_ /= sumw;
-  z_ /= sumw;
+  x /= sumw;  // now is <x_>
+  y /= sumw;
+  z /= sumw;
   xx /= sumw;  // now is <x_^2>
   yy /= sumw;
   zz /= sumw;
-  xx = sqrt(xx - x_ * x_);  // now is sqrt(<x_^2>-<x_>^2)
-  yy = sqrt(yy - y_ * y_);
-  zz = sqrt(zz - z_ * z_);
+  xx = sqrt(xx - x * x);  // now is sqrt(<x_^2>-<x_>^2)
+  yy = sqrt(yy - y * y);
+  zz = sqrt(zz - z * z);
   cl->setEnergy(e);
   cl->setNHits(n);
-  cl->setCentroidXYZ(x_, y_, z_);
+  cl->setCentroidXYZ(x, y, z);
   cl->setRMSXYZ(xx, yy, zz);
   cl->setHitValsX(raw_xvals);
   cl->setHitValsY(raw_yvals);
   cl->setHitValsZ(raw_zvals);
   cl->setHitValsE(raw_evals);
-  cl->addHits(constituentHits);  // associate used hits_ to cluster
+  cl->addHits(constituent_hits);  // associate used hits_ to cluster
 
   if (raw_xvals.size() > 2) {
     // skip fits for 'vertical' clusters
-    std::vector<float> sortedZ = raw_zvals;
-    std::sort(sortedZ.begin(), sortedZ.end());
-    if ((sortedZ.size() > 2) and (sortedZ.back() - sortedZ.front() > 1e3)) {
+    std::vector<float> sorted_z = raw_zvals;
+    std::sort(sorted_z.begin(), sorted_z.end());
+    if ((sorted_z.size() > 2) and (sorted_z.back() - sorted_z.front() > 1e3)) {
       for (int i = 0; i < raw_xvals.size(); i++) {  // mean subtract
-        raw_xvals[i] = raw_xvals[i] - x_;
-        raw_yvals[i] = raw_yvals[i] - y_;
-        raw_zvals[i] = raw_zvals[i] - z_;
+        raw_xvals[i] = raw_xvals[i] - x;
+        raw_yvals[i] = raw_yvals[i] - y;
+        raw_zvals[i] = raw_zvals[i] - z;
       }
 
       TGraph gxz(raw_zvals.size(), raw_zvals.data(), raw_xvals.data());

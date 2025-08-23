@@ -16,7 +16,7 @@
 namespace ecal {
 
 // we are using 32-bit words here
-using hex = packing::utility::hex<uint32_t>;
+using hex = packing::utility::Hex<uint32_t>;
 using BufferReader = packing::utility::BufferReader<uint32_t>;
 
 void EcalRawDecoder::configure(framework::config::Parameters& ps) {
@@ -58,12 +58,12 @@ void EcalRawDecoder::produce(framework::Event& event) {
       reader >> whole_event_header;
       /* event length not currently used but is stored in header as defined by
       the spec uint32_t version = (whole_event_header >> 28) &
-      packing::utility::mask<4>; uint32_t fpga = (whole_event_header >> 20) &
-      packing::utility::mask<8>; uint32_t eventlen = whole_event_header &
-      packing::utility::mask<16>;
+      packing::utility::MASK<4>; uint32_t fpga = (whole_event_header >> 20) &
+      packing::utility::MASK<8>; uint32_t eventlen = whole_event_header &
+      packing::utility::MASK<16>;
       */
       uint32_t nsamples =
-          (whole_event_header >> 16) & packing::utility::mask<4>;
+          (whole_event_header >> 16) & packing::utility::MASK<4>;
       // sample counters
       std::vector<uint32_t> length_per_sample(nsamples, 0);
       for (uint32_t i_sample{0}; i_sample < nsamples; i_sample++) {
@@ -72,7 +72,7 @@ void EcalRawDecoder::produce(framework::Event& event) {
         }
         uint32_t shift_in_word = 16 * (i_sample % 2);
         length_per_sample[i_sample] =
-            (w >> shift_in_word) & packing::utility::mask<12>;
+            (w >> shift_in_word) & packing::utility::MASK<12>;
       }
 
       // read first sample headers
@@ -101,17 +101,17 @@ void EcalRawDecoder::produce(framework::Event& event) {
     packing::utility::CRC fpga_crc;
     fpga_crc << head1;
     std::cout << hex(head1) << " : ";
-    uint32_t version = (head1 >> 28) & packing::utility::mask<4>;
+    uint32_t version = (head1 >> 28) & packing::utility::MASK<4>;
     // std::cout << "version " << version << std::flush;
     uint32_t one{1};
     if (version != one)
       EXCEPTION_RAISE("VersMis",
                       "EcalRawDecoder only knows version 1 of DAQ format.");
 
-    uint32_t fpga = (head1 >> 20) & packing::utility::mask<8>;
-    uint32_t nlinks = (head1 >> 14) & packing::utility::mask<6>;
+    uint32_t fpga = (head1 >> 20) & packing::utility::MASK<8>;
+    uint32_t nlinks = (head1 >> 14) & packing::utility::MASK<6>;
     // total length not used but is available in header as defined by spec
-    // uint32_t len = head1 & packing::utility::mask<12>;
+    // uint32_t len = head1 & packing::utility::MASK<12>;
 
     // std::cout << ", fpga: " << fpga << ", nlinks: " << nlinks << ", len: " <<
     // len << std::endl;
@@ -120,9 +120,9 @@ void EcalRawDecoder::produce(framework::Event& event) {
 
     // bunch ID (bx), read request (rreq) and orbit counter (orbit) are defined
     // in header but not used right now uint32_t bx_id = (head2 >> 20) &
-    // packing::utility::mask<12>; uint32_t rreq = (head2 >> 10) &
-    // packing::utility::mask<10>; uint32_t orbit = head2 &
-    // packing::utility::mask<10>;
+    // packing::utility::MASK<12>; uint32_t rreq = (head2 >> 10) &
+    // packing::utility::MASK<10>; uint32_t orbit = head2 &
+    // packing::utility::MASK<10>;
 
     // std::cout << "bx_id: " << bx_id << ", rreq: " << rreq << ", orbit: " <<
     // orbit << std::endl;
@@ -137,11 +137,11 @@ void EcalRawDecoder::produce(framework::Event& event) {
       uint32_t shift_in_word = 8 * (i_link % 4);
       // the check sums performed by the HGCROC and downstream chips can
       // confirm the validity of the data, not used here (yet)
-      // bool rid_ok = ((w >> (shift_in_word + 7)) & packing::utility::mask<1>)
+      // bool rid_ok = ((w >> (shift_in_word + 7)) & packing::utility::MASK<1>)
       // == 1; bool cdc_ok = ((w >> (shift_in_word + 6)) &
-      // packing::utility::mask<1>) == 1;
+      // packing::utility::MASK<1>) == 1;
       length_per_link[i_link] =
-          (w >> shift_in_word) & packing::utility::mask<6>;
+          (w >> shift_in_word) & packing::utility::MASK<6>;
       // std::cout << "  Link " << i_link << " readout " <<
       // length_per_link.at(i_link) << " channels" << std::endl;
     }
@@ -162,15 +162,15 @@ void EcalRawDecoder::produce(framework::Event& event) {
       reader >> w;
       fpga_crc << w;
       link_crc << w;
-      uint32_t roc_id = (w >> 16) & packing::utility::mask<16>;
+      uint32_t roc_id = (w >> 16) & packing::utility::MASK<16>;
       // checksum for this chunk of data can be used to confirm data validity
-      // bool crc_ok = (w >> 15) & packing::utility::mask<1> == 1;
+      // bool crc_ok = (w >> 15) & packing::utility::MASK<1> == 1;
       // std::cout << hex(w) << " : roc_id " << roc_id << ", crc_ok (v2
       // always false) " << std::boolalpha << crc_ok << std::endl;
 
       // get readout map from the last 8 bits of this word
       // and the entire next word
-      std::bitset<40> ro_map = w & packing::utility::mask<8>;
+      std::bitset<40> ro_map = w & packing::utility::MASK<8>;
       ro_map <<= 32;
       reader >> w;
       fpga_crc << w;
@@ -210,10 +210,10 @@ void EcalRawDecoder::produce(framework::Event& event) {
           for later comparison
            * if the data packet has readout its own checksum
           link_crc << w;
-          uint32_t bx_id = (w >> 16) & packing::utility::mask<12>;
-          uint32_t short_event = (w >> 10) & packing::utility::mask<6>;
-          uint32_t short_orbit = (w >> 7) & packing::utility::mask<3>;
-          uint32_t hamming_errs = (w >> 4) & packing::utility::mask<3>;
+          uint32_t bx_id = (w >> 16) & packing::utility::MASK<12>;
+          uint32_t short_event = (w >> 10) & packing::utility::MASK<6>;
+          uint32_t short_orbit = (w >> 7) & packing::utility::MASK<3>;
+          uint32_t hamming_errs = (w >> 4) & packing::utility::MASK<3>;
           */
         } else if (channel_id == common_mode_channel) {
           /** Common Mode Channels

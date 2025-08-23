@@ -59,11 +59,13 @@ class TrigEnergySum {
    * @param[in] d another digi to compare against
    * @returns true if this ID is less than the other ID
    */
-  bool operator<(const TrigEnergySum &sum) { return hwEnergy_ < sum.hwEnergy_; }
+  bool operator<(const TrigEnergySum &sum) {
+    return hw_energy_ < sum.hw_energy_;
+  }
 
   void clear() {
     energy_ = 0;
-    hwEnergy_ = 0;
+    hw_energy_ = 0;
     layer_ = 0;
     module_ = 0;
   }
@@ -77,8 +79,8 @@ class TrigEnergySum {
   void setEnergy(float energy) { energy_ = energy; }
   float energy() const { return energy_; }
 
-  void setHwEnergy(int hwEnergy) { hwEnergy_ = hwEnergy; }
-  int hwEnergy() const { return hwEnergy_; }
+  void setHwEnergy(int hwEnergy) { hw_energy_ = hwEnergy; }
+  int hwEnergy() const { return hw_energy_; }
   // inline float pe() const { return hwEnergy_*pe_per_adc_; }
   // inline float hadEnergy() const { return
   // hwEnergy_*pe_per_adc_*mev_per_pe_*had_sample_frac_; }
@@ -113,7 +115,7 @@ class TrigEnergySum {
   /// the raw ID for this trigger channel
   int layer_{0};
   int module_{0};
-  int hwEnergy_{0};
+  int hw_energy_{0};
   float energy_{0};
   /* const float pe_per_adc_{1.2/5}; // gain * pe/mV */
   /* const float mev_per_pe_{4.66/68}; // MeV/PE (MIP) */

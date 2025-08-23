@@ -7,35 +7,35 @@ ClassImp(trigger::TrigParticle)
       : p4_(p4),
         vtx_(0, 0, 0),
         end_(0, 0, 0),
-        pdgId_(0),
-        hwPt_(0),
-        hwEta_(0),
-        hwPhi_(0),
-        hwQual_(0),
-        hwIso_(0) {}
+        pdg_id_(0),
+        hw_pt_(0),
+        hw_eta_(0),
+        hw_phi_(0),
+        hw_qual_(0),
+        hw_iso_(0) {}
   TrigParticle::TrigParticle(LorentzVector p4, Point vtx)
       : p4_(p4),
         vtx_(vtx),
         end_(0, 0, 0),
-        pdgId_(0),
-        hwPt_(0),
-        hwEta_(0),
-        hwPhi_(0),
-        hwQual_(0),
-        hwIso_(0) {}
+        pdg_id_(0),
+        hw_pt_(0),
+        hw_eta_(0),
+        hw_phi_(0),
+        hw_qual_(0),
+        hw_iso_(0) {}
   TrigParticle::TrigParticle(LorentzVector p4, Point vtx, int pdgId)
       : p4_(p4),
         vtx_(vtx),
         end_(0, 0, 0),
-        pdgId_(pdgId),
-        hwPt_(0),
-        hwEta_(0),
-        hwPhi_(0),
-        hwQual_(0),
-        hwIso_(0) {}
+        pdg_id_(pdgId),
+        hw_pt_(0),
+        hw_eta_(0),
+        hw_phi_(0),
+        hw_qual_(0),
+        hw_iso_(0) {}
 
   // TrigParticle::TrigParticle(LorentzVector p4, Point vtx) : p4_(p4),
-  // vtx_(vtx), pdgId_(pdgId), hwPt_(hwPt), hwEta_(hwEta), hwPhi_(hwPhi),
-  // hwQual_(hwQual), hwIso_(hwIso) {}
+  // vtx_(vtx), pdg_id_(pdgId), hw_pt_(hwPt), hw_eta_(hwEta), hw_phi_(hwPhi),
+  // hw_qual_(hwQual), hw_iso_(hwIso) {}
 
 }  // namespace trigger

@@ -64,9 +64,10 @@ void HgcrocTriggerCalculations::addDigi(unsigned int id, unsigned int tid,
       conditions_.totPedestal(id), conditions_.totThreshold(id),
       conditions_.totGain(id));
   if (charge > 0) {
-    std::map<unsigned int, unsigned int>::iterator ic = linearCharge_.find(tid);
-    if (ic == linearCharge_.end())
-      linearCharge_[tid] = charge;
+    std::map<unsigned int, unsigned int>::iterator ic =
+        linear_charge_.find(tid);
+    if (ic == linear_charge_.end())
+      linear_charge_[tid] = charge;
     else
       ic->second += charge;
   }
@@ -84,11 +85,11 @@ void HgcrocTriggerCalculations::compressDigis(int cells_per_trig) {
                         std::to_string(cells_per_trig));
   }
 
-  for (auto ilinear : linearCharge_) {
+  for (auto ilinear : linear_charge_) {
     unsigned int lcharge = ilinear.second;
     lcharge = lcharge >> shift;
     uint8_t ccharge = ldmx::HgcrocTrigDigi::linear2Compressed(lcharge);
-    compressedCharge_[ilinear.first] = ccharge;
+    compressed_charge_[ilinear.first] = ccharge;
   }
 }
 

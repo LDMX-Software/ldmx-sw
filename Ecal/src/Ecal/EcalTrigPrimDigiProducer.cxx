@@ -36,7 +36,7 @@ void EcalTrigPrimDigiProducer::produce(framework::Event& event) {
     if (!tid.null()) {
       int tot = 0;
       if (pdigi.soi().isTOTComplete()) tot = pdigi.soi().tot();
-      calc.addDigi(pdigi.id(), tid.raw(), pdigi.soi().adc_t(), tot);
+      calc.addDigi(pdigi.id(), tid.raw(), pdigi.soi().adcT(), tot);
     }
   }
 

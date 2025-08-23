@@ -73,7 +73,7 @@ class EcalPnetVetoProcessor : public framework::Producer {
 
   float disc_cut_ = -99;
   std::vector<std::vector<float>> data_;
-  std::unique_ptr<ldmx::Ort::ONNXRuntime> rt_;
+  std::unique_ptr<ldmx::ort::ONNXRuntime> rt_;
 
   /** Name of the collection which will containt the results. */
   std::string collection_name_{"EcalPnetVeto"};

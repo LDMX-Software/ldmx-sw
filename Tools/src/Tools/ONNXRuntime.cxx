@@ -1,10 +1,9 @@
 
 #include "Tools/ONNXRuntime.h"
 
-namespace ldmx::Ort {
-
+namespace ldmx {
+namespace ort {
 using namespace ::Ort;
-
 #if ORT_API_VERSION == 2
 // version used when first integrated onnx into ldmx-sw
 // and version downloaded by cmake infrastructure
@@ -20,12 +19,12 @@ std::string get_output_name(std::unique_ptr<Session>& s, size_t i,
 #else
 // latest version with prebuilds for both x86_64 and arm64
 // architectures but contains a slight API change
-std::string get_input_name(std::unique_ptr<Session>& s, size_t i,
-                           AllocatorWithDefaultOptions a) {
+std::string getInputName(std::unique_ptr<Session>& s, size_t i,
+                         AllocatorWithDefaultOptions a) {
   return s->GetInputNameAllocated(i, a).get();
 }
-std::string get_output_name(std::unique_ptr<Session>& s, size_t i,
-                            AllocatorWithDefaultOptions a) {
+std::string getOutputName(std::unique_ptr<Session>& s, size_t i,
+                          AllocatorWithDefaultOptions a) {
   return s->GetOutputNameAllocated(i, a).get();
 }
 #if ORT_API_VERSION != 15
@@ -34,17 +33,17 @@ std::string get_output_name(std::unique_ptr<Session>& s, size_t i,
 #endif
 #endif
 
-Env ONNXRuntime::env_(ORT_LOGGING_LEVEL_WARNING, "");
+Env ONNXRuntime::env(ORT_LOGGING_LEVEL_WARNING, "");
 
 ONNXRuntime::ONNXRuntime(const std::string& model_path,
                          const SessionOptions* session_options) {
   // create session
   if (session_options) {
-    session_.reset(new Session(env_, model_path.c_str(), *session_options));
+    session_.reset(new Session(env, model_path.c_str(), *session_options));
   } else {
     SessionOptions sess_opts;
     sess_opts.SetIntraOpNumThreads(1);
-    session_.reset(new Session(env_, model_path.c_str(), sess_opts));
+    session_.reset(new Session(env, model_path.c_str(), sess_opts));
   }
   AllocatorWithDefaultOptions allocator;
 
@@ -56,7 +55,7 @@ ONNXRuntime::ONNXRuntime(const std::string& model_path,
 
   for (size_t i = 0; i < num_input_nodes; i++) {
     // get input node names
-    std::string input_name(get_input_name(session_, i, allocator));
+    std::string input_name(getInputName(session_, i, allocator));
     input_node_strings_[i] = input_name;
     input_node_names_[i] = input_node_strings_[i].c_str();
 
@@ -80,7 +79,7 @@ ONNXRuntime::ONNXRuntime(const std::string& model_path,
 
   for (size_t i = 0; i < num_output_nodes; i++) {
     // get output node names
-    std::string output_name(get_output_name(session_, i, allocator));
+    std::string output_name(getOutputName(session_, i, allocator));
     output_node_strings_[i] = output_name;
     output_node_names_[i] = output_node_strings_[i].c_str();
 
@@ -184,4 +183,5 @@ const std::vector<int64_t>& ONNXRuntime::getOutputShape(
   }
 }
 
-} /* namespace ldmx::Ort */
+}  // namespace ort
+}  // namespace ldmx

@@ -126,9 +126,9 @@ void EcalClusterAnalyzer::analyze(const framework::Event& event) {
         // for each contrib in this simhit
         const auto& contrib = it->getContrib(i);
         // get origin electron ID
-        ancestor = contrib.originID;
+        ancestor = contrib.origin_id_;
         // store energy from this contrib at index = origin electron ID
-        if (ancestor <= nbr_of_electrons) edep[ancestor] += contrib.edep;
+        if (ancestor <= nbr_of_electrons) edep[ancestor] += contrib.edep_;
         if (!tagged && i != 0 && prev_ancestor != ancestor) {
           // if origin electron ID does not match previous origin electron ID
           // this hit has contributions from several electrons, ie mixed case

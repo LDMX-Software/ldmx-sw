@@ -64,7 +64,7 @@ class BeamElectronLocator : public framework::Producer {
   /**
    * The name of the input collection used for counting electrons
    */
-  std::string inputColl_;
+  std::string input_coll_;
 
   /**
    * The pass name of the input collection used for counting electrons
@@ -75,34 +75,34 @@ class BeamElectronLocator : public framework::Producer {
    * The name of the output collection used to save some electron counting
    * variables
    */
-  std::string outputColl_;
+  std::string output_coll_;
 
   /**
    * The min value measured by the system (edge) in X, in mm
    **/
-  double minXmm_;
+  double min_xmm_;
   /**
    * The max value measured by the system (edge) in X, in mm
    **/
-  double maxXmm_;
+  double max_xmm_;
 
   /**
    * The min value measured by the system (edge) in Y, in mm
    **/
-  double minYmm_;
+  double min_ymm_;
   /**
    * The max value measured by the system (edge) in Y, in mm
    **/
-  double maxYmm_;
+  double max_ymm_;
 
   /**
    * The granularity of the detector (e.g. TS) in X, in mm
    **/
-  double granularityXmm_;
+  double granularity_xmm_;
   /**
    * The granularity of the detector (e.g. TS) in Y, in mm
    **/
-  double granularityYmm_;
+  double granularity_ymm_;
 
   /**
    * The tolerance within which simhits are considered to belong to

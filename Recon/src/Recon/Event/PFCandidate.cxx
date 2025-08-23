@@ -8,8 +8,8 @@ ClassImp(ldmx::PFCandidate);
 namespace ldmx {
 std::ostream& operator<<(std::ostream& o, const PFCandidate& c) {
   return o << "PFCandidate ( " << "id: " << c.pid_ << "), " << "Pxyz: ("
-           << c.trackPx_ << ", " << c.trackPy_ << ", " << c.trackPz_
-           << ") MeV/c, " << "Ecal energy: " << c.ecalEnergy_ << " MeV, "
-           << "Hcal energy: " << c.hcalEnergy_ << " MeV, ";
+           << c.track_px_ << ", " << c.track_py_ << ", " << c.track_pz_
+           << ") MeV/c, " << "Ecal energy: " << c.ecal_energy_ << " MeV, "
+           << "Hcal energy: " << c.hcal_energy_ << " MeV, ";
 }
 }  // namespace ldmx

@@ -99,7 +99,7 @@ void EcalRecProducer::produce(framework::Event& event) {
       // available. For now, we simply take the measurement of the SOI as the
       // peak amplitude.
 
-      charge = (digi.soi().adc_t() - the_conditions.adcPedestal(id)) *
+      charge = (digi.soi().adcT() - the_conditions.adcPedestal(id)) *
                the_conditions.adcGain(id);
 
       ldmx_log(trace) << "ADC Mode -> " << charge << " fC";

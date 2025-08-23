@@ -44,22 +44,22 @@ class TrigElectronProducer : public framework::Producer {
 
  private:
   // name of collection for target scoring plane inputs
-  std::string spCollName_;
+  std::string sp_coll_name_;
   // name of collection for calo cluster inputs
-  std::string clusterCollName_;
+  std::string cluster_coll_name_;
   // name of collection for electron outputs
-  std::string eleCollName_;
+  std::string ele_coll_name_;
 
   std::string target_sp_passname_;
   std::string cluster_coll_passname_;
   std::string cluster_collname_events_passname_;
   std::string sp_collname_events_passname_;
 
-  std::string propMapName_;
-  TProfile2D* propMapx_{nullptr};
-  TProfile2D* propMapy_{nullptr};
-  std::vector<TF1*> fitsX_{};
-  std::vector<TF1*> fitsY_{};
+  std::string prop_map_name_;
+  TProfile2D* prop_mapx_{nullptr};
+  TProfile2D* prop_mapy_{nullptr};
+  std::vector<TF1*> fits_x_{};
+  std::vector<TF1*> fits_y_{};
 
   // From:
   // Tools/python/HgcrocEmulator.py

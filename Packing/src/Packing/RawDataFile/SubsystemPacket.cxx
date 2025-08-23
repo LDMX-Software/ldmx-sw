@@ -18,8 +18,8 @@ SubsystemPacket::SubsystemPacket(uint32_t event, uint16_t id,
 }
 
 std::vector<uint32_t> SubsystemPacket::header() const {
-  uint32_t word = ((id_ & utility::mask<16>) << 16) +
-                  ((data_.size() & utility::mask<15>) << 1) + crc_ok_;
+  uint32_t word = ((id_ & utility::MASK<16>) << 16) +
+                  ((data_.size() & utility::MASK<15>) << 1) + crc_ok_;
   return {word, event_};
 }
 
@@ -29,9 +29,9 @@ utility::Reader& SubsystemPacket::read(utility::Reader& r) {
   uint32_t word;
   r >> word;
 
-  id_ = (word >> 16) & utility::mask<16>;
-  uint32_t len = (word >> 1) & utility::mask<15>;
-  crc_ok_ = word & utility::mask<1>;
+  id_ = (word >> 16) & utility::MASK<16>;
+  uint32_t len = (word >> 1) & utility::MASK<15>;
+  crc_ok_ = word & utility::MASK<1>;
 
   r >> event_;
 

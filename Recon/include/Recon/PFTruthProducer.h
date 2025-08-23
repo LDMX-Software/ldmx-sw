@@ -30,10 +30,10 @@ class PFTruthProducer : public framework::Producer {
 
  private:
   // name of collection for target, ecal, hcal truth to be output
-  std::string primaryCollName_;
-  std::string targetCollName_;
-  std::string ecalCollName_;
-  std::string hcalCollName_;
+  std::string primary_coll_name_;
+  std::string target_coll_name_;
+  std::string ecal_coll_name_;
+  std::string hcal_coll_name_;
   std::string target_sp_passname_;
   std::string ecal_sp_passname_;
   std::string sim_particles_passname_;

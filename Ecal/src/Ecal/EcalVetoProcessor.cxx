@@ -84,7 +84,7 @@ void EcalVetoProcessor::configure(framework::config::Parameters &parameters) {
   sim_particles_passname_ =
       parameters.get<std::string>("sim_particles_passname");
   // Load BDT ONNX file
-  rt_ = std::make_unique<ldmx::Ort::ONNXRuntime>(
+  rt_ = std::make_unique<ldmx::ort::ONNXRuntime>(
       parameters.get<std::string>("bdt_file"));
 
   // Read in arrays holding 68% containment radius_ per layer_
@@ -199,7 +199,7 @@ void EcalVetoProcessor::produce(framework::Event &event) {
         "SimParticles", sim_particles_passname_)};
 
     // Search for the recoil electron
-    auto [recoil_track_id, recoil_electron] = Analysis::getRecoil(particle_map);
+    auto [recoil_track_id, recoil_electron] = analysis::getRecoil(particle_map);
 
     // Find ECAL SP hit for recoil electron
     auto ecal_sp_hits{event.getCollection<ldmx::SimTrackerHit>(
@@ -884,12 +884,12 @@ void EcalVetoProcessor::produce(framework::Event &event) {
                                          set_variables - mip_tracking_setup)
                                          .count();
   buildBDTFeatureVector(result);
-  ldmx::Ort::FloatArrays inputs({bdt_features_});
+  ldmx::ort::FloatArrays inputs({bdt_features_});
   float pred =
       rt_->run({feature_list_name_}, inputs, {"probabilities"})[0].at(1);
   ldmx_log(info) << " BDT was ran, score is " << pred;
-  // Other considerations were (nLinregTracks_ == 0)  && (firstNearPhLayer_ >=
-  // 6)
+  // Other considerations were (n_linreg_tracks_ == 0)  && (first_near_ph_layer_
+  // >= 6)
   // && (ep_ang_ > 3.0 && ep_ang_ < 900 || ep_sep_ > 10.0 && ep_sep_ < 900)
   result.setVetoResult(pred > bdt_cut_val_);
   result.setDiscValue(pred);
@@ -903,16 +903,16 @@ void EcalVetoProcessor::produce(framework::Event &event) {
   // drop the event.
   if (!inverse_skim_) {
     if (result.passesVeto()) {
-      setStorageHint(framework::hint_should_keep);
+      setStorageHint(framework::HINT_SHOULD_KEEP);
     } else {
-      setStorageHint(framework::hint_should_drop);
+      setStorageHint(framework::HINT_SHOULD_DROP);
     }
   } else {
     // Invert the skimming logic
     if (result.passesVeto()) {
-      setStorageHint(framework::hint_should_drop);
+      setStorageHint(framework::HINT_SHOULD_DROP);
     } else {
-      setStorageHint(framework::hint_should_keep);
+      setStorageHint(framework::HINT_SHOULD_KEEP);
     }
   }
 

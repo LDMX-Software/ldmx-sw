@@ -48,7 +48,7 @@ class HcalTrigPrimDigiProducer : public framework::Producer {
   std::string cond_obj_name_;
 
   /** map of digis to the super trigger primitives */
-  std::map<unsigned int, unsigned int> stq_tps;
+  std::map<unsigned int, unsigned int> stq_tps_;
 };
 }  // namespace hcal
 

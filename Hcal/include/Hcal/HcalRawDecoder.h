@@ -17,33 +17,33 @@ namespace hcal {
 
 struct PolarfireEventHeader {
   /// version of daq format
-  int version;
+  int version_;
   /// id for polarfire
-  int fpga;
+  int fpga_;
   /// number of samples
-  int nsamples;
+  int nsamples_;
   /// spill number
-  int spill;
+  int spill_;
   /// number of 5MHz ticks since spill
-  int ticks;
+  int ticks_;
   /// bunch number according to this polarfire
-  int bunch;
+  int bunch_;
   /// event number according to this polarfire
-  int number;
+  int number_;
   /// run number according to this polarfire
-  int run;
+  int run_;
   /// day of month run started
-  int DD;
+  int dd_;
   /// month run started
-  int MM;
+  int month_;
   /// hour run started
-  int hh;
+  int hh_;
   /// minute run started
-  int mm;
+  int mm_;
   /// quality of link headers
-  std::vector<bool> good_bxheader;
+  std::vector<bool> good_bxheader_;
   /// quality of link trailers
-  std::vector<bool> good_trailer;
+  std::vector<bool> good_trailer_;
 
   /**
    * board us onto the bus with the input prefix
@@ -104,14 +104,14 @@ class HcalRawDecoder : public framework::Producer {
     reader >> head1;
     i_event++;
 
-    eh.version = (head1 >> 28) & packing::utility::mask<4>;
-    eh.fpga = (head1 >> 20) & packing::utility::mask<8>;
-    eh.nsamples = (head1 >> 16) & packing::utility::mask<4>;
-    eventlen = head1 & packing::utility::mask<16>;
-    if (eh.version == 1u) {
+    eh.version_ = (head1 >> 28) & packing::utility::MASK<4>;
+    eh.fpga_ = (head1 >> 20) & packing::utility::MASK<8>;
+    eh.nsamples_ = (head1 >> 16) & packing::utility::MASK<4>;
+    eventlen = head1 & packing::utility::MASK<16>;
+    if (eh.version_ == 1u) {
       // eventlen is 32-bit words in event
       // do nothing here
-    } else if (eh.version == 2u) {
+    } else if (eh.version_ == 2u) {
       // eventlen is 64-bit words in event,
       // need to multiply by 2 to get actual 32-bit event length
       eventlen *= 2;
@@ -124,8 +124,8 @@ class HcalRawDecoder : public framework::Producer {
     }
     // sample counters
     int n_words{0};
-    std::vector<uint32_t> length_per_sample(eh.nsamples, 0);
-    for (uint32_t i_sample{0}; i_sample < eh.nsamples; i_sample++) {
+    std::vector<uint32_t> length_per_sample(eh.nsamples_, 0);
+    for (uint32_t i_sample{0}; i_sample < eh.nsamples_; i_sample++) {
       if (i_sample % 2 == 0) {
         n_words++;
         reader >> w;
@@ -133,10 +133,10 @@ class HcalRawDecoder : public framework::Producer {
       }
       uint32_t shift_in_word = 16 * (i_sample % 2);
       length_per_sample[i_sample] =
-          (w >> shift_in_word) & packing::utility::mask<12>;
+          (w >> shift_in_word) & packing::utility::MASK<12>;
     }
 
-    if (eh.version == 2) {
+    if (eh.version_ == 2) {
       /**
        * For the time being, the number of sample lengths is fixed to make the
        * firmware for DMA readout simpler. This means we readout the leftover
@@ -152,21 +152,21 @@ class HcalRawDecoder : public framework::Producer {
        */
       reader >> head1;
       i_event++;
-      eh.spill = ((head1 >> 12) & 0xfff);
-      eh.bunch = (head1 & 0xfff);
+      eh.spill_ = ((head1 >> 12) & 0xfff);
+      eh.bunch_ = (head1 & 0xfff);
       reader >> head1;
       i_event++;
-      eh.ticks = head1;
+      eh.ticks_ = head1;
       reader >> head1;
       i_event++;
-      eh.number = head1;
+      eh.number_ = head1;
       reader >> head1;
       i_event++;
-      eh.run = (head1 & 0xFFF);
-      eh.DD = (head1 >> 23) & 0x1F;
-      eh.MM = (head1 >> 28) & 0xF;
-      eh.hh = (head1 >> 18) & 0x1F;
-      eh.mm = (head1 >> 12) & 0x3F;
+      eh.run_ = (head1 & 0xFFF);
+      eh.dd_ = (head1 >> 23) & 0x1F;
+      eh.mm_ = (head1 >> 28) & 0xF;
+      eh.hh_ = (head1 >> 18) & 0x1F;
+      eh.mm_ = (head1 >> 12) & 0x3F;
     }
 
     /**
@@ -203,18 +203,18 @@ class HcalRawDecoder : public framework::Producer {
       fpga_crc << head1;
 
       [[maybe_unused]] uint32_t hgcroc_version =
-          (head1 >> 28) & packing::utility::mask<4>;
-      uint32_t fpga = (head1 >> 20) & packing::utility::mask<8>;
-      uint32_t nlinks = (head1 >> 14) & packing::utility::mask<6>;
-      [[maybe_unused]] uint32_t len = head1 & packing::utility::mask<12>;
+          (head1 >> 28) & packing::utility::MASK<4>;
+      uint32_t fpga = (head1 >> 20) & packing::utility::MASK<8>;
+      uint32_t nlinks = (head1 >> 14) & packing::utility::MASK<6>;
+      [[maybe_unused]] uint32_t len = head1 & packing::utility::MASK<12>;
 
       fpga_crc << head2;
 
       [[maybe_unused]] uint32_t bx_id =
-          (head2 >> 20) & packing::utility::mask<12>;
+          (head2 >> 20) & packing::utility::MASK<12>;
       [[maybe_unused]] uint32_t rreq =
-          (head2 >> 10) & packing::utility::mask<10>;
-      [[maybe_unused]] uint32_t orbit = head2 & packing::utility::mask<10>;
+          (head2 >> 10) & packing::utility::MASK<10>;
+      [[maybe_unused]] uint32_t orbit = head2 & packing::utility::MASK<10>;
 
       std::vector<uint32_t> length_per_link(nlinks, 0);
       for (uint32_t i_link{0}; i_link < nlinks; i_link++) {
@@ -225,11 +225,11 @@ class HcalRawDecoder : public framework::Producer {
         }
         uint32_t shift_in_word = 8 * (i_link % 4);
         [[maybe_unused]] bool rid_ok =
-            ((w >> (shift_in_word + 7)) & packing::utility::mask<1>) == 1;
+            ((w >> (shift_in_word + 7)) & packing::utility::MASK<1>) == 1;
         [[maybe_unused]] bool cdc_ok =
-            ((w >> (shift_in_word + 6)) & packing::utility::mask<1>) == 1;
+            ((w >> (shift_in_word + 6)) & packing::utility::MASK<1>) == 1;
         length_per_link[i_link] =
-            (w >> shift_in_word) & packing::utility::mask<6>;
+            (w >> shift_in_word) & packing::utility::MASK<6>;
       }
 
       /** Decode Each Link in Sequence
@@ -240,8 +240,8 @@ class HcalRawDecoder : public framework::Producer {
        * ROC_ID (16) | CRC ok (1) | 0 (7) | RO Map (8)
        * RO Map (32)
        */
-      eh.good_bxheader.resize(nlinks);
-      eh.good_trailer.resize(nlinks);
+      eh.good_bxheader_.resize(nlinks);
+      eh.good_trailer_.resize(nlinks);
       for (uint32_t i_link{0}; i_link < nlinks; i_link++) {
         /**
          * If minimum length of 2 is not written for this link,
@@ -257,13 +257,13 @@ class HcalRawDecoder : public framework::Producer {
         fpga_crc << w;
         link_crc << w;
         [[maybe_unused]] uint32_t roc_id =
-            (w >> 16) & packing::utility::mask<16>;
+            (w >> 16) & packing::utility::MASK<16>;
         [[maybe_unused]] bool crc_ok =
-            ((w >> 15) & packing::utility::mask<1>) == 1;
+            ((w >> 15) & packing::utility::MASK<1>) == 1;
 
         // get readout map from the last 8 bits of this word
         // and the entire next word
-        std::bitset<40> ro_map = w & packing::utility::mask<8>;
+        std::bitset<40> ro_map = w & packing::utility::MASK<8>;
         ro_map <<= 32;
         i_event++;
         reader >> w;
@@ -298,18 +298,18 @@ class HcalRawDecoder : public framework::Producer {
              */
             link_crc << w;
             // v2
-            eh.good_bxheader[i_link] = ((w & 0xff000000) == 0xaa000000);
+            eh.good_bxheader_[i_link] = ((w & 0xff000000) == 0xaa000000);
             // v3
             //
             // Shadows a previous declaration but is never used so renamed here
             [[maybe_unused]] uint32_t v3_bx_id =
-                (w >> 16) & packing::utility::mask<12>;
+                (w >> 16) & packing::utility::MASK<12>;
             [[maybe_unused]] uint32_t short_event =
-                (w >> 10) & packing::utility::mask<6>;
+                (w >> 10) & packing::utility::MASK<6>;
             [[maybe_unused]] uint32_t short_orbit =
-                (w >> 7) & packing::utility::mask<3>;
+                (w >> 7) & packing::utility::MASK<3>;
             [[maybe_unused]] uint32_t hamming_errs =
-                (w >> 4) & packing::utility::mask<3>;
+                (w >> 4) & packing::utility::MASK<3>;
           } else if (j == common_mode_channel) {
             /** Common Mode Channels
              * 10 | 0000000000 | Common Mode ADC 0 (10) | Common Mode ADC 1 (10)
@@ -324,10 +324,10 @@ class HcalRawDecoder : public framework::Producer {
             // ROC v3 - CRC checksum
             if (roc_version_ == 2) {
               bool good_idle = (w == 0xaccccccc);
-              eh.good_trailer[i_link] = good_idle;
+              eh.good_trailer_[i_link] = good_idle;
             } else {
               bool good_crc = (link_crc.get() == w);
-              eh.good_trailer[i_link] = good_crc;
+              eh.good_trailer_[i_link] = good_crc;
             }
             /*
             if (roc_version_ > 2 and link_crc.get() != w) {
@@ -379,14 +379,14 @@ class HcalRawDecoder : public framework::Producer {
       }
       */
       // padding to reach 64-bit boundary in version 2
-      if (eh.version == 2u and length_per_sample.at(i_sample) % 2 == 1) {
+      if (eh.version_ == 2u and length_per_sample.at(i_sample) % 2 == 1) {
         i_event++;
         reader >> head1;
       }
       i_sample++;
     }
 
-    if (eh.version == 1u) {
+    if (eh.version_ == 1u) {
       // special footer words
       reader >> head1 >> head2;
     }

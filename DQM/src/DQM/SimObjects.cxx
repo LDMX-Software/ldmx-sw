@@ -198,9 +198,9 @@ void SimObjects::analyze(const framework::Event& event) {
       histograms_.fill(pt.name() + ".n_contribs", n_contribs);
       for (unsigned int i_contrib{0}; i_contrib < n_contribs; i_contrib++) {
         ldmx::SimCalorimeterHit::Contrib contrib{hit.getContrib(i_contrib)};
-        histograms_.fill(pt.name() + ".incidents", contrib.incidentID);
-        histograms_.fill(pt.name() + ".tracks", contrib.trackID);
-        histograms_.fill(pt.name() + ".pdg", contrib.pdgCode);
+        histograms_.fill(pt.name() + ".incidents", contrib.incident_id_);
+        histograms_.fill(pt.name() + ".tracks", contrib.track_id_);
+        histograms_.fill(pt.name() + ".pdg", contrib.pdg_code_);
       }
 
       histograms_.fill(pt.name() + ".edep", hit.getEdep());

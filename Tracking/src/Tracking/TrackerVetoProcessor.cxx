@@ -87,18 +87,18 @@ void TrackerVetoProcessor::produce(framework::Event& event) {
   if (!inverse_skim_) {
     if (passes_veto) {
       ldmx_log(info) << "Tracker veto passed, skim will keep the event";
-      setStorageHint(framework::hint_should_keep);
+      setStorageHint(framework::HINT_SHOULD_KEEP);
     } else {
       ldmx_log(info) << "Tracker veto failed";
-      setStorageHint(framework::hint_should_drop);
+      setStorageHint(framework::HINT_SHOULD_DROP);
     }
   } else {
     if (passes_veto) {
       ldmx_log(info) << "Inverse tracker veto passed";
-      setStorageHint(framework::hint_should_drop);
+      setStorageHint(framework::HINT_SHOULD_DROP);
     } else {
       ldmx_log(info) << "Inverse tracker veto failed, skim will keep the event";
-      setStorageHint(framework::hint_should_keep);
+      setStorageHint(framework::HINT_SHOULD_KEEP);
     }
   }
 }  // produce

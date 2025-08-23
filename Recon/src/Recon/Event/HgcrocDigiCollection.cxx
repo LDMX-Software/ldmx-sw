@@ -41,23 +41,23 @@ HgcrocDigiCollection::Sample::Sample(bool tot_progress, bool tot_complete,
 }
 
 void HgcrocDigiCollection::clear() {
-  channelIDs_.clear();
+  channel_i_ds_.clear();
   samples_.clear();
 
   return;
 }
 
 std::ostream &operator<<(std::ostream &o, const HgcrocDigiCollection &c) {
-  return o << "HgcrocDigiCollection { Num Channel IDs: " << c.channelIDs_.size()
-           << ", Num Samples: " << c.samples_.size()
-           << ", Samples Per Digi: " << c.numSamplesPerDigi_
-           << ", Index for SOI: " << c.sampleOfInterest_ << "}";
+  return o << "HgcrocDigiCollection { Num Channel IDs: "
+           << c.channel_i_ds_.size() << ", Num Samples: " << c.samples_.size()
+           << ", Samples Per Digi: " << c.num_samples_per_digi_
+           << ", Index for SOI: " << c.sample_of_interest_ << "}";
 }
 
 const HgcrocDigiCollection::HgcrocDigi HgcrocDigiCollection::getDigi(
     unsigned int digiIndex) const {
   return HgcrocDigiCollection::HgcrocDigi(
-      channelIDs_.at(digiIndex),
+      channel_i_ds_.at(digiIndex),
       samples_.begin() + digiIndex * getNumSamplesPerDigi(), *this);
 }
 
@@ -72,7 +72,7 @@ void HgcrocDigiCollection::addDigi(
     return;
   }
 
-  channelIDs_.push_back(id);
+  channel_i_ds_.push_back(id);
   for (auto const &s : digi) samples_.push_back(s.raw());
 
   return;
@@ -89,7 +89,7 @@ void HgcrocDigiCollection::addDigi(unsigned int id,
     return;
   }
 
-  channelIDs_.push_back(id);
+  channel_i_ds_.push_back(id);
   for (auto const &s : digi) samples_.push_back(s);
 
   return;
@@ -101,12 +101,12 @@ std::ostream &operator<<(std::ostream &s,
   s << "Sample { " << "tot prog: " << sample.isTOTinProgress() << ", "
     << "tot comp: " << sample.isTOTComplete() << ", ";
   if (sample.isTOTComplete() and sample.isTOTinProgress())
-    s << "adc t: " << sample.adc_t() << ", " << "tot: " << sample.tot() << ", ";
+    s << "adc t: " << sample.adcT() << ", " << "tot: " << sample.tot() << ", ";
   else if (sample.isTOTComplete())
-    s << "adc t-1: " << sample.adc_tm1() << ", " << "tot: " << sample.tot()
+    s << "adc t-1: " << sample.adcTm1() << ", " << "tot: " << sample.tot()
       << ", ";
   else
-    s << "adc t-1: " << sample.adc_tm1() << ", " << "adc t: " << sample.adc_t()
+    s << "adc t-1: " << sample.adcTm1() << ", " << "adc t: " << sample.adcT()
       << ", ";
 
   s << "toa: " << sample.toa() << " }";
@@ -130,8 +130,8 @@ std::ostream &operator<<(std::ostream &s,
 std::ostream &operator<<(std::ostream &s,
                          const ldmx::HgcrocDigiCollection &col) {
   s << "HgcrocDigiCollection { " << std::endl;
-  for (unsigned int iDigi = 0; iDigi < col.getNumDigis(); iDigi++)
-    s << "  " << col.getDigi(iDigi) << std::endl;
+  for (unsigned int i_digi = 0; i_digi < col.getNumDigis(); i_digi++)
+    s << "  " << col.getDigi(i_digi) << std::endl;
   s << "}";
   return s;
 }

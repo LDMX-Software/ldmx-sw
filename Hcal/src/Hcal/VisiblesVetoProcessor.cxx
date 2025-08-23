@@ -35,7 +35,7 @@ void VisiblesVetoProcessor::configure(
     framework::config::Parameters &parameters) {
   feature_list_name_ = parameters.get<std::string>("feature_list_name");
   // Load BDT ONNX file
-  rt_ = std::make_unique<ldmx::Ort::ONNXRuntime>(
+  rt_ = std::make_unique<ldmx::ort::ONNXRuntime>(
       parameters.get<std::string>("bdt_file"));
 
   bdt_cut_val_ = parameters.get<double>("disc_cut");
@@ -140,8 +140,8 @@ void VisiblesVetoProcessor::produce(framework::Event &event) {
   std::vector<int> layers_hit;
   for (const ldmx::HcalHit &hit : hcal_rec_hits) {
     if (hit.getEnergy() > 0.) {
-      ldmx::HcalID detID(hit.getID());
-      if (detID.getSection() != 0) {  // skip hits that aren't in main Hcal
+      ldmx::HcalID det_id(hit.getID());
+      if (det_id.getSection() != 0) {  // skip hits that aren't in main Hcal
         continue;
       }
       n_readout_hits_ += 1;
@@ -159,8 +159,8 @@ void VisiblesVetoProcessor::produce(framework::Event &event) {
 
       // check if this is a new layer in the collection
       if (!(std::find(layers_hit.begin(), layers_hit.end(),
-                      detID.getLayerID()) != layers_hit.end())) {
-        layers_hit.push_back(detID.getLayerID());
+                      det_id.getLayerID()) != layers_hit.end())) {
+        layers_hit.push_back(det_id.getLayerID());
       }
 
       double proj_x =
@@ -176,8 +176,8 @@ void VisiblesVetoProcessor::produce(framework::Event &event) {
       double closest_point = 9999.;
       for (const ldmx::HcalHit &hit2 : hcal_rec_hits) {
         if (hit2.getEnergy() > 0.) {
-          ldmx::HcalID detID2(hit2.getID());
-          if (detID2.getLayerID() == detID.getLayerID()) {
+          ldmx::HcalID det_i_d2(hit2.getID());
+          if (det_i_d2.getLayerID() == det_id.getLayerID()) {
             // Determine if a bar is vertical (along y-axis) or horizontal
             // (along x-axis) Odd layers have horizontal strips Even layers have
             // vertical strips
@@ -218,8 +218,8 @@ void VisiblesVetoProcessor::produce(framework::Event &event) {
 
   for (const ldmx::HcalHit &hit : hcal_rec_hits) {
     if (hit.getEnergy() > 0.) {
-      ldmx::HcalID detID(hit.getID());
-      if (detID.getSection() == 0) {
+      ldmx::HcalID det_id(hit.getID());
+      if (det_id.getSection() == 0) {
         x_std_ += hit.getEnergy() * (hit.getXPos() - x_mean_) *
                   (hit.getXPos() - x_mean_);
         y_std_ += hit.getEnergy() * (hit.getYPos() - y_mean_) *
@@ -242,7 +242,7 @@ void VisiblesVetoProcessor::produce(framework::Event &event) {
 
   buildBDTFeatureVector(result);
 
-  ldmx::Ort::FloatArrays inputs({bdt_features_});
+  ldmx::ort::FloatArrays inputs({bdt_features_});
   float pred =
       rt_->run({feature_list_name_}, inputs, {"probabilities"})[0].at(1);
   ldmx_log(info) << " Visibles BDT was ran, score is " << pred;

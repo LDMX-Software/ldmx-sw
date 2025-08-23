@@ -14,7 +14,7 @@ HcalVetoProcessor::HcalVetoProcessor(const std::string &name,
     : Producer(name, process) {}
 
 void HcalVetoProcessor::configure(framework::config::Parameters &parameters) {
-  total_PE_threshold_ = parameters.get<double>("pe_threshold");
+  total_pe_threshold_ = parameters.get<double>("pe_threshold");
   max_time_ = parameters.get<double>("max_time");
   output_coll_name_ = parameters.get<std::string>("output_coll_name");
   input_hit_coll_name_ = parameters.get<std::string>("input_hit_coll_name");
@@ -39,8 +39,8 @@ void HcalVetoProcessor::configure(framework::config::Parameters &parameters) {
   default_max_hit_.setAmplitudePos(-9999);
   default_max_hit_.setAmplitudeNeg(-9999);
 
-  double max_depth_ = parameters.get<double>("max_depth", 0.);
-  if (max_depth_ != 0.) {
+  double max_depth = parameters.get<double>("max_depth", 0.);
+  if (max_depth != 0.) {
     EXCEPTION_RAISE(
         "InvalidParam",
         "Earlier versions of the Hcal veto defined a max depth for "
@@ -48,7 +48,7 @@ void HcalVetoProcessor::configure(framework::config::Parameters &parameters) {
         "parameter (max_depth) from your configuration. See "
         "https://github.com/LDMX-Software/Hcal/issues/61 for details");
   }
-  back_min_PE_ = parameters.get<double>("back_min_pe");
+  back_min_pe_ = parameters.get<double>("back_min_pe");
   exclude_recoil_ele_ = parameters.get<bool>("exclude_recoil_ele", false);
   track_collection_ =
       parameters.get<std::string>("track_collection", "RecoilTracks");
@@ -92,13 +92,13 @@ void HcalVetoProcessor::produce(framework::Event &event) {
 
   // Loop over all of the Hcal hits and calculate to total photoelectrons
   // in the event.
-  float total_PE{0.0};
-  float max_PE{-1000};
+  float total_pe{0.0};
+  float max_pe{-1000};
   int num_total_hits{0};
   int num_valid_hits{0};
   int num_non_recoil_hits{0};
 
-  const ldmx::HcalHit *max_PE_hit{&default_max_hit_};
+  const ldmx::HcalHit *max_pe_hit{&default_max_hit_};
   for (const ldmx::HcalHit &hcal_hit : hcal_rec_hits) {
     num_total_hits++;
     // If the hit time is outside the readout window, don't consider it.
@@ -109,7 +109,7 @@ void HcalVetoProcessor::produce(framework::Event &event) {
     // Get the total PE in the bar
     float pe = hcal_hit.getPE();
     // Keep track of the total PE
-    total_PE += pe;
+    total_pe += pe;
 
     // Check that both sides of the bar have a PE value above threshold.
     // If not, don't consider the hit.  Double sided readout is only
@@ -117,7 +117,7 @@ void HcalVetoProcessor::produce(framework::Event &event) {
     // use the maximum PE as before.
     ldmx::HcalID id(hcal_hit.getID());
     if ((id.section() == ldmx::HcalID::BACK) &&
-        (hcal_hit.getMinPE() < back_min_PE_))
+        (hcal_hit.getMinPE() < back_min_pe_))
       continue;
 
     num_valid_hits++;
@@ -128,68 +128,70 @@ void HcalVetoProcessor::produce(framework::Event &event) {
       auto hit_pos_x = hcal_hit.getXPos();
       auto hit_pos_y = hcal_hit.getYPos();
       auto hit_pos_z = hcal_hit.getZPos();
-      auto dZ = recoil_pos_z - hit_pos_z;
+      auto d_z = recoil_pos_z - hit_pos_z;
 
-      auto drift_recoil_x = (dZ * (recoil_mom_x / recoil_mom_z)) + recoil_pos_x;
-      auto drift_recoil_y = (dZ * (recoil_mom_y / recoil_mom_z)) + recoil_pos_y;
+      auto drift_recoil_x =
+          (d_z * (recoil_mom_x / recoil_mom_z)) + recoil_pos_x;
+      auto drift_recoil_y =
+          (d_z * (recoil_mom_y / recoil_mom_z)) + recoil_pos_y;
       auto dx = drift_recoil_x - hit_pos_x;
       auto dy = drift_recoil_y - hit_pos_y;
-      auto dR_squared = dx * dx + dy * dy + dZ * dZ;
-      auto dR = sqrt(dR_squared);
+      auto d_r_squared = dx * dx + dy * dy + d_z * d_z;
+      auto d_r = sqrt(d_r_squared);
       ldmx_log(debug) << "    This hit is at " << hit_pos_x << " / "
                       << hit_pos_y << " /  " << hit_pos_z << " mm";
       ldmx_log(debug) << "    Ele is projected at " << drift_recoil_x << " / "
-                      << drift_recoil_y << " /  " << recoil_pos_z - dZ;
+                      << drift_recoil_y << " /  " << recoil_pos_z - d_z;
       ldmx_log(debug) << "    from " << recoil_pos_x << " / " << recoil_pos_y
                       << " / " << recoil_pos_z << " / " << " mm";
 
       ldmx_log(debug) << "       Ele had momentum of  " << recoil_mom_x << " / "
                       << recoil_mom_y << " /  " << recoil_mom_z << " MeV";
       ldmx_log(debug) << "    This hit has PE = " << pe
-                      << " and dR from ele = " << "is " << dR << " mm";
+                      << " and dR from ele = " << "is " << d_r << " mm";
 
       // Dont consider this hit for max PE hit if it's too close to the recoil
       // electron trajectory
-      if (dR < dr_from_recoil_max_) {
+      if (d_r < dr_from_recoil_max_) {
         continue;
       }
     }
     num_non_recoil_hits++;
 
     // Find the maximum PE in the list
-    if (max_PE < pe) {
-      max_PE = pe;
-      max_PE_hit = &hcal_hit;
+    if (max_pe < pe) {
+      max_pe = pe;
+      max_pe_hit = &hcal_hit;
     }
   }
 
   ldmx_log(info) << "There are " << num_valid_hits << " / " << num_total_hits
                  << " HCal hits read out. " << num_non_recoil_hits
                  << " are not associated with the recoil ele. Total PE of "
-                 << total_PE;
+                 << total_pe;
   // If the maximum PE found is below threshold, it passes the veto.
-  bool passes_veto = (max_PE < total_PE_threshold_);
+  bool passes_veto = (max_pe < total_pe_threshold_);
   ldmx_log(info) << "HCAL veto passed? " << passes_veto;
 
   ldmx::HcalVetoResult result;
   result.setVetoResult(passes_veto);
-  result.setMaxPEHit(*max_PE_hit);
-  result.setTotalPE(total_PE);
+  result.setMaxPEHit(*max_pe_hit);
+  result.setTotalPE(total_pe);
   result.setNumValidHits(num_valid_hits);
 
   // Skimming rules
   if (!inverse_skim_) {
     if (passes_veto) {
-      setStorageHint(framework::hint_should_keep);
+      setStorageHint(framework::HINT_SHOULD_KEEP);
     } else {
-      setStorageHint(framework::hint_should_drop);
+      setStorageHint(framework::HINT_SHOULD_DROP);
     }
   } else {
     // Inverse skimming rules
     if (passes_veto) {
-      setStorageHint(framework::hint_should_drop);
+      setStorageHint(framework::HINT_SHOULD_DROP);
     } else {
-      setStorageHint(framework::hint_should_keep);
+      setStorageHint(framework::HINT_SHOULD_KEEP);
     }
   }
 

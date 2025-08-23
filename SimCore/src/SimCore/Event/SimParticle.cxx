@@ -9,58 +9,58 @@ ClassImp(ldmx::SimParticle);
 
 namespace ldmx {
 SimParticle::ProcessTypeMap SimParticle::createProcessTypeMap() {
-  ProcessTypeMap procMap;
+  ProcessTypeMap proc_map;
   /// Electromagnetic interactions
   /// e Z --> e Z gamma
-  procMap["eBrem"] = ProcessType::eBrem;
+  proc_map["eBrem"] = ProcessType::eBrem;
   /// gamma --> e+ e-
-  procMap["conv"] = ProcessType::conv;
+  proc_map["conv"] = ProcessType::conv;
   /// e+ e- --> gamma gamma
-  procMap["annihil"] = ProcessType::annihil;
+  proc_map["annihil"] = ProcessType::annihil;
   /// gamma e --> gamma e
-  procMap["compt"] = ProcessType::compt;
+  proc_map["compt"] = ProcessType::compt;
   /// gamma Z --> e- Z
-  procMap["phot"] = ProcessType::phot;
+  proc_map["phot"] = ProcessType::phot;
   /// Electron ionization
-  procMap["eIoni"] = ProcessType::eIoni;
+  proc_map["eIoni"] = ProcessType::eIoni;
   /// Multiple scattering
-  procMap["msc"] = ProcessType::msc;
+  proc_map["msc"] = ProcessType::msc;
   /// gamma Z --> Z + X
-  procMap["photonNuclear"] = ProcessType::photonNuclear;
+  proc_map["photonNuclear"] = ProcessType::photonNuclear;
   /// mu Z --> Z + X
-  procMap["muonNuclear"] = ProcessType::muonNuclear;
+  proc_map["muonNuclear"] = ProcessType::muonNuclear;
   /// e Z --> e Z + X
-  procMap["electronNuclear"] = ProcessType::electronNuclear;
+  proc_map["electronNuclear"] = ProcessType::electronNuclear;
   /// gamma --> mu+ mu-
-  procMap["GammaToMuPair"] = ProcessType::GammaToMuPair;
+  proc_map["GammaToMuPair"] = ProcessType::GammaToMuPair;
   /// e- Z --> e- Z A'
-  procMap["DarkBrem"] = ProcessType::eDarkBrem;
+  proc_map["DarkBrem"] = ProcessType::eDarkBrem;
 
   // Inelastic interactions
   /// n + Z -> X
-  procMap["neutronInelastic"] = ProcessType::neutronInelastic;
+  proc_map["neutronInelastic"] = ProcessType::neutronInelastic;
   /// n + Z -> Z*
-  procMap["neutronCapture"] = ProcessType::neutronCapture;
+  proc_map["neutronCapture"] = ProcessType::neutronCapture;
   /// K + Z -> X
-  procMap["kaon-Inelastic"] = ProcessType::kaonInelastic;
-  procMap["kaon+Inelastic"] = ProcessType::kaonInelastic;
-  procMap["kaon0LInelastic"] = ProcessType::kaonInelastic;
-  procMap["kaon0SInelastic"] = ProcessType::kaonInelastic;
+  proc_map["kaon-Inelastic"] = ProcessType::kaonInelastic;
+  proc_map["kaon+Inelastic"] = ProcessType::kaonInelastic;
+  proc_map["kaon0LInelastic"] = ProcessType::kaonInelastic;
+  proc_map["kaon0SInelastic"] = ProcessType::kaonInelastic;
   /// pi + Z -> X
-  procMap["pi-Inelastic"] = ProcessType::pionInelastic;
-  procMap["pi+Inelastic"] = ProcessType::pionInelastic;
+  proc_map["pi-Inelastic"] = ProcessType::pionInelastic;
+  proc_map["pi+Inelastic"] = ProcessType::pionInelastic;
   /// p + Z -> X
-  procMap["protonInelastic"] = ProcessType::protonInelastic;
+  proc_map["protonInelastic"] = ProcessType::protonInelastic;
 
   /// Other
   /// Primary particle
-  procMap["Primary"] = ProcessType::Primary;
+  proc_map["Primary"] = ProcessType::Primary;
   // Decay
-  procMap["Decay"] = ProcessType::Decay;
-  return procMap;
+  proc_map["Decay"] = ProcessType::Decay;
+  return proc_map;
 }
 
-SimParticle::ProcessTypeMap SimParticle::process_map_ =
+SimParticle::ProcessTypeMap SimParticle::process_map =
     SimParticle::createProcessTypeMap();
 
 void SimParticle::clear() {
@@ -112,8 +112,8 @@ SimParticle::ProcessType SimParticle::findProcessType(
     process_name = process_name.substr(pos, process_name.size() - pos - 1);
   }
 
-  if (process_map_.find(process_name) != process_map_.end()) {
-    return process_map_[process_name];
+  if (process_map.find(process_name) != process_map.end()) {
+    return process_map[process_name];
   } else {
     return ProcessType::unknown;
   }

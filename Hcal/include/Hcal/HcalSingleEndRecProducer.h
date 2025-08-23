@@ -56,7 +56,7 @@ class HcalSingleEndRecProducer : public framework::Producer {
    * @param[in] shift in BX associated to TOA for this channel
    * @return tuple of (toa [ns since SOI], sum_adc, sum_tot)
    */
-  std::tuple<double, double, int> extract_measurements(
+  std::tuple<double, double, int> extractMeasurements(
       const ldmx::HgcrocDigiCollection::HgcrocDigi& digi, double pedestal,
       double bx_shift);
 

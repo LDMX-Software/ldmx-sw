@@ -98,13 +98,13 @@ class BeamElectronTruth {
    * SetBinned x coordinate of the found beam electron.
    * @param x The x coordinate of the found beam electron.
    */
-  void setBinnedX(double x) { binnedX_ = x; }
+  void setBinnedX(double x) { binned_x_ = x; }
 
   /**
    * SetBinned y coordinate of the found beam electron.
    * @param y The y coordinate of the found beam electron.
    */
-  void setBinnedY(double y) { binnedY_ = y; }
+  void setBinnedY(double y) { binned_y_ = y; }
 
   /**
    * Set all three binned spatial coordinates at once
@@ -112,21 +112,21 @@ class BeamElectronTruth {
    * @param y The binned y coordinate of the found beam electron.
    */
   void setBinnedXY(double x, double y) {
-    binnedX_ = x;
-    binnedY_ = y;
+    binned_x_ = x;
+    binned_y_ = y;
   }
 
   /**
    * Get binned x coordinate of the beam electron.
    * @return x The x coordinate of the found beam electron.
    */
-  double getBinnedX() { return binnedX_; }
+  double getBinnedX() { return binned_x_; }
 
   /**
    * GetBinned y_ coordinate of the beam electron.
    * @return y_ The y_ coordinate of the found beam electron.
    */
-  double getBinnedY() { return binnedY_; }
+  double getBinnedY() { return binned_y_; }
 
   // repeat for bar numbers instead of a spatial (bar center) coordinate
 
@@ -134,13 +134,13 @@ class BeamElectronTruth {
    * Set x bar number of the found beam electron.
    * @param x The x (vertical) bar number of the found beam electron.
    */
-  void setBarX(double x) { barX_ = x; }
+  void setBarX(double x) { bar_x_ = x; }
 
   /**
    * Set y_ bar number of the found beam electron.
    * @param y_ The y_ (horizontal) bar number of the found beam electron.
    */
-  void setBarY(double y) { barY_ = y; }
+  void setBarY(double y) { bar_y_ = y; }
 
   /**
    * Set both bar number coordinates at once
@@ -148,21 +148,21 @@ class BeamElectronTruth {
    * @param y The y (horizontal) bar number of the found beam electron.
    */
   void setBarXY(double x, double y) {
-    barX_ = x;
-    barY_ = y;
+    bar_x_ = x;
+    bar_y_ = y;
   }
 
   /**
    * Get x bar number of the found beam electron.
    * @return x The x (vertical) bar number of the found beam electron.
    */
-  double getBarX() { return barX_; }
+  double getBarX() { return bar_x_; }
 
   /**
    * Get y_ bar number of the found beam electron.
    * @return y_ The y_ (horizontal) bar number of the found beam electron.
    */
-  double getBarY() { return barY_; }
+  double getBarY() { return bar_y_; }
 
   // TODO could add separate setters for each momentum component
 
@@ -212,16 +212,16 @@ class BeamElectronTruth {
   double z_{-9999};
 
   /** x-coordinate (with TS resolution) **/
-  double binnedX_{-999};
+  double binned_x_{-999};
 
   /** y-coordinate (with TS resolution) **/
-  double binnedY_{-999};
+  double binned_y_{-999};
 
   /** TS vertical bar number overlapping with x-coordinate **/
-  double barX_{-1};
+  double bar_x_{-1};
 
   /** TS horizontal bar number overlapping with y-coordinate **/
-  double barY_{-1};
+  double bar_y_{-1};
 
   /** momentum x-component **/
   double px_{-999};

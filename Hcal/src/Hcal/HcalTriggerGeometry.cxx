@@ -10,14 +10,14 @@
 namespace hcal {
 
 HcalTriggerGeometry::HcalTriggerGeometry(const ldmx::HcalGeometry* hcalGeom)
-    : ConditionsObject(CONDITIONS_OBJECT_NAME), hcalGeometry_{hcalGeom} {}
+    : ConditionsObject(CONDITIONS_OBJECT_NAME), hcal_geometry_{hcalGeom} {}
 
 std::vector<ldmx::HcalDigiID> HcalTriggerGeometry::contentsOfQuad(
     ldmx::HcalTriggerID triggerCell) const {
   std::vector<ldmx::HcalDigiID> retval;
-  for (int iStrip = 0; iStrip < 4; iStrip++) {
-    int strip = iStrip + 4 * triggerCell.superstrip();
-    if (strip >= hcalGeometry_->getNumStrips(triggerCell.section())) break;
+  for (int i_strip = 0; i_strip < 4; i_strip++) {
+    int strip = i_strip + 4 * triggerCell.superstrip();
+    if (strip >= hcal_geometry_->getNumStrips(triggerCell.section())) break;
     retval.push_back(ldmx::HcalDigiID(
         triggerCell.section(), triggerCell.layer(), strip, triggerCell.end()));
   }
@@ -27,13 +27,14 @@ std::vector<ldmx::HcalDigiID> HcalTriggerGeometry::contentsOfQuad(
 std::vector<ldmx::HcalDigiID> HcalTriggerGeometry::contentsOfSTQ(
     ldmx::HcalTriggerID triggerCell) const {
   std::vector<ldmx::HcalDigiID> retval;
-  for (int iStrip = 0; iStrip < 8; iStrip++) {
-    for (int iLayer = 0; iLayer < 2; iLayer++) {
-      int strip = iStrip + 8 * triggerCell.superstrip();
-      if (strip >= hcalGeometry_->getNumStrips(triggerCell.section())) continue;
+  for (int i_strip = 0; i_strip < 8; i_strip++) {
+    for (int i_layer = 0; i_layer < 2; i_layer++) {
+      int strip = i_strip + 8 * triggerCell.superstrip();
+      if (strip >= hcal_geometry_->getNumStrips(triggerCell.section()))
+        continue;
       int tlayer = triggerCell.layer();
-      int player = 2 * (tlayer + iStrip) - tlayer % 2;
-      if (player >= hcalGeometry_->getNumLayers(triggerCell.section()))
+      int player = 2 * (tlayer + i_strip) - tlayer % 2;
+      if (player >= hcal_geometry_->getNumLayers(triggerCell.section()))
         continue;
       retval.push_back(ldmx::HcalDigiID(triggerCell.section(), player, strip,
                                         triggerCell.end()));
@@ -53,8 +54,8 @@ ldmx::HcalTriggerID HcalTriggerGeometry::belongsToSTQ(
   // 2x2 groups of quads, with "superlayers" like:
   // 0 1 0 1 2 3 2 3 ...
   // V H V H V H V H ...
-  int layer_ = precisionCell.layer();
-  int superlayer = 2 * (layer_ / 4) + (layer_ % 4) % 2;
+  int layer = precisionCell.layer();
+  int superlayer = 2 * (layer / 4) + (layer % 4) % 2;
   return ldmx::HcalTriggerID(precisionCell.section(), superlayer,
                              precisionCell.strip() / 8, precisionCell.end());
 }
@@ -70,12 +71,12 @@ class HcalTriggerGeometryProvider : public framework::ConditionsObjectProvider {
                               framework::Process& process)
       : ConditionsObjectProvider(HcalTriggerGeometry::CONDITIONS_OBJECT_NAME,
                                  tagname, parameters, process),
-        hcalTriggerGeometry_{nullptr} {}
+        hcal_trigger_geometry_{nullptr} {}
 
   /** Destructor */
   virtual ~HcalTriggerGeometryProvider() {
-    if (hcalTriggerGeometry_ != nullptr) delete hcalTriggerGeometry_;
-    hcalTriggerGeometry_ = nullptr;
+    if (hcal_trigger_geometry_ != nullptr) delete hcal_trigger_geometry_;
+    hcal_trigger_geometry_ = nullptr;
   }
 
   /**
@@ -87,15 +88,15 @@ class HcalTriggerGeometryProvider : public framework::ConditionsObjectProvider {
   virtual std::pair<const framework::ConditionsObject*,
                     framework::ConditionsIOV>
   getCondition(const ldmx::EventHeader& context) {
-    if (hcalTriggerGeometry_ == nullptr) {
+    if (hcal_trigger_geometry_ == nullptr) {
       std::pair<const framework::ConditionsObject*, framework::ConditionsIOV>
           cond_hcal_geom = requestParentCondition(
               ldmx::HcalGeometry::CONDITIONS_OBJECT_NAME, context);
       const ldmx::HcalGeometry* hcalgeom =
           dynamic_cast<const ldmx::HcalGeometry*>(cond_hcal_geom.first);
-      hcalTriggerGeometry_ = new HcalTriggerGeometry(hcalgeom);
+      hcal_trigger_geometry_ = new HcalTriggerGeometry(hcalgeom);
     }
-    return std::make_pair(hcalTriggerGeometry_,
+    return std::make_pair(hcal_trigger_geometry_,
                           framework::ConditionsIOV(
                               context.getRun(), context.getRun(), true, true));
   }
@@ -107,7 +108,7 @@ class HcalTriggerGeometryProvider : public framework::ConditionsObjectProvider {
   virtual void releaseConditionsObject(const framework::ConditionsObject* co) {}
 
  private:
-  HcalTriggerGeometry* hcalTriggerGeometry_;
+  HcalTriggerGeometry* hcal_trigger_geometry_;
 };
 
 }  // namespace hcal

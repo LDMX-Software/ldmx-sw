@@ -33,9 +33,9 @@ class TrigEcalClusterProducer : public framework::Producer {
 
  private:
   // name of collection for trigHits to be passed as input
-  std::string hitCollName_;
+  std::string hit_coll_name_;
   // name of collection for trigCluster to be output
-  std::string clusterCollName_;
+  std::string cluster_coll_name_;
 
   std::string hit_coll_passname_;
   std::string hit_coll_name_events_passname_;
