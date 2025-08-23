@@ -299,28 +299,28 @@ class EcalGeometry : public framework::ConditionsObject {
    *
    * @return module min radius [mm]
    */
-  double getModuleMinR() const { return moduler_; }
+  double getModuleMinR() const { return module_r_min_; }
 
   /**
    * Get the center-to-corner radius of the module hexagons
    *
    * @return module max radius [mm]
    */
-  double getModuleMaxR() const { return module_r_; }
+  double getModuleMaxR() const { return module_r_max_; }
 
   /**
    * Get the center-to-flat radius of the cell hexagons
    *
    * @return cell min radius [mm]
    */
-  double getCellMinR() const { return cellr_; }
+  double getCellMinR() const { return cell_r_min_; }
 
   /**
    * Get the center-to-corner radius of the cell hexagons
    *
    * @return cell max radius [mm]
    */
-  double getCellMaxR() const { return cell_r_; }
+  double getCellMaxR() const { return cell_r_max_; }
 
   /**
    * Get a reference to the TH2Poly used for Cell IDs.
@@ -398,10 +398,10 @@ class EcalGeometry : public framework::ConditionsObject {
    * a small space un-covered by the tiling, so the vertices adjacent to the
    * external vertex are projected onto the module edge.
    *
-   * @param[in] cellr_ the center-to-flat cell radius
-   * @param[in] cellR_ the center-to-corner cell radius
-   * @param[in] moduler_ the center-to-flat module radius
-   * @param[in] moduleR_ the center-to-flat module radius
+   * @param[in] cell_r_max_ the center-to-flat cell radius
+   * @param[in] cell_r_min_ the center-to-corner cell radius
+   * @param[in] module_r_min_ the center-to-flat module radius
+   * @param[in] module_r_max_ the center-to-flat module radius
    * @param[out] ecalMap_ TH2Poly with local cell ID to local cell position
    * mapping
    * @param[out] cellPostionMap_ map of local cell ID to cell center position
@@ -463,7 +463,7 @@ class EcalGeometry : public framework::ConditionsObject {
    * return true if distance to edge is less than max cell radius
    */
   bool isEdgeCell(EcalID cellModuleID) const {
-    return (distanceToEdge(cellModuleID) < cell_r_);
+    return (distanceToEdge(cellModuleID) < cell_r_max_);
   }
 
   /**
@@ -488,16 +488,16 @@ class EcalGeometry : public framework::ConditionsObject {
   double gap_;
 
   /// Center-to-Flat Radius of cell hexagon [mm]
-  double cellr_{0};
+  double cell_r_min_{0};
 
   /// Center-to-Flat Radius of module hexagon [mm]
-  double moduler_{0};
+  double module_r_min_{0};
 
   /// Center-to-Corner Radius of cell hexagon [mm]
-  double cell_r_{0};
+  double cell_r_max_{0};
 
   /// Center-to-Corner Radius of module hexagon [mm]
-  double module_r_{0};
+  double module_r_max_{0};
 
   /**
    * indicator of geometry orientation
