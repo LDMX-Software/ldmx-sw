@@ -63,13 +63,13 @@ void TrackingAction::PreUserTrackingAction(const G4Track* track) {
 
   // Activate user tracking actions
   for (auto& tracking_action : tracking_actions_)
-    tracking_action->preUserTrackingAction(track);
+    tracking_action->PreUserTrackingAction(track);
 }
 
 void TrackingAction::PostUserTrackingAction(const G4Track* track) {
   // Activate user tracking actions
   for (auto& tracking_action : tracking_actions_)
-    tracking_action->postUserTrackingAction(track);
+    tracking_action->PostUserTrackingAction(track);
 
   /**
    * If a track is to-be saved and it is being killed,

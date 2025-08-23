@@ -75,7 +75,7 @@ void MultiParticleGunPrimaryGenerator::GeneratePrimaryVertex(G4Event* anEvent) {
   }
 }
 
-void MultiParticleGunPrimaryGenerator::recordConfig(const std::string& id,
+void MultiParticleGunPrimaryGenerator::RecordConfig(const std::string& id,
                                                     ldmx::RunHeader& rh) {
   rh.setStringParameter(
       id + " Class", "simcore::generators::MultiParticleGunPrimaryGenerator");

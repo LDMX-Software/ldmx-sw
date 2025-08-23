@@ -55,7 +55,7 @@ class ParticleGun : public simcore::PrimaryGenerator {
    */
   void GeneratePrimaryVertex(G4Event* event) override;
 
-  void recordConfig(const std::string& id, ldmx::RunHeader& rh) override;
+  void RecordConfig(const std::string& id, ldmx::RunHeader& rh) override;
 
  private:
   /**

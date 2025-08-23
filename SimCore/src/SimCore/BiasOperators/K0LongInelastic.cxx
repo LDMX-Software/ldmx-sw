@@ -28,7 +28,7 @@ G4VBiasingOperation* K0LongInelastic::ProposeOccurenceBiasingOperation(
 
     double k0_long_in_xsec_biased = k0_long_in_xsec_unbiased * factor_;
 
-    return biasedXsec(k0_long_in_xsec_biased);
+    return BiasedXsec(k0_long_in_xsec_biased);
   }
   return nullptr;
 }

@@ -84,7 +84,7 @@ void LHEPrimaryGenerator::GeneratePrimaryVertex(G4Event* anEvent) {
   }
 }
 
-void LHEPrimaryGenerator::recordConfig(const std::string& id,
+void LHEPrimaryGenerator::RecordConfig(const std::string& id,
                                        ldmx::RunHeader& rh) {
   rh.setStringParameter(id + " Class",
                         "simcore::generators::LHEPrimaryGenerator");

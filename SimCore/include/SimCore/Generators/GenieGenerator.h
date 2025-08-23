@@ -69,7 +69,7 @@ class GenieGenerator : public simcore::PrimaryGenerator {
    */
   void GeneratePrimaryVertex(G4Event* event) final override;
 
-  void recordConfig(const std::string& id, ldmx::RunHeader& rh) override;
+  void RecordConfig(const std::string& id, ldmx::RunHeader& rh) final override;
 
  private:
   /**

@@ -52,7 +52,7 @@ G4VBiasingOperation* PhotoNuclear::ProposeOccurenceBiasingOperation(
 
     pn_xsec_biased_ = pn_xsec_unbiased_ * factor_;
 
-    return biasedXsec(pn_xsec_biased_);
+    return BiasedXsec(pn_xsec_biased_);
   }
 
   // If the current process is conversion and we want to bias down

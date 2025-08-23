@@ -63,7 +63,7 @@ class DarkBrem : public XsecBiasingOperator {
    *
    * @param[in,out] header RunHeader to record configuration to
    */
-  void recordConfig(ldmx::RunHeader& header) const override;
+  void RecordConfig(ldmx::RunHeader& header) const override;
 
  protected:
   /**

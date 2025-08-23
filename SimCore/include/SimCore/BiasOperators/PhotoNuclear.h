@@ -37,7 +37,7 @@ class PhotoNuclear : public XsecBiasingOperator {
   std::string getVolumeToBias() const override { return volume_; }
 
   /// record the configuration into the run header
-  void recordConfig(ldmx::RunHeader& h) const override {
+  void RecordConfig(ldmx::RunHeader& h) const override {
     h.setStringParameter("BiasOperators::PhotoNuclear::Volume", volume_);
     h.setFloatParameter("BiasOperators::PhotoNuclear::Threshold", threshold_);
     h.setFloatParameter("BiasOperators::PhotoNuclear::Factor", factor_);

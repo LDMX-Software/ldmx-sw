@@ -36,12 +36,12 @@ G4VBiasingOperation* DarkBrem::ProposeOccurenceBiasingOperation(
                 << " -> Biased xsec: " << db_xsec_biased << std::endl;
     }
 
-    return biasedXsec(db_xsec_biased);
+    return BiasedXsec(db_xsec_biased);
   }
   return nullptr;
 }
 
-void DarkBrem::recordConfig(ldmx::RunHeader& h) const {
+void DarkBrem::RecordConfig(ldmx::RunHeader& h) const {
   h.setIntParameter("BiasOperator::DarkBrem::Bias All Electrons", bias_all_);
   h.setFloatParameter("BiasOperator::DarkBrem::Factor", factor_);
   h.setStringParameter("BiasOperator::DarkBrem::Volume", volume_);

@@ -68,7 +68,7 @@ class UserAction {
    *
    * @param event Geant4 event object.
    */
-  virtual void beginOfEventAction(const G4Event*) {};
+  virtual void BeginOfEventAction(const G4Event*) {};
 
   /**
    * Method called at the end of every event.
@@ -77,7 +77,7 @@ class UserAction {
    *
    * @param event Geant4 event object.
    */
-  virtual void endOfEventAction(const G4Event*) {};
+  virtual void EndOfEventAction(const G4Event*) {};
 
   /**
    * Method called at the beginning of a run.
@@ -86,7 +86,7 @@ class UserAction {
    *
    * @param run Current Geant4 run object.
    */
-  virtual void beginOfRunAction(const G4Run*) {};
+  virtual void BeginOfRunAction(const G4Run*) {};
 
   /**
    * Method called at the end of a run.
@@ -95,7 +95,7 @@ class UserAction {
    *
    * @param run Current Geant4 run object.
    */
-  virtual void endOfRunAction(const G4Run*) {};
+  virtual void EndOfRunAction(const G4Run*) {};
 
   /**
    * Method called before the UserTrackingAction.
@@ -104,7 +104,7 @@ class UserAction {
    *
    * @param track current Geant4 track
    */
-  virtual void preUserTrackingAction(const G4Track*) {};
+  virtual void PreUserTrackingAction(const G4Track*) {};
 
   /**
    * Method called after the UserTrackingAction.
@@ -113,7 +113,7 @@ class UserAction {
    *
    * @param track current Geant4 track
    */
-  virtual void postUserTrackingAction(const G4Track*) {};
+  virtual void PostUserTrackingAction(const G4Track*) {};
 
   /**
    * Method called after each simulation step.
@@ -132,7 +132,7 @@ class UserAction {
    * @param current Geant4 track
    * @param current tracks' classification
    */
-  virtual G4ClassificationOfNewTrack classifyNewTrack(
+  virtual G4ClassificationOfNewTrack ClassifyNewTrack(
       const G4Track*, const G4ClassificationOfNewTrack& cl) {
     return cl;
   };
@@ -142,14 +142,14 @@ class UserAction {
    *
    * TYPE::STACKING
    */
-  virtual void newStage() {};
+  virtual void NewStage() {};
 
   /**
    * Method called at the beginning of a new event
    *
    * TYPE::STACKING
    */
-  virtual void prepareNewEvent() {};
+  virtual void PrepareNewEvent() {};
 
   /**
    * @return The user action types

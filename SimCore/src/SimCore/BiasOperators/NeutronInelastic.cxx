@@ -28,7 +28,7 @@ G4VBiasingOperation* NeutronInelastic::ProposeOccurenceBiasingOperation(
 
     double neut_in_xsec_biased = neut_in_xsec_unbiased * factor_;
 
-    return biasedXsec(neut_in_xsec_biased);
+    return BiasedXsec(neut_in_xsec_biased);
   }
   return nullptr;
 }

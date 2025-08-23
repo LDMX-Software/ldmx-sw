@@ -61,12 +61,12 @@ void Simulator::beforeNewRun(ldmx::RunHeader& header) {
       parameters_.get<std::vector<std::string>>("postInitCommands", {}));
 
   simcore::XsecBiasingOperator::Factory::get().apply(
-      [&header](auto bop) { bop->recordConfig(header); });
+      [&header](auto bop) { bop->RecordConfig(header); });
 
   int counter = 0;
   PrimaryGenerator::Factory::get().apply([&header, &counter](auto gen) {
     std::string gen_id = "Gen" + std::to_string(counter++);
-    gen->recordConfig(gen_id, header);
+    gen->RecordConfig(gen_id, header);
   });
 
   // Set a string parameter with the Geant4 SHA-1.

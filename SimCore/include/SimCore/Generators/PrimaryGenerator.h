@@ -66,7 +66,7 @@ class PrimaryGenerator : public G4VPrimaryGenerator {
    * @note you must include the id number in each entry into the run header
    * just in case there are other generators
    */
-  virtual void recordConfig(const std::string& id, ldmx::RunHeader& rh) = 0;
+  virtual void RecordConfig(const std::string& id, ldmx::RunHeader& rh) = 0;
 
   std::string name() { return name_; }
 

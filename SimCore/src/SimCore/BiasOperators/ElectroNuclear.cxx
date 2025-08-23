@@ -27,7 +27,7 @@ G4VBiasingOperation* ElectroNuclear::ProposeOccurenceBiasingOperation(
 
     double en_xsec_biased = en_xsec_unbiased * factor_;
 
-    return biasedXsec(en_xsec_biased);
+    return BiasedXsec(en_xsec_biased);
   }
   return nullptr;
 }
