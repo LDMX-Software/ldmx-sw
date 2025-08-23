@@ -17,16 +17,16 @@ void TestBeamClusterAnalyzer::configure(
     framework::config::Parameters& parameters) {
   input_col_ = parameters.get<std::string>("inputCollection");
   input_pass_name_ = parameters.get<std::string>("inputPassName");
-  //  wideInputCol_ =
+  //  wide_input_col_ =
   //  parameters.get<std::string>("3hitInputCollection");
-  // wideInputPassName_ =
+  // wide_input_pass_name_ =
   // parameters.get<std::string>("3hitInputPassName");
 
   ldmx_log(trace) << "In configure(), got parameters "
                   << "\n\t inputCollection = " << input_col_
                   << "\n\t inputPassName = " << input_pass_name_;
-  //        << "\n\t 3hitInputCollection = " << wideInputCol_
-  //        << "\n\t 3hitInputPassName = " << wideInputPassName_
+  //        << "\n\t 3hitInputCollection = " << wide_input_col_
+  //        << "\n\t 3hitInputPassName = " << wide_input_pass_name_
 
   return;
 }
@@ -124,35 +124,35 @@ void TestBeamClusterAnalyzer::onProcessStart() {
   }
 
   h_delta_vs_seed_ = new TH2F(
-      "h_delta_vs_speed", ";BarID_{seed};#Delta_{centroid}", n_channels_ + 1,
+      "h_delta_vs_speed", ";bar_id_{seed};#delta_{centroid}", n_channels_ + 1,
       -0.5, n_channels_ - 0.5, 5 * n_channels_, 0, n_channels_);
 
-  h_delta_centroids_ = new TH1F("h_delta_centroids", ";#Delta_{centroid}",
+  h_delta_centroids_ = new TH1F("h_delta_centroids", ";#delta_{centroid}",
                                 5 * n_channels_, -0.5, n_channels_ - 0.5);
 
   h_n_hits_ = new TH1F(
-      "hNHits", "Number of hits in the event; N_{hits}; Events", 10, 0, 10);
+      "hNHits", "Number of hits in the event; n_{hits}; Events", 10, 0, 10);
   h_n_clusters_ = new TH1F(
-      "h_n_clusters", "Number of clusters in the event; N_{clusters}; Events",
+      "h_n_clusters", "Number of clusters in the event; n_{clusters}; Events",
       10, 0, 10);
 
   /*
   hN3N2 = new TH1F("hN3N2", "Ratio of 3-hit to 2-hit clusters;
-  N_{3-hit}/N_{2-hit}; Events", 10, 0, 4); hN3N1 = new TH1F("hN3N1", "Ratio of
-  3-hit to 1-hit clusters; N_{3-hit}/N_{1-hit}; Events", 10, 0, 4); hN2N1 = new
-  TH1F("hN2N1", "Ratio of 2-hit to 1-hit clusters; N_{2-hit}/N_{1-hit}; Events",
+  n_{3-hit}/n_{2-hit}; Events", 10, 0, 4); hN3N1 = new TH1F("hN3N1", "Ratio of
+  3-hit to 1-hit clusters; n_{3-hit}/n_{1-hit}; Events", 10, 0, 4); hN2N1 = new
+  TH1F("hN2N1", "Ratio of 2-hit to 1-hit clusters; n_{2-hit}/n_{1-hit}; Events",
   10, 0, 4);
   */
   int n_cl = 6;
 
   h_n3_n2_ = new TH2F(
-      "hN3N2", "Number of 3-hit vs 2-hit clusters; N_{2-hit};N_{3-hit}; Events",
+      "hN3N2", "Number of 3-hit vs 2-hit clusters; n_{2-hit};n_{3-hit}; Events",
       n_cl, -0.5, n_cl - 0.5, n_cl, -0.5, n_cl - 0.5);
   h_n3_n1_ = new TH2F(
-      "hN3N1", "Number of 3-hit vs 1-hit clusters; N_{1-hit};N_{3-hit}; Events",
+      "hN3N1", "Number of 3-hit vs 1-hit clusters; n_{1-hit};n_{3-hit}; Events",
       n_cl, -0.5, n_cl - 0.5, n_cl, -0.5, n_cl - 0.5);
   h_n2_n1_ = new TH2F(
-      "hN2N1", "Number of 2-hit vs 1-hit clusters; N_{1-hit};N_{2-hit}; Events",
+      "hN2N1", "Number of 2-hit vs 1-hit clusters; n_{1-hit};n_{2-hit}; Events",
       n_cl, -0.5, n_cl - 0.5, n_cl, -0.5, n_cl - 0.5);
 
   return;

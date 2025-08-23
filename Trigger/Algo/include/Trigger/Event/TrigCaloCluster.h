@@ -41,12 +41,12 @@ class TrigCaloCluster {
   void setdydz(float dydz) { dydz_ = dydz; }
   void setdxdze(float dxdze) { dxdze_ = dxdze; }
   void setdydze(float dydze) { dydze_ = dydze; }
-  void set3D(bool x) { is3D_ = x; }
+  void set3D(bool x) { is3_d_ = x; }
   void setLayer(int layer) { layer_ = layer; }
-  void setFirstLayer(int l) { firstLayer_ = l; }
-  void setLastLayer(int l) { lastLayer_ = l; }
+  void setFirstLayer(int l) { first_layer_ = l; }
+  void setLastLayer(int l) { last_layer_ = l; }
   void setDepth(int d) { depth_ = d; }
-  void setNTP(int n) { nTP_ = n; }
+  void setNTP(int n) { n_tp_ = n; }
 
   float x() const { return x_; }
   float y() const { return y_; }
@@ -58,7 +58,7 @@ class TrigCaloCluster {
   float energy() const { return e_; }
   float dxdz() const { return dxdz_; }
   float dydz() const { return dydz_; }
-  int nTP() const { return nTP_; }
+  int nTP() const { return n_tp_; }
   int depth() const { return depth_; }
 
  private:
@@ -74,13 +74,13 @@ class TrigCaloCluster {
   float ze_{0};
   float dxdze_{0};
   float dydze_{0};
-  bool is3D_{true};
-  int nTP_{0};
+  bool is3_d_{true};
+  int n_tp_{0};
   // 2d attributes
   int layer_{-1};
   // 3d attributes
-  int firstLayer_{-1};
-  int lastLayer_{-1};
+  int first_layer_{-1};
+  int last_layer_{-1};
   int depth_{0};
 
   /// ROOT Dictionary class definition macro

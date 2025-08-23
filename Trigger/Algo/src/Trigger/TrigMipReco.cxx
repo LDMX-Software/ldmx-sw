@@ -157,7 +157,7 @@ void TrigMipReco::produce(framework::Event& event) {
         for (int l = seed.layer() + 1; l <= max_layer_; ++l) {
           const TrigCaloHit* best_hit = nullptr;
           // Grow search window if there is a hole
-          float best_dR_2 = radius_cut_2 * growth_factor * growth_factor;
+          float best_d_r_2 = radius_cut_2 * growth_factor * growth_factor;
 
           for (const auto& cand : layer_hits[l]) {
             if (used_hits.count(&cand) || cand.energy() < ecal_min_energy_ ||
@@ -170,13 +170,13 @@ void TrigMipReco::produce(framework::Event& event) {
                 (last->layer() % 2 == 0) ? 0.0f : 4.82f;
             const float layer_shift_cand =
                 (cand.layer() % 2 == 0) ? 0.0f : 4.82f;
-            const float dx = (cand.position_x() - layer_shift_cand) -
-                             (last->position_x() - layer_shift_last);
-            const float dy = cand.position_y() - last->position_y();
-            const float dR_2 = dx * dx + dy * dy;
+            const float dx = (cand.positionX() - layer_shift_cand) -
+                             (last->positionX() - layer_shift_last);
+            const float dy = cand.positionY() - last->positionY();
+            const float d_r_2 = dx * dx + dy * dy;
 
-            if (dR_2 < best_dR_2) {
-              best_dR_2 = dR_2;
+            if (d_r_2 < best_d_r_2) {
+              best_d_r_2 = d_r_2;
               // Closest unused hit in next layer
               best_hit = &cand;
             }
@@ -201,19 +201,19 @@ void TrigMipReco::produce(framework::Event& event) {
           // Isolation area energy check
           for (const auto* hit : track) {
             const int layer = hit->layer();
-            const float hit_x = hit->position_x();
-            const float hit_y = hit->position_y();
+            const float hit_x = hit->positionX();
+            const float hit_y = hit->positionY();
             float sum_e = 0.0f;
 
             for (const auto& cand : layer_hits[layer]) {
               // Skips self
               if (&cand == hit) continue;
 
-              const float dx = cand.position_x() - hit_x;
-              const float dy = cand.position_y() - hit_y;
-              const float dR_2 = dx * dx + dy * dy;
+              const float dx = cand.positionX() - hit_x;
+              const float dy = cand.positionY() - hit_y;
+              const float d_r_2 = dx * dx + dy * dy;
 
-              if (dR_2 < radius_cut_2) {
+              if (d_r_2 < radius_cut_2) {
                 sum_e += cand.energy();
               }
             }
@@ -247,13 +247,13 @@ void TrigMipReco::produce(framework::Event& event) {
       }
     }
 
-    std::set<size_t> valid_track_IDs;
+    std::set<size_t> valid_track_i_ds;
     for (const auto& [hit, idx] : hit_to_best_track) {
-      valid_track_IDs.insert(idx);
+      valid_track_i_ds.insert(idx);
     }
 
     std::vector<TrigMip> mips;
-    for (const size_t idx : valid_track_IDs) {
+    for (const size_t idx : valid_track_i_ds) {
       const auto& track = candidate_tracks[idx];
       TrigMip mip;
       mip.setStartLayer(track.front()->layer());
@@ -274,14 +274,14 @@ void TrigMipReco::produce(framework::Event& event) {
       float total_isolation_e_sum = 0.0f;
       for (const auto* hit : track) {
         const int layer = hit->layer();
-        const float hit_x = hit->position_x();
-        const float hit_y = hit->position_y();
+        const float hit_x = hit->positionX();
+        const float hit_y = hit->positionY();
         for (const auto& cand : layer_hits[layer]) {
           if (&cand == hit) continue;
-          const float dx = cand.position_x() - hit_x;
-          const float dy = cand.position_y() - hit_y;
-          const float dR_2 = dx * dx + dy * dy;
-          if (dR_2 < radius_cut_2) {
+          const float dx = cand.positionX() - hit_x;
+          const float dy = cand.positionY() - hit_y;
+          const float d_r_2 = dx * dx + dy * dy;
+          if (d_r_2 < radius_cut_2) {
             total_isolation_e_sum += cand.energy();
           }
         }

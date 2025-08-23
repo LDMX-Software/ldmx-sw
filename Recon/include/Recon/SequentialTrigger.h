@@ -64,17 +64,17 @@ class SequentialTrigger : public framework::Producer {
   std::vector<std::string> trigger_list_;
 
   /** pass name of the triggers */
-  std::vector<std::string> trigger_passNames_;
+  std::vector<std::string> trigger_pass_names_;
 
   /** options to enable OR or AND skimming*/
-  bool doOR_;
-  bool doAND_;
+  bool do_or_;
+  bool do_and_;
 
   /**
    * enables a output collection with the keep tag for the purposes of
    * validation
    * */
-  bool doVAL_;
+  bool do_val_;
 };
 
 }  // namespace recon

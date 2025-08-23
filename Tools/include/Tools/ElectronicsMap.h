@@ -28,7 +28,7 @@ template <class ElectronicsID, class DetID>
 class ElectronicsMap {
  public:
   ElectronicsMap(bool want_d2e = false)
-      : eid2did_{ElectronicsID::MAX_INDEX, 0}, makeD2E_(want_d2e) {}
+      : eid2did_{ElectronicsID::MAX_INDEX, 0}, make_d2e_(want_d2e) {}
 
   /**
    * Remove all entries from the map
@@ -50,7 +50,7 @@ class ElectronicsMap {
                           " which is larger than allowed in this map");
     }
     eid2did_[index] = did.raw();
-    if (makeD2E_) did2eid_.insert(std::make_pair(did.raw(), eid));
+    if (make_d2e_) did2eid_.insert(std::make_pair(did.raw(), eid));
   }
 
   /**
@@ -66,7 +66,7 @@ class ElectronicsMap {
    * electronics id.
    */
   bool exists(DetID did) const {
-    if (makeD2E_) {
+    if (make_d2e_) {
       return did2eid_.find(did.raw()) == did2eid_.end();
     } else {
       for (auto i : eid2did_) {
@@ -93,7 +93,7 @@ class ElectronicsMap {
    * globally-defined invalid electronics
    */
   ElectronicsID get(DetID did) const {
-    if (makeD2E_) {
+    if (make_d2e_) {
       auto itr = did2eid_.find(did.raw());
       if (itr == did2eid_.end()) {
         std::stringstream ss;
@@ -119,7 +119,7 @@ class ElectronicsMap {
   /**
    * Flag to determine if did2eid should be filled (resource optimization)
    */
-  bool makeD2E_;
+  bool make_d2e_;
 
   /**
    * Log(N) map for raw detector id to electronics id

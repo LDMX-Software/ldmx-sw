@@ -43,7 +43,7 @@ class RecoilMissesEcalSkimmer : public framework::Producer {
   void configure(framework::config::Parameters &parameters) override;
 
  private:
-  std::string ecalSimHitsPassName_;
+  std::string ecal_sim_hits_pass_name_;
 
   std::string sim_particles_pass_name_;
 

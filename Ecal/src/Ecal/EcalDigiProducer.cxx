@@ -110,8 +110,8 @@ void EcalDigiProducer::produce(framework::Event& event) {
        * to target), so the time shifting should be at the emulator level.
        */
       pulses_at_chip.emplace_back(
-          sim_hit.getContrib(i_contrib).edep * mev_,
-          sim_hit.getContrib(i_contrib).time  // global time (t=0ns at target)
+          sim_hit.getContrib(i_contrib).edep_ * mev_,
+          sim_hit.getContrib(i_contrib).time_  // global time (t=0ns at target)
               - sim_hit.getPosition().at(2) /
                     299.702547  // shift light-speed particle traveling along z_
       );

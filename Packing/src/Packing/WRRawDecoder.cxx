@@ -13,33 +13,33 @@
 namespace packing {
 
 struct WRBinaryPacket {
-  int runNumber;
-  int WRCounter;
-  int channel;
-  int seq_id;
-  int sec;
-  int coarse;
-  int frac;
+  int run_number_;
+  int wr_counter_;
+  int channel_;
+  int seq_id_;
+  int sec_;
+  int coarse_;
+  int frac_;
   utility::Reader& read(utility::Reader& r) {
-    return r >> runNumber >> WRCounter >> channel >> seq_id >> sec >> coarse >>
-           frac;
+    return r >> run_number_ >> wr_counter_ >> channel_ >> seq_id_ >> sec_ >>
+           coarse_ >> frac_;
   }
   void add(framework::Event& event, const std::string& name) {
-    event.add(name + "RunNumber", runNumber);
-    event.add(name + "Counter", WRCounter);
-    event.add(name + "Channel", channel);
-    event.add(name + "SeqId", seq_id);
-    event.add(name + "Sec", sec);
-    event.add(name + "Coarse", coarse);
-    event.add(name + "Frac", frac);
+    event.add(name + "RunNumber", run_number_);
+    event.add(name + "Counter", wr_counter_);
+    event.add(name + "Channel", channel_);
+    event.add(name + "SeqId", seq_id_);
+    event.add(name + "Sec", sec_);
+    event.add(name + "Coarse", coarse_);
+    event.add(name + "Frac", frac_);
   }
 };
 
 std::ostream& operator<<(std::ostream& os, const WRBinaryPacket& p) {
-  return (os << "WR Packet {" << "run: " << p.runNumber
-             << ", counter: " << p.WRCounter << ", channel: " << p.channel
-             << ", seq_id: " << p.seq_id << ", sec: " << p.sec
-             << ", coarse: " << p.coarse << ", frac: " << p.frac << "}");
+  return (os << "WR Packet {" << "run: " << p.run_number_
+             << ", counter: " << p.wr_counter_ << ", channel: " << p.channel_
+             << ", seq_id: " << p.seq_id_ << ", sec: " << p.sec_
+             << ", coarse: " << p.coarse_ << ", frac: " << p.frac_ << "}");
 }
 
 /**
@@ -66,7 +66,7 @@ class WRRawDecoder : public framework::Producer {
   /// the file reader (if we are doing that)
   packing::utility::Reader file_reader_;
   /// packet being used for decoding
-  WRBinaryPacket p;
+  WRBinaryPacket p_;
   /// ntuple tree
   TTree* tree_;
 };
@@ -83,20 +83,20 @@ void WRRawDecoder::onProcessStart() {
   if (ntuplize_) {
     getHistoDirectory();
     tree_ = new TTree("wrraw", "Flattened and decoded raw WR data");
-    tree_->Branch("run", &p.runNumber);
-    tree_->Branch("counter", &p.WRCounter);
-    tree_->Branch("channel", &p.channel);
-    tree_->Branch("seq_id", &p.seq_id);
-    tree_->Branch("sec", &p.sec);
-    tree_->Branch("coarse", &p.coarse);
-    tree_->Branch("frac", &p.frac);
+    tree_->Branch("run", &p_.run_number_);
+    tree_->Branch("counter", &p_.wr_counter_);
+    tree_->Branch("channel", &p_.channel_);
+    tree_->Branch("seq_id", &p_.seq_id_);
+    tree_->Branch("sec", &p_.sec_);
+    tree_->Branch("coarse", &p_.coarse_);
+    tree_->Branch("frac", &p_.frac_);
   }
 }
 
 void WRRawDecoder::produce(framework::Event& event) {
   // only add and fill when file able to readout packet
-  if (file_reader_ >> p) {
-    p.add(event, output_name_);
+  if (file_reader_ >> p_) {
+    p_.add(event, output_name_);
     tree_->Fill();
 #ifdef DEBUG
     std::cout << p << std::endl;

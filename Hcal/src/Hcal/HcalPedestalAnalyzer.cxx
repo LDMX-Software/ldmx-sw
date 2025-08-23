@@ -23,17 +23,17 @@ void HcalPedestalAnalyzer::analyze(const framework::Event& event) {
     for (int i = 0; i < digis.getNumSamplesPerDigi(); i++) {
       if (d.at(i).tot() > 0) has_tot = true;
       if (d.at(i).toa() > 0) has_toa = true;
-      if (d.at(i).adc_t() < low_cutoff_) has_under = true;
-      if (d.at(i).adc_t() > high_cutoff_) has_over = true;
+      if (d.at(i).adcT() < low_cutoff_) has_under = true;
+      if (d.at(i).adcT() > high_cutoff_) has_over = true;
     }
 
-    if (has_tot && filter_noTOT) chan.rejects[0]++;
-    if (has_toa && filter_noTOA) chan.rejects[1]++;
-    if (has_under) chan.rejects[2]++;
-    if (has_over) chan.rejects[3]++;
+    if (has_tot && filter_no_tot_) chan.rejects_[0]++;
+    if (has_toa && filter_no_toa_) chan.rejects_[1]++;
+    if (has_under) chan.rejects_[2]++;
+    if (has_over) chan.rejects_[3]++;
 
-    if (has_tot && filter_noTOT) continue;  // ignore this
-    if (has_toa && filter_noTOA) continue;  // ignore this
+    if (has_tot && filter_no_tot_) continue;  // ignore this
+    if (has_toa && filter_no_toa_) continue;  // ignore this
     if (has_under)
       continue;  // ignore this, set threshold to zero to disable requirement
     if (has_over)
@@ -41,26 +41,26 @@ void HcalPedestalAnalyzer::analyze(const framework::Event& event) {
                  // requirement
 
     for (int i = 0; i < digis.getNumSamplesPerDigi(); i++) {
-      int adc = d.at(i).adc_t();
+      int adc = d.at(i).adcT();
 
-      chan.sum += adc;
-      chan.sum_sq += adc * adc;
-      chan.entries++;
-      if (chan.hist)
-        chan.hist->Fill(adc);
+      chan.sum_ += adc;
+      chan.sum_sq_ += adc * adc;
+      chan.entries_++;
+      if (chan.hist_)
+        chan.hist_->Fill(adc);
       else if (make_histos_)
-        chan.adcs.push_back(adc);
+        chan.adcs_.push_back(adc);
     }
 
     // histogram-related business
-    if (make_histos_ && !chan.hist && chan.entries > 250)
-      create_and_fill(chan, detid);
+    if (make_histos_ && !chan.hist_ && chan.entries_ > 250)
+      createAndFill(chan, detid);
   }
 }
 
-void HcalPedestalAnalyzer::create_and_fill(Channel& chan,
-                                           ldmx::HcalDigiID detid) {
-  if (chan.entries == 0) return;
+void HcalPedestalAnalyzer::createAndFill(Channel& chan,
+                                         ldmx::HcalDigiID detid) {
+  if (chan.entries_ == 0) return;
 
   TDirectory* hdir = getHistoDirectory();
   hdir->cd();
@@ -68,14 +68,14 @@ void HcalPedestalAnalyzer::create_and_fill(Channel& chan,
   sprintf(hname, "pedestal_%d_%d_%d_%d", detid.section(), detid.layer(),
           detid.strip(), detid.end());
   // logic: 100 bins to +/- 5 sigma based on first 250 events.
-  double mean = (chan.sum * 1.0) / chan.entries;
-  double rms = sqrt(chan.sum_sq / chan.entries - mean * mean);
+  double mean = (chan.sum_ * 1.0) / chan.entries_;
+  double rms = sqrt(chan.sum_sq_ / chan.entries_ - mean * mean);
   if (rms * 5 < 50)
-    chan.hist = new TH1D(hname, hname, 30, int(mean) - 15, int(mean) + 15);
+    chan.hist_ = new TH1D(hname, hname, 30, int(mean) - 15, int(mean) + 15);
   else
-    chan.hist = new TH1D(hname, hname, 100, mean - 5 * rms, mean + 5 * rms);
-  for (auto x : chan.adcs) chan.hist->Fill(x);
-  chan.adcs.clear();
+    chan.hist_ = new TH1D(hname, hname, 100, mean - 5 * rms, mean + 5 * rms);
+  for (auto x : chan.adcs_) chan.hist_->Fill(x);
+  chan.adcs_.clear();
 }
 
 void HcalPedestalAnalyzer::onProcessEnd() {
@@ -90,17 +90,18 @@ void HcalPedestalAnalyzer::onProcessEnd() {
   fprintf(fout, "DetID,PEDESTAL_ADC,PEDESTAL_RMS_ADC\n");
 
   for (auto ichan : pedestal_data_) {
-    if (ichan.second.entries == 0) {
+    if (ichan.second.entries_ == 0) {
       std::cout << "All entries filtered for " << ichan.first << " for TOT "
-                << ichan.second.rejects[0] << " for TOA "
-                << ichan.second.rejects[1] << " for underthreshold "
-                << ichan.second.rejects[2] << " for overthreshold "
-                << ichan.second.rejects[3] << std::endl;
+                << ichan.second.rejects_[0] << " for TOA "
+                << ichan.second.rejects_[1] << " for underthreshold "
+                << ichan.second.rejects_[2] << " for overthreshold "
+                << ichan.second.rejects_[3] << std::endl;
       continue;  // all entries were filtered out
     }
 
-    double mean = ichan.second.sum * 1.0 / ichan.second.entries;
-    double rms = sqrt(ichan.second.sum_sq / ichan.second.entries - mean * mean);
+    double mean = ichan.second.sum_ * 1.0 / ichan.second.entries_;
+    double rms =
+        sqrt(ichan.second.sum_sq_ / ichan.second.entries_ - mean * mean);
     fprintf(fout, "0x%08x,%9.3f,%9.3f\n", ichan.first.raw(), mean, rms);
   }
 

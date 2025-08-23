@@ -113,7 +113,7 @@ int main() {
           adc = 0;
           tdc = digi.tot();
         } else {
-          adc = digi.soi().adc_t();
+          adc = digi.soi().adcT();
           tdc = 0;
         }
       } else {

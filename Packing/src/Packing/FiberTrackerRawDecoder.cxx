@@ -15,7 +15,7 @@ namespace packing {
 /**
  * converstion from 64-bit int to double specific to FiberTrackerDAQ
  */
-double to_double_ft(uint64_t i) {
+double toDoubleFt(uint64_t i) {
   static const unsigned int bits = 32;
   static const unsigned int expbits = 8;
   long double result;
@@ -74,12 +74,12 @@ class FiberTrackerField {
   /**
    * conversion to a single int
    */
-  int to_int(const std::size_t i = 0) const { return field_value_.at(i); }
+  int toInt(const std::size_t i = 0) const { return field_value_.at(i); }
 
   /**
    * conversion from series of ints to string specific to FiberTrackerDAQ
    */
-  std::string to_string() const {
+  std::string toString() const {
     std::string str;
     str.resize(field_value_.size());
     for (int i{0}; i < str.size(); i++) {
@@ -93,7 +93,7 @@ class FiberTrackerField {
    *
    * i is index_ of field value to start from
    */
-  long int to_long(const std::size_t i = 0) const {
+  long int toLong(const std::size_t i = 0) const {
     return ((uint64_t)field_value_.at(i + 1) << 32) |
            (uint64_t)field_value_.at(i);
   }
@@ -101,8 +101,8 @@ class FiberTrackerField {
   /**
    * convert two ints into a double
    */
-  double to_double(const std::size_t i = 0) const {
-    return to_double_ft(this->to_long(i));
+  double toDouble(const std::size_t i = 0) const {
+    return toDoubleFt(this->toLong(i));
   }
 
   /**
@@ -133,23 +133,23 @@ class FiberTrackerField {
  * empty (all zeros).
  */
 struct FiberTrackerEvent {
-  int trigger_timestamp_lsb, trigger_timestamp_msb, event_timestamp_lsb,
-      event_timestamp_msb;
-  std::vector<uint32_t> channel_hits;
+  int trigger_timestamp_lsb_, trigger_timestamp_msb_, event_timestamp_lsb_,
+      event_timestamp_msb_;
+  std::vector<uint32_t> channel_hits_;
 
   FiberTrackerEvent() = default;
 
   FiberTrackerEvent(const std::vector<uint32_t>& spill_data,
                     std::size_t i_word) {
-    trigger_timestamp_lsb = spill_data.at(i_word);
-    trigger_timestamp_msb = spill_data.at(i_word + 1);
-    event_timestamp_lsb = spill_data.at(i_word + 2);
-    event_timestamp_msb = spill_data.at(i_word + 3);
-    channel_hits.clear();
-    channel_hits.reserve(6);
+    trigger_timestamp_lsb_ = spill_data.at(i_word);
+    trigger_timestamp_msb_ = spill_data.at(i_word + 1);
+    event_timestamp_lsb_ = spill_data.at(i_word + 2);
+    event_timestamp_msb_ = spill_data.at(i_word + 3);
+    channel_hits_.clear();
+    channel_hits_.reserve(6);
     for (std::size_t i{i_word + 4}; i < i_word + 10 and i < spill_data.size();
          i++)
-      channel_hits.push_back(spill_data.at(i));
+      channel_hits_.push_back(spill_data.at(i));
   }
 };
 
@@ -157,42 +157,42 @@ struct FiberTrackerEvent {
  * Each one of these packets represents an entire spill of data
  */
 struct FiberTrackerBinaryPacket {
-  int acqMode;
-  long int acqStamp;
-  int acqType;
-  int acqTypeAllowed;
-  std::string coincidenceInUse;
-  int counts;
-  long int countsRecords;
-  long int countsRecordsWithZeroEvents;
-  long int countsTrigs;
-  std::string cycleName;
-  long int cycleStamp;
-  std::string equipmentName;
-  int eventSelectionAcq;
+  int acq_mode_;
+  long int acq_stamp_;
+  int acq_type_;
+  int acq_type_allowed_;
+  std::string coincidence_in_use_;
+  int counts_;
+  long int counts_records_;
+  long int counts_records_with_zero_events_;
+  long int counts_trigs_;
+  std::string cycle_name_;
+  long int cycle_stamp_;
+  std::string equipment_name_;
+  int event_selection_acq_;
   /**
    * This is the actual event data in which we are interested
    */
-  std::vector<FiberTrackerEvent> eventsData;
+  std::vector<FiberTrackerEvent> events_data_;
   /// index_ of event we are on (for next)
-  int i_event{0};
+  int i_event_{0};
 
-  double meanSNew;
-  std::string message;
-  std::vector<double> profile;
-  std::vector<double> profileStandAlone;
-  std::string timeFirstEvent;
-  std::string timeFirstTrigger;
-  std::string timeLastEvent;
-  std::string timeLastTrigger;
-  int trigger;
-  int triggerOffsetAcq;
-  int triggerSelectionAcq;
+  double mean_s_new_;
+  std::string message_;
+  std::vector<double> profile_;
+  std::vector<double> profile_stand_alone_;
+  std::string time_first_event_;
+  std::string time_first_trigger_;
+  std::string time_last_event_;
+  std::string time_last_trigger_;
+  int trigger_;
+  int trigger_offset_acq_;
+  int trigger_selection_acq_;
 
   bool next(FiberTrackerEvent& e) {
-    i_event++;
-    if (i_event < eventsData.size()) {
-      e = eventsData.at(i_event);
+    i_event_++;
+    if (i_event_ < events_data_.size()) {
+      e = events_data_.at(i_event_);
       return true;
     }
     return false;
@@ -203,91 +203,91 @@ struct FiberTrackerBinaryPacket {
    */
   utility::Reader& read(utility::Reader& r) {
     int i_field{0};
-    acqMode = FiberTrackerField(r, ++i_field).to_int();
+    acq_mode_ = FiberTrackerField(r, ++i_field).toInt();
 #ifdef DEBUG
     std::cout << i_field << " " << "acqMode = " << acqMode << std::endl;
 #endif
-    acqStamp = FiberTrackerField(r, ++i_field).to_long();
+    acq_stamp_ = FiberTrackerField(r, ++i_field).toLong();
 #ifdef DEBUG
     std::cout << i_field << " " << "acqStamp = " << acqStamp << std::endl;
 #endif
-    acqType = FiberTrackerField(r, ++i_field).to_int();
+    acq_type_ = FiberTrackerField(r, ++i_field).toInt();
 #ifdef DEBUG
     std::cout << i_field << " " << "acqType = " << acqType << std::endl;
 #endif
-    acqTypeAllowed = FiberTrackerField(r, ++i_field).to_int();
+    acq_type_allowed_ = FiberTrackerField(r, ++i_field).toInt();
 #ifdef DEBUG
     std::cout << i_field << " " << "acqTypeAllowed = " << acqTypeAllowed
               << std::endl;
 #endif
-    coincidenceInUse = FiberTrackerField(r, ++i_field).to_string();
+    coincidence_in_use_ = FiberTrackerField(r, ++i_field).toString();
 #ifdef DEBUG
     std::cout << i_field << " " << "coincidenceInUse = " << coincidenceInUse
               << std::endl;
 #endif
-    counts = FiberTrackerField(r, ++i_field).to_int();
+    counts_ = FiberTrackerField(r, ++i_field).toInt();
 #ifdef DEBUG
     std::cout << i_field << " " << "counts = " << counts << std::endl;
 #endif
-    countsRecords = FiberTrackerField(r, ++i_field).to_long();
+    counts_records_ = FiberTrackerField(r, ++i_field).toLong();
 #ifdef DEBUG
     std::cout << i_field << " " << "countsRecords = " << countsRecords
               << std::endl;
 #endif
-    countsRecordsWithZeroEvents = FiberTrackerField(r, ++i_field).to_long();
+    counts_records_with_zero_events_ = FiberTrackerField(r, ++i_field).toLong();
 #ifdef DEBUG
     std::cout << i_field << " "
               << "countsRecordsWithZeroEvents = " << countsRecordsWithZeroEvents
               << std::endl;
 #endif
-    countsTrigs = FiberTrackerField(r, ++i_field).to_long();
+    counts_trigs_ = FiberTrackerField(r, ++i_field).toLong();
 #ifdef DEBUG
     std::cout << i_field << " " << "countsTrigs = " << countsTrigs << std::endl;
 #endif
-    cycleName = FiberTrackerField(r, ++i_field).to_string();
+    cycle_name_ = FiberTrackerField(r, ++i_field).toString();
 #ifdef DEBUG
     std::cout << i_field << " " << "cycleName = " << cycleName << std::endl;
 #endif
-    cycleStamp = FiberTrackerField(r, ++i_field).to_long();
+    cycle_stamp_ = FiberTrackerField(r, ++i_field).toLong();
 #ifdef DEBUG
     std::cout << i_field << " " << "cycleStamp = " << cycleStamp << std::endl;
 #endif
-    equipmentName = FiberTrackerField(r, ++i_field).to_string();
+    equipment_name_ = FiberTrackerField(r, ++i_field).toString();
 #ifdef DEBUG
     std::cout << i_field << " " << "equipmentName = " << equipmentName
               << std::endl;
 #endif
-    eventSelectionAcq = FiberTrackerField(r, ++i_field).to_int();
+    event_selection_acq_ = FiberTrackerField(r, ++i_field).toInt();
 #ifdef DEBUG
     std::cout << i_field << " " << "eventSelectionAcq = " << eventSelectionAcq
               << std::endl;
 #endif
     FiberTrackerField events_data_field(r, ++i_field);
-    i_event = -1;
-    eventsData.clear();
-    eventsData.reserve(events_data_field.value().size() / 10);
+    i_event_ = -1;
+    events_data_.clear();
+    events_data_.reserve(events_data_field.value().size() / 10);
     for (std::size_t i_word{0}; i_word < events_data_field.value().size();
          i_word += 10) {
-      eventsData.emplace_back(events_data_field.value(), i_word);
+      events_data_.emplace_back(events_data_field.value(), i_word);
     }
 #ifdef DEBUG
     std::cout << i_field << " " << "eventsData (size = " << eventsData.size()
               << ")" << std::endl;
 #endif
-    meanSNew = FiberTrackerField(r, ++i_field).to_double();
+    mean_s_new_ = FiberTrackerField(r, ++i_field).toDouble();
 #ifdef DEBUG
     std::cout << i_field << " " << "meanSNew = " << meanSNew << std::endl;
 #endif
-    message = FiberTrackerField(r, ++i_field).to_string();
+    message_ = FiberTrackerField(r, ++i_field).toString();
 #ifdef DEBUG
     std::cout << i_field << " " << "message = " << message << std::endl;
 #endif
     FiberTrackerField profile_field(r, ++i_field);
-    profile.clear();
-    profile.reserve(profile_field.value().size() / 2);
+    profile_.clear();
+    profile_.reserve(profile_field.value().size() / 2);
     for (std::size_t i_word{0}; i_word < profile_field.value().size();
          i_word += 2) {
-      profile.push_back(profile_field.to_double(i_word));
+      profile_.push_back(profile_field.toDouble(i_word));
     }
 #ifdef DEBUG
     std::cout << i_field << " " << "profile size " << profile.size()
@@ -295,47 +295,48 @@ struct FiberTrackerBinaryPacket {
 #endif
     // fields 18 and 19 are skipped
     i_field += 2;
-    FiberTrackerField profileStandAlone_field(r, ++i_field);
-    profileStandAlone.clear();
-    profileStandAlone.reserve(profileStandAlone_field.value().size() / 2);
-    for (std::size_t i_word{0}; i_word < profileStandAlone_field.value().size();
-         i_word += 2) {
-      profileStandAlone.push_back(profileStandAlone_field.to_double(i_word));
+    FiberTrackerField profile_stand_alone_field(r, ++i_field);
+    profile_stand_alone_.clear();
+    profile_stand_alone_.reserve(profile_stand_alone_field.value().size() / 2);
+    for (std::size_t i_word{0};
+         i_word < profile_stand_alone_field.value().size(); i_word += 2) {
+      profile_stand_alone_.push_back(
+          profile_stand_alone_field.toDouble(i_word));
     }
 #ifdef DEBUG
     std::cout << i_field << " " << "profileStandAlone size "
               << profileStandAlone.size() << std::endl;
 #endif
-    timeFirstEvent = FiberTrackerField(r, ++i_field).to_string();
+    time_first_event_ = FiberTrackerField(r, ++i_field).toString();
 #ifdef DEBUG
     std::cout << i_field << " " << "timeFirstEvent = " << timeFirstEvent
               << std::endl;
 #endif
-    timeFirstTrigger = FiberTrackerField(r, ++i_field).to_string();
+    time_first_trigger_ = FiberTrackerField(r, ++i_field).toString();
 #ifdef DEBUG
     std::cout << i_field << " " << "timeFirstTrigger = " << timeFirstTrigger
               << std::endl;
 #endif
-    timeLastEvent = FiberTrackerField(r, ++i_field).to_string();
+    time_last_event_ = FiberTrackerField(r, ++i_field).toString();
 #ifdef DEBUG
     std::cout << i_field << " " << "timeLastEvent = " << timeLastEvent
               << std::endl;
 #endif
-    timeLastTrigger = FiberTrackerField(r, ++i_field).to_string();
+    time_last_trigger_ = FiberTrackerField(r, ++i_field).toString();
 #ifdef DEBUG
     std::cout << i_field << " " << "timeLastTrigger = " << timeLastTrigger
               << std::endl;
 #endif
-    trigger = FiberTrackerField(r, ++i_field).to_int();
+    trigger_ = FiberTrackerField(r, ++i_field).toInt();
 #ifdef DEBUG
     std::cout << i_field << " " << "trigger = " << trigger << std::endl;
 #endif
-    triggerOffsetAcq = FiberTrackerField(r, ++i_field).to_int();
+    trigger_offset_acq_ = FiberTrackerField(r, ++i_field).toInt();
 #ifdef DEBUG
     std::cout << i_field << " " << "triggerOffsetAcq = " << triggerOffsetAcq
               << std::endl;
 #endif
-    triggerSelectionAcq = FiberTrackerField(r, ++i_field).to_int();
+    trigger_selection_acq_ = FiberTrackerField(r, ++i_field).toInt();
 #ifdef DEBUG
     std::cout << i_field << " "
               << "triggerSelectionAcq = " << triggerSelectionAcq << std::endl;
@@ -345,7 +346,7 @@ struct FiberTrackerBinaryPacket {
 };
 
 std::ostream& operator<<(std::ostream& os, const FiberTrackerBinaryPacket& p) {
-  return (os << "FiberTracker Packet {" << p.acqStamp << "}");
+  return (os << "FiberTracker Packet {" << p.acq_stamp_ << "}");
 }
 
 /**
@@ -391,31 +392,33 @@ void FiberTrackerRawDecoder::onProcessStart() {
   if (ntuplize_) {
     getHistoDirectory();
     tree_ = new TTree("raw", "Flattened and decoded raw FiberTracker data");
-    tree_->Branch("TriggerTSLSB", &ft_event_.trigger_timestamp_lsb);
-    tree_->Branch("TriggerTSMSB", &ft_event_.trigger_timestamp_msb);
-    tree_->Branch("EventTSLSB", &ft_event_.event_timestamp_lsb);
-    tree_->Branch("EventTSMSB", &ft_event_.event_timestamp_msb);
-    tree_->Branch("ChannelHits", &ft_event_.channel_hits);
+    tree_->Branch("TriggerTSLSB", &ft_event_.trigger_timestamp_lsb_);
+    tree_->Branch("TriggerTSMSB", &ft_event_.trigger_timestamp_msb_);
+    tree_->Branch("EventTSLSB", &ft_event_.event_timestamp_lsb_);
+    tree_->Branch("EventTSMSB", &ft_event_.event_timestamp_msb_);
+    tree_->Branch("ChannelHits", &ft_event_.channel_hits_);
 
     spill_tree_ = new TTree("spill", "Spill Meta-Data from FiberTrackerDAQ");
-    spill_tree_->Branch("acqMode", &spill_packet_.acqMode);
-    spill_tree_->Branch("acqStamp", &spill_packet_.acqStamp);
-    spill_tree_->Branch("acqType", &spill_packet_.acqType);
-    spill_tree_->Branch("acqTypeAllowed", &spill_packet_.acqTypeAllowed);
-    spill_tree_->Branch("counts", &spill_packet_.counts);
-    spill_tree_->Branch("countsRecords", &spill_packet_.countsRecords);
+    spill_tree_->Branch("acqMode", &spill_packet_.acq_mode_);
+    spill_tree_->Branch("acqStamp", &spill_packet_.acq_stamp_);
+    spill_tree_->Branch("acqType", &spill_packet_.acq_type_);
+    spill_tree_->Branch("acqTypeAllowed", &spill_packet_.acq_type_allowed_);
+    spill_tree_->Branch("counts", &spill_packet_.counts_);
+    spill_tree_->Branch("countsRecords", &spill_packet_.counts_records_);
     spill_tree_->Branch("countsRecordsWithZeroEvents",
-                        &spill_packet_.countsRecordsWithZeroEvents);
-    spill_tree_->Branch("countsTrigs", &spill_packet_.countsTrigs);
-    spill_tree_->Branch("cycleStamp", &spill_packet_.cycleStamp);
-    spill_tree_->Branch("eventSelectionAcq", &spill_packet_.eventSelectionAcq);
-    spill_tree_->Branch("meanSNew", &spill_packet_.meanSNew);
-    spill_tree_->Branch("profile", &spill_packet_.profile);
-    spill_tree_->Branch("profileStandAlone", &spill_packet_.profileStandAlone);
-    spill_tree_->Branch("trigger", &spill_packet_.trigger);
-    spill_tree_->Branch("triggerOffsetAcq", &spill_packet_.triggerOffsetAcq);
+                        &spill_packet_.counts_records_with_zero_events_);
+    spill_tree_->Branch("countsTrigs", &spill_packet_.counts_trigs_);
+    spill_tree_->Branch("cycleStamp", &spill_packet_.cycle_stamp_);
+    spill_tree_->Branch("eventSelectionAcq",
+                        &spill_packet_.event_selection_acq_);
+    spill_tree_->Branch("meanSNew", &spill_packet_.mean_s_new_);
+    spill_tree_->Branch("profile", &spill_packet_.profile_);
+    spill_tree_->Branch("profileStandAlone",
+                        &spill_packet_.profile_stand_alone_);
+    spill_tree_->Branch("trigger", &spill_packet_.trigger_);
+    spill_tree_->Branch("triggerOffsetAcq", &spill_packet_.trigger_offset_acq_);
     spill_tree_->Branch("triggerSelectionAcq",
-                        &spill_packet_.triggerSelectionAcq);
+                        &spill_packet_.trigger_selection_acq_);
   }
 }
 
@@ -436,11 +439,11 @@ void FiberTrackerRawDecoder::produce(framework::Event& event) {
   }
   tree_->Fill();
 
-  event.add(output_name_ + "TriggerTSLSB", ft_event_.trigger_timestamp_lsb);
-  event.add(output_name_ + "TriggerTSMSB", ft_event_.trigger_timestamp_msb);
-  event.add(output_name_ + "EventTSLSB", ft_event_.event_timestamp_lsb);
-  event.add(output_name_ + "EventTSMSB", ft_event_.event_timestamp_msb);
-  event.add(output_name_ + "Hits", ft_event_.channel_hits);
+  event.add(output_name_ + "TriggerTSLSB", ft_event_.trigger_timestamp_lsb_);
+  event.add(output_name_ + "TriggerTSMSB", ft_event_.trigger_timestamp_msb_);
+  event.add(output_name_ + "EventTSLSB", ft_event_.event_timestamp_lsb_);
+  event.add(output_name_ + "EventTSMSB", ft_event_.event_timestamp_msb_);
+  event.add(output_name_ + "Hits", ft_event_.channel_hits_);
   return;
 }  // produce
 

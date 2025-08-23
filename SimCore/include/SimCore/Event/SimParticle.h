@@ -418,7 +418,7 @@ class SimParticle {
   std::string interaction_material_{""};
 
   /// Map containing the process types.
-  static ProcessTypeMap process_map_;
+  static ProcessTypeMap process_map;
 
   ClassDef(SimParticle, 8);
 

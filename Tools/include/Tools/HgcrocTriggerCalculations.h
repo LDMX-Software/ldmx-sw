@@ -180,16 +180,16 @@ class HgcrocTriggerCalculations {
    * charge measurements
    */
   const std::map<unsigned int, uint8_t> &compressedEnergies() const {
-    return compressedCharge_;
+    return compressed_charge_;
   }
 
  private:
   /** The conditions to be used */
   HgcrocTriggerConditions conditions_;
   /** A map of trigger channel id to linear charge */
-  std::map<unsigned int, unsigned int> linearCharge_;
+  std::map<unsigned int, unsigned int> linear_charge_;
   /** A map of trigger channel id to compressed charge */
-  std::map<unsigned int, uint8_t> compressedCharge_;
+  std::map<unsigned int, uint8_t> compressed_charge_;
 };  // HgcrocTriggerCalculations
 
 }  // namespace ldmx

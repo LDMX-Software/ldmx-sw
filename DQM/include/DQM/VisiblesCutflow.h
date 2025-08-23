@@ -26,7 +26,7 @@ class VisiblesCutflow : public framework::Analyzer {
   void analyze(const framework::Event& event) override;
 
  private:
-  std::unique_ptr<ldmx::Ort::ONNXRuntime> rt_;
+  std::unique_ptr<ldmx::ort::ONNXRuntime> rt_;
   double bdt_cut_val_{0.};
   std::string feature_list_name_;
 

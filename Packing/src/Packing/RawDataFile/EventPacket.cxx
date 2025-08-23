@@ -26,8 +26,8 @@ EventPacket::EventPacket(
 }
 
 std::vector<uint32_t> EventPacket::header() const {
-  uint32_t word = ((subsys_data_.size() & utility::mask<16>) << 16) +
-                  ((event_length_in_words_ & utility::mask<15>) << 1) + crc_ok_;
+  uint32_t word = ((subsys_data_.size() & utility::MASK<16>) << 16) +
+                  ((event_length_in_words_ & utility::MASK<15>) << 1) + crc_ok_;
   return {id_, word};
 }
 
@@ -39,9 +39,9 @@ utility::Reader& EventPacket::read(utility::Reader& r) {
   uint32_t word;
   r >> word;
 
-  uint16_t num_subsys = (word >> 16) & utility::mask<16>;
-  event_length_in_words_ = (word >> 1) & utility::mask<15>;
-  crc_ok_ = word & utility::mask<1>;
+  uint16_t num_subsys = (word >> 16) & utility::MASK<16>;
+  event_length_in_words_ = (word >> 1) & utility::MASK<15>;
+  crc_ok_ = word & utility::MASK<1>;
 
   r.read(subsys_data_, num_subsys);
 

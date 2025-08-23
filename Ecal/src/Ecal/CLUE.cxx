@@ -47,7 +47,7 @@ float CLUE::floatDist(float x1, float y1, float z1, float x2, float y2,
 //     merge = false;
 //     for (int i = 0; i < firstLayerClusters.size(); i++) {
 //       if (firstLayerClusters[i].empty()) continue;
-//       // if (firstLayerClusters[i].centroid().E() >= seedThreshold_) {
+//       // if (firstLayerClusters[i].centroid().E() >= seed_threshold_) {
 //       for (int j = i + 1; j < firstLayerClusters.size(); j++) {
 //         if (firstLayerClusters[j].empty()) continue;
 //         if (dist(firstLayerClusters[i].centroid().Px(),
@@ -484,7 +484,7 @@ std::vector<std::shared_ptr<CLUE::Density>> CLUE::layerSetup() {
         }
       }
       // } while (currentLayer[i]->layerFollowerOf == -1 && (layer_ - depth >=
-      // 0 || layer_ + depth < nbrOfLayers_));
+      // 0 || layer_ + depth < nbr_of_layers_));
       densities.push_back(current_layer[i]);
     }
     layer_rho_c_.push_back(highest_energy / 2);

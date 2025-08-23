@@ -41,16 +41,16 @@ class EcalTPSelector : public framework::Producer {
 
  private:
   // name of collection for EcalTPs to be passed as input
-  std::string tpCollName_;
+  std::string tp_coll_name_;
   // name of output collection
-  std::string passCollName_;
+  std::string pass_coll_name_;
 
   std::string tp_coll_passname_;
 
   std::string tp_coll_event_passname_;
 
-  unsigned int maxCentralTPs_{12};
-  unsigned int maxOuterTPs_{8};
+  unsigned int max_central_t_ps_{12};
+  unsigned int max_outer_t_ps_{8};
 
   // From:
   // Tools/python/HgcrocEmulator.py

@@ -29,7 +29,7 @@ static const double MIP_SI_ENERGY = 0.130;
  * charge [fC] * (1000 electrons / 0.1602 fC) * (1 MIP / 37 000 electrons) *
  * (0.130 MeV / 1 MIP)
  */
-static const double MeV_per_fC = MIP_SI_ENERGY / (37 * 0.1602);
+static const double ME_V_PER_F_C = MIP_SI_ENERGY / (37 * 0.1602);
 
 /**
  * Maximum percent error that a single hit
@@ -92,16 +92,16 @@ static const int NUM_TEST_SIM_HITS = 2000;
  * the input energy is "close enough" to the truth
  * energy.
  */
-class isCloseEnough : public Catch::Matchers::MatcherBase<double> {
+class IsCloseEnough : public Catch::Matchers::MatcherBase<double> {
  private:
   /// correct (sim-level) energy [MeV]
   double truth_;
 
   /// maximum absolute energy difference [MeV]
-  const double max_absolute_diff_;
+  const double MAX_ABSOLUTE_DIFF;
 
   /// maximum relative energy difference
-  const double max_relative_diff_;
+  const double MAX_RELATIVE_DIFF;
 
  public:
   /**
@@ -109,11 +109,11 @@ class isCloseEnough : public Catch::Matchers::MatcherBase<double> {
    *
    * Sets the truth level energy
    */
-  isCloseEnough(double const &truth, double const &abs_diff,
+  IsCloseEnough(double const &truth, double const &abs_diff,
                 double const &rel_diff)
       : truth_{truth},
-        max_absolute_diff_{abs_diff},
-        max_relative_diff_{rel_diff} {}
+        MAX_ABSOLUTE_DIFF{abs_diff},
+        MAX_RELATIVE_DIFF{rel_diff} {}
 
   /**
    * Performs the test for this matcher
@@ -123,8 +123,8 @@ class isCloseEnough : public Catch::Matchers::MatcherBase<double> {
    * difference.
    */
   bool match(const double &daq_energy) const override {
-    return (daq_energy == Approx(truth_).epsilon(max_relative_diff_) or
-            daq_energy == Approx(truth_).margin(max_absolute_diff_));
+    return (daq_energy == Approx(truth_).epsilon(MAX_RELATIVE_DIFF) or
+            daq_energy == Approx(truth_).margin(MAX_ABSOLUTE_DIFF));
   }
 
   /**
@@ -132,8 +132,8 @@ class isCloseEnough : public Catch::Matchers::MatcherBase<double> {
    */
   virtual std::string describe() const override {
     std::ostringstream ss;
-    ss << "is within an absolute difference of " << max_absolute_diff_
-       << "MeV OR a relative difference of " << max_relative_diff_ << " with "
+    ss << "is within an absolute difference of " << MAX_ABSOLUTE_DIFF
+       << "MeV OR a relative difference of " << MAX_RELATIVE_DIFF << " with "
        << truth_ << " MeV.";
     return ss.str();
   }
@@ -154,7 +154,7 @@ class EcalFakeSimHits : public framework::Producer {
    * The maximum value to be readout is 4096 TDC which
    * is equivalent to ~10000fC deposited charge.
    */
-  const double maxEnergy_ = 10000. * MeV_per_fC;
+  const double MAX_ENERGY = 10000. * ME_V_PER_F_C;
 
   /**
    * Minimum energy to make a sim hit for [MeV]
@@ -162,17 +162,17 @@ class EcalFakeSimHits : public framework::Producer {
    *
    * One MIP is ~0.13 MeV, so we choose that.
    */
-  const double minEnergy_ = MIP_SI_ENERGY;
+  const double MIN_ENERGY = MIP_SI_ENERGY;
 
   /**
    * The step between energies is calculated depending on the min, max energy
    * and the total number of sim hits_ you desire.
    * [MeV]
    */
-  const double energyStep_ = (maxEnergy_ - minEnergy_) / NUM_TEST_SIM_HITS;
+  const double ENERGY_STEP = (MAX_ENERGY - MIN_ENERGY) / NUM_TEST_SIM_HITS;
 
   /// current energy of the sim hit we are on
-  double currEnergy_ = minEnergy_;
+  double curr_energy_ = MIN_ENERGY;
 
  public:
   EcalFakeSimHits(const std::string &name, framework::Process &p)
@@ -185,20 +185,20 @@ class EcalFakeSimHits : public framework::Producer {
 
   void produce(framework::Event &event) final override {
     // put in a single sim hit
-    std::vector<ldmx::SimCalorimeterHit> pretendSimHits(1);
+    std::vector<ldmx::SimCalorimeterHit> pretend_sim_hits(1);
 
     ldmx::EcalID id(0, 0, 0);
-    pretendSimHits[0].setID(id.raw());
+    pretend_sim_hits[0].setID(id.raw());
     // incidentID, trackID, pdg ID, edep, time - 299mm is about 1ns from target
     // and in middle of ECal
-    pretendSimHits[0].addContrib(-1, -1, 0, currEnergy_, 1.);
+    pretend_sim_hits[0].addContrib(-1, -1, 0, curr_energy_, 1.);
     // sim position in middle of ECal
-    pretendSimHits[0].setPosition(0., 0., 299.);
+    pretend_sim_hits[0].setPosition(0., 0., 299.);
 
     // needs to be correct collection name
-    REQUIRE_NOTHROW(event.add("EcalSimHits", pretendSimHits));
+    REQUIRE_NOTHROW(event.add("EcalSimHits", pretend_sim_hits));
 
-    currEnergy_ += energyStep_;
+    curr_energy_ += ENERGY_STEP;
 
     return;
   }
@@ -254,52 +254,52 @@ class EcalCheckEnergyReconstruction : public framework::Analyzer {
   }
 
   void analyze(const framework::Event &event) final override {
-    const auto simHits = event.getCollection<ldmx::SimCalorimeterHit>(
+    const auto sim_hits = event.getCollection<ldmx::SimCalorimeterHit>(
         "EcalSimHits", ecal_simhits_passname_);
 
-    REQUIRE(simHits.size() == 1);
+    REQUIRE(sim_hits.size() == 1);
 
-    float truth_energy = simHits.at(0).getEdep();
+    float truth_energy = sim_hits.at(0).getEdep();
     ntuple_.setVar<float>("SimEnergy", truth_energy);
 
-    const auto daqDigis{event.getObject<ldmx::HgcrocDigiCollection>(
+    const auto daq_digis{event.getObject<ldmx::HgcrocDigiCollection>(
         "EcalDigis", ecal_digis_passname_)};
 
-    if (daqDigis.getNumDigis() == 1) {
-      auto daqDigi = daqDigis.getDigi(0);
-      ntuple_.setVar<int>("DaqDigi", daqDigi.soi().raw());
-      bool is_in_adc_mode = daqDigi.isADC();
+    if (daq_digis.getNumDigis() == 1) {
+      auto daq_digi = daq_digis.getDigi(0);
+      ntuple_.setVar<int>("DaqDigi", daq_digi.soi().raw());
+      bool is_in_adc_mode = daq_digi.isADC();
       ntuple_.setVar<int>("DaqDigiIsADC", is_in_adc_mode);
-      ntuple_.setVar<int>("DaqDigiADC", daqDigi.soi().adc_t());
-      ntuple_.setVar<int>("DaqDigiTOT", daqDigi.tot());
+      ntuple_.setVar<int>("DaqDigiADC", daq_digi.soi().adcT());
+      ntuple_.setVar<int>("DaqDigiTOT", daq_digi.tot());
 
-      const auto recHits = event.getCollection<ldmx::EcalHit>(
+      const auto rec_hits = event.getCollection<ldmx::EcalHit>(
           "EcalRecHits", ecal_rechits_passname_);
-      CHECK(recHits.size() == 1);
+      CHECK(rec_hits.size() == 1);
 
-      auto hit = recHits.at(0);
+      auto hit = rec_hits.at(0);
       ldmx::EcalID id(hit.getID());
       CHECK_FALSE(hit.isNoise());
-      CHECK(id.raw() == simHits.at(0).getID());
+      CHECK(id.raw() == sim_hits.at(0).getID());
 
       double daq_energy{hit.getAmplitude()};
-      CHECK_THAT(daq_energy, isCloseEnough(truth_energy, MAX_ENERGY_ERROR_DAQ,
+      CHECK_THAT(daq_energy, IsCloseEnough(truth_energy, MAX_ENERGY_ERROR_DAQ,
                                            MAX_ENERGY_PERCENT_ERROR_DAQ));
       ntuple_.setVar<float>("RecEnergy", hit.getAmplitude());
 
-      const auto trigDigis{event.getObject<ldmx::HgcrocTrigDigiCollection>(
+      const auto trig_digis{event.getObject<ldmx::HgcrocTrigDigiCollection>(
           "ecalTrigDigis", ecal_trig_digis_passname_)};
-      CHECK(trigDigis.size() == 1);
+      CHECK(trig_digis.size() == 1);
 
-      auto trigDigi = trigDigis.at(0);
+      auto trig_digi = trig_digis.at(0);
       float tp_energy =
-          8 * trigDigi.linearPrimitive() * 320. / 1024 * MeV_per_fC;
+          8 * trig_digi.linearPrimitive() * 320. / 1024 * ME_V_PER_F_C;
 
-      CHECK_THAT(tp_energy, isCloseEnough(truth_energy, MAX_ENERGY_ERROR_TP,
+      CHECK_THAT(tp_energy, IsCloseEnough(truth_energy, MAX_ENERGY_ERROR_TP,
                                           MAX_ENERGY_PERCENT_ERROR_TP));
       ntuple_.setVar<float>("TrigPrimEnergy", tp_energy);
-      ntuple_.setVar<int>("TrigPrimDigiEncoded", trigDigi.getPrimitive());
-      ntuple_.setVar<int>("TrigPrimDigiLinear", trigDigi.linearPrimitive());
+      ntuple_.setVar<int>("TrigPrimDigiEncoded", trig_digi.getPrimitive());
+      ntuple_.setVar<int>("TrigPrimDigiLinear", trig_digi.linearPrimitive());
     }
 
     return;

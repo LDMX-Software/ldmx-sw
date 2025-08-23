@@ -1,7 +1,7 @@
 #include "Hcal/HcalSingleEndRecProducer.h"
 namespace hcal {
 
-std::tuple<double, double, int> HcalSingleEndRecProducer::extract_measurements(
+std::tuple<double, double, int> HcalSingleEndRecProducer::extractMeasurements(
     const ldmx::HgcrocDigiCollection::HgcrocDigi& digi, double pedestal,
     double bx_shift) {
   // sum_adc = total of all but first in-time adc measurements
@@ -19,7 +19,7 @@ std::tuple<double, double, int> HcalSingleEndRecProducer::extract_measurements(
   double max_meas{0};
   for (std::size_t i_sample{0}; i_sample < digi.size(); i_sample++) {
     // adc logic
-    if (i_sample > 0) sum_adc += (digi.at(i_sample).adc_t() - pedestal);
+    if (i_sample > 0) sum_adc += (digi.at(i_sample).adcT() - pedestal);
 
     // tot logic
     sum_tot += digi.at(i_sample).tot();
@@ -38,8 +38,8 @@ std::tuple<double, double, int> HcalSingleEndRecProducer::extract_measurements(
                      (clock_cycle_ * toa_sample);
     }
 
-    if (digi.at(i_sample).adc_t() - pedestal > max_meas) {
-      max_meas = digi.at(i_sample).adc_t() - pedestal;
+    if (digi.at(i_sample).adcT() - pedestal > max_meas) {
+      max_meas = digi.at(i_sample).adcT() - pedestal;
       max_sample = i_sample;
     }
   }
@@ -67,29 +67,29 @@ void HcalSingleEndRecProducer::configure(framework::config::Parameters& p) {
 }
 
 void HcalSingleEndRecProducer::produce(framework::Event& event) {
-  const auto& hcalGeometry = getCondition<ldmx::HcalGeometry>(
+  const auto& hcal_geometry = getCondition<ldmx::HcalGeometry>(
       ldmx::HcalGeometry::CONDITIONS_OBJECT_NAME);
 
   const auto& conditions{
       getCondition<HcalReconConditions>(HcalReconConditions::CONDITIONS_NAME)};
 
-  auto hcalDigis =
+  auto hcal_digis =
       event.getObject<ldmx::HgcrocDigiCollection>(coll_name_, pass_name_);
 
-  std::vector<ldmx::HcalHit> hcalRecHits;
+  std::vector<ldmx::HcalHit> hcal_rec_hits;
 
-  isoi_ = hcalDigis.getSampleOfInterestIndex();
+  isoi_ = hcal_digis.getSampleOfInterestIndex();
 
-  for (auto const& digi : hcalDigis) {
+  for (auto const& digi : hcal_digis) {
     ldmx::HcalDigiID id_digi(digi.id());
     ldmx::HcalID id(id_digi.section(), id_digi.layer(), id_digi.strip());
 
     // amplitude/TOT reconstruction
     double num_mips_equivalent{0};
     auto [toa, sum_adc, sum_tot] =
-        extract_measurements(digi, conditions.adcPedestal(digi.id()),
-                             conditions.toaCalib(digi.id(), 0));
-    auto is_adc = conditions.is_adc(digi.id(), sum_tot);
+        extractMeasurements(digi, conditions.adcPedestal(digi.id()),
+                            conditions.toaCalib(digi.id(), 0));
+    auto is_adc = conditions.isAdc(digi.id(), sum_tot);
     if (is_adc) {
       double adc_calib = sum_adc / conditions.adcGain(digi.id(), 0);
       num_mips_equivalent = adc_calib;
@@ -97,37 +97,37 @@ void HcalSingleEndRecProducer::produce(framework::Event& event) {
       double tot_calib = conditions.linearize(digi.id(), sum_tot);
       num_mips_equivalent = tot_calib / conditions.adcGain(digi.id(), 0);
     }
-    int PEs = num_mips_equivalent * pe_per_mip_;
+    int p_es = num_mips_equivalent * pe_per_mip_;
     double reconstructed_energy =
         num_mips_equivalent * pe_per_mip_ * mip_energy_;
 
     // time reconstruction
-    double hitTime = toa;
+    double hit_time = toa;
 
     // position single ended (taken directly from geometry)
-    auto position = hcalGeometry.getStripCenterPosition(id);
+    auto position = hcal_geometry.getStripCenterPosition(id);
 
     // reconstructed Hit
-    ldmx::HcalHit recHit;
-    recHit.setID(id.raw());
-    recHit.setXPos(position.X());
-    recHit.setYPos(position.Y());
-    recHit.setZPos(position.Z());
-    recHit.setSection(id.section());
-    recHit.setStrip(id.strip());
-    recHit.setLayer(id.layer());
-    recHit.setEnd(id_digi.end());
-    recHit.setPE(PEs);
-    recHit.setMinPE(PEs);
-    recHit.setAmplitude(num_mips_equivalent);
-    recHit.setEnergy(reconstructed_energy);
-    recHit.setTime(hitTime);
-    recHit.setIsADC(is_adc);
-    hcalRecHits.push_back(recHit);
+    ldmx::HcalHit rec_hit;
+    rec_hit.setID(id.raw());
+    rec_hit.setXPos(position.X());
+    rec_hit.setYPos(position.Y());
+    rec_hit.setZPos(position.Z());
+    rec_hit.setSection(id.section());
+    rec_hit.setStrip(id.strip());
+    rec_hit.setLayer(id.layer());
+    rec_hit.setEnd(id_digi.end());
+    rec_hit.setPE(p_es);
+    rec_hit.setMinPE(p_es);
+    rec_hit.setAmplitude(num_mips_equivalent);
+    rec_hit.setEnergy(reconstructed_energy);
+    rec_hit.setTime(hit_time);
+    rec_hit.setIsADC(is_adc);
+    hcal_rec_hits.push_back(rec_hit);
   }
 
   // add collection to event bus
-  event.add(rec_coll_name_, hcalRecHits);
+  event.add(rec_coll_name_, hcal_rec_hits);
 }
 
 }  // namespace hcal

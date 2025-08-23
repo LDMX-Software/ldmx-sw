@@ -18,10 +18,10 @@ void TrigCaloCluster::clear() {
   ze_ = 0;
   dxdze_ = 0;
   dydze_ = 0;
-  is3D_ = false;
+  is3_d_ = false;
   layer_ = -1;
-  firstLayer_ = -1;
-  lastLayer_ = -1;
+  first_layer_ = -1;
+  last_layer_ = -1;
   depth_ = 0;
 }
 

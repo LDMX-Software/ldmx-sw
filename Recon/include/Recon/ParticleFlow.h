@@ -47,22 +47,22 @@ class ParticleFlow : public framework::Producer {
       framework::Event& event, std::string inputClusterCollName,
       std::string inputClusterPassName);
 
-  TGraph* eCorr_{0};
-  TGraph* hCorr_{0};
+  TGraph* e_corr_{0};
+  TGraph* h_corr_{0};
 
   // name of collection for PF inputs to be passed
-  std::string inputEcalCollName_;
-  std::string inputHcalCollName_;
-  std::string inputTrackCollName_;
+  std::string input_ecal_coll_name_;
+  std::string input_hcal_coll_name_;
+  std::string input_track_coll_name_;
   std::string input_ecal_passname_;
   std::string input_hcal_passname_;
   std::string input_tracks_passname_;
   // bool to toggle using pre-existing clusters instead of making new
   bool use_existing_ecal_clusters_;
   // name of collection for PF outputs
-  std::string outputCollName_;
+  std::string output_coll_name_;
   // configuration
-  bool singleParticle_;
+  bool single_particle_;
 };
 }  // namespace recon
 

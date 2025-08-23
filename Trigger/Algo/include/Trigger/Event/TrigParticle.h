@@ -53,36 +53,36 @@ class TrigParticle {
   double endz() const { return end_.Z(); }
 
   // cluster access
-  float getClusEnergy() const { return emClusE_; }
-  int getClusTP() const { return emClusNTP_; }
-  int getClusDepth() const { return emClusDepth_; }
+  float getClusEnergy() const { return em_clus_e_; }
+  int getClusTP() const { return em_clus_ntp_; }
+  int getClusDepth() const { return em_clus_depth_; }
   /* const TrigCaloCluster& getCluster() const {return clus_;} */
 
   // setters
   void setP4(const LorentzVector& p4) { p4_ = p4; }
   void setVertex(const Point& v) { vtx_ = v; }
   void setEndPoint(const Point& v) { end_ = v; }
-  void setClusEnergy(const float n) { emClusE_ = n; }
-  void setClusTP(const int n) { emClusNTP_ = n; }
-  void setClusDepth(const int n) { emClusDepth_ = n; }
+  void setClusEnergy(const float n) { em_clus_e_ = n; }
+  void setClusTP(const int n) { em_clus_ntp_ = n; }
+  void setClusDepth(const int n) { em_clus_depth_ = n; }
 
   /* void setCluster(const TrigCaloCluster& c) { */
   /*     clus_ = c; */
   /* } */
 
   // set HW values
-  void setHwPt(int pt) { hwPt_ = pt; }
-  void setHwEta(int eta) { hwEta_ = eta; }
-  void setHwPhi(int phi) { hwPhi_ = phi; }
-  void setHwQual(int qual) { hwQual_ = qual; }
-  void setHwIso(int iso) { hwIso_ = iso; }
+  void setHwPt(int pt) { hw_pt_ = pt; }
+  void setHwEta(int eta) { hw_eta_ = eta; }
+  void setHwPhi(int phi) { hw_phi_ = phi; }
+  void setHwQual(int qual) { hw_qual_ = qual; }
+  void setHwIso(int iso) { hw_iso_ = iso; }
 
   // retrieve HW values
-  int hwPt() const { return hwPt_; }
-  int hwEta() const { return hwEta_; }
-  int hwPhi() const { return hwPhi_; }
-  int hwQual() const { return hwQual_; }
-  int hwIso() const { return hwIso_; }
+  int hwPt() const { return hw_pt_; }
+  int hwEta() const { return hw_eta_; }
+  int hwPhi() const { return hw_phi_; }
+  int hwQual() const { return hw_qual_; }
+  int hwIso() const { return hw_iso_; }
 
  private:
   XYZTLorentzVector p4_{};
@@ -90,18 +90,18 @@ class TrigParticle {
 
   Point vtx_{};
   Point end_{};
-  int pdgId_{0};
+  int pdg_id_{0};
 
-  int hwPt_{0};
-  int hwEta_{0};
-  int hwPhi_{0};
-  int hwQual_{0};
-  int hwIso_{0};
+  int hw_pt_{0};
+  int hw_eta_{0};
+  int hw_phi_{0};
+  int hw_qual_{0};
+  int hw_iso_{0};
 
   // cluster attributes
-  float emClusE_{0};
-  int emClusNTP_{0};
-  int emClusDepth_{0};
+  float em_clus_e_{0};
+  int em_clus_ntp_{0};
+  int em_clus_depth_{0};
 
   /// ROOT Dictionary class definition macro
   ClassDef(TrigParticle, 2);

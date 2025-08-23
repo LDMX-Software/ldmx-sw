@@ -49,7 +49,7 @@ class QualityFlagAnalyzer : public framework::Analyzer {
 
   // plotting stuff
   int n_ev_{200};
-  static constexpr int n_channels_{16};
+  static constexpr int N_CHANNELS{16};
   int n_flags_{6};
   int pe_fill_nb_{0};
 

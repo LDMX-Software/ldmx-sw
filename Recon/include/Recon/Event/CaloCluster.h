@@ -62,19 +62,19 @@ class CaloCluster {
    * Sets total number of hits in the cluster.
    * @param nHits The total number of hits_.
    */
-  void setNHits(int nHits) { nHits_ = nHits; }
+  void setNHits(int nHits) { n_hits_ = nHits; }
 
   /**
    * Sets a sorted vector for the IDs of the hits_
    * that make up the cluster.
    * @param IDs Sorted vector of hit IDs.
    */
-  void setIDs(std::vector<unsigned int>& hitIDs) { hitIDs_ = hitIDs; }
+  void setIDs(std::vector<unsigned int>& hitIDs) { hit_i_ds_ = hitIDs; }
 
-  void setHitValsX(std::vector<float>& x_) { hitX_ = x_; }
-  void setHitValsY(std::vector<float>& x_) { hitY_ = x_; }
-  void setHitValsZ(std::vector<float>& x_) { hitZ_ = x_; }
-  void setHitValsE(std::vector<float>& x_) { hitE_ = x_; }
+  void setHitValsX(std::vector<float>& x_) { hit_x_ = x_; }
+  void setHitValsY(std::vector<float>& x_) { hit_y_ = x_; }
+  void setHitValsZ(std::vector<float>& x_) { hit_z_ = x_; }
+  void setHitValsE(std::vector<float>& x_) { hit_e_ = x_; }
 
   /**
    * Sets the three coordinates of the cluster centroid
@@ -83,22 +83,22 @@ class CaloCluster {
    * @param z_ The z_ coordinate.
    */
   void setCentroidXYZ(double x_, double y_, double z_) {
-    centroidX_ = x_;
-    centroidY_ = y_;
-    centroidZ_ = z_;
+    centroid_x_ = x_;
+    centroid_y_ = y_;
+    centroid_z_ = z_;
   }
   void setRMSXYZ(double x_, double y_, double z_) {
-    rmsX_ = x_;
-    rmsY_ = y_;
-    rmsZ_ = z_;
+    rms_x_ = x_;
+    rms_y_ = y_;
+    rms_z_ = z_;
   }
-  void setDXDZ(double x_) { DXDZ_ = x_; }
+  void setDXDZ(double x_) { dxdz_ = x_; }
 
-  void setDYDZ(double x_) { DYDZ_ = x_; }
+  void setDYDZ(double x_) { dydz_ = x_; }
 
-  void setEDXDZ(double x_) { errDXDZ_ = x_; }
+  void setEDXDZ(double x_) { err_dxdz_ = x_; }
 
-  void setEDYDZ(double x_) { errDYDZ_ = x_; }
+  void setEDYDZ(double x_) { err_dydz_ = x_; }
 
   /////////////////////////////////////////////
 
@@ -106,55 +106,55 @@ class CaloCluster {
   double getEnergy() const { return energy_; }
 
   // number of hits - equivalent to number of strips
-  int getNHits() const { return nHits_; }
+  int getNHits() const { return n_hits_; }
 
   // position (weighted by energy)
-  double getCentroidX() const { return centroidX_; }
-  double getCentroidY() const { return centroidY_; }
-  double getCentroidZ() const { return centroidZ_; }
-  double getRMSX() const { return rmsX_; }
-  double getRMSY() const { return rmsY_; }
-  double getRMSZ() const { return rmsZ_; }
+  double getCentroidX() const { return centroid_x_; }
+  double getCentroidY() const { return centroid_y_; }
+  double getCentroidZ() const { return centroid_z_; }
+  double getRMSX() const { return rms_x_; }
+  double getRMSY() const { return rms_y_; }
+  double getRMSZ() const { return rms_z_; }
 
-  double getDXDZ() const { return DXDZ_; }
+  double getDXDZ() const { return dxdz_; }
 
-  double getDYDZ() const { return DYDZ_; }
+  double getDYDZ() const { return dydz_; }
 
-  double getEDXDZ() const { return errDXDZ_; }
+  double getEDXDZ() const { return err_dxdz_; }
 
-  double getEDYDZ() const { return errDYDZ_; }
+  double getEDYDZ() const { return err_dydz_; }
 
   // get hit rawIDs (unused)
-  const std::vector<unsigned int>& getHitIDs() const { return hitIDs_; }
+  const std::vector<unsigned int>& getHitIDs() const { return hit_i_ds_; }
 
   // ability to store limited hit info
-  const std::vector<float>& getHitX() const { return hitX_; }
-  const std::vector<float>& getHitY() const { return hitY_; }
-  const std::vector<float>& getHitZ() const { return hitZ_; }
-  const std::vector<float>& getHitE() const { return hitE_; }
+  const std::vector<float>& getHitX() const { return hit_x_; }
+  const std::vector<float>& getHitY() const { return hit_y_; }
+  const std::vector<float>& getHitZ() const { return hit_z_; }
+  const std::vector<float>& getHitE() const { return hit_e_; }
 
   bool operator<(const CaloCluster& rhs) const {
     return this->getEnergy() < rhs.getEnergy();
   }
 
  protected:
-  std::vector<unsigned int> hitIDs_;
+  std::vector<unsigned int> hit_i_ds_;
   double energy_{0};
-  int nHits_{0};
-  double centroidX_{0};
-  double centroidY_{0};
-  double centroidZ_{0};
-  double rmsX_{0};
-  double rmsY_{0};
-  double rmsZ_{0};
-  double DXDZ_{0};
-  double DYDZ_{0};
-  double errDXDZ_{0};
-  double errDYDZ_{0};
-  std::vector<float> hitX_;
-  std::vector<float> hitY_;
-  std::vector<float> hitZ_;
-  std::vector<float> hitE_;
+  int n_hits_{0};
+  double centroid_x_{0};
+  double centroid_y_{0};
+  double centroid_z_{0};
+  double rms_x_{0};
+  double rms_y_{0};
+  double rms_z_{0};
+  double dxdz_{0};
+  double dydz_{0};
+  double err_dxdz_{0};
+  double err_dydz_{0};
+  std::vector<float> hit_x_;
+  std::vector<float> hit_y_;
+  std::vector<float> hit_z_;
+  std::vector<float> hit_e_;
 
  private:
   ClassDef(CaloCluster, 2);

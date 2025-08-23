@@ -145,7 +145,7 @@ void NtuplizeHgcrocDigiCollection::analyze(const framework::Event& event) {
       tot_comp_ = d.at(i_sample_).isTOTComplete();
       tot_ = d.at(i_sample_).tot();
       toa_ = d.at(i_sample_).toa();
-      int adc_t = d.at(i_sample_).adc_t();
+      int adc_t = d.at(i_sample_).adcT();
       raw_adc_ = adc_t;
       adc_ = adc_t - pedestal_table.get(d.id(), 0);
       flat_tree_->Fill();

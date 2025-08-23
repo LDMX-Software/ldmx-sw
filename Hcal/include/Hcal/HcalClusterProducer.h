@@ -48,12 +48,12 @@ class HcalClusterProducer : public framework::Producer {
 
  private:
   // double     EminSeed_{0.};
-  double EnoiseCut_{0.};
-  double deltaTime_{0};
-  double deltaR_{0};
-  double EminCluster_{0.};
-  double cutOff_{0.};
-  std::string clusterCollName_;
+  double enoise_cut_{0.};
+  double delta_time_{0};
+  double delta_r_{0};
+  double emin_cluster_{0.};
+  double cut_off_{0.};
+  std::string cluster_coll_name_;
   std::string hcal_hits_pass_name_;
 };
 

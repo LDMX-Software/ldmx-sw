@@ -166,7 +166,7 @@ class EcalVetoProcessor : public framework::Producer {
   /** Name of the collection which will containt the results. */
   std::string collection_name_{"EcalVeto"};
 
-  std::unique_ptr<ldmx::Ort::ONNXRuntime> rt_;
+  std::unique_ptr<ldmx::ort::ONNXRuntime> rt_;
 
   /// handle to current geometry (to share with member functions)
   const ldmx::EcalGeometry* geometry_;

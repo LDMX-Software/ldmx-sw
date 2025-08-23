@@ -122,11 +122,11 @@ void TestBeamHitAnalyzer::onProcessStart() {
                  n_p_ebins, 0, p_emax);
     h_pe_vs_delta_[i_b] = new TH2F(
         Form("h_pe_vs_delta_chan%i", i_b),
-        Form(";#Delta_{barID};PE, chan%i has max PE", i_b), n_channels_ + 1,
+        Form(";#delta_{barID};PE, chan%i has max PE", i_b), n_channels_ + 1,
         -n_channels_ / 2 - 0.5, n_channels_ / 2 + 0.5, n_p_ebins, 0, p_emax);
     h_delta_pe_vs_delta_[i_b] =
         new TH2F(Form("h_delta_pe_vs_delta_chan%i", i_b),
-                 Form(";#Delta_{barID};#Delta_PE, chan%i has max PE", i_b),
+                 Form(";#delta_{barID};#Delta_PE, chan%i has max PE", i_b),
                  n_channels_ + 1, -n_channels_ / 2 - 0.5, n_channels_ / 2 + 0.5,
                  n_p_ebins, 0, p_emax);
   }
@@ -143,7 +143,7 @@ void TestBeamHitAnalyzer::onProcessStart() {
   }
 
   h_pe_max_vs_delta_ =
-      new TH2F("h_pe_max_vs_delta_", ";#Delta_{barID};PE, max hit", n_channels_,
+      new TH2F("h_pe_max_vs_delta_", ";#delta_{barID};PE, max hit", n_channels_,
                -n_channels_ / 2, n_channels_ / 2, n_p_ebins, 0, p_emax);
   h_ev_disp_ =
       new TH2F(Form("h_ev_disp_ev%i", n_ev_), ";Event number; Bar ID; PE",

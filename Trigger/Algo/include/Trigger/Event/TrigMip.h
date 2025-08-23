@@ -29,7 +29,7 @@ class TrigMip {
   int nHits() const { return n_hits_; }
   int nHoles() const { return n_holes_; }
   int length() const { return length_; }
-  float SumEinIsolationRegion() const { return sum_e_in_isolation_region_; }
+  float sumEinIsolationRegion() const { return sum_e_in_isolation_region_; }
 
   void clear();
 

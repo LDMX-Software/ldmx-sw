@@ -9,18 +9,18 @@
 namespace trigger {
 
 struct EventDump {
-  uint64_t event;
-  std::vector<ldmx_int::EcalTP> EcalTPs;
+  uint64_t event_;
+  std::vector<ldmx_int::EcalTP> ecal_tps_;
 
-  EventDump() : event(0), EcalTPs() {}
+  EventDump() : event_(0), ecal_tps_() {}
   bool readFromFile(FILE *file) {
-    if (!fread(&event, sizeof(uint64_t), 1, file)) return false;
-    ldmx_int::readManyFromFile(EcalTPs, file);
+    if (!fread(&event_, sizeof(uint64_t), 1, file)) return false;
+    ldmx_int::readManyFromFile(ecal_tps_, file);
     return true;
   }
   bool writeToFile(FILE *file) {
-    fwrite(&event, sizeof(uint64_t), 1, file);
-    ldmx_int::writeManyToFile(EcalTPs, file);
+    fwrite(&event_, sizeof(uint64_t), 1, file);
+    ldmx_int::writeManyToFile(ecal_tps_, file);
     return true;
   }
 };
@@ -38,8 +38,8 @@ class DiscreteInputs {
   bool nextEvent() {
     if (feof(file_)) return false;
     if (!event_.readFromFile(file_)) return false;
-    printf("Beginning of event %lu (%lu TPs) \n", event_.event,
-           event_.EcalTPs.size());
+    printf("Beginning of event %lu (%lu TPs) \n", event_.event_,
+           event_.ecal_tps_.size());
     return true;
   }
   const EventDump &event() { return event_; }

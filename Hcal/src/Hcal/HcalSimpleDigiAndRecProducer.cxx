@@ -33,18 +33,18 @@ void HcalSimpleDigiAndRecProducer::onNewRun(const ldmx::RunHeader&) {
 }
 
 void HcalSimpleDigiAndRecProducer::produce(framework::Event& event) {
-  const auto& hcalGeometry = getCondition<ldmx::HcalGeometry>(
+  const auto& hcal_geometry = getCondition<ldmx::HcalGeometry>(
       ldmx::HcalGeometry::CONDITIONS_OBJECT_NAME);
 
-  std::vector<ldmx::HcalHit> hcalRecHits;
+  std::vector<ldmx::HcalHit> hcal_rec_hits;
 
-  auto simHits{event.getCollection<ldmx::SimCalorimeterHit>(input_coll_name_,
-                                                            input_pass_name_)};
+  auto sim_hits{event.getCollection<ldmx::SimCalorimeterHit>(input_coll_name_,
+                                                             input_pass_name_)};
   std::unordered_map<unsigned int, std::vector<const ldmx::SimCalorimeterHit*>>
       hits_by_id{};
   // Important, has to be a reference so that we don't take the address of a
   // variable that goes out of scope!
-  for (const auto& hit : simHits) {
+  for (const auto& hit : sim_hits) {
     auto id{hit.getID()};
     auto found{hits_by_id.find(id)};
     if (found == hits_by_id.end()) {
@@ -54,35 +54,35 @@ void HcalSimpleDigiAndRecProducer::produce(framework::Event& event) {
     }
   }
   for (const auto& [barID, simhits_in_bar] : hits_by_id) {
-    ldmx::HcalHit& recHit = hcalRecHits.emplace_back();
+    ldmx::HcalHit& rec_hit = hcal_rec_hits.emplace_back();
     double edep{};
     double time{};
-    std::vector<double> pos_{0, 0, 0};
+    std::vector<double> pos{0, 0, 0};
     for (auto hit : simhits_in_bar) {
       edep += hit->getEdep();
       double edep_hit = hit->getEdep();
       time += hit->getTime() * edep_hit;
-      auto hitPos{hit->getPosition()};
-      pos_[0] += hitPos[0] * edep_hit;
-      pos_[1] += hitPos[1] * edep_hit;
-      pos_[2] += hitPos[2] * edep_hit;
+      auto hit_pos{hit->getPosition()};
+      pos[0] += hit_pos[0] * edep_hit;
+      pos[1] += hit_pos[1] * edep_hit;
+      pos[2] += hit_pos[2] * edep_hit;
     }
-    ldmx::HcalID hitID{barID};
+    ldmx::HcalID hit_id{barID};
 
     // Position smearing
     double mean_pe{(edep / mev_per_mip_) * pe_per_mip_};
-    double xpos{pos_[0] / edep};
-    double ypos{pos_[1] / edep};
-    double zpos{pos_[2] / edep};
+    double xpos{pos[0] / edep};
+    double ypos{pos[1] / edep};
+    double zpos{pos[2] / edep};
     time /= edep;
 
-    auto orientation{hcalGeometry.getScintillatorOrientation(barID)};
+    auto orientation{hcal_geometry.getScintillatorOrientation(barID)};
     double half_total_width{
-        hcalGeometry.getHalfTotalWidth(hitID.section(), hitID.layer())};
-    double scint_bar_length{hcalGeometry.getScintillatorLength(hitID)};
+        hcal_geometry.getHalfTotalWidth(hit_id.section(), hit_id.layer())};
+    double scint_bar_length{hcal_geometry.getScintillatorLength(hit_id)};
 
-    auto stripCenter{hcalGeometry.getStripCenterPosition(hitID)};
-    if (hitID.section() == ldmx::HcalID::HcalSection::BACK) {
+    auto strip_center{hcal_geometry.getStripCenterPosition(hit_id)};
+    if (hit_id.section() == ldmx::HcalID::HcalSection::BACK) {
       double distance_along_bar =
           (orientation ==
            ldmx::HcalGeometry::ScintillatorOrientation::horizontal)
@@ -90,13 +90,13 @@ void HcalSimpleDigiAndRecProducer::produce(framework::Event& event) {
               : ypos;
       if (orientation ==
           ldmx::HcalGeometry::ScintillatorOrientation::horizontal) {
-        ypos = stripCenter.y();
+        ypos = strip_center.y();
         xpos += (*position_resolution_smear_)(rng_);
       } else {
-        xpos = stripCenter.x();
+        xpos = strip_center.x();
         ypos += (*position_resolution_smear_)(rng_);
       }
-      zpos = stripCenter.z();
+      zpos = strip_center.z();
       // Attenuation
       mean_pe *= exp(1. / attenuation_length_);
       double mean_pe_close =
@@ -109,57 +109,57 @@ void HcalSimpleDigiAndRecProducer::produce(framework::Event& event) {
                         ((half_total_width + distance_along_bar) /
                          (scint_bar_length * 0.5)) /
                         attenuation_length_);
-      int PE_close{
+      int pe_close{
           std::poisson_distribution<int>(mean_pe_close + mean_noise_)(rng_)};
-      int PE_far{
+      int pe_far{
           std::poisson_distribution<int>(mean_pe_far + mean_noise_)(rng_)};
-      recHit.setPE(PE_close + PE_far);
-      recHit.setMinPE(std::min(PE_close, PE_far));
+      rec_hit.setPE(pe_close + pe_far);
+      rec_hit.setMinPE(std::min(pe_close, pe_far));
     } else {
       // Side HCAL, no attenuation business since single ended readout
-      int PE{std::poisson_distribution<int>(mean_pe + mean_noise_)(rng_)};
-      recHit.setPE(PE);
-      recHit.setMinPE(PE);
+      int pe{std::poisson_distribution<int>(mean_pe + mean_noise_)(rng_)};
+      rec_hit.setPE(pe);
+      rec_hit.setMinPE(pe);
 
       // Checks orientation of side Hcal bars, sets center positions and add
       // smearing along bar orientation axis
       if (orientation ==
           ldmx::HcalGeometry::ScintillatorOrientation::horizontal) {
         xpos += (*position_resolution_smear_)(rng_);
-        ypos = stripCenter.y();
-        zpos = stripCenter.z();
+        ypos = strip_center.y();
+        zpos = strip_center.z();
       } else if (orientation ==
                  ldmx::HcalGeometry::ScintillatorOrientation::vertical) {
-        xpos = stripCenter.x();
+        xpos = strip_center.x();
         ypos += (*position_resolution_smear_)(rng_);
-        zpos = stripCenter.z();
+        zpos = strip_center.z();
       } else if (orientation ==
                  ldmx::HcalGeometry::ScintillatorOrientation::depth) {
-        xpos = stripCenter.x();
-        ypos = stripCenter.y();
+        xpos = strip_center.x();
+        ypos = strip_center.y();
         zpos += (*position_resolution_smear_)(rng_);
       } else {
-        xpos = stripCenter.x();
-        ypos = stripCenter.y();
-        zpos = stripCenter.z();
-        ldmx_log(warn) << "Bar orientation not found. Hit" << hitID.raw()
+        xpos = strip_center.x();
+        ypos = strip_center.y();
+        zpos = strip_center.z();
+        ldmx_log(warn) << "Bar orientation not found. Hit" << hit_id.raw()
                        << "positioned at bar center.";
       }
     }
 
-    recHit.setID(hitID.raw());
-    recHit.setXPos(xpos);
-    recHit.setNoise(false);
-    recHit.setYPos(ypos);
-    recHit.setZPos(zpos);
-    recHit.setTime(time);
-    recHit.setSection(hitID.section());
-    recHit.setStrip(hitID.strip());
-    recHit.setLayer(hitID.layer());
-    recHit.setEnergy(edep);
-    recHit.setOrientation(static_cast<int>(orientation));
+    rec_hit.setID(hit_id.raw());
+    rec_hit.setXPos(xpos);
+    rec_hit.setNoise(false);
+    rec_hit.setYPos(ypos);
+    rec_hit.setZPos(zpos);
+    rec_hit.setTime(time);
+    rec_hit.setSection(hit_id.section());
+    rec_hit.setStrip(hit_id.strip());
+    rec_hit.setLayer(hit_id.layer());
+    rec_hit.setEnergy(edep);
+    rec_hit.setOrientation(static_cast<int>(orientation));
   }
-  event.add(output_coll_name_, hcalRecHits);
+  event.add(output_coll_name_, hcal_rec_hits);
 }
 
 }  // namespace hcal

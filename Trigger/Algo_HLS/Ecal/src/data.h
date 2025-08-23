@@ -15,14 +15,14 @@ typedef ap_fixed<10, 9> xy_t;    // [mm] (-250 to 250, resolution = a few mm)
 typedef ap_fixed<16, 14> pxy_t;  // [MeV/c]
 
 struct EcalTP {
-  tid_t tid;
-  tp_t tp;
+  tid_t tid_;
+  tp_t tp_;
 };
 
 struct Ecal2dCluster {
-  e_t e;
-  xy_t x;
-  xy_t y;
+  e_t e_;
+  xy_t x_;
+  xy_t y_;
 };
 
 #endif

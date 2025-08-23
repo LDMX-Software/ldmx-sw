@@ -17,25 +17,25 @@ namespace hcal {
 class HcalReconConditions : public framework::ConditionsObject {
  public:
   /// index of m_adc_i in tot_calib table
-  static const unsigned int i_m_adc_i = 0;
+  static const unsigned int I_M_ADC_I = 0;
   /// index of cut_point_tot in tot_calib table
-  static const unsigned int i_cut_point_tot = 1;
+  static const unsigned int I_CUT_POINT_TOT = 1;
   /// index of high_slope in tot_calib table
-  static const unsigned int i_high_slope = 2;
+  static const unsigned int I_HIGH_SLOPE = 2;
   /// index of high_offset in tot_calib table
-  static const unsigned int i_high_offset = 3;
+  static const unsigned int I_HIGH_OFFSET = 3;
   /// index of low_slope in tot_calib table
-  static const unsigned int i_low_slope = 4;
+  static const unsigned int I_LOW_SLOPE = 4;
   /// index of low_power in tot_calib table
-  static const unsigned int i_low_power = 5;
+  static const unsigned int I_LOW_POWER = 5;
   /// index of lower_offset in tot_calib table
-  static const unsigned int i_lower_offset = 6;
+  static const unsigned int I_LOWER_OFFSET = 6;
   /// index of tot_not in tot_calib table
-  static const unsigned int i_tot_not = 7;
+  static const unsigned int I_TOT_NOT = 7;
   /// index of channel in tot_calib table
-  static const unsigned int i_channel = 8;
+  static const unsigned int I_CHANNEL = 8;
   /// index of flagged in tot_calib table
-  static const unsigned int i_flagged = 9;
+  static const unsigned int I_FLAGGED = 9;
   /// the name of the HcalReconConditions table
   /// (must match python registration name)
   static const std::string CONDITIONS_NAME;
@@ -86,7 +86,7 @@ class HcalReconConditions : public framework::ConditionsObject {
    * @param[in] sum_tot already evaluated sum of TOT values
    * @return true if digi is in ADC mode
    */
-  bool is_adc(const ldmx::HcalDigiID& id, double sum_tot) const;
+  bool isAdc(const ldmx::HcalDigiID& id, double sum_tot) const;
 
   /**
    * linearize the input sum_tot for the input channel

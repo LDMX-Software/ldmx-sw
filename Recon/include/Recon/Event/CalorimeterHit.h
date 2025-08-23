@@ -138,13 +138,13 @@ class CalorimeterHit {
    * Is this hit a noise hit?
    * @return true if this hit is a noise hit
    */
-  bool isNoise() const { return isNoise_; }
+  bool isNoise() const { return is_noise_; }
 
   /**
    * Set if this hit is a noise hit.
    * @param yes true if this hit is a noise hit
    */
-  void setNoise(bool yes) { isNoise_ = yes; }
+  void setNoise(bool yes) { is_noise_ = yes; }
 
   /**
    * Sort by time of hit
@@ -176,7 +176,7 @@ class CalorimeterHit {
   float zpos_{-9999.};
 
   /** Is this a noise hit? */
-  bool isNoise_{false};
+  bool is_noise_{false};
 
   /**
    * The ROOT class definition.
