@@ -71,20 +71,20 @@ void TrigScintDigiProducer::produce(framework::Event &event) {
     for (int i = 0; i < sim_hit.getNumberOfContribs(); i++) {
       auto contrib = sim_hit.getContrib(i);
 
-      ldmx_log(trace) << "Contrib " << i << " trackID: " << contrib.trackID
-                      << " pdgID: " << contrib.pdgCode
-                      << " edep: " << contrib.edep;
+      ldmx_log(trace) << "contrib " << i << " trackID: " << contrib.track_id_
+                      << " pdgID: " << contrib.pdg_code_
+                      << " edep: " << contrib.edep_;
       ldmx_log(trace) << "\t particle id: "
-                      << particle_map[contrib.trackID].getPdgID()
+                      << particle_map[contrib.track_id_].getPdgID()
                       << " particle status: "
-                      << particle_map[contrib.trackID].getGenStatus();
+                      << particle_map[contrib.track_id_].getGenStatus();
 
-      if (particle_map[contrib.trackID].getPdgID() == 11 &&
-          particle_map[contrib.trackID].getGenStatus() == 1) {
+      if (particle_map[contrib.track_id_].getPdgID() == 11 &&
+          particle_map[contrib.track_id_].getGenStatus() == 1) {
         if (beam_frac.find(id) == beam_frac.end()) {
-          beam_frac[id] = contrib.edep;
+          beam_frac[id] = contrib.edep_;
         } else {
-          beam_frac[id] += contrib.edep;
+          beam_frac[id] += contrib.edep_;
         }
       }
     }

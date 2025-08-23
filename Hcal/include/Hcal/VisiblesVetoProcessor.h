@@ -70,7 +70,7 @@ class VisiblesVetoProcessor : public framework::Producer {
 
   std::string collection_name_{"VisiblesVeto"};
 
-  std::unique_ptr<ldmx::Ort::ONNXRuntime> rt_;
+  std::unique_ptr<ldmx::ort::ONNXRuntime> rt_;
 };
 
 }  // namespace hcal

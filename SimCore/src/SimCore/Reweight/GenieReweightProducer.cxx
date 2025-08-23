@@ -65,7 +65,7 @@ void GenieReweightProducer::configure(framework::config::Parameters& ps) {
   std::normal_distribution<double> normal_distribution;
 
   for (auto const& vt_str : var_types_strings) {
-    auto vtype = ldmx::EventWeights::string_to_variation_type(vt_str);
+    auto vtype = ldmx::EventWeights::stringToVariationType(vt_str);
     for (size_t i_w = 0; i_w < n_weights_; ++i_w)
       variation_map_[vtype].push_back(normal_distribution(generator));
   }

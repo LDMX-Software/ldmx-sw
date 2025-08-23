@@ -14,9 +14,9 @@ namespace utility {
  * of static const varaibles.
  */
 template <short N>
-struct mask_backend {
+struct MaskBackend {
   /// value of mask
-  static const uint64_t value = (1ul << N) - 1ul;
+  static const uint64_t VALUE = (1ul << N) - 1ul;
 };
 
 /**
@@ -39,7 +39,7 @@ struct mask_backend {
  * @tparam N number of lowest-order bits to mask
  */
 template <short N>
-constexpr uint64_t mask = mask_backend<N>::value;
+constexpr uint64_t MASK = MaskBackend<N>::VALUE;
 
 }  // namespace utility
 }  // namespace packing

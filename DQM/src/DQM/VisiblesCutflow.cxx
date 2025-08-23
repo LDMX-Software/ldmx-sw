@@ -22,7 +22,7 @@
 namespace dqm {
 
 void VisiblesCutflow::configure(framework::config::Parameters &parameters) {
-  rt_ = std::make_unique<ldmx::Ort::ONNXRuntime>(
+  rt_ = std::make_unique<ldmx::ort::ONNXRuntime>(
       parameters.get<std::string>("bdt_file"));
   feature_list_name_ = parameters.get<std::string>("feature_list_name");
   bdt_cut_val_ = parameters.get<double>("disc_cut");
@@ -367,7 +367,7 @@ void VisiblesCutflow::analyze(const framework::Event &event) {
   bdt_features.push_back(hcal_energy);
   bdt_features.push_back(r_mean_from_photon_track);
 
-  ldmx::Ort::FloatArrays inputs({bdt_features});
+  ldmx::ort::FloatArrays inputs({bdt_features});
   float pred =
       rt_->run({feature_list_name_}, inputs, {"probabilities"})[0].at(1);
 

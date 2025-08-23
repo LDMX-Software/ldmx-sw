@@ -49,7 +49,7 @@ void QualityFlagAnalyzer::analyze(const framework::Event& event) {
   ldmx_log(debug) << "in event " << ev_nb << "; n_channels_ = " << n_chan;
 
   bool exists_intermediate_pe = false;
-  float hit_p_es[n_channels_] = {0.};
+  float hit_pes[N_CHANNELS] = {0.};
 
   // ok. get each channel, and find the associated hit, using bar nb.
 
@@ -66,7 +66,7 @@ void QualityFlagAnalyzer::analyze(const framework::Event& event) {
     for (auto hit : hits) {  // we will be ok even if there is no match
       if (hit.getBarID() == bar) {
         flag = hit.getQualityFlag();
-        hit_p_es[bar] = hit.getPE();
+        hit_pes[bar] = hit.getPE();
         if (flag == 0 && bar < 12 && 15 < hit.getPE() && hit.getPE() < 40)
           exists_intermediate_pe = true;
       }
@@ -76,7 +76,7 @@ void QualityFlagAnalyzer::analyze(const framework::Event& event) {
 
     // if flag = 0, fill for clean versions of the usual event displays
     if (flag == 0 && ev_nb < n_ev_ &&
-        bar < n_channels_) {  // stick within the predefined histogram array
+        bar < N_CHANNELS) {  // stick within the predefined histogram array
       for (int i_t = 0; i_t < q.size(); i_t++) {
         ldmx_log(debug) << "in event " << ev_nb << "; channel " << bar
                         << ", got charge[" << i_t << "] = " << q.at(i_t);
@@ -149,7 +149,7 @@ void QualityFlagAnalyzer::analyze(const framework::Event& event) {
                                                  fabs(q_err.at(i_t)));
       }  // over time samples
       h_out_pe_[pe_fill_nb_][bar]->GetYaxis()->SetTitle(
-          Form("Q, chan %i, ev %i, PE %.2f", bar, ev_nb, hit_p_es[bar]));
+          Form("Q, chan %i, ev %i, PE %.2f", bar, ev_nb, hit_pes[bar]));
     }  // over channels
     pe_fill_nb_++;  // update filled event counter for this flag
   }  // if fill
@@ -172,13 +172,13 @@ void QualityFlagAnalyzer::onProcessStart() {
 
   ldmx_log(debug) << "Setting up histograms... ";
 
-  for (int i_b = 0; i_b < n_channels_; i_b++) {
+  for (int i_b = 0; i_b < N_CHANNELS; i_b++) {
     h_pe_[i_b] = new TH1F(Form("hPE_chan%i", i_b), Form(";PE, chan%i", i_b),
                           n_p_ebins, 0, p_emax);
   }
 
   for (int i_e = 0; i_e < n_ev_; i_e++) {
-    for (int i_b = 0; i_b < n_channels_; i_b++) {
+    for (int i_b = 0; i_b < N_CHANNELS; i_b++) {
       h_out_[i_e][i_b] =
           new TH1F(Form("hCharge_chan%i_ev%i", i_b, i_e),
                    Form(";time sample; Q, channel %i, event %i [fC]", i_b, i_e),
@@ -202,7 +202,7 @@ void QualityFlagAnalyzer::onProcessStart() {
 
   h_td_cfire_chan_vs_event_ = new TH2F(
       "h_td_cfire_chan_vs_event_", ";channel with TDC < 63;event number",
-      n_channels_, -0.5, n_channels_ - 0.5, n_ev_, 0, n_ev_);
+      N_CHANNELS, -0.5, N_CHANNELS - 0.5, n_ev_, 0, n_ev_);
 
   pe_fill_nb_ = 0;
   ldmx_log(debug) << "done setting up histograms";

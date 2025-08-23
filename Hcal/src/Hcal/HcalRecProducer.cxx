@@ -32,118 +32,118 @@ void HcalRecProducer::configure(framework::config::Parameters& ps) {
   clock_cycle_ = ps.get<double>("clock_cycle");
   voltage_per_mip_ = ps.get<double>("voltage_per_mip");
   attlength_ = ps.get<double>("attenuationLength");
-  nADCs_ = ps.get<int>("nADCs");
+  n_ad_cs_ = ps.get<int>("nADCs");
 
   // configuring corrections graphs derived on the fly
   // TODO: maybe we should save these as a graph instead?
-  rateUpSlope_ = ps.get<double>("rateUpSlope");
-  timeUpSlope_ = ps.get<double>("timeUpSlope");
-  rateDnSlope_ = ps.get<double>("rateDnSlope");
-  timeDnSlope_ = ps.get<double>("timeDnSlope");
-  timePeak_ = ps.get<double>("timePeak");
-  pulseFunc_ =
-      TF1("pulseFunc",
-          "[0]*((1.0+exp([1]*(-[2]+[3])))*(1.0+exp([5]*(-[6]+[3]))))/"
-          "((1.0+exp([1]*(x-[2]+[3]-[4])))*(1.0+exp([5]*(x-[6]+[3]-[4]))))",
-          (double)nADCs_ * clock_cycle_ * -1, (double)nADCs_ * clock_cycle_);
-  pulseFunc_.FixParameter(1, rateUpSlope_);
-  pulseFunc_.FixParameter(2, timeUpSlope_);
-  pulseFunc_.FixParameter(3, timePeak_);
-  pulseFunc_.FixParameter(5, rateDnSlope_);
-  pulseFunc_.FixParameter(6, timeDnSlope_);
-  pulseFunc_.FixParameter(4, 0);
-  pulseFunc_.FixParameter(0, 1);
+  rate_up_slope_ = ps.get<double>("rateUpSlope");
+  time_up_slope_ = ps.get<double>("timeUpSlope");
+  rate_dn_slope_ = ps.get<double>("rateDnSlope");
+  time_dn_slope_ = ps.get<double>("timeDnSlope");
+  time_peak_ = ps.get<double>("timePeak");
+  pulse_func_ = TF1(
+      "pulseFunc",
+      "[0]*((1.0+exp([1]*(-[2]+[3])))*(1.0+exp([5]*(-[6]+[3]))))/"
+      "((1.0+exp([1]*(x-[2]+[3]-[4])))*(1.0+exp([5]*(x-[6]+[3]-[4]))))",
+      (double)n_ad_cs_ * clock_cycle_ * -1, (double)n_ad_cs_ * clock_cycle_);
+  pulse_func_.FixParameter(1, rate_up_slope_);
+  pulse_func_.FixParameter(2, time_up_slope_);
+  pulse_func_.FixParameter(3, time_peak_);
+  pulse_func_.FixParameter(5, rate_dn_slope_);
+  pulse_func_.FixParameter(6, time_dn_slope_);
+  pulse_func_.FixParameter(4, 0);
+  pulse_func_.FixParameter(0, 1);
 
   // build amplitude correction (Ampl[t-1]/Ampl[t]) with pulse-shape
   int n = 0;
   for (double t = -clock_cycle_; t < clock_cycle_; t += 0.01) {
-    double ampl_t = pulseFunc_.Eval(t);
-    double ampl_tm1 = pulseFunc_.Eval(t - clock_cycle_);
+    double ampl_t = pulse_func_.Eval(t);
+    double ampl_tm1 = pulse_func_.Eval(t - clock_cycle_);
     if (ampl_tm1 > ampl_t) continue;
-    correctionAmpl_.SetPoint(n, ampl_tm1 / ampl_t, ampl_t);
-    if (n == 0) minAmplFraction_ = ampl_tm1 / ampl_t;
+    correction_ampl_.SetPoint(n, ampl_tm1 / ampl_t, ampl_t);
+    if (n == 0) min_ampl_fraction_ = ampl_tm1 / ampl_t;
     n++;
   }
 
   // build TOA timewalk correction with pulse-shape
-  double toaThreshold = ps.get<double>("avgToaThreshold");
+  double toa_threshold = ps.get<double>("avgToaThreshold");
   double gain = ps.get<double>("avgGain");
   double pedestal = ps.get<double>("avgPedestal");
   n = 0;
-  for (double ampl = toaThreshold + 0.1; ampl < 10000; ampl += 0.01) {
-    pulseFunc_.FixParameter(0, ampl);
-    double ampl_t = gain * pedestal + pulseFunc_.Eval(0);
-    double toa =
-        fabs(pulseFunc_.GetX(toaThreshold, (double)nADCs_ * clock_cycle_ * -1,
-                             (double)nADCs_ * clock_cycle_));
-    correctionTOA_.SetPoint(n, ampl_t, toa);
-    if (n == 0) minAmpl_ = ampl_t;
+  for (double ampl = toa_threshold + 0.1; ampl < 10000; ampl += 0.01) {
+    pulse_func_.FixParameter(0, ampl);
+    double ampl_t = gain * pedestal + pulse_func_.Eval(0);
+    double toa = fabs(pulse_func_.GetX(toa_threshold,
+                                       (double)n_ad_cs_ * clock_cycle_ * -1,
+                                       (double)n_ad_cs_ * clock_cycle_));
+    correction_toa_.SetPoint(n, ampl_t, toa);
+    if (n == 0) min_ampl_ = ampl_t;
     n++;
   }
-  correctionTOA_.SetBit(TGraph::kIsSortedX);
+  correction_toa_.SetBit(TGraph::kIsSortedX);
 }
 
 double HcalRecProducer::getTOA(
     const ldmx::HgcrocDigiCollection::HgcrocDigi digi, double pedestal,
     unsigned int iSOI) const {
   // get toa relative to the startBX
-  double toaRelStartBX(0.), maxMeas{0.};
-  int toaSample(0), maxSample(0), iADC(0);
+  double toa_rel_start_bx(0.), max_meas{0.};
+  int toa_sample(0), max_sample(0), i_adc(0);
   for (int i_sample{0}; i_sample < digi.size(); i_sample++) {
     auto sample{digi.at(i_sample)};
     if (sample.toa() > 0) {
-      toaRelStartBX = sample.toa() * (clock_cycle_ / 1024);  // ns
+      toa_rel_start_bx = sample.toa() * (clock_cycle_ / 1024);  // ns
       // find in which ADC sample the TOA was taken
-      toaSample = iADC;
+      toa_sample = i_adc;
     }
-    if ((sample.adc_t() - pedestal) > maxMeas) {
-      maxMeas = (sample.adc_t() - pedestal);
-      maxSample = iADC;
+    if ((sample.adcT() - pedestal) > max_meas) {
+      max_meas = (sample.adcT() - pedestal);
+      max_sample = i_adc;
     }
-    iADC++;
+    i_adc++;
   }
 
   // time w.r.t to the peak
-  double toa = (maxSample - toaSample) * clock_cycle_ - toaRelStartBX;
+  double toa = (max_sample - toa_sample) * clock_cycle_ - toa_rel_start_bx;
 
   // time w.r.t to the SOI
-  toa += ((int)iSOI - maxSample) * clock_cycle_;
+  toa += ((int)iSOI - max_sample) * clock_cycle_;
 
   return toa;
 }
 
 void HcalRecProducer::produce(framework::Event& event) {
   // get the Hcal Geometry
-  const auto& hcalGeometry = getCondition<ldmx::HcalGeometry>(
+  const auto& hcal_geometry = getCondition<ldmx::HcalGeometry>(
       ldmx::HcalGeometry::CONDITIONS_OBJECT_NAME);
 
   // get the reconstruction parameters
   const auto& the_conditions{
       getCondition<HcalReconConditions>(HcalReconConditions::CONDITIONS_NAME)};
 
-  std::vector<ldmx::HcalHit> hcalRecHits;
-  auto hcalDigis = event.getObject<ldmx::HgcrocDigiCollection>(digi_coll_name_,
-                                                               digi_pass_name_);
-  int numDigiHits = hcalDigis.getNumDigis();
+  std::vector<ldmx::HcalHit> hcal_rec_hits;
+  auto hcal_digis = event.getObject<ldmx::HgcrocDigiCollection>(
+      digi_coll_name_, digi_pass_name_);
+  int num_digi_hits = hcal_digis.getNumDigis();
 
   // get sample of interest index
-  unsigned int iSOI = hcalDigis.getSampleOfInterestIndex();
+  unsigned int i_soi = hcal_digis.getSampleOfInterestIndex();
 
   // loop through digis
-  int iDigi = 0;
-  while (iDigi < numDigiHits) {
-    auto digi_posend = hcalDigis.getDigi(iDigi);
+  int i_digi = 0;
+  while (i_digi < num_digi_hits) {
+    auto digi_posend = hcal_digis.getDigi(i_digi);
 
     // ID from first digi sample (which should be in positive end)
     ldmx::HcalDigiID id_posend(digi_posend.id());
     ldmx::HcalID id(id_posend.section(), id_posend.layer(), id_posend.strip());
 
     // position from ID
-    auto position = hcalGeometry.getStripCenterPosition(id);
+    auto position = hcal_geometry.getStripCenterPosition(id);
     double half_total_width =
-        hcalGeometry.getHalfTotalWidth(id.section(), id.layer());
-    double ecal_dx = hcalGeometry.getEcalDx();
-    double ecal_dy = hcalGeometry.getEcalDy();
+        hcal_geometry.getHalfTotalWidth(id.section(), id.layer());
+    double ecal_dx = hcal_geometry.getEcalDx();
+    double ecal_dy = hcal_geometry.getEcalDy();
 
     // compute distance to the end of the bar
     // for back Hcal, we take the half of the bar
@@ -166,19 +166,19 @@ void HcalRecProducer::produce(framework::Event& event) {
     // get the estimated voltage and time from digi samples
     double voltage(0.);
     double voltage_min(0.);
-    double hitTime(0.);
+    double hit_time(0.);
 
-    double amplT(0.);
-    double amplT_posend(0.), amplTm1_posend(0.);
-    double amplT_negend(0.), amplTm1_negend(0.);
+    double ampl_t(0.);
+    double ampl_t_posend(0.), ampl_tm1_posend(0.);
+    double ampl_t_negend(0.), ampl_tm1_negend(0.);
 
     // Check if the bar is oriented in X or Y
-    const auto orientation{hcalGeometry.getScintillatorOrientation(id)};
+    const auto orientation{hcal_geometry.getScintillatorOrientation(id)};
     int orientation_int = static_cast<int>(orientation);
 
     // double readout
     if (id.section() == ldmx::HcalID::HcalSection::BACK) {
-      auto digi_negend = hcalDigis.getDigi(iDigi + 1);
+      auto digi_negend = hcal_digis.getDigi(i_digi + 1);
       ldmx::HcalDigiID id_negend(digi_negend.id());
 
       double voltage_posend, voltage_negend;
@@ -190,44 +190,46 @@ void HcalRecProducer::produce(framework::Event& event) {
             (digi_negend.tot() - the_conditions.totCalib(id_negend, 0)) *
             the_conditions.totCalib(id_negend, 1);
       } else {
-        amplT_posend =
-            digi_posend.soi().adc_t() - the_conditions.adcPedestal(id_posend);
-        amplTm1_posend =
-            digi_posend.soi().adc_tm1() - the_conditions.adcPedestal(id_posend);
-        amplT_negend =
-            digi_negend.soi().adc_t() - the_conditions.adcPedestal(id_negend);
-        amplTm1_negend =
-            digi_negend.soi().adc_tm1() - the_conditions.adcPedestal(id_negend);
+        ampl_t_posend =
+            digi_posend.soi().adcT() - the_conditions.adcPedestal(id_posend);
+        ampl_tm1_posend =
+            digi_posend.soi().adcTm1() - the_conditions.adcPedestal(id_posend);
+        ampl_t_negend =
+            digi_negend.soi().adcT() - the_conditions.adcPedestal(id_negend);
+        ampl_tm1_negend =
+            digi_negend.soi().adcTm1() - the_conditions.adcPedestal(id_negend);
 
         // correct amplitude (amplitude fractions from both ends need to be
         // above the boundary of the correction)
-        if (amplTm1_posend / amplT_posend > minAmplFraction_ &&
-            amplTm1_negend / amplT_negend > minAmplFraction_) {
-          amplT_posend *= correctionAmpl_.Eval(amplTm1_posend / amplT_posend);
-          amplT_negend *= correctionAmpl_.Eval(amplTm1_negend / amplT_negend);
+        if (ampl_tm1_posend / ampl_t_posend > min_ampl_fraction_ &&
+            ampl_tm1_negend / ampl_t_negend > min_ampl_fraction_) {
+          ampl_t_posend *=
+              correction_ampl_.Eval(ampl_tm1_posend / ampl_t_posend);
+          ampl_t_negend *=
+              correction_ampl_.Eval(ampl_tm1_negend / ampl_t_negend);
         }
 
         // set voltage
-        voltage_posend = amplT_posend * the_conditions.adcGain(id_posend, 0);
-        voltage_negend = amplT_negend * the_conditions.adcGain(id_negend, 0);
+        voltage_posend = ampl_t_posend * the_conditions.adcGain(id_posend, 0);
+        voltage_negend = ampl_t_negend * the_conditions.adcGain(id_negend, 0);
       }
 
       // get TOA
-      double TOA_posend =
-          getTOA(digi_posend, the_conditions.adcPedestal(id_posend), iSOI);
-      double TOA_negend =
-          getTOA(digi_negend, the_conditions.adcPedestal(id_negend), iSOI);
+      double toa_posend =
+          getTOA(digi_posend, the_conditions.adcPedestal(id_posend), i_soi);
+      double toa_negend =
+          getTOA(digi_negend, the_conditions.adcPedestal(id_negend), i_soi);
 
       // get sign of position along the bar
-      int position_bar_sign = (TOA_posend - TOA_negend) > 0 ? 1 : -1;
+      int position_bar_sign = (toa_posend - toa_negend) > 0 ? 1 : -1;
 
       // correct TOA
       // amplitudes from both ends need to be above the boundary of the
       // correction otherwise, one TOA gets corrected and the other does not,
       // which results in a large TOA difference and an out-of-bounds position
-      if (amplT_posend > minAmpl_ && amplT_negend > minAmpl_) {
-        TOA_posend = correctionTOA_.Eval(amplT_posend) - TOA_posend;
-        TOA_negend = correctionTOA_.Eval(amplT_negend) - TOA_negend;
+      if (ampl_t_posend > min_ampl_ && ampl_t_negend > min_ampl_) {
+        toa_posend = correction_toa_.Eval(ampl_t_posend) - toa_posend;
+        toa_negend = correction_toa_.Eval(ampl_t_negend) - toa_negend;
       }
 
       // get x(y) coordinate from TOA measurement = (dt*v/2)
@@ -235,7 +237,7 @@ void HcalRecProducer::produce(framework::Event& event) {
       // velocity of light in polystyrene, n = 1.6 = c/v
       double v = 299.792 / 1.6;
       double position_bar =
-          position_bar_sign * fabs(TOA_posend - TOA_negend) * v / 2;
+          position_bar_sign * fabs(toa_posend - toa_negend) * v / 2;
 
       // reverse voltage attenuation
       // if position along the bar is positive, then the positive end will have
@@ -252,7 +254,7 @@ void HcalRecProducer::produce(framework::Event& event) {
       voltage_min = std::min(voltage_posend, voltage_negend);
 
       // set amplitude as the average of both bars (reverse attenuated)
-      amplT = (amplT_posend / att_posend + amplT_negend / att_negend) / 2;
+      ampl_t = (ampl_t_posend / att_posend + ampl_t_negend / att_negend) / 2;
 
       // set position along the bar
       if (orientation ==
@@ -265,9 +267,9 @@ void HcalRecProducer::produce(framework::Event& event) {
       // set hit time
       // TODO: does this need to revert shift because of propagation of light in
       // polysterene?
-      hitTime = fabs(TOA_posend + TOA_negend) / 2;  // ns
+      hit_time = fabs(toa_posend + toa_negend) / 2;  // ns
 
-      iDigi += 2;
+      i_digi += 2;
     }  // end double readout loop
     else {  // single readout
 
@@ -287,11 +289,11 @@ void HcalRecProducer::produce(framework::Event& event) {
       } else {
         // ADC mode of readout
         // ADC - voltage measurement at a specific time of the pulse
-        amplT_posend =
-            digi_posend.soi().adc_t() - the_conditions.adcPedestal(id_posend);
-        amplTm1_posend =
-            digi_posend.soi().adc_tm1() - the_conditions.adcPedestal(id_posend);
-        voltage_i = amplT_posend * the_conditions.adcGain(id_posend);
+        ampl_t_posend =
+            digi_posend.soi().adcT() - the_conditions.adcPedestal(id_posend);
+        ampl_tm1_posend =
+            digi_posend.soi().adcTm1() - the_conditions.adcPedestal(id_posend);
+        voltage_i = ampl_t_posend * the_conditions.adcGain(id_posend);
       }
 
       // reverse voltage attenuation
@@ -306,19 +308,19 @@ void HcalRecProducer::produce(framework::Event& event) {
       voltage_min = voltage_i;
 
       // set amplitude (reverse attenuated)
-      amplT = amplT_posend / att;
+      ampl_t = ampl_t_posend / att;
 
       // get TOA
-      double TOA =
-          getTOA(digi_posend, the_conditions.adcPedestal(id_posend), iSOI);
+      double toa =
+          getTOA(digi_posend, the_conditions.adcPedestal(id_posend), i_soi);
 
       // correct TOA
-      TOA = correctionTOA_.Eval(amplT) - TOA;
+      toa = correction_toa_.Eval(ampl_t) - toa;
 
       // set hit time
-      hitTime = TOA;  // ns
+      hit_time = toa;  // ns
 
-      iDigi++;
+      i_digi++;
     }  // end single readout loop
 
     double num_mips_equivalent = voltage / voltage_per_mip_;
@@ -344,40 +346,40 @@ void HcalRecProducer::produce(framework::Event& event) {
      **/
     double reconstructed_energy = energy_deposited;
 
-    int PEs = num_mips_equivalent * pe_per_mip_;
-    int minPEs = (voltage_min / voltage_per_mip_) * pe_per_mip_;
+    int p_es = num_mips_equivalent * pe_per_mip_;
+    int min_p_es = (voltage_min / voltage_per_mip_) * pe_per_mip_;
 
     // copy over information to rec hit structure in new collection
-    ldmx::HcalHit recHit;
-    recHit.setID(id.raw());
-    recHit.setXPos(position.X());
-    recHit.setYPos(position.Y());
-    recHit.setZPos(position.Z());
-    recHit.setSection(id.section());
-    recHit.setStrip(id.strip());
-    recHit.setLayer(id.layer());
-    recHit.setPE(PEs);
-    recHit.setMinPE(minPEs);
-    recHit.setAmplitude((amplT / voltage_per_mip_) * mip_energy_);
-    recHit.setEnergy(reconstructed_energy);
-    recHit.setTime(hitTime);
-    recHit.setOrientation(orientation_int);
-    hcalRecHits.push_back(recHit);
+    ldmx::HcalHit rec_hit;
+    rec_hit.setID(id.raw());
+    rec_hit.setXPos(position.X());
+    rec_hit.setYPos(position.Y());
+    rec_hit.setZPos(position.Z());
+    rec_hit.setSection(id.section());
+    rec_hit.setStrip(id.strip());
+    rec_hit.setLayer(id.layer());
+    rec_hit.setPE(p_es);
+    rec_hit.setMinPE(min_p_es);
+    rec_hit.setAmplitude((ampl_t / voltage_per_mip_) * mip_energy_);
+    rec_hit.setEnergy(reconstructed_energy);
+    rec_hit.setTime(hit_time);
+    rec_hit.setOrientation(orientation_int);
+    hcal_rec_hits.push_back(rec_hit);
   }
 
   if (event.exists(sim_hit_coll_name_, sim_hit_pass_name_)) {
     // hcal sim hits_ exist ==> label which hits_ are real and which are pure
     // noise
-    auto hcalSimHits{event.getCollection<ldmx::SimCalorimeterHit>(
+    auto hcal_sim_hits{event.getCollection<ldmx::SimCalorimeterHit>(
         sim_hit_coll_name_, sim_hit_pass_name_)};
     std::set<int> real_hits;
-    for (auto const& sim_hit : hcalSimHits) real_hits.insert(sim_hit.getID());
-    for (auto& hit : hcalRecHits)
+    for (auto const& sim_hit : hcal_sim_hits) real_hits.insert(sim_hit.getID());
+    for (auto& hit : hcal_rec_hits)
       hit.setNoise(real_hits.find(hit.getID()) == real_hits.end());
   }
 
   // add collection to event bus
-  event.add(rec_hit_coll_name_, hcalRecHits);
+  event.add(rec_hit_coll_name_, hcal_rec_hits);
 }
 
 }  // namespace hcal

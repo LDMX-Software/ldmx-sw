@@ -61,13 +61,13 @@ class DumpFileWriter : public framework::Analyzer {
 
   // ClusterGeometry myGeo;
 
-  std::string dumpFileName = "dummy.dump";
+  std::string dump_file_name_ = "dummy.dump";
   std::string ecal_trig_digis_passname_;
   std::string ecal_trig_digis_event_passname_;
 
-  EventDump myEvent;
-  FILE* file = 0;
-  unsigned long evtNo = 0;
+  EventDump my_event_;
+  FILE* file_ = 0;
+  unsigned long evt_no_ = 0;
 };
 }  // namespace trigger
 

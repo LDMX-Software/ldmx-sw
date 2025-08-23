@@ -17,33 +17,33 @@ namespace trigger {
 
 class ClusterGeometry {
  public:
-  bool is_initialized = false;
+  bool is_initialized_ = false;
 
   // cell + module -> TP ID (get from geo service)
-  std::map<std::pair<int, int>, int> reverse_id_map;
-  std::map<int, std::pair<int, int> > id_map;
+  std::map<std::pair<int, int>, int> reverse_id_map_;
+  std::map<int, std::pair<int, int> > id_map_;
 
   // TP ID to X,Y positions in mm
-  std::map<int, std::pair<float, float> > positions;
+  std::map<int, std::pair<float, float> > positions_;
 
   // pairwise X,Y distances of all TPs
-  std::map<std::pair<int, int>, float> distances;
+  std::map<std::pair<int, int>, float> distances_;
 
   // list of neighbors associated to each TP
-  std::map<int, std::vector<int> > neighbors;
+  std::map<int, std::vector<int> > neighbors_;
 
-  int GetID(int cell_id, int module_id) {
-    return reverse_id_map[std::make_pair(cell_id, module_id)];
+  int getId(int cell_id, int module_id) {
+    return reverse_id_map_[std::make_pair(cell_id, module_id)];
   }
-  float GetDist(int id1, int id2) {
-    return distances[std::make_pair(id1, id2)];
+  float getDist(int id1, int id2) {
+    return distances_[std::make_pair(id1, id2)];
   }
 
-  void AddTP(int tid, int cell_id, int module_id, float x, float y);
-  void AddNeighbor(int id1, int id2);
-  bool CheckNeighbor(int id1, int id2);
+  void addTp(int tid, int cell_id, int module_id, float x, float y);
+  void addNeighbor(int id1, int id2);
+  bool checkNeighbor(int id1, int id2);
 
-  void Initialize();
+  void initialize();
 };
 
 /*
@@ -61,77 +61,78 @@ class ClusterGeometry {
 
 class Hit {
  public:
-  float x = 0;
-  float y = 0;
-  float z = 0;
-  float e = 0;
-  int idx = -1;
-  int cell_id = -1;
-  int module_id = -1;
-  int id = -1;      // encodes x,y
-  int layer = 0;    // z
-  int nSubHit = 0;  // for towers
-  bool used = false;
-  void Print() {
-    cout << "Hit (" << "e= " << e << ", id=" << id << ", layer= " << layer
-         << ", x= " << x << ", y= " << y << ", z= " << z
-         << ", nSub= " << nSubHit << ", used= " << used << ")" << endl;
+  float x_ = 0;
+  float y_ = 0;
+  float z_ = 0;
+  float e_ = 0;
+  int idx_ = -1;
+  int cell_id_ = -1;
+  int module_id_ = -1;
+  int id_ = -1;        // encodes x,y
+  int layer_ = 0;      // z
+  int n_sub_hit_ = 0;  // for towers
+  bool used_ = false;
+  void print() {
+    cout << "Hit (" << "e= " << e_ << ", id=" << id_ << ", layer= " << layer_
+         << ", x= " << x_ << ", y= " << y_ << ", z= " << z_
+         << ", nSub= " << n_sub_hit_ << ", used= " << used_ << ")" << endl;
   }
 };
 
 class Cluster {
  public:
-  std::vector<Hit> hits;
-  std::vector<Cluster> clusters2d;  // for 3d
+  std::vector<Hit> hits_;
+  std::vector<Cluster> clusters2d_;  // for 3d
   // calculate and store properties...
-  float x = 0;
-  float y = 0;
-  float z = 0;
+  float x_ = 0;
+  float y_ = 0;
+  float z_ = 0;
   // xyz RMS
-  float xx = 0;
-  float yy = 0;
-  float zz = 0;
-  float e = 0;
-  int seed = -1;    // id(xy)
-  int module = -1;  // uses seed
-  int layer = -1;
+  float xx_ = 0;
+  float yy_ = 0;
+  float zz_ = 0;
+  float e_ = 0;
+  int seed_ = -1;    // id(xy)
+  int module_ = -1;  // uses seed
+  int layer_ = -1;
 
   // 3d specific
-  bool is2D = true;
-  bool used = false;
-  int first_layer = -1;
-  int last_layer = -1;
-  int depth = 0;
-  float dxdz = 0;
-  float dxdze = 0;
-  float dydz = 0;
-  float dydze = 0;
+  bool is_2d_ = true;
+  bool used_ = false;
+  int first_layer_ = -1;
+  int last_layer_ = -1;
+  int depth_ = 0;
+  float dxdz_ = 0;
+  float dxdze_ = 0;
+  float dydz_ = 0;
+  float dydze_ = 0;
 
-  void Print(ClusterGeometry* g = 0) {
+  void print(ClusterGeometry* g = 0) {
     // ClusterGeometry* g;
     if (g == 0) {
-      cout << "Cluster (" << "e= " << e << ", seed id=" << seed << ", x= " << x
-           << ", y= " << y << ", z= " << z << ", nHit= " << hits.size() << ")"
-           << endl;
+      cout << "Cluster (" << "e= " << e_ << ", seed id=" << seed_
+           << ", x= " << x_ << ", y= " << y_ << ", z= " << z_
+           << ", nHit= " << hits_.size() << ")" << endl;
     } else {
-      auto idpair = g->id_map[seed];
-      cout << "Cluster (" << "e= " << e << ", seed id=" << seed
+      auto idpair = g->id_map_[seed_];
+      cout << "Cluster (" << "e= " << e_ << ", seed id=" << seed_
            << ", cell id=" << idpair.first << ", module id=" << idpair.second
-           << ", layer=" << layer << ", x= " << x << ", y= " << y
-           << ", z= " << z << ", nHit= " << hits.size() << ")" << endl;
+           << ", layer=" << layer_ << ", x= " << x_ << ", y= " << y_
+           << ", z= " << z_ << ", nHit= " << hits_.size() << ")" << endl;
     }
   }
-  void Print3d() {
-    cout << "Cluster (" << "e= " << e << ", seed id=" << seed << ", x= " << x
-         << ", y= " << y << ", z= " << z << ", n2dClus= " << clusters2d.size()
-         << ", first_layer=" << first_layer << ", depth=" << depth << ")"
+  void print3d() {
+    cout << "Cluster (" << "e= " << e_ << ", seed id=" << seed_ << ", x= " << x_
+         << ", y= " << y_ << ", z= " << z_
+         << ", n2dClus= " << clusters2d_.size()
+         << ", first_layer=" << first_layer_ << ", depth=" << depth_ << ")"
          << endl;
   }
-  void PrintHits() {
-    Print();
-    for (auto& h : hits) {
+  void printHits() {
+    print();
+    for (auto& h : hits_) {
       cout << "  ";
-      h.Print();
+      h.print();
     }
   }
 };
@@ -139,50 +140,50 @@ class Cluster {
 class IdealClusterBuilder {
  public:
   virtual ~IdealClusterBuilder() = default;
-  std::vector<Hit> all_hits{};
-  std::vector<Cluster> all_clusters{};
-  ClusterGeometry* g;
+  std::vector<Hit> all_hits_{};
+  std::vector<Cluster> all_clusters_{};
+  ClusterGeometry* g_;
 
-  float seed_thresh = 0;    // e.g. 100
-  float neighb_thresh = 0;  // e.g. 100
-  int n_neighbors = 1;
-  bool split_energy = true;
+  float seed_thresh_ = 0;    // e.g. 100
+  float neighb_thresh_ = 0;  // e.g. 100
+  int n_neighbors_ = 1;
+  bool split_energy_ = true;
   // bool use_towers = true;
-  bool use_towers = false;
+  bool use_towers_ = false;
   const int LAYER_MAX = 35;
   const int LAYER_SHOWERMAX = 7;
   const int LAYER_SEEDMIN = 3;
   const int LAYER_SEEDMAX = 15;
   const float MIN_TP_ENERGY = 0.5;  // in MeV
-  int DEPTH_GOOD = 5;
+  const int DEPTH_GOOD = 5;
   /* int order3d[LAYER_MAX]={ */
   /*     7,8,6,9,5,10,4,11,3,12,2,13,1,14,0,15,16,17,18,19 */
   /* }; */
-  bool debug = false;
+  bool debug_ = false;
 
-  void AddHit(Hit h) {
-    if (h.layer >= LAYER_MAX) return;
-    auto p = std::make_pair(h.cell_id, h.module_id);
-    h.id = g->reverse_id_map[p];
-    all_hits.push_back(h);
+  void addHit(Hit h) {
+    if (h.layer_ >= LAYER_MAX) return;
+    auto p = std::make_pair(h.cell_id_, h.module_id_);
+    h.id_ = g_->reverse_id_map_[p];
+    all_hits_.push_back(h);
   }
-  std::vector<Cluster> GetClusters() { return all_clusters; }
-  void SetClusterGeo(ClusterGeometry* _g) { g = _g; }
+  std::vector<Cluster> getClusters() { return all_clusters_; }
+  void setClusterGeo(ClusterGeometry* g) { g_ = g; }
 
-  virtual void BuildClusters();
-  std::vector<Cluster> Build2dClustersLayer(std::vector<Hit> hits);
-  void Build2dClusters();
-  void Build3dClusters();
-  void Fit(Cluster& c3);
+  virtual void buildClusters();
+  std::vector<Cluster> build2dClustersLayer(std::vector<Hit> hits);
+  void build2dClusters();
+  void build3dClusters();
+  void fit(Cluster& c3);
 
   /* void BuildClusters(); */
   /* void Cluster2dHits(); */
 };
 
 template <class T>
-void ESort(std::vector<T>& v) {
+void eSort(std::vector<T>& v) {
   std::sort(v.begin(), v.end(),
-            [](const auto& lhs, const auto& rhs) { return lhs.e > rhs.e; });
+            [](const auto& lhs, const auto& rhs) { return lhs.e_ > rhs.e_; });
 }
 
 }  // namespace trigger

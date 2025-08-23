@@ -50,19 +50,19 @@ void TruthHitProducer::produce(framework::Event &event) {
     for (int i = 0; i < sim_hit.getNumberOfContribs(); i++) {
       auto contrib = sim_hit.getContrib(i);
       if (verbose_) {
-        ldmx_log(debug) << "contrib " << i << " trackID: " << contrib.trackID
-                        << " pdgID: " << contrib.pdgCode
-                        << " edep: " << contrib.edep;
+        ldmx_log(debug) << "contrib " << i << " trackID: " << contrib.track_id_
+                        << " pdgID: " << contrib.pdg_code_
+                        << " edep: " << contrib.edep_;
         ldmx_log(debug) << "\t particle id: "
-                        << particle_map[contrib.trackID].getPdgID()
+                        << particle_map[contrib.track_id_].getPdgID()
                         << " particle status: "
-                        << particle_map[contrib.trackID].getGenStatus();
+                        << particle_map[contrib.track_id_].getGenStatus();
       }
       // if the trackID is in the map
-      if (particle_map.find(contrib.trackID) != particle_map.end()) {
+      if (particle_map.find(contrib.track_id_) != particle_map.end()) {
         // beam electron (PDGID = 11, genStatus == 1)
-        if (particle_map[contrib.trackID].getPdgID() == 11 &&
-            particle_map[contrib.trackID].getGenStatus() == 1) {
+        if (particle_map[contrib.track_id_].getPdgID() == 11 &&
+            particle_map[contrib.track_id_].getGenStatus() == 1) {
           keep = true;
         }
       }

@@ -28,21 +28,21 @@ class PFTrackProducer : public framework::Producer {
   virtual void produce(framework::Event& event);
 
  private:
-  bool truthTracking_{true};
+  bool truth_tracking_{true};
 
   // name of collection for track inputs to be passed
-  std::string inputTrackCollName_;
+  std::string input_track_coll_name_;
   // pass name for the input collection
   std::string input_pass_name_;
   // name of collection for pfTracks to be output
-  std::string outputTrackCollName_;
+  std::string output_track_coll_name_;
   // boolean to cheat to select only electron tracks
   //  in this cheating truth tracker
-  bool doElectronTracking_{};
+  bool do_electron_tracking_{};
   // minimum z_ momentum component allowed for beam electron selection
-  double minElectronMomentumZ_{};
+  double min_electron_momentum_z_{};
   // maximum trackID allowed for beam electron selection
-  int maxElectronTrackID_{};
+  int max_electron_track_id_{};
 };
 }  // namespace recon
 

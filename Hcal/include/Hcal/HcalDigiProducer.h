@@ -71,19 +71,19 @@ class HcalDigiProducer : public framework::Producer {
   std::string digi_coll_name_;
 
   /// output pulse truth collection name
-  std::string pulseTruthCollName_;
+  std::string pulse_truth_coll_name_;
 
   /// Time interval for chip clock in ns
   double clock_cycle_;
 
   /// Depth of ADC buffer.
-  int nADCs_;
+  int n_ad_cs_;
 
   /// Index for the Sample Of Interest in the list of digi samples
-  int iSOI_;
+  int i_soi_;
 
   /// Conversion from energy in MeV to voltage in mV
-  double MeV_;
+  double me_v_;
 
   /// Strip attenuation length [m]
   double attlength_;
@@ -97,11 +97,11 @@ class HcalDigiProducer : public framework::Producer {
 
   /// If true, save the "analog" composite pulse shape in the HGCROC emulator
   /// before it gets digitized
-  bool savePulseTruthInfo_{false};
+  bool save_pulse_truth_info_{false};
 
   /// If false, save digis from all channels, even pure noise in empty bars
   /// Helpful when comparing with test beam data
-  bool zeroSuppression_{true};
+  bool zero_suppression_{true};
 
   /// Hgcroc Emulator to digitize analog voltage signals
   std::unique_ptr<ldmx::HgcrocEmulator> hgcroc_;

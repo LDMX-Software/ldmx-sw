@@ -60,10 +60,10 @@ class TriggerProcessor : public framework::Producer {
 
  private:
   /// The energy sum to make cut on.
-  std::vector<double> layerESumCuts_;
+  std::vector<double> layer_e_sum_cuts_;
 
   /// The Beam energy [MeV]
-  double beamEnergy_;
+  double beam_energy_;
 
   /**
    * The trigger mode to run in. Mode zero sums over
@@ -73,7 +73,7 @@ class TriggerProcessor : public framework::Producer {
   int mode_{0};
 
   /** The first layer of layer sum. */
-  int startLayer_{0};
+  int start_layer_{0};
 
   /**
    * The endpoint layer of layer sum.
@@ -81,19 +81,19 @@ class TriggerProcessor : public framework::Producer {
    * **not inclusive** - i.e. this is the last layer that
    * is included in the layer sum.
    */
-  int endLayer_{0};
+  int end_layer_{0};
 
   /** The name of the trigger algorithm used. */
-  TString algoName_;
+  TString algo_name_;
 
   /** The name of the input collection (the Ecal hits_). */
-  std::string inputColl_;
+  std::string input_coll_;
 
   /** The pass name of the input (the Ecal hits_). */
-  std::string inputPass_;
+  std::string input_pass_;
 
   /** The name of the output collection (the trigger decision). */
-  std::string outputColl_;
+  std::string output_coll_;
 };
 
 }  // namespace recon

@@ -18,6 +18,6 @@ void HcalVetoResult::clear() { passes_veto_ = false; }
 
 std::ostream& operator<<(std::ostream& o, const HcalVetoResult& c) {
   return o << "HcalVetoResult { passes veto : " << c.passes_veto_
-           << " with max hitL " << c.max_PE_hit_ << " }";
+           << " with max hitL " << c.max_pe_hit_ << " }";
 }
 }  // namespace ldmx

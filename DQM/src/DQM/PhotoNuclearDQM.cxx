@@ -234,12 +234,12 @@ void PhotoNuclearDQM::analyze(const framework::Event &event) {
   }
 
   // Get the recoil electron
-  auto [trackID, recoil] = Analysis::getRecoil(particle_map);
+  auto [trackID, recoil] = analysis::getRecoil(particle_map);
   findRecoilProperties(recoil);
 
   // Use the recoil electron to retrieve the gamma that underwent a
   // photo-nuclear reaction.
-  auto pn_gamma{Analysis::getPNGamma(particle_map, recoil, 2500.)};
+  auto pn_gamma{analysis::getPNGamma(particle_map, recoil, 2500.)};
   if (pn_gamma == nullptr) {
     ldmx_log(warn) << "PN Daughter is lost, skipping";
     return;

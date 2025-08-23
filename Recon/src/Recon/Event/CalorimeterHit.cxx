@@ -14,7 +14,7 @@ void CalorimeterHit::clear() {
   xpos_ = 0;
   ypos_ = 0;
   zpos_ = 0;
-  isNoise_ = false;
+  is_noise_ = false;
 }
 
 std::ostream& operator<<(std::ostream& o, const CalorimeterHit& c) {

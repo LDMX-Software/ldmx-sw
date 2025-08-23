@@ -31,8 +31,8 @@ class TrackDeDxMassEstimator : public framework::Producer {
   virtual void produce(framework::Event& event) override;
 
  private:
-  float fit_res_C_{0.};
-  float fit_res_K_{-9999.};
+  float fit_res_c_{0.};
+  float fit_res_k_{-9999.};
 
   // name of input track collection
   std::string track_collection_;

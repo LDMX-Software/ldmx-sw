@@ -11,48 +11,48 @@ namespace trigger {
 namespace ldmx_int {
 
 struct EcalTP {
-  uint8_t tp;
-  uint32_t tid;
+  uint8_t tp_;
+  uint32_t tid_;
   // extra data for added convenience
-  uint32_t tp_lin;
-  uint32_t layer;
-  uint32_t module;
-  uint32_t cell;
+  uint32_t tp_lin_;
+  uint32_t layer_;
+  uint32_t module_;
+  uint32_t cell_;
 
-  bool operator<(const EcalTP &other) const { return tp > other.tp; }
+  bool operator<(const EcalTP &other) const { return tp_ > other.tp_; }
   void fill(int _tid, int _tp) {
-    tid = _tid;
-    tp = _tp;
+    tid_ = _tid;
+    tp_ = _tp;
     // derived data, optional
-    layer = 0;
-    module = 0;
-    cell = 0;
-    tp_lin = 0;
+    layer_ = 0;
+    module_ = 0;
+    cell_ = 0;
+    tp_lin_ = 0;
   }
   void fill(int _tid, int _tp, int _layer, int _module, int _cell,
             int _tp_lin) {
-    tid = _tid;
-    tp = _tp;
-    layer = _layer;
-    module = _module;
-    cell = _cell;
-    tp_lin = _tp_lin;
+    tid_ = _tid;
+    tp_ = _tp;
+    layer_ = _layer;
+    module_ = _module;
+    cell_ = _cell;
+    tp_lin_ = _tp_lin;
   }
   void writeToFile(FILE *file) const {
-    fwrite(&tp, sizeof(uint8_t), 1, file);
-    fwrite(&tid, sizeof(uint32_t), 1, file);
-    fwrite(&layer, sizeof(uint32_t), 1, file);
-    fwrite(&module, sizeof(uint32_t), 1, file);
-    fwrite(&cell, sizeof(uint32_t), 1, file);
-    fwrite(&tp_lin, sizeof(uint32_t), 1, file);
+    fwrite(&tp_, sizeof(uint8_t), 1, file);
+    fwrite(&tid_, sizeof(uint32_t), 1, file);
+    fwrite(&layer_, sizeof(uint32_t), 1, file);
+    fwrite(&module_, sizeof(uint32_t), 1, file);
+    fwrite(&cell_, sizeof(uint32_t), 1, file);
+    fwrite(&tp_lin_, sizeof(uint32_t), 1, file);
   }
   void readFromFile(FILE *file) {
-    fread(&tp, sizeof(uint8_t), 1, file);
-    fread(&tid, sizeof(uint32_t), 1, file);
-    fread(&layer, sizeof(uint32_t), 1, file);
-    fread(&module, sizeof(uint32_t), 1, file);
-    fread(&cell, sizeof(uint32_t), 1, file);
-    fread(&tp_lin, sizeof(uint32_t), 1, file);
+    fread(&tp_, sizeof(uint8_t), 1, file);
+    fread(&tid_, sizeof(uint32_t), 1, file);
+    fread(&layer_, sizeof(uint32_t), 1, file);
+    fread(&module_, sizeof(uint32_t), 1, file);
+    fread(&cell_, sizeof(uint32_t), 1, file);
+    fread(&tp_lin_, sizeof(uint32_t), 1, file);
   }
 };
 

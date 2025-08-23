@@ -37,10 +37,10 @@ class HcalCheckPositionMap : public framework::Analyzer {
   void onProcessStart() final override {}
 
   void analyze(const framework::Event &event) final override {
-    const auto simHits = event.getCollection<ldmx::SimCalorimeterHit>(
+    const auto sim_hits = event.getCollection<ldmx::SimCalorimeterHit>(
         "HcalSimHits", hcal_sim_hits_pass_name_);
 
-    CHECK(simHits.size() > 0);
+    CHECK(sim_hits.size() > 0);
     return;
   }
 };  // HcalCheckPositionMap

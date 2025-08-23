@@ -16,7 +16,7 @@ typedef std::vector<HgcrocPulseTruth> HgcrocPulseTruthCollection;
 class HgcrocPulseTruth {
  public:
   HgcrocPulseTruth(unsigned int id, ldmx::CompositePulse p)
-      : id_(id), compositePulse_(p){};
+      : id_(id), composite_pulse_(p){};
 
   /// default constructor needed for std::vector::resize
   HgcrocPulseTruth() = default;
@@ -31,7 +31,7 @@ class HgcrocPulseTruth {
 
  private:
   unsigned int id_;
-  ldmx::CompositePulse compositePulse_;
+  ldmx::CompositePulse composite_pulse_;
 
   ClassDef(HgcrocPulseTruth, 1);
 };

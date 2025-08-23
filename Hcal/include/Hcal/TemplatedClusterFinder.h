@@ -69,7 +69,7 @@ class TemplatedClusterFinder {
       // continue;
 
       nseeds_ = nseeds;
-      transitionWeights_.insert(std::pair<int, double>(ncluster, minwgt));
+      transition_weights_.insert(std::pair<int, double>(ncluster, minwgt));
       if (any and minwgt < cutoff) {
         // put the bigger one in mi
         if (clusters_[mi].centroid().E() < clusters_[mj].centroid().E()) {
@@ -90,7 +90,7 @@ class TemplatedClusterFinder {
 
   int getNSeeds() const { return nseeds_; }
 
-  std::map<int, double> getWeights() const { return transitionWeights_; }
+  std::map<int, double> getWeights() const { return transition_weights_; }
 
   std::vector<WorkingCluster> getClusters() const { return clusters_; }
 
@@ -98,7 +98,7 @@ class TemplatedClusterFinder {
   WeightClass wgt_;
   double finalwgt_;
   int nseeds_;
-  std::map<int, double> transitionWeights_;
+  std::map<int, double> transition_weights_;
   std::vector<WorkingCluster> clusters_;
 };
 }  // namespace hcal

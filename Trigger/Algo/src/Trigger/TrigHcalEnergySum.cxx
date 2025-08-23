@@ -9,9 +9,9 @@
 namespace trigger {
 
 void TrigHcalEnergySum::configure(framework::config::Parameters& ps) {
-  inProc_ = ps.get<std::string>("inputProc");
-  quadCollName_ = ps.get<std::string>("quadCollName");
-  combinedQuadCollName_ = ps.get<std::string>("combinedQuadCollName");
+  in_proc_ = ps.get<std::string>("inputProc");
+  quad_coll_name_ = ps.get<std::string>("quadCollName");
+  combined_quad_coll_name_ = ps.get<std::string>("combinedQuadCollName");
 }
 void TrigHcalEnergySum::produce(framework::Event& event) {
   // mV/ADC: 1.2
@@ -41,56 +41,57 @@ void TrigHcalEnergySum::produce(framework::Event& event) {
   // for(auto t : event.searchProducts("","","")) std::cout << t.name() << " "
   // << t.passname() << " " << t.type() << std::endl;
 
-  if (!event.exists(quadCollName_, inProc_)) {
-    // std::cout << "missing collection! : " << quadCollName_ << " " << inProc_
+  if (!event.exists(quad_coll_name_, in_proc_)) {
+    // std::cout << "missing collection! : " << quad_coll_name_ << " " <<
+    // in_proc_
     // << std::endl;
     return;
   }
 
   // auto
-  // oneEndedQuads{event.getObject<ldmx::CaloTrigPrimCollection>(quadCollName_)};
-  const std::vector<ldmx::CaloTrigPrim> oneEndedQuads =
-      event.getCollection<ldmx::CaloTrigPrim>(quadCollName_, inProc_);
+  // oneEndedQuads{event.getObject<ldmx::CaloTrigPrimCollection>(quad_coll_name_)};
+  const std::vector<ldmx::CaloTrigPrim> one_ended_quads =
+      event.getCollection<ldmx::CaloTrigPrim>(quad_coll_name_, in_proc_);
 
   //
   // sum bar ends to produce the combined quads
-  std::map<int, ldmx::CaloTrigPrim> twoEndedQuadMap;
-  for (const auto& oneEndedQuad : oneEndedQuads) {
-    const ldmx::HcalTriggerID end_id(oneEndedQuad.getId());
+  std::map<int, ldmx::CaloTrigPrim> two_ended_quad_map;
+  for (const auto& one_ended_quad : one_ended_quads) {
+    const ldmx::HcalTriggerID end_id(one_ended_quad.getId());
     ldmx::HcalTriggerID combo_id(end_id.section(), end_id.layer(),
                                  end_id.superstrip(), 2);
-    auto ptr = twoEndedQuadMap.find(combo_id.raw());
-    if (ptr == twoEndedQuadMap.end()) {
-      twoEndedQuadMap[combo_id.raw()] = oneEndedQuad;
+    auto ptr = two_ended_quad_map.find(combo_id.raw());
+    if (ptr == two_ended_quad_map.end()) {
+      two_ended_quad_map[combo_id.raw()] = one_ended_quad;
     } else {
       ptr->second.setPrimitive(ptr->second.getPrimitive() +
-                               oneEndedQuad.getPrimitive());
+                               one_ended_quad.getPrimitive());
     }
   }
-  ldmx::CaloTrigPrimCollection twoEndedQuads;
-  for (auto p : twoEndedQuadMap) twoEndedQuads.push_back(p.second);
-  event.add(combinedQuadCollName_, twoEndedQuads);
+  ldmx::CaloTrigPrimCollection two_ended_quads;
+  for (auto p : two_ended_quad_map) two_ended_quads.push_back(p.second);
+  event.add(combined_quad_coll_name_, two_ended_quads);
 
   //
   // Produce the layer-by-layer energy sums
-  const unsigned int LayerMax = 50;
-  const unsigned int SideLayerMax = 16;
-  trigger::TrigEnergySumCollection backLayerSums;
-  trigger::TrigEnergySumCollection sideLayerSums;
-  backLayerSums.resize(LayerMax);
-  for (int i = 0; i < LayerMax; i++) backLayerSums[i].setLayer(i);
-  sideLayerSums.resize(SideLayerMax);
-  for (int i = 0; i < SideLayerMax; i++) sideLayerSums[i].setLayer(i);
+  const unsigned int layer_max = 50;
+  const unsigned int side_layer_max = 16;
+  trigger::TrigEnergySumCollection back_layer_sums;
+  trigger::TrigEnergySumCollection side_layer_sums;
+  back_layer_sums.resize(layer_max);
+  for (int i = 0; i < layer_max; i++) back_layer_sums[i].setLayer(i);
+  side_layer_sums.resize(side_layer_max);
+  for (int i = 0; i < side_layer_max; i++) side_layer_sums[i].setLayer(i);
 
   int total_adc = 0;
   std::map<int, int> section_sum;
-  for (auto p : twoEndedQuadMap) {
+  for (auto p : two_ended_quad_map) {
     auto tp = p.second;
     int adc = tp.getPrimitive();
     total_adc += adc;
     ldmx::HcalTriggerID combo_id(tp.getId());
     int ilayer = combo_id.layer();
-    if (ilayer >= backLayerSums.size()) {
+    if (ilayer >= back_layer_sums.size()) {
       std::cout << "[TrigHcalEnergySum.cxx] Warning(!), layer " << ilayer
                 << " is out-of-bounds.\n";
       continue;
@@ -98,9 +99,11 @@ void TrigHcalEnergySum::produce(framework::Event& event) {
     int isec = combo_id.section();
 
     if (isec == 0)
-      backLayerSums[ilayer].setHwEnergy(adc + backLayerSums[ilayer].hwEnergy());
+      back_layer_sums[ilayer].setHwEnergy(adc +
+                                          back_layer_sums[ilayer].hwEnergy());
     else
-      sideLayerSums[ilayer].setHwEnergy(adc + sideLayerSums[ilayer].hwEnergy());
+      side_layer_sums[ilayer].setHwEnergy(adc +
+                                          side_layer_sums[ilayer].hwEnergy());
 
     auto ptr = section_sum.find(isec);
     if (ptr == section_sum.end()) {
@@ -109,20 +112,20 @@ void TrigHcalEnergySum::produce(framework::Event& event) {
       section_sum[isec] += adc;
     }
   }
-  event.add(combinedQuadCollName_ + "BackLayerSums", backLayerSums);
-  event.add(combinedQuadCollName_ + "SideLayerSums", sideLayerSums);
+  event.add(combined_quad_coll_name_ + "BackLayerSums", back_layer_sums);
+  event.add(combined_quad_coll_name_ + "SideLayerSums", side_layer_sums);
 
-  trigger::TrigEnergySumCollection sectionSums;
+  trigger::TrigEnergySumCollection section_sums;
   for (auto p : section_sum) {
-    sectionSums.emplace_back(-1, p.first, p.second);
+    section_sums.emplace_back(-1, p.first, p.second);
   }
-  event.add(combinedQuadCollName_ + "SectionSums", sectionSums);
+  event.add(combined_quad_coll_name_ + "SectionSums", section_sums);
 
   // Also store total energy for now
-  trigger::TrigEnergySum totalSum;
-  totalSum.setLayer(-1);
-  totalSum.setHwEnergy(total_adc);
-  event.add(combinedQuadCollName_ + "Sum", totalSum);
+  trigger::TrigEnergySum total_sum;
+  total_sum.setLayer(-1);
+  total_sum.setHwEnergy(total_adc);
+  event.add(combined_quad_coll_name_ + "Sum", total_sum);
 }
 
 }  // namespace trigger

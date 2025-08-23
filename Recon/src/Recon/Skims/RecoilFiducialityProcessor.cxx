@@ -22,11 +22,11 @@ void RecoilFiducialityProcessor::configure(
 
 void RecoilFiducialityProcessor::produce(framework::Event &event) {
   // Get the collection of simulated particles from the event
-  auto particleMap{
+  auto particle_map{
       event.getMap<int, ldmx::SimParticle>("SimParticles", input_pass_name_)};
 
   // Search for the recoil electron
-  auto [recoil_track_id, recoil_electron] = Analysis::getRecoil(particleMap);
+  auto [recoil_track_id, recoil_electron] = analysis::getRecoil(particle_map);
 
   // Get the collection of simulated Ecal hits_ from the event.
   const std::vector<ldmx::SimCalorimeterHit> ecal_sim_hits =
@@ -48,11 +48,11 @@ void RecoilFiducialityProcessor::produce(framework::Event &event) {
   bool has_ecal_hit = false;
   int ecal_hit_id = -1;
   for (const ldmx::SimCalorimeterHit &sim_hit : ecal_sim_hits) {
-    for (int iContrib = 0; iContrib < sim_hit.getNumberOfContribs();
-         ++iContrib) {
-      ldmx::SimCalorimeterHit::Contrib contrib = sim_hit.getContrib(iContrib);
+    for (int i_contrib = 0; i_contrib < sim_hit.getNumberOfContribs();
+         ++i_contrib) {
+      ldmx::SimCalorimeterHit::Contrib contrib = sim_hit.getContrib(i_contrib);
 
-      if (contrib.trackID == recoil_track_id) {
+      if (contrib.track_id_ == recoil_track_id) {
         has_ecal_hit = true;
         ecal_hit_id = sim_hit.getID();
       }
@@ -64,11 +64,11 @@ void RecoilFiducialityProcessor::produce(framework::Event &event) {
   bool has_hcal_hit = false;
   int hcal_hit_id = -1;
   for (const ldmx::SimCalorimeterHit &sim_hit : hcal_sim_hits) {
-    for (int iContrib = 0; iContrib < sim_hit.getNumberOfContribs();
-         ++iContrib) {
-      ldmx::SimCalorimeterHit::Contrib contrib = sim_hit.getContrib(iContrib);
+    for (int i_contrib = 0; i_contrib < sim_hit.getNumberOfContribs();
+         ++i_contrib) {
+      ldmx::SimCalorimeterHit::Contrib contrib = sim_hit.getContrib(i_contrib);
 
-      if (contrib.trackID == recoil_track_id) {
+      if (contrib.track_id_ == recoil_track_id) {
         has_hcal_hit = true;
         hcal_hit_id = sim_hit.getID();
       }
@@ -100,12 +100,12 @@ void RecoilFiducialityProcessor::produce(framework::Event &event) {
   // Configure outputs
   bool is_fiducial = has_min_energy && has_min_tracker_hits && has_ecal_hit;
 
-  int mask_tracker_E = has_min_energy << 0;
+  int mask_tracker_e = has_min_energy << 0;
   int mask_tracker_hits = has_min_tracker_hits << 1;
   int mask_ecal = has_ecal_hit << 2;
   int mask_hcal = has_hcal_hit << 3;
   int fiducial_flag =
-      mask_tracker_E | mask_tracker_hits | mask_ecal | mask_hcal;
+      mask_tracker_e | mask_tracker_hits | mask_ecal | mask_hcal;
 
   ldmx::FiducialFlag flag;
   flag.setFiducialFlag(fiducial_flag, 6);
@@ -129,15 +129,15 @@ void RecoilFiducialityProcessor::produce(framework::Event &event) {
 
   if (!inverse_skim_) {
     if (is_fiducial) {
-      setStorageHint(framework::hint_should_keep);
+      setStorageHint(framework::HINT_SHOULD_KEEP);
     } else {
-      setStorageHint(framework::hint_should_drop);
+      setStorageHint(framework::HINT_SHOULD_DROP);
     }
   } else {
     if (is_fiducial) {
-      setStorageHint(framework::hint_should_drop);
+      setStorageHint(framework::HINT_SHOULD_DROP);
     } else {
-      setStorageHint(framework::hint_should_keep);
+      setStorageHint(framework::HINT_SHOULD_KEEP);
     }
   }
 }

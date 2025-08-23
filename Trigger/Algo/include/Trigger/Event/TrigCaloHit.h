@@ -42,9 +42,9 @@ class TrigCaloHit {
   void setModule(int module) { module_section_ = module; }
   void setSection(int module_section) { module_section_ = module_section; }
 
-  float position_x() const { return position_x_; }
-  float position_y() const { return position_y_; }
-  float position_z() const { return position_z_; }
+  float positionX() const { return position_x_; }
+  float positionY() const { return position_y_; }
+  float positionZ() const { return position_z_; }
   float energy() const { return energy_; }
 
   int layer() const { return layer_; }

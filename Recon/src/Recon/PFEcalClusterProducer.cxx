@@ -7,64 +7,64 @@
 namespace recon {
 
 void PFEcalClusterProducer::configure(framework::config::Parameters& ps) {
-  hitCollName_ = ps.get<std::string>("hitCollName");
-  hitPassName_ = ps.get<std::string>("hitPassName");
-  clusterCollName_ = ps.get<std::string>("clusterCollName");
+  hit_coll_name_ = ps.get<std::string>("hitCollName");
+  hit_pass_name_ = ps.get<std::string>("hitPassName");
+  cluster_coll_name_ = ps.get<std::string>("clusterCollName");
   suffix_ = ps.get<std::string>("suffix", "");
-  singleCluster_ = ps.get<bool>("doSingleCluster");
-  logEnergyWeight_ = ps.get<bool>("logEnergyWeight");
+  single_cluster_ = ps.get<bool>("doSingleCluster");
+  log_energy_weight_ = ps.get<bool>("logEnergyWeight");
   // DBScan parameters
-  minClusterHitMult_ = ps.get<int>("minClusterHitMult");
-  clusterHitDist_ = ps.get<double>("clusterHitDist");
-  clusterZBias_ = ps.get<double>("clusterZBias", 1);
+  min_cluster_hit_mult_ = ps.get<int>("minClusterHitMult");
+  cluster_hit_dist_ = ps.get<double>("clusterHitDist");
+  cluster_z_bias_ = ps.get<double>("clusterZBias", 1);
   min_hit_energy_ = ps.get<double>("minHitEnergy");
 }
 
 void PFEcalClusterProducer::produce(framework::Event& event) {
-  if (!event.exists(hitCollName_, hitPassName_)) {
-    ldmx_log(fatal) << "Couldn't find input collection " << hitCollName_
-                    << " with pass name " << hitPassName_;
+  if (!event.exists(hit_coll_name_, hit_pass_name_)) {
+    ldmx_log(fatal) << "Couldn't find input collection " << hit_coll_name_
+                    << " with pass name " << hit_pass_name_;
     return;
   }
-  const auto ecalRecHits =
-      event.getCollection<ldmx::EcalHit>(hitCollName_, hitPassName_);
+  const auto ecal_rec_hits =
+      event.getCollection<ldmx::EcalHit>(hit_coll_name_, hit_pass_name_);
 
-  float eTotal = 0;
-  for (const auto& h : ecalRecHits) eTotal += h.getEnergy();
+  float e_total = 0;
+  for (const auto& h : ecal_rec_hits) e_total += h.getEnergy();
 
-  std::vector<ldmx::CaloCluster> pfClusters;
-  if (!singleCluster_) {
-    DBScanClusterBuilder cb(min_hit_energy_, clusterHitDist_, clusterZBias_,
-                            minClusterHitMult_);
+  std::vector<ldmx::CaloCluster> pf_clusters;
+  if (!single_cluster_) {
+    DBScanClusterBuilder cb(min_hit_energy_, cluster_hit_dist_, cluster_z_bias_,
+                            min_cluster_hit_mult_);
     std::vector<const ldmx::CalorimeterHit*> ptrs;
-    for (const auto& h : ecalRecHits) ptrs.push_back(&h);
+    for (const auto& h : ecal_rec_hits) ptrs.push_back(&h);
     std::vector<std::vector<const ldmx::CalorimeterHit*> > all_hit_ptrs =
         cb.runDBSCAN(ptrs);
 
     for (const auto& hit_ptrs : all_hit_ptrs) {
       ldmx::CaloCluster cl;
-      cb.fillClusterInfoFromHits(&cl, hit_ptrs, logEnergyWeight_);
-      pfClusters.push_back(cl);
+      cb.fillClusterInfoFromHits(&cl, hit_ptrs, log_energy_weight_);
+      pf_clusters.push_back(cl);
     }
   } else {  // create a single, large cluster
 
     ldmx::CaloCluster cl;
     std::vector<const ldmx::CalorimeterHit*> ptrs;
-    ptrs.reserve(ecalRecHits.size());
-    for (const auto& h : ecalRecHits) {
+    ptrs.reserve(ecal_rec_hits.size());
+    for (const auto& h : ecal_rec_hits) {
       ptrs.push_back(&h);
     }
     DBScanClusterBuilder dummy;
-    dummy.fillClusterInfoFromHits(&cl, ptrs, logEnergyWeight_);
-    pfClusters.push_back(cl);
+    dummy.fillClusterInfoFromHits(&cl, ptrs, log_energy_weight_);
+    pf_clusters.push_back(cl);
   }
 
-  std::sort(pfClusters.begin(), pfClusters.end(),
+  std::sort(pf_clusters.begin(), pf_clusters.end(),
             [](ldmx::CaloCluster a, ldmx::CaloCluster b) {
               return a.getEnergy() > b.getEnergy();
             });
-  event.add(clusterCollName_, pfClusters);
-  event.add("EcalTotalEnergy" + suffix_, eTotal);
+  event.add(cluster_coll_name_, pf_clusters);
+  event.add("EcalTotalEnergy" + suffix_, e_total);
 }
 
 }  // namespace recon

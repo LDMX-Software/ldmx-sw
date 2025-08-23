@@ -33,13 +33,13 @@ File::File(const framework::config::Parameters &ps) {
     uint32_t word;
     reader_ >> word;
 
-    uint8_t version = word & utility::mask<4>;
+    uint8_t version = word & utility::MASK<4>;
     if (version != 0) {
       EXCEPTION_RAISE("RawFileVers", "Unable to handle raw file version " +
                                          std::to_string(version));
     }
 
-    run_ = ((word >> 4) & utility::mask<28>);
+    run_ = ((word >> 4) & utility::MASK<28>);
 
     reader_.seek<uint32_t>(-2, std::ios::end);
     // save EOF in number of 32-bit-width words
@@ -130,10 +130,10 @@ void File::writeRunHeader(ldmx::RunHeader &header) {
     // use passed run number
     run_ = header.getRunNumber();
     // Why cant we just take the header from above?
-    uint32_t tempHeader =
-        (0 & utility::mask<4>)+((run_ & utility::mask<28>) << 4);
-    writer_ << tempHeader;
-    crc_ << tempHeader;
+    uint32_t temp_header =
+        (0 & utility::MASK<4>)+((run_ & utility::MASK<28>) << 4);
+    writer_ << temp_header;
+    crc_ << temp_header;
   } else {
     // put our read-in run number here
     header.setIntParameter("raw_run", run_);

@@ -105,16 +105,16 @@ HcalDetectorMap::HcalDetectorMap(const std::string& connections_table,
     // This gives correct range for the strip numbers [0,7] and [0,11] but the
     // actual order of the quadbars has to be checked
 
-    auto QuadBar{csv.getInteger("QuadBar")};
-    auto BarNumber{csv.getInteger("Bar")};
+    auto quad_bar{csv.getInteger("QuadBar")};
+    auto bar_number{csv.getInteger("Bar")};
     // Strip = (4 - Bar) + 4 * (QuadBar - 1)
     // QuadBar starts at 1 so we need to subtract to get first value
     // to be zero
-    auto strip{(BarNumber - 1) +
-               4 * (QuadBar - 1)};  // This is flipped from the original
+    auto strip{(bar_number - 1) +
+               4 * (quad_bar - 1)};  // This is flipped from the original
     if (csv.getInteger("Plane") % 2 == 1)
-      strip = (4 - BarNumber) +
-              4 * (QuadBar - 1);  // Plane 2 is backward by mistake
+      strip = (4 - bar_number) +
+              4 * (quad_bar - 1);  // Plane 2 is backward by mistake
     ldmx::HcalDigiID detid(0 /*section - only one section during test beam*/,
                            csv.getInteger("Plane") /*layer_*/, strip /*strip*/,
                            end /*end*/);

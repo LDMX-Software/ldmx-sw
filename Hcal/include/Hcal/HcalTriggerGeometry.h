@@ -46,7 +46,7 @@ class HcalTriggerGeometry : public framework::ConditionsObject {
 
  private:
   /** Reference to the Hcal geometry used for trigger geometry information */
-  const ldmx::HcalGeometry* hcalGeometry_;
+  const ldmx::HcalGeometry* hcal_geometry_;
 };
 
 }  // namespace hcal

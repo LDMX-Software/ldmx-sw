@@ -6,16 +6,16 @@ namespace recon {
 
 void ParticleFlow::configure(framework::config::Parameters& ps) {
   // I/O
-  inputEcalCollName_ = ps.get<std::string>("inputEcalCollName");
-  inputHcalCollName_ = ps.get<std::string>("inputHcalCollName");
-  inputTrackCollName_ = ps.get<std::string>("inputTrackCollName");
-  outputCollName_ = ps.get<std::string>("outputCollName");
+  input_ecal_coll_name_ = ps.get<std::string>("inputEcalCollName");
+  input_hcal_coll_name_ = ps.get<std::string>("inputHcalCollName");
+  input_track_coll_name_ = ps.get<std::string>("inputTrackCollName");
+  output_coll_name_ = ps.get<std::string>("outputCollName");
   input_ecal_passname_ = ps.get<std::string>("input_ecal_passname");
   input_hcal_passname_ = ps.get<std::string>("input_hcal_passname");
   input_tracks_passname_ = ps.get<std::string>("input_tracks_passname");
 
   // Algorithm configuration
-  singleParticle_ = ps.get<bool>("singleParticle");
+  single_particle_ = ps.get<bool>("singleParticle");
   use_existing_ecal_clusters_ = ps.get<bool>("use_existing_ecal_clusters");
 
   // Calibration factors, from jason, temperary
@@ -27,8 +27,8 @@ void ParticleFlow::configure(framework::config::Parameters& ps) {
                         275.0, 325.0, 375.0, 425.0};
   std::vector<float> h2{8.44,  7.38,  7.76, 8.535, 9.47,
                         10.45, 10.47, 9.71, 8.87};
-  eCorr_ = new TGraph(em1.size(), em1.data(), em2.data());
-  hCorr_ = new TGraph(h1.size(), h1.data(), h2.data());
+  e_corr_ = new TGraph(em1.size(), em1.data(), em2.data());
+  h_corr_ = new TGraph(h1.size(), h1.data(), h2.data());
 }
 
 // produce candidate track info
@@ -37,14 +37,14 @@ void ParticleFlow::fillCandTrack(ldmx::PFCandidate& cand,
   // TODO: smear
   std::vector<float> xyz = tk.getPosition();
   std::vector<double> pxyz = tk.getMomentum();
-  float ecalZ = 248;
-  float ecalX =
-      xyz[0] + pxyz[0] / pxyz[2] * (ecalZ - xyz[2]);  // project onto ecal face
-  float ecalY = xyz[1] + pxyz[1] / pxyz[2] * (ecalZ - xyz[2]);
-  cand.setEcalPositionXYZ(ecalX, ecalY, ecalZ);
+  float ecal_z = 248;
+  float ecal_x =
+      xyz[0] + pxyz[0] / pxyz[2] * (ecal_z - xyz[2]);  // project onto ecal face
+  float ecal_y = xyz[1] + pxyz[1] / pxyz[2] * (ecal_z - xyz[2]);
+  cand.setEcalPositionXYZ(ecal_x, ecal_y, ecal_z);
   cand.setTrackPxPyPz(pxyz[0], pxyz[1], pxyz[2]);
   // also use this object to set truth info
-  cand.setTruthEcalXYZ(ecalX, ecalY, ecalZ);
+  cand.setTruthEcalXYZ(ecal_x, ecal_y, ecal_z);
   cand.setTruthPxPyPz(pxyz[0], pxyz[1], pxyz[2]);
   float m2 = pow(tk.getEnergy(), 2) - pow(pxyz[0], 2) - pow(pxyz[1], 2) -
              pow(pxyz[2], 2);
@@ -60,12 +60,12 @@ void ParticleFlow::fillCandEMCalo(ldmx::PFCandidate& cand,
   float corr = 1.;
   float energy = em.getEnergy();
   // update energy: use min or max factor if outside calibration range
-  if (energy < eCorr_->GetX()[0]) {
-    corr = eCorr_->GetY()[0];
-  } else if (energy > eCorr_->GetX()[eCorr_->GetN() - 1]) {
-    corr = eCorr_->GetY()[eCorr_->GetN() - 1];
+  if (energy < e_corr_->GetX()[0]) {
+    corr = e_corr_->GetY()[0];
+  } else if (energy > e_corr_->GetX()[e_corr_->GetN() - 1]) {
+    corr = e_corr_->GetY()[e_corr_->GetN() - 1];
   } else {  // else look up calibration factor
-    corr = eCorr_->Eval(energy);
+    corr = e_corr_->Eval(energy);
   }
   cand.setEcalEnergy(energy * corr);
   cand.setEcalRawEnergy(energy);
@@ -83,12 +83,12 @@ void ParticleFlow::fillCandHadCalo(ldmx::PFCandidate& cand,
                                    const ldmx::CaloCluster& had) {
   float corr = 1.;
   float energy = had.getEnergy();
-  if (energy < hCorr_->GetX()[0]) {
-    corr = hCorr_->GetY()[0];
-  } else if (energy > hCorr_->GetX()[hCorr_->GetN() - 1]) {
-    corr = hCorr_->GetY()[hCorr_->GetN() - 1];
+  if (energy < h_corr_->GetX()[0]) {
+    corr = h_corr_->GetY()[0];
+  } else if (energy > h_corr_->GetX()[h_corr_->GetN() - 1]) {
+    corr = h_corr_->GetY()[h_corr_->GetN() - 1];
   } else {
-    corr = hCorr_->Eval(energy);
+    corr = h_corr_->Eval(energy);
   }
   cand.setHcalEnergy(energy * corr);
   cand.setHcalRawEnergy(energy);
@@ -130,36 +130,36 @@ void ParticleFlow::fillCandCalo(ldmx::PFCandidate& cand,
 
 // produce track, ecal, and hcal linking
 void ParticleFlow::produce(framework::Event& event) {
-  if (!event.exists(inputTrackCollName_, input_tracks_passname_)) {
+  if (!event.exists(input_track_coll_name_, input_tracks_passname_)) {
     ldmx_log(error) << "Unable to find (one) collection named "
-                    << inputTrackCollName_ << "_" << input_tracks_passname_;
+                    << input_track_coll_name_ << "_" << input_tracks_passname_;
     return;
   }
-  if (!event.exists(inputEcalCollName_, input_ecal_passname_)) {
+  if (!event.exists(input_ecal_coll_name_, input_ecal_passname_)) {
     ldmx_log(error) << "Unable to find (one) collection named "
-                    << inputEcalCollName_ << "_" << input_ecal_passname_;
+                    << input_ecal_coll_name_ << "_" << input_ecal_passname_;
     return;
   }
-  if (!event.exists(inputHcalCollName_, input_hcal_passname_)) {
+  if (!event.exists(input_hcal_coll_name_, input_hcal_passname_)) {
     ldmx_log(error) << "Unable to find (one) collection named "
-                    << inputHcalCollName_ << "_" << input_hcal_passname_;
+                    << input_hcal_coll_name_ << "_" << input_hcal_passname_;
     return;
   }
   // get the track and clustering info
-  const auto hcalClusters = event.getCollection<ldmx::CaloCluster>(
-      inputHcalCollName_, input_hcal_passname_);
+  const auto hcal_clusters = event.getCollection<ldmx::CaloCluster>(
+      input_hcal_coll_name_, input_hcal_passname_);
   const auto tracks = event.getCollection<ldmx::SimTrackerHit>(
-      inputTrackCollName_, input_tracks_passname_);
+      input_track_coll_name_, input_tracks_passname_);
   // here allow for using existing clusters of different type (EcalCluster)
-  const auto ecalClusters =
+  const auto ecal_clusters =
       use_existing_ecal_clusters_
-          ? getEcalClusters(event, inputEcalCollName_, input_ecal_passname_)
-          : event.getCollection<ldmx::CaloCluster>(inputEcalCollName_,
+          ? getEcalClusters(event, input_ecal_coll_name_, input_ecal_passname_)
+          : event.getCollection<ldmx::CaloCluster>(input_ecal_coll_name_,
                                                    input_ecal_passname_);
 
-  std::vector<ldmx::PFCandidate> pfCands;
+  std::vector<ldmx::PFCandidate> pf_cands;
   // multi-particle case
-  if (!singleParticle_) {
+  if (!single_particle_) {
     /*
       1. Build links maps at the Tk/Ecal and Hcal/Hcal interfaces
       2. Categorize tracks as: Ecal-matched, (Side) Hcal-matched, unmatched
@@ -173,9 +173,9 @@ void ParticleFlow::produce(framework::Event& event) {
     //
     // track-calo linking
     //
-    std::map<int, std::vector<int> > tkCaloMap;
-    std::map<int, std::vector<int> > caloTkMap;
-    std::map<std::pair<int, int>, float> tkEMDist;
+    std::map<int, std::vector<int> > tk_calo_map;
+    std::map<int, std::vector<int> > calo_tk_map;
+    std::map<std::pair<int, int>, float> tk_em_dist;
     // std::vector<int> unmatchedTracks;
     for (int i = 0; i < tracks.size(); i++) {
       const auto& tk = tracks[i];
@@ -183,69 +183,71 @@ void ParticleFlow::produce(framework::Event& event) {
       const std::vector<double> pxyz = tk.getMomentum();
       const float p = sqrt(pow(pxyz[0], 2) + pow(pxyz[1], 2) + pow(pxyz[2], 2));
       // float bestMatchVal = 9e9;
-      for (int j = 0; j < ecalClusters.size(); j++) {
-        const auto& ecal = ecalClusters[j];
+      for (int j = 0; j < ecal_clusters.size(); j++) {
+        const auto& ecal = ecal_clusters[j];
         // Matching logic
-        const float ecalClusZ = ecal.getCentroidZ();
-        const float tkXAtClus =
-            xyz[0] + pxyz[0] / pxyz[2] * (ecalClusZ - xyz[2]);  // extrapolation
-        const float tkYAtClus =
-            xyz[1] + pxyz[1] / pxyz[2] * (ecalClusZ - xyz[2]);
-        float dist = hypot(
-            (tkXAtClus - ecal.getCentroidX()) / std::max(1.0, ecal.getRMSX()),
-            (tkYAtClus - ecal.getCentroidY()) / std::max(1.0, ecal.getRMSY()));
-        tkEMDist[{i, j}] = dist;
-        bool isMatch =
+        const float ecal_clus_z = ecal.getCentroidZ();
+        const float tk_x_at_clus =
+            xyz[0] +
+            pxyz[0] / pxyz[2] * (ecal_clus_z - xyz[2]);  // extrapolation
+        const float tk_y_at_clus =
+            xyz[1] + pxyz[1] / pxyz[2] * (ecal_clus_z - xyz[2]);
+        float dist = hypot((tk_x_at_clus - ecal.getCentroidX()) /
+                               std::max(1.0, ecal.getRMSX()),
+                           (tk_y_at_clus - ecal.getCentroidY()) /
+                               std::max(1.0, ecal.getRMSY()));
+        tk_em_dist[{i, j}] = dist;
+        bool is_match =
             (dist < 2) && (ecal.getEnergy() > 0.3 * p &&
                            ecal.getEnergy() < 2 * p);  // matching criteria *
         // if (isMatch && dist < bestMatchVal) bestMatchVal = dist;
-        if (isMatch) {
-          if (tkCaloMap.count(i))
-            tkCaloMap[i].push_back(j);
+        if (is_match) {
+          if (tk_calo_map.count(i))
+            tk_calo_map[i].push_back(j);
           else
-            tkCaloMap[i] = {j};
-          if (caloTkMap.count(j))
-            caloTkMap[j].push_back(i);
+            tk_calo_map[i] = {j};
+          if (calo_tk_map.count(j))
+            calo_tk_map[j].push_back(i);
           else
-            caloTkMap[j] = {i};
+            calo_tk_map[j] = {i};
         }
       }
     }
 
     // em-hadcalo linking
-    std::map<int, std::vector<int> > emHadCaloMap;
-    std::map<std::pair<int, int>, float> EMHadDist;
-    for (int i = 0; i < ecalClusters.size(); i++) {
-      const auto& ecal = ecalClusters[i];
-      for (int j = 0; j < hcalClusters.size(); j++) {
-        const auto& hcal = hcalClusters[j];
+    std::map<int, std::vector<int> > em_had_calo_map;
+    std::map<std::pair<int, int>, float> em_had_dist;
+    for (int i = 0; i < ecal_clusters.size(); i++) {
+      const auto& ecal = ecal_clusters[i];
+      for (int j = 0; j < hcal_clusters.size(); j++) {
+        const auto& hcal = hcal_clusters[j];
         // TODO: matching logic
-        const float xAtHClus =
+        const float x_at_h_clus =
             ecal.getCentroidX() +
             ecal.getDXDZ() * (hcal.getCentroidZ() -
                               ecal.getCentroidZ());  // extrapolated position
-        const float yAtHClus =
+        const float y_at_h_clus =
             ecal.getCentroidY() +
             ecal.getDYDZ() * (hcal.getCentroidZ() - ecal.getCentroidZ());
         float dist = sqrt(
-            pow(xAtHClus - hcal.getCentroidX(), 2) /
+            pow(x_at_h_clus - hcal.getCentroidX(), 2) /
                 std::max(1.0, pow(hcal.getRMSX(), 2) + pow(ecal.getRMSX(), 2)) +
-            pow(yAtHClus - hcal.getCentroidY(), 2) /
+            pow(y_at_h_clus - hcal.getCentroidY(), 2) /
                 std::max(1.0, pow(hcal.getRMSY(), 2) + pow(ecal.getRMSY(), 2)));
-        EMHadDist[{i, j}] = dist;
-        bool isMatch = (dist < 5);  // matching criteria, was 2
-        if (isMatch) {
-          if (emHadCaloMap.count(i))
-            emHadCaloMap[i].push_back(j);
+        em_had_dist[{i, j}] = dist;
+        bool is_match = (dist < 5);  // matching criteria, was 2
+        if (is_match) {
+          if (em_had_calo_map.count(i))
+            em_had_calo_map[i].push_back(j);
           else
-            emHadCaloMap[i] = {j};
+            em_had_calo_map[i] = {j};
         }
       }
     }
 
     // NOT YET IMPLEMENTED...
     // tk-hadcalo linking (Side HCal)
-    std::map<int, std::vector<int> > tkHadCaloMap;
+    std::map<int, std::vector<int> > tk_had_calo_map;
     // for(int i=0; i<tracks.size(); i++){
     //   const auto& tk = tracks[i];
     //   for(int j=0; j<hcalClusters.size(); j++){
@@ -262,17 +264,17 @@ void ParticleFlow::produce(framework::Event& event) {
     //
     // track / ecal cluster arbitration
     //
-    std::vector<bool> tkIsEMLinked(tracks.size(), false);
-    std::vector<bool> EMIsTkLinked(ecalClusters.size(), false);
-    std::map<int, int> tkEMPairs{};
+    std::vector<bool> tk_is_em_linked(tracks.size(), false);
+    std::vector<bool> em_is_tk_linked(ecal_clusters.size(), false);
+    std::map<int, int> tk_em_pairs{};
     for (int i = 0; i < tracks.size(); i++) {
-      if (tkCaloMap.count(i)) {
+      if (tk_calo_map.count(i)) {
         // pick first (highest-energy) unused matching cluster
-        for (int em_idx : tkCaloMap[i]) {
-          if (!EMIsTkLinked[em_idx]) {
-            EMIsTkLinked[em_idx] = true;
-            tkIsEMLinked[i] = true;
-            tkEMPairs[i] = em_idx;
+        for (int em_idx : tk_calo_map[i]) {
+          if (!em_is_tk_linked[em_idx]) {
+            em_is_tk_linked[em_idx] = true;
+            tk_is_em_linked[i] = true;
+            tk_em_pairs[i] = em_idx;
             break;
           }
         }
@@ -280,17 +282,17 @@ void ParticleFlow::produce(framework::Event& event) {
     }
 
     // track / hcal cluster arbitration
-    std::vector<bool> EMIsHadLinked(ecalClusters.size(), false);
-    std::vector<bool> HadIsEMLinked(hcalClusters.size(), false);
-    std::map<int, int> EMHadPairs{};
-    for (int i = 0; i < ecalClusters.size(); i++) {
-      if (emHadCaloMap.count(i)) {
+    std::vector<bool> em_is_had_linked(ecal_clusters.size(), false);
+    std::vector<bool> had_is_em_linked(hcal_clusters.size(), false);
+    std::map<int, int> em_had_pairs{};
+    for (int i = 0; i < ecal_clusters.size(); i++) {
+      if (em_had_calo_map.count(i)) {
         // pick first (highest-energy) unused matching cluster
-        for (int had_idx : emHadCaloMap[i]) {
-          if (!HadIsEMLinked[had_idx]) {
-            HadIsEMLinked[had_idx] = true;
-            EMIsHadLinked[i] = true;
-            EMHadPairs[i] = had_idx;
+        for (int had_idx : em_had_calo_map[i]) {
+          if (!had_is_em_linked[had_idx]) {
+            had_is_em_linked[had_idx] = true;
+            em_is_had_linked[i] = true;
+            em_had_pairs[i] = had_idx;
             break;
           }
         }
@@ -311,42 +313,42 @@ void ParticleFlow::produce(framework::Event& event) {
       ldmx::PFCandidate cand;
       fillCandTrack(cand, tracks[i]);  // append track info to candidate
 
-      if (!tkIsEMLinked[i]) {
+      if (!tk_is_em_linked[i]) {
         // chargedUnmatch.push_back(cand);
       } else {  // if track is linked with ECal cluster
-        fillCandEMCalo(cand, ecalClusters[tkEMPairs[i]]);
-        if (EMIsHadLinked[tkEMPairs[i]]) {  // if ECal is linked with HCal
-                                            // cluster
-          fillCandHadCalo(cand, hcalClusters[EMHadPairs[tkEMPairs[i]]]);
+        fillCandEMCalo(cand, ecal_clusters[tk_em_pairs[i]]);
+        if (em_is_had_linked[tk_em_pairs[i]]) {  // if ECal is linked with HCal
+                                                 // cluster
+          fillCandHadCalo(cand, hcal_clusters[em_had_pairs[tk_em_pairs[i]]]);
         }
         // chargedMatch.push_back(cand);
       }
-      pfCands.push_back(cand);
+      pf_cands.push_back(cand);
     }
 
     // std::vector<ldmx::PFCandidate> emMatch;
     // std::vector<ldmx::PFCandidate> emUnmatch;
-    for (int i = 0; i < ecalClusters.size(); i++) {
+    for (int i = 0; i < ecal_clusters.size(); i++) {
       // already linked with ECal in the previous step
-      if (EMIsTkLinked[i]) continue;
+      if (em_is_tk_linked[i]) continue;
 
       ldmx::PFCandidate cand;
-      fillCandEMCalo(cand, ecalClusters[i]);
-      if (EMIsHadLinked[tkEMPairs[i]]) {
-        fillCandHadCalo(cand, hcalClusters[EMHadPairs[i]]);
+      fillCandEMCalo(cand, ecal_clusters[i]);
+      if (em_is_had_linked[tk_em_pairs[i]]) {
+        fillCandHadCalo(cand, hcal_clusters[em_had_pairs[i]]);
         // emMatch.push_back(cand);
       } else {
         // emUnmatch.push_back(cand);
       }
-      pfCands.push_back(cand);
+      pf_cands.push_back(cand);
     }
-    std::vector<ldmx::PFCandidate> hadOnly;
-    for (int i = 0; i < hcalClusters.size(); i++) {
-      if (HadIsEMLinked[i]) continue;
+    std::vector<ldmx::PFCandidate> had_only;
+    for (int i = 0; i < hcal_clusters.size(); i++) {
+      if (had_is_em_linked[i]) continue;
       ldmx::PFCandidate cand;
-      fillCandHadCalo(cand, hcalClusters[i]);
+      fillCandHadCalo(cand, hcal_clusters[i]);
       // hadOnly.push_back(cand);
-      pfCands.push_back(cand);
+      pf_cands.push_back(cand);
     }
 
     // // track / ecal cluster arbitration
@@ -427,42 +429,42 @@ void ParticleFlow::produce(framework::Event& event) {
       fillCandTrack(pf, tracks[0]);
       pid += 1;
     }
-    if (ecalClusters.size()) {
-      fillCandEMCalo(pf, ecalClusters[0]);
+    if (ecal_clusters.size()) {
+      fillCandEMCalo(pf, ecal_clusters[0]);
       pid += 2;
     }
-    if (hcalClusters.size()) {
-      fillCandHadCalo(pf, hcalClusters[0]);
+    if (hcal_clusters.size()) {
+      fillCandHadCalo(pf, hcal_clusters[0]);
       pid += 4;
     }
     pf.setPID(pid);
     pf.setEnergy(pf.getEcalEnergy() + pf.getHcalEnergy());
-    pfCands.push_back(pf);
+    pf_cands.push_back(pf);
   }
 
-  event.add(outputCollName_, pfCands);
+  event.add(output_coll_name_, pf_cands);
 }
 // stupid function to type cast from ecal to calo cluster
 const std::vector<ldmx::CaloCluster> ParticleFlow::getEcalClusters(
     framework::Event& event, std::string inputClusterCollName,
     std::string inputClusterPassName) {
-  const auto tmpClusters = event.getCollection<ldmx::EcalCluster>(
+  const auto tmp_clusters = event.getCollection<ldmx::EcalCluster>(
       inputClusterCollName, inputClusterPassName);
-  std::string newName = inputClusterCollName + "Cast";
-  std::vector<ldmx::CaloCluster> newClusters;
-  for (auto cl : tmpClusters) {
-    newClusters.emplace_back(cl);
+  std::string new_name = inputClusterCollName + "Cast";
+  std::vector<ldmx::CaloCluster> new_clusters;
+  for (auto cl : tmp_clusters) {
+    new_clusters.emplace_back(cl);
   }
-  event.add(newName, newClusters);
+  event.add(new_name, new_clusters);
   const auto calo_clusters =
-      event.getCollection<ldmx::CaloCluster>(newName, "");
+      event.getCollection<ldmx::CaloCluster>(new_name, "");
   return calo_clusters;
 }
 
 void ParticleFlow::onProcessEnd() {
   ldmx_log(debug) << "Process ends!";
-  delete eCorr_;
-  delete hCorr_;
+  delete e_corr_;
+  delete h_corr_;
 
   return;
 }

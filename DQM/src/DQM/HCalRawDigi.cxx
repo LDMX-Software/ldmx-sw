@@ -35,7 +35,7 @@ void HCalRawDigi::analyze(const framework::Event& event) {
     for (unsigned int i_sample{0}; i_sample < digis.getNumSamplesPerDigi();
          i_sample++) {
       histograms_.fill("adc_by_channel_sample" + std::to_string(i_sample),
-                       i_digi, digi.at(i_sample).adc_t());
+                       i_digi, digi.at(i_sample).adcT());
     }
     i_digi++;
   }

@@ -159,7 +159,7 @@ class HgcrocDigiCollection {
      *
      * @return 10-bit measurement of ADC t-1
      */
-    int adc_tm1() const { return first(); }
+    int adcTm1() const { return first(); }
 
     /**
      * Get the ADC measurement from this sample
@@ -169,7 +169,7 @@ class HgcrocDigiCollection {
      *
      * @return 10-bit measurement of current ADC
      */
-    int adc_t() const {
+    int adcT() const {
       if (version_ == 2) {
         return third();
       }
@@ -358,14 +358,14 @@ class HgcrocDigiCollection {
    * Get number of samples per digi
    * @return unsigned int number of samples per digi
    */
-  unsigned int getNumSamplesPerDigi() const { return numSamplesPerDigi_; }
+  unsigned int getNumSamplesPerDigi() const { return num_samples_per_digi_; }
 
   /**
    * Set number of samples for each digi
    * @param[in] n number of samples per digi
    */
   void setNumSamplesPerDigi(unsigned int n) {
-    numSamplesPerDigi_ = n;
+    num_samples_per_digi_ = n;
     return;
   }
 
@@ -373,7 +373,7 @@ class HgcrocDigiCollection {
    * Get index of sample of interest
    * @return unsigned int index for SOI
    */
-  unsigned int getSampleOfInterestIndex() const { return sampleOfInterest_; }
+  unsigned int getSampleOfInterestIndex() const { return sample_of_interest_; }
 
   /**
    * Set index of sample of interest
@@ -384,7 +384,7 @@ class HgcrocDigiCollection {
    * @param[in] n index for the sample of interest
    */
   void setSampleOfInterestIndex(unsigned int n) {
-    sampleOfInterest_ = n;
+    sample_of_interest_ = n;
     return;
   }
 
@@ -407,13 +407,13 @@ class HgcrocDigiCollection {
    * Get total number of digis
    * @return unsigned int number of digis
    */
-  unsigned int getNumDigis() const { return channelIDs_.size(); }
+  unsigned int getNumDigis() const { return channel_i_ds_.size(); }
 
   /**
    * Get total number of digis
    * @return unsigned int number of digis
    */
-  unsigned int size() const { return channelIDs_.size(); }
+  unsigned int size() const { return channel_i_ds_.size(); }
 
   /**
    * Add samples to collection
@@ -437,28 +437,28 @@ class HgcrocDigiCollection {
    * in the collection and only getting the digi when the iterator is
    * asked to de-reference.
    */
-  class iterator {
+  class Iterator {
    public:
     /// Connect the parent collection with an index to this iterator
-    explicit iterator(HgcrocDigiCollection& c, long index = 0)
+    explicit Iterator(HgcrocDigiCollection& c, long index = 0)
         : digi_index_{index}, coll_{c} {}
     /// Increment the digi index and return the iterator afterwards
-    iterator& operator++() {
+    Iterator& operator++() {
       digi_index_++;
       return *this;
     }
     /// Increment the digi index and return the iterator before
-    iterator operator++(int) {
-      iterator retval = *this;
+    Iterator operator++(int) {
+      Iterator retval = *this;
       ++(*this);
       return retval;
     }
     /// Check if two iterators are on the same index
-    bool operator==(iterator other) const {
+    bool operator==(Iterator other) const {
       return digi_index_ == other.digi_index_;
     }
     /// Check if two iterators are not on the same index
-    bool operator!=(iterator other) const { return !(*this == other); }
+    bool operator!=(Iterator other) const { return !(*this == other); }
     /**
      * De-reference this iterator by using the parent collection to get the
      * actual digi at the index
@@ -478,7 +478,7 @@ class HgcrocDigiCollection {
    *
    * We just point the user to the zero'th entry.
    */
-  iterator begin() { return iterator(*this, 0); }
+  Iterator begin() { return Iterator(*this, 0); }
 
   /**
    * The end of this collection
@@ -486,7 +486,7 @@ class HgcrocDigiCollection {
    * The end of the collection is the number
    * of digis stored in it.
    */
-  iterator end() { return iterator(*this, getNumDigis()); }
+  Iterator end() { return Iterator(*this, getNumDigis()); }
 
  private:
   /** Mask for lowest order bit in an int */
@@ -509,16 +509,16 @@ class HgcrocDigiCollection {
 
  private:
   /** list of channel IDs that we have digis for */
-  std::vector<unsigned int> channelIDs_;
+  std::vector<unsigned int> channel_i_ds_;
 
   /** list of samples that we have been given */
   std::vector<uint32_t> samples_;
 
   /** number of samples for each digi */
-  unsigned int numSamplesPerDigi_;
+  unsigned int num_samples_per_digi_;
 
   /** index for the sample of interest in the samples list */
-  unsigned int sampleOfInterest_;
+  unsigned int sample_of_interest_;
 
   /** version of the ROC we have read */
   int version_;

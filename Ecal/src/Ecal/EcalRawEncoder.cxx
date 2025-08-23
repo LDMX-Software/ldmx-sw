@@ -138,16 +138,16 @@ void EcalRawEncoder::produce(framework::Event& event) {
       word = 0;
 
       word |= (1 << (12 + 1 + 6 + 8));                                // version
-      word |= (fpga_id & packing::utility::mask<8>) << (12 + 1 + 6);  // FPGA
-      word |= (links.size() & packing::utility::mask<6>) << (12 + 1);  // NLINKS
-      word |= (total_length & packing::utility::mask<12>);  // LEN TODO
+      word |= (fpga_id & packing::utility::MASK<8>) << (12 + 1 + 6);  // FPGA
+      word |= (links.size() & packing::utility::MASK<6>) << (12 + 1);  // NLINKS
+      word |= (total_length & packing::utility::MASK<12>);  // LEN TODO
       buffer.push_back(word);
       fpga_crc << word;
 
       word = 0;
-      word |= (bunch_id & packing::utility::mask<12>) << 20;  // BX ID
-      word |= (rreq & packing::utility::mask<10>) << 10;      // RREQ
-      word |= (orbit & packing::utility::mask<10>);           // OR
+      word |= (bunch_id & packing::utility::MASK<12>) << 20;  // BX ID
+      word |= (rreq & packing::utility::MASK<10>) << 10;      // RREQ
+      word |= (orbit & packing::utility::MASK<10>);           // OR
       buffer.push_back(word);
       fpga_crc << word;
 
@@ -161,7 +161,7 @@ void EcalRawEncoder::produce(framework::Event& event) {
           if (i_link <= link_lengths.size()) {
             // we have a link
             word |= (((0b11 << 6) +
-                      (link_lengths.at(i_link) & packing::utility::mask<6>))
+                      (link_lengths.at(i_link) & packing::utility::MASK<6>))
                      << 8 * i_linklen);
           }  // do we have a link for this linklen subword?
         }  // loop through subwords in this word
@@ -193,7 +193,7 @@ void EcalRawEncoder::produce(framework::Event& event) {
          */
 
         word = 0;
-        word |= (link_id & packing::utility::mask<16>) << 16;
+        word |= (link_id & packing::utility::MASK<16>) << 16;
         word |= 1 << 15;
         // put first 8bits of RO Map in first header word
         word |= (ro_map >> 32).to_ulong();
@@ -211,9 +211,9 @@ void EcalRawEncoder::produce(framework::Event& event) {
         // special "header" word from ROC
         word = 0;
         word |= 0b0101 << 28;
-        word |= (bunch_id & packing::utility::mask<12>) << 16;
-        word |= (rreq & packing::utility::mask<6>) << 10;
-        word |= (orbit & packing::utility::mask<3>) << 7;
+        word |= (bunch_id & packing::utility::MASK<12>) << 16;
+        word |= (rreq & packing::utility::MASK<6>) << 10;
+        word |= (orbit & packing::utility::MASK<3>) << 7;
         // skipping hamming error bits because we will set them all to false
         // here
         word |= 0b0101;

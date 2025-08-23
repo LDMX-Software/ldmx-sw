@@ -149,9 +149,9 @@ void EcalDigiVerifier::analyze(const framework::Event &event) {
                      num_mod_with_more_than_2hits);
 
   if (total_rec_energy > 6000.) {
-    setStorageHint(framework::hint_should_keep);
+    setStorageHint(framework::HINT_SHOULD_KEEP);
   } else {
-    setStorageHint(framework::hint_should_drop);
+    setStorageHint(framework::HINT_SHOULD_DROP);
   }
 
   return;

@@ -246,19 +246,19 @@ void OverlayProducer::produce(framework::Event &event) {
 
           if (needs_contribs_added) {  // special treatment for (for now only)
                                        // ecal
-            int overlay_hitID = overlay_hit.getID();
-            if (hit_map.find(overlay_hitID) ==
+            int overlay_hit_id = overlay_hit.getID();
+            if (hit_map.find(overlay_hit_id) ==
                 hit_map.end()) {  // there wasn't already a simhit in this id
-              hit_map[overlay_hitID] = ldmx::SimCalorimeterHit();
-              hit_map[overlay_hitID].setID(overlay_hitID);
-              std::vector<float> hitPos = overlay_hit.getPosition();
-              hit_map[overlay_hitID].setPosition(hitPos[0], hitPos[1],
-                                                 hitPos[2]);
+              hit_map[overlay_hit_id] = ldmx::SimCalorimeterHit();
+              hit_map[overlay_hit_id].setID(overlay_hit_id);
+              std::vector<float> hit_pos = overlay_hit.getPosition();
+              hit_map[overlay_hit_id].setPosition(hit_pos[0], hit_pos[1],
+                                                  hit_pos[2]);
             }
             // add the overlay hit (as a) contrib
             // incidentID = -1000, trackID = -1000, pdgCode = 0  <-- these are
             // set in the header for now but could be parameters
-            hit_map[overlay_hitID].addContrib(
+            hit_map[overlay_hit_id].addContrib(
                 overlay_incident_id_, overlay_track_id_, overlay_pdg_code_,
                 overlay_hit.getEdep(), overlay_time);
           }  // if add overlay as contribs
