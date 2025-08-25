@@ -93,12 +93,15 @@ class lhe(simcfg.PrimaryGenerator) :
         name of new primary generator
     filePath : str
         path to LHE file containing the primary vertices
+    vertex : list of float, optional
+        Vertex position to shoot from [mm]. Defaults to [0.0, 0.0, 0.0]
     """
 
     def __init__(self,name,filePath):
         super().__init__(name,'simcore::generators::LHEPrimaryGenerator')
 
         self.filePath = filePath
+        self.vertex = [0.0, 0.0, 0.0]
 
 class completeReSim(simcfg.PrimaryGenerator) :
     """New complete re-simprimary generator
