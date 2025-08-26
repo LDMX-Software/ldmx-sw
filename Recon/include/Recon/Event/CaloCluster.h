@@ -69,7 +69,7 @@ class CaloCluster {
    * that make up the cluster.
    * @param IDs Sorted vector of hit IDs.
    */
-  void setIDs(std::vector<unsigned int>& hitIDs) { hit_i_ds_ = hitIDs; }
+  void setIDs(std::vector<unsigned int>& hitIDs) { hit_ids = hitIDs; }
 
   void setHitValsX(std::vector<float>& x_) { hit_x_ = x_; }
   void setHitValsY(std::vector<float>& x_) { hit_y_ = x_; }
@@ -125,7 +125,7 @@ class CaloCluster {
   double getEDYDZ() const { return err_dydz_; }
 
   // get hit rawIDs (unused)
-  const std::vector<unsigned int>& getHitIDs() const { return hit_i_ds_; }
+  const std::vector<unsigned int>& getHitIDs() const { return hit_ids; }
 
   // ability to store limited hit info
   const std::vector<float>& getHitX() const { return hit_x_; }
@@ -138,7 +138,7 @@ class CaloCluster {
   }
 
  protected:
-  std::vector<unsigned int> hit_i_ds_;
+  std::vector<unsigned int> hit_ids;
   double energy_{0};
   int n_hits_{0};
   double centroid_x_{0};
