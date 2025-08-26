@@ -181,7 +181,7 @@ tidy-cpp *ARGS='-p build --fix -fix-errors --quiet ':
     set -exu
     format_list=$(mktemp)
     git diff --name-only HEAD | egrep '(\.h|\.cxx)$' > ${format_list}
-    #git ls-tree -r HEAD --name-only | egrep '(\.h|\.cxx)$'   | grep -v '^HLS' > ${format_list}
+    cat ${format_list}
     denv clang-tidy $(cat ${format_list}) {{ ARGS }}
     rm ${format_list}
 
