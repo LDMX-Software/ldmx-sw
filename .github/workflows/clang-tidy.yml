@@ -17,6 +17,7 @@ jobs:
       with:
         submodules: 'recursive'
         fetch-depth: 0
+        ref: trunk
  
     - name: Pull latest changes
       run: |
