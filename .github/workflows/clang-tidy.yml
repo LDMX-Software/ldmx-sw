@@ -21,7 +21,10 @@ jobs:
         git pull origin ${GITHUB_HEAD_REF}
 
     - name: Run clang tidy on the C++
-      run: just install-denv init tidy-cpp
+      run: |
+        just install-denv init 
+        just compile
+        just tidy-cpp
 
     - name: Set up git user as the bot
       run: |
