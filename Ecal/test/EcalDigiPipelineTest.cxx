@@ -20,7 +20,7 @@ namespace test {
  * Energy deposited in our silicon sensors by one MIP on average.
  * [MeV]
  */
-static const double MIP_SI_ENERGY = 0.130;
+static const double mip_si_energy = 0.130;
 
 /**
  * Conversion between deposited charge and deposited energy
@@ -29,7 +29,7 @@ static const double MIP_SI_ENERGY = 0.130;
  * charge [fC] * (1000 electrons / 0.1602 fC) * (1 MIP / 37 000 electrons) *
  * (0.130 MeV / 1 MIP)
  */
-static const double ME_V_PER_F_C = MIP_SI_ENERGY / (37 * 0.1602);
+static const double mev_per_fc = mip_si_energy / (37 * 0.1602);
 
 /**
  * Maximum percent error that a single hit
@@ -62,7 +62,7 @@ static const double MAX_ENERGY_PERCENT_ERROR_TP = 0.15;
  * "simulated" (input into digitizer) and the reconstructed
  * energy deposited output by reconstructor.
  */
-static const double MAX_ENERGY_ERROR_DAQ = MIP_SI_ENERGY / 2;
+static const double MAX_ENERGY_ERROR_DAQ = mip_si_energy / 2;
 
 /**
  * Maximum absolute error that a single hit
@@ -73,7 +73,7 @@ static const double MAX_ENERGY_ERROR_DAQ = MIP_SI_ENERGY / 2;
  * "simulated" (input into digitizer) and the
  * energy estimated from trigger primitives.
  */
-static const double MAX_ENERGY_ERROR_TP = 2 * MIP_SI_ENERGY;
+static const double MAX_ENERGY_ERROR_TP = 2 * mip_si_energy;
 
 /**
  * Number of sim hits_ to create.
@@ -154,7 +154,7 @@ class EcalFakeSimHits : public framework::Producer {
    * The maximum value to be readout is 4096 TDC which
    * is equivalent to ~10000fC deposited charge.
    */
-  const double MAX_ENERGY = 10000. * ME_V_PER_F_C;
+  const double MAX_ENERGY = 10000. * mev_per_fc;
 
   /**
    * Minimum energy to make a sim hit for [MeV]
@@ -162,7 +162,7 @@ class EcalFakeSimHits : public framework::Producer {
    *
    * One MIP is ~0.13 MeV, so we choose that.
    */
-  const double MIN_ENERGY = MIP_SI_ENERGY;
+  const double MIN_ENERGY = mip_si_energy;
 
   /**
    * The step between energies is calculated depending on the min, max energy
@@ -293,7 +293,7 @@ class EcalCheckEnergyReconstruction : public framework::Analyzer {
 
       auto trig_digi = trig_digis.at(0);
       float tp_energy =
-          8 * trig_digi.linearPrimitive() * 320. / 1024 * ME_V_PER_F_C;
+          8 * trig_digi.linearPrimitive() * 320. / 1024 * mev_per_fc;
 
       CHECK_THAT(tp_energy, IsCloseEnough(truth_energy, MAX_ENERGY_ERROR_TP,
                                           MAX_ENERGY_PERCENT_ERROR_TP));
