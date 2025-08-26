@@ -12,7 +12,11 @@ jobs:
     - name: Install just
       uses: extractions/setup-just@v3
 
-    - uses: actions/checkout@v5
+    - name: Checkout ldmx-sw
+      uses: actions/checkout@v5
+      with:
+        submodules: 'recursive'
+        fetch-depth: 0
  
     - name: Pull latest changes
       run: |
