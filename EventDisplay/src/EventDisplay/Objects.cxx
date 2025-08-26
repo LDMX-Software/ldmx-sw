@@ -11,7 +11,7 @@ void Objects::Initialize() {
 }
 
 void Objects::SetSimThresh(double simThresh) {
-  simThresh_ = simThresh;
+  sim_thresh_ = simThresh;
   TEveElement* spHits = 0;
   spHits = sim_objects_->FindChild("SimParticles leaving ECAL");
   TEveElement::List_i sim;
@@ -21,7 +21,7 @@ void Objects::SetSimThresh(double simThresh) {
     ldmx::SimTrackerHit* sp = (ldmx::SimTrackerHit*)el->GetSourceObject();
     std::vector<double> pVec = sp->getMomentum();
     double p = pow(pow(pVec[0], 2) + pow(pVec[1], 2) + pow(pVec[2], 2), 0.5);
-    if (p < simThresh_) {
+    if (p < sim_thresh_) {
       el->SetRnrSelf(kFALSE);
     } else {
       el->SetRnrSelf(kTRUE);
@@ -270,7 +270,7 @@ void Objects::draw(std::vector<ldmx::SimTrackerHit> hits) {
       simArr->SetConeL(100 * 0.02 / r);
       simArr->SetConeR(150 * 0.02 / r);
       simArr->SetPickable(kTRUE);
-      if (p < simThresh_) {
+      if (p < sim_thresh_) {
         simArr->SetRnrSelf(kFALSE);
       }
 
@@ -389,12 +389,12 @@ void Objects::draw(std::map<int, ldmx::SimParticle> particles) {
       {int(ldmx::SimParticle::ProcessType::eDarkBrem), "eDarkBrem"}};
 
   TString eve_list_name;
-  eve_list_name.Form("SimParticles above %.1f MeV", simThresh_);
+  eve_list_name.Form("SimParticles above %.1f MeV", sim_thresh_);
   auto sim_particles = new TEveElementList(eve_list_name);
 
   for (auto const& [track_id, particle] : particles) {
     // skip if KE is less than threshold
-    if (particle.getEnergy() - particle.getMass() < simThresh_) continue;
+    if (particle.getEnergy() - particle.getMass() < sim_thresh_) continue;
 
     std::vector<double> pVec = particle.getMomentum();
     double p =

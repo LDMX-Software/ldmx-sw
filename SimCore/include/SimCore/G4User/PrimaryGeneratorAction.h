@@ -85,16 +85,16 @@ class PrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction {
    * Flag denoting whether the vertex position of a particle
    * should be smeared.
    */
-  bool useBeamspot_{false};
+  bool use_beamspot_{false};
 
   /** Extent of the beamspot in x_. */
-  double beamspotXSize_{0};
+  double beamspot_x_size_{0};
 
   /** Extent of the beamspot in y_. */
-  double beamspotYSize_{0};
+  double beamspot_y_size_{0};
 
   /** Extent of the beamspot in y_. */
-  double beamspotZSize_{0.};
+  double beamspot_z_size_{0.};
 
   /**
    * Should we time-shift so that the primary vertices arrive (or originate)

@@ -81,15 +81,15 @@ class EcalSD : public SensitiveDetector {
   /**
    * Clear the map of hits we have accumulated
    */
-  virtual void OnFinishedEvent() override { hits_.clear(); }
+  virtual void onFinishedEvent() override { hits_.clear(); }
 
  private:
   /// map of hits to add to the event (will be squashed)
   std::map<ldmx::EcalID, ldmx::SimCalorimeterHit> hits_;
   /// enable hit contribs
-  bool enableHitContribs_;
+  bool enable_hit_contribs_;
   /// compress hit contribs
-  bool compressHitContribs_;
+  bool compress_hit_contribs_;
   /// maximum track ID to be considered an "origin"
   int max_origin_track_id_;
 };

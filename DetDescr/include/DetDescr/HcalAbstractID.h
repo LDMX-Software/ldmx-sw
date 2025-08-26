@@ -64,7 +64,7 @@ class HcalAbstractID : public DetectorID {
    * Get the value of the bar field from the ID.
    * @return The value of the bar field.
    */
-  int bar_type() const { return (id_ >> BAR_TYPE_SHIFT) & BAR_TYPE_MASK; }
+  int barType() const { return (id_ >> BAR_TYPE_SHIFT) & BAR_TYPE_MASK; }
 
   /**
    * Get the value of the payload field from the ID.

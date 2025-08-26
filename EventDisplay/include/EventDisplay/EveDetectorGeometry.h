@@ -35,7 +35,7 @@ class EveDetectorGeometry {
     delete hcal_;
     delete sidehcal_;
     delete ecal_;
-    delete recoilTracker_;
+    delete recoil_tracker_;
     delete detector_;
   }
 
@@ -67,7 +67,7 @@ class EveDetectorGeometry {
   /**
    * Access Recoil Tracker Eve Element
    */
-  TEveElement* getRecoilTracker() { return recoilTracker_; }
+  TEveElement* getRecoilTracker() { return recoil_tracker_; }
 
   /**
    * Access Entire Detector Eve Element
@@ -75,11 +75,11 @@ class EveDetectorGeometry {
   TEveElement* getDetector() { return detector_; }
 
  private:
-  TEveElement* hcal_;           //* HCAL Eve Element
-  TEveElement* sidehcal_;       //* Side HCAL Eve Element
-  TEveElement* ecal_;           //* ECAL Eve Element
-  TEveElement* recoilTracker_;  //* Recoil Tracker Eve Element
-  TEveElement* detector_;       //* Entire Detector Eve Element
+  TEveElement* hcal_;            //* HCAL Eve Element
+  TEveElement* sidehcal_;        //* Side HCAL Eve Element
+  TEveElement* ecal_;            //* ECAL Eve Element
+  TEveElement* recoil_tracker_;  //* Recoil Tracker Eve Element
+  TEveElement* detector_;        //* Entire Detector Eve Element
 };
 }  // namespace eventdisplay
 

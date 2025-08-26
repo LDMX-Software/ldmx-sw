@@ -328,7 +328,7 @@ void GenieGenerator::GeneratePrimaryVertex(G4Event* event) {
   while (!genie_event) genie_event = evg_driver_.GenerateEvent(e_p4);
 
   auto ev_info = new UserEventInformation;
-  auto hepmc3_genie = hepMC3Converter_.ConvertToHepMC3(*genie_event);
+  auto hepmc3_genie = hep_mc3_converter_.ConvertToHepMC3(*genie_event);
   ldmx::HepMC3GenEvent hepmc3_ldmx_genie;
   hepmc3_genie->write_data(hepmc3_ldmx_genie);
   ev_info->addHepMC3GenEvent(hepmc3_ldmx_genie);
@@ -369,10 +369,10 @@ void GenieGenerator::GeneratePrimaryVertex(G4Event* event) {
 
     primary->SetProperTime(time_ * CLHEP::ns);
 
-    UserPrimaryParticleInformation* primaryInfo =
+    UserPrimaryParticleInformation* primary_info =
         new UserPrimaryParticleInformation();
-    primaryInfo->setHepEvtStatus(1);
-    primary->SetUserInformation(primaryInfo);
+    primary_info->setHepEvtStatus(1);
+    primary->SetUserInformation(primary_info);
 
     vertex->SetPrimary(primary);
   }

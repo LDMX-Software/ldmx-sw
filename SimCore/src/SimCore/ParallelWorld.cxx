@@ -7,29 +7,30 @@ namespace simcore {
 ParallelWorld::ParallelWorld(G4GDMLParser *parser, G4String worldName)
     : G4VUserParallelWorld(worldName),
       parser_(parser),
-      auxInfoReader_(
+      aux_info_reader_(
           new geo::AuxInfoReader(parser, framework::config::Parameters())) {}
 
-ParallelWorld::~ParallelWorld() { delete auxInfoReader_; }
+ParallelWorld::~ParallelWorld() { delete aux_info_reader_; }
 
 void ParallelWorld::Construct() {}
 
 void ParallelWorld::ConstructSD() {
-  G4VPhysicalVolume *worldPhysical = GetWorld();
-  G4LogicalVolume *worldLogical = worldPhysical->GetLogicalVolume();
+  G4VPhysicalVolume *world_physical = GetWorld();
+  G4LogicalVolume *world_logical = world_physical->GetLogicalVolume();
 
-  G4LogicalVolume *parallelWorldLogical =
+  G4LogicalVolume *parallel_world_logical =
       parser_->GetWorldVolume()->GetLogicalVolume();
-  auxInfoReader_->readGlobalAuxInfo();
+  aux_info_reader_->readGlobalAuxInfo();
 
-  for (int index_ = 0; index_ < parallelWorldLogical->GetNoDaughters();
-       index_++) {
-    G4VPhysicalVolume *physicalVol = parallelWorldLogical->GetDaughter(index_);
-    ldmx_log(debug) << "Adding : " << physicalVol->GetName()
+  for (int index = 0; index < parallel_world_logical->GetNoDaughters();
+       index++) {
+    G4VPhysicalVolume *physical_vol =
+        parallel_world_logical->GetDaughter(index);
+    ldmx_log(debug) << "Adding : " << physical_vol->GetName()
                     << " to parallel world.";
-    worldLogical->AddDaughter(physicalVol);
+    world_logical->AddDaughter(physical_vol);
   }
 
-  auxInfoReader_->assignAuxInfoToVolumes();
+  aux_info_reader_->assignAuxInfoToVolumes();
 }
 }  // namespace simcore

@@ -107,7 +107,7 @@ class TrackingAction : public G4UserTrackingAction {
    * Get a handle to the current TrackMap for the event.
    * @return A pointer to the current TrackMap for the event.
    */
-  TrackMap& getTrackMap() { return trackMap_; }
+  TrackMap& getTrackMap() { return track_map_; }
 
   /**
    * Get a pointer to the current UserTrackingAction from the G4RunManager.
@@ -124,15 +124,15 @@ class TrackingAction : public G4UserTrackingAction {
    * @param action  User action of type RunAction
    */
   void registerAction(std::shared_ptr<UserAction> trackingAction) {
-    trackingActions_.push_back(trackingAction);
+    tracking_actions_.push_back(trackingAction);
   }
 
  private:
   /// custom user actions to be called before and after processing a track
-  std::vector<std::shared_ptr<UserAction>> trackingActions_;
+  std::vector<std::shared_ptr<UserAction>> tracking_actions_;
 
   /** Stores parentage information for all tracks in the event. */
-  TrackMap trackMap_;
+  TrackMap track_map_;
 };  // TrackingAction
 
 }  // namespace simcore::g4user

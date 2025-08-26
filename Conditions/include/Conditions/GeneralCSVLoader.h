@@ -22,7 +22,7 @@ class GeneralCSVLoader {
   virtual ~GeneralCSVLoader() {}
 
   /** Get the column names */
-  std::vector<std::string> columnNames() const { return colNames_; }
+  std::vector<std::string> columnNames() const { return col_names_; }
 
   /** Advance to next row if possible */
   bool nextRow();
@@ -45,11 +45,11 @@ class GeneralCSVLoader {
   /**
    * The column names
    */
-  std::vector<std::string> colNames_;
+  std::vector<std::string> col_names_;
   /**
    * The row data
    */
-  std::vector<std::string> rowData_;
+  std::vector<std::string> row_data_;
 };
 
 /** @brief Specialization of the GeneralCSVLoader for loading from a string
@@ -77,7 +77,7 @@ class StringCSVLoader : public GeneralCSVLoader {
   /**
    * The current start and end pointers
    */
-  std::string::size_type rowBegin_, rowEnd_;
+  std::string::size_type row_begin_, row_end_;
 };
 
 /** @brief Specialization of the GeneralCSVLoader for loading from a file/stream
@@ -115,7 +115,7 @@ class StreamCSVLoader : public GeneralCSVLoader {
   /**
    * Own stream?
    */
-  bool ownStream_;
+  bool own_stream_;
   /**
    * Line buffer
    */

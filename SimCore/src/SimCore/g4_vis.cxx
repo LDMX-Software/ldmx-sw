@@ -38,7 +38,7 @@ int main(int argc, char* argv[]) {
   parser_parameters.addParameter<std::string>("detector", the_arg);
 
   // RunManager
-  G4RunManager* runManager = new G4RunManager;
+  G4RunManager* run_manager = new G4RunManager;
 
   // Detector components
   auto parser{simcore::geo::Parser::Factory::get().make(
@@ -49,28 +49,28 @@ int main(int argc, char* argv[]) {
     return 1;
   }
   auto parser_ptr{parser.value()};
-  runManager->SetUserInitialization(new simcore::DetectorConstruction(
+  run_manager->SetUserInitialization(new simcore::DetectorConstruction(
       parser_ptr, parser_parameters, empty_interface));
   G4GeometryManager::GetInstance()->OpenGeometry();
   parser_ptr->read();
-  runManager->DefineWorldVolume(parser_ptr->GetWorldVolume());
+  run_manager->DefineWorldVolume(parser_ptr->getWorldVolume());
 
   // required to define a physics list to complete initialization
   G4PhysListFactory lists;
-  runManager->SetUserInitialization(lists.GetReferencePhysList("FTFP_BERT"));
+  run_manager->SetUserInitialization(lists.GetReferencePhysList("FTFP_BERT"));
 
-  runManager->Initialize();
+  run_manager->Initialize();
 
   // Define (G)UI
   G4UIExecutive* ui = new G4UIExecutive(argc, argv);
-  G4VisManager* visManager = new G4VisExecutive;
-  visManager->Initialize();
+  G4VisManager* vis_manager = new G4VisExecutive;
+  vis_manager->Initialize();
 
   ui->SessionStart();
 
   delete ui;
-  delete runManager;
-  delete visManager;
+  delete run_manager;
+  delete vis_manager;
 
   return 0;
 }

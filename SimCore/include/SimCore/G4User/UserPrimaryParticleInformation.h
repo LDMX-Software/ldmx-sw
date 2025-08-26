@@ -33,13 +33,13 @@ class UserPrimaryParticleInformation
    * Set the HEP event status (generator status) e.g. from an LHE particle.
    * @param hepEvtStatus The HEP event status.
    */
-  void setHepEvtStatus(int hepEvtStatus) { hepEvtStatus_ = hepEvtStatus; }
+  void setHepEvtStatus(int hepEvtStatus) { hep_evt_status_ = hepEvtStatus; }
 
   /**
    * Get the HEP event status.
    * @return The HEP event status.
    */
-  int getHepEvtStatus() { return hepEvtStatus_; }
+  int getHepEvtStatus() { return hep_evt_status_; }
 
   /**
    * Implement virtual method (no-op).
@@ -50,7 +50,7 @@ class UserPrimaryParticleInformation
   /**
    * The HEP event status.
    */
-  int hepEvtStatus_{-1};
+  int hep_evt_status_{-1};
 };
 
 }  // namespace simcore

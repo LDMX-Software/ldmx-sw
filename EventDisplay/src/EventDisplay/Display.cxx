@@ -30,12 +30,12 @@ Display::Display(TEveManager* manager, bool verbose)
   // geometry for this drawing and
   // prints an Info statement to std-out. Currently, I can't figure out how to
   // turn this behavior off.
-  theDetector_ = new EveDetectorGeometry();
+  the_detector_ = new EveDetectorGeometry();
 
   manager_->AddEvent(new TEveEventManager("LDMX Detector", ""));
-  manager_->AddElement(theDetector_->getECAL());
-  manager_->AddElement(theDetector_->getHCAL());
-  manager_->AddElement(theDetector_->getRecoilTracker());
+  manager_->AddElement(the_detector_->getECAL());
+  manager_->AddElement(the_detector_->getHCAL());
+  manager_->AddElement(the_detector_->getRecoilTracker());
   manager_->AddEvent(new TEveEventManager("LDMX Event", ""));
 
   if (verbose_) {
@@ -76,9 +76,9 @@ Display::Display(TEveManager* manager, bool verbose)
   buttonNext->Connect("Pressed()", "eventdisplay::Display", this,
                       "NextEvent()");
 
-  textBoxClustersCollName_ =
+  text_box_clusters_coll_name_ =
       new TGTextEntry(commandFrameEcalClusterBranch, new TGTextBuffer(100));
-  commandFrameEcalClusterBranch->AddFrame(textBoxClustersCollName_,
+  commandFrameEcalClusterBranch->AddFrame(text_box_clusters_coll_name_,
                                           new TGLayoutHints(kLHintsExpandX));
 
   TGButton* buttonClusterName =
@@ -88,9 +88,9 @@ Display::Display(TEveManager* manager, bool verbose)
   buttonClusterName->Connect("Pressed()", "eventdisplay::Display", this,
                              "GetClustersCollInput()");
 
-  textBoxSimThresh_ =
+  text_box_sim_thresh_ =
       new TGTextEntry(commandFrameSimThresh, new TGTextBuffer(100));
-  commandFrameSimThresh->AddFrame(textBoxSimThresh_,
+  commandFrameSimThresh->AddFrame(text_box_sim_thresh_,
                                   new TGLayoutHints(kLHintsExpandX));
 
   TGButton* buttonDrawThresh =
@@ -100,9 +100,9 @@ Display::Display(TEveManager* manager, bool verbose)
   buttonDrawThresh->Connect("Pressed()", "eventdisplay::Display", this,
                             "SetSimThresh()");
 
-  textBoxEcalRecHitsCollName_ =
+  text_box_ecal_rec_hits_coll_name_ =
       new TGTextEntry(commandFrameEcalHitBranch, new TGTextBuffer(100));
-  commandFrameEcalHitBranch->AddFrame(textBoxEcalRecHitsCollName_,
+  commandFrameEcalHitBranch->AddFrame(text_box_ecal_rec_hits_coll_name_,
                                       new TGLayoutHints(kLHintsExpandX));
 
   TGButton* buttonSetECALBranch =
@@ -112,9 +112,9 @@ Display::Display(TEveManager* manager, bool verbose)
   buttonSetECALBranch->Connect("Pressed()", "eventdisplay::Display", this,
                                "GetECALRecHitsCollInput()");
 
-  textBoxHcalRecHitsCollName_ =
+  text_box_hcal_rec_hits_coll_name_ =
       new TGTextEntry(commandFrameHcalHitBranch, new TGTextBuffer(100));
-  commandFrameHcalHitBranch->AddFrame(textBoxHcalRecHitsCollName_,
+  commandFrameHcalHitBranch->AddFrame(text_box_hcal_rec_hits_coll_name_,
                                       new TGLayoutHints(kLHintsExpandX));
 
   TGButton* buttonSetHCALBranch =
@@ -124,9 +124,9 @@ Display::Display(TEveManager* manager, bool verbose)
   buttonSetHCALBranch->Connect("Pressed()", "eventdisplay::Display", this,
                                "GetHCALRecHitsCollInput()");
 
-  textBoxTrackerHitsCollName_ =
+  text_box_tracker_hits_coll_name_ =
       new TGTextEntry(commandFrameTrackerHitsBranch, new TGTextBuffer(100));
-  commandFrameTrackerHitsBranch->AddFrame(textBoxTrackerHitsCollName_,
+  commandFrameTrackerHitsBranch->AddFrame(text_box_tracker_hits_coll_name_,
                                           new TGLayoutHints(kLHintsExpandX));
 
   TGButton* buttonSetRecoilBranch =
@@ -136,9 +136,9 @@ Display::Display(TEveManager* manager, bool verbose)
   buttonSetRecoilBranch->Connect("Pressed()", "eventdisplay::Display", this,
                                  "GetTrackerHitsCollInput()");
 
-  textBoxEcalScorePlaneBranch_ =
+  text_box_ecal_score_plane_branch_ =
       new TGTextEntry(commandFrameEcalScorePlaneBranch, new TGTextBuffer(100));
-  commandFrameEcalScorePlaneBranch->AddFrame(textBoxEcalScorePlaneBranch_,
+  commandFrameEcalScorePlaneBranch->AddFrame(text_box_ecal_score_plane_branch_,
                                              new TGLayoutHints(kLHintsExpandX));
 
   TGButton* buttonSetSimParticlesBranch =
@@ -211,11 +211,11 @@ void Display::NextEvent() {
       std::cout << "[ Display ] : Loading new event " << "... " << std::endl;
     }
 
-    // draw<std::vector<ldmx::EcalHit>>(ecalRecHitsCollName_);
-    // draw<std::vector<ldmx::HcalHit>>(hcalRecHitsCollName_);
-    // draw<std::vector<ldmx::EcalCluster>>(clustersCollName_);
-    draw<std::vector<ldmx::SimTrackerHit>>(trackerHitsCollName_);
-    draw<std::vector<ldmx::SimTrackerHit>>(ecalSimParticlesCollName_);
+    // draw<std::vector<ldmx::EcalHit>>(ecal_rec_hits_coll_name_);
+    // draw<std::vector<ldmx::HcalHit>>(hcal_rec_hits_coll_name_);
+    // draw<std::vector<ldmx::EcalCluster>>(clusters_coll_name_);
+    draw<std::vector<ldmx::SimTrackerHit>>(tracker_hits_coll_name_);
+    draw<std::vector<ldmx::SimTrackerHit>>(ecal_sim_particles_coll_name_);
     draw<std::vector<ldmx::SimCalorimeterHit>>("EcalSimHits");
     draw<std::vector<ldmx::SimCalorimeterHit>>("HcalSimHits");
     draw<std::map<int, ldmx::SimParticle>>("SimParticles");
@@ -237,30 +237,30 @@ void Display::NextEvent() {
 }
 
 void Display::GetECALRecHitsCollInput() {
-  ecalRecHitsCollName_ = getText(textBoxEcalRecHitsCollName_);
+  ecal_rec_hits_coll_name_ = getText(text_box_ecal_rec_hits_coll_name_);
 }
 
 void Display::GetHCALRecHitsCollInput() {
-  hcalRecHitsCollName_ = getText(textBoxHcalRecHitsCollName_);
+  hcal_rec_hits_coll_name_ = getText(text_box_hcal_rec_hits_coll_name_);
 }
 
 void Display::GetTrackerHitsCollInput() {
-  trackerHitsCollName_ = getText(textBoxTrackerHitsCollName_);
+  tracker_hits_coll_name_ = getText(text_box_tracker_hits_coll_name_);
 }
 
 void Display::GetClustersCollInput() {
-  clustersCollName_ = getText(textBoxClustersCollName_);
+  clusters_coll_name_ = getText(text_box_clusters_coll_name_);
 }
 
 void Display::GetEcalSimParticlesCollInput() {
-  ecalSimParticlesCollName_ = getText(textBoxEcalScorePlaneBranch_);
+  ecal_sim_particles_coll_name_ = getText(text_box_ecal_score_plane_branch_);
 }
 
 bool Display::SetSimThresh() {
-  double thresh = atof(textBoxSimThresh_->GetText());
-  if (thresh == 0 && std::string(textBoxSimThresh_->GetText()) != "0") {
+  double thresh = atof(text_box_sim_thresh_->GetText());
+  if (thresh == 0 && std::string(text_box_sim_thresh_->GetText()) != "0") {
     std::cout << "[ Display ] : Invalid sim energy threshold entered: \""
-              << textBoxSimThresh_->GetText() << "\"" << std::endl;
+              << text_box_sim_thresh_->GetText() << "\"" << std::endl;
     return false;
   } else if (verbose_) {
     std::cout << "[ Display ] : Setting SimParticle energy threshold to "

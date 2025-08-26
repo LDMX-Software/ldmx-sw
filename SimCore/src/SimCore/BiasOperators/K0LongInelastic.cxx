@@ -18,17 +18,17 @@ G4VBiasingOperation* K0LongInelastic::ProposeOccurenceBiasingOperation(
     return nullptr;
   };
 
-  std::string currentProcess =
+  std::string current_process =
       callingProcess->GetWrappedProcess()->GetProcessName();
-  if (currentProcess.compare(this->getProcessToBias()) == 0) {
-    G4double interactionLength =
+  if (current_process.compare(this->getProcessToBias()) == 0) {
+    G4double interaction_length =
         callingProcess->GetWrappedProcess()->GetCurrentInteractionLength();
 
-    double k0LongInXsecUnbiased = 1. / interactionLength;
+    double k0_long_in_xsec_unbiased = 1. / interaction_length;
 
-    double k0LongInXsecBiased = k0LongInXsecUnbiased * factor_;
+    double k0_long_in_xsec_biased = k0_long_in_xsec_unbiased * factor_;
 
-    return BiasedXsec(k0LongInXsecBiased);
+    return BiasedXsec(k0_long_in_xsec_biased);
   }
   return nullptr;
 }

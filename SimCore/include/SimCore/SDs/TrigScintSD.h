@@ -54,7 +54,7 @@ class TrigScintSD : public SensitiveDetector {
     event.add(collection_name_, hits_);
   }
 
-  virtual void OnFinishedEvent() override { hits_.clear(); }
+  virtual void onFinishedEvent() override { hits_.clear(); }
 
  private:
   /// our collection of hits in this SD

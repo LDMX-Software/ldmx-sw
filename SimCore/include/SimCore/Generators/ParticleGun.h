@@ -61,7 +61,7 @@ class ParticleGun : public simcore::PrimaryGenerator {
   /**
    * The actual Geant4 implementation of the ParticleGun
    */
-  G4ParticleGun theGun_;
+  G4ParticleGun the_gun_;
 
   /**
    * LDMX Verbosity for this generator
