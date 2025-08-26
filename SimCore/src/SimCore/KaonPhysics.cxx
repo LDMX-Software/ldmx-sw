@@ -86,10 +86,10 @@ void KaonPhysics::ConstructParticle() {
 }
 
 void KaonPhysics::dumpDecayDetails(const G4ParticleDefinition* kaon) const {
-  ldmx_log(info) << "Decay table details for " << kaon->GetParticleName()
-                 << std::scientific << std::setprecision(15)
-                 << " (PDG Lifetime " << kaon->GetPDGLifeTime() << ")"
-                 << std::endl;
+  ldmx_log(trace) << "Decay table details for " << kaon->GetParticleName()
+                  << std::scientific << std::setprecision(15)
+                  << " (PDG Lifetime " << kaon->GetPDGLifeTime() << ")"
+                  << std::endl;
   auto* table{kaon->GetDecayTable()};
   if (not table) {
     ldmx_log(error) << "No Kaon decay table.";
@@ -113,10 +113,10 @@ void KaonPhysics::dumpDecayDetails(const G4ParticleDefinition* kaon) const {
         products += " + ";
       }
     }
-    ldmx_log(info) << "Channel " << i << " (" << kaon->GetParticleName()
-                   << " -> " << products << ") Kinematics type "
-                   << channel->GetKinematicsName() << " with BR "
-                   << channel->GetBR() << std::endl;
+    ldmx_log(trace) << "Channel " << i << " (" << kaon->GetParticleName()
+                    << " -> " << products << ") Kinematics type "
+                    << channel->GetKinematicsName() << " with BR "
+                    << channel->GetBR() << std::endl;
   }
 }
 
