@@ -29,7 +29,7 @@ static const double MIP_SI_ENERGY = 0.130;
  * charge [fC] * (1000 electrons / 0.1602 fC) * (1 MIP / 37 000 electrons) *
  * (0.130 MeV / 1 MIP)
  */
-static const double ME_V_PER_F_C = MIP_SI_ENERGY / (37 * 0.1602);
+static const double MEV_PER_FC = MIP_SI_ENERGY / (37 * 0.1602);
 
 /**
  * Maximum percent error that a single hit
@@ -154,7 +154,7 @@ class EcalFakeSimHits : public framework::Producer {
    * The maximum value to be readout is 4096 TDC which
    * is equivalent to ~10000fC deposited charge.
    */
-  const double MAX_ENERGY = 10000. * ME_V_PER_F_C;
+  const double MAX_ENERGY = 10000. * MEV_PER_FC;
 
   /**
    * Minimum energy to make a sim hit for [MeV]
@@ -293,7 +293,7 @@ class EcalCheckEnergyReconstruction : public framework::Analyzer {
 
       auto trig_digi = trig_digis.at(0);
       float tp_energy =
-          8 * trig_digi.linearPrimitive() * 320. / 1024 * ME_V_PER_F_C;
+          8 * trig_digi.linearPrimitive() * 320. / 1024 * MEV_PER_FC;
 
       CHECK_THAT(tp_energy, IsCloseEnough(truth_energy, MAX_ENERGY_ERROR_TP,
                                           MAX_ENERGY_PERCENT_ERROR_TP));
