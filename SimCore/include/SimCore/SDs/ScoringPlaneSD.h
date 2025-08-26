@@ -50,7 +50,7 @@ class ScoringPlaneSD : public SensitiveDetector {
    */
   virtual void saveHits(framework::Event& event) override;
 
-  virtual void OnFinishedEvent() override { hits_.clear(); }
+  virtual void onFinishedEvent() override { hits_.clear(); }
 
  private:
   /// Substring to match to logical volumes

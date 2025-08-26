@@ -5,8 +5,8 @@ void PhotoNuclearModel::removeExistingModel(G4ProcessManager* processManager) {
   const auto processes{processManager->GetProcessList()};
   for (int i{0}; i < processes->size(); ++i) {
     const auto process{(*processes)[i]};
-    const auto processName{process->GetProcessName()};
-    if (processName == "photonNuclear") {
+    const auto process_name{process->GetProcessName()};
+    if (process_name == "photonNuclear") {
       processManager->RemoveProcess(i);
     }
   }
@@ -14,13 +14,13 @@ void PhotoNuclearModel::removeExistingModel(G4ProcessManager* processManager) {
 
 void PhotoNuclearModel::addPNCrossSectionData(
     G4HadronInelasticProcess* process) const {
-  auto crossSectionRegistry{G4CrossSectionDataSetRegistry::Instance()};
-  auto crossSection{
-      crossSectionRegistry->GetCrossSectionDataSet("PhotoNuclearXS")};
-  if (!crossSection) {
-    crossSection = new G4PhotoNuclearCrossSection{};
+  auto cross_section_registry{G4CrossSectionDataSetRegistry::Instance()};
+  auto cross_section{
+      cross_section_registry->GetCrossSectionDataSet("PhotoNuclearXS")};
+  if (!cross_section) {
+    cross_section = new G4PhotoNuclearCrossSection{};
   }
-  process->AddDataSet(crossSection);
+  process->AddDataSet(cross_section);
 }
 
 DEFINE_FACTORY(PhotoNuclearModel);

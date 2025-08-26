@@ -35,12 +35,12 @@ class EcalID : public EcalAbstractID {
    * Create from raw number
    */
   EcalID(RawValue rawid) : EcalAbstractID(rawid) {
-    if (!null() && cell_type() != PrecisionGlobal &&
-        cell_type() != PrecisionLocal) {
+    if (!null() && cellType() != PrecisionGlobal &&
+        cellType() != PrecisionLocal) {
       EXCEPTION_RAISE(
           "DetectorIDMismatch",
           "Attempted to create EcalID from mismatched Ecal cell_type " +
-              std::to_string(cell_type()));
+              std::to_string(cellType()));
     }
   }
 
@@ -48,12 +48,12 @@ class EcalID : public EcalAbstractID {
    * Create from a DetectorID, but check
    */
   EcalID(const DetectorID id) : EcalAbstractID(id) {
-    if (!null() && cell_type() != PrecisionGlobal &&
-        cell_type() != PrecisionLocal) {
+    if (!null() && cellType() != PrecisionGlobal &&
+        cellType() != PrecisionLocal) {
       EXCEPTION_RAISE(
           "DetectorIDMismatch",
           "Attempted to create EcalID from mismatched Ecal cell_type " +
-              std::to_string(cell_type()));
+              std::to_string(cellType()));
     }
   }
 

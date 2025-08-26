@@ -211,7 +211,7 @@ TEST_CASE("DetectorID", "[DetDescr][functionality]") {
     REQUIRE_NOTHROW(SimSpecialID(did_ss.raw()));
 
     // choose big values to check collisions
-    SimSpecialID ssid = SimSpecialID::ScoringPlaneID(3210);
+    SimSpecialID ssid = SimSpecialID::scoringPlaneId(3210);
     SimSpecialID ssid2(SimSpecialID::SimSpecialType(1), 0xFEDCB);
 
     CHECK(ssid.raw() == 0x1c400c8a);

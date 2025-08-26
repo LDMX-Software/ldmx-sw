@@ -39,11 +39,11 @@ typedef std::vector<std::pair<double, double> > BoundingBox;
  * @brief Stores the necessary geometry details for a hexagonal prism.
  */
 struct HexPrism {
-  double x;
-  double y;
-  double z;
-  double height;
-  double radius;
+  double x_;
+  double y_;
+  double z_;
+  double height_;
+  double radius_;
 };
 
 /**
@@ -57,8 +57,8 @@ class DetectorGeometry {
    * Get the single instance of this class.
    */
   static const DetectorGeometry &getInstance() {
-    static const DetectorGeometry DETECTOR_GEOMETRY;
-    return DETECTOR_GEOMETRY;
+    static const DetectorGeometry detector_geometry;
+    return detector_geometry;
   }
 
   /**
@@ -147,82 +147,82 @@ class DetectorGeometry {
   // HCAL
 
   /** Number of layers in each section */
-  std::map<ldmx::HcalID::HcalSection, int> hcalNLayers_;
+  std::map<ldmx::HcalID::HcalSection, int> hcal_n_layers_;
 
   /** Number of strips per layer in each section */
-  std::map<ldmx::HcalID::HcalSection, int> hcalNStrips_;
+  std::map<ldmx::HcalID::HcalSection, int> hcal_n_strips_;
 
   /** Length of Scintillator Strip [mm] */
-  std::map<ldmx::HcalID::HcalSection, double> hcalLengthScint_;
+  std::map<ldmx::HcalID::HcalSection, double> hcal_length_scint_;
 
   /** The plane of the zero'th layer of each section [mm] */
-  std::map<ldmx::HcalID::HcalSection, double> hcalZeroLayer_;
+  std::map<ldmx::HcalID::HcalSection, double> hcal_zero_layer_;
 
   /** The plane of the zero'th strip of each section [mm] */
-  std::map<ldmx::HcalID::HcalSection, double> hcalZeroStrip_;
+  std::map<ldmx::HcalID::HcalSection, double> hcal_zero_strip_;
 
   /** Thickness of the layers in each seciton [mm] */
-  std::map<ldmx::HcalID::HcalSection, double> hcalLayerThickness_;
+  std::map<ldmx::HcalID::HcalSection, double> hcal_layer_thickness_;
 
   /** an example layer number of a vertical layer */
-  int hcalParityVertical_;
+  int hcal_parity_vertical_;
 
   /** Uncertainty in timing position along a bar/strip [mm] */
-  double hcalUncertaintyTimingPos_;
+  double hcal_uncertainty_timing_pos_;
 
   /** Thickness of Scintillator Strip [mm] */
-  double hcalThicknessScint_;
+  double hcal_thickness_scint_;
 
   /** Width of Scintillator Strip [mm] */
-  double hcalWidthScint_;
+  double hcal_width_scint_;
 
   /////////////////////////////////////////////////////////////
   // ECAL
 
   /** Thickness of sensitive Si layers */
-  double ecalSiThickness_;
+  double ecal_si_thickness_;
 
   /** Total depth of ECAL (length in Z direction) */
-  double ecalDepth_;
+  double ecal_depth_;
 
   /** z-coordinate of plane for first ecal layer [mm] */
-  double ecalZeroLayer_;
+  double ecal_zero_layer_;
 
   /** Helper class to calculate (x,y) coordinate from hexagons */
-  std::unique_ptr<ldmx::EcalHexReadout> ecalHexReader_;
+  std::unique_ptr<ldmx::EcalHexReadout> ecal_hex_reader_;
 
   /////////////////////////////////////////////////////////////
   // RECOIL TRACKER
 
-  double recoilStereoStripLength_;
+  double recoil_stereo_strip_length_;
 
-  double recoilStereoXWidth_;
+  double recoil_stereo_x_width_;
 
-  double recoilStereoYWidth_;
+  double recoil_stereo_y_width_;
 
-  double recoilStereoSeparation_;
+  double recoil_stereo_separation_;
 
-  double recoilStereoAngle_;
+  double recoil_stereo_angle_;
 
-  double recoilMonoStripLength_;
+  double recoil_mono_strip_length_;
 
-  double recoilMonoXWidth_;
+  double recoil_mono_x_width_;
 
-  double recoilMonoYWidth_;
+  double recoil_mono_y_width_;
 
-  double recoilMonoSeparation_;
+  double recoil_mono_separation_;
 
-  double recoilSensorThickness_;
+  double recoil_sensor_thickness_;
 
   /** position of each module in recoil detector
    * The key in this map is 10*layerID+moduleID
    */
-  std::map<int, std::vector<double> > recoilModulePos_;
+  std::map<int, std::vector<double> > recoil_module_pos_;
 
   /** angular tilt for each module in recoil detector
    * The key in this map is 10*layerID+moduleID
    */
-  std::map<int, double> recoilModuleAngle_;
+  std::map<int, double> recoil_module_angle_;
 };
 
 }  // namespace eventdisplay

@@ -72,12 +72,12 @@ class GammaPhysics : public G4VPhysicsConstructor {
   /**
    * The gamma to muons process.
    */
-  G4GammaConversionToMuons gammaConvProcess;
+  G4GammaConversionToMuons gamma_conv_process_;
 
   /**
    * Parameters from the configuration to pass along to the photonuclear model.
    */
-  framework::config::Parameters modelParameters;
+  framework::config::Parameters model_parameters_;
 };
 
 }  // namespace simcore

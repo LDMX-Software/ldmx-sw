@@ -43,13 +43,13 @@ class GenieReweightProducer : public framework::Producer {
 
  private:
   // input hepmc3 collection name
-  std::string hepmc3CollName_;
+  std::string hepmc3_coll_name_;
 
   // input hepmc3 pass name
-  std::string hepmc3PassName_;
+  std::string hepmc3_pass_name_;
 
   // output EventWeights collection name
-  std::string eventWeightsCollName_;
+  std::string event_weights_coll_name_;
 
   // seed to use
   int seed_;
@@ -68,14 +68,14 @@ class GenieReweightProducer : public framework::Producer {
       variation_map_;
 
   // hepmc3 convertor
-  std::unique_ptr<genie::HepMC3Converter> hepMC3Converter_;
+  std::unique_ptr<genie::HepMC3Converter> hep_mc3_converter_;
 
   std::unique_ptr<genie::rew::GReWeight> genie_rw_;
 
   void reinitializeGenieReweight();
   void reconfigureGenieReweight(size_t);
 
-  inline static genie::rew::EGSyst variation_type_to_genie_dial(
+  inline static genie::rew::EGSyst variationTypeToGenieDial(
       const ldmx::EventWeights::VariationType& vtype) {
     switch (vtype) {
       case ldmx::EventWeights::VariationType::kGENIE_INukeTwkDial_MFP_pi:

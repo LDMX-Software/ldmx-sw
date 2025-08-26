@@ -407,13 +407,13 @@ class HgcrocDigiCollection {
    * Get total number of digis
    * @return unsigned int number of digis
    */
-  unsigned int getNumDigis() const { return channel_i_ds_.size(); }
+  unsigned int getNumDigis() const { return channel_ids_.size(); }
 
   /**
    * Get total number of digis
    * @return unsigned int number of digis
    */
-  unsigned int size() const { return channel_i_ds_.size(); }
+  unsigned int size() const { return channel_ids_.size(); }
 
   /**
    * Add samples to collection
@@ -509,7 +509,7 @@ class HgcrocDigiCollection {
 
  private:
   /** list of channel IDs that we have digis for */
-  std::vector<unsigned int> channel_i_ds_;
+  std::vector<unsigned int> channel_ids_;
 
   /** list of samples that we have been given */
   std::vector<uint32_t> samples_;

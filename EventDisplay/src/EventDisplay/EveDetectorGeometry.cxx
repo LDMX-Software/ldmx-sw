@@ -13,7 +13,7 @@ EveDetectorGeometry::EveDetectorGeometry() {
   hcal_ = new TEveElementList("HCAL");
   sidehcal_ = new TEveElementList("Side HCAL");
   ecal_ = new TEveElementList("ECAL");
-  recoilTracker_ = new TEveElementList("Recoil Tracker");
+  recoil_tracker_ = new TEveElementList("Recoil Tracker");
   detector_ = new TEveElementList("LDMX Detector");
 
   drawECAL();
@@ -77,20 +77,20 @@ void EveDetectorGeometry::drawHCAL() {
 void EveDetectorGeometry::drawRecoilTracker() {
   for (int layerID = 1; layerID < 9; layerID++) {
     TString name;
-    name.Form("Stereo_%d", layerID);
+    name.Form("stereo_%d", layerID);
 
     TEveGeoShape* layer = EveShapeDrawer::getInstance().drawRectPrism(
         DetectorGeometry::getInstance().getBoundingBox(layerID, 0), 0, 0,
         DetectorGeometry::getInstance().getRotAngle(layerID, 0) * 180 / M_PI,
         kRed - 10, 90, name);
 
-    recoilTracker_->AddElement(layer);
+    recoil_tracker_->AddElement(layer);
   }
 
   for (int layerID = 9; layerID < 11; layerID++) {
     for (int moduleID = 0; moduleID < 10; moduleID++) {
       TString name;
-      name.Form("Mono_%d_%d", layerID, moduleID);
+      name.Form("mono_%d_%d", layerID, moduleID);
 
       TEveGeoShape* layer = EveShapeDrawer::getInstance().drawRectPrism(
           DetectorGeometry::getInstance().getBoundingBox(layerID, moduleID), 0,
@@ -99,11 +99,11 @@ void EveDetectorGeometry::drawRecoilTracker() {
               M_PI,
           kRed - 10, 90, name);
 
-      recoilTracker_->AddElement(layer);
+      recoil_tracker_->AddElement(layer);
     }
   }
 
-  detector_->AddElement(recoilTracker_);
+  detector_->AddElement(recoil_tracker_);
 
   return;
 }

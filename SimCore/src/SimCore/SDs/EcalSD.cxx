@@ -7,8 +7,8 @@ const std::string EcalSD::COLLECTION_NAME = "EcalSimHits";
 EcalSD::EcalSD(const std::string& name, simcore::ConditionsInterface& ci,
                const framework::config::Parameters& p)
     : SensitiveDetector(name, ci, p) {
-  enableHitContribs_ = p.get<bool>("enableHitContribs");
-  compressHitContribs_ = p.get<bool>("compressHitContribs");
+  enable_hit_contribs_ = p.get<bool>("enableHitContribs");
+  compress_hit_contribs_ = p.get<bool>("compressHitContribs");
   max_origin_track_id_ = p.get<int>("max_origin_track_id");
 }
 
@@ -27,19 +27,19 @@ G4bool EcalSD::ProcessHits(G4Step* aStep, G4TouchableHistory*) {
   }
 
   // Compute the hit position
-  G4StepPoint* prePoint = aStep->GetPreStepPoint();
-  G4StepPoint* postPoint = aStep->GetPostStepPoint();
+  G4StepPoint* pre_point = aStep->GetPreStepPoint();
+  G4StepPoint* post_point = aStep->GetPostStepPoint();
   G4ThreeVector position =
-      0.5 * (prePoint->GetPosition() + postPoint->GetPosition());
+      0.5 * (pre_point->GetPosition() + post_point->GetPosition());
 
   // Create the ID for the hit.
   int cpynum{0};  // Initialize cpynum to 0
 
-  auto preStepPoint = aStep->GetPreStepPoint();
-  if (preStepPoint) {
-    const auto& touchableHandle = preStepPoint->GetTouchableHandle();
-    if (touchableHandle) {
-      auto history = touchableHandle->GetHistory();
+  auto pre_step_point = aStep->GetPreStepPoint();
+  if (pre_step_point) {
+    const auto& touchable_handle = pre_step_point->GetTouchableHandle();
+    if (touchable_handle) {
+      auto history = touchable_handle->GetHistory();
       if (history) {
         auto volume = history->GetVolume(layer_depth);
         if (volume) {
@@ -48,8 +48,8 @@ G4bool EcalSD::ProcessHits(G4Step* aStep, G4TouchableHistory*) {
       }
     }
   }
-  int layerNumber;
-  layerNumber = cpynum / 7;
+  int layer_number;
+  layer_number = cpynum / 7;
   int module_position = cpynum % 7;
   /**
    * DEBUG
@@ -65,7 +65,7 @@ G4bool EcalSD::ProcessHits(G4Step* aStep, G4TouchableHistory*) {
   // fastest, but need to trust module number between GDML and EcalGeometry
   // match
   ldmx::EcalID id =
-      geometry.getID(position.x(), position.y(), layerNumber, module_position);
+      geometry.getID(position.x(), position.y(), layer_number, module_position);
 
   // medium, only need to trust z-layer positions in GDML and EcalGeometry match
   //    helpful for debugging any issues where transverse position is not
@@ -93,9 +93,9 @@ G4bool EcalSD::ProcessHits(G4Step* aStep, G4TouchableHistory*) {
   auto track_id = track->GetTrackID();
   auto pdg = track->GetParticleDefinition()->GetPDGEncoding();
 
-  if (enableHitContribs_) {
+  if (enable_hit_contribs_) {
     int contrib_i = hit.findContribIndex(track_id, pdg);
-    if (compressHitContribs_ and contrib_i != -1) {
+    if (compress_hit_contribs_ and contrib_i != -1) {
       hit.updateContrib(contrib_i, edep, time);
     } else {
       auto map{getTrackMap()};

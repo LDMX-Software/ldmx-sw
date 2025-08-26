@@ -30,8 +30,8 @@ class EveShapeDrawer {
    * Get Instance of Drawer
    */
   static EveShapeDrawer& getInstance() {
-    static EveShapeDrawer EVE_SHAPE_DRAWER;
-    return EVE_SHAPE_DRAWER;
+    static EveShapeDrawer eve_shape_drawer;
+    return eve_shape_drawer;
   }
 
   /**
@@ -53,19 +53,19 @@ class EveShapeDrawer {
                              Double_t xRot, Double_t yRot, Double_t zRot,
                              Double_t h, Double_t r, Int_t color,
                              Int_t transparency, TString name) {
-    TGeoCombiTrans* locAndOrien = new TGeoCombiTrans(
+    TGeoCombiTrans* loc_and_orien = new TGeoCombiTrans(
         xPos, yPos, zPos, new TGeoRotation(name, xRot, yRot, zRot));
 
-    TEveGeoShape* hexPrism = new TEveGeoShape(name);
+    TEveGeoShape* hex_prism = new TEveGeoShape(name);
     TGeoShape* tube = new TGeoTube(name, 0, r, h / 2);
     tube->SetUniqueID(uid_++);
-    hexPrism->SetShape(tube);
-    hexPrism->SetFillColor(color);
-    hexPrism->SetMainTransparency(transparency);
-    hexPrism->SetNSegments(6);
-    hexPrism->SetTransMatrix(*locAndOrien);
+    hex_prism->SetShape(tube);
+    hex_prism->SetFillColor(color);
+    hex_prism->SetMainTransparency(transparency);
+    hex_prism->SetNSegments(6);
+    hex_prism->SetTransMatrix(*loc_and_orien);
 
-    return hexPrism;
+    return hex_prism;
   }
 
   /**
@@ -106,18 +106,18 @@ class EveShapeDrawer {
                               Double_t dX, Double_t dY, Double_t dZ,
                               Double_t xRot, Double_t yRot, Double_t zRot,
                               Int_t color, Int_t transparency, TString name) {
-    TGeoCombiTrans* locAndOrien = new TGeoCombiTrans(
+    TGeoCombiTrans* loc_and_orien = new TGeoCombiTrans(
         xPos, yPos, zPos, new TGeoRotation(name, xRot, yRot, zRot));
 
-    TEveGeoShape* rectPrism = new TEveGeoShape(name);
+    TEveGeoShape* rect_prism = new TEveGeoShape(name);
     TGeoShape* box = new TGeoBBox(name, dX / 2, dY / 2, dZ / 2);
     box->SetUniqueID(uid_++);
-    rectPrism->SetShape(box);
-    rectPrism->SetFillColor(color);
-    rectPrism->SetMainTransparency(transparency);
-    rectPrism->SetTransMatrix(*locAndOrien);
+    rect_prism->SetShape(box);
+    rect_prism->SetFillColor(color);
+    rect_prism->SetMainTransparency(transparency);
+    rect_prism->SetTransMatrix(*loc_and_orien);
 
-    return rectPrism;
+    return rect_prism;
   }
 
   /**
@@ -137,7 +137,7 @@ class EveShapeDrawer {
     std::vector<double> center(3, 0);
     std::vector<double> widths(3, 0);
 
-    for (unsigned int iC = 0; iC < 3; iC++) {
+    for (unsigned int i_c = 0; i_c < 3; i_c++) {
       center[iC] = (boundingbox[iC].second + boundingbox[iC].first) / 2.0;
       widths[iC] = abs(boundingbox[iC].second - boundingbox[iC].first);
     }

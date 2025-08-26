@@ -14,15 +14,15 @@ LHEReader::LHEReader(std::string& filename) {
 
 std::unique_ptr<LHEEvent> LHEReader::readNextEvent() {
   std::string line;
-  bool foundEventElement = false;
+  bool found_event_element = false;
   while (getline(ifs_, line)) {
     if (line == "<event>") {
-      foundEventElement = true;
+      found_event_element = true;
       break;
     }
   }
 
-  if (!foundEventElement) {
+  if (!found_event_element) {
     ldmx_log(warn) << "No next <event> element was found by the LHE reader.";
     return nullptr;
   }
@@ -30,7 +30,7 @@ std::unique_ptr<LHEEvent> LHEReader::readNextEvent() {
   getline(ifs_, line);
 
   // Create the LHEEvent using std::make_unique
-  auto nextEvent = std::make_unique<LHEEvent>(line);
+  auto next_event = std::make_unique<LHEEvent>(line);
 
   while (getline(ifs_, line)) {
     if (line == "</event>" || line == "<mgrwt>") {
@@ -41,16 +41,16 @@ std::unique_ptr<LHEEvent> LHEReader::readNextEvent() {
     if (line.find("#") == std::string::npos) {  // not a comment line
       // Create LHEParticle using std::make_unique and add it to the event
       auto particle = std::make_unique<LHEParticle>(line);
-      nextEvent->addParticle(std::move(particle));
+      next_event->addParticle(std::move(particle));
     } else {
       if (line.find("#vertex") != std::string::npos) {
-        nextEvent->setVertex(line);
+        next_event->setVertex(line);
       }
     }
   }
 
   const std::vector<std::unique_ptr<LHEParticle>>& particles =
-      nextEvent->getParticles();
+      next_event->getParticles();
   for (const auto& particle : particles) {
     if (particle->getMother(0) != 0) {
       int mother1 = particle->getMother(0);
@@ -64,7 +64,7 @@ std::unique_ptr<LHEEvent> LHEReader::readNextEvent() {
     }
   }
 
-  return nextEvent;
+  return next_event;
 }
 
 }  // namespace lhe

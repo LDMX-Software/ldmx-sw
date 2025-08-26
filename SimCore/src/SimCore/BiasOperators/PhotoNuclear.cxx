@@ -19,7 +19,7 @@ void PhotoNuclear::StartRun() {
   XsecBiasingOperator::StartRun();
 
   if (processIsBiased(CONVERSION_PROCESS)) {
-    emXsecOperation = new G4BOptnChangeCrossSection("changeXsec-conv");
+    em_xsec_operation_ = new G4BOptnChangeCrossSection("changeXsec-conv");
   } else if (down_bias_conv_) {
     EXCEPTION_RAISE(
         "PhotoNuclearBiasing",
@@ -40,19 +40,19 @@ G4VBiasingOperation* PhotoNuclear::ProposeOccurenceBiasingOperation(
     return nullptr;
   }
 
-  std::string currentProcess =
+  std::string current_process =
       callingProcess->GetWrappedProcess()->GetProcessName();
 
   // If the current process is what want to bias
-  if (currentProcess.compare(this->getProcessToBias()) == 0) {
-    G4double interactionLength =
+  if (current_process.compare(this->getProcessToBias()) == 0) {
+    G4double interaction_length =
         callingProcess->GetWrappedProcess()->GetCurrentInteractionLength();
 
-    pnXsecUnbiased_ = 1. / interactionLength;
+    pn_xsec_unbiased_ = 1. / interaction_length;
 
-    pnXsecBiased_ = pnXsecUnbiased_ * factor_;
+    pn_xsec_biased_ = pn_xsec_unbiased_ * factor_;
 
-    return BiasedXsec(pnXsecBiased_);
+    return BiasedXsec(pn_xsec_biased_);
   }
 
   // If the current process is conversion and we want to bias down
@@ -60,18 +60,19 @@ G4VBiasingOperation* PhotoNuclear::ProposeOccurenceBiasingOperation(
   // normal (unbiased) photon-nuclear cross section
   // In that regime, the PN events generated would almost certainly be over
   // sampled.
-  if ((currentProcess.compare(CONVERSION_PROCESS) == 0) and down_bias_conv_) {
-    G4double interactionLength =
+  if ((current_process.compare(CONVERSION_PROCESS) == 0) and down_bias_conv_) {
+    G4double interaction_length =
         callingProcess->GetWrappedProcess()->GetCurrentInteractionLength();
 
-    double emXsecUnbiased = 1. / interactionLength;
+    double em_xsec_unbiased = 1. / interaction_length;
 
-    double emXsecBiased = std::max(
-        emXsecUnbiased + pnXsecUnbiased_ - pnXsecBiased_, pnXsecUnbiased_);
+    double em_xsec_biased =
+        std::max(em_xsec_unbiased + pn_xsec_unbiased_ - pn_xsec_biased_,
+                 pn_xsec_unbiased_);
     static auto material_tungsten =
         simcore::g4user::ptrretrieval::getMaterial("G4_W");
     auto interaction_material = track->GetMaterial();
-    if ((emXsecBiased == pnXsecUnbiased_) &&
+    if ((em_xsec_biased == pn_xsec_unbiased_) &&
         (interaction_material == material_tungsten)) {
       ldmx_log(warn) << "EM XS = PN unbiased XS! The biasing factor ("
                      << factor_ << ") is too large for particle with energy "
@@ -79,10 +80,10 @@ G4VBiasingOperation* PhotoNuclear::ProposeOccurenceBiasingOperation(
                      << " and material = " << interaction_material->GetName();
     }
 
-    emXsecOperation->SetBiasedCrossSection(emXsecBiased);
-    emXsecOperation->Sample();
+    em_xsec_operation_->SetBiasedCrossSection(em_xsec_biased);
+    em_xsec_operation_->Sample();
 
-    return emXsecOperation;
+    return em_xsec_operation_;
   }
   return nullptr;
 }

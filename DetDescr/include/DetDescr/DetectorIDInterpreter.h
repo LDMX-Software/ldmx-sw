@@ -75,14 +75,14 @@ class DetectorIDInterpreter {
    * Get the list of field information.
    * @return The list of field information.
    */
-  int getFieldCount() const { return int(p_fieldInfo_->fieldList_.size()); }
+  int getFieldCount() const { return int(p_field_info_->field_list_.size()); }
 
   /**
    * Get the list of field information.
    * @return The list of field information.
    */
   const IDField::IDFieldList& getFieldList() const {
-    return p_fieldInfo_->fieldList_;
+    return p_field_info_->field_list_;
   }
 
   /**
@@ -146,11 +146,11 @@ class DetectorIDInterpreter {
   /**
    * The unpacked list of field values.
    */
-  FieldValueList fieldValues_;
+  FieldValueList field_values_;
 
   struct SubdetectorIDFields {
-    IDField::IDFieldMap fieldMap_;
-    IDField::IDFieldList fieldList_;
+    IDField::IDFieldMap field_map_;
+    IDField::IDFieldList field_list_;
   };
 
   struct IDSignature {
@@ -161,12 +161,12 @@ class DetectorIDInterpreter {
     }
   };
 
-  static std::map<IDSignature, const SubdetectorIDFields*> g_rosettaStone;
+  static std::map<IDSignature, const SubdetectorIDFields*> g_rosetta_stone;
 
   /**
    * Pointer to the appropriate field info for this class
    */
-  const SubdetectorIDFields* p_fieldInfo_;
+  const SubdetectorIDFields* p_field_info_;
 };
 
 }  // namespace ldmx

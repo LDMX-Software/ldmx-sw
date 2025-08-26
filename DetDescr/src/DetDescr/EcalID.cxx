@@ -35,9 +35,9 @@ void EcalID::createInterpreters() {
       fields);
 }
 
-static const unsigned int base_row_w = 13;
-static const unsigned int v_middle = 11;
-static const unsigned int max_v = 23;
+static const unsigned int BASE_ROW_W = 13;
+static const unsigned int V_MIDDLE = 11;
+static const unsigned int MAX_V = 23;
 
 EcalID::EcalID(unsigned int layer, unsigned int module, unsigned int u,
                unsigned int v)
@@ -46,45 +46,45 @@ EcalID::EcalID(unsigned int layer, unsigned int module, unsigned int u,
   id_ |= (module & MODULE_MASK) << MODULE_SHIFT;
 
   unsigned int cell = 0;
-  if (v > max_v) {
+  if (v > MAX_V) {
     EXCEPTION_RAISE("InvalidIdException",
                     "Attempted to create EcalID with invalid (u,v)=(" +
                         std::to_string(u) + "," + std::to_string(v) + ")");
   }
 
-  if (v <= v_middle) {  // simple case...
-    if (u > (base_row_w - 1 + v)) {
+  if (v <= V_MIDDLE) {  // simple case...
+    if (u > (BASE_ROW_W - 1 + v)) {
       EXCEPTION_RAISE("InvalidIdException",
                       "Attempted to create EcalID with invalid (u,v)=(" +
                           std::to_string(u) + "," + std::to_string(v) + ")");
     }
-    cell = u + v * base_row_w + (v - 1) * v / 2;
+    cell = u + v * BASE_ROW_W + (v - 1) * v / 2;
   } else {
-    unsigned int umin = v - v_middle;
+    unsigned int umin = v - V_MIDDLE;
     static unsigned int umax = 23;  // constant
-    unsigned int vrel = v - v_middle - 1;
+    unsigned int vrel = v - V_MIDDLE - 1;
     if (u < umin || u > umax) {
       EXCEPTION_RAISE("InvalidIdException",
                       "Attempted to create EcalID with invalid (u,v)=(" +
                           std::to_string(u) + "," + std::to_string(v) + ")");
     }
-    cell = 222 + (u - umin) + vrel * base_row_w + 55 -
-           (v_middle - vrel - 1) * (v_middle - vrel) / 2;
+    cell = 222 + (u - umin) + vrel * BASE_ROW_W + 55 -
+           (V_MIDDLE - vrel - 1) * (V_MIDDLE - vrel) / 2;
   }
   id_ |= (cell & CELL_MASK) << CELL_SHIFT;
 }
 
-static const int row_starts[25] = {0,   13,  27,  42,  58,  75,  93,  112, 132,
+static const int ROW_STARTS[25] = {0,   13,  27,  42,  58,  75,  93,  112, 132,
                                    153, 175, 198, 222, 245, 267, 288, 308, 327,
                                    345, 362, 378, 393, 407, 420, -1};
 
 std::pair<unsigned int, unsigned int> EcalID::getCellUV() const {
   int cell = getCellID();
   unsigned int v;
-  for (v = 0; v < max_v && cell >= row_starts[v + 1];
+  for (v = 0; v < MAX_V && cell >= ROW_STARTS[v + 1];
        v++);  // find the right v value
-  unsigned int u = cell - row_starts[v];
-  if (v > v_middle) u += (v - v_middle);
+  unsigned int u = cell - ROW_STARTS[v];
+  if (v > V_MIDDLE) u += (v - V_MIDDLE);
   return std::pair<unsigned int, unsigned int>(u, v);
 }
 }  // namespace ldmx

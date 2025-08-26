@@ -103,21 +103,17 @@ class KaonPhysics : public G4VPhysicsConstructor {
 
   // Factor to scale the K^+/K^-/K^0_L/K^0_S lifetimes by. To reduce the
   // lifetime of all charged kaons by a factor 50, set these to 1/50.
-  double kplus_lifetime_factor{1};
-  double kminus_lifetime_factor{1};
-  double k0l_lifetime_factor{1};
-  double k0s_lifetime_factor{1};
+  double kplus_lifetime_factor_{1};
+  double kminus_lifetime_factor_{1};
+  double k0l_lifetime_factor_{1};
+  double k0s_lifetime_factor_{1};
 
   // Branching ratios for each of the decay processes listed in the
   // KaonDecayChannel enumerators
-  std::vector<double> kplus_branching_ratios;
-  std::vector<double> kminus_branching_ratios;
-  std::vector<double> k0l_branching_ratios;
-  std::vector<double> k0s_branching_ratios;
-
-  // If > 0, dump details about what was changed
-  // If > 1, dump details about the initial branching ratios
-  int verbosity;
+  std::vector<double> kplus_branching_ratios_;
+  std::vector<double> kminus_branching_ratios_;
+  std::vector<double> k0l_branching_ratios_;
+  std::vector<double> k0s_branching_ratios_;
 
  public:
   KaonPhysics(const G4String& name,
@@ -144,7 +140,7 @@ class KaonPhysics : public G4VPhysicsConstructor {
 
   void ConstructParticle() override;
 
-  void DumpDecayDetails(const G4ParticleDefinition* kaon) const;
+  void dumpDecayDetails(const G4ParticleDefinition* kaon) const;
 
   /**
    * Construct processes

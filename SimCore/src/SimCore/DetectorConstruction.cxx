@@ -29,7 +29,7 @@ DetectorConstruction::DetectorConstruction(
     : parser_(parser), parameters_{parameters}, conditions_interface_{ci} {}
 
 G4VPhysicalVolume* DetectorConstruction::Construct() {
-  return parser_->GetWorldVolume();
+  return parser_->getWorldVolume();
 }
 
 void DetectorConstruction::ConstructSDandField() {
@@ -59,28 +59,28 @@ void DetectorConstruction::ConstructSDandField() {
   //  which is called before G4RunManager::Initialize
   //  which is where this method ends up being called.
   simcore::XsecBiasingOperator::Factory::get().apply([&](auto bop) {
-    logical_volume_tests::Test includeVolumeTest{nullptr};
+    logical_volume_tests::Test include_volume_test{nullptr};
     if (bop->getVolumeToBias().compare("ecal") == 0) {
-      includeVolumeTest = &simcore::g4user::volumechecks::isInEcal;
+      include_volume_test = &simcore::g4user::volumechecks::isInEcal;
     } else if (bop->getVolumeToBias().compare("old_ecal") == 0) {
-      includeVolumeTest = &simcore::g4user::volumechecks::isInEcalOld;
+      include_volume_test = &simcore::g4user::volumechecks::isInEcalOld;
     } else if (bop->getVolumeToBias().compare("target") == 0) {
-      includeVolumeTest = &simcore::g4user::volumechecks::isInTargetOnly;
+      include_volume_test = &simcore::g4user::volumechecks::isInTargetOnly;
     } else if (bop->getVolumeToBias().compare("target_region") == 0) {
-      includeVolumeTest = &simcore::g4user::volumechecks::isInTargetRegion;
+      include_volume_test = &simcore::g4user::volumechecks::isInTargetRegion;
     } else if (bop->getVolumeToBias().compare("hcal") == 0) {
-      includeVolumeTest = &simcore::g4user::volumechecks::isInHcal;
+      include_volume_test = &simcore::g4user::volumechecks::isInHcal;
     } else {
       std::cerr << "[ DetectorConstruction ] : "
                 << "WARN - Requested volume to bias '" << bop->getVolumeToBias()
                 << "' is not recognized. Will attach volumes based on if their"
                 << " name contains the volume to bias." << std::endl;
-      includeVolumeTest = &simcore::g4user::volumechecks::nameContains;
+      include_volume_test = &simcore::g4user::volumechecks::nameContains;
     }
 
     for (G4LogicalVolume* volume : *G4LogicalVolumeStore::GetInstance()) {
       auto volume_name = volume->GetName();
-      if (includeVolumeTest(volume, bop->getVolumeToBias())) {
+      if (include_volume_test(volume, bop->getVolumeToBias())) {
         bop->AttachTo(volume);
         ldmx_log(debug) << "Attaching biasing operator " << bop->GetName()
                         << " to volume " << volume->GetName();

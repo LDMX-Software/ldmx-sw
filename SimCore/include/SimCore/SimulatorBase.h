@@ -40,20 +40,20 @@ class SimulatorBase : public framework::Producer {
    */
   void onProcessStart() override;
   ///  Conditions interface
-  ConditionsInterface conditionsIntf_;
+  ConditionsInterface conditions_intf_;
 
   /// User interface handle
-  G4UImanager* uiManager_{nullptr};
+  G4UImanager* ui_manager_{nullptr};
 
   /// Manager controlling G4 simulation run
-  std::unique_ptr<RunManager> runManager_;
+  std::unique_ptr<RunManager> run_manager_;
 
   /// Handle to the G4Session -> how to deal with G4cout and G4cerr
-  std::unique_ptr<G4UIsession> sessionHandle_;
+  std::unique_ptr<G4UIsession> session_handle_;
 
   /// Commands not allowed to be passed from python config file
   ///     This is because Simulator already runs them.
-  static const std::vector<std::string> invalidCommands_;
+  static const std::vector<std::string> INVALID_COMMANDS;
 
   /*********************************************************
    * Python Configuration Parameters
@@ -61,9 +61,9 @@ class SimulatorBase : public framework::Producer {
   /// The parameters used to configure the simulation
   framework::config::Parameters parameters_;
 
-  std::vector<std::string> preInitCommands_;
+  std::vector<std::string> pre_init_commands_;
 
-  std::vector<std::string> postInitCommands_;
+  std::vector<std::string> post_init_commands_;
 
   /*
    *

@@ -41,7 +41,7 @@ HgcrocDigiCollection::Sample::Sample(bool tot_progress, bool tot_complete,
 }
 
 void HgcrocDigiCollection::clear() {
-  channel_i_ds_.clear();
+  channel_ids_.clear();
   samples_.clear();
 
   return;
@@ -49,7 +49,7 @@ void HgcrocDigiCollection::clear() {
 
 std::ostream &operator<<(std::ostream &o, const HgcrocDigiCollection &c) {
   return o << "HgcrocDigiCollection { Num Channel IDs: "
-           << c.channel_i_ds_.size() << ", Num Samples: " << c.samples_.size()
+           << c.channel_ids_.size() << ", Num Samples: " << c.samples_.size()
            << ", Samples Per Digi: " << c.num_samples_per_digi_
            << ", Index for SOI: " << c.sample_of_interest_ << "}";
 }
@@ -57,7 +57,7 @@ std::ostream &operator<<(std::ostream &o, const HgcrocDigiCollection &c) {
 const HgcrocDigiCollection::HgcrocDigi HgcrocDigiCollection::getDigi(
     unsigned int digiIndex) const {
   return HgcrocDigiCollection::HgcrocDigi(
-      channel_i_ds_.at(digiIndex),
+      channel_ids_.at(digiIndex),
       samples_.begin() + digiIndex * getNumSamplesPerDigi(), *this);
 }
 
@@ -72,7 +72,7 @@ void HgcrocDigiCollection::addDigi(
     return;
   }
 
-  channel_i_ds_.push_back(id);
+  channel_ids_.push_back(id);
   for (auto const &s : digi) samples_.push_back(s.raw());
 
   return;
@@ -89,7 +89,7 @@ void HgcrocDigiCollection::addDigi(unsigned int id,
     return;
   }
 
-  channel_i_ds_.push_back(id);
+  channel_ids_.push_back(id);
   for (auto const &s : digi) samples_.push_back(s);
 
   return;

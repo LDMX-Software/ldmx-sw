@@ -56,10 +56,10 @@ class LoggedSession : public G4UIsession {
 
  private:
   /** cout log file */
-  std::ofstream coutFile_;
+  std::ofstream cout_file_;
 
   /** cerr log file */
-  std::ofstream cerrFile_;
+  std::ofstream cerr_file_;
 
 };  // LoggedSession
 

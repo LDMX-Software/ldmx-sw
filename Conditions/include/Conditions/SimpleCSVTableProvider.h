@@ -70,10 +70,10 @@ class SimpleCSVTableProvider : public framework::ConditionsObjectProvider {
   getCondition(const ldmx::EventHeader& context);
 
  private:
-  enum { OBJ_unknown, OBJ_int, OBJ_double } objectType_;
+  enum { OBJ_unknown, OBJ_int, OBJ_double } object_type_;
   std::vector<std::string> columns_;
-  std::string entriesURL_;
-  std::string conditions_baseURL_;
+  std::string entries_url_;
+  std::string conditions_base_url_;
 
   void entriesFromPython(std::vector<framework::config::Parameters>&);
   void entriesFromCSV();

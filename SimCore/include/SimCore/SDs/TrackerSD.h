@@ -51,7 +51,7 @@ class TrackerSD : public SensitiveDetector {
     event.add(collection_name_, hits_);
   }
 
-  virtual void OnFinishedEvent() override { hits_.clear(); }
+  virtual void onFinishedEvent() override { hits_.clear(); }
 
  private:
   /// The name of the subsystem we are apart of
@@ -64,7 +64,7 @@ class TrackerSD : public SensitiveDetector {
   std::vector<ldmx::SimTrackerHit> hits_;
 
   /// The detector ID
-  ldmx::SubdetectorIDType subDetID_;
+  ldmx::SubdetectorIDType sub_det_id_;
 
 };  // TrackerID
 

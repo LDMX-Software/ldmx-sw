@@ -41,9 +41,9 @@ G4bool TrigScintSD::ProcessHits(G4Step* step, G4TouchableHistory* history) {
   //  and we should keep that reference so that we are editing the correct hit
   ldmx::SimCalorimeterHit& hit = hits_.emplace_back();
 
-  G4StepPoint* prePoint = step->GetPreStepPoint();
-  G4StepPoint* postPoint = step->GetPostStepPoint();
-  if (prePoint == nullptr || postPoint == nullptr) {
+  G4StepPoint* pre_point = step->GetPreStepPoint();
+  G4StepPoint* post_point = step->GetPostStepPoint();
+  if (pre_point == nullptr || post_point == nullptr) {
     return false;
   }
 
@@ -54,18 +54,18 @@ G4bool TrigScintSD::ProcessHits(G4Step* step, G4TouchableHistory* history) {
   // The TouchableHandle is just a reference counted pointer to a
   // G4TouchableHistory object, which is a concrete implementation of a
   // G4Touchable interface.
-  if (!prePoint->GetTouchableHandle()) {
+  if (!pre_point->GetTouchableHandle()) {
     return false;
   }
-  auto touchableHistory{prePoint->GetTouchableHandle()->GetHistory()};
+  auto touchable_history{pre_point->GetTouchableHandle()->GetHistory()};
   // Affine transform for converting between local and global coordinates
-  auto topTransform{touchableHistory->GetTopTransform()};
+  auto top_transform{touchable_history->GetTopTransform()};
   // Set the hit position
-  auto position{0.5 * (prePoint->GetPosition() + postPoint->GetPosition())};
+  auto position{0.5 * (pre_point->GetPosition() + post_point->GetPosition())};
 
   // Convert the center of the bar to its corresponding global position
-  auto volumePosition{topTransform.Inverse().TransformPoint(G4ThreeVector())};
-  hit.setPosition(position[0], position[1], volumePosition.z());
+  auto volume_position{top_transform.Inverse().TransformPoint(G4ThreeVector())};
+  hit.setPosition(position[0], position[1], volume_position.z());
 
   // Get the track associated with this step
   auto track{step->GetTrack()};
@@ -113,18 +113,18 @@ G4bool TrigScintSD::ProcessHits(G4Step* step, G4TouchableHistory* history) {
   hit.setVelocity(track->GetVelocity());
   // Convert pre/post step position from global coordinates to coordinates
   // within the scintillator bar
-  const auto localPreStepPoint{
-      topTransform.TransformPoint(prePoint->GetPosition())};
-  const auto localPostStepPoint{
-      topTransform.TransformPoint(postPoint->GetPosition())};
-  hit.setPreStepPosition(localPreStepPoint[0], localPreStepPoint[1],
-                         localPreStepPoint[2]);
+  const auto local_pre_step_point{
+      top_transform.TransformPoint(pre_point->GetPosition())};
+  const auto local_post_step_point{
+      top_transform.TransformPoint(post_point->GetPosition())};
+  hit.setPreStepPosition(local_pre_step_point[0], local_pre_step_point[1],
+                         local_pre_step_point[2]);
 
-  hit.setPostStepPosition(localPostStepPoint[0], localPostStepPoint[1],
-                          localPostStepPoint[2]);
+  hit.setPostStepPosition(local_post_step_point[0], local_post_step_point[1],
+                          local_post_step_point[2]);
 
-  hit.setPreStepTime(prePoint->GetGlobalTime());
-  hit.setPostStepTime(postPoint->GetGlobalTime());
+  hit.setPreStepTime(pre_point->GetGlobalTime());
+  hit.setPostStepTime(post_point->GetGlobalTime());
 
   return true;
 }

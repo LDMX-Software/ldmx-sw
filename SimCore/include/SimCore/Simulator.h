@@ -151,10 +151,10 @@ class Simulator : public SimulatorBase {
 
  private:
   /// Number of events started
-  int numEventsBegan_{0};
+  int num_events_began_{0};
 
   /// Number of events completed
-  int numEventsCompleted_{0};
+  int num_events_completed_{0};
 
   /// the run number (for accessing the run header in onFileClose
   int run_{-1};

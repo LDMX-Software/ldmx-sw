@@ -36,11 +36,11 @@ class EcalTriggerID : public EcalAbstractID {
    * Create from raw number
    */
   EcalTriggerID(RawValue rawid) : EcalAbstractID(rawid) {
-    if (!null() && cell_type() != TriggerCell) {
+    if (!null() && cellType() != TriggerCell) {
       EXCEPTION_RAISE(
           "DetectorIDMismatch",
           "Attempted to create EcalTriggerID from mismatched Ecal cell_type " +
-              std::to_string(cell_type()));
+              std::to_string(cellType()));
     }
   }
 
@@ -48,11 +48,11 @@ class EcalTriggerID : public EcalAbstractID {
    * Create from a DetectorID, but check
    */
   EcalTriggerID(const DetectorID id) : EcalAbstractID(id) {
-    if (!null() && cell_type() != TriggerCell) {
+    if (!null() && cellType() != TriggerCell) {
       EXCEPTION_RAISE(
           "DetectorIDMismatch",
           "Attempted to create EcalTriggerID from mismatched Ecal cell_type " +
-              std::to_string(cell_type()));
+              std::to_string(cellType()));
     }
   }
 

@@ -45,7 +45,7 @@ class PhotoNuclearModel {
    * @param[in] processManager the process manager for the G4Gamma class, passed
    * in automatically by the GammaPhysics module_.
    */
-  virtual void ConstructGammaProcess(G4ProcessManager* processManager) = 0;
+  virtual void constructGammaProcess(G4ProcessManager* processManager) = 0;
 
   /**
    * The factory for PhotoNuclearModels.

@@ -4,34 +4,34 @@ namespace simcore {
 
 bool BertiniAtLeastNProductsProcess::acceptEvent() const {
   int secondaries{theParticleChange.GetNumberOfSecondaries()};
-  int matchingCount{0};
+  int matching_count{0};
   for (int i{0}; i < secondaries; ++i) {
     const auto secondary{theParticleChange.GetSecondary(i)->GetParticle()};
-    const auto pdgCode{secondary->GetDefinition()->GetPDGEncoding()};
+    const auto pdg_code{secondary->GetDefinition()->GetPDGEncoding()};
     const auto energy{secondary->GetKineticEnergy()};
-    if (std::find(std::begin(pdg_ids_), std::end(pdg_ids_), pdgCode) !=
+    if (std::find(std::begin(pdg_ids_), std::end(pdg_ids_), pdg_code) !=
         std::end(pdg_ids_)) {
       if (energy > threshold_) {
-        ++matchingCount;
+        ++matching_count;
       }
     }
-    if (matchingCount >= min_products_) {
+    if (matching_count >= min_products_) {
       return true;
     }
   }
   return false;
 }
 
-void BertiniAtLeastNProductsModel::ConstructGammaProcess(
+void BertiniAtLeastNProductsModel::constructGammaProcess(
     G4ProcessManager* processManager) {
-  auto photoNuclearProcess{
+  auto photo_nuclear_process{
       new G4HadronInelasticProcess("photonNuclear", G4Gamma::Definition())};
-  auto model{new BertiniAtLeastNProductsProcess{threshold_, Zmin_, Emin_,
+  auto model{new BertiniAtLeastNProductsProcess{threshold_, zmin_, emin_,
                                                 pdg_ids_, min_products_}};
   model->SetMaxEnergy(15 * CLHEP::GeV);
-  addPNCrossSectionData(photoNuclearProcess);
-  photoNuclearProcess->RegisterMe(model);
-  processManager->AddDiscreteProcess(photoNuclearProcess);
+  addPNCrossSectionData(photo_nuclear_process);
+  photo_nuclear_process->RegisterMe(model);
+  processManager->AddDiscreteProcess(photo_nuclear_process);
 }
 }  // namespace simcore
 

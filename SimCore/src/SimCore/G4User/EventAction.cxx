@@ -25,15 +25,15 @@ void EventAction::BeginOfEventAction(const G4Event* event) {
   simcore::g4user::TrackingAction::get()->getTrackMap().clear();
 
   // Call user event actions
-  for (auto& eventAction : eventActions_) {
-    eventAction->BeginOfEventAction(event);
+  for (auto& event_action : event_actions_) {
+    event_action->BeginOfEventAction(event);
   }
 }
 
 void EventAction::EndOfEventAction(const G4Event* event) {
   // Call user event actions
-  for (auto& eventAction : eventActions_) {
-    eventAction->EndOfEventAction(event);
+  for (auto& event_action : event_actions_) {
+    event_action->EndOfEventAction(event);
   }
 }
 

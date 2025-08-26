@@ -4,23 +4,23 @@ namespace ldmx {
 
 IDField::IDField(std::string fieldName, unsigned index, unsigned startBit,
                  unsigned endBit)
-    : fieldName_(fieldName),
+    : field_name_(fieldName),
       index_(index),
-      startBit_(startBit),
-      endBit_(endBit) {
+      start_bit_(startBit),
+      end_bit_(endBit) {
   // Create bit mask for the field.
-  bitMask_ = IDField::createBitMask(startBit, endBit);
+  bit_mask_ = IDField::createBitMask(startBit, endBit);
 }
 
-const std::string& IDField::getFieldName() { return fieldName_; }
+const std::string& IDField::getFieldName() { return field_name_; }
 
 unsigned IDField::getIndex() { return index_; }
 
-unsigned IDField::getStartBit() { return startBit_; }
+unsigned IDField::getStartBit() { return start_bit_; }
 
-unsigned IDField::getEndBit() { return endBit_; }
+unsigned IDField::getEndBit() { return end_bit_; }
 
-unsigned IDField::getBitMask() { return bitMask_; }
+unsigned IDField::getBitMask() { return bit_mask_; }
 
 unsigned IDField::createBitMask(unsigned startBit, unsigned endBit) {
   unsigned mask = 0;

@@ -3,10 +3,10 @@
 namespace simcore {
 
 UserRegionInformation::UserRegionInformation(bool aStoreSecondaries)
-    : storeSecondaries_(aStoreSecondaries) {}
+    : store_secondaries_(aStoreSecondaries) {}
 
 bool UserRegionInformation::getStoreSecondaries() const {
-  return storeSecondaries_;
+  return store_secondaries_;
 }
 
 void UserRegionInformation::Print() const {}

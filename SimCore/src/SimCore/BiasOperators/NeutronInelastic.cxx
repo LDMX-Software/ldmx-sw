@@ -18,17 +18,17 @@ G4VBiasingOperation* NeutronInelastic::ProposeOccurenceBiasingOperation(
     return nullptr;
   }
 
-  std::string currentProcess =
+  std::string current_process =
       callingProcess->GetWrappedProcess()->GetProcessName();
-  if (currentProcess.compare(this->getProcessToBias()) == 0) {
-    G4double interactionLength =
+  if (current_process.compare(this->getProcessToBias()) == 0) {
+    G4double interaction_length =
         callingProcess->GetWrappedProcess()->GetCurrentInteractionLength();
 
-    double neutInXsecUnbiased = 1. / interactionLength;
+    double neut_in_xsec_unbiased = 1. / interaction_length;
 
-    double neutInXsecBiased = neutInXsecUnbiased * factor_;
+    double neut_in_xsec_biased = neut_in_xsec_unbiased * factor_;
 
-    return BiasedXsec(neutInXsecBiased);
+    return BiasedXsec(neut_in_xsec_biased);
   }
   return nullptr;
 }
