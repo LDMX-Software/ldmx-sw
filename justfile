@@ -180,10 +180,15 @@ tidy-cpp *ARGS='-p build --fix -fix-errors --quiet ':
     #!/usr/bin/env sh
     set -exu
     format_list=$(mktemp)
-    git diff --name-only HEAD | egrep '(\.h|\.cxx)$' > ${format_list}
-    cat ${format_list}
-    denv clang-tidy $(cat ${format_list}) {{ ARGS }}
-    rm ${format_list}
+    git diff --name-only origin/trunk..HEAD | egrep '(\.h|\.cxx)$' > ${format_list}
+    # if the list is not empty, run clang-tidy
+    if [ ! -s ${format_list} ]; then
+      echo "No C++ files changed, skipping clang-tidy"
+    else
+      denv clang-tidy $(cat ${format_list}) {{ ARGS }}
+      rm ${format_list}
+    fi
+
 
 tidy-cpp-dir DIR *ARGS='-p build --fix -fix-errors --quiet ':
     #!/usr/bin/env sh
