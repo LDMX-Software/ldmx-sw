@@ -642,7 +642,7 @@ class DarkBremInteraction(ldmxcfg.Producer) :
 
         # weird binning so we can see the target and trigger pads
         self.build1DHistogram('dark_brem_z',
-            'Z Location of Dark Brem [mm]', 120, -5., 1.)
+            'Z Location of Dark Brem [mm]', 160, -7., 1.)
         # elements are hydrogen and carbon (for trigger pads) and tungsten target
         self.build1DHistogram('dark_brem_element',
             'Element in which Dark Brem Occurred',

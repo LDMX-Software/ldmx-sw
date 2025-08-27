@@ -26,7 +26,7 @@ from ._plotter import plotter
 
 # guard incase someone imports this somehow
 if __name__ == '__main__' :
-    parser = argparse.ArgumentParser("python3 -m Validation",
+    parser = argparse.ArgumentParser("just compare-plots",
         description="""
         Make comparison plots between different files within a directory.
 
