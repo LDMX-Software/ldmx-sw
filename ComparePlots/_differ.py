@@ -9,6 +9,7 @@ import matplotlib
 import uproot
 import numpy as np
 import hist.intervals
+import mplhep
 
 # us
 from ._file import File
@@ -144,7 +145,9 @@ class Differ :
         den_h, _den_art = raw_histograms[0]
         bins = den_h.axes[0].edges
         for num_h, num_art in raw_histograms[1:]:
-            (den_h/num_h).plot1d(
+            mplhep.histplot(
+                (num_h.values()/den_h.values()),
+                bins = bins,
                 ax = ratio_ax,
                 yerr = hist.intervals.ratio_uncertainty(
                     num = num_h.values(),
