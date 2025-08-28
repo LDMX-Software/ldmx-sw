@@ -145,8 +145,13 @@ class Differ :
         den_h, _den_art = raw_histograms[0]
         bins = den_h.axes[0].edges
         for num_h, num_art in raw_histograms[1:]:
+            # NumPy nicely warns us when we divide by zero,
+            # but its defaults are sensible to use
+            # x/0 = inf, 0/0 = nan
+            with np.errstate(divide="ignore", invalid="ignore"):
+                ratio = num_h.values() / den_h.values()
             mplhep.histplot(
-                (num_h.values()/den_h.values()),
+                ratio,
                 bins = bins,
                 ax = ratio_ax,
                 yerr = hist.intervals.ratio_uncertainty(
