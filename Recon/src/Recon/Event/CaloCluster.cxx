@@ -12,7 +12,7 @@ std::ostream& operator<<(std::ostream& o, const CaloCluster& c) {
 }
 
 void CaloCluster::clear() {
-  hit_ids.clear();
+  hit_ids_.clear();
   energy_ = 0;
   n_hits_ = 0;
   centroid_x_ = 0;

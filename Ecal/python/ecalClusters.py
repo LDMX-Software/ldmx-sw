@@ -49,14 +49,3 @@ class EcalClusterProducer(ldmxcfg.Producer) :
         # Recluster merged clusters or not
         # No reclustering leads to more undercounting, reclustering leads to more overcounting
         self.reclustering = False
-
-        # not applicable for CLUE
-        self.build1DHistogram("nLoops", "Number of loops for clustering", 50, 0, 400)
-         # not applicable for CLUE
-        self.build2DHistogram("seed_weights", "Number of seeds", 20, 0, 100, "Minimum weight", 20, 0, 10) 
-        # not applicable for simplified algo
-        self.build2DHistogram("recluster", "Initial number of clusters", 20, 0, 20, "Number of clusters after reclustering", 20, 0, 20) 
-        self.build1DHistogram("rhoc", "rho_c", 20, 0, 2000)
-        self.build1DHistogram("deltac", "delta_c", 20, 0, 100)
-        self.build1DHistogram("deltao", "delta_o", 20, 0, 200)
-

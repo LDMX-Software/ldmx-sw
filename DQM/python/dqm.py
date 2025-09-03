@@ -1063,7 +1063,9 @@ class EcalClusterAnalyzer(ldmxcfg.Analyzer) :
         self.ecal_sp_hits_passname = ''
 
 
-        self.build1DHistogram("number_of_clusters", "Number of CLUE clusters", 5, -0.5, 4.5)
+        self.build1DHistogram("number_of_clusters_first_layer", "Number of CLUE clusters on the first layer", 5, -0.5, 4.5)
+        self.build1DHistogram("number_of_clusters_per_layer", "Number of CLUE clusters per layer", 5, -0.5, 4.5)
+        self.build1DHistogram("number_of_clusters", "Total number of CLUE clusters", 51, -0.5, 50)
         self.build1DHistogram("correctly_predicted_events", "Correct Cluster Count", 3, 0., 3.)
 
         # Need to mod for more than two electrons
@@ -1080,7 +1082,8 @@ class EcalClusterAnalyzer(ldmxcfg.Analyzer) :
         self.build2DHistogram("total_energy_vs_hits", "Total energy (edep) [MeV]", 30, 0, 150, "Hits in cluster", 20, 0, 200)
         self.build2DHistogram("total_energy_vs_purity", "Total energy (edep) [MeV]", 30, 0, 150, "Energy purity %", 21, 0, 105)
         self.build2DHistogram("sp_ele_distance_vs_purity", "SP ele distance in xy-plane [mm]", 50, 0, 250, "Energy purity %", 21, 0, 105)
-        
+        self.build2DHistogram("sp_clue_distance_vs_layer", "CLUE centroid to SP ele distance in xy-plane [mm]", 125, 0., 250., "Layer", 33, -0.5, 32.5)
+
         self.build1DHistogram("sp_clue_distance", "CLUE centroid to SP ele distance in xy-plane [mm]", 125, 0., 250.)
         self.build1DHistogram("sp_clue_x_residual", "CLUE centroid X - SP ele X [mm]", 250, -250., 250.)
         self.build1DHistogram("sp_clue_y_residual", "CLUE centroid Y - SP ele Y [mm]", 250, -250., 250.)

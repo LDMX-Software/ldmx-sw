@@ -113,7 +113,8 @@ std::vector<std::vector<const ldmx::EcalHit*>> CLUE::createLayers(
   // Clear any existing layer_rho_c_ values
   layer_rho_c_.clear();
 
-  int rhoc_factor = 2;
+  // This is rather ad-hoc, but this way it's still tunable via rhoc_ parameter
+  double rhoc_factor = rhoc_ / 250.;
 
   for (const auto& hit : hits) {
     ldmx::EcalID ecal_id(hit->getID());
@@ -540,9 +541,11 @@ void CLUE::convertToIntermediateClusters(
       intermediate_cluster.add(hit);
       // if hit is in first layer, add to first layer cluster
       ldmx::EcalID ecal_id(hit->getID());
-      if (ecal_id.layer() == 0) {
+      auto layer = ecal_id.layer();
+      intermediate_cluster.setLayer(layer);
+      if (layer == 0) {
         intermediate_cluster_first_layer.add(hit);
-        intermediate_cluster.setLayer(ecal_id.layer());
+        intermediate_cluster_first_layer.setLayer(layer);
       }
     }
     final_clusters_.push_back(intermediate_cluster);
