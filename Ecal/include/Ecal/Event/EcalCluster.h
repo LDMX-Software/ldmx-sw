@@ -63,7 +63,7 @@ class EcalCluster : public ldmx::CaloCluster {
   double first_layer_centroid_y_{0};
   double first_layer_centroid_z_{0};
 
-  ClassDef(EcalCluster, 2);
+  ClassDef(EcalCluster, 1);
 };
 }  // namespace ldmx
 

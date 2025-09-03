@@ -37,10 +37,6 @@ void EcalClusterAnalyzer::analyze(const framework::Event& event) {
   }
 
   std::map<int, int> layer_cluster_count;
-  // for (int layer = 0; layer <= 32; ++layer) {
-  //     layer_cluster_count[layer] = 0;
-  // }
-
   for (const auto& cluster : ecal_clusters) {
     auto layer = cluster.getLayer();
     layer_cluster_count[layer]++;
@@ -55,12 +51,11 @@ void EcalClusterAnalyzer::analyze(const framework::Event& event) {
       static_cast<double>(total_clusters) / layer_cluster_count.size()));
 
   ldmx_log(info) << "Avg number of clusters per layer: " << n_ecal_clusters;
-std::cout << layer_cluster_count[0] << " clusters in first layer" << std::endl;
   // Fill histograms with the number of clusters
   histograms_.fill("number_of_clusters", total_clusters);
   histograms_.fill("number_of_clusters_per_layer", n_ecal_clusters);
   histograms_.fill("number_of_clusters_first_layer", layer_cluster_count[0]);
-  
+
   // Fill simplied 3-bin histogram to check the prediction
   if (n_ecal_clusters == nbr_of_electrons) {
     // correct
