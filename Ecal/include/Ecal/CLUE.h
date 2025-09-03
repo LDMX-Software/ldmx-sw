@@ -79,7 +79,7 @@ class CLUE {
       std::vector<std::shared_ptr<Density>>& densities, bool connectingLayers,
       int layerTag = 0);
 
-  std::vector<std::shared_ptr<Density>> layerSetup();
+  std::vector<std::shared_ptr<Density>> setupForClue3D();
 
   void convertToIntermediateClusters(
       std::vector<std::vector<const ldmx::EcalHit*>>& clusters);
@@ -117,15 +117,10 @@ class CLUE {
   double deltao_;
   double dm_;
 
-  // layers in Ecal; a bit unsure if this is the correct number
-  int max_layers_{17};
+  // layers in Ecal
+  int max_layers_{32};
   int nbr_of_layers_;
-  // air between layers (a guess, but it seems to work)
-  double air_{10.};
-  // thickness of ECal layers
-  std::vector<double> layer_thickness_ = {2.,   3.5,  5.3,  5.3, 5.3, 5.3,
-                                          5.3,  5.3,  5.3,  5.3, 5.3, 10.5,
-                                          10.5, 10.5, 10.5, 10.5};
+
   std::vector<double> layer_rho_c_;
   std::vector<double> layer_delta_c_;
   // containment radius for the different layers of the ECal
@@ -144,7 +139,6 @@ class CLUE {
   std::vector<double> centroid_distances_;
   IntermediateCluster event_centroid_;
 
-  float first_layer_max_z_;
   std::vector<IntermediateCluster> first_layer_centroids_;
 
   int seed_index_{0};

@@ -10,14 +10,14 @@ namespace ecal {
 
 class MyClusterWeight {
  public:
+  // returns weighting function, where smallest, weights will be combined first
   double operator()(const IntermediateCluster& a,
-                    const IntermediateCluster&
-                        b) {  // returns weighting function, where smallest
-                              // weights will be combined first
-
-    double rmol = 10.00;    // Moliere radius_ of detector, roughly. In mm
-    double dzchar = 100.0;  // Characteristic cluster longitudinal variable TO
-                            // BE DETERMINED! in mm
+                    const IntermediateCluster& b) {
+    // Moliere radius_ of detector, roughly. In mm
+    double rmol = 10.00;
+    // Characteristic cluster longitudinal variable TO
+    // BE DETERMINED! in mm
+    double dzchar = 100.0;
 
     double a_e = a.centroid().E();
     double a_x = a.centroid().Px();

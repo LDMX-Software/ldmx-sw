@@ -14,57 +14,68 @@ EcalClusterProducer::EcalClusterProducer(const std::string& name,
                                          framework::Process& process)
     : Producer(name, process) {}
 
-void EcalClusterProducer::configure(framework::config::Parameters& parameters) {
-  cutoff_ = parameters.get<double>("cutoff");
-  seed_threshold_ = parameters.get<double>("seed_threshold");
+void EcalClusterProducer::configure(framework::config::Parameters& ps) {
+  cutoff_ = ps.get<double>("cutoff");
+  seed_threshold_ = ps.get<double>("seed_threshold");
 
-  dc_ = parameters.get<double>("dc");
-  rhoc_ = parameters.get<double>("rhoc");
-  deltac_ = parameters.get<double>("deltac");
-  deltao_ = parameters.get<double>("deltao");
+  dc_ = ps.get<double>("dc");
+  rhoc_ = ps.get<double>("rhoc");
+  deltac_ = ps.get<double>("deltac");
+  deltao_ = ps.get<double>("deltao");
 
-  rec_hit_coll_name_ = parameters.get<std::string>("rec_hit_coll_name");
-  rec_hit_pass_name_ = parameters.get<std::string>("rec_hit_pass_name");
-  algo_coll_name_ = parameters.get<std::string>("algo_coll_name");
-  algo_name_ = parameters.get<std::string>("algo_name");
-  cluster_coll_name_ = parameters.get<std::string>("cluster_coll_name");
-  clue_ = parameters.get<bool>("CLUE");
-  nbr_of_layers_ = parameters.get<int>("nbr_of_layers");
-  reclustering_ = parameters.get<bool>("reclustering");
+  rec_hit_coll_name_ = ps.get<std::string>("rec_hit_coll_name");
+  rec_hit_pass_name_ = ps.get<std::string>("rec_hit_pass_name");
+  algo_coll_name_ = ps.get<std::string>("algo_coll_name");
+  algo_name_ = ps.get<std::string>("algo_name");
+  cluster_coll_name_ = ps.get<std::string>("cluster_coll_name");
+  clue_ = ps.get<bool>("CLUE");
+  nbr_of_layers_ = ps.get<int>("nbr_of_layers");
+  reclustering_ = ps.get<bool>("reclustering");
 }
 
 void EcalClusterProducer::produce(framework::Event& event) {
   const auto& ecal_hits{event.getCollection<ldmx::EcalHit>(rec_hit_coll_name_,
                                                            rec_hit_pass_name_)};
   if (ecal_hits.size() == 0) {
-    // don't do anything if there are no ECal hits_
+    // don't do anything if there are no ECal hits
+    ldmx_log(fatal) << "No ECal hits found... exiting";
     return;
   }
 
   if (clue_) {
+    ldmx_log(info) << "Using CLUE clustering algorithm";
     CLUE cf;
     cf.cluster(ecal_hits, dc_, rhoc_, deltac_, deltao_, nbr_of_layers_,
                reclustering_);
+    ldmx_log(debug) << "CLUE algorithm finished clustering";
     std::vector<IntermediateCluster> wc_vec = cf.getClusters();
     std::vector<IntermediateCluster> f_wc_vec = cf.getFirstLayerCentroids();
+    ldmx_log(debug) << "Got " << wc_vec.size() << " clusters with "
+                    << f_wc_vec.size() << " first layer centroids";
 
     auto n_loops = cf.getNLoops();
-    histograms_.fill("nLoops", n_loops);
-    histograms_.fill("nClusters", wc_vec.size());
-    if (reclustering_)
+    ldmx_log(debug) << "Number of clustering loops: " << n_loops;
+
+    if (reclustering_) {
+      ldmx_log(debug) << "Reclustererd initial number of clusters: "
+                      << cf.getInitialClusterNbr()
+                      << ", final number of clusters: " << wc_vec.size();
       histograms_.fill("recluster", cf.getInitialClusterNbr(), wc_vec.size());
+    }
 
     std::vector<ldmx::EcalCluster> ecal_clusters;
+    ldmx_log(debug) << "Filling " << wc_vec.size()
+                    << " clusters into ecal_clusters";
     for (int a_wc = 0; a_wc < wc_vec.size(); a_wc++) {
       ldmx::EcalCluster cluster;
 
       cluster.setEnergy(wc_vec[a_wc].centroid().E());
-      cluster.setCentroidXYZ(wc_vec[a_wc].centroid().Px(),
-                             wc_vec[a_wc].centroid().Py(),
-                             wc_vec[a_wc].centroid().Pz());
-      cluster.setFirstLayerCentroidXYZ(f_wc_vec[a_wc].centroid().Px(),
-                                       f_wc_vec[a_wc].centroid().Py(),
-                                       f_wc_vec[a_wc].centroid().Pz());
+      cluster.setCentroidXYZ(wc_vec[a_wc].centroid().x(),
+                             wc_vec[a_wc].centroid().y(),
+                             wc_vec[a_wc].centroid().z());
+      cluster.setFirstLayerCentroidXYZ(f_wc_vec[a_wc].centroid().x(),
+                                       f_wc_vec[a_wc].centroid().y(),
+                                       f_wc_vec[a_wc].centroid().z());
       cluster.setNHits(wc_vec[a_wc].getHits().size());
       cluster.addHits(wc_vec[a_wc].getHits());
       cluster.addFirstLayerHits(f_wc_vec[a_wc].getHits());
@@ -83,7 +94,7 @@ void EcalClusterProducer::produce(framework::Event& event) {
         cl_yy += cl_w * hit->getYPos() * hit->getYPos();
         cl_zz += cl_w * hit->getZPos() * hit->getZPos();
         sumw += cl_w;
-      }  // over hits_
+      }  // over hits
       // could probably get this as cluster.getCentroidX() instead
       cl_x /= sumw;  // now is <x_>
       cl_y /= sumw;
@@ -96,15 +107,27 @@ void EcalClusterProducer::produce(framework::Event& event) {
       cl_zz = sqrt(cl_zz - cl_z * cl_z);
 
       cluster.setRMSXYZ(cl_xx, cl_yy, cl_zz);
-
-      histograms_.fill("nHits", wc_vec[a_wc].getHits().size());
-      histograms_.fill("cluster_energy", wc_vec[a_wc].centroid().E());
+      cluster.setLayer(wc_vec[a_wc].getLayer());
+      ldmx_log(trace) << "Cluster " << a_wc
+                      << " energy: " << cluster.getEnergy()
+                      << ", nHits: " << cluster.getNHits() << ", centroid: ("
+                      << cluster.getCentroidX() << ", "
+                      << cluster.getCentroidY() << ", "
+                      << cluster.getCentroidZ() << "), " << "RMS : ("
+                      << cluster.getRMSX() << ", " << cluster.getRMSY() << ", "
+                      << cluster.getRMSZ() << ")" << ", first layer centroid: ("
+                      << cluster.getFirstLayerCentroidX() << ", "
+                      << cluster.getFirstLayerCentroidY() << ", "
+                      << cluster.getFirstLayerCentroidZ() << ")" << ", RMS: ("
+                      << cl_xx << ", " << cl_yy << ", " << cl_zz << ")";
 
       ecal_clusters.push_back(cluster);
     }
-
+    ldmx_log(debug) << "Filled " << ecal_clusters.size()
+                    << " clusters into ecal_clusters";
     event.add(cluster_coll_name_, ecal_clusters);
   } else {
+    ldmx_log(info) << "Using simple clustering algorithm " << algo_name_;
     TemplatedClusterFinder<MyClusterWeight> cf;
 
     for (const ldmx::EcalHit& hit : ecal_hits) {
@@ -141,9 +164,10 @@ void EcalClusterProducer::produce(framework::Event& event) {
       ldmx::EcalCluster cluster;
 
       cluster.setEnergy(wc_vec[a_wc].centroid().E());
-      cluster.setCentroidXYZ(wc_vec[a_wc].centroid().Px(),
-                             wc_vec[a_wc].centroid().Py(),
-                             wc_vec[a_wc].centroid().Pz());
+      cluster.setCentroidXYZ(wc_vec[a_wc].centroid().x(),
+                             wc_vec[a_wc].centroid().y(),
+                             wc_vec[a_wc].centroid().z());
+      cluster.setLayer(wc_vec[a_wc].getLayer());
       cluster.setNHits(wc_vec[a_wc].getHits().size());
       cluster.addHits(wc_vec[a_wc].getHits());
 
@@ -155,7 +179,7 @@ void EcalClusterProducer::produce(framework::Event& event) {
 
     event.add(cluster_coll_name_, ecal_clusters);
     event.add(algo_coll_name_, algo_result);
-  }
+  }  // end on simple clustering
 }
 }  // namespace ecal
 

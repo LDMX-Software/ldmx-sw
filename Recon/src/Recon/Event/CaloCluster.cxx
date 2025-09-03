@@ -18,6 +18,7 @@ void CaloCluster::clear() {
   centroid_x_ = 0;
   centroid_y_ = 0;
   centroid_z_ = 0;
+  layer_ = -1;
   rms_x_ = 0;
   rms_y_ = 0;
   rms_z_ = 0;
@@ -28,11 +29,11 @@ void CaloCluster::clear() {
 }
 
 void CaloCluster::addHits(const std::vector<const CalorimeterHit*> hitsVec) {
-  std::vector<unsigned int> vec_i_ds;
+  std::vector<unsigned int> vec_ids;
   for (unsigned int i_hit = 0; i_hit < hitsVec.size(); i_hit++) {
-    vec_i_ds.push_back(hitsVec[i_hit]->getID());
+    vec_ids.push_back(hitsVec[i_hit]->getID());
   }
-  setIDs(vec_i_ds);
+  setIDs(vec_ids);
 }
 
 }  // namespace ldmx
