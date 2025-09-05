@@ -5,27 +5,23 @@
 
 namespace ecal {
 
-// Euclidean distance between two points
-// Note that x*x is much faster than std::pow(x,2)
-float CLUE::dist(double x1, double y1, double x2, double y2) {
+/**
+ * Euclidean distance between two points
+ * Using x*x and std::sqrt since they are more specialized and faster than
+ * std::pow
+ * @tparam T floating point type
+ */
+template <typename T>
+T CLUE::dist(T x1, T y1, T x2, T y2) {
   auto delta_x = x1 - x2;
   auto delta_y = y1 - y2;
   auto r_square = delta_x * delta_x + delta_y * delta_y;
   return std::sqrt(r_square);
 }
 
-// Euclidean distance between two points (float version)
-// Overloaded for 2D and 3D
-float CLUE::floatDist(float x1, float y1, float x2, float y2) {
-  auto delta_x = x1 - x2;
-  auto delta_y = y1 - y2;
-  auto r_square = delta_x * delta_x + delta_y * delta_y;
-  return std::sqrt(r_square);
-}
-
-// 3D version
-float CLUE::floatDist(float x1, float y1, float z1, float x2, float y2,
-                      float z2) {
+// 3D version, overloaded
+template <typename T>
+T CLUE::dist(T x1, T y1, T z1, T x2, T y2, T z2) {
   auto delta_x = x1 - x2;
   auto delta_y = y1 - y2;
   auto delta_z = z1 - z2;
@@ -104,8 +100,8 @@ std::vector<std::vector<const ldmx::EcalHit*>> CLUE::createLayers(
   ldmx_log(trace) << "Number of layers: " << nbr_of_layers_;
 
   // vector of layers, each layer having a vector of hits
-  std::vector<std::vector<const ldmx::EcalHit*>> hits_per_layer;
-  hits_per_layer.resize(nbr_of_layers_);
+  // initialize with nbr_of_layers_ empty vectors
+  std::vector<std::vector<const ldmx::EcalHit*>> hits_per_layer(nbr_of_layers_);
 
   // Track highest energy per layer for proper rho_c calculation
   std::vector<double> layer_max_energies(nbr_of_layers_, 0.0);
@@ -229,8 +225,8 @@ std::vector<std::shared_ptr<CLUE::Density>> CLUE::setup(
                     << "; Energy: " << densities[i]->total_energy_;
     // loop through all higher energy densities
     for (int j = 0; j < i; j++) {
-      float distance_2d = floatDist(densities[i]->x_, densities[i]->y_,
-                                    densities[j]->x_, densities[j]->y_);
+      float distance_2d = dist(densities[i]->x_, densities[i]->y_,
+                               densities[j]->x_, densities[j]->y_);
       // condition energyJ > energyI but this should be baked in as we sorted
       // according to energy
       if ((distance_2d < dm_) && (distance_2d < densities[i]->delta_)) {
@@ -329,8 +325,8 @@ std::vector<std::vector<const ldmx::EcalHit*>> CLUE::clustering(
 
       bool is_seed;
       if (delta_c_mod != deltac_ && merged_densities[density->cluster_id_] &&
-          floatDist(density->x_, density->y_, event_centroid_.centroid().x(),
-                    event_centroid_.centroid().y()) < centroid_radius) {
+          dist(density->x_, density->y_, event_centroid_.centroid().x(),
+               event_centroid_.centroid().y()) < centroid_radius) {
         // if energy has been overloaded and this density belongs to cluster
         // that was overloaded and this density is close enough to event
         // centroid use modded delta c
@@ -346,9 +342,9 @@ std::vector<std::vector<const ldmx::EcalHit*>> CLUE::clustering(
       if (is_seed) {
         ldmx_log(trace) << "      This is a Seed";
         ldmx_log(trace) << "      Distance to centroid: "
-                        << floatDist(density->x_, density->y_,
-                                     event_centroid_.centroid().x(),
-                                     event_centroid_.centroid().y())
+                        << dist(density->x_, density->y_,
+                                event_centroid_.centroid().x(),
+                                event_centroid_.centroid().y())
                         << "; with delta " << density->delta_;
         ldmx_log(trace) << "      Setting cluster ID to " << k;
         density->cluster_id_ = k;
@@ -461,8 +457,8 @@ std::vector<std::shared_ptr<CLUE::Density>> CLUE::setupForClue3D() {
         auto& previous_layer = seeds_[layer - depth];
         for (const auto& prev_seed : previous_layer) {
           // for each seed in previous layer
-          auto distance_2d_prev = floatDist(current_seed->x_, current_seed->y_,
-                                            prev_seed->x_, prev_seed->y_);
+          auto distance_2d_prev = dist(current_seed->x_, current_seed->y_,
+                                       prev_seed->x_, prev_seed->y_);
           auto dz_prev = std::abs(current_seed->z_ - prev_seed->z_);
           ldmx_log(trace) << "      DeltaXY to index " << prev_seed->index_
                           << ": " << std::setprecision(4) << distance_2d_prev;
@@ -492,8 +488,8 @@ std::vector<std::shared_ptr<CLUE::Density>> CLUE::setupForClue3D() {
         ldmx_log(trace) << "    Looking at post-layer: " << layer + depth;
         auto& next_layer = seeds_[layer + depth];
         for (const auto& next_seed : next_layer) {
-          auto distance_2d_next = floatDist(current_seed->x_, current_seed->y_,
-                                            next_seed->x_, next_seed->y_);
+          auto distance_2d_next = dist(current_seed->x_, current_seed->y_,
+                                       next_seed->x_, next_seed->y_);
           auto dz_next = std::abs(current_seed->z_ - next_seed->z_);
           ldmx_log(trace) << "      DeltaXY to index " << next_seed->index_
                           << ": " << std::setprecision(4) << distance_2d_next;
@@ -534,8 +530,8 @@ void CLUE::convertToIntermediateClusters(
   // Convert to workingecalclusters to ensure compatibility with
   // EcalClusterProducer
   for (const auto& cluster : clusters) {
-    auto intermediate_cluster = IntermediateCluster();
-    auto intermediate_cluster_first_layer = IntermediateCluster();
+    IntermediateCluster intermediate_cluster{},
+        intermediate_cluster_first_layer{};
 
     for (const auto& hit : cluster) {
       intermediate_cluster.add(hit);

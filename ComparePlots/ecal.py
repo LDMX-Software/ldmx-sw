@@ -121,7 +121,9 @@ def clue_cluster(d : Differ, out_dir = None) :
     """
     
     features = [
-        ('EcalClusterAnalyzer/EcalClusterAnalyzer_number_of_clusters', 'Number of CLUE clusters'),
+        ('EcalClusterAnalyzer/EcalClusterAnalyzer_number_of_clusters_first_layer', 'Number of CLUE clusters on the first layer'),
+        ('EcalClusterAnalyzer/EcalClusterAnalyzer_number_of_clusters_per_layer', 'Number of CLUE clusters per layer'),
+        ('EcalClusterAnalyzer/EcalClusterAnalyzer_number_of_clusters', 'Total number of CLUE clusters'),
         ('EcalClusterAnalyzer/EcalClusterAnalyzer_energy_percentage', 'Percentage of energy in cluster'),
         ('EcalClusterAnalyzer/EcalClusterAnalyzer_clusterless_hits_percentage', 'Percentage of hits not in a cluster'),
         ('EcalClusterAnalyzer/EcalClusterAnalyzer_sp_clue_distance', 'CLUE centroid to SP ele distance in xy-plane [mm]'),

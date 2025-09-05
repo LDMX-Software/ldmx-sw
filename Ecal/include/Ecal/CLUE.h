@@ -29,23 +29,24 @@ class CLUE {
 
  public:
   struct Density {
-    float x_;
-    float y_;
-    float z_;
+    double x_;
+    double y_;
+    double z_;
     double total_energy_;
     int index_;
 
     // index of density this density is follower of
     // set to index of spatially closest density with higher energy; -1 if seed
     int follower_of_;
-    // separation distance to density that this is follower of
-    float delta_;
-    float z_delta_;
-
-    int cluster_id_;  // 2D cluster ID
-
+    // 2D separation distance to density that this is follower of
+    double delta_;
+    // separation in z to density that this is follower of
+    double z_delta_;
+    // 2D cluster ID
+    int cluster_id_;
+    // layer of density
     int layer_;
-
+    // hits in this density
     std::vector<const ldmx::EcalHit*> hits_;
 
     Density() {}
@@ -63,9 +64,15 @@ class CLUE {
     }
   };
 
-  float dist(double x1, double y1, double x2, double y2);
-  float floatDist(float x1, float y1, float x2, float y2);
-  float floatDist(float x1, float y1, float z1, float x2, float y2, float z2);
+  /**
+   * Euclidean distance between two points
+   * @tparam T floating point type
+   */
+  template <typename T>
+  T dist(T x1, T y1, T x2, T y2);
+  // 3D version
+  template <typename T>
+  T dist(T x1, T y1, T z1, T x2, T y2, T z2);
   std::vector<std::vector<const ldmx::EcalHit*>> createLayers(
       const std::vector<const ldmx::EcalHit*>& hits);
   float roundToDecimal(float x, int num_decimal_precision_digits);
