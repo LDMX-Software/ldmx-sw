@@ -16,7 +16,7 @@ from LDMX.Biasing import include as includeBiasing
 def electro_nuclear( detector, generator ) :
     """Example configuration for producing electro-nuclear reactions in the target.
 
-    In this particular example, 4 GeV electrons are fired upstream of the
+    In this particular example, 8 GeV electrons are fired upstream of the
     tagger tracker. TargetENFilter filters out events that don't see an
     electro-nuclear reaction take places in the target.
 
@@ -45,7 +45,7 @@ def electro_nuclear( detector, generator ) :
     sim.setDetector( detector , True )
 
     # Set run parameters
-    sim.description = "Target electron-nuclear, xsec bias 1e8"
+    sim.description = "Target electron-nuclear, xsec bias 1e5"
     sim.beamSpotSmear = [20., 80., 0.] #mm
 
     sim.generators.append(generator)
