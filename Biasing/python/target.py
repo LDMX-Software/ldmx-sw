@@ -51,13 +51,13 @@ def electro_nuclear( detector, generator ) :
     sim.generators.append(generator)
 
     # Enable and configure the biasing
-    sim.biasing_operators = [ bias_operators.ElectroNuclear('target',1e8) ]
+    sim.biasing_operators = [ bias_operators.ElectroNuclear('target',1e5) ]
 
     # the following filters are in a library that needs to be included
     includeBiasing.library()
 
     # Configure the sequence in which user actions should be called.
-    recoil_thresh = 0.625 * generator.energy * 1000.
+    recoil_thresh = 0.975 * generator.energy * 1000.
     tagger_threshold = 0.95 * generator.energy * 1000.
     sim.actions.extend([
             filters.TaggerVetoFilter(thresh = tagger_threshold),
