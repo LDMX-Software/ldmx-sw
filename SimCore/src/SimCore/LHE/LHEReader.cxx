@@ -16,6 +16,11 @@ std::unique_ptr<LHEEvent> LHEReader::readNextEvent() {
   std::string line;
   bool found_event_element = false;
   while (getline(ifs_, line)) {
+    auto back =
+        std::find_if_not(line.rbegin(), line.rend(), [](unsigned char c) {
+          return std::isspace(c);
+        }).base();
+    line.erase(back, line.end());
     if (line == "<event>") {
       found_event_element = true;
       break;
@@ -33,6 +38,11 @@ std::unique_ptr<LHEEvent> LHEReader::readNextEvent() {
   auto next_event = std::make_unique<LHEEvent>(line);
 
   while (getline(ifs_, line)) {
+    auto back =
+        std::find_if_not(line.rbegin(), line.rend(), [](unsigned char c) {
+          return std::isspace(c);
+        }).base();
+    line.erase(back, line.end());
     if (line == "</event>" || line == "<mgrwt>") {
       // break if the event ended or in LHE 3.0 if we reach the mgrwt block
       break;
