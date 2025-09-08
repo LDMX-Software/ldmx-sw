@@ -121,8 +121,8 @@ p.sequence.extend([
         hcal_digi_reco,
         hcal_veto,
         TriggerProcessor('trigger', 8000.),
-        hcal_clusters,
-        hcal_wab,
+        #hcal_clusters,
+        #hcal_wab,
         *recoil_tracker_dqm,
         ])
 
