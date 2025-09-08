@@ -55,7 +55,7 @@ jobs:
 
     # sphinx is a python package, so we need to setup python on this runner
     - name: Setup Python for Sphinx
-      uses: actions/setup-python@v5
+      uses: actions/setup-python@v6
       with:
         python-version: 3.11
     
