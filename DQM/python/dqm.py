@@ -1065,7 +1065,7 @@ class EcalClusterAnalyzer(ldmxcfg.Analyzer) :
 
         self.build1DHistogram("number_of_clusters_first_layer", "Number of CLUE clusters on the first layer", 5, -0.5, 4.5)
         self.build1DHistogram("number_of_clusters_per_layer", "Number of CLUE clusters per layer", 5, -0.5, 4.5)
-        self.build1DHistogram("number_of_clusters", "Total number of CLUE clusters", 51, -0.5, 50)
+        self.build1DHistogram("number_of_clusters", "Total number of CLUE clusters", 51, -0.5, 50.5)
         self.build1DHistogram("correctly_predicted_events", "Correct Cluster Count", 3, 0., 3.)
 
         # Need to mod for more than two electrons
