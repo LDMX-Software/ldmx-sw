@@ -57,8 +57,6 @@ class EcalCluster : public ldmx::CaloCluster {
   }
 
  private:
-  // Could add further ECal-specific info here...
-
   std::vector<unsigned int> first_layer_hit_ids_;
 
   double first_layer_centroid_x_{0};

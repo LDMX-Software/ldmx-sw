@@ -39,19 +39,13 @@ class EcalClusterProducer(ldmxcfg.Producer) :
         # Currently only used when nbrOfLayers > 1
         self.dc = 5.
         # Minimum seed energy/maximum outlier energy
+        # Not used when nbrOfLayers > 1
         self.rhoc = 550.
         # Minimum seed separation
+        # Not used when nbrOfLayers > 1
         self.deltac = 10.
         # Minimum outlier separation
         self.deltao = 40.
         # Recluster merged clusters or not
         # No reclustering leads to more undercounting, reclustering leads to more overcounting
         self.reclustering = False
-
-        self.build1DHistogram("nLoops", "Number of loops for clustering", 50, 0, 400) # not applicable for CLUE
-        self.build1DHistogram("nClusters", "Number of clusters", 20, 0, 20)
-        self.build1DHistogram("nHits", "Hits per cluster", 20, 0, 300)
-        self.build1DHistogram("cluster_energy", "Energy [MeV] per cluster", 100, 0, 20000)
-        self.build2DHistogram("seed_weights", "Number of seeds", 20, 0, 100, "Minimum weight", 20, 0, 10) # not applicable for CLUE
-        self.build2DHistogram("recluster", "Initial number of clusters", 20, 0, 20, "Number of clusters after reclustering", 20, 0, 20) # not applicable for existing algo
-
