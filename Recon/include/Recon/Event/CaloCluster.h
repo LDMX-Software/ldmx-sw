@@ -69,7 +69,7 @@ class CaloCluster {
    * that make up the cluster.
    * @param IDs Sorted vector of hit IDs.
    */
-  void setIDs(std::vector<unsigned int>& hitIDs) { hit_ids = hitIDs; }
+  void setIDs(std::vector<unsigned int>& hitIDs) { hit_ids_ = hitIDs; }
 
   void setHitValsX(std::vector<float>& x_) { hit_x_ = x_; }
   void setHitValsY(std::vector<float>& x_) { hit_y_ = x_; }
@@ -78,27 +78,30 @@ class CaloCluster {
 
   /**
    * Sets the three coordinates of the cluster centroid
-   * @param x_ The x_ coordinate.
-   * @param y_ The y_ coordinate.
-   * @param z_ The z_ coordinate.
+   * @param x The x coordinate.
+   * @param y The y coordinate.
+   * @param z The z coordinate.
    */
-  void setCentroidXYZ(double x_, double y_, double z_) {
-    centroid_x_ = x_;
-    centroid_y_ = y_;
-    centroid_z_ = z_;
+  void setCentroidXYZ(double centroid_x, double centroid_y, double centroid_z) {
+    centroid_x_ = centroid_x;
+    centroid_y_ = centroid_y;
+    centroid_z_ = centroid_z;
   }
-  void setRMSXYZ(double x_, double y_, double z_) {
-    rms_x_ = x_;
-    rms_y_ = y_;
-    rms_z_ = z_;
+
+  // Sets the layer of the cluster centroid
+  void setLayer(int layer) { layer_ = layer; }
+  void setRMSXYZ(double rms_x, double rms_y, double rms_z) {
+    rms_x_ = rms_x;
+    rms_y_ = rms_y;
+    rms_z_ = rms_z;
   }
-  void setDXDZ(double x_) { dxdz_ = x_; }
+  void setDXDZ(double dxdz) { dxdz_ = dxdz; }
 
-  void setDYDZ(double x_) { dydz_ = x_; }
+  void setDYDZ(double dydz) { dydz_ = dydz; }
 
-  void setEDXDZ(double x_) { err_dxdz_ = x_; }
+  void setEDXDZ(double err_dxdz) { err_dxdz_ = err_dxdz; }
 
-  void setEDYDZ(double x_) { err_dydz_ = x_; }
+  void setEDYDZ(double err_dydz) { err_dydz_ = err_dydz; }
 
   /////////////////////////////////////////////
 
@@ -109,23 +112,31 @@ class CaloCluster {
   int getNHits() const { return n_hits_; }
 
   // position (weighted by energy)
+  /// centroid x-location
   double getCentroidX() const { return centroid_x_; }
+  /// @brief  centroid y-location
   double getCentroidY() const { return centroid_y_; }
+  /// @brief  centroid z-location
   double getCentroidZ() const { return centroid_z_; }
+  /// @brief  layer of the cluster centroid
+  int getLayer() const { return layer_; }
+  /// @brief  rms in x
   double getRMSX() const { return rms_x_; }
+  /// @brief  rms in y
   double getRMSY() const { return rms_y_; }
+  /// @brief  rms in z
   double getRMSZ() const { return rms_z_; }
-
+  /// @brief  Delta in x-z plane
   double getDXDZ() const { return dxdz_; }
-
+  /// @brief  Delta in y-z plane
   double getDYDZ() const { return dydz_; }
-
+  /// @brief  Delta unc on unc in x-z plane
   double getEDXDZ() const { return err_dxdz_; }
-
+  /// @brief  Delta unc on unc in y-z plane
   double getEDYDZ() const { return err_dydz_; }
 
   // get hit rawIDs (unused)
-  const std::vector<unsigned int>& getHitIDs() const { return hit_ids; }
+  const std::vector<unsigned int>& getHitIDs() const { return hit_ids_; }
 
   // ability to store limited hit info
   const std::vector<float>& getHitX() const { return hit_x_; }
@@ -138,12 +149,13 @@ class CaloCluster {
   }
 
  protected:
-  std::vector<unsigned int> hit_ids;
+  std::vector<unsigned int> hit_ids_;
   double energy_{0};
   int n_hits_{0};
   double centroid_x_{0};
   double centroid_y_{0};
   double centroid_z_{0};
+  int layer_{-1};
   double rms_x_{0};
   double rms_y_{0};
   double rms_z_{0};
@@ -157,7 +169,7 @@ class CaloCluster {
   std::vector<float> hit_e_;
 
  private:
-  ClassDef(CaloCluster, 2);
+  ClassDef(CaloCluster, 3);
 };
 }  // namespace ldmx
 

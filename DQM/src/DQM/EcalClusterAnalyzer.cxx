@@ -36,9 +36,26 @@ void EcalClusterAnalyzer::analyze(const framework::Event& event) {
     nbr_of_electrons = nbr_of_electrons_;
   }
 
-  int n_ecal_clusters = ecal_clusters.size();
+  std::map<int, int> layer_cluster_count;
+  for (const auto& cluster : ecal_clusters) {
+    auto layer = cluster.getLayer();
+    layer_cluster_count[layer]++;
+  }
+
+  int total_clusters = 0;
+  for (const auto& [layer, count] : layer_cluster_count) {
+    total_clusters += count;
+  }
+
+  int n_ecal_clusters = static_cast<int>(std::round(
+      static_cast<double>(total_clusters) / layer_cluster_count.size()));
+
+  ldmx_log(info) << "Avg number of clusters per layer: " << n_ecal_clusters;
   // Fill histograms with the number of clusters
-  histograms_.fill("number_of_clusters", n_ecal_clusters);
+  histograms_.fill("number_of_clusters", total_clusters);
+  histograms_.fill("number_of_clusters_per_layer", n_ecal_clusters);
+  histograms_.fill("number_of_clusters_first_layer", layer_cluster_count[0]);
+
   // Fill simplied 3-bin histogram to check the prediction
   if (n_ecal_clusters == nbr_of_electrons) {
     // correct
@@ -150,8 +167,14 @@ void EcalClusterAnalyzer::analyze(const framework::Event& event) {
   int clustered_hits = 0;
   ldmx_log(trace) << "Loop over the clusters, N = " << n_ecal_clusters;
   for (const auto& cl : ecal_clusters) {
-    auto cluster_centroid_x = cl.getFirstLayerCentroidX();
-    auto cluster_centroid_y = cl.getFirstLayerCentroidY();
+    auto layer = cl.getLayer();
+    ldmx_log(trace) << "Cluster in layer " << layer
+                    << ", energy: " << cl.getEnergy()
+                    << ", number of hits: " << cl.getHitIDs().size();
+    auto cluster_centroid_x = cl.getCentroidX();
+    auto cluster_centroid_y = cl.getCentroidY();
+    auto cluster_rms_x = cl.getRMSX();
+    auto cluster_rms_y = cl.getRMSY();
 
     // Find the closest sp_electron_positions to the cluster centroid
     double min_distance = 9999.;
@@ -168,13 +191,17 @@ void EcalClusterAnalyzer::analyze(const framework::Event& event) {
       }
     }  // end loop on the scoring plane electron positions
     // Fill histogram with the distance to the closest scoring plane electron
-    ldmx_log(trace) << "\tCluster centroid: (" << cluster_centroid_x << ", "
-                    << cluster_centroid_y
-                    << ") mm, min distance to SP electron: " << min_distance
+    ldmx_log(trace) << "\tCluster centroid: (" << cluster_centroid_x << " +/- "
+                    << cluster_rms_x << ", " << cluster_centroid_y << " +/- "
+                    << cluster_rms_y
+                    << " mm; min distance to SP electron: " << min_distance
                     << " mm";
-    histograms_.fill("sp_clue_distance", min_distance);
-    histograms_.fill("sp_clue_x_residual", sp_clue_x_residuals);
-    histograms_.fill("sp_clue_y_residual", sp_clue_y_residuals);
+    if (layer == 0) {
+      histograms_.fill("sp_clue_distance", min_distance);
+      histograms_.fill("sp_clue_x_residual", sp_clue_x_residuals);
+      histograms_.fill("sp_clue_y_residual", sp_clue_y_residuals);
+    }
+    histograms_.fill("sp_clue_distance_vs_layer", layer, min_distance);
 
     // for each cluster
     // total number of hits coming from electron, index = electron ID

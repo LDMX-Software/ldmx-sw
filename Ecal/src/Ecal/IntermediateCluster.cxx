@@ -44,5 +44,10 @@ void IntermediateCluster::add(const IntermediateCluster& wc) {
     hits_.push_back(eh);
   }
 }
+// Set layer of the cluster centroid
+void IntermediateCluster::setLayer(int layer) { layer_ = layer; }
+
+// Get layer of the cluster centroid
+int IntermediateCluster::getLayer() const { return layer_; }
 
 }  // namespace ecal

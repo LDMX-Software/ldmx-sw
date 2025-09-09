@@ -25,7 +25,8 @@ class IntermediateCluster {
   std::vector<const ldmx::EcalHit*> getHits() const { return hits_; }
   bool empty() const { return hits_.empty(); }
   void clear() { hits_.clear(); }
-  int getLayer() const { return layer_; }
+  int getLayer() const;
+  void setLayer(int layer);
 
  private:
   int layer_;
