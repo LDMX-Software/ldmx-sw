@@ -73,6 +73,12 @@ __materials__ = dict(
         nuclear_interaction_length = 107.2,
         radiation_length = 24.01
     ),
+    Ti = PDGMaterial(
+        density = 4.540,
+        minimum_ionization = 1.477,
+        nuclear_interaction_length = 126.2,
+        radiation_length = 16.16
+    ),
     Air = PDGMaterial(
         density = 1.205e-3,
         minimum_ionization = 1.815,
@@ -209,6 +215,7 @@ class Layer :
     Here   | PDG
     -------|-----
     Al     | Al
+    Ti     | Ti
     Air    | Mixtures -> Air (dry, 1 atm)
     PCB    | weighted mix of materials
     Si     | Si
@@ -242,6 +249,7 @@ class Layer :
 
     materials = dict(
         Al = pdg_material(Al = 1.0),
+        Ti = pdg_material(Ti = 1.0),
         Air = pdg_material(Air = 1.0),
 #        # using atomic fraction
 #        PCB = pdg_material(
@@ -257,10 +265,12 @@ class Layer :
 #        ),
         # using depth/thickness fraction from pcb-layers.nbt
         PCB = pdg_material(
-            Cu = 0.238,
-            G10 = 1.422,
+            Cu = 0.170,
+            G10 = 1.490,
             scale_weights=True
         ),
+        FR4 = pdg_material(G10 = 1.0),
+        Cu = pdg_material(Cu = 1.0),
         Si = pdg_material(Si = 1.0),
         W = pdg_material(W = 1.0),
         Carbon = pdg_material(C = 1.0),
@@ -305,6 +315,12 @@ class Layer :
     def pcb() :
         return Layer('PCB',1.666)
 
+    def pcb_unpacked():
+        return [
+            Layer('Cu', 0.170),
+            Layer('FR4', 1.490)
+        ]
+
     def glue(t) :
         return Layer('Glue', t)
 
@@ -313,6 +329,12 @@ class Layer :
 
     def carbon(t) :
         return Layer('Carbon',t)
+
+    def titanium_baseplate():
+        return Layer('Ti', 1)
+
+    def aluminum_support_plane():
+        return Layer('Al', 3)
 
 
 @dataclass
@@ -354,10 +376,24 @@ class BiLayerSandwich:
       | Air                           |
       | Readout Motherboard (PCB)     |
 
+    For the 2025 "slice test", we are co-opting baseplates and support planes
+    from other sources, so they look like
+
+      | front absorber (W)            |
+      | Readout Motherboard (PCB)     |
+      | Air                           |
+      | Hexamodule (Si, Glue, PCB,Ti) |
+      | Aluminum Support (Al)         |
+      | Hexamodule (Si, Glue, PCB,Ti) |
+      | Air                           |
+      | Readout Motherboard (PCB)     |
+
+
     """
 
     front: float = 0.0
     cooling: float = 0.0
+    slice_test: bool = False
 
     def material_stack(self):
         layers = []
@@ -367,30 +403,43 @@ class BiLayerSandwich:
             layers.append(Layer.air(0.5))
         if self.front == 0:
             layers.append(Layer.air(0.15)) # correction
-        layers.append(Layer.pcb()) # PCB_dz
+        #layers.append(Layer.pcb()) # PCB_dz
+        layers.extend(Layer.pcb_unpacked())
         layers.append(Layer.air(3.5)) # PCB_Motherboard_Gap
-        layers.append(Layer.pcb()) # PCB_dz
+        #layers.append(Layer.pcb()) # PCB_dz
+        layers.extend(Layer.pcb_unpacked())
         layers.append(Layer.glue(0.1)) # Glue_dz
         layers.append(Layer.silicon()) # Si_dz
         layers.append(Layer.glue(0.2)) # GlueThick_dz
-        layers.append(Layer.carbon(0.79)) # CarbonBasePlate_dz
-        if self.cooling == 0 :
-            layers.append(Layer.air(0.5)) # preshower_extra_air
-        if self.cooling > 0 :
-            layers.append(Layer.tungsten(self.cooling))
-        layers.append(Layer.carbon(5.7)) # CarbonCoolingPlane_dz
-        if self.cooling > 0 :
-            layers.append(Layer.tungsten(self.cooling))
-        layers.append(Layer.carbon(0.79)) # CarbonBasePlate_dz
+        if self.slice_test:
+            layers.append(Layer.titanium_baseplate())
+        else:
+            layers.append(Layer.carbon(0.79)) # CarbonBasePlate_dz
+            if self.cooling == 0 :
+                layers.append(Layer.air(0.5)) # preshower_extra_air
+            if self.cooling > 0 :
+                layers.append(Layer.tungsten(self.cooling))
+        if self.slice_test:
+            layers.append(Layer.aluminum_support_plane())
+        else:
+            layers.append(Layer.carbon(5.7)) # CarbonCoolingPlane_dz
+        if self.slice_test:
+            layers.append(Layer.titanium_baseplate())
+        else:
+            layers.append(Layer.carbon(0.79)) # CarbonBasePlate_dz
+            if self.cooling > 0 :
+                layers.append(Layer.tungsten(self.cooling))
         layers.append(Layer.glue(0.2)) # GlueThick_dz
         layers.append(Layer.silicon()) # Si_dz
         layers.append(Layer.glue(0.1)) # Glue_dz
-        layers.append(Layer.pcb()) # PCB_dz
+        #layers.append(Layer.pcb()) # PCB_dz
+        layers.extend(Layer.pcb_unpacked())
         layers.append(Layer.air(3.5)) # PCB_Motherboard_Gap
         if self.cooling == 0 : # sampling_section_offset
             layers.append(Layer.air(0.5))
             layers.append(Layer.air(0.5))
-        layers.append(Layer.pcb()) # PCB_dz
+        #layers.append(Layer.pcb()) # PCB_dz
+        layers.extend(Layer.pcb_unpacked())
         return layers
 
 
@@ -609,7 +658,7 @@ def minildmx():
     print('            |     Depth     |')
     print('N Bi-Layers | X0    | mm    |')
     for n in range(1,4):
-        layers = n*BiLayerSandwich(front=0, cooling=0).material_stack()
+        layers = n*BiLayerSandwich(front=0, cooling=0, slice_test=True).material_stack()
         print('{n:>11} | {x0:<5.3g} | {z:<5.3g} |'.format(
             n = n,
             x0 = sum(layer.thickness / layer.x0 for layer in layers),
@@ -619,22 +668,22 @@ def minildmx():
 
 @command
 def bilayer_spec():
-    layers = BiLayerSandwich(front=0, cooling=0).material_stack()
+    layers = BiLayerSandwich(front=0, cooling=0, slice_test=True).material_stack()
     totals_by_material = {}
 
     print('Full Layer Stack')
-    print('Material, Depth / mm')
+    print('Material, Depth / mm, Depth / X0')
     for layer in layers:
-        print(layer.name, layer.thickness, sep=', ')
+        print(layer.name, layer.thickness, f'{layer.thickness / layer.x0:.3g}', sep=', ')
         if layer.name not in totals_by_material:
             totals_by_material[layer.name] = 0.0
         totals_by_material[layer.name] += layer.thickness
 
     print()
     print('Total Depths')
-    print('Material, Depth / mm')
+    print('Material, Depth / mm, Depth / X0')
     for material, depth in totals_by_material.items():
-        print(material, depth, sep=', ')
+        print(material, depth, f'{depth/Layer.materials[material].radiation_length_mm():.3g}', sep=', ')
 
 
 def main():
