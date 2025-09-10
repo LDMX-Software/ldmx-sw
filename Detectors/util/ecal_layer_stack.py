@@ -266,7 +266,7 @@ class Layer :
         # using depth/thickness fraction from pcb-layers.nbt
         PCB = pdg_material(
             Cu = 0.170,
-            G10 = 1.490,
+            G10 = 1.030,
             scale_weights=True
         ),
         FR4 = pdg_material(G10 = 1.0),
@@ -318,7 +318,7 @@ class Layer :
     def pcb_unpacked():
         return [
             Layer('Cu', 0.170),
-            Layer('FR4', 1.490)
+            Layer('FR4', 1.030)
         ]
 
     def glue(t) :
