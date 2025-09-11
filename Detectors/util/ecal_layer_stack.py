@@ -348,8 +348,8 @@ class Layer :
     def aluminum_support_plane():
         return Layer('Al', 3)
 
-    def kapton():
-        return Layer('Kapton', 1)
+    def kapton(t):
+        return Layer('Kapton', t)
 
 
 @dataclass
@@ -383,11 +383,21 @@ class BiLayerSandwich:
       | front absorber (W)            |
       | Readout Motherboard (PCB)     |
       | Air                           |
-      | Hexamodule (Si, Glue, PCB, C) |
+      | Hexamodule                    |
+      |   PCB (Cu + FR4)              |
+      |   Glue                        |
+      |   Si                          |
+      |   Glue                        |
+      |   Carbon baseplate            |
       | Cooling Absorber (W)          |
       | Carbon Cooling Plane (Carbon) |
       | Cooling Absorber (W)          |
-      | Hexamodule (Si, Glue, PCB, C) |
+      | Hexamodule                    |
+      |   Carbon baseplate            |
+      |   Glue                        |
+      |   Si                          |
+      |   Glue                        |
+      |   PCB (Cu + FR4)              |
       | Air                           |
       | Readout Motherboard (PCB)     |
 
@@ -397,9 +407,25 @@ class BiLayerSandwich:
       | front absorber (W)            |
       | Readout Motherboard (PCB)     |
       | Air                           |
-      | Hexamodule (Si, Glue, PCB,Ti) |
+      | Hexamodule                    |
+      |   PCB (Cu + FR4)              |
+      |   Glue                        |
+      |   Si                          |
+      |   Glue                        |
+      |   Kapton                      |
+      |   Cu                          |
+      |   Kapton                      |
+      |   Ti                          |
       | Aluminum Support (Al)         |
-      | Hexamodule (Si, Glue, PCB,Ti) |
+      | Hexamodule                    |
+      |   Ti                          |
+      |   Kapton                      |
+      |   Cu                          |
+      |   Kapton                      |
+      |   Glue                        |
+      |   Si                          |
+      |   Glue                        |
+      |   PCB (Cu + FR4)              |
       | Air                           |
       | Readout Motherboard (PCB)     |
 
@@ -427,7 +453,12 @@ class BiLayerSandwich:
         layers.append(Layer.silicon()) # Si_dz
         layers.append(Layer.glue(0.2)) # GlueThick_dz
         if self.slice_test:
-            layers.append(Layer.titanium_baseplate())
+            layers.extend([
+                Layer.kapton(0.05),
+                Layer('Cu', 0.017), # approx thickness of 0.5oz Cu layer
+                Layer.kapton(0.05),
+                Layer.titanium_baseplate()
+            ])
         else:
             layers.append(Layer.carbon(0.79)) # CarbonBasePlate_dz
             if self.cooling == 0 :
@@ -439,7 +470,12 @@ class BiLayerSandwich:
         else:
             layers.append(Layer.carbon(5.7)) # CarbonCoolingPlane_dz
         if self.slice_test:
-            layers.append(Layer.titanium_baseplate())
+            layers.extend([
+                Layer.titanium_baseplate(),
+                Layer.kapton(0.05),
+                Layer('Cu', 0.017), # approx thickness of 0.5oz Cu layer
+                Layer.kapton(0.05),
+            ])
         else:
             layers.append(Layer.carbon(0.79)) # CarbonBasePlate_dz
             if self.cooling > 0 :
@@ -671,10 +707,12 @@ def ldmx_ecal_v15():
 
 @command
 def minildmx():
+    Layer.SensDetThickness = 0.3
+
     print('            |     Depth     |')
     print('N Bi-Layers | X0    | mm    |')
     for n in range(1,4):
-        layers = [Layer.kapton()]+n*BiLayerSandwich(front=0, cooling=0, slice_test=True).material_stack()+[Layer.kapton()]
+        layers = [Layer.kapton(0.1)]+n*BiLayerSandwich(front=0, cooling=0, slice_test=True).material_stack()+[Layer.kapton(0.1)]
         print('{n:>11} | {x0:<5.3g} | {z:<5.3g} |'.format(
             n = n,
             x0 = sum(layer.thickness / layer.x0 for layer in layers),
@@ -687,11 +725,14 @@ def bilayer_spec():
     include_kapton = True
     slice_test = True
 
+    if slice_test:
+        Layer.SensDetThickness = 0.3
+
     layers = BiLayerSandwich(front=0, cooling=0, slice_test=slice_test).material_stack()
 
     if include_kapton:
-        layers.insert(0, Layer.kapton())
-        layers.append(Layer.kapton())
+        layers.insert(0, Layer.kapton(0.1))
+        layers.append(Layer.kapton(0.1))
 
     totals_by_material = {}
 
@@ -707,7 +748,7 @@ def bilayer_spec():
     print('Total Depths')
     print('Material, Depth / mm, Depth / X0')
     for material, depth in totals_by_material.items():
-        print(material, depth, f'{depth/Layer.materials[material].radiation_length_mm():.3g}', sep=', ')
+        print(material, f'{depth:.3g}', f'{depth/Layer.materials[material].radiation_length_mm():.3g}', sep=', ')
 
 
 def main():
