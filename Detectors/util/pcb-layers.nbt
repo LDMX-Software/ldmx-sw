@@ -15,6 +15,11 @@ let hexagon_area : Area = _hexagon_area(hexagon_side)
 let copper_thick = _copper_layer_weight(n_copper_layers)/copper_density
 let fr4_thick = pcb_thick - copper_thick
 
+print("Single Cu layer thicknesses...")
+print("Weight | Depth")
+print(" 0.5oz | {0.5 oz/ft^2 / copper_density -> mm:.3f}")
+print("  1 oz | {1.0 oz/ft^2 / copper_density -> mm:.3f}")
+
 print("For {n_copper_layers} layers of Cu...")
 print("      |    Cu    |   FR-4")
 print("Depth | {copper_thick -> mm:.3f} | {fr4_thick -> mm:.3f}")
