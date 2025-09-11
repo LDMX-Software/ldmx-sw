@@ -728,7 +728,7 @@ def bilayer_spec():
     if slice_test:
         Layer.SensDetThickness = 0.3
 
-    layers = BiLayerSandwich(front=0, cooling=0, slice_test=slice_test).material_stack()
+    layers = 3*BiLayerSandwich(front=0, cooling=0, slice_test=slice_test).material_stack()
 
     if include_kapton:
         layers.insert(0, Layer.kapton(0.1))
