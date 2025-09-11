@@ -67,6 +67,12 @@ class PDGMaterialEncoder(json.JSONEncoder):
 
 # This dictionary holds materials that are copied down from the PDG site
 __materials__ = dict(
+    Kapton = PDGMaterial(
+        density = 1.420,
+        minimum_ionization = 1.820,
+        nuclear_interaction_length = 85.5,
+        radiation_length = 40.58
+    ),
     Al = PDGMaterial(
         density = 2.699,
         minimum_ionization = 1.615,
@@ -85,6 +91,8 @@ __materials__ = dict(
         nuclear_interaction_length = 90.1,
         radiation_length = 36.62
     ),
+    # same as air, but with incorrect density
+    # for comparing to past versions of the script with typo
     SuperDenseAir = PDGMaterial(
         density = 1.205,
         minimum_ionization = 1.815,
@@ -217,7 +225,7 @@ class Layer :
     Al     | Al
     Ti     | Ti
     Air    | Mixtures -> Air (dry, 1 atm)
-    PCB    | weighted mix of materials
+    PCB    | 0.17mm Cu + 1.03mm G10
     Si     | Si
     W      | W
     Carbon | C -> 6 C carbon (amorphous) with lower density to represent carbon fiber
@@ -226,6 +234,9 @@ class Layer :
     PCB in the GDML is 50% Cu, 23% O, 4.8% Na, 17% Si, 5.2% Ca,
     and the PDG does not have any mixtures in the drop down menu
     that have Copper in them so I have to spin my own.
+    After attempting to construct my own "material", I've found its more
+    reasonable to estimate the total thickness of Copper and then
+    assign the rest of the PCB thickness to the fiberglass (FR4).
 
     Glue in the GDML is a polycarbon is 85% C, 4% H, and 11% O,
     the polycarbonate in the PDG is 75% C, 5% H and 20% O which
@@ -274,7 +285,8 @@ class Layer :
         Si = pdg_material(Si = 1.0),
         W = pdg_material(W = 1.0),
         Carbon = pdg_material(C = 1.0),
-        Glue = pdg_material(polycarbonate = 1.0)
+        Glue = pdg_material(polycarbonate = 1.0),
+        Kapton = pdg_material(Kapton = 1.0)
     )
 
     dEdx = {
@@ -335,6 +347,9 @@ class Layer :
 
     def aluminum_support_plane():
         return Layer('Al', 3)
+
+    def kapton():
+        return Layer('Kapton', 1)
 
 
 @dataclass
@@ -653,12 +668,13 @@ def ldmx_ecal_v15():
     weights = calc_weights(mbs)
     print_weights(*weights)
 
+
 @command
 def minildmx():
     print('            |     Depth     |')
     print('N Bi-Layers | X0    | mm    |')
     for n in range(1,4):
-        layers = n*BiLayerSandwich(front=0, cooling=0, slice_test=True).material_stack()
+        layers = [Layer.kapton()]+n*BiLayerSandwich(front=0, cooling=0, slice_test=True).material_stack()+[Layer.kapton()]
         print('{n:>11} | {x0:<5.3g} | {z:<5.3g} |'.format(
             n = n,
             x0 = sum(layer.thickness / layer.x0 for layer in layers),
@@ -668,7 +684,15 @@ def minildmx():
 
 @command
 def bilayer_spec():
-    layers = BiLayerSandwich(front=0, cooling=0, slice_test=True).material_stack()
+    include_kapton = True
+    slice_test = True
+
+    layers = BiLayerSandwich(front=0, cooling=0, slice_test=slice_test).material_stack()
+
+    if include_kapton:
+        layers.insert(0, Layer.kapton())
+        layers.append(Layer.kapton())
+
     totals_by_material = {}
 
     print('Full Layer Stack')
