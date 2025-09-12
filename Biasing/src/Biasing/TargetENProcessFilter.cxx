@@ -54,9 +54,7 @@ void TargetENProcessFilter::stepping(const G4Step* step) {
   // If the particle isn't in the target, don't continue with the processing.
   if (track_volume != target_volume) return;
 
-  /*std::cout << "*******************************" << std::endl;
-  std::cout << "*   Step " << track->GetCurrentStepNumber() << std::endl;
-  std::cout << "********************************" << std::endl;*/
+  // ldmx_log(trace)<< "*   Step " << track->GetCurrentStepNumber();
 
   if (track->GetMomentum().mag() > recoil_energy_threshold_) {
     track->SetTrackStatus(fKillTrackAndSecondaries);
@@ -70,10 +68,8 @@ void TargetENProcessFilter::stepping(const G4Step* step) {
   // If the brem photon doesn't undergo any reaction in the target, stop
   // processing the rest of the event.
   if (secondaries->size() == 0) {
-    /*std::cout << "[ TargetENProcessFilter ]: "
-                << "Electron did not interact in the target. --> Postponing
-       tracks."
-                << std::endl;*/
+    ldmx_log(debug)
+        << "Electron did not interact in the target. --> Postponing tracks.";
 
     track->SetTrackStatus(fKillTrackAndSecondaries);
     G4RunManager::GetRunManager()->AbortEvent();
@@ -82,26 +78,22 @@ void TargetENProcessFilter::stepping(const G4Step* step) {
     G4String process_name =
         secondaries->at(0)->GetCreatorProcess()->GetProcessName();
 
-    /*std::cout << "[ TargetENProcessFilter ]: "
-              << "Electron produced " << secondaries->size()
-              << " particle via " << processName << " process."
-              << std::endl;*/
+    ldmx_log(debug) << "Electron produced " << secondaries->size()
+                    << " particle via " << process_name << " process.";
 
     // Only record the process that is being biased
     if (!process_name.contains(process_)) {
-      /*std::cout << "[ TargetENProcessFilter ]: "
-                << "Process was not " << BiasingMessenger::getProcess() << "-->
-         Killing all tracks!"
-                << std::endl;*/
+      ldmx_log(debug) << "Process was not " << process_
+                      << "--> Killing all tracks!";
 
       track->SetTrackStatus(fKillTrackAndSecondaries);
       G4RunManager::GetRunManager()->AbortEvent();
       return;
     }
 
-    std::cout << "[ TargetENProcessFilter ]: "
-              << "Electronuclear reaction resulted in " << secondaries->size()
-              << " particles via " << process_name << " process." << std::endl;
+    ldmx_log(info) << "Electronuclear reaction resulted in "
+                   << secondaries->size() << " particles via " << process_name
+                   << " process.";
     // BiasingMessenger::setEventWeight(track->GetWeight());
     reaction_occurred_ = true;
   }
