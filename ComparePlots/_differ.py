@@ -156,7 +156,8 @@ class Differ :
                 ax = ratio_ax,
                 yerr = hist.intervals.ratio_uncertainty(
                     num = num_h.values(),
-                    denom = den_h.values()
+                    denom = den_h.values(),
+                    uncertainty_type = 'poisson-ratio'
                 ),
                 histtype='errorbar',
                 color = num_art[0].stairs.get_edgecolor()
