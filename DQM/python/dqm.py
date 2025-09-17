@@ -876,23 +876,33 @@ class EcalClusterAnalyzer(ldmxcfg.Analyzer) :
         self.cluster_coll_name = 'ecalClusters'
         self.cluster_pass_name = ''
 
-        self.ecal_sp_hits_passname = ''
+        self.ecal_sp_hits_coll_name = 'EcalScoringPlaneHits'
+        self.ecal_sp_hits_pass_name = ''
+        self.mixed_hit_cutoff = 0.05
 
         # Need to mod for more than two electrons
         self.build1DHistogram("ancestors", "Ancestors of particles", 4, 0, 3)
 
         self.build1DHistogram("same_ancestor", "Percentage of hits in cluster coming from the electron that produced most hits", 21, 0, 105)
         self.build1DHistogram("energy_percentage", "Percentage of energy in cluster coming from the electron that produced most of energy", 21, 0, 105)
-        self.build1DHistogram("mixed_hit_energy", "Percentage of total energy coming from hits with energy contributions from more than one electron", 21, 0, 105)
-        self.build1DHistogram("clusterless_hits", "Number of hits not in a cluster", 10, 0, 200)
-        self.build1DHistogram("clusterless_hits_percentage", "Percentage of hits not in a cluster", 21, 0, 105)
+        self.build1DHistogram("mixed_hit_energy", f"Percentage of total energy coming from hits with at least {100*self.mixed_hit_cutoff}% energy contributions from additional electron(s)", 21, 0, 105)
+        self.build1DHistogram("unclustered_hits", "Number of hits not in a cluster", 10, 0, 200)
+        self.build1DHistogram("unclustered_hits_percentage", "Percentage of hits not in a cluster", 21, 0, 105)
         self.build1DHistogram("total_rechits_in_event", "Rechits per event", 20, 0, 500)
         self.build1DHistogram("correctly_predicted_events", "Correctly predicted events", 3, 0, 3)
 
-        self.build2DHistogram("total_energy_vs_hits", "Total energy (edep)", 30, 0, 150, "Hits in cluster", 20, 0, 200)
+        self.build2DHistogram("total_energy_vs_hits", "Total energy (edep)", 30, 0, 150, "Hits in cluster", 30, 0, 300)
         self.build2DHistogram("total_energy_vs_purity", "Total energy (edep)", 30, 0, 150, "Energy purity %", 21, 0, 105)
         self.build2DHistogram("distance_energy_purity", "Distance in xy-plane", 20, 0, 220, "Energy purity %", 21, 0, 105)
 
+        self.build1DHistogram("SP_distance", "dR(SPhit_1, SPhit_2)", 100, -1, 202)
+        self.build1DHistogram("cluster_distance", "dR(cl_1, cl_2)", 100, -1, 202)
+        self.build1DHistogram("cluster_RMSX", "RMS(hits in cluster) X", 100, -1, 202)
+        self.build1DHistogram("cluster_RMSY", "RMS(hits in cluster) Y", 100, -1, 202)
+        self.build2DHistogram("dE_cl2_vs_cl1", "E_{cl}-E_{true}^{SP}, cluster 1 [MeV]", 100, -10000, 10000, "E_{cl}-E_{true}^{SP}, cluster 2 [MeV]", 100, -10000, 10000)
+
+        self.build2DHistogram("tag0frac_vs_SPdist", "dR(SPhit_1, SPhit_2)", 251, -1, 250,  "Fraction of mixed (purity less than {int(100*(1.-self.mixed_hit_cutoff))}%) ancestors", 200, 0, 1)
+        
 ecal_dqm = [
         EcalDigiVerify(),
         EcalShowerFeatures(),
