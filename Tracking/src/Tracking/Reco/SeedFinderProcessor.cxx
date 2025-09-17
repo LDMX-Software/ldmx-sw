@@ -172,17 +172,38 @@ void SeedFinderProcessor::produce(framework::Event& event) {
   std::vector<int> strategy = {0, 1, 2, 3, 4};
   bool success = GroupStrips(measurements, strategy);
   if (success) FindSeedsFromMap(seed_tracks, target_pseudo_meas);
+  ldmx_log(info) << "Number of seeds after first strategy = "<<seed_tracks.size();
 
   //  currently, we only use a single strategy but eventually
   //  we will use more.  Below is an example of how to add them
-  /*
+  
   groups_map.clear();
-  strategy = {9,10,11,12,13};
+  //  std::vector<int> strategy = {5,6,7,8,9};
+  //bool success = GroupStrips(measurements,strategy);
+  strategy = {5,6,7,8,9};
   success = GroupStrips(measurements,strategy);
   if (success)
     FindSeedsFromMap(seed_tracks, target_pseudo_meas);
-  */
+  ldmx_log(info) << "Number of seeds after second strategy = "<<seed_tracks.size();
+  
+  groups_map.clear();
+  //  std::vector<int> strategy = {5,6,7,8,9};
+  //bool success = GroupStrips(measurements,strategy);
+  strategy = {2,3,4,5,6};
+  success = GroupStrips(measurements,strategy);
+  if (success)
+    FindSeedsFromMap(seed_tracks, target_pseudo_meas);
+  ldmx_log(info) << "Number of seeds after third strategy = "<<seed_tracks.size();
 
+  groups_map.clear();
+  //  std::vector<int> strategy = {5,6,7,8,9};
+  //bool success = GroupStrips(measurements,strategy);
+  strategy = {1,3,5,7,9};
+  success = GroupStrips(measurements,strategy);
+  if (success)
+    FindSeedsFromMap(seed_tracks, target_pseudo_meas);
+  ldmx_log(info) << "Number of seeds after third fourth strategy = "<<seed_tracks.size();
+  
   groups_map.clear();
   // outputTree_->Fill();
   ntracks_ += seed_tracks.size();

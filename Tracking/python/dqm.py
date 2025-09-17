@@ -554,6 +554,7 @@ class VertexingDQM(ldmxcfg.Analyzer):
         self.subdetector = "Recoil"
 
         self.nbins    = 50
+        self.maxZ = 50.0
     def buildHistograms(self) :
 
         #particle info, particularly Ks
@@ -569,11 +570,11 @@ class VertexingDQM(ldmxcfg.Analyzer):
         #these will all be fore Ks->pi+pi-
         self.build1DHistogram("truth_Ks_origin_X","truth_Ks_origin_X", self.nbins, -30., 30. )
         self.build1DHistogram("truth_Ks_origin_Y","truth_Ks_origin_Y", self.nbins, -50., 50. )
-        self.build1DHistogram("truth_Ks_origin_Z","truth_Ks_origin_Z", self.nbins, -5., 100. )
+        self.build1DHistogram("truth_Ks_origin_Z","truth_Ks_origin_Z", self.nbins, -5., self.maxZ )
 
         self.build1DHistogram("truth_Ks_endpoint_X","truth_Ks_endpoint_X", self.nbins, -30., 30. )
         self.build1DHistogram("truth_Ks_endpoint_Y","truth_Ks_endpoint_Y", self.nbins, -50., 50. )
-        self.build1DHistogram("truth_Ks_endpoint_Z","truth_Ks_endpoint_Z", self.nbins, -5., 100. )
+        self.build1DHistogram("truth_Ks_endpoint_Z","truth_Ks_endpoint_Z", self.nbins, -5., self.maxZ )
 
         self.build1DHistogram("truth_pion_momentum_X","truth_pion_momentum_X", self.nbins, -1., 1. )
         self.build1DHistogram("truth_pion_momentum_Y","truth_pion_momentum_Y", self.nbins, -1., 1. )
@@ -581,19 +582,19 @@ class VertexingDQM(ldmxcfg.Analyzer):
 
         self.build1DHistogram("truth_findable_Ks_origin_X","truth_findable_Ks_origin_X", self.nbins, -30., 30. )
         self.build1DHistogram("truth_findable_Ks_origin_Y","truth_findable_Ks_origin_Y", self.nbins, -50., 50. )
-        self.build1DHistogram("truth_findable_Ks_origin_Z","truth_findable_Ks_origin_Z", self.nbins, -5., 100. )
+        self.build1DHistogram("truth_findable_Ks_origin_Z","truth_findable_Ks_origin_Z", self.nbins, -5., self.maxZ )
 
         self.build1DHistogram("truth_findable_Ks_endpoint_X","truth_findable_Ks_endpoint_X", self.nbins, -30., 30. )
         self.build1DHistogram("truth_findable_Ks_endpoint_Y","truth_findable_Ks_endpoint_Y", self.nbins, -50., 50. )
-        self.build1DHistogram("truth_findable_Ks_endpoint_Z","truth_findable_Ks_endpoint_Z", self.nbins, -5., 100. )
+        self.build1DHistogram("truth_findable_Ks_endpoint_Z","truth_findable_Ks_endpoint_Z", self.nbins, -5., self.maxZ )
 
         self.build1DHistogram("truth_found_Ks_origin_X","truth_found_Ks_origin_X", self.nbins, -30., 30. )
         self.build1DHistogram("truth_found_Ks_origin_Y","truth_found_Ks_origin_Y", self.nbins, -50., 50. )
-        self.build1DHistogram("truth_found_Ks_origin_Z","truth_found_Ks_origin_Z", self.nbins, -5., 100. )
+        self.build1DHistogram("truth_found_Ks_origin_Z","truth_found_Ks_origin_Z", self.nbins, -5., self.maxZ )
 
         self.build1DHistogram("truth_found_Ks_endpoint_X","truth_found_Ks_endpoint_X", self.nbins, -30., 30. )
         self.build1DHistogram("truth_found_Ks_endpoint_Y","truth_found_Ks_endpoint_Y", self.nbins, -50., 50. )
-        self.build1DHistogram("truth_found_Ks_endpoint_Z","truth_found_Ks_endpoint_Z", self.nbins, -5., 100. )
+        self.build1DHistogram("truth_found_Ks_endpoint_Z","truth_found_Ks_endpoint_Z", self.nbins, -5., self.maxZ )
         
         self.build1DHistogram("truth_findable_pion_momentum_X","truth_findable_pion_momentum_X", self.nbins, -1., 1. )
         self.build1DHistogram("truth_findable_pion_momentum_Y","truth_findable_pion_momentum_Y", self.nbins, -1., 1. )
@@ -603,19 +604,46 @@ class VertexingDQM(ldmxcfg.Analyzer):
         self.build1DHistogram("truth_found_pion_momentum_Y","truth_found_pion_momentum_Y", self.nbins, -1., 1. )
         self.build1DHistogram("truth_found_pion_momentum_Z","truth_found_pion_momentum_Z", self.nbins, -0., 9. ) 
         
-        self.build1DHistogram("N_tracks","N_tracks", 10,0.,10.); 
-        self.build1DHistogram("N_vertex","N_vertex", 10,0.,10.); 
-        self.build1DHistogram("vertex_x","vertex_x",self.nbins, -30., 30.)
-        self.build1DHistogram("vertex_y","vertex_y",self.nbins, -50., 50.)
-        self.build1DHistogram("vertex_z","vertex_z",self.nbins, -5., 100.)
-        self.build1DHistogram("vertex_px","vertex_px",self.nbins, -1., 1.)
-        self.build1DHistogram("vertex_py","vertex_py",self.nbins, -1., 1.)
-        self.build1DHistogram("vertex_pz","vertex_pz",self.nbins, 0., 9.0)
-        self.build1DHistogram("vertex_mass","vertex_mass",self.nbins, 0.0, 3.)
-        self.build1DHistogram("vertex_mass_near_Ks","vertex_mass_near_Ks",self.nbins, 0.0, 1.)
-        self.build1DHistogram("vertex_chi2","vertex_chi2",self.nbins, 0.0, 20.)
-        self.build1DHistogram("vertex_ndf","vertex_ndf",10, 0.0, 10.)
+        self.build1DHistogram("reco_N_tracks","Number of tracks in event", 10,0.,10.); 
+        self.build1DHistogram("reco_N_vertex","Number of +/- v0s in event", 10,0.,10.); 
+        self.build1DHistogram("reco_ks_vertex_x","reco x position of Ks",self.nbins, -30., 30.)
+        self.build1DHistogram("reco_ks_vertex_y","reco y position of Ks",self.nbins, -50., 50.)
+        self.build1DHistogram("reco_ks_vertex_z","reco z position of Ks",self.nbins, -5., self.maxZ)
+        self.build1DHistogram("reco_ks_vertex_px","reco x momentum of Ks",self.nbins, -1., 1.)
+        self.build1DHistogram("reco_ks_vertex_py","reco y momentum of Ks",self.nbins, -1., 1.)
+        self.build1DHistogram("reco_ks_vertex_pz","reco z momentum of Ks",self.nbins, 0., 9.0)
+        self.build1DHistogram("reco_ks_vertex_mass","reco mass of Ks",self.nbins, 0.0, 3.)
+        self.build1DHistogram("reco_ks_vertex_mass_near_Ks","reco mass of Ks",self.nbins, 0.3, 0.7)
+        self.build1DHistogram("reco_ks_vertex_chi2","chi2 of Ks V0s",self.nbins, 0.0, 20.)
+        self.build1DHistogram("reco_ks_vertex_ndf","ndf of Ks V0s",10, 0.0, 10.)
 
+        self.build1DHistogram("reco_ks_vertex_N_hits","Number of Reco Tracker Hits on Ks-Vertexed Track", 12,0.,12.)
+        self.build1DHistogram("reco_ks_pion_momentum_X","reco_ks_pion_momentum_X", self.nbins, -1., 1. )
+        self.build1DHistogram("reco_ks_pion_momentum_Y","reco_ks_pion_momentum_Y", self.nbins, -1., 1. )
+        self.build1DHistogram("reco_ks_pion_momentum_Z","reco_ks_pion_momentum_Z", self.nbins, -0., 9. ) 
+        self.build1DHistogram("fitted_ks_pion_momentum_X","fitted_ks_pion_momentum_X", self.nbins, -1., 1. )
+        self.build1DHistogram("fitted_ks_pion_momentum_Y","fitted_ks_pion_momentum_Y", self.nbins, -1., 1. )
+        self.build1DHistogram("fitted_ks_pion_momentum_Z","fitted_ks_pion_momentum_Z", self.nbins, -0., 9. ) 
 
+        self.build1DHistogram("reco_all_vertex_x","reco x position of Ks",self.nbins, -30., 30.)
+        self.build1DHistogram("reco_all_vertex_y","reco y position of Ks",self.nbins, -50., 50.)
+        self.build1DHistogram("reco_all_vertex_z","reco z position of Ks",self.nbins, -5., self.maxZ)
+        self.build1DHistogram("reco_all_vertex_px","reco x momentum of Ks",self.nbins, -1., 1.)
+        self.build1DHistogram("reco_all_vertex_py","reco y momentum of Ks",self.nbins, -1., 1.)
+        self.build1DHistogram("reco_all_vertex_pz","reco z momentum of Ks",self.nbins, 0., 9.0)
+        self.build1DHistogram("reco_all_vertex_mass","reco mass of Ks",self.nbins, 0.0, 3.)
+        self.build1DHistogram("reco_all_vertex_mass_near_Ks","reco mass of Ks",self.nbins, 0.3, 0.7)
+        self.build1DHistogram("reco_all_vertex_chi2","chi2 of Ks V0s",self.nbins, 0.0, 20.)
+        self.build1DHistogram("reco_all_vertex_ndf","ndf of Ks V0s",10, 0.0, 10.)
+
+        self.build1DHistogram("reco_all_vertex_N_hits","Number of Reco Tracker Hits on Vertexed Track", 12,0.,12.)
+        self.build1DHistogram("reco_all_track_momentum_X","reco_all_track_momentum_X", self.nbins, -1., 1. )
+        self.build1DHistogram("reco_all_track_momentum_Y","reco_all_track_momentum_Y", self.nbins, -1., 1. )
+        self.build1DHistogram("reco_all_track_momentum_Z","reco_all_track_momentum_Z", self.nbins, -0., 9. ) 
+        self.build1DHistogram("fitted_all_track_momentum_X","fitted_all_track_momentum_X", self.nbins, -1., 1. )
+        self.build1DHistogram("fitted_all_track_momentum_Y","fitted_all_track_momentum_Y", self.nbins, -1., 1. )
+        self.build1DHistogram("fitted_all_track_momentum_Z","fitted_all_track_momentum_Z", self.nbins, -0., 9. ) 
+ 
+        
         print(self.histograms)
                 

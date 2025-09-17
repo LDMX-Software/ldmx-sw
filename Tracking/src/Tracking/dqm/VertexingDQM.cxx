@@ -25,6 +25,7 @@ namespace tracking::dqm {
     track_events_passname_ =
       parameters.getParameter<std::string>("track_events_passname");
     simparticle_passname_ = parameters.getParameter<std::string>("simparticle_passname");
+    vertex_collection_events_passname_ = parameters.getParameter<std::string>("vertex_events_passname");
     
     title_ = parameters.getParameter<std::string>("title", "recoil_vertex_");
     trackProb_cut_ = parameters.getParameter<double>("trackProb_cut", 0.5);
@@ -49,12 +50,13 @@ namespace tracking::dqm {
     
     if (!event.exists(vertexCollection_, vertex_collection_events_passname_)) {
       ldmx_log(error) << "ERROR:: vertexCollection " << vertexCollection_
+		      << " for pass  = "<<vertex_collection_events_passname_
 		      << " not in event" << std::endl;
       return;
     }
     
     auto vertices{
-      event.getCollection<ldmx::Vertex>(vertexCollection_, vertex_passname_)};
+      event.getCollection<ldmx::Vertex>(vertexCollection_,  vertex_collection_events_passname_)};
     
     if (!event.exists(trackCollection_, track_events_passname_)) {
       ldmx_log(error) << "ERROR:: trackCollection " << trackCollection_
@@ -204,8 +206,8 @@ namespace tracking::dqm {
     ldmx_log(info) << "Filling general histograms " << std::endl;
 
     // General Plots       
-    histograms_.fill("N_tracks", recoTrackCollection_->size());
-    histograms_.fill("N_vertex", vertices.size());
+    histograms_.fill("reco_N_tracks", recoTrackCollection_->size());
+    histograms_.fill("reco_N_vertex", vertices.size());
 
     for(int iV=0; iV<vertices.size(); iV++){
       std::cout<<"Checking vertex #"<<iV<<std::endl;
@@ -219,7 +221,7 @@ namespace tracking::dqm {
       ///////////////////////
       //  this block looks for truth pions from the Ks
       //  ****   I don't think the truth track Id is working....skip for now
-      //  use reco track instead (sorry, still call it truth track
+      //  use reco track instead (sorry, still call it truth track)
       for(int iT=0; iT<inTrks.size(); iT++){
 	ldmx::Track track=inTrks.at(iT);
 	// find the truth track matched to this reco track
@@ -277,39 +279,71 @@ namespace tracking::dqm {
       //found pi+pi- from Ks
       std::cout<<" FOUND A pi+pi- from Ks!!!"<<std::endl;
       
-      histograms_.fill("vertex_x",vert.position()[0]);
-      histograms_.fill("vertex_y",vert.position()[1]);
-      histograms_.fill("vertex_z",vert.position()[2]);
-      histograms_.fill("vertex_px",vert.momentum()[0]);
-      histograms_.fill("vertex_py",vert.momentum()[1]);
-      histograms_.fill("vertex_pz",vert.momentum()[2]);
-      histograms_.fill("vertex_mass",vert.getMass());
-      histograms_.fill("vertex_mass_near_Ks",vert.getMass());
+      histograms_.fill("reco_ks_vertex_x",vert.position()[0]);
+      histograms_.fill("reco_ks_vertex_y",vert.position()[1]);
+      histograms_.fill("reco_ks_vertex_z",vert.position()[2]);
+      histograms_.fill("reco_ks_vertex_px",vert.momentum()[0]);
+      histograms_.fill("reco_ks_vertex_py",vert.momentum()[1]);
+      histograms_.fill("reco_ks_vertex_pz",vert.momentum()[2]);
+      histograms_.fill("reco_ks_vertex_mass",vert.getMass());
+      histograms_.fill("reco_ks_vertex_mass_near_Ks",vert.getMass());
 
 
-      histograms_.fill("vertex_chi2",vert.getChi2());
-      histograms_.fill("vertex_ndf",vert.getNDF());
-      //histograms_.fill(title_+"vertex_chi2_over_ndf",vert.fitQuality().first/vert.fitQuality().second);
+      histograms_.fill("reco_ks_vertex_chi2",vert.getChi2());
+      histograms_.fill("reco_ks_vertex_ndf",vert.getNDF());
+
+
+      for(int iT=0; iT<inTrks.size(); iT++){
+	ldmx::Track trk=inTrks.at(iT);
+	histograms_.fill("reco_ks_vertex_N_hits",trk.getNhits());
+	histograms_.fill("reco_ks_pion_momentum_X",trk.getMomentum()[1]);
+	histograms_.fill("reco_ks_pion_momentum_Y",trk.getMomentum()[2]);
+	histograms_.fill("reco_ks_pion_momentum_Z",trk.getMomentum()[0]);
+      }
+      std::vector<ldmx::Vertex::FittedTrack> fitTracks=vert.getFittedTracks();
+      for(int iT=0; iT<fitTracks.size(); iT++){
+	ldmx::Vertex::FittedTrack fitTrk=fitTracks.at(iT);
+	histograms_.fill("fitted_ks_pion_momentum_X",fitTrk.momentum[0]);
+	histograms_.fill("fitted_ks_pion_momentum_Y",fitTrk.momentum[1]);
+	histograms_.fill("fitted_ks_pion_momentum_Z",fitTrk.momentum[2]);
+	
+      }
+
     }
+    //just fill histograms from all V0s
+    
+    for(int iV=0; iV<vertices.size(); iV++){
+      auto vert = vertices.at(iV);
+      histograms_.fill("reco_all_vertex_x",vert.position()[0]);
+      histograms_.fill("reco_all_vertex_y",vert.position()[1]);
+      histograms_.fill("reco_all_vertex_z",vert.position()[2]);
+      histograms_.fill("reco_all_vertex_px",vert.momentum()[0]);
+      histograms_.fill("reco_all_vertex_py",vert.momentum()[1]);
+      histograms_.fill("reco_all_vertex_pz",vert.momentum()[2]);
+      histograms_.fill("reco_all_vertex_mass",vert.getMass());
+      histograms_.fill("reco_all_vertex_mass_near_Ks",vert.getMass());
 
-    
-    //    ldmx_log(debug) << "Track Monitoring on Unique Tracks" << std::endl;
-    
-    //    TrackMonitoring(uniqueTracks_, measurements, title_, true, true);
-    
-    //  ldmx_log(debug) << "Track Monitoring on duplicates and fakes" << std::endl;
-    // Fakes and duplicates
-    //TrackMonitoring(duplicateTracks_, measurements, title_ + "dup_", false,
-    //                false);
-    ///TrackMonitoring(fakeTracks_, measurements, title_ + "fake_", false, false);
-    
-    
-    // Tagger Recoil Matching
-    
-    // Clear the vectors
-    //  uniqueTracks_.clear();
-    //duplicateTracks_.clear();
-    //fakeTracks_.clear();
+
+      histograms_.fill("reco_all_vertex_chi2",vert.getChi2());
+      histograms_.fill("reco_all_vertex_ndf",vert.getNDF());
+
+      std::vector<ldmx::Track> inTrks=vert.getOriginalTracks();
+      for(int iT=0; iT<inTrks.size(); iT++){
+	ldmx::Track trk=inTrks.at(iT);
+	histograms_.fill("reco_all_vertex_N_hits",trk.getNhits());
+	histograms_.fill("reco_all_track_momentum_X",trk.getMomentum()[1]);
+	histograms_.fill("reco_all_track_momentum_Y",trk.getMomentum()[2]);
+	histograms_.fill("reco_all_track_momentum_Z",trk.getMomentum()[0]);
+      }
+      std::vector<ldmx::Vertex::FittedTrack> fitTracks=vert.getFittedTracks();
+      for(int iT=0; iT<fitTracks.size(); iT++){
+	ldmx::Vertex::FittedTrack fitTrk=fitTracks.at(iT);
+	histograms_.fill("fitted_all_track_momentum_X",fitTrk.momentum[0]);
+	histograms_.fill("fitted_all_track_momentum_Y",fitTrk.momentum[1]);
+	histograms_.fill("fitted_all_track_momentum_Z",fitTrk.momentum[2]);
+	
+      }
+    }
   }
   
   void VertexingDQM::onProcessEnd() {

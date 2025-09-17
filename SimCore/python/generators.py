@@ -426,3 +426,19 @@ def single_backwards_positron(energy: float):
     beam.energy = energy
     return beam
 
+def single_kshort_target() :
+    """Configure a particle gun to fire a 4 GeV Kshort upstream of the tagger tracker.
+   
+    Returns
+    -------
+    Instance of a particle gun configured to fire a single 4 Gev Kshort 
+    directly upstream from the target.
+    """
+
+    particle_gun = gun('single_kshort_upstream_target')
+    particle_gun.particle = 'e-' 
+    particle_gun.position = [ 0., 0., 0.0 ]  # mm
+    particle_gun.direction = [ 0., 0., 1] 
+    particle_gun.energy = 4.0 # GeV
+
+    return particle_gun
