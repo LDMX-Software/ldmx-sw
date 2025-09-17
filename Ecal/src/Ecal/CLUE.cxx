@@ -21,64 +21,68 @@ float CLUE::floatDist(float x1, float y1, float z1, float x2, float y2,
    likely merged => recluster Did not quite work and I don't remember the idea
    anymore but leaving the code here for inspo */
 
-// void electronSeparation(std::vector<ldmx::EcalHit> hits) {
-//   std::vector<double> layerThickness =
-//   { 2., 3.5, 5.3, 5.3, 5.3, 5.3, 5.3, 5.3, 5.3, 5.3, 5.3, 10.5, 10.5, 10.5, 10.5,
-//   10.5 }; double air = 10.; std::sort(hits.begin(), hits.end(), [](const
-//   ldmx::EcalHit& a, const ldmx::EcalHit& b) {
-//       return a.getZPos() < b.getZPos();
-//   });
-//   std::vector<ldmx::EcalHit> firstLayers;
-//   std::vector<IntermediateEcalCluster> firstLayerClusters;
-//   int layerTag = 0;
-//   double layerZ = hits[0].getZPos();
-//   for (const auto& hit : hits) {
-//     if (hit.getZPos() > layerZ + layerThickness[layerTag] + air) {
-//       layerTag++;
-//       // if (layerTag > limit) break;
-//       break;
-//     }
-//     firstLayers.push_back(hit);
-//     firstLayerClusters.push_back(IntermediateEcalCluster(hit, layerTag));
+  void CLUE::electronSeparation(std::vector<ldmx::EcalHit> hits) {
+  std::vector<double> layerThickness =
+  { 2., 3.5, 5.3, 5.3, 5.3, 5.3, 5.3, 5.3, 5.3, 5.3, 5.3, 10.5, 10.5, 10.5, 10.5,
+  10.5 };
+  double air = 10.;
+  // sort hits in z 
+  std::sort(hits.begin(), hits.end(), [](const
+  ldmx::EcalHit& a, const ldmx::EcalHit& b) {
+      return a.getZPos() < b.getZPos();
+  });
+  
+  std::vector<ldmx::EcalHit> firstLayers;
+  std::vector<IntermediateCluster> firstLayerClusters;
+  int layerTag = 0;
+  double layerZ = hits[0].getZPos();
+  for (const auto& hit : hits) {
+    if (hit.getZPos() > layerZ + layerThickness[layerTag] + air) {
+      layerTag++;
+      // if (layerTag > limit) break;
+      break;
+    }
+    firstLayers.push_back(hit);
+    firstLayerClusters.push_back(IntermediateCluster(hit, layerTag));
 
-//   }
-//   bool merge = false;
-//   do {
-//     merge = false;
-//     for (int i = 0; i < firstLayerClusters.size(); i++) {
-//       if (firstLayerClusters[i].empty()) continue;
-//       // if (firstLayerClusters[i].centroid().E() >= seedThreshold_) {
-//       for (int j = i + 1; j < firstLayerClusters.size(); j++) {
-//         if (firstLayerClusters[j].empty()) continue;
-//         if (dist(firstLayerClusters[i].centroid().Px(),
-//         firstLayerClusters[i].centroid().Py(),
-//         firstLayerClusters[j].centroid().Px(),
-//         firstLayerClusters[j].centroid().Py()) < 8.) {
-//           firstLayerClusters[i].add(firstLayerClusters[j]);
-//           firstLayerClusters[j].clear();
-//           merge = true;
-//         }
-//       }
-//       // } else break;
-//     }
-//   } while (merge);
-//   ldmx_log(trace) << "--- ELECTRON SEPARATION ---";
-//   for (int i = 0; i < firstLayerClusters.size(); i++) {
-//     if (firstLayerClusters[i].empty()) continue;
-//     ldmx_log(trace) << "  Cluster " << i << " x: "
-//                     << firstLayerClusters[i].centroid().Px() << " y: "
-//                     << firstLayerClusters[i].centroid().Py();
-//     for (int j = i + 1;
-//     j < firstLayerClusters.size(); j++) {
-//       if (firstLayerClusters[j].empty()) continue;
-//       auto d = dist(firstLayerClusters[i].centroid().Px(),
-//       firstLayerClusters[i].centroid().Py(),
-//       firstLayerClusters[j].centroid().Px(),
-//       firstLayerClusters[j].centroid().Py());
-//       ldmx_log(trace) << "Dist to cluster " << j << ": " << d;
-//     }
-//   }
-// }
+  }
+  bool merge = false;
+  do {
+    merge = false;
+    for (int i = 0; i < firstLayerClusters.size(); i++) {
+      if (firstLayerClusters[i].empty()) continue;
+      // if (firstLayerClusters[i].centroid().E() >= seedThreshold_) {
+      for (int j = i + 1; j < firstLayerClusters.size(); j++) {
+        if (firstLayerClusters[j].empty()) continue;
+        if (dist(firstLayerClusters[i].centroid().Px(),
+        firstLayerClusters[i].centroid().Py(),
+        firstLayerClusters[j].centroid().Px(),
+        firstLayerClusters[j].centroid().Py()) < 8.) {
+          firstLayerClusters[i].add(firstLayerClusters[j]);
+          firstLayerClusters[j].clear();
+          merge = true;
+        }
+      }
+      // } else break;
+    }
+  } while (merge);
+  ldmx_log(trace) << "--- ELECTRON SEPARATION ---";
+  for (int i = 0; i < firstLayerClusters.size(); i++) {
+    if (firstLayerClusters[i].empty()) continue;
+    ldmx_log(trace) << "  Cluster " << i << " x: "
+                    << firstLayerClusters[i].centroid().Px() << " y: "
+                    << firstLayerClusters[i].centroid().Py();
+    for (int j = i + 1;
+    j < firstLayerClusters.size(); j++) {
+      if (firstLayerClusters[j].empty()) continue;
+      auto d = dist(firstLayerClusters[i].centroid().Px(),
+      firstLayerClusters[i].centroid().Py(),
+      firstLayerClusters[j].centroid().Px(),
+      firstLayerClusters[j].centroid().Py());
+      ldmx_log(trace) << "Dist to cluster " << j << ": " << d;
+    }
+  }
+}
 
 std::vector<std::vector<const ldmx::EcalHit*>> CLUE::createLayers(
     const std::vector<const ldmx::EcalHit*>& hits) {
@@ -93,6 +97,7 @@ std::vector<std::vector<const ldmx::EcalHit*>> CLUE::createLayers(
   layers.push_back({});
   double layerSeparation = (maxZ - layerZ) / nbr_of_layers_;
   ldmx_log(trace) << "  Layer separation: " << layerSeparation;
+  ldmx_log(trace) << "  Number of layers: " << nbr_of_layers_;
   ldmx_log(trace) << "  Creating layer 0";
 
   double highestEnergy = 0.;
@@ -143,7 +148,8 @@ std::vector<std::shared_ptr<CLUE::Density>> CLUE::setup(
     // collapse z dimension
     float x = roundToDecimal(hit->getXPos(), 4);
     float y = roundToDecimal(hit->getYPos(), 4);
-    ldmx_log(trace) << "  New hit { x: " << x << " y: " << y << "}";
+    float z = roundToDecimal(hit->getZPos(), 4);
+    ldmx_log(trace) << "  New hit { x: " << x << " y: " << y << "}" << " (and z: " << z << ")";
     std::pair<float, float> coords;
     if (dc_ != 0 && nbr_of_layers_ > 1) {
       // if more than one layer, divide hits into densities with side dc_
@@ -158,7 +164,7 @@ std::vector<std::shared_ptr<CLUE::Density>> CLUE::setup(
         j = -j;
         y = (j + 0.5) * dc_;
       } else                  // TODO i think this 1 should be a j
-        y = (1 - 0.5) * dc_;  // set x,y to middle of box
+        y = (j - 0.5) * dc_;  // set x,y to middle of box
       coords = {i, j};
       ldmx_log(trace) << "    Index " << i << ", " << j << "; x: " << x
                       << " y: " << y;
@@ -169,9 +175,9 @@ std::vector<std::shared_ptr<CLUE::Density>> CLUE::setup(
     }
     if (densityMap.find(coords) == densityMap.end()) {
       densityMap.emplace(coords, std::make_shared<CLUE::Density>(x, y));
-      ldmx_log(trace) << "    New density created";
+      ldmx_log(trace) << "    * New density created";
     } else {
-      ldmx_log(trace) << "    Found density with x: " << densityMap[coords]->x
+      ldmx_log(trace) << "    --> Found density with x: " << densityMap[coords]->x
                       << " y: " << densityMap[coords]->y;
     }
     densityMap[coords]->hits.push_back(hit);
@@ -212,7 +218,7 @@ std::vector<std::shared_ptr<CLUE::Density>> CLUE::setup(
         densities[i]->delta = d;
         densities[i]->follower_of = j;
         ldmx_log(trace) << "    New parent, index " << j
-                        << "; delta: " << std::setprecision(20) << d;
+                        << "; delta: " << std::setprecision(10) << d;
       }
     }
   }
@@ -312,7 +318,7 @@ std::vector<std::vector<const ldmx::EcalHit*>> CLUE::clustering(
             densities[i]->total_energy > rhoc_ && densities[i]->delta > deltac_;
 
       if (isSeed) {
-        ldmx_log(trace) << "  Distance to centroid: "
+        ldmx_log(trace) << "  Distance to event centroid: "
                         << floatDist(densities[i]->x, densities[i]->y,
                                      event_centroid_.centroid().Px(),
                                      event_centroid_.centroid().Py());
@@ -334,6 +340,7 @@ std::vector<std::vector<const ldmx::EcalHit*>> CLUE::clustering(
         ldmx_log(trace) << "  Follower";
         int& parentIndex = densities[i]->follower_of;
         if (parentIndex != -1) followers[parentIndex].push_back(i);
+	else ldmx_log(error) << "  Somehow found a follower with parent index -1: id = " << i;
       } else {
         ldmx_log(trace) << "  Outlier";
       }
@@ -413,33 +420,37 @@ std::vector<std::shared_ptr<CLUE::Density>> CLUE::layerSetup() {
       if (currentLayer[i]->total_energy > highestEnergy)
         highestEnergy = currentLayer[i]->total_energy;
       ldmx_log(trace) << "    Density with index " << currentLayer[i]->index
-                      << ", energy: " << currentLayer[i]->total_energy;
+                      << ", energy: " << currentLayer[i]->total_energy
+		      << " position (x,y)= {" << currentLayer[i]->x << ","
+		      << currentLayer[i]->y << ")";
       int depth = 1;
       // decide delta and followerof from seeds in previous and next layer
       // do {
       // depth++;
       if (layer - depth >= 0) {
         // look at previous layer
+	ldmx_log(trace) << "      In previous layer... ";
         auto& previousLayer = seeds_[layer - depth];
+	ldmx_log(trace) << "      Got " << previousLayer.size() << " seeds";
         for (int j = 0; j < previousLayer.size(); j++) {
           // for each seed in previous layer
           auto d = floatDist(currentLayer[i]->x, currentLayer[i]->y,
                              previousLayer[j]->x, previousLayer[j]->y);
-          auto dz = std::abs(currentLayer[i]->z - previousLayer[i]->z);
+          auto dz = std::abs(currentLayer[i]->z - previousLayer[j]->z);
           ldmx_log(trace) << "      Delta to index " << previousLayer[j]->index
-                          << ": " << std::setprecision(20) << d;
+                          << ": " << std::setprecision(10) << d;
           ldmx_log(trace) << "      DeltaZ to index " << previousLayer[j]->index
-                          << ": " << std::setprecision(20) << dz << std::endl;
+                          << ": " << std::setprecision(10) << dz << std::endl;
           if (previousLayer[j]->total_energy > currentLayer[i]->total_energy &&
               d < currentLayer[i]->delta && dz < currentLayer[i]->z_delta) {
             ldmx_log(trace)
-                << "      New parent: index " << previousLayer[j]->index
+                << "      * New parent: index " << previousLayer[j]->index
                 << " on layer " << layer - depth << "; energy "
                 << previousLayer[j]->total_energy;
             ldmx_log(trace)
-                << "      New delta: " << std::setprecision(20) << d;
+                << "      * New delta: " << std::setprecision(10) << d;
             ldmx_log(trace)
-                << "      New deltaZ: " << std::setprecision(20) << dz;
+                << "      * New deltaZ: " << std::setprecision(10) << dz;
             currentLayer[i]->delta = d;
             currentLayer[i]->z_delta = dz;
             currentLayer[i]->follower_of = previousLayer[j]->index;
@@ -450,24 +461,26 @@ std::vector<std::shared_ptr<CLUE::Density>> CLUE::layerSetup() {
         }
       }
       if (layer + depth < nbr_of_layers_) {
+	ldmx_log(trace) << "      In next layer: " << layer + depth;
         auto& nextLayer = seeds_[layer + depth];
+	ldmx_log(trace) << "      Got " << nextLayer.size() << " seeds";
         for (int j = 0; j < nextLayer.size(); j++) {
           auto d = floatDist(currentLayer[i]->x, currentLayer[i]->y,
                              nextLayer[j]->x, nextLayer[j]->y);
-          auto dz = std::abs(currentLayer[i]->z - nextLayer[i]->z);
+          auto dz = std::abs(currentLayer[i]->z - nextLayer[j]->z);
           ldmx_log(trace) << "      Delta to index " << nextLayer[j]->index
-                          << ": " << std::setprecision(20) << d;
+                          << ": " << std::setprecision(10) << d;
           ldmx_log(trace) << "      DeltaZ to index " << nextLayer[j]->index
-                          << ": " << std::setprecision(20) << dz;
+                          << ": " << std::setprecision(10) << dz;
           if (nextLayer[j]->total_energy > currentLayer[i]->total_energy &&
               d < currentLayer[i]->delta && dz < currentLayer[i]->z_delta) {
-            ldmx_log(trace) << "      New parent: index " << nextLayer[j]->index
+            ldmx_log(trace) << "      * New parent: index " << nextLayer[j]->index
                             << " on layer " << layer + depth << "; energy "
                             << nextLayer[j]->total_energy;
             ldmx_log(trace)
-                << "      New delta: " << std::setprecision(20) << d;
+                << "      * New delta: " << std::setprecision(10) << d;
             ldmx_log(trace)
-                << "      New deltaZ: " << std::setprecision(20) << dz;
+                << "      * New deltaZ: " << std::setprecision(10) << dz;
             currentLayer[i]->delta = d;
             currentLayer[i]->z_delta = dz;
             currentLayer[i]->follower_of = nextLayer[j]->index;
@@ -475,12 +488,14 @@ std::vector<std::shared_ptr<CLUE::Density>> CLUE::layerSetup() {
                      currentLayer[i]->total_energy) {
             break;
           }
-        }
-      }
+	}//over seeds in next layer        
+      }// if not outside layer range
+      
       // } while (currentLayer[i]->layerFollowerOf == -1 && (layer - depth >=
       // 0 || layer + depth < nbrOfLayers_));
+      ldmx_log(trace) << "      Done setting parents.";
       densities.push_back(currentLayer[i]);
-    }
+    }//over seeds in current layer 
     layer_rho_c_.push_back(highestEnergy / 2);
   }
   return densities;
@@ -540,14 +555,14 @@ void CLUE::cluster(const std::vector<ldmx::EcalHit>& unsorted_hits, double dc,
               return a->getZPos() < b->getZPos();
             });
 
-  seeds_.resize(nbrOfLayers);
+  seeds_.resize(nbr_of_layers_);
   const auto layers = createLayers(hits);
   if (nbr_of_layers_ > 1) {
     for (int i = 0; i < layers.size(); i++) {
       ldmx_log(trace) << "--- LAYER " << i << " ---";
       auto densities = setup(layers[i]);
       auto clusters = clustering(densities, false, i);
-      // convertToIntermediateClusters(clusters); // uncomment for layer
+      // convertToIntermediateClusters(clusters); // uncomment for layer //LK try uncommenting
       // clustering without 3D
     }
     // Below for CLUE3D, comment for just layer clustering

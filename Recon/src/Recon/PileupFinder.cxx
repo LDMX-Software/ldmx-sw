@@ -48,7 +48,10 @@ void PileupFinder::produce(framework::Event& event) {
   // get the list of hits associated with pileup candidates
   // if a rechit is not on that list, add to output collection.
   std::vector<ldmx::EcalHit> output_hits;
+  std::vector<unsigned int> pileup_hitIDs;
 
+  //this needs to be a two-step procedure: loop over all clusters deemed to be pileup to find all their associated hits 
+  // then loop over that list to make a collection of output hits that doesn't contain them
   for (const auto& pf_cand : pf_cands){
     if(pf_cand.getPID()==3 || pf_cand.getPID()==7){
       //we have both ecal cluster and track 
@@ -61,32 +64,25 @@ void PileupFinder::produce(framework::Event& event) {
       ldmx_log(trace) << "Got pileup candidate with PID = " << pf_cand.getPID() << " and momentum = " << mom << " MeV." ;
       
       // now! use the hit-candidate association to get the associated ecal hits. 
-      
-      
-      // TODO:
-      // write a header for this file --> DONE 
-      // clean up all the methods below here --> DONE 
-      // compile, possibly increment particleflow candidate class imp nb --> DONE
-      // try out hit association (print list?)
       int pf_cl_idx = pf_cand.getEcalIndex();
       ldmx_log(trace) << "Got Ecal cluster with index " << pf_cl_idx << " while cluster array length is " << clusters.size();
       if (pf_cl_idx < 0 ) // was never set
 	continue;
       auto cl = clusters[pf_cl_idx];
       auto hitIDs = cl.getHitIDs();
-      // make a collection without pileup hits
-      for (auto hit : ecal_hits ) {
-	
-	auto foundIndex = std::find(std::begin(hitIDs), std::end(hitIDs), hit.getID());
-	// When the element is not found, std::find returns the end of the range
-	if (foundIndex == std::end(hitIDs)) { //hit not found in the pileup cluster
-	  output_hits.emplace_back(hit); //keep it 
-	  ldmx_log(trace) << "Got no-pileup hit! ";
-	}
-      }// over hits 
+      // add to collection of pileup hits
+      pileup_hitIDs.insert(pileup_hitIDs.end(), hitIDs.begin(), hitIDs.end());
     }// if trk/ecal matched
   }// over PF objects 
-    
+  
+  for (auto hit : ecal_hits ) {
+    auto foundIndex = std::find(std::begin(pileup_hitIDs), std::end(pileup_hitIDs), hit.getID());
+    // When the element is not found, std::find returns the end of the range                                                            
+    if (foundIndex == std::end(pileup_hitIDs)) { //hit not part of any pileup cluster
+      output_hits.emplace_back(hit); //keep it                                                                                          
+      ldmx_log(trace) << "Got no-pileup hit! ";
+    }
+  }
   event.add(output_rec_hit_coll_name_, output_hits);
 
 }

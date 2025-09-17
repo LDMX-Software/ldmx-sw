@@ -25,9 +25,15 @@ void TruthHitProducer::produce(framework::Event &event) {
   // Check if the collection exists.  If not, don't bother processing the event.
   if (!event.exists(input_collection_, input_pass_name_)) {
     ldmx_log(error) << "No input collection called " << input_collection_
+                    << "_" <<  input_pass_name_ <<  " found; skipping!";
+    return;
+  }
+   if (!event.exists("SimParticles",sim_particles_pass_name_)) {
+    ldmx_log(error) << "No input SimParticle collection with pass " << sim_particles_pass_name_
                     << " found; skipping!";
     return;
   }
+
   // looper over sim hits and aggregate energy depositions for each detID
   const auto simHits{event.getCollection<ldmx::SimCalorimeterHit>(
       input_collection_, input_pass_name_)};

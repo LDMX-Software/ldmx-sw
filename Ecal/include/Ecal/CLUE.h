@@ -62,7 +62,7 @@ class CLUE {
       hits = {};
     }
   };
-
+  /*  helper functions to calculate distances */
   float dist(double x1, double y1, double x2, double y2);
   float floatDist(float x1, float y1, float x2, float y2);
   float floatDist(float x1, float y1, float z1, float x2, float y2, float z2);
@@ -72,6 +72,9 @@ class CLUE {
   std::vector<std::shared_ptr<Density>> setup(
       const std::vector<const ldmx::EcalHit*>& hits);
 
+  // get distance between clusters in the first layers, proxy for electron sep.
+  void electronSeparation(std::vector<ldmx::EcalHit> hits);
+  
   // connectingLayers marks if we're currently doing 3D clustering (i.e.
   // connecting seeds between layers) otherwise, layerTag tells us which layer
   // number we're working on
