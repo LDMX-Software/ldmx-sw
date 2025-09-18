@@ -79,6 +79,9 @@ class CLUE {
   std::vector<std::shared_ptr<Density>> setup(
       const std::vector<const ldmx::EcalHit*>& hits);
 
+  // get distance between clusters in the first layers, proxy for electron sep.
+  void electronSeparation(std::vector<ldmx::EcalHit> hits);
+  
   // connectingLayers marks if we're currently doing 3D clustering (i.e.
   // connecting seeds between layers) otherwise, layerTag tells us which layer
   // number we're working on
