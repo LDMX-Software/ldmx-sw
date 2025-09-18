@@ -19,57 +19,11 @@ namespace framework {
 /**
  * @class HistogramPool
  *
- * Singleton class used to create and pool histograms.
- *
- * Helpful for managing all those TH1 pointers by name instead of using
- * variables.
+ * Class for holding an EventProcessor's histogram pointers
+ * and making sure that they all end up in the same directory
+ * in the output histogram file.
  */
 class HistogramPool {
- private:
-  /** Container for all histograms. */
-  std::unordered_map<std::string, TH1*> histograms_;
-
-  /**
-   * Private constructor to prevent instantiation
-   *
-   * Sets some style options as well.
-   */
-  HistogramPool();
-
- public:
-  /// Hide copy constructor
-  HistogramPool(HistogramPool const&) = delete;
-
-  /// Hide assignment operator
-  void operator=(HistogramPool const&) = delete;
-
-  /// Access the single instance of HistogramPool by reference
-  static HistogramPool& getInstance();
-
-  /**
-   * Insert a histogram into the pool
-   *
-   * @note Does not check for any doubling of names!
-   */
-  void insert(const std::string& name, TH1* hist) { histograms_[name] = hist; }
-
-  /**
-   * Get a histogram using its name.
-   *
-   * Checks if histogram exists.
-   *
-   * @return Retrieve the histogram named "name" from the pool.
-   */
-  TH1* get(const std::string& name);
-
-};  // HistogramPool
-
-/**
- * @class HistogramHelper
- *
- * Interface class between an EventProcessor and the HistogramPool
- */
-class HistogramHelper {
  private:
   /// The weight to fill histograms with
   double the_weight_{1.};
@@ -77,18 +31,50 @@ class HistogramHelper {
   /// The name of the processor that this helper is assigned to
   std::string name_;
 
+  /// The directory all histograms should go into
+  TDirectory* file_{nullptr};
+
+  /**
+   * the sub-directory that these histograms should go into
+   *
+   * We only create this directory if a histogram is created
+   * so that we avoid creating empty directories in the output
+   * histogram file.
+   */
+  TDirectory* directory_{nullptr};
+
+  /**
+   * Generic creation of a new histogram
+   *
+   * The input function is the one that calls `new` with the specific options.
+   * I want to do this generic function so that we have one place that
+   * has the directory creation and cd code and we can't just pass in the
+   * `TH1` pointer because then the `new` is not called when we are in the
+   * correct directory.
+   *
+   * @param[in] name name of histogram
+   * @param[in] factory function that creates the TH1
+   */
+  void create(const std::string& name, std::function<(TH1*)()> factory);
+
  public:
   /**
    * Constructor
    *
-   * Sets the name
+   * Sets the name and output file along with updating
+   * some of the style options for the histograms.
    */
-  HistogramHelper(const std::string& name) : name_(name) {}
+  HistogramPool(TDirectory* file, const std::string& name);
 
   /**
    * Set the weight for filling the histograms
    */
   void setWeight(double w) { the_weight_ = w; }
+
+  /**
+   * get a histogram from this pool by name
+   */
+  TH1* get(const std::string& name);
 
   /**
    * Create a ROOT 1D histogram of type TH1F and pool it for later use.
@@ -186,14 +172,6 @@ class HistogramHelper {
     }
   }
 
-  /**
-   * Get a pointer to a histogram by name
-   *
-   * @param name name of the histogram to get
-   */
-  TH1* get(const std::string& name) {
-    return HistogramPool::getInstance().get(name_ + "_" + name);
-  }
 };
 }  // namespace framework
 

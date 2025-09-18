@@ -16,7 +16,8 @@
 
 namespace framework {
 
-HistogramPool::HistogramPool() {
+HistogramPool::HistogramPool(TDirectory* file, const std::string& name)
+  : file_{file}, name_{name} {
   gStyle->SetOptStat(1);
   gStyle->SetGridColor(17);
   gStyle->SetFrameBorderMode(0);
@@ -35,12 +36,15 @@ HistogramPool::HistogramPool() {
   gStyle->SetHistLineWidth(2);
 }
 
-HistogramPool& HistogramPool::getInstance() {
-  // Create an instance of HistogramPool if needed
-  //  Guarnteed to be destroyed, instantiaed on first use
-  static HistogramPool instance;
+void HistogramPool::create(const std::string& name, std::function<(TH1*)()> factory) {
+  if (directory_ == nullptr) {
+    directory_ = file_->mkdir(name_.c_str());
+  }
+  directory_->cd();
 
-  return instance;
+  histograms_[name] = factory();
+
+  file_->cd();
 }
 
 TH1* HistogramPool::get(const std::string& name) {
@@ -55,6 +59,11 @@ TH1* HistogramPool::get(const std::string& name) {
 void HistogramHelper::create(const std::string& name, const std::string& xLabel,
                              const double& bins, const double& xmin,
                              const double& xmax) {
+  if (directory_ == nullptr) {
+    directory_ = file_->mkdir(name_.c_str());
+  }
+  directory_->cd();
+
   std::string full_name = name_ + "_" + name;
 
   // Create a histogram of type T
@@ -68,7 +77,8 @@ void HistogramHelper::create(const std::string& name, const std::string& xLabel,
   hist->GetXaxis()->CenterTitle();
 
   // Insert it into the pool of histograms for later use
-  HistogramPool::getInstance().insert(full_name, hist);
+  histograms_[name] = hist;
+  file_->cd();
 }
 
 void HistogramHelper::create(const std::string& name, const std::string& xLabel,
