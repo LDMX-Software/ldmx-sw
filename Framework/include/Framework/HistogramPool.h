@@ -27,45 +27,9 @@ class HistogramPool {
  private:
   /// The weight to fill histograms with
   double the_weight_{1.};
-
-  /// The name of the processor that this helper is assigned to
-  std::string name_;
-
-  /// The directory all histograms should go into
-  TDirectory* file_{nullptr};
-
-  /**
-   * the sub-directory that these histograms should go into
-   *
-   * We only create this directory if a histogram is created
-   * so that we avoid creating empty directories in the output
-   * histogram file.
-   */
-  TDirectory* directory_{nullptr};
-
-  /**
-   * Generic creation of a new histogram
-   *
-   * The input function is the one that calls `new` with the specific options.
-   * I want to do this generic function so that we have one place that
-   * has the directory creation and cd code and we can't just pass in the
-   * `TH1` pointer because then the `new` is not called when we are in the
-   * correct directory.
-   *
-   * @param[in] name name of histogram
-   * @param[in] factory function that creates the TH1
-   */
-  void create(const std::string& name, std::function<(TH1*)()> factory);
-
+  /// the pool of histogram pointers
+  std::unordered_map<std::string, TH1*> histograms_;
  public:
-  /**
-   * Constructor
-   *
-   * Sets the name and output file along with updating
-   * some of the style options for the histograms.
-   */
-  HistogramPool(TDirectory* file, const std::string& name);
-
   /**
    * Set the weight for filling the histograms
    */

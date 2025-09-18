@@ -15,7 +15,7 @@
 #include "Framework/Event.h"
 #include "Framework/Exception/Exception.h"
 #include "Framework/Factory.h"
-#include "Framework/Histograms.h"
+#include "Framework/HistogramPool.h"
 #include "Framework/Logger.h"
 #include "Framework/NtupleManager.h"
 #include "Framework/RunHeader.h"
@@ -217,8 +217,8 @@ class EventProcessor {
    */
   void abortEvent() { throw AbortEventException(); }
 
-  /// Interface class for making and filling histograms
-  HistogramHelper histograms_;
+  /// helper object for making and filling histograms
+  HistogramPool histograms_;
 
   /// Manager for any ntuples
   NtupleManager &ntuple_{NtupleManager::getInstance()};
