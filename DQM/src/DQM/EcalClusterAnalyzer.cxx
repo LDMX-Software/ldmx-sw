@@ -16,7 +16,12 @@ void EcalClusterAnalyzer::configure(framework::config::Parameters& ps) {
   cluster_coll_name_ = ps.get<std::string>("cluster_coll_name");
   cluster_pass_name_ = ps.get<std::string>("cluster_pass_name");
 
-  ecal_sp_hits_passname_ = ps.get<std::string>("ecal_sp_hits_passname");
+  ecal_sp_hits_coll_name_ =
+      ps.getParameter<std::string>("ecal_sp_hits_coll_name");
+  ecal_sp_hits_pass_name_ =
+      ps.getParameter<std::string>("ecal_sp_hits_pass_name");
+  mixed_hit_cutoff_ = ps.getParameter<double>("mixed_hit_cutoff");
+  
   return;
 }
 
@@ -41,6 +46,7 @@ void EcalClusterAnalyzer::analyze(const framework::Event& event) {
     auto layer = cluster.getLayer();
     layer_cluster_count[layer]++;
   }
+
 
   int total_clusters = 0;
   for (const auto& [layer, count] : layer_cluster_count) {
@@ -109,6 +115,8 @@ void EcalClusterAnalyzer::analyze(const framework::Event& event) {
                  << ", TS counted electrons: " << nbr_of_electrons
                  << ", SP electrons: " << sp_electron_positions.size();
 
+  std::map<int,float> true_energy;
+  std::map<int,float> delta_energy;
   double sp_ele_dist{9999.};
   if (nbr_of_electrons == 2 && sp_electron_positions.size() > 1) {
     // Measures sp_ele_distance between two electrons in the ECal scoring plane
@@ -119,11 +127,19 @@ void EcalClusterAnalyzer::analyze(const framework::Event& event) {
     pos2 = sp_electron_positions[1];
     sp_ele_dist = std::sqrt((pos1[0] - pos2[0]) * (pos1[0] - pos2[0]) +
                             (pos1[1] - pos2[1]) * (pos1[1] - pos2[1]));
-
+    
+    histograms_.fill("sp_distance", sp_ele_dist);
+        
   }  // end block about the scoring plane hits
 
   ldmx_log(trace) << "Distance between the two e- in the ECal scoring plane: "
                   << sp_ele_dist << " mm";
+
+  double tot_event_energy=0;
+  std::vector<double> tot_origin_edep;
+  tot_origin_edep.resize(nbr_of_electrons_ + 1);
+  int n_mixed = 0;
+
 
   // Loop over the rechits and find the matching simhits
   ldmx_log(trace) << "Loop over the rechits and find the matching simhits";
@@ -133,31 +149,53 @@ void EcalClusterAnalyzer::analyze(const framework::Event& event) {
         [&hit](const auto& sim_hit) { return sim_hit.getID() == hit.getID(); });
     if (it != ecal_sim_hits.end()) {
       // if found a simhit matching this rechit
+      ldmx_log(trace) << "\tFound simhit matching rechit with ID" << hit.getID();
       int ancestor = 0;
       int prev_ancestor = 0;
       bool tagged = false;
       int tag = 0;
       std::vector<double> edep;
-      edep.resize(nbr_of_electrons + 1);
+      edep.resize(nbr_of_electrons_ + 1);
+      double eTot=0; //keep track of total from all counted ancestors 
+      ldmx_log(trace) << "\t\tIt has " << it->getNumberOfContribs() << " contribs. ";
       for (int i = 0; i < it->getNumberOfContribs(); i++) {
         // for each contrib in this simhit
         const auto& contrib = it->getContrib(i);
         // get origin electron ID
         ancestor = contrib.origin_id_;
+	ldmx_log(trace) << "\t\t\tAncestor ID " << ancestor << " with edep " << c.edep;
+	tot_event_energy+=c.edep;
         // store energy from this contrib at index = origin electron ID
-        if (ancestor <= nbr_of_electrons) edep[ancestor] += contrib.edep_;
+        if (ancestor <= nbr_of_electrons) {
+	  edep[ancestor] += contrib.edep_;
+	  tot_origin_edep[ancestor] += contrib.edep_;
+	  eTot+= contrib.edep_;
+	}
         if (!tagged && i != 0 && prev_ancestor != ancestor) {
           // if origin electron ID does not match previous origin electron ID
           // this hit has contributions from several electrons, ie mixed case
           tag = 0;
           tagged = true;
+	  ldmx_log(trace) << "\t\t\t\tMixed hit! Ancestor ID changed to " << ancestor;
         }
         prev_ancestor = ancestor;
-      }
+      }//over contribs
+      // now check if mixed really means mixed, i.e. more than small fraction from a second electron.
+      if (tagged) {
+        for (int i = 1; i < nbr_of_electrons_ + 1; i++) {
+	  if (edep[i]/eTot > 1 - mixed_hit_cutoff_) { //one ancestor contributes at least the complement to the allowed mixing fraction
+	    tagged = false;
+	    ancestor = distance(edep.begin(), max_element(edep.begin(), edep.end()));
+	    ldmx_log(trace) << "\t\t\t\tUndid mixed hit tagging, now ancestor = " << ancestor;
+	    break;
+	  }
+	}
+      }      
       if (!tagged) {
-        // if not tagged, hit was from a single electron
-        tag = prev_ancestor;
+        // if not tagged, hit was from a single electron (within acceptable purity)
+        tag = ancestor; //prev_ancestor;
       }
+      else nMixed++;
       histograms_.fill("ancestors", tag);
       hit_info.insert({hit.getID(), std::make_pair(tag, edep)});
     }  // end if simhit found
@@ -166,6 +204,16 @@ void EcalClusterAnalyzer::analyze(const framework::Event& event) {
   // Loop over the clusters
   int clustered_hits = 0;
   ldmx_log(trace) << "Loop over the clusters, N = " << n_ecal_clusters;
+  histograms_.fill("tag0frac_vs_SPdist",dist, (float)nMixed/ecal_rec_hits.size());
+  ldmx_log(debug) << "Got " << nMixed << " mixed hits, a fraction of " << (float)nMixed/ecal_rec_hits.size();
+
+  if (ecal_clusters.size() >= 2) {
+    float dR = std::sqrt(std::pow((ecal_clusters[0].getCentroidX() - ecal_clusters[1].getCentroidX()), 2) +
+			 std::pow((ecal_clusters[0].getCentroidY() - ecal_clusters[1].getCentroidY()), 2) );
+    histograms_.fill("cluster_distance", dR);
+    ldmx_log(trace) << "Gt cluster distance (0,1) = " << dR;
+  }
+
   for (const auto& cl : ecal_clusters) {
     auto layer = cl.getLayer();
     ldmx_log(trace) << "Cluster in layer " << layer
@@ -212,7 +260,7 @@ void EcalClusterAnalyzer::analyze(const framework::Event& event) {
     energy_from_electron.resize(nbr_of_electrons + 1);
     double energy_sum = 0.;
     double n_sum = 0.;
-
+    ldmx_log(trace) << "Looping over hits in the cluster";
     const auto& hit_ids = cl.getHitIDs();
     for (const auto& id : hit_ids) {
       // for each hit in cluster, find previously stored info
@@ -250,6 +298,10 @@ void EcalClusterAnalyzer::analyze(const framework::Event& event) {
       // get largest energy contribution
       double max_energy_contribution = *max_element(
           energy_from_electron.begin(), energy_from_electron.end());
+      std::string to_log;
+      for (auto nb : energy_from_electron) to_log.append(std::to_string(nb)+" ");
+      ldmx_log(debug) << "Energies vector is " << to_log ;
+  
       // energy purity = largest contribution / all energy
       histograms_.fill("energy_percentage",
                        100. * (max_energy_contribution / energy_sum));
@@ -272,12 +324,23 @@ void EcalClusterAnalyzer::analyze(const framework::Event& event) {
                                   n_hits_from_electron.end());
       histograms_.fill("same_ancestor", 100. * (n_max / n_sum));
     }
+    // find the main contributor 
+    auto elt = distance(energy_from_electron.begin(), max_element(energy_from_electron.begin(), energy_from_electron.end()));
+    ldmx_log(debug) << "Found that the maximum contributing trackID is " << elt;
+    delta_energy[elt]=cl.getEnergy()-true_energy[elt];
+    //    delta_energy[2]=e[2]-true_energy[2];
+    histograms_.fill("cluster_RMSX", cl.getRMSX());
   }  // end loop on the clusters
-
-  histograms_.fill("clusterless_hits", (ecal_rec_hits.size() - clustered_hits));
+  std::string more_log;
+  for (auto nb : tot_origin_edep) more_log.append(std::to_string(nb)+" ");
+  ldmx_log(debug) << "Edep per ancestor in event is " << more_log ;
+  ldmx_log(debug) << "Total energy deposited in event: " << tot_event_energy ;
+  
+  histograms_.fill("dE_cl2_vs_cl1", delta_energy[1], delta_energy[2]);
+  histograms_.fill("unclustered_hits", (ecal_rec_hits.size() - clustered_hits));
   histograms_.fill("total_rechits_in_event", ecal_rec_hits.size());
   histograms_.fill(
-      "clusterless_hits_percentage",
+      "unclustered_hits_percentage",
       100. * (ecal_rec_hits.size() - clustered_hits) / ecal_rec_hits.size());
 }
 
