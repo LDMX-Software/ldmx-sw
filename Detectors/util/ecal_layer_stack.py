@@ -3,6 +3,44 @@
 This is a stand-alone python script meant to help make these calculations easer.
 It is kept within ldmx-sw since both the GDML and the reconstruction layer weights
 have been updated using the output of this script.
+
+In order to align with Geant4, we use the following units
+- Energy: MeV
+- Distance: mm
+
+We keep a few reference tables so that all layers
+can access the properties of their materials.
+The materials that are copied from the PDG
+[Atomic and Nuclear Properties](https://pdg.lbl.gov/2023/AtomicNuclearProperties/index.html)
+are kept as PDGMaterial in the materials dictionary and a few aliases of these
+materials are kept in material_aliases to be clear about the material names we
+use (in the GDML) and the material names from the PDG.
+
+Some composite materials are also found in the PDG, but others are not.
+Specifically, the PCB is not something found in the PDG, so we have
+to estimate the approximate thickness of copper (Cu) in the PCB and then
+attribute the rest of its thickness to fiberglass (FR4 -> G10).
+
+The unit-conversion calculations are left in PDGMaterial for transparency.
+
+Natalia found [this study of the ALICE TRD](https://www-physics.lbl.gov/~gilg/PixelUpgradeMechanicsCooling/Material/Radiationlength.pdf)
+which is a helpful source of comparison to make sure we aren't wildly off.
+
+Here   | PDG
+-------|-----
+Al     | Al
+Ti     | Ti
+Air    | Mixtures -> Air (dry, 1 atm)
+PCB    | 0.17mm Cu + 1.03mm G10 (see pcb-layers.nbt for this estimate)
+Si     | Si
+W      | W
+Carbon | C -> 6 C carbon (amorphous) with lower density to represent carbon fiber
+Glue   | Polymers -> polycarbonate (OC6H4C(CH3)2C6H4OCO)n
+Kapton | Polymers -> Polymide film (Kapton)
+
+Glue in the GDML is a polycarbon is 85% C, 4% H, and 11% O,
+the polycarbonate in the PDG is 75% C, 5% H and 20% O which
+I deemed close enough.
 """
 
 import sys
@@ -55,7 +93,7 @@ class PDGMaterialEncoder(json.JSONEncoder):
     table with indenting for easier readability.
     For example
 
-        print(json.dumps(Layer.materials, cls=PDGMaterialEncoder, indent=2))
+        print(json.dumps(materials, cls=PDGMaterialEncoder, indent=2))
 
     """
 
@@ -66,7 +104,7 @@ class PDGMaterialEncoder(json.JSONEncoder):
 
 
 # This dictionary holds materials that are copied down from the PDG site
-__materials__ = dict(
+materials = dict(
     Kapton = PDGMaterial(
         density = 1.420,
         minimum_ionization = 1.820,
@@ -159,150 +197,26 @@ __materials__ = dict(
     )
 )
 
+material_aliases = dict(
+    FR4 = 'G10',
+    Carbon = 'C',
+    Glue = 'polycarbonate'
+)
 
-def pdg_material(*, scale_weights=False, **kwargs):
-    """Estimate material properties by doing a weighted sum of its components
-    from the PDG material table copied from online.
 
-    The input key-word arguments specify the material (key) and its fraction (value).
-    For example, the following would produce a material which is 50% copper and 50% silicon.
+def get_material(name):
+    """get a PDGMaterial by name
 
-        pdg_material(Cu = 0.5, Si = 0.5)
-
-    If the input weights do not sum to 1.0, then a ValueError is raised (if scale_weights is False)
-    or the weights are all divided by their sum.
+    First, we re-map the input name to an alias if it is present
+    in material_aliases, then we look it up in the materials dictionary.
     """
-    
-    weight_sum = sum(weight for weight in kwargs.values())
-    if weight_sum != 1.0:
-        if not scale_weights:
-            raise ValueError(f"Sum of weights provided ({weight_sum}) does not equal 1.0: {kwargs}")
-
-        # divide all weights by the weight sum so it equals 1
-        for key in kwargs:
-            kwargs[key] /= weight_sum
-
-    return PDGMaterial(
-        density = sum(weight*__materials__[material].density for material, weight in kwargs.items()),
-        minimum_ionization = sum(
-            weight*__materials__[material].minimum_ionization
-            for material, weight in kwargs.items()
-        ),
-        radiation_length = 1/(sum(
-            weight/__materials__[material].radiation_length
-            for material, weight in kwargs.items())
-        ),
-        nuclear_interaction_length = 1/(sum(
-            weight/__materials__[material].nuclear_interaction_length
-            for material, weight in kwargs.items())
-        )
-    )
+    return materials[material_aliases.get(name, name)]
 
 
 class Layer :
     """class representing a single layer of a single material
 
-    In order to align with Geant4, we use the following units
-    - Energy: MeV
-    - Distance: mm
-
-    Class Attributes
-    ----------------
-    We keep a few reference tables stored within the class so that all layers
-    can access the properties of their materials.
-    The materials that are copied from the PDG
-    [Atomic and Nuclear Properties](https://pdg.lbl.gov/2023/AtomicNuclearProperties/index.html)
-    are kept as PDGMaterial in the __materials__ dictionary.
-    Some composite materials are also found in the PDG, but we have to estimate the PCB
-    material properties ourselves.
-    The unit-conversion calculations are left in PDGMaterial for transparency.
-
-    Natalia found [this study of the ALICE TRD](https://www-physics.lbl.gov/~gilg/PixelUpgradeMechanicsCooling/Material/Radiationlength.pdf)
-    which is a helpful source of comparison to make sure we aren't wildly off.
-
-    Here   | PDG
-    -------|-----
-    Al     | Al
-    Ti     | Ti
-    Air    | Mixtures -> Air (dry, 1 atm)
-    PCB    | 0.17mm Cu + 1.03mm G10
-    Si     | Si
-    W      | W
-    Carbon | C -> 6 C carbon (amorphous) with lower density to represent carbon fiber
-    Glue   | Polymers -> polycarbonate (OC6H4C(CH3)2C6H4OCO)n
-
-    PCB in the GDML is 50% Cu, 23% O, 4.8% Na, 17% Si, 5.2% Ca,
-    and the PDG does not have any mixtures in the drop down menu
-    that have Copper in them so I have to spin my own.
-    After attempting to construct my own "material", I've found its more
-    reasonable to estimate the total thickness of Copper and then
-    assign the rest of the PCB thickness to the fiberglass (FR4).
-
-    Glue in the GDML is a polycarbon is 85% C, 4% H, and 11% O,
-    the polycarbonate in the PDG is 75% C, 5% H and 20% O which
-    I deemed close enough.
-
-    dEdx : dict[str, float]
-        material name to average energy loss per unit distance (MeV/mm) of a MIP.
-        If listed in the PDG, they are the "Minimum ionization" line.
-        The calculation is (dEdx [MeV cm^2/g] * density [g/cm^3]) / 10 [mm/cm]
-
-    X0 : dict[str, float]
-        material name to radiation length (mm)
-        These values are taken from the "Radiation length" line of the PDG if possible.
-        The calculation is (X0 [g/cm^2] / density [g/cm^3]) * 10 [mm/cm].
-
-    nuclen : dict[str, float]
-        material name to nuclear interaction length (mm)
-        These values are taken from the "Nuclear interaction length" line of the PDG if possible.
-        The calculation is (nuclen [g/cm^2] / density [g/cm^3]) * 10 [mm/cm].
     """
-
-    materials = dict(
-        Al = pdg_material(Al = 1.0),
-        Ti = pdg_material(Ti = 1.0),
-        Air = pdg_material(Air = 1.0),
-#        # using atomic fraction
-#        PCB = pdg_material(
-#            Cu = 0.5,
-#            G10 = 0.5,
-#            scale_weights = True
-#        ),
-#        # using depth/thickness fraction from ALICE TRD
-#        PCB = pdg_material(
-#            Cu = 0.025,
-#            G10 = 0.38,
-#            scale_weights = True
-#        ),
-        # using depth/thickness fraction from pcb-layers.nbt
-        PCB = pdg_material(
-            Cu = 0.170,
-            G10 = 1.030,
-            scale_weights=True
-        ),
-        FR4 = pdg_material(G10 = 1.0),
-        Cu = pdg_material(Cu = 1.0),
-        Si = pdg_material(Si = 1.0),
-        W = pdg_material(W = 1.0),
-        Carbon = pdg_material(C = 1.0),
-        Glue = pdg_material(polycarbonate = 1.0),
-        Kapton = pdg_material(Kapton = 1.0)
-    )
-
-    dEdx = {
-        name : material.minimum_ionization_MeV_mm()
-        for name, material in materials.items()
-    }
-
-    X0 = {
-        name: material.radiation_length_mm()
-        for name, material in materials.items()
-    }
-    
-    nuclen = {
-        name: material.nuclear_interaction_length_mm()
-        for name, material in materials.items()
-    }
 
     # 300 um for v14 and 400 um for v15
     SensDetThickness = 0.4
@@ -311,9 +225,12 @@ class Layer :
         self.name = name
         self.thickness = thickness
         self.sensitive = sensitive
-        self.nuclen = Layer.nuclen[self.name]
-        self.x0 = Layer.X0[self.name]
-        self.dEdx = Layer.dEdx[self.name]
+
+        the_material = get_material(name)
+
+        self.nuclen = the_material.nuclear_interaction_length_mm()
+        self.x0 = the_material.radiation_length_mm()
+        self.dEdx = the_material.minimum_ionization_MeV_mm()
 
     def __str__(self) :
         return f'{self.thickness:.2f} mm {self.name}'
@@ -646,7 +563,7 @@ def print_layer_materials():
                 'nuclear_interaction_length_mm'
             ]
         }
-        for name, material in Layer.materials.items()
+        for name, material in materials.items()
     }, indent=2))
 
 
@@ -676,6 +593,7 @@ def ldmx_ecal_v14():
     mbs = materials_between_sensdet(layers)
     weights = calc_weights(mbs)
     print_weights(*weights)
+
 
 @command
 def ldmx_ecal_v15():
@@ -748,7 +666,7 @@ def bilayer_spec():
     print('Total Depths')
     print('Material, Depth / mm, Depth / X0')
     for material, depth in totals_by_material.items():
-        print(material, f'{depth:.3g}', f'{depth/Layer.materials[material].radiation_length_mm():.3g}', sep=', ')
+        print(material, f'{depth:.3g}', f'{depth/get_material(material).radiation_length_mm():.3g}', sep=', ')
 
 
 def main():
