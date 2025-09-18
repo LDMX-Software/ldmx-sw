@@ -101,34 +101,56 @@ TEST_CASE("HistogramPool Functions", "[Framework][functionality]") {
       static TDirectory* d{f.mkdir("p")};
       return d;
     }};
-    p.create("h1", "foo", 10, 0, 1);
-    p.create("h2", "bar", {0.0, 0.5, 0.8, 1.0});
-    p.create("h3", "baz", 5, -5, 5, "foo", 10, -5, 5);
-    p.create("h4", "baz", {-5.0, -1.0, 0.0, 1.0, 5.0}, "foo", {0.0, 1.0, 5.0});
+    std::vector<std::string> cats{"one", "two", "three"};
+
+    p.create("h1_1", "foo", 10, 0, 1);
+    p.create("h1_2", "bar", {0.0, 0.5, 0.8, 1.0});
+    p.create("h1_3", cats);
+
+    p.create("h2_1", "baz", 5, -5, 5, "foo", 10, -5, 5);
+    p.create("h2_2", "baz", {-5.0, -1.0, 0.0, 1.0, 5.0}, "foo", {0.0, 1.0, 5.0});
+
+    p.fill("h1_3", 1);
+//    p.fill("h1_3", "one");
+//    p.fill("h1_3", "three");
+//    p.fill("h1_3", "four");
+    p.fill("h1_3", 0);
+
     f.Write();
 
-    auto h1 = dynamic_cast<TH1F*>(f.Get("p/h1"));
-    REQUIRE(h1 != nullptr);
-    CHECK(h1->GetNbinsX() == 10);
-    CHECK(h1->GetBinLowEdge(1) == 0.0);
-    CHECK(h1->GetBinLowEdge(11) == 1.0);
+    auto h1_1 = dynamic_cast<TH1F*>(f.Get("p/h1_1"));
+    REQUIRE(h1_1 != nullptr);
+    CHECK(h1_1->GetNbinsX() == 10);
+    CHECK(h1_1->GetBinLowEdge(1) == 0.0);
+    CHECK(h1_1->GetBinLowEdge(11) == 1.0);
 
-    auto h2 = dynamic_cast<TH1F*>(f.Get("p/h2"));
-    REQUIRE(h2 != nullptr);
-    CHECK(h2->GetNbinsX() == 3);
-    CHECK(h2->GetBinLowEdge(1) == 0.0);
-    CHECK(h2->GetBinLowEdge(2) == 0.5);
-    CHECK(h2->GetBinLowEdge(3) == 0.8);
-    CHECK(h2->GetBinLowEdge(4) == 1.0);
+    auto h1_2 = dynamic_cast<TH1F*>(f.Get("p/h1_2"));
+    REQUIRE(h1_2 != nullptr);
+    CHECK(h1_2->GetNbinsX() == 3);
+    CHECK(h1_2->GetBinLowEdge(1) == 0.0);
+    CHECK(h1_2->GetBinLowEdge(2) == 0.5);
+    CHECK(h1_2->GetBinLowEdge(3) == 0.8);
+    CHECK(h1_2->GetBinLowEdge(4) == 1.0);
 
-    auto h3 = dynamic_cast<TH2F*>(f.Get("p/h3"));
-    REQUIRE(h3 != nullptr);
-    CHECK(h3->GetNbinsX() == 5);
-    CHECK(h3->GetNbinsY() == 10);
+    auto h1_3 = dynamic_cast<TH1F*>(f.Get("p/h1_3"));
+    REQUIRE(h1_3 != nullptr);
+    CHECK(h1_3->GetNbinsX() == 3);
 
-    auto h4 = dynamic_cast<TH2F*>(f.Get("p/h4"));
-    REQUIRE(h4 != nullptr);
-    CHECK(h4->GetNbinsX() == 4);
-    CHECK(h4->GetNbinsY() == 2);
+    CHECK(h1_3->GetBinContent(0) == 1);
+    CHECK(h1_3->GetBinContent(1) == 2);
+    CHECK(h1_3->GetBinContent(2) == 0);
+    CHECK(h1_3->GetBinContent(3) == 0);
+    CHECK(h1_3->GetBinContent(4) == 1);
+
+
+    auto h2_1 = dynamic_cast<TH2F*>(f.Get("p/h2_1"));
+    REQUIRE(h2_1 != nullptr);
+    CHECK(h2_1->GetNbinsX() == 5);
+    CHECK(h2_1->GetNbinsY() == 10);
+
+    auto h2_2 = dynamic_cast<TH2F*>(f.Get("p/h2_2"));
+    REQUIRE(h2_2 != nullptr);
+    CHECK(h2_2->GetNbinsX() == 4);
+    CHECK(h2_2->GetNbinsY() == 2);
   }
 }

@@ -119,6 +119,8 @@ class HistogramPool {
   void create(const std::string& name, const std::string& x_label,
               const std::vector<double>& bins);
 
+  void create(const std::string& name, const std::vector<std::string>& categories);
+
   /**
    * Create a ROOT 2D histogram of type TH2F and pool it for later use.
    *
@@ -164,7 +166,15 @@ class HistogramPool {
    * @param name name of the histogram to fill
    * @param val value to fill
    */
-  void fill(const std::string& name, const double& val);
+  template<typename T>
+  void fill(const std::string& name, const T& val) {
+    auto hist = dynamic_cast<TH1F*>(this->get(name));
+    if (hist) {
+      hist->Fill(val, the_weight_);
+    } /*else {
+      EXCEPTION_RAISE("BadHistSize", "Attempting to 1D fill a histogram that is not actually a TH1F");
+    }*/
+  }
 
   /**
    * Fill a 2D histogram

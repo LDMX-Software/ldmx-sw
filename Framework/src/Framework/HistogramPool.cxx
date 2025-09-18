@@ -19,10 +19,38 @@ namespace framework {
 TH1* HistogramPool::get(const std::string& name) {
   auto histo = histograms_.find(name);
   if (histo == histograms_.end()) {
-    EXCEPTION_RAISE("InvalidArg", "Histogram " + name + " not found in pool.");
+    EXCEPTION_RAISE("InvalidArg",
+        "Histogram " + name + " not found in pool."
+        "\nMake sure to `histograms_.create` in onProcessStart for any "
+        "histogram you want to `histograms_.fill`.");
   }
 
   return histograms_[name];
+}
+
+
+std::tuple<std::size_t,double,double> category_bins(
+    const std::vector<std::string>& categories,
+    int offset = 0
+    ) {
+  std::size_t n_categories = categories.size();
+  double min = offset - 0.5;
+  double max = offset + n_categories + 1.5;
+  return std::make_tuple(n_categories, min, max);
+}
+
+void label_axis(TAxis* axis, const std::vector<std::string>& categories) {
+  for (std::size_t ibin{1}; ibin <= categories.size(); ibin++) {
+    axis->SetBinLabel(ibin, categories[ibin-1].c_str());
+  }
+}
+
+void HistogramPool::create(const std::string& name, const std::vector<std::string>& categories) {
+  create(name, "", 0, 0, 0);
+  auto h{get(name)};
+  for (const auto& cat : categories) {
+    h->Fill(cat.c_str(), 0.0);
+  }
 }
 
 void HistogramPool::create(const std::string& name, const std::string& x_label,
@@ -75,14 +103,10 @@ void HistogramPool::create(const std::string& name, const std::string& x_label,
   histograms_[name] = hist;
 }
 
+/*
 void HistogramPool::fill(const std::string& name, const double& val) {
-  auto hist = dynamic_cast<TH1F*>(this->get(name));
-  if (hist) {
-    hist->Fill(val, the_weight_);
-  } else {
-    EXCEPTION_RAISE("BadHistSize", "Attempting to 1D fill a histogram that is not actually a TH1F");
-  }
 }
+*/
 
 void HistogramPool::fill(const std::string& name, const double& valx, const double& valy) {
   auto hist = dynamic_cast<TH2F*>(this->get(name));
