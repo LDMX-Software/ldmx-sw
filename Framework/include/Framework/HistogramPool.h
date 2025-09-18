@@ -22,6 +22,47 @@ namespace framework {
  * Class for holding an EventProcessor's histogram pointers
  * and making sure that they all end up in the same directory
  * in the output histogram file.
+ *
+ * # Usage
+ * Each of the EventProcessors have a `histograms_` member variable that
+ * developers can use within their producers and analyzers.
+ *
+ * In `onProcessStart()`, you create the histograms that you will want to fill.
+ * For example,
+ * ```cpp
+ * histograms_.create("my_variable", "Label for Axis", 10, 0.0, 1.0);
+ * ```
+ * And then in `analyze` or `produce` you fill the histograms.
+ * ```cpp
+ * histograms_.fill("my_variable", the_value);
+ * ```
+ *
+ * Attempting to `create` histograms without the Python configuration
+ * providing an output histogram file will fail because then there
+ * is no place for the histograms to be saved.
+ *
+ * The `fill` function uses the current setting of the weight in the
+ * `histograms_`object. This is helpful if, for example, you are putting one
+ * entry in the histogram for each event and you want the histogram to use
+ * the event weights. 
+ * In order to do this event weighting for histograms, you would add
+ * the following line and **all** of the histograms that are `fill`ed _after_
+ * this line will use the event weight.
+ * ```cpp
+ * histograms_.setWeight(event.getEventWeight());
+ * ```
+ * If you don't want to use special weighting, that's fine. The default
+ * weight is 1 and you may even have separate histograms in your processor
+ * that use different weights for example.
+ * ```cpp
+ * histograms_setWeight(1);
+ * 
+ * histograms_.fill("h_without_event_weight", value);
+ *
+ * histograms_.setWeight(event.getEventWeight());
+ *
+ * histograms_.fill("h_with_event_weight", value);
+ * ```
  */
 class HistogramPool {
  private:
@@ -57,13 +98,13 @@ class HistogramPool {
    *
    * @param name Name of the histogram. This will also be used as a
    *             title.
-   * @param xLabel Title of the x axis.
+   * @param x_label Title of the x axis.
    * @param bins Total number of histogram bins.
    * @param xmin The lower histogram limit.
    * @param xmax The upper histogram limit.
    */
-  void create(const std::string& name, const std::string& xLabel,
-              const double& bins, const double& xmin, const double& xmax);
+  void create(const std::string& name, const std::string& x_label,
+              const int& bins, const double& xmin, const double& xmax);
 
   /**
    * Create a ROOT 1D histogram of type TH1F and pool it for later use.
@@ -72,10 +113,10 @@ class HistogramPool {
    *
    * @param name Name of the histogram. This will also be used as a
    *             title.
-   * @param xLabel Title of the x axis.
+   * @param x_label Title of the x axis.
    * @param bins vector of bin edges
    */
-  void create(const std::string& name, const std::string& xLabel,
+  void create(const std::string& name, const std::string& x_label,
               const std::vector<double>& bins);
 
   /**
@@ -85,18 +126,18 @@ class HistogramPool {
    *
    * @param name Name of the histogram. This will also be used as a
    *             title.
-   * @param xLabel Title of the x axis.
+   * @param x_label Title of the x axis.
    * @param xbins Total number of histogram bins in x_.
    * @param xmin The lower histogram limit in x_.
    * @param xmax The upper histogram limit in x_.
-   * @param yLabel Title of the x axis.
+   * @param y_label Title of the x axis.
    * @param ybins Total number of histogram bins in y_.
    * @param ymin The lower histogram limit in y_.
    * @param ymax The upper histogram limit in y_.
    */
-  void create(const std::string& name, const std::string& xLabel,
-              const double& xbins, const double& xmin, const double& xmax,
-              const std::string& yLabel, const double& ybins,
+  void create(const std::string& name, const std::string& x_label,
+              const int& xbins, const double& xmin, const double& xmax,
+              const std::string& y_label, const int& ybins,
               const double& ymin, const double& ymax);
 
   /**
@@ -106,45 +147,35 @@ class HistogramPool {
    *
    * @param name Name of the histogram. This will also be used as a
    *             title.
-   * @param xLabel Title of the x axis.
+   * @param x_label Title of the x axis.
    * @param xbins Bin edges on x axis
-   * @param yLabel Title of the y axis.
+   * @param y_label Title of the y axis.
    * @param ybins Bin edges on y axis
    */
-  void create(const std::string& name, const std::string& xLabel,
-              const std::vector<double>& xbins, const std::string& yLabel,
+  void create(const std::string& name, const std::string& x_label,
+              const std::vector<double>& xbins, const std::string& y_label,
               const std::vector<double>& ybins);
 
   /**
    * Fill a 1D histogram
    *
-   * Uses the current setting of theWeight_.
+   * Uses the current setting of the weight.
    *
    * @param name name of the histogram to fill
    * @param val value to fill
    */
-  void fill(const std::string& name, const double& val) {
-    auto hist = dynamic_cast<TH1F*>(this->get(name));
-    if (hist) {
-      hist->Fill(val, the_weight_);
-    }
-  }
+  void fill(const std::string& name, const double& val);
 
   /**
    * Fill a 2D histogram
    *
-   * Uses the current setting of theWeight_.
+   * Uses the current setting of the weight.
    *
    * @param name name of the histogram to fill
    * @param valx x value to fill
    * @param valy y value to fill
    */
-  void fill(const std::string& name, const double& valx, const double& valy) {
-    auto hist = dynamic_cast<TH2F*>(this->get(name));
-    if (hist) {
-      hist->Fill(valx, valy, the_weight_);
-    }
-  }
+  void fill(const std::string& name, const double& valx, const double& valy);
 
 };
 }  // namespace framework

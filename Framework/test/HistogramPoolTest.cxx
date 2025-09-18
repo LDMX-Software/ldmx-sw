@@ -64,8 +64,14 @@ TEST_CASE("HistogramPool Functions", "[Framework][functionality]") {
 
   SECTION("separate pools") {
     TFile f{test_file, "recreate"};
-    HistogramPool p1{[&f]() { return f.mkdir("p1"); }};
-    HistogramPool p2{[&f]() { return f.mkdir("p2"); }};
+    HistogramPool p1{[&f]() { 
+      static TDirectory *d{f.mkdir("p1")};
+      return d;
+    }};
+    HistogramPool p2{[&f]() {
+      static TDirectory *d{f.mkdir("p2")};
+      return d;
+    }};
     CHECK(f.Get("p1") == nullptr);
     CHECK(f.Get("p2") == nullptr);
     p1.create("h", "bar", 10, 0, 1);
@@ -89,4 +95,40 @@ TEST_CASE("HistogramPool Functions", "[Framework][functionality]") {
   }
 
   // different types of creation
+  SECTION("different types of histograms") {
+    TFile f{test_file, "recreate"};
+    HistogramPool p{[&f]() {
+      static TDirectory* d{f.mkdir("p")};
+      return d;
+    }};
+    p.create("h1", "foo", 10, 0, 1);
+    p.create("h2", "bar", {0.0, 0.5, 0.8, 1.0});
+    p.create("h3", "baz", 5, -5, 5, "foo", 10, -5, 5);
+    p.create("h4", "baz", {-5.0, -1.0, 0.0, 1.0, 5.0}, "foo", {0.0, 1.0, 5.0});
+    f.Write();
+
+    auto h1 = dynamic_cast<TH1F*>(f.Get("p/h1"));
+    REQUIRE(h1 != nullptr);
+    CHECK(h1->GetNbinsX() == 10);
+    CHECK(h1->GetBinLowEdge(1) == 0.0);
+    CHECK(h1->GetBinLowEdge(11) == 1.0);
+
+    auto h2 = dynamic_cast<TH1F*>(f.Get("p/h2"));
+    REQUIRE(h2 != nullptr);
+    CHECK(h2->GetNbinsX() == 3);
+    CHECK(h2->GetBinLowEdge(1) == 0.0);
+    CHECK(h2->GetBinLowEdge(2) == 0.5);
+    CHECK(h2->GetBinLowEdge(3) == 0.8);
+    CHECK(h2->GetBinLowEdge(4) == 1.0);
+
+    auto h3 = dynamic_cast<TH2F*>(f.Get("p/h3"));
+    REQUIRE(h3 != nullptr);
+    CHECK(h3->GetNbinsX() == 5);
+    CHECK(h3->GetNbinsY() == 10);
+
+    auto h4 = dynamic_cast<TH2F*>(f.Get("p/h4"));
+    REQUIRE(h4 != nullptr);
+    CHECK(h4->GetNbinsX() == 4);
+    CHECK(h4->GetNbinsY() == 2);
+  }
 }
