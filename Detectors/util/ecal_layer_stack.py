@@ -31,7 +31,7 @@ Here   | PDG
 Al     | Al
 Ti     | Ti
 Air    | Mixtures -> Air (dry, 1 atm)
-PCB    | 0.17mm Cu + 1.03mm G10 (see pcb-layers.nbt for this estimate)
+PCB    | 0.17mm Cu + 1.03mm G10 (see Layer.pcb for details)
 Si     | Si
 W      | W
 Carbon | C -> 6 C carbon (amorphous) with lower density to represent carbon fiber
@@ -241,10 +241,36 @@ class Layer :
     def tungsten(t) :
         return Layer('W', t)
 
-    def pcb() :
+    def pcb(*, thickness = 1.2, n_copper_layers = 8) :
+        """Estimate PCB layer properties with a layer of copper and a layer of fiberglass
+
+        The total thickness of the PCB is given as well as the expected number of copper layers.
+        The total thickness of the copper is then determined assuming that 2 of the copper layers
+        are 1 oz/ft^2 and the rest are 0.5 oz/ft^2.
+        The rest of the PCB thickness is then attributed to the fiberglass.
+        """
+
+        if n_copper_layers < 3:
+            raise ValueError('This estimate for the PCB does not make sense if there are less than 3 copper layers.')
+
+        # after dividing the copper weight (in oz/ft^2) by the density (in g/cm^3)
+        # we need to scale by this factor to get the units into mm
+        # https://numbat.dev/?q=oz+%2F+ft%5E2+%2F+%28g%2Fcm%5E3%29+-%3E+mm%E2%8F%8E
+        one_oz_ft2_per_one_g_cm3_to_mm = 0.305152
+
+        copper_thickness = round(
+            ( # 2 1oz layers and the rest are 0.5oz layers
+                (2)*(1) + (n_copper_layers - 2)*(0.5)
+            )/materials['Cu'].density*one_oz_ft2_per_one_g_cm3_to_mm,
+            ndigits = 3 # round to the micron
+        )
+
+        if copper_thickness >= thickness:
+            raise ValueError(f'Total thickness of PCB provided {thickness} is smaller than thickness for {n_copper_layers} of copper {copper_thickness}.')
+
         return [
-            Layer('Cu', 0.170),
-            Layer('FR4', 1.030)
+            Layer('Cu', copper_thickness),
+            Layer('FR4', thickness - copper_thickness)
         ]
 
     def glue(t) :
@@ -659,6 +685,20 @@ def bilayer_spec():
     print('Material, Depth / mm, Depth / X0')
     for material, depth in totals_by_material.items():
         print(material, f'{depth:.3g}', f'{depth/get_material(material).radiation_length_mm():.3g}', sep=', ')
+
+
+@command
+def pcb():
+    print('Layers')
+    total_mm, total_x0 = (0,0)
+    for layer in Layer.pcb():
+        print(layer.name, layer.thickness)
+        total_mm += layer.thickness
+        total_x0 += layer.thickness / layer.x0
+
+    print('\nTotal')
+    print(f'{total_mm:.3g} mm')
+    print(f'{total_x0:.3g} X0')
 
 
 def main():
