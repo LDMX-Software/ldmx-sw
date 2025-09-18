@@ -80,7 +80,7 @@ void EcalClusterAnalyzer::analyze(const framework::Event& event) {
   // Determine the truth information for the recoil electron
   std::vector<std::vector<float>> sp_electron_positions;
   const auto& ecal_sp_hits{event.getCollection<ldmx::SimTrackerHit>(
-      "EcalScoringPlaneHits", ecal_sp_hits_passname_)};
+      "EcalScoringPlaneHits", ecal_sp_hits_pass_name_)};
 
   std::vector<ldmx::SimTrackerHit> sorted_sp_hits = ecal_sp_hits;
   std::sort(sorted_sp_hits.begin(), sorted_sp_hits.end(),
@@ -163,8 +163,8 @@ void EcalClusterAnalyzer::analyze(const framework::Event& event) {
         const auto& contrib = it->getContrib(i);
         // get origin electron ID
         ancestor = contrib.origin_id_;
-	ldmx_log(trace) << "\t\t\tAncestor ID " << ancestor << " with edep " << c.edep;
-	tot_event_energy+=c.edep;
+	ldmx_log(trace) << "\t\t\tAncestor ID " << ancestor << " with edep " << contrib.edep_;
+	tot_event_energy+=contrib.edep_;
         // store energy from this contrib at index = origin electron ID
         if (ancestor <= nbr_of_electrons) {
 	  edep[ancestor] += contrib.edep_;
@@ -195,7 +195,7 @@ void EcalClusterAnalyzer::analyze(const framework::Event& event) {
         // if not tagged, hit was from a single electron (within acceptable purity)
         tag = ancestor; //prev_ancestor;
       }
-      else nMixed++;
+      else n_mixed++;
       histograms_.fill("ancestors", tag);
       hit_info.insert({hit.getID(), std::make_pair(tag, edep)});
     }  // end if simhit found
@@ -204,8 +204,8 @@ void EcalClusterAnalyzer::analyze(const framework::Event& event) {
   // Loop over the clusters
   int clustered_hits = 0;
   ldmx_log(trace) << "Loop over the clusters, N = " << n_ecal_clusters;
-  histograms_.fill("tag0frac_vs_SPdist",dist, (float)nMixed/ecal_rec_hits.size());
-  ldmx_log(debug) << "Got " << nMixed << " mixed hits, a fraction of " << (float)nMixed/ecal_rec_hits.size();
+  histograms_.fill("tag0frac_vs_SPdist",sp_ele_dist, (float)n_mixed/ecal_rec_hits.size());
+  ldmx_log(debug) << "Got " << n_mixed << " mixed hits, a fraction of " << (float)n_mixed/ecal_rec_hits.size();
 
   if (ecal_clusters.size() >= 2) {
     float dR = std::sqrt(std::pow((ecal_clusters[0].getCentroidX() - ecal_clusters[1].getCentroidX()), 2) +

@@ -52,12 +52,11 @@ class PFCandidate {
     pos_hcal_y_ = y_;
     pos_hcal_z_ = z_;
   }
-
   void setTrackPxPyPz(float x_, float y_, float z_) {
     track_px_ = x_;
     track_py_ = y_;
     track_pz_ = z_;
-
+  }
   // associate component indices to the pf candidate
   void setTrackIndex(int x) { track_idx_ = x; }
   void setEcalIndex(int x) { ecal_idx_ = x; }

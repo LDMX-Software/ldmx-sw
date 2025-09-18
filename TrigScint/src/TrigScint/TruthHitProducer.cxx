@@ -37,9 +37,9 @@ void TruthHitProducer::produce(framework::Event &event) {
   }
 
   // looper over sim hits and aggregate energy depositions for each detID
-  const auto simHits{event.getCollection<ldmx::SimCalorimeterHit>(
+  const auto sim_hits{event.getCollection<ldmx::SimCalorimeterHit>(
       input_collection_, input_pass_name_)};
-  auto particleMap{event.getMap<int, ldmx::SimParticle>(
+  auto particle_map{event.getMap<int, ldmx::SimParticle>(
       "SimParticles", sim_particles_pass_name_)};
 
   std::vector<ldmx::SimCalorimeterHit> truth_beam_electrons;
@@ -49,14 +49,14 @@ void TruthHitProducer::produce(framework::Event &event) {
     bool keep{false};
     // check if hit is from beam electron and, if so, add to output collection
     for (int i = 0; i < sim_hit.getNumberOfContribs(); i++) {
-      auto contrib = simHit.getContrib(i);
-      ldmx_log(trace) << "contrib " << i << " trackID: " << contrib.trackID
-		      << " pdgID: " << contrib.pdgCode
-		      << " edep: " << contrib.edep;
+      auto contrib = sim_hit.getContrib(i);
+      ldmx_log(trace) << "contrib " << i << " track_id: " << contrib.track_id_
+		      << " pdgID: " << contrib.pdg_code_
+		      << " edep: " << contrib.edep_;
       ldmx_log(trace) << "\t particle id: "
-		      << particleMap[contrib.trackID].getPdgID()
+		      << particle_map[contrib.track_id_].getPdgID()
 		      << " particle status: "
-		      << particleMap[contrib.trackID].getGenStatus();
+		      << particle_map[contrib.track_id_].getGenStatus();
       
       // if the trackID is in the map
       if (particle_map.find(contrib.track_id_) != particle_map.end()) {
@@ -66,7 +66,7 @@ void TruthHitProducer::produce(framework::Event &event) {
           keep = true;
         }
       }
-      if (keep) truthBeamElectrons.push_back(sim_hit);
+      if (keep) truth_beam_electrons.push_back(sim_hit);
     }//over simhit contribs 
   }//over simhits 
   event.add(output_collection_, truth_beam_electrons);

@@ -341,13 +341,13 @@ std::vector<std::vector<const ldmx::EcalHit*>> CLUE::clustering(
             density->total_energy_ > rhoc_ && density->delta_ > delta_c_mod;
       } else {
         is_seed = density->total_energy_ > rhoc_ && density->delta_ > deltac_;
-      if (is_seed) {
-        ldmx_log(trace) << "  Distance to event centroid: "
-                        << floatDist(density->x_, density->y_,
-                                     event_centroid_.centroid().x(),
-				     event_centroid_.centroid().y());
+	if (is_seed) {
+	  ldmx_log(trace) << "  Distance to event centroid: "
+			  << dist(density->x_, density->y_,
+				  event_centroid_.centroid().x(),
+				  event_centroid_.centroid().y());
+	}
       }
-
       bool is_outlier =
           (density->total_energy_ < rhoc_) && (density->delta_ > deltao_);
       density->cluster_id_ = -1;
@@ -460,7 +460,7 @@ std::vector<std::shared_ptr<CLUE::Density>> CLUE::setupForClue3D() {
       if (current_seed->total_energy_ > highest_energy)
         highest_energy = current_seed->total_energy_;
       ldmx_log(trace) << "    Density with index " << current_seed->index_
-                      << ", energy: " << current_seed->total_energy_;
+                      << ", energy: " << current_seed->total_energy_
       		      << " position (x,y)= {" << current_seed->x_ << ","
 		      << current_seed->y_ << ")";
       int depth = 1;

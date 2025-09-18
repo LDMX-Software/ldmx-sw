@@ -318,7 +318,7 @@ void ParticleFlow::produce(framework::Event& event) {
         // chargedUnmatch.push_back(cand);
       } else {  // if track is linked with ECal cluster
         fillCandEMCalo(cand, ecal_clusters[tk_em_pairs[i]]);
-	cand.setEcalIndex(tkEMPairs[i]);
+	cand.setEcalIndex(tk_em_pairs[i]);
         if (em_is_had_linked[tk_em_pairs[i]]) {  // if ECal is linked with HCal
                                                  // cluster
           fillCandHadCalo(cand, hcal_clusters[em_had_pairs[tk_em_pairs[i]]]);
