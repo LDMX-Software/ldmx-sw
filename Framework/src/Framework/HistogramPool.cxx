@@ -28,6 +28,8 @@ TH1* HistogramPool::get(const std::string& name) {
 void HistogramPool::create(const std::string& name, const std::string& xLabel,
                              const double& bins, const double& xmin,
                              const double& xmax) {
+  get_directory_()->cd();
+
   // Create a histogram of type T
   auto hist = new TH1F(name.c_str(), name.c_str(), bins, xmin, xmax);
 
@@ -44,6 +46,7 @@ void HistogramPool::create(const std::string& name, const std::string& xLabel,
 
 void HistogramPool::create(const std::string& name, const std::string& xLabel,
                              const std::vector<double>& bins) {
+  get_directory_()->cd();
   auto hist = new TH1F(name.c_str(), name.c_str(), bins.size()-1, bins.data());
 
   // Set the title
@@ -62,6 +65,7 @@ void HistogramPool::create(const std::string& name, const std::string& xLabel,
                              const double& xmax, const std::string& yLabel,
                              const double& ybins, const double& ymin,
                              const double& ymax) {
+  get_directory_()->cd();
   // Create a histogram of type T
   auto hist = new TH2F(name.c_str(), name.c_str(), xbins, xmin, xmax,
                        ybins, ymin, ymax);
@@ -85,6 +89,7 @@ void HistogramPool::create(const std::string& name, const std::string& xLabel,
                              const std::vector<double>& xbins,
                              const std::string& yLabel,
                              const std::vector<double>& ybins) {
+  get_directory_()->cd();
   auto hist = new TH2F(name.c_str(), name.c_str(),
                        xbins.size()-1, xbins.data(),
                        ybins.size()-1, ybins.data());

@@ -8,7 +8,7 @@
 namespace framework {
 
 EventProcessor::EventProcessor(const std::string &name, Process &process)
-    : histograms_{},
+    : histograms_{[this]() -> TDirectory* { return this->getHistoDirectory(); }},
       the_log_{logging::makeLogger(name)},
       process_{process},
       name_{name} {}

@@ -4,15 +4,15 @@
 //----------------//
 //   C++ StdLib   //
 //----------------//
-#include <iostream>
-#include <memory>
 #include <unordered_map>
+#include <functional>
 
 //----------//
 //   ROOT   //
 //----------//
 #include "TH1F.h"
 #include "TH2F.h"
+#include "TDirectory.h"
 
 namespace framework {
 
@@ -29,7 +29,17 @@ class HistogramPool {
   double the_weight_{1.};
   /// the pool of histogram pointers
   std::unordered_map<std::string, TH1*> histograms_;
+  /**
+   * the callback to get the directory these histograms should go in
+   *
+   * This needs to be dynamic so that the directory is only created
+   * upon request.
+   */
+  std::function<TDirectory*()> get_directory_;
  public:
+  /// define how we can get the directory we need
+  HistogramPool(std::function<TDirectory*()> get_directory): get_directory_{get_directory} {}
+
   /**
    * Set the weight for filling the histograms
    */
