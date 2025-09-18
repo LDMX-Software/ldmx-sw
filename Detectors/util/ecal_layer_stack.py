@@ -3,6 +3,44 @@
 This is a stand-alone python script meant to help make these calculations easer.
 It is kept within ldmx-sw since both the GDML and the reconstruction layer weights
 have been updated using the output of this script.
+
+In order to align with Geant4, we use the following units
+- Energy: MeV
+- Distance: mm
+
+We keep a few reference tables so that all layers
+can access the properties of their materials.
+The materials that are copied from the PDG
+[Atomic and Nuclear Properties](https://pdg.lbl.gov/2023/AtomicNuclearProperties/index.html)
+are kept as PDGMaterial in the materials dictionary and a few aliases of these
+materials are kept in material_aliases to be clear about the material names we
+use (in the GDML) and the material names from the PDG.
+
+Some composite materials are also found in the PDG, but others are not.
+Specifically, the PCB is not something found in the PDG, so we have
+to estimate the approximate thickness of copper (Cu) in the PCB and then
+attribute the rest of its thickness to fiberglass (FR4 -> G10).
+
+The unit-conversion calculations are left in PDGMaterial for transparency.
+
+Natalia found [this study of the ALICE TRD](https://www-physics.lbl.gov/~gilg/PixelUpgradeMechanicsCooling/Material/Radiationlength.pdf)
+which is a helpful source of comparison to make sure we aren't wildly off.
+
+Here   | PDG
+-------|-----
+Al     | Al
+Ti     | Ti
+Air    | Mixtures -> Air (dry, 1 atm)
+PCB    | 0.17mm Cu + 1.03mm G10 (see Layer.pcb for details)
+Si     | Si
+W      | W
+Carbon | C -> 6 C carbon (amorphous) with lower density to represent carbon fiber
+Glue   | Polymers -> polycarbonate (OC6H4C(CH3)2C6H4OCO)n
+Kapton | Polymers -> Polymide film (Kapton)
+
+Glue in the GDML is a polycarbon is 85% C, 4% H, and 11% O,
+the polycarbonate in the PDG is 75% C, 5% H and 20% O which
+I deemed close enough.
 """
 
 import sys
@@ -55,7 +93,7 @@ class PDGMaterialEncoder(json.JSONEncoder):
     table with indenting for easier readability.
     For example
 
-        print(json.dumps(Layer.materials, cls=PDGMaterialEncoder, indent=2))
+        print(json.dumps(materials, cls=PDGMaterialEncoder, indent=2))
 
     """
 
@@ -66,12 +104,24 @@ class PDGMaterialEncoder(json.JSONEncoder):
 
 
 # This dictionary holds materials that are copied down from the PDG site
-__materials__ = dict(
+materials = dict(
+    Kapton = PDGMaterial(
+        density = 1.420,
+        minimum_ionization = 1.820,
+        nuclear_interaction_length = 85.5,
+        radiation_length = 40.58
+    ),
     Al = PDGMaterial(
         density = 2.699,
         minimum_ionization = 1.615,
         nuclear_interaction_length = 107.2,
         radiation_length = 24.01
+    ),
+    Ti = PDGMaterial(
+        density = 4.540,
+        minimum_ionization = 1.477,
+        nuclear_interaction_length = 126.2,
+        radiation_length = 16.16
     ),
     Air = PDGMaterial(
         density = 1.205e-3,
@@ -79,6 +129,8 @@ __materials__ = dict(
         nuclear_interaction_length = 90.1,
         radiation_length = 36.62
     ),
+    # same as air, but with incorrect density
+    # for comparing to past versions of the script with typo
     SuperDenseAir = PDGMaterial(
         density = 1.205,
         minimum_ionization = 1.815,
@@ -145,142 +197,26 @@ __materials__ = dict(
     )
 )
 
+material_aliases = dict(
+    FR4 = 'G10',
+    Carbon = 'C',
+    Glue = 'polycarbonate'
+)
 
-def pdg_material(*, scale_weights=False, **kwargs):
-    """Estimate material properties by doing a weighted sum of its components
-    from the PDG material table copied from online.
 
-    The input key-word arguments specify the material (key) and its fraction (value).
-    For example, the following would produce a material which is 50% copper and 50% silicon.
+def get_material(name):
+    """get a PDGMaterial by name
 
-        pdg_material(Cu = 0.5, Si = 0.5)
-
-    If the input weights do not sum to 1.0, then a ValueError is raised (if scale_weights is False)
-    or the weights are all divided by their sum.
+    First, we re-map the input name to an alias if it is present
+    in material_aliases, then we look it up in the materials dictionary.
     """
-    
-    weight_sum = sum(weight for weight in kwargs.values())
-    if weight_sum != 1.0:
-        if not scale_weights:
-            raise ValueError(f"Sum of weights provided ({weight_sum}) does not equal 1.0: {kwargs}")
-
-        # divide all weights by the weight sum so it equals 1
-        for key in kwargs:
-            kwargs[key] /= weight_sum
-
-    return PDGMaterial(
-        density = sum(weight*__materials__[material].density for material, weight in kwargs.items()),
-        minimum_ionization = sum(
-            weight*__materials__[material].minimum_ionization
-            for material, weight in kwargs.items()
-        ),
-        radiation_length = 1/(sum(
-            weight/__materials__[material].radiation_length
-            for material, weight in kwargs.items())
-        ),
-        nuclear_interaction_length = 1/(sum(
-            weight/__materials__[material].nuclear_interaction_length
-            for material, weight in kwargs.items())
-        )
-    )
+    return materials[material_aliases.get(name, name)]
 
 
 class Layer :
     """class representing a single layer of a single material
 
-    In order to align with Geant4, we use the following units
-    - Energy: MeV
-    - Distance: mm
-
-    Class Attributes
-    ----------------
-    We keep a few reference tables stored within the class so that all layers
-    can access the properties of their materials.
-    The materials that are copied from the PDG
-    [Atomic and Nuclear Properties](https://pdg.lbl.gov/2023/AtomicNuclearProperties/index.html)
-    are kept as PDGMaterial in the __materials__ dictionary.
-    Some composite materials are also found in the PDG, but we have to estimate the PCB
-    material properties ourselves.
-    The unit-conversion calculations are left in PDGMaterial for transparency.
-
-    Natalia found [this study of the ALICE TRD](https://www-physics.lbl.gov/~gilg/PixelUpgradeMechanicsCooling/Material/Radiationlength.pdf)
-    which is a helpful source of comparison to make sure we aren't wildly off.
-
-    Here   | PDG
-    -------|-----
-    Al     | Al
-    Air    | Mixtures -> Air (dry, 1 atm)
-    PCB    | weighted mix of materials
-    Si     | Si
-    W      | W
-    Carbon | C -> 6 C carbon (amorphous) with lower density to represent carbon fiber
-    Glue   | Polymers -> polycarbonate (OC6H4C(CH3)2C6H4OCO)n
-
-    PCB in the GDML is 50% Cu, 23% O, 4.8% Na, 17% Si, 5.2% Ca,
-    and the PDG does not have any mixtures in the drop down menu
-    that have Copper in them so I have to spin my own.
-
-    Glue in the GDML is a polycarbon is 85% C, 4% H, and 11% O,
-    the polycarbonate in the PDG is 75% C, 5% H and 20% O which
-    I deemed close enough.
-
-    dEdx : dict[str, float]
-        material name to average energy loss per unit distance (MeV/mm) of a MIP.
-        If listed in the PDG, they are the "Minimum ionization" line.
-        The calculation is (dEdx [MeV cm^2/g] * density [g/cm^3]) / 10 [mm/cm]
-
-    X0 : dict[str, float]
-        material name to radiation length (mm)
-        These values are taken from the "Radiation length" line of the PDG if possible.
-        The calculation is (X0 [g/cm^2] / density [g/cm^3]) * 10 [mm/cm].
-
-    nuclen : dict[str, float]
-        material name to nuclear interaction length (mm)
-        These values are taken from the "Nuclear interaction length" line of the PDG if possible.
-        The calculation is (nuclen [g/cm^2] / density [g/cm^3]) * 10 [mm/cm].
     """
-
-    materials = dict(
-        Al = pdg_material(Al = 1.0),
-        Air = pdg_material(Air = 1.0),
-#        # using atomic fraction
-#        PCB = pdg_material(
-#            Cu = 0.5,
-#            G10 = 0.5,
-#            scale_weights = True
-#        ),
-#        # using depth/thickness fraction from ALICE TRD
-#        PCB = pdg_material(
-#            Cu = 0.025,
-#            G10 = 0.38,
-#            scale_weights = True
-#        ),
-        # using depth/thickness fraction from pcb-layers.nbt
-        PCB = pdg_material(
-            Cu = 0.238,
-            G10 = 1.422,
-            scale_weights=True
-        ),
-        Si = pdg_material(Si = 1.0),
-        W = pdg_material(W = 1.0),
-        Carbon = pdg_material(C = 1.0),
-        Glue = pdg_material(polycarbonate = 1.0)
-    )
-
-    dEdx = {
-        name : material.minimum_ionization_MeV_mm()
-        for name, material in materials.items()
-    }
-
-    X0 = {
-        name: material.radiation_length_mm()
-        for name, material in materials.items()
-    }
-    
-    nuclen = {
-        name: material.nuclear_interaction_length_mm()
-        for name, material in materials.items()
-    }
 
     # 300 um for v14 and 400 um for v15
     SensDetThickness = 0.4
@@ -289,9 +225,12 @@ class Layer :
         self.name = name
         self.thickness = thickness
         self.sensitive = sensitive
-        self.nuclen = Layer.nuclen[self.name]
-        self.x0 = Layer.X0[self.name]
-        self.dEdx = Layer.dEdx[self.name]
+
+        the_material = get_material(name)
+
+        self.nuclen = the_material.nuclear_interaction_length_mm()
+        self.x0 = the_material.radiation_length_mm()
+        self.dEdx = the_material.minimum_ionization_MeV_mm()
 
     def __str__(self) :
         return f'{self.thickness:.2f} mm {self.name}'
@@ -302,8 +241,37 @@ class Layer :
     def tungsten(t) :
         return Layer('W', t)
 
-    def pcb() :
-        return Layer('PCB',1.666)
+    def pcb(*, thickness = 1.2, n_copper_layers = 8) :
+        """Estimate PCB layer properties with a layer of copper and a layer of fiberglass
+
+        The total thickness of the PCB is given as well as the expected number of copper layers.
+        The total thickness of the copper is then determined assuming that 2 of the copper layers
+        are 1 oz/ft^2 and the rest are 0.5 oz/ft^2.
+        The rest of the PCB thickness is then attributed to the fiberglass.
+        """
+
+        if n_copper_layers < 3:
+            raise ValueError('This estimate for the PCB does not make sense if there are less than 3 copper layers.')
+
+        # after dividing the copper weight (in oz/ft^2) by the density (in g/cm^3)
+        # we need to scale by this factor to get the units into mm
+        # https://numbat.dev/?q=oz+%2F+ft%5E2+%2F+%28g%2Fcm%5E3%29+-%3E+mm%E2%8F%8E
+        one_oz_ft2_per_one_g_cm3_to_mm = 0.305152
+
+        copper_thickness = round(
+            ( # 2 1oz layers and the rest are 0.5oz layers
+                (2)*(1) + (n_copper_layers - 2)*(0.5)
+            )/materials['Cu'].density*one_oz_ft2_per_one_g_cm3_to_mm,
+            ndigits = 3 # round to the micron
+        )
+
+        if copper_thickness >= thickness:
+            raise ValueError(f'Total thickness of PCB provided {thickness} is smaller than thickness for {n_copper_layers} of copper {copper_thickness}.')
+
+        return [
+            Layer('Cu', copper_thickness),
+            Layer('FR4', thickness - copper_thickness)
+        ]
 
     def glue(t) :
         return Layer('Glue', t)
@@ -313,6 +281,15 @@ class Layer :
 
     def carbon(t) :
         return Layer('Carbon',t)
+
+    def titanium_baseplate():
+        return Layer('Ti', 1)
+
+    def aluminum_support_plane():
+        return Layer('Al', 3)
+
+    def kapton(t):
+        return Layer('Kapton', t)
 
 
 @dataclass
@@ -346,18 +323,57 @@ class BiLayerSandwich:
       | front absorber (W)            |
       | Readout Motherboard (PCB)     |
       | Air                           |
-      | Hexamodule (Si, Glue, PCB, C) |
+      | Hexamodule                    |
+      |   PCB (Cu + FR4)              |
+      |   Glue                        |
+      |   Si                          |
+      |   Glue                        |
+      |   Carbon baseplate            |
       | Cooling Absorber (W)          |
       | Carbon Cooling Plane (Carbon) |
       | Cooling Absorber (W)          |
-      | Hexamodule (Si, Glue, PCB, C) |
+      | Hexamodule                    |
+      |   Carbon baseplate            |
+      |   Glue                        |
+      |   Si                          |
+      |   Glue                        |
+      |   PCB (Cu + FR4)              |
       | Air                           |
       | Readout Motherboard (PCB)     |
+
+    For the 2025 "slice test", we are co-opting baseplates and support planes
+    from other sources, so they look like
+
+      | Readout Motherboard (PCB)     |
+      | Air                           |
+      | Hexamodule                    |
+      |   PCB (Cu + FR4)              |
+      |   Glue                        |
+      |   Si                          |
+      |   Glue                        |
+      |   Kapton                      |
+      |   Cu                          |
+      |   Kapton                      |
+      |   Ti                          |
+      | Aluminum Support (Al)         |
+      | Hexamodule                    |
+      |   Ti                          |
+      |   Kapton                      |
+      |   Cu                          |
+      |   Kapton                      |
+      |   Glue                        |
+      |   Si                          |
+      |   Glue                        |
+      |   PCB (Cu + FR4)              |
+      | Air                           |
+      | Readout Motherboard (PCB)     |
+
 
     """
 
     front: float = 0.0
     cooling: float = 0.0
+    slice_test: bool = False
 
     def material_stack(self):
         layers = []
@@ -367,30 +383,49 @@ class BiLayerSandwich:
             layers.append(Layer.air(0.5))
         if self.front == 0:
             layers.append(Layer.air(0.15)) # correction
-        layers.append(Layer.pcb()) # PCB_dz
+        layers.extend(Layer.pcb()) # PCB_dz
         layers.append(Layer.air(3.5)) # PCB_Motherboard_Gap
-        layers.append(Layer.pcb()) # PCB_dz
+        layers.extend(Layer.pcb()) # PCB_dz
         layers.append(Layer.glue(0.1)) # Glue_dz
         layers.append(Layer.silicon()) # Si_dz
         layers.append(Layer.glue(0.2)) # GlueThick_dz
-        layers.append(Layer.carbon(0.79)) # CarbonBasePlate_dz
-        if self.cooling == 0 :
-            layers.append(Layer.air(0.5)) # preshower_extra_air
-        if self.cooling > 0 :
-            layers.append(Layer.tungsten(self.cooling))
-        layers.append(Layer.carbon(5.7)) # CarbonCoolingPlane_dz
-        if self.cooling > 0 :
-            layers.append(Layer.tungsten(self.cooling))
-        layers.append(Layer.carbon(0.79)) # CarbonBasePlate_dz
+        if self.slice_test:
+            layers.extend([
+                Layer.kapton(0.05),
+                Layer('Cu', 0.017), # approx thickness of 0.5oz Cu layer
+                Layer.kapton(0.05),
+                Layer.titanium_baseplate()
+            ])
+        else:
+            layers.append(Layer.carbon(0.79)) # CarbonBasePlate_dz
+            if self.cooling == 0 :
+                layers.append(Layer.air(0.5)) # preshower_extra_air
+            if self.cooling > 0 :
+                layers.append(Layer.tungsten(self.cooling))
+        if self.slice_test:
+            layers.append(Layer.aluminum_support_plane())
+        else:
+            layers.append(Layer.carbon(5.7)) # CarbonCoolingPlane_dz
+        if self.slice_test:
+            layers.extend([
+                Layer.titanium_baseplate(),
+                Layer.kapton(0.05),
+                Layer('Cu', 0.017), # approx thickness of 0.5oz Cu layer
+                Layer.kapton(0.05),
+            ])
+        else:
+            layers.append(Layer.carbon(0.79)) # CarbonBasePlate_dz
+            if self.cooling > 0 :
+                layers.append(Layer.tungsten(self.cooling))
         layers.append(Layer.glue(0.2)) # GlueThick_dz
         layers.append(Layer.silicon()) # Si_dz
         layers.append(Layer.glue(0.1)) # Glue_dz
-        layers.append(Layer.pcb()) # PCB_dz
+        layers.extend(Layer.pcb()) # PCB_dz
         layers.append(Layer.air(3.5)) # PCB_Motherboard_Gap
         if self.cooling == 0 : # sampling_section_offset
             layers.append(Layer.air(0.5))
             layers.append(Layer.air(0.5))
-        layers.append(Layer.pcb()) # PCB_dz
+        layers.extend(Layer.pcb()) # PCB_dz
         return layers
 
 
@@ -546,7 +581,7 @@ def print_layer_materials():
                 'nuclear_interaction_length_mm'
             ]
         }
-        for name, material in Layer.materials.items()
+        for name, material in materials.items()
     }, indent=2))
 
 
@@ -577,6 +612,7 @@ def ldmx_ecal_v14():
     weights = calc_weights(mbs)
     print_weights(*weights)
 
+
 @command
 def ldmx_ecal_v15():
     """full LDMX Ecal v15 geometry"""
@@ -604,12 +640,15 @@ def ldmx_ecal_v15():
     weights = calc_weights(mbs)
     print_weights(*weights)
 
+
 @command
 def minildmx():
+    Layer.SensDetThickness = 0.3
+
     print('            |     Depth     |')
     print('N Bi-Layers | X0    | mm    |')
     for n in range(1,4):
-        layers = n*BiLayerSandwich(front=0, cooling=0).material_stack()
+        layers = [Layer.kapton(0.1)]+n*BiLayerSandwich(front=0, cooling=0, slice_test=True).material_stack()+[Layer.kapton(0.1)]
         print('{n:>11} | {x0:<5.3g} | {z:<5.3g} |'.format(
             n = n,
             x0 = sum(layer.thickness / layer.x0 for layer in layers),
@@ -619,22 +658,47 @@ def minildmx():
 
 @command
 def bilayer_spec():
-    layers = BiLayerSandwich(front=0, cooling=0).material_stack()
+    include_kapton = True
+    slice_test = True
+
+    if slice_test:
+        Layer.SensDetThickness = 0.3
+
+    layers = 3*BiLayerSandwich(front=0, cooling=0, slice_test=slice_test).material_stack()
+
+    if include_kapton:
+        layers.insert(0, Layer.kapton(0.1))
+        layers.append(Layer.kapton(0.1))
+
     totals_by_material = {}
 
     print('Full Layer Stack')
-    print('Material, Depth / mm')
+    print('Material, Depth / mm, Depth / X0')
     for layer in layers:
-        print(layer.name, layer.thickness, sep=', ')
+        print(layer.name, layer.thickness, f'{layer.thickness / layer.x0:.3g}', sep=', ')
         if layer.name not in totals_by_material:
             totals_by_material[layer.name] = 0.0
         totals_by_material[layer.name] += layer.thickness
 
     print()
     print('Total Depths')
-    print('Material, Depth / mm')
+    print('Material, Depth / mm, Depth / X0')
     for material, depth in totals_by_material.items():
-        print(material, depth, sep=', ')
+        print(material, f'{depth:.3g}', f'{depth/get_material(material).radiation_length_mm():.3g}', sep=', ')
+
+
+@command
+def pcb():
+    print('Layers')
+    total_mm, total_x0 = (0,0)
+    for layer in Layer.pcb():
+        print(layer.name, layer.thickness)
+        total_mm += layer.thickness
+        total_x0 += layer.thickness / layer.x0
+
+    print('\nTotal')
+    print(f'{total_mm:.3g} mm')
+    print(f'{total_x0:.3g} X0')
 
 
 def main():
