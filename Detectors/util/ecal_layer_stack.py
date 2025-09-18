@@ -242,9 +242,6 @@ class Layer :
         return Layer('W', t)
 
     def pcb() :
-        return Layer('PCB',1.666)
-
-    def pcb_unpacked():
         return [
             Layer('Cu', 0.170),
             Layer('FR4', 1.030)
@@ -321,7 +318,6 @@ class BiLayerSandwich:
     For the 2025 "slice test", we are co-opting baseplates and support planes
     from other sources, so they look like
 
-      | front absorber (W)            |
       | Readout Motherboard (PCB)     |
       | Air                           |
       | Hexamodule                    |
@@ -361,11 +357,9 @@ class BiLayerSandwich:
             layers.append(Layer.air(0.5))
         if self.front == 0:
             layers.append(Layer.air(0.15)) # correction
-        #layers.append(Layer.pcb()) # PCB_dz
-        layers.extend(Layer.pcb_unpacked())
+        layers.extend(Layer.pcb()) # PCB_dz
         layers.append(Layer.air(3.5)) # PCB_Motherboard_Gap
-        #layers.append(Layer.pcb()) # PCB_dz
-        layers.extend(Layer.pcb_unpacked())
+        layers.extend(Layer.pcb()) # PCB_dz
         layers.append(Layer.glue(0.1)) # Glue_dz
         layers.append(Layer.silicon()) # Si_dz
         layers.append(Layer.glue(0.2)) # GlueThick_dz
@@ -400,14 +394,12 @@ class BiLayerSandwich:
         layers.append(Layer.glue(0.2)) # GlueThick_dz
         layers.append(Layer.silicon()) # Si_dz
         layers.append(Layer.glue(0.1)) # Glue_dz
-        #layers.append(Layer.pcb()) # PCB_dz
-        layers.extend(Layer.pcb_unpacked())
+        layers.extend(Layer.pcb()) # PCB_dz
         layers.append(Layer.air(3.5)) # PCB_Motherboard_Gap
         if self.cooling == 0 : # sampling_section_offset
             layers.append(Layer.air(0.5))
             layers.append(Layer.air(0.5))
-        #layers.append(Layer.pcb()) # PCB_dz
-        layers.extend(Layer.pcb_unpacked())
+        layers.extend(Layer.pcb()) # PCB_dz
         return layers
 
 
