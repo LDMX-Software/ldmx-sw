@@ -62,9 +62,9 @@ class LdmxMeasurementCalibrator {
                  typename traj_t::TrackStateProxy trackState) const {
     acts_examples::IndexSourceLink source_link{
         genericSourceLink.get<acts_examples::IndexSourceLink>()};
-    assert(m_measurements and
+    assert(m_measurements_ and
            "Undefined measurement container in LdmxMeasurementCalibrator");
-    assert((sourceLink.index() < m_measurements->size()) and
+    assert((source_link.index() < m_measurements_->size()) and
            "Source link index is outside the container bounds in "
            "LdmxMeasurementCalibrator");
 
@@ -105,9 +105,9 @@ class LdmxMeasurementCalibrator {
     acts_examples::IndexSourceLink source_link{
         genericSourceLink.get<acts_examples::IndexSourceLink>()};
 
-    assert(m_measurements and
+    assert(m_measurements_ and
            "Undefined measurement container in LdmxMeasurementCalibrator");
-    assert((sourceLink.index() < m_measurements->size()) and
+    assert((source_link.index() < m_measurements_->size()) and
            "Source link index is outside the container bounds in "
            "LdmxMeasurementCalibrator");
 
