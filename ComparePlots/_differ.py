@@ -9,6 +9,7 @@ import matplotlib
 import uproot
 import numpy as np
 import hist.intervals
+import mplhep
 
 # us
 from ._file import File
@@ -144,11 +145,19 @@ class Differ :
         den_h, _den_art = raw_histograms[0]
         bins = den_h.axes[0].edges
         for num_h, num_art in raw_histograms[1:]:
-            (den_h/num_h).plot1d(
+            # NumPy nicely warns us when we divide by zero,
+            # but its defaults are sensible to use
+            # x/0 = inf, 0/0 = nan
+            with np.errstate(divide="ignore", invalid="ignore"):
+                ratio = num_h.values() / den_h.values()
+            mplhep.histplot(
+                ratio,
+                bins = bins,
                 ax = ratio_ax,
                 yerr = hist.intervals.ratio_uncertainty(
                     num = num_h.values(),
-                    denom = den_h.values()
+                    denom = den_h.values(),
+                    uncertainty_type = 'poisson-ratio'
                 ),
                 histtype='errorbar',
                 color = num_art[0].stairs.get_edgecolor()
