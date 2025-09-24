@@ -89,13 +89,17 @@ class HistogramPool {
    * @note The `fill` method assumes we are creating TH1F or TH2F histograms
    * which is what is implemented in the create methods.
    *
+   * @param[in] name name to store histogram under in the pool, the `create`
+   * methods below ensure that the name in the pool and the name in the output
+   * file are the same
    * @param[in] factory the function that creates the histogram
    * which is called after we go into the appropriate output directory,
    * the returned pointer is then put into the pool after checking that
    * it doesn't exist yet.
+   * @param[in] weighted true if histogram is weighted (we then call Sumw2) or false otherwise
    * @throws framework::Exception if the passed name already exists
    */
-  void insert(const std::string& name, std::function<TH1*()> factory);
+  void insert(const std::string& name, std::function<TH1*()> factory, bool weighted);
 
  public:
   /// define how we can get the directory we need
@@ -125,12 +129,11 @@ class HistogramPool {
    * @param xmax The upper histogram limit.
    */
   void create(const std::string& name, const std::string& x_label,
-              const int& bins, const double& xmin, const double& xmax);
+              const int& bins, const double& xmin, const double& xmax,
+              bool weighted = false);
 
   /**
    * Create a ROOT 1D histogram of type TH1F and pool it for later use.
-   *
-   * @note Does not check if another histogram of the same name is in use.
    *
    * @param name Name of the histogram. This will also be used as a
    *             title.
@@ -138,15 +141,14 @@ class HistogramPool {
    * @param bins vector of bin edges
    */
   void create(const std::string& name, const std::string& x_label,
-              const std::vector<double>& bins);
+              const std::vector<double>& bins, bool weighted = false);
 
   void create(const std::string& name,
-              const std::vector<std::string>& categories);
+              const std::vector<std::string>& categories,
+              bool weighted = false);
 
   /**
    * Create a ROOT 2D histogram of type TH2F and pool it for later use.
-   *
-   * @note Does not check if another histogram of the same name is in use.
    *
    * @param name Name of the histogram. This will also be used as a
    *             title.
@@ -162,23 +164,30 @@ class HistogramPool {
   void create(const std::string& name, const std::string& x_label,
               const int& xbins, const double& xmin, const double& xmax,
               const std::string& y_label, const int& ybins, const double& ymin,
-              const double& ymax);
-
-  /**
-   * Create a ROOT 2D histogram of type TH2F and pool it for later use.
-   *
-   * @note Does not check if another histogram of the same name is in use.
-   *
-   * @param name Name of the histogram. This will also be used as a
-   *             title.
-   * @param x_label Title of the x axis.
-   * @param xbins Bin edges on x axis
-   * @param y_label Title of the y axis.
-   * @param ybins Bin edges on y axis
-   */
+              const double& ymax, bool weighted = false);
   void create(const std::string& name, const std::string& x_label,
-              const std::vector<double>& xbins, const std::string& y_label,
-              const std::vector<double>& ybins);
+              const std::vector<double>& xbins,
+              const std::string& y_label, const int& ybins, const double& ymin,
+              const double& ymax, bool weighted = false);
+  void create(const std::string& name, const std::string& x_label,
+              const std::vector<std::string>& xcategories,
+              const std::string& y_label, const int& ybins, const double& ymin,
+              const double& ymax, bool weighted = false);
+  void create(const std::string& name, const std::string& x_label,
+              const int& xbins, const double& xmin, const double& xmax,
+              const std::string& y_label, const std::vector<double>& ybins, bool weighted = false);
+  void create(const std::string& name, const std::string& x_label,
+              const int& xbins, const double& xmin, const double& xmax,
+              const std::string& y_label, const std::vector<std::string>& ycategories, bool weighted = false);
+  void create(const std::string& name, const std::string& x_label,
+              const std::vector<double>& xbins,
+              const std::string& y_label, const std::vector<double>& ybins, bool weighted = false);
+  void create(const std::string& name, const std::string& x_label,
+              const std::vector<double>& xbins,
+              const std::string& y_label, const std::vector<std::string>& ycategories, bool weighted = false);
+  void create(const std::string& name, const std::string& x_label,
+              const std::vector<std::string>& xcategories,
+              const std::string& y_label, const std::vector<std::string>& ycategories, bool weighted = false);
 
   /**
    * Fill a 1D histogram
@@ -203,6 +212,29 @@ class HistogramPool {
   }
 
   /**
+   * Fill a 1D histogram
+   *
+   * Using the input weight.
+   *
+   * @param name name of the histogram to fill
+   * @param val value to fill
+   * @param w weight to fill with
+   */
+  template <typename T>
+  void fillw(const std::string& name, const T& val, double w) {
+    auto hist = dynamic_cast<TH1F*>(this->get(name));
+    if (hist) {
+      hist->Fill(val, w);
+    } else {
+      // the `get` method handles checking if the histogram exists
+      // the only way that hist would be null at this point is if its not a TH1F
+      EXCEPTION_RAISE(
+          "BadHistSize",
+          "Attempting to 1D fill a histogram that is not actually 1D.");
+    }
+  }
+
+  /**
    * Fill a 2D histogram
    *
    * Uses the current setting of the weight.
@@ -216,6 +248,30 @@ class HistogramPool {
     auto hist = dynamic_cast<TH2F*>(this->get(name));
     if (hist) {
       hist->Fill(valx, valy, the_weight_);
+    } else {
+      // the `get` method handles checking if the histogram exists
+      // the only way that hist would be null at this point is if its not a TH2F
+      EXCEPTION_RAISE(
+          "BadHistSize",
+          "Attempting to 2D fill a histogram that is not actually 2D.");
+    }
+  }
+
+  /**
+   * Fill a 2D histogram
+   *
+   * Using the input weight.
+   *
+   * @param name name of the histogram to fill
+   * @param valx x value to fill
+   * @param valy y value to fill
+   * @param w weight to fill with
+   */
+  template <typename Tx, typename Ty>
+  void fillw(const std::string& name, const Tx& valx, const Ty& valy, double w) {
+    auto hist = dynamic_cast<TH2F*>(this->get(name));
+    if (hist) {
+      hist->Fill(valx, valy, w);
     } else {
       // the `get` method handles checking if the histogram exists
       // the only way that hist would be null at this point is if its not a TH2F

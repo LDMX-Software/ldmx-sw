@@ -104,11 +104,13 @@ TEST_CASE("HistogramPool Functions", "[Framework][functionality]") {
     std::vector<std::string> cats{"one", "two", "three"};
 
     p.create("h1_1", "foo", 10, 0, 1);
-    p.create("h1_2", "bar", {0.0, 0.5, 0.8, 1.0});
+    p.create("h1_2", "bar", {0.0, 0.5, 0.8, 1.0}, true);
     p.create("h1_3", cats);
 
     p.create("h2_1", "baz", 5, -5, 5, "foo", 10, -5, 5);
     p.create("h2_2", "baz", {-5.0, -1.0, 0.0, 1.0, 5.0}, "foo", {0.0, 1.0, 5.0});
+
+    p.fill("h1_2", 0.75);
 
     p.fill("h1_3", "one");
     // "one" again because categories are zero-indexed into bins
@@ -128,6 +130,8 @@ TEST_CASE("HistogramPool Functions", "[Framework][functionality]") {
     CHECK(h1_1->GetNbinsX() == 10);
     CHECK(h1_1->GetBinLowEdge(1) == 0.0);
     CHECK(h1_1->GetBinLowEdge(11) == 1.0);
+    REQUIRE(h1_1->GetSumw2() != nullptr);
+    CHECK(h1_1->GetSumw2()->fN == 0);
 
     auto h1_2 = dynamic_cast<TH1F*>(f.Get("p/h1_2"));
     REQUIRE(h1_2 != nullptr);
@@ -136,6 +140,8 @@ TEST_CASE("HistogramPool Functions", "[Framework][functionality]") {
     CHECK(h1_2->GetBinLowEdge(2) == 0.5);
     CHECK(h1_2->GetBinLowEdge(3) == 0.8);
     CHECK(h1_2->GetBinLowEdge(4) == 1.0);
+    REQUIRE(h1_2->GetSumw2() != nullptr);
+    CHECK(h1_2->GetSumw2()->fN == 5);
 
     auto h1_3 = dynamic_cast<TH1F*>(f.Get("p/h1_3"));
     REQUIRE(h1_3 != nullptr);
