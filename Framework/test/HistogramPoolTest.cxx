@@ -110,11 +110,16 @@ TEST_CASE("HistogramPool Functions", "[Framework][functionality]") {
     p.create("h2_1", "baz", 5, -5, 5, "foo", 10, -5, 5);
     p.create("h2_2", "baz", {-5.0, -1.0, 0.0, 1.0, 5.0}, "foo", {0.0, 1.0, 5.0});
 
-    p.fill("h1_3", 1);
-//    p.fill("h1_3", "one");
-//    p.fill("h1_3", "three");
-//    p.fill("h1_3", "four");
+    p.fill("h1_3", "one");
+    // "one" again because categories are zero-indexed into bins
     p.fill("h1_3", 0);
+    // "two" because categories are zero-indexed into bins
+    p.fill("h1_3", 1);
+    // "three" into third bin
+    p.fill("h1_3", "three");
+    // unknown category auto-expands Nbins when 
+    // doing categorical axes
+    //p.fill("h1_3", "four");
 
     f.Write();
 
@@ -136,11 +141,11 @@ TEST_CASE("HistogramPool Functions", "[Framework][functionality]") {
     REQUIRE(h1_3 != nullptr);
     CHECK(h1_3->GetNbinsX() == 3);
 
-    CHECK(h1_3->GetBinContent(0) == 1);
-    CHECK(h1_3->GetBinContent(1) == 2);
-    CHECK(h1_3->GetBinContent(2) == 0);
-    CHECK(h1_3->GetBinContent(3) == 0);
-    CHECK(h1_3->GetBinContent(4) == 1);
+    CHECK(h1_3->GetBinContent(0) == 0); // under
+    CHECK(h1_3->GetBinContent(1) == 2); // one
+    CHECK(h1_3->GetBinContent(2) == 1); // two
+    CHECK(h1_3->GetBinContent(3) == 1); // three
+    CHECK(h1_3->GetBinContent(4) == 0); // over
 
 
     auto h2_1 = dynamic_cast<TH2F*>(f.Get("p/h2_1"));
