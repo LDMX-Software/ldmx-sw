@@ -78,7 +78,7 @@ struct IndexSourceLinkAccessor
 
   // get the range of elements with requested geoId
   std::pair<Iterator, Iterator> range(const Acts::Surface& surface) const {
-    assert(container != nullptr);
+    assert(container_ != nullptr);
     auto [begin, end] = container_->equal_range(surface.geometryId());
     return {Iterator{begin}, Iterator{end}};
   }
