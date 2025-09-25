@@ -27,6 +27,14 @@ namespace framework {
  * # Usage
  * Each of the EventProcessors have a `histograms_` member variable that
  * developers can use within their producers and analyzers.
+ * You need to create the histograms before filling them.
+ * There are three different ways to specify the bins of a histogram:
+ * - uniform bins: provide the number of bins, the minimum, and the maximum
+ * - variable bins: provide the full list of bin edges (as a std::vector)
+ * - categories: provide a list of named categories (as a std::vector<std::string>)
+ *
+ * With these three different ways to specify bins, there are three different
+ * ways to create a 1D histogram and eight different ways to create a 2D histogram.
  *
  * In `onProcessStart()`, you create the histograms that you will want to fill.
  * For example,
