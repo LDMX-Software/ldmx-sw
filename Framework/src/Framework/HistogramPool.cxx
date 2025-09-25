@@ -49,7 +49,7 @@ void HistogramPool::insert(const std::string& name,
   histograms_[name] = h;
 }
 
-std::tuple<std::size_t, double, double> category_bins(
+std::tuple<std::size_t, double, double> categoryBins(
     const std::vector<std::string>& categories, int offset = 0) {
   std::size_t n_categories = categories.size();
   double min = offset - 0.5;
@@ -57,7 +57,7 @@ std::tuple<std::size_t, double, double> category_bins(
   return std::make_tuple(n_categories, min, max);
 }
 
-void label_axis(TAxis* axis, const std::vector<std::string>& categories) {
+void labelAxis(TAxis* axis, const std::vector<std::string>& categories) {
   for (std::size_t ibin{1}; ibin <= categories.size(); ibin++) {
     axis->SetBinLabel(ibin, categories[ibin - 1].c_str());
   }
@@ -66,9 +66,9 @@ void label_axis(TAxis* axis, const std::vector<std::string>& categories) {
 void HistogramPool::create(const std::string& name,
                            const std::vector<std::string>& categories, bool weighted) {
   insert(name, [&]() {
-    auto [nbins, xmin, xmax] = category_bins(categories);
+    auto [nbins, xmin, xmax] = categoryBins(categories);
     auto hist = new TH1F(name.c_str(), "", nbins, xmin, xmax);
-    label_axis(hist->GetXaxis(), categories);
+    labelAxis(hist->GetXaxis(), categories);
     return hist;
   }, weighted);
 }
@@ -123,10 +123,10 @@ void HistogramPool::create(const std::string& name, const std::string& x_label,
             const std::string& y_label, const int& ybins, const double& ymin,
             const double& ymax, bool weighted) {
   insert(name, [&]() {
-    auto [nxbins, xmin, xmax] = category_bins(xcategories);
+    auto [nxbins, xmin, xmax] = categoryBins(xcategories);
     auto hist =
         new TH2F(name.c_str(), "", nxbins, xmin, xmax, ybins, ymin, ymax);
-    label_axis(hist->GetXaxis(), xcategories);
+    labelAxis(hist->GetXaxis(), xcategories);
     hist->GetXaxis()->SetTitle(x_label.c_str());
     hist->GetYaxis()->SetTitle(y_label.c_str());
     return hist;
@@ -149,10 +149,10 @@ void HistogramPool::create(const std::string& name, const std::string& x_label,
             const int& xbins, const double& xmin, const double& xmax,
             const std::string& y_label, const std::vector<std::string>& ycategories, bool weighted) {
   insert(name, [&]() {
-    auto [nybins, ymin, ymax] = category_bins(ycategories);
+    auto [nybins, ymin, ymax] = categoryBins(ycategories);
     auto hist =
         new TH2F(name.c_str(), "", xbins, xmin, xmax, nybins, ymin, ymax);
-    label_axis(hist->GetYaxis(), ycategories);
+    labelAxis(hist->GetYaxis(), ycategories);
     hist->GetXaxis()->SetTitle(x_label.c_str());
     hist->GetYaxis()->SetTitle(y_label.c_str());
     return hist;
@@ -175,10 +175,10 @@ void HistogramPool::create(const std::string& name, const std::string& x_label,
             const std::vector<double>& xbins,
             const std::string& y_label, const std::vector<std::string>& ycategories, bool weighted) {
   insert(name, [&]() {
-    auto [nybins, ymin, ymax] = category_bins(ycategories);
+    auto [nybins, ymin, ymax] = categoryBins(ycategories);
     auto hist =
         new TH2F(name.c_str(), "", xbins.size() - 1, xbins.data(), nybins, ymin, ymax);
-    label_axis(hist->GetYaxis(), ycategories);
+    labelAxis(hist->GetYaxis(), ycategories);
     hist->GetXaxis()->SetTitle(x_label.c_str());
     hist->GetYaxis()->SetTitle(y_label.c_str());
     return hist;
@@ -189,12 +189,12 @@ void HistogramPool::create(const std::string& name, const std::string& x_label,
             const std::vector<std::string>& xcategories,
             const std::string& y_label, const std::vector<std::string>& ycategories, bool weighted) {
   insert(name, [&]() {
-    auto [nybins, ymin, ymax] = category_bins(ycategories);
-    auto [nxbins, xmin, xmax] = category_bins(xcategories);
+    auto [nybins, ymin, ymax] = categoryBins(ycategories);
+    auto [nxbins, xmin, xmax] = categoryBins(xcategories);
     auto hist =
         new TH2F(name.c_str(), "", nxbins, xmin, xmax, nybins, ymin, ymax);
-    label_axis(hist->GetYaxis(), ycategories);
-    label_axis(hist->GetXaxis(), xcategories);
+    labelAxis(hist->GetYaxis(), ycategories);
+    labelAxis(hist->GetXaxis(), xcategories);
     hist->GetXaxis()->SetTitle(x_label.c_str());
     hist->GetYaxis()->SetTitle(y_label.c_str());
     return hist;
