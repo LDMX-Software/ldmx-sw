@@ -10,12 +10,13 @@
 #include <catch2/matchers/catch_matchers_vector.hpp>
 
 #include "Framework/HistogramPool.h"
-#include "TFile.h"        //to open and check root files
+#include "TFile.h"  //to open and check root files
 
 using framework::HistogramPool;
 
 /**
- * mock exception like the case where configuration did not provide a histogram file
+ * mock exception like the case where configuration did not provide a histogram
+ * file
  */
 TDirectory* cant_create_dir() {
   throw std::runtime_error("NOFILEGIVEN");
@@ -36,10 +37,7 @@ TEST_CASE("HistogramPool Functions", "[Framework][functionality]") {
   SECTION("exception on request") {
     HistogramPool p{cant_create_dir};
     // raise exception from get_directory
-    REQUIRE_THROWS_WITH(
-        p.create("dne", "foo", 10, 0.0, 1.0),
-        "NOFILEGIVEN"
-    );
+    REQUIRE_THROWS_WITH(p.create("dne", "foo", 10, 0.0, 1.0), "NOFILEGIVEN");
   }
 
   SECTION("creation on request") {
@@ -64,12 +62,12 @@ TEST_CASE("HistogramPool Functions", "[Framework][functionality]") {
 
   SECTION("separate pools") {
     TFile f{test_file, "recreate"};
-    HistogramPool p1{[&f]() { 
-      static TDirectory *d{f.mkdir("p1")};
+    HistogramPool p1{[&f]() {
+      static TDirectory* d{f.mkdir("p1")};
       return d;
     }};
     HistogramPool p2{[&f]() {
-      static TDirectory *d{f.mkdir("p2")};
+      static TDirectory* d{f.mkdir("p2")};
       return d;
     }};
     CHECK(f.Get("p1") == nullptr);
@@ -108,7 +106,8 @@ TEST_CASE("HistogramPool Functions", "[Framework][functionality]") {
     p.create("h1_3", cats);
 
     p.create("h2_1", "baz", 5, -5, 5, "foo", 10, -5, 5);
-    p.create("h2_2", "baz", {-5.0, -1.0, 0.0, 1.0, 5.0}, "foo", {0.0, 1.0, 5.0});
+    p.create("h2_2", "baz", {-5.0, -1.0, 0.0, 1.0, 5.0}, "foo",
+             {0.0, 1.0, 5.0});
     p.create("h2_3", "", cats, "", cats);
 
     p.setWeight(0.75);
@@ -124,9 +123,9 @@ TEST_CASE("HistogramPool Functions", "[Framework][functionality]") {
     p.fill("h1_3", 1);
     // "three" into third bin
     p.fill("h1_3", "three");
-    // unknown category auto-expands Nbins when 
+    // unknown category auto-expands Nbins when
     // doing categorical axes
-    //p.fill("h1_3", "four");
+    // p.fill("h1_3", "four");
 
     p.fill("h2_3", "one", "two");
 
@@ -148,21 +147,21 @@ TEST_CASE("HistogramPool Functions", "[Framework][functionality]") {
     CHECK(h1_2->GetBinLowEdge(3) == 0.8);
     CHECK(h1_2->GetBinLowEdge(4) == 1.0);
     CHECK(h1_2->GetBinContent(1) == 0.5);
-    CHECK(h1_2->GetBinContent(2) == 2*0.75);
+    CHECK(h1_2->GetBinContent(2) == 2 * 0.75);
     REQUIRE(h1_2->GetSumw2() != nullptr);
     CHECK(h1_2->GetSumw2()->fN == 5);
     CHECK(h1_2->GetSumw2()->At(1) == 0.25);
-    CHECK(h1_2->GetSumw2()->At(2) == 0.75*0.75*2);
+    CHECK(h1_2->GetSumw2()->At(2) == 0.75 * 0.75 * 2);
 
     auto h1_3 = dynamic_cast<TH1F*>(f.Get("p/h1_3"));
     REQUIRE(h1_3 != nullptr);
     CHECK(h1_3->GetNbinsX() == 3);
 
-    CHECK(h1_3->GetBinContent(0) == 0); // under
-    CHECK(h1_3->GetBinContent(1) == 2); // one
-    CHECK(h1_3->GetBinContent(2) == 1); // two
-    CHECK(h1_3->GetBinContent(3) == 1); // three
-    CHECK(h1_3->GetBinContent(4) == 0); // over
+    CHECK(h1_3->GetBinContent(0) == 0);  // under
+    CHECK(h1_3->GetBinContent(1) == 2);  // one
+    CHECK(h1_3->GetBinContent(2) == 1);  // two
+    CHECK(h1_3->GetBinContent(3) == 1);  // three
+    CHECK(h1_3->GetBinContent(4) == 0);  // over
 
     auto h2_1 = dynamic_cast<TH2F*>(f.Get("p/h2_1"));
     REQUIRE(h2_1 != nullptr);

@@ -31,10 +31,12 @@ namespace framework {
  * There are three different ways to specify the bins of a histogram:
  * - uniform bins: provide the number of bins, the minimum, and the maximum
  * - variable bins: provide the full list of bin edges (as a std::vector)
- * - categories: provide a list of named categories (as a std::vector<std::string>)
+ * - categories: provide a list of named categories (as a
+ * std::vector<std::string>)
  *
  * With these three different ways to specify bins, there are three different
- * ways to create a 1D histogram and eight different ways to create a 2D histogram.
+ * ways to create a 1D histogram and eight different ways to create a 2D
+ * histogram.
  *
  * In `onProcessStart()`, you create the histograms that you will want to fill.
  * For example,
@@ -104,10 +106,12 @@ class HistogramPool {
    * which is called after we go into the appropriate output directory,
    * the returned pointer is then put into the pool after checking that
    * it doesn't exist yet.
-   * @param[in] weighted true if histogram is weighted (we then call Sumw2) or false otherwise
+   * @param[in] weighted true if histogram is weighted (we then call Sumw2) or
+   * false otherwise
    * @throws framework::Exception if the passed name already exists
    */
-  void insert(const std::string& name, std::function<TH1*()> factory, bool weighted);
+  void insert(const std::string& name, std::function<TH1*()> factory,
+              bool weighted);
 
  public:
   /// define how we can get the directory we need
@@ -174,28 +178,34 @@ class HistogramPool {
               const std::string& y_label, const int& ybins, const double& ymin,
               const double& ymax, bool weighted = false);
   void create(const std::string& name, const std::string& x_label,
-              const std::vector<double>& xbins,
-              const std::string& y_label, const int& ybins, const double& ymin,
-              const double& ymax, bool weighted = false);
+              const std::vector<double>& xbins, const std::string& y_label,
+              const int& ybins, const double& ymin, const double& ymax,
+              bool weighted = false);
   void create(const std::string& name, const std::string& x_label,
               const std::vector<std::string>& xcategories,
               const std::string& y_label, const int& ybins, const double& ymin,
               const double& ymax, bool weighted = false);
   void create(const std::string& name, const std::string& x_label,
               const int& xbins, const double& xmin, const double& xmax,
-              const std::string& y_label, const std::vector<double>& ybins, bool weighted = false);
+              const std::string& y_label, const std::vector<double>& ybins,
+              bool weighted = false);
   void create(const std::string& name, const std::string& x_label,
               const int& xbins, const double& xmin, const double& xmax,
-              const std::string& y_label, const std::vector<std::string>& ycategories, bool weighted = false);
+              const std::string& y_label,
+              const std::vector<std::string>& ycategories,
+              bool weighted = false);
   void create(const std::string& name, const std::string& x_label,
-              const std::vector<double>& xbins,
-              const std::string& y_label, const std::vector<double>& ybins, bool weighted = false);
+              const std::vector<double>& xbins, const std::string& y_label,
+              const std::vector<double>& ybins, bool weighted = false);
   void create(const std::string& name, const std::string& x_label,
-              const std::vector<double>& xbins,
-              const std::string& y_label, const std::vector<std::string>& ycategories, bool weighted = false);
+              const std::vector<double>& xbins, const std::string& y_label,
+              const std::vector<std::string>& ycategories,
+              bool weighted = false);
   void create(const std::string& name, const std::string& x_label,
               const std::vector<std::string>& xcategories,
-              const std::string& y_label, const std::vector<std::string>& ycategories, bool weighted = false);
+              const std::string& y_label,
+              const std::vector<std::string>& ycategories,
+              bool weighted = false);
 
   /**
    * Fill a 1D histogram
@@ -276,7 +286,8 @@ class HistogramPool {
    * @param w weight to fill with
    */
   template <typename Tx, typename Ty>
-  void fillw(const std::string& name, const Tx& valx, const Ty& valy, double w) {
+  void fillw(const std::string& name, const Tx& valx, const Ty& valy,
+             double w) {
     auto hist = dynamic_cast<TH2F*>(this->get(name));
     if (hist) {
       hist->Fill(valx, valy, w);
