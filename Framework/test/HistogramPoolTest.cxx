@@ -109,8 +109,13 @@ TEST_CASE("HistogramPool Functions", "[Framework][functionality]") {
 
     p.create("h2_1", "baz", 5, -5, 5, "foo", 10, -5, 5);
     p.create("h2_2", "baz", {-5.0, -1.0, 0.0, 1.0, 5.0}, "foo", {0.0, 1.0, 5.0});
+    p.create("h2_3", "", cats, "", cats);
 
+    p.setWeight(0.75);
     p.fill("h1_2", 0.75);
+    p.fillw("h1_2", 0.1, 0.5);
+    p.fill("h1_2", 0.75);
+    p.setWeight(1);
 
     p.fill("h1_3", "one");
     // "one" again because categories are zero-indexed into bins
@@ -122,6 +127,8 @@ TEST_CASE("HistogramPool Functions", "[Framework][functionality]") {
     // unknown category auto-expands Nbins when 
     // doing categorical axes
     //p.fill("h1_3", "four");
+
+    p.fill("h2_3", "one", "two");
 
     f.Write();
 
@@ -140,8 +147,12 @@ TEST_CASE("HistogramPool Functions", "[Framework][functionality]") {
     CHECK(h1_2->GetBinLowEdge(2) == 0.5);
     CHECK(h1_2->GetBinLowEdge(3) == 0.8);
     CHECK(h1_2->GetBinLowEdge(4) == 1.0);
+    CHECK(h1_2->GetBinContent(1) == 0.5);
+    CHECK(h1_2->GetBinContent(2) == 2*0.75);
     REQUIRE(h1_2->GetSumw2() != nullptr);
     CHECK(h1_2->GetSumw2()->fN == 5);
+    CHECK(h1_2->GetSumw2()->At(1) == 0.25);
+    CHECK(h1_2->GetSumw2()->At(2) == 0.75*0.75*2);
 
     auto h1_3 = dynamic_cast<TH1F*>(f.Get("p/h1_3"));
     REQUIRE(h1_3 != nullptr);
@@ -153,7 +164,6 @@ TEST_CASE("HistogramPool Functions", "[Framework][functionality]") {
     CHECK(h1_3->GetBinContent(3) == 1); // three
     CHECK(h1_3->GetBinContent(4) == 0); // over
 
-
     auto h2_1 = dynamic_cast<TH2F*>(f.Get("p/h2_1"));
     REQUIRE(h2_1 != nullptr);
     CHECK(h2_1->GetNbinsX() == 5);
@@ -163,5 +173,9 @@ TEST_CASE("HistogramPool Functions", "[Framework][functionality]") {
     REQUIRE(h2_2 != nullptr);
     CHECK(h2_2->GetNbinsX() == 4);
     CHECK(h2_2->GetNbinsY() == 2);
+
+    auto h2_3 = dynamic_cast<TH2F*>(f.Get("p/h2_3"));
+    REQUIRE(h2_3 != nullptr);
+    CHECK(h2_3->GetBinContent(1, 2) == 1);
   }
 }
