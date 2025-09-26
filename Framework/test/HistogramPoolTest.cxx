@@ -37,7 +37,8 @@ TEST_CASE("HistogramPool Functions", "[Framework][functionality]") {
   SECTION("exception on request") {
     HistogramPool test_pool{cantCreateDir};
     // raise exception from get_directory
-    REQUIRE_THROWS_WITH(test_pool.create("dne", "foo", 10, 0.0, 1.0), "NOFILEGIVEN");
+    REQUIRE_THROWS_WITH(test_pool.create("dne", "foo", 10, 0.0, 1.0),
+                        "NOFILEGIVEN");
   }
 
   SECTION("creation on request") {
@@ -107,7 +108,7 @@ TEST_CASE("HistogramPool Functions", "[Framework][functionality]") {
 
     test_pool.create("h2_1", "baz", 5, -5, 5, "foo", 10, -5, 5);
     test_pool.create("h2_2", "baz", {-5.0, -1.0, 0.0, 1.0, 5.0}, "foo",
-             {0.0, 1.0, 5.0});
+                     {0.0, 1.0, 5.0});
     test_pool.create("h2_3", "", cats, "", cats);
 
     test_pool.setWeight(0.75);
