@@ -18,7 +18,7 @@ using framework::HistogramPool;
  * mock exception like the case where configuration did not provide a histogram
  * file
  */
-TDirectory* cant_create_dir() {
+TDirectory* cantCreateDir() {
   throw std::runtime_error("NOFILEGIVEN");
   return nullptr;
 }
@@ -35,7 +35,7 @@ TEST_CASE("HistogramPool Functions", "[Framework][functionality]") {
   const char* test_file = "/tmp/test_histogram_pool.root";
 
   SECTION("exception on request") {
-    HistogramPool p{cant_create_dir};
+    HistogramPool p{cantCreateDir};
     // raise exception from get_directory
     REQUIRE_THROWS_WITH(p.create("dne", "foo", 10, 0.0, 1.0), "NOFILEGIVEN");
   }
