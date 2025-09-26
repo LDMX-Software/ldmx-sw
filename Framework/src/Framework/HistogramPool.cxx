@@ -43,9 +43,15 @@ void HistogramPool::insert(const std::string& name,
 
   get_directory_()->cd();
 
-  auto h = factory();
-  if (weighted) h->Sumw2();
-  histograms_[name] = h;
+  /**
+   * The histogram needs to be created _after_ we `cd` into the appropriate
+   * output directory which is why we pass in the factory function that creates
+   * the histogram into this function rather than a pointer to the already
+   * created histogram itself.
+   */
+  auto hist = factory();
+  if (weighted) hist->Sumw2();
+  histograms_[name] = hist;
 }
 
 std::tuple<std::size_t, double, double> categoryBins(
