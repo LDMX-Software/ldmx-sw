@@ -154,69 +154,6 @@ void PhotoNuclearDQM::findSubleadingKinematics(
   }
 }
 
-void PhotoNuclearDQM::setHistLabels(const std::string &name,
-                                    const std::vector<std::string> &labels) {
-  auto histo{histograms_.get(name)};
-  for (std::size_t ibin{1}; ibin <= labels.size(); ibin++) {
-    histo->GetXaxis()->SetBinLabel(ibin, labels[ibin - 1].c_str());
-  }
-}
-
-void PhotoNuclearDQM::onProcessStart() {
-  std::vector<std::string> labels = {"",
-                                     "Nothing hard",   // 0
-                                     "1 n",            // 1
-                                     "2 n",            // 2
-                                     "#geq 3 n",       // 3
-                                     "1 #pi",          // 4
-                                     "2 #pi",          // 5
-                                     "1 #pi_{0}",      // 6
-                                     "1 #pi A",        // 7
-                                     "1 #pi 2 A",      // 8
-                                     "2 #pi A",        // 9
-                                     "1 #pi_{0} A",    // 10
-                                     "1 #pi_{0} 2 A",  // 11
-                                     "#pi_{0} #pi A",  // 12
-                                     "1 p",            // 13
-                                     "2 p",            // 14
-                                     "pn",             // 15
-                                     "K^{0}_{L} X",    // 16
-                                     "K X",            // 17
-                                     "K^{0}_{S} X",    // 18
-                                     "exotics",        // 19
-                                     "multi-body",     // 20
-                                     ""};
-
-  setHistLabels("event_type", labels);
-  setHistLabels("event_type_500mev", labels);
-  setHistLabels("event_type_2000mev", labels);
-
-  labels = {"",
-            "1 n",      // 0
-            "K#pm X",   // 1
-            "1 K^{0}",  // 2
-            "2 n",      // 3
-            "Soft",     // 4
-            "Other",    // 5
-            ""};
-
-  setHistLabels("event_type_compact", labels);
-  setHistLabels("event_type_compact_500mev", labels);
-  setHistLabels("event_type_compact_2000mev", labels);
-
-  setHistLabels("1n_event_type", {"nn", "pn", "#pi^{+}n", "#pi^{0}n", "other"});
-
-  setHistLabels(
-      "pn_vertex_volume",
-      {"Didn't happen", "Else", "W Cooling", "C Cooling", "PCB",
-       "CarbonBasePlate", "Absorber", "Sensor", "Glue", "Motherboard"});
-
-  setHistLabels("pn_interaction_material",
-                {"Didn't happen", "Else", "Si", "W", "FR4", "Steel", "Epoxy",
-                 "PVT", "Glue", "Air"});
-
-}  // end of onProcessStart
-
 void PhotoNuclearDQM::configure(framework::config::Parameters &parameters) {
   count_light_ions_ = parameters.get<bool>("count_light_ions", true);
 

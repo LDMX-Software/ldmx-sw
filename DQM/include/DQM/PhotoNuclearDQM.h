@@ -75,15 +75,6 @@ class PhotoNuclearDQM : public framework::Analyzer {
    */
   void analyze(const framework::Event &event) override;
 
-  /// @brief  Helper function to label categorical histos
-  /// @param name : Name of the histo for the labels to set
-  /// @param labels : Labels on the X axis
-  void setHistLabels(const std::string &name,
-                     const std::vector<std::string> &labels);
-
-  /// Method executed before processing of events begins.
-  void onProcessStart() override;
-
  private:
   /** Method used to classify events. Note: Assumes that daughters is sorted by
    * kinetic energy. */

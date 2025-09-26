@@ -128,45 +128,8 @@ int SampleValidation::pdgidLabel(const int pdgid) {
     label =
         18;  // dark photon, need pdg id for other models like ALPs and SIMPs
 
-  return label;
+  return label - 1;
 }
 
-void SampleValidation::onProcessStart() {
-  std::vector<std::string> labels = {"",
-                                     "e^{+}",                   // 1
-                                     "e^{-}",                   // 2
-                                     "#mu^{+}",                 // 3
-                                     "#mu^{-}",                 // 4
-                                     "#gamma",                  // 5
-                                     "p^{+}",                   // 6
-                                     "n^{0}",                   // 7
-                                     "#pi^{+}",                 // 8
-                                     "#pi^{-}",                 // 9
-                                     "#pi^{0}",                 // 10
-                                     "K^{+}",                   // 11
-                                     "K^{-}",                   // 12
-                                     "k_{L}",                   // 13
-                                     "k_{S}",                   // 14
-                                     "light-N",                 // 15
-                                     "heavy-N",                 // 16
-                                     "#Lambda / #Sigma / #Xi",  // 17
-                                     "A'",                      // 18
-                                     "else",
-                                     ""};
-
-  std::vector<TH1*> hists = {
-      histograms_.get("primaries_pdgid"),
-      histograms_.get("primarydaughters_pdgid"),
-      histograms_.get("harddaughters_pdgid"),
-      histograms_.get("hardbremdaughters_pdgid"),
-
-  };
-
-  for (int ilabel{1}; ilabel < labels.size(); ++ilabel) {
-    for (auto& hist : hists) {
-      hist->GetXaxis()->SetBinLabel(ilabel, labels[ilabel - 1].c_str());
-    }
-  }
-}
 }  // namespace dqm
 DECLARE_ANALYZER(dqm::SampleValidation)
