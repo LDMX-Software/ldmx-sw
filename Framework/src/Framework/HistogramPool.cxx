@@ -62,7 +62,39 @@ void labelAxis(TAxis* axis, const std::vector<std::string>& categories) {
   }
 }
 
-void HistogramPool::create(const std::string& name,
+void HistogramPool::create(const config::Parameters& p) {
+  auto name{p.get<std::string>("name")};
+  auto x_label{p.get<std::string>("xlabel")};
+  auto y_label{p.get<std::string>("ylabel")};
+  auto numeric_xbins{p.get<std::vector<double>>("xbins")};
+  auto category_xbins{p.get<std::vector<std::string>>("xcategories", {})};
+  auto numeric_ybins{p.get<std::vector<double>>("ybins", {})};
+  auto category_ybins{p.get<std::vector<std::string>>("ycategories", {})};
+
+  bool one_dim = (numeric_ybins.empty() and category_ybins.empty());
+  bool x_is_category = (not category_xbins.empty());
+  bool y_is_category = (not category_ybins.empty());
+  if (one_dim) {
+    // assume 1D histogram
+    if (x_is_category) {
+      create(name, x_label, category_xbins);
+    } else {
+      create(name, x_label, numeric_xbins);
+    }
+  } else {
+    if (x_is_category and y_is_category) {
+      create(name, x_label, category_xbins, y_label, category_ybins);
+    } else if (x_is_category and not y_is_category) {
+      create(name, x_label, category_xbins, y_label, numeric_ybins);
+    } else if (not x_is_category and y_is_category) {
+      create(name, x_label, numeric_xbins, y_label, category_ybins);
+    } else /* not x_is_category and not y_is_category */ {
+      create(name, x_label, numeric_xbins, y_label, numeric_ybins);
+    }
+  }
+}
+
+void HistogramPool::create(const std::string& name, const std::string& x_label,
                            const std::vector<std::string>& categories,
                            bool weighted) {
   insert(
@@ -70,6 +102,7 @@ void HistogramPool::create(const std::string& name,
       [&]() {
         auto [nbins, xmin, xmax] = categoryBins(categories);
         auto hist = new TH1F(name.c_str(), "", nbins, xmin, xmax);
+        hist->GetXaxis()->SetTitle(x_label.c_str());
         labelAxis(hist->GetXaxis(), categories);
         return hist;
       },
@@ -217,6 +250,24 @@ void HistogramPool::create(const std::string& name, const std::string& x_label,
         auto hist = new TH2F(name.c_str(), "", xbins.size() - 1, xbins.data(),
                              nybins, ymin, ymax);
         labelAxis(hist->GetYaxis(), ycategories);
+        hist->GetXaxis()->SetTitle(x_label.c_str());
+        hist->GetYaxis()->SetTitle(y_label.c_str());
+        return hist;
+      },
+      weighted);
+}
+
+void HistogramPool::create(const std::string& name, const std::string& x_label,
+                           const std::vector<std::string>& xcategories,
+                           const std::string& y_label,
+                           const std::vector<double>& ybins, bool weighted) {
+  insert(
+      name,
+      [&]() {
+        auto [nxbins, xmin, xmax] = categoryBins(xcategories);
+        auto hist = new TH2F(name.c_str(), "", nxbins, xmin, xmax,
+                             ybins.size() - 1, ybins.data());
+        labelAxis(hist->GetXaxis(), xcategories);
         hist->GetXaxis()->SetTitle(x_label.c_str());
         hist->GetYaxis()->SetTitle(y_label.c_str());
         return hist;

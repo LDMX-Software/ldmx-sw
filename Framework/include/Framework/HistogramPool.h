@@ -10,6 +10,7 @@
 //----------//
 //   ROOT   //
 //----------//
+#include "Framework/Configure/Parameters.h"
 #include "Framework/Exception/Exception.h"
 #include "TDirectory.h"
 #include "TH1F.h"
@@ -35,8 +36,13 @@ namespace framework {
  * std::vector<std::string>)
  *
  * With these three different ways to specify bins, there are three different
- * ways to create a 1D histogram and eight different ways to create a 2D
- * histogram.
+ * ways to create a 1D histogram and nine different ways to create a 2D
+ * histogram. (Future developer note: if we want to increase the number of ways
+ * to specify the bins
+ * -- "axis type" -- * or increase the number of dimensions again, we probably
+ * just want to use a builder pattern like Boost.Histogram or just use
+ * Boost.Histogram under-the-hood and copy the resulting histograms into ROOT
+ * histograms at end of run time.)
  *
  * In `onProcessStart()`, you create the histograms that you will want to fill.
  * For example,
@@ -129,6 +135,11 @@ class HistogramPool {
   TH1* get(const std::string& name);
 
   /**
+   * Create a histogram from the input configuration parameters
+   */
+  void create(const config::Parameters& p);
+
+  /**
    * Create a ROOT 1D histogram of type TH1F and pool it for later use.
    *
    * @note Does not check if another histogram of the same name is in use.
@@ -155,7 +166,7 @@ class HistogramPool {
   void create(const std::string& name, const std::string& x_label,
               const std::vector<double>& bins, bool weighted = false);
 
-  void create(const std::string& name,
+  void create(const std::string& name, const std::string& x_label,
               const std::vector<std::string>& categories,
               bool weighted = false);
 
@@ -173,34 +184,47 @@ class HistogramPool {
    * @param ymin The lower histogram limit in y_.
    * @param ymax The upper histogram limit in y_.
    */
+  // uniform x, uniform y
   void create(const std::string& name, const std::string& x_label,
               const int& xbins, const double& xmin, const double& xmax,
               const std::string& y_label, const int& ybins, const double& ymin,
               const double& ymax, bool weighted = false);
+  // variable x, uniform y
   void create(const std::string& name, const std::string& x_label,
               const std::vector<double>& xbins, const std::string& y_label,
               const int& ybins, const double& ymin, const double& ymax,
               bool weighted = false);
+  // category x, uniform y
   void create(const std::string& name, const std::string& x_label,
               const std::vector<std::string>& xcategories,
               const std::string& y_label, const int& ybins, const double& ymin,
               const double& ymax, bool weighted = false);
+  // uniform x, variable y
   void create(const std::string& name, const std::string& x_label,
               const int& xbins, const double& xmin, const double& xmax,
               const std::string& y_label, const std::vector<double>& ybins,
               bool weighted = false);
+  // variable x, variable y
+  void create(const std::string& name, const std::string& x_label,
+              const std::vector<double>& xbins, const std::string& y_label,
+              const std::vector<double>& ybins, bool weighted = false);
+  // category x, variable y
+  void create(const std::string& name, const std::string& x_label,
+              const std::vector<std::string>& xcategories,
+              const std::string& y_label, const std::vector<double>& ybins,
+              bool weighted = false);
+  // uniform x, category y
   void create(const std::string& name, const std::string& x_label,
               const int& xbins, const double& xmin, const double& xmax,
               const std::string& y_label,
               const std::vector<std::string>& ycategories,
               bool weighted = false);
-  void create(const std::string& name, const std::string& x_label,
-              const std::vector<double>& xbins, const std::string& y_label,
-              const std::vector<double>& ybins, bool weighted = false);
+  // variable x, category y
   void create(const std::string& name, const std::string& x_label,
               const std::vector<double>& xbins, const std::string& y_label,
               const std::vector<std::string>& ycategories,
               bool weighted = false);
+  // category x, category y
   void create(const std::string& name, const std::string& x_label,
               const std::vector<std::string>& xcategories,
               const std::string& y_label,

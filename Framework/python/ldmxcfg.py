@@ -167,8 +167,8 @@ class EventProcessor:
             variable name of histogram
         xlabel : str
             title of x-axis of histogram
-        bins : int OR list of floats
-            Number of bins on x-axis OR bin edges on x-axis
+        bins : int OR list of floats OR list of str
+            Number of bins on x-axis OR bin edges on x-axis OR string categories
         xmin : float
             Minimum edge of bins on x-axis
         xmax : float
@@ -180,19 +180,21 @@ class EventProcessor:
         """
 
         import LDMX.Framework.histogram as h
-        theBinEdges = bins
+        the_bins = bins
         if xmin is not None and xmax is not None :
-            theBinEdges = h.uniform_binning(bins,xmin,xmax)
+            the_bins = h.uniform_binning(bins,xmin,xmax)
 
-        self.histograms.append(h.histogram(name, xlabel,theBinEdges))
+        self.histograms.append(h.histogram(name, xlabel,the_bins))
+
 
     def build2DHistogram(self, name, 
-            xlabel = 'X Axis', xbins = 1, xmin = None, xmax = None, 
-            ylabel = 'Y Axis', ybins = 1, ymin = None, ymax = None) :
+            xlabel = '', xbins = 1, xmin = None, xmax = None, 
+            ylabel = '', ybins = 1, ymin = None, ymax = None) :
         """Create a 2D histogram
 
         If {x,y}min or {x,y}max are not provided, {x,y}bins is assumed
-        to be the bin edges on the {x,y}-axis. If they are both provided,
+        to be the bin edges on the {x,y}-axis (or named string categories).
+        If they are both provided,
         {x,y}-bins is assumed to be the number of bins on the {x,y}-axis.
 
         Parameters
@@ -201,16 +203,16 @@ class EventProcessor:
             variable name of histogram
         xlabel : str
             title of x-axis of histogram
-        xbins : int OR list of floats
-            Number of bins on x-axis OR list of bin edges on x-axis
+        xbins : int OR list of floats OR list of str
+            Number of bins on x-axis OR list of bin edges on x-axis OR string categories
         xmin : float
             Minimum edge of bins on x-axis
         xmax : float
             Maximum edge of bins on x-axis
         ylabel : str
             title of y-axis of histogram
-        ybins : int OR list of floats
-            Number of bins on y-axis OR list of bin edges on y-axis
+        ybins : int OR list of floats OR list of str
+            Number of bins on y-axis OR list of bin edges on y-axis OR string categories
         ymin : float
             Minimum edge of bins on y-axis
         ymay : float
@@ -235,17 +237,18 @@ class EventProcessor:
         """
 
         import LDMX.Framework.histogram as h
-        theBinEdgesX = xbins
+        the_x_bins = xbins
         if xmin is not None and xmax is not None :
-            theBinEdgesX = h.uniform_binning(xbins,xmin,xmax)
+            the_x_bins = h.uniform_binning(xbins,xmin,xmax)
 
-        theBinEdgesY = ybins
+        the_y_bins = ybins
         if ymin is not None and ymax is not None :
-            theBinEdgesY = h.uniform_binning(ybins,ymin,ymax)
+            the_y_bins = h.uniform_binning(ybins,ymin,ymax)
 
         self.histograms.append(
-                h.histogram(name, xlabel,theBinEdgesX, ylabel,theBinEdgesY)
+                h.histogram(name, xlabel,the_x_bins, ylabel,the_y_bins)
                 )
+
 
 class Producer(EventProcessor):
     """A producer object.

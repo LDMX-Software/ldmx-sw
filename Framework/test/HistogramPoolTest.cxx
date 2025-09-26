@@ -103,7 +103,7 @@ TEST_CASE("HistogramPool Functions", "[Framework][functionality]") {
 
     p.create("h1_1", "foo", 10, 0, 1);
     p.create("h1_2", "bar", {0.0, 0.5, 0.8, 1.0}, true);
-    p.create("h1_3", cats);
+    p.create("h1_3", "", cats);
 
     p.create("h2_1", "baz", 5, -5, 5, "foo", 10, -5, 5);
     p.create("h2_2", "baz", {-5.0, -1.0, 0.0, 1.0, 5.0}, "foo",
