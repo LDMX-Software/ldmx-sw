@@ -1040,24 +1040,24 @@ class SampleValidation(ldmxcfg.Analyzer) :
         self.target_scoring_plane_passname = ''
 
         pdgid_bin_labels = [
-            "e^{+}",                   # 1
-            "e^{-}",                   # 2
-            "#mu^{+}",                 # 3
-            "#mu^{-}",                 # 4
-            "#gamma",                  # 5
-            "p^{+}",                   # 6
-            "n^{0}",                   # 7
-            "#pi^{+}",                 # 8
-            "#pi^{-}",                 # 9
-            "#pi^{0}",                 # 10
-            "K^{+}",                   # 11
-            "K^{-}",                   # 12
-            "k_{L}",                   # 13
-            "k_{S}",                   # 14
-            "light-N",                 # 15
-            "heavy-N",                 # 16
-            "#Lambda / #Sigma / #Xi",  # 17
-            "A'",                      # 18
+            "e^{+}",                   # 0
+            "e^{-}",                   # 1
+            "#mu^{+}",                 # 2
+            "#mu^{-}",                 # 3
+            "#gamma",                  # 4
+            "p^{+}",                   # 5
+            "n^{0}",                   # 6
+            "#pi^{+}",                 # 7
+            "#pi^{-}",                 # 8
+            "#pi^{0}",                 # 9
+            "K^{+}",                   # 10
+            "K^{-}",                   # 11
+            "k_{L}",                   # 12
+            "k_{S}",                   # 13
+            "light-N",                 # 14
+            "heavy-N",                 # 15
+            "#Lambda / #Sigma / #Xi",  # 16
+            "A'",                      # 17
             "else",
         ]
 

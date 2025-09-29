@@ -94,24 +94,24 @@ void SampleValidation::analyze(const framework::Event& event) {
 int SampleValidation::pdgidLabel(const int pdgid) {
   // initially assign label as "anything else"/overflow value,
   // only change if the pdg id is something of interest
-  int label = 19;
-  if (pdgid == -11) label = 1;    // e+
-  if (pdgid == 11) label = 2;     // e-
-  if (pdgid == -13) label = 3;    // μ+
-  if (pdgid == 13) label = 4;     // μ-
-  if (pdgid == 22) label = 5;     // γ
-  if (pdgid == 2212) label = 6;   // proton
-  if (pdgid == 2112) label = 7;   // neutron
-  if (pdgid == 211) label = 8;    // π+
-  if (pdgid == -211) label = 9;   // π-
-  if (pdgid == 111) label = 10;   // π0
-  if (pdgid == 321) label = 11;   // K+
-  if (pdgid == -321) label = 12;  // K-
-  if (pdgid == 130) label = 13;   // K-Long
-  if (pdgid == 310) label = 14;   // K-Short
+  int label = 18;
+  if (pdgid == -11) label = 0;    // e+
+  if (pdgid == 11) label = 1;     // e-
+  if (pdgid == -13) label = 2;    // μ+
+  if (pdgid == 13) label = 3;     // μ-
+  if (pdgid == 22) label = 4;     // γ
+  if (pdgid == 2212) label = 5;   // proton
+  if (pdgid == 2112) label = 6;   // neutron
+  if (pdgid == 211) label = 7;    // π+
+  if (pdgid == -211) label = 8;   // π-
+  if (pdgid == 111) label = 9;   // π0
+  if (pdgid == 321) label = 10;   // K+
+  if (pdgid == -321) label = 11;  // K-
+  if (pdgid == 130) label = 12;   // K-Long
+  if (pdgid == 310) label = 13;   // K-Short
   if (pdgid == 3122 || pdgid == 3222 || pdgid == 3212 || pdgid == 3112 ||
       pdgid == 3322 || pdgid == 3312)
-    label = 17;  // strange baryon
+    label = 16;  // strange baryon
   /*
    * Nuclear PDG codes are given by ±10LZZZAAAI so to find the atomic
    * number, we divide by 10 (to lose I) and then take the modulo
@@ -119,16 +119,16 @@ int SampleValidation::pdgidLabel(const int pdgid) {
    */
   if (pdgid > 1000000000) {  // nuclei
     if (((pdgid / 10) % 1000) <= 4) {
-      label = 15;  // light nuclei
+      label = 14;  // light nuclei
     } else {
-      label = 16;  // heavy nuclei
+      label = 15;  // heavy nuclei
     }
   }
+  // dark photon, need pdg id for other models like ALPs and SIMPs
   if (pdgid == 622)
-    label =
-        18;  // dark photon, need pdg id for other models like ALPs and SIMPs
+    label = 17;
 
-  return label - 1;
+  return label;
 }
 
 }  // namespace dqm
