@@ -118,7 +118,7 @@ class HCalDQM(ldmxcfg.Analyzer) :
         self.build1DHistogram('along_x', 'x', 1200, -3000,3000)
         self.build1DHistogram('along_y', 'y', 1200, -3000,3000)
         self.build1DHistogram('along_z', 'z', 1200, 0,6000)
-#Per hit
+        # Per hit
         self.build1DHistogram("pe",
                               f"Photoelectrons in the HCal ({section_name})",
                               *pe_bins)
@@ -143,7 +143,7 @@ class HCalDQM(ldmxcfg.Analyzer) :
         self.build1DHistogram("sim_energy_per_bar",
                               f"Simulated hit energy per bar in the HCal ({section_name})",
                               *energy_bins)
-#Once per event
+        # Once per event
         self.build1DHistogram("total_energy",
                               f"Total reconstructed energy in the HCal ({section_name})",
                               *total_energy_bins)
@@ -224,8 +224,8 @@ class HcalInefficiencyAnalyzer(ldmxcfg.Analyzer):
         section_names = ['back', 'top', 'bottom', 'right', 'left']
         inefficiency_depth_bins = [6000, 0., 6000.]
         inefficiency_layer_bins = [100, 0, 100]
-#Overall, Back, Side, Top, Bottom, Left, Right, Both,
-#Back only, Side Only, Neither
+        # Overall, Back, Side, Top, Bottom, Left, Right, Both,
+        # Back only, Side Only, Neither
         self.build1DHistogram('efficiency', "", 12, -1, 11)
         for section in range(num_sections):
             section_name = section_names[section]
@@ -522,8 +522,8 @@ class VisiblesFeatureProducer(ldmxcfg.Analyzer) :
 
         ## Feature histograms ##
         self.build1DHistogram("layers_hit", "Number of Hcal layers hit", 100, 0, 100);
-self.build1DHistogram("x_std", "Std dev x [mm]", 80, 0, 800);
-self.build1DHistogram("y_std", "Std dev y [mm]", 80, 0, 800);
+        self.build1DHistogram("x_std", "Std dev x [mm]", 80, 0, 800);
+        self.build1DHistogram("y_std", "Std dev y [mm]", 80, 0, 800);
         self.build1DHistogram("z_std", "Std dev z [mm]", 100, 0, 1000)
         self.build1DHistogram("x_mean", "Average hit x [mm]", 80, -800, 800)
         self.build1DHistogram("y_mean", "Average hit  y [mm]", 80, -800, 800)
@@ -641,10 +641,10 @@ class DarkBremInteraction(ldmxcfg.Producer) :
         self.build1DHistogram('incident_pt',
             'Incident Electron pT [MeV]',100,0,2000)
 
-#weird binning so we can see the target and trigger pads
+        # weird binning so we can see the target and trigger pads
         self.build1DHistogram('dark_brem_z',
             'Z Location of Dark Brem [mm]', 160, -7., 1.)
-#elements are hydrogen and carbon(for trigger pads) and tungsten target
+        # elements are hydrogen and carbon (for trigger pads) and tungsten target
         self.build1DHistogram('dark_brem_element',
             'Element in which Dark Brem Occurred',
             ["did not happen", "H 1", "C 6", "O 8", "Na 11", "Si 14",
@@ -691,8 +691,7 @@ class NtuplizeHgcrocDigiCollection(ldmxcfg.Analyzer) :
         self.input_pass = input_pass
 
         if using_eid is None :
-#deduce if using eid based on presence of HcalDetectorMap in \
-            conditions system
+            # deduce if using eid based on presence of HcalDetectorMap in conditions system
             from LDMX.Framework import ldmxcfg
             from LDMX.Hcal.DetectorMap import HcalDetectorMap
             using_eid = True
@@ -1062,20 +1061,20 @@ class SampleValidation(ldmxcfg.Analyzer) :
             "else",
         ]
 
-#primary histograms
+        #primary histograms
         self.build1DHistogram("primaries_pdgid", "ID of primary particles", pdgid_bin_labels)
         self.build1DHistogram("primaries_energy", "Energy of primary particles [MeV]", 90, 0, 9000) # range applicable for 4 GeV beam
         self.build2DHistogram("beam_smear", "x [mm]", 30, -150, 150, "y [mm]", 30, -150, 150)
         self.build1DHistogram("primarydaughters_pdgid", "ID of primary daughters", pdgid_bin_labels)
         self.build1DHistogram("daughterphoton_energy", "Energy spectrum of all photons from primary [MeV]", 170, 0, 8500)
 
-#primary daughter of interest(brem / dark brem) histograms
+        #primary daughter of interest(brem / dark brem) histograms
         self.build1DHistogram("harddaughters_pdgid", "ID of primary daughters", pdgid_bin_labels)
         self.build1DHistogram("harddaughters_startZ", "Start z position of hard primary daughter [mm]", 100, -500, 500)
         self.build1DHistogram("harddaughters_endZ", "End z position of hard primary daughter [mm]", 100, -500, 500)
         self.build1DHistogram("harddaughters_energy", "Energy spectrum of hard primary daughter [MeV]", 130, 2000, 8500)
 
-#daughters of hard brem histograms
+        #daughters of hard brem histograms
         self.build1DHistogram("hardbremdaughters_pdgid", "ID of hard brem daughters", pdgid_bin_labels)
         self.build1DHistogram("hardbremdaughters_startZ", "Start z position of hard brem daughters  [mm]", 200, -1000, 1000)
         self.build1DHistogram("hardbremdaughters_endZ", "End z position of hard brem daughters  [mm]", 70, -1000, 6000)
@@ -1117,7 +1116,7 @@ class EcalClusterAnalyzer(ldmxcfg.Analyzer) :
         self.ecal_sim_hit_coll = "EcalSimHits"
         self.ecal_sim_hit_pass = "" #use whatever pass is available
 
-#Pass name for ecal digis and rec hits
+        #Pass name for ecal digis and rec hits
         self.rec_hit_coll_name = 'EcalRecHits'
         self.rec_hit_pass_name = ''
 
@@ -1133,7 +1132,7 @@ class EcalClusterAnalyzer(ldmxcfg.Analyzer) :
         self.build1DHistogram("correctly_predicted_events", "Correct Cluster Count",
                               ["Underpredicted", "Correct", "Overpredicted"])
 
-#Need to mod for more than two electrons
+        #Need to mod for more than two electrons
         self.build1DHistogram("ancestors", "Ancestors of particles", 4, 0., 4.)
 
         self.build1DHistogram("same_ancestor", "Percentage of hits in cluster coming from the electron that produced most hits", 21, 0., 105.)
