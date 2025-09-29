@@ -63,15 +63,15 @@ void VisiblesCutflow::analyze(const framework::Event &event) {
   const auto &particle_map{event.getMap<int, ldmx::SimParticle>(
       "SimParticles", sim_particles_pass_name_)};
 
+  //printf("particle map size %ld\n", particle_map.size());
+
   for (auto const &it : particle_map) {
-    std::vector<int> parents = it.second.getParents();
-    for (int track_id : parents) {
-      if (track_id == 0 && it.second.getPdgID() == -11) {
-        decay_z = it.second.getVertex()[2];
-      }
+    if (it.second.getPdgID() == 622) {
+      decay_z = it.second.getEndPoint()[2];
+      printf("Found parent track and vertex %lf\n", decay_z);
     }
   }
-
+  //printf("Decay_z %lf\n", decay_z);
   histograms_.fill("total_events", decay_z);
 
   // Get target scoring plane hits for recoil electron
@@ -84,10 +84,11 @@ void VisiblesCutflow::analyze(const framework::Event &event) {
 
   std::vector<double> recoil_p(3);
   bool found_recoil_e = false;
-
+  //block should not run since doing truth tracking.
   if (recoil_from_tracking_) {
     const auto &recoil_tracks{
         event.getCollection<ldmx::Track>(track_collection_, track_pass_name_)};
+    
     for (auto &track : recoil_tracks) {
       // need to figure out how to best isolate candidate electron track
       if (track.q() == 1 && track.getNhits() == 5) {
@@ -101,21 +102,37 @@ void VisiblesCutflow::analyze(const framework::Event &event) {
     if (event.exists(sp_collection_, sp_pass_name_)) {
       const auto &target_sp_hits = event.getCollection<ldmx::SimTrackerHit>(
           sp_collection_, sp_pass_name_);
+      //printf("target_sp_hits size %ld\n", target_sp_hits.size());
       bool found_rec = false;
       for (auto const &it : particle_map) {
         for (auto const &sphit : target_sp_hits) {
           if (sphit.getPosition()[2] > 0) {
             if (it.first == sphit.getTrackID()) {
+	      //Looking for A'
               if (it.second.getPdgID() == 622) {
+		printf("found A'\n");
                 std::vector<float> x0_float = sphit.getPosition();
                 std::vector<double> x0_double(x0_float.begin(), x0_float.end());
                 gamma_x0 = x0_double;
                 gamma_p = sphit.getMomentum();
                 gamma_energy = sphit.getEnergy();
                 found_rec = true;
+		printf("Found rec bool? %d\n", found_rec);
               }
+	      /*
+	      if (it.second.getPdgID() == 11){
+		std::vector<int> parent_vec = it.second.getParents();
+		printf("Size of parent vec--> %ld\n", parent_vec.size());
+		std::cout << "Vector elements: ";
+		for (int element : parent_vec) {
+		  std::cout << element << " ";
+		}
+		std::cout << std::endl;
+	      }
+	      */
               if (it.second.getPdgID() == 11 &&
-                  inList(it.second.getParents(), 0)) {
+                  inList(it.second.getParents(), 1)) { //recoil electron clearly not zero, seems it is 1. 
+		printf("Pass condition to look for recoil electron!\n");
                 if (!found_rec) {
                   std::vector<float> x0_float = sphit.getPosition();
                   std::vector<double> x0_double(x0_float.begin(),
@@ -129,6 +146,8 @@ void VisiblesCutflow::analyze(const framework::Event &event) {
                 }
                 recoil_p = sphit.getMomentum();
                 found_recoil_e = true;
+		printf("Found recoil e? %d\n", found_recoil_e);
+		printf("momentum check -> %lf\n", recoil_p[2]);
               }
             }
           }
@@ -143,14 +162,17 @@ void VisiblesCutflow::analyze(const framework::Event &event) {
                                                     gamma_p[2] * gamma_p[2])));
 
   double p_mag = 0.;
+
   if (found_recoil_e) {
     p_mag = std::sqrt(recoil_p[0] * recoil_p[0] + recoil_p[1] * recoil_p[1] +
                       recoil_p[2] * recoil_p[2]);
+    printf("Found recoil electron with recoil %lf\n", p_mag);
   }
-
+  
   if (p_mag < 50. && all_cuts_) {
     return;
   }
+  //Lets see if just cutting out the recoil stuff will let us populate some 
   histograms_.fill("pass_acceptance", decay_z);
 
   // Get EcalRecHits, check that trigger is passed
@@ -260,7 +282,8 @@ void VisiblesCutflow::analyze(const framework::Event &event) {
                       det_id.getLayerID()) != layers_hit.end())) {
         layers_hit.push_back(det_id.getLayerID());
       }
-
+      //printf("Gamma check --> %lf\n", gamma_x0[2]);
+      //printf("Gamma check --> %lf\n", gamma_p[0]);
       double proj_x =
           gamma_x0[0] + (hit_z - gamma_x0[2]) * gamma_p[0] / gamma_p[2];
       double proj_y =

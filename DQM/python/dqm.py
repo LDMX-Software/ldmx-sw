@@ -546,18 +546,18 @@ class VisiblesCutflow(ldmxcfg.Analyzer) :
         self.beam_energy = 8000.0
 
         self.hcal_rec_coll_name = "HcalRecHits"
-        self.hcal_rec_pass_name = ''
+        self.hcal_rec_pass_name = 'tat_vis'#'v14' #'tat_vis'
         self.ecal_rec_coll_name = "EcalRecHits"
-        self.ecal_rec_pass_name = ''
+        self.ecal_rec_pass_name = 'tat_vis'#'v14' #'tat_vis'
         self.recoil_from_tracking = False
         self.track_collection = 'RecoilTracks'
-        self.track_pass_name = ''
+        self.track_pass_name = 'tat_vis'#'v14' #'tat_vis'
         self.sp_coll_name = 'TargetScoringPlaneHits'
-        self.sp_pass_name = ''
-        self.sim_particles_pass_name = ''
+        self.sp_pass_name = 'tat_vis'#'v14' #'tat_vis'
+        self.sim_particles_pass_name = 'tat_vis'#'v14' #'tat_vis'
 
         self.ecal_veto_coll_name = "EcalVeto"
-        self.ecal_veto_pass_name = ''
+        self.ecal_veto_pass_name = 'tat_vis'#'v14' #'tat_vis'
         self.ecal_disc_cut = 0.99741 # assumes SegMip disc
 
         ## Histograms for efficiency ##
