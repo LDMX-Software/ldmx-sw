@@ -44,11 +44,17 @@ namespace framework {
  * Boost.Histogram under-the-hood and copy the resulting histograms into ROOT
  * histograms at end of run time.)
  *
- * In `onProcessStart()`, you create the histograms that you will want to fill.
+ * In `onProcessStart()` or in the Python configuration,
+ * you create the histograms that you will want to fill.
  * For example,
  * ```cpp
  * histograms_.create("my_variable", "Label for Axis", 10, 0.0, 1.0);
  * ```
+ * or
+ * ```python
+ * analyzer.build1DHistogram("my_variable", "Label for Axis", 10, 0.0, 1.0)
+ * ```
+ *
  * And then in `analyze` or `produce` you fill the histograms.
  * ```cpp
  * histograms_.fill("my_variable", the_value);
@@ -80,6 +86,14 @@ namespace framework {
  *
  * histograms_.fill("h_with_event_weight", value);
  * ```
+ * Additionally, if you want to use individual weights for the different
+ * histograms, you can use the `fillw` function to provide a weight when
+ * calling `fill`.
+ *
+ * @note By default, the histograms do not store the sum of the square weights
+ * in order to save space. If you are filling histograms with weights that are
+ * not 1 and you care about correct error estimates using those histograms,
+ * make sure to `create` the histogram with the `weighted` argument set to `true`.
  */
 class HistogramPool {
  private:
@@ -140,91 +154,192 @@ class HistogramPool {
   void create(const config::Parameters& p);
 
   /**
-   * Create a ROOT 1D histogram of type TH1F and pool it for later use.
+   * Create a ROOT 1D histogram with uniform binning
    *
-   * @note Does not check if another histogram of the same name is in use.
-   *
-   * @param name Name of the histogram. This will also be used as a
-   *             title.
+   * @param name Name of the histogram.
    * @param x_label Title of the x axis.
    * @param bins Total number of histogram bins.
    * @param xmin The lower histogram limit.
    * @param xmax The upper histogram limit.
+   * @param weighted whether to track the sum of squared weights separately
    */
   void create(const std::string& name, const std::string& x_label,
               const int& bins, const double& xmin, const double& xmax,
               bool weighted = false);
 
   /**
-   * Create a ROOT 1D histogram of type TH1F and pool it for later use.
+   * Create a ROOT 1D histogram with variable binning
    *
-   * @param name Name of the histogram. This will also be used as a
-   *             title.
+   * @param name Name of the histogram.
    * @param x_label Title of the x axis.
    * @param bins vector of bin edges
+   * @param weighted whether to track the sum of squared weights separately
    */
   void create(const std::string& name, const std::string& x_label,
               const std::vector<double>& bins, bool weighted = false);
 
+  /**
+   * Create a ROOT 1D histogram with categorical binning
+   *
+   * @param name Name of the histogram.
+   * @param x_label Title of the x axis.
+   * @param categories list of string categories to name the bins
+   * @param weighted whether to track the sum of squared weights separately
+   */
   void create(const std::string& name, const std::string& x_label,
               const std::vector<std::string>& categories,
               bool weighted = false);
 
   /**
-   * Create a ROOT 2D histogram of type TH2F and pool it for later use.
+   * Create a ROOT 2D histogram with both axes having uniform binning
    *
-   * @param name Name of the histogram. This will also be used as a
-   *             title.
+   * @param name Name of the histogram.
    * @param x_label Title of the x axis.
-   * @param xbins Total number of histogram bins in x_.
-   * @param xmin The lower histogram limit in x_.
-   * @param xmax The upper histogram limit in x_.
+   * @param xbins Total number of histogram bins in x.
+   * @param xmin The lower histogram limit in x.
+   * @param xmax The upper histogram limit in x.
    * @param y_label Title of the x axis.
-   * @param ybins Total number of histogram bins in y_.
-   * @param ymin The lower histogram limit in y_.
-   * @param ymax The upper histogram limit in y_.
+   * @param ybins Total number of histogram bins in y.
+   * @param ymin The lower histogram limit in y.
+   * @param ymax The upper histogram limit in y.
+   * @param weighted whether to track the sum of squared weights separately
    */
-  // uniform x, uniform y
   void create(const std::string& name, const std::string& x_label,
               const int& xbins, const double& xmin, const double& xmax,
               const std::string& y_label, const int& ybins, const double& ymin,
               const double& ymax, bool weighted = false);
-  // variable x, uniform y
+
+  /**
+   * Create a ROOT 2D histogram with variable bins on the x axis
+   * and uniform bins on the y axis
+   *
+   * @param name Name of the histogram.
+   * @param x_label Title of the x axis.
+   * @param xbins vector of bin edges
+   * @param y_label Title of the x axis.
+   * @param ybins Total number of histogram bins in y.
+   * @param ymin The lower histogram limit in y.
+   * @param ymax The upper histogram limit in y.
+   * @param weighted whether to track the sum of squared weights separately
+   */
   void create(const std::string& name, const std::string& x_label,
               const std::vector<double>& xbins, const std::string& y_label,
               const int& ybins, const double& ymin, const double& ymax,
               bool weighted = false);
-  // category x, uniform y
+
+  /**
+   * Create a ROOT 2D histogram with category bins on the x axis
+   * and uniform bins on the y axis
+   *
+   * @param name Name of the histogram.
+   * @param x_label Title of the x axis.
+   * @param xcategories vector of string categories
+   * @param y_label Title of the x axis.
+   * @param ybins Total number of histogram bins in y.
+   * @param ymin The lower histogram limit in y.
+   * @param ymax The upper histogram limit in y.
+   * @param weighted whether to track the sum of squared weights separately
+   */
   void create(const std::string& name, const std::string& x_label,
               const std::vector<std::string>& xcategories,
               const std::string& y_label, const int& ybins, const double& ymin,
               const double& ymax, bool weighted = false);
-  // uniform x, variable y
+
+  /**
+   * Create a ROOT 2D histogram with uniform bins on the x axis
+   * and variable bins on the y axis
+   *
+   * @param name Name of the histogram.
+   * @param x_label Title of the x axis.
+   * @param xbins Total number of histogram bins in x.
+   * @param xmin The lower histogram limit in x.
+   * @param xmax The upper histogram limit in x.
+   * @param y_label Title of the x axis.
+   * @param ybins vector of bin edges
+   * @param weighted whether to track the sum of squared weights separately
+   */
   void create(const std::string& name, const std::string& x_label,
               const int& xbins, const double& xmin, const double& xmax,
               const std::string& y_label, const std::vector<double>& ybins,
               bool weighted = false);
-  // variable x, variable y
+
+  /**
+   * Create a ROOT 2D histogram with variable bins on the x axis
+   * and variable bins on the y axis
+   *
+   * @param name Name of the histogram.
+   * @param x_label Title of the x axis.
+   * @param xbins vector of bin edges
+   * @param y_label Title of the x axis.
+   * @param ybins vector of bin edges
+   * @param weighted whether to track the sum of squared weights separately
+   */
   void create(const std::string& name, const std::string& x_label,
               const std::vector<double>& xbins, const std::string& y_label,
               const std::vector<double>& ybins, bool weighted = false);
-  // category x, variable y
+
+  /**
+   * Create a ROOT 2D histogram with category bins on the x axis
+   * and variable bins on the y axis
+   *
+   * @param name Name of the histogram.
+   * @param x_label Title of the x axis.
+   * @param xcategories vector of string categories
+   * @param y_label Title of the x axis.
+   * @param ybins vector of bin edges
+   * @param weighted whether to track the sum of squared weights separately
+   */
   void create(const std::string& name, const std::string& x_label,
               const std::vector<std::string>& xcategories,
               const std::string& y_label, const std::vector<double>& ybins,
               bool weighted = false);
-  // uniform x, category y
+
+  /**
+   * Create a ROOT 2D histogram with uniform bins on the x axis
+   * and category bins on the y axis
+   *
+   * @param name Name of the histogram.
+   * @param x_label Title of the x axis.
+   * @param xbins Total number of histogram bins in x.
+   * @param xmin The lower histogram limit in x.
+   * @param xmax The upper histogram limit in x.
+   * @param y_label Title of the x axis.
+   * @param ycategories vector of string categories
+   * @param weighted whether to track the sum of squared weights separately
+   */
   void create(const std::string& name, const std::string& x_label,
               const int& xbins, const double& xmin, const double& xmax,
               const std::string& y_label,
               const std::vector<std::string>& ycategories,
               bool weighted = false);
-  // variable x, category y
+
+  /**
+   * Create a ROOT 2D histogram with variable bins on the x axis
+   * and category bins on the y axis
+   *
+   * @param name Name of the histogram.
+   * @param x_label Title of the x axis.
+   * @param xbins vector of bin edges
+   * @param y_label Title of the x axis.
+   * @param ycategories vector of string categories
+   * @param weighted whether to track the sum of squared weights separately
+   */
   void create(const std::string& name, const std::string& x_label,
               const std::vector<double>& xbins, const std::string& y_label,
               const std::vector<std::string>& ycategories,
               bool weighted = false);
-  // category x, category y
+
+  /**
+   * Create a ROOT 2D histogram with category bins on the x axis
+   * and category bins on the y axis
+   *
+   * @param name Name of the histogram.
+   * @param x_label Title of the x axis.
+   * @param xcategories vector of string categories
+   * @param y_label Title of the x axis.
+   * @param ycategories vector of string categories
+   * @param weighted whether to track the sum of squared weights separately
+   */
   void create(const std::string& name, const std::string& x_label,
               const std::vector<std::string>& xcategories,
               const std::string& y_label,
