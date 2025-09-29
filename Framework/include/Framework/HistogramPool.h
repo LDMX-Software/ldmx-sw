@@ -25,6 +25,14 @@ namespace framework {
  * and making sure that they all end up in the same directory
  * in the output histogram file.
  *
+ * @note In v4.5.1 of ldmx-sw and earlier, all of the processors shared
+ * the same pool of histograms, so the naming was a little funky. If
+ * a processor's name was `"myProc"` and a histogram's name was `"myHist"`,
+ * the histogram would be written to `"myProc/myProc_myHist"` in the output
+ * histogram file. After v4.5.2, this central pool was abandoned and the
+ * output histograms are written to the more obvious location `"myProc/myHist"`
+ * in the output histogram file.
+ *
  * # Usage
  * Each of the EventProcessors have a `histograms_` member variable that
  * developers can use within their producers and analyzers.
