@@ -205,7 +205,11 @@ class TrigScintRecHitProducer(ldmxcfg.Producer) :
         self.input_pass_name=""   #take any pass
         self.output_collection="trigScintRecHitsPad3"
         self.verbose = False
-        self.sample_of_interest=2 # Sample of interest. Range 0 to 3
+        self.sample_of_interest=2 # Sample of interest. Range 0 to 4
+        self.pe_cut = 42.0  # this is the nPU / PU cut
+        self.Reject_62TDC = False # whether to reject hits with TDC==62 (True) or set to 0 (False)
+        self.Recover_62TDC = False # whether to try to recover hits with TDC==62 above threshold (pe_cut) (True) or not (False)
+
 
     def pad1() : 
         """Get the rechit producer for first pad"""
@@ -344,27 +348,6 @@ class TrigScintTrackProducer(ldmxcfg.Producer) :
 
 trigScintTrack = TrigScintTrackProducer( "trigScintTrack" )
 
-class TrigScintTrackProducer(ldmxcfg.Producer) :
-    """Configuration for track producer for Trigger Scintillators"""
-
-    def __init__(self,name) :
-        super().__init__(name,'trigscint::','TrigScint')
-
-        self.delta_max = 0.75
-        self.tracking_threshold = 0.  #to add in neighboring channels
-        self.seeding_collection = "TriggerPad1Clusters"
-        self.further_input_collections = ["TriggerPad2Clusters","TriggerPad3Clusters"]
-        self.allow_skip_last_collection = False
-        self.vertical_bar_start_index = 52
-        self.number_horizontal_bars = 24  #16 for x,y segmented geometry only 
-        self.number_vertical_bars = 0     #8 for x,y segmented geometry only
-        self.horizontal_bar_width = 3.
-        self.horizontal_bar_gap = 0.3
-        self.vertical_bar_width = 3.
-        self.vertical_bar_gap = 0.3
-        self.input_pass_name="" #take any pass
-        self.output_collection="TriggerPadTracks"
-        self.verbosity = 0
 
 class TrigScintFirmwareTracker(ldmxcfg.Producer) :
     """Configuration for the track producer from the Firmware Tracker"""

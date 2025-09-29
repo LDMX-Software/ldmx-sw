@@ -84,6 +84,13 @@ class TrigScintRecHitProducer : public framework::Producer {
 
   /// Total number of photoelectrons per MIP
   int sample_of_interest_{2};
+
+  /// PE threshold
+  double pe_cut_{42.0};
+
+  /// Options to handle pileup due to hits with TDC==62
+  bool reject_62tdc_{false};
+  bool recover_62tdc_{false};
 };
 
 }  // namespace trigscint

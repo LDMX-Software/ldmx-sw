@@ -134,6 +134,7 @@ void SimulatorBase::configure(framework::config::Parameters& parameters) {
   G4CascadeParameters::Instance();
 
   buildGeometry();
+  ldmx_log(trace) << "Finishing building.. ";
   for (const std::string& cmd : preInitCommands_) {
     int g4Ret = uiManager_->ApplyCommand(cmd);
     if (g4Ret > 0) {
@@ -149,7 +150,7 @@ void SimulatorBase::createLogging() {
   // For now dont print out anything from GEANT
   // Next step is to modify G4Session to print everything into our logging
   // system
-  sessionHandle_ = std::make_unique<BatchSession>();
+  // sessionHandle_ = std::make_unique<BatchSession>();
 
   if (sessionHandle_ != nullptr)
     uiManager_->SetCoutDestination(sessionHandle_.get());

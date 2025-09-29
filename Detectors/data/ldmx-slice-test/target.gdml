@@ -28,6 +28,25 @@
   </solids>
 
   <materials>
+  
+      <element Z="1" formula="H" name="H">
+        <atom type="A" unit="g/mol" value="1.00794"/>
+      </element>
+      <element Z="6" formula="C" name="C">
+        <atom type="A" unit="g/mol" value="12.0107"/>
+      </element>
+      <element Z="7" formula="N" name="N">
+        <atom type="A" unit="g/mol" value="14.0068"/>
+      </element>
+      <element Z="8" formula="O" name="O">
+        <atom type="A" unit="g/mol" value="15.9994"/>
+      </element>
+      <element Z="18" formula="Ar" name="Ar">
+        <atom type="A" unit="g/mol" value="39.9477"/>
+      </element>
+      <element Z="74" formula="W" name="W">
+        <atom type="A" unit="g/mol" value="183.842"/>
+      </element>  
 
       <material name="Vacuum" state="gas">
       <MEE unit="eV" value="19.2"/>

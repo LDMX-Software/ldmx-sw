@@ -25,6 +25,16 @@ void TrigScintRecHitProducer::configure(
   outputCollection_ = parameters.getParameter<std::string>("output_collection");
   verbose_ = parameters.getParameter<bool>("verbose");
   sample_of_interest_ = parameters.getParameter<int>("sample_of_interest");
+  
+  // New options for handling pileup (hits with TDC==62)
+  pe_cut_= parameters.getParameter<double>("pe_cut");
+  reject_62tdc_ = parameters.getParameter<bool>("Reject_62TDC");
+  recover_62tdc_ = parameters.getParameter<bool>("Recover_62TDC");
+  // Fail if both are enabled
+  if (reject_62tdc_ && recover_62tdc_){
+    EXCEPTION_RAISE("Configuration",
+                    "Invalid configuration: Reject_62TDC and Recover_62TDC cannot both be enabled.");
+  }
 }
 
 void TrigScintRecHitProducer::produce(framework::Event &event) {
@@ -74,7 +84,23 @@ void TrigScintRecHitProducer::produce(framework::Event &event) {
     uint nSamp = adc.size();
     float pedSubtrQ = integratedCharge - nSamp * pedestal_;
     hit.setEnergy(pedSubtrQ * 6250. / gain_ * mevPerMip_ / pePerMip_);  // MeV
-    hit.setPE(pedSubtrQ * 6250. / gain_);
+    float pe = (pedSubtrQ * 6250. / gain_);
+    hit.setPE(pe);
+
+    // Apply user-selected pileup handling (default: accept all)
+    // Compute PEs at the primary time sample only (in-time bunch)
+    float ChargeOfInterest = qie.ADC2Q(adc[sample_of_interest_]);
+    float pedQ = ChargeOfInterest - pedestal_;
+    float pe_primary = (pedQ * 6250./gain_);
+ 
+    if (reject_62tdc_ && tdc[sample_of_interest_] == 62) {
+      continue;  // Reject all 62 TDC hits
+    }
+    if (recover_62tdc_ && tdc[sample_of_interest_] == 62 &&
+        pe_primary < pe_cut_) {
+      continue;  // Reject only low PEs (pileup hits) 
+    }
+
     trigScintHits.push_back(hit);
   }
   // Create the container to hold the
