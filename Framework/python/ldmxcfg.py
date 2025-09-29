@@ -154,7 +154,7 @@ class EventProcessor:
         return instance
 
 
-    def build1DHistogram(self, name, xlabel, bins, xmin = None, xmax = None):
+    def build1DHistogram(self, name, xlabel, bins, xmin = None, xmax = None, weighted=False):
         """Make a 1D histogram 
 
         If xmin and xmax are not provided, bins is assumed to be
@@ -173,6 +173,8 @@ class EventProcessor:
             Minimum edge of bins on x-axis
         xmax : float
             Maximum edge of bins on x-axis
+        weighted: bool
+            whether to keep track of sum of squared weights
 
         See Also
         --------
@@ -184,12 +186,13 @@ class EventProcessor:
         if xmin is not None and xmax is not None :
             the_bins = h.uniform_binning(bins,xmin,xmax)
 
-        self.histograms.append(h.histogram(name, xlabel,the_bins))
+        self.histograms.append(h.histogram(name, xlabel,the_bins, weighted=weighted))
 
 
     def build2DHistogram(self, name, 
             xlabel = '', xbins = 1, xmin = None, xmax = None, 
-            ylabel = '', ybins = 1, ymin = None, ymax = None) :
+            ylabel = '', ybins = 1, ymin = None, ymax = None,
+            weighted = False) :
         """Create a 2D histogram
 
         If {x,y}min or {x,y}max are not provided, {x,y}bins is assumed
@@ -215,8 +218,10 @@ class EventProcessor:
             Number of bins on y-axis OR list of bin edges on y-axis OR string categories
         ymin : float
             Minimum edge of bins on y-axis
-        ymay : float
-            Mayimum edge of bins on y-axis
+        ymax : float
+            Maximum edge of bins on y-axis
+        weighted: bool
+            whether to keep track of sum of squared weights
 
         See Also
         --------
@@ -246,7 +251,7 @@ class EventProcessor:
             the_y_bins = h.uniform_binning(ybins,ymin,ymax)
 
         self.histograms.append(
-                h.histogram(name, xlabel,the_x_bins, ylabel,the_y_bins)
+                h.histogram(name, xlabel,the_x_bins, ylabel,the_y_bins, weighted=weighted)
                 )
 
 

@@ -72,6 +72,7 @@ void HistogramPool::create(const config::Parameters& p) {
   auto name{p.get<std::string>("name")};
   auto x_label{p.get<std::string>("xlabel")};
   auto y_label{p.get<std::string>("ylabel")};
+  auto weighted{p.get<bool>("weighted")};
   auto numeric_xbins{p.get<std::vector<double>>("xbins")};
   auto category_xbins{p.get<std::vector<std::string>>("xcategories", {})};
   auto numeric_ybins{p.get<std::vector<double>>("ybins", {})};
@@ -83,19 +84,19 @@ void HistogramPool::create(const config::Parameters& p) {
   if (one_dim) {
     // assume 1D histogram
     if (x_is_category) {
-      create(name, x_label, category_xbins);
+      create(name, x_label, category_xbins, weighted);
     } else {
-      create(name, x_label, numeric_xbins);
+      create(name, x_label, numeric_xbins, weighted);
     }
   } else {
     if (x_is_category and y_is_category) {
-      create(name, x_label, category_xbins, y_label, category_ybins);
+      create(name, x_label, category_xbins, y_label, category_ybins, weighted);
     } else if (x_is_category and not y_is_category) {
-      create(name, x_label, category_xbins, y_label, numeric_ybins);
+      create(name, x_label, category_xbins, y_label, numeric_ybins, weighted);
     } else if (not x_is_category and y_is_category) {
-      create(name, x_label, numeric_xbins, y_label, category_ybins);
+      create(name, x_label, numeric_xbins, y_label, category_ybins, weighted);
     } else /* not x_is_category and not y_is_category */ {
-      create(name, x_label, numeric_xbins, y_label, numeric_ybins);
+      create(name, x_label, numeric_xbins, y_label, numeric_ybins, weighted);
     }
   }
 }
