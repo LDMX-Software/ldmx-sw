@@ -112,8 +112,8 @@ void TruthSeedProcessor::createTruthTrack(
   Acts::Vector3 mom{p_vec[0], p_vec[1], p_vec[2]};
 
   // Rotate the position and momentum into the ACTS frame.
-  auto posActs = tracking::sim::utils::ldmx2Acts(pos);
-  auto momActs = tracking::sim::utils::ldmx2Acts(mom);
+  auto pos_acts = tracking::sim::utils::ldmx2Acts(pos);
+  auto mom_acts = tracking::sim::utils::ldmx2Acts(mom);
 
   // Get the charge of the particle.
   // TODO: Add function that uses the PDG ID to calculate this.
@@ -126,7 +126,7 @@ void TruthSeedProcessor::createTruthTrack(
 
   // Transform the position, momentum and charge to free parameters.
   // use position & momentum in ACTS frame
-  auto free_params{tracking::sim::utils::toFreeParameters(posActs, momActs, q)};
+  auto free_params{tracking::sim::utils::toFreeParameters(pos_acts, mom_acts, q)};
 
   // Create a line surface at the perigee.  The perigee position is extracted
   // from a particle's vertex or the particle's position at a specific
