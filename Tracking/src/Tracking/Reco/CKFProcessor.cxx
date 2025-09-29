@@ -502,12 +502,17 @@ void CKFProcessor::produce(framework::Event& event) {
       trk.setNdf(track.nMeasurements() - 5);
       trk.setNsharedHits(track.nSharedHits());
 
-      ldmx_log(debug) << "    Track momentum: px = " << track.momentum()[0]
-                      << " py = " << track.momentum()[1]
-                      << " pz = " << track.momentum()[2];
-      trk.setMomentum(track.momentum()[0], track.momentum()[1],
-                      track.momentum()[2]);
+      Acts::Vector3 trkMomTrking(track.momentum()[0],track.momentum()[1],track.momentum()[2]);
+      //save the momentum in the global coords and and GeV-->MeV
+      auto trkMomGbl=tracking::sim::utils::acts2LdmxMomentum(trkMomTrking); 
 
+      ldmx_log(debug) << " Global   Track momentum: px = " << trkMomGbl[0]
+                      << " py = " << trkMomGbl[1]
+                      << " pz = " << trkMomGbl[2];
+
+      trk.setMomentum(trkMomGbl[0], trkMomGbl[1], trkMomGbl[2]); 
+
+ 
       // At least min_hits hits and p > 50 MeV
       if ((trk.getNhits() <= min_hits_) || (abs(1. / trk.getQoP()) <= 0.05)) {
         ldmx_log(debug)

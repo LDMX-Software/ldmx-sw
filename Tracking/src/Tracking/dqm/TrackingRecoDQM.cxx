@@ -154,7 +154,7 @@ void TrackingRecoDQM::efficiencyPlots(
     auto truth_z0 = truth_trk.getZ0();
     auto truth_theta = truth_trk.getTheta();
     auto truth_qop = truth_trk.getQoP();
-    auto truth_p = 1. / abs(truth_trk.getQoP());
+    auto truth_p = 1. / abs(truth_trk.getQoP())*1000.0;
     auto truth_n_hits = truth_trk.getNhits();
 
     std::vector<double> truth_mom = truth_trk.getMomentum();
@@ -162,9 +162,9 @@ void TrackingRecoDQM::efficiencyPlots(
     // Polar angle
     // The momentum in the plane transverse wrt the beam axis
     auto truth_pt_beam =
-        std::sqrt(truth_mom[1] * truth_mom[1] + truth_mom[2] * truth_mom[2]);
+        std::sqrt(truth_mom[1] * truth_mom[1] + truth_mom[0] * truth_mom[0]);
 
-    auto truth_beam_angle = std::atan2(truth_pt_beam, truth_mom[0]);
+    auto truth_beam_angle = std::atan2(truth_pt_beam, truth_mom[2]);
 
     histograms_.fill(title + "truth_nHits", truth_n_hits);
     histograms_.fill(title + "truth_d0", truth_d0);
@@ -235,15 +235,15 @@ void TrackingRecoDQM::efficiencyPlots(
     auto truth_z0 = truth_trk->getZ0();
     auto truth_theta = truth_trk->getTheta();
     auto truth_qop = truth_trk->getQoP();
-    auto truth_p = 1. / abs(truth_trk->getQoP());
+    auto truth_p = 1. / abs(truth_trk->getQoP())*1000.0;
     std::vector<double> truth_mom = truth_trk->getMomentum();
 
     // Polar angle
     // The momentum in the plane transverse wrt the beam axis
     auto truth_pt_beam =
-        std::sqrt(truth_mom[1] * truth_mom[1] + truth_mom[2] * truth_mom[2]);
+        std::sqrt(truth_mom[1] * truth_mom[1] + truth_mom[0] * truth_mom[0]);
 
-    auto truth_beam_angle = std::atan2(truth_pt_beam, truth_mom[0]);
+    auto truth_beam_angle = std::atan2(truth_pt_beam, truth_mom[2]);
 
     // Fill reco plots for efficiencies - numerator. The quantities are truth
     histograms_.fill(title + "match_prob", track_truth_prob);
@@ -310,7 +310,7 @@ void TrackingRecoDQM::trackMonitoring(
     auto trk_qop = track.getQoP();
     auto trk_theta = track.getTheta();
     auto trk_phi = track.getPhi();
-    auto trk_p = 1. / abs(trk_qop);
+    auto trk_p = 1. / abs(trk_qop)*1000.0;
     for (auto track_hit : track.getMeasurementsIdxs()) {
       histograms_.fill(title + "LayersHit",
                        measurements.at(track_hit).getLayer());
@@ -320,11 +320,11 @@ void TrackingRecoDQM::trackMonitoring(
 
     // The transverse momentum in the bending plane
     double pt_bending =
-        std::sqrt(trk_mom[0] * trk_mom[0] + trk_mom[1] * trk_mom[1]);
+        std::sqrt(trk_mom[1] * trk_mom[1] + trk_mom[2] * trk_mom[2]);
 
     // The momentum in the plane transverse wrt the beam axis
     double pt_beam =
-        std::sqrt(trk_mom[1] * trk_mom[1] + trk_mom[2] * trk_mom[2]);
+        std::sqrt(trk_mom[0] * trk_mom[0] + trk_mom[1] * trk_mom[1]);
 
     // Covariance matrix
     Acts::BoundSquareMatrix cov =
@@ -340,14 +340,14 @@ void TrackingRecoDQM::trackMonitoring(
         cov(Acts::BoundIndices::eBoundTheta, Acts::BoundIndices::eBoundTheta));
     double sigmaqop = sqrt(cov(Acts::BoundIndices::eBoundQOverP,
                                Acts::BoundIndices::eBoundQOverP));
-    double sigmap = (1. / trk_qop) * (1. / trk_qop) * sigmaqop;
+    double sigmap = (1. / trk_qop) * (1. / trk_qop) * sigmaqop*1000;//convert to MeV
 
     histograms_.fill(title + "d0", trk_d0);
     histograms_.fill(title + "z0", trk_z0);
     histograms_.fill(title + "qop", trk_qop);
     histograms_.fill(title + "phi", trk_phi);
     histograms_.fill(title + "theta", trk_theta);
-    histograms_.fill(title + "p", std::abs(1. / trk_qop));
+    histograms_.fill(title + "p", std::abs(1. / trk_qop)*1000);
 
     if (doDetail) {
       histograms_.fill(title + "px", trk_mom[0]);
@@ -372,10 +372,10 @@ void TrackingRecoDQM::trackMonitoring(
       histograms_.fill(title + "p_err", sigmap);
 
       // 2D Error plots
-      double p = std::abs(1. / trk_qop);
+      double p = std::abs(1. / trk_qop)*1000.0;
       histograms_.fill(title + "d0_err_vs_p", p, sigmad0);
-      histograms_.fill(title + "z0_err_vs_p", std::abs(1. / trk_qop), sigmaz0);
-      histograms_.fill(title + "p_err_vs_p", std::abs(1. / trk_qop), sigmap);
+      histograms_.fill(title + "z0_err_vs_p", p, sigmaz0);
+      histograms_.fill(title + "p_err_vs_p", p, sigmap);
 
       if (track.getNhits() == 8)
         histograms_.fill(title + "p_err_vs_p_8hits", p, sigmap);
@@ -408,12 +408,12 @@ void TrackingRecoDQM::trackMonitoring(
         auto truth_phi = truth_trk->getPhi();
         auto truth_theta = truth_trk->getTheta();
         auto truth_qop = truth_trk->getQoP();
-        auto truth_p = 1. / abs(truth_trk->getQoP());
+        auto truth_p = 1. / abs(truth_trk->getQoP())*1000.0;
         std::vector<double> truth_mom = truth_trk->getMomentum();
         // Polar angle
         // The momentum in the plane transverse wrt the beam axis
         double truth_pt_beam = std::sqrt(truth_mom[1] * truth_mom[1] +
-                                         truth_mom[2] * truth_mom[2]);
+                                         truth_mom[0] * truth_mom[0]);
 
         // histograms_.fill(title+"truth_d0",   truth_d0);
         // histograms_.fill(title+"truth_z0",   truth_z0);
@@ -475,7 +475,7 @@ void TrackingRecoDQM::trackMonitoring(
         else if (track.getNhits() == 10)
           histograms_.fill(title + "res_p_vs_p_10hits", truth_p, res_p);
 
-        histograms_.fill(title + "res_pt_beam_vs_p", truth_pt_beam,
+        histograms_.fill(title + "res_pt_beam_vs_p", truth_p,
                          res_pt_beam);
 
       }  // found matched track
@@ -534,7 +534,7 @@ void TrackingRecoDQM::trackStateMonitoring(const ldmx::Tracks& tracks,
         Acts::BoundIndices::eBoundQOverP, Acts::BoundIndices::eBoundQOverP));
 
     double trk_qop = track.getQoP();
-    double trk_p = 1. / abs(trk_qop);
+    double trk_p = 1. / abs(trk_qop)*1000.0;
 
     double track_state_loc0 = target_state.params_[0];
     double track_state_loc1 = target_state.params_[1];
