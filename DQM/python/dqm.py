@@ -1079,11 +1079,9 @@ class EcalClusterAnalyzer(ldmxcfg.Analyzer) :
         self.build1DHistogram("unclustered_hits", "Number of hits not in a cluster", 10, 0., 200.)
         self.build1DHistogram("unclustered_hits_percentage", "Percentage of hits not in a cluster", 21, 0., 105.)
         self.build1DHistogram("total_rechits_in_event", "RecHits per event", 20, 0., 500.)
-        self.build1DHistogram("correctly_predicted_events", "Correctly predicted events", 3, 0., 3.)
-
 
         self.build2DHistogram("total_energy_vs_hits", "Total energy (edep) [MeV]", 30, 0., 150., "Hits in cluster", 30, 0., 300.)
-        self.build2DHistogram("total_energy_vs_purity", "Total energy (edep) [MeV]", 30, 0., 150., "Energy purity %", 21., 0, 105.)
+        self.build2DHistogram("total_energy_vs_purity", "Total energy (edep) [MeV]", 30, 0., 150., "Energy purity %", 21, 0, 105.)
         self.build2DHistogram("sp_ele_distance_vs_purity", "SP ele distance in xy-plane [mm]", 50, 0, 250, "Energy purity %", 21, 0., 105.)
         self.build2DHistogram("sp_clue_distance_vs_layer", "CLUE centroid to SP ele distance in xy-plane [mm]", 125, 0., 250., "Layer", 33, -0.5, 32.5)
 
