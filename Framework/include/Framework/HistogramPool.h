@@ -93,7 +93,8 @@ namespace framework {
  * @note By default, the histograms do not store the sum of the square weights
  * in order to save space. If you are filling histograms with weights that are
  * not 1 and you care about correct error estimates using those histograms,
- * make sure to `create` the histogram with the `weighted` argument set to `true`.
+ * make sure to `create` the histogram with the `weighted` argument set to
+ * `true`.
  */
 class HistogramPool {
  private:

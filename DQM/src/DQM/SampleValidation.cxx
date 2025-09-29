@@ -104,7 +104,7 @@ int SampleValidation::pdgidLabel(const int pdgid) {
   if (pdgid == 2112) label = 6;   // neutron
   if (pdgid == 211) label = 7;    // π+
   if (pdgid == -211) label = 8;   // π-
-  if (pdgid == 111) label = 9;   // π0
+  if (pdgid == 111) label = 9;    // π0
   if (pdgid == 321) label = 10;   // K+
   if (pdgid == -321) label = 11;  // K-
   if (pdgid == 130) label = 12;   // K-Long
@@ -125,8 +125,7 @@ int SampleValidation::pdgidLabel(const int pdgid) {
     }
   }
   // dark photon, need pdg id for other models like ALPs and SIMPs
-  if (pdgid == 622)
-    label = 17;
+  if (pdgid == 622) label = 17;
 
   return label;
 }
