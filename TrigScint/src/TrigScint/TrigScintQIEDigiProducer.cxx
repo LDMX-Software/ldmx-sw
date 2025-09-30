@@ -112,6 +112,9 @@ void TrigScintQIEDigiProducer::produce(framework::Event& event) {
     // time offset = global offset+simhit time
     ex[id.bar()]->AddPulse(toff_overall_ + simHit.getTime(), PulseAmp);
 
+    //std::cout  << "Processing sim hit with bar ID: " << id.bar() << std::endl;
+    //std::cout << outputCollection_ << " true time " << toff_overall_ + simHit.getTime() << std::endl;
+
     // incrementing true energy deposited in appropriate bar.
     TrueEdep[id.bar()] += simHit.getEdep();
   }
@@ -146,6 +149,8 @@ void TrigScintQIEDigiProducer::produce(framework::Event& event) {
       QIEInfo.setCID(smq_->CapID(ex[bar_id]));
 
       QDigis.push_back(QIEInfo);
+      //std::cout << outputCollection_ << " true edep " << bar_id << " " << TrueEdep[bar_id] << std::endl;
+
     }
   }
   event.add(outputCollection_, QDigis);

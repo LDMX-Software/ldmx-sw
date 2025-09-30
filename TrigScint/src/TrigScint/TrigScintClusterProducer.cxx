@@ -458,7 +458,7 @@ void TrigScintClusterProducer::produce(framework::Event &event) {
     }
   }  // over channels
 
-  if (trigScintClusters.size() > 0)
+  //if (trigScintClusters.size() > 0)
     event.add(output_collection_, trigScintClusters);
 
   hitChannelMap_.clear();

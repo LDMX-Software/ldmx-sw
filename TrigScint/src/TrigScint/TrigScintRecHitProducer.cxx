@@ -67,10 +67,18 @@ void TrigScintRecHitProducer::produce(framework::Event &event) {
       hit.setTime(tdc[sample_of_interest_] * 0.5);
 
     float integratedCharge = 0;
+    int adc_size = adc.size();
     // integrate pulse over all time samples. will subtract pedestal next
-    for (const auto &adcVal : adc) {
+    //for (const auto &adcVal : adc) {
+    //  integratedCharge += qie.ADC2Q(adcVal);
+    //}
+    int start_point = sample_of_interest_ - 4;
+    if (start_point < 0) start_point = 0;
+    for (int i = start_point; i <= sample_of_interest_; i++) {
+      auto adcVal = adc.at(i);
       integratedCharge += qie.ADC2Q(adcVal);
     }
+
     uint nSamp = adc.size();
     float pedSubtrQ = integratedCharge - nSamp * pedestal_;
     hit.setEnergy(pedSubtrQ * 6250. / gain_ * mevPerMip_ / pePerMip_);  // MeV
