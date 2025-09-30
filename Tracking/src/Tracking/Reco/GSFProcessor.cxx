@@ -439,8 +439,8 @@ void GSFProcessor::produce(framework::Event& event) {
     tracking::sim::utils::flatCov(trk_cov, v_trk_cov);
     trk.setPerigeeCov(v_trk_cov);
     Acts::Vector3 trk_momentum = gsftrk.momentum();
-    auto trk_mom_gbl=tracking::sim::utils::acts2LdmxMomentum(trk_momentum);     
-    trk.setMomentum(trk_mom_gbl[0], trk_mom_gbl[1], trk_mom_gbl[2]); 
+    auto trk_mom_gbl = tracking::sim::utils::acts2LdmxMomentum(trk_momentum);
+    trk.setMomentum(trk_mom_gbl[0], trk_mom_gbl[1], trk_mom_gbl[2]);
 
     // truth information
     trk.setTrackID(track.getTrackID());

@@ -184,7 +184,7 @@ inline Acts::Vector3 ldmx2Acts(Acts::Vector3 ldmx_v) {
 //(0 1 0) x_  = y_
 //(0 0 1) y_  = z_
 //(1 0 0) z_  = x_
-  
+
 inline Acts::Vector3 acts2Ldmx(Acts::Vector3 acts_v) {
   // TODO::Move it to a static member
   Acts::SquareMatrix3 ldmx_rot;
@@ -194,12 +194,12 @@ inline Acts::Vector3 acts2Ldmx(Acts::Vector3 acts_v) {
 }
 
 inline std::vector<double> acts2LdmxMomentum(Acts::Vector3 acts_mom) {
-  Acts::Vector3 ldmx_mom=acts2Ldmx(acts_mom);
-  return std::vector<double>{ldmx_mom[0]/Acts::UnitConstants::MeV,
-      ldmx_mom[1]/Acts::UnitConstants::MeV,
-      ldmx_mom[2]/Acts::UnitConstants::MeV}; 
+  Acts::Vector3 ldmx_mom = acts2Ldmx(acts_mom);
+  return std::vector<double>{ldmx_mom[0] / Acts::UnitConstants::MeV,
+                             ldmx_mom[1] / Acts::UnitConstants::MeV,
+                             ldmx_mom[2] / Acts::UnitConstants::MeV};
 }
-  
+
 // Transform position, momentum and charge to free parameters
 
 inline Acts::FreeVector toFreeParameters(Acts::Vector3 pos_, Acts::Vector3 mom,
