@@ -10,25 +10,6 @@ void HcalVetoResults::configure(framework::config::Parameters &ps) {
   hcal_veto_passname_ = ps.get<std::string>("hcal_veto_passname");
 }
 
-void HcalVetoResults::onProcessStart() {
-  std::vector<TH1 *> hists_hca_lsector = {histograms_.get("max_section")};
-
-  // enum HcalSection { BACK = 0, TOP = 1, BOTTOM = 2, RIGHT = 3, LEFT = 4 };
-  std::vector<std::string> labels_hca_lsector = {"HCAL BACK",    // 1
-                                                 "HCAL TOP",     // 2
-                                                 "HCAL BOTTOM",  // 3
-                                                 "HCAL RIGHT",   // 4
-                                                 "HCAL LEFT",    // 5
-                                                 ""};
-
-  for (int ilabel{1}; ilabel < labels_hca_lsector.size(); ++ilabel) {
-    for (auto &hist : hists_hca_lsector) {
-      hist->GetXaxis()->SetBinLabel(ilabel,
-                                    labels_hca_lsector[ilabel - 1].c_str());
-    }
-  }
-}
-
 void HcalVetoResults::analyze(const framework::Event &event) {
   // Get the veto object
   auto hcal_veto{

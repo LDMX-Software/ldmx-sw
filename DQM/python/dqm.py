@@ -200,7 +200,8 @@ class HcalVetoResults(ldmxcfg.Analyzer) :
         self.build1DHistogram('num_valid_hits',
                 'Total number of valid HCAL hits', 500, -0.5, 499.5)
         self.build1DHistogram('max_section',
-                'Maximal PE hit section', 5, -0.5, 4.5)
+                'Maximal PE hit section',
+                ['Back', 'Top', 'Bottom', 'Right', 'Left'])
         self.build1DHistogram('max_pos_z',
                 'Maximal PE hit postion Z [mm]', 6000, 200., 6200)
         self.build1DHistogram('veto_pass',
@@ -646,10 +647,11 @@ class DarkBremInteraction(ldmxcfg.Producer) :
         # elements are hydrogen and carbon (for trigger pads) and tungsten target
         self.build1DHistogram('dark_brem_element',
             'Element in which Dark Brem Occurred',
-            12, 0, 12)
+            ["did not happen", "H 1", "C 6", "O 8", "Na 11", "Si 14",
+             "Ca 20", "Cu 29", "Y 39", "Lu 71", "W 74", "unlisted"])
         self.build1DHistogram('dark_brem_material',
             'Material in which Dark Brem Occurred',
-            8, 0, 8)
+            ["Unknown", "C", "PCB", "Glue", "Si", "Al", "W / LYSO", "PVT"])
 
 
 class HCalRawDigi(ldmxcfg.Analyzer) :
@@ -736,17 +738,56 @@ class PhotoNuclearDQM(ldmxcfg.Analyzer) :
 
         self.sim_particles_passname = ''
 
+        event_type_labels = [
+            "Nothing hard",   # 0
+            "1 n",            # 1
+            "2 n",            # 2
+            "#geq 3 n",       # 3
+            "1 #pi",          # 4
+            "2 #pi",          # 5
+            "1 #pi_{0}",      # 6
+            "1 #pi A",        # 7
+            "1 #pi 2 A",      # 8
+            "2 #pi A",        # 9
+            "1 #pi_{0} A",    # 10
+            "1 #pi_{0} 2 A",  # 11
+            "#pi_{0} #pi A",  # 12
+            "1 p",            # 13
+            "2 p",            # 14
+            "pn",             # 15
+            "K^{0}_{L} X",    # 16
+            "K X",            # 17
+            "K^{0}_{S} X",    # 18
+            "exotics",        # 19
+            "multi-body",     # 20
+        ]
+        event_type_compact_labels = [
+            "1 n",      # 0
+            "K#pm X",   # 1
+            "1 K^{0}",  # 2
+            "2 n",      # 3
+            "Soft",     # 4
+            "Other",    # 5
+        ]
 
         self.count_light_ions=count_light_ions
-        self.build1DHistogram("event_type"         , "", 24, -1, 23)
-        self.build1DHistogram("event_type_500mev"  , "", 24, -1, 23)
-        self.build1DHistogram("event_type_2000mev" , "", 24, -1, 23)
-        self.build1DHistogram("event_type_compact"         , "", 8, -1, 7)
-        self.build1DHistogram("event_type_compact_500mev"  , "", 8, -1, 7)
-        self.build1DHistogram("event_type_compact_2000mev" , "", 8, -1, 7)
-        self.build1DHistogram("1n_event_type"              , "", 7,  -1, 6)
-        self.build1DHistogram("pn_vertex_volume"           , "", 13,  -0.5, 12.5)
-        self.build1DHistogram("pn_interaction_material"    , "", 10,  -0.5, 9.5)
+        self.build1DHistogram("event_type"         , "", event_type_labels)
+        self.build1DHistogram("event_type_500mev"  , "", event_type_labels)
+        self.build1DHistogram("event_type_2000mev" , "", event_type_labels)
+        self.build1DHistogram("event_type_compact"         , "", event_type_compact_labels)
+        self.build1DHistogram("event_type_compact_500mev"  , "", event_type_compact_labels)
+        self.build1DHistogram("event_type_compact_2000mev" , "", event_type_compact_labels)
+        self.build1DHistogram("1n_event_type"              , "", [
+            "nn", "pn", "#pi^{+}n", "#pi^{0}n", "other"
+        ])
+        self.build1DHistogram("pn_vertex_volume"           , "", [
+            "Didn't happen", "Else", "W Cooling", "C Cooling", "PCB",
+            "CarbonBasePlate", "Absorber", "Sensor", "Glue", "Motherboard"
+        ])
+        self.build1DHistogram("pn_interaction_material"    , "", [
+            "Didn't happen", "Else", "Si", "W", "FR4", "Steel", "Epoxy",
+            "PVT", "Glue", "Air"
+        ])
         self.build1DHistogram("pn_particle_mult"   , "Photo-nuclear Multiplicity", 200, 0, 200)
         self.build1DHistogram("pn_neutron_mult"    , "Photo-nuclear Neutron Multiplicity", 200,0, 200)
         self.build1DHistogram("pn_gamma_energy"    , "#gamma Energy [MeV]", 100, 0, 10000)
@@ -859,7 +900,7 @@ class TrkDeDxMassEstFeatures(ldmxcfg.Analyzer) :
         self.build1DHistogram("mass_estimate_very_low_p_pion", "Mass Estimate for pions [MeV]", 20, 0., 200.)
         self.build1DHistogram("mass_estimate_very_low_p_kaon", "Mass Estimate for kaons [MeV]", 60, 200., 800.)
         self.build1DHistogram("mass_estimate_very_low_p_proton", "Mass Estimate for proton [MeV]", 40, 800., 1200.)
-        self.build1DHistogram("track_type", "Track Type", 3, 0, 3)
+        self.build1DHistogram("track_type", "Track Type", ['Other', 'Tagger', 'Recoil'])
         
 
 class TrigScintSimDQM(ldmxcfg.Analyzer) :
@@ -998,21 +1039,43 @@ class SampleValidation(ldmxcfg.Analyzer) :
         self.sim_particles_passname = ''
         self.target_scoring_plane_passname = ''
 
-        # primary histograms
-        self.build1DHistogram("primaries_pdgid", "ID of primary particles", 20, 0, 20)
+        pdgid_bin_labels = [
+            "e^{+}",                   # 0
+            "e^{-}",                   # 1
+            "#mu^{+}",                 # 2
+            "#mu^{-}",                 # 3
+            "#gamma",                  # 4
+            "p^{+}",                   # 5
+            "n^{0}",                   # 6
+            "#pi^{+}",                 # 7
+            "#pi^{-}",                 # 8
+            "#pi^{0}",                 # 9
+            "K^{+}",                   # 10
+            "K^{-}",                   # 11
+            "k_{L}",                   # 12
+            "k_{S}",                   # 13
+            "light-N",                 # 14
+            "heavy-N",                 # 15
+            "#Lambda / #Sigma / #Xi",  # 16
+            "A'",                      # 17
+            "else",
+        ]
+
+        #primary histograms
+        self.build1DHistogram("primaries_pdgid", "ID of primary particles", pdgid_bin_labels)
         self.build1DHistogram("primaries_energy", "Energy of primary particles [MeV]", 90, 0, 9000) # range applicable for 4 GeV beam
         self.build2DHistogram("beam_smear", "x [mm]", 30, -150, 150, "y [mm]", 30, -150, 150)
-        self.build1DHistogram("primarydaughters_pdgid", "ID of primary daughters", 20, 0, 20)
+        self.build1DHistogram("primarydaughters_pdgid", "ID of primary daughters", pdgid_bin_labels)
         self.build1DHistogram("daughterphoton_energy", "Energy spectrum of all photons from primary [MeV]", 170, 0, 8500)
 
-        # primary daughter of interest (brem / dark brem) histograms
-        self.build1DHistogram("harddaughters_pdgid", "ID of primary daughters", 20, 0, 20)
+        #primary daughter of interest(brem / dark brem) histograms
+        self.build1DHistogram("harddaughters_pdgid", "ID of primary daughters", pdgid_bin_labels)
         self.build1DHistogram("harddaughters_startZ", "Start z position of hard primary daughter [mm]", 100, -500, 500)
         self.build1DHistogram("harddaughters_endZ", "End z position of hard primary daughter [mm]", 100, -500, 500)
         self.build1DHistogram("harddaughters_energy", "Energy spectrum of hard primary daughter [MeV]", 130, 2000, 8500)
 
-        # daughters of hard brem histograms
-        self.build1DHistogram("hardbremdaughters_pdgid", "ID of hard brem daughters", 20, 0, 20)
+        #daughters of hard brem histograms
+        self.build1DHistogram("hardbremdaughters_pdgid", "ID of hard brem daughters", pdgid_bin_labels)
         self.build1DHistogram("hardbremdaughters_startZ", "Start z position of hard brem daughters  [mm]", 200, -1000, 1000)
         self.build1DHistogram("hardbremdaughters_endZ", "End z position of hard brem daughters  [mm]", 70, -1000, 6000)
         self.build1DHistogram("hardbremdaughters_energy", "Energy of hard brem daughters  [MeV]", 170, 0, 8500)
@@ -1053,7 +1116,7 @@ class EcalClusterAnalyzer(ldmxcfg.Analyzer) :
         self.ecal_sim_hit_coll = "EcalSimHits"
         self.ecal_sim_hit_pass = "" #use whatever pass is available
 
-        # Pass name for ecal digis and rec hits
+        #Pass name for ecal digis and rec hits
         self.rec_hit_coll_name = 'EcalRecHits'
         self.rec_hit_pass_name = ''
 
@@ -1066,9 +1129,10 @@ class EcalClusterAnalyzer(ldmxcfg.Analyzer) :
         self.build1DHistogram("number_of_clusters_first_layer", "Number of CLUE clusters on the first layer", 5, -0.5, 4.5)
         self.build1DHistogram("number_of_clusters_per_layer", "Number of CLUE clusters per layer", 5, -0.5, 4.5)
         self.build1DHistogram("number_of_clusters", "Total number of CLUE clusters", 51, -0.5, 50.5)
-        self.build1DHistogram("correctly_predicted_events", "Correct Cluster Count", 3, 0., 3.)
+        self.build1DHistogram("correctly_predicted_events", "Correct Cluster Count",
+                              ["Underpredicted", "Correct", "Overpredicted"])
 
-        # Need to mod for more than two electrons
+        #Need to mod for more than two electrons
         self.build1DHistogram("ancestors", "Ancestors of particles", 4, 0., 4.)
 
         self.build1DHistogram("same_ancestor", "Percentage of hits in cluster coming from the electron that produced most hits", 21, 0., 105.)
