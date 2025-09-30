@@ -126,7 +126,8 @@ void TruthSeedProcessor::createTruthTrack(
 
   // Transform the position, momentum and charge to free parameters.
   // use position & momentum in ACTS frame
-  auto free_params{tracking::sim::utils::toFreeParameters(pos_acts, mom_acts, q)};
+  auto free_params{
+      tracking::sim::utils::toFreeParameters(pos_acts, mom_acts, q)};
 
   // Create a line surface at the perigee.  The perigee position is extracted
   // from a particle's vertex or the particle's position at a specific
@@ -179,10 +180,12 @@ void TruthSeedProcessor::createTruthTrack(
   trk.setPerigeeParameters(
       tracking::sim::utils::convertActsToLdmxPars(prop_bound_vec));
 
-  //save the global position & momentum in the ldmx::track object
-  //save momentum in MeV
+  // save the global position & momentum in the ldmx::track object
+  // save momentum in MeV
   trk.setPosition(pos(0), pos(1), pos(2));
-  trk.setMomentum(mom(0)/Acts::UnitConstants::MeV, mom(1)/Acts::UnitConstants::MeV, mom(2)/Acts::UnitConstants::MeV);
+  trk.setMomentum(mom(0) / Acts::UnitConstants::MeV,
+                  mom(1) / Acts::UnitConstants::MeV,
+                  mom(2) / Acts::UnitConstants::MeV);
 }
 
 // origin_surface is the perigee
