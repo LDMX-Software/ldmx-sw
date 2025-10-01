@@ -7,9 +7,6 @@ project(DetDescr VERSION 2.1.0
                  LANGUAGES CXX
 )
 
-# Search and configure ROOT
-find_package(ROOT 6.16 CONFIG REQUIRED)
-
 setup_python(package_name LDMX/DetDescr)
 # Setup the test
 setup_test(dependencies DetDescr::DetDescr)

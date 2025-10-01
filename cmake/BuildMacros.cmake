@@ -228,8 +228,8 @@ endmacro()
 
 macro(setup_library)
 
-  set(options interface register_target)
-  set(oneValueArgs module name)
+  set(options interface)
+  set(oneValueArgs module name linkdef)
   set(multiValueArgs dependencies sources)
   cmake_parse_arguments(setup_library "${options}" "${oneValueArgs}"
                         "${multiValueArgs}" ${ARGN})
@@ -283,10 +283,16 @@ macro(setup_library)
   endif()
   add_library(${alias} ALIAS ${library_name})
 
-  if(setup_library_register_target)
-    set(registered_targets
-        ${registered_targets} ${alias}
-        CACHE INTERNAL "registered_targets")
+  if(setup_library_linkdef)
+    file(GLOB headers CONFIGURE_DEPENDS ${include_path}/[a-zA-Z]*.h)
+    file(GLOB linkdef CONFIGURE_DEPENDS "${setup_library_linkdef}")
+    list(REMOVE_ITEM headers "${linkdef}")
+    root_generate_dictionary(
+      ${library_name}Dict
+      ${headers}
+      LINKDEF ${linkdef}
+      MODULE ${library_name})
+    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/lib${library_name}_rdict.pcm DESTINATION lib)
   endif()
 
   # Install the libraries and headers
@@ -354,69 +360,6 @@ macro(setup_data)
   endif()
 
 endmacro()
-
-function(register_event_object)
-
-  set(oneValueArgs module_path namespace class type key)
-  cmake_parse_arguments(register_event_object "${options}" "${oneValueArgs}"
-                        "${multiValueArgs}" ${ARGN})
-
-  # Start by checking if the class that is being registered exists
-  if(NOT EXISTS ${PROJECT_SOURCE_DIR}/include/${register_event_object_module_path}/${register_event_object_class}.h)
-    message(FATAL_ERROR
-      "Trying to register class ${register_event_object_class} that doesn't exist.")
-  endif()
-
-  set(header
-      ${register_event_object_module_path}/${register_event_object_class}.h)
-
-  if(DEFINED register_event_object_namespace)
-    string(CONCAT register_event_object_class
-                  ${register_event_object_namespace} "::"
-                  ${register_event_object_class})
-  endif()
-
-  # Only register objects that haven't already been registered.
-  if(register_event_object_class IN_LIST dict)
-    return()
-  endif()
-
-  set(dict
-      ${dict} ${register_event_object_class}
-      CACHE INTERNAL "dict")
-
-  set(event_headers
-      ${event_headers} ${header}
-      CACHE INTERNAL "event_headers")
-
-  set(namespaces
-      ${namespaces} ${register_event_object_namespace}
-      CACHE INTERNAL "namespaces")
-
-  if(NOT ${PROJECT_SOURCE_DIR}/include IN_LIST include_paths)
-    set(include_paths
-        "$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>" ${include_paths}
-        CACHE INTERNAL "include_paths")
-  endif()
-
-  if(register_event_object_type STREQUAL "collection")
-    set(dict
-        ${dict} 
-        "std::vector< ${register_event_object_class} >"
-        CACHE INTERNAL "dict")
-  elseif(register_event_object_type STREQUAL "map")
-    set(dict
-        ${dict}
-        "std::map< ${register_event_object_key}, ${register_event_object_class} >"
-        CACHE INTERNAL "dict")
-  elseif(DEFINED register_event_object_type)
-    message(
-      FATAL_ERROR
-        "Trying to register object with invalid type ${register_event_object_type}"
-    )
-  endif()
-
-endfunction()
 
 macro(setup_test)
 
@@ -488,7 +431,7 @@ macro(build_test)
   # contains the test from the different modules.  Each of the modules needs to
   # setup the test they want to run.
   add_executable(run_test ${test_sources})
-  target_link_libraries(run_test PRIVATE Catch2::Catch2WithMain ${test_dep})
+  target_link_libraries(run_test PRIVATE Catch2::Catch2WithMain ${test_dep} ${GENIE_LIBS})
 
   foreach(entry ${test_modules})
     file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/${entry}/test)
@@ -519,12 +462,8 @@ macro(build_test)
 endmacro()
 
 macro(clear_cache_variables)
-  unset(registered_targets CACHE)
-  unset(dict CACHE)
-  unset(event_headers CACHE)
   unset(test_sources CACHE)
   unset(test_dep CACHE)
   unset(test_modules CACHE)
-  unset(namespaces CACHE)
   unset(test_configs CACHE)
 endmacro()

@@ -8,12 +8,10 @@ project(DQM VERSION 2.1.0
             LANGUAGES CXX
 )
 
-# Search and configure ROOT
-find_package(ROOT CONFIG REQUIRED)
-
 setup_library(module DQM
               dependencies ROOT::Physics 
                            Framework::Framework Recon::Event Tools::Tools DetDescr::DetDescr
+                           Ecal::Event SimCore::Event Hcal::Event Tracking::Event TrigScint::Event
 )
 
 setup_python(package_name LDMX/DQM)

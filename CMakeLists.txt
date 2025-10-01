@@ -29,6 +29,28 @@ project(LDMX_SW VERSION ${LDMXSW_VERSION_NUM}
 
 set(CMAKE_CXX_STANDARD 20)
 
+# Search and configure ROOT
+find_package(ROOT 6.16 CONFIG REQUIRED)
+
+# Generate the ROOT dictionary.  The following allows the use of the macro used
+# to generate the dictionary.
+include("${ROOT_DIR}/RootMacros.cmake")
+
+# Search for the Python3 library
+find_package(Python3 COMPONENTS Interpreter Development)
+
+# Search for Boost
+find_package(
+  Boost REQUIRED
+  COMPONENTS system
+             log
+             filesystem
+             thread
+             chrono
+             atomic
+             regex)
+
+
 # Load additional macros used by this project. 
 list(APPEND CMAKE_MODULE_PATH ${LDMX_SW_SOURCE_DIR}/cmake/)
 
@@ -36,6 +58,11 @@ list(APPEND CMAKE_MODULE_PATH ${LDMX_SW_SOURCE_DIR}/cmake/)
 # 'build_macros_found' will be set to the path of the module.  Otherwise, it
 # is set to NOTFOUND.
 include(BuildMacros RESULT_VARIABLE build_macros_found)
+
+setup_geant4_target()
+
+setup_genie_target()
+include_directories(SYSTEM /usr/local/include/GENIE )
 
 # Adding ROOT as "SYSTEM" 
 # which will silence compiler warnings from these 3rd party softwares
@@ -77,22 +104,6 @@ if(NOT BUILD_RECON_ONLY AND NOT BUILD_SIM_ONLY)
     set(BUILD_ALL ON)
     message(STATUS "Building all modules.")
 endif()
-
-# Start by building all of the classes needed for building the event bus and 
-# ROOT dictionary. This is on by forcing the global "BUILD_EVENT_ONLY" option
-# here.
-set(BUILD_EVENT_ONLY ON CACHE BOOL "Build the SimCore library." FORCE)
-
-add_subdirectory(Recon ${CMAKE_BINARY_DIR}/ReconEvent)
-add_subdirectory(SimCore ${CMAKE_BINARY_DIR}/SimCoreEvent)
-add_subdirectory(Ecal ${CMAKE_BINARY_DIR}/EcalEvent)
-add_subdirectory(Hcal ${CMAKE_BINARY_DIR}/HcalEvent)
-add_subdirectory(TrigScint ${CMAKE_BINARY_DIR}/TrigScintEvent)
-add_subdirectory(Tracking ${CMAKE_BINARY_DIR}/TrackingEvent)
-add_subdirectory(Trigger/Algo ${CMAKE_BINARY_DIR}/TriggerEvent)
-
-# Once the event libraries have been built, turn off the global option. 
-set(BUILD_EVENT_ONLY OFF CACHE BOOL "Build the SimCore library." FORCE)
 
 # The framework has all the backend code needed to run all processors.
 add_subdirectory(Framework)

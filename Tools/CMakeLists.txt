@@ -12,13 +12,11 @@ project(Tools VERSION 2.1.0
 # to an external folder and create the targets.
 find_package(ONNXRuntime 1.2.0)
 
-# Search and configure ROOT
-find_package(ROOT CONFIG REQUIRED)
-
 # Setup the library
 setup_library(module Tools
               dependencies Framework::Framework Recon::Event Conditions::Conditions
                            ONNXRuntime::Interface ROOT::Core ROOT::Physics Packing::Utility
+                           SimCore::Event
 )
 target_include_directories(Tools SYSTEM PUBLIC HLS_Arbitrary_Precision_Types/include)
 

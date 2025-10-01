@@ -8,31 +8,12 @@ project(Ecal VERSION 2.1.0
              LANGUAGES CXX
 )
 
-# Search and configure ROOT
-find_package(ROOT CONFIG REQUIRED)
-
-option(BUILD_EVENT_ONLY "Build the event library." ON)
-if(BUILD_EVENT_ONLY)
-    
-    register_event_object( module_path "Ecal/Event" namespace "ldmx" class "ClusterAlgoResult" )
-    register_event_object( module_path "Ecal/Event" namespace "ldmx" class "EcalVetoResult" )
-    register_event_object( module_path "Ecal/Event" namespace "ldmx" class "EcalWABResult" )
-    register_event_object( module_path "Ecal/Event" namespace "ldmx" class "EcalTrajectoryInfo")
-    register_event_object( module_path "Ecal/Event" namespace "ldmx" class "EcalMipResult")
-    register_event_object( module_path "Ecal/Event" namespace "ldmx" class "EcalCluster" type "collection" )
-    register_event_object( module_path "Ecal/Event" namespace "ldmx" class "EcalHit"     type "collection" )
-
-    
-    # Generate the files needed to build the event classes.
-    setup_library(module Ecal
-                  name Event
-                  dependencies ROOT::Core ROOT::Hist ROOT::Physics
-                               Recon::Event SimCore::Event 
-                  register_target)
-
-    return()
-
-endif()
+setup_library(
+  module Ecal
+  name Event
+  dependencies ROOT::Core ROOT::Physics Recon::Event
+  linkdef ${CMAKE_CURRENT_SOURCE_DIR}/include/Ecal/Event/LinkDef.h
+)
 
 # Search for the ONNXRuntime binaries.  If not found, download the binaries 
 # to an external folder and create the targets.
@@ -43,7 +24,7 @@ find_package(Eigen3 CONFIG REQUIRED)
 setup_library(module Ecal
               dependencies ROOT::Physics
                            Framework::Framework Recon::Event Tools::Tools DetDescr::DetDescr 
-                           ONNXRuntime::Interface Ecal::Event
+                           ONNXRuntime::Interface Ecal::Event Tracking::Event SimCore::Event
                            Eigen3::Eigen
 )
 

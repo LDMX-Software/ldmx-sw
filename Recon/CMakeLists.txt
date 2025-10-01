@@ -9,46 +9,12 @@ project(Recon VERSION 2.1.0
               LANGUAGES CXX
 )
 
-
-option(BUILD_EVENT_ONLY "Build the event library." ON)
-if(BUILD_EVENT_ONLY)
-
-  # Search and configure ROOT
-  find_package(ROOT CONFIG REQUIRED)
-
-  register_event_object(module_path "Recon/Event" namespace "ldmx" 
-                        class "CalorimeterHit" type "collection" )
-  register_event_object(module_path "Recon/Event" namespace "ldmx" 
-                        class "CaloCluster" type "collection" )
-  register_event_object( module_path "Recon/Event" namespace "ldmx" 
-                         class "TriggerResult" )
-  register_event_object( module_path "Recon/Event" namespace "ldmx" 
-                         class "HgcrocDigiCollection" )
-  register_event_object( module_path "Recon/Event" 
-                         namespace "ldmx" class "HgcrocPulseTruth" 
-                         type "collection")
-  register_event_object( module_path "Recon/Event" namespace "ldmx" 
-                         class "CompositePulse" )
-  register_event_object( module_path "Recon/Event" 
-                         namespace "ldmx" class "HgcrocTrigDigi" 
-                         type "collection" )
-  register_event_object( module_path "Recon/Event" 
-                         namespace "ldmx" class "CaloTrigPrim" 
-                         type "collection" )
-  register_event_object(module_path "Recon/Event" namespace "ldmx" 
-                        class "PFCandidate" type "collection" )
-  register_event_object( module_path "Recon/Event" namespace "ldmx"
-  			class "BeamElectronTruth" type "collection" )
-  register_event_object( module_path "Recon/Event" namespace "ldmx" 
-                         class "TrackDeDxMassEstimate" type "collection" )
-  register_event_object( module_path "Recon/Event" namespace "ldmx" 
-                         class "FiducialFlag" )
- setup_library(module Recon name Event
-                 dependencies ROOT::Core
-                 register_target)
-  
-  return()
-endif()
+setup_library(
+  module Recon
+  name Event
+  dependencies ROOT::Core
+  linkdef include/Recon/Event/LinkDef.h
+)
 
 file(GLOB SRC_FILES CONFIGURE_DEPENDS 
   ${PROJECT_SOURCE_DIR}/src/Recon/Examples/[a-zA-z]*.cxx
@@ -58,9 +24,9 @@ file(GLOB SRC_FILES CONFIGURE_DEPENDS
 
 setup_library(module Recon
   dependencies Framework::Framework Recon::Event Tools::Tools 
-                           DetDescr::DetDescr Ecal::Ecal
-                           Packing::Utility
-              sources ${SRC_FILES}
+               DetDescr::DetDescr Ecal::Event
+               Packing::Utility TrigScint::Event Tracking::Event
+  sources ${SRC_FILES}
 )
 
 setup_python(package_name LDMX/Recon)
