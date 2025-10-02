@@ -4,11 +4,16 @@ set(GENIE_LIBRARIES "")
 macro(add_genie_target)
   cmake_parse_arguments(add_genie_target "" "name" "dependencies" ${ARGN})
   add_library(GENIE::${add_genie_target_name} SHARED IMPORTED)
-  #set(libs "/usr/local/lib/lib${add_genie_target_name}.so" ${add_genie_target_dependencies})
+  set_property(TARGET GENIE::${add_genie_target_name} APPEND PROPERTY IMPORTED_CONFIGURATIONS NOCONFIG)
   set_target_properties(GENIE::${add_genie_target_name} PROPERTIES
+    INTERFACE_INCLUDE_DIRECTORIES "/usr/local/include/GENIE"
     IMPORTED_LOCATION "/usr/local/lib/lib${add_genie_target_name}.so"
+    IMPORTED_LOCATION_NOCONFIG "/usr/local/lib/lib${add_genie_target_name}.so"
+    IMPORTED_SONAME_NOCONFIG "lib${add_genie_target_name}.so"
   )
-  if ("${add_genie_target_dependencies}")
+  list(LENGTH add_genie_target_dependencies num_deps)
+  if (${num_deps} GREATER 0)
+    message("adding deps to ${add_genie_target_name} ${add_genie_target_dependencies}")
     set_target_properties(GENIE::${add_genie_target_name} PROPERTIES
       INTERFACE_LINK_LIBRARIES "${add_genie_target_dependencies}"
     )
@@ -19,22 +24,19 @@ endmacro()
 include(CMakeFindDependencyMacro)
 find_dependency(ROOT CONFIG REQUIRED)
 
-list(APPEND GENIE_LIBRARIES log4cpp gsl)
 add_genie_target(name GRwFwk)
 add_genie_target(name GRwIO)
 add_genie_target(name GRwClc)
 
-list(APPEND GENIE_LIBRARIES xml2)
 add_genie_target(name GFwMsg dependencies log4cpp)
 add_genie_target(name GFwReg dependencies GENIE::GFwMsg)
-add_genie_target(name GFwAlg)
-add_genie_target(name GFwInt dependencies GFwAlg)
+add_genie_target(name GFwAlg dependencies GENIE::GFwReg)
+add_genie_target(name GFwInt dependencies GENIE::GFwAlg)
 add_genie_target(name GFwGHEP)
-add_genie_target(name GFwNum dependencies ROOT::MathMore)
-add_genie_target(name GFwUtl dependencies GFwInt GFwNum GFwAlg pythia8 ROOT::EGPythia8 xml2)
+add_genie_target(name GFwNum dependencies ROOT::MathMore ROOT::TreePlayer)
+add_genie_target(name GFwUtl dependencies GENIE::GFwInt GENIE::GFwNum pythia8 ROOT::EGPythia8 xml2)
 add_genie_target(name GFwParDat dependencies ROOT::EG)
-add_genie_target(name GFwEG dependencies GFwParDat ROOT::EG)
-list(APPEND GENIE_LIBRARIES ROOT::EG ROOT::EGPythia8 pythia8)
+add_genie_target(name GFwEG dependencies GENIE::GFwParDat ROOT::EG)
 add_genie_target(name GFwNtp)
 
 add_genie_target(name GPhCmn)
@@ -70,15 +72,11 @@ add_genie_target(name GPhResXS)
 add_genie_target(name GPhResEG)
 add_genie_target(name GPhStrXS)
 add_genie_target(name GPhStrEG)
-list(APPEND GENIE_LIBRARIES LHAPDF)
 add_genie_target(name GPhHEDISXS)
 add_genie_target(name GPhHEDISEG)
-list(APPEND GENIE_LIBRARIES ROOT::Geom)
 add_genie_target(name GTlFlx)
 add_genie_target(name GTlGeo dependencies ROOT::Geom)
-list(APPEND GENIE_LIBRARIES ROOT::MathCore ROOT::MathMore)
 
-message(${GENIE_LIBRARIES})
 add_library(GENIE::GENIE INTERFACE IMPORTED GLOBAL)
 set_target_properties(GENIE::GENIE PROPERTIES
   INTERFACE_LINK_LIBRARIES "${GENIE_LIBRARIES}"
