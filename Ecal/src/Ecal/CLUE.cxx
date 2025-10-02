@@ -35,7 +35,7 @@ T CLUE::dist(T x1, T y1, T z1, T x2, T y2, T z2) {
    anymore but leaving the code here for inspo */
 
 void CLUE::electronSeparation(std::vector<ldmx::EcalHit> hits) {
-  std::vector<double> layerThickness = {2.,   3.5,  5.3,  5.3, 5.3, 5.3,
+  std::vector<double> layer_thickness = {2.,   3.5,  5.3,  5.3, 5.3, 5.3,
                                         5.3,  5.3,  5.3,  5.3, 5.3, 10.5,
                                         10.5, 10.5, 10.5, 10.5};
   double air = 10.;
@@ -45,33 +45,33 @@ void CLUE::electronSeparation(std::vector<ldmx::EcalHit> hits) {
               return a.getZPos() < b.getZPos();
             });
 
-  std::vector<ldmx::EcalHit> firstLayers;
-  std::vector<IntermediateCluster> firstLayerClusters;
-  int layerTag = 0;
-  double layerZ = hits[0].getZPos();
+  std::vector<ldmx::EcalHit> first_layers;
+  std::vector<IntermediateCluster> first_layer_clusters;
+  int layer_tag = 0;
+  double layer_z = hits[0].getZPos();
   for (const auto& hit : hits) {
-    if (hit.getZPos() > layerZ + layerThickness[layerTag] + air) {
-      layerTag++;
+    if (hit.getZPos() > layer_z + layer_thickness[layer_tag] + air) {
+      layer_tag++;
       // if (layerTag > limit) break;
       break;
     }
-    firstLayers.push_back(hit);
-    firstLayerClusters.push_back(IntermediateCluster(hit, layerTag));
+    first_layers.push_back(hit);
+    first_layer_clusters.push_back(IntermediateCluster(hit, layer_tag));
   }
   bool merge = false;
   do {
     merge = false;
-    for (int i = 0; i < firstLayerClusters.size(); i++) {
-      if (firstLayerClusters[i].empty()) continue;
+    for (int i = 0; i < first_layer_clusters.size(); i++) {
+      if (first_layer_clusters[i].empty()) continue;
       // if (firstLayerClusters[i].centroid().E() >= seedThreshold_) {
-      for (int j = i + 1; j < firstLayerClusters.size(); j++) {
-        if (firstLayerClusters[j].empty()) continue;
-        if (dist(firstLayerClusters[i].centroid().Px(),
-                 firstLayerClusters[i].centroid().Py(),
-                 firstLayerClusters[j].centroid().Px(),
-                 firstLayerClusters[j].centroid().Py()) < 8.) {
-          firstLayerClusters[i].add(firstLayerClusters[j]);
-          firstLayerClusters[j].clear();
+      for (int j = i + 1; j < first_layer_clusters.size(); j++) {
+        if (first_layer_clusters[j].empty()) continue;
+        if (dist(first_layer_clusters[i].centroid().Px(),
+                 first_layer_clusters[i].centroid().Py(),
+                 first_layer_clusters[j].centroid().Px(),
+                 first_layer_clusters[j].centroid().Py()) < 8.) {
+          first_layer_clusters[i].add(first_layer_clusters[j]);
+          first_layer_clusters[j].clear();
           merge = true;
         }
       }
@@ -79,17 +79,17 @@ void CLUE::electronSeparation(std::vector<ldmx::EcalHit> hits) {
     }
   } while (merge);
   ldmx_log(trace) << "--- ELECTRON SEPARATION ---";
-  for (int i = 0; i < firstLayerClusters.size(); i++) {
-    if (firstLayerClusters[i].empty()) continue;
+  for (int i = 0; i < first_layer_clusters.size(); i++) {
+    if (first_layer_clusters[i].empty()) continue;
     ldmx_log(trace) << "  Cluster " << i
-                    << " x: " << firstLayerClusters[i].centroid().Px()
-                    << " y: " << firstLayerClusters[i].centroid().Py();
-    for (int j = i + 1; j < firstLayerClusters.size(); j++) {
-      if (firstLayerClusters[j].empty()) continue;
-      auto d = dist(firstLayerClusters[i].centroid().Px(),
-                    firstLayerClusters[i].centroid().Py(),
-                    firstLayerClusters[j].centroid().Px(),
-                    firstLayerClusters[j].centroid().Py());
+                    << " x: " << first_layer_clusters[i].centroid().Px()
+                    << " y: " << first_layer_clusters[i].centroid().Py();
+    for (int j = i + 1; j < first_layer_clusters.size(); j++) {
+      if (first_layer_clusters[j].empty()) continue;
+      auto d = dist(first_layer_clusters[i].centroid().Px(),
+                    first_layer_clusters[i].centroid().Py(),
+                    first_layer_clusters[j].centroid().Px(),
+                    first_layer_clusters[j].centroid().Py());
       ldmx_log(trace) << "Dist to cluster " << j << ": " << d;
     }
   }

@@ -155,7 +155,7 @@ void EcalClusterAnalyzer::analyze(const framework::Event& event) {
       int tag = 0;
       std::vector<double> edep;
       edep.resize(nbr_of_electrons_ + 1);
-      double eTot = 0;  // keep track of total from all counted ancestors
+      double e_tot = 0;  // keep track of total from all counted ancestors
       ldmx_log(trace) << "\t\tIt has " << it->getNumberOfContribs()
                       << " contribs. ";
       for (int i = 0; i < it->getNumberOfContribs(); i++) {
@@ -170,7 +170,7 @@ void EcalClusterAnalyzer::analyze(const framework::Event& event) {
         if (ancestor <= nbr_of_electrons) {
           edep[ancestor] += contrib.edep_;
           tot_origin_edep[ancestor] += contrib.edep_;
-          eTot += contrib.edep_;
+          e_tot += contrib.edep_;
         }
         if (!tagged && i != 0 && prev_ancestor != ancestor) {
           // if origin electron ID does not match previous origin electron ID
@@ -186,7 +186,7 @@ void EcalClusterAnalyzer::analyze(const framework::Event& event) {
       // from a second electron.
       if (tagged) {
         for (int i = 1; i < nbr_of_electrons_ + 1; i++) {
-          if (edep[i] / eTot >
+          if (edep[i] / e_tot >
               1 - mixed_hit_cutoff_) {  // one ancestor contributes at least the
                                         // complement to the allowed mixing
                                         // fraction
@@ -220,14 +220,14 @@ void EcalClusterAnalyzer::analyze(const framework::Event& event) {
                   << (float)n_mixed / ecal_rec_hits.size();
 
   if (ecal_clusters.size() >= 2) {
-    float dR = std::sqrt(std::pow((ecal_clusters[0].getCentroidX() -
+    float d_r = std::sqrt(std::pow((ecal_clusters[0].getCentroidX() -
                                    ecal_clusters[1].getCentroidX()),
                                   2) +
                          std::pow((ecal_clusters[0].getCentroidY() -
                                    ecal_clusters[1].getCentroidY()),
                                   2));
-    histograms_.fill("cluster_distance", dR);
-    ldmx_log(trace) << "Gt cluster distance (0,1) = " << dR;
+    histograms_.fill("cluster_distance", d_r);
+    ldmx_log(trace) << "Gt cluster distance (0,1) = " << d_r;
   }
 
   for (const auto& cl : ecal_clusters) {
