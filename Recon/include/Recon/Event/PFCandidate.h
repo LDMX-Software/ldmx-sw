@@ -110,21 +110,6 @@ class PFCandidate {
   void setTruthEnergy(double x_) { truth_energy_ = x_; }
   void setTruthPdgId(int x_) { truth_pdg_id_ = x_; }
 
-  /**
-   * Take in the ecal hits that make up the candidate.
-   * @param hit The digi hit's entry number in the events digi
-   * collection.
-   */
-  // void setEcalHits(const std::vector<const ldmx::EcalHit*> hits) { ecal_hits_
-  // = hits; }
-
-  /**
-   * Take in the hcal hits that make up the candidate.
-   * @param hit The digi hit's entry number in the events digi
-   * collection.
-   */
-  //  void setHcalHits(const std::vector<const ldmx::HcalHit*> hits) {
-  //  hcal_hits_ = hits; }
   /*
      Getters
    */
