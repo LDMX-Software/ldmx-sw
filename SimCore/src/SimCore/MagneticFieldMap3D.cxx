@@ -1,4 +1,4 @@
-#include "SimCore/Geo/MagneticFieldMap3D.h"
+#include "SimCore/MagneticFieldMap3D.h"
 
 #include "Framework/Exception/Exception.h"
 
@@ -14,7 +14,7 @@
 
 using namespace std;
 
-namespace simcore::geo {
+namespace simcore {
 MagneticFieldMap3D::MagneticFieldMap3D(const char* filename, double xOffset,
                                        double yOffset, double zOffset)
     : nx_(0),
@@ -257,4 +257,4 @@ void MagneticFieldMap3D::GetFieldValue(const double point[4],
   }
 }
 
-}  // namespace simcore::geo
+}  // namespace simcore

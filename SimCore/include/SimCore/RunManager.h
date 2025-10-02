@@ -30,9 +30,7 @@
 namespace simcore {
 
 // Forward declare to avoid circular dependency in headers
-namespace geo {
 class DetectorConstruction;
-}
 class UserActionManager;
 class APrimeMessenger;
 class ConditionsInterface;
@@ -76,7 +74,7 @@ class RunManager : public G4RunManager {
    * Get the user detector construction cast to a specific type.
    * @return The user detector construction.
    */
-  geo::DetectorConstruction* getDetectorConstruction();
+  DetectorConstruction* getDetectorConstruction();
 
   /**
    * Tell RunManager to use the seed from the root file.

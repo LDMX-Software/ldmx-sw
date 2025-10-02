@@ -183,7 +183,7 @@ void SimulatorBase::buildGeometry() {
   // Set the DetectorConstruction instance used to build the detector
   // from the GDML description.
   run_manager_->SetUserInitialization(
-      new geo::DetectorConstruction(parser_ptr, parameters_, conditions_intf_));
+      new DetectorConstruction(parser_ptr, parameters_, conditions_intf_));
 
   // Parse the detector geometry and validate if specified.
   auto detector_path{parameters_.get<std::string>("detector")};

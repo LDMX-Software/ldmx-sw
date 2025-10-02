@@ -18,7 +18,7 @@ void Simulator::configure(framework::config::Parameters& parameters) {
 
 void Simulator::beforeNewRun(ldmx::RunHeader& header) {
   // Get the detector header from the user detector construction
-  geo::DetectorConstruction* detector =
+  DetectorConstruction* detector =
       dynamic_cast<RunManager*>(RunManager::GetRunManager())
           ->getDetectorConstruction();
 

@@ -27,7 +27,6 @@ setup_library(module SimCore
               dependencies Framework::Configure
                            Framework::Exception
                            Framework::Framework
-                           SimCore::Event
                            Geant4::Interface)
 
 
@@ -74,6 +73,7 @@ setup_library(module SimCore
 setup_library(module SimCore
               name SDs
               dependencies DetDescr::DetDescr
+                           SimCore::Event
                            SimCore::G4User)
 
 setup_library(module SimCore
@@ -85,8 +85,8 @@ setup_library(module SimCore
 setup_library(module SimCore
               dependencies ROOT::Physics
                            ROOT::MathMore
-                           ${GENIE_LIBRARIES}
-                           SimCore::Event
+                           HepMC3
+                           SimCore::G4User
                            SimCore::Geo
                            SimCore::PhotoNuclearModels
                            SimCore::BiasOperators
