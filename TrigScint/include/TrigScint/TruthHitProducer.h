@@ -52,8 +52,7 @@ class TruthHitProducer : public framework::Producer {
    */
   void produce(framework::Event &event) override;
 
-   private:
-
+ private:
   /// Name of the input collection containing the sim hits
   std::string input_collection_;
 
@@ -66,7 +65,6 @@ class TruthHitProducer : public framework::Producer {
   /// Name of the output collection that will be used to store the
   /// selected sim hits
   std::string output_collection_;
-
 
 };  // TruthHitProducer
 

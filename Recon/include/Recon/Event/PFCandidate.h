@@ -10,8 +10,8 @@
 // ROOT
 #include "TObject.h"  //For ClassDef
 // ldmx-sw objects
-//#include "Ecal/Event/EcalHit.h" 
-//#include "Hcal/Event/HcalHit.h"
+// #include "Ecal/Event/EcalHit.h"
+// #include "Hcal/Event/HcalHit.h"
 
 namespace ldmx {
 
@@ -115,14 +115,16 @@ class PFCandidate {
    * @param hit The digi hit's entry number in the events digi
    * collection.
    */
-  //void setEcalHits(const std::vector<const ldmx::EcalHit*> hits) { ecal_hits_ = hits; } 
+  // void setEcalHits(const std::vector<const ldmx::EcalHit*> hits) { ecal_hits_
+  // = hits; }
 
   /**
    * Take in the hcal hits that make up the candidate.
    * @param hit The digi hit's entry number in the events digi
    * collection.
    */
-  //  void setHcalHits(const std::vector<const ldmx::HcalHit*> hits) { hcal_hits_ = hits; }
+  //  void setHcalHits(const std::vector<const ldmx::HcalHit*> hits) {
+  //  hcal_hits_ = hits; }
   /*
      Getters
    */
@@ -141,8 +143,8 @@ class PFCandidate {
   }
   // associate component indices to the pf candidate
   int getTrackIndex() const { return track_idx_; }
-  int getEcalIndex() const { return ecal_idx_ ; }
-  int getHcalIndex() const { return hcal_idx_ ; }
+  int getEcalIndex() const { return ecal_idx_; }
+  int getHcalIndex() const { return hcal_idx_; }
 
   std::vector<float> getTrackPxPyPz() const {
     return {track_px_, track_py_, track_pz_};
@@ -184,20 +186,19 @@ class PFCandidate {
   double getTruthEnergy() { return truth_energy_; }
   int getTruthPdgId() { return truth_pdg_id_; }
 
-   /**
+  /**
    * Take in the ecal hits that make up the candidate.
    * @param hit The digi hit's entry number in the events digi
    * collection.
    */
-  //std::vector<const ldmx::EcalHit*> getEcalHits() { return ecal_hits_; } 
+  // std::vector<const ldmx::EcalHit*> getEcalHits() { return ecal_hits_; }
 
   /**
    * Take in the hcal hits that make up the candidate.
    * @param hit The digi hit's entry number in the events digi
    * collection.
    */
-  // std::vector<const ldmx::HcalHit*> getHcalHits() { return hcal_hits_; } 
-  
+  // std::vector<const ldmx::HcalHit*> getHcalHits() { return hcal_hits_; }
 
  private:
   /* Particle ID enum */
@@ -266,7 +267,7 @@ class PFCandidate {
   int track_idx_{-1};
   int ecal_idx_{-1};
   int hcal_idx_{-1};
-  
+
   /* The ROOT class definition. */
   ClassDef(PFCandidate, 2);
 };

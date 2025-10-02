@@ -34,17 +34,17 @@ T CLUE::dist(T x1, T y1, T z1, T x2, T y2, T z2) {
    likely merged => recluster Did not quite work and I don't remember the idea
    anymore but leaving the code here for inspo */
 
-  void CLUE::electronSeparation(std::vector<ldmx::EcalHit> hits) {
-  std::vector<double> layerThickness =
-  { 2., 3.5, 5.3, 5.3, 5.3, 5.3, 5.3, 5.3, 5.3, 5.3, 5.3, 10.5, 10.5, 10.5, 10.5,
-  10.5 };
+void CLUE::electronSeparation(std::vector<ldmx::EcalHit> hits) {
+  std::vector<double> layerThickness = {2.,   3.5,  5.3,  5.3, 5.3, 5.3,
+                                        5.3,  5.3,  5.3,  5.3, 5.3, 10.5,
+                                        10.5, 10.5, 10.5, 10.5};
   double air = 10.;
-  // sort hits in z 
-  std::sort(hits.begin(), hits.end(), [](const
-  ldmx::EcalHit& a, const ldmx::EcalHit& b) {
-      return a.getZPos() < b.getZPos();
-  });
-  
+  // sort hits in z
+  std::sort(hits.begin(), hits.end(),
+            [](const ldmx::EcalHit& a, const ldmx::EcalHit& b) {
+              return a.getZPos() < b.getZPos();
+            });
+
   std::vector<ldmx::EcalHit> firstLayers;
   std::vector<IntermediateCluster> firstLayerClusters;
   int layerTag = 0;
@@ -57,7 +57,6 @@ T CLUE::dist(T x1, T y1, T z1, T x2, T y2, T z2) {
     }
     firstLayers.push_back(hit);
     firstLayerClusters.push_back(IntermediateCluster(hit, layerTag));
-
   }
   bool merge = false;
   do {
@@ -68,9 +67,9 @@ T CLUE::dist(T x1, T y1, T z1, T x2, T y2, T z2) {
       for (int j = i + 1; j < firstLayerClusters.size(); j++) {
         if (firstLayerClusters[j].empty()) continue;
         if (dist(firstLayerClusters[i].centroid().Px(),
-        firstLayerClusters[i].centroid().Py(),
-        firstLayerClusters[j].centroid().Px(),
-        firstLayerClusters[j].centroid().Py()) < 8.) {
+                 firstLayerClusters[i].centroid().Py(),
+                 firstLayerClusters[j].centroid().Px(),
+                 firstLayerClusters[j].centroid().Py()) < 8.) {
           firstLayerClusters[i].add(firstLayerClusters[j]);
           firstLayerClusters[j].clear();
           merge = true;
@@ -82,16 +81,15 @@ T CLUE::dist(T x1, T y1, T z1, T x2, T y2, T z2) {
   ldmx_log(trace) << "--- ELECTRON SEPARATION ---";
   for (int i = 0; i < firstLayerClusters.size(); i++) {
     if (firstLayerClusters[i].empty()) continue;
-    ldmx_log(trace) << "  Cluster " << i << " x: "
-                    << firstLayerClusters[i].centroid().Px() << " y: "
-                    << firstLayerClusters[i].centroid().Py();
-    for (int j = i + 1;
-    j < firstLayerClusters.size(); j++) {
+    ldmx_log(trace) << "  Cluster " << i
+                    << " x: " << firstLayerClusters[i].centroid().Px()
+                    << " y: " << firstLayerClusters[i].centroid().Py();
+    for (int j = i + 1; j < firstLayerClusters.size(); j++) {
       if (firstLayerClusters[j].empty()) continue;
       auto d = dist(firstLayerClusters[i].centroid().Px(),
-      firstLayerClusters[i].centroid().Py(),
-      firstLayerClusters[j].centroid().Px(),
-      firstLayerClusters[j].centroid().Py());
+                    firstLayerClusters[i].centroid().Py(),
+                    firstLayerClusters[j].centroid().Px(),
+                    firstLayerClusters[j].centroid().Py());
       ldmx_log(trace) << "Dist to cluster " << j << ": " << d;
     }
   }
@@ -102,7 +100,6 @@ std::vector<std::vector<const ldmx::EcalHit*>> CLUE::createLayers(
     const std::vector<const ldmx::EcalHit*>& hits) {
   ldmx_log(trace) << "--- LAYER CREATION ---";
   ldmx_log(trace) << "Number of layers: " << nbr_of_layers_;
-
 
   // vector of layers, each layer having a vector of hits
   // initialize with nbr_of_layers_ empty vectors
@@ -168,7 +165,8 @@ std::vector<std::shared_ptr<CLUE::Density>> CLUE::setup(
     float x = roundToDecimal(hit->getXPos(), 4);
     float y = roundToDecimal(hit->getYPos(), 4);
     float z = roundToDecimal(hit->getZPos(), 4);
-    ldmx_log(trace) << "  New hit { x: " << x << " y: " << y << "}" << " (and z: " << z << ")";
+    ldmx_log(trace) << "  New hit { x: " << x << " y: " << y << "}"
+                    << " (and z: " << z << ")";
     std::pair<float, float> coords;
     if (dc_ != 0 && nbr_of_layers_ > 1) {
       // if more than one layer, divide hit into densities with side dc
@@ -199,7 +197,8 @@ std::vector<std::shared_ptr<CLUE::Density>> CLUE::setup(
       density_map.emplace(coords, std::make_shared<CLUE::Density>(x, y));
       ldmx_log(trace) << "  * New density created";
     } else {
-      ldmx_log(trace) << "  --> Found density with x: " << density_map[coords]->x_
+      ldmx_log(trace) << "  --> Found density with x: "
+                      << density_map[coords]->x_
                       << " y: " << density_map[coords]->y_;
     }
     density_map[coords]->hits_.push_back(hit);
@@ -341,12 +340,12 @@ std::vector<std::vector<const ldmx::EcalHit*>> CLUE::clustering(
             density->total_energy_ > rhoc_ && density->delta_ > delta_c_mod;
       } else {
         is_seed = density->total_energy_ > rhoc_ && density->delta_ > deltac_;
-	if (is_seed) {
-	  ldmx_log(trace) << "  Distance to event centroid: "
-			  << dist(density->x_, density->y_,
-				  event_centroid_.centroid().x(),
-				  event_centroid_.centroid().y());
-	}
+        if (is_seed) {
+          ldmx_log(trace) << "  Distance to event centroid: "
+                          << dist(density->x_, density->y_,
+                                  event_centroid_.centroid().x(),
+                                  event_centroid_.centroid().y());
+        }
       }
       bool is_outlier =
           (density->total_energy_ < rhoc_) && (density->delta_ > deltao_);
@@ -371,8 +370,10 @@ std::vector<std::vector<const ldmx::EcalHit*>> CLUE::clustering(
         int& parent_index = density->follower_of_;
         if (parent_index != -1)
           followers[parent_index].push_back(density->index_);
-	else
-	  ldmx_log(error) << "  Somehow found a follower with parent index -1: id = " << density->index_;
+        else
+          ldmx_log(error)
+              << "  Somehow found a follower with parent index -1: id = "
+              << density->index_;
       } else {
         ldmx_log(trace) << "      This is an Outlier";
       }
@@ -461,8 +462,8 @@ std::vector<std::shared_ptr<CLUE::Density>> CLUE::setupForClue3D() {
         highest_energy = current_seed->total_energy_;
       ldmx_log(trace) << "    Density with index " << current_seed->index_
                       << ", energy: " << current_seed->total_energy_
-      		      << " position (x,y)= {" << current_seed->x_ << ","
-		      << current_seed->y_ << ")";
+                      << " position (x,y)= {" << current_seed->x_ << ","
+                      << current_seed->y_ << ")";
       int depth = 1;
       // decide delta_ and followerof from seeds in previous and next layer_
       // do {
@@ -470,9 +471,9 @@ std::vector<std::shared_ptr<CLUE::Density>> CLUE::setupForClue3D() {
       if ((layer - depth >= 0) && (layer - depth < seeds_.size())) {
         ldmx_log(trace) << "    Looking at pre-layer: " << layer - depth;
         // look at previous layer
-	ldmx_log(trace) << "      In previous layer... ";
+        ldmx_log(trace) << "      In previous layer... ";
         auto& previous_layer = seeds_[layer - depth];
-	ldmx_log(trace) << "      Got " << previous_layer.size() << " seeds";
+        ldmx_log(trace) << "      Got " << previous_layer.size() << " seeds";
         for (const auto& prev_seed : previous_layer) {
           // for each seed in previous layer
           auto distance_2d_prev = dist(current_seed->x_, current_seed->y_,
@@ -506,7 +507,7 @@ std::vector<std::shared_ptr<CLUE::Density>> CLUE::setupForClue3D() {
       if (layer + depth < nbr_of_layers_ && layer + depth < seeds_.size()) {
         ldmx_log(trace) << "    Looking at post-layer: " << layer + depth;
         auto& next_layer = seeds_[layer + depth];
-	ldmx_log(trace) << "      Got " << next_layer.size() << " seeds";
+        ldmx_log(trace) << "      Got " << next_layer.size() << " seeds";
         for (const auto& next_seed : next_layer) {
           auto distance_2d_next = dist(current_seed->x_, current_seed->y_,
                                        next_seed->x_, next_seed->y_);

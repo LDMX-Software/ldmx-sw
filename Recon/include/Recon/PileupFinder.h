@@ -37,7 +37,6 @@ class PileupFinder : public framework::Producer {
   virtual void onProcessEnd();
 
  private:
-
   // name of collections for PF input object to be passed
   std::string rec_hit_coll_name_;
   std::string rec_hit_pass_name_;
@@ -49,7 +48,7 @@ class PileupFinder : public framework::Producer {
   std::string output_rec_hit_coll_name_;
   // configuration
 
-  double min_mom_{0.}; //MeV 
+  double min_mom_{0.};  // MeV
 };
 }  // namespace recon
 

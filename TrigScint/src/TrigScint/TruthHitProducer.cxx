@@ -8,31 +8,30 @@ TruthHitProducer::TruthHitProducer(const std::string &name,
     : Producer(name, process) {}
 
 void TruthHitProducer::configure(framework::config::Parameters &parameters) {
-
   input_collection_ = parameters.getParameter<std::string>("input_collection");
   input_pass_name_ = parameters.getParameter<std::string>("input_pass_name");
-  output_collection_ = parameters.getParameter<std::string>("output_collection");
+  output_collection_ =
+      parameters.getParameter<std::string>("output_collection");
   sim_particles_pass_name_ =
       parameters.getParameter<std::string>("sim_particles_pass_name");
 
   ldmx_log(info) << "In TruthHitProducer: configure done!";
   ldmx_log(info) << "Got parameters:  " << "\nInput collection:     "
-		 << input_collection_
-		 << "\nInput pass name:     " << input_pass_name_
-		 << "\nOutput collection:    " << output_collection_;
-
+                 << input_collection_
+                 << "\nInput pass name:     " << input_pass_name_
+                 << "\nOutput collection:    " << output_collection_;
 }
 
 void TruthHitProducer::produce(framework::Event &event) {
   // Check if the collection exists.  If not, don't bother processing the event.
   if (!event.exists(input_collection_, input_pass_name_)) {
-    ldmx_log(error) << "No input collection called " << input_collection_
-                    << "_" <<  input_pass_name_ <<  " found; skipping!";
+    ldmx_log(error) << "No input collection called " << input_collection_ << "_"
+                    << input_pass_name_ << " found; skipping!";
     return;
   }
-   if (!event.exists("SimParticles",sim_particles_pass_name_)) {
-    ldmx_log(error) << "No input SimParticle collection with pass " << sim_particles_pass_name_
-                    << " found; skipping!";
+  if (!event.exists("SimParticles", sim_particles_pass_name_)) {
+    ldmx_log(error) << "No input SimParticle collection with pass "
+                    << sim_particles_pass_name_ << " found; skipping!";
     return;
   }
 
@@ -51,13 +50,13 @@ void TruthHitProducer::produce(framework::Event &event) {
     for (int i = 0; i < sim_hit.getNumberOfContribs(); i++) {
       auto contrib = sim_hit.getContrib(i);
       ldmx_log(trace) << "contrib " << i << " track_id: " << contrib.track_id_
-		      << " pdgID: " << contrib.pdg_code_
-		      << " edep: " << contrib.edep_;
+                      << " pdgID: " << contrib.pdg_code_
+                      << " edep: " << contrib.edep_;
       ldmx_log(trace) << "\t particle id: "
-		      << particle_map[contrib.track_id_].getPdgID()
-		      << " particle status: "
-		      << particle_map[contrib.track_id_].getGenStatus();
-      
+                      << particle_map[contrib.track_id_].getPdgID()
+                      << " particle status: "
+                      << particle_map[contrib.track_id_].getGenStatus();
+
       // if the trackID is in the map
       if (particle_map.find(contrib.track_id_) != particle_map.end()) {
         // beam electron (PDGID = 11, genStatus == 1)
@@ -67,8 +66,8 @@ void TruthHitProducer::produce(framework::Event &event) {
         }
       }
       if (keep) truth_beam_electrons.push_back(sim_hit);
-    }//over simhit contribs 
-  }//over simhits 
+    }  // over simhit contribs
+  }  // over simhits
   event.add(output_collection_, truth_beam_electrons);
 }
 }  // namespace trigscint
