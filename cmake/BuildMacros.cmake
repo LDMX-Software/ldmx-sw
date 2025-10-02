@@ -262,7 +262,7 @@ macro(build_test)
   # contains the test from the different modules.  Each of the modules needs to
   # setup the test they want to run.
   add_executable(run_test ${test_sources})
-  target_link_libraries(run_test PRIVATE Catch2::Catch2WithMain ${test_dep} ${GENIE_LIBS})
+  target_link_libraries(run_test PRIVATE Catch2::Catch2WithMain ${test_dep})
 
   foreach(entry ${test_modules})
     file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/${entry}/test)

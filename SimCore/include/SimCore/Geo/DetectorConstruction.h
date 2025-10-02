@@ -12,12 +12,9 @@
 //---< SimCore >---//
 #include "SimCore/Geo/Parser.h"
 
-// Forward declaration
 namespace simcore::geo {
-class Parser;
-}
 
-namespace simcore {
+class Parser;
 
 /**
  * @class DetectorConstruction
@@ -77,6 +74,7 @@ class DetectorConstruction : public G4VUserDetectorConstruction {
   /// Enable logging
   enableLogging("DetectorConstruction")
 };  // DetectorConstruction
-}  // namespace simcore
+    
+}  // namespace simcore::geo
 
 #endif  // SIMCORE_DETECTORCONSTRUCTION_H

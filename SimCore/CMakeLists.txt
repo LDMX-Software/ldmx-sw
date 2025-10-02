@@ -11,7 +11,7 @@ project(
 setup_library(
   module SimCore
   name Event
-  dependencies ROOT::Core GENIE::GENIE HepMC3
+  dependencies ROOT::Core HepMC3 HepMC3rootIO
   linkdef include/SimCore/Event/LinkDef.h
 )
 
@@ -27,6 +27,7 @@ setup_library(module SimCore
               dependencies Framework::Configure
                            Framework::Exception
                            Framework::Framework
+                           SimCore::Event
                            Geant4::Interface)
 
 
@@ -56,7 +57,8 @@ setup_library(module SimCore
               dependencies SimCore::LHE
                            SimCore::G4User
 			                     SimCore::Event
-                           GENIE::GENIE)
+                           ${GENIE_LIBRARIES}
+                           HepMC3)
 			   
 # Reweight Library
 setup_library(module SimCore
@@ -65,7 +67,8 @@ setup_library(module SimCore
                            SimCore::Event
                            Framework::Configure
                            Framework::Framework
-                           GENIE::GENIE)
+                           ${GENIE_LIBRARIES}
+                           HepMC3)
 
 # Sensitive Detectors library
 setup_library(module SimCore
@@ -76,12 +79,15 @@ setup_library(module SimCore
 setup_library(module SimCore
               name Geo
               dependencies SimCore::G4User
+                           SimCore::SDs
+                           SimCore::BiasOperators
                            DetDescr::DetDescr)
 
 # Setup the library
 setup_library(module SimCore
               dependencies ROOT::Physics
                            ROOT::MathMore
+                           ${GENIE_LIBRARIES}
                            SimCore::Event
                            SimCore::Geo
                            SimCore::PhotoNuclearModels
@@ -102,6 +108,6 @@ setup_python(package_name LDMX/SimCore)
 setup_test(config_dir test)
 
 # add visualization executable
-add_executable(g4-vis ${PROJECT_SOURCE_DIR}/src/SimCore/g4_vis.cxx)
-target_link_libraries(g4-vis PRIVATE Geant4::Interface SimCore::SimCore)
+add_executable(g4-vis ${PROJECT_SOURCE_DIR}/app/g4_vis.cxx)
+target_link_libraries(g4-vis PRIVATE Geant4::Interface SimCore::Geo SimCore::Generators)
 install(TARGETS g4-vis DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)

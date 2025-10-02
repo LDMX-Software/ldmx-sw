@@ -12,7 +12,7 @@
 #include "Framework/EventProcessor.h"
 #include "Framework/Logger.h"
 #include "SimCore/ConditionsInterface.h"
-#include "SimCore/DetectorConstruction.h"
+#include "SimCore/Geo/DetectorConstruction.h"
 #include "SimCore/G4Session.h"
 #include "SimCore/G4User/TrackingAction.h"
 #include "SimCore/G4User/UserEventInformation.h"

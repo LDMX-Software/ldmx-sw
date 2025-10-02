@@ -7,7 +7,7 @@
 /*   SimCore   */
 /*~~~~~~~~~~~~~*/
 #include "SimCore/BiasOperators/XsecBiasingOperator.h"
-#include "SimCore/DetectorConstruction.h"
+#include "SimCore/Geo/DetectorConstruction.h"
 #include "SimCore/G4User/VolumeChecks.h"
 #include "SimCore/SDs/SensitiveDetector.h"
 
@@ -22,6 +22,8 @@ namespace logical_volume_tests {
 using Test = bool (*)(G4LogicalVolume*, const std::string&);
 
 }  // namespace logical_volume_tests
+
+namespace geo {
 
 DetectorConstruction::DetectorConstruction(
     std::shared_ptr<simcore::geo::Parser> parser,
@@ -88,4 +90,5 @@ void DetectorConstruction::ConstructSDandField() {
     }  // loop over volumes
   });  // loop over biasing operators
 }
+}  // namespace geo
 }  // namespace simcore

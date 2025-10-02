@@ -16,7 +16,7 @@
 #include <vector>
 using std::vector;
 
-namespace simcore {
+namespace simcore::geo {
 
 /**
  * @brief
@@ -119,7 +119,6 @@ class MagneticFieldMap3D : public G4MagneticField {
   enableLogging("MagneticFieldMap3D")
 };
 
-}  // namespace simcore
-// namespace
+}  // namespace simcore::geo
 
 #endif

@@ -22,7 +22,6 @@
 #include "Framework/Configure/Parameters.h"
 #include "Framework/EventProcessor.h"
 #include "SimCore/ConditionsInterface.h"
-#include "SimCore/DetectorConstruction.h"
 #include "SimCore/RunManager.h"
 #include "SimCore/SimulatorBase.h"
 
@@ -39,7 +38,7 @@
 /*~~~~~~~~~~~~~*/
 #include "SimCore/APrimePhysics.h"
 #include "SimCore/BiasOperators/XsecBiasingOperator.h"
-#include "SimCore/DetectorConstruction.h"
+#include "SimCore/Geo/DetectorConstruction.h"
 #include "SimCore/Event/HepMC3GenEvent.h"
 #include "SimCore/G4Session.h"
 #include "SimCore/G4User/TrackingAction.h"

@@ -12,7 +12,7 @@
 #include "G4DarkBreM/G4DarkBremsstrahlung.h"  //for process name
 #include "SimCore/APrimePhysics.h"
 #include "SimCore/BiasOperators/XsecBiasingOperator.h"
-#include "SimCore/DetectorConstruction.h"
+#include "SimCore/Geo/DetectorConstruction.h"
 #include "SimCore/G4User/EventAction.h"
 #include "SimCore/G4User/PrimaryGeneratorAction.h"
 #include "SimCore/G4User/RunAction.h"
@@ -195,8 +195,8 @@ void RunManager::TerminateOneEvent() {
   ldmx_log(debug) << "Reset the dark brem process (if it was activated)";
 }
 
-DetectorConstruction* RunManager::getDetectorConstruction() {
-  return static_cast<DetectorConstruction*>(this->userDetector);
+geo::DetectorConstruction* RunManager::getDetectorConstruction() {
+  return static_cast<geo::DetectorConstruction*>(this->userDetector);
 }
 
 }  // namespace simcore

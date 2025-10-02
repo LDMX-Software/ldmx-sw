@@ -6,7 +6,7 @@
 #include "G4RunManager.hh"
 #include "G4UIExecutive.hh"
 #include "G4VisExecutive.hh"
-#include "SimCore/DetectorConstruction.h"
+#include "SimCore/Geo/DetectorConstruction.h"
 #include "SimCore/Geo/Parser.h"
 
 static void printUsage() {
@@ -49,7 +49,7 @@ int main(int argc, char* argv[]) {
     return 1;
   }
   auto parser_ptr{parser.value()};
-  run_manager->SetUserInitialization(new simcore::DetectorConstruction(
+  run_manager->SetUserInitialization(new simcore::geo::DetectorConstruction(
       parser_ptr, parser_parameters, empty_interface));
   G4GeometryManager::GetInstance()->OpenGeometry();
   parser_ptr->read();
