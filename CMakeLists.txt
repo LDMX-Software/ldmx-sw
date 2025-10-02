@@ -49,12 +49,12 @@ include_directories(SYSTEM /usr/local/include/root)
 # Search for the Python3 library
 find_package(Python3 COMPONENTS Interpreter Development)
 
-setup_geant4_target()
+# CMake target wrapper around Geant4 CMake configuration
+find_package(Geant4Interface)
 
-include_directories(SYSTEM /usr/local/include/GENIE )
-setup_genie_target()
+find_package(GENIE)
+#include_directories(SYSTEM /usr/local/include/GENIE )
 
-# Search for Boost
 find_package(
   Boost REQUIRED
   COMPONENTS system

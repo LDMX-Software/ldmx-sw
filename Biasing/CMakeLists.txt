@@ -5,9 +5,6 @@ cmake_minimum_required(VERSION 3.12)
 #Set the project name
 project(Biasing VERSION 2.1.0 DESCRIPTION "Biasing classes." LANGUAGES CXX)
 
-#Configure Geant4
-setup_geant4_target()
-
 setup_library(
   module Biasing 
   name Utility 

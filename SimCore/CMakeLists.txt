@@ -11,10 +11,11 @@ project(
 setup_library(
   module SimCore
   name Event
-  dependencies ROOT::Core ${GENIE_LIBS} HepMC3 HepMC3rootIO
+  dependencies ROOT::Core GENIE::GENIE HepMC3
   linkdef include/SimCore/Event/LinkDef.h
 )
 
+# TODO check if this is necessary
 install(FILES /usr/local/lib/libHepMC3rootIO_rdict.pcm DESTINATION lib)
 
 # include dark brem simulation
@@ -55,8 +56,7 @@ setup_library(module SimCore
               dependencies SimCore::LHE
                            SimCore::G4User
 			                     SimCore::Event
-                           ${GENIE_LIBS}
-                           HepMC3)
+                           GENIE::GENIE)
 			   
 # Reweight Library
 setup_library(module SimCore
@@ -65,8 +65,7 @@ setup_library(module SimCore
                            SimCore::Event
                            Framework::Configure
                            Framework::Framework
-                           ${GENIE_LIBS}
-                           HepMC3)
+                           GENIE::GENIE)
 
 # Sensitive Detectors library
 setup_library(module SimCore
@@ -83,8 +82,6 @@ setup_library(module SimCore
 setup_library(module SimCore
               dependencies ROOT::Physics
                            ROOT::MathMore
-                           HepMC3
-                           ${GENIE_LIBS}
                            SimCore::Event
                            SimCore::Geo
                            SimCore::PhotoNuclearModels

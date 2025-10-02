@@ -39,8 +39,6 @@ else()
   message(STATUS "Found Acts ${Acts_VERSION}")
 endif()
 
-setup_geant4_target()
-
 file(GLOB SRC_FILES CONFIGURE_DEPENDS 
   ${PROJECT_SOURCE_DIR}/src/Tracking/Sim/[a-zA-z]*.cxx
   ${PROJECT_SOURCE_DIR}/src/Tracking/Reco/[a-zA-z]*.cxx
