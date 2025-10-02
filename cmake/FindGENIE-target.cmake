@@ -8,11 +8,11 @@ macro(add_genie_target)
   set_target_properties(GENIE::${add_genie_target_name} PROPERTIES
     IMPORTED_LOCATION "/usr/local/lib/lib${add_genie_target_name}.so"
   )
-#  if ("${add_genie_target_dependencies}")
-#    set_target_properties(GENIE::${add_genie_target_name} PROPERTIES
-#      INTERFACE_LINK_LIBRARIES "${add_genie_target_dependencies}"
-#    )
-#  endif()
+  if ("${add_genie_target_dependencies}")
+    set_target_properties(GENIE::${add_genie_target_name} PROPERTIES
+      INTERFACE_LINK_LIBRARIES "${add_genie_target_dependencies}"
+    )
+  endif()
   list(APPEND GENIE_LIBRARIES GENIE::${add_genie_target_name})
 endmacro()
 

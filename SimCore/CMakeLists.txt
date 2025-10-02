@@ -79,8 +79,6 @@ setup_library(module SimCore
 setup_library(module SimCore
               name Geo
               dependencies SimCore::G4User
-                           SimCore::SDs
-                           SimCore::BiasOperators
                            DetDescr::DetDescr)
 
 # Setup the library
@@ -109,5 +107,5 @@ setup_test(config_dir test)
 
 # add visualization executable
 add_executable(g4-vis ${PROJECT_SOURCE_DIR}/app/g4_vis.cxx)
-target_link_libraries(g4-vis PRIVATE Geant4::Interface SimCore::Geo SimCore::Generators)
+target_link_libraries(g4-vis PRIVATE Geant4::Interface SimCore::SimCore)
 install(TARGETS g4-vis DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
