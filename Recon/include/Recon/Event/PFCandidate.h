@@ -171,20 +171,6 @@ class PFCandidate {
   double getTruthEnergy() { return truth_energy_; }
   int getTruthPdgId() { return truth_pdg_id_; }
 
-  /**
-   * Take in the ecal hits that make up the candidate.
-   * @param hit The digi hit's entry number in the events digi
-   * collection.
-   */
-  // std::vector<const ldmx::EcalHit*> getEcalHits() { return ecal_hits_; }
-
-  /**
-   * Take in the hcal hits that make up the candidate.
-   * @param hit The digi hit's entry number in the events digi
-   * collection.
-   */
-  // std::vector<const ldmx::HcalHit*> getHcalHits() { return hcal_hits_; }
-
  private:
   /* Particle ID enum */
   int pid_{0};
