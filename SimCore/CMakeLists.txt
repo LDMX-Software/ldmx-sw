@@ -56,17 +56,15 @@ setup_library(module SimCore
               dependencies SimCore::LHE
                            SimCore::G4User
 			                     SimCore::Event
-                           ${GENIE_LIBRARIES}
+                           GENIE::GENIE
                            HepMC3)
 			   
 # Reweight Library
 setup_library(module SimCore
               name Reweight
-              dependencies SimCore::Generators
-                           SimCore::Event
-                           Framework::Configure
+              dependencies Framework::Configure
                            Framework::Framework
-                           ${GENIE_LIBRARIES}
+                           GENIE::GENIE
                            HepMC3)
 
 # Sensitive Detectors library

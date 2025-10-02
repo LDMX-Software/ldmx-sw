@@ -53,7 +53,6 @@ find_package(Python3 COMPONENTS Interpreter Development)
 find_package(Geant4Interface)
 
 find_package(GENIE)
-include_directories(SYSTEM ${GENIE_INCLUDE_DIRS})
 
 find_package(
   Boost REQUIRED
