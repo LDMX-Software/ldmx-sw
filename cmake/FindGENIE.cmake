@@ -20,7 +20,8 @@ if (GENIE_FOUND)
   return()
 endif()
 
-set(GENIE_INCLUDE_DIRS "/usr/local/include/GENIE")
+set(GENIE_DIR "/usr/local")
+set(GENIE_INCLUDE_DIRS "${GENIE_DIR}/include/GENIE")
 set(GENIE_LIBRARIES "")
 
 macro(add_genie_target)
@@ -28,9 +29,9 @@ macro(add_genie_target)
   add_library(GENIE::${add_genie_target_name} SHARED IMPORTED)
   set_property(TARGET GENIE::${add_genie_target_name} APPEND PROPERTY IMPORTED_CONFIGURATIONS NOCONFIG)
   set_target_properties(GENIE::${add_genie_target_name} PROPERTIES
-    INTERFACE_INCLUDE_DIRECTORIES "/usr/local/include/GENIE"
-    IMPORTED_LOCATION "/usr/local/lib/lib${add_genie_target_name}.so"
-    IMPORTED_LOCATION_NOCONFIG "/usr/local/lib/lib${add_genie_target_name}.so"
+    INTERFACE_INCLUDE_DIRECTORIES "${GENIE_INCLUDE_DIRS}"
+    IMPORTED_LOCATION "${GENIE_DIR}/lib/lib${add_genie_target_name}.so"
+    IMPORTED_LOCATION_NOCONFIG "${GENIE_DIR}/lib/lib${add_genie_target_name}.so"
     IMPORTED_SONAME_NOCONFIG "lib${add_genie_target_name}.so"
   )
   list(LENGTH add_genie_target_dependencies num_deps)
