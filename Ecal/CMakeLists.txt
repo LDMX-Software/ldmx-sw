@@ -9,7 +9,7 @@ setup_library(
   module Ecal
   name Event
   dependencies ROOT::Core ROOT::Physics Recon::Event
-  linkdef ${CMAKE_CURRENT_SOURCE_DIR}/include/Ecal/Event/LinkDef.h
+  linkdef include/Ecal/Event/LinkDef.h
 )
 
 # Search for the ONNXRuntime binaries.  If not found, download the binaries 
@@ -31,11 +31,6 @@ setup_python(package_name LDMX/Ecal)
 
 setup_data(module Ecal)
 
-# Add the printing executable
-add_executable(print-ecal-hex-readout ${PROJECT_SOURCE_DIR}/src/Ecal/print_ecal_hex_readout.cxx)
-
-# Link to the Framework library
-target_link_libraries(print-ecal-hex-readout PRIVATE DetDescr Ecal ROOT::Physics)
-
-# Install the fire executable
-install(TARGETS print-ecal-hex-readout DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
+add_executable(print-ecal-hex-readout app/print_ecal_hex_readout.cxx)
+target_link_libraries(print-ecal-hex-readout PRIVATE DetDescr Ecal::Ecal ROOT::Physics)
+install(TARGETS print-ecal-hex-readout DESTINATION bin)

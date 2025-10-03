@@ -20,6 +20,6 @@ target_include_directories(Tools SYSTEM PUBLIC HLS_Arbitrary_Precision_Types/inc
 setup_python(package_name LDMX/Tools)
 
 # Add the hgcroc running executable
-add_executable(run-hgcroc ${PROJECT_SOURCE_DIR}/src/Tools/run_hgcroc.cxx)
+add_executable(run-hgcroc app/run_hgcroc.cxx)
 target_link_libraries(run-hgcroc PRIVATE Framework Tools Conditions)
-install(TARGETS run-hgcroc DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
+install(TARGETS run-hgcroc DESTINATION bin)
