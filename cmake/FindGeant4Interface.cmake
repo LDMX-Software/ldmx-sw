@@ -1,8 +1,9 @@
 #
-# FindGeant4.cmake
+# FindGeant4Interface.cmake
 #
-# Find an installation of Geant4. Highly tuned to the installation
-# of Geant4 that is built into the ldmx/dev image.
+# Find an installation of Geant4 and wrap it with a CMake target.
+# Highly tuned to the installation of Geant4 that is built into the
+# ldmx/dev image.
 # Just builds a target Geant4::Interface around the already-defined
 # Geant4 CMake configuration installed with the build.
 #
