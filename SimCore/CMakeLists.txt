@@ -15,9 +15,6 @@ setup_library(
   linkdef include/SimCore/Event/LinkDef.h
 )
 
-# TODO check if this is necessary
-install(FILES /usr/local/lib/libHepMC3rootIO_rdict.pcm DESTINATION lib)
-
 # include dark brem simulation
 add_subdirectory(G4DarkBreM)
 
