@@ -64,6 +64,7 @@ setup_library(module SimCore
               name Reweight
               dependencies Framework::Configure
                            Framework::Framework
+                           SimCore::Event
                            GENIE::GENIE
                            HepMC3)
 

@@ -14,11 +14,17 @@ setup_library(
   linkdef include/TrigScint/Event/LinkDef.h
 )
 
-setup_library(module TrigScint name Firmware dependencies Tools::Tools)
-
-setup_library(module TrigScint
-  dependencies Framework::Framework Recon::Event Hcal::Event DetDescr::DetDescr
-	                         Tools::Tools SimCore::Event TrigScint::Firmware
+setup_library(
+  module TrigScint
+  name Firmware
+  dependencies Tools::Tools
 )
+
+setup_library(
+  module TrigScint
+  dependencies Framework::Framework Recon::Event Hcal::Event DetDescr::DetDescr
+               Tools::Tools SimCore::Event TrigScint::Firmware TrigScint::Event
+)
+
 setup_python(package_name LDMX/TrigScint)
 
