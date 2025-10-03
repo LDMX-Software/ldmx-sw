@@ -1,9 +1,7 @@
-# Set the minimum version of CMake that's required
 cmake_minimum_required(VERSION 3.12)
 
 # Set the project name
-project(TrigScint VERSION 2.1.0
-                  DESCRIPTION "Module for all things trigger scintillator."
+project(TrigScint DESCRIPTION "Module for all things trigger scintillator."
                   LANGUAGES CXX
 )
 

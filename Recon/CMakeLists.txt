@@ -1,10 +1,7 @@
-
-# Set the minimum version of CMake that's required
 cmake_minimum_required(VERSION 3.12)
 
 # Set the project name
-project(Recon VERSION 2.1.0
-              DESCRIPTION "Module containing recon processors that span multiple
+project(Recon DESCRIPTION "Module containing recon processors that span multiple
                            systems."
               LANGUAGES CXX
 )

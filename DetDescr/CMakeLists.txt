@@ -1,9 +1,7 @@
-# Set the minimum version of CMake that's required
 cmake_minimum_required(VERSION 3.12)
 
 # Set the project name
-project(DetDescr VERSION 2.1.0
-                 DESCRIPTION "Detector description module."
+project(DetDescr DESCRIPTION "Detector description module."
                  LANGUAGES CXX
 )
 

@@ -1,11 +1,7 @@
-
-# Set the minimum version of CMake that's required
 cmake_minimum_required(VERSION 3.12)
 
-# Set the project name and version.
-# TODO: The version should be synced up with ldmx-sw.
-project(Tracking VERSION 2.1.0
-                 DESCRIPTION "Module containing the sim and recon code for the trackers."
+# Set the project name
+project(Tracking DESCRIPTION "Module containing the sim and recon code for the trackers."
                  LANGUAGES CXX
 )
 

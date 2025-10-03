@@ -1,10 +1,7 @@
-# Set the minimum version of CMake that's required
 cmake_minimum_required(VERSION 3.12)
 
-# Set the project name
 project(
   SimCore
-  VERSION 1.4.0
   DESCRIPTION "Core classes needed to run the Simulator."
   LANGUAGES CXX)
 

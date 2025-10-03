@@ -1,10 +1,8 @@
-# Set the minimum version of CMake that's required
 cmake_minimum_required(VERSION 3.12)
 
 # Set the project name
 project(
   Framework
-  VERSION 1.3.6
   DESCRIPTION "Framework used to define processing pipelines and modules."
   LANGUAGES CXX)
 
