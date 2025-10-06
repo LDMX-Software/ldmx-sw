@@ -6,9 +6,11 @@
 #
 # This will define the following variables
 #
-# GENIE_FOUND
+# GENIE_FOUND        - boolean if we found GENIE
+# GENIE_DIR          - path to install location of GENIE
 # GENIE_INCLUDE_DIRS - path to the headers
-# GENIE_LIBRARIES    - CMake list of CMake targets
+# GENIE_LIBRARIES    - CMake list of libraries to link to
+#                      (targets and library names)
 #
 # and the following main target to link to
 # (other targets are defined for specific GENIE libraries)
