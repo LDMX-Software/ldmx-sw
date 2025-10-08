@@ -77,7 +77,8 @@ class EventProcessor:
         needs: list[str]
             Names of libraries that should be linked to the compiled processor in addition to 'Framework'
             which is linked be default.
-            For example, one can gain access to the detector ID infrastructure with 'DetDescr'.
+            For example, one can gain access to the detector ID infrastructure with 'DetDescr' or the
+            Ecal Event classes with 'Ecal_Event' (or 'Ecal/Event', or 'Ecal::Event')
         instance_name: str, default is class_name
             name to give to instance of this C++ processor
         compile_notice: bool, default is True
@@ -135,7 +136,7 @@ class EventProcessor:
                 )
             import subprocess
             libs_to_link = set(['Framework']+needs)
-            subprocess.run([
+            cmd = [
                 'g++', '-std=c++20', '-fPIC', '-shared', # construct a shared library for dynamic loading
                 '-o', str(lib), str(src), # define output file and input source file
             ]+[
@@ -144,13 +145,21 @@ class EventProcessor:
                 '-I/usr/local/include/root', # include ROOT's non-system headers
                 '-I@CMAKE_INSTALL_PREFIX@/include', # include ldmx-sw headers (if non-system)
                 '-L@CMAKE_INSTALL_PREFIX@/lib', # include ldmx-sw libs (if non-system)
-            ], check=True)
+            ]
+            if compile_notice:
+                print(*cmd)
+            subprocess.run(cmd, check=True)
             if compile_notice:
                 print(f'done compiling {src}')
 
         instance = cls(instance_name, class_name, str(lib))
         for cfg_name, cfg_val in config_kwargs.items():
             setattr(instance, cfg_name, cfg_val)
+
+        # load any dependency libraries at runtime as well
+        for mod in needs:
+            Process.addModule(mod)
+
         return instance
 
 
