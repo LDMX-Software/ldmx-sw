@@ -79,12 +79,12 @@ void TrigScintRecHitProducer::produce(framework::Event &event) {
     // Set energy and photoelectrons
     hit.setEnergy(ped_subtr_q * 6250. / gain_ * mev_per_mip_ /
                   pe_per_mip_);  // MeV
-    float pe = (pedSubtrQ * 6250. / gain_);
+    float pe = (ped_subtr_q * 6250. / gain_);
     hit.setPE(pe);
 
     // Apply user-selected pileup handling (default: accept all)
     // Compute PEs at the primary time sample only (in-time bunch)
-    float ChargeOfInterest = qie.ADC2Q(adc[sample_of_interest_]);
+    float ChargeOfInterest = qie.adc2Q(adc[sample_of_interest_]);
     float pedQ = ChargeOfInterest - pedestal_;
     float pe_primary = (pedQ * 6250./gain_);
  
