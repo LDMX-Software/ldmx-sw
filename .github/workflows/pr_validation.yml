@@ -45,7 +45,7 @@ jobs:
         echo "HEAD_REF=$HEAD_REF" >> $GITHUB_ENV
 
     - name: Checkout ldmx-sw
-      uses: actions/checkout@v4
+      uses: actions/checkout@v5
       with:
         submodules: 'recursive'
         fetch-depth: 0
@@ -53,8 +53,6 @@ jobs:
 
     - name: Install just
       uses: extractions/setup-just@v3
-      with:
-          just-version: 1.26.0
  
     - name: Compile and Install ldmx-sw
       run: |
@@ -99,14 +97,18 @@ jobs:
 
     # need clone of ldmx-sw for getting gold tag
     - name: Checkout ldmx-sw
-      uses: actions/checkout@v4
+      uses: actions/checkout@v5
       with:
         submodules: 'recursive'
         fetch-depth: 0
         ref: ${{ env.HEAD_REF }}
+          
+    - uses: extractions/setup-just@v3
+
+    - run: just install-denv init
 
     - name: Download ldmx-sw Package
-      uses: actions/download-artifact@v4
+      uses: actions/download-artifact@v5
       with:
         name: ldmx-sw-build-${{ github.sha }}
 
@@ -116,7 +118,7 @@ jobs:
         tar xf ldmx-sw-package.tar
 
     - name: Download CI Gold Data
-      uses: actions/checkout@v4
+      uses: actions/checkout@v5
       with:
         repository: LDMX-Software/ci-data
         path: ci-data

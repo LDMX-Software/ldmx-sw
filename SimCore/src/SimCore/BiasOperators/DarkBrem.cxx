@@ -11,32 +11,32 @@ namespace biasoperators {
 
 DarkBrem::DarkBrem(std::string name, const framework::config::Parameters& p)
     : XsecBiasingOperator(name, p) {
-  volume_ = p.getParameter<std::string>("volume");
-  factor_ = p.getParameter<double>("factor");
-  bias_all_ = p.getParameter<bool>("bias_all");
+  volume_ = p.get<std::string>("volume");
+  factor_ = p.get<double>("factor");
+  bias_all_ = p.get<bool>("bias_all");
 }
 
 G4VBiasingOperation* DarkBrem::ProposeOccurenceBiasingOperation(
     const G4Track* track, const G4BiasingProcessInterface* callingProcess) {
-  std::string currentProcess =
+  std::string current_process =
       callingProcess->GetWrappedProcess()->GetProcessName();
-  if (currentProcess.compare(this->getProcessToBias()) == 0) {
+  if (current_process.compare(this->getProcessToBias()) == 0) {
     // bias only the primary particle if we don't want to bias all particles
     if (not bias_all_ and track->GetParentID() != 0) return nullptr;
 
-    G4double interactionLength =
+    G4double interaction_length =
         callingProcess->GetWrappedProcess()->GetCurrentInteractionLength();
 
-    double dbXsecUnbiased = 1. / interactionLength;
-    double dbXsecBiased = dbXsecUnbiased * factor_;
+    double db_xsec_unbiased = 1. / interaction_length;
+    double db_xsec_biased = db_xsec_unbiased * factor_;
 
     if (G4RunManager::GetRunManager()->GetVerboseLevel() > 1) {
       std::cout << "[ DarkBremXsecBiasingOperator ]: "
-                << " Unbiased DBrem xsec: " << dbXsecUnbiased
-                << " -> Biased xsec: " << dbXsecBiased << std::endl;
+                << " Unbiased DBrem xsec: " << db_xsec_unbiased
+                << " -> Biased xsec: " << db_xsec_biased << std::endl;
     }
 
-    return BiasedXsec(dbXsecBiased);
+    return BiasedXsec(db_xsec_biased);
   }
   return nullptr;
 }

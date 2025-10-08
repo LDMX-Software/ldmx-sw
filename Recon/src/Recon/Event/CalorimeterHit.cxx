@@ -6,7 +6,7 @@
 ClassImp(ldmx::CalorimeterHit);
 
 namespace ldmx {
-void CalorimeterHit::Clear() {
+void CalorimeterHit::clear() {
   id_ = 0;
   amplitude_ = 0;
   energy_ = 0;
@@ -14,12 +14,12 @@ void CalorimeterHit::Clear() {
   xpos_ = 0;
   ypos_ = 0;
   zpos_ = 0;
-  isNoise_ = false;
+  is_noise_ = false;
 }
 
-void CalorimeterHit::Print() const {
-  std::cout << "CalorimeterHit { " << "id: " << std::hex << id_ << std::dec
-            << ",  energy: " << energy_ << "MeV, time: " << time_
-            << "ns, amplitude: " << amplitude_ << "}" << std::endl;
+std::ostream& operator<<(std::ostream& o, const CalorimeterHit& c) {
+  return o << "CalorimeterHit { " << "id: " << std::hex << c.id_ << std::dec
+           << ",  energy: " << c.energy_ << "MeV, time: " << c.time_
+           << "ns, amplitude: " << c.amplitude_ << "}";
 }
 }  // namespace ldmx

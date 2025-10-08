@@ -44,7 +44,7 @@ class StorageControl {
 
  public:
   /** Set the default state */
-  void setDefaultKeep(bool keep) { defaultIsKeep_ = keep; }
+  void setDefaultKeep(bool keep) { default_is_keep_ = keep; }
 
   /**
    * Reset the event-by-event state
@@ -103,7 +103,7 @@ class StorageControl {
   /**
    * Default state for storage control
    */
-  bool defaultIsKeep_{true};
+  bool default_is_keep_{true};
 
   /**
    * Collection of hints from the event processors
@@ -130,13 +130,13 @@ class StorageControl {
 /**
  * storage control hint alias for backwards compatibility
  */
-constexpr StorageControl::Hint hint_shouldKeep =
+constexpr StorageControl::Hint HINT_SHOULD_KEEP =
     StorageControl::Hint::ShouldKeep;
 
 /**
  * storage control hint alias for backwards compatibility
  */
-constexpr StorageControl::Hint hint_shouldDrop =
+constexpr StorageControl::Hint HINT_SHOULD_DROP =
     StorageControl::Hint::ShouldDrop;
 
 }  // namespace framework

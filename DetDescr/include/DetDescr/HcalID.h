@@ -39,11 +39,11 @@ class HcalID : public HcalAbstractID {
    * Create from raw number
    */
   HcalID(RawValue rawid) : HcalAbstractID(rawid) {
-    if (!null() && bar_type() != Global) {
+    if (!null() && barType() != Global) {
       EXCEPTION_RAISE(
           "DetectorIDMismatch",
           "Attempted to create HcalID from mismatched Hcal bar_type " +
-              std::to_string(bar_type()));
+              std::to_string(barType()));
     }
   }
 
@@ -51,11 +51,11 @@ class HcalID : public HcalAbstractID {
    * Create from a DetectorID, but check
    */
   HcalID(const HcalAbstractID id) : HcalAbstractID(id) {
-    if (!null() && bar_type() != Global) {
+    if (!null() && barType() != Global) {
       EXCEPTION_RAISE(
           "DetectorIDMismatch",
           "Attempted to create HcalID from mismatched Hcal bar_type " +
-              std::to_string(bar_type()));
+              std::to_string(barType()));
     }
   }
 
@@ -107,10 +107,10 @@ class HcalID : public HcalAbstractID {
    */
   unsigned int strip() const { return (id_ >> STRIP_SHIFT) & STRIP_MASK; }
 
+  friend std::ostream& operator<<(std::ostream& o, const ldmx::HcalID& d);
+
   static void createInterpreters();
 };
 }  // namespace ldmx
-
-std::ostream& operator<<(std::ostream&, const ldmx::HcalID&);
 
 #endif

@@ -81,7 +81,7 @@ class IDField {
   /**
    * The name of the field.
    */
-  std::string fieldName_;
+  std::string field_name_;
 
   /**
    * The index of the field.
@@ -91,17 +91,17 @@ class IDField {
   /**
    * The start bit of the field.
    */
-  unsigned startBit_;
+  unsigned start_bit_;
 
   /**
    * The end bit of the field.
    */
-  unsigned endBit_;
+  unsigned end_bit_;
 
   /**
    * The bit mask of the field.
    */
-  unsigned bitMask_;
+  unsigned bit_mask_;
 };
 }  // namespace ldmx
 

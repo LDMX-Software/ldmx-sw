@@ -47,14 +47,14 @@ namespace simcore {
 GenieReweightProducer::GenieReweightProducer(const std::string& name,
                                              framework::Process& process)
     : Producer(name, process) {
-  hepMC3Converter_ = std::make_unique<genie::HepMC3Converter>();
+  hep_mc3_converter_ = std::make_unique<genie::HepMC3Converter>();
   genie_rw_ = std::make_unique<genie::rew::GReWeight>();
 }
 
 void GenieReweightProducer::configure(framework::config::Parameters& ps) {
-  hepmc3CollName_ = ps.get<std::string>("hepmc3CollName");
-  hepmc3PassName_ = ps.get<std::string>("hepmc3PassName");
-  eventWeightsCollName_ = ps.get<std::string>("eventWeightsCollName");
+  hepmc3_coll_name_ = ps.get<std::string>("hepmc3CollName");
+  hepmc3_pass_name_ = ps.get<std::string>("hepmc3PassName");
+  event_weights_coll_name_ = ps.get<std::string>("eventWeightsCollName");
   seed_ = ps.get<int>("seed");
   n_weights_ = static_cast<size_t>(ps.get<int>("n_weights"));
   auto var_types_strings = ps.get<std::vector<std::string> >("var_types");
@@ -65,7 +65,7 @@ void GenieReweightProducer::configure(framework::config::Parameters& ps) {
   std::normal_distribution<double> normal_distribution;
 
   for (auto const& vt_str : var_types_strings) {
-    auto vtype = ldmx::EventWeights::string_to_variation_type(vt_str);
+    auto vtype = ldmx::EventWeights::stringToVariationType(vt_str);
     for (size_t i_w = 0; i_w < n_weights_; ++i_w)
       variation_map_[vtype].push_back(normal_distribution(generator));
   }
@@ -88,7 +88,7 @@ void GenieReweightProducer::reinitializeGenieReweight() {
 
   auto& syst = genie_rw_->Systematics();
   for (auto var : variation_map_)
-    syst.Init(variation_type_to_genie_dial(var.first));
+    syst.Init(variationTypeToGenieDial(var.first));
 }
 
 void GenieReweightProducer::onNewRun(const ldmx::RunHeader& runHeader) {
@@ -153,7 +153,7 @@ void GenieReweightProducer::reconfigureGenieReweight(size_t i_w) {
 void GenieReweightProducer::produce(framework::Event& event) {
   // grab the input hepmc3 event collection
   auto hepmc3_col = event.getObject<std::vector<ldmx::HepMC3GenEvent> >(
-      hepmc3CollName_, hepmc3PassName_);
+      hepmc3_coll_name_, hepmc3_pass_name_);
 
   // create an output weights
   ldmx::EventWeights ev_weights(variation_map_);
@@ -175,7 +175,7 @@ void GenieReweightProducer::produce(framework::Event& event) {
       if (i_w == 0) ldmx_log(debug) << hepmc3_genev;
 
       // now convert to genie event record
-      auto genie_ev_record_ptr = hepMC3Converter_->RetrieveGHEP(hepmc3_genev);
+      auto genie_ev_record_ptr = hep_mc3_converter_->RetrieveGHEP(hepmc3_genev);
 
       // print that out too ...
       if (i_w == 0) ldmx_log(debug) << *genie_ev_record_ptr;
@@ -193,7 +193,7 @@ void GenieReweightProducer::produce(framework::Event& event) {
 
   ldmx_log(trace) << ev_weights;
 
-  event.add(eventWeightsCollName_, ev_weights);
+  event.add(event_weights_coll_name_, ev_weights);
 }
 }  // namespace simcore
 

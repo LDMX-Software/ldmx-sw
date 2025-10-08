@@ -2,6 +2,8 @@
 
 #include "DetDescr/DetectorIDInterpreter.h"
 
+namespace ldmx {
+
 std::ostream& operator<<(std::ostream& s, const ldmx::SimSpecialID& id) {
   if (id.getSubtype() == ldmx::SimSpecialID::SCORING_PLANE)
     s << "SimSpecial(ScoringPlane " << id.plane() << ')';
@@ -10,8 +12,6 @@ std::ostream& operator<<(std::ostream& s, const ldmx::SimSpecialID& id) {
       << ')';
   return s;
 }
-
-namespace ldmx {
 
 void SimSpecialID::createInterpreters() {
   IDField::IDFieldList fields;

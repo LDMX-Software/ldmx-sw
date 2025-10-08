@@ -28,8 +28,8 @@ class MagneticFieldStore {
    * @return The magnetic field store.
    */
   static MagneticFieldStore* getInstance() {
-    static MagneticFieldStore INSTANCE;
-    return &INSTANCE;
+    static MagneticFieldStore instance;
+    return &instance;
   }
 
   /**
@@ -38,10 +38,10 @@ class MagneticFieldStore {
    * Cleans up all stored G4MagneticFields
    */
   ~MagneticFieldStore() {
-    for (auto& nameField : magFields_) {
+    for (auto& nameField : mag_fields_) {
       delete nameField.second;
     }
-    magFields_.clear();
+    mag_fields_.clear();
   }
 
   /**
@@ -49,7 +49,7 @@ class MagneticFieldStore {
    * @param name The name of the magnetic field.
    */
   G4MagneticField* getMagneticField(const std::string& name) {
-    return magFields_.at(name);
+    return mag_fields_.at(name);
   }
 
   /**
@@ -58,14 +58,14 @@ class MagneticFieldStore {
    * @param magField The magnetic field definition.
    */
   void addMagneticField(const std::string& name, G4MagneticField* magField) {
-    magFields_[name] = magField;
+    mag_fields_[name] = magField;
   }
 
  private:
   /**
    * Map of names to magnetic fields.
    */
-  MagFieldMap magFields_;
+  MagFieldMap mag_fields_;
 };
 
 }  // namespace simcore

@@ -12,40 +12,42 @@
 
 help_message := "shared recipes for ldmx-sw development
 
-    Some folks use 'ldmx' as an alias for 'just' in which case you can
-    replace 'just' with 'ldmx' in the examples below.
-
   USAGE:
     just <cmd> [arguments...]
 
-  Multiple commands can be provided at once and they will be run in sequence.
+  Multiple commands can be provided at once if they don't require arguments.
 
-    just init configure build test
+    just init configure-force-error build
 
   COMMANDS:
 "
 
-# inherited from ldmx-env bash functions
-# we could look into removing this and instead having the denv_workspace be
-# the justfile_directory() itself but that is a larger change than introducing just
-# the denv workspace is colloquially known as LDMX_BASE
-
-export LDMX_BASE := parent_directory(justfile_directory())
-
-# tell denv where the workspace is
-# usually, denv deduces where the workspace is by finding the .denv directory,
-# but we want to set where the denv is within the justfile so users could (for example)
+# deduce the denv_workspace corresponding to this justfile
+# usually, denv deduces where the workspace is on its own by finding the .denv directory,
+# but we want to set where the denv is within the some recipes so users could (for example)
 # run their ldmx-sw build from within some other denv by invoking fire from just
 #   just -f path/to/ldmx-sw/justfile fire config.py
-# would run this denv even if there is a denv in the directory where config.py is.
+# or
+#   just path/to/ldmx-sw/fire config.py
+# would run this denv even if there is a denv in the directory where config.py is because
+# those [no-cd] recipes set denv_workspace="{{ this_denv_workspace }}"
+# supporting either the old (parent_directory, LDMX_BASE path) and the new (ldmx-sw itself)
+# forces a decision to be made now when just is invoked
+# we default to the new path (ldmx-sw itself) for new invocations while supporting the
+# old location only if it exists.
 
-export denv_workspace := LDMX_BASE
+denv_workspace_in_ldmx_sw_parent := path_exists(parent_directory(justfile_directory()) / ".denv")
+this_denv_workspace := if denv_workspace_in_ldmx_sw_parent == "true" {
+  parent_directory(justfile_directory())
+} else {
+  justfile_directory()
+}
 
 # make sure APPTAINER_CACHEDIR is not in the home directory
 # unless the user has already defined it
 #   just 1.15
 
-export APPTAINER_CACHEDIR := env("APPTAINER_CACHEDIR", LDMX_BASE / ".apptainer")
+export APPTAINER_CACHEDIR := env("APPTAINER_CACHEDIR", this_denv_workspace / ".apptainer")
 
 _default:
     @just --list --justfile {{ justfile() }} --list-heading "{{ help_message }}"
@@ -59,6 +61,7 @@ install-denv:
 [private]
 prep-version:
     git fetch --tags && git describe --tags | cut -f 1 -d '-' > VERSION
+    git rev-parse HEAD > COMMIT_SHA
 
 # configure how ldmx-sw will be built
 # added ADDITIONAL_WARNINGS and CLANG_TIDY to help improve code quality
@@ -69,13 +72,16 @@ configure-base *CONFIG: prep-version
     denv cmake -B build -S . {{ CONFIG }}
 
 # default configure of build when developing
-configure *CONFIG: (configure-base "-DADDITIONAL_WARNINGS=ON -DENABLE_CLANG_TIDY=ON" CONFIG)
+configure *CONFIG: (configure-base "-DADDITIONAL_WARNINGS=ON -DCMAKE_EXPORT_COMPILE_COMMANDS=ON" CONFIG)
 
 # configure minimal option for faster compilation
 configure-quick: configure-base
 
 # configure with Address Sanitizer (ASAN) and  UndefinedBehaviorSanitizer (UBSan)
 configure-asan-ubsan: (configure-base "-DENABLE_SANITIZER_UNDEFINED_BEHAVIOR=ON -DENABLE_SANITIZER_ADDRESS=ON")
+
+# configure with clang-tidy ON
+configure-clang-tidy:  (configure-base "-DENABLE_CLANG_TIDY=ON")
 
 # This is the same as just configure but reports all (non-3rd-party) warnings as errors
 configure-force-error: (configure "-DWARNINGS_AS_ERRORS=ON")
@@ -99,12 +105,12 @@ test *ARGS:
 # run ldmx-sw with the input configuration script
 [no-cd]
 fire config_py *ARGS:
-    denv fire {{ config_py }} {{ ARGS }}
+    denv_workspace="{{ this_denv_workspace }}" denv fire {{ config_py }} {{ ARGS }}
 
 # run gdb on a config file
 [no-cd]
 debug config_py *ARGS:
-    denv gdb --args fire {{ config_py }} {{ ARGS }}
+    denv_workspace="{{ this_denv_workspace }}" denv gdb --args fire {{ config_py }} {{ ARGS }}
 
 # initialize a containerized development environment
 init:
@@ -125,12 +131,12 @@ init:
       if denv check --workspace --quiet; then
         echo "\033[32mWorkspace already initialized.\033[0m"
       else
-        denv init --clean-env --name ldmx ldmx/dev:latest "${LDMX_BASE}"
+        denv init --clean-env --name ldmx ldmx/dev:latest
       fi
     else
       # denv v1.1.0 and later has updated denv init to allow us
       # to avoid overwriting quietly
-      denv init --clean-env --no-over --no-mkdir --name ldmx ldmx/dev:latest "${LDMX_BASE}"
+      denv init --clean-env --no-over --no-mkdir --name ldmx ldmx/dev:latest
     fi
     denv config print
 
@@ -151,7 +157,7 @@ check:
 # remove the build and install directories of ldmx-sw
 [confirm("This will remove the build and install directories. Are you sure?")]
 clean:
-    rm -r build install VERSION
+    rm -r build install VERSION COMMIT_SHA
 
 # format the ldmx-sw source code
 format: format-cpp format-just
@@ -168,6 +174,29 @@ format-cpp *ARGS='-i':
 # format the justfile
 format-just:
     @just --fmt --unstable --justfile {{ justfile() }}
+
+# Now do the same but with clang tidy
+tidy-cpp *ARGS='-p build --fix -fix-errors --quiet ':
+    #!/usr/bin/env sh
+    set -exu
+    format_list=$(mktemp)
+    git diff --name-only origin/trunk..HEAD | egrep '(\.h|\.cxx)$' > ${format_list}
+    # if the list is not empty, run clang-tidy
+    if [ ! -s ${format_list} ]; then
+      echo "No C++ files changed, skipping clang-tidy"
+    else
+      denv clang-tidy $(cat ${format_list}) {{ ARGS }}
+      rm ${format_list}
+    fi
+
+
+tidy-cpp-dir DIR *ARGS='-p build --fix -fix-errors --quiet ':
+    #!/usr/bin/env sh
+    set -exu
+    format_list=$(mktemp)
+    find {{ DIR }} -name "*.h" -o -name "*.cxx" > ${format_list}
+    denv clang-tidy $(cat ${format_list}) {{ ARGS }}
+    rm ${format_list}
 
 # shellcheck doesn't have a "apply-formatting" option
 # because it really is more of a tidier (its changes could affect code meaning)
@@ -226,19 +255,24 @@ setenv +ENVVAR:
 # configure and build ldmx-sw
 compile ncpu=num_cpus() *CONFIG='': (configure CONFIG) (build ncpu)
 
+# configure and build ldmx-sw the quick way
+compile-quick ncpu=num_cpus() *CONFIG='': (configure-quick) (build ncpu)
+
 # re-build ldmx-sw and then run a config
 recompFire config_py *ARGS: compile (fire config_py ARGS)
 
-# install the validation module
-# `python3 -m pip install Validation/` is the standard `pip` install method.
-# We add `--upgrade` to tell `pip` it should overwrite the package if it already has been
-# installed before which is helpful in the case where someone is updating the code and running
-# the new code within the container. The `--target install/python/` arguments tell `pip`
-# where to install the package. This directory is where we currently store our python modules
-# and is where the container expects them to be. The `--no-cache` argument tells `pip` to
-# not use a cache for downloading any dependencies from the internet which is necessary since
-# `pip` will not be able to write to the cache location within the container.
+# print out the environment configuration
+print-config:
+    denv config print
 
-# install the python Validation plotting module
-install-validation:
-    denv python3 -m pip install Validation/ --upgrade --target install/python/ --no-cache
+# install the dependencies of the plotting module
+install-compare-plots-deps:
+    denv python3 -m pip install -r ComparePlots/requirements.txt --no-cache --break-system-packages
+
+# alias for install-compare-plots-deps
+install-validation: install-compare-plots-deps
+
+# run the ComparePlots plotting module
+[no-cd]
+compare-plots *args:
+    denv_workspace="{{ this_denv_workspace }}" denv 'PYTHONPATH="{{ justfile_directory() }}:${PYTHONPATH}" python3 -m ComparePlots {{ args }}'

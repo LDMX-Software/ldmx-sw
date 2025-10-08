@@ -5,8 +5,10 @@
 #include "DetDescr/HcalDigiID.h"
 #include "DetDescr/HcalID.h"
 
+namespace ldmx {
+
 std::ostream& operator<<(std::ostream& s, const ldmx::HcalAbstractID& id) {
-  switch (id.bar_type()) {
+  switch (id.barType()) {
     case (ldmx::HcalAbstractID::Global):
       return s << ldmx::HcalID(id);
     case (ldmx::HcalAbstractID::Digi):
@@ -14,8 +16,9 @@ std::ostream& operator<<(std::ostream& s, const ldmx::HcalAbstractID& id) {
       //    case(ldmx::HcalAbstractID::Trigger): return s <<
       //    ldmx::HcalTriggerID(id);
     default:
-      return s << "HcalAbstractID(" << id.bar_type() << ":0x"
+      return s << "HcalAbstractID(" << id.barType() << ":0x"
                << std::setfill('0') << std::setw(6) << std::right << std::hex
                << id.payload();
   }
 }
+}  // namespace ldmx

@@ -25,23 +25,23 @@ void Vertexer::onProcessStart() {
   double z0min = -2;
   double z0max = 2;
 
-  h_delta_d0 = new TH1F("h_delta_d0", "h_delta_d0", 400, d0min, d0max);
-  h_delta_z0 = new TH1F("h_delta_z0", "h_delta_z0", 200, z0min, z0max);
-  h_delta_p = new TH1F("h_delta_p", "h_delta_p", 200, -1, 4);
+  h_delta_d0_ = new TH1F("h_delta_d0", "h_delta_d0", 400, d0min, d0max);
+  h_delta_z0_ = new TH1F("h_delta_z0", "h_delta_z0", 200, z0min, z0max);
+  h_delta_p_ = new TH1F("h_delta_p", "h_delta_p", 200, -1, 4);
   // h_delta_pT_vsP    = new TH2D("h_delta_pT_vs_p","h_delta_pT_v_p",200,)
-  h_delta_phi = new TH1F("h_delta_phi", "h_delta_phi", 400, -0.2, 0.2);
-  h_delta_theta = new TH1F("h_delta_theta", "h_delta_theta", 200, -0.1, 0.1);
+  h_delta_phi_ = new TH1F("h_delta_phi", "h_delta_phi", 400, -0.2, 0.2);
+  h_delta_theta_ = new TH1F("h_delta_theta", "h_delta_theta", 200, -0.1, 0.1);
 
-  h_delta_d0_vs_recoil_p =
+  h_delta_d0_vs_recoil_p_ =
       new TH2F("h_delta_d0_vs_recoil_p", "h_delta_d0_vs_recoil_p", 200, 0, 5,
                400, -1, 1);
-  h_delta_z0_vs_recoil_p =
+  h_delta_z0_vs_recoil_p_ =
       new TH2F("h_delta_z0_vs_recoil_p", "h_delta_z0_vs_recoil_p", 200, 0, 5,
                400, -1, 1);
 
-  h_td0_vs_rd0 =
+  h_td0_vs_rd0_ =
       new TH2F("h_td0_vs_rd0", "h_td0_vs_rd0", 100, -40, 40, 100, -40, 40);
-  h_tz0_vs_rz0 =
+  h_tz0_vs_rz0_ =
       new TH2F("h_tz0_vs_rz0", "h_tz0_vs_rz0", 100, -40, 40, 100, -40, 40);
 
   gctx_ = Acts::GeometryContext();
@@ -58,34 +58,32 @@ void Vertexer::onProcessStart() {
   };
   */
 
-  sp_interpolated_bField_ =
+  sp_interpolated_b_field_ =
       std::make_shared<InterpolatedMagneticField3>(loadDefaultBField(
-          field_map_, default_transformPos, default_transformBField));
+          field_map_, defaultTransformPos, defaultTransformBField));
 
   // There is a sign issue between the vertexing and the perigee representation
   Acts::Vector3 b_field(0., 0., -1.5 * Acts::UnitConstants::T);
-  bField_ = std::make_shared<Acts::ConstantBField>(b_field);
+  b_field_ = std::make_shared<Acts::ConstantBField>(b_field);
 
-  std::cout << "Check if nullptr::" << sp_interpolated_bField_.get()
+  std::cout << "Check if nullptr::" << sp_interpolated_b_field_.get()
             << std::endl;
 
   // Set up propagator with void navigator
   // auto&& stepper = Acts::EigenStepper<>{sp_interpolated_bField_};
   // propagator_ = std::make_shared<VoidPropagator>(stepper);
 
-  auto&& stepper_const = Acts::EigenStepper<>{bField_};
+  auto&& stepper_const = Acts::EigenStepper<>{b_field_};
   propagator_ = std::make_shared<VoidPropagator>(stepper_const);
 }
 
 void Vertexer::configure(framework::config::Parameters& parameters) {
   // TODO:: the bfield map should be taken automatically
-  field_map_ = parameters.getParameter<std::string>("field_map");
+  field_map_ = parameters.get<std::string>("field_map");
 
-  trk_c_name_1 =
-      parameters.getParameter<std::string>("trk_c_name_1", "TaggerTracks");
-  trk_c_name_2 =
-      parameters.getParameter<std::string>("trk_c_name_2", "RecoilTracks");
-  input_pass_name_ = parameters.getParameter<std::string>("input_pass_name");
+  trk_c_name_1_ = parameters.get<std::string>("trk_c_name_1", "TaggerTracks");
+  trk_c_name_2_ = parameters.get<std::string>("trk_c_name_2", "RecoilTracks");
+  input_pass_name_ = parameters.get<std::string>("input_pass_name");
 }
 
 void Vertexer::produce(framework::Event& event) {
@@ -94,10 +92,10 @@ void Vertexer::produce(framework::Event& event) {
 
   // Track linearizer in the proximity of the vertex location
   using Linearizer = Acts::HelicalTrackLinearizer;
-  Linearizer::Config linearizerConfig;
-  linearizerConfig.bField = bField_;
-  linearizerConfig.propagator = propagator_;
-  Linearizer linearizer(linearizerConfig);
+  Linearizer::Config linearizer_config;
+  linearizer_config.bField = b_field_;
+  linearizer_config.propagator = propagator_;
+  Linearizer linearizer(linearizer_config);
 
   // Set up Billoir Vertex Fitter
   using VertexFitter = Acts::FullBilloirVertexFitter;
@@ -106,8 +104,8 @@ void Vertexer::produce(framework::Event& event) {
   // using VertexFitter =
   //  Acts::FullBilloirVertexFitter<tracking::sim::utils::boundTrackParameters,Linearizer>;
 
-  VertexFitter::Config vertexFitterCfg;
-  VertexFitter billoirFitter(vertexFitterCfg);
+  VertexFitter::Config vertex_fitter_cfg;
+  VertexFitter billoir_fitter(vertex_fitter_cfg);
   //  mg Aug 2024 .. State doesn't exist in v36 and isn't used here anyway
   //  VertexFitter::State state(sp_interpolated_bField_->makeCache(bctx_));
 
@@ -119,14 +117,14 @@ void Vertexer::produce(framework::Event& event) {
   //  Acts::VertexingOptions<Acts::BoundTrackParameters> vfOptions(gctx_,
   //  bctx_);
   // mg Aug 2024 ... VertexingOptions template change in v36
-  Acts::VertexingOptions vfOptions(gctx_, bctx_);
+  Acts::VertexingOptions vf_options(gctx_, bctx_);
 
   // Retrive the two track collections
 
   const std::vector<ldmx::Track> tracks_1 =
-      event.getCollection<ldmx::Track>(trk_c_name_1, input_pass_name_);
+      event.getCollection<ldmx::Track>(trk_c_name_1_, input_pass_name_);
   const std::vector<ldmx::Track> tracks_2 =
-      event.getCollection<ldmx::Track>(trk_c_name_2, input_pass_name_);
+      event.getCollection<ldmx::Track>(trk_c_name_2_, input_pass_name_);
 
   ldmx_log(debug) << "Retrieved track collections" << std::endl
                   << "Track 1 size:" << tracks_1.size() << std::endl
@@ -138,13 +136,13 @@ void Vertexer::produce(framework::Event& event) {
 
   // TODO:: The perigee surface should be common between all tracks.
 
-  std::shared_ptr<Acts::PerigeeSurface> perigeeSurface =
+  std::shared_ptr<Acts::PerigeeSurface> perigee_surface =
       Acts::Surface::makeShared<Acts::PerigeeSurface>(Acts::Vector3(
           tracks_1.front().getPerigeeX(), tracks_1.front().getPerigeeY(),
           tracks_1.front().getPerigeeZ()));
 
   // Monitoring of tagger and recoil tracks
-  TaggerRecoilMonitoring(tracks_1, tracks_2);
+  taggerRecoilMonitoring(tracks_1, tracks_2);
 
   // Start the vertex formation
   // Form a vertex for each combination of tracks found in the same event
@@ -152,12 +150,12 @@ void Vertexer::produce(framework::Event& event) {
 
   for (auto& trk : tracks_1) {
     billoir_tracks_1.push_back(
-        tracking::sim::utils::boundTrackParameters(trk, perigeeSurface));
+        tracking::sim::utils::boundTrackParameters(trk, perigee_surface));
   }
 
   for (auto& trk : tracks_2) {
     billoir_tracks_2.push_back(
-        tracking::sim::utils::boundTrackParameters(trk, perigeeSurface));
+        tracking::sim::utils::boundTrackParameters(trk, perigee_surface));
   }
 
   //  std::vector<Acts::Vertex<Acts::BoundTrackParameters> > fit_vertices;
@@ -202,26 +200,26 @@ void Vertexer::onProcessEnd() {
   ldmx_log(info) << "Reconstructed " << nvertices_ << " vertices over "
                  << nreconstructable_ << " reconstructable" << std::endl;
 
-  TFile* outfile_ = new TFile((getName() + ".root").c_str(), "RECREATE");
-  outfile_->cd();
+  TFile* outfile = new TFile((getName() + ".root").c_str(), "RECREATE");
+  outfile->cd();
 
-  h_delta_d0->Write();
-  h_delta_z0->Write();
-  h_delta_p->Write();
-  h_delta_phi->Write();
-  h_delta_theta->Write();
+  h_delta_d0_->Write();
+  h_delta_z0_->Write();
+  h_delta_p_->Write();
+  h_delta_phi_->Write();
+  h_delta_theta_->Write();
 
-  h_delta_d0_vs_recoil_p->Write();
-  h_delta_z0_vs_recoil_p->Write();
+  h_delta_d0_vs_recoil_p_->Write();
+  h_delta_z0_vs_recoil_p_->Write();
 
-  h_td0_vs_rd0->Write();
-  h_tz0_vs_rz0->Write();
+  h_td0_vs_rd0_->Write();
+  h_tz0_vs_rz0_->Write();
 
-  outfile_->Close();
-  delete outfile_;
+  outfile->Close();
+  delete outfile;
 }
 
-void Vertexer::TaggerRecoilMonitoring(
+void Vertexer::taggerRecoilMonitoring(
     const std::vector<ldmx::Track>& tagger_tracks,
     const std::vector<ldmx::Track>& recoil_tracks) {
   // For the moment only check that I have 1 tagger track and one recoil track
@@ -243,20 +241,20 @@ void Vertexer::TaggerRecoilMonitoring(
   t_p = t_trk.q() / t_trk.getQoP();
   r_p = r_trk.q() / r_trk.getQoP();
 
-  h_delta_d0->Fill(t_trk.getD0() - r_trk.getD0());
-  h_delta_z0->Fill(t_trk.getZ0() - r_trk.getZ0());
-  h_delta_p->Fill(t_p - r_p);
-  h_delta_phi->Fill(t_trk.getPhi() - r_trk.getPhi());
-  h_delta_theta->Fill(t_trk.getTheta() - r_trk.getTheta());
+  h_delta_d0_->Fill(t_trk.getD0() - r_trk.getD0());
+  h_delta_z0_->Fill(t_trk.getZ0() - r_trk.getZ0());
+  h_delta_p_->Fill(t_p - r_p);
+  h_delta_phi_->Fill(t_trk.getPhi() - r_trk.getPhi());
+  h_delta_theta_->Fill(t_trk.getTheta() - r_trk.getTheta());
 
   // differential plots
 
-  h_delta_d0_vs_recoil_p->Fill(r_p, t_trk.getD0() - r_trk.getD0());
-  h_delta_z0_vs_recoil_p->Fill(r_p, t_trk.getZ0() - r_trk.getZ0());
+  h_delta_d0_vs_recoil_p_->Fill(r_p, t_trk.getD0() - r_trk.getD0());
+  h_delta_z0_vs_recoil_p_->Fill(r_p, t_trk.getZ0() - r_trk.getZ0());
 
   //"beamspot"
-  h_td0_vs_rd0->Fill(r_trk.getD0(), t_trk.getD0());
-  h_tz0_vs_rz0->Fill(r_trk.getZ0(), t_trk.getZ0());
+  h_td0_vs_rd0_->Fill(r_trk.getD0(), t_trk.getD0());
+  h_tz0_vs_rz0_->Fill(r_trk.getZ0(), t_trk.getZ0());
 
   //"pT"
   // TODO Transverse momentum should obtained orthogonal to the B-Field

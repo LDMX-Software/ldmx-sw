@@ -33,7 +33,7 @@ namespace tracking::reco {
  * Create a track seed using truth information extracted from the corresponding
  * SimParticle or SimTrackerHit. When creating seeds in the Tagger tracker,
  * the SimParticle associated with the incident electron (trackID == 1) is used
- * to create the seed from the parameters (x, y, z, px, py, pz, q) at the
+ * to create the seed from the parameters (x_, y_, z_, px, py, pz, q) at the
  * vertex. For the Recoil tracker, since the electron is produced
  * upstream, the SimParticle can't be used to get any parameters at the target.
  * In this case, the target scoring plane hits are used to extract the
@@ -101,7 +101,7 @@ class TruthSeedProcessor : public TrackingGeometryUser {
 
   /**
    * Use the vertex position of the SimParticle to extract
-   * (x, y, z, px, py, pz, q) and create a track seed.
+   * (x_, y_, z_, px, py, pz, q) and create a track seed.
    *
    * @param particle The SimParticle to make a seed from.
    */
@@ -110,7 +110,7 @@ class TruthSeedProcessor : public TrackingGeometryUser {
 
   /**
    * Use the scoring plane hit at the target to extract
-   * (x, y, z, px, py, pz) and create a track seed. In this case, the
+   * (x_, y_, z_, px, py, pz) and create a track seed. In this case, the
    * SimParticle is used to extract the charge of the particle.
    *
    * @param particle The SimParticle to extract the charge from.
@@ -123,7 +123,7 @@ class TruthSeedProcessor : public TrackingGeometryUser {
   /**
    * Create a seed track from the given position, momentum and charge.
    *
-   * @param pos The position at which the particle was created.
+   * @param pos_ The position at which the particle was created.
    * @param p The momentum of the particle at the point of creation.
    * @param charge The charge of the particle.
    * @param target_surface the surface to where to express the truth track
@@ -154,7 +154,7 @@ class TruthSeedProcessor : public TrackingGeometryUser {
 
   ldmx::Track seedFromTruth(const ldmx::Track& tt, bool seed_smearing);
 
-  ldmx::Track RecoilFullSeed(
+  ldmx::Track recoilFullSeed(
       const ldmx::SimParticle& particle, const int trackID,
       const ldmx::SimTrackerHit& hit, const ldmx::SimTrackerHit& ecal_hit,
       const std::map<int, std::vector<int>>& hit_count_map,
@@ -181,7 +181,7 @@ class TruthSeedProcessor : public TrackingGeometryUser {
    * @param target_surface : the target surface for the truth target state
    */
 
-  ldmx::Track TaggerFullSeed(
+  ldmx::Track taggerFullSeed(
       const ldmx::SimParticle& beam_electron, const int trackID,
       const ldmx::SimTrackerHit& hit,
       const std::map<int, std::vector<int>>& hit_count_map,
@@ -222,7 +222,7 @@ class TruthSeedProcessor : public TrackingGeometryUser {
   int n_min_hits_recoil_{7};
 
   /**
-   * Min cut on the z of the scoring hit. It could be used to clean the scoring
+   * Min cut on the z_ of the scoring hit. It could be used to clean the scoring
    * hits if desired.
    */
   float z_min_{-999};
@@ -268,7 +268,7 @@ class TruthSeedProcessor : public TrackingGeometryUser {
   std::default_random_engine generator_;
   std::shared_ptr<std::normal_distribution<float>> normal_;
 
-  bool seedSmearing_{false};
+  bool seed_smearing_{false};
 
   std::vector<double> d0smear_;
   std::vector<double> z0smear_;
@@ -277,6 +277,6 @@ class TruthSeedProcessor : public TrackingGeometryUser {
   double relpsmear_;
   std::vector<double> rel_smearfactors_;
   std::vector<double> inflate_factors_;
-  std::vector<double> beamOrigin_{-880.1, -44., 0.};
+  std::vector<double> beam_origin_{-880.1, -44., 0.};
 };
 }  // namespace tracking::reco

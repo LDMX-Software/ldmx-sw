@@ -11,20 +11,20 @@
 /*~~~~~~~~~~~~~~~~*/
 #include <iostream>
 
-ClassImp(ldmx::TrigScintHit)
+ClassImp(ldmx::TrigScintHit);
 
-    namespace ldmx {
-  void TrigScintHit::Clear(Option_t * option) {
-    ldmx::HcalHit::Clear();
-    barID_ = -1;
-    moduleID_ = -1;
-    beamEfrac_ = 0;
-  }
+namespace ldmx {
+void TrigScintHit::clear(Option_t* option) {
+  ldmx::HcalHit::clear();
+  bar_id_ = -1;
+  module_id_ = -1;
+  beam_efrac_ = 0;
+}
 
-  void TrigScintHit::Print(Option_t * option) const {
-    std::cout << "TrigScintHit { " << "id: " << std::hex << getID() << std::dec
-              << ",  energy: " << getEnergy() << "MeV, time: " << getTime()
-              << "ns, amplitude: " << getAmplitude() << ", pe: " << getPE()
-              << "}" << std::endl;
-  }
+std::ostream& operator<<(std::ostream& o, const TrigScintHit& c) {
+  return o << "TrigScintHit { " << "id: " << std::hex << c.getID() << std::dec
+           << ",  energy: " << c.getEnergy() << "MeV, time: " << c.getTime()
+           << "ns, amplitude: " << c.getAmplitude() << ", pe: " << c.getPE()
+           << "}";
+}
 }  // namespace ldmx

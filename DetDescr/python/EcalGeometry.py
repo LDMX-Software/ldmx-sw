@@ -21,6 +21,8 @@ class EcalGeometry() :
         Shift the odd-numbered layers
     layer_shift_odd_bilayer : bool
         Shift the odd-numbered bi-layers
+    si_thickness : float
+        Thickness of the silicon sensor [mm]
     detectors_valid : array of strings
         Regular expressions identifying which detectors are valid for this geometry
     moduleMinR : float
@@ -41,6 +43,7 @@ class EcalGeometry() :
             layer_shift_y = 0.,
             layer_shift_odd = False,
             layer_shift_odd_bilayer = False,
+            si_thickness = 0.3, 
             nCellRHeight = 35.3,
             moduleMinR = 85.0) :
 
@@ -53,13 +56,12 @@ class EcalGeometry() :
         self.layer_shift_y = layer_shift_y
         self.layer_shift_odd = layer_shift_odd
         self.layer_shift_odd_bilayer = layer_shift_odd_bilayer
+        self.si_thickness = si_thickness  
         self.moduleMinR = moduleMinR
         self.detectors_valid = detectors_valid
 
         # parameters which are somewhat independent of GDML
         self.nCellRHeight = nCellRHeight
-
-        self.verbose = 0
 
     def __str__(self) :
         """Stringify this configuration class"""
@@ -108,7 +110,7 @@ class EcalGeometry() :
                 )
 
     def v14() :
-        eg = EcalGeometry(detectors_valid = ["ldmx-det-v14","ldmx-det-v14.*","ldmx-lyso-r1-v14", "ldmx-lyso-r1-v14.*", "ldmx-det-v15","ldmx-det-v15.*"],
+        eg = EcalGeometry(detectors_valid = ["ldmx-det-v14","ldmx-det-v14.*"],
                 gap = 1.5,
                 layerZPositions = [
                       7.582, 16.062, 33.226, 43.206, 60.370, 71.350, 90.014, 101.594, 
@@ -117,6 +119,26 @@ class EcalGeometry() :
                       331.966, 343.546, 365.710, 380.690, 402.854, 417.834, 439.998,
                       454.978, 477.142, 492.122, 514.286, 529.266
 			],
+                ecalFrontZ = 240.0,
+                cornersSideUp = True,
+                layer_shift_odd = True,
+                )
+        # shift by a single cell diameter
+        eg.layer_shift_x = 2*eg.moduleMinR / eg.nCellRHeight
+        return eg
+
+    def v15() :
+        eg = EcalGeometry(detectors_valid = ["ldmx-det-v15","ldmx-det-v15.*","ldmx-lyso-r4-v15", "ldmx-lyso-r4-v15.*"],
+                gap = 1.5,
+                si_thickness = 0.4,
+                layerZPositions = [
+                    # using 400 um Si thickness
+                    7.582, 16.162, 33.426, 43.506, 60.770, 71.850, 91.114, 103.194, 
+                    122.458, 134.538, 153.802, 165.882, 185.146, 197.226, 216.490, 
+                    228.570, 247.834, 259.914, 279.178, 291.258, 310.522, 322.602, 
+                    341.866, 353.946, 377.210, 392.290, 415.554, 430.634, 453.898, 
+                    468.978, 492.242, 507.322
+                ],
                 ecalFrontZ = 240.0,
                 cornersSideUp = True,
                 layer_shift_odd = True,
@@ -154,4 +176,4 @@ class EcalGeometry() :
         return eg
 
     def geometries() :
-        return [EcalGeometry.v9(), EcalGeometry.v12(), EcalGeometry.v13(), EcalGeometry.v14(), EcalGeometry.reduced(), EcalGeometry.reduced_v2()]
+        return [EcalGeometry.v9(), EcalGeometry.v12(), EcalGeometry.v13(), EcalGeometry.v14(), EcalGeometry.v15(), EcalGeometry.reduced(), EcalGeometry.reduced_v2()]

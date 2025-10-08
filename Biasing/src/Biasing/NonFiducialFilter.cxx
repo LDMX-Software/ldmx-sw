@@ -22,13 +22,13 @@
 
 namespace biasing {
 
-bool nonFiducial_ = false;
+bool non_fiducial = false;
 
 NonFiducialFilter::NonFiducialFilter(const std::string& name,
                                      framework::config::Parameters& parameters)
     : simcore::UserAction(name, parameters) {
-  recoil_max_p_ = parameters.getParameter<double>("recoil_max_p");
-  abort_fiducial_ = parameters.getParameter<bool>("abort_fiducial");
+  recoil_max_p_ = parameters.get<double>("recoil_max_p");
+  abort_fiducial_ = parameters.get<bool>("abort_fiducial");
 }
 
 void NonFiducialFilter::stepping(const G4Step* step) {
@@ -36,14 +36,14 @@ void NonFiducialFilter::stepping(const G4Step* step) {
   auto track{step->GetTrack()};
 
   // Get the PDG ID of the track and make sure it's an electron.
-  if (auto pdgID{track->GetParticleDefinition()->GetPDGEncoding()};
-      pdgID != 11) {
+  if (auto pdg_id{track->GetParticleDefinition()->GetPDGEncoding()};
+      pdg_id != 11) {
     return;
   }
 
   // Only process the primary electron track
-  int parentID{step->GetTrack()->GetParentID()};
-  if (parentID != 0) {
+  int parent_id{step->GetTrack()->GetParentID()};
+  if (parent_id != 0) {
     return;
   }
 
@@ -52,8 +52,8 @@ void NonFiducialFilter::stepping(const G4Step* step) {
   auto volume{phys_vol ? phys_vol->GetLogicalVolume() : nullptr};
 
   // Check if the track is tagged.
-  auto electronCheck{simcore::UserTrackInformation::get(track)};
-  if (electronCheck->isRecoilElectron() == true) {
+  auto electron_check{simcore::UserTrackInformation::get(track)};
+  if (electron_check->isRecoilElectron() == true) {
     if (track->GetMomentum().mag() > recoil_max_p_) {
       // Kill the track if its momemntum is too high
       track->SetTrackStatus(fKillTrackAndSecondaries);
@@ -71,14 +71,14 @@ void NonFiducialFilter::stepping(const G4Step* step) {
       track->SetTrackStatus(fKillTrackAndSecondaries);
       G4RunManager::GetRunManager()->AbortEvent();
       ldmx_log(debug) << ">> This event is fiducial, exiting";
-      nonFiducial_ = false;
+      non_fiducial = false;
       return;
     }
     // I comment the following debug out since it would print per step and it's
     // hard to read but it could be otherwise useful if somebody wants to do a
     // step-by-step debugging ldmx_log(debug) << "  >> In this step this is
     // non-fiducial, keeping it so far";
-    nonFiducial_ = true;
+    non_fiducial = true;
     return;
   } else {
     // Check if the particle enters the recoil tracker.
@@ -91,8 +91,8 @@ void NonFiducialFilter::stepping(const G4Step* step) {
       /* Tag the tracks that:
        1) Have a recoil electron
        2) Enter/Exit the Target */
-      auto trackInfo{simcore::UserTrackInformation::get(track)};
-      trackInfo->tagRecoilElectron();  // tag the target recoil electron
+      auto track_info{simcore::UserTrackInformation::get(track)};
+      track_info->tagRecoilElectron();  // tag the target recoil electron
       ldmx_log(debug) << "  >> This track is the recoil electron, tagging it";
       return;
     }
@@ -100,7 +100,7 @@ void NonFiducialFilter::stepping(const G4Step* step) {
 }
 
 void NonFiducialFilter::EndOfEventAction(const G4Event*) {
-  if (nonFiducial_) {
+  if (non_fiducial) {
     ldmx_log(debug) << "  >> This event is non-fiducial in ECAL, keeping it";
   } else {
     ldmx_log(debug) << ">> This event is fiducial, exiting";

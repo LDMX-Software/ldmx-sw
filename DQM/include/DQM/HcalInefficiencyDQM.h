@@ -32,7 +32,7 @@ class HcalInefficiencyAnalyzer : public framework::Analyzer {
   void configure(framework::config::Parameters &parameters) override;
 
   bool hitPassesVeto(const ldmx::HcalHit &hit, int section) {
-    if (hit.getPE() < pe_veto_threshold || hit.getTime() > max_hit_time_) {
+    if (hit.getPE() < pe_veto_threshold_ || hit.getTime() > max_hit_time_) {
       return true;
     }
     if (section == ldmx::HcalID::HcalSection::BACK && hit.getMinPE() < 1) {
@@ -44,13 +44,13 @@ class HcalInefficiencyAnalyzer : public framework::Analyzer {
   void analyze(const framework::Event &event) override;
 
  private:
-  std::string hcalSimHitsCollection_{"HcalSimHits"};
-  std::string hcalRecHitsCollection_{"HcalRecHits"};
-  std::string hcalSimHitsPassName_{""};
-  std::string hcalRecHitsPassName_{""};
+  std::string hcal_sim_hits_collection_{"HcalSimHits"};
+  std::string hcal_rec_hits_collection_{"HcalRecHits"};
+  std::string hcal_sim_hits_pass_name_{""};
+  std::string hcal_rec_hits_pass_name_{""};
 
   // Veto threshold for photo-electrons
-  float pe_veto_threshold;
+  float pe_veto_threshold_;
   double max_hit_time_;
 };
 

@@ -27,8 +27,8 @@ class EcalAbstractID : public DetectorID {
     Special = 7           // common-mode, calibration cells, etc
   };
 
-  static const RawValue CELL_TYPE_MASK{
-      0x7};  // space for up to eight cell types
+  // space for up to eight cell types
+  static const RawValue CELL_TYPE_MASK{0x7};
   static const RawValue CELL_TYPE_SHIFT{23};
   static const RawValue ECAL_PAYLOAD_MASK{0x007FFFFF};
 
@@ -64,17 +64,18 @@ class EcalAbstractID : public DetectorID {
    * Get the value of the cell field from the ID.
    * @return The value of the cell field.
    */
-  int cell_type() const { return (id_ >> CELL_TYPE_SHIFT) & CELL_TYPE_MASK; }
+  int cellType() const { return (id_ >> CELL_TYPE_SHIFT) & CELL_TYPE_MASK; }
 
   /**
    * Get the value of the payload field from the ID.
    * @return The value of the payload field.
    */
   int payload() const { return id_ & ECAL_PAYLOAD_MASK; }
+
+  friend std::ostream& operator<<(std::ostream& s,
+                                  const ldmx::EcalAbstractID& id);
 };
 
 }  // namespace ldmx
-
-std::ostream& operator<<(std::ostream& s, const ldmx::EcalAbstractID& id);
 
 #endif

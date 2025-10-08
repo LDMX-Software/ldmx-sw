@@ -60,12 +60,12 @@ class StackingAction : public G4UserStackingAction {
    * @param action  User action of type StackingAction
    */
   void registerAction(std::shared_ptr<UserAction> stackingAction) {
-    stackingActions_.push_back(stackingAction);
+    stacking_actions_.push_back(stackingAction);
   }
 
  private:
   /// Collection of user stacking actions
-  std::vector<std::shared_ptr<UserAction>> stackingActions_;
+  std::vector<std::shared_ptr<UserAction>> stacking_actions_;
 
 };  // StackingAction
 

@@ -49,19 +49,19 @@ class HcalWABVetoProcessor : public framework::Producer {
 
  private:
   // Maximum sum of total ECAL and HCAL energy
-  double maxtotalEnergyCompare_{1000.};
+  double maxtotal_energy_compare_{1000.};
   // Minimum sum of total ECAL and HCAL energy
-  double mintotalEnergyCompare_{0.};
+  double mintotal_energy_compare_{0.};
   // Maximum number of clusters in an event
-  double maxnClusters_{0.};
+  double maxn_clusters_{0.};
   // Maximum allowed mean average number of hits in the event's clusters
-  double maxMeanHitsPerCluster_{0.};
+  double max_mean_hits_per_cluster_{0.};
   // Maimum allowed mean average energy in event's clusters
-  double maxMeanEnergyPerCluster_{0.};
-  std::string outputCollName_;
-  std::string inputHCALClusterCollName_;
-  std::string inputHCALHitCollName_;
-  std::string inputECALHitCollName_;
+  double max_mean_energy_per_cluster_{0.};
+  std::string output_coll_name_;
+  std::string input_hcal_cluster_coll_name_;
+  std::string input_hcal_hit_coll_name_;
+  std::string input_ecal_hit_coll_name_;
   std::string hcal_hit_passname_;
   std::string ecal_hit_passname_;
   std::string hcal_cluster_passname_;

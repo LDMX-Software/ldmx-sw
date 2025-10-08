@@ -229,7 +229,7 @@ BOOST_PYTHON_MODULE(libDetDescr) {
                        "hits like scoring planes",
                        init<>(args("self"), "Empty id (but not null!)"))
       .def(init<RawValue>("Create from raw number", args("self", "rawid")))
-      .def("ScoringPlaneID", &SimSpecialID::ScoringPlaneID,
+      .def("ScoringPlaneID", &SimSpecialID::scoringPlaneId,
            "Create a scoring id from pieces", args("plane"))
       .staticmethod("ScoringPlaneID")
       .def("plane", &SimSpecialID::plane,

@@ -9,7 +9,7 @@ void copyHit2(Hit One, Hit Two);
 void hitproducer_ref(ap_uint<14> FIFO[NHITS][5], Hit outHit[NHITS],
                      ap_uint<8> Peds[NHITS]);
 #endif
-void hitproducer_hw(ap_uint<14> FIFO[NHITS][5], Hit outHit[NHITS],
-                    ap_uint<8> Peds[NHITS]);
+void hitproducerHw(ap_uint<14> FIFO[NHITS][5], Hit outHit[NHITS],
+                   ap_uint<8> Peds[NHITS]);
 
 #endif

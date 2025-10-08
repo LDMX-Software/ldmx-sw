@@ -36,12 +36,12 @@ class SimTrackerHit {
   /**
    * Print a description of this object.
    */
-  void Print() const;
+  friend std::ostream &operator<<(std::ostream &o, const SimTrackerHit &d);
 
   /**
    * Reset the SimTrackerHit object.
    */
-  void Clear();
+  void clear();
 
   /**
    * Get the detector ID of the hit.
@@ -53,14 +53,14 @@ class SimTrackerHit {
    * Get the geometric layer ID of the hit.
    * @return The layer ID of the hit.
    */
-  int getLayerID() const { return layerID_; };
+  int getLayerID() const { return layer_id_; };
 
   /**
    * Get the module ID associated with a hit.  This is used to
-   * uniquely identify a sensor within a layer.
+   * uniquely identify a sensor within a layer_.
    * @return The module ID associated with a hit.
    */
-  int getModuleID() const { return moduleID_; };
+  int getModuleID() const { return module_id_; };
 
   /**
    * Get the XYZ position of the hit [mm].
@@ -91,7 +91,7 @@ class SimTrackerHit {
    * hit [mm].
    * @return The path length of the hit.
    */
-  float getPathLength() const { return pathLength_; };
+  float getPathLength() const { return path_length_; };
 
   /**
    * Get the XYZ momentum of the particle at the position at which
@@ -104,13 +104,13 @@ class SimTrackerHit {
    * Get the Sim particle track ID of the hit.
    * @return The Sim particle track ID of the hit.
    */
-  int getTrackID() const { return trackID_; };
+  int getTrackID() const { return track_id_; };
 
   /**
    * Get the Sim particle track ID of the hit.
    * @return The Sim particle track ID of the hit.
    */
-  int getPdgID() const { return pdgID_; };
+  int getPdgID() const { return pdg_id_; };
 
   /**
    * Set the detector ID of the hit.
@@ -122,22 +122,22 @@ class SimTrackerHit {
    * Set the geometric layer ID of the hit.
    * @param layerID The layer ID of the hit.
    */
-  void setLayerID(const int layerID) { this->layerID_ = layerID; };
+  void setLayerID(const int layerID) { this->layer_id_ = layerID; };
 
   /**
    * Set the module ID associated with a hit.  This is used to
-   * uniquely identify a sensor within a layer.
+   * uniquely identify a sensor within a layer_.
    * @return moduleID The module ID associated with a hit.
    */
-  void setModuleID(const int moduleID) { this->moduleID_ = moduleID; };
+  void setModuleID(const int moduleID) { this->module_id_ = moduleID; };
 
   /**
    * Set the position of the hit [mm].
-   * @param x The X position.
-   * @param y The Y position.
-   * @param z The Z position.
+   * @param x_ The X position.
+   * @param y_ The Y position.
+   * @param z_ The Z position.
    */
-  void setPosition(const float x, const float y, const float z);
+  void setPosition(const float x_, const float y_, const float z_);
 
   /**
    * Set the energy deposited on the hit [MeV].
@@ -162,7 +162,7 @@ class SimTrackerHit {
    * @param pathLength The path length of the hit.
    */
   void setPathLength(const float pathLength) {
-    this->pathLength_ = pathLength;
+    this->path_length_ = pathLength;
   };
 
   /**
@@ -178,13 +178,13 @@ class SimTrackerHit {
    * Set the Sim particle track ID of the hit.
    * @return The Sim particle track ID of the hit.
    */
-  void setTrackID(const int simTrackID) { this->trackID_ = simTrackID; };
+  void setTrackID(const int simTrackID) { this->track_id_ = simTrackID; };
 
   /**
    * Set the Sim particle track ID of the hit.
    * @return The Sim particle track ID of the hit.
    */
-  void setPdgID(const int simPdgID) { this->pdgID_ = simPdgID; };
+  void setPdgID(const int simPdgID) { this->pdg_id_ = simPdgID; };
 
   /**
    * Sort by time of hit
@@ -202,10 +202,10 @@ class SimTrackerHit {
   /**
    * The layer ID.
    */
-  int layerID_{0};
+  int layer_id_{0};
 
   /** The module ID. */
-  int moduleID_{0};
+  int module_id_{0};
 
   /**
    * The energy deposited on the hit.
@@ -255,22 +255,22 @@ class SimTrackerHit {
   /**
    * The path length of the hit.
    */
-  float pathLength_{0};
+  float path_length_{0};
 
   /**
    * The Sim Track ID.
    */
-  int trackID_{0};
+  int track_id_{0};
 
   /**
    * The Sim PDG ID.
    */
-  int pdgID_{0};
+  int pdg_id_{0};
 
   /**
    * The ROOT class definition.
    */
-  ClassDef(SimTrackerHit, 3);
+  ClassDef(SimTrackerHit, 4);
 
 };  // SimTrackerHit
 }  // namespace ldmx

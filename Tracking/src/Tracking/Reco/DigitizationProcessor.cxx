@@ -19,18 +19,17 @@ void DigitizationProcessor::onProcessStart() {
 void DigitizationProcessor::configure(
     framework::config::Parameters& parameters) {
   hit_collection_ =
-      parameters.getParameter<std::string>("hit_collection", "TaggerSimHits");
+      parameters.get<std::string>("hit_collection", "TaggerSimHits");
 
-  tracker_hit_passname_ =
-      parameters.getParameter<std::string>("tracker_hit_passname");
-  out_collection_ = parameters.getParameter<std::string>("out_collection",
-                                                         "OutputMeasuements");
-  min_e_dep_ = parameters.getParameter<double>("min_e_dep", 0.05);
-  track_id_ = parameters.getParameter<int>("track_id", -1);
-  do_smearing_ = parameters.getParameter<bool>("do_smearing", true);
-  sigma_u_ = parameters.getParameter<double>("sigma_u", 0.01);
-  sigma_v_ = parameters.getParameter<double>("sigma_v", 0.);
-  merge_hits_ = parameters.getParameter<bool>("merge_hits", false);
+  tracker_hit_passname_ = parameters.get<std::string>("tracker_hit_passname");
+  out_collection_ =
+      parameters.get<std::string>("out_collection", "OutputMeasuements");
+  min_e_dep_ = parameters.get<double>("min_e_dep", 0.05);
+  track_id_ = parameters.get<int>("track_id", -1);
+  do_smearing_ = parameters.get<bool>("do_smearing", true);
+  sigma_u_ = parameters.get<double>("sigma_u", 0.01);
+  sigma_v_ = parameters.get<double>("sigma_v", 0.);
+  merge_hits_ = parameters.get<bool>("merge_hits", false);
 }
 
 void DigitizationProcessor::onNewRun(const ldmx::RunHeader& runHeader) {
@@ -62,7 +61,7 @@ void DigitizationProcessor::produce(framework::Event& event) {
   event.add(out_collection_, measurements);
 }
 
-// This method merges hits that have the same track_id on the same layer.
+// This method merges hits that have the same track_id on the same layer_.
 // The energy of the merged hit is the sum of the energy of the single sub-hits
 // The position/momentum of the merged hit is the energy-weighted average
 // sihits = vector of hits to merge
@@ -78,52 +77,53 @@ bool DigitizationProcessor::mergeHits(
     return true;
   }
 
-  ldmx::SimTrackerHit mergedHit;
-  // Since all the hits will be on the same sensor, just use the ID of the first
-  mergedHit.setLayerID(sihits[0].getLayerID());
-  mergedHit.setModuleID(sihits[0].getModuleID());
-  mergedHit.setID(sihits[0].getID());
-  mergedHit.setTrackID(sihits[0].getTrackID());
+  ldmx::SimTrackerHit merged_hit;
+  // Since all the hits will be on the same sensor, just use the ID of the
+  // first
+  merged_hit.setLayerID(sihits[0].getLayerID());
+  merged_hit.setModuleID(sihits[0].getModuleID());
+  merged_hit.setID(sihits[0].getID());
+  merged_hit.setTrackID(sihits[0].getTrackID());
 
-  double X{0}, Y{0}, Z{0}, PX{0}, PY{0}, PZ{0};
-  double T{0}, E{0}, EDEP{0}, path{0};
-  int pdgID{0};
+  double x{0}, y{0}, z{0}, px{0}, py{0}, pz{0};
+  double t{0}, e{0}, edep{0}, path{0};
+  int pdg_id{0};
 
-  pdgID = sihits[0].getPdgID();
+  pdg_id = sihits[0].getPdgID();
 
   for (auto hit : sihits) {
     double edep_hit = hit.getEdep();
-    EDEP += edep_hit;
-    E += hit.getEnergy();
-    T += edep_hit * hit.getTime();
-    X += edep_hit * hit.getPosition()[0];
-    Y += edep_hit * hit.getPosition()[1];
-    Z += edep_hit * hit.getPosition()[2];
-    PX += edep_hit * hit.getMomentum()[0];
-    PY += edep_hit * hit.getMomentum()[1];
-    PZ += edep_hit * hit.getMomentum()[2];
+    edep += edep_hit;
+    e += hit.getEnergy();
+    t += edep_hit * hit.getTime();
+    x += edep_hit * hit.getPosition()[0];
+    y += edep_hit * hit.getPosition()[1];
+    z += edep_hit * hit.getPosition()[2];
+    px += edep_hit * hit.getMomentum()[0];
+    py += edep_hit * hit.getMomentum()[1];
+    pz += edep_hit * hit.getMomentum()[2];
     path += edep_hit * hit.getPathLength();
 
-    if (hit.getPdgID() != pdgID) {
+    if (hit.getPdgID() != pdg_id) {
       ldmx_log(error)
           << "ERROR:: Found hits with compatible sensorID and track_id "
              "but different PDGID";
       ldmx_log(error) << "TRACKID ==" << hit.getTrackID() << " vs "
                       << sihits[0].getTrackID();
-      ldmx_log(error) << "PDGID== " << hit.getPdgID() << " vs " << pdgID;
+      ldmx_log(error) << "PDGID== " << hit.getPdgID() << " vs " << pdg_id;
       return false;
     }
   }
 
-  mergedHit.setTime(T / EDEP);
-  mergedHit.setPosition(X / EDEP, Y / EDEP, Z / EDEP);
-  mergedHit.setMomentum(PX / EDEP, PY / EDEP, PZ / EDEP);
-  mergedHit.setPathLength(path / EDEP);
-  mergedHit.setEnergy(E);
-  mergedHit.setEdep(EDEP);
-  mergedHit.setPdgID(pdgID);
+  merged_hit.setTime(t / edep);
+  merged_hit.setPosition(x / edep, y / edep, z / edep);
+  merged_hit.setMomentum(px / edep, py / edep, pz / edep);
+  merged_hit.setPathLength(path / edep);
+  merged_hit.setEnergy(e);
+  merged_hit.setEdep(edep);
+  merged_hit.setPdgID(pdg_id);
 
-  mergedHits.push_back(mergedHit);
+  mergedHits.push_back(merged_hit);
 
   return true;
 }
@@ -131,7 +131,7 @@ bool DigitizationProcessor::mergeHits(
 bool DigitizationProcessor::mergeSimHits(
     const std::vector<ldmx::SimTrackerHit>& sim_hits,
     std::vector<ldmx::SimTrackerHit>& merged_hits) {
-  // The first key is the index of the sensitive element ID, second key is the
+  // The first key is the index_ of the sensitive element ID, second key is the
   // track_id
   std::map<int, std::map<int, std::vector<ldmx::SimTrackerHit>>> hitmap;
 
@@ -158,8 +158,13 @@ bool DigitizationProcessor::mergeSimHits(
   ldmx_log(debug) << "Sim_hits Size = " << sim_hits.size()
                   << " Merged_hits Size = " << merged_hits.size();
 
-  // for (const auto& hit : sim_hits) hit.Print();
-  // for (const auto& mhit : merged_hits) mhit.Print();
+  for (const auto& hit : sim_hits) {
+    ldmx_log(trace) << hit;
+  }
+
+  for (const auto& mhit : merged_hits) {
+    ldmx_log(trace) << mhit;
+  }
 
   return true;
 }
@@ -185,7 +190,7 @@ std::vector<ldmx::Measurement> DigitizationProcessor::digitizeHits(
 
       ldmx::Measurement measurement(sim_hit);
 
-      // Get the layer ID.
+      // Get the layer_ ID.
       auto layer_id = tracking::sim::utils::getSensorID(sim_hit);
       measurement.setLayerID(layer_id);
 
@@ -197,8 +202,8 @@ std::vector<ldmx::Measurement> DigitizationProcessor::digitizeHits(
         // hit_surface->toStream(geometry_context(), std::cout);
         ldmx_log(trace)
             << "Local to global\n"
-            << hit_surface->transform(geometry_context()).rotation() << "\n"
-            << hit_surface->transform(geometry_context()).translation();
+            << hit_surface->transform(geometryContext()).rotation() << "\n"
+            << hit_surface->transform(geometryContext()).translation();
 
         Acts::Vector3 dummy_momentum;
         Acts::Vector2 local_pos;
@@ -210,7 +215,7 @@ std::vector<ldmx::Measurement> DigitizationProcessor::digitizeHits(
 
         try {
           local_pos = hit_surface
-                          ->globalToLocal(geometry_context(), global_pos,
+                          ->globalToLocal(geometryContext(), global_pos,
                                           dummy_momentum, surface_thickness)
                           .value();
         } catch (const std::exception& e) {
@@ -232,7 +237,7 @@ std::vector<ldmx::Measurement> DigitizationProcessor::digitizeHits(
 
           // transform to global
           auto transf_global_pos{hit_surface->localToGlobal(
-              geometry_context(), local_pos, dummy_momentum)};
+              geometryContext(), local_pos, dummy_momentum)};
           measurement.setGlobalPosition(measurement.getGlobalPosition()[0],
                                         transf_global_pos(1),
                                         transf_global_pos(2));

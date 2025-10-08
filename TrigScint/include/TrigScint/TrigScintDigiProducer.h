@@ -68,35 +68,35 @@ class TrigScintDigiProducer : public framework::Producer {
   std::mt19937 rng_;
 
   /// Generate noise hits given the number of channels and mean noise.
-  std::unique_ptr<ldmx::NoiseGenerator> noiseGenerator_{nullptr};
+  std::unique_ptr<ldmx::NoiseGenerator> noise_generator_{nullptr};
 
   /// Name of the input collection containing the sim hits
-  std::string inputCollection_;
+  std::string input_collection_;
 
   /// Name of the pass that the input collection is on (empty string means take
   /// any pass)
-  std::string inputPassName_;
+  std::string input_pass_name_;
 
   /// Name of the output collection that will be used to stored the
   /// digitized trigger scintillator hits
-  std::string outputCollection_;
+  std::string output_collection_;
 
   std::string sim_particles_passname_;
 
   /// Number of strips per array
-  int stripsPerArray_{50};
+  int strips_per_array_{50};
 
   /// Number of arrays
-  int numberOfArrays_{3};
+  int number_of_arrays_{3};
 
   /// Mean readout noise
-  double meanNoise_{0};
+  double mean_noise_{0};
 
   /// Total MeV per MIP
-  double mevPerMip_{1.40};
+  double mev_per_mip_{1.40};
 
   /// Total number of photoelectrons per MIP
-  double pePerMip_{13.5};
+  double pe_per_mip_{13.5};
 };
 
 }  // namespace trigscint

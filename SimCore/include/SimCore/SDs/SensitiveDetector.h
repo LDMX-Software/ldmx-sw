@@ -97,7 +97,7 @@ class SensitiveDetector : public G4VSensitiveDetector {
   /**
    * Cleanup SD and prepare a new-event state.
    */
-  virtual void OnFinishedEvent() = 0;
+  virtual void onFinishedEvent() = 0;
 
   /**
    * Record the configuration of this detector into the run header.

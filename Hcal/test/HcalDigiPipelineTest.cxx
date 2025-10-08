@@ -47,12 +47,12 @@ static const double MAX_PE_ERROR_DAQ = 40;
 static const double MAX_PE_PERCENT_ERROR_DAQ = 0.4;
 
 /**
- * Number of sim hits to create.
+ * Number of sim hits_ to create.
  *
  * In this test, we create one sim hit per event,
  * run it through the digi pipeline, and then
  * check it. This parameter tells us how many
- * sim hits to create and then (combined with
+ * sim hits_ to create and then (combined with
  * the parameters of HcalFakeSimHits), we know
  * how "fine-grained" the test is.
  */
@@ -63,16 +63,16 @@ static const int NUM_TEST_SIM_HITS = 1000;
  * the input energy/position is "close enough" to the truth
  * energy/position.
  */
-class isCloseEnough : public Catch::Matchers::MatcherBase<double> {
+class IsCloseEnough : public Catch::Matchers::MatcherBase<double> {
  private:
   /// correct (sim-level)
   double truth_;
 
   /// maximum absolute difference
-  const double max_absolute_diff_;
+  const double MAX_ABSOLUTE_DIFF;
 
   /// maximum relative difference
-  const double max_relative_diff_;
+  const double MAX_RELATIVE_DIFF;
 
  public:
   /**
@@ -80,11 +80,11 @@ class isCloseEnough : public Catch::Matchers::MatcherBase<double> {
    *
    * Sets the truth level
    */
-  isCloseEnough(double const &truth, double const &abs_diff,
+  IsCloseEnough(double const &truth, double const &abs_diff,
                 double const &rel_diff)
       : truth_{truth},
-        max_absolute_diff_{abs_diff},
-        max_relative_diff_{rel_diff} {}
+        MAX_ABSOLUTE_DIFF{abs_diff},
+        MAX_RELATIVE_DIFF{rel_diff} {}
 
   /**
    * Performs the test for this matcher
@@ -94,8 +94,8 @@ class isCloseEnough : public Catch::Matchers::MatcherBase<double> {
    * difference.
    */
   bool match(const double &daq) const override {
-    return (daq == Approx(truth_).epsilon(max_relative_diff_) or
-            daq == Approx(truth_).margin(max_absolute_diff_));
+    return (daq == Approx(truth_).epsilon(MAX_RELATIVE_DIFF) or
+            daq == Approx(truth_).margin(MAX_ABSOLUTE_DIFF));
   }
 
   /**
@@ -103,8 +103,8 @@ class isCloseEnough : public Catch::Matchers::MatcherBase<double> {
    */
   virtual std::string describe() const override {
     std::ostringstream ss;
-    ss << "is within an absolute difference of " << max_absolute_diff_
-       << " OR a relative difference of " << max_relative_diff_ << " with "
+    ss << "is within an absolute difference of " << MAX_ABSOLUTE_DIFF
+       << " OR a relative difference of " << MAX_RELATIVE_DIFF << " with "
        << truth_;
     return ss.str();
   }
@@ -114,7 +114,7 @@ class isCloseEnough : public Catch::Matchers::MatcherBase<double> {
  * @class FakeSimHits
  *
  * Fills the event bus with an HcalSimHits collection with
- * a range of energy hits. These hits are put into unique
+ * a range of energy hits_. These hits_ are put into unique
  * bars so that we can compare them to the correct energy
  * in one event.
  */
@@ -124,22 +124,22 @@ class HcalFakeSimHits : public framework::Producer {
    */
   // Based on the current gain settings for the ADC readout mode
   // we will reach saturation ~ 20 MeV ~ 290 PEs
-  const double maxEnergy_ = 200 * PE_ENERGY;  // ~ 13 MeV
+  const double MAX_ENERGY = 200 * PE_ENERGY;  // ~ 13 MeV
 
   /**
    * Minimum energy to make a sim hit for [MeV]
    * Needs to be above readout threshold (after internal HcalDigi's calculation)
    */
-  const double minEnergy_ = 4 * PE_ENERGY;
+  const double MIN_ENERGY = 4 * PE_ENERGY;
   /**
    * The step between energies is calculated depending on the min, max energy
-   * and the total number of sim hits you desire.
+   * and the total number of sim hits_ you desire.
    * [MeV]
    */
-  const double energyStep_ = (maxEnergy_ - minEnergy_) / NUM_TEST_SIM_HITS;
+  const double ENERGY_STEP = (MAX_ENERGY - MIN_ENERGY) / NUM_TEST_SIM_HITS;
 
   /// current energy of the sim hit we are on
-  double currEnergy_ = minEnergy_;
+  double curr_energy_ = MIN_ENERGY;
 
  public:
   HcalFakeSimHits(const std::string &name, framework::Process &p)
@@ -152,26 +152,26 @@ class HcalFakeSimHits : public framework::Producer {
 
   void produce(framework::Event &event) final override {
     // put in a single sim hit
-    std::vector<ldmx::SimCalorimeterHit> pretendSimHits(1);
+    std::vector<ldmx::SimCalorimeterHit> pretend_sim_hits(1);
 
-    // We hard-code the position of one hit: back hcal, layer 1, strip 31
+    // We hard-code the position of one hit: back hcal, layer_ 1, strip 31
     // This real simHit position is obtained by looking at calorimeter
     // SimHits of a 4 GeV muon shoot through the beamline
     ldmx::HcalID id(0, 1, 31);
-    pretendSimHits[0].setPosition(-6.70265, 3.70265, 879);  // mm
-    pretendSimHits[0].setID(id.raw());
-    pretendSimHits[0].addContrib(
-        -1,           // incidentID
-        -1,           // trackID
-        0,            // pdg ID
-        currEnergy_,  // edep
+    pretend_sim_hits[0].setPosition(-6.70265, 3.70265, 879);  // mm
+    pretend_sim_hits[0].setID(id.raw());
+    pretend_sim_hits[0].addContrib(
+        -1,            // incidentID
+        -1,            // trackID
+        0,             // pdg ID
+        curr_energy_,  // edep
         2.96628  // time - 299mm is about 1ns from target and in middle of HCal
     );
 
     // needs to be correct collection name
     // REQUIRE_NOTHROW(event.add("HcalSimHits", pretendSimHits));
-    REQUIRE_NOTHROW(event.add("HcalFakeSimHits", pretendSimHits));
-    currEnergy_ += energyStep_;
+    REQUIRE_NOTHROW(event.add("HcalFakeSimHits", pretend_sim_hits));
+    curr_energy_ += ENERGY_STEP;
 
     return;
   }
@@ -192,7 +192,7 @@ class HcalFakeSimHits : public framework::Producer {
 class HcalCheckReconstruction : public framework::Analyzer {
   // save ntuple? False by default because if ntuplizer is on, the HcalGeometry
   // test cannot be run
-  const bool save_ = false;
+  const bool SAVE = false;
 
  private:
   std::string hcal_fake_sim_hits_passname_;
@@ -212,7 +212,7 @@ class HcalCheckReconstruction : public framework::Analyzer {
   }
 
   void onProcessStart() final override {
-    if (save_) {
+    if (SAVE) {
       getHistoDirectory();
       ntuple_.create("HcalDigiTest");
       ntuple_.addVar<float>("HcalDigiTest", "SimEnergy");
@@ -233,43 +233,43 @@ class HcalCheckReconstruction : public framework::Analyzer {
   }
 
   void analyze(const framework::Event &event) final override {
-    const auto simHits = event.getCollection<ldmx::SimCalorimeterHit>(
+    const auto sim_hits = event.getCollection<ldmx::SimCalorimeterHit>(
         "HcalFakeSimHits", hcal_fake_sim_hits_passname_);
 
-    REQUIRE(simHits.size() == 1);
+    REQUIRE(sim_hits.size() == 1);
 
-    float truth_energy = simHits.at(0).getEdep();
+    float truth_energy = sim_hits.at(0).getEdep();
 
-    if (save_) {
+    if (SAVE) {
       ntuple_.setVar<float>("SimEnergy", truth_energy);
-      ntuple_.setVar<float>("SimX", simHits.at(0).getPosition()[0]);
-      ntuple_.setVar<float>("SimY", simHits.at(0).getPosition()[1]);
-      ntuple_.setVar<float>("SimZ", simHits.at(0).getPosition()[2]);
-      ntuple_.setVar<float>("SimTime", simHits.at(0).getContrib(0).time);
+      ntuple_.setVar<float>("SimX", sim_hits.at(0).getPosition()[0]);
+      ntuple_.setVar<float>("SimY", sim_hits.at(0).getPosition()[1]);
+      ntuple_.setVar<float>("SimZ", sim_hits.at(0).getPosition()[2]);
+      ntuple_.setVar<float>("SimTime", sim_hits.at(0).getContrib(0).time_);
     }
 
-    const auto daqDigis{event.getObject<ldmx::HgcrocDigiCollection>(
+    const auto daq_digis{event.getObject<ldmx::HgcrocDigiCollection>(
         "HcalDigis", hcal_digis_passname_)};
-    auto daqDigi = daqDigis.getDigi(0);
-    bool is_in_adc_mode = daqDigi.isADC();
+    auto daq_digi = daq_digis.getDigi(0);
+    bool is_in_adc_mode = daq_digi.isADC();
 
-    if (save_) {
-      ntuple_.setVar<int>("DaqDigi", daqDigi.soi().raw());
+    if (SAVE) {
+      ntuple_.setVar<int>("DaqDigi", daq_digi.soi().raw());
       ntuple_.setVar<int>("DaqDigiIsADC", is_in_adc_mode);
-      ntuple_.setVar<int>("DaqDigiADC", daqDigi.soi().adc_t());
-      ntuple_.setVar<int>("DaqDigiTOT", daqDigi.tot());
+      ntuple_.setVar<int>("DaqDigiADC", daq_digi.soi().adcT());
+      ntuple_.setVar<int>("DaqDigiTOT", daq_digi.tot());
     }
 
-    const auto recHits = event.getCollection<ldmx::HcalHit>(
+    const auto rec_hits = event.getCollection<ldmx::HcalHit>(
         "HcalRecHits", hcal_rec_hits_passname_);
-    CHECK(recHits.size() == 1);
+    CHECK(rec_hits.size() == 1);
 
-    auto hit = recHits.at(0);
+    auto hit = rec_hits.at(0);
     ldmx::HcalID id(hit.getID());
     CHECK_FALSE(hit.isNoise());
-    CHECK(id.raw() == simHits.at(0).getID());
+    CHECK(id.raw() == sim_hits.at(0).getID());
 
-    if (save_) {
+    if (SAVE) {
       ntuple_.setVar<float>("RecX", hit.getXPos());
       ntuple_.setVar<float>("RecY", hit.getYPos());
       ntuple_.setVar<float>("RecZ", hit.getZPos());
@@ -280,7 +280,7 @@ class HcalCheckReconstruction : public framework::Analyzer {
 
     // define target pe by using the settings at the top
     double daq_pe{hit.getPE()};
-    CHECK_THAT(daq_pe, isCloseEnough(truth_energy / PE_ENERGY, MAX_PE_ERROR_DAQ,
+    CHECK_THAT(daq_pe, IsCloseEnough(truth_energy / PE_ENERGY, MAX_PE_ERROR_DAQ,
                                      MAX_PE_PERCENT_ERROR_DAQ));
 
     // std::cout << "rec energy " << hit.getEnergy() << " * approx sampl
@@ -299,7 +299,7 @@ class HcalCheckReconstruction : public framework::Analyzer {
             truth_pos = simHits.at(0).getPosition()[1];
             rec_pos = hit.getYPos();
           }
-          // std::cout << "rec pos " << rec_pos << " truth " << truth_pos <<
+          // std::cout << "rec pos_ " << rec_pos << " truth " << truth_pos <<
           // std::endl;
           // comment position check for now
           // CHECK_THAT(rec_pos, isCloseEnough(truth_pos,

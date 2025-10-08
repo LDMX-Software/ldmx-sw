@@ -30,20 +30,18 @@ PrimaryGeneratorAction::PrimaryGeneratorAction(
     const framework::config::Parameters& parameters)
     : G4VUserPrimaryGeneratorAction() {
   // Check whether a beamspot should be used or not.
-  auto beamSpot{
-      parameters.getParameter<std::vector<double> >("beamSpotSmear", {})};
-  if (!beamSpot.empty()) {
-    useBeamspot_ = true;
-    beamspotXSize_ = beamSpot[0];
-    beamspotYSize_ = beamSpot[1];
-    beamspotZSize_ = beamSpot[2];
+  auto beam_spot{parameters.get<std::vector<double> >("beamSpotSmear", {})};
+  if (!beam_spot.empty()) {
+    use_beamspot_ = true;
+    beamspot_x_size_ = beam_spot[0];
+    beamspot_y_size_ = beam_spot[1];
+    beamspot_z_size_ = beam_spot[2];
   }
 
-  time_shift_primaries_ = parameters.getParameter<bool>("time_shift_primaries");
+  time_shift_primaries_ = parameters.get<bool>("time_shift_primaries");
 
-  auto generators{
-      parameters.getParameter<std::vector<framework::config::Parameters> >(
-          "generators", {})};
+  auto generators{parameters.get<std::vector<framework::config::Parameters> >(
+      "generators", {})};
   if (generators.empty()) {
     EXCEPTION_RAISE("MissingGenerator",
                     "Need to define some generator of primaries.");
@@ -51,11 +49,11 @@ PrimaryGeneratorAction::PrimaryGeneratorAction(
 
   for (auto& generator : generators) {
     if (not PrimaryGenerator::Factory::get().make(
-            generator.getParameter<std::string>("class_name"),
-            generator.getParameter<std::string>("instance_name"), generator)) {
+            generator.get<std::string>("class_name"),
+            generator.get<std::string>("instance_name"), generator)) {
       EXCEPTION_RAISE("UnableToCreate",
                       "Unable to create a PrimaryGenerator of type " +
-                          generator.getParameter<std::string>("class_name"));
+                          generator.get<std::string>("class_name"));
     }
   }
 }
@@ -83,11 +81,11 @@ void PrimaryGeneratorAction::GeneratePrimaries(G4Event* event) {
   });
 
   // smear all primary vertices (if activated)
-  int nPV = event->GetNumberOfPrimaryVertex();
-  if (nPV > 0) {
+  int n_pv = event->GetNumberOfPrimaryVertex();
+  if (n_pv > 0) {
     // loop over all vertices generated
-    for (int iPV = 0; iPV < nPV; ++iPV) {
-      G4PrimaryVertex* primary_vertex = event->GetPrimaryVertex(iPV);
+    for (int i_pv = 0; i_pv < n_pv; ++i_pv) {
+      G4PrimaryVertex* primary_vertex = event->GetPrimaryVertex(i_pv);
 
       if (not primary_vertex) {
         EXCEPTION_RAISE(
@@ -116,8 +114,8 @@ void PrimaryGeneratorAction::GeneratePrimaries(G4Event* event) {
           primary->SetUserInformation(primary_info);
         }  // check if primaryinfo is defined
 
-        int hepStatus = primary_info->getHepEvtStatus();
-        if (hepStatus <= 0) {
+        int hep_status = primary_info->getHepEvtStatus();
+        if (hep_status <= 0) {
           // undefined hepStatus ==> set to 1
           primary_info->setHepEvtStatus(1);
         }  // check if hepStatus defined
@@ -128,7 +126,7 @@ void PrimaryGeneratorAction::GeneratePrimaries(G4Event* event) {
       event_info->incWeight(primary_vertex->GetWeight());
 
       // smear beamspot if it is turned on
-      if (useBeamspot_) {
+      if (use_beamspot_) {
         double x0_i = primary_vertex->GetX0();
         double y0_i = primary_vertex->GetY0();
         double z0_i = primary_vertex->GetZ0();
@@ -139,9 +137,9 @@ void PrimaryGeneratorAction::GeneratePrimaries(G4Event* event) {
          *  - add the initial point (in case its off center) to get
          *    [init-0.5*size, init+0.5*size]
          */
-        double x0_f = beamspotXSize_ * (G4UniformRand() - 0.5) + x0_i;
-        double y0_f = beamspotYSize_ * (G4UniformRand() - 0.5) + y0_i;
-        double z0_f = beamspotZSize_ * (G4UniformRand() - 0.5) + z0_i;
+        double x0_f = beamspot_x_size_ * (G4UniformRand() - 0.5) + x0_i;
+        double y0_f = beamspot_y_size_ * (G4UniformRand() - 0.5) + y0_i;
+        double z0_f = beamspot_z_size_ * (G4UniformRand() - 0.5) + z0_i;
         primary_vertex->SetPosition(x0_f, y0_f, z0_f);
       }
 

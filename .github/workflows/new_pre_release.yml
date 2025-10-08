@@ -23,7 +23,7 @@ jobs:
       job_matrix: ${{steps.gen-mat.outputs.job_matrix}}
     steps:
     - name: Checkout ldmx-sw
-      uses: actions/checkout@v4
+      uses: actions/checkout@v5
       with:
         submodules: 'recursive'
         ref: ${{ github.event.inputs.branch }}
@@ -31,8 +31,6 @@ jobs:
 
     - name: Install just
       uses: extractions/setup-just@v3
-      with:
-          just-version: 1.26.0
 
     - name: Compile and Install ldmx-sw
       run: | 
@@ -64,7 +62,7 @@ jobs:
       matrix: ${{fromJson(needs.compile-ldmx-sw.outputs.job_matrix)}}
     steps:
     - name: Download ldmx-sw Package
-      uses: actions/download-artifact@v4
+      uses: actions/download-artifact@v5
       with:
         name: ldmx-sw-build-${{ github.sha }}
 
@@ -72,6 +70,10 @@ jobs:
       run: |
         cd ${GITHUB_WORKSPACE}
         tar xf ldmx-sw-package.tar
+
+    - uses: extractions/setup-just@v3
+
+    - run: just install-denv init
 
     - name: Run ${{matrix.sample}} ${{matrix.run}}
       id: validation
@@ -91,7 +93,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Download Generated Histograms
-      uses: actions/download-artifact@v4
+      uses: actions/download-artifact@v5
       with:
         path: '.'
 
@@ -99,6 +101,10 @@ jobs:
       run: |
         cd ${GITHUB_WORKSPACE}
         tar xf ldmx-sw-build-${GITHUB_SHA}/ldmx-sw-package.tar
+
+    - uses: extractions/setup-just@v3
+
+    - run: just install-denv init
 
     - name: Package Histograms together for Release
       id: packaging
@@ -108,7 +114,7 @@ jobs:
         _hists=$(pwd)/hists-out
         set_output hists "${_hists}/*"
         for s in inclusive ecal_pn it_pileup; do
-          ldmx hadd ${_hists}/${s}.root ${s}-*-hists/*
+          denv hadd ${_hists}/${s}.root ${s}-*-hists/*
         done
       shell: bash
 

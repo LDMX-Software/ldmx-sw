@@ -2,16 +2,28 @@
  * @file LHEParticle.h
  * @brief Class defining a single particle record in an LHE event
  * @author Jeremy McCormick, SLAC National Accelerator Laboratory
+ * @author Tamas Almos Vami, UCSB
  */
 
 #ifndef SIMCORE_LHEPARTICLE_H_
 #define SIMCORE_LHEPARTICLE_H_
 
+// LDMX
+#include "Framework/Exception/Exception.h"
+
 // STL
+#include <stdlib.h>
+
+#include <iostream>
+#include <sstream>
 #include <string>
 #include <vector>
 
-namespace simcore::lhe {
+// Geant4
+#include "globals.hh"
+
+namespace simcore {
+namespace lhe {
 
 /**
  * @class LHEParticle
@@ -29,63 +41,62 @@ class LHEParticle {
    * Get the PDG code (IDUP).
    * @return The PDG code.
    */
-  int getIDUP() const;
+  int getPdgId() const;
 
   /**
    * Get the status code (ISTUP).
    * @return The status code.
    */
-  int getISTUP() const;
+  int getStatus() const;
 
   /**
-   * Get a mother particle index (MOTHUP) by index.
-   * @return The mother particle by index.
+   * Get a mother particle index (MOTHUP) by index_.
+   * @return The mother particle by index_.
    */
-  int getMOTHUP(int) const;
+  int getMother(int) const;
 
   /**
-   * Get the particle color (ICOLUP) by index.
-   * @return The particle color by index.
+   * Get the particle color (ICOLUP) by index_.
+   * @return The particle color by index_.
    */
-  int getICOLUP(int) const;
+  int getColor(int) const;
 
   /**
-   * Get a momentum component (PUP) by index.
+   * Get a momentum component (PUP) by index_.
    * Defined in order: E/C, Px, Py, Pz, mass
-   * @return The momentum component by index.
+   * @return The momentum component by index_.
    */
-  double getPUP(int) const;
+  double getMomentum(int) const;
 
   /**
    * Get the proper lifetime (VTIMUP).
    * @return The particle's proper lifetime.
    */
-  double getVTIMUP() const;
+  double getLifetime() const;
 
   /**
    * Get the particle's spin (SPINUP).
    * @return The particle's spin.
    */
-  double getSPINUP() const;
+  double getSpin() const;
 
   /**
-   * Set a mother particle by index.
-   * @param i The mother index.
+   * Set a mother particle by index_.
+   * @param i The mother index_.
    * @param particle The mother particle.
    */
   void setMother(int i, LHEParticle* particle);
 
   /**
-   * Get a mother particle by index.
-   * @return The mother particle at the index.
+   * Get a mother particle by index_.
+   * @return The mother particle at the index_.
    */
-  LHEParticle* getMother(int) const;
+  LHEParticle* getMotherParticle(int) const;
 
   /**
    * Print particle information to an output stream.
-   * @param stream The output stream.
    */
-  void print(std::ostream& stream) const;
+  void print() const;
 
   /**
    * Overloaded stream operator.
@@ -104,39 +115,40 @@ class LHEParticle {
   /**
    * The PDG code.
    */
-  int idup_;
+  int pdg_id_;
 
   /**
    * The status code.
    */
-  int istup_;
+  int status_;
 
   /**
    * The mother particle indices.
    */
-  int mothup_[2];
+  int mother_[2];
 
   /**
    * The particle color.
    */
-  int icolup_[2];
+  int color_[2];
 
   /**
    * The momentum components.
    */
-  double pup_[5];
+  double momentum_[5];
 
   /**
    * The proper time.
    */
-  double vtimup_;
+  double lifetime_;
 
   /**
    * The particle's spin.
    */
-  int spinup_;
+  int spin_;
 };
 
-}  // namespace simcore::lhe
+}  // namespace lhe
+}  // namespace simcore
 
 #endif

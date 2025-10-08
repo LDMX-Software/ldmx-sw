@@ -29,21 +29,21 @@ class HcalVetoResult {
   virtual ~HcalVetoResult() = default;
 
   /** Reset the object. */
-  void Clear();
+  void clear();
 
   /** Print out the object */
-  void Print() const;
+  friend std::ostream &operator<<(std::ostream &o, const HcalVetoResult &d);
 
   /** Checks if the event passes the Hcal veto. */
   bool passesVeto() const { return passes_veto_; };
 
   /** @return The maximum PE HcalHit. */
-  ldmx::HcalHit getMaxPEHit() const { return max_PE_hit_; }
+  ldmx::HcalHit getMaxPEHit() const { return max_pe_hit_; }
 
   /** @return The total number of PE. */
-  float getTotalPE() const { return total_PE_; }
+  float getTotalPE() const { return total_pe_; }
 
-  /** @return The number of valid hits. */
+  /** @return The number of valid hits_. */
   float getNumValidHits() const { return num_valid_hits_; }
 
   /**
@@ -51,7 +51,7 @@ class HcalVetoResult {
    *
    * @param passes_veto Veto result.
    */
-  void setVetoResult(const bool& passes_veto = true) {
+  void setVetoResult(const bool &passes_veto = true) {
     passes_veto_ = passes_veto;
   }
 
@@ -60,19 +60,19 @@ class HcalVetoResult {
    *
    * @param max_PE_hit The maximum PE HcalHit
    */
-  void setMaxPEHit(const ldmx::HcalHit max_PE_hit) { max_PE_hit_ = max_PE_hit; }
+  void setMaxPEHit(const ldmx::HcalHit max_PE_hit) { max_pe_hit_ = max_PE_hit; }
 
   /**
    * Set the total number of PE.
    *
    * @param total_PE The maximum PE HcalHit
    */
-  void setTotalPE(const float total_PE) { total_PE_ = total_PE; }
+  void setTotalPE(const float total_PE) { total_pe_ = total_PE; }
 
   /**
-   * Set the number of valid hits.
+   * Set the number of valid hits_.
    *
-   * @param num_valid_hits The number of valid hits
+   * @param num_valid_hits The number of valid hits_
    */
   void setNumValidHits(const float num_valid_hits) {
     num_valid_hits_ = num_valid_hits;
@@ -80,10 +80,10 @@ class HcalVetoResult {
 
  private:
   /** Reference to max PE hit. */
-  ldmx::HcalHit max_PE_hit_;
+  ldmx::HcalHit max_pe_hit_;
 
   // Total number of PE
-  float total_PE_{0.0};
+  float total_pe_{0.0};
 
   // Number of hits above threshold
   int num_valid_hits_{0};
@@ -91,7 +91,7 @@ class HcalVetoResult {
   /** Flag indicating whether the event passes the Hcal veto. */
   bool passes_veto_{false};
 
-  ClassDef(HcalVetoResult, 3);
+  ClassDef(HcalVetoResult, 4);
 
 };  // HcalVetoResult
 }  // namespace ldmx

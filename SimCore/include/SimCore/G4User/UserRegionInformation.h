@@ -33,7 +33,7 @@ class UserRegionInformation : public G4VUserRegionInformation {
   bool getStoreSecondaries() const;
 
  private:
-  bool storeSecondaries_;
+  bool store_secondaries_;
 };
 
 }  // namespace simcore

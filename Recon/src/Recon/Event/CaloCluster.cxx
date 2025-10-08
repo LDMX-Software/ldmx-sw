@@ -1,39 +1,39 @@
 #include "Recon/Event/CaloCluster.h"
 
-ClassImp(ldmx::CaloCluster)
+ClassImp(ldmx::CaloCluster);
 
-    namespace ldmx {
-  CaloCluster::CaloCluster() {}
+namespace ldmx {
 
-  CaloCluster::~CaloCluster() { Clear(); }
+CaloCluster::~CaloCluster() { clear(); }
 
-  void CaloCluster::Print() const {
-    std::cout << "CaloCluster { " << "Energy: " << energy_ << ", "
-              << "Number of hits: " << nHits_ << " }" << std::endl;
+std::ostream& operator<<(std::ostream& o, const CaloCluster& c) {
+  return o << "CaloCluster { " << "Energy: " << c.energy_ << ", "
+           << "Number of hits_: " << c.n_hits_ << " }";
+}
+
+void CaloCluster::clear() {
+  hit_ids_.clear();
+  energy_ = 0;
+  n_hits_ = 0;
+  centroid_x_ = 0;
+  centroid_y_ = 0;
+  centroid_z_ = 0;
+  layer_ = -1;
+  rms_x_ = 0;
+  rms_y_ = 0;
+  rms_z_ = 0;
+  dxdz_ = 0;
+  dydz_ = 0;
+  err_dxdz_ = 0;
+  err_dydz_ = 0;
+}
+
+void CaloCluster::addHits(const std::vector<const CalorimeterHit*> hitsVec) {
+  std::vector<unsigned int> vec_ids;
+  for (unsigned int i_hit = 0; i_hit < hitsVec.size(); i_hit++) {
+    vec_ids.push_back(hitsVec[i_hit]->getID());
   }
-
-  void CaloCluster::Clear() {
-    hitIDs_.clear();
-    energy_ = 0;
-    nHits_ = 0;
-    centroidX_ = 0;
-    centroidY_ = 0;
-    centroidZ_ = 0;
-    rmsX_ = 0;
-    rmsY_ = 0;
-    rmsZ_ = 0;
-    DXDZ_ = 0;
-    DYDZ_ = 0;
-    errDXDZ_ = 0;
-    errDYDZ_ = 0;
-  }
-
-  void CaloCluster::addHits(const std::vector<const CalorimeterHit *> hitsVec) {
-    std::vector<unsigned int> vecIDs;
-    for (unsigned int iHit = 0; iHit < hitsVec.size(); iHit++) {
-      vecIDs.push_back(hitsVec[iHit]->getID());
-    }
-    setIDs(vecIDs);
-  }
+  setIDs(vec_ids);
+}
 
 }  // namespace ldmx

@@ -22,8 +22,7 @@ const std::string HcalSD::COLLECTION_NAME = "HcalSimHits";
 HcalSD::HcalSD(const std::string& name, simcore::ConditionsInterface& ci,
                const framework::config::Parameters& p)
     : SensitiveDetector(name, ci, p), birksc1_(1.29e-2), birksc2_(9.59e-6) {
-  gdmlIdentifiers_ = {
-      p.getParameter<std::vector<std::string>>("gdml_identifiers")};
+  gdml_identifiers_ = {p.get<std::vector<std::string>>("gdml_identifiers")};
 }
 
 ldmx::HcalID HcalSD::decodeCopyNumber(const std::uint32_t copyNumber,
@@ -37,21 +36,21 @@ ldmx::HcalID HcalSD::decodeCopyNumber(const std::uint32_t copyNumber,
   }
   const auto& geometry = getCondition<ldmx::HcalGeometry>(
       ldmx::HcalGeometry::CONDITIONS_OBJECT_NAME);
-  unsigned int stripID = 0;
+  unsigned int strip_id = 0;
   const unsigned int section = copyNumber / 1000;
   const unsigned int layer = copyNumber % 1000;
 
   // 5cm wide bars are HARD-CODED
   if (section == ldmx::HcalID::BACK) {
     if (geometry.backLayerIsHorizontal(layer)) {
-      stripID = int((localPosition.y() + scint->GetYHalfLength()) / 50.0);
+      strip_id = int((localPosition.y() + scint->GetYHalfLength()) / 50.0);
     } else {
-      stripID = int((localPosition.x() + scint->GetXHalfLength()) / 50.0);
+      strip_id = int((localPosition.x() + scint->GetXHalfLength()) / 50.0);
     }
   } else {
-    stripID = int((localPosition.z() + scint->GetZHalfLength()) / 50.0);
+    strip_id = int((localPosition.z() + scint->GetZHalfLength()) / 50.0);
   }
-  return ldmx::HcalID{section, layer, stripID};
+  return ldmx::HcalID{section, layer, strip_id};
 }
 
 G4bool HcalSD::ProcessHits(G4Step* aStep, G4TouchableHistory* ROhist) {
@@ -95,23 +94,23 @@ G4bool HcalSD::ProcessHits(G4Step* aStep, G4TouchableHistory* ROhist) {
   //              product of the step length (in cm) and the density
   //              of the scintillator:
 
-  G4double birksFactor(1.0);
-  G4double stepLength = aStep->GetStepLength() / CLHEP::cm;
+  G4double birks_factor(1.0);
+  G4double step_length = aStep->GetStepLength() / CLHEP::cm;
   // Do not apply Birks for gamma deposits!
   // Check, cut if necessary.
-  if (stepLength > 1.0e-6) {
+  if (step_length > 1.0e-6) {
     G4double rho = aStep->GetPreStepPoint()->GetMaterial()->GetDensity() /
                    (CLHEP::g / CLHEP::cm3);
-    G4double dedx = edep / (rho * stepLength);  //[MeV*cm^2/g]
-    birksFactor = 1.0 / (1.0 + birksc1_ * dedx + birksc2_ * dedx * dedx);
+    G4double dedx = edep / (rho * step_length);  //[MeV*cm^2/g]
+    birks_factor = 1.0 / (1.0 + birksc1_ * dedx + birksc2_ * dedx * dedx);
     if (aStep->GetTrack()->GetDefinition() == G4Gamma::GammaDefinition())
-      birksFactor = 1.0;
+      birks_factor = 1.0;
     if (aStep->GetTrack()->GetDefinition() == G4Neutron::NeutronDefinition())
-      birksFactor = 1.0;
+      birks_factor = 1.0;
   }
 
   // update edep to include birksFactor
-  edep *= birksFactor;
+  edep *= birks_factor;
 
   // Create a new cal hit.
   ldmx::SimCalorimeterHit& hit{hits_.emplace_back()};
@@ -120,16 +119,16 @@ G4bool HcalSD::ProcessHits(G4Step* aStep, G4TouchableHistory* ROhist) {
   G4Box* scint = nullptr;
 
   if (aStep) {
-    const auto* preStepPoint = aStep->GetPreStepPoint();
-    if (preStepPoint) {
-      const auto& touchableHandle = preStepPoint->GetTouchableHandle();
-      if (touchableHandle) {
-        const auto* volume = touchableHandle->GetVolume();
+    const auto* pre_step_point = aStep->GetPreStepPoint();
+    if (pre_step_point) {
+      const auto& touchable_handle = pre_step_point->GetTouchableHandle();
+      if (touchable_handle) {
+        const auto* volume = touchable_handle->GetVolume();
 
         if (volume) {
-          const auto* logicalVolume = volume->GetLogicalVolume();
-          if (logicalVolume) {
-            auto* solid = logicalVolume->GetSolid();
+          const auto* logical_volume = volume->GetLogicalVolume();
+          if (logical_volume) {
+            auto* solid = logical_volume->GetSolid();
             if (solid) {
               scint = static_cast<G4Box*>(solid);
             }
@@ -140,8 +139,8 @@ G4bool HcalSD::ProcessHits(G4Step* aStep, G4TouchableHistory* ROhist) {
   }
 
   // Set the step mid-point as the hit position.
-  G4StepPoint* prePoint = aStep->GetPreStepPoint();
-  G4StepPoint* postPoint = aStep->GetPostStepPoint();
+  G4StepPoint* pre_point = aStep->GetPreStepPoint();
+  G4StepPoint* post_point = aStep->GetPostStepPoint();
   // A Geant4 "touchable" is a way to uniquely identify a particular volume,
   // short for touchable detector element. See the detector definition and
   // response section of the Geant4 application developers manual for details.
@@ -150,20 +149,20 @@ G4bool HcalSD::ProcessHits(G4Step* aStep, G4TouchableHistory* ROhist) {
   // G4TouchableHistory object, which is a concrete implementation of a
   // G4Touchable interface.
   //
-  auto touchableHistory{prePoint->GetTouchableHandle()->GetHistory()};
+  auto touchable_history{pre_point->GetTouchableHandle()->GetHistory()};
   // Affine transform for converting between local and global coordinates
-  auto topTransform{touchableHistory->GetTopTransform()};
+  auto top_transform{touchable_history->GetTopTransform()};
   G4ThreeVector position =
-      0.5 * (prePoint->GetPosition() + postPoint->GetPosition());
-  G4ThreeVector localPosition = topTransform.TransformPoint(position);
+      0.5 * (pre_point->GetPosition() + post_point->GetPosition());
+  G4ThreeVector local_position = top_transform.TransformPoint(position);
   hit.setPosition(position[0], position[1], position[2]);
 
   // Create the ID for the hit. Note 2 here corresponds to the "depth" of the
   // geometry tree. If this changes in the GDML, this would have to be updated
   // here. Currently, 0 corresponds to the world volume, 1 corresponds to the
   // Hcal, and 2 to the bars/absorbers
-  int copyNum = touchableHistory->GetVolume(2)->GetCopyNo();
-  ldmx::HcalID id = decodeCopyNumber(copyNum, localPosition, scint);
+  int copy_num = touchable_history->GetVolume(2)->GetCopyNo();
+  ldmx::HcalID id = decodeCopyNumber(copy_num, local_position, scint);
   hit.setID(id.raw());
 
   // add one contributor for this hit with
@@ -181,36 +180,38 @@ G4bool HcalSD::ProcessHits(G4Step* aStep, G4TouchableHistory* ROhist) {
   // Pre/post step details for scintillator response simulation
 
   // Convert back to mm
-  hit.setPathLength(stepLength * CLHEP::cm / CLHEP::mm);
+  hit.setPathLength(step_length * CLHEP::cm / CLHEP::mm);
   hit.setVelocity(track->GetVelocity());
   const auto& geometry = getCondition<ldmx::HcalGeometry>(
       ldmx::HcalGeometry::CONDITIONS_OBJECT_NAME);
   // Convert pre/post step position from global coordinates to coordinates
   // within the scintillator bar
-  const auto localPreStepPoint{
-      topTransform.TransformPoint(prePoint->GetPosition())};
-  const auto localPostStepPoint{
-      topTransform.TransformPoint(postPoint->GetPosition())};
+  const auto local_pre_step_point{
+      top_transform.TransformPoint(pre_point->GetPosition())};
+  const auto local_post_step_point{
+      top_transform.TransformPoint(post_point->GetPosition())};
 
   // And rotate them to a local coordinate system for the bar that always has
   // the same x/y/z definitions (see HcalGeometry for details)
-  auto localPrePositionRotated{geometry.rotateGlobalToLocalBarPosition(
-      {localPreStepPoint[0], localPreStepPoint[1], localPreStepPoint[2]}, id)};
-
-  auto localPostPositionRotated{geometry.rotateGlobalToLocalBarPosition(
-      {localPostStepPoint[0], localPostStepPoint[1], localPostStepPoint[2]},
+  auto local_pre_position_rotated{geometry.rotateGlobalToLocalBarPosition(
+      {local_pre_step_point[0], local_pre_step_point[1],
+       local_pre_step_point[2]},
       id)};
-  hit.setPreStepPosition(localPrePositionRotated[0], localPrePositionRotated[1],
-                         localPrePositionRotated[2]);
-  hit.setPostStepPosition(localPostPositionRotated[0],
-                          localPostPositionRotated[1],
-                          localPostPositionRotated[2]);
-  hit.setPreStepTime(prePoint->GetGlobalTime());
-  hit.setPostStepTime(postPoint->GetGlobalTime());
 
-  if (this->verboseLevel > 2) {
-    hit.Print();
-  }
+  auto local_post_position_rotated{geometry.rotateGlobalToLocalBarPosition(
+      {local_post_step_point[0], local_post_step_point[1],
+       local_post_step_point[2]},
+      id)};
+  hit.setPreStepPosition(local_pre_position_rotated[0],
+                         local_pre_position_rotated[1],
+                         local_pre_position_rotated[2]);
+  hit.setPostStepPosition(local_post_position_rotated[0],
+                          local_post_position_rotated[1],
+                          local_post_position_rotated[2]);
+  hit.setPreStepTime(pre_point->GetGlobalTime());
+  hit.setPostStepTime(post_point->GetGlobalTime());
+
+  ldmx_log(trace) << hit;
 
   return true;
 }

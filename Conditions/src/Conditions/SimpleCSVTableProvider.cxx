@@ -15,40 +15,38 @@ SimpleCSVTableProvider::SimpleCSVTableProvider(
     const framework::config::Parameters& parameters,
     framework::Process& process)
     : framework::ConditionsObjectProvider(name, tagname, parameters, process) {
-  columns_ = parameters.getParameter<std::vector<std::string>>("columns");
-  std::string dtype = parameters.getParameter<std::string>("dataType");
+  columns_ = parameters.get<std::vector<std::string>>("columns");
+  std::string dtype = parameters.get<std::string>("dataType");
   if (dtype == "int" || dtype == "integer")
-    objectType_ = SimpleCSVTableProvider::OBJ_int;
+    object_type_ = SimpleCSVTableProvider::OBJ_int;
   if (dtype == "double" || dtype == "float")
-    objectType_ = SimpleCSVTableProvider::OBJ_double;
+    object_type_ = SimpleCSVTableProvider::OBJ_double;
 
-  conditions_baseURL_ =
-      parameters.getParameter<std::string>("conditions_baseURL");
+  conditions_base_url_ = parameters.get<std::string>("conditions_baseURL");
 
   if (parameters.exists("entries")) {
     std::vector<framework::config::Parameters> plist =
-        parameters.getParameter<std::vector<framework::config::Parameters>>(
-            "entries");
+        parameters.get<std::vector<framework::config::Parameters>>("entries");
     if (!plist.empty()) entriesFromPython(plist);
   }
 
-  entriesURL_ = parameters.getParameter<std::string>("entriesURL");
-  if (!entriesURL_.empty()) entriesFromCSV();
+  entries_url_ = parameters.get<std::string>("entriesURL");
+  if (!entries_url_.empty()) entriesFromCSV();
 }
 
 void SimpleCSVTableProvider::entriesFromPython(
     std::vector<framework::config::Parameters>& plist) {
   for (auto aprov : plist) {
     SimpleCSVTableProvider::Entry item;
-    int firstRun = aprov.getParameter<int>("firstRun", -1);
-    int lastRun = aprov.getParameter<int>("lastRun", -1);
-    std::string rtype = aprov.getParameter<std::string>("runType", "any");
-    bool isMC = (rtype == "any" || rtype == "MC");
-    bool isData = (rtype == "any" || rtype == "data");
-    item.iov_ = framework::ConditionsIOV(firstRun, lastRun, isData, isMC);
-    item.url_ = aprov.getParameter<std::string>("URL");
-    if (objectType_ == OBJ_int && aprov.exists("values")) {
-      item.ivalues_ = aprov.getParameter<std::vector<int>>("values");
+    int first_run = aprov.get<int>("firstRun", -1);
+    int last_run = aprov.get<int>("lastRun", -1);
+    std::string rtype = aprov.get<std::string>("runType", "any");
+    bool is_mc = (rtype == "any" || rtype == "MC");
+    bool is_data = (rtype == "any" || rtype == "data");
+    item.iov_ = framework::ConditionsIOV(first_run, last_run, is_data, is_mc);
+    item.url_ = aprov.get<std::string>("URL");
+    if (object_type_ == OBJ_int && aprov.exists("values")) {
+      item.ivalues_ = aprov.get<std::vector<int>>("values");
       if (item.ivalues_.size() != columns_.size()) {
         EXCEPTION_RAISE("ConditionsException",
                         "Mismatch in values vector (" +
@@ -58,8 +56,8 @@ void SimpleCSVTableProvider::entriesFromPython(
                             getConditionObjectName());
       }
     }
-    if (objectType_ == OBJ_double && aprov.exists("values")) {
-      item.dvalues_ = aprov.getParameter<std::vector<double>>("values");
+    if (object_type_ == OBJ_double && aprov.exists("values")) {
+      item.dvalues_ = aprov.get<std::vector<double>>("values");
       if (item.dvalues_.size() != columns_.size()) {
         EXCEPTION_RAISE("ConditionsException",
                         "Mismatch in values vector (" +
@@ -86,7 +84,7 @@ void SimpleCSVTableProvider::entriesFromPython(
 }
 
 void SimpleCSVTableProvider::entriesFromCSV() {
-  std::string csvurl = expandEnv(entriesURL_);
+  std::string csvurl = expandEnv(entries_url_);
   std::unique_ptr<std::istream> pstr = urlstream(csvurl);
 
   StreamCSVLoader loader(*(pstr.get()));
@@ -111,10 +109,10 @@ void SimpleCSVTableProvider::entriesFromCSV() {
   do {
     bool valid_for_data = strcasecmp("MC", loader.get("RUNTYPE").c_str());
     bool valid_for_mc = strcasecmp("DATA", loader.get("RUNTYPE").c_str());
-    int firstRun = loader.getInteger("FIRST_RUN");
-    int lastRun = loader.getInteger("LAST_RUN");
+    int first_run = loader.getInteger("FIRST_RUN");
+    int last_run = loader.getInteger("LAST_RUN");
     Entry e;
-    e.iov_ = framework::ConditionsIOV(firstRun, lastRun, valid_for_data,
+    e.iov_ = framework::ConditionsIOV(first_run, last_run, valid_for_data,
                                       valid_for_mc);
     e.url_ = loader.get("URL");
     //    std::cout << valid_for_data << " " << valid_for_mc << " " << e.url_ <<
@@ -134,7 +132,7 @@ std::string SimpleCSVTableProvider::expandEnv(const std::string& s) const {
     if (key == "LDMX_CONDITION_TAG")
       retval += getTagName();
     else if (key == "LDMX_CONDITION_BASEURL")
-      retval += conditions_baseURL_;
+      retval += conditions_base_url_;
     else {
       const char* cenv = getenv(key.c_str());
       if (cenv != 0) {
@@ -148,7 +146,7 @@ std::string SimpleCSVTableProvider::expandEnv(const std::string& s) const {
   if (j < s.size()) retval.append(s, j);
   // prepend base URL if no URL provided
   if (retval.find("://") == std::string::npos) {
-    retval = conditions_baseURL_ + retval;
+    retval = conditions_base_url_ + retval;
   }
   //	std::cout << s << "=>" << retval << std::endl;
   return retval;
@@ -157,21 +155,22 @@ std::string SimpleCSVTableProvider::expandEnv(const std::string& s) const {
 std::pair<const framework::ConditionsObject*, framework::ConditionsIOV>
 SimpleCSVTableProvider::getCondition(const ldmx::EventHeader& context) {
   for (auto tabledef : entries_) {
-    //	    std::cout << condition_name << " " << tabledef.objectName_ << " " <<
+    //	    std::cout << condition_name << " " << tabledef.object_name_ << " "
+    //<<
     // tabledef.iov_ << " " << std::endl;
     if (tabledef.iov_.validForEvent(context)) {
       std::string expurl = expandEnv(tabledef.url_);
 
       if (expurl == "python:") {
         // here we just copy values...
-        if (objectType_ == OBJ_int) {
+        if (object_type_ == OBJ_int) {
           IntegerTableCondition* table =
               new IntegerTableCondition(getConditionObjectName(), columns_);
           table->setIdMask(0);  // all ids are the same...
           table->add(0, tabledef.ivalues_);
           return std::pair<const framework::ConditionsObject*,
                            framework::ConditionsIOV>(table, tabledef.iov_);
-        } else if (objectType_ == OBJ_double) {
+        } else if (object_type_ == OBJ_double) {
           conditions::DoubleTableCondition* table =
               new conditions::DoubleTableCondition(getConditionObjectName(),
                                                    columns_);
@@ -183,14 +182,14 @@ SimpleCSVTableProvider::getCondition(const ldmx::EventHeader& context) {
       } else {
         std::unique_ptr<std::istream> stream = urlstream(expurl);
 
-        if (objectType_ == OBJ_int) {
+        if (object_type_ == OBJ_int) {
           IntegerTableCondition* table =
               new IntegerTableCondition(getConditionObjectName(), columns_);
           conditions::utility::SimpleTableStreamerCSV::load(*table,
                                                             *(stream.get()));
           return std::pair<const framework::ConditionsObject*,
                            framework::ConditionsIOV>(table, tabledef.iov_);
-        } else if (objectType_ == OBJ_double) {
+        } else if (object_type_ == OBJ_double) {
           conditions::DoubleTableCondition* table =
               new conditions::DoubleTableCondition(getConditionObjectName(),
                                                    columns_);

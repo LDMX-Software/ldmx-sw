@@ -6,7 +6,7 @@ namespace ldmx {
 RawSiStripHit::RawSiStripHit(std::vector<short> samples, long time)
     : samples_(samples), time_(time) {}
 
-void RawSiStripHit::Clear() {
+void RawSiStripHit::clear() {
   samples_.clear();
   time_ = 0;
 }

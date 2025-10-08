@@ -5,7 +5,7 @@ p.maxTriesPerEvent = 10000
 
 from LDMX.Biasing import target
 from LDMX.SimCore import generators as gen
-det = 'ldmx-lyso-r1-v14-8gev'
+det = 'ldmx-lyso-r4-v15-8gev'
 mySim = target.photo_nuclear(det, gen.single_8gev_e_upstream_tagger())
 mySim.beamSpotSmear = [20.,80.,0.]
 mySim.description = 'LYSO Target PN Simulation'
@@ -75,12 +75,14 @@ target_dqm = [
     dqm.TrigScintSimDQM('TargetSimHits','TargetSimHits','target'),
     dqm.TrigScintDigiDQM('TargetDigis','TargetDigis','target'),
     dqm.TrigScintClusterDQM('TargetClusters','TargetClusters','target'),
+    dqm.TrigScintDigiVerifierDQM('TrigScintDigiVerifier','TargetSimHits','TargetDigis'),
     ]
 
 
 # Load ecal veto and use tracking in it
 ecal_veto = ecal_vetos.EcalVetoProcessor()
 ecal_mip = ecal_vetos.EcalMipProcessor()
+ecal_veto_pnet =  ecal_vetos.EcalPnetVetoProcessor()
 
 # Load hcal veto
 import LDMX.Hcal.hcal as hcal
@@ -100,6 +102,7 @@ p.sequence.extend([
         ecal_cluster.EcalClusterProducer(),
         ecal_veto,
         ecal_mip,
+        ecal_veto_pnet,
         hcal_digi_reco,
         hcal_veto,
         *ts_digis,

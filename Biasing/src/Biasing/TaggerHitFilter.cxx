@@ -19,7 +19,7 @@ namespace biasing {
 TaggerHitFilter::TaggerHitFilter(const std::string& name,
                                  framework::config::Parameters& parameters)
     : simcore::UserAction(name, parameters) {
-  layers_hit_ = parameters.getParameter<int>("layers_hit", 8);
+  layers_hit_ = parameters.get<int>("layers_hit", 8);
   ldmx_log(debug) << " layers_hit_ = " << layers_hit_;
 }
 
@@ -28,8 +28,8 @@ void TaggerHitFilter::stepping(const G4Step* step) {
   // needed to determine if this is the incident electron.
   auto track{step->GetTrack()};
   // Require that track is charged
-  if (auto pdgCh{track->GetParticleDefinition()->GetPDGCharge()};
-      abs(pdgCh) == 0) {
+  if (auto pdg_ch{track->GetParticleDefinition()->GetPDGCharge()};
+      abs(pdg_ch) == 0) {
     return;
   }
 
@@ -66,19 +66,19 @@ void TaggerHitFilter::stepping(const G4Step* step) {
   // The copy number is used to identify which layer energy was deposited into.
   int copy_number{0};
   // Get the pre-step point
-  auto* preStepPoint = step->GetPreStepPoint();
-  if (preStepPoint) {
+  auto* pre_step_point = step->GetPreStepPoint();
+  if (pre_step_point) {
     // Get the touchable handle
-    const auto& touchableHandle = preStepPoint->GetTouchableHandle();
-    if (touchableHandle) {
+    const auto& touchable_handle = pre_step_point->GetTouchableHandle();
+    if (touchable_handle) {
       // Get the history
-      auto* history = touchableHandle->GetHistory();
+      auto* history = touchable_handle->GetHistory();
       if (history) {
         // Get the volume
-        auto* volumeAtTwo = history->GetVolume(2);
-        if (volumeAtTwo) {
+        auto* volume_at_two = history->GetVolume(2);
+        if (volume_at_two) {
           // Get the copy number
-          copy_number = volumeAtTwo->GetCopyNo();
+          copy_number = volume_at_two->GetCopyNo();
         }
       }
     }

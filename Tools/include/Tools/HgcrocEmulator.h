@@ -55,7 +55,7 @@ class HgcrocEmulator {
    * Check if emulator has been seeded
    * @return true if random generator has been seeded
    */
-  bool hasSeed() const { return noiseInjector_.get() != nullptr; }
+  bool hasSeed() const { return noise_injector_.get() != nullptr; }
 
   /**
    * Seed the emulator for random number generation
@@ -74,12 +74,12 @@ class HgcrocEmulator {
    */
   void condition(const conditions::DoubleTableCondition& table) {
     // reset cache of column numbers if table changes
-    if (&table != chipConditions_) conditionNamesToIndex_.clear();
-    chipConditions_ = &table;
+    if (&table != chip_conditions_) condition_names_to_index_.clear();
+    chip_conditions_ = &table;
   }
 
   /**
-   * Digitize the signals from the simulated hits
+   * Digitize the signals from the simulated hits_
    *
    * This is where the hefty amount of work is done.
    *
@@ -89,7 +89,7 @@ class HgcrocEmulator {
    *    - Sort the input sim voltage hits by amplitude
    *
    * 1. Combine input simulated hits into one CompositePulse to digitize.
-   *    - This composite pulse decides whether to merge two simulated hits
+   *    - This composite pulse decides whether to merge two simulated hits_
    *      into one larger pulse depending on how close they are in time.
    *
    * 2. Add a timing jitter TODO
@@ -112,7 +112,7 @@ class HgcrocEmulator {
    * the point the pulse crosses the toaThreshold_ with
    * respect to the current clock window.
    * The time measurements are converted to clock counts
-   * using 2^10=1024 and clockCycle_.
+   * using 2^10=1024 and clock_cycle_.
    *
    * Both the tot_complete_ and tot_progress_ flags are set
    * to false for all the samples.
@@ -186,7 +186,7 @@ class HgcrocEmulator {
    * @return electronic noise amplitude [mV] above pedestal
    */
   double noise(const int& channelID) const {
-    return noiseInjector_->Gaus(
+    return noise_injector_->Gaus(
         0, getCondition(channelID, "NOISE") * gain(channelID));
   };
 
@@ -203,8 +203,8 @@ class HgcrocEmulator {
     return getCondition(id, "READOUT_THRESHOLD");
   }
 
-  bool savePulseTruthInfo_{false};
-  ldmx::HgcrocPulseTruthCollection* pulseTruthColl_;
+  bool save_pulse_truth_info_{false};
+  ldmx::HgcrocPulseTruthCollection* pulse_truth_coll_;
 
  private:
   /**
@@ -218,17 +218,17 @@ class HgcrocEmulator {
    */
   double getCondition(int id, const std::string& name) const {
     // check if emulator has been passed a table of conditions
-    if (!chipConditions_) {
+    if (!chip_conditions_) {
       EXCEPTION_RAISE("HgcrocCond",
                       "HGC ROC Emulator was not given a conditions table.");
     }
 
     // cache column index for the input name
-    if (conditionNamesToIndex_.count(name) == 0)
-      conditionNamesToIndex_[name] = chipConditions_->getColumnNumber(name);
+    if (condition_names_to_index_.count(name) == 0)
+      condition_names_to_index_[name] = chip_conditions_->getColumnNumber(name);
 
     // get condition
-    return chipConditions_->get(id, conditionNamesToIndex_.at(name));
+    return chip_conditions_->get(id, condition_names_to_index_.at(name));
   }
 
  private:
@@ -240,34 +240,34 @@ class HgcrocEmulator {
   bool noise_{true};
 
   /// Depth of ADC buffer.
-  int nADCs_;
+  int n_ad_cs_;
 
   /// Index for the Sample Of Interest in the list of digi samples
-  int iSOI_;
+  int i_soi_;
 
   /// Time interval for chip clock [ns]
-  double clockCycle_;
+  double clock_cycle_;
 
   /// Jitter of timing mechanism in the chip [ns]
-  double timingJitter_;
+  double timing_jitter_;
 
   /// Conversion from time [ns] to counts
   double ns_;
 
   /// Rate of Up Slope in Pulse Shape [1/ns]
-  double rateUpSlope_;
+  double rate_up_slope_;
 
   /// Time of Up Slope relative to Pulse Shape Fit [ns]
-  double timeUpSlope_;
+  double time_up_slope_;
 
   /// Rate of Down Slope in Pulse Shape [1/ns]
-  double rateDnSlope_;
+  double rate_dn_slope_;
 
   /// Time of Down Slope relative to Pulse Shape Fit [ns]
-  double timeDnSlope_;
+  double time_dn_slope_;
 
   /// Time of Peak relative to pulse shape fit [ns]
-  double timePeak_;
+  double time_peak_;
 
   /// Hit merging time [ns]
   double hit_merge_ns_;
@@ -282,7 +282,7 @@ class HgcrocEmulator {
    * The defaults are listed below and are separate parameters
    * passed through the python configuration.
    */
-  const conditions::DoubleTableCondition* chipConditions_{nullptr};
+  const conditions::DoubleTableCondition* chip_conditions_{nullptr};
 
   /**
    * Map of condition names to column numbers
@@ -290,14 +290,14 @@ class HgcrocEmulator {
    * mutable so that we can update the cached column values
    * in getCondition during processing.
    */
-  mutable std::map<std::string, int> conditionNamesToIndex_;
+  mutable std::map<std::string, int> condition_names_to_index_;
 
   /**************************************************************************************
    * Helpful Member Objects
    *************************************************************************************/
 
-  /// Generates Gaussian noise on top of real hits
-  std::unique_ptr<TRandom3> noiseInjector_;
+  /// Generates Gaussian noise on top of real hits_
+  std::unique_ptr<TRandom3> noise_injector_;
 
   /**
    * Functional shape of signal pulse in time
@@ -319,7 +319,7 @@ class HgcrocEmulator {
    *          {(1+\exp(p_1(t-p_2+p_3-p_4)))(1+\exp(p_5*(t-p_6+p_3-p_4)))}
    * @f]
    */
-  mutable TF1 pulseFunc_;
+  mutable TF1 pulse_func_;
 
   /// Enable logging
   enableLogging("HgcrocEmulator")

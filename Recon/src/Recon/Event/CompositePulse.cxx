@@ -10,7 +10,7 @@ void CompositePulse::addOrMerge(const std::pair<double, double>& hit,
     if (fabs(imerge->second - hit.second) < hit_merge_ns) break;
   if (imerge == hits_.end()) {  // didn't find a match, add to the list
     hits_.push_back(hit);
-  } else {  // merge hits, shifting time to average
+  } else {  // merge hits_, shifting time to average
     imerge->second = (imerge->second * imerge->first + hit.first * hit.second);
     imerge->first += hit.first;
     imerge->second /= imerge->first;

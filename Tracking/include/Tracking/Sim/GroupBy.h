@@ -14,7 +14,7 @@
 
 #include "Tracking/Sim/Range.h"
 
-namespace ActsExamples {
+namespace acts_examples {
 
 /// Proxy for iterating over groups of elements within a container.
 ///
@@ -58,15 +58,15 @@ class GroupBy {
     using reference = Group&;
 
     constexpr GroupIterator(const GroupBy& groupBy, Iterator groupBegin)
-        : m_groupBy(groupBy),
-          m_groupBegin(groupBegin),
-          m_groupEnd(groupBy.findEndOfGroup(groupBegin)) {}
+        : m_group_by_(groupBy),
+          m_group_begin_(groupBegin),
+          m_group_end_(groupBy.findEndOfGroup(groupBegin)) {}
     /// Pre-increment operator to advance to the next group.
     constexpr GroupIterator& operator++() {
       // make the current end the new group beginning
-      std::swap(m_groupBegin, m_groupEnd);
+      std::swap(m_group_begin_, m_group_end_);
       // find the end of the next group starting from the new beginning
-      m_groupEnd = m_groupBy.findEndOfGroup(m_groupBegin);
+      m_group_end_ = m_group_by_.findEndOfGroup(m_group_begin_);
       return *this;
     }
     /// Post-increment operator to advance to the next group.
@@ -77,20 +77,20 @@ class GroupBy {
     }
     /// Derefence operator that returns the pointed-to group of elements.
     constexpr Group operator*() const {
-      const Key key = (m_groupBegin != m_groupEnd)
-                          ? m_groupBy.m_keyGetter(*m_groupBegin)
+      const Key key = (m_group_begin_ != m_group_end_)
+                          ? m_group_by_.m_key_getter_(*m_group_begin_)
                           : Key();
-      return {key, makeRange(m_groupBegin, m_groupEnd)};
+      return {key, makeRange(m_group_begin_, m_group_end_)};
     }
 
    private:
-    const GroupBy& m_groupBy;
-    Iterator m_groupBegin;
-    Iterator m_groupEnd;
+    const GroupBy& m_group_by_;
+    Iterator m_group_begin_;
+    Iterator m_group_end_;
 
     friend constexpr bool operator==(const GroupIterator& lhs,
                                      const GroupEndIterator& rhs) {
-      return lhs.m_groupBegin == rhs;
+      return lhs.m_group_begin_ == rhs;
     }
     friend constexpr bool operator!=(const GroupIterator& lhs,
                                      const GroupEndIterator& rhs) {
@@ -101,17 +101,17 @@ class GroupBy {
   /// Construct the group-by proxy for an iterator range.
   constexpr GroupBy(Iterator begin, Iterator end,
                     KeyGetter keyGetter = KeyGetter())
-      : m_begin(begin), m_end(end), m_keyGetter(std::move(keyGetter)) {}
+      : m_begin_(begin), m_end_(end), m_key_getter_(std::move(keyGetter)) {}
   constexpr GroupIterator begin() const {
-    return GroupIterator(*this, m_begin);
+    return GroupIterator(*this, m_begin_);
   }
-  constexpr GroupEndIterator end() const { return m_end; }
-  constexpr bool empty() const { return m_begin == m_end; }
+  constexpr GroupEndIterator end() const { return m_end_; }
+  constexpr bool empty() const { return m_begin_ == m_end_; }
 
  private:
-  Iterator m_begin;
-  Iterator m_end;
-  KeyGetter m_keyGetter;
+  Iterator m_begin_;
+  Iterator m_end_;
+  KeyGetter m_key_getter_;
 
   /// Find the end of the group that starts at the given position.
   ///
@@ -120,13 +120,13 @@ class GroupBy {
   /// underlying container and is a cache-friendly access pattern.
   constexpr Iterator findEndOfGroup(Iterator start) const {
     // check for end so we can safely dereference the start iterator.
-    if (start == m_end) {
+    if (start == m_end_) {
       return start;
     }
     // search the first element that does not share a key with the start.
-    return std::find_if_not(std::next(start), m_end,
-                            [this, start](const auto& x) {
-                              return m_keyGetter(x) == m_keyGetter(*start);
+    return std::find_if_not(std::next(start), m_end_,
+                            [this, start](const auto& x_) {
+                              return m_key_getter_(x_) == m_key_getter_(*start);
                             });
   }
 };
@@ -138,4 +138,4 @@ auto makeGroupBy(const Container& container, KeyGetter keyGetter)
   return {std::begin(container), std::end(container), std::move(keyGetter)};
 }
 
-}  // namespace ActsExamples
+}  // namespace acts_examples

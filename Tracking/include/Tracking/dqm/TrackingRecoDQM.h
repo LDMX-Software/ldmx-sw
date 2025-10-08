@@ -70,9 +70,9 @@ class TrackingRecoDQM : public framework::Analyzer {
                   std::vector<ldmx::Track>& fakeTracks);
 
  private:
-  std::string trackCollection_;
-  std::string truthCollection_;
-  std::string measurementCollection_;
+  std::string track_collection_;
+  std::string truth_collection_;
+  std::string measurement_collection_;
   std::string measurement_passname_;
 
   std::string ecal_sp_events_passname_;
@@ -85,31 +85,31 @@ class TrackingRecoDQM : public framework::Analyzer {
   std::string truth_passname_;
 
   std::string title_{"tagger_trk_"};
-  double trackProb_cut_{0.5};
+  double track_prob_cut_{0.5};
   std::string subdetector_{"Tagger"};
-  bool doTruthComparison_{false};
-  std::vector<std::string> trackStates_;
+  bool do_truth_comparison_{false};
+  std::vector<std::string> track_states_;
 
   // Truth Track collection
-  std::shared_ptr<ldmx::Tracks> truthTrackCollection_{nullptr};
+  std::shared_ptr<ldmx::Tracks> truth_track_collection_{nullptr};
 
-  // Ecal scoring plane hits
+  // Ecal scoring plane hits_
   std::shared_ptr<std::vector<ldmx::SimTrackerHit>> ecal_scoring_hits_{nullptr};
 
-  // Target  scoring plane hits
+  // Target  scoring plane hits_
   std::shared_ptr<std::vector<ldmx::SimTrackerHit>> target_scoring_hits_{
       nullptr};
 
   // If I have truth information, sort the tracks vector according to their
   // trackID and truthProb
   // real tracks (truth_prob > cut), unique
-  std::vector<ldmx::Track> uniqueTracks_;
+  std::vector<ldmx::Track> unique_tracks_;
   // real tracks (truth_prob > cut), duplicated
-  std::vector<ldmx::Track> duplicateTracks_;
+  std::vector<ldmx::Track> duplicate_tracks_;
   // fake tracks (truth_prob < cut)
-  std::vector<ldmx::Track> fakeTracks_;
+  std::vector<ldmx::Track> fake_tracks_;
 
   // PID mapping
-  std::map<int, int> pidmap;
+  std::map<int, int> pidmap_;
 };
 }  // namespace tracking::dqm

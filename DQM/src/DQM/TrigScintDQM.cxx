@@ -35,28 +35,28 @@ void TrigScintDQM::onProcessStart() {
 }
 
 void TrigScintDQM::configure(framework::config::Parameters &ps) {
-  hitCollectionName_ = ps.getParameter<std::string>("hit_collection");
-  padName_ = ps.getParameter<std::string>("pad");
-  hit_passname_ = ps.getParameter<std::string>("hit_passname");
+  hit_collection_name_ = ps.get<std::string>("hit_collection");
+  pad_name_ = ps.get<std::string>("pad");
+  hit_passname_ = ps.get<std::string>("hit_passname");
 
-  ldmx_log(debug) << " Collection name = " << hitCollectionName_
-                  << " pad name = " << padName_;
+  ldmx_log(debug) << " Collection name = " << hit_collection_name_
+                  << " pad name = " << pad_name_;
 }
 
 void TrigScintDQM::analyze(const framework::Event &event) {
-  const std::vector<ldmx::SimCalorimeterHit> TrigScintHits =
-      event.getCollection<ldmx::SimCalorimeterHit>(hitCollectionName_,
+  const std::vector<ldmx::SimCalorimeterHit> trig_scint_hits =
+      event.getCollection<ldmx::SimCalorimeterHit>(hit_collection_name_,
                                                    hit_passname_);
 
   // Get the total hit count
-  int hitCount = TrigScintHits.size();
-  histograms_.fill("n_hits", hitCount);
+  int hit_count = trig_scint_hits.size();
+  histograms_.fill("n_hits", hit_count);
 
-  double totalEnergy{0};
-  for (const ldmx::SimCalorimeterHit &hit : TrigScintHits) {
-    ldmx::TrigScintID detID(hit.getID());
+  double total_energy{0};
+  for (const ldmx::SimCalorimeterHit &hit : trig_scint_hits) {
+    ldmx::TrigScintID det_id(hit.getID());
 
-    int bar = detID.bar();
+    int bar = det_id.bar();
 
     histograms_.fill("energy", hit.getEdep());
     histograms_.fill("hit_time", hit.getTime());
@@ -67,10 +67,10 @@ void TrigScintDQM::analyze(const framework::Event &event) {
     histograms_.fill("y", posvec.at(1));
     histograms_.fill("z", posvec.at(2));
 
-    totalEnergy += hit.getEdep();
+    total_energy += hit.getEdep();
   }
 
-  histograms_.fill("total_energy", totalEnergy);
+  histograms_.fill("total_energy", total_energy);
 }
 
 }  // namespace dqm

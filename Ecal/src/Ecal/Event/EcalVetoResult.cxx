@@ -4,11 +4,9 @@
 ClassImp(ldmx::EcalVetoResult);
 
 namespace ldmx {
-EcalVetoResult::EcalVetoResult() {}
+EcalVetoResult::~EcalVetoResult() { clear(); }
 
-EcalVetoResult::~EcalVetoResult() { Clear(); }
-
-void EcalVetoResult::Clear() {
+void EcalVetoResult::clear() {
   passes_veto_ = false;
 
   n_readout_hits_ = 0;
@@ -172,9 +170,7 @@ void EcalVetoResult::setVariables(
   ecal_layer_edep_readout_ = ecal_layer_edep_readout;
 }
 
-void EcalVetoResult::Print() const {
-  std::cout << "[ EcalVetoResult ]:\n"
-            << "\t Passes veto : " << passes_veto_ << "\n"
-            << std::endl;
+std::ostream& operator<<(std::ostream& o, const EcalVetoResult& c) {
+  return o << "EcalVetoResult { Passes veto : " << c.passes_veto_ << " }";
 }
 }  // namespace ldmx

@@ -48,12 +48,12 @@ class Display : public TGMainFrame {
 
     delete theDetector_;
 
-    delete textBoxClustersCollName_;
-    delete textBoxSimThresh_;
-    delete textBoxEcalRecHitsCollName_;
-    delete textBoxHcalRecHitsCollName_;
-    delete textBoxTrackerHitsCollName_;
-    delete textBoxEcalScorePlaneBranch_;
+    delete text_box_clusters_coll_name_;
+    delete text_box_sim_thresh_;
+    delete text_box_ecal_rec_hits_coll_name_;
+    delete text_box_hcal_rec_hits_coll_name_;
+    delete text_box_tracker_hits_coll_name_;
+    delete text_box_ecal_score_plane_branch_;
 
     delete manager_;
   }
@@ -69,50 +69,50 @@ class Display : public TGMainFrame {
    * eventTreeName_
    * @return false unable to open file or find tree named eventTreeName_
    */
-  bool SetFile(const TString file);
+  bool setFile(const TString file);
 
   /**
    * Goes forward one event unless the current event number equals the maximum
    * event number.
    */
-  void NextEvent();
+  void nextEvent();
 
   /**
    * Gets ecalRecHits collection name from text box
    */
-  void GetECALRecHitsCollInput();
+  void getEcalRecHitsCollInput();
 
   /**
    * Gets clusters collection name from text box
    */
-  void GetClustersCollInput();
+  void getClustersCollInput();
 
   /**
    * Gets trackerHits collection name from text box
    */
-  void GetTrackerHitsCollInput();
+  void getTrackerHitsCollInput();
 
   /**
    * Gets hcalRecHits collection name from text box
    */
-  void GetHCALRecHitsCollInput();
+  void getHcalRecHitsCollInput();
 
   /**
    * Gets ECAL Sim Particles Branch name from text box
    */
-  void GetEcalSimParticlesCollInput();
+  void getEcalSimParticlesCollInput();
 
   /**
    * Sets threshold energy from a SimParticle to be drawn from text box.
    * Re-draws the display.
    * @return bool success check
    */
-  bool SetSimThresh();
+  bool setSimThresh();
 
   /**
    * Colors cluster objects and redraws.
    */
-  void ColorClusters();
+  void colorClusters();
 
  private:
   /**
@@ -150,28 +150,28 @@ class Display : public TGMainFrame {
   std::unique_ptr<framework::EventFile> the_file_;
 
   /// name of ecal clusters collection in event tree
-  std::string clustersCollName_ = "ecalClusters";
+  std::string clusters_coll_name_ = "ecalClusters";
   /// name of ecalRecHits collection in event tree
-  std::string ecalRecHitsCollName_ = "EcalRecHits";
+  std::string ecal_rec_hits_coll_name_ = "EcalRecHits";
   /// name of hcalRecHits collection in event tree
-  std::string hcalRecHitsCollName_ = "HcalRecHits";
+  std::string hcal_rec_hits_coll_name_ = "HcalRecHits";
   /// name of recoil hitss collection in event tree
-  std::string trackerHitsCollName_ = "RecoilSimHits";
+  std::string tracker_hits_coll_name_ = "RecoilSimHits";
   /// name of ecal sim particles collection in
-  std::string ecalSimParticlesCollName_ = "EcalScoringPlaneHits";
+  std::string ecal_sim_particles_coll_name_ = "EcalScoringPlaneHits";
 
   /// drawing methods for the detector geometry
-  EveDetectorGeometry* theDetector_{nullptr};
+  EveDetectorGeometry* the_detector_{nullptr};
 
   /// drawing methods for event objects
   Objects objects_;
 
-  TGTextEntry* textBoxClustersCollName_;
-  TGTextEntry* textBoxSimThresh_;
-  TGTextEntry* textBoxEcalRecHitsCollName_;
-  TGTextEntry* textBoxHcalRecHitsCollName_;
-  TGTextEntry* textBoxTrackerHitsCollName_;
-  TGTextEntry* textBoxEcalScorePlaneBranch_;
+  TGTextEntry* text_box_clusters_coll_name_;
+  TGTextEntry* text_box_sim_thresh_;
+  TGTextEntry* text_box_ecal_rec_hits_coll_name_;
+  TGTextEntry* text_box_hcal_rec_hits_coll_name_;
+  TGTextEntry* text_box_tracker_hits_coll_name_;
+  TGTextEntry* text_box_ecal_score_plane_branch_;
 
   /// event display manager
   TEveManager* manager_{nullptr};

@@ -90,7 +90,7 @@ class RandomNumberSeedService : public ConditionsObject,
    *
    * @returns master seed that is used to derive all other seeds
    */
-  uint64_t getMasterSeed() const { return masterSeed_; }
+  uint64_t getMasterSeed() const { return master_seed_; }
 
   /**
    * Get the seed service as a conditions object
@@ -140,10 +140,10 @@ class RandomNumberSeedService : public ConditionsObject,
   bool initialized_{false};
 
   /// what mode of master seed are we using
-  int seedMode_{0};
+  int seed_mode_{0};
 
   /// what the master seed actually is
-  uint64_t masterSeed_{0};
+  uint64_t master_seed_{0};
 
   /// cache of seeds by name
   mutable std::map<std::string, uint64_t> seeds_;

@@ -22,11 +22,9 @@ namespace biasing {
 TargetBremFilter::TargetBremFilter(const std::string& name,
                                    framework::config::Parameters& parameters)
     : simcore::UserAction(name, parameters) {
-  recoilMaxPThreshold_ =
-      parameters.getParameter<double>("recoil_max_p_threshold");
-  bremEnergyThreshold_ =
-      parameters.getParameter<double>("brem_min_energy_threshold");
-  killRecoil_ = parameters.getParameter<bool>("kill_recoil_track");
+  recoil_max_p_threshold_ = parameters.get<double>("recoil_max_p_threshold");
+  brem_energy_threshold_ = parameters.get<double>("brem_min_energy_threshold");
+  kill_recoil_ = parameters.get<bool>("kill_recoil_track");
 }
 
 TargetBremFilter::~TargetBremFilter() {}
@@ -34,16 +32,16 @@ TargetBremFilter::~TargetBremFilter() {}
 G4ClassificationOfNewTrack TargetBremFilter::ClassifyNewTrack(
     const G4Track* track, const G4ClassificationOfNewTrack& currentTrackClass) {
   // get the PDGID of the track.
-  G4int pdgID = track->GetParticleDefinition()->GetPDGEncoding();
+  G4int pdg_id = track->GetParticleDefinition()->GetPDGEncoding();
 
   // Get the particle type.
-  G4String particleName = track->GetParticleDefinition()->GetParticleName();
+  G4String particle_name = track->GetParticleDefinition()->GetParticleName();
 
   // Use current classification by default so values from other plugins are not
   // overridden.
   G4ClassificationOfNewTrack classification = currentTrackClass;
 
-  if (track->GetTrackID() == 1 && pdgID == 11) {
+  if (track->GetTrackID() == 1 && pdg_id == 11) {
     return fWaiting;
   }
 
@@ -59,7 +57,8 @@ void TargetBremFilter::stepping(const G4Step* step) {
 
   // Get the PDG ID of the track and make sure it's an electron. If
   // another particle type is found, thrown an exception.
-  if (auto pdgID{track->GetParticleDefinition()->GetPDGEncoding()}; pdgID != 11)
+  if (auto pdg_id{track->GetParticleDefinition()->GetPDGEncoding()};
+      pdg_id != 11)
     return;
 
   // Get the region the particle is currently in.  Continue processing
@@ -107,14 +106,14 @@ void TargetBremFilter::stepping(const G4Step* step) {
   if (track_volume == recoil_physical_volume or
       track_volume == world_physical_volume) {
     // If the recoil electron
-    if (track->GetMomentum().mag() >= recoilMaxPThreshold_) {
+    if (track->GetMomentum().mag() >= recoil_max_p_threshold_) {
       track->SetTrackStatus(fKillTrackAndSecondaries);
       G4RunManager::GetRunManager()->AbortEvent();
       return;
     }
 
     // Get the electron secondries
-    bool hasBremCandidate = false;
+    bool has_brem_candidate = false;
     if (auto secondaries = step->GetSecondary(); secondaries->size() == 0) {
       track->SetTrackStatus(fKillTrackAndSecondaries);
       G4RunManager::GetRunManager()->AbortEvent();
@@ -129,18 +128,18 @@ void TargetBremFilter::stepping(const G4Step* step) {
         }
 
         if (ebrem_process &&
-            secondary_track->GetKineticEnergy() > bremEnergyThreshold_) {
-          auto trackInfo{simcore::UserTrackInformation::get(secondary_track)};
-          trackInfo->tagBremCandidate();
+            secondary_track->GetKineticEnergy() > brem_energy_threshold_) {
+          auto track_info{simcore::UserTrackInformation::get(secondary_track)};
+          track_info->tagBremCandidate();
 
           getEventInfo()->incBremCandidateCount();
 
-          hasBremCandidate = true;
+          has_brem_candidate = true;
         }
       }
     }
 
-    if (!hasBremCandidate) {
+    if (!has_brem_candidate) {
       track->SetTrackStatus(fKillTrackAndSecondaries);
       G4RunManager::GetRunManager()->AbortEvent();
       return;
@@ -152,7 +151,7 @@ void TargetBremFilter::stepping(const G4Step* step) {
 
     // Check if the recoil electron should be killed.  If not, postpone
     // its processing until the brem gamma has been processed.
-    if (killRecoil_)
+    if (kill_recoil_)
       track->SetTrackStatus(fStopAndKill);
     else
       track->SetTrackStatus(fSuspend);

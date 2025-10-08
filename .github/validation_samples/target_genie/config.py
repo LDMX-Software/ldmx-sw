@@ -6,7 +6,7 @@ p.maxTriesPerEvent = 10000
 from LDMX.Biasing import ecal
 from LDMX.SimCore import generators as gen
 from LDMX.SimCore import simulator as sim
-det = 'ldmx-det-v14-8gev'
+det = 'ldmx-det-v15-8gev'
 mySim = sim.simulator('sim')
 mySim.setDetector(det, True)
 genie = gen.genie(name=f'genie_G18_02a_02_11b',
@@ -101,6 +101,9 @@ en_trigger = [
         trigger_energy_sums.TrigHcalEnergySum(),
         trigger_energy_sums.TrigEcalClusterProducer(),
         trigger_energy_sums.TrigElectronProducer('propagationMap.root'),
+        trigger_energy_sums.HcalTPSelector(),
+        trigger_energy_sums.HCalTrigMipReco(),
+        trigger_energy_sums.ECalTrigMipReco(),
 
         ]
 
@@ -114,6 +117,7 @@ from LDMX.DQM import dqm
 # Load ecal veto and use tracking in it
 ecal_veto = ecal_vetos.EcalVetoProcessor()
 ecal_mip = ecal_vetos.EcalMipProcessor()
+ecal_veto_pnet =  ecal_vetos.EcalPnetVetoProcessor()
 
 # Load hcal veto
 import LDMX.Hcal.hcal as hcal
@@ -146,6 +150,7 @@ p.sequence.extend([
         ecal_cluster.EcalClusterProducer(),
         ecal_veto,
         ecal_mip,
+        ecal_veto_pnet,
         hcal_digi.HcalDigiProducer(),
         hcal_digi_reco,
         hcal_veto,

@@ -3,15 +3,23 @@
  * @brief Class defining an LHE event with a list of particles and information
  * from the header block
  * @author Jeremy McCormick, SLAC National Accelerator Laboratory
+ * @author Tamas Almos Vami, UCSB
  */
 
 #ifndef SIMCORE_LHEEVENT_H_
 #define SIMCORE_LHEEVENT_H_
 
 // LDMX
+#include "Framework/Exception/Exception.h"
 #include "SimCore/LHE/LHEParticle.h"
 
+// Geant4
+#include "globals.hh"
+
 // STL
+#include <iostream>
+#include <memory>
+#include <sstream>
 #include <vector>
 
 namespace simcore::lhe {
@@ -37,57 +45,57 @@ class LHEEvent {
   /**
    * Class destructor.
    */
-  virtual ~LHEEvent();
+  virtual ~LHEEvent() = default;
 
   /**
    * Get the number of particles (NUP) in the event.
    * @return The number of particles in event.
    */
-  int getNUP() const;
+  int getNumParticles() const;
 
   /**
    * Get the ID of the physics process (IDRUP).
    * @return The ID of the physics process.
    */
-  int getIDPRUP() const;
+  int getProcessID() const;
 
   /**
    * Get the event weight (XWGTUP).
    * @return The event weight.
    */
-  double getXWGTUP() const;
+  double getEventWeight() const;
 
   /**
    * Get the scale Q of parton distributions (SCALUP).
    * @return The scale Q of parton distributions.
    */
-  double getSCALUP() const;
+  double getScaleQ() const;
 
   /**
    * Get the value of the QED coupling (AQEDUP).
    * @return The value of the QED coupling.
    */
-  double getAQEDUP() const;
+  double getCouplingQed() const;
 
   /**
-   * Get the value of the QED coupling (AQCDUP).
-   * @return The value of the QED coupling.
+   * Get the value of the QCD coupling (AQCDUP).
+   * @return The value of the QCD coupling.
    */
-  double getAQCDUP() const;
+  double getCouplingQcd() const;
 
   /**
    * Set the vertex location (careful to match units as expected!)
    */
-  void setVertex(double x, double y, double z);
+  void setVertex(double x_, double y_, double z_);
 
   /**
-   * Parse the vertex from a line of the form "#vertex [x] [y] [z]"
+   * Parse the vertex from a line of the form "#vertex [x_] [y_] [z_]"
    */
   void setVertex(const std::string& line);
 
   /**
    * Get the vertex location (careful to match units as expected!)
-   * @return Array double[3] with x,y,z ordering
+   * @return Array double[3] with x_,y_,z_ ordering
    */
   const double* getVertex() const;
 
@@ -101,44 +109,44 @@ class LHEEvent {
    * Add a particle to the event.
    * @particle The particle to add.
    */
-  void addParticle(LHEParticle* particle);
+  void addParticle(std::unique_ptr<LHEParticle> particle);
 
   /**
    * Get the list of particles in the event.
    * @return The list of particles in the event.
    */
-  const std::vector<LHEParticle*>& getParticles();
+  const std::vector<std::unique_ptr<LHEParticle>>& getParticles() const;
 
  private:
   /**
    * Number of particles.
    */
-  int nup_;
+  int num_particles_;
 
   /**
    * The physics process ID.
    */
-  int idprup_;
+  int process_id_;
 
   /**
    * The event weight.
    */
-  double xwgtup_;
+  double event_weight_;
 
   /**
    * Scale Q of parton distributions.
    */
-  double scalup_;
+  double scale_q_;
+
+  /**
+   * QED coupling value.
+   */
+  double coupling_qed_;
 
   /**
    * QCD coupling value.
    */
-  double aqedup_;
-
-  /**
-   * QCD coupling value.
-   */
-  double aqcdup_;
+  double coupling_qcd_;
 
   /**
    * Vertex location
@@ -153,7 +161,7 @@ class LHEEvent {
   /**
    * The list of particles.
    */
-  std::vector<LHEParticle*> particles_;
+  std::vector<std::unique_ptr<LHEParticle>> particles_;
 };
 
 }  // namespace simcore::lhe

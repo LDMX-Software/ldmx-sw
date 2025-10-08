@@ -3,80 +3,81 @@
 // STL
 #include <iostream>
 
-ClassImp(ldmx::SimCalorimeterHit)
+ClassImp(ldmx::SimCalorimeterHit);
 
-    namespace ldmx {
-  const std::string SimCalorimeterHit::ECAL_COLLECTION = "EcalSimHits";
+namespace ldmx {
+const std::string SimCalorimeterHit::ECAL_COLLECTION = "EcalSimHits";
 
-  const std::string SimCalorimeterHit::HCAL_COLLECTION = "HcalSimHits";
+const std::string SimCalorimeterHit::HCAL_COLLECTION = "HcalSimHits";
 
-  void SimCalorimeterHit::Clear() {
-    incidentIDContribs_.clear();
-    trackIDContribs_.clear();
-    pdgCodeContribs_.clear();
-    edepContribs_.clear();
-    timeContribs_.clear();
+void SimCalorimeterHit::clear() {
+  incident_id_contribs_.clear();
+  track_id_contribs_.clear();
+  pdg_code_contribs_.clear();
+  edep_contribs_.clear();
+  time_contribs_.clear();
 
-    nContribs_ = 0;
-    id_ = 0;
-    edep_ = 0;
-    x_ = 0;
-    y_ = 0;
-    z_ = 0;
-    time_ = 0;
+  n_contribs_ = 0;
+  id_ = 0;
+  edep_ = 0;
+  x_ = 0;
+  y_ = 0;
+  z_ = 0;
+  time_ = 0;
+}
+
+std::ostream& operator<<(std::ostream& o, const SimCalorimeterHit& hit) {
+  return o << "SimCalorimeterHit { " << "id: " << hit.id_
+           << ",  edep: " << hit.edep_
+           << ", "
+              "position: ( "
+           << hit.x_ << ", " << hit.y_ << ", " << hit.z_
+           << " ), num contribs: " << hit.n_contribs_ << " }";
+}
+
+void SimCalorimeterHit::addContrib(int incidentID, int trackID, int pdgCode,
+                                   float edep, float time, int originID) {
+  incident_id_contribs_.push_back(incidentID);
+  track_id_contribs_.push_back(trackID);
+  pdg_code_contribs_.push_back(pdgCode);
+  edep_contribs_.push_back(edep);
+  time_contribs_.push_back(time);
+  origin_contribs_.push_back(originID);
+  edep_ += edep;
+  if (time < time_ || time_ == 0) {
+    time_ = time;
   }
+  ++n_contribs_;
+}
 
-  void SimCalorimeterHit::Print() const {
-    std::cout << "SimCalorimeterHit { " << "id: " << id_ << ",  edep: " << edep_
-              << ", "
-                 "position: ( "
-              << x_ << ", " << y_ << ", " << z_
-              << " ), num contribs: " << nContribs_ << " }" << std::endl;
-  }
+SimCalorimeterHit::Contrib SimCalorimeterHit::getContrib(int i) const {
+  Contrib contrib;
+  contrib.incident_id_ = incident_id_contribs_.at(i);
+  contrib.track_id_ = track_id_contribs_.at(i);
+  contrib.edep_ = edep_contribs_.at(i);
+  contrib.time_ = time_contribs_.at(i);
+  contrib.pdg_code_ = pdg_code_contribs_.at(i);
+  contrib.origin_id_ = origin_contribs_.at(i);
+  return contrib;
+}
 
-  void SimCalorimeterHit::addContrib(int incidentID, int trackID, int pdgCode,
-                                     float edep, float time, int originID) {
-    incidentIDContribs_.push_back(incidentID);
-    trackIDContribs_.push_back(trackID);
-    pdgCodeContribs_.push_back(pdgCode);
-    edepContribs_.push_back(edep);
-    timeContribs_.push_back(time);
-    originContribs_.push_back(originID);
-    edep_ += edep;
-    if (time < time_ || time_ == 0) {
-      time_ = time;
+int SimCalorimeterHit::findContribIndex(int trackID, int pdgCode) const {
+  int contrib_index = -1;
+  for (int i_contrib = 0; i_contrib < n_contribs_; i_contrib++) {
+    Contrib contrib = getContrib(i_contrib);
+    if (contrib.track_id_ == trackID && contrib.pdg_code_ == pdgCode) {
+      contrib_index = i_contrib;
+      break;
     }
-    ++nContribs_;
   }
+  return contrib_index;
+}
 
-  SimCalorimeterHit::Contrib SimCalorimeterHit::getContrib(int i) const {
-    Contrib contrib;
-    contrib.incidentID = incidentIDContribs_.at(i);
-    contrib.trackID = trackIDContribs_.at(i);
-    contrib.edep = edepContribs_.at(i);
-    contrib.time = timeContribs_.at(i);
-    contrib.pdgCode = pdgCodeContribs_.at(i);
-    contrib.originID = originContribs_.at(i);
-    return contrib;
+void SimCalorimeterHit::updateContrib(int i, float edep, float time) {
+  this->edep_contribs_[i] += edep;
+  if (time < this->time_contribs_.at(i)) {
+    this->time_contribs_[i] = time;
   }
-
-  int SimCalorimeterHit::findContribIndex(int trackID, int pdgCode) const {
-    int contribIndex = -1;
-    for (int iContrib = 0; iContrib < nContribs_; iContrib++) {
-      Contrib contrib = getContrib(iContrib);
-      if (contrib.trackID == trackID && contrib.pdgCode == pdgCode) {
-        contribIndex = iContrib;
-        break;
-      }
-    }
-    return contribIndex;
-  }
-
-  void SimCalorimeterHit::updateContrib(int i, float edep, float time) {
-    this->edepContribs_[i] += edep;
-    if (time < this->timeContribs_.at(i)) {
-      this->timeContribs_[i] = time;
-    }
-    edep_ += edep;
-  }
+  edep_ += edep;
+}
 }  // namespace ldmx

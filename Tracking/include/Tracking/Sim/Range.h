@@ -11,7 +11,7 @@
 #include <iterator>
 #include <utility>
 
-namespace ActsExamples {
+namespace acts_examples {
 
 /// A wrapper around a pair of iterators to simplify range-based loops.
 ///
@@ -19,28 +19,28 @@ namespace ActsExamples {
 /// a sub-range. This wrapper simplifies the iteration and should be used as
 /// follows:
 ///
-///     for (auto x : makeRange(std::equal_range(...)) {
+///     for (auto indx : makeRange(std::equal_range(...)) {
 ///         ...
 ///     }
 ///
 template <typename Iterator>
 class Range {
  public:
-  Range(Iterator b, Iterator e) : m_begin(b), m_end(e) {}
+  Range(Iterator b, Iterator e) : m_begin_(b), m_end_(e) {}
   Range(Range&&) = default;
   Range(const Range&) = default;
   ~Range() = default;
   Range& operator=(Range&&) = default;
   Range& operator=(const Range&) = default;
 
-  Iterator begin() const { return m_begin; }
-  Iterator end() const { return m_end; }
-  bool empty() const { return m_begin == m_end; }
-  std::size_t size() const { return std::distance(m_begin, m_end); }
+  Iterator begin() const { return m_begin_; }
+  Iterator end() const { return m_end_; }
+  bool empty() const { return m_begin_ == m_end_; }
+  std::size_t size() const { return std::distance(m_begin_, m_end_); }
 
  private:
-  Iterator m_begin;
-  Iterator m_end;
+  Iterator m_begin_;
+  Iterator m_end_;
 };
 
 template <typename Iterator>
@@ -53,4 +53,4 @@ Range<Iterator> makeRange(std::pair<Iterator, Iterator> range) {
   return Range<Iterator>(range.first, range.second);
 }
 
-}  // namespace ActsExamples
+}  // namespace acts_examples

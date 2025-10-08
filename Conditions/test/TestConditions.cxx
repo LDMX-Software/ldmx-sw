@@ -207,13 +207,13 @@ TEST_CASE("Conditions", "[Conditions]") {
     hp->setEventHeader(&cxt);
 
     cxt.setRun(10);
-    const IntegerTableCondition& iTable =
+    const IntegerTableCondition& i_table =
         hp->getConditions().getCondition<IntegerTableCondition>(
             "test_table_python");
 
-    CHECK(iTable.getByName(292, "A") == 10);
-    CHECK(iTable.getByName(2928184, "B") == 45);
-    CHECK(iTable.getByName(82910, "C") == 129);
+    CHECK(i_table.getByName(292, "A") == 10);
+    CHECK(i_table.getByName(2928184, "B") == 45);
+    CHECK(i_table.getByName(82910, "C") == 129);
   }
 
   SECTION("Testing file loading") {
@@ -244,16 +244,16 @@ TEST_CASE("Conditions", "[Conditions]") {
     hp->setEventHeader(&cxt);
 
     cxt.setRun(10);
-    const conditions::DoubleTableCondition& fTable1 =
+    const conditions::DoubleTableCondition& f_table1 =
         hp->getConditions().getCondition<conditions::DoubleTableCondition>(
             "test_table_file");
-    matchesAll(dtable, fTable1);
+    matchesAll(dtable, f_table1);
 
     cxt.setRun(119);
-    const conditions::DoubleTableCondition& fTable2 =
+    const conditions::DoubleTableCondition& f_table2 =
         hp->getConditions().getCondition<conditions::DoubleTableCondition>(
             "test_table_file");
-    matchesAll(dtable, fTable2);
+    matchesAll(dtable, f_table2);
   }
 
   SECTION("Testing HTTP loading") {
@@ -265,8 +265,8 @@ TEST_CASE("Conditions", "[Conditions]") {
         "columns=[\"A\",\"Q\",\"V\"]\n"
         "cop=SimpleCSVTableProvider.SimpleCSVIntegerTableProvider(\"test_table_"
         "http\",columns)\n"
-        "cop.validForever(\"http://www-users.cse.umn.edu/~jmmans/"
-        "test_table.csv\")\n";
+        "cop.validForever(\"https://raw.githubusercontent.com/LDMX-Software/"
+        "ci-data/refs/heads/main/conditions-test/test_table.csv\")\n";
 
     FILE* f = fopen("/tmp/test_cond.py", "w");
     fputs(cfgpy, f);
@@ -278,10 +278,10 @@ TEST_CASE("Conditions", "[Conditions]") {
     ldmx::EventHeader cxt;
     hp->setEventHeader(&cxt);
 
-    const IntegerTableCondition& httpTable =
+    const IntegerTableCondition& http_table =
         hp->getConditions().getCondition<IntegerTableCondition>(
             "test_table_http");
-    matchesAll(httpTable, itable);
+    matchesAll(http_table, itable);
   }
 
   SECTION("Testing CSV metatable") {
@@ -293,9 +293,10 @@ TEST_CASE("Conditions", "[Conditions]") {
         "columns=[\"PEDESTAL_ADC\"]\n"
         "cop=SimpleCSVTableProvider.SimpleCSVDoubleTableProvider(\"testbeam22_"
         "pedestals\",columns)\n"
-        "cop.conditions_baseURL='http://www-users.cse.umn.edu/~jmmans/ldmx/"
-        "condtest/'\n"
-        "cop.entriesURL='${LDMX_CONDITION_BASEURL}/testbeam22_pedestals.csv'\n";
+        "cop.conditions_baseURL='https://raw.githubusercontent.com/"
+        "LDMX-Software/conditions-data/refs/heads/main/'\n"
+        "cop.entriesURL='${LDMX_CONDITION_BASEURL}/Hcal/testbeam04-2022/"
+        "pedestals/index_v1_0_0.csv'\n";
 
     FILE* f = fopen("/tmp/test_cond.py", "w");
     fputs(cfgpy, f);
@@ -356,59 +357,59 @@ TEST_CASE("Conditions", "[Conditions]") {
  *  - CSVLoader
  */
 TEST_CASE("CSVLoader", "[Conditions][CSVLoader]") {
-  std::string testA("A,B,C\n1,2,3\n5,\"6\",7\n");
+  std::string test_a("A,B,C\n1,2,3\n5,\"6\",7\n");
 
-  StringCSVLoader loaderA(testA);
+  StringCSVLoader loader_a(test_a);
 
-  REQUIRE(loaderA.nextRow());
-  REQUIRE(loaderA.get("A") == "1");
-  REQUIRE(loaderA.getInteger("B") == 2);
-  REQUIRE(loaderA.get("C") == "3");
-  REQUIRE(loaderA.nextRow());
-  REQUIRE(loaderA.get("A") == "5");
-  REQUIRE(loaderA.getInteger("B") == 6);
-  REQUIRE(loaderA.get("C") == "7");
-  REQUIRE(!loaderA.nextRow());
+  REQUIRE(loader_a.nextRow());
+  REQUIRE(loader_a.get("A") == "1");
+  REQUIRE(loader_a.getInteger("B") == 2);
+  REQUIRE(loader_a.get("C") == "3");
+  REQUIRE(loader_a.nextRow());
+  REQUIRE(loader_a.get("A") == "5");
+  REQUIRE(loader_a.getInteger("B") == 6);
+  REQUIRE(loader_a.get("C") == "7");
+  REQUIRE(!loader_a.nextRow());
 
-  std::string testB("#Ignore me, dude\nA,B,C\n\n1,2,3\n5,\"6\",7");
+  std::string test_b("#Ignore me, dude\nA,B,C\n\n1,2,3\n5,\"6\",7");
 
-  StringCSVLoader loaderB(testB);
+  StringCSVLoader loader_b(test_b);
 
-  REQUIRE(loaderB.nextRow());
-  REQUIRE(loaderB.get("A") == "1");
-  REQUIRE(loaderB.getInteger("B") == 2);
-  REQUIRE(loaderB.get("C") == "3");
-  REQUIRE(loaderB.nextRow());
-  REQUIRE(loaderB.get("A") == "5");
-  REQUIRE(loaderB.getInteger("B") == 6);
-  REQUIRE(loaderB.get("C") == "7");
-  REQUIRE(!loaderB.nextRow());
+  REQUIRE(loader_b.nextRow());
+  REQUIRE(loader_b.get("A") == "1");
+  REQUIRE(loader_b.getInteger("B") == 2);
+  REQUIRE(loader_b.get("C") == "3");
+  REQUIRE(loader_b.nextRow());
+  REQUIRE(loader_b.get("A") == "5");
+  REQUIRE(loader_b.getInteger("B") == 6);
+  REQUIRE(loader_b.get("C") == "7");
+  REQUIRE(!loader_b.nextRow());
 
-  std::string testC("#Ignore me, dude\nA,B,C\n\n1,2,3\n5,\"6\",7,9");
+  std::string test_c("#Ignore me, dude\nA,B,C\n\n1,2,3\n5,\"6\",7,9");
 
-  StringCSVLoader loaderC(testC);
+  StringCSVLoader loader_c(test_c);
 
-  REQUIRE(loaderC.nextRow());
-  REQUIRE(loaderC.get("A") == "1");
-  REQUIRE(loaderC.getInteger("B") == 2);
-  REQUIRE(loaderC.get("C") == "3");
-  REQUIRE_THROWS(loaderC.nextRow());
+  REQUIRE(loader_c.nextRow());
+  REQUIRE(loader_c.get("A") == "1");
+  REQUIRE(loader_c.getInteger("B") == 2);
+  REQUIRE(loader_c.get("C") == "3");
+  REQUIRE_THROWS(loader_c.nextRow());
 
-  std::ofstream fxB("test.csv");
-  fxB << testB;
-  fxB.close();
+  std::ofstream fx_b("test.csv");
+  fx_b << test_b;
+  fx_b.close();
 
-  StreamCSVLoader loaderB2("test.csv");
+  StreamCSVLoader loader_b2("test.csv");
 
-  REQUIRE(loaderB2.nextRow());
-  REQUIRE(loaderB2.get("A") == "1");
-  REQUIRE(loaderB2.getInteger("B") == 2);
-  REQUIRE(loaderB2.get("C") == "3");
-  REQUIRE(loaderB2.nextRow());
-  REQUIRE(loaderB2.get("A") == "5");
-  REQUIRE(loaderB2.getInteger("B") == 6);
-  REQUIRE(loaderB2.get("C") == "7");
-  REQUIRE(!loaderB2.nextRow());
+  REQUIRE(loader_b2.nextRow());
+  REQUIRE(loader_b2.get("A") == "1");
+  REQUIRE(loader_b2.getInteger("B") == 2);
+  REQUIRE(loader_b2.get("C") == "3");
+  REQUIRE(loader_b2.nextRow());
+  REQUIRE(loader_b2.get("A") == "5");
+  REQUIRE(loader_b2.getInteger("B") == 6);
+  REQUIRE(loader_b2.get("C") == "7");
+  REQUIRE(!loader_b2.nextRow());
 }
 
 }  // namespace test

@@ -43,8 +43,7 @@ class EventWeights {
   EventWeights(std::map<VariationType, std::vector<double> > var_map)
       : variations_map_(var_map) {}
 
-  void Clear();
-  void Print();
+  void clear();
 
   friend std::ostream &operator<<(std::ostream &o, const EventWeights &ew);
 
@@ -72,8 +71,7 @@ class EventWeights {
   std::map<VariationType, std::vector<double> > variations_map_;
 
  public:
-  inline static std::string variation_type_to_string(
-      const VariationType &vtype) {
+  inline static std::string variationTypeToString(const VariationType &vtype) {
     switch (vtype) {
       case VariationType::kINVALID:
         return "INVALID";
@@ -110,7 +108,7 @@ class EventWeights {
     }
     return "UNKNOWN";
   }
-  inline static VariationType string_to_variation_type(
+  inline static VariationType stringToVariationType(
       const std::string &typestring) {
     if (typestring == "UNKNOWN")
       return VariationType::kUNKNOWN;

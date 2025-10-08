@@ -12,7 +12,7 @@ pileupFilePassName="pileup"
 thisPassName="overlay"
 p=ldmxcfg.Process(thisPassName)
 
-det = 'ldmx-det-v14-8gev'
+det = 'ldmx-det-v15-8gev'
 p.run = int(os.environ['LDMX_RUN_NUMBER'])
 p.maxEvents = int(os.environ['LDMX_NUM_EVENTS']) // 2
 
@@ -21,20 +21,8 @@ from LDMX.Tracking import full_tracking_sequence
 
 from LDMX.Recon.overlay import OverlayProducer
 overlay=OverlayProducer('pileup.root')
-overlay.passName = simPassName                  #sim input event pass name
-overlay.overlayPassName = pileupFilePassName    #pileup input event pass name
-overlay.totalNumberOfInteractions = 2.
-overlay.doPoissonIntime = False
-overlay.doPoissonOutoftime = False
-overlay.nEarlierBunchesToSample = 0
-overlay.bunchSpacing = 26.9      #ns = 1000./37.2 ; 5.4 = 1000./186.
-overlay.timeSpread = 0.       # <-- realistically, 30 ps; 
-overlay.timeMean   = 0.       # <-- here set the in-bunch average pu time offset to no time shift whatsoever; useful for validation though
-overlay.overlayCaloHitCollections=[ 
-        "TriggerPad1SimHits", "TriggerPad2SimHits", "TriggerPad3SimHits", "TargetSimHits", 
-        "EcalSimHits", "HcalSimHits"]
-overlay.overlayTrackerHitCollections=[ "TaggerSimHits", "RecoilSimHits" ]
-overlay.verbosity=0 #1 #3 #
+overlay.sim_passname = simPassName                  #sim input event pass name
+overlay.overlay_passname = pileupFilePassName    #pileup input event pass name
 
 p.sequence = [overlay]
 
@@ -47,7 +35,7 @@ from LDMX.Hcal import HcalGeometry
 import LDMX.Hcal.hcal_hardcoded_conditions
 
 from LDMX.Ecal import digi as eDigi
-from LDMX.Ecal import vetos
+from LDMX.Ecal import vetos as ecal_vetos
 import LDMX.Ecal.ecalClusters as ecal_cluster
 from LDMX.Hcal import digi as hDigi
 
@@ -81,8 +69,8 @@ trigScintTrack.input_pass_name = thisPassName
 # Load the ECAL modules                           
 ecalDigi   = eDigi.EcalDigiProducer('ecalDigis')
 ecalReco   = eDigi.EcalRecProducer('ecalRecon')
-ecalVeto   = vetos.EcalVetoProcessor('ecalVetoBDT')
-ecalMip = vetos.EcalMipProcessor('ecalMip')
+ecalVeto   = ecal_vetos.EcalVetoProcessor('ecalVetoBDT')
+ecalMip = ecal_vetos.EcalMipProcessor('ecalMip')
 
 # The newly produced, overlayed simhits
 ecalDigi.inputCollName += overlayStr
@@ -143,7 +131,7 @@ for ts_dqm in trigScint_dqm :
 
 # EcalDigiVerify
 ecalDigiVerify = dqm.EcalDigiVerify()
-ecalDigiVerify.ecalSimHitColl += overlayStr
+ecalDigiVerify.ecal_sim_hit_coll += overlayStr
 
 # EcalShowerFeatures
 ecalShowerFeatures = dqm.EcalShowerFeatures()
@@ -156,6 +144,8 @@ ecalMipTrackingFeatures.ecal_veto_pass = thisPassName
 # EcalVetoResults
 ecalVetoResults = dqm.EcalVetoResults()
 ecalVetoResults.ecal_veto_pass = thisPassName
+ecal_veto_pnet =  ecal_vetos.EcalPnetVetoProcessor()
+ecal_veto_pnet.ecal_rec_hits_passname = thisPassName
 
 # HCAL DQM
 hcalDQM = [
@@ -196,7 +186,12 @@ p.sequence.extend(full_tracking_sequence.sequence)
 p.sequence.extend(full_tracking_sequence.dqm_sequence)
 
 p.sequence.extend([
-    ecalDigi, ecalReco, ecalVeto, ecalMip, ecal_cluster.EcalClusterProducer(),
+    ecalDigi,
+    ecalReco, 
+    ecalVeto, 
+    ecalMip, 
+    ecal_veto_pnet,
+    ecal_cluster.EcalClusterProducer(),
     hcal_digi_reco, 
     hcal_veto,
     *ts_digis,

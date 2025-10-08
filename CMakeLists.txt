@@ -18,6 +18,10 @@ endif()
 file(READ ${CMAKE_CURRENT_SOURCE_DIR}/VERSION LDMXSW_VERSION)
 string(STRIP "${LDMXSW_VERSION}" LDMXSW_VERSION)
 string(REGEX REPLACE "^v" "" LDMXSW_VERSION_NUM "${LDMXSW_VERSION}") 
+
+file(READ ${CMAKE_CURRENT_SOURCE_DIR}/COMMIT_SHA COMMIT_SHA)
+string(STRIP "${COMMIT_SHA}" COMMIT_SHA)
+
 project(LDMX_SW VERSION ${LDMXSW_VERSION_NUM} 
                 DESCRIPTION "The Light Dark Matter eXperiment simulation and reconstruction framework." 
                 LANGUAGES CXX    

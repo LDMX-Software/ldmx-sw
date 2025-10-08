@@ -51,7 +51,7 @@ void printUsage();
 int main(int argc, char* argv[]) try {
   if (argc < 2) {
     printUsage();
-    return 1;
+    return 2;
   }
 
   int ptrpy = 1;
@@ -64,7 +64,7 @@ int main(int argc, char* argv[]) try {
     std::cout << " ** No python configuration script provided (must end in "
                  "'.py'). ** "
               << std::endl;
-    return 1;
+    return 3;
   }
 
   std::cout << "---- LDMXSW: Loading configuration --------" << std::endl;
@@ -84,7 +84,7 @@ int main(int argc, char* argv[]) try {
               << std::endl;
     std::cerr << "  at " << e.module() << ":" << e.line() << " in "
               << e.function() << std::endl;
-    return 1;
+    return 4;
   }
 
   std::cout << "---- LDMXSW: Configuration load complete  --------"
@@ -95,7 +95,7 @@ int main(int argc, char* argv[]) try {
   memset(&act, '\0', sizeof(act));
   if (sigaction(SIGINT, &act, NULL) < 0) {
     perror("sigaction");
-    return 1;
+    return 5;
   }
 
   // See comment above for reason why this code is commented out.
@@ -117,14 +117,14 @@ int main(int argc, char* argv[]) try {
     //  if an Exception is thrown, we haven't gotten to the end of Process::run
     //  where logging is closed, so we can do one more error message and then
     //  close it.
-    // ldmx_log macro needs this variable to be named 'theLog_'
-    auto theLog_{framework::logging::makeLogger("fire")};
+    // ldmx_log macro needs this variable to be named 'the_log_'
+    auto the_log_{framework::logging::makeLogger("fire")};
     ldmx_log(fatal) << "[" << e.name() << "] : " << e.message() << "\n"
                     << "  at " << e.module() << ":" << e.line() << " in "
                     << e.function();
     ldmx_log(debug) << e.stackTrace();
     framework::logging::close();
-    return 1;  // return non-zero error-status
+    return 6;  // return non-zero error-status
   }
 
   std::cout << "---- LDMXSW: Event processing complete  --------" << std::endl;

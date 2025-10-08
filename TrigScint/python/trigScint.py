@@ -27,9 +27,6 @@ class TrigScintDigiProducer(ldmxcfg.Producer) :
         self.input_collection="TriggerPad3SimHits"
         self.input_pass_name="" #take any pass
         self.output_collection="trigScintDigisPad3"
-        import time
-        self.randomSeed = int(time.time())
-        self.verbose = False
         
         self.sim_particles_passname = ""
 
@@ -59,6 +56,8 @@ class TrigScintDigiProducer(ldmxcfg.Producer) :
         digi = TrigScintDigiProducer( 'TargetDigis' )
         digi.input_collection = 'TargetSimHits'
         digi.output_collection= 'TargetDigis'
+        digi.mev_per_mip = 1.
+        digi.pe_per_mip = 300.
         return digi
 
 

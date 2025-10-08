@@ -18,12 +18,12 @@ class HepMC3GenEvent : public HepMC3::GenEventData {
  public:
   virtual ~HepMC3GenEvent() = default;
 
-  void Clear();
-  void Print() const;
+  void clear();
+  void print() const;
 
   HepMC3::GenEvent getHepMCGenEvent() const;
 
-  std::string get_as_string() const;
+  std::string getAsString() const;
 
  public:
   ClassDef(HepMC3GenEvent, 1);

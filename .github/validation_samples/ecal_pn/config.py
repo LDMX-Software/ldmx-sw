@@ -5,7 +5,7 @@ p.maxTriesPerEvent = 10000
 
 from LDMX.Biasing import ecal
 from LDMX.SimCore import generators as gen
-det = 'ldmx-det-v14-8gev'
+det = 'ldmx-det-v15-8gev'
 mySim = ecal.photo_nuclear(det,gen.single_8gev_e_upstream_tagger())
 mySim.beamSpotSmear = [20.,80.,0.]
 mySim.description = 'ECal PN Test Simulation'
@@ -66,13 +66,19 @@ count.input_pass_name = ''
 # Load the DQM modules
 from LDMX.DQM import dqm
 
-# Load ecal veto and use tracking in it
+# Define ecal veto and use tracking in it
 ecal_veto = ecal_vetos.EcalVetoProcessor()
 ecal_mip = ecal_vetos.EcalMipProcessor()
+ecal_veto_pnet =  ecal_vetos.EcalPnetVetoProcessor()
 
 # Load hcal veto
 import LDMX.Hcal.hcal as hcal
 hcal_veto = hcal.HcalVetoProcessor()
+
+# Load visibles veto and turn off all
+# cuts except the visibles BDT
+visibles_veto = dqm.VisiblesCutflow()
+visibles_veto.all_cuts = False
 
 p.logger.termLevel = 1
 # Example to show trace level logging for ecal veto (only)
@@ -88,6 +94,7 @@ p.sequence.extend([
         ecal_cluster.EcalClusterProducer(),
         ecal_veto,
         ecal_mip,
+        ecal_veto_pnet,
         hcal_digi_reco,
         hcal_veto,
         *ts_digis,
@@ -95,7 +102,9 @@ p.sequence.extend([
         trigScintTrack,
         count, TriggerProcessor('trigger', 8000.),
         dqm.PhotoNuclearDQM(),
-        dqm.EcalClusterAnalyzer()
+        dqm.EcalClusterAnalyzer(),
+        visibles_veto,
+        dqm.VisiblesFeatureProducer()
         ])
 
 p.sequence.extend(dqm.all_dqm)

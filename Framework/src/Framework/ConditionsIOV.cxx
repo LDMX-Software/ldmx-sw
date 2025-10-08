@@ -13,38 +13,39 @@ std::ostream& operator<<(std::ostream& s, const framework::ConditionsIOV& iov) {
 namespace framework {
 
 bool ConditionsIOV::validForEvent(const ldmx::EventHeader& eh) const {
-  return (eh.getRun() >= firstRun_ || firstRun_ == -1) &&
-         (eh.getRun() <= lastRun_ || lastRun_ == -1) &&
-         ((eh.isRealData()) ? (validForData_) : (validForMC_));
+  return (eh.getRun() >= first_run_ || first_run_ == -1) &&
+         (eh.getRun() <= last_run_ || last_run_ == -1) &&
+         ((eh.isRealData()) ? (valid_for_data_) : (valid_for_mc_));
 }
 
 bool ConditionsIOV::overlaps(const ConditionsIOV& iov) const {
-  if (iov.validForData_ != validForData_ && iov.validForMC_ != validForMC_)
+  if (iov.valid_for_data_ != valid_for_data_ &&
+      iov.valid_for_mc_ != valid_for_mc_)
     return false;
-  if (iov.firstRun_ < lastRun_) return false;  // starts after this IOV
-  if (iov.lastRun_ < firstRun_) return false;  // ends before this IOV
+  if (iov.first_run_ < last_run_) return false;  // starts after this IOV
+  if (iov.last_run_ < first_run_) return false;  // ends before this IOV
   return true;
 }
 
-void ConditionsIOV::Print() const {
+void ConditionsIOV::print() const {
   stream(std::cout);
   std::cout << std::endl;
 }
 
-std::string ConditionsIOV::ToString() const {
+std::string ConditionsIOV::toString() const {
   std::stringstream s;
   stream(s);
   return s.str();
 }
 
 void ConditionsIOV::stream(std::ostream& s) const {
-  s << "IOV(" << firstRun_ << "->";
-  if (lastRun_ == -1)
+  s << "IOV(" << first_run_ << "->";
+  if (last_run_ == -1)
     s << "[all runs]";
   else
-    s << lastRun_;
-  if (validForData_) s << ",Data";
-  if (validForMC_) s << ",MC";
+    s << last_run_;
+  if (valid_for_data_) s << ",Data";
+  if (valid_for_mc_) s << ",MC";
   s << ")";
 }
 }  // namespace framework

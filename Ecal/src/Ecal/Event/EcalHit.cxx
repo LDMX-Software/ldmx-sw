@@ -3,14 +3,14 @@
 // STL
 #include <iostream>
 
-ClassImp(ldmx::EcalHit)
+ClassImp(ldmx::EcalHit);
 
-    namespace ldmx {
-  void EcalHit::Clear() { CalorimeterHit::Clear(); }
+namespace ldmx {
+void EcalHit::clear() { CalorimeterHit::clear(); }
 
-  void EcalHit::Print() const {
-    std::cout << "EcalHit { " << "id: " << std::hex << getID() << std::dec
-              << ",  energy: " << getEnergy() << "MeV, time: " << getTime()
-              << "ns, amplitude: " << getAmplitude() << "}" << std::endl;
-  }
+std::ostream& operator<<(std::ostream& o, const EcalHit& hit) {
+  return o << "EcalHit { " << "id: " << std::hex << hit.getID() << std::dec
+           << ",  energy: " << hit.getEnergy() << "MeV, time: " << hit.getTime()
+           << "ns, amplitude: " << hit.getAmplitude() << "}";
+}
 }  // namespace ldmx

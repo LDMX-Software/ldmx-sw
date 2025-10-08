@@ -44,7 +44,7 @@ class ParallelWorld : public G4VUserParallelWorld {
   G4GDMLParser* parser_{nullptr};
 
   /** The auxiliary GDML info reader. */
-  geo::AuxInfoReader* auxInfoReader_{nullptr};
+  geo::AuxInfoReader* aux_info_reader_{nullptr};
 
   /// Enable logging
   enableLogging("ParallelWorld");

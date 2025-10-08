@@ -20,6 +20,7 @@ tbClustersUp  =TestBeamClusterProducer("tbClusters")
 tbClustersUp.input_pass_name=inputPassName
 #tbClustersUp.input_collection="TestBeamHitsUp"
 tbClustersUp.pad_time=0.
+tbClustersUp.threshold=15.
 tbClustersUp.time_tolerance=50.
 tbClustersUp.verbosity=0
 p.sequence = [

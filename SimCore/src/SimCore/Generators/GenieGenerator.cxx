@@ -45,9 +45,9 @@
 #include "Randomize.hh"
 
 // ROOT
+#include <Math/Vector3D.h>
 #include <TLorentzVector.h>
 #include <TParticle.h>
-#include <TVector3.h>
 
 #include "Math/Interpolator.h"
 
@@ -296,8 +296,8 @@ void GenieGenerator::GeneratePrimaryVertex(G4Event* event) {
   auto z_pos = position_[2] +
                (G4Random::getTheGenerator()->flat() - 0.5) * target_thickness_;
 
-  ldmx_log(debug) << "Generating interaction at (x,y,z)=" << "(" << x_pos << ","
-                  << y_pos << "," << z_pos << ")";
+  ldmx_log(debug) << "Generating interaction at (x_,y_,z_)=" << "(" << x_pos
+                  << "," << y_pos << "," << z_pos << ")";
 
   genie::InitialState initial_state(targets_.at(nucl_target_i), 11);
   evg_driver_.Configure(initial_state);
@@ -328,7 +328,7 @@ void GenieGenerator::GeneratePrimaryVertex(G4Event* event) {
   while (!genie_event) genie_event = evg_driver_.GenerateEvent(e_p4);
 
   auto ev_info = new UserEventInformation;
-  auto hepmc3_genie = hepMC3Converter_.ConvertToHepMC3(*genie_event);
+  auto hepmc3_genie = hep_mc3_converter_.ConvertToHepMC3(*genie_event);
   ldmx::HepMC3GenEvent hepmc3_ldmx_genie;
   hepmc3_genie->write_data(hepmc3_ldmx_genie);
   ev_info->addHepMC3GenEvent(hepmc3_ldmx_genie);
@@ -369,10 +369,10 @@ void GenieGenerator::GeneratePrimaryVertex(G4Event* event) {
 
     primary->SetProperTime(time_ * CLHEP::ns);
 
-    UserPrimaryParticleInformation* primaryInfo =
+    UserPrimaryParticleInformation* primary_info =
         new UserPrimaryParticleInformation();
-    primaryInfo->setHepEvtStatus(1);
-    primary->SetUserInformation(primaryInfo);
+    primary_info->setHepEvtStatus(1);
+    primary->SetUserInformation(primary_info);
 
     vertex->SetPrimary(primary);
   }

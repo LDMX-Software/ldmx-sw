@@ -11,46 +11,45 @@
 namespace trigger {
 
 void TrigElectronProducer::configure(framework::config::Parameters& ps) {
-  spCollName_ = ps.getParameter<std::string>("scoringPlaneCollName");
-  clusterCollName_ = ps.getParameter<std::string>("clusterCollName");
-  eleCollName_ = ps.getParameter<std::string>("eleCollName");
-  propMapName_ = ps.getParameter<std::string>("propMapName");
-  target_sp_passname_ = ps.getParameter<std::string>("target_sp_passname");
-  cluster_coll_passname_ =
-      ps.getParameter<std::string>("cluster_coll_passname");
+  sp_coll_name_ = ps.get<std::string>("scoringPlaneCollName");
+  cluster_coll_name_ = ps.get<std::string>("clusterCollName");
+  ele_coll_name_ = ps.get<std::string>("eleCollName");
+  prop_map_name_ = ps.get<std::string>("propMapName");
+  target_sp_passname_ = ps.get<std::string>("target_sp_passname");
+  cluster_coll_passname_ = ps.get<std::string>("cluster_coll_passname");
   cluster_collname_events_passname_ =
-      ps.getParameter<std::string>("cluster_collname_events_passname");
+      ps.get<std::string>("cluster_collname_events_passname");
   sp_collname_events_passname_ =
-      ps.getParameter<std::string>("sp_collname_events_passname_");
+      ps.get<std::string>("sp_collname_events_passname_");
 }
 
 void TrigElectronProducer::produce(framework::Event& event) {
-  if (!event.exists(clusterCollName_, cluster_collname_events_passname_))
+  if (!event.exists(cluster_coll_name_, cluster_collname_events_passname_))
     return;
-  auto ecalClusters{event.getObject<TrigCaloClusterCollection>(
-      clusterCollName_, cluster_coll_passname_)};
+  auto ecal_clusters{event.getObject<TrigCaloClusterCollection>(
+      cluster_coll_name_, cluster_coll_passname_)};
 
-  if (!event.exists(spCollName_, sp_collname_events_passname_)) return;
-  const std::vector<ldmx::SimTrackerHit> TargetSPHit =
-      event.getCollection<ldmx::SimTrackerHit>(spCollName_,
+  if (!event.exists(sp_coll_name_, sp_collname_events_passname_)) return;
+  const std::vector<ldmx::SimTrackerHit> target_sp_hit =
+      event.getCollection<ldmx::SimTrackerHit>(sp_coll_name_,
                                                target_sp_passname_);
   // ldmx::SimTrackerHit targetPrimary;
   // std::map<int,int> tk_to_iTargetSPHit;
-  float xT = 0, yT = 0;
-  for (const auto& hit : TargetSPHit) {
+  float x_t = 0, y_t = 0;
+  for (const auto& hit : target_sp_hit) {
     if (hit.getTrackID() != 1) continue;
     if (!(abs(hit.getPdgID()) == 11)) continue;
     auto xyz = hit.getPosition();
     if (xyz[2] < 0 || xyz[2] > 1) continue;  // select one sp
-    xT = xyz[0];
-    yT = xyz[1];
+    x_t = xyz[0];
+    y_t = xyz[1];
     // more details:
     // https://github.com/LDMX-Software/ldmx-analysis/blob/ch/dev/src/TriggerAnalyzer.cxx
   }
 
   // std::vector<ldmx::SimParticle> eles;
   TrigParticleCollection eles;
-  for (const auto& clus : ecalClusters) {
+  for (const auto& clus : ecal_clusters) {
     TrigParticle el;
     // ldmx::SimParticle el;
 
@@ -78,10 +77,10 @@ void TrigElectronProducer::produce(framework::Event& event) {
     // Electron_dy*240/Electron_zClus","TruthEcal_e>1e3")
 
     float pred_px = clus.z() > 0
-                        ? getPx(calib_e, (240. / clus.z()) * (clus.x() - xT))
+                        ? getPx(calib_e, (240. / clus.z()) * (clus.x() - x_t))
                         : 0;  // adjust, tracing back to ecal face
     float pred_py =
-        clus.z() > 0 ? getPy(calib_e, (240. / clus.z()) * (clus.y() - yT)) : 0;
+        clus.z() > 0 ? getPy(calib_e, (240. / clus.z()) * (clus.y() - y_t)) : 0;
 
     // std::cout << "expectX " << pred_px << " versus " << fit_px << std::endl;
     // std::cout << "expectY " << pred_py << " versus " << fit_py << std::endl;
@@ -89,7 +88,7 @@ void TrigElectronProducer::produce(framework::Event& event) {
         std::max(pow(calib_e, 2) - (pow(pred_px, 2) + pow(pred_py, 2)), 0.));
 
     // produce el
-    Point targ(xT, yT, 0);
+    Point targ(x_t, y_t, 0);
     LorentzVector p4(pred_px, pred_py, pred_pz, calib_e);
     eles.emplace_back(p4, targ, 11);
     Point calo(clus.x(), clus.y(),
@@ -108,13 +107,13 @@ void TrigElectronProducer::produce(framework::Event& event) {
     // el.setMomentum(pred_px, pred_py, pred_pz);
     // eles.push_back(el);
   }
-  event.add(eleCollName_, eles);
+  event.add(ele_coll_name_, eles);
 }
 
 void TrigElectronProducer::setupMaps(bool isX) {
-  TProfile2D* prof = isX ? propMapx_ : propMapy_;
-  const int N = prof->GetXaxis()->GetNbins();
-  for (int i = 1; i <= N; i++) {
+  TProfile2D* prof = isX ? prop_mapx_ : prop_mapy_;
+  const int n = prof->GetXaxis()->GetNbins();
+  for (int i = 1; i <= n; i++) {
     TF1* func = new TF1("func", "pol1", -20, 20);  // going to fit for px/e
     TProfile* proj = prof->ProfileY("h", i, i);
     proj->Fit("func", "q", "", -1, 1);
@@ -123,13 +122,13 @@ void TrigElectronProducer::setupMaps(bool isX) {
       TCanvas c("c", "");
       proj->Draw();
       func->Draw("same");
-      c.SaveAs(TString::Format("debugFit_%d_%d.pdf", int(isX), i));
+      c.SaveAs(TString::Format("debug_fit_%d_%d.pdf", int(isX), i));
     }
     delete proj;
     if (isX) {
-      fitsX_.push_back(func);
+      fits_x_.push_back(func);
     } else {
-      fitsY_.push_back(func);
+      fits_y_.push_back(func);
     }
   }
   return;
@@ -138,7 +137,7 @@ void TrigElectronProducer::setupMaps(bool isX) {
 float TrigElectronProducer::getP(bool isX, float e, float d) {
   if (fabs(d) > 300) return 0;  // something has gone very wrong
   const bool debug = false;
-  TProfile2D* prof = isX ? propMapx_ : propMapy_;
+  TProfile2D* prof = isX ? prop_mapx_ : prop_mapy_;
   if (!prof) {
     if (debug) std::cout << "null pointer" << std::endl;
     return 0;
@@ -153,11 +152,11 @@ float TrigElectronProducer::getP(bool isX, float e, float d) {
   bin2 = std::max(1, std::min(bin2, prof->GetXaxis()->GetNbins()));
   float res1, res2;
   if (isX) {
-    res1 = fitsX_[bin1 - 1]->GetX(d);
-    res2 = fitsX_[bin2 - 1]->GetX(d);
+    res1 = fits_x_[bin1 - 1]->GetX(d);
+    res2 = fits_x_[bin2 - 1]->GetX(d);
   } else {
-    res1 = fitsY_[bin1 - 1]->GetX(d);
-    res2 = fitsY_[bin2 - 1]->GetX(d);
+    res1 = fits_y_[bin1 - 1]->GetX(d);
+    res2 = fits_y_[bin2 - 1]->GetX(d);
   }
 
   if (debug)
@@ -172,11 +171,11 @@ float TrigElectronProducer::getP(bool isX, float e, float d) {
 void TrigElectronProducer::onProcessStart() {
   ldmx_log(debug) << "Process starts!";
 
-  TFile* f = new TFile(propMapName_.c_str(), "read");
-  propMapx_ = (TProfile2D*)f->Get("profx");
-  propMapx_->SetDirectory(0);
-  propMapy_ = (TProfile2D*)f->Get("profy");
-  propMapy_->SetDirectory(0);
+  TFile* f = new TFile(prop_map_name_.c_str(), "read");
+  prop_mapx_ = (TProfile2D*)f->Get("profx");
+  prop_mapx_->SetDirectory(0);
+  prop_mapy_ = (TProfile2D*)f->Get("profy");
+  prop_mapy_->SetDirectory(0);
   f->Close();
 
   setupMaps(0);  // X
@@ -189,8 +188,8 @@ void TrigElectronProducer::onProcessEnd() {
   ldmx_log(debug) << "Process ends!";
 
   // free maps
-  for (int i = 0; i < fitsX_.size(); i++) delete fitsX_[i];
-  for (int i = 0; i < fitsY_.size(); i++) delete fitsY_[i];
+  for (int i = 0; i < fits_x_.size(); i++) delete fits_x_[i];
+  for (int i = 0; i < fits_y_.size(); i++) delete fits_y_[i];
 
   return;
 }

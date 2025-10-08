@@ -141,7 +141,7 @@ class CKFProcessor final : public TrackingGeometryUser {
   auto makeGeoIdSourceLinkMap(const geo::TrackersTrackingGeometry &tg,
                               const std::vector<ldmx::Measurement> &ldmxsps)
       -> std::unordered_multimap<Acts::GeometryIdentifier,
-                                 ActsExamples::IndexSourceLink>;
+                                 acts_examples::IndexSourceLink>;
 
   template <typename geometry_t, typename source_link_hash_t,
             typename source_link_equality_t>
@@ -165,8 +165,8 @@ class CKFProcessor final : public TrackingGeometryUser {
 
   bool debug_acts_{false};
 
-  std::shared_ptr<Acts::PlaneSurface> target_surface;
-  Acts::RotationMatrix3 surf_rotation;
+  std::shared_ptr<Acts::PlaneSurface> target_surface_;
+  Acts::RotationMatrix3 surf_rotation_;
   // Constant BField
   double bfield_{0};
   // Use constant bfield
@@ -176,14 +176,14 @@ class CKFProcessor final : public TrackingGeometryUser {
   bool remove_stereo_{false};
 
   // Use 2d measurements instead of 1D
-  bool use1Dmeasurements_{true};
+  bool use1_dmeasurements_{true};
 
   // Minimum number of hits on tracks
   int min_hits_{7};
 
   // Stepping size (in mm)
   double propagator_step_size_{200.};
-  int propagator_maxSteps_{1000};
+  int propagator_max_steps_{1000};
 
   // The extrapolation surface
   bool use_extrapolate_location_{true};
@@ -193,7 +193,7 @@ class CKFProcessor final : public TrackingGeometryUser {
   // The measurement collection to use for track reconstruction
   std::string measurement_collection_{"TaggerMeasurements"};
 
-  std::string simParticles_passName_;
+  std::string sim_particles_pass_name_;
   std::string sim_particles_event_passname_;
 
   // Outlier removal pvalue
@@ -239,7 +239,7 @@ class CKFProcessor final : public TrackingGeometryUser {
   };
 
   // Keep track on which system this processor is running on
-  bool taggerTracking_{true};
+  bool tagger_tracking_{true};
 
 };  // CKFProcessor
 

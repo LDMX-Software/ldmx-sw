@@ -6,29 +6,29 @@
 namespace recon {
 
 void TriggerProcessor::configure(framework::config::Parameters& parameters) {
-  layerESumCuts_ = parameters.getParameter<std::vector<double>>("thresholds");
-  beamEnergy_ = parameters.getParameter<double>("beamEnergy");
-  mode_ = parameters.getParameter<int>("mode");
-  startLayer_ = parameters.getParameter<int>("start_layer");
-  endLayer_ = parameters.getParameter<int>("end_layer");
-  inputColl_ = parameters.getParameter<std::string>("input_collection");
-  inputPass_ = parameters.getParameter<std::string>("input_pass");
-  outputColl_ = parameters.getParameter<std::string>("trigger_collection");
+  layer_e_sum_cuts_ = parameters.get<std::vector<double>>("thresholds");
+  beam_energy_ = parameters.get<double>("beamEnergy");
+  mode_ = parameters.get<int>("mode");
+  start_layer_ = parameters.get<int>("start_layer");
+  end_layer_ = parameters.get<int>("end_layer");
+  input_coll_ = parameters.get<std::string>("input_collection");
+  input_pass_ = parameters.get<std::string>("input_pass");
+  output_coll_ = parameters.get<std::string>("trigger_collection");
 
   if (mode_ == 0) {
-    algoName_ = "LayerSumTrig";
+    algo_name_ = "LayerSumTrig";
   } else if (mode_ == 1) {
-    algoName_ = "CenterTower";
+    algo_name_ = "CenterTower";
   }
 }
 
 void TriggerProcessor::produce(framework::Event& event) {
   /** Grab the Ecal hit collection for the given event */
-  const std::vector<ldmx::EcalHit> ecalRecHits =
-      event.getCollection<ldmx::EcalHit>(inputColl_, inputPass_);
+  const std::vector<ldmx::EcalHit> ecal_rec_hits =
+      event.getCollection<ldmx::EcalHit>(input_coll_, input_pass_);
 
   // number of electrons in this event
-  const int nElectrons{event.getElectronCount()};
+  const int n_electrons{event.getElectronCount()};
 
   /**
    * There are three scenarios:
@@ -45,25 +45,26 @@ void TriggerProcessor::produce(framework::Event& event) {
    *     a simple scaling might suffice there too assuming
    *     energy cuts are listed as [ Ecut_1e, Ecut_2e, ... ]
    */
-  double layerESumCut{0.};
-  if (nElectrons <= 0)
-    layerESumCut = 0.;  // always fail if no electrons
-  else if (nElectrons <= layerESumCuts_.size())
-    layerESumCut = layerESumCuts_.at(nElectrons - 1);
+  double layer_e_sum_cut{0.};
+  if (n_electrons <= 0)
+    layer_e_sum_cut = 0.;  // always fail if no electrons
+  else if (n_electrons <= layer_e_sum_cuts_.size())
+    layer_e_sum_cut = layer_e_sum_cuts_.at(n_electrons - 1);
   else
-    layerESumCut = layerESumCuts_.at(0) + (nElectrons - 1) * beamEnergy_;
+    layer_e_sum_cut =
+        layer_e_sum_cuts_.at(0) + (n_electrons - 1) * beam_energy_;
 
-  ldmx_log(info) << "Got trigger energy cut " << layerESumCut << " for "
-                 << nElectrons << " electrons counted in the event.";
+  ldmx_log(info) << "Got trigger energy cut " << layer_e_sum_cut << " for "
+                 << n_electrons << " electrons counted in the event.";
 
-  std::vector<double> layerDigiE(100, 0.0);  // big empty vector..
+  std::vector<double> layer_digi_e(100, 0.0);  // big empty vector..
 
-  /** Loop over all ecal hits in the given event */
-  for (const ldmx::EcalHit& hit : ecalRecHits) {
+  /** Loop over all ecal hits_ in the given event */
+  for (const ldmx::EcalHit& hit : ecal_rec_hits) {
     ldmx::EcalID id(hit.getID());
-    if (id.layer() < layerDigiE.size()) {  // just to be safe...
-      if (mode_ == 0) {  // Sum over all cells in a given layer
-        layerDigiE[id.layer()] += hit.getEnergy();
+    if (id.layer() < layer_digi_e.size()) {  // just to be safe...
+      if (mode_ == 0) {  // Sum over all cells in a given layer_
+        layer_digi_e[id.layer()] += hit.getEnergy();
       } else if (mode_ == 1) {  // Sum over cells in central tower only
                                 // std::pair<float, float> xyPos =
         // hit->getCellCentroidXYPair(hit->getID()); float cellRadius =
@@ -75,31 +76,31 @@ void TriggerProcessor::produce(framework::Event& event) {
     }
   }
 
-  float layerSum = 0;
+  float layer_sum = 0;
   bool pass = false;
 
-  for (int iL = startLayer_; iL < endLayer_; ++iL) {
-    layerSum += layerDigiE[iL];
+  for (int i_l = start_layer_; i_l < end_layer_; ++i_l) {
+    layer_sum += layer_digi_e[i_l];
   }
 
-  pass = (layerSum <= layerESumCut);
-  ldmx_log(info) << "Got trigger energy sum " << layerSum
+  pass = (layer_sum <= layer_e_sum_cut);
+  ldmx_log(info) << "Got trigger energy sum " << layer_sum
                  << "; and decision is pass = " << pass;
 
   ldmx::TriggerResult result;
-  result.set(algoName_, pass, 4);
-  result.setAlgoVar(0, layerSum);
-  result.setAlgoVar(1, layerESumCut);
-  result.setAlgoVar(2, endLayer_ - startLayer_);
-  result.setAlgoVar(3, nElectrons);
+  result.set(algo_name_, pass, 4);
+  result.setAlgoVar(0, layer_sum);
+  result.setAlgoVar(1, layer_e_sum_cut);
+  result.setAlgoVar(2, end_layer_ - start_layer_);
+  result.setAlgoVar(3, n_electrons);
 
-  event.add(outputColl_, result);
+  event.add(output_coll_, result);
 
   // mark the event
   if (pass)
-    setStorageHint(framework::hint_shouldKeep);
+    setStorageHint(framework::HINT_SHOULD_KEEP);
   else
-    setStorageHint(framework::hint_shouldDrop);
+    setStorageHint(framework::HINT_SHOULD_DROP);
 }
 }  // namespace recon
 

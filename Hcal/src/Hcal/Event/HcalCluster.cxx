@@ -3,18 +3,18 @@
 ClassImp(ldmx::HcalCluster);
 
 namespace ldmx {
-HcalCluster::~HcalCluster() { Clear(); }
+HcalCluster::~HcalCluster() { clear(); }
 
-void HcalCluster::Clear() {
-  ldmx::CaloCluster::Clear();
+void HcalCluster::clear() {
+  ldmx::CaloCluster::clear();
   time_ = 0;
 }
 
 void HcalCluster::addHits(const std::vector<const HcalHit *> hitsVec) {
-  std::vector<unsigned int> vecIDs;
-  for (unsigned int iHit = 0; iHit < hitsVec.size(); iHit++) {
-    vecIDs.push_back(hitsVec[iHit]->getID());
+  std::vector<unsigned int> vec_i_ds;
+  for (unsigned int i_hit = 0; i_hit < hitsVec.size(); i_hit++) {
+    vec_i_ds.push_back(hitsVec[i_hit]->getID());
   }
-  setIDs(vecIDs);
+  setIDs(vec_i_ds);
 }
 }  // namespace ldmx

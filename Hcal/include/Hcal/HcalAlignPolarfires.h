@@ -14,38 +14,39 @@ namespace hcal {
  * - assuming spill numbering is NOT the same between the two DPMs
  */
 class HcalAlignPolarfires : public framework::Producer {
-  /// input decoded objects (vector index == polarfire index)
+  /// input decoded objects (vector index == polarfire index_)
   std::vector<std::string> input_names_;
   /// pass name for decoded objects
   std::string input_pass_;
   /// output object name
   std::string output_name_;
   /// number of 5MHz ticks difference to consider polarfires aligned
-  static int max_tick_diff_;
+  static int max_tick_diff;
 
  public:
   struct PolarfireQueueEntry {
     /// the i'th spill
-    int spill;
+    int spill_;
     /// ticks since spill
-    int ticks;
-    ldmx::HgcrocDigiCollection digis;
+    int ticks_;
+    ldmx::HgcrocDigiCollection digis_;
     PolarfireQueueEntry(const framework::Event& event,
                         const std::string& input_name,
                         const std::string& input_pass,
                         std::pair<int, int>& spill_counter);
-    bool same_event(const PolarfireQueueEntry& rhs) {
-      return (spill == rhs.spill and abs(ticks - rhs.ticks) < max_tick_diff_);
+    bool sameEvent(const PolarfireQueueEntry& rhs) {
+      return (spill_ == rhs.spill_ and
+              abs(ticks_ - rhs.ticks_) < max_tick_diff);
     }
-    bool earlier_event(const PolarfireQueueEntry& rhs) {
-      if (spill == rhs.spill) return ticks < rhs.ticks;
-      return spill < rhs.spill;
+    bool earlierEvent(const PolarfireQueueEntry& rhs) {
+      if (spill_ == rhs.spill_) return ticks_ < rhs.ticks_;
+      return spill_ < rhs.spill_;
     }
   };
   /// queue of unmatched digis
-  std::queue<PolarfireQueueEntry> pf0_queue, pf1_queue;
+  std::queue<PolarfireQueueEntry> pf0_queue_, pf1_queue_;
   /// spill counter
-  std::pair<int, int> pf0_spill_counter{0, -1}, pf1_spill_counter{0, -1};
+  std::pair<int, int> pf0_spill_counter_{0, -1}, pf1_spill_counter_{0, -1};
 
  public:
   HcalAlignPolarfires(const std::string& n, framework::Process& p)

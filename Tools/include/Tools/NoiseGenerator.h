@@ -1,6 +1,6 @@
 /**
  * @file NoiseGenerator.h
- * @brief Utility used to generate noise hits.
+ * @brief Utility used to generate noise hits_.
  * @author Omar Moreno, SLAC National Accelerator Laboratory
  */
 
@@ -45,17 +45,17 @@ class NoiseGenerator {
   bool hasSeed() const { return random_.get() != nullptr; }
 
   /**
-   * Generate noise hits.
+   * Generate noise hits_.
    *
    * @param emptyChannels The total number of channels without a hit
    *                      on them.
-   * @return A vector containing the amplitude of the noise hits.
+   * @return A vector containing the amplitude of the noise hits_.
    */
   std::vector<double> generateNoiseHits(int emptyChannels);
 
   /** Set the noise threshold. */
   void setNoiseThreshold(double noiseThreshold) {
-    noiseThreshold_ = noiseThreshold;
+    noise_threshold_ = noiseThreshold;
   }
 
   /** Set the mean noise. */
@@ -69,7 +69,7 @@ class NoiseGenerator {
   std::unique_ptr<TRandom3> random_{nullptr};
 
   /** The noise threshold. */
-  double noiseThreshold_{4};
+  double noise_threshold_{4};
 
   /** Mean noise. */
   double noise_{1};
@@ -78,7 +78,7 @@ class NoiseGenerator {
   double pedestal_{0};
 
   /** Gaussian flag */
-  bool useGaussianModel_{true};
+  bool use_gaussian_model_{true};
 
   /** pdf for poisson errors */
   std::unique_ptr<boost::math::poisson_distribution<> > poisson_dist_;

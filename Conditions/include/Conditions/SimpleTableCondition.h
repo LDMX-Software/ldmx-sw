@@ -26,29 +26,29 @@ class BaseTableCondition : public framework::ConditionsObject {
                      const std::vector<std::string>& columns)
       : framework::ConditionsObject{name},
         columns_{columns},
-        idMask_{0xFFFFFFFFu} {
-    columnCount_ = (unsigned int)(columns.size());
+        id_mask_{0xFFFFFFFFu} {
+    column_count_ = (unsigned int)(columns.size());
   }
 
   /**
    * Get a the column number for the given column name
    */
   unsigned int getColumnNumber(const std::string& colname) const {
-    for (unsigned int i = 0; i < columnCount_; i++)
+    for (unsigned int i = 0; i < column_count_; i++)
       if (colname == columns_[i]) return i;
-    return columnCount_;
+    return column_count_;
   }
 
   /**
    * Get the number of columns
    */
-  unsigned int getColumnCount() const { return columnCount_; }
+  unsigned int getColumnCount() const { return column_count_; }
 
   /**
    * Get the name of the given column
    */
   const std::string& getColumnName(unsigned int icol) const {
-    if (icol >= columnCount_) {
+    if (icol >= column_count_) {
       EXCEPTION_RAISE("ConditionsException",
                       std::string("Column index out of range in ") + getName());
     }
@@ -80,13 +80,13 @@ class BaseTableCondition : public framework::ConditionsObject {
    * Set an AND mask to be applied to the id.  Typically used to "flatten" a
    * table in some manner.
    */
-  void setIdMask(unsigned int mask) { idMask_ = mask; }
+  void setIdMask(unsigned int mask) { id_mask_ = mask; }
 
   /**
    * Get the AND mask to be applied to the id.  Typically used to "flatten" a
    * table in some manner.
    */
-  unsigned int getIdMask() const { return idMask_; }
+  unsigned int getIdMask() const { return id_mask_; }
 
   /**
    * Streams a given row of this table
@@ -101,9 +101,9 @@ class BaseTableCondition : public framework::ConditionsObject {
   std::size_t findKeyInsert(unsigned int id) const;
 
   std::vector<std::string> columns_;
-  unsigned int columnCount_;
+  unsigned int column_count_;
   std::vector<uint32_t> keys_;
-  unsigned int idMask_;
+  unsigned int id_mask_;
 };
 
 template <class T>
@@ -125,12 +125,12 @@ class HomogenousTableCondition : public BaseTableCondition {
 
   /** Add an entry to the table */
   void add(unsigned int id, const std::vector<T>& values) {
-    if (values.size() != columnCount_) {
+    if (values.size() != column_count_) {
       EXCEPTION_RAISE("ConditionsException",
                       getName() + ": Attempted to insert a row with " +
                           std::to_string(values.size()) +
                           " columns into a table with " +
-                          std::to_string(columnCount_) + " columns");
+                          std::to_string(column_count_) + " columns");
     }
     std::size_t loc = findKey(id);
     if (loc != getRowCount()) {
@@ -143,7 +143,7 @@ class HomogenousTableCondition : public BaseTableCondition {
     // insert into the keys
     keys_.insert(keys_.begin() + loc, id);
     // insert into the values
-    values_.insert(values_.begin() + loc * columnCount_, values.begin(),
+    values_.insert(values_.begin() + loc * column_count_, values.begin(),
                    values.end());
   }
 
@@ -153,12 +153,12 @@ class HomogenousTableCondition : public BaseTableCondition {
    */
   T get(unsigned int id, unsigned int col) const {
     std::size_t irow = findKey(id);
-    if (col >= columnCount_ || irow == getRowCount()) {  // raise exception
+    if (col >= column_count_ || irow == getRowCount()) {  // raise exception
       EXCEPTION_RAISE("ConditionsException",
                       "No such column " + std::to_string(col) + " or id " +
                           std::to_string(id));
     }
-    return values_[irow * columnCount_ + col];
+    return values_[irow * column_count_ + col];
   }
 
   /**
@@ -170,8 +170,8 @@ class HomogenousTableCondition : public BaseTableCondition {
       EXCEPTION_RAISE("ConditionsException",
                       "Row out of range: " + std::to_string(irow));
     }
-    std::vector<T> rv(&(values_[irow * columnCount_]),
-                      &(values_[(irow + 1) * columnCount_]));
+    std::vector<T> rv(&(values_[irow * column_count_]),
+                      &(values_[(irow + 1) * column_count_]));
     return std::pair<unsigned int, std::vector<T> >(keys_[irow], rv);
   }
 
@@ -194,8 +194,8 @@ class HomogenousTableCondition : public BaseTableCondition {
                       "Row out of range: " + std::to_string(irow));
     }
     s << keys_[irow];
-    for (int i = 0; i < columnCount_; i++)
-      s << ',' << values_[irow * columnCount_ + i];
+    for (int i = 0; i < column_count_; i++)
+      s << ',' << values_[irow * column_count_ + i];
     return s << std::endl;
   }
 

@@ -4,7 +4,8 @@ p = ldmxcfg.Process('test')
 p.maxTriesPerEvent = 10000
 
 from LDMX.Biasing import target
-det = 'ldmx-det-v14-8gev'
+from LDMX.SimCore import generators
+det = 'ldmx-det-v15-8gev'
 mySim = target.dark_brem(
     #A' mass in MeV - set in init.sh to same value in GeV
     10.0,
@@ -12,7 +13,8 @@ mySim = target.dark_brem(
     #   easiest way to find this path out is by running `. init.sh` locally to see what
     #   is produced
     'electron_tungsten_MaxE_8.0_MinE_4.0_RelEStep_0.1_UndecayedAP_mA_0.01_run_1',
-    det
+    det,
+    generators.single_8gev_e_upstream_tagger()
 )
 
 p.sequence = [ mySim ]
@@ -73,6 +75,7 @@ from LDMX.DQM import dqm
 # Load ecal veto and use tracking in it
 ecalVeto = ecal_vetos.EcalVetoProcessor()
 ecalMip = ecal_vetos.EcalMipProcessor()
+ecal_veto_pnet = ecal_vetos.EcalPnetVetoProcessor()
 
 # Load HCAL veto
 import LDMX.Hcal.hcal as hcal
@@ -92,6 +95,7 @@ p.sequence.extend([
         ecal_digi.EcalRecProducer(), 
         ecalVeto,
         ecalMip,
+        ecal_veto_pnet,
         hcal_digi_reco,
         hcal_veto,
         *ts_digis,

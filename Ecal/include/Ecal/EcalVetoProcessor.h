@@ -12,6 +12,7 @@
 #include "DetDescr/EcalGeometry.h"
 #include "DetDescr/EcalID.h"
 #include "DetDescr/SimSpecialID.h"
+#include "Ecal/EcalHelper.h"
 #include "Ecal/Event/EcalHit.h"
 #include "Ecal/Event/EcalTrajectoryInfo.h"
 #include "Ecal/Event/EcalVetoResult.h"
@@ -21,7 +22,6 @@
 #include "SimCore/Event/SimTrackerHit.h"
 #include "Tools/AnalysisUtils.h"
 #include "Tools/ONNXRuntime.h"
-#include "Tracking/Event/Track.h"
 
 // C++
 #include <stdlib.h>
@@ -33,8 +33,8 @@
 #include <map>
 #include <memory>
 
-// ROOT (for anle calculations)
-#include "TVector3.h"
+// ROOT (for angle calculations)
+#include "Math/Vector3D.h"
 
 namespace ecal {
 
@@ -79,7 +79,7 @@ class EcalVetoProcessor : public framework::Producer {
   void clearProcessor();
 
   /* Function to calculate the energy weighted shower centroid */
-  ldmx::EcalID GetShowerCentroidIDAndRMS(
+  ldmx::EcalID getShowerCentroidIdAndRms(
       const std::vector<ldmx::EcalHit>& ecal_rec_hits, float& shower_rms);
 
   /* Function to load up empty vector of hit maps */
@@ -97,40 +97,6 @@ class EcalVetoProcessor : public framework::Producer {
                                       std::array<float, 3> position);
 
   void buildBDTFeatureVector(const ldmx::EcalVetoResult& result);
-
-  // MIP tracking
-  /**
-   * Returns the distance between the lines v and w, with v defined to pass
-   * through the points (v1,v2) (and similarly for w).
-   *
-   * @param[in] v1 An arbitrary point on line v
-   * @param[in] v2 A second, distinct point on line v
-   * @param[in] w1 An arbitrary point on line w
-   * @param[in] w2 A second, distinct point on line w
-   * @returns Closest distance of approach of lines u and v
-   */
-  float distTwoLines(TVector3 v1, TVector3 v2, TVector3 w1, TVector3 w2);
-  /**
-   * Return the minimum distance between the point h1 and the line passing
-   * through points p1 and p2.
-   *
-   * @param[in] h1 Point to find the distance to
-   * @param[in] p1 An arbitrary point on the line
-   * @param[in] p2 A second, distinct point on the line
-   * @returns Minimum distance between h1 and the line
-   */
-  float distPtToLine(TVector3 h1, TVector3 p1, TVector3 p2);
-
-  /**
-   * Return a vector of parameters for a propagated recoil track
-   * @param[in] tracks The track collection
-   * @param[in] ts_type The track state type, i.e. tracks state at the ECAL face
-   * @param[in] ts_title The track state title, most likely "ecal"
-   * @returns Vector of parameters for a propagated recoil track
-   */
-  std::vector<float> trackProp(const ldmx::Tracks& tracks,
-                               ldmx::TrackStateType ts_type,
-                               const std::string& ts_title);
 
  private:
   int nevents_{0};
@@ -200,7 +166,7 @@ class EcalVetoProcessor : public framework::Producer {
   /** Name of the collection which will containt the results. */
   std::string collection_name_{"EcalVeto"};
 
-  std::unique_ptr<ldmx::Ort::ONNXRuntime> rt_;
+  std::unique_ptr<ldmx::ort::ONNXRuntime> rt_;
 
   /// handle to current geometry (to share with member functions)
   const ldmx::EcalGeometry* geometry_;

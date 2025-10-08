@@ -15,7 +15,7 @@
 namespace simcore::g4user {
 
 void TrackingAction::PreUserTrackingAction(const G4Track* track) {
-  if (not trackMap_.contains(track)) {
+  if (not track_map_.contains(track)) {
     // New Track
 
     // get track information and initialize our new track
@@ -24,19 +24,19 @@ void TrackingAction::PreUserTrackingAction(const G4Track* track) {
     track_info->initialize(track);
 
     // Get the region info for where the track was created (could be NULL)
-    auto regionInfo = (UserRegionInformation*)track->GetLogicalVolumeAtVertex()
-                          ->GetRegion()
-                          ->GetUserInformation();
+    auto region_info = (UserRegionInformation*)track->GetLogicalVolumeAtVertex()
+                           ->GetRegion()
+                           ->GetUserInformation();
 
     // Get the gen status if track was primary
-    int curGenStatus = -1;
+    int cur_gen_status = -1;
     if (track->GetDynamicParticle()->GetPrimaryParticle()) {
-      auto primaryInfo = dynamic_cast<UserPrimaryParticleInformation*>(
+      auto primary_info = dynamic_cast<UserPrimaryParticleInformation*>(
           track->GetDynamicParticle()
               ->GetPrimaryParticle()
               ->GetUserInformation());
-      if (primaryInfo) {
-        curGenStatus = primaryInfo->getHepEvtStatus();
+      if (primary_info) {
+        cur_gen_status = primary_info->getHepEvtStatus();
       }
     }
 
@@ -52,23 +52,24 @@ void TrackingAction::PreUserTrackingAction(const G4Track* track) {
      *  For example, this happens if the user wants to save the
      *  secondaries of a particular track.
      */
-    if (curGenStatus == 1 or !regionInfo or regionInfo->getStoreSecondaries()) {
+    if (cur_gen_status == 1 or !region_info or
+        region_info->getStoreSecondaries()) {
       track_info->setSaveFlag(true);
     }
 
     // insert this track into the event's track map
-    trackMap_.insert(track);
+    track_map_.insert(track);
   }
 
   // Activate user tracking actions
-  for (auto& trackingAction : trackingActions_)
-    trackingAction->PreUserTrackingAction(track);
+  for (auto& tracking_action : tracking_actions_)
+    tracking_action->PreUserTrackingAction(track);
 }
 
 void TrackingAction::PostUserTrackingAction(const G4Track* track) {
   // Activate user tracking actions
-  for (auto& trackingAction : trackingActions_)
-    trackingAction->PostUserTrackingAction(track);
+  for (auto& tracking_action : tracking_actions_)
+    tracking_action->PostUserTrackingAction(track);
 
   /**
    * If a track is to-be saved and it is being killed,
@@ -80,7 +81,7 @@ void TrackingAction::PostUserTrackingAction(const G4Track* track) {
   auto track_info{UserTrackInformation::get(track)};
   if (track_info->getSaveFlag() and
       track->GetTrackStatus() == G4TrackStatus::fStopAndKill) {
-    trackMap_.save(track);
+    track_map_.save(track);
   }
 }
 

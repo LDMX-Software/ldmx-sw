@@ -43,9 +43,9 @@ class TrigScintClusterDQM : public framework::Analyzer {
 
  private:
   /** Name of trigger pad cluster  collection. */
-  std::string clusterCollectionName_{"TriggerPadUpClusters"};
-  std::string padName_{"_up"};
-  std::string passName_{""};
+  std::string cluster_collection_name_{"TriggerPadUpClusters"};
+  std::string pad_name_{"_up"};
+  std::string pass_name_{""};
 };
 
 }  // namespace dqm

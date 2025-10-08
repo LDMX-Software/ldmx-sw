@@ -76,7 +76,7 @@ class GenieGenerator : public simcore::PrimaryGenerator {
    * The GENIE event generator driver and convertor to HepMC3GenEvent
    */
   genie::GEVGDriver evg_driver_;
-  genie::HepMC3Converter hepMC3Converter_;
+  genie::HepMC3Converter hep_mc3_converter_;
 
   double energy_;
   std::vector<int> targets_;

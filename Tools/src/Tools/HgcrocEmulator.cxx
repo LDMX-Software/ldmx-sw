@@ -6,40 +6,40 @@ namespace ldmx {
 HgcrocEmulator::HgcrocEmulator(const framework::config::Parameters &ps) {
   // settings of readout chip that are the same for all chips
   //  used  in actual digitization
-  noise_ = ps.getParameter<bool>("noise");
-  timingJitter_ = ps.getParameter<double>("timingJitter");
-  rateUpSlope_ = ps.getParameter<double>("rateUpSlope");
-  timeUpSlope_ = ps.getParameter<double>("timeUpSlope");
-  rateDnSlope_ = ps.getParameter<double>("rateDnSlope");
-  timeDnSlope_ = ps.getParameter<double>("timeDnSlope");
-  timePeak_ = ps.getParameter<double>("timePeak");
-  clockCycle_ = ps.getParameter<double>("clockCycle");
-  nADCs_ = ps.getParameter<int>("nADCs");
-  iSOI_ = ps.getParameter<int>("iSOI");
+  noise_ = ps.get<bool>("noise");
+  timing_jitter_ = ps.get<double>("timingJitter");
+  rate_up_slope_ = ps.get<double>("rateUpSlope");
+  time_up_slope_ = ps.get<double>("timeUpSlope");
+  rate_dn_slope_ = ps.get<double>("rateDnSlope");
+  time_dn_slope_ = ps.get<double>("timeDnSlope");
+  time_peak_ = ps.get<double>("timePeak");
+  clock_cycle_ = ps.get<double>("clockCycle");
+  n_ad_cs_ = ps.get<int>("nADCs");
+  i_soi_ = ps.get<int>("iSOI");
 
   // Time -> clock counts conversion
   //  time [ns] * ( 2^10 / max time in ns ) = clock counts
-  ns_ = 1024. / clockCycle_;
+  ns_ = 1024. / clock_cycle_;
 
   hit_merge_ns_ = 0.05;  // combine at 50 ps level
 
   // Configure the pulse shape function
-  pulseFunc_ =
+  pulse_func_ =
       TF1("pulseFunc",
           "[0]*((1.0+exp([1]*(-[2]+[3])))*(1.0+exp([5]*(-[6]+[3]))))/"
           "((1.0+exp([1]*(x-[2]+[3]-[4])))*(1.0+exp([5]*(x-[6]+[3]-[4]))))",
-          0.0, (double)nADCs_ * clockCycle_);
-  pulseFunc_.FixParameter(0, 1.0);  // amplitude is set externally
-  pulseFunc_.FixParameter(1, rateUpSlope_);
-  pulseFunc_.FixParameter(2, timeUpSlope_);
-  pulseFunc_.FixParameter(3, timePeak_);
-  pulseFunc_.FixParameter(4, 0);  // not using time offset in this way
-  pulseFunc_.FixParameter(5, rateDnSlope_);
-  pulseFunc_.FixParameter(6, timeDnSlope_);
+          0.0, (double)n_ad_cs_ * clock_cycle_);
+  pulse_func_.FixParameter(0, 1.0);  // amplitude is set externally
+  pulse_func_.FixParameter(1, rate_up_slope_);
+  pulse_func_.FixParameter(2, time_up_slope_);
+  pulse_func_.FixParameter(3, time_peak_);
+  pulse_func_.FixParameter(4, 0);  // not using time offset in this way
+  pulse_func_.FixParameter(5, rate_dn_slope_);
+  pulse_func_.FixParameter(6, time_dn_slope_);
 }
 
 void HgcrocEmulator::seedGenerator(uint64_t seed) {
-  noiseInjector_ = std::make_unique<TRandom3>(seed);
+  noise_injector_ = std::make_unique<TRandom3>(seed);
 }
 
 bool HgcrocEmulator::digitize(
@@ -50,19 +50,19 @@ bool HgcrocEmulator::digitize(
   digiToAdd.clear();  // make sure it is clean
 
   // Configure chip settings based off of table (that may have been passed)
-  double totMax = getCondition(channelID, "TOT_MAX");
-  double padCapacitance = getCondition(channelID, "PAD_CAPACITANCE");
+  double tot_max = getCondition(channelID, "TOT_MAX");
+  double pad_capacitance = getCondition(channelID, "PAD_CAPACITANCE");
   double gain = this->gain(channelID);
   double pedestal = this->pedestal(channelID);
-  double toaThreshold = getCondition(channelID, "TOA_THRESHOLD");
-  double totThreshold = getCondition(channelID, "TOT_THRESHOLD");
+  double toa_threshold = getCondition(channelID, "TOA_THRESHOLD");
+  double tot_threshold = getCondition(channelID, "TOT_THRESHOLD");
   // measTime defines the point in the BX where an in-time
   //  (time=0 in times vector) hit would arrive.
   // Used to determine BX boundaries and TOA behavior.
-  double measTime = getCondition(channelID, "MEAS_TIME");
-  double drainRate = getCondition(channelID, "DRAIN_RATE");
-  double readoutThresholdFloat = this->readoutThreshold(channelID);
-  int readoutThreshold = int(readoutThresholdFloat);
+  double meas_time = getCondition(channelID, "MEAS_TIME");
+  double drain_rate = getCondition(channelID, "DRAIN_RATE");
+  double readout_threshold_float = this->readoutThreshold(channelID);
+  int readout_threshold = int(readout_threshold_float);
 
   // sort by amplitude
   //  ==> makes sure that puleses are merged towards higher ones
@@ -73,7 +73,7 @@ bool HgcrocEmulator::digitize(
 
   // step 1: gather voltages into groups separated by (programmable) ns, single
   // pass
-  ldmx::CompositePulse pulse(pulseFunc_, gain, pedestal);
+  ldmx::CompositePulse pulse(pulse_func_, gain, pedestal);
 
   for (auto hit : arriving_pulses) pulse.addOrMerge(hit, hit_merge_ns_);
 
@@ -83,116 +83,118 @@ bool HgcrocEmulator::digitize(
   /// the time here is nominal (zero gives peak if hit.second is zero)
 
   // step 3: go through each BX sample one by one
-  bool wasTOA = false;
-  for (int iADC = 0; iADC < nADCs_; iADC++) {
-    double startBX = (iADC - iSOI_) * clockCycle_ - measTime;
-    ldmx_log(trace) << "  iADC = " << iADC << " at startBX = " << startBX;
+  bool was_toa = false;
+  for (int i_adc = 0; i_adc < n_ad_cs_; i_adc++) {
+    double start_bx = (i_adc - i_soi_) * clock_cycle_ - meas_time;
+    ldmx_log(trace) << "  iADC = " << i_adc << " at startBX = " << start_bx;
 
     // step 3b: check each merged hit to see if it peaks in this BX.  If so,
     // check its peak time to see if it's over TOT or TOA.
-    bool startTOT = false;
-    bool overTOA = false;
-    double toverTOA = -1;
-    double toverTOT = -1;
+    bool start_tot = false;
+    bool over_toa = false;
+    double tover_toa = -1;
+    double tover_tot = -1;
     for (auto hit : pulse.hits()) {
-      int hitBX = int((hit.second + measTime) / clockCycle_ + iSOI_);
+      int hit_bx = int((hit.second + meas_time) / clock_cycle_ + i_soi_);
       // if this hit wasn't in the current BX, continue...
-      if (hitBX != iADC) {
+      if (hit_bx != i_adc) {
         continue;
       }
 
       double vpeak = pulse(hit.second);
 
-      if (vpeak > totThreshold) {
-        startTOT = true;
+      if (vpeak > tot_threshold) {
+        start_tot = true;
         // use the latest time in the window
-        if (toverTOT < hit.second) {
-          toverTOT = hit.second;
+        if (tover_tot < hit.second) {
+          tover_tot = hit.second;
         }
       }
 
-      if (vpeak > toaThreshold) {
-        if (!overTOA || hit.second < toverTOA) toverTOA = hit.second;
-        overTOA = true;
+      if (vpeak > toa_threshold) {
+        if (!over_toa || hit.second < tover_toa) tover_toa = hit.second;
+        over_toa = true;
       }
 
-    }  // loop over sim hits
+    }  // loop over sim hits_
 
     // check for the case of a TOA even though the peak is in the next BX
-    if (!overTOA && pulse(startBX + clockCycle_) > toaThreshold) {
-      if (pulse(startBX) < toaThreshold) {
+    if (!over_toa && pulse(start_bx + clock_cycle_) > toa_threshold) {
+      if (pulse(start_bx) < toa_threshold) {
         // pulse crossed TOA threshold somewhere between the start of this
         // basket and the end
-        overTOA = true;
-        toverTOA = startBX + clockCycle_;
+        over_toa = true;
+        tover_toa = start_bx + clock_cycle_;
       }
     }
 
-    if (startTOT) {
+    if (start_tot) {
       // above TOT threshold -> do TOT readout mode
 
       // @TODO NO NOISE
       //  CompositePulse includes pedestal, we need to remove it
       //  when calculating the charge deposited.
       double charge_deposited =
-          (pulse(toverTOT) - gain * pedestal) * padCapacitance;
+          (pulse(tover_tot) - gain * pedestal) * pad_capacitance;
 
       // Measure Time Over Threshold (TOT) by using the drain rate.
       //  1. Use drain rate to see how long it takes for the charge to drain off
       //  2. Translate this into DIGI samples
 
       // Assume linear drain with slope drain rate:
-      //      y-intercept = pulse amplitude
+      //      y_-intercept = pulse amplitude
       //      slope       = drain rate
       //  ==> x-intercept = amplitude / rate
       // actual time over threshold using the real signal voltage amplitude
-      double tot = charge_deposited / drainRate;
+      double tot = charge_deposited / drain_rate;
       ldmx_log(trace) << "    we are in TOT read-out mode, TOT = " << tot;
 
       // calculate the TDC counts for this tot measurement
       //  internally, the chip uses 12 bits (2^12 = 4096)
       //  to measure a maximum of tot Max [ns]
-      int tdc_counts = int(tot * 4096 / totMax) + pedestal;
+      int tdc_counts = int(tot * 4096 / tot_max) + pedestal;
 
       // were we already over TOA?  TOT is reported in BX where TOA went over
       // threshold...
       int toa{0};
-      if (wasTOA) {
+      if (was_toa) {
         // TOA was in the past
         toa = digiToAdd.back().toa();
       } else {
         // TOA is here and we need to find it
-        double timecross = pulse.findCrossing(startBX, toverTOT, toaThreshold);
-        toa = int((timecross - startBX) * ns_);
+        double timecross =
+            pulse.findCrossing(start_bx, tover_tot, toa_threshold);
+        toa = int((timecross - start_bx) * ns_);
         // keep inside valid limits
         if (toa == 0) toa = 1;
         if (toa > 1023) toa = 1023;
       }
       ldmx_log(trace) << "    Adding TOT hit with toa = " << toa
                       << ", tdc_counts = " << tdc_counts
-                      << " adc_t at prev iADC = "
-                      << digiToAdd.at(iADC - 1).adc_t();
+                      << " adcT at prev iADC = "
+                      << digiToAdd.at(i_adc - 1).adcT();
       // ADC at t-1
       auto adc_at_tminus1 =
-          (iADC > 0) ? digiToAdd.at(iADC - 1).adc_t() : pedestal;
+          (i_adc > 0) ? digiToAdd.at(i_adc - 1).adcT() : pedestal;
       auto i_tot_sample = digiToAdd.size();
       // mark as a TOT measurement with 2nd boolean as true
       digiToAdd.emplace_back(false, true, adc_at_tminus1, tdc_counts, toa);
 
       // TODO: properly handle saturation and recovery, eventually.
       // Now just kill everything...
-      ldmx_log(trace) << "   Adding further hits with ADC [t-1] = 0x3FF, toa = "
-                         "0x3FF, until digiToAdd.size() = "
-                      << digiToAdd.size() << " < nADCs_(" << nADCs_ << ")";
-      while (digiToAdd.size() < nADCs_) {
+      ldmx_log(trace)
+          << "   Adding further hits_ with ADC [t-1] = 0x3FF, toa = "
+             "0x3FF, until digiToAdd.size() = "
+          << digiToAdd.size() << " < n_ad_cs_(" << n_ad_cs_ << ")";
+      while (digiToAdd.size() < n_ad_cs_) {
         // flags to mark type of sample
         digiToAdd.emplace_back(true, false, 0x3FF, 0x3FF, 0);
       }
       // Read out if the toa is within one Bx after nominal
-      return (i_tot_sample <= iSOI_ + 1);
+      return (i_tot_sample <= i_soi_ + 1);
     } else {
       // determine the voltage at the sampling time
-      double bxvolts = pulse((iADC - iSOI_) * clockCycle_);
+      double bxvolts = pulse((i_adc - i_soi_) * clock_cycle_);
       // add noise if requested
       if (noise_) bxvolts += noise(channelID);
       // convert to integer and keep in range (handle low and high saturation)
@@ -203,33 +205,34 @@ bool HgcrocEmulator::digitize(
 
       // check for TOA
       int toa(0);
-      if (pulse(startBX) < toaThreshold && overTOA) {
-        double timecross = pulse.findCrossing(startBX, toverTOA, toaThreshold);
-        toa = int((timecross - startBX) * ns_);
+      if (pulse(start_bx) < toa_threshold && over_toa) {
+        double timecross =
+            pulse.findCrossing(start_bx, tover_toa, toa_threshold);
+        toa = int((timecross - start_bx) * ns_);
         // keep inside valid limits
         if (toa == 0) toa = 1;
         if (toa > 1023) toa = 1023;
-        wasTOA = true;
+        was_toa = true;
       } else {
-        wasTOA = false;
+        was_toa = false;
       }
       // ADC at t-1
       auto adc_t_minus1 =
-          (iADC > 0) ? digiToAdd.at(iADC - 1).adc_t() : pedestal;
+          (i_adc > 0) ? digiToAdd.at(i_adc - 1).adcT() : pedestal;
 
       digiToAdd.emplace_back(false, false, adc_t_minus1, adc, toa);
     }  // TOT or ADC Mode
   }  // sampling baskets
 
-  if (savePulseTruthInfo_)
-    pulseTruthColl_->push_back(ldmx::HgcrocPulseTruth(channelID, pulse));
+  if (save_pulse_truth_info_)
+    pulse_truth_coll_->push_back(ldmx::HgcrocPulseTruth(channelID, pulse));
 
   // we only get here if we never went into TOT mode
   // check the SOI to see if we should read out
-  ldmx_log(trace) << "  we are adding the hit IFF iSOI= " << iSOI_
-                  << "'s adc_t = " << digiToAdd.at(iSOI_).adc_t()
-                  << " >= thresh (" << readoutThreshold << ")";
-  return digiToAdd.at(iSOI_).adc_t() >= readoutThreshold;
+  ldmx_log(trace) << "  we are adding the hit IFF iSOI= " << i_soi_
+                  << "'s adc_t = " << digiToAdd.at(i_soi_).adcT()
+                  << " >= thresh (" << readout_threshold << ")";
+  return digiToAdd.at(i_soi_).adcT() >= readout_threshold;
 }  // HgcrocEmulator::digitize
 
 std::vector<ldmx::HgcrocDigiCollection::Sample> HgcrocEmulator::noiseDigi(
@@ -239,19 +242,19 @@ std::vector<ldmx::HgcrocDigiCollection::Sample> HgcrocEmulator::noiseDigi(
   double gain{this->gain(channel)};
   // fill a digi with noise samples
   std::vector<ldmx::HgcrocDigiCollection::Sample> noise_digi;
-  for (int iADC{0}; iADC < nADCs_; iADC++) {
+  for (int i_adc{0}; i_adc < n_ad_cs_; i_adc++) {
     // gen noise for ADC samples
     // ADC at t-1
     int adc_tm1{static_cast<int>(pedestal)};
-    if (iADC > 0) {
-      adc_tm1 = noise_digi.at(iADC - 1).adc_t();
+    if (i_adc > 0) {
+      adc_tm1 = noise_digi.at(i_adc - 1).adcT();
     } else {
       adc_tm1 += noise(channel) / gain;
     }
     // ADC at t
     int adc_t{static_cast<int>(pedestal + noise(channel) / gain)};
 
-    if (iADC == iSOI_) adc_t += soi_amplitude / gain;
+    if (i_adc == i_soi_) adc_t += soi_amplitude / gain;
 
     // set toa to 0 (not determined)
     // put new sample into noise digi

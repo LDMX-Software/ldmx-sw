@@ -3,10 +3,9 @@
 ClassImp(ldmx::TrackDeDxMassEstimate);
 
 namespace ldmx {
-TrackDeDxMassEstimate::TrackDeDxMassEstimate() {}
 
-void TrackDeDxMassEstimate::Clear() {
-  theIh_ = -1.0;
+void TrackDeDxMassEstimate::clear() {
+  the_ih_ = -1.0;
   momentum_ = 9999.0;
   mass_ = 0.;
   track_index_ = -1;
@@ -14,12 +13,12 @@ void TrackDeDxMassEstimate::Clear() {
   pdg_id_ = 0;
 }
 
-void TrackDeDxMassEstimate::Print() const {
-  std::cout << "TrackDeDxMassEstimate { " << "Momentum: " << momentum_ << ", "
-            << "Ih: " << theIh_ << ", " << "Mass: " << mass_ << ", "
-            << "Track Index: " << track_index_ << ", "
-            << "Track Type: " << track_type_ << " }" << "PDG ID: " << pdg_id_
-            << " }" << std::endl;
+std::ostream& operator<<(std::ostream& o, const TrackDeDxMassEstimate& c) {
+  return o << "TrackDeDxMassEstimate { " << "Momentum: " << c.momentum_ << ", "
+           << "Ih: " << c.the_ih_ << ", " << "Mass: " << c.mass_ << ", "
+           << "Track Index: " << c.track_index_ << ", "
+           << "Track Type: " << c.track_type_ << " }" << "PDG ID: " << c.pdg_id_
+           << " }";
 }
 
 }  // namespace ldmx

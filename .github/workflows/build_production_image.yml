@@ -19,8 +19,6 @@ jobs:
     -
       name: Set up just
       uses: extractions/setup-just@v3
-      with:
-        just-version: 1.26.0
     -
       name: Login to DockerHub
       uses: docker/login-action@v3
@@ -29,7 +27,7 @@ jobs:
         password: ${{ secrets.DOCKER_PASSWORD }}
     -
       name: Git Build Context
-      uses: actions/checkout@v4
+      uses: actions/checkout@v5
       with:
         submodules: recursive
         fetch-depth: 0

@@ -69,11 +69,11 @@ class TrigScintID : public DetectorID {
    */
   int getBarID() const { return (id_ >> BAR_SHIFT) & BAR_MASK; }
 
+  friend std::ostream& operator<<(std::ostream& o, const ldmx::TrigScintID& d);
+
   static void createInterpreters();
 };  // TrigScintID
 
 }  // namespace ldmx
-
-std::ostream& operator<<(std::ostream&, const ldmx::TrigScintID&);
 
 #endif  // DETDESCR_TRIGSCINTID_H

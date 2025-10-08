@@ -40,7 +40,7 @@ class TrigScintSD : public SensitiveDetector {
   }
 
   /**
-   * Process steps to create hits.
+   * Process steps to create hits_.
    *
    * @param[in] step The step information.
    * @param[in] history The readout history.
@@ -54,7 +54,7 @@ class TrigScintSD : public SensitiveDetector {
     event.add(collection_name_, hits_);
   }
 
-  virtual void OnFinishedEvent() override { hits_.clear(); }
+  virtual void onFinishedEvent() override { hits_.clear(); }
 
  private:
   /// our collection of hits in this SD
@@ -65,6 +65,12 @@ class TrigScintSD : public SensitiveDetector {
   std::string vol_name_;
   /// the ID number for the module we are gathering hits from
   int module_id_;
+  /// Whether to use Birks law for energy deposition
+  bool use_birks_law_;
+  /// Birks law constants c1
+  double birks_const_one_;
+  /// Birks law constants c2
+  double birks_const_two_;
 };
 
 }  // namespace simcore

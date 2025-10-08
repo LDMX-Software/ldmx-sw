@@ -24,8 +24,8 @@ class SimSpecialID : public DetectorID {
   static const RawValue SUBTYPE_DATA_MASK{0x3FFFFF};
 
   // scoring plane only
-  static const RawValue PLANE_MASK{
-      0xFFF};  // space for up to 4096 scoring planes
+  // space for up to 4096 scoring planes
+  static const RawValue PLANE_MASK{0xFFF};
   static const RawValue PLANE_SHIFT{0};
 
   /**
@@ -59,7 +59,7 @@ class SimSpecialID : public DetectorID {
   /**
    * Create a scoring id from pieces
    */
-  static SimSpecialID ScoringPlaneID(int plane) {
+  static SimSpecialID scoringPlaneId(int plane) {
     return SimSpecialID(SCORING_PLANE, (plane & PLANE_MASK) << PLANE_SHIFT);
   }
 
@@ -85,10 +85,10 @@ class SimSpecialID : public DetectorID {
    */
   RawValue subtypePayload() const { return id_ & SUBTYPE_DATA_MASK; }
 
+  friend std::ostream& operator<<(std::ostream& o, const ldmx::SimSpecialID& d);
+
   static void createInterpreters();
 };
 }  // namespace ldmx
-
-std::ostream& operator<<(std::ostream&, const ldmx::SimSpecialID&);
 
 #endif

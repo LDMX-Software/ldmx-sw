@@ -49,7 +49,9 @@
 <constant name="trigger_pad_offset"    
           value="(target_dim_y - (number_of_bars*trigger_bar_dy + (number_of_bars - 1)*trigger_pad_bar_gap))/2" />
 
-<!-- Trigger pad distance from the target is -2.4262 --> 
+<!-- Trigger pad setup --> 
+<constant name="trigger_gap_from_target"
+          value="1.4248*mm" />
 <constant name="trig_scint_pad12_separation"
           value="60"/>
 <constant name="trigger_pad1_z"
@@ -57,7 +59,7 @@
 <constant name="trigger_pad2_z"    
           value="-(trigger_pad_thickness/2) - clearance" />
 <constant name="trigger_pad3_z"      
-          value="target_z - (target_thickness/2) - (trigger_pad_thickness/2) - clearance" />
+          value="target_z - (target_thickness/2) - (trigger_pad_thickness/2) - trigger_gap_from_target - clearance" />
 
 <!-- Parent volume dimensions --> 
 <constant name="trig_scint_area_envelope_x" value="magnet_gap_dx - 5" />
@@ -234,7 +236,7 @@
     ECal 
 --> 
 
-<constant name="num_bilayers" value="17"/>
+<constant name="num_bilayers" value="16"/>
 
 <!-- 
   ECal absorbing layer thicknesses 
@@ -248,23 +250,22 @@
   Pre-Shower|        1 |   0.0 |     0.0
   Section A |        1 |   1.0 |     1.0
   Section B |        1 |   2.0 |     1.5
-  Section C |        9 |   3.5 |     1.8
-  Section D |        5 |   7.0 |     3.5
+  Section C |        9 |   4.0 |     2.0
+  Section D |        4 |   7.0 |     3.5
 -->
 <matrix name="cooling_tungsten_dz"
         coldim="1"
         values="1.0
                 1.5
-                1.8
-                1.8
-                1.8
-                1.8
-                1.8
-                1.8
-                1.8
-                1.8
-                1.8
-                3.5
+                2.0
+                2.0
+                2.0
+                2.0
+                2.0
+                2.0
+                2.0
+                2.0
+                2.0
                 3.5
                 3.5
                 3.5
@@ -273,20 +274,19 @@
         coldim="1"
         values="1.0
                 2.0
-                3.5
-                3.5
-                3.5
-                3.5
-                3.5
-                3.5
-                3.5
-                3.5
-                3.5
-                7.0
-                7.0
-                7.0
-                7.0
-                7.0"/>
+                4.0
+                4.0
+                4.0
+                4.0
+                4.0
+                4.0
+                4.0
+                4.0
+                4.0
+                8.0
+                8.0
+                8.0
+                8.0"/>
 <!--
 The cumulative amount of absorber in front of the n'th bilayer.
 
@@ -299,24 +299,22 @@ when defining GDML variables, so this needs to be precomputed.
         values="0.0
                 3.0
                 8.0
-                15.1
-                22.2
-                29.3
-                36.4
-                43.5
-                50.6
-                57.7
-                64.8
-                71.9
-                85.9
-                99.9
-                113.9
-                127.9
-                141.9"/>
+                16.0
+                24.0
+                32.0
+                40.0
+                48.0
+                56.0
+                64.0
+                72.0
+                80.0
+                95.0
+                110.0
+                125.0
+                140.0"/>
 
 <!--
 The thickness of the strongback aluminum bar holding up the bilayer
-
 there are only two thicknesses but since it varies _at all_ across
 bilayers, we need to list them all explicitly so we can just reference
 them in the bilayer loop
@@ -325,7 +323,6 @@ them in the bilayer loop
         coldim="1"
         values="12.7
                 12.7
-                25.4
                 25.4
                 25.4
                 25.4
@@ -351,7 +348,7 @@ them in the bilayer loop
 -->
 <variable name="PCB_dz" value="1.666"/>
 <variable name="Glue_dz" value="0.1"/>
-<variable name="Si_dz" value="0.3"/>
+<variable name="Si_dz" value="0.4"/>
 <variable name="GlueThick_dz" value="0.2"/>
 <variable name="CarbonBasePlate_dz" value="0.79"/>
 <!-- thickness of motherboard assembly, must match what is extracted -->

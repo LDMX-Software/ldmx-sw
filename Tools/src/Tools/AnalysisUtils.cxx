@@ -21,9 +21,9 @@
 //----------//
 //   ROOT   //
 //----------//
-#include "TVector3.h"
+#include "Math/Vector3D.h"
 
-namespace Analysis {
+namespace analysis {
 
 std::tuple<int, const ldmx::SimParticle *> getRecoil(
     const std::map<int, ldmx::SimParticle> &particleMap) {
@@ -48,11 +48,11 @@ std::tuple<int, const ldmx::SimParticle *> getRecoil(
 bool doesParticleHavePNDaughters(
     const ldmx::SimParticle &gamma,
     const std::map<int, ldmx::SimParticle> &particleMap) {
-  for (auto daughterID : gamma.getDaughters()) {
-    if (particleMap.find(daughterID) != std::end(particleMap)) {
-      const auto daughter{particleMap.at(daughterID)};
-      const auto processType{daughter.getProcessType()};
-      if (processType == ldmx::SimParticle::ProcessType::photonNuclear) {
+  for (auto daughter_id : gamma.getDaughters()) {
+    if (particleMap.find(daughter_id) != std::end(particleMap)) {
+      const auto daughter{particleMap.at(daughter_id)};
+      const auto process_type{daughter.getProcessType()};
+      if (process_type == ldmx::SimParticle::ProcessType::photonNuclear) {
         return true;
       }  // Was it PN?
     }  // Was it in the map?
@@ -64,18 +64,18 @@ bool doesParticleHavePNDaughters(
 const ldmx::SimParticle *getPNGamma(
     const std::map<int, ldmx::SimParticle> &particleMap,
     const ldmx::SimParticle *recoil, const float &energyThreshold) {
-  auto recoilDaughters{recoil->getDaughters()};
-  for (auto recoilDaughterID : recoilDaughters) {
+  auto recoil_daughters{recoil->getDaughters()};
+  for (auto recoil_daughter_id : recoil_daughters) {
     // Have we stored the recoil daughter?
-    if (particleMap.find(recoilDaughterID) != std::end(particleMap)) {
-      auto recoilDaughter{particleMap.at(recoilDaughterID)};
+    if (particleMap.find(recoil_daughter_id) != std::end(particleMap)) {
+      auto recoil_daughter{particleMap.at(recoil_daughter_id)};
       // Is it a gamma?
-      if (recoilDaughter.getPdgID() == 22) {
+      if (recoil_daughter.getPdgID() == 22) {
         // Does it have enough energy?
-        if (recoilDaughter.getEnergy() >= energyThreshold) {
+        if (recoil_daughter.getEnergy() >= energyThreshold) {
           // Are its daughters PN products?
-          if (doesParticleHavePNDaughters(recoilDaughter, particleMap)) {
-            return &particleMap.at(recoilDaughterID);
+          if (doesParticleHavePNDaughters(recoil_daughter, particleMap)) {
+            return &particleMap.at(recoil_daughter_id);
           }
         }
       }
@@ -84,4 +84,4 @@ const ldmx::SimParticle *getPNGamma(
   return nullptr;
 }
 
-}  // namespace Analysis
+}  // namespace analysis

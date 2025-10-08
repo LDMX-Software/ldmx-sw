@@ -3,66 +3,62 @@
 namespace tracking::dqm {
 
 void TrackingRecoDQM::configure(framework::config::Parameters& parameters) {
-  trackCollection_ = parameters.getParameter<std::string>("track_collection");
-  truthCollection_ = parameters.getParameter<std::string>("truth_collection");
-  measurementCollection_ =
-      parameters.getParameter<std::string>("measurement_collection");
-  measurement_passname_ =
-      parameters.getParameter<std::string>("measurement_passname");
+  track_collection_ = parameters.get<std::string>("track_collection");
+  truth_collection_ = parameters.get<std::string>("truth_collection");
+  measurement_collection_ =
+      parameters.get<std::string>("measurement_collection");
+  measurement_passname_ = parameters.get<std::string>("measurement_passname");
 
   ecal_sp_events_passname_ =
-      parameters.getParameter<std::string>("ecal_sp_events_passname");
-  ecal_sp_passname_ = parameters.getParameter<std::string>("ecal_sp_passname");
+      parameters.get<std::string>("ecal_sp_events_passname");
+  ecal_sp_passname_ = parameters.get<std::string>("ecal_sp_passname");
   target_sp_events_passname_ =
-      parameters.getParameter<std::string>("target_sp_events_passname");
-  target_sp_passname_ =
-      parameters.getParameter<std::string>("target_sp_passname");
-  truth_passname_ = parameters.getParameter<std::string>("truth_passname");
-  truth_events_passname_ =
-      parameters.getParameter<std::string>("truth_events_passname");
-  track_passname_ = parameters.getParameter<std::string>("track_passname");
+      parameters.get<std::string>("target_sp_events_passname");
+  target_sp_passname_ = parameters.get<std::string>("target_sp_passname");
+  truth_passname_ = parameters.get<std::string>("truth_passname");
+  truth_events_passname_ = parameters.get<std::string>("truth_events_passname");
+  track_passname_ = parameters.get<std::string>("track_passname");
   track_collection_events_passname_ =
-      parameters.getParameter<std::string>("track_collection_events_passname");
+      parameters.get<std::string>("track_collection_events_passname");
 
-  title_ = parameters.getParameter<std::string>("title", "tagger_trk_");
-  trackProb_cut_ = parameters.getParameter<double>("trackProb_cut", 0.5);
-  subdetector_ = parameters.getParameter<std::string>("subdetector", "Tagger");
-  trackStates_ =
-      parameters.getParameter<std::vector<std::string>>("trackStates", {});
+  title_ = parameters.get<std::string>("title", "tagger_trk_");
+  track_prob_cut_ = parameters.get<double>("trackProb_cut", 0.5);
+  subdetector_ = parameters.get<std::string>("subdetector", "Tagger");
+  track_states_ = parameters.get<std::vector<std::string>>("trackStates", {});
 
-  pidmap[-321] = PIDBins::kminus;
-  pidmap[321] = PIDBins::kplus;
-  pidmap[-211] = PIDBins::piminus;
-  pidmap[211] = PIDBins::piplus;
-  pidmap[11] = PIDBins::electron;
-  pidmap[-11] = PIDBins::positron;
-  pidmap[2212] = PIDBins::proton;
-  pidmap[-2212] = PIDBins::antiproton;
+  pidmap_[-321] = PIDBins::kminus;
+  pidmap_[321] = PIDBins::kplus;
+  pidmap_[-211] = PIDBins::piminus;
+  pidmap_[211] = PIDBins::piplus;
+  pidmap_[11] = PIDBins::electron;
+  pidmap_[-11] = PIDBins::positron;
+  pidmap_[2212] = PIDBins::proton;
+  pidmap_[-2212] = PIDBins::antiproton;
 }
 
 void TrackingRecoDQM::analyze(const framework::Event& event) {
-  ldmx_log(trace) << "DQM Reading in:" << trackCollection_;
+  ldmx_log(trace) << "DQM Reading in:" << track_collection_;
 
-  if (!event.exists(trackCollection_, track_collection_events_passname_)) {
-    ldmx_log(error) << "TrackCollection " << trackCollection_
+  if (!event.exists(track_collection_, track_collection_events_passname_)) {
+    ldmx_log(error) << "TrackCollection " << track_collection_
                     << " with pass = " << track_collection_events_passname_
                     << " not in event";
     return;
   }
 
   auto tracks{
-      event.getCollection<ldmx::Track>(trackCollection_, track_passname_)};
+      event.getCollection<ldmx::Track>(track_collection_, track_passname_)};
   auto measurements{event.getCollection<ldmx::Measurement>(
-      measurementCollection_, measurement_passname_)};
+      measurement_collection_, measurement_passname_)};
 
   // The truth track collection
-  if (event.exists(truthCollection_, truth_events_passname_)) {
-    truthTrackCollection_ = std::make_shared<ldmx::Tracks>(
-        event.getCollection<ldmx::Track>(truthCollection_, truth_passname_));
-    doTruthComparison_ = true;
+  if (event.exists(truth_collection_, truth_events_passname_)) {
+    truth_track_collection_ = std::make_shared<ldmx::Tracks>(
+        event.getCollection<ldmx::Track>(truth_collection_, truth_passname_));
+    do_truth_comparison_ = true;
   }
 
-  // The scoring plane hits
+  // The scoring plane hits_
   if (event.exists("EcalScoringPlaneHits", ecal_sp_events_passname_)) {
     ecal_scoring_hits_ = std::make_shared<std::vector<ldmx::SimTrackerHit>>(
         event.getCollection<ldmx::SimTrackerHit>("EcalScoringPlaneHits",
@@ -75,12 +71,12 @@ void TrackingRecoDQM::analyze(const framework::Event& event) {
                                                  target_sp_passname_));
   }
 
-  ldmx_log(debug) << "Do truth comparison::" << doTruthComparison_;
+  ldmx_log(debug) << "Do truth comparison::" << do_truth_comparison_;
 
-  if (doTruthComparison_) {
-    sortTracks(tracks, uniqueTracks_, duplicateTracks_, fakeTracks_);
+  if (do_truth_comparison_) {
+    sortTracks(tracks, unique_tracks_, duplicate_tracks_, fake_tracks_);
   } else {
-    uniqueTracks_ = tracks;
+    unique_tracks_ = tracks;
   }
 
   ldmx_log(debug) << "Filling histograms for " << tracks.size() << " tracks";
@@ -88,45 +84,46 @@ void TrackingRecoDQM::analyze(const framework::Event& event) {
   // General Plots
   histograms_.fill(title_ + "N_tracks", tracks.size());
 
-  if (!uniqueTracks_.empty()) {
-    ldmx_log(debug) << "Track Monitoring on " << uniqueTracks_.size()
+  if (!unique_tracks_.empty()) {
+    ldmx_log(debug) << "Track Monitoring on " << unique_tracks_.size()
                     << " Unique Tracks";
-    trackMonitoring(uniqueTracks_, measurements, title_, true,
-                    doTruthComparison_);
+    trackMonitoring(unique_tracks_, measurements, title_, true,
+                    do_truth_comparison_);
   }
 
   // Fakes and duplicates
-  if (!duplicateTracks_.empty()) {
-    ldmx_log(debug) << "Track Monitoring on " << duplicateTracks_.size()
+  if (!duplicate_tracks_.empty()) {
+    ldmx_log(debug) << "Track Monitoring on " << duplicate_tracks_.size()
                     << " duplicates";
-    trackMonitoring(duplicateTracks_, measurements, title_ + "dup_", false,
+    trackMonitoring(duplicate_tracks_, measurements, title_ + "dup_", false,
                     false);
   }
-  if (!fakeTracks_.empty()) {
-    ldmx_log(debug) << "Track Monitoring on " << fakeTracks_.size() << " fakes";
-    trackMonitoring(fakeTracks_, measurements, title_ + "fake_", false, false);
+  if (!fake_tracks_.empty()) {
+    ldmx_log(debug) << "Track Monitoring on " << fake_tracks_.size()
+                    << " fakes";
+    trackMonitoring(fake_tracks_, measurements, title_ + "fake_", false, false);
   }
 
   // Track Extrapolation to Ecal Monitoring
   ldmx_log(trace) << "Track Extrapolation to Ecal Monitoring";
-  if (std::find(trackStates_.begin(), trackStates_.end(), "target") !=
-      trackStates_.end()) {
+  if (std::find(track_states_.begin(), track_states_.end(), "target") !=
+      track_states_.end()) {
     trackStateMonitoring(tracks, ldmx::TrackStateType::AtTarget, "target");
   }
 
-  if (std::find(trackStates_.begin(), trackStates_.end(), "ecal") !=
-      trackStates_.end()) {
+  if (std::find(track_states_.begin(), track_states_.end(), "ecal") !=
+      track_states_.end()) {
     trackStateMonitoring(tracks, ldmx::TrackStateType::AtECAL, "ecal");
   }
 
-  if (std::find(trackStates_.begin(), trackStates_.end(), "beamOrigin") !=
-      trackStates_.end()) {
+  if (std::find(track_states_.begin(), track_states_.end(), "beamOrigin") !=
+      track_states_.end()) {
     trackStateMonitoring(tracks, ldmx::TrackStateType::AtBeamOrigin,
                          "beamOrigin");
   }
 
   // Technical Efficiency plots
-  if (doTruthComparison_) {
+  if (do_truth_comparison_) {
     ldmx_log(trace) << "Technical Efficiency plots";
     efficiencyPlots(tracks, measurements, title_);
   }
@@ -135,9 +132,9 @@ void TrackingRecoDQM::analyze(const framework::Event& event) {
 
   // Clear the vectors
   ldmx_log(trace) << "Clear the vectors";
-  uniqueTracks_.clear();
-  duplicateTracks_.clear();
-  fakeTracks_.clear();
+  unique_tracks_.clear();
+  duplicate_tracks_.clear();
+  fake_tracks_.clear();
 }
 
 void TrackingRecoDQM::onProcessEnd() {
@@ -150,15 +147,15 @@ void TrackingRecoDQM::efficiencyPlots(
     const std::string& title) {
   // Do all truth track plots - denominator
 
-  histograms_.fill(title + "truth_N_tracks", truthTrackCollection_->size());
-  for (auto& truth_trk : *(truthTrackCollection_)) {
+  histograms_.fill(title + "truth_N_tracks", truth_track_collection_->size());
+  for (auto& truth_trk : *(truth_track_collection_)) {
     auto truth_phi = truth_trk.getPhi();
     auto truth_d0 = truth_trk.getD0();
     auto truth_z0 = truth_trk.getZ0();
     auto truth_theta = truth_trk.getTheta();
     auto truth_qop = truth_trk.getQoP();
     auto truth_p = 1. / abs(truth_trk.getQoP());
-    auto truth_nHits = truth_trk.getNhits();
+    auto truth_n_hits = truth_trk.getNhits();
 
     std::vector<double> truth_mom = truth_trk.getMomentum();
 
@@ -169,7 +166,7 @@ void TrackingRecoDQM::efficiencyPlots(
 
     auto truth_beam_angle = std::atan2(truth_pt_beam, truth_mom[0]);
 
-    histograms_.fill(title + "truth_nHits", truth_nHits);
+    histograms_.fill(title + "truth_nHits", truth_n_hits);
     histograms_.fill(title + "truth_d0", truth_d0);
     histograms_.fill(title + "truth_z0", truth_z0);
     histograms_.fill(title + "truth_phi", truth_phi);
@@ -178,36 +175,36 @@ void TrackingRecoDQM::efficiencyPlots(
     histograms_.fill(title + "truth_p", truth_p);
     histograms_.fill(title + "truth_beam_angle", truth_beam_angle);
 
-    if (pidmap.count(truth_trk.getPdgID()) != 0) {
-      histograms_.fill(title + "truth_PID", pidmap[truth_trk.getPdgID()]);
+    if (pidmap_.count(truth_trk.getPdgID()) != 0) {
+      histograms_.fill(title + "truth_PID", pidmap_[truth_trk.getPdgID()]);
 
       // TODO do this properly.
 
-      if (pidmap[truth_trk.getPdgID()] == PIDBins::kminus) {
+      if (pidmap_[truth_trk.getPdgID()] == PIDBins::kminus) {
         histograms_.fill(title + "truth_kminus_p", truth_p);
       }
 
-      if (pidmap[truth_trk.getPdgID()] == PIDBins::kplus) {
+      if (pidmap_[truth_trk.getPdgID()] == PIDBins::kplus) {
         histograms_.fill(title + "truth_kplus_p", truth_p);
       }
 
-      if (pidmap[truth_trk.getPdgID()] == PIDBins::piminus) {
+      if (pidmap_[truth_trk.getPdgID()] == PIDBins::piminus) {
         histograms_.fill(title + "truth_piminus_p", truth_p);
       }
 
-      if (pidmap[truth_trk.getPdgID()] == PIDBins::piplus) {
+      if (pidmap_[truth_trk.getPdgID()] == PIDBins::piplus) {
         histograms_.fill(title + "truth_piplus_p", truth_p);
       }
 
-      if (pidmap[truth_trk.getPdgID()] == PIDBins::electron) {
+      if (pidmap_[truth_trk.getPdgID()] == PIDBins::electron) {
         histograms_.fill(title + "truth_electron_p", truth_p);
       }
 
-      if (pidmap[truth_trk.getPdgID()] == PIDBins::positron) {
+      if (pidmap_[truth_trk.getPdgID()] == PIDBins::positron) {
         histograms_.fill(title + "truth_positron_p", truth_p);
       }
 
-      if (pidmap[truth_trk.getPdgID()] == PIDBins::proton) {
+      if (pidmap_[truth_trk.getPdgID()] == PIDBins::proton) {
         histograms_.fill(title + "truth_proton_p", truth_p);
       }
     }
@@ -218,15 +215,16 @@ void TrackingRecoDQM::efficiencyPlots(
     // Match the tracks to truth
     ldmx::Track* truth_trk = nullptr;
 
-    auto it =
-        std::find_if(truthTrackCollection_->begin(),
-                     truthTrackCollection_->end(), [&](const ldmx::Track& tt) {
-                       return tt.getTrackID() == track.getTrackID();
-                     });
+    auto it = std::find_if(truth_track_collection_->begin(),
+                           truth_track_collection_->end(),
+                           [&](const ldmx::Track& tt) {
+                             return tt.getTrackID() == track.getTrackID();
+                           });
 
-    double trackTruthProb = track.getTruthProb();
+    double track_truth_prob = track.getTruthProb();
 
-    if (it != truthTrackCollection_->end() && trackTruthProb >= trackProb_cut_)
+    if (it != truth_track_collection_->end() &&
+        track_truth_prob >= track_prob_cut_)
       truth_trk = &(*it);
 
     // Match not found
@@ -248,7 +246,7 @@ void TrackingRecoDQM::efficiencyPlots(
     auto truth_beam_angle = std::atan2(truth_pt_beam, truth_mom[0]);
 
     // Fill reco plots for efficiencies - numerator. The quantities are truth
-    histograms_.fill(title + "match_prob", trackTruthProb);
+    histograms_.fill(title + "match_prob", track_truth_prob);
     histograms_.fill(title + "match_d0", truth_d0);
     histograms_.fill(title + "match_z0", truth_z0);
     histograms_.fill(title + "match_phi", truth_phi);
@@ -257,43 +255,43 @@ void TrackingRecoDQM::efficiencyPlots(
     histograms_.fill(title + "match_qop", truth_qop);
     histograms_.fill(title + "match_beam_angle", truth_beam_angle);
     histograms_.fill(title + "match_nHits", measurements.size());
-    for (auto trackHit : track.getMeasurementsIdxs()) {
+    for (auto track_hit : track.getMeasurementsIdxs()) {
       histograms_.fill(title + "match_LayersHit",
-                       measurements.at(trackHit).getLayer());
+                       measurements.at(track_hit).getLayer());
     }
 
     // For some particles
 
-    if (pidmap.count(truth_trk->getPdgID()) != 0) {
-      histograms_.fill(title + "match_PID", pidmap[truth_trk->getPdgID()]);
+    if (pidmap_.count(truth_trk->getPdgID()) != 0) {
+      histograms_.fill(title + "match_PID", pidmap_[truth_trk->getPdgID()]);
 
       // TODO do this properly.
 
-      if (pidmap[truth_trk->getPdgID()] == PIDBins::kminus) {
+      if (pidmap_[truth_trk->getPdgID()] == PIDBins::kminus) {
         histograms_.fill(title + "match_kminus_p", truth_p);
       }
 
-      if (pidmap[truth_trk->getPdgID()] == PIDBins::kplus) {
+      if (pidmap_[truth_trk->getPdgID()] == PIDBins::kplus) {
         histograms_.fill(title + "match_kplus_p", truth_p);
       }
 
-      if (pidmap[truth_trk->getPdgID()] == PIDBins::piminus) {
+      if (pidmap_[truth_trk->getPdgID()] == PIDBins::piminus) {
         histograms_.fill(title + "match_piminus_p", truth_p);
       }
 
-      if (pidmap[truth_trk->getPdgID()] == PIDBins::piplus) {
+      if (pidmap_[truth_trk->getPdgID()] == PIDBins::piplus) {
         histograms_.fill(title + "match_piplus_p", truth_p);
       }
 
-      if (pidmap[truth_trk->getPdgID()] == PIDBins::electron) {
+      if (pidmap_[truth_trk->getPdgID()] == PIDBins::electron) {
         histograms_.fill(title + "match_electron_p", truth_p);
       }
 
-      if (pidmap[truth_trk->getPdgID()] == PIDBins::positron) {
+      if (pidmap_[truth_trk->getPdgID()] == PIDBins::positron) {
         histograms_.fill(title + "match_positron_p", truth_p);
       }
 
-      if (pidmap[truth_trk->getPdgID()] == PIDBins::proton) {
+      if (pidmap_[truth_trk->getPdgID()] == PIDBins::proton) {
         histograms_.fill(title + "match_proton_p", truth_p);
       }
     }
@@ -313,9 +311,9 @@ void TrackingRecoDQM::trackMonitoring(
     auto trk_theta = track.getTheta();
     auto trk_phi = track.getPhi();
     auto trk_p = 1. / abs(trk_qop);
-    for (auto trackHit : track.getMeasurementsIdxs()) {
+    for (auto track_hit : track.getMeasurementsIdxs()) {
       histograms_.fill(title + "LayersHit",
-                       measurements.at(trackHit).getLayer());
+                       measurements.at(track_hit).getLayer());
     }
 
     std::vector<double> trk_mom = track.getMomentum();
@@ -391,16 +389,16 @@ void TrackingRecoDQM::trackMonitoring(
       // Match to the truth track
       ldmx::Track* truth_trk = nullptr;
 
-      auto it = std::find_if(truthTrackCollection_->begin(),
-                             truthTrackCollection_->end(),
+      auto it = std::find_if(truth_track_collection_->begin(),
+                             truth_track_collection_->end(),
                              [&](const ldmx::Track& tt) {
                                return tt.getTrackID() == track.getTrackID();
                              });
 
-      double trackTruthProb = track.getTruthProb();
+      double track_truth_prob = track.getTruthProb();
 
-      if (it != truthTrackCollection_->end() &&
-          trackTruthProb >= trackProb_cut_)
+      if (it != truth_track_collection_->end() &&
+          track_truth_prob >= track_prob_cut_)
         truth_trk = &(*it);
 
       // Found matched track
@@ -493,15 +491,16 @@ void TrackingRecoDQM::trackStateMonitoring(const ldmx::Tracks& tracks,
     // Match the tracks to truth
     ldmx::Track* truth_trk = nullptr;
 
-    auto it =
-        std::find_if(truthTrackCollection_->begin(),
-                     truthTrackCollection_->end(), [&](const ldmx::Track& tt) {
-                       return tt.getTrackID() == track.getTrackID();
-                     });
+    auto it = std::find_if(truth_track_collection_->begin(),
+                           truth_track_collection_->end(),
+                           [&](const ldmx::Track& tt) {
+                             return tt.getTrackID() == track.getTrackID();
+                           });
 
-    double trackTruthProb = track.getTruthProb();
+    double track_truth_prob = track.getTruthProb();
 
-    if (it != truthTrackCollection_->end() && trackTruthProb >= trackProb_cut_)
+    if (it != truth_track_collection_->end() &&
+        track_truth_prob >= track_prob_cut_)
       truth_trk = &(*it);
 
     // Match not found, skip track
@@ -516,12 +515,12 @@ void TrackingRecoDQM::trackStateMonitoring(const ldmx::Tracks& tracks,
 
     if (!truth_ts.has_value()) continue;
 
-    ldmx::Track::TrackState& truthTargetState = truth_ts.value();
-    ldmx::Track::TrackState& TargetState = trk_ts.value();
+    ldmx::Track::TrackState& truth_target_state = truth_ts.value();
+    ldmx::Track::TrackState& target_state = trk_ts.value();
 
     ldmx_log(debug) << "Unpacking covariance matrix";
     Acts::BoundSquareMatrix cov =
-        tracking::sim::utils::unpackCov(TargetState.cov);
+        tracking::sim::utils::unpackCov(target_state.cov_);
 
     [[maybe_unused]] double sigmaloc0 = sqrt(
         cov(Acts::BoundIndices::eBoundLoc0, Acts::BoundIndices::eBoundLoc0));
@@ -537,20 +536,20 @@ void TrackingRecoDQM::trackStateMonitoring(const ldmx::Tracks& tracks,
     double trk_qop = track.getQoP();
     double trk_p = 1. / abs(trk_qop);
 
-    double track_state_loc0 = TargetState.params[0];
-    double track_state_loc1 = TargetState.params[1];
-    [[maybe_unused]] double track_state_phi = TargetState.params[2];
-    [[maybe_unused]] double track_state_theta = TargetState.params[3];
-    [[maybe_unused]] double track_state_p = TargetState.params[4];
+    double track_state_loc0 = target_state.params_[0];
+    double track_state_loc1 = target_state.params_[1];
+    [[maybe_unused]] double track_state_phi = target_state.params_[2];
+    [[maybe_unused]] double track_state_theta = target_state.params_[3];
+    [[maybe_unused]] double track_state_p = target_state.params_[4];
 
-    double truth_state_loc0 = truthTargetState.params[0];
-    double truth_state_loc1 = truthTargetState.params[1];
-    [[maybe_unused]] double truth_state_phi = truthTargetState.params[2];
-    [[maybe_unused]] double truth_state_theta = truthTargetState.params[3];
-    [[maybe_unused]] double truth_state_p = truthTargetState.params[4];
+    double truth_state_loc0 = truth_target_state.params_[0];
+    double truth_state_loc1 = truth_target_state.params_[1];
+    [[maybe_unused]] double truth_state_phi = truth_target_state.params_[2];
+    [[maybe_unused]] double truth_state_theta = truth_target_state.params_[3];
+    [[maybe_unused]] double truth_state_p = truth_target_state.params_[4];
 
     // Check that the track state is filled
-    if (TargetState.params.size() < 5) continue;
+    if (target_state.params_.size() < 5) continue;
 
     histograms_.fill(title_ + "trk_" + ts_title + "_loc0", track_state_loc0);
     histograms_.fill(title_ + "trk_" + ts_title + "_loc1", track_state_loc1);
@@ -605,37 +604,37 @@ void TrackingRecoDQM::sortTracks(const std::vector<ldmx::Track>& tracks,
                                  std::vector<ldmx::Track>& duplicateTracks,
                                  std::vector<ldmx::Track>& fakeTracks) {
   // Create a copy of the const vector so we can sort it
-  std::vector<ldmx::Track> sortedTracks = tracks;
+  std::vector<ldmx::Track> sorted_tracks = tracks;
 
   // Sort the vector of Track objects based on their trackID member
-  std::sort(sortedTracks.begin(), sortedTracks.end(),
+  std::sort(sorted_tracks.begin(), sorted_tracks.end(),
             [](ldmx::Track& t1, ldmx::Track& t2) {
               return t1.getTrackID() < t2.getTrackID();
             });
 
   // Loop over the sorted vector of Track objects
-  for (size_t i = 0; i < sortedTracks.size(); i++) {
-    if (sortedTracks[i].getTruthProb() < trackProb_cut_)
-      fakeTracks.push_back(sortedTracks[i]);
+  for (size_t i = 0; i < sorted_tracks.size(); i++) {
+    if (sorted_tracks[i].getTruthProb() < track_prob_cut_)
+      fakeTracks.push_back(sorted_tracks[i]);
     else {  // not a fake track
       // If this is the first Track object with this trackID, add it to the
       // uniqueTracks vector directly
       if (uniqueTracks.size() == 0 ||
-          sortedTracks[i].getTrackID() != sortedTracks[i - 1].getTrackID()) {
-        uniqueTracks.push_back(sortedTracks[i]);
+          sorted_tracks[i].getTrackID() != sorted_tracks[i - 1].getTrackID()) {
+        uniqueTracks.push_back(sorted_tracks[i]);
       }
       // Otherwise, add it to the duplicateTracks vector if its truthProb is
       // lower than the existing Track object Otherwise, if the truthProbability
       // is higher than the track stored in uniqueTracks, put it in uniqueTracks
       // and move the uniqueTracks.back to duplicateTracks.
-      else if (sortedTracks[i].getTruthProb() >
+      else if (sorted_tracks[i].getTruthProb() >
                uniqueTracks.back().getTruthProb()) {
         duplicateTracks.push_back(uniqueTracks.back());
-        uniqueTracks.back() = sortedTracks[i];
+        uniqueTracks.back() = sorted_tracks[i];
       }
       // Otherwise, add it to the duplicateTracks vector
       else {
-        duplicateTracks.push_back(sortedTracks[i]);
+        duplicateTracks.push_back(sorted_tracks[i]);
       }
     }  // a real track
   }  // loop on sorted tracks

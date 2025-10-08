@@ -7,8 +7,8 @@
 
 #include "DetDescr/HcalGeometry.h"
 #include "Hcal/Event/HcalHit.h"
+#include "Math/Vector3D.h"
 #include "TLorentzVector.h"
-#include "TVector3.h"
 
 namespace hcal {
 
@@ -22,16 +22,16 @@ class WorkingCluster {
 
   void add(const WorkingCluster& wc);
 
-  double GetTime() { return time_; }
+  double getTime() { return time_; }
 
   const TLorentzVector& centroid() const { return centroid_; }
 
-  void SetCentroidPxPyPzE(double newCentroidX, double newCentroidY,
+  void setCentroidPxPyPzE(double newCentroidX, double newCentroidY,
                           double newCentroidZ, double newE) {
     centroid_.SetPxPyPzE(newCentroidX, newCentroidY, newCentroidZ, newE);
   }
 
-  void SetTime(double t) { time_ = t; }
+  void setTime(double t) { time_ = t; }
 
   std::vector<const ldmx::HcalHit*> getHits() const { return hits_; }
 

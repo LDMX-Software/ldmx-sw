@@ -73,16 +73,16 @@ class BufferReader {
    */
   WordType next() {
     WordType w{0};
-    for (std::size_t i_byte{0}; i_byte < n_bytes_; i_byte++) {
+    for (std::size_t i_byte{0}; i_byte < N_BYTES; i_byte++) {
       w |= (buffer_.at(i_word_ + i_byte) << 8 * i_byte);
     }
-    i_word_ += n_bytes_;
+    i_word_ += N_BYTES;
     return w;
   }
 
  private:
   // number of bytes in the words we are reading
-  static const std::size_t n_bytes_{sizeof(WordType)};
+  static const std::size_t N_BYTES{sizeof(WordType)};
   // current buffer we are reading
   const std::vector<uint8_t>& buffer_;
   // current index in buffer we are reading

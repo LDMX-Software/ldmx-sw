@@ -2,12 +2,12 @@
 
 #include "DetDescr/DetectorIDInterpreter.h"
 
+namespace ldmx {
+
 std::ostream& operator<<(std::ostream& s, const ldmx::HcalID& id) {
   s << "Hcal(" << id.section() << ',' << id.layer() << ',' << id.strip() << ')';
   return s;
 }
-
-namespace ldmx {
 
 void HcalID::createInterpreters() {
   IDField::IDFieldList fields;

@@ -14,6 +14,9 @@
 #include "Framework/Configure/Parameters.h"
 #include "Framework/EventFile.h"
 #include "Framework/EventProcessor.h"
+#include "Framework/RandomNumberSeedService.h"
+#include "SimCore/Event/SimCalorimeterHit.h"
+#include "SimCore/Event/SimTrackerHit.h"
 
 namespace recon {
 
@@ -23,7 +26,7 @@ namespace recon {
 class OverlayProducer : public framework::Producer {
  public:
   OverlayProducer(const std::string &name, framework::Process &process)
-      : framework::Producer(name, process), overlayEvent_{"overlay"} {}
+      : framework::Producer(name, process), overlay_event_{"overlay"} {}
 
   // Destructor
   virtual ~OverlayProducer() = default;
@@ -70,56 +73,62 @@ class OverlayProducer : public framework::Producer {
   /**
    * Pileup overlay events input file name
    */
-  std::string overlayFileName_;
+  std::string overlay_filename_;
 
   /**
    * Pileup overlay events input file
    */
-  std::unique_ptr<framework::EventFile> overlayFile_;
+  std::unique_ptr<framework::EventFile> overlay_file_;
 
   /**
    * The overlay ldmx event bus
    */
-  framework::Event overlayEvent_;
+  framework::Event overlay_event_;
 
   /**
    * List of SimCalorimeterHit collection(s) to loop over and add hits from,
    * combining sim and pileup
    */
-  std::vector<std::string> caloCollections_;
+  std::vector<std::string> calo_collections_;
 
   /**
    * List of SimTrackerHit collection(s) to loop over and add hits from,
    * combining sim and pileup
    */
-  std::vector<std::string> trackerCollections_;
+  std::vector<std::string> tracker_collections_;
 
   /**
    * Pileup overlay events input pass name
    */
-  std::string overlayPassName_;
+  std::string overlay_passname_;
 
   /**
    * To use for finding the sim event bus passengers, mostly a disambiguation
    */
-  std::string simPassName_;
+  std::string sim_passname_;
+
+  /**
+   * Postfix to add to the collection name of the overlayed collections.
+   * This is currently set to "Overlay".
+   */
+  std::string out_coll_postfix_;
 
   /**
    * Let the total number of in-time events be poisson distributed, or fix at
    * the chosen value, poissonMu_
    */
-  bool doPoissonIT_{false};
+  bool do_poisson_in_time_{false};
 
   /**
    * Let the total number of out-of-time events be poisson distributed, or fix
    *  at the chosen value, poissonMu_
    */
-  bool doPoissonOOT_{false};
+  bool do_poisson_out_of_time_{false};
 
   /**
    * (average) total number of events
    */
-  double poissonMu_{0.};
+  double poisson_mu_{0.};
 
   /**
    * Random number generator for number of overlaid events.
@@ -133,44 +142,51 @@ class OverlayProducer : public framework::Producer {
    * TRandom2 slightly (~10%) faster than TRandom3; shorter period but our input
    * files will have way shorter period anyway.
    */
-  std::unique_ptr<TRandom2> rndmTime_;
+  std::unique_ptr<TRandom2> rndm_time_;
 
   /**
    * Width of pileup bunch spread in time (in [ns]), specified as a sigma of a
    * Gaussian distribution
    */
-  double timeSigma_{0.};
+  double time_sigma_{0.};
 
   /**
    * Average position in time (in [ns]) of pileup bunches, relative to the sim
    * event. Should realistically be 0. Using a non-zero mean and sigma = 0 is
    * however useful for validation.
    */
-  double timeMean_{0.};
+  double time_mean_{0.};
 
   /**
    * Spacing in time (in [ns]) between electron bunches.
    */
-  double bunchSpacing_{0.};
+  double bunch_spacing_{0.};
 
   /**
    * Number of bunches before the sim event to pull pileup events
    * from. Defaults to 0 --> all events occur in the same bunch as the sim
    * event.
    */
-  int nEarlier_{0};
+  int n_earlier_{0};
 
   /**
    * Number of bunches after the sim event to pull pileup events
    * from. Defaults to 0 --> all events occur in the same bunch as the sim
    * event.
    */
-  int nLater_{0};
+  int n_later_{0};
 
   /**
-   * Local control of processor verbosity
+   * Minimum event number to start overlaying from.
+   * Inclusive.
    */
-  int verbosity_;
+  int start_event_min_{1};
+
+  /**
+   * Maximum event number to start overlaying from.
+   * Inclusive.
+   */
+  int start_event_max_{10000};
 
   /**
    * For Ecal, overlay hits should be added as contribs.
@@ -178,9 +194,9 @@ class OverlayProducer : public framework::Producer {
    * So assign a nonsensical trackID, incidentID, and PDG ID to the contribs
    * from overlay. These are hardwired right here.
    */
-  int overlayIncidentID_{-1000};
-  int overlayTrackID_{-1000};
-  int overlayPdgCode_{0};
+  int overlay_incident_id_{-1000};
+  int overlay_track_id_{-1000};
+  int overlay_pdg_code_{0};
 };
 }  // namespace recon
 

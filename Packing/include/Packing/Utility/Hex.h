@@ -15,14 +15,14 @@ namespace utility {
  * @tparam[in] WordType type of word for styling
  */
 template <typename WordType>
-struct hex {
-  static const std::size_t width_{8 * sizeof(WordType)};
+struct Hex {
+  static const std::size_t WIDTH{8 * sizeof(WordType)};
   WordType& word_;
-  hex(WordType& w) : word_{w} {}
+  Hex(WordType& w) : word_{w} {}
   friend inline std::ostream& operator<<(
-      std::ostream& os, const packing::utility::hex<WordType>& h) {
-    os << "0x" << std::setfill('0') << std::setw(h.width_) << std::hex
-       << h.word_ << std::dec;
+      std::ostream& os, const packing::utility::Hex<WordType>& h) {
+    os << "0x" << std::setfill('0') << std::setw(h.WIDTH) << std::hex << h.word_
+       << std::dec;
     return os;
   }
 };

@@ -3,13 +3,13 @@
 ClassImp(ldmx::HgcrocPulseTruth);
 
 namespace ldmx {
-void HgcrocPulseTruth::Clear() {}
+void HgcrocPulseTruth::clear() {}
 
 // Could be improved...
 double HgcrocPulseTruth::getMax() const {
-  auto hits = compositePulse_.hits();
+  auto hits = composite_pulse_.hits();
 
-  std::sort(
+  std::ranges::sort(
       hits.begin(), hits.end(),
       [](const std::pair<double, double> &a,
          const std::pair<double, double> &b) { return a.second < b.second; });
@@ -19,7 +19,7 @@ double HgcrocPulseTruth::getMax() const {
   double peak = -9999.0;
   for (int i = 0; i < 100; i++) {
     double time = starttime + (endtime - starttime) / 100.0 * i;
-    double v = compositePulse_.at(time);
+    double v = composite_pulse_.at(time);
     if (v > peak) peak = v;
   }
 

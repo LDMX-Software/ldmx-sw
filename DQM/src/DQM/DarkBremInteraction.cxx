@@ -3,8 +3,7 @@
 namespace dqm {
 
 void DarkBremInteraction::configure(framework::config::Parameters& parameters) {
-  particle_passname_ =
-      parameters.getParameter<std::string>("particle_passname");
+  particle_passname_ = parameters.get<std::string>("particle_passname");
 }
 /**
  * calculate total energy from 3-momentum and mass
@@ -33,28 +32,6 @@ static double quadsum(const std::initializer_list<double>& list) {
   double sum{0};
   for (const double& elem : list) sum += elem * elem;
   return sqrt(sum);
-}
-
-void DarkBremInteraction::setHistLabels(
-    const std::string& name, const std::vector<std::string>& labels) {
-  /**
-   * We could probably move this into Framework since it is a relatively
-   * common task. I could even imagine a way of constructing a StrCategory
-   * histogram.
-   */
-  auto h{histograms_.get(name)};
-  for (std::size_t ibin{1}; ibin <= labels.size(); ibin++) {
-    h->GetXaxis()->SetBinLabel(ibin, labels[ibin - 1].c_str());
-  }
-}
-
-void DarkBremInteraction::onProcessStart() {
-  setHistLabels("dark_brem_material",
-                {"Unknown", "C", "PCB", "Glue", "Si", "Al", "W / LYSO", "PVT"});
-
-  setHistLabels("dark_brem_element",
-                {"did not happen", "H 1", "C 6", "O 8", "Na 11", "Si 14",
-                 "Ca 20", "Cu 29", "Y 39", "Lu 71", "W 74", "unlisted"});
 }
 
 void DarkBremInteraction::produce(framework::Event& event) {

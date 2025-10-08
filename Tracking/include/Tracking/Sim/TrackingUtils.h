@@ -3,7 +3,7 @@
 
 // TODO:: MAKE A CXX!!
 
-// Recoil back layers numbering scheme for module
+// Recoil back layers numbering scheme for module_
 
 //    +Y  /\   4  3  2  1  0
 //        |
@@ -11,7 +11,7 @@
 //    -Y  \/   9  8  7  6  5
 //          -X <----  ----> +X
 
-// ModN (x,    y,   z)
+// ModN (x_,    y_,   z_)
 // 0    (96,   40,  z2)
 // 1    (48,   40,  z1)
 // 2    (0,    40,  z2)
@@ -74,41 +74,41 @@ inline int getSensorID(const ldmx::SimTrackerHit& hit) {
   // TODO!! FIX THIS HARDCODE!
   if (hit.getPosition()[2] > 0) vol = 3;
 
-  unsigned int sensorId = 0;
-  unsigned int layerId = 0;
+  unsigned int sensor_id = 0;
+  unsigned int layer_id = 0;
 
   // tagger numbering scheme for surfaces mapping
   // Layers from 1 to 14  => transform to 0->13
   if (vol == 2) {
-    sensorId = (hit.getLayerID() + 1) % 2;  // 0,1,0,1 ...
+    sensor_id = (hit.getLayerID() + 1) % 2;  // 0,1,0,1 ...
 
     // v12
     // layerId  = (hit.getLayerID() + 1) / 2; //1,2,3,4,5,6,7
     // v14
-    layerId = 7 - ((hit.getLayerID() - 1) / 2);
+    layer_id = 7 - ((hit.getLayerID() - 1) / 2);
   }
 
   // recoil numbering scheme for surfaces mapping
   if (vol == 3) {
     // For axial-stereo modules use the same numbering scheme as the tagger
     if (hit.getLayerID() < 9) {
-      sensorId = (hit.getLayerID() + 1) % 2;
-      layerId = (hit.getLayerID() + 1) / 2;
+      sensor_id = (hit.getLayerID() + 1) % 2;
+      layer_id = (hit.getLayerID() + 1) / 2;
     }
 
     // For the axial only modules
     else {
-      sensorId = hit.getModuleID();
-      layerId = (hit.getLayerID() + 2) / 2;  // 9->11 /2 = 5 10->12 / 2 = 6
+      sensor_id = hit.getModuleID();
+      layer_id = (hit.getLayerID() + 2) / 2;  // 9->11 /2 = 5 10->12 / 2 = 6
     }
   }
 
   // vol * 1000 + ly * 100 + sensor
-  unsigned int index = vol * 1000 + layerId * 100 + sensorId;
+  unsigned int index = vol * 1000 + layer_id * 100 + sensor_id;
 
   if (debug) {
     std::cout << "LdmxSpacePointConverter::Check index::" << vol << "--"
-              << layerId << "--" << sensorId << "==>" << index << std::endl;
+              << layer_id << "--" << sensor_id << "==>" << index << std::endl;
     std::cout << vol << "===" << hit.getLayerID() << "===" << hit.getModuleID()
               << std::endl;
   }
@@ -118,9 +118,9 @@ inline int getSensorID(const ldmx::SimTrackerHit& hit) {
 
 // This method converts a SimHit in a LdmxSpacePoint for the Acts seeder.
 //  (1) Rotate the coordinates into acts::seedFinder coordinates defined by
-//  B-Field along z axis [Z_ldmx -> X_acts, X_ldmx->Y_acts, Y_ldmx->Z_acts] (2)
+//  B-Field along z_ axis [Z_ldmx -> X_acts, X_ldmx->Y_acts, Y_ldmx->Z_acts] (2)
 //  Saves the error information. At the moment the errors are fixed. They should
-//  be obtained from the digitized hits.
+//  be obtained from the digitized hits_.
 
 // TODO::Move to shared pointers?!
 // TODO::Pass to instances?
@@ -165,13 +165,13 @@ inline Acts::BoundSquareMatrix unpackCov(const std::vector<double>& v_cov) {
 }
 
 // Rotate to ACTS frame
-// z->x, x->y, y->z
+// z_->x_, x_->y_, y_->z_
 
-//(0 0 1) x  = z
-//(1 0 0) y  = x
-//(0 1 0) z  = y
+//(0 0 1) x_  = z_
+//(1 0 0) y_  = x_
+//(0 1 0) z_  = y_
 
-inline Acts::Vector3 Ldmx2Acts(Acts::Vector3 ldmx_v) {
+inline Acts::Vector3 ldmx2Acts(Acts::Vector3 ldmx_v) {
   // TODO::Move it to a static member
   Acts::SquareMatrix3 acts_rot;
   acts_rot << 0., 0., 1., 1., 0., 0., 0., 1, 0.;
@@ -181,14 +181,14 @@ inline Acts::Vector3 Ldmx2Acts(Acts::Vector3 ldmx_v) {
 
 // Transform position, momentum and charge to free parameters
 
-inline Acts::FreeVector toFreeParameters(Acts::Vector3 pos, Acts::Vector3 mom,
+inline Acts::FreeVector toFreeParameters(Acts::Vector3 pos_, Acts::Vector3 mom,
                                          Acts::ActsScalar q) {
   Acts::FreeVector free_params;
   Acts::ActsScalar p = mom.norm() * Acts::UnitConstants::MeV;
 
-  free_params[Acts::eFreePos0] = pos(Acts::ePos0) * Acts::UnitConstants::mm;
-  free_params[Acts::eFreePos1] = pos(Acts::ePos1) * Acts::UnitConstants::mm;
-  free_params[Acts::eFreePos2] = pos(Acts::ePos2) * Acts::UnitConstants::mm;
+  free_params[Acts::eFreePos0] = pos_(Acts::ePos0) * Acts::UnitConstants::mm;
+  free_params[Acts::eFreePos1] = pos_(Acts::ePos1) * Acts::UnitConstants::mm;
+  free_params[Acts::eFreePos2] = pos_(Acts::ePos2) * Acts::UnitConstants::mm;
   free_params[Acts::eFreeTime] = 0.;
   free_params[Acts::eFreeDir0] = mom(0) / mom.norm();
   free_params[Acts::eFreeDir1] = mom(1) / mom.norm();
@@ -209,51 +209,51 @@ inline std::vector<double> convertActsToLdmxPars(Acts::BoundVector acts_par) {
 }
 
 inline Acts::BoundVector boundState(const ldmx::Track& trk) {
-  Acts::BoundVector paramVec;
-  paramVec << trk.getD0(), trk.getZ0(), trk.getPhi(), trk.getTheta(),
+  Acts::BoundVector param_vec;
+  param_vec << trk.getD0(), trk.getZ0(), trk.getPhi(), trk.getTheta(),
       trk.getQoP(), trk.getT();
-  return paramVec;
+  return param_vec;
 }
 
 inline Acts::BoundVector boundState(const ldmx::Track::TrackState& ts) {
-  Acts::BoundVector paramVec;
-  paramVec << ts.params[0], ts.params[1], ts.params[2], ts.params[3],
-      ts.params[4], ts.params[5];
-  return paramVec;
+  Acts::BoundVector param_vec;
+  param_vec << ts.params_[0], ts.params_[1], ts.params_[2], ts.params_[3],
+      ts.params_[4], ts.params_[5];
+  return param_vec;
 }
 
 inline Acts::BoundTrackParameters boundTrackParameters(
     const ldmx::Track& trk, std::shared_ptr<Acts::PerigeeSurface> perigee) {
-  Acts::BoundVector paramVec = boundState(trk);
-  Acts::BoundSquareMatrix covMat = unpackCov(trk.getPerigeeCov());
-  auto partHypo{Acts::SinglyChargedParticleHypothesis::electron()};
+  Acts::BoundVector param_vec = boundState(trk);
+  Acts::BoundSquareMatrix cov_mat = unpackCov(trk.getPerigeeCov());
+  auto part_hypo{Acts::SinglyChargedParticleHypothesis::electron()};
   //  auto
   //  part{Acts::GenericParticleHypothesis(Acts::ParticleHypothesis(Acts::PdgParticle(trk.getPdgID())))};
   //  return Acts::BoundTrackParameters(perigee, paramVec, std::move(covMat));
   // need to add particle hypothesis
-  return Acts::BoundTrackParameters(perigee, paramVec, std::move(covMat),
-                                    partHypo);
+  return Acts::BoundTrackParameters(perigee, param_vec, std::move(cov_mat),
+                                    part_hypo);
 }
 
 inline Acts::BoundTrackParameters btp(const ldmx::Track::TrackState& ts,
                                       std::shared_ptr<Acts::Surface> surf,
                                       int pdgid) {
-  Acts::BoundVector paramVec = boundState(ts);
-  Acts::BoundSquareMatrix covMat = unpackCov(ts.cov);
-  auto partHypo{Acts::SinglyChargedParticleHypothesis::electron()};
+  Acts::BoundVector param_vec = boundState(ts);
+  Acts::BoundSquareMatrix cov_mat = unpackCov(ts.cov_);
+  auto part_hypo{Acts::SinglyChargedParticleHypothesis::electron()};
   //  auto
   //  part{Acts::GenericParticleHypothesis(Acts::ParticleHypothesis(Acts::PdgParticle(pdgid)))};
-  return Acts::BoundTrackParameters(surf, paramVec, std::move(covMat),
-                                    partHypo);
+  return Acts::BoundTrackParameters(surf, param_vec, std::move(cov_mat),
+                                    part_hypo);
 }
 
 // Return an unbound surface
 inline const std::shared_ptr<Acts::PlaneSurface> unboundSurface(
     double xloc, double yloc = 0., double zloc = 0.) {
   // Define the target surface - be careful:
-  //  x - downstream
-  //  y - left (when looking along x)
-  //  z - up
+  //  x_ - downstream
+  //  y_ - left (when looking along x_)
+  //  z_ - up
   //  Passing identity here means that your target surface is oriented in the
   //  same way
   Acts::RotationMatrix3 surf_rotation = Acts::RotationMatrix3::Zero();
@@ -278,14 +278,14 @@ inline const std::shared_ptr<Acts::PlaneSurface> unboundSurface(
 // This method returns a source link index
 inline std::size_t sourceLinkHash(const Acts::SourceLink& a) {
   return static_cast<std::size_t>(
-      a.get<ActsExamples::IndexSourceLink>().index());
+      a.get<acts_examples::IndexSourceLink>().index());
 }
 
 // This method checks if two source links are equal by index
 inline bool sourceLinkEquality(const Acts::SourceLink& a,
                                const Acts::SourceLink& b) {
-  return a.get<ActsExamples::IndexSourceLink>().index() ==
-         b.get<ActsExamples::IndexSourceLink>().index();
+  return a.get<acts_examples::IndexSourceLink>().index() ==
+         b.get<acts_examples::IndexSourceLink>().index();
 }
 
 }  // namespace utils

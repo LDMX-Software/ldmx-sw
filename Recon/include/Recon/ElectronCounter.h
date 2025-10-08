@@ -55,29 +55,29 @@ class ElectronCounter : public framework::Producer {
   /**
    * The name of the input collection used for counting electrons
    */
-  std::string inputColl_;
+  std::string input_coll_;
 
   /**
    * The pass name of the input collection used for counting electrons
    */
-  std::string inputPassName_;
+  std::string input_pass_name_;
 
   /**
    * The name of the output collection used to save some electron counting
    * variables
    */
-  std::string outputColl_;
+  std::string output_coll_;
 
   /**
    * The number of electrons actually simulated in the event
    */
-  int nElectronsSim_{-1};
+  int n_electrons_sim_{-1};
 
   /**
    * Use the number of electrons actually simulated in the event as the electron
    * count
    */
-  int useSimElectronCount_{false};
+  int use_sim_electron_count_{false};
 
 };  // ElectronCounter
 }  // namespace recon

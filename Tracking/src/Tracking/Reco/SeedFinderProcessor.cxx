@@ -22,73 +22,69 @@ SeedFinderProcessor::SeedFinderProcessor(const std::string& name,
     : TrackingGeometryUser(name, process) {
   // TODO REMOVE FROM DEFAULT
   /*
-  outputFile_ = new TFile("seeder.root", "RECREATE");
-  outputTree_ = new TTree("seeder", "seeder");
+  output_file_ = new TFile("seeder.root", "RECREATE");
+  output_tree_ = new TTree("seeder", "seeder");
 
-  outputTree_->Branch("nevents", &nevents_);
-  outputTree_->Branch("xhit", &xhit_);
-  outputTree_->Branch("yhit", &yhit_);
-  outputTree_->Branch("zhit", &zhit_);
+  output_tree_->Branch("nevents", &nevents_);
+  output_tree_->Branch("xhit", &xhit_);
+  output_tree_->Branch("yhit", &yhit_);
+  output_tree_->Branch("zhit", &zhit_);
 
-  outputTree_->Branch("b0", &b0_);
-  outputTree_->Branch("b1", &b1_);
-  outputTree_->Branch("b2", &b2_);
-  outputTree_->Branch("b3", &b3_);
-  outputTree_->Branch("b4", &b4_);
+  output_tree_->Branch("b0", &b0_);
+  output_tree_->Branch("b1", &b1_);
+  output_tree_->Branch("b2", &b2_);
+  output_tree_->Branch("b3", &b3_);
+  output_tree_->Branch("b4", &b4_);
   */
 }
 
 void SeedFinderProcessor::onProcessStart() {
-  truthMatchingTool_ = std::make_shared<tracking::sim::TruthMatchingTool>();
+  truth_matching_tool_ = std::make_shared<tracking::sim::TruthMatchingTool>();
 }
 
 void SeedFinderProcessor::configure(framework::config::Parameters& parameters) {
   // Output seed name
-  out_seed_collection_ = parameters.getParameter<std::string>(
-      "out_seed_collection", getName() + "SeedTracks");
+  out_seed_collection_ = parameters.get<std::string>("out_seed_collection",
+                                                     getName() + "SeedTracks");
 
   // Input strip hits
-  input_hits_collection_ = parameters.getParameter<std::string>(
-      "input_hits_collection", "TaggerSimHits");
+  input_hits_collection_ =
+      parameters.get<std::string>("input_hits_collection", "TaggerSimHits");
 
   // Tagger tracks - only for Recoil Seed finding
-  tagger_trks_collection_ = parameters.getParameter<std::string>(
-      "tagger_trks_collection", "TaggerTracks");
+  tagger_trks_collection_ =
+      parameters.get<std::string>("tagger_trks_collection", "TaggerTracks");
 
-  perigee_location_ = parameters.getParameter<std::vector<double>>(
-      "perigee_location", {-700, 0., 0.});
-  pmin_ =
-      parameters.getParameter<double>("pmin", 0.05 * Acts::UnitConstants::GeV);
-  pmax_ = parameters.getParameter<double>("pmax", 8 * Acts::UnitConstants::GeV);
-  d0max_ =
-      parameters.getParameter<double>("d0max", -15. * Acts::UnitConstants::mm);
-  d0min_ =
-      parameters.getParameter<double>("d0min", -45. * Acts::UnitConstants::mm);
-  z0max_ =
-      parameters.getParameter<double>("z0max", 60. * Acts::UnitConstants::mm);
+  perigee_location_ =
+      parameters.get<std::vector<double>>("perigee_location", {-700, 0., 0.});
+  pmin_ = parameters.get<double>("pmin", 0.05 * Acts::UnitConstants::GeV);
+  pmax_ = parameters.get<double>("pmax", 8 * Acts::UnitConstants::GeV);
+  d0max_ = parameters.get<double>("d0max", -15. * Acts::UnitConstants::mm);
+  d0min_ = parameters.get<double>("d0min", -45. * Acts::UnitConstants::mm);
+  z0max_ = parameters.get<double>("z0max", 60. * Acts::UnitConstants::mm);
 
-  phicut_ = parameters.getParameter<double>("phicut", 0.1);
-  thetacut_ = parameters.getParameter<double>("thetacut", 0.2);
+  phicut_ = parameters.get<double>("phicut", 0.1);
+  thetacut_ = parameters.get<double>("thetacut", 0.2);
 
-  loc0cut_ = parameters.getParameter<double>("loc0cut", 0.1);
-  loc1cut_ = parameters.getParameter<double>("loc1cut", 0.3);
+  loc0cut_ = parameters.get<double>("loc0cut", 0.1);
+  loc1cut_ = parameters.get<double>("loc1cut", 0.3);
 
-  strategies_ = parameters.getParameter<std::vector<std::string>>(
-      "strategies", {"0,1,2,3,4"});
+  strategies_ =
+      parameters.get<std::vector<std::string>>("strategies", {"0,1,2,3,4"});
 
-  inflate_factors_ = parameters.getParameter<std::vector<double>>(
+  inflate_factors_ = parameters.get<std::vector<double>>(
       "inflate_factors", {10., 10., 10., 10., 10., 10.});
 
-  bfield_ = parameters.getParameter<double>("bfield", 1.5);
+  bfield_ = parameters.get<double>("bfield", 1.5);
 
-  input_pass_name_ = parameters.getParameter<std::string>("input_pass_name");
+  input_pass_name_ = parameters.get<std::string>("input_pass_name");
 
   sim_particles_passname_ =
-      parameters.getParameter<std::string>("sim_particles_passname");
-  tagger_trks_event_collection_passname_ = parameters.getParameter<std::string>(
-      "tagger_trks_event_collection_passname");
+      parameters.get<std::string>("sim_particles_passname");
+  tagger_trks_event_collection_passname_ =
+      parameters.get<std::string>("tagger_trks_event_collection_passname");
   sim_particles_event_passname_ =
-      parameters.getParameter<std::string>("sim_particles_event_passname");
+      parameters.get<std::string>("sim_particles_event_passname");
 }
 
 void SeedFinderProcessor::produce(framework::Event& event) {
@@ -100,7 +96,7 @@ void SeedFinderProcessor::produce(framework::Event& event) {
   nevents_++;
 
   // check if SimParticleMap is available for truth matching
-  std::map<int, ldmx::SimParticle> particleMap;
+  std::map<int, ldmx::SimParticle> particle_map;
 
   const std::vector<ldmx::Measurement> measurements =
       event.getCollection<ldmx::Measurement>(input_hits_collection_,
@@ -129,12 +125,12 @@ void SeedFinderProcessor::produce(framework::Event& event) {
     // the track have small correlation.
 
     if (ts.has_value()) {
-      auto trackState = ts.value();
+      auto track_state = ts.value();
 
       Acts::BoundSquareMatrix cov =
-          tracking::sim::utils::unpackCov(trackState.cov);
-      double locu = trackState.params[0];
-      double locv = trackState.params[1];
+          tracking::sim::utils::unpackCov(track_state.cov_);
+      double locu = track_state.params_[0];
+      double locv = track_state.params_[1];
       double covuu =
           cov(Acts::BoundIndices::eBoundLoc0, Acts::BoundIndices::eBoundLoc0);
       double covvv =
@@ -145,7 +141,7 @@ void SeedFinderProcessor::produce(framework::Event& event) {
       Acts::Vector3 dummy{0., 0., 0.};
       Acts::Vector2 local_pos{locu, locv};
       Acts::Vector3 global_pos =
-          tgt_surf->localToGlobal(geometry_context(), local_pos, dummy);
+          tgt_surf->localToGlobal(geometryContext(), local_pos, dummy);
 
       pseudo_meas.setGlobalPosition(global_pos(0), global_pos(1),
                                     global_pos(2));
@@ -157,21 +153,21 @@ void SeedFinderProcessor::produce(framework::Event& event) {
   }
 
   if (event.exists("SimParticles", sim_particles_event_passname_)) {
-    particleMap = event.getMap<int, ldmx::SimParticle>("SimParticles",
-                                                       sim_particles_passname_);
-    truthMatchingTool_->setup(particleMap, measurements);
+    particle_map = event.getMap<int, ldmx::SimParticle>(
+        "SimParticles", sim_particles_passname_);
+    truth_matching_tool_->setup(particle_map, measurements);
   }
 
   ldmx_log(debug) << "Preparing the strategies";
 
-  groups_map.clear();
+  groups_map_.clear();
   //  set the seeding strategy
   //  strategy is a list of layers from which to  make the seed
-  //  this must include 5 layers; layer numbering starts at 0.
+  //  this must include 5 layers; layer_ numbering starts at 0.
   //  std::vector<int> strategy = {9,10,11,12,13};
   std::vector<int> strategy = {0, 1, 2, 3, 4};
-  bool success = GroupStrips(measurements, strategy);
-  if (success) FindSeedsFromMap(seed_tracks, target_pseudo_meas);
+  bool success = groupStrips(measurements, strategy);
+  if (success) findSeedsFromMap(seed_tracks, target_pseudo_meas);
 
   //  currently, we only use a single strategy but eventually
   //  we will use more.  Below is an example of how to add them
@@ -183,8 +179,8 @@ void SeedFinderProcessor::produce(framework::Event& event) {
     FindSeedsFromMap(seed_tracks, target_pseudo_meas);
   */
 
-  groups_map.clear();
-  // outputTree_->Fill();
+  groups_map_.clear();
+  // output_tree_->Fill();
   ntracks_ += seed_tracks.size();
   event.add(out_seed_collection_, seed_tracks);
 
@@ -204,8 +200,9 @@ void SeedFinderProcessor::produce(framework::Event& event) {
   // measurements from:
   //  - raw hits in data
   //  - sim hits in MC
-  // Step 0: Get the sim hits and project them on the surfaces to mimic 2d hits
-  // Step 1: Smear the hits and associate an uncertainty to those measurements.
+  // Step 0: Get the sim hits and project them on the surfaces to mimic 2d
+  // hits Step 1: Smear the hits and associate an uncertainty to those
+  // measurements.
 
   xhit_.clear();
   yhit_.clear();
@@ -229,7 +226,7 @@ void SeedFinderProcessor::produce(framework::Event& event) {
 // while this takes in a target measurement (from tagger, this is pmeas_tgt)
 // this code doesn't do anything with it yet.
 
-ldmx::Track SeedFinderProcessor::SeedTracker(
+ldmx::Track SeedFinderProcessor::seedTracker(
     const ldmx::Measurements& vmeas, double xOrigin,
     const Acts::Vector3& perigee_location,
     const ldmx::Measurements& pmeas_tgt) {
@@ -241,8 +238,8 @@ ldmx::Track SeedFinderProcessor::SeedTracker(
   // In this way it's easier to incorporate the tagger track extrapolation to
   // the fit
 
-  Acts::ActsMatrix<5, 5> A = Acts::ActsMatrix<5, 5>::Zero();
-  Acts::ActsVector<5> Y = Acts::ActsVector<5>::Zero();
+  Acts::ActsMatrix<5, 5> a = Acts::ActsMatrix<5, 5>::Zero();
+  Acts::ActsVector<5> y = Acts::ActsVector<5>::Zero();
 
   for (auto meas : vmeas) {
     double xmeas = meas.getGlobalPosition()[0] - xOrigin;
@@ -251,8 +248,8 @@ ldmx::Track SeedFinderProcessor::SeedTracker(
     const Acts::Surface* hit_surface = geometry().getSurface(meas.getLayerID());
 
     // Get the global to local transformation
-    auto rot = hit_surface->transform(geometry_context()).rotation();
-    auto tr = hit_surface->transform(geometry_context()).translation();
+    auto rot = hit_surface->transform(geometryContext()).rotation();
+    auto tr = hit_surface->transform(geometryContext()).translation();
 
     auto rotl2g = rot.transpose();
 
@@ -263,19 +260,19 @@ ldmx::Track SeedFinderProcessor::SeedTracker(
     yhit_.push_back(meas.getGlobalPosition()[1]);
     zhit_.push_back(meas.getGlobalPosition()[2]);
 
-    Acts::ActsMatrix<2, 5> A_i;
+    Acts::ActsMatrix<2, 5> a_i;
 
-    A_i(0, 0) = rotl2g(0, 1);
-    A_i(0, 1) = rotl2g(0, 1) * xmeas;
-    A_i(0, 2) = rotl2g(0, 1) * xmeas * xmeas;
-    A_i(0, 3) = rotl2g(0, 2);
-    A_i(0, 4) = rotl2g(0, 2) * xmeas;
+    a_i(0, 0) = rotl2g(0, 1);
+    a_i(0, 1) = rotl2g(0, 1) * xmeas;
+    a_i(0, 2) = rotl2g(0, 1) * xmeas * xmeas;
+    a_i(0, 3) = rotl2g(0, 2);
+    a_i(0, 4) = rotl2g(0, 2) * xmeas;
 
-    A_i(1, 0) = rotl2g(1, 1);
-    A_i(1, 1) = rotl2g(1, 1) * xmeas;
-    A_i(1, 2) = rotl2g(1, 1) * xmeas * xmeas;
-    A_i(1, 3) = rotl2g(1, 2);
-    A_i(1, 4) = rotl2g(1, 2) * xmeas;
+    a_i(1, 0) = rotl2g(1, 1);
+    a_i(1, 1) = rotl2g(1, 1) * xmeas;
+    a_i(1, 2) = rotl2g(1, 1) * xmeas * xmeas;
+    a_i(1, 3) = rotl2g(1, 2);
+    a_i(1, 4) = rotl2g(1, 2) * xmeas;
 
     // Fill the yprime vector
     Acts::Vector2 offset = (rot.transpose() * tr).topRows<2>();
@@ -283,59 +280,59 @@ ldmx::Track SeedFinderProcessor::SeedTracker(
 
     loc(0) = meas.getLocalPosition()[0];
     loc(1) = 0.;
-    double uError = sqrt(vmeas[0].getLocalCovariance()[0]);
+    double u_error = sqrt(vmeas[0].getLocalCovariance()[0]);
 
     // TODO Fix vError for measurements
-    double vError = 40. / sqrt(12);
+    double v_error = 40. / sqrt(12);
 
-    Acts::ActsMatrix<2, 2> W_i =
+    Acts::ActsMatrix<2, 2> w_i =
         Acts::ActsMatrix<2, 2>::Zero();  // weight matrix
 
-    W_i(0, 0) = 1. / (uError * uError);
-    W_i(1, 1) = 1. / (vError * vError);
+    w_i(0, 0) = 1. / (u_error * u_error);
+    w_i(1, 1) = 1. / (v_error * v_error);
 
-    Acts::Vector2 Yprime_i = loc + offset - xoffset;
-    Y += (A_i.transpose()) * W_i * Yprime_i;
+    Acts::Vector2 yprime_i = loc + offset - xoffset;
+    y += (a_i.transpose()) * w_i * yprime_i;
 
-    Acts::ActsMatrix<2, 5> WA_i = (W_i * A_i);
-    A += A_i.transpose() * WA_i;
+    Acts::ActsMatrix<2, 5> wa_i = (w_i * a_i);
+    a += a_i.transpose() * wa_i;
   }
 
-  Acts::ActsVector<5> B;
-  B = A.inverse() * Y;
+  Acts::ActsVector<5> b;
+  b = a.inverse() * y;
 
-  b0_.push_back(B(0));
-  b1_.push_back(B(1));
-  b2_.push_back(B(2));
-  b3_.push_back(B(3));
-  b4_.push_back(B(4));
+  b0_.push_back(b(0));
+  b1_.push_back(b(1));
+  b2_.push_back(b(2));
+  b3_.push_back(b(3));
+  b4_.push_back(b(4));
 
   // Acts::ActsVector<5> hlx = Acts::ActsVector<5>::Zero();
   Acts::ActsVector<3> ref{0., 0., 0.};
 
-  double relativePerigeeX = perigee_location(0) - xOrigin;
+  double relative_perigee_x = perigee_location(0) - xOrigin;
 
   std::shared_ptr<const Acts::PerigeeSurface> seed_perigee =
       Acts::Surface::makeShared<Acts::PerigeeSurface>(Acts::Vector3(
-          relativePerigeeX, perigee_location(1), perigee_location(2)));
+          relative_perigee_x, perigee_location(1), perigee_location(2)));
 
   // in mm
-  Acts::Vector3 seed_pos{relativePerigeeX,
-                         B(0) + B(1) * relativePerigeeX +
-                             B(2) * relativePerigeeX * relativePerigeeX,
-                         B(3) + B(4) * relativePerigeeX};
-  Acts::Vector3 dir{1, B(1) + 2 * B(2) * relativePerigeeX, B(4)};
+  Acts::Vector3 seed_pos{relative_perigee_x,
+                         b(0) + b(1) * relative_perigee_x +
+                             b(2) * relative_perigee_x * relative_perigee_x,
+                         b(3) + b(4) * relative_perigee_x};
+  Acts::Vector3 dir{1, b(1) + 2 * b(2) * relative_perigee_x, b(4)};
   dir /= dir.norm();
 
   // Momentum at xmeas
   double p =
-      0.3 * bfield_ * (1. / (2. * abs(B(2)))) * 0.001;  // R in meters, p in GeV
+      0.3 * bfield_ * (1. / (2. * abs(b(2)))) * 0.001;  // R in meters, p in GeV
   // std::cout<<"Momentum "<< p*dir << std::endl;
 
   // Convert it to MeV since that's what TrackUtils assumes
   Acts::Vector3 seed_mom = p * dir / Acts::UnitConstants::MeV;
   Acts::ActsScalar q =
-      B(2) < 0 ? -1 * Acts::UnitConstants::e : +1 * Acts::UnitConstants::e;
+      b(2) < 0 ? -1 * Acts::UnitConstants::e : +1 * Acts::UnitConstants::e;
 
   // Linear intersection with the perigee line. TODO:: Use propagator instead
   // Project the position on the surface.
@@ -351,13 +348,13 @@ ldmx::Track SeedFinderProcessor::SeedTracker(
   //     intersection.intersection.position, seed_mom, q);
 
   auto intersection =
-      (*seed_perigee).intersect(geometry_context(), seed_pos, dir);
+      (*seed_perigee).intersect(geometryContext(), seed_pos, dir);
 
   Acts::FreeVector seed_free = tracking::sim::utils::toFreeParameters(
       intersection.intersections()[0].position(), seed_mom, q);
 
   auto bound_params = Acts::transformFreeToBoundParameters(
-                          seed_free, *seed_perigee, geometry_context())
+                          seed_free, *seed_perigee, geometryContext())
                           .value();
 
   ldmx_log(trace) << "bound parameters at perigee location" << bound_params;
@@ -409,20 +406,20 @@ ldmx::Track SeedFinderProcessor::SeedTracker(
 
   ldmx_log(debug)
       << "...making the ParticleHypothesis ...assume electron for now";
-  auto partHypo{Acts::SinglyChargedParticleHypothesis::electron()};
+  auto part_hypo{Acts::SinglyChargedParticleHypothesis::electron()};
 
   ldmx_log(debug) << "Making BoundTrackParameters seedParameters";
-  Acts::BoundTrackParameters seedParameters(
-      seed_perigee, std::move(bound_params), bound_cov, partHypo);
+  Acts::BoundTrackParameters seed_parameters(
+      seed_perigee, std::move(bound_params), bound_cov, part_hypo);
 
   ldmx_log(debug) << "Returning seed track";
   return trk;
 }
 
 void SeedFinderProcessor::onProcessEnd() {
-  // outputFile_->cd();
-  // outputTree_->Write();
-  // outputFile_->Close();
+  // output_file_->cd();
+  // output_tree_->Write();
+  // output_file_->Close();
   ldmx_log(info) << "AVG Time/Event: " << std::fixed << std::setprecision(1)
                  << processing_time_ / nevents_ << " ms";
   ldmx_log(info) << "Total Seeds/Events: " << ntracks_ << "/" << nevents_;
@@ -442,7 +439,7 @@ void SeedFinderProcessor::onProcessEnd() {
 // Not a good algorithm. The best would be to organize all the hits in sensors
 // *first* then only select the hits that we are interested into. TODO!
 
-bool SeedFinderProcessor::GroupStrips(
+bool SeedFinderProcessor::groupStrips(
     const std::vector<ldmx::Measurement>& measurements,
     const std::vector<int> strategy) {
   //    std::cout<<"Using stratedy"<<std::endl;
@@ -456,13 +453,13 @@ bool SeedFinderProcessor::GroupStrips(
 
     if (std::find(strategy.begin(), strategy.end(), meas.getLayer()) !=
         strategy.end()) {
-      ldmx_log(debug) << "Adding measurement from layer = " << meas.getLayer();
-      groups_map[meas.getLayer()].push_back(&meas);
+      ldmx_log(debug) << "Adding measurement from layer_ = " << meas.getLayer();
+      groups_map_[meas.getLayer()].push_back(&meas);
     }
 
   }  // loop meas
 
-  if (groups_map.size() < 5)
+  if (groups_map_.size() < 5)
     return false;
   else
     return true;
@@ -472,17 +469,17 @@ bool SeedFinderProcessor::GroupStrips(
 // for each of those This will reshuffle all points. (issue?) Will sort the
 // meas_for_seed vector
 
-void SeedFinderProcessor::FindSeedsFromMap(ldmx::Tracks& seeds,
+void SeedFinderProcessor::findSeedsFromMap(ldmx::Tracks& seeds,
                                            const ldmx::Measurements& pmeas) {
   std::map<int, std::vector<const ldmx::Measurement*>>::iterator groups_iter =
-      groups_map.begin();
+      groups_map_.begin();
   // Vector of iterators
-  constexpr size_t K = 5;
+  constexpr size_t k = 5;
   std::vector<std::vector<const ldmx::Measurement*>::iterator> it;
-  it.reserve(K);
+  it.reserve(k);
 
   unsigned int ikey = 0;
-  for (auto& key : groups_map) {
+  for (auto& key : groups_map_) {
     it[ikey] = key.second.begin();
     ikey++;
   }
@@ -506,7 +503,7 @@ void SeedFinderProcessor::FindSeedsFromMap(ldmx::Tracks& seeds,
 
     ldmx_log(debug) << " Grouping ";
 
-    for (int j = 0; j < K; j++) {
+    for (int j = 0; j < k; j++) {
       const ldmx::Measurement* meas = (*(it[j]));
       meas_for_seeds.push_back(*meas);
     }
@@ -526,17 +523,17 @@ void SeedFinderProcessor::FindSeedsFromMap(ldmx::Tracks& seeds,
     Acts::Vector3 perigee{perigee_location_[0], perigee_location_[1],
                           perigee_location_[2]};
 
-    ldmx::Track seedTrack =
-        SeedTracker(meas_for_seeds, meas_for_seeds.at(2).getGlobalPosition()[0],
+    ldmx::Track seed_track =
+        seedTracker(meas_for_seeds, meas_for_seeds.at(2).getGlobalPosition()[0],
                     perigee, pmeas);
 
     bool fail = false;
 
     // Remove failed fits
-    if (1. / abs(seedTrack.getQoP()) < pmin_) {
+    if (1. / abs(seed_track.getQoP()) < pmin_) {
       nfailpmin_++;
       fail = true;
-    } else if (1. / abs(seedTrack.getQoP()) > pmax_) {
+    } else if (1. / abs(seed_track.getQoP()) > pmax_) {
       nfailpmax_++;
       fail = true;
     }
@@ -544,19 +541,19 @@ void SeedFinderProcessor::FindSeedsFromMap(ldmx::Tracks& seeds,
     // Remove large part of fake tracks and duplicates with the following cuts
     // for various compatibility checks.
 
-    else if (abs(seedTrack.getZ0()) > z0max_) {
+    else if (abs(seed_track.getZ0()) > z0max_) {
       nfailz0max_++;
       fail = true;
-    } else if (seedTrack.getD0() < d0min_) {
+    } else if (seed_track.getD0() < d0min_) {
       nfaild0min_++;
       fail = true;
-    } else if (seedTrack.getD0() > d0max_) {
+    } else if (seed_track.getD0() > d0max_) {
       nfaild0max_++;
       fail = true;
-    } else if (abs(seedTrack.getPhi()) > phicut_) {
+    } else if (abs(seed_track.getPhi()) > phicut_) {
       fail = true;
       nfailphi_++;
-    } else if (abs(seedTrack.getTheta() - piover2_) > thetacut_) {
+    } else if (abs(seed_track.getTheta() - piover2_) > thetacut_) {
       fail = true;
       nfailtheta_++;
     }
@@ -578,9 +575,9 @@ void SeedFinderProcessor::FindSeedsFromMap(ldmx::Tracks& seeds,
         // The d0/z0 are in a frame with the same orientation of the target
         // surface
         double delta_loc0 =
-            seedTrack.getD0() - tgt_pseudomeas.getLocalPosition()[0];
+            seed_track.getD0() - tgt_pseudomeas.getLocalPosition()[0];
         double delta_loc1 =
-            seedTrack.getZ0() - tgt_pseudomeas.getLocalPosition()[1];
+            seed_track.getZ0() - tgt_pseudomeas.getLocalPosition()[1];
 
         if (abs(delta_loc0) < loc0cut_ && abs(delta_loc1) < loc1cut_) {
           // found at least 1 compatible target location
@@ -591,14 +588,14 @@ void SeedFinderProcessor::FindSeedsFromMap(ldmx::Tracks& seeds,
     }  // pmeas > 0
 
     if (!fail) {
-      if (truthMatchingTool_->configured()) {
-        auto truthInfo = truthMatchingTool_->TruthMatch(meas_for_seeds);
-        seedTrack.setTrackID(truthInfo.trackID);
-        seedTrack.setPdgID(truthInfo.pdgID);
-        seedTrack.setTruthProb(truthInfo.truthProb);
+      if (truth_matching_tool_->configured()) {
+        auto truth_info = truth_matching_tool_->truthMatch(meas_for_seeds);
+        seed_track.setTrackID(truth_info.track_id_);
+        seed_track.setPdgID(truth_info.pdg_id_);
+        seed_track.setTruthProb(truth_info.truth_prob_);
       }
 
-      seeds.push_back(seedTrack);
+      seeds.push_back(seed_track);
     }
 
     else {
@@ -612,8 +609,8 @@ void SeedFinderProcessor::FindSeedsFromMap(ldmx::Tracks& seeds,
     // Go to next combination
     ldmx_log(debug) << "Go to the next combination";
 
-    ++it[K - 1];
-    for (int i = K - 1;
+    ++it[k - 1];
+    for (int i = k - 1;
          (i > 0) && (it[i] == (std::next(groups_iter, i))->second.end()); --i) {
       it[i] = std::next(groups_iter, i)->second.begin();
       ++it[i - 1];

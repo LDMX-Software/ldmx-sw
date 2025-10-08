@@ -62,52 +62,52 @@ class SimQIE {
   /**
    * Quantization error
    */
-  float QErr(float Q);
+  float qErr(float Q);
 
   /**
    * Digitizing input charge
    * @param Charge = The charge to be digitized
    * @note default charge unit = femto C = 1e-15 C
    */
-  int Q2ADC(float Charge);
+  int q2Adc(float Charge);
 
   /**
    * Converting ADC back to charge
    * @param ADC = ADC count
    */
-  float ADC2Q(int ADC);
+  float adc2Q(int ADC);
 
   /**
    * TDC of the input pulse
    * @param pp = pointer to a pulse instance
    * @param T0 = starting time of the pulse
    */
-  int TDC(QIEInputPulse* pp, float T0);
+  int tdc(QIEInputPulse* pp, float T0);
 
   /**
    * Complete set of ADCs for the pulse
    * @param pp = pointer to pulse instance
    */
-  std::vector<int> Out_ADC(QIEInputPulse* pp);
+  std::vector<int> outAdc(QIEInputPulse* pp);
 
   /**
    * Complete set of TDCs for the pulse
    * @param pp = pointer to pulse instance
    */
-  std::vector<int> Out_TDC(QIEInputPulse* pp);
+  std::vector<int> outTdc(QIEInputPulse* pp);
 
   /**
    * Complete set of Capacitor IDs for the pulse
    * @param pp = pointer to pulse instance
    */
-  std::vector<int> CapID(QIEInputPulse* pp);
+  std::vector<int> capId(QIEInputPulse* pp);
 
   /**
    * Method to check if the pulse is good to be stored
    * @param pulse pointer to the pulse we want to analyze
    * @note ideally, checks if the amplitude is above some threshold.
    */
-  bool PulseCut(QIEInputPulse* pulse, float cut);
+  bool pulseCut(QIEInputPulse* pulse, float cut);
 
  private:
   /// Indices of first bin of each subrange
@@ -131,7 +131,7 @@ class SimQIE {
   float tdc_thr_{3.74};
 
   /// Random number generator (required for noise simulation)
-  std::unique_ptr<TRandom3> rand_ptr{nullptr};
+  std::unique_ptr<TRandom3> rand_ptr_{nullptr};
   TRandom3* trg_;
 
   /// mean of gaussian noise (Pedestal)

@@ -143,9 +143,9 @@ class XsecBiasingOperator : public G4VBiasingOperator {
    * @return the biasing operation with the input biased cross section
    */
   G4VBiasingOperation* BiasedXsec(double biased_xsec) {
-    xsecOperation_->SetBiasedCrossSection(biased_xsec);
-    xsecOperation_->Sample();
-    return xsecOperation_;
+    xsec_operation_->SetBiasedCrossSection(biased_xsec);
+    xsec_operation_->Sample();
+    return xsec_operation_;
   }
 
   /**
@@ -157,10 +157,10 @@ class XsecBiasingOperator : public G4VBiasingOperator {
   bool processIsBiased(std::string process);
 
   /** Cross-section biasing operation. */
-  G4BOptnChangeCrossSection* xsecOperation_{nullptr};
+  G4BOptnChangeCrossSection* xsec_operation_{nullptr};
 
   /** Process manager associated with the particle of interest. */
-  G4ProcessManager* processManager_{nullptr};
+  G4ProcessManager* process_manager_{nullptr};
 
   /**
    * Do *not* propose any biasing on final states.
@@ -178,7 +178,7 @@ class XsecBiasingOperator : public G4VBiasingOperator {
     return nullptr;
   }
   /// Enable logging
-  framework::logging::logger theLog_;
+  framework::logging::logger the_log_;
 
 };  // XsecBiasingOperator
 }  // namespace simcore

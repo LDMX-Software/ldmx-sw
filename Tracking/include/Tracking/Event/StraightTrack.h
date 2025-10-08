@@ -33,10 +33,10 @@ class StraightTrack {
    *
    * This class is needed by ROOT when building the dictionary.
    */
-  void Print() const;
+  friend std::ostream& operator<<(std::ostream& o, const StraightTrack& d);
 
   // To match the Framework Bus clear. It's doing nothing
-  void Clear() {};
+  void clear() {};
 
   void setNhits(int nhits) { n_hits_ = nhits; }
   int getNhits() const { return n_hits_; }
@@ -188,7 +188,7 @@ class StraightTrack {
   std::vector<double> trk_cov_;
 
   /// Class declaration needed by the ROOT dictionary.
-  ClassDef(StraightTrack, 1);
+  ClassDef(StraightTrack, 2);
 
 };  // StraightTrack
 

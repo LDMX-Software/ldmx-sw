@@ -25,11 +25,11 @@ class NtuplizeHgcrocDigiCollection : public framework::Analyzer {
   ~NtuplizeHgcrocDigiCollection() {}
 
   void configure(framework::config::Parameters& ps) final override {
-    input_name_ = ps.getParameter<std::string>("input_name");
-    input_pass_ = ps.getParameter<std::string>("input_pass");
-    pedestal_table_ = ps.getParameter<std::string>("pedestal_table");
-    using_eid_ = ps.getParameter<bool>("using_eid");
-    already_aligned_ = ps.getParameter<bool>("already_aligned");
+    input_name_ = ps.get<std::string>("input_name");
+    input_pass_ = ps.get<std::string>("input_pass");
+    pedestal_table_ = ps.get<std::string>("pedestal_table");
+    using_eid_ = ps.get<bool>("using_eid");
+    already_aligned_ = ps.get<bool>("already_aligned");
   }
 
   void onProcessStart() final override {
@@ -145,7 +145,7 @@ void NtuplizeHgcrocDigiCollection::analyze(const framework::Event& event) {
       tot_comp_ = d.at(i_sample_).isTOTComplete();
       tot_ = d.at(i_sample_).tot();
       toa_ = d.at(i_sample_).toa();
-      int adc_t = d.at(i_sample_).adc_t();
+      int adc_t = d.at(i_sample_).adcT();
       raw_adc_ = adc_t;
       adc_ = adc_t - pedestal_table.get(d.id(), 0);
       flat_tree_->Fill();

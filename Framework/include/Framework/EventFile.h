@@ -198,7 +198,7 @@ class EventFile {
    * 1. We have a parent file - Just follow the parent's lead
    *    by calling the parent's nextEvent.
    * 2. We are an output file (and we don't have a parent file).
-   *    Just increment the number of entries and the entry index.
+   *    Just increment the number of entries and the entry index_.
    * 3. We are an input file. Now we need to load the next entry
    *    of the our tree into the event bus objects.
    *    If we are configured to be "loopable", then we will
@@ -255,7 +255,7 @@ class EventFile {
   ldmx::RunHeader &getRunHeader(int runNumber);
 
   /// @return the name of the ROOT file being managed.
-  const std::string &getFileName() { return fileName_; }
+  const std::string &getFileName() { return file_name_; }
 
  private:
   /**
@@ -284,16 +284,16 @@ class EventFile {
   Long64_t ientry_{-1};
 
   /// The file name.
-  std::string fileName_;
+  std::string file_name_;
 
   /// True if file is an output file being written to disk.
-  bool isOutputFile_;
+  bool is_output_file_;
 
   /// True if there is only one output file
-  bool isSingleOutput_;
+  bool is_single_output_;
 
   /// True if this is an input file with pileup overlay events */
-  bool isLoopable_{false};
+  bool is_loopable_{false};
 
   /// The backing TFile for this EventFile.
   TFile *file_{nullptr};
@@ -313,7 +313,7 @@ class EventFile {
    * The series of rules to call before cloning/copying the
    * parent tree.
    */
-  std::vector<std::pair<std::string, bool>> preCloneRules_;
+  std::vector<std::pair<std::string, bool>> pre_clone_rules_;
 
   /**
    * Vector of drop rules that have been parsed and
@@ -322,7 +322,7 @@ class EventFile {
    * The branches were initial deactivated so they don't get cloned
    * to output tree.
    */
-  std::vector<std::string> reactivateRules_;
+  std::vector<std::string> reactivate_rules_;
 
   /**
    * Map of run numbers to RunHeader objects
@@ -334,7 +334,7 @@ class EventFile {
    *     - This happens when the RunHeader is created by Process::run during
    * production
    */
-  std::map<int, std::pair<bool, ldmx::RunHeader *>> runMap_;
+  std::map<int, std::pair<bool, ldmx::RunHeader *>> run_map_;
 };
 }  // namespace framework
 

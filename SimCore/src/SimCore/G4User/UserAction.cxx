@@ -17,7 +17,7 @@ UserAction::UserAction(const std::string& name,
                        framework::config::Parameters& parameters)
     : name_{name},
       parameters_{parameters},
-      theLog_{::framework::logging::makeLogger(name)} {}
+      the_log_{::framework::logging::makeLogger(name)} {}
 
 UserEventInformation* UserAction::getEventInfo() const {
   return static_cast<UserEventInformation*>(

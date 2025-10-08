@@ -63,13 +63,13 @@ class TargetBremFilter : public simcore::UserAction {
 
  private:
   /// Recoil electron threshold.
-  double recoilMaxPThreshold_{1500};  // MeV
+  double recoil_max_p_threshold_{1500};  // MeV
 
   /// Brem gamma energy treshold
-  double bremEnergyThreshold_{2500};
+  double brem_energy_threshold_{2500};
 
   /// Flag indicating if the recoil electron track should be killed
-  bool killRecoil_{false};
+  bool kill_recoil_{false};
 
 };  // TargetBremFilter
 }  // namespace biasing

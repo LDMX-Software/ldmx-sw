@@ -79,11 +79,6 @@ class CaloTrigPrim {
   uint32_t getPrimitive() const { return tp_; }
 
   /**
-   * Print a description of this object.
-   */
-  void Print() const;
-
-  /**
    * Stream the input CaloTP
    *
    * In one line, prints out the ID (in hex),
@@ -114,7 +109,7 @@ class CaloTrigPrim {
   /// the integer trigger primitive value for this channel
   uint32_t tp_{0};
   /// ROOT Dictionary class definition macro
-  ClassDef(CaloTrigPrim, 1);
+  ClassDef(CaloTrigPrim, 2);
 };
 }  // namespace ldmx
 

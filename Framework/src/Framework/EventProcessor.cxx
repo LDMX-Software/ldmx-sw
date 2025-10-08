@@ -8,8 +8,10 @@
 namespace framework {
 
 EventProcessor::EventProcessor(const std::string &name, Process &process)
-    : histograms_{name},
-      theLog_{logging::makeLogger(name)},
+    : histograms_{[this]() -> TDirectory * {
+        return this->getHistoDirectory();
+      }},
+      the_log_{logging::makeLogger(name)},
       process_{process},
       name_{name} {}
 
@@ -22,11 +24,11 @@ const ldmx::EventHeader &EventProcessor::getEventHeader() const {
 }
 
 TDirectory *EventProcessor::getHistoDirectory() {
-  if (!histoDir_) {
-    histoDir_ = process_.makeHistoDirectory(name_);
+  if (!histo_dir_) {
+    histo_dir_ = process_.makeHistoDirectory(name_);
   }
-  histoDir_->cd();  // make this the current directory
-  return histoDir_;
+  histo_dir_->cd();  // make this the current directory
+  return histo_dir_;
 }
 
 void EventProcessor::setStorageHint(framework::StorageControl::Hint hint,
@@ -43,18 +45,7 @@ int EventProcessor::getRunNumber() const { return process_.getRunNumber(); }
 void EventProcessor::createHistograms(
     const std::vector<framework::config::Parameters> &histos) {
   for (auto const &h : histos) {
-    auto name{h.getParameter<std::string>("name")};
-    auto xLabel{h.getParameter<std::string>("xlabel")};
-    auto xbins{h.getParameter<std::vector<double>>("xbins")};
-    auto yLabel{h.getParameter<std::string>("ylabel")};
-    auto ybins{h.getParameter<std::vector<double>>("ybins", {})};
-    if (ybins.empty()) {
-      // assume 1D histogram
-      histograms_.create(name, xLabel, xbins);
-    } else {
-      // assume 2D histogram
-      histograms_.create(name, xLabel, xbins, yLabel, ybins);
-    }
+    histograms_.create(h);
   }
 }
 

@@ -5,6 +5,7 @@
 #include <TTree.h>
 #include <TCanvas.h>
 #include <TLegend.h>
+#include <TLatex.h>
 #include <TGaxis.h>
 #include <TFile.h>
 #include <TGraphErrors.h>
@@ -72,7 +73,8 @@ void makeEventCanvas(string inFile, int maxEvents = 200, int deadChannel =8, int
    TFile * fIn = TFile::Open( inFile.c_str(), "READ");
    if (!fIn)
 	 std::cout << "Couldn't open " << inFile << std::endl;
-   fIn->cd("QIEplotMaker");
+   //   fIn->cd("QIEplotMaker");
+   fIn->cd("plotMaker");
    fIn->ls();
    
    TLatex * latex = new TLatex();
@@ -213,7 +215,7 @@ void makeEventCanvas(string inFile, int maxEvents = 200, int deadChannel =8, int
 	 //	c2->cd();
 	 //	latex->DrawLatex(0.4, 0.9, Form("Event %i",iE) ); //add event number
 	 // save space by not saving the .png, uncomment if needed
-	 // c1->SaveAs(Form("%s/hCharge_ev%i.png", outDir.Data(), iE));
+	 c1->SaveAs(Form("%s/hCharge_ev%i.png", outDir.Data(), iE));
 	 c1->SaveAs(Form("%s/hCharge_ev%i.pdf", outDir.Data(), iE));
 	 c2->SetTopMargin(0.2);
 	 c2->cd(2);
@@ -222,6 +224,5 @@ void makeEventCanvas(string inFile, int maxEvents = 200, int deadChannel =8, int
 	 //c2->SaveAs(Form("%s/hCharge_ev%i_standardized.png", outDir.Data(), iE));
 	 c2->SaveAs(Form("%s/hCharge_ev%i_standardized.pdf", outDir.Data(), iE));
    }
-  
    //Done.
 }

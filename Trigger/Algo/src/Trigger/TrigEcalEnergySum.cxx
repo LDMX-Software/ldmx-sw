@@ -9,31 +9,31 @@
 namespace trigger {
 
 void TrigEcalEnergySum::configure(framework::config::Parameters& ps) {
-  hitCollName_ = ps.getParameter<std::string>("hitCollName");
-  hit_coll_passname_ = ps.getParameter<std::string>("hit_coll_passname");
+  hit_coll_name_ = ps.get<std::string>("hitCollName");
+  hit_coll_passname_ = ps.get<std::string>("hit_coll_passname");
   hit_collname_events_passname_ =
-      ps.getParameter<std::string>("hit_collname_events_passname");
+      ps.get<std::string>("hit_collname_events_passname");
 }
 
 void TrigEcalEnergySum::produce(framework::Event& event) {
-  if (!event.exists(hitCollName_, hit_collname_events_passname_)) return;
-  auto ecalTrigDigis{event.getObject<ldmx::HgcrocTrigDigiCollection>(
-      hitCollName_, hit_coll_passname_)};
+  if (!event.exists(hit_coll_name_, hit_collname_events_passname_)) return;
+  auto ecal_trig_digis{event.getObject<ldmx::HgcrocTrigDigiCollection>(
+      hit_coll_name_, hit_coll_passname_)};
 
   // floating point algorithm
   // float total_e = 0;
   // e_t total_e_trunc=0;
 
   // run the firmware (hls) algorithm directly
-  EcalTP Input_TPs_hw[N_INPUT_TP];
+  EcalTP input_t_ps_hw[N_INPUT_TP];
   e_t energy_hw;
-  int iTP = 0;
-  ecalTpToE cvt;
-  for (const auto& trigDigi : ecalTrigDigis) {
+  int i_tp = 0;
+  EcalTpToE cvt;
+  for (const auto& trig_digi : ecal_trig_digis) {
     // HgcrocTrigDigi
 
-    ldmx::EcalTriggerID tid(trigDigi.getId());  // raw value
-    float e = cvt.calc(trigDigi.linearPrimitive(), tid.layer());
+    ldmx::EcalTriggerID tid(trig_digi.getId());  // raw value
+    float e = cvt.calc(trig_digi.linearPrimitive(), tid.layer());
     // // compressed ECal digis are 8xADCs (HCal will be 4x)
     // float sie = 8 * trigDigi.linearPrimitive() * gain *
     //             mVtoMeV;  // in MeV, before layer corrections
@@ -42,14 +42,14 @@ void TrigEcalEnergySum::produce(framework::Event& event) {
     // total_e += e;
     // total_e_trunc = total_e_trunc + e_t(e);
 
-    if (iTP < N_INPUT_TP) {
-      Input_TPs_hw[iTP].tid = trigDigi.getId();
-      Input_TPs_hw[iTP].tp = e_t(e);
+    if (i_tp < N_INPUT_TP) {
+      input_t_ps_hw[i_tp].tid_ = trig_digi.getId();
+      input_t_ps_hw[i_tp].tp_ = e_t(e);
     }
-    iTP++;
+    i_tp++;
   }
 
-  TotalEnergy_hw(Input_TPs_hw, energy_hw);
+  TotalEnergy_hw(input_t_ps_hw, energy_hw);
 
   // std::cout << "Total ECal energy: " << total_e << " MeV (hw: " << energy_hw
   //           << " MeV)" << std::endl;

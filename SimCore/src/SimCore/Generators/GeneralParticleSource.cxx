@@ -23,22 +23,21 @@ namespace generators {
 GeneralParticleSource::GeneralParticleSource(
     const std::string& name, const framework::config::Parameters& parameters)
     : PrimaryGenerator(name, parameters) {
-  init_commands_ =
-      parameters.getParameter<std::vector<std::string>>("initCommands");
+  init_commands_ = parameters.get<std::vector<std::string>>("initCommands");
   for (const auto& cmd : init_commands_) {
-    int g4Ret = G4UImanager::GetUIpointer()->ApplyCommand(cmd);
-    if (g4Ret > 0) {
+    int g4_ret = G4UImanager::GetUIpointer()->ApplyCommand(cmd);
+    if (g4_ret > 0) {
       EXCEPTION_RAISE("InitCmd",
                       "Initialization command '" + cmd +
                           "' returned a failue status from Geant4: " +
-                          std::to_string(g4Ret));
+                          std::to_string(g4_ret));
     }
   }
 }
 
 void GeneralParticleSource::GeneratePrimaryVertex(G4Event* event) {
   // just pass to the Geant4 implementation
-  theG4Source_.GeneratePrimaryVertex(event);
+  the_g4_source_.GeneratePrimaryVertex(event);
   return;
 }
 

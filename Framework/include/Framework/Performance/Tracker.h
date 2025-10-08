@@ -32,15 +32,15 @@ class Tracker {
    */
   ~Tracker();
   /// literally first line of Process::run
-  void absolute_start();
+  void absoluteStart();
   /// literally last line of Process::run (if run compeletes without error)
-  void absolute_stop();
+  void absoluteStop();
   /// start the timer for a specific callback and specific processor
   void start(Callback cb, std::size_t i_proc);
   /// stop the timer for a specific callback and specific processor
   void stop(Callback cb, std::size_t i_proc);
   /// inform us that we finished an event (and whether it was completed or not)
-  void end_event(bool completed);
+  void endEvent(bool completed);
 
  private:
   /**

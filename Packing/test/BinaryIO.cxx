@@ -145,7 +145,7 @@ TEST_CASE("BinaryIO", "[Packing][functionality]") {
 
         REQUIRE(f.nextEvent());
 
-        event.Clear();
+        event.clear();
         event.onEndOfEvent();
       }
 
@@ -176,7 +176,7 @@ TEST_CASE("BinaryIO", "[Packing][functionality]") {
               event.getCollection<uint32_t>(triggerpad_object_name, ""));
         CHECK_FALSE(event.exists(tracker_object_name, ""));
 
-        event.Clear();
+        event.clear();
         event.onEndOfEvent();
       }
 

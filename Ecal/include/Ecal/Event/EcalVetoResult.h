@@ -26,7 +26,7 @@ namespace ldmx {
 class EcalVetoResult {
  public:
   /** Constructor */
-  EcalVetoResult();
+  EcalVetoResult() = default;
 
   /** Destructor */
   virtual ~EcalVetoResult();
@@ -74,10 +74,10 @@ class EcalVetoResult {
       std::array<float, 3> recoil_pos);
 
   /** Reset the object. */
-  void Clear();
+  void clear();
 
   /** Print the object */
-  void Print() const;
+  friend std::ostream& operator<<(std::ostream& o, const EcalVetoResult& d);
 
   /** Checks if the event passes the Ecal veto. */
   bool passesVeto() const { return passes_veto_; }
@@ -311,10 +311,10 @@ class EcalVetoResult {
   /** pz of recoil electron at the Ecal face. */
   float recoil_pz_{-9999};
 
-  /** x position of recoil electron at the Ecal face. */
+  /** x-position of recoil electron at the Ecal face. */
   float recoil_x_{-9999};
 
-  /** y position of recoil electron at the Ecal face. */
+  /** y-position of recoil electron at the Ecal face. */
   float recoil_y_{-9999};
 
   /// Number of hits outside of the electron roc in the Ecal
@@ -337,7 +337,7 @@ class EcalVetoResult {
 
   std::vector<float> ecal_layer_edep_readout_;
 
-  ClassDef(EcalVetoResult, 11);
+  ClassDef(EcalVetoResult, 12);
 };
 }  // namespace ldmx
 

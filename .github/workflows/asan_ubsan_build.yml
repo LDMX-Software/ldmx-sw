@@ -15,15 +15,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout ldmx-sw
-      uses: actions/checkout@v4
+      uses: actions/checkout@v5
       with:
         submodules: 'recursive'
         fetch-depth: 0
 
     - name: Install just
       uses: extractions/setup-just@v3
-      with:
-          just-version: 1.26.0
  
     - name: Compile and Install ldmx-sw
       run: |

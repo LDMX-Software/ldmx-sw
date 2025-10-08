@@ -7,9 +7,9 @@ namespace biasoperators {
 GammaToMuPair::GammaToMuPair(std::string name,
                              const framework::config::Parameters& p)
     : XsecBiasingOperator(name, p) {
-  volume_ = p.getParameter<std::string>("volume");
-  factor_ = p.getParameter<double>("factor");
-  threshold_ = p.getParameter<double>("threshold");
+  volume_ = p.get<std::string>("volume");
+  factor_ = p.get<double>("factor");
+  threshold_ = p.get<double>("threshold");
 }
 
 G4VBiasingOperation* GammaToMuPair::ProposeOccurenceBiasingOperation(
@@ -18,17 +18,17 @@ G4VBiasingOperation* GammaToMuPair::ProposeOccurenceBiasingOperation(
     return nullptr;
   }
 
-  std::string currentProcess =
+  std::string current_process =
       callingProcess->GetWrappedProcess()->GetProcessName();
-  if (currentProcess.compare(this->getProcessToBias()) == 0) {
-    G4double interactionLength =
+  if (current_process.compare(this->getProcessToBias()) == 0) {
+    G4double interaction_length =
         callingProcess->GetWrappedProcess()->GetCurrentInteractionLength();
 
-    double enXsecUnbiased = 1. / interactionLength;
+    double en_xsec_unbiased = 1. / interaction_length;
 
-    double enXsecBiased = enXsecUnbiased * factor_;
+    double en_xsec_biased = en_xsec_unbiased * factor_;
 
-    return BiasedXsec(enXsecBiased);
+    return BiasedXsec(en_xsec_biased);
   }
   return nullptr;
 }

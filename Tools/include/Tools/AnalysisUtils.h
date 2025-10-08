@@ -21,7 +21,7 @@ namespace ldmx {
 class SimParticle;
 }
 
-namespace Analysis {
+namespace analysis {
 
 /**
  * Find and return the sim particle associated with the recoil electron.
@@ -65,6 +65,6 @@ const ldmx::SimParticle *getPNGamma(
     const std::map<int, ldmx::SimParticle> &particleMap,
     const ldmx::SimParticle *recoil, const float &energyThreshold);
 
-}  // namespace Analysis
+}  // namespace analysis
 
 #endif  // _ANALYSIS_UTILS_H_

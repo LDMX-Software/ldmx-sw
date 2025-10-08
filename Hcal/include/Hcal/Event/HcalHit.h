@@ -36,12 +36,12 @@ class HcalHit : public ldmx::CalorimeterHit {
   /**
    * Clear the data in the object.
    */
-  void Clear();
+  void clear();
 
   /**
    * Print out the object.
    */
-  void Print() const;
+  friend std::ostream &operator<<(std::ostream &o, const HcalHit &d);
 
   /**
    * Get the number of photoelectrons estimated for this hit.
@@ -86,31 +86,31 @@ class HcalHit : public ldmx::CalorimeterHit {
    * Get if hit was reconstructed using ADC.
    * @return isADC
    */
-  int getIsADC() const { return isADC_; }
+  int getIsADC() const { return is_adc_; }
 
   /**
    * Get the toa of the positive end.
    * @return toaPos
    */
-  int getToaPos() const { return toaPos_; }
+  int getToaPos() const { return toa_pos_; }
 
   /**
    * Get the toa of the negative end.
    * @return toaNeg
    */
-  int getToaNeg() const { return toaNeg_; }
+  int getToaNeg() const { return toa_neg_; }
 
   /**
    * Get the amplitude of the positive end.
    * @return amplitudePos
    */
-  int getAmplitudePos() const { return amplitudePos_; }
+  int getAmplitudePos() const { return amplitude_pos_; }
 
   /**
    * Get the amplitude of the negative end.
    * @return amplitudeNeg
    */
-  int getAmplitudeNeg() const { return amplitudeNeg_; }
+  int getAmplitudeNeg() const { return amplitude_neg_; }
 
   /**
    * Get the position of the hit
@@ -141,7 +141,7 @@ class HcalHit : public ldmx::CalorimeterHit {
    * Note: only applies for double ended readout
    * @return timeDiff
    */
-  double getTimeDiff() const { return timeDiff_; }
+  double getTimeDiff() const { return time_diff_; }
 
   // Now the setters
 
@@ -178,7 +178,7 @@ class HcalHit : public ldmx::CalorimeterHit {
   void setStrip(int strip) { strip_ = strip; }
 
   /**
-   * Set the end (0 neg, 1 pos side).
+   * Set the end (0 neg, 1 pos_ side).
    * @param end
    */
   void setEnd(int end) { end_ = end; }
@@ -187,37 +187,37 @@ class HcalHit : public ldmx::CalorimeterHit {
    * Set if the hit is reconstructed using ADC
    * @param isADC int
    */
-  void setIsADC(int isADC) { isADC_ = isADC; }
+  void setIsADC(int isADC) { is_adc_ = isADC; }
 
   /**
    * Set time difference (uncorrected)
    * @param time
    */
-  void setTimeDiff(double timeDiff) { timeDiff_ = timeDiff; }
+  void setTimeDiff(double timeDiff) { time_diff_ = timeDiff; }
 
   /**
    * Set toa of the positive end
    * @param time
    */
-  void setToaPos(double toaPos) { toaPos_ = toaPos; }
+  void setToaPos(double toaPos) { toa_pos_ = toaPos; }
 
   /**
    * Set toa of the negative end
    * @param time
    */
-  void setToaNeg(double toaNeg) { toaNeg_ = toaNeg; }
+  void setToaNeg(double toaNeg) { toa_neg_ = toaNeg; }
 
   /**
    * Set amplitude of the positive end
    * @param amplitude
    */
-  void setAmplitudePos(double amplitudePos) { amplitudePos_ = amplitudePos; }
+  void setAmplitudePos(double amplitudePos) { amplitude_pos_ = amplitudePos; }
 
   /**
    * Set amplitude of the negative end
    * @param amplitude
    */
-  void setAmplitudeNeg(double amplitudeNeg) { amplitudeNeg_ = amplitudeNeg; }
+  void setAmplitudeNeg(double amplitudeNeg) { amplitude_neg_ = amplitudeNeg; }
 
   /**
    * Set original position
@@ -248,21 +248,21 @@ class HcalHit : public ldmx::CalorimeterHit {
   int end_{-99};
 
   /// isADC
-  int isADC_{-99};
+  int is_adc_{-99};
 
-  double timeDiff_{-9999.};
+  double time_diff_{-9999.};
   double position_{-9999.};
   int orientation_{-9999};
 
-  double toaPos_{-9999.};
-  double toaNeg_{-9999.};
-  double amplitudePos_{-9999.};
-  double amplitudeNeg_{-9999.};
+  double toa_pos_{-9999.};
+  double toa_neg_{-9999.};
+  double amplitude_pos_{-9999.};
+  double amplitude_neg_{-9999.};
 
   /**
    * The ROOT class definition.
    */
-  ClassDef(HcalHit, 5);
+  ClassDef(HcalHit, 6);
 };
 }  // namespace ldmx
 

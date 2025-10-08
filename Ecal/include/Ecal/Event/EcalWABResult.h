@@ -34,13 +34,11 @@ class EcalWABResult {
 
   /**
    * Print the string representation of this object.
-   *
-   * This method is needed by ROOT when building the dictionary.
    */
-  void Print() const;
+  friend std::ostream &operator<<(std::ostream &o, const EcalWABResult &d);
 
   // To match the Framework Bus clear. It's doing nothing.
-  void Clear() {}
+  void clear() {}
 
   void setVariables(
       float true_theta_electron, float true_theta_photon,
@@ -222,7 +220,7 @@ class EcalWABResult {
   int progress_num_;
 
   /// Class declaration needed by the ROOT dictionary.
-  ClassDef(EcalWABResult, 1);
+  ClassDef(EcalWABResult, 2);
 };  // EcalWABResult
 
 typedef std::vector<ldmx::EcalWABResult> EcalWABResults;

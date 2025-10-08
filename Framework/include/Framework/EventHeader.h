@@ -63,19 +63,19 @@ class EventHeader {
    *
    * @param[in] o ROOT-style Option (ignored)
    */
-  void Clear(Option_t* o = "");
+  void clear(Option_t* o = "");
 
   /**
    * Print this object.
    * @param[in] o ROOT-style Option (ignored)
    */
-  void Print(Option_t* o = "") const;
+  void print(Option_t* o = "") const;
 
   /**
    * Return the event number.
    * @return The event number.
    */
-  int getEventNumber() const { return eventNumber_; }
+  int getEventNumber() const { return event_number_; }
 
   /**
    * Return the run number.
@@ -101,13 +101,13 @@ class EventHeader {
    * Is this a real data event?
    * @return True if this is a real data event.
    */
-  bool isRealData() const { return isRealData_; }
+  bool isRealData() const { return is_real_data_; }
 
   /**
    * set whether this event is real or MC data
    * @param[in] yes True if this event is real data
    */
-  void setRealData(bool yes = true) { isRealData_ = yes; }
+  void setRealData(bool yes = true) { is_real_data_ = yes; }
 
   /**
    * Set the event number.
@@ -117,7 +117,7 @@ class EventHeader {
    * is done separately within Framework.
    * @param eventNumber The event number.
    */
-  void setEventNumber(int eventNumber) { this->eventNumber_ = eventNumber; }
+  void setEventNumber(int eventNumber) { this->event_number_ = eventNumber; }
 
   /**
    * Set the run number.
@@ -166,7 +166,7 @@ class EventHeader {
    * @return The parameter value.
    */
   void setIntParameter(const std::string& name, int value) {
-    intParameters_[name] = value;
+    int_parameters_[name] = value;
   }
 
   /**
@@ -183,7 +183,7 @@ class EventHeader {
    * @return value The parameter value.
    */
   void setFloatParameter(const std::string& name, float value) {
-    floatParameters_[name] = value;
+    float_parameters_[name] = value;
   }
 
   /**
@@ -200,14 +200,14 @@ class EventHeader {
    * @return value The parameter value.
    */
   void setStringParameter(const std::string& name, std::string value) {
-    stringParameters_[name] = value;
+    string_parameters_[name] = value;
   }
 
  protected:
   /**
    * The event number.
    */
-  int eventNumber_{-1};
+  int event_number_{-1};
 
   /**
    * The run number.
@@ -227,27 +227,27 @@ class EventHeader {
   /**
    * Is this event real data?
    */
-  bool isRealData_{false};
+  bool is_real_data_{false};
 
   /**
    * The int parameters.
    */
-  std::map<std::string, int> intParameters_;
+  std::map<std::string, int> int_parameters_;
 
   /**
    * The float parameters.
    */
-  std::map<std::string, float> floatParameters_;
+  std::map<std::string, float> float_parameters_;
 
   /**
    * The string parameters.
    */
-  std::map<std::string, std::string> stringParameters_;
+  std::map<std::string, std::string> string_parameters_;
 
   /**
    * ROOT class definition.
    */
-  ClassDef(EventHeader, 2);
+  ClassDef(EventHeader, 3);
 };
 
 }  // namespace ldmx

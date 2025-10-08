@@ -2,7 +2,7 @@
 
 namespace framework {
 
-void RunHeaderAnalyzer::onNewRun(const ldmx::RunHeader& rh) { rh.Print(); }
+void RunHeaderAnalyzer::onNewRun(const ldmx::RunHeader& rh) { rh.print(); }
 
 void RunHeaderAnalyzer::analyze(const framework::Event& event) { return; }
 

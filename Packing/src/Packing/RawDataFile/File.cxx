@@ -9,17 +9,16 @@ namespace packing {
 namespace rawdatafile {
 
 File::File(const framework::config::Parameters &ps) {
-  is_output_ = ps.getParameter<bool>("is_output");
-  skip_unavailable_ = ps.getParameter<bool>("skip_unavailable");
+  is_output_ = ps.get<bool>("is_output");
+  skip_unavailable_ = ps.get<bool>("skip_unavailable");
 
-  std::string fn = ps.getParameter<std::string>("filename");
+  std::string fn = ps.get<std::string>("filename");
 
-  ecal_object_name_ = ps.getParameter<std::string>("ecal_object_name");
-  hcal_object_name_ = ps.getParameter<std::string>("hcal_object_name");
-  tracker_object_name_ = ps.getParameter<std::string>("tracker_object_name");
-  triggerpad_object_name_ =
-      ps.getParameter<std::string>("triggerpad_object_name");
-  pass_name_ = ps.getParameter<std::string>("pass_name");
+  ecal_object_name_ = ps.get<std::string>("ecal_object_name");
+  hcal_object_name_ = ps.get<std::string>("hcal_object_name");
+  tracker_object_name_ = ps.get<std::string>("tracker_object_name");
+  triggerpad_object_name_ = ps.get<std::string>("triggerpad_object_name");
+  pass_name_ = ps.get<std::string>("pass_name");
 
   std::cerr << "creating file" << std::endl;
   if (is_output_) {
@@ -34,13 +33,13 @@ File::File(const framework::config::Parameters &ps) {
     uint32_t word;
     reader_ >> word;
 
-    uint8_t version = word & utility::mask<4>;
+    uint8_t version = word & utility::MASK<4>;
     if (version != 0) {
       EXCEPTION_RAISE("RawFileVers", "Unable to handle raw file version " +
                                          std::to_string(version));
     }
 
-    run_ = ((word >> 4) & utility::mask<28>);
+    run_ = ((word >> 4) & utility::MASK<28>);
 
     reader_.seek<uint32_t>(-2, std::ios::end);
     // save EOF in number of 32-bit-width words
@@ -51,7 +50,7 @@ File::File(const framework::config::Parameters &ps) {
 
     reader_.seek<uint32_t>(1, std::ios::beg);
 
-    if (ps.getParameter<bool>("verify_checksum")) {
+    if (ps.get<bool>("verify_checksum")) {
       utility::CRC crc;
       for (auto ifile{reader_.tell<uint32_t>()}; ifile < eof; ifile++) {
         reader_ >> word;
@@ -131,10 +130,10 @@ void File::writeRunHeader(ldmx::RunHeader &header) {
     // use passed run number
     run_ = header.getRunNumber();
     // Why cant we just take the header from above?
-    uint32_t tempHeader =
-        (0 & utility::mask<4>)+((run_ & utility::mask<28>) << 4);
-    writer_ << tempHeader;
-    crc_ << tempHeader;
+    uint32_t temp_header =
+        (0 & utility::MASK<4>)+((run_ & utility::MASK<28>) << 4);
+    writer_ << temp_header;
+    crc_ << temp_header;
   } else {
     // put our read-in run number here
     header.setIntParameter("raw_run", run_);

@@ -10,74 +10,72 @@ namespace recon {
 
 void RecoilFiducialityProcessor::configure(
     framework::config::Parameters &parameters) {
-  min_p_mag_ = parameters.getParameter<double>("min_p_mag");
-  min_tracker_hits_ = parameters.getParameter<int>("min_tracker_hits");
-  input_pass_name_ = parameters.getParameter<std::string>("input_pass_name");
-  ecal_collection_ = parameters.getParameter<std::string>("ecal_collection");
-  hcal_collection_ = parameters.getParameter<std::string>("hcal_collection");
-  recoil_collection_ =
-      parameters.getParameter<std::string>("recoil_collection");
-  output_collection_ =
-      parameters.getParameter<std::string>("output_collection");
-  inverse_skim_ = parameters.getParameter<bool>("inverse_skim");
+  min_p_mag_ = parameters.get<double>("min_p_mag");
+  min_tracker_hits_ = parameters.get<int>("min_tracker_hits");
+  input_pass_name_ = parameters.get<std::string>("input_pass_name");
+  ecal_collection_ = parameters.get<std::string>("ecal_collection");
+  hcal_collection_ = parameters.get<std::string>("hcal_collection");
+  recoil_collection_ = parameters.get<std::string>("recoil_collection");
+  output_collection_ = parameters.get<std::string>("output_collection");
+  inverse_skim_ = parameters.get<bool>("inverse_skim");
 }
 
 void RecoilFiducialityProcessor::produce(framework::Event &event) {
   // Get the collection of simulated particles from the event
-  auto particleMap{
+  auto particle_map{
       event.getMap<int, ldmx::SimParticle>("SimParticles", input_pass_name_)};
 
   // Search for the recoil electron
-  auto [recoil_track_id, recoil_electron] = Analysis::getRecoil(particleMap);
+  auto [recoil_track_id, recoil_electron] = analysis::getRecoil(particle_map);
 
-  // Get the collection of simulated Ecal hits from the event.
+  // Get the collection of simulated Ecal hits_ from the event.
   const std::vector<ldmx::SimCalorimeterHit> ecal_sim_hits =
       event.getCollection<ldmx::SimCalorimeterHit>(ecal_collection_,
                                                    input_pass_name_);
 
-  // Get the collection of simulated Ecal hits from the event.
+  // Get the collection of simulated Ecal hits_ from the event.
   const std::vector<ldmx::SimCalorimeterHit> hcal_sim_hits =
       event.getCollection<ldmx::SimCalorimeterHit>(hcal_collection_,
                                                    input_pass_name_);
 
-  // Get the collection of simulated tracker hits from the event.
+  // Get the collection of simulated tracker hits_ from the event.
   const std::vector<ldmx::SimTrackerHit> recoil_sim_hits =
       event.getCollection<ldmx::SimTrackerHit>(recoil_collection_,
                                                input_pass_name_);
 
-  // Loop through the Ecal hits and check if the recoil electron is
+  // Loop through the Ecal hits_ and check if the recoil electron is
   // associated with any of them.
   bool has_ecal_hit = false;
   int ecal_hit_id = -1;
   for (const ldmx::SimCalorimeterHit &sim_hit : ecal_sim_hits) {
-    for (int iContrib = 0; iContrib < sim_hit.getNumberOfContribs();
-         ++iContrib) {
-      ldmx::SimCalorimeterHit::Contrib contrib = sim_hit.getContrib(iContrib);
+    for (int i_contrib = 0; i_contrib < sim_hit.getNumberOfContribs();
+         ++i_contrib) {
+      ldmx::SimCalorimeterHit::Contrib contrib = sim_hit.getContrib(i_contrib);
 
-      if (contrib.trackID == recoil_track_id) {
+      if (contrib.track_id_ == recoil_track_id) {
         has_ecal_hit = true;
         ecal_hit_id = sim_hit.getID();
       }
     }
   }
 
-  // Loop through the Hcal hits and check if the recoil electron is
+  // Loop through the Hcal hits_ and check if the recoil electron is
   // associated with any of them.
   bool has_hcal_hit = false;
   int hcal_hit_id = -1;
   for (const ldmx::SimCalorimeterHit &sim_hit : hcal_sim_hits) {
-    for (int iContrib = 0; iContrib < sim_hit.getNumberOfContribs();
-         ++iContrib) {
-      ldmx::SimCalorimeterHit::Contrib contrib = sim_hit.getContrib(iContrib);
+    for (int i_contrib = 0; i_contrib < sim_hit.getNumberOfContribs();
+         ++i_contrib) {
+      ldmx::SimCalorimeterHit::Contrib contrib = sim_hit.getContrib(i_contrib);
 
-      if (contrib.trackID == recoil_track_id) {
+      if (contrib.track_id_ == recoil_track_id) {
         has_hcal_hit = true;
         hcal_hit_id = sim_hit.getID();
       }
     }
   }
 
-  // Loop through the recoil tracker hits and count how many
+  // Loop through the recoil tracker hits_ and count how many
   // the recoil electron is associated with
   std::set<int> layers_hit;
   for (const ldmx::SimTrackerHit &sim_hit : recoil_sim_hits) {
@@ -102,12 +100,12 @@ void RecoilFiducialityProcessor::produce(framework::Event &event) {
   // Configure outputs
   bool is_fiducial = has_min_energy && has_min_tracker_hits && has_ecal_hit;
 
-  int mask_tracker_E = has_min_energy << 0;
+  int mask_tracker_e = has_min_energy << 0;
   int mask_tracker_hits = has_min_tracker_hits << 1;
   int mask_ecal = has_ecal_hit << 2;
   int mask_hcal = has_hcal_hit << 3;
   int fiducial_flag =
-      mask_tracker_E | mask_tracker_hits | mask_ecal | mask_hcal;
+      mask_tracker_e | mask_tracker_hits | mask_ecal | mask_hcal;
 
   ldmx::FiducialFlag flag;
   flag.setFiducialFlag(fiducial_flag, 6);
@@ -131,15 +129,15 @@ void RecoilFiducialityProcessor::produce(framework::Event &event) {
 
   if (!inverse_skim_) {
     if (is_fiducial) {
-      setStorageHint(framework::hint_shouldKeep);
+      setStorageHint(framework::HINT_SHOULD_KEEP);
     } else {
-      setStorageHint(framework::hint_shouldDrop);
+      setStorageHint(framework::HINT_SHOULD_DROP);
     }
   } else {
     if (is_fiducial) {
-      setStorageHint(framework::hint_shouldDrop);
+      setStorageHint(framework::HINT_SHOULD_DROP);
     } else {
-      setStorageHint(framework::hint_shouldKeep);
+      setStorageHint(framework::HINT_SHOULD_KEEP);
     }
   }
 }

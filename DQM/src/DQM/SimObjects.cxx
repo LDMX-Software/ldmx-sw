@@ -9,9 +9,9 @@
 namespace dqm {
 
 void SimObjects::configure(framework::config::Parameters& ps) {
-  sim_pass_ = ps.getParameter<std::string>("sim_pass");
+  sim_pass_ = ps.get<std::string>("sim_pass");
   sim_particles_map_passname_ =
-      ps.getParameter<std::string>("sim_particles_map_passname");
+      ps.get<std::string>("sim_particles_map_passname");
   return;
 }
 
@@ -58,7 +58,8 @@ void SimObjects::onProcessStart() {
                      200);
   histograms_.create("SimParticles.z", "Vertex z-Position [mm]", 171, -700,
                      1000.);
-  histograms_.create("SimParticles.process", "Creator Process Type", 20, 0, 20);
+  histograms_.create("SimParticles.process", "Creator Process Type",
+                     creator_process_labels);
   histograms_.create("SimParticles.track_id", "Track ID of Particle", 100, 0,
                      1000);
   histograms_.create("SimParticles.parent", "Track ID of Parent", 100, 0, 1000);
@@ -83,13 +84,6 @@ void SimObjects::onProcessStart() {
   histograms_.create("pn_child.parent", "Track ID of Parent", 100, 0, 1000);
   histograms_.create("pn_child.children", "Track IDs of Children", 100, 0,
                      1000);
-
-  // Add bin labels to category plots
-  auto hist{histograms_.get("SimParticles.process")};
-  for (int i{0}; i < creator_process_labels.size(); ++i) {
-    const auto& label{creator_process_labels[i]};
-    hist->GetXaxis()->SetBinLabel(i + 1, label.c_str());
-  }
 }
 
 void SimObjects::createCalorimeterHists(const std::string& coll_name) {
@@ -198,9 +192,9 @@ void SimObjects::analyze(const framework::Event& event) {
       histograms_.fill(pt.name() + ".n_contribs", n_contribs);
       for (unsigned int i_contrib{0}; i_contrib < n_contribs; i_contrib++) {
         ldmx::SimCalorimeterHit::Contrib contrib{hit.getContrib(i_contrib)};
-        histograms_.fill(pt.name() + ".incidents", contrib.incidentID);
-        histograms_.fill(pt.name() + ".tracks", contrib.trackID);
-        histograms_.fill(pt.name() + ".pdg", contrib.pdgCode);
+        histograms_.fill(pt.name() + ".incidents", contrib.incident_id_);
+        histograms_.fill(pt.name() + ".tracks", contrib.track_id_);
+        histograms_.fill(pt.name() + ".pdg", contrib.pdg_code_);
       }
 
       histograms_.fill(pt.name() + ".edep", hit.getEdep());

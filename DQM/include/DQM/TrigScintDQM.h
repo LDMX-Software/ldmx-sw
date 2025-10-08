@@ -16,7 +16,7 @@
 //----------//
 //   ROOT   //
 //----------//
-#include "TVector3.h"
+#include "Math/Vector3D.h"
 
 //----------//
 //   LDMX   //
@@ -56,10 +56,10 @@ class TrigScintDQM : public framework::Analyzer {
 
  private:
   /// Name of trigger pad hit  collection.
-  std::string hitCollectionName_{"TriggerPadUpSimHits"};
+  std::string hit_collection_name_{"TriggerPadUpSimHits"};
 
   /// Name of Pad
-  std::string padName_{"_up"};
+  std::string pad_name_{"_up"};
   std::string hit_passname_;
 };
 

@@ -54,7 +54,7 @@ namespace simcore {
  *
  * N_x*N_y*N_z+9
  *
- * x y z B_x B_y B_z
+ * x_ y_ z_ B_x B_y B_z
  *
  * Original PurgMagTabulatedField3D code developed by: S.Larsson and J.
  * Generowicz.
@@ -82,9 +82,9 @@ class MagneticFieldMap3D : public G4MagneticField {
   /*
    * Storage space for the table.
    */
-  vector<vector<vector<double>>> xField_;
-  vector<vector<vector<double>>> yField_;
-  vector<vector<vector<double>>> zField_;
+  vector<vector<vector<double>>> x_field_;
+  vector<vector<vector<double>>> y_field_;
+  vector<vector<vector<double>>> z_field_;
 
   /*
    * The dimensions of the table.
@@ -104,14 +104,14 @@ class MagneticFieldMap3D : public G4MagneticField {
   /*
    * Offsets if field map is not in global coordinates
    */
-  double xOffset_;
-  double yOffset_;
-  double zOffset_;
+  double x_offset_;
+  double y_offset_;
+  double z_offset_;
 
   /*
    * Flags for inverting dimensions.
    */
-  bool invertX_, invertY_, invertZ_;
+  bool invert_x_, invert_y_, invert_z_;
 
   /**
    * Enable logging for this class.

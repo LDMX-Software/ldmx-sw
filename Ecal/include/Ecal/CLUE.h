@@ -29,43 +29,50 @@ class CLUE {
 
  public:
   struct Density {
-    float x;
-    float y;
-    float z;
-    double total_energy;
-    int index;
+    double x_;
+    double y_;
+    double z_;
+    double total_energy_;
+    int index_;
 
     // index of density this density is follower of
     // set to index of spatially closest density with higher energy; -1 if seed
-    int follower_of;
-    // separation distance to density that this is follower of
-    float delta;
-    float z_delta;
-
-    int cluster_id;  // 2D cluster ID
-
-    int layer;
-
-    std::vector<const ldmx::EcalHit*> hits;
+    int follower_of_;
+    // 2D separation distance to density that this is follower of
+    double delta_;
+    // separation in z to density that this is follower of
+    double z_delta_;
+    // 2D cluster ID
+    int cluster_id_;
+    // layer of density
+    int layer_;
+    // hits in this density
+    std::vector<const ldmx::EcalHit*> hits_;
 
     Density() {}
 
-    Density(float xx, float yy) : x(xx), y(yy) {
-      total_energy = 0.;
-      index = -1;
-      follower_of = -1;
-      delta = std::numeric_limits<float>::max();
-      z_delta = std::numeric_limits<float>::max();
-      cluster_id = -1;
-      layer = -1;
-      z = 0.;
-      hits = {};
+    Density(float xx, float yy) : x_(xx), y_(yy) {
+      total_energy_ = 0.;
+      index_ = -1;
+      follower_of_ = -1;
+      delta_ = std::numeric_limits<float>::max();
+      z_delta_ = std::numeric_limits<float>::max();
+      cluster_id_ = -1;
+      layer_ = -1;
+      z_ = 0.;
+      hits_ = {};
     }
   };
 
-  float dist(double x1, double y1, double x2, double y2);
-  float floatDist(float x1, float y1, float x2, float y2);
-  float floatDist(float x1, float y1, float z1, float x2, float y2, float z2);
+  /**
+   * Euclidean distance between two points
+   * @tparam T floating point type
+   */
+  template <typename T>
+  T dist(T x1, T y1, T x2, T y2);
+  // 3D version
+  template <typename T>
+  T dist(T x1, T y1, T z1, T x2, T y2, T z2);
   std::vector<std::vector<const ldmx::EcalHit*>> createLayers(
       const std::vector<const ldmx::EcalHit*>& hits);
   float roundToDecimal(float x, int num_decimal_precision_digits);
@@ -79,7 +86,7 @@ class CLUE {
       std::vector<std::shared_ptr<Density>>& densities, bool connectingLayers,
       int layerTag = 0);
 
-  std::vector<std::shared_ptr<Density>> layerSetup();
+  std::vector<std::shared_ptr<Density>> setupForClue3D();
 
   void convertToIntermediateClusters(
       std::vector<std::vector<const ldmx::EcalHit*>>& clusters);
@@ -117,19 +124,14 @@ class CLUE {
   double deltao_;
   double dm_;
 
-  // layers in Ecal; a bit unsure if this is the correct number
-  int max_layers_{17};
+  // layers in Ecal
+  int max_layers_{32};
   int nbr_of_layers_;
-  // air between layers (a guess, but it seems to work)
-  double air_{10.};
-  // thickness of ECal layers
-  std::vector<double> layer_thickness_ = {2.,   3.5,  5.3,  5.3, 5.3, 5.3,
-                                          5.3,  5.3,  5.3,  5.3, 5.3, 10.5,
-                                          10.5, 10.5, 10.5, 10.5};
+
   std::vector<double> layer_rho_c_;
-  std::vector<double> layer_delta_c;
+  std::vector<double> layer_delta_c_;
   // containment radius for the different layers of the ECal
-  std::vector<double> radius{
+  std::vector<double> radius_{
       5.723387467629167,  5.190678018534044,  5.927290663506518,
       6.182560329200212,  7.907549398117859,  8.606100542857211,
       10.93381822596916,  12.043201938160239, 14.784548371508041,
@@ -144,7 +146,6 @@ class CLUE {
   std::vector<double> centroid_distances_;
   IntermediateCluster event_centroid_;
 
-  float first_layer_max_z_;
   std::vector<IntermediateCluster> first_layer_centroids_;
 
   int seed_index_{0};

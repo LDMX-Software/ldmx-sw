@@ -36,7 +36,7 @@ logger makeLogger(const std::string& name) {
 }
 
 template <typename T>
-const T& safe_extract(log::attribute_value attr) {
+const T& safeExtract(log::attribute_value attr) {
   static const T empty_value = {};
   auto attr_val = log::extract<T>(attr);
   if (attr_val) {
@@ -62,11 +62,11 @@ class Filter {
       : fallback_level_{fallback}, custom_levels_{custom} {}
   Filter(level fallback) : Filter(fallback, {}) {}
   bool operator()(log::attribute_value_set const& attrs) {
-    auto it = custom_levels_.find(safe_extract<std::string>(attrs["Channel"]));
+    auto it = custom_levels_.find(safeExtract<std::string>(attrs["Channel"]));
     if (it != custom_levels_.end()) {
-      return safe_extract<level>(attrs["Severity"]) >= it->second;
+      return safeExtract<level>(attrs["Severity"]) >= it->second;
     }
-    return safe_extract<level>(attrs["Severity"]) >= fallback_level_;
+    return safeExtract<level>(attrs["Severity"]) >= fallback_level_;
   }
 };
 
@@ -75,17 +75,17 @@ void open(const framework::config::Parameters& p) {
   typedef sinks::text_ostream_backend ourSinkBack_t;
   typedef sinks::synchronous_sink<ourSinkBack_t> ourSinkFront_t;
 
-  level fileLevel{convertLevel(p.getParameter<int>("fileLevel", 0))};
-  std::string filePath{p.getParameter<std::string>("filePath", "")};
+  level file_level{convertLevel(p.get<int>("fileLevel", 0))};
+  std::string file_path{p.get<std::string>("filePath", "")};
 
-  level termLevel{convertLevel(p.getParameter<int>("termLevel", 4))};
+  level term_level{convertLevel(p.get<int>("termLevel", 4))};
   std::vector<framework::config::Parameters> empty{};
-  const auto& logRules{
+  const auto& log_rules{
       p.get<std::vector<framework::config::Parameters>>("logRules", empty)};
   std::unordered_map<std::string, level> custom_levels;
-  for (const auto& logRule : logRules) {
-    custom_levels[logRule.getParameter<std::string>("name")] =
-        convertLevel(logRule.getParameter<int>("level"));
+  for (const auto& log_rule : log_rules) {
+    custom_levels[log_rule.get<std::string>("name")] =
+        convertLevel(log_rule.get<int>("level"));
   }
 
   // allow our logs to access common attributes, the ones availabe are
@@ -100,44 +100,44 @@ void open(const framework::config::Parameters& p) {
 
   // file sink is optional
   //  don't even make it if no filePath is provided
-  if (not filePath.empty()) {
-    boost::shared_ptr<ourSinkBack_t> fileBack =
+  if (not file_path.empty()) {
+    boost::shared_ptr<ourSinkBack_t> file_back =
         boost::make_shared<ourSinkBack_t>();
-    fileBack->add_stream(boost::make_shared<std::ofstream>(filePath));
+    file_back->add_stream(boost::make_shared<std::ofstream>(file_path));
 
-    boost::shared_ptr<ourSinkFront_t> fileSink =
-        boost::make_shared<ourSinkFront_t>(fileBack);
+    boost::shared_ptr<ourSinkFront_t> file_sink =
+        boost::make_shared<ourSinkFront_t>(file_back);
 
     // this is where the logging level is set
-    fileSink->set_filter(Filter(fileLevel, custom_levels));
-    fileSink->set_formatter(
+    file_sink->set_filter(Filter(file_level, custom_levels));
+    file_sink->set_formatter(
         [](const log::record_view& view, log::formatting_ostream& os) {
           Formatter::get()(view, os);
         });
-    core->add_sink(fileSink);
+    core->add_sink(file_sink);
   }  // file set to pass something
 
   // terminal sink is always created
-  boost::shared_ptr<ourSinkBack_t> termBack =
+  boost::shared_ptr<ourSinkBack_t> term_back =
       boost::make_shared<ourSinkBack_t>();
-  termBack->add_stream(boost::shared_ptr<std::ostream>(
+  term_back->add_stream(boost::shared_ptr<std::ostream>(
       &std::cout,            // point this stream to std::cout
       boost::null_deleter()  // don't let boost delete std::cout
       ));
   // flushes message to screen **after each message**
-  termBack->auto_flush(true);
+  term_back->auto_flush(true);
 
-  boost::shared_ptr<ourSinkFront_t> termSink =
-      boost::make_shared<ourSinkFront_t>(termBack);
+  boost::shared_ptr<ourSinkFront_t> term_sink =
+      boost::make_shared<ourSinkFront_t>(term_back);
 
   // translate integer level to enum
-  termSink->set_filter(Filter(termLevel, custom_levels));
+  term_sink->set_filter(Filter(term_level, custom_levels));
   // need to wrap formatter in lambda to enforce singleton formatter
-  termSink->set_formatter(
+  term_sink->set_formatter(
       [](const log::record_view& view, log::formatting_ostream& os) {
         Formatter::get()(view, os);
       });
-  core->add_sink(termSink);
+  core->add_sink(term_sink);
 
   return;
 
@@ -165,7 +165,7 @@ void Formatter::operator()(const log::record_view& view,
    * We de-reference the value out of the log into our own type
    * so that we can compare and convert it into a string.
    */
-  const level msg_level{safe_extract<level>(view["Severity"])};
+  const level msg_level{safeExtract<level>(view["Severity"])};
   switch (msg_level) {
     case level::trace:
       os << "trace";

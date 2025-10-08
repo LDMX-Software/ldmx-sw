@@ -13,35 +13,36 @@ HcalTrigPrimDigiProducer::HcalTrigPrimDigiProducer(const std::string& name,
     : Producer(name, process) {}
 
 void HcalTrigPrimDigiProducer::configure(framework::config::Parameters& ps) {
-  digiCollName_ = ps.getParameter<std::string>("digiCollName");
-  digiPassName_ = ps.getParameter<std::string>("digiPassName");
-  condObjName_ =
-      ps.getParameter<std::string>("condObjName", "HcalTrigPrimDigiConditions");
+  digi_coll_name_ = ps.get<std::string>("digiCollName");
+  digi_pass_name_ = ps.get<std::string>("digiPassName");
+  cond_obj_name_ =
+      ps.get<std::string>("condObjName", "HcalTrigPrimDigiConditions");
 }
 
 void HcalTrigPrimDigiProducer::produce(framework::Event& event) {
   const HcalTriggerGeometry& geom = getCondition<HcalTriggerGeometry>(
       HcalTriggerGeometry::CONDITIONS_OBJECT_NAME);
 
-  const ldmx::HgcrocDigiCollection& hcalDigis =
-      event.getObject<ldmx::HgcrocDigiCollection>(digiCollName_, digiPassName_);
+  const ldmx::HgcrocDigiCollection& hcal_digis =
+      event.getObject<ldmx::HgcrocDigiCollection>(digi_coll_name_,
+                                                  digi_pass_name_);
 
   // get the calibration object
   const conditions::IntegerTableCondition& conditions =
-      getCondition<conditions::IntegerTableCondition>(condObjName_);
+      getCondition<conditions::IntegerTableCondition>(cond_obj_name_);
 
   // construct the calculator...
   ldmx::HgcrocTriggerCalculations calc(conditions);
 
   // Loop over the digis
-  for (unsigned int ix = 0; ix < hcalDigis.getNumDigis(); ix++) {
-    const ldmx::HgcrocDigiCollection::HgcrocDigi pdigi = hcalDigis.getDigi(ix);
+  for (unsigned int ix = 0; ix < hcal_digis.getNumDigis(); ix++) {
+    const ldmx::HgcrocDigiCollection::HgcrocDigi pdigi = hcal_digis.getDigi(ix);
     ldmx::HcalTriggerID tid = geom.belongsToQuad(ldmx::HcalDigiID(pdigi.id()));
 
     if (!tid.null()) {
       int tot = 0;
       if (pdigi.soi().isTOTComplete()) tot = pdigi.soi().tot();
-      calc.addDigi(pdigi.id(), tid.raw(), pdigi.soi().adc_t(), tot);
+      calc.addDigi(pdigi.id(), tid.raw(), pdigi.soi().adcT(), tot);
     }
   }
 
@@ -65,7 +66,7 @@ void HcalTrigPrimDigiProducer::produce(framework::Event& event) {
   }
 
   // build STQs from the quads (w/ compressed energies)
-  stq_tps.clear();
+  stq_tps_.clear();
   for (auto result : results) {
     if (result.second > 0) {
       const ldmx::HcalTriggerID quad_id(result.first);
@@ -81,20 +82,20 @@ void HcalTrigPrimDigiProducer::produce(framework::Event& event) {
       }
       const ldmx::HcalDigiID prec_id(precisions_ids.front().raw());
       const ldmx::HcalTriggerID stq_id = geom.belongsToSTQ(prec_id);
-      auto ptr = stq_tps.find(stq_id.raw());
+      auto ptr = stq_tps_.find(stq_id.raw());
       int linear_charge =
           hgc_compress_factor *
           ldmx::HgcrocTrigDigi::compressed2Linear(result.second);
-      if (ptr != stq_tps.end()) {
+      if (ptr != stq_tps_.end()) {
         ptr->second += linear_charge;
       } else {
-        stq_tps[stq_id.raw()] = linear_charge;
+        stq_tps_[stq_id.raw()] = linear_charge;
       }
     }
   }
 
   ldmx::CaloTrigPrimCollection stq_digis;
-  for (auto result : stq_tps) {
+  for (auto result : stq_tps_) {
     if (result.second > 0) {
       stq_digis.push_back(ldmx::CaloTrigPrim(result.first, result.second));
     }

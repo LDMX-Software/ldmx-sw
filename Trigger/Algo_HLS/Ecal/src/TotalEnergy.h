@@ -11,7 +11,7 @@
 #define N_INPUT_TP 100
 #define N_CLUSTER 10
 
-void TotalEnergy_hw(EcalTP Input_TPs[N_INPUT_TP], e_t &energy);
-void TotalEnergy_ref(EcalTP Input_TPs[N_INPUT_TP], e_t &energy);
+void totalEnergyHw(EcalTP Input_TPs[N_INPUT_TP], e_t &energy);
+void totalEnergyRef(EcalTP Input_TPs[N_INPUT_TP], e_t &energy);
 
 #endif

@@ -18,7 +18,7 @@
 //----------//
 //   ROOT   //
 //----------//
-#include <TVector3.h>
+#include <Math/Vector3D.h>
 
 #include "TObject.h"
 
@@ -29,8 +29,8 @@ typedef std::pair<float, float> XYCoords;
 // MIP tracking:  Class for storing hit information for tracking in a
 // convenient way
 struct HitData {
-  int layer;
-  TVector3 pos;
+  int layer_;
+  ROOT::Math::XYZVector pos_;
 };
 
 class EcalTrajectoryInfo {
@@ -43,11 +43,10 @@ class EcalTrajectoryInfo {
 
   /**
    * Print the string representation of this object.
-   * This class is needed by ROOT when building the dictionary.
    */
-  void Print() const;
+  friend std::ostream& operator<<(std::ostream& o, const EcalTrajectoryInfo& d);
 
-  void Clear();
+  void clear();
 
   const std::vector<XYCoords>& getEleTrajectory() const {
     return ele_trajectory_;
@@ -75,7 +74,7 @@ class EcalTrajectoryInfo {
   std::vector<XYCoords> photon_trajectory_;
   std::vector<HitData> tracking_hit_list_;
 
-  ClassDef(EcalTrajectoryInfo, 1);
+  ClassDef(EcalTrajectoryInfo, 2);
 };  // EcalTrajectoryInfo
 
 }  // namespace ldmx

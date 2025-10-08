@@ -13,6 +13,11 @@ if len(sys.argv) > 2 :
     timeSample=int(sys.argv[2])
 else :
     timeSample=15
+
+if len(sys.argv) > 3 :
+    pulseWidth=int(sys.argv[3])
+else :
+    pulseWidth=5
     
 from LDMX.TrigScint.trigScint import TestBeamHitProducer
 
@@ -25,7 +30,7 @@ gainFileName=sys.argv[1].replace(".root", "_gains.txt")
 gainFileName=gainFileName.replace("_adcTrig", "")  #not derived for adcTrig events 
 
 #pick one file more or less at random as the fallback option
-defaultRun="unpacked_4gev_negativeMu_Apr03_2200_reformat_30timeSamplesFrom0_linearize"
+defaultRun="unpacked_data_20250215_114611_ext_trig_ldmx_sw_parsed_linearize" #unpacked_4gev_negativeMu_Apr03_2200_reformat_30timeSamplesFrom0_linearize"
 dataPath=path.dirname( sys.argv[1] ) #extract the path to where we keep the data
 defaultGainFileName=dataPath+"/"+defaultRun+"_gains.txt"
 
@@ -84,9 +89,9 @@ tbHitsUp.input_collection="QIEsamplesPad1" #"QIEsamplesUp"
 tbHitsUp.pedestals=pedList
 tbHitsUp.gain=gainList 
 tbHitsUp.startSample=timeSample
-tbHitsUp.pulseWidth=7 #5 
-tbHitsUp.pulseWidthLYSO=7 #9 #7 for plastic, 9 for LYSO 
-tbHitsUp.doCleanHits=True
+tbHitsUp.pulseWidth=pulseWidth #5 #7 
+tbHitsUp.pulseWidthLYSO=pulseWidth #5 #7 #9 #7 for plastic, 9 for LYSO 
+tbHitsUp.doCleanHits=False #True
 tbHitsUp.nInstrumentedChannels=12
 p.sequence = [
     tbHitsUp

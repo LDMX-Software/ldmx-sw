@@ -13,21 +13,23 @@ namespace generators {
 MultiParticleGunPrimaryGenerator::MultiParticleGunPrimaryGenerator(
     const std::string& name, const framework::config::Parameters& parameters)
     : PrimaryGenerator(name, parameters), random_(new TRandom) {
-  auto stlVertex{parameters.getParameter<std::vector<double> >("vertex")};
-  auto stlMomentum{parameters.getParameter<std::vector<double> >("momentum")};
-  mpgNParticles_ = parameters.getParameter<int>("nParticles");
-  mpgPdgID_ = parameters.getParameter<int>("pdgID");
-  mpgEnablePoisson_ = parameters.getParameter<bool>("enablePoisson");
+  auto stl_vertex{parameters.get<std::vector<double> >("vertex")};
+  auto stl_momentum{parameters.get<std::vector<double> >("momentum")};
+  mpg_n_particles_ = parameters.get<int>("nParticles");
+  mpg_pdg_id_ = parameters.get<int>("pdgID");
+  mpg_enable_poisson_ = parameters.get<bool>("enablePoisson");
 
-  if (stlVertex.size() != 3 or stlMomentum.size() != 3 or mpgNParticles_ <= 0) {
+  if (stl_vertex.size() != 3 or stl_momentum.size() != 3 or
+      mpg_n_particles_ <= 0) {
     EXCEPTION_RAISE("InvalideConfig",
                     "Parameters pass to '" + name_ + "' are not valid.");
   }
 
-  mpgVertex_ = G4ThreeVector(stlVertex.at(0) * mm, stlVertex.at(1) * mm,
-                             stlVertex.at(2) * mm);
-  mpgMomentum_ = G4ThreeVector(stlMomentum.at(0) * MeV, stlMomentum.at(1) * MeV,
-                               stlMomentum.at(2) * MeV);
+  mpg_vertex_ = G4ThreeVector(stl_vertex.at(0) * mm, stl_vertex.at(1) * mm,
+                              stl_vertex.at(2) * mm);
+  mpg_momentum_ =
+      G4ThreeVector(stl_momentum.at(0) * MeV, stl_momentum.at(1) * MeV,
+                    stl_momentum.at(2) * MeV);
 }
 
 MultiParticleGunPrimaryGenerator::~MultiParticleGunPrimaryGenerator() {
@@ -35,25 +37,25 @@ MultiParticleGunPrimaryGenerator::~MultiParticleGunPrimaryGenerator() {
 }
 
 void MultiParticleGunPrimaryGenerator::GeneratePrimaryVertex(G4Event* anEvent) {
-  int cur_mpg_pdgid = mpgPdgID_;
-  G4ThreeVector cur_mpg_vertex = mpgVertex_;
-  G4ThreeVector cur_mpg_momentum = mpgMomentum_;
+  int cur_mpg_pdgid = mpg_pdg_id_;
+  G4ThreeVector cur_mpg_vertex = mpg_vertex_;
+  G4ThreeVector cur_mpg_momentum = mpg_momentum_;
 
   // current number of vertices in the event!
-  int curNVertices = anEvent->GetNumberOfPrimaryVertex();
+  int cur_n_vertices = anEvent->GetNumberOfPrimaryVertex();
 
-  double nInteractionsInput = mpgNParticles_;
-  int nInteractions = nInteractionsInput;
-  if (mpgEnablePoisson_) {
-    nInteractions = 0;
-    while (nInteractions == 0) {  // keep generating a random poisson until > 0,
-                                  // no point in generator 0 vertices...
-      nInteractions = random_->Poisson(nInteractionsInput);
+  double n_interactions_input = mpg_n_particles_;
+  int n_interactions = n_interactions_input;
+  if (mpg_enable_poisson_) {
+    n_interactions = 0;
+    while (n_interactions == 0) {  // keep generating a random poisson until >
+                                   // 0, no point in generator 0 vertices...
+      n_interactions = random_->Poisson(n_interactions_input);
     }
   }
 
   // make a for loop
-  for (int i = 0; i < (nInteractions - curNVertices); ++i) {
+  for (int i = 0; i < (n_interactions - cur_n_vertices); ++i) {
     G4PrimaryVertex* curvertex =
         new G4PrimaryVertex(cur_mpg_vertex, 0.);  // second input is t0
     // curvertex->SetPosition(0. * mm,0. * mm,-10. * mm);
@@ -63,10 +65,10 @@ void MultiParticleGunPrimaryGenerator::GeneratePrimaryVertex(G4Event* anEvent) {
         new G4PrimaryParticle(cur_mpg_pdgid, cur_mpg_momentum.x(),
                               cur_mpg_momentum.y(), cur_mpg_momentum.z());
 
-    UserPrimaryParticleInformation* primaryInfo =
+    UserPrimaryParticleInformation* primary_info =
         new UserPrimaryParticleInformation();
-    primaryInfo->setHepEvtStatus(1.);
-    primary->SetUserInformation(primaryInfo);
+    primary_info->setHepEvtStatus(1.);
+    primary->SetUserInformation(primary_info);
 
     curvertex->SetPrimary(primary);
     anEvent->AddPrimaryVertex(curvertex);
@@ -77,15 +79,15 @@ void MultiParticleGunPrimaryGenerator::RecordConfig(const std::string& id,
                                                     ldmx::RunHeader& rh) {
   rh.setStringParameter(
       id + " Class", "simcore::generators::MultiParticleGunPrimaryGenerator");
-  rh.setIntParameter(id + " Poisson Enabled", mpgEnablePoisson_);
-  rh.setFloatParameter(id + " N Particles", mpgNParticles_);
-  rh.setIntParameter(id + " PDG ID", mpgPdgID_);
-  rh.setFloatParameter(id + " Vertex X [mm]", mpgVertex_.x());
-  rh.setFloatParameter(id + " Vertex Y [mm]", mpgVertex_.y());
-  rh.setFloatParameter(id + " Vertex Z [mm]", mpgVertex_.z());
-  rh.setFloatParameter(id + " Momentum X [MeV]", mpgMomentum_.x());
-  rh.setFloatParameter(id + " Momentum Y [MeV]", mpgMomentum_.y());
-  rh.setFloatParameter(id + " Momentum Z [MeV]", mpgMomentum_.z());
+  rh.setIntParameter(id + " Poisson Enabled", mpg_enable_poisson_);
+  rh.setFloatParameter(id + " N Particles", mpg_n_particles_);
+  rh.setIntParameter(id + " PDG ID", mpg_pdg_id_);
+  rh.setFloatParameter(id + " Vertex X [mm]", mpg_vertex_.x());
+  rh.setFloatParameter(id + " Vertex Y [mm]", mpg_vertex_.y());
+  rh.setFloatParameter(id + " Vertex Z [mm]", mpg_vertex_.z());
+  rh.setFloatParameter(id + " Momentum X [MeV]", mpg_momentum_.x());
+  rh.setFloatParameter(id + " Momentum Y [MeV]", mpg_momentum_.y());
+  rh.setFloatParameter(id + " Momentum Z [MeV]", mpg_momentum_.z());
 }
 
 }  // namespace generators

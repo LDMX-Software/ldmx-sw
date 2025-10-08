@@ -46,17 +46,17 @@ class HcalGeometryProvider : public framework::ConditionsObjectProvider {
   virtual void releaseConditionsObject(const framework::ConditionsObject* co) {}
 
   virtual void onNewRun(ldmx::RunHeader& rh) {
-    if (detectorGeometry_.empty())
-      detectorGeometry_ = rh.getDetectorName();
-    else if (hcalGeometry_ != nullptr &&
-             detectorGeometry_ != rh.getDetectorName()) {
+    if (detector_geometry_.empty())
+      detector_geometry_ = rh.getDetectorName();
+    else if (hcal_geometry_ != nullptr &&
+             detector_geometry_ != rh.getDetectorName()) {
       EXCEPTION_RAISE(
           "GeometryException",
           "Attempting to run a single job with multiple geometries " +
-              detectorGeometry_ + " and '" + rh.getDetectorName() + "'");
+              detector_geometry_ + " and '" + rh.getDetectorName() + "'");
     }
     // make sure detector name has been set
-    if (detectorGeometry_.empty())
+    if (detector_geometry_.empty())
       EXCEPTION_RAISE("GeometryException",
                       "HcalGeometryProvider unable to get the name of the "
                       "detector from the RunHeader.");
@@ -66,8 +66,8 @@ class HcalGeometryProvider : public framework::ConditionsObjectProvider {
   /** Handle to the parameters, needed for future use during get condition */
   framework::config::Parameters params_;
   /** Geometry as last used */
-  std::string detectorGeometry_;
-  ldmx::HcalGeometry* hcalGeometry_;
+  std::string detector_geometry_;
+  ldmx::HcalGeometry* hcal_geometry_;
 };
 
 HcalGeometryProvider::HcalGeometryProvider(
@@ -78,38 +78,37 @@ HcalGeometryProvider::HcalGeometryProvider(
           ConditionsObjectProvider{ldmx::HcalGeometry::CONDITIONS_OBJECT_NAME,
                                    tagname, parameters, process},
       params_{parameters} {
-  hcalGeometry_ = 0;
+  hcal_geometry_ = 0;
 }
 
 HcalGeometryProvider::~HcalGeometryProvider() {
-  if (hcalGeometry_) delete hcalGeometry_;
-  hcalGeometry_ = 0;
+  if (hcal_geometry_) delete hcal_geometry_;
+  hcal_geometry_ = 0;
 }
 
 std::pair<const framework::ConditionsObject*, framework::ConditionsIOV>
 HcalGeometryProvider::getCondition(const ldmx::EventHeader& context) {
-  static const std::string KEYNAME("detectors_valid");
+  static const std::string keyname("detectors_valid");
 
-  if (!hcalGeometry_) {
+  if (!hcal_geometry_) {
     framework::config::Parameters phex =
         (params_.exists("HcalGeometry"))
-            ? (params_.getParameter<framework::config::Parameters>(
-                  "HcalGeometry"))
+            ? (params_.get<framework::config::Parameters>("HcalGeometry"))
             : (params_);
 
     // search through the subtrees
     for (auto key : phex.keys()) {
       framework::config::Parameters pver =
-          phex.getParameter<framework::config::Parameters>(key);
+          phex.get<framework::config::Parameters>(key);
 
-      if (!pver.exists(KEYNAME)) {
-        ldmx_log(warn) << "No parameter " << KEYNAME << " found in " << key;
+      if (!pver.exists(keyname)) {
+        ldmx_log(warn) << "No parameter " << keyname << " found in " << key;
         // log strange situation and continue
         continue;
       }
 
       std::vector<std::string> dets_valid =
-          pver.getParameter<std::vector<std::string> >(KEYNAME);
+          pver.get<std::vector<std::string> >(keyname);
       for (auto detregex : dets_valid) {
         std::string regex(detregex);
         if (regex.empty()) continue;  // no empty regex allowed
@@ -126,22 +125,22 @@ HcalGeometryProvider::getCondition(const ldmx::EventHeader& context) {
               "GeometryException",
               "Invalid detector regular expression : '" + regex + "' " + err);
         }
-        int nmatch = regexec(&reg, detectorGeometry_.c_str(), 0, 0, 0);
+        int nmatch = regexec(&reg, detector_geometry_.c_str(), 0, 0, 0);
         regfree(&reg);
         if (!nmatch) {
-          hcalGeometry_ = new ldmx::HcalGeometry(pver);
+          hcal_geometry_ = new ldmx::HcalGeometry(pver);
           break;
         }
       }
-      if (hcalGeometry_) break;
+      if (hcal_geometry_) break;
     }
-    if (!hcalGeometry_) {
+    if (!hcal_geometry_) {
       EXCEPTION_RAISE("GeometryException", "Unable to create HcalGeometry");
     }
   }
 
   return std::make_pair(
-      hcalGeometry_,
+      hcal_geometry_,
       framework::ConditionsIOV(context.getRun(), context.getRun(), true, true));
 }
 

@@ -37,12 +37,12 @@ class CalorimeterHit {
   /**
    * Clear the data in the object.
    */
-  void Clear();
+  void clear();
 
   /**
    * Print out the object.
    */
-  void Print() const;
+  friend std::ostream &operator<<(std::ostream &o, const CalorimeterHit &d);
 
   /**
    * Get the detector ID.
@@ -100,37 +100,37 @@ class CalorimeterHit {
 
   /**
    * Get the X position of the hit [mm].
-   * @return the x position of the hit
+   * @return the x_ position of the hit
    */
   float getXPos() const { return xpos_; }
 
   /**
    * Set the X position of the hit [mm].
-   * @param xpos the x position of the hit
+   * @param xpos the x_ position of the hit
    */
   void setXPos(float xpos) { xpos_ = xpos; }
 
   /**
    * Get the Y position of the hit [mm].
-   * @return the y position of the hit
+   * @return the y_ position of the hit
    */
   float getYPos() const { return ypos_; }
 
   /**
    * Set the Y position of the hit [mm].
-   * @param ypos the y position of the hit
+   * @param ypos the y_ position of the hit
    */
   void setYPos(float ypos) { ypos_ = ypos; }
 
   /**
    * Get the Z position of the hit [mm].
-   * @return the z position of the hit
+   * @return the z_ position of the hit
    */
   float getZPos() const { return zpos_; }
 
   /**
    * Set the Z position of the hit [mm].
-   * @param zpos the z position of the hit
+   * @param zpos the z_ position of the hit
    */
   void setZPos(float zpos) { zpos_ = zpos; }
 
@@ -138,13 +138,13 @@ class CalorimeterHit {
    * Is this hit a noise hit?
    * @return true if this hit is a noise hit
    */
-  bool isNoise() const { return isNoise_; }
+  bool isNoise() const { return is_noise_; }
 
   /**
    * Set if this hit is a noise hit.
    * @param yes true if this hit is a noise hit
    */
-  void setNoise(bool yes) { isNoise_ = yes; }
+  void setNoise(bool yes) { is_noise_ = yes; }
 
   /**
    * Sort by time of hit
@@ -176,12 +176,12 @@ class CalorimeterHit {
   float zpos_{-9999.};
 
   /** Is this a noise hit? */
-  bool isNoise_{false};
+  bool is_noise_{false};
 
   /**
    * The ROOT class definition.
    */
-  ClassDef(CalorimeterHit, 2);
+  ClassDef(CalorimeterHit, 3);
 };
 }  // namespace ldmx
 

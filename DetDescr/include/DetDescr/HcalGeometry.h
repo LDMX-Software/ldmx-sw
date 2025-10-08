@@ -13,7 +13,7 @@
 #include "Framework/Exception/Exception.h"
 
 // ROOT
-#include "TVector3.h"
+#include "Math/Vector3D.h"
 
 // STL
 #include <map>
@@ -69,16 +69,17 @@ class HcalGeometry : public framework::ConditionsObject {
    * @throw std::out_of_range if HcalID is not on map.
    *
    * @param HcalID
-   * @return A TVector3 with the X, Y and Z position of the center of the bar.
+   * @return A ROOT::Math::XYZVector with the X, Y and Z position of the center
+   * of the bar.
    */
-  TVector3 getStripCenterPosition(ldmx::HcalID id) const {
+  ROOT::Math::XYZVector getStripCenterPosition(ldmx::HcalID id) const {
     return strip_position_map_.at(id);
   }
 
   /**
    * Get the strip position map
    */
-  std::map<ldmx::HcalID, TVector3> getStripPositionMap() const {
+  std::map<ldmx::HcalID, ROOT::Math::XYZVector> getStripPositionMap() const {
     return strip_position_map_;
   }
 
@@ -287,7 +288,7 @@ class HcalGeometry : public framework::ConditionsObject {
    Map of the HcalID position of strip centers relative to world geometry.
    The map is not configurable and is calculated by buildStripPositionMap().
    */
-  std::map<ldmx::HcalID, TVector3> strip_position_map_;
+  std::map<ldmx::HcalID, ROOT::Math::XYZVector> strip_position_map_;
 };
 
 }  // namespace ldmx

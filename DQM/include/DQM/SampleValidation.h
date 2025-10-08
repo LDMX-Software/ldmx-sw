@@ -18,9 +18,7 @@ class SampleValidation : public framework::Analyzer {
       : Analyzer(name, process) {}
   virtual void configure(framework::config::Parameters& ps) override;
   virtual void analyze(const framework::Event& event) override;
-  int pdgid_label(const int pdgid);
-  /// Method executed before processing of events begins.
-  void onProcessStart() override;
+  int pdgidLabel(const int pdgid);
 
  private:
   std::string target_scoring_plane_passname_;

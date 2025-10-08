@@ -37,15 +37,16 @@ class Measurement {
    * @param y Position in y in mm.
    * @param z Position in z in mm.
    */
-  void setGlobalPosition(const float& x, const float& y, const float& z) {
-    x_ = x;
-    y_ = y;
-    z_ = z;
+  void setGlobalPosition(const float& meas_x, const float& meas_y,
+                         const float& meas_z) {
+    meas_x_ = meas_x;
+    meas_y_ = meas_y;
+    meas_z_ = meas_z;
   };
 
   /// @return The global position of the measurement as an array.
   [[nodiscard]] std::array<float, 3> getGlobalPosition() const {
-    return std::array<float, 3>{x_, y_, z_};
+    return std::array<float, 3>{meas_x_, meas_y_, meas_z_};
   };
 
   /**
@@ -55,14 +56,14 @@ class Measurement {
    * @param u Position in U in mm.
    * @param v Position in V in mm.
    */
-  void setLocalPosition(const float& u, const float& v) {
-    u_ = u;
-    v_ = v;
+  void setLocalPosition(const float& meas_u, const float& meas_v) {
+    meas_u_ = meas_u;
+    meas_v_ = meas_v;
   };
 
   /// @return The local position of the measurement as an array.
   [[nodiscard]] std::array<float, 2> getLocalPosition() const {
-    return std::array<float, 2>{u_, v_};
+    return std::array<float, 2>{meas_u_, meas_v_};
   };
 
   /**
@@ -85,33 +86,34 @@ class Measurement {
   /**
    * Set the measurement time in ns.
    *
-   * @param t The time in ns.
+   * @param meas_t The time in ns.
    */
-  void setTime(const float& t) { t_ = t; };
+  void setTime(const float& meas_t) { meas_t_ = meas_t; };
 
   /// @return The hit time in ns.
-  [[nodiscard]] float getTime() const { return t_; };
+  [[nodiscard]] float getTime() const { return meas_t_; };
 
   /**
    * Set the layer ID of the sensor where this measurement took place.
    *
-   * @param layerid The layer ID of the sensor associated with this measurement.
+   * @param layer_id The layer ID of the sensor associated with this
+   * measurement.
    */
-  void setLayerID(const int& layerid) {
-    layerid_ = layerid;
-    layer_ = ((layerid_ / 100) % 10 - 1) * 2 + layerid % 2;
+  void setLayerID(const int& layer_id) {
+    layer_id_ = layer_id;
+    layer_ = ((layer_id_ / 100) % 10 - 1) * 2 + layer_id % 2;
   };
 
   /// @return The layer ID of the sensor associated with this measurement.
-  [[nodiscard]] int getLayerID() const { return layerid_; };
+  [[nodiscard]] int getLayerID() const { return layer_id_; };
 
   /// @return The layer number internal to the tracker.
   int getLayer() const { return layer_; }
 
   /// Add a trackId to the internal vector
-  void addTrackId(int trkId) { trackIds_.push_back(trkId); };
+  void addTrackId(int trk_id) { track_ids_.push_back(trk_id); };
   /// @return the sim particle IDs that compose the measurement
-  std::vector<unsigned int> getTrackIds() const { return trackIds_; };
+  std::vector<unsigned int> getTrackIds() const { return track_ids_; };
 
   ///  @return The energy deposited in the sensor where the measurement took
   ///  place.
@@ -134,19 +136,19 @@ class Measurement {
 
  private:
   /// The global position in x (mm).
-  float x_{0.};
+  float meas_x_{0.};
   /// The global position in x (mm).
-  float y_{0.};
+  float meas_y_{0.};
   /// The global position in x (mm).
-  float z_{0.};
+  float meas_z_{0.};
   /// Measurement time (ns).
-  float t_{0.};
+  float meas_t_{0.};
   /// Local position in u (mm).
-  float u_{0.};
+  float meas_u_{0.};
   /// Local position in v (mm).
-  float v_{0.};
+  float meas_v_{0.};
   /// The ID of the sensor where the measurement took place.
-  int layerid_{0};
+  int layer_id_{0};
   /// The layer number internal to the tracker.
   int layer_{0};
   /// The energy deposited in the sensor where the measurement took place.
@@ -158,7 +160,7 @@ class Measurement {
   /// The ID of the hit.
   int id_{0};
   /// TrackIDs the vector of TrackIDs that form the measurement
-  std::vector<unsigned int> trackIds_{};
+  std::vector<unsigned int> track_ids_{};
 
   ClassDef(Measurement, 2);
 };  // Measurement

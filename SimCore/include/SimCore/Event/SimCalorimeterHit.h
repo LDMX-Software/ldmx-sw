@@ -53,22 +53,22 @@ class SimCalorimeterHit {
      * If no particle is found matching these criteria, the primary particle
      * that is this trackID's ancestor is chosen.
      */
-    int incidentID{-1};
+    int incident_id_{-1};
 
     /// track ID of this contributor
-    int trackID{-1};
+    int track_id_{-1};
 
     /// PDG ID of this contributor
-    int pdgCode{0};
+    int pdg_code_{0};
 
     /// Energy depostied by this contributor
-    float edep{0};
+    float edep_{0};
 
     /// Time this contributor made the hit (global Geant4 time)
-    float time{0};
+    float time_{0};
 
     /// Saves ID of electron incident particle came from
-    int originID{-1};
+    int origin_id_{-1};
   };
 
   /**
@@ -84,12 +84,12 @@ class SimCalorimeterHit {
   /**
    * Clear the data in the object.
    */
-  void Clear();
+  void clear();
 
   /**
    * Print out the object.
    */
-  void Print() const;
+  friend std::ostream &operator<<(std::ostream &o, const SimCalorimeterHit &d);
 
   /**
    * Get the detector ID.
@@ -127,7 +127,7 @@ class SimCalorimeterHit {
    * @return The local XYZ position of the hit.
    */
   std::vector<float> getPreStepPosition() const {
-    return {preStepX_, preStepY_, preStepZ_};
+    return {pre_step_x_, pre_step_y_, pre_step_z_};
   }
   /**
    * Get the XYZ post-step position of the hit in the coordinate frame of the
@@ -135,7 +135,7 @@ class SimCalorimeterHit {
    * @return The XYZ position of the hit.
    */
   std::vector<float> getPostStepPosition() const {
-    return {postStepX_, postStepY_, postStepZ_};
+    return {post_step_x_, post_step_y_, post_step_z_};
   }
   /**
    * Set the XYZ position of the hit [mm].
@@ -156,9 +156,9 @@ class SimCalorimeterHit {
    * @param z The Z position.
    */
   void setPreStepPosition(const float x, const float y, const float z) {
-    preStepX_ = x;
-    preStepY_ = y;
-    preStepZ_ = z;
+    pre_step_x_ = x;
+    pre_step_y_ = y;
+    pre_step_z_ = z;
   }
   /**
    * Set the XYZ post-step position of the hit in the coordinate frame of the
@@ -168,31 +168,31 @@ class SimCalorimeterHit {
    * @param z The Z position.
    */
   void setPostStepPosition(const float x, const float y, const float z) {
-    postStepX_ = x;
-    postStepY_ = y;
-    postStepZ_ = z;
+    post_step_x_ = x;
+    post_step_y_ = y;
+    post_step_z_ = z;
   }
 
   /**
    * Set the physical path length for the interaction [mm].
    * @param length The physical path lenght
    */
-  void setPathLength(const float length) { pathLength_ = length; }
+  void setPathLength(const float length) { path_length_ = length; }
   /**
    * Get the physical path length for the interaction [mm].
    * @return physical path length
    */
-  float getPathLength() const { return pathLength_; }
+  float getPathLength() const { return path_length_; }
   /**
    * Set global pre-step time of the hit [ns].
    * @param time The time before the step
    */
-  void setPreStepTime(const float time) { preStepTime_ = time; }
+  void setPreStepTime(const float time) { pre_step_time_ = time; }
   /**
    * Set global post-step time of the hit [ns].
    * @param time The time before the step
    */
-  void setPostStepTime(const float time) { postStepTime_ = time; }
+  void setPostStepTime(const float time) { post_step_time_ = time; }
 
   /**
    * Set the velocity of the track [mm/ns].
@@ -209,12 +209,12 @@ class SimCalorimeterHit {
    * Get the pre-step time of the hit [ns].
    * @return The global time of the hit before the interaction.
    */
-  float getPreStepTime() const { return preStepTime_; }
+  float getPreStepTime() const { return pre_step_time_; }
   /**
    * Get the post-step time of the hit [ns].
    * @return The global time of the hit after the interaction.
    */
-  float getPostStepTime() const { return postStepTime_; }
+  float getPostStepTime() const { return post_step_time_; }
 
   /**
    * Get the track velocity of the hit [mm/ns].
@@ -232,7 +232,7 @@ class SimCalorimeterHit {
    * Get the number of hit contributions.
    * @return The number of hit contributions.
    */
-  unsigned getNumberOfContribs() const { return nContribs_; }
+  unsigned getNumberOfContribs() const { return n_contribs_; }
 
   /**
    * Add a hit contribution from a SimParticle.
@@ -247,9 +247,9 @@ class SimCalorimeterHit {
                   float time, int originID = -1);
 
   /**
-   * Get a hit contribution by index.
+   * Get a hit contribution by index_.
    * @param i The index of the hit contribution.
-   * @return The hit contribution at the index.
+   * @return The hit contribution at the index_.
    */
   Contrib getContrib(int i) const;
 
@@ -280,26 +280,26 @@ class SimCalorimeterHit {
   /**
    * Get the list of track IDs contributing to the hit.
    */
-  std::vector<int> getTrackIds() const { return trackIDContribs_; }
+  std::vector<int> getTrackIds() const { return track_id_contribs_; }
   /**
    * Get the list of incident IDs contributing to the hit
    */
-  std::vector<int> getIncidentIds() const { return incidentIDContribs_; }
+  std::vector<int> getIncidentIds() const { return incident_id_contribs_; }
 
   /**
    * Get the list of PDG codes contributing to the hit.
    */
-  std::vector<int> getPdgIds() const { return pdgCodeContribs_; }
+  std::vector<int> getPdgIds() const { return pdg_code_contribs_; }
 
   /**
    * Get the list of energy depositions contributing to the hit.
    */
-  std::vector<float> getEdeps() const { return edepContribs_; }
+  std::vector<float> getEdeps() const { return edep_contribs_; }
 
   /**
    * Get the list of times contributing to the hit.
    */
-  std::vector<float> getTimes() const { return timeContribs_; }
+  std::vector<float> getTimes() const { return time_contribs_; }
 
  private:
   /**
@@ -338,37 +338,37 @@ class SimCalorimeterHit {
   /**
    * The list of track IDs contributing to the hit.
    */
-  std::vector<int> trackIDContribs_;
+  std::vector<int> track_id_contribs_;
 
   /**
    * The list of incident IDs contributing to the hit
    */
-  std::vector<int> incidentIDContribs_;
+  std::vector<int> incident_id_contribs_;
 
   /**
    * The list of PDG codes contributing to the hit.
    */
-  std::vector<int> pdgCodeContribs_;
+  std::vector<int> pdg_code_contribs_;
 
   /**
    * The list of energy depositions contributing to the hit.
    */
-  std::vector<float> edepContribs_;
+  std::vector<float> edep_contribs_;
 
   /**
    * The list of times contributing to the hit.
    */
-  std::vector<float> timeContribs_;
+  std::vector<float> time_contribs_;
 
   /**
    * The list of origin IDs contributing to the hit.
    */
-  std::vector<int> originContribs_;
+  std::vector<int> origin_contribs_;
 
   /**
    * The number of hit contributions.
    */
-  unsigned nContribs_{0};
+  unsigned n_contribs_{0};
 
   /*
    * Parameters used only for hits corresponding to a single interactions
@@ -379,30 +379,30 @@ class SimCalorimeterHit {
    * The true path length [mm]. Can in general differ from the distance between
    * the pre and post step position.
    */
-  float pathLength_{-1};
+  float path_length_{-1};
 
   /**
    * The X, Y, and Z positions [mm] before the interaction in the coordinate
    * frame of the sensitive volume.
    */
-  float preStepX_{0};
-  float preStepY_{0};
-  float preStepZ_{0};
+  float pre_step_x_{0};
+  float pre_step_y_{0};
+  float pre_step_z_{0};
   /**
    * The global time before the interaction [ns]
    */
-  float preStepTime_{0};
+  float pre_step_time_{0};
   /**
    * The X, Y, and Z positions [mm] after the interaction in the coordinate
    * frame of the sensitive volume.
    */
-  float postStepX_{0};
-  float postStepY_{0};
-  float postStepZ_{0};
+  float post_step_x_{0};
+  float post_step_y_{0};
+  float post_step_z_{0};
   /**
    * The global time after the interaction [ns]
    */
-  float postStepTime_{0};
+  float post_step_time_{0};
 
   /**
    * The track velocity [mm/ns].
@@ -412,7 +412,7 @@ class SimCalorimeterHit {
   /**
    * ROOT class definition.
    */
-  ClassDef(SimCalorimeterHit, 6)
+  ClassDef(SimCalorimeterHit, 7)
 };
 }  // namespace ldmx
 

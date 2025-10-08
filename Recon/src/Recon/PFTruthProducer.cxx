@@ -6,20 +6,19 @@
 namespace recon {
 
 void PFTruthProducer::configure(framework::config::Parameters &ps) {
-  primaryCollName_ = ps.getParameter<std::string>("outputPrimaryCollName");
-  targetCollName_ = ps.getParameter<std::string>("outputTargetCollName");
-  ecalCollName_ = ps.getParameter<std::string>("outputEcalCollName");
-  hcalCollName_ = ps.getParameter<std::string>("outputHcalCollName");
-  target_sp_passname_ = ps.getParameter<std::string>("target_sp_passname");
-  ecal_sp_passname_ = ps.getParameter<std::string>("ecal_sp_passname");
-  sim_particles_passname_ =
-      ps.getParameter<std::string>("sim_particles_passname");
+  primary_coll_name_ = ps.get<std::string>("outputPrimaryCollName");
+  target_coll_name_ = ps.get<std::string>("outputTargetCollName");
+  ecal_coll_name_ = ps.get<std::string>("outputEcalCollName");
+  hcal_coll_name_ = ps.get<std::string>("outputHcalCollName");
+  target_sp_passname_ = ps.get<std::string>("target_sp_passname");
+  ecal_sp_passname_ = ps.get<std::string>("ecal_sp_passname");
+  sim_particles_passname_ = ps.get<std::string>("sim_particles_passname");
   sim_particles_event_passname_ =
-      ps.getParameter<std::string>("sim_particles_event_passname");
+      ps.get<std::string>("sim_particles_event_passname");
   ecal_sp_hits_event_passname_ =
-      ps.getParameter<std::string>("ecal_sp_hits_event_passname");
+      ps.get<std::string>("ecal_sp_hits_event_passname");
   target_sp_hits_event_passname_ =
-      ps.getParameter<std::string>("target_sp_hits_event_passname");
+      ps.get<std::string>("target_sp_hits_event_passname");
 }
 template <class T>
 void sortHits(std::vector<T> spHits) {
@@ -33,18 +32,18 @@ void PFTruthProducer::produce(framework::Event &event) {
   if (!event.exists("EcalScoringPlaneHits", ecal_sp_hits_event_passname_))
     return;
   if (!event.exists("SimParticles", sim_particles_event_passname_)) return;
-  const auto targSpHits = event.getCollection<ldmx::SimTrackerHit>(
+  const auto targ_sp_hits = event.getCollection<ldmx::SimTrackerHit>(
       "TargetScoringPlaneHits", target_sp_passname_);
-  const auto ecalSpHits = event.getCollection<ldmx::SimTrackerHit>(
+  const auto ecal_sp_hits = event.getCollection<ldmx::SimTrackerHit>(
       "EcalScoringPlaneHits", ecal_sp_passname_);
   const auto particle_map = event.getMap<int, ldmx::SimParticle>(
       "SimParticles", sim_particles_passname_);
 
   std::map<int, ldmx::SimParticle> primaries;
-  std::set<int> simIDs;
-  std::vector<ldmx::SimTrackerHit> atTarget;
-  std::vector<ldmx::SimTrackerHit> atEcal;
-  std::vector<ldmx::SimTrackerHit> atHcal;
+  std::set<int> sim_i_ds;
+  std::vector<ldmx::SimTrackerHit> at_target;
+  std::vector<ldmx::SimTrackerHit> at_ecal;
+  std::vector<ldmx::SimTrackerHit> at_hcal;
   for (const auto &pm : particle_map) {
     const auto &p = pm.second;
     // sim particles only ever have exactly one parent
@@ -53,36 +52,36 @@ void PFTruthProducer::produce(framework::Event &event) {
     // the parent of a primary is "track 0"
     if (parent == 0) {
       primaries[pm.first] = p;
-      simIDs.insert(pm.first);
+      sim_i_ds.insert(pm.first);
     }
   }
-  for (const auto &spHit : targSpHits) {
-    if (simIDs.count(spHit.getTrackID()) &&
-        fabs(0.18 - spHit.getPosition()[2]) < 0.1 &&
-        spHit.getMomentum()[2] > 0) {
-      atTarget.push_back(spHit);
+  for (const auto &sp_hit : targ_sp_hits) {
+    if (sim_i_ds.count(sp_hit.getTrackID()) &&
+        fabs(0.18 - sp_hit.getPosition()[2]) < 0.1 &&
+        sp_hit.getMomentum()[2] > 0) {
+      at_target.push_back(sp_hit);
     }
   }
-  for (const auto &spHit : ecalSpHits) {
-    if (simIDs.count(spHit.getTrackID()) &&
-        fabs(240 - spHit.getPosition()[2]) < 0.1 &&
-        spHit.getMomentum()[2] > 0) {
-      atEcal.push_back(spHit);
+  for (const auto &sp_hit : ecal_sp_hits) {
+    if (sim_i_ds.count(sp_hit.getTrackID()) &&
+        fabs(240 - sp_hit.getPosition()[2]) < 0.1 &&
+        sp_hit.getMomentum()[2] > 0) {
+      at_ecal.push_back(sp_hit);
     }
-    if (simIDs.count(spHit.getTrackID()) &&
-        fabs(840 - spHit.getPosition()[2]) < 0.1 &&
-        spHit.getMomentum()[2] > 0) {
-      atHcal.push_back(spHit);
+    if (sim_i_ds.count(sp_hit.getTrackID()) &&
+        fabs(840 - sp_hit.getPosition()[2]) < 0.1 &&
+        sp_hit.getMomentum()[2] > 0) {
+      at_hcal.push_back(sp_hit);
     }
   }
   // sortHits(primaries); // use map instead
-  sortHits(atTarget);
-  sortHits(atEcal);
-  sortHits(atHcal);
-  event.add(primaryCollName_, primaries);
-  event.add(targetCollName_, atTarget);
-  event.add(ecalCollName_, atEcal);
-  event.add(hcalCollName_, atHcal);
+  sortHits(at_target);
+  sortHits(at_ecal);
+  sortHits(at_hcal);
+  event.add(primary_coll_name_, primaries);
+  event.add(target_coll_name_, at_target);
+  event.add(ecal_coll_name_, at_ecal);
+  event.add(hcal_coll_name_, at_hcal);
 }
 }  // namespace recon
 

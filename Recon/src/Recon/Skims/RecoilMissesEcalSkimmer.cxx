@@ -17,55 +17,54 @@ RecoilMissesEcalSkimmer::~RecoilMissesEcalSkimmer() {}
 
 void RecoilMissesEcalSkimmer::configure(
     framework::config::Parameters &parameters) {
-  ecalSimHitsPassName_ =
-      parameters.getParameter<std::string>("ecalSimHitsPassName");
+  ecal_sim_hits_pass_name_ = parameters.get<std::string>("ecalSimHitsPassName");
 
   sim_particles_pass_name_ =
-      parameters.getParameter<std::string>("sim_particles_pass_name");
+      parameters.get<std::string>("sim_particles_pass_name");
 }
 
 void RecoilMissesEcalSkimmer::produce(framework::Event &event) {
   // Get the collection of simulated particles from the event
-  auto particleMap{event.getMap<int, ldmx::SimParticle>(
+  auto particle_map{event.getMap<int, ldmx::SimParticle>(
       "SimParticles", sim_particles_pass_name_)};
 
   // Search for the recoil electron
-  auto [recoilTrackID, recoilElectron] = Analysis::getRecoil(particleMap);
+  auto [recoilTrackID, recoilElectron] = analysis::getRecoil(particle_map);
 
-  // Get the collection of simulated Ecal hits from the event.
-  const std::vector<ldmx::SimCalorimeterHit> ecalSimHits =
+  // Get the collection of simulated Ecal hits_ from the event.
+  const std::vector<ldmx::SimCalorimeterHit> ecal_sim_hits =
       event.getCollection<ldmx::SimCalorimeterHit>("EcalSimHits",
-                                                   ecalSimHitsPassName_);
+                                                   ecal_sim_hits_pass_name_);
 
-  // Loop through the Ecal hits and check if the recoil electron is
-  // associated with any of them.  If there are any recoil electron hits
+  // Loop through the Ecal hits_ and check if the recoil electron is
+  // associated with any of them.  If there are any recoil electron hits_
   // in the Ecal, drop the event.
-  bool hasRecoilElectronHits = false;
-  for (const ldmx::SimCalorimeterHit &simHit : ecalSimHits) {
+  bool has_recoil_electron_hits = false;
+  for (const ldmx::SimCalorimeterHit &sim_hit : ecal_sim_hits) {
     /*std::cout << "[ RecoilMissesEcalSkimmer ]: "
               << "Number of hit contributions: "
               << simHit->getNumberOfContribs() << std::endl;*/
 
-    for (int iContrib = 0; iContrib < simHit.getNumberOfContribs();
-         ++iContrib) {
-      ldmx::SimCalorimeterHit::Contrib contrib = simHit.getContrib(iContrib);
+    for (int i_contrib = 0; i_contrib < sim_hit.getNumberOfContribs();
+         ++i_contrib) {
+      ldmx::SimCalorimeterHit::Contrib contrib = sim_hit.getContrib(i_contrib);
 
-      if (contrib.trackID == recoilTrackID) {
+      if (contrib.track_id_ == recoilTrackID) {
         /*std::cout << "[ RecoilMissesEcalSkimmer ]: "
                   << "Ecal hit associated with recoil electron." << std::endl;
          */
 
-        hasRecoilElectronHits = true;
+        has_recoil_electron_hits = true;
       }
     }
   }
 
   // Tell the skimmer to keep or drop the event based on whether there
-  // were recoil electron hits found in the Ecal.
-  if (hasRecoilElectronHits) {
-    setStorageHint(framework::hint_shouldDrop);
+  // were recoil electron hits_ found in the Ecal.
+  if (has_recoil_electron_hits) {
+    setStorageHint(framework::HINT_SHOULD_DROP);
   } else {
-    setStorageHint(framework::hint_shouldKeep);
+    setStorageHint(framework::HINT_SHOULD_KEEP);
   }
 }
 }  // namespace recon

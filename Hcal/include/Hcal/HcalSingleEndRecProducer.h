@@ -28,7 +28,7 @@ class HcalSingleEndRecProducer : public framework::Producer {
   double mip_energy_;
   /// length of clock cycle [ns]
   double clock_cycle_;
-  /// sample of interest index
+  /// sample of interest index_
   unsigned int isoi_;
 
  private:
@@ -56,7 +56,7 @@ class HcalSingleEndRecProducer : public framework::Producer {
    * @param[in] shift in BX associated to TOA for this channel
    * @return tuple of (toa [ns since SOI], sum_adc, sum_tot)
    */
-  std::tuple<double, double, int> extract_measurements(
+  std::tuple<double, double, int> extractMeasurements(
       const ldmx::HgcrocDigiCollection::HgcrocDigi& digi, double pedestal,
       double bx_shift);
 

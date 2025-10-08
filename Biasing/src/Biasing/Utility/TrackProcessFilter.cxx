@@ -17,7 +17,7 @@ namespace utility {
 TrackProcessFilter::TrackProcessFilter(
     const std::string& name, framework::config::Parameters& parameters)
     : simcore::UserAction(name, parameters) {
-  process_ = parameters.getParameter<std::string>("process");
+  process_ = parameters.get<std::string>("process");
 }
 
 TrackProcessFilter::~TrackProcessFilter() {}
@@ -25,8 +25,8 @@ TrackProcessFilter::~TrackProcessFilter() {}
 void TrackProcessFilter::PostUserTrackingAction(const G4Track* track) {
   if (const G4VProcess * process{track->GetCreatorProcess()}; process) {
     auto name{process->GetProcessName()};
-    auto trackInfo{simcore::UserTrackInformation::get(track)};
-    if (name.contains(process_)) trackInfo->setSaveFlag(true);
+    auto track_info{simcore::UserTrackInformation::get(track)};
+    if (name.contains(process_)) track_info->setSaveFlag(true);
   }  // does this track have a creator process
 }
 

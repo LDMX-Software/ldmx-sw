@@ -33,11 +33,6 @@ class HcalVetoResults : public framework::Analyzer {
   virtual void configure(framework::config::Parameters& ps);
 
   /**
-   * Things to do only on process start
-   */
-  virtual void onProcessStart();
-
-  /**
    * Fills histograms
    */
   virtual void analyze(const framework::Event& event);

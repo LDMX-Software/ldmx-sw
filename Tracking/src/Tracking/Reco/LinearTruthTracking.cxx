@@ -11,19 +11,19 @@ LinearTruthTracking::LinearTruthTracking(const std::string& name,
 
 void LinearTruthTracking::configure(framework::config::Parameters& parameters) {
   // Output seed name
-  out_trk_collection_ = parameters.getParameter<std::string>(
-      "out_trk_collection", "LinearRecoilTruthTracks");
+  out_trk_collection_ = parameters.get<std::string>("out_trk_collection",
+                                                    "LinearRecoilTruthTracks");
 
-  // Input strip hits
-  input_hits_collection_ = parameters.getParameter<std::string>(
-      "input_hits_collection", "RecoilSimHits");
-  input_rec_hits_collection_ = parameters.getParameter<std::string>(
-      "input_recHits_collection", "EcalRecHits");
+  // Input strip hits_
+  input_hits_collection_ =
+      parameters.get<std::string>("input_hits_collection", "RecoilSimHits");
+  input_rec_hits_collection_ =
+      parameters.get<std::string>("input_recHits_collection", "EcalRecHits");
 
-  input_pass_name_ = parameters.getParameter<std::string>("input_pass_name");
+  input_pass_name_ = parameters.get<std::string>("input_pass_name");
 
   ecal_first_layer_z_threshold_ =
-      parameters.getParameter<double>("ecal_first_layer_z_threshold");
+      parameters.get<double>("ecal_first_layer_z_threshold");
 }  // configure
 
 void LinearTruthTracking::produce(framework::Event& event) {
@@ -44,7 +44,7 @@ void LinearTruthTracking::produce(framework::Event& event) {
     if (x_ecal.getZPos() < ecal_first_layer_z_threshold_) {
       first_layer_ecal_rec_hits.push_back(
           {x_ecal.getZPos(), x_ecal.getXPos(), x_ecal.getYPos()});
-    }  // if first layer of Ecal
+    }  // if first layer_ of Ecal
   }  // for positions in ecalRecHit
 
   // Check if we would fit empty seeds.
@@ -53,7 +53,7 @@ void LinearTruthTracking::produce(framework::Event& event) {
     n_truth_ += straight_truth_tracks.size();
     event.add(out_trk_collection_, straight_truth_tracks);
     return;
-  }  // if not enough hits
+  }  // if not enough hits_
 
   std::vector<ldmx::SimTrackerHit> truth_points;
 
@@ -92,7 +92,7 @@ ldmx::StraightTrack LinearTruthTracking::truthTracker(
     std::vector<std::array<double, 3>>& ecal_points) {
   ldmx::StraightTrack trk = ldmx::StraightTrack();
 
-  // We have pre-selected hits corresponding to the Recoil e-, so we only fit
+  // We have pre-selected hits_ corresponding to the Recoil e-, so we only fit
   // these (no RecHit)
   auto [m_x, b_x, m_y, b_y] = fit3DLine(points);
 
@@ -118,7 +118,7 @@ ldmx::StraightTrack LinearTruthTracking::truthTracker(
   if (ecal_points.size() > 0) {
     double ecal_first_layer_z = ecal_points[0][0];
 
-    // Extrapolate track to first layer of Ecal
+    // Extrapolate track to first layer_ of Ecal
     std::array<double, 3> extrapolated_point = {ecal_first_layer_z,
                                                 m_x * ecal_first_layer_z + b_x,
                                                 m_y * ecal_first_layer_z + b_y};
@@ -185,12 +185,12 @@ std::tuple<double, double, double, double> LinearTruthTracking::fit3DLine(
     y_vec(i) = y_vals[i];
   }
 
-  Eigen::Matrix2d AtA = a_mat.transpose() * a_mat;
-  Eigen::Vector2d At_x = a_mat.transpose() * x_vec;
-  Eigen::Vector2d At_y = a_mat.transpose() * y_vec;
+  Eigen::Matrix2d at_a = a_mat.transpose() * a_mat;
+  Eigen::Vector2d at_x = a_mat.transpose() * x_vec;
+  Eigen::Vector2d at_y = a_mat.transpose() * y_vec;
 
-  Eigen::Vector2d x_params = AtA.ldlt().solve(At_x);
-  Eigen::Vector2d y_params = AtA.ldlt().solve(At_y);
+  Eigen::Vector2d x_params = at_a.ldlt().solve(at_x);
+  Eigen::Vector2d y_params = at_a.ldlt().solve(at_y);
 
   // Return (mx, bx, my, by)
   return {x_params(0), x_params(1), y_params(0), y_params(1)};

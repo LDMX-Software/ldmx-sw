@@ -15,66 +15,66 @@ TestBeamClusterAnalyzer::TestBeamClusterAnalyzer(const std::string& name,
 
 void TestBeamClusterAnalyzer::configure(
     framework::config::Parameters& parameters) {
-  inputCol_ = parameters.getParameter<std::string>("inputCollection");
-  inputPassName_ = parameters.getParameter<std::string>("inputPassName");
-  //  wideInputCol_ =
-  //  parameters.getParameter<std::string>("3hitInputCollection");
-  // wideInputPassName_ =
-  // parameters.getParameter<std::string>("3hitInputPassName");
+  input_col_ = parameters.get<std::string>("inputCollection");
+  input_pass_name_ = parameters.get<std::string>("inputPassName");
+  //  wide_input_col_ =
+  //  parameters.get<std::string>("3hitInputCollection");
+  // wide_input_pass_name_ =
+  // parameters.get<std::string>("3hitInputPassName");
 
-  std::cout << " [ TestBeamClusterAnalyzer ] In configure(), got parameters "
-            << "\n\t inputCollection = " << inputCol_
-            << "\n\t inputPassName = " << inputPassName_ << std::endl;
-  //        << "\n\t 3hitInputCollection = " << wideInputCol_
-  //        << "\n\t 3hitInputPassName = " << wideInputPassName_
+  ldmx_log(trace) << "In configure(), got parameters "
+                  << "\n\t inputCollection = " << input_col_
+                  << "\n\t inputPassName = " << input_pass_name_;
+  //        << "\n\t 3hitInputCollection = " << wide_input_col_
+  //        << "\n\t 3hitInputPassName = " << wide_input_pass_name_
 
   return;
 }
 
 void TestBeamClusterAnalyzer::analyze(const framework::Event& event) {
-  if (!event.exists(inputCol_, inputPassName_)) {
-    ldmx_log(info) << "No cluster collection " << inputCol_ << "_"
-                   << inputPassName_ << " found. Skipping analysis of event";
+  if (!event.exists(input_col_, input_pass_name_)) {
+    ldmx_log(info) << "No cluster collection " << input_col_ << "_"
+                   << input_pass_name_ << " found. Skipping analysis of event";
     return;
   }
 
-  const auto clusters{
-      event.getCollection<ldmx::TrigScintCluster>(inputCol_, inputPassName_)};
+  const auto clusters{event.getCollection<ldmx::TrigScintCluster>(
+      input_col_, input_pass_name_)};
 
   int n1hit = 0;
   int n2hit = 0;
   int n3hit = 0;
 
-  int nClusters = clusters.size();
+  int n_clusters = clusters.size();
   int idx = 0;
   for (auto cluster : clusters) {
     int seed = cluster.getSeed();
-    int nHits = cluster.getNHits();
-    if (nHits == 3)
+    int n_hits = cluster.getNHits();
+    if (n_hits == 3)
       n3hit++;
-    else if (nHits == 2)
+    else if (n_hits == 2)
       n2hit++;
-    else if (nHits == 1)
+    else if (n_hits == 1)
       n1hit++;
 
-    float PE = cluster.getPE();
+    float pe = cluster.getPE();
 
-    hPEinClusters[seed]->Fill(PE);
+    h_pe_in_clusters_[seed]->Fill(pe);
 
     /* // this requires different implementation. use getHitIDs and use the
     indices in there
        // in a loop over hits in the event to extract the PEs
        // -- later.
     for (auto hits : cluster.getConstituents() )
-      hPEinHits[seed]->Fill(PE);
+      h_pe_in_hits_[seed]->Fill(PE);
     */
     // instead of always checking distance between the first two, instead, fill
     // with distance from current to previous this should give us a better idea
     // about if we're dominated by close-by activity in secondaries
     if (idx > 0) {  // look back at the previous cluster when more than one
-      hDeltaCentroids->Fill(
+      h_delta_centroids_->Fill(
           fabs(clusters[idx].getCentroid() - clusters[idx - 1].getCentroid()));
-      hDeltaVsSeed->Fill(
+      h_delta_vs_seed_->Fill(
           clusters[idx - 1].getSeed(),
           fabs(clusters[idx].getCentroid() - clusters[idx - 1].getCentroid()));
     }
@@ -90,68 +90,70 @@ void TestBeamClusterAnalyzer::analyze(const framework::Event& event) {
         hN2N1->Fill((float)n2hit/n1hit);
   }
   */
-  hN3N2->Fill(n2hit, n3hit);
-  hN3N1->Fill(n1hit, n3hit);
-  hN2N1->Fill(n1hit, n2hit);
+  h_n3_n2_->Fill(n2hit, n3hit);
+  h_n3_n1_->Fill(n1hit, n3hit);
+  h_n2_n1_->Fill(n1hit, n2hit);
 
-  hNClusters->Fill(nClusters);
+  h_n_clusters_->Fill(n_clusters);
   // todo: get hit collection to fill Nhits later?
-  hNHits->Fill(3 * n3hit + 2 * n2hit + n1hit);
+  h_n_hits_->Fill(3 * n3hit + 2 * n2hit + n1hit);
 
   return;
 }
 
 void TestBeamClusterAnalyzer::onProcessStart() {
-  std::cout << "\n\n Process starts! My analyzer should do something -- like "
-               "print this \n\n"
-            << std::endl;
+  ldmx_log(trace)
+      << "\n\n Process starts! My analyzer should do something -- like "
+         "print this";
 
   getHistoDirectory();
 
-  int PEmax = 600;
-  int nPEbins = 0.25 * PEmax;
+  int p_emax = 600;
+  int n_p_ebins = 0.25 * p_emax;
   // float Qmax = PEmax / (6250. / 4.e6);
   // float Qmin = -10;
   // int nQbins = (Qmax - Qmin) / 4;
 
-  for (int iB = 0; iB < nChannels; iB++) {
-    hPEinHits[iB] = new TH1F(Form("hPE_chan%i", iB), Form(";PE, chan%i", iB),
-                             nPEbins, 0, PEmax);
-    hPEinClusters[iB] = new TH1F(Form("hPEinClusters_chan%i", iB),
-                                 Form(";PE, chan%i", iB), nPEbins, 0, PEmax);
+  for (int i_b = 0; i_b < n_channels_; i_b++) {
+    h_pe_in_hits_[i_b] =
+        new TH1F(Form("hPE_chan%i", i_b), Form(";PE, chan%i", i_b), n_p_ebins,
+                 0, p_emax);
+    h_pe_in_clusters_[i_b] =
+        new TH1F(Form("h_pe_in_clusters_chan%i", i_b), Form(";PE, chan%i", i_b),
+                 n_p_ebins, 0, p_emax);
   }
 
-  hDeltaVsSeed =
-      new TH2F("hDeltaVsSeed", ";BarID_{seed};#Delta_{centroid}", nChannels + 1,
-               -0.5, nChannels - 0.5, 5 * nChannels, 0, nChannels);
+  h_delta_vs_seed_ = new TH2F(
+      "h_delta_vs_speed", ";bar_id_{seed};#delta_{centroid}", n_channels_ + 1,
+      -0.5, n_channels_ - 0.5, 5 * n_channels_, 0, n_channels_);
 
-  hDeltaCentroids = new TH1F("hDeltaCentroids", ";#Delta_{centroid}",
-                             5 * nChannels, -0.5, nChannels - 0.5);
+  h_delta_centroids_ = new TH1F("h_delta_centroids", ";#delta_{centroid}",
+                                5 * n_channels_, -0.5, n_channels_ - 0.5);
 
-  hNHits = new TH1F("hNHits", "Number of hits in the event; N_{hits}; Events",
-                    10, 0, 10);
-  hNClusters = new TH1F("hNClusters",
-                        "Number of clusters in the event; N_{clusters}; Events",
-                        10, 0, 10);
+  h_n_hits_ = new TH1F(
+      "hNHits", "Number of hits in the event; n_{hits}; Events", 10, 0, 10);
+  h_n_clusters_ = new TH1F(
+      "h_n_clusters", "Number of clusters in the event; n_{clusters}; Events",
+      10, 0, 10);
 
   /*
   hN3N2 = new TH1F("hN3N2", "Ratio of 3-hit to 2-hit clusters;
-  N_{3-hit}/N_{2-hit}; Events", 10, 0, 4); hN3N1 = new TH1F("hN3N1", "Ratio of
-  3-hit to 1-hit clusters; N_{3-hit}/N_{1-hit}; Events", 10, 0, 4); hN2N1 = new
-  TH1F("hN2N1", "Ratio of 2-hit to 1-hit clusters; N_{2-hit}/N_{1-hit}; Events",
+  n_{3-hit}/n_{2-hit}; Events", 10, 0, 4); hN3N1 = new TH1F("hN3N1", "Ratio of
+  3-hit to 1-hit clusters; n_{3-hit}/n_{1-hit}; Events", 10, 0, 4); hN2N1 = new
+  TH1F("hN2N1", "Ratio of 2-hit to 1-hit clusters; n_{2-hit}/n_{1-hit}; Events",
   10, 0, 4);
   */
-  int nCl = 6;
+  int n_cl = 6;
 
-  hN3N2 = new TH2F(
-      "hN3N2", "Number of 3-hit vs 2-hit clusters; N_{2-hit};N_{3-hit}; Events",
-      nCl, -0.5, nCl - 0.5, nCl, -0.5, nCl - 0.5);
-  hN3N1 = new TH2F(
-      "hN3N1", "Number of 3-hit vs 1-hit clusters; N_{1-hit};N_{3-hit}; Events",
-      nCl, -0.5, nCl - 0.5, nCl, -0.5, nCl - 0.5);
-  hN2N1 = new TH2F(
-      "hN2N1", "Number of 2-hit vs 1-hit clusters; N_{1-hit};N_{2-hit}; Events",
-      nCl, -0.5, nCl - 0.5, nCl, -0.5, nCl - 0.5);
+  h_n3_n2_ = new TH2F(
+      "hN3N2", "Number of 3-hit vs 2-hit clusters; n_{2-hit};n_{3-hit}; Events",
+      n_cl, -0.5, n_cl - 0.5, n_cl, -0.5, n_cl - 0.5);
+  h_n3_n1_ = new TH2F(
+      "hN3N1", "Number of 3-hit vs 1-hit clusters; n_{1-hit};n_{3-hit}; Events",
+      n_cl, -0.5, n_cl - 0.5, n_cl, -0.5, n_cl - 0.5);
+  h_n2_n1_ = new TH2F(
+      "hN2N1", "Number of 2-hit vs 1-hit clusters; n_{1-hit};n_{2-hit}; Events",
+      n_cl, -0.5, n_cl - 0.5, n_cl, -0.5, n_cl - 0.5);
 
   return;
 }

@@ -1,29 +1,32 @@
 #include "TrigScint/Event/TrigScintCluster.h"
 
-ClassImp(ldmx::TrigScintCluster)
+ClassImp(ldmx::TrigScintCluster);
 
-    namespace ldmx {
-  TrigScintCluster::~TrigScintCluster() { Clear(); }
+namespace ldmx {
+TrigScintCluster::~TrigScintCluster() { clear(); }
 
-  void TrigScintCluster::Print(Option_t * option) const {
-    std::cout << "TrigScintCluster { " << "Energy: " << energy_ << ", "
-              << "Number of hits: " << nHits_ << ", " << "Seed channel "
-              << seed_ << ", Channel centroid: " << centroid_ << " }"
-              << std::endl;
-    std::cout << "  --  Constituent hit channel ids: {  ";
-    for (const auto &idx : getHitIDs()) std::cout << idx << "  ";
-    std::cout << "}" << std::endl;
+std::ostream& operator<<(std::ostream& o, const TrigScintCluster& c) {
+  o << "TrigScintCluster { " << "Energy: " << c.energy_ << ", "
+    << "Number of hits: " << c.n_hits_ << ", " << "Seed channel " << c.seed_
+    << ", Channel centroid: " << c.centroid_ << " }";
+  o << "  --  Constituent hit channel ids: {  ";
+  for (const auto& idx : c.getHitIDs()) {
+    o << idx << "  ";
+
+    o << "}";
   }
+  return o;
+};
 
-  void TrigScintCluster::Clear(Option_t *) {
-    hitIDs_.clear();
+void TrigScintCluster::clear(Option_t*) {
+  hit_ids_.clear();
 
-    centroidX_ = 0;
-    centroidY_ = 0;
-    centroidZ_ = 0;
-    setEnergy(0);
-    setNHits(0);
-    setCentroid(0);
-    setSeed(-1);
-  }
+  centroid_x_ = 0;
+  centroid_y_ = 0;
+  centroid_z_ = 0;
+  setEnergy(0);
+  setNHits(0);
+  setCentroid(0);
+  setSeed(-1);
+}
 }  // namespace ldmx

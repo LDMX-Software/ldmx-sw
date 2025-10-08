@@ -62,28 +62,28 @@ class HcalDigiProducer : public framework::Producer {
   // Python Configuration Parameters
 
   /// input hit collection name
-  std::string inputCollName_;
+  std::string input_coll_name_;
 
   /// input pass name
-  std::string inputPassName_;
+  std::string input_pass_name_;
 
   /// output hit collection name
-  std::string digiCollName_;
+  std::string digi_coll_name_;
 
   /// output pulse truth collection name
-  std::string pulseTruthCollName_;
+  std::string pulse_truth_coll_name_;
 
   /// Time interval for chip clock in ns
-  double clockCycle_;
+  double clock_cycle_;
 
   /// Depth of ADC buffer.
-  int nADCs_;
+  int n_ad_cs_;
 
   /// Index for the Sample Of Interest in the list of digi samples
-  int iSOI_;
+  int i_soi_;
 
   /// Conversion from energy in MeV to voltage in mV
-  double MeV_;
+  double me_v_;
 
   /// Strip attenuation length [m]
   double attlength_;
@@ -97,11 +97,11 @@ class HcalDigiProducer : public framework::Producer {
 
   /// If true, save the "analog" composite pulse shape in the HGCROC emulator
   /// before it gets digitized
-  bool savePulseTruthInfo_{false};
+  bool save_pulse_truth_info_{false};
 
   /// If false, save digis from all channels, even pure noise in empty bars
   /// Helpful when comparing with test beam data
-  bool zeroSuppression_{true};
+  bool zero_suppression_{true};
 
   /// Hgcroc Emulator to digitize analog voltage signals
   std::unique_ptr<ldmx::HgcrocEmulator> hgcroc_;
@@ -110,18 +110,18 @@ class HcalDigiProducer : public framework::Producer {
   double ns_;
 
   /// Read out threshold
-  double readoutThreshold_;
+  double readout_threshold_;
   /// Read out pedestal
   double pedestal_;
   /// Read out gain
   double gain_;
   /// Noise RMS
-  double noiseRMS_;
+  double noise_rms_;
 
   /// Generates noise hits based off of number of cells that are not hit
-  std::unique_ptr<ldmx::NoiseGenerator> noiseGenerator_;
+  std::unique_ptr<ldmx::NoiseGenerator> noise_generator_;
 
-  /// Generates Gaussian noise on top of real hits
+  /// Generates Gaussian noise on top of real hits_
   std::mt19937 rng_;
 };
 }  // namespace hcal

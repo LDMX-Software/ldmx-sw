@@ -4,21 +4,22 @@ ClassImp(ldmx::SimTrackerHit);
 
 namespace ldmx {
 
-SimTrackerHit::~SimTrackerHit() { Clear(); }
+SimTrackerHit::~SimTrackerHit() { clear(); }
 
-void SimTrackerHit::Print() const {
-  std::cout << "SimTrackerHit { " << "id: " << id_ << ", "
-            << "layerID: " << layerID_ << ", " << "moduleID: " << moduleID_
-            << ", " << "position: ( " << x_ << ", " << y_ << ", " << z_
-            << " ), " << "edep: " << edep_ << ", " << "time: " << time_ << ", "
-            << "momentum: ( " << px_ << ", " << py_ << ", " << pz_ << " )"
-            << " }" << std::endl;
+std::ostream& operator<<(std::ostream& o, const SimTrackerHit& hit) {
+  return o << "SimTrackerHit { " << "id: " << hit.id_ << ", "
+           << "layerID: " << hit.layer_id_ << ", "
+           << "moduleID: " << hit.module_id_ << ", " << "position: ( " << hit.x_
+           << ", " << hit.y_ << ", " << hit.z_ << " ), "
+           << "edep: " << hit.edep_ << ", " << "time: " << hit.time_ << ", "
+           << "momentum: ( " << hit.px_ << ", " << hit.py_ << ", " << hit.pz_
+           << " )" << " }";
 }
 
-void SimTrackerHit::Clear() {
+void SimTrackerHit::clear() {
   id_ = 0;
-  layerID_ = 0;
-  moduleID_ = 0;
+  layer_id_ = 0;
+  module_id_ = 0;
   edep_ = 0;
   time_ = 0;
   px_ = 0;
@@ -28,15 +29,16 @@ void SimTrackerHit::Clear() {
   y_ = 0;
   z_ = 0;
   energy_ = 0;
-  pathLength_ = 0;
-  trackID_ = -1;
-  pdgID_ = 0;
+  path_length_ = 0;
+  track_id_ = -1;
+  pdg_id_ = 0;
 }
 
-void SimTrackerHit::setPosition(const float x, const float y, const float z) {
-  this->x_ = x;
-  this->y_ = y;
-  this->z_ = z;
+void SimTrackerHit::setPosition(const float x_, const float y_,
+                                const float z_) {
+  this->x_ = x_;
+  this->y_ = y_;
+  this->z_ = z_;
 }
 
 void SimTrackerHit::setMomentum(const float px, const float py,

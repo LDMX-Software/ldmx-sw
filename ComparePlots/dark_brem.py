@@ -1,0 +1,50 @@
+"""Plotting of ECal-related validation plots"""
+
+from ._differ import Differ
+from ._plotter import plotter
+import logging
+
+log = logging.getLogger('dark_brem')
+
+@plotter
+def kinematics(d : Differ, out_dir = None) :
+    """Plot Dark Brem interaction histograms
+
+    Parameters
+    ----------
+    d : Differ
+        Differ containing files that are not event files (presumably histogram files)
+    """
+
+    features = [
+        ('aprime_energy', 'Dark Photon Energy [MeV]'),
+        ('aprime_pt', 'Dark Photon $p_T$ [MeV]'),
+        ('aprime_theta', 'Dark Photon $\\theta$ [degree]'),
+        ('recoil_energy', 'Recoil Energy [MeV]'),
+        ('recoil_pt', 'Recoil $p_T$ [MeV]'),
+        ('recoil_theta', 'Recoil $\\theta$ [degree]'),
+        ('incident_energy', 'Incident Energy [MeV]'),
+        ('incident_pt', 'Incident $p_T$ [MeV]'),
+        ('dark_brem_z', 'Dark Brem Z Location [mm]'),
+    ]
+    for h, name in features :
+        log.info(f'plotting {h}')
+        d.plot1d(f'DarkBremDQM/DarkBremDQM_{h}', name, out_dir = out_dir, density=True, ylabel='Weighted Fraction')
+
+    log.info('plotting dark_brem_element')
+    d.plot1d(
+        'DarkBremDQM/DarkBremDQM_dark_brem_element', 
+        'Element in which Dark Brem Occurred',
+        out_dir = out_dir,
+        density=True,
+        ylabel='Weighted Fraction'
+    )
+
+    log.info('plotting dark_brem_material')
+    d.plot1d(
+        'DarkBremDQM/DarkBremDQM_dark_brem_material',
+        'Material in which Dark Brem Occurred',
+        out_dir = out_dir,
+        density=True,
+        ylabel='Weighted Fraction'
+    )

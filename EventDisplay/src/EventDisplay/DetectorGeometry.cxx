@@ -11,74 +11,75 @@ DetectorGeometry::DetectorGeometry() {
   ///////////////////////////////////////////////////////////////////////////////////
   // HCAL
 
-  hcalParityVertical_ = 1;
+  hcal_parity_vertical_ = 1;
 
-  hcalUncertaintyTimingPos_ = 50.0;
+  hcal_uncertainty_timing_pos_ = 50.0;
 
-  hcalThicknessScint_ = 20.0;
+  hcal_thickness_scint_ = 20.0;
 
-  hcalWidthScint_ = 50.0;
+  hcal_width_scint_ = 50.0;
 
-  hcalNLayers_[ldmx::HcalID::HcalSection::BACK] = 100;
-  hcalNLayers_[ldmx::HcalID::HcalSection::TOP] = 28;
-  hcalNLayers_[ldmx::HcalID::HcalSection::BOTTOM] = 28;
-  hcalNLayers_[ldmx::HcalID::HcalSection::LEFT] = 26;
-  hcalNLayers_[ldmx::HcalID::HcalSection::RIGHT] = 26;
+  hcal_n_layers_[ldmx::HcalID::HcalSection::BACK] = 100;
+  hcal_n_layers_[ldmx::HcalID::HcalSection::TOP] = 28;
+  hcal_n_layers_[ldmx::HcalID::HcalSection::BOTTOM] = 28;
+  hcal_n_layers_[ldmx::HcalID::HcalSection::LEFT] = 26;
+  hcal_n_layers_[ldmx::HcalID::HcalSection::RIGHT] = 26;
 
-  hcalNStrips_[ldmx::HcalID::HcalSection::BACK] = 62;
-  hcalNStrips_[ldmx::HcalID::HcalSection::TOP] = 12;
-  hcalNStrips_[ldmx::HcalID::HcalSection::BOTTOM] = 12;
-  hcalNStrips_[ldmx::HcalID::HcalSection::LEFT] = 12;
-  hcalNStrips_[ldmx::HcalID::HcalSection::RIGHT] = 12;
+  hcal_n_strips_[ldmx::HcalID::HcalSection::BACK] = 62;
+  hcal_n_strips_[ldmx::HcalID::HcalSection::TOP] = 12;
+  hcal_n_strips_[ldmx::HcalID::HcalSection::BOTTOM] = 12;
+  hcal_n_strips_[ldmx::HcalID::HcalSection::LEFT] = 12;
+  hcal_n_strips_[ldmx::HcalID::HcalSection::RIGHT] = 12;
 
   double ecal_z = 440.;
   double ecal_xy = 600.;
   double back_transverse_width = 3100.;
   double ecal_front_z = 220.;
 
-  hcalLengthScint_[ldmx::HcalID::HcalSection::BACK] = back_transverse_width;
-  hcalLengthScint_[ldmx::HcalID::HcalSection::TOP] =
+  hcal_length_scint_[ldmx::HcalID::HcalSection::BACK] = back_transverse_width;
+  hcal_length_scint_[ldmx::HcalID::HcalSection::TOP] =
       (back_transverse_width + ecal_xy) / 2.;
-  hcalLengthScint_[ldmx::HcalID::HcalSection::BOTTOM] =
+  hcal_length_scint_[ldmx::HcalID::HcalSection::BOTTOM] =
       (back_transverse_width + ecal_xy) / 2.;
-  hcalLengthScint_[ldmx::HcalID::HcalSection::LEFT] =
+  hcal_length_scint_[ldmx::HcalID::HcalSection::LEFT] =
       (back_transverse_width + ecal_xy) / 2.;
-  hcalLengthScint_[ldmx::HcalID::HcalSection::RIGHT] =
+  hcal_length_scint_[ldmx::HcalID::HcalSection::RIGHT] =
       (back_transverse_width + ecal_xy) / 2.;
 
-  hcalZeroLayer_[ldmx::HcalID::HcalSection::BACK] =
+  hcal_zero_layer_[ldmx::HcalID::HcalSection::BACK] =
       ecal_front_z + 600.;  // leaving 60cm cube for ecal
-  hcalZeroLayer_[ldmx::HcalID::HcalSection::TOP] = ecal_xy / 2.;
-  hcalZeroLayer_[ldmx::HcalID::HcalSection::BOTTOM] = ecal_xy / 2.;
-  hcalZeroLayer_[ldmx::HcalID::HcalSection::LEFT] = ecal_xy / 2.;
-  hcalZeroLayer_[ldmx::HcalID::HcalSection::RIGHT] = ecal_xy / 2.;
+  hcal_zero_layer_[ldmx::HcalID::HcalSection::TOP] = ecal_xy / 2.;
+  hcal_zero_layer_[ldmx::HcalID::HcalSection::BOTTOM] = ecal_xy / 2.;
+  hcal_zero_layer_[ldmx::HcalID::HcalSection::LEFT] = ecal_xy / 2.;
+  hcal_zero_layer_[ldmx::HcalID::HcalSection::RIGHT] = ecal_xy / 2.;
 
-  hcalZeroStrip_[ldmx::HcalID::HcalSection::BACK] = back_transverse_width / 2.;
-  hcalZeroStrip_[ldmx::HcalID::HcalSection::TOP] = ecal_front_z;
-  hcalZeroStrip_[ldmx::HcalID::HcalSection::BOTTOM] = ecal_front_z;
-  hcalZeroStrip_[ldmx::HcalID::HcalSection::LEFT] = ecal_front_z;
-  hcalZeroStrip_[ldmx::HcalID::HcalSection::RIGHT] = ecal_front_z;
+  hcal_zero_strip_[ldmx::HcalID::HcalSection::BACK] =
+      back_transverse_width / 2.;
+  hcal_zero_strip_[ldmx::HcalID::HcalSection::TOP] = ecal_front_z;
+  hcal_zero_strip_[ldmx::HcalID::HcalSection::BOTTOM] = ecal_front_z;
+  hcal_zero_strip_[ldmx::HcalID::HcalSection::LEFT] = ecal_front_z;
+  hcal_zero_strip_[ldmx::HcalID::HcalSection::RIGHT] = ecal_front_z;
 
   // absorber + scintillator + 2*air
-  hcalLayerThickness_[ldmx::HcalID::HcalSection::BACK] =
-      25. + hcalThicknessScint_ + 2 * 2.;
-  hcalLayerThickness_[ldmx::HcalID::HcalSection::TOP] =
-      20. + hcalThicknessScint_ + 2 * 2.;
-  hcalLayerThickness_[ldmx::HcalID::HcalSection::BOTTOM] =
-      20. + hcalThicknessScint_ + 2 * 2.;
-  hcalLayerThickness_[ldmx::HcalID::HcalSection::LEFT] =
-      20. + hcalThicknessScint_ + 2 * 2.;
-  hcalLayerThickness_[ldmx::HcalID::HcalSection::RIGHT] =
-      20. + hcalThicknessScint_ + 2 * 2.;
+  hcal_layer_thickness_[ldmx::HcalID::HcalSection::BACK] =
+      25. + hcal_thickness_scint_ + 2 * 2.;
+  hcal_layer_thickness_[ldmx::HcalID::HcalSection::TOP] =
+      20. + hcal_thickness_scint_ + 2 * 2.;
+  hcal_layer_thickness_[ldmx::HcalID::HcalSection::BOTTOM] =
+      20. + hcal_thickness_scint_ + 2 * 2.;
+  hcal_layer_thickness_[ldmx::HcalID::HcalSection::LEFT] =
+      20. + hcal_thickness_scint_ + 2 * 2.;
+  hcal_layer_thickness_[ldmx::HcalID::HcalSection::RIGHT] =
+      20. + hcal_thickness_scint_ + 2 * 2.;
 
   ///////////////////////////////////////////////////////////////////////////////////
   // ECAL
 
-  ecalZeroLayer_ = ecal_front_z;
+  ecal_zero_layer_ = ecal_front_z;
 
-  ecalSiThickness_ = 0.5;
+  ecal_si_thickness_ = 0.5;
 
-  ecalDepth_ = ecal_z;
+  ecal_depth_ = ecal_z;
 
   std::vector<double> ecalSiPlanes = {
       7.850,   13.300,  26.400,  33.500,  47.950,  56.550,  72.250,
@@ -91,13 +92,13 @@ DetectorGeometry::DetectorGeometry() {
   hexReadoutParams["gap"] = 1.5;
   hexReadoutParams["moduleMinR"] = 85.0;
   hexReadoutParams["layerZPositions"] = ecalSiPlanes;
-  hexReadoutParams["ecalFrontZ"] = ecalZeroLayer_;
+  hexReadoutParams["ecalFrontZ"] = ecal_zero_layer_;
   hexReadoutParams["nCellRHeight"] = 35.3;
   hexReadoutParams["verbose"] = 0;
 
   framework::config::Parameters hexReadout;
   hexReadout.setParameters(hexReadoutParams);
-  ecalHexReader_ = std::unique_ptr<ldmx::EcalHexReadout>(
+  ecal_hex_reader_ = std::unique_ptr<ldmx::EcalHexReadout>(
       ldmx::EcalHexReadout::debugMake(hexReadout));
 
   /////////////////////////////////////////////////////////////
@@ -118,25 +119,25 @@ DetectorGeometry::DetectorGeometry() {
   //      be hard coded here instead of calculated from design specifications
   //      like the HCAL case.
 
-  recoilStereoStripLength_ = 98.0;
+  recoil_stereo_strip_length_ = 98.0;
 
-  recoilStereoXWidth_ = 40.34;
+  recoil_stereo_x_width_ = 40.34;
 
-  recoilStereoYWidth_ = 100.0;
+  recoil_stereo_y_width_ = 100.0;
 
-  recoilStereoSeparation_ = 3.0;
+  recoil_stereo_separation_ = 3.0;
 
-  recoilStereoAngle_ = 0.1;
+  recoil_stereo_angle_ = 0.1;
 
-  recoilMonoStripLength_ = 78.0;
+  recoil_mono_strip_length_ = 78.0;
 
-  recoilMonoXWidth_ = 50.0;
+  recoil_mono_x_width_ = 50.0;
 
-  recoilMonoYWidth_ = 80.0;
+  recoil_mono_y_width_ = 80.0;
 
-  recoilMonoSeparation_ = 1.0;
+  recoil_mono_separation_ = 1.0;
 
-  recoilSensorThickness_ = 0.52;
+  recoil_sensor_thickness_ = 0.52;
 
   // The following keys for the position and angle maps should correspond to the
   // copynumber in the recoil.gdml file At writing, the layerIDs and moduleIDs
@@ -144,104 +145,124 @@ DetectorGeometry::DetectorGeometry() {
 
   std::vector<double> recoilStereoLayerZPos = {7.5, 22.5, 37.5, 52.5};
 
-  recoilModulePos_[10] = {
-      0, 0, recoilStereoLayerZPos.at(0) - recoilStereoSeparation_};
-  recoilModulePos_[20] = {
-      0, 0, recoilStereoLayerZPos.at(0) + recoilStereoSeparation_};
+  recoil_module_pos_[10] = {
+      0, 0, recoilStereoLayerZPos.at(0) - recoil_stereo_separation_};
+  recoil_module_pos_[20] = {
+      0, 0, recoilStereoLayerZPos.at(0) + recoil_stereo_separation_};
 
-  recoilModulePos_[30] = {
-      0, 0, recoilStereoLayerZPos.at(1) - recoilStereoSeparation_};
-  recoilModulePos_[40] = {
-      0, 0, recoilStereoLayerZPos.at(1) + recoilStereoSeparation_};
+  recoil_module_pos_[30] = {
+      0, 0, recoilStereoLayerZPos.at(1) - recoil_stereo_separation_};
+  recoil_module_pos_[40] = {
+      0, 0, recoilStereoLayerZPos.at(1) + recoil_stereo_separation_};
 
-  recoilModulePos_[50] = {
-      0, 0, recoilStereoLayerZPos.at(2) - recoilStereoSeparation_};
-  recoilModulePos_[60] = {
-      0, 0, recoilStereoLayerZPos.at(2) + recoilStereoSeparation_};
+  recoil_module_pos_[50] = {
+      0, 0, recoilStereoLayerZPos.at(2) - recoil_stereo_separation_};
+  recoil_module_pos_[60] = {
+      0, 0, recoilStereoLayerZPos.at(2) + recoil_stereo_separation_};
 
-  recoilModulePos_[70] = {
-      0, 0, recoilStereoLayerZPos.at(3) - recoilStereoSeparation_};
-  recoilModulePos_[80] = {
-      0, 0, recoilStereoLayerZPos.at(3) + recoilStereoSeparation_};
+  recoil_module_pos_[70] = {
+      0, 0, recoilStereoLayerZPos.at(3) - recoil_stereo_separation_};
+  recoil_module_pos_[80] = {
+      0, 0, recoilStereoLayerZPos.at(3) + recoil_stereo_separation_};
 
   std::vector<double> recoilMonoLayerZPos = {90.0, 180.0};
 
-  recoilModulePos_[90] = {2 * recoilMonoXWidth_, 0.5 * recoilMonoYWidth_,
-                          recoilMonoLayerZPos.at(0) + recoilMonoSeparation_};
-  recoilModulePos_[91] = {recoilMonoXWidth_, 0.5 * recoilMonoYWidth_,
-                          recoilMonoLayerZPos.at(0) - recoilMonoSeparation_};
-  recoilModulePos_[92] = {0.0, 0.5 * recoilMonoYWidth_,
-                          recoilMonoLayerZPos.at(0) + recoilMonoSeparation_};
-  recoilModulePos_[93] = {-1 * recoilMonoXWidth_, 0.5 * recoilMonoYWidth_,
-                          recoilMonoLayerZPos.at(0) - recoilMonoSeparation_};
-  recoilModulePos_[94] = {-2 * recoilMonoXWidth_, 0.5 * recoilMonoYWidth_,
-                          recoilMonoLayerZPos.at(0) + recoilMonoSeparation_};
-  recoilModulePos_[95] = {2 * recoilMonoXWidth_, -0.5 * recoilMonoYWidth_,
-                          recoilMonoLayerZPos.at(0) + recoilMonoSeparation_};
-  recoilModulePos_[96] = {recoilMonoXWidth_, -0.5 * recoilMonoYWidth_,
-                          recoilMonoLayerZPos.at(0) - recoilMonoSeparation_};
-  recoilModulePos_[97] = {0.0, -0.5 * recoilMonoYWidth_,
-                          recoilMonoLayerZPos.at(0) + recoilMonoSeparation_};
-  recoilModulePos_[98] = {-1 * recoilMonoXWidth_, -0.5 * recoilMonoYWidth_,
-                          recoilMonoLayerZPos.at(0) - recoilMonoSeparation_};
-  recoilModulePos_[99] = {-2 * recoilMonoXWidth_, -0.5 * recoilMonoYWidth_,
-                          recoilMonoLayerZPos.at(0) + recoilMonoSeparation_};
+  recoil_module_pos_[90] = {
+      2 * recoil_mono_x_width_, 0.5 * recoil_mono_y_width_,
+      recoilMonoLayerZPos.at(0) + recoil_mono_separation_};
+  recoil_module_pos_[91] = {
+      recoil_mono_x_width_, 0.5 * recoil_mono_y_width_,
+      recoilMonoLayerZPos.at(0) - recoil_mono_separation_};
+  recoil_module_pos_[92] = {
+      0.0, 0.5 * recoil_mono_y_width_,
+      recoilMonoLayerZPos.at(0) + recoil_mono_separation_};
+  recoil_module_pos_[93] = {
+      -1 * recoil_mono_x_width_, 0.5 * recoil_mono_y_width_,
+      recoilMonoLayerZPos.at(0) - recoil_mono_separation_};
+  recoil_module_pos_[94] = {
+      -2 * recoil_mono_x_width_, 0.5 * recoil_mono_y_width_,
+      recoilMonoLayerZPos.at(0) + recoil_mono_separation_};
+  recoil_module_pos_[95] = {
+      2 * recoil_mono_x_width_, -0.5 * recoil_mono_y_width_,
+      recoilMonoLayerZPos.at(0) + recoil_mono_separation_};
+  recoil_module_pos_[96] = {
+      recoil_mono_x_width_, -0.5 * recoil_mono_y_width_,
+      recoilMonoLayerZPos.at(0) - recoil_mono_separation_};
+  recoil_module_pos_[97] = {
+      0.0, -0.5 * recoil_mono_y_width_,
+      recoilMonoLayerZPos.at(0) + recoil_mono_separation_};
+  recoil_module_pos_[98] = {
+      -1 * recoil_mono_x_width_, -0.5 * recoil_mono_y_width_,
+      recoilMonoLayerZPos.at(0) - recoil_mono_separation_};
+  recoil_module_pos_[99] = {
+      -2 * recoil_mono_x_width_, -0.5 * recoil_mono_y_width_,
+      recoilMonoLayerZPos.at(0) + recoil_mono_separation_};
 
-  recoilModulePos_[100] = {2 * recoilMonoXWidth_, 0.5 * recoilMonoYWidth_,
-                           recoilMonoLayerZPos.at(1) + recoilMonoSeparation_};
-  recoilModulePos_[101] = {recoilMonoXWidth_, 0.5 * recoilMonoYWidth_,
-                           recoilMonoLayerZPos.at(1) - recoilMonoSeparation_};
-  recoilModulePos_[102] = {0.0, 0.5 * recoilMonoYWidth_,
-                           recoilMonoLayerZPos.at(1) + recoilMonoSeparation_};
-  recoilModulePos_[103] = {-1 * recoilMonoXWidth_, 0.5 * recoilMonoYWidth_,
-                           recoilMonoLayerZPos.at(1) - recoilMonoSeparation_};
-  recoilModulePos_[104] = {-2 * recoilMonoXWidth_, 0.5 * recoilMonoYWidth_,
-                           recoilMonoLayerZPos.at(1) + recoilMonoSeparation_};
-  recoilModulePos_[105] = {2 * recoilMonoXWidth_, -0.5 * recoilMonoYWidth_,
-                           recoilMonoLayerZPos.at(1) + recoilMonoSeparation_};
-  recoilModulePos_[106] = {recoilMonoXWidth_, -0.5 * recoilMonoYWidth_,
-                           recoilMonoLayerZPos.at(1) - recoilMonoSeparation_};
-  recoilModulePos_[107] = {0.0, -0.5 * recoilMonoYWidth_,
-                           recoilMonoLayerZPos.at(1) + recoilMonoSeparation_};
-  recoilModulePos_[108] = {-1 * recoilMonoXWidth_, -0.5 * recoilMonoYWidth_,
-                           recoilMonoLayerZPos.at(1) - recoilMonoSeparation_};
-  recoilModulePos_[109] = {-2 * recoilMonoXWidth_, -0.5 * recoilMonoYWidth_,
-                           recoilMonoLayerZPos.at(1) + recoilMonoSeparation_};
+  recoil_module_pos_[100] = {
+      2 * recoil_mono_x_width_, 0.5 * recoil_mono_y_width_,
+      recoilMonoLayerZPos.at(1) + recoil_mono_separation_};
+  recoil_module_pos_[101] = {
+      recoil_mono_x_width_, 0.5 * recoil_mono_y_width_,
+      recoilMonoLayerZPos.at(1) - recoil_mono_separation_};
+  recoil_module_pos_[102] = {
+      0.0, 0.5 * recoil_mono_y_width_,
+      recoilMonoLayerZPos.at(1) + recoil_mono_separation_};
+  recoil_module_pos_[103] = {
+      -1 * recoil_mono_x_width_, 0.5 * recoil_mono_y_width_,
+      recoilMonoLayerZPos.at(1) - recoil_mono_separation_};
+  recoil_module_pos_[104] = {
+      -2 * recoil_mono_x_width_, 0.5 * recoil_mono_y_width_,
+      recoilMonoLayerZPos.at(1) + recoil_mono_separation_};
+  recoil_module_pos_[105] = {
+      2 * recoil_mono_x_width_, -0.5 * recoil_mono_y_width_,
+      recoilMonoLayerZPos.at(1) + recoil_mono_separation_};
+  recoil_module_pos_[106] = {
+      recoil_mono_x_width_, -0.5 * recoil_mono_y_width_,
+      recoilMonoLayerZPos.at(1) - recoil_mono_separation_};
+  recoil_module_pos_[107] = {
+      0.0, -0.5 * recoil_mono_y_width_,
+      recoilMonoLayerZPos.at(1) + recoil_mono_separation_};
+  recoil_module_pos_[108] = {
+      -1 * recoil_mono_x_width_, -0.5 * recoil_mono_y_width_,
+      recoilMonoLayerZPos.at(1) - recoil_mono_separation_};
+  recoil_module_pos_[109] = {
+      -2 * recoil_mono_x_width_, -0.5 * recoil_mono_y_width_,
+      recoilMonoLayerZPos.at(1) + recoil_mono_separation_};
 
   // Recoil Angles
-  recoilModuleAngle_[10] = 0.0;
-  recoilModuleAngle_[20] = recoilStereoAngle_;
+  recoil_module_angle_[10] = 0.0;
+  recoil_module_angle_[20] = recoil_stereo_angle_;
 
-  recoilModuleAngle_[30] = 0.0;
-  recoilModuleAngle_[40] = -recoilStereoAngle_;
+  recoil_module_angle_[30] = 0.0;
+  recoil_module_angle_[40] = -recoil_stereo_angle_;
 
-  recoilModuleAngle_[50] = 0.0;
-  recoilModuleAngle_[60] = recoilStereoAngle_;
+  recoil_module_angle_[50] = 0.0;
+  recoil_module_angle_[60] = recoil_stereo_angle_;
 
-  recoilModuleAngle_[70] = 0.0;
-  recoilModuleAngle_[80] = -recoilStereoAngle_;
+  recoil_module_angle_[70] = 0.0;
+  recoil_module_angle_[80] = -recoil_stereo_angle_;
 
-  recoilModuleAngle_[90] = 0.0;
-  recoilModuleAngle_[91] = 0.0;
-  recoilModuleAngle_[92] = 0.0;
-  recoilModuleAngle_[93] = 0.0;
-  recoilModuleAngle_[94] = 0.0;
-  recoilModuleAngle_[95] = 0.0;
-  recoilModuleAngle_[96] = 0.0;
-  recoilModuleAngle_[97] = 0.0;
-  recoilModuleAngle_[98] = 0.0;
-  recoilModuleAngle_[99] = 0.0;
+  recoil_module_angle_[90] = 0.0;
+  recoil_module_angle_[91] = 0.0;
+  recoil_module_angle_[92] = 0.0;
+  recoil_module_angle_[93] = 0.0;
+  recoil_module_angle_[94] = 0.0;
+  recoil_module_angle_[95] = 0.0;
+  recoil_module_angle_[96] = 0.0;
+  recoil_module_angle_[97] = 0.0;
+  recoil_module_angle_[98] = 0.0;
+  recoil_module_angle_[99] = 0.0;
 
-  recoilModuleAngle_[100] = 0.0;
-  recoilModuleAngle_[101] = 0.0;
-  recoilModuleAngle_[102] = 0.0;
-  recoilModuleAngle_[103] = 0.0;
-  recoilModuleAngle_[104] = 0.0;
-  recoilModuleAngle_[105] = 0.0;
-  recoilModuleAngle_[106] = 0.0;
-  recoilModuleAngle_[107] = 0.0;
-  recoilModuleAngle_[108] = 0.0;
-  recoilModuleAngle_[109] = 0.0;
+  recoil_module_angle_[100] = 0.0;
+  recoil_module_angle_[101] = 0.0;
+  recoil_module_angle_[102] = 0.0;
+  recoil_module_angle_[103] = 0.0;
+  recoil_module_angle_[104] = 0.0;
+  recoil_module_angle_[105] = 0.0;
+  recoil_module_angle_[106] = 0.0;
+  recoil_module_angle_[107] = 0.0;
+  recoil_module_angle_[108] = 0.0;
+  recoil_module_angle_[109] = 0.0;
 
   // TODO Tagger
   // TODO Trigger Pad
@@ -258,57 +279,57 @@ BoundingBox DetectorGeometry::getBoundingBox(const ldmx::HcalHit &hit) const {
 
   // calculate center of layer,strip with respect to detector section
   double layercenter =
-      layer * hcalLayerThickness_.at(section) + 0.5 * hcalThicknessScint_;
-  double stripcenter = (strip + 0.5) * hcalWidthScint_;
+      layer * hcal_layer_thickness_.at(section) + 0.5 * hcal_thickness_scint_;
+  double stripcenter = (strip + 0.5) * hcal_width_scint_;
 
   // calculate error in layer,strip position
-  double elayer = 0.5 * hcalThicknessScint_;
-  double estrip = 0.5 * hcalWidthScint_;
+  double elayer = 0.5 * hcal_thickness_scint_;
+  double estrip = 0.5 * hcal_width_scint_;
 
   double x, y, z;
   if (section == ldmx::HcalID::HcalSection::BACK) {
-    z = hcalZeroLayer_.at(section) + layercenter;
+    z = hcal_zero_layer_.at(section) + layercenter;
     Z.first = z - elayer;
     Z.second = z + elayer;
 
     // only horizontal layers implemented currently
-    if (false) {  //( (layer ^ hcalParityVertical_) & 1) == 0 ) { //checks for
+    if (false) {  //( (layer ^ hcal_parity_vertical_) & 1) == 0 ) { //checks for
                   // same parity
       // Vertical Layers
 
-      x = -hcalZeroStrip_.at(section) + stripcenter;
+      x = -hcal_zero_strip_.at(section) + stripcenter;
       X.first = x - estrip;
       X.second = x + estrip;
 
       y = hit.getYPos();
-      Y.first = y - hcalUncertaintyTimingPos_;
-      Y.second = y + hcalUncertaintyTimingPos_;
+      Y.first = y - hcal_uncertainty_timing_pos_;
+      Y.second = y + hcal_uncertainty_timing_pos_;
 
     } else {
       // Horizontal Layers
 
       x = hit.getXPos();
-      X.first = x - hcalUncertaintyTimingPos_;
-      X.second = x + hcalUncertaintyTimingPos_;
+      X.first = x - hcal_uncertainty_timing_pos_;
+      X.second = x + hcal_uncertainty_timing_pos_;
 
-      y = -1 * hcalZeroStrip_.at(section) + stripcenter;
+      y = -1 * hcal_zero_strip_.at(section) + stripcenter;
       Y.first = y - estrip;
       Y.second = y + estrip;
 
     }  // calculate depending on layer
 
   } else {
-    z = hcalZeroStrip_.at(section) + stripcenter;
+    z = hcal_zero_strip_.at(section) + stripcenter;
     Z.first = z - estrip;
     Z.second = z + estrip;
 
     if (section == ldmx::HcalID::HcalSection::TOP or
         section == ldmx::HcalID::HcalSection::BOTTOM) {
       x = hit.getXPos();
-      X.first = x - hcalUncertaintyTimingPos_;
-      X.second = x + hcalUncertaintyTimingPos_;
+      X.first = x - hcal_uncertainty_timing_pos_;
+      X.second = x + hcal_uncertainty_timing_pos_;
 
-      y = hcalZeroLayer_.at(section) + layercenter;
+      y = hcal_zero_layer_.at(section) + layercenter;
       if (section == ldmx::HcalID::HcalSection::BOTTOM) {
         y *= -1;
       }
@@ -319,10 +340,10 @@ BoundingBox DetectorGeometry::getBoundingBox(const ldmx::HcalHit &hit) const {
     } else if (section == ldmx::HcalID::HcalSection::LEFT or
                section == ldmx::HcalID::HcalSection::RIGHT) {
       y = hit.getYPos();
-      Y.first = y - hcalUncertaintyTimingPos_;
-      Y.second = y + hcalUncertaintyTimingPos_;
+      Y.first = y - hcal_uncertainty_timing_pos_;
+      Y.second = y + hcal_uncertainty_timing_pos_;
 
-      x = hcalZeroLayer_.at(section) + layercenter;
+      x = hcal_zero_layer_.at(section) + layercenter;
       if (section == ldmx::HcalID::HcalSection::RIGHT) {
         x *= -1;
       }
@@ -383,52 +404,54 @@ BoundingBox DetectorGeometry::getBoundingBox(
     ldmx::HcalID::HcalSection section) const {
   std::pair<double, double> X(0, 0), Y(0, 0), Z(0, 0);
 
-  double total_strip_width = hcalNStrips_.at(section) * hcalWidthScint_;
+  double total_strip_width = hcal_n_strips_.at(section) * hcal_width_scint_;
   double total_thickness =
-      hcalNLayers_.at(section) * hcalLayerThickness_.at(section);
+      hcal_n_layers_.at(section) * hcal_layer_thickness_.at(section);
   if (section == ldmx::HcalID::HcalSection::BACK) {
-    X.first = -hcalZeroStrip_.at(ldmx::HcalID::HcalSection::BACK);
+    X.first = -hcal_zero_strip_.at(ldmx::HcalID::HcalSection::BACK);
     X.second = X.first + total_strip_width;
 
-    Y.first = -hcalLengthScint_.at(ldmx::HcalID::HcalSection::BACK) / 2.0;
-    Y.second = hcalLengthScint_.at(ldmx::HcalID::HcalSection::BACK) / 2.0;
+    Y.first = -hcal_length_scint_.at(ldmx::HcalID::HcalSection::BACK) / 2.0;
+    Y.second = hcal_length_scint_.at(ldmx::HcalID::HcalSection::BACK) / 2.0;
 
-    Z.first = hcalZeroLayer_.at(ldmx::HcalID::HcalSection::BACK);
+    Z.first = hcal_zero_layer_.at(ldmx::HcalID::HcalSection::BACK);
     Z.second = Z.first + total_thickness;
 
   } else {
-    Z.first = hcalZeroStrip_.at(section);
+    Z.first = hcal_zero_strip_.at(section);
     Z.second = Z.first + total_strip_width;
 
     if (section == ldmx::HcalID::HcalSection::LEFT) {
-      X.first = hcalZeroLayer_.at(ldmx::HcalID::HcalSection::LEFT);
+      X.first = hcal_zero_layer_.at(ldmx::HcalID::HcalSection::LEFT);
       X.second = X.first + total_thickness;
 
-      Y.second = hcalZeroLayer_.at(ldmx::HcalID::HcalSection::TOP);
-      Y.first = Y.second - hcalLengthScint_.at(ldmx::HcalID::HcalSection::LEFT);
+      Y.second = hcal_zero_layer_.at(ldmx::HcalID::HcalSection::TOP);
+      Y.first =
+          Y.second - hcal_length_scint_.at(ldmx::HcalID::HcalSection::LEFT);
 
     } else if (section == ldmx::HcalID::HcalSection::RIGHT) {
-      X.second = -hcalZeroLayer_.at(ldmx::HcalID::HcalSection::RIGHT);
+      X.second = -hcal_zero_layer_.at(ldmx::HcalID::HcalSection::RIGHT);
       X.first = X.second - total_thickness;
 
-      Y.first = -hcalZeroLayer_.at(ldmx::HcalID::HcalSection::BOTTOM);
+      Y.first = -hcal_zero_layer_.at(ldmx::HcalID::HcalSection::BOTTOM);
       Y.second =
-          Y.first + hcalLengthScint_.at(ldmx::HcalID::HcalSection::RIGHT);
+          Y.first + hcal_length_scint_.at(ldmx::HcalID::HcalSection::RIGHT);
 
     } else if (section == ldmx::HcalID::HcalSection::TOP) {
-      Y.first = hcalZeroLayer_.at(ldmx::HcalID::HcalSection::TOP);
+      Y.first = hcal_zero_layer_.at(ldmx::HcalID::HcalSection::TOP);
       Y.second = Y.first + total_thickness;
 
-      X.first = -hcalZeroLayer_.at(ldmx::HcalID::HcalSection::RIGHT);
-      X.second = X.first + hcalLengthScint_.at(ldmx::HcalID::HcalSection::TOP);
+      X.first = -hcal_zero_layer_.at(ldmx::HcalID::HcalSection::RIGHT);
+      X.second =
+          X.first + hcal_length_scint_.at(ldmx::HcalID::HcalSection::TOP);
 
     } else if (section == ldmx::HcalID::HcalSection::BOTTOM) {
-      Y.second = -hcalZeroLayer_.at(ldmx::HcalID::HcalSection::BOTTOM);
+      Y.second = -hcal_zero_layer_.at(ldmx::HcalID::HcalSection::BOTTOM);
       Y.first = Y.second - total_thickness;
 
-      X.second = hcalZeroLayer_.at(ldmx::HcalID::HcalSection::LEFT);
+      X.second = hcal_zero_layer_.at(ldmx::HcalID::HcalSection::LEFT);
       X.first =
-          X.second - hcalLengthScint_.at(ldmx::HcalID::HcalSection::BOTTOM);
+          X.second - hcal_length_scint_.at(ldmx::HcalID::HcalSection::BOTTOM);
 
     } else {
       std::cerr << "[ Warning ] : Unrecognized ldmx::HcalID::HcalSection in "
@@ -449,9 +472,10 @@ BoundingBox DetectorGeometry::getBoundingBox(
 
 HexPrism DetectorGeometry::getHexPrism(const ldmx::EcalID &id) const {
   HexPrism hexpris;
-  ecalHexReader_->getCellAbsolutePosition(id, hexpris.x, hexpris.y, hexpris.z);
-  hexpris.height = ecalSiThickness_;
-  hexpris.radius = ecalHexReader_->getCellMaxR();
+  ecal_hex_reader_->getCellAbsolutePosition(id, hexpris.x, hexpris.y,
+                                            hexpris.z);
+  hexpris.height = ecal_si_thickness_;
+  hexpris.radius = ecal_hex_reader_->getCellMaxR();
 
   return hexpris;
 }
@@ -466,11 +490,11 @@ HexPrism DetectorGeometry::getHexTower(int towerIndex) const {
     return hexpris;
   }
 
-  hexpris.x = ecalHexReader_->getModuleCenter(towerIndex).first;
-  hexpris.y = ecalHexReader_->getModuleCenter(towerIndex).second;
-  hexpris.z = ecalZeroLayer_ + ecalDepth_ / 2;
-  hexpris.height = ecalDepth_;
-  hexpris.radius = ecalHexReader_->getModuleMaxR();
+  hexpris.x = ecal_hex_reader_->getModuleCenter(towerIndex).first;
+  hexpris.y = ecal_hex_reader_->getModuleCenter(towerIndex).second;
+  hexpris.z = ecal_zero_layer_ + ecal_depth_ / 2;
+  hexpris.height = ecal_depth_;
+  hexpris.radius = ecal_hex_reader_->getModuleMaxR();
 
   return hexpris;
 }
@@ -478,21 +502,21 @@ HexPrism DetectorGeometry::getHexTower(int towerIndex) const {
 double DetectorGeometry::getRotAngle(int layerID, int moduleID) const {
   int combined = layerID * 10 + moduleID;
 
-  if (recoilModuleAngle_.find(combined) == recoilModuleAngle_.end()) {
+  if (recoil_module_angle_.find(combined) == recoil_module_angle_.end()) {
     std::cerr << "[ Warning ] : DetectorGeometry::getRotAngle : Input layerID ("
               << layerID << ") and input moduleID (" << moduleID
               << ") are not included in the geometry!" << std::endl;
     return 0.0;
   }
 
-  return recoilModuleAngle_.at(combined);
+  return recoil_module_angle_.at(combined);
 }
 
 BoundingBox DetectorGeometry::getBoundingBox(int layerID, int moduleID) const {
   int combined = layerID * 10 + moduleID;
 
   BoundingBox bbox;
-  if (recoilModulePos_.find(combined) == recoilModulePos_.end()) {
+  if (recoil_module_pos_.find(combined) == recoil_module_pos_.end()) {
     std::cerr
         << "[ Warning ] : DetectorGeometry::getBoundingBox : Input layerID ("
         << layerID << ") and input moduleID (" << moduleID
@@ -500,20 +524,20 @@ BoundingBox DetectorGeometry::getBoundingBox(int layerID, int moduleID) const {
     return bbox;
   }
 
-  double xWidth = recoilStereoXWidth_;
-  double yWidth = recoilStereoStripLength_;
+  double xWidth = recoil_stereo_x_width_;
+  double yWidth = recoil_stereo_strip_length_;
   if (layerID > 8) {
-    xWidth = recoilMonoXWidth_;
-    yWidth = recoilMonoStripLength_;
+    xWidth = recoil_mono_x_width_;
+    yWidth = recoil_mono_strip_length_;
   }
 
-  bbox.emplace_back(recoilModulePos_.at(combined).at(0) - xWidth / 2.,
-                    recoilModulePos_.at(combined).at(0) + xWidth / 2.);
-  bbox.emplace_back(recoilModulePos_.at(combined).at(1) - yWidth / 2.,
-                    recoilModulePos_.at(combined).at(1) + yWidth / 2.);
+  bbox.emplace_back(recoil_module_pos_.at(combined).at(0) - xWidth / 2.,
+                    recoil_module_pos_.at(combined).at(0) + xWidth / 2.);
+  bbox.emplace_back(recoil_module_pos_.at(combined).at(1) - yWidth / 2.,
+                    recoil_module_pos_.at(combined).at(1) + yWidth / 2.);
   bbox.emplace_back(
-      recoilModulePos_.at(combined).at(2) - recoilSensorThickness_ / 2.,
-      recoilModulePos_.at(combined).at(2) + recoilSensorThickness_ / 2.);
+      recoil_module_pos_.at(combined).at(2) - recoil_sensor_thickness_ / 2.,
+      recoil_module_pos_.at(combined).at(2) + recoil_sensor_thickness_ / 2.);
 
   return bbox;
 }
@@ -525,7 +549,7 @@ BoundingBox DetectorGeometry::getBoundingBox(
   int combined = layerID * 10 + moduleID;
 
   BoundingBox bbox;
-  if (recoilModulePos_.find(combined) == recoilModulePos_.end()) {
+  if (recoil_module_pos_.find(combined) == recoil_module_pos_.end()) {
     std::cerr
         << "[ Warning ] : DetectorGeometry::getBoundingBox : Input layerID ("
         << layerID << ") and input moduleID (" << moduleID
@@ -536,9 +560,9 @@ BoundingBox DetectorGeometry::getBoundingBox(
   std::vector<float> hitPos = recoilHit.getPosition();
 
   double xWidth = 1.0;
-  double yWidth = recoilStereoStripLength_;
+  double yWidth = recoil_stereo_strip_length_;
   if (layerID > 8) {
-    yWidth = recoilMonoStripLength_;
+    yWidth = recoil_mono_strip_length_;
   }
 
   // we have to un-rotate the x-position of the hit, so we can rotate it later
@@ -547,11 +571,11 @@ BoundingBox DetectorGeometry::getBoundingBox(
   double xPos = hitPos.at(0) * cos(-rotAngle) - hitPos.at(1) * sin(-rotAngle);
 
   bbox.emplace_back(xPos - xWidth / 2., xPos + xWidth / 2.);
-  bbox.emplace_back(recoilModulePos_.at(combined).at(1) - yWidth / 2.,
-                    recoilModulePos_.at(combined).at(1) + yWidth / 2.);
+  bbox.emplace_back(recoil_module_pos_.at(combined).at(1) - yWidth / 2.,
+                    recoil_module_pos_.at(combined).at(1) + yWidth / 2.);
   bbox.emplace_back(
-      recoilModulePos_.at(combined).at(2) - recoilSensorThickness_ / 2.,
-      recoilModulePos_.at(combined).at(2) + recoilSensorThickness_ / 2.);
+      recoil_module_pos_.at(combined).at(2) - recoil_sensor_thickness_ / 2.,
+      recoil_module_pos_.at(combined).at(2) + recoil_sensor_thickness_ / 2.);
 
   return bbox;
 }

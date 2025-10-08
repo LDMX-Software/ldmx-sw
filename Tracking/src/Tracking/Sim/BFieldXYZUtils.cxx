@@ -1,16 +1,16 @@
 #include "Tracking/Sim/BFieldXYZUtils.h"
 
-Acts::Vector3 default_transformPos(const Acts::Vector3& pos) {
+Acts::Vector3 defaultTransformPos(const Acts::Vector3& pos_) {
   Acts::Vector3 rot_pos;
-  rot_pos(0) = pos(1);
-  rot_pos(1) = pos(2);
-  rot_pos(2) = pos(0) + DIPOLE_OFFSET;
+  rot_pos(0) = pos_(1);
+  rot_pos(1) = pos_(2);
+  rot_pos(2) = pos_(0) + DIPOLE_OFFSET;
 
   return rot_pos;
 }
 
-Acts::Vector3 default_transformBField(const Acts::Vector3& field,
-                                      const Acts::Vector3& /*pos*/) {
+Acts::Vector3 defaultTransformBField(const Acts::Vector3& field,
+                                     const Acts::Vector3& /*pos_*/) {
   Acts::Vector3 rot_field;
 
   rot_field(0) = field(2);
@@ -26,8 +26,8 @@ Acts::Vector3 default_transformBField(const Acts::Vector3& field,
   return rot_field;
 }
 
-size_t localToGlobalBin_xyz(std::array<size_t, 3> bins,
-                            std::array<size_t, 3> sizes) {
+size_t localToGlobalBinXyz(std::array<size_t, 3> bins,
+                           std::array<size_t, 3> sizes) {
   return (bins[0] * (sizes[1] * sizes[2]) + bins[1] * sizes[2] +
           bins[2]);  // xyz - field space
   // return (bins[1] * (sizes[2] * sizes[0]) + bins[2] * sizes[0] + bins[0]);

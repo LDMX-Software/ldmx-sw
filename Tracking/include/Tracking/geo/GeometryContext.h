@@ -61,7 +61,7 @@ class GeometryContext : public framework::ConditionsObject {
   // This holds all the transformations of the Tracking Geometry and
   // the alignment corrections already applied
 
-  std::unordered_map<unsigned int, Acts::Transform3> alignment_map;
+  std::unordered_map<unsigned int, Acts::Transform3> alignment_map_;
 
   /// Conditions object name
   static const std::string NAME;

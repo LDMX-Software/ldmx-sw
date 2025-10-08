@@ -18,17 +18,17 @@ HcalReconConditions::HcalReconConditions(
       tot_calibs_{tot_calib},
       toa_calibs_{toa_calib} {}
 
-bool HcalReconConditions::is_adc(const ldmx::HcalDigiID& id,
-                                 double sum_tot) const {
+bool HcalReconConditions::isAdc(const ldmx::HcalDigiID& id,
+                                double sum_tot) const {
   // check if the linearization has been done correctly
   //  a non-zero flag value is implicitly converted to true
-  if (totCalib(id, i_flagged) == 1) {
+  if (totCalib(id, I_FLAGGED) == 1) {
     return true;
   }
 
   // if we are in ADC range (which was used as a reference in linearization),
   // we use ADC
-  if (sum_tot < totCalib(id, i_lower_offset)) {
+  if (sum_tot < totCalib(id, I_LOWER_OFFSET)) {
     return true;
   }
 
@@ -39,16 +39,16 @@ double HcalReconConditions::linearize(const ldmx::HcalDigiID& id,
                                       double sum_tot) const {
   // we know we have a linearization fit and are in TOT range,
   //  the lower side of TOT needs to be linearized with a specialized power law
-  if (sum_tot < totCalib(id, i_cut_point_tot)) {
-    return pow((sum_tot - totCalib(id, i_lower_offset)) /
-                   totCalib(id, i_low_slope),
-               1 / totCalib(id, i_low_power)) +
-           totCalib(id, i_tot_not);
+  if (sum_tot < totCalib(id, I_CUT_POINT_TOT)) {
+    return pow((sum_tot - totCalib(id, I_LOWER_OFFSET)) /
+                   totCalib(id, I_LOW_SLOPE),
+               1 / totCalib(id, I_LOW_POWER)) +
+           totCalib(id, I_TOT_NOT);
   }
 
   // we know sum_tot is >= lower offset and >= tot cut
   //  higher tot, linearized with adc using a simple linear mapping
-  return (sum_tot - totCalib(id, i_high_offset)) * totCalib(id, i_high_slope);
+  return (sum_tot - totCalib(id, I_HIGH_OFFSET)) * totCalib(id, I_HIGH_SLOPE);
 }
 
 /**
@@ -94,10 +94,10 @@ class HcalReconConditionsProvider : public framework::ConditionsObjectProvider {
                           name + " is not equal to the expected name " +
                           HcalReconConditions::CONDITIONS_NAME);
     }
-    adc_gain_ = parameters.getParameter<std::string>("adc_gain");
-    adc_ped_ = parameters.getParameter<std::string>("adc_ped");
-    tot_calib_ = parameters.getParameter<std::string>("tot_calib");
-    toa_calib_ = parameters.getParameter<std::string>("toa_calib");
+    adc_gain_ = parameters.get<std::string>("adc_gain");
+    adc_ped_ = parameters.get<std::string>("adc_ped");
+    tot_calib_ = parameters.get<std::string>("tot_calib");
+    toa_calib_ = parameters.get<std::string>("toa_calib");
   }
 
   /**

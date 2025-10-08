@@ -24,13 +24,13 @@ namespace biasing {
 TargetENProcessFilter::TargetENProcessFilter(
     const std::string& name, framework::config::Parameters& parameters)
     : simcore::UserAction(name, parameters) {
-  recoilEnergyThreshold_ = parameters.getParameter<double>("recoilThreshold");
+  recoil_energy_threshold_ = parameters.get<double>("recoilThreshold");
 }
 
 TargetENProcessFilter::~TargetENProcessFilter() {}
 
 void TargetENProcessFilter::stepping(const G4Step* step) {
-  if (reactionOccurred_) return;
+  if (reaction_occurred_) return;
 
   // Get the track associated with this step.
   G4Track* track = step->GetTrack();
@@ -39,10 +39,10 @@ void TargetENProcessFilter::stepping(const G4Step* step) {
   if (track->GetParentID() != 0) return;
 
   // get the PDGID of the track.
-  G4int pdgID = track->GetParticleDefinition()->GetPDGEncoding();
+  G4int pdg_id = track->GetParticleDefinition()->GetPDGEncoding();
 
   // Make sure that the particle being processed is an electron.
-  if (pdgID != 11) return;  // Throw an exception
+  if (pdg_id != 11) return;  // Throw an exception
 
   // Get the volume the particle is in.
   G4VPhysicalVolume* track_volume = track->GetVolume();
@@ -54,11 +54,9 @@ void TargetENProcessFilter::stepping(const G4Step* step) {
   // If the particle isn't in the target, don't continue with the processing.
   if (track_volume != target_volume) return;
 
-  /*std::cout << "*******************************" << std::endl;
-  std::cout << "*   Step " << track->GetCurrentStepNumber() << std::endl;
-  std::cout << "********************************" << std::endl;*/
+  // ldmx_log(trace)<< "*   Step " << track->GetCurrentStepNumber();
 
-  if (track->GetMomentum().mag() > recoilEnergyThreshold_) {
+  if (track->GetMomentum().mag() > recoil_energy_threshold_) {
     track->SetTrackStatus(fKillTrackAndSecondaries);
     G4RunManager::GetRunManager()->AbortEvent();
     return;
@@ -70,45 +68,39 @@ void TargetENProcessFilter::stepping(const G4Step* step) {
   // If the brem photon doesn't undergo any reaction in the target, stop
   // processing the rest of the event.
   if (secondaries->size() == 0) {
-    /*std::cout << "[ TargetENProcessFilter ]: "
-                << "Electron did not interact in the target. --> Postponing
-       tracks."
-                << std::endl;*/
+    ldmx_log(debug)
+        << "Electron did not interact in the target. --> Postponing tracks.";
 
     track->SetTrackStatus(fKillTrackAndSecondaries);
     G4RunManager::GetRunManager()->AbortEvent();
     return;
   } else {
-    G4String processName =
+    G4String process_name =
         secondaries->at(0)->GetCreatorProcess()->GetProcessName();
 
-    /*std::cout << "[ TargetENProcessFilter ]: "
-              << "Electron produced " << secondaries->size()
-              << " particle via " << processName << " process."
-              << std::endl;*/
+    ldmx_log(debug) << "Electron produced " << secondaries->size()
+                    << " particle via " << process_name << " process.";
 
     // Only record the process that is being biased
-    if (!processName.contains(process_)) {
-      /*std::cout << "[ TargetENProcessFilter ]: "
-                << "Process was not " << BiasingMessenger::getProcess() << "-->
-         Killing all tracks!"
-                << std::endl;*/
+    if (!process_name.contains(process_)) {
+      ldmx_log(debug) << "Process was not " << process_
+                      << "--> Killing all tracks!";
 
       track->SetTrackStatus(fKillTrackAndSecondaries);
       G4RunManager::GetRunManager()->AbortEvent();
       return;
     }
 
-    std::cout << "[ TargetENProcessFilter ]: "
-              << "Electronuclear reaction resulted in " << secondaries->size()
-              << " particles via " << processName << " process." << std::endl;
+    ldmx_log(info) << "Electronuclear reaction resulted in "
+                   << secondaries->size() << " particles via " << process_name
+                   << " process.";
     // BiasingMessenger::setEventWeight(track->GetWeight());
-    reactionOccurred_ = true;
+    reaction_occurred_ = true;
   }
 }
 
 void TargetENProcessFilter::EndOfEventAction(const G4Event*) {
-  reactionOccurred_ = false;
+  reaction_occurred_ = false;
 }
 }  // namespace biasing
 

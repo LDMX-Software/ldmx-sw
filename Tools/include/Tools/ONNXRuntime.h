@@ -15,7 +15,8 @@
 
 #include "onnxruntime_cxx_api.h"
 
-namespace ldmx::Ort {
+namespace ldmx {
+namespace ort {
 
 typedef std::vector<std::vector<float>> FloatArrays;
 
@@ -35,7 +36,7 @@ class ONNXRuntime {
               const ::Ort::SessionOptions* session_options = nullptr);
   ONNXRuntime(const ONNXRuntime&) = delete;
   ONNXRuntime& operator=(const ONNXRuntime&) = delete;
-  ~ONNXRuntime();
+  ~ONNXRuntime() = default;
 
   /**
    * Run model inference and get outputs.
@@ -71,7 +72,7 @@ class ONNXRuntime {
       const std::string& output_name) const;
 
  private:
-  static ::Ort::Env env_;
+  static ::Ort::Env env;
   std::unique_ptr<::Ort::Session> session_;
 
   std::vector<std::string> input_node_strings_;
@@ -83,6 +84,7 @@ class ONNXRuntime {
   std::map<std::string, std::vector<int64_t>> output_node_dims_;
 };
 
-}  // namespace ldmx::Ort
+}  // namespace ort
+}  // namespace ldmx
 
 #endif /* TOOLS_ONNXRUNTIME_H_ */

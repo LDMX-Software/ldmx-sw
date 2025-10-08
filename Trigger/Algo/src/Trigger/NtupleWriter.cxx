@@ -2,6 +2,7 @@
 
 #include "SimCore/Event/SimTrackerHit.h"
 #include "Trigger/Event/TrigEnergySum.h"
+#include "Trigger/Event/TrigMip.h"
 #include "Trigger/Event/TrigParticle.h"
 
 namespace trigger {
@@ -9,30 +10,27 @@ NtupleWriter::NtupleWriter(const std::string& name, framework::Process& process)
     : Producer(name, process) {}
 
 void NtupleWriter::configure(framework::config::Parameters& ps) {
-  outPath_ = ps.getParameter<std::string>("outPath");
+  out_path_ = ps.get<std::string>("outPath");
 
   target_sp_hits_event_passname_ =
-      ps.getParameter<std::string>("target_sp_hits_event_passname");
-  target_sp_passname_ = ps.getParameter<std::string>("target_sp_passname");
+      ps.get<std::string>("target_sp_hits_event_passname");
+  target_sp_passname_ = ps.get<std::string>("target_sp_passname");
 
   ecal_sp_hits_events_passname_ =
-      ps.getParameter<std::string>("ecal_sp_hits_events_passname");
-  ecal_sp_passname_ = ps.getParameter<std::string>("ecal_sp_passname");
+      ps.get<std::string>("ecal_sp_hits_events_passname");
+  ecal_sp_passname_ = ps.get<std::string>("ecal_sp_passname");
 
   ecal_trig_sums_event_passname_ =
-      ps.getParameter<std::string>("ecal_trig_sums_event_passname");
-  ecal_trig_sums_passname_ =
-      ps.getParameter<std::string>("ecal_trig_sums_passname");
+      ps.get<std::string>("ecal_trig_sums_event_passname");
+  ecal_trig_sums_passname_ = ps.get<std::string>("ecal_trig_sums_passname");
 
   trig_electrons_event_passname_ =
-      ps.getParameter<std::string>("trig_electrons_event_passname");
-  trig_electrons_passname_ =
-      ps.getParameter<std::string>("trig_electrons_passname");
+      ps.get<std::string>("trig_electrons_event_passname");
+  trig_electrons_passname_ = ps.get<std::string>("trig_electrons_passname");
 
   hcal_trig_quads_events_passname_ =
-      ps.getParameter<std::string>("hcal_trig_quads_events_passname");
-  hcal_trig_quads_passname_ =
-      ps.getParameter<std::string>("hcal_trig_quads_passname");
+      ps.get<std::string>("hcal_trig_quads_events_passname");
+  hcal_trig_quads_passname_ = ps.get<std::string>("hcal_trig_quads_passname");
 }
 
 // precision-limiting function
@@ -43,25 +41,25 @@ inline float prec(float x) { return x; }
 void NtupleWriter::produce(framework::Event& event) {
   framework::NtupleManager& n{framework::NtupleManager::getInstance()};
 
-  std::string inTag;
-  inTag = "TargetScoringPlaneHits";
-  if (writeTruth_ && event.exists(inTag, target_sp_hits_event_passname_)) {
+  std::string in_tag;
+  in_tag = "TargetScoringPlaneHits";
+  if (write_truth_ && event.exists(in_tag, target_sp_hits_event_passname_)) {
     const std::vector<ldmx::SimTrackerHit> hits =
-        event.getCollection<ldmx::SimTrackerHit>(inTag, target_sp_passname_);
+        event.getCollection<ldmx::SimTrackerHit>(in_tag, target_sp_passname_);
 
-    ldmx::SimTrackerHit h, hMaxEle;  // the desired truth hits
+    ldmx::SimTrackerHit h, h_max_ele;  // the desired truth hits
     for (const auto& hit : hits) {
       auto xyz = hit.getPosition();
       if (xyz[2] > 0 && xyz[2] < 1) {
         if (hit.getTrackID() == 1) h = hit;
-        if (hit.getPdgID() == 11 && (hit.getEnergy() > hMaxEle.getEnergy()))
-          hMaxEle = hit;
+        if (hit.getPdgID() == 11 && (hit.getEnergy() > h_max_ele.getEnergy()))
+          h_max_ele = hit;
       } else {
         continue;  // select one sp
       }
     }
     if (h.getPdgID() == 0)
-      h = hMaxEle;  // save max energy in case track1 isn't found (A')
+      h = h_max_ele;  // save max energy in case track1 isn't found (A')
     std::string coll = "Truth";
     n.setVar(coll + "_e", prec(h.getEnergy()));
     n.setVar(coll + "_x", prec(h.getPosition()[0]));
@@ -71,23 +69,23 @@ void NtupleWriter::produce(framework::Event& event) {
     n.setVar(coll + "_pz", prec(h.getMomentum()[2]));
     n.setVar(coll + "_pdgId", h.getPdgID());
   }
-  inTag = "EcalScoringPlaneHits";
-  if (writeTruth_ && event.exists(inTag, ecal_sp_hits_events_passname_)) {
+  in_tag = "EcalScoringPlaneHits";
+  if (write_truth_ && event.exists(in_tag, ecal_sp_hits_events_passname_)) {
     const std::vector<ldmx::SimTrackerHit> hits =
-        event.getCollection<ldmx::SimTrackerHit>(inTag, ecal_sp_passname_);
-    ldmx::SimTrackerHit h, hMaxEle;  // the desired truth hits
+        event.getCollection<ldmx::SimTrackerHit>(in_tag, ecal_sp_passname_);
+    ldmx::SimTrackerHit h, h_max_ele;  // the desired truth hits
     for (const auto& hit : hits) {
       auto xyz = hit.getPosition();
       if (xyz[2] > 239.99 && xyz[2] < 240.01) {
         if (hit.getTrackID() == 1) h = hit;
-        if (hit.getPdgID() == 11 && (hit.getEnergy() > hMaxEle.getEnergy()))
-          hMaxEle = hit;
+        if (hit.getPdgID() == 11 && (hit.getEnergy() > h_max_ele.getEnergy()))
+          h_max_ele = hit;
       } else {
         continue;  // select one sp
       }
     }
     if (h.getPdgID() == 0)
-      h = hMaxEle;  // save max energy in case track1 isn't found (A')
+      h = h_max_ele;  // save max energy in case track1 isn't found (A')
     std::string coll = "TruthEcal";
     n.setVar(coll + "_e", prec(h.getEnergy()));
     n.setVar(coll + "_x", prec(h.getPosition()[0]));
@@ -98,73 +96,126 @@ void NtupleWriter::produce(framework::Event& event) {
     n.setVar(coll + "_pdgId", h.getPdgID());
   }
 
-  inTag = "ecalTrigSums";
-  if (writeEcalSums_ && event.exists(inTag, ecal_trig_sums_event_passname_)) {
+  in_tag = "ecalTrigSums";
+  if (write_ecal_sums_ &&
+      event.exists(in_tag, ecal_trig_sums_event_passname_)) {
     const auto sums =
-        event.getCollection<TrigEnergySum>(inTag, ecal_trig_sums_passname_);
+        event.getCollection<TrigEnergySum>(in_tag, ecal_trig_sums_passname_);
     // const int nEcalLayers = 34;
-    vector<float> energyAfterLayer;  // (nEcalLayers, 0.);
+    vector<float> energy_after_layer;  // (nEcalLayers, 0.);
     for (const auto& sum : sums) {
       if (!(sum.energy() > 0)) continue;
-      if (sum.layer() >= energyAfterLayer.size())
-        energyAfterLayer.resize(sum.layer() + 1);
+      if (sum.layer() >= energy_after_layer.size())
+        energy_after_layer.resize(sum.layer() + 1);
       for (int i = 0; i <= sum.layer(); i++) {
-        energyAfterLayer[i] += sum.energy();
+        energy_after_layer[i] += sum.energy();
       }
     }
-    n.setVar("Ecal_e_afterLayer", energyAfterLayer);
-    n.setVar("Ecal_e_nLayer", int(energyAfterLayer.size()));
+    n.setVar("Ecal_e_afterLayer", energy_after_layer);
+    n.setVar("Ecal_e_nLayer", int(energy_after_layer.size()));
   }
-  inTag = "hcalTrigQuadsBackLayerSums";
-  if (writeHcalSums_ && event.exists(inTag, hcal_trig_quads_events_passname_)) {
+  in_tag = "hcalTrigQuadsBackLayerSums";
+  if (write_hcal_sums_ &&
+      event.exists(in_tag, hcal_trig_quads_events_passname_)) {
     const auto sums =
-        event.getCollection<TrigEnergySum>(inTag, hcal_trig_quads_passname_);
-    vector<float> energyAfterLayer;
+        event.getCollection<TrigEnergySum>(in_tag, hcal_trig_quads_passname_);
+    vector<float> energy_after_layer;
     for (const auto& sum : sums) {
       if (!(sum.hwEnergy() > 0)) continue;
-      if (sum.layer() >= energyAfterLayer.size())
-        energyAfterLayer.resize(sum.layer() + 1);
+      if (sum.layer() >= energy_after_layer.size())
+        energy_after_layer.resize(sum.layer() + 1);
       for (int i = 0; i <= sum.layer(); i++) {
-        energyAfterLayer[i] += sum.hwEnergy();
+        energy_after_layer[i] += sum.hwEnergy();
       }
     }
-    n.setVar("Hcal_e_afterLayer", energyAfterLayer);
-    n.setVar("Hcal_e_nLayer", int(energyAfterLayer.size()));
+    n.setVar("Hcal_e_afterLayer", energy_after_layer);
+    n.setVar("Hcal_e_nLayer", int(energy_after_layer.size()));
   }
 
-  inTag = "trigElectrons";
-  if (writeEle_ && event.exists(inTag, trig_electrons_event_passname_)) {
-    const auto eles =
-        event.getCollection<TrigParticle>(inTag, trig_electrons_passname_);
-    const int nEle = eles.size();
-    int maxE = -1;
-    float maxEVal = 0;
-    int maxPt = -1;
-    float maxPtVal = 0;
-    vector<float> v_e(nEle);
-    vector<float> v_eC(nEle);
-    vector<float> v_zC(nEle);
-    vector<float> v_px(nEle);
-    vector<float> v_py(nEle);
-    vector<float> v_pz(nEle);
-    vector<float> v_dx(nEle);
-    vector<float> v_dy(nEle);
-    vector<float> v_x(nEle);
-    vector<float> v_y(nEle);
-    vector<int> v_tp(nEle);
-    vector<int> v_depth(nEle);
-    for (unsigned int i = 0; i < nEle; i++) {
-      if (eles[i].energy() > maxEVal) {
-        maxEVal = eles[i].energy();
-        maxE = i;
+  in_tag = "hcalTrigQuadsSideLayerSums";
+  if (write_hcal_sums_ &&
+      event.exists(in_tag, hcal_trig_quads_events_passname_)) {
+    const auto sums =
+        event.getCollection<TrigEnergySum>(in_tag, hcal_trig_quads_passname_);
+    float energy_in_side_hcal = 0.f;
+    for (const auto& sum : sums) {
+      if (!(sum.hwEnergy() > 0)) continue;
+      for (int i = 0; i <= sum.layer(); i++) {
+        energy_in_side_hcal += sum.hwEnergy();
       }
-      if (eles[i].pt() > maxPtVal) {
-        maxPtVal = eles[i].pt();
-        maxPt = i;
+    }
+    n.setVar("SideHcal_e", energy_in_side_hcal);
+  }
+
+  in_tag = "ecalTrigMIPs";
+  if (write_ecal_trig_mi_ps_ &&
+      event.exists(in_tag, ecal_trig_sums_event_passname_)) {
+    const auto mips =
+        event.getCollection<TrigMip>(in_tag, ecal_trig_sums_passname_);
+    std::vector<int> lengths;
+    std::vector<int> n_holes;
+    std::vector<float> iso_energies;
+    for (const auto& mip : mips) {
+      lengths.push_back(mip.length());
+      n_holes.push_back(mip.nHoles());
+      iso_energies.push_back(mip.sumEinIsolationRegion());
+    }
+    n.setVar("Ecal_mip_length", lengths);
+    n.setVar("Ecal_mip_nHoles", n_holes);
+    n.setVar("Ecal_mip_isolationEnergy", iso_energies);
+  }
+
+  in_tag = "hcalTrigMIPs";
+  if (write_hcal_trig_mi_ps_ &&
+      event.exists(in_tag, hcal_trig_quads_events_passname_)) {
+    const auto mips =
+        event.getCollection<TrigMip>(in_tag, hcal_trig_quads_passname_);
+    std::vector<int> lengths;
+    std::vector<int> n_holes;
+    // std::vector<float> isoEnergies;
+    for (const auto& mip : mips) {
+      lengths.push_back(mip.length());
+      n_holes.push_back(mip.nHoles());
+      // isoEnergies.push_back(mip.SumEinIsolationRegion());
+    }
+    n.setVar("Hcal_mip_length", lengths);
+    n.setVar("Hcal_mip_nHoles", n_holes);
+    // n.setVar("Hcal_mip_isolationEnergy", isoEnergies);
+  }
+
+  in_tag = "trigElectrons";
+  if (write_ele_ && event.exists(in_tag, trig_electrons_event_passname_)) {
+    const auto eles =
+        event.getCollection<TrigParticle>(in_tag, trig_electrons_passname_);
+    const int n_ele = eles.size();
+    int max_e = -1;
+    float max_e_val = 0;
+    int max_pt = -1;
+    float max_pt_val = 0;
+    vector<float> v_e(n_ele);
+    vector<float> v_e_c(n_ele);
+    vector<float> v_z_c(n_ele);
+    vector<float> v_px(n_ele);
+    vector<float> v_py(n_ele);
+    vector<float> v_pz(n_ele);
+    vector<float> v_dx(n_ele);
+    vector<float> v_dy(n_ele);
+    vector<float> v_x(n_ele);
+    vector<float> v_y(n_ele);
+    vector<int> v_tp(n_ele);
+    vector<int> v_depth(n_ele);
+    for (unsigned int i = 0; i < n_ele; i++) {
+      if (eles[i].energy() > max_e_val) {
+        max_e_val = eles[i].energy();
+        max_e = i;
+      }
+      if (eles[i].pt() > max_pt_val) {
+        max_pt_val = eles[i].pt();
+        max_pt = i;
       }
       v_e[i] = prec(eles[i].energy());
-      v_eC[i] = prec(eles[i].getClusEnergy());
-      v_zC[i] = prec(eles[i].endz());
+      v_e_c[i] = prec(eles[i].getClusEnergy());
+      v_z_c[i] = prec(eles[i].endz());
       v_px[i] = prec(eles[i].px());
       v_py[i] = prec(eles[i].py());
       v_pz[i] = prec(eles[i].pz());
@@ -176,12 +227,12 @@ void NtupleWriter::produce(framework::Event& event) {
       v_depth[i] = prec(eles[i].getClusDepth());
     }
     std::string coll = "Electron";
-    n.setVar("n" + coll, nEle);
-    n.setVar("maxE", maxE);
-    n.setVar("maxPt", maxPt);
+    n.setVar("n" + coll, n_ele);
+    n.setVar("maxE", max_e);
+    n.setVar("maxPt", max_pt);
     n.setVar(coll + "_e", v_e);
-    n.setVar(coll + "_eClus", v_eC);
-    n.setVar(coll + "_zClus", v_zC);
+    n.setVar(coll + "_eClus", v_e_c);
+    n.setVar(coll + "_zClus", v_z_c);
     n.setVar(coll + "_px", v_px);
     n.setVar(coll + "_py", v_py);
     n.setVar(coll + "_pz", v_pz);
@@ -196,32 +247,32 @@ void NtupleWriter::produce(framework::Event& event) {
 
 void NtupleWriter::onProcessStart() {
   // auto hdir = getHistoDirectory();
-  outFile_ = new TFile(outPath_.c_str(), "recreate");
-  outFile_->SetCompressionSettings(209);
+  out_file_ = new TFile(out_path_.c_str(), "recreate");
+  out_file_->SetCompressionSettings(209);
   // 100*alg+level
   // 2=LZMA, 9 = max compression
   framework::NtupleManager& n{framework::NtupleManager::getInstance()};
   n.create(tag_);
 
-  if (writeEle_) {
+  if (write_ele_) {
     std::string coll = "Electron";
     n.addVar<int>(tag_, "n" + coll);
     n.addVar<int>(tag_, "maxE");
     n.addVar<int>(tag_, "maxPt");
-    n.addVar<vector<float> >(tag_, coll + "_e");
-    n.addVar<vector<float> >(tag_, coll + "_eClus");
-    n.addVar<vector<float> >(tag_, coll + "_zClus");
-    n.addVar<vector<float> >(tag_, coll + "_px");
-    n.addVar<vector<float> >(tag_, coll + "_py");
-    n.addVar<vector<float> >(tag_, coll + "_pz");
-    n.addVar<vector<float> >(tag_, coll + "_dx");
-    n.addVar<vector<float> >(tag_, coll + "_dy");
-    n.addVar<vector<float> >(tag_, coll + "_x");  // at target
-    n.addVar<vector<float> >(tag_, coll + "_y");
-    n.addVar<vector<int> >(tag_, coll + "_tp");
-    n.addVar<vector<int> >(tag_, coll + "_depth");
+    n.addVar<vector<float>>(tag_, coll + "_e");
+    n.addVar<vector<float>>(tag_, coll + "_eClus");
+    n.addVar<vector<float>>(tag_, coll + "_zClus");
+    n.addVar<vector<float>>(tag_, coll + "_px");
+    n.addVar<vector<float>>(tag_, coll + "_py");
+    n.addVar<vector<float>>(tag_, coll + "_pz");
+    n.addVar<vector<float>>(tag_, coll + "_dx");
+    n.addVar<vector<float>>(tag_, coll + "_dy");
+    n.addVar<vector<float>>(tag_, coll + "_x");  // at target
+    n.addVar<vector<float>>(tag_, coll + "_y");
+    n.addVar<vector<int>>(tag_, coll + "_tp");
+    n.addVar<vector<int>>(tag_, coll + "_depth");
   }
-  if (writeTruth_) {
+  if (write_truth_) {
     n.addVar<float>(tag_, "Truth_x");
     n.addVar<float>(tag_, "Truth_y");
     n.addVar<float>(tag_, "Truth_px");
@@ -237,18 +288,29 @@ void NtupleWriter::onProcessStart() {
     n.addVar<float>(tag_, "TruthEcal_e");
     n.addVar<int>(tag_, "TruthEcal_pdgId");
   }
-  if (writeEcalSums_) {
-    n.addVar<vector<float> >(tag_, "Ecal_e_afterLayer");
+  if (write_ecal_trig_mi_ps_) {
+    n.addVar<std::vector<int>>(tag_, "Ecal_mip_length");
+    n.addVar<std::vector<int>>(tag_, "Ecal_mip_nHoles");
+    n.addVar<std::vector<float>>(tag_, "Ecal_mip_isolationEnergy");
+  }
+  if (write_hcal_trig_mi_ps_) {
+    n.addVar<std::vector<int>>(tag_, "Hcal_mip_length");
+    n.addVar<std::vector<int>>(tag_, "Hcal_mip_nHoles");
+    // n.addVar<std::vector<float>>(tag_, "Hcal_mip_isolationEnergy");
+  }
+  if (write_ecal_sums_) {
+    n.addVar<vector<float>>(tag_, "Ecal_e_afterLayer");
     n.addVar<int>(tag_, "Ecal_e_nLayer");
   };
-  if (writeHcalSums_) {
-    n.addVar<vector<float> >(tag_, "Hcal_e_afterLayer");
+  if (write_hcal_sums_) {
+    n.addVar<vector<float>>(tag_, "Hcal_e_afterLayer");
     n.addVar<int>(tag_, "Hcal_e_nLayer");
+    n.addVar<float>(tag_, "SideHcal_e");
   };
 }
 void NtupleWriter::onProcessEnd() {
-  outFile_->Write();
-  outFile_->Close();
+  out_file_->Write();
+  out_file_->Close();
 }
 
 }  // namespace trigger

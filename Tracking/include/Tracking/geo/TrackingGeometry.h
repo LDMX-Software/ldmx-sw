@@ -72,18 +72,18 @@ class TrackingGeometry : public framework::ConditionsObject {
     return (pvol_a.GetTranslation().z() < pvol_b.GetTranslation().z());
   };
 
-  void ConvertG4Rot(const G4RotationMatrix* g4rot,
+  void convertG4Rot(const G4RotationMatrix* g4rot,
                     Acts::RotationMatrix3& rot) const;
-  Acts::Vector3 ConvertG4Pos(const G4ThreeVector& g4pos) const;
+  Acts::Vector3 convertG4Pos(const G4ThreeVector& g4pos) const;
 
   void dumpGeometry(const std::string& outputDir,
                     const Acts::GeometryContext& gctx) const;
 
   std::shared_ptr<const Acts::TrackingGeometry> getTG() const {
-    return tGeometry_;
+    return t_geometry_;
   };
 
-  Acts::Transform3 GetTransform(const G4VPhysicalVolume& phex,
+  Acts::Transform3 getTransform(const G4VPhysicalVolume& phex,
                                 bool toTrackingFrame = false) const;
 
   Acts::Transform3 toTracker(const Acts::Transform3& trans) const;
@@ -103,15 +103,15 @@ class TrackingGeometry : public framework::ConditionsObject {
 
   // Global vector holding all the alignable detector elements of the tracking
   // geometry.
-  std::vector<std::shared_ptr<DetectorElement>> detElements;
+  std::vector<std::shared_ptr<DetectorElement>> det_elements_;
 
  protected:
   const Acts::GeometryContext& gctx_;
   std::string gdml_{""};
   // The rotation matrices to go from global to tracking frame.
   Acts::RotationMatrix3 x_rot_, y_rot_;
-  std::shared_ptr<const Acts::TrackingGeometry> tGeometry_{nullptr};
-  G4VPhysicalVolume* fWorldPhysVol_{nullptr};
+  std::shared_ptr<const Acts::TrackingGeometry> t_geometry_{nullptr};
+  G4VPhysicalVolume* f_world_phys_vol_{nullptr};
 
  private:
   enableLogging("TrackingGeometry")

@@ -5,28 +5,9 @@
 namespace dqm {
 
 void HcalVetoResults::configure(framework::config::Parameters &ps) {
-  hcal_veto_name_ = ps.getParameter<std::string>("hcal_veto_name");
-  hcal_veto_pass_ = ps.getParameter<std::string>("hcal_veto_pass");
-  hcal_veto_passname_ = ps.getParameter<std::string>("hcal_veto_passname");
-}
-
-void HcalVetoResults::onProcessStart() {
-  std::vector<TH1 *> hists_HCALsector = {histograms_.get("max_section")};
-
-  // enum HcalSection { BACK = 0, TOP = 1, BOTTOM = 2, RIGHT = 3, LEFT = 4 };
-  std::vector<std::string> labels_HCALsector = {"HCAL BACK",    // 1
-                                                "HCAL TOP",     // 2
-                                                "HCAL BOTTOM",  // 3
-                                                "HCAL RIGHT",   // 4
-                                                "HCAL LEFT",    // 5
-                                                ""};
-
-  for (int ilabel{1}; ilabel < labels_HCALsector.size(); ++ilabel) {
-    for (auto &hist : hists_HCALsector) {
-      hist->GetXaxis()->SetBinLabel(ilabel,
-                                    labels_HCALsector[ilabel - 1].c_str());
-    }
-  }
+  hcal_veto_name_ = ps.get<std::string>("hcal_veto_name");
+  hcal_veto_pass_ = ps.get<std::string>("hcal_veto_pass");
+  hcal_veto_passname_ = ps.get<std::string>("hcal_veto_passname");
 }
 
 void HcalVetoResults::analyze(const framework::Event &event) {

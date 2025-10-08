@@ -35,14 +35,14 @@ class Reader {
 
 namespace debug {
 
-struct hex {
+struct Hex {
   uint32_t word_;
-  hex(uint32_t w) : word_{w} {}
+  Hex(uint32_t w) : word_{w} {}
 };
 
 }  // namespace debug
 
-inline std::ostream& operator<<(std::ostream& os, const debug::hex& h) {
+inline std::ostream& operator<<(std::ostream& os, const debug::Hex& h) {
   os << "0x" << std::setfill('0') << std::setw(8) << std::hex << h.word_
      << std::dec;
   return os;
@@ -55,32 +55,32 @@ inline std::ostream& operator<<(std::ostream& os, const debug::hex& h) {
 void PolarfireEventHeader::board(framework::Event& event,
                                  const std::string& prefix) {
   {
-    event.add(prefix + "Version", version);
-    event.add(prefix + "FPGA", fpga);
-    event.add(prefix + "NSamples", nsamples);
-    event.add(prefix + "Spill", spill);
-    event.add(prefix + "Ticks", ticks);
-    event.add(prefix + "Bunch", bunch);
-    event.add(prefix + "Number", number);
-    event.add(prefix + "Run", run);
-    event.add(prefix + "DD", DD);
-    event.add(prefix + "MM", MM);
-    event.add(prefix + "hh", hh);
-    event.add(prefix + "mm", mm);
-    event.add(prefix + "GoodLinkHeader", good_bxheader);
-    event.add(prefix + "GoodLinkTrailer", good_trailer);
+    event.add(prefix + "Version", version_);
+    event.add(prefix + "FPGA", fpga_);
+    event.add(prefix + "NSamples", nsamples_);
+    event.add(prefix + "Spill", spill_);
+    event.add(prefix + "Ticks", ticks_);
+    event.add(prefix + "Bunch", bunch_);
+    event.add(prefix + "Number", number_);
+    event.add(prefix + "Run", run_);
+    event.add(prefix + "DD", dd_);
+    event.add(prefix + "MM", month_);
+    event.add(prefix + "hh", hh_);
+    event.add(prefix + "mm", mm_);
+    event.add(prefix + "GoodLinkHeader", good_bxheader_);
+    event.add(prefix + "GoodLinkTrailer", good_trailer_);
   }
 }
 
 void HcalRawDecoder::configure(framework::config::Parameters& ps) {
-  input_file_ = ps.getParameter<std::string>("input_file");
-  input_names_ = ps.getParameter<std::vector<std::string>>("input_names", {});
-  input_pass_ = ps.getParameter<std::string>("input_pass");
-  output_name_ = ps.getParameter<std::string>("output_name");
-  roc_version_ = ps.getParameter<int>("roc_version");
-  translate_eid_ = ps.getParameter<bool>("translate_eid");
-  read_from_file_ = ps.getParameter<bool>("read_from_file");
-  detector_name_ = ps.getParameter<std::string>("detector_name");
+  input_file_ = ps.get<std::string>("input_file");
+  input_names_ = ps.get<std::vector<std::string>>("input_names", {});
+  input_pass_ = ps.get<std::string>("input_pass");
+  output_name_ = ps.get<std::string>("output_name");
+  roc_version_ = ps.get<int>("roc_version");
+  translate_eid_ = ps.get<bool>("translate_eid");
+  read_from_file_ = ps.get<bool>("read_from_file");
+  detector_name_ = ps.get<std::string>("detector_name");
   if (read_from_file_) {
     file_reader_.open(input_file_);
   }
@@ -143,7 +143,7 @@ void HcalRawDecoder::produce(framework::Event& event) {
         digis.addDigi(did_raw, digi);
       } else {
         /** DO NOTHING
-         *  skip hits where the EID aren't in the detector mapping
+         *  skip hits_ where the EID aren't in the detector mapping
          *  no zero supp during test beam on the front-end,
          *  so channels that aren't connected to anything are still
          *  being readout.

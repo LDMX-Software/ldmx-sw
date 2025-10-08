@@ -12,48 +12,51 @@ WorkingCluster::WorkingCluster(const ldmx::HcalHit* eh,
 
 void WorkingCluster::add(const ldmx::HcalHit* eh,
                          const ldmx::HcalGeometry& hex) {
-  double hitE = eh->getEnergy();
-  TVector3 hitpos = hex.getStripCenterPosition(eh->getID());
-  double hitX = hitpos.x();
-  double hitY = hitpos.y();
-  double hitZ = hitpos.z();
-  double hitT = eh->getTime();
+  double hit_e = eh->getEnergy();
+  ROOT::Math::XYZVector hitpos = hex.getStripCenterPosition(eh->getID());
+  double hit_x = hitpos.x();
+  double hit_y = hitpos.y();
+  double hit_z = hitpos.z();
+  double hit_t = eh->getTime();
   // Based on weight for  Center-of-Gravity by hitpos*hiE/totalE
-  double newE = hitE + centroid_.E();
-  double newCentroidX = (centroid_.Px() * centroid_.E() + hitE * hitX) / newE;
-  double newCentroidY = (centroid_.Py() * centroid_.E() + hitE * hitY) / newE;
-  double newCentroidZ = (centroid_.Pz() * centroid_.E() + hitE * hitZ) / newE;
+  double new_e = hit_e + centroid_.E();
+  double new_centroid_x =
+      (centroid_.Px() * centroid_.E() + hit_e * hit_x) / new_e;
+  double new_centroid_y =
+      (centroid_.Py() * centroid_.E() + hit_e * hit_y) / new_e;
+  double new_centroid_z =
+      (centroid_.Pz() * centroid_.E() + hit_e * hit_z) / new_e;
 
-  if (time_ < hitT) {
-    time_ = hitT;
+  if (time_ < hit_t) {
+    time_ = hit_t;
   }
-  centroid_.SetPxPyPzE(newCentroidX, newCentroidY, newCentroidZ, newE);
+  centroid_.SetPxPyPzE(new_centroid_x, new_centroid_y, new_centroid_z, new_e);
   hits_.push_back(eh);
 }
 
 void WorkingCluster::add(const WorkingCluster& wc) {
-  double clusterE = wc.centroid().E();
-  double centroidX = wc.centroid().Px();
-  double centroidY = wc.centroid().Py();
-  double centroidZ = wc.centroid().Pz();
+  double cluster_e = wc.centroid().E();
+  double centroid_x = wc.centroid().Px();
+  double centroid_y = wc.centroid().Py();
+  double centroid_z = wc.centroid().Pz();
 
-  double newE = clusterE + centroid_.E();
-  double newCentroidX =
-      (centroid_.Px() * centroid_.E() + clusterE * centroidX) / newE;
-  double newCentroidY =
-      (centroid_.Py() * centroid_.E() + clusterE * centroidY) / newE;
-  double newCentroidZ =
-      (centroid_.Pz() * centroid_.E() + clusterE * centroidZ) / newE;
+  double new_e = cluster_e + centroid_.E();
+  double new_centroid_x =
+      (centroid_.Px() * centroid_.E() + cluster_e * centroid_x) / new_e;
+  double new_centroid_y =
+      (centroid_.Py() * centroid_.E() + cluster_e * centroid_y) / new_e;
+  double new_centroid_z =
+      (centroid_.Pz() * centroid_.E() + cluster_e * centroid_z) / new_e;
 
-  centroid_.SetPxPyPzE(newCentroidX, newCentroidY, newCentroidZ, newE);
+  centroid_.SetPxPyPzE(new_centroid_x, new_centroid_y, new_centroid_z, new_e);
   /*if(wc.GetTime() > time_){
       time_ = wc.GetTime();
   }*/
 
-  std::vector<const ldmx::HcalHit*> clusterHits = wc.getHits();
+  std::vector<const ldmx::HcalHit*> cluster_hits = wc.getHits();
 
-  for (unsigned int i = 0; i < clusterHits.size(); i++) {
-    hits_.push_back(clusterHits[i]);
+  for (unsigned int i = 0; i < cluster_hits.size(); i++) {
+    hits_.push_back(cluster_hits[i]);
   }
 }
 }  // namespace hcal

@@ -23,7 +23,7 @@ namespace ldmx {
  * @brief Represents the estimated mass of a particle
  * using tracker dE/dx information
  * @note This class represents the estimated mass information
- * from a tracker including mass, track index, and the track type
+ * from a tracker including mass, track index_, and the track type
  */
 
 class TrackDeDxMassEstimate {
@@ -31,7 +31,7 @@ class TrackDeDxMassEstimate {
   /**
    * Class constructor.
    */
-  TrackDeDxMassEstimate();
+  TrackDeDxMassEstimate() = default;
 
   /**
    * Class destructor.
@@ -41,12 +41,13 @@ class TrackDeDxMassEstimate {
   /**
    * Clear the data in the object.
    */
-  void Clear();
+  void clear();
 
   /**
    * Print out the object.
    */
-  void Print() const;
+  friend std::ostream &operator<<(std::ostream &o,
+                                  const TrackDeDxMassEstimate &d);
 
   /**
    * Set the momentum of the particle/track.
@@ -56,9 +57,9 @@ class TrackDeDxMassEstimate {
 
   /**
    * Set the Ih of the particle/track.
-   * @param theIh The Ih of the particle/track.
+   * @param the_ih The Ih of the particle/track.
    */
-  void setIh(float theIh) { theIh_ = theIh; }
+  void setIh(float the_ih) { the_ih_ = the_ih; }
 
   /**
    * Set the estimated mass of the particle/track.
@@ -97,7 +98,7 @@ class TrackDeDxMassEstimate {
    * Get the Ih of the particle/track.
    * @return The Ih of the particle/track.
    */
-  float getIh() const { return theIh_; }
+  float getIh() const { return the_ih_; }
 
   /**
    * Get the estimated mass of the particle/track.
@@ -128,7 +129,7 @@ class TrackDeDxMassEstimate {
   float momentum_{0.};
 
   /* The Ih of the particle/track */
-  float theIh_{0.};
+  float the_ih_{0.};
 
   /* The estimated mass of the particle/track */
   float mass_{0.};
@@ -145,7 +146,7 @@ class TrackDeDxMassEstimate {
   /**
    * The ROOT class definition.
    */
-  ClassDef(TrackDeDxMassEstimate, 3);
+  ClassDef(TrackDeDxMassEstimate, 4);
 };
 }  // namespace ldmx
 

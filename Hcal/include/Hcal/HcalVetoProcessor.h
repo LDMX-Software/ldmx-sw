@@ -61,14 +61,14 @@ class HcalVetoProcessor : public framework::Producer {
 
  private:
   /** Total PE threshold. */
-  double total_PE_threshold_{5};
+  double total_pe_threshold_{5};
 
   /** Maximum hit time that should be considered by the veto. */
   float max_time_{50};  // ns
 
   /** The minimum number of PE in both bars needed for a hit to be considered in
    * double ended readout mode. */
-  float back_min_PE_{1};
+  float back_min_pe_{1};
 
   /*
    * A hit representing the case where we never reach the maxPE condition. This
@@ -83,7 +83,7 @@ class HcalVetoProcessor : public framework::Producer {
    * this.
    *
    * It contains nonsense values but since they are predictable, they are harder
-   * to mistake for real hits. See constructor for the actual values.
+   * to mistake for real hits_. See constructor for the actual values.
    */
   ldmx::HcalHit default_max_hit_;
 

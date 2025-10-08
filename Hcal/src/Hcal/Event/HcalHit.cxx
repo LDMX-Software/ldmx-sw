@@ -6,16 +6,16 @@
 ClassImp(ldmx::HcalHit);
 
 namespace ldmx {
-void HcalHit::Clear() {
-  ldmx::CalorimeterHit::Clear();
+void HcalHit::clear() {
+  ldmx::CalorimeterHit::clear();
   pe_ = 0;
   minpe_ = -99;
 }
 
-void HcalHit::Print() const {
-  std::cout << "HcalHit { " << "id: " << std::hex << getID() << std::dec
-            << ",  energy: " << getEnergy() << "MeV, time: " << getTime()
-            << "ns, amplitude: " << getAmplitude() << ", pe: " << getPE() << "}"
-            << std::endl;
+std::ostream& operator<<(std::ostream& o, const HcalHit& c) {
+  return o << "HcalHit { " << "id: " << std::hex << c.getID() << std::dec
+           << ",  energy: " << c.getEnergy() << "MeV, time: " << c.getTime()
+           << "ns, amplitude: " << c.getAmplitude() << ", pe: " << c.getPE()
+           << "}";
 }
 }  // namespace ldmx

@@ -33,21 +33,21 @@ void TrackMap::insert(const G4Track* track) {
 }
 
 int TrackMap::findIncident(G4int trackID) const {
-  int currTrackID = trackID;
-  bool foundIncident{false};
-  while (not foundIncident) {
-    auto& [parentID, inCalRegion] = ancestry_.at(currTrackID);
+  int curr_track_id = trackID;
+  bool found_incident{false};
+  while (not found_incident) {
+    auto& [parentID, inCalRegion] = ancestry_.at(curr_track_id);
     if (not inCalRegion or parentID == 0) {
       // current track ID is nearest ancestor
       // originating outside cal region
       // or is a primary particle
-      foundIncident = true;
+      found_incident = true;
     } else {
       // still in cal region, keep going
-      currTrackID = parentID;
+      curr_track_id = parentID;
     }
   }
-  return currTrackID;
+  return curr_track_id;
 }
 
 void TrackMap::save(const G4Track* track) {
@@ -59,11 +59,11 @@ void TrackMap::save(const G4Track* track) {
 
   // Update the gen status from the primary particle.
   if (track->GetDynamicParticle()->GetPrimaryParticle() != nullptr) {
-    G4VUserPrimaryParticleInformation* primaryInfo =
+    G4VUserPrimaryParticleInformation* primary_info =
         track->GetDynamicParticle()->GetPrimaryParticle()->GetUserInformation();
-    if (primaryInfo != nullptr) {
+    if (primary_info != nullptr) {
       particle.setGenStatus(
-          ((UserPrimaryParticleInformation*)primaryInfo)->getHepEvtStatus());
+          ((UserPrimaryParticleInformation*)primary_info)->getHepEvtStatus());
     }
   }
 

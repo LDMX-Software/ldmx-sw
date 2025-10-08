@@ -75,19 +75,19 @@ class HcalRecProducer : public framework::Producer {
 
  private:
   /// Digi Collection Name to use as input
-  std::string digiCollName_;
+  std::string digi_coll_name_;
 
   /// Digi Pass Name to use as input
-  std::string digiPassName_;
+  std::string digi_pass_name_;
 
   /// simhit collection name
-  std::string simHitCollName_;
+  std::string sim_hit_coll_name_;
 
   /// simhit pass name
-  std::string simHitPassName_;
+  std::string sim_hit_pass_name_;
 
   /// output hit collection name
-  std::string recHitCollName_;
+  std::string rec_hit_coll_name_;
 
   /// Energy [MeV] deposited by a MIP
   double mip_energy_;
@@ -105,7 +105,7 @@ class HcalRecProducer : public framework::Producer {
   double attlength_;
 
   /// Pulse function
-  mutable TF1 pulseFunc_;
+  mutable TF1 pulse_func_;
 
   /**
    * Correction to the pulse's measured amplitude at the peak.
@@ -113,7 +113,7 @@ class HcalRecProducer : public framework::Producer {
    *(T) over its correct value (1.0) with the ratio between sample T and sample
    *T+25ns.
    **/
-  mutable TGraph correctionAmpl_;
+  mutable TGraph correction_ampl_;
 
   /**
    * Correction to the measured TOA relative to the peak.
@@ -124,31 +124,31 @@ class HcalRecProducer : public framework::Producer {
    * TOA threshold) with the amplitude at the sample time (T) over its correct
    * value (1.0).
    */
-  mutable TGraph correctionTOA_;
+  mutable TGraph correction_toa_;
 
   /// Minimum amplitude fraction to apply amplitude correction
-  double minAmplFraction_;
+  double min_ampl_fraction_;
 
   /// Minimum amplitude to apply TOA correction
-  double minAmpl_;
+  double min_ampl_;
 
   /// Depth of ADC buffer.
-  int nADCs_;
+  int n_ad_cs_;
 
   /// Rate of Up Slope in Pulse Shape [1/ns]
-  double rateUpSlope_;
+  double rate_up_slope_;
 
   /// Time of Up Slope relative to Pulse Shape Fit [ns]
-  double timeUpSlope_;
+  double time_up_slope_;
 
   /// Rate of Down Slope in Pulse Shape [1/ns]
-  double rateDnSlope_;
+  double rate_dn_slope_;
 
   /// Time of Down Slope relative to Pulse Shape Fit [ns]
-  double timeDnSlope_;
+  double time_dn_slope_;
 
   /// Time of Peak relative to pulse shape fit [ns]
-  double timePeak_;
+  double time_peak_;
 };
 }  // namespace hcal
 

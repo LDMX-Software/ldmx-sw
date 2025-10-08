@@ -21,8 +21,8 @@ class PropagationMapWriter : public framework::Producer {
   virtual void onProcessEnd();
 
  private:
-  TFile* outFile_{nullptr};
-  std::string outPath_{"./propagationMap.root"};
+  TFile* out_file_{nullptr};
+  std::string out_path_{"./propagationMap.root"};
   std::string ecal_scoring_plane_passname_;
   std::string target_scoring_plane_passname_;
   std::string target_sp_hits_events_passname_;
