@@ -1,5 +1,3 @@
-
-# Set the minimum version of CMake that's required 
 cmake_minimum_required(VERSION 3.12)
 
 # make sure the source and binary directories are different
@@ -14,7 +12,7 @@ if ("${srcdir}" STREQUAL "${bindir}")
   'just configure' and 'just build' will do the necessary directory movement for you as well.")
 endif()
 
-# Set the project name
+# Set the project name and version
 file(READ ${CMAKE_CURRENT_SOURCE_DIR}/VERSION LDMXSW_VERSION)
 string(STRIP "${LDMXSW_VERSION}" LDMXSW_VERSION)
 string(REGEX REPLACE "^v" "" LDMXSW_VERSION_NUM "${LDMXSW_VERSION}") 
@@ -24,7 +22,7 @@ string(STRIP "${COMMIT_SHA}" COMMIT_SHA)
 
 project(LDMX_SW VERSION ${LDMXSW_VERSION_NUM} 
                 DESCRIPTION "The Light Dark Matter eXperiment simulation and reconstruction framework." 
-                LANGUAGES CXX    
+                LANGUAGES CXX
 )
 
 set(CMAKE_CXX_STANDARD 20)
@@ -37,9 +35,35 @@ list(APPEND CMAKE_MODULE_PATH ${LDMX_SW_SOURCE_DIR}/cmake/)
 # is set to NOTFOUND.
 include(BuildMacros RESULT_VARIABLE build_macros_found)
 
+# Search and configure ROOT
+find_package(ROOT 6.16 CONFIG REQUIRED)
+
+# Generate the ROOT dictionary.  The following allows the use of the macro used
+# to generate the dictionary.
+include("${ROOT_DIR}/RootMacros.cmake")
+
 # Adding ROOT as "SYSTEM" 
 # which will silence compiler warnings from these 3rd party softwares
 include_directories(SYSTEM /usr/local/include/root)
+
+# Search for the Python3 library
+find_package(Python3 COMPONENTS Interpreter Development)
+
+# CMake target wrapper around Geant4 CMake configuration
+find_package(Geant4Interface)
+
+find_package(GENIE)
+
+find_package(
+  Boost REQUIRED
+  COMPONENTS system
+             log
+             filesystem
+             thread
+             chrono
+             atomic
+             regex)
+
 
 # FunctionalCoreTest.cxx doesnt comply with clang-tidy but that's ok
 set_source_files_properties(Framework/test/FunctionalCoreTest.cxx PROPERTIES COMPILE_OPTIONS "-Wno-null-dereference")
@@ -62,105 +86,21 @@ endif()
 # Clear any variables cached during previous configuration cycles. 
 clear_cache_variables()
 
-# The following types of builds are allowed
-#
-# * Recon - In addition to building the framework, build the modules needed 
-# by the reconstruction.  
-# * Sim - Only build the modules necessary to run the simulation.
-# * Eve - Build the event display only.
-#
-# By default, all modules are built.
-option(BUILD_RECON_ONLY     "Build the modules necessary to run the reconstruction." OFF)
-option(BUILD_SIM_ONLY       "Build the modules necessary to run the simulation."     OFF)
-
-if(NOT BUILD_RECON_ONLY AND NOT BUILD_SIM_ONLY) 
-    set(BUILD_ALL ON)
-    message(STATUS "Building all modules.")
-endif()
-
-# Start by building all of the classes needed for building the event bus and 
-# ROOT dictionary. This is on by forcing the global "BUILD_EVENT_ONLY" option
-# here.
-set(BUILD_EVENT_ONLY ON CACHE BOOL "Build the SimCore library." FORCE)
-
-add_subdirectory(Recon ${CMAKE_BINARY_DIR}/ReconEvent)
-add_subdirectory(SimCore ${CMAKE_BINARY_DIR}/SimCoreEvent)
-add_subdirectory(Ecal ${CMAKE_BINARY_DIR}/EcalEvent)
-add_subdirectory(Hcal ${CMAKE_BINARY_DIR}/HcalEvent)
-add_subdirectory(TrigScint ${CMAKE_BINARY_DIR}/TrigScintEvent)
-add_subdirectory(Tracking ${CMAKE_BINARY_DIR}/TrackingEvent)
-add_subdirectory(Trigger/Algo ${CMAKE_BINARY_DIR}/TriggerEvent)
-
-# Once the event libraries have been built, turn off the global option. 
-set(BUILD_EVENT_ONLY OFF CACHE BOOL "Build the SimCore library." FORCE)
-
-# The framework has all the backend code needed to run all processors.
 add_subdirectory(Framework)
-
-# This module contains all detector service related code.  Needed by recon. 
 add_subdirectory(DetDescr)
+add_subdirectory(Packing)
+add_subdirectory(Conditions)
+add_subdirectory(Tools)
+add_subdirectory(Ecal)
+add_subdirectory(Recon)
+add_subdirectory(DQM)
+add_subdirectory(Hcal)
+add_subdirectory(TrigScint)
+add_subdirectory(Tracking)
+add_subdirectory(Trigger/Algo)
+add_subdirectory(SimCore)
+add_subdirectory(Biasing)
+add_subdirectory(Detectors)
+add_subdirectory(MagFieldMap)
 
-if(BUILD_ALL OR BUILD_RECON_ONLY)
-
-    message(STATUS "Building the modules necessary for the reconstruction.")
-
-    # Interface with raw data
-    add_subdirectory(Packing)
-
-    # Conditions services
-    add_subdirectory(Conditions)
-
-    # The tools module contains tools generic enough to be used by other modules.
-    add_subdirectory(Tools)
-
-    # This module contains ECal reconstruction code.
-    add_subdirectory(Ecal)
-
-    # Currently, this module contains processors from several subsystems.
-    add_subdirectory(Recon)
-
-    # Data quality management plots.
-    add_subdirectory(DQM)
-
-    # This module contains HCal reconstruction code.
-    add_subdirectory(Hcal)
-
-    # This module contains all things trigger scintillator
-    add_subdirectory(TrigScint)
-
-    # This module is focused on track reconstruction
-    add_subdirectory(Tracking)
-
-    # This module contains trigger algorithms.
-    add_subdirectory(Trigger/Algo)
-
-endif()
-
-if(BUILD_ALL OR BUILD_SIM_ONLY)
-
-    message(STATUS "Building the modules necessary for the simulation.")
-
-    # SimCore allows the simulation to be run without biasing
-    add_subdirectory(SimCore)
-
-    # Adding the Biasing module, allows the use of biasing in the simulation
-    add_subdirectory(Biasing)
-
-    # Add the Detectors submodule.  This has no dependecies.
-    add_subdirectory(Detectors)
-
-    # Add the magnetic field map directory.  This simply installs the B-field maps.
-    add_subdirectory(MagFieldMap)
-
-endif()
-
-# Build all test.  The test are assumed to reside inside of the directory 
-# "test" within each module.  The main
 build_test()
-
-# The EventDisplay is stand-a-lone and _needs_ to be after everything else
-# so that it can clear the cache variables and construct its own dictionary.
-option(BUILD_EVE "Build the event display as well as other parts." OFF)
-if(BUILD_EVE)
-    add_subdirectory(EventDisplay)
-endif()

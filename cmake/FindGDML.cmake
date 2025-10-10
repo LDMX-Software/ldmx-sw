@@ -6,8 +6,9 @@
 #
 # This will define the following variables
 #
-# GDML_FOUND GDML_INCLUDE_DIRS - path to headers GDML_LIBRARIES    - path to
-# libraries
+# GDML_FOUND
+# GDML_INCLUDE_DIRS - path to headers
+# GDML_LIBRARIES    - path to libraries
 #
 # and the following targets
 #

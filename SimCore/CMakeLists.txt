@@ -1,52 +1,16 @@
-# Set the minimum version of CMake that's required
 cmake_minimum_required(VERSION 3.12)
 
-# Set the project name
 project(
   SimCore
-  VERSION 1.4.0
   DESCRIPTION "Core classes needed to run the Simulator."
   LANGUAGES CXX)
 
-# Search and configure ROOT
-find_package(ROOT CONFIG REQUIRED)
-
-# Search for Boost
-find_package(Boost REQUIRED COMPONENTS log)
-
-include_directories( /usr/local/include/GENIE )
-
-option(BUILD_EVENT_ONLY "Build the event library." ON)
-if(BUILD_EVENT_ONLY)
-
-  install(FILES /usr/local/lib/libHepMC3rootIO_rdict.pcm DESTINATION lib)
-
-  register_event_object(module_path "SimCore/Event" namespace "ldmx" 
-                        class "SimCalorimeterHit" type "collection")
-  register_event_object(module_path "SimCore/Event" namespace "ldmx"
-                        class "SimTrackerHit" type "collection")
-  register_event_object(module_path "SimCore/Event" namespace "ldmx"
-                        class "SimParticle" type "map" key "int")
-  register_event_object(module_path "SimCore/Event" namespace "ldmx"
-      class "EventWeights")
-
-  register_event_object(module_path "SimCore/Event" namespace "ldmx"
-      class "HepMC3GenEvent" type "collection")
-
-  # Generate the files needed to build the event classes.
-  setup_library(module SimCore name Event
-                dependencies ROOT::Core ${GENIE_LIBS} HepMC3 HepMC3rootIO
-                register_target)
-
-  return()
-
-endif()
-
-# Configure Geant4
-setup_geant4_target()
-
-#Configure Genie
-setup_genie_target()
+setup_library(
+  module SimCore
+  name Event
+  dependencies ROOT::Core HepMC3 HepMC3rootIO
+  linkdef include/SimCore/Event/LinkDef.h
+)
 
 # include dark brem simulation
 add_subdirectory(G4DarkBreM)
@@ -85,24 +49,24 @@ setup_library(module SimCore
               name Generators
               dependencies SimCore::LHE
                            SimCore::G4User
-			   SimCore::Event
-                           ${GENIE_LIBS}
+			                     SimCore::Event
+                           GENIE::GENIE
                            HepMC3)
 			   
 # Reweight Library
 setup_library(module SimCore
               name Reweight
-              dependencies SimCore::Generators
-                           SimCore::Event
-                           Framework::Configure
+              dependencies Framework::Configure
                            Framework::Framework
-                           ${GENIE_LIBS}
+                           SimCore::Event
+                           GENIE::GENIE
                            HepMC3)
 
 # Sensitive Detectors library
 setup_library(module SimCore
               name SDs
               dependencies DetDescr::DetDescr
+                           SimCore::Event
                            SimCore::G4User)
 
 setup_library(module SimCore
@@ -115,6 +79,7 @@ setup_library(module SimCore
               dependencies ROOT::Physics
                            ROOT::MathMore
                            HepMC3
+                           SimCore::G4User
                            SimCore::Geo
                            SimCore::PhotoNuclearModels
                            SimCore::BiasOperators
@@ -134,6 +99,6 @@ setup_python(package_name LDMX/SimCore)
 setup_test(config_dir test)
 
 # add visualization executable
-add_executable(g4-vis ${PROJECT_SOURCE_DIR}/src/SimCore/g4_vis.cxx)
+add_executable(g4-vis ${PROJECT_SOURCE_DIR}/app/g4_vis.cxx)
 target_link_libraries(g4-vis PRIVATE Geant4::Interface SimCore::SimCore)
 install(TARGETS g4-vis DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)

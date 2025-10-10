@@ -1,10 +1,8 @@
-# Set the minimum version of CMake that's required
 cmake_minimum_required(VERSION 3.12)
 
 # Set the project name
 project(
   Packing
-  VERSION 1.0.0
   DESCRIPTION "Classes needed to interface with raw binary data."
   LANGUAGES CXX)
 

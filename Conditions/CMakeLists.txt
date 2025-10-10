@@ -1,10 +1,7 @@
-
-# Set the minimum version of CMake that's required
 cmake_minimum_required(VERSION 3.12)
 
 # Set the project name
-project(Conditions VERSION 2.1.0
-                   DESCRIPTION "Module that contains Conditions providers and objects"
+project(Conditions DESCRIPTION "Module that contains Conditions providers and objects"
                    LANGUAGES CXX
 )
 
