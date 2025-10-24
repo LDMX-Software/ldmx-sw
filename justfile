@@ -162,41 +162,38 @@ clean:
 # format the ldmx-sw source code
 format: format-cpp format-just
 
-# format the C++ source code of ldmx-sw
-format-cpp *ARGS='-i':
+_clang-tool-impl file_list_cmd *tool_cmd_and_args:
     #!/usr/bin/env sh
-    set -exu
-    format_list=$(mktemp)
-    git ls-tree -r HEAD --name-only | egrep '(\.h|\.cxx)$' > ${format_list}
-    denv clang-format {{ ARGS }} $(cat ${format_list})
-    rm ${format_list}
+    set -eu
+    cpp_list="$(mktemp)"
+    if ! {{ file_list_cmd }} | grep -E '\.(h|cxx)$' > "${cpp_list}"; then
+      echo "no C++ files (extensions .h and .cxx) to apply {{ tool_cmd_and_args }}"
+    else
+      xargs --arg-file="${cpp_list}" denv {{ tool_cmd_and_args }}
+    fi
+    rm "${cpp_list}"
+
+
+# format the C++ source code of ldmx-sw
+format-cpp *ARGS='-i': (_clang-tool-impl "git ls-files" "clang-format" ARGS)
+
+# format only the C++ files that have changed relative to trunk
+format-cpp-diff *args='-i': (_clang-tool-impl "git diff --name-status trunk" "clang-format" args)
 
 # format the justfile
 format-just:
     @just --fmt --unstable --justfile {{ justfile() }}
 
-# Now do the same but with clang tidy
-tidy-cpp *ARGS='-p build --fix -fix-errors --quiet ':
-    #!/usr/bin/env sh
-    set -exu
-    format_list=$(mktemp)
-    git diff --name-only origin/trunk..HEAD | egrep '(\.h|\.cxx)$' > ${format_list}
-    # if the list is not empty, run clang-tidy
-    if [ ! -s ${format_list} ]; then
-      echo "No C++ files changed, skipping clang-tidy"
-    else
-      denv clang-tidy $(cat ${format_list}) {{ ARGS }}
-      rm ${format_list}
-    fi
+default_tidy_args := '-p build --fix -fix-errors --quiet'
 
+# tidy all C++ files of ldmx-sw
+tidy-cpp-all *args=default_tidy_args: (_clang-tool-impl "git ls-files" "clang-tidy" args)
 
-tidy-cpp-dir DIR *ARGS='-p build --fix -fix-errors --quiet ':
-    #!/usr/bin/env sh
-    set -exu
-    format_list=$(mktemp)
-    find {{ DIR }} -name "*.h" -o -name "*.cxx" > ${format_list}
-    denv clang-tidy $(cat ${format_list}) {{ ARGS }}
-    rm ${format_list}
+# tidy C++ files that are different relative to trunk
+tidy-cpp-diff *args=default_tidy_args: (_clang-tool-impl "git diff trunk --name-status" "clang-tidy" args)
+
+# tidy C++ files within the input directory
+tidy-cpp-dir DIR *args=default_tidy_args: (_clang-tool-impl "find {{ DIR }}" "clang-tidy" args)
 
 # shellcheck doesn't have a "apply-formatting" option
 # because it really is more of a tidier (its changes could affect code meaning)
