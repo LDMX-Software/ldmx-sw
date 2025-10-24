@@ -2,6 +2,8 @@ name: apply clang tools
 on:
   pull_request:
   workflow_dispatch:
+  schedule:
+    cron: '0 0 * * 0'
 
 permissions:
   contents: write
@@ -18,7 +20,7 @@ jobs:
       if: github.ref != 'refs/heads/trunk'
       run: |
         git remote set-branches origin trunk
-        git fetch --depth=1 --no-tags --no-recurse-submodules
+        git fetch --depth=1 --no-tags
     - run: just install-denv init configure
     - name: run clang-format and clang-tidy on the changed C++ files
       if: github.ref != 'refs/heads/trunk'
