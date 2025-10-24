@@ -28,6 +28,7 @@ jobs:
         just format-cpp-diff
         just tidy-cpp-diff
     - name: run clang-format and clang-tidy on all C++ files
+      if: github.ref == 'refs/heads/trunk'
       run: |
         just format-cpp
         just tidy-cpp-all
