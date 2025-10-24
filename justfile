@@ -178,7 +178,7 @@ _clang-tool-impl file_list_cmd *tool_cmd_and_args:
 format-cpp *ARGS='-i': (_clang-tool-impl "git ls-files" "clang-format" ARGS)
 
 # format only the C++ files that have changed relative to trunk
-format-cpp-diff *args='-i': (_clang-tool-impl "git diff --name-status trunk" "clang-format" args)
+format-cpp-diff *args='-i': (_clang-tool-impl "git diff --name-only origin/trunk" "clang-format" args)
 
 # format the justfile
 format-just:
@@ -190,7 +190,7 @@ default_tidy_args := '-p build --fix -fix-errors --quiet'
 tidy-cpp-all *args=default_tidy_args: (_clang-tool-impl "git ls-files" "clang-tidy" args)
 
 # tidy C++ files that are different relative to trunk
-tidy-cpp-diff *args=default_tidy_args: (_clang-tool-impl "git diff trunk --name-status" "clang-tidy" args)
+tidy-cpp-diff *args=default_tidy_args: (_clang-tool-impl "git diff --name-only origin/trunk" "clang-tidy" args)
 
 # tidy C++ files within the input directory
 tidy-cpp-dir DIR *args=default_tidy_args: (_clang-tool-impl "find {{ DIR }}" "clang-tidy" args)
