@@ -12,17 +12,25 @@ jobs:
     steps:
     - uses: extractions/setup-just@v3
     - uses: actions/checkout@v5
+      with:
+        submodules: 'recursive'
     - name: get trunk HEAD_REF for comparison
+      if: github.ref != 'refs/heads/trunk'
       run: |
         git remote set-branches origin trunk
         git fetch --depth=1 --no-tags --no-recurse-submodules
-    - name: run clang-format and clang-tidy on the C++
+    - run: just install-denv init configure
+    - name: run clang-format and clang-tidy on the changed C++ files
+      if: github.ref != 'refs/heads/trunk'
       run: |
-        just install-denv init 
-        just configure
         just format-cpp-diff
         just tidy-cpp-diff
+    - name: run clang-format and clang-tidy on all C++ files
+      run: |
+        just format-cpp
+        just tidy-cpp-all
     - name: auto-commit changes
+      if: github.ref != 'refs/heads/trunk'
       run: |
         git config user.name 'github-actions[bot]'
         git config user.email 'github-actions[bot]@users.noreply.github.com'
