@@ -62,7 +62,7 @@ jobs:
       matrix: ${{fromJson(needs.compile-ldmx-sw.outputs.job_matrix)}}
     steps:
     - name: Download ldmx-sw Package
-      uses: actions/download-artifact@v5
+      uses: actions/download-artifact@v6
       with:
         name: ldmx-sw-build-${{ github.sha }}
 
@@ -93,7 +93,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Download Generated Histograms
-      uses: actions/download-artifact@v5
+      uses: actions/download-artifact@v6
       with:
         path: '.'
 
