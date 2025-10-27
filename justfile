@@ -160,7 +160,7 @@ clean:
     rm -r build install VERSION COMMIT_SHA
 
 # format the ldmx-sw source code
-format: format-cpp format-just
+format: format-cpp-all format-just
 
 _clang-tool-impl file_list_cmd *tool_cmd_and_args:
     #!/usr/bin/env sh
@@ -175,7 +175,10 @@ _clang-tool-impl file_list_cmd *tool_cmd_and_args:
 
 
 # format the C++ source code of ldmx-sw
-format-cpp *ARGS='-i': (_clang-tool-impl "git ls-files" "clang-format" ARGS)
+format-cpp-all *ARGS='-i': (_clang-tool-impl "git ls-files" "clang-format" ARGS)
+
+# formatting is quick enough that the format-cpp shortcut can be used
+format-cpp: format-cpp-all
 
 # format only the C++ files that have changed relative to trunk
 format-cpp-diff *args='-i': (_clang-tool-impl "git diff --name-only origin/trunk" "clang-format" args)
