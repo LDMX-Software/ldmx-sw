@@ -192,9 +192,6 @@ tidy-cpp-all *args=default_tidy_args: (_clang-tool-impl "git ls-files" "clang-ti
 # tidy C++ files that are different relative to trunk
 tidy-cpp-diff *args=default_tidy_args: (_clang-tool-impl "git diff --name-only origin/trunk" "clang-tidy" args)
 
-# tidy C++ files within the input directory
-tidy-cpp-dir DIR *args=default_tidy_args: (_clang-tool-impl "find {{ DIR }}" "clang-tidy" args)
-
 # shellcheck doesn't have a "apply-formatting" option
 # because it really is more of a tidier (its changes could affect code meaning)
 # so only a check is implemented here
