@@ -663,7 +663,7 @@ class HCalRawDigi(ldmxcfg.Analyzer) :
 
 class HgcrocPulseTruth(ldmxcfg.Analyzer) :
     def __init__(self, input_digi_name, input_truth_name) :
-        super().__init__('hgcroc_pulse_truth', 'dqm::HgcrocPulseTruth', 'DQM')
+        super().__init__('hgcroc_pulse_truth', 'dqm::HgcrocPulseTruthAnalyzer', 'DQM')
         self.input_digi_name = input_digi_name
         self.input_digi_pass = ''
         self.input_truth_name = input_truth_name
@@ -673,7 +673,7 @@ class HgcrocPulseTruth(ldmxcfg.Analyzer) :
                             "Pulse Peak Voltage [mV]",
                             200, 0, 2000,
                             "Digi sum of ADC",
-                            256, 0, 1024)
+                            400, 0, 4000)
 
         self.build2DHistogram("vpeak_TOT",
                             "Pulse Peak Voltage [mV]",
