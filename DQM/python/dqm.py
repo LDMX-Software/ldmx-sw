@@ -684,11 +684,17 @@ class HgcrocPulseTruth(ldmxcfg.Analyzer) :
 
 class NtuplizeHgcrocDigiCollection(ldmxcfg.Analyzer) :
     def __init__(self,input_name, pedestal_table = None, input_pass = '', 
-            using_eid = None, already_aligned = False,
-            name = 'ntuplizehgcroc') :
+            using_eid = None, already_aligned = False, 
+            save_truth = False, input_truth_name = 'HcalPulseTruth',
+            input_truth_pass = '', name = 'ntuplizehgcroc') :
         super().__init__(name,'dqm::NtuplizeHgcrocDigiCollection','DQM')
         self.input_name = input_name
         self.input_pass = input_pass
+
+        self.save_truth = save_truth
+        if save_truth:
+            self.input_truth_name = input_truth_name
+            self.input_truth_pass = input_truth_pass
 
         if using_eid is None :
             # deduce if using eid based on presence of HcalDetectorMap in conditions system

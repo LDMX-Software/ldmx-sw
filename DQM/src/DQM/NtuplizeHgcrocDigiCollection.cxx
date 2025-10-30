@@ -5,18 +5,20 @@
 #include "Framework/EventProcessor.h"
 #include "Hcal/HcalDetectorMap.h"
 #include "Recon/Event/HgcrocDigiCollection.h"
+#include "Recon/Event/HgcrocPulseTruth.h"
 
 namespace dqm {
 
 class NtuplizeHgcrocDigiCollection : public framework::Analyzer {
-  std::string input_name_, input_pass_, pedestal_table_;
+  std::string input_name_, input_pass_, input_truth_name_, input_truth_pass_, pedestal_table_;
   int ldmxsw_event_, version_, pf_event_, pf_ticks_, pf_spill_;
   int raw_id_, adc_, raw_adc_, tot_, toa_, i_sample_;
   int fpga_, link_, channel_, index_;
   int section_, layer_, strip_, end_;
   bool tot_prog_, tot_comp_, aligned_;
-  bool using_eid_, already_aligned_;
+  bool using_eid_, already_aligned_, save_truth_;
   bool good_link_;
+  double truth_vpeak_;
   TTree* flat_tree_;
 
  public:
@@ -27,6 +29,9 @@ class NtuplizeHgcrocDigiCollection : public framework::Analyzer {
   void configure(framework::config::Parameters& ps) final override {
     input_name_ = ps.get<std::string>("input_name");
     input_pass_ = ps.get<std::string>("input_pass");
+    input_truth_name_ = ps.get<std::string>("input_truth_name");
+    input_truth_pass_ = ps.get<std::string>("input_truth_pass");
+    save_truth_ = ps.get<bool>("save_truth");
     pedestal_table_ = ps.get<std::string>("pedestal_table");
     using_eid_ = ps.get<bool>("using_eid");
     already_aligned_ = ps.get<bool>("already_aligned");
@@ -64,6 +69,7 @@ class NtuplizeHgcrocDigiCollection : public framework::Analyzer {
       flat_tree_->Branch("strip", &strip_);
       flat_tree_->Branch("end", &end_);
     }
+    flat_tree_->Branch("truth_vpeak", &truth_vpeak_);
   }
 
   void analyze(const framework::Event& event) final override;
@@ -111,9 +117,26 @@ void NtuplizeHgcrocDigiCollection::analyze(const framework::Event& event) {
   auto const& digis{
       event.getObject<ldmx::HgcrocDigiCollection>(input_name_, input_pass_)};
 
+  ldmx::HgcrocPulseTruthCollection truths;
+  if(save_truth_){
+    truths = event.getObject<ldmx::HgcrocPulseTruthCollection>(
+      input_truth_name_, input_truth_pass_);
+  }
+
   for (std::size_t i_digi{0}; i_digi < digis.size(); i_digi++) {
     auto d{digis.getDigi(i_digi)};
     raw_id_ = static_cast<int>(d.id());
+
+    if(save_truth_){
+      truth_vpeak_ = -1.0;
+      for (auto const& t : truths) {
+        if (raw_id_ == t.getID()) {
+          truth_vpeak_ = t.getMax();
+          break;
+        }
+      }
+    }
+
     if (using_eid_) {
       ldmx::HcalElectronicsID eid(d.id());
       fpga_ = eid.fiber();
