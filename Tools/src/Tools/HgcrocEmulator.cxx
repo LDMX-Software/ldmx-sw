@@ -190,11 +190,16 @@ bool HgcrocEmulator::digitize(
         // flags to mark type of sample
         digiToAdd.emplace_back(true, false, 0x3FF, 0x3FF, 0);
       }
+
+      if (save_pulse_truth_info_){
+        pulse_truth_coll_->push_back(ldmx::HgcrocPulseTruth(channelID, pulse));
+      }
+
       // Read out if the toa is within one Bx after nominal
       return (i_tot_sample <= i_soi_ + 1);
     } else {
       // determine the voltage at the sampling time
-      double bxvolts = pulse((i_adc - i_soi_) * clock_cycle_);
+      double bxvolts = pulse((i_adc - i_soi_) * clock_cycle_ - meas_time);
       // add noise if requested
       if (noise_) bxvolts += noise(channelID);
       // convert to integer and keep in range (handle low and high saturation)
@@ -224,8 +229,9 @@ bool HgcrocEmulator::digitize(
     }  // TOT or ADC Mode
   }  // sampling baskets
 
-  if (save_pulse_truth_info_)
+  if (save_pulse_truth_info_){
     pulse_truth_coll_->push_back(ldmx::HgcrocPulseTruth(channelID, pulse));
+  }
 
   // we only get here if we never went into TOT mode
   // check the SOI to see if we should read out
