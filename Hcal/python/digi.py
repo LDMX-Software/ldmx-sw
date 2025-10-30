@@ -40,9 +40,9 @@ class HcalHgcrocEmulator(HgcrocEmulator) :
         self.nADCs = 10
 
         # set pulse shape parameters
-        self.rateUpSlope = -0.1141
+        self.rateUpSlope = -0.08
         self.timeUpSlope = -9.897
-        self.rateDnSlope = 0.0279
+        self.rateDnSlope = 0.013
         self.timeDnSlope = 45.037
         self.timePeak    = 12.698 # the time such that with [parameter 4]=0, the pulse peaks at t=0
 
