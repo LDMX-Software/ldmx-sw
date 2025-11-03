@@ -17,6 +17,7 @@ void EcalClusterAnalyzer::configure(framework::config::Parameters& ps) {
   cluster_pass_name_ = ps.get<std::string>("cluster_pass_name");
 
   ecal_sp_hits_passname_ = ps.get<std::string>("ecal_sp_hits_passname");
+  inverse_skim_ = ps.get<bool>("inverse_skim", false);
   return;
 }
 
@@ -279,6 +280,20 @@ void EcalClusterAnalyzer::analyze(const framework::Event& event) {
   histograms_.fill(
       "clusterless_hits_percentage",
       100. * (ecal_rec_hits.size() - clustered_hits) / ecal_rec_hits.size());
+
+  if (!inverse_skim_) {
+    if (n_ecal_clusters > 0) {
+      setStorageHint(framework::HINT_SHOULD_KEEP);
+    } else {
+      setStorageHint(framework::HINT_SHOULD_DROP);
+    }
+  } else {
+    if (n_ecal_clusters > 0) {
+      setStorageHint(framework::HINT_SHOULD_DROP);
+    } else {
+      setStorageHint(framework::HINT_SHOULD_KEEP);
+    }
+  }
 }
 
 }  // namespace dqm
