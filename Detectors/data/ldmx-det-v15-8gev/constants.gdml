@@ -149,6 +149,10 @@
 <constant name="trigger_pad2_actual_z"
     value="ts_center_z + (trig_scint_area_envelope_z/2 - trigger_pad_thickness/2)" />
 
+<!-- Light-pipe bar dimensions (2 x 2 x 36.24 mm) -->
+<constant name="light_pipe_dx"        value="36.24*mm"/>
+<constant name="light_pipe_dy"        value="2*mm"/>
+<constant name="light_pipe_thickness" value="2*mm"/>
 
 <!--
    HCal
