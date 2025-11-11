@@ -36,6 +36,13 @@
          x = y = z = 0 mm.     
     -->
     <position name="trig_scint_pos" x="0.0" y="0.0" z="trig_scint_pos_z"/>
+
+    <!-- uncomment to add light pipes-->
+    <!-- might be helpful to turn on geometry checker to make sure there are no overlaps -->
+    <!-- Light pipe module positions: glued to TS faces (zero gap) -->
+    <!-- <position name="LP_pos_us" x="0.0" y="0.0" z="trig_scint_pos_z + (trigger_pad_bar_thickness + light_pipe_thickness)/2"/>
+    <position name="LP_pos_ds" x="0.0" y="0.0" z="trig_scint_pos_ds1_z - (trigger_pad_bar_thickness + light_pipe_thickness)/2"/> -->
+
     <position name="tagger_pos" x="0.0" y="0.0" z="tagger_pos_z"/>
     <position name="recoil_pos" x="0.0" y="0.0" z="recoil_pos_z"/>
     <position name="em_calorimeter_pos"
@@ -94,11 +101,22 @@
         <positionref ref="hadron_calorimeter_pos"/> 
         <rotationref ref="identity"/> 
       </physvol>
-      <physvol>
+      <physvol copynumber="8">
         <file name="magnet.gdml"/> 
         <positionref ref="magnet_pos"/> 
         <rotationref ref="identity"/> 
       </physvol>
+    <!-- uncomment to add light pipes-->
+      <!-- <physvol copynumber="9">
+        <file name="light_pipes_US.gdml"/>
+        <positionref ref="LP_pos_us"/>
+        <rotationref ref="identity"/>
+      </physvol>  
+      <physvol copynumber="10">
+        <file name="light_pipes_DS.gdml"/>
+        <positionref ref="LP_pos_ds"/>
+        <rotationref ref="identity"/>
+      </physvol>   -->
       <auxiliary auxtype="DetElem" auxvalue="Top"/>
     </volume>
   </structure>
