@@ -30,6 +30,7 @@
 
 // --- Tracking ---//
 #include "Tracking/Event/Track.h"
+#include "Tracking/Event/NewTrack.h"
 
 // --- < ACTS > --- //
 #include "Acts/Definitions/Algebra.hpp"
@@ -39,6 +40,7 @@
 #include "Acts/EventData/TrackParameters.hpp"
 #include "Acts/Surfaces/PerigeeSurface.hpp"
 #include "Acts/Surfaces/PlaneSurface.hpp"
+#include "Acts/Surfaces/Surface.hpp"
 #include "Tracking/Event/Measurement.h"
 #include "Tracking/Sim/IndexSourceLink.h"
 
@@ -287,7 +289,60 @@ inline bool sourceLinkEquality(const Acts::SourceLink& a,
   return a.get<acts_examples::IndexSourceLink>().index() ==
          b.get<acts_examples::IndexSourceLink>().index();
 }
+/*  
+   *   make the ldmx::TrackState  from BoundTrackParameters 
+   *   where the parameters are bound to a plane at constant X
+   *   in tracking coordinates (or, constant Z in ldmx global)
+   *   the TrackState is expressed in ldmx global coordinates
+   */
+//  inline ldmx::NewTrack::NewTrackState makeTrackState(const Acts::GeometryContext& gctx, Acts::BoundTrackParameters boundPars){
+  inline ldmx::NewTrack::NewTrackState makeTrackState(const Acts::GeometryContext& gctx, Acts::BoundTrackParameters bound_pars){
+    ldmx::NewTrack::NewTrackState new_ts;
+    
+    Acts::ActsScalar p = bound_pars.absoluteMomentum(); //magnitude of momentum in GeV
 
+    //make sure this is bound to a PlaneSurface
+    if(!std::is_same<decltype(bound_pars.referenceSurface()), Acts::PlaneSurface>::value)
+      return new_ts; //this will be empty
+
+    Acts::Vector3 trk_pos=bound_pars.position(gctx);//this returns trking global position
+    Acts::Vector3 trk_dir=bound_pars.direction();//this gives the trking global 3-direction...
+    
+    //this will all be in the tracking coordinates
+    //TODO:: rotate these to ldmx-global
+    /*
+    new_ts.pos_[0]=trkPos[0];
+    new_ts.pos_[1]=trkPos[1];
+    new_ts.pos_[2]=trkPos[2];
+    new_ts.mom_[0]=trkDir[0]*p;
+    new_ts.mom_[1]=trkDir[1]*p;
+    new_ts.mom_[2]=trkDir[2]*p;
+    */
+
+    /*
+     *  Get the bound covariance matrix and transform to free covariance matrix
+     */
+    auto bound_cov=bound_pars.covariance();
+    //the covariance is an std::optional object in BoundTrackParameters
+    //make sure it has a value
+    if(!bound_cov.has_value()){
+      std::cerr<<"TrackingUtils::makeTrackState  bound covariance is missing"<<std::endl;
+      return new_ts;
+    }
+    // jacobian to transform bound-->free track parameters
+    Acts::BoundToFreeMatrix btf_jac=bound_pars.referenceSurface().boundToFreeJacobian(gctx, trk_pos,trk_dir);
+
+    auto freeCov=btf_jac*bound_cov.value()*btf_jac.transpose();
+    
+    // remove the time row/column from free covariance
+
+
+    // change basis from position/direction/(q/p) to position/momentum
+
+
+    return new_ts;
+    
+  }  
 }  // namespace utils
 }  // namespace sim
 }  // namespace tracking
