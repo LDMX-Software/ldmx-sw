@@ -131,7 +131,7 @@ void EcalPnetVetoProcessor::produce(framework::Event& event) {
     result.setDiscValue(-99);
   }
 
-  ldmx_log(info) << "ParticleNet disc value = " << result.getDisc();
+  ldmx_log(debug) << "ParticleNet disc value = " << result.getDisc();
 
   result.setVetoResult(result.getDisc() > disc_cut_);
 
