@@ -220,12 +220,11 @@ void EcalClusterAnalyzer::analyze(const framework::Event& event) {
                   << (float)n_mixed / ecal_rec_hits.size();
 
   if (ecal_clusters.size() >= 2) {
-    float d_r = std::sqrt(std::pow((ecal_clusters[0].getCentroidX() -
-                                   ecal_clusters[1].getCentroidX()),
-                                  2) +
-                         std::pow((ecal_clusters[0].getCentroidY() -
-                                   ecal_clusters[1].getCentroidY()),
-                                  2));
+    float d_x = ecal_clusters[0].getCentroidX() -
+                                   ecal_clusters[1].getCentroidX();
+    float d_y = ecal_clusters[0].getCentroidY() -
+                                   ecal_clusters[1].getCentroidY();
+    float d_r = std::sqrt( d_x*d_x + d_y*d_y );
     histograms_.fill("cluster_distance", d_r);
     ldmx_log(trace) << "Gt cluster distance (0,1) = " << d_r;
   }
