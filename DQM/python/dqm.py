@@ -1127,7 +1127,7 @@ class EcalClusterAnalyzer(ldmxcfg.Analyzer) :
 
         self.inverse_skim = False
 
-        self.n_ecal_clusters_min = 0
+        self.n_ecal_clusters_min = 1
 
 
         self.build1DHistogram("number_of_clusters_first_layer", "Number of CLUE clusters on the first layer", 5, -0.5, 4.5)
