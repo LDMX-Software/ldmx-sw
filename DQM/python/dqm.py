@@ -1064,6 +1064,9 @@ class SampleValidation(ldmxcfg.Analyzer) :
         #primary histograms
         self.build1DHistogram("primaries_pdgid", "ID of primary particles", pdgid_bin_labels)
         self.build1DHistogram("primaries_energy", "Energy of primary particles [MeV]", 90, 0, 9000) # range applicable for 4 GeV beam
+        self.build1DHistogram("primaries_theta", "Theta [degree]", 50,0.,100.)
+        self.build1DHistogram("primaries_pt", "Transverse Momentum [MeV]", 200,0.,2000.)
+
         self.build2DHistogram("beam_smear", "x [mm]", 30, -150, 150, "y [mm]", 30, -150, 150)
         self.build1DHistogram("primarydaughters_pdgid", "ID of primary daughters", pdgid_bin_labels)
         self.build1DHistogram("daughterphoton_energy", "Energy spectrum of all photons from primary [MeV]", 170, 0, 8500)
@@ -1073,12 +1076,16 @@ class SampleValidation(ldmxcfg.Analyzer) :
         self.build1DHistogram("harddaughters_startZ", "Start z position of hard primary daughter [mm]", 100, -500, 500)
         self.build1DHistogram("harddaughters_endZ", "End z position of hard primary daughter [mm]", 100, -500, 500)
         self.build1DHistogram("harddaughters_energy", "Energy spectrum of hard primary daughter [MeV]", 130, 2000, 8500)
+        self.build1DHistogram("harddaughters_theta", "Theta [degree]", 25,0.,50.)
+        self.build1DHistogram("harddaughters_pt", "Transverse Momentum [MeV]", 50,0.,100.)
 
         #daughters of hard brem histograms
         self.build1DHistogram("hardbremdaughters_pdgid", "ID of hard brem daughters", pdgid_bin_labels)
         self.build1DHistogram("hardbremdaughters_startZ", "Start z position of hard brem daughters  [mm]", 200, -1000, 1000)
         self.build1DHistogram("hardbremdaughters_endZ", "End z position of hard brem daughters  [mm]", 70, -1000, 6000)
         self.build1DHistogram("hardbremdaughters_energy", "Energy of hard brem daughters  [MeV]", 170, 0, 8500)
+        self.build1DHistogram("hardbremdaughters_theta", "Theta [degree]", 50,0.,100.)
+        self.build1DHistogram("hardbremdaughters_pt", "Transverse Momentum [MeV]", 200,0.,1000.)
 
 
 class GenieTruthDQM(ldmxcfg.Analyzer) :
