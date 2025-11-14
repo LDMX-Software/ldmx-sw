@@ -17,6 +17,8 @@ void EcalClusterAnalyzer::configure(framework::config::Parameters& ps) {
   cluster_pass_name_ = ps.get<std::string>("cluster_pass_name");
 
   ecal_sp_hits_passname_ = ps.get<std::string>("ecal_sp_hits_passname");
+  inverse_skim_ = ps.get<bool>("inverse_skim");
+  n_ecal_clusters_min_ = ps.get<int>("n_ecal_clusters_min");
   return;
 }
 
@@ -47,8 +49,11 @@ void EcalClusterAnalyzer::analyze(const framework::Event& event) {
     total_clusters += count;
   }
 
-  int n_ecal_clusters = static_cast<int>(std::round(
-      static_cast<double>(total_clusters) / layer_cluster_count.size()));
+  int n_ecal_clusters = 0;
+  if (layer_cluster_count.size() != 0) {
+    n_ecal_clusters = static_cast<int>(std::round(
+        static_cast<double>(total_clusters) / layer_cluster_count.size()));
+  }
 
   ldmx_log(info) << "Avg number of clusters per layer: " << n_ecal_clusters;
   // Fill histograms with the number of clusters
@@ -279,6 +284,22 @@ void EcalClusterAnalyzer::analyze(const framework::Event& event) {
   histograms_.fill(
       "clusterless_hits_percentage",
       100. * (ecal_rec_hits.size() - clustered_hits) / ecal_rec_hits.size());
+
+  if (inverse_skim_) {
+    // inverse operation: drop events with enough clusters
+    if (n_ecal_clusters > n_ecal_clusters_min_) {
+      setStorageHint(framework::HINT_SHOULD_DROP);
+    } else {
+      setStorageHint(framework::HINT_SHOULD_KEEP);
+    }
+  } else {
+    // normal operation: keep events with enough clusters
+    if (n_ecal_clusters > n_ecal_clusters_min_) {
+      setStorageHint(framework::HINT_SHOULD_KEEP);
+    } else {
+      setStorageHint(framework::HINT_SHOULD_DROP);
+    }
+  }
 }
 
 }  // namespace dqm
