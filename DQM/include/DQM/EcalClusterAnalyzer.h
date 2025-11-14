@@ -65,6 +65,9 @@ class EcalClusterAnalyzer : public framework::Analyzer {
 
   // Inverse skim flag
   bool inverse_skim_;
+
+  // Minimum number of ECal clusters to keep the event
+  int n_ecal_clusters_min_;
 };
 
 }  // namespace dqm
