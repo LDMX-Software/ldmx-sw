@@ -4,6 +4,7 @@
 // LDMX Framework
 #include "Framework/Configure/Parameters.h"
 #include "Framework/EventProcessor.h"
+#include "Math/Vector3D.h"
 
 namespace dqm {
 
