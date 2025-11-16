@@ -326,8 +326,8 @@ void EcalVetoProcessor::produce(framework::Event &event) {
   if ((recoil_p[2] > 0.) && (recoil_p_at_target[2] > 0.) &&
       (recoil_pos[0] != -9999.) && (recoil_pos_at_target[0] != -9999.)) {
     ele_trajectory = getTrajectory(recoil_p, recoil_pos);
-    ele_trajectory_at_target = getTrajectory(recoil_p_at_target,
-                                               recoil_pos_at_target);
+    ele_trajectory_at_target =
+        getTrajectory(recoil_p_at_target, recoil_pos_at_target);
     // Get the photon projection. This does not require that the photon exists
     // tho
     std::array<float, 3> photon_proj_momentum = {
