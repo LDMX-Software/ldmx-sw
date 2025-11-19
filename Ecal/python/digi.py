@@ -225,13 +225,14 @@ class EcalRecProducer(Producer) :
         The mean of the resulting total recon energy is found by fitting a two-sided normal
         distribution (one mean, a low and high deviation) to the histogram.
         """
-
-        self.secondOrderEnergyCorrection = 1. #8000. / 7998.3
-        self.layerWeights = [ 
-                1.743, 3.401, 5.610, 6.715, 7.820, 10.030, 11.135, 11.135, 11.135, 11.135, 11.135, 
-                11.135, 11.135, 11.135, 11.135, 11.135, 11.135, 11.135, 11.135, 11.135, 11.135, 11.135, 
-                11.135, 15.555, 18.869, 18.869, 18.869, 18.869, 18.869, 18.869, 18.869, 9.478
-                ]
+        self.secondOrderEnergyCorrection = 8000. / 7332.8
+        # these layer weights were the 'dE' column of the table output by Detectors/util/ecal_layer_stack.py
+        self.layerWeights = [
+            1.743, 3.401, 5.610, 6.715, 7.820, 10.030, 11.135, 11.135, 11.135, 11.135,
+            11.135, 11.135, 11.135, 11.135, 11.135, 11.135, 11.135, 11.135, 11.135, 11.135,
+            11.135, 11.135, 11.135, 15.555, 18.869, 18.869, 18.869, 18.869, 18.869, 18.869,
+            18.869, 9.478
+        ]
 
     def reduced_v2(self) :
         """Generated for the reduced v2 geometry
