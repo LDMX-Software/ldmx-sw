@@ -104,7 +104,7 @@
         <rotationref ref="identity"/> 
       </physvol>
       <physvol copynumber="9">
-        <file name="light_pipes.gdml"/>
+        <file name="ts_light_pipes.gdml"/>
         <positionref ref="light_pipe_pos"/>
         <rotationref ref="identity"/>
       </physvol>
