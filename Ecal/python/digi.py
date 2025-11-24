@@ -148,7 +148,7 @@ class EcalRecProducer(Producer) :
         # use helper functions to set these
         self.secondOrderEnergyCorrection = 1.
         self.layerWeights = [ ]
-        self.v14()
+        self.v15()
 
     def v2(self) :
         """These layerWeights and energy correction were calculated at least before v3 geometry.
@@ -172,7 +172,7 @@ class EcalRecProducer(Producer) :
         electron events with 4GeV.
         """
 
-        self.secondOrderEnergyCorrection = 4000. / 4012.;
+        self.secondOrderEnergyCorrection = 4000. / 4012.
         self.layerWeights = [
             1.019, 1.707, 3.381, 5.022, 6.679, 8.060, 8.613, 8.613, 8.613, 8.613, 8.613,
             8.613, 8.613, 8.613, 8.613, 8.613, 8.613, 8.613, 8.613, 8.613, 8.613, 8.613,
@@ -206,7 +206,7 @@ class EcalRecProducer(Producer) :
 
         #self.secondOrderEnergyCorrection = 4000. / 3940.5
         self.secondOrderEnergyCorrection = 8000. / 7998.3
-        # these layer weights were the 'dE' column of the table output by Detetectors/util/ecal_layer_stack.py
+        # these layer weights were the 'dE' column of the table output by Detectors/util/ecal_layer_stack.py
         # See https://github.com/LDMX-Software/ldmx-sw/issues/1725
         # TLDR: these are wrong but only off by an absolute value of ~0.2, future detector versions
         # use the newer script with fixed material properties
@@ -216,6 +216,23 @@ class EcalRecProducer(Producer) :
                 10.915, 10.915, 14.783, 18.539, 18.539, 18.539, 18.539, 18.539, 18.539, 18.539,
                 18.539, 18.539, 9.938
                 ]
+
+    def v15(self) :
+        """Generated for the v15 geometry
+
+        The secondOrderEnergyCorrection is deteremined by generating 1M single 4GeV or 8GeV
+        electron events shot directly into the front of the ECal from immediately upstream.
+        The mean of the resulting total recon energy is found by fitting a two-sided normal
+        distribution (one mean, a low and high deviation) to the histogram.
+        """
+        self.secondOrderEnergyCorrection = 8000. / 7332.8
+        # these layer weights were the 'dE' column of the table output by Detectors/util/ecal_layer_stack.py
+        self.layerWeights = [
+            1.743, 3.401, 5.610, 6.715, 7.820, 10.030, 11.135, 11.135, 11.135, 11.135,
+            11.135, 11.135, 11.135, 11.135, 11.135, 11.135, 11.135, 11.135, 11.135, 11.135,
+            11.135, 11.135, 11.135, 15.555, 18.869, 18.869, 18.869, 18.869, 18.869, 18.869,
+            18.869, 9.478
+        ]
 
     def reduced_v2(self) :
         """Generated for the reduced v2 geometry

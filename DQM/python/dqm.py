@@ -328,8 +328,8 @@ class EcalDigiVerify(ldmxcfg.Analyzer) :
                 "Reconstructed Amplitude [MeV]" , 1000 , 0. , 50. )
 
         self.build2DHistogram( "sim_edep:rec_energy" ,
-                "Simulated Energy [MeV]" , 1000 , 0. , 50. ,
-                "Reconstructed Energy [MeV]" , 1000 , 0. , 50. )
+                "Simulated Energy [MeV]" , 1000 , 0. , 20. ,
+                "Reconstructed Energy [MeV]" , 1000 , 0. , 2000. )
 
 class EcalShowerFeatures(ldmxcfg.Analyzer) :
     """Configured EcalShowerFeatures python object """
