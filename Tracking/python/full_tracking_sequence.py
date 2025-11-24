@@ -70,7 +70,7 @@ tracking_tagger.taggerTracking = True
 tracking_tagger.seed_coll_name = seeder_tagger.out_seed_collection
 tracking_tagger.out_trk_collection = "TaggerTracks"
 tracking_tagger.measurement_collection = digi_tagger.out_collection
-tracking_tagger.min_hits = 4
+tracking_tagger.min_hits = 5
 tracking_tagger.outlier_pval_ = 16.5
 
 # CKF track finding for recoil tracker using seeds.
