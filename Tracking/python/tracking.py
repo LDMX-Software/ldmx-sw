@@ -188,7 +188,7 @@ class CKFProcessor(Producer):
         self.use_seed_perigee = False
         self.seed_coll_name = 'SeedTracks'
         self.out_trk_collection = 'Tracks'
-        self.min_hits = 6
+        self.min_hits = 5
         self.outlier_pval_ = 3.84
         self.sim_particles_event_passname = ''
         self.input_pass_name = ''
