@@ -76,16 +76,17 @@ void PileupFinder::produce(framework::Event& event) {
       auto cl = clusters[pf_cl_idx];
       auto hit_i_ds = cl.getHitIDs();
       // add to collection of pileup hits
-      pileup_hit_i_ds.insert(pileup_hit_i_ds.end(), hit_i_ds.begin(), hit_i_ds.end());
+      pileup_hit_i_ds.insert(pileup_hit_i_ds.end(), hit_i_ds.begin(),
+                             hit_i_ds.end());
     }  // if trk/ecal matched
   }  // over PF objects
 
   for (auto hit : ecal_hits) {
     auto found_index = std::find(std::begin(pileup_hit_i_ds),
-                                std::end(pileup_hit_i_ds), hit.getID());
+                                 std::end(pileup_hit_i_ds), hit.getID());
     // When the element is not found, std::find returns the end of the range
     if (found_index ==
-        std::end(pileup_hit_i_ds)) {    // hit not part of any pileup cluster
+        std::end(pileup_hit_i_ds)) {  // hit not part of any pileup cluster
       output_hits.emplace_back(hit);  // keep it
       ldmx_log(trace) << "Got no-pileup hit! ";
     }

@@ -36,8 +36,8 @@ T CLUE::dist(T x1, T y1, T z1, T x2, T y2, T z2) {
 
 void CLUE::electronSeparation(std::vector<ldmx::EcalHit> hits) {
   std::vector<double> layer_thickness = {2.,   3.5,  5.3,  5.3, 5.3, 5.3,
-                                        5.3,  5.3,  5.3,  5.3, 5.3, 10.5,
-                                        10.5, 10.5, 10.5, 10.5};
+                                         5.3,  5.3,  5.3,  5.3, 5.3, 10.5,
+                                         10.5, 10.5, 10.5, 10.5};
   double air = 10.;
   // sort hits in z
   std::sort(hits.begin(), hits.end(),
