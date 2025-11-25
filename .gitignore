@@ -32,3 +32,4 @@ EventDisplay/include/EventDisplay/EventDisplayLinkDef.h
 .profile
 .denv
 .apptainer
+.wget-hsts

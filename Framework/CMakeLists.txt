@@ -1,13 +1,10 @@
-# Set the minimum version of CMake that's required
 cmake_minimum_required(VERSION 3.12)
 
 # Set the project name
 project(
   Framework
-  VERSION 1.3.6
   DESCRIPTION "Framework used to define processing pipelines and modules."
   LANGUAGES CXX)
-
 
 setup_library(module Framework name Exception)
 
@@ -16,30 +13,9 @@ root_generate_dictionary(PerfDict
   Framework/Performance/Timer.h
   LINKDEF ${PROJECT_SOURCE_DIR}/include/Framework/Performance/LinkDef.h
   MODULE Framework_Performance)
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/Framework_Performance_rdict.pcm DESTINATION lib)
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/libFramework_Performance_rdict.pcm DESTINATION lib)
 
 setup_library(module Framework name Configure dependencies Python3::Python)
-
-# Search for the Python3 library
-find_package(Python3 COMPONENTS Interpreter Development)
-
-# Search for Boost
-find_package(
-  Boost REQUIRED
-  COMPONENTS system
-             log
-             filesystem
-             thread
-             chrono
-             atomic
-             regex)
-
-# Search and configure ROOT
-find_package(ROOT 6.16 CONFIG REQUIRED)
-
-# Generate the ROOT dictionary.  The following allows the use of the macro used
-# to generate the dictionary.
-include("${ROOT_DIR}/RootMacros.cmake")
 
 set(GIT_SHA1 "${COMMIT_SHA}")
 message(STATUS "Deduced git SHA: ${GIT_SHA1}")
@@ -52,12 +28,6 @@ configure_file(${PROJECT_SOURCE_DIR}/include/Framework/Version.h.in
 install(FILES ${PROJECT_BINARY_DIR}/include/Framework/Version.h
         DESTINATION ${CMAKE_INSTALL_PREFIX}/include/Framework/)
 
-# Register both the event and run headers with the event bus and ROOT dictionary
-register_event_object(module_path "Framework" namespace "ldmx" 
-                      class "EventHeader")
-register_event_object(module_path "Framework" namespace "ldmx" 
-                      class "RunHeader")
-
 # Setup the library
 setup_library(module Framework 
   dependencies ROOT::Core
@@ -69,7 +39,10 @@ setup_library(module Framework
                Framework::Exception
                Framework::Configure
                Framework::Performance
-               "${registered_targets}")
+  linkdef include/Framework/LinkDef.h)
+target_include_directories(Framework PUBLIC
+  "$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include>"
+  "$<INSTALL_INTERFACE:${CMAKE_INSTALL_PREFIX}/include>")
 
 # Compiling the Framework library requires features introduced by the cpp 17
 # standard.
@@ -78,47 +51,6 @@ set_target_properties(
   PROPERTIES CXX_STANDARD ${CMAKE_CXX_STANDARD}
              CXX_STANDARD_REQUIRED YES
              CXX_EXTENSIONS NO)
-
-# the following writes the LinkDef file using the CMake global variables
-# namespaces and dict that are lists appended to by the register_event_object function
-message(STATUS "Building ROOT dictionary LinkDef")
-set(linkdef_filepath ${PROJECT_BINARY_DIR}/include/Framework/EventDictLinkDef.h)
-file(WRITE ${linkdef_filepath} "
-#ifdef __CINT__
-
-#pragma link off all globals;
-#pragma link off all classes;
-#pragma link off all functions;
-
-#pragma link C++ nestedclass;
-#pragma link C++ nestedtypedef;
-
-")
-list(REMOVE_DUPLICATES namespaces)
-foreach(namespace ${namespaces})
-  file(APPEND ${linkdef_filepath} "#pragma link C++ namespace ${namespace};\n")
-endforeach()
-
-foreach(entry ${dict})
-  file(APPEND ${linkdef_filepath} "#pragma link C++ class ${entry}+;\n")
-endforeach()
-
-file(APPEND ${linkdef_filepath} "\n#endif\n")
-
-# need to update include directories so the dictionary generation knows
-# to use different paths at install time
-target_include_directories(Framework PUBLIC
-  "$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include>"
-  ${include_paths}
-  "$<INSTALL_INTERFACE:${CMAKE_INSTALL_PREFIX}/include>")
-
-# attach a ROOT dictionary to the Framework module with all the registered
-# headers in the event_headers list
-root_generate_dictionary(EventDict
-  ${event_headers}
-  LINKDEF ${linkdef_filepath}
-  MODULE Framework)
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/libFramework_rdict.pcm DESTINATION lib)
 
 # Add the fire executable
 add_executable(fire ${PROJECT_SOURCE_DIR}/app/fire.cxx)

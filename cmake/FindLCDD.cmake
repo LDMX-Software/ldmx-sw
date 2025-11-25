@@ -6,8 +6,9 @@
 #
 # This will define the following variables
 #
-# LCDD_FOUND LCDD_INCLUDE_DIRS - path to headers LCDD_LIBRARIES    - path to
-# libraries
+# LCDD_FOUND
+# LCDD_INCLUDE_DIRS - path to headers
+# LCDD_LIBRARIES    - path to libraries
 #
 # and the following targets
 #

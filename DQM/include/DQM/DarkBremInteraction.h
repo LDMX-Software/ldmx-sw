@@ -33,14 +33,6 @@ class DarkBremInteraction : public framework::Producer {
   DarkBremInteraction(const std::string& n, framework::Process& p)
       : framework::Producer(n, p) {}
   /**
-   * update the labels of some categorial histograms
-   *
-   * This is helpful for downstream viewers of the histograms
-   * so that ROOT will display the bins properly.
-   */
-  virtual void onProcessStart() override;
-
-  /**
    * extract the kinematics of the dark brem interaction from the SimParticles
    *
    * Sometimes the electron that undergoes the dark brem is not in a region
@@ -58,12 +50,6 @@ class DarkBremInteraction : public framework::Producer {
   void configure(framework::config::Parameters& parameters) override;
 
  private:
-  /**
-   * Set the labels of the histogram of the input name with the input labels
-   */
-  void setHistLabels(const std::string& name,
-                     const std::vector<std::string>& labels);
-
   /**
    * the list of known materials assigning them to material ID numbers
    *

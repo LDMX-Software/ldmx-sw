@@ -27,7 +27,8 @@ __main__() {
   # unpack the logs so we can compare them
   tar xzf ${_archive} gold.log output.log
 
-  if ! diff gold.log output.log > log.diff; then
+  # use sed replace (by blank) to run the diff without the initial HH:MM:SS timestamp
+  if ! diff  -I '^#' <(sed -e 's/^[0-9]\{2\}:[0-9]\{2\}:[0-9]\{2\}/ /g' gold.log) <(sed -e 's/^[0-9]\{2\}:[0-9]\{2\}:[0-9]\{2\}/ /g' output.log) > log.diff; then
     # do not error out (don't set rc here) if diff is non-zero, the timestamps printed out
     # by some processors prevent a full text diff so we do the character
     # count check below to look for big changes

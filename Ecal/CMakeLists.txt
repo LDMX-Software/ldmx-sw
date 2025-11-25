@@ -1,38 +1,16 @@
-
-# Set the minimum version of CMake that's required
 cmake_minimum_required(VERSION 3.12)
 
 # Set the project name
-project(Ecal VERSION 2.1.0
-             DESCRIPTION "Module for all things ECal."
+project(Ecal DESCRIPTION "Module for all things ECal."
              LANGUAGES CXX
 )
 
-# Search and configure ROOT
-find_package(ROOT CONFIG REQUIRED)
-
-option(BUILD_EVENT_ONLY "Build the event library." ON)
-if(BUILD_EVENT_ONLY)
-    
-    register_event_object( module_path "Ecal/Event" namespace "ldmx" class "ClusterAlgoResult" )
-    register_event_object( module_path "Ecal/Event" namespace "ldmx" class "EcalVetoResult" )
-    register_event_object( module_path "Ecal/Event" namespace "ldmx" class "EcalWABResult" )
-    register_event_object( module_path "Ecal/Event" namespace "ldmx" class "EcalTrajectoryInfo")
-    register_event_object( module_path "Ecal/Event" namespace "ldmx" class "EcalMipResult")
-    register_event_object( module_path "Ecal/Event" namespace "ldmx" class "EcalCluster" type "collection" )
-    register_event_object( module_path "Ecal/Event" namespace "ldmx" class "EcalHit"     type "collection" )
-
-    
-    # Generate the files needed to build the event classes.
-    setup_library(module Ecal
-                  name Event
-                  dependencies ROOT::Core ROOT::Hist ROOT::Physics
-                               Recon::Event SimCore::Event 
-                  register_target)
-
-    return()
-
-endif()
+setup_library(
+  module Ecal
+  name Event
+  dependencies ROOT::Core ROOT::Physics Recon::Event
+  linkdef include/Ecal/Event/LinkDef.h
+)
 
 # Search for the ONNXRuntime binaries.  If not found, download the binaries 
 # to an external folder and create the targets.
@@ -43,7 +21,7 @@ find_package(Eigen3 CONFIG REQUIRED)
 setup_library(module Ecal
               dependencies ROOT::Physics
                            Framework::Framework Recon::Event Tools::Tools DetDescr::DetDescr 
-                           ONNXRuntime::Interface Ecal::Event
+                           ONNXRuntime::Interface Ecal::Event Tracking::Event SimCore::Event
                            Eigen3::Eigen
 )
 
@@ -53,11 +31,6 @@ setup_python(package_name LDMX/Ecal)
 
 setup_data(module Ecal)
 
-# Add the printing executable
-add_executable(print-ecal-hex-readout ${PROJECT_SOURCE_DIR}/src/Ecal/print_ecal_hex_readout.cxx)
-
-# Link to the Framework library
-target_link_libraries(print-ecal-hex-readout PRIVATE DetDescr Ecal ROOT::Physics)
-
-# Install the fire executable
-install(TARGETS print-ecal-hex-readout DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
+add_executable(print-ecal-hex-readout app/print_ecal_hex_readout.cxx)
+target_link_libraries(print-ecal-hex-readout PRIVATE DetDescr Ecal::Ecal ROOT::Physics)
+install(TARGETS print-ecal-hex-readout DESTINATION bin)

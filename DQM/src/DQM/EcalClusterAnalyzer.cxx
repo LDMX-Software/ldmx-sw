@@ -22,6 +22,9 @@ void EcalClusterAnalyzer::configure(framework::config::Parameters& ps) {
       ps.getParameter<std::string>("ecal_sp_hits_pass_name");
   mixed_hit_cutoff_ = ps.getParameter<double>("mixed_hit_cutoff");
 
+  ecal_sp_hits_passname_ = ps.get<std::string>("ecal_sp_hits_passname");
+  inverse_skim_ = ps.get<bool>("inverse_skim");
+  n_ecal_clusters_min_ = ps.get<int>("n_ecal_clusters_min");
   return;
 }
 
@@ -52,8 +55,11 @@ void EcalClusterAnalyzer::analyze(const framework::Event& event) {
     total_clusters += count;
   }
 
-  int n_ecal_clusters = static_cast<int>(std::round(
-      static_cast<double>(total_clusters) / layer_cluster_count.size()));
+  int n_ecal_clusters = 0;
+  if (layer_cluster_count.size() != 0) {
+    n_ecal_clusters = static_cast<int>(std::round(
+        static_cast<double>(total_clusters) / layer_cluster_count.size()));
+  }
 
   ldmx_log(info) << "Avg number of clusters per layer: " << n_ecal_clusters;
   // Fill histograms with the number of clusters
@@ -360,21 +366,23 @@ void EcalClusterAnalyzer::analyze(const framework::Event& event) {
   histograms_.fill(
       "unclustered_hits_percentage",
       100. * (ecal_rec_hits.size() - clustered_hits) / ecal_rec_hits.size());
-}
 
-void EcalClusterAnalyzer::setHistLabels(
-    const std::string& name, const std::vector<std::string>& labels) {
-  auto histo{histograms_.get(name)};
-  for (std::size_t ibin{1}; ibin <= labels.size(); ibin++) {
-    histo->GetXaxis()->SetBinLabel(ibin, labels[ibin - 1].c_str());
+  if (inverse_skim_) {
+    // inverse operation: drop events with enough clusters
+    if (n_ecal_clusters > n_ecal_clusters_min_) {
+      setStorageHint(framework::HINT_SHOULD_DROP);
+    } else {
+      setStorageHint(framework::HINT_SHOULD_KEEP);
+    }
+  } else {
+    // normal operation: keep events with enough clusters
+    if (n_ecal_clusters > n_ecal_clusters_min_) {
+      setStorageHint(framework::HINT_SHOULD_KEEP);
+    } else {
+      setStorageHint(framework::HINT_SHOULD_DROP);
+    }
   }
 }
-
-void EcalClusterAnalyzer::onProcessStart() {
-  setHistLabels("correctly_predicted_events",
-                {"Underpredicted", "Correct", "Overpredicted"});
-
-}  // end of onProcessStart
 
 }  // namespace dqm
 

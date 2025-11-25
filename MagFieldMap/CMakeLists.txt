@@ -1,11 +1,7 @@
-
-# Set the minimum version of CMake that's required
 cmake_minimum_required(VERSION 3.12)
 
 # Set the project name
-project(MagFieldMap VERSION 0.2.0
-                    DESCRIPTION "Repository for LDMX magnetic field maps."
-)
+project(MagFieldMap DESCRIPTION "Repository for LDMX magnetic field maps.")
 
 message(STATUS "Installing all field map files.")
 

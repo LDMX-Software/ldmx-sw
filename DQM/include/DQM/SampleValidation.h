@@ -4,6 +4,7 @@
 // LDMX Framework
 #include "Framework/Configure/Parameters.h"
 #include "Framework/EventProcessor.h"
+#include "Math/Vector3D.h"
 
 namespace dqm {
 
@@ -19,8 +20,6 @@ class SampleValidation : public framework::Analyzer {
   virtual void configure(framework::config::Parameters& ps) override;
   virtual void analyze(const framework::Event& event) override;
   int pdgidLabel(const int pdgid);
-  /// Method executed before processing of events begins.
-  void onProcessStart() override;
 
  private:
   std::string target_scoring_plane_passname_;

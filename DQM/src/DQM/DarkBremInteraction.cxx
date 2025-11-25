@@ -34,28 +34,6 @@ static double quadsum(const std::initializer_list<double>& list) {
   return sqrt(sum);
 }
 
-void DarkBremInteraction::setHistLabels(
-    const std::string& name, const std::vector<std::string>& labels) {
-  /**
-   * We could probably move this into Framework since it is a relatively
-   * common task. I could even imagine a way of constructing a StrCategory
-   * histogram.
-   */
-  auto h{histograms_.get(name)};
-  for (std::size_t ibin{1}; ibin <= labels.size(); ibin++) {
-    h->GetXaxis()->SetBinLabel(ibin, labels[ibin - 1].c_str());
-  }
-}
-
-void DarkBremInteraction::onProcessStart() {
-  setHistLabels("dark_brem_material",
-                {"Unknown", "C", "PCB", "Glue", "Si", "Al", "W / LYSO", "PVT"});
-
-  setHistLabels("dark_brem_element",
-                {"did not happen", "H 1", "C 6", "O 8", "Na 11", "Si 14",
-                 "Ca 20", "Cu 29", "Y 39", "Lu 71", "W 74", "unlisted"});
-}
-
 void DarkBremInteraction::produce(framework::Event& event) {
   histograms_.setWeight(event.getEventHeader().getWeight());
   const auto& particle_map{

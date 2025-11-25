@@ -34,9 +34,6 @@ class EcalClusterAnalyzer : public framework::Analyzer {
   ~EcalClusterAnalyzer() override = default;
   void configure(framework::config::Parameters& ps) override;
   void analyze(const framework::Event& event) override;
-  void onProcessStart() override;
-  void setHistLabels(const std::string& name,
-                     const std::vector<std::string>& labels);
 
  private:
   /// Use the number of simulated electrons
@@ -71,6 +68,13 @@ class EcalClusterAnalyzer : public framework::Analyzer {
 
   // min energy fraction from smaller contributor to consider hit "mixed"
   double mixed_hit_cutoff_;
+  std::string ecal_sp_hits_passname_;
+
+  // Inverse skim flag
+  bool inverse_skim_;
+
+  // Minimum number of ECal clusters to keep the event
+  int n_ecal_clusters_min_;
 };
 
 }  // namespace dqm

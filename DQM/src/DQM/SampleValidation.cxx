@@ -30,16 +30,21 @@ void SampleValidation::analyze(const framework::Event& event) {
   // Loop over all SimParticles
   for (auto const& it : particle_map) {
     ldmx::SimParticle p = it.second;
-    int pdgid = p.getPdgID();
-    std::vector<double> vertex = p.getVertex();
-    double energy = p.getEnergy();
     std::vector<int> parents_track_ids = p.getParents();
     std::vector<int> daughters = p.getDaughters();
-
+    const auto& pdgid = p.getPdgID();
+    const auto& vertex = p.getVertex();
+    const auto& energy = p.getEnergy();
+    const auto& momentum = p.getMomentum();
     for (auto const& parent_track_id : parents_track_ids) {
       if (parent_track_id == 0) {
+        ROOT::Math::XYZVector momentum_vec(momentum[0], momentum[1],
+                                           momentum[2]);
         histograms_.fill("primaries_pdgid", pdgidLabel(pdgid));
         histograms_.fill("primaries_energy", energy);
+        histograms_.fill("primaries_theta",
+                         momentum_vec.Theta() * (180 / 3.14159));
+        histograms_.fill("primaries_pt", std::sqrt(momentum_vec.Perp2()));
         hard_thresh = (2500. / 4000.) * energy;
         primary_daughters = daughters;
         for (const ldmx::SimTrackerHit& sphit : target_sp_hits) {
@@ -48,14 +53,16 @@ void SampleValidation::analyze(const framework::Event& event) {
           }
         }
       }
-    }
-  }
+    }  // end loop over parents
+  }  // end loop over SimParticles (1st time)
 
   std::vector<std::vector<int>> hardbrem_daughters;
 
   for (auto const& it : particle_map) {
     int trackid = it.first;
     ldmx::SimParticle p = it.second;
+    const auto& momentum = p.getMomentum();
+    ROOT::Math::XYZVector momentum_vec(momentum[0], momentum[1], momentum[2]);
     for (auto const& primary_daughter : primary_daughters) {
       if (trackid == primary_daughter) {
         histograms_.fill("primarydaughters_pdgid", pdgidLabel(p.getPdgID()));
@@ -67,15 +74,20 @@ void SampleValidation::analyze(const framework::Event& event) {
           histograms_.fill("harddaughters_startZ", p.getVertex()[2]);
           histograms_.fill("harddaughters_endZ", p.getEndPoint()[2]);
           histograms_.fill("harddaughters_energy", p.getEnergy());
+          histograms_.fill("harddaughters_theta",
+                           momentum_vec.Theta() * (180 / 3.14159));
+          histograms_.fill("harddaughters_pt", std::sqrt(momentum_vec.Perp2()));
           hardbrem_daughters.push_back(p.getDaughters());
         }
       }
-    }
-  }
+    }  // end loop over primary daughters
+  }  // end loop over SimParticles (2nd time)
 
   for (auto const& it : particle_map) {
     int trackid = it.first;
     ldmx::SimParticle p = it.second;
+    const auto& momentum = p.getMomentum();
+    ROOT::Math::XYZVector momentum_vec(momentum[0], momentum[1], momentum[2]);
     for (const std::vector<int>& daughter_track_id : hardbrem_daughters) {
       for (const int& daughter_id : daughter_track_id) {
         if (trackid == daughter_id) {
@@ -83,10 +95,14 @@ void SampleValidation::analyze(const framework::Event& event) {
           histograms_.fill("hardbremdaughters_startZ", p.getVertex()[2]);
           histograms_.fill("hardbremdaughters_endZ", p.getEndPoint()[2]);
           histograms_.fill("hardbremdaughters_energy", p.getEnergy());
+          histograms_.fill("hardbremdaughters_theta",
+                           momentum_vec.Theta() * (180 / 3.14159));
+          histograms_.fill("hardbremdaughters_pt",
+                           std::sqrt(momentum_vec.Perp2()));
         }
       }
-    }
-  }
+    }  // end loop over hardbrem daughters
+  }  // end loop over SimParticles (3x time)
 
   return;
 }
@@ -94,24 +110,24 @@ void SampleValidation::analyze(const framework::Event& event) {
 int SampleValidation::pdgidLabel(const int pdgid) {
   // initially assign label as "anything else"/overflow value,
   // only change if the pdg id is something of interest
-  int label = 19;
-  if (pdgid == -11) label = 1;    // e+
-  if (pdgid == 11) label = 2;     // e-
-  if (pdgid == -13) label = 3;    // μ+
-  if (pdgid == 13) label = 4;     // μ-
-  if (pdgid == 22) label = 5;     // γ
-  if (pdgid == 2212) label = 6;   // proton
-  if (pdgid == 2112) label = 7;   // neutron
-  if (pdgid == 211) label = 8;    // π+
-  if (pdgid == -211) label = 9;   // π-
-  if (pdgid == 111) label = 10;   // π0
-  if (pdgid == 321) label = 11;   // K+
-  if (pdgid == -321) label = 12;  // K-
-  if (pdgid == 130) label = 13;   // K-Long
-  if (pdgid == 310) label = 14;   // K-Short
+  int label = 18;
+  if (pdgid == -11) label = 0;    // e+
+  if (pdgid == 11) label = 1;     // e-
+  if (pdgid == -13) label = 2;    // μ+
+  if (pdgid == 13) label = 3;     // μ-
+  if (pdgid == 22) label = 4;     // γ
+  if (pdgid == 2212) label = 5;   // proton
+  if (pdgid == 2112) label = 6;   // neutron
+  if (pdgid == 211) label = 7;    // π+
+  if (pdgid == -211) label = 8;   // π-
+  if (pdgid == 111) label = 9;    // π0
+  if (pdgid == 321) label = 10;   // K+
+  if (pdgid == -321) label = 11;  // K-
+  if (pdgid == 130) label = 12;   // K-Long
+  if (pdgid == 310) label = 13;   // K-Short
   if (pdgid == 3122 || pdgid == 3222 || pdgid == 3212 || pdgid == 3112 ||
       pdgid == 3322 || pdgid == 3312)
-    label = 17;  // strange baryon
+    label = 16;  // strange baryon
   /*
    * Nuclear PDG codes are given by ±10LZZZAAAI so to find the atomic
    * number, we divide by 10 (to lose I) and then take the modulo
@@ -119,54 +135,16 @@ int SampleValidation::pdgidLabel(const int pdgid) {
    */
   if (pdgid > 1000000000) {  // nuclei
     if (((pdgid / 10) % 1000) <= 4) {
-      label = 15;  // light nuclei
+      label = 14;  // light nuclei
     } else {
-      label = 16;  // heavy nuclei
+      label = 15;  // heavy nuclei
     }
   }
-  if (pdgid == 622)
-    label =
-        18;  // dark photon, need pdg id for other models like ALPs and SIMPs
+  // dark photon, need pdg id for other models like ALPs and SIMPs
+  if (pdgid == 622) label = 17;
 
   return label;
 }
 
-void SampleValidation::onProcessStart() {
-  std::vector<std::string> labels = {"",
-                                     "e^{+}",                   // 1
-                                     "e^{-}",                   // 2
-                                     "#mu^{+}",                 // 3
-                                     "#mu^{-}",                 // 4
-                                     "#gamma",                  // 5
-                                     "p^{+}",                   // 6
-                                     "n^{0}",                   // 7
-                                     "#pi^{+}",                 // 8
-                                     "#pi^{-}",                 // 9
-                                     "#pi^{0}",                 // 10
-                                     "K^{+}",                   // 11
-                                     "K^{-}",                   // 12
-                                     "k_{L}",                   // 13
-                                     "k_{S}",                   // 14
-                                     "light-N",                 // 15
-                                     "heavy-N",                 // 16
-                                     "#Lambda / #Sigma / #Xi",  // 17
-                                     "A'",                      // 18
-                                     "else",
-                                     ""};
-
-  std::vector<TH1*> hists = {
-      histograms_.get("primaries_pdgid"),
-      histograms_.get("primarydaughters_pdgid"),
-      histograms_.get("harddaughters_pdgid"),
-      histograms_.get("hardbremdaughters_pdgid"),
-
-  };
-
-  for (int ilabel{1}; ilabel < labels.size(); ++ilabel) {
-    for (auto& hist : hists) {
-      hist->GetXaxis()->SetBinLabel(ilabel, labels[ilabel - 1].c_str());
-    }
-  }
-}
 }  // namespace dqm
 DECLARE_ANALYZER(dqm::SampleValidation)

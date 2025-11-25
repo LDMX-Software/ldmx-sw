@@ -49,17 +49,6 @@ void TrkDeDxMassEstFeatures::analyze(const framework::Event &event) {
   return;
 }
 
-void TrkDeDxMassEstFeatures::onProcessStart() {
-  std::vector<std::string> labels = {"Other",   // 0
-                                     "Tagger",  // 1
-                                     "Recoil",  // 2
-                                     ""};
-  TH1 *hist = histograms_.get("track_type");
-  for (int ilabel{1}; ilabel < labels.size(); ++ilabel) {
-    hist->GetXaxis()->SetBinLabel(ilabel, labels[ilabel - 1].c_str());
-  }
-}
-
 }  // namespace dqm
 
 DECLARE_ANALYZER(dqm::TrkDeDxMassEstFeatures);

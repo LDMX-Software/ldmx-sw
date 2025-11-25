@@ -43,14 +43,36 @@ class histogram:
         title of y-axis that this histogram represents
     ybins : list of floats
         bin edges along y-axis
+    weighted: bool
+        whether to keep track of sum of squared weights
     """
     
-    def __init__(self, name, xlabel, xbins, ylabel='', ybins=[]) :
+    def __init__(self, name, xlabel, xbins, ylabel='', ybins=[], weighted = False):
         self.name   = name
         self.xlabel = xlabel
-        self.xbins  = xbins
         self.ylabel = ylabel
-        self.ybins  = ybins
+        self.weighted = weighted
+
+        if len(xbins) == 0:
+            raise ValueError('Cannot have a histogram with zero bins.')
+
+        if isinstance(xbins[0], str):
+            self.xbins = [0.0]
+            self.xcategories = xbins
+        else:
+            self.xbins = xbins
+            self.xcategories = []
+
+        if len(ybins) == 0:
+            self.ybins = []
+            self.ycategories = []
+        elif isinstance(ybins[0], str):
+            self.ybins = []
+            self.ycategories = ybins
+        else:
+            self.ybins = ybins
+            self.ycategories = []
+
 
     def __repr__(self):
         """Represent this object to the human user

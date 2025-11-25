@@ -34,26 +34,26 @@ def dqm(d : Differ, out_dir = None) :
             shared_members = [ ('x', 'x [mm]'), ('y', 'y [mm]'), ('z', 'z [mm]'), 
                 ('n_hits', 'Hit multiplicity') ]
             for member, name in shared_members :
-                d.plot1d(f'TrigScint{coll}{pad}/TrigScint{coll}{pad}_{member}', f'{coll} {name}',
+                d.plot1d(f'TrigScint{coll}{pad}/{member}', f'{coll} {name}',
                          out_dir = out_dir)
         special_members = [
-            (f'TrigScintSim{pad}/TrigScintSim{pad}_hit_time', 'Simhit time [ns]'),
-            (f'TrigScintDigi{pad}/TrigScintDigi{pad}_total_pe', 'Total PE in event'),
-            (f'TrigScintDigi{pad}/TrigScintDigi{pad}_pe', 'Total PE in bars'),
-            (f'TrigScintSim{pad}/TrigScintSim{pad}_id', 'Channel ID'),
-            (f'TrigScintDigi{pad}/TrigScintDigi{pad}_id', 'Channel ID'),
-            (f'TrigScintDigi{pad}/TrigScintDigi{pad}_hit_time', 'Digi hit time [ns]'),
-            (f'TrigScintDigi{pad}/TrigScintDigi{pad}_id_noise', 'ID of noise hits'),
-            (f'TrigScintDigi{pad}/TrigScintDigi{pad}_pe_noise', 'PE in noise hits'),
-            (f'TrigScintDigi{pad}/TrigScintDigi{pad}_n_hits_noise', 'Number of noise hits'),
-            (f'TrigScintCluster{pad}/TrigScintCluster{pad}_centroid', 'Cluster centroid [in channel nb]'),
-            (f'TrigScintCluster{pad}/TrigScintCluster{pad}_total_pe', 'Cluster total PE in event'),
-            (f'TrigScintCluster{pad}/TrigScintCluster{pad}_n_clusters', 'Cluster multiplicity'),
-            (f'TrigScintCluster{pad}/TrigScintCluster{pad}_seed', 'Cluster seed [in channel nb]'),
-            (f'TrigScintCluster{pad}/TrigScintCluster{pad}_cluster_time', 'Cluster time [ns]'),
-            (f'TrigScintCluster{pad}/TrigScintCluster{pad}_beamEfrac', 'Beam electron energy fraction')
+            (f'TrigScintSim{pad}/hit_time', 'Simhit time [ns]'),
+            (f'TrigScintDigi{pad}/_total_pe', 'Total PE in event'),
+            (f'TrigScintDigi{pad}/_pe', 'Total PE in bars'),
+            (f'TrigScintSim{pad}/id', 'Channel ID'),
+            (f'TrigScintDigi{pad}/_id', 'Channel ID'),
+            (f'TrigScintDigi{pad}/_hit_time', 'Digi hit time [ns]'),
+            (f'TrigScintDigi{pad}/_id_noise', 'ID of noise hits'),
+            (f'TrigScintDigi{pad}/_pe_noise', 'PE in noise hits'),
+            (f'TrigScintDigi{pad}/_n_hits_noise', 'Number of noise hits'),
+            (f'TrigScintCluster{pad}/_centroid', 'Cluster centroid [in channel nb]'),
+            (f'TrigScintCluster{pad}/_total_pe', 'Cluster total PE in event'),
+            (f'TrigScintCluster{pad}/_n_clusters', 'Cluster multiplicity'),
+            (f'TrigScintCluster{pad}/_seed', 'Cluster seed [in channel nb]'),
+            (f'TrigScintCluster{pad}/_cluster_time', 'Cluster time [ns]'),
+            (f'TrigScintCluster{pad}/_beamEfrac', 'Beam electron energy fraction')
             # not implemented but should be
-            #(f'TrigScintDigi{pad}/TrigScintDigi{pad}_beamEfrac', 'Beam electron energy fraction') 
+            #(f'TrigScintDigi{pad}/_beamEfrac', 'Beam electron energy fraction') 
             ] 
         for member, name in special_members :
             d.plot1d(member, name, out_dir = out_dir)
