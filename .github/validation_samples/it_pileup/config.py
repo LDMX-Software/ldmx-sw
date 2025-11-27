@@ -117,17 +117,9 @@ truthPF = pfReco.pfTruthProducer()
 # CLUE     
 import LDMX.Ecal.ecalClusters as cl
 cluster = cl.EcalClusterProducer()
-cluster.seedThreshold = 350.
-cluster.cutoff = 10.
-# CLUE specific                                                                                                                                                                                                     
-cluster.CLUE = True #CLUE                                                                                                                                                                                           
-cluster.dc = 0.3
-cluster.rhoc = 550.
-cluster.deltac = 10.
-cluster.deltao = 40.
-cluster.debug = False
+cluster.seedThreshold = 350.                                                                                                                                                                             cluster.dc = 0.3
 cluster.nbrOfLayers = 1
-cluster.nbr_of_layers = cluster.nbrOfLayers
+cluster.nbr_of_layers = cluster.nbrOfLayers #just here to highlight confusion
 cluster.reclustering = True                                                                                                                                                                                
 cluster.rec_hit_pass_name=thisPassName #run on process+pileup       
 
@@ -236,7 +228,6 @@ p.sequence.extend([
     ecalVeto, 
     ecalMip, 
     ecal_veto_pnet,
-    ecal_cluster.EcalClusterProducer(),
     hcal_digi_reco, 
     hcal_veto,
     *ts_digis,
