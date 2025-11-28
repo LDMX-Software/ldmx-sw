@@ -319,7 +319,7 @@ class TruthSeedProcessor(Producer):
         self.sp_pass_name = ''
         self.input_pass_name = ''
         self.sim_particles_passname = ''
-        
+        self.particle_hypothesis = 11 
         
 
 

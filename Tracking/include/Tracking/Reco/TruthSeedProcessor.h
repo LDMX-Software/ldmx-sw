@@ -278,5 +278,6 @@ class TruthSeedProcessor : public TrackingGeometryUser {
   std::vector<double> rel_smearfactors_;
   std::vector<double> inflate_factors_;
   std::vector<double> beam_origin_{-880.1, -44., 0.};
+  int particle_hypothesis_;
 };
 }  // namespace tracking::reco
