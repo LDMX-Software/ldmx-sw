@@ -209,6 +209,12 @@ class EcalGeometry : public framework::ConditionsObject {
   }
 
   /**
+   * Get the z-coordinate of the Ecal face
+   * @return z-coordinate of the Ecal face
+   */
+  double getEcalFrontZ() const { return ecal_front_z_; }
+
+  /**
    * Get the number of layers in the Ecal Geometry
    *
    * @returns number fo layers in geometry

@@ -754,7 +754,8 @@ void EcalVetoProcessor::produce(framework::Event &event) {
   // Find the location of the recoil electron
   // Ecal face is not where the first layer_ starts,
   // defined in DetDescr/python/EcalGeometry.py
-  const float dz_from_face{7.932};
+  const float dz_from_face =
+      (geometry_->getZPosition(0)) - (geometry_->getEcalFrontZ());
   float drifted_recoil_x{-9999.};
   float drifted_recoil_y{-9999.};
   if (recoil_p[2] > 0.) {
