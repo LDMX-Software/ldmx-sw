@@ -251,39 +251,11 @@
 <matrix name="cooling_tungsten_dz"
         coldim="1"
         values="0.0
-                0.0
-                2.0
-                1.8
-                1.8
-                1.8
-                1.8
-                1.8
-                1.8
-                1.8
-                1.8
-                3.5
-                3.5
-                3.5
-                3.5
-                3.5"/>
+                0.0"/>
 <matrix name="front_tungsten_dz"
         coldim="1"
         values="0.0
-                0.0
-                2.0
-                3.5
-                3.5
-                3.5
-                3.5
-                3.5
-                3.5
-                3.5
-                3.5
-                7.0
-                7.0
-                7.0
-                7.0
-                7.0"/>
+                0.0"/>
 <!--
 The cumulative amount of absorber in front of the n'th bilayer.
 
@@ -294,22 +266,7 @@ when defining GDML variables, so this needs to be precomputed.
 <matrix name="bilayer_absorber_cumulative"
         coldim="1"
         values="0.0
-                0.0
-                8.0
-                15.1
-                22.2
-                29.3
-                36.4
-                43.5
-                50.6
-                57.7
-                64.8
-                71.9
-                85.9
-                99.9
-                113.9
-                127.9
-                141.9"/>
+                0.0"/>
 
 <!--
 The thickness of the strongback aluminum bar holding up the bilayer
@@ -336,16 +293,6 @@ them in the bilayer loop
                 25.4
                 25.4
                 25.4" />
-
-<!--
-The thickness of the pre-shower bilayer absorbers
-
-In v14, the pre-shower bilayer has no absorbers. However, 
-in the reduced geometry we are testing this possibility.
--->
-
-<variable name="front_pre_tungsten_dz" value="0.0"/>
-<variable name="cooling_pre_tungsten_dz" value="0.0"/>
 
 <!--
   Thickness of various components in the ECal layer stack

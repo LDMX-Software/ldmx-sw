@@ -366,7 +366,7 @@
       <section zOrder="1" zPosition="3.175" />
     </xtru>
     -->
-    <loop for="bilayer" from="1" to="num_bilayers" step="1">
+    <loop for="bilayer" from="1" to="num_bilayers-1" step="1">
       <box name="strongback_bar[bilayer]" lunit="mm"
            x="strongback_bar_dx" y="strongback_bar_dy" z="bilayer_strongback_thickness[bilayer]" />
     </loop>
@@ -385,7 +385,7 @@
 
       The octagons are oriented so that the middle of a flat side is bisected by the x and y axes.
     -->
-    <loop for="bilayer" from="1" to="num_bilayers" step="1">
+    <loop for="bilayer" from="1" to="num_bilayers-1" step="1">
       <xtru name="W_front_absorber[bilayer]" lunit="mm">
         <twoDimVertex x="absorber_polygon[1,1]" y="absorber_polygon[1,2]"/>
         <twoDimVertex x="absorber_polygon[2,1]" y="absorber_polygon[2,2]"/>
@@ -433,54 +433,6 @@
         <!-- The zPosition is non-physical (doesn't match cooling_tungsten_dz[bilayer]) but that's fine because the absorbers aren't included anyways -->
       </xtru>
     </loop>
-
-    <!-- repeat above process for pre-shower absorbers -->
-    <xtru name="W_pre_front_absorber" lunit="mm">
-        <twoDimVertex x="absorber_polygon[1,1]" y="absorber_polygon[1,2]"/>
-        <twoDimVertex x="absorber_polygon[2,1]" y="absorber_polygon[2,2]"/>
-        <twoDimVertex x="absorber_polygon[3,1]" y="absorber_polygon[3,2]"/>
-        <twoDimVertex x="absorber_polygon[4,1]" y="absorber_polygon[4,2]"/>
-        <twoDimVertex x="absorber_polygon[5,1]" y="absorber_polygon[5,2]"/>
-        <twoDimVertex x="absorber_polygon[6,1]" y="absorber_polygon[6,2]"/>
-        <twoDimVertex x="absorber_polygon[7,1]" y="absorber_polygon[7,2]"/>
-        <twoDimVertex x="absorber_polygon[8,1]" y="absorber_polygon[8,2]"/>
-        <twoDimVertex x="absorber_polygon[9,1]" y="absorber_polygon[9,2]"/>
-        <twoDimVertex x="absorber_polygon[10,1]" y="absorber_polygon[10,2]"/>
-        <twoDimVertex x="absorber_polygon[11,1]" y="absorber_polygon[11,2]"/>
-        <twoDimVertex x="absorber_polygon[12,1]" y="absorber_polygon[12,2]"/>
-        <twoDimVertex x="absorber_polygon[13,1]" y="absorber_polygon[13,2]"/>
-        <twoDimVertex x="absorber_polygon[14,1]" y="absorber_polygon[14,2]"/>
-        <twoDimVertex x="absorber_polygon[15,1]" y="absorber_polygon[15,2]"/>
-        <twoDimVertex x="absorber_polygon[16,1]" y="absorber_polygon[16,2]"/>
-        <twoDimVertex x="absorber_polygon[17,1]" y="absorber_polygon[17,2]"/>
-        <twoDimVertex x="absorber_polygon[18,1]" y="absorber_polygon[18,2]"/>
-        <section zOrder="0" zPosition="0"/>
-        <section zOrder="1" zPosition="1"/> 
-        <!-- The zPosition is non-physical (doesn't match front_pre_tungsten_dz) but that's fine because the absorbers aren't included anyways -->
-      </xtru>
-      <xtru name="W_pre_cooling_absorber" lunit="mm">
-        <twoDimVertex x="absorber_polygon[1,1]" y="absorber_polygon[1,2]"/>
-        <twoDimVertex x="absorber_polygon[2,1]" y="absorber_polygon[2,2]"/>
-        <twoDimVertex x="absorber_polygon[3,1]" y="absorber_polygon[3,2]"/>
-        <twoDimVertex x="absorber_polygon[4,1]" y="absorber_polygon[4,2]"/>
-        <twoDimVertex x="absorber_polygon[5,1]" y="absorber_polygon[5,2]"/>
-        <twoDimVertex x="absorber_polygon[6,1]" y="absorber_polygon[6,2]"/>
-        <twoDimVertex x="absorber_polygon[7,1]" y="absorber_polygon[7,2]"/>
-        <twoDimVertex x="absorber_polygon[8,1]" y="absorber_polygon[8,2]"/>
-        <twoDimVertex x="absorber_polygon[9,1]" y="absorber_polygon[9,2]"/>
-        <twoDimVertex x="absorber_polygon[10,1]" y="absorber_polygon[10,2]"/>
-        <twoDimVertex x="absorber_polygon[11,1]" y="absorber_polygon[11,2]"/>
-        <twoDimVertex x="absorber_polygon[12,1]" y="absorber_polygon[12,2]"/>
-        <twoDimVertex x="absorber_polygon[13,1]" y="absorber_polygon[13,2]"/>
-        <twoDimVertex x="absorber_polygon[14,1]" y="absorber_polygon[14,2]"/>
-        <twoDimVertex x="absorber_polygon[15,1]" y="absorber_polygon[15,2]"/>
-        <twoDimVertex x="absorber_polygon[16,1]" y="absorber_polygon[16,2]"/>
-        <twoDimVertex x="absorber_polygon[17,1]" y="absorber_polygon[17,2]"/>
-        <twoDimVertex x="absorber_polygon[18,1]" y="absorber_polygon[18,2]"/>
-        <section zOrder="0" zPosition="0"/>
-        <section zOrder="1" zPosition="1"/>
-        <!-- The zPosition is non-physical (doesn't match cooling_pre_tungsten_dz) but that's fine because the absorbers aren't included anyways -->
-      </xtru>
 
     <!--
       The carbon cooling layer spans the entire ECal box since it is the suport "curtain" for each
@@ -595,7 +547,7 @@
     </volume>
 
     <!-- define the tungsten absorber volume corresponding to the correct-thickness solid -->
-    <loop for="bilayer" from="1" to="num_bilayers" step="1">
+    <loop for="bilayer" from="1" to="num_bilayers-1" step="1">
       <volume name="strongback_bar_volume[bilayer]">
         <materialref ref="G4_Al0x2705780" />
         <solidref ref="strongback_bar[bilayer]" />
@@ -611,19 +563,6 @@
         <!--<auxiliary auxtype="VisAttributes" auxvalue="BlueSolid"/>-->
       </volume>
     </loop>
-
-    <!-- define the pre-shower tungsten absorber volumes -->
-    <volume name="W_pre_front_volume">
-      <materialref ref="G4_W0x270bda0"/>
-      <solidref ref="W_pre_front_absorber"/>
-      <!--<auxiliary auxtype="VisAttributes" auxvalue="BlueSolid"/>-->
-    </volume>
-
-    <volume name="W_pre_cooling_volume">
-      <materialref ref="G4_W0x270bda0"/>
-      <solidref ref="W_pre_cooling_absorber"/>
-      <!--<auxiliary auxtype="VisAttributes" auxvalue="BlueSolid"/>-->
-    </volume>
 
     <!--
       All of the physical volumes will be included as a child volume
@@ -686,38 +625,38 @@
       <physvol>
         <volumeref ref="PCB_motherboard_volume"/>
         <position name="PCB_PS_motherboard_physvol0_pos" unit="mm" x="0" y="-support_box_shift" 
-          z="bilayer_start + front_pre_tungsten_dz + FrontTolerance + MotherBoardAssembly_dz/2."/>
+          z="bilayer_start + FrontTolerance + MotherBoardAssembly_dz/2."/>
       </physvol>
 
       <physvol>
         <volumeref ref="PCB_volume"/>
         <position name="PCB_volume_rel_to_hexaboard"
           x="0" y="-support_box_shift" 
-          z="bilayer_start + front_pre_tungsten_dz + FrontTolerance + PCB_dz + PCB_Motherboard_Gap"/>
+          z="bilayer_start + FrontTolerance + PCB_dz + PCB_Motherboard_Gap"/>
       </physvol>
       <physvol>
         <volumeref ref="Glue_volume"/>
         <position name="Glue_volume_rel_to_hexaboard"
           x="0" y="-support_box_shift" 
-          z="bilayer_start + front_pre_tungsten_dz + FrontTolerance + PCB_dz + PCB_Motherboard_Gap + PCB_dz"/>
+          z="bilayer_start + FrontTolerance + PCB_dz + PCB_Motherboard_Gap + PCB_dz"/>
       </physvol>
       <physvol copynumber="7*0 + 0">
         <volumeref ref="Si_volume"/>
         <position name="Si_volume_rel_to_hexaboard"
           x="0" y="-support_box_shift" 
-          z="bilayer_start + front_pre_tungsten_dz + FrontTolerance + PCB_dz + PCB_Motherboard_Gap + PCB_dz + Glue_dz"/>
+          z="bilayer_start + FrontTolerance + PCB_dz + PCB_Motherboard_Gap + PCB_dz + Glue_dz"/>
       </physvol>
       <physvol>
         <volumeref ref="GlueThick_volume"/>
         <position name="GlueThick_volume_rel_to_hexaboard"
           x="0" y="-support_box_shift" 
-          z="bilayer_start + front_pre_tungsten_dz + FrontTolerance + PCB_dz + PCB_Motherboard_Gap + PCB_dz + Glue_dz + Si_dz"/>
+          z="bilayer_start + FrontTolerance + PCB_dz + PCB_Motherboard_Gap + PCB_dz + Glue_dz + Si_dz"/>
       </physvol>
       <physvol>
         <volumeref ref="CarbonBasePlate_volume"/>
         <position name="CarbonBasePlate_volume_rel_to_hexaboard"
           x="0" y="-support_box_shift"
-          z="bilayer_start + front_pre_tungsten_dz + FrontTolerance + PCB_dz + PCB_Motherboard_Gap + PCB_dz + Glue_dz + Si_dz + GlueThick_dz"/>
+          z="bilayer_start + FrontTolerance + PCB_dz + PCB_Motherboard_Gap + PCB_dz + Glue_dz + Si_dz + GlueThick_dz"/>
       </physvol>
 
       <!-- 
@@ -731,8 +670,8 @@
         <position name="strongback_bar_volume_PSpos" unit="mm" 
           x="strongback_pos_x"
           y="strongback_pos_y"
-          z="bilayer_start + front_pre_tungsten_dz + FrontTolerance + PCB_dz + PCB_Motherboard_Gap + Flower_dz 
-            + 2 + CarbonCoolingPlane_dz/2."/>
+          z="bilayer_start + FrontTolerance + PCB_dz + PCB_Motherboard_Gap + Flower_dz 
+            + CarbonCoolingPlane_dz/2."/>
       </physvol>
       
       <!--
@@ -744,52 +683,52 @@
       <physvol>
         <volumeref ref="C_volume_CarbonCoolingPlane"/>
         <position name="PS_carbon_pos" unit="mm" x="0" y="-support_box_shift" 
-          z="bilayer_start + front_pre_tungsten_dz + FrontTolerance + PCB_dz + PCB_Motherboard_Gap + Flower_dz 
-            + preshower_extra_air + 2 + CarbonCoolingPlane_dz/2."/>
+          z="bilayer_start + FrontTolerance + PCB_dz + PCB_Motherboard_Gap + Flower_dz 
+            + preshower_extra_air + CarbonCoolingPlane_dz/2."/>
       </physvol>
 
       <physvol>
         <volumeref ref="CarbonBasePlate_volume"/>
         <position name="CarbonBasePlate_volume_PS_pos1_0"
           x="shift_x" y="shift_y-support_box_shift" 
-          z="bilayer_start + front_pre_tungsten_dz + FrontTolerance + PCB_dz + PCB_Motherboard_Gap + Flower_dz 
-            + preshower_extra_air + cooling_pre_tungsten_dz + CarbonCoolingPlane_dz + cooling_pre_tungsten_dz"/>
+          z="bilayer_start + FrontTolerance + PCB_dz + PCB_Motherboard_Gap + Flower_dz 
+            + preshower_extra_air + CarbonCoolingPlane_dz"/>
       </physvol>
       <physvol>
         <volumeref ref="GlueThick_volume"/>
         <position name="GlueThick_volume_PS_pos1_0"
           x="shift_x" y="shift_y-support_box_shift" 
-          z="bilayer_start + front_pre_tungsten_dz + FrontTolerance + PCB_dz + PCB_Motherboard_Gap + Flower_dz 
-            + preshower_extra_air + cooling_pre_tungsten_dz + CarbonCoolingPlane_dz + cooling_pre_tungsten_dz + CarbonBasePlate_dz"/>
+          z="bilayer_start + FrontTolerance + PCB_dz + PCB_Motherboard_Gap + Flower_dz 
+            + preshower_extra_air + CarbonCoolingPlane_dz + CarbonBasePlate_dz"/>
       </physvol>
       <physvol copynumber="7*1 + 0">
         <volumeref ref="Si_volume"/>
         <position name="Si_volume_rel_to_hexaboard"
           x="shift_x" y="shift_y-support_box_shift" 
-          z="bilayer_start + front_pre_tungsten_dz + FrontTolerance + PCB_dz + PCB_Motherboard_Gap + Flower_dz 
-            + preshower_extra_air + cooling_pre_tungsten_dz + CarbonCoolingPlane_dz + cooling_pre_tungsten_dz + CarbonBasePlate_dz + GlueThick_dz"/>
+          z="bilayer_start + FrontTolerance + PCB_dz + PCB_Motherboard_Gap + Flower_dz 
+            + preshower_extra_air + CarbonCoolingPlane_dz + CarbonBasePlate_dz + GlueThick_dz"/>
       </physvol>
       <physvol>
         <volumeref ref="Glue_volume"/>
         <position name="Glue_volume_rel_to_hexaboard"
           x="shift_x" y="shift_y-support_box_shift" 
-          z="bilayer_start + front_pre_tungsten_dz + FrontTolerance + PCB_dz + PCB_Motherboard_Gap + Flower_dz 
-            + preshower_extra_air + cooling_pre_tungsten_dz + CarbonCoolingPlane_dz + cooling_pre_tungsten_dz + CarbonBasePlate_dz + GlueThick_dz + Si_dz"/>
+          z="bilayer_start + FrontTolerance + PCB_dz + PCB_Motherboard_Gap + Flower_dz 
+            + preshower_extra_air + CarbonCoolingPlane_dz + CarbonBasePlate_dz + GlueThick_dz + Si_dz"/>
       </physvol>
       <physvol>
         <volumeref ref="PCB_volume"/>
         <position name="PS_flower_pos1"
           x="shift_x" y="shift_y-support_box_shift" 
-          z="bilayer_start + front_pre_tungsten_dz + FrontTolerance + PCB_dz + PCB_Motherboard_Gap + Flower_dz 
-            + preshower_extra_air + cooling_pre_tungsten_dz + CarbonCoolingPlane_dz + cooling_pre_tungsten_dz + CarbonBasePlate_dz + GlueThick_dz + Si_dz + Glue_dz"/>
+          z="bilayer_start + FrontTolerance + PCB_dz + PCB_Motherboard_Gap + Flower_dz 
+            + preshower_extra_air + CarbonCoolingPlane_dz + CarbonBasePlate_dz + GlueThick_dz + Si_dz + Glue_dz"/>
       </physvol>
 
       <physvol>
         <volumeref ref="PCB_motherboard_volume"/>
         <rotationref ref="flip"/>
         <position name="PCB_PS_motherboard_pos1" unit="mm" x="0" y="-support_box_shift" 
-          z="bilayer_start + front_pre_tungsten_dz + FrontTolerance + PCB_dz + PCB_Motherboard_Gap + Flower_dz 
-            + preshower_extra_air + cooling_pre_tungsten_dz + CarbonCoolingPlane_dz + cooling_pre_tungsten_dz + Flower_dz + PCB_Motherboard_Gap 
+          z="bilayer_start + FrontTolerance + PCB_dz + PCB_Motherboard_Gap + Flower_dz 
+            + preshower_extra_air + CarbonCoolingPlane_dz + Flower_dz + PCB_Motherboard_Gap 
             + preshower_extra_air + PCB_dz - MotherBoardAssembly_dz/2."/>
       </physvol>
 
