@@ -117,7 +117,7 @@ truthPF = pfReco.pfTruthProducer()
 # CLUE     
 import LDMX.Ecal.ecalClusters as cl
 cluster = cl.EcalClusterProducer()
-cluster.seedThreshold = 350.                                                                                                                                                                             cluster.dc = 0.3
+cluster.seed_threshold = 350.                                                                                                                                                                             cluster.dc = 0.3
 cluster.nbr_of_layers = 1
 cluster.reclustering = True                                                                                                                                                                                
 cluster.rec_hit_pass_name=thisPassName #run on process+pileup       
@@ -129,6 +129,7 @@ pfComb.input_ecal_passname = thisPassName
 # trigger recasting existing CLUE to caloclusters
 pfComb.use_existing_ecal_clusters = True 
 
+# Load pileup finder
 from LDMX.Recon import pileupFinder
 puFinder = pileupFinder.pileupFinder()
 puFinder.rec_hit_pass_name=thisPassName
@@ -136,9 +137,6 @@ puFinder.rec_hit_pass_name=thisPassName
 puFinder.cluster_coll_name=pfComb.inputEcalCollName+"Cast"                                                                                                                   
 puFinder.pf_cand_coll_name=pfComb.outputCollName
 puFinder.min_momentum=3000.
-
-# Load pileup finder
-from LDMX.Recon.pfReco import pileupFinder
 
 # Load the DQM modules
 from LDMX.DQM import dqm
