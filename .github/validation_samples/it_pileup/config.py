@@ -246,7 +246,7 @@ p.sequence.extend([
      truthPF,
      pfComb,        
      puFinder
-)]
+])
 
 p.inputFiles = ['ecal_pn.root']
 p.outputFiles= ['events.root']
