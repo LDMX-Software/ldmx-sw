@@ -9,9 +9,6 @@
 
 // ROOT
 #include "TObject.h"  //For ClassDef
-// ldmx-sw objects
-// #include "Ecal/Event/EcalHit.h"
-// #include "Hcal/Event/HcalHit.h"
 
 namespace ldmx {
 
