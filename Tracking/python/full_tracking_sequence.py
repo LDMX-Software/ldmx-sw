@@ -81,7 +81,7 @@ tracking_recoil.out_trk_collection = "RecoilTracks"
 # for truth seed based case use 
 # tracking_recoil.seed_coll_name = "RecoilTruthSeeds"
 tracking_recoil.measurement_collection = digi_recoil.out_collection
-tracking_recoil.min_hits = 6
+tracking_recoil.min_hits = 5
 tracking_recoil.outlier_pval_ =  22.1
 
 # Greedy ambiguity solver for the tagger
@@ -128,24 +128,24 @@ dqm_seed_recoil.title = ""
 dqm_seed_recoil.buildHistograms()
 
 # DQM for the tagger with CKF
-dqm_tagger_cfk = tkdqm.TrackingRecoDQM("TaggerDQM")
-dqm_tagger_cfk.track_collection = tracking_tagger.out_trk_collection
-dqm_tagger_cfk.truth_hit_collection="TaggerSimHits"
-dqm_tagger_cfk.truth_collection = "TaggerTruthTracks"
-dqm_tagger_cfk.trackStates = ["target"]
-dqm_tagger_cfk.title = ""
-dqm_tagger_cfk.measurement_collection=digi_tagger.out_collection
-dqm_tagger_cfk.buildHistograms()
+dqm_tagger_ckf = tkdqm.TrackingRecoDQM("TaggerDQM")
+dqm_tagger_ckf.track_collection = tracking_tagger.out_trk_collection
+dqm_tagger_ckf.truth_hit_collection="TaggerSimHits"
+dqm_tagger_ckf.truth_collection = "TaggerTruthTracks"
+dqm_tagger_ckf.trackStates = ["target"]
+dqm_tagger_ckf.title = ""
+dqm_tagger_ckf.measurement_collection=digi_tagger.out_collection
+dqm_tagger_ckf.buildHistograms()
 
 # DQM for the recoil with CKF
-dqm_recoil_cfk = tkdqm.TrackingRecoDQM("RecoilDQM")
-dqm_recoil_cfk.track_collection = tracking_recoil.out_trk_collection
-dqm_recoil_cfk.truth_collection = "RecoilTruthTracks"
-dqm_recoil_cfk.trackStates = ["ecal","target"]
-dqm_recoil_cfk.title = ""
-dqm_recoil_cfk.measurement_collection=digi_recoil.out_collection
-dqm_recoil_cfk.truth_hit_collection = "RecoilSimHits"
-dqm_recoil_cfk.buildHistograms()
+dqm_recoil_ckf = tkdqm.TrackingRecoDQM("RecoilDQM")
+dqm_recoil_ckf.track_collection = tracking_recoil.out_trk_collection
+dqm_recoil_ckf.truth_collection = "RecoilTruthTracks"
+dqm_recoil_ckf.trackStates = ["ecal","target"]
+dqm_recoil_ckf.title = ""
+dqm_recoil_ckf.measurement_collection=digi_recoil.out_collection
+dqm_recoil_ckf.truth_hit_collection = "RecoilSimHits"
+dqm_recoil_ckf.buildHistograms()
 
 # DQM for the tagger with GAS  (Greedy ambiguity solver)
 dqm_tagger_gas = tkdqm.TrackingRecoDQM("TaggerGASDQM")
@@ -208,8 +208,8 @@ sequence = [
 dqm_sequence = [
     dqm_seed_tagger,
     dqm_seed_recoil,
-    dqm_tagger_cfk,
-    dqm_recoil_cfk,
+    dqm_tagger_ckf,
+    dqm_recoil_ckf,
     dqm_tagger_gas,
     dqm_recoil_gas,
     dqm_tagger_gsf,
