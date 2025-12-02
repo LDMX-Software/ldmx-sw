@@ -4,7 +4,7 @@ Sets all parameters to reasonable defaults.
 
 Examples
 --------
-    from LDMX.Recon.pfReco import pileupFinder
+    from LDMX.Recon import pileupFinder
     p.sequence.append( pileupFinder )
 """
 
