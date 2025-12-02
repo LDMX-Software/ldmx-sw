@@ -73,6 +73,7 @@ void TruthSeedProcessor::configure(framework::config::Parameters& parameters) {
   // Skip the tagger or recoil trackers if wanted
   skip_tagger_ = parameters.get<bool>("skip_tagger", false);
   skip_recoil_ = parameters.get<bool>("skip_recoil", false);
+  particle_hypothesis_ = parameters.get<int>("particle_hypothesis");
 }
 
 void TruthSeedProcessor::createTruthTrack(
@@ -134,18 +135,16 @@ void TruthSeedProcessor::createTruthTrack(
       Acts::Vector3(free_params[Acts::eFreePos0], free_params[Acts::eFreePos1],
                     free_params[Acts::eFreePos2]))};
 
-  // std::cout<<"PF:: gen_surface"<< std::endl<<free_params[Acts::eFreePos0]<<"
-  // " <<free_params[Acts::eFreePos1]<<" " <<free_params[Acts::eFreePos2]<<
-  // std::endl;
+  // ldmx_log(trace)<<"PF:: gen_surface"<<free_params[Acts::eFreePos0]<<"
+  // " <<free_params[Acts::eFreePos1]<<" " <<free_params[Acts::eFreePos2];
 
   // Transform the parameters to local positions on the perigee surface.
   auto bound_params{
       Acts::transformFreeToBoundParameters(free_params, *gen_surface, gctx_)
           .value()};
-  int pdgid = 11;               // electron
-  if (charge > 0) pdgid = -11;  // positron
+  // Create a particle hypothesis
   auto part{Acts::GenericParticleHypothesis(
-      Acts::ParticleHypothesis(Acts::PdgParticle(pdgid)))};
+      Acts::ParticleHypothesis(Acts::PdgParticle(particle_hypothesis_)))};
   Acts::BoundTrackParameters bound_trk_pars(gen_surface, bound_params,
                                             std::nullopt, part);
 
@@ -160,7 +159,7 @@ void TruthSeedProcessor::createTruthTrack(
     ldmx_log(error) << "Linear extrapolation to a far away surface in B field."
                     << "  This will cause inaccuracies in track parameters"
                     << "  Distance extrapolated = "
-                    << (tgt_surf_center(0) - gen_surf_center(0)) << std::endl;
+                    << (tgt_surf_center(0) - gen_surf_center(0));
 
   auto prop_bound_state =
       trk_extrap_->extrapolate(bound_trk_pars, target_surface);
@@ -253,17 +252,17 @@ ldmx::Track TruthSeedProcessor::taggerFullSeed(
 
   // Smeared track at the beam origin
   ldmx::Track smeared_truth_track = seedFromTruth(truth_track, true);
-  // std::cout << "!!!!! Smeared truth track momentums: "
+  // ldmx_log(trace) << "!!!!! Smeared truth track momentums: "
   //           << smearedTruthTrack.getMomentum()[0] << " "
   //           << smearedTruthTrack.getMomentum()[1] << " "
-  //           << smearedTruthTrack.getMomentum()[2] << std::endl;
-  // std::cout << "!!!!! Smeared truth track Q/P: " <<
+  //           << smearedTruthTrack.getMomentum()[2];
+  // ldmx_log(trace) << "!!!!! Smeared truth track Q/P: " <<
   // smearedTruthTrack.getQoP()
-  //           << std::endl;
-  ldmx_log(debug) << "Truth parameters at beam origin" << std::endl;
+  //          ;
+  ldmx_log(debug) << "Truth parameters at beam origin";
   for (auto par : truth_track.getPerigeeParameters())
     ldmx_log(debug) << par << " ";
-  ldmx_log(debug) << std::endl;
+  ldmx_log(debug);
 
   // Add the truth track state at the target
   //  Truth track target will be obtained from the scoring plane hit then
@@ -283,10 +282,10 @@ ldmx::Track TruthSeedProcessor::taggerFullSeed(
   ts_truth_target.ts_type_ = ldmx::TrackStateType::AtTarget;
   smeared_truth_track.addTrackState(ts_truth_target);
 
-  ldmx_log(debug) << "Truth parameters at target" << std::endl;
+  ldmx_log(debug) << "Truth parameters at target";
   for (auto par : truth_track_target.getPerigeeParameters())
     ldmx_log(debug) << par << " ";
-  ldmx_log(debug) << std::endl;
+  ldmx_log(debug);
 
   // This is the un-smeared truth track that can be used for pulls and residuals
   ldmx::Track seed_truth_track = seedFromTruth(truth_track, false);
@@ -301,7 +300,7 @@ ldmx::Track TruthSeedProcessor::taggerFullSeed(
   ts_truth_beam_origin.ts_type_ = ldmx::TrackStateType::AtBeamOrigin;
   smeared_truth_track.addTrackState(ts_truth_beam_origin);
 
-  ldmx_log(debug) << "Smeared parameters at origin" << std::endl;
+  ldmx_log(debug) << "Smeared parameters at origin";
   for (auto par : smeared_truth_track.getPerigeeParameters())
     ldmx_log(debug) << par << " ";
 
@@ -340,7 +339,7 @@ ldmx::Track TruthSeedProcessor::seedFromTruth(const ldmx::Track& tt,
   Acts::BoundVector stddev;
 
   if (seed_smearing) {
-    ldmx_log(debug) << "Smear track and inflate covariance" << std::endl;
+    ldmx_log(debug) << "Smear track and inflate covariance";
 
     /*
       double sigma_d0     = rel_smearfactors_[Acts::eBoundLoc0]   * tt.getD0();
@@ -395,7 +394,7 @@ ldmx::Track TruthSeedProcessor::seedFromTruth(const ldmx::Track& tt,
     stddev[Acts::eBoundTime] =
         inflate_factors_[Acts::eBoundTime] * sigma_t * Acts::UnitConstants::ns;
 
-    ldmx_log(debug) << stddev << std::endl;
+    ldmx_log(debug) << stddev;
 
     std::vector<double> v_seed_params(
         (bound_params).data(),
@@ -726,21 +725,21 @@ void TruthSeedProcessor::produce(framework::Event& event) {
     }
 
     // Findable particle selection
-    // std::cout << "!!! n_recoil_sim_hits found: " <<
-    // hit_count_map_recoil[hit.getTrackID()].size() << std::endl;
+    // ldmx_log(trace) << "!!! n_recoil_sim_hits found: " <<
+    // hit_count_map_recoil[hit.getTrackID()].size();
     if (hit_count_map_recoil[hit.getTrackID()].size() > n_min_hits_recoil_ &&
         found_ecal_hit && !skip_recoil_) {
       ldmx::Track truth_recoil_track =
           recoilFullSeed(particle_map[hit.getTrackID()], hit.getTrackID(), hit,
                          ecal_hit, hit_count_map_recoil, target_surface,
                          target_unbound_surface, ecal_surface);
-      // std::cout << "!!! Recoil track created" << std::endl;
-      // std::cout << "!!! Recoil track momentum: " <<
+      // ldmx_log(trace) << "!!! Recoil track created";
+      // ldmx_log(trace) << "!!! Recoil track momentum: " <<
       // truth_recoil_track.getMomentum()[0] << " " <<
       // truth_recoil_track.getMomentum()[1] << " " <<
-      // truth_recoil_track.getMomentum()[2] << std::endl; std::cout << "!!! Hit
+      // truth_recoil_track.getMomentum()[2]; ldmx_log(trace) << "!!! Hit
       // momentum: " << hit.getMomentum()[0] << " " << hit.getMomentum()[1] << "
-      // " << hit.getMomentum()[2] << std::endl;
+      // " << hit.getMomentum()[2];
       recoil_truth_tracks.push_back(truth_recoil_track);
     }
   }
@@ -768,9 +767,9 @@ void TruthSeedProcessor::produce(framework::Event& event) {
     tagger_truth_seeds.push_back(seed);
   }
 
-  ldmx_log(debug) << "Forming seeds from truth" << std::endl;
+  ldmx_log(debug) << "Forming seeds from truth";
   for (auto& tt : recoil_truth_tracks) {
-    ldmx_log(debug) << "Smearing truth track" << std::endl;
+    ldmx_log(debug) << "Smearing truth track";
 
     ldmx::Track seed = seedFromTruth(tt, seed_smearing_);
 
