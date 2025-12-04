@@ -146,10 +146,7 @@ void SimulatorBase::configure(framework::config::Parameters& parameters) {
 }
 void SimulatorBase::createLogging() {
   auto logging_prefix = parameters_.get<std::string>("logging_prefix");
-  // For now dont print out anything from GEANT
-  // Next step is to modify G4Session to print everything into our logging
-  // system
-  session_handle_ = std::make_unique<BatchSession>();
+  session_handle_ = std::make_unique<LoggedSession>(logging_prefix);
 
   if (session_handle_ != nullptr)
     ui_manager_->SetCoutDestination(session_handle_.get());
