@@ -1,4 +1,4 @@
-name: apply clang tools
+name: Apply clang tools
 on:
   pull_request:
   workflow_dispatch:
@@ -40,5 +40,5 @@ jobs:
         git config user.name 'github-actions[bot]'
         git config user.email 'github-actions[bot]@users.noreply.github.com'
         git add .
-        git commit -m "apply clang-format and clang-tidy" || exit 0
+        git commit -m "Apply clang-format and clang-tidy" || exit 0
         git push origin HEAD:${GITHUB_HEAD_REF}
