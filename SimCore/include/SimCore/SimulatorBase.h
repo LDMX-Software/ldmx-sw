@@ -49,7 +49,7 @@ class SimulatorBase : public framework::Producer {
   std::unique_ptr<RunManager> run_manager_;
 
   /// Handle to the G4Session -> how to deal with G4cout and G4cerr
-  std::unique_ptr<G4UIsession> session_handle_;
+  std::unique_ptr<LoggedSession> session_handle_;
 
   /// Commands not allowed to be passed from python config file
   ///     This is because Simulator already runs them.

@@ -2,103 +2,65 @@
  * @file G4Session.h
  * @brief Classes which redirect the output of G4cout and G4cerr
  * @author Tom Eichlersmith, University of Minnesota
+ * @author Tamas Almos Vami, UCSB
  */
 
-#ifndef SIMCORE_G4SESSION_H_
-#define SIMCORE_G4SESSION_H_
+#ifndef SIMCORE_G4SESSION_H
+#define SIMCORE_G4SESSION_H
 
-#include <fstream>
-#include <iostream>
+#include <algorithm>
+#include <string>
 
-// Geant4
+#include "Framework/Logger.h"
 #include "G4UIsession.hh"
 
 namespace simcore {
 
 /**
  * @class LoggedSession
+ * @brief Session that routes G4cout and G4cerr through the Framework logger
  *
- * Log the output of Geant4 to files in current directory.
+ * This session intercepts all Geant4 output and routes it through the
+ * Framework's logging system with the logger name "Geant4". Messages are
+ * parsed to determine appropriate log levels:
+ * - G4cout with "WARNING" -> warn
+ * - G4cout with "ERROR" -> error
+ * - G4cout with verbose tracking info -> trace
+ * - G4cout default -> debug
+ * - G4cerr with "ERROR" or "FATAL" -> error
+ * - G4cerr default -> warn
  */
 class LoggedSession : public G4UIsession {
  public:
   /**
-   * Constructor
-   *
-   * Sets up output file streams for the cout and cerr paths.
+   * Constructor - creates a logger named "Geant4"
    */
-  LoggedSession(const std::string& coutFileName = "G4cout.log",
-                const std::string& cerrFileName = "G4cerr.log");
+  LoggedSession(std::string logging_prefix = "Geant4");
 
   /**
    * Destructor
-   *
-   * Closes the output files streams
    */
-  ~LoggedSession();
+  ~LoggedSession() override = default;
 
   /**
-   * Required hook for Geant4
-   *
-   * Does nothing
+   * Receive a message from G4cout
+   * @param message The message from Geant4
+   * @return 0 for success
    */
-  G4UIsession* SessionStart() { return nullptr; }
+  G4int ReceiveG4cout(const G4String& message) override;
 
   /**
-   * Redirects cout to file
+   * Receive a message from G4cerr
+   * @param message The message from Geant4
+   * @return 0 for success
    */
-  G4int ReceiveG4cout(const G4String& message);
-
-  /**
-   * Redirects cerr to file
-   */
-  G4int ReceiveG4cerr(const G4String& message);
+  G4int ReceiveG4cerr(const G4String& message) override;
 
  private:
-  /** cout log file */
-  std::ofstream cout_file_;
-
-  /** cerr log file */
-  std::ofstream cerr_file_;
-
-};  // LoggedSession
-
-/**
- * @class BatchSession
- *
- * Do _nothing_ with G4cout and G4cerr messages. This is made to improve
- * performance.
- */
-class BatchSession : public G4UIsession {
- public:
-  /**
-   * Constructor
-   */
-  BatchSession() {}
-
-  /**
-   * Destructor
-   */
-  ~BatchSession() {}
-
-  /**
-   * Required hook for Geant4
-   *
-   * Does nothing
-   */
-  G4UIsession* SessionStart() { return nullptr; }
-
-  /**
-   * Does nothing with input
-   */
-  G4int ReceiveG4cout(const G4String&) { return 0; }
-
-  /**
-   * Does nothing with input
-   */
-  G4int ReceiveG4cerr(const G4String&) { return 0; }
+  /// Framework logger for Geant4 messages
+  mutable framework::logging::logger the_log_;
 };
 
 }  // namespace simcore
 
-#endif
+#endif  // SIMCORE_G4SESSION_H

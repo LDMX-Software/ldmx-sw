@@ -97,7 +97,7 @@ class simulator(Producer):
         self.postInitCommands = [ ]
         self.actions = [ ]
         self.biasing_operators = [ ]
-        self.logging_prefix = ''
+        self.logging_prefix = 'GEANT4'
         self.rootPrimaryGenUseSeed = False
         self.validate_detector = False
         self.verbosity = 0
