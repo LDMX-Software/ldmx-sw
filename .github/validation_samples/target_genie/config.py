@@ -125,7 +125,7 @@ hcal_veto = hcal.HcalVetoProcessor()
 
 p.logger.termLevel = 10
 # Example to show trace level logging for ecal veto (only)
-p.logger.custom(full_tracking_sequence.dqm_recoil_cfk, level = -1)
+p.logger.custom(full_tracking_sequence.dqm_recoil_ckf, level = -1)
 
 # Add full tracking for both recoil trackers: digi, seeds, CFK, ambiguity resolution, GSF, DQM
 recoil_tracking = [
@@ -138,7 +138,7 @@ recoil_tracking = [
 ]
 
 recoil_tracker_dqm = [
-    full_tracking_sequence.dqm_recoil_cfk,
+    full_tracking_sequence.dqm_recoil_ckf,
 #     full_tracking_sequence.dqm_recoil_gas,
 #     full_tracking_sequence.dqm_recoil_gsf
 ]
