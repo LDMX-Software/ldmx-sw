@@ -91,9 +91,9 @@ hcal_wab = hcal.HcalWABVetoProcessor()
 
 p.logger.termLevel = 1
 # Example to show trace level logging for recoil CKF  (only)
-#p.logger.custom(full_tracking_sequence.dqm_recoil_cfk, level = -1)
+#p.logger.custom(full_tracking_sequence.dqm_recoil_ckf, level = -1)
 
-# Add full tracking for both recoil trackers: digi, seeds, CFK, ambiguity resolution, GSF, DQM
+# Add full tracking for both recoil trackers: digi, seeds, CKF, ambiguity resolution, GSF, DQM
 recoil_tracking = [
     full_tracking_sequence.digi_recoil,
     full_tracking_sequence.truth_tracking,
@@ -104,7 +104,7 @@ recoil_tracking = [
 ]
 
 recoil_tracker_dqm = [
-    full_tracking_sequence.dqm_recoil_cfk,
+    full_tracking_sequence.dqm_recoil_ckf,
 #     full_tracking_sequence.dqm_recoil_gas,
 #     full_tracking_sequence.dqm_recoil_gsf
 ]
