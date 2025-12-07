@@ -62,29 +62,24 @@ void SeedFinderProcessor::configure(framework::config::Parameters& parameters) {
   d0max_ = parameters.get<double>("d0max", -15. * Acts::UnitConstants::mm);
   d0min_ = parameters.get<double>("d0min", -45. * Acts::UnitConstants::mm);
   z0max_ = parameters.get<double>("z0max", 60. * Acts::UnitConstants::mm);
-
   phicut_ = parameters.get<double>("phicut", 0.1);
   thetacut_ = parameters.get<double>("thetacut", 0.2);
-
   loc0cut_ = parameters.get<double>("loc0cut", 0.1);
   loc1cut_ = parameters.get<double>("loc1cut", 0.3);
-
   strategies_ =
       parameters.get<std::vector<std::string>>("strategies", {"0,1,2,3,4"});
-
   inflate_factors_ = parameters.get<std::vector<double>>(
       "inflate_factors", {10., 10., 10., 10., 10., 10.});
-
   bfield_ = parameters.get<double>("bfield", 1.5);
-
   input_pass_name_ = parameters.get<std::string>("input_pass_name");
-
   sim_particles_passname_ =
       parameters.get<std::string>("sim_particles_passname");
   tagger_trks_event_collection_passname_ =
       parameters.get<std::string>("tagger_trks_event_collection_passname");
   sim_particles_event_passname_ =
       parameters.get<std::string>("sim_particles_event_passname");
+  u_error_ = parameters.get<double>("u_error");
+  v_error_ = parameters.get<double>("v_error");
 }
 
 void SeedFinderProcessor::produce(framework::Event& event) {
@@ -280,16 +275,11 @@ ldmx::Track SeedFinderProcessor::seedTracker(
 
     loc(0) = meas.getLocalPosition()[0];
     loc(1) = 0.;
-    double u_error = sqrt(vmeas[0].getLocalCovariance()[0]);
+    // weight matrix
+    Acts::ActsMatrix<2, 2> w_i = Acts::ActsMatrix<2, 2>::Zero();
 
-    // TODO Fix vError for measurements
-    double v_error = 40. / sqrt(12);
-
-    Acts::ActsMatrix<2, 2> w_i =
-        Acts::ActsMatrix<2, 2>::Zero();  // weight matrix
-
-    w_i(0, 0) = 1. / (u_error * u_error);
-    w_i(1, 1) = 1. / (v_error * v_error);
+    w_i(0, 0) = 1. / (u_error_ * u_error_);
+    w_i(1, 1) = 1. / (v_error_ * v_error_);
 
     Acts::Vector2 yprime_i = loc + offset - xoffset;
     y += (a_i.transpose()) * w_i * yprime_i;
@@ -325,8 +315,8 @@ ldmx::Track SeedFinderProcessor::seedTracker(
   dir /= dir.norm();
 
   // Momentum at xmeas
-  double p =
-      0.3 * bfield_ * (1. / (2. * abs(b(2)))) * 0.001;  // R in meters, p in GeV
+  // R in meters, p in GeV
+  double p = 0.3 * bfield_ * (1. / (2. * abs(b(2)))) * 0.001;
   // std::cout<<"Momentum "<< p*dir << std::endl;
 
   // Convert it to MeV since that's what TrackUtils assumes
@@ -486,6 +476,7 @@ void SeedFinderProcessor::findSeedsFromMap(ldmx::Tracks& seeds,
 
   // K vectors in an array v[0],v[1].... v[K-1]
 
+  // Loop over all combinations
   while (it[0] != groups_iter->second.end()) {
     // process the pointed-to elements
 
