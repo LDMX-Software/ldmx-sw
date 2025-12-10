@@ -3,7 +3,7 @@ from LDMX.Tracking import tracking
 from LDMX.Tracking import geo
 
 from LDMX.Tracking.geo import TrackersTrackingGeometryProvider as trackgeo
-trackgeo.get_instance().setDetector('ldmx-det-v14-8gev')
+trackgeo.get_instance().setDetector('ldmx-det-v15-8gev')
 
 # Truth seeder
 # Runs truth tracking producing tracks from target scoring plane hits for Recoil

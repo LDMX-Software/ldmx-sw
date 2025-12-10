@@ -13,7 +13,7 @@ class TrackersTrackingGeometryProvider(ldmxcfg.ConditionsObjectProvider):
         from LDMX.Tracking.geo import TrackersTrackingGeometryProvider as trackgeo
         trackgeo.get_instance().setDetector('ldmx-det-v12')
 
-    The default detector is 'ldmx-det-v14'.
+    The default detector is 'ldmx-det-v15-8gev'.
     """
 
     __instance = None
@@ -46,7 +46,7 @@ class TrackersTrackingGeometryProvider(ldmxcfg.ConditionsObjectProvider):
             raise Exception('TrackersTrackingGeometryProvider is a singleton class and should only be retrieved using get_instance()')
         else: 
             super().__init__('TrackersTrackingGeometry', 'tracking::geo::TrackersTrackingGeometryProvider', 'Tracking')
-            self.setDetector('ldmx-det-v14-8gev-no-cals')
+            self.setDetector('ldmx-det-v15-8gev')
             #  acts x = global z
             #   // global z:  -200 - 900/2 = -650 to -200 + 900/2 = 250 mm
             #   // global y: -70 to 70

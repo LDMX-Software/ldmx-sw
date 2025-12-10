@@ -1480,7 +1480,7 @@
 
   <structure>
     <volume name="support_box">
-      <materialref ref="G4_Al0x2705780"/>
+      <materialref ref="Aluminum"/>
       <solidref ref="support_box-SOL"/>
     </volume>
   </structure>
