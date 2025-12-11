@@ -61,7 +61,7 @@
 
     <!-- One LP bar volume for pad 2 -->
     <volume name="lp_pad2_bar_volume">
-      <materialref ref="AcrylicPMMA"/>
+      <materialref ref="AcrylicPMMA"/> 
       <solidref ref="light_pipe_bar_box"/>
       <auxiliary auxtype="VisAttributes" auxvalue="TriggerPadVis"/>
       <auxiliary auxtype="DetElem"       auxvalue="LightPipe"/>
@@ -69,7 +69,7 @@
 
     <!-- One LP bar volume for pad 1 -->
     <volume name="lp_pad1_bar_volume">
-      <materialref ref="AcrylicPMMA"/>
+      <materialref ref="AcrylicPMMA"/> 
       <solidref ref="light_pipe_bar_box"/>
       <auxiliary auxtype="VisAttributes" auxvalue="TriggerPadVis"/>
       <auxiliary auxtype="DetElem"       auxvalue="LightPipe"/>
@@ -85,6 +85,8 @@
         number_of_bars = 12  →  12 bars per layer
         We place 2 layers →  24 bars per pad
       -->
+      <!-- LP bars shifted in x by exactly the TS bar length (trigger_bar_dx)
+       so they are glued to, but not overlapping, the TS bars. -->
       <loop for="x" to="number_of_bars" step="1">
 
         <!-- ===================== -->
@@ -95,7 +97,7 @@
         <physvol copynumber="2*x-2">
           <volumeref ref="lp_pad2_bar_volume" />
           <position name="lp_pad2_bar_layer1_pos" unit="mm"
-                    x="0"
+                    x="trigger_bar_dx"
                     y="-target_dim_y/2
                        + lp_bar_dy*(x - 0.5)
                        + lp_bar_y_gap*(x - 1)
@@ -111,7 +113,7 @@
         <physvol copynumber="2*x-1">
           <volumeref ref="lp_pad2_bar_volume" />
           <position name="lp_pad2_bar_layer2_pos" unit="mm"
-                    x="0"
+                    x="trigger_bar_dx"
                     y="-target_dim_y/2
                        + lp_bar_dy*(x - 0.5)
                        + lp_bar_y_gap*(x - 1)
@@ -132,7 +134,7 @@
         <physvol copynumber="2*x-2">
           <volumeref ref="lp_pad1_bar_volume" />
           <position name="lp_pad1_bar_layer1_pos" unit="mm"
-                    x="0"
+                    x="trigger_bar_dx"
                     y="-target_dim_y/2
                        + lp_bar_dy*(x - 0.5)
                        + lp_bar_y_gap*(x - 1)
@@ -148,7 +150,7 @@
         <physvol copynumber="2*x-1">
           <volumeref ref="lp_pad1_bar_volume" />
           <position name="lp_pad1_bar_layer2_pos" unit="mm"
-                    x="0"
+                    x="trigger_bar_dx"
                     y="-target_dim_y/2
                        + lp_bar_dy*(x - 0.5)
                        + lp_bar_y_gap*(x - 1)

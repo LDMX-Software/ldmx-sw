@@ -71,7 +71,7 @@
     </volume>
 
     <volume name="lp_pad3_bar_volume">
-      <materialref ref="AcrylicPMMA"/>
+      <materialref ref="AcrylicPMMA"/> 
       <solidref ref="lp3_bar_box"/>
       <auxiliary auxtype="VisAttributes" auxvalue="TriggerPadVis"/>
       <auxiliary auxtype="DetElem"       auxvalue="LightPipe"/>
@@ -102,7 +102,7 @@
         <physvol copynumber="2*x-2">  <!-- LP pad 3, layer 1 -->
           <volumeref ref="lp_pad3_bar_volume" />
           <position name="lp_pad3_bar_layer1_pos" unit="mm"
-                    x="0"
+                    x="trigger_bar_dx"
                     y="-target_dim_y/2
                        + lp_bar_dy*(x - 0.5)
                        + lp_bar_y_gap*(x - 1)
@@ -115,7 +115,7 @@
         <physvol copynumber="2*x - 1">  <!-- LP pad 3, layer 2 -->
           <volumeref ref="lp_pad3_bar_volume" />
           <position name="lp_pad3_bar_layer2_pos" unit="mm"
-                    x="0"
+                    x="trigger_bar_dx"
                     y="-target_dim_y/2
                        + lp_bar_dy*(x - 0.5)
                        + lp_bar_y_gap*(x - 1)
