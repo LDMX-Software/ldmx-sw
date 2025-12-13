@@ -79,18 +79,12 @@
         <positionref ref="trig_scint_pos"/>
         <rotationref ref="identity"/>
       </physvol>
-      <!-- New: TS light pipes for pads 1 & 2 -->
-      <physvol copynumber="4">
-        <file name="ts_light_pipes.gdml"/>
-        <positionref ref="trig_scint_pos"/>
-        <rotationref ref="identity"/>
-      </physvol>
       <physvol copynumber="5">
         <file name="recoil.gdml"/>
         <positionref ref="recoil_pos"/>
         <rotationref ref="identity"/>
       </physvol>
-      <physvol copynumber="6"> 
+      <!-- <physvol copynumber="6"> 
         <file name="ecal.gdml"/> 
         <positionref ref="em_calorimeter_pos"/> 
         <rotationref ref="identity"/> 
@@ -99,7 +93,7 @@
         <file name="hcal.gdml"/> 
         <positionref ref="hadron_calorimeter_pos"/> 
         <rotationref ref="identity"/> 
-      </physvol>
+      </physvol> -->
       <auxiliary auxtype="DetElem" auxvalue="Top"/>
     </volume>
   </structure>
@@ -107,10 +101,10 @@
   <userinfo>
     <!-- detector version -->
     <auxiliary auxtype="DetectorVersion" auxvalue="1">
-      <auxiliary auxtype="DetectorName" auxvalue="ldmx-reduced-v2"/>
-      <auxiliary auxtype="Author" auxvalue="Tamas Vami, Sanjit Masanam"/>
+      <auxiliary auxtype="DetectorName" auxvalue="ldmx-reduced-v3"/>
+      <auxiliary auxtype="Author" auxvalue="[placeholder]"/>
       <auxiliary auxtype="Description" 
-                 auxvalue="The reduced geometry for a 2025 summer running"/>
+                 auxvalue="The reduced geometry for ESA run"/>
     </auxiliary>
 
     <!-- define regions -->

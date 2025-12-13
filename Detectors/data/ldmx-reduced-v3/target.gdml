@@ -66,6 +66,7 @@
     <volume name="trigger_pad3_bar_volume">
       <materialref ref="Polyvinyltoluene"/>
       <solidref ref="trigger_bar_box"/>
+      <auxiliary auxtype="Region"        auxvalue="trig_scint"/>    <!-- Make TS3 scint behave like TS1 & TS2 -->
       <auxiliary auxtype="VisAttributes" auxvalue="TriggerPadVis"/>
       <auxiliary auxtype="DetElem" auxvalue="TriggerPad"/>
     </volume>
@@ -73,6 +74,7 @@
     <volume name="lp_pad3_bar_volume">
       <materialref ref="AcrylicPMMA"/> 
       <solidref ref="lp3_bar_box"/>
+      <auxiliary auxtype="Region"        auxvalue="trig_scint"/>  <!-- Make TS3 light pipe also belong to the trigger scint region -->
       <auxiliary auxtype="VisAttributes" auxvalue="TriggerPadVis"/>
       <auxiliary auxtype="DetElem"       auxvalue="LightPipe"/>
     </volume>
