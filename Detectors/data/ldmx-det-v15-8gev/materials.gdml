@@ -210,3 +210,10 @@ use "glue" instead of listing the chemical formula.
   <composite n="9" ref="C"/>
   <composite n="10" ref="H"/>
 </material>
+<material name="AcrylicPMMA" state="solid">
+  <MEE unit="eV" value="74.0"/>
+  <D unit="g/cm3" value="1.19"/>
+  <fraction n="0.534" ref="H"/>
+  <fraction n="0.333" ref="C"/>	
+  <fraction n="0.133" ref="O"/>
+</material>

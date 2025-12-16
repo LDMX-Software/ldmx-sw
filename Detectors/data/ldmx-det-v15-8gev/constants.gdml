@@ -43,8 +43,11 @@
 <constant name="trigger_pad_dim_x"          value="target_dim_x" />
 <constant name="trigger_pad_dim_y"          value="target_dim_y" />
 <constant name="trigger_bar_dx"             value="30"/>
-<constant name="trigger_bar_dy"             value="3.05"/>   
+<constant name="trigger_bar_dy"             value="3.15"/>   
 <constant name="number_of_bars"             value="24"/>
+<constant name="sipm_thickness"             value="0.05*mm"/>
+<constant name="sipm_dy"                    value="2*mm"/>
+<constant name="sipm_dz"                    value="2*mm"/>
 
 <constant name="trigger_pad_offset"    
           value="(target_dim_y - (number_of_bars*trigger_bar_dy + (number_of_bars - 1)*trigger_pad_bar_gap))/2" />
@@ -54,6 +57,13 @@
           value="1.4248*mm" />
 <constant name="trig_scint_pad12_separation"
           value="60"/>
+<!--Trigger pad x follows the beam curve and is determined a priori
+    If the z values of the trigger pads change, these must be recalculated-->
+<constant name="trigger_pad1_x"      
+          value="-21.5" />
+<constant name="trigger_pad2_x"      
+          value="-19" />
+
 <constant name="trigger_pad1_z"
           value="- trig_scint_pad12_separation - trigger_pad_thickness/2 - clearance" />
 <constant name="trigger_pad2_z"    
@@ -66,6 +76,11 @@
 <constant name="trig_scint_area_envelope_y" value="magnet_gap_dy - 5" />
 <constant name="trig_scint_area_envelope_z" 
           value="-trigger_pad1_z + trigger_pad_thickness + 2*clearance"/>
+
+<!-- Light-pipe bar dimensions for TS (2 x 2 x 36.24 mm) -->
+<constant name="light_pipe_dx"        value="36.24*mm"/>
+<constant name="light_pipe_dy"        value="2*mm"/>
+<constant name="light_pipe_thickness" value="2*mm"/>
 
 <!--
   Tracker common variables 
