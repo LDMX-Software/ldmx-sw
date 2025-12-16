@@ -1,5 +1,6 @@
 from LDMX.Framework.ldmxcfg import Producer
 from LDMX.Tracking.make_path import makeFieldMapPath
+from math import sqrt
 
 class DigitizationProcessor(Producer):
     """ Producer that smears simulated tracker hits.
@@ -71,6 +72,10 @@ class SeedFinderProcessor(Producer):
         The name of the input collection of hits to be used for seed finding.
     out_seed_collection : string
         The name of the ouput collection of seeds to be stored.
+    u_error : float
+        Uncertainty in the sensitive direction for the seed hits.
+    v_error : float
+        Uncertainty in the insensitive direction for the seed hits.
     """
 
     def __init__(self, instance_name="SeedFinderProcessor"):
@@ -92,6 +97,8 @@ class SeedFinderProcessor(Producer):
         self.sim_particles_passname = ''
         self.tagger_trks_event_collection_passname = ''
         self.sim_particles_event_passname = ''
+        self.u_error = 0.006
+        self.v_error = 40. / sqrt(12)
         
         
 

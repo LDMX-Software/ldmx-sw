@@ -176,6 +176,11 @@ class SeedFinderProcessor : public TrackingGeometryUser {
   std::shared_ptr<tracking::sim::TruthMatchingTool> truth_matching_tool_ =
       nullptr;
 
+  /// u error
+  double u_error_;
+  /// v error
+  double v_error_;
+
 };  // SeedFinderProcessor
 
 }  // namespace reco
