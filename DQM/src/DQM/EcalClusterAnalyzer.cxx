@@ -214,7 +214,7 @@ void EcalClusterAnalyzer::analyze(const framework::Event& event) {
     n_hits_from_electron.resize(nbr_of_electrons + 2);
     // total number of energy coming from electron, index = electron ID
     std::vector<double> energy_from_electron;
-    energy_from_electron.resize(nbr_of_electrons + 1);
+    energy_from_electron.resize(nbr_of_electrons + 2);
     double energy_sum = 0.;
     double n_sum = 0.;
 
