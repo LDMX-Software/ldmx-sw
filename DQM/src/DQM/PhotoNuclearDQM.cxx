@@ -218,9 +218,9 @@ void PhotoNuclearDQM::analyze(const framework::Event &event) {
     }
 
     // Now the interaction material
-    if (pn_interaction_material.find("G4_Si") != std::string::npos) {
+    if (pn_interaction_material.find("Silicon") != std::string::npos || pn_interaction_material.find("G4_Si") != std::string::npos) {
       histograms_.fill("pn_interaction_material", 2);
-    } else if (pn_interaction_material.find("G4_W") != std::string::npos) {
+    } else if (pn_interaction_material.find("Tungsten") != std::string::npos || pn_interaction_material.find("G4_W") != std::string::npos) {
       histograms_.fill("pn_interaction_material", 3);
     } else if (pn_interaction_material.find("FR4") != std::string::npos) {
       // Glass epoxy
@@ -237,7 +237,7 @@ void PhotoNuclearDQM::analyze(const framework::Event &event) {
     } else if (pn_interaction_material.find("Glue") != std::string::npos) {
       // This is the notion for PVT
       histograms_.fill("pn_interaction_material", 8);
-    } else if (pn_interaction_material.find("G4_AIR") != std::string::npos) {
+    } else if (pn_interaction_material.find("Air") != std::string::npos || pn_interaction_material.find("G4_AIR") != std::string::npos) {
       // Air
       histograms_.fill("pn_interaction_material", 9);
     } else {
