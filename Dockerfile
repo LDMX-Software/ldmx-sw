@@ -13,3 +13,4 @@ RUN cmake -DCMAKE_INSTALL_PREFIX=/usr/local -S /code -B /code/build &&\
     ldconfig
 
 ENV LDMX_SW_INSTALL=/usr/local
+ENV ROOT_INCLUDE_PATH=/usr/local/include
