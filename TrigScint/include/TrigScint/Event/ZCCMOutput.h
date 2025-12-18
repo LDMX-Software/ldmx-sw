@@ -6,18 +6,6 @@
 #include "TrigScint/Event/TrigScintQIEDigis.h"
 #include "QIEStream.h" // for definitions of Mask
 
-/*
-  template <uint32_t N>
-struct Mask {
-  static const uint32_t ONE{1};
-  static const uint32_t M = (ONE << N) - ONE;
-};
-template <uint8_t n>
-struct Mask8 {
-  static const uint8_t ONE{1};
-  static const uint8_t M = (ONE << n) - ONE;
-};
-*/
 namespace trigscint {
 
 /**
