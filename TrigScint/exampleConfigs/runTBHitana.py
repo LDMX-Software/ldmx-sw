@@ -41,9 +41,9 @@ p.histogramFile = outname #.replace(".root"
 
 p.maxEvents = nEv
 
-p.logFileName=outname.replace(".root",".log")
-p.termLogLevel = 2
-p.logFileLevel=1#0
+p.logger.fileName=outname.replace(".root",".log")
+p.logger.termLevel = 2
+p.logger.fileLevel=1#0
 
 p.logger.debug(tsEv)
 
