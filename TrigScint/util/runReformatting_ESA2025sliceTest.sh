@@ -54,7 +54,6 @@ fi
 
 logVerbosity=2 #set to 0 for lots of debug printout to logs, and rudimentary python decoding script plots 
 rootFilePath="rootFiles"
-mkdir -p $rootFilePath
 
 echo "trigger flags set to ${trigFlag}"
 
@@ -74,12 +73,15 @@ for file in $(cat $fileList) ; do
 	echo "Running over $file ..."
 	sleep 1 
 	timeStart=$(date +%s)                   #keep track of processing time  
-	rawRootFile="${file//.dat/.root}"    #output from RAW->tree format conversion 
 	path=${file%/*}
-	path="${path/${rootFilePath}}"           #set it to the final path for now. when running batch, instead use a tmp dir, and then copy
-	fName=${rawRootFile##*/}
+	path="${path}/${rootFilePath}"           #set it to the final path for now. when running batch, instead use a tmp dir, and then copy
+	mkdir -p $path
+	echo "Using root file output path $path"
+	fName=${file##*/}
+	rawRootFile="${path}/${fName//.dat/.root}"    #output from RAW->tree format conversion 
+	rootFileName=${rawRootFile##*/}
 	#then follows all the stepwise ldmx producer output files
-	digiRootFile="${path}/decoded_${fName}"
+	digiRootFile="${path}/decoded_${rootFileName}"
 	digiRootLogFile="${digiRootFile/.root/.log}"
 	linearRootFile="${digiRootFile/.root/_linearize.root}" 
 	hitsRootFile="${linearRootFile/.root/_hits.root}"
