@@ -9,8 +9,8 @@
 #include "Framework/Configure/Parameters.h"  // Needed to import parameters from configuration file
 #include "Framework/Event.h"
 #include "Framework/EventProcessor.h"  //Needed to declare processor
-#include "TrigScint/Event/ZCCMOutput.h"
 #include "TrigScint/Event/TrigScintQIEDigis.h"
+#include "TrigScint/Event/ZCCMOutput.h"
 namespace trigscint {
 
 class ZCCMDecoder : public framework::Producer {
@@ -54,9 +54,9 @@ class ZCCMDecoder : public framework::Producer {
   int number_of_lanes_{14};
   // number of channels served by each lane
   //  int number_of_channels_per_lane_{6}; //consider this static
-  
+
   // number of channels in the readout (all pads)
-  int n_channels_{number_of_lanes_*ZCCMOutput::NUM_CHAN_PER_LANE};
+  int n_channels_{number_of_lanes_ * ZCCMOutput::NUM_CHAN_PER_LANE};
   // number of time samples making up the event
   int n_samples_{70};
   // configurable flag, to set the isRealData bit in the event header
@@ -64,7 +64,6 @@ class ZCCMDecoder : public framework::Producer {
   // keep track of which of max 4 modules are used (get from lane/module map)
   int modules_used_[4] = {0};
 
-  
 };  // decoder
 
 }  // namespace trigscint
