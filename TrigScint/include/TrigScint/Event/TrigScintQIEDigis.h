@@ -48,6 +48,16 @@ class TrigScintQIEDigis {
   int getElecID() const { return elec_id_; }
 
   /**
+   * Get module ID (pad naming number -1)
+   */
+  int getModuleID() const { return module_id_; }
+  
+  /**
+   * Get lane ID
+   */
+  int getLaneID() const { return lane_id_; }
+  
+  /**
    * Get ADCs of all time samples
    */
   std::vector<int> getADC() const { return adcs_; }
@@ -85,6 +95,16 @@ class TrigScintQIEDigis {
   void setElecID(const int elecid) { elec_id_ = elecid; }
 
   /**
+   * Store the module ID (pad number-1)
+   */
+  void setModuleID(const int moduleid) { module_id_ = moduleid; }
+
+  /**
+   * Store the lane (fiber) ID
+   */
+  void setLaneID(const int laneid) { lane_id_ = laneid; }
+  
+  /**
    * Store adcs of all time samples
    * @param adc_ array of adcs
    */
@@ -107,7 +127,12 @@ class TrigScintQIEDigis {
   int chan_id_;
   /// channel ID
   int elec_id_{-1};
-
+  /// module ID (pad)
+  int module_id_;
+  /// lane ID (fiber)
+  int lane_id_{-1};
+  
+  
   /// analog to digital counts
   std::vector<int> adcs_;
 
