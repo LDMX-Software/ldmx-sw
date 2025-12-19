@@ -260,8 +260,8 @@ void ZCCMDecoder::produce(framework::Event &event) {
 	  ce_map.insert(std::pair<int, std::vector<int>>(elec_id, ces));
 	}
 	cid_map[elec_id].at(sample_nb) = cid_val;
-	bc0_map[elec_id].at(sample_nb) = bc0_val;
-	ce_map[elec_id].at(sample_nb) = ce_val;
+	bc0_map[elec_id].at(sample_nb) = bc0;
+	ce_map[elec_id].at(sample_nb) = ce;
       }// over channels
       ldmx_log(debug) << "Done with lane " <<  int(lane)
 		      << " which we think is " << i_word%n_lanes
