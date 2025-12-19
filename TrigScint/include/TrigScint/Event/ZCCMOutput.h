@@ -2,9 +2,9 @@
 #define TRIGSCINT_EVENT_ZCCMOUTPUT_H
 
 //---< ROOT >---//
+#include "QIEStream.h"  // for definitions of Mask
 #include "TObject.h"
 #include "TrigScint/Event/TrigScintQIEDigis.h"
-#include "QIEStream.h" // for definitions of Mask
 
 namespace trigscint {
 
@@ -97,22 +97,21 @@ class ZCCMOutput {
     use these to define positions and sizes of error flags etc other header
     words relative to each other.
     these simply state the order:
-    header {16B DAQ header, 8B TS time stamp, 8B empty}{message 0}...{message N-1}
-    for each time sample, every lane each sends a message:
-    [ 1B ADC for 6 channels, 2B empty, 1B TDC for 6 channels, 1B flags, 1B lane nb];
-    and the 1B "flags" structure is:
-    flags = 2b CID (capID), 1b CE (channel alignment? error), 1b BC0, 4b empty
+    header {16B DAQ header, 8B TS time stamp, 8B empty}{message 0}...{message
+    N-1} for each time sample, every lane each sends a message: [ 1B ADC for 6
+    channels, 2B empty, 1B TDC for 6 channels, 1B flags, 1B lane nb]; and the 1B
+    "flags" structure is: flags = 2b CID (capID), 1b CE (channel alignment?
+    error), 1b BC0, 4b empty
   */
   const static int DAQHEADER_POS{0};
-  const static int DAQHEADER_LEN_BYTES{16}; 
+  const static int DAQHEADER_LEN_BYTES{16};
   const static int TIMESTAMP_POS{DAQHEADER_POS + DAQHEADER_LEN_BYTES};
   const static int TIMESTAMP_LEN_BYTES{8};
-  const static int EMPTY_HEADER_WORD_POS{TIMESTAMP_POS +
-					 TIMESTAMP_LEN_BYTES};
+  const static int EMPTY_HEADER_WORD_POS{TIMESTAMP_POS + TIMESTAMP_LEN_BYTES};
   const static int EMPTY_HEADER_WORD_LEN_BYTES{8};
   // this marks the start of event data (i.e. after end of event header)
   const static int EVENTDATA_POS{EMPTY_HEADER_WORD_POS +
-				 EMPTY_HEADER_WORD_LEN_BYTES};
+                                 EMPTY_HEADER_WORD_LEN_BYTES};
   /*
     the time sample word has ADC, TDC, flags and lane:
     one for each lane, in every time sample
@@ -121,15 +120,17 @@ class ZCCMOutput {
   // the number of channels sets the length of the ADC and TDC streams
   const static int NUM_CHAN_PER_LANE{6};
   const static int ADC_SAMPLE_WORD_POS{0};
-  const static int ADC_LEN_BYTES{1*NUM_CHAN_PER_LANE};
-  const static int EMPTY_WORD_SAMPLE_WORD_POS{ADC_SAMPLE_WORD_POS+ADC_LEN_BYTES};
+  const static int ADC_LEN_BYTES{1 * NUM_CHAN_PER_LANE};
+  const static int EMPTY_WORD_SAMPLE_WORD_POS{ADC_SAMPLE_WORD_POS +
+                                              ADC_LEN_BYTES};
   const static int EMPTY_WORD_LEN_BYTES{2};
-  const static int TDC_SAMPLE_WORD_POS{EMPTY_WORD_SAMPLE_WORD_POS
-				       +EMPTY_WORD_LEN_BYTES};
-  const static int TDC_LEN_BYTES{1*NUM_CHAN_PER_LANE};
-  const static int FLAGS_SAMPLE_WORD_POS{TDC_SAMPLE_WORD_POS+TDC_LEN_BYTES};
+  const static int TDC_SAMPLE_WORD_POS{EMPTY_WORD_SAMPLE_WORD_POS +
+                                       EMPTY_WORD_LEN_BYTES};
+  const static int TDC_LEN_BYTES{1 * NUM_CHAN_PER_LANE};
+  const static int FLAGS_SAMPLE_WORD_POS{TDC_SAMPLE_WORD_POS + TDC_LEN_BYTES};
   const static int FLAGS_LEN_BYTES{1};
-  const static int LANE_SAMPLE_WORD_POS{FLAGS_SAMPLE_WORD_POS + FLAGS_LEN_BYTES};
+  const static int LANE_SAMPLE_WORD_POS{FLAGS_SAMPLE_WORD_POS +
+                                        FLAGS_LEN_BYTES};
   const static int LANE_LEN_BYTES{1};
   // and positions of error bits/flags inside the flags word
   const static int CAPID_POS_IN_FLAG{0};
@@ -138,16 +139,16 @@ class ZCCMOutput {
   const static int CE_LEN_BITS{1};
   const static int BC0_POS_IN_FLAG{CE_POS_IN_FLAG + CE_LEN_BITS};
   const static int BC0_LEN_BITS{1};
-  const static int EMPTY_FLAG_WORD_POS_IN_FLAG{BC0_POS_IN_FLAG+BC0_LEN_BITS};
+  const static int EMPTY_FLAG_WORD_POS_IN_FLAG{BC0_POS_IN_FLAG + BC0_LEN_BITS};
   const static int EMPTY_FLAG_WORD_LEN_BITS{4};
-  
+
   // event data concludes the readout.
 
   // for convenience, define the length of a message (time sample for one lane)
-  const static int SAMPLE_WORD_LEN_BYTES = ADC_LEN_BYTES + TDC_LEN_BYTES
-                                       + EMPTY_WORD_LEN_BYTES + FLAGS_LEN_BYTES
-                                       + LANE_LEN_BYTES ;
- 
+  const static int SAMPLE_WORD_LEN_BYTES = ADC_LEN_BYTES + TDC_LEN_BYTES +
+                                           EMPTY_WORD_LEN_BYTES +
+                                           FLAGS_LEN_BYTES + LANE_LEN_BYTES;
+
  private:
   /// detector lane ID (aka fiber)
   int lane_;
