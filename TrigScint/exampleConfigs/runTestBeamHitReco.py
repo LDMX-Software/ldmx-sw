@@ -7,12 +7,12 @@ import sys
 
 inputPassName="conv"
 nEv=400000
-#p.maxEvents = nEv
+p.maxEvents = nEv
 
 if len(sys.argv) > 2 :
     timeSample=int(sys.argv[2])
 else :
-    timeSample=15
+    timeSample=1 #15
 
 if len(sys.argv) > 3 :
     pulseWidth=int(sys.argv[3])
@@ -22,15 +22,14 @@ else :
 from LDMX.TrigScint.trigScint import TestBeamHitProducer
 
 
-nChannels=12
+nChannels=24
 gainList=[2e6]*nChannels
 
 #now if there is a gain file, use that instead to read in the gain for each channel
 gainFileName=sys.argv[1].replace(".root", "_gains.txt")
-gainFileName=gainFileName.replace("_adcTrig", "")  #not derived for adcTrig events 
 
 #pick one file more or less at random as the fallback option
-defaultRun="unpacked_data_20250215_114611_ext_trig_ldmx_sw_parsed_linearize" #unpacked_4gev_negativeMu_Apr03_2200_reformat_30timeSamplesFrom0_linearize"
+defaultRun="decoded_data_20251208_225935_dark_current_kicker_trigger_parsed_50k_linearize"
 dataPath=path.dirname( sys.argv[1] ) #extract the path to where we keep the data
 defaultGainFileName=dataPath+"/"+defaultRun+"_gains.txt"
 
@@ -47,24 +46,25 @@ if exists(gainFileName) :
 print("Using this list of gains:")
 print(gainList)
 
-pedList=[
-            -4.6,  #0.6,
-            -2.6, #4.4,
-            -0.6, #-1.25,
-            4.4,  #3.9,    # #3
-            1.9,  #10000., # #4: (used to be) dead channel during test beam
-            -2.3, #-2.1,   # #5 
-            1.0,  #2.9,    # #6
-            -1.2, #-2,     # #7
-            4.9,  #-0.4,   # #8  dead channel in spring 2022 testbeam at CERN, most of the runs 
-            -4.4, #-1.1,   # #9: dead channel in TTU teststand setup
-            -0.1, #1.5,    # #10
-            -1.7, #2.0,    # #11
-            3.3,  #3.7,    # #12 -- uninstrumented
-            -0.3, #2.8,    # #13 -- uninstrumented
-            1.3,  #-1.5,   # #14 -- uninstrumented
-            1.3   #1.6     # #15 -- uninstrumented
-        ]
+pedList=[-2.]*nChannels
+#[
+#            -4.6,  #0.6,
+#            -2.6, #4.4,
+#            -0.6, #-1.25,
+#            4.4,  #3.9,    # #3
+#            1.9,  #10000., # #4: (used to be) dead channel during test beam
+#            -2.3, #-2.1,   # #5 
+#            1.0,  #2.9,    # #6
+#            -1.2, #-2,     # #7
+#            4.9,  #-0.4,   # #8  dead channel in spring 2022 testbeam at CERN, most of the runs 
+#            -4.4, #-1.1,   # #9: dead channel in TTU teststand setup
+#            -0.1, #1.5,    # #10
+#            -1.7, #2.0,    # #11
+#            3.3,  #3.7,    # #12 -- uninstrumented
+#            -0.3, #2.8,    # #13 -- uninstrumented
+#            1.3,  #-1.5,   # #14 -- uninstrumented
+#            1.3   #1.6     # #15 -- uninstrumented
+#        ]
 
 #now if there is a ped file, use that instead to read in the ped for each channel
 pedFileName=gainFileName.replace("gains", "peds")
@@ -92,7 +92,7 @@ tbHitsUp.startSample=timeSample
 tbHitsUp.pulseWidth=pulseWidth #5 #7 
 tbHitsUp.pulseWidthLYSO=pulseWidth #5 #7 #9 #7 for plastic, 9 for LYSO 
 tbHitsUp.doCleanHits=False #True
-tbHitsUp.nInstrumentedChannels=12
+tbHitsUp.nInstrumentedChannels=24
 p.sequence = [
     tbHitsUp
     ]
