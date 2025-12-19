@@ -147,6 +147,8 @@ void ZCCMDecoder::produce(framework::Event &event) {
   std::map<int, std::vector<int>> adc_map;
   std::map<int, std::vector<int>> tdc_map;
   std::map<int, std::vector<int>> cid_map;
+  std::map<int, std::vector<int>> bc0_map;
+  std::map<int, std::vector<int>> ce_map;
   // we need one output digi collection per pad
   std::vector< std::vector<trigscint::TrigScintQIEDigis>> out_digis;
   std::size_t n_modules = std::ranges::count_if(modules_used_,
@@ -252,8 +254,14 @@ void ZCCMDecoder::produce(framework::Event &event) {
 	if (cid_map.find(elec_id) == cid_map.end()) {  // we have a new channel
 	  std::vector<int> cids(n_samp, 0);
 	  cid_map.insert(std::pair<int, std::vector<int>>(elec_id, cids));
+	  std::vector<int> bc0s(n_samp, 0);
+	  bc0_map.insert(std::pair<int, std::vector<int>>(elec_id, bc0s));
+	  std::vector<int> ces(n_samp, 0);
+	  ce_map.insert(std::pair<int, std::vector<int>>(elec_id, ces));
 	}
 	cid_map[elec_id].at(sample_nb) = cid_val;
+	bc0_map[elec_id].at(sample_nb) = bc0_val;
+	ce_map[elec_id].at(sample_nb) = ce_val;
       }// over channels
       ldmx_log(debug) << "Done with lane " <<  int(lane)
 		      << " which we think is " << i_word%n_lanes
@@ -291,6 +299,8 @@ void ZCCMDecoder::produce(framework::Event &event) {
     digi.setLaneID(lane);
     digi.setTDC(tdc_map[itr->first]);
     digi.setCID(cid_map[itr->first]);
+    digi.setBC0(bc0_map[itr->first]);
+    digi.setCE(ce_map[itr->first]);
     if (bar == 0)
       ldmx_log(debug) << "for bar 0, got time since spill "
                       << digi.getTimeSinceSpill();

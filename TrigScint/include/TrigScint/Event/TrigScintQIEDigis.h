@@ -73,6 +73,16 @@ class TrigScintQIEDigis {
   std::vector<int> getCID() const { return cids_; }
 
   /**
+   * Get BC0s (= 1 for periodic sync time sample) of all time samples
+   */
+  std::vector<int> getBC0() const { return bc0s_; }
+  
+  /**
+   * Get CEs (an error state flag) of all time samples
+   */
+  std::vector<int> getCE() const { return ces_; }
+  
+  /**
    * Store the event time since spill counter
    */
   void setTimeSinceSpill(const uint32_t timeSpill) {
@@ -122,6 +132,20 @@ class TrigScintQIEDigis {
    */
   void setCID(const std::vector<int> cid) { cids_ = cid; }
 
+  /**
+   * Store bc0s of all time samples
+   * @param bc0_ array of BC0s (perodic sample sync)
+   */
+  void setBC0(const std::vector<int> bc0) { bc0s_ = bc0; }
+
+  /**
+   * Store ces of all time samples
+   * @param ce_ array of CEs (error state)
+   */
+  void setCE(const std::vector<int> ce) { ces_ = ce; }
+
+  
+  
  protected:
   /// channel ID
   int chan_id_;
@@ -145,6 +169,8 @@ class TrigScintQIEDigis {
  private:
   /// capacitor IDs
   std::vector<int> cids_;
+  std::vector<int> bc0s_;
+  std::vector<int> ces_;
 
   ClassDef(TrigScintQIEDigis, 4);
 };
