@@ -146,7 +146,7 @@ class TrigScintQIEDigis {
   /// capacitor IDs
   std::vector<int> cids_;
 
-  ClassDef(TrigScintQIEDigis, 3);
+  ClassDef(TrigScintQIEDigis, 4);
 };
 }  // namespace trigscint
 #endif
