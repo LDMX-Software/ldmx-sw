@@ -268,10 +268,10 @@ void ZCCMDecoder::produce(framework::Event &event) {
       if (cid_map.find(elec_id) == cid_map.end()) {  // we have a new channel
         std::vector<int> cids(n_samp, 0);
         cid_map.insert(std::pair<int, std::vector<int>>(elec_id, cids));
-	std::vector<int> bc0s(n_samp, 0);
-	bc0_map.insert(std::pair<int, std::vector<int>>(elec_id, bc0s));
-	std::vector<int> ces(n_samp, 0);
-	ce_map.insert(std::pair<int, std::vector<int>>(elec_id, ces));
+        std::vector<int> bc0s(n_samp, 0);
+        bc0_map.insert(std::pair<int, std::vector<int>>(elec_id, bc0s));
+        std::vector<int> ces(n_samp, 0);
+        ce_map.insert(std::pair<int, std::vector<int>>(elec_id, ces));
       }
       cid_map[elec_id].at(sample_nb) = cid_val;
       bc0_map[elec_id].at(sample_nb) = bc0;

@@ -76,12 +76,12 @@ class TrigScintQIEDigis {
    * Get BC0s (= 1 for periodic sync time sample) of all time samples
    */
   std::vector<int> getBC0() const { return bc0s_; }
-  
+
   /**
    * Get CEs (an error state flag) of all time samples
    */
   std::vector<int> getCE() const { return ces_; }
-  
+
   /**
    * Store the event time since spill counter
    */
@@ -144,8 +144,6 @@ class TrigScintQIEDigis {
    */
   void setCE(const std::vector<int> ce) { ces_ = ce; }
 
-  
-  
  protected:
   /// channel ID
   int chan_id_;
