@@ -1,4 +1,8 @@
 #!/usr/bin/env python3
+
+# note that this script requires a setup of Rogue, either an actual install, or using conda or denv.
+# if using denv, take care not to confuse this with the ldmx-sw denv needed for further processing. This script does not run with an ldmx-sw image.
+
 import pyrogue.utilities.fileio
 import sys
 import numpy as np
@@ -6,7 +10,7 @@ import argparse
 from pathlib import Path
 
 def main():
-    parser = argparse.ArgumentParser(description="just hexdump the Hcal/Ecal data without attempting to decode")
+    parser = argparse.ArgumentParser(description="Dump the Hcal/Ecal/TS data from Rogue without attempting to decode. Depends on Rogue. A compatible image can be set up with 'denv init ghcr.io/slaclab/rogue:v6.6.2'. Take care not to confuse this with an ldmx-sw denv setup. ")
     parser.add_argument('input', help='input file to Hcal/Ecal data from')
     parser.add_argument('--nevent', '-n', help='maximum number of events to decode', type=int)
     parser.add_argument('--contrib', '-c', choices=['ecal','hcal'], help='contributor to focus on, without this dump all data from subsystem 5 which could be both Ecal and Hcal')
