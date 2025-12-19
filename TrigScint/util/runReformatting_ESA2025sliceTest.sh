@@ -10,23 +10,18 @@ nEvents=-1
 doVerbose=0
 startDoRerun=0
 deadChannel=-1 #8   #sometimes elecID 8 is not really connected
-recoSamp=14
-timeOffset=0   #offset in nTimeSamples for fiber2
+recoSamp=32
 RUN_FIRE='just fire'
 fileList=""
-channelMap="toyChannelMap_4modules_14lanes.txt" #<--- use this for 2025 data 
-#"channelMap_LYSOback_plasticFront_12-to-16channels_rotated180.txt"           #<--- use this for 2022 data and S30XL
-#"channelMap_LYSOback_plasticFront_12-to-16channels_rotated180_fiberSwap.txt" #<--- use this for mar28 2022 data
-#"channelMap_LYSOback_plasticFront_12-to-16channels.txt"                      #<--- october 2021 test beam data 
-#"channelMap_identity_16channels.txt"                                         #<--- this gives chanID = elecID for the one-module setup
+channelMap="channelMap_4modules_14lanes.txt" #<--- use this for 2025 data 
 OPTIND=1 #reset option counter between runs
 
-while getopts 'f:hs:n:e:d:r:o:c:m:VRS' flag; do
+while getopts 'f:hs:n:e:d:r:c:m:VRS' flag; do
   case "${flag}" in
     h) echo  "usage: (note boolean flags with capital letters) \n. $0 [-f file list (mandatory)] 
 	\t[-s startSample (default: $startSamp)] 
 	\t[-n numberTimeSamples (default: $nSamp)] 
-	\t[-e number of events (default: $nEvents, for all)] \n\t[-d dead channel nb (default: $deadChannel) \n\t[-r hit reco time sample (default: $recoSamp)]  \n\t[-o time offset for fiber 2 (default: $timeOffset)]  \n\t[-c channel map name (default: $channelMap)]  \n\t[-V verbose boolean ] \n\t[-R rerun from first step ] \n\t[-S run with singularity (sets appropriate fire command)] "
+	\t[-e number of events (default: $nEvents, for all)] \n\t[-d dead channel nb (default: $deadChannel) \n\t[-r hit reco time sample (default: $recoSamp)]  \n\t[-c channel map name (default: $channelMap)]  \n\t[-V verbose boolean ] \n\t[-R rerun from first step ] \n\t[-S run with singularity (sets appropriate fire command)] "
        #exit 0;;   # works with sh, but then can't run the container
        return 0;; # works with source or .
     f) fileList="${OPTARG}" ; echo $fileList;; 
@@ -35,7 +30,6 @@ while getopts 'f:hs:n:e:d:r:o:c:m:VRS' flag; do
     e) nEvents="${OPTARG}" ;;
     d) deadChannel="${OPTARG}" ;;
     r) recoSamp="${OPTARG}" ;;
-    o) timeOffset="${OPTARG}" ;;
     c) channelMap="${OPTARG}" ;;
     m) moduleMap="${OPTARG}" ;;
     V) doVerbose=1 ;;
@@ -59,11 +53,14 @@ echo "trigger flags set to ${trigFlag}"
 
 echo "using identifier $id"
 
-#we will assume a few env variables are set: LDMX_BASE (from sourcing ldmx-env.sh) and the appropriate fire command (prepended by ldmx only when running locally) set by the calling script. 
 reformatDir=${PWD}
-configDir=${LDMX_BASE}/ldmx-sw/TrigScint/exampleConfigs
-utilDir=${LDMX_BASE}/ldmx-sw/TrigScint/util
-digiDir=${LDMX_BASE}/ldmx-sw/run
+# deduce the location of ldmx-sw from the path to _this_ script
+# requires to be run by bash
+ldmx_sw_dir="$( cd -- "$(dirname -- "${BASH_SOURCE[0]}")/../../" && pwd)"
+export LDMX_BASE=$ldmx_sw_dir/../blah
+configDir=${ldmx_sw_dir}/TrigScint/exampleConfigs
+utilDir=${ldmx_sw_dir}/TrigScint/util
+digiDir=${ldmx_sw_dir}/run
 
 ln -s ${configDir}/../data/${channelMap} ${channelMap}
 ln -s ${configDir}/../data/${moduleMap} ${moduleMap}
