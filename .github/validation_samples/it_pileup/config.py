@@ -117,7 +117,8 @@ truthPF = pfReco.pfTruthProducer()
 # CLUE     
 import LDMX.Ecal.ecalClusters as cl
 cluster = cl.EcalClusterProducer()
-cluster.seed_threshold = 350.                                                                                                                                                                             cluster.dc = 0.3
+cluster.seed_threshold = 350. 
+cluster.dc = 0.3
 cluster.nbr_of_layers = 1
 cluster.reclustering = True                                                                                                                                                                                
 cluster.rec_hit_pass_name=thisPassName #run on process+pileup       
