@@ -164,6 +164,18 @@ class EcalRecProducer(Producer) :
             8.775, 8.775, 8.775, 8.775, 8.775, 8.775, 8.775, 8.775, 12.642, 16.51,
             16.51, 16.51, 16.51, 16.51, 16.51, 16.51, 16.51, 16.51, 16.51, 8.45
             ]
+        
+    def v3(self) :
+        """These layerWeights and energy correction must be recalculated for the v3 geometry.
+        """
+
+        self.secondOrderEnergyCorrection = 0.948
+        self.layerWeights = [
+            1.641, 3.526, 5.184, 6.841,
+            8.222, 8.775, 8.775, 8.775, 8.775, 8.775, 8.775, 8.775, 8.775, 8.775,
+            8.775, 8.775, 8.775, 8.775, 8.775, 8.775, 8.775, 8.775, 12.642, 16.51,
+            16.51, 16.51, 16.51, 16.51, 16.51, 16.51, 16.51, 16.51, 16.51, 8.45
+            ]
 
     def v9(self) :
         """These layerWeights and energy correction were calculated for the v9 geometry.
@@ -239,6 +251,18 @@ class EcalRecProducer(Producer) :
 
         TODO: The secondOrderEnergyCorrection for this geometry has yet to be calculated,
         so unity is being used as a placeholder.
+        """
+
+        self.secondOrderEnergyCorrection = 1.
+        self.layerWeights = [ 
+                2.312, 5.417, 9.837, 11.910, 11.910, 11.910
+                ]
+
+    def reduced_v3(self) :
+        """Generated for the reduced v3 geometry
+
+        TODO: Configure the correct geometry for the ESA run,
+        this is currently being used as a placeholder.
         """
 
         self.secondOrderEnergyCorrection = 1.
