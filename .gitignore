@@ -33,3 +33,4 @@ EventDisplay/include/EventDisplay/EventDisplayLinkDef.h
 .denv
 .apptainer
 .wget-hsts
+.parallel
