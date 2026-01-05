@@ -158,8 +158,12 @@ else
   if ${follow}; then
     ${cmd} &
     parallel_pid=$!
+    # wait until log file appears
+    while ! [ -f "${log_dir}/parallel.log" ]; do
+      sleep 1
+    done
     # watch log file until parallel completes all the jobs
-    tail --follow=name --retry --pid="${parallel_pid}" "${log_dir}/parallel.log"
+    tail --follow --pid="${parallel_pid}" "${log_dir}/parallel.log"
   else
     ${cmd}
   fi

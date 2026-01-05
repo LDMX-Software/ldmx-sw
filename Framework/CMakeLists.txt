@@ -56,6 +56,11 @@ set_target_properties(
 add_executable(fire ${PROJECT_SOURCE_DIR}/app/fire.cxx)
 target_link_libraries(fire PRIVATE Framework::Framework)
 install(TARGETS fire DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
+install(FILES app/fire-parallel
+  TYPE BIN
+  PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE
+              GROUP_READ GROUP_EXECUTE
+              WORLD_READ WORLD_EXECUTE)
 
 # Setup the test
 setup_test(dependencies Framework::Framework)
