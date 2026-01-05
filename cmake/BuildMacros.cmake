@@ -115,13 +115,17 @@ macro(setup_library)
   add_library(${alias} ALIAS ${library_name})
 
   if(setup_library_linkdef)
-    file(GLOB headers CONFIGURE_DEPENDS ${include_path}/[a-zA-Z]*.h)
-    file(GLOB linkdef CONFIGURE_DEPENDS "${setup_library_linkdef}")
+    # make sure the headers are relative to the include/ directory so that
+    # the generated dictionary does not require the entire source tree to be present
+    # (it can look at the installed headers)
+    file(GLOB headers RELATIVE ${PROJECT_SOURCE_DIR}/include CONFIGURE_DEPENDS ${include_path}/[a-zA-Z]*.h)
+    file(REAL_PATH "${setup_library_linkdef}" linkdef_full)
+    file(RELATIVE_PATH linkdef ${PROJECT_SOURCE_DIR}/include "${linkdef_full}")
     list(REMOVE_ITEM headers "${linkdef}")
     root_generate_dictionary(
       ${library_name}Dict
       ${headers}
-      LINKDEF ${linkdef}
+      LINKDEF ${setup_library_linkdef}
       MODULE ${library_name})
     install(FILES ${CMAKE_CURRENT_BINARY_DIR}/lib${library_name}_rdict.pcm DESTINATION lib)
   endif()
