@@ -201,7 +201,7 @@ void ZCCMDecoder::produce(framework::Event &event) {
     }
     // extract the flag info
     int cid{(flag >> ZCCMOutput::CAPID_POS_IN_FLAG) &
-             Mask8<ZCCMOutput::CAPID_LEN_BITS>::M};
+            Mask8<ZCCMOutput::CAPID_LEN_BITS>::M};
     ldmx_log(trace) << "Got Cap ID " << cid;
     bool bc0{static_cast<bool>((flag >> ZCCMOutput::BC0_POS_IN_FLAG) &
                                Mask8<ZCCMOutput::BC0_LEN_BITS>::M)};
@@ -210,7 +210,7 @@ void ZCCMDecoder::produce(framework::Event &event) {
                               Mask8<ZCCMOutput::CE_LEN_BITS>::M)};
     ldmx_log(trace) << "Got CE flag " << ce;
     int empty_bits{(flag >> ZCCMOutput::EMPTY_FLAG_WORD_POS_IN_FLAG) &
-                         Mask8<ZCCMOutput::EMPTY_FLAG_WORD_LEN_BITS>::M};
+                   Mask8<ZCCMOutput::EMPTY_FLAG_WORD_LEN_BITS>::M};
     if (empty_bits)
       ldmx_log(fatal) << "Empty bits of flag not empty: " << empty_bits;
 
