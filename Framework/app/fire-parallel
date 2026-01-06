@@ -149,7 +149,7 @@ fi
 cmd="${cmd} ${parallel_args}"
 
 if ${dry_run}; then
-  echo ${cmd}
+  echo "${cmd}"
   ${cmd}
   if ${follow}; then
     echo "tail -f --pid=<parallel-pid> ${log_dir}/parallel.log"
