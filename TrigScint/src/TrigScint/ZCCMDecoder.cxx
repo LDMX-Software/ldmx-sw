@@ -153,8 +153,8 @@ void ZCCMDecoder::produce(framework::Event &event) {
   std::vector<std::vector<trigscint::TrigScintQIEDigis>> out_digis;
   std::size_t n_modules =
       std::ranges::count_if(modules_used_, [](int x) { return x != 0; });
-  for (uint i = 0; i < n_modules; i++)
-    out_digis.emplace_back(std::vector<trigscint::TrigScintQIEDigis>(NULL));
+  // default construct (empty) vectors of digis separated into modules
+  out_digis.resize(n_modules);
 
   // read in words from the output. line them up per channel and time sample.
   // channels are in the electronics ordering
@@ -200,8 +200,8 @@ void ZCCMDecoder::produce(framework::Event &event) {
       ldmx_log(debug) << "Set time sample start lane to " << start_lane;
     }
     // extract the flag info
-    int cid{static_cast<int>((flag >> ZCCMOutput::CAPID_POS_IN_FLAG) &
-                             Mask8<ZCCMOutput::CAPID_LEN_BITS>::M)};
+    int cid{(flag >> ZCCMOutput::CAPID_POS_IN_FLAG) &
+            Mask8<ZCCMOutput::CAPID_LEN_BITS>::M};
     ldmx_log(trace) << "Got Cap ID " << cid;
     bool bc0{static_cast<bool>((flag >> ZCCMOutput::BC0_POS_IN_FLAG) &
                                Mask8<ZCCMOutput::BC0_LEN_BITS>::M)};
@@ -209,9 +209,8 @@ void ZCCMDecoder::produce(framework::Event &event) {
     bool ce{static_cast<bool>((flag >> ZCCMOutput::CE_POS_IN_FLAG) &
                               Mask8<ZCCMOutput::CE_LEN_BITS>::M)};
     ldmx_log(trace) << "Got CE flag " << ce;
-    int empty_bits{
-        static_cast<int>((flag >> ZCCMOutput::EMPTY_FLAG_WORD_POS_IN_FLAG) &
-                         Mask8<ZCCMOutput::EMPTY_FLAG_WORD_LEN_BITS>::M)};
+    int empty_bits{(flag >> ZCCMOutput::EMPTY_FLAG_WORD_POS_IN_FLAG) &
+                   Mask8<ZCCMOutput::EMPTY_FLAG_WORD_LEN_BITS>::M};
     if (empty_bits)
       ldmx_log(fatal) << "Empty bits of flag not empty: " << empty_bits;
 
