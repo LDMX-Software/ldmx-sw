@@ -16,11 +16,11 @@ usage() {
     --help|-h : print this help and exit
     --dry-run : print the jobs that would be run instead of running them
     --log-dir : specify where the logs for the jobs and parallel should be stored
-                if the special string '-', then the logs are not stored and instead
-                printed to the terminal. This '-' prevents '--follow' from being used.
-    --follow  : put the parallel run into the background and watch the parallel
-                job log while waiting for the jobs to complete
-                Cannot be used if '-' is used for '--log-dir'.
+                defaults to printing the output of the jobs to the terminal AFTER
+                the job fully completes (i.e. the parallel default).
+                If this is provided, we instead write the output of each job to
+                its own file and follow parallel's joblog file reporting when jobs
+                complete.
     --        : signal that the rest of the arguments should be passed to GNU parallel
 
   ARGUMENTS
@@ -48,8 +48,7 @@ HELP
 }
 
 dry_run=false
-log_dir="logs"
-follow=false
+log_dir=""
 config=""
 template_args=""
 while [ $# -gt 0 ]; do
@@ -60,9 +59,6 @@ while [ $# -gt 0 ]; do
       ;;
     --dry-run)
       dry_run=true
-      ;;
-    --follow)
-      follow=true
       ;;
     --log-dir)
       shift
@@ -110,11 +106,6 @@ if [ -z "${template_args}" ]; then
   template_args="{}"
 fi
 
-if ${follow} && [ "${log_dir}" = "-" ]; then
-  echo "error: cannot '--follow' when redirecting the logs to the terminal ('--log-dir -')"
-  exit 2
-fi
-
 if [ -z "${config}" ] || [ ! -f "${config}" ]; then
   echo "error: the config script argument is required"
   exit 3
@@ -122,7 +113,7 @@ fi
 
 cmd="parallel"
 if ${dry_run}; then
-  if [ "${log_dir}" != "-" ]; then
+  if [ -n "${log_dir}" ]; then
     if [ -d "${log_dir}" ]; then
       echo "warning: actual run would fail here because the output log directory already exists"
     fi
@@ -130,7 +121,7 @@ if ${dry_run}; then
   fi
   cmd="${cmd} --dry-run"
 else
-  if [ "${log_dir}" != "-" ]; then
+  if [ -n "${log_dir}" ]; then
     if [ -d "${log_dir}" ]; then
       echo "error: output log directory '${log_dir}' already exists"
       exit 4
@@ -139,23 +130,28 @@ else
   fi
 fi
 
-if [ "${log_dir}" != "-" ]; then
+if [ -n "${log_dir}" ]; then
   cmd="${cmd} --joblog ${log_dir}/parallel.log"
 fi
-cmd="${cmd} fire ${config} ${template_args}"
-if [ "${log_dir}" != "-" ]; then
-  cmd="${cmd} &> ${log_dir}/job-{#}.out"
+job_cmd_template="fire ${config} ${template_args}"
+if [ -n "${log_dir}" ]; then
+  cmd="${cmd} ${job_cmd_template} >${log_dir}/job-{#}.out 2>&1"
+else
+  cmd="${cmd} ${job_cmd_template}"
 fi
 cmd="${cmd} ${parallel_args}"
 
 if ${dry_run}; then
-  echo "${cmd}"
-  ${cmd}
-  if ${follow}; then
-    echo "tail -f --pid=<parallel-pid> ${log_dir}/parallel.log"
+  # don't show user `--dry-run` that we'll use to print the jobs from
+  # parallel's perspective later
+  echo "${cmd}" | sed 's|--dry-run ||'
+  if [ -n "${log_dir}" ]; then
+    echo "parallel_pid=\$!"
+    echo "tail -f --pid=\"\${parallel_pid}\" ${log_dir}/parallel.log"
   fi
+  ${cmd}
 else
-  if ${follow}; then
+  if [ -n "${log_dir}" ]; then
     ${cmd} &
     parallel_pid=$!
     # wait until log file appears
