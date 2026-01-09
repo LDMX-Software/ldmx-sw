@@ -22,7 +22,6 @@ void EcalClusterAnalyzer::configure(framework::config::Parameters& ps) {
       ps.getParameter<std::string>("ecal_sp_hits_pass_name");
   mixed_hit_cutoff_ = ps.getParameter<double>("mixed_hit_cutoff");
 
-  ecal_sp_hits_passname_ = ps.get<std::string>("ecal_sp_hits_passname");
   inverse_skim_ = ps.get<bool>("inverse_skim");
   n_ecal_clusters_min_ = ps.get<int>("n_ecal_clusters_min");
   return;
