@@ -68,7 +68,6 @@ class EcalClusterAnalyzer : public framework::Analyzer {
 
   // min energy fraction from smaller contributor to consider hit "mixed"
   double mixed_hit_cutoff_;
-  std::string ecal_sp_hits_passname_;
 
   // Inverse skim flag
   bool inverse_skim_;
