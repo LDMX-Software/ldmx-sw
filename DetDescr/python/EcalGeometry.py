@@ -179,7 +179,7 @@ class EcalGeometry() :
         eg = EcalGeometry(detectors_valid = ["ldmx-reduced-v3"],
                 gap = 1.5,
                 layerZPositions = [
-                      7.582, 16.062, 32.226, 40.206
+                      86.00, 92.23, 136.8, 143.03
                       ],
                 ecalFrontZ = 240.0,
                 cornersSideUp = True,
