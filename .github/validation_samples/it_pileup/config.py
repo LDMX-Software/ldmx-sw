@@ -109,7 +109,7 @@ hcal_veto.input_hit_pass_name = thisPassName
 from LDMX.Recon import pfReco
 trackPF = pfReco.pfTrackProducer()
 trackPF.inputTrackCollName=trackPF.inputTrackCollName+overlayStr #"EcalScoringPlaneHitsOverlay" #                                                                                                                   
-trackPF.input_pass_name=inputPassName
+trackPF.input_pass_name=thisPassName
 trackPF.doElectronTracking=True
 # reference info
 truthPF = pfReco.pfTruthProducer()
