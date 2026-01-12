@@ -232,8 +232,7 @@ p.sequence.extend([
     *ts_clusters,
     trigScintTrack,
     count, TriggerProcessor('trigger', 8000.),
-    dqm.PhotoNuclearDQM(),
-    dqm.EcalClusterAnalyzer()
+    dqm.PhotoNuclearDQM()
 ])
 
 p.sequence.extend(dqm_with_overlay)
@@ -241,6 +240,7 @@ p.sequence.extend(dqm_with_overlay)
 # Add PFlow + pileup finding sequence 
 p.sequence.extend([
      cluster,
+     dqm.EcalClusterAnalyzer(),
      trackPF,
      truthPF,
      pfComb,        
