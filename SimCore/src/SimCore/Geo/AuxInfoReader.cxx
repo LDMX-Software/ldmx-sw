@@ -13,9 +13,9 @@
 #include "G4FieldManager.hh"
 #include "G4GDMLEvaluator.hh"
 #include "G4LogicalVolumeStore.hh"
+#include "G4ProductionCuts.hh"
 #include "G4Region.hh"
 #include "G4RegionStore.hh"
-#include "G4ProductionCuts.hh"
 #include "G4SDManager.hh"
 #include "G4SystemOfUnits.hh"
 #include "G4UniformMagField.hh"
@@ -245,9 +245,10 @@ void AuxInfoReader::createRegion(const G4String& name,
   // NOLINTBEGIN
   auto region = new G4Region(name);
   region->SetUserInformation(region_info);
-  //To get rid of those pesky G4 warnings
+  // To get rid of those pesky G4 warnings
   auto defaultcuts = new G4ProductionCuts;
-  defaultcuts->SetProductionCut(1.*mm);//Omitting index applies it to all particle types
+  defaultcuts->SetProductionCut(
+      1. * mm);  // Omitting index applies it to all particle types
   region->SetProductionCuts(defaultcuts);
 }
 // NOLINTEND
