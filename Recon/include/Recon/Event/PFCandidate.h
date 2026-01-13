@@ -49,12 +49,15 @@ class PFCandidate {
     pos_hcal_y_ = y_;
     pos_hcal_z_ = z_;
   }
-
   void setTrackPxPyPz(float x_, float y_, float z_) {
     track_px_ = x_;
     track_py_ = y_;
     track_pz_ = z_;
   }
+  // associate component indices to the pf candidate
+  void setTrackIndex(int x) { track_idx_ = x; }
+  void setEcalIndex(int x) { ecal_idx_ = x; }
+  void setHcalIndex(int x) { hcal_idx_ = x; }
 
   void setEcalEnergy(float x_) { ecal_energy_ = x_; }
   void setEcalRawEnergy(float x_) { ecal_raw_energy_ = x_; }
@@ -120,6 +123,10 @@ class PFCandidate {
   std::vector<float> getHcalPositionXYZ() const {
     return {pos_hcal_x_, pos_hcal_y_, pos_hcal_z_};
   }
+  // associate component indices to the pf candidate
+  int getTrackIndex() const { return track_idx_; }
+  int getEcalIndex() const { return ecal_idx_; }
+  int getHcalIndex() const { return hcal_idx_; }
 
   std::vector<float> getTrackPxPyPz() const {
     return {track_px_, track_py_, track_pz_};
@@ -223,6 +230,11 @@ class PFCandidate {
   double truth_mass_{0};
   double truth_energy_{0};
   int truth_pdg_id_{0};
+
+  /* Indices of the components making up the PFlow object */
+  int track_idx_{-1};
+  int ecal_idx_{-1};
+  int hcal_idx_{-1};
 
   /* The ROOT class definition. */
   ClassDef(PFCandidate, 2);
