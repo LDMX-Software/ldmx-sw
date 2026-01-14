@@ -81,7 +81,7 @@ tracking_recoil.out_trk_collection = "RecoilTracks"
 # for truth seed based case use 
 # tracking_recoil.seed_coll_name = "RecoilTruthSeeds"
 tracking_recoil.measurement_collection = digi_recoil.out_collection
-tracking_recoil.min_hits = 5
+tracking_recoil.min_hits = 4
 tracking_recoil.outlier_pval_ =  22.1
 
 # Greedy ambiguity solver for the tagger

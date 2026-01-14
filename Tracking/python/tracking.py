@@ -147,6 +147,8 @@ class CKFProcessor(Producer):
         Use single strip measurements and not 3D points.
     min_hits : int
         Minimum number of measurements on track to accept the trajectory.
+    min_p : double
+        Minimum momentum (MeV) of the found tracks.
     use_extrapolate_location : bool
         Activate the usage of extrapolate location for returning the track 
         parameters.
@@ -195,7 +197,8 @@ class CKFProcessor(Producer):
         self.use_seed_perigee = False
         self.seed_coll_name = 'SeedTracks'
         self.out_trk_collection = 'Tracks'
-        self.min_hits = 5
+        self.min_hits = 4
+        self.min_p = 45. #MeV
         self.outlier_pval_ = 3.84
         self.sim_particles_event_passname = ''
         self.input_pass_name = ''

@@ -112,6 +112,8 @@ class TrackingGeometry : public framework::ConditionsObject {
   Acts::RotationMatrix3 x_rot_, y_rot_;
   std::shared_ptr<const Acts::TrackingGeometry> t_geometry_{nullptr};
   G4VPhysicalVolume* f_world_phys_vol_{nullptr};
+  // Target surface for tagger constraint in recoil tracking
+  std::shared_ptr<Acts::PlaneSurface> target_surface_{nullptr};
 
  private:
   enableLogging("TrackingGeometry")

@@ -44,6 +44,32 @@ TrackersTrackingGeometry::TrackersTrackingGeometry(
   Acts::TrackingGeometryBuilder tgb(tgb_cfg);
   t_geometry_ = tgb.trackingGeometry(gctx_);
 
+  // Add a target surface at x=0 (between tagger and recoil) for tagger
+  // constraint This surface will hold pseudo-measurements from the tagger track
+  // state
+  Acts::Vector3 target_pos(0., 0., 0.);
+  Acts::Translation3 target_translation(target_pos);
+
+  // Define rotation matrix with u=+Y, v=+Z, w=+X to match CKFProcessor
+  Acts::RotationMatrix3 target_rotation = Acts::RotationMatrix3::Zero();
+  target_rotation(1, 0) = 1;  // u direction along +Y
+  target_rotation(2, 1) = 1;  // v direction along +Z
+  target_rotation(0, 2) = 1;  // w direction along +X
+
+  Acts::Transform3 target_transform(target_translation * target_rotation);
+  target_surface_ =
+      Acts::Surface::makeShared<Acts::PlaneSurface>(target_transform);
+
+  // Set a unique geometry ID for the target surface: volume=99, layer=99
+  Acts::GeometryIdentifier target_gid;
+  target_gid.setVolume(99);
+  target_gid.setLayer(99);
+  target_surface_->assignGeometryId(target_gid);
+
+  // Store target surface in the layer map (using shared_ptr to keep it alive)
+  // We'll use a special layer ID 9999 for lookups
+  layer_surface_map_[9999] = target_surface_.get();
+
   // dumpGeometry("./");
   makeLayerSurfacesMap();
 }

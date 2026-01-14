@@ -71,7 +71,7 @@ void GSFProcessor::onNewRun(const ldmx::RunHeader& rh) {
                         // default_transformBField));
                         transform_pos, transform_b_field));
 
-  auto acts_logging_level = Acts::Logging::ERROR;
+  auto acts_logging_level = Acts::Logging::FATAL;
 
   if (debug_) acts_logging_level = Acts::Logging::VERBOSE;
 
@@ -113,7 +113,7 @@ void GSFProcessor::onNewRun(const ldmx::RunHeader& rh) {
 
   const auto stepper = Acts::EigenStepper<>{map};
   propagator_ = std::make_unique<Propagator>(
-      stepper, navigator, Acts::getDefaultLogger("PROP", acts_logging_level));
+      stepper, navigator, Acts::getDefaultLogger("EXTRAP", acts_logging_level));
 
   trk_extrap_ = std::make_shared<std::decay_t<decltype(*trk_extrap_)>>(
       *propagator_, geometryContext(), magneticFieldContext());

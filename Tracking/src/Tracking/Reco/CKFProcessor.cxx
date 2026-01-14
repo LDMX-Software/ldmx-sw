@@ -119,7 +119,7 @@ void CKFProcessor::onNewRun(const ldmx::RunHeader& rh) {
                         // default_transformBField));
                         transform_pos, transform_b_field));
 
-  auto acts_logging_level = Acts::Logging::FATAL;
+  auto acts_logging_level = Acts::Logging::ERROR;
   if (debug_acts_) acts_logging_level = Acts::Logging::VERBOSE;
 
   // Setup the steppers
@@ -140,7 +140,7 @@ void CKFProcessor::onNewRun(const ldmx::RunHeader& rh) {
           ? std::make_unique<CkfPropagator>(const_stepper, navigator)
           : std::make_unique<CkfPropagator>(
                 stepper, navigator,
-                Acts::getDefaultLogger("ACTS_PROP", acts_logging_level));
+                Acts::getDefaultLogger("CKF_PROP", acts_logging_level));
 
   // Setup the finder / fitters
   ckf_ = std::make_unique<std::decay_t<decltype(*ckf_)>>(
@@ -204,9 +204,66 @@ void CKFProcessor::produce(framework::Event& event) {
   profiling_map_["setup"] +=
       std::chrono::duration<double, std::milli>(setup - start).count();
 
-  const std::vector<ldmx::Measurement> measurements =
+  std::vector<ldmx::Measurement> measurements =
       event.getCollection<ldmx::Measurement>(measurement_collection_,
                                              input_pass_name_);
+
+  // For recoil tracking, optionally add tagger track state at target as
+  // constraint
+  if (!tagger_tracking_) {
+    // Load tagger tracks
+    std::vector<ldmx::Track> tagger_tracks;
+    if (event.exists(tagger_trks_collection_, input_pass_name_)) {
+      tagger_tracks = event.getCollection<ldmx::Track>(tagger_trks_collection_,
+                                                       input_pass_name_);
+
+      // Find best tagger track (lowest chi2)
+      double best_chi2 = std::numeric_limits<double>::infinity();
+      const ldmx::Track* best_tagger_track = nullptr;
+      for (const auto& tagtrk : tagger_tracks) {
+        if (tagtrk.getChi2() < best_chi2) {
+          best_chi2 = tagtrk.getChi2();
+          best_tagger_track = &tagtrk;
+        }
+      }
+
+      // Create pseudo-measurement at target from best tagger track
+      if (best_tagger_track) {
+        auto ts =
+            best_tagger_track->getTrackState(ldmx::TrackStateType::AtTarget);
+        if (ts.has_value()) {
+          auto track_state = ts.value();
+          Acts::BoundSquareMatrix cov =
+              tracking::sim::utils::unpackCov(track_state.cov_);
+          double locu = track_state.params_[0];
+          double locv = track_state.params_[1];
+          double covuu = cov(Acts::BoundIndices::eBoundLoc0,
+                             Acts::BoundIndices::eBoundLoc0);
+          double covvv = cov(Acts::BoundIndices::eBoundLoc1,
+                             Acts::BoundIndices::eBoundLoc1);
+
+          ldmx::Measurement pseudo_meas;
+          pseudo_meas.setLocalPosition(locu, locv);
+          Acts::Vector3 dummy{0., 0., 0.};
+          Acts::Vector2 local_pos{locu, locv};
+          Acts::Vector3 global_pos = target_surface_->localToGlobal(
+              geometryContext(), local_pos, dummy);
+          pseudo_meas.setGlobalPosition(global_pos(0), global_pos(1),
+                                        global_pos(2));
+          pseudo_meas.setTime(0.);
+          pseudo_meas.setLocalCovariance(covuu, covvv);
+          // Use geometry ID for target surface: volume=99, layer=99
+          // This matches the target surface added to the tracking geometry
+          // Special ID to mark this as target measurement
+          pseudo_meas.setLayerID(9999);
+
+          measurements.push_back(pseudo_meas);
+          ldmx_log(debug) << "Added tagger track state at target as "
+                             "pseudo-measurement for CKF";
+        }
+      }
+    }
+  }
 
   // check if SimParticleMap is available for truth matching
   std::shared_ptr<tracking::sim::TruthMatchingTool> truth_matching_tool =
@@ -508,12 +565,13 @@ void CKFProcessor::produce(framework::Event& event) {
       trk.setMomentum(track.momentum()[0], track.momentum()[1],
                       track.momentum()[2]);
 
-      // At least min_hits hits and p > 50 MeV
-      if ((trk.getNhits() <= min_hits_) || (abs(1. / trk.getQoP()) <= 0.05)) {
-        ldmx_log(debug)
+      // At least min_hits hits and p above threshold
+      if ((trk.getNhits() <= min_hits_) ||
+          (std::abs(1. / trk.getQoP()) <= (min_p_ * 0.001))) {
+        ldmx_log(error)
             << "  > Track candidate did NOT meet the requirements: Nhits = "
-            << trk.getNhits() << " and p = " << abs(1. / trk.getQoP())
-            << " GeV";
+            << trk.getNhits()
+            << " and p = " << (std::abs(1. / trk.getQoP()) * 1000) << " MeV";
         // No point of doing the extrapolations if the track candidate anyway
         // wont be kept
         continue;
@@ -711,6 +769,8 @@ void CKFProcessor::configure(framework::config::Parameters& parameters) {
   remove_stereo_ = parameters.get<bool>("remove_stereo", false);
   use1_dmeasurements_ = parameters.get<bool>("use1Dmeasurements", true);
   min_hits_ = parameters.get<int>("min_hits", 7);
+  // Minimum momentum threshold (MeV)
+  min_p_ = parameters.get<double>("min_p", 30.);
 
   // Ckf specific options
   use_extrapolate_location_ =
@@ -731,6 +791,10 @@ void CKFProcessor::configure(framework::config::Parameters& parameters) {
 
   // keep track on which system tracking is running
   tagger_tracking_ = parameters.get<bool>("taggerTracking", true);
+
+  // Tagger track collections for recoil tracking constraint
+  tagger_trks_collection_ =
+      parameters.get<std::string>("tagger_trks_collection", "TaggerTracks");
 
   // BField Systematics
   map_offset_ =
@@ -756,6 +820,7 @@ auto CKFProcessor::makeGeoIdSourceLinkMap(
     ldmx::Measurement meas = measurements.at(i_meas);
     unsigned int layerid = meas.getLayerID();
 
+    // All measurements should now have corresponding surfaces in the geometry
     const Acts::Surface* hit_surface = tg.getSurface(layerid);
 
     if (hit_surface) {

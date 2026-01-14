@@ -413,10 +413,10 @@ void SeedFinderProcessor::onProcessEnd() {
   ldmx_log(info) << "AVG Time/Event: " << std::fixed << std::setprecision(1)
                  << processing_time_ / nevents_ << " ms";
   ldmx_log(info) << "Total Seeds/Events: " << ntracks_ << "/" << nevents_;
-  ldmx_log(info) << "Seeds discarded due to multiple hits on layers "
+  ldmx_log(info) << "   Seeds discarded due to multiple hits on layers= "
                  << ndoubles_;
-  ldmx_log(info) << "not enough seed points " << nmissing_;
-  ldmx_log(info) << " nfailpmin=" << nfailpmin_;
+  ldmx_log(info) << "   not enough seed points= " << nmissing_;
+  ldmx_log(info) << "   nfailpmin=" << nfailpmin_;
   ldmx_log(info) << "   nfailpmax=" << nfailpmax_;
   ldmx_log(info) << "   nfaild0max=" << nfaild0max_;
   ldmx_log(info) << "   nfaild0min=" << nfaild0min_;

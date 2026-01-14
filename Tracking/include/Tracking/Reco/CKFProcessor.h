@@ -181,6 +181,9 @@ class CKFProcessor final : public TrackingGeometryUser {
   // Minimum number of hits on tracks
   int min_hits_{7};
 
+  // Minimum momentum threshold (MeV)
+  double min_p_{30.};
+
   // Stepping size (in mm)
   double propagator_step_size_{200.};
   int propagator_max_steps_{1000};
@@ -217,10 +220,18 @@ class CKFProcessor final : public TrackingGeometryUser {
   // The Propagator
   std::unique_ptr<const CkfPropagator> propagator_;
 
+  // Fallback propagator with zero magnetic field
+  std::unique_ptr<const CkfPropagator> propagator_zero_b_;
+
   // The CKF
   std::unique_ptr<
       const Acts::CombinatorialKalmanFilter<CkfPropagator, TrackContainer>>
       ckf_;
+
+  // Fallback CKF using zero magnetic field propagator
+  std::unique_ptr<
+      const Acts::CombinatorialKalmanFilter<CkfPropagator, TrackContainer>>
+      ckf_zero_b_;
 
   // Track Extrapolator Tool
   std::shared_ptr<tracking::reco::TrackExtrapolatorTool<CkfPropagator>>
@@ -240,6 +251,9 @@ class CKFProcessor final : public TrackingGeometryUser {
 
   // Keep track on which system this processor is running on
   bool tagger_tracking_{true};
+
+  // Tagger track collections for recoil tracking constraint
+  std::string tagger_trks_collection_{"TaggerTracks"};
 
 };  // CKFProcessor
 
