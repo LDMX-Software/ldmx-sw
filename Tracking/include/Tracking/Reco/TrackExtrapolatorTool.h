@@ -38,7 +38,7 @@ class TrackExtrapolatorTool {
 
   /**
    * Turn on/off internal debug flag
-   * @param debug
+   * @param debug: boolean to set debug mode
    */
 
   void setDebug(bool debug) { debug_ = debug; }
@@ -46,8 +46,8 @@ class TrackExtrapolatorTool {
   /** Method to extrapolate to a target surface given a set of
    BoundTrackParameters
    *
-   @param Bound Track Parameters
-   @param The target surface
+   @param pars: Bound Track Parameters
+   @param target_surface: The target surface
    @return optional with BoundTrackParameters
   */
 
@@ -81,19 +81,39 @@ class TrackExtrapolatorTool {
       }
     }
 
-    if (result.ok())
+    if (result.ok()) {
+      if (debug_) {
+        std::cout << "TrackExtrapolatorTool::Extrapolation succeeded!"
+                  << std::endl;
+      }
       return *result->endParameters;
-    else
+    } else {
+      // printout debug info
+      if (debug_) {
+        std::cout << "TrackExtrapolatorTool:: Extrapolation failed!"
+                  << std::endl;
+        auto err = result.error();
+        std::cout << "Error category: " << err.category().name() << " : "
+                  << err.value() << std::endl;
+        std::cout << "Error message: '" << err.message() << "'" << std::endl;
+
+        std::cout << "Starting parameters: " << std::endl;
+        std::cout << pars.parameters().transpose() << std::endl;
+        std::cout << "Surface position: " << std::endl;
+        std::cout << target_surface->transform(gctx_).translation().transpose()
+                  << std::endl;
+      }
       return std::nullopt;
-  }
+    }
+  }  // end of extrapolate() with BoundTrackParameters
 
   /** Method to extrapolate to a target surface given a track
    * The method computes which track state is closest to the surface to choose
    which one to use to
    * extrapolate. This method doesn't use a measurement, but whatever first/last
    track state is defined.
-   @param An Acts::Track
-   @param The target surface
+   @param track: An Acts::Track
+   @param target_surface: The target surface
    @return optional containing the bound track parameters.
    **/
 
@@ -142,8 +162,14 @@ class TrackExtrapolatorTool {
     Acts::BoundTrackParameters sp(surface.getSharedPtr(), smoothed, cov,
                                   part_hypo);
     return extrapolate(sp, target_surface);
-  }
+  }  // end of extrapolate() with track
 
+  /** Method to extrapolate to ECAL surface given a track
+   *
+   @param track: An Acts::Track
+   @param target_surface: The target surface
+   @return optional containing the bound track parameters.
+   **/
   template <class track_t>
   std::optional<Acts::BoundTrackParameters> extrapolateToEcal(
       track_t track, const std::shared_ptr<Acts::Surface>& target_surface) {
@@ -151,8 +177,7 @@ class TrackExtrapolatorTool {
     // Now.. I'm taking whatever it is. I'm not checking here if it is a
     // measurement.
 
-    auto& tsc = track.container().trackStateContainer();
-    auto begin = track.trackStates().begin();
+    auto begin = track.trackStatesReversed().begin();
     auto ts_last = *begin;
     const auto& surface = (ts_last).referenceSurface();
     const auto& smoothed = (ts_last).smoothed();
@@ -170,18 +195,37 @@ class TrackExtrapolatorTool {
     auto result =
         propagator_.propagate(state_parameters, *target_surface, p_options);
 
-    if (result.ok())
+    if (result.ok()) {
+      if (debug_) {
+        std::cout << "TrackExtrapolatorTool::Extrapolation to ECAL succeeded!"
+                  << std::endl;
+      }
       return *result->endParameters;
-    else
+    } else {
+      // printout debug info
+      if (debug_) {
+        std::cout << "TrackExtrapolatorTool:: Extrapolation to ECAL failed!"
+                  << std::endl;
+        auto err = result.error();
+        std::cout << "Error category: " << err.category().name() << ":"
+                  << err.value() << std::endl;
+        std::cout << "Error message: '" << err.message() << "'" << std::endl;
+        std::cout << "Starting parameters: " << std::endl;
+        std::cout << state_parameters.parameters().transpose() << std::endl;
+        std::cout << "Surface position: " << std::endl;
+        std::cout << target_surface->transform(gctx_).translation().transpose()
+                  << std::endl;
+      }
       return std::nullopt;
-  }
+    }
+  }  // end of extrapolateToEcal()
 
   /**
    ** Create an ldmx::TrackState to the extrapolated position
-   @param Acts::Track
-   @param extrapolation surface
-   @param ldmx::Track::TrackState
-   @param TrackStateType
+   @param track: Acts::Track
+   @param target_surface: extrapolation surface
+   @param ts: ldmx::Track::TrackState
+   @param type: TrackStateType
    @return boolean to check if there was a problem in the extrapolation
    *
    */
@@ -191,7 +235,12 @@ class TrackExtrapolatorTool {
                            const std::shared_ptr<Acts::Surface>& target_surface,
                            ldmx::Track::TrackState& ts,
                            ldmx::TrackStateType type) {
-    auto opt_pars = extrapolate(track, target_surface);
+    std::optional<Acts::BoundTrackParameters> opt_pars;
+    if (type == ldmx::TrackStateType::AtECAL) {
+      opt_pars = extrapolateToEcal(track, target_surface);
+    } else {
+      opt_pars = extrapolate(track, target_surface);
+    }
     if (opt_pars) {
       // Reference point
       Acts::Vector3 surf_loc = target_surface->transform(gctx_).translation();

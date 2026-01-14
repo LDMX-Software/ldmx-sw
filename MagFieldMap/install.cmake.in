@@ -26,9 +26,9 @@ foreach(fieldmap_path ${fieldmap_files})
   set(fieldmap_install ${magfield_map_install}/${fieldmap_filename})
   set(install_timestamp ${CMAKE_CURRENT_BINARY_DIR}/MagFieldMap/${fieldmap_filename}.stamp)
   if (EXISTS ${fieldmap_install} AND EXISTS ${install_timestamp} AND ${install_timestamp} IS_NEWER_THAN ${fieldmap_path})
-    message(STATUS "Up-to-date: ${fieldmap_install}")
+  #message(STATUS "Up-to-date: ${fieldmap_install}")
   else()
-    message(STATUS "Installing: ${fieldmap_install}")
+    #message(STATUS "Installing: ${fieldmap_install}")
     execute_process(
       COMMAND tar -zxf ${fieldmap_path}
       COMMAND touch ${install_timestamp}

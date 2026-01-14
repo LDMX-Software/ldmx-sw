@@ -8,10 +8,10 @@
 
 //--- C++ StdLib ---//
 #include <algorithm>  //std::vector reverse
+#include <cmath>
+#include <fstream>
 #include <iostream>
 #include <typeinfo>
-// eN files
-#include <fstream>
 
 namespace tracking {
 namespace reco {
@@ -27,11 +27,18 @@ void CKFProcessor::onNewRun(const ldmx::RunHeader& rh) {
   profiling_map_["ckf_run"] = 0.;
   profiling_map_["result_loop"] = 0.;
 
+  // Initialize CKF usage counters
+  n_zero_b_ckf_ = 0;
+  n_const_b_ckf_ = 0;
+  n_field_map_ckf_ = 0;
+
   // Generate a constant magnetic field
   Acts::Vector3 b_field(0., 0., bfield_ * Acts::UnitConstants::T);
 
   // Setup a constant magnetic field
   const auto const_b_field = std::make_shared<Acts::ConstantBField>(b_field);
+  const auto const_b_field_zero_b =
+      std::make_shared<Acts::ConstantBField>(Acts::Vector3(0., 0., 0.));
 
   // Define the target surface - be careful:
   //  x - downstream
@@ -125,6 +132,7 @@ void CKFProcessor::onNewRun(const ldmx::RunHeader& rh) {
   // Setup the steppers
   const auto stepper = Acts::EigenStepper<>{map};
   const auto const_stepper = Acts::EigenStepper<>{const_b_field};
+  const auto const_stepper_zero_b = Acts::EigenStepper<>{const_b_field_zero_b};
   const auto multi_stepper = Acts::MultiEigenStepperLoop{map};
 
   // Setup the navigator
@@ -135,22 +143,36 @@ void CKFProcessor::onNewRun(const ldmx::RunHeader& rh) {
   const Acts::Navigator navigator(nav_cfg);
 
   // Setup the propagators
-  propagator_ =
-      const_b_field_
-          ? std::make_unique<CkfPropagator>(const_stepper, navigator)
-          : std::make_unique<CkfPropagator>(
-                stepper, navigator,
-                Acts::getDefaultLogger("CKF_PROP", acts_logging_level));
-
+  propagator_ = std::make_unique<CkfPropagator>(
+      stepper, navigator,
+      Acts::getDefaultLogger("CKF_PROP", acts_logging_level));
   // Setup the finder / fitters
   ckf_ = std::make_unique<std::decay_t<decltype(*ckf_)>>(
       *propagator_, Acts::getDefaultLogger("CKF", acts_logging_level));
+
+  // Setup zero-B propagator and CKF for low-momentum fallback
+  propagator_zero_b_ = std::make_unique<CkfPropagator>(
+      const_stepper_zero_b, navigator,
+      Acts::getDefaultLogger("CKF_ZERO_B", acts_logging_level));
+  ckf_zero_b_ = std::make_unique<std::decay_t<decltype(*ckf_zero_b_)>>(
+      *propagator_zero_b_,
+      Acts::getDefaultLogger("CKF_ZERO_B", acts_logging_level));
+
+  // Setup constant 1.5T propagator
+  propagator_const_ = std::make_unique<CkfPropagator>(const_stepper, navigator);
+  ckf_const_b_ = std::make_unique<std::decay_t<decltype(*ckf_const_b_)>>(
+      *propagator_const_,
+      Acts::getDefaultLogger("CKF_CONST_B", acts_logging_level));
+
+  // Setup the Track Extrapolator Tools
   trk_extrap_ = std::make_shared<std::decay_t<decltype(*trk_extrap_)>>(
       *propagator_, geometryContext(), magneticFieldContext());
+  trk_extrap_zero_b_ =
+      std::make_shared<std::decay_t<decltype(*trk_extrap_zero_b_)>>(
+          *propagator_zero_b_, geometryContext(), magneticFieldContext());
 }
 
 void CKFProcessor::produce(framework::Event& event) {
-  eventnr_++;
   // get the tracking geometry from conditions
   auto tg{geometry()};
 
@@ -162,9 +184,8 @@ void CKFProcessor::produce(framework::Event& event) {
 
   nevents_++;
 
-  auto logging_level = Acts::Logging::DEBUG;
-  ACTS_LOCAL_LOGGER(
-      Acts::getDefaultLogger("LDMX Tracking Geometry Maker", logging_level));
+  ACTS_LOCAL_LOGGER(Acts::getDefaultLogger("LDMX Tracking Geometry Maker",
+                                           Acts::Logging::DEBUG));
 
   // Move this at the start of the producer
   Acts::PropagatorOptions<Acts::StepperPlainOptions,
@@ -444,39 +465,98 @@ void CKFProcessor::produce(framework::Event& event) {
   Acts::VectorMultiTrajectory mtj;
   Acts::TrackContainer tc{vtc, mtj};
 
+  // Pre-build CKF options for normal and zero-B propagators
+  const Acts::CombinatorialKalmanFilterOptions<SourceLinkAccIt, TrackContainer>
+      ckf_options(TrackingGeometryUser::geometryContext(),
+                  TrackingGeometryUser::magneticFieldContext(),
+                  TrackingGeometryUser::calibrationContext(),
+                  source_link_accessor_delegate, ckf_extensions,
+                  propagator_options, true /* multiple scattering */,
+                  false /* energy loss */);
+
   // The number of track candidates (i.e. startParameters.size()) is always
   // the same as the number of seed tracks
   ldmx_log(debug) << "Loop on the track candidates";
   for (size_t track_id = 0u; track_id < start_parameters.size(); ++track_id) {
     ldmx_log(debug) << "---------------------------";
     ldmx_log(debug) << "Candidate Track ID = " << track_id;
-    // Define the CKF options here:
-    const Acts::CombinatorialKalmanFilterOptions<SourceLinkAccIt,
-                                                 TrackContainer>
-        ckf_options(TrackingGeometryUser::geometryContext(),
-                    TrackingGeometryUser::magneticFieldContext(),
-                    TrackingGeometryUser::calibrationContext(),
-                    source_link_accessor_delegate, ckf_extensions,
-                    propagator_options, true /* multiple scattering */,
-                    false /* energy loss */);
+
+    // Check if seed momentum is too low and will likely go out of bounds
+    auto start_params = start_parameters.at(track_id).parameters().transpose();
+    // d0 in mm
+    double seed_d0 = start_params[0];
+    // z0 in mm
+    double seed_z0 = start_params[1];
+    // q/p in 1/GeV
+    double seed_q_over_p = start_params[4];
+    // momentum in MeV
+    double seed_p = (std::abs(1.0 / seed_q_over_p) * 1000);
+
+    // Three-way routing:
+    // - Recoil + low p  -> zero-B CKF
+    // - Tagger + low p  -> const-B CKF
+    // - Otherwise       -> field-map CKF
+    bool low_p = (seed_p < 50.0);
+    bool out_of_bounds = (std::abs(seed_d0) > 0.5 || std::abs(seed_z0) > 3.0);
+
+    // Recoil: zero-B if low_p OR out_of_bounds. Tagger: const-B if low_p OR
+    // out_of_bounds.
+    bool use_zero_b_ckf = (!tagger_tracking_) && (low_p || out_of_bounds);
+    bool use_const_b_ckf = (tagger_tracking_) && (low_p || out_of_bounds);
+
+    // Higher threshold for extrapolation (ECAL safety remains as-is)
+    bool use_zero_b_extrap = (seed_p < 100.0);
 
     ldmx_log(debug) << "  Checking options:  multiple scattering = "
                     << ckf_options.multipleScattering
                     << "  energy loss = " << ckf_options.energyLoss;
-    auto results =
-        ckf_->findTracks(start_parameters.at(track_id), ckf_options, tc);
 
-    auto start_params = start_parameters.at(track_id).parameters().transpose();
+    if (use_zero_b_ckf) {
+      ldmx_log(debug) << "  Using zero-B CKF (recoil: low-p/pos): p=" << seed_p
+                      << " MeV, d0=" << seed_d0 << " mm, z0=" << seed_z0
+                      << " mm";
+      n_zero_b_ckf_++;
+    } else if (use_const_b_ckf) {
+      ldmx_log(debug) << "  Using const-B CKF (tagger: low-p/pos): p=" << seed_p
+                      << " MeV, d0=" << seed_d0 << " mm, z0=" << seed_z0
+                      << " mm";
+      n_const_b_ckf_++;
+    } else {
+      ldmx_log(debug) << "  Using field-map CKF (high-p/within-field): p="
+                      << seed_p << " MeV, d0=" << seed_d0
+                      << " mm, z0=" << seed_z0 << " mm";
+      n_field_map_ckf_++;
+    }
+
+    auto results =
+        use_zero_b_ckf
+            ? ckf_zero_b_->findTracks(start_parameters.at(track_id),
+                                      ckf_options, tc)
+            : (use_const_b_ckf
+                   ? ckf_const_b_->findTracks(start_parameters.at(track_id),
+                                              ckf_options, tc)
+                   : ckf_->findTracks(start_parameters.at(track_id),
+                                      ckf_options, tc));
+
     ldmx_log(debug)
         << "  Checking CKF success for track candidate with params: "
         << " D0 = " << start_params[0] << " Z0 = " << start_params[1]
         << ", Phi = " << start_params[2] << " Theta = " << start_params[3]
         << ", QoP = " << start_params[4] << " Time = " << start_params[5];
+
     if (not results.ok()) {
-      ldmx_log(debug) << "    CKF failed!";
+      auto err = results.error();
+      auto max_steps = propagator_options.maxSteps;
+      ldmx_log(error) << "    CKF failed (" << err.category().name() << ":"
+                      << err.value() << ") message='" << err.message() << "'"
+                      << " seed_p=" << seed_p
+                      << " MeV use_zero_b=" << std::boolalpha << use_zero_b_ckf
+                      << " use_const_b=" << std::boolalpha << use_const_b_ckf
+                      << " maxSteps=" << max_steps
+                      << " start_params=" << start_params.transpose();
       continue;
     } else {
-      ldmx_log(debug) << "    CKF succeded!";
+      ldmx_log(debug) << "    CKF succeeded!";
     }
 
     auto& tracks_from_seed = results.value();
@@ -491,8 +571,9 @@ void CKFProcessor::produce(framework::Event& event) {
       ldmx::Track trk = ldmx::Track();
       ldmx::Track::TrackState ts_at_target;
 
+      auto extrap_tool = use_zero_b_extrap ? trk_extrap_zero_b_ : trk_extrap_;
       // Extrapolate to the target
-      bool success = trk_extrap_->trackStateAtSurface(
+      bool success = extrap_tool->trackStateAtSurface(
           track, target_surface_, ts_at_target, ldmx::TrackStateType::AtTarget);
       // Check if the extrapolation to target succeeded
       if (success) {
@@ -507,8 +588,8 @@ void CKFProcessor::produce(framework::Event& event) {
 
         trk.addTrackState(ts_at_target);
       } else {
-        ldmx_log(info) << "    Could not extrapolate to target! nhits = "
-                       << track.nMeasurements() << " Printing track states:  ";
+        ldmx_log(error) << "    Could not extrapolate to target! nhits = "
+                        << track.nMeasurements() << " Printing track states:  ";
         for (const auto ts : track.trackStatesReversed()) {
           if (ts.hasSmoothed()) {
             ldmx_log(info) << "    Track momentum for smoothed track state = "
@@ -566,7 +647,7 @@ void CKFProcessor::produce(framework::Event& event) {
                       track.momentum()[2]);
 
       // At least min_hits hits and p above threshold
-      if ((trk.getNhits() <= min_hits_) ||
+      if ((trk.getNhits() < min_hits_) ||
           (std::abs(1. / trk.getQoP()) <= (min_p_ * 0.001))) {
         ldmx_log(error)
             << "  > Track candidate did NOT meet the requirements: Nhits = "
@@ -637,7 +718,7 @@ void CKFProcessor::produce(framework::Event& event) {
       if (tagger_tracking_) {
         ldmx_log(debug) << "    Beam Origin Extrapolation";
         ldmx::Track::TrackState ts_at_beam_origin;
-        success = trk_extrap_->trackStateAtSurface(
+        success = extrap_tool->trackStateAtSurface(
             track, beam_origin_surface, ts_at_beam_origin,
             ldmx::TrackStateType::AtBeamOrigin);
 
@@ -645,6 +726,8 @@ void CKFProcessor::produce(framework::Event& event) {
           trk.addTrackState(ts_at_beam_origin);
           ldmx_log(debug)
               << "  Successfully obtained TrackState at beam origin";
+        } else {
+          ldmx_log(error) << "    Could not extrapolate to beam origin";
         }
       }
 
@@ -652,7 +735,9 @@ void CKFProcessor::produce(framework::Event& event) {
       if (!tagger_tracking_) {
         ldmx_log(debug) << "    Ecal Extrapolation";
         ldmx::Track::TrackState ts_at_ecal;
-        success = trk_extrap_->trackStateAtSurface(
+
+        trk_extrap_zero_b_->setDebug(false);
+        success = trk_extrap_zero_b_->trackStateAtSurface(
             track, ecal_surface, ts_at_ecal, ldmx::TrackStateType::AtECAL);
 
         if (success) {
@@ -665,8 +750,7 @@ void CKFProcessor::produce(framework::Event& event) {
                           << ", theta = " << ts_at_ecal.params_[3]
                           << ", QoP = " << ts_at_ecal.params_[4];
         } else {
-          ldmx_log(info) << "    Could not extrapolate to ECAL!! Please check "
-                            "the track states";
+          ldmx_log(error) << "    Could not extrapolate to ECAL";
         }
       }
 
@@ -728,6 +812,9 @@ void CKFProcessor::onProcessStart() {
 void CKFProcessor::onProcessEnd() {
   ldmx_log(info) << "found " << ntracks_ << " tracks  / " << nseeds_
                  << " nseeds";
+  ldmx_log(info) << "CKF usage: zero-B=" << n_zero_b_ckf_
+                 << " const-B=" << n_const_b_ckf_
+                 << " field-map=" << n_field_map_ckf_;
   ldmx_log(info) << "AVG Time/Event: " << std::fixed << std::setprecision(1)
                  << processing_time_ / nevents_ << " ms";
   ldmx_log(info) << "Breakdown::";

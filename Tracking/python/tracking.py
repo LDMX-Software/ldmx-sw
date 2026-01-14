@@ -82,7 +82,7 @@ class SeedFinderProcessor(Producer):
         super().__init__(instance_name, 'tracking::reco::SeedFinderProcessor',
                          'Tracking')
         self.perigee_location = []
-        self.pmin = 0.05
+        self.pmin = 0.04
         self.pmax = 8.
         self.d0min = 20.
         self.d0max = 20.
@@ -122,8 +122,6 @@ class CKFProcessor(Producer):
         Can be used to define the number of pion states generated with uniform
         distributions to be propagated through the tracking geometry for
         debugging purposes. <functionality to be moved>
-    steps_output_file_path_ : string
-        DEPRECATED TO BE REMOVED
     bfield : float
         <functionality to be removed>
         If using a constant bfield, this is the BZ component. 
@@ -198,7 +196,7 @@ class CKFProcessor(Producer):
         self.seed_coll_name = 'SeedTracks'
         self.out_trk_collection = 'Tracks'
         self.min_hits = 4
-        self.min_p = 45. #MeV
+        self.min_p = 40. #MeV
         self.outlier_pval_ = 3.84
         self.sim_particles_event_passname = ''
         self.input_pass_name = ''

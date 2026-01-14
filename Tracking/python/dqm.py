@@ -42,8 +42,8 @@ class TrackingRecoDQM(ldmxcfg.Analyzer):
         self.phimax   = 0.1#0.2
         self.thetamin = 1.4#1.4
         self.thetamax = 1.7#1.7
-        self.qopmin   = -10#-10
-        self.qopmax   = 10#10
+        self.qopmin   = -22
+        self.qopmax   = 22
         self.pmax     =  10.
 
         self.trackStates = ["ecal","target"]

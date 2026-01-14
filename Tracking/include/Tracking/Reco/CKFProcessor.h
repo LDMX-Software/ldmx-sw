@@ -223,6 +223,9 @@ class CKFProcessor final : public TrackingGeometryUser {
   // Fallback propagator with zero magnetic field
   std::unique_ptr<const CkfPropagator> propagator_zero_b_;
 
+  // Constant BField propagator
+  std::unique_ptr<const CkfPropagator> propagator_const_;
+
   // The CKF
   std::unique_ptr<
       const Acts::CombinatorialKalmanFilter<CkfPropagator, TrackContainer>>
@@ -233,14 +236,24 @@ class CKFProcessor final : public TrackingGeometryUser {
       const Acts::CombinatorialKalmanFilter<CkfPropagator, TrackContainer>>
       ckf_zero_b_;
 
+  std::unique_ptr<
+      const Acts::CombinatorialKalmanFilter<CkfPropagator, TrackContainer>>
+      ckf_const_b_;
+
   // Track Extrapolator Tool
   std::shared_ptr<tracking::reco::TrackExtrapolatorTool<CkfPropagator>>
       trk_extrap_;
+  std::shared_ptr<tracking::reco::TrackExtrapolatorTool<CkfPropagator>>
+      trk_extrap_zero_b_;
 
   /// n seeds and n tracks
   int nseeds_{0};
   int ntracks_{0};
-  int eventnr_{0};
+
+  /// CKF usage counters
+  int n_zero_b_ckf_{0};
+  int n_const_b_ckf_{0};
+  int n_field_map_ckf_{0};
 
   // BField Systematics
   std::vector<double> map_offset_{

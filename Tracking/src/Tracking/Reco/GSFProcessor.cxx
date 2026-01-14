@@ -105,15 +105,14 @@ void GSFProcessor::onNewRun(const ldmx::RunHeader& rh) {
 
   BetheHeitlerApprox bethe_heitler = Acts::makeDefaultBetheHeitlerApprox();
 
-  const auto gsf_logger = Acts::getDefaultLogger("GSF", acts_logging_level);
-
   gsf_ = std::make_unique<std::decay_t<decltype(*gsf_)>>(
       std::move(gsf_propagator), std::move(bethe_heitler),
       Acts::getDefaultLogger("GSF", acts_logging_level));
 
   const auto stepper = Acts::EigenStepper<>{map};
   propagator_ = std::make_unique<Propagator>(
-      stepper, navigator, Acts::getDefaultLogger("EXTRAP", acts_logging_level));
+      stepper, navigator,
+      Acts::getDefaultLogger("GSF_EXTRAP", acts_logging_level));
 
   trk_extrap_ = std::make_shared<std::decay_t<decltype(*trk_extrap_)>>(
       *propagator_, geometryContext(), magneticFieldContext());
