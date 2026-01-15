@@ -13,6 +13,8 @@
 #include "G4FieldManager.hh"
 #include "G4GDMLEvaluator.hh"
 #include "G4LogicalVolumeStore.hh"
+#include "G4ProductionCuts.hh"
+#include "G4ProductionCutsTable.hh"
 #include "G4Region.hh"
 #include "G4RegionStore.hh"
 #include "G4SDManager.hh"
@@ -244,6 +246,8 @@ void AuxInfoReader::createRegion(const G4String& name,
   // NOLINTBEGIN
   auto region = new G4Region(name);
   region->SetUserInformation(region_info);
+  // To get rid of those pesky G4 warnings
+  region->SetProductionCuts(G4ProductionCutsTable::GetProductionCutsTable()->GetDefaultProductionCuts());
 }
 // NOLINTEND
 
