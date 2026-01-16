@@ -174,7 +174,7 @@
   either side 
 -->
 <variable name="tagger_envelope_dz" 
-    value="tracker_envelope_clearance*2 + tagger_layer_delta*6" />
+    value="tracker_envelope_clearance*2 + tagger_layer_delta" />
 
 
 <!--
