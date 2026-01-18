@@ -7,6 +7,9 @@
 
 #include "Hcal/HcalRecProducer.h"
 
+#include <algorithm>  // for std::max, std::min
+#include <cmath>      // for std::round
+
 #include "Hcal/Event/HcalHit.h"
 #include "Hcal/HcalReconConditions.h"
 #include "Recon/Event/HgcrocDigiCollection.h"
@@ -134,6 +137,9 @@ void HcalRecProducer::produce(framework::Event& event) {
   while (i_digi < num_digi_hits) {
     auto digi_posend = hcal_digis.getDigi(i_digi);
 
+    // track readout mode for this hit (1 = ADC, 0 = TOT)
+    bool is_adc_mode = false;
+
     // ID from first digi sample (which should be in positive end)
     ldmx::HcalDigiID id_posend(digi_posend.id());
     ldmx::HcalID id(id_posend.section(), id_posend.layer(), id_posend.strip());
@@ -155,10 +161,11 @@ void HcalRecProducer::produce(framework::Event& event) {
       distance_negend = half_total_width;
     } else {
       if ((id.section() == ldmx::HcalID::HcalSection::TOP) ||
-          (id.section() == ldmx::HcalID::HcalSection::BOTTOM))
+          (id.section() == ldmx::HcalID::HcalSection::BOTTOM)) {
         distance_ecal = ecal_dx;
-      else
+      } else {
         distance_ecal = ecal_dy;
+      }
       distance_posend = 2 * half_total_width - distance_ecal / 2.;
       distance_negend = distance_ecal / 2.;
     }
@@ -182,14 +189,18 @@ void HcalRecProducer::produce(framework::Event& event) {
       ldmx::HcalDigiID id_negend(digi_negend.id());
 
       double voltage_posend, voltage_negend;
+      // Check if in TOT mode
       if (digi_posend.isTOT()) {
+        is_adc_mode = false;
         voltage_posend =
             (digi_posend.tot() - the_conditions.totCalib(id_posend, 0)) *
             the_conditions.totCalib(id_posend, 1);
         voltage_negend =
             (digi_negend.tot() - the_conditions.totCalib(id_negend, 0)) *
             the_conditions.totCalib(id_negend, 1);
-      } else {
+      }  // end TOT mode, go to ADC mode
+      else {
+        is_adc_mode = true;
         ampl_t_posend =
             digi_posend.soi().adcT() - the_conditions.adcPedestal(id_posend);
         ampl_tm1_posend =
@@ -212,7 +223,7 @@ void HcalRecProducer::produce(framework::Event& event) {
         // set voltage
         voltage_posend = ampl_t_posend * the_conditions.adcGain(id_posend, 0);
         voltage_negend = ampl_t_negend * the_conditions.adcGain(id_negend, 0);
-      }
+      }  // end ADC mode
 
       // get TOA
       double toa_posend =
@@ -272,9 +283,10 @@ void HcalRecProducer::produce(framework::Event& event) {
       i_digi += 2;
     }  // end double readout loop
     else {  // single readout
-
       double voltage_i;
+      // Check if in TOT mode (for single-ended readout)
       if (digi_posend.isTOT()) {
+        is_adc_mode = false;
         // TOT - number of clock ticks that pulse was over threshold
         // this is related to the amplitude of the pulse approximately through a
         // linear drain rate the amplitude of the pulse is related to the energy
@@ -286,7 +298,9 @@ void HcalRecProducer::produce(framework::Event& event) {
         voltage_i = (digi_posend.tot() - the_conditions.totCalib(id_posend)) *
                     the_conditions.totCalib(id_posend);
 
-      } else {
+      }  // end TOT mode, go to ADC mode (for single-ended readout)
+      else {
+        is_adc_mode = true;
         // ADC mode of readout
         // ADC - voltage measurement at a specific time of the pulse
         ampl_t_posend =
@@ -326,11 +340,11 @@ void HcalRecProducer::produce(framework::Event& event) {
     double num_mips_equivalent = voltage / voltage_per_mip_;
     double energy_deposited = num_mips_equivalent * mip_energy_;
 
-    // reconstructed energy in the layer_ (approximate)
+    // reconstructed energy in the layer (approximate)
     // TODO: need to incorporate corrections if necessary
     /**
      * Simple calculation of sampling fraction:
-     * Thickness per layer_: scintillator (0.2cm) + steel (0.25cm)
+     * Thickness per layer: scintillator (0.2cm) + steel (0.25cm)
      * Radiation length and nuclear interaction length:
      *  scintillator: X0 = 41.31cm, Lambda = 77.07cm
      *https://pdg.lbl.gov/2017/AtomicNuclearProperties/HTML/polystyrene.html
@@ -346,8 +360,8 @@ void HcalRecProducer::produce(framework::Event& event) {
      **/
     double reconstructed_energy = energy_deposited;
 
-    int p_es = num_mips_equivalent * pe_per_mip_;
-    int min_p_es = (voltage_min / voltage_per_mip_) * pe_per_mip_;
+    int pe_s = num_mips_equivalent * pe_per_mip_;
+    int min_pe_s = (voltage_min / voltage_per_mip_) * pe_per_mip_;
 
     // copy over information to rec hit structure in new collection
     ldmx::HcalHit rec_hit;
@@ -358,15 +372,17 @@ void HcalRecProducer::produce(framework::Event& event) {
     rec_hit.setSection(id.section());
     rec_hit.setStrip(id.strip());
     rec_hit.setLayer(id.layer());
-    rec_hit.setPE(p_es);
-    rec_hit.setMinPE(min_p_es);
+    rec_hit.setPE(pe_s);
+    rec_hit.setMinPE(min_pe_s);
+    rec_hit.setIsADC(is_adc_mode ? 1 : 0);
     rec_hit.setAmplitude((ampl_t / voltage_per_mip_) * mip_energy_);
     rec_hit.setEnergy(reconstructed_energy);
     rec_hit.setTime(hit_time);
     rec_hit.setOrientation(orientation_int);
     hcal_rec_hits.push_back(rec_hit);
-  }
+  }  // end of digi loop
 
+  // mark noise hits if sim hits are available
   if (event.exists(sim_hit_coll_name_, sim_hit_pass_name_)) {
     // hcal sim hits_ exist ==> label which hits_ are real and which are pure
     // noise

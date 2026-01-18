@@ -39,8 +39,9 @@ import LDMX.Hcal.hcal_hardcoded_conditions
 import LDMX.Ecal.digi as ecal_digi
 import LDMX.Ecal.vetos as ecal_vetos
 import LDMX.Ecal.EcalWABRecProcessor as ecal_WAB
-import LDMX.Hcal.digi as hcal_digi
-hcal_digi_reco = hcal_digi.HcalSimpleDigiAndRecProducer()
+import LDMX.Hcal.digi as hcal_digi_and_reco
+hcal_digi = hcal_digi_and_reco.HcalDigiProducer()
+hcal_reco = hcal_digi_and_reco.HcalRecProducer()
 
 ecalVeto = ecal_vetos.EcalVetoProcessor()
 ecalVeto.num_ecal_layers = 6
@@ -133,7 +134,8 @@ p.sequence.extend([
         ecal_digi.EcalRecProducer(), 
         ecalVeto,
         ecalMip,
-        hcal_digi_reco,
+        hcal_digi,
+        hcal_reco,
         hcal_veto,
         *ts_digis,
         TrigScintClusterProducer.pad1(),

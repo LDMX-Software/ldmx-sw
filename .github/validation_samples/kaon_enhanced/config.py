@@ -118,7 +118,9 @@ ecalMip = ecal_vetos.EcalMipProcessor()
 ecal_veto_pnet = ecal_vetos.EcalPnetVetoProcessor()
 
 # HCAL part
-hcal_digi_reco = hDigi.HcalSimpleDigiAndRecProducer()
+import LDMX.Hcal.digi as hcal_digi_and_reco
+hcal_digi = hcal_digi_and_reco.HcalDigiProducer()
+hcal_reco = hcal_digi_and_reco.HcalRecProducer()
 
 # electron counter for trigger processor 
 eCount = ElectronCounter( 1, "ElectronCounter") # first argument is number of electrons in simulation
@@ -150,7 +152,8 @@ p.sequence.extend([
         trigScintTrack, 
         eCount, 
         simpleTrig, 
-        hcal_digi_reco,
+        hcal_digi,
+        hcal_reco,
         hcal_veto,
         dqm.PhotoNuclearDQM()
         ])

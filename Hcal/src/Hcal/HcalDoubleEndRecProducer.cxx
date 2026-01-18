@@ -76,9 +76,13 @@ void HcalDoubleEndRecProducer::produce(framework::Event& event) {
     // skip non-double-ended layers
     if (id.section() != ldmx::HcalID::HcalSection::BACK) continue;
 
+    // skip if we couldn't find both ends of the bar
+    auto indices = indices_by_id[id];
+    if (indices.first == -1 || indices.second == -1) continue;
+
     // get two hits_ to reconstruct
-    auto hit_pos_end = hcal_bar.second.at(indices_by_id[id].first);
-    auto hit_neg_end = hcal_bar.second.at(indices_by_id[id].second);
+    auto hit_pos_end = hcal_bar.second.at(indices.first);
+    auto hit_neg_end = hcal_bar.second.at(indices.second);
 
     // update TOA hit with negative end with mean shift
     ldmx::HcalDigiID digi_id_pos(hit_pos_end.getSection(),
@@ -91,7 +95,7 @@ void HcalDoubleEndRecProducer::produce(framework::Event& event) {
 
     double pos_time = hit_pos_end.getTime();
     double neg_time = hit_neg_end.getTime();
-    if (pos_time != 0 || neg_time != 0) {
+    if (pos_time != 0 && neg_time != 0) {
       neg_time = neg_time - mean_shift;
     }
 
