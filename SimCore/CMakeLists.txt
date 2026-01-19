@@ -51,6 +51,19 @@ setup_library(module SimCore
               name PhotoNuclearModels
               dependencies SimCore::G4User)
 
+# Bertini cascade history capture library
+setup_library(module SimCore
+              name Bertini
+              dependencies Geant4::Interface
+                           SimCore::Event
+                           SimCore::G4User
+                           SimCore::PhotoNuclearModels
+                           Framework::Configure
+                           Framework::Framework)
+
+# Suppress warnings from the hack header
+# The #define private protected hack triggers -Wkeyword-macro
+target_compile_options(SimCore_Bertini PRIVATE -Wno-keyword-macro)
 
 # Primary Generators library needs G4User, LHE, and HepMC
 setup_library(module SimCore
@@ -58,10 +71,10 @@ setup_library(module SimCore
               dependencies SimCore::LHE
                            SimCore::HepMC
                            SimCore::G4User
-			                     SimCore::Event
+                        SimCore::Event
                            GENIE::GENIE
                            HepMC3)
-			   
+
 # Reweight Library
 setup_library(module SimCore
               name Reweight
@@ -91,11 +104,12 @@ setup_library(module SimCore
                            SimCore::G4User
                            SimCore::Geo
                            SimCore::PhotoNuclearModels
+                           SimCore::Bertini
                            SimCore::BiasOperators
                            SimCore::Generators
                            SimCore::Reweight
                            SimCore::SDs)
-                           
+
 # Set some target properties
 set_target_properties(SimCore
                       PROPERTIES CXX_STANDARD 17

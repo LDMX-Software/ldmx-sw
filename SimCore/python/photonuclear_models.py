@@ -189,3 +189,27 @@ class NoPhotoNuclearModel(PhotoNuclearModel):
     """
 
     pass
+
+
+@photo_nuclear_model(
+    "simcore::bertini::BertiniWithHistoryModel", "SimCore_Bertini"
+)
+class BertiniWithHistoryModel(PhotoNuclearModel):
+    """Bertini cascade with internal history recording.
+
+    Uses the standard Bertini cascade but captures the step-by-step cascade
+    history for each photonuclear interaction. The history includes all particles,
+    parent-daughter relationships, momenta, positions, and quasi-deuteron target
+    types (pp, pn, nn). Output is stored as "PhotonuclearCascadeHistories".
+
+    By default, only cascades initiated by photons above 5 GeV are recorded
+    (matching the typical ECal PN bias threshold).
+
+    Examples
+    --------
+        model = BertiniWithHistoryModel()
+        model.energy_threshold = 2500.0  # record above 2.5 GeV
+    """
+
+    max_energy: float = 15000.0
+    energy_threshold: float = 5000.0
