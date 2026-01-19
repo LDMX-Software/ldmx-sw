@@ -93,7 +93,7 @@ hcal_reco = hcal_digi_and_reco.HcalRecProducer()
 hcal_digi.input_coll_name  += overlayStr
 hcal_digi.input_pass_name = thisPassName
 hcal_digi.sim_hit_pass_name = thisPassName
-hcal_reco.input_coll_name  += overlayStr
+# Use the digis produced above
 hcal_reco.input_pass_name = thisPassName
 hcal_reco.sim_hit_pass_name = thisPassName
 

@@ -83,7 +83,7 @@ class HcalDigiProducer : public framework::Producer {
   int i_soi_;
 
   /// Conversion from energy in MeV to voltage in mV
-  double me_v_;
+  double mev_;
 
   /// Strip attenuation length [m]
   double attlength_;

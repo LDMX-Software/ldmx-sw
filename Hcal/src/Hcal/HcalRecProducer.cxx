@@ -7,9 +7,6 @@
 
 #include "Hcal/HcalRecProducer.h"
 
-#include <algorithm>  // for std::max, std::min
-#include <cmath>      // for std::round
-
 #include "Hcal/Event/HcalHit.h"
 #include "Hcal/HcalReconConditions.h"
 #include "Recon/Event/HgcrocDigiCollection.h"
@@ -23,32 +20,31 @@ HcalRecProducer::HcalRecProducer(const std::string& name,
 
 void HcalRecProducer::configure(framework::config::Parameters& ps) {
   // collection names
-  digi_coll_name_ = ps.get<std::string>("digiCollName");
-  digi_pass_name_ = ps.get<std::string>("digiPassName");
-  sim_hit_coll_name_ = ps.get<std::string>("simHitCollName");
-  sim_hit_pass_name_ = ps.get<std::string>("simHitPassName");
-  rec_hit_coll_name_ = ps.get<std::string>("recHitCollName");
-
+  input_coll_name_ = ps.get<std::string>("input_coll_name");
+  input_pass_name_ = ps.get<std::string>("input_pass_name");
+  sim_hit_coll_name_ = ps.get<std::string>("sim_hit_coll_name");
+  sim_hit_pass_name_ = ps.get<std::string>("sim_hit_pass_name");
+  rec_hit_coll_name_ = ps.get<std::string>("rec_hit_coll_name");
   // parameters
   mip_energy_ = ps.get<double>("mip_energy");
   pe_per_mip_ = ps.get<double>("pe_per_mip");
   clock_cycle_ = ps.get<double>("clock_cycle");
   voltage_per_mip_ = ps.get<double>("voltage_per_mip");
-  attlength_ = ps.get<double>("attenuationLength");
-  n_ad_cs_ = ps.get<int>("nADCs");
+  attlength_ = ps.get<double>("attenuation_length");
+  n_adcs_ = ps.get<int>("n_adcs");
 
   // configuring corrections graphs derived on the fly
   // TODO: maybe we should save these as a graph instead?
-  rate_up_slope_ = ps.get<double>("rateUpSlope");
-  time_up_slope_ = ps.get<double>("timeUpSlope");
-  rate_dn_slope_ = ps.get<double>("rateDnSlope");
-  time_dn_slope_ = ps.get<double>("timeDnSlope");
-  time_peak_ = ps.get<double>("timePeak");
-  pulse_func_ = TF1(
-      "pulseFunc",
-      "[0]*((1.0+exp([1]*(-[2]+[3])))*(1.0+exp([5]*(-[6]+[3]))))/"
-      "((1.0+exp([1]*(x-[2]+[3]-[4])))*(1.0+exp([5]*(x-[6]+[3]-[4]))))",
-      (double)n_ad_cs_ * clock_cycle_ * -1, (double)n_ad_cs_ * clock_cycle_);
+  rate_up_slope_ = ps.get<double>("rate_up_slope");
+  time_up_slope_ = ps.get<double>("time_up_slope");
+  rate_dn_slope_ = ps.get<double>("rate_dn_slope");
+  time_dn_slope_ = ps.get<double>("time_dn_slope");
+  time_peak_ = ps.get<double>("time_peak");
+  pulse_func_ =
+      TF1("pulseFunc",
+          "[0]*((1.0+exp([1]*(-[2]+[3])))*(1.0+exp([5]*(-[6]+[3]))))/"
+          "((1.0+exp([1]*(x-[2]+[3]-[4])))*(1.0+exp([5]*(x-[6]+[3]-[4]))))",
+          (double)n_adcs_ * clock_cycle_ * -1, (double)n_adcs_ * clock_cycle_);
   pulse_func_.FixParameter(1, rate_up_slope_);
   pulse_func_.FixParameter(2, time_up_slope_);
   pulse_func_.FixParameter(3, time_peak_);
@@ -69,16 +65,16 @@ void HcalRecProducer::configure(framework::config::Parameters& ps) {
   }
 
   // build TOA timewalk correction with pulse-shape
-  double toa_threshold = ps.get<double>("avgToaThreshold");
-  double gain = ps.get<double>("avgGain");
-  double pedestal = ps.get<double>("avgPedestal");
+  double toa_threshold = ps.get<double>("avg_toa_threshold");
+  double gain = ps.get<double>("avg_gain");
+  double pedestal = ps.get<double>("avg_pedestal");
   n = 0;
   for (double ampl = toa_threshold + 0.1; ampl < 10000; ampl += 0.01) {
     pulse_func_.FixParameter(0, ampl);
     double ampl_t = gain * pedestal + pulse_func_.Eval(0);
     double toa = fabs(pulse_func_.GetX(toa_threshold,
-                                       (double)n_ad_cs_ * clock_cycle_ * -1,
-                                       (double)n_ad_cs_ * clock_cycle_));
+                                       (double)n_adcs_ * clock_cycle_ * -1,
+                                       (double)n_adcs_ * clock_cycle_));
     correction_toa_.SetPoint(n, ampl_t, toa);
     if (n == 0) min_ampl_ = ampl_t;
     n++;
@@ -110,7 +106,7 @@ double HcalRecProducer::getTOA(
   double toa = (max_sample - toa_sample) * clock_cycle_ - toa_rel_start_bx;
 
   // time w.r.t to the SOI
-  toa += ((int)iSOI - max_sample) * clock_cycle_;
+  toa += (static_cast<int>(iSOI) - max_sample) * clock_cycle_;
 
   return toa;
 }
@@ -126,7 +122,7 @@ void HcalRecProducer::produce(framework::Event& event) {
 
   std::vector<ldmx::HcalHit> hcal_rec_hits;
   auto hcal_digis = event.getObject<ldmx::HgcrocDigiCollection>(
-      digi_coll_name_, digi_pass_name_);
+      input_coll_name_, input_pass_name_);
   int num_digi_hits = hcal_digis.getNumDigis();
 
   // get sample of interest index
