@@ -78,7 +78,12 @@ void HcalDoubleEndRecProducer::produce(framework::Event& event) {
 
     // skip if we couldn't find both ends of the bar
     auto indices = indices_by_id[id];
-    if (indices.first == -1 || indices.second == -1) continue;
+    if (indices.first == -1 || indices.second == -1) {
+      ldmx_log(warn) << "Couldn't find both ends of the bar "
+                     << " for HcalID section " << static_cast<int>(id.section())
+                     << " layer " << id.layer() << " strip " << id.strip();
+      continue;
+    }
 
     // get two hits_ to reconstruct
     auto hit_pos_end = hcal_bar.second.at(indices.first);
