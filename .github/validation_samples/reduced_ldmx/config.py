@@ -43,7 +43,7 @@ import LDMX.Hcal.digi as hcal_digi
 hcal_digi_reco = hcal_digi.HcalSimpleDigiAndRecProducer()
 
 ecalVeto = ecal_vetos.EcalVetoProcessor()
-ecalVeto.num_ecal_layers = 6
+ecalVeto.num_ecal_layers = 4
 ecalVeto.beam_energy = 4000.
 ecalVeto.recoil_from_tracking = False
 
