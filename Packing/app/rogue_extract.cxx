@@ -5,7 +5,8 @@
 #include <iostream>
 
 #include "Packing/Utility/Reader.h"
-#include "Packing/RogueFrame.h"
+#include "Packing/RogueFrameHeader.h"
+#include "Packing/LDMXRoRHeader.h"
 
 static void usage() {
   std::cout << "\n"
@@ -58,22 +59,28 @@ int main(int argc, char* argv[]) {
     return 1;
   }
 
-  packing::RogueFrame frame;
+  packing::RogueFrameHeader frame_header;
+  packing::LDMXRoRHeader ror_header;
+  std::vector<uint32_t> words;
   int frame_count{0};
   try {
     while (r) {
-      r >> frame;
+      r >> frame_header;
       frame_count++;
-      if (frame.channel() == 0) {
+      if (frame_header.channel() == 0) {
         printf("frame %d\n", frame_count);
-        printf("  channel = %d, size = %ld\n", frame.channel(), frame.data().size());
-        printf("  vers = %d, subsys = %d, contrib = %d, sentinel = %02x\n",
-            frame.data().at(0), frame.data().at(1), frame.data().at(2), frame.data().at(3));
-        const uint32_t* words = std::bit_cast<const uint32_t*>(frame.data().data());
+        printf("  channel = %d, size = %d\n", frame_header.channel(), frame_header.size());
+        r >> ror_header;
+        printf("  vers = %d, subsys = %d, contrib = %d\n",
+            ror_header.version(), ror_header.subsystem(), ror_header.contributor());
+        r.read(words, (frame_header.size() - packing::LDMXRoRHeader::size)/4);
         printf("--------\n");
-        for (std::size_t i_word{0}; i_word < frame.data().size()/4; i_word++) {
+        for (std::size_t i_word{0}; i_word < words.size(); i_word++) {
           printf("%08x\n", words[i_word]);
         }
+      } else {
+        // skip this frame
+        r.seek(r.tell()+frame_header.size());
       }
     }
   } catch (const std::runtime_error& e) {
