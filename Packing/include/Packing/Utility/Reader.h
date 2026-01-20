@@ -1,6 +1,7 @@
 #ifndef PACKING_UTILITY_READER_H_
 #define PACKING_UTILITY_READER_H_
 
+#include <vector>
 #include <fstream>
 #include <iostream>  //debuggin
 #include <string>
