@@ -4,18 +4,7 @@ import sys
 import numpy as np
 import argparse
 from pathlib import Path
-
-
-# helper class to swap endianness of TS data
 import struct
-
-def swap_endianness(num):
-    # Pack the number as a 32-bit integer in network byte order
-    packed_num = struct.pack('>I', num)
-    # Unpack the number as a 32-bit integer in little-endian byte order
-    unpacked_num = struct.unpack('<I', packed_num)[0]
-    return unpacked_num
-
 
 def main():
     parser = argparse.ArgumentParser(description="just hexdump the Hcal/Ecal data without attempting to decode")
