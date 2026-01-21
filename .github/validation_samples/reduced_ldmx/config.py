@@ -16,7 +16,7 @@ myGun.pdgID = 11
 myGun.enablePoisson = False #True   
 
 mySim = sim.simulator( "mySim" ) # Build simulator object
-det = 'ldmx-reduced-v2'
+det = 'ldmx-reduced-v3'
 mySim.setDetector(det, True )
 mySim.beamSpotSmear = [20.,80.,0.]
 mySim.description = 'Reduced ECal Electron Gun Test Simulation'
@@ -43,12 +43,12 @@ import LDMX.Hcal.digi as hcal_digi
 hcal_digi_reco = hcal_digi.HcalSimpleDigiAndRecProducer()
 
 ecalVeto = ecal_vetos.EcalVetoProcessor()
-ecalVeto.num_ecal_layers = 6
+ecalVeto.num_ecal_layers = 4
 ecalVeto.beam_energy = 4000.
 ecalVeto.recoil_from_tracking = False
 
 ecalMip = ecal_vetos.EcalMipProcessor()
-ecalMip.num_ecal_layers = 6
+ecalMip.num_ecal_layers = 4 
 
 ecalWAB = ecal_WAB.EcalWABRecProcessor()
 
