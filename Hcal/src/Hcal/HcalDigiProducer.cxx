@@ -36,31 +36,31 @@ void HcalDigiProducer::configure(framework::config::Parameters& ps) {
 
   // If true, ignore readout threshold
   // and generate pedestal noise digis in every empty channel
-  zero_suppression_ = ps.get<bool>("zeroSuppression");
+  zero_suppression_ = ps.get<bool>("zero_suppression");
 
   // Save full analog pulse shapes from the HGCROC emulation
-  save_pulse_truth_info_ = ps.get<bool>("savePulseTruthInfo");
+  save_pulse_truth_info_ = ps.get<bool>("save_pulse_truth_info");
 
   // collection names
-  input_coll_name_ = ps.get<std::string>("inputCollName");
-  input_pass_name_ = ps.get<std::string>("inputPassName");
-  digi_coll_name_ = ps.get<std::string>("digiCollName");
-  pulse_truth_coll_name_ = ps.get<std::string>("pulseTruthCollName");
+  input_coll_name_ = ps.get<std::string>("input_coll_name");
+  input_pass_name_ = ps.get<std::string>("input_pass_name");
+  digi_coll_name_ = ps.get<std::string>("digi_coll_name");
+  pulse_truth_coll_name_ = ps.get<std::string>("pulse_truth_coll_name");
 
   // physical constants
   //  used to calculate unit conversions
-  me_v_ = ps.get<double>("MeV");
-  attlength_ = ps.get<double>("attenuationLength");
+  mev_ = ps.get<double>("mev");
+  attlength_ = ps.get<double>("attenuation_length");
 
   // Time -> clock counts conversion
   //  time [ns] * ( 2^10 / max time in ns ) = clock counts
   ns_ = 1024. / clock_cycle_;
 
   // Configure generator that will produce noise hits_ in empty channels
-  gain_ = ps.get<double>("avgGain");
-  readout_threshold_ = ps.get<double>("avgReadoutThreshold");
-  pedestal_ = ps.get<double>("avgPedestal");
-  noise_rms_ = ps.get<double>("avgNoiseRMS");
+  gain_ = ps.get<double>("avg_gain");
+  readout_threshold_ = ps.get<double>("avg_readout_threshold");
+  pedestal_ = ps.get<double>("avg_pedestal");
+  noise_rms_ = ps.get<double>("avg_noise_rms");
 }
 
 void HcalDigiProducer::onNewRun(const ldmx::RunHeader&) {
@@ -229,7 +229,7 @@ void HcalDigiProducer::produce(framework::Event& event) {
       // Get voltages and times.
       for (int i_contrib = 0; i_contrib < sim_hit.getNumberOfContribs();
            i_contrib++) {
-        double voltage = sim_hit.getContrib(i_contrib).edep_ * me_v_;
+        double voltage = sim_hit.getContrib(i_contrib).edep_ * mev_;
         // global time (t=0ns at target)
         double time = sim_hit.getContrib(i_contrib).time_;
         // shift light-speed particle traveling along z_

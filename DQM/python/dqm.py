@@ -156,6 +156,9 @@ class HCalDQM(ldmxcfg.Analyzer) :
         self.build1DHistogram('max_pe',
                               f"Maximum photoelectrons in the HCal ({section_name})",
                               *pe_bins)
+        self.build1DHistogram('max_pe_adc',
+                              f"Maximum photoelectrons (ADC mode only) in the HCal ({section_name})",
+                              *pe_bins)
         self.build2DHistogram('sim_layer:strip',
                               f'HCal Layer ({section_name})',
                               *layer_bins,
@@ -178,6 +181,9 @@ class HCalDQM(ldmxcfg.Analyzer) :
                               *multiplicity_bins)
         self.build1DHistogram('max_pe_time',
                              f"Max PE hit time ({section_name}) [ns]",
+                              *time_bins)
+        self.build1DHistogram('max_pe_adc_time',
+                             f"Max PE (ADC mode only) hit time ({section_name}) [ns]",
                               *time_bins)
         self.build1DHistogram('hit_z', f"Reconstructed Z position in the HCal ({section_name}) [mm]",
                               1000, 0, 6000

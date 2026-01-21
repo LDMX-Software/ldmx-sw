@@ -26,6 +26,7 @@ project(LDMX_SW VERSION ${LDMXSW_VERSION_NUM}
 )
 
 set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_INSTALL_MESSAGE LAZY)
 
 # Load additional macros used by this project. 
 list(APPEND CMAKE_MODULE_PATH ${LDMX_SW_SOURCE_DIR}/cmake/)
