@@ -183,10 +183,8 @@ class EcalGeometry() :
                       ],
                 ecalFrontZ = 240.0,
                 cornersSideUp = True,
-                layer_shift_odd = True,
+                layer_shift_odd = False,
                 )
-        # shift by a single cell diameter
-        eg.layer_shift_x = 2*eg.moduleMinR / eg.nCellRHeight
         return eg
 
     def geometries() :

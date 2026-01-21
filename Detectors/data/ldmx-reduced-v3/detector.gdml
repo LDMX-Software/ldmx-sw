@@ -102,9 +102,9 @@
     <!-- detector version -->
     <auxiliary auxtype="DetectorVersion" auxvalue="1">
       <auxiliary auxtype="DetectorName" auxvalue="ldmx-reduced-v3"/>
-      <auxiliary auxtype="Author" auxvalue="Sanjit Masanam"/>
+      <auxiliary auxtype="Author" auxvalue="Tamas Vami, Sanjit Masanam"/>
       <auxiliary auxtype="Description" 
-                 auxvalue="The reduced geometry for the 2025 Winter running"/>
+                 auxvalue="The reduced geometry for the 2025 vertical slice test"/>
     </auxiliary>
 
     <!-- define regions -->
