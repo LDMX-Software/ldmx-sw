@@ -185,22 +185,22 @@ class TrigScintSD(simcfg.SensitiveDetector) :
         return TrigScintSD(2,'Pad1','trigger_pad1_bar_volume')
 
     def pad1lg() :
-        return TrigScintSD(6,'Pad1lightguide','tspad1_lightpipe_volume')
+        return TrigScintSD(6,'Pad1LightGuide','tspad1_lightpipe_volume')
 
     def pad2lg() :
-        return TrigScintSD(5,'Pad2lightguide','tspad2_lightpipe_volume')
+        return TrigScintSD(5,'Pad2LightGuide','tspad2_lightpipe_volume')
 
     def pad3lg() :
-        return TrigScintSD(7,'Pad3lightguide','tspad3_lightpipe_volume')
+        return TrigScintSD(7,'Pad3LightGuide','tspad3_lightpipe_volume')
 
     def pad1sipm() :
-        return TrigScintSD(9, 'Pad1sipm','tspad1_sipm_volume')
+        return TrigScintSD(9, 'Pad1SiPM','tspad1_sipm_volume')
 
     def pad2sipm() :
-        return TrigScintSD(8, 'Pad2sipm','tspad2_sipm_volume')
+        return TrigScintSD(8, 'Pad2SiPM','tspad2_sipm_volume')
 
     def pad3sipm() :
-        return TrigScintSD(10,'Pad3sipm','tspad3_sipm_volume')
+        return TrigScintSD(10,'Pad3SiPM','tspad3_sipm_volume')
 
     def target() :
         """Target sensitive detector"""

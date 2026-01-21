@@ -138,7 +138,7 @@ class simulator(Producer):
             trigscint = [ sds.TrigScintSD.up(), sds.TrigScintSD.tag(), sds.TrigScintSD.down() ]
         elif 'hcal-prototype' in det_name :
             trigscint = [ sds.TrigScintSD.testbeam() ]
-        elif 'v13' in det_name or 'v14' in det_name :
+        elif 'v13' in det_name or 'v14' in det_name or 'reduced' in det_name :
             trigscint = [ sds.TrigScintSD.pad1(), sds.TrigScintSD.pad2(), sds.TrigScintSD.pad3() ]
         else:
             trigscint = [ sds.TrigScintSD.pad1(), sds.TrigScintSD.pad2(), sds.TrigScintSD.pad3(), sds.TrigScintSD.pad1lg(), sds.TrigScintSD.pad2lg(), sds.TrigScintSD.pad3lg(), sds.TrigScintSD.pad1sipm(), sds.TrigScintSD.pad2sipm(), sds.TrigScintSD.pad3sipm() ]

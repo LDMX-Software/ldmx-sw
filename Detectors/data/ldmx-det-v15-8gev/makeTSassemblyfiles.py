@@ -6,6 +6,12 @@ dname = os.path.dirname(abspath)
 os.chdir(dname)
 
 '''
+
+Author: CJ Barton / Lund University group
+Added to ldmx-sw Jan 2026
+Github PR 1888
+Github issues 1760 & 1761
+
 Script which automatically generates GDML files for the TS pads and their associated instruments.
 Currently, 'associated instruments' are the SiPMs and the light pipes.
 
