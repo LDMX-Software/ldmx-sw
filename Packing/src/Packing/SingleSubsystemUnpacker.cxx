@@ -21,32 +21,50 @@ void SingleSubsystemUnpacker::produce(framework::Event& event) {
 
   while(reader_ and not reader_.eof()) {
     reader_ >> frame_header;
-    if (frame_header.channel() == 0) {
-      // data channel, read RoR header
-      reader_ >> ror_header;
-      if (ror_header.subsystem() == subsystem_ and (contributor_ < 0 or contributor_ == ror_header.contributor())) {
-        // correct subsystem and contributor channel, load data into memory, add to event, and leave
-        std::vector<uint8_t> buff;
-        if (not reader_.read(buff, frame_header.size() - ror_header.size)) {
-          EXCEPTION_RAISE("MalForm",
-                          "Raw file provided was unable to read entire data frame.");
-        }
-        // buff has subsystem data without RoR header
-        event.add(output_name_, buff);
-        // ror_header has global RoR information
-        event.getEventHeader().setIntParameter("RoR Timestamp", ror_header.timestamp());
-        return;
-      } else {
-        // data channel but not correct subsystem, skip
-        reader_.seek(reader_.tell()+frame_header.size()-ror_header.size);
-      }
-    } else {
-      // config channel, skip
+    if (frame_header.channel() != 0) {
+      // non-data channel in StreamWriter, skip
       reader_.seek(reader_.tell()+frame_header.size());
+      continue;
     }
+
+    // data channel, read RoR header
+    reader_ >> ror_header;
+    if (ror_header.subsystem() != subsystem_) {
+      // wrong subsystem ID number
+      reader_.seek(reader_.tell()+frame_header.size()-ror_header.size);
+      continue;
+    }
+
+    if (contributor_ >= 0 and contributor_ != ror_header.contributor()) {
+      // wrong contributor ID number
+      reader_.seek(reader_.tell()+frame_header.size()-ror_header.size);
+      continue;
+    }
+    
+    // correct subsystem and contributor channel
+    frame_count_++;
+    if (frame_offset_ >= frame_count_) {
+      // skip the first frame_offset_ frames that correspond to the selected subsystem
+      reader_.seek(reader_.tell()+frame_header.size()-ror_header.size);
+      continue;
+    }
+
+    // load data into memory, add to event, and leave
+    std::vector<uint8_t> buff;
+    if (not reader_.read(buff, frame_header.size() - ror_header.size)) {
+      EXCEPTION_RAISE("MalForm",
+                      "Raw file provided was unable to read entire data frame.");
+    }
+
+    // buff has subsystem data without RoR header
+    event.add(output_name_, buff);
+    // ror_header has global RoR information
+    event.getEventHeader().setIntParameter("RoR Timestamp", ror_header.timestamp());
+    // successfully unpacked an event, return from produce
+    return;
   }
 
-  /// abort event if we've reached the end of the file
+  /// abort event if we've reached the end of the file (left while loop)
   abortEvent();
 }
 

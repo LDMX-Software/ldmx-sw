@@ -44,8 +44,6 @@ class SingleSubsystemUnpacker : public framework::Producer {
    * (-1 means ignore this filter)
    */
   int contributor_;
-  /// should we include the firmware-inserted RoR header?
-  bool include_ror_header_;
   /// number of frames to skip before sending data
   int frame_offset_;
   /// destination object name
