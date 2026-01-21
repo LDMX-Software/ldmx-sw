@@ -1,29 +1,53 @@
 
 #include "Packing/SingleSubsystemUnpacker.h"
 
+#include "Packing/RogueFrameHeader.h"
+#include "Packing/LDMXRoRHeader.h"
+
 namespace packing {
 
-void SingleSubsystemUnpacker::beforeNewRun(ldmx::RunHeader& rh) {
-  rh.setDetectorName(detector_name_);
-}
-
 void SingleSubsystemUnpacker::configure(framework::config::Parameters& ps) {
-  reader_.open(ps.get<std::string>("raw_file"));
-  num_bytes_per_event_ = ps.get<int>("num_bytes_per_event");
+  reader_.open(ps.get<std::string>("dat_file"));
+  subsystem_ = ps.get<int>("subsystem");
+  contributor_ = ps.get<int>("contributor");
+  frame_offset_ = ps.get<int>("frame_offset");
   output_name_ = ps.get<std::string>("output_name");
-  detector_name_ = ps.get<std::string>("detector_name");
+  frame_count_ = 0;
 }
 
 void SingleSubsystemUnpacker::produce(framework::Event& event) {
-  if (!reader_ or reader_.eof()) abortEvent();
+  static packing::RogueFrameHeader frame_header;
+  static packing::LDMXRoRHeader ror_header;
 
-  std::vector<uint8_t> buff;
-  if (!reader_.read(buff, num_bytes_per_event_)) {
-    EXCEPTION_RAISE("MalForm", "Raw file provided was unable to read " +
-                                   std::to_string(num_bytes_per_event_) +
-                                   " bytes in an event.");
+  while(reader_ and not reader_.eof()) {
+    reader_ >> frame_header;
+    if (frame_header.channel() == 0) {
+      // data channel, read RoR header
+      reader_ >> ror_header;
+      if (ror_header.subsystem() == subsystem_ and (contributor_ < 0 or contributor_ == ror_header.contributor())) {
+        // correct subsystem and contributor channel, load data into memory, add to event, and leave
+        std::vector<uint8_t> buff;
+        if (not reader_.read(buff, frame_header.size() - ror_header.size)) {
+          EXCEPTION_RAISE("MalForm",
+                          "Raw file provided was unable to read entire data frame.");
+        }
+        // buff has subsystem data without RoR header
+        event.add(output_name_, buff);
+        // ror_header has global RoR information
+        event.getEventHeader().setIntParameter("RoR Timestamp", ror_header.timestamp());
+        return;
+      } else {
+        // data channel but not correct subsystem, skip
+        reader_.seek(reader_.tell()+frame_header.size()-ror_header.size);
+      }
+    } else {
+      // config channel, skip
+      reader_.seek(reader_.tell()+frame_header.size());
+    }
   }
-  event.add(output_name_, buff);
+
+  /// abort event if we've reached the end of the file
+  abortEvent();
 }
 
 }  // namespace packing
