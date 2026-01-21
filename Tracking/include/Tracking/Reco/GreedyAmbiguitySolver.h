@@ -88,20 +88,27 @@ class GreedyAmbiguitySolver final : public TrackingGeometryUser {
 
  private:
   /// Maximum amount of shared hits per track.
-  std::uint32_t maximum_shared_hits_{1};
+  std::uint32_t maximum_shared_hits_;
   /// Maximum number of iterations
-  std::uint32_t maximum_iterations_{1000};
+  std::uint32_t maximum_iterations_;
 
   /// Minimum number of measurement to form a track.
-  std::size_t n_meas_min_{7};
+  std::size_t n_meas_min_;
 
-  std::string out_trk_collection_{"TaggerTracksClean"};
+  /// Name of the output cleaned Track collection.
+  std::string out_trk_collection_;
 
-  std::string track_collection_{"TaggerTracks"};
+  /// Track collection to be cleaned.
+  std::string track_collection_;
 
-  std::string meas_collection_{"DigiTaggerSimHits"};
+  /// Measurements collection in the tracker
+  std::string meas_collection_;
 
-  std::string input_pass_name_{""};
+  /// Minimum momentum of the cleaned tracks (MeV)
+  double min_p_;
+
+  /// Input pass name
+  std::string input_pass_name_;
 
   struct State {
     std::size_t number_of_tracks_{};

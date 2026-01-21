@@ -126,7 +126,7 @@ void CKFProcessor::onNewRun(const ldmx::RunHeader& rh) {
                         // default_transformBField));
                         transform_pos, transform_b_field));
 
-  auto acts_logging_level = Acts::Logging::ERROR;
+  auto acts_logging_level = Acts::Logging::FATAL;
   if (debug_acts_) acts_logging_level = Acts::Logging::VERBOSE;
 
   // Setup the steppers
@@ -481,7 +481,7 @@ void CKFProcessor::produce(framework::Event& event) {
     ldmx_log(debug) << "---------------------------";
     ldmx_log(debug) << "Candidate Track ID = " << track_id;
 
-    // Check if seed momentum is too low and will likely go out of bounds
+    // Get seed parameters for logging
     auto start_params = start_parameters.at(track_id).parameters().transpose();
     // d0 in mm
     double seed_d0 = start_params[0];
@@ -492,18 +492,6 @@ void CKFProcessor::produce(framework::Event& event) {
     // momentum in MeV
     double seed_p = (std::abs(1.0 / seed_q_over_p) * 1000);
 
-    // Three-way routing:
-    // - Recoil + low p  -> zero-B CKF
-    // - Tagger + low p  -> const-B CKF
-    // - Otherwise       -> field-map CKF
-    bool low_p = (seed_p < 50.0);
-    bool out_of_bounds = (std::abs(seed_d0) > 0.5 || std::abs(seed_z0) > 3.0);
-
-    // Recoil: zero-B if low_p OR out_of_bounds. Tagger: const-B if low_p OR
-    // out_of_bounds.
-    bool use_zero_b_ckf = (!tagger_tracking_) && (low_p || out_of_bounds);
-    bool use_const_b_ckf = (tagger_tracking_) && (low_p || out_of_bounds);
-
     // Higher threshold for extrapolation (ECAL safety remains as-is)
     bool use_zero_b_extrap = (seed_p < 100.0);
 
@@ -511,48 +499,37 @@ void CKFProcessor::produce(framework::Event& event) {
                     << ckf_options.multipleScattering
                     << "  energy loss = " << ckf_options.energyLoss;
 
-    if (use_zero_b_ckf) {
-      ldmx_log(debug) << "  Using zero-B CKF (recoil: low-p/pos): p=" << seed_p
-                      << " MeV, d0=" << seed_d0 << " mm, z0=" << seed_z0
-                      << " mm";
-      n_zero_b_ckf_++;
-    } else if (use_const_b_ckf) {
-      ldmx_log(debug) << "  Using const-B CKF (tagger: low-p/pos): p=" << seed_p
-                      << " MeV, d0=" << seed_d0 << " mm, z0=" << seed_z0
-                      << " mm";
-      n_const_b_ckf_++;
-    } else {
-      ldmx_log(debug) << "  Using field-map CKF (high-p/within-field): p="
-                      << seed_p << " MeV, d0=" << seed_d0
-                      << " mm, z0=" << seed_z0 << " mm";
-      n_field_map_ckf_++;
-    }
+    // Try field-map CKF first
+    ldmx_log(debug) << "  Using field-map CKF: p=" << seed_p
+                    << " MeV, d0=" << seed_d0 << " mm, z0=" << seed_z0 << " mm";
+    n_field_map_ckf_++;
 
     auto results =
-        use_zero_b_ckf
-            ? ckf_zero_b_->findTracks(start_parameters.at(track_id),
-                                      ckf_options, tc)
-            : (use_const_b_ckf
-                   ? ckf_const_b_->findTracks(start_parameters.at(track_id),
-                                              ckf_options, tc)
-                   : ckf_->findTracks(start_parameters.at(track_id),
-                                      ckf_options, tc));
+        ckf_->findTracks(start_parameters.at(track_id), ckf_options, tc);
 
-    ldmx_log(debug)
-        << "  Checking CKF success for track candidate with params: "
-        << " D0 = " << start_params[0] << " Z0 = " << start_params[1]
-        << ", Phi = " << start_params[2] << " Theta = " << start_params[3]
-        << ", QoP = " << start_params[4] << " Time = " << start_params[5];
+    // If field-map CKF fails, try fallback options
+    if (!results.ok()) {
+      if (!tagger_tracking_) {
+        ldmx_log(debug)
+            << "  Field-map CKF failed, falling back to zero-B CKF (recoil)";
+        n_zero_b_ckf_++;
+        results = ckf_zero_b_->findTracks(start_parameters.at(track_id),
+                                          ckf_options, tc);
+      } else if (tagger_tracking_) {
+        ldmx_log(debug)
+            << "  Field-map CKF failed, falling back to const-B CKF (tagger)";
+        n_const_b_ckf_++;
+        results = ckf_const_b_->findTracks(start_parameters.at(track_id),
+                                           ckf_options, tc);
+      }
+    }
 
     if (not results.ok()) {
       auto err = results.error();
       auto max_steps = propagator_options.maxSteps;
       ldmx_log(error) << "    CKF failed (" << err.category().name() << ":"
                       << err.value() << ") message='" << err.message() << "'"
-                      << " seed_p=" << seed_p
-                      << " MeV use_zero_b=" << std::boolalpha << use_zero_b_ckf
-                      << " use_const_b=" << std::boolalpha << use_const_b_ckf
-                      << " maxSteps=" << max_steps
+                      << " seed_p=" << seed_p << " MeV maxSteps=" << max_steps
                       << " start_params=" << start_params.transpose();
       continue;
     } else {
@@ -839,25 +816,25 @@ void CKFProcessor::onProcessEnd() {
 }
 
 void CKFProcessor::configure(framework::config::Parameters& parameters) {
-  dumpobj_ = parameters.get<bool>("dumpobj", 0);
-  pionstates_ = parameters.get<int>("pionstates", 0);
+  dumpobj_ = parameters.get<bool>("dumpobj");
+  pionstates_ = parameters.get<int>("pionstates");
 
-  bfield_ = parameters.get<double>("bfield", -1.5);
-  const_b_field_ = parameters.get<bool>("const_b_field", false);
+  bfield_ = parameters.get<double>("bfield");
+  const_b_field_ = parameters.get<bool>("const_b_field");
   field_map_ = parameters.get<std::string>("field_map");
-  propagator_step_size_ = parameters.get<double>("propagator_step_size", 200.);
-  propagator_max_steps_ = parameters.get<int>("propagator_maxSteps", 10000);
+  propagator_step_size_ = parameters.get<double>("propagator_step_size");
+  propagator_max_steps_ = parameters.get<int>("propagator_maxSteps");
   measurement_collection_ = parameters.get<std::string>(
       "measurement_collection", "TaggerMeasurements");
-  outlier_pval_ = parameters.get<double>("outlier_pval_", 3.84);
+  outlier_pval_ = parameters.get<double>("outlier_pval_");
 
-  debug_acts_ = parameters.get<bool>("debug_acts", false);
+  debug_acts_ = parameters.get<bool>("debug_acts");
 
-  remove_stereo_ = parameters.get<bool>("remove_stereo", false);
-  use1_dmeasurements_ = parameters.get<bool>("use1Dmeasurements", true);
-  min_hits_ = parameters.get<int>("min_hits", 7);
+  remove_stereo_ = parameters.get<bool>("remove_stereo");
+  use1_dmeasurements_ = parameters.get<bool>("use1Dmeasurements");
+  min_hits_ = parameters.get<int>("min_hits");
   // Minimum momentum threshold (MeV)
-  min_p_ = parameters.get<double>("min_p", 30.);
+  min_p_ = parameters.get<double>("min_p");
 
   // Ckf specific options
   use_extrapolate_location_ =

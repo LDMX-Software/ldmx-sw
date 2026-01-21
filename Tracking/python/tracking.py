@@ -196,10 +196,11 @@ class CKFProcessor(Producer):
         self.seed_coll_name = 'SeedTracks'
         self.out_trk_collection = 'Tracks'
         self.min_hits = 4
-        self.min_p = 40. #MeV
+        self.min_p = 35. #MeV
         self.outlier_pval_ = 3.84
         self.sim_particles_event_passname = ''
         self.input_pass_name = ''
+        self.use1Dmeasurements = True
         
 class GSFProcessor(Producer):
     """ Producer that runs Gaussian Sum Fitter on a specific track collection
@@ -350,6 +351,14 @@ class GreedyAmbiguitySolver(Producer):
         Maximum number of iterations in track cleaning loop.
     nMeasurementsMin : int
         Minimum number of hits on a track.
+    out_trk_collection : string
+        Name of the output cleaned Track collection.
+    trackCollection : string
+        Track collection to be cleaned.
+    measCollection  : string
+        Measurements collection in the tracker
+    min_p : double
+        Minimum momentum (MeV) of the cleaned tracks.
     """
     def __init__(self, instance_name = "GreedyAmbiguitySolver"):
         super().__init__(instance_name, 'tracking::reco::GreedyAmbiguitySolver',
@@ -357,11 +366,11 @@ class GreedyAmbiguitySolver(Producer):
 
         self.maximumSharedHits = 2 
         self.maximumIterations = 1000
-        self.nMeasurementsMin = 5
+        self.nMeasurementsMin = 4
         self.out_trk_collection = "TaggerTracksClean"
         self.trackCollection = "TaggerTracks"
         self.measCollection = "DigiTaggerSimHits"
-        
+        self.min_p = 30. #MeV
         self.input_pass_name = ""
 
 class TrackerVetoProcessor(Producer):

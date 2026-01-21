@@ -172,8 +172,9 @@ void GreedyAmbiguitySolver::configure(
   meas_collection_ =
       parameters.get<std::string>("measCollection", "DigiTaggerSimHits");
   input_pass_name_ = parameters.get<std::string>("input_pass_name");
-  n_meas_min_ = parameters.get<int>("nMeasurementsMin", 5);
-  maximum_shared_hits_ = parameters.get<int>("maximumSharedHits", 1);
+  n_meas_min_ = parameters.get<int>("nMeasurementsMin");
+  maximum_shared_hits_ = parameters.get<int>("maximumSharedHits");
+  min_p_ = parameters.get<double>("min_p");
 }
 
 void GreedyAmbiguitySolver::produce(framework::Event& event) {
@@ -204,8 +205,14 @@ void GreedyAmbiguitySolver::produce(framework::Event& event) {
   for (auto i_track : state.selected_tracks_) {
     auto clean_trk = tracks[state.track_tips_.at(i_track)];
     if ((clean_trk.getNhits() > n_meas_min_) &&
-        (std::abs(1. / clean_trk.getQoP()) > 0.05)) {
+        (std::abs(1. / clean_trk.getQoP()) > min_p_ * 0.001)) {
       out_tracks.push_back(clean_trk);
+    } else {
+      ldmx_log(debug)
+          << "  > Track candidate did NOT meet the requirements: Nhits = "
+          << clean_trk.getNhits()
+          << " and p = " << (std::abs(1. / clean_trk.getQoP()) * 1000)
+          << " MeV";
     }
   }
 
