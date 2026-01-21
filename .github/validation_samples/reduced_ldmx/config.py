@@ -48,7 +48,7 @@ ecalVeto.beam_energy = 4000.
 ecalVeto.recoil_from_tracking = False
 
 ecalMip = ecal_vetos.EcalMipProcessor()
-ecalMip.num_ecal_layers = 6
+ecalMip.num_ecal_layers = 4 
 
 ecalWAB = ecal_WAB.EcalWABRecProcessor()
 
