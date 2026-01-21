@@ -43,8 +43,14 @@ nBytes=lenHeader + nLanes*nTimeSamples*lenMessage
 from LDMX.Packing import rawio
 
 p.sequence = [
-    rawio.SingleSubsystemUnpacker(raw_file = RAWfileName, output_name = "ZCCMoutput", detector_name="ldmx-hcal-prototype-v1.0", num_bytes_per_event = int(nBytes))
-        ]
+    rawio.SingleSubsystemUnpacker(
+        dat_file = RAWfileName,
+        output_name = "ZCCMoutput",
+        frame_offset = 1,
+        subsystem = 2,
+        contributor = 1
+    )
+]
 
 p.maxEvents = int(nEv) # this HAS TO be set! single subsystem unpacker will abort all events when it runs out of data so it cannot simply be left running
 
