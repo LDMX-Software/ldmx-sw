@@ -247,7 +247,8 @@ void AuxInfoReader::createRegion(const G4String& name,
   auto region = new G4Region(name);
   region->SetUserInformation(region_info);
   // To get rid of those pesky G4 warnings
-  region->SetProductionCuts(G4ProductionCutsTable::GetProductionCutsTable()->GetDefaultProductionCuts());
+  region->SetProductionCuts(G4ProductionCutsTable::GetProductionCutsTable()
+                                ->GetDefaultProductionCuts());
 }
 // NOLINTEND
 
