@@ -22,8 +22,9 @@
 // using namespace framework;
 
 // This code allows ldmx-app to exit gracefully when receiving preemption
-// signals from the HPC (SIGUSR2) or Ctrl-c (SIGINT). It finishes the current
+// signals from the SDF (SIGUSR2) or Ctrl-c (SIGINT). It finishes the current
 // event and closes ROOT files properly instead of losing work.
+// NOLINTNEXTLINE(readability-identifier-naming)
 extern volatile std::sig_atomic_t preemption_received_;
 
 static void softFinish(int sig, siginfo_t* siginfo, void* context) {
@@ -119,6 +120,7 @@ int main(int argc, char* argv[]) try {
     //  where logging is closed, so we can do one more error message and then
     //  close it.
     // ldmx_log macro needs this variable to be named 'the_log_'
+    // NOLINTNEXTLINE(readability-identifier-naming)
     auto the_log_{framework::logging::makeLogger("fire")};
     ldmx_log(fatal) << "[" << e.name() << "] : " << e.message() << "\n"
                     << "  at " << e.module() << ":" << e.line() << " in "

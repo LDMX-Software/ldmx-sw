@@ -21,6 +21,7 @@
 #include "TROOT.h"
 
 // Preemption flag that can be set by signal handlers
+// NOLINTNEXTLINE(readability-identifier-naming)
 volatile std::sig_atomic_t preemption_received_ = 0;
 
 namespace framework {
