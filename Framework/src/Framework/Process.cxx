@@ -20,6 +20,9 @@
 #include "TFile.h"
 #include "TROOT.h"
 
+// Preemption flag that can be set by signal handlers
+volatile std::sig_atomic_t preemption_received_ = 0;
+
 namespace framework {
 
 Process::Process(const framework::config::Parameters &configuration)
@@ -219,6 +222,13 @@ void Process::run() {
       event_limit = total_events_;
     }
     while (n_events_processed < event_limit) {
+      // Check for preemption before processing each event
+      if (preemption_received_) {
+        ldmx_log(fatal)
+            << "Preemption signal received, stopping event generation";
+        break;
+      }
+
       total_tries++;
       num_tries++;
 
@@ -344,9 +354,10 @@ void Process::run() {
       }
 
       bool event_completed = true;
-      while (master_file->nextEvent(
+      while (!preemption_received_ &&
+             master_file->nextEvent(
                  storage_controller_.keepEvent(event_completed)) &&
-             (event_limit_ < 0 || (n_events_processed) < event_limit_)) {
+             ((event_limit_ < 0) || (n_events_processed < event_limit_))) {
         // clean up for storage control calculation
         storage_controller_.resetEventState();
         logging::Formatter::set(the_event.getEventNumber());
@@ -373,6 +384,11 @@ void Process::run() {
 
         n_events_processed++;
       }  // loop through events
+
+      if (preemption_received_) {
+        ldmx_log(fatal) << "Preemption signal received, stopping event "
+                           "processing and closing files";
+      }
 
       bool leave_early{false};
       if (event_limit_ > 0 && n_events_processed == event_limit_) {
