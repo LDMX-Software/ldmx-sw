@@ -24,6 +24,8 @@
 // This code allows ldmx-app to exit gracefully when receiving preemption
 // signals from the SDF (SIGUSR2) or Ctrl-c (SIGINT). It finishes the current
 // event and closes ROOT files properly instead of losing work.
+// NOTE: This seems to be container dependent. It has been tested and works
+//       with apptainer while does not work with podman.
 // NOLINTNEXTLINE(readability-identifier-naming)
 extern volatile std::sig_atomic_t preemption_received_;
 
