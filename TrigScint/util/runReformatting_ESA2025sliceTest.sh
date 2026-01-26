@@ -3,6 +3,9 @@
 # a script to run reformatting on all files in a file list
 # this is the ESA 2025 slice test data version
 
+set -o errexit
+set -o nounset
+
 #some defaults
 nSamp=70
 startSamp=0
@@ -49,22 +52,13 @@ fi
 logVerbosity=2 #set to 0 for lots of debug printout to logs, and rudimentary python decoding script plots 
 rootFilePath="rootFiles"
 
-echo "trigger flags set to ${trigFlag}"
-
-echo "using identifier $id"
-
 reformatDir=${PWD}
 # deduce the location of ldmx-sw from the path to _this_ script
 # requires to be run by bash
 ldmx_sw_dir="$( cd -- "$(dirname -- "${BASH_SOURCE[0]}")/../../" && pwd)"
-export LDMX_BASE=$ldmx_sw_dir/../blah
 configDir=${ldmx_sw_dir}/TrigScint/exampleConfigs
 utilDir=${ldmx_sw_dir}/TrigScint/util
 digiDir=${ldmx_sw_dir}/run
-
-ln -s ${configDir}/../data/${channelMap} ${channelMap}
-ln -s ${configDir}/../data/${moduleMap} ${moduleMap}
-
 
 for file in $(cat $fileList) ; do
 	echo "Running over $file ..."
