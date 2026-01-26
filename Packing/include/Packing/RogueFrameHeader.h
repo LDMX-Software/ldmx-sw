@@ -25,6 +25,12 @@ class RogueFrameHeader {
   uint16_t flags() const { return flags_; }
   /// get specifc error flags included in the header
   uint8_t error() const { return error_; }
+  /// get the trailer byte for checking
+  uint8_t trailer() const { return trailer_; }
+  /// check if this frame is probably a yaml dump
+  bool probablyYaml() const {
+    return trailer_ == 0x0a;
+  }
  private:
   /**
    * size of frame written by StreamWriter
@@ -41,6 +47,16 @@ class RogueFrameHeader {
   uint8_t error_;
   /// StreamWriter channel
   uint8_t channel_;
+  /**
+   * last byte stored in frame
+   *
+   * we need to check the trailer byte as well since
+   * many of the early runs took data with both the data
+   * and yaml-dump of the config stored in the same channel
+   *
+   * The yaml-dump has a characteristic trailer byte 0x0a
+   */
+  uint8_t trailer_;
 };
 
 }

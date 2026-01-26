@@ -21,7 +21,7 @@ void SingleSubsystemUnpacker::produce(framework::Event& event) {
 
   while(reader_ and not reader_.eof()) {
     reader_ >> frame_header;
-    if (frame_header.channel() != 0) {
+    if (frame_header.channel() != 0 or frame_header.probablyYaml()) {
       // non-data channel in StreamWriter, skip
       reader_.seek(reader_.tell()+frame_header.size());
       continue;

@@ -67,9 +67,10 @@ int main(int argc, char* argv[]) {
     while (r) {
       r >> frame_header;
       frame_count++;
-      if (frame_header.channel() == 0) {
+      if (frame_header.channel() == 0 and not frame_header.probablyYaml()) {
         printf("frame %d\n", frame_count);
-        printf("  channel = %d, size = %d\n", frame_header.channel(), frame_header.size());
+        printf("  channel = %d, size = %d, trailer = 0x%02x\n",
+            frame_header.channel(), frame_header.size(), frame_header.trailer());
         r >> ror_header;
         printf("  vers = %d, subsys = %d, contrib = %d\n",
             ror_header.version(), ror_header.subsystem(), ror_header.contributor());
