@@ -15,6 +15,7 @@ static void usage() {
                "\n"
                " OPTIONS:\n"
                "  -h,--help    : print this help and exit\n"
+               "  -n,--n-events: limit to first N events to print\n"
             << std::endl;
 }
 
@@ -25,6 +26,7 @@ int main(int argc, char* argv[]) {
     return 1;
   }
 
+  int nevents{-1};
   std::string in_file;
   for (int i_arg{1}; i_arg < argc; i_arg++) {
     std::string arg{argv[i_arg]};
@@ -33,6 +35,20 @@ int main(int argc, char* argv[]) {
       if (arg == "-h" or arg == "--help") {
         usage();
         return 0;
+      } else if (arg == "-n" or arg == "--n-events") {
+        if (i_arg + 1 == argc or argv[i_arg + 1][0] == '-') {
+          std::cerr << "The " << arg
+                    << " parameter requires an argument after it.\n";
+          return 1;
+        }
+        i_arg++;
+        try {
+          nevents = std::stoi(argv[i_arg]);
+        } catch (const std::invalid_argument& e) {
+          std::cerr << "The argument to " << arg << " '" << argv[i_arg]
+                    << "' is not an integer.\n";
+          return 1;
+        }
       } else {
         std::cerr << "Unrecognized option " << arg << std::endl;
         return 1;
@@ -61,27 +77,36 @@ int main(int argc, char* argv[]) {
 
   packing::RogueFrameHeader frame_header;
   packing::LDMXRoRHeader ror_header;
-  std::vector<uint32_t> words;
+  std::vector<uint8_t> bytes;
   int frame_count{0};
+  int event_count{0};
   try {
     while (r) {
       r >> frame_header;
       frame_count++;
+      const int frame_end = r.tell()+frame_header.size();
       if (frame_header.channel() == 0 and not frame_header.probablyYaml()) {
+        event_count++;
         printf("frame %d\n", frame_count);
         printf("  channel = %d, size = %d, trailer = 0x%02x\n",
             frame_header.channel(), frame_header.size(), frame_header.trailer());
         r >> ror_header;
         printf("  vers = %d, subsys = %d, contrib = %d\n",
             ror_header.version(), ror_header.subsystem(), ror_header.contributor());
-        r.read(words, (frame_header.size() - packing::LDMXRoRHeader::size)/4);
-        printf("--------\n");
-        for (std::size_t i_word{0}; i_word < words.size(); i_word++) {
-          printf("%08x\n", words[i_word]);
+        r.read(bytes, (frame_header.size() - packing::LDMXRoRHeader::size));
+        for (std::size_t i_row{0}; i_row < bytes.size() / 16; i_row++) {
+          printf("%8lu  ", i_row);
+          for (std::size_t i_byte{0}; i_byte < 16; i_byte ++) {
+            printf("%02x ", bytes[16*i_row+i_byte]);
+          }
+          printf("\n");
+        }
+        if (nevents > 0 and event_count >= nevents) {
+          return 0;
         }
       } else {
         // skip this frame
-        r.seek(r.tell()+frame_header.size());
+        r.seek(frame_end);
       }
     }
   } catch (const std::runtime_error& e) {
