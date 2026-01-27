@@ -21,9 +21,14 @@ void SingleSubsystemUnpacker::produce(framework::Event& event) {
 
   while(reader_ and not reader_.eof()) {
     reader_ >> frame_header;
+
+    // store location of end-of-frame for skipping this frame
+    // if we fail any of the filter checks
+    const auto frame_end = reader_.tell() + frame_header.size();
+
     if (frame_header.channel() != 0 or frame_header.probablyYaml()) {
       // non-data channel in StreamWriter, skip
-      reader_.seek(reader_.tell()+frame_header.size());
+      reader_.seek(frame_end);
       continue;
     }
 
@@ -31,13 +36,13 @@ void SingleSubsystemUnpacker::produce(framework::Event& event) {
     reader_ >> ror_header;
     if (ror_header.subsystem() != subsystem_) {
       // wrong subsystem ID number
-      reader_.seek(reader_.tell()+frame_header.size()-ror_header.size);
+      reader_.seek(frame_end);
       continue;
     }
 
     if (contributor_ >= 0 and contributor_ != ror_header.contributor()) {
       // wrong contributor ID number
-      reader_.seek(reader_.tell()+frame_header.size()-ror_header.size);
+      reader_.seek(frame_end);
       continue;
     }
     
@@ -45,7 +50,7 @@ void SingleSubsystemUnpacker::produce(framework::Event& event) {
     frame_count_++;
     if (frame_offset_ >= frame_count_) {
       // skip the first frame_offset_ frames that correspond to the selected subsystem
-      reader_.seek(reader_.tell()+frame_header.size()-ror_header.size);
+      reader_.seek(frame_end);
       continue;
     }
 
