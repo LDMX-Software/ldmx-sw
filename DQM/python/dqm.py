@@ -1058,13 +1058,13 @@ class SampleValidation(ldmxcfg.Analyzer) :
             "#pi^{0}",                 # 9
             "K^{+}",                   # 10
             "K^{-}",                   # 11
-            "k_{L}",                   # 12
-            "k_{S}",                   # 13
+            "K_{L}",                   # 12
+            "K_{S}",                   # 13
             "light-N",                 # 14
             "heavy-N",                 # 15
             "#Lambda / #Sigma / #Xi",  # 16
             "A'",                      # 17
-            "else",
+            "else",                    # 18
         ]
 
         #primary histograms
