@@ -5,6 +5,7 @@ import os
 p.maxTriesPerEvent = 1000
 p.run = int(os.environ['LDMX_RUN_NUMBER'])
 p.maxEvents = int(os.environ['LDMX_NUM_EVENTS']) // 2
+p.logger.termLevel = 4
 
 
 from LDMX.Biasing import ecal

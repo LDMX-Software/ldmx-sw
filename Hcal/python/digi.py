@@ -66,11 +66,11 @@ class HcalDigiProducer(Producer) :
         Configuration for the chip emulator
     MeV : float
         Conversion between energy [MeV] and voltage [mV]
-    inputCollName : str
+    input_coll_name : str
         Name of input collection  
-    inputPassName : str
+    input_pass_name : str
         Name of input pass 
-    digiCollName : str    
+    digi_coll_name : str    
         Name of digi collection                                                                                                                                                                          
     """
 
@@ -82,29 +82,26 @@ class HcalDigiProducer(Producer) :
         #Energy -> Volts converstion
         # energy [MeV] ( 1 MIP / energy per MIP [MeV] ) ( voltage per MIP [mV] / 1 MIP ) = voltage [mV]
         # assuming 1 PEs ~ 5mV ->  self.MeV = 72.961 mV/MeV
-        self.MeV = (1./mipEnergy)*self.hgcroc.calculateVoltageHcal( nPEPerMIP )
+        self.mev = (1./mipEnergy)*self.hgcroc.calculateVoltageHcal( nPEPerMIP )
 
         # attenuation length
-        self.attenuationLength = 5.; # in m   
-
+        self.attenuation_length = 5.; # in m   
         # avg parameters
-        self.avgReadoutThreshold = 4. #ADCs - noise config only
-        self.avgGain = 1.2 #noise config only
-        self.avgPedestal = 1. #noise config only
+        self.avg_readout_threshold = 4. #ADCs - noise config only
+        self.avg_gain = 1.2 #noise config only
+        self.avg_pedestal = 1. #noise config only
         # avg noise set to 0.02PE
-        self.avgNoiseRMS = self.hgcroc.calculateVoltageHcal(0.02)/self.avgGain
-
-        self.savePulseTruthInfo = False
+        self.avg_noise_rms = self.hgcroc.calculateVoltageHcal(0.02)/self.avg_gain
+        self.save_pulse_truth_info = False
 
         # If false, digitize every channel, by not dropping any pulses
         # to e.g. simulate a pedestal measurement
-        self.zeroSuppression = True
-
+        self.zero_suppression = True
         # input and output collection name parameters
-        self.inputCollName = 'HcalSimHits'
-        self.inputPassName = ''
-        self.digiCollName = 'HcalDigis'
-        self.pulseTruthCollName = 'HcalPulseTruth'
+        self.input_coll_name = 'HcalSimHits'
+        self.input_pass_name = ''
+        self.digi_coll_name = 'HcalDigis'
+        self.pulse_truth_coll_name = 'HcalPulseTruth'
 
 class HcalRecProducer(Producer) :
     """Configuration for the HcalRecProducer
@@ -117,15 +114,15 @@ class HcalRecProducer(Producer) :
         Copied from module-wide mipEnergy [MeV]
     clock_cycle : float
         Time for one DAQ clock cycle to pass [ns]
-    digiCollName : str
+    input_coll_name : str
         Name of digi collection
-    digiPassName : str
+    input_pass_name : str
         Name of digi pass
-    simHitCollName : str
+    sim_hit_coll_name : str
         Name of simHit collection
-    simHitPassName : str 
+    sim_hit_pass_name : str 
         Name of simHit pass 
-    recHitCollName : str
+    rec_hit_coll_name : str
         Name of recHit collection
     """
 
@@ -139,27 +136,27 @@ class HcalRecProducer(Producer) :
         self.clock_cycle = 25. #ns - needs to match the setting on the chip   
         self.pe_per_mip = nPEPerMIP
         
-	# attenuation length
-        self.attenuationLength = 5.; # in m  
+	    # attenuation length
+        self.attenuation_length = 5.; # in m  
         
-        self.digiCollName = 'HcalDigis'
-        self.digiPassName = ''
-        self.simHitCollName = 'HcalSimHits'
-        self.simHitPassName = ''
-        self.recHitCollName = 'HcalRecHits'
+        self.input_coll_name = 'HcalDigis'
+        self.input_pass_name = ''
+        self.sim_hit_coll_name = 'HcalSimHits'
+        self.sim_hit_pass_name = ''
+        self.rec_hit_coll_name = 'HcalRecHits'
 
         # hgcroc parameters:
-        self.rateUpSlope = hgcroc.rateUpSlope
-        self.timeUpSlope = hgcroc.timeUpSlope
-        self.rateDnSlope = hgcroc.rateDnSlope
-        self.timeDnSlope = hgcroc.timeDnSlope
-        self.timePeak    = hgcroc.timePeak
-        self.nADCs       = hgcroc.nADCs
+        self.rate_up_slope = hgcroc.rateUpSlope
+        self.time_up_slope = hgcroc.timeUpSlope
+        self.rate_dn_slope = hgcroc.rateDnSlope
+        self.time_dn_slope = hgcroc.timeDnSlope
+        self.time_peak    = hgcroc.timePeak
+        self.n_adcs       = hgcroc.nADCs
 
         # avg parameters
-        self.avgToaThreshold = 1.6 # mV - correction config only
-        self.avgGain = 1.2 # correction config only 
-        self.avgPedestal = 1. #noise config only   
+        self.avg_toa_threshold = 1.6 # mV - correction config only
+        self.avg_gain = 1.2 # correction config only 
+        self.avg_pedestal = 1. #noise config only   
 
 class HcalSingleEndRecProducer(Producer) :
     """ Configuration for the single ended Hcal Rec Producer

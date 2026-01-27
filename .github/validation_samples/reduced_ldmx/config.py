@@ -39,16 +39,17 @@ import LDMX.Hcal.hcal_hardcoded_conditions
 import LDMX.Ecal.digi as ecal_digi
 import LDMX.Ecal.vetos as ecal_vetos
 import LDMX.Ecal.EcalWABRecProcessor as ecal_WAB
-import LDMX.Hcal.digi as hcal_digi
-hcal_digi_reco = hcal_digi.HcalSimpleDigiAndRecProducer()
+import LDMX.Hcal.digi as hcal_digi_and_reco
+hcal_digi = hcal_digi_and_reco.HcalDigiProducer()
+hcal_reco = hcal_digi_and_reco.HcalRecProducer()
 
 ecalVeto = ecal_vetos.EcalVetoProcessor()
-ecalVeto.num_ecal_layers = 6
+ecalVeto.num_ecal_layers = 4
 ecalVeto.beam_energy = 4000.
 ecalVeto.recoil_from_tracking = False
 
 ecalMip = ecal_vetos.EcalMipProcessor()
-ecalMip.num_ecal_layers = 6
+ecalMip.num_ecal_layers = 4 
 
 ecalWAB = ecal_WAB.EcalWABRecProcessor()
 
@@ -133,7 +134,8 @@ p.sequence.extend([
         ecal_digi.EcalRecProducer(), 
         ecalVeto,
         ecalMip,
-        hcal_digi_reco,
+        hcal_digi,
+        hcal_reco,
         hcal_veto,
         *ts_digis,
         TrigScintClusterProducer.pad1(),

@@ -52,24 +52,19 @@ class TruthHitProducer : public framework::Producer {
    */
   void produce(framework::Event &event) override;
 
-  /// Class to set the verbosity level.
-  // TODO: Make use of the global verbose parameter.
-  bool verbose_{false};
-
+ private:
   /// Name of the input collection containing the sim hits
   std::string input_collection_;
 
   /// Name of the pass that the input collection is on (empty string means take
   /// any pass)
   std::string input_pass_name_;
+  /// Name of the pass that the input simparticles collection is on
+  std::string sim_particles_pass_name_;
 
   /// Name of the output collection that will be used to store the
   /// selected sim hits
   std::string output_collection_;
-
- private:
-  std::string sim_particles_passname_;
-  std::string input_collection_events_passname_;
 
 };  // TruthHitProducer
 

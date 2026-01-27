@@ -84,7 +84,7 @@
         <positionref ref="recoil_pos"/>
         <rotationref ref="identity"/>
       </physvol>
-      <!-- <physvol copynumber="6"> 
+      <physvol copynumber="6"> 
         <file name="ecal.gdml"/> 
         <positionref ref="em_calorimeter_pos"/> 
         <rotationref ref="identity"/> 
@@ -93,7 +93,7 @@
         <file name="hcal.gdml"/> 
         <positionref ref="hadron_calorimeter_pos"/> 
         <rotationref ref="identity"/> 
-      </physvol> -->
+      </physvol>
       <auxiliary auxtype="DetElem" auxvalue="Top"/>
     </volume>
   </structure>

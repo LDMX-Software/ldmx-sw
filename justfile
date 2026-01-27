@@ -107,6 +107,11 @@ test *ARGS:
 fire config_py *ARGS:
     denv_workspace="{{ this_denv_workspace }}" denv fire {{ config_py }} {{ ARGS }}
 
+# multiple runs of ldmx-sw fire with same input configuration script
+[no-cd]
+fire-parallel config_py *ARGS:
+    denv_workspace="{{ this_denv_workspace }}" denv fire-parallel {{ config_py }} {{ ARGS }}
+
 # run gdb on a config file
 [no-cd]
 debug config_py *ARGS:

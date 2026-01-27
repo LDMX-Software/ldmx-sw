@@ -75,8 +75,9 @@ import LDMX.Ecal.ecalClusters as ecal_cluster
 # Load the HCAL modules
 import LDMX.Hcal.HcalGeometry
 import LDMX.Hcal.hcal_hardcoded_conditions
-import LDMX.Hcal.digi as hcal_digi
-hcal_digi_reco = hcal_digi.HcalSimpleDigiAndRecProducer()
+import LDMX.Hcal.digi as hcal_digi_and_reco
+hcal_digi = hcal_digi_and_reco.HcalDigiProducer()
+hcal_reco = hcal_digi_and_reco.HcalRecProducer()
 
 
 # Load electron counting and trigger
@@ -115,7 +116,8 @@ p.sequence.extend([
         ecal_veto,
         ecal_mip,
         ecal_veto_pnet,
-        hcal_digi_reco,
+        hcal_digi,
+        hcal_reco,
         hcal_veto,
         trigger,
         dqm.EcalClusterAnalyzer()

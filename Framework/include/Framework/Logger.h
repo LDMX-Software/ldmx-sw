@@ -145,6 +145,7 @@ class Formatter {
  * Assumes to have access to a variable named the_log_ of type logger.
  * Input logging level (without namespace or enum).
  */
+// NOLINTNEXTLINE(readability-identifier-naming)
 #define ldmx_log(lvl) BOOST_LOG_SEV(the_log_, ::framework::logging::level::lvl)
 
 #endif  // FRAMEWORK_LOGGER_H

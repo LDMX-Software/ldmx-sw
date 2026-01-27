@@ -20,10 +20,7 @@ class TruthHitProducer(ldmxcfg.Producer) :
         self.input_collection="TriggerPadUpSimHits"
         self.input_pass_name="" #take any pass
         self.output_collection="truthBeamElectronsUp"
-        self.verbose = False
-        
-        self.sim_particles_passname = ""
-        self.input_collection_events_passname = ""
+        self.sim_particles_pass_name = ""
 
     def up() :
         """Get the beam electron truth hits for the trigger pad upstream of target"""
