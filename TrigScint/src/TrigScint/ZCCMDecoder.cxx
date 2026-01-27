@@ -97,6 +97,19 @@ void ZCCMDecoder::produce(framework::Event &event) {
   ldmx_log(debug) << "Got input collection " << input_collection_ << "_"
                   << input_pass_name_;
 
+  /* -- PROCESS THE EVENT INFORMATION -- */
+  uint32_t time_stamp = 0;
+  for (int i_w = 0; i_w < ZCCMOutput::TIMESTAMP_LEN_BYTES; i_w++) {
+    int pos = ZCCMOutput::TIMESTAMP_POS + i_w;
+    uint8_t time_word = event_output.at(pos);
+    ldmx_log(debug) << "time stamp word at position " << pos
+                    << " (with iW = " << i_w
+                    << ") = " << std::bitset<8>(time_word);
+    time_stamp |= (time_word << i_w * 8);  // shift by a byte at a time
+  }
+  // TODO: make actual use of the time stamp in the event header
+  // This time_stamp is local to the TS
+
   /* -- TS event header done; read the channel contents -- */
 
   /*

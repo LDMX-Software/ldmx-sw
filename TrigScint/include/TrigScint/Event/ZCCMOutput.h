@@ -93,14 +93,19 @@ class ZCCMOutput {
   void setCID(const std::vector<int> cid) { cids_ = cid; }
 
  public:
-  /*
-    for each time sample, every lane each sends a message: [ 1B ADC for 6
-    channels, 2B empty, 1B TDC for 6 channels, 1B flags, 1B lane nb]; and the 1B
-    "flags" structure is: flags = 2b CID (capID), 1b CE (channel alignment?
-    error), 1b BC0, 4b empty
-  */
+  /**
+   * for each time sample, every lane each sends a message:
+   * [ 1B ADC for 6 channels, 2B empty, 1B TDC for 6 channels, 1B flags, 1B lane nb];
+   * and the 1B "flags" structure is:
+   *  flags = 2b CID (capID), 1b CE (channel alignment? error), 1b BC0, 4b empty
+   */
+  const static int TIMESTAMP_POS{0};
+  const static int TIMESTAMP_LEN_BYTES{8};
+  const static int EMPTY_HEADER_WORD_POS{TIMESTAMP_POS + TIMESTAMP_LEN_BYTES};
+  const static int EMPTY_HEADER_WORD_LEN_BYTES{8};
   // this marks the start of event data (i.e. after end of event header)
-  const static int EVENTDATA_POS{0};
+  const static int EVENTDATA_POS{EMPTY_HEADER_WORD_POS +
+                                 EMPTY_HEADER_WORD_LEN_BYTES};
   /*
     the time sample word has ADC, TDC, flags and lane:
     one for each lane, in every time sample
