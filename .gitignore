@@ -34,3 +34,4 @@ EventDisplay/include/EventDisplay/EventDisplayLinkDef.h
 .apptainer
 .wget-hsts
 .parallel
+.python_history
