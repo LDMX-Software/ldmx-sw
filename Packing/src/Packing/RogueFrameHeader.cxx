@@ -20,4 +20,4 @@ utility::Reader& RogueFrameHeader::read(utility::Reader& r) {
   return r;
 }
 
-}
+}  // namespace packing

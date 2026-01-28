@@ -2,8 +2,8 @@
 #ifndef PACKING_ROGUEFRAMEHEADER_H
 #define PACKING_ROGUEFRAMEHEADER_H
 
-#include <vector>
 #include <cstdint>
+#include <vector>
 
 #include "Packing/Utility/Reader.h"
 
@@ -28,9 +28,8 @@ class RogueFrameHeader {
   /// get the trailer byte for checking
   uint8_t trailer() const { return trailer_; }
   /// check if this frame is probably a yaml dump
-  bool probablyYaml() const {
-    return trailer_ == 0x0a;
-  }
+  bool probablyYaml() const { return trailer_ == 0x0a; }
+
  private:
   /**
    * size of frame written by StreamWriter
@@ -59,6 +58,6 @@ class RogueFrameHeader {
   uint8_t trailer_;
 };
 
-}
+}  // namespace packing
 
 #endif

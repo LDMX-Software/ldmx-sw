@@ -7,7 +7,8 @@ void SingleSubsystemUnpackerFixedLength::beforeNewRun(ldmx::RunHeader& rh) {
   rh.setDetectorName(detector_name_);
 }
 
-void SingleSubsystemUnpackerFixedLength::configure(framework::config::Parameters& ps) {
+void SingleSubsystemUnpackerFixedLength::configure(
+    framework::config::Parameters& ps) {
   reader_.open(ps.get<std::string>("raw_file"));
   num_bytes_per_event_ = ps.get<int>("num_bytes_per_event");
   output_name_ = ps.get<std::string>("output_name");

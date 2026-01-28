@@ -1,8 +1,8 @@
 
 #include "Packing/SingleSubsystemUnpacker.h"
 
-#include "Packing/RogueFrameHeader.h"
 #include "Packing/LDMXRoRHeader.h"
+#include "Packing/RogueFrameHeader.h"
 
 namespace packing {
 
@@ -19,7 +19,7 @@ void SingleSubsystemUnpacker::produce(framework::Event& event) {
   static packing::RogueFrameHeader frame_header;
   static packing::LDMXRoRHeader ror_header;
 
-  while(reader_ and not reader_.eof()) {
+  while (reader_ and not reader_.eof()) {
     reader_ >> frame_header;
 
     // store location of end-of-frame for skipping this frame
@@ -45,11 +45,12 @@ void SingleSubsystemUnpacker::produce(framework::Event& event) {
       reader_.seek(frame_end);
       continue;
     }
-    
+
     // correct subsystem and contributor channel
     frame_count_++;
     if (frame_offset_ >= frame_count_) {
-      // skip the first frame_offset_ frames that correspond to the selected subsystem
+      // skip the first frame_offset_ frames that correspond to the selected
+      // subsystem
       reader_.seek(frame_end);
       continue;
     }
@@ -57,14 +58,15 @@ void SingleSubsystemUnpacker::produce(framework::Event& event) {
     // load data into memory, add to event, and leave
     std::vector<uint8_t> buff;
     if (not reader_.read(buff, frame_header.size() - ror_header.size)) {
-      EXCEPTION_RAISE("MalForm",
-                      "Raw file provided was unable to read entire data frame.");
+      EXCEPTION_RAISE(
+          "MalForm", "Raw file provided was unable to read entire data frame.");
     }
 
     // buff has subsystem data without RoR header
     event.add(output_name_, buff);
     // ror_header has global RoR information
-    event.getEventHeader().setIntParameter("RoR Timestamp", ror_header.timestamp());
+    event.getEventHeader().setIntParameter("RoR Timestamp",
+                                           ror_header.timestamp());
     // successfully unpacked an event, return from produce
     return;
   }

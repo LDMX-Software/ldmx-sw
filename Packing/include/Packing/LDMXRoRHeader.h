@@ -2,8 +2,8 @@
 #ifndef PACKING_LDMXRORHEADER_H
 #define PACKING_LDMXRORHEADER_H
 
-#include <vector>
 #include <cstdint>
+#include <vector>
 
 #include "Packing/Utility/Reader.h"
 
@@ -21,7 +21,7 @@ namespace packing {
 class LDMXRoRHeader {
  public:
   /// size of this header in bytes
-  static const unsigned int size = 16;
+  static const unsigned int SIZE = 16;
   /// read the next LDMX RoR header into memory
   utility::Reader& read(utility::Reader& r);
   /// version of LDMX data (should be zero)
@@ -32,6 +32,7 @@ class LDMXRoRHeader {
   uint8_t contributor() const { return contributor_; }
   /// get timestamp of this RoR
   uint64_t timestamp() const { return timestamp_; }
+
  private:
   /// version of LDMX data (should be zero)
   uint8_t version_;
@@ -49,6 +50,6 @@ class LDMXRoRHeader {
   uint64_t timestamp_;
 };
 
-}
+}  // namespace packing
 
 #endif

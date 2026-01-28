@@ -95,9 +95,9 @@ class ZCCMOutput {
  public:
   /**
    * for each time sample, every lane each sends a message:
-   * [ 1B ADC for 6 channels, 2B empty, 1B TDC for 6 channels, 1B flags, 1B lane nb];
-   * and the 1B "flags" structure is:
-   *  flags = 2b CID (capID), 1b CE (channel alignment? error), 1b BC0, 4b empty
+   * [ 1B ADC for 6 channels, 2B empty, 1B TDC for 6 channels, 1B flags, 1B lane
+   * nb]; and the 1B "flags" structure is: flags = 2b CID (capID), 1b CE
+   * (channel alignment? error), 1b BC0, 4b empty
    */
   const static int TIMESTAMP_POS{0};
   const static int TIMESTAMP_LEN_BYTES{8};

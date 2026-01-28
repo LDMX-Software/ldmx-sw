@@ -4,9 +4,9 @@
 
 #include <iostream>
 
-#include "Packing/Utility/Reader.h"
-#include "Packing/RogueFrameHeader.h"
 #include "Packing/LDMXRoRHeader.h"
+#include "Packing/RogueFrameHeader.h"
+#include "Packing/Utility/Reader.h"
 
 static void usage() {
   std::cout << "\n"
@@ -118,7 +118,7 @@ int main(int argc, char* argv[]) {
     while (r) {
       r >> frame_header;
       frame_count++;
-      const int frame_end = r.tell()+frame_header.size();
+      const int frame_end = r.tell() + frame_header.size();
       if (frame_header.channel() != 0) {
         // non-data channel in StreamWriter, skip
         r.seek(frame_end);
@@ -148,17 +148,18 @@ int main(int argc, char* argv[]) {
       event_count++;
       printf("frame %d\n", frame_count);
       printf("  channel = %d, size = %d, trailer = 0x%02x\n",
-          frame_header.channel(), frame_header.size(), frame_header.trailer());
-      printf("  vers = %d, subsys = %d, contrib = %d\n",
-          ror_header.version(), ror_header.subsystem(), ror_header.contributor());
+             frame_header.channel(), frame_header.size(),
+             frame_header.trailer());
+      printf("  vers = %d, subsys = %d, contrib = %d\n", ror_header.version(),
+             ror_header.subsystem(), ror_header.contributor());
 
       r.read(bytes, (frame_header.size() - packing::LDMXRoRHeader::size));
 
       // print similar to hexdump -C
       for (std::size_t i_row{0}; i_row < bytes.size() / 16; i_row++) {
         printf("%8lu  ", i_row);
-        for (std::size_t i_byte{0}; i_byte < 16; i_byte ++) {
-          printf("%02x ", bytes[16*i_row+i_byte]);
+        for (std::size_t i_byte{0}; i_byte < 16; i_byte++) {
+          printf("%02x ", bytes[16 * i_row + i_byte]);
         }
         printf("\n");
       }

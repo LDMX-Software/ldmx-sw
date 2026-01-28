@@ -24,4 +24,4 @@ utility::Reader& LDMXRoRHeader::read(utility::Reader& r) {
   return (r >> timestamp_);
 }
 
-}
+}  // namespace packing

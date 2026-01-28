@@ -17,7 +17,8 @@ namespace packing {
 class SingleSubsystemUnpackerFixedLength : public framework::Producer {
  public:
   /// normal constructor
-  SingleSubsystemUnpackerFixedLength(const std::string& name, framework::Process& p)
+  SingleSubsystemUnpackerFixedLength(const std::string& name,
+                                     framework::Process& p)
       : framework::Producer(name, p) {}
   /// empty destructor
   virtual ~SingleSubsystemUnpackerFixedLength() {}

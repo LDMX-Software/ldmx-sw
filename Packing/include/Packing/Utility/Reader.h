@@ -1,11 +1,11 @@
 #ifndef PACKING_UTILITY_READER_H_
 #define PACKING_UTILITY_READER_H_
 
-#include <vector>
 #include <fstream>
 #include <iostream>  //debuggin
 #include <string>
 #include <type_traits>
+#include <vector>
 
 namespace packing {
 namespace utility {
@@ -171,7 +171,8 @@ class Reader {
    * @return *this
    */
   template <typename ContentType>
-  Reader& read(std::vector<ContentType>& vec, std::size_t count, std::size_t offset = 0) {
+  Reader& read(std::vector<ContentType>& vec, std::size_t count,
+               std::size_t offset = 0) {
     vec.resize(offset + count);
     for (std::size_t i{offset}; i < vec.size(); i++) {
       if (!(*this >> vec[i])) return *this;

@@ -217,7 +217,8 @@ void ZCCMDecoder::produce(framework::Event &event) {
       if (i_word >= num_expected_messages) {
         ldmx_log(fatal)
             << "More words than expected! Breaking event data loop in sample "
-            << sample_nb << " at lane = " << int(lane) << ", channel nb " << i_c;
+            << sample_nb << " at lane = " << int(lane) << ", channel nb "
+            << i_c;
         break;
       }
       uint8_t adc_val =
