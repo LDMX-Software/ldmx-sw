@@ -217,7 +217,7 @@ void ZCCMDecoder::produce(framework::Event &event) {
       if (i_word >= num_expected_messages) {
         ldmx_log(fatal)
             << "More words than expected! Breaking event data loop in sample "
-            << sample_nb << " at lane = " << lane << ", channel nb " << i_c;
+            << sample_nb << " at lane = " << int(lane) << ", channel nb " << i_c;
         break;
       }
       uint8_t adc_val =
@@ -262,7 +262,8 @@ void ZCCMDecoder::produce(framework::Event &event) {
 
     if (int(lane) != i_word % n_lanes)
       ldmx_log(fatal) << "Lane ordering has been messed up! Expect lane "
-                      << i_word % n_lanes << ", but we got lane " << int(lane);
+                      << i_word % n_lanes << ", but we got lane " << int(lane)
+                      << " in sample " << sample_nb;
     // shift to next word
     i_word++;
   }  // while event data words left in the stream
