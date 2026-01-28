@@ -53,6 +53,10 @@ scintillator_mat="Polyvinyltoluene"
 lightpipe_mat   ="AcrylicPMMA" 
 sipm_mat        ="Silicon"
 
+#To streamline TargetDarkBremFilter.cxx, TSPad3 and its components are considered part of
+#the 'target' G4Region, whereas TSPad1/2 are in the 'trig_scint' region.
+region_name = ["trig_scint","trig_scint","target"]
+
 for i in range(3):
 
     #Variables that must change between iterations
@@ -204,7 +208,7 @@ to the housing, and maybe see if the visattributes can be reworked
         </physvol>
       </loop>
 
-      <auxiliary auxtype="Region" auxvalue="trig_scint" />
+      <auxiliary auxtype="Region" auxvalue="{region_name[i]}" />
       <!--<auxiliary auxtype="VisAttributes" auxvalue="TriggerPadVis"/>-->
       <auxiliary auxtype="DetElem" auxvalue="TriggerPad"/>
 
