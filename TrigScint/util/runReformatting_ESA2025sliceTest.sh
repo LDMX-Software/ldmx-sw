@@ -19,14 +19,13 @@ fileList=""
 channelMap="channelMap_4modules_14lanes.txt" #<--- use this for 2025 data 
 OPTIND=1 #reset option counter between runs
 
-while getopts 'f:hs:n:e:d:r:c:m:VRS' flag; do
+while getopts 'f:hs:n:e:d:r:c:VRS' flag; do
   case "${flag}" in
     h) echo  "usage: (note boolean flags with capital letters) \n. $0 [-f file list (mandatory)] 
 	\t[-s startSample (default: $startSamp)] 
 	\t[-n numberTimeSamples (default: $nSamp)] 
 	\t[-e number of events (default: $nEvents, for all)] \n\t[-d dead channel nb (default: $deadChannel) \n\t[-r hit reco time sample (default: $recoSamp)]  \n\t[-c channel map name (default: $channelMap)]  \n\t[-V verbose boolean ] \n\t[-R rerun from first step ] \n\t[-S run with singularity (sets appropriate fire command)] "
-       #exit 0;;   # works with sh, but then can't run the container
-       return 0;; # works with source or .
+       exit 0;;
     f) fileList="${OPTARG}" ; echo $fileList;; 
     s) startSamp="${OPTARG}" ;;
     n) nSamp="${OPTARG}" ;;
@@ -34,7 +33,6 @@ while getopts 'f:hs:n:e:d:r:c:m:VRS' flag; do
     d) deadChannel="${OPTARG}" ;;
     r) recoSamp="${OPTARG}" ;;
     c) channelMap="${OPTARG}" ;;
-    m) moduleMap="${OPTARG}" ;;
     V) doVerbose=1 ;;
     R) startDoRerun=1 ;;
     S) RUN_FIRE='fire' ;;
@@ -49,6 +47,7 @@ if [ -z "${fileList}" ] ; then
    return 1;
 fi
 
+timeOffset=0
 logVerbosity=2 #set to 0 for lots of debug printout to logs, and rudimentary python decoding script plots 
 rootFilePath="rootFiles"
 
@@ -59,6 +58,9 @@ ldmx_sw_dir="$( cd -- "$(dirname -- "${BASH_SOURCE[0]}")/../../" && pwd)"
 configDir=${ldmx_sw_dir}/TrigScint/exampleConfigs
 utilDir=${ldmx_sw_dir}/TrigScint/util
 digiDir=${ldmx_sw_dir}/run
+
+# update map files to be full paths
+channelMap="${configDir}/../data/${channelMap}"
 
 for file in $(cat $fileList) ; do
 	echo "Running over $file ..."
@@ -121,7 +123,7 @@ for file in $(cat $fileList) ; do
 	echo
 	echo "**********************************************************"
 	echo
-	echo "Done reformatting $nEvsRun events from $file in $((timeEnd-timeStart)) seconds: "
+	echo "Done reformatting $nEvents events from $file in $((timeEnd-timeStart)) seconds: "
 	echo "txt -> dat in $((timeDat-timeStart)) s, "
 	echo "dat -> raw root in $((timeRaw-timeDat)) s, "
 	echo "raw root -> QIE in $((timeDecode-timeRaw)) s, "
