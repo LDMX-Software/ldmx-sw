@@ -36,10 +36,6 @@
          x = y = z = 0 mm.     
     -->
     <position name="trig_scint_pos" x="0.0" y="0.0" z="trig_scint_pos_z"/>
-
-    <!-- Light pipe module position  -->
-    <position name="light_pipe_pos" x="0.0" y="0.0" z="trig_scint_pos_z"/>
-
     <position name="tagger_pos" x="0.0" y="0.0" z="tagger_pos_z"/>
     <position name="recoil_pos" x="0.0" y="0.0" z="recoil_pos_z"/>
     <position name="em_calorimeter_pos"
@@ -98,15 +94,10 @@
         <positionref ref="hadron_calorimeter_pos"/> 
         <rotationref ref="identity"/> 
       </physvol>
-      <physvol copynumber="8">
+      <physvol>
         <file name="magnet.gdml"/> 
         <positionref ref="magnet_pos"/> 
         <rotationref ref="identity"/> 
-      </physvol>
-      <physvol copynumber="9">
-        <file name="ts_light_pipes.gdml"/>
-        <positionref ref="light_pipe_pos"/>
-        <rotationref ref="identity"/>
       </physvol>
       <auxiliary auxtype="DetElem" auxvalue="Top"/>
     </volume>
@@ -229,9 +220,6 @@
       <auxiliary auxtype="Visible" auxvalue="false"/>
       <auxiliary auxtype="LineWidth" auxvalue="1.0"/>
     </auxiliary>  
-    <auxiliary auxtype="Region" auxvalue="light_pipe">
-      <auxiliary auxtype="StoreTrajectories" auxvalue="true"/>
-    </auxiliary>
   </userinfo>  
 
   <setup name="Default" version="1.0">

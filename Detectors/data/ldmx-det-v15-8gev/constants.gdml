@@ -149,15 +149,6 @@
 <constant name="trigger_pad2_actual_z"
     value="ts_center_z + (trig_scint_area_envelope_z/2 - trigger_pad_thickness/2)" />
 
-<!-- Light-pipe bar dimensions -->
-<constant name="light_pipe_dx" value="36.24*mm"/>
-<constant name="light_pipe_dy" value="2*mm"/>
-<constant name="light_pipe_thickness" value="2*mm"/>
-
-<!-- Light pipe positions relative to TS pads -->
-<constant name="light_pipe_pad1_z_offset" value="-(trigger_pad_bar_thickness/2 + light_pipe_thickness/2)"/>
-<constant name="light_pipe_pad2_z_offset" value="-(trigger_pad_bar_thickness/2 + light_pipe_thickness/2)"/>
-<constant name="light_pipe_pad3_z_offset" value="trigger_pad_bar_thickness/2 + light_pipe_thickness/2"/>
 
 <!--
    HCal
