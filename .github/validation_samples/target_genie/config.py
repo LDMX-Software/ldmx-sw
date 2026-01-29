@@ -112,6 +112,10 @@ en_trigger = [
 from LDMX.Recon import pfReco
 pf_reco = pfReco.pfTruthProducer()
 
+# Load the dEdx mass estimator
+from LDMX.Recon import trackDeDxMassEstimator
+recoil_track_mass_estimator = trackDeDxMassEstimator.trackDeDxMassEstimator()
+
 # Load the DQM modules
 from LDMX.DQM import dqm
 
@@ -158,11 +162,11 @@ p.sequence.extend([
         TriggerProcessor('trigger', 8000.),
         *en_trigger,
         pf_reco,
-        *recoil_tracker_dqm
+        recoil_track_mass_estimator
         ])
 
 # Remove TS DQM
-almost_all_dqm = [dqm.sample_validation_dqm + dqm.ecal_dqm + dqm.hcal_dqm + dqm.trigger_dqm]
+almost_all_dqm = [dqm.sample_validation_dqm + recoil_tracker_dqm + dqm.ecal_dqm + dqm.hcal_dqm + dqm.trigger_dqm + dqm.dEdx_dqm] 
 
 p.sequence.extend(*almost_all_dqm)
 

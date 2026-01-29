@@ -43,7 +43,7 @@ void TrkDeDxMassEstFeatures::analyze(const framework::Event &event) {
         histograms_.fill("mass_estimate_very_low_p_proton", mass_est.getMass());
       }
     }
-    histograms_.fill("track_type", mass_est.getTrackType());
+    histograms_.fill("track_type", mass_est.getTrackType() + 0.5);
   }
 
   return;
