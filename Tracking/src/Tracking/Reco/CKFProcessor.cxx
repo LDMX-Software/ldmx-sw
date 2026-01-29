@@ -387,6 +387,10 @@ void CKFProcessor::produce(framework::Event& event) {
   Acts::VectorMultiTrajectory mtj;
   Acts::TrackContainer tc{vtc, mtj};
 
+  // Map to store path lengths for measurements: measurement index ->
+  // path_length
+  std::map<std::size_t, float> measurement_path_lengths;
+
   // The number of track candidates (i.e. startParameters.size()) is always
   // the same as the number of seed tracks
   ldmx_log(debug) << "Loop on the track candidates";
@@ -556,6 +560,54 @@ void CKFProcessor::produce(framework::Event& event) {
                           << sl.index();
           ldmx_log(trace) << "    Measurement:\n" << ldmx_meas;
           trk.addMeasurementIndex(sl.index());
+
+          // Extract path length from the track state based on the angle
+          if (ts.hasSmoothed()) {
+            const auto& meas_surface = ts.referenceSurface();
+            const auto& smoothed_params = ts.smoothed();
+
+            // Get the momentum from the track parameters
+            // momentum = p * direction where direction = (sin(theta)*cos(phi),
+            // sin(theta)*sin(phi), cos(theta))
+            float p_inv = smoothed_params[Acts::eBoundQOverP];
+            float p = 1.0f / std::abs(p_inv);
+            float theta = smoothed_params[Acts::eBoundTheta];
+            float phi = smoothed_params[Acts::eBoundPhi];
+
+            Acts::Vector3 global_momentum(p * std::sin(theta) * std::cos(phi),
+                                          p * std::sin(theta) * std::sin(phi),
+                                          p * std::cos(theta));
+
+            // Get the local frame (transform from global to local)
+            auto local_frame_transform =
+                meas_surface.transform(geometryContext());
+            Acts::Vector3 local_momentum =
+                local_frame_transform.rotation().transpose() * global_momentum;
+
+            // Calculate local angle components (tangent of angles)
+            float phi_u = (local_momentum.z() != 0)
+                              ? local_momentum.x() / local_momentum.z()
+                              : 0.;
+            float phi_v = (local_momentum.z() != 0)
+                              ? local_momentum.y() / local_momentum.z()
+                              : 0.;
+
+            // Calculate the total angle from the local angle components
+            // tan(angle) = sqrt(phi_u^2 + phi_v^2)
+            // cos(angle) = 1 / sqrt(1 + tan(angle)^2)
+            // path_length = thickness / cos(angle)
+            const float sensor_thickness = 0.320f;  // mm
+            float tan_angle_sq = phi_u * phi_u + phi_v * phi_v;
+            float cos_angle = 1.0f / std::sqrt(1.0f + tan_angle_sq);
+            float path_length = sensor_thickness / cos_angle;
+
+            ldmx_log(debug) << "      Local angles: phi_u = " << phi_u
+                            << ", phi_v = " << phi_v
+                            << "; Path length = " << path_length << " mm";
+
+            // Store for later update
+            measurement_path_lengths[sl.index()] = path_length;
+          }
         } else {
           ldmx_log(debug) << "    This TrackState is not a measurement";
         }
@@ -634,9 +686,19 @@ void CKFProcessor::produce(framework::Event& event) {
   profiling_map_["ckf_run"] +=
       std::chrono::duration<double, std::milli>(ckf_run - ckf_setup).count();
 
+  // Update measurements with path length information
+  std::vector<ldmx::Measurement> updated_measurements = measurements;
+  for (const auto& [meas_idx, path_len] : measurement_path_lengths) {
+    if (meas_idx < updated_measurements.size()) {
+      updated_measurements[meas_idx].setPathLength(path_len);
+      ldmx_log(debug) << "Updated measurement " << meas_idx
+                      << " with path length: " << path_len << " mm";
+    }
+  }
+
   // Calculating Shared Hits
   auto shared_hits = computeSharedHits(
-      tracks, measurements, tg, tracking::sim::utils::sourceLinkHash,
+      tracks, updated_measurements, tg, tracking::sim::utils::sourceLinkHash,
       tracking::sim::utils::sourceLinkEquality);
   for (std::size_t i_track = 0; i_track < shared_hits.size(); ++i_track) {
     tracks[i_track].setNsharedHits(shared_hits[i_track].size());
@@ -651,6 +713,11 @@ void CKFProcessor::produce(framework::Event& event) {
 
   // Add the tracks to the event
   event.add(out_trk_collection_, tracks);
+
+  // Add the updated measurements with path lengths back to the event
+  event.add(on_track_measurements_, updated_measurements);
+  // Drop the original measurements to avoid confusion
+  event.addDrop(measurement_collection_);
 
   auto end = std::chrono::high_resolution_clock::now();
   // long long microseconds =
@@ -704,6 +771,8 @@ void CKFProcessor::configure(framework::config::Parameters& parameters) {
   propagator_max_steps_ = parameters.get<int>("propagator_maxSteps", 10000);
   measurement_collection_ = parameters.get<std::string>(
       "measurement_collection", "TaggerMeasurements");
+  on_track_measurements_ = parameters.get<std::string>(
+      "on_track_measurements", "TaggerOnTrackMeasurements");
   outlier_pval_ = parameters.get<double>("outlier_pval_", 3.84);
 
   debug_acts_ = parameters.get<bool>("debug_acts", false);

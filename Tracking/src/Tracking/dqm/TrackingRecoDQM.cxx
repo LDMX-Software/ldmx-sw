@@ -256,8 +256,11 @@ void TrackingRecoDQM::efficiencyPlots(
     histograms_.fill(title + "match_beam_angle", truth_beam_angle);
     histograms_.fill(title + "match_nHits", measurements.size());
     for (auto track_hit : track.getMeasurementsIdxs()) {
-      histograms_.fill(title + "match_LayersHit",
+      histograms_.fill(title + "match_layers_hit",
                        measurements.at(track_hit).getLayer());
+      // Add histogram of the measurment path lengths
+      histograms_.fill(title + "match_measurement_path_length",
+                       measurements.at(track_hit).getPathLength());
     }
 
     // For some particles
@@ -312,8 +315,11 @@ void TrackingRecoDQM::trackMonitoring(
     auto trk_phi = track.getPhi();
     auto trk_p = 1. / abs(trk_qop);
     for (auto track_hit : track.getMeasurementsIdxs()) {
-      histograms_.fill(title + "LayersHit",
+      histograms_.fill(title + "layers_hit",
                        measurements.at(track_hit).getLayer());
+      // Add histogram of the measurment path lengths
+      histograms_.fill(title + "measurement_path_length",
+                       measurements.at(track_hit).getPathLength());
     }
 
     std::vector<double> trk_mom = track.getMomentum();

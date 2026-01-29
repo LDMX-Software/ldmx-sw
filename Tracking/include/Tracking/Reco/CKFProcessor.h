@@ -193,6 +193,9 @@ class CKFProcessor final : public TrackingGeometryUser {
   // The measurement collection to use for track reconstruction
   std::string measurement_collection_{"TaggerMeasurements"};
 
+  // The output collection for on-track measurements with path lengths
+  std::string on_track_measurements_{"TaggerOnTrackMeasurements"};
+
   std::string sim_particles_pass_name_;
   std::string sim_particles_event_passname_;
 

@@ -67,6 +67,16 @@ class Measurement {
   };
 
   /**
+   * Set the path length along the track at this measurement.
+   *
+   * @param path_length Path length in mm.
+   */
+  void setPathLength(const float& path_length) { path_length_ = path_length; };
+
+  /// @return The path length along the track at this measurement in mm.
+  [[nodiscard]] float getPathLength() const { return path_length_; };
+
+  /**
    * Set cov(U,U) and cov(V, V).
    *
    * @param cov_uu cov(U, U).
@@ -147,6 +157,8 @@ class Measurement {
   float meas_u_{0.};
   /// Local position in v (mm).
   float meas_v_{0.};
+  /// Path length along the track at this measurement (mm).
+  float path_length_{0.};
   /// The ID of the sensor where the measurement took place.
   int layer_id_{0};
   /// The layer number internal to the tracker.
