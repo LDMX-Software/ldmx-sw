@@ -140,14 +140,27 @@ void CKFProcessor::onNewRun(const ldmx::RunHeader& rh) {
           ? std::make_unique<CkfPropagator>(const_stepper, navigator)
           : std::make_unique<CkfPropagator>(
                 stepper, navigator,
-                Acts::getDefaultLogger("ACTS_PROP", acts_logging_level));
+                Acts::getDefaultLogger("CKF_PROP", acts_logging_level));
 
   // Setup the finder / fitters
   ckf_ = std::make_unique<std::decay_t<decltype(*ckf_)>>(
       *propagator_, Acts::getDefaultLogger("CKF", acts_logging_level));
   trk_extrap_ = std::make_shared<std::decay_t<decltype(*trk_extrap_)>>(
       *propagator_, geometryContext(), magneticFieldContext());
-}
+
+  // Setup zero-B CKF as fallback
+  Acts::ConstantBField zero_b_field(Acts::Vector3(0., 0., 0.));
+  const auto zero_b_stepper = Acts::EigenStepper<>{
+      std::make_shared<Acts::ConstantBField>(zero_b_field)};
+  propagator_zero_b_ =
+      std::make_unique<CkfPropagator>(zero_b_stepper, navigator);
+  ckf_zero_b_ = std::make_unique<std::decay_t<decltype(*ckf_zero_b_)>>(
+      *propagator_zero_b_,
+      Acts::getDefaultLogger("CKF_ZERO_B", acts_logging_level));
+  trk_extrap_zero_b_ =
+      std::make_shared<std::decay_t<decltype(*trk_extrap_zero_b_)>>(
+          *propagator_zero_b_, geometryContext(), magneticFieldContext());
+}  // end of CKFProcessor::onNewRun()
 
 void CKFProcessor::produce(framework::Event& event) {
   eventnr_++;
@@ -162,9 +175,8 @@ void CKFProcessor::produce(framework::Event& event) {
 
   nevents_++;
 
-  auto logging_level = Acts::Logging::DEBUG;
-  ACTS_LOCAL_LOGGER(
-      Acts::getDefaultLogger("LDMX Tracking Geometry Maker", logging_level));
+  ACTS_LOCAL_LOGGER(Acts::getDefaultLogger("LDMX Tracking Geometry Maker",
+                                           Acts::Logging::DEBUG));
 
   // Move this at the start of the producer
   Acts::PropagatorOptions<Acts::StepperPlainOptions,
@@ -406,10 +418,21 @@ void CKFProcessor::produce(framework::Event& event) {
     ldmx_log(debug) << "  Checking options:  multiple scattering = "
                     << ckf_options.multipleScattering
                     << "  energy loss = " << ckf_options.energyLoss;
+
+    // Try field-map CKF first
     auto results =
         ckf_->findTracks(start_parameters.at(track_id), ckf_options, tc);
 
     auto start_params = start_parameters.at(track_id).parameters().transpose();
+
+    // If field-map CKF fails, try zero-B CKF as fallback (only for recoil
+    // tracking)
+    if (!results.ok() && !tagger_tracking_) {
+      ldmx_log(debug) << "    Field-map CKF failed, trying zero-B CKF fallback";
+      results = ckf_zero_b_->findTracks(start_parameters.at(track_id),
+                                        ckf_options, tc);
+    }
+
     ldmx_log(debug)
         << "  Checking CKF success for track candidate with params: "
         << " D0 = " << start_params[0] << " Z0 = " << start_params[1]
@@ -437,6 +460,17 @@ void CKFProcessor::produce(framework::Event& event) {
       // Extrapolate to the target
       bool success = trk_extrap_->trackStateAtSurface(
           track, target_surface_, ts_at_target, ldmx::TrackStateType::AtTarget);
+
+      // If extrapolation with field fails, try zero-B fallback (only for recoil
+      // tracking)
+      if (!success && !tagger_tracking_) {
+        ldmx_log(debug)
+            << "    Field-map extrapolation failed, trying zero-B fallback";
+        success = trk_extrap_zero_b_->trackStateAtSurface(
+            track, target_surface_, ts_at_target,
+            ldmx::TrackStateType::AtTarget);
+      }
+
       // Check if the extrapolation to target succeeded
       if (success) {
         ldmx_log(debug) << "    Successfully obtained TrackState at target";
