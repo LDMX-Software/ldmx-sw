@@ -55,7 +55,7 @@
 <!-- 
     Magnet
 --> 
-<!-- No magnet in ESA, this is kept for consistency -->
+<!-- No magnet at the vertical slice test, this is kept for consistency -->
 <constant name="magnet_pos_z" value="-40*cm" />
 <!-- Magnet gap dimensions --> 
 <constant name="magnet_gap_dx" value="430*mm"/>

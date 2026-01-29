@@ -174,7 +174,6 @@ class EcalGeometry() :
         # shift by a single cell diameter
         eg.layer_shift_x = 2*eg.moduleMinR / eg.nCellRHeight
         return eg
-      
 
     def reduced_v3() :
         eg = EcalGeometry(detectors_valid = ["ldmx-reduced-v3"],

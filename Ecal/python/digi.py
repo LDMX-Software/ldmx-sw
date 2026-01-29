@@ -164,7 +164,6 @@ class EcalRecProducer(Producer) :
             8.775, 8.775, 8.775, 8.775, 8.775, 8.775, 8.775, 8.775, 12.642, 16.51,
             16.51, 16.51, 16.51, 16.51, 16.51, 16.51, 16.51, 16.51, 16.51, 8.45
             ]
-        
 
     def v9(self) :
         """These layerWeights and energy correction were calculated for the v9 geometry.
