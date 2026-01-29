@@ -425,11 +425,7 @@ void GSFProcessor::produce(framework::Event& event) {
       if (success) trk.addTrackState(ts_at_ecal);
     }
 
-    trk.setPerigeeLocation(
-        perigee_surface.transform(geometryContext()).translation()(0),
-        perigee_surface.transform(geometryContext()).translation()(1),
-        perigee_surface.transform(geometryContext()).translation()(2));
-
+    trk.setPerigeeLocation(0., 0., 0.);
     trk.setChi2(gsftrk.chi2());
     trk.setNhits(gsftrk.nMeasurements());
     trk.setNdf(gsftrk.nMeasurements() - 5);
