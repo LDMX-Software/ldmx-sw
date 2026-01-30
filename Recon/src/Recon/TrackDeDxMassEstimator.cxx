@@ -60,38 +60,38 @@ void TrackDeDxMassEstimator::produce(framework::Event &event) {
   for (uint i = 0; i < tracks.size(); i++) {
     auto track = tracks.at(i);
     // If track momentum doen't exist, skip
-    auto the_qo_p = track.getQoP();
-    if (the_qo_p == 0) {
+    auto the_qop = track.getQoP();
+    if (the_qop == 0) {
       ldmx_log(debug) << "Track " << i << "has zero q/p ";
       continue;
     }
 
     int pdg_id = track.getPdgID();
-    float momentum = 1. / std::abs(the_qo_p) * 1000;  // unit: MeV
+    float momentum = 1. / std::abs(the_qop) * 1000;  // unit: MeV
     ldmx_log(debug) << "Track " << i << " has momentum " << momentum;
 
     /// Get the hits_ associated with the truth track
     ldmx::TrackDeDxMassEstimate mass_est;
-    float sum_d_edx_inv2 = 0.;
-    float d_edx;
+    float sum_dedx_inv2 = 0.;
+    float dedx;
     float n_simhits = 0;
     for (auto hit : simhits) {
       // Check if the hit is associated with the track
       if (hit.getTrackID() != track.getTrackID()) continue;
       if (hit.getEdep() >= 0 && hit.getPathLength() > 0) {
-        d_edx = hit.getEdep() / hit.getPathLength() * 10;  // unit: MeV/cm
-        sum_d_edx_inv2 += 1. / (d_edx * d_edx);
+        dedx = hit.getEdep() / hit.getPathLength() * 10;  // unit: MeV/cm
+        sum_dedx_inv2 += 1. / (dedx * dedx);
         n_simhits++;
       }
     }  // end of loop over measurements
 
-    if (sum_d_edx_inv2 == 0) {
+    if (sum_dedx_inv2 == 0) {
       ldmx_log(debug) << "Track " << i << " has no dEdx measurements";
       continue;
     }
 
     // Ih = (1/N * sum_i^N(dE/dx_i)^-2)^-1/2
-    float the_ih = 1. / sqrt(1. / n_simhits * sum_d_edx_inv2);
+    float the_ih = 1. / sqrt(1. / n_simhits * sum_dedx_inv2);
 
     float mass = 0.;
     if (the_ih > fit_res_c_) {
@@ -103,6 +103,7 @@ void TrackDeDxMassEstimator::produce(framework::Event &event) {
     }
 
     mass_est.setMomentum(momentum);
+    mass_est.setNhits(n_simhits);
     mass_est.setIh(the_ih);
     mass_est.setMass(mass);
     mass_est.setTrackIndex(i);
