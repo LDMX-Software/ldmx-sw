@@ -259,6 +259,11 @@ class GSFProcessor final : public TrackingGeometryUser {
   std::shared_ptr<tracking::reco::TrackExtrapolatorTool<Propagator>>
       trk_extrap_;
 
+  // Surfaces for extrapolation
+  std::shared_ptr<Acts::Surface> beam_origin_surface_;
+  std::shared_ptr<Acts::Surface> target_surface_;
+  std::shared_ptr<Acts::Surface> ecal_surface_;
+
 };  // GSFProcessor
 
 }  // namespace reco

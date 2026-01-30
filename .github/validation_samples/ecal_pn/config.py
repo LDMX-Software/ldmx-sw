@@ -24,7 +24,7 @@ p.run = int(os.environ['LDMX_RUN_NUMBER'])
 p.histogramFile = f'hist.root'
 p.outputFiles = [f'events.root']
 
-# Load the full tracking sequance
+# Load the full tracking sequence
 from LDMX.Tracking import full_tracking_sequence
 
 # Load the ECAL modules

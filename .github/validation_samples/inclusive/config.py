@@ -24,7 +24,7 @@ p.maxEvents = int(os.environ['LDMX_NUM_EVENTS'])
 p.histogramFile = 'hist.root'
 p.outputFiles = ['events.root']
 
-# Load the full tracking sequance
+# Load the full tracking sequence
 from LDMX.Tracking import full_tracking_sequence
 
 # Load the ECAL modules
