@@ -48,6 +48,14 @@ void TrackingRecoDQM::analyze(const framework::Event& event) {
 
   auto tracks{
       event.getCollection<ldmx::Track>(track_collection_, track_passname_)};
+
+  if (!event.exists(measurement_collection_, measurement_passname_)) {
+    ldmx_log(error) << "Measurement collection " << measurement_collection_
+                    << " with pass = " << measurement_passname_
+                    << " not in event";
+    return;
+  }
+
   auto measurements{event.getCollection<ldmx::Measurement>(
       measurement_collection_, measurement_passname_)};
 
