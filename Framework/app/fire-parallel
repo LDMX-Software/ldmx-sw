@@ -51,6 +51,7 @@ dry_run=false
 log_dir=""
 config=""
 template_args=""
+parallel_opts=""
 while [ $# -gt 0 ]; do
   case "${1}" in
     -h|--help)
@@ -71,7 +72,18 @@ while [ $# -gt 0 ]; do
     --)
       # user wants the following arguments to be given to GNU parallel
       shift
-      break
+      while [ $# -gt 0 ]; do
+        case "${1}" in
+          "::"*)
+            # begins GNU parallel args, break
+            break 2
+            ;;
+          *)
+            parallel_opts="${parallel_opts} ${1}"
+            ;;
+        esac
+        shift
+      done
       ;;
     "::"*)
       # obviously a GNU parallel arg, break
@@ -132,6 +144,9 @@ fi
 
 if [ -n "${log_dir}" ]; then
   cmd="${cmd} --joblog ${log_dir}/parallel.log"
+fi
+if [ -n "${parallel_opts}" ]; then
+  cmd="${cmd} ${parallel_opts}"
 fi
 job_cmd_template="fire ${config} ${template_args}"
 if [ -n "${log_dir}" ]; then
