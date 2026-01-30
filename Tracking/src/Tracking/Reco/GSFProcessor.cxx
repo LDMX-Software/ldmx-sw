@@ -512,9 +512,6 @@ void GSFProcessor::produce(framework::Event& event) {
 
   }  // loop on tracks
 
-  // Clear reference surface pointer to avoid dangling references
-  gsf_options.referenceSurface = nullptr;
-
   event.add(out_trk_collection_, out_tracks);
 }  // end of produce()
 
