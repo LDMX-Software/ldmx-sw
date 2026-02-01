@@ -35,6 +35,15 @@ std::ostream& operator<<(std::ostream& o, const SimCalorimeterHit& hit) {
            << " ), num contribs: " << hit.n_contribs_ << " }";
 }
 
+std::ostream& operator<<(std::ostream& o,
+                         const SimCalorimeterHit::Contrib& contrib) {
+  return o << "Contrib { " << "incident_id: " << contrib.incident_id_
+           << ",  track_id: " << contrib.track_id_
+           << ", pdg_code: " << contrib.pdg_code_ << ", edep: " << contrib.edep_
+           << ", time: " << contrib.time_
+           << ", origin_id: " << contrib.origin_id_ << " }";
+}
+
 void SimCalorimeterHit::addContrib(int incidentID, int trackID, int pdgCode,
                                    float edep, float time, int originID) {
   incident_id_contribs_.push_back(incidentID);
