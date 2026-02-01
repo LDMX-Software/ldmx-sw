@@ -101,6 +101,12 @@ class OverlayProducer : public framework::Producer {
   std::vector<std::string> tracker_collections_;
 
   /**
+   * List of SimParticle collection(s) to loop over and add hits from,
+   * combining sim and pileup
+   */
+  std::vector<std::string> particle_collections_;
+
+  /**
    * List of SimCalorimeterHit collections which keep track of hit contribs.
    */
   std::vector<std::string> contrib_collections_;
