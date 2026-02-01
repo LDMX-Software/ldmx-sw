@@ -3,6 +3,7 @@
 
 //---< C++ StdLib >---//
 #include <map>
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -96,6 +97,12 @@ class OverlayProducer : public framework::Producer {
    * combining sim and pileup
    */
   std::vector<std::string> tracker_collections_;
+
+  /**
+   * List of SimParticle collection(s) to loop over and add hits from,
+   * combining sim and pileup
+   */
+  std::vector<std::string> particle_collections_;
 
   /**
    * Pileup overlay events input pass name
