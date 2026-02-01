@@ -96,6 +96,7 @@ class SeedFinderProcessor(Producer):
         self.input_hits_collection = 'TaggerSimHits'
         self.out_seed_collection = 'SeedTracks'
         self.input_pass_name = ''
+        self.sim_particles_coll_name = 'SimParticles'
         self.sim_particles_passname = ''
         self.tagger_trks_event_collection_passname = ''
         self.sim_particles_event_passname = ''
@@ -197,6 +198,7 @@ class CKFProcessor(Producer):
         self.out_trk_collection = 'Tracks'
         self.min_hits = 5
         self.outlier_pval_ = 3.84
+        self.sim_particles_coll_name = 'SimParticles'
         self.sim_particles_event_passname = ''
         self.input_pass_name = ''
 
@@ -322,12 +324,22 @@ class TruthSeedProcessor(Producer):
         self.skip_tagger = False
         self.skip_recoil = False
         self.max_track_id = 5
-
+        
+        self.ecal_sp_coll_name = 'EcalScoringPlaneHits'
         self.sp_pass_name = ''
         self.input_pass_name = ''
+        self.sim_particles_coll_name = 'SimParticles'
         self.sim_particles_passname = ''
-        self.particle_hypothesis = 11
+        self.particle_hypothesis = 11 
 
+        # output collection names
+        self.beam_electrons_collection = 'beamElectrons'
+        self.tagger_seeds_collection = 'TaggerTruthSeeds'
+        self.tagger_truth_collection = 'TaggerTruthTracks'
+        self.recoil_seeds_collection = 'RecoilTruthSeeds'
+        self.recoil_truth_collection = 'RecoilTruthTracks'
+
+        
 
 
 class GreedyAmbiguitySolver(Producer):

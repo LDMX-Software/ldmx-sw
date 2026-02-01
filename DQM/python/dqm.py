@@ -64,6 +64,7 @@ class ReSimVerifier(ldmxcfg.Analyzer) :
             'RecoilSimHits',
             'TaggerSimHits',
         ]
+        self.sim_coll_name = 'SimParticles'
         self.sim_pass_name = ''
         self.resim_pass_name = 'resim'
         self.stop_on_error=stop_on_error
@@ -532,6 +533,7 @@ class VisiblesFeatureProducer(ldmxcfg.Analyzer) :
         self.track_pass_name = ''
         self.sp_coll_name = 'TargetScoringPlaneHits'
         self.sp_pass_name = ''
+        self.sim_particles_coll_name = 'SimParticles'
         self.sim_particles_pass_name = ''
 
         ## Feature histograms ##
@@ -569,6 +571,7 @@ class VisiblesCutflow(ldmxcfg.Analyzer) :
         self.track_pass_name = ''
         self.sp_coll_name = 'TargetScoringPlaneHits'
         self.sp_pass_name = ''
+        self.sim_particles_coll_name = 'SimParticles'
         self.sim_particles_pass_name = ''
 
         self.ecal_veto_coll_name = "EcalVeto"
@@ -623,7 +626,7 @@ class SimObjects(ldmxcfg.Analyzer) :
     def __init__(self,name='sim_dqm',sim_pass='') :
         super().__init__(name,'dqm::SimObjects','DQM')
         self.sim_pass = sim_pass
-
+        self.sim_particles_coll_name = 'SimParticles'
         self.sim_particles_passname = ''
         self.sim_particles_map_passname = ''
 
@@ -632,7 +635,8 @@ class SimObjects(ldmxcfg.Analyzer) :
 class DarkBremInteraction(ldmxcfg.Producer) :
     def __init__(self) :
         super().__init__('DarkBremDQM','dqm::DarkBremInteraction','DQM')
-
+        
+        self.particle_coll_name = 'SimParticles'
         self.particle_passname = ''
 
         self.build_1d_histogram('aprime_energy',
@@ -750,7 +754,7 @@ class PhotoNuclearDQM(ldmxcfg.Analyzer) :
     def __init__(self,name='PN', count_light_ions=True) :
         super().__init__(name,'dqm::PhotoNuclearDQM','DQM')
 
-
+        self.sim_particles_coll_name = 'SimParticles'
         self.sim_particles_passname = ''
 
         event_type_labels = [
@@ -1051,7 +1055,9 @@ class SampleValidation(ldmxcfg.Analyzer) :
     def __init__(self, name='SampleValidation') :
         super().__init__(name, 'dqm::SampleValidation', 'DQM')
 
+        self.sim_particles_coll_name = 'SimParticles'
         self.sim_particles_passname = ''
+        self.target_scoring_plane_coll_name = 'TargetScoringPlaneHits'
         self.target_scoring_plane_passname = ''
 
         pdgid_bin_labels = [

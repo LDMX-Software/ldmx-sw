@@ -54,10 +54,10 @@ class TrackingRecoDQM(ldmxcfg.Analyzer):
         self.truth_collection = "TaggerTruthTracks"
         self.measurement_collection = "DigiTaggerSimHits"
         self.measurement_passname = ""
-
-        self.ecal_sp_events_passname= ""
+        
+        self.ecal_sp_coll_name= "EcalScoringPlaneHits"
         self.ecal_sp_passname= ""
-        self.target_sp_events_passname= ""
+        self.target_sp_coll_name= "TargetScoringPlaneHits"
         self.target_sp_passname= ""
         self.truth_events_passname = ""
         self.truth_passname = ""
