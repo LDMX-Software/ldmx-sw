@@ -16,7 +16,8 @@ void SingleSubsystemUnpacker::configure(framework::config::Parameters& ps) {
     auto [subsys, contrib] = packing::LDMXRoRHeader::subsystem(subsystem_name);
     if (subsystem_ == -1) {
       EXCEPTION_RAISE("BadName",
-          "Subsystem name '"+subsystem_name+"' not 'ts', 'tdaq', 'tracker', 'ecal', 'hcal'.");
+                      "Subsystem name '" + subsystem_name +
+                          "' not 'ts', 'tdaq', 'tracker', 'ecal', 'hcal'.");
     }
     subsystem_ = subsys;
     contributor_ = contrib;

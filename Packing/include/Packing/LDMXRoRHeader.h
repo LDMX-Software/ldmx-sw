@@ -3,8 +3,8 @@
 #define PACKING_LDMXRORHEADER_H
 
 #include <cstdint>
-#include <vector>
 #include <unordered_map>
+#include <vector>
 
 #include "Packing/Utility/Reader.h"
 
@@ -57,8 +57,8 @@ class LDMXRoRHeader {
    * subsystems and so this function will need to be rewritten.
    *
    * @param[in] name subsystem name ('tdaq','ts','tracker','hcal','ecal')
-   * @return 2-tuple of subsystem, contributor ID numbers. Returns the pair (-1, -1)
-   * if the name is not found in our maps above.
+   * @return 2-tuple of subsystem, contributor ID numbers. Returns the pair (-1,
+   * -1) if the name is not found in our maps above.
    */
   static std::tuple<int, int> subsystem(const std::string& name);
 

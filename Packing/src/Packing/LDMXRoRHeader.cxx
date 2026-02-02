@@ -5,20 +5,10 @@
 namespace packing {
 
 const std::unordered_map<std::string, int> LDMXRoRHeader::SUBSYSTEM_ID = {
-  { "tdaq", 1 },
-  { "ts", 2 },
-  { "tracker", 4 },
-  { "ecal", 5 },
-  { "hcal", 5 }
-};
+    {"tdaq", 1}, {"ts", 2}, {"tracker", 4}, {"ecal", 5}, {"hcal", 5}};
 
 const std::unordered_map<std::string, int> LDMXRoRHeader::CONTRIBUTOR_ID = {
-  { "tdaq", -1 },
-  { "ts", 1 },
-  { "tracker", -1 },
-  { "ecal", 20 },
-  { "hcal", 40 }
-};
+    {"tdaq", -1}, {"ts", 1}, {"tracker", -1}, {"ecal", 20}, {"hcal", 40}};
 
 std::tuple<int, int> LDMXRoRHeader::subsystem(const std::string& name) {
   auto subsys_it{SUBSYSTEM_ID.find(name)};
