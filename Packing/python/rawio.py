@@ -76,29 +76,6 @@ class SingleSubsystemUnpacker(ldmxcfg.Producer) :
         self.frame_offset = frame_offset
 
 
-class SingleSubsystemUnpackerFixedLength(ldmxcfg.Producer) :
-    """Configuration for unpacking a single subsystem's raw data file
-    into a series of vector buffers to put onto the event bus.
-
-    Parameters
-    ----------
-    raw_file : str
-        File path to raw data file to read in
-    output_name : str
-        Name of buffer object for event bus
-    num_bytes_per_event : int
-        Number of bytes to put onto each event bus
-    detector_name : str
-        Name of the detector GDML file
-    """
-
-    def __init__(self, raw_file, output_name, num_bytes_per_event,detector_name) :
-        super().__init__(f'unpack_{os.path.basename(raw_file)}','packing::SingleSubsystemUnpackerFixedLength','Packing')
-        self.raw_file = raw_file
-        self.output_name = output_name
-        self.num_bytes_per_event = num_bytes_per_event
-        self.detector_name = detector_name
-
 class SingleSubsystemPacker(ldmxcfg.Analyzer) :
     """Configuration for packing a single subsystem's encoded buffer
     into a raw data file in sequence.
