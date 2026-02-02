@@ -107,8 +107,8 @@ void ZCCMDecoder::produce(framework::Event &event) {
                     << ") = " << std::bitset<8>(time_word);
     time_stamp |= (time_word << i_w * 8);  // shift by a byte at a time
   }
-  // TODO: make actual use of the time stamp in the event header
   // This time_stamp is local to the TS
+  event.getEventHeader().setIntParameter("TS Timestamp", time_stamp);
 
   /* -- TS event header done; read the channel contents -- */
 

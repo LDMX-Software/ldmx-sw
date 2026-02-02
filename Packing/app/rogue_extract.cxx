@@ -153,7 +153,7 @@ int main(int argc, char* argv[]) {
       printf("  vers = %d, subsys = %d, contrib = %d\n", ror_header.version(),
              ror_header.subsystem(), ror_header.contributor());
 
-      r.read(bytes, (frame_header.size() - packing::LDMXRoRHeader::size));
+      r.read(bytes, (frame_header.size() - packing::LDMXRoRHeader::SIZE));
 
       // print similar to hexdump -C
       for (std::size_t i_row{0}; i_row < bytes.size() / 16; i_row++) {
