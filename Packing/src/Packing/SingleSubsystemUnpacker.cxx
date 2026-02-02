@@ -57,7 +57,8 @@ void SingleSubsystemUnpacker::produce(framework::Event& event) {
 
     // load data into memory, add to event, and leave
     std::vector<uint8_t> buff;
-    if (not reader_.read(buff, frame_header.size() - packing::LDMXRoRHeader::SIZE)) {
+    if (not reader_.read(buff,
+                         frame_header.size() - packing::LDMXRoRHeader::SIZE)) {
       EXCEPTION_RAISE(
           "MalForm", "Raw file provided was unable to read entire data frame.");
     }
