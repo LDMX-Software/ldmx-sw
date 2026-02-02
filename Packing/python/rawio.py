@@ -66,7 +66,12 @@ class SingleSubsystemUnpacker(ldmxcfg.Producer) :
         super().__init__(f'unpack_{os.path.basename(dat_file)}','packing::SingleSubsystemUnpacker','Packing')
         self.dat_file = dat_file
         self.output_name = output_name
-        self.subsystem = subsystem
+        if type(subsystem) is str:
+            self.subsystem_name = subsystem
+            self.subsystem = -1
+        else:
+            self.subsystem_name = ''
+            self.subsystem = subsystem
         self.contributor = contributor
         self.frame_offset = frame_offset
 

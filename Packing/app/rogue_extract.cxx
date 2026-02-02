@@ -60,20 +60,8 @@ int main(int argc, char* argv[]) {
         }
         i_arg++;
         std::string subsys_arg{argv[i_arg]};
-        if (subsys_arg == "ecal") {
-          subsystem = 5;
-          contributor = 40;
-        } else if (subsys_arg == "hcal") {
-          subsystem = 5;
-          contributor = 20;
-        } else if (subsys_arg == "ts") {
-          subsystem = 2;
-          contributor = 1;
-        } else if (subsys_arg == "tdaq") {
-          subsystem = 1;
-        } else if (subsys_arg == "tracker") {
-          subsystem = 4;
-        } else {
+        auto [subsys, contrib] = packing::LDMXRoRHeader::subsystem(subsys_arg);
+        if (subsys == -1) {
           try {
             subsystem = std::stoi(subsys_arg.c_str());
           } catch (const std::invalid_argument& e) {
@@ -82,6 +70,9 @@ int main(int argc, char* argv[]) {
                       << " or a positive integer.\n";
             return 1;
           }
+        } else {
+          subsystem = subsys;
+          contributor = contrib;
         }
       } else {
         std::cerr << "Unrecognized option " << arg << std::endl;

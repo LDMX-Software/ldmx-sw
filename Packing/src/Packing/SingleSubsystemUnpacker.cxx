@@ -8,8 +8,19 @@ namespace packing {
 
 void SingleSubsystemUnpacker::configure(framework::config::Parameters& ps) {
   reader_.open(ps.get<std::string>("dat_file"));
-  subsystem_ = ps.get<int>("subsystem");
-  contributor_ = ps.get<int>("contributor");
+  auto subsystem_name{ps.get<std::string>("subsystem_name")};
+  if (subsystem_name.empty()) {
+    subsystem_ = ps.get<int>("subsystem");
+    contributor_ = ps.get<int>("contributor");
+  } else {
+    auto [subsys, contrib] = packing::LDMXRoRHeader::subsystem(subsystem_name);
+    if (subsystem_ == -1) {
+      EXCEPTION_RAISE("BadName",
+          "Subsystem name '"+subsystem_name+"' not 'ts', 'tdaq', 'tracker', 'ecal', 'hcal'.");
+    }
+    subsystem_ = subsys;
+    contributor_ = contrib;
+  }
   frame_offset_ = ps.get<int>("frame_offset");
   output_name_ = ps.get<std::string>("output_name");
   frame_count_ = 0;

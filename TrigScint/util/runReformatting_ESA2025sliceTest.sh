@@ -84,7 +84,7 @@ for file in $(cat $fileList) ; do
 	#doRerun=1     #sometimes convenient to force rerunning from here 
 	if [[ ! -f ${rawRootFile} ||  ${doRerun} -eq 1 ]] ; then  #if no .root file with the right name, or, indeed did rerun the .dat step/should otherwise rerun from here
 		echo "Running raw unpacking on ${file} to produce ${rawRootFile} ..."
-		$RUN_FIRE $configDir/runRawUnpackerZCCM.py ${file} ${rawRootFile} ${nSamp} ${nEvents}
+		$RUN_FIRE $configDir/runRawUnpackerZCCM.py ${file} ${rawRootFile} ${nEvents}
 		doRerun=1
 	else
 		echo "Already unpacked ${file} to ${rawRootFile} ; proceeding to the decoding step."
