@@ -16,8 +16,8 @@ static void usage() {
                " OPTIONS:\n"
                "  -h,--help      : print this help and exit\n"
                "  -n,--nevent    : maximum number of events to unpack\n"
-               "  -s,--subsystem : which subsystem\n"
-               "                   ('ecal','hcal','ts','tdaq', or integer)\n"
+               "  -s,--subsystem : which subsystem\n                   "
+               "('ecal','hcal','ts','tdaq', 'tracker', or integer)\n"
             << std::endl;
 }
 
