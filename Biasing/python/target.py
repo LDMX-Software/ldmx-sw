@@ -167,22 +167,22 @@ def gamma_mumu( detector, generator ) :
     sim.setDetector( detector , True )
 
     # Set run parameters
-    sim.description = "gamma -> mu+ mu-, xsec bias 10e9"
     sim.beamSpotSmear = [20., 80., 0.]
-
+    xsec_bias_threshold = 0.625 * generator.energy * 1000.
     tagger_threshold = 0.95 * generator.energy * 1000.
     recoil_max_p = 0.375 * generator.energy * 1000.
     brem_min_e = 0.625 * generator.energy * 1000.
     if generator.energy == 8.0:
-          xsec_bias = 550.
+          xsec_bias = 1.E5
           
     else:
-          xsec_bias = 450.
+          xsec_bias = 3.E4
 
     sim.generators.append(generator)
 
     # Enable and configure the biasing
-    sim.biasing_operators = [ bias_operators.GammaToMuPair('target', 1.E4, 2500.) ]
+    sim.description = "gamma --> mu+ mu-, xsec bias " + str(xsec_bias) + " xsec threshold " + str(xsec_bias_threshold) + " GeV"
+    sim.biasing_operators = [ bias_operators.GammaToMuPair('target', xsec_bias, xsec_bias_threshold) ]
 
     # the following filters are in a library that needs to be included
     includeBiasing.library()
