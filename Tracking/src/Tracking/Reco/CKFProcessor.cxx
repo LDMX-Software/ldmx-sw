@@ -556,6 +556,59 @@ void CKFProcessor::produce(framework::Event& event) {
                           << sl.index();
           ldmx_log(trace) << "    Measurement:\n" << ldmx_meas;
           trk.addMeasurementIndex(sl.index());
+
+          // Extract path length from the track state based on the angle
+          if (ts.hasSmoothed()) {
+            const auto& meas_surface = ts.referenceSurface();
+            const auto& smoothed_params = ts.smoothed();
+
+            // Get the momentum from the track parameters
+            // momentum = p * direction where direction = (sin(theta)*cos(phi),
+            // sin(theta)*sin(phi), cos(theta))
+            float p_inv = smoothed_params[Acts::eBoundQOverP];
+            float p = 1.0f / std::abs(p_inv);
+            float theta = smoothed_params[Acts::eBoundTheta];
+            float phi = smoothed_params[Acts::eBoundPhi];
+
+            Acts::Vector3 global_momentum(p * std::sin(theta) * std::cos(phi),
+                                          p * std::sin(theta) * std::sin(phi),
+                                          p * std::cos(theta));
+
+            // Get the local frame (transform from global to local)
+            auto local_frame_transform =
+                meas_surface.transform(geometryContext());
+            Acts::Vector3 local_momentum =
+                local_frame_transform.rotation().transpose() * global_momentum;
+
+            // Calculate local angle components (tangent of angles)
+            float phi_u = (local_momentum.z() != 0)
+                              ? local_momentum.x() / local_momentum.z()
+                              : 0.;
+            float phi_v = (local_momentum.z() != 0)
+                              ? local_momentum.y() / local_momentum.z()
+                              : 0.;
+
+            // Calculate the total angle from the local angle components
+            // tan(angle) = sqrt(phi_u^2 + phi_v^2)
+            // cos(angle) = 1 / sqrt(1 + tan(angle)^2)
+            // path_length = thickness / cos(angle)
+            const float sensor_thickness = 0.320f;  // mm
+            float tan_angle_sq = phi_u * phi_u + phi_v * phi_v;
+            float cos_angle = 1.0f / std::sqrt(1.0f + tan_angle_sq);
+            float path_length = sensor_thickness / cos_angle;
+
+            ldmx_log(debug) << "      Local angles: phi_u = " << phi_u
+                            << ", phi_v = " << phi_v
+                            << "; Path length = " << path_length << " mm";
+
+            // Calculate dE/dx and add to track (in MeV/mm)
+            float edep = ldmx_meas.getEdep();
+            float dedx = edep / path_length;
+            trk.addDedxMeasurement(dedx);
+
+            ldmx_log(debug) << "      Edep = " << edep
+                            << " MeV, dE/dx = " << dedx << " MeV/mm";
+          }
         } else {
           ldmx_log(debug) << "    This TrackState is not a measurement";
         }
