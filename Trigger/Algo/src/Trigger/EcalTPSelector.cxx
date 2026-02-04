@@ -10,37 +10,31 @@ void EcalTPSelector::configure(framework::config::Parameters& ps) {
 }
 
 void EcalTPSelector::produce(framework::Event& event) {
-  if (!event.exists(tp_coll_name_, tp_coll_event_passname_)) return;
+  // if (!event.exists(tp_coll_name_, tp_coll_event_passname_)) return;
   auto ecal_trig_digis{event.getObject<ldmx::HgcrocTrigDigiCollection>(
       tp_coll_name_, tp_coll_passname_)};
 
-  std::map<int, ldmx::HgcrocTrigDigiCollection> l_digis;  // left
-  std::map<int, ldmx::HgcrocTrigDigiCollection> r_digis;  // right
+  // std::map<int, ldmx::HgcrocTrigDigiCollection> l_digis;  // left
+  // std::map<int, ldmx::HgcrocTrigDigiCollection> r_digis;  // right
   std::map<int, ldmx::HgcrocTrigDigiCollection> c_digis;  // center
-  std::map<int, int> l_sums;                              // left
-  std::map<int, int> r_sums;                              // right
+  std::map<int, ldmx::HgcrocTrigDigiCollection> o_digis;  // outer
+  // std::map<int, int> l_sums;                              // left
+  // std::map<int, int> r_sums;                              // right
   std::map<int, int> c_sums;                              // center
+  std::map<int, int> o_sums;                              // outer
   for (const auto& trig_digi : ecal_trig_digis) {
     ldmx::EcalTriggerID tid(trig_digi.getId());
     int module = tid.module();
     int layer = tid.layer();
-    if (module > 3) {
-      auto ptr = l_digis.find(layer);
-      if (ptr == l_digis.end()) {
-        l_digis[layer] = {trig_digi};
-        l_sums[layer] = trig_digi.linearPrimitive();
+
+    if (module > 0) {
+      auto ptr = o_digis.find(layer);
+      if (ptr == o_digis.end()) {
+        o_digis[layer] = {trig_digi};
+        o_sums[layer] = trig_digi.linearPrimitive();
       } else {
-        l_digis[layer].push_back(trig_digi);
-        l_sums[layer] += trig_digi.linearPrimitive();
-      }
-    } else if (module > 0) {
-      auto ptr = r_digis.find(layer);
-      if (ptr == r_digis.end()) {
-        r_digis[layer] = {trig_digi};
-        r_sums[layer] = trig_digi.linearPrimitive();
-      } else {
-        r_digis[layer].push_back(trig_digi);
-        r_sums[layer] += trig_digi.linearPrimitive();
+        o_digis[layer].push_back(trig_digi);
+        o_sums[layer] += trig_digi.linearPrimitive();
       }
     } else {
       auto ptr = c_digis.find(layer);
@@ -59,7 +53,7 @@ void EcalTPSelector::produce(framework::Event& event) {
   // Instead, sort by ID to be deterministic.
   ldmx::HgcrocTrigDigiCollection pass_t_ps;
   pass_t_ps.reserve(ecal_trig_digis.size());
-  for (auto& pair : l_digis) {
+  for (auto& pair : o_digis) {
     auto& digis = pair.second;
     if (digis.size() > max_outer_t_ps_) {
       std::sort(digis.begin(), digis.end(),
@@ -70,17 +64,17 @@ void EcalTPSelector::produce(framework::Event& event) {
     }
     pass_t_ps.insert(pass_t_ps.end(), digis.begin(), digis.end());
   }
-  for (auto& pair : r_digis) {
-    auto& digis = pair.second;
-    if (digis.size() > max_outer_t_ps_) {
-      std::sort(digis.begin(), digis.end(),
-                [](ldmx::HgcrocTrigDigi a, ldmx::HgcrocTrigDigi b) {
-                  return a.getId() > b.getId();
-                });
-      digis.resize(max_central_t_ps_);
-    }
-    pass_t_ps.insert(pass_t_ps.end(), digis.begin(), digis.end());
-  }
+  // for (auto& pair : r_digis) {
+  //   auto& digis = pair.second;
+  //   if (digis.size() > max_outer_t_ps_) {
+  //     std::sort(digis.begin(), digis.end(),
+  //               [](ldmx::HgcrocTrigDigi a, ldmx::HgcrocTrigDigi b) {
+  //                 return a.getId() > b.getId();
+  //               });
+  //     digis.resize(max_central_t_ps_);
+  //   }
+  //   pass_t_ps.insert(pass_t_ps.end(), digis.begin(), digis.end());
+  // }
   // center digis, can sort by energy
   for (auto& pair : c_digis) {
     auto& digis = pair.second;
@@ -108,22 +102,21 @@ void EcalTPSelector::produce(framework::Event& event) {
 
   TrigEnergySumCollection pass_trig_sums;
   EcalTpToE cvt;
-  for (auto& pair : l_sums) {
+  for (auto& pair : o_sums) {
     double e = cvt.calc(pair.second, pair.first);
     // TrigEnergySum s(pair.first, 4, e);
-    pass_trig_sums.emplace_back(pair.first, 4, e);
-  }
-  for (auto& pair : r_sums) {
-    double e = cvt.calc(pair.second, pair.first);
-    // TrigEnergySum s(pair.first, 1, e);
     pass_trig_sums.emplace_back(pair.first, 1, e);
   }
+  // for (auto& pair : r_sums) {
+  //   double e = cvt.calc(pair.second, pair.first);
+  //   // TrigEnergySum s(pair.first, 1, e);
+  //   pass_trig_sums.emplace_back(pair.first, 1, e);
+  // }
   for (auto& pair : c_sums) {
     double e = cvt.calc(pair.second, pair.first);
     // TrigEnergySum s(pair.first, 0, e);
     pass_trig_sums.emplace_back(pair.first, 0, e);
   }
-
   event.add(pass_coll_name_ + "Hits", pass_trig_hits);
   event.add(pass_coll_name_ + "Sums", pass_trig_sums);
 }
