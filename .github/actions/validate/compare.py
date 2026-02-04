@@ -201,7 +201,9 @@ def compare(gold_f, gold_label, test_f, test_label) :
             gold_h.Draw("E")
             test_h.Draw('ESAME')
     
-        c.BuildLegend()
+        legend = c.BuildLegend()
+        legend.SetFillStyle(0)  # transparent
+        legend.SetBorderSize(0)  # no frame
         c.SaveAs(f'plots/{sub_dir}/{key.replace("/","_").replace(":","_")}.pdf')
 
 if __name__ == '__main__' :
