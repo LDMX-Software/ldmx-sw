@@ -115,7 +115,7 @@ EventFile::~EventFile() {
 
 bool EventFile::isCorrupted() const {
   if (is_output_file_) return file_->IsZombie();
-  return (!tree_ or file_->IsZombie());
+  return (!tree_ or file_->IsZombie() or file_->GetNkeys() == 0);
 }
 
 void EventFile::addDrop(const std::string &rule) {
