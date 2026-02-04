@@ -5,6 +5,7 @@
 /*   DetDescr   */
 /*~~~~~~~~~~~~~~*/
 #include <algorithm>
+#include <map>
 #include <string>
 #include <vector>
 
@@ -83,9 +84,7 @@ class HcalSD : public SensitiveDetector {
   /**
    * Add our hits to the event bus and then reset the container
    */
-  virtual void saveHits(framework::Event& event) override {
-    event.add(COLLECTION_NAME, hits_);
-  }
+  virtual void saveHits(framework::Event& event) override;
 
   virtual void onFinishedEvent() override { hits_.clear(); }
 
@@ -102,8 +101,14 @@ class HcalSD : public SensitiveDetector {
   // TODO: document!
   double birksc2_;
 
-  // collection of hits to write to event bus
-  std::vector<ldmx::SimCalorimeterHit> hits_;
+  /// map of hits to add to the event (will be squashed)
+  std::map<ldmx::HcalID, ldmx::SimCalorimeterHit> hits_;
+  /// enable hit contribs
+  bool enable_hit_contribs_;
+  /// compress hit contribs
+  bool compress_hit_contribs_;
+  /// maximum track ID to be considered an "origin"
+  int max_origin_track_id_;
 
 };  // HcalSD
 
