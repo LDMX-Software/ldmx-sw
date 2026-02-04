@@ -110,8 +110,8 @@ class TrackingRecoDQM(ldmxcfg.Analyzer):
                               "nHits",15,0,15)
         self.build1DHistogram("layers_hit",
                               "Num layers hit",15,0,15)
-        self.build1DHistogram("measurement_path_length",
-                              "Measurement path length (mm)", 200, 0.3, 0.6)
+        self.build1DHistogram("measurement_dedx",
+                              "Measurement dE/dx (MeV/mm)", 60, 0., 0.6)
         self.build1DHistogram("Chi2",
                               "Chi2",nbins,0,100)
         self.build1DHistogram("ndf",
@@ -247,13 +247,13 @@ class TrackingRecoDQM(ldmxcfg.Analyzer):
             self.build1DHistogram("truth_qop",
                                   "truth q/p [GeV^{-1}]",nbins,qopmin,qopmax)
             self.build1DHistogram("truth_p",
-                                  "truth p [GeV]",nbins,0,pmax)
+                                  "truth p [GeV]",nbins, 0., pmax)
             self.build1DHistogram("truth_beam_angle",
                                   "angle wrt beam axis",20,0,2)
             self.build1DHistogram("truth_PID",
                                   "Particles",8,-4,4)
-            self.build1DHistogram("truth_measurement_path_length",
-                                  "Truth measurement path length (mm)", 200, 0.3, 0.6)
+            self.build1DHistogram("truth_measurement_dedx",
+                                  "Truth measurement dE/dx (MeV/mm)", 60, 0., 0.6)
             self.build1DHistogram("truth_kminus_p",
                                   "truth p",nbins, 0., pmax)
             self.build1DHistogram("truth_kplus_p",
@@ -329,8 +329,8 @@ class TrackingRecoDQM(ldmxcfg.Analyzer):
                                   "Particles",8,-4,4)
             self.build1DHistogram("match_nHits",
                                   "match nHits",15,0,15)            
-            self.build1DHistogram("match_measurement_path_length",
-                                  "Match measurement path length (mm)", 200, 0.3, 0.6)            
+            self.build1DHistogram("match_measurement_dedx",
+                                  "Match measurement dE/dx (MeV/mm)", 60, 0., 0.6)            
             self.build1DHistogram("match_layers_hit",
                                   "match layers hit",15,0,15)
 
@@ -373,8 +373,8 @@ class TrackingRecoDQM(ldmxcfg.Analyzer):
                                   "fake nHits",15,0,15)
             self.build1DHistogram("fake_layers_hit",
                                   "fake layers hit",15,0,15)
-            self.build1DHistogram("fake_measurement_path_length",
-                                  "Fake measurement path length (mm)", 200, 0.3, 0.6)
+            self.build1DHistogram("fake_measurement_dedx",
+                                  "Fake measurement dE/dx (MeV/mm)", 60, 0., 0.6)
             self.build1DHistogram("fake_Chi2",
                                   "fake Chi2",100,0,chi2Fake_max)
             self.build1DHistogram("fake_Chi2_per_ndf",
@@ -403,8 +403,8 @@ class TrackingRecoDQM(ldmxcfg.Analyzer):
                                   "dup nHits",15,0,15)
             self.build1DHistogram("dup_layers_hit",
                                   "dup layers hit",15,0,15)            
-            self.build1DHistogram("dup_measurement_path_length",
-                                  "Dup measurement path length (mm)", 200, 0.3, 0.6)
+            self.build1DHistogram("dup_measurement_dedx",
+                                  "Dup measurement dE/dx (MeV/mm)", 60, 0., 0.6)
             self.build1DHistogram("dup_Chi2",
                                   "dup Chi2",100,0,100)
             self.build1DHistogram("dup_Chi2_per_ndf",

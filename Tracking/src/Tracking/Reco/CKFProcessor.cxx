@@ -387,10 +387,6 @@ void CKFProcessor::produce(framework::Event& event) {
   Acts::VectorMultiTrajectory mtj;
   Acts::TrackContainer tc{vtc, mtj};
 
-  // Map to store path lengths for measurements: measurement index ->
-  // path_length
-  std::map<std::size_t, float> measurement_path_lengths;
-
   // The number of track candidates (i.e. startParameters.size()) is always
   // the same as the number of seed tracks
   ldmx_log(debug) << "Loop on the track candidates";
@@ -605,8 +601,13 @@ void CKFProcessor::produce(framework::Event& event) {
                             << ", phi_v = " << phi_v
                             << "; Path length = " << path_length << " mm";
 
-            // Store for later update
-            measurement_path_lengths[sl.index()] = path_length;
+            // Calculate dE/dx and add to track (in MeV/mm)
+            float edep = ldmx_meas.getEdep();
+            float dedx = edep / path_length;
+            trk.addDedxMeasurement(dedx);
+
+            ldmx_log(debug) << "      Edep = " << edep
+                            << " MeV, dE/dx = " << dedx << " MeV/mm";
           }
         } else {
           ldmx_log(debug) << "    This TrackState is not a measurement";
@@ -686,19 +687,9 @@ void CKFProcessor::produce(framework::Event& event) {
   profiling_map_["ckf_run"] +=
       std::chrono::duration<double, std::milli>(ckf_run - ckf_setup).count();
 
-  // Update measurements with path length information
-  std::vector<ldmx::Measurement> updated_measurements = measurements;
-  for (const auto& [meas_idx, path_len] : measurement_path_lengths) {
-    if (meas_idx < updated_measurements.size()) {
-      updated_measurements[meas_idx].setPathLength(path_len);
-      ldmx_log(debug) << "Updated measurement " << meas_idx
-                      << " with path length: " << path_len << " mm";
-    }
-  }
-
   // Calculating Shared Hits
   auto shared_hits = computeSharedHits(
-      tracks, updated_measurements, tg, tracking::sim::utils::sourceLinkHash,
+      tracks, measurements, tg, tracking::sim::utils::sourceLinkHash,
       tracking::sim::utils::sourceLinkEquality);
   for (std::size_t i_track = 0; i_track < shared_hits.size(); ++i_track) {
     tracks[i_track].setNsharedHits(shared_hits[i_track].size());
@@ -713,11 +704,6 @@ void CKFProcessor::produce(framework::Event& event) {
 
   // Add the tracks to the event
   event.add(out_trk_collection_, tracks);
-
-  // Add the updated measurements with path lengths back to the event
-  event.add(on_track_measurements_, updated_measurements);
-  // Drop the original measurements to avoid confusion
-  event.addDrop(measurement_collection_);
 
   auto end = std::chrono::high_resolution_clock::now();
   // long long microseconds =
@@ -771,8 +757,6 @@ void CKFProcessor::configure(framework::config::Parameters& parameters) {
   propagator_max_steps_ = parameters.get<int>("propagator_maxSteps", 10000);
   measurement_collection_ = parameters.get<std::string>(
       "measurement_collection", "TaggerMeasurements");
-  on_track_measurements_ = parameters.get<std::string>(
-      "on_track_measurements", "TaggerOnTrackMeasurements");
   outlier_pval_ = parameters.get<double>("outlier_pval_", 3.84);
 
   debug_acts_ = parameters.get<bool>("debug_acts", false);
