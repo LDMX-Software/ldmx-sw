@@ -8,7 +8,7 @@ from LDMX.SimCore import generators as gen
 from LDMX.SimCore import simulator as sim
 det = 'ldmx-det-v15-8gev'
 mySim = sim.simulator('sim')
-mySim.setDetector(det, True)
+mySim.setDetector(det, include_scoring_planes_minimal = True)
 genie = gen.genie(name=f'genie_G18_02a_02_11b',
                         energy = 8.0,
                         targets = [ 1000741820, 1000741830, 1000741840, 1000741860 ],

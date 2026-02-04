@@ -13,7 +13,7 @@ wab_gen.vertex = [0.0, 0.0, 0.0]
 
 det = 'ldmx-det-v15-8gev'
 mySim = sim.simulator('sim')
-mySim.setDetector(det, True)
+mySim.setDetector(det, include_scoring_planes_minimal = True)
 mySim.generators.append(wab_gen) 
 
 p.sequence = [ mySim ]

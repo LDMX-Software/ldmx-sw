@@ -10,7 +10,7 @@ import LDMX.Ecal.ecal_hardcoded_conditions
 
 from LDMX.SimCore import simulator
 sim = simulator.simulator("mySim")
-sim.setDetector( 'ldmx-det-v12', True  )
+sim.setDetector( 'ldmx-det-v12', include_scoring_planes_minimal = True  )
 sim.description = "ECal Digi Pipeline Tested on Basic 4GeV Gun"
 from LDMX.SimCore import generators
 sim.generators = [ generators.single_4gev_e_upstream_tagger() ]

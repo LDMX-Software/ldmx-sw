@@ -34,7 +34,7 @@ import LDMX.Ecal.EcalGeometry
 import LDMX.Hcal.HcalGeometry
 
 mySim = simulator.simulator( "mySim" )
-mySim.setDetector( 'ldmx-det-v14' , True )
+mySim.setDetector( 'ldmx-det-v14' , include_scoring_planes_minimal = True )
 mySim.generators = [ generators.single_backwards_positron(args.beam) ]
 mySim.description = 'Basic test Simulation'
 p.sequence = [ mySim ]

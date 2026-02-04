@@ -8,7 +8,7 @@ from LDMX.SimCore import generators as gen
 from LDMX.SimCore import simulator as sim
 det = 'ldmx-det-v15-8gev'
 mySim = sim.simulator( "mySim" )
-mySim.setDetector(det, True )
+mySim.setDetector(det, include_scoring_planes_minimal = True )
 mySim.description = 'Deep ECal Gun Simulation'
 
 ene_ang_pos_cmds_ele = [

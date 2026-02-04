@@ -35,7 +35,7 @@ sim = simulator.simulator("test")
 #
 # Set the path to the detector to use (pulled from job config)
 #
-sim.setDetector( version, True )
+sim.setDetector( version, include_scoring_planes_minimal = True )
 sim.scoringPlanes = makeScoringPlanesPath(version)
 
 outname=outputNameString #+".root"
