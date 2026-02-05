@@ -238,20 +238,6 @@ void GSFProcessor::produce(framework::Event& event) {
   // Electron hypothesis
   //  propagator_options.mass = 0.511 * Acts::UnitConstants::MeV;
 
-  // Define reference surfaces - persistent for entire produce() call
-  std::shared_ptr<const Acts::PerigeeSurface> reference_surface =
-      Acts::Surface::makeShared<Acts::PerigeeSurface>(
-          Acts::Vector3(0., 0., 0.));
-
-  std::shared_ptr<Acts::Surface> beam_origin_surface =
-      tracking::sim::utils::unboundSurface(-700);
-
-  std::shared_ptr<Acts::Surface> target_surface =
-      tracking::sim::utils::unboundSurface(0.);
-
-  std::shared_ptr<Acts::Surface> ecal_surface =
-      tracking::sim::utils::unboundSurface(240.5);
-
   // GSF options will be configured per-track
   std::shared_ptr<const Acts::Surface> gsf_ref_surface;
   Acts::GsfOptions<Acts::VectorMultiTrajectory> gsf_options{
@@ -330,7 +316,7 @@ void GSFProcessor::produce(framework::Event& event) {
 
       auto ts = track.getTrackState(ldmx::TrackStateType::AtBeamOrigin).value();
       trk_btp_beam_origin =
-          tracking::sim::utils::btp(ts, beam_origin_surface, 11);
+          tracking::sim::utils::btp(ts, beam_origin_surface_, 11);
     }
     // Recoil tracking
     else {
@@ -340,7 +326,7 @@ void GSFProcessor::produce(framework::Event& event) {
         continue;
       }
       auto ts = track.getTrackState(ldmx::TrackStateType::AtTarget).value();
-      trk_btp_beam_origin = tracking::sim::utils::btp(ts, target_surface, 11);
+      trk_btp_beam_origin = tracking::sim::utils::btp(ts, target_surface_, 11);
     }
     ldmx_log(debug) << "    Perigee Surface (acts-x, acts-y, acts-z) = ("
                     << track.getPerigeeX() << ", " << track.getPerigeeY()
@@ -429,6 +415,7 @@ void GSFProcessor::produce(framework::Event& event) {
     ldmx::Track trk = ldmx::Track();
 
     bool success = false;
+    bool success_ecal = false;
     ldmx::Track::TrackState ts_at_target_surface;
 
     if (tagger_tracking_) {
@@ -443,20 +430,22 @@ void GSFProcessor::produce(framework::Event& event) {
         trk.addTrackState(ts_at_target);
         ts_at_target_surface = ts_at_target;
       }
-    } else {
+    }  // end tagger tracking
+    else {
       ldmx_log(debug) << "  Ecal Extrapolation";
       ldmx::Track::TrackState ts_at_ecal;
-      success = trk_extrap_->trackStateAtSurface(
+      success_ecal = trk_extrap_->trackStateAtSurface(
           gsftrk, ecal_surface_, ts_at_ecal, ldmx::TrackStateType::AtECAL);
 
-      if (success) trk.addTrackState(ts_at_ecal);
+      if (success_ecal) trk.addTrackState(ts_at_ecal);
 
       // Also get track state at target for perigee parameters
       ldmx_log(debug) << "  Target extrapolation for perigee parameters";
       success = trk_extrap_->trackStateAtSurface(
           gsftrk, target_surface_, ts_at_target_surface,
           ldmx::TrackStateType::AtTarget);
-    }
+      if (success) trk.addTrackState(ts_at_target_surface);
+    }  // end recoil tracking
 
     // Use parameters at target surface (0, 0, 0) for perigee
     trk.setPerigeeLocation(0., 0., 0.);
