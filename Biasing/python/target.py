@@ -42,7 +42,7 @@ def electro_nuclear( detector, generator ) :
 
     # Set the path to the detector to use.
     #   Also tell the simulator to include scoring planes
-    sim.setDetector( detector , True )
+    sim.setDetector( detector , include_scoring_planes_minimal = True )
 
     # Set run parameters
     sim.description = "Target electron-nuclear, xsec bias 1e5"
@@ -99,7 +99,7 @@ def photo_nuclear( detector, generator ) :
 
     # Set the path to the detector to use.
     #   Also tell the simulator to include scoring planes
-    sim.setDetector( detector , True )
+    sim.setDetector( detector , include_scoring_planes_minimal = True )
 
     # Set run parameters
     xsec_bias_threshold = 0.625 * generator.energy * 1000.
@@ -164,7 +164,7 @@ def gamma_mumu( detector, generator ) :
 
     # Set the path to the detector to use.
     #   Also tell the simulator to include scoring planes
-    sim.setDetector( detector , True )
+    sim.setDetector( detector , include_scoring_planes_minimal = True )
 
     # Set run parameters
     sim.beamSpotSmear = [20., 80., 0.]
@@ -237,7 +237,7 @@ def dark_brem( ap_mass , lhe, detector, generator,
     sim = simulator.simulator( "target_dark_brem_" + str(ap_mass) + "_MeV" )
 
     sim.description = "One e- fired far upstream with Dark Brem turned on and biased up in target"
-    sim.setDetector( detector , True )
+    sim.setDetector( detector , include_scoring_planes_minimal = True )
     sim.generators.append( generators.single_8gev_e_upstream_tagger() )
     sim.beamSpotSmear = [ 20., 80., 0. ] #mm
 

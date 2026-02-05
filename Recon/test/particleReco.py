@@ -19,7 +19,7 @@ from LDMX.SimCore import simulator as sim
 import LDMX.Ecal.EcalGeometry
 import LDMX.Hcal.HcalGeometry
 mySim = sim.simulator( "mySim" )
-mySim.setDetector( 'ldmx-det-v14' , True )
+mySim.setDetector( 'ldmx-det-v14' , include_scoring_planes_minimal = True )
 sim.beamSpotSmear = [20., 80., 0.]
 
 # Get a pre-written generator

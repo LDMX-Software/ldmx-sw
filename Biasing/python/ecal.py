@@ -48,7 +48,7 @@ def photo_nuclear( detector, generator ) :
     
     # Set the path to the detector to use.
     #   the second parameter says we want to include scoring planes
-    sim.setDetector( detector , True )
+    sim.setDetector( detector , include_scoring_planes_minimal = True )
 
     # Set run parameters
     xsec_bias_threshold = 0.625 * generator.energy * 1000.
@@ -91,7 +91,7 @@ def nonfiducial_photo_nuclear( detector, generator ) :
     
     # Set the path to the detector to use.
     #   the second parameter says we want to include scoring planes
-    sim.setDetector( detector , True )
+    sim.setDetector( detector , include_scoring_planes_minimal = True )
     
     # Set run parameters
     xsec_bias_threshold = 0.625 * generator.energy * 1000.
@@ -156,7 +156,7 @@ def gamma_mumu(detector, generator) :
 
     # Set the path to the detector to use
     # Also tell the simulator to include scoring planes
-    sim.setDetector( detector, True )
+    sim.setDetector( detector, include_scoring_planes_minimal = True )
 
     # Set run parameters
     xsec_bias_threshold = 0.625 * generator.energy * 1000.
@@ -195,7 +195,7 @@ def deep_photo_nuclear( detector, generator, bias_threshold, processes, ecal_min
     
     # Set the path to the detector to use.
     #   the second parameter says we want to include scoring planes
-    sim.setDetector( detector , True )
+    sim.setDetector( detector , include_scoring_planes_minimal = True )
     
     # Set run parameters
     # Set run parameters

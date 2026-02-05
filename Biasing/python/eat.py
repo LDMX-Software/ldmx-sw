@@ -65,7 +65,7 @@ def midshower_nuclear( detector , generator, bias_factor , bias_threshold , min_
 
     #Set the path to the detector to use.
     #the second parameter says we want to include scoring planes
-    sim.setDetector( detector , True )
+    sim.setDetector( detector , include_scoring_planes_minimal = True )
 
     #Set run parameters
     sim.description = "Biased Mid-Shower Nuclear Interactions ME Background"
@@ -142,7 +142,7 @@ def midshower_dimuon( detector , generator, bias_factor , bias_threshold , min_d
 
     #Set the path to the detector to use.
     #the second parameter says we want to include scoring planes
-    sim.setDetector( detector , True )
+    sim.setDetector( detector , include_scoring_planes_minimal = True )
 
     #Set run parameters
     sim.description = "Biased Mid-Shower DiMuon Interactions ME Background"
@@ -220,7 +220,7 @@ def dark_brem(ap_mass, db_event_lib, detector, generator,
     from LDMX.Ecal import EcalGeometry
     
     sim.description = "One e- fired far upstream with Dark Brem turned on and biased up in ECal"
-    sim.setDetector( detector , True )
+    sim.setDetector( detector , include_scoring_planes_minimal = True )
     sim.generators = [ generator ]
     sim.beamSpotSmear = [ 20., 80., 0. ] #mm
 

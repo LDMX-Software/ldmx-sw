@@ -17,7 +17,7 @@ myGun.enablePoisson = False #True
 
 mySim = sim.simulator( "mySim" ) # Build simulator object
 det = 'ldmx-reduced-v3'
-mySim.setDetector(det, True )
+mySim.setDetector(det, include_scoring_planes_minimal = True )
 mySim.beamSpotSmear = [20.,80.,0.]
 mySim.description = 'Reduced ECal Electron Gun Test Simulation'
 
