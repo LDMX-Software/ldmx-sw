@@ -710,7 +710,7 @@ void CKFProcessor::produce(framework::Event& event) {
   // std::chrono::duration_cast<std::chrono::microseconds>(end-start).count();
   auto diff = end - start;
   processing_time_ += std::chrono::duration<double, std::milli>(diff).count();
-}
+}  // end of produce()
 
 void CKFProcessor::onProcessStart() {
   if (use1_dmeasurements_)
@@ -790,7 +790,7 @@ void CKFProcessor::configure(framework::config::Parameters& parameters) {
       parameters.get<std::vector<double>>("map_offset_", {0., 0., 0.});
 
   input_pass_name_ = parameters.get<std::string>("input_pass_name");
-}
+}  // end of configure()
 
 auto CKFProcessor::makeGeoIdSourceLinkMap(
     const geo::TrackersTrackingGeometry& tg,
