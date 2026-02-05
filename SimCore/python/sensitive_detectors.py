@@ -83,6 +83,10 @@ class HcalSD(simcfg.SensitiveDetector) :
         The current defaults match the mainline LDMX Hcal and
         prototype Hcal (scint_box) scintillator geometries.
 
+    enable_hit_contribs : bool, optional
+        Should the simulation save contributions to Hcal sim hits?
+    compress_hit_contribs : bool, optional
+        Should the simulation compress contributions to Hcal sim hits by PDG ID?
     """
     def __init__(self, gdml_identifiers = ['scintYVolume', 'scintXVolume',
                                            'scintX_0Volume', 'scintX_1Volume', 'scintX_2Volume', 'scintX_3Volume',
@@ -92,6 +96,9 @@ class HcalSD(simcfg.SensitiveDetector) :
                                            'scint_box']) :
         super().__init__('hcal_sd', 'simcore::HcalSD','SimCore_SDs')
         self.gdml_identifiers = gdml_identifiers
+        self.enable_hit_contribs = True
+        self.compress_hit_contribs = True
+        self.max_origin_track_id = 6
 
 class EcalSD(simcfg.SensitiveDetector) :
     """SD for the ECal
@@ -102,15 +109,15 @@ class EcalSD(simcfg.SensitiveDetector) :
 
     Parameters
     ----------
-    enableHitContribs : bool, optional
+    enable_hit_contribs : bool, optional
         Should the simulation save contributions to Ecal sim hits?
-    compressHitContribs : bool, optional
+    compress_hit_contribs : bool, optional
         Should the simulation compress contributions to Ecal sim hits by PDG ID?
     """
     def __init__(self) :
         super().__init__('ecal_sd', 'simcore::EcalSD','SimCore_SDs')
-        self.enableHitContribs = True
-        self.compressHitContribs = True
+        self.enable_hit_contribs = True
+        self.compress_hit_contribs = True
         self.max_origin_track_id = 6
 
 class TrigScintSD(simcfg.SensitiveDetector) :
