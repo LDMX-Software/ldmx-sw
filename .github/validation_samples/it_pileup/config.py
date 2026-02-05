@@ -23,7 +23,7 @@ from LDMX.Recon.overlay import OverlayProducer
 overlay=OverlayProducer('pileup.root')
 overlay.sim_passname = simPassName                  #sim input event pass name
 overlay.overlay_passname = pileupFilePassName    #pileup input event pass name
-
+overlay.tracker_collections.extend(["EcalScoringPlaneHits"])
 p.sequence = [overlay]
 
 # ECal geometry nonsense
