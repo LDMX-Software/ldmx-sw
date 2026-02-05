@@ -192,7 +192,6 @@ void RunManager::TerminateOneEvent() {
   };
 
   reactivate_dark_brem(G4Electron::Definition()->GetProcessManager());
-  ldmx_log(debug) << "Reset the dark brem process (if it was activated)";
 }
 
 DetectorConstruction* RunManager::getDetectorConstruction() {
