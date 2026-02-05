@@ -9,7 +9,7 @@ p.logger.termLevel = 4
 
 from LDMX.SimCore import simulator as sim
 mySim = sim.simulator( "mySim" )
-mySim.setDetector( 'ldmx-det-v15-8gev', True )
+mySim.setDetector( 'ldmx-det-v15-8gev', include_scoring_planes_minimal = True )
 from LDMX.SimCore import generators as gen
 mySim.generators.append( gen.single_8gev_e_upstream_tagger() )
 mySim.beamSpotSmear = [20.,80.,0.]
