@@ -234,10 +234,32 @@ class CKFProcessor final : public TrackingGeometryUser {
   std::shared_ptr<tracking::reco::TrackExtrapolatorTool<CkfPropagator>>
       trk_extrap_zero_b_;
 
+  // Const-B (1.5T) CKF as fallback for tagger
+  std::unique_ptr<const CkfPropagator> propagator_const_b_;
+  std::unique_ptr<
+      const Acts::CombinatorialKalmanFilter<CkfPropagator, TrackContainer>>
+      ckf_const_b_;
+  std::shared_ptr<tracking::reco::TrackExtrapolatorTool<CkfPropagator>>
+      trk_extrap_const_b_;
+
   /// n seeds and n tracks
   int nseeds_;
   int ntracks_;
   int eventnr_;
+
+  // CKF fallback statistics
+  int n_fieldmap_ckf_failed_tagger_{0};
+  int n_fieldmap_ckf_failed_recoil_{0};
+  int n_constb_ckf_recovered_tagger_{0};
+  int n_zerob_ckf_recovered_recoil_{0};
+
+  // Extrapolation fallback statistics
+  int n_fieldmap_target_extrap_failed_tagger_{0};
+  int n_constb_target_extrap_recovered_tagger_{0};
+  int n_fieldmap_target_extrap_failed_recoil_{0};
+  int n_zerob_target_extrap_recovered_recoil_{0};
+  int n_fieldmap_ecal_extrap_failed_recoil_{0};
+  int n_zerob_ecal_extrap_recovered_recoil_{0};
 
   // BField Systematics
   std::vector<double> map_offset_{
