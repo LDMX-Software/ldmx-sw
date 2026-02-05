@@ -48,6 +48,12 @@ class EcalDigiVerifier : public framework::Analyzer {
   /// Pass Name for RecHits
   std::string ecal_rec_hit_pass_;
 
+  /// Collection Name for Preselection Decision
+  std::string ecal_presel_coll_;
+
+  /// Pass Name for Preselection Decision
+  std::string ecal_presel_pass_;
+
   /// Number of layers in the ECAL
   int num_layers_;
 };

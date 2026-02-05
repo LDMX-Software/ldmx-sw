@@ -276,6 +276,10 @@ class EcalDigiVerify(ldmxcfg.Analyzer) :
 
         self.ecal_rec_hit_coll = "EcalRecHits"
         self.ecal_rec_hit_pass = ""
+        
+        self.ecal_presel_coll = "EcalPreselectionDecision"
+        self.ecal_presel_pass = ""
+        
         self.num_layers = 32
 
         self.build1DHistogram( "rec_sim_hit_residual_x" ,
@@ -328,6 +332,9 @@ class EcalDigiVerify(ldmxcfg.Analyzer) :
 
         self.build1DHistogram( "num_hit_if_more_than_2hits"      ,
                 "Num of hits for modules with >2 hits" , 31 , -0.5 , 30.5 )
+        
+        self.build1DHistogram( "preselection_passed" ,
+                "Preselection Passed" , ["Fail", "Pass"] )
         
         self.build2DHistogram( "sim_edep:rec_amplitude" ,
                 "Simulated Energy [MeV]" , 1000 , 0. , 50. ,

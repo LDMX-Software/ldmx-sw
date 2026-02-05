@@ -82,6 +82,10 @@ ecal_veto_pnet = ecal_vetos.EcalPnetVetoProcessor()
 import LDMX.Hcal.hcal as hcal
 hcal_veto = hcal.HcalVetoProcessor()
 
+# Load preselection skimmer
+from LDMX.Recon.ecalPreselectionSkimmer import EcalPreselectionSkimmer
+ecal_pres_skimmer = EcalPreselectionSkimmer()
+
 # The Tracking modules produce a lot of helpful messages
 # but (at the debug level) is too much for commiting the gold log
 # into the git working tree on GitHub
@@ -94,6 +98,7 @@ p.sequence.extend(full_tracking_sequence.dqm_sequence)
 p.sequence.extend([
         ecal_digi.EcalDigiProducer(),
         ecal_digi.EcalRecProducer(), 
+        ecal_pres_skimmer,
         ecalVeto,
         ecalMip,
         ecal_veto_pnet,
