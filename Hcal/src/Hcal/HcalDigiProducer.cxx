@@ -16,12 +16,25 @@ HcalDigiProducer::HcalDigiProducer(const std::string& name,
     : Producer(name, process) {
   /*
    * Noise generator by default uses a Gausian model for noise
-   * i.e. It assumes the noise is distributed around a mean (setPedestal)
+   * i.e. it assumes the noise is distributed around a mean (setPedestal)
    * with a certain RMS (setNoise) and then calculates
-   * how many hits_ should be generated for a given number of empty
+   * how many hits should be generated for a given number of empty
    * channels and a minimum readout value (setNoiseThreshold)
    */
   noise_generator_ = std::make_unique<ldmx::NoiseGenerator>();
+}
+
+double HcalDigiProducer::makeTimeDelta(TimeSpreadType kind,
+                                       std::vector<double>& parameters) const {
+  switch (kind) {
+    case TimeSpreadType::UNIFORM:
+      return random_time_->Uniform(parameters[0], parameters[1]);
+    case TimeSpreadType::CONSTANT:
+      return parameters[0];
+    case TimeSpreadType::GAUSSIAN:
+      return random_time_->Gaus(parameters[0], parameters[1]);
+  }
+  return 0;
 }
 
 void HcalDigiProducer::configure(framework::config::Parameters& ps) {
@@ -30,7 +43,7 @@ void HcalDigiProducer::configure(framework::config::Parameters& ps) {
   auto hgcroc_params = ps.get<framework::config::Parameters>("hgcroc");
   hgcroc_ = std::make_unique<ldmx::HgcrocEmulator>(hgcroc_params);
   clock_cycle_ = hgcroc_params.get<double>("clockCycle");
-  n_ad_cs_ = hgcroc_params.get<int>("nADCs");
+  n_adcs_ = hgcroc_params.get<int>("nADCs");
   i_soi_ = hgcroc_params.get<int>("iSOI");
   noise_ = hgcroc_params.get<bool>("noise");
 
@@ -56,11 +69,30 @@ void HcalDigiProducer::configure(framework::config::Parameters& ps) {
   //  time [ns] * ( 2^10 / max time in ns ) = clock counts
   ns_ = 1024. / clock_cycle_;
 
-  // Configure generator that will produce noise hits_ in empty channels
+  // Configure generator that will produce noise hits in empty channels
   gain_ = ps.get<double>("avg_gain");
   readout_threshold_ = ps.get<double>("avg_readout_threshold");
   pedestal_ = ps.get<double>("avg_pedestal");
   noise_rms_ = ps.get<double>("avg_noise_rms");
+
+  flat_time_shift_ = ps.get<double>("flat_time_shift");
+  // Time spread parameters
+  // Per hit
+  const auto& time_spread_per_hit{
+      ps.get<framework::config::Parameters>("time_spread_per_hit")};
+  int kind = time_spread_per_hit.get<int>("kind");
+  time_spread_per_hit_parameters_ =
+      time_spread_per_hit.get<std::vector<double>>("parameters");
+  do_time_spread_per_hit_ = kind != -1;
+  time_spread_per_hit_type_ = static_cast<TimeSpreadType>(kind);
+  // Per spill / event
+  const auto& time_spread_per_spill{
+      ps.get<framework::config::Parameters>("time_spread_per_spill")};
+  kind = time_spread_per_spill.get<int>("kind");
+  time_spread_per_spill_parameters_ =
+      time_spread_per_spill.get<std::vector<double>>("parameters");
+  do_time_spread_per_spill_ = kind != -1;
+  time_spread_per_spill_type_ = static_cast<TimeSpreadType>(kind);
 }
 
 void HcalDigiProducer::onNewRun(const ldmx::RunHeader&) {
@@ -81,6 +113,10 @@ void HcalDigiProducer::onNewRun(const ldmx::RunHeader&) {
   rng_.seed(rseed.getSeed("HcalDigiProducer"));
   // Setting up the read-out chip
   hgcroc_->seedGenerator(rseed.getSeed("HcalDigiProducer::HgcrocEmulator"));
+
+  // Random number generator for time shifts
+  random_time_ =
+      std::make_unique<TRandom2>(rseed.getSeed("HcalDigiProducer::randomTime"));
 }
 
 void HcalDigiProducer::produce(framework::Event& event) {
@@ -94,13 +130,13 @@ void HcalDigiProducer::produce(framework::Event& event) {
 
   // Empty collection to be filled
   ldmx::HgcrocDigiCollection hcal_digis;
-  hcal_digis.setNumSamplesPerDigi(n_ad_cs_);
+  hcal_digis.setNumSamplesPerDigi(n_adcs_);
   hcal_digis.setSampleOfInterestIndex(i_soi_);
 
   std::map<unsigned int, std::vector<const ldmx::SimCalorimeterHit*>>
       hits_by_id;
 
-  // get simulated hcal hits_ from Geant4 and group them by id
+  // get simulated hcal hits from Geant4 and group them by id
   auto hcal_sim_hits{event.getCollection<ldmx::SimCalorimeterHit>(
       input_coll_name_, input_pass_name_)};
 
@@ -126,6 +162,11 @@ void HcalDigiProducer::produce(framework::Event& event) {
   /******************************************************************************************
    * HGCROC Emulation on Simulated Hits (grouped by HcalID)
    ******************************************************************************************/
+  double time_delta{flat_time_shift_};
+  if (do_time_spread_per_spill_) {
+    time_delta += makeTimeDelta(time_spread_per_spill_type_,
+                                time_spread_per_spill_parameters_);
+  }
   for (auto const& sim_bar : hits_by_id) {
     ldmx::HcalID det_id(sim_bar.first);
     int section = det_id.section();
@@ -234,6 +275,11 @@ void HcalDigiProducer::produce(framework::Event& event) {
         double time = sim_hit.getContrib(i_contrib).time_;
         // shift light-speed particle traveling along z_
         time -= position.at(2) / 299.702547;
+        if (do_time_spread_per_hit_) {
+          time += makeTimeDelta(time_spread_per_hit_type_,
+                                time_spread_per_hit_parameters_);
+        }
+        time += time_delta;
 
         if (end_close == 0) {
           pulses_posend.emplace_back(voltage * att_close, time + shift_close);
@@ -246,7 +292,7 @@ void HcalDigiProducer::produce(framework::Event& event) {
     }
 
     /**
-     * Now we have all the sub-hits_ from all the simhits
+     * Now we have all the sub-hits from all the simhits
      * Digitize:
      * For back Hcal return two digis.
      * For side Hcal we choose which pulse to readout based on
