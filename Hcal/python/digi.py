@@ -56,6 +56,55 @@ class HcalHgcrocEmulator(HgcrocEmulator) :
              Number of photo electrons
         """
         return PE*(5/1)
+
+
+class DigiTimeSpread():
+    '''Type representing possible time smearing/shifting that can be applied
+    during the digitization stage, either per event/spill or per hit
+    '''
+    def __init__(self, kind, parameters):
+        if kind not in [-1, 0, 1, 2]:
+            raise ValueError(
+                "Invalid kind of time spread, must be -1 (No spread), 0 (Gaussian), 1 (Uniform) or 2 (Constant)"
+            )
+        self.kind = kind
+        self.parameters = parameters
+
+
+class NoSpread(DigiTimeSpread):
+    def __init__(self):
+        super().__init__(-1, parameters=[0.])
+
+class GaussianSpread(DigiTimeSpread):
+    def __init__(self, mean, sigma):
+        '''Gaussian time spread
+        Parameters:
+        mean : float
+            Mean of the Gaussian distribution
+        sigma : float
+            Standard deviation of the Gaussian distribution
+        '''
+        super().__init__(0, parameters=[mean, sigma])
+
+class UniformSpread(DigiTimeSpread):
+    def __init__(self, min_value, max_value):
+        '''Uniform time spread
+        Parameters:
+        min_value : float
+            Minimum value of the uniform distribution
+        max_value : float
+            Maximum value of the uniform distribution
+        '''
+        super().__init__(1, parameters=[min_value, max_value])
+
+class ConstantSpread(DigiTimeSpread):
+    def __init__(self, value):
+        '''Constant time spread
+        Parameters:
+        value : float
+            Value of the constant time spread
+        '''
+        super().__init__(2, parameters=[value])
     
 class HcalDigiProducer(Producer) :
     """Configuration for HcalDigiProducer
@@ -102,6 +151,12 @@ class HcalDigiProducer(Producer) :
         self.input_pass_name = ''
         self.digi_coll_name = 'HcalDigis'
         self.pulse_truth_coll_name = 'HcalPulseTruth'
+
+        # Flat time shift to apply to all hits
+        self.flat_time_shift = 0.
+
+        self.time_spread_per_hit = NoSpread()
+        self.time_spread_per_spill = NoSpread()
 
 class HcalRecProducer(Producer) :
     """Configuration for the HcalRecProducer
