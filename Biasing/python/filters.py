@@ -8,6 +8,7 @@ Examples of how each filter is configured for biased MC generation.
 
 from LDMX.SimCore import simcfg
 
+
 class TargetBremFilter(simcfg.UserAction):
     """ Configuration for filtering events that don't see a hard brem in the target. 
 
@@ -75,7 +76,7 @@ class EcalProcessFilter(simcfg.UserAction):
         include.library()
 
         self.process = process
-        
+
 class DeepEcalProcessFilter(simcfg.UserAction):
     """ Configuration for keeping events where the pn happens deep in the ECAL.
 
@@ -177,7 +178,7 @@ class TargetDarkBremFilter(simcfg.UserAction):
 
         self.threshold = minApEnergy
 
-class TaggerVetoFilter(simcfg.UserAction): 
+class TaggerVetoFilter(simcfg.UserAction):
     """ Configuration used to reject off-energy electrons in the tagger tracker.
 
     Parameters
@@ -187,7 +188,7 @@ class TaggerVetoFilter(simcfg.UserAction):
     reject_events_missing_tagger : bool
         Also veto events where the primary particle misses the tagger region
     """
-    
+
     def __init__(self,thresh, reject_events_missing_tagger=True) :
         super().__init__('tagger_veto_filter','biasing::TaggerVetoFilter')
 
@@ -249,7 +250,7 @@ class MidShowerDiMuonBkgdFilter(simcfg.UserAction) :
         self.threshold = thresh
 
 
-class TaggerHitFilter(simcfg.UserAction): 
+class TaggerHitFilter(simcfg.UserAction):
     """ Configuration used to reject off-energy electrons in the tagger tracker.
     Parameters
     ----------

@@ -1,7 +1,9 @@
 from LDMX.Framework.ldmxcfg import Producer
 from LDMX.Tracking.make_path import makeFieldMapPath
+
+
 #from LDMX.Tracking.make_path import makeDetectorPath
-                
+
 class LinearSeedFinder(Producer):
     """ Producer to find Seeds for the reduced geometry track finding
 
@@ -44,11 +46,11 @@ class LinearSeedFinder(Producer):
         self.layer12_midpoint = 12.5
         self.layer23_midpoint = 20.0
         self.layer34_midpoint = 27.5
-       
-        self.input_pass_name = ''  
+
+        self.input_pass_name = ''
         self.sim_particles_passname = ''
         self.sim_particles_events_passname = ''
-        
+
 class LinearTrackFinder(Producer):
     """ Producer to find Seeds for the reduced geometry track finding
 

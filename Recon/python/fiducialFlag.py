@@ -1,5 +1,6 @@
 from LDMX.Framework import ldmxcfg
 
+
 """Configuration for RecoilFiducialityProcessor
 
 Sets all parameters to defaults.

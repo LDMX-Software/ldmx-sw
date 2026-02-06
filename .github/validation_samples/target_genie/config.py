@@ -1,4 +1,6 @@
 from LDMX.Framework import ldmxcfg
+
+
 p = ldmxcfg.Process('test')
 
 p.maxTriesPerEvent = 10000
@@ -6,10 +8,12 @@ p.maxTriesPerEvent = 10000
 from LDMX.Biasing import ecal
 from LDMX.SimCore import generators as gen
 from LDMX.SimCore import simulator as sim
+
+
 det = 'ldmx-det-v15-8gev'
 mySim = sim.simulator('sim')
 mySim.setDetector(det, include_scoring_planes_minimal = True)
-genie = gen.genie(name=f'genie_G18_02a_02_11b',
+genie = gen.genie(name='genie_G18_02a_02_11b',
                         energy = 8.0,
                         targets = [ 1000741820, 1000741830, 1000741840, 1000741860 ],
                         target_thickness = 0.3504,
@@ -19,12 +23,14 @@ genie = gen.genie(name=f'genie_G18_02a_02_11b',
                         beam_size = [ 20., 80. ],
                         direction = [0.,0.,1.],
                         tune='G18_02a_02_11b',
-                        spline_file=f'gxspl_emode_GENIE_v3_04_00.xml',
-                        message_threshold_file=f'Messenger_ErrorOnly.xml')
+                        spline_file='gxspl_emode_GENIE_v3_04_00.xml',
+                        message_threshold_file='Messenger_ErrorOnly.xml')
 
 mySim.generators = [ genie ]
 
 from LDMX.SimCore import genie_reweight
+
+
 genie_rw = genie_reweight.GenieReweightProducer(name='genie_reweight')
 genie_rw.hepmc3CollName = "SimHepMC3Events"
 genie_rw.hepmc3PassName = ""
@@ -42,26 +48,29 @@ p.sequence = [ mySim ]
 import os
 import sys
 
+
 p.maxEvents = int(int(os.environ['LDMX_NUM_EVENTS']) * 0.7)
 p.run = int(os.environ['LDMX_RUN_NUMBER'])
 
-p.histogramFile = f'hist.root'
-p.outputFiles = [f'events.root']
+p.histogramFile = 'hist.root'
+p.outputFiles = ['events.root']
 
 # Load the full tracking sequance
-from LDMX.Tracking import full_tracking_sequence
+import LDMX.Ecal.digi as ecal_digi
+import LDMX.Ecal.ecal_hardcoded_conditions
+import LDMX.Ecal.ecalClusters as ecal_cluster
 
 # Load the ECAL modules
 import LDMX.Ecal.EcalGeometry
-import LDMX.Ecal.ecal_hardcoded_conditions
-import LDMX.Ecal.digi as ecal_digi
 import LDMX.Ecal.vetos as ecal_vetos
-import LDMX.Ecal.ecalClusters as ecal_cluster
+import LDMX.Hcal.digi as hcal_digi_and_reco
+import LDMX.Hcal.hcal_hardcoded_conditions
 
 # Load the HCAL modules
 import LDMX.Hcal.HcalGeometry
-import LDMX.Hcal.hcal_hardcoded_conditions
-import LDMX.Hcal.digi as hcal_digi_and_reco
+from LDMX.Tracking import full_tracking_sequence
+
+
 hcal_digi = hcal_digi_and_reco.HcalDigiProducer()
 hcal_reco = hcal_digi_and_reco.HcalRecProducer()
 
@@ -85,11 +94,12 @@ hcal_reco = hcal_digi_and_reco.HcalRecProducer()
 #         ]
 
 # Load electron counting and trigger
+from LDMX.Ecal import ecal_trig_digi
+from LDMX.Hcal import hcal_trig_digi
 from LDMX.Recon.electronCounter import ElectronCounter
 from LDMX.Recon.simpleTrigger import TriggerProcessor
-from LDMX.Hcal import hcal_trig_digi
-from LDMX.Ecal import ecal_trig_digi
 from LDMX.Trigger import trigger_energy_sums
+
 
 count = ElectronCounter(1,'ElectronCounter')
 count.input_pass_name = ''
@@ -110,14 +120,19 @@ en_trigger = [
 
 #Load PF reconstruction
 from LDMX.Recon import pfReco
+
+
 pf_reco = pfReco.pfTruthProducer()
 
 # Load the dEdx mass estimator
 from LDMX.Recon import trackDeDxMassEstimator
+
+
 recoil_track_mass_estimator = trackDeDxMassEstimator.trackDeDxMassEstimator()
 
 # Load the DQM modules
 from LDMX.DQM import dqm
+
 
 # Load ecal veto and use tracking in it
 ecal_veto = ecal_vetos.EcalVetoProcessor()
@@ -126,6 +141,8 @@ ecal_veto_pnet =  ecal_vetos.EcalPnetVetoProcessor()
 
 # Load hcal veto
 import LDMX.Hcal.hcal as hcal
+
+
 hcal_veto = hcal.HcalVetoProcessor()
 
 p.logger.termLevel = 10
@@ -151,7 +168,7 @@ recoil_tracker_dqm = [
 p.sequence.extend([
         *recoil_tracking,
         ecal_digi.EcalDigiProducer(),
-        ecal_digi.EcalRecProducer(), 
+        ecal_digi.EcalRecProducer(),
         ecal_cluster.EcalClusterProducer(),
         ecal_veto,
         ecal_mip,
@@ -166,7 +183,7 @@ p.sequence.extend([
         ])
 
 # Remove TS DQM
-almost_all_dqm = [dqm.sample_validation_dqm + recoil_tracker_dqm + dqm.ecal_dqm + dqm.hcal_dqm + dqm.trigger_dqm + dqm.dEdx_dqm] 
+almost_all_dqm = [dqm.sample_validation_dqm + recoil_tracker_dqm + dqm.ecal_dqm + dqm.hcal_dqm + dqm.trigger_dqm + dqm.dEdx_dqm]
 
 p.sequence.extend(*almost_all_dqm)
 

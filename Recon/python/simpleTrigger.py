@@ -33,14 +33,15 @@ Examples
 
 from LDMX.Framework import ldmxcfg
 
+
 class TriggerProcessor(ldmxcfg.Producer) :
     """Configuration for the (multi-electron aware but simple) trigger on the ECal reco hits"""
 
     def __init__(self, name, beamEnergy) :
         super().__init__(name,'recon::TriggerProcessor','Recon')
-          
+
         self.beamEnergy = beamEnergy
-        if (self.beamEnergy == 4000.): 
+        if (self.beamEnergy == 4000.):
             self.thresholds = [ 1500., 5000., 8200., 11800. ]
         else:
             self.thresholds = [ 3000., 10790., 18540., 26250. ]

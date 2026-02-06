@@ -9,6 +9,7 @@ with helpful member functions.
 
 from LDMX.Framework.ldmxcfg import Producer
 
+
 class EcalTrigPrimDigiProducer(Producer) :
     """Configuration for EcalTrigPrimDigiProducer
 

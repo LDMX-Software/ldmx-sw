@@ -61,7 +61,7 @@ electrons.direction = [sin(theta)*cos(phi), sin(theta)*sin(phi), cos(theta)]
 #  so that we can easily know what the "true" value of something is, so
 #  we want to keep z between ~200 and 240
 z = 220. # mm - in front of ECal but skipping tracker/target material
-# if we wanted the angles to be angles _from the target_, we need to 
+# if we wanted the angles to be angles _from the target_, we need to
 #  shift the electron transverse (x and y) position as well so that
 #  the electron avoids material /and/ looks like it came from the target
 # or we could just have it be angles without moving the particle
@@ -70,7 +70,7 @@ z = 220. # mm - in front of ECal but skipping tracker/target material
 electrons.position = [z*tan(theta)*cos(phi), z*tan(theta)*sin(phi), z] if arg.angle_at_target else [0., 0., z]
 
 validator = simulator.simulator('plain')
-validator.setDetector(f'ldmx-det-v14', False)
+validator.setDetector('ldmx-det-v14', False)
 validator.description = 'Electrons straight into ECal for ECal geometry testing'
 validator.generators = [electrons]
 

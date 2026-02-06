@@ -1,6 +1,7 @@
 """ConditionsProvider for HcalGeometry"""
 from LDMX.Framework import ldmxcfg
 
+
 class HcalGeometryProvider(ldmxcfg.ConditionsObjectProvider):
     """Provider that provides access to Hcal geometry (HcalGeometry)
 
@@ -82,7 +83,7 @@ class HcalTriggerGeometryProvider(ldmxcfg.ConditionsObjectProvider):
             super().__init__("HcalTriggerGeometry","hcal::HcalTriggerGeometryProvider","Hcal")
             from LDMX.DetDescr import HcalGeometry
             self.HcalGeometry = HcalGeometry.HcalGeometry()
-            HcalTriggerGeometryProvider.__instance = self 
+            HcalTriggerGeometryProvider.__instance = self
 
 # make sure global instance is created, this registers the condition
 HcalTriggerGeometryProvider.getInstance()

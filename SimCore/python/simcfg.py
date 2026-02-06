@@ -5,7 +5,7 @@ the other processors, so we have two extra objects that require
 their own python classes.
 """
 
-class UserAction: 
+class UserAction:
     """Object that stores parameters for a UserAction
 
     Parameters
@@ -20,7 +20,7 @@ class UserAction:
         self.class_name    = class_name
         self.instance_name = instance_name
 
-    def __str__(self): 
+    def __str__(self):
         """Stringify this UserAction
 
         Returns
@@ -31,7 +31,7 @@ class UserAction:
 
         string = "UserAction (" + self.__repr__() + ")\n"
         string += " Parameters: \n"
-        for k, v in self.__dict__.items(): 
+        for k, v in self.__dict__.items():
             string += "  %s : %s \n" % (k, v)
 
         return string
@@ -47,7 +47,7 @@ class UserAction:
 
         return '%s of class %s' % (self.instance_name, self.class_name)
 
-class PrimaryGenerator: 
+class PrimaryGenerator:
     """Object that stores parameters for a PrimaryGenerator
 
     Parameters
@@ -67,7 +67,7 @@ class PrimaryGenerator:
         from LDMX.Framework import ldmxcfg
         ldmxcfg.Process.addModule(module_name)
 
-    def __str__(self): 
+    def __str__(self):
         """Stringify this PrimaryGenerator
 
         Returns
@@ -77,9 +77,9 @@ class PrimaryGenerator:
         """
 
 
-        string = "PrimaryGenerator (" + self.__repr__() + ")\n" 
+        string = "PrimaryGenerator (" + self.__repr__() + ")\n"
         string += " Parameters: \n"
-        for k, v in self.__dict__.items(): 
+        for k, v in self.__dict__.items():
             string += "  %s : %s \n" % (k, v)
 
         return string
@@ -115,7 +115,7 @@ class SensitiveDetector:
         from LDMX.Framework import ldmxcfg
         ldmxcfg.Process.addModule(module_name)
 
-    def __str__(self): 
+    def __str__(self):
         """Stringify this SensitiveDetector
 
         Returns
@@ -125,9 +125,9 @@ class SensitiveDetector:
         """
 
 
-        string = "SensitiveDetector (" + self.__repr__() + ")\n" 
+        string = "SensitiveDetector (" + self.__repr__() + ")\n"
         string += " Parameters: \n"
-        for k, v in self.__dict__.items(): 
+        for k, v in self.__dict__.items():
             string += "  %s : %s \n" % (k, v)
 
         return string
@@ -143,7 +143,7 @@ class SensitiveDetector:
 
         return '%s of class %s' % (self.instance_name, self.class_name)
 
-class PhotoNuclearModel():
+class PhotoNuclearModel:
     """Configuration for a photonuclear model that we want to load
 
     Parameters

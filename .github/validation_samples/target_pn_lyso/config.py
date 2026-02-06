@@ -1,10 +1,14 @@
 from LDMX.Framework import ldmxcfg
+
+
 p = ldmxcfg.Process('test')
 
 p.maxTriesPerEvent = 10000
 
 from LDMX.Biasing import target
 from LDMX.SimCore import generators as gen
+
+
 det = 'ldmx-lyso-r4-v15-8gev'
 mySim = target.photo_nuclear(det, gen.single_8gev_e_upstream_tagger())
 mySim.beamSpotSmear = [20.,80.,0.]
@@ -18,35 +22,42 @@ p.sequence = [ mySim ]
 import os
 import sys
 
+
 # this sample takes about 5 times more than the other CI wfs
 # so we divide with 5 to get the same ballpark in time
 p.maxEvents = int(os.environ['LDMX_NUM_EVENTS']) // 5
 p.run = int(os.environ['LDMX_RUN_NUMBER'])
 
-p.histogramFile = f'hist.root'
-p.outputFiles = [f'events.root']
+p.histogramFile = 'hist.root'
+p.outputFiles = ['events.root']
 
 # Load the full tracking sequance
-from LDMX.Tracking import full_tracking_sequence
+import LDMX.Ecal.digi as ecal_digi
+import LDMX.Ecal.ecal_hardcoded_conditions
+import LDMX.Ecal.ecalClusters as ecal_cluster
 
 # Load the ECAL modules
 import LDMX.Ecal.EcalGeometry
-import LDMX.Ecal.ecal_hardcoded_conditions
-import LDMX.Ecal.digi as ecal_digi
 import LDMX.Ecal.vetos as ecal_vetos
-import LDMX.Ecal.ecalClusters as ecal_cluster
+import LDMX.Hcal.digi as hcal_digi_and_reco
+import LDMX.Hcal.hcal_hardcoded_conditions
 
 # Load the HCAL modules
 import LDMX.Hcal.HcalGeometry
-import LDMX.Hcal.hcal_hardcoded_conditions
-import LDMX.Hcal.digi as hcal_digi_and_reco
+from LDMX.Tracking import full_tracking_sequence
+
+
 hcal_digi = hcal_digi_and_reco.HcalDigiProducer()
 hcal_reco = hcal_digi_and_reco.HcalRecProducer()
 
 # Load the TS modules
-from LDMX.TrigScint.trigScint import TrigScintDigiProducer
-from LDMX.TrigScint.trigScint import TrigScintClusterProducer
-from LDMX.TrigScint.trigScint import trigScintTrack
+from LDMX.TrigScint.trigScint import (
+        TrigScintClusterProducer,
+        TrigScintDigiProducer,
+        trigScintTrack,
+)
+
+
 ts_digis = [
         TrigScintDigiProducer.pad1(),
         TrigScintDigiProducer.pad2(),
@@ -65,6 +76,8 @@ target_clusters = TrigScintClusterProducer.target()
 # Load electron counting and trigger
 from LDMX.Recon.electronCounter import ElectronCounter
 from LDMX.Recon.simpleTrigger import TriggerProcessor
+
+
 trigger = TriggerProcessor('trigger', 8000.)
 
 count = ElectronCounter(1,'ElectronCounter')
@@ -72,6 +85,8 @@ count.input_pass_name = ''
 
 # Load the DQM modules
 from LDMX.DQM import dqm
+
+
 target_dqm = [
     dqm.TrigScintSimDQM('TargetSimHits','TargetSimHits','target'),
     dqm.TrigScintDigiDQM('TargetDigis','TargetDigis','target'),
@@ -87,10 +102,14 @@ ecal_veto_pnet =  ecal_vetos.EcalPnetVetoProcessor()
 
 # Load hcal veto
 import LDMX.Hcal.hcal as hcal
+
+
 hcal_veto = hcal.HcalVetoProcessor()
 
 # Load preselection skimmer
 from LDMX.Recon.ecalPreselectionSkimmer import EcalPreselectionSkimmer
+
+
 ecal_pres_skimmer = EcalPreselectionSkimmer()
 
 p.logger.termLevel = 1
@@ -103,7 +122,7 @@ p.sequence.extend(full_tracking_sequence.dqm_sequence)
 
 p.sequence.extend([
         ecal_digi.EcalDigiProducer(),
-        ecal_digi.EcalRecProducer(), 
+        ecal_digi.EcalRecProducer(),
         ecal_pres_skimmer,
         ecal_cluster.EcalClusterProducer(),
         ecal_veto,
@@ -117,7 +136,7 @@ p.sequence.extend([
         trigScintTrack,
         target_digis,
         target_clusters,
-        count, 
+        count,
         trigger,
         *target_dqm,
         dqm.PhotoNuclearDQM(),

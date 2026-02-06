@@ -6,6 +6,7 @@ with several helpful member functions.
 
 from LDMX.Framework.ldmxcfg import Producer
 
+
 class _EventToReSim:
     """A class to hold the information identifying a specific event we wish to re-simulate
 
@@ -133,6 +134,7 @@ class simulator(Producer):
         """
 
         from LDMX.Detectors import makePath as mP
+
         from . import sensitive_detectors as sds
         self.detector = mP.makeDetectorPath( det_name )
         if 'v12' in det_name :

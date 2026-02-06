@@ -1,6 +1,7 @@
 
 from LDMX.Framework import ldmxcfg
 
+
 # Create a process
 p = ldmxcfg.Process( 'test_ecal_digis' )
 
@@ -8,8 +9,8 @@ p = ldmxcfg.Process( 'test_ecal_digis' )
 p.maxEvents = 2000
 
 # Import the Ecal conditions and geometry
-from LDMX.Ecal import ecal_hardcoded_conditions
-from LDMX.Ecal import digi, ecal_trig_digi
+from LDMX.Ecal import digi, ecal_hardcoded_conditions, ecal_trig_digi
+
 
 # Set the output file name
 p.outputFiles = ['ecal_digi_pipeline_test.root']
@@ -19,6 +20,8 @@ p.histogramFile = 'ecal_digi_pipeline_test_histo.root'
 
 # Geometry provider
 from LDMX.Ecal import EcalGeometry
+
+
 geom = EcalGeometry.EcalGeometryProvider.getInstance()
 
 # ECal digi

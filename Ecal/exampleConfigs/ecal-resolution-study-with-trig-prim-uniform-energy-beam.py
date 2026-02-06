@@ -71,7 +71,7 @@ electrons = generators.gps(
 )
 
 validator = simulator.simulator('plain')
-validator.setDetector(f'ldmx-det-v14', False)
+validator.setDetector('ldmx-det-v14', False)
 validator.description = 'Electrons straight into ECal for ECal geometry testing'
 validator.generators = [electrons]
 

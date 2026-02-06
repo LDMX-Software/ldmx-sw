@@ -4,7 +4,9 @@ This file was configured by cmake for the installation of ldmx-sw at
    @CMAKE_INSTALL_PREFIX@
 """
 
-import os, sys
+import os
+import sys
+
 
 def makeBDTPath( BDTname ) :
     """Get the full path to the installed BDT files

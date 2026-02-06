@@ -1,6 +1,7 @@
 
 from LDMX.Framework import ldmxcfg
 
+
 class TestProcessor(ldmxcfg.Producer):
   """Configuration for the producer defined in ConfigurePythonTest.
 
@@ -21,10 +22,10 @@ class TestProcessor(ldmxcfg.Producer):
   test_dict : dict
     Dictionary test parameter.
   """
-  
-  def __init__(self): 
+
+  def __init__(self):
     super().__init__('test_instance', 'framework::test::TestConfig', 'Framework')
-    
+
     self.test_int = 9
     self.test_double = 7.7
     self.test_string = 'Yay!'
@@ -33,13 +34,13 @@ class TestProcessor(ldmxcfg.Producer):
     self.test_double_vec = [ 0.1 , 0.2 , 0.3 ]
     self.test_string_vec = [ 'first' , 'second' , 'third' ]
     self.test_2dlist = [ [ 11, 12, 13], [21, 22], [31,32,33,34]]
-    
+
     self.test_collection_passname = ''
     self.test_object_passname = ''
     self.veto_test_object_passname = ''
     self.tenth_event_passname = ''
     self.event_index_passname = ''
-        
+
 
 
 # Create a process

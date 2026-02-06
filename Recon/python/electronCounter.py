@@ -10,6 +10,7 @@ Examples
 
 from LDMX.Framework import ldmxcfg
 
+
 class ElectronCounter(ldmxcfg.Producer) :
     """Configuration for the event beam electron counter"""
 

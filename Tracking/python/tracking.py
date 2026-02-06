@@ -1,6 +1,8 @@
+from math import sqrt
+
 from LDMX.Framework.ldmxcfg import Producer
 from LDMX.Tracking.make_path import makeFieldMapPath
-from math import sqrt
+
 
 class DigitizationProcessor(Producer):
     """ Producer that smears simulated tracker hits.
@@ -41,9 +43,9 @@ class DigitizationProcessor(Producer):
         self.track_id = -1
         self.min_e_dep = 0.05
         self.hit_collection = 'TaggerSimHits'
-        self.out_collection = 'OutputMeasurements' 
+        self.out_collection = 'OutputMeasurements'
         self.tracker_hit_passname = ''
-                
+
 class SeedFinderProcessor(Producer):
     """ Producer to find Seeds for the KF-based track finding.
 
@@ -99,8 +101,8 @@ class SeedFinderProcessor(Producer):
         self.sim_particles_event_passname = ''
         self.u_error = 0.006
         self.v_error = 40. / sqrt(12)
-        
-        
+
+
 
 class CKFProcessor(Producer):
     """ Producer that runs the Combinatorial Kalman Filter for track finding and fitting.
@@ -183,7 +185,7 @@ class CKFProcessor(Producer):
         self.dumpobj = False
         self.debug_acts = False
         self.pionstates = 0
-        self.bfield = -1.5 
+        self.bfield = -1.5
         self.const_b_field = False
         self.field_map = makeFieldMapPath()
         self.propagator_step_size = 1000.
@@ -199,7 +201,7 @@ class CKFProcessor(Producer):
         self.outlier_pval_ = 3.84
         self.sim_particles_event_passname = ''
         self.input_pass_name = ''
-        
+
 class GSFProcessor(Producer):
     """ Producer that runs Gaussian Sum Fitter on a specific track collection
 
@@ -233,7 +235,7 @@ class GSFProcessor(Producer):
     def __init__(self, instance_name='GSFProcessor'):
         super().__init__(instance_name, 'tracking::reco::GSFProcessor',
                          'Tracking')
-        
+
         self.maxComponent    = 12
         self.abortOnError    = False
         self.disableAllMaterialHandling = False
@@ -247,15 +249,15 @@ class GSFProcessor(Producer):
         self.out_trk_collection = "GSFTracks"
         self.trackCollection = "TaggerTracks"
         self.measCollection = "DigiTaggerSimHits"
-        
-        
+
+
         self.track_passname = ""
-        self.meas_passname = "" 
+        self.meas_passname = ""
         self.track_collection_event_passname = ""
         self.meas_collection_event_passname = ""
-        
 
-        
+
+
 
 class TruthSeedProcessor(Producer):
     """ Producer that returns truth seeds to feed the KF based track finding.
@@ -322,12 +324,12 @@ class TruthSeedProcessor(Producer):
         self.skip_tagger = False
         self.skip_recoil = False
         self.max_track_id = 5
-        
+
         self.sp_pass_name = ''
         self.input_pass_name = ''
         self.sim_particles_passname = ''
-        self.particle_hypothesis = 11 
-        
+        self.particle_hypothesis = 11
+
 
 
 class GreedyAmbiguitySolver(Producer):
@@ -354,13 +356,13 @@ class GreedyAmbiguitySolver(Producer):
         super().__init__(instance_name, 'tracking::reco::GreedyAmbiguitySolver',
                          'Tracking')
 
-        self.maximumSharedHits = 2 
+        self.maximumSharedHits = 2
         self.maximumIterations = 1000
         self.nMeasurementsMin = 5
         self.out_trk_collection = "TaggerTracksClean"
         self.trackCollection = "TaggerTracks"
         self.measCollection = "DigiTaggerSimHits"
-        
+
         self.input_pass_name = ""
 
 class TrackerVetoProcessor(Producer):
@@ -423,7 +425,7 @@ class TrackerVetoProcessor(Producer):
         self.input_recoil_pass_name = ""
         self.inverse_skim = False
         self.output_collection = "TrackerVeto"
-        
+
         self.sim_particles_passname = ""
         self.input_collection_events_passname = ""
-        
+

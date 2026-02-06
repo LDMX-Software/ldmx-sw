@@ -1,10 +1,14 @@
 from LDMX.Framework import ldmxcfg
+
+
 p = ldmxcfg.Process('test')
 
 p.maxTriesPerEvent = 10000
 
 det = 'ldmx-lyso-r1-v14-8gev'
 from LDMX.Biasing import target
+
+
 mySim = target.dark_brem(
     #A' mass in MeV - set in init.sh to same value in GeV
     10.0,
@@ -23,24 +27,28 @@ p.sequence = [ mySim ]
 import os
 import sys
 
+
 p.maxEvents = 100
 p.run = 1
 
-p.histogramFile = f'hist.root'
-p.outputFiles = [f'events.root']
+p.histogramFile = 'hist.root'
+p.outputFiles = ['events.root']
 p.termLogLevel = 0
 
-import LDMX.Ecal.EcalGeometry
-import LDMX.Ecal.ecal_hardcoded_conditions
-import LDMX.Hcal.HcalGeometry
-import LDMX.Hcal.hcal_hardcoded_conditions
 import LDMX.Ecal.digi as ecal_digi
+import LDMX.Ecal.ecal_hardcoded_conditions
+import LDMX.Ecal.EcalGeometry
 import LDMX.Ecal.vetos as ecal_vetos
 import LDMX.Hcal.digi as hcal_digi
+import LDMX.Hcal.hcal_hardcoded_conditions
+import LDMX.Hcal.HcalGeometry
+from LDMX.TrigScint.trigScint import (
+    TrigScintClusterProducer,
+    TrigScintDigiProducer,
+    trigScintTrack,
+)
 
-from LDMX.TrigScint.trigScint import TrigScintDigiProducer
-from LDMX.TrigScint.trigScint import TrigScintClusterProducer
-from LDMX.TrigScint.trigScint import trigScintTrack
+
 ts_digis = [
         TrigScintDigiProducer.pad1(),
         TrigScintDigiProducer.pad2(),
@@ -52,14 +60,16 @@ for d in ts_digis :
 from LDMX.Recon.electronCounter import ElectronCounter
 from LDMX.Recon.simpleTrigger import TriggerProcessor
 
+
 count = ElectronCounter(1,'ElectronCounter')
 count.input_pass_name = ''
 
 from LDMX.DQM import dqm
 
+
 p.sequence.extend([
         ecal_digi.EcalDigiProducer(),
-        ecal_digi.EcalRecProducer(), 
+        ecal_digi.EcalRecProducer(),
         ecal_vetos.EcalVetoProcessor(),
         hcal_digi.HcalDigiProducer(),
         hcal_digi.HcalRecProducer(),
@@ -67,7 +77,7 @@ p.sequence.extend([
         TrigScintClusterProducer.pad1(),
         TrigScintClusterProducer.pad2(),
         TrigScintClusterProducer.pad3(),
-        trigScintTrack, 
+        trigScintTrack,
         count, TriggerProcessor('trigger', 8000.),
         dqm.DarkBremInteraction()
         ] + dqm.all_dqm)

@@ -6,12 +6,10 @@
         from LDMX.Biasing import target
 """
 
-from LDMX.SimCore import generators
-from LDMX.SimCore import simulator
-from LDMX.SimCore import bias_operators
-from LDMX.Biasing import filters
-from LDMX.Biasing import util
+from LDMX.Biasing import filters, util
 from LDMX.Biasing import include as includeBiasing
+from LDMX.SimCore import bias_operators, generators, simulator
+
 
 def electro_nuclear( detector, generator ) :
     """Example configuration for producing electro-nuclear reactions in the target.
@@ -108,10 +106,10 @@ def photo_nuclear( detector, generator ) :
     brem_min_e = 0.625 * generator.energy * 1000.
     if generator.energy == 8.0:
           xsec_bias = 550.
-          
+
     else:
           xsec_bias = 450.
-    
+
     sim.description = "Target photo-nuclear, xsec bias " + str(xsec_bias) + " xsec threshold " + str(xsec_bias_threshold) + " GeV"
     sim.beamSpotSmear = [20., 80., 0.]
 
@@ -174,7 +172,7 @@ def gamma_mumu( detector, generator ) :
     brem_min_e = 0.625 * generator.energy * 1000.
     if generator.energy == 8.0:
           xsec_bias = 1.E5
-          
+
     else:
           xsec_bias = 3.E4
 
@@ -199,7 +197,7 @@ def gamma_mumu( detector, generator ) :
     return sim
 
 def dark_brem( ap_mass , lhe, detector, generator,
-             scale_APrime = False, decay_mode = 'no_decay', 
+             scale_APrime = False, decay_mode = 'no_decay',
              ap_tau = -1.0, dist_decay_min = 0.0,
              dist_decay_max = 1.0) :
     """Example configuration for producing dark brem interactions in the target.

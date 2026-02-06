@@ -24,16 +24,16 @@ if killChan8 :
 
 
 gunZpos=800 #3000  #mm -- define as positive here, for file naming; set sign below
-detV=2.0        #detector geometry version number 
-beamXsmear=7.5 #mm    7.5mm for reasonable efficiency, larger than TS module to get more empty (no MIP)  events. set to 150mm for large noise 
-beamYsmear=20  #mm    20 mm      -- " --, set to 200 for large noise 
-noisePerEvent=0.08  #average number of PEs from SiPM noise per event (gets scaled by nTimeSamples to be constant) -- 0.1 per event is taken from run183 
+detV=2.0        #detector geometry version number
+beamXsmear=7.5 #mm    7.5mm for reasonable efficiency, larger than TS module to get more empty (no MIP)  events. set to 150mm for large noise
+beamYsmear=20  #mm    20 mm      -- " --, set to 200 for large noise
+noisePerEvent=0.08  #average number of PEs from SiPM noise per event (gets scaled by nTimeSamples to be constant) -- 0.1 per event is taken from run183
 startSample=15
 
 if len(sys.argv) > 1 :
     nTimeSamples=int(sys.argv[1])
 else :
-    nTimeSamples=30 #config default is 5 
+    nTimeSamples=30 #config default is 5
 if len(sys.argv) > 2 :
     elecNoise=float(sys.argv[2])
 else :
@@ -42,7 +42,7 @@ if len(sys.argv) > 3 :
     kExpo=float(sys.argv[3])
 else :
     kExpo=0.1   #config default is 0.1
-    
+
 p.run = 1
 p.maxEvents = nEvents
 p.outputFiles = ['testbeamSim_'+str(nElectrons)+'e_zNeg'+str(gunZpos)+'mm_beamSpot'+str(beamXsmear)+'x'+str(beamYsmear)+'mm_'+str(nTimeSamples)+'tSamp_eNoise'+str(elecNoise)+'_tauInv'+str(kExpo)+'_detV'+str(detV)+'_'+killString+str(p.maxEvents)+'ev.root']
@@ -108,7 +108,7 @@ tsEv=EventReadoutProducer("eventLinearizer")
 tsEv.input_pass_name=thisPassName
 tsEv.input_collection=tsDigis.output_collection #"trigScintQIEDigisPad1"
 tsEv.time_shift=0 #timeOffset
-tsEv.verbose = True 
+tsEv.verbose = True
 
 #------ set up hit reconstruction -------
 
@@ -121,9 +121,9 @@ tbHits.inputPassName=thisPassName
 #else :
 tbHits.inputCollection="QIEsamplesPad1"
 tbHits.pedestals=pedList
-tbHits.gain=gainList 
+tbHits.gain=gainList
 tbHits.startSample=startSample
-tbHits.pulseWidth=12 #5 
+tbHits.pulseWidth=12 #5
 tbHits.pulseWidthLYSO=12
 tbHits.doCleanHits=True
 tbHits.nInstrumentedChannels=nChannels
@@ -143,7 +143,7 @@ tbClusters.clustering_threshold = 50.  #to add in neighboring
 
 tbClusters3  =TestBeamClusterProducer("tbClusters3")
 tbClusters3.input_pass_name=thisPassName
-tbClusters3.input_collection=tbHits.outputCollection 
+tbClusters3.input_collection=tbHits.outputCollection
 tbClusters3.output_collection=tbClusters.output_collection+"ThreeHits"
 tbClusters3.max_cluster_width=3
 tbClusters3.pad_time=100.
@@ -175,7 +175,7 @@ clAna3hit.inputCollection=tbClusters3.output_collection
 
 outname=p.outputFiles[0].replace(".root", "_plots.root")
 #p.outputFiles = [ outname ]
-p.histogramFile = outname 
+p.histogramFile = outname
 
 p.sequence=[simulation,
             tsDigis,

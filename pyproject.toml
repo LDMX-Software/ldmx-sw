@@ -41,7 +41,7 @@ select = [
 ]
 
 # Disable specific rules that might be too strict
-ignore = []
+ignore = ["F401"]  # Allow unused imports
 
 # Allow autofix for all enabled rules (when `--fix` is provided)
 fixable = ["ALL"]

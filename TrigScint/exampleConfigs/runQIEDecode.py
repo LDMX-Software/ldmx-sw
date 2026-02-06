@@ -2,7 +2,7 @@
 
 from LDMX.Framework import ldmxcfg
 
-p = ldmxcfg.Process('unpack') 
+p = ldmxcfg.Process('unpack')
 import sys
 
 
@@ -21,7 +21,7 @@ logName= p.outputFiles[0].replace(".root", "_toLDMX.log")
 if len(sys.argv) > 5 :
     mapFile=sys.argv[5]
 else :
-    mapFile="channelMap_LYSOback_plasticFront_12-to-16channels_rotated180.txt" # "channelMap_LYSOback_plasticFront_12-to-16channels.txt" # "channelMap_identity_"+str(nChan)+"channels.txt"    
+    mapFile="channelMap_LYSOback_plasticFront_12-to-16channels_rotated180.txt" # "channelMap_LYSOback_plasticFront_12-to-16channels.txt" # "channelMap_identity_"+str(nChan)+"channels.txt"
 if len(sys.argv) > 6 :
     logVerbosity=int(sys.argv[6])
 else :
@@ -31,10 +31,10 @@ if len(sys.argv) > 7 :
     nChan=int(sys.argv[7])
 else :
     nChan=16 #default
-    
+
 from LDMX.TrigScint.qieFormat import QIEDecoder
 dec=QIEDecoder.up(mapFile)
-#dec.input_collection="QIEstreamUp" 
+#dec.input_collection="QIEstreamUp"
 dec.input_pass_name=inputPass
 dec.verbose=True
 dec.number_channels=nChan  #default: 50

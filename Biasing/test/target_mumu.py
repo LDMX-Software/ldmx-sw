@@ -1,9 +1,13 @@
 from LDMX.Framework import ldmxcfg
+
+
 p = ldmxcfg.Process('target_mumu')
-from LDMX.Biasing import target
-from LDMX.SimCore import generators
 import LDMX.Ecal.EcalGeometry
 import LDMX.Hcal.HcalGeometry
+from LDMX.Biasing import target
+from LDMX.SimCore import generators
+
+
 p.sequence = [
     target.gamma_mumu(
         'ldmx-det-v14' ,

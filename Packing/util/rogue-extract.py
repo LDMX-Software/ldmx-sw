@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
-import pyrogue.utilities.fileio
-import sys
-import numpy as np
 import argparse
-from pathlib import Path
 import struct
+import sys
+from pathlib import Path
+
+import numpy as np
+import pyrogue.utilities.fileio
+
 
 def main():
     parser = argparse.ArgumentParser(description="just hexdump the Hcal/Ecal data without attempting to decode")
@@ -40,7 +42,7 @@ def main():
 
     outfile = open(output_file_name, "wb")
 
-       
+
     count = 0
     pastConfig = False
     rightSubsyst = False
@@ -53,7 +55,7 @@ def main():
                 continue
             if not pastConfig:
                 print('got past config packet')
-                pastConfig = True 
+                pastConfig = True
             # a byte from the Rogue header signals the subsystem
             # from slaclab/ldmx-firmware/common/tdaq/python/ldmx_tdaq/_Constants.py
             subsys = data[1]
@@ -92,6 +94,6 @@ def main():
             if args.nevent is not None and count%(args.nevent/10)==0 :
                 print(f'At {count} events out of {args.nevent}')
     outfile.close()
-    
+
 if __name__ == '__main__':
     main()

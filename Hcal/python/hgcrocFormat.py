@@ -2,15 +2,16 @@
 
 from LDMX.Framework.ldmxcfg import Producer
 
+
 class HcalRawDecoder(Producer) :
     """Decode a raw buffer into HCal Digis
 
     Parameters
     """
 
-    def __init__(self, output_name, roc_version = 2, 
+    def __init__(self, output_name, roc_version = 2,
             input_names = None, input_pass = '',
-            input_file = None, connections_table = None, 
+            input_file = None, connections_table = None,
             detector_name = 'ldmx-hcal-prototype-v1.0') :
         super().__init__('hcalrawdecode','hcal::HcalRawDecoder','Hcal')
 

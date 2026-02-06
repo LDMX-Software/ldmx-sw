@@ -8,7 +8,11 @@ HcalHgcrocConditionsHardcode: SimpleCSVDoubleTableProvider
     Provides a table of double conditions for hcal hgcroc emulator
 """
 
-from LDMX.Conditions.SimpleCSVTableProvider import SimpleCSVIntegerTableProvider, SimpleCSVDoubleTableProvider
+from LDMX.Conditions.SimpleCSVTableProvider import (
+                                                 SimpleCSVDoubleTableProvider,
+                                                 SimpleCSVIntegerTableProvider,
+)
+
 
 HcalTrigPrimConditionsHardcode=SimpleCSVIntegerTableProvider("HcalTrigPrimDigiConditions",["ADC_PEDESTAL","ADC_THRESHOLD","TOT_PEDESTAL","TOT_THRESHOLD","TOT_GAIN"])
 HcalTrigPrimConditionsHardcode.validForAllRows([ 1 , # ADC_PEDESTAL -- should match value from HgcrocEmulator
@@ -41,6 +45,8 @@ toa_calib.validForAllRows([0., 0.]) # dummy values
 
 # wrap our tables in the parent object that is used by the processors
 from .conditions import HcalReconConditionsProvider
+
+
 HcalReconConditionsProvider(adc_pedestal, adc_gain, tot_calib, toa_calib)
 
 HcalHgcrocConditionsHardcode=SimpleCSVDoubleTableProvider("HcalHgcrocConditions", [

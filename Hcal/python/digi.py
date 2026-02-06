@@ -14,11 +14,11 @@ mipEnergy: float
 """
 
 from LDMX.Framework.ldmxcfg import Producer
-
 from LDMX.Tools.HgcrocEmulator import HgcrocEmulator
 
-nPEPerMIP = 68. #PEs created per MIP 
-mipEnergy = 4.66 #MeV - measured 1.4 MeV for a 6mm thick tile, so for 20mm bar = 1.4*20/6      
+
+nPEPerMIP = 68. #PEs created per MIP
+mipEnergy = 4.66 #MeV - measured 1.4 MeV for a 6mm thick tile, so for 20mm bar = 1.4*20/6
 
 class HcalHgcrocEmulator(HgcrocEmulator) :
     """
@@ -56,7 +56,7 @@ class HcalHgcrocEmulator(HgcrocEmulator) :
              Number of photo electrons
         """
         return PE*(5/1)
-    
+
 class HcalDigiProducer(Producer) :
     """Configuration for HcalDigiProducer
 
@@ -85,7 +85,7 @@ class HcalDigiProducer(Producer) :
         self.mev = (1./mipEnergy)*self.hgcroc.calculateVoltageHcal( nPEPerMIP )
 
         # attenuation length
-        self.attenuation_length = 5.; # in m   
+        self.attenuation_length = 5. # in m
         # avg parameters
         self.avg_readout_threshold = 4. #ADCs - noise config only
         self.avg_gain = 1.2 #noise config only
@@ -126,19 +126,19 @@ class HcalRecProducer(Producer) :
         Name of recHit collection
     """
 
-    def __init__(self, instance_name = 'hcalRecon') : 
+    def __init__(self, instance_name = 'hcalRecon') :
         super().__init__(instance_name , 'hcal::HcalRecProducer','Hcal')
 
         hgcroc = HcalHgcrocEmulator()
 
         self.voltage_per_mip = (5/1)*(nPEPerMIP) # 5*68 mV/ MIP
         self.mip_energy = mipEnergy #MeV / MIP
-        self.clock_cycle = 25. #ns - needs to match the setting on the chip   
+        self.clock_cycle = 25. #ns - needs to match the setting on the chip
         self.pe_per_mip = nPEPerMIP
-        
+
 	    # attenuation length
-        self.attenuation_length = 5.; # in m  
-        
+        self.attenuation_length = 5. # in m
+
         self.input_coll_name = 'HcalDigis'
         self.input_pass_name = ''
         self.sim_hit_coll_name = 'HcalSimHits'
@@ -155,8 +155,8 @@ class HcalRecProducer(Producer) :
 
         # avg parameters
         self.avg_toa_threshold = 1.6 # mV - correction config only
-        self.avg_gain = 1.2 # correction config only 
-        self.avg_pedestal = 1. #noise config only   
+        self.avg_gain = 1.2 # correction config only
+        self.avg_pedestal = 1. #noise config only
 
 class HcalSingleEndRecProducer(Producer) :
     """ Configuration for the single ended Hcal Rec Producer
@@ -183,7 +183,7 @@ class HcalSingleEndRecProducer(Producer) :
         self.mip_energy = mipEnergy
         self.clock_cycle = 25.
         self.pe_per_mip = nPEPerMIP
-        
+
         self.coll_name = coll_name
         self.pass_name = pass_name
         self.rec_coll_name = rec_coll_name

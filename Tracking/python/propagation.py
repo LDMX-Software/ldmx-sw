@@ -1,7 +1,6 @@
 from LDMX.Framework.ldmxcfg import Producer
 
 
-
 class CustomStatePropagator(Producer):
     """ Producer to generate an user defined set of particles at the target
     and propaget them through the BField map to an user defined plane surface.
@@ -25,7 +24,7 @@ class CustomStatePropagator(Producer):
         Minimum and maximum phi angle uniform pdf
 
     """
-    
+
     def __init__(self, instance_name="CustomStatePropagator"):
         super().__init__(instance_name,"tracking::reco::CustomStatePropagator","Tracking")
         self.nstates       = 1000
@@ -33,4 +32,4 @@ class CustomStatePropagator(Producer):
         self.prange        = [0.05,4.]
         self.thetarange    = [0., 1.57079632679]
         self.phirange      = [0., 6.28]
-        
+
