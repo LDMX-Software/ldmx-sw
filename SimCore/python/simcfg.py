@@ -58,11 +58,19 @@ class PrimaryGenerator:
         Name of C++ class that this PrimaryGenerator should be
     module_name : str, optional
         Name of C++ library that this primary generator is compiled into
+
+    Attributes
+    ----------
+    beam_spot_smear : list of float, optional
+        2 (x,y) or 3 (x,y,z) widths to smear primary vertices from this generator [mm].
+        If set, this generator will handle its own beam spot smearing instead of using
+        the global simulator beam_spot_smear setting.
     """
 
     def __init__(self, instance_name, class_name, module_name = 'SimCore_Generators'):
         self.class_name    = class_name
         self.instance_name = instance_name
+        self.beam_spot_smear = [20., 80., 0.]  # Per-generator beam spot smearing (default values)
 
         from LDMX.Framework import ldmxcfg
         ldmxcfg.Process.addModule(module_name)

@@ -29,15 +29,6 @@ namespace simcore::g4user {
 PrimaryGeneratorAction::PrimaryGeneratorAction(
     const framework::config::Parameters& parameters)
     : G4VUserPrimaryGeneratorAction() {
-  // Check whether a beamspot should be used or not.
-  auto beam_spot{parameters.get<std::vector<double> >("beamSpotSmear", {})};
-  if (!beam_spot.empty()) {
-    use_beamspot_ = true;
-    beamspot_x_size_ = beam_spot[0];
-    beamspot_y_size_ = beam_spot[1];
-    beamspot_z_size_ = beam_spot[2];
-  }
-
   time_shift_primaries_ = parameters.get<bool>("time_shift_primaries");
 
   auto generators{parameters.get<std::vector<framework::config::Parameters> >(
@@ -80,7 +71,7 @@ void PrimaryGeneratorAction::GeneratePrimaries(G4Event* event) {
     generator->GeneratePrimaryVertex(event);
   });
 
-  // smear all primary vertices (if activated)
+  // All beam spot smearing is handled by individual generators
   int n_pv = event->GetNumberOfPrimaryVertex();
   if (n_pv > 0) {
     // loop over all vertices generated
@@ -124,24 +115,6 @@ void PrimaryGeneratorAction::GeneratePrimaries(G4Event* event) {
 
       // include the weight of this primary vertex in the event weight
       event_info->incWeight(primary_vertex->GetWeight());
-
-      // smear beamspot if it is turned on
-      if (use_beamspot_) {
-        double x0_i = primary_vertex->GetX0();
-        double y0_i = primary_vertex->GetY0();
-        double z0_i = primary_vertex->GetZ0();
-        /*
-         * G4UniformRand returns a number in [0,1]
-         *  - we shift this range so that it is [-0.5,0.5]
-         *  - multiply by the width to get [-0.5*size,0.5*size]
-         *  - add the initial point (in case its off center) to get
-         *    [init-0.5*size, init+0.5*size]
-         */
-        double x0_f = beamspot_x_size_ * (G4UniformRand() - 0.5) + x0_i;
-        double y0_f = beamspot_y_size_ * (G4UniformRand() - 0.5) + y0_i;
-        double z0_f = beamspot_z_size_ * (G4UniformRand() - 0.5) + z0_i;
-        primary_vertex->SetPosition(x0_f, y0_f, z0_f);
-      }
 
       // shift so that t=0 coincides with primaries arriving at (or coming from)
       // the target

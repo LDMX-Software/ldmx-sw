@@ -38,6 +38,13 @@ GeneralParticleSource::GeneralParticleSource(
 void GeneralParticleSource::GeneratePrimaryVertex(G4Event* event) {
   // just pass to the Geant4 implementation
   the_g4_source_.GeneratePrimaryVertex(event);
+
+  // Apply beam spot smearing if configured for this generator
+  if (useBeamspot() && event->GetNumberOfPrimaryVertex() > 0) {
+    smearBeamspot(
+        event->GetPrimaryVertex(event->GetNumberOfPrimaryVertex() - 1));
+  }
+
   return;
 }
 

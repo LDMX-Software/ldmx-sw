@@ -25,6 +25,7 @@
 
 // Forward Declarations
 class G4Event;
+class G4PrimaryVertex;
 
 namespace simcore {
 
@@ -70,9 +71,38 @@ class PrimaryGenerator : public G4VPrimaryGenerator {
 
   std::string name() { return name_; }
 
+  /**
+   * Apply beam spot smearing to a primary vertex
+   *
+   * This method should be called by derived classes after generating a vertex
+   * if beam spot smearing is enabled for this generator.
+   *
+   * @param primary_vertex The vertex to smear
+   */
+  void smearBeamspot(G4PrimaryVertex* primary_vertex);
+
+  /**
+   * Check if beam spot smearing is enabled for this generator
+   *
+   * @return true if smearing is enabled
+   */
+  bool useBeamspot() const { return use_beamspot_; }
+
  protected:
   /// Name of the PrimaryGenerator
   std::string name_{""};
+
+  /// Flag denoting whether beam spot smearing is enabled for this generator
+  bool use_beamspot_{false};
+
+  /// Extent of the beamspot in x [mm]
+  double beamspot_x_size_{0};
+
+  /// Extent of the beamspot in y [mm]
+  double beamspot_y_size_{0};
+
+  /// Extent of the beamspot in z [mm]
+  double beamspot_z_size_{0};
 };  // PrimaryGenerator
 
 }  // namespace simcore

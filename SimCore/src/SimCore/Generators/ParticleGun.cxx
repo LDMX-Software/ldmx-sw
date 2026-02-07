@@ -82,6 +82,12 @@ ParticleGun::ParticleGun(const std::string& name,
 void ParticleGun::GeneratePrimaryVertex(G4Event* event) {
   // Call G4 class method to generate primaries.
   the_gun_.GeneratePrimaryVertex(event);
+
+  // Apply beam spot smearing if configured for this generator
+  if (useBeamspot() && event->GetNumberOfPrimaryVertex() > 0) {
+    smearBeamspot(
+        event->GetPrimaryVertex(event->GetNumberOfPrimaryVertex() - 1));
+  }
 }
 
 void ParticleGun::RecordConfig(const std::string& id, ldmx::RunHeader& rh) {

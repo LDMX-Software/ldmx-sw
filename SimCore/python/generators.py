@@ -30,6 +30,9 @@ class gun(simcfg.PrimaryGenerator) :
         Unit vector direction to shoot from
     vertex : list of float, optional
         Vertex position to shoot from [mm]. Defaults to [0.0, 0.0, 0.0]
+    beam_spot_smear : list of float, optional
+        2 (x,y) or 3 (x,y,z) widths to smear vertices from this generator [mm]
+        If set, overrides the global simulator beam_spot_smear for this generator.
 
     Examples
     --------
@@ -38,6 +41,7 @@ class gun(simcfg.PrimaryGenerator) :
         myGun.energy = 4.0
         myGun.direction = [ 0., 0., 1. ]
         myGun.position = [ 0., 0., 0. ]
+        myGun.beam_spot_smear = [20., 80., 0.]
     """
 
     def __init__(self, name ) :
@@ -71,6 +75,9 @@ class multi(simcfg.PrimaryGenerator) :
         Number of particles to shoot (or average of Poisson distribution)
     pdgID : int
         PDG ID of particle(s) to shoot
+    beam_spot_smear : list of float, optional
+        2 (x,y) or 3 (x,y,z) widths to smear vertices from this generator [mm]
+        If set, overrides the global simulator beam_spot_smear for this generator.
     """
 
     def __init__(self,name) :
@@ -95,6 +102,9 @@ class lhe(simcfg.PrimaryGenerator) :
         path to LHE file containing the primary vertices
     vertex : list of float, optional
         Vertex position to shoot from [mm]. Defaults to [0.0, 0.0, 0.0]
+    beam_spot_smear : list of float, optional
+        2 (x,y) or 3 (x,y,z) widths to smear vertices from this generator [mm]
+        If set, overrides the global simulator beam_spot_smear for this generator.
     """
 
     def __init__(self,name,filePath):

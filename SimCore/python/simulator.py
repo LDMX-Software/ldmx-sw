@@ -56,8 +56,6 @@ class simulator(Producer):
         Describe this run in a human-readable way
     scoringPlanes : str, optional
         Full path to the scoring planes gdml (suggested to use setDetector)
-    beamSpotSmear : list of float, optional
-        2 (x,y) or 3 (x,y,z) widths to smear ALL primary vertices by [mm]
     time_shift_primaries : bool
         Should we shift the times of primaries so that z=0mm corresponds to t=0ns? 
     preInitCommands : list of str, optional
@@ -91,7 +89,6 @@ class simulator(Producer):
         #######################################################################
         # Optional Parameters (with helpful defaults)
         self.scoringPlanes = ''
-        self.beamSpotSmear = [ ]
         self.time_shift_primaries = True
         self.preInitCommands = [ ]
         self.postInitCommands = [ ]
