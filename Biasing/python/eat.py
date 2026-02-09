@@ -10,10 +10,9 @@ Example
     from LDMX.Biasing import eat
 """
 
-from LDMX.SimCore import simulator
-from LDMX.SimCore import generators
-from LDMX.Biasing import filters
-from LDMX.Biasing import util
+from LDMX.Biasing import filters, util
+from LDMX.SimCore import generators, simulator
+
 
 def midshower_nuclear( detector , generator, bias_factor , bias_threshold , min_nuclear_energy ) :
     """Example configuration for producing mid-shower nuclear interactions in
@@ -59,7 +58,7 @@ def midshower_nuclear( detector , generator, bias_factor , bias_threshold , min_
 
     """
 
-    #Instantiate the simulator. 
+    #Instantiate the simulator.
     sim = simulator.simulator("eat-midshower-nuclear")
     from LDMX.Ecal import EcalGeometry
 
@@ -70,12 +69,12 @@ def midshower_nuclear( detector , generator, bias_factor , bias_threshold , min_
     #Set run parameters
     sim.description = "Biased Mid-Shower Nuclear Interactions ME Background"
     sim.beamSpotSmear = [20., 80., 0.] #mm
-    
+
     sim.generators = [ generator ]
 
     #Enable and configure the biasing
     from LDMX.SimCore import bias_operators
-    sim.biasing_operators = [ 
+    sim.biasing_operators = [
             bias_operators.PhotoNuclear('ecal',bias_factor,bias_threshold),
             bias_operators.ElectroNuclear('ecal',bias_factor,bias_threshold)
             ]
@@ -136,7 +135,7 @@ def midshower_dimuon( detector , generator, bias_factor , bias_threshold , min_d
 
     """
 
-    #Instantiate the simulator. 
+    #Instantiate the simulator.
     sim = simulator.simulator("eat-midshower-dimuon")
     from LDMX.Ecal import EcalGeometry
 
@@ -147,8 +146,7 @@ def midshower_dimuon( detector , generator, bias_factor , bias_threshold , min_d
     #Set run parameters
     sim.description = "Biased Mid-Shower DiMuon Interactions ME Background"
     sim.beamSpotSmear = [20., 80., 0.] #mm
-    
-    from LDMX.SimCore import generators
+
     sim.generators = [ generator ]
 
     #Enable and configure the biasing
@@ -165,7 +163,7 @@ def midshower_dimuon( detector , generator, bias_factor , bias_threshold , min_d
     return sim
 
 
-def dark_brem(ap_mass, db_event_lib, detector, generator, 
+def dark_brem(ap_mass, db_event_lib, detector, generator,
               scale_APrime = False, decay_mode = 'no_decay',
               ap_tau = -1.0, dist_decay_min = 0.0,
               dist_decay_max = 1.0) :
@@ -215,10 +213,10 @@ def dark_brem(ap_mass, db_event_lib, detector, generator,
         )
 
     """
-    
+
     sim = simulator.simulator( "ecal_dark_brem_%sMeV" % str(ap_mass) )
     from LDMX.Ecal import EcalGeometry
-    
+
     sim.description = "One e- fired far upstream with Dark Brem turned on and biased up in ECal"
     sim.setDetector( detector , include_scoring_planes_minimal = True )
     sim.generators = [ generator ]
@@ -237,14 +235,15 @@ def dark_brem(ap_mass, db_event_lib, detector, generator,
     sim.dark_brem.activate( ap_mass , db_model )
 
     #Biasing dark brem up inside of the ecal volumes
-    from LDMX.SimCore import bias_operators
     from math import log10
-    sim.biasing_operators = [ 
+
+    from LDMX.SimCore import bias_operators
+    sim.biasing_operators = [
             bias_operators.DarkBrem.ecal(
                 sim.dark_brem.ap_mass**max(2, log10(sim.dark_brem.ap_mass)) / db_model.epsilon**2
               )
             ]
-    
+
     beam_energy = generator.energy*1000
     sim.actions = [
             util.DecayChildrenKeeper([622]), # keep children of A' decay
@@ -252,5 +251,5 @@ def dark_brem(ap_mass, db_event_lib, detector, generator,
             filters.PrimaryToEcalFilter(0.875*beam_energy),
             filters.EcalDarkBremFilter(0.5*beam_energy)
     ]
-    
+
     return sim

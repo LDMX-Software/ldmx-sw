@@ -1,6 +1,6 @@
 """Configuration module for dark brem simulation"""
 
-class DarkBremModel() :
+class DarkBremModel :
     """Storage for parameters of a dark brem model
 
     All other models should inherit from this class
@@ -73,7 +73,7 @@ class DarkBrem:
         The model that should be use for dark bremming
     """
 
-    def __init__(self) : 
+    def __init__(self) :
         self.ap_mass            = 0.
         self.only_one_per_event = False
         self.enable             = False #off by default
@@ -94,11 +94,11 @@ class DarkBrem:
         if model is not None :
             if not isinstance(model,DarkBremModel) :
                 raise Exception('Dark brem process needs to be configured with an associated DarkBremModel.')
-    
+
             self.enable = True
             self.model  = model
 
-    def __str__(self): 
+    def __str__(self):
         """Stringify the DarkBrem configuration
 
         Returns

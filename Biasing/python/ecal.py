@@ -6,12 +6,10 @@
         from LDMX.Biasing import ecal
 """
 
-from LDMX.SimCore import simulator
-from LDMX.SimCore import generators
-from LDMX.SimCore import bias_operators
-from LDMX.Biasing import filters
-from LDMX.Biasing import util
+from LDMX.Biasing import filters, util
 from LDMX.Biasing import include as includeBiasing
+from LDMX.SimCore import bias_operators, generators, simulator
+
 
 def photo_nuclear( detector, generator ) :
     """Example configuration for producing photo-nuclear reactions in the ECal.  
@@ -43,9 +41,9 @@ def photo_nuclear( detector, generator ) :
     """
 
 
-    # Instantiate the simulator. 
+    # Instantiate the simulator.
     sim = simulator.simulator("photo-nuclear")
-    
+
     # Set the path to the detector to use.
     #   the second parameter says we want to include scoring planes
     sim.setDetector( detector , include_scoring_planes_minimal = True )
@@ -62,9 +60,9 @@ def photo_nuclear( detector, generator ) :
 
     sim.description = "ECal photo-nuclear, xsec bias " + str(xsec_bias) + " xsec threshold " + str(xsec_bias_threshold) + " GeV"
     sim.beamSpotSmear = [20., 80., 0.] #mm
-    
+
     sim.generators.append( generator )
-    
+
     # Enable and configure the biasing
     sim.biasing_operators = [ bias_operators.PhotoNuclear('ecal',xsec_bias,xsec_bias_threshold,only_children_of_primary = True) ]
 
@@ -77,7 +75,7 @@ def photo_nuclear( detector, generator ) :
             # Only consider events where a hard brem occurs
             filters.TargetBremFilter(recoil_max_p = recoil_max_p, brem_min_e = brem_min_e),
             # Only consider events where a PN reaction happnes in the ECal
-            filters.EcalProcessFilter(),     
+            filters.EcalProcessFilter(),
             # Tag all photo-nuclear tracks to persist them to the event.
             util.TrackProcessFilter.photo_nuclear()
     ])
@@ -86,26 +84,26 @@ def photo_nuclear( detector, generator ) :
 
 def nonfiducial_photo_nuclear( detector, generator ) :
 
-    # Instantiate the simulator. 
+    # Instantiate the simulator.
     sim = simulator.simulator("photo-nuclear")
-    
+
     # Set the path to the detector to use.
     #   the second parameter says we want to include scoring planes
     sim.setDetector( detector , include_scoring_planes_minimal = True )
-    
+
     # Set run parameters
     xsec_bias_threshold = 0.625 * generator.energy * 1000.
     tagger_threshold = 0.95 * generator.energy * 1000.
     recoil_max_p = 0.375 * generator.energy * 1000.
     brem_min_e = 0.625 * generator.energy * 1000.
     if generator.energy == 8.0:
-          xsec_bias = 550.    
+          xsec_bias = 550.
     else:
           xsec_bias = 450.
 
-    sim.description = "Non-fiducial ECal photo-nuclear, xsec bias " + str(xsec_bias) + " xsec threshold " + str(xsec_bias_threshold) + " GeV" 
+    sim.description = "Non-fiducial ECal photo-nuclear, xsec bias " + str(xsec_bias) + " xsec threshold " + str(xsec_bias_threshold) + " GeV"
     sim.generators.append( generator )
-    
+
     # Enable and configure the biasing
     sim.biasing_operators = [ bias_operators.PhotoNuclear('ecal',xsec_bias,xsec_bias_threshold,only_children_of_primary = True) ]
 
@@ -120,7 +118,7 @@ def nonfiducial_photo_nuclear( detector, generator ) :
             # Only considers events that are Non-Fiducial (Doesn't enter an ECal volume)
             filters.NonFiducialFilter(recoil_max_momentum = recoil_max_p),
             # Only consider events where a PN reaction happens in the ECal
-            filters.EcalProcessFilter(),     
+            filters.EcalProcessFilter(),
             # Tag all photo-nuclear tracks to persist them to the event.
             util.TrackProcessFilter.photo_nuclear()
     ])
@@ -165,7 +163,7 @@ def gamma_mumu(detector, generator) :
     brem_min_e = 0.625 * generator.energy * 1000.
     if generator.energy == 8.0:
           xsec_bias = 1.E5
-          
+
     else:
           xsec_bias = 3.E4
 
@@ -190,13 +188,13 @@ def gamma_mumu(detector, generator) :
 
 def deep_photo_nuclear( detector, generator, bias_threshold, processes, ecal_min_Z, require_photon_fromTarget = False) :
 
-    # Instantiate the simulator. 
+    # Instantiate the simulator.
     sim = simulator.simulator("photo-nuclear")
-    
+
     # Set the path to the detector to use.
     #   the second parameter says we want to include scoring planes
     sim.setDetector( detector , include_scoring_planes_minimal = True )
-    
+
     # Set run parameters
     # Set run parameters
     xsec_bias_threshold = 0.625 * generator.energy * 1000.
@@ -205,11 +203,11 @@ def deep_photo_nuclear( detector, generator, bias_threshold, processes, ecal_min
     else:
           xsec_bias = 450.
 
-    sim.description = "deep ECal photo-nuclear, xsec bias " + str(xsec_bias) + " xsec threshold " + str(xsec_bias_threshold) + " GeV" 
+    sim.description = "deep ECal photo-nuclear, xsec bias " + str(xsec_bias) + " xsec threshold " + str(xsec_bias_threshold) + " GeV"
     sim.beamSpotSmear = [20., 80., 0.] #mm
-    
+
     sim.generators.append( generator )
-    
+
     # Enable and configure the biasing
     sim.biasing_operators = [ bias_operators.PhotoNuclear('ecal',xsec_bias, xsec_bias_threshold, only_children_of_primary = True, down_bias_conv = False) ]
 

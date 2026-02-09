@@ -2,6 +2,7 @@
 
 from LDMX.Framework import ldmxcfg
 
+
 class HCalGeometryVerifier(ldmxcfg.Analyzer) :
     """Configured HCalGeometryVerifier python object
 
@@ -276,15 +277,15 @@ class EcalDigiVerify(ldmxcfg.Analyzer) :
 
         self.ecal_rec_hit_coll = "EcalRecHits"
         self.ecal_rec_hit_pass = ""
-        
+
         self.ecal_presel_coll = "EcalPreselectionDecision"
         self.ecal_presel_pass = ""
-        
+
         self.num_layers = 32
 
         self.build1DHistogram( "rec_sim_hit_residual_x" ,
                 "RecHit X - SimHit X [mm]" , 30 , -15.0 , 15.0 )
-        
+
         self.build1DHistogram( "rec_sim_hit_residual_y" ,
                 "RecHit Y - SimHit Y [mm]" , 30 , -15.0 , 15.0 )
 
@@ -294,7 +295,7 @@ class EcalDigiVerify(ldmxcfg.Analyzer) :
         self.build2DHistogram( "rec_sim_hit_residual_x:layer" ,
                 "RecHit X - SimHit X [mm]" , 30 , -15.0 , 15.0,
                 "RecHit Layer" , 34 , 0.5 , 34.5 )
-        
+
         self.build2DHistogram( "rec_sim_hit_residual_y:layer" ,
                 "RecHit Y - SimHit Y [mm]" , 30 , -15.0 , 15.0,
                 "RecHit Layer" , 34 , 0.5 , 34.5  )
@@ -305,7 +306,7 @@ class EcalDigiVerify(ldmxcfg.Analyzer) :
 
         self.build1DHistogram( "num_sim_hits_per_cell" ,
                 "Number of SimHits per ECal Cell (excluding empty rec cells)" , 20 , -0.5 , 19.5 )
-        
+
         self.build1DHistogram( "num_rec_hits" ,
                 "Number of RecHits" , 100 , -0.5 , 299.5 )
 
@@ -332,10 +333,10 @@ class EcalDigiVerify(ldmxcfg.Analyzer) :
 
         self.build1DHistogram( "num_hit_if_more_than_2hits"      ,
                 "Num of hits for modules with >2 hits" , 31 , -0.5 , 30.5 )
-        
+
         self.build1DHistogram( "preselection_passed" ,
                 "Preselection Passed" , ["Fail", "Pass"] )
-        
+
         self.build2DHistogram( "sim_edep:rec_amplitude" ,
                 "Simulated Energy [MeV]" , 1000 , 0. , 50. ,
                 "Reconstructed Amplitude [MeV]" , 1000 , 0. , 50. )
@@ -414,7 +415,7 @@ class EcalMipTrackingFeatures(ldmxcfg.Analyzer) :
                 'Recoil electron y [mm]',100,-300.,300.)
         self.build1DHistogram('n_tracking_hits',
                 'Num Tracking Hits',300,0.,300.)
-        
+
 
 class EcalVetoResults(ldmxcfg.Analyzer) :
     """Configured EcalMipTrackingFeatures python object """
@@ -462,44 +463,44 @@ class EcalWABRecResults(ldmxcfg.Analyzer) :
         self.ecal_WAB_rec_name = 'EcalWABRec'
         self.ecal_WAB_rec_pass = ''
 
-        self.build2DHistogram("ThetaDiffElectronPhoton", 
+        self.build2DHistogram("ThetaDiffElectronPhoton",
                             "Reco #theta Difference between Photon and Electron [Degrees]",
                             92, -1, 91,
                             "True #theta Difference between Photon and Electron [Degrees]",
                             92, -1, 91)
-        self.build2DHistogram("ThetaElectron", 
+        self.build2DHistogram("ThetaElectron",
                             "Electron Reco #theta [Degrees]",
-                            92, -1, 91, 
+                            92, -1, 91,
                             "Electron True #theta [Degrees]",
                             92, -1, 91)
-        self.build2DHistogram("ThetaPhoton", 
+        self.build2DHistogram("ThetaPhoton",
                             "Photon Reco #theta [Degrees]",
-                            92, -1, 91, 
+                            92, -1, 91,
                             "Photon True #theta [Degrees]",
                             92, -1, 91)
-        self.build2DHistogram("PhiDiffElectronPhoton", 
+        self.build2DHistogram("PhiDiffElectronPhoton",
                             "Reco #phi Difference between Photon and Electron [Degrees]",
                             92, -1, 91,
                             "True #phi Difference between Photon and Electron [Degrees]",
                             92, -1, 91)
-        self.build2DHistogram("PhiElectron", 
+        self.build2DHistogram("PhiElectron",
                             "Electron Reco #phi [Degrees]",
-                            92, -1, 91, 
+                            92, -1, 91,
                             "Electron True #phi [Degrees]",
                             92, -1, 91)
-        self.build2DHistogram("PhiPhoton", 
+        self.build2DHistogram("PhiPhoton",
                             "Photon Reco #phi [Degrees]",
-                            92, -1, 91, 
+                            92, -1, 91,
                             "Photon True #phi [Degrees]",
                             92, -1, 91)
-        self.build2DHistogram("ElectronEnergy", 
+        self.build2DHistogram("ElectronEnergy",
                             "Reconstructed Recoil Electron Shower Energy [MeV]",
                             80, 0, 4000,
                             "True Recoil Electron Energy [MeV]",
                             80, 0, 4000)
-        self.build2DHistogram("PhotonEnergy", 
+        self.build2DHistogram("PhotonEnergy",
                             "Reconstructed Photon Shower Energy [MeV]",
-                            80, 0, 4000, 
+                            80, 0, 4000,
                             "True Photon Energy [MeV]",
                             80, 0, 4000)
         self.build1DHistogram("ElectronThetaDiff", "Electron True and Reconstruction #theta Difference [Degrees]", 181, 0, 181)
@@ -521,7 +522,7 @@ class VisiblesFeatureProducer(ldmxcfg.Analyzer) :
         self.training_file = ""
 
         ## Input simulation parameters ##
-        self.beam_energy = 8000.0 # in MeV                                                                          
+        self.beam_energy = 8000.0 # in MeV
         self.hcal_rec_coll_name = "HcalRecHits"
         self.hcal_rec_pass_name = ''
         self.ecal_rec_coll_name = "EcalRecHits"
@@ -534,9 +535,9 @@ class VisiblesFeatureProducer(ldmxcfg.Analyzer) :
         self.sim_particles_pass_name = ''
 
         ## Feature histograms ##
-        self.build1DHistogram("layers_hit", "Number of Hcal layers hit", 100, 0, 100);
-        self.build1DHistogram("x_std", "Std dev x [mm]", 80, 0, 800);
-        self.build1DHistogram("y_std", "Std dev y [mm]", 80, 0, 800);
+        self.build1DHistogram("layers_hit", "Number of Hcal layers hit", 100, 0, 100)
+        self.build1DHistogram("x_std", "Std dev x [mm]", 80, 0, 800)
+        self.build1DHistogram("y_std", "Std dev y [mm]", 80, 0, 800)
         self.build1DHistogram("z_std", "Std dev z [mm]", 100, 0, 1000)
         self.build1DHistogram("x_mean", "Average hit x [mm]", 80, -800, 800)
         self.build1DHistogram("y_mean", "Average hit  y [mm]", 80, -800, 800)
@@ -597,9 +598,9 @@ class VisiblesCutflow(ldmxcfg.Analyzer) :
         self.build1DHistogram("beam_angle", "beam_angle", 100, 0, 0.5)
 
         ## BDT feature histograms ##
-        self.build1DHistogram("layers_hit", "Number of Hcal layers hit", 100, 0, 100);
-        self.build1DHistogram("x_std", "Std dev x [mm]", 80, 0, 800);
-        self.build1DHistogram("y_std", "Std dev y [mm]", 80, 0, 800);
+        self.build1DHistogram("layers_hit", "Number of Hcal layers hit", 100, 0, 100)
+        self.build1DHistogram("x_std", "Std dev x [mm]", 80, 0, 800)
+        self.build1DHistogram("y_std", "Std dev y [mm]", 80, 0, 800)
         self.build1DHistogram("z_std", "Std dev z [mm]", 100, 0, 1000)
         self.build1DHistogram("x_mean", "Average hit x [mm]", 80, -800, 800)
         self.build1DHistogram("y_mean", "Average hit  y [mm]", 80, -800, 800)
@@ -609,7 +610,7 @@ class VisiblesCutflow(ldmxcfg.Analyzer) :
         self.build1DHistogram("n_hits", "Total Hcal hits", 200, 0, 200)
         self.build1DHistogram("total_energy", "Total Hcal energy [MeV]", 100, 4800, 9800)
         self.build1DHistogram("photon_track", "Average distance from photon track [mm]", 80, 0, 800)
-        
+
 class SimObjects(ldmxcfg.Analyzer) :
     """Configuration for sim-level objects to histogram-ize
 
@@ -647,7 +648,7 @@ class DarkBremInteraction(ldmxcfg.Producer) :
             'Recoil Electron pT [MeV]',100,0,2000)
         self.build1DHistogram('recoil_theta',
             'Recoil Electron Theta [degree]',50,0.,100.)
-            
+
 
         self.build1DHistogram('incident_energy',
             'Incident Electron Energy [MeV]',101,0,8080)
@@ -696,7 +697,7 @@ class HgcrocPulseTruth(ldmxcfg.Analyzer) :
 
 
 class NtuplizeHgcrocDigiCollection(ldmxcfg.Analyzer) :
-    def __init__(self,input_name, pedestal_table = None, input_pass = '', 
+    def __init__(self,input_name, pedestal_table = None, input_pass = '',
             using_eid = None, already_aligned = False,
             name = 'ntuplizehgcroc') :
         super().__init__(name,'dqm::NtuplizeHgcrocDigiCollection','DQM')
@@ -840,42 +841,42 @@ class PhotoNuclearDQM(ldmxcfg.Analyzer) :
         self.build1DHistogram("hardest_pi_ke",    "Kinetic Energy Hardest Photo-nuclear #pi [MeV]", 200, 0, 8000)
         self.build1DHistogram("hardest_pi_theta", "#theta of Hardest Photo-nuclear #pi [Degrees]", 180, 0, 180)
 
-        self.build2DHistogram("h_ke_h_theta", 
+        self.build2DHistogram("h_ke_h_theta",
                             "Kinetic Energy Hardest Photo-nuclear Particle [MeV]",
-                            200, 0, 8000, 
+                            200, 0, 8000,
                             "#theta of Hardest Photo-nuclear Particle [Degrees]",
                             180, 0, 180)
-        
-        self.build2DHistogram("1n_ke:2nd_h_ke", 
+
+        self.build2DHistogram("1n_ke:2nd_h_ke",
                             "Kinetic Energy of Leading Neutron [MeV]",
-                            200, 0, 8000, 
+                            200, 0, 8000,
                             "Kinetic Energy of 2nd Hardest Particle [MeV]",
                             200, 0, 8000)
-        
-        self.build2DHistogram("1kp_ke:2nd_h_ke", 
+
+        self.build2DHistogram("1kp_ke:2nd_h_ke",
                             "Kinetic Energy of Leading Charged Kaon [MeV]",
-                            200, 0, 8000, 
+                            200, 0, 8000,
                             "Kinetic Energy of 2nd Hardest Particle [MeV]",
                             200, 0, 8000)
-        
-        self.build2DHistogram("1k0_ke:2nd_h_ke", 
+
+        self.build2DHistogram("1k0_ke:2nd_h_ke",
                             "Kinetic Energy of Leading K0 [MeV]",
-                            200, 0, 8000, 
+                            200, 0, 8000,
                             "Kinetic Energy of 2nd Hardest Particle [MeV]",
                             200, 0, 8000)
-        
-        self.build2DHistogram("recoil_vertex_x:recoil_vertex_y", 
-                           "Recoil electron vertex x [mm]", 
-                           80, -40, 40, 
-                           "Recoil electron vertex y [mm]", 
+
+        self.build2DHistogram("recoil_vertex_x:recoil_vertex_y",
+                           "Recoil electron vertex x [mm]",
+                           80, -40, 40,
+                           "Recoil electron vertex y [mm]",
                            160, -80, 80)
-        
-        self.build2DHistogram("pn_gamma_int_x:pn_gamma_int_y", 
-                           "PN gamma interaction vertex x [mm]", 
-                           50, -250, 250, 
-                           "PN gamma interaction vertex y [mm]", 
+
+        self.build2DHistogram("pn_gamma_int_x:pn_gamma_int_y",
+                           "PN gamma interaction vertex x [mm]",
+                           50, -250, 250,
+                           "PN gamma interaction vertex y [mm]",
                            50, -250, 250)
-        
+
 
 class TrkDeDxMassEstFeatures(ldmxcfg.Analyzer) :
     """Configured TrkDeDxMassEstFeatures python object
@@ -893,7 +894,7 @@ class TrkDeDxMassEstFeatures(ldmxcfg.Analyzer) :
 
     def __init__(self,name='TrkDeDxMassEstFeatures') :
         super().__init__(name, "dqm::TrkDeDxMassEstFeatures",'DQM')
-        
+
         self.mass_estimate_name = "TrackDeDxMassEstimate"
         self.mass_estimate_pass = ""
 
@@ -914,7 +915,7 @@ class TrkDeDxMassEstFeatures(ldmxcfg.Analyzer) :
         self.build1DHistogram("mass_estimate_very_low_p_kaon", "Mass Estimate for kaons [MeV]", 60, 200., 800.)
         self.build1DHistogram("mass_estimate_very_low_p_proton", "Mass Estimate for proton [MeV]", 40, 800., 1200.)
         self.build1DHistogram("track_type", "Track Type", ['Other', 'Tagger', 'Recoil'])
-        
+
 
 class TrigScintSimDQM(ldmxcfg.Analyzer) :
     """Configured TrigScintSimDQM python object
@@ -997,7 +998,7 @@ class TrigScintClusterDQM(ldmxcfg.Analyzer) :
         self.pad = pad
         self.passName = ''
 
-        
+
 class TrigScintTrackDQM(ldmxcfg.Analyzer) :
     """Configured TrigScintTrackDQM python object
     
@@ -1118,12 +1119,12 @@ class GenieTruthDQM(ldmxcfg.Analyzer) :
 
         self.hepmc3CollName = coll_name
         self.hepmc3PassName = pass_name
-        
+
 
 sample_validation_dqm = [
         SampleValidation()
         ]
-        
+
 class EcalClusterAnalyzer(ldmxcfg.Analyzer) :
     """Analyze clustering"""
 
@@ -1184,7 +1185,7 @@ class EcalClusterAnalyzer(ldmxcfg.Analyzer) :
         self.build2DHistogram("dE_cl2_vs_cl1", "E_{cl}-E_{true}^{SP}, cluster 1 [MeV]", 100, -10000, 10000, "E_{cl}-E_{true}^{SP}, cluster 2 [MeV]", 100, -10000, 10000)
 
         self.build2DHistogram("tag0frac_vs_SPdist", "dR(SPhit_1, SPhit_2)", 251, -1, 250,  "Fraction of mixed (purity less than {int(100*(1.-self.mixed_hit_cutoff))}%) ancestors", 200, 0, 1)
-        
+
 ecal_dqm = [
         EcalDigiVerify(),
         EcalShowerFeatures(),

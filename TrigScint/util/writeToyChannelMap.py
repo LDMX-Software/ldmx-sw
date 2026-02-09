@@ -1,6 +1,7 @@
 import numpy as np
 
-# define numbers and names we will use 
+
+# define numbers and names we will use
 nLanes=14
 nChan=6
 nModules=4
@@ -10,7 +11,7 @@ mapFileName=f"../data/toyChannelMap_{nModules}modules_{nLanes}lanes.txt"
 nChanTotal=nLanes*nChan
 # two lanes are for LYSO. discard those. knowing that there are
 # three TS modules (pads), get the number of bars per TS module
-nBarsPerModule=(nLanes-2)*nChan/3 
+nBarsPerModule=(nLanes-2)*nChan/3
 
 # note that we are not treating LYSO differently here even though
 # it has fewer instrumented bars -- not making sure we get

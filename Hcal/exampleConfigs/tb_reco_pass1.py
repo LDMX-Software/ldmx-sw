@@ -1,4 +1,7 @@
-import argparse, sys, os, pathlib
+import argparse
+import sys
+import os
+import pathlib
 
 """
 Takes raw data file after reformat (with run number)

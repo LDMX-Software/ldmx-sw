@@ -1,4 +1,4 @@
-import json 
+import json
 from LDMX.Framework import ldmxcfg
 p = ldmxcfg.Process('plot') #
 
@@ -24,7 +24,7 @@ tsEv.inputPassName=inputPassName
 #these are derived as the mean of gaussian fits to the "event pedestal" (average over middle two quartiles) for each channel
 tsEv.startSample=startSample
 tsEv.gain=2e6
-                 
+
 
 p.sequence = [
     tsEv

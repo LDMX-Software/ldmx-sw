@@ -2,7 +2,8 @@
 # For detailed description of the various configurations, check the .py module files inside
 # Tracking/python
 
-import os,math
+import os
+import math
 from LDMX.Framework import ldmxcfg
 
 p = ldmxcfg.Process("sim")
@@ -15,7 +16,7 @@ from LDMX.Tracking import tracking
 from LDMX.Tracking import geo
 
 
-# Truth seeder 
+# Truth seeder
 # Runs truth tracking producing tracks from target scoring plane hits for Recoil
 # and generated electros for Tagger.
 # Truth tracks can be used for assessing tracking performance or using as seeds
@@ -83,8 +84,8 @@ seederRecoil.pmax  =  819.0346117063144
 seederRecoil.d0min =  -40.20866044915365
 seederRecoil.d0max = 36.47833845632701
 seederRecoil.z0max = 40.517081118987285
-seederRecoil.thetacut =  1.4783718595311992 
-seederRecoil.phicut =  1.5786029498528924 
+seederRecoil.thetacut =  1.4783718595311992
+seederRecoil.phicut =  1.5786029498528924
 
 
 

@@ -12,7 +12,7 @@ if len(sys.argv) > 2 :
     timeSample=int(sys.argv[2])
 else :
     timeSample=21
-    
+
 from LDMX.TrigScint.trigScint import TestBeamClusterProducer
 
 
@@ -33,6 +33,6 @@ p.inputFiles = [sys.argv[1]]
 p.outputFiles = [ sys.argv[1].replace(".root", "_clusters.root") ]
 
 p.termLogLevel = 2
-p.logFileName = p.outputFiles[0].replace(".root", ".log") 
+p.logFileName = p.outputFiles[0].replace(".root", ".log")
 p.logFileLevel=0
 

@@ -7,7 +7,9 @@ This file was configured by cmake for the installation of ldmx-sw at
    @CMAKE_INSTALL_PREFIX@
 """
 
-import os, sys
+import os
+import sys
+
 
 def makePath( detName , fileName ) :
     """Return a path to the installed data directory for the input detector and file names.

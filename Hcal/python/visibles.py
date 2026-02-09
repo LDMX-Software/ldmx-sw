@@ -6,8 +6,11 @@ Examples
    p.sequence.append( VisiblesVetoProcessor)
 """
 
+import os
+import sys
+
 from LDMX.Framework import ldmxcfg
-import os, sys
+
 
 def makeBDTPath(BDTname) :
     """ Get the full path to the installed BDT files

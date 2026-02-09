@@ -14,16 +14,17 @@ p.sequence.extend([ dec ])
 
 from LDMX.Framework import ldmxcfg
 
+
 class ZCCMEncoder(ldmxcfg.Producer) :
     """Configuration for ZCCM encoder"""
-    def __init__(self, channelMapFile, name = 'ZCCMEncode'): 
+    def __init__(self, channelMapFile, name = 'ZCCMEncode'):
         super().__init__(f'{name}', 'trigscint::ZCCMEncoder', "TrigScint")
-        self.name = name 
+        self.name = name
         self.input_pass_name = ''
         self.input_collection = 'trigScintZCCMDigis'
         self.output_collection = 'ZCCMDigis'
-        self.module_map_file = moduleMapFile 
-        self.channel_map_file = channelMapFile 
+        self.module_map_file = moduleMapFile
+        self.channel_map_file = channelMapFile
         self.number_channels = 14*6
 
     def tagger(mapFile) :
@@ -50,9 +51,9 @@ class ZCCMEncoder(ldmxcfg.Producer) :
 
 class ZCCMDecoder(ldmxcfg.Producer) :
     """Configuration for ZCCM decoder"""
-    def __init__(self, mapFile, name = 'ZCCMDecode'): 
+    def __init__(self, mapFile, name = 'ZCCMDecode'):
         super().__init__(f'{name}', 'trigscint::ZCCMDecoder', "TrigScint")
-        self.name = name 
+        self.name = name
         self.input_pass_name = ''
         self.input_collection = 'ZCCMoutput'
         self.output_collection = 'decodedZCCM'

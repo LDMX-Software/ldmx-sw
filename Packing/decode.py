@@ -1,6 +1,8 @@
 """Basic HGCROCv2RawDataFile reformatting configuration"""
 
-import argparse, sys
+import argparse
+import sys
+
 
 parser = argparse.ArgumentParser(f'ldmx fire {sys.argv[0]}')
 
@@ -22,6 +24,7 @@ arg = parser.parse_args()
 
 from LDMX.Framework import ldmxcfg
 
+
 p = ldmxcfg.Process('unpack')
 p.maxEvents = arg.max_events
 p.termLogLevel = 1
@@ -32,10 +35,13 @@ import LDMX.TrigScint.qieFormat as ts_format
 from LDMX.DQM import dqm
 from LDMX.Packing import rawio
 
+
 p.outputFiles = [arg.output_file]
 
 # where the ntuplizing tree will go
 import os
+
+
 p.histogramFile = f'{os.path.dirname(arg.output_file)}ntuple_{os.path.basename(arg.output_file)}'
 
 if arg.wr is not None :

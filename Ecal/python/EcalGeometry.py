@@ -1,6 +1,7 @@
 """ConditionsProvider for EcalGeometry and other Ecal geometry-related aspects"""
 from LDMX.Framework import ldmxcfg
 
+
 class EcalGeometryProvider(ldmxcfg.ConditionsObjectProvider):
     """Provider that provides access to Ecal geometry (ecal::EcalGeometry)
 
@@ -80,7 +81,7 @@ class EcalTriggerGeometryProvider(ldmxcfg.ConditionsObjectProvider):
             raise Exception('EcalTriggerGeometryProvider is a singleton class and should only be retrieved using getInstance()')
         else:
             super().__init__("EcalTriggerGeometry","ecal::EcalTriggerGeometryProvider","Ecal")
-            EcalTriggerGeometryProvider.__instance = self 
+            EcalTriggerGeometryProvider.__instance = self
 
 # make sure global instance is created, this registers the condition
 EcalTriggerGeometryProvider.getInstance()

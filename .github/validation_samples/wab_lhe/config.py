@@ -1,4 +1,6 @@
 from LDMX.Framework import ldmxcfg
+
+
 p = ldmxcfg.Process('test')
 
 p.maxTriesPerEvent = 10000
@@ -6,15 +8,17 @@ p.maxTriesPerEvent = 10000
 from LDMX.Biasing import ecal
 from LDMX.SimCore import generators as gen
 from LDMX.SimCore import simulator as sim
+
+
 # Load LHE file containing WAB events
-wab_gen = gen.lhe("WAB Generator", "8GeV_WABFF2_10K.lhe") 
+wab_gen = gen.lhe("WAB Generator", "8GeV_WABFF2_10K.lhe")
 # Place them in the middle of the target
 wab_gen.vertex = [0.0, 0.0, 0.0]
 
 det = 'ldmx-det-v15-8gev'
 mySim = sim.simulator('sim')
 mySim.setDetector(det, include_scoring_planes_minimal = True)
-mySim.generators.append(wab_gen) 
+mySim.generators.append(wab_gen)
 
 p.sequence = [ mySim ]
 
@@ -24,26 +28,29 @@ p.sequence = [ mySim ]
 import os
 import sys
 
+
 p.maxEvents = int(int(os.environ['LDMX_NUM_EVENTS']) * 0.99)
 p.run = int(os.environ['LDMX_RUN_NUMBER'])
 
-p.histogramFile = f'hist.root'
-p.outputFiles = [f'events.root']
+p.histogramFile = 'hist.root'
+p.outputFiles = ['events.root']
 
 # Load the full tracking sequance
-from LDMX.Tracking import full_tracking_sequence
+import LDMX.Ecal.digi as ecal_digi
+import LDMX.Ecal.ecal_hardcoded_conditions
+import LDMX.Ecal.ecalClusters as ecal_cluster
 
 # Load the ECAL modules
 import LDMX.Ecal.EcalGeometry
-import LDMX.Ecal.ecal_hardcoded_conditions
-import LDMX.Ecal.digi as ecal_digi
 import LDMX.Ecal.vetos as ecal_vetos
-import LDMX.Ecal.ecalClusters as ecal_cluster
+import LDMX.Hcal.digi as hcal_digi_and_reco
+import LDMX.Hcal.hcal_hardcoded_conditions
 
 # Load the HCAL modules
 import LDMX.Hcal.HcalGeometry
-import LDMX.Hcal.hcal_hardcoded_conditions
-import LDMX.Hcal.digi as hcal_digi_and_reco
+from LDMX.Tracking import full_tracking_sequence
+
+
 hcal_digi = hcal_digi_and_reco.HcalDigiProducer()
 hcal_reco = hcal_digi_and_reco.HcalRecProducer()
 
@@ -67,17 +74,19 @@ hcal_reco = hcal_digi_and_reco.HcalRecProducer()
 #         ]
 
 # Load electron counting and trigger
+from LDMX.Ecal import ecal_trig_digi
+from LDMX.Hcal import hcal_trig_digi
 from LDMX.Recon.electronCounter import ElectronCounter
 from LDMX.Recon.simpleTrigger import TriggerProcessor
-from LDMX.Hcal import hcal_trig_digi
-from LDMX.Ecal import ecal_trig_digi
 from LDMX.Trigger import trigger_energy_sums
+
 
 count = ElectronCounter(1,'ElectronCounter')
 count.input_pass_name = ''
 
 # Load the DQM modules
 from LDMX.DQM import dqm
+
 
 # Load ecal veto and use tracking in it
 ecal_veto = ecal_vetos.EcalVetoProcessor()
@@ -86,6 +95,8 @@ ecal_veto_pnet =  ecal_vetos.EcalPnetVetoProcessor()
 
 # Load hcal veto
 import LDMX.Hcal.hcal as hcal
+
+
 hcal_veto = hcal.HcalVetoProcessor()
 hcal_clusters = hcal.HcalClusterProducer()
 hcal_wab = hcal.HcalWABVetoProcessor()
@@ -113,7 +124,7 @@ recoil_tracker_dqm = [
 p.sequence.extend([
         *recoil_tracking,
         ecal_digi.EcalDigiProducer(),
-        ecal_digi.EcalRecProducer(), 
+        ecal_digi.EcalRecProducer(),
         ecal_cluster.EcalClusterProducer(),
         ecal_veto,
         ecal_mip,

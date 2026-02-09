@@ -12,7 +12,8 @@ The run number is deduced from the file name.
 @author Tom Eichlersmith, University of Minnesota
 """
 
-import argparse, sys
+import argparse
+import sys
 
 parser = argparse.ArgumentParser(f'ldmx fire {sys.argv[0]}',
     description=__doc__)
@@ -39,9 +40,9 @@ from LDMX.DQM import dqm
 import os
 from LDMX.Hcal.DetectorMap import HcalDetectorMap
 detmap = HcalDetectorMap(f'{os.environ["LDMX_BASE"]}/ldmx-sw/Hcal/data/testbeam_connections.csv')
-detmap.want_d2e = True # helps quicken the det -> elec translation                                                                                                                                                                                                                                                                                                   
+detmap.want_d2e = True # helps quicken the det -> elec translation
 
-# extract and deduce parameters from input file name                                                                                                                                                                                                                                                                                                                 
+# extract and deduce parameters from input file name
 params = os.path.basename(arg.input_file).replace('.root','').split('_')
 run = params[params.index("run")+1]
 day = params[-2]
@@ -70,9 +71,9 @@ p.inputFiles = [arg.input_file]
 p.outputFiles = [f'{dir_name}/{file_name}.root']
 p.histogramFile = f'{dir_name}-ntuple/ntuple_{file_name}.root'
 
-# sequence                                                                                                                                                                                                                                                                                                                                                           
-#   1. decode event packet into digi collection                                                                                                                                                                                                                                                                                                                      
-#   2. ntuplize digi collection                                                                                                                                                                                                                                                                                                                                      
+# sequence
+#   1. decode event packet into digi collection
+#   2. ntuplize digi collection
 p.sequence = [
         hcal_format.HcalRawDecoder(
             input_names = input_names,

@@ -22,6 +22,7 @@ doVAL : bool
 
 from LDMX.Framework import ldmxcfg
 
+
 class SequentialTrigger(ldmxcfg.Producer) :
     """Configuration for the sequential trigger (skimmer) on the ECal reco hits"""
 
@@ -29,7 +30,7 @@ class SequentialTrigger(ldmxcfg.Producer) :
         super().__init__(name,'recon::SequentialTrigger','Recon')
 
         self.trigger_list = ["Trigger","Trigger2"]
-        self.trigger_passNames = ["reconSeq","reconSeq"] 
+        self.trigger_passNames = ["reconSeq","reconSeq"]
         self.doOR = False
         self.doAND = True
         self.doVAL = True

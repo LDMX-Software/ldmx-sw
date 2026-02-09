@@ -18,7 +18,7 @@ if len(sys.argv) > 3 :
     pulseWidth=int(sys.argv[3])
 else :
     pulseWidth=5
-    
+
 from LDMX.TrigScint.trigScint import TestBeamHitProducer
 
 
@@ -34,7 +34,7 @@ dataPath=path.dirname( sys.argv[1] ) #extract the path to where we keep the data
 defaultGainFileName=dataPath+"/"+defaultRun+"_gains.txt"
 
 #if for some reason, gains are not derived for this run. probably too low stats --> fits not converging. bet on that inter-channel gain differences are larger than variations in channel over time; then it is better to use an old file than a flat default gain. also, this could be edited to become an average file.
-if not exists(gainFileName) :  
+if not exists(gainFileName) :
     gainFileName=defaultGainFileName
 print("using gain file "+gainFileName)
 if exists(gainFileName) :
@@ -53,10 +53,10 @@ pedList=[-2.]*nChannels
 #            -0.6, #-1.25,
 #            4.4,  #3.9,    # #3
 #            1.9,  #10000., # #4: (used to be) dead channel during test beam
-#            -2.3, #-2.1,   # #5 
+#            -2.3, #-2.1,   # #5
 #            1.0,  #2.9,    # #6
 #            -1.2, #-2,     # #7
-#            4.9,  #-0.4,   # #8  dead channel in spring 2022 testbeam at CERN, most of the runs 
+#            4.9,  #-0.4,   # #8  dead channel in spring 2022 testbeam at CERN, most of the runs
 #            -4.4, #-1.1,   # #9: dead channel in TTU teststand setup
 #            -0.1, #1.5,    # #10
 #            -1.7, #2.0,    # #11
@@ -70,7 +70,7 @@ pedList=[-2.]*nChannels
 pedFileName=gainFileName.replace("gains", "peds")
 defaultPedFileName=dataPath+"/"+defaultRun+"_peds.txt"
 
-if not exists(pedFileName) :  
+if not exists(pedFileName) :
     pedFileName=defaultPedFileName
 
 if exists(pedFileName) :
@@ -87,10 +87,10 @@ tbHitsUp  =TestBeamHitProducer("tbHits")
 tbHitsUp.input_pass_name=inputPassName
 tbHitsUp.input_collection="QIEsamplesPad1" #"QIEsamplesUp"
 tbHitsUp.pedestals=pedList
-tbHitsUp.gain=gainList 
+tbHitsUp.gain=gainList
 tbHitsUp.startSample=timeSample
-tbHitsUp.pulseWidth=pulseWidth #5 #7 
-tbHitsUp.pulseWidthLYSO=pulseWidth #5 #7 #9 #7 for plastic, 9 for LYSO 
+tbHitsUp.pulseWidth=pulseWidth #5 #7
+tbHitsUp.pulseWidthLYSO=pulseWidth #5 #7 #9 #7 for plastic, 9 for LYSO
 tbHitsUp.doCleanHits=False #True
 tbHitsUp.nInstrumentedChannels=24
 p.sequence = [

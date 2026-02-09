@@ -2,6 +2,7 @@
 
 from LDMX.Framework import ldmxcfg
 
+
 class EcalDetectorMap(ldmxcfg.ConditionsObjectProvider) :
     """The COP that maps between Electronic and Detector IDs.
 

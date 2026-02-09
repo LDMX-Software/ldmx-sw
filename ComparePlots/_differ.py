@@ -4,15 +4,17 @@
 import os
 import re
 
+import hist.intervals
+
 # external dependencies
 import matplotlib
-import uproot
-import numpy as np
-import hist.intervals
 import mplhep
+import numpy as np
+import uproot
 
 # us
 from ._file import File
+
 
 class Differ :
     """Differ allowing easy comparison of "similar" files
@@ -59,7 +61,7 @@ class Differ :
                 return arg
             else :
                 raise KeyError(f'Argument provided {arg} is not a ComparePlots.File or a tuple of arguments for its constructor')
-                
+
         self.grp_name = grp_name
         self.files = list(map(open_file, args))
         self.output_type = output_type

@@ -13,6 +13,7 @@ Examples
 
 from LDMX.Framework import ldmxcfg
 
+
 class TrigScintDigiProducer(ldmxcfg.Producer) :
     """Configuration for digitizer for Trigger Scintillators"""
 
@@ -27,7 +28,7 @@ class TrigScintDigiProducer(ldmxcfg.Producer) :
         self.input_collection="TriggerPad3SimHits"
         self.input_pass_name="" #take any pass
         self.output_collection="trigScintDigisPad3"
-        
+
         self.sim_particles_passname = ""
 
     def pad1() :
@@ -76,7 +77,7 @@ class TrigScintQIEDigiProducer(ldmxcfg.Producer) :
         self.input_pass_name="" #take any pass
         self.output_collection="trigScintQIEDigisPad3"
         self.input_pulse_shape="Expo" # Name of the input pulse class
-        self.expo_k=0.1          # Inverse of decay time of piece-wise exponential 
+        self.expo_k=0.1          # Inverse of decay time of piece-wise exponential
         self.expo_tmax=5.0       # Time at which piece-wise exponential peaks
         self.maxts=5             # No. of time samples to analyze
         self.toff_overall = 55.0 # Global time offset
@@ -85,8 +86,8 @@ class TrigScintQIEDigiProducer(ldmxcfg.Producer) :
         self.elec_noise = 1.5    # Electronic noise (in fC)
         self.sipm_gain = 1.e6    # SiPM Gain
         self.qie_sf = 40.        # QIE sampling frequency in MHz
-        self.zeroSupp_in_pe = 1. # min nPE in integrated pulse to keep hit  
-        
+        self.zeroSupp_in_pe = 1. # min nPE in integrated pulse to keep hit
+
         import time
         self.verbose = False
 
@@ -125,7 +126,7 @@ class EventReadoutProducer(ldmxcfg.Producer) :
         self.time_shift=5
         self.fiber_to_shift=0
         self.verbose = False
-        
+
 class TestBeamHitProducer(ldmxcfg.Producer) :
     """Configuration for testbeam hit producer for Trigger Scintillators"""
 
@@ -137,19 +138,19 @@ class TestBeamHitProducer(ldmxcfg.Producer) :
         self.outputCollection="testBeamHitsPad1"
         self.verbose = False
         self.doCleanHits = False   #whether to apply quality criteria in hit reconstruction
-        self.nInstrumentedChannels=12 #number of channels 
+        self.nInstrumentedChannels=12 #number of channels
         self.startSample=10   # Sample where pulse is expected to start (triggered mode)
         self.pulseWidth=5     # Number of consecutive samples to include in the pulse
-        self.pulseWidthLYSO=8 # as above, for LYSO 
+        self.pulseWidthLYSO=8 # as above, for LYSO
         self.gain = [2.e6]*12      # SiPM Gain
-        self.MIPresponse = [1.]*12      # channel MIP response correction factor 
+        self.MIPresponse = [1.]*12      # channel MIP response correction factor
         self.pedestals=[
             -4.6, #0.6,
             -2.6, #4.4,
             -0.6, #-1.25,
             4.5,  #3.9, 	 # #3
             1.9,  #10000., # #4: (used to be) dead channel during test beam
-            -2.2, #-2.1,   # #5 
+            -2.2, #-2.1,   # #5
             0.9,  #2.9,    # #6
             -1.2, #-2,     # #7
             4.8,  #-0.4,   # #8
@@ -162,7 +163,7 @@ class TestBeamHitProducer(ldmxcfg.Producer) :
             1.3   #1.6     # #15 -- uninstrumented
         ]
 
-                                
+
 class TestBeamClusterProducer(ldmxcfg.Producer) :
     """Configuration for cluster producer for Trigger Scintillators"""
 
@@ -188,7 +189,7 @@ class TestBeamClusterProducer(ldmxcfg.Producer) :
         cluster.output_collection= 'TeastBeamClustersPad1'
         cluster.pad_time= -999.
         return cluster
-        
+
 class TrigScintRecHitProducer(ldmxcfg.Producer) :
     """Configuration for rechit producer for Trigger Scintillators"""
 
@@ -196,7 +197,7 @@ class TrigScintRecHitProducer(ldmxcfg.Producer) :
         super().__init__(name,'trigscint::TrigScintRecHitProducer','TrigScint')
 
         self .mev_per_mip = 0.4   #\
-                                  # >>>both are for converting edep to PEs 
+                                  # >>>both are for converting edep to PEs
         self.pe_per_mip = 100.    #/
         self.pedestal= 6.0        # QIE pedestal value (in fC)
         self.gain = 1.e6      # SiPM Gain
@@ -206,21 +207,21 @@ class TrigScintRecHitProducer(ldmxcfg.Producer) :
         self.verbose = False
         self.sample_of_interest=2 # Sample of interest. Range 0 to 3
 
-    def pad1() : 
+    def pad1() :
         """Get the rechit producer for first pad"""
         rechit = TrigScintRecHitProducer( 'trigScintRecHitsPad1' )
         rechit.input_collection  = 'trigScintQIEDigisPad1'
         rechit.output_collection = 'trigScintRecHitsPad1'
         return rechit
 
-    def pad2() : 
+    def pad2() :
         """Get the rechit producer for second pad"""
         rechit = TrigScintRecHitProducer( 'trigScintRecHitsPad2' )
         rechit.input_collection  = 'trigScintQIEDigisPad2'
         rechit.output_collection = 'trigScintRecHitsPad2'
         return rechit
 
-    def pad3() : 
+    def pad3() :
         """Get the rechit producer for third pad"""
         rechit = TrigScintRecHitProducer( 'trigScintRecHitsPad3' )
         rechit.input_collection  = 'trigScintQIEDigisPad3'
@@ -234,7 +235,7 @@ class TrigScintFirmwareHitProducer(ldmxcfg.Producer) :
         super().__init__(name,'trigscint::TrigScintFirmwareHitProducer','TrigScint')
 
         self .mev_per_mip = 0.4   #\
-                                  # >>>both are for converting edep to PEs 
+                                  # >>>both are for converting edep to PEs
         self.pe_per_mip = 100.    #/
         self.pedestal= 6.0        # QIE pedestal value (in fC)
         self.gain = 1.e6      # SiPM Gain
@@ -245,7 +246,7 @@ class TrigScintFirmwareHitProducer(ldmxcfg.Producer) :
         self.verbose = False
         self.sample_of_interest=2 # Sample of interest. Range 0 to 3
 
-    def pad1() : 
+    def pad1() :
         """Get the firmware hit producer for first pad"""
         rechit = TrigScintRecHitProducer( 'trigScintFirmHitsPad1' )
         rechit.input_collection  = 'trigScintQIEDigisPad1'
@@ -253,7 +254,7 @@ class TrigScintFirmwareHitProducer(ldmxcfg.Producer) :
         rechit.test_collection = 'trigScintRecHitsPad1'
         return rechit
 
-    def pad2() : 
+    def pad2() :
         """Get the firmware hit producer for second pad"""
         rechit = TrigScintRecHitProducer( 'trigScintFirmHitsPad2' )
         rechit.input_collection  = 'trigScintQIEDigisPad2'
@@ -261,7 +262,7 @@ class TrigScintFirmwareHitProducer(ldmxcfg.Producer) :
         rechit.test_collection = 'trigScintRecHitsPad2'
         return rechit
 
-    def pad3() : 
+    def pad3() :
         """Get the firmware hit for third pad"""
         rechit = TrigScintRecHitProducer( 'trigScintFirmHitsPad3' )
         rechit.input_collection  = 'trigScintQIEDigisPad3'
@@ -331,7 +332,7 @@ class TrigScintTrackProducer(ldmxcfg.Producer) :
         self.further_input_collections = ["TriggerPad2Clusters","TriggerPad3Clusters"]
         self.allow_skip_last_collection = False
         self.vertical_bar_start_index = 52
-        self.number_horizontal_bars = 24  #16 for x,y segmented geometry only 
+        self.number_horizontal_bars = 24  #16 for x,y segmented geometry only
         self.number_vertical_bars = 0     #8 for x,y segmented geometry only
         self.horizontal_bar_width = 3.
         self.horizontal_bar_gap = 0.3
@@ -355,7 +356,7 @@ class TrigScintTrackProducer(ldmxcfg.Producer) :
         self.further_input_collections = ["TriggerPad2Clusters","TriggerPad3Clusters"]
         self.allow_skip_last_collection = False
         self.vertical_bar_start_index = 52
-        self.number_horizontal_bars = 24  #16 for x,y segmented geometry only 
+        self.number_horizontal_bars = 24  #16 for x,y segmented geometry only
         self.number_vertical_bars = 0     #8 for x,y segmented geometry only
         self.horizontal_bar_width = 3.
         self.horizontal_bar_gap = 0.3
@@ -381,21 +382,21 @@ class TrigScintFirmwareTracker(ldmxcfg.Producer) :
 
 class QIEAnalyzer(ldmxcfg.Analyzer) :
     """Configuration for linearized QIE analyzer for Trigger Scintillators"""
-    
+
     def __init__(self,name) :
         super().__init__(name,'trigscint::QIEAnalyzer','TrigScint')
 
         self.inputCollection="QIEsamplesPad1"
-        self.inputPassName=""   #take any pass                                                                                         
-        self.startSample=2      #first time sample included in reformatting 
-        self.gain = [2.e6]*16      # SiPM Gain  //TODO: vector 
+        self.inputPassName=""   #take any pass
+        self.startSample=2      #first time sample included in reformatting
+        self.gain = [2.e6]*16      # SiPM Gain  //TODO: vector
         self.pedestals=[
             -4.6, #0.6,
             -2.6, #4.4,
             -0.6, #-1.25,
             4.5,  #3.9, 	 # #3
             1.9,  #10000., # #4: (used to be) dead channel during test beam
-            -2.2, #-2.1,   # #5 
+            -2.2, #-2.1,   # #5
             0.9,  #2.9,    # #6
             -1.2, #-2,     # #7
             4.8,  #-0.4,   # #8
@@ -408,26 +409,26 @@ class QIEAnalyzer(ldmxcfg.Analyzer) :
             1.3   #1.6     # #15 -- uninstrumented
         ]
 
-        
+
 class QualityFlagAnalyzer(ldmxcfg.Analyzer) :
     """Configuration for linearized QIE analyzer for Trigger Scintillators"""
-    
+
     def __init__(self,name) :
         super().__init__(name,'trigscint::QualityFlagAnalyzer','TrigScint')
 
         self.inputEventCollection="QIEsamplesUp"
-        self.inputEventPassName=""   #take any pass                                                                                         
+        self.inputEventPassName=""   #take any pass
         self.inputHitCollection="testBeamHitsUp"
-        self.inputHitPassName=""   #take any pass                                                                                         
-        self.startSample=2      #first time sample included in reformatting 
-        self.gain = [2.e6]*16      # SiPM Gain  //TODO: vector 
+        self.inputHitPassName=""   #take any pass
+        self.startSample=2      #first time sample included in reformatting
+        self.gain = [2.e6]*16      # SiPM Gain  //TODO: vector
         self.pedestals=[
             -4.6, #0.6,
             -2.6, #4.4,
             -0.6, #-1.25,
             4.5,  #3.9, 	 # #3
             1.9,  #10000., # #4: (used to be) dead channel during test beam
-            -2.2, #-2.1,   # #5 
+            -2.2, #-2.1,   # #5
             0.9,  #2.9,    # #6
             -1.2, #-2,     # #7
             4.8,  #-0.4,   # #8
@@ -442,20 +443,20 @@ class QualityFlagAnalyzer(ldmxcfg.Analyzer) :
 
 class TestBeamHitAnalyzer(ldmxcfg.Analyzer) :
     """Configuration for linearized QIE analyzer for Trigger Scintillators"""
-    
+
     def __init__(self,name) :
         super().__init__(name,'trigscint::TestBeamHitAnalyzer','TrigScint')
 
         self.inputCollection="testBeamHitsPad1"
-        self.inputPassName=""   #take any pass                                                                                         
-        self.startSample=2      #first time sample included in reformatting 
+        self.inputPassName=""   #take any pass
+        self.startSample=2      #first time sample included in reformatting
         self.pedestals=[
             -4.6, #0.6,
             -2.6, #4.4,
             -0.6, #-1.25,
             4.5,  #3.9, 	 # #3
             1.9,  #10000., # #4: (used to be) dead channel during test beam
-            -2.2, #-2.1,   # #5 
+            -2.2, #-2.1,   # #5
             0.9,  #2.9,    # #6
             -1.2, #-2,     # #7
             4.8,  #-0.4,   # #8
@@ -467,18 +468,18 @@ class TestBeamHitAnalyzer(ldmxcfg.Analyzer) :
             1.3,  #-1.5,   # #14 -- uninstrumented
             1.3   #1.6     # #15 -- uninstrumented
         ]
-                 
+
 
 class TestBeamClusterAnalyzer(ldmxcfg.Analyzer) :
     """Configuration for linearized QIE analyzer for Trigger Scintillators"""
-    
+
     def __init__(self,name) :
         super().__init__(name,'trigscint::TestBeamClusterAnalyzer','TrigScint')
 
         self.inputCollection="TestBeamClustersUpClean"
-        self.inputPassName=""   #take any pass                                                                                         
+        self.inputPassName=""   #take any pass
         self.inputHitCollection="testBeamHitsUp"
-        self.inputHitPassName=""   #take any pass                                                                                         
-        self.startSample=2      #first time sample included in reformatting 
+        self.inputHitPassName=""   #take any pass
+        self.startSample=2      #first time sample included in reformatting
         self.deadChannels=[ 8 ]
-                 
+

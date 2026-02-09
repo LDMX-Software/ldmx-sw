@@ -1,6 +1,7 @@
 
 from LDMX.Framework import ldmxcfg
 
+
 # Create a process
 p = ldmxcfg.Process( 'test_hcal_digis' )
 
@@ -8,8 +9,8 @@ p = ldmxcfg.Process( 'test_hcal_digis' )
 p.maxEvents = 1000 # should be the same as NUM_TEST_SIM_HITS
 
 # Import the Hcal conditions
-from LDMX.Hcal import hcal_hardcoded_conditions
-from LDMX.Hcal import digi
+from LDMX.Hcal import digi, hcal_hardcoded_conditions
+
 
 # Set the output file name
 p.outputFiles = ['hcal_digi_pipeline_test.root']
@@ -19,6 +20,7 @@ p.histogramFile = 'hcal_digi_pipeline_test_histo.root'
 
 # Geometry provider
 import LDMX.Hcal.HcalGeometry
+
 
 # HCal digi
 hcalDigis = digi.HcalDigiProducer()

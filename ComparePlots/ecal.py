@@ -1,8 +1,10 @@
 """Plotting of ECal-related validation plots"""
 
+import logging
+
 from ._differ import Differ
 from ._plotter import plotter
-import logging
+
 
 log = logging.getLogger('ecal')
 
@@ -86,7 +88,7 @@ def mip_tracking(d : Differ, out_dir = None) :
     for col, name in features :
         log.info(f'plotting {col}')
         d.plot1d(col, name, out_dir = out_dir)
-        
+
 
 @plotter
 def veto_results(d : Differ, out_dir = None) :
@@ -119,7 +121,7 @@ def clue_cluster(d : Differ, out_dir = None) :
     d : Differ
         Differ containing files that are not event files (presumably histogram files)
     """
-    
+
     features = [
         ('EcalClusterAnalyzer/number_of_clusters_first_layer', 'Number of CLUE clusters on the first layer'),
         ('EcalClusterAnalyzer/number_of_clusters_per_layer', 'Number of CLUE clusters per layer'),

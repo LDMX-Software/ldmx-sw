@@ -61,7 +61,7 @@ from LDMX.Tracking import tracking
 
 import LDMX.Tracking.geo
 
-# Truth seeder 
+# Truth seeder
 # Runs truth tracking producing tracks from target scoring plane hits for Recoil
 # and generated electros for Tagger.
 # Truth tracks can be used for assessing tracking performance or using as seeds

@@ -2,6 +2,7 @@
 
 from LDMX.Framework import ldmxcfg
 
+
 class HcalPedestalAnalyzer(ldmxcfg.Analyzer) :
     """Constructs standard pedestal text files and
     optionally produces histograms for each channel.

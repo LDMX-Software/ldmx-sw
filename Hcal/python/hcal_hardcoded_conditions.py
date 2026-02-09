@@ -8,7 +8,11 @@ HcalHgcrocConditionsHardcode: SimpleCSVDoubleTableProvider
     Provides a table of double conditions for hcal hgcroc emulator
 """
 
-from LDMX.Conditions.SimpleCSVTableProvider import SimpleCSVIntegerTableProvider, SimpleCSVDoubleTableProvider
+from LDMX.Conditions.SimpleCSVTableProvider import (
+                                                 SimpleCSVDoubleTableProvider,
+                                                 SimpleCSVIntegerTableProvider,
+)
+
 
 HcalTrigPrimConditionsHardcode=SimpleCSVIntegerTableProvider("HcalTrigPrimDigiConditions",["ADC_PEDESTAL","ADC_THRESHOLD","TOT_PEDESTAL","TOT_THRESHOLD","TOT_GAIN"])
 HcalTrigPrimConditionsHardcode.validForAllRows([ 1 , # ADC_PEDESTAL -- should match value from HgcrocEmulator
@@ -42,6 +46,8 @@ toa_calib.validForAllRows([0., 0.]) # dummy values
 
 # wrap our tables in the parent object that is used by the processors
 from .conditions import HcalReconConditionsProvider
+
+
 HcalReconConditionsProvider(adc_pedestal, adc_gain, tot_calib, toa_calib)
 
 HcalHgcrocConditionsHardcode=SimpleCSVDoubleTableProvider("HcalHgcrocConditions", [
@@ -58,7 +64,7 @@ HcalHgcrocConditionsHardcode=SimpleCSVDoubleTableProvider("HcalHgcrocConditions"
         ])
 
 HcalHgcrocConditionsHardcode.validForAllRows([
-    1. , #PEDESTAL 
+    1. , #PEDESTAL
     0.02*5/1.2, #NOISE - 0.02 PE with 1 PE ~ 5mV and gain = 1.2
     12.5, #MEAS_TIME - ns - clock_cycle/2 - defines the point in the BX where an in-time (time=0 in times vector) hit would arrive
     20., #PAD_CAPACITANCE - pF

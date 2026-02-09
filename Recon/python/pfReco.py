@@ -10,6 +10,7 @@ Examples
 
 from LDMX.Framework import ldmxcfg
 
+
 class pfEcalClusterProducer(ldmxcfg.Producer) :
     """Configuration for Ecal cluster builder for particle reco"""
     def __init__(self, name='PFEcalCluster') :
@@ -69,7 +70,7 @@ class pfTruthProducer(ldmxcfg.Producer) :
         self.outputTargetCollName  = 'PFTruthTarget'
         self.outputEcalCollName    = 'PFTruthEcal'
         self.outputHcalCollName    = 'PFTruthHcal'
-        
+
         self.target_sp_passname = ''
         self.ecal_sp_passname = ''
         self.sim_particles_passname = ''

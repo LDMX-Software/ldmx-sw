@@ -1,5 +1,6 @@
 from LDMX.Framework import ldmxcfg
 
+
 # Create a process
 p = ldmxcfg.Process( 'test_hcal_geometry' )
 
@@ -8,8 +9,9 @@ p.maxEvents = 10
 
 # Set the run number
 p.run = 0
-# Import the Hcal conditions 
+# Import the Hcal conditions
 from LDMX.Hcal import digi
+
 
 # Set the output file name
 p.outputFiles = ['hcal_geometry_test.root']
@@ -18,9 +20,10 @@ p.outputFiles = ['hcal_geometry_test.root']
 p.histogramFile = 'hcal_geometry_test_histo.root'
 
 # Geometry provider
-import LDMX.Hcal.HcalGeometry
 import LDMX.Ecal.EcalGeometry
+import LDMX.Hcal.HcalGeometry
 from LDMX.Hcal import hcal_hardcoded_conditions
+
 
 # HCal digi
 hcalDigis = digi.HcalDigiProducer()
@@ -29,8 +32,8 @@ hcalDigis = digi.HcalDigiProducer()
 hcalDigis.hgcroc.noise = False
 
 #  Generate muons
-from LDMX.SimCore import simulator
-from LDMX.SimCore import generators
+from LDMX.SimCore import generators, simulator
+
 
 sim = simulator.simulator("single_neutron")
 sim.setDetector( 'ldmx-det-v14' , False )

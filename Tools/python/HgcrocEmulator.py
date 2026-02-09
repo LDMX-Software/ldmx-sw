@@ -1,6 +1,6 @@
 """Configuration for HGCROC Emulator"""
 
-class HgcrocEmulator() :
+class HgcrocEmulator :
     """Configuration for HGCROC Emulator
 
     The parameters in this configuration class
@@ -42,7 +42,7 @@ class HgcrocEmulator() :
         self.timePeak     = 77.732
         self.clockCycle   = 25.0 #ns
         self.timingJitter = self.clockCycle / 100. #ns - pretty arbitrarily chosen
-        self.nADCs        = 10 
+        self.nADCs        = 10
         self.iSOI         = 2
 
         # turn on or off noise

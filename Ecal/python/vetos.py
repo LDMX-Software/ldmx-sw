@@ -8,6 +8,7 @@ Examples
 
 from LDMX.Framework import ldmxcfg
 
+
 class EcalVetoProcessor(ldmxcfg.Producer) :
     """Configuration for the ECal veto"""
 
@@ -22,7 +23,7 @@ class EcalVetoProcessor(ldmxcfg.Producer) :
         self.roc_file = makeRoCPath( "RoC_v14_8gev" )
         self.beam_energy = 8000.0  # in MeV
         self.disc_cut = 0.99741
-        
+
         self.sp_pass_name = ""
         self.collection_name = "EcalVeto"
         self.rec_pass_name = ""
@@ -33,7 +34,7 @@ class EcalVetoProcessor(ldmxcfg.Producer) :
 
         self.sim_particles_passname = ""
         self.track_pass_name = ""
-        
+
         self.ecal_simhits_passname = ""
         self.ecal_digis_passname = ""
         self.ecal_rechits_passname = ""
@@ -71,7 +72,7 @@ class EcalPnetVetoProcessor(ldmxcfg.Producer) :
         self.track_collection = "RecoilTracksClean"
         self.track_pass_name = ""
         self.recoil_from_tracking = True
-        
+
 
 
 

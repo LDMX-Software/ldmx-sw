@@ -10,6 +10,7 @@ Examples
 
 from LDMX.Framework import ldmxcfg
 
+
 class pileupFinder(ldmxcfg.Producer) :
     """Configuration for pileup finding from particle flow objects"""
     def __init__(self, name='PileupFinder') :

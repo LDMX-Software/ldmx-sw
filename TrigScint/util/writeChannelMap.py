@@ -1,6 +1,7 @@
 import numpy as np
 
-# define numbers and names we will use 
+
+# define numbers and names we will use
 nLanes=14
 nChan=6
 nModules=4
@@ -10,25 +11,25 @@ mapFileName=f"../data/channelMap_{nModules}modules_{nLanes}lanes.txt"
 #nChanTotal=nLanes*nChan
 # two lanes are for LYSO. discard those. knowing that there are
 # three TS modules (pads), get the number of bars per TS module
-nBarsPerModule=(nLanes-2)*nChan/3 
+nBarsPerModule=(nLanes-2)*nChan/3
 
 
 BAR_NUMBERS = np.array([
     [10, 0, 8, 6, 4, 2], # Lane 0
-    [3, 11, 9, 5, 7, 1], 
+    [3, 11, 9, 5, 7, 1],
     [22, 12, 20, 18, 16, 14],
     [15, 23, 21, 17, 19, 13],
-    
+
     [10, 0, 8, 6, 4, 2], # Lane 4
-    [3, 11, 9, 5, 7, 1], 
+    [3, 11, 9, 5, 7, 1],
     [22, 12, 20, 18, 16, 14],
     [15, 23, 21, 17, 19, 13],
-    
+
     [10, 0, 8, 6, 4, 2], # Lane 8
-    [3, 11, 9, 5, 7, 1], 
+    [3, 11, 9, 5, 7, 1],
     [22, 12, 20, 18, 16, 14],
     [15, 23, 21, 17, 19, 13],
-    
+
     [9, 7, 11, 3, 1, 5], # Lane 12
     [15, 23, 21, 17, 19, 13]
 ])
@@ -50,7 +51,7 @@ with open(mapFileName, "w", encoding="utf-8") as f:
         for iC in range(nChan) :
             #print(f"At channel {iC}, barCounter {barCounter}")
             elecID = 100*lane+10*module+iC
-            barID = BAR_NUMBERS[lane][iC] 
+            barID = BAR_NUMBERS[lane][iC]
             #print(f"-- elecID={elecID}, barID {barID}")
             f.write(f"{elecID}\t{barID}\n")
             # highlight when we reach the number of bars

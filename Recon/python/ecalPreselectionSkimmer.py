@@ -74,6 +74,7 @@ Examples
 
 from LDMX.Framework import ldmxcfg
 
+
 class EcalPreselectionSkimmer(ldmxcfg.Producer) :
     """Configuration for an ECAL-based pre-selection skimmer"""
 
@@ -82,11 +83,11 @@ class EcalPreselectionSkimmer(ldmxcfg.Producer) :
 
         # Mode selection (default: rechit-based)
         self.use_rechits = True
-        
+
         # Rechit-based parameters
         self.ecal_rec_hit_coll = "EcalRecHits"
         self.ecal_rec_hit_pass = ""
-        
+
         # Veto-based parameters
         self.ecal_veto_name = "EcalVeto"
         self.ecal_veto_pass = ""

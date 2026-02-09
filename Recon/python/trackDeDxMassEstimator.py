@@ -26,6 +26,7 @@ Examples
 
 from LDMX.Framework import ldmxcfg
 
+
 class trackDeDxMassEstimator(ldmxcfg.Producer) :
     """Configuration for the mass estimator from tracker dEdx"""
 
