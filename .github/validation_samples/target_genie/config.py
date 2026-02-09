@@ -1,5 +1,6 @@
 from LDMX.Framework import ldmxcfg
 p = ldmxcfg.Process('test')
+import os
 
 p.maxTriesPerEvent = 10000
 
@@ -19,7 +20,7 @@ genie = gen.genie(name=f'genie_G18_02a_02_11b',
                         beam_size = [ 20., 80. ],
                         direction = [0.,0.,1.],
                         tune='G18_02a_02_11b',
-                        spline_file=f'gxspl_emode_GENIE_v3_04_00.xml',
+                        spline_file=f'{os.environ["CI_DATA"]/target_genie/gxspl_emode_GENIE_v3_04_00.xml',
                         message_threshold_file=f'Messenger_ErrorOnly.xml')
 
 mySim.generators = [ genie ]
@@ -39,7 +40,6 @@ p.sequence = [ mySim ]
 ##################################################################
 # Below should be the same for all sim scenarios
 
-import os
 import sys
 
 p.maxEvents = int(int(os.environ['LDMX_NUM_EVENTS']) * 0.7)
@@ -101,7 +101,7 @@ en_trigger = [
         trigger_energy_sums.TrigEcalEnergySum(),
         trigger_energy_sums.TrigHcalEnergySum(),
         trigger_energy_sums.TrigEcalClusterProducer(),
-        trigger_energy_sums.TrigElectronProducer('propagationMap.root'),
+        trigger_energy_sums.TrigElectronProducer(f'{os.environ["CI_DATA"]}/target_genie/propagationMap.root'),
         trigger_energy_sums.HcalTPSelector(),
         trigger_energy_sums.HCalTrigMipReco(),
         trigger_energy_sums.ECalTrigMipReco(),
