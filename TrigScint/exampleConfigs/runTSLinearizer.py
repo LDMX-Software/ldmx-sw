@@ -35,16 +35,16 @@ p.sequence = [
 
 
 #generate on the fly
-p.inputFiles = [sys.argv[1]]
+p.input_files = [sys.argv[1]]
 outname=sys.argv[1]
 outname=outname.replace("_reco.root", ".root")
 outname=outname.replace(".root", "_linearize.root")
-p.outputFiles = [ outname ]
+p.output_files = [ outname ]
 
 
-p.logger.file_path=p.outputFiles[0].replace(".root",".log")
-p.logger.termLevel = 2
-p.logger.fileLevel = log_verbosity
+p.logger.file_path=p.output_files[0].replace(".root",".log")
+p.logger.term_level = 2
+p.logger.file_level = log_verbosity
 
 #p.pause()
 

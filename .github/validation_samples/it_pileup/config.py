@@ -236,7 +236,7 @@ trigger_dqm.trigger_pass = this_pass_name
 
 dqm_with_overlay = trigScint_sim_dqm + trigScint_dqm + [trigger_dqm, ecal_digi_verify, ecal_shower_features, ecal_mip_tracking_features, ecal_veto_results] + hcal_dqm
 
-p.logger.termLevel = 1
+p.logger.term_level = 1
 
 # Add full tracking for both tagger and recoil trackers: digi, seeds, CFK, ambiguity resolution, GSF, DQM
 p.sequence.extend(full_tracking_sequence.sequence)
@@ -270,6 +270,6 @@ p.sequence.extend([
      pu_finder
 ])
 
-p.inputFiles = ['ecal_pn.root']
-p.outputFiles= ['events.root']
-p.histogramFile = 'hist.root'
+p.input_files = ['ecal_pn.root']
+p.output_files= ['events.root']
+p.histogram_file = 'hist.root'

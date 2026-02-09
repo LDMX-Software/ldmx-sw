@@ -32,13 +32,13 @@ if not os.path.isdir(arg.out_dir) :
 p = ldmxcfg.Process( "valid" )
 p.run = arg.run
 p.max_events = arg.n_events
-p.maxTriesPerEvent = 10000
+p.max_tries_per_event = 10000
 file_stub = f'energy_{arg.energy}_theta_{arg.theta:02d}_phi_{arg.phi}_attarget_{arg.angle_at_target}_geometry_v14_events_{arg.n_events}_run_{arg.run}.root'
-p.outputFiles = [ arg.out_dir+'/type_events_'+file_stub ]
+p.output_files = [ arg.out_dir+'/type_events_'+file_stub ]
 
 # we want to see every event
-p.logFrequency = 1000
-p.termLogLevel = 0
+p.log_frequency = 1000
+p.term_log_level = 0
 
 from LDMX.SimCore import simulator
 from LDMX.SimCore import generators

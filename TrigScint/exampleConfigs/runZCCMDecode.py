@@ -9,11 +9,11 @@ n_ev=400000
 
 p.max_events = n_ev
 
-p.inputFiles=[sys.argv[1]]
-p.outputFiles = [sys.argv[2]]
+p.input_files=[sys.argv[1]]
+p.output_files = [sys.argv[2]]
 input_pass=sys.argv[3]
 n_samp=int(sys.argv[4])
-log_name= p.outputFiles[0].replace(".root", "_toLDMX.log")
+log_name= p.output_files[0].replace(".root", "_toLDMX.log")
 
 
 if len(sys.argv) > 5 :
@@ -45,9 +45,9 @@ dec.is_real_data=True #default: False
 
 p.sequence = [ dec ]
 
-p.logger.termLevel = 2
+p.logger.term_level = 2
 p.logger.file_path = log_name
-p.logger.fileLevel = log_verbosity
+p.logger.file_level = log_verbosity
 
 
 if log_verbosity < 2 :

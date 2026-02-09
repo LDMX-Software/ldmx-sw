@@ -28,8 +28,8 @@ else :
 
 p.run = 10
 p.max_events = 2000
-p.outputFiles = ['testbeamSim_zNeg'+str(gun_z_pos)+'mm_beamSpot'+str(beam_x_smear)+'x'+str(beam_y_smear)+'mm_'+str(n_time_samples)+'tSamp_eNoise'+str(elec_noise)+'_tauInv'+str(k_expo)+'_detV'+str(det_v)+'_'+str(p.max_events)+'ev.root']
-print("Producing output file: "+p.outputFiles[0])
+p.output_files = ['testbeamSim_zNeg'+str(gun_z_pos)+'mm_beamSpot'+str(beam_x_smear)+'x'+str(beam_y_smear)+'mm_'+str(n_time_samples)+'tSamp_eNoise'+str(elec_noise)+'_tauInv'+str(k_expo)+'_detV'+str(det_v)+'_'+str(p.max_events)+'ev.root']
+print("Producing output file: "+p.output_files[0])
 
 gun_z_pos   =-float(gun_z_pos)  #get sign right, and make floats, to use as parameters
 beam_x_smear=float(beam_x_smear)
@@ -96,8 +96,8 @@ ts_ana.start_sample=0
 ts_ana.pedestals=ped_list
 ts_ana.gain=gain_list
 
-outname=p.outputFiles[0].replace(".root", "_plots.root")
-p.histogramFile = outname
+outname=p.output_files[0].replace(".root", "_plots.root")
+p.histogram_file = outname
 
 p.sequence=[simulation,
                   ts_digis,
@@ -108,4 +108,4 @@ p.sequence=[simulation,
                   ]
 
 
-p.termLogLevel = 2 #0
+p.term_log_level = 2 #0

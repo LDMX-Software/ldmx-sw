@@ -197,7 +197,7 @@ p.sequence   = [digi_tagger, digi_recoil,
 # The input file to be added.
 # for now, we just take the first argument on the command line
 import sys
-p.inputFiles = [sys.argv[1]]
+p.input_files = [sys.argv[1]]
 output_name_string= str(sys.argv[2]) #sample identifier
 out_dir= str(sys.argv[3])    #sample identifier
 outname=out_dir+'/'+output_name_string #+".root" #+'_withTracking.root'#+".root"
@@ -218,13 +218,13 @@ outname=out_dir+'/'+output_name_string #+".root" #+'_withTracking.root'#+".root"
 # Output name
 #   just append '_withTracking' to the name of the input file
 from pathlib import Path
-input_filepath = Path(p.inputFiles[0])
-p.outputFiles = [outname]
+input_filepath = Path(p.input_files[0])
+p.output_files = [outname]
 
 # lower log level so 'info' and above messages can be printed
-p.termLogLevel=4
+p.term_log_level=4
 
 # Number of events
 p.max_events = 2000
 # Where to store DQM plots
-p.histogramFile = out_dir+'_hists/'+output_name_string #' #out_dir+'_hists/'+output_name_string #+"_hists.root"
+p.histogram_file = out_dir+'_hists/'+output_name_string #' #out_dir+'_hists/'+output_name_string #+"_hists.root"

@@ -34,12 +34,12 @@ p = ldmxcfg.Process( "valid" )
 if arg.max_events is not None:
     p.max_events = arg.max_events
 
-p.inputFiles = [str(path) for path in arg.input_file]
-p.histogramFile = str(arg.out_dir / arg.out_name)
+p.input_files = [str(path) for path in arg.input_file]
+p.histogram_file = str(arg.out_dir / arg.out_name)
 
 # print updates every 1k events
-p.logFrequency = 1000
-p.termLogLevel = 0
+p.log_frequency = 1000
+p.term_log_level = 0
 
 import LDMX.Ecal.EcalGeometry
 

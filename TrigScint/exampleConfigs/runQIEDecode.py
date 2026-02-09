@@ -11,11 +11,11 @@ n_ev=400000
 
 #p.max_events = n_ev
 
-p.inputFiles=[sys.argv[1]]
-p.outputFiles = [sys.argv[2]]
+p.input_files=[sys.argv[1]]
+p.output_files = [sys.argv[2]]
 input_pass=sys.argv[3]
 n_samp=int(sys.argv[4])
-log_name= p.outputFiles[0].replace(".root", "_toLDMX.log")
+log_name= p.output_files[0].replace(".root", "_toLDMX.log")
 
 
 if len(sys.argv) > 5 :
@@ -47,15 +47,15 @@ p.sequence = [
     dec
     ]
 
-#p.termLogLevel = 1
-p.logger.termLevel = 1
-#p.logFileName = log_name
+#p.term_log_level = 1
+p.logger.term_level = 1
+#p.log_file_name = log_name
 p.logger.FilePath = log_name
-#p.fileLogLevel = log_verbosity
-p.logger.fileLevel = log_verbosity
+#p.file_log_level = log_verbosity
+p.logger.file_level = log_verbosity
 
 
-#p.logger.logRules=[ "QIEDecoder", 0]
+#p.logger.log_rules=[ "QIEDecoder", 0]
 #p.logger.debug("QIEDecoder") #wrong way, don't pass instance name
 if log_verbosity < 2 :
     p.logger.debug(dec) #pass instance itself

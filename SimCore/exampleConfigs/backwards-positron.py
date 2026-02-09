@@ -24,9 +24,9 @@ args = parser.parse_args()
 
 p = ldmxcfg.Process("beam")
 p.max_events = args.n_events
-p.termLogLevel = 1
+p.term_log_level = 1
 p.run = 1
-p.outputFiles = [ f'backwards_positron_beam_{args.beam}.root' ]
+p.output_files = [ f'backwards_positron_beam_{args.beam}.root' ]
 
 from LDMX.SimCore import generators
 from LDMX.SimCore import simulator

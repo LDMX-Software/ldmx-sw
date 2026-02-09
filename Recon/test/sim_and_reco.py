@@ -68,8 +68,8 @@ p.sequence=[ sim,
         #ldmxcfg.Producer('trackerVeto' ,'ldmx::TrackerVetoProcessor'  ,'EventProc')
         ]
 
-p.outputFiles=["/tmp/simoutput.root"]
+p.output_files=["/tmp/simoutput.root"]
 p.max_events = 1000
 with open('/tmp/parameterDump.json', 'w') as outfile:
-     json.dump(p.parameterDump(),  outfile, indent=4)
+     json.dump(p.parameter_dump(),  outfile, indent=4)
 

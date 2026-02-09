@@ -36,7 +36,7 @@ class HcalRawDecoder(Producer) :
         if connections_table is None :
             # deduce if using eid based on presence of HcalDetectorMap in conditions system
             self.translate_eid = False
-            for cop in ldmxcfg.Process.lastProcess.conditionsObjectProviders :
+            for cop in ldmxcfg.Process.lastProcess.conditions_object_providers :
                 if isinstance(cop,HcalDetectorMap) :
                     self.translate_eid = True
                     break
@@ -78,7 +78,7 @@ class HcalAlignPolarfires(Producer) :
         p = ldmxcfg.Process.lastProcess
 
         if drop_lonely_events :
-            p.skimConsider(self.name)
+            p.skim_consider(self.name)
 
         if not keep_inputs :
             for i in self.input_names :

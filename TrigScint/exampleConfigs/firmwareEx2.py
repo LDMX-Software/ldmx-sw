@@ -163,17 +163,17 @@ hit_firm.verbose = True
 p.sequence=[ sim, ts_digis_tag, ts_digis_up, ts_digis_down, ts_clusters_tag, ts_clusters_up, ts_clusters_down, trig_scint_track, trig_firm, e_count, qie_digi, rechit, hit_firm]
 # p.sequence=[sim]
 
-p.outputFiles=[outname]
+p.output_files=[outname]
 
-p.termLogLevel = 0  # default is 2 (WARNING); but then logFrequency is ignored. level 1 = INFO.
+p.term_log_level = 0  # default is 2 (WARNING); but then logFrequency is ignored. level 1 = INFO.
 
 #print this many events to stdout (independent on number of events, edge case: round-off effects when not divisible. so can go up by a factor 2 or so)
 log_events=20
 if p.max_events < log_events :
      log_events = p.max_events
-p.logFrequency = int( p.max_events/log_events )
+p.log_frequency = int( p.max_events/log_events )
 
-json.dumps(p.parameterDump(), indent=2)
+json.dumps(p.parameter_dump(), indent=2)
 
 with open('parameterDump.json', 'w') as outfile:
-     json.dump(p.parameterDump(),  outfile, indent=4)
+     json.dump(p.parameter_dump(),  outfile, indent=4)

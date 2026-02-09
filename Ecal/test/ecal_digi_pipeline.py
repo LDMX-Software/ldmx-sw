@@ -31,7 +31,7 @@ p.sequence=[ sim,
         digi.EcalRecProducer(),
         dqm.EcalDigiVerify()
         ]
-p.outputFiles=['ecal_digi_pipeline.root']
-p.histogramFile = 'ecal_digi_verify_hists.root'
+p.output_files=['ecal_digi_pipeline.root']
+p.histogram_file = 'ecal_digi_verify_hists.root'
 p.max_events = 1000
 

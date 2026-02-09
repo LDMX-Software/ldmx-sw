@@ -13,10 +13,10 @@ from LDMX.Hcal import digi, hcal_hardcoded_conditions
 
 
 # Set the output file name
-p.outputFiles = ['hcal_digi_pipeline_test.root']
+p.output_files = ['hcal_digi_pipeline_test.root']
 
 # The the histogram file name
-p.histogramFile = 'hcal_digi_pipeline_test_histo.root'
+p.histogram_file = 'hcal_digi_pipeline_test_histo.root'
 
 # Geometry provider
 import LDMX.Hcal.HcalGeometry

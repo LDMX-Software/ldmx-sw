@@ -9,7 +9,7 @@ import os
 p.run = int(os.environ['LDMX_RUN_NUMBER'])
 # slightly less than the others to test wrapping
 p.max_events = int(int(os.environ['LDMX_NUM_EVENTS'])*0.95) // 2
-p.logger.termLevel = 4
+p.logger.term_level = 4
 
 from LDMX.SimCore import simulator as sim
 
@@ -29,4 +29,4 @@ import LDMX.Ecal.EcalGeometry
 import LDMX.Hcal.HcalGeometry
 
 
-p.outputFiles = ['pileup.root']
+p.output_files = ['pileup.root']

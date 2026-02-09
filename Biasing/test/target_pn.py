@@ -15,5 +15,5 @@ p.sequence = [
         )
     ]
 p.max_events = 1000
-p.maxTriesPerEvent = 1000
-p.outputFiles = [ 'target_pn.root' ]
+p.max_tries_per_event = 1000
+p.output_files = [ 'target_pn.root' ]

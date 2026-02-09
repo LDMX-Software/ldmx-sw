@@ -11,12 +11,12 @@ p.max_events = 10
 if len(sys.argv) > 1 :
     p.max_events = int(sys.argv[1])
 # we want to see every event
-p.logFrequency = 1
-p.termLogLevel = 0
+p.log_frequency = 1
+p.term_log_level = 0
 # Set a run number
 p.run = 9001
 # we also only have an output file
-p.outputFiles = [ "justSim_" + str(p.max_events) + "_events.root" ]
+p.output_files = [ "justSim_" + str(p.max_events) + "_events.root" ]
 import LDMX.Ecal.EcalGeometry
 import LDMX.Hcal.HcalGeometry
 from LDMX.SimCore import simulator as sim

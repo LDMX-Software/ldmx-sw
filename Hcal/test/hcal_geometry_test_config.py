@@ -14,10 +14,10 @@ from LDMX.Hcal import digi
 
 
 # Set the output file name
-p.outputFiles = ['hcal_geometry_test.root']
+p.output_files = ['hcal_geometry_test.root']
 
 # The histogram file name
-p.histogramFile = 'hcal_geometry_test_histo.root'
+p.histogram_file = 'hcal_geometry_test_histo.root'
 
 # Geometry provider
 import LDMX.Ecal.EcalGeometry

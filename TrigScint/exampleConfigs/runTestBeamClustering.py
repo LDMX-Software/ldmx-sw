@@ -29,10 +29,10 @@ p.sequence = [
 
 
 #generate on the fly
-p.inputFiles = [sys.argv[1]]
-p.outputFiles = [ sys.argv[1].replace(".root", "_clusters.root") ]
+p.input_files = [sys.argv[1]]
+p.output_files = [ sys.argv[1].replace(".root", "_clusters.root") ]
 
-p.termLogLevel = 2
-p.logFileName = p.outputFiles[0].replace(".root", ".log")
+p.term_log_level = 2
+p.log_file_name = p.output_files[0].replace(".root", ".log")
 p.logFileLevel=0
 

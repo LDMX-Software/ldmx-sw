@@ -95,17 +95,17 @@ p.sequence = [
 
 
 #generate on the fly
-p.inputFiles = [sys.argv[1]]
+p.input_files = [sys.argv[1]]
 outname=sys.argv[1]
 outname=outname.replace(".root", "_plots.root")
-#p.outputFiles = [ outname ]
+#p.output_files = [ outname ]
 
-p.histogramFile = outname #.replace(".root"
+p.histogram_file = outname #.replace(".root"
 
 p.max_events = n_ev
 
-p.logFileName=outname.replace(".root",".log")
-p.termLogLevel = 2#0
+p.log_file_name=outname.replace(".root",".log")
+p.term_log_level = 2#0
 p.logFileLevel=0
 
-json.dumps(p.parameterDump(), indent=2)
+json.dumps(p.parameter_dump(), indent=2)

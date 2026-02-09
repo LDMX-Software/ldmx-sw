@@ -5,8 +5,8 @@ p = ldmxcfg.Process('raw')
 import sys
 
 RAWfileName=sys.argv[1]
-p.outputFiles = [sys.argv[2]]
-log_name=p.outputFiles[0].replace(".root", "_toRoot.log")
+p.output_files = [sys.argv[2]]
+log_name=p.output_files[0].replace(".root", "_toRoot.log")
 if len(sys.argv) > 3 :
     p.maxEvents = int(sys.argv[3])
 else :
@@ -24,7 +24,7 @@ p.sequence = [
     )
 ]
 
-p.logger.termLevel = 0 #1
+p.logger.term_level = 0 #1
 p.logger.file_name = log_name
-p.logger.fileLevel = 0
+p.logger.file_level = 0
 

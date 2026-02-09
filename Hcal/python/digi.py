@@ -58,7 +58,7 @@ class HcalHgcrocEmulator(HgcrocEmulator) :
         return pe*(5/1)
 
 
-class DigiTimeSpread():
+class DigiTimeSpread:
     '''Type representing possible time smearing/shifting that can be applied
     during the digitization stage, either per event/spill or per hit
     '''
@@ -105,7 +105,7 @@ class ConstantSpread(DigiTimeSpread):
             Value of the constant time spread
         '''
         super().__init__(2, parameters=[value])
-    
+
 class HcalDigiProducer(Producer) :
     """Configuration for HcalDigiProducer
 

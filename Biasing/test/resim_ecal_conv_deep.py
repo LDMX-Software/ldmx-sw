@@ -26,15 +26,15 @@ import LDMX.Ecal.vetos as ecal_vetos
 from LDMX.Biasing import util
 
 
-p.inputFiles = ['events_pn_deep_test.root']
-p.outputFiles = ['events_pn_deep_test_resim.root']
-p.histogramFile = 'hist_pn_deep_test_resim.root'
+p.input_files = ['events_pn_deep_test.root']
+p.output_files = ['events_pn_deep_test_resim.root']
+p.histogram_file = 'hist_pn_deep_test_resim.root'
 
-p.maxTriesPerEvent = 10000
+p.max_tries_per_event = 10000
 p.max_events = 1000
 p.run = 20
-p.logFrequency = 100
-p.termLogLevel = 0
+p.log_frequency = 100
+p.term_log_level = 0
 
 p.sequence=[mysim.resimulate(which_events = [1]),
 #        mysim.actions.extend([filters.TargetBremFilter()]),

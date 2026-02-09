@@ -14,12 +14,12 @@ arg = parser.parse_args()
 
 p = ldmxcfg.Process('sim')
 p.max_events = arg.nevents
-p.termLogLevel = 0
-p.logFrequency = 10
+p.term_log_level = 0
+p.log_frequency = 10
 
 detector = 'ldmx-hcal-prototype-v2.0' # TODO: CHANGE TO FEFIX version
 
-p.outputFiles = [
+p.output_files = [
         arg.particle
         +"Sim_%.2fGeV_"%arg.energy
         + str(p.max_events)

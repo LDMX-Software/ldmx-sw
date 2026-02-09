@@ -99,7 +99,7 @@ p.sequence = [
 
 
 #generate on the fly
-p.inputFiles = [sys.argv[1]]
-p.outputFiles = [ sys.argv[1].replace(".root", "_hits.root") ]
+p.input_files = [sys.argv[1]]
+p.output_files = [ sys.argv[1].replace(".root", "_hits.root") ]
 
-p.termLogLevel = 2
+p.term_log_level = 2

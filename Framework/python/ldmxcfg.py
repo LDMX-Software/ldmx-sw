@@ -42,10 +42,10 @@ class EventProcessor:
 
         if module_name.endswith('.so'):
             # assume user passed full path to library
-            Process.addLibrary(module_name)
+            Process.add_library(module_name)
         else:
             # assume user passed name of module processor is compiled into
-            Process.addModule(module_name)
+            Process.add_module(module_name)
 
 
     @classmethod
@@ -158,12 +158,12 @@ class EventProcessor:
 
         # load any dependency libraries at runtime as well
         for mod in needs:
-            Process.addModule(mod)
+            Process.add_module(mod)
 
         return instance
 
 
-    def build1DHistogram(self, name, xlabel, bins, xmin = None, xmax = None, weighted=False):
+    def build_1d_histogram(self, name, xlabel, bins, xmin = None, xmax = None, weighted=False):
         """Make a 1D histogram 
 
         If xmin and xmax are not provided, bins is assumed to be
@@ -198,7 +198,7 @@ class EventProcessor:
         self.histograms.append(h.histogram(name, xlabel,the_bins, weighted=weighted))
 
 
-    def build2DHistogram(self, name,
+    def build_2d_histogram(self, name,
             xlabel = '', xbins = 1, xmin = None, xmax = None,
             ylabel = '', ybins = 1, ymin = None, ymax = None,
             weighted = False) :
@@ -240,12 +240,12 @@ class EventProcessor:
         --------
 
         When doing all uniform binning, you can specify the arguments by position.
-            myProcessor.build2DHistogram( 'dummy' ,
+            myProcessor.build_2d_histogram( 'dummy' ,
                 'My X Axis' , 20 , 0. , 1. ,
                 'My Y Axis' , 60 , 0. , 10. )
 
         When using variable binning, you have to use the parameter names.
-            myProcessor.build2DHistogram( 'dummy2' ,
+            myProcessor.build_2d_histogram( 'dummy2' ,
                 xlabel='My X Axis', xbins=[0.,1.,2.],
                 ylabel='My Y Axis', ybins=60, ymin=0., ymax=10. )
         """
@@ -351,15 +351,15 @@ class ConditionsObjectProvider:
     def __init__(self, object_name, class_name, module_name):
         self.object_name=object_name
         self.class_name=class_name
-        self.tagName=''
+        self.tag_name=''
 
         # make sure process loads this library if it hasn't yet
-        Process.addModule(module_name)
+        Process.add_module(module_name)
 
         #register this conditions object provider with the process
-        Process.declareConditionsObjectProvider(self)
+        Process.declare_conditions_object_provider(self)
 
-    def setTag(self,newtag) :
+    def set_tag(self,newtag) :
         """Set the tag generation of the Conditions
 
         Parameters
@@ -368,7 +368,7 @@ class ConditionsObjectProvider:
             Tag for generation of conditions
         """
 
-        self.tagName=newtag
+        self.tag_name=newtag
 
     def __eq__(self,other) :
         """Check if two COPs are the same
@@ -395,7 +395,7 @@ class ConditionsObjectProvider:
             A message with all the parameters and member variables in a human readable format
         """
 
-        msg = "\n  ConditionsObjectProvider(%s of class %s, tag='%s')"%(self.object_name,self.class_name,self.tagName)
+        msg = "\n  ConditionsObjectProvider(%s of class %s, tag='%s')"%(self.object_name,self.class_name,self.tag_name)
         if len(self.__dict__)>0:
             msg += "\n   Parameters:"
             for k, v in self.__dict__.items():
@@ -417,7 +417,7 @@ class RandomNumberSeedService(ConditionsObjectProvider):
 
     def __init__(self) :
         super().__init__('RandomNumberSeedService','framework::RandomNumberSeedService','Framework')
-        self.seedMode = ''
+        self.seed_mode = ''
         self.seed=-1 #only used in external mode
 
         # use run seed mode by default
@@ -425,7 +425,7 @@ class RandomNumberSeedService(ConditionsObjectProvider):
 
     def run(self) :
         """Base random number seeds off of the run number"""
-        self.seedMode = 'run'
+        self.seed_mode = 'run'
 
     def external(self,seed) :
         """Input the master random number seed
@@ -435,12 +435,12 @@ class RandomNumberSeedService(ConditionsObjectProvider):
         seed : int
             Integer to use as master random number seed
         """
-        self.seedMode = 'external'
+        self.seed_mode = 'external'
         self.seed = seed
 
     def time(self) :
         """Set master random seed based off of time"""
-        self.seedMode = 'time'
+        self.seed_mode = 'time'
 
 
 class _LogRule:
@@ -483,10 +483,10 @@ class Logger:
     """
 
     def __init__(self):
-        self.termLevel = 2 # warnings and above
-        self.fileLevel = 0 # everything
+        self.term_level = 2 # warnings and above
+        self.file_level = 0 # everything
         self.file_path  = '' # don't open file for logging
-        self.logRules = []
+        self.log_rules = []
 
 
     def custom(self, name, level):
@@ -505,7 +505,7 @@ class Logger:
 
         if isinstance(name, EventProcessor):
             name = name.instance_name
-        self.logRules.append(_LogRule(name, level))
+        self.log_rules.append(_LogRule(name, level))
 
     def trace(self, name):
         """drop the input channel to the trace level"""
@@ -587,36 +587,36 @@ class Process:
     Analyzer : the other type of event processor
     """
 
-    lastProcess=None
+    last_process =None
 
     def __init__(self, pass_name):
 
-        if ( Process.lastProcess is not None ) :
+        if ( Process.last_process is not None ) :
             raise Exception( "Process object is already created! You can only create one Process object in a script." )
 
         self.pass_name=pass_name
         self.max_events=-1
-        self.minEvents=-1
-        self.maxTriesPerEvent=1
+        self.min_events=-1
+        self.max_tries_per_event=1
         self.run=-1
-        self.inputFiles=[]
-        self.outputFiles=[]
+        self.input_files=[]
+        self.output_files=[]
         self.sequence=[]
         self.keep=[]
         self.libraries=[]
-        self.skimDefaultIsKeep=True
-        self.skimRules=[]
-        self.logFrequency=-1
+        self.skim_default_is_keep=True
+        self.skim_rules=[]
+        self.log_frequency=-1
         self.logger = Logger()
-        self.compressionSetting=9
-        self.histogramFile=''
-        self.conditionsGlobalTag='Default'
-        self.conditionsObjectProviders=[]
+        self.compression_setting=9
+        self.histogram_file=''
+        self.conditions_global_tag='Default'
+        self.conditions_object_providers=[]
         self.tree_name = 'LDMX_Events'
-        Process.lastProcess=self
+        Process.last_process=self
 
         # needs lastProcess defined to self-register
-        self.randomNumberSeedService=RandomNumberSeedService()
+        self.random_number_seed_service=RandomNumberSeedService()
 
 
     def __setattr__(self, key, val):
@@ -635,13 +635,13 @@ class Process:
             # this if need be
             # 'Process' needs to match the name given in enableLogging
             # in include/Framework/Process.h
-            self.logger.logRules.insert(0, _LogRule('Process', level=1))
+            self.logger.log_rules.insert(0, _LogRule('Process', level=1))
             # fall through to set the key=val
 
         super().__setattr__(key, val)
 
 
-    def addLibrary(lib) :
+    def add_library(lib) :
         """Add a library to the list of dynamically loaded libraries
 
         A process object must already have been created.
@@ -660,12 +660,12 @@ class Process:
             addLibrary( 'libSimCore.so' )
         """
 
-        if ( Process.lastProcess is not None ) :
-            Process.lastProcess.libraries.append( lib )
+        if ( Process.last_process is not None ) :
+            Process.last_process.libraries.append( lib )
         else :
             raise Exception( "No Process object defined yet! You need to create a Process before creating any EventProcessors." )
 
-    def addModule(module) :
+    def add_module(module) :
         """Add a module to the list of dynamically loaded libraries
 
         A process object must already have been created.
@@ -693,9 +693,9 @@ class Process:
         """
 
         actual_module_name = module.replace('/','_').replace('::','_')
-        Process.addLibrary('@CMAKE_INSTALL_PREFIX@/lib/lib%s.so'%(actual_module_name))
+        Process.add_library('@CMAKE_INSTALL_PREFIX@/lib/lib%s.so'%(actual_module_name))
 
-    def declareConditionsObjectProvider(cop):
+    def declare_conditions_object_provider(cop):
         """Declare a conditions object provider to be loaded with the process
 
         A process object must already have been created.
@@ -711,22 +711,22 @@ class Process:
         - Overrides an already declared COP with the passed COP if they are equal
         """
 
-        if ( Process.lastProcess is not None ) :
+        if ( Process.last_process is not None ) :
 
-            cop.setTag(Process.lastProcess.conditionsGlobalTag)
+            cop.set_tag(Process.last_process.conditions_global_tag)
 
             # check if the input COP matches one already declared
             #   if it does match, override the already declared one with the passed one
-            for index, already_defined_cop in enumerate(Process.lastProcess.conditionsObjectProviders) :
+            for index, already_defined_cop in enumerate(Process.last_process.conditions_object_providers) :
                 if cop == already_defined_cop :
-                    Process.lastProcess.conditionsObjectProviders[index] = cop
+                    Process.last_process.conditions_object_providers[index] = cop
                     return
 
-            Process.lastProcess.conditionsObjectProviders.append( cop )
+            Process.last_process.conditions_object_providers.append( cop )
         else :
             raise Exception( "No Process object defined yet! You need to create a Process before declaring any ConditionsObjectProviders." )
 
-    def setConditionsGlobalTag(self,tag) :
+    def set_conditions_global_tag(self,tag) :
         """Set the global tag for all the ConditionsObjectProviders
 
         Parameters
@@ -735,21 +735,21 @@ class Process:
             Global generation tag to pass to all COPs
         """
 
-        self.conditionsGlobalTag=tag
-        for cop in self.conditionsObjectProviders :
-            cop.setTag(tag)
+        self.conditions_global_tag=tag
+        for cop in self.conditions_object_providers :
+            cop.set_tag(tag)
 
-    def skimDefaultIsSave(self):
+    def skim_default_is_save(self):
         """Configure the process to by default keep every event."""
 
-        self.skimDefaultIsKeep=True
+        self.skim_default_is_keep=True
 
-    def skimDefaultIsDrop(self):
+    def skim_default_is_drop(self):
         """Configure the process to by default drop (not save) every event."""
 
-        self.skimDefaultIsKeep=False
+        self.skim_default_is_keep=False
 
-    def skimConsider(self,name_pat):
+    def skim_consider(self,name_pat):
         """Configure the process to listen to processors matching input.
 
         The list of skim rules has a rather complicated form, so it
@@ -764,7 +764,7 @@ class Process:
         -------
             ecal_veto = ldmxcfg.Producer( 'ecal_veto' , 'EcalVetoProcessor' )
             # Setup of other parameters for the veto
-            p.skimConsider( 'ecal_veto' )
+            p.skim_consider( 'ecal_veto' )
 
         See Also
         --------
@@ -772,10 +772,10 @@ class Process:
 
         """
 
-        self.skimRules.append(name_pat)
-        self.skimRules.append("")
+        self.skim_rules.append(name_pat)
+        self.skim_rules.append("")
 
-    def skimConsiderLabelled(self,name_pat,label_pat):
+    def skim_consider_labelled(self,name_pat,label_pat):
         """Configure the process to listen to processors matching input.
 
         The list of skim rules has a rather complicated form, so it
@@ -797,8 +797,8 @@ class Process:
         skimConsider
 
         """
-        self.skimRules.append(name_pat)
-        self.skimRules.append(label_pat)
+        self.skim_rules.append(name_pat)
+        self.skim_rules.append(label_pat)
 
     def setCompression(self,algorithm,level=9):
         """set the compression settings for any output files in this process
@@ -832,7 +832,7 @@ class Process:
             flag for the level of compression to use
         """
 
-        self.compressionSetting = algorithm*100 + level
+        self.compression_setting = algorithm*100 + level
 
     def inputDir(self, indir) :
         """Scan the input directory and make a list of input root files to read from it
@@ -848,7 +848,7 @@ class Process:
 
         import os
         full_path_dir = os.path.realpath(indir)
-        self.inputFiles.extend([ os.path.join(full_path_dir,f)
+        self.input_files.extend([ os.path.join(full_path_dir,f)
                 for f in os.listdir(full_path_dir)
                 if os.path.isfile(os.path.join(full_path_dir,f)) and f.endswith('.root')
                 ])
@@ -907,34 +907,34 @@ class Process:
         if (self.run>0): msg += "\n using run number %d"%(self.run)
         if (self.max_events>0): msg += "\n Maximum events to process: %d"%(self.max_events)
         else: msg += "\n No limit on maximum events to process"
-        if (len(self.conditionsObjectProviders)>0):
+        if (len(self.conditions_object_providers)>0):
             msg += "\n conditionsObjectProviders:\n"
-            for cop in self.conditionsObjectProviders:
+            for cop in self.conditions_object_providers:
                 msg+=str(cop)
         msg += "\n Processor sequence:"
         for proc in self.sequence:
             msg += str(proc)
-        if len(self.inputFiles) > 0:
-            if len(self.outputFiles)==len(self.inputFiles):
+        if len(self.input_files) > 0:
+            if len(self.output_files)==len(self.input_files):
                 msg += "\n Files:"
-                for i in range(0,len(self.inputFiles)):
-                    msg += "\n  '%s' -> '%s'"%(self.inputFiles[i],self.outputFiles[i])
+                for i in range(0,len(self.input_files)):
+                    msg += "\n  '%s' -> '%s'"%(self.input_files[i],self.output_files[i])
             else:
                 msg += "\n Input files:"
-                for afile in self.inputFiles:
+                for afile in self.input_files:
                     msg += '\n  ' + afile
-                if len(self.outputFiles) > 0:
-                    msg += "\n Output file: " + self.outputFiles[0]
-        elif len(self.outputFiles) > 0:
-            msg += "\n Output file: " + self.outputFiles[0]
+                if len(self.output_files) > 0:
+                    msg += "\n Output file: " + self.output_files[0]
+        elif len(self.output_files) > 0:
+            msg += "\n Output file: " + self.output_files[0]
         msg += "\n Skim rules:"
-        if self.skimDefaultIsKeep: msg += "\n  Default: keep the event"
+        if self.skim_default_is_keep: msg += "\n  Default: keep the event"
         else: msg += "\n  Default: drop the event"
-        for i in range(0,len(self.skimRules)-1,2):
-            if self.skimRules[i+1]=="":
-                msg += "\n  Listen to hints from processors with names matching '%s'"%(self.skimRules[i])
+        for i in range(0,len(self.skim_rules)-1,2):
+            if self.skim_rules[i+1]=="":
+                msg += "\n  Listen to hints from processors with names matching '%s'"%(self.skim_rules[i])
             else:
-                msg += "\n  Listen to hints with labels matching '%s' from processors with names matching '%s'"%(self.skimRules[i+1],self.skimRules[i])
+                msg += "\n  Listen to hints with labels matching '%s' from processors with names matching '%s'"%(self.skim_rules[i+1],self.skim_rules[i])
         if len(self.keep) > 0:
             msg += "\n Rules for keeping previous products:"
             for arule in self.keep:

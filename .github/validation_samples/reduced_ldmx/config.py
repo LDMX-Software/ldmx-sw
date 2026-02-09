@@ -3,7 +3,7 @@ from LDMX.Framework import ldmxcfg
 
 p = ldmxcfg.Process('test')
 
-p.maxTriesPerEvent = 100
+p.max_tries_per_event = 100
 
 from LDMX.Biasing import ecal
 from LDMX.SimCore import generators as gen
@@ -26,7 +26,7 @@ my_sim.description = 'Reduced ECal Electron Gun Test Simulation'
 
 my_sim.generators = [ my_gun ]
 p.sequence = [ my_sim ]
-p.termLogLevel = 0
+p.term_log_level = 0
 
 import os
 
@@ -34,8 +34,8 @@ import os
 p.max_events = int(os.environ['LDMX_NUM_EVENTS'])
 p.run = int(os.environ['LDMX_RUN_NUMBER'])
 
-p.histogramFile = 'hist.root'
-p.outputFiles = ['events.root']
+p.histogram_file = 'hist.root'
+p.output_files = ['events.root']
 
 import LDMX.Ecal.digi as ecal_digi
 import LDMX.Ecal.ecal_hardcoded_conditions

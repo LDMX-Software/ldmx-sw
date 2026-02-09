@@ -3,7 +3,7 @@ from LDMX.Framework import ldmxcfg
 
 p = ldmxcfg.Process('test')
 
-p.maxTriesPerEvent = 10000
+p.max_tries_per_event = 10000
 
 from LDMX.Biasing import ecal
 from LDMX.SimCore import generators as gen
@@ -64,8 +64,8 @@ import sys
 p.max_events = int(os.environ['LDMX_NUM_EVENTS'])
 p.run = int(os.environ['LDMX_RUN_NUMBER'])
 
-p.histogramFile = 'hist.root'
-p.outputFiles = ['events.root']
+p.histogram_file = 'hist.root'
+p.output_files = ['events.root']
 
 # Load the full tracking sequance
 import LDMX.Ecal.digi as ecal_digi
@@ -116,7 +116,7 @@ import LDMX.Hcal.hcal as hcal
 
 hcal_veto = hcal.HcalVetoProcessor()
 
-p.logger.termLevel = 1
+p.logger.term_level = 1
 # Example to show trace level logging for trigger (only)
 p.logger.custom(trigger, level = -1)
 
@@ -134,8 +134,8 @@ p.sequence.extend([
         dqm.EcalClusterAnalyzer()
         ])
 
-p.skimDefaultIsDrop()
-p.skimConsider(trigger.instance_name)
+p.skim_default_is_drop()
+p.skim_consider(trigger.instance_name)
 
 almost_all_dqm = [dqm.sample_validation_dqm + dqm.ecal_dqm + dqm.hcal_dqm + dqm.trigger_dqm]
 

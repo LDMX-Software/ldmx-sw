@@ -3,7 +3,7 @@ from LDMX.Framework import ldmxcfg
 
 p = ldmxcfg.Process('test')
 
-p.maxTriesPerEvent = 10000
+p.max_tries_per_event = 10000
 
 from LDMX.Biasing import ecal
 from LDMX.SimCore import generators as gen
@@ -32,8 +32,8 @@ import sys
 p.max_events = int(int(os.environ['LDMX_NUM_EVENTS']) * 0.99)
 p.run = int(os.environ['LDMX_RUN_NUMBER'])
 
-p.histogramFile = 'hist.root'
-p.outputFiles = ['events.root']
+p.histogram_file = 'hist.root'
+p.output_files = ['events.root']
 
 # Load the full tracking sequance
 import LDMX.Ecal.digi as ecal_digi
@@ -101,7 +101,7 @@ hcal_veto = hcal.HcalVetoProcessor()
 hcal_clusters = hcal.HcalClusterProducer()
 hcal_wab = hcal.HcalWABVetoProcessor()
 
-p.logger.termLevel = 1
+p.logger.term_level = 1
 # Example to show trace level logging for recoil CKF  (only)
 #p.logger.custom(full_tracking_sequence.dqm_recoil_ckf, level = -1)
 

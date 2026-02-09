@@ -21,11 +21,11 @@ else :
 
 p.run = 10
 #p.max_events = 2000
-p.inputFiles = [ input_file ]
+p.input_files = [ input_file ]
 outname=input_file.replace(".root", "_interCalib.root")
-p.outputFiles = [ outname ]
-print("Running over input file: "+p.inputFiles[0])
-print("Producing output file: "+p.outputFiles[0])
+p.output_files = [ outname ]
+print("Running over input file: "+p.input_files[0])
+print("Producing output file: "+p.output_files[0])
 
 from LDMX.TrigScint.trigScint import TrigScintRecHitProducer
 from LDMX.TrigScint.trigScint import TrigScintClusterProducer
@@ -88,7 +88,7 @@ ts_ana.pedestals=ped_list
 ts_ana.gain=gain_list
 
 outname=outname.replace(".root", "_plots.root")
-p.histogramFile = outname
+p.histogram_file = outname
 
 
 
@@ -140,4 +140,4 @@ p.sequence = [
 
 
 
-p.termLogLevel = 2 #0
+p.term_log_level = 2 #0

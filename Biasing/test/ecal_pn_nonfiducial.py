@@ -21,14 +21,14 @@ import LDMX.Ecal.digi as ecal_digi
 import LDMX.Ecal.vetos as ecal_vetos
 
 
-p.outputFiles = ['events_nonfiducial_test_production.root']
-p.histogramFile = 'hist_nonfiducial_test_production.root'
+p.output_files = ['events_nonfiducial_test_production.root']
+p.histogram_file = 'hist_nonfiducial_test_production.root'
 
-p.maxTriesPerEvent = 10000
+p.max_tries_per_event = 10000
 p.max_events = 100
 p.run = 2
-p.logFrequency = 100
-#p.termLogLevel = 0
+p.log_frequency = 100
+#p.term_log_level = 0
 
 p.sequence=[ mysim,
         ecal_digi.EcalDigiProducer(),

@@ -24,14 +24,14 @@ import LDMX.Ecal.vetos as ecal_vetos
 from LDMX.Biasing import util
 
 
-p.outputFiles = ['events_pn_deep_test.root']
-p.histogramFile = 'hist_pn_deep_test.root'
+p.output_files = ['events_pn_deep_test.root']
+p.histogram_file = 'hist_pn_deep_test.root'
 
-p.maxTriesPerEvent = 10000
+p.max_tries_per_event = 10000
 p.max_events = 10
 p.run = 20
-p.logFrequency = 100
-p.termLogLevel = 0
+p.log_frequency = 100
+p.term_log_level = 0
 
 p.sequence=[ mysim,
         ecal_digi.EcalDigiProducer(),

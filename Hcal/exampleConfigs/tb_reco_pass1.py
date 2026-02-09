@@ -19,8 +19,8 @@ arg = parser.parse_args()
 from LDMX.Framework import ldmxcfg
 p = ldmxcfg.Process('')
 #p.max_events = arg.max_events
-p.termLogLevel = 0
-p.logFrequency = 1000
+p.term_log_level = 0
+p.log_frequency = 1000
 
 print(arg.output_dir)
 
@@ -32,8 +32,8 @@ import LDMX.Hcal.hgcrocFormat as hcal_format
 base_name = os.path.basename(arg.input_file).replace('.root','')
 dir_name  = os.path.dirname(arg.output_dir)
 
-p.inputFiles = [arg.input_file]
-p.outputFiles = [f'{dir_name}/reco_{base_name}_pass1.root']
+p.input_files = [arg.input_file]
+p.output_files = [f'{dir_name}/reco_{base_name}_pass1.root']
 
 # sequence
 tbl = f'{os.environ["LDMX_BASE"]}/ldmx-sw/Hcal/data/testbeam_connections.csv'

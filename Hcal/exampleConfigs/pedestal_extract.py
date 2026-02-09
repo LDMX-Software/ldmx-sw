@@ -16,8 +16,8 @@ from LDMX.Framework import ldmxcfg
 
 p = ldmxcfg.Process('hcal_ana')
 p.max_events = arg.max_events
-p.termLogLevel = 0
-p.logFrequency = 10
+p.term_log_level = 0
+p.log_frequency = 10
 
 import LDMX.Hcal.hgcrocFormat as hcal_format
 import LDMX.Hcal.hcal_ana as hcal_ana
@@ -28,9 +28,9 @@ from LDMX.Packing import rawio
 import os
 base_name = os.path.basename(arg.input_file).replace('.raw','')
 
-p.outputFiles = ['/dev/null']
+p.output_files = ['/dev/null']
 
-p.histogramFile = f'hist_{base_name}.root'
+p.histogram_file = f'hist_{base_name}.root'
 tbl = f'{os.environ["LDMX_BASE"]}/ldmx-sw/Hcal/data/testbeam_connections.csv'
 
 # sequence

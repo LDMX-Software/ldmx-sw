@@ -10,14 +10,14 @@ if len(sys.argv) > 1 :
     p.max_events = int(sys.argv[1])
 
 # we want to see every event
-p.logFrequency = 1 if p.max_events <= 10 else 100
-p.termLogLevel = 1
+p.log_frequency = 1 if p.max_events <= 10 else 100
+p.term_log_level = 1
 
 # Set a run number
 p.run = 9001
 
 # we also only have an output file
-p.outputFiles = [ "pfReco_" + str(p.max_events) + "_events.root" ]
+p.output_files = [ "pfReco_" + str(p.max_events) + "_events.root" ]
 
 import LDMX.Ecal.EcalGeometry
 import LDMX.Hcal.HcalGeometry
@@ -82,7 +82,7 @@ p.sequence.extend([
         ])
 
 if True: #False:
-    p.setCompression(2, level=9) # LZMA
+    p.set_compression(2, level=9) # LZMA
     from LDMX.Recon import pfReco
     ecal_pf = pfReco.pfEcalClusterProducer()
     hcal_pf = pfReco.pfHcalClusterProducer()

@@ -13,10 +13,10 @@ from LDMX.Ecal import digi, ecal_hardcoded_conditions, ecal_trig_digi
 
 
 # Set the output file name
-p.outputFiles = ['ecal_digi_pipeline_test.root']
+p.output_files = ['ecal_digi_pipeline_test.root']
 
 # The the histogram file name
-p.histogramFile = 'ecal_digi_pipeline_test_histo.root'
+p.histogram_file = 'ecal_digi_pipeline_test_histo.root'
 
 # Geometry provider
 from LDMX.Ecal import EcalGeometry

@@ -3,7 +3,7 @@ from LDMX.Framework import ldmxcfg
 
 p = ldmxcfg.Process('test')
 
-p.maxTriesPerEvent = 10000
+p.max_tries_per_event = 10000
 
 from LDMX.Biasing import target
 from LDMX.SimCore import generators
@@ -33,8 +33,8 @@ import sys
 p.max_events = int(os.environ['LDMX_NUM_EVENTS'])
 p.run = int(os.environ['LDMX_RUN_NUMBER'])
 
-p.histogramFile = 'hist.root'
-p.outputFiles = ['events.root']
+p.histogram_file = 'hist.root'
+p.output_files = ['events.root']
 
 # Load the full tracking sequance
 import LDMX.Ecal.digi as ecal_digi
@@ -106,7 +106,7 @@ ecal_pres_skimmer = EcalPreselectionSkimmer()
 # The Tracking modules produce a lot of helpful messages
 # but (at the debug level) is too much for commiting the gold log
 # into the git working tree on GitHub
-p.logger.termLevel = 1
+p.logger.term_level = 1
 
 # Add full tracking for both tagger and recoil trackers: digi, seeds, CFK, ambiguity resolution, GSF, DQM
 p.sequence.extend(full_tracking_sequence.sequence)

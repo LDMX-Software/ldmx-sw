@@ -42,14 +42,14 @@ p.sequence.extend(full_tracking_sequence.sequence)
 # Output name
 #   just append '_withTracking' to the name of the input file
 from pathlib import Path
-p.outputFiles = ['test_8gev_electrons_withTracking.root']
+p.output_files = ['test_8gev_electrons_withTracking.root']
 
 # lower log level so 'info' and above messages can be printed
-p.termLogLevel=1
+p.term_log_level=1
 
 # Number of events
 p.max_events = n_evts
 
 # Where to store DQM plots
-p.histogramFile = "test_dqmMonitoringFile.root"
+p.histogram_file = "test_dqmMonitoringFile.root"
 

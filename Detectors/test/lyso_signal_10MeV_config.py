@@ -3,7 +3,7 @@ from LDMX.Framework import ldmxcfg
 
 p = ldmxcfg.Process('test')
 
-p.maxTriesPerEvent = 10000
+p.max_tries_per_event = 10000
 
 det = 'ldmx-lyso-r1-v14-8gev'
 from LDMX.Biasing import target
@@ -31,9 +31,9 @@ import sys
 p.max_events = 100
 p.run = 1
 
-p.histogramFile = 'hist.root'
-p.outputFiles = ['events.root']
-p.termLogLevel = 0
+p.histogram_file = 'hist.root'
+p.output_files = ['events.root']
+p.term_log_level = 0
 
 import LDMX.Ecal.digi as ecal_digi
 import LDMX.Ecal.ecal_hardcoded_conditions

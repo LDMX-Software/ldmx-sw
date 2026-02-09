@@ -5,8 +5,8 @@ p = ldmxcfg.Process('raw')
 import sys
 
 RAWfileName=sys.argv[1]
-p.outputFiles = [sys.argv[2]]
-log_name=p.outputFiles[0].replace(".root", "_toRoot.log")
+p.output_files = [sys.argv[2]]
+log_name=p.output_files[0].replace(".root", "_toRoot.log")
 if len(sys.argv) > 3 :
     n_time_samples=int(sys.argv[3])
 else :
@@ -33,6 +33,6 @@ p.sequence = [
 
 p.max_events = int(n_ev) # apparently this HAS TO be set! single subsystem unpacker will abort all events when it runs out of data
 
-p.termLogLevel = 0 #1
-p.logFileName = log_name
-p.fileLogLevel = 0
+p.term_log_level = 0 #1
+p.log_file_name = log_name
+p.file_log_level = 0

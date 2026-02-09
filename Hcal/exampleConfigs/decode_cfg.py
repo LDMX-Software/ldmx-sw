@@ -30,8 +30,8 @@ from LDMX.Framework import ldmxcfg
 p = ldmxcfg.Process('decode')
 if arg.max_events is not None :
     p.max_events = arg.max_events
-p.termLogLevel = 0
-p.logFrequency = 1000
+p.term_log_level = 0
+p.log_frequency = 1000
 
 import LDMX.Hcal.hgcrocFormat as hcal_format
 import LDMX.Hcal.HcalGeometry
@@ -67,9 +67,9 @@ os.makedirs(dir_name+'-ntuple', exist_ok=True)
 
 file_name = f'decoded_{provided}_run_{run}_{day}_{time}'
 
-p.inputFiles = [arg.input_file]
-p.outputFiles = [f'{dir_name}/{file_name}.root']
-p.histogramFile = f'{dir_name}-ntuple/ntuple_{file_name}.root'
+p.input_files = [arg.input_file]
+p.output_files = [f'{dir_name}/{file_name}.root']
+p.histogram_file = f'{dir_name}-ntuple/ntuple_{file_name}.root'
 
 # sequence
 #   1. decode event packet into digi collection

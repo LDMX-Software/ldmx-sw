@@ -28,8 +28,8 @@ import sys
 p.run = int(os.environ['LDMX_RUN_NUMBER'])
 p.max_events = int(os.environ['LDMX_NUM_EVENTS'])
 
-p.histogramFile = 'hist.root'
-p.outputFiles = ['events.root']
+p.histogram_file = 'hist.root'
+p.output_files = ['events.root']
 
 # Load the full tracking sequence
 import LDMX.Ecal.digi as ecal_digi
@@ -98,7 +98,7 @@ from LDMX.Recon.ecalPreselectionSkimmer import EcalPreselectionSkimmer
 
 ecal_pres_skimmer = EcalPreselectionSkimmer()
 
-p.logger.termLevel = 1
+p.logger.term_level = 1
 # p.logger.custom(ecal_veto, level = -1)
 
 # Add full tracking for both tagger and recoil trackers: digi, seeds, CFK, ambiguity resolution, GSF, DQM

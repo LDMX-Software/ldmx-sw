@@ -50,9 +50,9 @@ import os
 p.run = int(os.environ['LDMX_RUN_NUMBER'])
 p.max_events = int(os.environ['LDMX_NUM_EVENTS'])
 
-p.histogramFile = 'hist.root'
-p.outputFiles = ['events.root']
-p.logger.termLevel = 1
+p.histogram_file = 'hist.root'
+p.output_files = ['events.root']
+p.logger.term_level = 1
 p.logger.custom("GEANT4", level = 3)
 
 import LDMX.Ecal.ecal_hardcoded_conditions

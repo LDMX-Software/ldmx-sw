@@ -14,8 +14,8 @@ p.max_events = args.n_events
 p.run = 1
 
 filename = f'uniform_electrons_maxE_{args.max_energy}_minE_{args.min_energy}_maxPolar_{args.angle}_N_{args.n_events}_run_{p.run:04d}.root'
-p.outputFiles = [ 'events_'+filename ]
-p.histogramFile = 'hists_'+filename
+p.output_files = [ 'events_'+filename ]
+p.histogram_file = 'hists_'+filename
 
 import LDMX.Hcal.HcalGeometry
 import LDMX.Ecal.EcalGeometry

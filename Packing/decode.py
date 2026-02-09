@@ -27,8 +27,8 @@ from LDMX.Framework import ldmxcfg
 
 p = ldmxcfg.Process('unpack')
 p.max_events = arg.max_events
-p.termLogLevel = 1
-p.logFrequency = 1
+p.term_log_level = 1
+p.log_frequency = 1
 
 import LDMX.Hcal.hgcrocFormat as hcal_format
 import LDMX.TrigScint.qieFormat as ts_format
@@ -36,13 +36,13 @@ from LDMX.DQM import dqm
 from LDMX.Packing import rawio
 
 
-p.outputFiles = [arg.output_file]
+p.output_files = [arg.output_file]
 
 # where the ntuplizing tree will go
 import os
 
 
-p.histogramFile = f'{os.path.dirname(arg.output_file)}ntuple_{os.path.basename(arg.output_file)}'
+p.histogram_file = f'{os.path.dirname(arg.output_file)}ntuple_{os.path.basename(arg.output_file)}'
 
 if arg.wr is not None :
     p.sequence.append(
@@ -84,7 +84,7 @@ if arg.ft51 is not None :
         )
 
 if arg.pf0 is not None :
-    p.inputFiles = [arg.pf0]
+    p.input_files = [arg.pf0]
     p.sequence.extend([
         hcal_format.HcalRawDecoder(
             input_names = ['Polarfire0Raw'],
@@ -98,7 +98,7 @@ if arg.pf0 is not None :
         ])
 
 if arg.pf1 is not None :
-    p.inputFiles = [arg.pf1]
+    p.input_files = [arg.pf1]
     p.sequence.extend([
         hcal_format.HcalRawDecoder(
             input_names = ['Polarfire1Raw'],
@@ -112,7 +112,7 @@ if arg.pf1 is not None :
         ])
 
 if arg.hcal is not None :
-    p.inputFiles = [arg.hcal]
+    p.input_files = [arg.hcal]
     p.sequence.extend([
         hcal_format.HcalRawDecoder(
             connections_table = f'{os.environ["LDMX_BASE"]}/ldmx-sw/Hcal/data/testbeam_connections.csv',
@@ -127,7 +127,7 @@ if arg.hcal is not None :
         ])
 
 if arg.ts is not None :
-    p.inputFiles = [arg.ts]
+    p.input_files = [arg.ts]
     n_channels = 16
     n_timesamples = 30
     header_len = 4+4+4+3+1

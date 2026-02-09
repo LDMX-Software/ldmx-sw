@@ -16,5 +16,5 @@ p.sequence = [
         )
     ]
 p.max_events = 1000
-p.maxTriesPerEvent = 1000
-p.outputFiles = [ 'ecal_pn.root' ]
+p.max_tries_per_event = 1000
+p.output_files = [ 'ecal_pn.root' ]

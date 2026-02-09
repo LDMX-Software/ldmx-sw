@@ -14,8 +14,8 @@ dump_run_header = ldmxcfg.RunHeaderAna()
 p.max_events = -1
 p.run = 2
 
-p.inputFiles  = file_in
-print(p.inputFiles)
+p.input_files  = file_in
+print(p.input_files)
 
 p.sequence = [dump_run_header]
 

@@ -45,8 +45,8 @@ else :
 
 p.run = 1
 p.max_events = n_events
-p.outputFiles = ['testbeamSim_'+str(n_electrons)+'e_zNeg'+str(gun_z_pos)+'mm_beamSpot'+str(beam_x_smear)+'x'+str(beam_y_smear)+'mm_'+str(n_time_samples)+'tSamp_eNoise'+str(elec_noise)+'_tauInv'+str(k_expo)+'_detV'+str(det_v)+'_'+kill_string+str(p.max_events)+'ev.root']
-print("Producing output file: "+p.outputFiles[0])
+p.output_files = ['testbeamSim_'+str(n_electrons)+'e_zNeg'+str(gun_z_pos)+'mm_beamSpot'+str(beam_x_smear)+'x'+str(beam_y_smear)+'mm_'+str(n_time_samples)+'tSamp_eNoise'+str(elec_noise)+'_tauInv'+str(k_expo)+'_detV'+str(det_v)+'_'+kill_string+str(p.max_events)+'ev.root']
+print("Producing output file: "+p.output_files[0])
 
 gun_z_pos   =-float(gun_z_pos)  #get sign right, and make floats, to use as parameters
 beam_x_smear=float(beam_x_smear)
@@ -173,9 +173,9 @@ cl_ana_3hit.inputCollection=tb_clusters_3.output_collection
 
 
 
-outname=p.outputFiles[0].replace(".root", "_plots.root")
-#p.outputFiles = [ outname ]
-p.histogramFile = outname
+outname=p.output_files[0].replace(".root", "_plots.root")
+#p.output_files = [ outname ]
+p.histogram_file = outname
 
 p.sequence=[simulation,
             ts_digis,
@@ -190,4 +190,4 @@ p.sequence=[simulation,
                   ]
 
 
-p.termLogLevel = 2
+p.term_log_level = 2

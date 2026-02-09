@@ -6,10 +6,10 @@ p = ldmxcfg.Process('ecal_pn')
 import os
 
 
-p.maxTriesPerEvent = 1000
+p.max_tries_per_event = 1000
 p.run = int(os.environ['LDMX_RUN_NUMBER'])
 p.max_events = int(os.environ['LDMX_NUM_EVENTS']) // 2
-p.logger.termLevel = 4
+p.logger.term_level = 4
 
 
 from LDMX.Biasing import ecal
@@ -26,4 +26,4 @@ import LDMX.Ecal.EcalGeometry
 import LDMX.Hcal.HcalGeometry
 
 
-p.outputFiles = ['ecal_pn.root']
+p.output_files = ['ecal_pn.root']

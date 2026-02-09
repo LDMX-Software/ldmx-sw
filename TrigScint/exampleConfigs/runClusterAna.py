@@ -13,7 +13,7 @@ else :
     print("specify an input file")
     exit
 
-p.inputFiles=[  in_file ]
+p.input_files=[  in_file ]
 
 from LDMX.TrigScint.trigScint import TestBeamClusterAnalyzer
 
@@ -25,9 +25,9 @@ cl_ana_2hit.inputCollection="TestBeamClustersPad1"
 
 
 
-outname=p.inputFiles[0].replace(".root", "_plots.root")
-#p.outputFiles = [ outname ]
-p.histogramFile = outname
+outname=p.input_files[0].replace(".root", "_plots.root")
+#p.output_files = [ outname ]
+p.histogram_file = outname
 
 p.sequence=[cl_ana_2hit,
             #cl_ana_3hit
@@ -36,4 +36,4 @@ p.sequence=[cl_ana_2hit,
                   ]
 
 
-p.termLogLevel = 2
+p.term_log_level = 2

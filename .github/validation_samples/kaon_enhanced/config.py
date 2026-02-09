@@ -138,7 +138,7 @@ from LDMX.DQM import dqm
 # Load HCAL veto
 hcal_veto = hcal.HcalVetoProcessor()
 
-p.logger.termLevel = 1
+p.logger.term_level = 1
 
 # Add full tracking for both tagger and recoil trackers: digi, seeds, CFK, ambiguity resolution, GSF, DQM
 p.sequence.extend(full_tracking_sequence.sequence)
@@ -164,5 +164,5 @@ p.sequence.extend([
 p.sequence.extend(dqm.all_dqm)
 
 
-p.histogramFile = 'hist.root'
-p.outputFiles = ['events.root']
+p.histogram_file = 'hist.root'
+p.output_files = ['events.root']

@@ -14,6 +14,6 @@ p.sequence = [
         'ldmx-det-v14' , #name of geometry to use
         )
     ]
-p.maxTriesPerEvent = 1000
+p.max_tries_per_event = 1000
 p.max_events = 100
-p.outputFiles = [ 'ecal_db.root' ]
+p.output_files = [ 'ecal_db.root' ]
