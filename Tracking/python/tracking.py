@@ -124,8 +124,6 @@ class CKFProcessor(Producer):
         Can be used to define the number of pion states generated with uniform
         distributions to be propagated through the tracking geometry for
         debugging purposes. <functionality to be moved>
-    steps_output_file_path_ : string
-        DEPRECATED TO BE REMOVED
     bfield : float
         <functionality to be removed>
         If using a constant bfield, this is the BZ component. 
