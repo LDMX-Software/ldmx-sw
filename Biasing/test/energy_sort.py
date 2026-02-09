@@ -4,22 +4,22 @@ from LDMX.Framework import ldmxcfg
 # create my process object
 p = ldmxcfg.Process( "test" )
 p.run = 9001
-p.maxEvents = 10
+p.max_events = 10
 p.outputFiles = [ "energy_sort.root" ]
 import LDMX.Ecal.EcalGeometry
 import LDMX.Hcal.HcalGeometry
 from LDMX.SimCore import simulator as sim
 
 
-mySim = sim.simulator( "mySim" )
-mySim.setDetector( 'ldmx-det-v14' )
+my_sim = sim.simulator( "my_sim" )
+my_sim.setDetector( 'ldmx-det-v14' )
 from LDMX.SimCore import generators as gen
 
 
-mySim.generators.append( gen.single_4gev_e_upstream_tagger() )
-mySim.description = 'Basic test Simulation'
+my_sim.generators.append( gen.single_4gev_e_upstream_tagger() )
+my_sim.description = 'Basic test Simulation'
 from LDMX.Biasing import util
 
 
-mySim.actions = [ util.PartialEnergySorter( 3000. ) ]
-p.sequence.append( mySim )
+my_sim.actions = [ util.PartialEnergySorter( 3000. ) ]
+p.sequence.append( my_sim )

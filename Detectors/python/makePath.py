@@ -11,7 +11,7 @@ import os
 import sys
 
 
-def makePath( detName , fileName ) :
+def makePath( det_name , file_name ) :
     """Return a path to the installed data directory for the input detector and file names.
 
     Assumes the detectors are installed in the 'data/detectors' directory in the installation directory.
@@ -23,9 +23,9 @@ def makePath( detName , fileName ) :
 
     Parameters
     ----------
-    detName : str
+    det_name : str
         Name of detector to get a path for (should match the name of one of the detector directories)
-    fileName : str
+    file_name : str
         Name of the detector gdml file to get a path for (should match the name -- no extension -- of one of the gdml files)
 
     Returns
@@ -34,18 +34,18 @@ def makePath( detName , fileName ) :
         full path to installed detector gdml description
     """
 
-    fullPath = '@CMAKE_INSTALL_PREFIX@/data/detectors/' + detName + '/' + fileName + '.gdml'
-    if not os.path.isfile( fullPath ) :
-        raise ValueError('GDML file \'%s\' does not exist.' % ( fullPath ))
+    full_path = '@CMAKE_INSTALL_PREFIX@/data/detectors/' + det_name + '/' + file_name + '.gdml'
+    if not os.path.isfile( full_path ) :
+        raise ValueError('GDML file \'%s\' does not exist.' % ( full_path ))
 
-    return fullPath
+    return full_path
 
-def makeDetectorPath( detName ) :
+def makeDetectorPath( det_name ) :
     """Get the full path to the installed ldmx detector description
 
     Parameters
     ----------
-    detName : str
+    det_name : str
         Name of detector to get a path for (should match the name of one of the detector directories)
 
     Returns
@@ -60,14 +60,14 @@ def makeDetectorPath( detName ) :
         mySimulator.detector = makeDetectorPath( 'ldmx-det-v12' )
     """
 
-    return makePath( detName , 'detector' )
+    return makePath( det_name , 'detector' )
 
-def makeScoringPlanesPath( detName ) :
+def makeScoringPlanesPath( det_name ) :
     """Get the full path to the installed ldmx scoring planes description
 
     Parameters
     ----------
-    detName : str
+    det_name : str
         Name of detector to get a path for (should match the name of one of the detector directories)
 
     Returns
@@ -82,4 +82,4 @@ def makeScoringPlanesPath( detName ) :
         mySimulator.scoringPlanes = makeScoringPlanesPath( 'ldmx-det-v12' )
     """
 
-    return makePath( detName , 'scoring_planes' )
+    return makePath( det_name , 'scoring_planes' )

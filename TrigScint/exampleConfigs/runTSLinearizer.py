@@ -3,19 +3,19 @@ p = ldmxcfg.Process('conv') #
 
 import sys
 
-inputPassName="unpack"
-nEv=400000
+input_pass_name="unpack"
+n_ev=400000
 
-#p.maxEvents = nEv
+#p.max_events = n_ev
 
 if len(sys.argv) > 2 :
-    timeOffset=int(sys.argv[2])
+    time_offset=int(sys.argv[2])
 else :
-    timeOffset=5
+    time_offset=5
 if len(sys.argv) > 3 :
-    logVerbosity=int(sys.argv[3])
+    log_verbosity=int(sys.argv[3])
 else :
-    logVerbosity=2
+    log_verbosity=2
 
 
 from LDMX.TrigScint.trigScint import EventReadoutProducer
@@ -23,14 +23,14 @@ from LDMX.TrigScint.trigScint import EventReadoutProducer
 
 # ------------------- all set; setup in detail, and run with these settings ---------------
 
-tsEv=EventReadoutProducer("eventLinearizer")
-tsEv.input_pass_name=inputPassName
-tsEv.input_collection="decodedQIEUp"
-tsEv.time_shift=timeOffset
-if logVerbosity < 1 :
-    tsEv.verbose=True
+ts_ev=EventReadoutProducer("eventLinearizer")
+ts_ev.input_pass_name=input_pass_name
+ts_ev.input_collection="decodedQIEUp"
+ts_ev.time_shift=time_offset
+if log_verbosity < 1 :
+    ts_ev.verbose=True
 p.sequence = [
-    tsEv
+    ts_ev
     ]
 
 
@@ -42,11 +42,11 @@ outname=outname.replace(".root", "_linearize.root")
 p.outputFiles = [ outname ]
 
 
-p.logger.filePath=p.outputFiles[0].replace(".root",".log")
+p.logger.file_path=p.outputFiles[0].replace(".root",".log")
 p.logger.termLevel = 2
-p.logger.fileLevel = logVerbosity
+p.logger.fileLevel = log_verbosity
 
 #p.pause()
 
-if (logVerbosity < 1 ) :
-    p.logger.debug(tsEv)
+if (log_verbosity < 1 ) :
+    p.logger.debug(ts_ev)

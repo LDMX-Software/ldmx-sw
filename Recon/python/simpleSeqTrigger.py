@@ -35,5 +35,5 @@ class SequentialTrigger(ldmxcfg.Producer) :
         self.doAND = True
         self.doVAL = True
 
-simpleSeqTrigger = SequentialTrigger("simpleSeqTrigger")
+simple_seq_trigger = SequentialTrigger("simple_seq_trigger")
 

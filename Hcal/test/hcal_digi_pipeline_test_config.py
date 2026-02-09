@@ -6,7 +6,7 @@ from LDMX.Framework import ldmxcfg
 p = ldmxcfg.Process( 'test_hcal_digis' )
 
 # Set the maximum number of events
-p.maxEvents = 1000 # should be the same as NUM_TEST_SIM_HITS
+p.max_events = 1000 # should be the same as NUM_TEST_SIM_HITS
 
 # Import the Hcal conditions
 from LDMX.Hcal import digi, hcal_hardcoded_conditions
@@ -23,17 +23,17 @@ import LDMX.Hcal.HcalGeometry
 
 
 # HCal digi
-hcalDigis = digi.HcalDigiProducer()
-hcalDigis.input_coll_name = 'HcalFakeSimHits'
+hcal_digis = digi.HcalDigiProducer()
+hcal_digis.input_coll_name = 'HcalFakeSimHits'
 # Turn off noise hits
-hcalDigis.hgcroc.noise = False
+hcal_digis.hgcroc.noise = False
 
-hcalRec = digi.HcalRecProducer()
-hcalRec.sim_hit_coll_name = 'HcalFakeSimHits'
+hcal_rec = digi.HcalRecProducer()
+hcal_rec.sim_hit_coll_name = 'HcalFakeSimHits'
 
 p.sequence = [
     ldmxcfg.Producer('fakeSimHits','hcal::test::HcalFakeSimHits','Hcal'),
-    hcalDigis,
+    hcal_digis,
     digi.HcalRecProducer(),
     ldmxcfg.Analyzer('checkHcalHits','hcal::test::HcalCheckReconstruction','Hcal'),
 ]

@@ -29,7 +29,7 @@ if not os.path.isdir(arg.out_dir) :
 
 p = ldmxcfg.Process( "valid" )
 p.run = arg.run
-p.maxEvents = arg.n_events
+p.max_events = arg.n_events
 p.maxTriesPerEvent = 10000
 file_stub = '_'.join([
     'type', 'events',

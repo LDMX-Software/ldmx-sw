@@ -14,6 +14,6 @@ p.sequence = [
         'ldmx-det-v14', #name of geometry to use
         )
     ]
-p.maxEvents = 1000
+p.max_events = 1000
 p.maxTriesPerEvent = 1000
 p.outputFiles = [ 'target_db.root' ]

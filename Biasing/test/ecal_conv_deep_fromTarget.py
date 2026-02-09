@@ -12,8 +12,8 @@ from LDMX.SimCore import generators
 
 
 det = 'ldmx-det-v14-8gev'
-mysim = ecal.deep_photo_nuclear(det, generators.single_8gev_e_upstream_tagger(), bias_threshold = 5010., processes=['conv','phot)'], ecal_min_Z = 400., require_photon_fromTarget = True)
-#mysim = ecal.deep_photo_nuclear(det, generators.single_8gev_e_upstream_tagger(), bias_threshold = 5010., processes=['conv','phot)'], ecal_min_Z = 200., require_photon_fromTarget = True)
+mysim = ecal.deep_photo_nuclear(det, generators.single_8gev_e_upstream_tagger(), bias_threshold = 5010., processes=['conv','phot)'], ecal_min_z = 400., require_photon_from_target = True)
+#mysim = ecal.deep_photo_nuclear(det, generators.single_8gev_e_upstream_tagger(), bias_threshold = 5010., processes=['conv','phot)'], ecal_min_z = 200., require_photon_from_target = True)
 mysim.description = "ECal Deep Conversion Test Simulation"
 
 #mysim.actions.append( util.StepPrinter(1) )
@@ -28,7 +28,7 @@ p.outputFiles = ['events_pn_deep_fromTarget_test.root']
 p.histogramFile = 'hist_pn_deep_fromTarget_test.root'
 
 p.maxTriesPerEvent = 10000
-p.maxEvents = 10
+p.max_events = 10
 p.totalEvents = 10
 p.run = 20
 p.logFrequency = 100

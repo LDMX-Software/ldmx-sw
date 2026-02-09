@@ -26,7 +26,7 @@ from LDMX.Framework import ldmxcfg
 
 
 p = ldmxcfg.Process('unpack')
-p.maxEvents = arg.max_events
+p.max_events = arg.max_events
 p.termLogLevel = 1
 p.logFrequency = 1
 

@@ -201,7 +201,7 @@ class simulator(Producer):
 
         """
         resimulator = self
-        resimulator.className = 'simcore::ReSimulator'
+        resimulator.class_name = 'simcore::ReSimulator'
         if which_events is None:
             resimulator.resimulate_all_events = True
             resimulator.care_about_run = False

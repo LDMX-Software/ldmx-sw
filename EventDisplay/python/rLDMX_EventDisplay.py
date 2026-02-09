@@ -32,18 +32,18 @@ def addBranch(tree, ldmx_class, branch_name):
 
 def trackPlotter(tree, event_number, tag, save, save_tag):
 
-    recoilSimHits = addBranch(tree, 'SimTrackerHit', f'RecoilSimHits_{tag}')
-    targetSP = addBranch(tree, 'SimTrackerHit', f'TargetScoringPlaneHits_{tag}')
-    ecalRecHit = addBranch(tree, 'EcalHit', f'EcalRecHits_{tag}')
-    digiRecoil = addBranch(tree, 'Measurement', f'DigiRecoilSimHits_{tag}')
-    recoilTruth = addBranch(tree, 'StraightTrack', f'LinearRecoilTruthTracks_{tag}')
+    recoil_sim_hits = addBranch(tree, 'SimTrackerHit', f'RecoilSimHits_{tag}')
+    target_sp = addBranch(tree, 'SimTrackerHit', f'TargetScoringPlaneHits_{tag}')
+    ecal_rec_hit = addBranch(tree, 'EcalHit', f'EcalRecHits_{tag}')
+    digi_recoil = addBranch(tree, 'Measurement', f'DigiRecoilSimHits_{tag}')
+    recoil_truth = addBranch(tree, 'StraightTrack', f'LinearRecoilTruthTracks_{tag}')
     recoil = addBranch(tree, 'StraightTrack', f'LinearRecoilTracks_{tag}')
 
     tree.GetEntry(event_number)
 
-    recoilSim_x = []
-    recoilSim_y = []
-    recoilSim_z = []
+    recoil_sim_x = []
+    recoil_sim_y = []
+    recoil_sim_z = []
 
     xpos_digi_tot = []
     ypos_digi_tot = []
@@ -61,46 +61,46 @@ def trackPlotter(tree, event_number, tag, save, save_tag):
     ecal_end_y = []
     ecal_end_z = []
 
-    ecal_end_NOISE_x = []
-    ecal_end_NOISE_y = []
-    ecal_end_NOISE_z = []
+    ecal_end_noise_x = []
+    ecal_end_noise_y = []
+    ecal_end_noise_z = []
 
-    targetSP_x = []
-    targetSP_y = []
-    targetSP_z = []
+    target_sp_x = []
+    target_sp_y = []
+    target_sp_z = []
 
-    trackParams = []
-    truthTrackParams = []
+    track_params = []
+    truth_track_params = []
 
-    for particle in recoilSimHits:
-        recoilSim_z.append(particle.getPosition()[2])
-        recoilSim_x.append(particle.getPosition()[0])
-        recoilSim_y.append(particle.getPosition()[1])
+    for particle in recoil_sim_hits:
+        recoil_sim_z.append(particle.getPosition()[2])
+        recoil_sim_x.append(particle.getPosition()[0])
+        recoil_sim_y.append(particle.getPosition()[1])
 
-    for sp_particle in targetSP:
+    for sp_particle in target_sp:
         if (sp_particle.getPosition()[2] > 0):
-            targetSP_z.append(sp_particle.getPosition()[2])
-            targetSP_x.append(sp_particle.getPosition()[0])
-            targetSP_y.append(sp_particle.getPosition()[1])
+            target_sp_z.append(sp_particle.getPosition()[2])
+            target_sp_x.append(sp_particle.getPosition()[0])
+            target_sp_y.append(sp_particle.getPosition()[1])
 
-    for x_digi in digiRecoil:
+    for x_digi in digi_recoil:
         zpos_digi_tot.append(x_digi.getGlobalPosition()[0])
         xpos_digi_tot.append(x_digi.getGlobalPosition()[1])
         ypos_digi_tot.append(x_digi.getGlobalPosition()[2])
 
-    for x_ecal in ecalRecHit:
+    for x_ecal in ecal_rec_hit:
         if (x_ecal.getZPos() < 250):
             if (x_ecal.isNoise()):
-                ecal_end_NOISE_x.append(x_ecal.getXPos())
-                ecal_end_NOISE_y.append(x_ecal.getYPos())
-                ecal_end_NOISE_z.append(x_ecal.getZPos())
+                ecal_end_noise_x.append(x_ecal.getXPos())
+                ecal_end_noise_y.append(x_ecal.getYPos())
+                ecal_end_noise_z.append(x_ecal.getZPos())
             else:
                 ecal_end_x.append(x_ecal.getXPos())
                 ecal_end_y.append(x_ecal.getYPos())
                 ecal_end_z.append(x_ecal.getZPos())
 
     for x in recoil:
-        trackParams.append((x.getSlopeX(), x.getInterceptX(), x.getSlopeY(), x.getInterceptY(), x.getDistanceToRecHit(), x.getChi2(), x.getTrackID()))
+        track_params.append((x.getSlopeX(), x.getInterceptX(), x.getSlopeY(), x.getInterceptY(), x.getDistanceToRecHit(), x.getChi2(), x.getTrackID()))
         first_sensor_z.append(x.getFirstSensorPosition()[0])
         first_sensor_x.append(x.getFirstSensorPosition()[1])
         first_sensor_y.append(x.getFirstSensorPosition()[2])
@@ -109,14 +109,14 @@ def trackPlotter(tree, event_number, tag, save, save_tag):
         second_sensor_x.append(x.getSecondSensorPosition()[1])
         second_sensor_y.append(x.getSecondSensorPosition()[2])
 
-    for x_truth in recoilTruth:
-        truthTrackParams.append((x_truth.getSlopeX(), x_truth.getInterceptX(), x_truth.getSlopeY(), x_truth.getInterceptY(), x_truth.getDistanceToRecHit(), x_truth.getChi2()))
+    for x_truth in recoil_truth:
+        truth_track_params.append((x_truth.getSlopeX(), x_truth.getInterceptX(), x_truth.getSlopeY(), x_truth.getInterceptY(), x_truth.getDistanceToRecHit(), x_truth.getChi2()))
 
-    digiPoints = np.column_stack((zpos_digi_tot, xpos_digi_tot, ypos_digi_tot))
-    ecalRecHits = np.column_stack((ecal_end_z, ecal_end_x, ecal_end_y))
-    ecalRecHits_noise = np.column_stack((ecal_end_NOISE_z, ecal_end_NOISE_x, ecal_end_NOISE_y))
-    recoilSim = np.column_stack((recoilSim_z, recoilSim_x, recoilSim_y))
-    targetSP_hits = np.column_stack((targetSP_z, targetSP_x, targetSP_y))
+    digi_points = np.column_stack((zpos_digi_tot, xpos_digi_tot, ypos_digi_tot))
+    ecal_rec_hits = np.column_stack((ecal_end_z, ecal_end_x, ecal_end_y))
+    ecal_rec_hits_noise = np.column_stack((ecal_end_noise_z, ecal_end_noise_x, ecal_end_noise_y))
+    recoil_sim = np.column_stack((recoil_sim_z, recoil_sim_x, recoil_sim_y))
+    target_sp_hits = np.column_stack((target_sp_z, target_sp_x, target_sp_y))
     first_sensor_pos = np.column_stack((first_sensor_z, first_sensor_x, first_sensor_y))
     second_sensor_pos = np.column_stack((second_sensor_z, second_sensor_x, second_sensor_y))
 
@@ -137,36 +137,36 @@ def trackPlotter(tree, event_number, tag, save, save_tag):
         ax.plot([zi, zi], [xi - x_sensor_uncertainty, xi + x_sensor_uncertainty], [yi, yi], color='black',linewidth=2)  # x error
         ax.plot([zi, zi], [xi, xi], [yi - y_sensor_uncertainty, yi + y_sensor_uncertainty], color='black',linewidth=2)  # y error
 
-    ax.scatter(digiPoints[:,0], digiPoints[:,1], digiPoints[:,2], c='b', marker='o', label='DigiRecoil SimHit', s=25)
-    ax.scatter(ecalRecHits[:, 0], ecalRecHits[:, 1], ecalRecHits[:, 2], c='purple', label='ECalRecHit', s=50, alpha=0.5)
-    ax.scatter(recoilSim[:, 0], recoilSim[:, 1], recoilSim[:, 2], marker='o', c='gray', label='RecoilSimHits', s=100, alpha=0.25)
-    ax.scatter(targetSP_hits[:, 0], targetSP_hits[:, 1], targetSP_hits[:, 2], marker='o', c='yellow', label='Target SP Hits', s=50, alpha=0.5)
+    ax.scatter(digi_points[:,0], digi_points[:,1], digi_points[:,2], c='b', marker='o', label='DigiRecoil SimHit', s=25)
+    ax.scatter(ecal_rec_hits[:, 0], ecal_rec_hits[:, 1], ecal_rec_hits[:, 2], c='purple', label='ECalRecHit', s=50, alpha=0.5)
+    ax.scatter(recoil_sim[:, 0], recoil_sim[:, 1], recoil_sim[:, 2], marker='o', c='gray', label='RecoilSimHits', s=100, alpha=0.25)
+    ax.scatter(target_sp_hits[:, 0], target_sp_hits[:, 1], target_sp_hits[:, 2], marker='o', c='yellow', label='Target SP Hits', s=50, alpha=0.5)
     ax.scatter(first_sensor_pos[:,0], first_sensor_pos[:,1], first_sensor_pos[:,2], marker='o', c='red', label='First Sensor Point', s=30, alpha=0.75)
     ax.scatter(second_sensor_pos[:,0], second_sensor_pos[:,1], second_sensor_pos[:,2], marker='o', c='orange', label='Second Sensor Point', s=30, alpha=0.75)
 
-    if (len(ecal_end_NOISE_z) > 0):
-        ax.scatter(ecalRecHits_noise[:, 0], ecalRecHits_noise[:, 1], ecalRecHits_noise[:, 2], c='magenta', label='NOISE ECalRecHit', s=50, alpha=0.5)
+    if (len(ecal_end_noise_z) > 0):
+        ax.scatter(ecal_rec_hits_noise[:, 0], ecal_rec_hits_noise[:, 1], ecal_rec_hits_noise[:, 2], c='magenta', label='NOISE ECalRecHit', s=50, alpha=0.5)
 
-    for track in trackParams:
+    for track in track_params:
         if (track[6] == 1):
-            ax.plot([0.0, ecalRecHits[0][0]], [track[1], track[0]*ecalRecHits[0][0]+track[1]], [track[3], track[2]*ecalRecHits[0][0]+track[3]], 'b--', label=f'TrackID = {track[6]}, d_RecHit = {track[4]:.2f} mm, chi2 = {track[5]:.3f}')
+            ax.plot([0.0, ecal_rec_hits[0][0]], [track[1], track[0]*ecal_rec_hits[0][0]+track[1]], [track[3], track[2]*ecal_rec_hits[0][0]+track[3]], 'b--', label=f'TrackID = {track[6]}, d_RecHit = {track[4]:.2f} mm, chi2 = {track[5]:.3f}')
         else:
-            ax.plot([0.0, ecalRecHits[0][0]], [track[1], track[0]*ecalRecHits[0][0]+track[1]], [track[3], track[2]*ecalRecHits[0][0]+track[3]], 'r--', label=f'TrackID = {track[6]}, d_RecHit = {track[4]:.2f} mm, chi2 = {track[5]:.3f}')
+            ax.plot([0.0, ecal_rec_hits[0][0]], [track[1], track[0]*ecal_rec_hits[0][0]+track[1]], [track[3], track[2]*ecal_rec_hits[0][0]+track[3]], 'r--', label=f'TrackID = {track[6]}, d_RecHit = {track[4]:.2f} mm, chi2 = {track[5]:.3f}')
 
-    if (len(truthTrackParams) > 0):
-        for truthTrack in truthTrackParams:
-            ax.plot([0.0, ecalRecHits[0][0]], [truthTrack[1], truthTrack[0]*ecalRecHits[0][0]+truthTrack[1]], [truthTrack[3], truthTrack[2]*ecalRecHits[0][0]+truthTrack[3]], color='blue', label=f'Truth Track, d_RecHit = {truthTrack[4]:.2f} mm, chi2 = {truthTrack[5]:.3f}')
+    if (len(truth_track_params) > 0):
+        for truth_track in truth_track_params:
+            ax.plot([0.0, ecal_rec_hits[0][0]], [truth_track[1], truth_track[0]*ecal_rec_hits[0][0]+truth_track[1]], [truth_track[3], truth_track[2]*ecal_rec_hits[0][0]+truth_track[3]], color='blue', label=f'Truth Track, d_RecHit = {truth_track[4]:.2f} mm, chi2 = {truth_track[5]:.3f}')
 
-    x = ecalRecHits[0][0]
-    y_range = np.linspace(min(ecalRecHits[:,1]) - 5, max(ecalRecHits[:,1]) + 5, 50)
-    z_range = np.linspace(min(ecalRecHits[:,2]) - 5, max(ecalRecHits[:,2]) + 5, 50)
-    Y, Z = np.meshgrid(y_range, z_range)
-    X = np.full(Y.shape, ecalRecHits[0][0])
+    x = ecal_rec_hits[0][0]
+    y_range = np.linspace(min(ecal_rec_hits[:,1]) - 5, max(ecal_rec_hits[:,1]) + 5, 50)
+    z_range = np.linspace(min(ecal_rec_hits[:,2]) - 5, max(ecal_rec_hits[:,2]) + 5, 50)
+    y, z = np.meshgrid(y_range, z_range)
+    x = np.full(y.shape, ecal_rec_hits[0][0])
 
-    plane = ax.plot_surface(X, Y, Z, color='red', alpha=0.1, edgecolor='none')
+    plane = ax.plot_surface(x, y, z, color='red', alpha=0.1, edgecolor='none')
 
-    for recHit in ecalRecHits:
-        center_z, center_x, center_y = recHit[0], recHit[1], recHit[2]
+    for rec_hit in ecal_rec_hits:
+        center_z, center_x, center_y = rec_hit[0], rec_hit[1], rec_hit[2]
         radius = 3.87
         theta = np.linspace(0, 2 * np.pi, 100)
         circle_x = center_x + radius * np.cos(theta)

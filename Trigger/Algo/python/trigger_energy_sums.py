@@ -72,13 +72,13 @@ class TrigEcalClusterProducer(Producer) :
 class TrigElectronProducer(Producer) :
     """Configuration for Tester
     """
-    def __init__(self, instance_name = 'myTrigElectronProducer', propMapName="./propagationMap.root") :
+    def __init__(self, instance_name = 'myTrigElectronProducer', prop_map_name="./propagationMap.root") :
         super().__init__(instance_name , 'trigger::TrigElectronProducer','Trigger')
-        # self.outPath = outPath
+        # self.out_path = out_path
         self.scoringPlaneCollName = "TargetScoringPlaneHits"
         self.clusterCollName = "ecalTrigClusters"
         self.eleCollName = "trigElectrons"
-        self.propMapName = propMapName
+        self.prop_map_name = prop_map_name
 
         self.target_sp_passname = ""
         self.cluster_coll_passname = ""
@@ -88,9 +88,9 @@ class TrigElectronProducer(Producer) :
 class NtupleWriter(Producer) :
     """Configuration for Tester
     """
-    def __init__(self, instance_name = 'myNtupleWriter', outPath="./ntuple.root", ) :
+    def __init__(self, instance_name = 'myNtupleWriter', out_path="./ntuple.root", ) :
         super().__init__(instance_name , 'trigger::NtupleWriter','Trigger')
-        self.outPath = outPath
+        self.out_path = out_path
 
         self.target_sp_hits_event_passname = ""
         self.target_sp_passname = ""
@@ -107,9 +107,9 @@ class NtupleWriter(Producer) :
 class PropagationMapWriter(Producer) :
     """Configuration for Tester
     """
-    def __init__(self, instance_name = 'myPropagationMapWriter', outPath="./propagationMap.root") :
+    def __init__(self, instance_name = 'myPropagationMapWriter', out_path="./propagationMap.root") :
         super().__init__(instance_name , 'trigger::PropagationMapWriter','Trigger')
-        self.outPath = outPath
+        self.out_path = out_path
 
         self.ecal_scoring_plane_passname = ""
         self.target_scoring_plane_passname = ""

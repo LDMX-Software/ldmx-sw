@@ -11,8 +11,8 @@ from LDMX.SimCore import simulator as sim
 
 
 det = 'ldmx-det-v15-8gev'
-mySim = sim.simulator('sim')
-mySim.setDetector(det, include_scoring_planes_minimal = True)
+my_sim = sim.simulator('sim')
+my_sim.setDetector(det, include_scoring_planes_minimal = True)
 genie = gen.genie(name='genie_G18_02a_02_11b',
                         energy = 8.0,
                         targets = [ 1000741820, 1000741830, 1000741840, 1000741860 ],
@@ -26,7 +26,7 @@ genie = gen.genie(name='genie_G18_02a_02_11b',
                         spline_file='gxspl_emode_GENIE_v3_04_00.xml',
                         message_threshold_file='Messenger_ErrorOnly.xml')
 
-mySim.generators = [ genie ]
+my_sim.generators = [ genie ]
 
 from LDMX.SimCore import genie_reweight
 
@@ -40,7 +40,7 @@ genie_rw.verbosity = 0
 
 p.sequence.append(genie_rw)
 
-p.sequence = [ mySim ]
+p.sequence = [ my_sim ]
 
 ##################################################################
 # Below should be the same for all sim scenarios
@@ -49,7 +49,7 @@ import os
 import sys
 
 
-p.maxEvents = int(int(os.environ['LDMX_NUM_EVENTS']) * 0.7)
+p.max_events = int(int(os.environ['LDMX_NUM_EVENTS']) * 0.7)
 p.run = int(os.environ['LDMX_RUN_NUMBER'])
 
 p.histogramFile = 'hist.root'
@@ -80,7 +80,7 @@ hcal_reco = hcal_digi_and_reco.HcalRecProducer()
 
 # from LDMX.TrigScint.trigScint import TrigScintDigiProducer
 # from LDMX.TrigScint.trigScint import TrigScintClusterProducer
-# from LDMX.TrigScint.trigScint import trigScintTrack
+# from LDMX.TrigScint.trigScint import trig_scint_track
 # ts_digis = [
 #         TrigScintDigiProducer.pad1(),
 #         TrigScintDigiProducer.pad2(),
@@ -96,8 +96,8 @@ hcal_reco = hcal_digi_and_reco.HcalRecProducer()
 # Load electron counting and trigger
 from LDMX.Ecal import ecal_trig_digi
 from LDMX.Hcal import hcal_trig_digi
-from LDMX.Recon.electronCounter import ElectronCounter
-from LDMX.Recon.simpleTrigger import TriggerProcessor
+from LDMX.Recon.electron_counter import ElectronCounter
+from LDMX.Recon.simple_trigger import TriggerProcessor
 from LDMX.Trigger import trigger_energy_sums
 
 

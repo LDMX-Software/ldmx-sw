@@ -8,7 +8,7 @@ import os
 
 p.maxTriesPerEvent = 1000
 p.run = int(os.environ['LDMX_RUN_NUMBER'])
-p.maxEvents = int(os.environ['LDMX_NUM_EVENTS']) // 2
+p.max_events = int(os.environ['LDMX_NUM_EVENTS']) // 2
 p.logger.termLevel = 4
 
 
@@ -16,11 +16,11 @@ from LDMX.Biasing import ecal
 from LDMX.SimCore import generators as gen
 
 
-mySim = ecal.photo_nuclear('ldmx-det-v15-8gev',gen.single_8gev_e_upstream_tagger())
-mySim.beamSpotSmear = [20.,80.,0.]
-mySim.description = 'ECal PN Test Simulation'
+my_sim = ecal.photo_nuclear('ldmx-det-v15-8gev',gen.single_8gev_e_upstream_tagger())
+my_sim.beamSpotSmear = [20.,80.,0.]
+my_sim.description = 'ECal PN Test Simulation'
 
-p.sequence = [ mySim ]
+p.sequence = [ my_sim ]
 
 import LDMX.Ecal.EcalGeometry
 import LDMX.Hcal.HcalGeometry

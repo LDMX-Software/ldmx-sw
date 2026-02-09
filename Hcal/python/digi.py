@@ -7,9 +7,9 @@ Two module-wide parameters are defined.
 
 Attributes
 ----------
-nPEPerMIP: float
+n_pe_per_mip: float
     Number of photo-electrons (PEs) created for each MIP 
-mipEnergy: float
+mip_energy: float
     Energy [MeV] of a single MIP 
 """
 
@@ -17,8 +17,8 @@ from LDMX.Framework.ldmxcfg import Producer
 from LDMX.Tools.HgcrocEmulator import HgcrocEmulator
 
 
-nPEPerMIP = 68. #PEs created per MIP
-mipEnergy = 4.66 #MeV - measured 1.4 MeV for a 6mm thick tile, so for 20mm bar = 1.4*20/6
+n_pe_per_mip = 68. #PEs created per MIP
+mip_energy = 4.66 #MeV - measured 1.4 MeV for a 6mm thick tile, so for 20mm bar = 1.4*20/6
 
 class HcalHgcrocEmulator(HgcrocEmulator) :
     """
@@ -46,16 +46,16 @@ class HcalHgcrocEmulator(HgcrocEmulator) :
         self.timeDnSlope = 45.037
         self.timePeak    = 12.698 # the time such that with [parameter 4]=0, the pulse peaks at t=0
 
-    def calculateVoltageHcal(self, PE) :
+    def calculateVoltageHcal(self, pe) :
         """Calculate the voltage signal [mV] of the input number of photo-electrons (PEs)
         Assuming that 1 PE ~ 5mV
         This translates to (68/4.66)*5 = 73 PE/MeV
         Parameters
         ----------
-        PE : int
+        pe : int
              Number of photo electrons
         """
-        return PE*(5/1)
+        return pe*(5/1)
 
 
 class DigiTimeSpread():
@@ -123,7 +123,7 @@ class HcalDigiProducer(Producer) :
         Name of digi collection                                                                                                                                                                          
     """
 
-    def __init__(self, instance_name = 'hcalDigis') :
+    def __init__(self, instance_name = 'hcal_digis') :
         super().__init__(instance_name , 'hcal::HcalDigiProducer','Hcal')
 
         self.hgcroc = HcalHgcrocEmulator()
@@ -131,7 +131,7 @@ class HcalDigiProducer(Producer) :
         #Energy -> Volts converstion
         # energy [MeV] ( 1 MIP / energy per MIP [MeV] ) ( voltage per MIP [mV] / 1 MIP ) = voltage [mV]
         # assuming 1 PEs ~ 5mV ->  self.MeV = 72.961 mV/MeV
-        self.mev = (1./mipEnergy)*self.hgcroc.calculateVoltageHcal( nPEPerMIP )
+        self.mev = (1./mip_energy)*self.hgcroc.calculateVoltageHcal( n_pe_per_mip )
 
         # attenuation length
         self.attenuation_length = 5. # in m
@@ -166,7 +166,7 @@ class HcalRecProducer(Producer) :
     voltage_per_mip: float
         Conversion from voltage [mV] to number of MIPs
     mip_energy : float
-        Copied from module-wide mipEnergy [MeV]
+        Copied from module-wide mip_energy [MeV]
     clock_cycle : float
         Time for one DAQ clock cycle to pass [ns]
     input_coll_name : str
@@ -178,7 +178,7 @@ class HcalRecProducer(Producer) :
     sim_hit_pass_name : str 
         Name of simHit pass 
     rec_hit_coll_name : str
-        Name of recHit collection
+        Name of rec_hit collection
     """
 
     def __init__(self, instance_name = 'hcalRecon') :
@@ -186,10 +186,10 @@ class HcalRecProducer(Producer) :
 
         hgcroc = HcalHgcrocEmulator()
 
-        self.voltage_per_mip = (5/1)*(nPEPerMIP) # 5*68 mV/ MIP
-        self.mip_energy = mipEnergy #MeV / MIP
+        self.voltage_per_mip = (5/1)*(n_pe_per_mip) # 5*68 mV/ MIP
+        self.mip_energy = mip_energy #MeV / MIP
         self.clock_cycle = 25. #ns - needs to match the setting on the chip
-        self.pe_per_mip = nPEPerMIP
+        self.pe_per_mip = n_pe_per_mip
 
 	    # attenuation length
         self.attenuation_length = 5. # in m
@@ -219,7 +219,7 @@ class HcalSingleEndRecProducer(Producer) :
     Attributes
     ----------
     -  mip_energy : float
-       Copied from module-wide mipEnergy [MeV]
+       Copied from module-wide mip_energy [MeV]
     -  clock_cycle : float
        Time for one DAQ clock cycle to pass [ns]
     -  pe_per_mip: float
@@ -235,9 +235,9 @@ class HcalSingleEndRecProducer(Producer) :
     def __init__(self, instance_name = 'hcalRecon', pass_name = '', coll_name = 'HcalDigis', rec_coll_name = 'HcalRecHits', rec_pass_name = '') :
         super().__init__(instance_name , 'hcal::HcalSingleEndRecProducer','Hcal')
 
-        self.mip_energy = mipEnergy
+        self.mip_energy = mip_energy
         self.clock_cycle = 25.
-        self.pe_per_mip = nPEPerMIP
+        self.pe_per_mip = n_pe_per_mip
 
         self.coll_name = coll_name
         self.pass_name = pass_name
@@ -250,7 +250,7 @@ class HcalDoubleEndRecProducer(Producer) :
     Attributes
     ----------
     -  mip_energy : float
-       Copied from module-wide mipEnergy [MeV]
+       Copied from module-wide mip_energy [MeV]
     -  clock_cycle : float
        Time for one DAQ clock cycle to pass [ns]
     -  pe_per_mip: float
@@ -266,9 +266,9 @@ class HcalDoubleEndRecProducer(Producer) :
     def __init__(self, instance_name = 'hcalDoubleRecon', pass_name = '', coll_name = 'HcalRecHits', rec_coll_name = 'HcalDoubleEndRecHits', rec_pass_name = '') :
         super().__init__(instance_name , 'hcal::HcalDoubleEndRecProducer','Hcal')
 
-        self.mip_energy = mipEnergy
+        self.mip_energy = mip_energy
         self.clock_cycle = 25.
-        self.pe_per_mip = nPEPerMIP
+        self.pe_per_mip = n_pe_per_mip
 
         self.coll_name = coll_name
         self.pass_name = pass_name

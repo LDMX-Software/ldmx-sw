@@ -10,11 +10,11 @@ from LDMX.SimCore import generators as gen
 
 
 det = 'ldmx-lyso-r4-v15-8gev'
-mySim = target.photo_nuclear(det, gen.single_8gev_e_upstream_tagger())
-mySim.beamSpotSmear = [20.,80.,0.]
-mySim.description = 'LYSO Target PN Simulation'
+my_sim = target.photo_nuclear(det, gen.single_8gev_e_upstream_tagger())
+my_sim.beamSpotSmear = [20.,80.,0.]
+my_sim.description = 'LYSO Target PN Simulation'
 
-p.sequence = [ mySim ]
+p.sequence = [ my_sim ]
 
 ##################################################################
 # Below should be the same for all sim scenarios
@@ -25,7 +25,7 @@ import sys
 
 # this sample takes about 5 times more than the other CI wfs
 # so we divide with 5 to get the same ballpark in time
-p.maxEvents = int(os.environ['LDMX_NUM_EVENTS']) // 5
+p.max_events = int(os.environ['LDMX_NUM_EVENTS']) // 5
 p.run = int(os.environ['LDMX_RUN_NUMBER'])
 
 p.histogramFile = 'hist.root'
@@ -54,7 +54,7 @@ hcal_reco = hcal_digi_and_reco.HcalRecProducer()
 from LDMX.TrigScint.trigScint import (
         TrigScintClusterProducer,
         TrigScintDigiProducer,
-        trigScintTrack,
+        trig_scint_track,
 )
 
 
@@ -74,8 +74,8 @@ target_digis = TrigScintDigiProducer.target()
 target_clusters = TrigScintClusterProducer.target()
 
 # Load electron counting and trigger
-from LDMX.Recon.electronCounter import ElectronCounter
-from LDMX.Recon.simpleTrigger import TriggerProcessor
+from LDMX.Recon.electron_counter import ElectronCounter
+from LDMX.Recon.simple_trigger import TriggerProcessor
 
 
 trigger = TriggerProcessor('trigger', 8000.)
@@ -133,7 +133,7 @@ p.sequence.extend([
         hcal_veto,
         *ts_digis,
         *ts_clusters,
-        trigScintTrack,
+        trig_scint_track,
         target_digis,
         target_clusters,
         count,

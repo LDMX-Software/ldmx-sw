@@ -10,7 +10,7 @@ args = parser.parse_args()
 from LDMX.Framework import ldmxcfg
 
 p = ldmxcfg.Process('uniele')
-p.maxEvents = args.n_events
+p.max_events = args.n_events
 p.run = 1
 
 filename = f'uniform_electrons_maxE_{args.max_energy}_minE_{args.min_energy}_maxPolar_{args.angle}_N_{args.n_events}_run_{p.run:04d}.root'
@@ -79,18 +79,18 @@ truth_tracking.p_cutEcal         = 0. # In MeV
 # These smearing quantities are default. We expect around 6um hit resolution in bending plane
 # v-smearing is actually not used as 1D measurements are used for tracking. These smearing parameters
 # are fed to the digitization producer.
-uSmearing = 0.006       #mm
-vSmearing = 0.000001    #mm
+u_smearing = 0.006       #mm
+v_smearing = 0.000001    #mm
 
 # Runs G4 hit smearing producing measurements in the Tagger tracker.
 # Hits that belong to the same sensor with the same trackID are merged together to reduce combinatorics
 # Smearing Processor - Recoil
-digiRecoil = tracking.DigitizationProcessor("DigitizationProcessorRecoil")
-digiRecoil.hit_collection = "RecoilSimHits"
-digiRecoil.out_collection = "DigiRecoilSimHits"
-digiRecoil.merge_hits = True
-digiRecoil.sigma_u = uSmearing
-digiRecoil.sigma_v = vSmearing
+digi_recoil = tracking.DigitizationProcessor("DigitizationProcessorRecoil")
+digi_recoil.hit_collection = "RecoilSimHits"
+digi_recoil.out_collection = "DigiRecoilSimHits"
+digi_recoil.merge_hits = True
+digi_recoil.sigma_u = u_smearing
+digi_recoil.sigma_v = v_smearing
 
 
 # This runs the track seed finder looking for 5 hits in consecutive sensors and fitting them with a
@@ -98,16 +98,16 @@ digiRecoil.sigma_v = vSmearing
 # parameters and the impact parameters at the target or generation point. For the tagger one should look
 # for compatibility with the beam orbit / beam spot
 #Seed finder processor - Recoil
-seederRecoil = tracking.SeedFinderProcessor("SeedRecoil")
-seederRecoil.perigee_location = [0.,0.,0.]
-seederRecoil.input_hits_collection =  digiRecoil.out_collection
-seederRecoil.out_seed_collection = "RecoilRecoSeeds"
-seederRecoil.bfield = 1.5
-seederRecoil.pmin  = 0.1
-seederRecoil.pmax  = 4.
-seederRecoil.d0min = -0.5
-seederRecoil.d0max = 0.5
-seederRecoil.z0max = 10.
+seeder_recoil = tracking.SeedFinderProcessor("SeedRecoil")
+seeder_recoil.perigee_location = [0.,0.,0.]
+seeder_recoil.input_hits_collection =  digi_recoil.out_collection
+seeder_recoil.out_seed_collection = "RecoilRecoSeeds"
+seeder_recoil.bfield = 1.5
+seeder_recoil.pmin  = 0.1
+seeder_recoil.pmax  = 4.
+seeder_recoil.d0min = -0.5
+seeder_recoil.d0max = 0.5
+seeder_recoil.z0max = 10.
 
 
 # Producer for running the CKF track finding starting from the found seeds.
@@ -120,14 +120,14 @@ tracking_recoil.bfield = -1.5  #in T #From looking at the BField map
 tracking_recoil.const_b_field = False
 
 #Target location for the CKF extrapolation
-#tracking_recoil.seed_coll_name = seederRecoil.out_seed_collection
+#tracking_recoil.seed_coll_name = seeder_recoil.out_seed_collection
 tracking_recoil.seed_coll_name = "RecoilTruthSeeds"
 tracking_recoil.out_trk_collection = "RecoilTracks"
 
 #smear the hits used for finding/fitting
 tracking_recoil.trackID = -1 #1
 tracking_recoil.pdgID = -9999 #11
-tracking_recoil.measurement_collection = digiRecoil.out_collection
+tracking_recoil.measurement_collection = digi_recoil.out_collection
 tracking_recoil.min_hits = 5
 
 from LDMX.Tracking import dqm
@@ -135,7 +135,7 @@ digi_dqm = dqm.TrackerDigiDQM()
 tracking_dqm = dqm.TrackingRecoDQM()
 
 seed_recoil_dqm = dqm.TrackingRecoDQM("SeedRecoilDQM")
-seed_recoil_dqm.track_collection = seederRecoil.out_seed_collection
+seed_recoil_dqm.track_collection = seeder_recoil.out_seed_collection
 seed_recoil_dqm.truth_collection = "RecoilTruthTracks"
 seed_recoil_dqm.title = ""
 
@@ -152,9 +152,9 @@ recoil_dqm.title = ""
 
 p.sequence = [
     sim,
-    digiRecoil,
+    digi_recoil,
     truth_tracking,
-    seederRecoil,
+    seeder_recoil,
     tracking_recoil,
     recoil_dqm, seed_recoil_dqm
 ]

@@ -11,9 +11,9 @@ from LDMX.SimCore import simulator as sim
 
 
 det = 'ldmx-det-v15-8gev'
-mySim = sim.simulator( "mySim" )
-mySim.setDetector(det, include_scoring_planes_minimal = True )
-mySim.description = 'Deep ECal Gun Simulation'
+my_sim = sim.simulator( "my_sim" )
+my_sim.setDetector(det, include_scoring_planes_minimal = True )
+my_sim.description = 'Deep ECal Gun Simulation'
 
 ene_ang_pos_cmds_ele = [
         '/gps/ene/type Lin',
@@ -50,9 +50,9 @@ gps_cmds = (['/gps/particle e-'] +
             ene_ang_pos_cmds_gamma +
             ['/gps/source/multiplevertex True'])
 
-mySim.generators = [gen.gps('electron_photon', gps_cmds)]
+my_sim.generators = [gen.gps('electron_photon', gps_cmds)]
 
-p.sequence = [ mySim ]
+p.sequence = [ my_sim ]
 
 ##################################################################
 # Below should be the same for all sim scenarios
@@ -61,7 +61,7 @@ import os
 import sys
 
 
-p.maxEvents = int(os.environ['LDMX_NUM_EVENTS'])
+p.max_events = int(os.environ['LDMX_NUM_EVENTS'])
 p.run = int(os.environ['LDMX_RUN_NUMBER'])
 
 p.histogramFile = 'hist.root'
@@ -88,8 +88,8 @@ hcal_reco = hcal_digi_and_reco.HcalRecProducer()
 
 
 # Load electron counting and trigger
-from LDMX.Recon.electronCounter import ElectronCounter
-from LDMX.Recon.simpleTrigger import TriggerProcessor
+from LDMX.Recon.electron_counter import ElectronCounter
+from LDMX.Recon.simple_trigger import TriggerProcessor
 
 
 count = ElectronCounter(1,'ElectronCounter')
@@ -135,7 +135,7 @@ p.sequence.extend([
         ])
 
 p.skimDefaultIsDrop()
-p.skimConsider(trigger.instanceName)
+p.skimConsider(trigger.instance_name)
 
 almost_all_dqm = [dqm.sample_validation_dqm + dqm.ecal_dqm + dqm.hcal_dqm + dqm.trigger_dqm]
 

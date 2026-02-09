@@ -10,28 +10,28 @@ from LDMX.SimCore import generators as gen
 from LDMX.SimCore import simulator as sim
 
 
-#myGun = gen.single_4gev_e_upstream_tagger()
-myGun = gen.multi( "mgpGen" )
-myGun.vertex = [ 0., 0., -880] # mm
-myGun.momentum = [0.,0.,4000.] # MeV
-myGun.nParticles = 1
-myGun.pdgID = 11
-myGun.enablePoisson = False #True
+#my_gun = gen.single_4gev_e_upstream_tagger()
+my_gun = gen.multi( "mgpGen" )
+my_gun.vertex = [ 0., 0., -880] # mm
+my_gun.momentum = [0.,0.,4000.] # MeV
+my_gun.nParticles = 1
+my_gun.pdgID = 11
+my_gun.enablePoisson = False #True
 
-mySim = sim.simulator( "mySim" ) # Build simulator object
+my_sim = sim.simulator( "my_sim" ) # Build simulator object
 det = 'ldmx-reduced-v3'
-mySim.setDetector(det, include_scoring_planes_minimal = True )
-mySim.beamSpotSmear = [20.,80.,0.]
-mySim.description = 'Reduced ECal Electron Gun Test Simulation'
+my_sim.setDetector(det, include_scoring_planes_minimal = True )
+my_sim.beamSpotSmear = [20.,80.,0.]
+my_sim.description = 'Reduced ECal Electron Gun Test Simulation'
 
-mySim.generators = [ myGun ]
-p.sequence = [ mySim ]
+my_sim.generators = [ my_gun ]
+p.sequence = [ my_sim ]
 p.termLogLevel = 0
 
 import os
 
 
-p.maxEvents = int(os.environ['LDMX_NUM_EVENTS'])
+p.max_events = int(os.environ['LDMX_NUM_EVENTS'])
 p.run = int(os.environ['LDMX_RUN_NUMBER'])
 
 p.histogramFile = 'hist.root'
@@ -50,20 +50,20 @@ import LDMX.Hcal.HcalGeometry
 hcal_digi = hcal_digi_and_reco.HcalDigiProducer()
 hcal_reco = hcal_digi_and_reco.HcalRecProducer()
 
-ecalVeto = ecal_vetos.EcalVetoProcessor()
-ecalVeto.num_ecal_layers = 4
-ecalVeto.beam_energy = 4000.
-ecalVeto.recoil_from_tracking = False
+ecal_veto = ecal_vetos.EcalVetoProcessor()
+ecal_veto.num_ecal_layers = 4
+ecal_veto.beam_energy = 4000.
+ecal_veto.recoil_from_tracking = False
 
-ecalMip = ecal_vetos.EcalMipProcessor()
-ecalMip.num_ecal_layers = 4
+ecal_mip = ecal_vetos.EcalMipProcessor()
+ecal_mip.num_ecal_layers = 4
 
-ecalWAB = ecal_WAB.EcalWABRecProcessor()
+ecal_wab = ecal_WAB.EcalWABRecProcessor()
 
 from LDMX.TrigScint.trigScint import (
     TrigScintClusterProducer,
     TrigScintDigiProducer,
-    trigScintTrack,
+    trig_scint_track,
 )
 
 
@@ -75,8 +75,8 @@ ts_digis = [
 for d in ts_digis :
     d.randomSeed = 1
 
-from LDMX.Recon.electronCounter import ElectronCounter
-from LDMX.Recon.simpleTrigger import TriggerProcessor
+from LDMX.Recon.electron_counter import ElectronCounter
+from LDMX.Recon.simple_trigger import TriggerProcessor
 
 
 count = ElectronCounter(1,'ElectronCounter')
@@ -122,22 +122,22 @@ truth_tracking.layer12_midpoint = layer12_mid
 truth_tracking.layer23_midpoint = layer23_mid
 truth_tracking.layer34_midpoint = layer34_mid
 
-rSeedTracking = reducedTracking.LinearSeedFinder("LinearSeedFinder")
-rSeedTracking.input_hits_collection = "DigiRecoilSimHits"
-rSeedTracking.input_rec_hits_collection = "EcalRecHits"
-rSeedTracking.out_seed_collection = "LinearRecoilSeedTracks"
-rSeedTracking.layer12_midpoint = layer12_mid
-rSeedTracking.layer23_midpoint = layer23_mid
-rSeedTracking.layer34_midpoint = layer34_mid
-rSeedTracking.recoil_uncertainty = [0.006, 0.085]
-rSeedTracking.ecal_distance_threshold = 15.0
+r_seed_tracking = reducedTracking.LinearSeedFinder("LinearSeedFinder")
+r_seed_tracking.input_hits_collection = "DigiRecoilSimHits"
+r_seed_tracking.input_rec_hits_collection = "EcalRecHits"
+r_seed_tracking.out_seed_collection = "LinearRecoilSeedTracks"
+r_seed_tracking.layer12_midpoint = layer12_mid
+r_seed_tracking.layer23_midpoint = layer23_mid
+r_seed_tracking.layer34_midpoint = layer34_mid
+r_seed_tracking.recoil_uncertainty = [0.006, 0.085]
+r_seed_tracking.ecal_distance_threshold = 15.0
 
-rTracking = reducedTracking.LinearTrackFinder("LinearTrackFinder")
-rTracking.seed_collection = "LinearRecoilSeedTracks"
-rTracking.out_trk_collection = "LinearRecoilTracks"
+r_tracking = reducedTracking.LinearTrackFinder("LinearTrackFinder")
+r_tracking.seed_collection = "LinearRecoilSeedTracks"
+r_tracking.out_trk_collection = "LinearRecoilTracks"
 
 rTracking_dqm = trk_dqm.StraightTracksDQM("LinearRecoilTracksDQM")
-rTracking_dqm.track_collection = rTracking.out_trk_collection
+rTracking_dqm.track_collection = r_tracking.out_trk_collection
 rTracking_dqm.truth_collection = truth_tracking.out_track_collection
 rTracking_dqm.title = ""
 rTracking_dqm.measurement_collection=digi_recoil_reduced.out_collection
@@ -146,8 +146,8 @@ rTracking_dqm.buildHistograms()
 p.sequence.extend([
         ecal_digi.EcalDigiProducer(),
         ecal_digi.EcalRecProducer(),
-        ecalVeto,
-        ecalMip,
+        ecal_veto,
+        ecal_mip,
         hcal_digi,
         hcal_reco,
         hcal_veto,
@@ -155,14 +155,14 @@ p.sequence.extend([
         TrigScintClusterProducer.pad1(),
         TrigScintClusterProducer.pad2(),
         TrigScintClusterProducer.pad3(),
-        trigScintTrack,
+        trig_scint_track,
         count, TriggerProcessor('trigger', 4000.),
         digi_recoil_reduced,
         truth_tracking,
-        rSeedTracking,
-        rTracking,
+        r_seed_tracking,
+        r_tracking,
         rTracking_dqm,
-	ecalWAB,
+	ecal_wab,
 	ecalWAB_dqm])
 
 reduced_ecal_dqm = [

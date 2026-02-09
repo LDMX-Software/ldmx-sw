@@ -14,6 +14,6 @@ p.sequence = [
         generators.single_4gev_e_upstream_tagger()
         )
     ]
-p.maxEvents = 1000
+p.max_events = 1000
 p.maxTriesPerEvent = 1000
 p.outputFiles = [ 'target_pn.root' ]

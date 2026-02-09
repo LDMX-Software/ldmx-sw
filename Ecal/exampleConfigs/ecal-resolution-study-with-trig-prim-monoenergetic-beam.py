@@ -31,7 +31,7 @@ if not os.path.isdir(arg.out_dir) :
 
 p = ldmxcfg.Process( "valid" )
 p.run = arg.run
-p.maxEvents = arg.n_events
+p.max_events = arg.n_events
 p.maxTriesPerEvent = 10000
 file_stub = f'energy_{arg.energy}_theta_{arg.theta:02d}_phi_{arg.phi}_attarget_{arg.angle_at_target}_geometry_v14_events_{arg.n_events}_run_{arg.run}.root'
 p.outputFiles = [ arg.out_dir+'/type_events_'+file_stub ]

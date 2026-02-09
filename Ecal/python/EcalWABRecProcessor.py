@@ -2,8 +2,8 @@
 
 Examples
 --------
-    from LDMX.Ecal.ecalVeto import ecalVeto
-    p.sequence.append( ecalVeto )
+    from LDMX.Ecal.ecal_veto import ecal_veto
+    p.sequence.append( ecal_veto )
 """
 
 from LDMX.Framework import ldmxcfg

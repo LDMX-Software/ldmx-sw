@@ -32,7 +32,7 @@ from LDMX.Framework import ldmxcfg
 
 p = ldmxcfg.Process( "valid" )
 if arg.max_events is not None:
-    p.maxEvents = arg.max_events
+    p.max_events = arg.max_events
 
 p.inputFiles = [str(path) for path in arg.input_file]
 p.histogramFile = str(arg.out_dir / arg.out_name)

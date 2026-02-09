@@ -66,13 +66,13 @@ class EcalDigiProducer(Producer) :
         Should we suppress pure noise "hits" below readout threshold?
     inputCollName : str
         Name of simulated ecal hits to digitize
-    inputPassName : str
+    input_pass_name : str
         Name of pass to digitize
     digiCollName : str
         Output name of digis put into event bus
     """
 
-    def __init__(self, instance_name = 'ecalDigis', si_thickness = 0.4) :
+    def __init__(self, instance_name = 'ecal_digis', si_thickness = 0.4) :
         super().__init__(instance_name , 'ecal::EcalDigiProducer','Ecal')
 
         self.hgcroc = EcalHgcrocEmulator()
@@ -85,18 +85,18 @@ class EcalDigiProducer(Producer) :
 
         # these averages are for configuring the noise generator
         #   _only_ and are not meant to be propated to a chip-by-chip basis
-        avgGain = 0.3125/20.
-        self.avgReadoutThreshold = 53.*avgGain
-        self.avgPedestal = 50.*avgGain
+        avg_gain = 0.3125/20.
+        self.avgReadoutThreshold = 53.*avg_gain
+        self.avgPedestal = 50.*avg_gain
         # noise is too optimistic, but need to mimic old noise model
-        self.avgNoiseRMS = 0.6*avgGain
+        self.avgNoiseRMS = 0.6*avg_gain
 
         # Should we suppress noise "hits" below readout threshold?
         self.zero_suppression = True
 
         # input and output collection name parameters
         self.inputCollName = 'EcalSimHits'
-        self.inputPassName = ''
+        self.input_pass_name = ''
         self.digiCollName = 'EcalDigis'
 
 

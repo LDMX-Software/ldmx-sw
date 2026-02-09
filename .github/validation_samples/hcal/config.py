@@ -6,9 +6,9 @@ p = ldmxcfg.Process('test')
 from LDMX.SimCore import simulator as sim
 
 
-mySim = sim.simulator( "mySim" )
-mySim.description = 'Hcal Muons and Neutrons'
-mySim.setDetector( 'ldmx-det-v15-8gev' )
+my_sim = sim.simulator( "my_sim" )
+my_sim.description = 'Hcal Muons and Neutrons'
+my_sim.setDetector( 'ldmx-det-v15-8gev' )
 from LDMX.SimCore import generators as gen
 
 
@@ -37,9 +37,9 @@ gps_cmds = ['/gps/particle mu-'] + ene_ang_pos_cmds + [
         '/gps/source/multiplevertex True'
         ]
 
-mySim.generators = [gen.gps('muon_neutron',gps_cmds)]
+my_sim.generators = [gen.gps('muon_neutron',gps_cmds)]
 
-p.sequence = [ mySim ]
+p.sequence = [ my_sim ]
 
 ##################################################################
 # Below should be the same for all sim scenarios
@@ -48,7 +48,7 @@ import os
 
 
 p.run = int(os.environ['LDMX_RUN_NUMBER'])
-p.maxEvents = int(os.environ['LDMX_NUM_EVENTS'])
+p.max_events = int(os.environ['LDMX_NUM_EVENTS'])
 
 p.histogramFile = 'hist.root'
 p.outputFiles = ['events.root']

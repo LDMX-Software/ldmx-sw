@@ -16,11 +16,11 @@ wab_gen = gen.lhe("WAB Generator", "8GeV_WABFF2_10K.lhe")
 wab_gen.vertex = [0.0, 0.0, 0.0]
 
 det = 'ldmx-det-v15-8gev'
-mySim = sim.simulator('sim')
-mySim.setDetector(det, include_scoring_planes_minimal = True)
-mySim.generators.append(wab_gen)
+my_sim = sim.simulator('sim')
+my_sim.setDetector(det, include_scoring_planes_minimal = True)
+my_sim.generators.append(wab_gen)
 
-p.sequence = [ mySim ]
+p.sequence = [ my_sim ]
 
 ##################################################################
 # Below should be the same for all sim scenarios
@@ -29,7 +29,7 @@ import os
 import sys
 
 
-p.maxEvents = int(int(os.environ['LDMX_NUM_EVENTS']) * 0.99)
+p.max_events = int(int(os.environ['LDMX_NUM_EVENTS']) * 0.99)
 p.run = int(os.environ['LDMX_RUN_NUMBER'])
 
 p.histogramFile = 'hist.root'
@@ -60,7 +60,7 @@ hcal_reco = hcal_digi_and_reco.HcalRecProducer()
 
 # from LDMX.TrigScint.trigScint import TrigScintDigiProducer
 # from LDMX.TrigScint.trigScint import TrigScintClusterProducer
-# from LDMX.TrigScint.trigScint import trigScintTrack
+# from LDMX.TrigScint.trigScint import trig_scint_track
 # ts_digis = [
 #         TrigScintDigiProducer.pad1(),
 #         TrigScintDigiProducer.pad2(),
@@ -76,8 +76,8 @@ hcal_reco = hcal_digi_and_reco.HcalRecProducer()
 # Load electron counting and trigger
 from LDMX.Ecal import ecal_trig_digi
 from LDMX.Hcal import hcal_trig_digi
-from LDMX.Recon.electronCounter import ElectronCounter
-from LDMX.Recon.simpleTrigger import TriggerProcessor
+from LDMX.Recon.electron_counter import ElectronCounter
+from LDMX.Recon.simple_trigger import TriggerProcessor
 from LDMX.Trigger import trigger_energy_sums
 
 

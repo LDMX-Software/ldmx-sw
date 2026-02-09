@@ -2,16 +2,16 @@ import os
 import sys
 
 
-thisPassName = "presel"
-inputName = sys.argv[1]
+this_pass_name = "presel"
+input_name = sys.argv[1]
 
 from LDMX.Framework import ldmxcfg
 
 
-p = ldmxcfg.Process(thisPassName)
+p = ldmxcfg.Process(this_pass_name)
 
 p.termLogLevel = 0
-p.inputFiles =[inputName]
+p.inputFiles =[input_name]
 p.outputFiles =["eventsPreskimmed.root"]
 
 from LDMX.Recon.ecalPreselectionSkimmer import EcalPreselectionSkimmer
@@ -38,4 +38,4 @@ ecal_pres_skimmer.fiducial_level = 0
 
 p.sequence =[ecal_pres_skimmer]
 p.skimDefaultIsDrop()
-p.skimConsider(p.sequence[0].instanceName)
+p.skimConsider(p.sequence[0].instance_name)

@@ -20,8 +20,8 @@ fit_res_K : float
 
 Examples
 --------
-    from LDMX.Recon.trackDeDxMassEstimator import recoilTrackMassEstimator
-    p.sequence.append( recoilTrackMassEstimator )
+    from LDMX.Recon.trackDeDxMassEstimator import recoil_track_mass_estimator
+    p.sequence.append( recoil_track_mass_estimator )
 """
 
 from LDMX.Framework import ldmxcfg
@@ -37,5 +37,5 @@ class trackDeDxMassEstimator(ldmxcfg.Producer) :
         self.fit_res_C = 3.094
         self.fit_res_K = 1.862
 
-recoilTrackMassEstimator = trackDeDxMassEstimator("RecoilTrackMassEstimator")
-recoilTrackMassEstimator.track_collection = "RecoilTruthTracks"
+recoil_track_mass_estimator = trackDeDxMassEstimator("RecoilTrackMassEstimator")
+recoil_track_mass_estimator.track_collection = "RecoilTruthTracks"

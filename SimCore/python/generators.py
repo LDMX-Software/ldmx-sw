@@ -34,11 +34,11 @@ class gun(simcfg.PrimaryGenerator) :
 
     Examples
     --------
-        myGun = gun( 'myGun' )
-        myGun.particle = 'e-'
-        myGun.energy = 4.0
-        myGun.direction = [ 0., 0., 1. ]
-        myGun.position = [ 0., 0., 0. ]
+        my_gun = gun( 'my_gun' )
+        my_gun.particle = 'e-'
+        my_gun.energy = 4.0
+        my_gun.direction = [ 0., 0., 1. ]
+        my_gun.position = [ 0., 0., 0. ]
     """
 
     def __init__(self, name ) :
@@ -92,16 +92,16 @@ class lhe(simcfg.PrimaryGenerator) :
     ----------
     name : str
         name of new primary generator
-    filePath : str
+    file_path : str
         path to LHE file containing the primary vertices
     vertex : list of float, optional
         Vertex position to shoot from [mm]. Defaults to [0.0, 0.0, 0.0]
     """
 
-    def __init__(self,name,filePath):
+    def __init__(self,name,file_path):
         super().__init__(name,'simcore::generators::LHEPrimaryGenerator')
 
-        self.filePath = filePath
+        self.file_path = file_path
         self.vertex = [0.0, 0.0, 0.0]
 
 class completeReSim(simcfg.PrimaryGenerator) :
@@ -125,7 +125,7 @@ class completeReSim(simcfg.PrimaryGenerator) :
     def __init__(self,name,file_path) :
         super().__init__(name,'simcore::generators::RootCompleteReSim')
 
-        self.filePath = file_path
+        self.file_path = file_path
         self.collection_name = 'SimParticles'
         self.pass_name = ''
 
@@ -139,7 +139,7 @@ class ecalSP(simcfg.PrimaryGenerator) :
     ----------
     name : str
         name of new primary generator
-    filePath : str
+    file_path : str
         path to ROOT file containing the EcalScoringPlanes to re-simulate
 
 
@@ -153,10 +153,10 @@ class ecalSP(simcfg.PrimaryGenerator) :
         Maximum time of scoring plane hit to still re-sim [ns]
     """
 
-    def __init__(self,name,filePath) :
+    def __init__(self,name,file_path) :
         super().__init__( name , 'simcore::generators::RootSimFromEcalSP' )
 
-        self.filePath = filePath
+        self.file_path = file_path
         self.collection_name = 'EcalScoringPlaneHits'
         self.pass_name = ''
         self.time_cutoff = 50.
@@ -170,7 +170,7 @@ class gps(simcfg.PrimaryGenerator) :
     ----------
     name : str
         name of new primary generator
-    initCommands : list of strings
+    init_commands : list of strings
         List of Geant4 commands to initialize this GeneralParticleSource
 
     Returns
@@ -180,7 +180,7 @@ class gps(simcfg.PrimaryGenerator) :
 
     Examples
     --------
-        myGPS = gps( 'myGPS' , [
+        my_gps = gps( 'my_gps' , [
             "/gps/particle e-",
             "/gps/pos/type Plane",
             "/gps/pos/shape Square",
@@ -196,9 +196,9 @@ class gps(simcfg.PrimaryGenerator) :
             ] )
     """
 
-    def __init__(self,name,initCommands) :
+    def __init__(self,name,init_commands) :
         super().__init__(name,'simcore::generators::GeneralParticleSource')
-        self.initCommands = initCommands
+        self.init_commands = init_commands
 
 class genie(simcfg.PrimaryGenerator) :
     """Simple GENIE generator

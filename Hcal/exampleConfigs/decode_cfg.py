@@ -29,7 +29,7 @@ from LDMX.Framework import ldmxcfg
 
 p = ldmxcfg.Process('decode')
 if arg.max_events is not None :
-    p.maxEvents = arg.max_events
+    p.max_events = arg.max_events
 p.termLogLevel = 0
 p.logFrequency = 1000
 

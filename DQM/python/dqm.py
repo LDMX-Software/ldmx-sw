@@ -996,7 +996,7 @@ class TrigScintClusterDQM(ldmxcfg.Analyzer) :
 
         self.cluster_collection = coll
         self.pad = pad
-        self.passName = ''
+        self.pass_name = ''
 
 
 class TrigScintTrackDQM(ldmxcfg.Analyzer) :
@@ -1017,7 +1017,7 @@ class TrigScintTrackDQM(ldmxcfg.Analyzer) :
         super().__init__(name,'dqm::TrigScintTrackDQM','DQM')
 
         self.track_collection = coll
-        self.passName = ''
+        self.pass_name = ''
 
 
 class Trigger(ldmxcfg.Analyzer) :

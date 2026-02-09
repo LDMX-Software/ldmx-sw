@@ -6,7 +6,7 @@ from LDMX.Framework import ldmxcfg
 p = ldmxcfg.Process( 'test_ecal_digis' )
 
 # Set the maximum number of events
-p.maxEvents = 2000
+p.max_events = 2000
 
 # Import the Ecal conditions and geometry
 from LDMX.Ecal import digi, ecal_hardcoded_conditions, ecal_trig_digi
@@ -25,14 +25,14 @@ from LDMX.Ecal import EcalGeometry
 geom = EcalGeometry.EcalGeometryProvider.getInstance()
 
 # ECal digi
-ecalDigis = digi.EcalDigiProducer(si_thickness = 0.5)
+ecal_digis = digi.EcalDigiProducer(si_thickness = 0.5)
 
 # Turn of noise hits
-ecalDigis.hgcroc.noise = False
+ecal_digis.hgcroc.noise = False
 
 p.sequence = [
     ldmxcfg.Producer('fakeSimHits','ecal::test::EcalFakeSimHits','Ecal'),
-    ecalDigis,
+    ecal_digis,
     ecal_trig_digi.EcalTrigPrimDigiProducer(),
     digi.EcalRecProducer(),
     ldmxcfg.Analyzer('checkEcalHits','ecal::test::EcalCheckEnergyReconstruction','Ecal'),

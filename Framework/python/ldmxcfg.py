@@ -15,11 +15,11 @@ class EventProcessor:
 
     Parameters
     ----------
-    instanceName : str
+    instance_name : str
         Name of this copy of the producer object
-    className : str
+    class_name : str
         Name (including namespace) of the C++ class that this processor should be
-    moduleName : str
+    module_name : str
         Name of module the C++ class is in (e.g. Ecal or SimCore)
         or full path to the library that should be loaded
 
@@ -35,17 +35,17 @@ class EventProcessor:
     LDMX.Framework.histogram.histogram : histogram configuration object
     """
 
-    def __init__(self, instanceName, className, moduleName):
-        self.instanceName=instanceName
-        self.className=className
+    def __init__(self, instance_name, class_name, module_name):
+        self.instance_name=instance_name
+        self.class_name=class_name
         self.histograms=[]
 
-        if moduleName.endswith('.so'):
+        if module_name.endswith('.so'):
             # assume user passed full path to library
-            Process.addLibrary(moduleName)
+            Process.addLibrary(module_name)
         else:
             # assume user passed name of module processor is compiled into
-            Process.addModule(moduleName)
+            Process.addModule(module_name)
 
 
     @classmethod
@@ -274,8 +274,8 @@ class Producer(EventProcessor):
     LDMX.Framwork.ldmxcfg.EventProcessor : base class
     """
 
-    def __init__(self, instanceName, className, moduleName):
-        super().__init__(instanceName,className, moduleName)
+    def __init__(self, instance_name, class_name, module_name):
+        super().__init__(instance_name,class_name, module_name)
 
     def __str__(self) :
         """Stringify this Producer, creates a message with all the internal parameters.
@@ -286,7 +286,7 @@ class Producer(EventProcessor):
             A message with all the parameters and member variables in a human readable format
         """
 
-        msg = "\n  Producer(%s of class %s)"%(self.instanceName,self.className)
+        msg = "\n  Producer(%s of class %s)"%(self.instance_name,self.class_name)
         if len(self.__dict__)>0:
             msg += "\n   Parameters:"
             for k, v in self.__dict__.items():
@@ -304,8 +304,8 @@ class Analyzer(EventProcessor):
     LDMX.Framework.ldmxcfg.EventProcessor : base class
     """
 
-    def __init__(self, instanceName, className, moduleName):
-        super().__init__(instanceName,className, moduleName)
+    def __init__(self, instance_name, class_name, module_name):
+        super().__init__(instance_name,class_name, module_name)
 
     def __str__(self) :
         """Stringify this Analyzer, creates a message with all the internal parameters.
@@ -316,7 +316,7 @@ class Analyzer(EventProcessor):
             A message with all the parameters and member variables in a human readable format
         """
 
-        msg = "\n  Analyzer(%s of class %s)"%(self.instanceName,self.className)
+        msg = "\n  Analyzer(%s of class %s)"%(self.instance_name,self.class_name)
         if len(self.__dict__)>0:
             msg += "\n   Parameters:"
             for k, v in self.__dict__.items():
@@ -335,11 +335,11 @@ class ConditionsObjectProvider:
 
     Parameters
     ----------
-    objectName : str
+    object_name : str
         Name of the object this provider provides
-    className : str
+    class_name : str
         Name (including namespace) of the C++ class of the provider
-    moduleName : str
+    module_name : str
         Name of module that this COP is compiled into (e.g. Ecal or EventProc)
 
     Attributes
@@ -348,13 +348,13 @@ class ConditionsObjectProvider:
         Tag which identifies the generation of information
     """
 
-    def __init__(self, objectName, className, moduleName):
-        self.objectName=objectName
-        self.className=className
+    def __init__(self, object_name, class_name, module_name):
+        self.object_name=object_name
+        self.class_name=class_name
         self.tagName=''
 
         # make sure process loads this library if it hasn't yet
-        Process.addModule(moduleName)
+        Process.addModule(module_name)
 
         #register this conditions object provider with the process
         Process.declareConditionsObjectProvider(self)
@@ -384,7 +384,7 @@ class ConditionsObjectProvider:
         if not isinstance(other,ConditionsObjectProvider) :
             return NotImplemented
 
-        return (self.objectName == other.objectName and self.className == other.className)
+        return (self.object_name == other.object_name and self.class_name == other.class_name)
 
     def __str__(self) :
         """Stringify this ConditionsObjectProvider, creates a message with all the internal parameters.
@@ -395,7 +395,7 @@ class ConditionsObjectProvider:
             A message with all the parameters and member variables in a human readable format
         """
 
-        msg = "\n  ConditionsObjectProvider(%s of class %s, tag='%s')"%(self.objectName,self.className,self.tagName)
+        msg = "\n  ConditionsObjectProvider(%s of class %s, tag='%s')"%(self.object_name,self.class_name,self.tagName)
         if len(self.__dict__)>0:
             msg += "\n   Parameters:"
             for k, v in self.__dict__.items():
@@ -476,7 +476,7 @@ class Logger:
         minimum severity level to print to the terminal
     fileLevel: int
         minimum severity level to print to the file
-    filePath: str
+    file_path: str
         path to file to direct logging to (if not provided, don't open a file for logging)
     logRules: List[_LogRule]
         list of custom logging rules that override the default terminal and file levels
@@ -485,7 +485,7 @@ class Logger:
     def __init__(self):
         self.termLevel = 2 # warnings and above
         self.fileLevel = 0 # everything
-        self.filePath  = '' # don't open file for logging
+        self.file_path  = '' # don't open file for logging
         self.logRules = []
 
 
@@ -504,7 +504,7 @@ class Logger:
         """
 
         if isinstance(name, EventProcessor):
-            name = name.instanceName
+            name = name.instance_name
         self.logRules.append(_LogRule(name, level))
 
     def trace(self, name):
@@ -532,14 +532,14 @@ class Process:
 
     Parameters
     ----------
-    passName : str
+    pass_name : str
         Short reference name for this run of the process
 
     Attributes
     ----------
     lastProcess : Process
         Class-wide reference to the last Process object to be constructed
-    maxEvents : int
+    max_events : int
         Maximum number events to process.
         If totalEvents is set, this will be ignored.
     minEvents : int
@@ -553,7 +553,7 @@ class Process:
         If totalEvents is set, this will be ignored.
     totalEvents : int
         Number of events we'd like to produce independetly of the number of tries it would take.
-        Both maxEvents and maxTriesPerEvent will be ignored. Be warned about infinite loops!
+        Both max_events and maxTriesPerEvent will be ignored. Be warned about infinite loops!
     run : int
         Run number for this process
     inputFiles : list of strings
@@ -589,13 +589,13 @@ class Process:
 
     lastProcess=None
 
-    def __init__(self, passName):
+    def __init__(self, pass_name):
 
         if ( Process.lastProcess is not None ) :
             raise Exception( "Process object is already created! You can only create one Process object in a script." )
 
-        self.passName=passName
-        self.maxEvents=-1
+        self.pass_name=pass_name
+        self.max_events=-1
         self.minEvents=-1
         self.maxTriesPerEvent=1
         self.run=-1
@@ -623,7 +623,7 @@ class Process:
         logger_remap = {
             'termLogLevel' : 'termLevel',
             'fileLogLevel' : 'fileLevel',
-            'logFileName'  : 'filePath'
+            'logFileName'  : 'file_path'
         }
         if key in logger_remap:
             setattr(self.logger, logger_remap[key], val)
@@ -749,7 +749,7 @@ class Process:
 
         self.skimDefaultIsKeep=False
 
-    def skimConsider(self,namePat):
+    def skimConsider(self,name_pat):
         """Configure the process to listen to processors matching input.
 
         The list of skim rules has a rather complicated form, so it
@@ -757,14 +757,14 @@ class Process:
 
         Parameters
         ----------
-        namePat : str
+        name_pat : str
             Pattern for the processor instanceNames to match for the Process to listen
 
         Example
         -------
-            ecalVeto = ldmxcfg.Producer( 'ecalVeto' , 'EcalVetoProcessor' )
+            ecal_veto = ldmxcfg.Producer( 'ecal_veto' , 'EcalVetoProcessor' )
             # Setup of other parameters for the veto
-            p.skimConsider( 'ecalVeto' )
+            p.skimConsider( 'ecal_veto' )
 
         See Also
         --------
@@ -772,10 +772,10 @@ class Process:
 
         """
 
-        self.skimRules.append(namePat)
+        self.skimRules.append(name_pat)
         self.skimRules.append("")
 
-    def skimConsiderLabelled(self,namePat,labelPat):
+    def skimConsiderLabelled(self,name_pat,label_pat):
         """Configure the process to listen to processors matching input.
 
         The list of skim rules has a rather complicated form, so it
@@ -787,9 +787,9 @@ class Process:
 
         Parameters
         ----------
-        namePat : str
+        name_pat : str
             Pattern for the processor instanceNames to match for the Process to listen
-        labelPat : str
+        label_pat : str
             Pattern for the storage hint reason to match for the Process to listen
 
         See Also
@@ -797,8 +797,8 @@ class Process:
         skimConsider
 
         """
-        self.skimRules.append(namePat)
-        self.skimRules.append(labelPat)
+        self.skimRules.append(name_pat)
+        self.skimRules.append(label_pat)
 
     def setCompression(self,algorithm,level=9):
         """set the compression settings for any output files in this process
@@ -847,10 +847,10 @@ class Process:
         """
 
         import os
-        fullPathDir = os.path.realpath(indir)
-        self.inputFiles.extend([ os.path.join(fullPathDir,f)
-                for f in os.listdir(fullPathDir)
-                if os.path.isfile(os.path.join(fullPathDir,f)) and f.endswith('.root')
+        full_path_dir = os.path.realpath(indir)
+        self.inputFiles.extend([ os.path.join(full_path_dir,f)
+                for f in os.listdir(full_path_dir)
+                if os.path.isfile(os.path.join(full_path_dir,f)) and f.endswith('.root')
                 ])
 
     def parameterDump(self) :
@@ -903,9 +903,9 @@ class Process:
             A human-readable, multi-line description of this process object
         """
 
-        msg = "Process with pass name '%s'"%(self.passName)
+        msg = "Process with pass name '%s'"%(self.pass_name)
         if (self.run>0): msg += "\n using run number %d"%(self.run)
-        if (self.maxEvents>0): msg += "\n Maximum events to process: %d"%(self.maxEvents)
+        if (self.max_events>0): msg += "\n Maximum events to process: %d"%(self.max_events)
         else: msg += "\n No limit on maximum events to process"
         if (len(self.conditionsObjectProviders)>0):
             msg += "\n conditionsObjectProviders:\n"

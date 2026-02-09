@@ -353,8 +353,8 @@ class TrackingRecoDQM(ldmxcfg.Analyzer):
 
 
 
-            chi2Fake_max    = 500
-            chi2NdfFake_max = 50
+            chi2_fake_max    = 500
+            chi2_ndf_fake_max = 50
             scaling = 1.
 
             #Fake Plots
@@ -377,9 +377,9 @@ class TrackingRecoDQM(ldmxcfg.Analyzer):
             self.build1DHistogram("fake_measurement_dedx",
                                   "Fake measurement dE/dx (MeV/mm)", 60, 0., 0.6)
             self.build1DHistogram("fake_Chi2",
-                                  "fake Chi2",100,0,chi2Fake_max)
+                                  "fake Chi2",100,0,chi2_fake_max)
             self.build1DHistogram("fake_Chi2_per_ndf",
-                                  "fake Chi2/ndf",100,0,chi2NdfFake_max)
+                                  "fake Chi2/ndf",100,0,chi2_ndf_fake_max)
             self.build1DHistogram("fake_nShared",
                                   "fake nShared",5,0,5)
             self.build1DHistogram("fake_nHoles",
@@ -420,25 +420,25 @@ class TrackingRecoDQM(ldmxcfg.Analyzer):
 
 
             #Track states extrapolations
-            for trackState in self.trackStates:
+            for track_state in self.trackStates:
 
-                self.build1DHistogram("trk_"+trackState+"_loc0","trk_"+trackState+"_loc0 [mm]",200,-50,50)
-                self.build1DHistogram("trk_"+trackState+"_loc1","trk_"+trackState+"_loc1 [mm]",200,-50,50)
-                self.build1DHistogram(trackState+"_sp_hit_X",trackState+"_sp_hit_X [mm]",200,-50,50)
-                self.build1DHistogram(trackState+"_sp_hit_Y",trackState+"_sp_hit_Y [mm]",200,-50,50)
-                self.build1DHistogram("trk_"+trackState+"_loc0-sp_hit_X",trackState+"_diff loc0 and hit_X [mm]",200,-0.2,0.2)
-                self.build1DHistogram("trk_"+trackState+"_loc1-sp_hit_Y",trackState+"_diff loc1 and hit_Y [mm]",200,-5,5)
-                self.build1DHistogram(trackState+"_Pulls_of_loc0",trackState+"_pulls_of_loc0 [mm]",200,-5,5)
-                self.build1DHistogram(trackState+"_Pulls_of_loc1",trackState+"_pulls_of_loc1 [mm]",200,-5,5)
+                self.build1DHistogram("trk_"+track_state+"_loc0","trk_"+track_state+"_loc0 [mm]",200,-50,50)
+                self.build1DHistogram("trk_"+track_state+"_loc1","trk_"+track_state+"_loc1 [mm]",200,-50,50)
+                self.build1DHistogram(track_state+"_sp_hit_X",track_state+"_sp_hit_X [mm]",200,-50,50)
+                self.build1DHistogram(track_state+"_sp_hit_Y",track_state+"_sp_hit_Y [mm]",200,-50,50)
+                self.build1DHistogram("trk_"+track_state+"_loc0-sp_hit_X",track_state+"_diff loc0 and hit_X [mm]",200,-0.2,0.2)
+                self.build1DHistogram("trk_"+track_state+"_loc1-sp_hit_Y",track_state+"_diff loc1 and hit_Y [mm]",200,-5,5)
+                self.build1DHistogram(track_state+"_Pulls_of_loc0",track_state+"_pulls_of_loc0 [mm]",200,-5,5)
+                self.build1DHistogram(track_state+"_Pulls_of_loc1",track_state+"_pulls_of_loc1 [mm]",200,-5,5)
 
-                self.build2DHistogram(trackState+"_res_loc0-vs-N_hits","N_hits",  5,6.5,11.5,trackState+"_res_loc0 [mm]",100,-0.2,0.2)
-                self.build2DHistogram(trackState+"_res_loc1-vs-N_hits","N_hits",  5,6.5,11.5,trackState+"_res_loc1 [mm]",100,-5,5)
-                self.build2DHistogram(trackState+"_res_loc0-vs-trk_p",  "trk_p",200,0,5,     trackState+"_res_loc0 [mm]",100,-0.2,0.2)
-                self.build2DHistogram(trackState+"_res_loc1-vs-trk_p",  "trk_p",200,0,5,     trackState+"_res_loc1 [mm]",100,-5,5)
-                self.build2DHistogram(trackState+"_pulls_loc0-vs-N_hits","N_hits",5,6.5,11.5,trackState+"_pulls_loc0 [mm]",100,-3,3)
-                self.build2DHistogram(trackState+"_pulls_loc1-vs-N_hits","N_hits",5,6.5,11.5,trackState+"_pulls_loc1 [mm]",100,-3,3)
-                self.build2DHistogram(trackState+"_pulls_loc0-vs-trk_p","trk_p",200,0,5,     trackState+"_pulls_loc0 [mm]",100,-3,3)
-                self.build2DHistogram(trackState+"_pulls_loc1-vs-trk_p","trk_p",200,0,5,     trackState+"_pulls_loc1 [mm]",100,-3,3)
+                self.build2DHistogram(track_state+"_res_loc0-vs-N_hits","N_hits",  5,6.5,11.5,track_state+"_res_loc0 [mm]",100,-0.2,0.2)
+                self.build2DHistogram(track_state+"_res_loc1-vs-N_hits","N_hits",  5,6.5,11.5,track_state+"_res_loc1 [mm]",100,-5,5)
+                self.build2DHistogram(track_state+"_res_loc0-vs-trk_p",  "trk_p",200,0,5,     track_state+"_res_loc0 [mm]",100,-0.2,0.2)
+                self.build2DHistogram(track_state+"_res_loc1-vs-trk_p",  "trk_p",200,0,5,     track_state+"_res_loc1 [mm]",100,-5,5)
+                self.build2DHistogram(track_state+"_pulls_loc0-vs-N_hits","N_hits",5,6.5,11.5,track_state+"_pulls_loc0 [mm]",100,-3,3)
+                self.build2DHistogram(track_state+"_pulls_loc1-vs-N_hits","N_hits",5,6.5,11.5,track_state+"_pulls_loc1 [mm]",100,-3,3)
+                self.build2DHistogram(track_state+"_pulls_loc0-vs-trk_p","trk_p",200,0,5,     track_state+"_pulls_loc0 [mm]",100,-3,3)
+                self.build2DHistogram(track_state+"_pulls_loc1-vs-trk_p","trk_p",200,0,5,     track_state+"_pulls_loc1 [mm]",100,-3,3)
 
 class StraightTracksDQM(ldmxcfg.Analyzer):
     def __init__(self, name="StraightTracksDQM"):
@@ -499,16 +499,16 @@ class StraightTracksDQM(ldmxcfg.Analyzer):
             self.build1DHistogram("pull_phi","pull #phi",   100, -5, 5)
             self.build1DHistogram("pull_theta","pull #theta", 100, -5,5)
 
-            chi2Fake_max    = 15
-            chi2NdfFake_max = 10
+            chi2_fake_max    = 15
+            chi2_ndf_fake_max = 10
             scaling = 1.
 
             #Fake Plots
             self.build1DHistogram("fake_phi","fake #phi", nbins, scaling*phimin, scaling*phimax)
             self.build1DHistogram("fake_theta", "fake #theta", nbins, scaling*thetamin,scaling*thetamax)
             self.build1DHistogram("fake_nHits","fake nHits",5,0,5)
-            self.build1DHistogram("fake_Chi2","fake Chi2",nbins,0,chi2Fake_max)
-            self.build1DHistogram("fake_Chi2_per_ndf","fake Chi2/ndf",nbins,0,chi2NdfFake_max)
+            self.build1DHistogram("fake_Chi2","fake Chi2",nbins,0,chi2_fake_max)
+            self.build1DHistogram("fake_Chi2_per_ndf","fake Chi2/ndf",nbins,0,chi2_ndf_fake_max)
             self.build1DHistogram("fake_trk_PID","Particles",8,-4,4)
 
             #Duplicate plots

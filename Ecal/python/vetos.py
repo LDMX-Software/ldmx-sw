@@ -2,8 +2,8 @@
 
 Examples
 --------
-    from LDMX.Ecal.ecalVeto import ecalVeto
-    p.sequence.append( ecalVeto )
+    from LDMX.Ecal.ecal_veto import ecal_veto
+    p.sequence.append( ecal_veto )
 """
 
 from LDMX.Framework import ldmxcfg
@@ -12,7 +12,7 @@ from LDMX.Framework import ldmxcfg
 class EcalVetoProcessor(ldmxcfg.Producer) :
     """Configuration for the ECal veto"""
 
-    def __init__(self,name = 'ecalVeto') :
+    def __init__(self,name = 'ecal_veto') :
         super().__init__(name,"ecal::EcalVetoProcessor",'Ecal')
 
         from LDMX.Ecal.makePath import makeBDTPath, makeRoCPath

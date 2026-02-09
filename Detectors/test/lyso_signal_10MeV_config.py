@@ -9,7 +9,7 @@ det = 'ldmx-lyso-r1-v14-8gev'
 from LDMX.Biasing import target
 
 
-mySim = target.dark_brem(
+my_sim = target.dark_brem(
     #A' mass in MeV - set in init.sh to same value in GeV
     10.0,
     # library path is uniquely determined by arguments given to `dbgen run` in init.sh
@@ -19,7 +19,7 @@ mySim = target.dark_brem(
     det
 )
 
-p.sequence = [ mySim ]
+p.sequence = [ my_sim ]
 
 ##################################################################
 # Below should be the same for all sim scenarios
@@ -28,7 +28,7 @@ import os
 import sys
 
 
-p.maxEvents = 100
+p.max_events = 100
 p.run = 1
 
 p.histogramFile = 'hist.root'
@@ -45,7 +45,7 @@ import LDMX.Hcal.HcalGeometry
 from LDMX.TrigScint.trigScint import (
     TrigScintClusterProducer,
     TrigScintDigiProducer,
-    trigScintTrack,
+    trig_scint_track,
 )
 
 
@@ -57,8 +57,8 @@ ts_digis = [
 for d in ts_digis :
     d.randomSeed = 1
 
-from LDMX.Recon.electronCounter import ElectronCounter
-from LDMX.Recon.simpleTrigger import TriggerProcessor
+from LDMX.Recon.electron_counter import ElectronCounter
+from LDMX.Recon.simple_trigger import TriggerProcessor
 
 
 count = ElectronCounter(1,'ElectronCounter')
@@ -77,7 +77,7 @@ p.sequence.extend([
         TrigScintClusterProducer.pad1(),
         TrigScintClusterProducer.pad2(),
         TrigScintClusterProducer.pad3(),
-        trigScintTrack,
+        trig_scint_track,
         count, TriggerProcessor('trigger', 8000.),
         dqm.DarkBremInteraction()
         ] + dqm.all_dqm)

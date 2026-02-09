@@ -11,7 +11,7 @@ import LDMX.Ecal.EcalGeometry
 from LDMX.SimCore import simulator
 
 
-sim = simulator.simulator("mySim")
+sim = simulator.simulator("my_sim")
 sim.setDetector( 'ldmx-det-v12', include_scoring_planes_minimal = True  )
 sim.description = "ECal Digi Pipeline Tested on Basic 4GeV Gun"
 from LDMX.SimCore import generators
@@ -33,5 +33,5 @@ p.sequence=[ sim,
         ]
 p.outputFiles=['ecal_digi_pipeline.root']
 p.histogramFile = 'ecal_digi_verify_hists.root'
-p.maxEvents = 1000
+p.max_events = 1000
 

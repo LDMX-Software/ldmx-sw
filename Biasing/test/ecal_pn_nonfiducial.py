@@ -25,7 +25,7 @@ p.outputFiles = ['events_nonfiducial_test_production.root']
 p.histogramFile = 'hist_nonfiducial_test_production.root'
 
 p.maxTriesPerEvent = 10000
-p.maxEvents = 100
+p.max_events = 100
 p.run = 2
 p.logFrequency = 100
 #p.termLogLevel = 0
