@@ -149,9 +149,7 @@ macro(setup_python)
   if(EXISTS ${PROJECT_SOURCE_DIR}/python)
 
     # Get a list of all python files inside the python package
-    file(GLOB py_scripts CONFIGURE_DEPENDS
-         ${PROJECT_SOURCE_DIR}/python/_*[a-zA-Z]*.py
-         ${PROJECT_SOURCE_DIR}/python/_*[a-zA-Z]*.py.in)
+    file(GLOB py_scripts CONFIGURE_DEPENDS ${PROJECT_SOURCE_DIR}/python/[a-zA-Z_]*.py)
 
     foreach(pyscript ${py_scripts})
 
