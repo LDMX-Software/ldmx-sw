@@ -78,9 +78,9 @@ hcal_reco = hcal_digi_and_reco.HcalRecProducer()
 # Cant run this until we figure out how to have
 # an upstream tagger track (GENIE starts at target)
 
-# from LDMX.TrigScint.trigScint import TrigScintDigiProducer
-# from LDMX.TrigScint.trigScint import TrigScintClusterProducer
-# from LDMX.TrigScint.trigScint import trig_scint_track
+# from LDMX.TrigScint.trig_scint import TrigScintDigiProducer
+# from LDMX.TrigScint.trig_scint import TrigScintClusterProducer
+# from LDMX.TrigScint.trig_scint import trig_scint_track
 # ts_digis = [
 #         TrigScintDigiProducer.pad1(),
 #         TrigScintDigiProducer.pad2(),

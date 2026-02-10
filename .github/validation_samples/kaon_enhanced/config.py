@@ -90,7 +90,7 @@ from LDMX.Recon.simple_trigger import TriggerProcessor
 from LDMX.Tracking import full_tracking_sequence
 
 # Load the TS modules
-from LDMX.TrigScint.trigScint import (
+from LDMX.TrigScint.trig_scint import (
         TrigScintClusterProducer,
         TrigScintDigiProducer,
         trig_scint_track,

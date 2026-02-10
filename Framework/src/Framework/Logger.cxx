@@ -75,13 +75,13 @@ void open(const framework::config::Parameters& p) {
   typedef sinks::text_ostream_backend ourSinkBack_t;
   typedef sinks::synchronous_sink<ourSinkBack_t> ourSinkFront_t;
 
-  level file_level{convertLevel(p.get<int>("fileLevel", 0))};
+  level file_level{convertLevel(p.get<int>("file_level", 0))};
   std::string file_path{p.get<std::string>("file_path", "")};
 
-  level term_level{convertLevel(p.get<int>("termLevel", 4))};
+  level term_level{convertLevel(p.get<int>("term_level", 4))};
   std::vector<framework::config::Parameters> empty{};
   const auto& log_rules{
-      p.get<std::vector<framework::config::Parameters>>("logRules", empty)};
+      p.get<std::vector<framework::config::Parameters>>("log_rules", empty)};
   std::unordered_map<std::string, level> custom_levels;
   for (const auto& log_rule : log_rules) {
     custom_levels[log_rule.get<std::string>("name")] =

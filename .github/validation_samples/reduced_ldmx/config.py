@@ -60,7 +60,7 @@ ecal_mip.num_ecal_layers = 4
 
 ecal_wab = ecal_WAB.EcalWABRecProcessor()
 
-from LDMX.TrigScint.trigScint import (
+from LDMX.TrigScint.trig_scint import (
     TrigScintClusterProducer,
     TrigScintDigiProducer,
     trig_scint_track,

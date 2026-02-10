@@ -51,7 +51,7 @@ hcal_digi = hcal_digi_and_reco.HcalDigiProducer()
 hcal_reco = hcal_digi_and_reco.HcalRecProducer()
 
 # Load the TS modules
-from LDMX.TrigScint.trigScint import (
+from LDMX.TrigScint.trig_scint import (
         TrigScintClusterProducer,
         TrigScintDigiProducer,
         trig_scint_track,
