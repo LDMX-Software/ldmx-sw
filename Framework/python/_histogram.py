@@ -4,7 +4,7 @@ These histogram objects are passed to the HistogramPool to be
 created for processors that they are grouped with.
 """
 
-from ._parameter_set import parameter_set
+from ._parameter_set import parameter_set, field
 
 
 def uniform_binning( nbins , minedge , maxedge ) :
@@ -55,8 +55,10 @@ class histogram:
     name: str
     xlabel: str = ''
     xbins: list[float] = []
+    xcategories: list[str] = field(init=False)
     ylabel: str = ''
     ybins: list[float] = []
+    ycategories: list[str] = field(init=False)
     weighted: bool = False
 
 
