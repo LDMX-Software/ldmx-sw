@@ -11,8 +11,6 @@ in the configuration pyton module is at the top.
 import warnings
 from dataclasses import dataclass, field
 
-parameter = field
-
 def check_list(l, dimension, entry_type):
     if dimension == 1:
         for e in l:
@@ -22,7 +20,7 @@ def check_list(l, dimension, entry_type):
         for ll in l:
             check_list(ll, 1, entry_type)
     else:
-        raise Exception(f'Dimension {dimension} not supported.')
+        raise Exception(f'List with dimension {dimension} not supported.')
 
 def validate_and_set_attr(self, attr, val):
     # first, we check if the attr is a legacy name
@@ -58,13 +56,12 @@ def validate_and_set_attr(self, attr, val):
         raise KeyError(f'Attribute {attr} not a member of {self.__class__.__name__}')
 
     expected_type = self.__dataclass_fields__[attr].type
-    if not isinstance(val, expected_type):
-        raise TypeError(f'Attribute {attr} should be type {expected_type} instead of type {type(val)}.')
-
     if isinstance(val, list):
         expected_dimension  = self.__dataclass_fields__[attr].metadata['dimension']
         expected_entry_type = self.__dataclass_fields__[attr].metadata['entry_type']
         check_list(val, expected_dimension, expected_entry_type)
+    elif not isinstance(val, expected_type):
+        raise TypeError(f'Attribute {attr} should be type {expected_type} instead of type {type(val)}.')
 
     self.__dict__[attr] = val
 

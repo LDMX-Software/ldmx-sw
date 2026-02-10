@@ -1,4 +1,9 @@
+from ._parameter_set import parameter_set, field
+from ._logger import Logger
+from ._rnss import RandomNumberSeedService
 
+
+@parameter_set
 class Process:
     """Process configuration object
 
@@ -39,15 +44,15 @@ class Process:
     outputFiles : list of strings
         Output files to write out event data to after processing
     sequence : list of Producers and Analyzers
-        List of event processors to pass the event bus objects to
+        list of event processors to pass the event bus objects to
     keep : list of strings
-        List of rules to keep or drop objects from the event bus
+        list of rules to keep or drop objects from the event bus
     libraries : list of strings
-        List of libraries to load before attempting to build any processors
+        list of libraries to load before attempting to build any processors
     skimDefaultIsKeep : bool
         Flag to say whether to process should by default keep the event or not
     skimRules : list of strings
-        List of skimming rules for which processors the process should listen to when deciding whether to keep an event
+        list of skimming rules for which processors the process should listen to when deciding whether to keep an event
     logFrequency : int
         Print the event number whenever its modulus with this frequency is zero
     logger : Logger
@@ -55,7 +60,7 @@ class Process:
     conditionsGlobalTag : str
         Global tag for the current generation of conditions
     conditionsObjectProviders : list of ConditionsObjectProviders
-        List of the sources of calibration and conditions information
+        list of the sources of calibration and conditions information
     randomNumberSeedService : RandomNumberSeedService
         conditions object that provides random number seeds in a deterministic way
 
@@ -67,142 +72,68 @@ class Process:
 
     lastProcess=None
 
-    def __init__(self, passName):
+    passName: str
+    maxEvents: int = -1
+    minEvents: int = -1
+    maxTriesPerEvent: int = 1
+    run: int = -1
+    inputFiles: list[str] = []
+    outputFiles: list[str] = []
+    sequence: list[any] = []
+    keep: list[str] = []
+    libraries: list[str] = []
+    skimDefaultIsKeep: bool = True
+    skimRules: list[str] = []
+    logFrequency: int = -1
+    logger: Logger = field(default_factory = Logger)
+    compressionSetting: int = 9
+    histogramFile: str = ''
+    conditionsGlobalTag: str = 'Default'
+    conditionsObjectProviders: list[any] = []
+    tree_name: str = 'LDMX_Events'
+    __legacy__ = {
+        'termLogLevel': 'logger.termLevel',
+        'fileLogLevel': 'logger.fileLevel',
+        'logFileName' : 'logger.filePath',
+    }
 
+
+    def __post_init__(self):
         if ( Process.lastProcess is not None ) :
             raise Exception( "Process object is already created! You can only create one Process object in a script." )
+        from . import _register
+        self.libraries.extend(_register.library.__registry__)
+        self.conditionsObjectProviders.extend(_regsiter.conditions_object_providers.__registry__)
 
-        self.passName=passName
-        self.maxEvents=-1
-        self.minEvents=-1
-        self.maxTriesPerEvent=1
-        self.run=-1
-        self.inputFiles=[]
-        self.outputFiles=[]
-        self.sequence=[]
-        self.keep=[]
-        self.libraries=[]
-        self.skimDefaultIsKeep=True
-        self.skimRules=[]
-        self.logFrequency=-1
-        self.logger = Logger()
-        self.compressionSetting=9
-        self.histogramFile=''
-        self.conditionsGlobalTag='Default'
-        self.conditionsObjectProviders=[]
-        self.tree_name = 'LDMX_Events'
         Process.lastProcess=self
-
         # needs lastProcess defined to self-register
         self.randomNumberSeedService=RandomNumberSeedService()
 
 
-    def __setattr__(self, key, val):
-        logger_remap = {
-            'termLogLevel' : 'termLevel',
-            'fileLogLevel' : 'fileLevel',
-            'logFileName'  : 'filePath'
-        }
-        if key in logger_remap:
-            setattr(self.logger, logger_remap[key], val)
-            return
-        elif key == 'logFrequency' and val > 0:
-            # make sure the Process channel is lowered to info
-            # later log rules override earlier ones so we put this
-            # at the front of the list so the user could have overwritten
-            # this if need be
-            # 'Process' needs to match the name given in enableLogging
-            # in include/Framework/Process.h
-            self.logger.logRules.insert(0, _LogRule('Process', level=1))
-            # fall through to set the key=val
-
-        super().__setattr__(key, val)
-
-
-    def addLibrary(lib) :
-        """Add a library to the list of dynamically loaded libraries
-
-        A process object must already have been created.
-
-        Parameters
-        ----------
-        lib : str
-            name of library to load 
-
-        Warnings
-        --------
-        - Will exit the script if a process object hasn't been defined yet.
-
-        Examples
-        --------
-            addLibrary( 'libSimCore.so' )
-        """
-
-        if ( Process.lastProcess is not None ) :
-            Process.lastProcess.libraries.append( lib )
-        else :
-            raise Exception( "No Process object defined yet! You need to create a Process before creating any EventProcessors." )
-
-    def addModule(module) :
-        """Add a module to the list of dynamically loaded libraries
-
-        A process object must already have been created.
-
-        Parameters
-        ----------
-        module : str
-            Name of module to load as a library
-
-        See Also
-        --------
-        Process.addLibrary
-
-        Examples
-        --------
-        You can use this function to load a general module
-            addModule('SimCore')
-
-        With the string substitutions that are made, you can
-        refer to submodules with cmake, C++, or the library
-        syntax. The following calls are all equivalent.
-            addModule('Ecal/Event')
-            addModule('Ecal::Event')
-            addModule('Ecal_Event')
-        """
-
-        actual_module_name = module.replace('/','_').replace('::','_')
-        Process.addLibrary('@CMAKE_INSTALL_PREFIX@/lib/lib%s.so'%(actual_module_name))
-
-    def declareConditionsObjectProvider(cop):
+    def _declare_conditions_object_provider(self, cop):
         """Declare a conditions object provider to be loaded with the process
 
-        A process object must already have been created.
-
         Parameters
         ----------
-        cop : ConditionsObjectProvider
+        cop
             provider to load with the process
 
         Warnings
         --------
-        - Will exit the script if a process object hasn't been defined yet.
         - Overrides an already declared COP with the passed COP if they are equal
         """
 
-        if ( Process.lastProcess is not None ) :
+        cop.tagName = Process.lastProcess.conditionsGlobalTag
 
-            cop.setTag(Process.lastProcess.conditionsGlobalTag)
+        # check if the input COP matches one already declared
+        #   if it does match, override the already declared one with the passed one
+        for index, already_defined_cop in enumerate(self.conditionsObjectProviders) :
+            if cop == already_defined_cop :
+                self.conditionsObjectProviders[index] = cop
+                return
 
-            # check if the input COP matches one already declared
-            #   if it does match, override the already declared one with the passed one
-            for index, already_defined_cop in enumerate(Process.lastProcess.conditionsObjectProviders) :
-                if cop == already_defined_cop :
-                    Process.lastProcess.conditionsObjectProviders[index] = cop
-                    return
+        self.conditionsObjectProviders.append(cop)
 
-            Process.lastProcess.conditionsObjectProviders.append( cop )
-        else :
-            raise Exception( "No Process object defined yet! You need to create a Process before declaring any ConditionsObjectProviders." )
 
     def setConditionsGlobalTag(self,tag) :
         """Set the global tag for all the ConditionsObjectProviders
@@ -215,7 +146,8 @@ class Process:
 
         self.conditionsGlobalTag=tag
         for cop in self.conditionsObjectProviders :
-            cop.setTag(tag)
+            cop.tagName = tag
+
 
     def skimDefaultIsSave(self):
         """Configure the process to by default keep every event."""
@@ -315,7 +247,7 @@ class Process:
     def inputDir(self, indir) :
         """Scan the input directory and make a list of input root files to read from it
 
-        Lists all files ending in '.root' in the input directory (not recursive).
+        lists all files ending in '.root' in the input directory (not recursive).
         Extends the inputFiles list by these files.
 
         Parameters
@@ -410,9 +342,9 @@ class Process:
         else: msg += "\n  Default: drop the event"
         for i in range(0,len(self.skimRules)-1,2):
             if self.skimRules[i+1]=="":
-                msg += "\n  Listen to hints from processors with names matching '%s'"%(self.skimRules[i])
+                msg += "\n  listen to hints from processors with names matching '%s'"%(self.skimRules[i])
             else:
-                msg += "\n  Listen to hints with labels matching '%s' from processors with names matching '%s'"%(self.skimRules[i+1],self.skimRules[i])
+                msg += "\n  listen to hints with labels matching '%s' from processors with names matching '%s'"%(self.skimRules[i+1],self.skimRules[i])
         if len(self.keep) > 0:
             msg += "\n Rules for keeping previous products:"
             for arule in self.keep:

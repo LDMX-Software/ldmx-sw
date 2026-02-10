@@ -105,3 +105,8 @@ add_subdirectory(Detectors)
 add_subdirectory(MagFieldMap)
 
 build_test()
+add_test(
+  NAME PythonConfigParameterSet
+  COMMAND python3 -m unittest Framework/python/cfg/test_parameter_set.py
+  WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+)

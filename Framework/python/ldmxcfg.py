@@ -4,56 +4,29 @@ Basic python configuration for ldmx-sw application
 """
 
 from pathlib import Path
-from ._parameter_set import parameter_set, field
-
-def _add_module_or_library(module):
-    """let Process deduce the full path if it wasn't already deduced"""
-    if module.endswith('.so'):
-        Process.addLibrary(module)
-    else:
-        Process.addModule(module)
-
-
-def processor_post_init(self):
-    _add_module_or_library(self.moduleName)
-    if not hasattr(self, 'instanceName'):
-        setattr(self, 'instanceName', self.className)
-
-
-def processor(class_name: str, module_name: str):
-    return parameter_set(
-        post_init = processor_post_init,
-        class_name = class_name,
-        moduleName = module_name
-    )
-
-
-def conditions_object_provider_post_init(self):
-    _add_module_or_library(self.moduleName)
-    Process.declareConditionsObjectProvider(self)
-
-
-def conditions_object_provider(object_name: str, class_name: str, module_name: str):
-    return parameter_set(
-        post_init = conditions_object_provider_post_init,
-        objectName = object_name,
-        className = class_name,
-        moduleName = module_name,
-        tagName = ''
-    )
 
 
 class EventProcessor:
     """An EventProcessor object
 
-    This object contains some helper functions for creating processors and configuring their histograms.
+    This object contains the parameters that are necessary for a framework::EventProcessor to be configured.
 
     You should NOT use this class directly. Use one of the derived classes Producer or Analyzer for clarity.
+
+    Parameters
+    ----------
+    instanceName : str
+        Name of this copy of the producer object
+    className : str
+        Name (including namespace) of the C++ class that this processor should be
+    moduleName : str
+        Name of module the C++ class is in (e.g. Ecal or SimCore)
+        or full path to the library that should be loaded
 
     Attributes
     ----------
     histograms : list of histogram1D objects
-        list of histogram configure objects for the HistogramPool to make for this processor
+        List of histogram configure objects for the HistogramPool to make for this processor
 
     See Also
     --------
@@ -61,6 +34,19 @@ class EventProcessor:
     LDMX.Framework.ldmxcfg.Analyzer : Analyzer configuration object
     LDMX.Framework.histogram.histogram : histogram configuration object
     """
+
+    def __init__(self, instanceName, className, moduleName):
+        self.instanceName=instanceName
+        self.className=className
+        self.histograms=[]
+
+        if moduleName.endswith('.so'):
+            # assume user passed full path to library
+            Process.addLibrary(moduleName)
+        else:
+            # assume user passed name of module processor is compiled into
+            Process.addModule(moduleName)
+
 
     @classmethod
     def from_file(cls, source_file, class_name = None, needs = [], instance_name = None, compile_notice = True, **config_kwargs):
@@ -288,6 +274,9 @@ class Producer(EventProcessor):
     LDMX.Framwork.ldmxcfg.EventProcessor : base class
     """
 
+    def __init__(self, instanceName, className, moduleName):
+        super().__init__(instanceName,className, moduleName)
+
     def __str__(self) :
         """Stringify this Producer, creates a message with all the internal parameters.
 
@@ -315,6 +304,9 @@ class Analyzer(EventProcessor):
     LDMX.Framework.ldmxcfg.EventProcessor : base class
     """
 
+    def __init__(self, instanceName, className, moduleName):
+        super().__init__(instanceName,className, moduleName)
+
     def __str__(self) :
         """Stringify this Analyzer, creates a message with all the internal parameters.
 
@@ -331,7 +323,6 @@ class Analyzer(EventProcessor):
                 msg += "\n    " + str(k) + " : " + str(v)
 
         return msg
-
 
 class ConditionsObjectProvider:
     """A ConditionsObjectProvider
@@ -357,6 +348,16 @@ class ConditionsObjectProvider:
         Tag which identifies the generation of information
     """
 
+    def __init__(self, objectName, className, moduleName):
+        self.objectName=objectName
+        self.className=className
+        self.tagName=''
+
+        # make sure process loads this library if it hasn't yet
+        Process.addModule(moduleName)
+
+        #register this conditions object provider with the process
+        Process.declareConditionsObjectProvider(self)
 
     def setTag(self,newtag) :
         """Set the tag generation of the Conditions
@@ -402,8 +403,6 @@ class ConditionsObjectProvider:
 
         return msg
 
-
-@conditions_object_provider('RandomNumberSeedService','framework::RandomNumberSeedService','Framework')
 class RandomNumberSeedService(ConditionsObjectProvider):
     """The random number seed service
 
@@ -413,13 +412,16 @@ class RandomNumberSeedService(ConditionsObjectProvider):
     Attributes
     ----------
     seedMode : str
-        Name of mode of getting random seeds, uses run number by default
-    seed: int
-        integer seed only used in external mode
+        Name of mode of getting random seeds
     """
 
-    seedMode: str = 'run'
-    seed: int = -1
+    def __init__(self) :
+        super().__init__('RandomNumberSeedService','framework::RandomNumberSeedService','Framework')
+        self.seedMode = ''
+        self.seed=-1 #only used in external mode
+
+        # use run seed mode by default
+        self.run()
 
     def run(self) :
         """Base random number seeds off of the run number"""
@@ -441,19 +443,17 @@ class RandomNumberSeedService(ConditionsObjectProvider):
         self.seedMode = 'time'
 
 
-@parameter_set
 class _LogRule:
     """A single pair holding a channel name and the level it should be logged at
 
     This class should not be used directly, use the helper functions
     in Logger instead to define rule sets.
     """
+    def __init__(self, name, level):
+        self.name = name
+        self.level = level
 
-    name: str
-    level: int
 
-
-@parameter_set
 class Logger:
     """Configure the logging infrastructure of ldmx-sw
 
@@ -478,14 +478,15 @@ class Logger:
         minimum severity level to print to the file
     filePath: str
         path to file to direct logging to (if not provided, don't open a file for logging)
-    logRules: list[_LogRule]
+    logRules: List[_LogRule]
         list of custom logging rules that override the default terminal and file levels
     """
 
-    termLevel: int = 2
-    fileLevel: int = 0
-    filePath: str = ''
-    logRules: list[_LogRule] = []
+    def __init__(self):
+        self.termLevel = 2 # warnings and above
+        self.fileLevel = 0 # everything
+        self.filePath  = '' # don't open file for logging
+        self.logRules = []
 
 
     def custom(self, name, level):
@@ -519,7 +520,7 @@ class Logger:
         """raise the input channel to the error-only level"""
         self.custom(name, level = 3)
 
-@parameter_set
+
 class Process:
     """Process configuration object
 
@@ -560,15 +561,15 @@ class Process:
     outputFiles : list of strings
         Output files to write out event data to after processing
     sequence : list of Producers and Analyzers
-        list of event processors to pass the event bus objects to
+        List of event processors to pass the event bus objects to
     keep : list of strings
-        list of rules to keep or drop objects from the event bus
+        List of rules to keep or drop objects from the event bus
     libraries : list of strings
-        list of libraries to load before attempting to build any processors
+        List of libraries to load before attempting to build any processors
     skimDefaultIsKeep : bool
         Flag to say whether to process should by default keep the event or not
     skimRules : list of strings
-        list of skimming rules for which processors the process should listen to when deciding whether to keep an event
+        List of skimming rules for which processors the process should listen to when deciding whether to keep an event
     logFrequency : int
         Print the event number whenever its modulus with this frequency is zero
     logger : Logger
@@ -576,7 +577,7 @@ class Process:
     conditionsGlobalTag : str
         Global tag for the current generation of conditions
     conditionsObjectProviders : list of ConditionsObjectProviders
-        list of the sources of calibration and conditions information
+        List of the sources of calibration and conditions information
     randomNumberSeedService : RandomNumberSeedService
         conditions object that provides random number seeds in a deterministic way
 
@@ -588,38 +589,56 @@ class Process:
 
     lastProcess=None
 
-    passName: str
-    maxEvents: int = -1
-    minEvents: int = -1
-    maxTriesPerEvent: int = 1
-    run: int = -1
-    inputFiles: list[str] = []
-    outputFiles: list[str] = []
-    sequence: list[EventProcessor] = []
-    keep: list[str] = []
-    libraries: list[str] = []
-    skimDefaultIsKeep: bool = True
-    skimRules: list[str] = []
-    logFrequency: int = -1
-    logger: Logger = field(default_factory = Logger)
-    compressionSetting: int = 9
-    histogramFile: str = ''
-    conditionsGlobalTag: str = 'Default'
-    conditionsObjectProviders: list[ConditionsObjectProvider] = []
-    tree_name: str = 'LDMX_Events'
-    __legacy__ = {
-        'termLogLevel': 'logger.termLevel',
-        'fileLogLevel': 'logger.fileLevel',
-        'logFileName' : 'logger.filePath',
-    }
+    def __init__(self, passName):
 
-
-    def __post_init__(self):
         if ( Process.lastProcess is not None ) :
             raise Exception( "Process object is already created! You can only create one Process object in a script." )
+
+        self.passName=passName
+        self.maxEvents=-1
+        self.minEvents=-1
+        self.maxTriesPerEvent=1
+        self.run=-1
+        self.inputFiles=[]
+        self.outputFiles=[]
+        self.sequence=[]
+        self.keep=[]
+        self.libraries=[]
+        self.skimDefaultIsKeep=True
+        self.skimRules=[]
+        self.logFrequency=-1
+        self.logger = Logger()
+        self.compressionSetting=9
+        self.histogramFile=''
+        self.conditionsGlobalTag='Default'
+        self.conditionsObjectProviders=[]
+        self.tree_name = 'LDMX_Events'
         Process.lastProcess=self
+
         # needs lastProcess defined to self-register
         self.randomNumberSeedService=RandomNumberSeedService()
+
+
+    def __setattr__(self, key, val):
+        logger_remap = {
+            'termLogLevel' : 'termLevel',
+            'fileLogLevel' : 'fileLevel',
+            'logFileName'  : 'filePath'
+        }
+        if key in logger_remap:
+            setattr(self.logger, logger_remap[key], val)
+            return
+        elif key == 'logFrequency' and val > 0:
+            # make sure the Process channel is lowered to info
+            # later log rules override earlier ones so we put this
+            # at the front of the list so the user could have overwritten
+            # this if need be
+            # 'Process' needs to match the name given in enableLogging
+            # in include/Framework/Process.h
+            self.logger.logRules.insert(0, _LogRule('Process', level=1))
+            # fall through to set the key=val
+
+        super().__setattr__(key, val)
 
 
     def addLibrary(lib) :
@@ -818,7 +837,7 @@ class Process:
     def inputDir(self, indir) :
         """Scan the input directory and make a list of input root files to read from it
 
-        lists all files ending in '.root' in the input directory (not recursive).
+        Lists all files ending in '.root' in the input directory (not recursive).
         Extends the inputFiles list by these files.
 
         Parameters
@@ -913,9 +932,9 @@ class Process:
         else: msg += "\n  Default: drop the event"
         for i in range(0,len(self.skimRules)-1,2):
             if self.skimRules[i+1]=="":
-                msg += "\n  listen to hints from processors with names matching '%s'"%(self.skimRules[i])
+                msg += "\n  Listen to hints from processors with names matching '%s'"%(self.skimRules[i])
             else:
-                msg += "\n  listen to hints with labels matching '%s' from processors with names matching '%s'"%(self.skimRules[i+1],self.skimRules[i])
+                msg += "\n  Listen to hints with labels matching '%s' from processors with names matching '%s'"%(self.skimRules[i+1],self.skimRules[i])
         if len(self.keep) > 0:
             msg += "\n Rules for keeping previous products:"
             for arule in self.keep:
@@ -927,8 +946,6 @@ class Process:
 
         return msg
 
-
-@processor("framework::RunHeaderAnalyzer", "Framework")
 class RunHeaderAna(Analyzer) :
     """                                                                                                                  
     Contains an instance of RunHeaderAnalyzer that
@@ -938,3 +955,6 @@ class RunHeaderAna(Analyzer) :
     --------
         p.sequence.append( ldmxcfg.RunHeaderAna() )
     """
+
+    def __init__(self, name='RunHeaderAnalyzer'):
+        super().__init__(name, 'framework::RunHeaderAnalyzer', 'Framework')

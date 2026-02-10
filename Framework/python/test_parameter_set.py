@@ -1,5 +1,5 @@
 from ._parameter_set import parameter_set, field
-from .ldmxcfg import processor
+from . import processor
 
 
 @parameter_set
@@ -99,12 +99,12 @@ class TestParameter(unittest.TestCase):
         with self.assertRaises(TypeError):
             @parameter_set()
             class BadVec:
-                vec: list = [1, 1.0]
+                vec: list[int] = [1, 1.0]
 
         with self.assertRaises(TypeError):
             @parameter_set()
             class Bad2DVec:
-                vec: list = [[2, 3], 1]
+                vec: list[int] = [[2, 3], 1]
 
     def test_legacy_remap(self):
         c = MyClass()
