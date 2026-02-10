@@ -269,7 +269,8 @@ void EcalGeometry::buildCellMap() {
   grid_min_p -= cell_r_min_;
   num_p_cells++;
   while (grid_min_p > -1 * module_r_max_) {
-    grid_min_p -= 2 * cell_r_min_;  // decrement x by cell center-to-flat diameter
+    // decrement x by cell center-to-flat diameter
+    grid_min_p -= 2 * cell_r_min_;
     num_p_cells++;
   }
   while (grid_min_q > -1 * module_r_min_) {
@@ -286,7 +287,8 @@ void EcalGeometry::buildCellMap() {
   num_p_cells *= 2;
   num_q_cells *= 2;
 
-  grid_map.Honeycomb(grid_min_p, grid_min_q, cell_r_max_, num_p_cells, num_q_cells);
+  grid_map.Honeycomb(grid_min_p, grid_min_q, cell_r_max_, num_p_cells,
+                     num_q_cells);
 
   ldmx_log(trace) << std::setprecision(2)
                   << "Building buildCellMap with cell rmin: " << cell_r_min_

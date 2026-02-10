@@ -73,7 +73,8 @@ Process::Process(const framework::config::Parameters &configuration)
 
   storage_controller_.setDefaultKeep(
       configuration.get<bool>("skim_default_is_keep", true));
-  auto skim_rules{configuration.get<std::vector<std::string>>("skim_rules", {})};
+  auto skim_rules{
+      configuration.get<std::vector<std::string>>("skim_rules", {})};
   for (size_t i = 0; i < skim_rules.size(); i += 2) {
     storage_controller_.addRule(skim_rules[i], skim_rules[i + 1]);
   }

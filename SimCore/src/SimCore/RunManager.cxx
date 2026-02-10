@@ -39,7 +39,8 @@ RunManager::RunManager(framework::config::Parameters& parameters,
   parameters_ = parameters;
 
   // Set whether the ROOT primary generator should use the persisted seed.
-  auto root_primary_gen_use_seed{parameters.get<bool>("root_primary_gen_use_seed")};
+  auto root_primary_gen_use_seed{
+      parameters.get<bool>("root_primary_gen_use_seed")};
 
   // Validate the geometry if specified.
   setUseRootSeed(root_primary_gen_use_seed);

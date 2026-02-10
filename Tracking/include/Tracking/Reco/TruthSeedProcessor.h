@@ -58,7 +58,7 @@ class TruthSeedProcessor : public TrackingGeometryUser {
    * given set of parameters.
    *
    * The parameters a processor has access to are the member variables
-    * of the python class in the sequence that has class_name equal to
+   * of the python class in the sequence that has class_name equal to
    * the EventProcessor class name.
    *
    * @param parameters Parameters for configuration.
