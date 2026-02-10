@@ -33,17 +33,17 @@ p.output_files = ['events.root']
 
 # Load the full tracking sequence
 import LDMX.Ecal.digi as ecal_digi
-import LDMX.Ecal.ecal_hardcoded_conditions
 import LDMX.Ecal.ecal_clusters as ecal_cluster
 
 # Load the ECAL modules
 import LDMX.Ecal.ecal_geometry
+import LDMX.Ecal.ecal_hardcoded_conditions
 import LDMX.Ecal.vetos as ecal_vetos
 import LDMX.Hcal.digi as hcal_digi_and_reco
-import LDMX.Hcal.hcal_hardcoded_conditions
 
 # Load the HCAL modules
 import LDMX.Hcal.hcal_geometry
+import LDMX.Hcal.hcal_hardcoded_conditions
 from LDMX.Tracking import full_tracking_sequence
 
 

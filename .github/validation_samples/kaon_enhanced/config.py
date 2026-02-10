@@ -72,14 +72,13 @@ my_sim.actions.extend([my_filter])
 p.sequence=[my_sim]
 
 # Load the full tracking sequance
-import LDMX.Ecal.ecal_hardcoded_conditions
-
 # Load the ECAL modules
 import LDMX.Ecal.ecal_geometry
-import LDMX.Hcal.hcal_hardcoded_conditions
+import LDMX.Ecal.ecal_hardcoded_conditions
 
 # Load the HCAL modules
 import LDMX.Hcal.hcal_geometry
+import LDMX.Hcal.hcal_hardcoded_conditions
 from LDMX.Ecal import digi as eDigi
 from LDMX.Ecal import vetos as ecal_vetos
 from LDMX.Hcal import digi as hDigi

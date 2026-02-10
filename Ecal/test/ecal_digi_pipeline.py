@@ -6,8 +6,8 @@ from LDMX.Framework import ldmxcfg
 p=ldmxcfg.Process("v12")
 p.run = 1
 
-import LDMX.Ecal.ecal_hardcoded_conditions
 import LDMX.Ecal.ecal_geometry
+import LDMX.Ecal.ecal_hardcoded_conditions
 from LDMX.SimCore import simulator
 
 

@@ -29,16 +29,16 @@ overlay.overlay_passname = pileup_file_pass_name    #pileup input event pass nam
 p.sequence = [overlay]
 
 # ECal geometry nonsense
-import LDMX.Ecal.ecal_hardcoded_conditions
 import LDMX.Ecal.ecal_clusters as ecal_cluster
+import LDMX.Ecal.ecal_hardcoded_conditions
 import LDMX.Hcal.hcal_hardcoded_conditions
-from LDMX.Ecal import ecal_geometry
 from LDMX.Ecal import digi as eDigi
+from LDMX.Ecal import ecal_geometry
 from LDMX.Ecal import vetos as ecal_vetos
+from LDMX.Hcal import digi as hDigi
 
 # Hcal hardwired/geometry stuff
 from LDMX.Hcal import hcal_geometry
-from LDMX.Hcal import digi as hDigi
 
 
 # this is hardwired into the code to be appended to the sim hits collections

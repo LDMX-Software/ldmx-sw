@@ -23,7 +23,7 @@ namespace generators {
 GeneralParticleSource::GeneralParticleSource(
     const std::string& name, const framework::config::Parameters& parameters)
     : PrimaryGenerator(name, parameters) {
-  init_commands_ = parameters.get<std::vector<std::string>>("initCommands");
+  init_commands_ = parameters.get<std::vector<std::string>>("init_commands");
   for (const auto& cmd : init_commands_) {
     int g4_ret = G4UImanager::GetUIpointer()->ApplyCommand(cmd);
     if (g4_ret > 0) {

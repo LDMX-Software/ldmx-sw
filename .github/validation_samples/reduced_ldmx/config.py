@@ -38,13 +38,13 @@ p.histogram_file = 'hist.root'
 p.output_files = ['events.root']
 
 import LDMX.Ecal.digi as ecal_digi
-import LDMX.Ecal.ecal_hardcoded_conditions
 import LDMX.Ecal.ecal_geometry
+import LDMX.Ecal.ecal_hardcoded_conditions
 import LDMX.Ecal.EcalWABRecProcessor as ecal_WAB
 import LDMX.Ecal.vetos as ecal_vetos
 import LDMX.Hcal.digi as hcal_digi_and_reco
-import LDMX.Hcal.hcal_hardcoded_conditions
 import LDMX.Hcal.hcal_geometry
+import LDMX.Hcal.hcal_hardcoded_conditions
 
 
 hcal_digi = hcal_digi_and_reco.HcalDigiProducer()
