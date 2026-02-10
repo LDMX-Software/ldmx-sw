@@ -27,7 +27,7 @@ Examples
 from LDMX.Framework import ldmxcfg
 
 
-class trackDeDxMassEstimator(ldmxcfg.Producer) :
+class TrackDeDxMassEstimator(ldmxcfg.Producer) :
     """Configuration for the mass estimator from tracker dEdx"""
 
     def __init__(self, name="TrackDeDxMassEstimator") :
@@ -37,5 +37,5 @@ class trackDeDxMassEstimator(ldmxcfg.Producer) :
         self.fit_res_C = 3.094
         self.fit_res_K = 1.862
 
-recoil_track_mass_estimator = trackDeDxMassEstimator("RecoilTrackMassEstimator")
+recoil_track_mass_estimator = TrackDeDxMassEstimator("RecoilTrackMassEstimator")
 recoil_track_mass_estimator.track_collection = "RecoilTruthTracks"

@@ -200,7 +200,7 @@ TEST_CASE("Conditions", "[Conditions]") {
     fputs(cfgpy, f);
     fclose(f);
 
-    auto cfg{framework::config::run("ldmxcfg.Process.lastProcess",
+    auto cfg{framework::config::run("ldmxcfg.Process.last_process",
                                     "/tmp/test_cond.py", 0, 0)};
     auto hp{std::make_unique<framework::Process>(cfg)};
     ldmx::EventHeader cxt;
@@ -237,7 +237,7 @@ TEST_CASE("Conditions", "[Conditions]") {
     fputs(cfgpy, f);
     fclose(f);
 
-    auto cfg{framework::config::run("ldmxcfg.Process.lastProcess",
+    auto cfg{framework::config::run("ldmxcfg.Process.last_process",
                                     "/tmp/test_cond.py", 0, 0)};
     auto hp{std::make_unique<framework::Process>(cfg)};
     ldmx::EventHeader cxt;
@@ -272,7 +272,7 @@ TEST_CASE("Conditions", "[Conditions]") {
     fputs(cfgpy, f);
     fclose(f);
 
-    auto cfg{framework::config::run("ldmxcfg.Process.lastProcess",
+    auto cfg{framework::config::run("ldmxcfg.Process.last_process",
                                     "/tmp/test_cond.py", 0, 0)};
     auto hp{std::make_unique<framework::Process>(cfg)};
     ldmx::EventHeader cxt;
@@ -293,16 +293,16 @@ TEST_CASE("Conditions", "[Conditions]") {
         "columns=[\"PEDESTAL_ADC\"]\n"
         "cop=SimpleCSVTableProvider.SimpleCSVDoubleTableProvider(\"testbeam22_"
         "pedestals\",columns)\n"
-        "cop.conditions_baseURL='https://raw.githubusercontent.com/"
+        "cop.conditions_base_url='https://raw.githubusercontent.com/"
         "LDMX-Software/conditions-data/refs/heads/main/'\n"
-        "cop.entriesURL='${LDMX_CONDITION_BASEURL}/Hcal/testbeam04-2022/"
+        "cop.entries_url='${LDMX_CONDITION_BASEURL}/Hcal/testbeam04-2022/"
         "pedestals/index_v1_0_0.csv'\n";
 
     FILE* f = fopen("/tmp/test_cond.py", "w");
     fputs(cfgpy, f);
     fclose(f);
 
-    auto cfg{framework::config::run("ldmxcfg.Process.lastProcess",
+    auto cfg{framework::config::run("ldmxcfg.Process.last_process",
                                     "/tmp/test_cond.py", 0, 0)};
     auto hp{std::make_unique<framework::Process>(cfg)};
     ldmx::EventHeader cxt;

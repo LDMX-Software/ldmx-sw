@@ -107,7 +107,7 @@ import LDMX.Hcal.hcal as hcal
 hcal_veto = hcal.HcalVetoProcessor()
 
 # Load preselection skimmer
-from LDMX.Recon.ecalPreselectionSkimmer import EcalPreselectionSkimmer
+from LDMX.Recon.ecal_preselection_skimmer import EcalPreselectionSkimmer
 
 
 ecal_pres_skimmer = EcalPreselectionSkimmer()

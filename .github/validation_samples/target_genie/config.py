@@ -122,13 +122,11 @@ en_trigger = [
 from LDMX.Recon import pf_reco
 
 
-pf_reco = pfReco.pfTruthProducer()
+pf_reco = pf_reco.pfTruthProducer()
 
 # Load the dEdx mass estimator
 from LDMX.Recon import track_dedx_mass_estimator
-
-
-recoil_track_mass_estimator = trackDeDxMassEstimator.trackDeDxMassEstimator()
+recoil_track_mass_estimator = track_dedx_mass_estimator.TrackDeDxMassEstimator()
 
 # Load the DQM modules
 from LDMX.DQM import dqm

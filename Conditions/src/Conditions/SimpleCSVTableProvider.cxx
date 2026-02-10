@@ -38,8 +38,8 @@ void SimpleCSVTableProvider::entriesFromPython(
     std::vector<framework::config::Parameters>& plist) {
   for (auto aprov : plist) {
     SimpleCSVTableProvider::Entry item;
-    int first_run = aprov.get<int>("firstRun", -1);
-    int last_run = aprov.get<int>("lastRun", -1);
+    int first_run = aprov.get<int>("first_run", -1);
+    int last_run = aprov.get<int>("last_run", -1);
     std::string rtype = aprov.get<std::string>("run_type", "any");
     bool is_mc = (rtype == "any" || rtype == "MC");
     bool is_data = (rtype == "any" || rtype == "data");

@@ -78,7 +78,7 @@ ecal_veto   = ecal_vetos.EcalVetoProcessor('ecalVetoBDT')
 ecal_mip = ecal_vetos.EcalMipProcessor('ecal_mip')
 
 # The newly produced, overlayed simhits
-ecal_digi.inputCollName += overlay_str
+ecal_digi.input_coll_name += overlay_str
 ecal_digi.input_pass_name = this_pass_name
 
 # Use the digis produced above
@@ -124,12 +124,12 @@ hcal_veto.input_hit_pass_name = this_pass_name
 from LDMX.Recon import pf_reco
 
 
-track_pf = pfReco.pfTrackProducer()
+track_pf = pf_reco.pfTrackProducer()
 track_pf.input_track_coll_name=track_pf.input_track_coll_name+overlay_str #"EcalScoringPlaneHitsOverlay" #
 track_pf.input_pass_name=this_pass_name
 track_pf.do_electron_tracking=True
 # reference info
-truth_pf = pfReco.pfTruthProducer()
+truth_pf = pf_reco.pfTruthProducer()
 
 # CLUE
 import LDMX.Ecal.ecal_clusters as cl
@@ -143,9 +143,9 @@ cluster.reclustering = True
 cluster.rec_hit_pass_name=this_pass_name #run on process+pileup
 
 # particle flow:
-pf_comb=pfReco.pfProducer()
+pf_comb=pf_reco.pfProducer()
 pf_comb.input_ecal_coll_name = cluster.cluster_coll_name # use CLUE
-pf_comb.input_ecal_passname = this_pass_name
+pf_comb.input_ecal_pass_name = this_pass_name
 # trigger recasting existing CLUE to caloclusters
 pf_comb.use_existing_ecal_clusters = True
 
@@ -153,7 +153,7 @@ pf_comb.use_existing_ecal_clusters = True
 from LDMX.Recon import pileup_finder
 
 
-pu_finder = pileupFinder.pileupFinder()
+pu_finder = pileup_finder.pileupFinder()
 pu_finder.rec_hit_pass_name=this_pass_name
 #needs recast caloclusters, not (CLUE) ecalclusters
 pu_finder.cluster_coll_name=pf_comb.input_ecal_coll_name+"Cast"

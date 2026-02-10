@@ -36,7 +36,7 @@ class HcalRawDecoder(Producer) :
         if connections_table is None :
             # deduce if using eid based on presence of HcalDetectorMap in conditions system
             self.translate_eid = False
-            for cop in ldmxcfg.Process.lastProcess.conditions_object_providers :
+            for cop in ldmxcfg.Process.last_process.conditions_object_providers :
                 if isinstance(cop,HcalDetectorMap) :
                     self.translate_eid = True
                     break
@@ -75,7 +75,7 @@ class HcalAlignPolarfires(Producer) :
         self.max_tick_diff = max_tick_diff
 
         from LDMX.Framework import ldmxcfg
-        p = ldmxcfg.Process.lastProcess
+        p = ldmxcfg.Process.last_process
 
         if drop_lonely_events :
             p.skim_consider(self.name)

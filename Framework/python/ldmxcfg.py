@@ -527,7 +527,7 @@ class Process:
     The python object that stores the necessary parameters for configuring
     a Process for ldmx-app to execute.
 
-    Upon construction, the class-wide reference lastProcess is set
+    Upon construction, the class-wide reference last_process is set
     and the rest of the attributes are set to sensible defaults.
 
     Parameters
@@ -537,7 +537,7 @@ class Process:
 
     Attributes
     ----------
-    lastProcess : Process
+    last_process : Process
         Class-wide reference to the last Process object to be constructed
     max_events : int
         Maximum number events to process.
@@ -588,8 +588,6 @@ class Process:
     """
 
     last_process = None
-    # For backward compatibility with code expecting 'lastProcess'
-    lastProcess = None
 
     def __init__(self, pass_name):
 
@@ -616,22 +614,13 @@ class Process:
         self.conditions_object_providers=[]
         self.tree_name = 'LDMX_Events'
         Process.last_process = self
-        Process.lastProcess = self  # keep both updated
 
-        # needs lastProcess defined to self-register
+        # needs last_process defined to self-register
         self.random_number_seed_service=RandomNumberSeedService()
 
 
     def __setattr__(self, key, val):
-        logger_remap = {
-            'termLogLevel' : 'termLevel',
-            'fileLogLevel' : 'fileLevel',
-            'logFileName'  : 'file_path'
-        }
-        if key in logger_remap:
-            setattr(self.logger, logger_remap[key], val)
-            return
-        elif key == 'logFrequency' and val > 0:
+        if key == 'log_frequency' and val > 0:
             # make sure the Process channel is lowered to info
             # later log rules override earlier ones so we put this
             # at the front of the list so the user could have overwritten

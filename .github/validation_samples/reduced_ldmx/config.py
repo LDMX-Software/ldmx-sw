@@ -40,7 +40,7 @@ p.output_files = ['events.root']
 import LDMX.Ecal.digi as ecal_digi
 import LDMX.Ecal.ecal_geometry
 import LDMX.Ecal.ecal_hardcoded_conditions
-import LDMX.Ecal.EcalWABRecProcessor as ecal_WAB
+import LDMX.Ecal.ecal_wab_rec_processor as ecal_wab
 import LDMX.Ecal.vetos as ecal_vetos
 import LDMX.Hcal.digi as hcal_digi_and_reco
 import LDMX.Hcal.hcal_geometry
@@ -58,7 +58,7 @@ ecal_veto.recoil_from_tracking = False
 ecal_mip = ecal_vetos.EcalMipProcessor()
 ecal_mip.num_ecal_layers = 4
 
-ecal_wab = ecal_WAB.EcalWABRecProcessor()
+ecal_wab = ecal_wab.EcalWABRecProcessor()
 
 from LDMX.TrigScint.trig_scint import (
     TrigScintClusterProducer,
@@ -94,7 +94,7 @@ from LDMX.DQM import dqm
 ecalWAB_dqm = dqm.EcalWABRecResults()
 
 from LDMX.Tracking import dqm as trk_dqm
-from LDMX.Tracking import geo, reducedTracking, tracking
+from LDMX.Tracking import geo, reduced_tracking, tracking
 from LDMX.Tracking.geo import TrackersTrackingGeometryProvider as trackgeo
 
 
@@ -114,7 +114,7 @@ layer12_mid = (9.5+15.5)/2.
 layer23_mid = (15.5+24.5)/2.
 layer34_mid = (24.5+30.5)/2.
 
-truth_tracking = reducedTracking.LinearTruthTracking("LinearTruthTracking")
+truth_tracking = reduced_tracking.LinearTruthTracking("LinearTruthTracking")
 truth_tracking.input_hits_collection = "RecoilSimHits"
 truth_tracking.input_rec_hits_collection = "EcalRecHits"
 truth_tracking.out_track_collection = "LinearRecoilTruthTracks"
@@ -122,7 +122,7 @@ truth_tracking.layer12_midpoint = layer12_mid
 truth_tracking.layer23_midpoint = layer23_mid
 truth_tracking.layer34_midpoint = layer34_mid
 
-r_seed_tracking = reducedTracking.LinearSeedFinder("LinearSeedFinder")
+r_seed_tracking = reduced_tracking.LinearSeedFinder("LinearSeedFinder")
 r_seed_tracking.input_hits_collection = "DigiRecoilSimHits"
 r_seed_tracking.input_rec_hits_collection = "EcalRecHits"
 r_seed_tracking.out_seed_collection = "LinearRecoilSeedTracks"
@@ -132,7 +132,7 @@ r_seed_tracking.layer34_midpoint = layer34_mid
 r_seed_tracking.recoil_uncertainty = [0.006, 0.085]
 r_seed_tracking.ecal_distance_threshold = 15.0
 
-r_tracking = reducedTracking.LinearTrackFinder("LinearTrackFinder")
+r_tracking = reduced_tracking.LinearTrackFinder("LinearTrackFinder")
 r_tracking.seed_collection = "LinearRecoilSeedTracks"
 r_tracking.out_trk_collection = "LinearRecoilTracks"
 

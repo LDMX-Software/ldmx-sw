@@ -709,7 +709,7 @@ class NtuplizeHgcrocDigiCollection(ldmxcfg.Analyzer) :
             from LDMX.Framework import ldmxcfg
             from LDMX.Hcal.detector_map import HcalDetectorMap
             using_eid = True
-            for cop in ldmxcfg.Process.lastProcess.conditions_object_providers :
+            for cop in ldmxcfg.Process.last_process.conditions_object_providers :
                 if isinstance(cop,HcalDetectorMap) :
                     using_eid = False
                     break
