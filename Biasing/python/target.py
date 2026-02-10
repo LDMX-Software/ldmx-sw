@@ -6,12 +6,10 @@
         from LDMX.Biasing import target
 """
 
-from LDMX.SimCore import generators
-from LDMX.SimCore import simulator
-from LDMX.SimCore import bias_operators
-from LDMX.Biasing import filters
-from LDMX.Biasing import util
+from LDMX.Biasing import filters, util
 from LDMX.Biasing import include as includeBiasing
+from LDMX.SimCore import bias_operators, generators, simulator
+
 
 def electro_nuclear( detector, generator ) :
     """Example configuration for producing electro-nuclear reactions in the target.
@@ -42,7 +40,7 @@ def electro_nuclear( detector, generator ) :
 
     # Set the path to the detector to use.
     #   Also tell the simulator to include scoring planes
-    sim.setDetector( detector , True )
+    sim.setDetector( detector , include_scoring_planes_minimal = True )
 
     # Set run parameters
     sim.description = "Target electron-nuclear, xsec bias 1e5"
@@ -99,7 +97,7 @@ def photo_nuclear( detector, generator ) :
 
     # Set the path to the detector to use.
     #   Also tell the simulator to include scoring planes
-    sim.setDetector( detector , True )
+    sim.setDetector( detector , include_scoring_planes_minimal = True )
 
     # Set run parameters
     xsec_bias_threshold = 0.625 * generator.energy * 1000.
@@ -108,10 +106,10 @@ def photo_nuclear( detector, generator ) :
     brem_min_e = 0.625 * generator.energy * 1000.
     if generator.energy == 8.0:
           xsec_bias = 550.
-          
+
     else:
           xsec_bias = 450.
-    
+
     sim.description = "Target photo-nuclear, xsec bias " + str(xsec_bias) + " xsec threshold " + str(xsec_bias_threshold) + " GeV"
     sim.beamSpotSmear = [20., 80., 0.]
 
@@ -164,25 +162,25 @@ def gamma_mumu( detector, generator ) :
 
     # Set the path to the detector to use.
     #   Also tell the simulator to include scoring planes
-    sim.setDetector( detector , True )
+    sim.setDetector( detector , include_scoring_planes_minimal = True )
 
     # Set run parameters
-    sim.description = "gamma -> mu+ mu-, xsec bias 10e9"
     sim.beamSpotSmear = [20., 80., 0.]
-
+    xsec_bias_threshold = 0.625 * generator.energy * 1000.
     tagger_threshold = 0.95 * generator.energy * 1000.
     recoil_max_p = 0.375 * generator.energy * 1000.
     brem_min_e = 0.625 * generator.energy * 1000.
     if generator.energy == 8.0:
-          xsec_bias = 550.
-          
+          xsec_bias = 1.E5
+
     else:
-          xsec_bias = 450.
+          xsec_bias = 3.E4
 
     sim.generators.append(generator)
 
     # Enable and configure the biasing
-    sim.biasing_operators = [ bias_operators.GammaToMuPair('target', 1.E4, 2500.) ]
+    sim.description = "gamma --> mu+ mu-, xsec bias " + str(xsec_bias) + " xsec threshold " + str(xsec_bias_threshold) + " GeV"
+    sim.biasing_operators = [ bias_operators.GammaToMuPair('target', xsec_bias, xsec_bias_threshold) ]
 
     # the following filters are in a library that needs to be included
     includeBiasing.library()
@@ -199,7 +197,7 @@ def gamma_mumu( detector, generator ) :
     return sim
 
 def dark_brem( ap_mass , lhe, detector, generator,
-             scale_APrime = False, decay_mode = 'no_decay', 
+             scale_APrime = False, decay_mode = 'no_decay',
              ap_tau = -1.0, dist_decay_min = 0.0,
              dist_decay_max = 1.0) :
     """Example configuration for producing dark brem interactions in the target.
@@ -237,7 +235,7 @@ def dark_brem( ap_mass , lhe, detector, generator,
     sim = simulator.simulator( "target_dark_brem_" + str(ap_mass) + "_MeV" )
 
     sim.description = "One e- fired far upstream with Dark Brem turned on and biased up in target"
-    sim.setDetector( detector , True )
+    sim.setDetector( detector , include_scoring_planes_minimal = True )
     sim.generators.append( generators.single_8gev_e_upstream_tagger() )
     sim.beamSpotSmear = [ 20., 80., 0. ] #mm
 

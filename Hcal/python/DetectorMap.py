@@ -2,6 +2,7 @@
 
 from LDMX.Framework import ldmxcfg
 
+
 class HcalDetectorMap(ldmxcfg.ConditionsObjectProvider) :
     """Provider of the Hcal detector map allowing translations between
     electronics IDs and detector IDs.

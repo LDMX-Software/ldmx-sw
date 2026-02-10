@@ -8,6 +8,7 @@ for conditions between the multiple condition sets
 
 from LDMX.Framework import ldmxcfg
 
+
 class HcalReconConditionsProvider(ldmxcfg.ConditionsObjectProvider) :
     """The HcalReconConditions object packages the reconstructing conditions tables together
     

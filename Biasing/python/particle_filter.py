@@ -4,6 +4,7 @@
 
 from LDMX.SimCore import simcfg
 
+
 class PhotoNuclearProductsFilter(simcfg.UserAction) :
     """ Configuration for keeping events with specific products of PN interactions
 
@@ -35,7 +36,7 @@ class PhotoNuclearProductsFilter(simcfg.UserAction) :
         -------
         Instance of configured PhotoNuclearProductsFilter
         """
-    
+
         particle_filter = PhotoNuclearProductsFilter("kaon_filter")
         particle_filter.pdg_ids = [
                 130, # K_L^0
@@ -108,5 +109,5 @@ class PhotoNuclearTopologyFilter(simcfg.UserAction):
 
 
 
-    
+
 

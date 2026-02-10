@@ -10,7 +10,7 @@ if len(sys.argv) > 2 :
     timeSample=int(sys.argv[2])
 else :
     timeSample=21
-    
+
 from LDMX.TrigScint.trigScint import TrigScintRecHitProducer
 
 

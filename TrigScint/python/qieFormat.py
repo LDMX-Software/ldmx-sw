@@ -13,15 +13,16 @@ p.sequence.extend([ dec ])
 
 from LDMX.Framework import ldmxcfg
 
+
 class QIEEncoder(ldmxcfg.Producer) :
     """Configuration for QIE encoder"""
-    def __init__(self, mapFile, name = 'QIEEncode'): 
+    def __init__(self, mapFile, name = 'QIEEncode'):
         super().__init__(f'{name}', 'trigscint::QIEEncoder', "TrigScint")
-        self.name = name 
+        self.name = name
         self.input_pass_name = ''
         self.input_collection = 'trigScintQIEDigisTag'
         self.output_collection = 'QIEstreamTag'
-        self.channel_map_file = mapFile 
+        self.channel_map_file = mapFile
         self.number_channels = 50
         self.verbose = False
 
@@ -49,9 +50,9 @@ class QIEEncoder(ldmxcfg.Producer) :
 
 class QIEDecoder(ldmxcfg.Producer) :
     """Configuration for QIE encoder"""
-    def __init__(self, mapFile, name = 'QIEDecode'): 
+    def __init__(self, mapFile, name = 'QIEDecode'):
         super().__init__(f'{name}', 'trigscint::QIEDecoder', "TrigScint")
-        self.name = name 
+        self.name = name
         self.input_pass_name = ''
         self.input_collection = 'QIEstreamTag'
         self.output_collection = 'decodedQIETag'

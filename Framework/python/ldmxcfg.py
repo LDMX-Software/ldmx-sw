@@ -198,8 +198,8 @@ class EventProcessor:
         self.histograms.append(h.histogram(name, xlabel,the_bins, weighted=weighted))
 
 
-    def build2DHistogram(self, name, 
-            xlabel = '', xbins = 1, xmin = None, xmax = None, 
+    def build2DHistogram(self, name,
+            xlabel = '', xbins = 1, xmin = None, xmax = None,
             ylabel = '', ybins = 1, ymin = None, ymax = None,
             weighted = False) :
         """Create a 2D histogram
@@ -355,7 +355,7 @@ class ConditionsObjectProvider:
 
         # make sure process loads this library if it hasn't yet
         Process.addModule(moduleName)
-        
+
         #register this conditions object provider with the process
         Process.declareConditionsObjectProvider(self)
 
@@ -520,7 +520,7 @@ class Logger:
         """raise the input channel to the error-only level"""
         self.custom(name, level = 3)
 
-    
+
 class Process:
     """Process configuration object
 
@@ -588,7 +588,7 @@ class Process:
     """
 
     lastProcess=None
-    
+
     def __init__(self, passName):
 
         if ( Process.lastProcess is not None ) :
@@ -637,7 +637,7 @@ class Process:
             # in include/Framework/Process.h
             self.logger.logRules.insert(0, _LogRule('Process', level=1))
             # fall through to set the key=val
-        
+
         super().__setattr__(key, val)
 
 
@@ -664,7 +664,7 @@ class Process:
             Process.lastProcess.libraries.append( lib )
         else :
             raise Exception( "No Process object defined yet! You need to create a Process before creating any EventProcessors." )
-    
+
     def addModule(module) :
         """Add a module to the list of dynamically loaded libraries
 
@@ -738,12 +738,12 @@ class Process:
         self.conditionsGlobalTag=tag
         for cop in self.conditionsObjectProviders :
             cop.setTag(tag)
-            
+
     def skimDefaultIsSave(self):
         """Configure the process to by default keep every event."""
 
         self.skimDefaultIsKeep=True
-        
+
     def skimDefaultIsDrop(self):
         """Configure the process to by default drop (not save) every event."""
 
@@ -848,9 +848,9 @@ class Process:
 
         import os
         fullPathDir = os.path.realpath(indir)
-        self.inputFiles.extend([ os.path.join(fullPathDir,f) 
-                for f in os.listdir(fullPathDir) 
-                if os.path.isfile(os.path.join(fullPathDir,f)) and f.endswith('.root') 
+        self.inputFiles.extend([ os.path.join(fullPathDir,f)
+                for f in os.listdir(fullPathDir)
+                if os.path.isfile(os.path.join(fullPathDir,f)) and f.endswith('.root')
                 ])
 
     def parameterDump(self) :
@@ -861,8 +861,8 @@ class Process:
 
         keys_to_skip = [ 'histograms' , 'libraries' ]
 
-        from LDMX.SimCore import simcfg
         from LDMX.Framework import histogram as h
+        from LDMX.SimCore import simcfg
 
         def extract(obj):
             """Extract the parameter from the input object"""
@@ -908,7 +908,7 @@ class Process:
         if (self.maxEvents>0): msg += "\n Maximum events to process: %d"%(self.maxEvents)
         else: msg += "\n No limit on maximum events to process"
         if (len(self.conditionsObjectProviders)>0):
-            msg += "\n conditionsObjectProviders:\n";
+            msg += "\n conditionsObjectProviders:\n"
             for cop in self.conditionsObjectProviders:
                 msg+=str(cop)
         msg += "\n Processor sequence:"
@@ -931,7 +931,7 @@ class Process:
         if self.skimDefaultIsKeep: msg += "\n  Default: keep the event"
         else: msg += "\n  Default: drop the event"
         for i in range(0,len(self.skimRules)-1,2):
-            if self.skimRules[i+1]=="": 
+            if self.skimRules[i+1]=="":
                 msg += "\n  Listen to hints from processors with names matching '%s'"%(self.skimRules[i])
             else:
                 msg += "\n  Listen to hints with labels matching '%s' from processors with names matching '%s'"%(self.skimRules[i+1],self.skimRules[i])

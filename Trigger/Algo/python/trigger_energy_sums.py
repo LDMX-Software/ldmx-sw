@@ -1,5 +1,6 @@
 from LDMX.Framework.ldmxcfg import Producer
 
+
 class EcalTPSelector(Producer) :
     """Configuration for EcalTPSelector
     """
@@ -78,7 +79,7 @@ class TrigElectronProducer(Producer) :
         self.clusterCollName = "ecalTrigClusters"
         self.eleCollName = "trigElectrons"
         self.propMapName = propMapName
-        
+
         self.target_sp_passname = ""
         self.cluster_coll_passname = ""
         self.cluster_collname_events_passname = ""
@@ -90,7 +91,7 @@ class NtupleWriter(Producer) :
     def __init__(self, instance_name = 'myNtupleWriter', outPath="./ntuple.root", ) :
         super().__init__(instance_name , 'trigger::NtupleWriter','Trigger')
         self.outPath = outPath
-        
+
         self.target_sp_hits_event_passname = ""
         self.target_sp_passname = ""
         self.ecal_sp_hits_events_passname = ""
@@ -101,7 +102,7 @@ class NtupleWriter(Producer) :
         self.trig_electrons_passname = ""
         self.hcal_trig_quads_events_passname = ""
         self.hcal_trig_quads_passname = ""
-        
+
 
 class PropagationMapWriter(Producer) :
     """Configuration for Tester
@@ -109,9 +110,9 @@ class PropagationMapWriter(Producer) :
     def __init__(self, instance_name = 'myPropagationMapWriter', outPath="./propagationMap.root") :
         super().__init__(instance_name , 'trigger::PropagationMapWriter','Trigger')
         self.outPath = outPath
-        
+
         self.ecal_scoring_plane_passname = ""
         self.target_scoring_plane_passname = ""
         self.target_sp_hits_events_passname = ""
         self.ecal_sp_hits_events_passname = ""
-        
+

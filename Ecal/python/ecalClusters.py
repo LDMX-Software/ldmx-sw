@@ -8,6 +8,7 @@ Examples
 
 from LDMX.Framework import ldmxcfg
 
+
 class EcalClusterProducer(ldmxcfg.Producer) :
     """Configure the clustering"""
 
@@ -24,7 +25,7 @@ class EcalClusterProducer(ldmxcfg.Producer) :
         self.cutoff = 10.
         self.seed_threshold = 100.0 #MeV
 
-        # Name of the algo to save to the root file 
+        # Name of the algo to save to the root file
         self.algo_name = "MyClusterAlgo"
         # Name of the cluster algo collection to make
         self.algo_coll_name = "ClusterAlgoResult"

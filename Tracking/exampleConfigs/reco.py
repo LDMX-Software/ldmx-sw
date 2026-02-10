@@ -2,7 +2,8 @@
 # For detailed description of the various configurations, check the .py module files inside
 # Tracking/python
 
-import os,math
+import os
+import math
 from LDMX.Framework import ldmxcfg
 from LDMX.SimCore import generators
 from LDMX.SimCore import simulator
@@ -24,7 +25,7 @@ partGunString='single_8gev_e_upstream_tagger'
 detector = 'ldmx-det-v14-8gev-no-cals'
 ####  set up beam simulation
 sim = simulator.simulator('inclusive_single_8gev')
-sim.setDetector(detector,include_scoring_planes = True)  
+sim.setDetector(detector,include_scoring_planes_minimal = True)
 sim.description = 'A single 8gev electron shot from upstream of the 8gev tagger.'
 sim.beamSpotSmear = [20., 80., 0]
 particle_gun = generators.single_8gev_e_upstream_tagger()

@@ -1,5 +1,6 @@
 from LDMX.Framework import ldmxcfg
 
+
 class GenieReweightProducer(ldmxcfg.Producer) :
 
     def __init__(self,name='genieEventWeights',

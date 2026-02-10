@@ -1,4 +1,6 @@
 from LDMX.Framework import ldmxcfg
+
+
 p = ldmxcfg.Process('test')
 
 p.maxTriesPerEvent = 100
@@ -7,17 +9,18 @@ from LDMX.Biasing import ecal
 from LDMX.SimCore import generators as gen
 from LDMX.SimCore import simulator as sim
 
+
 #myGun = gen.single_4gev_e_upstream_tagger()
 myGun = gen.multi( "mgpGen" )
 myGun.vertex = [ 0., 0., -880] # mm
 myGun.momentum = [0.,0.,4000.] # MeV
 myGun.nParticles = 1
 myGun.pdgID = 11
-myGun.enablePoisson = False #True   
+myGun.enablePoisson = False #True
 
 mySim = sim.simulator( "mySim" ) # Build simulator object
 det = 'ldmx-reduced-v3'
-mySim.setDetector(det, True )
+mySim.setDetector(det, include_scoring_planes_minimal = True )
 mySim.beamSpotSmear = [20.,80.,0.]
 mySim.description = 'Reduced ECal Electron Gun Test Simulation'
 
@@ -26,20 +29,24 @@ p.sequence = [ mySim ]
 p.termLogLevel = 0
 
 import os
+
+
 p.maxEvents = int(os.environ['LDMX_NUM_EVENTS'])
 p.run = int(os.environ['LDMX_RUN_NUMBER'])
 
-p.histogramFile = f'hist.root'
-p.outputFiles = [f'events.root']
+p.histogramFile = 'hist.root'
+p.outputFiles = ['events.root']
 
-import LDMX.Ecal.EcalGeometry
-import LDMX.Ecal.ecal_hardcoded_conditions
-import LDMX.Hcal.HcalGeometry
-import LDMX.Hcal.hcal_hardcoded_conditions
 import LDMX.Ecal.digi as ecal_digi
-import LDMX.Ecal.vetos as ecal_vetos
+import LDMX.Ecal.ecal_hardcoded_conditions
+import LDMX.Ecal.EcalGeometry
 import LDMX.Ecal.EcalWABRecProcessor as ecal_WAB
+import LDMX.Ecal.vetos as ecal_vetos
 import LDMX.Hcal.digi as hcal_digi_and_reco
+import LDMX.Hcal.hcal_hardcoded_conditions
+import LDMX.Hcal.HcalGeometry
+
+
 hcal_digi = hcal_digi_and_reco.HcalDigiProducer()
 hcal_reco = hcal_digi_and_reco.HcalRecProducer()
 
@@ -49,13 +56,17 @@ ecalVeto.beam_energy = 4000.
 ecalVeto.recoil_from_tracking = False
 
 ecalMip = ecal_vetos.EcalMipProcessor()
-ecalMip.num_ecal_layers = 4 
+ecalMip.num_ecal_layers = 4
 
 ecalWAB = ecal_WAB.EcalWABRecProcessor()
 
-from LDMX.TrigScint.trigScint import TrigScintDigiProducer
-from LDMX.TrigScint.trigScint import TrigScintClusterProducer
-from LDMX.TrigScint.trigScint import trigScintTrack
+from LDMX.TrigScint.trigScint import (
+    TrigScintClusterProducer,
+    TrigScintDigiProducer,
+    trigScintTrack,
+)
+
+
 ts_digis = [
         TrigScintDigiProducer.pad1(),
         TrigScintDigiProducer.pad2(),
@@ -67,23 +78,26 @@ for d in ts_digis :
 from LDMX.Recon.electronCounter import ElectronCounter
 from LDMX.Recon.simpleTrigger import TriggerProcessor
 
+
 count = ElectronCounter(1,'ElectronCounter')
 count.input_pass_name = ''
 
 # Load hcal veto
 import LDMX.Hcal.hcal as hcal
+
+
 hcal_veto = hcal.HcalVetoProcessor()
 
 from LDMX.DQM import dqm
 
+
 ecalWAB_dqm = dqm.EcalWABRecResults()
 
-from LDMX.Tracking import tracking
-from LDMX.Tracking import reducedTracking
-from LDMX.Tracking import geo
 from LDMX.Tracking import dqm as trk_dqm
-
+from LDMX.Tracking import geo, reducedTracking, tracking
 from LDMX.Tracking.geo import TrackersTrackingGeometryProvider as trackgeo
+
+
 trackgeo.get_instance().setDetector(det)
 
 # Smearing Processor - Recoil
@@ -131,7 +145,7 @@ rTracking_dqm.buildHistograms()
 
 p.sequence.extend([
         ecal_digi.EcalDigiProducer(),
-        ecal_digi.EcalRecProducer(), 
+        ecal_digi.EcalRecProducer(),
         ecalVeto,
         ecalMip,
         hcal_digi,
@@ -141,7 +155,7 @@ p.sequence.extend([
         TrigScintClusterProducer.pad1(),
         TrigScintClusterProducer.pad2(),
         TrigScintClusterProducer.pad3(),
-        trigScintTrack, 
+        trigScintTrack,
         count, TriggerProcessor('trigger', 4000.),
         digi_recoil_reduced,
         truth_tracking,

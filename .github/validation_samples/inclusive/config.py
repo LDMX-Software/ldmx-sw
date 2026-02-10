@@ -1,11 +1,17 @@
 from LDMX.Framework import ldmxcfg
+
+
 p = ldmxcfg.Process('test')
 
 from LDMX.SimCore import simulator as sim
+
+
 mySim = sim.simulator( "mySim" )
 det = 'ldmx-det-v15-8gev'
-mySim.setDetector(det, True )
+mySim.setDetector(det, include_scoring_planes_minimal = True )
 from LDMX.SimCore import generators as gen
+
+
 mySim.generators.append( gen.single_8gev_e_upstream_tagger() )
 mySim.beamSpotSmear = [20.,80.,0.]
 mySim.description = 'Basic test Simulation'
@@ -18,33 +24,40 @@ p.sequence = [ mySim ]
 import os
 import sys
 
+
 p.run = int(os.environ['LDMX_RUN_NUMBER'])
 p.maxEvents = int(os.environ['LDMX_NUM_EVENTS'])
 
 p.histogramFile = 'hist.root'
 p.outputFiles = ['events.root']
 
-# Load the full tracking sequance
-from LDMX.Tracking import full_tracking_sequence
+# Load the full tracking sequence
+import LDMX.Ecal.digi as ecal_digi
+import LDMX.Ecal.ecal_hardcoded_conditions
+import LDMX.Ecal.ecalClusters as ecal_cluster
 
 # Load the ECAL modules
 import LDMX.Ecal.EcalGeometry
-import LDMX.Ecal.ecal_hardcoded_conditions
-import LDMX.Ecal.digi as ecal_digi
 import LDMX.Ecal.vetos as ecal_vetos
-import LDMX.Ecal.ecalClusters as ecal_cluster
+import LDMX.Hcal.digi as hcal_digi_and_reco
+import LDMX.Hcal.hcal_hardcoded_conditions
 
 # Load the HCAL modules
 import LDMX.Hcal.HcalGeometry
-import LDMX.Hcal.hcal_hardcoded_conditions
-import LDMX.Hcal.digi as hcal_digi_and_reco
+from LDMX.Tracking import full_tracking_sequence
+
+
 hcal_digi = hcal_digi_and_reco.HcalDigiProducer()
 hcal_reco = hcal_digi_and_reco.HcalRecProducer()
 
 # Load the TS modules
-from LDMX.TrigScint.trigScint import TrigScintDigiProducer
-from LDMX.TrigScint.trigScint import TrigScintClusterProducer
-from LDMX.TrigScint.trigScint import trigScintTrack
+from LDMX.TrigScint.trigScint import (
+        TrigScintClusterProducer,
+        TrigScintDigiProducer,
+        trigScintTrack,
+)
+
+
 ts_digis = [
         TrigScintDigiProducer.pad1(),
         TrigScintDigiProducer.pad2(),
@@ -64,6 +77,7 @@ from LDMX.DQM import dqm
 from LDMX.Recon.electronCounter import ElectronCounter
 from LDMX.Recon.simpleTrigger import TriggerProcessor
 
+
 count = ElectronCounter(1,'ElectronCounter')
 count.input_pass_name = ''
 
@@ -74,8 +88,15 @@ ecal_veto_pnet = ecal_vetos.EcalPnetVetoProcessor()
 
 # Load HCAL veto
 import LDMX.Hcal.hcal as hcal
+
+
 hcal_veto = hcal.HcalVetoProcessor()
 
+# Load preselection skimmer
+from LDMX.Recon.ecalPreselectionSkimmer import EcalPreselectionSkimmer
+
+
+ecal_pres_skimmer = EcalPreselectionSkimmer()
 
 p.logger.termLevel = 1
 # p.logger.custom(ecalVeto, level = -1)
@@ -86,7 +107,8 @@ p.sequence.extend(full_tracking_sequence.dqm_sequence)
 
 p.sequence.extend([
         ecal_digi.EcalDigiProducer(),
-        ecal_digi.EcalRecProducer(), 
+        ecal_digi.EcalRecProducer(),
+        ecal_pres_skimmer,
         ecal_cluster.EcalClusterProducer(),
         ecalVeto,
         ecalMip,

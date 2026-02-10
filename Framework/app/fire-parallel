@@ -20,8 +20,11 @@ usage() {
                 the job fully completes (i.e. the parallel default).
                 If this is provided, we instead write the output of each job to
                 its own file and follow parallel's joblog file reporting when jobs
-                complete.
-    --        : signal that the rest of the arguments should be passed to GNU parallel
+                complete
+    --        : delimiter after which all arguments will be passed to GNU parallel
+                directly. Script options must be strictly between '--' and the first
+                instance of '::', with only template values permitted afterwards. 
+                Template values need not be preceded by '--'.
 
   ARGUMENTS
     config.py : configuration script to pass to fire for the parallel jobs
@@ -31,11 +34,11 @@ usage() {
     parallel  : all other arguments are passed to GNU parallel. Most commonly, these
                 are the arguments specifying the values for the template (e.g. '::: 1 2 3').
                 More detail on how to specify these values can be seen in the GNU parallel
-                manual[0].
+                manual[0], or see the examples below.
 
     [0]: https://www.gnu.org/software/parallel/man.html
 
-  EXAMPLE
+  EXAMPLE 1 : Basic Usage
 
     The following runs 6 copies of 'fire config.py N' in parallel where N
     is 10, 11, 12, 13, 14, or 15. The terminal output of these jobs is
@@ -43,6 +46,28 @@ usage() {
     according to parallel.
 
       fire-parallel config.py ::: 10 11 12 13 14 15
+  
+  EXAMPLE 2 : Multiple Arguments
+
+    The following runs 4 copies of 'fire config.py N M' in parallel, where
+    the ordered pair (N,M) is (A,1), (A,2), (B,1), or (B,2). The values
+    passed to N and M are (optionally) set respectively with template brackets
+    referring to the values positions: the first block (after the first ':::') is
+    indicated by {1}, and the second block (after the second ':::'), and so on.
+
+      fire-parallel config.py {1} {2} ::: A B ::: 1 2
+  
+  EXAMPLE 3 : Linked Arguments
+
+    By default, GNU parallel performs a Cartesian product between sets of 
+    values if there are multiple. Sometimes it is convenient to associate
+    values element-wise, and for this we employ the '--link' option. The
+    following runs 2 copies of 'fire config.py N M' in parallel where the 
+    ordered pair (N,M) is either (A,1) or (B,2). Note that '--link' (and any
+    other options passed directly to GNU parallel) must be after the '--'
+    delimeter, but before ':::'.
+
+      fire-parallel config.py -- --link ::: A B ::: 1 2
 
 HELP
 }
@@ -51,6 +76,7 @@ dry_run=false
 log_dir=""
 config=""
 template_args=""
+parallel_opts=""
 while [ $# -gt 0 ]; do
   case "${1}" in
     -h|--help)
@@ -71,7 +97,18 @@ while [ $# -gt 0 ]; do
     --)
       # user wants the following arguments to be given to GNU parallel
       shift
-      break
+      while [ $# -gt 0 ]; do
+        case "${1}" in
+          "::"*)
+            # begins GNU parallel args, break
+            break 2
+            ;;
+          *)
+            parallel_opts="${parallel_opts} ${1}"
+            ;;
+        esac
+        shift
+      done
       ;;
     "::"*)
       # obviously a GNU parallel arg, break
@@ -132,6 +169,9 @@ fi
 
 if [ -n "${log_dir}" ]; then
   cmd="${cmd} --joblog ${log_dir}/parallel.log"
+fi
+if [ -n "${parallel_opts}" ]; then
+  cmd="${cmd} ${parallel_opts}"
 fi
 job_cmd_template="fire ${config} ${template_args}"
 if [ -n "${log_dir}" ]; then

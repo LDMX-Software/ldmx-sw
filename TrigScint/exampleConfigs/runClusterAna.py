@@ -27,7 +27,7 @@ clAna2hit.inputCollection="TestBeamClustersPad1"
 
 outname=p.inputFiles[0].replace(".root", "_plots.root")
 #p.outputFiles = [ outname ]
-p.histogramFile = outname 
+p.histogramFile = outname
 
 p.sequence=[clAna2hit,
             #clAna3hit

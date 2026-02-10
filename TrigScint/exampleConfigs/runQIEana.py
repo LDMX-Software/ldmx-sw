@@ -1,4 +1,4 @@
-import json 
+import json
 from os.path import exists
 from os import path
 from LDMX.Framework import ldmxcfg
@@ -24,7 +24,7 @@ nChannels=12
 gainList=[2e6]*nChannels
 #now if there is a gain file, use that instead to read in the gain for each channel
 gainFileName=sys.argv[1].replace(".root", "_gains.txt")
-gainFileName=gainFileName.replace("_adcTrig", "")  #not derived for adcTrig events 
+gainFileName=gainFileName.replace("_adcTrig", "")  #not derived for adcTrig events
 
 #pick one file more or less at random as the fallback option
 defaultRun="unpacked_4gev_negativeMu_Apr03_2200_reformat_30timeSamplesFrom0_linearize"
@@ -51,7 +51,7 @@ pedList=[
             -0.6, #-1.25,
             4.4,  #3.9, 	 # #3
             1.9,  #10000., # #4: (used to be) dead channel during test beam
-            -2.3, #-2.1,   # #5 
+            -2.3, #-2.1,   # #5
             1.0,  #2.9,    # #6
             -1.2, #-2,     # #7
             4.9,  #-0.4,   # #8
@@ -68,7 +68,7 @@ pedList=[
 pedFileName=gainFileName.replace("gains", "peds")
 defaultPedFileName=dataPath+"/"+defaultRun+"_peds.txt"
 
-if not exists(pedFileName) :  
+if not exists(pedFileName) :
     pedFileName=defaultPedFileName
 
 if exists(pedFileName) :
@@ -87,7 +87,7 @@ tsEv.inputPassName=inputPassName
 #these are derived as the mean of gaussian fits to the "event pedestal" (average over middle two quartiles) for each channel
 tsEv.startSample=startSample
 tsEv.pedestals=pedList
-tsEv.gain=gainList 
+tsEv.gain=gainList
 
 p.sequence = [
     tsEv

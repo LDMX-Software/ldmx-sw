@@ -35,36 +35,36 @@ sim = simulator.simulator("test")
 #
 # Set the path to the detector to use (pulled from job config)
 #
-sim.setDetector( version, True )
+sim.setDetector( version, include_scoring_planes_minimal = True )
 sim.scoringPlanes = makeScoringPlanesPath(version)
 
 outname=outputNameString #+".root"
 print("NAME = " + outname)
 
 #
-# Set run parameters. These are all pulled from the job config 
+# Set run parameters. These are all pulled from the job config
 #
 p.run = runNum
 p.maxEvents = 100
 nElectrons = nEle
-beamEnergy = 4.0;  #in GeV                                                                                                                                              
+beamEnergy = 4.0  #in GeV
 
 sim.description = "Inclusive "+str(beamEnergy)+" GeV electron events, "+str(nElectrons)+"e"
 #sim.randomSeeds = [ SEED1 , SEED2 ]
 sim.beamSpotSmear = [20., 80., 0]
 
 
-mpgGen = generators.multi( "mgpGen" ) # this is the line that actually creates the generator                                                                  
-mpgGen.vertex = [ -44., 0., -880. ] # mm                                                                                                                              
+mpgGen = generators.multi( "mgpGen" ) # this is the line that actually creates the generator
+mpgGen.vertex = [ -44., 0., -880. ] # mm
 mpgGen.nParticles = nElectrons
 mpgGen.pdgID = 11
-mpgGen.enablePoisson = False #True                                                                                                                                      
+mpgGen.enablePoisson = False #True
 
 import math
 theta = math.radians(5.45)
 beamEnergyMeV=1000*beamEnergy
 px = beamEnergyMeV*math.sin(theta)
-py = 0.;
+py = 0.
 pz= beamEnergyMeV*math.cos(theta)
 mpgGen.momentum = [ px, py, pz ]
 
@@ -72,8 +72,8 @@ mpgGen.momentum = [ px, py, pz ]
 # Set the multiparticle gun as generator
 #
 sim.generators = [ mpgGen ]
-         
-#reconstruction and vetoes 
+
+#reconstruction and vetoes
 
 #Ecal and Hcal hardwired/geometry stuff
 #import LDMX.Ecal.EcalGeometry
@@ -107,7 +107,7 @@ tsSimColls=[ "TriggerPad2SimHits", "TriggerPad3SimHits", "TriggerPad1SimHits" ]
 
 # #hcal digi chain
 # hcalDigi   =hDigi.HcalDigiProducer('hcalDigis')
-# hcalReco   =hDigi.HcalRecProducer('hcalRecon')                  
+# hcalReco   =hDigi.HcalRecProducer('hcalRecon')
 # hcalVeto   =hcal.HcalVetoProcessor('hcalVeto')
 # #hcalDigi.inputCollName="HcalSimHits"
 #hcalDigi.inputPassName=passName
@@ -132,7 +132,7 @@ tsDigisUp.verbosity=0
 tsClustersUp.verbosity=1
 trigScintTrack.verbosity=1
 
-trigScintTrack.delta_max = 0.75 
+trigScintTrack.delta_max = 0.75
 
 trigFirm = TrigScintFirmwareTracker( "trigFirm" )
 trigFirm.input_pass_name = "sim"
@@ -142,7 +142,7 @@ trigFirm.digis3_collection = "trigScintDigisPad3"
 trigFirm.output_collection = "TriggerPadTracksFirmware"
 
 from LDMX.Recon.electronCounter import ElectronCounter
-eCount = ElectronCounter( nElectrons, "ElectronCounter") # first argument is number of electrons in simulation 
+eCount = ElectronCounter( nElectrons, "ElectronCounter") # first argument is number of electrons in simulation
 eCount.use_simulated_electron_number = False
 eCount.input_collection="TriggerPadTracks"
 eCount.input_pass_name=passName
@@ -157,7 +157,7 @@ p.outputFiles=[outname]
 p.termLogLevel = 0  # default is 2 (WARNING); but then logFrequency is ignored. level 1 = INFO.
 
 #print this many events to stdout (independent on number of events, edge case: round-off effects when not divisible. so can go up by a factor 2 or so)
-logEvents=20 
+logEvents=20
 if p.maxEvents < logEvents :
      logEvents = p.maxEvents
 p.logFrequency = int( p.maxEvents/logEvents )

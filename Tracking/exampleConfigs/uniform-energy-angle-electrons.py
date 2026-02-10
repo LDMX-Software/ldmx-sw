@@ -24,7 +24,7 @@ from LDMX.SimCore import simulator
 from LDMX.SimCore import generators
 
 sim = simulator.simulator("uniform-electrons")
-sim.setDetector('ldmx-det-v14-8gev', True)
+sim.setDetector('ldmx-det-v14-8gev', include_scoring_planes_minimal = True)
 sim.description = "Electrons with uniformly sampled energy and angle shot from target"
 sim.beamSpotSmear = [20., 80., 0.]
 # GPS generator
@@ -61,7 +61,7 @@ from LDMX.Tracking import tracking
 
 import LDMX.Tracking.geo
 
-# Truth seeder 
+# Truth seeder
 # Runs truth tracking producing tracks from target scoring plane hits for Recoil
 # and generated electros for Tagger.
 # Truth tracks can be used for assessing tracking performance or using as seeds

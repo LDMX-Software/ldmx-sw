@@ -1,4 +1,5 @@
-import argparse,sys
+import argparse
+import sys
 from LDMX.Framework import ldmxcfg
 
 """

@@ -43,9 +43,9 @@ the polycarbonate in the PDG is 75% C, 5% H and 20% O which
 I deemed close enough.
 """
 
-import sys
-from dataclasses import dataclass, asdict
 import json
+import sys
+from dataclasses import asdict, dataclass
 
 
 @dataclass
@@ -535,7 +535,7 @@ def print_weights(
     dE_between_sensdet,
     X0_between_sensdet,
     L_between_sensdet,
-    Zpos_layer, 
+    Zpos_layer,
     output = sys.stdout
 ):
     """print the weights in a nice-ly formatted table
@@ -550,8 +550,7 @@ def print_weights(
     )
     output.write('-----------------------------------\n')
     for layer in range(len(dE_between_sensdet)-1):
-        output.write('{0:5d} {1:7.3f} {2:6.3f} {3:6.3f} {4:6.3f}\n'.format(
-            layer+1, dE_between_sensdet[layer], X0_between_sensdet[layer], L_between_sensdet[layer], Zpos_layer[layer]))
+        output.write(f'{layer+1:5d} {dE_between_sensdet[layer]:7.3f} {X0_between_sensdet[layer]:6.3f} {L_between_sensdet[layer]:6.3f} {Zpos_layer[layer]:6.3f}\n')
     #endfor - layers
     output.write('-----------------------------------\n')
     output.write('{0:>5s} {1:7.3f} {2:6.3f} {3:6.3f} {4:6.3f}\n'.format(
@@ -649,11 +648,7 @@ def minildmx():
     print('N Bi-Layers | X0    | mm    |')
     for n in range(1,4):
         layers = [Layer.kapton(0.1)]+n*BiLayerSandwich(front=0, cooling=0, slice_test=True).material_stack()+[Layer.kapton(0.1)]
-        print('{n:>11} | {x0:<5.3g} | {z:<5.3g} |'.format(
-            n = n,
-            x0 = sum(layer.thickness / layer.x0 for layer in layers),
-            z = sum(layer.thickness for layer in layers)
-        ))
+        print(f'{n:>11} | {sum(layer.thickness / layer.x0 for layer in layers):<5.3g} | {sum(layer.thickness for layer in layers):<5.3g} |')
 
 
 @command

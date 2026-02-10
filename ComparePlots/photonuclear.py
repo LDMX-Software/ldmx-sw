@@ -1,8 +1,10 @@
 
 
+import logging
+
 from ._differ import Differ
 from ._plotter import plotter
-import logging
+
 
 log = logging.getLogger('photonuclear')
 
@@ -25,7 +27,7 @@ def pndqm(d: Differ, out_dir=None):
     d.plot1d("PN/event_type_compact", "", out_dir=out_dir)
     d.plot1d("PN/event_type_compact_500mev", "", out_dir=out_dir)
     d.plot1d("PN/event_type_compact_2000mev", "", out_dir=out_dir)
-    d.plot1d("PN/1n_event_type", "", out_dir=out_dir) 
+    d.plot1d("PN/1n_event_type", "", out_dir=out_dir)
     d.plot1d("PN/pn_interaction_material", "", out_dir=out_dir)
     d.plot1d("PN/pn_vertex_volume", "", out_dir=out_dir)
     d.plot1d("PN/pn_particle_mult", "Photo-nuclear Multiplicity", out_dir=out_dir)

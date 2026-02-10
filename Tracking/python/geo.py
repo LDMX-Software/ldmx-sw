@@ -1,6 +1,7 @@
 
 from LDMX.Framework import ldmxcfg
 
+
 class TrackersTrackingGeometryProvider(ldmxcfg.ConditionsObjectProvider):
     """The provider of the tracking geometry
 
@@ -18,7 +19,7 @@ class TrackersTrackingGeometryProvider(ldmxcfg.ConditionsObjectProvider):
 
     __instance = None
 
-    def get_instance(): 
+    def get_instance():
         if TrackersTrackingGeometryProvider.__instance == None:
             TrackersTrackingGeometryProvider()
 
@@ -44,9 +45,9 @@ class TrackersTrackingGeometryProvider(ldmxcfg.ConditionsObjectProvider):
     def __init__(self):
         if TrackersTrackingGeometryProvider.__instance != None:
             raise Exception('TrackersTrackingGeometryProvider is a singleton class and should only be retrieved using get_instance()')
-        else: 
+        else:
             super().__init__('TrackersTrackingGeometry', 'tracking::geo::TrackersTrackingGeometryProvider', 'Tracking')
-            self.setDetector('ldmx-det-v14-8gev-no-cals')
+            self.setDetector('ldmx-det-v15-8gev')
             #  acts x = global z
             #   // global z:  -200 - 900/2 = -650 to -200 + 900/2 = 250 mm
             #   // global y: -70 to 70

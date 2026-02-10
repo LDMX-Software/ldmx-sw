@@ -20,11 +20,12 @@ fit_res_K : float
 
 Examples
 --------
-    from LDMX.Recon.trackDeDxMassEstimator import reoilTrackMassEstimator
-    p.sequence.append( reoilTrackMassEstimator )
+    from LDMX.Recon.trackDeDxMassEstimator import recoilTrackMassEstimator
+    p.sequence.append( recoilTrackMassEstimator )
 """
 
 from LDMX.Framework import ldmxcfg
+
 
 class trackDeDxMassEstimator(ldmxcfg.Producer) :
     """Configuration for the mass estimator from tracker dEdx"""

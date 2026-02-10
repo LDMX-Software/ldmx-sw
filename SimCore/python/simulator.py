@@ -6,6 +6,7 @@ with several helpful member functions.
 
 from LDMX.Framework.ldmxcfg import Producer
 
+
 class _EventToReSim:
     """A class to hold the information identifying a specific event we wish to re-simulate
 
@@ -114,15 +115,17 @@ class simulator(Producer):
         from LDMX.SimCore import kaon_physics
         self.kaon_parameters = kaon_physics.KaonPhysics()
 
-    def setDetector(self, det_name , include_scoring_planes = False ) :
+    def setDetector(self, det_name , include_scoring_planes_others = False, include_scoring_planes_minimal = False ) :
         """Set the detector description with the option to include the scoring planes
 
         Parameters
         ----------
         det_name : str
             name of a detector in the Detectors module
-        include_scoring_planes : bool
-            True if you want to import and use scoring planes
+        include_scoring_planes_minimal : bool
+            True if you want to import only target and ecal scoring planes
+        include_scoring_planes_others : bool
+            True if you want to import the remaining other scoring planes
 
         See Also
         --------
@@ -131,6 +134,7 @@ class simulator(Producer):
         """
 
         from LDMX.Detectors import makePath as mP
+
         from . import sensitive_detectors as sds
         self.detector = mP.makeDetectorPath( det_name )
         if 'v12' in det_name :
@@ -146,12 +150,16 @@ class simulator(Producer):
                 sds.EcalSD(),
                 sds.TrigScintSD.target()
                 ] + trigscint
-        if include_scoring_planes :
+        if include_scoring_planes_minimal :
             self.scoringPlanes = mP.makeScoringPlanesPath( det_name )
             self.sensitive_detectors.extend([
-                sds.ScoringPlaneSD.ecal(),
-                sds.ScoringPlaneSD.hcal(),
                 sds.ScoringPlaneSD.target(),
+                sds.ScoringPlaneSD.ecal(),
+                ])
+        if include_scoring_planes_others :
+            self.scoringPlanes = mP.makeScoringPlanesPath( det_name )
+            self.sensitive_detectors.extend([
+                sds.ScoringPlaneSD.hcal(),
                 sds.ScoringPlaneSD.trigscint(),
                 sds.ScoringPlaneSD.tracker(),
                 sds.ScoringPlaneSD.magnet()

@@ -28,7 +28,7 @@ tsEv.input_pass_name=inputPassName
 tsEv.input_collection="decodedZCCMPad1"
 tsEv.time_shift=timeOffset
 if logVerbosity < 1 :
-    tsEv.verbose=True 
+    tsEv.verbose=True
 p.sequence = [
     tsEv
     ]

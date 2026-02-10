@@ -15,6 +15,7 @@ mip_si_energy : float
 
 from LDMX.Framework.ldmxcfg import Producer
 
+
 n_kelectrons_per_mip = 37.0 #thousand e-h pairs created per MIP <- derived from 0.5mm thick Si
 charge_per_mip = n_kelectrons_per_mip*0.1602 #fC
 mip_si_energy = 0.130 #MeV - corresponds to ~3.5 eV per e-h pair <- derived from 0.5mm thick Si
@@ -38,7 +39,7 @@ def EcalHgcrocEmulator() :
     hgcroc.timeDnSlope = 87.7649
     hgcroc.timePeak    = 77.732
 
-    hgcroc.nADCs        = 10 
+    hgcroc.nADCs        = 10
     hgcroc.iSOI         = 2
 
     return hgcroc
@@ -77,7 +78,7 @@ class EcalDigiProducer(Producer) :
         self.hgcroc = EcalHgcrocEmulator()
 
         #Energy -> Volts converstion
-        #   energy [MeV] (thousand electrons per MIP) (charge per thousand electrons fC) 
+        #   energy [MeV] (thousand electrons per MIP) (charge per thousand electrons fC)
         #        (avg pad capacitance pF) ( 1 MIP / energy [MeV] ) = voltage [mV]
         #   this leads to ~ 470 mV/MeV or ~6.8 MeV maximum hit (if 320 fC is max ADC range)
         self.MeV = charge_per_mip/20./(mip_si_energy*si_thickness/0.5)
@@ -131,7 +132,7 @@ class EcalRecProducer(Producer) :
         Weighting factors depending on layer index
     """
 
-    def __init__(self, instance_name = 'ecalRecon') : 
+    def __init__(self, instance_name = 'ecalRecon') :
         super().__init__(instance_name , 'ecal::EcalRecProducer','Ecal')
 
         self.mip_si_energy = mip_si_energy #MeV / MIP
@@ -143,7 +144,7 @@ class EcalRecProducer(Producer) :
         self.simHitCollName = 'EcalSimHits'
         self.simHitPassName = ''
         self.recHitCollName = 'EcalRecHits'
-        
+
         # geometry dependent settings
         # use helper functions to set these
         self.secondOrderEnergyCorrection = 1.
@@ -210,7 +211,7 @@ class EcalRecProducer(Producer) :
         # See https://github.com/LDMX-Software/ldmx-sw/issues/1725
         # TLDR: these are wrong but only off by an absolute value of ~0.2, future detector versions
         # use the newer script with fixed material properties
-        self.layerWeights = [ 
+        self.layerWeights = [
                 2.329, 4.339, 6.495, 7.490, 8.595, 10.253, 10.915, 10.915, 10.915, 10.915, 10.915,
                 10.915, 10.915, 10.915, 10.915, 10.915, 10.915, 10.915, 10.915, 10.915, 10.915,
                 10.915, 10.915, 14.783, 18.539, 18.539, 18.539, 18.539, 18.539, 18.539, 18.539,
@@ -242,6 +243,6 @@ class EcalRecProducer(Producer) :
         """
 
         self.secondOrderEnergyCorrection = 1.
-        self.layerWeights = [ 
+        self.layerWeights = [
                 2.312, 5.417, 9.837, 11.910, 11.910, 11.910
                 ]

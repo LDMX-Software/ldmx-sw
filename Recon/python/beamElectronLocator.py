@@ -22,6 +22,7 @@ verbose : boolean
 
 from LDMX.Framework import ldmxcfg
 
+
 class BeamElectronLocator(ldmxcfg.Producer) :
     """The name is purely conventional to match the C++ class name for clarity
 

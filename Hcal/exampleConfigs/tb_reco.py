@@ -1,4 +1,6 @@
-import argparse, sys, os
+import argparse
+import sys
+import os
 
 """
 Takes raw data file after reformat (with run number)
@@ -45,8 +47,8 @@ p.sequence = [
         rec_pass_name = '',
     ),
     hcal_digi.HcalDoubleEndRecProducer(
-        pass_name = '', 
-        coll_name = 'HcalSingleEndRecHits', 
+        pass_name = '',
+        coll_name = 'HcalSingleEndRecHits',
         rec_coll_name = 'HcalDoubleEndRecHits',
         rec_pass_name = ''
     )

@@ -5,6 +5,7 @@ Specialization of ConditionsObjectProvider for simple tables indexed by detid
 
 from LDMX.Framework import ldmxcfg
 
+
 class SimpleCSVTableEntry:
     """One entry in the providing table
 
@@ -39,7 +40,7 @@ class SimpleCSVTableEntry:
 
         self.firstRun=firstRun
         self.lastRun=lastRun
-        
+
     def __str__(self) :
         """Stringify this table entry
 
@@ -57,7 +58,7 @@ class SimpleCSVTableEntry:
 
         msg += ", Run Type %s, URL %s }" %( self.runType , self.URL )
 
-        return msg 
+        return msg
 
 class SimpleCSVTableProvider(ldmxcfg.ConditionsObjectProvider):
     """Provides a uniform table of a specific type
@@ -124,12 +125,12 @@ class SimpleCSVTableProvider(ldmxcfg.ConditionsObjectProvider):
         entry=SimpleCSVTableEntry("python:")
         entry.values=values
         self.entries.append(entry)
-        
+
 class SimpleCSVDoubleTableProvider(SimpleCSVTableProvider):
     """Provider for tables of doubles"""
     def __init__(self,objName,columns):
         super().__init__(objName,"double",columns)
-        
+
 class SimpleCSVIntegerTableProvider(SimpleCSVTableProvider):
     """Provider for tables of integers"""
     def __init__(self,objName,columns):

@@ -12,13 +12,13 @@ if len(sys.argv) > 1 :
     inputFile=sys.argv[1]
 else :
     print("got to specify an input file")
-    exit 
+    exit
 if len(sys.argv) > 2 :
     inputPassName=sys.argv[2]
 else :
     inputPassName="conv" #"sim"
 
-    
+
 p.run = 10
 #p.maxEvents = 2000
 p.inputFiles = [ inputFile ]
@@ -73,7 +73,7 @@ tsAna.pedestals=pedList
 tsAna.gain=gainList
 
 outname=outname.replace(".root", "_plots.root")
-p.histogramFile = outname 
+p.histogramFile = outname
 
 
 
@@ -83,9 +83,9 @@ tbHitsUp  =TestBeamHitProducer("tbHits")
 tbHitsUp.input_pass_name=inputPassName
 tbHitsUp.input_collection="QIEsamplesUp"
 tbHitsUp.pedestals=pedList
-tbHitsUp.gain=gainList 
+tbHitsUp.gain=gainList
 tbHitsUp.startSample=startSample
-tbHitsUp.pulseWidth=12 #5 
+tbHitsUp.pulseWidth=12 #5
 tbHitsUp.pulseWidthLYSO=14
 tbHitsUp.doCleanHits=True
 tbHitsUp.nInstrumentedChannels=12
@@ -100,7 +100,7 @@ tbClustersUp.pad_time=100.
 tbClustersUp.time_tolerance=999.
 tbClustersUp.verbosity=0
 tbClustersUp.clustering_threshold = 40.  #to add in neighboring
-tbClustersUp.seed_threshold = 50.   # i think 50 cuts off the low tail of the PE distribution 
+tbClustersUp.seed_threshold = 50.   # i think 50 cuts off the low tail of the PE distribution
 
 
 cleanClustersUp  =TestBeamClusterProducer("cleanClusters")

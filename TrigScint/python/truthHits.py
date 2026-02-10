@@ -11,11 +11,12 @@ Examples
 
 from LDMX.Framework import ldmxcfg
 
+
 class TruthHitProducer(ldmxcfg.Producer) :
     """Configuration for truth hit selection producer"""
 
     def __init__(self,name) :
-        super().__init__(name,'trigscint::TruthHitProducer','TrigScint') 
+        super().__init__(name,'trigscint::TruthHitProducer','TrigScint')
 
         self.input_collection="TriggerPadUpSimHits"
         self.input_pass_name="" #take any pass

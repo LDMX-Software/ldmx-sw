@@ -1,10 +1,10 @@
 from LDMX.Framework import ldmxcfg
 
-p = ldmxcfg.Process('raw') 
+p = ldmxcfg.Process('raw')
 
 import sys
 
-RAWfileName=sys.argv[1] 
+RAWfileName=sys.argv[1]
 p.outputFiles = [sys.argv[2]]
 logName=p.outputFiles[0].replace(".root", "_toRoot.log")
 if len(sys.argv) > 3 :
@@ -24,7 +24,7 @@ p.sequence = [
     )
 ]
 
-p.logger.termLevel = 0 #1 
+p.logger.termLevel = 0 #1
 p.logger.fileName = logName
-p.logger.fileLevel = 0 
+p.logger.fileLevel = 0
 

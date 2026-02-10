@@ -2,6 +2,7 @@
 
 from LDMX.Framework import ldmxcfg
 
+
 class HcalVetoProcessor(ldmxcfg.Producer) :
     """Configuration for veto in HCal
 
@@ -19,13 +20,13 @@ class HcalVetoProcessor(ldmxcfg.Producer) :
         self.pe_threshold = 8.0
         self.max_time = 50.0
         self.back_min_pe = 1.
-        self.input_hit_coll_name= "HcalRecHits";
+        self.input_hit_coll_name= "HcalRecHits"
         self.input_hit_pass_name = ''
-        self.output_coll_name= "HcalVeto";
-        self.inverse_skim = False;
-        
+        self.output_coll_name= "HcalVeto"
+        self.inverse_skim = False
+
         self.track_pass_name = ''
-        
+
 
 class HcalWABVetoProcessor(ldmxcfg.Producer) :
     """Configuration for WAB veto in HCal
@@ -41,17 +42,17 @@ class HcalWABVetoProcessor(ldmxcfg.Producer) :
     def __init__(self,name = 'hcalWABVeto') :
         super().__init__(name,'hcal::HcalWABVetoProcessor','Hcal')
 
-        self.max_total_energy_compare = 1000.0;
-        self.min_total_energy_compare = 0.0;
-        self.n_clusters = 6.0;
-        self.mean_hits_per_cluster = 3.0;
-        self.mean_energy_per_cluster = 6.;
+        self.max_total_energy_compare = 1000.0
+        self.min_total_energy_compare = 0.0
+        self.n_clusters = 6.0
+        self.mean_hits_per_cluster = 3.0
+        self.mean_energy_per_cluster = 6.
 
-        self.inputHCALHitCollName = "HcalRecHits";
-        self.inputECALHitCollName = "EcalRecHits" ;
-        self.outputCollName = "HcalWABVetoes";
+        self.inputHCALHitCollName = "HcalRecHits"
+        self.inputECALHitCollName = "EcalRecHits"
+        self.outputCollName = "HcalWABVetoes"
         self.inputHCALClusterCollName = "HcalClusters"
-        
+
         self.hcal_hit_passname = ''
         self.ecal_hit_passname = ''
         self.hcal_cluster_passname = ''
@@ -106,4 +107,4 @@ class HcalClusterProducer(ldmxcfg.Producer) :
 
         self.clusterCollName = 'HcalClusters'
         self.hcal_hits_pass_name = ''
-        
+

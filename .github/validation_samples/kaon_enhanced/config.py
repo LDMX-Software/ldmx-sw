@@ -3,6 +3,7 @@ import sys
 
 from LDMX.Framework import ldmxcfg
 
+
 thisPassName = 'test'
 p=ldmxcfg.Process(thisPassName)
 
@@ -14,15 +15,12 @@ p.maxEvents = 1
 p.totalEvents = int(os.environ['LDMX_NUM_EVENTS']) // 2
 p.run = int(os.environ['LDMX_RUN_NUMBER'])
 
-from LDMX.SimCore import generators as gen
-from LDMX.SimCore import bias_operators
-from LDMX.SimCore import kaon_physics
-from LDMX.SimCore import photonuclear_models as pn
-from LDMX.Biasing import ecal
-from LDMX.Biasing import filters
-from LDMX.Biasing import particle_filter
-from LDMX.Biasing import util
+from LDMX.Biasing import ecal, filters, particle_filter, util
 from LDMX.Biasing import include as includeBiasing
+from LDMX.SimCore import bias_operators, kaon_physics
+from LDMX.SimCore import generators as gen
+from LDMX.SimCore import photonuclear_models as pn
+
 
 detector = 'ldmx-det-v15-8gev'
 generator=gen.single_8gev_e_upstream_tagger()
@@ -30,7 +28,7 @@ bias_factor = 550.
 bias_treshold = 5000.
 
 mySim = ecal.photo_nuclear(detector, generator)
-mySim.description = f'8 GeV ECal Kaon PN simulation, xsec bias {bias_factor}' 
+mySim.description = f'8 GeV ECal Kaon PN simulation, xsec bias {bias_factor}'
 mySim.biasing_operators = [ bias_operators.PhotoNuclear('ecal',bias_factor,bias_treshold,only_children_of_primary = True) ]
 
 # Configure the sequence in which user actions should be called.
@@ -51,7 +49,7 @@ mySim.actions.extend([
 mySim.kaon_parameters = kaon_physics.KaonPhysics.upKaons()
 
 # Alternative pn models
-myModel = pn.BertiniAtLeastNProductsModel.kaon() 
+myModel = pn.BertiniAtLeastNProductsModel.kaon()
 # Count all (not stopped) particles as "hard"
 myModel.hard_particle_threshold=0.
 # Apply the model to any nucleus
@@ -66,7 +64,7 @@ myModel.min_products = 1
 # Change the default model to the kaon producing model
 mySim.photonuclear_model = myModel
 
-# Add the filter at the end of the current list of user actions. 
+# Add the filter at the end of the current list of user actions.
 # Filter for events with a kaon daughter
 myFilter = particle_filter.PhotoNuclearProductsFilter.kaon()
 mySim.actions.extend([myFilter])
@@ -74,28 +72,31 @@ mySim.actions.extend([myFilter])
 p.sequence=[mySim]
 
 # Load the full tracking sequance
-from LDMX.Tracking import full_tracking_sequence
+import LDMX.Ecal.ecal_hardcoded_conditions
 
 # Load the ECAL modules
 import LDMX.Ecal.EcalGeometry
-import LDMX.Ecal.ecal_hardcoded_conditions
-from LDMX.Ecal import digi as eDigi
-from LDMX.Ecal import vetos as ecal_vetos
+import LDMX.Hcal.hcal_hardcoded_conditions
 
 # Load the HCAL modules
 import LDMX.Hcal.HcalGeometry
-import LDMX.Hcal.hcal_hardcoded_conditions
+from LDMX.Ecal import digi as eDigi
+from LDMX.Ecal import vetos as ecal_vetos
 from LDMX.Hcal import digi as hDigi
 from LDMX.Hcal import hcal
-
-# Load the TS modules                                                                    
-from LDMX.TrigScint.trigScint import TrigScintDigiProducer
-from LDMX.TrigScint.trigScint import TrigScintClusterProducer
-from LDMX.TrigScint.trigScint import trigScintTrack
 
 # Load electron counting and trigger
 from LDMX.Recon.electronCounter import ElectronCounter
 from LDMX.Recon.simpleTrigger import TriggerProcessor
+from LDMX.Tracking import full_tracking_sequence
+
+# Load the TS modules
+from LDMX.TrigScint.trigScint import (
+        TrigScintClusterProducer,
+        TrigScintDigiProducer,
+        trigScintTrack,
+)
+
 
 #TS digi + clustering + track chain
 ts_digis = [
@@ -119,20 +120,22 @@ ecal_veto_pnet = ecal_vetos.EcalPnetVetoProcessor()
 
 # HCAL part
 import LDMX.Hcal.digi as hcal_digi_and_reco
+
+
 hcal_digi = hcal_digi_and_reco.HcalDigiProducer()
 hcal_reco = hcal_digi_and_reco.HcalRecProducer()
 
-# electron counter for trigger processor 
+# electron counter for trigger processor
 eCount = ElectronCounter( 1, "ElectronCounter") # first argument is number of electrons in simulation
 eCount.input_pass_name = ''
 simpleTrig = TriggerProcessor("simpleTrig",8000.)
 simpleTrig.input_pass=thisPassName
 
-# Load DQM 
+# Load DQM
 from LDMX.DQM import dqm
 
+
 # Load HCAL veto
-import LDMX.Hcal.hcal as hcal
 hcal_veto = hcal.HcalVetoProcessor()
 
 p.logger.termLevel = 1
@@ -141,17 +144,17 @@ p.logger.termLevel = 1
 p.sequence.extend(full_tracking_sequence.sequence)
 p.sequence.extend(full_tracking_sequence.dqm_sequence)
 
-p.sequence.extend([ 
-        ecalDigi, 
-        ecalReco, 
+p.sequence.extend([
+        ecalDigi,
+        ecalReco,
         ecalVeto,
         ecalMip,
         ecal_veto_pnet,
         *ts_digis,
-        *ts_clusters, 
-        trigScintTrack, 
-        eCount, 
-        simpleTrig, 
+        *ts_clusters,
+        trigScintTrack,
+        eCount,
+        simpleTrig,
         hcal_digi,
         hcal_reco,
         hcal_veto,
@@ -161,5 +164,5 @@ p.sequence.extend([
 p.sequence.extend(dqm.all_dqm)
 
 
-p.histogramFile = f'hist.root'
-p.outputFiles = [f'events.root']
+p.histogramFile = 'hist.root'
+p.outputFiles = ['events.root']

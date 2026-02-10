@@ -3,9 +3,12 @@ overlaying histograms with the same key
 """
 
 import os
-import sys
-import ROOT
 import subprocess
+import sys
+
+import ROOT
+
+
 ROOT.gROOT.SetBatch(1)
 ROOT.gStyle.SetOptStat(0)
 
@@ -52,7 +55,7 @@ def flatten(l) :
 
     return flat_l
 
-class HistogramFile() :
+class HistogramFile :
     """A root file with histograms that we want to be styled in same way
 
     This class is not very complicated and is simply here to do two things.
@@ -155,9 +158,9 @@ def compare(gold_f, gold_label, test_f, test_label) :
 
     c = ROOT.TCanvas()
 
-    os.makedirs(f'plots/pass',exist_ok=True)
-    os.makedirs(f'plots/fail',exist_ok=True)
-    
+    os.makedirs('plots/pass',exist_ok=True)
+    os.makedirs('plots/fail',exist_ok=True)
+
     for key in gold.list_histograms() :
         try :
             gold_h = gold.get(key)
@@ -200,8 +203,10 @@ def compare(gold_f, gold_label, test_f, test_label) :
             # Plot the 1D plots with their uncertainty
             gold_h.Draw("E")
             test_h.Draw('ESAME')
-    
-        c.BuildLegend()
+
+        legend = c.BuildLegend()
+        legend.SetFillStyle(0)
+        legend.SetBorderSize(0)
         c.SaveAs(f'plots/{sub_dir}/{key.replace("/","_").replace(":","_")}.pdf')
 
 if __name__ == '__main__' :

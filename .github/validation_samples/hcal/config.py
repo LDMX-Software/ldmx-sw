@@ -1,11 +1,16 @@
 from LDMX.Framework import ldmxcfg
+
+
 p = ldmxcfg.Process('test')
 
 from LDMX.SimCore import simulator as sim
+
+
 mySim = sim.simulator( "mySim" )
 mySim.description = 'Hcal Muons and Neutrons'
 mySim.setDetector( 'ldmx-det-v15-8gev' )
 from LDMX.SimCore import generators as gen
+
 
 # flat distribution of energy from 1 GeV to 8 GeV
 # vertex on x-y plane close to front of side hcal/ecal
@@ -41,6 +46,7 @@ p.sequence = [ mySim ]
 
 import os
 
+
 p.run = int(os.environ['LDMX_RUN_NUMBER'])
 p.maxEvents = int(os.environ['LDMX_NUM_EVENTS'])
 
@@ -49,11 +55,13 @@ p.outputFiles = ['events.root']
 p.logger.termLevel = 1
 p.logger.custom("GEANT4", level = 3)
 
-import LDMX.Ecal.EcalGeometry
 import LDMX.Ecal.ecal_hardcoded_conditions
-import LDMX.Hcal.HcalGeometry
-import LDMX.Hcal.hcal_hardcoded_conditions
+import LDMX.Ecal.EcalGeometry
 import LDMX.Hcal.digi as hcal_digi_and_reco
+import LDMX.Hcal.hcal_hardcoded_conditions
+import LDMX.Hcal.HcalGeometry
+
+
 hcal_digi = hcal_digi_and_reco.HcalDigiProducer()
 hcal_reco = hcal_digi_and_reco.HcalRecProducer()
 hcal_simplified_digi_and_reco = hcal_digi_and_reco.HcalSimpleDigiAndRecProducer()
@@ -61,9 +69,12 @@ hcal_simplified_digi_and_reco.output_coll_name = 'SimplifiedHcalRecHits'
 
 # Load hcal veto
 import LDMX.Hcal.hcal as hcal
+
+
 hcal_veto = hcal.HcalVetoProcessor()
 
 from LDMX.DQM import dqm
+
 
 simplified_hcal_dqm_back = dqm.HCalDQM( 'HcalSimpleRecoDQM', section = 0 )
 simplified_hcal_dqm_back.rec_coll_name = hcal_simplified_digi_and_reco.output_coll_name

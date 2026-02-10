@@ -1,5 +1,5 @@
 
-class KaonPhysics():
+class KaonPhysics:
     """Parameters that determine the physics of kaons in the simulation
 
     Parameters

@@ -6,6 +6,7 @@ are hardcoded into the python configuration.
 
 from LDMX.SimCore import simcfg
 
+
 class gun(simcfg.PrimaryGenerator) :
     """New basic particle gun primary generator
 
@@ -123,7 +124,7 @@ class completeReSim(simcfg.PrimaryGenerator) :
 
     def __init__(self,name,file_path) :
         super().__init__(name,'simcore::generators::RootCompleteReSim')
-        
+
         self.filePath = file_path
         self.collection_name = 'SimParticles'
         self.pass_name = ''
@@ -297,7 +298,7 @@ def _single_e_upstream_tagger(position, momentum, energy):
     import math
     momentum_mag = math.sqrt(sum(map(lambda x: x*x, momentum)))
     unit_direction = list(map(lambda x: x/momentum_mag, momentum))
-    
+
     particle_gun = gun(f'single_{energy}gev_e_upstream_tagger')
     particle_gun.particle = 'e-'
     particle_gun.position = position
@@ -338,14 +339,14 @@ def single_4gev_e_upstream_target() :
     """
 
     particle_gun = gun('single_4gev_e_upstream_target')
-    particle_gun.particle = 'e-' 
+    particle_gun.particle = 'e-'
     particle_gun.position = [ 0., 0., -1.2 ]  # mm
-    particle_gun.direction = [ 0., 0., 1] 
+    particle_gun.direction = [ 0., 0., 1]
     particle_gun.energy = 4.0 # GeV
 
     return particle_gun
 
-def single_1pt2gev_e_upstream_tagger(): 
+def single_1pt2gev_e_upstream_tagger():
     """Configure a particle gun to fire a 8 GeV electron upstream of the tagger tracker.
 
     The position and direction are set such that the electron will be bent by 
@@ -364,7 +365,7 @@ def single_1pt2gev_e_upstream_tagger():
         1.2
     )
 
-def single_8gev_e_upstream_tagger(): 
+def single_8gev_e_upstream_tagger():
     """Configure a particle gun to fire a 8 GeV electron upstream of the tagger tracker.
 
     The position and direction are set such that the electron will be bent by 

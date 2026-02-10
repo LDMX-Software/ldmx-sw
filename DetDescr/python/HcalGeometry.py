@@ -67,39 +67,24 @@ class HcalReadoutGeometry:
 
     def __str__(self):
         """Stringify this configuration class"""
-        s = """
+        s = f"""
         HcalReadoutGeometry {{
-            Scintillator thickness: {:.1f} [mm], width: {:.1f} [mm],
-            Number of sections: {{{}}},
+            Scintillator thickness: {self.scint_thickness:.1f} [mm], width: {self.scint_width:.1f} [mm],
+            Number of sections: {{{self.num_sections}}},
             Layers: {{
-                Number of layers: {}
-                Layer thickness: {} [mm]
-                Z-position of zero-th layer: {} [mm]
-                Half total width of layers: {} [mm]
-                Number of strips per layer: {}
-                Location of zero-th strip per layer: {} [mm]
-                Scintillator length: {} [mm]
+                Number of layers: {self.num_layers}
+                Layer thickness: {self.layer_thickness} [mm]
+                Z-position of zero-th layer: {self.zero_layer} [mm]
+                Half total width of layers: {self.half_total_width} [mm]
+                Number of strips per layer: {self.num_strips}
+                Location of zero-th strip per layer: {self.zero_strip} [mm]
+                Scintillator length: {self.scint_length} [mm]
             }},
-            Ecal DX, DY: {}, {} [mm],
-            Y offset: {},
-            Valid detector regexps: {}
+            Ecal DX, DY: {self.ecal_dx}, {self.ecal_dy} [mm],
+            Y offset: {self.y_offset},
+            Valid detector regexps: {self.detectors_valid}
         }}
-        """.format(
-            self.scint_thickness,
-            self.scint_width,
-            self.num_sections,
-            self.num_layers,
-            self.layer_thickness,
-            self.zero_layer,
-            self.half_total_width,
-            self.num_strips,
-            self.zero_strip,
-            self.scint_length,
-            self.ecal_dx,
-            self.ecal_dy,
-            self.y_offset,
-            self.detectors_valid,
-        )
+        """
         return s
 
 

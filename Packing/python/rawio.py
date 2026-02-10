@@ -1,9 +1,11 @@
 """Module for configuring a raw data file"""
 
-from LDMX.Framework import ldmxcfg
 import os
 
-class RawDataFile() :
+from LDMX.Framework import ldmxcfg
+
+
+class RawDataFile :
     """RawDataFile configuration class"""
 
     def __init__(self, name, is_output) :
@@ -15,7 +17,7 @@ class RawDataFile() :
         self.triggerpad_object_name = "TriggerPadRaw"
         self.pass_name = ""
         self.skip_unavailable = True
-        
+
         self.ecal_object_passname_ = ''
         self.hcal_object_passname_ = ''
         self.triggerpad_object_passname_ = ''

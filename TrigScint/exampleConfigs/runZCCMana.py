@@ -1,4 +1,4 @@
-import json 
+import json
 from os.path import exists
 from os import path
 from LDMX.Framework import ldmxcfg
@@ -24,7 +24,7 @@ nChannels=24
 gainList=[2e6]*nChannels
 #now if there is a gain file, use that instead to read in the gain for each channel
 gainFileName=sys.argv[1].replace(".root", "_gains.txt")
-gainFileName=gainFileName.replace("_adcTrig", "")  #not derived for adcTrig events 
+gainFileName=gainFileName.replace("_adcTrig", "")  #not derived for adcTrig events
 
 #pick one file more or less at random as the fallback option
 defaultRun="decoded_data_20251208_225935_dark_current_kicker_trigger_parsed_50k_linearize"
@@ -51,7 +51,7 @@ pedList=[2.]*nChannels
 pedFileName=gainFileName.replace("gains", "peds")
 defaultPedFileName=dataPath+"/"+defaultRun+"_peds.txt"
 
-if not exists(pedFileName) :  
+if not exists(pedFileName) :
     pedFileName=defaultPedFileName
 
 if exists(pedFileName) :
@@ -71,7 +71,7 @@ tsEv.inputCollection="QIEsamplesPad1"
 #these are derived as the mean of gaussian fits to the "event pedestal" (average over middle two quartiles) for each channel
 tsEv.startSample=startSample
 tsEv.pedestals=pedList
-tsEv.gain=gainList 
+tsEv.gain=gainList
 
 p.sequence = [
     tsEv

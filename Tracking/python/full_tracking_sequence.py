@@ -1,8 +1,8 @@
 # Load the tracking module
-from LDMX.Tracking import tracking
-from LDMX.Tracking import geo
-
+from LDMX.Tracking import geo, tracking
 from LDMX.Tracking.geo import TrackersTrackingGeometryProvider as trackgeo
+
+
 trackgeo.get_instance().setDetector('ldmx-det-v15-8gev')
 
 # Truth seeder
@@ -65,7 +65,7 @@ seeder_recoil.phicut =  1.6
 # CKF track finding for tagger tracker using seeds.
 tracking_tagger  = tracking.CKFProcessor("Tagger_TrackFinder")
 tracking_tagger.taggerTracking = True
-# for truth seed based case use 
+# for truth seed based case use
 # tracking_tagger.seed_coll_name = "TaggerTruthSeeds"
 tracking_tagger.seed_coll_name = seeder_tagger.out_seed_collection
 tracking_tagger.out_trk_collection = "TaggerTracks"
@@ -78,7 +78,7 @@ tracking_recoil  = tracking.CKFProcessor("Recoil_TrackFinder")
 tracking_recoil.taggerTracking = False
 tracking_recoil.seed_coll_name = seeder_recoil.out_seed_collection
 tracking_recoil.out_trk_collection = "RecoilTracks"
-# for truth seed based case use 
+# for truth seed based case use
 # tracking_recoil.seed_coll_name = "RecoilTruthSeeds"
 tracking_recoil.measurement_collection = digi_recoil.out_collection
 tracking_recoil.min_hits = 5
@@ -100,18 +100,19 @@ greedy_solver_recoil.measCollection = digi_recoil.out_collection
 GSF_tagger = tracking.GSFProcessor("Tagger_GSF")
 GSF_tagger.taggerTracking = True
 GSF_tagger.trackCollection = greedy_solver_tagger.out_trk_collection
-GSF_tagger.measCollection  = digi_tagger.out_collection 
+GSF_tagger.measCollection  = digi_tagger.out_collection
 GSF_tagger.out_trk_collection = "GSFTaggerTracks"
 
 # Gaussian sum filter for the recoil
 GSF_recoil = tracking.GSFProcessor("Recoil_GSF")
 GSF_recoil.taggerTracking = False
 GSF_recoil.trackCollection = greedy_solver_recoil.out_trk_collection
-GSF_recoil.measCollection  = digi_recoil.out_collection 
+GSF_recoil.measCollection  = digi_recoil.out_collection
 GSF_recoil.out_trk_collection = "GSFRecoilTracks"
 
 # Running DQM for the collections above
 from LDMX.Tracking import dqm as tkdqm
+
 
 # Seeder DQM for the tagger
 dqm_seed_tagger = tkdqm.TrackingRecoDQM("SeedTaggerDQM")

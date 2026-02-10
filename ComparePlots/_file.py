@@ -1,10 +1,12 @@
 """Wrap an uproot file for some extra help plotting"""
 
-import uproot
-import os
 import logging
+import os
+
 import hist
 import mplhep
+import uproot
+
 
 class File :
     """File entry in Differ object holding histogram objects
@@ -62,7 +64,7 @@ class File :
             raise ValueError(f'The filename provided {fn} cannot be split into key_val pairs. \n\tWorking example: hist_new.root')
         file_params =  { l[i] : l[i+1] for i in range(len(l)-1) if i%2 == 0 }
         File.log.debug(f'Deduced File Parameters: {file_params}')
-        
+
         if legendlabel_parameter is None :
             legendlabel_parameter = [next(iter(file_params))]
         ll = [file_params[l] for l in legendlabel_parameter if l in file_params]
@@ -89,7 +91,7 @@ class File :
         """Retrun the path to the file on disk"""
         return self.root_file.file_path
 
-    
+
     def get(self, obj):
         """Get the input ROOT histogram by name and return it as a hist.Hist"""
         return self.root_file[obj].to_hist()

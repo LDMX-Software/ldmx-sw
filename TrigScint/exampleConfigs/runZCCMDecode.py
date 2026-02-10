@@ -2,7 +2,7 @@
 
 from LDMX.Framework import ldmxcfg
 
-p = ldmxcfg.Process('unpack') 
+p = ldmxcfg.Process('unpack')
 import sys
 
 nEv=400000
@@ -30,7 +30,7 @@ if len(sys.argv) > 7 :
     nChan=int(sys.argv[7])
 else :
     nChan=14*6 #default
-    
+
 from LDMX.TrigScint.zccmFormat import ZCCMDecoder
 dec=ZCCMDecoder(mapFile)
 moduleMapFile=mapFile.replace("Channel", "Module")
@@ -39,7 +39,7 @@ dec.module_map_file=moduleMapFile
 dec.input_pass_name=inputPass
 dec.output_collection = dec.output_collection+"Pad"
 dec.verbose=True
-dec.number_channels=nChan  
+dec.number_channels=nChan
 dec.number_time_samples=nSamp
 dec.is_real_data=True #default: False
 
@@ -53,6 +53,6 @@ p.logger.fileLevel = logVerbosity
 if logVerbosity < 2 :
     p.logger.debug(dec) #pass instance itself
 if logVerbosity < 1 :
-    p.logger.trace(dec) 
+    p.logger.trace(dec)
 
 #p.pause()

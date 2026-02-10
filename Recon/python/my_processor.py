@@ -3,6 +3,7 @@
 # We need the ldmx configuration package to construct the processor objects
 from LDMX.Framework import ldmxcfg
 
+
 class MyProcessor(ldmxcfg.Producer) :
     """The name is purely conventional to match the C++ class name for clarity
 
@@ -42,6 +43,5 @@ class MyProcessor(ldmxcfg.Producer) :
         self.my_parameter = 20
         self.ecal_rechits_passname = ''
         self.ecal_rec_hits_event_passname = ''
-        
-        
-        
+
+

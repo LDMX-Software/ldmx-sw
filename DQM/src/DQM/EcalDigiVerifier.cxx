@@ -8,6 +8,8 @@ void EcalDigiVerifier::configure(framework::config::Parameters &ps) {
   ecal_sim_hit_pass_ = ps.get<std::string>("ecal_sim_hit_pass");
   ecal_rec_hit_coll_ = ps.get<std::string>("ecal_rec_hit_coll");
   ecal_rec_hit_pass_ = ps.get<std::string>("ecal_rec_hit_pass");
+  ecal_presel_coll_ = ps.get<std::string>("ecal_presel_coll");
+  ecal_presel_pass_ = ps.get<std::string>("ecal_presel_pass");
   num_layers_ = ps.get<int>("num_layers");
 
   return;
@@ -147,6 +149,13 @@ void EcalDigiVerifier::analyze(const framework::Event &event) {
   if (num_mod_with_more_than_2hits > 0)
     histograms_.fill("num_mod_with_more_than_2hits",
                      num_mod_with_more_than_2hits);
+
+  // Check if preselection decision exists and fill histogram
+  if (event.exists(ecal_presel_coll_, ecal_presel_pass_)) {
+    bool presel_passed =
+        event.getObject<bool>(ecal_presel_coll_, ecal_presel_pass_);
+    histograms_.fill("preselection_passed", presel_passed ? 1. : 0.);
+  }
 
   if (total_rec_energy > 6000.) {
     setStorageHint(framework::HINT_SHOULD_KEEP);

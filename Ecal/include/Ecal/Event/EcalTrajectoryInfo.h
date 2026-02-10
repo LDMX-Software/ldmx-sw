@@ -74,7 +74,7 @@ class EcalTrajectoryInfo {
   std::vector<XYCoords> photon_trajectory_;
   std::vector<HitData> tracking_hit_list_;
 
-  ClassDef(EcalTrajectoryInfo, 2);
+  ClassDef(EcalTrajectoryInfo, 3);
 };  // EcalTrajectoryInfo
 
 }  // namespace ldmx
