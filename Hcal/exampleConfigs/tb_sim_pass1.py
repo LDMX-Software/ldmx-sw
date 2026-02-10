@@ -1,4 +1,7 @@
-import argparse, sys, os, pathlib
+import argparse
+import sys
+import os
+import pathlib
 from LDMX.Framework import ldmxcfg
 
 """
