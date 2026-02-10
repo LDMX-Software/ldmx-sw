@@ -26,7 +26,7 @@ my_sim.description = 'Reduced ECal Electron Gun Test Simulation'
 
 my_sim.generators = [ my_gun ]
 p.sequence = [ my_sim ]
-p.term_log_level = 0
+p.logger.term_level = 0
 
 import os
 

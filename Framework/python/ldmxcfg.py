@@ -541,24 +541,24 @@ class Process:
         Class-wide reference to the last Process object to be constructed
     max_events : int
         Maximum number events to process.
-        If totalEvents is set, this will be ignored.
-    minEvents : int
+        If total_events is set, this will be ignored.
+    min_events : int
         Index of the first events to process.
         The skipping process is relatively slow, if used for anything outside of debugging
         make a  skim to a new file and then run again rather than use this.
         Note: this skips events of *each* input file, you a single file only.
-    maxTriesPerEvent : int
+    max_tries_per_event : int
         Maximum number of attempts to make in a row before giving up on an event
         Only used in Production Mode (no input files)
-        If totalEvents is set, this will be ignored.
-    totalEvents : int
+        If total_events is set, this will be ignored.
+    total_events : int
         Number of events we'd like to produce independetly of the number of tries it would take.
-        Both max_events and maxTriesPerEvent will be ignored. Be warned about infinite loops!
+        Both max_events and max_tries_per_event will be ignored. Be warned about infinite loops!
     run : int
         Run number for this process
-    inputFiles : list of strings
+    input_files : list of strings
         Input files to read in event data from and process
-    outputFiles : list of strings
+    output_files : list of strings
         Output files to write out event data to after processing
     sequence : list of Producers and Analyzers
         List of event processors to pass the event bus objects to
@@ -566,19 +566,19 @@ class Process:
         List of rules to keep or drop objects from the event bus
     libraries : list of strings
         List of libraries to load before attempting to build any processors
-    skimDefaultIsKeep : bool
+    skim_default_is_keep : bool
         Flag to say whether to process should by default keep the event or not
-    skimRules : list of strings
+    skim_rules : list of strings
         List of skimming rules for which processors the process should listen to when deciding whether to keep an event
-    logFrequency : int
+    log_frequency : int
         Print the event number whenever its modulus with this frequency is zero
     logger : Logger
         configuration for logging system in ldmx-sw
-    conditionsGlobalTag : str
+    conditions_global_tag : str
         Global tag for the current generation of conditions
-    conditionsObjectProviders : list of ConditionsObjectProviders
+    conditions_object_providers : list of ConditionsObjectProviders
         List of the sources of calibration and conditions information
-    randomNumberSeedService : RandomNumberSeedService
+    random_number_seed_service : RandomNumberSeedService
         conditions object that provides random number seeds in a deterministic way
 
     See Also

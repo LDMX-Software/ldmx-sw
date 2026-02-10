@@ -219,8 +219,8 @@ void Process::run() {
     if (total_events_ > 0) {
       // Have a warning at the first event
       if (num_tries == 0)
-        ldmx_log(warn) << "The totalEvents was set, so maxEvents and "
-                          "maxTriesPerEvent will be ignored!";
+        ldmx_log(warn) << "The total_events was set, so max_events and "
+                          "max_tries_per_event will be ignored!";
       event_limit = total_events_;
     }
     while (n_events_processed < event_limit) {

@@ -29,7 +29,7 @@ p.histogram_file = 'hist_pn_deep_fromTarget_test.root'
 
 p.max_tries_per_event = 10000
 p.max_events = 10
-p.totalEvents = 10
+p.total_events = 10
 p.run = 20
 p.log_frequency = 100
 p.term_log_level = 0

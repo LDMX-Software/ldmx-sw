@@ -7,16 +7,16 @@ from LDMX.Framework import ldmxcfg
 this_pass_name = 'test'
 p=ldmxcfg.Process(this_pass_name)
 
-# This need to be set but has no meaning given p.totalEvents
+# This need to be set but has no meaning given p.total_events
 p.max_events = 1
 # kaon-focused sample takes about twice as long as normal PN,
 # so we ask for half as many events such that validation jobs stay
 # time-limited by the PN
-p.totalEvents = int(os.environ['LDMX_NUM_EVENTS']) // 2
+p.total_events = int(os.environ['LDMX_NUM_EVENTS']) // 2
 p.run = int(os.environ['LDMX_RUN_NUMBER'])
 
 from LDMX.Biasing import ecal, filters, particle_filter, util
-from LDMX.Biasing import include as includeBiasing
+from LDMX.Biasing import include as include_biasing
 from LDMX.SimCore import bias_operators, kaon_physics
 from LDMX.SimCore import generators as gen
 from LDMX.SimCore import photonuclear_models as pn
@@ -32,7 +32,7 @@ my_sim.description = f'8 GeV ECal Kaon PN simulation, xsec bias {bias_factor}'
 my_sim.biasing_operators = [ bias_operators.PhotoNuclear('ecal',bias_factor,bias_treshold,only_children_of_primary = True) ]
 
 # Configure the sequence in which user actions should be called.
-includeBiasing.library()
+include_biasing.library()
 my_sim.actions.clear()
 my_sim.actions.extend([
         filters.TaggerVetoFilter(thresh=2*3800.),
@@ -51,7 +51,7 @@ my_sim.kaon_parameters = kaon_physics.KaonPhysics.upKaons()
 # Alternative pn models
 my_model = pn.BertiniAtLeastNProductsModel.kaon()
 # Count all (not stopped) particles as "hard"
-my_model.hard_particle_threshold=0.
+my_model.hard_particle_threshold = 0.
 # Apply the model to any nucleus
 my_model.zmin = 0
 # Apply the model for photonuclear reactions with > 5000 MeV photons
@@ -111,7 +111,7 @@ ts_clusters = [
         ]
 
 # ECAL part
-ecal_reco   =eDigi.EcalRecProducer()
+ecal_reco = eDigi.EcalRecProducer()
 ecal_digi = eDigi.EcalDigiProducer()
 ecal_veto = ecal_vetos.EcalVetoProcessor()
 ecal_mip = ecal_vetos.EcalMipProcessor()
@@ -125,7 +125,8 @@ hcal_digi = hcal_digi_and_reco.HcalDigiProducer()
 hcal_reco = hcal_digi_and_reco.HcalRecProducer()
 
 # electron counter for trigger processor
-e_count = ElectronCounter( 1, "ElectronCounter") # first argument is number of electrons in simulation
+# first argument is number of electrons in simulation
+e_count = ElectronCounter( 1, "ElectronCounter") 
 e_count.input_pass_name = ''
 simple_trig = TriggerProcessor("simple_trig",8000.)
 simple_trig.input_pass=this_pass_name
@@ -138,6 +139,9 @@ from LDMX.DQM import dqm
 hcal_veto = hcal.HcalVetoProcessor()
 
 p.logger.term_level = 1
+# Example to show trace level logging for sim (only)
+# p.logger.custom("KaonPhysics", level = -1)
+
 
 # Add full tracking for both tagger and recoil trackers: digi, seeds, CFK, ambiguity resolution, GSF, DQM
 p.sequence.extend(full_tracking_sequence.sequence)
