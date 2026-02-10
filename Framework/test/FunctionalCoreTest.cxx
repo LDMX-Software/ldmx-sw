@@ -608,7 +608,8 @@ TEST_CASE("Core Framework Functionality", "[Framework][functionality]") {
         std::vector<std::string> input_file = {input_files.at(0)};
         process.add("input_files", input_file);
         REQUIRE(framework::test::runProcess(process));
-        CHECK_THAT(hist_file_path, framework::test::IsGoodhistogram_file(1 + 2));
+        CHECK_THAT(hist_file_path,
+                   framework::test::IsGoodhistogram_file(1 + 2));
         CHECK(framework::test::removeFile(hist_file_path));
       }
 
