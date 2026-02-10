@@ -25,3 +25,7 @@ setup_library(module Packing
 setup_python(package_name LDMX/Packing)
 
 setup_test(dependencies Packing::Packing)
+
+add_executable(rogue-extract app/rogue_extract.cxx)
+target_link_libraries(rogue-extract PRIVATE Packing::Packing)
+install(TARGETS rogue-extract)

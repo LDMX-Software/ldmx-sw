@@ -45,28 +45,38 @@ class RawIO(ldmxcfg.Producer) :
     def destination(file_name) :
         return RawIO(RawDataFile(file_name, True))
 
+
 class SingleSubsystemUnpacker(ldmxcfg.Producer) :
     """Configuration for unpacking a single subsystem's raw data file
     into a series of vector buffers to put onto the event bus.
 
     Parameters
     ----------
-    raw_file : str
+    dat_file : str
         File path to raw data file to read in
     output_name : str
         Name of buffer object for event bus
-    num_bytes_per_event : int
-        Number of bytes to put onto each event bus
-    detector_name : str
-        Name of the detector GDML file
+    subsystem : int
+        subsystem ID number to filter for
+    contributor : int
+        contributor ID number to filter for (-1 means don't apply the filter)
+    frame_offset : int
+        number of frames for the subsystem to skip at the beginnig of the file
     """
 
-    def __init__(self, raw_file, output_name, num_bytes_per_event,detector_name) :
-        super().__init__(f'unpack_{os.path.basename(raw_file)}','packing::SingleSubsystemUnpacker','Packing')
-        self.raw_file = raw_file
+    def __init__(self, dat_file, output_name, subsystem, contributor = -1, frame_offset = 0) :
+        super().__init__(f'unpack_{os.path.basename(dat_file)}','packing::SingleSubsystemUnpacker','Packing')
+        self.dat_file = dat_file
         self.output_name = output_name
-        self.num_bytes_per_event = num_bytes_per_event
-        self.detector_name = detector_name
+        if type(subsystem) is str:
+            self.subsystem_name = subsystem
+            self.subsystem = -1
+        else:
+            self.subsystem_name = ''
+            self.subsystem = subsystem
+        self.contributor = contributor
+        self.frame_offset = frame_offset
+
 
 class SingleSubsystemPacker(ldmxcfg.Analyzer) :
     """Configuration for packing a single subsystem's encoded buffer

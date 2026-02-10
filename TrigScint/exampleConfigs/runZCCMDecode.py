@@ -43,10 +43,7 @@ dec.number_channels=nChan
 dec.number_time_samples=nSamp
 dec.is_real_data=True #default: False
 
-
-p.sequence = [
-    dec
-    ]
+p.sequence = [ dec ]
 
 p.logger.termLevel = 2
 p.logger.filePath = logName
