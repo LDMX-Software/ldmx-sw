@@ -131,9 +131,9 @@ void GSFProcessor::configure(framework::config::Parameters& parameters) {
       parameters.get<std::string>("out_trk_collection", "GSFTracks");
 
   track_collection_ =
-      parameters.get<std::string>("trackCollection", "TaggerTracks");
+      parameters.get<std::string>("track_collection", "TaggerTracks");
   meas_collection_ =
-      parameters.get<std::string>("measCollection", "DigiTaggerSimHits");
+      parameters.get<std::string>("meas_collection", "DigiTaggerSimHits");
 
   track_passname_ = parameters.get<std::string>("track_passname");
   meas_passname_ = parameters.get<std::string>("meas_passname");

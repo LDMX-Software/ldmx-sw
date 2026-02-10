@@ -51,7 +51,7 @@ class TestProducer : public Producer {
   ~TestProducer() {}
 
   void configure(framework::config::Parameters& p) final override {
-    create_run_header_ = p.get<bool>("createRunHeader");
+    create_run_header_ = p.get<bool>("create_run_header");
   }
 
   void beforeNewRun(ldmx::RunHeader& header) final override {
@@ -479,12 +479,12 @@ TEST_CASE("Core Framework Functionality", "[Framework][functionality]") {
   process.add<std::string>("tree_name", "LDMX_Events");
 
   framework::config::Parameters producer_parameters;
-  producer_parameters.add<std::string>("className",
+  producer_parameters.add<std::string>("class_name",
                                        "framework::test::TestProducer");
   producer_parameters.add<std::string>("instanceName", "TestProducer");
 
   framework::config::Parameters analyzer_parameters;
-  analyzer_parameters.add<std::string>("className",
+  analyzer_parameters.add<std::string>("class_name",
                                        "framework::test::TestAnalyzer");
   analyzer_parameters.add<std::string>("instanceName", "TestAnalyzer");
 
@@ -496,12 +496,12 @@ TEST_CASE("Core Framework Functionality", "[Framework][functionality]") {
     // no input files, only output files
 
     output_files = {"test_productionmode_events.root"};
-    process.add<std::string>("passName", "test");
+    process.add<std::string>("pass_name", "test");
     process.add("outputFiles", output_files);
     process.add("maxEvents", 3);
     process.add("run", 3);
 
-    producer_parameters.add("createRunHeader", true);
+    producer_parameters.add("create_run_header", true);
 
     sequence = {producer_parameters};
 
@@ -580,9 +580,9 @@ TEST_CASE("Core Framework Functionality", "[Framework][functionality]") {
 
     for (int run{2}; run < 5; run++) {
       auto make_inputs = process;
-      make_inputs.add<std::string>("passName", "makeInputs");
+      make_inputs.add<std::string>("pass_name", "makeInputs");
       auto producer = producer_parameters;
-      producer.add("createRunHeader", true);
+      producer.add("create_run_header", true);
       make_inputs.add<std::vector<framework::config::Parameters>>("sequence",
                                                                   {producer});
       output_files = {input_files.at(run - 2)};
@@ -593,7 +593,7 @@ TEST_CASE("Core Framework Functionality", "[Framework][functionality]") {
       REQUIRE_THAT(input_files.at(run - 2),
                    framework::test::IsGoodEventFile("makeInputs", run, 1));
     }
-    process.add<std::string>("passName", "test");
+    process.add<std::string>("pass_name", "test");
 
     SECTION("Analysis Mode") {
       // no output files, only histogram output
@@ -659,7 +659,7 @@ TEST_CASE("Core Framework Functionality", "[Framework][functionality]") {
       }
 
       SECTION("with producers") {
-        producer_parameters.add("createRunHeader", false);
+        producer_parameters.add("create_run_header", false);
         sequence = {producer_parameters};
 
         process.add("sequence", sequence);

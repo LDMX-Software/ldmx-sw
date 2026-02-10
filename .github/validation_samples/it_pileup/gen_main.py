@@ -22,8 +22,8 @@ my_sim.description = 'ECal PN Test Simulation'
 
 p.sequence = [ my_sim ]
 
-import LDMX.Ecal.EcalGeometry
-import LDMX.Hcal.HcalGeometry
+import LDMX.Ecal.ecal_geometry
+import LDMX.Hcal.hcal_geometry
 
 
 p.output_files = ['ecal_pn.root']

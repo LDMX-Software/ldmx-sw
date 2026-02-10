@@ -3,8 +3,8 @@ from LDMX.Framework import ldmxcfg
 
 p = ldmxcfg.Process('ecal_pn')
 
-import LDMX.Ecal.EcalGeometry
-import LDMX.Hcal.HcalGeometry
+import LDMX.Ecal.ecal_geometry
+import LDMX.Hcal.hcal_geometry
 from LDMX.Biasing import ecal
 from LDMX.SimCore import generators
 

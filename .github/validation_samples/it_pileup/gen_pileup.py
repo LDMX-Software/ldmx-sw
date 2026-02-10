@@ -25,8 +25,8 @@ my_sim.description = 'Basic test Simulation'
 
 p.sequence = [ my_sim ]
 
-import LDMX.Ecal.EcalGeometry
-import LDMX.Hcal.HcalGeometry
+import LDMX.Ecal.ecal_geometry
+import LDMX.Hcal.hcal_geometry
 
 
 p.output_files = ['pileup.root']

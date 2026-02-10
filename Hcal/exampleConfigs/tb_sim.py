@@ -27,7 +27,7 @@ p.output_files = [
         ]
 
 from LDMX.SimCore import simulator
-import LDMX.Ecal.EcalGeometry # geometry required by sim
+import LDMX.Ecal.ecal_geometry # geometry required by sim
 
 my_sim = simulator.simulator('my_sim')
 my_sim.setDetector(detector)
@@ -44,7 +44,7 @@ p.sequence.append( my_sim )
 # my_sim.verbosity = 1
 
 # import chip/geometry (hardcoded) conditions
-import LDMX.Hcal.HcalGeometry
+import LDMX.Hcal.hcal_geometry
 import LDMX.Hcal.hcal_testbeamsim_conditions
 import LDMX.Hcal.digi as hcal_digi
 

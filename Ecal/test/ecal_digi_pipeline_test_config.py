@@ -19,7 +19,7 @@ p.output_files = ['ecal_digi_pipeline_test.root']
 p.histogram_file = 'ecal_digi_pipeline_test_histo.root'
 
 # Geometry provider
-from LDMX.Ecal import EcalGeometry
+from LDMX.Ecal import ecal_geometry
 
 
 geom = EcalGeometry.EcalGeometryProvider.getInstance()

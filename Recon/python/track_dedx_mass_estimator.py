@@ -20,7 +20,7 @@ fit_res_K : float
 
 Examples
 --------
-    from LDMX.Recon.trackDeDxMassEstimator import recoil_track_mass_estimator
+    from LDMX.Recon.track_dedx_mass_estimator import recoil_track_mass_estimator
     p.sequence.append( recoil_track_mass_estimator )
 """
 

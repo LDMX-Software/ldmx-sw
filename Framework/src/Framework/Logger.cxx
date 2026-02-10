@@ -76,7 +76,7 @@ void open(const framework::config::Parameters& p) {
   typedef sinks::synchronous_sink<ourSinkBack_t> ourSinkFront_t;
 
   level file_level{convertLevel(p.get<int>("fileLevel", 0))};
-  std::string file_path{p.get<std::string>("filePath", "")};
+  std::string file_path{p.get<std::string>("file_path", "")};
 
   level term_level{convertLevel(p.get<int>("termLevel", 4))};
   std::vector<framework::config::Parameters> empty{};

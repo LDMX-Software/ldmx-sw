@@ -30,21 +30,21 @@ Process::Process(const framework::config::Parameters &configuration)
     : conditions_{*this} {
   config_ = configuration;
 
-  pass_name_ = configuration.get<std::string>("passName", "");
-  histo_filename_ = configuration.get<std::string>("histogramFile", "");
+  pass_name_ = configuration.get<std::string>("pass_name", "");
+  histo_filename_ = configuration.get<std::string>("histogram_file", "");
 
-  max_tries_ = configuration.get<int>("maxTriesPerEvent", 1);
-  event_limit_ = configuration.get<int>("maxEvents", -1);
-  min_events_ = configuration.get<int>("minEvents", -1);
-  total_events_ = configuration.get<int>("totalEvents", -1);
-  log_frequency_ = configuration.get<int>("logFrequency", -1);
-  compression_setting_ = configuration.get<int>("compressionSetting", 9);
+  max_tries_ = configuration.get<int>("max_tries_per_event", 1);
+  event_limit_ = configuration.get<int>("max_events", -1);
+  min_events_ = configuration.get<int>("min_events", -1);
+  total_events_ = configuration.get<int>("total_events", -1);
+  log_frequency_ = configuration.get<int>("log_frequency", -1);
+  compression_setting_ = configuration.get<int>("compression_setting", 9);
   skip_corrupted_input_files_ =
-      configuration.get<bool>("skipCorruptedInputFiles", false);
+      configuration.get<bool>("skip_corrupted_input_files", false);
 
-  input_files_ = configuration.get<std::vector<std::string>>("inputFiles", {});
+  input_files_ = configuration.get<std::vector<std::string>>("input_files", {});
   output_files_ =
-      configuration.get<std::vector<std::string>>("outputFiles", {});
+      configuration.get<std::vector<std::string>>("output_files", {});
   drop_keep_rules_ = configuration.get<std::vector<std::string>>("keep", {});
 
   event_header_ = 0;
@@ -72,23 +72,23 @@ Process::Process(const framework::config::Parameters &configuration)
   }
 
   storage_controller_.setDefaultKeep(
-      configuration.get<bool>("skimDefaultIsKeep", true));
-  auto skim_rules{configuration.get<std::vector<std::string>>("skimRules", {})};
+      configuration.get<bool>("skim_default_is_keep", true));
+  auto skim_rules{configuration.get<std::vector<std::string>>("skim_rules", {})};
   for (size_t i = 0; i < skim_rules.size(); i += 2) {
     storage_controller_.addRule(skim_rules[i], skim_rules[i + 1]);
   }
 
   auto sequence{configuration.get<std::vector<framework::config::Parameters>>(
       "sequence", {})};
-  if (sequence.empty() && configuration.get<bool>("testingMode", false)) {
+  if (sequence.empty() && configuration.get<bool>("testing_mode", false)) {
     EXCEPTION_RAISE(
         "NoSeq",
         "No sequence has been defined. What should I be doing?\nUse "
         "p.sequence to tell me what processors to run.");
   }
   for (auto proc : sequence) {
-    auto class_name{proc.get<std::string>("className")};
-    auto instance_name{proc.get<std::string>("instanceName")};
+    auto class_name{proc.get<std::string>("class_name")};
+    auto instance_name{proc.get<std::string>("instance_name")};
     auto ep{
         EventProcessor::Factory::get().make(class_name, instance_name, *this)};
     if (not ep) {
@@ -116,16 +116,16 @@ Process::Process(const framework::config::Parameters &configuration)
 
   auto conditions_object_providers{
       configuration.get<std::vector<framework::config::Parameters>>(
-          "conditionsObjectProviders", {})};
+          "conditions_object_providers", {})};
   for (auto cop : conditions_object_providers) {
-    auto class_name{cop.get<std::string>("className")};
-    auto object_name{cop.get<std::string>("objectName")};
-    auto tag_name{cop.get<std::string>("tagName")};
+    auto class_name{cop.get<std::string>("class_name")};
+    auto object_name{cop.get<std::string>("object_name")};
+    auto tag_name{cop.get<std::string>("tag_name")};
     conditions_.createConditionsObjectProvider(class_name, object_name,
                                                tag_name, cop);
   }
 
-  bool log_performance = configuration.get<bool>("logPerformance", false);
+  bool log_performance = configuration.get<bool>("log_performance", false);
   if (log_performance) {
     std::vector<std::string> names{sequence_.size()};
     for (std::size_t i{0}; i < sequence_.size(); i++) {

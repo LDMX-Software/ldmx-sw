@@ -14,13 +14,13 @@ QualityFlagAnalyzer::QualityFlagAnalyzer(const std::string& name,
     : Analyzer(name, process) {}
 
 void QualityFlagAnalyzer::configure(framework::config::Parameters& parameters) {
-  input_event_col_ = parameters.get<std::string>("inputEventCollection");
-  input_event_pass_name_ = parameters.get<std::string>("inputEventPassName");
-  input_hit_col_ = parameters.get<std::string>("inputHitCollection");
-  input_hit_pass_name_ = parameters.get<std::string>("inputHitPassName");
+  input_event_col_ = parameters.get<std::string>("input_event_collection");
+  input_event_pass_name_ = parameters.get<std::string>("input_event_pass_name");
+  input_hit_col_ = parameters.get<std::string>("input_hit_collection");
+  input_hit_pass_name_ = parameters.get<std::string>("input_hit_pass_name");
   peds_ = parameters.get<std::vector<double> >("pedestals");
   gain_ = parameters.get<std::vector<double> >("gain");
-  start_sample_ = parameters.get<int>("startSample");
+  start_sample_ = parameters.get<int>("start_sample");
 
   std::cout << " [ QualityFlagAnalyzer ] In configure(), got parameters "
             << "\n\t inputEventCollection = " << input_event_col_

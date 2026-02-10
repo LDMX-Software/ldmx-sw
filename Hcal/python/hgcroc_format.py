@@ -32,7 +32,7 @@ class HcalRawDecoder(Producer) :
         self.detector_name = detector_name # only used when reading from file
 
         from LDMX.Framework import ldmxcfg
-        from LDMX.Hcal.DetectorMap import HcalDetectorMap
+        from LDMX.Hcal.detector_map import HcalDetectorMap
         if connections_table is None :
             # deduce if using eid based on presence of HcalDetectorMap in conditions system
             self.translate_eid = False

@@ -6,8 +6,8 @@ class EcalTPSelector(Producer) :
     """
     def __init__(self, instance_name = 'myEcalTPSelector') :
         super().__init__(instance_name , 'trigger::EcalTPSelector','Trigger')
-        self.tpCollName = "ecalTrigDigis"
-        self.passCollName = "ecalTrig"
+        self.tp_coll_name = "ecalTrigDigis"
+        self.pass_coll_name = "ecalTrig"
         self.tp_coll_pass_name = ""
         self.tp_coll_event_passname = ""
 
@@ -26,7 +26,7 @@ class TrigEcalEnergySum(Producer) :
     """
     def __init__(self, instance_name = 'myTrigEcalEnergySum') :
         super().__init__(instance_name , 'trigger::TrigEcalEnergySum','Trigger')
-        self.hitCollName = "ecalTrigDigis"
+        self.hit_coll_name = "ecalTrigDigis"
         self.hit_coll_passname = ""
         self.hit_collname_events_passname = ""
 
@@ -35,9 +35,9 @@ class TrigHcalEnergySum(Producer) :
     """
     def __init__(self, instance_name = 'myTrigHcalEnergySum') :
         super().__init__(instance_name , 'trigger::TrigHcalEnergySum','Trigger')
-        self.quadCollName = "hcalTrigPrimDigiSTQs"
-        self.combinedQuadCollName = "hcalTrigQuads"
-        self.inputProc = "" # name of the process where the STQs are built
+        self.quad_coll_name = "hcalTrigPrimDigiSTQs"
+        self.combined_quad_coll_name = "hcalTrigQuads"
+        self.input_proc = "" # name of the process where the STQs are built
 
 class HCalTrigMipReco(Producer) :
     """Configuration for TrigMipReco in Hcal
@@ -64,8 +64,8 @@ class TrigEcalClusterProducer(Producer) :
     """
     def __init__(self, instance_name = 'myTrigEcalClusterProducer') :
         super().__init__(instance_name , 'trigger::TrigEcalClusterProducer','Trigger')
-        self.hitCollName = "ecalTrigDigis"
-        self.clusterCollName = "ecalTrigClusters"
+        self.hit_coll_name = "ecalTrigDigis"
+        self.cluster_coll_name = "ecalTrigClusters"
         self.hit_coll_passname = ""
         self.hit_coll_name_events_passname = ""
 
@@ -75,9 +75,9 @@ class TrigElectronProducer(Producer) :
     def __init__(self, instance_name = 'myTrigElectronProducer', prop_map_name="./propagationMap.root") :
         super().__init__(instance_name , 'trigger::TrigElectronProducer','Trigger')
         # self.out_path = out_path
-        self.scoringPlaneCollName = "TargetScoringPlaneHits"
-        self.clusterCollName = "ecalTrigClusters"
-        self.eleCollName = "trigElectrons"
+        self.scoring_plane_coll_name = "TargetScoringPlaneHits"
+        self.cluster_coll_name = "ecalTrigClusters"
+        self.ele_coll_name = "trigElectrons"
         self.prop_map_name = prop_map_name
 
         self.target_sp_passname = ""

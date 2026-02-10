@@ -34,11 +34,11 @@ p.term_log_level = 0
 p.log_frequency = 1000
 
 import LDMX.Hcal.hgcrocFormat as hcal_format
-import LDMX.Hcal.HcalGeometry
+import LDMX.Hcal.hcal_geometry
 import LDMX.Hcal.hcal_hardcoded_conditions
 from LDMX.DQM import dqm
 import os
-from LDMX.Hcal.DetectorMap import HcalDetectorMap
+from LDMX.Hcal.detector_map import HcalDetectorMap
 detmap = HcalDetectorMap(f'{os.environ["LDMX_BASE"]}/ldmx-sw/Hcal/data/testbeam_connections.csv')
 detmap.want_d2e = True # helps quicken the det -> elec translation
 

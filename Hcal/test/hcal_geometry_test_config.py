@@ -20,8 +20,8 @@ p.output_files = ['hcal_geometry_test.root']
 p.histogram_file = 'hcal_geometry_test_histo.root'
 
 # Geometry provider
-import LDMX.Ecal.EcalGeometry
-import LDMX.Hcal.HcalGeometry
+import LDMX.Ecal.ecal_geometry
+import LDMX.Hcal.hcal_geometry
 from LDMX.Hcal import hcal_hardcoded_conditions
 
 

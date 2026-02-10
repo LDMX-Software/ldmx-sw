@@ -36,7 +36,7 @@ sim = simulator.simulator("test")
 # Set the path to the detector to use (pulled from job config)
 #
 sim.setDetector( version, include_scoring_planes_minimal = True )
-sim.scoringPlanes = makeScoringPlanesPath(version)
+sim.scoring_planes = makeScoringPlanesPath(version)
 
 outname=output_name_string #+".root"
 print("NAME = " + outname)
@@ -56,9 +56,9 @@ sim.beamSpotSmear = [20., 80., 0]
 
 mpg_gen = generators.multi( "mgpGen" ) # this is the line that actually creates the generator
 mpg_gen.vertex = [ -44., 0., -880. ] # mm
-mpg_gen.nParticles = n_electrons
-mpg_gen.pdgID = 11
-mpg_gen.enablePoisson = False #True
+mpg_gen.n_particles = n_electrons
+mpg_gen.pdg_id = 11
+mpg_gen.enable_poisson = False #True
 
 import math
 theta = math.radians(5.45)
@@ -76,12 +76,12 @@ sim.generators = [ mpg_gen ]
 #reconstruction and vetoes
 
 #Ecal and Hcal hardwired/geometry stuff
-#import LDMX.Ecal.EcalGeometry
+#import LDMX.Ecal.ecal_geometry
 import LDMX.Ecal.ecal_hardcoded_conditions
-from LDMX.Ecal import EcalGeometry
+from LDMX.Ecal import ecal_geometry
 #egeom = EcalGeometry.EcalGeometryProvider.getInstance()
 #Hcal hardwired/geometry stuff
-from LDMX.Hcal import HcalGeometry
+from LDMX.Hcal import hcal_geometry
 import LDMX.Hcal.hcal_hardcoded_conditions
 #hgeom = HcalGeometry.HcalGeometryProvider.getInstance()
 

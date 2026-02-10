@@ -6,8 +6,8 @@ from LDMX.SimCore import simulator
 this_pass_name="sim"
 p = ldmxcfg.Process(this_pass_name)
 
-from LDMX.Hcal import HcalGeometry
-#from LDMX.Ecal import EcalGeometry
+from LDMX.Hcal import hcal_geometry
+#from LDMX.Ecal import ecal_geometry
 
 n_events = 4000
 kill_chan_8 = True # toggle to kill all signal from channel 8 (dead in testbeam)
@@ -61,9 +61,9 @@ beam_y_smear=float(beam_y_smear)
 
 mpg_gen = generators.multi( "mgpGen" ) # this is the line that actually creates the generator
 mpg_gen.vertex = [ 0., 0., gun_z_pos ] # mm
-mpg_gen.nParticles = n_electrons
-mpg_gen.pdgID = 11
-mpg_gen.enablePoisson = False #True
+mpg_gen.n_particles = n_electrons
+mpg_gen.pdg_id = 11
+mpg_gen.enable_poisson = False #True
 mpg_gen.momentum = [ 0., 0., beam_energy ]
 
 gun = generators.gun('particle_gun')
@@ -117,16 +117,16 @@ from LDMX.TrigScint.trigScint import TestBeamHitProducer
 tb_hits  =TestBeamHitProducer("tb_hits")
 tb_hits.input_pass_name=this_pass_name
 #if input_pass_name=="sim" : #different conventions in sim and data
-#    tb_hits.inputCollection="trigScintQIEDigisPad1"
+#    tb_hits.input_collection="trigScintQIEDigisPad1"
 #else :
-tb_hits.inputCollection="QIEsamplesPad1"
+tb_hits.input_collection="QIEsamplesPad1"
 tb_hits.pedestals=ped_list
 tb_hits.gain=gain_list
 tb_hits.start_sample=start_sample
 tb_hits.pulse_width=12 #5
-tb_hits.pulseWidthLYSO=12
-tb_hits.doCleanHits=True
-tb_hits.nInstrumentedChannels=n_channels
+tb_hits.pulse_width_lyso=12
+tb_hits.do_clean_hits=True
+tb_hits.n_instrumented_channels=n_channels
 
 
 #------ set up clustering -------
@@ -135,7 +135,7 @@ from LDMX.TrigScint.trigScint import TestBeamClusterProducer
 
 tb_clusters  =TestBeamClusterProducer("tb_clusters")
 tb_clusters.input_pass_name=this_pass_name
-tb_clusters.input_collection=tb_hits.outputCollection #"trigScintQIEDigisPad1" #
+tb_clusters.input_collection=tb_hits.output_collection #"trigScintQIEDigisPad1" #
 tb_clusters.pad_time=100.
 tb_clusters.time_tolerance=999.
 tb_clusters.verbosity=0
@@ -143,7 +143,7 @@ tb_clusters.clustering_threshold = 50.  #to add in neighboring
 
 tb_clusters_3  =TestBeamClusterProducer("tb_clusters_3")
 tb_clusters_3.input_pass_name=this_pass_name
-tb_clusters_3.input_collection=tb_hits.outputCollection
+tb_clusters_3.input_collection=tb_hits.output_collection
 tb_clusters_3.output_collection=tb_clusters.output_collection+"ThreeHits"
 tb_clusters_3.max_cluster_width=3
 tb_clusters_3.pad_time=100.
@@ -166,10 +166,10 @@ ts_ana.gain=gain_list
 from LDMX.TrigScint.trigScint import TestBeamClusterAnalyzer
 
 cl_ana_2hit = TestBeamClusterAnalyzer("2-hitClusters")
-cl_ana_2hit.inputCollection=tb_clusters.output_collection
+cl_ana_2hit.input_collection=tb_clusters.output_collection
 
 cl_ana_3hit = TestBeamClusterAnalyzer("3-hitClusters")
-cl_ana_3hit.inputCollection=tb_clusters_3.output_collection
+cl_ana_3hit.input_collection=tb_clusters_3.output_collection
 
 
 

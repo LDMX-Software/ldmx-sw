@@ -20,7 +20,7 @@ p.max_events = arg.max_events
 p.term_log_level = 0
 p.log_frequency = 1000
 
-import LDMX.Hcal.HcalGeometry
+import LDMX.Hcal.hcal_geometry
 import LDMX.Hcal.hcal_testbeam0422_conditions
 import LDMX.Hcal.digi as hcal_digi
 import LDMX.Hcal.hgcrocFormat as hcal_format

@@ -12,5 +12,5 @@ class HcalTrigPrimDigiProducer(Producer) :
 
     def __init__(self, instance_name = 'hcalTrigPrimDigis') :
         super().__init__(instance_name , 'hcal::HcalTrigPrimDigiProducer','Hcal')
-        self.digiCollName = "HcalDigis"
-        self.digiPassName = ""
+        self.digi_coll_name = "HcalDigis"
+        self.digi_pass_name = ""

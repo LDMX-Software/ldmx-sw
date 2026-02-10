@@ -39,7 +39,7 @@ RunManager::RunManager(framework::config::Parameters& parameters,
   parameters_ = parameters;
 
   // Set whether the ROOT primary generator should use the persisted seed.
-  auto root_primary_gen_use_seed{parameters.get<bool>("rootPrimaryGenUseSeed")};
+  auto root_primary_gen_use_seed{parameters.get<bool>("root_primary_gen_use_seed")};
 
   // Validate the geometry if specified.
   setUseRootSeed(root_primary_gen_use_seed);
@@ -49,7 +49,7 @@ void RunManager::setupPhysics() {
   auto p_list{physics_list_factory_.GetReferencePhysList("FTFP_BERT")};
   p_list->SetVerboseLevel(0);
 
-  parallel_world_path_ = parameters_.get<std::string>("scoringPlanes");
+  parallel_world_path_ = parameters_.get<std::string>("scoring_planes");
   is_pw_enabled_ = !parallel_world_path_.empty();
   if (is_pw_enabled_) {
     ldmx_log(debug) << "Parallel worlds physics list has been registered";

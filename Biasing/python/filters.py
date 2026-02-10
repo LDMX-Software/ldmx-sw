@@ -120,7 +120,7 @@ class TargetENFilter(simcfg.UserAction) :
         from LDMX.Biasing import include
         include.library()
 
-        self.recoilThreshold = recoil_thresh #MeV
+        self.recoil_threshold = recoil_thresh #MeV
 
 class TargetPNFilter(simcfg.UserAction) :
     """ Configuration for filtering photo-nuclear events in the target."""

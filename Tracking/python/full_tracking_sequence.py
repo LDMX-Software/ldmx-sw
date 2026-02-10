@@ -87,27 +87,27 @@ tracking_recoil.outlier_pval_ =  22.1
 # Greedy ambiguity solver for the tagger
 greedy_solver_tagger = tracking.GreedyAmbiguitySolver("GreedySolverTagger")
 greedy_solver_tagger.out_trk_collection = "TaggerTracksClean"
-greedy_solver_tagger.trackCollection = tracking_tagger.out_trk_collection
-greedy_solver_tagger.measCollection = digi_tagger.out_collection
+greedy_solver_tagger.track_collection = tracking_tagger.out_trk_collection
+greedy_solver_tagger.meas_collection = digi_tagger.out_collection
 
 # Greedy ambiguity solver for the recoil
 greedy_solver_recoil = tracking.GreedyAmbiguitySolver("GreedySolverRecoil")
 greedy_solver_recoil.out_trk_collection = "RecoilTracksClean"
-greedy_solver_recoil.trackCollection = tracking_recoil.out_trk_collection
-greedy_solver_recoil.measCollection = digi_recoil.out_collection
+greedy_solver_recoil.track_collection = tracking_recoil.out_trk_collection
+greedy_solver_recoil.meas_collection = digi_recoil.out_collection
 
 # Gaussian sum filter for the tagger
 GSF_tagger = tracking.GSFProcessor("Tagger_GSF")
 GSF_tagger.taggerTracking = True
-GSF_tagger.trackCollection = greedy_solver_tagger.out_trk_collection
-GSF_tagger.measCollection  = digi_tagger.out_collection
+GSF_tagger.track_collection = greedy_solver_tagger.out_trk_collection
+GSF_tagger.meas_collection  = digi_tagger.out_collection
 GSF_tagger.out_trk_collection = "GSFTaggerTracks"
 
 # Gaussian sum filter for the recoil
 GSF_recoil = tracking.GSFProcessor("Recoil_GSF")
 GSF_recoil.taggerTracking = False
-GSF_recoil.trackCollection = greedy_solver_recoil.out_trk_collection
-GSF_recoil.measCollection  = digi_recoil.out_collection
+GSF_recoil.track_collection = greedy_solver_recoil.out_trk_collection
+GSF_recoil.meas_collection  = digi_recoil.out_collection
 GSF_recoil.out_trk_collection = "GSFRecoilTracks"
 
 # Running DQM for the collections above

@@ -15,7 +15,7 @@ class EcalVetoProcessor(ldmxcfg.Producer) :
     def __init__(self,name = 'ecal_veto') :
         super().__init__(name,"ecal::EcalVetoProcessor",'Ecal')
 
-        from LDMX.Ecal.makePath import makeBDTPath, makeRoCPath
+        from LDMX.Ecal.make_path import makeBDTPath, makeRoCPath
         self.num_ecal_layers = 32
         self.verbose = False
         self.feature_list_name = "input"
@@ -62,7 +62,7 @@ class EcalPnetVetoProcessor(ldmxcfg.Producer) :
     def __init__(self,name = 'EcalPnetVeto') :
         super().__init__(name,"ecal::EcalPnetVetoProcessor",'Ecal')
 
-        from LDMX.Ecal.makePath import makeBDTPath
+        from LDMX.Ecal.make_path import makeBDTPath
         self.model_path = makeBDTPath("particle_net_ecal_v10")
         self.disc_cut = 0.65
         self.collection_name = "EcalPnetVeto"

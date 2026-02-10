@@ -18,10 +18,10 @@ p.input_files=[  in_file ]
 from LDMX.TrigScint.trigScint import TestBeamClusterAnalyzer
 
 cl_ana_3hit = TestBeamClusterAnalyzer("3-hitClusters")
-cl_ana_3hit.inputCollection="TestBeamClustersPad1ThreeHits"
+cl_ana_3hit.input_collection="TestBeamClustersPad1ThreeHits"
 
 cl_ana_2hit = TestBeamClusterAnalyzer("2-hitClusters")
-cl_ana_2hit.inputCollection="TestBeamClustersPad1"
+cl_ana_2hit.input_collection="TestBeamClustersPad1"
 
 
 

@@ -7,17 +7,17 @@
 namespace recon {
 
 void PFEcalClusterProducer::configure(framework::config::Parameters& ps) {
-  hit_coll_name_ = ps.get<std::string>("hitCollName");
-  hit_pass_name_ = ps.get<std::string>("hitPassName");
-  cluster_coll_name_ = ps.get<std::string>("clusterCollName");
+  hit_coll_name_ = ps.get<std::string>("hit_coll_name");
+  hit_pass_name_ = ps.get<std::string>("hit_pass_name");
+  cluster_coll_name_ = ps.get<std::string>("cluster_coll_name");
   suffix_ = ps.get<std::string>("suffix", "");
-  single_cluster_ = ps.get<bool>("doSingleCluster");
-  log_energy_weight_ = ps.get<bool>("logEnergyWeight");
+  single_cluster_ = ps.get<bool>("do_single_cluster");
+  log_energy_weight_ = ps.get<bool>("log_energy_weight");
   // DBScan parameters
-  min_cluster_hit_mult_ = ps.get<int>("minClusterHitMult");
-  cluster_hit_dist_ = ps.get<double>("clusterHitDist");
+  min_cluster_hit_mult_ = ps.get<int>("min_cluster_hit_mult");
+  cluster_hit_dist_ = ps.get<double>("cluster_hit_dist");
   cluster_z_bias_ = ps.get<double>("clusterZBias", 1);
-  min_hit_energy_ = ps.get<double>("minHitEnergy");
+  min_hit_energy_ = ps.get<double>("min_hit_energy");
 }
 
 void PFEcalClusterProducer::produce(framework::Event& event) {

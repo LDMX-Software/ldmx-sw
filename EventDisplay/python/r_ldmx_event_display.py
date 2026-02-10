@@ -6,7 +6,7 @@ import numpy as np
 import ROOT as r
 from mpl_toolkits.mplot3d import Axes3D, art3d
 
-from LDMX.Framework import EventTree
+from LDMX.Framework import event_tree
 
 
 def addBranch(tree, ldmx_class, branch_name):

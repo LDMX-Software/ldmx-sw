@@ -460,8 +460,8 @@ class EcalWABRecResults(ldmxcfg.Analyzer) :
     def __init__(self,name="EcalWABRecResults") :
         super().__init__(name,'dqm::EcalWABRecResults','DQM')
 
-        self.ecal_WAB_rec_name = 'EcalWABRec'
-        self.ecal_WAB_rec_pass = ''
+        self.ecal_wab_rec_name = 'EcalWABRec'
+        self.ecal_wab_rec_pass = ''
 
         self.build_2d_histogram("ThetaDiffElectronPhoton",
                             "Reco #theta Difference between Photon and Electron [Degrees]",
@@ -707,7 +707,7 @@ class NtuplizeHgcrocDigiCollection(ldmxcfg.Analyzer) :
         if using_eid is None :
             # deduce if using eid based on presence of HcalDetectorMap in conditions system
             from LDMX.Framework import ldmxcfg
-            from LDMX.Hcal.DetectorMap import HcalDetectorMap
+            from LDMX.Hcal.detector_map import HcalDetectorMap
             using_eid = True
             for cop in ldmxcfg.Process.lastProcess.conditions_object_providers :
                 if isinstance(cop,HcalDetectorMap) :
@@ -1117,8 +1117,8 @@ class GenieTruthDQM(ldmxcfg.Analyzer) :
     def __init__(self,name='GenieTruthDQM',coll_name="",pass_name="") :
         super().__init__(name,'dqm::GenieTruthDQM','DQM')
 
-        self.hepmc3CollName = coll_name
-        self.hepmc3PassName = pass_name
+        self.hepmc3_coll_name = coll_name
+        self.hepmc3_pass_name = pass_name
 
 
 sample_validation_dqm = [

@@ -22,10 +22,10 @@ class SimpleCSVTableEntry:
     """
 
     def __init__(self, url):
-        self.URL=url
+        self.url=url
         self.first_run=-1
         self.last_run=-1
-        self.runType="any"
+        self.run_type="any"
 
     def setIOV(self, first_run, last_run):
         """Set the Interval Of Validity for this table entry
@@ -56,7 +56,7 @@ class SimpleCSVTableEntry:
         else :
             msg += "Valid between %d and %d" %( self.first_run , self.last_run )
 
-        msg += ", Run Type %s, URL %s }" %( self.runType , self.URL )
+        msg += ", Run Type %s, URL %s }" %( self.run_type , self.url )
 
         return msg
 
@@ -82,8 +82,8 @@ class SimpleCSVTableProvider(ldmxcfg.ConditionsObjectProvider):
         self.data_type=data_type
         self.columns=columns
         self.entries=[]
-        self.conditions_baseURL=''
-        self.entriesURL=''
+        self.conditions_base_url=''
+        self.entries_url=''
 
     def validForever(self, url):
         """Add an entry to this provider that is valid forever and for all run types (data or MC)

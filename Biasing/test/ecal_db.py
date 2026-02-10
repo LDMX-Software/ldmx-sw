@@ -3,8 +3,8 @@ from LDMX.Framework import ldmxcfg
 
 p = ldmxcfg.Process('ecal_db')
 from LDMX.Biasing import eat
-from LDMX.Ecal import EcalGeometry
-from LDMX.Hcal import HcalGeometry
+from LDMX.Ecal import ecal_geometry
+from LDMX.Hcal import hcal_geometry
 
 
 p.sequence = [

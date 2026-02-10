@@ -30,8 +30,8 @@ p.output_files = [ f'backwards_positron_beam_{args.beam}.root' ]
 
 from LDMX.SimCore import generators
 from LDMX.SimCore import simulator
-import LDMX.Ecal.EcalGeometry
-import LDMX.Hcal.HcalGeometry
+import LDMX.Ecal.ecal_geometry
+import LDMX.Hcal.hcal_geometry
 
 my_sim = simulator.simulator( "my_sim" )
 my_sim.setDetector( 'ldmx-det-v14' , include_scoring_planes_minimal = True )

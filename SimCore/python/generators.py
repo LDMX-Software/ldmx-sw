@@ -78,11 +78,11 @@ class multi(simcfg.PrimaryGenerator) :
         super().__init__(name,'simcore::generators::MultiParticleGunPrimaryGenerator')
 
         #turn off Poisson by default
-        self.enablePoisson = False
+        self.enable_poisson = False
         self.vertex = [ ]
         self.momentum = [ ]
-        self.nParticles = 1
-        self.pdgID = 0
+        self.n_particles = 1
+        self.pdg_id = 0
 
 
 class lhe(simcfg.PrimaryGenerator) :

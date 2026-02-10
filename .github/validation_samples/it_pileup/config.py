@@ -30,14 +30,14 @@ p.sequence = [overlay]
 
 # ECal geometry nonsense
 import LDMX.Ecal.ecal_hardcoded_conditions
-import LDMX.Ecal.ecalClusters as ecal_cluster
+import LDMX.Ecal.ecal_clusters as ecal_cluster
 import LDMX.Hcal.hcal_hardcoded_conditions
-from LDMX.Ecal import EcalGeometry
+from LDMX.Ecal import ecal_geometry
 from LDMX.Ecal import digi as eDigi
 from LDMX.Ecal import vetos as ecal_vetos
 
 # Hcal hardwired/geometry stuff
-from LDMX.Hcal import HcalGeometry
+from LDMX.Hcal import hcal_geometry
 from LDMX.Hcal import digi as hDigi
 
 
@@ -45,7 +45,7 @@ from LDMX.Hcal import digi as hDigi
 overlay_str="Overlay"
 
 # Load the TS modules
-from LDMX.TrigScint.trigScint import (
+from LDMX.TrigScint.trig_scint import (
     TrigScintClusterProducer,
     TrigScintDigiProducer,
     trig_scint_track,
@@ -82,10 +82,10 @@ ecal_digi.inputCollName += overlay_str
 ecal_digi.input_pass_name = this_pass_name
 
 # Use the digis produced above
-ecal_reco.digiPassName = this_pass_name
+ecal_reco.digi_pass_name = this_pass_name
 # SimHits are used to find noise
-ecal_reco.simHitCollName += overlay_str
-ecal_reco.simHitPassName = this_pass_name
+ecal_reco.sim_hit_coll_name += overlay_str
+ecal_reco.sim_hit_pass_name = this_pass_name
 
 ecal_veto.recoil_from_tracking = False
 ecal_veto.rec_pass_name = this_pass_name
@@ -121,18 +121,18 @@ hcal_veto.input_hit_pass_name = this_pass_name
 
 # Load and configure  particle flow sequence.
 # Here we use PF "tracking" and CLUE Ecal clustering
-from LDMX.Recon import pfReco
+from LDMX.Recon import pf_reco
 
 
 track_pf = pfReco.pfTrackProducer()
-track_pf.inputTrackCollName=track_pf.inputTrackCollName+overlay_str #"EcalScoringPlaneHitsOverlay" #
+track_pf.input_track_coll_name=track_pf.input_track_coll_name+overlay_str #"EcalScoringPlaneHitsOverlay" #
 track_pf.input_pass_name=this_pass_name
-track_pf.doElectronTracking=True
+track_pf.do_electron_tracking=True
 # reference info
 truth_pf = pfReco.pfTruthProducer()
 
 # CLUE
-import LDMX.Ecal.ecalClusters as cl
+import LDMX.Ecal.ecal_clusters as cl
 
 
 cluster = cl.EcalClusterProducer()
@@ -144,20 +144,20 @@ cluster.rec_hit_pass_name=this_pass_name #run on process+pileup
 
 # particle flow:
 pf_comb=pfReco.pfProducer()
-pf_comb.inputEcalCollName = cluster.cluster_coll_name # use CLUE
+pf_comb.input_ecal_coll_name = cluster.cluster_coll_name # use CLUE
 pf_comb.input_ecal_passname = this_pass_name
 # trigger recasting existing CLUE to caloclusters
 pf_comb.use_existing_ecal_clusters = True
 
 # Load pileup finder
-from LDMX.Recon import pileupFinder
+from LDMX.Recon import pileup_finder
 
 
 pu_finder = pileupFinder.pileupFinder()
 pu_finder.rec_hit_pass_name=this_pass_name
 #needs recast caloclusters, not (CLUE) ecalclusters
-pu_finder.cluster_coll_name=pf_comb.inputEcalCollName+"Cast"
-pu_finder.pf_cand_coll_name=pf_comb.outputCollName
+pu_finder.cluster_coll_name=pf_comb.input_ecal_coll_name+"Cast"
+pu_finder.pf_cand_coll_name=pf_comb.output_coll_name
 pu_finder.min_momentum=3000.
 
 # Load the DQM modules

@@ -6,8 +6,8 @@ p=ldmxcfg.Process("v14_conv_deep")
 import LDMX.Ecal.ecal_hardcoded_conditions as ecal_conditions
 import LDMX.Hcal.hcal_hardcoded_conditions as hcal_conditions
 from LDMX.Biasing import ecal
-from LDMX.Ecal import EcalGeometry
-from LDMX.Hcal import HcalGeometry
+from LDMX.Ecal import ecal_geometry
+from LDMX.Hcal import hcal_geometry
 from LDMX.SimCore import generators
 
 

@@ -90,9 +90,9 @@ tb_hits_up.pedestals=ped_list
 tb_hits_up.gain=gain_list
 tb_hits_up.start_sample=time_sample
 tb_hits_up.pulse_width=pulse_width #5 #7
-tb_hits_up.pulseWidthLYSO=pulse_width #5 #7 #9 #7 for plastic, 9 for LYSO
-tb_hits_up.doCleanHits=False #True
-tb_hits_up.nInstrumentedChannels=24
+tb_hits_up.pulse_width_lyso=pulse_width #5 #7 #9 #7 for plastic, 9 for LYSO
+tb_hits_up.do_clean_hits=False #True
+tb_hits_up.n_instrumented_channels=24
 p.sequence = [
     tb_hits_up
     ]

@@ -75,11 +75,11 @@ p.sequence=[my_sim]
 import LDMX.Ecal.ecal_hardcoded_conditions
 
 # Load the ECAL modules
-import LDMX.Ecal.EcalGeometry
+import LDMX.Ecal.ecal_geometry
 import LDMX.Hcal.hcal_hardcoded_conditions
 
 # Load the HCAL modules
-import LDMX.Hcal.HcalGeometry
+import LDMX.Hcal.hcal_geometry
 from LDMX.Ecal import digi as eDigi
 from LDMX.Ecal import vetos as ecal_vetos
 from LDMX.Hcal import digi as hDigi

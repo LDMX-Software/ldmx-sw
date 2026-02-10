@@ -32,8 +32,8 @@ from LDMX.SimCore import genie_reweight
 
 
 genie_rw = genie_reweight.GenieReweightProducer(name='genie_reweight')
-genie_rw.hepmc3CollName = "SimHepMC3Events"
-genie_rw.hepmc3PassName = ""
+genie_rw.hepmc3_coll_name = "SimHepMC3Events"
+genie_rw.hepmc3_pass_name = ""
 genie_rw.var_types = ["GENIE_INukeTwkDial_MFP_pi","GENIE_INukeTwkDial_MFP_N"]
 genie_rw.verbosity = 0
 
@@ -58,16 +58,16 @@ p.output_files = ['events.root']
 # Load the full tracking sequance
 import LDMX.Ecal.digi as ecal_digi
 import LDMX.Ecal.ecal_hardcoded_conditions
-import LDMX.Ecal.ecalClusters as ecal_cluster
+import LDMX.Ecal.ecal_clusters as ecal_cluster
 
 # Load the ECAL modules
-import LDMX.Ecal.EcalGeometry
+import LDMX.Ecal.ecal_geometry
 import LDMX.Ecal.vetos as ecal_vetos
 import LDMX.Hcal.digi as hcal_digi_and_reco
 import LDMX.Hcal.hcal_hardcoded_conditions
 
 # Load the HCAL modules
-import LDMX.Hcal.HcalGeometry
+import LDMX.Hcal.hcal_geometry
 from LDMX.Tracking import full_tracking_sequence
 
 
@@ -119,13 +119,13 @@ en_trigger = [
         ]
 
 #Load PF reconstruction
-from LDMX.Recon import pfReco
+from LDMX.Recon import pf_reco
 
 
 pf_reco = pfReco.pfTruthProducer()
 
 # Load the dEdx mass estimator
-from LDMX.Recon import trackDeDxMassEstimator
+from LDMX.Recon import track_dedx_mass_estimator
 
 
 recoil_track_mass_estimator = trackDeDxMassEstimator.trackDeDxMassEstimator()

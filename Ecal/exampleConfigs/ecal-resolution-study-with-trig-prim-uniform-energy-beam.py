@@ -47,9 +47,9 @@ p.term_log_level = 0
 
 from LDMX.SimCore import simulator
 from LDMX.SimCore import generators
-import LDMX.Ecal.EcalGeometry
+import LDMX.Ecal.ecal_geometry
 import LDMX.Ecal.ecal_hardcoded_conditions
-import LDMX.Hcal.HcalGeometry
+import LDMX.Hcal.hcal_geometry
 import LDMX.Ecal.digi as ecal_digi
 import LDMX.Ecal.ecal_trig_digi as ecal_trig_digi
 

@@ -39,7 +39,7 @@ class EcalGeometryProvider(ldmxcfg.ConditionsObjectProvider):
             raise Exception('EcalGeometryProvider is a singleton class and should only be retrieved using getInstance()')
         else:
             super().__init__("EcalGeometryProvider","ecal::EcalGeometryProvider","Ecal")
-            from LDMX.DetDescr.EcalGeometry import EcalGeometry
+            from LDMX.DetDescr.ecal_geometry import EcalGeometry
             self.geometries = EcalGeometry.geometries()
             EcalGeometryProvider.__instance = self
 

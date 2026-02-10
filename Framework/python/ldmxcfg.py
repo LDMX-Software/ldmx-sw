@@ -587,7 +587,9 @@ class Process:
     Analyzer : the other type of event processor
     """
 
-    last_process =None
+    last_process = None
+    # For backward compatibility with code expecting 'lastProcess'
+    lastProcess = None
 
     def __init__(self, pass_name):
 
@@ -613,7 +615,8 @@ class Process:
         self.conditions_global_tag='Default'
         self.conditions_object_providers=[]
         self.tree_name = 'LDMX_Events'
-        Process.last_process=self
+        Process.last_process = self
+        Process.lastProcess = self  # keep both updated
 
         # needs lastProcess defined to self-register
         self.random_number_seed_service=RandomNumberSeedService()

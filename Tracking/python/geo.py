@@ -38,7 +38,7 @@ class TrackersTrackingGeometryProvider(ldmxcfg.ConditionsObjectProvider):
         LDMX.Detectors.makePath for definitions of the path making functions.
         """
 
-        from LDMX.Detectors import makePath as mP
+        from LDMX.Detectors import make_path as mP
         print("Setting detector for tracking to "+det_name)
         self.detector = mP.makeDetectorPath( det_name )
 

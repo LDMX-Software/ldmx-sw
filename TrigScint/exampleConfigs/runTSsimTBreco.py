@@ -86,16 +86,16 @@ tb_hits_up.pedestals=ped_list
 tb_hits_up.gain=gain_list
 tb_hits_up.start_sample=start_sample
 tb_hits_up.pulse_width=12 #5
-tb_hits_up.pulseWidthLYSO=14
-tb_hits_up.doCleanHits=True
-tb_hits_up.nInstrumentedChannels=12
+tb_hits_up.pulse_width_lyso=14
+tb_hits_up.do_clean_hits=True
+tb_hits_up.n_instrumented_channels=12
 
 
 from LDMX.TrigScint.trigScint import TestBeamClusterProducer
 
 tbClustersUp  =TestBeamClusterProducer("tb_clusters")
 tbClustersUp.input_pass_name=this_pass_name
-tbClustersUp.input_collection=tb_hits_up.outputCollection
+tbClustersUp.input_collection=tb_hits_up.output_collection
 tbClustersUp.pad_time=100.
 tbClustersUp.time_tolerance=999.
 tbClustersUp.verbosity=0
@@ -105,21 +105,21 @@ tbClustersUp.seed_threshold = 50.   # i think 50 cuts off the low tail of the PE
 
 clean_clusters_up  =TestBeamClusterProducer("cleanClusters")
 clean_clusters_up.input_pass_name=this_pass_name
-clean_clusters_up.input_collection=tb_hits_up.outputCollection
+clean_clusters_up.input_collection=tb_hits_up.output_collection
 clean_clusters_up.output_collection=tbClustersUp.output_collection+"Clean"
 clean_clusters_up.pad_time=100.
 clean_clusters_up.time_tolerance=999.
 clean_clusters_up.verbosity=0
 clean_clusters_up.clustering_threshold = 40.  #to add in neighboring
 clean_clusters_up.seed_threshold = 50.
-clean_clusters_up.doCleanHits=True
+clean_clusters_up.do_clean_hits=True
 
 
 from LDMX.TrigScint.trigScint import QualityFlagAnalyzer
 
 flag_ana=QualityFlagAnalyzer("plotMaker")
-flag_ana.inputEventPassName=input_pass_name
-flag_ana.inputHitPassName=this_pass_name
+flag_ana.input_event_pass_name=input_pass_name
+flag_ana.input_hit_pass_name=this_pass_name
 flag_ana.start_sample=0
 flag_ana.pedestals=ped_list
 flag_ana.gain=gain_list

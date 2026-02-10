@@ -37,11 +37,11 @@ p.term_log_level = 0
 
 import LDMX.Ecal.digi as ecal_digi
 import LDMX.Ecal.ecal_hardcoded_conditions
-import LDMX.Ecal.EcalGeometry
+import LDMX.Ecal.ecal_geometry
 import LDMX.Ecal.vetos as ecal_vetos
 import LDMX.Hcal.digi as hcal_digi
 import LDMX.Hcal.hcal_hardcoded_conditions
-import LDMX.Hcal.HcalGeometry
+import LDMX.Hcal.hcal_geometry
 from LDMX.TrigScint.trigScint import (
     TrigScintClusterProducer,
     TrigScintDigiProducer,

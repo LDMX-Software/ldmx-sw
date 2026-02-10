@@ -17,8 +17,8 @@ filename = f'uniform_electrons_maxE_{args.max_energy}_minE_{args.min_energy}_max
 p.output_files = [ 'events_'+filename ]
 p.histogram_file = 'hists_'+filename
 
-import LDMX.Hcal.HcalGeometry
-import LDMX.Ecal.EcalGeometry
+import LDMX.Hcal.hcal_geometry
+import LDMX.Ecal.ecal_geometry
 
 from LDMX.SimCore import simulator
 from LDMX.SimCore import generators
@@ -126,7 +126,7 @@ tracking_recoil.out_trk_collection = "RecoilTracks"
 
 #smear the hits used for finding/fitting
 tracking_recoil.trackID = -1 #1
-tracking_recoil.pdgID = -9999 #11
+tracking_recoil.pdg_id = -9999 #11
 tracking_recoil.measurement_collection = digi_recoil.out_collection
 tracking_recoil.min_hits = 5
 

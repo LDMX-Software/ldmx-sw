@@ -102,30 +102,30 @@ tb_hits_up.gain=gain_list
 tb_hits_up.MIPresponse=response_list
 tb_hits_up.start_sample=start_sample
 tb_hits_up.pulse_width=12 #5
-tb_hits_up.pulseWidthLYSO=12 #14
-tb_hits_up.doCleanHits=True
-tb_hits_up.nInstrumentedChannels=12
+tb_hits_up.pulse_width_lyso=12 #14
+tb_hits_up.do_clean_hits=True
+tb_hits_up.n_instrumented_channels=12
 
 
 from LDMX.TrigScint.trigScint import TestBeamClusterProducer
 
 clean_clusters_up  =TestBeamClusterProducer("cleanClusters")
 clean_clusters_up.input_pass_name=this_pass_name
-clean_clusters_up.input_collection=tb_hits_up.outputCollection
+clean_clusters_up.input_collection=tb_hits_up.output_collection
 clean_clusters_up.output_collection=clean_clusters_up.output_collection+"Clean"
 clean_clusters_up.pad_time=100.
 clean_clusters_up.time_tolerance=999.
 clean_clusters_up.verbosity=0
 clean_clusters_up.clustering_threshold = 40.  #to add in neighboring
 clean_clusters_up.seed_threshold = 50.
-clean_clusters_up.doCleanHits=True
+clean_clusters_up.do_clean_hits=True
 
 
 from LDMX.TrigScint.trigScint import QualityFlagAnalyzer
 
 flag_ana=QualityFlagAnalyzer("plotMaker")
-flag_ana.inputEventPassName=input_pass_name
-flag_ana.inputHitPassName=this_pass_name
+flag_ana.input_event_pass_name=input_pass_name
+flag_ana.input_hit_pass_name=this_pass_name
 flag_ana.start_sample=0
 flag_ana.pedestals=ped_list
 flag_ana.gain=gain_list

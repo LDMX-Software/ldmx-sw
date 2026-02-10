@@ -6,8 +6,8 @@ p = ldmxcfg.Process( "test" )
 p.run = 9001
 p.max_events = 10
 p.output_files = [ "energy_sort.root" ]
-import LDMX.Ecal.EcalGeometry
-import LDMX.Hcal.HcalGeometry
+import LDMX.Ecal.ecal_geometry
+import LDMX.Hcal.hcal_geometry
 from LDMX.SimCore import simulator as sim
 
 

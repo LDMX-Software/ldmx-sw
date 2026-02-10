@@ -24,7 +24,7 @@ p.log_frequency = 1000
 
 print(arg.output_dir)
 
-import LDMX.Hcal.HcalGeometry
+import LDMX.Hcal.hcal_geometry
 import LDMX.Hcal.hcal_testbeam0422_conditions
 import LDMX.Hcal.digi as hcal_digi
 import LDMX.Hcal.hgcrocFormat as hcal_format

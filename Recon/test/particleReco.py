@@ -19,8 +19,8 @@ p.run = 9001
 # we also only have an output file
 p.output_files = [ "pfReco_" + str(p.max_events) + "_events.root" ]
 
-import LDMX.Ecal.EcalGeometry
-import LDMX.Hcal.HcalGeometry
+import LDMX.Ecal.ecal_geometry
+import LDMX.Hcal.hcal_geometry
 from LDMX.SimCore import simulator as sim
 
 
@@ -42,11 +42,11 @@ p.sequence.append( my_sim )
 
 import LDMX.Ecal.digi as ecal_digi
 import LDMX.Ecal.ecal_hardcoded_conditions
-import LDMX.Ecal.EcalGeometry
+import LDMX.Ecal.ecal_geometry
 import LDMX.Ecal.vetos as ecal_vetos
 import LDMX.Hcal.digi as hcal_digi
 import LDMX.Hcal.hcal_hardcoded_conditions
-import LDMX.Hcal.HcalGeometry
+import LDMX.Hcal.hcal_geometry
 from LDMX.TrigScint.trigScint import (
     TrigScintClusterProducer,
     TrigScintDigiProducer,
@@ -83,7 +83,7 @@ p.sequence.extend([
 
 if True: #False:
     p.set_compression(2, level=9) # LZMA
-    from LDMX.Recon import pfReco
+    from LDMX.Recon import pf_reco
     ecal_pf = pfReco.pfEcalClusterProducer()
     hcal_pf = pfReco.pfHcalClusterProducer()
     track_pf = pfReco.pfTrackProducer()
@@ -91,19 +91,19 @@ if True: #False:
 
 
     # configure clustering options
-    ecal_pf.doSingleCluster = False
-    ecal_pf.logEnergyWeight = True
+    ecal_pf.do_single_cluster = False
+    ecal_pf.log_energy_weight = True
 
-    hcal_pf.doSingleCluster = False
-    hcal_pf.clusterHitDist = 200. # mm
-    hcal_pf.logEnergyWeight = True
+    hcal_pf.do_single_cluster = False
+    hcal_pf.cluster_hit_dist = 200. # mm
+    hcal_pf.log_energy_weight = True
 
     ecalPF_simple = pfReco.pfEcalClusterProducer()
-    ecalPF_simple.clusterCollName += "Simple"
-    ecalPF_simple.doSingleCluster = True
+    ecalPF_simple.cluster_coll_name += "Simple"
+    ecalPF_simple.do_single_cluster = True
     hcalPF_simple = pfReco.pfHcalClusterProducer()
-    hcalPF_simple.clusterCollName += "Simple"
-    hcalPF_simple.doSingleCluster = True
+    hcalPF_simple.cluster_coll_name += "Simple"
+    hcalPF_simple.do_single_cluster = True
 
     p.sequence.extend([
         ecal_pf, hcal_pf, track_pf,

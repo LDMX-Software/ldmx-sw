@@ -41,7 +41,7 @@ p.histogram_file = str(arg.out_dir / arg.out_name)
 p.log_frequency = 1000
 p.term_log_level = 0
 
-import LDMX.Ecal.EcalGeometry
+import LDMX.Ecal.ecal_geometry
 
 p.sequence = [
     ldmxcfg.Analyzer('resolution','ldmx::ecal::TrigPrimResolutionAnalyzer','Ecal')

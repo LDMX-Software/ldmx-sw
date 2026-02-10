@@ -79,7 +79,7 @@ def makeScoringPlanesPath( det_name ) :
     --------
     Useful for use with the simulator producer:
         from LDMX.Detector.makePath import *
-        mySimulator.scoringPlanes = makeScoringPlanesPath( 'ldmx-det-v12' )
+        mySimulator.scoring_planes = makeScoringPlanesPath( 'ldmx-det-v12' )
     """
 
     return makePath( det_name , 'scoring_planes' )

@@ -7,7 +7,7 @@ p=ldmxcfg.Process("v12")
 p.run = 1
 
 import LDMX.Ecal.ecal_hardcoded_conditions
-import LDMX.Ecal.EcalGeometry
+import LDMX.Ecal.ecal_geometry
 from LDMX.SimCore import simulator
 
 

@@ -39,12 +39,12 @@ static void unrotate(double& p, double& q) {
 
 EcalGeometry::EcalGeometry(const framework::config::Parameters& ps)
     : framework::ConditionsObject(EcalGeometry::CONDITIONS_OBJECT_NAME) {
-  layer_z_positions_ = ps.get<std::vector<double>>("layerZPositions");
-  ecal_front_z_ = ps.get<double>("ecalFrontZ");
-  module_r_min_ = ps.get<double>("moduleMinR");
+  layer_z_positions_ = ps.get<std::vector<double>>("layer_z_positions");
+  ecal_front_z_ = ps.get<double>("ecal_front_z");
+  module_r_min_ = ps.get<double>("module_min_r");
   gap_ = ps.get<double>("gap");
-  n_cell_r_height_ = ps.get<double>("nCellRHeight");
-  corners_side_up_ = ps.get<bool>("cornersSideUp");
+  n_cell_r_height_ = ps.get<double>("n_cell_r_height");
+  corners_side_up_ = ps.get<bool>("corners_side_up");
   layer_shift_x_ = ps.get<double>("layer_shift_x");
   layer_shift_y_ = ps.get<double>("layer_shift_y");
   layer_shift_odd_ = ps.get<bool>("layer_shift_odd");

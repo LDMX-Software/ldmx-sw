@@ -210,9 +210,9 @@ class GSFProcessor(Producer):
 
     Attributes
     ---------
-    trackCollection : string
+    track_collection : string
         Track collection to be refitted with GSF
-    measCollection  : string
+    meas_collection  : string
         Measurements collection in the tracker
     maxComponents   : int
         How many gaussians to use to sample the BetheHeitler
@@ -245,8 +245,8 @@ class GSFProcessor(Producer):
         self.field_map = makeFieldMapPath()
         self.taggerTracking = True
         self.out_trk_collection = "GSFTracks"
-        self.trackCollection = "TaggerTracks"
-        self.measCollection = "DigiTaggerSimHits"
+        self.track_collection = "TaggerTracks"
+        self.meas_collection = "DigiTaggerSimHits"
 
 
         self.track_passname = ""
@@ -358,8 +358,8 @@ class GreedyAmbiguitySolver(Producer):
         self.maximumIterations = 1000
         self.nMeasurementsMin = 5
         self.out_trk_collection = "TaggerTracksClean"
-        self.trackCollection = "TaggerTracks"
-        self.measCollection = "DigiTaggerSimHits"
+        self.track_collection = "TaggerTracks"
+        self.meas_collection = "DigiTaggerSimHits"
 
         self.input_pass_name = ""
 

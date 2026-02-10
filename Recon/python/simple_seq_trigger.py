@@ -31,9 +31,9 @@ class SequentialTrigger(ldmxcfg.Producer) :
 
         self.trigger_list = ["Trigger","Trigger2"]
         self.trigger_passNames = ["reconSeq","reconSeq"]
-        self.doOR = False
-        self.doAND = True
-        self.doVAL = True
+        self.do_or = False
+        self.do_and = True
+        self.do_val = True
 
 simple_seq_trigger = SequentialTrigger("simple_seq_trigger")
 

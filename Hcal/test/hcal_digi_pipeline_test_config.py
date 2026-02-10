@@ -19,7 +19,7 @@ p.output_files = ['hcal_digi_pipeline_test.root']
 p.histogram_file = 'hcal_digi_pipeline_test_histo.root'
 
 # Geometry provider
-import LDMX.Hcal.HcalGeometry
+import LDMX.Hcal.hcal_geometry
 
 
 # HCal digi

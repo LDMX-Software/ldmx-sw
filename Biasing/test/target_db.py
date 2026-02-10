@@ -2,8 +2,8 @@ from LDMX.Framework import ldmxcfg
 
 
 p = ldmxcfg.Process('target_db')
-import LDMX.Ecal.EcalGeometry
-import LDMX.Hcal.HcalGeometry
+import LDMX.Ecal.ecal_geometry
+import LDMX.Hcal.hcal_geometry
 from LDMX.Biasing import target
 
 

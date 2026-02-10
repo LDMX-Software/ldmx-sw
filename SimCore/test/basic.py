@@ -17,8 +17,8 @@ p.term_log_level = 0
 p.run = 9001
 # we also only have an output file
 p.output_files = [ "justSim_" + str(p.max_events) + "_events.root" ]
-import LDMX.Ecal.EcalGeometry
-import LDMX.Hcal.HcalGeometry
+import LDMX.Ecal.ecal_geometry
+import LDMX.Hcal.hcal_geometry
 from LDMX.SimCore import simulator as sim
 
 

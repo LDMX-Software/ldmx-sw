@@ -117,15 +117,15 @@ tracking_recoil.outlier_pval_ =  22.165497985508754
 
 
 GSF_tagger = tracking.GSFProcessor("Tagger_GSF")
-GSF_tagger.trackCollection = "TaggerTracksClean"
-GSF_tagger.measCollection  = "DigiTaggerSimHits"
+GSF_tagger.track_collection = "TaggerTracksClean"
+GSF_tagger.meas_collection  = "DigiTaggerSimHits"
 GSF_tagger.out_trk_collection = "GSFTagger"
 GSF_tagger.taggerTracking = True
 GSF_tagger.debug = False
 
 GSF_recoil = tracking.GSFProcessor("Recoil_GSF")
-GSF_recoil.trackCollection = "RecoilTracksClean"
-GSF_recoil.measCollection  = "DigiRecoilSimHits"
+GSF_recoil.track_collection = "RecoilTracksClean"
+GSF_recoil.meas_collection  = "DigiRecoilSimHits"
 GSF_recoil.out_trk_collection = "GSFRecoil"
 GSF_recoil.taggerTracking = False
 GSF_recoil.debug = True
@@ -134,15 +134,15 @@ greedy_solver_tagger = tracking.GreedyAmbiguitySolver("GreedySolverTagger")
 greedy_solver_tagger.nMeasurementsMin = 5
 greedy_solver_tagger.maximumSharedHits = 2
 greedy_solver_tagger.out_trk_collection = "TaggerTracksClean"
-greedy_solver_tagger.trackCollection = "TaggerTracks"
-greedy_solver_tagger.measCollection = "DigiTaggerSimHits"
+greedy_solver_tagger.track_collection = "TaggerTracks"
+greedy_solver_tagger.meas_collection = "DigiTaggerSimHits"
 
 greedy_solver_recoil = tracking.GreedyAmbiguitySolver("GreedySolverRecoil")
 greedy_solver_recoil.nMeasurementsMin = 5
 greedy_solver_recoil.maximumSharedHits = 2
 greedy_solver_recoil.out_trk_collection = "RecoilTracksClean"
-greedy_solver_recoil.trackCollection = "RecoilTracks"
-greedy_solver_recoil.measCollection = "DigiRecoilSimHits"
+greedy_solver_recoil.track_collection = "RecoilTracks"
+greedy_solver_recoil.meas_collection = "DigiRecoilSimHits"
 
 from LDMX.Tracking import dqm
 digi_dqm = dqm.TrackerDigiDQM()

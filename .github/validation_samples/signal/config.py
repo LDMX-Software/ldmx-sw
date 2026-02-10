@@ -41,13 +41,13 @@ import LDMX.Ecal.digi as ecal_digi
 import LDMX.Ecal.ecal_hardcoded_conditions
 
 # Load the ECAL modules
-import LDMX.Ecal.EcalGeometry
+import LDMX.Ecal.ecal_geometry
 import LDMX.Ecal.vetos as ecal_vetos
 import LDMX.Hcal.digi as hcal_digi_and_reco
 import LDMX.Hcal.hcal_hardcoded_conditions
 
 # Load the HCAL modules
-import LDMX.Hcal.HcalGeometry
+import LDMX.Hcal.hcal_geometry
 from LDMX.Tracking import full_tracking_sequence
 
 

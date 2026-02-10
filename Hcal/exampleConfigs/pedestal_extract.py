@@ -21,7 +21,7 @@ p.log_frequency = 10
 
 import LDMX.Hcal.hgcrocFormat as hcal_format
 import LDMX.Hcal.hcal_ana as hcal_ana
-import LDMX.Hcal.HcalGeometry
+import LDMX.Hcal.hcal_geometry
 import LDMX.Hcal.hcal_hardcoded_conditions
 from LDMX.Packing import rawio
 

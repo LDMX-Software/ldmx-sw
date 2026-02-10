@@ -14,7 +14,7 @@ mip_energy: float
 """
 
 from LDMX.Framework.ldmxcfg import Producer
-from LDMX.Tools.HgcrocEmulator import HgcrocEmulator
+from LDMX.Tools.hgcroc_emulator import HgcrocEmulator
 
 
 n_pe_per_mip = 68. #PEs created per MIP
@@ -34,17 +34,17 @@ class HcalHgcrocEmulator(HgcrocEmulator) :
 
         # SOI
         # Sample of interest (will have double of samples (6) after pulse peak)
-        self.iSOI = 3
+        self.i_soi = 3
 
         # nADCs
-        self.nADCs = 10
+        self.n_adcs = 10
 
         # set pulse shape parameters
-        self.rateUpSlope = -0.1141
-        self.timeUpSlope = -9.897
-        self.rateDnSlope = 0.0279
-        self.timeDnSlope = 45.037
-        self.timePeak    = 12.698 # the time such that with [parameter 4]=0, the pulse peaks at t=0
+        self.rate_up_slope = -0.1141
+        self.time_up_slope = -9.897
+        self.rate_dn_slope = 0.0279
+        self.time_dn_slope = 45.037
+        self.time_peak    = 12.698 # the time such that with [parameter 4]=0, the pulse peaks at t=0
 
     def calculateVoltageHcal(self, pe) :
         """Calculate the voltage signal [mV] of the input number of photo-electrons (PEs)
@@ -201,12 +201,12 @@ class HcalRecProducer(Producer) :
         self.rec_hit_coll_name = 'HcalRecHits'
 
         # hgcroc parameters:
-        self.rate_up_slope = hgcroc.rateUpSlope
-        self.time_up_slope = hgcroc.timeUpSlope
-        self.rate_dn_slope = hgcroc.rateDnSlope
-        self.time_dn_slope = hgcroc.timeDnSlope
-        self.time_peak    = hgcroc.timePeak
-        self.n_adcs       = hgcroc.nADCs
+        self.rate_up_slope = hgcroc.rate_up_slope
+        self.time_up_slope = hgcroc.time_up_slope
+        self.rate_dn_slope = hgcroc.rate_dn_slope
+        self.time_dn_slope = hgcroc.time_dn_slope
+        self.time_peak    = hgcroc.time_peak
+        self.n_adcs       = hgcroc.n_adcs
 
         # avg parameters
         self.avg_toa_threshold = 1.6 # mV - correction config only

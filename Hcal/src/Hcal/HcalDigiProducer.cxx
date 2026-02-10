@@ -42,9 +42,9 @@ void HcalDigiProducer::configure(framework::config::Parameters& ps) {
   //  used  in actual digitization
   auto hgcroc_params = ps.get<framework::config::Parameters>("hgcroc");
   hgcroc_ = std::make_unique<ldmx::HgcrocEmulator>(hgcroc_params);
-  clock_cycle_ = hgcroc_params.get<double>("clockCycle");
-  n_adcs_ = hgcroc_params.get<int>("nADCs");
-  i_soi_ = hgcroc_params.get<int>("iSOI");
+  clock_cycle_ = hgcroc_params.get<double>("clock_cycle");
+  n_adcs_ = hgcroc_params.get<int>("n_adcs");
+  i_soi_ = hgcroc_params.get<int>("i_soi");
   noise_ = hgcroc_params.get<bool>("noise");
 
   // If true, ignore readout threshold

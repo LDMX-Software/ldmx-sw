@@ -6,7 +6,7 @@ namespace generators {
 LHEPrimaryGenerator::LHEPrimaryGenerator(
     const std::string& name, const framework::config::Parameters& parameters)
     : PrimaryGenerator(name, parameters),
-      file_path_{parameters.get<std::string>("filePath")},
+      file_path_{parameters.get<std::string>("file_path")},
       reader_{file_path_},
       vertex_{parameters.get<std::vector<double>>("vertex")} {}
 

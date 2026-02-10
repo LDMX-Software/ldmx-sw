@@ -66,7 +66,7 @@ print(ped_list)
 
 ts_ev=QIEAnalyzer("plotMaker")
 ts_ev.input_pass_name=input_pass_name
-ts_ev.inputCollection="QIEsamplesPad1"
+ts_ev.input_collection="QIEsamplesPad1"
 # now in default config, too, but with test beam values :
 #these are derived as the mean of gaussian fits to the "event pedestal" (average over middle two quartiles) for each channel
 ts_ev.start_sample=start_sample

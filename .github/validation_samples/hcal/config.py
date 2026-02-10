@@ -56,10 +56,10 @@ p.logger.term_level = 1
 p.logger.custom("GEANT4", level = 3)
 
 import LDMX.Ecal.ecal_hardcoded_conditions
-import LDMX.Ecal.EcalGeometry
+import LDMX.Ecal.ecal_geometry
 import LDMX.Hcal.digi as hcal_digi_and_reco
 import LDMX.Hcal.hcal_hardcoded_conditions
-import LDMX.Hcal.HcalGeometry
+import LDMX.Hcal.hcal_geometry
 
 
 hcal_digi = hcal_digi_and_reco.HcalDigiProducer()

@@ -34,16 +34,16 @@ p.output_files = ['events.root']
 # Load the full tracking sequence
 import LDMX.Ecal.digi as ecal_digi
 import LDMX.Ecal.ecal_hardcoded_conditions
-import LDMX.Ecal.ecalClusters as ecal_cluster
+import LDMX.Ecal.ecal_clusters as ecal_cluster
 
 # Load the ECAL modules
-import LDMX.Ecal.EcalGeometry
+import LDMX.Ecal.ecal_geometry
 import LDMX.Ecal.vetos as ecal_vetos
 import LDMX.Hcal.digi as hcal_digi_and_reco
 import LDMX.Hcal.hcal_hardcoded_conditions
 
 # Load the HCAL modules
-import LDMX.Hcal.HcalGeometry
+import LDMX.Hcal.hcal_geometry
 from LDMX.Tracking import full_tracking_sequence
 
 
@@ -51,7 +51,7 @@ hcal_digi = hcal_digi_and_reco.HcalDigiProducer()
 hcal_reco = hcal_digi_and_reco.HcalRecProducer()
 
 # Load the TS modules
-from LDMX.TrigScint.trigScint import (
+from LDMX.TrigScint.trig_scint import (
         TrigScintClusterProducer,
         TrigScintDigiProducer,
         trig_scint_track,
@@ -93,7 +93,7 @@ import LDMX.Hcal.hcal as hcal
 hcal_veto = hcal.HcalVetoProcessor()
 
 # Load preselection skimmer
-from LDMX.Recon.ecalPreselectionSkimmer import EcalPreselectionSkimmer
+from LDMX.Recon.ecal_preselection_skimmer import EcalPreselectionSkimmer
 
 
 ecal_pres_skimmer = EcalPreselectionSkimmer()

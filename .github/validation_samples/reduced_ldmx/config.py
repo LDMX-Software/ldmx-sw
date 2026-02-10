@@ -14,9 +14,9 @@ from LDMX.SimCore import simulator as sim
 my_gun = gen.multi( "mgpGen" )
 my_gun.vertex = [ 0., 0., -880] # mm
 my_gun.momentum = [0.,0.,4000.] # MeV
-my_gun.nParticles = 1
-my_gun.pdgID = 11
-my_gun.enablePoisson = False #True
+my_gun.n_particles = 1
+my_gun.pdg_id = 11
+my_gun.enable_poisson = False #True
 
 my_sim = sim.simulator( "my_sim" ) # Build simulator object
 det = 'ldmx-reduced-v3'
@@ -39,12 +39,12 @@ p.output_files = ['events.root']
 
 import LDMX.Ecal.digi as ecal_digi
 import LDMX.Ecal.ecal_hardcoded_conditions
-import LDMX.Ecal.EcalGeometry
+import LDMX.Ecal.ecal_geometry
 import LDMX.Ecal.EcalWABRecProcessor as ecal_WAB
 import LDMX.Ecal.vetos as ecal_vetos
 import LDMX.Hcal.digi as hcal_digi_and_reco
 import LDMX.Hcal.hcal_hardcoded_conditions
-import LDMX.Hcal.HcalGeometry
+import LDMX.Hcal.hcal_geometry
 
 
 hcal_digi = hcal_digi_and_reco.HcalDigiProducer()
