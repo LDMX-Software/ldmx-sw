@@ -191,7 +191,7 @@ class TestAnalyzer : public Analyzer {
  * - The directory has the histogram "test_hist_"
  * - The histogram has the correct number of entries
  */
-class IsGoodhistogram_file : public Catch::Matchers::MatcherBase<std::string> {
+class IsGoodhistogramFile : public Catch::Matchers::MatcherBase<std::string> {
  private:
   /// Correct number of entries
   int correct_get_entries_;
@@ -202,7 +202,7 @@ class IsGoodhistogram_file : public Catch::Matchers::MatcherBase<std::string> {
    *
    * Sets the correct event indices
    */
-  IsGoodhistogram_file(int const& n) : correct_get_entries_(n) {}
+  IsGoodhistogramFile(int const& n) : correct_get_entries_(n) {}
 
   /**
    * Performs the test for this matcher
@@ -566,7 +566,7 @@ TEST_CASE("Core Framework Functionality", "[Framework][functionality]") {
       }
 
       CHECK_THAT(hist_file_path,
-                 framework::test::IsGoodhistogram_file(1 + 2 + 3));
+                 framework::test::IsGoodhistogramFile(1 + 2 + 3));
       CHECK(framework::test::removeFile(hist_file_path));
     }
 
@@ -609,14 +609,14 @@ TEST_CASE("Core Framework Functionality", "[Framework][functionality]") {
         process.add("input_files", input_file);
         REQUIRE(framework::test::runProcess(process));
         CHECK_THAT(hist_file_path,
-                   framework::test::IsGoodhistogram_file(1 + 2));
+                   framework::test::IsGoodhistogramFile(1 + 2));
         CHECK(framework::test::removeFile(hist_file_path));
       }
 
       SECTION("multiple input files") {
         process.add("input_files", input_files);
         REQUIRE(framework::test::runProcess(process));
-        CHECK_THAT(hist_file_path, framework::test::IsGoodhistogram_file(
+        CHECK_THAT(hist_file_path, framework::test::IsGoodhistogramFile(
                                        1 + 2 + 1 + 2 + 3 + 1 + 2 + 3 + 4));
         CHECK(framework::test::removeFile(hist_file_path));
       }
@@ -654,7 +654,7 @@ TEST_CASE("Core Framework Functionality", "[Framework][functionality]") {
                                           "makeInputs", 2 + 3 + 4, 3, false));
         }
 
-        CHECK_THAT(hist_file_path, framework::test::IsGoodhistogram_file(
+        CHECK_THAT(hist_file_path, framework::test::IsGoodhistogramFile(
                                        1 + 2 + 1 + 2 + 3 + 1 + 2 + 3 + 4));
         CHECK(framework::test::removeFile(hist_file_path));
       }
