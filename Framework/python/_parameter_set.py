@@ -10,12 +10,12 @@ in the configuration pyton module is at the top.
 
 import warnings
 from dataclasses import dataclass, field
+from typing import Any
 
 def check_list(l, dimension, entry_type):
     if dimension == 1:
-        for e in l:
-            if not isinstance(e, entry_type):
-                raise TypeError(f'Entry {e} is not of expected type {entry_type}')
+        if entry_type is not Any and any(not isinstance(e, entry_type) for e in l):
+            raise TypeError(f'Entry {e} is not of expected type {entry_type}')
     elif dimension == 2:
         for ll in l:
             check_list(ll, 1, entry_type)

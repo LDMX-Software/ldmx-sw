@@ -1,9 +1,10 @@
 from ._parameter_set import parameter_set
+from . import _register
 
 def conditions_object_provider_post_init(self):
-    _add_module_or_library(self.moduleName)
-    Process.declareConditionsObjectProvider(self)
-    self.__is_conditions_object_provider__ = True
+    _register.library(self.moduleName)
+    self.__dict__['__is_conditions_object_provider__'] = True
+    _register.conditions_object_provider(self)
 
 
 def conditions_object_provider__eq__(self, other):

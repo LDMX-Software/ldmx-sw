@@ -1,6 +1,7 @@
 from ._parameter_set import parameter_set, field
 from ._logger import Logger
 from ._rnss import RandomNumberSeedService
+from typing import Any
 
 
 @parameter_set
@@ -79,7 +80,7 @@ class Process:
     run: int = -1
     inputFiles: list[str] = []
     outputFiles: list[str] = []
-    sequence: list[any] = []
+    sequence: list[Any] = []
     keep: list[str] = []
     libraries: list[str] = []
     skimDefaultIsKeep: bool = True
@@ -89,8 +90,9 @@ class Process:
     compressionSetting: int = 9
     histogramFile: str = ''
     conditionsGlobalTag: str = 'Default'
-    conditionsObjectProviders: list[any] = []
+    conditionsObjectProviders: list[Any] = []
     tree_name: str = 'LDMX_Events'
+    randomNumberSeedService: RandomNumberSeedService = field(init=False, default_factory=RandomNumberSeedService)
     __legacy__ = {
         'termLogLevel': 'logger.termLevel',
         'fileLogLevel': 'logger.fileLevel',
@@ -103,7 +105,7 @@ class Process:
             raise Exception( "Process object is already created! You can only create one Process object in a script." )
         from . import _register
         self.libraries.extend(_register.library.__registry__)
-        self.conditionsObjectProviders.extend(_regsiter.conditions_object_providers.__registry__)
+        self.conditionsObjectProviders.extend(_register.conditions_object_provider.__registry__)
 
         Process.lastProcess=self
         # needs lastProcess defined to self-register
