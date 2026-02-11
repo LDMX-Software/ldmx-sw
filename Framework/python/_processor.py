@@ -11,8 +11,6 @@ def processor_post_init(self):
     """
 
     _register.library(self.module_name)
-    if not hasattr(self, 'instance_name'):
-        self.__dict__['instance_name'] = self.class_name
 
 
 def histogram(
@@ -91,6 +89,7 @@ def processor(class_name: str, module_name: str):
         post_init = processor_post_init,
         class_name = class_name,
         module_name = module_name,
+        instance_name = class_name,
         histograms = field(default_factory=list),
         helpers = [('histogram',histogram)],
     )
