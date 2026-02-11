@@ -10,13 +10,14 @@
     &constants;  
 
     <!--
-      ESA layout: two trackers upstream of the target
+      ESA slice test layout: two recoil trackers upstream of the target
       Tracker 1 center:  -240.5 mm
       Tracker 2 center:  -140.5 mm
       Spacing between them = 100 mm
     -->
-    <variable name="tagger_pos_z" value="-240.5*mm" /> 
-    <variable name="recoil_pos_z" value="-140.5*mm"/>
+    <variable name="tracker1_center_z" value="-240.5*mm"/>
+    <variable name="tracker2_center_z" value="-140.5*mm"/>
+    <variable name="recoil_pos_z" value="tracker2_center_z"/>
 
     <!-- Position of the ECal and HCal parent volumes -->
     <constant name="em_calorimeter_pos_z" value="ecal_front_z" />
@@ -36,7 +37,6 @@
          x = y = z = 0 mm.     
     -->
     <position name="trig_scint_pos" x="0.0" y="0.0" z="trig_scint_pos_z"/>
-    <position name="tagger_pos" x="0.0" y="0.0" z="tagger_pos_z"/>
     <position name="recoil_pos" x="0.0" y="0.0" z="recoil_pos_z"/>
     <position name="em_calorimeter_pos"
 		  x="0.0" 
@@ -64,11 +64,7 @@
     <volume name="World">
       <materialref ref="Vacuum"/>
       <solidref ref="world_box"/>
-      <physvol copynumber="1">
-        <file name="tagger.gdml"/>
-        <positionref ref="tagger_pos"/>
-        <rotationref ref="identity"/>
-      </physvol> 
+      <!-- remove tagger tracker for 2025 ESA slice test run -->
       <physvol copynumber="2">
         <file name="target.gdml"  />
         <positionref ref="center" />
@@ -113,9 +109,6 @@
     </auxiliary>   
     <auxiliary auxtype="Region" auxvalue="MagnetRegion">
       <auxiliary auxtype="StoreTrajectories" auxvalue="false"/>
-    </auxiliary>
-    <auxiliary auxtype="Region" auxvalue="tagger" >
-      <auxiliary auxtype="StoreTrajectories" auxvalue="true"/>
     </auxiliary>
     <auxiliary auxtype="Region" auxvalue="trig_scint" >
       <auxiliary auxtype="StoreTrajectories" auxvalue="true"/>
