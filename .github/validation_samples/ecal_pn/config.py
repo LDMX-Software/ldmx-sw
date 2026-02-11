@@ -10,8 +10,8 @@ from LDMX.SimCore import generators as gen
 
 
 det = 'ldmx-det-v15-8gev'
+
 my_sim = ecal.photo_nuclear(det,gen.single_8gev_e_upstream_tagger())
-my_sim.beamSpotSmear = [20.,80.,0.]
 my_sim.description = 'ECal PN Test Simulation'
 
 p.sequence = [ my_sim ]

@@ -10,8 +10,8 @@ from LDMX.SimCore import generators as gen
 
 
 det = 'ldmx-lyso-r4-v15-8gev'
+
 my_sim = target.photo_nuclear(det, gen.single_8gev_e_upstream_tagger())
-my_sim.beamSpotSmear = [20.,80.,0.]
 my_sim.description = 'LYSO Target PN Simulation'
 
 p.sequence = [ my_sim ]

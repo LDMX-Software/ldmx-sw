@@ -72,6 +72,11 @@ void MultiParticleGunPrimaryGenerator::GeneratePrimaryVertex(G4Event* anEvent) {
 
     curvertex->SetPrimary(primary);
     anEvent->AddPrimaryVertex(curvertex);
+
+    // Apply beam spot smearing if configured for this generator
+    if (useBeamspot()) {
+      smearBeamspot(curvertex);
+    }
   }
 }
 

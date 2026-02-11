@@ -77,6 +77,11 @@ void LHEPrimaryGenerator::GeneratePrimaryVertex(G4Event* anEvent) {
 
     anEvent->AddPrimaryVertex(vertex);
 
+    // Apply beam spot smearing if configured for this generator
+    if (useBeamspot()) {
+      smearBeamspot(vertex);
+    }
+
   } else {
     ldmx_log(error) << "Ran out of input events so run will be aborted!";
     G4RunManager::GetRunManager()->AbortRun(true);
