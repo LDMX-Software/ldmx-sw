@@ -29,18 +29,18 @@ def EcalHgcrocEmulator() :
     electrons per MIP.
     """
 
-    from LDMX.Tools import HgcrocEmulator
-    hgcroc = HgcrocEmulator.HgcrocEmulator()
+    from LDMX.Tools import hgcroc_emulator
+    hgcroc = hgcroc_emulator.HgcrocEmulator()
 
     # set pulse shape parameters
-    hgcroc.rateUpSlope =  -0.345
-    hgcroc.timeUpSlope = 70.6547
-    hgcroc.rateDnSlope = 0.140068
-    hgcroc.timeDnSlope = 87.7649
-    hgcroc.timePeak    = 77.732
+    hgcroc.rate_up_slope =  -0.345
+    hgcroc.time_up_slope = 70.6547
+    hgcroc.rate_dn_slope = 0.140068
+    hgcroc.time_dn_slope = 87.7649
+    hgcroc.time_peak    = 77.732
 
-    hgcroc.nADCs        = 10
-    hgcroc.iSOI         = 2
+    hgcroc.n_adcs        = 10
+    hgcroc.i_soi         = 2
 
     return hgcroc
 
@@ -56,7 +56,7 @@ class EcalDigiProducer(Producer) :
     ----------
     hgcroc : HgcrocEmulator
         Configuration for the chip emulator
-    MeV : float
+    mev : float
         Conversion between energy [MeV] and voltage [mV]
     avgReadoutThreshold : float
         Average readout threshold for all channels [mV], for noise emulation
@@ -64,15 +64,15 @@ class EcalDigiProducer(Producer) :
         Average pedestal for all channels [mV], for noise emulation
     zero_suppresion : bool
         Should we suppress pure noise "hits" below readout threshold?
-    inputCollName : str
+    input_coll_name : str
         Name of simulated ecal hits to digitize
-    inputPassName : str
+    input_pass_name : str
         Name of pass to digitize
-    digiCollName : str
+    digi_coll_name : str
         Output name of digis put into event bus
     """
 
-    def __init__(self, instance_name = 'ecalDigis', si_thickness = 0.4) :
+    def __init__(self, instance_name = 'ecal_digis', si_thickness = 0.4) :
         super().__init__(instance_name , 'ecal::EcalDigiProducer','Ecal')
 
         self.hgcroc = EcalHgcrocEmulator()
@@ -81,23 +81,23 @@ class EcalDigiProducer(Producer) :
         #   energy [MeV] (thousand electrons per MIP) (charge per thousand electrons fC)
         #        (avg pad capacitance pF) ( 1 MIP / energy [MeV] ) = voltage [mV]
         #   this leads to ~ 470 mV/MeV or ~6.8 MeV maximum hit (if 320 fC is max ADC range)
-        self.MeV = charge_per_mip/20./(mip_si_energy*si_thickness/0.5)
+        self.mev = charge_per_mip/20./(mip_si_energy*si_thickness/0.5)
 
         # these averages are for configuring the noise generator
         #   _only_ and are not meant to be propated to a chip-by-chip basis
-        avgGain = 0.3125/20.
-        self.avgReadoutThreshold = 53.*avgGain
-        self.avgPedestal = 50.*avgGain
+        avg_gain = 0.3125/20.
+        self.avg_readout_threshold = 53.*avg_gain
+        self.avg_pedestal = 50.*avg_gain
         # noise is too optimistic, but need to mimic old noise model
-        self.avgNoiseRMS = 0.6*avgGain
+        self.avg_noise_rms = 0.6*avg_gain
 
         # Should we suppress noise "hits" below readout threshold?
         self.zero_suppression = True
 
         # input and output collection name parameters
-        self.inputCollName = 'EcalSimHits'
-        self.inputPassName = ''
-        self.digiCollName = 'EcalDigis'
+        self.input_coll_name = 'EcalSimHits'
+        self.input_pass_name = ''
+        self.digi_coll_name = 'EcalDigis'
 
 
 class EcalRecProducer(Producer) :
@@ -139,15 +139,15 @@ class EcalRecProducer(Producer) :
         self.charge_per_mip = charge_per_mip #fC / MIP
         self.clock_cycle = 25. #ns - needs to match the setting on the chip
 
-        self.digiCollName = 'EcalDigis'
-        self.digiPassName = ''
-        self.simHitCollName = 'EcalSimHits'
-        self.simHitPassName = ''
-        self.recHitCollName = 'EcalRecHits'
+        self.digi_coll_name = 'EcalDigis'
+        self.digi_pass_name = ''
+        self.sim_hit_coll_name = 'EcalSimHits'
+        self.sim_hit_pass_name = ''
+        self.rec_hit_coll_name = 'EcalRecHits'
 
         # geometry dependent settings
         # use helper functions to set these
-        self.secondOrderEnergyCorrection = 1.
+        self.second_order_energy_correction = 1.
         self.layerWeights = [ ]
         self.v15()
 
@@ -158,7 +158,7 @@ class EcalRecProducer(Producer) :
         electron events with 4GeV.
         """
 
-        self.secondOrderEnergyCorrection = 0.948
+        self.second_order_energy_correction = 0.948
         self.layerWeights = [
             1.641, 3.526, 5.184, 6.841,
             8.222, 8.775, 8.775, 8.775, 8.775, 8.775, 8.775, 8.775, 8.775, 8.775,
@@ -173,7 +173,7 @@ class EcalRecProducer(Producer) :
         electron events with 4GeV.
         """
 
-        self.secondOrderEnergyCorrection = 4000. / 4012.
+        self.second_order_energy_correction = 4000. / 4012.
         self.layerWeights = [
             1.019, 1.707, 3.381, 5.022, 6.679, 8.060, 8.613, 8.613, 8.613, 8.613, 8.613,
             8.613, 8.613, 8.613, 8.613, 8.613, 8.613, 8.613, 8.613, 8.613, 8.613, 8.613,
@@ -188,7 +188,7 @@ class EcalRecProducer(Producer) :
         electron events with 4GeV.
         """
 
-        self.secondOrderEnergyCorrection = 4000. / 4007.
+        self.second_order_energy_correction = 4000. / 4007.
         self.layerWeights = [
             1.675, 2.724, 4.398, 6.039, 7.696, 9.077, 9.630, 9.630, 9.630, 9.630, 9.630,
             9.630, 9.630, 9.630, 9.630, 9.630, 9.630, 9.630, 9.630, 9.630, 9.630, 9.630,
@@ -205,8 +205,8 @@ class EcalRecProducer(Producer) :
         distribution (one mean, a low and high deviation) to the histogram.
         """
 
-        #self.secondOrderEnergyCorrection = 4000. / 3940.5
-        self.secondOrderEnergyCorrection = 8000. / 7998.3
+        #self.second_order_energy_correction = 4000. / 3940.5
+        self.second_order_energy_correction = 8000. / 7998.3
         # these layer weights were the 'dE' column of the table output by Detectors/util/ecal_layer_stack.py
         # See https://github.com/LDMX-Software/ldmx-sw/issues/1725
         # TLDR: these are wrong but only off by an absolute value of ~0.2, future detector versions
@@ -226,7 +226,7 @@ class EcalRecProducer(Producer) :
         The mean of the resulting total recon energy is found by fitting a two-sided normal
         distribution (one mean, a low and high deviation) to the histogram.
         """
-        self.secondOrderEnergyCorrection = 8000. / 7332.8
+        self.second_order_energy_correction = 8000. / 7332.8
         # these layer weights were the 'dE' column of the table output by Detectors/util/ecal_layer_stack.py
         self.layerWeights = [
             1.743, 3.401, 5.610, 6.715, 7.820, 10.030, 11.135, 11.135, 11.135, 11.135,
@@ -242,7 +242,7 @@ class EcalRecProducer(Producer) :
         so unity is being used as a placeholder.
         """
 
-        self.secondOrderEnergyCorrection = 1.
+        self.second_order_energy_correction = 1.
         self.layerWeights = [
                 2.312, 5.417, 9.837, 11.910, 11.910, 11.910
                 ]

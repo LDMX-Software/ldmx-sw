@@ -74,6 +74,7 @@ class BertiniNothingHardModel(simcfg.PhotoNuclearModel):
         self.hard_particle_threshold = 200.
         self.zmin = 74
         self.emin = 2500.
+
 class BertiniSingleNeutronModel(simcfg.PhotoNuclearModel):
     """A photonuclear model producing only topologies where only one neutron has
     kinetic energy above a particular threshold.
@@ -163,7 +164,7 @@ class BertiniExactlyNProductsModel(simcfg.PhotoNuclearModel):
     def neutron(n_products = 1, hard_particle_threshold=200.):
         # This is requiring exactly 1 neutron with at least 200 MeV
         model = BertiniExactlyNProductsModel(f"{n_products}_neutron_model")
-        model.hard_particle_threshold=hard_particle_threshold
+        model.hard_particle_threshold = hard_particle_threshold
         model.pdg_ids = [2212]
         model.n_products = n_products
         return model

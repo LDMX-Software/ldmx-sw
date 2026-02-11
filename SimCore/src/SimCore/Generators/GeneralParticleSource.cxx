@@ -23,7 +23,7 @@ namespace generators {
 GeneralParticleSource::GeneralParticleSource(
     const std::string& name, const framework::config::Parameters& parameters)
     : PrimaryGenerator(name, parameters) {
-  init_commands_ = parameters.get<std::vector<std::string>>("initCommands");
+  init_commands_ = parameters.get<std::vector<std::string>>("init_commands");
   for (const auto& cmd : init_commands_) {
     int g4_ret = G4UImanager::GetUIpointer()->ApplyCommand(cmd);
     if (g4_ret > 0) {
@@ -38,6 +38,13 @@ GeneralParticleSource::GeneralParticleSource(
 void GeneralParticleSource::GeneratePrimaryVertex(G4Event* event) {
   // just pass to the Geant4 implementation
   the_g4_source_.GeneratePrimaryVertex(event);
+
+  // Apply beam spot smearing if configured for this generator
+  if (useBeamspot() && event->GetNumberOfPrimaryVertex() > 0) {
+    smearBeamspot(
+        event->GetPrimaryVertex(event->GetNumberOfPrimaryVertex() - 1));
+  }
+
   return;
 }
 

@@ -32,11 +32,11 @@ class HcalRawDecoder(Producer) :
         self.detector_name = detector_name # only used when reading from file
 
         from LDMX.Framework import ldmxcfg
-        from LDMX.Hcal.DetectorMap import HcalDetectorMap
+        from LDMX.Hcal.detector_map import HcalDetectorMap
         if connections_table is None :
             # deduce if using eid based on presence of HcalDetectorMap in conditions system
             self.translate_eid = False
-            for cop in ldmxcfg.Process.lastProcess.conditionsObjectProviders :
+            for cop in ldmxcfg.Process.last_process.conditions_object_providers :
                 if isinstance(cop,HcalDetectorMap) :
                     self.translate_eid = True
                     break
@@ -75,10 +75,10 @@ class HcalAlignPolarfires(Producer) :
         self.max_tick_diff = max_tick_diff
 
         from LDMX.Framework import ldmxcfg
-        p = ldmxcfg.Process.lastProcess
+        p = ldmxcfg.Process.last_process
 
         if drop_lonely_events :
-            p.skimConsider(self.name)
+            p.skim_consider(self.name)
 
         if not keep_inputs :
             for i in self.input_names :

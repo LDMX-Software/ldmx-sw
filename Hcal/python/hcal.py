@@ -48,10 +48,10 @@ class HcalWABVetoProcessor(ldmxcfg.Producer) :
         self.mean_hits_per_cluster = 3.0
         self.mean_energy_per_cluster = 6.
 
-        self.inputHCALHitCollName = "HcalRecHits"
-        self.inputECALHitCollName = "EcalRecHits"
-        self.outputCollName = "HcalWABVetoes"
-        self.inputHCALClusterCollName = "HcalClusters"
+        self.input_hcal_hit_coll_name = "HcalRecHits"
+        self.input_ecal_hit_coll_name = "EcalRecHits"
+        self.output_coll_name = "HcalWABVetoes"
+        self.input_hcal_cluster_coll_name = "HcalClusters"
 
         self.hcal_hit_passname = ''
         self.ecal_hit_passname = ''
@@ -99,12 +99,12 @@ class HcalClusterProducer(ldmxcfg.Producer) :
         super().__init__(name,'hcal::HcalClusterProducer','Hcal')
 
         #self.EminSeed = 0.1 # Not used
-        self.EnoiseCut = 0.01
-        self.deltaTime = 10.
-        self.deltaR = 0.
-        self.EminCluster = 0.5 # Minimum Energy to be classed as a cluster TODO
-        self.cutOff = 10.
+        self.enoise_cut = 0.01
+        self.delta_time = 10.
+        self.delta_r = 0.
+        self.emin_cluster = 0.5 # Minimum Energy to be classed as a cluster TODO
+        self.cut_off = 10.
 
-        self.clusterCollName = 'HcalClusters'
+        self.cluster_coll_name = 'HcalClusters'
         self.hcal_hits_pass_name = ''
 

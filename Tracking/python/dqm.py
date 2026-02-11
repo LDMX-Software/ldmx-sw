@@ -12,16 +12,16 @@ class TrackerDigiDQM(ldmxcfg.Analyzer):
         self.measurements_passname = ''
 
         for i in range(0, 14):
-            self.build2DHistogram('global_yz_l%s' % i,
+            self.build_2d_histogram('global_yz_l%s' % i,
                                   'Global y (mm)', 70, -50, 20,
                                   'Global z (mm)', 100, -50, 50)
-            self.build2DHistogram('local_uv_l%s' % i,
+            self.build_2d_histogram('local_uv_l%s' % i,
                                   'u (mm)', 60, -30, 30,
                                   'v (mm)', 100, -50, 50)
-            self.build1DHistogram('time_l%s' % i,
+            self.build_1d_histogram('time_l%s' % i,
                                   'Time (ns)', 100, 0, 100)
 
-        self.build2DHistogram('global_xy',
+        self.build_2d_histogram('global_xy',
                               'Global x (mm)', 100, -1000, 0,
                               'Global y (mm)', 100, -50, 50)
 
@@ -80,339 +80,339 @@ class TrackingRecoDQM(ldmxcfg.Analyzer):
         pmax    =self.pmax
 
 
-        self.build1DHistogram("N_tracks",
+        self.build_1d_histogram("N_tracks",
                               "N tracks",10,0,10)
 
 
-        self.build1DHistogram("d0",
+        self.build_1d_histogram("d0",
                               "d0 [mm]",nbins,d0min,d0max)
 
-        self.build1DHistogram("z0",
+        self.build_1d_histogram("z0",
                               "z0 [mm]",nbins,z0min,z0max)
 
-        self.build1DHistogram("phi",
+        self.build_1d_histogram("phi",
                               "#phi [rad]",nbins,phimin,phimax)
 
-        self.build1DHistogram("theta",
+        self.build_1d_histogram("theta",
                               "#theta [rad]",nbins,thetamin,thetamax)
 
-        self.build1DHistogram("p",
+        self.build_1d_histogram("p",
                               "P [GeV]",nbins,0,pmax)
 
-        self.build1DHistogram("qop",
+        self.build_1d_histogram("qop",
                               "qOverP [GeV^{-1}]",nbins,qopmin,qopmax)
 
-        self.build1DHistogram("pt_bending",
+        self.build_1d_histogram("pt_bending",
                               "pT bending plane [GeV]",nbins,0.,pmax)
-        self.build1DHistogram("pt_beam",
+        self.build_1d_histogram("pt_beam",
                               "pT beam axis [GeV]",nbins,0,0.5)
 
-        self.build1DHistogram("nHits",
+        self.build_1d_histogram("nHits",
                               "nHits",15,0,15)
-        self.build1DHistogram("layers_hit",
+        self.build_1d_histogram("layers_hit",
                               "Num layers hit",15,0,15)
-        self.build1DHistogram("measurement_dedx",
+        self.build_1d_histogram("measurement_dedx",
                               "Measurement dE/dx (MeV/mm)", 60, 0., 0.6)
-        self.build1DHistogram("Chi2",
+        self.build_1d_histogram("Chi2",
                               "Chi2",nbins,0,100)
-        self.build1DHistogram("ndf",
+        self.build_1d_histogram("ndf",
                               "ndf",10,0,10)
-        self.build1DHistogram("Chi2_per_ndf",
+        self.build_1d_histogram("Chi2_per_ndf",
                               "Chi2/ndf",nbins,0,10)
-        self.build1DHistogram("nShared",
+        self.build_1d_histogram("nShared",
                               "nShared",5,0,5)
-        self.build1DHistogram("nHoles",
+        self.build_1d_histogram("nHoles",
                               "nHoles",5,0,5)
-        self.build1DHistogram("px",
+        self.build_1d_histogram("px",
                               "pX [GeV]",nbins,0.0,pmax)
-        self.build1DHistogram("py",
+        self.build_1d_histogram("py",
                               "pY [GeV]",nbins,-pmax/20.0,pmax/20.0)
-        self.build1DHistogram("pz",
+        self.build_1d_histogram("pz",
                               "pZ [GeV]",nbins,-pmax/20.0,pmax/20.0)
-        self.build1DHistogram("d0_err",
+        self.build_1d_histogram("d0_err",
                               "#sigma_{d0} [mm]",nbins,0,0.2)
-        self.build1DHistogram("z0_err",
+        self.build_1d_histogram("z0_err",
                               "#sigma_{z0} [mm]",nbins,0,0.7)
-        self.build1DHistogram("phi_err",
+        self.build_1d_histogram("phi_err",
                               "#sigma_{#phi} [rad]",nbins,0,0.04)
-        self.build1DHistogram("theta_err",
+        self.build_1d_histogram("theta_err",
                               "#sigma_{#theta} [rad]",nbins,0,0.06)
-        self.build1DHistogram("qop_err",
+        self.build_1d_histogram("qop_err",
                               "#sigma_{qOp} [GeV^{-1}]",nbins,0,1)
-        self.build1DHistogram("p_err",
+        self.build_1d_histogram("p_err",
                               "#sigma_{p} [GeV]", nbins, 0, 1)
 
 
-        self.build2DHistogram("d0_err_vs_p",
+        self.build_2d_histogram("d0_err_vs_p",
                               "p [GeV]", nbins, 0, pmax,
                               "#sigma_{d0} [mm]", nbins, 0,0.2)
 
-        self.build2DHistogram("z0_err_vs_p",
+        self.build_2d_histogram("z0_err_vs_p",
                               "p [GeV]", nbins, 0, pmax,
                               "#sigma_{z0} [mm]", nbins, 0,0.8)
 
-        self.build2DHistogram("p_err_vs_p",
+        self.build_2d_histogram("p_err_vs_p",
                               "p [GeV]", nbins, 0, pmax,
                               "#sigma_{p} [GeV]", nbins, 0,1)
 
-        self.build2DHistogram("p_err_vs_p_8hits",
+        self.build_2d_histogram("p_err_vs_p_8hits",
                               "p [GeV]", nbins, 0, pmax,
                               "#sigma_{p} [GeV]", nbins, 0,1)
 
-        self.build2DHistogram("p_err_vs_p_9hits",
+        self.build_2d_histogram("p_err_vs_p_9hits",
                               "p [GeV]", nbins, 0, pmax,
                               "#sigma_{p} [GeV]", nbins, 0,1)
 
-        self.build2DHistogram("p_err_vs_p_10hits",
+        self.build_2d_histogram("p_err_vs_p_10hits",
                               "p [GeV]", nbins, 0, pmax,
                               "#sigma_{p} [GeV]", nbins, 0,1)
 
-        self.build2DHistogram("res_p_vs_p",
+        self.build_2d_histogram("res_p_vs_p",
                               "p [GeV]", nbins, 0, pmax,
                               "res_{p} [GeV]", nbins, -3,3)
 
-        self.build2DHistogram("res_qop_vs_p",
+        self.build_2d_histogram("res_qop_vs_p",
                               "p [GeV]", nbins, 0, pmax,
                               "res_{qop} [GeV^{-1}]", nbins, -0.5,0.5)
 
-        self.build2DHistogram("res_d0_vs_p",
+        self.build_2d_histogram("res_d0_vs_p",
                               "p [GeV]"      , nbins, 0, pmax,
                               "res_{d0} [mm]", nbins, -0.05,0.05)
 
-        self.build2DHistogram("res_z0_vs_p",
+        self.build_2d_histogram("res_z0_vs_p",
                               "p [GeV]"      , nbins, 0, pmax,
                               "res_{z0} [mm]", nbins,-0.5,0.5)
 
-        self.build2DHistogram("res_phi_vs_p",
+        self.build_2d_histogram("res_phi_vs_p",
                               "p [GeV]"   , nbins, 0, pmax,
                               "res_{#phi}", nbins, -0.005,0.005)
 
-        self.build2DHistogram("res_theta_vs_p",
+        self.build_2d_histogram("res_theta_vs_p",
                               "p [GeV]"     , nbins, 0, pmax,
                               "res_{#theta}", nbins, -0.01,0.01)
 
-        self.build2DHistogram("res_p_vs_p_8hits",
+        self.build_2d_histogram("res_p_vs_p_8hits",
                               "p [GeV]",       nbins, 0, pmax,
                               "res_{p} [GeV]", nbins, -3,3)
 
-        self.build2DHistogram("res_p_vs_p_9hits",
+        self.build_2d_histogram("res_p_vs_p_9hits",
                               "p [GeV]", nbins, 0, pmax,
                               "res_{p} [GeV]", nbins, -3,3)
 
-        self.build2DHistogram("res_p_vs_p_10hits",
+        self.build_2d_histogram("res_p_vs_p_10hits",
                               "p [GeV]", nbins, 0, pmax,
                               "res_{p} [GeV]", nbins, -3,3)
 
 
-        self.build2DHistogram("pull_qop_vs_p",
+        self.build_2d_histogram("pull_qop_vs_p",
                               "p [GeV]"   , nbins, 0, pmax,
                               "pull_{qop}", nbins, -5,5)
 
-        self.build2DHistogram("pull_d0_vs_p",
+        self.build_2d_histogram("pull_d0_vs_p",
                               "p [GeV]"      , nbins, 0, pmax,
                               "pull_{d0}"    , nbins, -5,5)
 
-        self.build2DHistogram("pull_z0_vs_p",
+        self.build_2d_histogram("pull_z0_vs_p",
                               "p [GeV]"      , nbins, 0, pmax,
                               "pull_{z0}"    , nbins,-5,5)
 
-        self.build2DHistogram("pull_phi_vs_p",
+        self.build_2d_histogram("pull_phi_vs_p",
                               "p [GeV]"   , nbins, 0, pmax,
                               "pull_{#phi}", nbins, -5,5)
 
-        self.build2DHistogram("pull_theta_vs_p",
+        self.build_2d_histogram("pull_theta_vs_p",
                               "p [GeV]"      , nbins, 0, pmax,
                               "pull_{#theta}", nbins, -5,5)
 
 
-        self.build2DHistogram("res_pt_beam_vs_p",
+        self.build_2d_histogram("res_pt_beam_vs_p",
                               "truth p [GeV]", nbins, 0, pmax,
                               "res_{pt} beam", nbins, -0.5,0.5)
 
 
         if self.doTruth:
-            self.build1DHistogram("truth_N_tracks",
+            self.build_1d_histogram("truth_N_tracks",
                               "truth_N tracks",10,0,10)
-            self.build1DHistogram("truth_nHits",
+            self.build_1d_histogram("truth_nHits",
                                   "truth nHits", 15, 0,15)
-            self.build1DHistogram("truth_layers_hit",
+            self.build_1d_histogram("truth_layers_hit",
                                   "truth layers hit",15,0,15)
-            self.build1DHistogram("truth_d0",
+            self.build_1d_histogram("truth_d0",
                                   "truth d0 [mm]", nbins, d0min,d0max)
-            self.build1DHistogram("truth_z0",
+            self.build_1d_histogram("truth_z0",
                                   "truth z0 [mm]", nbins, z0min,z0max)
-            self.build1DHistogram("truth_phi",
+            self.build_1d_histogram("truth_phi",
                                   "truth #phi", nbins, phimin, phimax)
-            self.build1DHistogram("truth_theta",
+            self.build_1d_histogram("truth_theta",
                                   "truth #theta", nbins, thetamin,thetamax)
-            self.build1DHistogram("truth_qop",
+            self.build_1d_histogram("truth_qop",
                                   "truth q/p [GeV^{-1}]",nbins,qopmin,qopmax)
-            self.build1DHistogram("truth_p",
+            self.build_1d_histogram("truth_p",
                                   "truth p [GeV]",nbins, 0., pmax)
-            self.build1DHistogram("truth_beam_angle",
+            self.build_1d_histogram("truth_beam_angle",
                                   "angle wrt beam axis",20,0,2)
-            self.build1DHistogram("truth_PID",
+            self.build_1d_histogram("truth_PID",
                                   "Particles",8,-4,4)
-            self.build1DHistogram("truth_measurement_dedx",
+            self.build_1d_histogram("truth_measurement_dedx",
                                   "Truth measurement dE/dx (MeV/mm)", 60, 0., 0.6)
-            self.build1DHistogram("truth_kminus_p",
+            self.build_1d_histogram("truth_kminus_p",
                                   "truth p",nbins, 0., pmax)
-            self.build1DHistogram("truth_kplus_p",
+            self.build_1d_histogram("truth_kplus_p",
                                   "truth p",nbins, 0., pmax)
-            self.build1DHistogram("truth_piminus_p",
+            self.build_1d_histogram("truth_piminus_p",
                                   "truth p",nbins, 0., pmax)
-            self.build1DHistogram("truth_piplus_p",
+            self.build_1d_histogram("truth_piplus_p",
                                   "truth p",nbins, 0., pmax)
-            self.build1DHistogram("truth_electron_p",
+            self.build_1d_histogram("truth_electron_p",
                                   "truth p",nbins, 0., pmax)
-            self.build1DHistogram("truth_positron_p",
+            self.build_1d_histogram("truth_positron_p",
                                   "truth p",nbins, 0., pmax)
-            self.build1DHistogram("truth_proton_p",
+            self.build_1d_histogram("truth_proton_p",
                                   "truth p",nbins, 0., pmax)
 
 
-            #self.build1DHistogram("truth_pt_bending",
+            #self.build_1d_histogram("truth_pt_bending",
             #                  "pT bending plane [GeV]",100,-pmax,pmax)
-            #self.build1DHistogram("truth_pt_beam",
+            #self.build_1d_histogram("truth_pt_beam",
             #                      "pT beam axis [GeV]",100,-pmax,pmax)
 
             #res
-            self.build1DHistogram("res_d0",
+            self.build_1d_histogram("res_d0",
                                   "res d0 [mm]", nbins, -0.2,0.2)
-            self.build1DHistogram("res_z0",
+            self.build_1d_histogram("res_z0",
                                   "res z0 [mm]", nbins, -0.6,0.6)
-            self.build1DHistogram("res_phi",
+            self.build_1d_histogram("res_phi",
                                   "res #phi", nbins, -0.02, 0.02)
-            self.build1DHistogram("res_theta",
+            self.build_1d_histogram("res_theta",
                                   "res #theta", nbins, -0.04,0.04)
-            self.build1DHistogram("res_p",
+            self.build_1d_histogram("res_p",
                                   "res p [GeV]",nbins,-1,1)
 
-            self.build1DHistogram("res_pt_beam",
+            self.build_1d_histogram("res_pt_beam",
                                   "res pt beam [GeV]", nbins, -1,1)
 
-            self.build1DHistogram("res_qop",
+            self.build_1d_histogram("res_qop",
                                   "res q/p [GeV^{-1}]",nbins,-1,1)
 
             #pull
-            self.build1DHistogram("pull_d0",
+            self.build_1d_histogram("pull_d0",
                                   "pull d0",     100, -5,5)
-            self.build1DHistogram("pull_z0",
+            self.build_1d_histogram("pull_z0",
                                   "pull z0",     100, -5,5)
-            self.build1DHistogram("pull_phi",
+            self.build_1d_histogram("pull_phi",
                                   "pull #phi",   100, -5, 5)
-            self.build1DHistogram("pull_theta",
+            self.build_1d_histogram("pull_theta",
                                   "pull #theta", 100, -5,5)
-            self.build1DHistogram("pull_p",
+            self.build_1d_histogram("pull_p",
                                   "pull p",      100,-5,5)
-            self.build1DHistogram("pull_qop",
+            self.build_1d_histogram("pull_qop",
                                   "pull q/p",    100,-5,5)
 
 
             #Efficiency plots
-            self.build1DHistogram("match_prob",
+            self.build_1d_histogram("match_prob",
                                   "reco truth match probability", nbins, 0.0,1.1)
-            self.build1DHistogram("match_d0",
+            self.build_1d_histogram("match_d0",
                                   "reco match d0 [mm]", nbins, d0min,d0max)
-            self.build1DHistogram("match_z0",
+            self.build_1d_histogram("match_z0",
                                   "reco match z0 [mm]", nbins, z0min,z0max)
-            self.build1DHistogram("match_phi",
+            self.build_1d_histogram("match_phi",
                                   "reco match #phi",    nbins, phimin, phimax)
-            self.build1DHistogram("match_theta",
+            self.build_1d_histogram("match_theta",
                                   "reco match #theta",  nbins, thetamin,thetamax)
-            self.build1DHistogram("match_qop",
+            self.build_1d_histogram("match_qop",
                                   "truth q/p [GeV^{-1}]",nbins,qopmin,qopmax)
-            self.build1DHistogram("match_p",
+            self.build_1d_histogram("match_p",
                                   "truth p [GeV]", nbins,0,pmax)
-            self.build1DHistogram("match_beam_angle",
+            self.build_1d_histogram("match_beam_angle",
                                   "angle wrt beam axis", 20, 0, 2)
-            self.build1DHistogram("match_PID",
+            self.build_1d_histogram("match_PID",
                                   "Particles",8,-4,4)
-            self.build1DHistogram("match_nHits",
+            self.build_1d_histogram("match_nHits",
                                   "match nHits",15,0,15)
-            self.build1DHistogram("match_measurement_dedx",
+            self.build_1d_histogram("match_measurement_dedx",
                                   "Match measurement dE/dx (MeV/mm)", 60, 0., 0.6)
-            self.build1DHistogram("match_layers_hit",
+            self.build_1d_histogram("match_layers_hit",
                                   "match layers hit",15,0,15)
 
 
-            self.build1DHistogram("match_kminus_p",
+            self.build_1d_histogram("match_kminus_p",
                                   "truth p",nbins, 0., pmax)
-            self.build1DHistogram("match_kplus_p",
+            self.build_1d_histogram("match_kplus_p",
                                   "truth p",nbins, 0., pmax)
-            self.build1DHistogram("match_piminus_p",
+            self.build_1d_histogram("match_piminus_p",
                                   "truth p",nbins, 0., pmax)
-            self.build1DHistogram("match_piplus_p",
+            self.build_1d_histogram("match_piplus_p",
                                   "truth p",nbins, 0., pmax)
-            self.build1DHistogram("match_electron_p",
+            self.build_1d_histogram("match_electron_p",
                                   "truth p",nbins, 0., pmax)
-            self.build1DHistogram("match_positron_p",
+            self.build_1d_histogram("match_positron_p",
                                   "truth p",nbins, 0., pmax)
-            self.build1DHistogram("match_proton_p",
+            self.build_1d_histogram("match_proton_p",
                                   "truth p",nbins, 0., pmax)
 
 
 
-            chi2Fake_max    = 500
-            chi2NdfFake_max = 50
+            chi2_fake_max    = 500
+            chi2_ndf_fake_max = 50
             scaling = 1.
 
             #Fake Plots
-            self.build1DHistogram("fake_d0",
+            self.build_1d_histogram("fake_d0",
                                   "fake d0 [mm]", nbins, scaling*d0min,scaling*d0max)
-            self.build1DHistogram("fake_z0",
+            self.build_1d_histogram("fake_z0",
                                   "fake z0 [mm]", nbins, scaling*z0min,scaling*z0max)
-            self.build1DHistogram("fake_phi",
+            self.build_1d_histogram("fake_phi",
                                   "fake #phi", nbins, scaling*phimin, scaling*phimax)
-            self.build1DHistogram("fake_theta",
+            self.build_1d_histogram("fake_theta",
                                   "fake #theta", nbins, scaling*thetamin,scaling*thetamax)
-            self.build1DHistogram("fake_p",
+            self.build_1d_histogram("fake_p",
                                   "fake p [GeV]",nbins,0,pmax)
-            self.build1DHistogram("fake_qop",
+            self.build_1d_histogram("fake_qop",
                                   "fake qOverP [GeV^{-1}]",nbins,-40,40)
-            self.build1DHistogram("fake_nHits",
+            self.build_1d_histogram("fake_nHits",
                                   "fake nHits",15,0,15)
-            self.build1DHistogram("fake_layers_hit",
+            self.build_1d_histogram("fake_layers_hit",
                                   "fake layers hit",15,0,15)
-            self.build1DHistogram("fake_measurement_dedx",
+            self.build_1d_histogram("fake_measurement_dedx",
                                   "Fake measurement dE/dx (MeV/mm)", 60, 0., 0.6)
-            self.build1DHistogram("fake_Chi2",
-                                  "fake Chi2",100,0,chi2Fake_max)
-            self.build1DHistogram("fake_Chi2_per_ndf",
-                                  "fake Chi2/ndf",100,0,chi2NdfFake_max)
-            self.build1DHistogram("fake_nShared",
+            self.build_1d_histogram("fake_Chi2",
+                                  "fake Chi2",100,0,chi2_fake_max)
+            self.build_1d_histogram("fake_Chi2_per_ndf",
+                                  "fake Chi2/ndf",100,0,chi2_ndf_fake_max)
+            self.build_1d_histogram("fake_nShared",
                                   "fake nShared",5,0,5)
-            self.build1DHistogram("fake_nHoles",
+            self.build_1d_histogram("fake_nHoles",
                                   "fake nHoles",5,0,5)
 
 
             #Duplicate plots
 
-            self.build1DHistogram("dup_d0",
+            self.build_1d_histogram("dup_d0",
                                   "dup d0 [mm]", 100, d0min,d0max)
-            self.build1DHistogram("dup_z0",
+            self.build_1d_histogram("dup_z0",
                                   "dup z0 [mm]", 100, z0min,z0max)
-            self.build1DHistogram("dup_phi",
+            self.build_1d_histogram("dup_phi",
                                   "dup #phi", 100, phimin, phimax)
-            self.build1DHistogram("dup_theta",
+            self.build_1d_histogram("dup_theta",
                                   "dup #theta", 100, thetamin,thetamax)
-            self.build1DHistogram("dup_p",
+            self.build_1d_histogram("dup_p",
                                   "dup p [GeV]",100,0,pmax)
-            self.build1DHistogram("dup_qop",
+            self.build_1d_histogram("dup_qop",
                                   "dup qOverP [GeV^{-1}]",nbins,qopmin,qopmax)
-            self.build1DHistogram("dup_nHits",
+            self.build_1d_histogram("dup_nHits",
                                   "dup nHits",15,0,15)
-            self.build1DHistogram("dup_layers_hit",
+            self.build_1d_histogram("dup_layers_hit",
                                   "dup layers hit",15,0,15)
-            self.build1DHistogram("dup_measurement_dedx",
+            self.build_1d_histogram("dup_measurement_dedx",
                                   "Dup measurement dE/dx (MeV/mm)", 60, 0., 0.6)
-            self.build1DHistogram("dup_Chi2",
+            self.build_1d_histogram("dup_Chi2",
                                   "dup Chi2",100,0,100)
-            self.build1DHistogram("dup_Chi2_per_ndf",
+            self.build_1d_histogram("dup_Chi2_per_ndf",
                                   "dup Chi2/ndf",100,0,10)
-            self.build1DHistogram("dup_nShared",
+            self.build_1d_histogram("dup_nShared",
                                   "dup nShared",5,0,5)
-            self.build1DHistogram("dup_nHoles",
+            self.build_1d_histogram("dup_nHoles",
                                   "dup nHoles",5,0,5)
 
 
@@ -420,25 +420,25 @@ class TrackingRecoDQM(ldmxcfg.Analyzer):
 
 
             #Track states extrapolations
-            for trackState in self.trackStates:
+            for track_state in self.trackStates:
 
-                self.build1DHistogram("trk_"+trackState+"_loc0","trk_"+trackState+"_loc0 [mm]",200,-50,50)
-                self.build1DHistogram("trk_"+trackState+"_loc1","trk_"+trackState+"_loc1 [mm]",200,-50,50)
-                self.build1DHistogram(trackState+"_sp_hit_X",trackState+"_sp_hit_X [mm]",200,-50,50)
-                self.build1DHistogram(trackState+"_sp_hit_Y",trackState+"_sp_hit_Y [mm]",200,-50,50)
-                self.build1DHistogram("trk_"+trackState+"_loc0-sp_hit_X",trackState+"_diff loc0 and hit_X [mm]",200,-0.2,0.2)
-                self.build1DHistogram("trk_"+trackState+"_loc1-sp_hit_Y",trackState+"_diff loc1 and hit_Y [mm]",200,-5,5)
-                self.build1DHistogram(trackState+"_Pulls_of_loc0",trackState+"_pulls_of_loc0 [mm]",200,-5,5)
-                self.build1DHistogram(trackState+"_Pulls_of_loc1",trackState+"_pulls_of_loc1 [mm]",200,-5,5)
+                self.build_1d_histogram("trk_"+track_state+"_loc0","trk_"+track_state+"_loc0 [mm]",200,-50,50)
+                self.build_1d_histogram("trk_"+track_state+"_loc1","trk_"+track_state+"_loc1 [mm]",200,-50,50)
+                self.build_1d_histogram(track_state+"_sp_hit_X",track_state+"_sp_hit_X [mm]",200,-50,50)
+                self.build_1d_histogram(track_state+"_sp_hit_Y",track_state+"_sp_hit_Y [mm]",200,-50,50)
+                self.build_1d_histogram("trk_"+track_state+"_loc0-sp_hit_X",track_state+"_diff loc0 and hit_X [mm]",200,-0.2,0.2)
+                self.build_1d_histogram("trk_"+track_state+"_loc1-sp_hit_Y",track_state+"_diff loc1 and hit_Y [mm]",200,-5,5)
+                self.build_1d_histogram(track_state+"_Pulls_of_loc0",track_state+"_pulls_of_loc0 [mm]",200,-5,5)
+                self.build_1d_histogram(track_state+"_Pulls_of_loc1",track_state+"_pulls_of_loc1 [mm]",200,-5,5)
 
-                self.build2DHistogram(trackState+"_res_loc0-vs-N_hits","N_hits",  5,6.5,11.5,trackState+"_res_loc0 [mm]",100,-0.2,0.2)
-                self.build2DHistogram(trackState+"_res_loc1-vs-N_hits","N_hits",  5,6.5,11.5,trackState+"_res_loc1 [mm]",100,-5,5)
-                self.build2DHistogram(trackState+"_res_loc0-vs-trk_p",  "trk_p",200,0,5,     trackState+"_res_loc0 [mm]",100,-0.2,0.2)
-                self.build2DHistogram(trackState+"_res_loc1-vs-trk_p",  "trk_p",200,0,5,     trackState+"_res_loc1 [mm]",100,-5,5)
-                self.build2DHistogram(trackState+"_pulls_loc0-vs-N_hits","N_hits",5,6.5,11.5,trackState+"_pulls_loc0 [mm]",100,-3,3)
-                self.build2DHistogram(trackState+"_pulls_loc1-vs-N_hits","N_hits",5,6.5,11.5,trackState+"_pulls_loc1 [mm]",100,-3,3)
-                self.build2DHistogram(trackState+"_pulls_loc0-vs-trk_p","trk_p",200,0,5,     trackState+"_pulls_loc0 [mm]",100,-3,3)
-                self.build2DHistogram(trackState+"_pulls_loc1-vs-trk_p","trk_p",200,0,5,     trackState+"_pulls_loc1 [mm]",100,-3,3)
+                self.build_2d_histogram(track_state+"_res_loc0-vs-N_hits","N_hits",  5,6.5,11.5,track_state+"_res_loc0 [mm]",100,-0.2,0.2)
+                self.build_2d_histogram(track_state+"_res_loc1-vs-N_hits","N_hits",  5,6.5,11.5,track_state+"_res_loc1 [mm]",100,-5,5)
+                self.build_2d_histogram(track_state+"_res_loc0-vs-trk_p",  "trk_p",200,0,5,     track_state+"_res_loc0 [mm]",100,-0.2,0.2)
+                self.build_2d_histogram(track_state+"_res_loc1-vs-trk_p",  "trk_p",200,0,5,     track_state+"_res_loc1 [mm]",100,-5,5)
+                self.build_2d_histogram(track_state+"_pulls_loc0-vs-N_hits","N_hits",5,6.5,11.5,track_state+"_pulls_loc0 [mm]",100,-3,3)
+                self.build_2d_histogram(track_state+"_pulls_loc1-vs-N_hits","N_hits",5,6.5,11.5,track_state+"_pulls_loc1 [mm]",100,-3,3)
+                self.build_2d_histogram(track_state+"_pulls_loc0-vs-trk_p","trk_p",200,0,5,     track_state+"_pulls_loc0 [mm]",100,-3,3)
+                self.build_2d_histogram(track_state+"_pulls_loc1-vs-trk_p","trk_p",200,0,5,     track_state+"_pulls_loc1 [mm]",100,-3,3)
 
 class StraightTracksDQM(ldmxcfg.Analyzer):
     def __init__(self, name="StraightTracksDQM"):
@@ -470,75 +470,75 @@ class StraightTracksDQM(ldmxcfg.Analyzer):
         thetamin=self.thetamin
         thetamax=self.thetamax
 
-        self.build1DHistogram("N_tracks","N tracks",10,0,10)
+        self.build_1d_histogram("N_tracks","N tracks",10,0,10)
 
-        self.build1DHistogram("phi", "#phi [rad]",nbins,phimin,phimax)
+        self.build_1d_histogram("phi", "#phi [rad]",nbins,phimin,phimax)
 
-        self.build1DHistogram("theta", "#theta [rad]",nbins,thetamin,thetamax)
+        self.build_1d_histogram("theta", "#theta [rad]",nbins,thetamin,thetamax)
 
-        self.build1DHistogram("trk_PID","Particles",30,-15,15)
-        self.build1DHistogram("nHits", "nHits",5,0,5)
-        self.build1DHistogram("Chi2", "Chi2",nbins,0,15)
-        self.build1DHistogram("ndf", "ndf",5,0,5)
-        self.build1DHistogram("Chi2_per_ndf", "Chi2/ndf",nbins,0,10)
-        self.build1DHistogram("dRecHit", "Distance to Nearest EcalRecHit [mm]",nbins, 0.0, 20.0)
-        self.build1DHistogram("phi_err","#sigma_{#phi} [rad]",nbins,0,0.001)
-        self.build1DHistogram("theta_err","#sigma_{#theta} [rad]",nbins,0,0.03)
+        self.build_1d_histogram("trk_PID","Particles",30,-15,15)
+        self.build_1d_histogram("nHits", "nHits",5,0,5)
+        self.build_1d_histogram("Chi2", "Chi2",nbins,0,15)
+        self.build_1d_histogram("ndf", "ndf",5,0,5)
+        self.build_1d_histogram("Chi2_per_ndf", "Chi2/ndf",nbins,0,10)
+        self.build_1d_histogram("dRecHit", "Distance to Nearest EcalRecHit [mm]",nbins, 0.0, 20.0)
+        self.build_1d_histogram("phi_err","#sigma_{#phi} [rad]",nbins,0,0.001)
+        self.build_1d_histogram("theta_err","#sigma_{#theta} [rad]",nbins,0,0.03)
 
         if self.doTruth:
-#            self.build1DHistogram("truth_N_tracks","truth_N tracks",10,0,10)
-#            self.build1DHistogram("truth_nHits","truth nHits", 15, 0,15)
-            self.build1DHistogram("truth_phi","truth #phi", nbins, phimin, phimax)
-            self.build1DHistogram("truth_theta","truth #theta", nbins, thetamin,thetamax)
+#            self.build_1d_histogram("truth_N_tracks","truth_N tracks",10,0,10)
+#            self.build_1d_histogram("truth_nHits","truth nHits", 15, 0,15)
+            self.build_1d_histogram("truth_phi","truth #phi", nbins, phimin, phimax)
+            self.build_1d_histogram("truth_theta","truth #theta", nbins, thetamin,thetamax)
 
-            self.build1DHistogram("truth_PID","Particles",30,-15,15)
+            self.build_1d_histogram("truth_PID","Particles",30,-15,15)
 
-            self.build1DHistogram("res_phi","res #phi", nbins, -0.02, 0.02)
-            self.build1DHistogram("res_theta","res #theta", nbins, -0.04,0.04)
+            self.build_1d_histogram("res_phi","res #phi", nbins, -0.02, 0.02)
+            self.build_1d_histogram("res_theta","res #theta", nbins, -0.04,0.04)
 
-            self.build1DHistogram("pull_phi","pull #phi",   100, -5, 5)
-            self.build1DHistogram("pull_theta","pull #theta", 100, -5,5)
+            self.build_1d_histogram("pull_phi","pull #phi",   100, -5, 5)
+            self.build_1d_histogram("pull_theta","pull #theta", 100, -5,5)
 
-            chi2Fake_max    = 15
-            chi2NdfFake_max = 10
+            chi2_fake_max    = 15
+            chi2_ndf_fake_max = 10
             scaling = 1.
 
             #Fake Plots
-            self.build1DHistogram("fake_phi","fake #phi", nbins, scaling*phimin, scaling*phimax)
-            self.build1DHistogram("fake_theta", "fake #theta", nbins, scaling*thetamin,scaling*thetamax)
-            self.build1DHistogram("fake_nHits","fake nHits",5,0,5)
-            self.build1DHistogram("fake_Chi2","fake Chi2",nbins,0,chi2Fake_max)
-            self.build1DHistogram("fake_Chi2_per_ndf","fake Chi2/ndf",nbins,0,chi2NdfFake_max)
-            self.build1DHistogram("fake_trk_PID","Particles",8,-4,4)
+            self.build_1d_histogram("fake_phi","fake #phi", nbins, scaling*phimin, scaling*phimax)
+            self.build_1d_histogram("fake_theta", "fake #theta", nbins, scaling*thetamin,scaling*thetamax)
+            self.build_1d_histogram("fake_nHits","fake nHits",5,0,5)
+            self.build_1d_histogram("fake_Chi2","fake Chi2",nbins,0,chi2_fake_max)
+            self.build_1d_histogram("fake_Chi2_per_ndf","fake Chi2/ndf",nbins,0,chi2_ndf_fake_max)
+            self.build_1d_histogram("fake_trk_PID","Particles",8,-4,4)
 
             #Duplicate plots
-            self.build1DHistogram("dup_phi","dup #phi", 100, phimin, phimax)
-            self.build1DHistogram("dup_theta","dup #theta", 100, thetamin,thetamax)
-            self.build1DHistogram("dup_nHits","dup nHits",5,0,5)
-            self.build1DHistogram("dup_Chi2","dup Chi2",1000,0,100)
-            self.build1DHistogram("dup_Chi2_per_ndf","dup Chi2/ndf",1000,0,100)
-            self.build1DHistogram("dup_trk_PID","Particles",30,-15,15)
+            self.build_1d_histogram("dup_phi","dup #phi", 100, phimin, phimax)
+            self.build_1d_histogram("dup_theta","dup #theta", 100, thetamin,thetamax)
+            self.build_1d_histogram("dup_nHits","dup nHits",5,0,5)
+            self.build_1d_histogram("dup_Chi2","dup Chi2",1000,0,100)
+            self.build_1d_histogram("dup_Chi2_per_ndf","dup Chi2/ndf",1000,0,100)
+            self.build_1d_histogram("dup_trk_PID","Particles",30,-15,15)
 
-            self.build1DHistogram("trk_target_loc0","trk_target_loc0 [mm]",200,-50,50)
-            self.build1DHistogram("trk_target_loc1","trk_target_loc1 [mm]",200,-50,50)
-            self.build1DHistogram("trk_target_loc0-truth_target_loc0","target trk_loc0 - truth_loc0 [mm]",100,-0.1,0.1)
-            self.build1DHistogram("trk_target_loc1-truth_target_loc1","target trk_loc1 - truth_loc1 [mm]",100,-2,2)
-            self.build1DHistogram("trk_ecal_loc0","trk_ecal_loc0 [mm]",200,-50,50)
-            self.build1DHistogram("trk_ecal_loc1","trk_ecal_loc1 [mm]",200,-50,50)
-            self.build1DHistogram("trk_ecal_loc0-truth_ecal_loc0","ecal trk_loc0 - truth_loc0 [mm]",200,-0.3,0.3)
-            self.build1DHistogram("trk_ecal_loc1-truth_ecal_loc1","ecal trk_loc1 - truth_loc1 [mm]",200,-6,6)
+            self.build_1d_histogram("trk_target_loc0","trk_target_loc0 [mm]",200,-50,50)
+            self.build_1d_histogram("trk_target_loc1","trk_target_loc1 [mm]",200,-50,50)
+            self.build_1d_histogram("trk_target_loc0-truth_target_loc0","target trk_loc0 - truth_loc0 [mm]",100,-0.1,0.1)
+            self.build_1d_histogram("trk_target_loc1-truth_target_loc1","target trk_loc1 - truth_loc1 [mm]",100,-2,2)
+            self.build_1d_histogram("trk_ecal_loc0","trk_ecal_loc0 [mm]",200,-50,50)
+            self.build_1d_histogram("trk_ecal_loc1","trk_ecal_loc1 [mm]",200,-50,50)
+            self.build_1d_histogram("trk_ecal_loc0-truth_ecal_loc0","ecal trk_loc0 - truth_loc0 [mm]",200,-0.3,0.3)
+            self.build_1d_histogram("trk_ecal_loc1-truth_ecal_loc1","ecal trk_loc1 - truth_loc1 [mm]",200,-6,6)
 
-            self.build1DHistogram("target_Pulls_of_loc0","target_pulls_of_loc0 [mm]",200,-5,5)
-            self.build1DHistogram("target_Pulls_of_loc1","target_pulls_of_loc1 [mm]",200,-5,5)
-            self.build1DHistogram("ecal_Pulls_of_loc0","ecal_pulls_of_loc0 [mm]",200,-5,5)
-            self.build1DHistogram("ecal_Pulls_of_loc1","ecal_pulls_of_loc1 [mm]",200,-5,5)
+            self.build_1d_histogram("target_Pulls_of_loc0","target_pulls_of_loc0 [mm]",200,-5,5)
+            self.build_1d_histogram("target_Pulls_of_loc1","target_pulls_of_loc1 [mm]",200,-5,5)
+            self.build_1d_histogram("ecal_Pulls_of_loc0","ecal_pulls_of_loc0 [mm]",200,-5,5)
+            self.build_1d_histogram("ecal_Pulls_of_loc1","ecal_pulls_of_loc1 [mm]",200,-5,5)
 
-            self.build2DHistogram("target_res_loc0-vs-N_hits","N_hits",5,0.0,5.0,"target_res_loc0 [mm]",100,-0.2,0.2)
-            self.build2DHistogram("target_res_loc1-vs-N_hits","N_hits",5,0.0, 5.0,"target_res_loc1 [mm]",100,-5,5)
-            self.build2DHistogram("ecal_res_loc0-vs-N_hits","N_hits",5,0.0,5.0,"ecal_res_loc0 [mm]",100,-0.2,0.2)
-            self.build2DHistogram("ecal_res_loc1-vs-N_hits","N_hits",5,0.0, 5.0,"ecal_res_loc1 [mm]",100,-5,5)
+            self.build_2d_histogram("target_res_loc0-vs-N_hits","N_hits",5,0.0,5.0,"target_res_loc0 [mm]",100,-0.2,0.2)
+            self.build_2d_histogram("target_res_loc1-vs-N_hits","N_hits",5,0.0, 5.0,"target_res_loc1 [mm]",100,-5,5)
+            self.build_2d_histogram("ecal_res_loc0-vs-N_hits","N_hits",5,0.0,5.0,"ecal_res_loc0 [mm]",100,-0.2,0.2)
+            self.build_2d_histogram("ecal_res_loc1-vs-N_hits","N_hits",5,0.0, 5.0,"ecal_res_loc1 [mm]",100,-5,5)
 
-            self.build2DHistogram("target_pulls_loc0-vs-N_hits","N_hits",5,0.0,5.0,"target_pulls_loc0 [mm]",100,-3,3)
-            self.build2DHistogram("target_pulls_loc1-vs-N_hits","N_hits",5,0.0,5.0,"target_pulls_loc1 [mm]",100,-3,3)
-            self.build2DHistogram("ecal_pulls_loc0-vs-N_hits","N_hits",5,0.0,5.0,"ecal_pulls_loc0 [mm]",100,-3,3)
-            self.build2DHistogram("ecal_pulls_loc1-vs-N_hits","N_hits",5,0.0,5.0,"ecal_pulls_loc1 [mm]",100,-3,3)
+            self.build_2d_histogram("target_pulls_loc0-vs-N_hits","N_hits",5,0.0,5.0,"target_pulls_loc0 [mm]",100,-3,3)
+            self.build_2d_histogram("target_pulls_loc1-vs-N_hits","N_hits",5,0.0,5.0,"target_pulls_loc1 [mm]",100,-3,3)
+            self.build_2d_histogram("ecal_pulls_loc0-vs-N_hits","N_hits",5,0.0,5.0,"ecal_pulls_loc0 [mm]",100,-3,3)
+            self.build_2d_histogram("ecal_pulls_loc1-vs-N_hits","N_hits",5,0.0,5.0,"ecal_pulls_loc1 [mm]",100,-3,3)

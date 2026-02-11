@@ -6,17 +6,15 @@ p = ldmxcfg.Process('test')
 from LDMX.SimCore import simulator as sim
 
 
-mySim = sim.simulator( "mySim" )
+my_sim = sim.simulator( "my_sim" )
 det = 'ldmx-det-v15-8gev'
-mySim.setDetector(det, include_scoring_planes_minimal = True )
+my_sim.setDetector(det, include_scoring_planes_minimal = True )
 from LDMX.SimCore import generators as gen
 
+my_sim.generators.append( gen.single_8gev_e_upstream_tagger() )
+my_sim.description = 'Basic test Simulation'
 
-mySim.generators.append( gen.single_8gev_e_upstream_tagger() )
-mySim.beamSpotSmear = [20.,80.,0.]
-mySim.description = 'Basic test Simulation'
-
-p.sequence = [ mySim ]
+p.sequence = [ my_sim ]
 
 ##################################################################
 # Below should be the same for all sim scenarios
@@ -26,24 +24,24 @@ import sys
 
 
 p.run = int(os.environ['LDMX_RUN_NUMBER'])
-p.maxEvents = int(os.environ['LDMX_NUM_EVENTS'])
+p.max_events = int(os.environ['LDMX_NUM_EVENTS'])
 
-p.histogramFile = 'hist.root'
-p.outputFiles = ['events.root']
+p.histogram_file = 'hist.root'
+p.output_files = ['events.root']
 
 # Load the full tracking sequence
 import LDMX.Ecal.digi as ecal_digi
-import LDMX.Ecal.ecal_hardcoded_conditions
-import LDMX.Ecal.ecalClusters as ecal_cluster
+import LDMX.Ecal.ecal_clusters as ecal_cluster
 
 # Load the ECAL modules
-import LDMX.Ecal.EcalGeometry
+import LDMX.Ecal.ecal_geometry
+import LDMX.Ecal.ecal_hardcoded_conditions
 import LDMX.Ecal.vetos as ecal_vetos
 import LDMX.Hcal.digi as hcal_digi_and_reco
-import LDMX.Hcal.hcal_hardcoded_conditions
 
 # Load the HCAL modules
-import LDMX.Hcal.HcalGeometry
+import LDMX.Hcal.hcal_geometry
+import LDMX.Hcal.hcal_hardcoded_conditions
 from LDMX.Tracking import full_tracking_sequence
 
 
@@ -51,10 +49,10 @@ hcal_digi = hcal_digi_and_reco.HcalDigiProducer()
 hcal_reco = hcal_digi_and_reco.HcalRecProducer()
 
 # Load the TS modules
-from LDMX.TrigScint.trigScint import (
+from LDMX.TrigScint.trig_scint import (
         TrigScintClusterProducer,
         TrigScintDigiProducer,
-        trigScintTrack,
+        trig_scint_track,
 )
 
 
@@ -74,16 +72,16 @@ ts_clusters = [
 from LDMX.DQM import dqm
 
 # Load electron counting and trigger
-from LDMX.Recon.electronCounter import ElectronCounter
-from LDMX.Recon.simpleTrigger import TriggerProcessor
+from LDMX.Recon.electron_counter import ElectronCounter
+from LDMX.Recon.simple_trigger import TriggerProcessor
 
 
 count = ElectronCounter(1,'ElectronCounter')
 count.input_pass_name = ''
 
 # Load ecal veto and use tracking in it
-ecalVeto = ecal_vetos.EcalVetoProcessor()
-ecalMip = ecal_vetos.EcalMipProcessor()
+ecal_veto = ecal_vetos.EcalVetoProcessor()
+ecal_mip = ecal_vetos.EcalMipProcessor()
 ecal_veto_pnet = ecal_vetos.EcalPnetVetoProcessor()
 
 # Load HCAL veto
@@ -93,13 +91,13 @@ import LDMX.Hcal.hcal as hcal
 hcal_veto = hcal.HcalVetoProcessor()
 
 # Load preselection skimmer
-from LDMX.Recon.ecalPreselectionSkimmer import EcalPreselectionSkimmer
+from LDMX.Recon.ecal_preselection_skimmer import EcalPreselectionSkimmer
 
 
 ecal_pres_skimmer = EcalPreselectionSkimmer()
 
-p.logger.termLevel = 1
-# p.logger.custom(ecalVeto, level = -1)
+p.logger.term_level = 1
+# p.logger.custom(ecal_veto, level = -1)
 
 # Add full tracking for both tagger and recoil trackers: digi, seeds, CFK, ambiguity resolution, GSF, DQM
 p.sequence.extend(full_tracking_sequence.sequence)
@@ -110,15 +108,15 @@ p.sequence.extend([
         ecal_digi.EcalRecProducer(),
         ecal_pres_skimmer,
         ecal_cluster.EcalClusterProducer(),
-        ecalVeto,
-        ecalMip,
+        ecal_veto,
+        ecal_mip,
         ecal_veto_pnet,
         hcal_digi,
         hcal_reco,
         hcal_veto,
         *ts_digis,
         *ts_clusters,
-        trigScintTrack,
+        trig_scint_track,
         count, TriggerProcessor('trigger', 8000.),
         dqm.PhotoNuclearDQM(),
         dqm.EcalClusterAnalyzer()

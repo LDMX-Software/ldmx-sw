@@ -39,7 +39,7 @@ class HcalGeometry : public framework::ConditionsObject {
    * (Hcal/python/HcalGeometry.py) needs to match the CONDITIONS_OBJECT_NAME
    * exactly.
    */
-  static constexpr const char *CONDITIONS_OBJECT_NAME{"HcalGeometry"};
+  static constexpr const char *CONDITIONS_OBJECT_NAME{"hcal_geometry"};
 
   /**
    * Encodes the orientation of a bar.

@@ -6,33 +6,31 @@ from LDMX.Framework import ldmxcfg
 p = ldmxcfg.Process( 'test_ecal_digis' )
 
 # Set the maximum number of events
-p.maxEvents = 2000
+p.max_events = 2000
 
 # Import the Ecal conditions and geometry
 from LDMX.Ecal import digi, ecal_hardcoded_conditions, ecal_trig_digi
 
 
 # Set the output file name
-p.outputFiles = ['ecal_digi_pipeline_test.root']
+p.output_files = ['ecal_digi_pipeline_test.root']
 
 # The the histogram file name
-p.histogramFile = 'ecal_digi_pipeline_test_histo.root'
+p.histogram_file = 'ecal_digi_pipeline_test_histo.root'
 
 # Geometry provider
-from LDMX.Ecal import EcalGeometry
-
-
-geom = EcalGeometry.EcalGeometryProvider.getInstance()
+from LDMX.Ecal import ecal_geometry
+geom = ecal_geometry.EcalGeometryProvider.getInstance()
 
 # ECal digi
-ecalDigis = digi.EcalDigiProducer(si_thickness = 0.5)
+ecal_digis = digi.EcalDigiProducer(si_thickness = 0.5)
 
 # Turn of noise hits
-ecalDigis.hgcroc.noise = False
+ecal_digis.hgcroc.noise = False
 
 p.sequence = [
     ldmxcfg.Producer('fakeSimHits','ecal::test::EcalFakeSimHits','Ecal'),
-    ecalDigis,
+    ecal_digis,
     ecal_trig_digi.EcalTrigPrimDigiProducer(),
     digi.EcalRecProducer(),
     ldmxcfg.Analyzer('checkEcalHits','ecal::test::EcalCheckEnergyReconstruction','Ecal'),

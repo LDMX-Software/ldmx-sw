@@ -6,8 +6,8 @@
 namespace dqm {
 
 void EcalWABRecResults::configure(framework::config::Parameters &ps) {
-  ecal_wab_rec_name_ = ps.get<std::string>("ecal_WAB_rec_name");
-  ecal_wab_rec_pass_ = ps.get<std::string>("ecal_WAB_rec_pass");
+  ecal_wab_rec_name_ = ps.get<std::string>("ecal_wab_rec_name");
+  ecal_wab_rec_pass_ = ps.get<std::string>("ecal_wab_rec_pass");
 
   return;
 }

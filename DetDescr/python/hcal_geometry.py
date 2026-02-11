@@ -118,17 +118,17 @@ class HcalGeometry:
         # See https://github.com/LDMX-Software/ldmx-sw/blob/trunk/Detectors/data/ldmx-det-v13/hcal.gdml#L21
         # and https://github.com/LDMX-Software/ldmx-sw/blob/trunk/Detectors/data/ldmx-det-v13/hcal.gdml#L177
         # and the corresponding discussion https://github.com/LDMX-Software/ldmx-sw/pull/1135#discussion_r1178068211
-        side_TB_scint_length = 1944
+        side_tb_scint_length = 1944
 
         # See https://github.com/LDMX-Software/ldmx-sw/blob/trunk/Detectors/data/ldmx-det-v13/hcal.gdml#L22
         # and https://github.com/LDMX-Software/ldmx-sw/blob/trunk/Detectors/data/ldmx-det-v13/hcal.gdml#L181
         # and the corresponding discussion https://github.com/LDMX-Software/ldmx-sw/pull/1135#discussion_r1178070801
-        side_LR_scint_length = 1832
+        side_lr_scint_length = 1832
         self.v13.scint_length = [[back_scint_length for layer in range(self.v13.num_layers[0])],
-                                 [side_TB_scint_length for layer in range(self.v13.num_layers[1])],
-                                 [side_TB_scint_length for layer in range(self.v13.num_layers[2])],
-                                 [side_LR_scint_length for layer in range(self.v13.num_layers[3])],
-                                 [side_LR_scint_length for layer in range(self.v13.num_layers[4])],
+                                 [side_tb_scint_length for layer in range(self.v13.num_layers[1])],
+                                 [side_tb_scint_length for layer in range(self.v13.num_layers[2])],
+                                 [side_lr_scint_length for layer in range(self.v13.num_layers[3])],
+                                 [side_lr_scint_length for layer in range(self.v13.num_layers[4])],
                                  ]
 
         self.v13.zero_layer = [
@@ -311,42 +311,42 @@ class HcalGeometry:
         self.v14 = HcalReadoutGeometry()
 
         # GDML-parameters
-        hcal_airThick = 2.0
-        hcal_scintThick = 20.0
-        hcal_scintWidth = 50.0
+        hcal_air_thick = 2.0
+        hcal_scint_thick = 20.0
+        hcal_scint_width = 50.0
 
-        back_hcal_numLayers = 96
-        back_hcal_numScint = 40
-        back_hcal_absoThick = 25
-        back_hcal_layerThick = (
-            back_hcal_absoThick + hcal_scintThick + 2.0 * hcal_airThick
+        back_hcal_num_layers = 96
+        back_hcal_num_scint = 40
+        back_hcal_abso_thick = 25
+        back_hcal_layer_thick = (
+            back_hcal_abso_thick + hcal_scint_thick + 2.0 * hcal_air_thick
         )
         back_hcal_scint_length = 2000.0
         back_hcal_dx = back_hcal_scint_length
         back_hcal_dy = back_hcal_scint_length
-        back_hcal_dz = back_hcal_numLayers * back_hcal_layerThick
+        back_hcal_dz = back_hcal_num_layers * back_hcal_layer_thick
 
-        side_hcal_absoThick = 20.0
+        side_hcal_abso_thick = 20.0
         side_hcal_dz = 600.0
-        side_hcal_numModules = 4
-        side_hcal_numSections = 4
+        side_hcal_num_modules = 4
+        side_hcal_num_sections = 4
         side_hcal_scint_length = [1800.0, 1600.0, 1400.0, 1200.0]
-        side_hcal_numLayers = [4, 3, 2, 3]
-        side_hcal_numPrevLayers = [0, 4, 7, 9]
-        side_hcal_numScintZ = [m / hcal_scintWidth for m in side_hcal_scint_length]
-        side_hcal_numScintXY = side_hcal_dz / hcal_scintWidth
+        side_hcal_num_layers = [4, 3, 2, 3]
+        side_hcal_num_prev_layers = [0, 4, 7, 9]
+        side_hcal_num_scint_z = [m / hcal_scint_width for m in side_hcal_scint_length]
+        side_hcal_num_scint_xy = side_hcal_dz / hcal_scint_width
         # Number of layers oriented in x,y. Multiply by 2 to get the total number of layers
-        side_hcal_numTotalLayers = (
-            side_hcal_numLayers[0]
-            + side_hcal_numLayers[1]
-            + side_hcal_numLayers[2]
-            + side_hcal_numLayers[3]
+        side_hcal_num_total_layers = (
+            side_hcal_num_layers[0]
+            + side_hcal_num_layers[1]
+            + side_hcal_num_layers[2]
+            + side_hcal_num_layers[3]
         ) * 2
-        side_hcal_layerThick = (
-            side_hcal_absoThick + 2.0 * hcal_airThick + hcal_scintThick
+        side_hcal_layer_thick = (
+            side_hcal_abso_thick + 2.0 * hcal_air_thick + hcal_scint_thick
         )
-        side_hcal_moduleWidth = side_hcal_numTotalLayers * side_hcal_layerThick
-        side_hcal_moduleLength = side_hcal_scint_length[0]
+        side_hcal_module_width = side_hcal_num_total_layers * side_hcal_layer_thick
+        side_hcal_module_length = side_hcal_scint_length[0]
 
         hcal_envelope_dx = 3000.0
         hcal_envelope_dy = 3000.0
@@ -358,53 +358,53 @@ class HcalGeometry:
         ecal_front_z = 24.0 * 10
         # End GDML-parameters
 
-        self.v14.scint_thickness = hcal_scintThick
-        self.v14.scint_width = hcal_scintWidth
+        self.v14.scint_thickness = hcal_scint_thick
+        self.v14.scint_width = hcal_scint_width
         self.v14.ecal_dx = ecal_side_dx
         self.v14.ecal_dy = ecal_side_dy
         self.v14.layer_thickness = [
-            back_hcal_absoThick + self.v14.scint_thickness + 2 * hcal_airThick,
-            side_hcal_absoThick + self.v14.scint_thickness + 2 * hcal_airThick,
-            side_hcal_absoThick + self.v14.scint_thickness + 2 * hcal_airThick,
-            side_hcal_absoThick + self.v14.scint_thickness + 2 * hcal_airThick,
-            side_hcal_absoThick + self.v14.scint_thickness + 2 * hcal_airThick,
+            back_hcal_abso_thick + self.v14.scint_thickness + 2 * hcal_air_thick,
+            side_hcal_abso_thick + self.v14.scint_thickness + 2 * hcal_air_thick,
+            side_hcal_abso_thick + self.v14.scint_thickness + 2 * hcal_air_thick,
+            side_hcal_abso_thick + self.v14.scint_thickness + 2 * hcal_air_thick,
+            side_hcal_abso_thick + self.v14.scint_thickness + 2 * hcal_air_thick,
         ]
         self.v14.num_sections = 5
         self.v14.num_layers = [
-            back_hcal_numLayers,
-            side_hcal_numTotalLayers,
-            side_hcal_numTotalLayers,
-            side_hcal_numTotalLayers,
-            side_hcal_numTotalLayers,
+            back_hcal_num_layers,
+            side_hcal_num_total_layers,
+            side_hcal_num_total_layers,
+            side_hcal_num_total_layers,
+            side_hcal_num_total_layers,
         ]
         # (in absolute numbers)
         self.v14.zero_layer = [
-            ecal_front_z + side_hcal_dz + 2 * hcal_airThick + back_hcal_absoThick,
-            ecal_side_dy / 2.0 + 2 * hcal_airThick + side_hcal_absoThick,
-            ecal_side_dy / 2.0 + 2 * hcal_airThick + side_hcal_absoThick,
-            ecal_side_dx / 2.0 + 2 * hcal_airThick + side_hcal_absoThick,
-            ecal_side_dx / 2.0 + 2 * hcal_airThick + side_hcal_absoThick,
+            ecal_front_z + side_hcal_dz + 2 * hcal_air_thick + back_hcal_abso_thick,
+            ecal_side_dy / 2.0 + 2 * hcal_air_thick + side_hcal_abso_thick,
+            ecal_side_dy / 2.0 + 2 * hcal_air_thick + side_hcal_abso_thick,
+            ecal_side_dx / 2.0 + 2 * hcal_air_thick + side_hcal_abso_thick,
+            ecal_side_dx / 2.0 + 2 * hcal_air_thick + side_hcal_abso_thick,
         ]
 
         # 3D readout for side Hcal
         self.v14.side_3d_readout = 1
-        self.v14.side_num_modules = side_hcal_numModules
+        self.v14.side_num_modules = side_hcal_num_modules
         # In back hcal: odd layers are horizontal, even layers are vertical
         self.v14.back_horizontal_parity = 1
 
-        self.v14.scint_length = [[back_hcal_scint_length for layer in range(back_hcal_numLayers)],
-                                 [0.] * side_hcal_numTotalLayers, # Filled below
-                                 [0.] * side_hcal_numTotalLayers,
-                                 [0.] * side_hcal_numTotalLayers,
-                                 [0.] * side_hcal_numTotalLayers]
-        for s in range(side_hcal_numSections):
+        self.v14.scint_length = [[back_hcal_scint_length for layer in range(back_hcal_num_layers)],
+                                 [0.] * side_hcal_num_total_layers, # Filled below
+                                 [0.] * side_hcal_num_total_layers,
+                                 [0.] * side_hcal_num_total_layers,
+                                 [0.] * side_hcal_num_total_layers]
+        for s in range(side_hcal_num_sections):
             for m in range(self.v14.side_num_modules):
-                for l in range(side_hcal_numLayers[m] * 2):
+                for l in range(side_hcal_num_layers[m] * 2):
                     # Layer numbering starts at 1
                     layer = l + 1
                     # The back hcal (section 0) has already been handled
                     section_index = s + 1
-                    layer_index = l + side_hcal_numPrevLayers[m] * 2
+                    layer_index = l + side_hcal_num_prev_layers[m] * 2
                     if layer % 2 == 0:
                         # Layer number is even, length is along X/Y
                         self.v14.scint_length[section_index][layer_index] = side_hcal_scint_length[m]
@@ -413,21 +413,21 @@ class HcalGeometry:
                         self.v14.scint_length[section_index][layer_index] = side_hcal_dz
         # side properties
         # num strips
-        #  for layer 1: side_hcal_numScintZ (odd layers have strips oriented in z)
-        #  for layer 2: side_hcal_numScintXY
-        #  [side_hcal_numScintZ[m],side_hcal_numScintXY,etc]
+        #  for layer 1: side_hcal_num_scint_z (odd layers have strips oriented in z)
+        #  for layer 2: side_hcal_num_scint_xy
+        #  [side_hcal_num_scint_z[m],side_hcal_num_scint_xy,etc]
         half_total_width_side = []
         num_strips_side = []
         for m in range(self.v14.side_num_modules):
-            for l in range(side_hcal_numLayers[m] * 2):
+            for l in range(side_hcal_num_layers[m] * 2):
                 if (l + 1) % 2 == 0:
                     # Layer number is even
                     half_total_width_side.append(side_hcal_dz / 2)
-                    num_strips_side.append(int(side_hcal_numScintXY))
+                    num_strips_side.append(int(side_hcal_num_scint_xy))
                 else:
                     # Layer number is odd
                     half_total_width_side.append(side_hcal_scint_length[m] / 2)
-                    num_strips_side.append(int(side_hcal_numScintZ[m]))
+                    num_strips_side.append(int(side_hcal_num_scint_z[m]))
 
         # In side hcal: odd layers have strips oriented in z
         zero_strip_even = ecal_front_z
@@ -438,10 +438,10 @@ class HcalGeometry:
             ecal_side_dy / 2.0,   # Left
         ]
         zero_strip_side = []
-        for s in range(side_hcal_numSections):
+        for s in range(side_hcal_num_sections):
             zero_strip_section = []
             for m in range(self.v14.side_num_modules):
-                for l in range(side_hcal_numLayers[m] * 2):
+                for l in range(side_hcal_num_layers[m] * 2):
                     if (l + 1) % 2 == 0:
                         zero_strip_section.append(zero_strip_even)
                     else:
@@ -449,14 +449,14 @@ class HcalGeometry:
             zero_strip_side.append(zero_strip_section)
 
         self.v14.half_total_width = [
-            [back_hcal_dx / 2] * back_hcal_numLayers,
+            [back_hcal_dx / 2] * back_hcal_num_layers,
             half_total_width_side,
             half_total_width_side,
             half_total_width_side,
             half_total_width_side,
         ]
         self.v14.num_strips = [
-            [back_hcal_numScint] * back_hcal_numLayers,
+            [back_hcal_num_scint] * back_hcal_num_layers,
             num_strips_side,
             num_strips_side,
             num_strips_side,
@@ -464,7 +464,7 @@ class HcalGeometry:
         ]
         self.v14.zero_strip = [
             # for now x and y is the same so the
-            [back_hcal_dx / 2.0] * back_hcal_numLayers,
+            [back_hcal_dx / 2.0] * back_hcal_num_layers,
             zero_strip_side[0],
             zero_strip_side[1],
             zero_strip_side[2],

@@ -90,10 +90,10 @@ DetectorGeometry::DetectorGeometry() {
 
   std::map<std::string, std::any> hexReadoutParams;
   hexReadoutParams["gap"] = 1.5;
-  hexReadoutParams["moduleMinR"] = 85.0;
+  hexReadoutParams["module_min_r"] = 85.0;
   hexReadoutParams["layerZPositions"] = ecalSiPlanes;
-  hexReadoutParams["ecalFrontZ"] = ecal_zero_layer_;
-  hexReadoutParams["nCellRHeight"] = 35.3;
+  hexReadoutParams["ecal_front_z"] = ecal_zero_layer_;
+  hexReadoutParams["n_cell_r_height"] = 35.3;
   hexReadoutParams["verbose"] = 0;
 
   framework::config::Parameters hexReadout;

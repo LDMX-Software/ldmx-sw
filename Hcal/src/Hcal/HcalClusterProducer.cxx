@@ -17,13 +17,13 @@ HcalClusterProducer::HcalClusterProducer(const std::string& name,
     : Producer(name, process) {}
 
 void HcalClusterProducer::configure(framework::config::Parameters& parameters) {
-  enoise_cut_ = parameters.get<double>("EnoiseCut");
-  delta_time_ = parameters.get<double>("deltaTime");
-  delta_r_ = parameters.get<double>("deltaR");
-  emin_cluster_ = parameters.get<double>("EminCluster");
-  cut_off_ = parameters.get<double>("cutOff");
+  enoise_cut_ = parameters.get<double>("enoise_cut");
+  delta_time_ = parameters.get<double>("delta_time");
+  delta_r_ = parameters.get<double>("delta_r");
+  emin_cluster_ = parameters.get<double>("emin_cluster");
+  cut_off_ = parameters.get<double>("cut_off");
 
-  cluster_coll_name_ = parameters.get<std::string>("clusterCollName");
+  cluster_coll_name_ = parameters.get<std::string>("cluster_coll_name");
   hcal_hits_pass_name_ = parameters.get<std::string>("hcal_hits_pass_name");
 }
 

@@ -29,8 +29,8 @@ if not os.path.isdir(arg.out_dir) :
 
 p = ldmxcfg.Process( "valid" )
 p.run = arg.run
-p.maxEvents = arg.n_events
-p.maxTriesPerEvent = 10000
+p.max_events = arg.n_events
+p.max_tries_per_event = 10000
 file_stub = '_'.join([
     'type', 'events',
     'emin', str(arg.energy_min),
@@ -39,17 +39,17 @@ file_stub = '_'.join([
     'events', str(arg.n_events),
     'run', str(arg.run)
 ])
-p.outputFiles = [ arg.out_dir+'/'+file_stub+'.root' ]
+p.output_files = [ arg.out_dir+'/'+file_stub+'.root' ]
 
 # we want to see every event
-p.logFrequency = 1000
-p.termLogLevel = 0
+p.log_frequency = 1000
+p.term_log_level = 0
 
 from LDMX.SimCore import simulator
 from LDMX.SimCore import generators
-import LDMX.Ecal.EcalGeometry
+import LDMX.Ecal.ecal_geometry
 import LDMX.Ecal.ecal_hardcoded_conditions
-import LDMX.Hcal.HcalGeometry
+import LDMX.Hcal.hcal_geometry
 import LDMX.Ecal.digi as ecal_digi
 import LDMX.Ecal.ecal_trig_digi as ecal_trig_digi
 

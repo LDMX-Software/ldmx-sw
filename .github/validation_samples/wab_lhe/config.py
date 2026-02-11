@@ -3,7 +3,7 @@ from LDMX.Framework import ldmxcfg
 
 p = ldmxcfg.Process('test')
 
-p.maxTriesPerEvent = 10000
+p.max_tries_per_event = 10000
 
 from LDMX.Biasing import ecal
 from LDMX.SimCore import generators as gen
@@ -16,11 +16,11 @@ wab_gen = gen.lhe("WAB Generator", "8GeV_WABFF2_10K.lhe")
 wab_gen.vertex = [0.0, 0.0, 0.0]
 
 det = 'ldmx-det-v15-8gev'
-mySim = sim.simulator('sim')
-mySim.setDetector(det, include_scoring_planes_minimal = True)
-mySim.generators.append(wab_gen)
+my_sim = sim.simulator('sim')
+my_sim.setDetector(det, include_scoring_planes_minimal = True)
+my_sim.generators.append(wab_gen)
 
-p.sequence = [ mySim ]
+p.sequence = [ my_sim ]
 
 ##################################################################
 # Below should be the same for all sim scenarios
@@ -29,25 +29,25 @@ import os
 import sys
 
 
-p.maxEvents = int(int(os.environ['LDMX_NUM_EVENTS']) * 0.99)
+p.max_events = int(int(os.environ['LDMX_NUM_EVENTS']) * 0.99)
 p.run = int(os.environ['LDMX_RUN_NUMBER'])
 
-p.histogramFile = 'hist.root'
-p.outputFiles = ['events.root']
+p.histogram_file = 'hist.root'
+p.output_files = ['events.root']
 
 # Load the full tracking sequance
 import LDMX.Ecal.digi as ecal_digi
-import LDMX.Ecal.ecal_hardcoded_conditions
-import LDMX.Ecal.ecalClusters as ecal_cluster
+import LDMX.Ecal.ecal_clusters as ecal_cluster
 
 # Load the ECAL modules
-import LDMX.Ecal.EcalGeometry
+import LDMX.Ecal.ecal_geometry
+import LDMX.Ecal.ecal_hardcoded_conditions
 import LDMX.Ecal.vetos as ecal_vetos
 import LDMX.Hcal.digi as hcal_digi_and_reco
-import LDMX.Hcal.hcal_hardcoded_conditions
 
 # Load the HCAL modules
-import LDMX.Hcal.HcalGeometry
+import LDMX.Hcal.hcal_geometry
+import LDMX.Hcal.hcal_hardcoded_conditions
 from LDMX.Tracking import full_tracking_sequence
 
 
@@ -58,9 +58,9 @@ hcal_reco = hcal_digi_and_reco.HcalRecProducer()
 # Cant run this until we figure out how to have
 # an upstream tagger track (LHE info starts at target)
 
-# from LDMX.TrigScint.trigScint import TrigScintDigiProducer
-# from LDMX.TrigScint.trigScint import TrigScintClusterProducer
-# from LDMX.TrigScint.trigScint import trigScintTrack
+# from LDMX.TrigScint.trig_scint import TrigScintDigiProducer
+# from LDMX.TrigScint.trig_scint import TrigScintClusterProducer
+# from LDMX.TrigScint.trig_scint import trig_scint_track
 # ts_digis = [
 #         TrigScintDigiProducer.pad1(),
 #         TrigScintDigiProducer.pad2(),
@@ -76,8 +76,8 @@ hcal_reco = hcal_digi_and_reco.HcalRecProducer()
 # Load electron counting and trigger
 from LDMX.Ecal import ecal_trig_digi
 from LDMX.Hcal import hcal_trig_digi
-from LDMX.Recon.electronCounter import ElectronCounter
-from LDMX.Recon.simpleTrigger import TriggerProcessor
+from LDMX.Recon.electron_counter import ElectronCounter
+from LDMX.Recon.simple_trigger import TriggerProcessor
 from LDMX.Trigger import trigger_energy_sums
 
 
@@ -101,7 +101,7 @@ hcal_veto = hcal.HcalVetoProcessor()
 hcal_clusters = hcal.HcalClusterProducer()
 hcal_wab = hcal.HcalWABVetoProcessor()
 
-p.logger.termLevel = 1
+p.logger.term_level = 1
 # Example to show trace level logging for recoil CKF  (only)
 #p.logger.custom(full_tracking_sequence.dqm_recoil_ckf, level = -1)
 

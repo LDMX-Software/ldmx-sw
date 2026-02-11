@@ -13,11 +13,11 @@ QIEAnalyzer::QIEAnalyzer(const std::string& name, framework::Process& process)
     : Analyzer(name, process) {}
 
 void QIEAnalyzer::configure(framework::config::Parameters& parameters) {
-  input_col_ = parameters.get<std::string>("inputCollection");
-  input_pass_name_ = parameters.get<std::string>("inputPassName");
+  input_col_ = parameters.get<std::string>("input_collection");
+  input_pass_name_ = parameters.get<std::string>("input_pass_name");
   peds_ = parameters.get<std::vector<double> >("pedestals");
   gain_ = parameters.get<std::vector<double> >("gain");
-  start_sample_ = parameters.get<int>("startSample");
+  start_sample_ = parameters.get<int>("start_sample");
 
   ldmx_log(trace) << "In configure(), got parameters "
                   << "\n\t inputCollection = " << input_col_

@@ -16,7 +16,7 @@ class LinearSeedFinder(Producer):
     ----------
     input_hits_collection : string
         The name of the input collection of hits to be used for seed finding.
-    input_recHits_collection : string
+    input_rec_hits_collection : string
         The name of the input collection of Ecal RecHits (from layer 1) to give a degree of freedom to seed finding.
     out_seed_collection : string
         The name of the ouput collection of seeds to be stored.
@@ -85,7 +85,7 @@ class LinearTruthTracking(Producer):
     ----------
     input_hits_collection : string
         The name of the input collection of hits to be used for truth tracking.
-    input_recHits_collection : string
+    input_rec_hits_collection : string
         The name of the input collection of Ecal RecHits (from layer 1) to check track quality
     out_track_collection : string
         The name of the ouput collection of truth tracks to be stored.

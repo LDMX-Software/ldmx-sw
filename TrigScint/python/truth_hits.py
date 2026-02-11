@@ -25,22 +25,22 @@ class TruthHitProducer(ldmxcfg.Producer) :
 
     def up() :
         """Get the beam electron truth hits for the trigger pad upstream of target"""
-        trHit = TruthHitProducer( 'truthBeamElectronsUp' )
-        trHit.input_collection = 'TriggerPadUpSimHits'
-        trHit.output_collection= 'truthBeamElectronsUp'
-        return trHit
+        tr_hit = TruthHitProducer( 'truthBeamElectronsUp' )
+        tr_hit.input_collection = 'TriggerPadUpSimHits'
+        tr_hit.output_collection= 'truthBeamElectronsUp'
+        return tr_hit
 
     def down() :
         """Get the beam electron truth hits for the trigger pad downstream of target"""
-        trHit = TruthHitProducer( 'truthBeamElectronsDn' )
-        trHit.input_collection = 'TriggerPadDownSimHits'
-        trHit.output_collection= 'truthBeamElectronsDn'
-        return trHit
+        tr_hit = TruthHitProducer( 'truthBeamElectronsDn' )
+        tr_hit.input_collection = 'TriggerPadDownSimHits'
+        tr_hit.output_collection= 'truthBeamElectronsDn'
+        return tr_hit
 
     def tagger() :
         """Get the beam electron truth hits for the trigger pad upstream of tagger"""
-        trHit = TruthHitProducer( 'truthBeamElectronsTag' )
-        trHit.input_collection = 'TriggerPadTaggerSimHits'
-        trHit.output_collection= 'truthBeamElectronsTag'
-        return trHit
+        tr_hit = TruthHitProducer( 'truthBeamElectronsTag' )
+        tr_hit.input_collection = 'TriggerPadTaggerSimHits'
+        tr_hit.output_collection= 'truthBeamElectronsTag'
+        return tr_hit
 

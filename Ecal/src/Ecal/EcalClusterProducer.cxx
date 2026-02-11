@@ -28,7 +28,7 @@ void EcalClusterProducer::configure(framework::config::Parameters& ps) {
   algo_coll_name_ = ps.get<std::string>("algo_coll_name");
   algo_name_ = ps.get<std::string>("algo_name");
   cluster_coll_name_ = ps.get<std::string>("cluster_coll_name");
-  clue_ = ps.get<bool>("CLUE");
+  clue_ = ps.get<bool>("clue");
   nbr_of_layers_ = ps.get<int>("nbr_of_layers");
   reclustering_ = ps.get<bool>("reclustering");
 }

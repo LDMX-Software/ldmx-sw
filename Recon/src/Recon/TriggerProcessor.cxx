@@ -7,7 +7,7 @@ namespace recon {
 
 void TriggerProcessor::configure(framework::config::Parameters& parameters) {
   layer_e_sum_cuts_ = parameters.get<std::vector<double>>("thresholds");
-  beam_energy_ = parameters.get<double>("beamEnergy");
+  beam_energy_ = parameters.get<double>("beam_energy");
   mode_ = parameters.get<int>("mode");
   start_layer_ = parameters.get<int>("start_layer");
   end_layer_ = parameters.get<int>("end_layer");

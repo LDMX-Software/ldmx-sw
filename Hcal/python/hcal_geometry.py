@@ -39,8 +39,8 @@ class HcalGeometryProvider(ldmxcfg.ConditionsObjectProvider):
             raise Exception('HcalGeometryProvider is a singleton class and should only be retrieved using getInstance()')
         else:
             super().__init__("HcalGeometryProvider","hcal::HcalGeometryProvider","Hcal")
-            from LDMX.DetDescr import HcalGeometry
-            self.HcalGeometry = HcalGeometry.HcalGeometry()
+            from LDMX.DetDescr import hcal_geometry
+            self.hcal_geometry = hcal_geometry.HcalGeometry()
             HcalGeometryProvider.__instance = self
 
 # make sure global instance is created, this registers the condition
@@ -81,8 +81,8 @@ class HcalTriggerGeometryProvider(ldmxcfg.ConditionsObjectProvider):
             raise Exception('HcalTriggerGeometryProvider is a singleton class and should only be retrieved using getInstance()')
         else:
             super().__init__("HcalTriggerGeometry","hcal::HcalTriggerGeometryProvider","Hcal")
-            from LDMX.DetDescr import HcalGeometry
-            self.HcalGeometry = HcalGeometry.HcalGeometry()
+            from LDMX.DetDescr import hcal_geometry
+            self.hcal_geometry = hcal_geometry.HcalGeometry()
             HcalTriggerGeometryProvider.__instance = self
 
 # make sure global instance is created, this registers the condition
