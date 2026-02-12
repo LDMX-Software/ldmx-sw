@@ -1,5 +1,6 @@
 from LDMX.Framework import ldmxcfg
 
+import os
 
 p = ldmxcfg.Process('test')
 
@@ -11,7 +12,11 @@ from LDMX.SimCore import simulator as sim
 
 
 # Load LHE file containing WAB events
-wab_gen = gen.lhe("WAB Generator", "8GeV_WABFF2_10K.lhe")
+wab_gen = gen.lhe(
+    "WAB Generator",
+    f'{os.environ["CI_DATA"]}/wab_lhe/8GeV_WABFF2_10K.lhe'
+)
+
 # Place them in the middle of the target
 wab_gen.vertex = [0.0, 0.0, 0.0]
 
