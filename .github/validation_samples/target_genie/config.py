@@ -112,7 +112,7 @@ en_trigger = [
         trigger_energy_sums.TrigEcalEnergySum(),
         trigger_energy_sums.TrigHcalEnergySum(),
         trigger_energy_sums.TrigEcalClusterProducer(),
-        trigger_energy_sums.TrigElectronProducer(f'{os.environ["CI_DATA"]}/target_genie/propagationMap.root'),
+        trigger_energy_sums.TrigElectronProducer(prop_map_name=f'{os.environ["CI_DATA"]}/target_genie/propagationMap.root'),
         trigger_energy_sums.HcalTPSelector(),
         trigger_energy_sums.HCalTrigMipReco(),
         trigger_energy_sums.ECalTrigMipReco(),
