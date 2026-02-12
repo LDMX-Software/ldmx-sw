@@ -9,7 +9,7 @@ continue because some analyses can be done without the dictionary loaded.
 Examples
 --------
     
-    from LDMX.Framework import EventTree
+    from LDMX.Framework import event_tree
 
     event_tree = EventTree.EventTree('my_events.root')
 

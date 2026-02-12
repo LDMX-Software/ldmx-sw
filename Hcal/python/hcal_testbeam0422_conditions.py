@@ -9,7 +9,7 @@ You can modify this path if you have your conditions somewhere else.
 **Make sure these conditions are available to the container.
 
     import hcal_testbeam0422_conditions
-    hcal_testbeam0422_conditions.adc_pedestal.conditions_baseURL = 'file:///full/path/my/url/'
+    hcal_testbeam0422_conditions.adc_pedestal.conditions_base_url = 'file:///full/path/my/url/'
 
 """
 
@@ -22,12 +22,12 @@ from LDMX.Conditions.SimpleCSVTableProvider import (
 
 
 adc_pedestal = SimpleCSVDoubleTableProvider("hcal_adc_pedestal",["PEDESTAL_ADC","PEDESTAL_RMS_ADC"])
-adc_pedestal.conditions_baseURL = f'file://{os.environ["LDMX_BASE"]}/conditions-data/'
-adc_pedestal.entriesURL = '${LDMX_CONDITION_BASEURL}/Hcal/testbeam04-2022/pedestals/index_v1_0_0.csv'
+adc_pedestal.conditions_base_url = f'file://{os.environ["LDMX_BASE"]}/conditions-data/'
+adc_pedestal.entries_url = '${LDMX_CONDITION_BASEURL}/Hcal/testbeam04-2022/pedestals/index_v1_0_0.csv'
 
 adc_gain = SimpleCSVDoubleTableProvider("hcal_adc_gain",["MIPMPV_ADC"])
-adc_gain.conditions_baseURL = f'file://{os.environ["LDMX_BASE"]}/conditions-data/'
-adc_gain.entriesURL = '${LDMX_CONDITION_BASEURL}/Hcal/testbeam04-2022/mips/index_v1_1_0.csv'
+adc_gain.conditions_base_url = f'file://{os.environ["LDMX_BASE"]}/conditions-data/'
+adc_gain.entries_url = '${LDMX_CONDITION_BASEURL}/Hcal/testbeam04-2022/mips/index_v1_1_0.csv'
 
 # the TOT linearization parameters are very stable so we use the same set for all runs
 tot_calib = SimpleCSVDoubleTableProvider("hcal_tot_calibration",
@@ -37,8 +37,8 @@ tot_calib.validForever(f'file://{os.environ["LDMX_BASE"]}/conditions-data/Hcal/t
 
 toa_calib = SimpleCSVDoubleTableProvider("hcal_toa_calibration",
                                          ["bx_shift", "mean_shift"])
-toa_calib.conditions_baseURL = f'file://{os.environ["LDMX_BASE"]}/conditions-data/'
-toa_calib.entriesURL = '${LDMX_CONDITION_BASEURL}/Hcal/testbeam04-2022/toa_calibration/index_v1_0_0.csv'
+toa_calib.conditions_base_url = f'file://{os.environ["LDMX_BASE"]}/conditions-data/'
+toa_calib.entries_url = '${LDMX_CONDITION_BASEURL}/Hcal/testbeam04-2022/toa_calibration/index_v1_0_0.csv'
 
 from .conditions import HcalReconConditionsProvider
 

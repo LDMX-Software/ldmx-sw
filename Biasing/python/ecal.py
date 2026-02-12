@@ -186,7 +186,7 @@ def gamma_mumu(detector, generator) :
 
     return sim
 
-def deep_photo_nuclear( detector, generator, bias_threshold, processes, ecal_min_Z, require_photon_fromTarget = False) :
+def deep_photo_nuclear( detector, generator, bias_threshold, processes, ecal_min_z, require_photon_from_target = False) :
 
     # Instantiate the simulator.
     sim = simulator.simulator("photo-nuclear")
@@ -221,7 +221,7 @@ def deep_photo_nuclear( detector, generator, bias_threshold, processes, ecal_min
             # Make sure the primary electron with a given energy reaches the ECAL
             filters.PrimaryToEcalFilter(0.2*generator.energy*1000),
             # Only considers events when the interaction happend deep in the ECAL
-            filters.DeepEcalProcessFilter(bias_threshold, processes, ecal_min_Z, require_photon_fromTarget),
+            filters.DeepEcalProcessFilter(bias_threshold, processes, ecal_min_z, require_photon_from_target),
             # Keep intersting particles in the output
             util.TrackProcessFilter.conversion()
     ])

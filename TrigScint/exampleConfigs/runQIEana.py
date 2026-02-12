@@ -6,13 +6,13 @@ p = ldmxcfg.Process('plot') #
 
 import sys
 
-inputPassName="conv"
-nEv=2000
+input_pass_name="conv"
+n_ev=2000
 
 if len(sys.argv) > 2 :
-    startSample=int(sys.argv[2])
+    start_sample=int(sys.argv[2])
 else :
-    startSample=2
+    start_sample=2
 
 
 from LDMX.TrigScint.trigScint import QIEAnalyzer
@@ -20,32 +20,32 @@ from LDMX.TrigScint.trigScint import QIEAnalyzer
 
 # ------------------- all set; setup in detail, and run with these settings ---------------
 
-nChannels=12
-gainList=[2e6]*nChannels
+n_channels=12
+gain_list=[2e6]*n_channels
 #now if there is a gain file, use that instead to read in the gain for each channel
-gainFileName=sys.argv[1].replace(".root", "_gains.txt")
-gainFileName=gainFileName.replace("_adcTrig", "")  #not derived for adcTrig events
+gain_file_name=sys.argv[1].replace(".root", "_gains.txt")
+gain_file_name=gain_file_name.replace("_adcTrig", "")  #not derived for adcTrig events
 
 #pick one file more or less at random as the fallback option
-defaultRun="unpacked_4gev_negativeMu_Apr03_2200_reformat_30timeSamplesFrom0_linearize"
-dataPath=path.dirname( sys.argv[1] ) #extract the path to where we keep the data
-defaultGainFileName=dataPath+"/"+defaultRun+"_gains.txt"
+default_run="unpacked_4gev_negativeMu_Apr03_2200_reformat_30timeSamplesFrom0_linearize"
+data_path=path.dirname( sys.argv[1] ) #extract the path to where we keep the data
+default_gain_file_name=data_path+"/"+default_run+"_gains.txt"
 
 #if for some reason, gains are not derived for this run. probably too low stats --> fits not converging. bet on that inter-channel gain differences are larger than variations in channel over time; then it is better to use an old file than a flat default gain. also, this could be edited to become an average file.
-if not exists(gainFileName) :
-    gainFileName=defaultGainFileName
+if not exists(gain_file_name) :
+    gain_file_name=default_gain_file_name
 
-if exists(gainFileName) :
-    with open(gainFileName) as f:
+if exists(gain_file_name) :
+    with open(gain_file_name) as f:
         for line in f.readlines() :
             line=line.split(',')  #values are comma separated, one channel per line: channelNB, gain
-            gainList[ int(line[0].strip()) ] = float(line[1].strip())
+            gain_list[ int(line[0].strip()) ] = float(line[1].strip())
 
 print("Using this list of gains:")
-print(gainList)
+print(gain_list)
 
 #similarly for pedestals.
-pedList=[
+ped_list=[
             -4.6,  #0.6,
             -2.6, #4.4,
             -0.6, #-1.25,
@@ -65,47 +65,47 @@ pedList=[
         ]
 
 #now if there is a ped file, use that instead to read in the ped for each channel
-pedFileName=gainFileName.replace("gains", "peds")
-defaultPedFileName=dataPath+"/"+defaultRun+"_peds.txt"
+ped_file_name=gain_file_name.replace("gains", "peds")
+default_ped_file_name=data_path+"/"+default_run+"_peds.txt"
 
-if not exists(pedFileName) :
-    pedFileName=defaultPedFileName
+if not exists(ped_file_name) :
+    ped_file_name=default_ped_file_name
 
-if exists(pedFileName) :
-    with open(pedFileName) as f:
+if exists(ped_file_name) :
+    with open(ped_file_name) as f:
         for line in f.readlines() :
             line=line.split(',')  #values are comma separated, one channel per line: channelNB, ped
-            pedList[ int(line[0].strip()) ] = float(line[1].strip())
+            ped_list[ int(line[0].strip()) ] = float(line[1].strip())
 
 print("Using this list of peds:")
-print(pedList)
+print(ped_list)
 
 
-tsEv=QIEAnalyzer("plotMaker")
-tsEv.inputPassName=inputPassName
+ts_ev=QIEAnalyzer("plotMaker")
+ts_ev.input_pass_name=input_pass_name
 # now in default config, too, but with test beam values :
 #these are derived as the mean of gaussian fits to the "event pedestal" (average over middle two quartiles) for each channel
-tsEv.startSample=startSample
-tsEv.pedestals=pedList
-tsEv.gain=gainList
+ts_ev.start_sample=start_sample
+ts_ev.pedestals=ped_list
+ts_ev.gain=gain_list
 
 p.sequence = [
-    tsEv
+    ts_ev
     ]
 
 
 #generate on the fly
-p.inputFiles = [sys.argv[1]]
+p.input_files = [sys.argv[1]]
 outname=sys.argv[1]
 outname=outname.replace(".root", "_plots.root")
-#p.outputFiles = [ outname ]
+#p.output_files = [ outname ]
 
-p.histogramFile = outname #.replace(".root"
+p.histogram_file = outname #.replace(".root"
 
-p.maxEvents = nEv
+p.max_events = n_ev
 
-p.logFileName=outname.replace(".root",".log")
-p.termLogLevel = 2#0
+p.log_file_name=outname.replace(".root",".log")
+p.term_log_level = 2#0
 p.logFileLevel=0
 
-json.dumps(p.parameterDump(), indent=2)
+json.dumps(p.parameter_dump(), indent=2)

@@ -21,7 +21,7 @@ n_evts=1000  #number of events to gen/reco
 
 #   set up a simple particle gun for this example  #
 #   just 8gev electrons started upstream of tagger and first ts #
-partGunString='single_8gev_e_upstream_tagger'
+part_gun_string='single_8gev_e_upstream_tagger'
 detector = 'ldmx-det-v14-8gev-no-cals'
 ####  set up beam simulation
 sim = simulator.simulator('inclusive_single_8gev')
@@ -42,14 +42,14 @@ p.sequence.extend(full_tracking_sequence.sequence)
 # Output name
 #   just append '_withTracking' to the name of the input file
 from pathlib import Path
-p.outputFiles = ['test_8gev_electrons_withTracking.root']
+p.output_files = ['test_8gev_electrons_withTracking.root']
 
 # lower log level so 'info' and above messages can be printed
-p.termLogLevel=1
+p.term_log_level=1
 
 # Number of events
-p.maxEvents = n_evts
+p.max_events = n_evts
 
 # Where to store DQM plots
-p.histogramFile = "test_dqmMonitoringFile.root"
+p.histogram_file = "test_dqmMonitoringFile.root"
 

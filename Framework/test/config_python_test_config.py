@@ -47,10 +47,10 @@ class TestProcessor(ldmxcfg.Producer):
 p = ldmxcfg.Process( 'test' )
 
 # Specify the input files
-p.inputFiles = [ 'input1' , 'input2' ]
+p.input_files = [ 'input1' , 'input2' ]
 
 # Specify whether events should be kept by default
-p.skimDefaultIsKeep = False
+p.skim_default_is_keep = False
 
 # But the processor pipeline
 p.sequence = [ TestProcessor() ]

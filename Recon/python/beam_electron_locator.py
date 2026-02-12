@@ -45,12 +45,12 @@ class BeamElectronLocator(ldmxcfg.Producer) :
         self.input_collection = "truthBeamElectronsTarget"
         self.input_pass_name  = ""
         self.output_collection = "BeamElectronTruthInfo"
-        self.granularity_X_mm = 20./8.
-        self.granularity_Y_mm = 80./48.
+        self.granularity_x_mm = 20./8.
+        self.granularity_y_mm = 80./48.
         self.min_granularity_mm = 0.1
-        self.min_X_mm = -10.
-        self.max_X_mm = 10.
-        self.min_Y_mm = -40.
-        self.max_Y_mm = 40.
+        self.min_x_mm = -10.
+        self.max_x_mm = 10.
+        self.min_y_mm = -40.
+        self.max_y_mm = 40.
         self.verbose = False
 

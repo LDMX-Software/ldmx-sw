@@ -32,7 +32,7 @@ class EcalClusterProducer(ldmxcfg.Producer) :
 
         # --- CLUE ALGORITHM ---
         # Enable CLUE algorithm
-        self.CLUE = True
+        self.clue = True
         # Nbr of layers to perform CLUE on
         # = 1 collapses all hits into same z-dimension, gives best results atm
         self.nbr_of_layers = 1

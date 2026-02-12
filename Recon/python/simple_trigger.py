@@ -4,7 +4,7 @@ Sets all parameters to reasonable defaults.
 
 Attributes:
 ------------- 
-beamEnergy : float
+beam_energy : float
     The beam energy in MeV
 thresholds : list of floats
     The upper limit on Ecal reconstructed hit energy sum (in MeV) allowed for the event to pass the trigger. 
@@ -27,8 +27,8 @@ trigger_collection : string
 
 Examples
 --------
-    from LDMX.Recon.simpleTrigger import simpleTrigger
-    p.sequence.append( simpleTrigger )
+    from LDMX.Recon.simple_trigger import simple_trigger
+    p.sequence.append( simple_trigger )
 """
 
 from LDMX.Framework import ldmxcfg
@@ -37,11 +37,11 @@ from LDMX.Framework import ldmxcfg
 class TriggerProcessor(ldmxcfg.Producer) :
     """Configuration for the (multi-electron aware but simple) trigger on the ECal reco hits"""
 
-    def __init__(self, name, beamEnergy) :
+    def __init__(self, name, beam_energy) :
         super().__init__(name,'recon::TriggerProcessor','Recon')
 
-        self.beamEnergy = beamEnergy
-        if (self.beamEnergy == 4000.):
+        self.beam_energy = beam_energy
+        if (self.beam_energy == 4000.):
             self.thresholds = [ 1500., 5000., 8200., 11800. ]
         else:
             self.thresholds = [ 3000., 10790., 18540., 26250. ]
@@ -52,5 +52,5 @@ class TriggerProcessor(ldmxcfg.Producer) :
         self.input_pass = ''
         self.trigger_collection = "Trigger"
 
-simpleTrigger = TriggerProcessor("simpleTrigger", 8000.)
+simple_trigger = TriggerProcessor("simple_trigger", 8000.)
 

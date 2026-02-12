@@ -3,13 +3,13 @@ from LDMX.Framework import ldmxcfg
 
 p = ldmxcfg.Process('test')
 
-p.maxTriesPerEvent = 10000
+p.max_tries_per_event = 10000
 
 det = 'ldmx-lyso-r1-v14-8gev'
 from LDMX.Biasing import target
 
 
-mySim = target.dark_brem(
+my_sim = target.dark_brem(
     #A' mass in MeV - set in init.sh to same value in GeV
     10.0,
     # library path is uniquely determined by arguments given to `dbgen run` in init.sh
@@ -19,7 +19,7 @@ mySim = target.dark_brem(
     det
 )
 
-p.sequence = [ mySim ]
+p.sequence = [ my_sim ]
 
 ##################################################################
 # Below should be the same for all sim scenarios
@@ -28,24 +28,24 @@ import os
 import sys
 
 
-p.maxEvents = 100
+p.max_events = 100
 p.run = 1
 
-p.histogramFile = 'hist.root'
-p.outputFiles = ['events.root']
-p.termLogLevel = 0
+p.histogram_file = 'hist.root'
+p.output_files = ['events.root']
+p.term_log_level = 0
 
 import LDMX.Ecal.digi as ecal_digi
+import LDMX.Ecal.ecal_geometry
 import LDMX.Ecal.ecal_hardcoded_conditions
-import LDMX.Ecal.EcalGeometry
 import LDMX.Ecal.vetos as ecal_vetos
 import LDMX.Hcal.digi as hcal_digi
+import LDMX.Hcal.hcal_geometry
 import LDMX.Hcal.hcal_hardcoded_conditions
-import LDMX.Hcal.HcalGeometry
 from LDMX.TrigScint.trigScint import (
     TrigScintClusterProducer,
     TrigScintDigiProducer,
-    trigScintTrack,
+    trig_scint_track,
 )
 
 
@@ -57,8 +57,8 @@ ts_digis = [
 for d in ts_digis :
     d.randomSeed = 1
 
-from LDMX.Recon.electronCounter import ElectronCounter
-from LDMX.Recon.simpleTrigger import TriggerProcessor
+from LDMX.Recon.electron_counter import ElectronCounter
+from LDMX.Recon.simple_trigger import TriggerProcessor
 
 
 count = ElectronCounter(1,'ElectronCounter')
@@ -77,7 +77,7 @@ p.sequence.extend([
         TrigScintClusterProducer.pad1(),
         TrigScintClusterProducer.pad2(),
         TrigScintClusterProducer.pad3(),
-        trigScintTrack,
+        trig_scint_track,
         count, TriggerProcessor('trigger', 8000.),
         dqm.DarkBremInteraction()
         ] + dqm.all_dqm)

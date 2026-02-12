@@ -10,8 +10,8 @@
 namespace trigger {
 
 void TrigEcalClusterProducer::configure(framework::config::Parameters& ps) {
-  hit_coll_name_ = ps.get<std::string>("hitCollName");
-  cluster_coll_name_ = ps.get<std::string>("clusterCollName");
+  hit_coll_name_ = ps.get<std::string>("hit_coll_name");
+  cluster_coll_name_ = ps.get<std::string>("cluster_coll_name");
   hit_coll_passname_ = ps.get<std::string>("hit_coll_passname");
   hit_coll_name_events_passname_ =
       ps.get<std::string>("hit_coll_name_events_passname");

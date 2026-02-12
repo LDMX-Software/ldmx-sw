@@ -22,7 +22,7 @@ bool ConditionsIOV::overlaps(const ConditionsIOV& iov) const {
   if (iov.valid_for_data_ != valid_for_data_ &&
       iov.valid_for_mc_ != valid_for_mc_)
     return false;
-  if (iov.first_run_ < last_run_) return false;  // starts after this IOV
+  if (iov.first_run_ > last_run_) return false;  // starts after this IOV
   if (iov.last_run_ < first_run_) return false;  // ends before this IOV
   return true;
 }

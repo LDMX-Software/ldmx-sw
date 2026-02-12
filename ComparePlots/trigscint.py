@@ -16,7 +16,7 @@ def dqm(d : Differ, out_dir = None) :
 
     collections=["Sim", "Digi", "Cluster"]
     pads = ["Pad1", "Pad2", "Pad3"]
-    tColl="TrigScintTracks"
+    t_coll="TrigScintTracks"
 
     track_hists = [
         ('centroid', 'Track centroid [in channel nb]'),
@@ -28,7 +28,7 @@ def dqm(d : Differ, out_dir = None) :
         ('y', 'Track y [mm]')
         ]
     for member, name in track_hists :
-        d.plot1d(f'{tColl}/{tColl}_{member}', name, out_dir = out_dir)
+        d.plot1d(f'{t_coll}/{t_coll}_{member}', name, out_dir = out_dir)
 
     for pad in pads :
         for coll in collections :

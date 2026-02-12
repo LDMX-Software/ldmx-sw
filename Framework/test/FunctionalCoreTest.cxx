@@ -51,7 +51,7 @@ class TestProducer : public Producer {
   ~TestProducer() {}
 
   void configure(framework::config::Parameters& p) final override {
-    create_run_header_ = p.get<bool>("createRunHeader");
+    create_run_header_ = p.get<bool>("create_run_header");
   }
 
   void beforeNewRun(ldmx::RunHeader& header) final override {
@@ -177,7 +177,7 @@ class TestAnalyzer : public Analyzer {
 };  // TestAnalyzer
 
 /**
- * @class isGoodHistogramFile
+ * @class isGoodhistogram_file
  *
  * Runs a variety of checks to make sure the
  * histogram in the input filename is what we expect it to be.
@@ -191,7 +191,7 @@ class TestAnalyzer : public Analyzer {
  * - The directory has the histogram "test_hist_"
  * - The histogram has the correct number of entries
  */
-class IsGoodHistogramFile : public Catch::Matchers::MatcherBase<std::string> {
+class IsGoodhistogramFile : public Catch::Matchers::MatcherBase<std::string> {
  private:
   /// Correct number of entries
   int correct_get_entries_;
@@ -202,7 +202,7 @@ class IsGoodHistogramFile : public Catch::Matchers::MatcherBase<std::string> {
    *
    * Sets the correct event indices
    */
-  IsGoodHistogramFile(int const& n) : correct_get_entries_(n) {}
+  IsGoodhistogramFile(int const& n) : correct_get_entries_(n) {}
 
   /**
    * Performs the test for this matcher
@@ -236,7 +236,7 @@ class IsGoodHistogramFile : public Catch::Matchers::MatcherBase<std::string> {
        << correct_get_entries_;
     return ss.str();
   }
-};  // isGoodHistogramFile
+};  // isGoodhistogram_file
 
 /**
  * @class isGoodEventFile
@@ -309,7 +309,7 @@ class IsGoodEventFile : public Catch::Matchers::MatcherBase<std::string> {
     if (exist_collection_) {
       // make sure collection matches pattern
       TTreeReaderValue<std::vector<ldmx::CalorimeterHit>> collection(
-          events, ("test_collection_" + pass_).c_str());
+          events, ("TestCollection_" + pass_).c_str());
       while (events.Next()) {
         if (collection->size() != header->getEventNumber()) {
           f->Close();
@@ -326,7 +326,7 @@ class IsGoodEventFile : public Catch::Matchers::MatcherBase<std::string> {
     } else {
       // check to make sure collection is NOT there
       auto t{(TTree*)f->Get("LDMX_Events")};
-      if (t and t->GetBranch(("test_collection_" + pass_).c_str())) {
+      if (t and t->GetBranch(("TestCollection_" + pass_).c_str())) {
         f->Close();
         return false;
       }
@@ -335,7 +335,7 @@ class IsGoodEventFile : public Catch::Matchers::MatcherBase<std::string> {
     if (exist_object_) {
       // make sure object matches pattern
       TTreeReaderValue<ldmx::HcalVetoResult> object(
-          events, ("test_object_" + pass_).c_str());
+          events, ("TestObject_" + pass_).c_str());
       while (events.Next()) {
         if (object->getMaxPEHit().getID() != header->getEventNumber()) {
           f->Close();
@@ -345,7 +345,7 @@ class IsGoodEventFile : public Catch::Matchers::MatcherBase<std::string> {
     } else {
       // check to make sure object is NOT there
       auto t{(TTree*)f->Get("LDMX_Events")};
-      if (t and t->GetBranch(("test_object_" + pass_).c_str())) {
+      if (t and t->GetBranch(("TestObject_" + pass_).c_str())) {
         f->Close();
         return false;
       }
@@ -381,13 +381,13 @@ class IsGoodEventFile : public Catch::Matchers::MatcherBase<std::string> {
     ss << "can be opened and has the correct number of entries in the event "
           "tree and the run tree.";
 
-    ss << " test_collection_" << pass_ << " was verified to ";
+    ss << " TestCollection_" << pass_ << " was verified to ";
     if (exist_collection_)
       ss << " be the correct pattern.";
     else
       ss << " not be in the file.";
 
-    ss << " test_object_" << pass_ << " was verified to ";
+    ss << " TestObject_" << pass_ << " was verified to ";
     if (exist_object_)
       ss << " be the correct pattern.";
     else
@@ -470,23 +470,23 @@ DECLARE_ANALYZER(framework::test::TestAnalyzer)
 TEST_CASE("Core Framework Functionality", "[Framework][functionality]") {
   // these parameters aren't tested/changed, so we set them out here
   framework::config::Parameters process;
-  process.add("compressionSetting", 9);
-  process.add("maxTriesPerEvent", 1);
-  process.add("logFrequency", -1);
-  process.add("termLogLevel", 4);
-  process.add("fileLogLevel", 4);
-  process.add<std::string>("logFileName", "");
+  process.add("compression_setting", 9);
+  process.add("max_tries_per_event", 1);
+  process.add("log_frequency", -1);
+  process.add("term_log_level", 4);
+  process.add("file_log_level", 4);
+  process.add<std::string>("log_file_name", "");
   process.add<std::string>("tree_name", "LDMX_Events");
 
   framework::config::Parameters producer_parameters;
-  producer_parameters.add<std::string>("className",
+  producer_parameters.add<std::string>("class_name",
                                        "framework::test::TestProducer");
-  producer_parameters.add<std::string>("instanceName", "TestProducer");
+  producer_parameters.add<std::string>("instance_name", "TestProducer");
 
   framework::config::Parameters analyzer_parameters;
-  analyzer_parameters.add<std::string>("className",
+  analyzer_parameters.add<std::string>("class_name",
                                        "framework::test::TestAnalyzer");
-  analyzer_parameters.add<std::string>("instanceName", "TestAnalyzer");
+  analyzer_parameters.add<std::string>("instance_name", "TestAnalyzer");
 
   // declare used and re-used types, not used in all branches
   std::vector<framework::config::Parameters> sequence;
@@ -496,18 +496,18 @@ TEST_CASE("Core Framework Functionality", "[Framework][functionality]") {
     // no input files, only output files
 
     output_files = {"test_productionmode_events.root"};
-    process.add<std::string>("passName", "test");
-    process.add("outputFiles", output_files);
-    process.add("maxEvents", 3);
+    process.add<std::string>("pass_name", "test");
+    process.add("output_files", output_files);
+    process.add("max_events", 3);
     process.add("run", 3);
 
-    producer_parameters.add("createRunHeader", true);
+    producer_parameters.add("create_run_header", true);
 
     sequence = {producer_parameters};
 
     SECTION("only producers") {
       process.add("sequence", sequence);
-      process.add<std::string>("histogramFile", "");
+      process.add<std::string>("histogram_file", "");
       SECTION("no drop/keep rules") {
         // Process owns and deletes the processors
         REQUIRE(framework::test::runProcess(process));
@@ -524,9 +524,9 @@ TEST_CASE("Core Framework Functionality", "[Framework][functionality]") {
       }
 
       SECTION("skim for even indexed events") {
-        process.add("skimDefaultIsKeep", false);
+        process.add("skim_default_is_keep", false);
         std::vector<std::string> rules = {"TestProducer", ""};
-        process.add("skimRules", rules);
+        process.add("skim_rules", rules);
         REQUIRE(framework::test::runProcess(process));
         CHECK_THAT(output_files.at(0),
                    framework::test::IsGoodEventFile("test", 1, 1));
@@ -537,7 +537,7 @@ TEST_CASE("Core Framework Functionality", "[Framework][functionality]") {
       std::string hist_file_path =
           "test_productionmode_withanalyses_hists.root";
 
-      process.add("histogramFile", hist_file_path);
+      process.add("histogram_file", hist_file_path);
 
       sequence.push_back(analyzer_parameters);
       process.add("sequence", sequence);
@@ -557,16 +557,16 @@ TEST_CASE("Core Framework Functionality", "[Framework][functionality]") {
       }
 
       SECTION("skim for even indexed events") {
-        process.add("skimDefaultIsKeep", false);
+        process.add("skim_default_is_keep", false);
         std::vector<std::string> rules = {"TestProducer", ""};
-        process.add("skimRules", rules);
+        process.add("skim_rules", rules);
         REQUIRE(framework::test::runProcess(process));
         CHECK_THAT(output_files.at(0),
                    framework::test::IsGoodEventFile("test", 1, 1));
       }
 
       CHECK_THAT(hist_file_path,
-                 framework::test::IsGoodHistogramFile(1 + 2 + 3));
+                 framework::test::IsGoodhistogramFile(1 + 2 + 3));
       CHECK(framework::test::removeFile(hist_file_path));
     }
 
@@ -580,20 +580,20 @@ TEST_CASE("Core Framework Functionality", "[Framework][functionality]") {
 
     for (int run{2}; run < 5; run++) {
       auto make_inputs = process;
-      make_inputs.add<std::string>("passName", "makeInputs");
+      make_inputs.add<std::string>("pass_name", "makeInputs");
       auto producer = producer_parameters;
-      producer.add("createRunHeader", true);
+      producer.add("create_run_header", true);
       make_inputs.add<std::vector<framework::config::Parameters>>("sequence",
                                                                   {producer});
       output_files = {input_files.at(run - 2)};
-      make_inputs.add("outputFiles", output_files);
-      make_inputs.add("maxEvents", run);
+      make_inputs.add("output_files", output_files);
+      make_inputs.add("max_events", run);
       make_inputs.add("run", run);
       REQUIRE(framework::test::runProcess(make_inputs));
       REQUIRE_THAT(input_files.at(run - 2),
                    framework::test::IsGoodEventFile("makeInputs", run, 1));
     }
-    process.add<std::string>("passName", "test");
+    process.add<std::string>("pass_name", "test");
 
     SECTION("Analysis Mode") {
       // no output files, only histogram output
@@ -602,20 +602,20 @@ TEST_CASE("Core Framework Functionality", "[Framework][functionality]") {
       process.add("sequence", sequence);
 
       std::string hist_file_path = "test_analysismode_hists.root";
-      process.add("histogramFile", hist_file_path);
+      process.add("histogram_file", hist_file_path);
 
       SECTION("one input file") {
         std::vector<std::string> input_file = {input_files.at(0)};
-        process.add("inputFiles", input_file);
+        process.add("input_files", input_file);
         REQUIRE(framework::test::runProcess(process));
-        CHECK_THAT(hist_file_path, framework::test::IsGoodHistogramFile(1 + 2));
+        CHECK_THAT(hist_file_path, framework::test::IsGoodhistogramFile(1 + 2));
         CHECK(framework::test::removeFile(hist_file_path));
       }
 
       SECTION("multiple input files") {
-        process.add("inputFiles", input_files);
+        process.add("input_files", input_files);
         REQUIRE(framework::test::runProcess(process));
-        CHECK_THAT(hist_file_path, framework::test::IsGoodHistogramFile(
+        CHECK_THAT(hist_file_path, framework::test::IsGoodhistogramFile(
                                        1 + 2 + 1 + 2 + 3 + 1 + 2 + 3 + 4));
         CHECK(framework::test::removeFile(hist_file_path));
       }
@@ -625,11 +625,11 @@ TEST_CASE("Core Framework Functionality", "[Framework][functionality]") {
     SECTION("Merge Mode") {
       // many input files to one output file
 
-      process.add("inputFiles", input_files);
+      process.add("input_files", input_files);
 
       std::string event_file_path = "test_mergemode_events.root";
       output_files = {event_file_path};
-      process.add("outputFiles", output_files);
+      process.add("output_files", output_files);
 
       SECTION("with analyzers") {
         sequence = {analyzer_parameters};
@@ -637,7 +637,7 @@ TEST_CASE("Core Framework Functionality", "[Framework][functionality]") {
         std::string hist_file_path = "test_mergemode_withanalyzers_hists.root";
 
         process.add("sequence", sequence);
-        process.add("histogramFile", hist_file_path);
+        process.add("histogram_file", hist_file_path);
 
         SECTION("no drop/keep rules") {
           REQUIRE(framework::test::runProcess(process));
@@ -653,13 +653,13 @@ TEST_CASE("Core Framework Functionality", "[Framework][functionality]") {
                                           "makeInputs", 2 + 3 + 4, 3, false));
         }
 
-        CHECK_THAT(hist_file_path, framework::test::IsGoodHistogramFile(
+        CHECK_THAT(hist_file_path, framework::test::IsGoodhistogramFile(
                                        1 + 2 + 1 + 2 + 3 + 1 + 2 + 3 + 4));
         CHECK(framework::test::removeFile(hist_file_path));
       }
 
       SECTION("with producers") {
-        producer_parameters.add("createRunHeader", false);
+        producer_parameters.add("create_run_header", false);
         sequence = {producer_parameters};
 
         process.add("sequence", sequence);
@@ -671,9 +671,9 @@ TEST_CASE("Core Framework Functionality", "[Framework][functionality]") {
         }
 
         SECTION("skim for even indexed events") {
-          process.add("skimDefaultIsKeep", false);
+          process.add("skim_default_is_keep", false);
           std::vector<std::string> rules = {"TestProducer", ""};
-          process.add("skimRules", rules);
+          process.add("skim_rules", rules);
           REQUIRE(framework::test::runProcess(process));
           CHECK_THAT(event_file_path,
                      framework::test::IsGoodEventFile("test", 1 + 1 + 2, 3));

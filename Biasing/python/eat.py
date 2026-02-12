@@ -60,7 +60,7 @@ def midshower_nuclear( detector , generator, bias_factor , bias_threshold , min_
 
     #Instantiate the simulator.
     sim = simulator.simulator("eat-midshower-nuclear")
-    from LDMX.Ecal import EcalGeometry
+    from LDMX.Ecal import ecal_geometry
 
     #Set the path to the detector to use.
     #the second parameter says we want to include scoring planes
@@ -137,7 +137,7 @@ def midshower_dimuon( detector , generator, bias_factor , bias_threshold , min_d
 
     #Instantiate the simulator.
     sim = simulator.simulator("eat-midshower-dimuon")
-    from LDMX.Ecal import EcalGeometry
+    from LDMX.Ecal import ecal_geometry
 
     #Set the path to the detector to use.
     #the second parameter says we want to include scoring planes
@@ -164,7 +164,7 @@ def midshower_dimuon( detector , generator, bias_factor , bias_threshold , min_d
 
 
 def dark_brem(ap_mass, db_event_lib, detector, generator,
-              scale_APrime = False, decay_mode = 'no_decay',
+              scale_aprime = False, decay_mode = 'no_decay',
               ap_tau = -1.0, dist_decay_min = 0.0,
               dist_decay_max = 1.0) :
     """Example configuration for producing dark brem interactions in the ECal. 
@@ -186,7 +186,7 @@ def dark_brem(ap_mass, db_event_lib, detector, generator,
         Beam generator for this simulation which should be a ParticleGun
         so we can configure the PrimaryToEcalFilter to select events where
         beam electrons retain 87.5% of their energy.
-    scale_APrime : bool
+    scale_aprime : bool
         Whether to scale the A' momentum along with the recoil electron.
     decay_mode : str
         The A' decay mode. Either no_decay, flat_decay, or geant_decay
@@ -215,7 +215,7 @@ def dark_brem(ap_mass, db_event_lib, detector, generator,
     """
 
     sim = simulator.simulator( "ecal_dark_brem_%sMeV" % str(ap_mass) )
-    from LDMX.Ecal import EcalGeometry
+    from LDMX.Ecal import ecal_geometry
 
     sim.description = "One e- fired far upstream with Dark Brem turned on and biased up in ECal"
     sim.setDetector( detector , include_scoring_planes_minimal = True )
@@ -227,7 +227,7 @@ def dark_brem(ap_mass, db_event_lib, detector, generator,
     db_model = dark_brem.G4DarkBreMModel( db_event_lib )
     db_model.threshold = 0.5*generator.energy #GeV - minimum energy electron needs to have to dark brem
     db_model.epsilon   = 0.01 #decrease epsilon from one to help with Geant4 biasing calculations
-    db_model.scale_APrime = scale_APrime
+    db_model.scale_aprime = scale_aprime
     db_model.decay_mode = decay_mode
     db_model.ap_tau = ap_tau
     db_model.dist_decay_min = dist_decay_min

@@ -6,16 +6,16 @@ namespace recon {
 
 void ParticleFlow::configure(framework::config::Parameters& ps) {
   // I/O
-  input_ecal_coll_name_ = ps.get<std::string>("inputEcalCollName");
-  input_hcal_coll_name_ = ps.get<std::string>("inputHcalCollName");
-  input_track_coll_name_ = ps.get<std::string>("inputTrackCollName");
-  output_coll_name_ = ps.get<std::string>("outputCollName");
+  input_ecal_coll_name_ = ps.get<std::string>("input_ecal_coll_name");
+  input_hcal_coll_name_ = ps.get<std::string>("input_hcal_coll_name");
+  input_track_coll_name_ = ps.get<std::string>("input_track_coll_name");
+  output_coll_name_ = ps.get<std::string>("output_coll_name");
   input_ecal_passname_ = ps.get<std::string>("input_ecal_passname");
   input_hcal_passname_ = ps.get<std::string>("input_hcal_passname");
   input_tracks_passname_ = ps.get<std::string>("input_tracks_passname");
 
   // Algorithm configuration
-  single_particle_ = ps.get<bool>("singleParticle");
+  single_particle_ = ps.get<bool>("single_particle");
   use_existing_ecal_clusters_ = ps.get<bool>("use_existing_ecal_clusters");
 
   // Calibration factors, from jason, temperary

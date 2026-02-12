@@ -3,8 +3,8 @@ from LDMX.Framework import ldmxcfg
 
 p = ldmxcfg.Process('ecal_db')
 from LDMX.Biasing import eat
-from LDMX.Ecal import EcalGeometry
-from LDMX.Hcal import HcalGeometry
+from LDMX.Ecal import ecal_geometry
+from LDMX.Hcal import hcal_geometry
 
 
 p.sequence = [
@@ -14,6 +14,6 @@ p.sequence = [
         'ldmx-det-v14' , #name of geometry to use
         )
     ]
-p.maxTriesPerEvent = 1000
-p.maxEvents = 100
-p.outputFiles = [ 'ecal_db.root' ]
+p.max_tries_per_event = 1000
+p.max_events = 100
+p.output_files = [ 'ecal_db.root' ]

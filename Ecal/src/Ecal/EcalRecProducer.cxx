@@ -20,15 +20,15 @@ EcalRecProducer::EcalRecProducer(const std::string& name,
 
 void EcalRecProducer::configure(framework::config::Parameters& ps) {
   // collection names
-  digi_coll_name_ = ps.get<std::string>("digiCollName");
-  digi_pass_name_ = ps.get<std::string>("digiPassName");
-  sim_hit_coll_name_ = ps.get<std::string>("simHitCollName");
-  sim_hit_pass_name_ = ps.get<std::string>("simHitPassName");
-  rec_hit_coll_name_ = ps.get<std::string>("recHitCollName");
+  digi_coll_name_ = ps.get<std::string>("digi_coll_name");
+  digi_pass_name_ = ps.get<std::string>("digi_pass_name");
+  sim_hit_coll_name_ = ps.get<std::string>("sim_hit_coll_name");
+  sim_hit_pass_name_ = ps.get<std::string>("sim_hit_pass_name");
+  rec_hit_coll_name_ = ps.get<std::string>("rec_hit_coll_name");
 
   layer_weights_ = ps.get<std::vector<double>>("layerWeights");
   second_order_energy_correction_ =
-      ps.get<double>("secondOrderEnergyCorrection");
+      ps.get<double>("second_order_energy_correction");
 
   mip_si_energy_ = ps.get<double>("mip_si_energy");
   clock_cycle_ = ps.get<double>("clock_cycle");

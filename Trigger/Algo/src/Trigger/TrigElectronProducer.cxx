@@ -11,10 +11,10 @@
 namespace trigger {
 
 void TrigElectronProducer::configure(framework::config::Parameters& ps) {
-  sp_coll_name_ = ps.get<std::string>("scoringPlaneCollName");
-  cluster_coll_name_ = ps.get<std::string>("clusterCollName");
-  ele_coll_name_ = ps.get<std::string>("eleCollName");
-  prop_map_name_ = ps.get<std::string>("propMapName");
+  sp_coll_name_ = ps.get<std::string>("scoring_plane_coll_name");
+  cluster_coll_name_ = ps.get<std::string>("cluster_coll_name");
+  ele_coll_name_ = ps.get<std::string>("ele_coll_name");
+  prop_map_name_ = ps.get<std::string>("prop_map_name");
   target_sp_passname_ = ps.get<std::string>("target_sp_passname");
   cluster_coll_passname_ = ps.get<std::string>("cluster_coll_passname");
   cluster_collname_events_passname_ =

@@ -133,15 +133,15 @@ class TestBeamHitProducer(ldmxcfg.Producer) :
     def __init__(self,name) :
         super().__init__(name,'trigscint::TestBeamHitProducer','TrigScint')
 
-        self.inputCollection="QIEsamplesPad1"
-        self.inputPassName=""   #take any pass
-        self.outputCollection="testBeamHitsPad1"
+        self.input_collection="QIEsamplesPad1"
+        self.input_pass_name=""   #take any pass
+        self.output_collection="testBeamHitsPad1"
         self.verbose = False
-        self.doCleanHits = False   #whether to apply quality criteria in hit reconstruction
-        self.nInstrumentedChannels=12 #number of channels
-        self.startSample=10   # Sample where pulse is expected to start (triggered mode)
-        self.pulseWidth=5     # Number of consecutive samples to include in the pulse
-        self.pulseWidthLYSO=8 # as above, for LYSO
+        self.do_clean_hits = False   #whether to apply quality criteria in hit reconstruction
+        self.n_instrumented_channels=12 #number of channels
+        self.start_sample=10   # Sample where pulse is expected to start (triggered mode)
+        self.pulse_width=5     # Number of consecutive samples to include in the pulse
+        self.pulse_width_lyso=8 # as above, for LYSO
         self.gain = [2.e6]*12      # SiPM Gain
         self.MIPresponse = [1.]*12      # channel MIP response correction factor
         self.pedestals=[
@@ -179,7 +179,7 @@ class TestBeamClusterProducer(ldmxcfg.Producer) :
         self.input_collection="testBeamHitsPad1"
         self.input_pass_name="" #take any pass
         self.output_collection="TestBeamClustersPad1"
-        self.doCleanHits = False   #whether to apply quality criteria from hit reconstruction
+        self.do_clean_hits = False   #whether to apply quality criteria from hit reconstruction
         self.verbosity = 0
 
     def pad1() :
@@ -342,7 +342,7 @@ class TrigScintTrackProducer(ldmxcfg.Producer) :
         self.output_collection="TriggerPadTracks"
         self.verbosity = 0
 
-trigScintTrack = TrigScintTrackProducer( "trigScintTrack" )
+trig_scint_track = TrigScintTrackProducer( "trig_scint_track" )
 
 class TrigScintTrackProducer(ldmxcfg.Producer) :
     """Configuration for track producer for Trigger Scintillators"""
@@ -386,9 +386,9 @@ class QIEAnalyzer(ldmxcfg.Analyzer) :
     def __init__(self,name) :
         super().__init__(name,'trigscint::QIEAnalyzer','TrigScint')
 
-        self.inputCollection="QIEsamplesPad1"
-        self.inputPassName=""   #take any pass
-        self.startSample=2      #first time sample included in reformatting
+        self.input_collection="QIEsamplesPad1"
+        self.input_pass_name=""   #take any pass
+        self.start_sample=2      #first time sample included in reformatting
         self.gain = [2.e6]*16      # SiPM Gain  //TODO: vector
         self.pedestals=[
             -4.6, #0.6,
@@ -416,11 +416,11 @@ class QualityFlagAnalyzer(ldmxcfg.Analyzer) :
     def __init__(self,name) :
         super().__init__(name,'trigscint::QualityFlagAnalyzer','TrigScint')
 
-        self.inputEventCollection="QIEsamplesUp"
-        self.inputEventPassName=""   #take any pass
-        self.inputHitCollection="testBeamHitsUp"
-        self.inputHitPassName=""   #take any pass
-        self.startSample=2      #first time sample included in reformatting
+        self.input_event_collection="QIEsamplesUp"
+        self.input_event_pass_name=""   #take any pass
+        self.input_hit_collection="testBeamHitsUp"
+        self.input_hit_pass_name=""   #take any pass
+        self.start_sample=2      #first time sample included in reformatting
         self.gain = [2.e6]*16      # SiPM Gain  //TODO: vector
         self.pedestals=[
             -4.6, #0.6,
@@ -447,9 +447,9 @@ class TestBeamHitAnalyzer(ldmxcfg.Analyzer) :
     def __init__(self,name) :
         super().__init__(name,'trigscint::TestBeamHitAnalyzer','TrigScint')
 
-        self.inputCollection="testBeamHitsPad1"
-        self.inputPassName=""   #take any pass
-        self.startSample=2      #first time sample included in reformatting
+        self.input_collection="testBeamHitsPad1"
+        self.input_pass_name=""   #take any pass
+        self.start_sample=2      #first time sample included in reformatting
         self.pedestals=[
             -4.6, #0.6,
             -2.6, #4.4,
@@ -476,10 +476,10 @@ class TestBeamClusterAnalyzer(ldmxcfg.Analyzer) :
     def __init__(self,name) :
         super().__init__(name,'trigscint::TestBeamClusterAnalyzer','TrigScint')
 
-        self.inputCollection="TestBeamClustersUpClean"
-        self.inputPassName=""   #take any pass
-        self.inputHitCollection="testBeamHitsUp"
-        self.inputHitPassName=""   #take any pass
-        self.startSample=2      #first time sample included in reformatting
+        self.input_collection="TestBeamClustersUpClean"
+        self.input_pass_name=""   #take any pass
+        self.input_hit_collection="testBeamHitsUp"
+        self.input_hit_pass_name=""   #take any pass
+        self.start_sample=2      #first time sample included in reformatting
         self.deadChannels=[ 8 ]
 

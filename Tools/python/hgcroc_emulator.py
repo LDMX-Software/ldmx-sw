@@ -35,15 +35,15 @@ class HgcrocEmulator :
 
     def __init__(self) :
 
-        self.rateUpSlope  = -0.345
-        self.timeUpSlope  = 70.6547
-        self.rateDnSlope  = 0.140068
-        self.timeDnSlope  = 87.7649
-        self.timePeak     = 77.732
-        self.clockCycle   = 25.0 #ns
-        self.timingJitter = self.clockCycle / 100. #ns - pretty arbitrarily chosen
-        self.nADCs        = 10
-        self.iSOI         = 2
+        self.rate_up_slope  = -0.345
+        self.time_up_slope  = 70.6547
+        self.rate_dn_slope  = 0.140068
+        self.time_dn_slope  = 87.7649
+        self.time_peak     = 77.732
+        self.clock_cycle   = 25.0 #ns
+        self.timing_jitter = self.clock_cycle / 100. #ns - pretty arbitrarily chosen
+        self.n_adcs        = 10
+        self.i_soi         = 2
 
         # turn on or off noise
         #   NOT DOCUMENTED - only meant for testing purposes

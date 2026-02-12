@@ -22,24 +22,24 @@ class SimpleCSVTableEntry:
     """
 
     def __init__(self, url):
-        self.URL=url
-        self.firstRun=-1
-        self.lastRun=-1
-        self.runType="any"
+        self.url=url
+        self.first_run=-1
+        self.last_run=-1
+        self.run_type="any"
 
-    def setIOV(self, firstRun, lastRun):
+    def setIOV(self, first_run, last_run):
         """Set the Interval Of Validity for this table entry
 
         Parameters
         ----------
-        firstRun : int
+        first_run : int
             First run number that this entry is valid for
-        lastRun : int
+        last_run : int
             Last run number that this entry is valid for
         """
 
-        self.firstRun=firstRun
-        self.lastRun=lastRun
+        self.first_run=first_run
+        self.last_run=last_run
 
     def __str__(self) :
         """Stringify this table entry
@@ -51,12 +51,12 @@ class SimpleCSVTableEntry:
         """
 
         msg = "  TableEntry { "
-        if ( self.firstRun == -1 and self.lastRun == -1 ) :
+        if ( self.first_run == -1 and self.last_run == -1 ) :
             msg += "Valid for All Time"
         else :
-            msg += "Valid between %d and %d" %( self.firstRun , self.lastRun )
+            msg += "Valid between %d and %d" %( self.first_run , self.last_run )
 
-        msg += ", Run Type %s, URL %s }" %( self.runType , self.URL )
+        msg += ", Run Type %s, URL %s }" %( self.run_type , self.url )
 
         return msg
 
@@ -65,9 +65,9 @@ class SimpleCSVTableProvider(ldmxcfg.ConditionsObjectProvider):
 
     Parametrs
     ---------
-    objName : str
+    obj_name : str
         Name of object that this provider provides (e.g. EcalGains)
-    dataType : str
+    data_type : str
         Name of type of data stored in this table (e.g. "int" or "double")
     columns : list of str
         List of column names for this table
@@ -77,13 +77,13 @@ class SimpleCSVTableProvider(ldmxcfg.ConditionsObjectProvider):
         URL to a CSV table mapping tables to specific intervals of validity.  Optional.
     """
 
-    def __init__(self,objName,dataType, columns):
-        super().__init__(objName,"conditions::SimpleCSVTableProvider",'Conditions')
-        self.dataType=dataType
+    def __init__(self,obj_name,data_type, columns):
+        super().__init__(obj_name,"conditions::SimpleCSVTableProvider",'Conditions')
+        self.data_type=data_type
         self.columns=columns
         self.entries=[]
-        self.conditions_baseURL=''
-        self.entriesURL=''
+        self.conditions_base_url=''
+        self.entries_url=''
 
     def validForever(self, url):
         """Add an entry to this provider that is valid forever and for all run types (data or MC)
@@ -96,21 +96,21 @@ class SimpleCSVTableProvider(ldmxcfg.ConditionsObjectProvider):
 
         self.entries.append(SimpleCSVTableEntry(url))
 
-    def validForRuns(self, url, firstRun, lastRun):
+    def validForRuns(self, url, first_run, last_run):
         """Add an entry to this provider that is valid between the input run numbers
 
         Parameters
         ----------
         url : str
             Location to download the table from
-        firstRun : int
+        first_run : int
             First run number that this entry is valid for
-        lastRun : int
+        last_run : int
             Last run number that this entry is valid for
         """
 
         entry=SimpleCSVTableEntry(url)
-        entry.setIOV(firstRun,lastRun)
+        entry.setIOV(first_run,last_run)
         self.entries.append(entry)
 
     def validForAllRows(self, values):
@@ -128,11 +128,11 @@ class SimpleCSVTableProvider(ldmxcfg.ConditionsObjectProvider):
 
 class SimpleCSVDoubleTableProvider(SimpleCSVTableProvider):
     """Provider for tables of doubles"""
-    def __init__(self,objName,columns):
-        super().__init__(objName,"double",columns)
+    def __init__(self,obj_name,columns):
+        super().__init__(obj_name,"double",columns)
 
 class SimpleCSVIntegerTableProvider(SimpleCSVTableProvider):
     """Provider for tables of integers"""
-    def __init__(self,objName,columns):
-        super().__init__(objName,"int",columns)
+    def __init__(self,obj_name,columns):
+        super().__init__(obj_name,"int",columns)
 

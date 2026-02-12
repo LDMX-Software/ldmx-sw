@@ -10,11 +10,11 @@ from LDMX.Framework import ldmxcfg
 p=ldmxcfg.Process("v12")
 p.run = 1
 
-import LDMX.Ecal.EcalGeometry
+import LDMX.Ecal.ecal_geometry
 from LDMX.SimCore import simulator
 
 
-sim = simulator.simulator("mySim")
+sim = simulator.simulator("my_sim")
 sim.setDetector( 'ldmx-det-v12', include_scoring_planes_minimal = True  )
 sim.description = "ECal photo-nuclear, xsec bias 450"
 sim.randomSeeds = [ 2*p.run , 2*p.run+1 ]
@@ -36,20 +36,20 @@ sim.actions = [ filters.TaggerVetoFilter(),
 from LDMX.TrigScint.trigScint import (
      TrigScintClusterProducer,
      TrigScintDigiProducer,
-     trigScintTrack,
+     trig_scint_track,
 )
 
 
-tsDigisUp   = TrigScintDigiProducer.up()
-tsDigisTag  = TrigScintDigiProducer.tagger()
-tsDigisDown = TrigScintDigiProducer.down()
-clTag=TrigScintClusterProducer.tagger()
-clUp=TrigScintClusterProducer.up()
-clDown=TrigScintClusterProducer.down()
+ts_digis_up   = TrigScintDigiProducer.up()
+ts_digis_tag  = TrigScintDigiProducer.tagger()
+ts_digis_down = TrigScintDigiProducer.down()
+cl_tag=TrigScintClusterProducer.tagger()
+cl_up=TrigScintClusterProducer.up()
+cl_down=TrigScintClusterProducer.down()
 
 from LDMX.Ecal import digi, ecal_hardcoded_conditions, vetos
 from LDMX.Hcal import hcal
-from LDMX.Recon.simpleTrigger import simpleTrigger
+from LDMX.Recon.simple_trigger import simple_trigger
 
 
 #from LDMX.EventProc.trackerHitKiller import trackerHitKiller
@@ -59,17 +59,17 @@ p.sequence=[ sim,
         vetos.EcalVetoProcessor(),
         hcal.HcalDigiProducer(),
         hcal.HcalVetoProcessor(),
-        tsDigisUp, tsDigisTag, tsDigisDown,
-        clTag, clUp, clDown,
-        trigScintTrack,
+        ts_digis_up, ts_digis_tag, ts_digis_down,
+        cl_tag, cl_up, cl_down,
+        trig_scint_track,
         #trackerHitKiller,
-        simpleTrigger,
+        simple_trigger,
         #ldmxcfg.Producer('finableTrack','ldmx::FindableTrackProcessor','EventProc'),
         #ldmxcfg.Producer('trackerVeto' ,'ldmx::TrackerVetoProcessor'  ,'EventProc')
         ]
 
-p.outputFiles=["/tmp/simoutput.root"]
-p.maxEvents = 1000
+p.output_files=["/tmp/simoutput.root"]
+p.max_events = 1000
 with open('/tmp/parameterDump.json', 'w') as outfile:
-     json.dump(p.parameterDump(),  outfile, indent=4)
+     json.dump(p.parameter_dump(),  outfile, indent=4)
 

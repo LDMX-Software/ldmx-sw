@@ -3,17 +3,18 @@ from LDMX.Framework import ldmxcfg
 
 p = ldmxcfg.Process('test')
 
-p.maxTriesPerEvent = 10000
+p.max_tries_per_event = 10000
 
 from LDMX.Biasing import ecal
 from LDMX.SimCore import generators as gen
 
 
 det = 'ldmx-det-v15-8gev'
-mySim = ecal.photo_nuclear(det,gen.single_8gev_e_upstream_tagger())
-mySim.description = 'ECal PN Test Simulation'
 
-p.sequence = [ mySim ]
+my_sim = ecal.photo_nuclear(det,gen.single_8gev_e_upstream_tagger())
+my_sim.description = 'ECal PN Test Simulation'
+
+p.sequence = [ my_sim ]
 
 ##################################################################
 # Below should be the same for all sim scenarios
@@ -22,25 +23,25 @@ import os
 import sys
 
 
-p.maxEvents = int(os.environ['LDMX_NUM_EVENTS'])
+p.max_events = int(os.environ['LDMX_NUM_EVENTS'])
 p.run = int(os.environ['LDMX_RUN_NUMBER'])
 
-p.histogramFile = 'hist.root'
-p.outputFiles = ['events.root']
+p.histogram_file = 'hist.root'
+p.output_files = ['events.root']
 
 # Load the full tracking sequence
 import LDMX.Ecal.digi as ecal_digi
-import LDMX.Ecal.ecal_hardcoded_conditions
-import LDMX.Ecal.ecalClusters as ecal_cluster
+import LDMX.Ecal.ecal_clusters as ecal_cluster
 
 # Load the ECAL modules
-import LDMX.Ecal.EcalGeometry
+import LDMX.Ecal.ecal_geometry
+import LDMX.Ecal.ecal_hardcoded_conditions
 import LDMX.Ecal.vetos as ecal_vetos
 import LDMX.Hcal.digi as hcal_digi_and_reco
-import LDMX.Hcal.hcal_hardcoded_conditions
 
 # Load the HCAL modules
-import LDMX.Hcal.HcalGeometry
+import LDMX.Hcal.hcal_geometry
+import LDMX.Hcal.hcal_hardcoded_conditions
 from LDMX.Tracking import full_tracking_sequence
 
 
@@ -48,10 +49,10 @@ hcal_digi = hcal_digi_and_reco.HcalDigiProducer()
 hcal_reco = hcal_digi_and_reco.HcalRecProducer()
 
 # Load the TS modules
-from LDMX.TrigScint.trigScint import (
+from LDMX.TrigScint.trig_scint import (
         TrigScintClusterProducer,
         TrigScintDigiProducer,
-        trigScintTrack,
+        trig_scint_track,
 )
 
 
@@ -68,8 +69,8 @@ ts_clusters = [
         ]
 
 # Load electron counting and trigger
-from LDMX.Recon.electronCounter import ElectronCounter
-from LDMX.Recon.simpleTrigger import TriggerProcessor
+from LDMX.Recon.electron_counter import ElectronCounter
+from LDMX.Recon.simple_trigger import TriggerProcessor
 
 
 count = ElectronCounter(1,'ElectronCounter')
@@ -96,13 +97,13 @@ visibles_veto = dqm.VisiblesCutflow()
 visibles_veto.all_cuts = False
 
 # Load preselection skimmer
-from LDMX.Recon.ecalPreselectionSkimmer import EcalPreselectionSkimmer
+from LDMX.Recon.ecal_preselection_skimmer import EcalPreselectionSkimmer
 
 
 ecal_pres_skimmer = EcalPreselectionSkimmer()
 
 
-p.logger.termLevel = 1
+p.logger.term_level = 1
 # Example to show trace level logging for ecal veto (only)
 # p.logger.custom(ecal_veto, level = -1)
 
@@ -123,7 +124,7 @@ p.sequence.extend([
         hcal_veto,
         *ts_digis,
         *ts_clusters,
-        trigScintTrack,
+        trig_scint_track,
         count, TriggerProcessor('trigger', 8000.),
         dqm.PhotoNuclearDQM(),
         dqm.EcalClusterAnalyzer(),

@@ -18,7 +18,7 @@ class BiasingUtilityAction(simcfg.UserAction) :
     def __init__(self,instance_name,class_name) :
         super().__init__(instance_name,'biasing::utility::%s'%class_name)
         from LDMX.Framework.ldmxcfg import Process
-        Process.addLibrary('@CMAKE_INSTALL_PREFIX@/lib/libBiasing_Utility.so')
+        Process.add_library('@CMAKE_INSTALL_PREFIX@/lib/libBiasing_Utility.so')
 
 class StepPrinter(BiasingUtilityAction) :
     """Print each step of the input track ID

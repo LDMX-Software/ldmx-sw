@@ -73,7 +73,7 @@ class PrimaryGenerator:
         self.beam_spot_smear = [20., 80., 0.]  # Per-generator beam spot smearing (default values)
 
         from LDMX.Framework import ldmxcfg
-        ldmxcfg.Process.addModule(module_name)
+        ldmxcfg.Process.add_module(module_name)
 
     def __str__(self):
         """Stringify this PrimaryGenerator
@@ -121,7 +121,7 @@ class SensitiveDetector:
         self.instance_name = instance_name
 
         from LDMX.Framework import ldmxcfg
-        ldmxcfg.Process.addModule(module_name)
+        ldmxcfg.Process.add_module(module_name)
 
     def __str__(self):
         """Stringify this SensitiveDetector
@@ -169,4 +169,4 @@ class PhotoNuclearModel:
         self.instance_name = instance_name
 
         from LDMX.Framework import ldmxcfg
-        ldmxcfg.Process.addModule(module_name)
+        ldmxcfg.Process.add_module(module_name)

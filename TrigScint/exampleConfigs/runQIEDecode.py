@@ -6,39 +6,39 @@ p = ldmxcfg.Process('unpack')
 import sys
 
 
-nEv=400000
-#mapFile="channelMapFrontBack_"+str(nChan)+"channels.txt" #../TrigScint/data/channelMapFrontBack.txt")
+n_ev=400000
+#map_file="channelMapFrontBack_"+str(n_chan)+"channels.txt" #../TrigScint/data/channelMapFrontBack.txt")
 
-#p.maxEvents = nEv
+#p.max_events = n_ev
 
-p.inputFiles=[sys.argv[1]]
-p.outputFiles = [sys.argv[2]]
-inputPass=sys.argv[3]
-nSamp=int(sys.argv[4])
-logName= p.outputFiles[0].replace(".root", "_toLDMX.log")
+p.input_files=[sys.argv[1]]
+p.output_files = [sys.argv[2]]
+input_pass=sys.argv[3]
+n_samp=int(sys.argv[4])
+log_name= p.output_files[0].replace(".root", "_toLDMX.log")
 
 
 if len(sys.argv) > 5 :
-    mapFile=sys.argv[5]
+    map_file=sys.argv[5]
 else :
-    mapFile="channelMap_LYSOback_plasticFront_12-to-16channels_rotated180.txt" # "channelMap_LYSOback_plasticFront_12-to-16channels.txt" # "channelMap_identity_"+str(nChan)+"channels.txt"
+    map_file="channelMap_LYSOback_plasticFront_12-to-16channels_rotated180.txt" # "channelMap_LYSOback_plasticFront_12-to-16channels.txt" # "channelMap_identity_"+str(n_chan)+"channels.txt"
 if len(sys.argv) > 6 :
-    logVerbosity=int(sys.argv[6])
+    log_verbosity=int(sys.argv[6])
 else :
-    logVerbosity=2
+    log_verbosity=2
 
 if len(sys.argv) > 7 :
-    nChan=int(sys.argv[7])
+    n_chan=int(sys.argv[7])
 else :
-    nChan=16 #default
+    n_chan=16 #default
 
 from LDMX.TrigScint.qieFormat import QIEDecoder
-dec=QIEDecoder.up(mapFile)
+dec=QIEDecoder.up(map_file)
 #dec.input_collection="QIEstreamUp"
-dec.input_pass_name=inputPass
+dec.input_pass_name=input_pass
 dec.verbose=True
-dec.number_channels=nChan  #default: 50
-dec.number_time_samples=nSamp  #default: 5
+dec.number_channels=n_chan  #default: 50
+dec.number_time_samples=n_samp  #default: 5
 dec.is_real_data=True #default: False
 #dec.spill_counter_conversion=125.0e6  #default: 125.e6 #not used
 
@@ -47,15 +47,15 @@ p.sequence = [
     dec
     ]
 
-#p.termLogLevel = 1
-p.logger.termLevel = 1
-#p.logFileName = logName
-p.logger.FilePath = logName
-#p.fileLogLevel = logVerbosity
-p.logger.fileLevel = logVerbosity
+#p.term_log_level = 1
+p.logger.term_level = 1
+#p.log_file_name = log_name
+p.logger.FilePath = log_name
+#p.file_log_level = log_verbosity
+p.logger.file_level = log_verbosity
 
 
-#p.logger.logRules=[ "QIEDecoder", 0]
+#p.logger.log_rules=[ "QIEDecoder", 0]
 #p.logger.debug("QIEDecoder") #wrong way, don't pass instance name
-if logVerbosity < 2 :
+if log_verbosity < 2 :
     p.logger.debug(dec) #pass instance itself

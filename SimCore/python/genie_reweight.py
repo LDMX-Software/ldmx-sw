@@ -8,7 +8,7 @@ class GenieReweightProducer(ldmxcfg.Producer) :
                  seed=10,
                  var_types=["GENIE_GENERIC"],
                  message_threshold_file = "/usr/local/GENIE/Generator/config/Messenger.xml",
-                 eventWeightsCollName="genieEventWeights"):
+                 event_weights_coll_name="genieEventWeights"):
         super().__init__(name,"simcore::GenieReweightProducer","SimCore::Reweight")
 
         self.seed = seed
@@ -16,4 +16,4 @@ class GenieReweightProducer(ldmxcfg.Producer) :
         self.var_types = var_types
         self.message_threshold_file = message_threshold_file
 
-        self.eventWeightsCollName = eventWeightsCollName
+        self.event_weights_coll_name = event_weights_coll_name
