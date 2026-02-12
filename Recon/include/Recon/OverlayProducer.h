@@ -201,16 +201,6 @@ class OverlayProducer : public framework::Producer {
    * Inclusive.
    */
   int start_event_max_{10000};
-
-  /**
-   * For Ecal, overlay hits should be added as contribs.
-   * But these are required to be unique, by the Ecal rconstruction code.
-   * So assign a nonsensical trackID, incidentID, and PDG ID to the contribs
-   * from overlay. These are hardwired right here.
-   */
-  int overlay_incident_id_{-1000};
-  int overlay_track_id_{-1000};
-  int overlay_pdg_code_{0};
 };
 }  // namespace recon
 

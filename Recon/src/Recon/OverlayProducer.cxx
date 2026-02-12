@@ -110,9 +110,8 @@ void OverlayProducer::produce(framework::Event &event) {
   std::map<std::string, std::map<int, ldmx::SimParticle>>
       particle_collection_map;
   std::map<std::string, std::map<int, ldmx::SimCalorimeterHit>> hit_map;
-  int track_id_increment =
-      -1;  // there should only be one SimParticles collection, so it's fine for
-           // this to be just an integer rather than a vector
+  int track_id_increment = 100000;  // track_id's for overlay events will be
+                                    // incremented by this value
 
   // start by copying over all the collections from the sim event
 
@@ -203,7 +202,7 @@ void OverlayProducer::produce(framework::Event &event) {
     }
   }  // over particle collections for sim event
 
-  /* ----------- now do the pileup overlay ----------- */
+  /* ----------- now do the overlay ----------- */
 
   // we could shift these by a random number, effectively placing the
   // sim event at random positions in the interval, preserving the
@@ -309,18 +308,51 @@ void OverlayProducer::produce(framework::Event &event) {
             if (this_coll_hit_map.find(overlay_hit_id) ==
                 this_coll_hit_map
                     .end()) {  // there wasn't already a simhit in this id
+              ldmx_log(trace)
+                  << "No existing simhit found for ID " << overlay_hit_id
+                  << "; copying overlay hit to output collection";
               this_coll_hit_map[overlay_hit_id] = ldmx::SimCalorimeterHit();
               this_coll_hit_map[overlay_hit_id].setID(overlay_hit_id);
               std::vector<float> hit_pos = overlay_hit.getPosition();
-              this_coll_hit_map[overlay_hit_id].setPosition(
-                  hit_pos[0], hit_pos[1], hit_pos[2]);
-            }
-            // add the overlay hit (as a) contrib
-            // incidentID = -1000, trackID = -1000, pdgCode = 0  <-- these are
-            // set in the header for now but could be parameters
-            this_coll_hit_map[overlay_hit_id].addContrib(
-                overlay_incident_id_, overlay_track_id_, overlay_pdg_code_,
-                overlay_hit.getEdep(), overlay_time);
+              this_coll_hit_map[overlay_hit_id].setPosition(hit_pos[0], hit_pos[1],
+                                                  hit_pos[2]);
+              std::vector<float> pre_step_pos =
+                  overlay_hit.getPreStepPosition();
+              this_coll_hit_map[overlay_hit_id].setPreStepPosition(
+                  pre_step_pos[0], pre_step_pos[1], pre_step_pos[2]);
+              std::vector<float> post_step_pos =
+                  overlay_hit.getPostStepPosition();
+              this_coll_hit_map[overlay_hit_id].setPostStepPosition(
+                  post_step_pos[0], post_step_pos[1], post_step_pos[2]);
+              this_coll_hit_map[overlay_hit_id].setEdep(overlay_hit.getEdep());
+              this_coll_hit_map[overlay_hit_id].setPathLength(
+                  overlay_hit.getPathLength());
+              this_coll_hit_map[overlay_hit_id].setPreStepTime(
+                  overlay_hit.getPreStepTime() + time_offset);
+              this_coll_hit_map[overlay_hit_id].setPostStepTime(
+                  overlay_hit.getPostStepTime() + time_offset);
+              this_coll_hit_map[overlay_hit_id].setVelocity(overlay_hit.getVelocity());
+            }  // if overlay_hit_id not present
+
+            // add the overlay hit contribs to existing hit,
+            // incrementing track IDs and timestamp as needed
+            int n_contribs = overlay_hit.getNumberOfContribs();
+            ldmx_log(trace)
+                << "Copying and reindexing " << n_contribs
+                << " contributors to the sim hit for ID " << overlay_hit_id;
+            for (int i = 0; i < n_contribs; i++) {
+              ldmx::SimCalorimeterHit::Contrib contrib{
+                  overlay_hit.getContrib(i)};
+              int incident_id = contrib.incident_id_ + track_id_increment;
+              int track_id = contrib.track_id_ + track_id_increment;
+              float time = contrib.time_ + time_offset;
+              this_coll_hit_map[overlay_hit_id].addContrib(incident_id, track_id,
+                                                 contrib.pdg_code_,
+                                                 contrib.edep_, time);
+            }  // loop over contribs in overlay_hit
+            ldmx_log(trace) << "There are now "
+                            << this_coll_hit_map[overlay_hit_id].getNumberOfContribs()
+                            << " total contributors in the output collection";
           }  // if add overlay as contribs
           else {
             calo_collection_map[out_coll_name].push_back(overlay_hit);
@@ -338,7 +370,7 @@ void OverlayProducer::produce(framework::Event &event) {
 
       /* ----------- now do simtracker hits_ overlay ----------- */
 
-      // get the SimTrackerHit collections that we want to overlay
+      // loop over the SimTrackerHit collections that we want to overlay
       for (const auto &coll : tracker_collections_) {
         auto overlay_tracker_hits{
             overlay_event_.getCollection<ldmx::SimTrackerHit>(
@@ -382,14 +414,42 @@ void OverlayProducer::produce(framework::Event &event) {
         ldmx_log(trace) << "in loop: printing overlay event: ";
 
         for (auto &[track_id, particle] : overlay_particles) {
-          auto overlay_time{particle.getTime() + time_offset};
-          particle.setTime(overlay_time);
           int new_track_id = track_id + track_id_increment;
-          particle_collection_map[out_coll_name_particles].emplace(new_track_id,
-                                                                   particle);
+          // need to increment all the track ids which requires
+          // copying each variable individually
+          ldmx::SimParticle new_particle;
+          new_particle.setEnergy(particle.getEnergy());
+          new_particle.setPdgID(particle.getPdgID());
+          new_particle.setGenStatus(particle.getGenStatus());
+          new_particle.setTime(particle.getTime() + time_offset);
+          std::vector<double> vertex = particle.getVertex();
+          new_particle.setVertex(vertex[0], vertex[1], vertex[2]);
+          new_particle.setVertexVolume(particle.getVertexVolume());
+          new_particle.setInteractionMaterial(
+              particle.getInteractionMaterial());
+          std::vector<double> end_point = particle.getEndPoint();
+          new_particle.setEndPoint(end_point[0], end_point[1], end_point[2]);
+          std::vector<double> momentum = particle.getMomentum();
+          new_particle.setMomentum(momentum[0], momentum[1], momentum[2]);
+          new_particle.setMass(particle.getMass());
+          new_particle.setCharge(particle.getCharge());
+          new_particle.setProcessType(particle.getProcessType());
+          std::vector<double> end_point_momentum =
+              particle.getEndPointMomentum();
+          new_particle.setEndPointMomentum(end_point_momentum[0],
+                                           end_point_momentum[1],
+                                           end_point_momentum[2]);
+          for (int &id : particle.getDaughters()) {
+            new_particle.addDaughter(id + track_id_increment);
+          }
+          for (int &id : particle.getParents()) {
+            new_particle.addParent(id + track_id_increment);
+          }
+          particle_collection_map[out_coll_name_particles].emplace(
+              new_track_id, new_particle);
 
           ldmx_log(trace) << "Track ID: " << new_track_id << " --- "
-                          << particle;
+                          << new_particle;
           ldmx_log(trace) << "Adding sim particle to output map "
                           << out_coll_name_particles;
         }  // over overlay sim particles collection
