@@ -24,7 +24,7 @@ genie = gen.genie(name='genie_G18_02a_02_11b',
                         beam_size = [ 20., 80. ],
                         direction = [0.,0.,1.],
                         tune='G18_02a_02_11b',
-                        spline_file=f'{os.environ["CI_DATA"]/target_genie/gxspl_emode_GENIE_v3_04_00.xml',
+                        spline_file=f'{os.environ["CI_DATA"]}/target_genie/gxspl_emode_GENIE_v3_04_00.xml',
                         message_threshold_file=f'Messenger_ErrorOnly.xml')
 
 
