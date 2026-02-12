@@ -2,6 +2,7 @@
 
 from LDMX.SimCore import simcfg
 
+
 class BiasingUtilityAction(simcfg.UserAction) :
     """Helpful derived class for this submodule, makes
     sure the library and namespace are set correctly.
@@ -17,7 +18,7 @@ class BiasingUtilityAction(simcfg.UserAction) :
     def __init__(self,instance_name,class_name) :
         super().__init__(instance_name,'biasing::utility::%s'%class_name)
         from LDMX.Framework.ldmxcfg import Process
-        Process.addLibrary('@CMAKE_INSTALL_PREFIX@/lib/libBiasing_Utility.so')
+        Process.add_library('@CMAKE_INSTALL_PREFIX@/lib/libBiasing_Utility.so')
 
 class StepPrinter(BiasingUtilityAction) :
     """Print each step of the input track ID
@@ -83,7 +84,7 @@ class TrackProcessFilter(BiasingUtilityAction):
     
         """
         return TrackProcessFilter('electronNuclear')
-        
+
     def electron_brem() :
         """ Configuration used to tag all electron brem tracks to persist them to the event.
     
@@ -93,7 +94,7 @@ class TrackProcessFilter(BiasingUtilityAction):
     
         """
         return TrackProcessFilter('eBrem')
-        
+
     def conversion() :
         """ Configuration used to tag all electron conversion tracks to persist them to the event.
     

@@ -1,0 +1,79 @@
+[project]
+name = "ldmx-sw"
+description = "The Light Dark Matter eXperiment simulation and reconstruction framework."
+readme = "README.md"
+license = {text = "GPL-3.0"}
+
+[tool.ruff]
+# Set the maximum line length to 88
+line-length = 88
+
+# Exclude common directories
+exclude = [
+    ".git",
+    "__pycache__",
+    "build",
+    "dist",
+    ".eggs",
+    "*.egg-info",
+    ".venv",
+    "venv",
+    ".denv",
+    ".apptainer",
+    "Trigger/ruckus",  # Third-party firmware code
+]
+
+[tool.ruff.lint]
+# Enable pycodestyle (`E`, `W`), Pyflakes (`F`), isort (`I`), and pep8-naming (`N`)
+select = [
+    "E",    # pycodestyle errors
+    "W",    # pycodestyle warnings
+    "F",    # Pyflakes
+    "I",    # isort
+    "N",    # pep8-naming
+    "UP",   # pyupgrade
+    "B",    # flake8-bugbear
+    "C4",   # flake8-comprehensions
+    "DTZ",  # flake8-datetimez
+    "SIM",  # flake8-simplify
+    "TID",  # flake8-tidy-imports
+    "RUF",  # Ruff-specific rules
+]
+
+# Disable specific rules that might be too strict
+ignore = [
+    "F401", # Allow unused imports
+    "E402"  # Imports dont have to be on top
+]
+
+# Allow autofix for all enabled rules (when `--fix` is provided)
+fixable = ["ALL"]
+unfixable = []
+
+# Allow unused variables when underscore-prefixed
+dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
+
+[tool.ruff.lint.per-file-ignores]
+# Allow unused imports in __init__.py files
+"__init__.py" = ["F401"]
+# Ignore import order in example configs
+"**/exampleConfigs/*.py" = ["I001"]
+
+[tool.ruff.lint.isort]
+# Use a single line between direct and from import
+lines-after-imports = 2
+# Group imports by type
+known-first-party = ["LDMX"]
+
+[tool.ruff.format]
+# Use double quotes for strings
+quote-style = "double"
+
+# Indent with spaces, not tabs
+indent-style = "space"
+
+# Use line endings appropriate to the platform
+line-ending = "auto"
+
+# Enable auto-formatting of code examples in docstrings
+docstring-code-format = true

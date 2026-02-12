@@ -4,20 +4,20 @@ p = ldmxcfg.Process('clusters') #
 
 import sys
 
-inputPassName="hits"
-nEv=400000
-#p.maxEvents = nEv
+input_pass_name="hits"
+n_ev=400000
+#p.max_events = n_ev
 
 if len(sys.argv) > 2 :
-    timeSample=int(sys.argv[2])
+    time_sample=int(sys.argv[2])
 else :
-    timeSample=21
-    
+    time_sample=21
+
 from LDMX.TrigScint.trigScint import TestBeamClusterProducer
 
 
-tbClustersUp  =TestBeamClusterProducer("tbClusters")
-tbClustersUp.input_pass_name=inputPassName
+tbClustersUp  =TestBeamClusterProducer("tb_clusters")
+tbClustersUp.input_pass_name=input_pass_name
 #tbClustersUp.input_collection="TestBeamHitsUp"
 tbClustersUp.pad_time=0.
 tbClustersUp.threshold=15.
@@ -29,10 +29,10 @@ p.sequence = [
 
 
 #generate on the fly
-p.inputFiles = [sys.argv[1]]
-p.outputFiles = [ sys.argv[1].replace(".root", "_clusters.root") ]
+p.input_files = [sys.argv[1]]
+p.output_files = [ sys.argv[1].replace(".root", "_clusters.root") ]
 
-p.termLogLevel = 2
-p.logFileName = p.outputFiles[0].replace(".root", ".log") 
+p.term_log_level = 2
+p.log_file_name = p.output_files[0].replace(".root", ".log")
 p.logFileLevel=0
 

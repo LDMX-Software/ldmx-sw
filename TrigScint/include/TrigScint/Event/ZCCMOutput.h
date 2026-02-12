@@ -93,19 +93,13 @@ class ZCCMOutput {
   void setCID(const std::vector<int> cid) { cids_ = cid; }
 
  public:
-  /*
-    use these to define positions and sizes of error flags etc other header
-    words relative to each other.
-    these simply state the order:
-    header {16B DAQ header, 8B TS time stamp, 8B empty}{message 0}...{message
-    N-1} for each time sample, every lane each sends a message: [ 1B ADC for 6
-    channels, 2B empty, 1B TDC for 6 channels, 1B flags, 1B lane nb]; and the 1B
-    "flags" structure is: flags = 2b CID (capID), 1b CE (channel alignment?
-    error), 1b BC0, 4b empty
-  */
-  const static int DAQHEADER_POS{0};
-  const static int DAQHEADER_LEN_BYTES{16};
-  const static int TIMESTAMP_POS{DAQHEADER_POS + DAQHEADER_LEN_BYTES};
+  /**
+   * for each time sample, every lane each sends a message:
+   * [ 1B ADC for 6 channels, 2B empty, 1B TDC for 6 channels, 1B flags, 1B lane
+   * nb]; and the 1B "flags" structure is: flags = 2b CID (capID), 1b CE
+   * (channel alignment? error), 1b BC0, 4b empty
+   */
+  const static int TIMESTAMP_POS{0};
   const static int TIMESTAMP_LEN_BYTES{8};
   const static int EMPTY_HEADER_WORD_POS{TIMESTAMP_POS + TIMESTAMP_LEN_BYTES};
   const static int EMPTY_HEADER_WORD_LEN_BYTES{8};

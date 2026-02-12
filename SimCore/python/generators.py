@@ -6,6 +6,7 @@ are hardcoded into the python configuration.
 
 from LDMX.SimCore import simcfg
 
+
 class gun(simcfg.PrimaryGenerator) :
     """New basic particle gun primary generator
 
@@ -30,14 +31,18 @@ class gun(simcfg.PrimaryGenerator) :
         Unit vector direction to shoot from
     vertex : list of float, optional
         Vertex position to shoot from [mm]. Defaults to [0.0, 0.0, 0.0]
+    beam_spot_smear : list of float, optional
+        2 (x,y) or 3 (x,y,z) widths to smear vertices from this generator [mm]
+        If set, overrides the global simulator beam_spot_smear for this generator.
 
     Examples
     --------
-        myGun = gun( 'myGun' )
-        myGun.particle = 'e-'
-        myGun.energy = 4.0
-        myGun.direction = [ 0., 0., 1. ]
-        myGun.position = [ 0., 0., 0. ]
+        my_gun = gun( 'my_gun' )
+        my_gun.particle = 'e-'
+        my_gun.energy = 4.0
+        my_gun.direction = [ 0., 0., 1. ]
+        my_gun.position = [ 0., 0., 0. ]
+        my_gun.beam_spot_smear = [20., 80., 0.]
     """
 
     def __init__(self, name ) :
@@ -71,17 +76,20 @@ class multi(simcfg.PrimaryGenerator) :
         Number of particles to shoot (or average of Poisson distribution)
     pdgID : int
         PDG ID of particle(s) to shoot
+    beam_spot_smear : list of float, optional
+        2 (x,y) or 3 (x,y,z) widths to smear vertices from this generator [mm]
+        If set, overrides the global simulator beam_spot_smear for this generator.
     """
 
     def __init__(self,name) :
         super().__init__(name,'simcore::generators::MultiParticleGunPrimaryGenerator')
 
         #turn off Poisson by default
-        self.enablePoisson = False
+        self.enable_poisson = False
         self.vertex = [ ]
         self.momentum = [ ]
-        self.nParticles = 1
-        self.pdgID = 0
+        self.n_particles = 1
+        self.pdg_id = 0
 
 
 class lhe(simcfg.PrimaryGenerator) :
@@ -91,16 +99,19 @@ class lhe(simcfg.PrimaryGenerator) :
     ----------
     name : str
         name of new primary generator
-    filePath : str
+    file_path : str
         path to LHE file containing the primary vertices
     vertex : list of float, optional
         Vertex position to shoot from [mm]. Defaults to [0.0, 0.0, 0.0]
+    beam_spot_smear : list of float, optional
+        2 (x,y) or 3 (x,y,z) widths to smear vertices from this generator [mm]
+        If set, overrides the global simulator beam_spot_smear for this generator.
     """
 
-    def __init__(self,name,filePath):
+    def __init__(self,name,file_path):
         super().__init__(name,'simcore::generators::LHEPrimaryGenerator')
 
-        self.filePath = filePath
+        self.file_path = file_path
         self.vertex = [0.0, 0.0, 0.0]
 
 class completeReSim(simcfg.PrimaryGenerator) :
@@ -123,8 +134,8 @@ class completeReSim(simcfg.PrimaryGenerator) :
 
     def __init__(self,name,file_path) :
         super().__init__(name,'simcore::generators::RootCompleteReSim')
-        
-        self.filePath = file_path
+
+        self.file_path = file_path
         self.collection_name = 'SimParticles'
         self.pass_name = ''
 
@@ -138,7 +149,7 @@ class ecalSP(simcfg.PrimaryGenerator) :
     ----------
     name : str
         name of new primary generator
-    filePath : str
+    file_path : str
         path to ROOT file containing the EcalScoringPlanes to re-simulate
 
 
@@ -152,10 +163,10 @@ class ecalSP(simcfg.PrimaryGenerator) :
         Maximum time of scoring plane hit to still re-sim [ns]
     """
 
-    def __init__(self,name,filePath) :
+    def __init__(self,name,file_path) :
         super().__init__( name , 'simcore::generators::RootSimFromEcalSP' )
 
-        self.filePath = filePath
+        self.file_path = file_path
         self.collection_name = 'EcalScoringPlaneHits'
         self.pass_name = ''
         self.time_cutoff = 50.
@@ -169,7 +180,7 @@ class gps(simcfg.PrimaryGenerator) :
     ----------
     name : str
         name of new primary generator
-    initCommands : list of strings
+    init_commands : list of strings
         List of Geant4 commands to initialize this GeneralParticleSource
 
     Returns
@@ -179,7 +190,7 @@ class gps(simcfg.PrimaryGenerator) :
 
     Examples
     --------
-        myGPS = gps( 'myGPS' , [
+        my_gps = gps( 'my_gps' , [
             "/gps/particle e-",
             "/gps/pos/type Plane",
             "/gps/pos/shape Square",
@@ -195,9 +206,9 @@ class gps(simcfg.PrimaryGenerator) :
             ] )
     """
 
-    def __init__(self,name,initCommands) :
+    def __init__(self,name,init_commands) :
         super().__init__(name,'simcore::generators::GeneralParticleSource')
-        self.initCommands = initCommands
+        self.init_commands = init_commands
 
 class genie(simcfg.PrimaryGenerator) :
     """Simple GENIE generator
@@ -297,7 +308,7 @@ def _single_e_upstream_tagger(position, momentum, energy):
     import math
     momentum_mag = math.sqrt(sum(map(lambda x: x*x, momentum)))
     unit_direction = list(map(lambda x: x/momentum_mag, momentum))
-    
+
     particle_gun = gun(f'single_{energy}gev_e_upstream_tagger')
     particle_gun.particle = 'e-'
     particle_gun.position = position
@@ -338,14 +349,14 @@ def single_4gev_e_upstream_target() :
     """
 
     particle_gun = gun('single_4gev_e_upstream_target')
-    particle_gun.particle = 'e-' 
+    particle_gun.particle = 'e-'
     particle_gun.position = [ 0., 0., -1.2 ]  # mm
-    particle_gun.direction = [ 0., 0., 1] 
+    particle_gun.direction = [ 0., 0., 1]
     particle_gun.energy = 4.0 # GeV
 
     return particle_gun
 
-def single_1pt2gev_e_upstream_tagger(): 
+def single_1pt2gev_e_upstream_tagger():
     """Configure a particle gun to fire a 8 GeV electron upstream of the tagger tracker.
 
     The position and direction are set such that the electron will be bent by 
@@ -364,7 +375,7 @@ def single_1pt2gev_e_upstream_tagger():
         1.2
     )
 
-def single_8gev_e_upstream_tagger(): 
+def single_8gev_e_upstream_tagger():
     """Configure a particle gun to fire a 8 GeV electron upstream of the tagger tracker.
 
     The position and direction are set such that the electron will be bent by 

@@ -43,9 +43,9 @@ the polycarbonate in the PDG is 75% C, 5% H and 20% O which
 I deemed close enough.
 """
 
-import sys
-from dataclasses import dataclass, asdict
 import json
+import sys
+from dataclasses import asdict, dataclass
 
 
 @dataclass
@@ -509,33 +509,33 @@ def calc_weights(layers_partitioned_by_sensdet) :
     """
 
     # Does not include sensitive detector layers
-    dE_between_sensdet = [ ]
-    X0_between_sensdet = [ ]
-    L_between_sensdet  = [ ]
+    de_between_sensdet = [ ]
+    x0_between_sensdet = [ ]
+    l_between_sensdet  = [ ]
     # Does include sensitive detector layers
-    Zpos_layer = [ ]
+    zpos_layer = [ ]
     for section in layers_partitioned_by_sensdet :
-        dE_between_sensdet.append(sum(l.thickness * l.dEdx for l in section))
-        X0_between_sensdet.append(sum(l.thickness / l.x0 for l in section))
-        L_between_sensdet.append(sum(l.thickness / l.nuclen for l in section))
+        de_between_sensdet.append(sum(l.thickness * l.dEdx for l in section))
+        x0_between_sensdet.append(sum(l.thickness / l.x0 for l in section))
+        l_between_sensdet.append(sum(l.thickness / l.nuclen for l in section))
         last_layer_pos = 0.0
-        if len(Zpos_layer) > 0:
-            last_layer_pos = Zpos_layer[-1] + Layer.SensDetThickness
-        Zpos_layer.append(last_layer_pos + sum(l.thickness for l in section))
+        if len(zpos_layer) > 0:
+            last_layer_pos = zpos_layer[-1] + Layer.SensDetThickness
+        zpos_layer.append(last_layer_pos + sum(l.thickness for l in section))
     #endfor - sections
 
-    dE_between_sensdet = average(dE_between_sensdet)
-    X0_between_sensdet = average(X0_between_sensdet)
-    L_between_sensdet  = average(L_between_sensdet)
+    de_between_sensdet = average(de_between_sensdet)
+    x0_between_sensdet = average(x0_between_sensdet)
+    l_between_sensdet  = average(l_between_sensdet)
 
-    return dE_between_sensdet, X0_between_sensdet, L_between_sensdet, Zpos_layer
+    return de_between_sensdet, x0_between_sensdet, l_between_sensdet, zpos_layer
 
 
 def print_weights(
-    dE_between_sensdet,
-    X0_between_sensdet,
-    L_between_sensdet,
-    Zpos_layer, 
+    de_between_sensdet,
+    x0_between_sensdet,
+    l_between_sensdet,
+    zpos_layer,
     output = sys.stdout
 ):
     """print the weights in a nice-ly formatted table
@@ -549,15 +549,14 @@ def print_weights(
         )
     )
     output.write('-----------------------------------\n')
-    for layer in range(len(dE_between_sensdet)-1):
-        output.write('{0:5d} {1:7.3f} {2:6.3f} {3:6.3f} {4:6.3f}\n'.format(
-            layer+1, dE_between_sensdet[layer], X0_between_sensdet[layer], L_between_sensdet[layer], Zpos_layer[layer]))
+    for layer in range(len(de_between_sensdet)-1):
+        output.write(f'{layer+1:5d} {de_between_sensdet[layer]:7.3f} {x0_between_sensdet[layer]:6.3f} {l_between_sensdet[layer]:6.3f} {zpos_layer[layer]:6.3f}\n')
     #endfor - layers
     output.write('-----------------------------------\n')
     output.write('{0:>5s} {1:7.3f} {2:6.3f} {3:6.3f} {4:6.3f}\n'.format(
-        'Sum', sum(dE_between_sensdet[:-1]), sum(X0_between_sensdet[:-1]), sum(L_between_sensdet[:-1]), Zpos_layer[-1] ))
+        'Sum', sum(de_between_sensdet[:-1]), sum(x0_between_sensdet[:-1]), sum(l_between_sensdet[:-1]), zpos_layer[-1] ))
     output.write('{0:>5s} {1:7.3f} {2:6.3f} {3:6.3f} {4:6.3f}\n'.format(
-        'Back', dE_between_sensdet[-1], X0_between_sensdet[-1], L_between_sensdet[-1], Zpos_layer[-1]))
+        'Back', de_between_sensdet[-1], x0_between_sensdet[-1], l_between_sensdet[-1], zpos_layer[-1]))
     output.flush()
 
 
@@ -649,11 +648,7 @@ def minildmx():
     print('N Bi-Layers | X0    | mm    |')
     for n in range(1,4):
         layers = [Layer.kapton(0.1)]+n*BiLayerSandwich(front=0, cooling=0, slice_test=True).material_stack()+[Layer.kapton(0.1)]
-        print('{n:>11} | {x0:<5.3g} | {z:<5.3g} |'.format(
-            n = n,
-            x0 = sum(layer.thickness / layer.x0 for layer in layers),
-            z = sum(layer.thickness for layer in layers)
-        ))
+        print(f'{n:>11} | {sum(layer.thickness / layer.x0 for layer in layers):<5.3g} | {sum(layer.thickness for layer in layers):<5.3g} |')
 
 
 @command

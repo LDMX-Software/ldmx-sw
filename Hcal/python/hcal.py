@@ -2,6 +2,7 @@
 
 from LDMX.Framework import ldmxcfg
 
+
 class HcalVetoProcessor(ldmxcfg.Producer) :
     """Configuration for veto in HCal
 
@@ -19,13 +20,13 @@ class HcalVetoProcessor(ldmxcfg.Producer) :
         self.pe_threshold = 8.0
         self.max_time = 50.0
         self.back_min_pe = 1.
-        self.input_hit_coll_name= "HcalRecHits";
+        self.input_hit_coll_name= "HcalRecHits"
         self.input_hit_pass_name = ''
-        self.output_coll_name= "HcalVeto";
-        self.inverse_skim = False;
-        
+        self.output_coll_name= "HcalVeto"
+        self.inverse_skim = False
+
         self.track_pass_name = ''
-        
+
 
 class HcalWABVetoProcessor(ldmxcfg.Producer) :
     """Configuration for WAB veto in HCal
@@ -41,17 +42,17 @@ class HcalWABVetoProcessor(ldmxcfg.Producer) :
     def __init__(self,name = 'hcalWABVeto') :
         super().__init__(name,'hcal::HcalWABVetoProcessor','Hcal')
 
-        self.max_total_energy_compare = 1000.0;
-        self.min_total_energy_compare = 0.0;
-        self.n_clusters = 6.0;
-        self.mean_hits_per_cluster = 3.0;
-        self.mean_energy_per_cluster = 6.;
+        self.max_total_energy_compare = 1000.0
+        self.min_total_energy_compare = 0.0
+        self.n_clusters = 6.0
+        self.mean_hits_per_cluster = 3.0
+        self.mean_energy_per_cluster = 6.
 
-        self.inputHCALHitCollName = "HcalRecHits";
-        self.inputECALHitCollName = "EcalRecHits" ;
-        self.outputCollName = "HcalWABVetoes";
-        self.inputHCALClusterCollName = "HcalClusters"
-        
+        self.input_hcal_hit_coll_name = "HcalRecHits"
+        self.input_ecal_hit_coll_name = "EcalRecHits"
+        self.output_coll_name = "HcalWABVetoes"
+        self.input_hcal_cluster_coll_name = "HcalClusters"
+
         self.hcal_hit_passname = ''
         self.ecal_hit_passname = ''
         self.hcal_cluster_passname = ''
@@ -98,12 +99,12 @@ class HcalClusterProducer(ldmxcfg.Producer) :
         super().__init__(name,'hcal::HcalClusterProducer','Hcal')
 
         #self.EminSeed = 0.1 # Not used
-        self.EnoiseCut = 0.01
-        self.deltaTime = 10.
-        self.deltaR = 0.
-        self.EminCluster = 0.5 # Minimum Energy to be classed as a cluster TODO
-        self.cutOff = 10.
+        self.enoise_cut = 0.01
+        self.delta_time = 10.
+        self.delta_r = 0.
+        self.emin_cluster = 0.5 # Minimum Energy to be classed as a cluster TODO
+        self.cut_off = 10.
 
-        self.clusterCollName = 'HcalClusters'
+        self.cluster_coll_name = 'HcalClusters'
         self.hcal_hits_pass_name = ''
-        
+

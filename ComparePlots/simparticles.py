@@ -1,6 +1,8 @@
+import logging
+
 from ._differ import Differ
 from ._plotter import plotter
-import logging
+
 
 log = logging.getLogger('8GeV')
 

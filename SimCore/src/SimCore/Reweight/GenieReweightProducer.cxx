@@ -52,9 +52,9 @@ GenieReweightProducer::GenieReweightProducer(const std::string& name,
 }
 
 void GenieReweightProducer::configure(framework::config::Parameters& ps) {
-  hepmc3_coll_name_ = ps.get<std::string>("hepmc3CollName");
-  hepmc3_pass_name_ = ps.get<std::string>("hepmc3PassName");
-  event_weights_coll_name_ = ps.get<std::string>("eventWeightsCollName");
+  hepmc3_coll_name_ = ps.get<std::string>("hepmc3_coll_name");
+  hepmc3_pass_name_ = ps.get<std::string>("hepmc3_pass_name");
+  event_weights_coll_name_ = ps.get<std::string>("event_weights_coll_name");
   seed_ = ps.get<int>("seed");
   n_weights_ = static_cast<size_t>(ps.get<int>("n_weights"));
   auto var_types_strings = ps.get<std::vector<std::string> >("var_types");

@@ -27,7 +27,7 @@ void TrigScintTrackDQM::onProcessStart() {
 
 void TrigScintTrackDQM::configure(framework::config::Parameters &ps) {
   track_collection_name_ = ps.get<std::string>("track_collection");
-  pass_name_ = ps.get<std::string>("passName").c_str();
+  pass_name_ = ps.get<std::string>("pass_name").c_str();
 
   ldmx_log(debug) << "Collection name = " << track_collection_name_
                   << " pass name =" << pass_name_;

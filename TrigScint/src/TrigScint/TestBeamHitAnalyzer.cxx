@@ -14,10 +14,10 @@ TestBeamHitAnalyzer::TestBeamHitAnalyzer(const std::string& name,
     : Analyzer(name, process) {}
 
 void TestBeamHitAnalyzer::configure(framework::config::Parameters& parameters) {
-  input_col_ = parameters.get<std::string>("inputCollection");
-  input_pass_name_ = parameters.get<std::string>("inputPassName");
+  input_col_ = parameters.get<std::string>("input_collection");
+  input_pass_name_ = parameters.get<std::string>("input_pass_name");
   peds_ = parameters.get<std::vector<double> >("pedestals");
-  start_sample_ = parameters.get<int>("startSample");
+  start_sample_ = parameters.get<int>("start_sample");
 
   std::cout << " [ TestBeamHitAnalyzer ] In configure(), got parameters "
             << "\n\t inputCollection = " << input_col_

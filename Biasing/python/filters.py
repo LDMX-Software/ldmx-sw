@@ -8,6 +8,7 @@ Examples of how each filter is configured for biased MC generation.
 
 from LDMX.SimCore import simcfg
 
+
 class TargetBremFilter(simcfg.UserAction):
     """ Configuration for filtering events that don't see a hard brem in the target. 
 
@@ -75,7 +76,7 @@ class EcalProcessFilter(simcfg.UserAction):
         include.library()
 
         self.process = process
-        
+
 class DeepEcalProcessFilter(simcfg.UserAction):
     """ Configuration for keeping events where the pn happens deep in the ECAL.
 
@@ -86,14 +87,14 @@ class DeepEcalProcessFilter(simcfg.UserAction):
     processes: vector of str
         The allowed processes that can happen deep inside the ECAL, default is
         conversion (conv) and photoelectron (photo)
-    ecal_min_Z: double
+    ecal_min_z: double
         Minimum Z location where the deep process should happen
-    require_photon_fromTarget: bool
+    require_photon_from_target: bool
         Require that the hard brem photon originates from the target
         Default is False
     """
 
-    def __init__(self, bias_threshold, processes, ecal_min_Z, require_photon_fromTarget) :
+    def __init__(self, bias_threshold, processes, ecal_min_z, require_photon_from_target) :
         super().__init__("deepecal_filter", "biasing::DeepEcalProcessFilter")
 
         from LDMX.Biasing import include
@@ -101,8 +102,8 @@ class DeepEcalProcessFilter(simcfg.UserAction):
 
         self.bias_threshold = bias_threshold
         self.processes = processes
-        self.ecal_min_Z = ecal_min_Z
-        self.require_photon_fromTarget = require_photon_fromTarget
+        self.ecal_min_z = ecal_min_z
+        self.require_photon_from_target = require_photon_from_target
 
 class TargetENFilter(simcfg.UserAction) :
     """ Configuration for filtering electro-nuclear events in the target. 
@@ -119,7 +120,7 @@ class TargetENFilter(simcfg.UserAction) :
         from LDMX.Biasing import include
         include.library()
 
-        self.recoilThreshold = recoil_thresh #MeV
+        self.recoil_threshold = recoil_thresh #MeV
 
 class TargetPNFilter(simcfg.UserAction) :
     """ Configuration for filtering photo-nuclear events in the target."""
@@ -148,36 +149,36 @@ class EcalDarkBremFilter(simcfg.UserAction):
 
     Parameters
     ----------
-    minApEnergy : float
+    min_ap_energy : float
         Minimum A' energy to keep the event [MeV]
     """
 
-    def __init__(self,minApEnergy):
+    def __init__(self,min_ap_energy):
         super().__init__('ecal_db_filter','biasing::EcalDarkBremFilter')
 
         from LDMX.Biasing import include
         include.library()
 
-        self.threshold = minApEnergy
+        self.threshold = min_ap_energy
 
 class TargetDarkBremFilter(simcfg.UserAction):
     """ Configuration for filtering A' events
 
     Parameters
     ----------
-    minApEnergy : float
+    min_ap_energy : float
         Minimum A' energy to keep the event [MeV]
     """
 
-    def __init__(self,minApEnergy):
+    def __init__(self,min_ap_energy):
         super().__init__('target_db_filter','biasing::TargetDarkBremFilter')
 
         from LDMX.Biasing import include
         include.library()
 
-        self.threshold = minApEnergy
+        self.threshold = min_ap_energy
 
-class TaggerVetoFilter(simcfg.UserAction): 
+class TaggerVetoFilter(simcfg.UserAction):
     """ Configuration used to reject off-energy electrons in the tagger tracker.
 
     Parameters
@@ -187,7 +188,7 @@ class TaggerVetoFilter(simcfg.UserAction):
     reject_events_missing_tagger : bool
         Also veto events where the primary particle misses the tagger region
     """
-    
+
     def __init__(self,thresh, reject_events_missing_tagger=True) :
         super().__init__('tagger_veto_filter','biasing::TaggerVetoFilter')
 
@@ -249,7 +250,7 @@ class MidShowerDiMuonBkgdFilter(simcfg.UserAction) :
         self.threshold = thresh
 
 
-class TaggerHitFilter(simcfg.UserAction): 
+class TaggerHitFilter(simcfg.UserAction):
     """ Configuration used to reject off-energy electrons in the tagger tracker.
     Parameters
     ----------
@@ -257,10 +258,10 @@ class TaggerHitFilter(simcfg.UserAction):
         Minimum number of tagger layers with a hit needed to persist the event.
     """
 
-    def __init__(self, layersHit=8) :
+    def __init__(self, layers_hit=8) :
         super().__init__('tagger_hit_filter','biasing::TaggerHitFilter')
 
         from LDMX.Biasing import include
         include.library()
 
-        self.layers_hit = layersHit
+        self.layers_hit = layers_hit

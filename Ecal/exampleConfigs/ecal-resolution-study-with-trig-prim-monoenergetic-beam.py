@@ -31,20 +31,20 @@ if not os.path.isdir(arg.out_dir) :
 
 p = ldmxcfg.Process( "valid" )
 p.run = arg.run
-p.maxEvents = arg.n_events
-p.maxTriesPerEvent = 10000
+p.max_events = arg.n_events
+p.max_tries_per_event = 10000
 file_stub = f'energy_{arg.energy}_theta_{arg.theta:02d}_phi_{arg.phi}_attarget_{arg.angle_at_target}_geometry_v14_events_{arg.n_events}_run_{arg.run}.root'
-p.outputFiles = [ arg.out_dir+'/type_events_'+file_stub ]
+p.output_files = [ arg.out_dir+'/type_events_'+file_stub ]
 
 # we want to see every event
-p.logFrequency = 1000
-p.termLogLevel = 0
+p.log_frequency = 1000
+p.term_log_level = 0
 
 from LDMX.SimCore import simulator
 from LDMX.SimCore import generators
-import LDMX.Ecal.EcalGeometry
+import LDMX.Ecal.ecal_geometry
 import LDMX.Ecal.ecal_hardcoded_conditions
-import LDMX.Hcal.HcalGeometry
+import LDMX.Hcal.hcal_geometry
 import LDMX.Ecal.digi as ecal_digi
 import LDMX.Ecal.ecal_trig_digi as ecal_trig_digi
 
@@ -61,7 +61,7 @@ electrons.direction = [sin(theta)*cos(phi), sin(theta)*sin(phi), cos(theta)]
 #  so that we can easily know what the "true" value of something is, so
 #  we want to keep z between ~200 and 240
 z = 220. # mm - in front of ECal but skipping tracker/target material
-# if we wanted the angles to be angles _from the target_, we need to 
+# if we wanted the angles to be angles _from the target_, we need to
 #  shift the electron transverse (x and y) position as well so that
 #  the electron avoids material /and/ looks like it came from the target
 # or we could just have it be angles without moving the particle
@@ -70,7 +70,7 @@ z = 220. # mm - in front of ECal but skipping tracker/target material
 electrons.position = [z*tan(theta)*cos(phi), z*tan(theta)*sin(phi), z] if arg.angle_at_target else [0., 0., z]
 
 validator = simulator.simulator('plain')
-validator.setDetector(f'ldmx-det-v14', False)
+validator.setDetector('ldmx-det-v14', False)
 validator.description = 'Electrons straight into ECal for ECal geometry testing'
 validator.generators = [electrons]
 

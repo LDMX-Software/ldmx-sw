@@ -3,8 +3,8 @@
 namespace trigger {
 
 void EcalTPSelector::configure(framework::config::Parameters& ps) {
-  tp_coll_name_ = ps.get<std::string>("tpCollName");
-  pass_coll_name_ = ps.get<std::string>("passCollName");
+  tp_coll_name_ = ps.get<std::string>("tp_coll_name");
+  pass_coll_name_ = ps.get<std::string>("pass_coll_name");
   tp_coll_passname_ = ps.get<std::string>("tp_coll_pass_name");
   tp_coll_event_passname_ = ps.get<std::string>("tp_coll_event_passname");
 }

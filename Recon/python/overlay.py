@@ -48,6 +48,7 @@ start_event_max : int
 
 from LDMX.Framework import ldmxcfg
 
+
 class OverlayProducer(ldmxcfg.Producer) :
     """Configuration for pileup overlay
 
@@ -63,7 +64,7 @@ class OverlayProducer(ldmxcfg.Producer) :
         super().__init__(name,'recon::OverlayProducer','Recon')
 
 
-        self.overlay_filename = file_name 
+        self.overlay_filename = file_name
         self.sim_passname = "sim"
         self.overlay_passname = "sim"
         self.calo_collections =  ["TriggerPad1SimHits", "TriggerPad2SimHits", "TriggerPad3SimHits",
@@ -73,13 +74,13 @@ class OverlayProducer(ldmxcfg.Producer) :
         self.poisson_mu = 2.
         self.do_poisson_in_time = False
         self.do_poisson_out_of_time = False
-        # realistically, 30 ps; 
+        # realistically, 30 ps;
         self.time_sigma = 0.        # [ns]
         self.time_mean = 0.          # [ns]
         self.n_earlier = 0
         self.n_later = 0
         # 26.9 = 1000./37.2 ; 5.4 = 1000./186.
-        self.bunch_spacing = 26.9   # [ns] 
+        self.bunch_spacing = 26.9   # [ns]
         self.tree_name = 'LDMX_Events'
         self.start_event_min = 1
         self.start_event_max = 10000

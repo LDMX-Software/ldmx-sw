@@ -15,8 +15,8 @@ TestBeamClusterAnalyzer::TestBeamClusterAnalyzer(const std::string& name,
 
 void TestBeamClusterAnalyzer::configure(
     framework::config::Parameters& parameters) {
-  input_col_ = parameters.get<std::string>("inputCollection");
-  input_pass_name_ = parameters.get<std::string>("inputPassName");
+  input_col_ = parameters.get<std::string>("input_collection");
+  input_pass_name_ = parameters.get<std::string>("input_pass_name");
   //  wide_input_col_ =
   //  parameters.get<std::string>("3hitInputCollection");
   // wide_input_pass_name_ =

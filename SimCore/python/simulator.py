@@ -6,6 +6,7 @@ with several helpful member functions.
 
 from LDMX.Framework.ldmxcfg import Producer
 
+
 class _EventToReSim:
     """A class to hold the information identifying a specific event we wish to re-simulate
 
@@ -56,8 +57,6 @@ class simulator(Producer):
         Describe this run in a human-readable way
     scoringPlanes : str, optional
         Full path to the scoring planes gdml (suggested to use setDetector)
-    beamSpotSmear : list of float, optional
-        2 (x,y) or 3 (x,y,z) widths to smear ALL primary vertices by [mm]
     time_shift_primaries : bool
         Should we shift the times of primaries so that z=0mm corresponds to t=0ns? 
     preInitCommands : list of str, optional
@@ -90,15 +89,14 @@ class simulator(Producer):
 
         #######################################################################
         # Optional Parameters (with helpful defaults)
-        self.scoringPlanes = ''
-        self.beamSpotSmear = [ ]
+        self.scoring_planes = ''
         self.time_shift_primaries = True
         self.preInitCommands = [ ]
         self.postInitCommands = [ ]
         self.actions = [ ]
         self.biasing_operators = [ ]
         self.logging_prefix = 'GEANT4'
-        self.rootPrimaryGenUseSeed = False
+        self.root_primary_gen_use_seed = False
         self.validate_detector = False
         self.verbosity = 0
 
@@ -132,7 +130,8 @@ class simulator(Producer):
         sensitive_detectors for configuring the SDs
         """
 
-        from LDMX.Detectors import makePath as mP
+        from LDMX.Detectors import make_path as mP
+
         from . import sensitive_detectors as sds
         self.detector = mP.makeDetectorPath( det_name )
         if 'v12' in det_name :
@@ -149,13 +148,13 @@ class simulator(Producer):
                 sds.TrigScintSD.target()
                 ] + trigscint
         if include_scoring_planes_minimal :
-            self.scoringPlanes = mP.makeScoringPlanesPath( det_name )
+            self.scoring_planes = mP.makeScoringPlanesPath( det_name )
             self.sensitive_detectors.extend([
                 sds.ScoringPlaneSD.target(),
                 sds.ScoringPlaneSD.ecal(),
                 ])
         if include_scoring_planes_others :
-            self.scoringPlanes = mP.makeScoringPlanesPath( det_name )
+            self.scoring_planes = mP.makeScoringPlanesPath( det_name )
             self.sensitive_detectors.extend([
                 sds.ScoringPlaneSD.hcal(),
                 sds.ScoringPlaneSD.trigscint(),
@@ -199,7 +198,7 @@ class simulator(Producer):
 
         """
         resimulator = self
-        resimulator.className = 'simcore::ReSimulator'
+        resimulator.class_name = 'simcore::ReSimulator'
         if which_events is None:
             resimulator.resimulate_all_events = True
             resimulator.care_about_run = False

@@ -1,16 +1,16 @@
-import json 
+import json
 from LDMX.Framework import ldmxcfg
 p = ldmxcfg.Process('plot') #
 
 import sys
 
-inputPassName="hits"
-nEv=200000
+input_pass_name="hits"
+n_ev=200000
 
 if len(sys.argv) > 2 :
-    startSample=int(sys.argv[2])
+    start_sample=int(sys.argv[2])
 else :
-    startSample=2
+    start_sample=2
 
 
 from LDMX.TrigScint.trigScint import TestBeamHitAnalyzer
@@ -18,33 +18,33 @@ from LDMX.TrigScint.trigScint import TestBeamHitAnalyzer
 
 # ------------------- all set; setup in detail, and run with these settings ---------------
 
-tsEv=TestBeamHitAnalyzer("plotMaker")
-tsEv.inputPassName=inputPassName
+ts_ev=TestBeamHitAnalyzer("plotMaker")
+ts_ev.input_pass_name=input_pass_name
 # now in default config, too, but with test beam values :
 #these are derived as the mean of gaussian fits to the "event pedestal" (average over middle two quartiles) for each channel
-tsEv.startSample=startSample
-tsEv.gain=2e6
-                 
+ts_ev.start_sample=start_sample
+ts_ev.gain=2e6
+
 
 p.sequence = [
-    tsEv
+    ts_ev
     ]
 
 
 #generate on the fly
-p.inputFiles = [sys.argv[1]]
+p.input_files = [sys.argv[1]]
 outname=sys.argv[1]
 outname=outname.replace(".root", "_plots.root")
-#p.outputFiles = [ outname ]
+#p.output_files = [ outname ]
 
-p.histogramFile = outname #.replace(".root"
+p.histogram_file = outname #.replace(".root"
 
-p.maxEvents = nEv
+p.max_events = n_ev
 
-p.logger.fileName=outname.replace(".root",".log")
-p.logger.termLevel = 2
-p.logger.fileLevel=1#0
+p.logger.file_name=outname.replace(".root",".log")
+p.logger.term_level = 2
+p.logger.file_level=1#0
 
-p.logger.debug(tsEv)
+p.logger.debug(ts_ev)
 
-json.dumps(p.parameterDump(), indent=2)
+json.dumps(p.parameter_dump(), indent=2)

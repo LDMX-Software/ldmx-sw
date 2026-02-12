@@ -12,8 +12,8 @@
 namespace dqm {
 
 void GenieTruthDQM::configure(framework::config::Parameters& ps) {
-  hepmc3_coll_name_ = ps.get<std::string>("hepmc3CollName");
-  hepmc3_pass_name_ = ps.get<std::string>("hepmc3PassName");
+  hepmc3_coll_name_ = ps.get<std::string>("hepmc3_coll_name");
+  hepmc3_pass_name_ = ps.get<std::string>("hepmc3_pass_name");
   return;
 }
 

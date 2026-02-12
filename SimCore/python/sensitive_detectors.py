@@ -2,6 +2,7 @@
 
 from LDMX.SimCore import simcfg
 
+
 class ScoringPlaneSD(simcfg.SensitiveDetector) :
     """Scoring plane SD
 

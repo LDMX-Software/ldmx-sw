@@ -7,15 +7,15 @@ HgcrocEmulator::HgcrocEmulator(const framework::config::Parameters &ps) {
   // settings of readout chip that are the same for all chips
   //  used  in actual digitization
   noise_ = ps.get<bool>("noise");
-  timing_jitter_ = ps.get<double>("timingJitter");
-  rate_up_slope_ = ps.get<double>("rateUpSlope");
-  time_up_slope_ = ps.get<double>("timeUpSlope");
-  rate_dn_slope_ = ps.get<double>("rateDnSlope");
-  time_dn_slope_ = ps.get<double>("timeDnSlope");
-  time_peak_ = ps.get<double>("timePeak");
-  clock_cycle_ = ps.get<double>("clockCycle");
-  n_ad_cs_ = ps.get<int>("nADCs");
-  i_soi_ = ps.get<int>("iSOI");
+  timing_jitter_ = ps.get<double>("timing_jitter");
+  rate_up_slope_ = ps.get<double>("rate_up_slope");
+  time_up_slope_ = ps.get<double>("time_up_slope");
+  rate_dn_slope_ = ps.get<double>("rate_dn_slope");
+  time_dn_slope_ = ps.get<double>("time_dn_slope");
+  time_peak_ = ps.get<double>("time_peak");
+  clock_cycle_ = ps.get<double>("clock_cycle");
+  n_ad_cs_ = ps.get<int>("n_adcs");
+  i_soi_ = ps.get<int>("i_soi");
 
   // Time -> clock counts conversion
   //  time [ns] * ( 2^10 / max time in ns ) = clock counts
