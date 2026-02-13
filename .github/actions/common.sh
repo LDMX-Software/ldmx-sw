@@ -48,6 +48,9 @@ warn() {
 
 start_group Deduce Common Environment Variables
 export LDMX_BASE=$(cd ${GITHUB_WORKSPACE}/../ && pwd)
+export CI_DATA=$(cd ${GITHUB_WORKSPACE}/ci-data && pwd)
 echo "LDMX_BASE=${LDMX_BASE}"
+echo "GITHUB_WORKSPACE=${GITHUB_WORKSPACE}"
+echo "CI_DATA=${CI_DATA}"
 end_group
 
