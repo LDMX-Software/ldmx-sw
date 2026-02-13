@@ -9,7 +9,8 @@ in the configuration pyton module is at the top.
 """
 
 import warnings
-from dataclasses import dataclass, field
+import copy
+from dataclasses import dataclass, field, Field
 from typing import Any
 
 def check_list(l, dimension, entry_type):
@@ -66,12 +67,13 @@ def validate_and_set_attr(self, attr, val):
     self.__dict__[attr] = val
 
 
-class create_list:
-    def __init__(self, l):
-        self._list = l
+class create_default:
+    def __init__(self, o):
+        self._default = o
 
     def __call__(self):
-        return self._list
+        """we want a _copy_ of the default so the new object can edit it as they wish"""
+        return copy.deepcopy(self._default)
 
 
 def parameter_set(
@@ -108,7 +110,7 @@ def parameter_set(
                 cls.__annotations__[name] = list[Any]
                 setattr(cls, name,
                         field(
-                            default_factory = create_list(value),
+                            default_factory = create_default(value),
                             init=False,
                             metadata = {
                                 'entry_type': Any,
@@ -135,8 +137,14 @@ def parameter_set(
             # (as is done with dataclass)
             if var not in cls.__annotations__:
                 continue
+
             the_value = getattr(cls, var)
-            if isinstance(the_value, list):
+            if isinstance(the_value, (bool,int,float,str)):
+                # type is simple and can be left alone
+                pass
+            elif isinstance(the_value, list):
+                # special list deduction to do early warnings on bad dimensions
+                # and check entries in default value
                 type_args = cls.__annotations__[var].__args__
 
                 dimension = len(type_args)
@@ -144,22 +152,27 @@ def parameter_set(
                     raise TypeError('Python configuration parameter_sets need to annotate some content for each list.')
                 if dimension > 2:
                     raise TypeError('Python configuration parameter_sets are limited to 1D or 2D lists.')
-
+    
                 entry_type = type_args[0]
                 if not all(entry_type is t for t in type_args):
                     raise TypeError('Python configuration parameter_sets must have all entries be the same type.')
-
+    
                 check_list(the_value, dimension, entry_type)
                 setattr(
                     cls, var,
                     field(
-                        default_factory=create_list(the_value),
+                        default_factory=create_default(the_value),
                         metadata = {
                             'entry_type': entry_type,
                             'dimension': dimension
                         }
                     )
                 )
+            elif not isinstance(the_value, Field):
+                # type is not simple and not already a dataclasses.Field so we wrap it
+                # in a creation function to get around dataclass's prevention on using mutable defaults
+                setattr(cls, var, field(default_factory = create_default(the_value)))
+
         return dataclass(slots=False)(cls)
 
     if _class is None:

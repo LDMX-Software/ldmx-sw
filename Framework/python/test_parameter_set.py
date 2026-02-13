@@ -4,7 +4,7 @@ from . import processor
 
 @parameter_set
 class MyParams:
-    foo: str = 'bar'
+    foo: str = 'what'
 
 
 @processor("hello", "world")
@@ -14,7 +14,7 @@ class MyClass:
     name: str = 'foo'
     vec: list[int] = [1, 2, 3]
     vec2d: list[float,float] = [[0.0, 1.0],[-1.0,0.0]]
-    p: MyParams = field(default_factory=MyParams)
+    p: MyParams = MyParams()
     __legacy__ = {
         'className': 'class_name', # test we can remap required parameters
         'Name': 'name', # test we can remap regular parameters
@@ -37,14 +37,15 @@ class TestParameter(unittest.TestCase):
             'instance_name': 'hello',
             'histograms': [],
             'one': 1,
-            'two': 2,
+            'two': 2.0,
             'name': 'foo',
             'vec': [1,2,3],
-            'p': MyParams(foo = 'bar'),
+            'p': MyParams(),
             'vec2d': [[0.0, 1.0], [-1.0, 0.0]]
         }
         dict_defaults.update(kwargs)
         self.assertDictEqual(c.__dict__, dict_defaults)
+
 
     def test_defaults(self):
         c = MyClass()
@@ -69,7 +70,7 @@ class TestParameter(unittest.TestCase):
         self.assertMyClass(c, one = 2, two = 4.0, name = 'bar')
         c.vec = [4, 5]
         self.assertMyClass(c, one = 2, two = 4.0, name = 'bar', vec = [4, 5])
-        self.assertEqual(c.p.foo, 'bar')
+        self.assertEqual(c.p.foo, 'what')
         c.p.foo = 'baz'
         self.assertEqual(c.p.foo, 'baz')
 

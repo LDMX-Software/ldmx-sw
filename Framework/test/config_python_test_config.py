@@ -9,12 +9,11 @@ class MyParameters:
 
 @ldmxcfg.processor("framework::test::TestConfig", "Framework")
 class TestProcessor:
-    instance_name: str = "should_not_be_default"
     test_int: int = 9
     test_double: float = 7.7
     test_string: str = "Yay!"
     test_int_vec: list[int] = [ 1 , 2 , 3 ]
-    test_dict: MyParameters = ldmxcfg.field(default_factory = MyParameters)
+    test_dict: MyParameters = MyParameters()
     test_double_vec: list[float] = [ 0.1 , 0.2 , 0.3 ]
     test_string_vec: list[str] = [ 'first' , 'second' , 'third' ]
     test_2dlist: list[int,int] = [ [ 11, 12, 13], [21, 22], [31,32,33,34]]
@@ -40,5 +39,3 @@ p.skim_default_is_keep = False
 
 # But the processor pipeline
 p.sequence = [ TestProcessor() ]
-print(p.random_number_seed_service.__dict__)
-print(p.sequence[0].__dict__)
