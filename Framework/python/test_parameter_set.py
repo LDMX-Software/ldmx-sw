@@ -25,12 +25,12 @@ class MyClass:
 import unittest
 
 class TestParameter(unittest.TestCase):
-    def assertListEqual(self, lhs, rhs):
-        self.assertEqual(len(lhs), len(rhs))
-        for l, r in zip(lhs, rhs):
-            self.assertEqual(l, r)
-
     def assertMyClass(self, c, **kwargs):
+        """We need the __dict__ member to hold all of the parameters
+        we want on the C++ side so we compare the __dict__ to a construction
+        of the defaults with any updates we expect passed in through
+        key-word arguments"""
+
         dict_defaults = {
             'class_name': 'hello',
             'module_name': 'world',
@@ -49,6 +49,14 @@ class TestParameter(unittest.TestCase):
     def test_defaults(self):
         c = MyClass()
         self.assertMyClass(c)
+
+
+    def test_change_required_parameter(self):
+        c = MyClass()
+        self.assertMyClass(c)
+        c.class_name = 'baz'
+        c.instance_name = 'cowabunga'
+        self.assertMyClass(c, class_name = 'baz', instance_name = 'cowabunga')
 
 
     def test_change_after_creation(self):
