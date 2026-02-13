@@ -22,6 +22,11 @@ class MyClass:
     }
 
 
+@parameter_set
+class RequireList:
+    l: list[int]
+
+
 import unittest
 
 class TestParameter(unittest.TestCase):
@@ -45,6 +50,11 @@ class TestParameter(unittest.TestCase):
         }
         dict_defaults.update(kwargs)
         self.assertDictEqual(c.__dict__, dict_defaults)
+
+
+    def test_required_list(self):
+        o = RequireList([1,2,3])
+        self.assertEqual(o.l, [1,2,3])
 
 
     def test_defaults(self):

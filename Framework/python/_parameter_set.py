@@ -10,16 +10,19 @@ in the configuration pyton module is at the top.
 
 import warnings
 import copy
+import types
 from dataclasses import dataclass, field, Field
 from typing import Any
 
-def check_list(l, dimension, entry_type):
+def check_list(attr, l, dimension, entry_type):
     if dimension == 1:
-        if entry_type is not Any and any(not isinstance(e, entry_type) for e in l):
-            raise TypeError(f'An entry in the list is not of expected type {entry_type}')
+        if entry_type is not Any:
+            for e in l:
+                if type(e) is not entry_type:
+                    raise TypeError(f'Entry {e} in parameter {attr} is not of expected type {entry_type}')
     elif dimension == 2:
         for ll in l:
-            check_list(ll, 1, entry_type)
+            check_list(attr, ll, 1, entry_type)
     else:
         raise Exception(f'List with dimension {dimension} not supported.')
 
@@ -60,8 +63,8 @@ def validate_and_set_attr(self, attr, val):
     if isinstance(val, list):
         expected_dimension  = self.__dataclass_fields__[attr].metadata['dimension']
         expected_entry_type = self.__dataclass_fields__[attr].metadata['entry_type']
-        check_list(val, expected_dimension, expected_entry_type)
-    elif not isinstance(val, expected_type):
+        check_list(attr, val, expected_dimension, expected_entry_type)
+    elif expected_type is not Any and not isinstance(val, expected_type):
         raise TypeError(f'Attribute {attr} should be type {expected_type} instead of type {type(val)}.')
 
     self.__dict__[attr] = val
@@ -126,27 +129,25 @@ def parameter_set(
         for name, func in helpers:
             setattr(cls, name, func)
 
-        # process class variables so that mutable classes (mainly list)
+        # process class annotations so that mutable classes
         # are given to dataclass as a default_factory instead of a default
-        for var in vars(cls):
-            # filter out special "dunder" class variables
-            # that start and end with double underscore
-            if var.startswith('__') and var.endswith('__'):
-                continue
-            # only look at variables that have annotations with them
-            # (as is done with dataclass)
-            if var not in cls.__annotations__:
+        for name, the_type in cls.__annotations__.items():
+            the_value = getattr(cls, name, None)
+            simple_types = (bool, int, float, str)
+
+            if the_type in simple_types:
+                # type is simple and can be left alone for dataclass to handle
                 continue
 
-            the_value = getattr(cls, var)
-            if isinstance(the_value, (bool,int,float,str)):
-                # type is simple and can be left alone
-                pass
-            elif isinstance(the_value, list):
+            if isinstance(the_value, Field):
+                # value already specified as dataclass field,
+                # assume user knows what they are doing and skip
+                continue
+
+            if isinstance(the_type, types.GenericAlias) and the_type.__origin__ is list:
                 # special list deduction to do early warnings on bad dimensions
                 # and check entries in default value
-                type_args = cls.__annotations__[var].__args__
-
+                type_args = getattr(the_type, '__args__', ())
                 dimension = len(type_args)
                 if dimension == 0:
                     raise TypeError('Python configuration parameter_sets need to annotate some content for each list.')
@@ -157,21 +158,20 @@ def parameter_set(
                 if not all(entry_type is t for t in type_args):
                     raise TypeError('Python configuration parameter_sets must have all entries be the same type.')
     
-                check_list(the_value, dimension, entry_type)
-                setattr(
-                    cls, var,
-                    field(
-                        default_factory=create_default(the_value),
-                        metadata = {
-                            'entry_type': entry_type,
-                            'dimension': dimension
-                        }
+                field_kwargs = dict(
+                    metadata = dict(
+                        entry_type = entry_type,
+                        dimension = dimension
                     )
                 )
-            elif not isinstance(the_value, Field):
-                # type is not simple and not already a dataclasses.Field so we wrap it
+                if the_value is not None:
+                    check_list(name, the_value, dimension, entry_type)
+                    field_kwargs['default_factory'] = create_default(the_value)
+                setattr(cls, name, field(**field_kwargs))
+            else:
+                # type is not simple, not already a dataclasses.Field, and not a list so we wrap it
                 # in a creation function to get around dataclass's prevention on using mutable defaults
-                setattr(cls, var, field(default_factory = create_default(the_value)))
+                setattr(cls, name, field(default_factory = create_default(the_value)))
 
         return dataclass(slots=False)(cls)
 
