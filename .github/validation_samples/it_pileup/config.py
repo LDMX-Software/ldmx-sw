@@ -17,6 +17,8 @@ det = 'ldmx-det-v15-8gev'
 p.run = int(os.environ['LDMX_RUN_NUMBER'])
 p.max_events = int(os.environ['LDMX_NUM_EVENTS']) // 2
 
+p.inputFiles = ['ecal_pn.root']
+
 # Load the full tracking sequance
 from LDMX.Recon.overlay import OverlayProducer
 from LDMX.Tracking import full_tracking_sequence
@@ -25,6 +27,7 @@ from LDMX.Tracking import full_tracking_sequence
 overlay=OverlayProducer('pileup.root')
 overlay.sim_passname = sim_pass_name                  #sim input event pass name
 overlay.overlay_passname = pileup_file_pass_name    #pileup input event pass name
+overlay.tracker_collections += ['TargetScoringPlaneHits', 'EcalScoringPlaneHits']
 
 p.sequence = [overlay]
 
@@ -88,6 +91,8 @@ ecal_reco.sim_hit_pass_name = this_pass_name
 
 ecal_veto.recoil_from_tracking = False
 ecal_veto.rec_pass_name = this_pass_name
+ecal_veto.ecal_sp_coll_name += overlay_str
+ecal_veto.target_sp_coll_name += overlay_str
 
 # Load the HCAL modules
 import LDMX.Hcal.digi as hcal_digi_and_reco
@@ -124,12 +129,14 @@ from LDMX.Recon import pf_reco
 
 
 track_pf = pf_reco.pfTrackProducer()
-#"EcalScoringPlaneHitsOverlay" #
-track_pf.input_track_coll_name=track_pf.input_track_coll_name+overlay_str
+track_pf.input_track_coll_name += overlay_str # "EcalScoringPlaneHitsOverlay"
 track_pf.input_pass_name=this_pass_name
 track_pf.do_electron_tracking=True
 # reference info
 truth_pf = pf_reco.pfTruthProducer()
+truth_pf.target_sp_coll_name += overlay_str
+truth_pf.ecal_sp_coll_name += overlay_str
+truth_pf.sim_particles_coll_name += overlay_str
 
 # CLUE
 import LDMX.Ecal.ecal_clusters as cl
@@ -189,6 +196,7 @@ for ts_dqm in trig_scint_dqm :
 # EcalDigiVerify
 ecal_digi_verify = dqm.EcalDigiVerify()
 ecal_digi_verify.ecal_sim_hit_coll += overlay_str
+ecal_digi_verify.rec_hit_pass_name = this_pass_name
 
 # EcalShowerFeatures
 ecal_shower_features = dqm.EcalShowerFeatures()
@@ -197,6 +205,7 @@ ecal_shower_features.ecal_veto_pass = this_pass_name
 # EcalMipTrackingFeatures
 ecal_mip_tracking_features = dqm.EcalMipTrackingFeatures()
 ecal_mip_tracking_features.ecal_veto_pass = this_pass_name
+ecal_mip_tracking_features.ecal_mip_pass = this_pass_name
 
 # EcalVetoResults
 ecal_veto_results = dqm.EcalVetoResults()
