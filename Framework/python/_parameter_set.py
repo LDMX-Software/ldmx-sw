@@ -15,7 +15,7 @@ from typing import Any
 def check_list(l, dimension, entry_type):
     if dimension == 1:
         if entry_type is not Any and any(not isinstance(e, entry_type) for e in l):
-            raise TypeError(f'Entry {e} is not of expected type {entry_type}')
+            raise TypeError(f'An entry in the list is not of expected type {entry_type}')
     elif dimension == 2:
         for ll in l:
             check_list(ll, 1, entry_type)
@@ -89,6 +89,11 @@ def parameter_set(
                 lambda self: None
             )
             def _full_post_init(self):
+                # make sure all dataclass fields are present in __dict__
+                # since that is the mechanism we use to grab them in C++
+                for name, field in self.__dataclass_fields__.items():
+                    if name not in self.__dict__:
+                        self.__dict__[name] = getattr(self, name)
                 post_init(self)
                 org_post_init(self)
     
@@ -97,10 +102,23 @@ def parameter_set(
         # update setattr function to validate stuff as well
         cls.__setattr__ = validate_and_set_attr
 
-        # add additional annotations that are required
+        # add additional annotations that are required parameters
         for name, value in required_parameters.items():
-            cls.__annotations__[name] = type(value)
-            setattr(cls, name, field(default = value, init = False))
+            if type(value) is list:
+                cls.__annotations__[name] = list[Any]
+                setattr(cls, name,
+                        field(
+                            default_factory = create_list(value),
+                            init=False,
+                            metadata = {
+                                'entry_type': Any,
+                                'dimension': 1
+                            }
+                        )
+                    )
+            else:
+                cls.__annotations__[name] = type(value)
+                setattr(cls, name, field(default = value, init=False))
 
         # add additional helpers
         for name, func in helpers:
@@ -142,7 +160,7 @@ def parameter_set(
                         }
                     )
                 )
-        return dataclass()(cls)
+        return dataclass(slots=False)(cls)
 
     if _class is None:
         return _decorator_impl

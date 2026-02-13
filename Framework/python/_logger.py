@@ -61,8 +61,8 @@ class Logger:
             level (and above) messages to print for that channel
         """
 
-        if hasattr(name, 'instanceName'):
-            name = name.instanceName
+        if hasattr(name, 'instance_name'):
+            name = name.instance_name
         self.logRules.append(_LogRule(name, level))
 
 

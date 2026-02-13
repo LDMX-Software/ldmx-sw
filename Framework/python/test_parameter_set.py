@@ -30,12 +30,22 @@ class TestParameter(unittest.TestCase):
         for l, r in zip(lhs, rhs):
             self.assertEqual(l, r)
 
-    def assertMyClass(self, c, *, one, two, name, vec):
-        self.assertEqual(c.class_name, 'hello')
-        self.assertEqual(c.one, one)
-        self.assertEqual(c.two, two)
-        self.assertEqual(c.name, name)
-        self.assertListEqual(c.vec, vec)
+    def assertMyClass(self, c, *, one, two, name, vec, foo = 'bar'):
+        self.assertDictEqual(
+            c.__dict__,
+            {
+                'class_name': 'hello',
+                'module_name': 'world',
+                'instance_name': 'hello',
+                'histograms': [],
+                'one': one,
+                'two': two,
+                'name': name,
+                'vec': vec,
+                'p': MyParams(foo = foo),
+                'vec2d': [[0.0, 1.0], [-1.0, 0.0]]
+            }
+        )
 
     def test_defaults(self):
         c = MyClass()
@@ -57,7 +67,7 @@ class TestParameter(unittest.TestCase):
 
     def test_change_during_creation(self):
         c = MyClass(one = 2, two = 3.0, name = 'bar', vec = [4, 5], p = MyParams(foo = 'baz'))
-        self.assertMyClass(c, one = 2, two = 3.0, name = 'bar', vec = [4, 5])
+        self.assertMyClass(c, one = 2, two = 3.0, name = 'bar', vec = [4, 5], foo='baz')
         self.assertEqual(c.p.foo, 'baz')
 
     def test_basic_errors(self):

@@ -6,7 +6,7 @@ def processor_post_init(self):
     """necessary post_init for all processors
 
     we make sure the module this processor belongs to
-    is registered to be loaded and it has an instanceName
+    is registered to be loaded and it has an instance_name
     if it was not defined by the user
     """
 
@@ -90,7 +90,7 @@ def processor(class_name: str, module_name: str):
         class_name = class_name,
         module_name = module_name,
         instance_name = class_name,
-        histograms = field(default_factory=list),
+        histograms = [],
         helpers = [('histogram',histogram)],
     )
 

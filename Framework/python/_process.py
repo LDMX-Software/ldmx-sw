@@ -125,7 +125,7 @@ class Process:
         - Overrides an already declared COP with the passed COP if they are equal
         """
 
-        cop.tagName = Process.last_process.conditions_global_tag
+        cop.tag_name = Process.last_process.conditions_global_tag
 
         # check if the input COP matches one already declared
         #   if it does match, override the already declared one with the passed one
@@ -148,7 +148,7 @@ class Process:
 
         self.conditions_global_tag=tag
         for cop in self.conditions_object_providers :
-            cop.tagName = tag
+            cop.tag_name = tag
 
 
     def skimDefaultIsSave(self):
@@ -170,7 +170,7 @@ class Process:
         Parameters
         ----------
         namePat : str
-            Pattern for the processor instanceNames to match for the Process to listen
+            Pattern for the processor instance_names to match for the Process to listen
 
         Example
         -------
@@ -200,7 +200,7 @@ class Process:
         Parameters
         ----------
         namePat : str
-            Pattern for the processor instanceNames to match for the Process to listen
+            Pattern for the processor instance_names to match for the Process to listen
         labelPat : str
             Pattern for the storage hint reason to match for the Process to listen
 
