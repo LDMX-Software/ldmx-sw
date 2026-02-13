@@ -26,6 +26,7 @@ def check_list(attr, l, dimension, entry_type):
     else:
         raise Exception(f'List with dimension {dimension} not supported.')
 
+
 def validate_and_set_attr(self, attr, val):
     # first, we check if the attr is a legacy name
     legacy_remap = getattr(self.__class__, '__legacy__', None)
@@ -111,19 +112,11 @@ def parameter_set(
         for name, value in required_parameters.items():
             if type(value) is list:
                 cls.__annotations__[name] = list[Any]
-                setattr(cls, name,
-                        field(
-                            default_factory = create_default(value),
-                            init=False,
-                            metadata = {
-                                'entry_type': Any,
-                                'dimension': 1
-                            }
-                        )
-                    )
+            elif type(value) is Field:
+                cls.__annotations__[name] = type(value.default)
             else:
                 cls.__annotations__[name] = type(value)
-                setattr(cls, name, field(default = value, init=False))
+            setattr(cls, name, value)
 
         # add additional helpers
         for name, func in helpers:

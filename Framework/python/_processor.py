@@ -87,8 +87,8 @@ def processor(class_name: str, module_name: str):
 
     return parameter_set(
         post_init = processor_post_init,
-        class_name = class_name,
-        module_name = module_name,
+        class_name = field(default=class_name, init=False),
+        module_name = field(default=module_name, init=False),
         instance_name = class_name,
         histograms = [],
         helpers = [('histogram',histogram)],
