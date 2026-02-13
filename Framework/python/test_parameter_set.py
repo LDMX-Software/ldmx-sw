@@ -56,6 +56,9 @@ class TestParameter(unittest.TestCase):
         o = RequireList([1,2,3])
         self.assertEqual(o.l, [1,2,3])
 
+        with self.assertRaises(TypeError):
+            o2 = RequireList()
+
 
     def test_defaults(self):
         c = MyClass()
