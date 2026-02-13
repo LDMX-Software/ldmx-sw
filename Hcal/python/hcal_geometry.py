@@ -1,24 +1,26 @@
 """ConditionsProvider for HcalGeometry"""
 from LDMX.Framework import ldmxcfg
+from typing import Any
 
-
-class HcalGeometryProvider(ldmxcfg.ConditionsObjectProvider):
+@ldmxcfg.conditions_object_provider("HcalGeometryProvider","hcal::HcalGeometryProvider","Hcal")
+class HcalGeometryProvider:
     """Provider that provides access to Hcal geometry (HcalGeometry)
 
     Parameters
     ----------
-    tagName : str
+    tag_name : str
         tag for generator of information
 
     Attributes
     ----------
-    HcalGeometry : HcalGeometry
+    hcal_geometry : HcalGeometry
         Actual class providing Hcal layout
     __instance : HcalGeometryProvider
         Singleton instance of this object
     """
 
     __instance = None
+    hcal_geometry: Any
 
     def getInstance() :
         """Get the single instance of the HcalGeometryProvider
@@ -38,7 +40,6 @@ class HcalGeometryProvider(ldmxcfg.ConditionsObjectProvider):
         if HcalGeometryProvider.__instance != None :
             raise Exception('HcalGeometryProvider is a singleton class and should only be retrieved using getInstance()')
         else:
-            super().__init__("HcalGeometryProvider","hcal::HcalGeometryProvider","Hcal")
             from LDMX.DetDescr import hcal_geometry
             self.hcal_geometry = hcal_geometry.HcalGeometry()
             HcalGeometryProvider.__instance = self
@@ -47,21 +48,23 @@ class HcalGeometryProvider(ldmxcfg.ConditionsObjectProvider):
 HcalGeometryProvider.getInstance()
 
 
-class HcalTriggerGeometryProvider(ldmxcfg.ConditionsObjectProvider):
+@ldmxcfg.conditions_object_provider("HcalTriggerGeometry","hcal::HcalTriggerGeometryProvider","Hcal")
+class HcalTriggerGeometryProvider:
     """Provider that provides access to Hcal geometry (ldmx::HcalGeometry)
     Parameters
     ----------
-    tagName : str
+    tag_name : str
         tag for generator of information
     Attributes
     ----------
-    HcalGeometry : HcalGeometry
+    hcal_geometry : HcalGeometry
         Actual class providing precision cellular layout in Hcal
     __instance : HcalTriggerGeometryProvider
         Singleton instance of this object
     """
 
     __instance = None
+    hcal_geometry: Any
 
     def getInstance() :
         """Get the single instance of the HcalTriggerGeometryProvider
@@ -80,7 +83,6 @@ class HcalTriggerGeometryProvider(ldmxcfg.ConditionsObjectProvider):
         if HcalTriggerGeometryProvider.__instance != None :
             raise Exception('HcalTriggerGeometryProvider is a singleton class and should only be retrieved using getInstance()')
         else:
-            super().__init__("HcalTriggerGeometry","hcal::HcalTriggerGeometryProvider","Hcal")
             from LDMX.DetDescr import hcal_geometry
             self.hcal_geometry = hcal_geometry.HcalGeometry()
             HcalTriggerGeometryProvider.__instance = self

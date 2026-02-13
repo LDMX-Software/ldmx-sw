@@ -1,13 +1,15 @@
 """ConditionsProvider for EcalGeometry and other Ecal geometry-related aspects"""
 from LDMX.Framework import ldmxcfg
+from typing import Any
 
 
-class EcalGeometryProvider(ldmxcfg.ConditionsObjectProvider):
+@ldmxcfg.conditions_object_provider("EcalGeometry", "ecal::EcalGeometryProvider", "Ecal")
+class EcalGeometryProvider:
     """Provider that provides access to Ecal geometry (ecal::EcalGeometry)
 
     Parameters
     ----------
-    tagName : str
+    tag_name : str
         tag for generator of information
 
     Attributes
@@ -19,6 +21,7 @@ class EcalGeometryProvider(ldmxcfg.ConditionsObjectProvider):
     """
 
     __instance = None
+    geometries: list[Any] = []
 
     def getInstance() :
         """Get the single instance of the EcalGeometryProvider
@@ -34,11 +37,10 @@ class EcalGeometryProvider(ldmxcfg.ConditionsObjectProvider):
 
         return EcalGeometryProvider.__instance
 
-    def __init__(self):
+    def __post_init__(self):
         if EcalGeometryProvider.__instance != None :
             raise Exception('EcalGeometryProvider is a singleton class and should only be retrieved using getInstance()')
         else:
-            super().__init__("EcalGeometryProvider","ecal::EcalGeometryProvider","Ecal")
             from LDMX.DetDescr.ecal_geometry import EcalGeometry
             self.geometries = EcalGeometry.geometries()
             EcalGeometryProvider.__instance = self
@@ -46,12 +48,13 @@ class EcalGeometryProvider(ldmxcfg.ConditionsObjectProvider):
 # make sure global instance is created, this registers the condition
 EcalGeometryProvider.getInstance()
 
-class EcalTriggerGeometryProvider(ldmxcfg.ConditionsObjectProvider):
+@ldmxcfg.conditions_object_provider("EcalTriggerGeometry", "ecal::EcalTriggerGeometryProvider", "Ecal")
+class EcalTriggerGeometryProvider:
     """Provider that provides access to Ecal geometry (ldmx::EcalGeometry)
 
     Parameters
     ----------
-    tagName : str
+    tag_name : str
         tag for generator of information
 
     Attributes
@@ -76,11 +79,10 @@ class EcalTriggerGeometryProvider(ldmxcfg.ConditionsObjectProvider):
 
         return EcalTriggerGeometryProvider.__instance
 
-    def __init__(self):
+    def __post_init__(self):
         if EcalTriggerGeometryProvider.__instance != None :
             raise Exception('EcalTriggerGeometryProvider is a singleton class and should only be retrieved using getInstance()')
         else:
-            super().__init__("EcalTriggerGeometry","ecal::EcalTriggerGeometryProvider","Ecal")
             EcalTriggerGeometryProvider.__instance = self
 
 # make sure global instance is created, this registers the condition
