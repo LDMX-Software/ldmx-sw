@@ -36,13 +36,13 @@ def library(name: str):
         full_path = f'@CMAKE_INSTALL_PREFIX@/lib/lib{actual_module_name}.so'
 
     from ._process import Process
-    if Process.lastProcess is None:
+    if Process.last_process is None:
         # Process not created yet,
         # put into this functions registry
         library.__registry__.append(full_path)
     else:
         # Process is created, append directly
-        Process.lastProcess.libraries.append(full_path)
+        Process.last_process.libraries.append(full_path)
 
 
 library.__registry__ = []
@@ -58,13 +58,13 @@ def conditions_object_provider(cop):
     """
 
     from ._process import Process
-    if Process.lastProcess is None:
+    if Process.last_process is None:
         # Process not created yet,
         # put into this functions registry
         conditions_object_provider.__registry__.append(cop)
     else:
         # Process is created, append directly
-        Process.lastProcess._declare_conditions_object_provider(cop)
+        Process.last_process._declare_conditions_object_provider(cop)
 
 
 conditions_object_provider.__registry__ = []
