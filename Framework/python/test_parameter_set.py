@@ -30,35 +30,35 @@ class TestParameter(unittest.TestCase):
         for l, r in zip(lhs, rhs):
             self.assertEqual(l, r)
 
-    def assertMyClass(self, c, *, one, two, name, vec, foo = 'bar'):
-        self.assertDictEqual(
-            c.__dict__,
-            {
-                'class_name': 'hello',
-                'module_name': 'world',
-                'instance_name': 'hello',
-                'histograms': [],
-                'one': one,
-                'two': two,
-                'name': name,
-                'vec': vec,
-                'p': MyParams(foo = foo),
-                'vec2d': [[0.0, 1.0], [-1.0, 0.0]]
-            }
-        )
+    def assertMyClass(self, c, **kwargs):
+        dict_defaults = {
+            'class_name': 'hello',
+            'module_name': 'world',
+            'instance_name': 'hello',
+            'histograms': [],
+            'one': 1,
+            'two': 2,
+            'name': 'foo',
+            'vec': [1,2,3],
+            'p': MyParams(foo = 'bar'),
+            'vec2d': [[0.0, 1.0], [-1.0, 0.0]]
+        }
+        dict_defaults.update(kwargs)
+        self.assertDictEqual(c.__dict__, dict_defaults)
 
     def test_defaults(self):
         c = MyClass()
-        self.assertMyClass(c, one = 1, two = 2.0, name = 'foo', vec = [1, 2, 3])
+        self.assertMyClass(c)
+
 
     def test_change_after_creation(self):
         c = MyClass()
         c.one = 2
-        self.assertMyClass(c, one = 2, two = 2.0, name = 'foo', vec = [1, 2, 3])
+        self.assertMyClass(c, one = 2)
         c.name = 'bar'
-        self.assertMyClass(c, one = 2, two = 2.0, name = 'bar', vec = [1, 2, 3])
+        self.assertMyClass(c, one = 2, name = 'bar')
         c.two *= 2
-        self.assertMyClass(c, one = 2, two = 4.0, name = 'bar', vec = [1, 2, 3])
+        self.assertMyClass(c, one = 2, two = 4.0, name = 'bar')
         c.vec = [4, 5]
         self.assertMyClass(c, one = 2, two = 4.0, name = 'bar', vec = [4, 5])
         self.assertEqual(c.p.foo, 'bar')
@@ -67,7 +67,7 @@ class TestParameter(unittest.TestCase):
 
     def test_change_during_creation(self):
         c = MyClass(one = 2, two = 3.0, name = 'bar', vec = [4, 5], p = MyParams(foo = 'baz'))
-        self.assertMyClass(c, one = 2, two = 3.0, name = 'bar', vec = [4, 5], foo='baz')
+        self.assertMyClass(c, one = 2, two = 3.0, name = 'bar', vec = [4, 5], p=MyParams(foo='baz'))
         self.assertEqual(c.p.foo, 'baz')
 
     def test_basic_errors(self):
