@@ -17,7 +17,6 @@ det = 'ldmx-det-v15-8gev'
 p.run = int(os.environ['LDMX_RUN_NUMBER'])
 p.max_events = int(os.environ['LDMX_NUM_EVENTS']) // 2
 
-p.inputFiles = ['ecal_pn.root']
 
 # Load the full tracking sequance
 from LDMX.Recon.overlay import OverlayProducer
