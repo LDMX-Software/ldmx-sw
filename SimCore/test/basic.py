@@ -12,7 +12,6 @@ if len(sys.argv) > 1 :
     p.max_events = int(sys.argv[1])
 # we want to see every event
 p.log_frequency = 1
-p.term_log_level = 0
 # Set a run number
 p.run = 9001
 # we also only have an output file
