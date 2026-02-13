@@ -962,7 +962,7 @@ class TrigScintDigiDQM(ldmxcfg.Analyzer) :
 
         self.hit_collection = hit_coll
         self.pad = pad
-        self.trig_scint_passname = ''
+        self.pass_name = ''
 
 class TrigScintDigiVerifierDQM(ldmxcfg.Analyzer) :
     def __init__(self, name = 'TrigScintDigiVerifier', ts_simhit_coll = 'TriggerPadUpSimHits', ts_digi_coll = 'trigScintDigisUp') :
