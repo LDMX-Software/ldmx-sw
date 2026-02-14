@@ -32,7 +32,7 @@ jobs:
     - name: Run ecal_pn config
       #continue-on-error: true
       run: |
-        just setenv LDMX_NUM_EVENTS=300
+        just setenv LDMX_NUM_EVENTS=3000
         just setenv LDMX_RUN_NUMBER=7500
         #just setenv ASAN_OPTIONS=log_path=output.log
         just setenv ASAN_OPTIONS=detect_leaks=0
