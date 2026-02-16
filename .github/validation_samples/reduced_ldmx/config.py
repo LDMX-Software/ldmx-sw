@@ -91,7 +91,7 @@ hcal_veto = hcal.HcalVetoProcessor()
 from LDMX.DQM import dqm
 
 
-ecalWAB_dqm = dqm.EcalWABRecResults()
+ecal_wab_dqm = dqm.EcalWABRecResults()
 
 from LDMX.Tracking import dqm as trk_dqm
 from LDMX.Tracking import geo, reduced_tracking, tracking
@@ -101,7 +101,9 @@ from LDMX.Tracking.geo import TrackersTrackingGeometryProvider as trackgeo
 trackgeo.get_instance().setDetector(det)
 
 # Smearing Processor - Recoil
-digi_recoil_reduced = tracking.DigitizationProcessor("DigitizationProcessorRecoilReduced")
+digi_recoil_reduced = tracking.DigitizationProcessor(
+    "DigitizationProcessorRecoilReduced"
+)
 digi_recoil_reduced.hit_collection = "RecoilSimHits"
 digi_recoil_reduced.out_collection = "DigiRecoilSimHits"
 digi_recoil_reduced.merge_hits = True
@@ -136,12 +138,12 @@ r_tracking = reduced_tracking.LinearTrackFinder("LinearTrackFinder")
 r_tracking.seed_collection = "LinearRecoilSeedTracks"
 r_tracking.out_trk_collection = "LinearRecoilTracks"
 
-rTracking_dqm = trk_dqm.StraightTracksDQM("LinearRecoilTracksDQM")
-rTracking_dqm.track_collection = r_tracking.out_trk_collection
-rTracking_dqm.truth_collection = truth_tracking.out_track_collection
-rTracking_dqm.title = ""
-rTracking_dqm.measurement_collection=digi_recoil_reduced.out_collection
-rTracking_dqm.buildHistograms()
+r_tracking_dqm = trk_dqm.StraightTracksDQM("LinearRecoilTracksDQM")
+r_tracking_dqm.track_collection = r_tracking.out_trk_collection
+r_tracking_dqm.truth_collection = truth_tracking.out_track_collection
+r_tracking_dqm.title = ""
+r_tracking_dqm.measurement_collection=digi_recoil_reduced.out_collection
+r_tracking_dqm.buildHistograms()
 
 p.sequence.extend([
         ecal_digi.EcalDigiProducer(),
@@ -161,9 +163,9 @@ p.sequence.extend([
         truth_tracking,
         r_seed_tracking,
         r_tracking,
-        rTracking_dqm,
-	ecal_wab,
-	ecalWAB_dqm])
+        r_tracking_dqm,
+        ecal_wab,
+        ecal_wab_dqm])
 
 reduced_ecal_dqm = [
         dqm.EcalDigiVerify(),
@@ -172,5 +174,11 @@ reduced_ecal_dqm = [
         dqm.EcalVetoResults()
         ]
 
-reduced_dqm = [dqm.sample_validation_dqm + reduced_ecal_dqm +  dqm.hcal_dqm +  dqm.trigScint_dqm +  dqm.trigger_dqm]
+reduced_dqm = [
+        dqm.sample_validation_dqm
+         + reduced_ecal_dqm
+         +  dqm.hcal_dqm
+         +  dqm.trigScint_dqm
+         +  dqm.trigger_dqm
+         ]
 p.sequence.extend(*reduced_dqm)

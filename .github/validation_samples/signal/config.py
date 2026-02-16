@@ -5,10 +5,11 @@ p = ldmxcfg.Process('test')
 
 p.max_tries_per_event = 10000
 
+import os
+
 from LDMX.Biasing import target
 from LDMX.SimCore import generators
 
-import os
 
 det = 'ldmx-det-v15-8gev'
 my_sim = target.dark_brem(
@@ -108,7 +109,8 @@ ecal_pres_skimmer = EcalPreselectionSkimmer()
 # into the git working tree on GitHub
 p.logger.term_level = 1
 
-# Add full tracking for both tagger and recoil trackers: digi, seeds, CFK, ambiguity resolution, GSF, DQM
+# Add full tracking for both tagger and recoil trackers:
+# digi, seeds, CFK, ambiguity resolution, GSF, DQM
 p.sequence.extend(full_tracking_sequence.sequence)
 p.sequence.extend(full_tracking_sequence.dqm_sequence)
 

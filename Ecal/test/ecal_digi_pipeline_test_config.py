@@ -20,6 +20,8 @@ p.histogram_file = 'ecal_digi_pipeline_test_histo.root'
 
 # Geometry provider
 from LDMX.Ecal import ecal_geometry
+
+
 geom = ecal_geometry.EcalGeometryProvider.getInstance()
 
 # ECal digi

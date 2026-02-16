@@ -6,7 +6,7 @@ from LDMX.Framework import ldmxcfg
 class EcalDetectorMap(ldmxcfg.ConditionsObjectProvider) :
     """The COP that maps between Electronic and Detector IDs.
 
-    The mapping is defined in three 'tiers'. 
+    The mapping is defined in three 'tiers'.
 
     1. cell - Each cell of a module has specific ROC elink and channel
     2. motherboard - Each module has a specific ROC elink and polarfire

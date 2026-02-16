@@ -7,20 +7,11 @@ import sys
 RAWfileName=sys.argv[1]
 p.output_files = [sys.argv[2]]
 log_name=p.output_files[0].replace(".root", "_toRoot.log")
-if len(sys.argv) > 3 :
-    n_time_samples=int(sys.argv[3])
-else :
-    n_time_samples=24 #default
+n_time_samples = int(sys.argv[3]) if len(sys.argv) > 3 else 24 #default
 
-if len(sys.argv) > 4 :
-    n_ev=sys.argv[4] #int(sys.argv[4])
-else :
-    n_ev=4e6 #default
+n_ev = sys.argv[4] if len(sys.argv) > 4 else 4e6 #default
 
-if len(sys.argv) > 5 :
-    n_channels=int(sys.argv[5])
-else :
-    n_channels=16 #default
+n_channels = int(sys.argv[5]) if len(sys.argv) > 5 else 16 #default
 len_header=4+4+4+3+1 #UTC time_stamp s, timestamp clock ticks, time since spill, evNb, 4bit error words+4bit empty
 n_words=2*n_channels*n_time_samples+len_header
 

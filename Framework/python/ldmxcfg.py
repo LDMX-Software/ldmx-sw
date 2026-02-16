@@ -89,7 +89,7 @@ class EventProcessor:
         Examples
         --------
         A basic walkthrough is available online. https://ldmx-software.github.io/analysis/ldmx-sw.html
-        
+
         If `MyAnalyzer.cxx` contains the class `MyAnalyzer`, then we can put
 
             p.sequence = [ ldmxcfg.Analyzer.from_file('MyAnalyzer.cxx') ]
@@ -135,15 +135,17 @@ class EventProcessor:
                     ' (or library does not exist), recompiling...'
                 )
             import subprocess
-            libs_to_link = set(['Framework']+needs)
+            libs_to_link = set(['Framework', *needs])
             cmd = [
-                'g++', '-std=c++20', '-fPIC', '-shared', # construct a shared library for dynamic loading
+                # construct a shared library for dynamic loading
+                'g++', '-std=c++20', '-fPIC', '-shared',
                 '-o', str(lib), str(src), # define output file and input source file
             ]+[
                 f'-l{lib}' for lib in libs_to_link
             ]+[
                 '-I/usr/local/include/root', # include ROOT's non-system headers
-                '-I@CMAKE_INSTALL_PREFIX@/include', # include ldmx-sw headers (if non-system)
+                # include ldmx-sw headers (if non-system)
+                '-I@CMAKE_INSTALL_PREFIX@/include',
                 '-L@CMAKE_INSTALL_PREFIX@/lib', # include ldmx-sw libs (if non-system)
             ]
             if compile_notice:
@@ -164,7 +166,7 @@ class EventProcessor:
 
 
     def build_1d_histogram(self, name, xlabel, bins, xmin = None, xmax = None, weighted=False):
-        """Make a 1D histogram 
+        """Make a 1D histogram
 
         If xmin and xmax are not provided, bins is assumed to be
         the bin edges on the x-axis. If they are both provided,
@@ -374,7 +376,7 @@ class ConditionsObjectProvider:
         """Check if two COPs are the same
 
         We decide that two COPs are 'equal' if they have the same instance and class names
-        
+
         Parameters
         ----------
         other : ConditionsObjectProvider
@@ -641,7 +643,7 @@ class Process:
         Parameters
         ----------
         lib : str
-            name of library to load 
+            name of library to load
 
         Warnings
         --------
@@ -939,7 +941,7 @@ class Process:
         return msg
 
 class RunHeaderAna(Analyzer) :
-    """                                                                                                                  
+    """
     Contains an instance of RunHeaderAnalyzer that
     has already been configured.
 

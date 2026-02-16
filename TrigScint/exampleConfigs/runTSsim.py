@@ -11,20 +11,12 @@ gun_z_pos=1100 #3000  #mm -- define as positive here, for file naming; set sign 
 det_v=2        #detector geometry version number
 beam_x_smear=7.5 #mm
 beam_y_smear=20 #mm
-noise_per_event=1.  #average number of PEs from SiPM noise per event (gets scaled by n_time_samples to be constant)
+#average number of PEs from SiPM noise per event (gets scaled by n_time_samples to be constant)
+noise_per_event=1.
 start_sample=17.
-if len(sys.argv) > 1 :
-    n_time_samples=int(sys.argv[1])
-else :
-    n_time_samples=30 #config default is 5
-if len(sys.argv) > 2 :
-    elec_noise=float(sys.argv[2])
-else :
-    elec_noise=1.5 #config default is 1.5
-if len(sys.argv) > 3 :
-    k_expo=float(sys.argv[3])
-else :
-    k_expo=0.1   #config default is 0.1
+n_time_samples = int(sys.argv[1]) if len(sys.argv) > 1 else 30 #config default is 5
+elec_noise = float(sys.argv[2]) if len(sys.argv) > 2 else 1.5 #config default is 1.5
+k_expo = float(sys.argv[3]) if len(sys.argv) > 3 else 0.1 #config default is 0.1
 
 p.run = 10
 p.max_events = 2000

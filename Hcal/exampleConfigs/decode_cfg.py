@@ -1,12 +1,12 @@
-"""Decoding configuration for raw testbeam data                                                                                                                                                                                                                                                                                                                      
-                                                                                                                                                                                                                                                                                                                                                                     
-Decoding **DOES NOT** attempt                                                                                                                                                                                                                                                                                                       
-to align the two halves of the HCal. We assume a local home path of ldmx-sw installation e.g.                                                                                                                                                                                                                                                                                                                  
-                                                                                                                                                                                                                                                                                                                                                                     
-  LDMX_BASE=/local/cms/user/eichl008/ldmx/                                                                                                                                                                                                                                                                                                                           
-                                                                                                                                                                                                                                                                                                                                                                     
-so that we can construct the output path correctly.                                                                                                                                                                                                                                                                                                                  
-                                                                                                                                                                                                                                                                                                                                                                     
+"""Decoding configuration for raw testbeam data
+
+Decoding **DOES NOT** attempt
+to align the two halves of the HCal. We assume a local home path of ldmx-sw installation e.g.
+
+  LDMX_BASE=/local/cms/user/eichl008/ldmx/
+
+so that we can construct the output path correctly.
+
 The run number is deduced from the file name.
 
 @author Tom Eichlersmith, University of Minnesota

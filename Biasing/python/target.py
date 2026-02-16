@@ -104,19 +104,19 @@ def photo_nuclear( detector, generator ) :
     tagger_threshold = 0.95 * generator.energy * 1000.
     recoil_max_p = 0.375 * generator.energy * 1000.
     brem_min_e = 0.625 * generator.energy * 1000.
-    if generator.energy == 8.0:
-          xsec_bias = 550.
+    xsec_bias = 550. if generator.energy == 8.0 else 450.
 
-    else:
-          xsec_bias = 450.
-
-    sim.description = "Target photo-nuclear, xsec bias " + str(xsec_bias) + " xsec threshold " + str(xsec_bias_threshold) + " GeV"
+    sim.description = (
+        f"Target photo-nuclear, xsec bias {xsec_bias}"
+        f" xsec threshold {xsec_bias_threshold} GeV"
+    )
     sim.beamSpotSmear = [20., 80., 0.]
 
     sim.generators.append(generator)
 
     # Enable and configure the biasing
-    sim.biasing_operators = [ bias_operators.PhotoNuclear('target',xsec_bias,xsec_bias_threshold,only_children_of_primary=True) ]
+    sim.biasing_operators = [ bias_operators.PhotoNuclear('target',
+    xsec_bias,xsec_bias_threshold,only_children_of_primary=True) ]
 
     # the following filters are in a library that needs to be included
     includeBiasing.library()
@@ -125,7 +125,8 @@ def photo_nuclear( detector, generator ) :
     sim.actions.extend([
             filters.TaggerVetoFilter(thresh = tagger_threshold),
             # Only consider events where a hard brem occurs
-            filters.TargetBremFilter(recoil_max_p = recoil_max_p, brem_min_e = brem_min_e),
+            filters.TargetBremFilter(recoil_max_p = recoil_max_p,
+            brem_min_e = brem_min_e),
             filters.TargetPNFilter(),
             # Tag all photo-nuclear tracks to persist them to the event.
             util.TrackProcessFilter.photo_nuclear()
@@ -134,11 +135,11 @@ def photo_nuclear( detector, generator ) :
     return sim
 
 def gamma_mumu( detector, generator ) :
-    """Example configuration for biasing gamma to mu+ mu- conversions in the target.
+    """Example configuration for biasing gamma to mu+ mu- target conversions
 
     In this particular example, 8 GeV electrons are fired upstream of the
     tagger tracker.  The TargetBremFilter filters out all events that don't
-    produced a brem in the target with an energy greater than 5 GeV. 
+    produced a brem in the target with an energy greater than 5 GeV.
 
     Parameters
     ----------
@@ -170,16 +171,15 @@ def gamma_mumu( detector, generator ) :
     tagger_threshold = 0.95 * generator.energy * 1000.
     recoil_max_p = 0.375 * generator.energy * 1000.
     brem_min_e = 0.625 * generator.energy * 1000.
-    if generator.energy == 8.0:
-          xsec_bias = 1.E5
-
-    else:
-          xsec_bias = 3.E4
+    xsec_bias = 1.E5 if generator.energy == 8.0 else 3.E4
 
     sim.generators.append(generator)
 
     # Enable and configure the biasing
-    sim.description = "gamma --> mu+ mu-, xsec bias " + str(xsec_bias) + " xsec threshold " + str(xsec_bias_threshold) + " GeV"
+    sim.description = (
+        f"gamma --> mu+ mu-, xsec bias {xsec_bias}"
+        f" xsec threshold {xsec_bias_threshold} GeV"
+    )
     sim.biasing_operators = [ bias_operators.GammaToMuPair('target', xsec_bias, xsec_bias_threshold) ]
 
     # the following filters are in a library that needs to be included
@@ -212,7 +212,8 @@ def dark_brem( ap_mass , lhe, detector, generator,
     ap_mass : float
         The mass of the A' in MeV.
     lhe : str
-        The path to the directory containing LHE files to use as events of the dark brem.
+        The path to the directory containing LHE files to use as events 
+        of the dark brem.
     detector : str
         Name of detector to simulate in
 
@@ -226,7 +227,8 @@ def dark_brem( ap_mass , lhe, detector, generator,
     for large (>50k) event samples.
 
         from LDMX.SimCore import makePath
-        target_ap_sim = target.dark_brem(1000., makePath.makeLHEPath(1000.), 'ldmx-det-v12')
+        target_ap_sim = target.dark_brem(1000., makePath.makeLHEPath(1000.), 
+        'ldmx-det-v12')
 
     In general, the second argument should be the full path to the LHE event library.
 
@@ -234,7 +236,10 @@ def dark_brem( ap_mass , lhe, detector, generator,
     """
     sim = simulator.simulator( "target_dark_brem_" + str(ap_mass) + "_MeV" )
 
-    sim.description = "One e- fired far upstream with Dark Brem turned on and biased up in target"
+    sim.description = (
+        f"One e- fired far upstream with Dark Brem turned on and biased up in target"
+        f" A' mass {ap_mass} MeV"
+    )
     sim.setDetector( detector , include_scoring_planes_minimal = True )
     sim.generators.append( generators.single_8gev_e_upstream_tagger() )
     sim.beamSpotSmear = [ 20., 80., 0. ] #mm
@@ -242,8 +247,10 @@ def dark_brem( ap_mass , lhe, detector, generator,
     #Activiate dark bremming with a certain A' mass and LHE library
     from LDMX.SimCore import dark_brem
     db_model = dark_brem.G4DarkBreMModel(lhe)
-    db_model.threshold = 4. #GeV - minimum energy electron needs to have to dark brem
-    db_model.epsilon   = 0.01 #decrease epsilon from one to help with Geant4 biasing calculations
+    # GeV - minimum energy electron needs to have to dark brem
+    db_model.threshold = 4.
+    # decrease epsilon from one to help with Geant4 biasing calculations
+    db_model.epsilon   = 0.01
     db_model.scale_aprime = scale_aprime
     db_model.decay_mode = decay_mode
     db_model.ap_tau = ap_tau
@@ -256,7 +263,8 @@ def dark_brem( ap_mass , lhe, detector, generator,
 
     #Biasing dark brem up inside of the target
     sim.biasing_operators = [
-            bias_operators.DarkBrem.target(sim.dark_brem.ap_mass**mass_power / db_model.epsilon**2)
+            bias_operators.DarkBrem.target(
+                sim.dark_brem.ap_mass**mass_power / db_model.epsilon**2)
             ]
 
     sim.actions.extend([

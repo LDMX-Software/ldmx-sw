@@ -229,7 +229,7 @@ class HcalInefficiencyAnalyzer(ldmxcfg.Analyzer):
         self.max_hit_time = max_hit_time
 
         section_names = ['back', 'top', 'bottom', 'right', 'left']
-        inefficiency_depth_bins = [6000, 0., 6000.]
+        # inefficiency_depth_bins = [6000, 0., 6000.]
         inefficiency_layer_bins = [100, 0, 100]
         # Overall, Back, Side, Top, Bottom, Left, Right, Both,
         # Back only, Side Only, Neither
@@ -243,7 +243,7 @@ class HcalInefficiencyAnalyzer(ldmxcfg.Analyzer):
 
 class EcalDigiVerify(ldmxcfg.Analyzer) :
     """Configured EcalDigiVerifier python object
-    
+
     Contains an instance of EcalDigiVerifier that
     has already been configured.
 
@@ -255,14 +255,14 @@ class EcalDigiVerify(ldmxcfg.Analyzer) :
          around the total energy being fired into the ECal
        - Integrates to number of events
     3. SimHit Energy Deposition vs Reconstructed Hit Amplitude
-       - A perfect reconstruction would see a one-to-one linear 
+       - A perfect reconstruction would see a one-to-one linear
          relationship between these two variables
        - Integrates to number of rec hits
        - Aggregates EDeps from any SimHits in the same cell
     4. RecHit - SimHit spacial residuals
     5. Number of hits in modules
     6. Noise related plots
-    
+
     Examples
     --------
         from LDMX.DQM import dqm
@@ -705,7 +705,8 @@ class NtuplizeHgcrocDigiCollection(ldmxcfg.Analyzer) :
         self.input_pass = input_pass
 
         if using_eid is None :
-            # deduce if using eid based on presence of HcalDetectorMap in conditions system
+            # deduce if using eid based on presence of HcalDetectorMap in conditions
+            # system
             from LDMX.Framework import ldmxcfg
             from LDMX.Hcal.detector_map import HcalDetectorMap
             using_eid = True
@@ -734,12 +735,12 @@ class NtuplizeTrigScintQIEDigis(ldmxcfg.Analyzer) :
 
 class PhotoNuclearDQM(ldmxcfg.Analyzer) :
     """Configured PhotoNuclearDQM python object
-    
+
     Contains an instance of PhotoNuclearDQM that
     has already been configured.
-    
+
     Builds the necessary histograms as well.
-    
+
     Examples
     --------
         from LDMX.DQM import dqm
@@ -880,12 +881,12 @@ class PhotoNuclearDQM(ldmxcfg.Analyzer) :
 
 class TrkDeDxMassEstFeatures(ldmxcfg.Analyzer) :
     """Configured TrkDeDxMassEstFeatures python object
-    
+
     Contains an instance of TrkDeDxMassEstFeatures that
     has already been configured.
-    
+
     Builds the necessary histograms as well.
-    
+
     Examples
     --------
         from LDMX.DQM import dqm
@@ -919,12 +920,12 @@ class TrkDeDxMassEstFeatures(ldmxcfg.Analyzer) :
 
 class TrigScintSimDQM(ldmxcfg.Analyzer) :
     """Configured TrigScintSimDQM python object
-    
+
     Contains an instance of TrigScintSimDQM that
     has already been configured.
-    
+
     Builds the necessary histograms as well.
-    
+
     Examples
     --------
         from LDMX.DQM import dqm
@@ -940,12 +941,12 @@ class TrigScintSimDQM(ldmxcfg.Analyzer) :
 
 class TrigScintDigiDQM(ldmxcfg.Analyzer) :
     """Configured TrigScintDigiDQM python object
-    
+
     Contains an instance of TrigScintDigiDQM that
     has already been configured.
-    
+
     Builds the necessary histograms as well.
-    
+
     Examples
     --------
         from LDMX.DQM import dqm
@@ -979,12 +980,12 @@ class TrigScintDigiVerifierDQM(ldmxcfg.Analyzer) :
 
 class TrigScintClusterDQM(ldmxcfg.Analyzer) :
     """Configured TrigScintClusterDQM python object
-    
+
     Contains an instance of TrigScintClusterDQM that
     has already been configured.
-    
+
     Builds the necessary histograms as well.
-    
+
     Examples
     --------
         from LDMX.DQM import dqm
@@ -1001,12 +1002,12 @@ class TrigScintClusterDQM(ldmxcfg.Analyzer) :
 
 class TrigScintTrackDQM(ldmxcfg.Analyzer) :
     """Configured TrigScintTrackDQM python object
-    
+
     Contains an instance of TrigScintTrackDQM that
     has already been configured.
-    
+
     Builds the necessary histograms as well.
-    
+
     Examples
     --------
         from LDMX.DQM import dqm
@@ -1021,7 +1022,7 @@ class TrigScintTrackDQM(ldmxcfg.Analyzer) :
 
 
 class Trigger(ldmxcfg.Analyzer) :
-    """Configured Trigger python object                                                                                                                          
+    """Configured Trigger python object
     Contains an instance of TrigScintTrackDQM that
     has already been configured.
 

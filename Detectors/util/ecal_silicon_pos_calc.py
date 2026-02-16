@@ -31,7 +31,8 @@ bilayer_absorber_cumulative = [0.0, 3.0, 8.0, 15.1, 22.2, 29.3, 36.4, 43.5, 50.6
 front_tungsten_dz = [1.0, 2.0, 3.5, 3.5, 3.5, 3.5, 3.5, 3.5, 3.5, 3.5, 3.5, 7.0, 7.0, 7.0, 7.0, 7.0]
 cooling_tungsten_dz = [1.0, 1.5, 1.8, 1.8, 1.8, 1.8, 1.8, 1.8, 1.8, 1.8, 1.8, 3.5, 3.5, 3.5, 3.5, 3.5]
 
-# Arrays/constants for reduced_v3 geo (changing geo_name will cause script to go back to v15)
+# Arrays/constants for reduced_v3 geo (changing geo_name will cause script to go back to
+# v15)
 if geo_name == 'reduced_v3':
     layer_z_positions = [0, 0, 0, 0]
     bilayer_absorber_cumulative = [0.0] * 2

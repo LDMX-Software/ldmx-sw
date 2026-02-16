@@ -6,15 +6,13 @@ import sys
 input_pass_name="unpack"
 n_ev=60000
 
-if len(sys.argv) > 2 :
-    time_sample=int(sys.argv[2])
-else :
-    time_sample=21
+time_sample = int(sys.argv[2]) if len(sys.argv) > 2 else 21
 
 from LDMX.TrigScint.trigScint import TrigScintRecHitProducer
 
 
-# ------------------- all set; setup in detail, and run with these settings ---------------
+# ------------------- all set; setup in detail, and run with these settings
+# ---------------
 
 
 ts_rec_hits_up  =TrigScintRecHitProducer.up()

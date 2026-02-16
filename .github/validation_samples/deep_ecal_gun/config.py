@@ -44,11 +44,11 @@ ene_ang_pos_cmds_gamma = [
         ]
 
 # One electron and one photon both with the above initial kinematics
-gps_cmds = (['/gps/particle e-'] +
-            ene_ang_pos_cmds_ele +
-            ['/gps/source/add 1', '/gps/particle gamma'] +
-            ene_ang_pos_cmds_gamma +
-            ['/gps/source/multiplevertex True'])
+gps_cmds = ['/gps/particle e-',
+            *ene_ang_pos_cmds_ele,
+            '/gps/source/add 1', '/gps/particle gamma',
+            *ene_ang_pos_cmds_gamma,
+            '/gps/source/multiplevertex True']
 
 my_sim.generators = [gen.gps('electron_photon', gps_cmds)]
 
@@ -137,6 +137,11 @@ p.sequence.extend([
 p.skim_default_is_drop()
 p.skim_consider(trigger.instance_name)
 
-almost_all_dqm = [dqm.sample_validation_dqm + dqm.ecal_dqm + dqm.hcal_dqm + dqm.trigger_dqm]
+almost_all_dqm = [
+        dqm.sample_validation_dqm
+        + dqm.ecal_dqm
+        + dqm.hcal_dqm
+        + dqm.trigger_dqm
+        ]
 
 p.sequence.extend(*almost_all_dqm)

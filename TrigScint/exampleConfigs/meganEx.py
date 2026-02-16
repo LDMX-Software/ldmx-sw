@@ -54,7 +54,8 @@ sim.description = "Inclusive "+str(beam_energy)+" GeV electron events, "+str(n_e
 sim.beamSpotSmear = [20., 80., 0]
 
 
-mpg_gen = generators.multi( "mgpGen" ) # this is the line that actually creates the generator
+# this is the line that actually creates the generator
+mpg_gen = generators.multi( "mgpGen" )
 mpg_gen.vertex = [ -44., 0., -880. ] # mm
 mpg_gen.n_particles = n_electrons
 mpg_gen.pdg_id = 11
@@ -141,21 +142,26 @@ trig_scint_track.verbosity=1
 trig_scint_track.delta_max = 0.75
 
 from LDMX.Recon.electron_counter import ElectronCounter
-e_count = ElectronCounter( n_electrons, "ElectronCounter") # first argument is number of electrons in simulation
+# first argument is number of electrons in simulation
+e_count = ElectronCounter( n_electrons, "ElectronCounter")
 e_count.use_simulated_electron_number = False
 e_count.input_collection="TriggerPadTracks"
 e_count.input_pass_name=pass_name
 
-# # p.sequence=[ sim, ecal_digi, ecal_reco, ecal_veto, hcalDigi, hcalReco, hcalVeto, ts_digis_tag, ts_digis_up, ts_digis_down, ts_clusters_tag, ts_clusters_up, ts_clusters_down, trig_scint_track, e_count ]
+# # p.sequence=[ sim, ecal_digi, ecal_reco, ecal_veto, hcalDigi, hcalReco, hcalVeto,
+# ts_digis_tag, ts_digis_up, ts_digis_down, ts_clusters_tag, ts_clusters_up,
+# ts_clusters_down, trig_scint_track, e_count ]
 # #hcal digi keeps crashing in config step
 p.sequence=[ sim, ts_digis_tag, ts_digis_up, ts_digis_down, ts_clusters_tag, ts_clusters_up, ts_clusters_down, trig_scint_track, e_count]
 # p.sequence=[sim]
 
 p.output_files=[outname]
 
-p.term_log_level = 0  # default is 2 (WARNING); but then logFrequency is ignored. level 1 = INFO.
+# default is 2 (WARNING); but then logFrequency is ignored. level 1 = INFO.
+p.term_log_level = 0
 
-#print this many events to stdout (independent on number of events, edge case: round-off effects when not divisible. so can go up by a factor 2 or so)
+#print this many events to stdout (independent on number of events, edge case: round-off
+#effects when not divisible. so can go up by a factor 2 or so)
 log_events=20
 if p.max_events < log_events :
      log_events = p.max_events

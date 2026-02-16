@@ -319,14 +319,14 @@ def _single_e_upstream_tagger(position, momentum, energy):
 def single_4gev_e_upstream_tagger() :
     """Configure a particle gun to fire a 4 GeV electron upstream of the tagger tracker.
 
-    The position and direction are set such that the electron will be bent by 
+    The position and direction are set such that the electron will be bent by
     the field and arrive at the target at [0, 0, 0] if it isn't smeared and doesn't
     interact with any material. In reality, it will be smeared and it will interact
     with some material but we can dream.
 
     Returns
     -------
-    Instance of a particle gun configured to fire a single 4 Gev electron 
+    Instance of a particle gun configured to fire a single 4 Gev electron
     upstream of the entire detector apparatus.
     """
     return _single_e_upstream_tagger(
@@ -338,13 +338,13 @@ def single_4gev_e_upstream_tagger() :
 def single_4gev_e_upstream_target() :
     """Configure a particle gun to fire a 4 GeV electron upstream of the tagger tracker.
 
-    The position and direction are set such that the electron will be bent by 
-    the field and arrive at the target at approximately [0, 0, 0] (assuming 
+    The position and direction are set such that the electron will be bent by
+    the field and arrive at the target at approximately [0, 0, 0] (assuming
     it's not smeared).
-    
+
     Returns
     -------
-    Instance of a particle gun configured to fire a single 4 Gev electron 
+    Instance of a particle gun configured to fire a single 4 Gev electron
     directly upstream of the target.
     """
 
@@ -359,14 +359,14 @@ def single_4gev_e_upstream_target() :
 def single_1pt2gev_e_upstream_tagger():
     """Configure a particle gun to fire a 8 GeV electron upstream of the tagger tracker.
 
-    The position and direction are set such that the electron will be bent by 
+    The position and direction are set such that the electron will be bent by
     the field and arrive at the target at [0, 0, 0] if it isn't smeared and doesn't
     interact with any material. In reality, it will be smeared and it will interact
     with some material but we can dream.
 
     Returns
     -------
-    Instance of a particle gun configured to fire a single 8 GeV electron 
+    Instance of a particle gun configured to fire a single 8 GeV electron
     upstream of the entire detector apparatus.
     """
     return _single_e_upstream_tagger(
@@ -378,14 +378,14 @@ def single_1pt2gev_e_upstream_tagger():
 def single_8gev_e_upstream_tagger():
     """Configure a particle gun to fire a 8 GeV electron upstream of the tagger tracker.
 
-    The position and direction are set such that the electron will be bent by 
+    The position and direction are set such that the electron will be bent by
     the field and arrive at the target at [0, 0, 0] if it isn't smeared and doesn't
     interact with any material. In reality, it will be smeared and it will interact
     with some material but we can dream.
 
     Returns
     -------
-    Instance of a particle gun configured to fire a single 8 GeV electron 
+    Instance of a particle gun configured to fire a single 8 GeV electron
     upstream of the entire detector apparatus.
     """
     return _single_e_upstream_tagger(
@@ -397,20 +397,20 @@ def single_8gev_e_upstream_tagger():
 
 def single_e_beam_pipe(ene = 8.0):
     """Configure a particle gun to fire an electron of settable energy
-    upstream of the tagger tracker.  
+    upstream of the tagger tracker.
 
     The starting position here is well upstream of the analyzing magnet
-    the position/angle of the gun is such that 8 gev electrons arrive 
-    at the target z=0 at xy=(0,0).  This generator is used to study 
-    off-energy beam electrons.  
+    the position/angle of the gun is such that 8 gev electrons arrive
+    at the target z=0 at xy=(0,0).  This generator is used to study
+    off-energy beam electrons.
 
-    Note that if an energy != 8gev, the trajectory will be different. 
+    Note that if an energy != 8gev, the trajectory will be different.
     And many electrons with energies sufficiently lower than 8GeV will just curve
     into the side of the magnet and not reach the target.
 
     Returns
     -------
-    Instance of a particle gun configured to fire a single 8 GeV electron 
+    Instance of a particle gun configured to fire a single 8 GeV electron
     upstream of the entire detector apparatus.
     """
     return _single_e_upstream_tagger(
@@ -430,7 +430,7 @@ def single_backwards_positron(energy: float):
     ----------
     energy: float
         energy in GeV of the positron
-    
+
     Returns
     -------
     gun:

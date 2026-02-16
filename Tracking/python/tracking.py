@@ -68,7 +68,7 @@ class SeedFinderProcessor(Producer):
         Maximum d0 allowed for the seeds. Computed at the perigee.
     z0max : float
         Maximum z0 allowed for the seeds. Computed at the perigee.
-    strategies : List[string] -- WORK IN PROGRESS AND NOT ACTIVE --- 
+    strategies : List[string] -- WORK IN PROGRESS AND NOT ACTIVE ---
         List of 5 hits (3 axial and 2 stereo) for seed finding.
     input_hits_collection : string
         The name of the input collection of hits to be used for seed finding.
@@ -126,7 +126,7 @@ class CKFProcessor(Producer):
         debugging purposes. <functionality to be moved>
     bfield : float
         <functionality to be removed>
-        If using a constant bfield, this is the BZ component. 
+        If using a constant bfield, this is the BZ component.
     const_b_field : bool
         <functionality to be removed>
         Activate the usage of constant magnetic field.
@@ -148,10 +148,10 @@ class CKFProcessor(Producer):
     min_hits : int
         Minimum number of measurements on track to accept the trajectory.
     use_extrapolate_location : bool
-        Activate the usage of extrapolate location for returning the track 
+        Activate the usage of extrapolate location for returning the track
         parameters.
     extrapolate_location : list[double]
-        Location of the extrapolation for the trajectory (perigee 
+        Location of the extrapolation for the trajectory (perigee
         representation).
     use_seed_perigee : bool
         Uses the seed perigee as extrapolation location.
@@ -172,8 +172,8 @@ class CKFProcessor(Producer):
        Activate kalman filter track refitting of the found trajectories
     gsf_refit : bool
        <experimental>
-       Refit tracks with Gaussian Sum Filter 
-        
+       Refit tracks with Gaussian Sum Filter
+
     """
 
     def __init__(self, instance_name='CKFProcessor'):
@@ -261,8 +261,8 @@ class TruthSeedProcessor(Producer):
     """ Producer that returns truth seeds to feed the KF based track finding.
     Seeds are not smeared, so the fits will be too optimistic, especially the
     residuals of the estimated locations w.r.t. simulated hits on each surface.
-    The default parameters assume electron seeds are being found in the recoil 
-    tracker with loose requirements on momentum and z position. 
+    The default parameters assume electron seeds are being found in the recoil
+    tracker with loose requirements on momentum and z position.
 
     Parameters
     ----------
@@ -273,10 +273,10 @@ class TruthSeedProcessor(Producer):
     ----------
 
     pdg_ids : list[int]
-        List of particle IDs whose scoring plane hits will be used to form 
+        List of particle IDs whose scoring plane hits will be used to form
         initial seeds.
     scoring_hits_coll_name : string
-        The name of the scoring plane hits from where to get the truth 
+        The name of the scoring plane hits from where to get the truth
         parameters.
     recoil_sim_sim_hits_coll_name : string
         The name of the sim tracker hits collection.
@@ -290,15 +290,15 @@ class TruthSeedProcessor(Producer):
         If positive, select only scoring hits with that particular track ID.
     pz_cut : double
         Minimum cut on the momentum (MeV)of the seed along the beam axis.
-    p_cut : double 
+    p_cut : double
         Minimum cut on the momentum(MeV) of the seed.
-    p_cut_max : double 
+    p_cut_max : double
         Maximum cut on the momentum of the seed.
-    p_cut_ecal : double 
-        Minimum seed track momentum(MeV) at the ECAL scoring plane 
-    skip_tagger : bool 
-        Ignore the tagger tracker(makes empty collections). 
-    skip_recoil : bool 
+    p_cut_ecal : double
+        Minimum seed track momentum(MeV) at the ECAL scoring plane
+    skip_tagger : bool
+        Ignore the tagger tracker(makes empty collections).
+    skip_recoil : bool
         Ignore the recoil tracker(makes empty collections).
     max_track_id : double
         Maximum track ID for a hit to be selected in the target scoring plane.
@@ -331,7 +331,7 @@ class TruthSeedProcessor(Producer):
 
 
 class GreedyAmbiguitySolver(Producer):
-    """ Producer that cleans duplicate tracks from CKF output. 
+    """ Producer that cleans duplicate tracks from CKF output.
 
     Parameters
     ----------
@@ -367,12 +367,12 @@ class TrackerVetoProcessor(Producer):
     """ Class that flags events that pass the tracker veto
         This processor evaluates tracker events based on recoil and tagger track properties,
     applying configurable selection criteria to determine whether an event should be flagged.
-    
+
     Parameters
     ----------
     instance_name : str
         Unique name for this instance.
-    
+
     Attributes
     ----------
     max_d0 : float

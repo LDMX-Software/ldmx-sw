@@ -1,9 +1,9 @@
-"""Configuration for beam electron locator 
+"""Configuration for beam electron locator
 
 Attributes:
 -------------
 input_collection : string
-    Name of the input collection, should be one that holds sim hits 
+    Name of the input collection, should be one that holds sim hits
 input_pass_name : string
     Pass name of the input collection
 output_collection : string

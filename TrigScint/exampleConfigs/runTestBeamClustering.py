@@ -8,10 +8,7 @@ input_pass_name="hits"
 n_ev=400000
 #p.max_events = n_ev
 
-if len(sys.argv) > 2 :
-    time_sample=int(sys.argv[2])
-else :
-    time_sample=21
+time_sample = int(sys.argv[2]) if len(sys.argv) > 2 else 21
 
 from LDMX.TrigScint.trigScint import TestBeamClusterProducer
 

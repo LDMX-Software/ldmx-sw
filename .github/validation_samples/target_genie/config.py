@@ -4,6 +4,7 @@ from LDMX.Framework import ldmxcfg
 p = ldmxcfg.Process('test')
 import os
 
+
 p.max_tries_per_event = 10000
 
 from LDMX.Biasing import ecal
@@ -25,7 +26,7 @@ genie = gen.genie(name='genie_G18_02a_02_11b',
                         direction = [0.,0.,1.],
                         tune='G18_02a_02_11b',
                         spline_file=f'{os.environ["CI_DATA"]}/target_genie/gxspl_emode_GENIE_v3_04_00.xml',
-                        message_threshold_file=f'Messenger_ErrorOnly.xml')
+                        message_threshold_file='Messenger_ErrorOnly.xml')
 
 
 my_sim.generators = [ genie ]
@@ -127,6 +128,8 @@ pf_reco = pf_reco.pfTruthProducer()
 
 # Load the dEdx mass estimator
 from LDMX.Recon import track_dedx_mass_estimator
+
+
 recoil_track_mass_estimator = track_dedx_mass_estimator.TrackDeDxMassEstimator()
 
 # Load the DQM modules
@@ -148,7 +151,8 @@ p.logger.term_level = 10
 # Example to show trace level logging for ecal veto (only)
 p.logger.custom(full_tracking_sequence.dqm_recoil_ckf, level = -1)
 
-# Add full tracking for both recoil trackers: digi, seeds, CFK, ambiguity resolution, GSF, DQM
+# Add full tracking for both recoil trackers:
+# digi, seeds, CFK, ambiguity resolution, GSF, DQM
 recoil_tracking = [
     full_tracking_sequence.digi_recoil,
     full_tracking_sequence.truth_tracking,
@@ -182,7 +186,14 @@ p.sequence.extend([
         ])
 
 # Remove TS DQM
-almost_all_dqm = [dqm.sample_validation_dqm + recoil_tracker_dqm + dqm.ecal_dqm + dqm.hcal_dqm + dqm.trigger_dqm + dqm.dEdx_dqm]
+almost_all_dqm = [
+    dqm.sample_validation_dqm
+    + recoil_tracker_dqm
+    + dqm.ecal_dqm
+    + dqm.hcal_dqm
+    + dqm.trigger_dqm
+    + dqm.dEdx_dqm
+    ]
 
 p.sequence.extend(*almost_all_dqm)
 

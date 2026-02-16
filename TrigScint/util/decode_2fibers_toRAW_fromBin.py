@@ -121,7 +121,8 @@ def binToTxt(in_file_name, out_file_name):
                     #format in hex with padding (don't lose leading zeroes)
                     hexnum=f"{dd:0>2X}" #int(hexnum,2))
                     #print(hexnum)
-                    hexline += hexnum #'{:0{}X}'.format(hexnum, 2) #"%2.2X" %num,end='')  # f'{data:X}\n'
+                    #'{:0{}X}'.format(hexnum, 2) #"%2.2X" %num,end='')  # f'{data:X}\n'
+                    hexline += hexnum
                 #print(hexline)
                 out_f.write(hexline) #hexline) #"%2.2X" %data,end='')
                 #out_f.write(hex(int(data, 2)))
@@ -136,7 +137,8 @@ def binToTxt(in_file_name, out_file_name):
 def load_data(file):
   data = open(file) #loads file
   data=data.read()       #reads file
-  data=data.split("\n") #turn one giant string into a list of line strings. The last line is "" and drops it.
+  #turn one giant string into a list of line strings. The last line is "" and drops it.
+  data=data.split("\n")
 
   return data
 
@@ -144,13 +146,13 @@ def load_data(file):
 def sort_into_events(data, address):
   processed_data=[]
   processed_event=[]
-  ev_nbs=[]
+  # ev_nbs=[]
   timestamps=[]
   ts=[]
   time_since_spill=[]
-  t_since_spill=[]
+  # t_since_spill=[]
   print('using "'+address+'" to delimit packet time samples')
-  has_added_first_event_word=False
+  # has_added_first_event_word=False
   skip_one=False #avoid setting timestamp using the first few weird lines in the file
   for line in data[0:] :
     try:
@@ -182,13 +184,13 @@ def sort_into_eventsBin(in_file_name, address):
     # could be interesting if used with a max_events for shorter dev cycle testing
   processed_data=[]
   processed_event=[]
-  ev_nbs=[]
+  # ev_nbs=[]
   timestamps=[]
   ts=[]
   time_since_spill=[]
-  t_since_spill=[]
+  # t_since_spill=[]
   print('using "'+address+'" to delimit packet time samples')
-  has_added_first_event_word=False
+  # has_added_first_event_word=False
   skip_one=True
   with open(in_file_name,'rb') as in_f :
       line = in_f.read(8).hex()
@@ -206,7 +208,8 @@ def sort_into_eventsBin(in_file_name, address):
               elif skip_one :
                   print("Found time since spill line: "+line)
                   #t_since_spill=[]
-                  time_since_spill.append(line[8:]) #spill count is only last half of the line
+                  #spill count is only last half of the line
+                  time_since_spill.append(line[8:])
                   print("Stored time since spill: "+line[8:])
                   skip_one=False
               else : #this is data
@@ -247,7 +250,8 @@ def main(options,args) :
 
     print("in_file = %s,\noutfile = %s,\npassThrough = %i,\ntrigOnTDC = %i,\nmaxEvents = %i,\nverbose = %i,\ntimeSampleCut = %i,\nsamplesPerEvent = %i" % (in_file, outfilename,int(pass_through),int(trig_on_tdc),max_events,is_verbose,time_sample_cut,samples_per_event) )
     #header stuff to do:
-    # cap id mismatch has its own flag. could let everything else be some sort of checksum error.
+    # cap id mismatch has its own flag. could let everything else be some sort of
+    # checksum error.
     # this could actually also be some dedicated bits for now; we don't have a checksum
     # protocol in mind.
 
@@ -282,13 +286,15 @@ def main(options,args) :
         fiber2 = fiber2.split('BC')
 
         out_values = []
-        #useless definitions already here to avoid errors if there is an empty time sample
+        #useless definitions already here to avoid errors if there is an empty time
+        #sample
         crc0_error=0
         crc1_error=0
         cid_unsync=0
         cid_skip=0
 
-        #adjust the sub-event counter: subtract any remainder mod samples_per_event, to make sure the previous event
+        #adjust the sub-event counter: subtract any remainder mod samples_per_event, to
+        #make sure the previous event
         # doesn't count towards the next event's sample collection
         sub_event_counter-=sub_event_counter%samples_per_event
         has_triggered=pass_through #which is false if we want to actually trigger first
@@ -304,7 +310,8 @@ def main(options,args) :
             f1.peds = peds[:8]
             f2.peds = peds[8:]
             if i >= time_sample_cut and not f1.decode(z[0]) + f2.decode(z[1]) :
-                #check if either sets has_triggered. in either case add to a redout "buffer"
+                #check if either sets has_triggered. in either case add to a redout
+                #"buffer"
                 if not has_triggered :
                     has_triggered=f1.triggerForReadout(trig_on_tdc)
                 if not has_triggered :
@@ -366,7 +373,8 @@ def main(options,args) :
                 out_values.append(adcs_out)
                 out_values.append(tdcs_out)
                 if (sub_event_counter % samples_per_event == 0) and has_triggered :
-                    # we want to write this chunk as an "event", with event number count,
+                    # we want to write this chunk as an "event", with event number
+                    # count,
                     # and the rest of the header, to file
                     event_counter+=1
                     print("\t\t------> writing event "+str(event_counter)+" to file at subevent count: "+str(sub_event_counter))
@@ -384,7 +392,8 @@ def main(options,args) :
                         e_word=error_word.to_bytes(1, byteorder=endian, signed=False)
                         print("\t\t------> writing header: "+str(event_counter)+", error = "+str(e_word))
                     outfile.write( error_word.to_bytes(1, byteorder=endian, signed=False))
-                    if len(out_values) != samples_per_event*2 : #1 ADC, 1 TDC vector per time sample
+                    #1 ADC, 1 TDC vector per time sample
+                    if len(out_values) != samples_per_event*2 :
                         print("UH-OH! got "+str(len(out_values))+" words in the event data!")
                         print(out_values)
                     for vals in out_values :
@@ -399,7 +408,8 @@ def main(options,args) :
                         print("Not using time samples after "+str(i)+"; breaking")
                         break #don't use late data
 
-        #this is all just for printing after the last time sample of every "actual" event
+        #this is all just for printing after the last time sample of every "actual"
+        #event
         if is_verbose:
             out_word=''
             out_word+="{0:0{1}X} ".format(event_counter, 32)

@@ -16,20 +16,26 @@ from LDMX.Conditions.SimpleCSVTableProvider import (
 
 EcalTrigPrimConditionsHardcode=SimpleCSVIntegerTableProvider("EcalTrigPrimDigiConditions",["ADC_PEDESTAL","ADC_THRESHOLD","TOT_PEDESTAL","TOT_THRESHOLD","TOT_GAIN"])
 
-EcalTrigPrimConditionsHardcode.validForAllRows([ 50 , # ADC_PEDESTAL -- should match value from HgcrocEmulator
+# ADC_PEDESTAL -- should match value from HgcrocEmulator
+EcalTrigPrimConditionsHardcode.validForAllRows([ 50 ,
                                                  5 , # ADC_THRESHOLD -- current noise is
-                                                 50,  # TOT_PEDESTAL -- currently set to match ADC pedestal
-                                                 100,  # TOT_THRESHOLD -- rather large value...
-                                                 8 ] # TOT_GAIN, ratio of recon TOT gain over recon ADC gain
+                                                 # TOT_PEDESTAL -- currently set to match ADC pedestal
+                                                 50,
+                                                 # TOT_THRESHOLD -- rather large value...
+                                                 100,
+                                                 # TOT_GAIN, ratio of recon TOT gain over recon ADC gain
+                                                 8 ]
                                                )
 
 EcalReconConditionsHardcode=SimpleCSVDoubleTableProvider("EcalReconConditions",["ADC_PEDESTAL","ADC_GAIN","TOT_PEDESTAL","TOT_GAIN"])
 
 EcalReconConditionsHardcode.validForAllRows([
     50. , #ADC_PEDESTAL - should match HgcrocEmulator
-    0.3125, #ADC_GAIN - 320. fC / 1024. counts - conversion to estimated charge deposited in ADC mode
+    #ADC_GAIN - 320. fC / 1024. counts - conversion to estimated charge deposited in ADC mode
+    0.3125,
     50.0 , #TOT_PEDESTAL - tweaked so that we pass the reconstruction tests
-    2.5, #TOT_GAIN - 10240 fC / 4096 counts - conversion to estimated charge deposited in TOT mode
+    #TOT_GAIN - 10240 fC / 4096 counts - conversion to estimated charge deposited in TOT mode
+    2.5,
     ])
 
 EcalHgcrocConditionsHardcode=SimpleCSVDoubleTableProvider("EcalHgcrocConditions", [
@@ -47,7 +53,8 @@ EcalHgcrocConditionsHardcode=SimpleCSVDoubleTableProvider("EcalHgcrocConditions"
 
 EcalHgcrocConditionsHardcode.validForAllRows([
     50. , #PEDESTAL - ADC
-    0.6, #NOISE - ADC, almost certainly too optimistic, but want to mimic previous noise model
+    #NOISE - ADC, almost certainly too optimistic, but want to mimic previous noise model
+    0.6,
     0.0, #MEAS_TIME - ns
     20., #PAD_CAPACITANCE - pF
     200., #TOT_MAX - ns - maximum time chip would be in TOT mode

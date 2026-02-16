@@ -25,23 +25,16 @@ if kill_chan_8 :
 
 gun_z_pos=800 #3000  #mm -- define as positive here, for file naming; set sign below
 det_v=2.0        #detector geometry version number
-beam_x_smear=7.5 #mm    7.5mm for reasonable efficiency, larger than TS module to get more empty (no MIP)  events. set to 150mm for large noise
+#mm    7.5mm for reasonable efficiency, larger than TS module to get more empty (no MIP)  events. set to 150mm for large noise
+beam_x_smear=7.5
 beam_y_smear=20  #mm    20 mm      -- " --, set to 200 for large noise
-noise_per_event=0.08  #average number of PEs from SiPM noise per event (gets scaled by n_time_samples to be constant) -- 0.1 per event is taken from run183
+#average number of PEs from SiPM noise per event (gets scaled by n_time_samples to be constant) -- 0.1 per event is taken from run183
+noise_per_event=0.08
 start_sample=15
 
-if len(sys.argv) > 1 :
-    n_time_samples=int(sys.argv[1])
-else :
-    n_time_samples=30 #config default is 5
-if len(sys.argv) > 2 :
-    elec_noise=float(sys.argv[2])
-else :
-    elec_noise=1.5 #config default is 1.5
-if len(sys.argv) > 3 :
-    k_expo=float(sys.argv[3])
-else :
-    k_expo=0.1   #config default is 0.1
+n_time_samples = int(sys.argv[1]) if len(sys.argv) > 1 else 30 #config default is 5
+elec_noise = float(sys.argv[2]) if len(sys.argv) > 2 else 1.5 #config default is 1.5
+k_expo = float(sys.argv[3]) if len(sys.argv) > 3 else 0.1 #config default is 0.1
 
 p.run = 1
 p.max_events = n_events
@@ -80,7 +73,8 @@ simulation.beamSpotSmear = [beam_x_smear, beam_y_smear, 0] #mm, at start positio
 simulation.description = "Inclusive "+str(beam_energy)+" GeV electron events, "+str(n_electrons)+"e"
 
 
-#### the digi and tb hit step not fully implemented !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+#### the digi and tb hit step not fully implemented
+#### !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 #------ set up digitization -------
 

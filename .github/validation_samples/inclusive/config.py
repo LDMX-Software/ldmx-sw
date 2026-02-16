@@ -11,6 +11,7 @@ det = 'ldmx-det-v15-8gev'
 my_sim.setDetector(det, include_scoring_planes_minimal = True )
 from LDMX.SimCore import generators as gen
 
+
 my_sim.generators.append( gen.single_8gev_e_upstream_tagger() )
 my_sim.description = 'Basic test Simulation'
 
@@ -99,7 +100,8 @@ ecal_pres_skimmer = EcalPreselectionSkimmer()
 p.logger.term_level = 1
 # p.logger.custom(ecal_veto, level = -1)
 
-# Add full tracking for both tagger and recoil trackers: digi, seeds, CFK, ambiguity resolution, GSF, DQM
+# Add full tracking for both tagger and recoil trackers:
+# digi, seeds, CFK, ambiguity resolution, GSF, DQM
 p.sequence.extend(full_tracking_sequence.sequence)
 p.sequence.extend(full_tracking_sequence.dqm_sequence)
 

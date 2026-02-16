@@ -80,7 +80,8 @@ class HcalOldDigiProducer(ldmxcfg.Producer) :
         self.strips_back_per_layer = 60 # n strips correspond to 5 cm wide bars
         self.num_back_hcal_layers = 96
         self.super_strip_size = 1 # 1 = 5 cm readout, 2 = 10 cm readout, ...
-        self.mev_per_mip = 4.66  # measured 1.4 MeV for a 6mm thick tile, so for 20mm bar = 1.4*20/6
+        # measured 1.4 MeV for a 6mm thick tile, so for 20mm bar = 1.4*20/6
+        self.mev_per_mip = 4.66
         self.pe_per_mip = 68. # PEs per MIP at 1m (assume 80% attentuation of 1m)
         self.strip_attenuation_length = 5. # this is in m
         self.strip_position_resolution = 150. # this is in mm

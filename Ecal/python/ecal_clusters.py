@@ -48,5 +48,6 @@ class EcalClusterProducer(ldmxcfg.Producer) :
         # Minimum outlier separation
         self.deltao = 40.
         # Recluster merged clusters or not
-        # No reclustering leads to more undercounting, reclustering leads to more overcounting
+        # No reclustering leads to more undercounting, reclustering leads to more
+        # overcounting
         self.reclustering = False

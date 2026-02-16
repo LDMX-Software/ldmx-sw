@@ -13,10 +13,7 @@ if len(sys.argv) > 1 :
 else :
     print("got to specify an input file")
     exit
-if len(sys.argv) > 2 :
-    input_pass_name=sys.argv[2]
-else :
-    input_pass_name="conv" #"sim"
+input_pass_name = sys.argv[2] if len(sys.argv) > 2 else "conv" #"sim"
 
 
 p.run = 10

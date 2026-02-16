@@ -1,5 +1,6 @@
 # Example of jobOption to run tracking on input simulated files in ldmx-sw
-# For detailed description of the various configurations, check the .py module files inside
+# For detailed description of the various configurations, check the .py module files
+# inside
 # Tracking/python
 
 import os
@@ -13,7 +14,8 @@ p = ldmxcfg.Process("TrackerReco")
 # Load the tracking module
 from LDMX.Tracking import tracking
 
-# This has to stay after defining the "TrackerReco" Process in order to load the geometry
+# This has to stay after defining the "TrackerReco" Process in order to load the
+# geometry
 # From the conditions
 from LDMX.Tracking import geo
 
@@ -36,7 +38,8 @@ p.sequence = [sim]
 # Load the full tracking sequance
 from LDMX.Tracking import full_tracking_sequence
 
-# Add full tracking for both tagger and recoil trackers: digi, seeds, CFK, ambiguity resolution, GSF, DQM
+# Add full tracking for both tagger and recoil trackers: digi, seeds, CFK, ambiguity
+# resolution, GSF, DQM
 p.sequence.extend(full_tracking_sequence.sequence)
 
 # Output name

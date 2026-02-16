@@ -10,8 +10,8 @@ log = logging.getLogger('photonuclear')
 
 @plotter
 def pndqm(d: Differ, out_dir=None):
-    pn_vertex_volume_labels= ['Did not happen', 'Else', 'W Cooling', 'C Cooling', 'PCB',
-       'CarbonBasePlate', 'Absorber', 'Sensor', 'Glue', 'Motherboard', '', '', '',]
+    # pn_vertex_volume_labels= ['Did not happen', 'Else', 'W Cooling', 'C Cooling', 'PCB',
+    #    'CarbonBasePlate', 'Absorber', 'Sensor', 'Glue', 'Motherboard', '', '', '',]
 
     d.plot1d("PN/event_type",  "Event category (200 MeV cut)",
              out_dir=out_dir,
