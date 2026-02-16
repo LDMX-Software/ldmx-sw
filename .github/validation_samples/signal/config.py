@@ -17,7 +17,11 @@ my_sim = target.dark_brem(
     10.0,
     # DB library stored in ci-data that is cloned into ldmx-sw root before
     # validation is run
-    f'{os.environ["CI_DATA"]}/signal/v5.2.0_electron_tungsten_MaxE_8.0_MinE_4.0_RelEStep_0.1_UndecayedAP_mA_0.01_run_1.csv',
+    (
+        f'{os.environ["CI_DATA"]}/signal/'
+        'v5.2.0_electron_tungsten_MaxE_8.0_MinE_4.0'
+        '_RelEStep_0.1_UndecayedAP_mA_0.01_run_1.csv'
+    ),
     det,
     generators.single_8gev_e_upstream_tagger()
 )

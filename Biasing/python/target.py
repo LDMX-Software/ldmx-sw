@@ -180,7 +180,11 @@ def gamma_mumu( detector, generator ) :
         f"gamma --> mu+ mu-, xsec bias {xsec_bias}"
         f" xsec threshold {xsec_bias_threshold} GeV"
     )
-    sim.biasing_operators = [ bias_operators.GammaToMuPair('target', xsec_bias, xsec_bias_threshold) ]
+    sim.biasing_operators = [
+        bias_operators.GammaToMuPair(
+            'target', xsec_bias, xsec_bias_threshold
+        )
+    ]
 
     # the following filters are in a library that needs to be included
     includeBiasing.library()
@@ -189,7 +193,10 @@ def gamma_mumu( detector, generator ) :
     sim.actions.extend([
             # Only consider events where a hard brem occurs
             filters.TaggerVetoFilter(thresh = tagger_threshold),
-            filters.TargetBremFilter(recoil_max_p = recoil_max_p, brem_min_e = brem_min_e),
+            filters.TargetBremFilter(
+                recoil_max_p=recoil_max_p,
+                brem_min_e=brem_min_e,
+            ),
             filters.TargetGammaMuMuFilter(),
             util.TrackProcessFilter.gamma_mumu()
     ])

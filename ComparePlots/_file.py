@@ -61,7 +61,11 @@ class File :
         fn = os.path.basename(filepath).replace('.root','')
         l = fn.split('_')
         if len(l)%2 != 0 :
-            raise ValueError(f'The filename provided {fn} cannot be split into key_val pairs. \n\tWorking example: hist_new.root')
+            raise ValueError(
+                f'The filename provided {fn} cannot be'
+                ' split into key_val pairs.'
+                '\n\tWorking example: hist_new.root'
+            )
         file_params =  { l[i] : l[i+1] for i in range(len(l)-1) if i%2 == 0 }
         File.log.debug(f'Deduced File Parameters: {file_params}')
 
@@ -70,7 +74,10 @@ class File :
         ll = [file_params[l] for l in legendlabel_parameter if l in file_params]
         if len(ll) < len(legendlabel_parameter):
             missing_params = set(legendlabel_parameter) - set(file_params.keys())
-            raise KeyError(f"{', '.join(missing_params)} not in deduced file parameters:\n{file_params}")
+            raise KeyError(
+                f"{', '.join(missing_params)} not in"
+                f" deduced file parameters:\n{file_params}"
+            )
         ll='_'.join(ll)
 
         File.log.debug(f'Deduced File Label: {ll}')

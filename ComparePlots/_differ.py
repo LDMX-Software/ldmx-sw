@@ -60,7 +60,11 @@ class Differ :
             elif isinstance(arg, File) :
                 return arg
             else :
-                raise KeyError(f'Argument provided {arg} is not a ComparePlots.File or a tuple of arguments for its constructor')
+                raise KeyError(
+                    f'Argument provided {arg} is not a'
+                    ' ComparePlots.File or a tuple of'
+                    ' arguments for its constructor'
+                )
 
         self.grp_name = grp_name
         self.files = list(map(open_file, args))
@@ -110,7 +114,9 @@ class Differ :
         out_dir : str
             Directory in which to write the plotting file
         file_name : str
-            Name of file, no extension (default: histname name with directory separators removed)
+            Name of file, no extension
+            (default: histname name with directory
+            separators removed)
         hist_kwargs : dict
             All other key-word arguments are passed into each File.plot1d
         """
@@ -128,7 +134,11 @@ class Differ :
         for f in self.files :
             try:
                 h = f.get(histname)
-                art = h[hist.rebin(rebin)].plot1d(ax=raw_ax, **f.hist_kwargs, **hist_kwargs)
+                art = h[hist.rebin(rebin)].plot1d(
+                    ax=raw_ax,
+                    **f.hist_kwargs,
+                    **hist_kwargs
+                )
                 raw_histograms.append((h, art))
             except uproot.KeyInFileError:
                 f.log.warn(f"Key {histname} doesn't exist in {self}, skipping")
@@ -173,5 +183,9 @@ class Differ :
         else :
             if file_name is None :
                 file_name = re.sub(r'^.*/','',histname)
-            fig.savefig(os.path.join(out_dir,file_name)+ self.output_type, bbox_inches='tight')
+            fig.savefig(
+                os.path.join(out_dir, file_name)
+                + self.output_type,
+                bbox_inches='tight'
+            )
             fig.clf()

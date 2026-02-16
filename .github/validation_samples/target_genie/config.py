@@ -25,7 +25,10 @@ genie = gen.genie(name='genie_G18_02a_02_11b',
                         beam_size = [ 20., 80. ],
                         direction = [0.,0.,1.],
                         tune='G18_02a_02_11b',
-                        spline_file=f'{os.environ["CI_DATA"]}/target_genie/gxspl_emode_GENIE_v3_04_00.xml',
+                        spline_file=(
+                            f'{os.environ["CI_DATA"]}/target_genie'
+                            '/gxspl_emode_GENIE_v3_04_00.xml'
+                        ),
                         message_threshold_file='Messenger_ErrorOnly.xml')
 
 
@@ -113,7 +116,12 @@ en_trigger = [
         trigger_energy_sums.TrigEcalEnergySum(),
         trigger_energy_sums.TrigHcalEnergySum(),
         trigger_energy_sums.TrigEcalClusterProducer(),
-        trigger_energy_sums.TrigElectronProducer(prop_map_name=f'{os.environ["CI_DATA"]}/target_genie/propagationMap.root'),
+        trigger_energy_sums.TrigElectronProducer(
+            prop_map_name=(
+                f'{os.environ["CI_DATA"]}'
+                '/target_genie/propagationMap.root'
+            )
+        ),
         trigger_energy_sums.HcalTPSelector(),
         trigger_energy_sums.HCalTrigMipReco(),
         trigger_energy_sums.ECalTrigMipReco(),
