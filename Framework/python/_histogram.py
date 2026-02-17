@@ -4,10 +4,10 @@ These histogram objects are passed to the HistogramPool to be
 created for processors that they are grouped with.
 """
 
-from ._parameter_set import parameter_set, field
+from ._parameter_set import field, parameter_set
 
 
-def uniform_binning( nbins , minedge , maxedge ) :
+def uniform_binning(nbins, minedge, maxedge):
     """Create a list of bin edges uniformly separated
 
     Parameters
@@ -20,10 +20,10 @@ def uniform_binning( nbins , minedge , maxedge ) :
         Upper edge of binning
     """
 
-    bin_width = float(maxedge-minedge)/float(nbins)
+    bin_width = float(maxedge - minedge) / float(nbins)
 
-    #range does not include upper limit, so we need to add an extra bin at end
-    return [ bin_width*ibin+minedge for ibin in range(nbins+1) ]
+    # range does not include upper limit, so we need to add an extra bin at end
+    return [bin_width * ibin + minedge for ibin in range(nbins + 1)]
 
 
 @parameter_set
@@ -53,18 +53,17 @@ class histogram:
     """
 
     name: str
-    xlabel: str = ''
+    xlabel: str = ""
     xbins: list[float] = []
     xcategories: list[str] = field(init=False)
-    ylabel: str = ''
+    ylabel: str = ""
     ybins: list[float] = []
     ycategories: list[str] = field(init=False)
     weighted: bool = False
 
-
     def __post_init__(self):
         if len(self.xbins) == 0:
-            raise ValueError('Cannot have a histogram with zero bins.')
+            raise ValueError("Cannot have a histogram with zero bins.")
 
         if isinstance(self.xbins[0], str):
             self.xcategories = self.xbins
@@ -79,4 +78,3 @@ class histogram:
             self.ybins = []
         else:
             self.ycategories = []
-

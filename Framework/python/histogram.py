@@ -4,7 +4,8 @@ These histogram objects are passed to the HistogramPool to be
 created for processors that they are grouped with.
 """
 
-def uniform_binning( nbins , minedge , maxedge ) :
+
+def uniform_binning(nbins, minedge, maxedge):
     """Create a list of bin edges uniformly separated
 
     Parameters
@@ -17,10 +18,11 @@ def uniform_binning( nbins , minedge , maxedge ) :
         Upper edge of binning
     """
 
-    bin_width = float(maxedge-minedge)/float(nbins)
+    bin_width = float(maxedge - minedge) / float(nbins)
 
-    #range does not include upper limit, so we need to add an extra bin at end
-    return [ bin_width*ibin+minedge for ibin in range(nbins+1) ]
+    # range does not include upper limit, so we need to add an extra bin at end
+    return [bin_width * ibin + minedge for ibin in range(nbins + 1)]
+
 
 class histogram:
     """Object to hold parameters for a one-dimensional root histogram
@@ -47,14 +49,14 @@ class histogram:
         whether to keep track of sum of squared weights
     """
 
-    def __init__(self, name, xlabel, xbins, ylabel='', ybins=[], weighted = False):
-        self.name   = name
+    def __init__(self, name, xlabel, xbins, ylabel="", ybins=[], weighted=False):
+        self.name = name
         self.xlabel = xlabel
         self.ylabel = ylabel
         self.weighted = weighted
 
         if len(xbins) == 0:
-            raise ValueError('Cannot have a histogram with zero bins.')
+            raise ValueError("Cannot have a histogram with zero bins.")
 
         if isinstance(xbins[0], str):
             self.xbins = [0.0]
@@ -73,7 +75,6 @@ class histogram:
             self.ybins = ybins
             self.ycategories = []
 
-
     def __repr__(self):
         """Represent this object to the human user
 
@@ -82,15 +83,18 @@ class histogram:
         A string representation of the histogram displaying its properties.
         """
 
-        if len(self.ybins) > 0 :
-            return "Name: %s x Label: %s y Label: %s" % (self.name,
-                self.xlabel, self.ylabel)
-        else :
-            return "Name: %s x Label: %s" % (self.name,self.xlabel)
+        if len(self.ybins) > 0:
+            return "Name: %s x Label: %s y Label: %s" % (
+                self.name,
+                self.xlabel,
+                self.ylabel,
+            )
+        else:
+            return "Name: %s x Label: %s" % (self.name, self.xlabel)
 
     def __str__(self):
-        """Stringify this object. 
-        
+        """Stringify this object.
+
         Helpful for printing it in python to make sure the passed variables are what you want.
 
         Returns

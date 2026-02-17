@@ -1,10 +1,9 @@
-from ._parameter_set import parameter_set, field
-from . import _register, _histogram
+from . import _histogram, _register
+from ._parameter_set import field, parameter_set
 
 
 @parameter_set
 class Processor:
-
     histograms: list[_histogram.histogram] = []
 
     def __post_init__(self):
@@ -15,22 +14,29 @@ class Processor:
         """
         _register.library(self.module_name)
 
-
     def histogram(
-            self, name,
-            xlabel = '', xbins = 1, xmin = None, xmax = None,
-            ylabel = '', ybins = None, ymin = None, ymax = None,
-            weighted = False):
+        self,
+        name,
+        xlabel="",
+        xbins=1,
+        xmin=None,
+        xmax=None,
+        ylabel="",
+        ybins=None,
+        ymin=None,
+        ymax=None,
+        weighted=False,
+    ):
         """declare a histogram for a processor to fill
-    
+
         If xmin and xmax are not provided, bins is assumed to be
         the bin edges on the x-axis. If they are both provided,
         bins is assumed to be the number of bins on the x-axis.
-    
+
         If ybins is None, then the histogram is assumed to be 1D
         while if ybins is not None, then the histogram is assumed
         to be 2D.
-    
+
         Parameters
         ----------
         name : str
@@ -53,27 +59,31 @@ class Processor:
             Maximum edge of bins on y-axis
         weighted: bool
             whether to keep track of sum of squared weights
-    
+
         See Also
         --------
         LDMX.Framework.histogram.histogram : histogram configuration object
         """
-    
+
         the_x_bins = xbins
-        if xmin is not None and xmax is not None :
-            the_x_bins = _histogram.uniform_binning(xbins,xmin,xmax)
-    
+        if xmin is not None and xmax is not None:
+            the_x_bins = _histogram.uniform_binning(xbins, xmin, xmax)
+
         if ybins is None:
             # 1D histogram
-            self.histograms.append(_histogram.histogram(name, xlabel,the_x_bins, weighted=weighted))
+            self.histograms.append(
+                _histogram.histogram(name, xlabel, the_x_bins, weighted=weighted)
+            )
         else:
             # 2D histogram
             the_y_bins = ybins
-            if ymin is not None and ymax is not None :
-                the_y_bins = _histogram.uniform_binning(ybins,ymin,ymax)
-    
+            if ymin is not None and ymax is not None:
+                the_y_bins = _histogram.uniform_binning(ybins, ymin, ymax)
+
             self.histograms.append(
-                    h.histogram(name, xlabel,the_x_bins, ylabel, the_y_bins, weighted=weighted)
+                h.histogram(
+                    name, xlabel, the_x_bins, ylabel, the_y_bins, weighted=weighted
+                )
             )
 
 
@@ -89,18 +99,22 @@ def processor(class_name: str, module_name: str):
     """
 
     return parameter_set(
-        class_name = field(default=class_name, init=False),
-        module_name = field(default=module_name, init=False),
-        instance_name = class_name,
-        required_base = Processor
+        class_name=field(default=class_name, init=False),
+        module_name=field(default=module_name, init=False),
+        instance_name=class_name,
+        required_base=Processor,
     )
 
 
 def processor_from_file(
-        cls, source_file, 
-        class_name = None, needs = [],
-        instance_name = None, compile_notice = True,
-        **config_kwargs):
+    cls,
+    source_file,
+    class_name=None,
+    needs=[],
+    instance_name=None,
+    compile_notice=True,
+    **config_kwargs,
+):
     """Construct an event processor "in place" from the passed source file
 
     Since Framework dynamically loads libraries containing processors after
@@ -140,7 +154,7 @@ def processor_from_file(
     Examples
     --------
     A basic walkthrough is available online. https://ldmx-software.github.io/analysis/ldmx-sw.html
-    
+
     If `MyAnalyzer.cxx` contains the class `MyAnalyzer`, then we can put
 
         p.sequence = [ ldmxcfg.Analyzer.from_file('MyAnalyzer.cxx') ]
@@ -166,7 +180,7 @@ def processor_from_file(
     if not isinstance(source_file, Path):
         source_file = Path(source_file)
     if not source_file.is_file():
-        raise ValueError(f'{source_file} is not accessible.')
+        raise ValueError(f"{source_file} is not accessible.")
 
     src = source_file.resolve()
 
@@ -178,30 +192,38 @@ def processor_from_file(
         # use class name for instance name if not provided
         instance_name = class_name
 
-    lib = src.parent / f'lib{src.stem}.so'
+    lib = src.parent / f"lib{src.stem}.so"
     if not lib.is_file() or src.stat().st_mtime > lib.stat().st_mtime:
         if compile_notice:
             print(
-                f'Processor source file {src} is newer than its compiled library {lib}'
-                ' (or library does not exist), recompiling...'
+                f"Processor source file {src} is newer than its compiled library {lib}"
+                " (or library does not exist), recompiling..."
             )
         import subprocess
-        libs_to_link = set(['Framework']+needs)
-        cmd = [
-            'g++', '-std=c++20', '-fPIC', '-shared', # construct a shared library for dynamic loading
-            '-o', str(lib), str(src), # define output file and input source file
-        ]+[
-            f'-l{lib}' for lib in libs_to_link
-        ]+[
-            '-I/usr/local/include/root', # include ROOT's non-system headers
-            '-I@CMAKE_INSTALL_PREFIX@/include', # include ldmx-sw headers (if non-system)
-            '-L@CMAKE_INSTALL_PREFIX@/lib', # include ldmx-sw libs (if non-system)
-        ]
+
+        libs_to_link = set(["Framework"] + needs)
+        cmd = (
+            [
+                "g++",
+                "-std=c++20",
+                "-fPIC",
+                "-shared",  # construct a shared library for dynamic loading
+                "-o",
+                str(lib),
+                str(src),  # define output file and input source file
+            ]
+            + [f"-l{lib}" for lib in libs_to_link]
+            + [
+                "-I/usr/local/include/root",  # include ROOT's non-system headers
+                "-I@CMAKE_INSTALL_PREFIX@/include",  # include ldmx-sw headers (if non-system)
+                "-L@CMAKE_INSTALL_PREFIX@/lib",  # include ldmx-sw libs (if non-system)
+            ]
+        )
         if compile_notice:
             print(*cmd)
         subprocess.run(cmd, check=True)
         if compile_notice:
-            print(f'done compiling {src}')
+            print(f"done compiling {src}")
 
     # TODO: figure out how to dynamically create a dataclass
     instance = cls(instance_name, class_name, str(lib))

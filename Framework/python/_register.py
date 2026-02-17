@@ -1,5 +1,6 @@
 """register objects with global variables for later use by the configuration"""
 
+
 def library(name: str):
     """register a new library to be loaded at run time
 
@@ -23,7 +24,7 @@ def library(name: str):
 
     If you have the full path to a library already deduced,
     you can provide that as well.
-        
+
         register.library('/full/path/to/libMyLibrary.so')
 
     String substitutions and full-path deducation are only
@@ -31,11 +32,12 @@ def library(name: str):
     """
 
     full_path = name
-    if not full_path.endswith('.so'):
-        actual_module_name = name.replace('/','_').replace('::','_')
-        full_path = f'@CMAKE_INSTALL_PREFIX@/lib/lib{actual_module_name}.so'
+    if not full_path.endswith(".so"):
+        actual_module_name = name.replace("/", "_").replace("::", "_")
+        full_path = f"@CMAKE_INSTALL_PREFIX@/lib/lib{actual_module_name}.so"
 
     from ._process import Process
+
     if Process.last_process is None:
         # Process not created yet,
         # put into this functions registry
@@ -53,11 +55,12 @@ def conditions_object_provider(cop):
 
     Parameters
     ----------
-    cop: 
+    cop:
         a conditions object provider object to be included in the run
     """
 
     from ._process import Process
+
     if Process.last_process is None:
         # Process not created yet,
         # put into this functions registry

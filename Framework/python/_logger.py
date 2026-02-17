@@ -1,5 +1,6 @@
 from ._parameter_set import parameter_set
 
+
 @parameter_set
 class _LogRule:
     """A single pair holding a channel name and the level it should be logged at
@@ -43,9 +44,8 @@ class Logger:
 
     termLevel: int = 2
     fileLevel: int = 0
-    filePath: str = ''
+    filePath: str = ""
     logRules: list[_LogRule] = []
-
 
     def custom(self, name, level):
         """Add a new custom logging rule to the logger
@@ -61,20 +61,18 @@ class Logger:
             level (and above) messages to print for that channel
         """
 
-        if hasattr(name, 'instance_name'):
+        if hasattr(name, "instance_name"):
             name = name.instance_name
         self.logRules.append(_LogRule(name, level))
 
-
     def trace(self, name):
         """drop the input channel to the trace level"""
-        self.custom(name, level = -1)
+        self.custom(name, level=-1)
 
     def debug(self, name):
         """drop the input channel to the debug level"""
-        self.custom(name, level = 0)
-
+        self.custom(name, level=0)
 
     def silence(self, name):
         """raise the input channel to the error-only level"""
-        self.custom(name, level = 3)
+        self.custom(name, level=3)

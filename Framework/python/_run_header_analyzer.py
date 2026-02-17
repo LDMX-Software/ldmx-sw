@@ -1,5 +1,6 @@
 from . import processor
 
+
 @processor("framework::RunHeaderAnalyzer", "Framework")
 class RunHeaderAna(Processor):
     """Contains an instance of RunHeaderAnalyzer that
@@ -9,4 +10,5 @@ class RunHeaderAna(Processor):
     --------
         p.sequence.append( LDMX.Framework.RunHeaderAna() )
     """
+
     pass

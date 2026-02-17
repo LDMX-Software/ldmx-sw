@@ -8,65 +8,68 @@ The tests are at the bottom and the code that would be
 in the configuration pyton module is at the top.
 """
 
-import warnings
 import copy
 import types
-from dataclasses import dataclass, field, Field
+import warnings
+from dataclasses import Field, dataclass, field
 from typing import Any
+
 
 def check_list(attr, l, dimension, entry_type):
     if dimension == 1:
         if entry_type is not Any:
             for e in l:
                 if type(e) is not entry_type:
-                    raise TypeError(f'Entry {e} in parameter {attr} is not of expected type {entry_type}')
+                    raise TypeError(
+                        f"Entry {e} in parameter {attr} is not of expected type {entry_type}"
+                    )
     elif dimension == 2:
         for ll in l:
             check_list(attr, ll, 1, entry_type)
     else:
-        raise Exception(f'List with dimension {dimension} not supported.')
+        raise Exception(f"List with dimension {dimension} not supported.")
 
 
 def validate_and_set_attr(self, attr, val):
     # first, we check if the attr is a legacy name
-    legacy_remap = getattr(self.__class__, '__legacy__', None)
+    legacy_remap = getattr(self.__class__, "__legacy__", None)
     if legacy_remap is not None and attr in legacy_remap:
         new_attr = legacy_remap[attr]
         warnings.warn(
             f"Legacy name '{attr}' has been replaced by '{new_attr}'.",
             DeprecationWarning,
-            #stacklevel=2
+            # stacklevel=2
         )
 
         # the attr is now updated to new name
         attr = new_attr
-        member, _dot, submember = attr.partition('.')
+        member, _dot, submember = attr.partition(".")
         if submember:
             # we are reaching into a sub-class and so we recurse into it
             if member not in self.__dataclass_fields__:
-                raise KeyError(f'Attribute {member} not a member of {self.__class__.__name__}')
+                raise KeyError(
+                    f"Attribute {member} not a member of {self.__class__.__name__}"
+                )
             # validate intermediate type?
             # I can't think of a reason to do this because we only reach
             # here in the case where a developer is remapping a legacy
             # parameter into a new submember parameter
-    
-            return validate_and_set_attr(
-                self.__dict__[member],
-                submember,
-                val
-            )
+
+            return validate_and_set_attr(self.__dict__[member], submember, val)
         # no submember, just fall through after we have changed 'attr'
 
     if attr not in self.__dataclass_fields__:
-        raise KeyError(f'Attribute {attr} not a member of {self.__class__.__name__}')
+        raise KeyError(f"Attribute {attr} not a member of {self.__class__.__name__}")
 
     expected_type = self.__dataclass_fields__[attr].type
     if isinstance(val, list):
-        expected_dimension  = self.__dataclass_fields__[attr].metadata['dimension']
-        expected_entry_type = self.__dataclass_fields__[attr].metadata['entry_type']
+        expected_dimension = self.__dataclass_fields__[attr].metadata["dimension"]
+        expected_entry_type = self.__dataclass_fields__[attr].metadata["entry_type"]
         check_list(attr, val, expected_dimension, expected_entry_type)
     elif expected_type is not Any and not isinstance(val, expected_type):
-        raise TypeError(f'Attribute {attr} should be type {expected_type} instead of type {type(val)}.')
+        raise TypeError(
+            f"Attribute {attr} should be type {expected_type} instead of type {type(val)}."
+        )
 
     self.__dict__[attr] = val
 
@@ -81,23 +84,19 @@ class create_default:
 
 
 def parameter_set(
-    _class = None, *,
-    post_init = None,
-    helpers = [],
-    required_base = None
-    **required_parameters
+    _class=None, *, post_init=None, helpers=[], required_base=None**required_parameters
 ):
     def _decorator_impl(cls):
         if required_base is not None and not isinstance(cls, required_base):
-            raise TypeError(f'{cls.__name__} is required to have base {required_base}')
+            raise TypeError(f"{cls.__name__} is required to have base {required_base}")
 
         if post_init is None:
             post_init = lambda self: None
 
         orig_post_init = (
-            getattr(cls, '__post_init__')
-            if hasattr(cls, '__post_init__') else
-            lambda self: None
+            cls.__post_init__
+            if hasattr(cls, "__post_init__")
+            else lambda self: None
         )
 
         # update post_init function to include some kind of common tasks
@@ -109,7 +108,7 @@ def parameter_set(
                     self.__dict__[name] = getattr(self, name)
             post_init(self)
             orig_post_init(self)
-    
+
         cls.__post_init__ = _full_post_init
 
         # update setattr function to validate stuff as well
@@ -147,31 +146,34 @@ def parameter_set(
             if isinstance(the_type, types.GenericAlias) and the_type.__origin__ is list:
                 # special list deduction to do early warnings on bad dimensions
                 # and check entries in default value
-                type_args = getattr(the_type, '__args__', ())
+                type_args = getattr(the_type, "__args__", ())
                 dimension = len(type_args)
                 if dimension == 0:
-                    raise TypeError('Python configuration parameter_sets need to annotate some content for each list.')
+                    raise TypeError(
+                        "Python configuration parameter_sets need to annotate some content for each list."
+                    )
                 if dimension > 2:
-                    raise TypeError('Python configuration parameter_sets are limited to 1D or 2D lists.')
-    
+                    raise TypeError(
+                        "Python configuration parameter_sets are limited to 1D or 2D lists."
+                    )
+
                 entry_type = type_args[0]
                 if not all(entry_type is t for t in type_args):
-                    raise TypeError('Python configuration parameter_sets must have all entries be the same type.')
-    
-                field_kwargs = dict(
-                    metadata = dict(
-                        entry_type = entry_type,
-                        dimension = dimension
+                    raise TypeError(
+                        "Python configuration parameter_sets must have all entries be the same type."
                     )
+
+                field_kwargs = dict(
+                    metadata=dict(entry_type=entry_type, dimension=dimension)
                 )
                 if the_value is not None:
                     check_list(name, the_value, dimension, entry_type)
-                    field_kwargs['default_factory'] = create_default(the_value)
+                    field_kwargs["default_factory"] = create_default(the_value)
                 setattr(cls, name, field(**field_kwargs))
             else:
                 # type is not simple, not already a dataclasses.Field, and not a list so we wrap it
                 # in a creation function to get around dataclass's prevention on using mutable defaults
-                setattr(cls, name, field(default_factory = create_default(the_value)))
+                setattr(cls, name, field(default_factory=create_default(the_value)))
 
         return dataclass(slots=False)(cls)
 
