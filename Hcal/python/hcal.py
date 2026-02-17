@@ -25,6 +25,7 @@ class HcalVetoProcessor(ldmxcfg.Producer) :
         self.output_coll_name= "HcalVeto"
         self.inverse_skim = False
 
+        self.track_collection = 'RecoilTracks'
         self.track_pass_name = ''
 
 
