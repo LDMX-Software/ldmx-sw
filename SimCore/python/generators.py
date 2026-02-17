@@ -1,10 +1,28 @@
-"""Primary Generator templates for use throughout ldmx-sw
+"""Primary Generator templates for use throughout ldmx-sw"""
 
-Mainly focused on reducing the number of places that certain parameter and class names
-are hardcoded into the python configuration.
-"""
+from LDMX.Framework import field, parameter_set, _register
 
-from LDMX.Framework import parameter_set, _register
+
+@parameter_set
+class PrimaryGenerator:
+    """Base configuration for all primary generators
+
+    Besides registering the library that the generator is a part of,
+    we also hold a common configuratin parameter shared amongst all
+    generators.
+
+    Attributes
+    ----------
+    beam_spot_smear : list of float, optional
+        2 (x,y) or 3 (x,y,z) widths to smear primary vertices from this generator [mm].
+        If set, this generator will handle its own beam spot smearing instead of using
+        the global simulator beam_spot_smear setting.
+    """
+
+    beam_spot_smear: list[float] = [20.0, 80.0, 0.0]
+
+    def __post_init__(self):
+        _register.library(self.module_name)
 
 
 def primary_generator(class_name: str, module_name: str = 'SimCore_Generators'):
@@ -19,10 +37,6 @@ def primary_generator(class_name: str, module_name: str = 'SimCore_Generators'):
 
     Attributes
     ----------
-    beam_spot_smear : list of float, optional
-        2 (x,y) or 3 (x,y,z) widths to smear primary vertices from this generator [mm].
-        If set, this generator will handle its own beam spot smearing instead of using
-        the global simulator beam_spot_smear setting.
     instance_name : str
         Unique name for this particular instance of a PrimaryGenerator
     """
@@ -30,13 +44,12 @@ def primary_generator(class_name: str, module_name: str = 'SimCore_Generators'):
         class_name = field(default=class_name, init=False),
         module_name = field(default=module_name, init=False),
         instance_name = class_name,
-        beam_spot_smear = [20., 80., 0.],
-        post_init = lambda self: _register.library(self.module_name)
+        required_base = PrimaryGenerator
     )
 
 
 @primary_generator("simcore::generators::ParticleGun")
-class gun:
+class gun(PrimaryGenerator):
     """basic particle gun primary generator
 
     Attributes
@@ -77,7 +90,7 @@ class gun:
 
 
 @primary_generator("simcore::generators::MultiParticleGunPrimaryGenerator")
-class multi:
+class multi(PrimaryGenerator):
     """multi particle gun primary generator
 
     Attributes
@@ -102,7 +115,7 @@ class multi:
 
 
 @primary_generator("simcore::generators::LHEPrimaryGenerator")
-class lhe(simcfg.PrimaryGenerator) :
+class lhe(PrimaryGenerator) :
     """LHE file primary generator
 
     Parameters
@@ -118,7 +131,7 @@ class lhe(simcfg.PrimaryGenerator) :
 
 
 @primary_generator("simcore::generators::GeneralParticleSource")
-class gps(simcfg.PrimaryGenerator) :
+class gps(PrimaryGenerator) :
     """general particle source
 
     The input initialization commands are run in the order that they are listed.
@@ -157,7 +170,7 @@ class gps(simcfg.PrimaryGenerator) :
 
 
 @primary_generator("simcore::generators::GenieGenerator")
-class genie:
+class genie(PrimaryGenerator):
     """Simple GENIE generator
 
     Attributes

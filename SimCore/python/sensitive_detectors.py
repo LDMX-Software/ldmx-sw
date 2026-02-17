@@ -1,9 +1,43 @@
 """Configuration classes for sensitive detectors"""
 
-from LDMX.SimCore import simcfg
+from LDMX.Framework import field, parameter_set, _register
 
 
-class ScoringPlaneSD(simcfg.SensitiveDetector) :
+class SensitiveDetector:
+    """base class for sensitive detectors
+
+    mainly here for type-checking the simulator parameters
+    and holding the shared post_init functionality of library
+    registration.
+    """
+
+    def __post_init__(self):
+        _register.library(self.module_name)
+
+
+def sensitive_detector(class_name: str, module_name: str = 'SimCore_SDs'):
+    """Configuration for a sensitive detector we want to load
+
+    Parameters
+    ----------
+    instance_name : str
+        Unique name for this particular instance of a PrimaryGenerator
+    class_name : str
+        Name of C++ class that this PrimaryGenerator should be
+    module_name : str
+        Name of C++ library that this primary generator is compiled into
+    """
+    return parameter_set(
+        class_name = class_name,
+        instance_name = class_name,
+        module_name = module_name,
+        required_base = SensitiveDetector
+    )
+
+
+
+@sensitive_detector("simcore::ScoringPlaneSD")
+class ScoringPlaneSD(SensitiveDetector) :
     """Scoring plane SD
 
     Simply collecting tracker-hit equivalent for scoring planes that
@@ -15,9 +49,13 @@ class ScoringPlaneSD(simcfg.SensitiveDetector) :
         Name of subsystem to store scoring plane hits for
         Names must match what is in gdml for sp_<subsystem>
     """
-    def __init__(self,subsystem) :
-        super().__init__(f'{subsystem}_sp','simcore::ScoringPlaneSD','SimCore_SDs')
 
+    subsystem: str
+    collection_name: str = field(init = False)
+    match_substr: str = field(init = False)
+
+    def __post_init__(self) :
+        self.instance_name = f'{self.subsystem}_sp'
         # we don't use the Python built-in str.capitalize since
         #  that function changes all characters after the first one to lowercase
         self.collection_name = f'{subsystem[0].upper()+subsystem[1:]}ScoringPlaneHits'
@@ -43,7 +81,9 @@ class ScoringPlaneSD(simcfg.SensitiveDetector) :
         sp.match_substr = 'sp_recoil'
         return sp
 
-class TrackerSD(simcfg.SensitiveDetector) :
+
+@sensitive_detector("simcore::TrackerSD")
+class TrackerSD(SensitiveDetector):
     """SD for the recoil and tagging trackers
 
     Parameters
@@ -53,12 +93,12 @@ class TrackerSD(simcfg.SensitiveDetector) :
     subdet_id : int
         ID number for the subsystem
     """
-    def __init__(self,subsystem,subdet_id) :
-        super().__init__(f'{subsystem}_TrackerSD','simcore::TrackerSD','SimCore_SDs')
 
-        self.subsystem = subsystem
-        self.subdet_id = subdet_id
+    subsystem: str
+    subdet_id: int
 
+    def __post_init__(self):
+        self.instance_name = f'{subsystem}_TrackerSD'
         self.collection_name = f'{subsystem}SimHits'
 
     def tagger() :
@@ -67,7 +107,9 @@ class TrackerSD(simcfg.SensitiveDetector) :
     def recoil() :
         return TrackerSD('Recoil',4)
 
-class HcalSD(simcfg.SensitiveDetector) :
+
+@sensitive_detector("simcore::HcalSD")
+class HcalSD(SensitiveDetector):
     """SD for the HCal
 
     Separate from the other calorimeters since it includes a Birks law
@@ -89,19 +131,24 @@ class HcalSD(simcfg.SensitiveDetector) :
     compress_hit_contribs : bool, optional
         Should the simulation compress contributions to Hcal sim hits by PDG ID?
     """
-    def __init__(self, gdml_identifiers = ['scintYVolume', 'scintXVolume',
-                                           'scintX_0Volume', 'scintX_1Volume', 'scintX_2Volume', 'scintX_3Volume',
-                                           'scintY_0Volume', 'scintY_1Volume', 'scintY_2Volume', 'scintY_3Volume',
-                                           'scintZXVolume', 'scintZYVolume',
-                                           'ScintBox',
-                                           'scint_box']) :
-        super().__init__('hcal_sd', 'simcore::HcalSD','SimCore_SDs')
-        self.gdml_identifiers = gdml_identifiers
-        self.enable_hit_contribs = True
-        self.compress_hit_contribs = True
-        self.max_origin_track_id = 6
 
-class EcalSD(simcfg.SensitiveDetector) :
+    gdml_identifiers: list[str] = [
+            'scintYVolume', 'scintXVolume', 'scintX_0Volume',
+            'scintX_1Volume', 'scintX_2Volume', 'scintX_3Volume',
+            'scintY_0Volume', 'scintY_1Volume', 'scintY_2Volume',
+            'scintY_3Volume', 'scintZXVolume', 'scintZYVolume',
+            'ScintBox', 'scint_box'
+    ]
+    enable_hit_contribs: bool = True
+    compress_hit_contribs: bool = True
+    max_origin_track_id: int = 6
+
+    def __post_init__(self):
+        self.instance_name = 'hcal_sd'
+
+
+@sensitive_detector("simcore::EcalSD")
+class EcalSD(SensitiveDetector):
     """SD for the ECal
 
     The two configurable parameters are inherited from a legacy method of
@@ -115,13 +162,17 @@ class EcalSD(simcfg.SensitiveDetector) :
     compress_hit_contribs : bool, optional
         Should the simulation compress contributions to Ecal sim hits by PDG ID?
     """
-    def __init__(self) :
-        super().__init__('ecal_sd', 'simcore::EcalSD','SimCore_SDs')
-        self.enable_hit_contribs = True
-        self.compress_hit_contribs = True
-        self.max_origin_track_id = 6
 
-class TrigScintSD(simcfg.SensitiveDetector) :
+    enable_hit_contribs: bool = True
+    compress_hit_contribs: bool = True
+    max_origin_track_id: int = 6
+
+    def __post_init__(self):
+        self.instance_name = 'ecal_sd'
+
+
+@sensitive_detector("simcore::TrigScintSD")
+class TrigScintSD(SensitiveDetector):
     """Trigger Scintillaotr Sensitive Detector
 
     used for both the trigger pad modules as well as collecting hits
@@ -144,16 +195,21 @@ class TrigScintSD(simcfg.SensitiveDetector) :
     birks_const_two : float, optional
         Second Birks constant, defaults to 9.59e-6
     """
-    def __init__(self, module, name, vol) :
-        super().__init__(f'trig_scint_{name}_sd', 'simcore::TrigScintSD','SimCore_SDs')
-        self.module_id = module
-        self.volume_name = vol
-        self.use_birks_law = False
-        self.birks_const_one = 1.29e-2
-        self.birks_const_two = 9.59e-6
 
-        coll = name+'SimHits'
-        if name != 'Target' :
+    module_id: int
+    name: str
+    volume_name: str
+    use_birks_law: bool = False
+    birks_const_one: float = 1.29e-2
+    birks_const_two: float = 9.59e-6
+    collection_name: str = field(init = False)
+
+
+    def __post_init__(self):
+        self.instance_name = f'trig_scint_{name}_sd'
+
+        coll = self.name+'SimHits'
+        if self.name != 'Target' :
             coll = 'Trigger'+coll
 
         self.collection_name = coll

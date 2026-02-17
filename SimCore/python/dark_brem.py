@@ -1,21 +1,28 @@
 """Configuration module for dark brem simulation"""
 
-from LDMX.Framework import ldmxcfg
+from LDMX.Framework import field, parameter_set
 
 
-def dark_brem_model(name: str):
-    return ldmxcfg.parameter_set(
-        name = name
+@parameter_set
+class DarkBremModel:
+    """base class for dark brem models for type checking"""
+    pass
+
+
+def dark_brem_model(name):
+    return parameter_set(
+        name = name,
+        required_base = DarkBremModel
     )
 
 
 @dark_brem_model("UNDEFINED")
-class UndefinedModel:
+class UndefinedModel(DarkBremModel):
     pass
 
 
 @dark_brem_model("g4db")
-class G4DarkBreMModel:
+class G4DarkBreMModel(DarkBremModel):
     """Configuration for the event library dark brem model
 
     This model uses G4DarkBreM's library model. The library
@@ -44,11 +51,7 @@ class G4DarkBreMModel:
     epsilon: float = 0.01
 
 
-# for legacy reasons, we define another name for the G4DB model
-VertexLibraryModel = G4DarkBreMModel
-
-
-@ldmxcfg.parameter_set
+@parameter_set
 class DarkBrem:
     """Storage for parameters of dark brem process
 
@@ -70,7 +73,7 @@ class DarkBrem:
     only_one_per_event: bool = False
     enable: bool = False
     cache_xsec: bool = True
-    model: Any = UndefinedModel()
+    model: DarkBremModel = UndefinedModel()
 
     def activate(self, ap_mass, model = None) :
         """Activate the dark brem process with the input A' mass [MeV] and dark brem model

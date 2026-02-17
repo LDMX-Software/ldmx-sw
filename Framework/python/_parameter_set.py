@@ -84,14 +84,18 @@ class create_default:
 
 
 def parameter_set(
-    _class=None, *, post_init=None, helpers=[], required_base=None**required_parameters
+    _class=None, *, post_init=None, helpers=[], required_base=None,
+    **required_parameters
 ):
     def _decorator_impl(cls):
-        if required_base is not None and not isinstance(cls, required_base):
+        if required_base is not None and required_base not in cls.__bases__:
             raise TypeError(f"{cls.__name__} is required to have base {required_base}")
 
-        if post_init is None:
-            post_init = lambda self: None
+        passed_post_init = (
+            post_init
+            if post_init is not None
+            else lambda self: None
+        )
 
         orig_post_init = (
             cls.__post_init__
@@ -106,7 +110,7 @@ def parameter_set(
             for name, field in self.__dataclass_fields__.items():
                 if name not in self.__dict__:
                     self.__dict__[name] = getattr(self, name)
-            post_init(self)
+            passed_post_init(self)
             orig_post_init(self)
 
         cls.__post_init__ = _full_post_init

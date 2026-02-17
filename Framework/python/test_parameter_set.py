@@ -1,4 +1,4 @@
-from . import processor
+from . import Processor, processor
 from ._parameter_set import field, parameter_set
 
 
@@ -8,7 +8,7 @@ class MyParams:
 
 
 @processor("hello", "world")
-class MyClass:
+class MyClass(Processor):
     one: int = 1
     two: float = 2.0
     name: str = "foo"

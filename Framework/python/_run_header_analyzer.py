@@ -1,4 +1,4 @@
-from . import processor
+from . import Processor, processor
 
 
 @processor("framework::RunHeaderAnalyzer", "Framework")

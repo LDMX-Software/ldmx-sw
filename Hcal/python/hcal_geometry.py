@@ -3,7 +3,7 @@ from LDMX.Framework import ldmxcfg
 from typing import Any
 
 @ldmxcfg.conditions_object_provider("HcalGeometryProvider","hcal::HcalGeometryProvider","Hcal")
-class HcalGeometryProvider:
+class HcalGeometryProvider(ldmxcfg.ConditionsObjectProvider):
     """Provider that provides access to Hcal geometry (HcalGeometry)
 
     Parameters
@@ -49,7 +49,7 @@ HcalGeometryProvider.getInstance()
 
 
 @ldmxcfg.conditions_object_provider("HcalTriggerGeometry","hcal::HcalTriggerGeometryProvider","Hcal")
-class HcalTriggerGeometryProvider:
+class HcalTriggerGeometryProvider(ldmxcfg.ConditionsObjectProvider):
     """Provider that provides access to Hcal geometry (ldmx::HcalGeometry)
     Parameters
     ----------

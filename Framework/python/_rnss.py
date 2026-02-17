@@ -35,4 +35,4 @@ class RandomNumberSeedService(ConditionsObjectProvider):
 
     def time(self) :
         """Set master random seed based off of time"""
-       self.seedMode = 'time'
+        self.seedMode = 'time'

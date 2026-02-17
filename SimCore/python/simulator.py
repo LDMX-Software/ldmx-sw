@@ -6,6 +6,16 @@ with several helpful member functions.
 
 from LDMX.Framework import ldmxcfg
 
+from .generators import PrimaryGenerator
+from .sensitive_detectors import SensitiveDetector
+from .photonuclear_models import PhotoNuclearModel
+from .user_actions import UserAction
+from .bias_operators import XsecBiasingOperator
+
+
+from .dark_brem import DarkBrem
+from .kaon_physics import KaonPhysics
+
 
 @ldmxcfg.parameter_set
 class _EventToReSim:
@@ -27,7 +37,7 @@ class _EventToReSim:
 
 
 @ldmxcfg.processor("simcore::Simulator", "SimCore")
-class simulator:
+class simulator(ldmxcfg.Processor):
     """A instance of the simulation configuration
 
     This class is derived from ldmxcfg.Producer and is mainly
@@ -78,33 +88,24 @@ class simulator:
         Verbosity level to print
     """
 
-    generators: list[Any] = []
+    generators: list[PrimaryGenerator] = []
     detector: str = ''
-    sensitive_detectors: list[Any] = []
+    sensitive_detectors: list[SensitiveDetector] = []
     description: str = ''
+    scoring_planes: str = ''
+    time_shift_primaries: bool = True
+    preInitCommands: list[str] = []
+    postInitCommands: list[str] = []
+    actions: list[UserAction] = []
+    biasing_operators: list[XsecBiasingOperator] = []
+    logging_prefix: str = 'GEANT4'
+    root_primary_gen_use_seed: bool = False
+    validate_detector: bool = False
+    verbosity: int = 0
+    dark_brem: DarkBrem = field(default_factory = DarkBrem)
+    photonuclear_model: PhotoNuclearModel = field(default_factory = PhotoNuclearModel)
+    kaon_parameters: KaonPhysics = field(default_factory = KaonPhysics)
 
-        self.scoring_planes = ''
-        self.time_shift_primaries = True
-        self.preInitCommands = [ ]
-        self.postInitCommands = [ ]
-        self.actions = [ ]
-        self.biasing_operators = [ ]
-        self.logging_prefix = 'GEANT4'
-        self.root_primary_gen_use_seed = False
-        self.validate_detector = False
-        self.verbosity = 0
-
-
-        #Dark Brem stuff
-        from LDMX.SimCore import dark_brem
-        self.dark_brem = dark_brem.DarkBrem()
-
-        # Default photonuclear model
-        from LDMX.SimCore import photonuclear_models
-        self.photonuclear_model = photonuclear_models.BertiniModel()
-
-        from LDMX.SimCore import kaon_physics
-        self.kaon_parameters = kaon_physics.KaonPhysics()
 
     def setDetector(self, det_name , include_scoring_planes_others = False, include_scoring_planes_minimal = False ) :
         """Set the detector description with the option to include the scoring planes
