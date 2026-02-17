@@ -4,9 +4,10 @@ Defines a derived class from ldmxcfg.Producer
 with several helpful member functions.
 """
 
-from LDMX.Framework.ldmxcfg import Producer
+from LDMX.Framework import ldmxcfg
 
 
+@ldmxcfg.parameter_set
 class _EventToReSim:
     """A class to hold the information identifying a specific event we wish to re-simulate
 
@@ -21,12 +22,12 @@ class _EventToReSim:
         event number to re-sim, required
     """
 
-    def __init__(self, event, run = -1):
-        self.event = event
-        self.run = run
+    event: int
+    run: int = -1
 
 
-class simulator(Producer):
+@ldmxcfg.processor("simcore::Simulator", "SimCore")
+class simulator:
     """A instance of the simulation configuration
 
     This class is derived from ldmxcfg.Producer and is mainly
@@ -77,18 +78,11 @@ class simulator(Producer):
         Verbosity level to print
     """
 
-    def __init__(self, instance_name ) :
-        super().__init__( instance_name , "simcore::Simulator" , "SimCore" )
+    generators: list[Any] = []
+    detector: str = ''
+    sensitive_detectors: list[Any] = []
+    description: str = ''
 
-        #######################################################################
-        # Required Parameters
-        self.generators = [ ]
-        self.detector = ''
-        self.sensitive_detectors = [ ]
-        self.description = ''
-
-        #######################################################################
-        # Optional Parameters (with helpful defaults)
         self.scoring_planes = ''
         self.time_shift_primaries = True
         self.preInitCommands = [ ]

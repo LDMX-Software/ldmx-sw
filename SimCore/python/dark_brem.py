@@ -1,29 +1,21 @@
 """Configuration module for dark brem simulation"""
 
-class DarkBremModel :
-    """Storage for parameters of a dark brem model
+from LDMX.Framework import ldmxcfg
 
-    All other models should inherit from this class
-    in order to keep the correct internal parameters.
 
-    Parameters
-    ----------
-    name : str
-        Name of this dark brem model
-    """
+def dark_brem_model(name: str):
+    return ldmxcfg.parameter_set(
+        name = name
+    )
 
-    def __init__(self,name) :
-        self.name = name
 
-    def __str__(self) :
-        string = '%s {'%self.name
-        for key in self.__dict__ :
-            if key is not self.name :
-                string += ' %s=%s'%( key , self.__dict__[key] )
-        string += ' }'
-        return string
+@dark_brem_model("UNDEFINED")
+class UndefinedModel:
+    pass
 
-class G4DarkBreMModel(DarkBremModel) :
+
+@dark_brem_model("g4db")
+class G4DarkBreMModel:
     """Configuration for the event library dark brem model
 
     This model uses G4DarkBreM's library model. The library
@@ -46,16 +38,17 @@ class G4DarkBreMModel(DarkBremModel) :
         Epsilon for dark brem xsec calculation
     """
 
-    def __init__(self, library_path) :
-        super().__init__('g4db')
-        self.library_path = library_path
-        self.method       = 'forward_only'
-        self.threshold    = 2.0 #GeV
-        self.epsilon      = 0.01
+    library_path: str
+    method: str = 'forward_only'
+    threshold: float = 2.0
+    epsilon: float = 0.01
+
 
 # for legacy reasons, we define another name for the G4DB model
 VertexLibraryModel = G4DarkBreMModel
 
+
+@ldmxcfg.parameter_set
 class DarkBrem:
     """Storage for parameters of dark brem process
 
@@ -73,12 +66,11 @@ class DarkBrem:
         The model that should be use for dark bremming
     """
 
-    def __init__(self) :
-        self.ap_mass            = 0.
-        self.only_one_per_event = False
-        self.enable             = False #off by default
-        self.cache_xsec         = True
-        self.model              = DarkBremModel('UNDEFINED')
+    ap_mass: float = 0.0
+    only_one_per_event: bool = False
+    enable: bool = False
+    cache_xsec: bool = True
+    model: Any = UndefinedModel()
 
     def activate(self, ap_mass, model = None) :
         """Activate the dark brem process with the input A' mass [MeV] and dark brem model
@@ -92,27 +84,5 @@ class DarkBrem:
         self.ap_mass = ap_mass
 
         if model is not None :
-            if not isinstance(model,DarkBremModel) :
-                raise Exception('Dark brem process needs to be configured with an associated DarkBremModel.')
-
             self.enable = True
             self.model  = model
-
-    def __str__(self):
-        """Stringify the DarkBrem configuration
-
-        Returns
-        -------
-        str
-            A human-readable version of all its attributes
-        """
-
-        string  = "{ Enabled: %r"%self.enable
-        if self.enable :
-            string += ", Mass: %.1f MeV"%self.ap_mass
-            string += ", Only One Per Event: %r"%self.only_one_per_event
-            string += ", Model: %s"%self.model
-
-        string += " }"
-
-        return string

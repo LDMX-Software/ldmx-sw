@@ -76,7 +76,7 @@ class create_default:
         self._default = o
 
     def __call__(self):
-        """we want a _copy_ of the default so the new object can edit it as they wish"""
+        """we want a _full copy_ of the default so the new object can edit it as they wish"""
         return copy.deepcopy(self._default)
 
 
@@ -84,27 +84,34 @@ def parameter_set(
     _class = None, *,
     post_init = None,
     helpers = [],
+    required_base = None
     **required_parameters
 ):
     def _decorator_impl(cls):
-        # update post_init function to include library loading
-        if post_init is not None:
-            org_post_init = (
-                getattr(cls, '__post_init__')
-                if hasattr(cls, '__post_init__') else
-                lambda self: None
-            )
-            def _full_post_init(self):
-                # make sure all dataclass fields are present in __dict__
-                # since that is the mechanism we use to grab them in C++
-                for name, field in self.__dataclass_fields__.items():
-                    if name not in self.__dict__:
-                        self.__dict__[name] = getattr(self, name)
-                post_init(self)
-                org_post_init(self)
+        if required_base is not None and not isinstance(cls, required_base):
+            raise TypeError(f'{cls.__name__} is required to have base {required_base}')
+
+        if post_init is None:
+            post_init = lambda self: None
+
+        orig_post_init = (
+            getattr(cls, '__post_init__')
+            if hasattr(cls, '__post_init__') else
+            lambda self: None
+        )
+
+        # update post_init function to include some kind of common tasks
+        def _full_post_init(self):
+            # make sure all dataclass fields are present in __dict__
+            # since that is the mechanism we use to grab them in C++
+            for name, field in self.__dataclass_fields__.items():
+                if name not in self.__dict__:
+                    self.__dict__[name] = getattr(self, name)
+            post_init(self)
+            orig_post_init(self)
     
-            cls.__post_init__ = _full_post_init
-        
+        cls.__post_init__ = _full_post_init
+
         # update setattr function to validate stuff as well
         cls.__setattr__ = validate_and_set_attr
 

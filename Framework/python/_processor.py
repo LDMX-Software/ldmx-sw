@@ -2,76 +2,79 @@ from ._parameter_set import parameter_set, field
 from . import _register, _histogram
 
 
-def processor_post_init(self):
-    """necessary post_init for all processors
+@parameter_set
+class Processor:
 
-    we make sure the module this processor belongs to
-    is registered to be loaded and it has an instance_name
-    if it was not defined by the user
-    """
+    histograms: list[_histogram.histogram] = []
 
-    _register.library(self.module_name)
+    def __post_init__(self):
+        """necessary post_init for all processors
+
+        we make sure the module this processor belongs to
+        is registered to be loaded
+        """
+        _register.library(self.module_name)
 
 
-def histogram(
-        self, name,
-        xlabel = '', xbins = 1, xmin = None, xmax = None,
-        ylabel = '', ybins = None, ymin = None, ymax = None,
-        weighted = False):
-    """declare a histogram for a processor to fill
-
-    If xmin and xmax are not provided, bins is assumed to be
-    the bin edges on the x-axis. If they are both provided,
-    bins is assumed to be the number of bins on the x-axis.
-
-    If ybins is None, then the histogram is assumed to be 1D
-    while if ybins is not None, then the histogram is assumed
-    to be 2D.
-
-    Parameters
-    ----------
-    name : str
-        variable name of histogram
-    xlabel : str
-        title of x-axis of histogram
-    xbins : int OR list of floats OR list of str
-        Number of bins on x-axis OR bin edges on x-axis OR string categories
-    xmin : float
-        Minimum edge of bins on x-axis
-    xmax : float
-        Maximum edge of bins on x-axis
-    ylabel : str
-        title of y-axis of histogram
-    ybins : int OR list of floats OR list of str
-        Number of bins on y-axis OR list of bin edges on y-axis OR string categories
-    ymin : float
-        Minimum edge of bins on y-axis
-    ymax : float
-        Maximum edge of bins on y-axis
-    weighted: bool
-        whether to keep track of sum of squared weights
-
-    See Also
-    --------
-    LDMX.Framework.histogram.histogram : histogram configuration object
-    """
-
-    the_x_bins = xbins
-    if xmin is not None and xmax is not None :
-        the_x_bins = _histogram.uniform_binning(xbins,xmin,xmax)
-
-    if ybins is None:
-        # 1D histogram
-        self.histograms.append(_histogram.histogram(name, xlabel,the_x_bins, weighted=weighted))
-    else:
-        # 2D histogram
-        the_y_bins = ybins
-        if ymin is not None and ymax is not None :
-            the_y_bins = _histogram.uniform_binning(ybins,ymin,ymax)
-
-        self.histograms.append(
-                h.histogram(name, xlabel,the_x_bins, ylabel, the_y_bins, weighted=weighted)
-        )
+    def histogram(
+            self, name,
+            xlabel = '', xbins = 1, xmin = None, xmax = None,
+            ylabel = '', ybins = None, ymin = None, ymax = None,
+            weighted = False):
+        """declare a histogram for a processor to fill
+    
+        If xmin and xmax are not provided, bins is assumed to be
+        the bin edges on the x-axis. If they are both provided,
+        bins is assumed to be the number of bins on the x-axis.
+    
+        If ybins is None, then the histogram is assumed to be 1D
+        while if ybins is not None, then the histogram is assumed
+        to be 2D.
+    
+        Parameters
+        ----------
+        name : str
+            variable name of histogram
+        xlabel : str
+            title of x-axis of histogram
+        xbins : int OR list of floats OR list of str
+            Number of bins on x-axis OR bin edges on x-axis OR string categories
+        xmin : float
+            Minimum edge of bins on x-axis
+        xmax : float
+            Maximum edge of bins on x-axis
+        ylabel : str
+            title of y-axis of histogram
+        ybins : int OR list of floats OR list of str
+            Number of bins on y-axis OR list of bin edges on y-axis OR string categories
+        ymin : float
+            Minimum edge of bins on y-axis
+        ymax : float
+            Maximum edge of bins on y-axis
+        weighted: bool
+            whether to keep track of sum of squared weights
+    
+        See Also
+        --------
+        LDMX.Framework.histogram.histogram : histogram configuration object
+        """
+    
+        the_x_bins = xbins
+        if xmin is not None and xmax is not None :
+            the_x_bins = _histogram.uniform_binning(xbins,xmin,xmax)
+    
+        if ybins is None:
+            # 1D histogram
+            self.histograms.append(_histogram.histogram(name, xlabel,the_x_bins, weighted=weighted))
+        else:
+            # 2D histogram
+            the_y_bins = ybins
+            if ymin is not None and ymax is not None :
+                the_y_bins = _histogram.uniform_binning(ybins,ymin,ymax)
+    
+            self.histograms.append(
+                    h.histogram(name, xlabel,the_x_bins, ylabel, the_y_bins, weighted=weighted)
+            )
 
 
 def processor(class_name: str, module_name: str):
@@ -86,12 +89,10 @@ def processor(class_name: str, module_name: str):
     """
 
     return parameter_set(
-        post_init = processor_post_init,
         class_name = field(default=class_name, init=False),
         module_name = field(default=module_name, init=False),
         instance_name = class_name,
-        histograms = [],
-        helpers = [('histogram',histogram)],
+        required_base = Processor
     )
 
 

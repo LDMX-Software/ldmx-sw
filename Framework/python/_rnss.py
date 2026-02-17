@@ -1,7 +1,7 @@
-from ._conditions_object_provider import conditions_object_provider
+from ._conditions_object_provider import conditions_object_provider, ConditionsObjectProvider
 
 @conditions_object_provider('RandomNumberSeedService','framework::RandomNumberSeedService','Framework')
-class RandomNumberSeedService:
+class RandomNumberSeedService(ConditionsObjectProvider):
     """The random number seed service
 
     This object registers the random number seed service with the process and
@@ -35,4 +35,4 @@ class RandomNumberSeedService:
 
     def time(self) :
         """Set master random seed based off of time"""
-        self.seedMode = 'time'
+       self.seedMode = 'time'

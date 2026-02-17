@@ -1,7 +1,8 @@
 from ._parameter_set import parameter_set, field
 from ._logger import Logger
 from ._rnss import RandomNumberSeedService
-from typing import Any
+from ._processor import Processor
+from ._conditions_object_provider import ConditionsObjectProvider
 
 
 @parameter_set
@@ -80,7 +81,7 @@ class Process:
     run: int = -1
     input_files: list[str] = []
     output_files: list[str] = []
-    sequence: list[Any] = []
+    sequence: list[Processor] = []
     keep: list[str] = []
     libraries: list[str] = []
     skim_default_is_keep: bool = True
@@ -90,7 +91,7 @@ class Process:
     compressionSetting: int = 9
     histogramFile: str = ''
     conditions_global_tag: str = 'Default'
-    conditions_object_providers: list[Any] = []
+    conditions_object_providers: list[ConditionsObjectProvider] = []
     tree_name: str = 'LDMX_Events'
     random_number_seed_service: RandomNumberSeedService = field(init=False, default_factory=RandomNumberSeedService)
     __legacy__ = {
