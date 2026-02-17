@@ -19,8 +19,6 @@ class PrimaryGenerator:
         the global simulator beam_spot_smear setting.
     """
 
-    beam_spot_smear: list[float] = [20.0, 80.0, 0.0]
-
     def __post_init__(self):
         _register.library(self.module_name)
 
@@ -44,6 +42,7 @@ def primary_generator(class_name: str, module_name: str = 'SimCore_Generators'):
         class_name = field(default=class_name, init=False),
         module_name = field(default=module_name, init=False),
         instance_name = class_name,
+        beam_spot_smear = [20.0, 80.0, 0.0],
         required_base = PrimaryGenerator
     )
 

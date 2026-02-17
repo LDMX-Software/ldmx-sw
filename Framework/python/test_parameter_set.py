@@ -24,7 +24,7 @@ class MyClass(Processor):
 
 @parameter_set
 class RequireList:
-    l: list[int]
+    the_list: list[int]
 
 
 import unittest
@@ -54,10 +54,17 @@ class TestParameter(unittest.TestCase):
 
     def test_required_list(self):
         o = RequireList([1, 2, 3])
-        self.assertEqual(o.l, [1, 2, 3])
+        self.assertEqual(o.the_list, [1, 2, 3])
 
         with self.assertRaises(TypeError):
             o2 = RequireList()
+
+
+    def test_fail_require_after_opt(self):
+        with self.assertRaises(TypeError):
+            @parameter_set
+            class RequireList2(MyParams):
+                the_list: list[int]
 
     def test_defaults(self):
         c = MyClass()

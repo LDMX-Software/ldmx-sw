@@ -4,7 +4,7 @@ Defines a derived class from ldmxcfg.Producer
 with several helpful member functions.
 """
 
-from LDMX.Framework import ldmxcfg
+from LDMX.Framework import Processor, processor, field, parameter_set
 
 from .generators import PrimaryGenerator
 from .sensitive_detectors import SensitiveDetector
@@ -17,7 +17,7 @@ from .dark_brem import DarkBrem
 from .kaon_physics import KaonPhysics
 
 
-@ldmxcfg.parameter_set
+@parameter_set
 class _EventToReSim:
     """A class to hold the information identifying a specific event we wish to re-simulate
 
@@ -36,8 +36,8 @@ class _EventToReSim:
     run: int = -1
 
 
-@ldmxcfg.processor("simcore::Simulator", "SimCore")
-class simulator(ldmxcfg.Processor):
+@processor("simcore::Simulator", "SimCore")
+class simulator(Processor):
     """A instance of the simulation configuration
 
     This class is derived from ldmxcfg.Producer and is mainly

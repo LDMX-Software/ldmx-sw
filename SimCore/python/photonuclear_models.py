@@ -1,6 +1,6 @@
 """Configuration classes for default photonuclear models"""
 
-from LDMX.Framework import parameter_set, _register
+from LDMX.Framework import field, parameter_set, _register
 
 
 class PhotoNuclearModel:
@@ -27,7 +27,7 @@ def photo_nuclear_model(class_name: str, module_name: str = 'SimCore_PhotoNuclea
 
 
 @photo_nuclear_model("simcore::BertiniModel")
-class BertiniModel(simcfg.PhotoNuclearModel):
+class BertiniModel(PhotoNuclearModel):
     """The default model for photonuclear interactions.
 
     Keeps the default Bertini model from Geant4.
