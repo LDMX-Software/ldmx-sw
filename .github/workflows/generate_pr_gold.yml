@@ -54,6 +54,14 @@ jobs:
     - uses: actions/checkout@v6
     - uses: extractions/setup-just@v3
     - run: just install-denv init
+    
+    - name: Checkout ci-data
+      uses: actions/checkout@v6
+      with:
+        repository: LDMX-Software/ci-data
+        path: ci-data
+        token: ${{ secrets.CI_DATA_PAT }}
+        
     - name: Download ldmx-sw Package
       uses: actions/download-artifact@v7
       with:

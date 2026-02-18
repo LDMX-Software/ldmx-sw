@@ -495,7 +495,7 @@ class HcalReadoutGeometry:
         ]
         # added the reduced geometry temporarily, for the final geometry
         # we should have a new function "reduced()" with the prototype geom
-        detectors_valid = ["ldmx-det-v14", "ldmx-det-v14.*", "ldmx-reduced", "ldmx-reduced-v2", "ldmx-reduced-v3","ldmx-lyso-r4-v15", "ldmx-lyso-r4-v15.*", "ldmx-det-v15","ldmx-det-v15.*"]
+        detectors_valid = ["ldmx-det-v14", "ldmx-det-v14.*", "ldmx-vertTS-v14.*", "ldmx-reduced", "ldmx-reduced-v2", "ldmx-reduced-v3","ldmx-lyso-r4-v15", "ldmx-lyso-r4-v15.*", "ldmx-det-v15","ldmx-det-v15.*"]
         return HcalReadoutGeometry(
             num_sections = num_sections,
             num_layers = num_layers,
@@ -527,4 +527,3 @@ class HcalGeometry:
     v14: HcalReadoutGeometry = ldmxcfg.field(default_factory = HcalReadoutGeometry.make_v14)
     v1_prototype: HcalReadoutGeometry = ldmxcfg.field(default_factory = HcalReadoutGeometry.make_v1_prototype)
     v2_prototype: HcalReadoutGeometry = ldmxcfg.field(default_factory = HcalReadoutGeometry.make_v2_prototype)
-

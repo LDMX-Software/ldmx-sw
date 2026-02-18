@@ -89,7 +89,7 @@ class EcalGeometry :
                 )
 
     def v14() :
-        eg = EcalGeometry(detectors_valid = ["ldmx-det-v14","ldmx-det-v14.*"],
+        eg = EcalGeometry(detectors_valid = ["ldmx-det-v14","ldmx-det-v14.*","ldmx-vertTS-v14.*"],
                 gap = 1.5,
                 layer_z_positions = [
                       7.582, 16.062, 33.226, 43.206, 60.370, 71.350, 90.014, 101.594,

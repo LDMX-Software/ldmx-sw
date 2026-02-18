@@ -8,15 +8,15 @@ p.max_tries_per_event = 10000
 from LDMX.Biasing import target
 from LDMX.SimCore import generators
 
+import os
 
 det = 'ldmx-det-v15-8gev'
 my_sim = target.dark_brem(
     #A' mass in MeV - set in init.sh to same value in GeV
     10.0,
-    # library path is uniquely determined by arguments given to `dbgen run` in init.sh
-    #   easiest way to find this path out is by running `. init.sh` locally to see what
-    #   is produced
-    'electron_tungsten_MaxE_8.0_MinE_4.0_RelEStep_0.1_UndecayedAP_mA_0.01_run_1',
+    # DB library stored in ci-data that is cloned into ldmx-sw root before
+    # validation is run
+    f'{os.environ["CI_DATA"]}/signal/v5.2.0_electron_tungsten_MaxE_8.0_MinE_4.0_RelEStep_0.1_UndecayedAP_mA_0.01_run_1.csv',
     det,
     generators.single_8gev_e_upstream_tagger()
 )
