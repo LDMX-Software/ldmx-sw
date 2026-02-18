@@ -4,8 +4,10 @@ from ._parameter_set import field, parameter_set
 
 class ConditionsObjectProvider:
     def __post_init__(self):
+        print('COP.post_init')
         _register.library(self.module_name)
         _register.conditions_object_provider(self)
+
 
     def __eq__(self, other):
         """Check if two COPs are the same

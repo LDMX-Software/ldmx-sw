@@ -31,3 +31,6 @@ my_sim.generators.append( gen.single_4gev_e_upstream_tagger() )
 # add your configured simulation to the sequence
 my_sim.description = 'Basic test Simulation'
 p.sequence.append( my_sim )
+
+import json
+print(json.dumps(p.parameterDump(), indent=2))

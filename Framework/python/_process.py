@@ -283,9 +283,6 @@ class Process:
 
         keys_to_skip = ["histograms", "libraries"]
 
-        from LDMX.Framework import histogram as h
-        from LDMX.SimCore import simcfg
-
         def extract(obj):
             """Extract the parameter from the input object"""
 
@@ -302,6 +299,7 @@ class Process:
 
         return extract(self)
 
+
     def pause(self):
         """Print this Process and wait for user confirmation to continue
 
@@ -309,8 +307,9 @@ class Process:
         waits for the user to press Enter to continue.
         """
 
-        print(self)
+        print(str(self))
         input("Press Enter to continue...")
+
 
     def __str__(self):
         """Stringify this object into a human readable, helpful form.
@@ -332,12 +331,10 @@ class Process:
         else:
             msg += "\n No limit on maximum events to process"
         if len(self.conditions_object_providers) > 0:
-            msg += "\n conditions_object_providers:\n"
-            for cop in self.conditions_object_providers:
-                msg += str(cop)
-        msg += "\n Processor sequence:"
-        for proc in self.sequence:
-            msg += str(proc)
+            msg += "\n conditions_object_providers:\n - "
+            msg += '\n  - '.join(str(cop) for cop in self.conditions_object_providers)
+        msg += "\n Processor sequence:\n - "
+        msg += '\n  - '.join(str(proc) for proc in self.sequence)
         if len(self.input_files) > 0:
             if len(self.output_files) == len(self.input_files):
                 msg += "\n Files:"

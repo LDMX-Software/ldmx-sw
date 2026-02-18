@@ -59,13 +59,17 @@ def conditions_object_provider(cop):
         a conditions object provider object to be included in the run
     """
 
+    print('registring', cop)
+
     from ._process import Process
 
     if Process.last_process is None:
+        print('last_process is None')
         # Process not created yet,
         # put into this functions registry
         conditions_object_provider.__registry__.append(cop)
     else:
+        print('append directly')
         # Process is created, append directly
         Process.last_process._declare_conditions_object_provider(cop)
 

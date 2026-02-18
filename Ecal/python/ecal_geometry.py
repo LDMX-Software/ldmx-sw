@@ -1,10 +1,11 @@
 """ConditionsProvider for EcalGeometry and other Ecal geometry-related aspects"""
-from LDMX.Framework import ldmxcfg
+from LDMX.Framework import ConditionsObjectProvider, conditions_object_provider, field
 from LDMX.DetDescr.ecal_geometry import EcalGeometry
 
+print('importing ecal_geometry')
 
-@ldmxcfg.conditions_object_provider("EcalGeometry", "ecal::EcalGeometryProvider", "Ecal")
-class EcalGeometryProvider(ldmxcfg.ConditionsObjectProvider):
+@conditions_object_provider("EcalGeometry", "ecal::EcalGeometryProvider", "Ecal")
+class EcalGeometryProvider(ConditionsObjectProvider):
     """Provider that provides access to Ecal geometry (ecal::EcalGeometry)
 
     Parameters
@@ -38,6 +39,7 @@ class EcalGeometryProvider(ldmxcfg.ConditionsObjectProvider):
         return EcalGeometryProvider.__instance
 
     def __post_init__(self):
+        print('creating EcalGeometryProvider')
         if EcalGeometryProvider.__instance != None :
             raise Exception('EcalGeometryProvider is a singleton class and should only be retrieved using getInstance()')
         else:
@@ -47,8 +49,8 @@ class EcalGeometryProvider(ldmxcfg.ConditionsObjectProvider):
 # make sure global instance is created, this registers the condition
 EcalGeometryProvider.getInstance()
 
-@ldmxcfg.conditions_object_provider("EcalTriggerGeometry", "ecal::EcalTriggerGeometryProvider", "Ecal")
-class EcalTriggerGeometryProvider(ldmxcfg.ConditionsObjectProvider):
+@conditions_object_provider("EcalTriggerGeometry", "ecal::EcalTriggerGeometryProvider", "Ecal")
+class EcalTriggerGeometryProvider(ConditionsObjectProvider):
     """Provider that provides access to Ecal geometry (ldmx::EcalGeometry)
 
     Parameters

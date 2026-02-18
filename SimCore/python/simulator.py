@@ -8,7 +8,7 @@ from LDMX.Framework import Processor, processor, field, parameter_set
 
 from .generators import PrimaryGenerator
 from .sensitive_detectors import SensitiveDetector
-from .photonuclear_models import PhotoNuclearModel
+from .photonuclear_models import PhotoNuclearModel, BertiniModel
 from .user_actions import UserAction
 from .bias_operators import XsecBiasingOperator
 
@@ -103,7 +103,7 @@ class simulator(Processor):
     validate_detector: bool = False
     verbosity: int = 0
     dark_brem: DarkBrem = field(default_factory = DarkBrem)
-    photonuclear_model: PhotoNuclearModel = field(default_factory = PhotoNuclearModel)
+    photonuclear_model: PhotoNuclearModel = field(default_factory = BertiniModel)
     kaon_parameters: KaonPhysics = field(default_factory = KaonPhysics)
 
 
