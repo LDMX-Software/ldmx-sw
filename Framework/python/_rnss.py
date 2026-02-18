@@ -1,6 +1,12 @@
-from ._conditions_object_provider import conditions_object_provider, ConditionsObjectProvider
+from ._conditions_object_provider import (
+    ConditionsObjectProvider,
+    conditions_object_provider,
+)
 
-@conditions_object_provider('RandomNumberSeedService','framework::RandomNumberSeedService','Framework')
+
+@conditions_object_provider(
+    "RandomNumberSeedService", "framework::RandomNumberSeedService", "Framework"
+)
 class RandomNumberSeedService(ConditionsObjectProvider):
     """The random number seed service
 
@@ -15,14 +21,14 @@ class RandomNumberSeedService(ConditionsObjectProvider):
         integer seed only used in external mode
     """
 
-    seedMode: str = 'run'
+    seed_node: str = "run"
     seed: int = -1
 
-    def run(self) :
+    def run(self):
         """Base random number seeds off of the run number"""
-        self.seedMode = 'run'
+        self.seed_mode = "run"
 
-    def external(self,seed) :
+    def external(self, seed):
         """Input the master random number seed
 
         Parameters
@@ -30,9 +36,9 @@ class RandomNumberSeedService(ConditionsObjectProvider):
         seed : int
             Integer to use as master random number seed
         """
-        self.seedMode = 'external'
+        self.seed_mode = "external"
         self.seed = seed
 
-    def time(self) :
+    def time(self):
         """Set master random seed based off of time"""
-        self.seedMode = 'time'
+        self.seed_mode = "time"

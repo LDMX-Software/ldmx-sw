@@ -24,7 +24,7 @@ def uniform_binning(nbins, minedge, maxedge):
     return [bin_width * ibin + minedge for ibin in range(nbins + 1)]
 
 
-class histogram:
+class Histogram:
     """Object to hold parameters for a one-dimensional root histogram
 
     This histogram object will be passed to the HistogramPool and created,
@@ -49,7 +49,9 @@ class histogram:
         whether to keep track of sum of squared weights
     """
 
-    def __init__(self, name, xlabel, xbins, ylabel="", ybins=[], weighted=False):
+    def __init__(self, name, xlabel, xbins, ylabel="", ybins=None, weighted=False):
+        if ybins is None:
+            ybins = []
         self.name = name
         self.xlabel = xlabel
         self.ylabel = ylabel
@@ -84,13 +86,9 @@ class histogram:
         """
 
         if len(self.ybins) > 0:
-            return "Name: %s x Label: %s y Label: %s" % (
-                self.name,
-                self.xlabel,
-                self.ylabel,
-            )
+            return f"Name: {self.name} x Label: {self.xlabel} y Label: {self.ylabel}"
         else:
-            return "Name: %s x Label: %s" % (self.name, self.xlabel)
+            return f"Name: {self.name} x Label: {self.xlabel}"
 
     def __str__(self):
         """Stringify this object.

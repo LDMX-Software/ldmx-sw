@@ -38,6 +38,7 @@ def validate_and_set_attr(self, attr, val):
         warnings.warn(
             f"Legacy name '{attr}' has been replaced by '{new_attr}'.",
             DeprecationWarning,
+            stacklevel=2,
             # stacklevel=2
         )
 
@@ -84,30 +85,31 @@ class create_default:
 
 
 def parameter_set(
-    _class=None, *, post_init=None, helpers=[], required_base=None,
-    **required_parameters
+    _class=None,
+    *,
+    post_init=None,
+    helpers=None,
+    required_base=None,
+    **required_parameters,
 ):
+    if helpers is None:
+        helpers = []
+
     def _decorator_impl(cls):
         if required_base is not None and required_base not in cls.__bases__:
             raise TypeError(f"{cls.__name__} is required to have base {required_base}")
 
-        passed_post_init = (
-            post_init
-            if post_init is not None
-            else lambda self: None
-        )
+        passed_post_init = post_init if post_init is not None else lambda self: None
 
         orig_post_init = (
-            cls.__post_init__
-            if hasattr(cls, "__post_init__")
-            else lambda self: None
+            cls.__post_init__ if hasattr(cls, "__post_init__") else lambda self: None
         )
 
         # update post_init function to include some kind of common tasks
         def _full_post_init(self):
             # make sure all dataclass fields are present in __dict__
             # since that is the mechanism we use to grab them in C++
-            for name, field in self.__dataclass_fields__.items():
+            for name, _field in self.__dataclass_fields__.items():
                 if name not in self.__dict__:
                     self.__dict__[name] = getattr(self, name, None)
             passed_post_init(self)
@@ -167,9 +169,9 @@ def parameter_set(
                         "Python configuration parameter_sets must have all entries be the same type."
                     )
 
-                field_kwargs = dict(
-                    metadata=dict(entry_type=entry_type, dimension=dimension)
-                )
+                field_kwargs = {
+                    "metadata": {"entry_type": entry_type, "dimension": dimension}
+                }
                 if the_value is not None:
                     check_list(name, the_value, dimension, entry_type)
                     field_kwargs["default_factory"] = create_default(the_value)

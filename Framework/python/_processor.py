@@ -72,7 +72,7 @@ class Processor:
         if ybins is None:
             # 1D histogram
             self.histograms.append(
-                _histogram.histogram(name, xlabel, the_x_bins, weighted=weighted)
+                _histogram.Histogram(name, xlabel, the_x_bins, weighted=weighted)
             )
         else:
             # 2D histogram
@@ -81,7 +81,7 @@ class Processor:
                 the_y_bins = _histogram.uniform_binning(ybins, ymin, ymax)
 
             self.histograms.append(
-                h.histogram(
+                h.Histogram(
                     name, xlabel, the_x_bins, ylabel, the_y_bins, weighted=weighted
                 )
             )
@@ -110,7 +110,7 @@ def processor_from_file(
     cls,
     source_file,
     class_name=None,
-    needs=[],
+    needs=None,
     instance_name=None,
     compile_notice=True,
     **config_kwargs,
@@ -177,6 +177,8 @@ def processor_from_file(
         built from the C++ source file and configured with the passed arguments
     """
 
+    if needs is None:
+        needs = []
     if not isinstance(source_file, Path):
         source_file = Path(source_file)
     if not source_file.is_file():
@@ -201,7 +203,7 @@ def processor_from_file(
             )
         import subprocess
 
-        libs_to_link = set(["Framework"] + needs)
+        libs_to_link = {"Framework", *needs}
         cmd = (
             [
                 "g++",

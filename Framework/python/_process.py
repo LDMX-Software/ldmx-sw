@@ -118,7 +118,6 @@ class Process:
         for cop in _register.conditions_object_provider.__registry__:
             self._declare_conditions_object_provider(cop)
 
-
     def _declare_conditions_object_provider(self, cop):
         """Declare a conditions object provider to be loaded with the process
 
@@ -288,7 +287,7 @@ class Process:
             if isinstance(obj, list):
                 return [extract(o) for o in obj]
             elif hasattr(obj, "__dict__"):
-                params = dict()
+                params = {}
                 for k in obj.__dict__:
                     if k not in keys_to_skip:
                         params[k] = extract(obj.__dict__[k])
@@ -297,7 +296,6 @@ class Process:
                 return obj
 
         return extract(self)
-
 
     def pause(self):
         """Print this Process and wait for user confirmation to continue
@@ -308,7 +306,6 @@ class Process:
 
         print(str(self))
         input("Press Enter to continue...")
-
 
     def __str__(self):
         """Stringify this object into a human readable, helpful form.
@@ -322,7 +319,7 @@ class Process:
             A human-readable, multi-line description of this process object
         """
 
-        msg = "Process with pass name '%s'" % (self.pass_name)
+        msg = f"Process with pass name '{self.pass_name}'"
         if self.run > 0:
             msg += "\n using run number %d" % (self.run)
         if self.max_events > 0:
@@ -331,17 +328,14 @@ class Process:
             msg += "\n No limit on maximum events to process"
         if len(self.conditions_object_providers) > 0:
             msg += "\n conditions_object_providers:\n - "
-            msg += '\n  - '.join(str(cop) for cop in self.conditions_object_providers)
+            msg += "\n  - ".join(str(cop) for cop in self.conditions_object_providers)
         msg += "\n Processor sequence:\n - "
-        msg += '\n  - '.join(str(proc) for proc in self.sequence)
+        msg += "\n  - ".join(str(proc) for proc in self.sequence)
         if len(self.input_files) > 0:
             if len(self.output_files) == len(self.input_files):
                 msg += "\n Files:"
                 for i in range(0, len(self.input_files)):
-                    msg += "\n  '%s' -> '%s'" % (
-                        self.input_files[i],
-                        self.output_files[i],
-                    )
+                    msg += f"\n  '{self.input_files[i]}' -> '{self.output_files[i]}'"
             else:
                 msg += "\n Input files:"
                 for afile in self.input_files:
@@ -357,15 +351,9 @@ class Process:
             msg += "\n  Default: drop the event"
         for i in range(0, len(self.skim_rules) - 1, 2):
             if self.skim_rules[i + 1] == "":
-                msg += (
-                    "\n  listen to hints from processors with names matching '%s'"
-                    % (self.skim_rules[i])
-                )
+                msg += f"\n  listen to hints from processors with names matching '{self.skim_rules[i]}'"
             else:
-                msg += (
-                    "\n  listen to hints with labels matching '%s' from processors with names matching '%s'"
-                    % (self.skim_rules[i + 1], self.skim_rules[i])
-                )
+                msg += f"\n  listen to hints with labels matching '{self.skim_rules[i + 1]}' from processors with names matching '{self.skim_rules[i]}'"
         if len(self.keep) > 0:
             msg += "\n Rules for keeping previous products:"
             for arule in self.keep:

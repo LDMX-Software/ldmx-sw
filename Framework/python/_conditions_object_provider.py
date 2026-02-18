@@ -36,6 +36,6 @@ def conditions_object_provider(object_name: str, class_name: str, module_name: s
         class_name=field(default=class_name, init=False),
         module_name=field(default=module_name, init=False),
         tag_name="",
-        post_init = _conditions_object_provider_shared_post_init,
+        post_init=_conditions_object_provider_shared_post_init,
         required_base=ConditionsObjectProvider,
     )

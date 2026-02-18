@@ -57,11 +57,11 @@ class TestParameter(unittest.TestCase):
         self.assertEqual(o.the_list, [1, 2, 3])
 
         with self.assertRaises(TypeError):
-            o2 = RequireList()
-
+            RequireList()
 
     def test_fail_require_after_opt(self):
         with self.assertRaises(TypeError):
+
             @parameter_set
             class RequireList2(MyParams):
                 the_list: list[int]
