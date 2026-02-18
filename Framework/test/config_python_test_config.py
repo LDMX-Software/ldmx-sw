@@ -8,7 +8,7 @@ class MyParameters:
 
 
 @ldmxcfg.processor("framework::test::TestConfig", "Framework")
-class TestProcessor:
+class TestProcessor(ldmxcfg.Processor):
     test_int: int = 9
     test_double: float = 7.7
     test_string: str = "Yay!"
