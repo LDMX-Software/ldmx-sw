@@ -11,21 +11,52 @@
 <!-- 
     Target
 --> 
+<!-- LYSO for ESA -->
+
 <!-- position -->
-<constant name="target_z" value="0.0*mm" />
-<!-- Tungsten X0 = .3504 cm.  Target thickeness = .1X0 -->
-<constant name="target_thickness" value="0.3504*mm" />
+<constant name="target_z" value="0.0" />
 <!-- Target dimensions -->
-<constant name="target_dim_x" value="4.0*cm"  />
-<constant name="target_dim_y" value="10.0*cm" />
+  <!-- target bar-->
+<constant name="target_bar_dx" value="30" />
+<constant name="target_bar_dy" value="3.0" />
+<constant name="target_bar_thickness" value="0.6" />
+<constant name="target_bar_gap" value="0.2" />
+
+  <!-- target array1-->
+<constant name="number_of_target_bars1" value="16" />
+<constant name="target_array1_dx" value="target_bar_dx" />
+<constant name="target_array1_dy" value="number_of_target_bars1 * target_bar_dy + (number_of_target_bars1 - 1) * target_bar_gap" />
+<constant name="target_array1_thickness" value="target_bar_thickness" />
+
+  <!-- target array2-->
+<constant name="number_of_target_bars2" value="17" />
+<constant name="target_array2_dx" value="target_bar_dx" />
+<constant name="target_array2_dy" value="number_of_target_bars2 * target_bar_dy + (number_of_target_bars2 - 1) * target_bar_gap" />
+<constant name="target_array2_thickness" value="target_bar_thickness" />
+
+  <!-- target box-->
+<constant name="target_dim_x" value="target_bar_dx" />
+<constant name="target_dim_y" value="target_array2_dy" />
+<constant name="target_thickness" value="2*target_bar_thickness + target_bar_gap" />      <!-- 1.4 mm -->
+
+<!-- Target positions -->
+  <!-- The LYSO layers are indexed from upstream to downstream. -->
+  <!-- target array1-->
+<constant name="target_array1_first_bar_y" value="-(number_of_target_bars1 - 1) * (target_bar_dy + target_bar_gap) / 2" />
+<constant name="target_array1_x" value="0" />
+<constant name="target_array1_y" value="0" />
+<constant name="target_array1_z" value="-(target_bar_thickness + target_bar_gap) / 2" />
+  <!-- target array2-->
+<constant name="target_array2_first_bar_y" value="-(number_of_target_bars2 - 1) * (target_bar_dy + target_bar_gap) / 2" />
+<constant name="target_array2_x" value="0" />
+<constant name="target_array2_y" value="0" />
+<constant name="target_array2_z" value="(target_bar_thickness + target_bar_gap) / 2" />
 
 <!-- 
     Magnet
 --> 
-
-<!-- Magnet is position such that the field center is at -40 cm. -->
+<!-- No magnet at the vertical slice test, this is kept for consistency -->
 <constant name="magnet_pos_z" value="-40*cm" />
-
 <!-- Magnet gap dimensions --> 
 <constant name="magnet_gap_dx" value="430*mm"/>
 <constant name="magnet_gap_dy" value="350*mm"/>
@@ -39,31 +70,45 @@
 
 <constant name="trigger_pad_thickness"      value="4.5*mm" />
 <constant name="trigger_pad_bar_thickness"  value="2*mm" />
-<constant name="trigger_pad_bar_gap"        value="0.3*mm" />
+<constant name="trigger_pad_bar_gap"        value="2*mm" />
 <constant name="trigger_pad_dim_x"          value="target_dim_x" />
 <constant name="trigger_pad_dim_y"          value="target_dim_y" />
 <constant name="trigger_bar_dx"             value="30"/>
-<constant name="trigger_bar_dy"             value="3.05"/>   
-<constant name="number_of_bars"             value="24"/>
+<constant name="trigger_bar_dy"             value="3.0"/>
+<constant name="number_of_bars"             value="12"/>
+
+<constant name="trigger_bar_y_gap"          value="0.15*mm"/>
+<constant name="trigger_layer_y_shift"      value="1.55*mm"/>
 
 <constant name="trigger_pad_offset"    
           value="(target_dim_y - (number_of_bars*trigger_bar_dy + (number_of_bars - 1)*trigger_pad_bar_gap))/2" />
 
-<!-- Trigger pad distance from the target is -2.4262 --> 
+<!-- TS1–TS2 center-to-center separation -->
 <constant name="trig_scint_pad12_separation"
-          value="60"/>
+          value="76.2*mm"/>
 <constant name="trigger_pad1_z"
           value="- trig_scint_pad12_separation - trigger_pad_thickness/2 - clearance" />
 <constant name="trigger_pad2_z"    
           value="-(trigger_pad_thickness/2) - clearance" />
+<!-- TS3 center position relative to target center -->
 <constant name="trigger_pad3_z"      
-          value="target_z - (target_thickness/2) - (trigger_pad_thickness/2) - clearance" />
+          value="-76.2*mm" />
 
 <!-- Parent volume dimensions --> 
 <constant name="trig_scint_area_envelope_x" value="magnet_gap_dx - 5" />
 <constant name="trig_scint_area_envelope_y" value="magnet_gap_dy - 5" />
 <constant name="trig_scint_area_envelope_z" 
           value="-trigger_pad1_z + trigger_pad_thickness + 2*clearance"/>
+
+<!-- light-pipe-specific constants -->
+<constant name="lp_bar_dy"        value="2.0*mm"/>
+<constant name="lp_bar_y_gap"     value="1.15*mm"/>
+<constant name="lp_layer_y_shift" value="1.55*mm"/>
+<constant name="lp_pad_offset"
+          value="(target_dim_y
+                   - (number_of_bars*lp_bar_dy
+                      + (number_of_bars - 1)*lp_bar_y_gap))/2"/>
+
 
 <!--
   Tracker common variables 
@@ -129,7 +174,7 @@
   either side 
 -->
 <variable name="tagger_envelope_dz" 
-    value="tracker_envelope_clearance*2 + tagger_layer_delta*6" />
+    value="tracker_envelope_clearance*2 + tagger_layer_delta" />
 
 
 <!--
@@ -416,6 +461,6 @@ This value is in mm
     Dimensions of ECal parent volume. The size is set to be 1 mm larger than 
     the thickness of the ECal calculated above.
 --> 
-<constant name="ecal_envelope_x" value="ecal_side_dx" /> 
-<constant name="ecal_envelope_y" value="ecal_side_dy" /> 
-<constant name="ecal_envelope_z" value="600.0" /> 
+<constant name="ecal_envelope_x" value="ecal_side_dx" />
+<constant name="ecal_envelope_y" value="ecal_side_dy" />
+<constant name="ecal_envelope_z" value="600.0" />

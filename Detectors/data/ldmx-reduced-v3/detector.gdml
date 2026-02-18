@@ -10,25 +10,26 @@
     &constants;  
 
     <!--
-      Position of the tagger and recoil tracker envelopes with respect to
-      target.  The 9 mm offset was chosen such that the midpoints of the 
-      last (first) layer of the tagger (recoil) tracker are 25 mm apart.
+      ESA slice test layout: two recoil trackers upstream of the target
+      Tracker 1 center:  -240.5 mm
+      Tracker 2 center:  -140.5 mm
+      Spacing between them = 100 mm
     -->
-    <variable name="tagger_pos_z" value="-9*mm - tagger_envelope_dz/2" /> 
-    <variable name="recoil_pos_z" value="9*mm + recoil_envelope_dz/2"/>
+    <variable name="tracker1_center_z" value="-240.5*mm"/>
+    <variable name="tracker2_center_z" value="-140.5*mm"/>
+    <variable name="recoil_pos_z" value="tracker2_center_z"/>
 
     <!-- Position of the ECal and HCal parent volumes -->
     <constant name="em_calorimeter_pos_z" value="ecal_front_z" />
     <constant name="hadron_calorimeter_pos_z" value="ecal_front_z + hcal_dz/2." />
 
     <!--
-      Trigger scintillator parent volume position relative to the target
-      ???? mm. The end of the parent volume relative to the target
-      is at ?????. This gives a ???? mm clearance between the upstream.
-      There are now two TS modules upstream of the tagger tracker.
+      ESA layout: TS parent volume center
+      Chosen so that TS1 and TS2 centers land at -381.0 mm and -304.8 mm
+      Spacing between them = 76.2 mm
     -->
     <variable name="trig_scint_pos_z" 
-      value="tagger_pos_z-trig_scint_area_envelope_z/2 -tagger_envelope_dz/2- clearance - 200" />
+          value="-344.0255*mm" />
     
     <!-- 
          Define all subdetector positions relative to the target.  
@@ -36,7 +37,6 @@
          x = y = z = 0 mm.     
     -->
     <position name="trig_scint_pos" x="0.0" y="0.0" z="trig_scint_pos_z"/>
-    <position name="tagger_pos" x="0.0" y="0.0" z="tagger_pos_z"/>
     <position name="recoil_pos" x="0.0" y="0.0" z="recoil_pos_z"/>
     <position name="em_calorimeter_pos"
 		  x="0.0" 
@@ -64,11 +64,7 @@
     <volume name="World">
       <materialref ref="Vacuum"/>
       <solidref ref="world_box"/>
-      <physvol copynumber="1">
-        <file name="tagger.gdml"/>
-        <positionref ref="tagger_pos"/>
-        <rotationref ref="identity"/>
-      </physvol> 
+      <!-- remove tagger tracker for 2025 ESA slice test run -->
       <physvol copynumber="2">
         <file name="target.gdml"  />
         <positionref ref="center" />
@@ -102,7 +98,7 @@
     <!-- detector version -->
     <auxiliary auxtype="DetectorVersion" auxvalue="1">
       <auxiliary auxtype="DetectorName" auxvalue="ldmx-reduced-v3"/>
-      <auxiliary auxtype="Author" auxvalue="Tamas Vami, Sanjit Masanam"/>
+      <auxiliary auxtype="Author" auxvalue="Tamas Vami, Sanjit Masanam, Layan Alsarayra"/>
       <auxiliary auxtype="Description" 
                  auxvalue="The reduced geometry for the 2025 vertical slice test"/>
     </auxiliary>
@@ -113,9 +109,6 @@
     </auxiliary>   
     <auxiliary auxtype="Region" auxvalue="MagnetRegion">
       <auxiliary auxtype="StoreTrajectories" auxvalue="false"/>
-    </auxiliary>
-    <auxiliary auxtype="Region" auxvalue="tagger" >
-      <auxiliary auxtype="StoreTrajectories" auxvalue="true"/>
     </auxiliary>
     <auxiliary auxtype="Region" auxvalue="trig_scint" >
       <auxiliary auxtype="StoreTrajectories" auxvalue="true"/>
