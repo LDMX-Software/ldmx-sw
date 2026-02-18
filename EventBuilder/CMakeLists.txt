@@ -5,9 +5,11 @@ project(EventBuilder DESCRIPTION "for building complete events from the raw data
              LANGUAGES CXX
 )
 
+#file(GLOB_RECURSE sources src/*.cxx)
+
 setup_library(
   module EventBuilder
-  sources src/Builder.cc
+  name Builder
   dependencies Framework::Framework
                Packing::Packing
 )
