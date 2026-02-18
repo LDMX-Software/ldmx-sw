@@ -3,24 +3,9 @@
 from LDMX.Framework import field, parameter_set, _register
 
 
-@parameter_set
 class PrimaryGenerator:
-    """Base configuration for all primary generators
-
-    Besides registering the library that the generator is a part of,
-    we also hold a common configuratin parameter shared amongst all
-    generators.
-
-    Attributes
-    ----------
-    beam_spot_smear : list of float, optional
-        2 (x,y) or 3 (x,y,z) widths to smear primary vertices from this generator [mm].
-        If set, this generator will handle its own beam spot smearing instead of using
-        the global simulator beam_spot_smear setting.
-    """
-
-    def __post_init__(self):
-        _register.library(self.module_name)
+    """Base for all primary generators for type checking"""
+    pass
 
 
 def primary_generator(class_name: str, module_name: str = 'SimCore_Generators'):
@@ -37,12 +22,17 @@ def primary_generator(class_name: str, module_name: str = 'SimCore_Generators'):
     ----------
     instance_name : str
         Unique name for this particular instance of a PrimaryGenerator
+    beam_spot_smear : list of float, optional
+        2 (x,y) or 3 (x,y,z) widths to smear primary vertices from this generator [mm].
+        If set, this generator will handle its own beam spot smearing instead of using
+        the global simulator beam_spot_smear setting.
     """
     return parameter_set(
         class_name = field(default=class_name, init=False),
         module_name = field(default=module_name, init=False),
         instance_name = class_name,
         beam_spot_smear = [20.0, 80.0, 0.0],
+        post_init = lambda self: _register.library(self.module_name),
         required_base = PrimaryGenerator
     )
 

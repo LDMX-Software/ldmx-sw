@@ -118,7 +118,6 @@ class Process:
         for cop in _register.conditions_object_provider.__registry__:
             self._declare_conditions_object_provider(cop)
 
-        self.random_number_seed_service = RandomNumberSeedService()
 
     def _declare_conditions_object_provider(self, cop):
         """Declare a conditions object provider to be loaded with the process

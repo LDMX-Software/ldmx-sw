@@ -1,6 +1,6 @@
 """ConditionsProvider for HcalGeometry"""
 from LDMX.Framework import ldmxcfg
-from typing import Any
+from LDMX.DetDescr.hcal_geometry import HcalGeometry
 
 @ldmxcfg.conditions_object_provider("HcalGeometryProvider","hcal::HcalGeometryProvider","Hcal")
 class HcalGeometryProvider(ldmxcfg.ConditionsObjectProvider):
@@ -20,7 +20,7 @@ class HcalGeometryProvider(ldmxcfg.ConditionsObjectProvider):
     """
 
     __instance = None
-    hcal_geometry: Any
+    hcal_geometry: HcalGeometry = ldmxcfg.field(default_factory = HcalGeometry)
 
     def getInstance() :
         """Get the single instance of the HcalGeometryProvider
@@ -36,12 +36,10 @@ class HcalGeometryProvider(ldmxcfg.ConditionsObjectProvider):
 
         return HcalGeometryProvider.__instance
 
-    def __init__(self):
+    def __post_init__(self):
         if HcalGeometryProvider.__instance != None :
             raise Exception('HcalGeometryProvider is a singleton class and should only be retrieved using getInstance()')
         else:
-            from LDMX.DetDescr import hcal_geometry
-            self.hcal_geometry = hcal_geometry.HcalGeometry()
             HcalGeometryProvider.__instance = self
 
 # make sure global instance is created, this registers the condition
@@ -64,7 +62,7 @@ class HcalTriggerGeometryProvider(ldmxcfg.ConditionsObjectProvider):
     """
 
     __instance = None
-    hcal_geometry: Any
+    hcal_geometry: HcalGeometry = ldmxcfg.field(default_factory = HcalGeometry)
 
     def getInstance() :
         """Get the single instance of the HcalTriggerGeometryProvider
@@ -79,12 +77,10 @@ class HcalTriggerGeometryProvider(ldmxcfg.ConditionsObjectProvider):
 
         return HcalTriggerGeometryProvider.__instance
 
-    def __init__(self):
+    def __post_init__(self):
         if HcalTriggerGeometryProvider.__instance != None :
             raise Exception('HcalTriggerGeometryProvider is a singleton class and should only be retrieved using getInstance()')
         else:
-            from LDMX.DetDescr import hcal_geometry
-            self.hcal_geometry = hcal_geometry.HcalGeometry()
             HcalTriggerGeometryProvider.__instance = self
 
 # make sure global instance is created, this registers the condition

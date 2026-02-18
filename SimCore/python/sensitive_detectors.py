@@ -6,13 +6,9 @@ from LDMX.Framework import field, parameter_set, _register
 class SensitiveDetector:
     """base class for sensitive detectors
 
-    mainly here for type-checking the simulator parameters
-    and holding the shared post_init functionality of library
-    registration.
+    here for type-checking the simulator parameters
     """
-
-    def __post_init__(self):
-        _register.library(self.module_name)
+    pass
 
 
 def sensitive_detector(class_name: str, module_name: str = 'SimCore_SDs'):
@@ -31,6 +27,7 @@ def sensitive_detector(class_name: str, module_name: str = 'SimCore_SDs'):
         class_name = class_name,
         instance_name = class_name,
         module_name = module_name,
+        post_init = lambda self: _register.library(self.module_name),
         required_base = SensitiveDetector
     )
 

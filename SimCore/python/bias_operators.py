@@ -10,9 +10,7 @@ from LDMX.Framework import field, parameter_set, _register
 
 class XsecBiasingOperator:
     """required base class for biasing operators for type-checking"""
-
-    def __post_init__(self):
-        _register.library(self.module_name)
+    pass
 
 
 def biasing_operator(class_name, module_name = 'SimCore_BiasOperators'):
@@ -20,6 +18,7 @@ def biasing_operator(class_name, module_name = 'SimCore_BiasOperators'):
         class_name = field(default = class_name, init = False),
         module_name = field(default = class_name, init = False),
         instance_name = class_name,
+        post_init = lambda self: _register.library(self.module_name),
         required_base = XsecBiasingOperator
     )
 
