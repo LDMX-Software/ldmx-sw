@@ -9,7 +9,6 @@ project(EventBuilder DESCRIPTION "for building complete events from the raw data
 
 setup_library(
   module EventBuilder
-  name Builder
   dependencies Framework::Framework
                Packing::Packing
 )
