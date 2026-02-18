@@ -15,17 +15,18 @@ from dataclasses import Field, dataclass, field
 from typing import Any
 
 
-def check_list(attr, l, dimension, entry_type):
+def check_list(attr, the_list, dimension, entry_type):
     if dimension == 1:
         if entry_type is not Any:
-            for e in l:
+            for e in the_list:
                 if not isinstance(e, entry_type):
                     raise TypeError(
-                        f"Entry {e} in parameter {attr} is not of expected type {entry_type}"
+                        f"Entry {e} in parameter {attr} "
+                        "is not of expected type {entry_type}"
                     )
     elif dimension == 2:
-        for ll in l:
-            check_list(attr, ll, 1, entry_type)
+        for sub_list in the_list:
+            check_list(attr, sub_list, 1, entry_type)
     else:
         raise Exception(f"List with dimension {dimension} not supported.")
 
@@ -69,18 +70,27 @@ def validate_and_set_attr(self, attr, val):
         check_list(attr, val, expected_dimension, expected_entry_type)
     elif expected_type is not Any and not isinstance(val, expected_type):
         raise TypeError(
-            f"Attribute {attr} should be type {expected_type} instead of type {type(val)}."
+            f"Attribute {attr} should be type {expected_type} "
+            "instead of type {type(val)}."
         )
 
     self.__dict__[attr] = val
 
 
-class create_default:
+class CreateDefault:
+    """stand in factory for a dataclass field when we already have a default
+
+    dataclasses do not want mutable classes provided as default values,
+    instead we need to provide a default_factory to the dataclass field.
+    This class can hold an already created default value of any type and then
+    return a **full** copy of that default value for the destination object
+    to edit it as it wishes.
+    """
+
     def __init__(self, o):
         self._default = o
 
     def __call__(self):
-        """we want a _full copy_ of the default so the new object can edit it as they wish"""
         return copy.deepcopy(self._default)
 
 
@@ -156,17 +166,20 @@ def parameter_set(
                 dimension = len(type_args)
                 if dimension == 0:
                     raise TypeError(
-                        "Python configuration parameter_sets need to annotate some content for each list."
+                        "Python configuration parameter_sets need to "
+                        "annotate some content for each list."
                     )
                 if dimension > 2:
                     raise TypeError(
-                        "Python configuration parameter_sets are limited to 1D or 2D lists."
+                        "Python configuration parameter_sets are limited "
+                        "to 1D or 2D lists."
                     )
 
                 entry_type = type_args[0]
                 if not all(entry_type is t for t in type_args):
                     raise TypeError(
-                        "Python configuration parameter_sets must have all entries be the same type."
+                        "Python configuration parameter_sets must have all "
+                        "entries be the same type."
                     )
 
                 field_kwargs = {
@@ -174,12 +187,13 @@ def parameter_set(
                 }
                 if the_value is not None:
                     check_list(name, the_value, dimension, entry_type)
-                    field_kwargs["default_factory"] = create_default(the_value)
+                    field_kwargs["default_factory"] = CreateDefault(the_value)
                 setattr(cls, name, field(**field_kwargs))
             else:
-                # type is not simple, not already a dataclasses.Field, and not a list so we wrap it
-                # in a creation function to get around dataclass's prevention on using mutable defaults
-                setattr(cls, name, field(default_factory=create_default(the_value)))
+                # type is not simple, not already a dataclasses.Field, and not a list
+                # so we wrap it in a creation function to get around dataclass's
+                # prevention on using mutable defaults
+                setattr(cls, name, field(default_factory=CreateDefault(the_value)))
 
         return dataclass(slots=False)(cls)
 

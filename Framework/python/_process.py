@@ -29,16 +29,17 @@ class Process:
         If total_events is set, this will be ignored.
     min_events : int
         Index of the first events to process.
-        The skipping process is relatively slow, if used for anything outside of debugging
-        make a  skim to a new file and then run again rather than use this.
+        The skipping process is relatively slow, if used for anything outside of
+        debugging make a  skim to a new file and then run again rather than use this.
         Note: this skips events of *each* input file, you a single file only.
     max_tries_per_event : int
         Maximum number of attempts to make in a row before giving up on an event
         Only used in Production Mode (no input files)
         If total_events is set, this will be ignored.
     total_events : int
-        Number of events we'd like to produce independetly of the number of tries it would take.
-        Both max_events and max_tries_per_event will be ignored. Be warned about infinite loops!
+        Number of events we'd like to produce independetly of the number of tries
+        it would take.  Both max_events and max_tries_per_event will be ignored.
+        Be warned about infinite loops!
     run : int
         Run number for this process
     input_files : list of strings
@@ -54,7 +55,8 @@ class Process:
     skim_default_is_keep : bool
         Flag to say whether to process should by default keep the event or not
     skim_rules : list of strings
-        list of skimming rules for which processors the process should listen to when deciding whether to keep an event
+        list of skimming rules for which processors the process should listen to
+        when deciding whether to keep an event
     log_frequency : int
         Print the event number whenever its modulus with this frequency is zero
     logger : Logger
@@ -65,6 +67,12 @@ class Process:
         list of the sources of calibration and conditions information
     random_number_seed_service : RandomNumberSeedService
         conditions object that provides random number seeds in a deterministic way
+    compression_setting: int
+        setting provided to ROOT when writing an output event file for compression
+    histogram_file: str
+        output file to store histograms in (optional, only needed if one of
+        the processors in the sequence attempts to fill histograms)
+
 
     See Also
     --------
@@ -88,8 +96,8 @@ class Process:
     skim_rules: list[str] = []
     log_frequency: int = -1
     logger: Logger = field(default_factory=Logger)
-    compressionSetting: int = 9
-    histogramFile: str = ""
+    compression_setting: int = 9
+    histogram_file: str = ""
     conditions_global_tag: str = "Default"
     conditions_object_providers: list[ConditionsObjectProvider] = []
     tree_name: str = "LDMX_Events"
@@ -105,7 +113,8 @@ class Process:
     def __post_init__(self):
         if Process.last_process is not None:
             raise Exception(
-                "Process object is already created! You can only create one Process object in a script."
+                "Process object is already created! "
+                "You can only create one Process object in a script."
             )
 
         # needs last_process defined to update registries
@@ -142,7 +151,7 @@ class Process:
 
         self.conditions_object_providers.append(cop)
 
-    def setConditionsGlobalTag(self, tag):
+    def set_conditions_global_tag(self, tag):
         """Set the global tag for all the ConditionsObjectProviders
 
         Parameters
@@ -155,17 +164,17 @@ class Process:
         for cop in self.conditions_object_providers:
             cop.tag_name = tag
 
-    def skimDefaultIsSave(self):
+    def skim_default_is_save(self):
         """Configure the process to by default keep every event."""
 
         self.skim_default_is_keep = True
 
-    def skimDefaultIsDrop(self):
+    def skim_default_is_drop(self):
         """Configure the process to by default drop (not save) every event."""
 
         self.skim_default_is_keep = False
 
-    def skimConsider(self, namePat):
+    def skim_consider(self, name_pat):
         """Configure the process to listen to processors matching input.
 
         The list of skim rules has a rather complicated form, so it
@@ -173,7 +182,7 @@ class Process:
 
         Parameters
         ----------
-        namePat : str
+        name_pat : str
             Pattern for the processor instance_names to match for the Process to listen
 
         Example
@@ -188,10 +197,10 @@ class Process:
 
         """
 
-        self.skim_rules.append(namePat)
+        self.skim_rules.append(name_pat)
         self.skim_rules.append("")
 
-    def skimConsiderLabelled(self, namePat, labelPat):
+    def skim_consider_labelled(self, name_pat, label_pat):
         """Configure the process to listen to processors matching input.
 
         The list of skim rules has a rather complicated form, so it
@@ -203,9 +212,9 @@ class Process:
 
         Parameters
         ----------
-        namePat : str
+        name_pat : str
             Pattern for the processor instance_names to match for the Process to listen
-        labelPat : str
+        label_pat : str
             Pattern for the storage hint reason to match for the Process to listen
 
         See Also
@@ -213,10 +222,10 @@ class Process:
         skimConsider
 
         """
-        self.skim_rules.append(namePat)
-        self.skim_rules.append(labelPat)
+        self.skim_rules.append(name_pat)
+        self.skim_rules.append(label_pat)
 
-    def setCompression(self, algorithm, level=9):
+    def set_compression(self, algorithm, level=9):
         """set the compression settings for any output files in this process
 
         We combine the compression settings here in the same way that ROOT
@@ -248,9 +257,9 @@ class Process:
             flag for the level of compression to use
         """
 
-        self.compressionSetting = algorithm * 100 + level
+        self.compression_setting = algorithm * 100 + level
 
-    def inputDir(self, indir):
+    def input_dir(self, indir):
         """Scan the input directory and make a list of input root files to read from it
 
         lists all files ending in '.root' in the input directory (not recursive).
@@ -264,16 +273,19 @@ class Process:
 
         import os
 
-        fullPathDir = os.path.realpath(indir)
+        full_path_dir = os.path.realpath(indir)
         self.input_files.extend(
             [
-                os.path.join(fullPathDir, f)
-                for f in os.listdir(fullPathDir)
-                if os.path.isfile(os.path.join(fullPathDir, f)) and f.endswith(".root")
+                os.path.join(full_path_dir, f)
+                for f in os.listdir(full_path_dir)
+                if (
+                    os.path.isfile(os.path.join(full_path_dir, f))
+                    and f.endswith(".root")
+                )
             ]
         )
 
-    def parameterDump(self):
+    def parameter_dump(self):
         """Recursively extract all configuration parameters for this process
 
         Only includes objects somehow attached to the process.
@@ -310,8 +322,8 @@ class Process:
     def __str__(self):
         """Stringify this object into a human readable, helpful form.
 
-        This function creates a very large, multi-line string that reports (almost) all of the important
-        details of this configured process.
+        This function creates a very large, multi-line string that reports
+        (almost) all of the important details of this configured process.
 
         Returns
         -------
@@ -321,9 +333,9 @@ class Process:
 
         msg = f"Process with pass name '{self.pass_name}'"
         if self.run > 0:
-            msg += "\n using run number %d" % (self.run)
+            msg += f"\n using run number {self.run}"
         if self.max_events > 0:
-            msg += "\n Maximum events to process: %d" % (self.max_events)
+            msg += f"\n Maximum events to process: {self.max_events}"
         else:
             msg += "\n No limit on maximum events to process"
         if len(self.conditions_object_providers) > 0:
@@ -351,9 +363,16 @@ class Process:
             msg += "\n  Default: drop the event"
         for i in range(0, len(self.skim_rules) - 1, 2):
             if self.skim_rules[i + 1] == "":
-                msg += f"\n  listen to hints from processors with names matching '{self.skim_rules[i]}'"
+                msg += (
+                    "\n  listen to hints from processors with names matching "
+                    f"'{self.skim_rules[i]}'"
+                )
             else:
-                msg += f"\n  listen to hints with labels matching '{self.skim_rules[i + 1]}' from processors with names matching '{self.skim_rules[i]}'"
+                msg += (
+                    "\n  listen to hints with labels matching "
+                    f"'{self.skim_rules[i + 1]}' from processors with names matching "
+                    f"'{self.skim_rules[i]}'"
+                )
         if len(self.keep) > 0:
             msg += "\n Rules for keeping previous products:"
             for arule in self.keep:

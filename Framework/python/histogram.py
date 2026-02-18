@@ -4,6 +4,8 @@ These histogram objects are passed to the HistogramPool to be
 created for processors that they are grouped with.
 """
 
+from ._parameter_set import field, parameter_set
+
 
 def uniform_binning(nbins, minedge, maxedge):
     """Create a list of bin edges uniformly separated
@@ -24,6 +26,7 @@ def uniform_binning(nbins, minedge, maxedge):
     return [bin_width * ibin + minedge for ibin in range(nbins + 1)]
 
 
+@parameter_set
 class Histogram:
     """Object to hold parameters for a one-dimensional root histogram
 
@@ -49,62 +52,29 @@ class Histogram:
         whether to keep track of sum of squared weights
     """
 
-    def __init__(self, name, xlabel, xbins, ylabel="", ybins=None, weighted=False):
-        if ybins is None:
-            ybins = []
-        self.name = name
-        self.xlabel = xlabel
-        self.ylabel = ylabel
-        self.weighted = weighted
+    name: str
+    xlabel: str = ""
+    xbins: list[float] = []
+    xcategories: list[str] = field(init=False)
+    ylabel: str = ""
+    ybins: list[float] = []
+    ycategories: list[str] = field(init=False)
+    weighted: bool = False
 
-        if len(xbins) == 0:
+    def __post_init__(self):
+        if len(self.xbins) == 0:
             raise ValueError("Cannot have a histogram with zero bins.")
 
-        if isinstance(xbins[0], str):
+        if isinstance(self.xbins[0], str):
+            self.xcategories = self.xbins
             self.xbins = [0.0]
-            self.xcategories = xbins
         else:
-            self.xbins = xbins
             self.xcategories = []
 
-        if len(ybins) == 0:
-            self.ybins = []
+        if len(self.ybins) == 0:
             self.ycategories = []
-        elif isinstance(ybins[0], str):
+        elif isinstance(self.ybins[0], str):
+            self.ycategories = self.ybins
             self.ybins = []
-            self.ycategories = ybins
         else:
-            self.ybins = ybins
             self.ycategories = []
-
-    def __repr__(self):
-        """Represent this object to the human user
-
-        Returns
-        -------
-        A string representation of the histogram displaying its properties.
-        """
-
-        if len(self.ybins) > 0:
-            return f"Name: {self.name} x Label: {self.xlabel} y Label: {self.ylabel}"
-        else:
-            return f"Name: {self.name} x Label: {self.xlabel}"
-
-    def __str__(self):
-        """Stringify this object.
-
-        Helpful for printing it in python to make sure the passed variables are what you want.
-
-        Returns
-        -------
-        A string representation of the histogram displaying its properties.
-
-        Example
-        -------
-        This function allows you to do things like:
-            print(myHistogram)
-        or
-            "The histogram in my processor is %s" % ( myHistogram )
-        """
-
-        return self.__repr__()

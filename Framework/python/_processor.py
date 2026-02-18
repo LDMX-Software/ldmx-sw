@@ -1,3 +1,6 @@
+import types
+from pathlib import Path
+
 from . import _histogram, _register
 from ._parameter_set import field, parameter_set
 
@@ -81,7 +84,7 @@ class Processor:
                 the_y_bins = _histogram.uniform_binning(ybins, ymin, ymax)
 
             self.histograms.append(
-                h.Histogram(
+                _histogram.Histogram(
                     name, xlabel, the_x_bins, ylabel, the_y_bins, weighted=weighted
                 )
             )
@@ -106,8 +109,40 @@ def processor(class_name: str, module_name: str):
     )
 
 
+def make_processor(name: str, class_name: str, module_name: str, **kwargs):
+    """make a processor without having a class to decorate
+
+    like the make_dataclass function, this is purely a convenience to
+    avoid some extra boilerplate (and for use when constructing a processor
+    from source below).
+
+    Parameters
+    ----------
+    name: str
+        name of the processor
+    class_name: str
+        fully-specified name of class in C++
+    module_name: str
+        library to load that the processor is in
+    kwargs: dict[str,Any]
+        extra key-word arguments assumed to be parameters
+        to pass to C++. These parameters DO NOT undergo
+        any type checking.
+    """
+
+    # dynamically create a new_class by name with the Processor base
+    # and call our decorator on it
+    cls = parameter_set(
+        class_name=class_name,
+        module_name=module_name,
+        instance_name=name,
+        required_base=Processor,
+        **kwargs,
+    )(types.new_class(name, (Processor,)))
+    return cls()
+
+
 def processor_from_file(
-    cls,
     source_file,
     class_name=None,
     needs=None,
@@ -129,21 +164,23 @@ def processor_from_file(
     does not allow for code to be well organized and split across many files nor does it
     allow for two processors to share common code.
     If you find yourself defining more than one `class` within your new C++ processor,
-    it is highly recommended to transition your workflow to including your processor as a
-    part of ldmx-sw so that it can fully benefit from a build system.
+    it is highly recommended to transition your workflow to including your processor as
+    a part of ldmx-sw so that it can fully benefit from a build system.
 
     Parameters
     ----------
     source_file: str | Path
-        path to source file to build into a processor (can be relative to where config is being run)
+        path to source file to build into a processor
+        (can be relative to where config is being run)
     class_name: str, default is name of source file
         name of C++ class that is the processor
         defaults to the name of the source file without an extension
     needs: list[str]
-        Names of libraries that should be linked to the compiled processor in addition to 'Framework'
-        which is linked be default.
-        For example, one can gain access to the detector ID infrastructure with 'DetDescr' or the
-        Ecal Event classes with 'Ecal_Event' (or 'Ecal/Event', or 'Ecal::Event')
+        Names of libraries that should be linked to the compiled processor in addition
+        to 'Framework' which is linked be default.
+        For example, one can gain access to the detector ID infrastructure with
+        'DetDescr' or the Ecal Event classes with 'Ecal_Event'
+        (or 'Ecal/Event', or 'Ecal::Event')
     instance_name: str, default is class_name
         name to give to instance of this C++ processor
     compile_notice: bool, default is True
@@ -153,27 +190,31 @@ def processor_from_file(
 
     Examples
     --------
-    A basic walkthrough is available online. https://ldmx-software.github.io/analysis/ldmx-sw.html
+    A basic walkthrough is available online.
+    https://ldmx-software.github.io/analysis/ldmx-sw.html
 
     If `MyAnalyzer.cxx` contains the class `MyAnalyzer`, then we can put
 
-        p.sequence = [ ldmxcfg.Analyzer.from_file('MyAnalyzer.cxx') ]
+        p.sequence = [ ldmxcfg.processor_from_file('MyAnalyzer.cxx') ]
 
     In our config script to run the analyzer on its own in the sequence.
     This default configuration only links the Framework library and so the analyzer
     would only be able to access the Framework and event objects.
-    If you needed another library (for example, the 'DetDescr' library has the ID classes),
-    one can also
+    If you needed another library (for example, the 'DetDescr' library has
+    the ID classes), one can also
 
-        p.sequence = [ ldmxcfg.Analyzer.from_file('MyAnalyzer.cxx', needs = ['DetDescr']) ]
+        p.sequence = [
+            ldmxcfg.processor_from_file('MyAnalyzer.cxx', needs = ['DetDescr'])
+        ]
 
-    To inform the compiler that it should link your analyzer with the 'DetDescr' library.
-    **No removal of the library is done** so if you change the `needs` or some other parameter
-    to `from_file` you should also remove the library file (`*.so`) before attempting to re-run.
+    To inform the compiler that it should link your analyzer with the 'DetDescr'
+    library. **No removal of the library is done** so if you change the `needs`
+    or some other parameter you should also remove the library file (`*.so`)
+    before attempting to re-run.
 
     Returns
     -------
-    EventProcessor
+    Processor
         built from the C++ source file and configured with the passed arguments
     """
 
@@ -204,21 +245,26 @@ def processor_from_file(
         import subprocess
 
         libs_to_link = {"Framework", *needs}
+        # this compilation command was created through trial and error
+        # we compile a shared library with dynamic loading under the C++20 standard
+        # linking the requested libraries to our newly built one
+        # and including ROOT's non-sytem headers, ldmx-sw headers (if non system)
+        # and ldmx-sw libraries (if non-system)
         cmd = (
             [
                 "g++",
                 "-std=c++20",
                 "-fPIC",
-                "-shared",  # construct a shared library for dynamic loading
+                "-shared",
                 "-o",
                 str(lib),
-                str(src),  # define output file and input source file
+                str(src),
             ]
             + [f"-l{lib}" for lib in libs_to_link]
             + [
-                "-I/usr/local/include/root",  # include ROOT's non-system headers
-                "-I@CMAKE_INSTALL_PREFIX@/include",  # include ldmx-sw headers (if non-system)
-                "-L@CMAKE_INSTALL_PREFIX@/lib",  # include ldmx-sw libs (if non-system)
+                "-I/usr/local/include/root",
+                "-I@CMAKE_INSTALL_PREFIX@/include",
+                "-L@CMAKE_INSTALL_PREFIX@/lib",
             ]
         )
         if compile_notice:
@@ -227,10 +273,7 @@ def processor_from_file(
         if compile_notice:
             print(f"done compiling {src}")
 
-    # TODO: figure out how to dynamically create a dataclass
-    instance = cls(instance_name, class_name, str(lib))
-    for cfg_name, cfg_val in config_kwargs.items():
-        setattr(instance, cfg_name, cfg_val)
+    instance = make_processor(instance_name, class_name, str(lib), **config_kwargs)
 
     # load any dependency libraries at runtime as well
     for mod in needs:

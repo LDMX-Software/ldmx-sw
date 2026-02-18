@@ -6,9 +6,9 @@ class ConditionsObjectProvider:
     def __eq__(self, other):
         """Check if two COPs are the same
 
-        We decide that two COPs are 'equal' if they have the same instance and class names
-        because in that situation the two COPs would class during runtime even if they
-        technically provide different objects.
+        We decide that two COPs are 'equal' if they have the same instance
+        and class names because in that situation the two COPs would class
+        during runtime even if they technically provide different objects.
 
         Parameters
         ----------

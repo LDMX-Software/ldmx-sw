@@ -32,20 +32,21 @@ class Logger:
 
     Paramters
     ---------
-    termLevel: int
+    term_level: int
         minimum severity level to print to the terminal
-    fileLevel: int
+    file_level: int
         minimum severity level to print to the file
-    filePath: str
-        path to file to direct logging to (if not provided, don't open a file for logging)
-    logRules: list[_LogRule]
+    file_path: str
+        path to file to direct logging to (if not provided,
+        don't open a file for logging)
+    log_rules: list[_LogRule]
         list of custom logging rules that override the default terminal and file levels
     """
 
-    termLevel: int = 2
-    fileLevel: int = 0
-    filePath: str = ""
-    logRules: list[_LogRule] = []
+    term_level: int = 2
+    file_level: int = 0
+    file_path: str = ""
+    log_rules: list[_LogRule] = []
 
     def custom(self, name, level):
         """Add a new custom logging rule to the logger
@@ -63,7 +64,7 @@ class Logger:
 
         if hasattr(name, "instance_name"):
             name = name.instance_name
-        self.logRules.append(_LogRule(name, level))
+        self.log_rules.append(_LogRule(name, level))
 
     def trace(self, name):
         """drop the input channel to the trace level"""
