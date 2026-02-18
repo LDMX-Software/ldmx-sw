@@ -1,5 +1,4 @@
-from . import Processor, processor
-from ._parameter_set import field, parameter_set
+from LDMX.Framework import Processor, field, parameter_set, processor
 
 
 @parameter_set
@@ -31,7 +30,7 @@ import unittest
 
 
 class TestParameter(unittest.TestCase):
-    def assertMyClass(self, c, **kwargs):
+    def assert_my_class(self, c, **kwargs):
         """We need the __dict__ member to hold all of the parameters
         we want on the C++ side so we compare the __dict__ to a construction
         of the defaults with any updates we expect passed in through
@@ -68,32 +67,32 @@ class TestParameter(unittest.TestCase):
 
     def test_defaults(self):
         c = MyClass()
-        self.assertMyClass(c)
+        self.assert_my_class(c)
 
     def test_change_required_parameter(self):
         c = MyClass()
-        self.assertMyClass(c)
+        self.assert_my_class(c)
         c.class_name = "baz"
         c.instance_name = "cowabunga"
-        self.assertMyClass(c, class_name="baz", instance_name="cowabunga")
+        self.assert_my_class(c, class_name="baz", instance_name="cowabunga")
 
     def test_change_after_creation(self):
         c = MyClass()
         c.one = 2
-        self.assertMyClass(c, one=2)
+        self.assert_my_class(c, one=2)
         c.name = "bar"
-        self.assertMyClass(c, one=2, name="bar")
+        self.assert_my_class(c, one=2, name="bar")
         c.two *= 2
-        self.assertMyClass(c, one=2, two=4.0, name="bar")
+        self.assert_my_class(c, one=2, two=4.0, name="bar")
         c.vec = [4, 5]
-        self.assertMyClass(c, one=2, two=4.0, name="bar", vec=[4, 5])
+        self.assert_my_class(c, one=2, two=4.0, name="bar", vec=[4, 5])
         self.assertEqual(c.p.foo, "what")
         c.p.foo = "baz"
         self.assertEqual(c.p.foo, "baz")
 
     def test_change_during_creation(self):
         c = MyClass(one=2, two=3.0, name="bar", vec=[4, 5], p=MyParams(foo="baz"))
-        self.assertMyClass(
+        self.assert_my_class(
             c, one=2, two=3.0, name="bar", vec=[4, 5], p=MyParams(foo="baz")
         )
         self.assertEqual(c.p.foo, "baz")

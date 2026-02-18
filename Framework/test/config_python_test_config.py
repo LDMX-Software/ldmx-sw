@@ -1,6 +1,7 @@
 
 from LDMX.Framework import ldmxcfg
 
+
 @ldmxcfg.parameter_set
 class MyParameters:
     one: int = 1
