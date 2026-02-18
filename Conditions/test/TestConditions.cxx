@@ -191,8 +191,8 @@ TEST_CASE("Conditions", "[Conditions]") {
     const char* cfgpy =
         "#!/usr/bin/python3\n\nimport sys\n\nfrom LDMX.Framework import "
         "ldmxcfg\nfrom LDMX.Conditions import "
-        "SimpleCSVTableProvider\n\np=ldmxcfg.Process('test')\np.testMode="
-        "True\ncolumns=['A','B','C']\ncop=SimpleCSVTableProvider."
+        "SimpleCSVTableProvider\n\np=ldmxcfg.Process('test')\n"
+        "columns=['A','B','C']\ncop=SimpleCSVTableProvider."
         "SimpleCSVIntegerTableProvider('test_table_python',columns)\ncop."
         "validForAllRows([10,45,129])";
 
@@ -227,8 +227,8 @@ TEST_CASE("Conditions", "[Conditions]") {
     const char* cfgpy =
         "#!/usr/bin/python3\n\nimport sys\n\nfrom LDMX.Framework import "
         "ldmxcfg\nfrom LDMX.Conditions import "
-        "SimpleCSVTableProvider\n\np=ldmxcfg.Process('test')\np.testMode="
-        "True\ncolumns=['SQRT','EXP','LOG']\ncop=SimpleCSVTableProvider."
+        "SimpleCSVTableProvider\n\np=ldmxcfg.Process('test')\n"
+        "columns=['SQRT','EXP','LOG']\ncop=SimpleCSVTableProvider."
         "SimpleCSVDoubleTableProvider('test_table_file',columns)\ncop."
         "validForRuns('file:///tmp/dump_double.csv',0,100)\ncop.validForRuns('/"
         "tmp/dump_double.csv',101,120)\n";
@@ -258,10 +258,9 @@ TEST_CASE("Conditions", "[Conditions]") {
 
   SECTION("Testing HTTP loading") {
     const char* cfgpy =
-        "#!/usr/bin/python3\n\nimport sys\n\nfrom LDMX.Framework "
+        "import sys\n\nfrom LDMX.Framework "
         "import ldmxcfg\nfrom LDMX.Conditions import SimpleCSVTableProvider\n"
         "p=ldmxcfg.Process(\"test\")\n"
-        "p.testMode=True\n"
         "columns=[\"A\",\"Q\",\"V\"]\n"
         "cop=SimpleCSVTableProvider.SimpleCSVIntegerTableProvider(\"test_table_"
         "http\",columns)\n"
@@ -286,10 +285,10 @@ TEST_CASE("Conditions", "[Conditions]") {
 
   SECTION("Testing CSV metatable") {
     const char* cfgpy =
-        "#!/usr/bin/python3\n\nimport sys\n\nfrom LDMX.Framework "
-        "import ldmxcfg\nfrom LDMX.Conditions import SimpleCSVTableProvider\n"
+        "import sys\n"
+        "from LDMX.Framework import ldmxcfg\n"
+        "from LDMX.Conditions import SimpleCSVTableProvider\n"
         "p=ldmxcfg.Process(\"test\")\n"
-        "p.testMode=True\n"
         "columns=[\"PEDESTAL_ADC\"]\n"
         "cop=SimpleCSVTableProvider.SimpleCSVDoubleTableProvider(\"testbeam22_"
         "pedestals\",columns)\n"
