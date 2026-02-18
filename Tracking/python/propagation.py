@@ -10,13 +10,13 @@ class CustomStatePropagator(Producer):
     ----------
     field_map : string
         The field map
-    surf_location : double 
+    surf_location : double
         The downstream location of the surface to where to propagate the states
     nstates : int
         Number of states to be propagated
     bs_size : vector<double> [Y,X]
         The size of the generated beamspot in Y-X [mm]
-    prange : vector<double> [min,max] 
+    prange : vector<double> [min,max]
         Minimum and maximum momentum magnitude uniform pdf  [GeV]
     thetarange : vector<double> [min,max]
         Minimum and maximum theta angle uniform pdf

@@ -16,9 +16,11 @@ mip_si_energy : float
 from LDMX.Framework.ldmxcfg import Producer
 
 
-n_kelectrons_per_mip = 37.0 #thousand e-h pairs created per MIP <- derived from 0.5mm thick Si
+#thousand e-h pairs created per MIP <- derived from 0.5mm thick Si
+n_kelectrons_per_mip = 37.0
 charge_per_mip = n_kelectrons_per_mip*0.1602 #fC
-mip_si_energy = 0.130 #MeV - corresponds to ~3.5 eV per e-h pair <- derived from 0.5mm thick Si
+#MeV - corresponds to ~3.5 eV per e-h pair <- derived from 0.5mm thick Si
+mip_si_energy = 0.130
 
 def EcalHgcrocEmulator() :
     """Get an HGCROC emulator and configure for the ECal specifically
@@ -80,7 +82,8 @@ class EcalDigiProducer(Producer) :
         #Energy -> Volts converstion
         #   energy [MeV] (thousand electrons per MIP) (charge per thousand electrons fC)
         #        (avg pad capacitance pF) ( 1 MIP / energy [MeV] ) = voltage [mV]
-        #   this leads to ~ 470 mV/MeV or ~6.8 MeV maximum hit (if 320 fC is max ADC range)
+        # this leads to ~ 470 mV/MeV or ~6.8 MeV maximum hit (if 320 fC is max ADC
+        # range)
         self.mev = charge_per_mip/20./(mip_si_energy*si_thickness/0.5)
 
         # these averages are for configuring the noise generator
@@ -125,7 +128,7 @@ class EcalRecProducer(Producer) :
     simHitPassName : str
         Name of sim pass
     recHitCollName : str
-        Name of output collection 
+        Name of output collection
     secondOrderEnergyCorrection : float
         Correction to weighted energy
     layerWeights : list of floats
@@ -207,9 +210,11 @@ class EcalRecProducer(Producer) :
 
         #self.second_order_energy_correction = 4000. / 3940.5
         self.second_order_energy_correction = 8000. / 7998.3
-        # these layer weights were the 'dE' column of the table output by Detectors/util/ecal_layer_stack.py
+        # these layer weights were the 'dE' column of the table output by
+        # Detectors/util/ecal_layer_stack.py
         # See https://github.com/LDMX-Software/ldmx-sw/issues/1725
-        # TLDR: these are wrong but only off by an absolute value of ~0.2, future detector versions
+        # TLDR: these are wrong but only off by an absolute value of ~0.2, future
+        # detector versions
         # use the newer script with fixed material properties
         self.layerWeights = [
                 2.329, 4.339, 6.495, 7.490, 8.595, 10.253, 10.915, 10.915, 10.915, 10.915, 10.915,
@@ -227,7 +232,8 @@ class EcalRecProducer(Producer) :
         distribution (one mean, a low and high deviation) to the histogram.
         """
         self.second_order_energy_correction = 8000. / 7332.8
-        # these layer weights were the 'dE' column of the table output by Detectors/util/ecal_layer_stack.py
+        # these layer weights were the 'dE' column of the table output by
+        # Detectors/util/ecal_layer_stack.py
         self.layerWeights = [
             1.743, 3.401, 5.610, 6.715, 7.820, 10.030, 11.135, 11.135, 11.135, 11.135,
             11.135, 11.135, 11.135, 11.135, 11.135, 11.135, 11.135, 11.135, 11.135, 11.135,

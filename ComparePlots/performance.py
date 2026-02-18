@@ -24,4 +24,9 @@ def event_timing(d : Differ, out_dir = None) :
     for processor in ['__ALL__']:
         branch = f'performance/by_event/{processor}./{processor}.duration_'
         log.info(f'plotting event time for {processor}')
-        d.plot1d(branch, f'{processor} Event Time [s]', out_dir = out_dir, legend_kw = dict(loc='upper right'))
+        d.plot1d(
+            branch,
+            f'{processor} Event Time [s]',
+            out_dir=out_dir,
+            legend_kw=dict(loc='upper right')
+        )

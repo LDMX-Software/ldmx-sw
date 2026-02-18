@@ -1,4 +1,4 @@
-""" Helpful python configuration functions for getting the path to installed 
+""" Helpful python configuration functions for getting the path to installed
 data files.
 
 This assumes the installation directory can be accessed via the cmake variable
@@ -29,20 +29,20 @@ def makeFieldMapPath() -> str:
 
 def makeDetectorPath(det_name : str) -> str:
     """Get the full path to the detector description.
-    
-    This will generate a path to detector.gdml, the main entry point for the 
-    detector description, for a given detector name. 
+
+    This will generate a path to detector.gdml, the main entry point for the
+    detector description, for a given detector name.
 
     Parameters
     ----------
     det_name : str
-        The name of the detector e.g. ldmx-det-v14 
+        The name of the detector e.g. ldmx-det-v14
 
     Returns
     -------
     str
         Full path to the detector.gdml of the given detector.
-    
+
     """
     path = '@CMAKE_INSTALL_PREFIX@/data/detectors/' + det_name + '/detector.gdml'
     if not os.path.isfile(path) :

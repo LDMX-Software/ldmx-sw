@@ -16,20 +16,12 @@ n_samp=int(sys.argv[4])
 log_name= p.output_files[0].replace(".root", "_toLDMX.log")
 
 
-if len(sys.argv) > 5 :
-    map_file=sys.argv[5]
-else :
-    map_file="toyChannelMap_4modules_14lanes.txt"
+map_file = (sys.argv[5] if len(sys.argv) > 5
+    else "toyChannelMap_4modules_14lanes.txt")
 
-if len(sys.argv) > 6 :
-    log_verbosity=int(sys.argv[6])
-else :
-    log_verbosity=2  #default
+log_verbosity = int(sys.argv[6]) if len(sys.argv) > 6 else 2 #default
 
-if len(sys.argv) > 7 :
-    n_chan=int(sys.argv[7])
-else :
-    n_chan=14*6 #default
+n_chan = int(sys.argv[7]) if len(sys.argv) > 7 else 14*6 #default
 
 from LDMX.TrigScint.zccmFormat import ZCCMDecoder
 dec=ZCCMDecoder(map_file)

@@ -8,9 +8,9 @@ Two module-wide parameters are defined.
 Attributes
 ----------
 n_pe_per_mip: float
-    Number of photo-electrons (PEs) created for each MIP 
+    Number of photo-electrons (PEs) created for each MIP
 mip_energy: float
-    Energy [MeV] of a single MIP 
+    Energy [MeV] of a single MIP
 """
 
 from LDMX.Framework.ldmxcfg import Producer
@@ -18,7 +18,8 @@ from LDMX.Tools.hgcroc_emulator import HgcrocEmulator
 
 
 n_pe_per_mip = 68. #PEs created per MIP
-mip_energy = 4.66 #MeV - measured 1.4 MeV for a 6mm thick tile, so for 20mm bar = 1.4*20/6
+#MeV - measured 1.4 MeV for a 6mm thick tile, so for 20mm bar = 1.4*20/6
+mip_energy = 4.66
 
 class HcalHgcrocEmulator(HgcrocEmulator) :
     """
@@ -44,7 +45,8 @@ class HcalHgcrocEmulator(HgcrocEmulator) :
         self.time_up_slope = -9.897
         self.rate_dn_slope = 0.0279
         self.time_dn_slope = 45.037
-        self.time_peak    = 12.698 # the time such that with [parameter 4]=0, the pulse peaks at t=0
+        # the time such that with [parameter 4]=0, the pulse peaks at t=0
+        self.time_peak    = 12.698
 
     def calculateVoltageHcal(self, pe) :
         """Calculate the voltage signal [mV] of the input number of photo-electrons (PEs)
@@ -116,11 +118,11 @@ class HcalDigiProducer(Producer) :
     MeV : float
         Conversion between energy [MeV] and voltage [mV]
     input_coll_name : str
-        Name of input collection  
+        Name of input collection
     input_pass_name : str
-        Name of input pass 
-    digi_coll_name : str    
-        Name of digi collection                                                                                                                                                                          
+        Name of input pass
+    digi_coll_name : str
+        Name of digi collection
     """
 
     def __init__(self, instance_name = 'hcal_digis') :
@@ -129,7 +131,8 @@ class HcalDigiProducer(Producer) :
         self.hgcroc = HcalHgcrocEmulator()
 
         #Energy -> Volts converstion
-        # energy [MeV] ( 1 MIP / energy per MIP [MeV] ) ( voltage per MIP [mV] / 1 MIP ) = voltage [mV]
+        # energy [MeV] ( 1 MIP / energy per MIP [MeV] ) ( voltage per MIP [mV] / 1 MIP )
+        # = voltage [mV]
         # assuming 1 PEs ~ 5mV ->  self.MeV = 72.961 mV/MeV
         self.mev = (1./mip_energy)*self.hgcroc.calculateVoltageHcal( n_pe_per_mip )
 
@@ -175,8 +178,8 @@ class HcalRecProducer(Producer) :
         Name of digi pass
     sim_hit_coll_name : str
         Name of simHit collection
-    sim_hit_pass_name : str 
-        Name of simHit pass 
+    sim_hit_pass_name : str
+        Name of simHit pass
     rec_hit_coll_name : str
         Name of rec_hit collection
     """
@@ -246,7 +249,7 @@ class HcalSingleEndRecProducer(Producer) :
 
 class HcalDoubleEndRecProducer(Producer) :
     """ Configuration for the double ended Hcal Rec Producer
-    
+
     Attributes
     ----------
     -  mip_energy : float

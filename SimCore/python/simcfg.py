@@ -70,7 +70,8 @@ class PrimaryGenerator:
     def __init__(self, instance_name, class_name, module_name = 'SimCore_Generators'):
         self.class_name    = class_name
         self.instance_name = instance_name
-        self.beam_spot_smear = [20., 80., 0.]  # Per-generator beam spot smearing (default values)
+        # Per-generator beam spot smearing (default values)
+        self.beam_spot_smear = [20., 80., 0.]
 
         from LDMX.Framework import ldmxcfg
         ldmxcfg.Process.add_module(module_name)

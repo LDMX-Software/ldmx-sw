@@ -30,12 +30,12 @@ ene_ang_pos_cmds = [
         ]
 
 # one muon and one neutron both with the above initial kinematics
-gps_cmds = ['/gps/particle mu-'] + ene_ang_pos_cmds + [
+gps_cmds = ['/gps/particle mu-',
+        *ene_ang_pos_cmds,
         '/gps/source/add 1',
-        '/gps/particle neutron'
-        ] + ene_ang_pos_cmds + [
-        '/gps/source/multiplevertex True'
-        ]
+        '/gps/particle neutron',
+        *ene_ang_pos_cmds,
+        '/gps/source/multiplevertex True']
 
 my_sim.generators = [gen.gps('muon_neutron',gps_cmds)]
 

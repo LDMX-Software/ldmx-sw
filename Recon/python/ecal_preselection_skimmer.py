@@ -3,7 +3,7 @@
 Sets all the default parameters that high so it leads to no preselection.
 
 Attributes:
-------------- 
+-------------
 
 use_rechits: bool
     If True, use rechit-based preselection. If False, use veto-based preselection (default: False)
@@ -33,7 +33,7 @@ summed_tight_iso_max: double
    Max value for summed tigh iso (veto mode only)
 ecal_back_energy_max: double
     Max value for ecal back energy (veto mode only)
- shower_rms_max: double 
+ shower_rms_max: double
     Max value for shower rms
  shower_y_std_max: double
    Max value for shower rms in Y
@@ -48,8 +48,8 @@ n_straight_tracks_max: int
 bdt_disc_min: double
     Min value for the BDT disc variable
 fiducial_level: int
-    0: don't care if it's fiducial or not, 
-    1: keep fiducial events only, 
+    0: don't care if it's fiducial or not,
+    1: keep fiducial events only,
     2: keep non-fid events only
 
 
@@ -57,11 +57,11 @@ fiducial_level: int
 Examples
 --------
     from LDMX.Recon.ecalPreselectionSkimmer import EcalPreselectionSkimmer
-    
+
     # Veto-based mode (default):
     ecal_pres_skimmer = EcalPreselectionSkimmer()
     p.sequence.append( ecal_pres_skimmer )
-    
+
     # Rechit-based mode:
     ecal_pres_skimmer = EcalPreselectionSkimmer()
     ecal_pres_skimmer.use_rechits = True

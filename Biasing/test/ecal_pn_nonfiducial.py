@@ -11,7 +11,8 @@ from LDMX.Hcal import hcal_geometry
 from LDMX.SimCore import generators
 
 
-mysim = ecal.nonfiducial_photo_nuclear('ldmx-det-v14-8gev', generators.single_8gev_e_upstream_tagger())
+mysim = ecal.nonfiducial_photo_nuclear('ldmx-det-v14-8gev',
+        generators.single_8gev_e_upstream_tagger())
 mysim.description = "ECal Non-Fiducial Test Simulation"
 
 #from LDMX.Biasing import util

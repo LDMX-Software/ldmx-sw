@@ -31,7 +31,11 @@ def kinematics(d : Differ, out_dir = None) :
     ]
     for h, name in features :
         log.info(f'plotting {h}')
-        d.plot1d(f'DarkBremDQM/{h}', name, out_dir = out_dir, density=True, ylabel='Weighted Fraction')
+        d.plot1d(
+            f'DarkBremDQM/{h}', name,
+            out_dir=out_dir, density=True,
+            ylabel='Weighted Fraction'
+        )
 
     log.info('plotting dark_brem_element')
     d.plot1d(

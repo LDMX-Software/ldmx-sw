@@ -3,7 +3,7 @@
 Sets all parameters to reasonable defaults.
 
 Attributes:
-------------- 
+-------------
 trigger_list
     the collection of each trigger we perform sequential skimming with.
 

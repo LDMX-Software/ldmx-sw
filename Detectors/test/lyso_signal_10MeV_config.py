@@ -79,5 +79,5 @@ p.sequence.extend([
         TrigScintClusterProducer.pad3(),
         trig_scint_track,
         count, TriggerProcessor('trigger', 8000.),
-        dqm.DarkBremInteraction()
-        ] + dqm.all_dqm)
+        dqm.DarkBremInteraction(),
+        *dqm.all_dqm])

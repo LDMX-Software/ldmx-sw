@@ -15,11 +15,16 @@ from LDMX.Conditions.SimpleCSVTableProvider import (
 
 
 HcalTrigPrimConditionsHardcode=SimpleCSVIntegerTableProvider("HcalTrigPrimDigiConditions",["ADC_PEDESTAL","ADC_THRESHOLD","TOT_PEDESTAL","TOT_THRESHOLD","TOT_GAIN"])
-HcalTrigPrimConditionsHardcode.validForAllRows([ 1 , # ADC_PEDESTAL -- should match value from HgcrocEmulator
+# ADC_PEDESTAL -- should match value from HgcrocEmulator
+HcalTrigPrimConditionsHardcode.validForAllRows([ 1 ,
                                                  5 , # ADC_THRESHOLD -- current noise is
-                                                 1,  # TOT_PEDESTAL -- currently set to match ADC pedestal
-                                                 10000,  # TOT_THRESHOLD -- rather large value...
-                                                 # Rounding because trigger primitives shouldn't represent floating point operations.
+                                                 # TOT_PEDESTAL -- currently set to match ADC pedestal
+                                                 1,
+                                                 # TOT_THRESHOLD -- rather large value...
+                                                 10000,
+                                                 # Rounding because trigger primitives
+                                                 # shouldn't represent floating point
+                                                 # operations.
                                                  # See https://github.com/LDMX-Software/Hcal/issues/66#issuecomment-1719663799
                                                  round(2.5) ] # TOT_GAIN, ratio of recon TOT gain over recon ADC gain
                                                )

@@ -11,7 +11,7 @@ from LDMX.Framework import ldmxcfg
 
 class HcalReconConditionsProvider(ldmxcfg.ConditionsObjectProvider) :
     """The HcalReconConditions object packages the reconstructing conditions tables together
-    
+
     This makes the processor using the recon conditions less dependent on the underlying structure.
 
     Parameters

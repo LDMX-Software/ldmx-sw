@@ -89,8 +89,8 @@ class histogram:
             return "Name: %s x Label: %s" % (self.name,self.xlabel)
 
     def __str__(self):
-        """Stringify this object. 
-        
+        """Stringify this object.
+
         Helpful for printing it in python to make sure the passed variables are what you want.
 
         Returns

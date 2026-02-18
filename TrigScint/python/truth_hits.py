@@ -1,4 +1,4 @@
-"""Configuration for truth hit producer 
+"""Configuration for truth hit producer
 
 Sets all parameters to reasonable defaults.
 

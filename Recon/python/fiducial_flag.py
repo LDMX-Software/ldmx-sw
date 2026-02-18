@@ -6,7 +6,7 @@ from LDMX.Framework import ldmxcfg
 Sets all parameters to defaults.
 
 Attributes:
-------------- 
+-------------
 min_p_mag : double
     Minimum energy of the recoil electron at production.
 min_tracker_hits: int

@@ -22,7 +22,8 @@ truth_tracking.p_cutEcal     = 0. # In MeV
 
 # Smearing Processor - Tagger
 # Runs G4 hit smearing producing measurements in the Tagger tracker.
-# Hits that belong to the same sensor with the same trackID are merged together to reduce combinatorics
+# Hits that belong to the same sensor with the same trackID are merged together to
+# reduce combinatorics
 digi_tagger = tracking.DigitizationProcessor("DigitizationProcessor")
 digi_tagger.hit_collection = "TaggerSimHits"
 digi_tagger.out_collection = "DigiTaggerSimHits"
@@ -33,9 +34,12 @@ digi_recoil.hit_collection = "RecoilSimHits"
 digi_recoil.out_collection = "DigiRecoilSimHits"
 
 # Seed Finder Tagger
-# This runs the track seed finder looking for 5 hits in consecutive sensors and fitting them with a
-# parabola+linear fit. Compatibility with expected particles is checked by looking at the track
-# parameters and the impact parameters at the target or generation point. For the tagger one should look
+# This runs the track seed finder looking for 5 hits in consecutive sensors and fitting
+# them with a
+# parabola+linear fit. Compatibility with expected particles is checked by looking at
+# the track
+# parameters and the impact parameters at the target or generation point. For the tagger
+# one should look
 # for compatibility with the beam orbit / beam spot
 seeder_tagger = tracking.SeedFinderProcessor("SeedTagger")
 seeder_tagger.input_hits_collection =  digi_tagger.out_collection

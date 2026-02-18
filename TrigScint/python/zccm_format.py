@@ -10,7 +10,8 @@ p.sequence.extend([ dec ])
 
 """
 
-#NOTE this needs rewriting substantially to deal with the fact that we're doing all modules in one stream
+#NOTE this needs rewriting substantially to deal with the fact that we're doing all
+#modules in one stream
 
 from LDMX.Framework import ldmxcfg
 

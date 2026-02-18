@@ -1,21 +1,21 @@
 """ filters
-Examples of how each filter is configured for biased MC generation. 
+Examples of how each filter is configured for biased MC generation.
 
-    The configurations below reflect the nominal values currently being used 
+    The configurations below reflect the nominal values currently being used
     for large scale production.  When debugging, it's best to create these
-    generators directly. 
+    generators directly.
 """
 
 from LDMX.SimCore import simcfg
 
 
 class TargetBremFilter(simcfg.UserAction):
-    """ Configuration for filtering events that don't see a hard brem in the target. 
+    """ Configuration for filtering events that don't see a hard brem in the target.
 
     An event is vetoed if one of two conditions is satisfied:
     1) The recoil electron exits the target area with an energy above 1500 MeV
     2) The recoil electorn brems, but the energy of at least one of the brems
-    isn't above 2500 MeV. 
+    isn't above 2500 MeV.
 
     Parameters
     ----------
@@ -48,7 +48,8 @@ class NonFiducialFilter(simcfg.UserAction):
     recoil_max_p : float
         Maximum momentum the recoil electron can have [MeV]
     abort_fiducial: bool
-        If true, aborts fiducial events. Otherwise, the fiducial events will be only tagged
+        If true, aborts fiducial events.
+        Otherwise, the fiducial events will be only tagged
     """
 
     def __init__(self,recoil_max_momentum, abort_fid_event = True) :
@@ -61,7 +62,8 @@ class NonFiducialFilter(simcfg.UserAction):
         self.abort_fiducial = abort_fid_event
 
 class EcalProcessFilter(simcfg.UserAction):
-    """ Configuration for filtering events that don't see a hard brem undergo a photo-nuclear reaction in the ECal. 
+    """ Configuration for filtering events that don't see a hard brem 
+    undergo a photo-nuclear reaction in the ECal.
 
     Parameters
     ----------
@@ -85,8 +87,8 @@ class DeepEcalProcessFilter(simcfg.UserAction):
     bias_threshold: double
         Threshold for minimum energy that the products should have
     processes: vector of str
-        The allowed processes that can happen deep inside the ECAL, default is
-        conversion (conv) and photoelectron (photo)
+        The allowed processes that can happen deep inside the ECAL, 
+        default is conversion (conv) and photoelectron (photo)
     ecal_min_z: double
         Minimum Z location where the deep process should happen
     require_photon_from_target: bool
@@ -94,7 +96,8 @@ class DeepEcalProcessFilter(simcfg.UserAction):
         Default is False
     """
 
-    def __init__(self, bias_threshold, processes, ecal_min_z, require_photon_from_target) :
+    def __init__(self, bias_threshold, processes, ecal_min_z,
+        require_photon_from_target) :
         super().__init__("deepecal_filter", "biasing::DeepEcalProcessFilter")
 
         from LDMX.Biasing import include
@@ -106,7 +109,7 @@ class DeepEcalProcessFilter(simcfg.UserAction):
         self.require_photon_from_target = require_photon_from_target
 
 class TargetENFilter(simcfg.UserAction) :
-    """ Configuration for filtering electro-nuclear events in the target. 
+    """ Configuration for filtering electro-nuclear events in the target.
 
     Parameters
     ----------
@@ -199,7 +202,8 @@ class TaggerVetoFilter(simcfg.UserAction):
         self.reject_events_missing_tagger = reject_events_missing_tagger
 
 class PrimaryToEcalFilter(simcfg.UserAction) :
-    """ Configuration used to reject events where the primary doesn't reach the ecal with a mimimum energy
+    """ Configuration used to reject events 
+    where the primary doesn't reach the ecal with a mimimum energy
 
     Parameters
     ----------
@@ -208,7 +212,8 @@ class PrimaryToEcalFilter(simcfg.UserAction) :
     """
 
     def __init__(self,thresh) :
-        super().__init__('primary_to_ecal_with_%d'%thresh,'biasing::PrimaryToEcalFilter')
+        super().__init__('primary_to_ecal_with_%d'%thresh,
+        'biasing::PrimaryToEcalFilter')
 
         from LDMX.Biasing import include
         include.library()
@@ -216,7 +221,8 @@ class PrimaryToEcalFilter(simcfg.UserAction) :
         self.threshold = thresh
 
 class MidShowerNuclearBkgdFilter(simcfg.UserAction) :
-    """ Configuration used to reject events that don't have enough energy given to the input process.
+    """ Configuration used to reject events 
+    that don't have enough energy given to the input process.
 
     Parameters
     ----------
@@ -225,7 +231,8 @@ class MidShowerNuclearBkgdFilter(simcfg.UserAction) :
     """
 
     def __init__(self,thresh) :
-        super().__init__('midshower_nuclear_min_%d_MeV'%(thresh),'biasing::MidShowerNuclearBkgdFilter')
+        super().__init__('midshower_nuclear_min_%d_MeV'%(thresh),
+        'biasing::MidShowerNuclearBkgdFilter')
 
         from LDMX.Biasing import include
         include.library()
@@ -233,7 +240,8 @@ class MidShowerNuclearBkgdFilter(simcfg.UserAction) :
         self.threshold = thresh
 
 class MidShowerDiMuonBkgdFilter(simcfg.UserAction) :
-    """ Configuration used to reject events that don't have enough energy given to muon conversion
+    """ Configuration used to reject events that don't have enough energy 
+    given to muon conversion
 
     Parameters
     ----------
@@ -242,7 +250,8 @@ class MidShowerDiMuonBkgdFilter(simcfg.UserAction) :
     """
 
     def __init__(self,thresh) :
-        super().__init__('midshower_dimuon_min_%d_MeV'%(thresh),'biasing::MidShowerDiMuonBkgdFilter')
+        super().__init__('midshower_dimuon_min_%d_MeV'%(thresh),
+        'biasing::MidShowerDiMuonBkgdFilter')
 
         from LDMX.Biasing import include
         include.library()

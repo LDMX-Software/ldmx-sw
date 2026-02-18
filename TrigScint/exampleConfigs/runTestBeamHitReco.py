@@ -9,15 +9,9 @@ input_pass_name="conv"
 n_ev=400000
 p.max_events = n_ev
 
-if len(sys.argv) > 2 :
-    time_sample=int(sys.argv[2])
-else :
-    time_sample=1 #15
+time_sample = int(sys.argv[2]) if len(sys.argv) > 2 else 1
 
-if len(sys.argv) > 3 :
-    pulse_width=int(sys.argv[3])
-else :
-    pulse_width=5
+pulse_width = int(sys.argv[3]) if len(sys.argv) > 3 else 5
 
 from LDMX.TrigScint.trigScint import TestBeamHitProducer
 
@@ -33,15 +27,20 @@ default_run="decoded_data_20251208_225935_dark_current_kicker_trigger_parsed_50k
 data_path=path.dirname( sys.argv[1] ) #extract the path to where we keep the data
 default_gain_file_name=data_path+"/"+default_run+"_gains.txt"
 
-#if for some reason, gains are not derived for this run. probably too low stats --> fits not converging. bet on that inter-channel gain differences are larger than variations in channel over time; then it is better to use an old file than a flat default gain. also, this could be edited to become an average file.
+#if for some reason, gains are not derived for this run. probably too low stats --> fits
+#not converging. bet on that inter-channel gain differences are larger than variations
+#in channel over time; then it is better to use an old file than a flat default gain.
+#also, this could be edited to become an average file.
 if not exists(gain_file_name) :
     gain_file_name=default_gain_file_name
 print("using gain file "+gain_file_name)
 if exists(gain_file_name) :
     with open(gain_file_name) as f:
         for line in f.readlines() :
-            line=line.split(',')  #values are comma separated, one channel per line: channelNB, gain
-            gain_list[ int(line[0].strip()) ] = float(line[1].strip()) #don't assume ordered
+             #values are comma separated, one channel per line: channelNB, gain
+            line=line.split(',')
+            #don't assume ordered
+            gain_list[ int(line[0].strip()) ] = float(line[1].strip())
 
 print("Using this list of gains:")
 print(gain_list)
@@ -56,7 +55,7 @@ ped_list=[-2.]*n_channels
 #            -2.3, #-2.1,   # #5
 #            1.0,  #2.9,    # #6
 #            -1.2, #-2,     # #7
-#            4.9,  #-0.4,   # #8  dead channel in spring 2022 testbeam at CERN, most of the runs
+#            4.9,  #-0.4,   # #8  dead channel in spring 2022 testbeam at CERN
 #            -4.4, #-1.1,   # #9: dead channel in TTU teststand setup
 #            -0.1, #1.5,    # #10
 #            -1.7, #2.0,    # #11
@@ -76,7 +75,8 @@ if not exists(ped_file_name) :
 if exists(ped_file_name) :
     with open(ped_file_name) as f:
         for line in f.readlines() :
-            line=line.split(',')  #values are comma separated, one channel per line: channelNB, ped
+            #values are comma separated, one channel per line: channelNB, ped
+            line=line.split(',')
             ped_list[ int(line[0].strip()) ] = float(line[1].strip())
 
 print("Using this list of peds:")

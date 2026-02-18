@@ -7,7 +7,7 @@ Examples
     from LDMX.TrigScint.trigScint import TrigScintDigiProducer
     p.sequence.extend([ TrigScintDigiProducer.pad1() , TrigScintDigiProducer.pad2() , TrigScintDigiProducer.pad3() ])
     from LDMX.TrigScint.trigScint import TrigScintClusterProducer
-    p.sequence.extend([ TrigScintClusterProducer.pad1() , TrigScintClusterProducer.pad2(), TrigScintClusterProducer.pad3() ]) 
+    p.sequence.extend([ TrigScintClusterProducer.pad1() , TrigScintClusterProducer.pad2(), TrigScintClusterProducer.pad3() ])
 
 """
 
@@ -137,9 +137,11 @@ class TestBeamHitProducer(ldmxcfg.Producer) :
         self.input_pass_name=""   #take any pass
         self.output_collection="testBeamHitsPad1"
         self.verbose = False
-        self.do_clean_hits = False   #whether to apply quality criteria in hit reconstruction
+        #whether to apply quality criteria in hit reconstruction
+        self.do_clean_hits = False
         self.n_instrumented_channels=12 #number of channels
-        self.start_sample=10   # Sample where pulse is expected to start (triggered mode)
+        # Sample where pulse is expected to start (triggered mode)
+        self.start_sample=10
         self.pulse_width=5     # Number of consecutive samples to include in the pulse
         self.pulse_width_lyso=8 # as above, for LYSO
         self.gain = [2.e6]*12      # SiPM Gain
@@ -179,7 +181,8 @@ class TestBeamClusterProducer(ldmxcfg.Producer) :
         self.input_collection="testBeamHitsPad1"
         self.input_pass_name="" #take any pass
         self.output_collection="TestBeamClustersPad1"
-        self.do_clean_hits = False   #whether to apply quality criteria from hit reconstruction
+        #whether to apply quality criteria from hit reconstruction
+        self.do_clean_hits = False
         self.verbosity = 0
 
     def pad1() :

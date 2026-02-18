@@ -37,12 +37,12 @@ def get_cmds(part='e-', energy_range=(0.1,3.), theta_range_deg=(0.,20.), zpos=0.
 
 cocktail_commands=[]
 cocktail_commands += get_cmds('e-')
-cocktail_commands += ['/gps/source/add 1'] + get_cmds('e+')
-cocktail_commands += ['/gps/source/add 1'] + get_cmds('gamma')
-cocktail_commands += ['/gps/source/add 1'] + get_cmds('pi-')
-cocktail_commands += ['/gps/source/add 1'] + get_cmds('pi+')
-cocktail_commands += ['/gps/source/add 1'] + get_cmds('mu-')
-cocktail_commands += ['/gps/source/add 1'] + get_cmds('mu+')
-cocktail_commands += ['/gps/source/add 1'] + get_cmds('proton')
-cocktail_commands += ['/gps/source/add 1'] + get_cmds('neutron')
+cocktail_commands += ['/gps/source/add 1', *get_cmds('e+')]
+cocktail_commands += ['/gps/source/add 1', *get_cmds('gamma')]
+cocktail_commands += ['/gps/source/add 1', *get_cmds('pi-')]
+cocktail_commands += ['/gps/source/add 1', *get_cmds('pi+')]
+cocktail_commands += ['/gps/source/add 1', *get_cmds('mu-')]
+cocktail_commands += ['/gps/source/add 1', *get_cmds('mu+')]
+cocktail_commands += ['/gps/source/add 1', *get_cmds('proton')]
+cocktail_commands += ['/gps/source/add 1', *get_cmds('neutron')]
 cocktail_commands += ['/gps/source/multiplevertex False']  # choose 1 randomly

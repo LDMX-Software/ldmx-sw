@@ -1,6 +1,6 @@
 """ Module for looping through event trees in python-based analyses
 
-The ROOT dictionary for our event objects is loaded indirectly by 
+The ROOT dictionary for our event objects is loaded indirectly by
 loading the 'libFramework.so' dynamic library. This library is linked
 to all the dictionaries with our event objects, so it loads all of them
 with itself. If ROOT fails to load the library, we print a warning but
@@ -8,7 +8,7 @@ continue because some analyses can be done without the dictionary loaded.
 
 Examples
 --------
-    
+
     from LDMX.Framework import event_tree
 
     event_tree = EventTree.EventTree('my_events.root')
@@ -37,7 +37,7 @@ class EventTree :
 
     This class is its own iterator. We use the opportunity
     to increment the entry of the tree that is loaded in memory
-    and stop iteration when we reach the number of events in 
+    and stop iteration when we reach the number of events in
     the tree.
 
     Additionally, the attribute retrieval mechanism is overridden

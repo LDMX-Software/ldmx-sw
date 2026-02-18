@@ -58,7 +58,7 @@ class simulator(Producer):
     scoringPlanes : str, optional
         Full path to the scoring planes gdml (suggested to use setDetector)
     time_shift_primaries : bool
-        Should we shift the times of primaries so that z=0mm corresponds to t=0ns? 
+        Should we shift the times of primaries so that z=0mm corresponds to t=0ns?
     preInitCommands : list of str, optional
         Geant4 commands to run before the run is initialized
     postInitCommands : list of str, optional
@@ -145,8 +145,8 @@ class simulator(Producer):
                 sds.TrackerSD.recoil(),
                 sds.HcalSD(),
                 sds.EcalSD(),
-                sds.TrigScintSD.target()
-                ] + trigscint
+                sds.TrigScintSD.target(),
+                *trigscint]
         if include_scoring_planes_minimal :
             self.scoring_planes = mP.makeScoringPlanesPath( det_name )
             self.sensitive_detectors.extend([

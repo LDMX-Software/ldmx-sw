@@ -1,4 +1,4 @@
-"""Helpful python configuration functions for getting the path to installed data files. 
+"""Helpful python configuration functions for getting the path to installed data files.
 
 This file was configured by cmake for the installation of ldmx-sw at
    @CMAKE_INSTALL_PREFIX@

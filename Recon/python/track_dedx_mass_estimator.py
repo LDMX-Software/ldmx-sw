@@ -1,16 +1,16 @@
 """Configuration for TrackDeDxMassEstimator
 
-The tracker dE/dx vs momentum 2d distribution profile 
-histogram can be fitted using an approximated 
+The tracker dE/dx vs momentum 2d distribution profile
+histogram can be fitted using an approximated
 Bethe-Bloch parametrization at low relativistic regime:
     dE/dx = K * m^2 / p^2 + C,
 where m is the particle mass, p is the particle momentum,
 K and C are fit parameters.
-Using the fitted result of the parameters, the mass of 
+Using the fitted result of the parameters, the mass of
 the particle can be calculated from its dE/dx and momentum.
 
 Attributes:
-------------- 
+-------------
 track_collection : string
     Name of the track collection used as input
 fit_res_C : float

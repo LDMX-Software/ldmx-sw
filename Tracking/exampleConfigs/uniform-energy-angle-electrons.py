@@ -38,7 +38,8 @@ sim.generators = [
         # angular distribution, isotropic with maximum polar angle relative to z-axis
         '/gps/direction 0 0 1',
         # the default direction is negative z (like cosmics coming down from the sky)
-        # so we need to rotate the frame of the angular distribution to be pointed along positive z
+        # so we need to rotate the frame of the angular distribution to be pointed along
+        # positive z
         '/gps/ang/rot1 1 0 0',
         '/gps/ang/rot2 0 -1 0',
         '/gps/ang/type cos', # isotropic angular distribution
@@ -76,14 +77,17 @@ truth_tracking.p_cut             = 0.05 # In MeV
 truth_tracking.pz_cut            = 0.03
 truth_tracking.p_cutEcal         = 0. # In MeV
 
-# These smearing quantities are default. We expect around 6um hit resolution in bending plane
-# v-smearing is actually not used as 1D measurements are used for tracking. These smearing parameters
+# These smearing quantities are default. We expect around 6um hit resolution in bending
+# plane
+# v-smearing is actually not used as 1D measurements are used for tracking. These
+# smearing parameters
 # are fed to the digitization producer.
 u_smearing = 0.006       #mm
 v_smearing = 0.000001    #mm
 
 # Runs G4 hit smearing producing measurements in the Tagger tracker.
-# Hits that belong to the same sensor with the same trackID are merged together to reduce combinatorics
+# Hits that belong to the same sensor with the same trackID are merged together to
+# reduce combinatorics
 # Smearing Processor - Recoil
 digi_recoil = tracking.DigitizationProcessor("DigitizationProcessorRecoil")
 digi_recoil.hit_collection = "RecoilSimHits"
@@ -93,9 +97,12 @@ digi_recoil.sigma_u = u_smearing
 digi_recoil.sigma_v = v_smearing
 
 
-# This runs the track seed finder looking for 5 hits in consecutive sensors and fitting them with a
-# parabola+linear fit. Compatibility with expected particles is checked by looking at the track
-# parameters and the impact parameters at the target or generation point. For the tagger one should look
+# This runs the track seed finder looking for 5 hits in consecutive sensors and fitting
+# them with a
+# parabola+linear fit. Compatibility with expected particles is checked by looking at
+# the track
+# parameters and the impact parameters at the target or generation point. For the tagger
+# one should look
 # for compatibility with the beam orbit / beam spot
 #Seed finder processor - Recoil
 seeder_recoil = tracking.SeedFinderProcessor("SeedRecoil")

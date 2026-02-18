@@ -11,7 +11,7 @@ class MyProcessor(ldmxcfg.Producer) :
         super().__init__( name , "recon::MyProcessor" , "Recon" )
 
     Calls the constructor for ldmxcfg.Producer, which is how we have handles
-    on this processor. You need to give the actual C++ class name with 
+    on this processor. You need to give the actual C++ class name with
     namespace(s) as the second entry, and the name of the module the C++ class
     is in as the third entry.
 

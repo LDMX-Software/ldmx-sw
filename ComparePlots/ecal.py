@@ -18,7 +18,11 @@ def digi_verify(d : Differ, out_dir = None) :
         Differ containing files that are not event files (presumably histogram files)
     """
 
-    col, name = 'EcalDigiVerify/num_sim_hits_per_cell', 'Number of SimHits per ECal Cell (excluding empty rec cells)'
+    col = 'EcalDigiVerify/num_sim_hits_per_cell'
+    name = (
+        'Number of SimHits per ECal Cell'
+        ' (excluding empty rec cells)'
+    )
     log.info(f'plotting {col}')
     d.plot1d(col, name, out_dir = out_dir, legend_kw = dict(loc='upper left'))
 
@@ -29,7 +33,10 @@ def digi_verify(d : Differ, out_dir = None) :
     ]
     for col, name in features :
         log.info(f'plotting {col}')
-        d.plot1d(col, name, out_dir = out_dir, rebin = 10 if 'total_rec_energy' in col else 1)
+        rebin = 10 if 'total_rec_energy' in col else 1
+        d.plot1d(
+            col, name, out_dir=out_dir, rebin=rebin
+        )
 
 @plotter
 def shower_feats(d : Differ, out_dir = None) :
@@ -76,7 +83,8 @@ def mip_tracking(d : Differ, out_dir = None) :
     d.plot1d(col, name, out_dir = out_dir, legend_kw = dict(loc='upper left'))
 
     features = [
-        ('EcalMipTrackingFeatures/n_linreg_segments', 'Number of Linear Regression Segments'),
+        ('EcalMipTrackingFeatures/n_linreg_segments',
+         'Number of Linear Regression Segments'),
         ('EcalMipTrackingFeatures/first_near_photon_layer', 'First Near Photon Layer'),
         ('EcalMipTrackingFeatures/ep_ang', 'Electron Photon Angle [degree]'),
         ('EcalMipTrackingFeatures/ep_sep', 'Electron Photon Separation'),
@@ -123,12 +131,17 @@ def clue_cluster(d : Differ, out_dir = None) :
     """
 
     features = [
-        ('EcalClusterAnalyzer/number_of_clusters_first_layer', 'Number of CLUE clusters on the first layer'),
-        ('EcalClusterAnalyzer/number_of_clusters_per_layer', 'Number of CLUE clusters per layer'),
+        ('EcalClusterAnalyzer/number_of_clusters_first_layer',
+         'Number of CLUE clusters on the first layer'),
+        ('EcalClusterAnalyzer/number_of_clusters_per_layer',
+         'Number of CLUE clusters per layer'),
         ('EcalClusterAnalyzer/number_of_clusters', 'Total number of CLUE clusters'),
         ('EcalClusterAnalyzer/energy_percentage', 'Percentage of energy in cluster'),
-        ('EcalClusterAnalyzer/clusterless_hits_percentage', 'Percentage of hits not in a cluster'),
-        ('EcalClusterAnalyzer/sp_clue_distance', 'CLUE centroid to SP ele distance in xy-plane [mm]'),
+        ('EcalClusterAnalyzer/clusterless_hits_percentage',
+         'Percentage of hits not in a cluster'),
+        ('EcalClusterAnalyzer/sp_clue_distance',
+         'CLUE centroid to SP ele distance'
+         ' in xy-plane [mm]'),
         ('EcalClusterAnalyzer/sp_clue_x_residual', 'CLUE centroid X - SP ele X [mm]'),
         ('EcalClusterAnalyzer/sp_clue_y_residual', 'CLUE centroid Y - SP ele Y [mm]'),
         ('EcalClusterAnalyzer/correctly_predicted_events', ''),

@@ -9,16 +9,14 @@ import sys
 input_pass_name="conv"
 n_ev=400000
 
-if len(sys.argv) > 2 :
-    start_sample=int(sys.argv[2])
-else :
-    start_sample=0
+start_sample = int(sys.argv[2]) if len(sys.argv) > 2 else 0
 
 
 from LDMX.TrigScint.trigScint import QIEAnalyzer
 
 
-# ------------------- all set; setup in detail, and run with these settings ---------------
+# ------------------- all set; setup in detail, and run with these settings
+# ---------------
 
 n_channels=24
 gain_list=[2e6]*n_channels
@@ -31,7 +29,10 @@ default_run="decoded_data_20251208_225935_dark_current_kicker_trigger_parsed_50k
 data_path=path.dirname( sys.argv[1] ) #extract the path to where we keep the data
 default_gain_file_name=data_path+"/"+default_run+"_gains.txt"
 
-#if for some reason, gains are not derived for this run. probably too low stats --> fits not converging. bet on that inter-channel gain differences are larger than variations in one channel over time; then it is better to use an old file than a flat default gain. also, this could be edited to become an average file.
+#if for some reason, gains are not derived for this run. probably too low stats --> fits
+#not converging. bet on that inter-channel gain differences are larger than variations
+#in one channel over time; then it is better to use an old file than a flat default
+#gain. also, this could be edited to become an average file.
 if not exists(gain_file_name) :
     gain_file_name=default_gain_file_name
 
@@ -68,7 +69,8 @@ ts_ev=QIEAnalyzer("plotMaker")
 ts_ev.input_pass_name=input_pass_name
 ts_ev.input_collection="QIEsamplesPad1"
 # now in default config, too, but with test beam values :
-#these are derived as the mean of gaussian fits to the "event pedestal" (average over middle two quartiles) for each channel
+#these are derived as the mean of gaussian fits to the "event pedestal" (average over
+#middle two quartiles) for each channel
 ts_ev.start_sample=start_sample
 ts_ev.pedestals=ped_list
 ts_ev.gain=gain_list

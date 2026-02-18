@@ -1,5 +1,6 @@
 # Example of jobOption to run tracking on input simulated files in ldmx-sw
-# For detailed description of the various configurations, check the .py module files inside
+# For detailed description of the various configurations, check the .py module files
+# inside
 # Tracking/python
 
 import os
@@ -11,7 +12,8 @@ p = ldmxcfg.Process("sim")
 # Load the tracking module
 from LDMX.Tracking import tracking
 
-# This has to stay after defining the "TrackerReco" Process in order to load the geometry
+# This has to stay after defining the "TrackerReco" Process in order to load the
+# geometry
 # From the conditions
 from LDMX.Tracking import geo
 
@@ -32,8 +34,10 @@ truth_tracking.pz_cut            = 0.03
 truth_tracking.p_cutEcal         = 0. # In MeV
 
 
-# These smearing quantities are default. We expect around 6um hit resolution in bending plane
-# v-smearing is actually not used as 1D measurements are used for tracking. These smearing parameters
+# These smearing quantities are default. We expect around 6um hit resolution in bending
+# plane
+# v-smearing is actually not used as 1D measurements are used for tracking. These
+# smearing parameters
 # are fed to the digitization producer.
 u_smearing = 0.006       #mm
 v_smearing = 0.000001    #mm
@@ -41,7 +45,8 @@ v_smearing = 0.000001    #mm
 
 # Smearing Processor - Tagger
 # Runs G4 hit smearing producing measurements in the Tagger tracker.
-# Hits that belong to the same sensor with the same trackID are merged together to reduce combinatorics
+# Hits that belong to the same sensor with the same trackID are merged together to
+# reduce combinatorics
 digi_tagger = tracking.DigitizationProcessor("DigitizationProcessor")
 digi_tagger.hit_collection = "TaggerSimHits"
 digi_tagger.out_collection = "DigiTaggerSimHits"
@@ -58,9 +63,12 @@ digi_recoil.sigma_u = u_smearing
 digi_recoil.sigma_v = v_smearing
 
 # Seed Finder Tagger
-# This runs the track seed finder looking for 5 hits in consecutive sensors and fitting them with a
-# parabola+linear fit. Compatibility with expected particles is checked by looking at the track
-# parameters and the impact parameters at the target or generation point. For the tagger one should look
+# This runs the track seed finder looking for 5 hits in consecutive sensors and fitting
+# them with a
+# parabola+linear fit. Compatibility with expected particles is checked by looking at
+# the track
+# parameters and the impact parameters at the target or generation point. For the tagger
+# one should look
 # for compatibility with the beam orbit / beam spot
 seeder_tagger = tracking.SeedFinderProcessor("SeedTagger")
 seeder_tagger.input_hits_collection =  digi_tagger.out_collection
