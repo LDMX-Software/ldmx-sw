@@ -96,8 +96,8 @@ void OverlayProducer::produce(framework::Event &event) {
   std::map<std::string, std::map<int, ldmx::SimParticle>>
       particle_collection_map;
   std::map<int, ldmx::SimCalorimeterHit> hit_map;
-  int track_id_increment =
-      -1;  // there should only be one SimParticles collection, so it's fine for
+  // there should only be one SimParticles collection, so it's fine for ...
+  int track_id_increment = -1;  
            // this to be just an integer rather than a vector
 
   // start by copying over all the collections from the sim event
