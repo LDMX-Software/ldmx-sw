@@ -58,8 +58,8 @@ class ScoringPlaneSD(SensitiveDetector) :
         self.instance_name = f'{self.subsystem}_sp'
         # we don't use the Python built-in str.capitalize since
         #  that function changes all characters after the first one to lowercase
-        self.collection_name = f'{subsystem[0].upper()+subsystem[1:]}ScoringPlaneHits'
-        self.match_substr = f'sp_{subsystem}' #depends on gdml
+        self.collection_name = f'{self.subsystem[0].upper()+self.subsystem[1:]}ScoringPlaneHits'
+        self.match_substr = f'sp_{self.subsystem}' #depends on gdml
 
     def ecal() :
         return ScoringPlaneSD('ecal')
@@ -96,10 +96,11 @@ class TrackerSD(SensitiveDetector):
 
     subsystem: str
     subdet_id: int
+    collection_name: str = field(init=False)
 
     def __post_init__(self):
-        self.instance_name = f'{subsystem}_TrackerSD'
-        self.collection_name = f'{subsystem}SimHits'
+        self.instance_name = f'{self.subsystem}_TrackerSD'
+        self.collection_name = f'{self.subsystem}SimHits'
 
     def tagger() :
         return TrackerSD('Tagger',1)
@@ -206,7 +207,7 @@ class TrigScintSD(SensitiveDetector):
 
 
     def __post_init__(self):
-        self.instance_name = f'trig_scint_{name}_sd'
+        self.instance_name = f'trig_scint_{self.name}_sd'
 
         coll = self.name+'SimHits'
         if self.name != 'Target' :

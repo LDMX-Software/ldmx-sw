@@ -107,15 +107,17 @@ class Process:
             raise Exception(
                 "Process object is already created! You can only create one Process object in a script."
             )
+
+        # needs last_process defined to update registries
+        Process.last_process = self
+
         from . import _register
 
         self.libraries.extend(_register.library.__registry__)
-        self.conditions_object_providers.extend(
-            _register.conditions_object_provider.__registry__
-        )
 
-        Process.last_process = self
-        # needs last_process defined to self-register
+        for cop in _register.conditions_object_provider.__registry__:
+            self._declare_conditions_object_provider(cop)
+
         self.random_number_seed_service = RandomNumberSeedService()
 
     def _declare_conditions_object_provider(self, cop):

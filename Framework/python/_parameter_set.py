@@ -19,7 +19,7 @@ def check_list(attr, l, dimension, entry_type):
     if dimension == 1:
         if entry_type is not Any:
             for e in l:
-                if type(e) is not entry_type:
+                if not isinstance(e, entry_type):
                     raise TypeError(
                         f"Entry {e} in parameter {attr} is not of expected type {entry_type}"
                     )
@@ -109,7 +109,7 @@ def parameter_set(
             # since that is the mechanism we use to grab them in C++
             for name, field in self.__dataclass_fields__.items():
                 if name not in self.__dict__:
-                    self.__dict__[name] = getattr(self, name)
+                    self.__dict__[name] = getattr(self, name, None)
             passed_post_init(self)
             orig_post_init(self)
 
