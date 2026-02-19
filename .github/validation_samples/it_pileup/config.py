@@ -260,9 +260,11 @@ dqm_with_overlay = (
 p.logger.term_level = 1
 
 # Add full tracking for both tagger and recoil trackers: digi, seeds, CFK, ambiguity resolution, GSF, DQM
-from LDMX.Tracking import full_tracking_sequence_2e
-p.sequence.extend(full_tracking_sequence_2e.trk_sequence)
-p.sequence.extend(full_tracking_sequence_2e.dqm_sequence)
+from LDMX.Tracking import full_tracking_sequence
+full_tracking_sequence.setOverlay()
+
+p.sequence.extend(full_tracking_sequence.sequence)
+p.sequence.extend(full_tracking_sequence.dqm_sequence)
 
 p.sequence.extend([
     ecal_digi,

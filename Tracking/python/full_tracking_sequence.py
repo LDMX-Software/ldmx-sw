@@ -7,7 +7,7 @@ trackgeo.get_instance().setDetector('ldmx-det-v15-8gev')
 
 # Truth seeder
 # Runs truth tracking producing tracks from target scoring plane hits for Recoil
-# and generated electros for Tagger.
+# and generated electrons for Tagger.
 # Truth tracks can be used for assessing tracking performance or using as seeds
 truth_tracking               = tracking.TruthSeedProcessor()
 truth_tracking.debug         = True
@@ -220,3 +220,28 @@ dqm_sequence = [
     dqm_tagger_gsf,
     dqm_recoil_gsf
 ]
+
+def setOverlay():
+    """Modifies full tracking and dqm sequences in-place so that all 
+    relevant input/output collections in the tracking processors point 
+    to the overlay collections."""
+
+    collection_names_to_update = [ # first, collections that are explicitly overlaid in the OverlayProducer
+        "TriggerPad1SimHits", "TriggerPad2SimHits", "TriggerPad3SimHits",
+        "TargetSimHits", "EcalSimHits", "HcalSimHits", "TaggerSimHits", 
+        "RecoilSimHits", "EcalScoringPlaneHits", "TargetScoringPlaneHits",
+        "SimParticles",
+    ] + [ # now all derivative collections; renaming collections saves us from dealing with all the different pass names between 1e and 2e collections here and later 
+        'RecoilTruthSeeds', 'RecoilTruthTracks', 'beamElectrons', 'TaggerTruthSeeds', 
+        'TaggerTruthTracks', 'DigiTaggerSimHits', 'DigiRecoilSimHits', 'TaggerRecoSeeds',
+        'RecoilRecoSeeds', 'TaggerTracks', 'RecoilTracks', 'TaggerTracksClean',
+        'RecoilTracksClean', 'GSFTaggerTracks', 'GSFRecoilTracks', 'TrackerVeto'
+    ]
+    overlay_str = 'Overlay'
+
+    # iterate through all processors, renaming collections as we go
+    for proc in sequence + dqm_sequence:
+        params = vars(proc) # Python variable assignments are references by default, so this works to update the processor class variables
+        for key, value in params.items():
+            if str(value) in collection_names_to_update:
+                params[key] += overlay_str
