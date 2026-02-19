@@ -240,10 +240,6 @@ for hdqm in hcal_dqm:
 trigger_dqm = dqm.Trigger()
 trigger_dqm.trigger_pass = this_pass_name
 
-# Sim objects DQM
-sim_dqm = dqm.SimObjects()
-sim_dqm.sim_particles_coll_name += overlay_str
-
 dqm_with_overlay = (
     trig_scint_sim_dqm
     + trig_scint_dqm
