@@ -324,13 +324,13 @@ class TruthSeedProcessor(Producer):
         self.skip_tagger = False
         self.skip_recoil = False
         self.max_track_id = 5
-        
+
         self.ecal_sp_coll_name = 'EcalScoringPlaneHits'
         self.sp_pass_name = ''
         self.input_pass_name = ''
         self.sim_particles_coll_name = 'SimParticles'
         self.sim_particles_passname = ''
-        self.particle_hypothesis = 11 
+        self.particle_hypothesis = 11
 
         # output collection names
         self.beam_electrons_collection = 'beamElectrons'
@@ -339,7 +339,7 @@ class TruthSeedProcessor(Producer):
         self.recoil_seeds_collection = 'RecoilTruthSeeds'
         self.recoil_truth_collection = 'RecoilTruthTracks'
 
-        
+
 
 
 class GreedyAmbiguitySolver(Producer):

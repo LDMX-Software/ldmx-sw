@@ -23,7 +23,7 @@ class EcalVetoProcessor(ldmxcfg.Producer) :
         self.roc_file = makeRoCPath( "RoC_v14_8gev" )
         self.beam_energy = 8000.0  # in MeV
         self.disc_cut = 0.99741
-        
+
         self.ecal_sp_coll_name = "EcalScoringPlaneHits"
         self.target_sp_coll_name = "TargetScoringPlaneHits"
         self.sp_pass_name = ""
@@ -33,7 +33,7 @@ class EcalVetoProcessor(ldmxcfg.Producer) :
         self.collection_name = "EcalVeto"
         self.rec_coll_name = "EcalRecHits"
         self.rec_pass_name = ""
-        
+
         self.recoil_from_tracking = True
         self.track_collection = "RecoilTracksClean"
         self.track_pass_name = ""

@@ -635,7 +635,7 @@ class SimObjects(ldmxcfg.Analyzer) :
 class DarkBremInteraction(ldmxcfg.Producer) :
     def __init__(self) :
         super().__init__('DarkBremDQM','dqm::DarkBremInteraction','DQM')
-        
+
         self.particle_coll_name = 'SimParticles'
         self.particle_passname = ''
 

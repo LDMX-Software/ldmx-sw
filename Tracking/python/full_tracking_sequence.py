@@ -228,11 +228,11 @@ def setOverlay():
 
     collection_names_to_update = [ # first, collections that are explicitly overlaid in the OverlayProducer
         "TriggerPad1SimHits", "TriggerPad2SimHits", "TriggerPad3SimHits",
-        "TargetSimHits", "EcalSimHits", "HcalSimHits", "TaggerSimHits", 
+        "TargetSimHits", "EcalSimHits", "HcalSimHits", "TaggerSimHits",
         "RecoilSimHits", "EcalScoringPlaneHits", "TargetScoringPlaneHits",
         "SimParticles",
-    ] + [ # now all derivative collections; renaming collections saves us from dealing with all the different pass names between 1e and 2e collections here and later 
-        'RecoilTruthSeeds', 'RecoilTruthTracks', 'beamElectrons', 'TaggerTruthSeeds', 
+    ] + [ # now all derivative collections; renaming collections saves us from dealing with all the different pass names between 1e and 2e collections here and later
+        'RecoilTruthSeeds', 'RecoilTruthTracks', 'beamElectrons', 'TaggerTruthSeeds',
         'TaggerTruthTracks', 'DigiTaggerSimHits', 'DigiRecoilSimHits', 'TaggerRecoSeeds',
         'RecoilRecoSeeds', 'TaggerTracks', 'RecoilTracks', 'TaggerTracksClean',
         'RecoilTracksClean', 'GSFTaggerTracks', 'GSFRecoilTracks', 'TrackerVeto'

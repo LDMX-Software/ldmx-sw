@@ -21,6 +21,7 @@ p.max_events = int(os.environ['LDMX_NUM_EVENTS']) // 2
 # Load the full tracking sequance
 from LDMX.Recon.overlay import OverlayProducer
 
+
 overlay=OverlayProducer('pileup.root')
 overlay.sim_passname = sim_pass_name                  #sim input event pass name
 overlay.overlay_passname = pileup_file_pass_name    #pileup input event pass name
@@ -119,6 +120,8 @@ count.input_pass_name = this_pass_name
 
 # Load HCAL veto
 from LDMX.Hcal.hcal import HcalVetoProcessor
+
+
 hcal_veto = HcalVetoProcessor()
 hcal_veto.input_hit_pass_name = this_pass_name
 hcal_veto.track_collection += overlay_str
@@ -257,6 +260,8 @@ p.logger.term_level = 1
 
 # Add full tracking for both tagger and recoil trackers: digi, seeds, CFK, ambiguity resolution, GSF, DQM
 from LDMX.Tracking import full_tracking_sequence
+
+
 full_tracking_sequence.setOverlay()
 
 p.sequence.extend(full_tracking_sequence.sequence)
