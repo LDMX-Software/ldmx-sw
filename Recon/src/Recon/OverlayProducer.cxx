@@ -122,7 +122,7 @@ void OverlayProducer::produce(framework::Event &event) {
     // we don't need to touch the hard process sim hits_, really... but we
     // might need the simhits in the hit map.
     if (needs_contribs_added) {
-      ldmx_log(trace) << "Collection " << coll_name << "needs contribs added";
+      ldmx_log(trace) << "Collection " << coll_name << " needs contribs added";
       for (const ldmx::SimCalorimeterHit &simhit : simhits_calo) {
         ldmx_log(trace) << simhit;
         // this copies the hit, its ID and its coordinates directly
