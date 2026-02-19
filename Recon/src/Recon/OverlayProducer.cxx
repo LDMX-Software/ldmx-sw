@@ -133,9 +133,6 @@ void OverlayProducer::produce(framework::Event &event) {
         ldmx_log(trace) << simhit;
         // this copies the hit, its ID and its coordinates directly
         hit_map[simhit.getID()] = simhit;
-        for (int i = 0; i < simhit.getNumberOfContribs(); i++) {
-          ldmx_log(trace) << "   " << simhit.getContrib(i);
-        }
 
       }  // over calo simhit collection
     }  // if needContribs
