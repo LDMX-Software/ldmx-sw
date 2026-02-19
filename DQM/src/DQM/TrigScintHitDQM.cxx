@@ -56,8 +56,7 @@ void TrigScintHitDQM::configure(framework::config::Parameters &ps) {
 void TrigScintHitDQM::analyze(const framework::Event &event) {
   // Get the collection of TrigScintHit digitized hits if the exists
   const std::vector<ldmx::TrigScintHit> trig_scint_hits =
-      event.getCollection<ldmx::TrigScintHit>(hit_collection_name_,
-                                              pass_name_);
+      event.getCollection<ldmx::TrigScintHit>(hit_collection_name_, pass_name_);
 
   // Get the total hit count
   int hit_count = trig_scint_hits.size();
