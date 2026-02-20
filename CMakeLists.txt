@@ -110,3 +110,8 @@ add_test(
   COMMAND python3 -m unittest Framework/test/test_parameter_set.py
   WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
 )
+add_test(
+  NAME StandaloneProcessor
+  COMMAND ./run
+  WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/Framework/test/standalone
+)

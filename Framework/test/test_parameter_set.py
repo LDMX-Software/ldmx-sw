@@ -1,4 +1,4 @@
-from LDMX.Framework import Processor, field, parameter_set, processor
+from LDMX.Framework import Processor, field, parameter_set, processor, make_processor
 
 
 @parameter_set
@@ -156,6 +156,19 @@ class TestParameter(unittest.TestCase):
         with self.assertWarns(DeprecationWarning):
             c.className = "OldClass"
         self.assertEqual(c.class_name, "OldClass")
+
+
+    def test_make_processor(self):
+        p = make_processor('MyClass2', 'my::Class', 'MyModule')
+        self.assertDictEqual(
+            p.__dict__,
+            {
+                'instance_name': 'MyClass2',
+                'class_name': 'my::Class',
+                'module_name': 'MyModule',
+                'histograms': []
+            }
+        )
 
 
 if __name__ == "__main__":
