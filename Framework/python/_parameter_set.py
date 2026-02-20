@@ -1,13 +1,3 @@
-"""development file for python config parameter sets
-
-Just run this file to run the tests.
-
-    [denv] python3 processor.py -v
-
-The tests are at the bottom and the code that would be
-in the configuration pyton module is at the top.
-"""
-
 import copy
 import types
 import warnings
@@ -16,6 +6,7 @@ from typing import Any
 
 
 def check_list(attr, the_list, dimension, entry_type):
+    """make sure each entry in a list is the right type"""
     if dimension == 1:
         if entry_type is not Any:
             for e in the_list:
