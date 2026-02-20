@@ -88,7 +88,7 @@ class KaonPhysics:
     k0s_lifetime_factor: float = 1.0
     verbosity: int = 0
 
-    def upKaons():
+    def up_kaons():
         """Returns a configuration of the kaon physics corresponding
         to the changes that were made in
         https://github.com/ldmx-software/geant4/tree/LDMX.upKaons_mod
@@ -121,6 +121,7 @@ class KaonPhysics:
         kaon_physics.verbosity = 2
         return kaon_physics
 
+
     def __setattr__(self, key, value):
         """Ensure that attempts to set the branching ratios give a total of
         something close to 1 and that the lifetime factors are positive.
@@ -134,7 +135,8 @@ class KaonPhysics:
             total_branching_ratio = sum(value)
             if abs(total_branching_ratio - 1) > 0.05:
                 raise ValueError(
-                    f"Total of branching ratios in {key} significantly different from one, was {total_branching_ratio}: {value}."
+                    f"Total of branching ratios in {key} significantly different "
+                    f"from one, was {total_branching_ratio}: {value}."
                 )
         elif "lifetime" in key:
             if not isinstance(value, float):

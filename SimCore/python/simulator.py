@@ -17,17 +17,18 @@ from .user_actions import UserAction
 
 @parameter_set
 class _EventToReSim:
-    """A class to hold the information identifying a specific event we wish to re-simulate
+    """A class to hold the information identifying a specific event we wish to
+    re-simulate
 
     This is an internal class used by simulator.resimulate in order to pass the event
     identification to the ReSimulator class
 
     Attributes
     ----------
-    run: int
-        run number of the event to re-sim, -1 if we don't care about the run
     event: int
         event number to re-sim, required
+    run: int
+        run number of the event to re-sim, -1 if we don't care about the run
     """
 
     event: int
@@ -42,10 +43,8 @@ class simulator(Processor):
     focused on providing helper functions that can be used instead
     of accessing the parameters member directly.
 
-    The parameters that are lists ('preInitCommands', 'postInitCommands', 'actions', and 'generators')
-    are initialized as empty lists so that we can append to them later.
-
-    The ECal hit conbtibutions are enabled and compressed by default.
+    The parameters that are lists are initialized as empty lists
+    so that we can append to them later.
 
     Parameters
     ----------
@@ -127,7 +126,7 @@ class simulator(Processor):
         sensitive_detectors for configuring the SDs
         """
 
-        from LDMX.Detectors import make_path as mP
+        from LDMX.Detectors import make_path
 
         from . import sensitive_detectors as sds
 
@@ -146,9 +145,16 @@ class simulator(Processor):
                 sds.TrigScintSD.pad2(),
                 sds.TrigScintSD.pad3(),
             ]
-        self.sensitive_detectors = [sds.TrackerSD.tagger(), sds.TrackerSD.recoil(), sds.HcalSD(), sds.EcalSD(), sds.TrigScintSD.target(), *trigscint]
+        self.sensitive_detectors = [
+                sds.TrackerSD.tagger(),
+                sds.TrackerSD.recoil(),
+                sds.HcalSD(),
+                sds.EcalSD(),
+                sds.TrigScintSD.target(),
+                *trigscint
+        ]
         if include_scoring_planes_minimal:
-            self.scoring_planes = mP.makeScoringPlanesPath(det_name)
+            self.scoring_planes = make_path.makeScoringPlanesPath(det_name)
             self.sensitive_detectors.extend(
                 [
                     sds.ScoringPlaneSD.target(),
@@ -198,7 +204,8 @@ class simulator(Processor):
             check is ignored). If only one value is provided, all events requested
             are also required to have that value for their run number to be resimulated.
             If more than one value is provided, it must be the same length as the
-            number of events requested so that the event/run number pair can be required.
+            number of events requested so that the event/run number pair can be
+            required.
 
         """
         resimulator = self
@@ -230,12 +237,13 @@ class simulator(Processor):
                     )
                 if len(which_runs) != len(which_events):
                     raise ValueError(
-                        "which_runs must have the same number of entries as which_events if more than one run is provided"
+                        "which_runs must have the same number of entries as which_events"
+                        " if more than one run is provided"
                     )
                 resimulator.care_about_run = True
                 resimulator.runs_to_resimulate = [
                     _EventToReSim(event, run)
-                    for event, run in zip(which_events, which_runs, strict=False)
+                    for event, run in zip(which_events, which_runs, strict=True)
                 ]
             else:
                 raise ValueError(
