@@ -130,7 +130,7 @@ class simulator(Processor):
 
         from . import sensitive_detectors as sds
 
-        self.detector = mP.makeDetectorPath(det_name)
+        self.detector = make_path.makeDetectorPath(det_name)
         if "v12" in det_name:
             trigscint = [
                 sds.TrigScintSD.up(),
@@ -162,7 +162,7 @@ class simulator(Processor):
                 ]
             )
         if include_scoring_planes_others:
-            self.scoring_planes = mP.makeScoringPlanesPath(det_name)
+            self.scoring_planes = make_path.makeScoringPlanesPath(det_name)
             self.sensitive_detectors.extend(
                 [
                     sds.ScoringPlaneSD.hcal(),
@@ -237,8 +237,8 @@ class simulator(Processor):
                     )
                 if len(which_runs) != len(which_events):
                     raise ValueError(
-                        "which_runs must have the same number of entries as which_events"
-                        " if more than one run is provided"
+                        "which_runs must have the same number of entries as "
+                        "which_events if more than one run is provided"
                     )
                 resimulator.care_about_run = True
                 resimulator.runs_to_resimulate = [

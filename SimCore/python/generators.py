@@ -353,8 +353,8 @@ def single_backwards_positron(energy: float):
     """A particle gun configured to shoot positrons backwards (i.e. upstream)
     from the target at the input energy.
 
-    This generator is helpful for studying where electron guns of different energies should
-    be started from if they should end up at the center of the target.
+    This generator is helpful for studying where electron guns of different
+    energies should be started from if they should end up at the center of the target.
 
     Parameters
     ----------
