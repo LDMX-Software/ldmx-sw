@@ -6,10 +6,11 @@ Examples of how each filter is configured for biased MC generation.
     generators directly. 
 """
 
-from LDMX.SimCore import simcfg
+from LDMX.SimCore.user_actions import UserAction, user_action
 
 
-class TargetBremFilter(simcfg.UserAction):
+@user_action("biasing::TargetBremFilter", "Biasing")
+class TargetBremFilter(UserAction):
     """ Configuration for filtering events that don't see a hard brem in the target. 
 
     An event is vetoed if one of two conditions is satisfied:
@@ -30,17 +31,13 @@ class TargetBremFilter(simcfg.UserAction):
         Should we kill the recoil electron track for a worst case scenario?
     """
 
-    def __init__(self,recoil_max_p,brem_min_e) :
-        super().__init__("target_brem_filter", "biasing::TargetBremFilter")
+    recoil_max_p: float
+    brem_min_e: float
+    kill_recoil_track: bool = False
 
-        from LDMX.Biasing import include
-        include.library()
 
-        self.recoil_max_p_threshold = recoil_max_p
-        self.brem_min_energy_threshold = brem_min_e
-        self.kill_recoil_track = False
-
-class NonFiducialFilter(simcfg.UserAction):
+@user_action("biasing::NonFiducialFilter", "Biasing")
+class NonFiducialFilter(UserAction):
     """ Configuration for rejecting events that are fiducial.
 
     Parameters
@@ -51,16 +48,12 @@ class NonFiducialFilter(simcfg.UserAction):
         If true, aborts fiducial events. Otherwise, the fiducial events will be only tagged
     """
 
-    def __init__(self,recoil_max_momentum, abort_fid_event = True) :
-        super().__init__("nonfiducial_filter", "biasing::NonFiducialFilter")
+    recoil_max_p: float
+    abort_fiducial: bool = True
 
-        from LDMX.Biasing import include
-        include.library()
 
-        self.recoil_max_p = recoil_max_momentum
-        self.abort_fiducial = abort_fid_event
-
-class EcalProcessFilter(simcfg.UserAction):
+@user_action("biasing::EcalProcessFilter", "Biasing")
+class EcalProcessFilter(UserAction):
     """ Configuration for filtering events that don't see a hard brem undergo a photo-nuclear reaction in the ECal. 
 
     Parameters
@@ -69,15 +62,11 @@ class EcalProcessFilter(simcfg.UserAction):
         Geant4 process to look for in the ecal
     """
 
-    def __init__(self,process = 'photonNuclear') :
-        super().__init__('ecal_%s_filter'%process,'biasing::EcalProcessFilter')
+    process: str = "photonNuclear"
 
-        from LDMX.Biasing import include
-        include.library()
 
-        self.process = process
-
-class DeepEcalProcessFilter(simcfg.UserAction):
+@user_action("biasing::DeepEcalProcessFilter", "Biasing")
+class DeepEcalProcessFilter(UserAction):
     """ Configuration for keeping events where the pn happens deep in the ECAL.
 
     Parameters
@@ -94,18 +83,14 @@ class DeepEcalProcessFilter(simcfg.UserAction):
         Default is False
     """
 
-    def __init__(self, bias_threshold, processes, ecal_min_z, require_photon_from_target) :
-        super().__init__("deepecal_filter", "biasing::DeepEcalProcessFilter")
+    bias_threshold: float
+    processes: list[str]
+    ecal_min_z: float
+    require_photon_from_target: bool
 
-        from LDMX.Biasing import include
-        include.library()
 
-        self.bias_threshold = bias_threshold
-        self.processes = processes
-        self.ecal_min_z = ecal_min_z
-        self.require_photon_from_target = require_photon_from_target
-
-class TargetENFilter(simcfg.UserAction) :
+@user_action("biasing::TargetENProcessFilter", "Biasing")
+class TargetENFilter(UserAction) :
     """ Configuration for filtering electro-nuclear events in the target. 
 
     Parameters
@@ -114,154 +99,107 @@ class TargetENFilter(simcfg.UserAction) :
         Maximum energy recoil electron is allowed to have [MeV]
     """
 
-    def __init__(self,recoil_thresh) :
-        super().__init__("target_en_process_filter","biasing::TargetENProcessFilter")
+    recoil_thresh: float
 
-        from LDMX.Biasing import include
-        include.library()
-
-        self.recoil_threshold = recoil_thresh #MeV
-
-class TargetPNFilter(simcfg.UserAction) :
+@user_action("biasing::TargetProcessFilter", "Biasing")
+class TargetProcessFilter(UserAction) :
     """ Configuration for filtering photo-nuclear events in the target."""
 
-    def __init__(self) :
-        super().__init__("target_process_filter", "biasing::TargetProcessFilter")
+    process: str
 
-        from LDMX.Biasing import include
-        include.library()
+    def photo_nuclear():
+        return TargetProcessFilter("photonNuclear")
+    
 
-        self.process = 'photonNuclear'
+    def gamma_mu_mu():
+        return TargetProcessFilter("GammaToMuPair")
 
-class TargetGammaMuMuFilter(simcfg.UserAction) :
-    """ Configuration for filtering muon conversion events in the target."""
 
-    def __init__(self) :
-        super().__init__("target_process_filter", "biasing::TargetProcessFilter")
-
-        from LDMX.Biasing import include
-        include.library()
-
-        self.process = 'GammaToMuPair'
-
-class EcalDarkBremFilter(simcfg.UserAction):
+@user_action("biasing::EcalDarkBremFilter", "Biasing")
+class EcalDarkBremFilter(UserAction):
     """ Configuration for filtering A' events
 
     Parameters
     ----------
-    min_ap_energy : float
+    threshold : float
         Minimum A' energy to keep the event [MeV]
     """
 
-    def __init__(self,min_ap_energy):
-        super().__init__('ecal_db_filter','biasing::EcalDarkBremFilter')
+    threshold: float
 
-        from LDMX.Biasing import include
-        include.library()
 
-        self.threshold = min_ap_energy
-
-class TargetDarkBremFilter(simcfg.UserAction):
+@user_action("biasing::TargetDarkBremFilter", "Biasing")
+class TargetDarkBremFilter(UserAction):
     """ Configuration for filtering A' events
 
     Parameters
     ----------
-    min_ap_energy : float
+    threshold : float
         Minimum A' energy to keep the event [MeV]
     """
 
-    def __init__(self,min_ap_energy):
-        super().__init__('target_db_filter','biasing::TargetDarkBremFilter')
+    threshold: float
 
-        from LDMX.Biasing import include
-        include.library()
-
-        self.threshold = min_ap_energy
-
-class TaggerVetoFilter(simcfg.UserAction):
+@user_action("biaisng::TaggerVetoFilter", "Biasing")
+class TaggerVetoFilter(UserAction):
     """ Configuration used to reject off-energy electrons in the tagger tracker.
 
     Parameters
     ----------
-    thresh : float
+    threshold : float
         Minimum energy [MeV] that electron should have
     reject_events_missing_tagger : bool
         Also veto events where the primary particle misses the tagger region
     """
 
-    def __init__(self,thresh, reject_events_missing_tagger=True) :
-        super().__init__('tagger_veto_filter','biasing::TaggerVetoFilter')
+    threshold: float
+    reject_events_missing_tagger: bool = True
 
-        from LDMX.Biasing import include
-        include.library()
 
-        self.threshold = thresh
-        self.reject_events_missing_tagger = reject_events_missing_tagger
-
-class PrimaryToEcalFilter(simcfg.UserAction) :
+@user_action("biasing::PrimaryToEcalFilter", "Biasing")
+class PrimaryToEcalFilter(UserAction) :
     """ Configuration used to reject events where the primary doesn't reach the ecal with a mimimum energy
 
     Parameters
     ----------
-    thresh : float
+    threshold : float
         Minimum energy [MeV] that primary electron should have when hitting ecal
     """
 
-    def __init__(self,thresh) :
-        super().__init__('primary_to_ecal_with_%d'%thresh,'biasing::PrimaryToEcalFilter')
+    threshold: float
 
-        from LDMX.Biasing import include
-        include.library()
-
-        self.threshold = thresh
-
-class MidShowerNuclearBkgdFilter(simcfg.UserAction) :
+@user_action("biasing::MidShowerNuclearBkgdFilter", "Biasing")
+class MidShowerNuclearBkgdFilter(UserAction) :
     """ Configuration used to reject events that don't have enough energy given to the input process.
 
     Parameters
     ----------
-    thresh : float
+    threshold : float
         Minimum energy [MeV] that the kinetic energy of the products needs to sum to
     """
 
-    def __init__(self,thresh) :
-        super().__init__('midshower_nuclear_min_%d_MeV'%(thresh),'biasing::MidShowerNuclearBkgdFilter')
+    threshold: float
 
-        from LDMX.Biasing import include
-        include.library()
-
-        self.threshold = thresh
-
-class MidShowerDiMuonBkgdFilter(simcfg.UserAction) :
+@user_action("biasing::MidShowerDiMuonBkgdFilter", "Biasing")
+class MidShowerDiMuonBkgdFilter(UserAction) :
     """ Configuration used to reject events that don't have enough energy given to muon conversion
 
     Parameters
     ----------
-    thresh : float
+    threshold : float
         Minimum energy [MeV] that needs to go into creating the muons
     """
 
-    def __init__(self,thresh) :
-        super().__init__('midshower_dimuon_min_%d_MeV'%(thresh),'biasing::MidShowerDiMuonBkgdFilter')
+    threshold: float
 
-        from LDMX.Biasing import include
-        include.library()
+@user_action("biasing::TaggerHitFilter", "Biasing")
+class TaggerHitFilter(UserAction):
+    """Configuration used to reject off-energy electrons in the tagger tracker.
 
-        self.threshold = thresh
-
-
-class TaggerHitFilter(simcfg.UserAction):
-    """ Configuration used to reject off-energy electrons in the tagger tracker.
     Parameters
     ----------
     layers_hit : int
         Minimum number of tagger layers with a hit needed to persist the event.
     """
 
-    def __init__(self, layers_hit=8) :
-        super().__init__('tagger_hit_filter','biasing::TaggerHitFilter')
-
-        from LDMX.Biasing import include
-        include.library()
-
-        self.layers_hit = layers_hit
+    layers_hit: int = 8
