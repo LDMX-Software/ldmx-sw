@@ -128,6 +128,15 @@ cluster.nbr_of_layers = 1
 cluster.reclustering = True                                                                                                                                                                                
 cluster.rec_hit_pass_name=thisPassName #run on process+pileup       
 
+# HCAL clusters for pfProducer
+hcalPF = pfReco.pfHcalClusterProducer()
+hcalPF.minClusterHitMult = 2
+hcalPF.clusterHitDist = 100.
+hcalPF.minHitEnergy = 0.1
+hcalPF.doSingleCluster = False
+hcalPF.logEnergyWeight = True
+hcalPF.input_pass_name = thisPassName   #run on process+pileup
+
 # particle flow:
 pfComb=pfReco.pfProducer()
 pfComb.inputEcalCollName = cluster.cluster_coll_name # use CLUE                                                                                                                                                 
@@ -249,6 +258,7 @@ p.sequence.extend([
      dqm.EcalClusterAnalyzer(),
      trackPF,
      truthPF,
+     hcalPF,
      pfComb,        
      puFinder
 ])
