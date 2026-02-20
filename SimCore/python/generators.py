@@ -1,14 +1,15 @@
 """Primary Generator templates for use throughout ldmx-sw"""
 
-from LDMX.Framework import field, parameter_set, _register
+from LDMX.Framework import _register, field, parameter_set
 
 
 class PrimaryGenerator:
     """Base for all primary generators for type checking"""
+
     pass
 
 
-def primary_generator(class_name: str, module_name: str = 'SimCore_Generators'):
+def primary_generator(class_name: str, module_name: str = "SimCore_Generators"):
     """Label a class as configuration for a primary generator
 
     Parameters
@@ -28,12 +29,12 @@ def primary_generator(class_name: str, module_name: str = 'SimCore_Generators'):
         the global simulator beam_spot_smear setting.
     """
     return parameter_set(
-        class_name = field(default=class_name, init=False),
-        module_name = field(default=module_name, init=False),
-        instance_name = class_name,
-        beam_spot_smear = [20.0, 80.0, 0.0],
-        post_init = lambda self: _register.library(self.module_name),
-        required_base = PrimaryGenerator
+        class_name=field(default=class_name, init=False),
+        module_name=field(default=module_name, init=False),
+        instance_name=class_name,
+        beam_spot_smear=[20.0, 80.0, 0.0],
+        post_init=lambda self: _register.library(self.module_name),
+        required_base=PrimaryGenerator,
     )
 
 
@@ -69,13 +70,11 @@ class gun(PrimaryGenerator):
 
     time: float = 0.0
     verbosity: int = 0
-    particle: str = ''
+    particle: str = ""
     energy: float = 0.0
     position: list[float] = []
     direction: list[float] = []
-    __legacy__ = {
-        'vertex': 'position'
-    }
+    __legacy__ = {"vertex": "position"}
 
 
 @primary_generator("simcore::generators::MultiParticleGunPrimaryGenerator")
@@ -104,7 +103,7 @@ class multi(PrimaryGenerator):
 
 
 @primary_generator("simcore::generators::LHEPrimaryGenerator")
-class lhe(PrimaryGenerator) :
+class lhe(PrimaryGenerator):
     """LHE file primary generator
 
     Parameters
@@ -120,7 +119,7 @@ class lhe(PrimaryGenerator) :
 
 
 @primary_generator("simcore::generators::GeneralParticleSource")
-class gps(PrimaryGenerator) :
+class gps(PrimaryGenerator):
     """general particle source
 
     The input initialization commands are run in the order that they are listed.
@@ -200,11 +199,11 @@ class genie(PrimaryGenerator):
     target_thickness: float = 0.3504
     abundances: list[float] = []
     time: float = 0.0
-    position: list[float] = [ 0.0, 0.0, 0.0 ]
-    beam_size: list[float] = [ 0.0, 0.0 ]
-    direction: list[float] = [ 0.0, 0.0, 1.0 ]
-    tune: str = 'default'
-    spline_file: str = ''
+    position: list[float] = [0.0, 0.0, 0.0]
+    beam_size: list[float] = [0.0, 0.0]
+    direction: list[float] = [0.0, 0.0, 1.0]
+    tune: str = "default"
+    spline_file: str = ""
     message_threshold_file: str = "/usr/local/GENIE/Generator/config/Messenger.xml"
 
 
@@ -237,121 +236,116 @@ def _single_e_upstream_tagger(position, momentum, energy):
     """
 
     import math
-    momentum_mag = math.sqrt(sum(map(lambda x: x*x, momentum)))
-    unit_direction = list(map(lambda x: x/momentum_mag, momentum))
+
+    momentum_mag = math.sqrt(sum(x * x for x in momentum))
+    unit_direction = [x / momentum_mag for x in momentum]
     return gun(
-        instance_name = f'single_{energy}gev_e_upstream_tagger',
-        particle = 'e-',
-        position = position,
-        direction = unit_direction,
-        energy = energy
+        instance_name=f"single_{energy}gev_e_upstream_tagger",
+        particle="e-",
+        position=position,
+        direction=unit_direction,
+        energy=energy,
     )
 
 
-def single_4gev_e_upstream_tagger() :
+def single_4gev_e_upstream_tagger():
     """Configure a particle gun to fire a 4 GeV electron upstream of the tagger tracker.
 
-    The position and direction are set such that the electron will be bent by 
+    The position and direction are set such that the electron will be bent by
     the field and arrive at the target at [0, 0, 0] if it isn't smeared and doesn't
     interact with any material. In reality, it will be smeared and it will interact
     with some material but we can dream.
 
     Returns
     -------
-    Instance of a particle gun configured to fire a single 4 Gev electron 
+    Instance of a particle gun configured to fire a single 4 Gev electron
     upstream of the entire detector apparatus.
     """
     return _single_e_upstream_tagger(
-        [ -43.56748, 0.0, -883.0 ],
-        [ 388.5554, 0.0, 3981.5967 ],
-        4.0
+        [-43.56748, 0.0, -883.0], [388.5554, 0.0, 3981.5967], 4.0
     )
 
 
-def single_4gev_e_upstream_target() :
+def single_4gev_e_upstream_target():
     """Configure a particle gun to fire a 4 GeV electron upstream of the tagger tracker.
 
-    The position and direction are set such that the electron will be bent by 
-    the field and arrive at the target at approximately [0, 0, 0] (assuming 
+    The position and direction are set such that the electron will be bent by
+    the field and arrive at the target at approximately [0, 0, 0] (assuming
     it's not smeared).
-    
+
     Returns
     -------
-    Instance of a particle gun configured to fire a single 4 Gev electron 
+    Instance of a particle gun configured to fire a single 4 Gev electron
     directly upstream of the target.
     """
 
     return gun(
-        instance_name = 'single_4gev_e_upstream_target',
-        particle = 'e-',
-        position = [ 0., 0., -1.2 ],
-        direction = [ 0., 0., 1],
-        energy = 4.0
+        instance_name="single_4gev_e_upstream_target",
+        particle="e-",
+        position=[0.0, 0.0, -1.2],
+        direction=[0.0, 0.0, 1],
+        energy=4.0,
     )
 
 
 def single_1pt2gev_e_upstream_tagger():
     """Configure a particle gun to fire a 8 GeV electron upstream of the tagger tracker.
 
-    The position and direction are set such that the electron will be bent by 
+    The position and direction are set such that the electron will be bent by
     the field and arrive at the target at [0, 0, 0] if it isn't smeared and doesn't
     interact with any material. In reality, it will be smeared and it will interact
     with some material but we can dream.
 
     Returns
     -------
-    Instance of a particle gun configured to fire a single 8 GeV electron 
+    Instance of a particle gun configured to fire a single 8 GeV electron
     upstream of the entire detector apparatus.
     """
     return _single_e_upstream_tagger(
-        [ -148.95303, 0.0, -883.0 ],
-        [ 388.57147, 0.0, 1135.8867 ],
-        1.2
+        [-148.95303, 0.0, -883.0], [388.57147, 0.0, 1135.8867], 1.2
     )
 
 
 def single_8gev_e_upstream_tagger():
     """Configure a particle gun to fire a 8 GeV electron upstream of the tagger tracker.
 
-    The position and direction are set such that the electron will be bent by 
+    The position and direction are set such that the electron will be bent by
     the field and arrive at the target at [0, 0, 0] if it isn't smeared and doesn't
     interact with any material. In reality, it will be smeared and it will interact
     with some material but we can dream.
 
     Returns
     -------
-    Instance of a particle gun configured to fire a single 8 GeV electron 
+    Instance of a particle gun configured to fire a single 8 GeV electron
     upstream of the entire detector apparatus.
     """
     return _single_e_upstream_tagger(
-        [ -21.745876, 0.0, -883.0 ],
-        [ 388.55154, 0.0, 7991.0703],
-        8.0
+        [-21.745876, 0.0, -883.0], [388.55154, 0.0, 7991.0703], 8.0
     )
 
 
-def single_e_beam_pipe(ene = 8.0):
+def single_e_beam_pipe(ene=8.0):
     """Configure a particle gun to fire an electron of settable energy
-    upstream of the tagger tracker.  
+    upstream of the tagger tracker.
 
     The starting position here is well upstream of the analyzing magnet
-    the position/angle of the gun is such that 8 gev electrons arrive 
-    at the target z=0 at xy=(0,0).  This generator is used to study 
-    off-energy beam electrons.  
+    the position/angle of the gun is such that 8 gev electrons arrive
+    at the target z=0 at xy=(0,0).  This generator is used to study
+    off-energy beam electrons.
 
-    Note that if an energy != 8gev, the trajectory will be different. 
+    Note that if an energy != 8gev, the trajectory will be different.
     And many electrons with energies sufficiently lower than 8GeV will just curve
     into the side of the magnet and not reach the target.
 
     Returns
     -------
-    Instance of a particle gun configured to fire a single 8 GeV electron 
+    Instance of a particle gun configured to fire a single 8 GeV electron
     upstream of the entire detector apparatus.
     """
     return _single_e_upstream_tagger(
-        [ -299.2386690686212, 0.0, -6000.0 ],
-        [ 434.59663056485   , 0.0, 7988.698356992288],
-        ene
+        [-299.2386690686212, 0.0, -6000.0],
+        [434.59663056485, 0.0, 7988.698356992288],
+        ene,
     )
 
 
@@ -366,17 +360,16 @@ def single_backwards_positron(energy: float):
     ----------
     energy: float
         energy in GeV of the positron
-    
+
     Returns
     -------
     gun:
         configured particle gun to shoot positrons backwards at the input energy
     """
     return gun(
-        f'backwards-positron-{energy}GeV',
-        particle = 'e+',
-        position = [0., 0., 0.],
-        direction = [0., 0., -1.],
-        energy = energy
+        f"backwards-positron-{energy}GeV",
+        particle="e+",
+        position=[0.0, 0.0, 0.0],
+        direction=[0.0, 0.0, -1.0],
+        energy=energy,
     )
-

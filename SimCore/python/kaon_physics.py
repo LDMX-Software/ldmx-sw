@@ -1,5 +1,5 @@
-
 from LDMX.Framework import parameter_set
+
 
 @parameter_set
 class KaonPhysics:
@@ -60,7 +60,7 @@ class KaonPhysics:
         0.0559,  # K^+ -> pi^+ + pi^- + pi^+
         0.0507,  # K^+ -> pi^0 + e^+ + nu_e
         0.0335,  # K^+ -> pi^0 + mu^+ + nu_mu
-        0.01761, # K^+ -> pi^+ + pi^0 + pi^0
+        0.01761,  # K^+ -> pi^+ + pi^0 + pi^0
     ]
     kminus_branching_ratios: list[float] = [
         0.6355,  # K^- -> mu^- + anti_nu_mu
@@ -68,26 +68,25 @@ class KaonPhysics:
         0.0559,  # K^- -> pi^- + pi^+ + pi^-
         0.0507,  # K-+ -> pi^0 + e^- + anti_nu_e
         0.0335,  # K-+ -> pi^0 + mu^- + anti_nu_mu
-        0.01761, # K-+ -> pi^- + pi^0 + pi^0
+        0.01761,  # K-+ -> pi^- + pi^0 + pi^0
     ]
     k0l_branching_ratios: list[float] = [
-        0.2027, # K^0_L -> pi^- + e^+ + nu_e
-        0.2027, # K^0_L -> pi^+ + e^- + anti_nu_e
-        0.1952, # K^0_L -> pi^0 + pi^0 + pi^0
-        0.1352, # K^0_L -> pi^- + mu^+ + nu_mu
-        0.1352, # K^0_L -> pi^+ + mu^- + anti_nu_mu
-        0.1254, # K^0_L -> pi^0 + pi^+ + pi^-
+        0.2027,  # K^0_L -> pi^- + e^+ + nu_e
+        0.2027,  # K^0_L -> pi^+ + e^- + anti_nu_e
+        0.1952,  # K^0_L -> pi^0 + pi^0 + pi^0
+        0.1352,  # K^0_L -> pi^- + mu^+ + nu_mu
+        0.1352,  # K^0_L -> pi^+ + mu^- + anti_nu_mu
+        0.1254,  # K^0_L -> pi^0 + pi^+ + pi^-
     ]
     k0s_branching_ratios: list[float] = [
-        0.6920, # K^0_S -> pi^+ + pi^-
-        0.3069, # K^0_S -> pi^0 + pi^0
+        0.6920,  # K^0_S -> pi^+ + pi^-
+        0.3069,  # K^0_S -> pi^0 + pi^0
     ]
-    kplus_lifetime_factor: float = 1.
-    kminus_lifetime_factor: float = 1.
-    k0l_lifetime_factor: float = 1.
-    k0s_lifetime_factor: float = 1.
+    kplus_lifetime_factor: float = 1.0
+    kminus_lifetime_factor: float = 1.0
+    k0l_lifetime_factor: float = 1.0
+    k0s_lifetime_factor: float = 1.0
     verbosity: int = 0
-
 
     def upKaons():
         """Returns a configuration of the kaon physics corresponding
@@ -103,25 +102,24 @@ class KaonPhysics:
         kaon_physics = KaonPhysics()
         kaon_physics.kplus_branching_ratios = [
             0.8831,  # K^+ -> mu^+ + nu_mu
-            0.,      # K^+ -> pi^+ + pi^0
-            0.,      # K^+ -> pi^+ + pi^- + pi^+
+            0.0,  # K^+ -> pi^+ + pi^0
+            0.0,  # K^+ -> pi^+ + pi^- + pi^+
             0.0704,  # K^+ -> pi^0 + e^+ + nu_e
             0.0465,  # K^+ -> pi^0 + mu^+ + nu_mu
-            0.,      # K^+ -> pi^+ + pi^0 + pi^0
+            0.0,  # K^+ -> pi^+ + pi^0 + pi^0
         ]
         kaon_physics.kminus_branching_ratios = [
             0.8831,  # K^- -> mu^- + anti_nu_mu
-            0.,      # K^- -> pi^- + pi^0
-            0.,      # K^- -> pi^- + pi^+ + pi^-
+            0.0,  # K^- -> pi^- + pi^0
+            0.0,  # K^- -> pi^- + pi^+ + pi^-
             0.0704,  # K^- -> pi^0 + e^- + anti_nu_e
             0.0464,  # K^- -> pi^0 + mu^- + anti_nu_mu
-            0.,      # K^- -> pi^- + pi^0 + pi^0
+            0.0,  # K^- -> pi^- + pi^0 + pi^0
         ]
-        kaon_physics.kplus_lifetime_factor = 1/50.
-        kaon_physics.kminus_lifetime_factor = 1/50.
+        kaon_physics.kplus_lifetime_factor = 1 / 50.0
+        kaon_physics.kminus_lifetime_factor = 1 / 50.0
         kaon_physics.verbosity = 2
         return kaon_physics
-
 
     def __setattr__(self, key, value):
         """Ensure that attempts to set the branching ratios give a total of
@@ -130,17 +128,21 @@ class KaonPhysics:
         Note that Geant4's defaults are not exactly equal to one, but something
         significantly different from one is likely to be a mistake.
         """
-        if 'branching_ratios' in key:
+        if "branching_ratios" in key:
             if not isinstance(value, list):
-                raise TypeError(f'Values of branching ratios ({key}) need to be lists')
+                raise TypeError(f"Values of branching ratios ({key}) need to be lists")
             total_branching_ratio = sum(value)
             if abs(total_branching_ratio - 1) > 0.05:
-                raise ValueError(f'Total of branching ratios in {key} significantly different from one, was {total_branching_ratio}: {value}.')
-        elif 'lifetime' in key:
+                raise ValueError(
+                    f"Total of branching ratios in {key} significantly different from one, was {total_branching_ratio}: {value}."
+                )
+        elif "lifetime" in key:
             if not isinstance(value, float):
-                raise TypeError(f'Lifetime parameter ({key}) needs to be floating-point')
+                raise TypeError(
+                    f"Lifetime parameter ({key}) needs to be floating-point"
+                )
             if value < 0:
-                raise ValueError(f'Lifetime parameter ({key}) needs to be positive')
+                raise ValueError(f"Lifetime parameter ({key}) needs to be positive")
 
         # Everything ok!
         super().__setattr__(key, value)

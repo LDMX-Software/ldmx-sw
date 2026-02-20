@@ -1,13 +1,15 @@
 """Configuration classes for default photonuclear models"""
 
-from LDMX.Framework import field, parameter_set, _register
+from LDMX.Framework import _register, field, parameter_set
 
 
 class PhotoNuclearModel:
     pass
 
 
-def photo_nuclear_model(class_name: str, module_name: str = 'SimCore_PhotoNuclearModels'):
+def photo_nuclear_model(
+    class_name: str, module_name: str = "SimCore_PhotoNuclearModels"
+):
     """Configuration for a photonuclear model that we want to load
 
     Parameters
@@ -18,11 +20,11 @@ def photo_nuclear_model(class_name: str, module_name: str = 'SimCore_PhotoNuclea
         Name of C++ library that this PhotoNuclear model is compiled into
     """
     return parameter_set(
-        class_name = field(default=class_name, init=False),
-        instance_name = class_name,
-        module_name = field(default=module_name, init=False),
-        post_init = lambda self: _register.library(self.module_name),
-        required_base = PhotoNuclearModel
+        class_name=field(default=class_name, init=False),
+        instance_name=class_name,
+        module_name=field(default=module_name, init=False),
+        post_init=lambda self: _register.library(self.module_name),
+        required_base=PhotoNuclearModel,
     )
 
 
@@ -32,6 +34,7 @@ class BertiniModel(PhotoNuclearModel):
 
     Keeps the default Bertini model from Geant4.
     """
+
     pass
 
 
@@ -41,7 +44,7 @@ class BertiniNothingHardModel(PhotoNuclearModel):
     certain threshold.
 
     Uses the default Bertini model from Geant4.
-    
+
     Nothing hard events are unlikely to come from low A nuclei. This can
     be tested by instrumenting one of the models and checking the typical
     number of attempts for different nuclei.
@@ -88,7 +91,7 @@ class BertiniNothingHardModel(PhotoNuclearModel):
     count_light_ions: bool = True
     hard_particle_threshold: float = 200.0
     zmin: int = 74
-    emin: float = 2500.
+    emin: float = 2500.0
 
 
 @photo_nuclear_model("simcore::BertiniSingleNeutronModel")
@@ -106,10 +109,9 @@ class BertiniSingleNeutronModel(PhotoNuclearModel):
     count_light_ions: bool = True
 
 
-
 @photo_nuclear_model("simcore::BertiniAtLeastNProductsModel")
 class BertiniAtLeastNProductsModel(PhotoNuclearModel):
-    """ A photonuclear model producing only topologies with no particles above a
+    """A photonuclear model producing only topologies with no particles above a
     certain threshold.
 
     Uses the default Bertini model from Geant4.
@@ -122,27 +124,26 @@ class BertiniAtLeastNProductsModel(PhotoNuclearModel):
     zmin: int = 0
     emin: float = 2500.0
 
-
-    def kaon(min_products = 1, hard_particle_threshold=200.):
+    def kaon(self=1, hard_particle_threshold=200.0):
         # Note: By default, this is requiring at least 1 kaon with at least 200
         # MeV. You may want a different energy threshold depending on your needs.
         return BertiniAtLeastNProductsModel(
-            min_products = min_products,
-            instance_name = f'{min_products}_kaon_model',
+            min_products=self,
+            instance_name=f"{self}_kaon_model",
             hard_particle_threshold=hard_particle_threshold,
-            pdg_ids = [
+            pdg_ids=[
                 130,  # K_L^0
                 310,  # K_S^0
                 311,  # K^0
                 321,  # K^+
-                -321, # K^-
-            ]
+                -321,  # K^-
+            ],
         )
 
 
 @photo_nuclear_model("simcore::BertiniExactlyNProductsModel")
 class BertiniExactlyNProductsModel(PhotoNuclearModel):
-    """ A photonuclear model producing only topologies with a define number
+    """A photonuclear model producing only topologies with a define number
     of particles above a certain threshold.
 
     Uses the default Bertini model from Geant4.
@@ -155,29 +156,27 @@ class BertiniExactlyNProductsModel(PhotoNuclearModel):
     emin: float = 2500.0
     check_allmatch: bool = False
 
-
-    def kaon(n_products = 2, hard_particle_threshold=200.):
+    def kaon(self=2, hard_particle_threshold=200.0):
         # This is requiring exactly 2 kaons with at least 200 MeV.
         return BertiniExactlyNProductsModel(
-            instance_name = f'{n_products}_kaon_model',
-            n_products = n_products,
-            pdg_ids = [
+            instance_name=f"{self}_kaon_model",
+            n_products=self,
+            pdg_ids=[
                 130,  # K_L^0
                 310,  # K_S^0
                 311,  # K^0
                 321,  # K^+
-                -321, # K^-
+                -321,  # K^-
             ],
-            hard_particle_threshold = hard_particle_threshold,
+            hard_particle_threshold=hard_particle_threshold,
         )
 
-
-    def neutron(n_products = 1, hard_particle_threshold=200.):
+    def neutron(self=1, hard_particle_threshold=200.0):
         return BertiniExactlyNProductsModel(
-            instance_name = f'{n_products}_neutron_model',
-            n_products = n_products,
-            hard_particle_threshold = hard_particle_threshold,
-            pdg_ids = [2212]
+            instance_name=f"{self}_neutron_model",
+            n_products=self,
+            hard_particle_threshold=hard_particle_threshold,
+            pdg_ids=[2212],
         )
 
 
@@ -188,4 +187,5 @@ class NoPhotoNuclearModel(PhotoNuclearModel):
     Make sure that no biasing operators for photonuclear reactions are enabled
     when using this model.
     """
+
     pass
