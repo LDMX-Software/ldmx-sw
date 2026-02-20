@@ -1,26 +1,18 @@
 """Utility classes for Simulation"""
 
-from LDMX.SimCore import simcfg
+from LDMX.SimCore.user_action import UserAction, user_action
 
 
-class BiasingUtilityAction(simcfg.UserAction) :
-    """Helpful derived class for this submodule, makes
-    sure the library and namespace are set correctly.
+def biasing_utility(class_name: str):
+    return user_action(
+        instance_name = class_name,
+        class_name = f'biasing::utility::{class_name}',
+        module_name = 'Biasing_Utility'
+    )
 
-    Parameters
-    ----------
-    instance_name : str
-        name of this instance
-    class_name : str
-        name of the class within this submodule
-    """
 
-    def __init__(self,instance_name,class_name) :
-        super().__init__(instance_name,'biasing::utility::%s'%class_name)
-        from LDMX.Framework.ldmxcfg import Process
-        Process.add_library('@CMAKE_INSTALL_PREFIX@/lib/libBiasing_Utility.so')
-
-class StepPrinter(BiasingUtilityAction) :
+@biasing_utility("StepPrinter")
+class StepPrinter(UserAction) :
     """Print each step of the input track ID
 
     The default track ID is 1 (the primary particle).
@@ -31,28 +23,27 @@ class StepPrinter(BiasingUtilityAction) :
         Geant4 track ID to print each step of
     """
 
-    def __init__(self,track_id=1, process_name='', depth=0) :
-        super().__init__('print_steps_%s'%track_id,'StepPrinter')
-        self.process_name = process_name
-        self.track_id = track_id
-        self.depth = depth
+    process_name: str = ""
+    track_id: int = 1
+    depth: int = 0
 
-class PartialEnergySorter(BiasingUtilityAction) :
+
+@biasing_utility("PartialEnergySorter")
+class PartialEnergySorter(UserAction) :
     """Process particles such that all particles above
     the input threshold are processed first.
 
     Parameters
     ----------
-    thresh : float
+    threshold : float
         Minimum energy [MeV] to process a track first
     """
 
-    def __init__(self,thresh) :
-        super().__init__('sort_above_%dMeV'%thresh,'PartialEnergySorter')
+    threshold: float
 
-        self.threshold = thresh
 
-class TrackProcessFilter(BiasingUtilityAction):
+@biasing_utility("TrackProcessFilter")
+class TrackProcessFilter(UserAction):
     """ Configuration used to tag all tracks produced via the given process to persist them to the event.
 
     Parameters
@@ -61,10 +52,11 @@ class TrackProcessFilter(BiasingUtilityAction):
         The Geant4 process name (e.g. photonNuclear) via which the tracks were produced. 
     """
 
-    def __init__(self,process_name) :
-        super().__init__('%s_track_filter'%process_name, 'TrackProcessFilter' )
+    process_name: str
 
-        self.process = process_name
+    def __post_init__(self) :
+        self.instance_name = f"{self.process_name}_track_filter"
+
 
     def photo_nuclear() :
         """ Configuration used to tag all photo-nuclear tracks to persist them to the event. 
@@ -74,6 +66,7 @@ class TrackProcessFilter(BiasingUtilityAction):
         Instance of TrackProcessFilter configured to tag photo-nuclear tracks.
         """
         return TrackProcessFilter('photonNuclear')
+
 
     def electro_nuclear() :
         """ Configuration used to tag all electro-nuclear tracks to persist them to the event. 
@@ -85,6 +78,7 @@ class TrackProcessFilter(BiasingUtilityAction):
         """
         return TrackProcessFilter('electronNuclear')
 
+
     def electron_brem() :
         """ Configuration used to tag all electron brem tracks to persist them to the event.
     
@@ -95,6 +89,7 @@ class TrackProcessFilter(BiasingUtilityAction):
         """
         return TrackProcessFilter('eBrem')
 
+
     def conversion() :
         """ Configuration used to tag all electron conversion tracks to persist them to the event.
     
@@ -104,6 +99,7 @@ class TrackProcessFilter(BiasingUtilityAction):
     
         """
         return TrackProcessFilter('conv')
+
 
     def dark_brem() :
         """ Configuration used to tag all dark brem tracks to persist them to the event. 
@@ -124,7 +120,9 @@ class TrackProcessFilter(BiasingUtilityAction):
         """
         return TrackProcessFilter('GammaToMuPair')
 
-class DecayChildrenKeeper(BiasingUtilityAction):
+
+@biasing_utility
+class DecayChildrenKeeper(UserAction):
     """ Configuration used to store children of specific particle decays
 
     Parameters
@@ -133,7 +131,4 @@ class DecayChildrenKeeper(BiasingUtilityAction):
         list of PDG ID of particles whose decay products we want to keep
     """
 
-    def __init__(self,parents) :
-        super().__init__('keep_decay_children', 'DecayChildrenKeeper' )
-
-        self.parents = parents
+    parents: list[int]
