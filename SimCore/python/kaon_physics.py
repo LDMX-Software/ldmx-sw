@@ -5,6 +5,13 @@ from LDMX.Framework import parameter_set
 class KaonPhysics:
     """Parameters that determine the physics of kaons in the simulation
 
+
+    Ensure that attempts to set the branching ratios give a total of
+    something close to 1 and that the lifetime factors are positive.
+
+    Note that Geant4's defaults are not exactly equal to one, but something
+    significantly different from one is likely to be a mistake.
+
     Parameters
     ----------
     kplus_branching_ratios : list[float]
@@ -120,31 +127,3 @@ class KaonPhysics:
         kaon_physics.kminus_lifetime_factor = 1 / 50.0
         kaon_physics.verbosity = 2
         return kaon_physics
-
-
-    def __setattr__(self, key, value):
-        """Ensure that attempts to set the branching ratios give a total of
-        something close to 1 and that the lifetime factors are positive.
-
-        Note that Geant4's defaults are not exactly equal to one, but something
-        significantly different from one is likely to be a mistake.
-        """
-        if "branching_ratios" in key:
-            if not isinstance(value, list):
-                raise TypeError(f"Values of branching ratios ({key}) need to be lists")
-            total_branching_ratio = sum(value)
-            if abs(total_branching_ratio - 1) > 0.05:
-                raise ValueError(
-                    f"Total of branching ratios in {key} significantly different "
-                    f"from one, was {total_branching_ratio}: {value}."
-                )
-        elif "lifetime" in key:
-            if not isinstance(value, float):
-                raise TypeError(
-                    f"Lifetime parameter ({key}) needs to be floating-point"
-                )
-            if value < 0:
-                raise ValueError(f"Lifetime parameter ({key}) needs to be positive")
-
-        # Everything ok!
-        super().__setattr__(key, value)
