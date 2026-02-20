@@ -8,7 +8,7 @@ os.chdir(dname)
 '''
 
 Author: CJ Barton / Lund University group
-Added to ldmx-sw Jan 2026
+Added to ldmx-sw Feb 2026
 Github PR 1888
 Github issues 1760 & 1761
 
@@ -24,24 +24,15 @@ The geometry implementation is done in 3 loops across 2 files (trig_scint.gdml f
 and target.gdml for TSPad3). This means that any time a change needs to be made to the dimensions
 or components of the TSPads, it must be changed 3 times.
 
-This is generally bad practice, and GDML has a solution for copying the same geometry into
-multiple locations, the <assembly>. A geometry defined in a sub-file can be implemented into
-the current GDML file as a complete object and then placed multiple times. This is already done
-for the ecal_motherboard(5/6)assembly.gdml files, and in principle this should be done for the
-TSPads as well. 
-
-A problem arises when we try to make the TSPads imported via <assembly> into distinct sensitive
-detectors (SDs), when the assemblies are intentionally identical.
-The parameter used to assign SDs is the G4LogicalVolume. In ldmx-sw, the correct G4LogicalVolume
-is found by searching the logical volume store for the intended SD names. For the assemblies, we
-can distinguish the physical volumes - but there is absolutely no way (as far as I know) to
-rename the logical volumes. So when we assign a component in the assembly as an SD, this
-assignment automatically spreads to the other assemblies and groups them all together.
+Originally, this was envisioned as solvable by the <assembly> object in GDML. However, assemblies
+are intended to only define physical volume configurations, and don't account for things like
+material etc. naturally. In addition, they aren't intended to have their own envelopes. For these
+reasons, a 'module' approach is taken instead, much like in detector.gdml. There's no problem with
+having nested modules, so long as the nested module is contained entirely within the parent.
 
 This script is a compromise, to collect all of the parameters relevant to the TSPads in
 one location while maintaining the distinct definitions for the logical volumes in each pad.
-It still generates <assembly> files for import into the relevant scripts, but now each pad
-has its own <assembly> file with its own logical volume names.
+Three submodules will be generated, which are then imported into their respective modules.
 
 It should be noted that this script is only concerned with differentiating TSPads+instruments.
 External factors, like where to place them in the world or the definitions of the materials,
@@ -49,9 +40,9 @@ should still be defined elsewhere, for example in the constants.gdml or material
 '''
 
 #Material variable names (material definitions should be found in materials.gdml)
-scintillator_mat="Polyvinyltoluene"
-lightpipe_mat   ="AcrylicPMMA" 
-sipm_mat        ="Silicon"
+scintillator_mat ="Polyvinyltoluene"
+lightpipe_mat    ="AcrylicPMMA" 
+sipm_mat         ="Silicon"
 
 #To streamline TargetDarkBremFilter.cxx, TSPad3 and its components are considered part of
 #the 'target' G4Region, whereas TSPad1/2 are in the 'trig_scint' region.
@@ -64,6 +55,7 @@ for i in range(3):
     scintillator_lvname=f"trigger_pad{i+1}_bar_volume"
     lightpipe_lvname=f"tspad{i+1}_lightpipe_volume"
     sipm_lvname=f"tspad{i+1}_sipm_volume"
+
     with open(filename,"w") as f:
         f.write(f'''<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
 <!DOCTYPE gdml [
@@ -97,12 +89,14 @@ to the housing, and maybe see if the visattributes can be reworked
 
   
   <solids>
-    <!--The box encompassing the assembly-->
-    <box lunit="mm" name="one_pad_box" x="trigger_bar_dx*2+sipm_thickness" y="(trigger_bar_dy+trigger_pad_bar_gap)*number_of_bars*2" z="trigger_pad_thickness"/>
-    <!--The scintillator bars/light pipes dimensions-->
-    <box lunit="mm" name="trigger_bar_box" x="trigger_bar_dx" y="trigger_bar_dy" z="trigger_pad_bar_thickness" />
+    <!--The envelope encompassing the assembly-->
+    <box lunit="mm" name="one_pad_box{i+1}" x="tspad{i+1}_envelope_x" y="(trigger_bar_dy+trigger_pad_bar_gap)*number_of_bars*2" z="trigger_pad_thickness"/>
+    <!--The scintillator bar dimensions (same for each pad)-->
+    <box lunit="mm" name="trigger_bar_box{i+1}" x="trigger_bar_dx" y="trigger_bar_dy" z="trigger_pad_bar_thickness" />
+        <!--The light pipe dimensions (different for each TSPad)-->
+    <box lunit="mm" name="trigger_light_pipe_box{i+1}" x="trigger_light_pipe{i+1}_dx" y="trigger_light_pipe_dy" z="trigger_light_pipe_thickness" />
     <!--SiPM dimensions-->    
-    <box lunit="mm" name="trigger_sipm_box" x="sipm_thickness" y="sipm_dy" z="sipm_dz" />
+    <box lunit="mm" name="trigger_sipm_box{i+1}" x="sipm_thickness" y="sipm_dy" z="sipm_dz" />
   </solids>
 
   
@@ -111,16 +105,15 @@ to the housing, and maybe see if the visattributes can be reworked
     <!--TS pad is made of polyvinyl toluene-->
     <volume name="{scintillator_lvname}">
       <materialref ref="{scintillator_mat}"/>
-      <solidref ref="trigger_bar_box"/>
+      <solidref ref="trigger_bar_box{i+1}"/>
       <auxiliary auxtype="VisAttributes" auxvalue="TriggerPadVis"/>
       <auxiliary auxtype="DetElem" auxvalue="TriggerPad"/>
     </volume>
 
-    <!--TS light guides are made of acrylic PMMA
-	For now, they have the exact same dimensions as the TS pad bars-->
+    <!--TS light guides are made of acrylic PMMA-->
     <volume name="{lightpipe_lvname}">
       <materialref ref="{lightpipe_mat}"/>
-      <solidref ref="trigger_bar_box"/>
+      <solidref ref="trigger_light_pipe_box{i+1}"/>
       <auxiliary auxtype="VisAttributes" auxvalue="TriggerPadVis"/>
       <auxiliary auxtype="DetElem" auxvalue="TriggerPad"/>
     </volume>
@@ -129,70 +122,28 @@ to the housing, and maybe see if the visattributes can be reworked
 	The model is the Hamamatsu S13360-2050VE-->
     <volume name="{sipm_lvname}">
       <materialref ref="{sipm_mat}"/>
-      <solidref ref="trigger_sipm_box"/>
+      <solidref ref="trigger_sipm_box{i+1}"/>
       <auxiliary auxtype="VisAttributes" auxvalue="TriggerPadVis"/>
       <auxiliary auxtype="DetElem" auxvalue="TriggerPad"/>
     </volume>
     
     <volume name="tspad{i+1}_volume">
       <materialref ref="Vacuum"/>
-      <solidref ref="one_pad_box" />
+      <solidref ref="one_pad_box{i+1}" />
 
-      
-<!--The entire assembly is aligned with the left edge of the encompassing
-    volume. This is to keep the encompassing volume as small as possible.
-    Unfortunately, this makes positioning the assembly more awkward in
-    the other files. The alternative was to make the envelope much larger
-    in x, and have x=0 align with the center of the scintillating bars.
-    This would likely cause overlaps with other pieces of the geometry
-    eventually, namely the support structure holding the TS and target etc
+      <loop for="x" from="1" to="number_of_bars" step="1">
 
-    The bright side is that, for now, the assembly x=0 is almost aligned
-    at the juncture between the scintillating bars and the light pipes.
--->
-      
-      <loop for="x" to="number_of_bars" step="1">
+        <!--
+        The light pipes and therefore the TS modules as a whole are of variable length. However, they align at the 'left'
+        edge along the beam direction (positive x in the simulation). Therefore in the x position, we align the SiPMs
+        along the +x edge of the TSPad envelope, and work backwards from there.
+        There are more elegant ways to write the x offset, but this one is the most legible.
+        -->
 
-	<physvol copynumber="2*x-2">
-          <volumeref ref="{scintillator_lvname}" />
-          <position name="trigger_pad_bar_layer1_pos" unit="mm"
-		    x="-(trigger_bar_dx+sipm_thickness)/2"
-                    y="-target_dim_y/2 + trigger_bar_dy*(x - 0.5) + trigger_pad_bar_gap*(x - 1) + trigger_pad_offset" 
-                    z="-trigger_pad_bar_thickness/2 - trigger_pad_bar_gap/2" />
-          <rotationref ref="identity" />
-        </physvol>
-	
-        <physvol copynumber="2*x - 1">
-          <volumeref ref="{scintillator_lvname}" />
-          <position name="trigger_pad_bar_layer2_pos" unit="mm"
-		    x="-(trigger_bar_dx+sipm_thickness)/2"
-                    y="-target_dim_y/2 + trigger_bar_dy*x + trigger_pad_bar_gap*(x - 1) + trigger_pad_offset"
-                    z="trigger_pad_bar_thickness/2 + trigger_pad_bar_gap/2" />
-          <rotationref ref="identity" />
-        </physvol>
-
-	<physvol copynumber="2*x-2">
-	  <volumeref ref="{lightpipe_lvname}" />
-          <position name="trigger_pad_bar_layer1_pos" unit="mm" 
-          	    x="(trigger_bar_dx-sipm_thickness)/2"
-                    y="-target_dim_y/2+trigger_bar_dy*(x-0.5)+trigger_pad_bar_gap*(x-1)+trigger_pad_offset" 
-                    z="-trigger_pad_bar_thickness/2 - trigger_pad_bar_gap/2" />
-          <rotationref ref="identity" />
-        </physvol>
-	
-        <physvol copynumber="2*x-1">
-          <volumeref ref="{lightpipe_lvname}" />
-          <position name="trigger_pad_bar_layer2_pos" unit="mm" 
-          	    x="(trigger_bar_dx-sipm_thickness)/2"
-                    y="-target_dim_y/2+trigger_bar_dy*x+trigger_pad_bar_gap*(x-1)+trigger_pad_offset"
-                    z="trigger_pad_bar_thickness/2 + trigger_pad_bar_gap/2" />
-          <rotationref ref="identity" />
-        </physvol>
-	
 	<physvol copynumber="2*x-2">
 	  <volumeref ref="{sipm_lvname}" />
           <position name="trigger_sipm_layer1_pos" unit="mm" 
-          	    x="trigger_bar_dx+sipm_thickness/2"
+          	    x="(tspad{i+1}_envelope_x-sipm_thickness)/2"
                     y="-target_dim_y/2+trigger_bar_dy*(x-0.5)+trigger_pad_bar_gap*(x-1)+trigger_pad_offset" 
                     z="-trigger_pad_bar_thickness/2 - trigger_pad_bar_gap/2" />
           <rotationref ref="identity" />
@@ -201,11 +152,48 @@ to the housing, and maybe see if the visattributes can be reworked
         <physvol copynumber="2*x-1">
           <volumeref ref="{sipm_lvname}" />
           <position name="trigger_sipm_layer2_pos" unit="mm" 
-          	    x="trigger_bar_dx+sipm_thickness/2"
+          	    x="(tspad{i+1}_envelope_x-sipm_thickness)/2"
                     y="-target_dim_y/2+trigger_bar_dy*x+trigger_pad_bar_gap*(x-1)+trigger_pad_offset"
                     z="trigger_pad_bar_thickness/2 + trigger_pad_bar_gap/2" />
           <rotationref ref="identity" />
         </physvol>
+
+	<physvol copynumber="2*x-2">
+	  <volumeref ref="{lightpipe_lvname}" />
+          <position name="trigger_pad_pipe_layer1_pos" unit="mm" 
+          	    x="(tspad{i+1}_envelope_x-trigger_light_pipe{i+1}_dx-2*sipm_thickness)/2"
+                    y="-target_dim_y/2+trigger_bar_dy*(x-0.5)+trigger_pad_bar_gap*(x-1)+trigger_pad_offset" 
+                    z="-trigger_pad_bar_thickness/2 - trigger_pad_bar_gap/2" />
+          <rotationref ref="identity" />
+        </physvol>
+	
+        <physvol copynumber="2*x-1">
+          <volumeref ref="{lightpipe_lvname}" />
+          <position name="trigger_pad_pipe_layer2_pos" unit="mm" 
+          	    x="(tspad{i+1}_envelope_x-trigger_light_pipe{i+1}_dx-2*sipm_thickness)/2"
+                    y="-target_dim_y/2+trigger_bar_dy*x+trigger_pad_bar_gap*(x-1)+trigger_pad_offset"
+                    z="trigger_pad_bar_thickness/2 + trigger_pad_bar_gap/2" />
+          <rotationref ref="identity" />
+        </physvol>
+
+	<physvol copynumber="2*x-2">
+          <volumeref ref="{scintillator_lvname}" />
+          <position name="trigger_pad_bar_layer1_pos" unit="mm"
+		    x="(tspad{i+1}_envelope_x-trigger_bar_dx-2*trigger_light_pipe{i+1}_dx-2*sipm_thickness)/2"
+                    y="-target_dim_y/2 + trigger_bar_dy*(x - 0.5) + trigger_pad_bar_gap*(x - 1) + trigger_pad_offset" 
+                    z="-trigger_pad_bar_thickness/2 - trigger_pad_bar_gap/2" />
+          <rotationref ref="identity" />
+        </physvol>
+	
+        <physvol copynumber="2*x - 1">
+          <volumeref ref="{scintillator_lvname}" />
+          <position name="trigger_pad_bar_layer2_pos" unit="mm"
+		    x="(tspad{i+1}_envelope_x-trigger_bar_dx-2*trigger_light_pipe{i+1}_dx-2*sipm_thickness)/2"
+                    y="-target_dim_y/2 + trigger_bar_dy*x + trigger_pad_bar_gap*(x - 1) + trigger_pad_offset"
+                    z="trigger_pad_bar_thickness/2 + trigger_pad_bar_gap/2" />
+          <rotationref ref="identity" />
+        </physvol>
+	
       </loop>
 
       <auxiliary auxtype="Region" auxvalue="{region_name[i]}" />

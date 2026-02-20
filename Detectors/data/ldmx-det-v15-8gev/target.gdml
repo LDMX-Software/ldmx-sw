@@ -38,20 +38,13 @@
       <auxiliary auxtype="DetElem" auxvalue="Target"/>
     </volume>
 
-    <assembly name="tspad3_assembly">
-          <physvol>
-            <file name="tspad3_assembly.gdml" />
-            <rotationref ref="identity" />
-	  </physvol>
-    </assembly>
-
     <volume name="TS_trgt">
       <materialref ref="Vacuum"/>
       <solidref ref="target_area_box" />
 
       <physvol>
-        <volumeref ref="tspad3_assembly"/>
-        <position name="tspad3_pos" unit="mm" x="trigger_bar_dx/2" y="0"
+        <file name="tspad3_assembly.gdml"/>
+        <position name="tspad3_pos" unit="mm" x="(tspad3_envelope_x-trigger_bar_dx)/2" y="0"
 		  z="trigger_pad3_z" />
       </physvol>
       
