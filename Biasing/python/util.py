@@ -1,11 +1,10 @@
 """Utility classes for Simulation"""
 
-from LDMX.SimCore.user_action import UserAction, user_action
+from LDMX.SimCore.user_actions import UserAction, user_action
 
 
 def biasing_utility(class_name: str):
     return user_action(
-        instance_name = class_name,
         class_name = f'biasing::utility::{class_name}',
         module_name = 'Biasing_Utility'
     )
