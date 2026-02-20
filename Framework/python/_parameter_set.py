@@ -23,6 +23,43 @@ def check_list(attr, the_list, dimension, entry_type):
 
 
 def validate_and_set_attr(self, attr, val):
+    """make sure the passed value is valid for the attribute it s updating
+
+    This function becomes the __setattr__ function for any parameter_set
+    class and is the core logic that ensures parameters are not mis-spelled
+    and do not change type.
+    We ensure this type-solidity by using dataclass to process a class's
+    definition for member annotations (see parameter_set). This produces
+    an internal list called __dataclass_fields__ that contains our set
+    of attributes (and their types!).
+
+    Besides this type checking, we can also remap if the user defines a
+    class variable __legacy__ that maps old parameter names to new ones.
+
+    Parameter
+    ---------
+    self: object
+        object whose attributes we are validating
+    attr: str
+        name of attribute we are attempting to set
+    val: Any
+        value we want to set the attribute to
+
+    Raises
+    ------
+    KeyError:
+        if the passed attribute is not one of the members as defined
+        when the class was declared and parsed by dataclass
+    TypeError:
+        if the passed value does not match the type of the member
+        as defined when the class was declared and parsed by dataclass
+
+    Warnings
+    --------
+    If the legacy re-mapping of a name is applied, a DeprecationWarning
+    is issued.
+    """
+
     # first, we check if the attr is a legacy name
     legacy_remap = getattr(self.__class__, "__legacy__", None)
     if legacy_remap is not None and attr in legacy_remap:
@@ -93,6 +130,84 @@ def parameter_set(
     required_base=None,
     **required_parameters,
 ):
+    """decorate a class and have it become a parameter_set whose members cannot change
+
+    This function decorates a class when it is defined, allowing us to modify
+    the class's behavior before it is used. We do a few things:
+    - add (or update) the __post_init__ function to ensure that all dataclass fields
+      are present in the __dict__ member variable (and include the passed post_init
+      if provided)
+    - have the class use valid_and_set_attr as the __setattr__ function
+    - add the list of required_parameters to the type annotations and class values
+      (if provided)
+    - add the passed list of helper functions (if provided)
+    - check that the class has the required_base class (if provided)
+    - wrap values provided by the user in CreateDefault if they are mutable
+    - forward the updated class to dataclass for final processing
+
+    See Also
+    --------
+    validate_and_set_attr:
+        for how the actual validation is done at run time
+    dataclasses.dataclass:
+        for general background on dataclasses and their vocabulary
+
+    Parameters
+    ----------
+    _class:
+        The class being decorated
+    post_init: Callable
+        Additional function to *include* in the generated __post_init__ function
+        This is run _after_ the dataclass fields are copied into the __dict__,
+        but before the class's own __post_init__ if it is defined.
+    helpers: List[Tuple[str,Callable]]
+        Additional functions to assign as member functions to the class
+    required_base: type
+        Required base type that classes this function is decorating should be
+    required_parameters: Dict[str,Any]
+        Additional key-word parameters are included as additional parameters
+        in the parameter_set by injecting their annotations and values into
+        the class definition.
+
+    Examples
+    --------
+    The most simple case is where we have a Python class that we want to hold
+    a few parameters in a group so that the C++ can retrieve them later.
+
+        @parameter_set
+        class MyParameters:
+            my_integer: int
+            my_double: float = 42.0
+
+    In this case, `my_integer` is "required" in the sense that it must be provided
+    whenever constructing a `MyParameters` object. This is helpful for parameters
+    that the user must provide and don't have a sensible default. `my_double`, on
+    the other hand, is "optional" and has the default value of 42.0.
+
+    The more complicated but more common case is where many different classes on the
+    C++ side must have the same few parameters to distinguish themselves but then can
+    have different, additional parameters. (Think event processors, conditions object
+    providers, primary generators, user actions, ...). The way to handle this situation
+    is to wrap the parameter_set function by another function that _requires_ certain
+    arguments. This then forces the user to provide certain values for certain
+    parameters when they are constructing a new Python configuration class.
+    The parameters to this function are mainly focused on this use case - examples
+    of which you can see in _processor.py and _conditions_object_provider.py.
+
+    Warnings
+    --------
+    Groups of parameter sets that have similar types on the C++ side tend to also
+    be grouped on the Python side using a common base class to help do type checking.
+    However, we *cannot* use all the features of Python inheritance with the current
+    solution. Specifically,
+    1. The base class cannot define any shared parameters since then those parameters
+        are included before any of the derived classes parameters. Pass those
+        to this function.
+    2. The base class should not define a __post_init__ or __setattr__ function
+        both of which will be overwritten by the versions of those functions defined
+        here.
+    """
+
     if helpers is None:
         helpers = []
 
