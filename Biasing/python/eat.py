@@ -61,7 +61,7 @@ def midshower_nuclear(
     """
 
     # Instantiate the simulator.
-    sim = simulator.simulator("eat-midshower-nuclear")
+    sim = simulator.simulator(instance_name = "eat-midshower-nuclear")
     from LDMX.Ecal import ecal_geometry
 
     # Set the path to the detector to use.
@@ -70,7 +70,6 @@ def midshower_nuclear(
 
     # Set run parameters
     sim.description = "Biased Mid-Shower Nuclear Interactions ME Background"
-    sim.beamSpotSmear = [20.0, 80.0, 0.0]  # mm
 
     sim.generators = [generator]
 
@@ -141,7 +140,7 @@ def midshower_dimuon(
     """
 
     # Instantiate the simulator.
-    sim = simulator.simulator("eat-midshower-dimuon")
+    sim = simulator.simulator(instance_name = "eat-midshower-dimuon")
     from LDMX.Ecal import ecal_geometry
 
     # Set the path to the detector to use.
@@ -150,7 +149,6 @@ def midshower_dimuon(
 
     # Set run parameters
     sim.description = "Biased Mid-Shower DiMuon Interactions ME Background"
-    sim.beamSpotSmear = [20.0, 80.0, 0.0]  # mm
 
     sim.generators = [generator]
 
@@ -229,7 +227,7 @@ def dark_brem(
 
     """
 
-    sim = simulator.simulator(f"ecal_dark_brem_{ap_mass!s}MeV")
+    sim = simulator.simulator(instance_name = f"ecal_dark_brem_{ap_mass!s}MeV")
     from LDMX.Ecal import ecal_geometry
 
     sim.description = (
@@ -237,7 +235,6 @@ def dark_brem(
     )
     sim.setDetector(detector, include_scoring_planes_minimal=True)
     sim.generators = [generator]
-    sim.beamSpotSmear = [20.0, 80.0, 0.0]  # mm
 
     # Activiate dark bremming with a certain A' mass and LHE library
     from LDMX.SimCore import dark_brem

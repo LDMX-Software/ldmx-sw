@@ -40,7 +40,7 @@ def photo_nuclear(detector, generator):
     """
 
     # Instantiate the simulator.
-    sim = simulator.simulator("photo-nuclear")
+    sim = simulator.simulator(instance_name = "photo-nuclear")
 
     # Set the path to the detector to use.
     #   the second parameter says we want to include scoring planes
@@ -60,9 +60,8 @@ def photo_nuclear(detector, generator):
         + str(xsec_bias_threshold)
         + " GeV"
     )
-    sim.beamSpotSmear = [20.0, 80.0, 0.0]  # mm
 
-    sim.generators.append(generator)
+    sim.generators = [generator]
 
     # Enable and configure the biasing
     sim.biasing_operators = [
@@ -74,9 +73,9 @@ def photo_nuclear(detector, generator):
     # Configure the sequence in which user actions should be called.
     sim.actions.extend(
         [
-            filters.TaggerVetoFilter(thresh=tagger_threshold),
+            filters.TaggerVetoFilter(threshold=tagger_threshold),
             # Only consider events where a hard brem occurs
-            filters.TargetBremFilter(recoil_max_p=recoil_max_p, brem_min_e=brem_min_e),
+            filters.TargetBremFilter(recoil_max_p_threshold=recoil_max_p, brem_min_energy_threshold=brem_min_e),
             # Only consider events where a PN reaction happnes in the ECal
             filters.EcalProcessFilter(),
             # Tag all photo-nuclear tracks to persist them to the event.
@@ -90,7 +89,7 @@ def photo_nuclear(detector, generator):
 def nonfiducial_photo_nuclear(detector, generator):
 
     # Instantiate the simulator.
-    sim = simulator.simulator("photo-nuclear")
+    sim = simulator.simulator(instance_name = "photo-nuclear")
 
     # Set the path to the detector to use.
     #   the second parameter says we want to include scoring planes
@@ -162,7 +161,7 @@ def gamma_mumu(detector, generator):
     """
 
     # Initiate the sim
-    sim = simulator.simulator("ecal_gammamumu")
+    sim = simulator.simulator(instance_name = "ecal_gammamumu")
 
     # Set the path to the detector to use
     # Also tell the simulator to include scoring planes
@@ -212,7 +211,7 @@ def deep_photo_nuclear(
 ):
 
     # Instantiate the simulator.
-    sim = simulator.simulator("photo-nuclear")
+    sim = simulator.simulator(instance_name = "photo-nuclear")
 
     # Set the path to the detector to use.
     #   the second parameter says we want to include scoring planes
@@ -230,9 +229,8 @@ def deep_photo_nuclear(
         + str(xsec_bias_threshold)
         + " GeV"
     )
-    sim.beamSpotSmear = [20.0, 80.0, 0.0]  # mm
 
-    sim.generators.append(generator)
+    sim.generators = [ generator ]
 
     # Enable and configure the biasing
     sim.biasing_operators = [

@@ -16,7 +16,7 @@ class XsecBiasingOperator:
 def biasing_operator(class_name, module_name="SimCore_BiasOperators"):
     return parameter_set(
         class_name=field(default=class_name, init=False),
-        module_name=field(default=class_name, init=False),
+        module_name=field(default=module_name, init=False),
         instance_name=class_name,
         post_init=lambda self: _register.library(self.module_name),
         required_base=XsecBiasingOperator,

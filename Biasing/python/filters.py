@@ -14,9 +14,9 @@ class TargetBremFilter(UserAction):
 
     Parameters
     ----------
-    recoil_max_p : float
+    recoil_max_p_threshold : float
         Maximum momentum the recoil electron can have [MeV]
-    brem_min_e : float
+    brem_min_energy_threshold : float
         Minimum energy the brem photon can have [MeV]
 
     Attributes
@@ -25,8 +25,8 @@ class TargetBremFilter(UserAction):
         Should we kill the recoil electron track for a worst case scenario?
     """
 
-    recoil_max_p: float
-    brem_min_e: float
+    recoil_max_p_threshold: float
+    brem_min_energy_threshold: float
     kill_recoil_track: bool = False
 
 
@@ -137,7 +137,7 @@ class TargetDarkBremFilter(UserAction):
     threshold: float
 
 
-@user_action("biaisng::TaggerVetoFilter", "Biasing")
+@user_action("biasing::TaggerVetoFilter", "Biasing")
 class TaggerVetoFilter(UserAction):
     """Configuration used to reject off-energy electrons in the tagger tracker.
 

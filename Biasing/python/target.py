@@ -35,7 +35,7 @@ def electro_nuclear(detector, generator):
     """
 
     # Instantiate the sim.
-    sim = simulator.simulator("target_electronNuclear")
+    sim = simulator.simulator(instance_name = "target_electronNuclear")
 
     # Set the path to the detector to use.
     #   Also tell the simulator to include scoring planes
@@ -43,9 +43,8 @@ def electro_nuclear(detector, generator):
 
     # Set run parameters
     sim.description = "Target electron-nuclear, xsec bias 1e5"
-    sim.beamSpotSmear = [20.0, 80.0, 0.0]  # mm
 
-    sim.generators.append(generator)
+    sim.generators = [generator]
 
     # Enable and configure the biasing
     sim.biasing_operators = [bias_operators.ElectroNuclear("target", 1e5)]
@@ -91,7 +90,7 @@ def photo_nuclear(detector, generator):
     """
 
     # Instantiate the sim.
-    sim = simulator.simulator("target_photonNuclear")
+    sim = simulator.simulator(instance_name = "target_photonNuclear")
 
     # Set the path to the detector to use.
     #   Also tell the simulator to include scoring planes
@@ -111,9 +110,8 @@ def photo_nuclear(detector, generator):
         + str(xsec_bias_threshold)
         + " GeV"
     )
-    sim.beamSpotSmear = [20.0, 80.0, 0.0]
 
-    sim.generators.append(generator)
+    sim.generators = [generator]
 
     # Enable and configure the biasing
     sim.biasing_operators = [
@@ -162,14 +160,12 @@ def gamma_mumu(detector, generator):
     """
 
     # Instantiate the sim.
-    sim = simulator.simulator("target_gammamumu")
+    sim = simulator.simulator(instance_name = "target_gammamumu")
 
     # Set the path to the detector to use.
     #   Also tell the simulator to include scoring planes
     sim.setDetector(detector, include_scoring_planes_minimal=True)
 
-    # Set run parameters
-    sim.beamSpotSmear = [20.0, 80.0, 0.0]
     xsec_bias_threshold = 0.625 * generator.energy * 1000.0
     tagger_threshold = 0.95 * generator.energy * 1000.0
     recoil_max_p = 0.375 * generator.energy * 1000.0
@@ -242,14 +238,13 @@ def dark_brem(
 
         target_ap_sim = target.dark_brem(1000, 'path/to/lhe', 'ldmx-det-v12')
     """
-    sim = simulator.simulator("target_dark_brem_" + str(ap_mass) + "_MeV")
+    sim = simulator.simulator(instance_name = f"target_dark_brem_{ap_mass!s}_MeV")
 
     sim.description = (
         "One e- fired far upstream with Dark Brem turned on and biased up in target"
     )
     sim.setDetector(detector, include_scoring_planes_minimal=True)
-    sim.generators.append(generators.single_8gev_e_upstream_tagger())
-    sim.beamSpotSmear = [20.0, 80.0, 0.0]  # mm
+    sim.generators = [generators.single_8gev_e_upstream_tagger()]
 
     # Activiate dark bremming with a certain A' mass and LHE library
     from LDMX.SimCore import dark_brem
