@@ -5,13 +5,12 @@ from LDMX.SimCore.user_actions import UserAction, user_action
 
 def biasing_utility(class_name: str):
     return user_action(
-        class_name = f'biasing::utility::{class_name}',
-        module_name = 'Biasing_Utility'
+        class_name=f"biasing::utility::{class_name}", module_name="Biasing_Utility"
     )
 
 
 @biasing_utility("StepPrinter")
-class StepPrinter(UserAction) :
+class StepPrinter(UserAction):
     """Print each step of the input track ID
 
     The default track ID is 1 (the primary particle).
@@ -28,7 +27,7 @@ class StepPrinter(UserAction) :
 
 
 @biasing_utility("PartialEnergySorter")
-class PartialEnergySorter(UserAction) :
+class PartialEnergySorter(UserAction):
     """Process particles such that all particles above
     the input threshold are processed first.
 
@@ -43,86 +42,88 @@ class PartialEnergySorter(UserAction) :
 
 @biasing_utility("TrackProcessFilter")
 class TrackProcessFilter(UserAction):
-    """ Configuration used to tag all tracks produced via the given process to persist them to the event.
+    """Configuration used to tag all tracks produced via the given process
+    to persist them to the event.
 
     Parameters
     ----------
     process_name : str
-        The Geant4 process name (e.g. photonNuclear) via which the tracks were produced. 
+        The Geant4 process name (e.g. photonNuclear) via which the tracks were produced.
     """
 
     process_name: str
 
-    def __post_init__(self) :
+    def __post_init__(self):
         self.instance_name = f"{self.process_name}_track_filter"
 
+    def photo_nuclear():
+        """Configuration used to tag all photo-nuclear tracks to persist
+        them to the event.
 
-    def photo_nuclear() :
-        """ Configuration used to tag all photo-nuclear tracks to persist them to the event. 
-    
         Return
         ------
         Instance of TrackProcessFilter configured to tag photo-nuclear tracks.
         """
-        return TrackProcessFilter('photonNuclear')
+        return TrackProcessFilter("photonNuclear")
 
+    def electro_nuclear():
+        """Configuration used to tag all electro-nuclear tracks to persist
+        them to the event.
 
-    def electro_nuclear() :
-        """ Configuration used to tag all electro-nuclear tracks to persist them to the event. 
-    
         Return
         ------
         Instance of TrackProcessFilter configured to tag electro-nuclear tracks.
-    
+
         """
-        return TrackProcessFilter('electronNuclear')
+        return TrackProcessFilter("electronNuclear")
 
+    def electron_brem():
+        """Configuration used to tag all electron brem tracks to persist
+        them to the event.
 
-    def electron_brem() :
-        """ Configuration used to tag all electron brem tracks to persist them to the event.
-    
         Return
         ------
         Instance of TrackProcessFilter configured to tag eBrem tracks.
-    
+
         """
-        return TrackProcessFilter('eBrem')
+        return TrackProcessFilter("eBrem")
 
+    def conversion():
+        """Configuration used to tag all electron conversion tracks to persist
+        them to the event.
 
-    def conversion() :
-        """ Configuration used to tag all electron conversion tracks to persist them to the event.
-    
         Return
         ------
         Instance of TrackProcessFilter configured to tag conversion tracks.
-    
+
         """
-        return TrackProcessFilter('conv')
+        return TrackProcessFilter("conv")
 
+    def dark_brem():
+        """Configuration used to tag all dark brem tracks to persist
+        them to the event.
 
-    def dark_brem() :
-        """ Configuration used to tag all dark brem tracks to persist them to the event. 
-    
         Return
         ------
         Instance of TrackProcessFilter configured to tag dark brem tracks.
-    
-        """
-        return TrackProcessFilter('DarkBrem')
 
-    def gamma_mumu() :
-        """ Configuration used to tag all gamma --> mu+ mu- tracks to persist them to the event.
+        """
+        return TrackProcessFilter("DarkBrem")
+
+    def gamma_mumu():
+        """Configuration used to tag all gamma --> mu+ mu- tracks to persist
+        them to the event.
 
         Return
         ------
         Instance of TrackProcessFilter configured to tag gamma --> mu+ mu- tracks.
         """
-        return TrackProcessFilter('GammaToMuPair')
+        return TrackProcessFilter("GammaToMuPair")
 
 
 @biasing_utility
 class DecayChildrenKeeper(UserAction):
-    """ Configuration used to store children of specific particle decays
+    """Configuration used to store children of specific particle decays
 
     Parameters
     ----------

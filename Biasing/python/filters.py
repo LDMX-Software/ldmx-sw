@@ -1,22 +1,16 @@
-""" filters
-Examples of how each filter is configured for biased MC generation. 
-
-    The configurations below reflect the nominal values currently being used 
-    for large scale production.  When debugging, it's best to create these
-    generators directly. 
-"""
+"""configuration for event filtering user actions"""
 
 from LDMX.SimCore.user_actions import UserAction, user_action
 
 
 @user_action("biasing::TargetBremFilter", "Biasing")
 class TargetBremFilter(UserAction):
-    """ Configuration for filtering events that don't see a hard brem in the target. 
+    """Configuration for filtering events that don't see a hard brem in the target.
 
     An event is vetoed if one of two conditions is satisfied:
     1) The recoil electron exits the target area with an energy above 1500 MeV
     2) The recoil electorn brems, but the energy of at least one of the brems
-    isn't above 2500 MeV. 
+    isn't above 2500 MeV.
 
     Parameters
     ----------
@@ -38,14 +32,15 @@ class TargetBremFilter(UserAction):
 
 @user_action("biasing::NonFiducialFilter", "Biasing")
 class NonFiducialFilter(UserAction):
-    """ Configuration for rejecting events that are fiducial.
+    """Configuration for rejecting events that are fiducial.
 
     Parameters
     ----------
     recoil_max_p : float
         Maximum momentum the recoil electron can have [MeV]
     abort_fiducial: bool
-        If true, aborts fiducial events. Otherwise, the fiducial events will be only tagged
+        If true, aborts fiducial events. Otherwise, the fiducial events will be
+        only tagged
     """
 
     recoil_max_p: float
@@ -54,7 +49,8 @@ class NonFiducialFilter(UserAction):
 
 @user_action("biasing::EcalProcessFilter", "Biasing")
 class EcalProcessFilter(UserAction):
-    """ Configuration for filtering events that don't see a hard brem undergo a photo-nuclear reaction in the ECal. 
+    """Configuration for filtering events that don't see a hard brem
+    undergo a photo-nuclear reaction in the ECal.
 
     Parameters
     ----------
@@ -67,7 +63,7 @@ class EcalProcessFilter(UserAction):
 
 @user_action("biasing::DeepEcalProcessFilter", "Biasing")
 class DeepEcalProcessFilter(UserAction):
-    """ Configuration for keeping events where the pn happens deep in the ECAL.
+    """Configuration for keeping events where the pn happens deep in the ECAL.
 
     Parameters
     ----------
@@ -90,8 +86,8 @@ class DeepEcalProcessFilter(UserAction):
 
 
 @user_action("biasing::TargetENProcessFilter", "Biasing")
-class TargetENFilter(UserAction) :
-    """ Configuration for filtering electro-nuclear events in the target. 
+class TargetENFilter(UserAction):
+    """Configuration for filtering electro-nuclear events in the target.
 
     Parameters
     ----------
@@ -101,15 +97,15 @@ class TargetENFilter(UserAction) :
 
     recoil_thresh: float
 
+
 @user_action("biasing::TargetProcessFilter", "Biasing")
-class TargetProcessFilter(UserAction) :
-    """ Configuration for filtering photo-nuclear events in the target."""
+class TargetProcessFilter(UserAction):
+    """Configuration for filtering photo-nuclear events in the target."""
 
     process: str
 
     def photo_nuclear():
         return TargetProcessFilter("photonNuclear")
-    
 
     def gamma_mu_mu():
         return TargetProcessFilter("GammaToMuPair")
@@ -117,7 +113,7 @@ class TargetProcessFilter(UserAction) :
 
 @user_action("biasing::EcalDarkBremFilter", "Biasing")
 class EcalDarkBremFilter(UserAction):
-    """ Configuration for filtering A' events
+    """Configuration for filtering A' events
 
     Parameters
     ----------
@@ -130,7 +126,7 @@ class EcalDarkBremFilter(UserAction):
 
 @user_action("biasing::TargetDarkBremFilter", "Biasing")
 class TargetDarkBremFilter(UserAction):
-    """ Configuration for filtering A' events
+    """Configuration for filtering A' events
 
     Parameters
     ----------
@@ -140,9 +136,10 @@ class TargetDarkBremFilter(UserAction):
 
     threshold: float
 
+
 @user_action("biaisng::TaggerVetoFilter", "Biasing")
 class TaggerVetoFilter(UserAction):
-    """ Configuration used to reject off-energy electrons in the tagger tracker.
+    """Configuration used to reject off-energy electrons in the tagger tracker.
 
     Parameters
     ----------
@@ -157,8 +154,9 @@ class TaggerVetoFilter(UserAction):
 
 
 @user_action("biasing::PrimaryToEcalFilter", "Biasing")
-class PrimaryToEcalFilter(UserAction) :
-    """ Configuration used to reject events where the primary doesn't reach the ecal with a mimimum energy
+class PrimaryToEcalFilter(UserAction):
+    """Configuration used to reject events where the primary doesn't reach the ecal
+    with a mimimum energy
 
     Parameters
     ----------
@@ -168,9 +166,11 @@ class PrimaryToEcalFilter(UserAction) :
 
     threshold: float
 
+
 @user_action("biasing::MidShowerNuclearBkgdFilter", "Biasing")
-class MidShowerNuclearBkgdFilter(UserAction) :
-    """ Configuration used to reject events that don't have enough energy given to the input process.
+class MidShowerNuclearBkgdFilter(UserAction):
+    """Configuration used to reject events that don't have enough energy given to the
+    input process.
 
     Parameters
     ----------
@@ -180,9 +180,11 @@ class MidShowerNuclearBkgdFilter(UserAction) :
 
     threshold: float
 
+
 @user_action("biasing::MidShowerDiMuonBkgdFilter", "Biasing")
-class MidShowerDiMuonBkgdFilter(UserAction) :
-    """ Configuration used to reject events that don't have enough energy given to muon conversion
+class MidShowerDiMuonBkgdFilter(UserAction):
+    """Configuration used to reject events that don't have enough energy given to
+    muon conversion
 
     Parameters
     ----------
@@ -191,6 +193,7 @@ class MidShowerDiMuonBkgdFilter(UserAction) :
     """
 
     threshold: float
+
 
 @user_action("biasing::TaggerHitFilter", "Biasing")
 class TaggerHitFilter(UserAction):

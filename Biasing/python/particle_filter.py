@@ -1,60 +1,54 @@
-""" Example configurations for filtering out PN events by the properties of 
-    of the reaction products.
-"""
+"""PN topology filtering user actions"""
 
-from LDMX.SimCore import simcfg
+from LDMX.SimCore.user_actions import UserAction, user_action
 
 
-class PhotoNuclearProductsFilter(simcfg.UserAction) :
-    """ Configuration for keeping events with specific products of PN interactions
-
-    Parameters
-    ----------
-    name : str
-        Name for this filter
+@user_action("biasing::PhotoNuclearProductsFilter", "Biasing")
+class PhotoNuclearProductsFilter(UserAction):
+    """Configuration for keeping events with specific products of PN interactions
 
     Attributes
     ----------
     pdg_ids : list of ints
         List of PDG product IDs to look for in PN products
+    min_e: float
+        minimum energy
     """
 
-    def __init__(self,name) :
-        super().__init__(name,'biasing::PhotoNuclearProductsFilter')
+    pdg_ids: list[int] = []
+    min_e: float = 0.0
 
-        from LDMX.Biasing import include
-        include.library()
+    def kaon():
+        """Configuration for filtering photo-nuclear events whose products don't
+        contain a kaon.
 
-        self.pdg_ids = [ ]
-        self.min_e = 0.
 
-    def kaon() :
-        """ Configuration for filtering photo-nuclear events whose products don't contain a kaon.
-    
-    
         Returns
         -------
         Instance of configured PhotoNuclearProductsFilter
         """
 
-        particle_filter = PhotoNuclearProductsFilter("kaon_filter")
-        particle_filter.pdg_ids = [
-                130, # K_L^0
-                310, # K_S^0
-                311, # K^0
-                321  # K^+
-        ]
-        return particle_filter
+        return PhotoNuclearProductsFilter(
+            instance_name="kaon_filter",
+            pdg_ids=[
+                130,  # K_L^0
+                310,  # K_S^0
+                311,  # K^0
+                321,  # K^+
+            ],
+        )
 
-class PhotoNuclearTopologyFilter(simcfg.UserAction):
+
+@user_action("UNDEFINED", "Biasing")
+class PhotoNuclearTopologyFilter(UserAction):
     """Configuration for keeping events with a PN reaction producing a
     particular event topology.
 
     Parameters
     ----------
-    name : str
+    instance_name : str
         Name for this filter
-    filter_class:
+    class_name:
         Name of the class that implements this filter. Should correspond to the
         invocation of DECLARE_ACTION in PhotoNuclearTopologyFilters.cxx
 
@@ -71,14 +65,11 @@ class PhotoNuclearTopologyFilter(simcfg.UserAction):
         PhotoNuclearDQM.
 
     """
-    def __init__(self, name, filter_class):
-        super().__init__(name, filter_class)
-        from LDMX.Biasing import include
-        include.library()
-        self.count_light_ions = True
 
+    hard_particle_threshold: float
+    count_light_ions: bool = True
 
-    def SingleNeutronFilter():
+    def single_neutron():
         """Configuration for keeping photonuclear events where a single neutron
         carries most of the kinetic energy from the interaction
 
@@ -88,12 +79,13 @@ class PhotoNuclearTopologyFilter(simcfg.UserAction):
         Instance of configured PhotoNuclearTopologyFilter
 
         """
-        filter = PhotoNuclearTopologyFilter(name='SingleNeutron',
-                                            filter_class='biasing::SingleNeutronFilter' )
-        filter.hard_particle_threshold = 200.
-        return filter
+        return PhotoNuclearTopologyFilter(
+            instance_name="SingleNeutron",
+            class_name="biasing::SingleNeutronFilter",
+            hard_particle_threshold=200.0,
+        )
 
-    def NothingHardFilter():
+    def nothing_hard():
         """Configuration for keeping photonuclear events no particles received
         significant kinetic energy.
 
@@ -102,12 +94,8 @@ class PhotoNuclearTopologyFilter(simcfg.UserAction):
         Instance of configured PhotoNuclearTopologyFilter
 
         """
-        filter = PhotoNuclearTopologyFilter(name='NothingHard',
-                                            filter_class='biasing::NothingHardFilter')
-        filter.hard_particle_threshold = 200.
-        return filter
-
-
-
-
-
+        return PhotoNuclearTopologyFilter(
+            instance_name="NothingHard",
+            class_name="biasing::NothingHardFilter",
+            hard_particle_threshold=200.0,
+        )
