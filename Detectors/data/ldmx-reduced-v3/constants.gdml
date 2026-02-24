@@ -74,7 +74,7 @@
 <constant name="trigger_pad_dim_x"          value="target_dim_x" />
 <constant name="trigger_pad_dim_y"          value="target_dim_y" />
 <constant name="trigger_bar_dx"             value="30"/>
-<constant name="trigger_bar_dy"             value="3.0"/>
+<constant name="trigger_bar_dy"             value="2.8956"/>
 <constant name="number_of_bars"             value="12"/>
 
 <constant name="trigger_bar_y_gap"          value="0.15*mm"/>
