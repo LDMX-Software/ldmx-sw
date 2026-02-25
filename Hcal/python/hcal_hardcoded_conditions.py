@@ -47,8 +47,8 @@ toa_calib.validForAllRows([0., 0.]) # dummy values
 # wrap our tables in the parent object that is used by the processors
 from .conditions import HcalReconConditionsProvider
 
-
-HcalReconConditionsProvider(adc_pedestal, adc_gain, tot_calib, toa_calib)
+HcalReconConditionsProvider(
+    adc_pedestal.object_name, adc_gain.object_name, tot_calib.object_name, toa_calib.object_name)
 
 HcalHgcrocConditionsHardcode=SimpleCSVDoubleTableProvider("HcalHgcrocConditions", [
             "PEDESTAL",

@@ -43,4 +43,4 @@ toa_calib.entries_url = '${LDMX_CONDITION_BASEURL}/Hcal/testbeam04-2022/toa_cali
 from .conditions import HcalReconConditionsProvider
 
 
-HcalReconConditionsProvider(adc_pedestal, adc_gain, tot_calib, toa_calib)
+HcalReconConditionsProvider(adc_pedestal.object_name, adc_gain.object_name, tot_calib.object_name, toa_calib.object_name)
