@@ -90,13 +90,13 @@ ecal_veto.recoil_from_tracking = False
 ecal_veto.rec_pass_name = this_pass_name
 ecal_veto.ecal_sp_coll_name += overlay_str
 ecal_veto.target_sp_coll_name += overlay_str
-ecal_veto.track_collection += overlay_str
+ecal_veto.track_pass_name = this_pass_name
 ecal_veto.sim_particles_coll_name += overlay_str
 
 ecal_veto_pnet =  ecal_vetos.EcalPnetVetoProcessor()
 ecal_veto_pnet.ecal_rec_hits_passname = this_pass_name
 ecal_veto_pnet.ecal_sp_coll_name += overlay_str
-ecal_veto_pnet.track_collection += overlay_str
+ecal_veto_pnet.track_pass_name = this_pass_name
 
 # Load the HCAL modules
 import LDMX.Hcal.digi as hcal_digi_and_reco
@@ -124,7 +124,7 @@ from LDMX.Hcal.hcal import HcalVetoProcessor
 
 hcal_veto = HcalVetoProcessor()
 hcal_veto.input_hit_pass_name = this_pass_name
-hcal_veto.track_collection += overlay_str
+hcal_veto.track_pass_name = this_pass_name
 
 # Load and configure  particle flow sequence.
 # Here we use PF "tracking" and CLUE Ecal clustering
@@ -133,8 +133,8 @@ from LDMX.Recon import pf_reco
 
 track_pf = pf_reco.pfTrackProducer()
 track_pf.input_track_coll_name += overlay_str # "EcalScoringPlaneHitsOverlay"
-track_pf.input_pass_name=this_pass_name
-track_pf.do_electron_tracking=True
+track_pf.input_pass_name = this_pass_name
+track_pf.do_electron_tracking = True
 # reference info
 truth_pf = pf_reco.pfTruthProducer()
 truth_pf.target_sp_coll_name += overlay_str
@@ -262,8 +262,7 @@ p.logger.term_level = 1
 from LDMX.Tracking import full_tracking_sequence
 
 
-full_tracking_sequence.setOverlay()
-
+full_tracking_sequence.setOverlay(this_pass_name) # append "Overlay" to sim collection names in tracking sequence
 p.sequence.extend(full_tracking_sequence.sequence)
 p.sequence.extend(full_tracking_sequence.dqm_sequence)
 
