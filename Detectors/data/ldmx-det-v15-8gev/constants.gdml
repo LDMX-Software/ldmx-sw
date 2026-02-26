@@ -43,7 +43,7 @@
 <constant name="trigger_pad_dim_x"          value="target_dim_x" />
 <constant name="trigger_pad_dim_y"          value="target_dim_y" />
 <constant name="trigger_bar_dx"             value="30"/>
-<constant name="trigger_bar_dy"             value="3.15"/>   
+<constant name="trigger_bar_dy"             value="3.0"/>   
 <constant name="number_of_bars"             value="24"/>
 <constant name="sipm_thickness"             value="0.05*mm"/>
 <constant name="sipm_dy"                    value="2*mm"/>
