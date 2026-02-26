@@ -320,35 +320,32 @@ void OverlayProducer::produce(framework::Event &event) {
     }  // over overlay events
   }  // over bunches
 
-  // after all events are done, the ecal hit_map is final and can be written
-  // to the event output
-  for (uint i_coll = 0; i_coll < calo_collections_.size(); i_coll++) {
-    // loop through collection names to find the right collection name
-    // add overlaid ecal hits_ as contribs/from hit_map rather than as copied
-    // simhits
-    if (strstr(calo_collections_[i_coll].c_str(), "Ecal")) {
-      ldmx_log(trace) << "Hits in hit_map after overlay of "
-                      << calo_collections_[i_coll] << "Overlay :";
+  // after all events are done, the contrib-using collections' hit_maps are
+  // final and can be written to the event output
+  for (uint i_coll = 0; i_coll < contrib_collections_.size(); i_coll++) {
+    // for each SimCalorimeterHit collection that uses contribs, add overlaid
+    // hits_ as contribs/from hit_map rather than as copied simhits
+    ldmx_log(trace) << "Hits in hit_map after overlay of "
+                    << contrib_collections_[i_coll] << "Overlay :";
 
-      for (auto &map_hit : hit_map) {
-        ldmx_log(trace) << map_hit.second;
+    for (auto &map_hit :
+         hit_map[contrib_collections_[i_coll] + out_coll_postfix_]) {
+      ldmx_log(trace) << map_hit.second;
 
-        if (calo_collection_map.find(calo_collections_[i_coll] +
-                                     out_coll_postfix_) ==
-            calo_collection_map.end()) {
-          ldmx_log(debug) << "Adding first hit from hit map as first outhit "
-                             "vector to calo_collection_map";
-          calo_collection_map[calo_collections_[i_coll] + out_coll_postfix_] = {
-              map_hit.second};
-        } else {
-          calo_collection_map[calo_collections_[i_coll] + out_coll_postfix_]
-              .push_back(map_hit.second);
-        }
-      }  // over hit_map
-      break;  // for now we only have one hit_map: for Ecal. so no need
-              // looking further after we got a match
-    }  // isEcal
-  }  // second loop over collections, to collect hits_ from hit_map
+      if (calo_collection_map.find(contrib_collections_[i_coll] +
+                                   out_coll_postfix_) ==
+          calo_collection_map.end()) {
+        ldmx_log(debug) << "Adding first hit from hit map as first outhit "
+                           "vector to calo_collection_map";
+        calo_collection_map[contrib_collections_[i_coll] + out_coll_postfix_] =
+            {map_hit.second};
+      } else {
+        calo_collection_map[contrib_collections_[i_coll] + out_coll_postfix_]
+            .push_back(map_hit.second);
+      }
+    }  // over hit_map
+  }  // second loop over contrib using collections, to collect hits_ from
+     // hit_map
 
   // done collecting hits_.
 
