@@ -28,23 +28,23 @@ class ZCCMEncoder(ldmxcfg.Producer) :
         self.channel_map_file = channel_map_file
         self.number_channels = 14*6
 
-    def tagger(map_file) :
+    def tagger(self) :
         """Get the encoding emulator for the trigger pad upstream of tagger"""
-        enc = ZCCMEncoder(map_file,'tag')
+        enc = ZCCMEncoder(self,'tag')
         enc.input_collection = 'trigScintZCCMDigisTag'
         enc.output_collection= 'ZCCMstreamTag'
         return enc
 
-    def up(map_file) :
+    def up(self) :
         """Get the encoding emulator for the trigger pad upstream of target"""
-        enc = ZCCMEncoder(map_file,'up')
+        enc = ZCCMEncoder(self,'up')
         enc.input_collection = 'trigScintZCCMDigisUp'
         enc.output_collection= 'ZCCMstreamUp'
         return enc
 
-    def down(map_file) :
+    def down(self) :
         """Get the encoding emulator for the trigger pad downstream of target"""
-        enc = ZCCMEncoder(map_file,'down')
+        enc = ZCCMEncoder(self,'down')
         enc.input_collection = 'trigScintZCCMDigisDown'
         enc.output_collection= 'ZCCMstreamDown'
         return enc
@@ -63,23 +63,23 @@ class ZCCMDecoder(ldmxcfg.Producer) :
         self.number_time_samples = 70
         self.is_real_data=True
 
-    def tagger(map_file) :
+    def tagger(self) :
         """Get the decoding emulator for the trigger pad upstream of tagger"""
-        dec = ZCCMDecoder(map_file,'tag')
+        dec = ZCCMDecoder(self,'tag')
         dec.input_collection = 'ZCCMstreamTag'
         dec.output_collection= 'decodedZCCMTag'
         return dec
 
-    def up(map_file) :
+    def up(self) :
         """Get the decoding emulator for the trigger pad upstream of target"""
-        dec = ZCCMDecoder(map_file,'up')
+        dec = ZCCMDecoder(self,'up')
         dec.input_collection = 'ZCCMoutputUp'
         dec.output_collection= 'decodedZCCMUp'
         return dec
 
-    def down(map_file) :
+    def down(self) :
         """Get the decoding emulator for the trigger pad downstream of target"""
-        dec = ZCCMDecoder(map_file,'down')
+        dec = ZCCMDecoder(self,'down')
         dec.input_collection = 'ZCCMstreamDown'
         dec.output_collection= 'decodedZCCMDown'
         return dec

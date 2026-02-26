@@ -49,7 +49,7 @@ class EventProcessor:
 
 
     @classmethod
-    def from_file(cls, source_file, class_name = None, needs = [], instance_name = None, compile_notice = True, **config_kwargs):
+    def from_file(cls, source_file, class_name = None, needs = None, instance_name = None, compile_notice = True, **config_kwargs):
         """Construct an event processor "in place" from the passed source file
 
         Since Framework dynamically loads libraries containing processors after
@@ -112,6 +112,8 @@ class EventProcessor:
             built from the C++ source file and configured with the passed arguments
         """
 
+        if needs is None:
+            needs = []
         if not isinstance(source_file, Path):
             source_file = Path(source_file)
         if not source_file.is_file():
@@ -135,7 +137,7 @@ class EventProcessor:
                     ' (or library does not exist), recompiling...'
                 )
             import subprocess
-            libs_to_link = set(['Framework', *needs])
+            libs_to_link = {'Framework', *needs}
             cmd = [
                 # construct a shared library for dynamic loading
                 'g++', '-std=c++20', '-fPIC', '-shared',
@@ -288,7 +290,7 @@ class Producer(EventProcessor):
             A message with all the parameters and member variables in a human readable format
         """
 
-        msg = "\n  Producer(%s of class %s)"%(self.instance_name,self.class_name)
+        msg = f"\n  Producer({self.instance_name} of class {self.class_name})"
         if len(self.__dict__)>0:
             msg += "\n   Parameters:"
             for k, v in self.__dict__.items():
@@ -318,7 +320,7 @@ class Analyzer(EventProcessor):
             A message with all the parameters and member variables in a human readable format
         """
 
-        msg = "\n  Analyzer(%s of class %s)"%(self.instance_name,self.class_name)
+        msg = f"\n  Analyzer({self.instance_name} of class {self.class_name})"
         if len(self.__dict__)>0:
             msg += "\n   Parameters:"
             for k, v in self.__dict__.items():
@@ -397,7 +399,7 @@ class ConditionsObjectProvider:
             A message with all the parameters and member variables in a human readable format
         """
 
-        msg = "\n  ConditionsObjectProvider(%s of class %s, tag='%s')"%(self.object_name,self.class_name,self.tag_name)
+        msg = f"\n  ConditionsObjectProvider({self.object_name} of class {self.class_name}, tag='{self.tag_name}')"
         if len(self.__dict__)>0:
             msg += "\n   Parameters:"
             for k, v in self.__dict__.items():
@@ -635,7 +637,7 @@ class Process:
         super().__setattr__(key, val)
 
 
-    def add_library(lib) :
+    def add_library(self) :
         """Add a library to the list of dynamically loaded libraries
 
         A process object must already have been created.
@@ -655,11 +657,11 @@ class Process:
         """
 
         if ( Process.last_process is not None ) :
-            Process.last_process.libraries.append( lib )
+            Process.last_process.libraries.append( self )
         else :
             raise Exception( "No Process object defined yet! You need to create a Process before creating any EventProcessors." )
 
-    def add_module(module) :
+    def add_module(self) :
         """Add a module to the list of dynamically loaded libraries
 
         A process object must already have been created.
@@ -686,10 +688,10 @@ class Process:
             addModule('Ecal_Event')
         """
 
-        actual_module_name = module.replace('/','_').replace('::','_')
-        Process.add_library('@CMAKE_INSTALL_PREFIX@/lib/lib%s.so'%(actual_module_name))
+        actual_module_name = self.replace('/','_').replace('::','_')
+        Process.add_library(f'@CMAKE_INSTALL_PREFIX@/lib/lib{actual_module_name}.so')
 
-    def declare_conditions_object_provider(cop):
+    def declare_conditions_object_provider(self):
         """Declare a conditions object provider to be loaded with the process
 
         A process object must already have been created.
@@ -707,16 +709,16 @@ class Process:
 
         if ( Process.last_process is not None ) :
 
-            cop.set_tag(Process.last_process.conditions_global_tag)
+            self.set_tag(Process.last_process.conditions_global_tag)
 
             # check if the input COP matches one already declared
             #   if it does match, override the already declared one with the passed one
             for index, already_defined_cop in enumerate(Process.last_process.conditions_object_providers) :
-                if cop == already_defined_cop :
-                    Process.last_process.conditions_object_providers[index] = cop
+                if self == already_defined_cop :
+                    Process.last_process.conditions_object_providers[index] = self
                     return
 
-            Process.last_process.conditions_object_providers.append( cop )
+            Process.last_process.conditions_object_providers.append( self )
         else :
             raise Exception( "No Process object defined yet! You need to create a Process before declaring any ConditionsObjectProviders." )
 
@@ -864,7 +866,7 @@ class Process:
             if isinstance(obj,list) :
                 return [ extract(o) for o in obj ]
             elif hasattr(obj,'__dict__') :
-                params = dict()
+                params = {}
                 for k in obj.__dict__ :
                     if k not in keys_to_skip :
                         params[k] = extract(obj.__dict__[k])
@@ -897,7 +899,7 @@ class Process:
             A human-readable, multi-line description of this process object
         """
 
-        msg = "Process with pass name '%s'"%(self.pass_name)
+        msg = f"Process with pass name '{self.pass_name}'"
         if (self.run>0): msg += "\n using run number %d"%(self.run)
         if (self.max_events>0): msg += "\n Maximum events to process: %d"%(self.max_events)
         else: msg += "\n No limit on maximum events to process"
@@ -912,7 +914,7 @@ class Process:
             if len(self.output_files)==len(self.input_files):
                 msg += "\n Files:"
                 for i in range(0,len(self.input_files)):
-                    msg += "\n  '%s' -> '%s'"%(self.input_files[i],self.output_files[i])
+                    msg += f"\n  '{self.input_files[i]}' -> '{self.output_files[i]}'"
             else:
                 msg += "\n Input files:"
                 for afile in self.input_files:
@@ -926,9 +928,9 @@ class Process:
         else: msg += "\n  Default: drop the event"
         for i in range(0,len(self.skim_rules)-1,2):
             if self.skim_rules[i+1]=="":
-                msg += "\n  Listen to hints from processors with names matching '%s'"%(self.skim_rules[i])
+                msg += f"\n  Listen to hints from processors with names matching '{self.skim_rules[i]}'"
             else:
-                msg += "\n  Listen to hints with labels matching '%s' from processors with names matching '%s'"%(self.skim_rules[i+1],self.skim_rules[i])
+                msg += f"\n  Listen to hints with labels matching '{self.skim_rules[i+1]}' from processors with names matching '{self.skim_rules[i]}'"
         if len(self.keep) > 0:
             msg += "\n Rules for keeping previous products:"
             for arule in self.keep:

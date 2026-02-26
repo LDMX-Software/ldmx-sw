@@ -84,7 +84,13 @@ class HCalDQM(ldmxcfg.Analyzer) :
 
 
 
-    def __init__(self,name="hcal_dqm", pe_threshold=8, section=0, max_hit_time = 50.0) :
+    def __init__(
+            self,
+            name="hcal_dqm",
+            pe_threshold=8,
+            section=0,
+            max_hit_time=50.0
+    ):
         self.section = section
         section_names = ['back', 'top', 'bottom', 'right', 'left']
         section_name = section_names[section]
@@ -961,7 +967,12 @@ class TrigScintDigiDQM(ldmxcfg.Analyzer) :
         self.trig_scint_passname = ''
 
 class TrigScintDigiVerifierDQM(ldmxcfg.Analyzer) :
-    def __init__(self, name = 'TrigScintDigiVerifier', ts_simhit_coll = 'TriggerPadUpSimHits', ts_digi_coll = 'trigScintDigisUp') :
+    def __init__(
+            self,
+            name='TrigScintDigiVerifier',
+            ts_simhit_coll='TriggerPadUpSimHits',
+            ts_digi_coll='trigScintDigisUp'
+    ):
         super().__init__(name,'dqm::TrigScintDigiVerifier','DQM')
 
         self.ts_simhit_coll = ts_simhit_coll

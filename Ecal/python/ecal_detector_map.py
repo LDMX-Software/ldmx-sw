@@ -35,7 +35,7 @@ class EcalDetectorMap(ldmxcfg.ConditionsObjectProvider) :
         return EcalGeometryProvider.__instance
 
     def __init__(self, cell_map, motherboard_map, layer_map, want_d2e = False) :
-        if EcalDetectorMap.__instance != None :
+        if EcalDetectorMap.__instance is not None :
             raise Exception('EcalDetectorMap is a singleton class and should only be created once. You can retrieve the single instance with EcalDetectorMap.get()')
         else:
             # the name needs to match the conditions object name in EcalDetectorMap.h

@@ -39,11 +39,11 @@ class RawIO(ldmxcfg.Producer) :
         super().__init__(f'IO_{raw_file}','packing::RawIO','Packing')
         self.raw_file = raw_file
 
-    def source(file_name) :
-        return RawIO(RawDataFile(file_name, False))
+    def source(self) :
+        return RawIO(RawDataFile(self, False))
 
-    def destination(file_name) :
-        return RawIO(RawDataFile(file_name, True))
+    def destination(self) :
+        return RawIO(RawDataFile(self, True))
 
 
 class SingleSubsystemUnpacker(ldmxcfg.Producer) :

@@ -94,7 +94,7 @@ class HistogramFile :
     def get(self, hist_key) :
         """Get a histogram from this file
 
-        After retrieving the histogram 
+        After retrieving the histogram
         (and checking that it was retrieved successfully),
         we style the histogram by setting the name, color, and fill attributes.
 

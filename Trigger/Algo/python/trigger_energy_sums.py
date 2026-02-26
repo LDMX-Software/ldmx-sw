@@ -107,7 +107,10 @@ class NtupleWriter(Producer) :
 class PropagationMapWriter(Producer) :
     """Configuration for Tester
     """
-    def __init__(self, instance_name = 'myPropagationMapWriter', out_path="./propagationMap.root") :
+    def __init__(
+        self,
+        instance_name = 'myPropagationMapWriter',
+        out_path = './propagationMap.root'):
         super().__init__(instance_name , 'trigger::PropagationMapWriter','Trigger')
         self.out_path = out_path
 

@@ -20,9 +20,9 @@ def makeFieldMapPath() -> str:
         Full path to the installed fieldmap.
     """
     fieldmap_name = 'BmapCorrected3D_13k_unfolded_scaled_1.15384615385.dat'
-    path = '@CMAKE_INSTALL_PREFIX@/data/fieldmap/%s' % fieldmap_name
+    path = f'@CMAKE_INSTALL_PREFIX@/data/fieldmap/{fieldmap_name}'
     if not os.path.isfile(path):
-        print('ERROR: The file %s does not exist.' % path)
+        print(f'ERROR: The file {path} does not exist.')
         sys.exit(1)
 
     return path
@@ -46,7 +46,7 @@ def makeDetectorPath(det_name : str) -> str:
     """
     path = '@CMAKE_INSTALL_PREFIX@/data/detectors/' + det_name + '/detector.gdml'
     if not os.path.isfile(path) :
-        print('GDML file \'%s\' does not exist.' % ( path ))
+        print(f'GDML file \'{path}\' does not exist.')
         sys.exit(1)
 
     return path

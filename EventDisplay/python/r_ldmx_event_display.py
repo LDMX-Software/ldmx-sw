@@ -10,7 +10,7 @@ from LDMX.Framework import event_tree
 
 
 def addBranch(tree, ldmx_class, branch_name):
-    if tree == None:
+    if tree is None:
         sys.exit('Set tree')
 
     if ldmx_class == 'EventHeader':
@@ -129,11 +129,11 @@ def trackPlotter(tree, event_number, tag, save, save_tag):
     x_sensor_uncertainty = 0.006 #mm
     y_sensor_uncertainty = 0.085 # mm
 
-    for zi, xi, yi in zip(first_sensor_pos[:,0], first_sensor_pos[:,1], first_sensor_pos[:,2]):
+    for zi, xi, yi in zip(first_sensor_pos[:,0], first_sensor_pos[:,1], first_sensor_pos[:,2], strict=False):
         ax.plot([zi, zi], [xi - x_sensor_uncertainty, xi + x_sensor_uncertainty], [yi, yi], color='black',linewidth=2)  # x error
         ax.plot([zi, zi], [xi, xi], [yi - y_sensor_uncertainty, yi + y_sensor_uncertainty], color='black',linewidth=2)  # y error
 
-    for zi, xi, yi in zip(second_sensor_pos[:,0], second_sensor_pos[:,1], second_sensor_pos[:,2]):
+    for zi, xi, yi in zip(second_sensor_pos[:,0], second_sensor_pos[:,1], second_sensor_pos[:,2], strict=False):
         ax.plot([zi, zi], [xi - x_sensor_uncertainty, xi + x_sensor_uncertainty], [yi, yi], color='black',linewidth=2)  # x error
         ax.plot([zi, zi], [xi, xi], [yi - y_sensor_uncertainty, yi + y_sensor_uncertainty], color='black',linewidth=2)  # y error
 
@@ -160,7 +160,7 @@ def trackPlotter(tree, event_number, tag, save, save_tag):
     x = ecal_rec_hits[0][0]
     y_range = np.linspace(min(ecal_rec_hits[:,1]) - 5, max(ecal_rec_hits[:,1]) + 5, 50)
     z_range = np.linspace(min(ecal_rec_hits[:,2]) - 5, max(ecal_rec_hits[:,2]) + 5, 50)
-    y, z = np.meshgrid(y_range, z_range)
+    y, _z = np.meshgrid(y_range, z_range)
     x = np.full(y.shape, ecal_rec_hits[0][0])
 
     # plane = ax.plot_surface(x, y, z, color='red', alpha=0.1, edgecolor='none')

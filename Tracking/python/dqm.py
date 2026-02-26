@@ -12,13 +12,13 @@ class TrackerDigiDQM(ldmxcfg.Analyzer):
         self.measurements_passname = ''
 
         for i in range(0, 14):
-            self.build_2d_histogram('global_yz_l%s' % i,
+            self.build_2d_histogram(f'global_yz_l{i}',
                                   'Global y (mm)', 70, -50, 20,
                                   'Global z (mm)', 100, -50, 50)
-            self.build_2d_histogram('local_uv_l%s' % i,
+            self.build_2d_histogram(f'local_uv_l{i}',
                                   'u (mm)', 60, -30, 30,
                                   'v (mm)', 100, -50, 50)
-            self.build_1d_histogram('time_l%s' % i,
+            self.build_1d_histogram(f'time_l{i}',
                                   'Time (ns)', 100, 0, 100)
 
         self.build_2d_histogram('global_xy',

@@ -26,23 +26,23 @@ class QIEEncoder(ldmxcfg.Producer) :
         self.number_channels = 50
         self.verbose = False
 
-    def tagger(map_file) :
+    def tagger(self) :
         """Get the encoding emulator for the trigger pad upstream of tagger"""
-        enc = QIEEncoder(map_file,'tag')
+        enc = QIEEncoder(self,'tag')
         enc.input_collection = 'trigScintQIEDigisTag'
         enc.output_collection= 'QIEstreamTag'
         return enc
 
-    def up(map_file) :
+    def up(self) :
         """Get the encoding emulator for the trigger pad upstream of target"""
-        enc = QIEEncoder(map_file,'up')
+        enc = QIEEncoder(self,'up')
         enc.input_collection = 'trigScintQIEDigisUp'
         enc.output_collection= 'QIEstreamUp'
         return enc
 
-    def down(map_file) :
+    def down(self) :
         """Get the encoding emulator for the trigger pad downstream of target"""
-        enc = QIEEncoder(map_file,'down')
+        enc = QIEEncoder(self,'down')
         enc.input_collection = 'trigScintQIEDigisDown'
         enc.output_collection= 'QIEstreamDown'
         return enc
@@ -62,23 +62,23 @@ class QIEDecoder(ldmxcfg.Producer) :
         self.is_real_data=False
         self.verbose = False
 
-    def tagger(map_file) :
+    def tagger(self) :
         """Get the decoding emulator for the trigger pad upstream of tagger"""
-        dec = QIEDecoder(map_file,'tag')
+        dec = QIEDecoder(self,'tag')
         dec.input_collection = 'QIEstreamTag'
         dec.output_collection= 'decodedQIETag'
         return dec
 
-    def up(map_file) :
+    def up(self) :
         """Get the decoding emulator for the trigger pad upstream of target"""
-        dec = QIEDecoder(map_file,'up')
+        dec = QIEDecoder(self,'up')
         dec.input_collection = 'QIEstreamUp'
         dec.output_collection= 'decodedQIEUp'
         return dec
 
-    def down(map_file) :
+    def down(self) :
         """Get the decoding emulator for the trigger pad downstream of target"""
-        dec = QIEDecoder(map_file,'down')
+        dec = QIEDecoder(self,'down')
         dec.input_collection = 'QIEstreamDown'
         dec.output_collection= 'decodedQIEDown'
         return dec

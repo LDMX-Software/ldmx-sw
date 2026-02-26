@@ -23,7 +23,9 @@ class File :
     """
     log = logging.getLogger('File')
 
-    def __init__(self, filepath, hist_kwargs = dict(), **open_kwargs) :
+    def __init__(self, filepath, hist_kwargs = None, **open_kwargs) :
+        if hist_kwargs is None:
+            hist_kwargs = {}
         self.root_file = uproot.open(filepath, **open_kwargs)
         self.hist_kwargs = hist_kwargs
 
@@ -33,7 +35,7 @@ class File :
         return 'File { Histograms labeled '+self.hist_kwargs['label']+' }'
 
 
-    def from_path(filepath, legendlabel_parameter = None) :
+    def from_path(self, legendlabel_parameter = None) :
         """Extract the legend-label for histograms from this file using the filepath
 
         This is separated from the contsructor because
@@ -58,7 +60,7 @@ class File :
         legendlabel_parameter : str, optional
             key-name to use in legend-label for this File
         """
-        fn = os.path.basename(filepath).replace('.root','')
+        fn = os.path.basename(self).replace('.root','')
         l = fn.split('_')
         if len(l)%2 != 0 :
             raise ValueError(
@@ -81,7 +83,7 @@ class File :
         ll='_'.join(ll)
 
         File.log.debug(f'Deduced File Label: {ll}')
-        return File(filepath, hist_kwargs=dict(label=ll))
+        return File(self, hist_kwargs={'label': ll})
 
 
     def keys(self, *args, **kwargs) :

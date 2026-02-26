@@ -29,13 +29,13 @@ class EcalGeometryProvider(ldmxcfg.ConditionsObjectProvider):
             Single instance of the provider
         """
 
-        if EcalGeometryProvider.__instance == None :
+        if EcalGeometryProvider.__instance is None :
             EcalGeometryProvider()
 
         return EcalGeometryProvider.__instance
 
     def __init__(self):
-        if EcalGeometryProvider.__instance != None :
+        if EcalGeometryProvider.__instance is not None :
             raise Exception('EcalGeometryProvider is a singleton class and should only be retrieved using getInstance()')
         else:
             super().__init__("EcalGeometryProvider","ecal::EcalGeometryProvider","Ecal")
@@ -71,13 +71,13 @@ class EcalTriggerGeometryProvider(ldmxcfg.ConditionsObjectProvider):
             Single instance of the provider
         """
 
-        if EcalTriggerGeometryProvider.__instance == None :
+        if EcalTriggerGeometryProvider.__instance is None :
             EcalTriggerGeometryProvider()
 
         return EcalTriggerGeometryProvider.__instance
 
     def __init__(self):
-        if EcalTriggerGeometryProvider.__instance != None :
+        if EcalTriggerGeometryProvider.__instance is not None :
             raise Exception('EcalTriggerGeometryProvider is a singleton class and should only be retrieved using getInstance()')
         else:
             super().__init__("EcalTriggerGeometry","ecal::EcalTriggerGeometryProvider","Ecal")

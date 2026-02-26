@@ -62,7 +62,7 @@ class NonFiducialFilter(simcfg.UserAction):
         self.abort_fiducial = abort_fid_event
 
 class EcalProcessFilter(simcfg.UserAction):
-    """ Configuration for filtering events that don't see a hard brem 
+    """ Configuration for filtering events that don't see a hard brem
     undergo a photo-nuclear reaction in the ECal.
 
     Parameters
@@ -72,7 +72,7 @@ class EcalProcessFilter(simcfg.UserAction):
     """
 
     def __init__(self,process = 'photonNuclear') :
-        super().__init__('ecal_%s_filter'%process,'biasing::EcalProcessFilter')
+        super().__init__(f'ecal_{process}_filter','biasing::EcalProcessFilter')
 
         from LDMX.Biasing import include
         include.library()
@@ -87,7 +87,7 @@ class DeepEcalProcessFilter(simcfg.UserAction):
     bias_threshold: double
         Threshold for minimum energy that the products should have
     processes: vector of str
-        The allowed processes that can happen deep inside the ECAL, 
+        The allowed processes that can happen deep inside the ECAL,
         default is conversion (conv) and photoelectron (photo)
     ecal_min_z: double
         Minimum Z location where the deep process should happen
@@ -202,7 +202,7 @@ class TaggerVetoFilter(simcfg.UserAction):
         self.reject_events_missing_tagger = reject_events_missing_tagger
 
 class PrimaryToEcalFilter(simcfg.UserAction) :
-    """ Configuration used to reject events 
+    """ Configuration used to reject events
     where the primary doesn't reach the ecal with a mimimum energy
 
     Parameters
@@ -221,7 +221,7 @@ class PrimaryToEcalFilter(simcfg.UserAction) :
         self.threshold = thresh
 
 class MidShowerNuclearBkgdFilter(simcfg.UserAction) :
-    """ Configuration used to reject events 
+    """ Configuration used to reject events
     that don't have enough energy given to the input process.
 
     Parameters
@@ -240,7 +240,7 @@ class MidShowerNuclearBkgdFilter(simcfg.UserAction) :
         self.threshold = thresh
 
 class MidShowerDiMuonBkgdFilter(simcfg.UserAction) :
-    """ Configuration used to reject events that don't have enough energy 
+    """ Configuration used to reject events that don't have enough energy
     given to muon conversion
 
     Parameters

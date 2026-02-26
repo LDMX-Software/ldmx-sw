@@ -20,7 +20,7 @@ n_bars_per_module=(n_lanes-2)*n_chan/3
 # nChanInLYSO=2*n_chan
 
 #make a sorted list of possible bar IDs
-bar_ids= [i for i in range(int(n_bars_per_module))]
+bar_ids= list(range(int(n_bars_per_module)))
 print(f'Made bar_id list {bar_ids}')
 
 map_list = [None]*n_modules

@@ -219,7 +219,7 @@ class simulator(Producer):
                 if len(which_runs) != len(which_events):
                     raise ValueError('which_runs must have the same number of entries as which_events if more than one run is provided')
                 resimulator.care_about_run = True
-                resimulator.runs_to_resimulate = [ _EventToReSim(event, run) for event, run in zip(which_events, which_runs) ]
+                resimulator.runs_to_resimulate = [ _EventToReSim(event, run) for event, run in zip(which_events, which_runs, strict=False) ]
             else:
                 raise ValueError('which_runs must be an int or a list of ints if provided')
         else:

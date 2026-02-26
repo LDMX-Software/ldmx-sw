@@ -89,12 +89,9 @@ class HcalSD(simcfg.SensitiveDetector) :
     compress_hit_contribs : bool, optional
         Should the simulation compress contributions to Hcal sim hits by PDG ID?
     """
-    def __init__(self, gdml_identifiers = ['scintYVolume', 'scintXVolume',
-                                           'scintX_0Volume', 'scintX_1Volume', 'scintX_2Volume', 'scintX_3Volume',
-                                           'scintY_0Volume', 'scintY_1Volume', 'scintY_2Volume', 'scintY_3Volume',
-                                           'scintZXVolume', 'scintZYVolume',
-                                           'ScintBox',
-                                           'scint_box']) :
+    def __init__(self, gdml_identifiers = None) :
+        if gdml_identifiers is None:
+            gdml_identifiers = ['scintYVolume', 'scintXVolume', 'scintX_0Volume', 'scintX_1Volume', 'scintX_2Volume', 'scintX_3Volume', 'scintY_0Volume', 'scintY_1Volume', 'scintY_2Volume', 'scintY_3Volume', 'scintZXVolume', 'scintZYVolume', 'ScintBox', 'scint_box']
         super().__init__('hcal_sd', 'simcore::HcalSD','SimCore_SDs')
         self.gdml_identifiers = gdml_identifiers
         self.enable_hit_contribs = True

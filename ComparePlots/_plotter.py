@@ -32,4 +32,4 @@ def plotter(func):
     return func
 
 
-plotter.__registry__ = dict()
+plotter.__registry__ = {}

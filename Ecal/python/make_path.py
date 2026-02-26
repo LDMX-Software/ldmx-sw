@@ -30,7 +30,7 @@ def makeBDTPath( bdt_name ) :
 
     full_path = '@CMAKE_INSTALL_PREFIX@/data/Ecal/' + bdt_name + '.onnx'
     if not os.path.isfile( full_path ) :
-        print('ERROR: ONNX model file \'%s\' does not exist.' % ( full_path ))
+        print(f'ERROR: ONNX model file \'{full_path}\' does not exist.')
         sys.exit(1)
 
     return full_path
@@ -57,7 +57,7 @@ def makeRoCPath( roc_name ) :
 
     full_path = '@CMAKE_INSTALL_PREFIX@/data/Ecal/' + roc_name + '.csv'
     if not os.path.isfile( full_path ) :
-        print('ERROR: RoC csv file \'%s\' does not exist.' % ( full_path ))
+        print(f'ERROR: RoC csv file \'{full_path}\' does not exist.')
         sys.exit(1)
 
     return full_path

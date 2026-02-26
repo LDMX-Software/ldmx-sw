@@ -251,7 +251,6 @@ class HcalGeometry:
         scint_bar_length = 2000.0
         scint_bar_cover_thickness = 0.5
         layer_thickness = 45.0
-        bar_mounting_plate_thickness = 3.0
         # air_thickness = layer_thickness - (
         #     absorber_thickness
         #     + bar_mounting_plate_thickness
@@ -324,7 +323,7 @@ class HcalGeometry:
         back_hcal_scint_length = 2000.0
         back_hcal_dx = back_hcal_scint_length
         # back_hcal_dy = back_hcal_scint_length
-        back_hcal_dz = back_hcal_num_layers * back_hcal_layer_thick
+        back_hcal_num_layers * back_hcal_layer_thick
 
         side_hcal_abso_thick = 20.0
         side_hcal_dz = 600.0
@@ -343,7 +342,7 @@ class HcalGeometry:
             + side_hcal_num_layers[2]
             + side_hcal_num_layers[3]
         ) * 2
-        side_hcal_layer_thick = (
+        (
             side_hcal_abso_thick + 2.0 * hcal_air_thick + hcal_scint_thick
         )
         # side_hcal_module_width = side_hcal_num_total_layers * side_hcal_layer_thick
