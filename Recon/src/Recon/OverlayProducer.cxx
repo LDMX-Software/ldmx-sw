@@ -88,7 +88,7 @@ void OverlayProducer::produce(framework::Event &event) {
       calo_collection_map;
   std::map<std::string, std::vector<ldmx::SimTrackerHit>>
       tracker_collection_map;
-  std::map<int, ldmx::SimCalorimeterHit> hit_map;
+  std::map<std::string, std::map<int, ldmx::SimCalorimeterHit>> hit_map;
 
   // start by copying over all the collections from the sim event
 
@@ -126,7 +126,7 @@ void OverlayProducer::produce(framework::Event &event) {
       for (const ldmx::SimCalorimeterHit &simhit : simhits_calo) {
         ldmx_log(trace) << simhit;
         // this copies the hit, its ID and its coordinates directly
-        hit_map[simhit.getID()] = simhit;
+        hit_map[coll_name + out_coll_postfix_][simhit.getID()] = simhit;
 
       }  // over calo simhit collection
     }  // if needContribs
@@ -254,19 +254,22 @@ void OverlayProducer::produce(framework::Event &event) {
 
           if (needs_contribs_added) {  // special treatment for (for now only)
                                        // ecal
+            auto &this_coll_hit_map{
+                hit_map[calo_collections_[i_coll] + out_coll_postfix_]};
             int overlay_hit_id = overlay_hit.getID();
-            if (hit_map.find(overlay_hit_id) ==
-                hit_map.end()) {  // there wasn't already a simhit in this id
-              hit_map[overlay_hit_id] = ldmx::SimCalorimeterHit();
-              hit_map[overlay_hit_id].setID(overlay_hit_id);
+            if (this_coll_hit_map.find(overlay_hit_id) ==
+                this_coll_hit_map
+                    .end()) {  // there wasn't already a simhit in this id
+              this_coll_hit_map[overlay_hit_id] = ldmx::SimCalorimeterHit();
+              this_coll_hit_map[overlay_hit_id].setID(overlay_hit_id);
               std::vector<float> hit_pos = overlay_hit.getPosition();
-              hit_map[overlay_hit_id].setPosition(hit_pos[0], hit_pos[1],
-                                                  hit_pos[2]);
+              this_coll_hit_map[overlay_hit_id].setPosition(
+                  hit_pos[0], hit_pos[1], hit_pos[2]);
             }
             // add the overlay hit (as a) contrib
             // incidentID = -1000, trackID = -1000, pdgCode = 0  <-- these are
             // set in the header for now but could be parameters
-            hit_map[overlay_hit_id].addContrib(
+            this_coll_hit_map[overlay_hit_id].addContrib(
                 overlay_incident_id_, overlay_track_id_, overlay_pdg_code_,
                 overlay_hit.getEdep(), overlay_time);
           }  // if add overlay as contribs
