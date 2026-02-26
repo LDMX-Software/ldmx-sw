@@ -55,6 +55,18 @@ void OverlayProducer::configure(framework::config::Parameters &parameters) {
                   << "\n\t startEventMin = " << start_event_min_
                   << "\n\t startEventMax = " << start_event_max_;
 
+  // given how the contrib collection specification is setup, it's possible for
+  // spelling errors to cause doom here, so we want to flag those
+  for (auto coll_name : contrib_collections_) {
+    if (std::find(calo_collections_.begin(), calo_collections_.end(),
+                  coll_name) == calo_collections_.end()) {
+      EXCEPTION_RAISE("CollNameMismatch",
+                      "The contrib-using collection " + coll_name +
+                          " does not match any SimCalorimeterHit collection in "
+                          "'calo_collections_'! Please check your spelling");
+    }
+  }
+
   return;
 }  // end configure()
 

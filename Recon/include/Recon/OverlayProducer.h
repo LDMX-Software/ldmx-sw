@@ -15,6 +15,7 @@
 #include "Framework/Configure/Parameters.h"
 #include "Framework/EventFile.h"
 #include "Framework/EventProcessor.h"
+#include "Framework/Exception/Exception.h"
 #include "Framework/RandomNumberSeedService.h"
 #include "SimCore/Event/SimCalorimeterHit.h"
 #include "SimCore/Event/SimTrackerHit.h"
