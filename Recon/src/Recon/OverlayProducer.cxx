@@ -148,7 +148,6 @@ void OverlayProducer::produce(framework::Event &event) {
     }
   }  // over tracker collections for sim event
 
-
   /* ----------- now do the pileup overlay ----------- */
 
   // we could shift these by a random number, effectively placing the
