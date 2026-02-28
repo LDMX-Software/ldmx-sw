@@ -70,7 +70,6 @@ class OverlayProducer(ldmxcfg.Producer) :
         self.calo_collections =  ["TriggerPad1SimHits", "TriggerPad2SimHits", "TriggerPad3SimHits",
                                    "TargetSimHits", "EcalSimHits", "HcalSimHits"]
         self.tracker_collections = [ "TaggerSimHits", "RecoilSimHits", "EcalScoringPlaneHits", "TargetScoringPlaneHits" ]
-        self.particle_collections = [ "SimParticles" ]
         self.out_coll_postfix = "Overlay"
         self.poisson_mu = 2.
         self.do_poisson_in_time = False

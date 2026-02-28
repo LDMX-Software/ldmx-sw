@@ -229,8 +229,7 @@ def setOverlay(pass_name:str):
     collection_names_to_update = [ # first, collections that are explicitly overlaid in the OverlayProducer
         "TriggerPad1SimHits", "TriggerPad2SimHits", "TriggerPad3SimHits",
         "TargetSimHits", "EcalSimHits", "HcalSimHits", "TaggerSimHits",
-        "RecoilSimHits", "EcalScoringPlaneHits", "TargetScoringPlaneHits",
-        "SimParticles"
+        "RecoilSimHits", "EcalScoringPlaneHits", "TargetScoringPlaneHits"
     ]
     overlay_str = 'Overlay'
 

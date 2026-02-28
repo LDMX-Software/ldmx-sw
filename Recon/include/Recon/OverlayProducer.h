@@ -99,12 +99,6 @@ class OverlayProducer : public framework::Producer {
   std::vector<std::string> tracker_collections_;
 
   /**
-   * List of SimParticle collection(s) to loop over and add hits from,
-   * combining sim and pileup
-   */
-  std::vector<std::string> particle_collections_;
-
-  /**
    * Pileup overlay events input pass name
    */
   std::string overlay_passname_;
