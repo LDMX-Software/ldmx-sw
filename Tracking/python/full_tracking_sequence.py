@@ -241,7 +241,9 @@ def setOverlay(pass_name:str):
             if str(key) in ['input_pass_name', 'track_collection_event_passname', 
                             'track_passname', 'meas_collection_event_passname', 'meas_passname', 
                             'measurement_passname', 'truth_events_passname', 'truth_passname', 
-                            'track_collection_events_passname']:
+                            'track_collection_events_passname', 'input_tagger_pass_name', 
+                            'input_recoil_pass_name', 'input_collection_events_passname', 
+                            'tagger_trks_event_collection_passname']:
                 params[key] = pass_name
                 continue
             if str(value) in collection_names_to_update:
