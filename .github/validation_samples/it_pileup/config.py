@@ -279,6 +279,7 @@ p.sequence.extend([
      dqm.EcalClusterAnalyzer(),
      track_pf,
      truth_pf,
+     hcal_pf,
      pf_comb,
      pu_finder
 ])
