@@ -5,47 +5,51 @@ import os
 
 from LDMX.Framework import ldmxcfg
 
+
 # first, we define the process, which must have a name which identifies this
 # processing pass ("pass name").
-simPassName="ecal_pn"
-pileupFilePassName="pileup"
-thisPassName="overlay"
-p=ldmxcfg.Process(thisPassName)
+sim_pass_name="ecal_pn"
+pileup_file_pass_name="pileup"
+this_pass_name="overlay"
+p=ldmxcfg.Process(this_pass_name)
 
 det = 'ldmx-det-v15-8gev'
 p.run = int(os.environ['LDMX_RUN_NUMBER'])
-p.maxEvents = int(os.environ['LDMX_NUM_EVENTS']) // 2
+p.max_events = int(os.environ['LDMX_NUM_EVENTS']) // 2
 
 # Load the full tracking sequance
+from LDMX.Recon.overlay import OverlayProducer
 from LDMX.Tracking import full_tracking_sequence
 
-from LDMX.Recon.overlay import OverlayProducer
+
 overlay=OverlayProducer('pileup.root')
-overlay.sim_passname = simPassName                  #sim input event pass name
-overlay.overlay_passname = pileupFilePassName    #pileup input event pass name
-overlay.tracker_collections.extend(["EcalScoringPlaneHits"])
+overlay.sim_passname = sim_pass_name                  #sim input event pass name
+overlay.overlay_passname = pileup_file_pass_name    #pileup input event pass name
+
 p.sequence = [overlay]
 
 # ECal geometry nonsense
-from LDMX.Ecal import EcalGeometry
+import LDMX.Ecal.ecal_clusters as ecal_cluster
 import LDMX.Ecal.ecal_hardcoded_conditions
+import LDMX.Hcal.hcal_hardcoded_conditions
+from LDMX.Ecal import digi as ecal_digi_reco
+from LDMX.Ecal import ecal_geometry
+from LDMX.Ecal import vetos as ecal_vetos
 
 # Hcal hardwired/geometry stuff
-from LDMX.Hcal import HcalGeometry
-import LDMX.Hcal.hcal_hardcoded_conditions
+from LDMX.Hcal import hcal_geometry
 
-from LDMX.Ecal import digi as eDigi
-from LDMX.Ecal import vetos as ecal_vetos
-import LDMX.Ecal.ecalClusters as ecal_cluster
-from LDMX.Hcal import digi as hDigi
 
 # this is hardwired into the code to be appended to the sim hits collections
-overlayStr="Overlay"
+overlay_str="Overlay"
 
 # Load the TS modules
-from LDMX.TrigScint.trigScint import TrigScintDigiProducer
-from LDMX.TrigScint.trigScint import TrigScintClusterProducer
-from LDMX.TrigScint.trigScint import trigScintTrack
+from LDMX.TrigScint.trig_scint import (
+    TrigScintClusterProducer,
+    TrigScintDigiProducer,
+    trig_scint_track,
+)
+
 
 ts_digis = [
         TrigScintDigiProducer.pad1(),
@@ -53,119 +57,124 @@ ts_digis = [
         TrigScintDigiProducer.pad3(),
         ]
 for digi in ts_digis :
-    digi.input_collection += overlayStr
+    digi.input_collection += overlay_str
 
 ts_clusters = [
         TrigScintClusterProducer.pad1(),
         TrigScintClusterProducer.pad2(),
         TrigScintClusterProducer.pad3(),
-        ] 
+        ]
 for clu in ts_clusters :
-    clu.input_pass_name = thisPassName
+    clu.input_pass_name = this_pass_name
 
-trigScintTrack.input_pass_name = thisPassName
+trig_scint_track.input_pass_name = this_pass_name
 
 
-# Load the ECAL modules                           
-ecalDigi   = eDigi.EcalDigiProducer('ecalDigis')
-ecalReco   = eDigi.EcalRecProducer('ecalRecon')
-ecalVeto   = ecal_vetos.EcalVetoProcessor('ecalVetoBDT')
-ecalMip = ecal_vetos.EcalMipProcessor('ecalMip')
+# Load the ECAL modules
+ecal_digi   = ecal_digi_reco.EcalDigiProducer('ecal_digis')
+ecal_reco   = ecal_digi_reco.EcalRecProducer('ecal_recon')
+ecal_veto   = ecal_vetos.EcalVetoProcessor('ecal_veto')
+ecal_mip = ecal_vetos.EcalMipProcessor('ecal_mip')
 
 # The newly produced, overlayed simhits
-ecalDigi.inputCollName += overlayStr
-ecalDigi.inputPassName = thisPassName
+ecal_digi.input_coll_name += overlay_str
+ecal_digi.input_pass_name = this_pass_name
 
 # Use the digis produced above
-ecalReco.digiPassName = thisPassName
+ecal_reco.digi_pass_name = this_pass_name
 # SimHits are used to find noise
-ecalReco.simHitCollName += overlayStr
-ecalReco.simHitPassName = thisPassName
+ecal_reco.sim_hit_coll_name += overlay_str
+ecal_reco.sim_hit_pass_name = this_pass_name
 
-ecalVeto.recoil_from_tracking = False
-ecalVeto.rec_pass_name = thisPassName
+ecal_veto.recoil_from_tracking = False
+ecal_veto.rec_pass_name = this_pass_name
 
 # Load the HCAL modules
 import LDMX.Hcal.digi as hcal_digi_and_reco
+
+
 hcal_digi = hcal_digi_and_reco.HcalDigiProducer()
 hcal_reco = hcal_digi_and_reco.HcalRecProducer()
 # The newly produced, overlayed simhits
-hcal_digi.input_coll_name  += overlayStr
-hcal_digi.input_pass_name = thisPassName
-hcal_digi.sim_hit_pass_name = thisPassName
+hcal_digi.input_coll_name  += overlay_str
+hcal_digi.input_pass_name = this_pass_name
+hcal_digi.sim_hit_pass_name = this_pass_name
 # Use the digis produced above
-hcal_reco.input_pass_name = thisPassName
-hcal_reco.sim_hit_pass_name = thisPassName
+hcal_reco.input_pass_name = this_pass_name
+hcal_reco.sim_hit_pass_name = this_pass_name
 
 # Load ElectronCounter and Trigger
-from LDMX.Recon.electronCounter import ElectronCounter
-from LDMX.Recon.simpleTrigger import TriggerProcessor
+from LDMX.Recon.electron_counter import ElectronCounter
+from LDMX.Recon.simple_trigger import TriggerProcessor
+
 
 count = ElectronCounter(2,'ElectronCounter')
-count.input_pass_name = thisPassName
+count.input_pass_name = this_pass_name
 
 # Load HCAL veto
 import LDMX.Hcal.hcal as hcal
-hcal_veto = hcal.HcalVetoProcessor()
-hcal_veto.input_hit_pass_name = thisPassName
 
-# Load and configure  particle flow sequence. 
-# Here we use PF "tracking" and CLUE Ecal clustering 
-from LDMX.Recon import pfReco
-trackPF = pfReco.pfTrackProducer()
-trackPF.inputTrackCollName=trackPF.inputTrackCollName+overlayStr #"EcalScoringPlaneHitsOverlay" #                                                                                                                   
-trackPF.input_pass_name=thisPassName
-trackPF.doElectronTracking=True
+
+hcal_veto = hcal.HcalVetoProcessor()
+hcal_veto.input_hit_pass_name = this_pass_name
+
+# Load and configure  particle flow sequence.
+# Here we use PF "tracking" and CLUE Ecal clustering
+from LDMX.Recon import pf_reco
+
+
+track_pf = pf_reco.pfTrackProducer()
+#"EcalScoringPlaneHitsOverlay" #
+track_pf.input_track_coll_name=track_pf.input_track_coll_name+overlay_str
+track_pf.input_pass_name=this_pass_name
+track_pf.do_electron_tracking=True
 # reference info
-truthPF = pfReco.pfTruthProducer()
-    
-# CLUE     
-import LDMX.Ecal.ecalClusters as cl
+truth_pf = pf_reco.pfTruthProducer()
+
+# CLUE
+import LDMX.Ecal.ecal_clusters as cl
 cluster = cl.EcalClusterProducer()
-cluster.seed_threshold = 350. 
+cluster.seed_threshold = 350.
 cluster.dc = 0.3
 cluster.nbr_of_layers = 1
-cluster.reclustering = True                                                                                                                                                                                
-cluster.rec_hit_pass_name=thisPassName #run on process+pileup       
+cluster.reclustering = True
+cluster.rec_hit_pass_name=this_pass_name #run on process+pileup
 
 # HCAL clusters for pfProducer
-hcalPF = pfReco.pfHcalClusterProducer()
-hcalPF.minClusterHitMult = 2
-hcalPF.clusterHitDist = 100.
-hcalPF.minHitEnergy = 0.1
-hcalPF.doSingleCluster = False
-hcalPF.logEnergyWeight = True
-hcalPF.input_pass_name = thisPassName   #run on process+pileup
+hcal_pf = pf_reco.pfHcalClusterProducer()
 
 # particle flow:
-pfComb=pfReco.pfProducer()
-pfComb.inputEcalCollName = cluster.cluster_coll_name # use CLUE                                                                                                                                                 
-pfComb.input_ecal_passname = thisPassName
+pf_comb=pf_reco.pfProducer()
+pf_comb.input_ecal_coll_name = cluster.cluster_coll_name # use CLUE
+pf_comb.input_ecal_pass_name = this_pass_name
 # trigger recasting existing CLUE to caloclusters
-pfComb.use_existing_ecal_clusters = True 
+pf_comb.use_existing_ecal_clusters = True
 
 # Load pileup finder
-from LDMX.Recon import pileupFinder
-puFinder = pileupFinder.pileupFinder()
-puFinder.rec_hit_pass_name=thisPassName
-#needs recast caloclusters, not (CLUE) ecalclusters 
-puFinder.cluster_coll_name=pfComb.inputEcalCollName+"Cast"                                                                                                                   
-puFinder.pf_cand_coll_name=pfComb.outputCollName
-puFinder.min_momentum=3000.
+from LDMX.Recon import pileup_finder
+
+
+pu_finder = pileup_finder.pileupFinder()
+pu_finder.rec_hit_pass_name=this_pass_name
+#needs recast caloclusters, not (CLUE) ecalclusters
+pu_finder.cluster_coll_name=pf_comb.input_ecal_coll_name+"Cast"
+pu_finder.pf_cand_coll_name=pf_comb.output_coll_name
+pu_finder.min_momentum=3000.
 
 # Load the DQM modules
 from LDMX.DQM import dqm
 
-trigScint_sim_dqm = [
+
+trig_scint_sim_dqm = [
     dqm.TrigScintSimDQM('TrigScintSimPad1','TriggerPad1SimHits','pad1'),
     dqm.TrigScintSimDQM('TrigScintSimPad2','TriggerPad2SimHits','pad2'),
     dqm.TrigScintSimDQM('TrigScintSimPad3','TriggerPad3SimHits','pad3'),
     ]
 
-for ts_sim_dqm in trigScint_sim_dqm :
-    ts_sim_dqm.hit_collection += overlayStr
- 
-trigScint_dqm = [
+for ts_sim_dqm in trig_scint_sim_dqm :
+    ts_sim_dqm.hit_collection += overlay_str
+
+trig_scint_dqm = [
     dqm.TrigScintDigiDQM('TrigScintDigiPad1','trigScintDigisPad1','pad1'),
     dqm.TrigScintDigiDQM('TrigScintDigiPad2','trigScintDigisPad2','pad2'),
     dqm.TrigScintDigiDQM('TrigScintDigiPad3','trigScintDigisPad3','pad3'),
@@ -175,29 +184,29 @@ trigScint_dqm = [
     dqm.TrigScintTrackDQM('TrigScintTracks','TriggerPadTracks')
     ]
 
-for ts_dqm in trigScint_dqm :
-    ts_dqm.passName = thisPassName
+for ts_dqm in trig_scint_dqm :
+    ts_dqm.pass_name = this_pass_name
 
 # EcalDigiVerify
-ecalDigiVerify = dqm.EcalDigiVerify()
-ecalDigiVerify.ecal_sim_hit_coll += overlayStr
+ecal_digi_verify = dqm.EcalDigiVerify()
+ecal_digi_verify.ecal_sim_hit_coll += overlay_str
 
 # EcalShowerFeatures
-ecalShowerFeatures = dqm.EcalShowerFeatures()
-ecalShowerFeatures.ecal_veto_pass = thisPassName
+ecal_shower_features = dqm.EcalShowerFeatures()
+ecal_shower_features.ecal_veto_pass = this_pass_name
 
 # EcalMipTrackingFeatures
-ecalMipTrackingFeatures = dqm.EcalMipTrackingFeatures()
-ecalMipTrackingFeatures.ecal_veto_pass = thisPassName
+ecal_mip_tracking_features = dqm.EcalMipTrackingFeatures()
+ecal_mip_tracking_features.ecal_veto_pass = this_pass_name
 
 # EcalVetoResults
-ecalVetoResults = dqm.EcalVetoResults()
-ecalVetoResults.ecal_veto_pass = thisPassName
+ecal_veto_results = dqm.EcalVetoResults()
+ecal_veto_results.ecal_veto_pass = this_pass_name
 ecal_veto_pnet =  ecal_vetos.EcalPnetVetoProcessor()
-ecal_veto_pnet.ecal_rec_hits_passname = thisPassName
+ecal_veto_pnet.ecal_rec_hits_passname = this_pass_name
 
 # HCAL DQM
-hcalDQM = [
+hcal_dqm = [
     dqm.HCalDQM(pe_threshold=8,
                 section=0
                 ),
@@ -216,53 +225,64 @@ hcalDQM = [
     dqm.HcalInefficiencyAnalyzer(),
 ]
 
-for hdqm in hcalDQM:
-    hdqm.rec_pass_name = thisPassName
-    hdqm.sim_pass_name = thisPassName
-    hdqm.sim_coll_name += overlayStr
+for hdqm in hcal_dqm:
+    hdqm.rec_pass_name = this_pass_name
+    hdqm.sim_pass_name = this_pass_name
+    hdqm.sim_coll_name += overlay_str
 
 # Trigger DQM
-triggerDQM = dqm.Trigger()
-triggerDQM.trigger_pass = thisPassName
+trigger_dqm = dqm.Trigger()
+trigger_dqm.trigger_pass = this_pass_name
 
 
-dqm_with_overlay = trigScint_sim_dqm + trigScint_dqm + [triggerDQM, ecalDigiVerify, ecalShowerFeatures, ecalMipTrackingFeatures, ecalVetoResults] + hcalDQM 
+dqm_with_overlay = (
+    trig_scint_sim_dqm
+    + trig_scint_dqm
+    + [
+        trigger_dqm,
+        ecal_digi_verify,
+        ecal_shower_features,
+        ecal_mip_tracking_features,
+        ecal_veto_results,
+    ]
+    + hcal_dqm
+)
 
-p.logger.termLevel = 1
+p.logger.term_level = 1
 
-# Add full tracking for both tagger and recoil trackers: digi, seeds, CFK, ambiguity resolution, GSF, DQM
+# Add full tracking for both tagger and recoil trackers: digi, seeds, CFK, ambiguity
+# resolution, GSF, DQM
 p.sequence.extend(full_tracking_sequence.sequence)
 p.sequence.extend(full_tracking_sequence.dqm_sequence)
 
 p.sequence.extend([
-    ecalDigi,
-    ecalReco, 
-    ecalVeto, 
-    ecalMip, 
+    ecal_digi,
+    ecal_reco,
+    ecal_veto,
+    ecal_mip,
     ecal_veto_pnet,
     hcal_digi,
     hcal_reco,
     hcal_veto,
     *ts_digis,
     *ts_clusters,
-    trigScintTrack,
+    trig_scint_track,
     count, TriggerProcessor('trigger', 8000.),
     dqm.PhotoNuclearDQM()
 ])
 
 p.sequence.extend(dqm_with_overlay)
 
-# Add PFlow + pileup finding sequence 
+# Add PFlow + pileup finding sequence
 p.sequence.extend([
      cluster,
      dqm.EcalClusterAnalyzer(),
-     trackPF,
-     truthPF,
-     hcalPF,
-     pfComb,        
-     puFinder
+     track_pf,
+     truth_pf,
+     pf_comb,
+     pu_finder
 ])
 
-p.inputFiles = ['ecal_pn.root']
-p.outputFiles= ['events.root']
-p.histogramFile = 'hist.root'
+p.input_files = ['ecal_pn.root']
+p.output_files= ['events.root']
+p.histogram_file = 'hist.root'
