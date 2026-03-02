@@ -108,7 +108,7 @@ jobs:
     - run: just install-denv init
 
     - name: Download ldmx-sw Package
-      uses: actions/download-artifact@v7
+      uses: actions/download-artifact@v8
       with:
         name: ldmx-sw-build-${{ github.sha }}
 

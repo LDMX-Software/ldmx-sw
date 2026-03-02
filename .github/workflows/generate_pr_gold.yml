@@ -63,7 +63,7 @@ jobs:
         token: ${{ secrets.CI_DATA_PAT }}
         
     - name: Download ldmx-sw Package
-      uses: actions/download-artifact@v7
+      uses: actions/download-artifact@v8
       with:
         name: ldmx-sw-build-${{ github.sha }}
 
@@ -93,7 +93,7 @@ jobs:
     steps:
     - name: Download All the Gold
       id: download
-      uses: actions/download-artifact@v7
+      uses: actions/download-artifact@v8
 
     - name: Checkout ci-data
       uses: actions/checkout@v6
