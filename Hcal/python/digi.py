@@ -48,6 +48,11 @@ energy [MeV] ( 1 MIP / energy per MIP [MeV] ) ( voltage per MIP [mV] / 1 MIP ) =
 - assuming 1 PEs ~ 5mV ->  72.961 mV/MeV
 """
 
+hcal_pulse_rate_up_slope = -0.1141
+hcal_pulse_time_up_slope = -9.897
+hcal_pulse_rate_dn_slope = 0.0279
+hcal_pulse_time_dn_slope = 45.037
+hcal_pulse_time_peak = 12.698
 
 def hcal_hgcroc_emulator():
     """
@@ -64,11 +69,11 @@ def hcal_hgcroc_emulator():
     return HgcrocEmulator(
         i_soi = 3,
         n_adcs = 10,
-        rate_up_slope = -0.1141,
-        time_up_slope = -9.897,
-        rate_dn_slope = 0.0279,
-        time_dn_slope = 45.037
-        time_peak    = 12.698 
+        rate_up_slope = hcal_pulse_rate_up_slope,
+        time_up_slope = hcal_pulse_time_up_slope,
+        rate_dn_slope = hcal_pulse_rate_dn_slope,
+        time_dn_slope = hcal_pulse_time_dn_slope,
+        time_peak     = hcal_pulse_time_peak
     )
 
 
@@ -196,6 +201,10 @@ class HcalRecProducer(Processor):
         Copied from module-wide mip_energy [MeV]
     clock_cycle : float
         Time for one DAQ clock cycle to pass [ns]
+    pe_per_mip: float
+        average number of PE per MIP
+    attenuation_length: float
+        attenuation length of bar [m]
     input_coll_name : str
         Name of digi collection
     input_pass_name : str
@@ -206,128 +215,126 @@ class HcalRecProducer(Processor):
         Name of simHit pass 
     rec_hit_coll_name : str
         Name of rec_hit collection
+    rate_up_slope: float
+        use to implement amplitude and time walk correction
+    time_up_slope: float
+        use to implement amplitude and time walk correction
+    rate_dn_slope: float
+        use to implement amplitude and time walk correction
+    time_dn_slope: float
+        use to implement amplitude and time walk correction
+    time_peak: float
+        use to implement amplitude and time walk correction
+    n_adcs: int
+        use to implement amplitude and time walk correction
+    avg_toa_threshold: float
+        use to implement amplitude and time walk correction
+    avg_gain: float
+        use to implement amplitude and time walk correction
+    avg_pedestal: float
+        use to implement amplitude and time walk correction
     """
 
-    def __init__(self, instance_name = 'hcalRecon') :
-        super().__init__(instance_name , 'hcal::HcalRecProducer','Hcal')
+    voltage_per_mip: float = (5/1)*n_pe_per_mip
+    mip_energy: float = mip_energy
+    clock_cycle: float = 25.0
+    pe_per_mip: float = n_pe_per_mip
+    attenuation_length: float = 5.0
+    input_coll_name: str = 'HcalDigis'
+    input_pass_name: str = ''
+    sim_hit_coll_name: str = 'HcalSimHits'
+    sim_hit_pass_name: str = ''
+    rec_hit_coll_name: str = 'HcalRecHits'
+    rate_up_slope: float = hcal_pulse_rate_up_slope
+    time_up_slope: float = hcal_pulse_time_up_slope
+    rate_dn_slope: float = hcal_pulse_rate_dn_slope
+    time_dn_slope: float = hcal_pulse_time_dn_slope
+    time_peak: float = hcal_pulse_time_peak
+    n_adcs: int = 10
+    avg_toa_threshold: float = 1.6 # mV - correction config only
+    avg_gain: float = 1.2 # correction config only
+    avg_pedestal: float = 1. #noise config only
 
-        hgcroc = HcalHgcrocEmulator()
 
-        self.voltage_per_mip = (5/1)*(n_pe_per_mip) # 5*68 mV/ MIP
-        self.mip_energy = mip_energy #MeV / MIP
-        self.clock_cycle = 25. #ns - needs to match the setting on the chip
-        self.pe_per_mip = n_pe_per_mip
-
-	    # attenuation length
-        self.attenuation_length = 5. # in m
-
-        self.input_coll_name = 'HcalDigis'
-        self.input_pass_name = ''
-        self.sim_hit_coll_name = 'HcalSimHits'
-        self.sim_hit_pass_name = ''
-        self.rec_hit_coll_name = 'HcalRecHits'
-
-        # hgcroc parameters:
-        self.rate_up_slope = hgcroc.rate_up_slope
-        self.time_up_slope = hgcroc.time_up_slope
-        self.rate_dn_slope = hgcroc.rate_dn_slope
-        self.time_dn_slope = hgcroc.time_dn_slope
-        self.time_peak    = hgcroc.time_peak
-        self.n_adcs       = hgcroc.n_adcs
-
-        # avg parameters
-        self.avg_toa_threshold = 1.6 # mV - correction config only
-        self.avg_gain = 1.2 # correction config only
-        self.avg_pedestal = 1. #noise config only
-
-class HcalSingleEndRecProducer(Producer) :
+@processor("hcal::HcalSingleEndRecProducer", "Hcal")
+class HcalSingleEndRecProducer(Processor):
     """ Configuration for the single ended Hcal Rec Producer
 
     Attributes
     ----------
-    -  mip_energy : float
+    mip_energy : float
        Copied from module-wide mip_energy [MeV]
-    -  clock_cycle : float
+    clock_cycle : float
        Time for one DAQ clock cycle to pass [ns]
-    -  pe_per_mip: float
+    pe_per_mip: float
        number of photo-electrons per MIP
-    -  pass_name: str
+    pass_name: str
        Name of digi pass
-    -  coll_name: str
+    coll_name: str
        Name of digi collection
-    -  rec_coll_name: str
+    rec_coll_name: str
        Name of rechit collection
     """
 
-    def __init__(self, instance_name = 'hcalRecon', pass_name = '', coll_name = 'HcalDigis', rec_coll_name = 'HcalRecHits', rec_pass_name = '') :
-        super().__init__(instance_name , 'hcal::HcalSingleEndRecProducer','Hcal')
+    mip_energy: float = mip_energy
+    clock_cycle: float = 25.0
+    pe_per_mip: float = pe_per_mip
+    coll_name: str = "HcalDigis"
+    pass_name: str = ""
+    rec_coll_name: str = "HcalRecHits"
 
-        self.mip_energy = mip_energy
-        self.clock_cycle = 25.
-        self.pe_per_mip = n_pe_per_mip
 
-        self.coll_name = coll_name
-        self.pass_name = pass_name
-        self.rec_coll_name = rec_coll_name
-        self.rec_pass_name = rec_pass_name
-
-class HcalDoubleEndRecProducer(Producer) :
+@processor("hcal::HcalDoubleEndRecProducer", "Hcal")
+class HcalDoubleEndRecProducer(Processor):
     """ Configuration for the double ended Hcal Rec Producer
     
     Attributes
     ----------
-    -  mip_energy : float
+    mip_energy : float
        Copied from module-wide mip_energy [MeV]
-    -  clock_cycle : float
+    clock_cycle : float
        Time for one DAQ clock cycle to pass [ns]
-    -  pe_per_mip: float
+    pe_per_mip: float
        number of photo-electrons per MIP
-    -  pass_name: str
+    pass_name: str
        Name of digi pass
-    -  coll_name: str
+    coll_name: str
        Name of digi collection
-    -  rec_coll_name: str
+    rec_coll_name: str
        Name of rechit collection
     """
 
-    def __init__(self, instance_name = 'hcalDoubleRecon', pass_name = '', coll_name = 'HcalRecHits', rec_coll_name = 'HcalDoubleEndRecHits', rec_pass_name = '') :
-        super().__init__(instance_name , 'hcal::HcalDoubleEndRecProducer','Hcal')
+    mip_energy: float = mip_energy
+    clock_cycle: float = 25.0
+    pe_per_mip: float = pe_per_mip
+    coll_name: str = "HcalRecHits"
+    pass_name: str = ""
+    rec_coll_name: str = "HcalDoubleEndRecHits"
+    rec_pass_name: str = ""
 
-        self.mip_energy = mip_energy
-        self.clock_cycle = 25.
-        self.pe_per_mip = n_pe_per_mip
 
-        self.coll_name = coll_name
-        self.pass_name = pass_name
-        self.rec_coll_name = rec_coll_name
-        self.rec_pass_name = rec_pass_name
-
-class HcalSimpleDigiAndRecProducer(Producer) :
+@processor("hcal::HcalSimpleDigiAndRecProducer", "Hcal")
+class HcalSimpleDigiAndRecProducer(Processor):
     """Configuration for Digitization producer in the HCal
-        Sets all parameters to reasonable defaults.
-    Examples
-    --------
-        from LDMX.EventProc.hcal import HcalDigiProducer
-        p.sequence.append( HcalDigiProducer() )
+
+    Legacy digi emulation and reconstruction producer which creates rec hits
+    without as detailed of a digi emulation or realistic reconstruction procedure.
     """
 
-    def __init__(self,name = 'hcalSimpleDigiAndRec') :
-        super().__init__(name,'hcal::HcalSimpleDigiAndRecProducer','Hcal')
-        self.input_coll_name = 'HcalSimHits'
-        self.input_pass_name = ''
-        self.output_coll_name = 'HcalRecHits'
-
-        self.mean_noise = 0.02
-        self.readout_threshold= 1
-        self.strips_side_lr_per_layer = 12
-        self.num_side_lr_hcal_layers = 26
-        self.strips_side_tb_per_layer = 12
-        self.num_side_tb_hcal_layers = 28
-        self.strips_back_per_layer = 60 # n strips correspond to 5 cm wide bars
-        self.num_back_hcal_layers = 96
-        self.super_strip_size = 1 # 1 = 5 cm readout, 2 = 10 cm readout, ...
-        self.mev_per_mip = 4.66  # measured 1.4 MeV for a 6mm thick tile, so for 20mm bar = 1.4*20/6
-        self.pe_per_mip = 68. # PEs per MIP at 1m (assume 80% attentuation of 1m)
-        self.attenuation_length = 5. # this is in m
-        self.position_resolution = 150. # this is in mm
-        self.sim_hit_pass_name = '' #use any pass available
+    input_coll_name: str = 'HcalSimHits'
+    input_pass_name: str = ''
+    output_coll_name: str = 'HcalRecHits'
+    mean_noise: float = 0.02
+    readout_threshold: int = 1
+    strips_side_lr_per_layer: int = 12
+    num_side_lr_hcal_layers: int = 26
+    strips_side_tb_per_layer: int = 12
+    num_side_tb_hcal_layers: int = 28
+    strips_back_per_layer: int = 60 # n strips correspond to 5 cm wide bars
+    num_back_hcal_layers: int = 96
+    super_strip_size: int = 1 # 1 = 5 cm readout, 2 = 10 cm readout, ...
+    mev_per_mip: float = 4.66  # measured 1.4 MeV for a 6mm thick tile, so for 20mm bar = 1.4*20/6
+    pe_per_mip: float = 68. # PEs per MIP at 1m (assume 80% attentuation of 1m)
+    attenuation_length: float = 5. # this is in m
+    position_resolution: float = 150. # this is in mm
+    sim_hit_pass_name: str = '' #use any pass available
