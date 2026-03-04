@@ -8,16 +8,16 @@ Two module-wide parameters are defined.
 Attributes
 ----------
 n_pe_per_mip: float
-    Number of photo-electrons (PEs) created for each MIP 
+    Number of photo-electrons (PEs) created for each MIP
 mip_energy: float
-    Energy [MeV] of a single MIP 
+    Energy [MeV] of a single MIP
 """
 
 from LDMX.Framework import Processor, processor
 from LDMX.Tools.hgcroc_emulator import HgcrocEmulator
 
 
-n_pe_per_mip = 68.
+n_pe_per_mip = 68.0
 """PEs created per MIP"""
 
 mip_energy = 4.66
@@ -29,19 +29,19 @@ measured 1.4MeV for a 6mm thick tile, so a 20mm thick bar is ~1.4*20/6
 
 def calculate_voltage(pe):
     """Calculate the voltage signal [mV] of the input number of photo-electrons (PEs)
-    
+
     Assuming that 1 PE ~ 5mV
     This translates to (68/4.66)*5 = 73 PE/MeV
-    
+
     Parameters
     ----------
     pe : int
         Number of photo electrons
     """
-    return pe*(5/1)
+    return pe * (5 / 1)
 
 
-energy_to_voltage_conversion = (1./mip_energy)*calculate_voltage(n_pe_per_mip)
+energy_to_voltage_conversion = (1.0 / mip_energy) * calculate_voltage(n_pe_per_mip)
 """conversion from energy in MeV to voltage in mV
 
 energy [MeV] ( 1 MIP / energy per MIP [MeV] ) ( voltage per MIP [mV] / 1 MIP ) = voltage [mV]
@@ -53,6 +53,7 @@ hcal_pulse_time_up_slope = -9.897
 hcal_pulse_rate_dn_slope = 0.0279
 hcal_pulse_time_dn_slope = 45.037
 hcal_pulse_time_peak = 12.698
+
 
 def hcal_hgcroc_emulator():
     """
@@ -67,13 +68,13 @@ def hcal_hgcroc_emulator():
 
     # the time such that with [parameter 4]=0, the pulse peaks at t=0
     return HgcrocEmulator(
-        i_soi = 3,
-        n_adcs = 10,
-        rate_up_slope = hcal_pulse_rate_up_slope,
-        time_up_slope = hcal_pulse_time_up_slope,
-        rate_dn_slope = hcal_pulse_rate_dn_slope,
-        time_dn_slope = hcal_pulse_time_dn_slope,
-        time_peak     = hcal_pulse_time_peak
+        i_soi=3,
+        n_adcs=10,
+        rate_up_slope=hcal_pulse_rate_up_slope,
+        time_up_slope=hcal_pulse_time_up_slope,
+        rate_dn_slope=hcal_pulse_rate_dn_slope,
+        time_dn_slope=hcal_pulse_time_dn_slope,
+        time_peak=hcal_pulse_time_peak,
     )
 
 
@@ -94,7 +95,7 @@ class DigiTimeSpread:
             )
 
     def none():
-        return DigiTimeSpread(kind = -1, parameters = [0.0])
+        return DigiTimeSpread(kind=-1, parameters=[0.0])
 
     def gaussian(mean, sigma):
         """Gaussing time spread
@@ -106,7 +107,7 @@ class DigiTimeSpread:
         sigma: float
             standard deviation
         """
-        return DigiTimeSpread(kind = 0, parameters = [mean, sigma])
+        return DigiTimeSpread(kind=0, parameters=[mean, sigma])
 
     def uniform(min_value, max_value):
         """Uniform time spread
@@ -118,7 +119,7 @@ class DigiTimeSpread:
         max_value : float
             Maximum value of the uniform distribution
         """
-        return DigiTimeSpread(kind = 1, parameters = [min_value, max_value])
+        return DigiTimeSpread(kind=1, parameters=[min_value, max_value])
 
     def constant(value):
         """Constant time spread
@@ -128,7 +129,7 @@ class DigiTimeSpread:
         value : float
             Value of the constant time spread
         """
-        return DigiTimeSpread(kind = 2, parameters = [value])
+        return DigiTimeSpread(kind=2, parameters=[value])
 
 
 @processor("hcal::HcalDigiProducer", "Hcal")
@@ -151,17 +152,17 @@ class HcalDigiProducer(Processor):
         average channel pedestal (for noise in empty channels)
     avg_noise_rms: float
         average channel noise RMS (for noise in empty channels)
-    save_pulse_truth_info: bool 
+    save_pulse_truth_info: bool
         save pulse details for later study of emulator
     pulse_truth_coll_name: str
         output name for pulse details (if being saved)
     zero_suppression: bool
         if True (default), drop channels that are not above their readout threshold
     input_coll_name : str
-        Name of input collection  
+        Name of input collection
     input_pass_name : str
-        Name of input pass 
-    digi_coll_name : str    
+        Name of input pass
+    digi_coll_name : str
         Name of digi collection
     flat_time_shift: float
         flat time shift to apply to all hits
@@ -171,22 +172,22 @@ class HcalDigiProducer(Processor):
         time spread to apply uniformly within each spill
     """
 
-    hgcroc: HgcrocEmulator = field(default_factory = hcal_hgcroc_emulator)
+    hgcroc: HgcrocEmulator = field(default_factory=hcal_hgcroc_emulator)
     mev: float = energy_to_voltage_conversion
     attenuation_length: float = 5.0
     avg_readout_threshold: float = 4.0
     avg_gain: float = 1.2
     avg_pedestal: float = 1.0
-    avg_noise_rms: float = calculate_voltage(0.02)/1.2
+    avg_noise_rms: float = calculate_voltage(0.02) / 1.2
     save_pulse_truth_info: bool = False
     zero_suppresion: bool = True
-    input_coll_name = 'HcalSimHits'
-    input_pass_name = ''
-    digi_coll_name = 'HcalDigis'
-    pulse_truth_coll_name = 'HcalPulseTruth'
+    input_coll_name = "HcalSimHits"
+    input_pass_name = ""
+    digi_coll_name = "HcalDigis"
+    pulse_truth_coll_name = "HcalPulseTruth"
     flat_time_shift: float = 0.0
-    time_spread_per_hit: DigiTimeSpread = field(default_factory = DigiTimeSpread.none)
-    time_spread_per_spill: DigiTimeSpread = field(default_factory = DigiTimeSpread.none)
+    time_spread_per_hit: DigiTimeSpread = field(default_factory=DigiTimeSpread.none)
+    time_spread_per_spill: DigiTimeSpread = field(default_factory=DigiTimeSpread.none)
 
 
 @processor("hcal::HcalRecProducer", "Hcal")
@@ -211,8 +212,8 @@ class HcalRecProducer(Processor):
         Name of digi pass
     sim_hit_coll_name : str
         Name of simHit collection
-    sim_hit_pass_name : str 
-        Name of simHit pass 
+    sim_hit_pass_name : str
+        Name of simHit pass
     rec_hit_coll_name : str
         Name of rec_hit collection
     rate_up_slope: float
@@ -235,30 +236,30 @@ class HcalRecProducer(Processor):
         use to implement amplitude and time walk correction
     """
 
-    voltage_per_mip: float = (5/1)*n_pe_per_mip
+    voltage_per_mip: float = (5 / 1) * n_pe_per_mip
     mip_energy: float = mip_energy
     clock_cycle: float = 25.0
     pe_per_mip: float = n_pe_per_mip
     attenuation_length: float = 5.0
-    input_coll_name: str = 'HcalDigis'
-    input_pass_name: str = ''
-    sim_hit_coll_name: str = 'HcalSimHits'
-    sim_hit_pass_name: str = ''
-    rec_hit_coll_name: str = 'HcalRecHits'
+    input_coll_name: str = "HcalDigis"
+    input_pass_name: str = ""
+    sim_hit_coll_name: str = "HcalSimHits"
+    sim_hit_pass_name: str = ""
+    rec_hit_coll_name: str = "HcalRecHits"
     rate_up_slope: float = hcal_pulse_rate_up_slope
     time_up_slope: float = hcal_pulse_time_up_slope
     rate_dn_slope: float = hcal_pulse_rate_dn_slope
     time_dn_slope: float = hcal_pulse_time_dn_slope
     time_peak: float = hcal_pulse_time_peak
     n_adcs: int = 10
-    avg_toa_threshold: float = 1.6 # mV - correction config only
-    avg_gain: float = 1.2 # correction config only
-    avg_pedestal: float = 1. #noise config only
+    avg_toa_threshold: float = 1.6  # mV - correction config only
+    avg_gain: float = 1.2  # correction config only
+    avg_pedestal: float = 1.0  # noise config only
 
 
 @processor("hcal::HcalSingleEndRecProducer", "Hcal")
 class HcalSingleEndRecProducer(Processor):
-    """ Configuration for the single ended Hcal Rec Producer
+    """Configuration for the single ended Hcal Rec Producer
 
     Attributes
     ----------
@@ -286,8 +287,8 @@ class HcalSingleEndRecProducer(Processor):
 
 @processor("hcal::HcalDoubleEndRecProducer", "Hcal")
 class HcalDoubleEndRecProducer(Processor):
-    """ Configuration for the double ended Hcal Rec Producer
-    
+    """Configuration for the double ended Hcal Rec Producer
+
     Attributes
     ----------
     mip_energy : float
@@ -321,20 +322,22 @@ class HcalSimpleDigiAndRecProducer(Processor):
     without as detailed of a digi emulation or realistic reconstruction procedure.
     """
 
-    input_coll_name: str = 'HcalSimHits'
-    input_pass_name: str = ''
-    output_coll_name: str = 'HcalRecHits'
+    input_coll_name: str = "HcalSimHits"
+    input_pass_name: str = ""
+    output_coll_name: str = "HcalRecHits"
     mean_noise: float = 0.02
     readout_threshold: int = 1
     strips_side_lr_per_layer: int = 12
     num_side_lr_hcal_layers: int = 26
     strips_side_tb_per_layer: int = 12
     num_side_tb_hcal_layers: int = 28
-    strips_back_per_layer: int = 60 # n strips correspond to 5 cm wide bars
+    strips_back_per_layer: int = 60  # n strips correspond to 5 cm wide bars
     num_back_hcal_layers: int = 96
-    super_strip_size: int = 1 # 1 = 5 cm readout, 2 = 10 cm readout, ...
-    mev_per_mip: float = 4.66  # measured 1.4 MeV for a 6mm thick tile, so for 20mm bar = 1.4*20/6
-    pe_per_mip: float = 68. # PEs per MIP at 1m (assume 80% attentuation of 1m)
-    attenuation_length: float = 5. # this is in m
-    position_resolution: float = 150. # this is in mm
-    sim_hit_pass_name: str = '' #use any pass available
+    super_strip_size: int = 1  # 1 = 5 cm readout, 2 = 10 cm readout, ...
+    mev_per_mip: float = (
+        4.66  # measured 1.4 MeV for a 6mm thick tile, so for 20mm bar = 1.4*20/6
+    )
+    pe_per_mip: float = 68.0  # PEs per MIP at 1m (assume 80% attentuation of 1m)
+    attenuation_length: float = 5.0  # this is in m
+    position_resolution: float = 150.0  # this is in mm
+    sim_hit_pass_name: str = ""  # use any pass available
