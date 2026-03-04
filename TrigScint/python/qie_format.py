@@ -33,7 +33,7 @@ class QIEEncoder(ldmxcfg.Producer) :
         enc.input_collection = 'trigScintQIEDigisTag'
         enc.output_collection= 'QIEstreamTag'
         return enc
-    
+
     @staticmethod
     def up(map_file) :
         """Get the encoding emulator for the trigger pad upstream of target"""

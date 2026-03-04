@@ -48,7 +48,7 @@ class RawIO(ldmxcfg.Producer) :
             File path to raw data file to read in
         """
         return RawIO(RawDataFile(raw_file, False))
-    
+
     @staticmethod
     def destination(raw_file) :
         """Configure a RawIO producer for writing to a raw data file
