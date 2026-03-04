@@ -230,7 +230,8 @@ TEST_CASE("Conditions", "[Conditions]") {
         "SimpleCSVTableProvider\n\np=ldmxcfg.Process('test')\np.testMode="
         "True\ncolumns=['SQRT','EXP','LOG']\ncop=SimpleCSVTableProvider."
         "SimpleCSVDoubleTableProvider('test_table_file',columns)\ncop."
-        "valid_for_runs('file:///tmp/dump_double.csv',0,100)\ncop.valid_for_runs('/"
+        "valid_for_runs('file:///tmp/"
+        "dump_double.csv',0,100)\ncop.valid_for_runs('/"
         "tmp/dump_double.csv',101,120)\n";
 
     FILE* f = fopen("/tmp/test_cond.py", "w");
