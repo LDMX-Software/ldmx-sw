@@ -1,0 +1,206 @@
+#!/bin/sh
+#  fire-parallel
+#
+# wrap fire with GNU's parallel to do multiple runs using
+# all available cores
+
+set -o nounset
+set -o errexit
+
+usage() {
+  cat <<HELP
+
+ fire-parallel {config.py} [template ...] [--] parallel ...
+
+  OPTIONS
+    --help|-h : print this help and exit
+    --dry-run : print the jobs that would be run instead of running them
+    --log-dir : specify where the logs for the jobs and parallel should be stored
+                defaults to printing the output of the jobs to the terminal AFTER
+                the job fully completes (i.e. the parallel default).
+                If this is provided, we instead write the output of each job to
+                its own file and follow parallel's joblog file reporting when jobs
+                complete
+    --        : delimiter after which all arguments will be passed to GNU parallel
+                directly. Script options must be strictly between '--' and the first
+                instance of '::', with only template values permitted afterwards. 
+                Template values need not be preceded by '--'.
+
+  ARGUMENTS
+    config.py : configuration script to pass to fire for the parallel jobs
+    template  : template arguments to be passed to the config script after given values
+                by GNU parallel. These are the arguments using curly-braces (e.g. {n})
+                from the GNU parallel manual[0].
+    parallel  : all other arguments are passed to GNU parallel. Most commonly, these
+                are the arguments specifying the values for the template (e.g. '::: 1 2 3').
+                More detail on how to specify these values can be seen in the GNU parallel
+                manual[0], or see the examples below.
+
+    [0]: https://www.gnu.org/software/parallel/man.html
+
+  EXAMPLE 1 : Basic Usage
+
+    The following runs 6 copies of 'fire config.py N' in parallel where N
+    is 10, 11, 12, 13, 14, or 15. The terminal output of these jobs is
+    saved in the "logs" directory and are named after their "sequence number"
+    according to parallel.
+
+      fire-parallel config.py ::: 10 11 12 13 14 15
+  
+  EXAMPLE 2 : Multiple Arguments
+
+    The following runs 4 copies of 'fire config.py N M' in parallel, where
+    the ordered pair (N,M) is (A,1), (A,2), (B,1), or (B,2). The values
+    passed to N and M are (optionally) set respectively with template brackets
+    referring to the values positions: the first block (after the first ':::') is
+    indicated by {1}, and the second block (after the second ':::'), and so on.
+
+      fire-parallel config.py {1} {2} ::: A B ::: 1 2
+  
+  EXAMPLE 3 : Linked Arguments
+
+    By default, GNU parallel performs a Cartesian product between sets of 
+    values if there are multiple. Sometimes it is convenient to associate
+    values element-wise, and for this we employ the '--link' option. The
+    following runs 2 copies of 'fire config.py N M' in parallel where the 
+    ordered pair (N,M) is either (A,1) or (B,2). Note that '--link' (and any
+    other options passed directly to GNU parallel) must be after the '--'
+    delimeter, but before ':::'.
+
+      fire-parallel config.py -- --link ::: A B ::: 1 2
+
+HELP
+}
+
+dry_run=false
+log_dir=""
+config=""
+template_args=""
+parallel_opts=""
+while [ $# -gt 0 ]; do
+  case "${1}" in
+    -h|--help)
+      usage
+      exit 0
+      ;;
+    --dry-run)
+      dry_run=true
+      ;;
+    --log-dir)
+      shift
+      if [ $# -eq 0 ]; then
+        echo "error: the '--log-dir' option requires an argument after it"
+        exit 1
+      fi
+      log_dir="${1}"
+      ;;
+    --)
+      # user wants the following arguments to be given to GNU parallel
+      shift
+      while [ $# -gt 0 ]; do
+        case "${1}" in
+          "::"*)
+            # begins GNU parallel args, break
+            break 2
+            ;;
+          *)
+            parallel_opts="${parallel_opts} ${1}"
+            ;;
+        esac
+        shift
+      done
+      ;;
+    "::"*)
+      # obviously a GNU parallel arg, break
+      break
+      ;;
+    *)
+      if [ "${config}" = "" ]; then
+        config="${1}"
+      else
+        template_args="${template_args} ${1}"
+      fi
+      ;;
+  esac
+  shift
+done
+
+# we left the while loop when encountering the break argument '--'
+# or the first obvious GNU parallel argument (starting with '::'),
+# so the rest of the command line arguments are the GNU parallel
+# arguments
+parallel_args="$*"
+if [ -z "${parallel_args}" ]; then
+  echo "error: providing 'parallel' arguments to specify the command line values is required"
+  exit 1
+fi
+
+# if template_args is empty, use the default behavior of GNU parallel
+# where the input line is provided in the same order its specified
+# on the command line. We need to specify this manually so that we
+# can add the capture-to-file suffix to the command.
+if [ -z "${template_args}" ]; then
+  template_args="{}"
+fi
+
+if [ -z "${config}" ] || [ ! -f "${config}" ]; then
+  echo "error: the config script argument is required"
+  exit 3
+fi
+
+cmd="parallel"
+if ${dry_run}; then
+  if [ -n "${log_dir}" ]; then
+    if [ -d "${log_dir}" ]; then
+      echo "warning: actual run would fail here because the output log directory already exists"
+    fi
+    echo "mkdir \"${log_dir}\""
+  fi
+  cmd="${cmd} --dry-run"
+else
+  if [ -n "${log_dir}" ]; then
+    if [ -d "${log_dir}" ]; then
+      echo "error: output log directory '${log_dir}' already exists"
+      exit 4
+    fi
+    mkdir "${log_dir}"
+  fi
+fi
+
+if [ -n "${log_dir}" ]; then
+  cmd="${cmd} --joblog ${log_dir}/parallel.log"
+fi
+if [ -n "${parallel_opts}" ]; then
+  cmd="${cmd} ${parallel_opts}"
+fi
+job_cmd_template="fire ${config} ${template_args}"
+if [ -n "${log_dir}" ]; then
+  cmd="${cmd} ${job_cmd_template} >${log_dir}/job-{#}.out 2>&1"
+else
+  cmd="${cmd} ${job_cmd_template}"
+fi
+cmd="${cmd} ${parallel_args}"
+
+if ${dry_run}; then
+  # don't show user `--dry-run` that we'll use to print the jobs from
+  # parallel's perspective later
+  echo "${cmd}" | sed 's|--dry-run ||'
+  if [ -n "${log_dir}" ]; then
+    echo "parallel_pid=\$!"
+    echo "tail -f --pid=\"\${parallel_pid}\" ${log_dir}/parallel.log"
+  fi
+  ${cmd}
+else
+  if [ -n "${log_dir}" ]; then
+    ${cmd} &
+    parallel_pid=$!
+    # wait until log file appears
+    while ! [ -f "${log_dir}/parallel.log" ]; do
+      sleep 1
+    done
+    # watch log file until parallel completes all the jobs
+    tail --follow --pid="${parallel_pid}" "${log_dir}/parallel.log"
+  else
+    ${cmd}
+  fi
+fi

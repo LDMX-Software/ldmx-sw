@@ -48,6 +48,16 @@ class TrigScintQIEDigis {
   int getElecID() const { return elec_id_; }
 
   /**
+   * Get module ID (pad naming number -1)
+   */
+  int getModuleID() const { return module_id_; }
+
+  /**
+   * Get lane ID
+   */
+  int getLaneID() const { return lane_id_; }
+
+  /**
    * Get ADCs of all time samples
    */
   std::vector<int> getADC() const { return adcs_; }
@@ -61,6 +71,16 @@ class TrigScintQIEDigis {
    * Get Cap IDs of all time samples
    */
   std::vector<int> getCID() const { return cids_; }
+
+  /**
+   * Get BC0s (= 1 for periodic sync time sample) of all time samples
+   */
+  std::vector<int> getBC0() const { return bc0s_; }
+
+  /**
+   * Get CEs (an error state flag) of all time samples
+   */
+  std::vector<int> getCE() const { return ces_; }
 
   /**
    * Store the event time since spill counter
@@ -85,6 +105,16 @@ class TrigScintQIEDigis {
   void setElecID(const int elecid) { elec_id_ = elecid; }
 
   /**
+   * Store the module ID (pad number-1)
+   */
+  void setModuleID(const int moduleid) { module_id_ = moduleid; }
+
+  /**
+   * Store the lane (fiber) ID
+   */
+  void setLaneID(const int laneid) { lane_id_ = laneid; }
+
+  /**
    * Store adcs of all time samples
    * @param adc_ array of adcs
    */
@@ -102,11 +132,27 @@ class TrigScintQIEDigis {
    */
   void setCID(const std::vector<int> cid) { cids_ = cid; }
 
+  /**
+   * Store bc0s of all time samples
+   * @param bc0_ array of BC0s (perodic sample sync)
+   */
+  void setBC0(const std::vector<int> bc0) { bc0s_ = bc0; }
+
+  /**
+   * Store ces of all time samples
+   * @param ce_ array of CEs (error state)
+   */
+  void setCE(const std::vector<int> ce) { ces_ = ce; }
+
  protected:
   /// channel ID
   int chan_id_;
   /// channel ID
   int elec_id_{-1};
+  /// module ID (pad)
+  int module_id_;
+  /// lane ID (fiber)
+  int lane_id_{-1};
 
   /// analog to digital counts
   std::vector<int> adcs_;
@@ -120,8 +166,10 @@ class TrigScintQIEDigis {
  private:
   /// capacitor IDs
   std::vector<int> cids_;
+  std::vector<int> bc0s_;
+  std::vector<int> ces_;
 
-  ClassDef(TrigScintQIEDigis, 3);
+  ClassDef(TrigScintQIEDigis, 4);
 };
 }  // namespace trigscint
 #endif

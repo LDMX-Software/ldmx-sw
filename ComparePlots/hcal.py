@@ -1,7 +1,9 @@
 
+import logging
+
 from ._differ import Differ
 from ._plotter import plotter
-import logging
+
 
 log = logging.getLogger('hcal')
 
@@ -36,7 +38,7 @@ def dqm(d: Differ, out_dir=None):
     ]
 
     log.info("Making the efficiency histogram...")
-    d.plot1d('HcalInefficiencyAnalyzer/HcalInefficiencyAnalyzer_efficiency',
+    d.plot1d('HcalInefficiencyAnalyzer/efficiency',
              'Hcal part involved in veto',
              'Efficiency',
              out_dir=out_dir,
@@ -50,9 +52,9 @@ def dqm(d: Differ, out_dir=None):
             log.info(f"Making the {name} histogram...")
             d.plot1d(name, title, out_dir=out_dir, density=True, ylabel='Event rate')
         log.info(f"Making the inefficiency figure for {section}")
-        d.plot1d(f'HcalInefficiencyAnalyzer/HcalInefficiencyAnalyzer_inefficiency_{section}',
+        d.plot1d(f'HcalInefficiencyAnalyzer/inefficiency_{section}',
                  'Layer',
-                 'Inefficiency (5PE)',
+                 'Inefficiency (8PE)',
                  out_dir=out_dir,
                  density=True)
 

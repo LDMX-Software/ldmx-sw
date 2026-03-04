@@ -12,13 +12,13 @@ void BeamElectronLocator::configure(framework::config::Parameters &parameters) {
   input_coll_ = parameters.get<std::string>("input_collection");
   input_pass_name_ = parameters.get<std::string>("input_pass_name");
   output_coll_ = parameters.get<std::string>("output_collection");
-  granularity_xmm_ = parameters.get<double>("granularity_X_mm");
-  granularity_ymm_ = parameters.get<double>("granularity_Y_mm");
+  granularity_xmm_ = parameters.get<double>("granularity_x_mm");
+  granularity_ymm_ = parameters.get<double>("granularity_y_mm");
   tolerance_ = parameters.get<double>("min_granularity_mm");
-  min_xmm_ = parameters.get<double>("min_X_mm");
-  max_xmm_ = parameters.get<double>("max_X_mm");
-  min_ymm_ = parameters.get<double>("min_Y_mm");
-  max_ymm_ = parameters.get<double>("max_Y_mm");
+  min_xmm_ = parameters.get<double>("min_x_mm");
+  max_xmm_ = parameters.get<double>("max_x_mm");
+  min_ymm_ = parameters.get<double>("min_y_mm");
+  max_ymm_ = parameters.get<double>("max_y_mm");
   verbose_ = parameters.get<bool>("verbose");
 }
 void BeamElectronLocator::onProcessStart() {

@@ -75,10 +75,10 @@ class HcalRecProducer : public framework::Producer {
 
  private:
   /// Digi Collection Name to use as input
-  std::string digi_coll_name_;
+  std::string input_coll_name_;
 
   /// Digi Pass Name to use as input
-  std::string digi_pass_name_;
+  std::string input_pass_name_;
 
   /// simhit collection name
   std::string sim_hit_coll_name_;
@@ -133,7 +133,7 @@ class HcalRecProducer : public framework::Producer {
   double min_ampl_;
 
   /// Depth of ADC buffer.
-  int n_ad_cs_;
+  int n_adcs_;
 
   /// Rate of Up Slope in Pulse Shape [1/ns]
   double rate_up_slope_;

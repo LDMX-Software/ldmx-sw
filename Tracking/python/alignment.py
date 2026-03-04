@@ -19,5 +19,5 @@ class AlignmentTestProcessor(Producer):
     def __init__(self, instance_name="AlignmentTestProcessor"):
         super().__init__(instance_name,
                          'tracking::reco::AlignmentTestProcessor', 'Tracking')
-        
+
 

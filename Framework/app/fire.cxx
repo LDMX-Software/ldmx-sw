@@ -21,16 +21,17 @@
  */
 // using namespace framework;
 
-// This code allows ldmx-app to exit gracefully when Ctrl-c is used. It is
-// currently causing segfaults when certain processors are used.  The code
-// will remain commented out until these issues are investigated further.
-/*
-static Process* p { 0 };
+// This code allows ldmx-app to exit gracefully when receiving preemption
+// signals from the SDF (SIGUSR2) or Ctrl-c (SIGINT). It finishes the current
+// event and closes ROOT files properly instead of losing work.
+// NOTE: This seems to be container dependent. It has been tested and works
+//       with apptainer v1.2 (at SDF) while does not work with podman.
+// NOLINTNEXTLINE(readability-identifier-naming)
+extern volatile std::sig_atomic_t preemption_received_;
 
-static void softFinish (int sig, siginfo_t *siginfo, void *context) {
-if (p) p->requestFinish();
+static void softFinish(int sig, siginfo_t* siginfo, void* context) {
+  preemption_received_ = 1;
 }
-*/
 
 /**
  * @func printUsage
@@ -72,7 +73,7 @@ int main(int argc, char* argv[]) try {
   framework::ProcessHandle p;
   try {
     framework::config::Parameters config{
-        framework::config::run("ldmxcfg.Process.lastProcess", argv[ptrpy],
+        framework::config::run("ldmxcfg.Process.last_process", argv[ptrpy],
                                argv + ptrpy + 1, argc - ptrpy - 1)};
     p = std::make_unique<framework::Process>(config);
   } catch (const framework::exception::Exception& e) {
@@ -90,22 +91,25 @@ int main(int argc, char* argv[]) try {
   std::cout << "---- LDMXSW: Configuration load complete  --------"
             << std::endl;
 
-  // If Ctrl-c is used, immediately exit the application.
+  // Setup signal handlers for graceful shutdown
   struct sigaction act;
   memset(&act, '\0', sizeof(act));
-  if (sigaction(SIGINT, &act, NULL) < 0) {
-    perror("sigaction");
+  act.sa_sigaction = &softFinish;
+  act.sa_flags = SA_SIGINFO;
+
+  // Handle SIGUSR2 (SDF preemption signal)
+  if (sigaction(SIGUSR2, &act, NULL) < 0) {
+    std::cerr << "Error setting up SIGUSR2 handler: " << strerror(errno)
+              << std::endl;
     return 5;
   }
 
-  // See comment above for reason why this code is commented out.
-  /* Use the sa_sigaction field because the handles has two additional
-   * parameters */
-  // act.sa_sigaction = &softFinish;
-
-  /* The SA_SIGINFO flag tells sigaction() to use the sa_sigaction field, not
-   * sa_handler. */
-  // act.sa_flags = SA_SIGINFO;
+  // Also handle SIGINT (Ctrl-C)
+  if (sigaction(SIGINT, &act, NULL) < 0) {
+    std::cerr << "Error setting up SIGINT handler: " << strerror(errno)
+              << std::endl;
+    return 5;
+  }
 
   std::cout << "---- LDMXSW: Starting event processing --------" << std::endl;
 
@@ -118,6 +122,7 @@ int main(int argc, char* argv[]) try {
     //  where logging is closed, so we can do one more error message and then
     //  close it.
     // ldmx_log macro needs this variable to be named 'the_log_'
+    // NOLINTNEXTLINE(readability-identifier-naming)
     auto the_log_{framework::logging::makeLogger("fire")};
     ldmx_log(fatal) << "[" << e.name() << "] : " << e.message() << "\n"
                     << "  at " << e.module() << ":" << e.line() << " in "

@@ -201,7 +201,7 @@ class CKFProcessor final : public TrackingGeometryUser {
   // 1DOF pvalues: 0.1 = 2.706 0.05 = 3.841 0.025 = 5.024 0.01 = 6.635 0.005
   // = 7.879 The probability to reject a good measurement is pvalue The
   // probability to reject an outlier is given in NIM A262 (1987) 444-450
-  double outlier_pval_{3.84};
+  double outlier_pval_;
 
   // The output track collection
   std::string out_trk_collection_{"Tracks"};
@@ -226,10 +226,40 @@ class CKFProcessor final : public TrackingGeometryUser {
   std::shared_ptr<tracking::reco::TrackExtrapolatorTool<CkfPropagator>>
       trk_extrap_;
 
+  // Zero-B CKF as fallback
+  std::unique_ptr<const CkfPropagator> propagator_zero_b_;
+  std::unique_ptr<
+      const Acts::CombinatorialKalmanFilter<CkfPropagator, TrackContainer>>
+      ckf_zero_b_;
+  std::shared_ptr<tracking::reco::TrackExtrapolatorTool<CkfPropagator>>
+      trk_extrap_zero_b_;
+
+  // Const-B (1.5T) CKF as fallback for tagger
+  std::unique_ptr<const CkfPropagator> propagator_const_b_;
+  std::unique_ptr<
+      const Acts::CombinatorialKalmanFilter<CkfPropagator, TrackContainer>>
+      ckf_const_b_;
+  std::shared_ptr<tracking::reco::TrackExtrapolatorTool<CkfPropagator>>
+      trk_extrap_const_b_;
+
   /// n seeds and n tracks
-  int nseeds_{0};
-  int ntracks_{0};
-  int eventnr_{0};
+  int nseeds_;
+  int ntracks_;
+  int eventnr_;
+
+  // CKF fallback statistics
+  int n_fieldmap_ckf_failed_tagger_{0};
+  int n_fieldmap_ckf_failed_recoil_{0};
+  int n_constb_ckf_recovered_tagger_{0};
+  int n_zerob_ckf_recovered_recoil_{0};
+
+  // Extrapolation fallback statistics
+  int n_fieldmap_target_extrap_failed_tagger_{0};
+  int n_constb_target_extrap_recovered_tagger_{0};
+  int n_fieldmap_target_extrap_failed_recoil_{0};
+  int n_zerob_target_extrap_recovered_recoil_{0};
+  int n_fieldmap_ecal_extrap_failed_recoil_{0};
+  int n_zerob_ecal_extrap_recovered_recoil_{0};
 
   // BField Systematics
   std::vector<double> map_offset_{

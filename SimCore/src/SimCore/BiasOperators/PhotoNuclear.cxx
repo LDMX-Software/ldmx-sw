@@ -70,7 +70,12 @@ G4VBiasingOperation* PhotoNuclear::ProposeOccurenceBiasingOperation(
         std::max(em_xsec_unbiased + pn_xsec_unbiased_ - pn_xsec_biased_,
                  pn_xsec_unbiased_);
     static auto material_tungsten =
-        simcore::g4user::ptrretrieval::getMaterial("G4_W");
+        simcore::g4user::ptrretrieval::getMaterial("Tungsten");
+    // For versions < v15
+    if (material_tungsten == nullptr) {
+      ldmx_log(warn) << "Attempting to use old tungsten material G4_W... ";
+      material_tungsten = simcore::g4user::ptrretrieval::getMaterial("G4_W");
+    }
     auto interaction_material = track->GetMaterial();
     if ((em_xsec_biased == pn_xsec_unbiased_) &&
         (interaction_material == material_tungsten)) {

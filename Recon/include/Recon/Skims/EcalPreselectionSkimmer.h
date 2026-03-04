@@ -10,6 +10,7 @@
 //----------//
 //   LDMX   //
 //----------//
+#include "Ecal/Event/EcalHit.h"
 #include "Ecal/Event/EcalMipResult.h"
 #include "Ecal/Event/EcalVetoResult.h"
 #include "Framework/EventProcessor.h"
@@ -35,14 +36,20 @@ class EcalPreselectionSkimmer : public framework::Producer {
   virtual void produce(framework::Event &event) final;
 
  private:
-  /// Collection Name for veto object
+  /// Use rechit-based preselection (if false, use veto-based)
+  bool use_rechits_;
+  /// Collection Name for veto object (optional if use_rechits_ is true)
   std::string ecal_veto_name_;
-  /// Pass Name for veto object
+  /// Pass Name for veto object (optional if use_rechits_ is true)
   std::string ecal_veto_pass_;
-  /// Collection Name for mip result object
+  /// Collection Name for mip result object (optional if use_rechits_ is true)
   std::string ecal_mip_name_;
-  /// Pass Name for mip result object
+  /// Pass Name for mip result object (optional if use_rechits_ is true)
   std::string ecal_mip_pass_;
+  /// Collection Name for ecal rechits
+  std::string ecal_rec_hit_coll_;
+  /// Pass Name for ecal rechits
+  std::string ecal_rec_hit_pass_;
   /// Max value for summed det
   double summed_det_max_;
   /// Max value for summed tigh iso

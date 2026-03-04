@@ -1,10 +1,8 @@
-# Set the minimum version of CMake that's required
 cmake_minimum_required(VERSION 3.12)
 
 # Set the project name
 project(
   Packing
-  VERSION 1.0.0
   DESCRIPTION "Classes needed to interface with raw binary data."
   LANGUAGES CXX)
 
@@ -27,3 +25,7 @@ setup_library(module Packing
 setup_python(package_name LDMX/Packing)
 
 setup_test(dependencies Packing::Packing)
+
+add_executable(rogue-extract app/rogue_extract.cxx)
+target_link_libraries(rogue-extract PRIVATE Packing::Packing)
+install(TARGETS rogue-extract)

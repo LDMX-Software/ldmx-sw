@@ -29,175 +29,6 @@ function(message)
   endif()
 endfunction()
 
-#
-# Process the Geant4 targets so they are modern cmake compatible.
-#
-macro(setup_geant4_target)
-
-  # Search for Geant4 and load its settings
-  find_package(Geant4 REQUIRED gdml ui_all vis_all)
-
-  # Create an imported Geant4 target if it hasn't been done yet.
-  if(NOT TARGET Geant4::Interface)
-
-    # Geant4_DEFINITIONS already include -D, this leads to the error
-    # <command-line>:0:1: error: macro names must be identifiers if not removed.
-    set(G4_DEF_TEMP "")
-    foreach(def ${Geant4_DEFINITIONS})
-      string(REPLACE "-D" "" def ${def})
-      list(APPEND G4_DEF_TEMP ${def})
-    endforeach()
-    set(LDMX_Geant4_DEFINITIONS ${G4_DEF_TEMP})
-    unset(G4_DEF_TEMP)
-
-    # Create the Geant4 target
-    add_library(Geant4::Interface INTERFACE IMPORTED GLOBAL)
-
-    # Set the target properties
-    set_target_properties(
-      Geant4::Interface
-      PROPERTIES INTERFACE_LINK_LIBRARIES "${Geant4_LIBRARIES}"
-                 INTERFACE_COMPILE_OPTIONS "${Geant4_Flags}"
-                 INTERFACE_COMPILE_DEFINITIONS "${LDMX_Geant4_DEFINITIONS}"
-                 INTERFACE_INCLUDE_DIRECTORIES "${Geant4_INCLUDE_DIRS}")
-
-    message(STATUS "Found Geant4 version ${Geant4_VERSION}")
-
-  endif()
-
-endmacro()
-
-
-function(add_genie_target gname)
-  #message(STATUS "Adding library Genie::${gname}")
-  add_library(Genie::${gname} SHARED IMPORTED GLOBAL) # or STATIC instead of SHARED
-  set_target_properties(Genie::${gname} PROPERTIES
-    IMPORTED_LOCATION "/usr/local/lib/lib${gname}.so"
-    INTERFACE_INCLUDE_DIRECTORIES "/usr/local/include/GENIE"
-  )
-endfunction()
-
-macro(setup_genie_target)
-  if(NOT DEFINED GENIE_LIBS)
-    find_package(ROOT CONFIG REQUIRED)
-    add_genie_target(GFwMsg)
-    add_genie_target(GFwReg)
-    add_genie_target(GFwAlg)
-    add_genie_target(GFwInt)
-    add_genie_target(GFwGHEP)
-    add_genie_target(GFwNum)
-    add_genie_target(GFwUtl)
-    add_genie_target(GFwParDat)
-    add_genie_target(GFwEG)
-    add_genie_target(GFwNtp)
-    
-    add_genie_target(GPhCmn)
-    add_genie_target(GPhDcy)
-    add_genie_target(GPhHadTens)
-    add_genie_target(GPhMEL)
-    add_genie_target(GPhPDF)
-    add_genie_target(GPhXSIg)
-    add_genie_target(GPhNuclSt)
-    add_genie_target(GPhDeEx)
-    add_genie_target(GPhHadnz)
-    add_genie_target(GPhHadTransp)
-    add_genie_target(GPhAMNGXS)
-    add_genie_target(GPhAMNGEG)
-    add_genie_target(GPhChmXS)
-    add_genie_target(GPhCohXS)
-    add_genie_target(GPhCohEG)
-    add_genie_target(GPhDISXS)
-    add_genie_target(GPhDISEG)
-    add_genie_target(GPhDfrcXS)
-    add_genie_target(GPhDfrcEG)
-    add_genie_target(GPhHELptnXS)
-    add_genie_target(GPhHELptnEG)
-    add_genie_target(GPhIBDXS)
-    add_genie_target(GPhIBDEG)
-    add_genie_target(GPhMNucXS)
-    add_genie_target(GPhMNucEG)
-    add_genie_target(GPhNuElXS)
-    add_genie_target(GPhNuElEG)
-    add_genie_target(GPhQELXS)
-    add_genie_target(GPhQELEG)
-    add_genie_target(GPhResXS)
-    add_genie_target(GPhResEG)
-    add_genie_target(GPhStrXS)
-    add_genie_target(GPhStrEG)
-    add_genie_target(GPhHEDISXS)
-    add_genie_target(GPhHEDISEG)
-    add_genie_target(GTlFlx)
-    add_genie_target(GTlGeo)
-    
-    add_genie_target(GRwFwk)
-    add_genie_target(GRwIO)
-    add_genie_target(GRwClc)
-    
-    set(GENIE_LIBS
-       log4cpp
-       gsl
-       Genie::GRwFwk
-       Genie::GRwClc
-       Genie::GRwIO
-       Genie::GFwInt
-       Genie::GFwNum
-       Genie::GFwUtl
-       Genie::GFwParDat
-       Genie::GFwEG
-       Genie::GFwAlg
-       Genie::GFwGHEP
-       Genie::GFwMsg
-       xml2
-       Genie::GFwReg
-       ROOT::EG
-       ROOT::EGPythia8
-       pythia8
-       Genie::GFwNtp
-       Genie::GPhXSIg
-       Genie::GPhPDF
-       Genie::GPhNuclSt
-       Genie::GPhCmn
-       Genie::GPhDcy
-       Genie::GPhHadTransp
-       Genie::GPhHadnz
-       Genie::GPhHadTens
-       Genie::GPhDeEx
-       Genie::GPhAMNGXS
-       Genie::GPhAMNGEG
-       Genie::GPhChmXS
-       Genie::GPhCohXS
-       Genie::GPhCohEG
-       Genie::GPhDISXS
-       Genie::GPhDISEG
-       Genie::GPhDfrcXS
-       Genie::GPhDfrcEG
-       Genie::GPhHELptnXS
-       Genie::GPhHELptnEG
-       Genie::GPhIBDXS
-       Genie::GPhIBDEG
-       Genie::GPhMNucXS
-       Genie::GPhMNucEG
-       Genie::GPhMEL
-       Genie::GPhNuElXS
-       Genie::GPhNuElEG
-       Genie::GPhQELXS
-       Genie::GPhQELEG
-       Genie::GPhResXS
-       Genie::GPhResEG
-       Genie::GPhStrXS
-       Genie::GPhStrEG
-       LHAPDF
-       Genie::GPhHEDISXS
-       Genie::GPhHEDISEG
-       ROOT::Geom
-       Genie::GTlGeo
-       Genie::GTlFlx
-       ROOT::MathCore
-       ROOT::MathMore)
-     message(STATUS "Found GENIE")
-  endif()
-endmacro()
-
 macro(setup_lcio_target)
 
   # If it doesn't exists, create an imported target for LCIO
@@ -228,8 +59,8 @@ endmacro()
 
 macro(setup_library)
 
-  set(options interface register_target)
-  set(oneValueArgs module name)
+  set(options interface)
+  set(oneValueArgs module name linkdef)
   set(multiValueArgs dependencies sources)
   cmake_parse_arguments(setup_library "${options}" "${oneValueArgs}"
                         "${multiValueArgs}" ${ARGN})
@@ -283,10 +114,20 @@ macro(setup_library)
   endif()
   add_library(${alias} ALIAS ${library_name})
 
-  if(setup_library_register_target)
-    set(registered_targets
-        ${registered_targets} ${alias}
-        CACHE INTERNAL "registered_targets")
+  if(setup_library_linkdef)
+    # make sure the headers are relative to the include/ directory so that
+    # the generated dictionary does not require the entire source tree to be present
+    # (it can look at the installed headers)
+    file(GLOB headers RELATIVE ${PROJECT_SOURCE_DIR}/include CONFIGURE_DEPENDS ${include_path}/[a-zA-Z]*.h)
+    file(REAL_PATH "${setup_library_linkdef}" linkdef_full)
+    file(RELATIVE_PATH linkdef ${PROJECT_SOURCE_DIR}/include "${linkdef_full}")
+    list(REMOVE_ITEM headers "${linkdef}")
+    root_generate_dictionary(
+      ${library_name}Dict
+      ${headers}
+      LINKDEF ${setup_library_linkdef}
+      MODULE ${library_name})
+    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/lib${library_name}_rdict.pcm DESTINATION lib)
   endif()
 
   # Install the libraries and headers
@@ -354,69 +195,6 @@ macro(setup_data)
   endif()
 
 endmacro()
-
-function(register_event_object)
-
-  set(oneValueArgs module_path namespace class type key)
-  cmake_parse_arguments(register_event_object "${options}" "${oneValueArgs}"
-                        "${multiValueArgs}" ${ARGN})
-
-  # Start by checking if the class that is being registered exists
-  if(NOT EXISTS ${PROJECT_SOURCE_DIR}/include/${register_event_object_module_path}/${register_event_object_class}.h)
-    message(FATAL_ERROR
-      "Trying to register class ${register_event_object_class} that doesn't exist.")
-  endif()
-
-  set(header
-      ${register_event_object_module_path}/${register_event_object_class}.h)
-
-  if(DEFINED register_event_object_namespace)
-    string(CONCAT register_event_object_class
-                  ${register_event_object_namespace} "::"
-                  ${register_event_object_class})
-  endif()
-
-  # Only register objects that haven't already been registered.
-  if(register_event_object_class IN_LIST dict)
-    return()
-  endif()
-
-  set(dict
-      ${dict} ${register_event_object_class}
-      CACHE INTERNAL "dict")
-
-  set(event_headers
-      ${event_headers} ${header}
-      CACHE INTERNAL "event_headers")
-
-  set(namespaces
-      ${namespaces} ${register_event_object_namespace}
-      CACHE INTERNAL "namespaces")
-
-  if(NOT ${PROJECT_SOURCE_DIR}/include IN_LIST include_paths)
-    set(include_paths
-        "$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>" ${include_paths}
-        CACHE INTERNAL "include_paths")
-  endif()
-
-  if(register_event_object_type STREQUAL "collection")
-    set(dict
-        ${dict} 
-        "std::vector< ${register_event_object_class} >"
-        CACHE INTERNAL "dict")
-  elseif(register_event_object_type STREQUAL "map")
-    set(dict
-        ${dict}
-        "std::map< ${register_event_object_key}, ${register_event_object_class} >"
-        CACHE INTERNAL "dict")
-  elseif(DEFINED register_event_object_type)
-    message(
-      FATAL_ERROR
-        "Trying to register object with invalid type ${register_event_object_type}"
-    )
-  endif()
-
-endfunction()
 
 macro(setup_test)
 
@@ -519,12 +297,8 @@ macro(build_test)
 endmacro()
 
 macro(clear_cache_variables)
-  unset(registered_targets CACHE)
-  unset(dict CACHE)
-  unset(event_headers CACHE)
   unset(test_sources CACHE)
   unset(test_dep CACHE)
   unset(test_modules CACHE)
-  unset(namespaces CACHE)
   unset(test_configs CACHE)
 endmacro()

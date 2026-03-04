@@ -8,7 +8,6 @@
 #
 # other recipe ideas:
 #   - production image building
-#   - format python
 
 help_message := "shared recipes for ldmx-sw development
 
@@ -107,6 +106,11 @@ test *ARGS:
 fire config_py *ARGS:
     denv_workspace="{{ this_denv_workspace }}" denv fire {{ config_py }} {{ ARGS }}
 
+# multiple runs of ldmx-sw fire with same input configuration script
+[no-cd]
+fire-parallel config_py *ARGS:
+    denv_workspace="{{ this_denv_workspace }}" denv fire-parallel {{ config_py }} {{ ARGS }}
+
 # run gdb on a config file
 [no-cd]
 debug config_py *ARGS:
@@ -160,43 +164,64 @@ clean:
     rm -r build install VERSION COMMIT_SHA
 
 # format the ldmx-sw source code
-format: format-cpp format-just
+format: format-cpp-all format-just
+
+_clang-tool-impl file_list_cmd *tool_cmd_and_args:
+    #!/usr/bin/env sh
+    set -eu
+    cpp_list="$(mktemp)"
+    if ! {{ file_list_cmd }} | grep -E '\.(h|cxx)$' > "${cpp_list}"; then
+      echo "no C++ files (extensions .h and .cxx) to apply {{ tool_cmd_and_args }}"
+    else
+      xargs --arg-file="${cpp_list}" denv {{ tool_cmd_and_args }}
+    fi
+    rm "${cpp_list}"
+
 
 # format the C++ source code of ldmx-sw
-format-cpp *ARGS='-i':
+format-cpp-all *ARGS='-i': (_clang-tool-impl "git ls-files" "clang-format" ARGS)
+
+# formatting is quick enough that the format-cpp shortcut can be used
+format-cpp: format-cpp-all
+
+# format only the C++ files that have changed relative to trunk
+format-cpp-diff *args='-i': (_clang-tool-impl "git diff --name-only origin/trunk" "clang-format" args)
+
+# format the Python source code
+format-python:
+    denv ruff format
+
+# format only the Python files that have changed relative to trunk
+format-python-diff:
     #!/usr/bin/env sh
-    set -exu
-    format_list=$(mktemp)
-    git ls-tree -r HEAD --name-only | egrep '(\.h|\.cxx)$' > ${format_list}
-    denv clang-format {{ ARGS }} $(cat ${format_list})
-    rm ${format_list}
+    set -eu
+    py_list="$(mktemp)"
+    if ! git diff --name-only origin/trunk | grep -E '\.py$' > "${py_list}"; then
+      echo "no Python files to format"
+    else
+      xargs --arg-file="${py_list}" denv ruff format
+    fi
+    rm "${py_list}"
+
+# lint the Python source code with ruff
+lint-python:
+    denv ruff check
+
+# lint and auto-fix the Python source code
+lint-python-fix:
+    denv ruff check --fix
 
 # format the justfile
 format-just:
     @just --fmt --unstable --justfile {{ justfile() }}
 
-# Now do the same but with clang tidy
-tidy-cpp *ARGS='-p build --fix -fix-errors --quiet ':
-    #!/usr/bin/env sh
-    set -exu
-    format_list=$(mktemp)
-    git diff --name-only origin/trunk..HEAD | egrep '(\.h|\.cxx)$' > ${format_list}
-    # if the list is not empty, run clang-tidy
-    if [ ! -s ${format_list} ]; then
-      echo "No C++ files changed, skipping clang-tidy"
-    else
-      denv clang-tidy $(cat ${format_list}) {{ ARGS }}
-      rm ${format_list}
-    fi
+default_tidy_args := '-p build --fix -fix-errors --quiet'
 
+# tidy all C++ files of ldmx-sw
+tidy-cpp-all *args=default_tidy_args: (_clang-tool-impl "git ls-files" "clang-tidy" args)
 
-tidy-cpp-dir DIR *ARGS='-p build --fix -fix-errors --quiet ':
-    #!/usr/bin/env sh
-    set -exu
-    format_list=$(mktemp)
-    find {{ DIR }} -name "*.h" -o -name "*.cxx" > ${format_list}
-    denv clang-tidy $(cat ${format_list}) {{ ARGS }}
-    rm ${format_list}
+# tidy C++ files that are different relative to trunk
+tidy-cpp-diff *args=default_tidy_args: (_clang-tool-impl "git diff --name-only origin/trunk" "clang-tidy" args)
 
 # shellcheck doesn't have a "apply-formatting" option
 # because it really is more of a tidier (its changes could affect code meaning)

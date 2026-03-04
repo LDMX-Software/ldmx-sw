@@ -8,14 +8,22 @@ HcalHgcrocConditionsHardcode: SimpleCSVDoubleTableProvider
     Provides a table of double conditions for hcal hgcroc emulator
 """
 
-from LDMX.Conditions.SimpleCSVTableProvider import SimpleCSVIntegerTableProvider, SimpleCSVDoubleTableProvider
+from LDMX.Conditions.SimpleCSVTableProvider import (
+                                                 SimpleCSVDoubleTableProvider,
+                                                 SimpleCSVIntegerTableProvider,
+)
+
 
 HcalTrigPrimConditionsHardcode=SimpleCSVIntegerTableProvider("HcalTrigPrimDigiConditions",["ADC_PEDESTAL","ADC_THRESHOLD","TOT_PEDESTAL","TOT_THRESHOLD","TOT_GAIN"])
-HcalTrigPrimConditionsHardcode.validForAllRows([ 1 , # ADC_PEDESTAL -- should match value from HgcrocEmulator
+# ADC_PEDESTAL -- should match value from HgcrocEmulator
+HcalTrigPrimConditionsHardcode.validForAllRows([ 1 ,
                                                  5 , # ADC_THRESHOLD -- current noise is
-                                                 1,  # TOT_PEDESTAL -- currently set to match ADC pedestal
-                                                 10000,  # TOT_THRESHOLD -- rather large value...
-                                                 2.5 ] # TOT_GAIN, ratio of recon TOT gain over recon ADC gain
+                                                 # TOT_PEDESTAL -- currently set to match ADC pedestal
+                                                 1,
+                                                 # TOT_THRESHOLD -- rather large value...
+                                                 10000,
+                                                 # TOT_GAIN, ratio of recon TOT gain over recon ADC gain
+                                                 2.5 ]
                                                )
 
 adc_pedestal = SimpleCSVDoubleTableProvider("hcal_adc_pedestal",["pedestal"])
@@ -23,7 +31,8 @@ adc_pedestal.validForAllRows([1.]) # should match HgcrocEmulator
 
 adc_gain = SimpleCSVDoubleTableProvider("hcal_adc_gain",["gain"])
 #Update this number
-adc_gain.validForAllRows([738.]) # 4 ADCs per PE - maxADCRange/readoutPadCapacitance/1024
+# 4 ADCs per PE - maxADCRange/readoutPadCapacitance/1024
+adc_gain.validForAllRows([738.])
 
 tot_calib = SimpleCSVDoubleTableProvider("hcal_tot_calibration",
                                          ["m_adc_i","cut_point_tot","high_slope","high_offset",
@@ -41,6 +50,8 @@ toa_calib.validForAllRows([0., 0.]) # dummy values
 
 # wrap our tables in the parent object that is used by the processors
 from .conditions import HcalReconConditionsProvider
+
+
 HcalReconConditionsProvider(adc_pedestal, adc_gain, tot_calib, toa_calib)
 
 HcalHgcrocConditionsHardcode=SimpleCSVDoubleTableProvider("HcalHgcrocConditions", [
@@ -59,7 +70,8 @@ HcalHgcrocConditionsHardcode=SimpleCSVDoubleTableProvider("HcalHgcrocConditions"
 HcalHgcrocConditionsHardcode.validForAllRows([
     1. , #PEDESTAL
     0.02*5/1.2, #NOISE - 0.02 PE with 1 PE ~ 5mV and gain = 1.2
-    12.5, #MEAS_TIME - ns - clock_cycle/2 - defines the point in the BX where an in-time (time=0 in times vector) hit would arrive
+    #MEAS_TIME - ns - clock_cycle/2 - defines the point in the BX where an in-time (time=0 in times vector) hit would arrive
+    12.5,
     20., #PAD_CAPACITANCE - pF
     200., #TOT_MAX - ns - maximum time chip would be in TOT mode
     10240. / 200., #DRAIN_RATE - fC/ns - dummy value for now

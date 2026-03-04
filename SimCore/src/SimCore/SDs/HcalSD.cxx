@@ -23,6 +23,9 @@ HcalSD::HcalSD(const std::string& name, simcore::ConditionsInterface& ci,
                const framework::config::Parameters& p)
     : SensitiveDetector(name, ci, p), birksc1_(1.29e-2), birksc2_(9.59e-6) {
   gdml_identifiers_ = {p.get<std::vector<std::string>>("gdml_identifiers")};
+  enable_hit_contribs_ = p.get<bool>("enable_hit_contribs");
+  compress_hit_contribs_ = p.get<bool>("compress_hit_contribs");
+  max_origin_track_id_ = p.get<int>("max_origin_track_id");
 }
 
 ldmx::HcalID HcalSD::decodeCopyNumber(const std::uint32_t copyNumber,
@@ -59,10 +62,7 @@ G4bool HcalSD::ProcessHits(G4Step* aStep, G4TouchableHistory* ROhist) {
 
   // Skip steps with no energy dep which come from non-Geantino particles.
   if (edep == 0.0 and not isGeantino(aStep)) {
-    if (verboseLevel > 2) {
-      std::cout << "CalorimeterSD skipping step with zero edep." << std::endl
-                << std::endl;
-    }
+    ldmx_log(trace) << "CalorimeterSD skipping step with zero edep.";
     return false;
   }
 
@@ -112,9 +112,6 @@ G4bool HcalSD::ProcessHits(G4Step* aStep, G4TouchableHistory* ROhist) {
   // update edep to include birksFactor
   edep *= birks_factor;
 
-  // Create a new cal hit.
-  ldmx::SimCalorimeterHit& hit{hits_.emplace_back()};
-
   // Get the scintillator solid box
   G4Box* scint = nullptr;
 
@@ -155,7 +152,6 @@ G4bool HcalSD::ProcessHits(G4Step* aStep, G4TouchableHistory* ROhist) {
   G4ThreeVector position =
       0.5 * (pre_point->GetPosition() + post_point->GetPosition());
   G4ThreeVector local_position = top_transform.TransformPoint(position);
-  hit.setPosition(position[0], position[1], position[2]);
 
   // Create the ID for the hit. Note 2 here corresponds to the "depth" of the
   // geometry tree. If this changes in the GDML, this would have to be updated
@@ -163,21 +159,51 @@ G4bool HcalSD::ProcessHits(G4Step* aStep, G4TouchableHistory* ROhist) {
   // Hcal, and 2 to the bars/absorbers
   int copy_num = touchable_history->GetVolume(2)->GetCopyNo();
   ldmx::HcalID id = decodeCopyNumber(copy_num, local_position, scint);
-  hit.setID(id.raw());
 
-  // add one contributor for this hit with
-  //  ID of ancestor incident on Cal-Region
-  //  ID of this track
-  //  PDG of this track
-  //  EDEP (including birks factor)
-  //  time of this hit
+  if (hits_.find(id) == hits_.end()) {
+    // hit in empty cell/bar
+    auto& new_hit = hits_[id];
+    new_hit.setID(id.raw());
+    new_hit.setPosition(position[0], position[1], position[2]);
+  }
+
+  auto& hit = hits_[id];
+
+  // hit variables
   const G4Track* track = aStep->GetTrack();
-  int track_id = track->GetTrackID();
-  hit.addContrib(getTrackMap().findIncident(track_id), track_id,
-                 track->GetParticleDefinition()->GetPDGEncoding(), edep,
-                 track->GetGlobalTime());
-  //
+  auto time = track->GetGlobalTime();
+  auto track_id = track->GetTrackID();
+  auto pdg = track->GetParticleDefinition()->GetPDGEncoding();
+
+  if (enable_hit_contribs_) {
+    int contrib_i = hit.findContribIndex(track_id, pdg);
+    if (compress_hit_contribs_ and contrib_i != -1) {
+      hit.updateContrib(contrib_i, edep, time);
+    } else {
+      auto map{getTrackMap()};
+      auto incident{map.findIncident(track_id)};
+      // default "origin" is just the same as incident
+      // "origin" checks if a hit "originates" from one of the earliest
+      // track IDs (i.e. probably one of the primaries)
+      int origin{incident};
+      for (int i{1}; i < max_origin_track_id_; ++i) {
+        if (map.isDescendant(track_id, i, 100)) {
+          origin = i;
+          break;
+        }
+      }
+      hit.addContrib(incident, track_id, pdg, edep, time, origin);
+    }
+  } else {
+    // no hit contribs and hit already exists
+    hit.setEdep(hit.getEdep() + edep);
+    if (time < hit.getTime() or hit.getTime() == 0) {
+      hit.setTime(time);
+    }
+  }
   // Pre/post step details for scintillator response simulation
+  // Note: These are set for each step, so the last step's details will be used
+  // if multiple steps occur in the same bar
 
   // Convert back to mm
   hit.setPathLength(step_length * CLHEP::cm / CLHEP::mm);
@@ -214,6 +240,14 @@ G4bool HcalSD::ProcessHits(G4Step* aStep, G4TouchableHistory* ROhist) {
   ldmx_log(trace) << hit;
 
   return true;
+}
+
+void HcalSD::saveHits(framework::Event& event) {
+  // squash hits into list
+  std::vector<ldmx::SimCalorimeterHit> hits;
+  hits.reserve(hits_.size());
+  for (const auto& [id, hit] : hits_) hits.push_back(hit);
+  event.add(COLLECTION_NAME, hits);
 }
 
 }  // namespace simcore

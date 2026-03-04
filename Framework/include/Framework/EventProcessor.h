@@ -89,7 +89,7 @@ class EventProcessor {
    * given set of parameters.
    *
    * The parameters a processor has access to are the member variables
-   * of the python class in the sequence that has className equal to
+   * of the python class in the sequence that has class_name equal to
    * the EventProcessor class name.
    *
    * For an example, look at MyProcessor.

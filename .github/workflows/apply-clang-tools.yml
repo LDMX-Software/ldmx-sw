@@ -1,0 +1,44 @@
+name: Apply clang tools
+on:
+  pull_request:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 0 * * 0'
+
+permissions:
+  contents: write
+
+jobs:
+  clang-tools:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: extractions/setup-just@v3
+    - uses: actions/checkout@v6
+      with:
+        submodules: 'recursive'
+    - name: get trunk HEAD_REF for comparison
+      if: github.ref != 'refs/heads/trunk'
+      run: |
+        git fetch origin ${GITHUB_HEAD_REF}
+        git checkout ${GITHUB_HEAD_REF}
+        git remote set-branches origin trunk
+        git fetch --depth=1 --no-tags
+    - run: just install-denv init configure
+    - name: run clang-format and clang-tidy on the changed C++ files
+      if: github.ref != 'refs/heads/trunk'
+      run: |
+        just format-cpp-diff
+        just tidy-cpp-diff
+    - name: run clang-format and clang-tidy on all C++ files
+      if: github.ref == 'refs/heads/trunk'
+      run: |
+        just format-cpp
+        just tidy-cpp-all
+    - name: auto-commit changes
+      if: github.ref != 'refs/heads/trunk'
+      run: |
+        git config user.name 'github-actions[bot]'
+        git config user.email 'github-actions[bot]@users.noreply.github.com'
+        git add .
+        git commit -m "Apply clang-format and clang-tidy" || exit 0
+        git push origin HEAD:${GITHUB_HEAD_REF}

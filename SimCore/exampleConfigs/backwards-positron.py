@@ -23,18 +23,18 @@ parser.add_argument('--beam', type=float, required=True, help='beam energy in Ge
 args = parser.parse_args()
 
 p = ldmxcfg.Process("beam")
-p.maxEvents = args.n_events
-p.termLogLevel = 1
+p.max_events = args.n_events
+p.term_log_level = 1
 p.run = 1
-p.outputFiles = [ f'backwards_positron_beam_{args.beam}.root' ]
+p.output_files = [ f'backwards_positron_beam_{args.beam}.root' ]
 
 from LDMX.SimCore import generators
 from LDMX.SimCore import simulator
-import LDMX.Ecal.EcalGeometry
-import LDMX.Hcal.HcalGeometry
+import LDMX.Ecal.ecal_geometry
+import LDMX.Hcal.hcal_geometry
 
-mySim = simulator.simulator( "mySim" )
-mySim.setDetector( 'ldmx-det-v14' , True )
-mySim.generators = [ generators.single_backwards_positron(args.beam) ]
-mySim.description = 'Basic test Simulation'
-p.sequence = [ mySim ]
+my_sim = simulator.simulator( "my_sim" )
+my_sim.setDetector( 'ldmx-det-v14' , include_scoring_planes_minimal = True )
+my_sim.generators = [ generators.single_backwards_positron(args.beam) ]
+my_sim.description = 'Basic test Simulation'
+p.sequence = [ my_sim ]

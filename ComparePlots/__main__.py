@@ -39,12 +39,32 @@ if __name__ == '__main__' :
         )
 
     parser.add_argument('data',help='directory of event and histogram files')
-    parser.add_argument('--log',help='logging level',choices=['info','debug','warn','error'], default='warn')
-    parser.add_argument('--label',help='label for grouping of data, defaults to data directory name')
-    parser.add_argument('--out-dir',help='directory to which to print plots. defaults to input data directory')
-    parser.add_argument('--systems',required=True, choices=plotter.__registry__.keys(), nargs='+',
-        help='list of plotters to run')
-    parser.add_argument('--output-type', help='File format to use to produce figures', default='pdf')
+    parser.add_argument(
+        '--log', help='logging level',
+        choices=['info', 'debug', 'warn', 'error'],
+        default='warn'
+    )
+    parser.add_argument(
+        '--label',
+        help='label for grouping of data,'
+        ' defaults to data directory name'
+    )
+    parser.add_argument(
+        '--out-dir',
+        help='directory to which to print plots.'
+        ' defaults to input data directory'
+    )
+    parser.add_argument(
+        '--systems', required=True,
+        choices=plotter.__registry__.keys(),
+        nargs='+',
+        help='list of plotters to run'
+    )
+    parser.add_argument(
+        '--output-type',
+        help='File format to use to produce figures',
+        default='pdf'
+    )
     parser.add_argument('--param',
                         nargs='+',
                         help='parameter(s) in filename to use as file labels')
@@ -53,7 +73,8 @@ if __name__ == '__main__' :
                         use using a regular expression""")
     parser.add_argument('--input-files', nargs='+', type=str,
                         help="""Specify the name of the root files directly (either
-                        full/relative path or name of files in the input data directory)""")
+                        full/relative path or name of files
+                        in the input data directory)""")
 
     arg = parser.parse_args()
 
@@ -97,7 +118,11 @@ if __name__ == '__main__' :
         root_files = [File.from_path(f, legendlabel_parameter=arg.param)
                       for f in input_files]
     else:
-        root_files = [ File.from_path(os.path.join(data,f), legendlabel_parameter = arg.param)
+        root_files = [
+            File.from_path(
+                os.path.join(data, f),
+                legendlabel_parameter=arg.param
+            )
                        for f in sorted(os.listdir(data)) if f.endswith('.root')]
 
     if arg.input_file_filter:

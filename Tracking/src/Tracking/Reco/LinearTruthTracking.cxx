@@ -18,7 +18,7 @@ void LinearTruthTracking::configure(framework::config::Parameters& parameters) {
   input_hits_collection_ =
       parameters.get<std::string>("input_hits_collection", "RecoilSimHits");
   input_rec_hits_collection_ =
-      parameters.get<std::string>("input_recHits_collection", "EcalRecHits");
+      parameters.get<std::string>("input_rec_hits_collection", "EcalRecHits");
 
   input_pass_name_ = parameters.get<std::string>("input_pass_name");
 

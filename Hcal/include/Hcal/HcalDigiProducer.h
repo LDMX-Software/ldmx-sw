@@ -11,6 +11,8 @@
 //----------//
 //   LDMX   //
 //----------//
+#include <TRandom2.h>
+
 #include "DetDescr/HcalDigiID.h"
 #include "DetDescr/HcalGeometry.h"
 #include "DetDescr/HcalID.h"
@@ -57,6 +59,21 @@ class HcalDigiProducer : public framework::Producer {
    */
   virtual void onNewRun(const ldmx::RunHeader& runHeader) override;
 
+  enum class TimeSpreadType {
+    GAUSSIAN = 0,
+    UNIFORM = 1,
+    CONSTANT = 2,
+  };
+
+  /** Create a randomized time delta based on the configured time spread type.
+   * Currently defined options are:
+   * 0: Gaussian -> parameters[0] = mean, parameters[1] = sigma
+   * 1: Uniform -> parameters[0] = min, parameters[1] = max
+   * 2: Constant -> parameters[0] = value
+   */
+  double makeTimeDelta(TimeSpreadType kind,
+                       std::vector<double>& parameters) const;
+
  private:
   ///////////////////////////////////////////////////////////////////////////////////////
   // Python Configuration Parameters
@@ -77,13 +94,13 @@ class HcalDigiProducer : public framework::Producer {
   double clock_cycle_;
 
   /// Depth of ADC buffer.
-  int n_ad_cs_;
+  int n_adcs_;
 
   /// Index for the Sample Of Interest in the list of digi samples
   int i_soi_;
 
   /// Conversion from energy in MeV to voltage in mV
-  double me_v_;
+  double mev_;
 
   /// Strip attenuation length [m]
   double attlength_;
@@ -108,6 +125,17 @@ class HcalDigiProducer : public framework::Producer {
 
   /// Conversion from time in ns to ticks of the internal clock
   double ns_;
+
+  std::unique_ptr<TRandom2> random_time_;
+  bool do_time_spread_per_spill_{false};
+  TimeSpreadType time_spread_per_spill_type_{TimeSpreadType::UNIFORM};
+  std::vector<double> time_spread_per_spill_parameters_{};
+
+  bool do_time_spread_per_hit_{false};
+  TimeSpreadType time_spread_per_hit_type_{TimeSpreadType::GAUSSIAN};
+  std::vector<double> time_spread_per_hit_parameters_{};
+
+  double flat_time_shift_{0.};
 
   /// Read out threshold
   double readout_threshold_;

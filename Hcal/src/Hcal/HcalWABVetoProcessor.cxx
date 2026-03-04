@@ -27,13 +27,13 @@ void HcalWABVetoProcessor::configure(
   max_mean_hits_per_cluster_ = parameters.get<double>("mean_hits_per_cluster");
   max_mean_energy_per_cluster_ =
       parameters.get<double>("mean_energy_per_cluster");
-  output_coll_name_ = parameters.get<std::string>("outputCollName");
+  output_coll_name_ = parameters.get<std::string>("output_coll_name");
   input_hcal_cluster_coll_name_ =
-      parameters.get<std::string>("inputHCALClusterCollName");
+      parameters.get<std::string>("input_hcal_cluster_coll_name");
   input_hcal_hit_coll_name_ =
-      parameters.get<std::string>("inputHCALHitCollName");
+      parameters.get<std::string>("input_hcal_hit_coll_name");
   input_ecal_hit_coll_name_ =
-      parameters.get<std::string>("inputECALHitCollName");
+      parameters.get<std::string>("input_ecal_hit_coll_name");
   hcal_hit_passname_ = parameters.get<std::string>("hcal_hit_passname");
   ecal_hit_passname_ = parameters.get<std::string>("ecal_hit_passname");
   hcal_cluster_passname_ = parameters.get<std::string>("hcal_cluster_passname");

@@ -7,8 +7,8 @@ const std::string EcalSD::COLLECTION_NAME = "EcalSimHits";
 EcalSD::EcalSD(const std::string& name, simcore::ConditionsInterface& ci,
                const framework::config::Parameters& p)
     : SensitiveDetector(name, ci, p) {
-  enable_hit_contribs_ = p.get<bool>("enableHitContribs");
-  compress_hit_contribs_ = p.get<bool>("compressHitContribs");
+  enable_hit_contribs_ = p.get<bool>("enable_hit_contribs");
+  compress_hit_contribs_ = p.get<bool>("compress_hit_contribs");
   max_origin_track_id_ = p.get<int>("max_origin_track_id");
 }
 

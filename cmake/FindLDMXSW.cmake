@@ -5,8 +5,9 @@
 #
 # This will define the following variables
 #
-# LDMXSW_FOUND LDMXSW_INCLUDE_DIRS - path to the headers LDMXSW_LIBRARIES   -
-# path to the libraries
+# LDMXSW_FOUND
+# LDMXSW_INCLUDE_DIRS - path to the headers
+# LDMXSW_LIBRARIES    - path to the libraries
 #
 # and the following targets
 #

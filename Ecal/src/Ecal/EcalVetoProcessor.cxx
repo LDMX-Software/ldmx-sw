@@ -326,6 +326,8 @@ void EcalVetoProcessor::produce(framework::Event &event) {
   if ((recoil_p[2] > 0.) && (recoil_p_at_target[2] > 0.) &&
       (recoil_pos[0] != -9999.) && (recoil_pos_at_target[0] != -9999.)) {
     ele_trajectory = getTrajectory(recoil_p, recoil_pos);
+    ele_trajectory_at_target =
+        getTrajectory(recoil_p_at_target, recoil_pos_at_target);
     // Get the photon projection. This does not require that the photon exists
     // tho
     std::array<float, 3> photon_proj_momentum = {
@@ -752,7 +754,8 @@ void EcalVetoProcessor::produce(framework::Event &event) {
   // Find the location of the recoil electron
   // Ecal face is not where the first layer_ starts,
   // defined in DetDescr/python/EcalGeometry.py
-  const float dz_from_face{7.932};
+  const float dz_from_face =
+      (geometry_->getZPosition(0)) - (geometry_->getEcalFrontZ());
   float drifted_recoil_x{-9999.};
   float drifted_recoil_y{-9999.};
   if (recoil_p[2] > 0.) {
@@ -819,12 +822,12 @@ void EcalVetoProcessor::produce(framework::Event &event) {
     // Calculate the electron trajectory with positions and momentum as measured
     // at the target
     if (!ele_trajectory_at_target.empty()) {
-      e_traj_target_start.SetXYZ(ele_trajectory_at_target[0].first,
-                                 ele_trajectory_at_target[0].second,
-                                 geometry_->getZPosition(0));
+      e_traj_target_start.SetXYZ(recoil_pos_at_target[0],
+                                 recoil_pos_at_target[1],
+                                 static_cast<float>(0.0));
       e_traj_target_end.SetXYZ(ele_trajectory_at_target[(0)].first,
                                ele_trajectory_at_target[(0)].second,
-                               geometry_->getZPosition((n_ecal_layers_ - 1)));
+                               geometry_->getZPosition(0));
       // Now calculate the ep angle at the target
       ROOT::Math::XYZVector evec_target =
           e_traj_target_end - e_traj_target_start;

@@ -6,10 +6,10 @@
 namespace recon {
 
 void PFTruthProducer::configure(framework::config::Parameters &ps) {
-  primary_coll_name_ = ps.get<std::string>("outputPrimaryCollName");
-  target_coll_name_ = ps.get<std::string>("outputTargetCollName");
-  ecal_coll_name_ = ps.get<std::string>("outputEcalCollName");
-  hcal_coll_name_ = ps.get<std::string>("outputHcalCollName");
+  primary_coll_name_ = ps.get<std::string>("output_primary_coll_name");
+  target_coll_name_ = ps.get<std::string>("output_target_coll_name");
+  ecal_coll_name_ = ps.get<std::string>("output_ecal_coll_name");
+  hcal_coll_name_ = ps.get<std::string>("output_hcal_coll_name");
   target_sp_passname_ = ps.get<std::string>("target_sp_passname");
   ecal_sp_passname_ = ps.get<std::string>("ecal_sp_passname");
   sim_particles_passname_ = ps.get<std::string>("sim_particles_passname");

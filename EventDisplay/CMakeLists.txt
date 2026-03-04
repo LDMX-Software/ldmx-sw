@@ -1,10 +1,7 @@
-
-# Set the minimum version of CMake that's required
 cmake_minimum_required(VERSION 3.12)
 
 # Set the project name
-project(EventDisplay VERSION 2.1.0
-                     DESCRIPTION "Event display module." 
+project(EventDisplay DESCRIPTION "Event display module." 
                      LANGUAGES CXX
 )
 

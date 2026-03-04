@@ -1,9 +1,9 @@
 # Load the tracking module
-from LDMX.Tracking import tracking
-from LDMX.Tracking import geo
-
+from LDMX.Tracking import geo, tracking
 from LDMX.Tracking.geo import TrackersTrackingGeometryProvider as trackgeo
-trackgeo.get_instance().setDetector('ldmx-det-v14-8gev')
+
+
+trackgeo.get_instance().setDetector('ldmx-det-v15-8gev')
 
 # Truth seeder
 # Runs truth tracking producing tracks from target scoring plane hits for Recoil
@@ -22,7 +22,8 @@ truth_tracking.p_cutEcal     = 0. # In MeV
 
 # Smearing Processor - Tagger
 # Runs G4 hit smearing producing measurements in the Tagger tracker.
-# Hits that belong to the same sensor with the same trackID are merged together to reduce combinatorics
+# Hits that belong to the same sensor with the same trackID are merged together to
+# reduce combinatorics
 digi_tagger = tracking.DigitizationProcessor("DigitizationProcessor")
 digi_tagger.hit_collection = "TaggerSimHits"
 digi_tagger.out_collection = "DigiTaggerSimHits"
@@ -33,9 +34,12 @@ digi_recoil.hit_collection = "RecoilSimHits"
 digi_recoil.out_collection = "DigiRecoilSimHits"
 
 # Seed Finder Tagger
-# This runs the track seed finder looking for 5 hits in consecutive sensors and fitting them with a
-# parabola+linear fit. Compatibility with expected particles is checked by looking at the track
-# parameters and the impact parameters at the target or generation point. For the tagger one should look
+# This runs the track seed finder looking for 5 hits in consecutive sensors and fitting
+# them with a
+# parabola+linear fit. Compatibility with expected particles is checked by looking at
+# the track
+# parameters and the impact parameters at the target or generation point. For the tagger
+# one should look
 # for compatibility with the beam orbit / beam spot
 seeder_tagger = tracking.SeedFinderProcessor("SeedTagger")
 seeder_tagger.input_hits_collection =  digi_tagger.out_collection
@@ -65,7 +69,7 @@ seeder_recoil.phicut =  1.6
 # CKF track finding for tagger tracker using seeds.
 tracking_tagger  = tracking.CKFProcessor("Tagger_TrackFinder")
 tracking_tagger.taggerTracking = True
-# for truth seed based case use 
+# for truth seed based case use
 # tracking_tagger.seed_coll_name = "TaggerTruthSeeds"
 tracking_tagger.seed_coll_name = seeder_tagger.out_seed_collection
 tracking_tagger.out_trk_collection = "TaggerTracks"
@@ -78,40 +82,41 @@ tracking_recoil  = tracking.CKFProcessor("Recoil_TrackFinder")
 tracking_recoil.taggerTracking = False
 tracking_recoil.seed_coll_name = seeder_recoil.out_seed_collection
 tracking_recoil.out_trk_collection = "RecoilTracks"
-# for truth seed based case use 
+# for truth seed based case use
 # tracking_recoil.seed_coll_name = "RecoilTruthSeeds"
 tracking_recoil.measurement_collection = digi_recoil.out_collection
-tracking_recoil.min_hits = 6
+tracking_recoil.min_hits = 5
 tracking_recoil.outlier_pval_ =  22.1
 
 # Greedy ambiguity solver for the tagger
 greedy_solver_tagger = tracking.GreedyAmbiguitySolver("GreedySolverTagger")
 greedy_solver_tagger.out_trk_collection = "TaggerTracksClean"
-greedy_solver_tagger.trackCollection = tracking_tagger.out_trk_collection
-greedy_solver_tagger.measCollection = digi_tagger.out_collection
+greedy_solver_tagger.track_collection = tracking_tagger.out_trk_collection
+greedy_solver_tagger.meas_collection = digi_tagger.out_collection
 
 # Greedy ambiguity solver for the recoil
 greedy_solver_recoil = tracking.GreedyAmbiguitySolver("GreedySolverRecoil")
 greedy_solver_recoil.out_trk_collection = "RecoilTracksClean"
-greedy_solver_recoil.trackCollection = tracking_recoil.out_trk_collection
-greedy_solver_recoil.measCollection = digi_recoil.out_collection
+greedy_solver_recoil.track_collection = tracking_recoil.out_trk_collection
+greedy_solver_recoil.meas_collection = digi_recoil.out_collection
 
 # Gaussian sum filter for the tagger
 GSF_tagger = tracking.GSFProcessor("Tagger_GSF")
 GSF_tagger.taggerTracking = True
-GSF_tagger.trackCollection = greedy_solver_tagger.out_trk_collection
-GSF_tagger.measCollection  = digi_tagger.out_collection 
+GSF_tagger.track_collection = greedy_solver_tagger.out_trk_collection
+GSF_tagger.meas_collection  = digi_tagger.out_collection
 GSF_tagger.out_trk_collection = "GSFTaggerTracks"
 
 # Gaussian sum filter for the recoil
 GSF_recoil = tracking.GSFProcessor("Recoil_GSF")
 GSF_recoil.taggerTracking = False
-GSF_recoil.trackCollection = greedy_solver_recoil.out_trk_collection
-GSF_recoil.measCollection  = digi_recoil.out_collection 
+GSF_recoil.track_collection = greedy_solver_recoil.out_trk_collection
+GSF_recoil.meas_collection  = digi_recoil.out_collection
 GSF_recoil.out_trk_collection = "GSFRecoilTracks"
 
 # Running DQM for the collections above
 from LDMX.Tracking import dqm as tkdqm
+
 
 # Seeder DQM for the tagger
 dqm_seed_tagger = tkdqm.TrackingRecoDQM("SeedTaggerDQM")
@@ -128,24 +133,24 @@ dqm_seed_recoil.title = ""
 dqm_seed_recoil.buildHistograms()
 
 # DQM for the tagger with CKF
-dqm_tagger_cfk = tkdqm.TrackingRecoDQM("TaggerDQM")
-dqm_tagger_cfk.track_collection = tracking_tagger.out_trk_collection
-dqm_tagger_cfk.truth_hit_collection="TaggerSimHits"
-dqm_tagger_cfk.truth_collection = "TaggerTruthTracks"
-dqm_tagger_cfk.trackStates = ["target"]
-dqm_tagger_cfk.title = ""
-dqm_tagger_cfk.measurement_collection=digi_tagger.out_collection
-dqm_tagger_cfk.buildHistograms()
+dqm_tagger_ckf = tkdqm.TrackingRecoDQM("TaggerDQM")
+dqm_tagger_ckf.track_collection = tracking_tagger.out_trk_collection
+dqm_tagger_ckf.truth_hit_collection="TaggerSimHits"
+dqm_tagger_ckf.truth_collection = "TaggerTruthTracks"
+dqm_tagger_ckf.trackStates = ["target"]
+dqm_tagger_ckf.title = ""
+dqm_tagger_ckf.measurement_collection=digi_tagger.out_collection
+dqm_tagger_ckf.buildHistograms()
 
 # DQM for the recoil with CKF
-dqm_recoil_cfk = tkdqm.TrackingRecoDQM("RecoilDQM")
-dqm_recoil_cfk.track_collection = tracking_recoil.out_trk_collection
-dqm_recoil_cfk.truth_collection = "RecoilTruthTracks"
-dqm_recoil_cfk.trackStates = ["ecal","target"]
-dqm_recoil_cfk.title = ""
-dqm_recoil_cfk.measurement_collection=digi_recoil.out_collection
-dqm_recoil_cfk.truth_hit_collection = "RecoilSimHits"
-dqm_recoil_cfk.buildHistograms()
+dqm_recoil_ckf = tkdqm.TrackingRecoDQM("RecoilDQM")
+dqm_recoil_ckf.track_collection = tracking_recoil.out_trk_collection
+dqm_recoil_ckf.truth_collection = "RecoilTruthTracks"
+dqm_recoil_ckf.trackStates = ["ecal","target"]
+dqm_recoil_ckf.title = ""
+dqm_recoil_ckf.measurement_collection=digi_recoil.out_collection
+dqm_recoil_ckf.truth_hit_collection = "RecoilSimHits"
+dqm_recoil_ckf.buildHistograms()
 
 # DQM for the tagger with GAS  (Greedy ambiguity solver)
 dqm_tagger_gas = tkdqm.TrackingRecoDQM("TaggerGASDQM")
@@ -208,8 +213,8 @@ sequence = [
 dqm_sequence = [
     dqm_seed_tagger,
     dqm_seed_recoil,
-    dqm_tagger_cfk,
-    dqm_recoil_cfk,
+    dqm_tagger_ckf,
+    dqm_recoil_ckf,
     dqm_tagger_gas,
     dqm_recoil_gas,
     dqm_tagger_gsf,

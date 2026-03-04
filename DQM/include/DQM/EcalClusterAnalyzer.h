@@ -61,7 +61,19 @@ class EcalClusterAnalyzer : public framework::Analyzer {
   // Pass Name for clusters
   std::string cluster_pass_name_;
 
-  std::string ecal_sp_hits_passname_;
+  // Collection Name for Scoring Plane hits
+  std::string ecal_sp_hits_coll_name_;
+  // Pass Name for Scoring Plane hits
+  std::string ecal_sp_hits_pass_name_;
+
+  // min energy fraction from smaller contributor to consider hit "mixed"
+  double mixed_hit_cutoff_;
+
+  // Inverse skim flag
+  bool inverse_skim_;
+
+  // Minimum number of ECal clusters to keep the event
+  int n_ecal_clusters_min_;
 };
 
 }  // namespace dqm

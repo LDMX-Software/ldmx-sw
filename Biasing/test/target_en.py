@@ -1,15 +1,19 @@
 from LDMX.Framework import ldmxcfg
+
+
 p = ldmxcfg.Process('target_en')
+import LDMX.Ecal.ecal_geometry
+import LDMX.Hcal.hcal_geometry
 from LDMX.Biasing import target
 from LDMX.SimCore import generators
-import LDMX.Ecal.EcalGeometry
-import LDMX.Hcal.HcalGeometry
+
+
 p.sequence = [
-    target.electro_nuclear( 
-        'ldmx-det-v14' , 
+    target.electro_nuclear(
+        'ldmx-det-v14' ,
         generators.single_4gev_e_upstream_tagger()
         )
     ]
-p.maxEvents = 1000
-p.maxTriesPerEvent = 1000
-p.outputFiles = [ 'target_en.root' ]
+p.max_events = 1000
+p.max_tries_per_event = 1000
+p.output_files = [ 'target_en.root' ]

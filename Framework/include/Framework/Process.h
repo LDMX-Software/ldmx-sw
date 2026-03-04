@@ -16,6 +16,7 @@
 #include "Framework/StorageControl.h"
 
 // STL
+#include <csignal>
 #include <map>
 #include <memory>
 #include <vector>

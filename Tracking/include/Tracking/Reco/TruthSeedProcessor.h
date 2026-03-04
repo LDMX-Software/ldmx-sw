@@ -58,7 +58,7 @@ class TruthSeedProcessor : public TrackingGeometryUser {
    * given set of parameters.
    *
    * The parameters a processor has access to are the member variables
-   * of the python class in the sequence that has className equal to
+   * of the python class in the sequence that has class_name equal to
    * the EventProcessor class name.
    *
    * @param parameters Parameters for configuration.
@@ -278,5 +278,6 @@ class TruthSeedProcessor : public TrackingGeometryUser {
   std::vector<double> rel_smearfactors_;
   std::vector<double> inflate_factors_;
   std::vector<double> beam_origin_{-880.1, -44., 0.};
+  int particle_hypothesis_;
 };
 }  // namespace tracking::reco
