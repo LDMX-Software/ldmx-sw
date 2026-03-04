@@ -637,7 +637,8 @@ class Process:
         super().__setattr__(key, val)
 
 
-    def add_library(self) :
+    @staticmethod
+    def add_library(lib) :
         """Add a library to the list of dynamically loaded libraries
 
         A process object must already have been created.
@@ -657,11 +658,12 @@ class Process:
         """
 
         if ( Process.last_process is not None ) :
-            Process.last_process.libraries.append( self )
+            Process.last_process.libraries.append( lib )
         else :
             raise Exception( "No Process object defined yet! You need to create a Process before creating any EventProcessors." )
 
-    def add_module(self) :
+    @staticmethod
+    def add_module(module) :
         """Add a module to the list of dynamically loaded libraries
 
         A process object must already have been created.
@@ -688,10 +690,11 @@ class Process:
             addModule('Ecal_Event')
         """
 
-        actual_module_name = self.replace('/','_').replace('::','_')
+        actual_module_name = module.replace('/','_').replace('::','_')
         Process.add_library(f'@CMAKE_INSTALL_PREFIX@/lib/lib{actual_module_name}.so')
 
-    def declare_conditions_object_provider(self):
+    @staticmethod
+    def declare_conditions_object_provider(cop):
         """Declare a conditions object provider to be loaded with the process
 
         A process object must already have been created.
@@ -709,16 +712,16 @@ class Process:
 
         if ( Process.last_process is not None ) :
 
-            self.set_tag(Process.last_process.conditions_global_tag)
+            cop.set_tag(Process.last_process.conditions_global_tag)
 
             # check if the input COP matches one already declared
             #   if it does match, override the already declared one with the passed one
             for index, already_defined_cop in enumerate(Process.last_process.conditions_object_providers) :
-                if self == already_defined_cop :
-                    Process.last_process.conditions_object_providers[index] = self
+                if cop == already_defined_cop :
+                    Process.last_process.conditions_object_providers[index] = cop
                     return
 
-            Process.last_process.conditions_object_providers.append( self )
+            Process.last_process.conditions_object_providers.append( cop )
         else :
             raise Exception( "No Process object defined yet! You need to create a Process before declaring any ConditionsObjectProviders." )
 

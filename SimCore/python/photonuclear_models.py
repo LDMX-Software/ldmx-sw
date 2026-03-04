@@ -112,10 +112,11 @@ class BertiniAtLeastNProductsModel(simcfg.PhotoNuclearModel):
         self.min_products = 1
         self.pdg_ids = []
 
-    def kaon(self = 1, hard_particle_threshold=200.):
+    @staticmethod
+    def kaon(min_products = 1, hard_particle_threshold=200.):
         # Note: By default, this is requiring at least 1 kaon with at least 200
         # MeV. You may want a different energy threshold depending on your needs.
-        model = BertiniAtLeastNProductsModel(f"{self}_kaon_model")
+        model = BertiniAtLeastNProductsModel(f"{min_products}_kaon_model")
         model.hard_particle_threshold=hard_particle_threshold
         model.pdg_ids = [
                 130,  # K_L^0
@@ -124,7 +125,7 @@ class BertiniAtLeastNProductsModel(simcfg.PhotoNuclearModel):
                 321,  # K^+
                 -321, # K^-
         ]
-        model.min_products = self
+        model.min_products = min_products
         return model
 
 
@@ -147,9 +148,10 @@ class BertiniExactlyNProductsModel(simcfg.PhotoNuclearModel):
         self.check_allmatch = False
         self.pdg_ids = []
 
-    def kaon(self = 2, hard_particle_threshold=200.):
+    @staticmethod
+    def kaon(n_products = 2, hard_particle_threshold=200.):
         # This is requiring exactly 2 kaons with at least 200 MeV.
-        model = BertiniExactlyNProductsModel(f"{self}_kaon_model")
+        model = BertiniExactlyNProductsModel(f"{n_products}_kaon_model")
         model.hard_particle_threshold=hard_particle_threshold
         model.pdg_ids = [
                 130,  # K_L^0
@@ -158,15 +160,16 @@ class BertiniExactlyNProductsModel(simcfg.PhotoNuclearModel):
                 321,  # K^+
                 -321, # K^-
         ]
-        model.n_products = self
+        model.n_products = n_products
         return model
 
-    def neutron(self = 1, hard_particle_threshold=200.):
+    @staticmethod
+    def neutron(n_products = 1, hard_particle_threshold=200.):
         # This is requiring exactly 1 neutron with at least 200 MeV
-        model = BertiniExactlyNProductsModel(f"{self}_neutron_model")
+        model = BertiniExactlyNProductsModel(f"{n_products}_neutron_model")
         model.hard_particle_threshold = hard_particle_threshold
         model.pdg_ids = [2212]
-        model.n_products = self
+        model.n_products = n_products
         return model
 
 

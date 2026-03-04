@@ -194,7 +194,7 @@ TEST_CASE("Conditions", "[Conditions]") {
         "SimpleCSVTableProvider\n\np=ldmxcfg.Process('test')\np.testMode="
         "True\ncolumns=['A','B','C']\ncop=SimpleCSVTableProvider."
         "SimpleCSVIntegerTableProvider('test_table_python',columns)\ncop."
-        "validForAllRows([10,45,129])";
+        "valid_for_all_rows([10,45,129])";
 
     FILE* f = fopen("/tmp/test_cond.py", "w");
     fputs(cfgpy, f);
@@ -230,7 +230,7 @@ TEST_CASE("Conditions", "[Conditions]") {
         "SimpleCSVTableProvider\n\np=ldmxcfg.Process('test')\np.testMode="
         "True\ncolumns=['SQRT','EXP','LOG']\ncop=SimpleCSVTableProvider."
         "SimpleCSVDoubleTableProvider('test_table_file',columns)\ncop."
-        "validForRuns('file:///tmp/dump_double.csv',0,100)\ncop.validForRuns('/"
+        "valid_for_runs('file:///tmp/dump_double.csv',0,100)\ncop.valid_for_runs('/"
         "tmp/dump_double.csv',101,120)\n";
 
     FILE* f = fopen("/tmp/test_cond.py", "w");
@@ -265,7 +265,7 @@ TEST_CASE("Conditions", "[Conditions]") {
         "columns=[\"A\",\"Q\",\"V\"]\n"
         "cop=SimpleCSVTableProvider.SimpleCSVIntegerTableProvider(\"test_table_"
         "http\",columns)\n"
-        "cop.validForever(\"https://raw.githubusercontent.com/LDMX-Software/"
+        "cop.valid_forever(\"https://raw.githubusercontent.com/LDMX-Software/"
         "ci-data/refs/heads/main/conditions-test/test_table.csv\")\n";
 
     FILE* f = fopen("/tmp/test_cond.py", "w");

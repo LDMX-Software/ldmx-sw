@@ -26,23 +26,26 @@ class QIEEncoder(ldmxcfg.Producer) :
         self.number_channels = 50
         self.verbose = False
 
-    def tagger(self) :
+    @staticmethod
+    def tagger(map_file) :
         """Get the encoding emulator for the trigger pad upstream of tagger"""
-        enc = QIEEncoder(self,'tag')
+        enc = QIEEncoder(map_file,'tag')
         enc.input_collection = 'trigScintQIEDigisTag'
         enc.output_collection= 'QIEstreamTag'
         return enc
-
-    def up(self) :
+    
+    @staticmethod
+    def up(map_file) :
         """Get the encoding emulator for the trigger pad upstream of target"""
-        enc = QIEEncoder(self,'up')
+        enc = QIEEncoder(map_file,'up')
         enc.input_collection = 'trigScintQIEDigisUp'
         enc.output_collection= 'QIEstreamUp'
         return enc
 
-    def down(self) :
+    @staticmethod
+    def down(map_file) :
         """Get the encoding emulator for the trigger pad downstream of target"""
-        enc = QIEEncoder(self,'down')
+        enc = QIEEncoder(map_file,'down')
         enc.input_collection = 'trigScintQIEDigisDown'
         enc.output_collection= 'QIEstreamDown'
         return enc
@@ -62,23 +65,26 @@ class QIEDecoder(ldmxcfg.Producer) :
         self.is_real_data=False
         self.verbose = False
 
-    def tagger(self) :
+    @staticmethod
+    def tagger(map_file) :
         """Get the decoding emulator for the trigger pad upstream of tagger"""
-        dec = QIEDecoder(self,'tag')
+        dec = QIEDecoder(map_file,'tag')
         dec.input_collection = 'QIEstreamTag'
         dec.output_collection= 'decodedQIETag'
         return dec
 
-    def up(self) :
+    @staticmethod
+    def up(map_file) :
         """Get the decoding emulator for the trigger pad upstream of target"""
-        dec = QIEDecoder(self,'up')
+        dec = QIEDecoder(map_file,'up')
         dec.input_collection = 'QIEstreamUp'
         dec.output_collection= 'decodedQIEUp'
         return dec
 
-    def down(self) :
+    @staticmethod
+    def down(map_file) :
         """Get the decoding emulator for the trigger pad downstream of target"""
-        dec = QIEDecoder(self,'down')
+        dec = QIEDecoder(map_file,'down')
         dec.input_collection = 'QIEstreamDown'
         dec.output_collection= 'decodedQIEDown'
         return dec

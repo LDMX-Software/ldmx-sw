@@ -17,7 +17,7 @@ from LDMX.Conditions.SimpleCSVTableProvider import (
 EcalTrigPrimConditionsHardcode=SimpleCSVIntegerTableProvider("EcalTrigPrimDigiConditions",["ADC_PEDESTAL","ADC_THRESHOLD","TOT_PEDESTAL","TOT_THRESHOLD","TOT_GAIN"])
 
 # ADC_PEDESTAL -- should match value from HgcrocEmulator
-EcalTrigPrimConditionsHardcode.validForAllRows([ 50 ,
+EcalTrigPrimConditionsHardcode.valid_for_all_rows([ 50 ,
                                                  5 , # ADC_THRESHOLD -- current noise is
                                                  # TOT_PEDESTAL -- currently set to match ADC pedestal
                                                  50,
@@ -29,7 +29,7 @@ EcalTrigPrimConditionsHardcode.validForAllRows([ 50 ,
 
 EcalReconConditionsHardcode=SimpleCSVDoubleTableProvider("EcalReconConditions",["ADC_PEDESTAL","ADC_GAIN","TOT_PEDESTAL","TOT_GAIN"])
 
-EcalReconConditionsHardcode.validForAllRows([
+EcalReconConditionsHardcode.valid_for_all_rows([
     50. , #ADC_PEDESTAL - should match HgcrocEmulator
     #ADC_GAIN - 320. fC / 1024. counts - conversion to estimated charge deposited in ADC mode
     0.3125,
@@ -51,7 +51,7 @@ EcalHgcrocConditionsHardcode=SimpleCSVDoubleTableProvider("EcalHgcrocConditions"
             "TOT_THRESHOLD"
         ])
 
-EcalHgcrocConditionsHardcode.validForAllRows([
+EcalHgcrocConditionsHardcode.valid_for_all_rows([
     50. , #PEDESTAL - ADC
     #NOISE - ADC, almost certainly too optimistic, but want to mimic previous noise model
     0.6,

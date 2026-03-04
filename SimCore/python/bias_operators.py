@@ -178,10 +178,12 @@ class DarkBrem(XsecBiasingOperator) :
         self.bias_all = bias_all
         self.factor = factor
 
-    def ecal(self) :
+    @staticmethod
+    def ecal(factor) :
         """Bias dark brem inside of the ecal by the input factor"""
-        return DarkBrem('ecal',True,self)
+        return DarkBrem('ecal',True,factor)
 
-    def target(self) :
+    @staticmethod
+    def target(factor) :
         """Bias dark brem inside of the target by the input factor"""
-        return DarkBrem('target_region',False,self)
+        return DarkBrem('target_region',False,factor)

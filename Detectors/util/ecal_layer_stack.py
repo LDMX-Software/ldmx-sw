@@ -237,12 +237,15 @@ class Layer :
     def __str__(self) :
         return f'{self.thickness:.2f} mm {self.name}'
 
-    def air(self) :
-        return Layer('Air',self)
+    @staticmethod
+    def air(t) :
+        return Layer('Air',t)
 
-    def tungsten(self) :
-        return Layer('W', self)
+    @staticmethod
+    def tungsten(t) :
+        return Layer('W', t)
 
+    @staticmethod
     def pcb(*, thickness = 1.2, n_copper_layers = 8) :
         """Estimate PCB layer properties with a layer of copper and a layer of fiberglass
 
@@ -275,23 +278,29 @@ class Layer :
             Layer('FR4', thickness - copper_thickness)
         ]
 
-    def glue(self) :
-        return Layer('Glue', self)
+    @staticmethod
+    def glue(t) :
+        return Layer('Glue', t)
 
+    @staticmethod
     def silicon() :
         return Layer('Si',Layer.SensDetThickness,sensitive=True)
 
-    def carbon(self) :
-        return Layer('Carbon',self)
+    @staticmethod
+    def carbon(t) :
+        return Layer('Carbon',t)
 
+    @staticmethod
     def titanium_baseplate():
         return Layer('Ti', 1)
 
+    @staticmethod
     def aluminum_support_plane():
         return Layer('Al', 3)
 
-    def kapton(self):
-        return Layer('Kapton', self)
+    @staticmethod
+    def kapton(t):
+        return Layer('Kapton', t)
 
 
 @dataclass

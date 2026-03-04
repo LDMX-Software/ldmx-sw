@@ -727,11 +727,11 @@ class NtuplizeHgcrocDigiCollection(ldmxcfg.Analyzer) :
         if pedestal_table is None :
             self.pedestal_table = 'NO_PEDESTALS'
             t = SimpleCSVIntegerTableProvider('NO_PEDESTALS',["PEDESTAL"])
-            t.validForAllRows([0])
+            t.valid_for_all_rows([0])
         else :
             self.pedestal_table = pedestal_table
             t = SimpleCSVIntegerTableProvider(pedestal_table,["PEDESTAL"])
-            t.validForever(f'file://{pedestal_table}')
+            t.valid_forever(f'file://{pedestal_table}')
 
 class NtuplizeTrigScintQIEDigis(ldmxcfg.Analyzer) :
     def __init__(self,input_name, input_pass = '', name = 'ts') :

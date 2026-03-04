@@ -27,7 +27,7 @@ class SimpleCSVTableEntry:
         self.last_run=-1
         self.run_type="any"
 
-    def setIOV(self, first_run, last_run):  # noqa: N802
+    def set_iov(self, first_run, last_run):
         """Set the Interval Of Validity for this table entry
 
         Parameters
@@ -98,7 +98,7 @@ class SimpleCSVTableProvider(ldmxcfg.ConditionsObjectProvider):
         self.conditions_base_url=''
         self.entries_url=''
 
-    def validForever(self, url):  # noqa: N802
+    def valid_forever(self, url):
         """Add an entry to this provider that is valid
         forever and for all run types (data or MC)
 
@@ -110,7 +110,7 @@ class SimpleCSVTableProvider(ldmxcfg.ConditionsObjectProvider):
 
         self.entries.append(SimpleCSVTableEntry(url))
 
-    def validForRuns(self, url, first_run, last_run):  # noqa: N802
+    def valid_for_runs(self, url, first_run, last_run):
         """Add an entry to this provider that is valid
         between the input run numbers
 
@@ -125,10 +125,10 @@ class SimpleCSVTableProvider(ldmxcfg.ConditionsObjectProvider):
         """
 
         entry=SimpleCSVTableEntry(url)
-        entry.setIOV(first_run,last_run)
+        entry.set_iov(first_run,last_run)
         self.entries.append(entry)
 
-    def validForAllRows(self, values):  # noqa: N802
+    def valid_for_all_rows(self, values):
         """Define a value to use for all rows instead of
         downloading the table from a URL
 

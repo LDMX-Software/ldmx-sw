@@ -28,23 +28,26 @@ class ZCCMEncoder(ldmxcfg.Producer) :
         self.channel_map_file = channel_map_file
         self.number_channels = 14*6
 
-    def tagger(self) :
+    @staticmethod
+    def tagger(map_file) :
         """Get the encoding emulator for the trigger pad upstream of tagger"""
-        enc = ZCCMEncoder(self,'tag')
+        enc = ZCCMEncoder(map_file,'tag')
         enc.input_collection = 'trigScintZCCMDigisTag'
         enc.output_collection= 'ZCCMstreamTag'
         return enc
 
-    def up(self) :
+    @staticmethod
+    def up(map_file) :
         """Get the encoding emulator for the trigger pad upstream of target"""
-        enc = ZCCMEncoder(self,'up')
+        enc = ZCCMEncoder(map_file,'up')
         enc.input_collection = 'trigScintZCCMDigisUp'
         enc.output_collection= 'ZCCMstreamUp'
         return enc
 
-    def down(self) :
+    @staticmethod
+    def down(map_file) :
         """Get the encoding emulator for the trigger pad downstream of target"""
-        enc = ZCCMEncoder(self,'down')
+        enc = ZCCMEncoder(map_file,'down')
         enc.input_collection = 'trigScintZCCMDigisDown'
         enc.output_collection= 'ZCCMstreamDown'
         return enc
@@ -63,23 +66,26 @@ class ZCCMDecoder(ldmxcfg.Producer) :
         self.number_time_samples = 70
         self.is_real_data=True
 
-    def tagger(self) :
+    @staticmethod
+    def tagger(map_file) :
         """Get the decoding emulator for the trigger pad upstream of tagger"""
-        dec = ZCCMDecoder(self,'tag')
+        dec = ZCCMDecoder(map_file,'tag')
         dec.input_collection = 'ZCCMstreamTag'
         dec.output_collection= 'decodedZCCMTag'
         return dec
 
-    def up(self) :
+    @staticmethod
+    def up(map_file) :
         """Get the decoding emulator for the trigger pad upstream of target"""
-        dec = ZCCMDecoder(self,'up')
+        dec = ZCCMDecoder(map_file,'up')
         dec.input_collection = 'ZCCMoutputUp'
         dec.output_collection= 'decodedZCCMUp'
         return dec
 
-    def down(self) :
+    @staticmethod
+    def down(map_file) :
         """Get the decoding emulator for the trigger pad downstream of target"""
-        dec = ZCCMDecoder(self,'down')
+        dec = ZCCMDecoder(map_file,'down')
         dec.input_collection = 'ZCCMstreamDown'
         dec.output_collection= 'decodedZCCMDown'
         return dec
