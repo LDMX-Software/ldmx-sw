@@ -9,6 +9,15 @@ namespace framework {
 
 Conditions::Conditions(Process& p) : process_{p} {}
 
+Conditions::~Conditions() {
+  for (auto& [name, entry] : cache_) {
+    if (entry.obj_ && entry.provider_) {
+      entry.provider_->releaseConditionsObject(entry.obj_);
+      entry.obj_ = nullptr;
+    }
+  }
+}
+
 void Conditions::createConditionsObjectProvider(
     const std::string& classname, const std::string& objname,
     const std::string& tagname, const framework::config::Parameters& params) {

@@ -30,6 +30,7 @@ leak:G4HadronElasticPhysics::ConstructProcess
 leak:G4HadronPhysicsFTFP_BERT::ConstructProcess
 leak:G4BOptnChangeCrossSection
 leak:G4VBiasingOperation
+leak:simcore::RunManager::Initialize
 
 # Acts tracking library
 leak:Acts::CuboidVolumeBuilder
