@@ -34,8 +34,9 @@ jobs:
       run: |
         just setenv LDMX_NUM_EVENTS=1000
         just setenv LDMX_RUN_NUMBER=7500
-        #just setenv ASAN_OPTIONS=log_path=output.log
-        just setenv ASAN_OPTIONS=detect_leaks=0
+        just setenv LDMX_LOG_LEVEL=5
+        just setenv ASAN_OPTIONS=log_path=output.log
+        just setenv LSAN_OPTIONS=suppressions=${GITHUB_WORKSPACE}/lsan_suppressions.txt
         just fire  ${GITHUB_WORKSPACE}/.github/validation_samples/ecal_pn/config.py
       shell: bash
 

@@ -103,7 +103,7 @@ from LDMX.Recon.ecal_preselection_skimmer import EcalPreselectionSkimmer
 ecal_pres_skimmer = EcalPreselectionSkimmer()
 
 
-p.logger.term_level = 1
+p.logger.term_level = int(os.environ['LDMX_LOG_LEVEL'])
 # Example to show trace level logging for ecal veto (only)
 # p.logger.custom(ecal_veto, level = -1)
 
