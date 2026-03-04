@@ -1,4 +1,4 @@
-"""Package to provide hard-coded conditions sources for Hcal reconstruction and simulation
+"""Package to provide hard-coded conditions sources for Hcal testbeam simulation
 
 Attributes
 ----------
@@ -92,7 +92,8 @@ HcalHgcrocConditionsHardcode.validForAllRows(
     [
         1.0,  # PEDESTAL
         0.02 * 5 / 1.2,  # NOISE - 0.02 PE with 1 PE ~ 5mV and gain = 1.2
-        12.5,  # MEAS_TIME - ns - clock_cycle/2 - defines the point in the BX where an in-time (time=0 in times vector) hit would arrive
+        12.5,  # MEAS_TIME - ns - clock_cycle/2
+        # defines the point in the BX where an in-time hit would arrive
         20.0,  # PAD_CAPACITANCE - pF
         200.0,  # TOT_MAX - ns - maximum time chip would be in TOT mode
         10240.0 / 200.0,  # DRAIN_RATE - fC/ns - dummy value for now

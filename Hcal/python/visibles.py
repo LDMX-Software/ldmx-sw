@@ -9,10 +9,10 @@ Examples
 import os
 import sys
 
-from LDMX.Framework import processor, Processor
+from LDMX.Framework import Processor, processor
 
 
-def makeBDTPath(bdt_name):
+def make_bdt_path(bdt_name):
     """Get the full path to the installed BDT files
     Exits entire python script if the file does not exist.
 
@@ -33,7 +33,7 @@ def makeBDTPath(bdt_name):
 
     full_path = "@CMAKE_INSTALL_PREFIX@/data/Hcal/" + bdt_name + ".onnx"
     if not os.path.isfile(full_path):
-        print("ERROR: ONNX model file '%s' does not exist." % (full_path))
+        print(f"ERROR: ONNX model file '{full_path}' does not exist.")
         sys.exit(1)
 
     return full_path
@@ -42,7 +42,7 @@ def makeBDTPath(bdt_name):
 @processor("hcal::VisiblesVetoProcessor", "Hcal")
 class VisiblesVetoProcessor(Processor):
     feature_list_name: str = "input"
-    bdt_file: str = makeBDTPath("visibles")
+    bdt_file: str = make_bdt_path("visibles")
     beam_energy: float = 8000.0  # in MeV
     disc_cut: float = 0.999965
     collection_name: str = "VisiblesVeto"

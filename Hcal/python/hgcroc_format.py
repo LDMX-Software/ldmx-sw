@@ -1,10 +1,10 @@
 """Decoding and Encoding HCal Digis out of and into raw buffers"""
 
-from LDMX.Framework import Processor, processor, field
+from LDMX.Framework import Processor, field, processor
 
 
 @processor("hcal::HcalRawDecoder", "Hcal")
-class HcalRawDecoder(Producer):
+class HcalRawDecoder(Processor):
     output_name: str
     roc_version: int = 2
     input_pass: str = ""
@@ -18,19 +18,19 @@ class HcalRawDecoder(Producer):
         if self.input_names is not None:
             self.read_from_file = False
             self.input_file = ""
-            self.input_names = input_names
         elif self.input_file is not None:
             self.read_from_file = True
-            self.input_file = input_file
             self.input_names = [""]
         else:
             raise Exception("Must read from event bus or input file.")
 
         from LDMX.Framework import ldmxcfg
+
         from .detector_map import HcalDetectorMap
 
-        if connections_table is None:
-            # deduce if using eid based on presence of HcalDetectorMap in conditions system
+        if self.connections_table is None:
+            # attempt to deduce if using eid based on presence of
+            # HcalDetectorMap in conditions system
             self.translate_eid = False
             for cop in ldmxcfg.Process.last_process.conditions_object_providers:
                 if isinstance(cop, HcalDetectorMap):
@@ -38,7 +38,7 @@ class HcalRawDecoder(Producer):
                     break
         else:
             # load connections table into conditions system
-            HcalDetectorMap(connections_table)
+            HcalDetectorMap(self.connections_table)
             self.translate_eid = True
 
 

@@ -97,7 +97,7 @@ class DigiTimeSpread:
     def none():
         return DigiTimeSpread(kind=-1, parameters=[0.0])
 
-    def gaussian(mean, sigma):
+    def gaussian(self, sigma):
         """Gaussing time spread
 
         Parameters
@@ -107,9 +107,9 @@ class DigiTimeSpread:
         sigma: float
             standard deviation
         """
-        return DigiTimeSpread(kind=0, parameters=[mean, sigma])
+        return DigiTimeSpread(kind=0, parameters=[self, sigma])
 
-    def uniform(min_value, max_value):
+    def uniform(self, max_value):
         """Uniform time spread
 
         Parameters
@@ -119,9 +119,9 @@ class DigiTimeSpread:
         max_value : float
             Maximum value of the uniform distribution
         """
-        return DigiTimeSpread(kind=1, parameters=[min_value, max_value])
+        return DigiTimeSpread(kind=1, parameters=[self, max_value])
 
-    def constant(value):
+    def constant(self):
         """Constant time spread
 
         Parameters
@@ -129,7 +129,7 @@ class DigiTimeSpread:
         value : float
             Value of the constant time spread
         """
-        return DigiTimeSpread(kind=2, parameters=[value])
+        return DigiTimeSpread(kind=2, parameters=[self])
 
 
 @processor("hcal::HcalDigiProducer", "Hcal")

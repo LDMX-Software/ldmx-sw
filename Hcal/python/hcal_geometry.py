@@ -1,7 +1,7 @@
 """ConditionsProvider for HcalGeometry"""
 
-from LDMX.Framework import ldmxcfg
 from LDMX.DetDescr.hcal_geometry import HcalGeometry
+from LDMX.Framework import ldmxcfg
 
 
 @ldmxcfg.conditions_object_provider(
@@ -35,13 +35,13 @@ class HcalGeometryProvider(ldmxcfg.ConditionsObjectProvider):
             Single instance of the provider
         """
 
-        if HcalGeometryProvider.__instance == None:
+        if HcalGeometryProvider.__instance is None:
             HcalGeometryProvider()
 
         return HcalGeometryProvider.__instance
 
     def __post_init__(self):
-        if HcalGeometryProvider.__instance != None:
+        if HcalGeometryProvider.__instance is not None:
             raise Exception(
                 "HcalGeometryProvider is a singleton class and should only be retrieved using getInstance()"
             )
@@ -81,13 +81,13 @@ class HcalTriggerGeometryProvider(ldmxcfg.ConditionsObjectProvider):
             Single instance of the provider
         """
 
-        if HcalTriggerGeometryProvider.__instance == None:
+        if HcalTriggerGeometryProvider.__instance is None:
             HcalTriggerGeometryProvider()
 
         return HcalTriggerGeometryProvider.__instance
 
     def __post_init__(self):
-        if HcalTriggerGeometryProvider.__instance != None:
+        if HcalTriggerGeometryProvider.__instance is not None:
             raise Exception(
                 "HcalTriggerGeometryProvider is a singleton class and should only be retrieved using getInstance()"
             )
