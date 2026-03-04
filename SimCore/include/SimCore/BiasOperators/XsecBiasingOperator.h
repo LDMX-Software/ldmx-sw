@@ -125,6 +125,7 @@ class XsecBiasingOperator : public G4VBiasingOperator {
    *
    * @param[in,out] header RunHeader to write configuration to
    */
+  // NOLINTNEXTLINE
   virtual void RecordConfig(ldmx::RunHeader& header) const = 0;
 
  protected:
@@ -142,6 +143,7 @@ class XsecBiasingOperator : public G4VBiasingOperator {
    * @param[in] biased_xsec the biased cross section
    * @return the biasing operation with the input biased cross section
    */
+  // NOLINTNEXTLINE
   G4VBiasingOperation* BiasedXsec(double biased_xsec) {
     xsec_operation_->SetBiasedCrossSection(biased_xsec);
     xsec_operation_->Sample();
