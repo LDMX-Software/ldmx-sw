@@ -5,14 +5,15 @@ it is just here to share the configuration classes helpful
 for conditions between the multiple condition sets
 """
 
-
 from LDMX.Framework import ConditionsObjectProvider, conditions_object_provider
 
 
-@conditions_object_provider("HcalReconConditions", "hcal::HcalReconConditionsProvider", "Hcal")
+@conditions_object_provider(
+    "HcalReconConditions", "hcal::HcalReconConditionsProvider", "Hcal"
+)
 class HcalReconConditionsProvider(ConditionsObjectProvider):
     """The HcalReconConditions object packages the reconstructing conditions tables together
-    
+
     This makes the processor using the recon conditions less dependent on the underlying structure.
 
     Parameters

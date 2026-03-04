@@ -3,14 +3,10 @@ All classes are derived versions of LDMX.Framework.ldmxcfg.Producer
 with helpful member functions.
 """
 
-from LDMX.Framework.ldmxcfg import Producer
+from LDMX.Framework import processor, Processor
 
 
-class HcalTrigPrimDigiProducer(Producer) :
-    """Configuration for HcalTrigPrimDigiProducer
-    """
-
-    def __init__(self, instance_name = 'hcalTrigPrimDigis') :
-        super().__init__(instance_name , 'hcal::HcalTrigPrimDigiProducer','Hcal')
-        self.digi_coll_name = "HcalDigis"
-        self.digi_pass_name = ""
+@processor("hcal::HcalTrigPrimDigiProducer", "Hcal")
+class HcalTrigPrimDigiProducer(Producer):
+    digi_coll_name: str = "HcalDigis"
+    digi_pass_name: str = ""
