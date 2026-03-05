@@ -12,6 +12,8 @@ void OverlayProducer::configure(framework::config::Parameters &parameters) {
       parameters.get<std::vector<std::string>>("calo_collections");
   tracker_collections_ =
       parameters.get<std::vector<std::string>>("tracker_collections");
+  contrib_collections_ =
+      parameters.get<std::vector<std::string>>("contrib_collections");
   sim_passname_ = parameters.get<std::string>("sim_passname");
   overlay_passname_ = parameters.get<std::string>("overlay_passname");
   out_coll_postfix_ = parameters.get<std::string>("out_coll_postfix");
@@ -53,6 +55,18 @@ void OverlayProducer::configure(framework::config::Parameters &parameters) {
                   << "\n\t startEventMin = " << start_event_min_
                   << "\n\t startEventMax = " << start_event_max_;
 
+  // given how the contrib collection specification is setup, it's possible for
+  // spelling errors to cause doom here, so we want to flag those
+  for (auto coll_name : contrib_collections_) {
+    if (std::find(calo_collections_.begin(), calo_collections_.end(),
+                  coll_name) == calo_collections_.end()) {
+      EXCEPTION_RAISE("CollNameMismatch",
+                      "The contrib-using collection " + coll_name +
+                          " does not match any SimCalorimeterHit collection in "
+                          "'calo_collections_'! Please check your spelling");
+    }
+  }
+
   return;
 }  // end configure()
 
@@ -86,7 +100,7 @@ void OverlayProducer::produce(framework::Event &event) {
       calo_collection_map;
   std::map<std::string, std::vector<ldmx::SimTrackerHit>>
       tracker_collection_map;
-  std::map<int, ldmx::SimCalorimeterHit> hit_map;
+  std::map<std::string, std::map<int, ldmx::SimCalorimeterHit>> hit_map;
 
   // start by copying over all the collections from the sim event
 
@@ -95,16 +109,19 @@ void OverlayProducer::produce(framework::Event &event) {
   // get the calo hits_ collections that we want to overlay, by looping over
   // the list of collections passed to the producer : calo_collections_
   for (const auto &coll_name : calo_collections_) {
-    // for now, Ecal and only Ecal uses contribs instead of multiple
-    // simhits_calo per channel, meaning, it requires special treatment
-    auto needs_contribs_added{
-        coll_name.find("Ecal") != std::string::npos ? true : false};
+    // search for the collection name in the list of collections that
+    // need contribs to be added, contrib_collections_
+    bool needs_contribs_added{std::find(contrib_collections_.begin(),
+                                        contrib_collections_.end(),
+                                        coll_name) != contrib_collections_.end()
+                                  ? true
+                                  : false};
 
-    // start out by just copying the sim hits_, unaltered.
+    // start out by just copying the sim hits, unaltered.
     auto simhits_calo =
         event.getCollection<ldmx::SimCalorimeterHit>(coll_name, sim_passname_);
-    // but don't copy ecal hits_ immediately: for them, wait until overlay
-    // contribs have been added. then add everything through the hit_map
+    // but don't copy contrib using hits immediately: for them, wait until
+    // overlay contribs have been added. then add everything through the hit_map
     if (!needs_contribs_added) {
       calo_collection_map[coll_name + out_coll_postfix_] = simhits_calo;
     }
@@ -117,10 +134,11 @@ void OverlayProducer::produce(framework::Event &event) {
     // we don't need to touch the hard process sim hits_, really... but we
     // might need the simhits in the hit map.
     if (needs_contribs_added) {
+      ldmx_log(trace) << "Collection " << coll_name << " needs contribs added";
       for (const ldmx::SimCalorimeterHit &simhit : simhits_calo) {
         ldmx_log(trace) << simhit;
         // this copies the hit, its ID and its coordinates directly
-        hit_map[simhit.getID()] = simhit;
+        hit_map[coll_name + out_coll_postfix_][simhit.getID()] = simhit;
 
       }  // over calo simhit collection
     }  // if needContribs
@@ -220,11 +238,13 @@ void OverlayProducer::produce(framework::Event &event) {
 
       // again get the calo hits_ collections that we want to overlay
       for (uint i_coll = 0; i_coll < calo_collections_.size(); i_coll++) {
-        // for now, Ecal and only Ecal uses contribs
-        bool needs_contribs_added = false;
-        if (strstr(calo_collections_[i_coll].c_str(), "Ecal")) {
-          needs_contribs_added = true;
-        }
+        // search for the collection name in the list of collections that
+        // need contribs to be added, contrib_collections_
+        bool needs_contribs_added{
+            std::find(contrib_collections_.begin(), contrib_collections_.end(),
+                      calo_collections_[i_coll]) != contrib_collections_.end()
+                ? true
+                : false};
 
         std::vector<ldmx::SimCalorimeterHit> overlay_hits =
             overlay_event_.getCollection<ldmx::SimCalorimeterHit>(
@@ -246,19 +266,22 @@ void OverlayProducer::produce(framework::Event &event) {
 
           if (needs_contribs_added) {  // special treatment for (for now only)
                                        // ecal
+            auto &this_coll_hit_map{
+                hit_map[calo_collections_[i_coll] + out_coll_postfix_]};
             int overlay_hit_id = overlay_hit.getID();
-            if (hit_map.find(overlay_hit_id) ==
-                hit_map.end()) {  // there wasn't already a simhit in this id
-              hit_map[overlay_hit_id] = ldmx::SimCalorimeterHit();
-              hit_map[overlay_hit_id].setID(overlay_hit_id);
+            if (this_coll_hit_map.find(overlay_hit_id) ==
+                this_coll_hit_map
+                    .end()) {  // there wasn't already a simhit in this id
+              this_coll_hit_map[overlay_hit_id] = ldmx::SimCalorimeterHit();
+              this_coll_hit_map[overlay_hit_id].setID(overlay_hit_id);
               std::vector<float> hit_pos = overlay_hit.getPosition();
-              hit_map[overlay_hit_id].setPosition(hit_pos[0], hit_pos[1],
-                                                  hit_pos[2]);
+              this_coll_hit_map[overlay_hit_id].setPosition(
+                  hit_pos[0], hit_pos[1], hit_pos[2]);
             }
             // add the overlay hit (as a) contrib
             // incidentID = -1000, trackID = -1000, pdgCode = 0  <-- these are
             // set in the header for now but could be parameters
-            hit_map[overlay_hit_id].addContrib(
+            this_coll_hit_map[overlay_hit_id].addContrib(
                 overlay_incident_id_, overlay_track_id_, overlay_pdg_code_,
                 overlay_hit.getEdep(), overlay_time);
           }  // if add overlay as contribs
@@ -312,35 +335,32 @@ void OverlayProducer::produce(framework::Event &event) {
     }  // over overlay events
   }  // over bunches
 
-  // after all events are done, the ecal hit_map is final and can be written
-  // to the event output
-  for (uint i_coll = 0; i_coll < calo_collections_.size(); i_coll++) {
-    // loop through collection names to find the right collection name
-    // add overlaid ecal hits_ as contribs/from hit_map rather than as copied
-    // simhits
-    if (strstr(calo_collections_[i_coll].c_str(), "Ecal")) {
-      ldmx_log(trace) << "Hits in hit_map after overlay of "
-                      << calo_collections_[i_coll] << "Overlay :";
+  // after all events are done, the contrib-using collections' hit_maps are
+  // final and can be written to the event output
+  for (uint i_coll = 0; i_coll < contrib_collections_.size(); i_coll++) {
+    // for each SimCalorimeterHit collection that uses contribs, add overlaid
+    // hits_ as contribs/from hit_map rather than as copied simhits
+    ldmx_log(trace) << "Hits in hit_map after overlay of "
+                    << contrib_collections_[i_coll] << "Overlay :";
 
-      for (auto &map_hit : hit_map) {
-        ldmx_log(trace) << map_hit.second;
+    for (auto &map_hit :
+         hit_map[contrib_collections_[i_coll] + out_coll_postfix_]) {
+      ldmx_log(trace) << map_hit.second;
 
-        if (calo_collection_map.find(calo_collections_[i_coll] +
-                                     out_coll_postfix_) ==
-            calo_collection_map.end()) {
-          ldmx_log(debug) << "Adding first hit from hit map as first outhit "
-                             "vector to calo_collection_map";
-          calo_collection_map[calo_collections_[i_coll] + out_coll_postfix_] = {
-              map_hit.second};
-        } else {
-          calo_collection_map[calo_collections_[i_coll] + out_coll_postfix_]
-              .push_back(map_hit.second);
-        }
-      }  // over hit_map
-      break;  // for now we only have one hit_map: for Ecal. so no need
-              // looking further after we got a match
-    }  // isEcal
-  }  // second loop over collections, to collect hits_ from hit_map
+      if (calo_collection_map.find(contrib_collections_[i_coll] +
+                                   out_coll_postfix_) ==
+          calo_collection_map.end()) {
+        ldmx_log(debug) << "Adding first hit from hit map as first outhit "
+                           "vector to calo_collection_map";
+        calo_collection_map[contrib_collections_[i_coll] + out_coll_postfix_] =
+            {map_hit.second};
+      } else {
+        calo_collection_map[contrib_collections_[i_coll] + out_coll_postfix_]
+            .push_back(map_hit.second);
+      }
+    }  // over hit_map
+  }  // second loop over contrib using collections, to collect hits_ from
+     // hit_map
 
   // done collecting hits_.
 
