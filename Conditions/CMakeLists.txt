@@ -5,8 +5,10 @@ project(Conditions DESCRIPTION "Module that contains Conditions providers and ob
                    LANGUAGES CXX
 )
 
+find_package(CURL REQUIRED)
+
 setup_library(module Conditions
-              dependencies Framework::Framework DetDescr::DetDescr
+              dependencies Framework::Framework DetDescr::DetDescr CURL::libcurl
 )
 
 setup_test(dependencies Conditions::Conditions)
