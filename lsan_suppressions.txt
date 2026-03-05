@@ -24,12 +24,15 @@ leak:G4CascadeParamMessenger
 leak:G4UIcmdWith
 leak:G4HadronicAbsorptionFritiof
 leak:G4ElectroVDNuclearModel
+leak:G4KineticTrack::G4KineticTrack
 leak:G4MuonVDNuclearModel
 leak:G4ElectroNuclearCrossSection
 leak:G4HadronElasticPhysics::ConstructProcess
 leak:G4HadronPhysicsFTFP_BERT::ConstructProcess
+leak:G4BinaryLightIonReaction::Interact
 leak:G4BOptnChangeCrossSection
 leak:G4VBiasingOperation
+leak:G4VElasticCollision::FinalState
 leak:simcore::RunManager::Initialize
 
 # Acts tracking library

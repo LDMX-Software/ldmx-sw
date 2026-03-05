@@ -89,13 +89,14 @@ const ConditionsObject* Conditions::getConditionPtr(
     cache_[condition_name] = ce;
     return ce.obj_;
   } else {
-    /// if still valid, we return what we have
+    // if still valid, we return what we have
     if (cacheptr->second.iov_.validForEvent(context)) {
       return cacheptr->second.obj_;
     } else {
       // if not, we release the old object
       cacheptr->second.provider_->releaseConditionsObject(
           cacheptr->second.obj_);
+      cacheptr->second.obj_ = nullptr;
       // now ask for a new one
       std::pair<const ConditionsObject*, ConditionsIOV> cond =
           cacheptr->second.provider_->getCondition(context);

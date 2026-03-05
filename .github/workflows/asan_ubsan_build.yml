@@ -30,6 +30,8 @@ jobs:
       shell: bash
 
     - name: Run ecal_pn config
+      id: run_ecal_pn
+      continue-on-error: true
       run: |
         just setenv LDMX_NUM_EVENTS=1000
         just setenv LDMX_RUN_NUMBER=7500
@@ -44,3 +46,7 @@ jobs:
       with:
         name: ASAN_UBSAN_output
         path: output.log*
+
+    - name: Fail ASAN/UBSAN if there were errors
+      if: steps.run_ecal_pn.outcome == 'failure'
+      run: exit 2
