@@ -84,7 +84,13 @@ class HCalDQM(ldmxcfg.Analyzer) :
 
 
 
-    def __init__(self,name="hcal_dqm", pe_threshold=8, section=0, max_hit_time = 50.0) :
+    def __init__(
+            self,
+            name="hcal_dqm",
+            pe_threshold=8,
+            section=0,
+            max_hit_time=50.0
+    ):
         self.section = section
         section_names = ['back', 'top', 'bottom', 'right', 'left']
         section_name = section_names[section]
@@ -721,11 +727,11 @@ class NtuplizeHgcrocDigiCollection(ldmxcfg.Analyzer) :
         if pedestal_table is None :
             self.pedestal_table = 'NO_PEDESTALS'
             t = SimpleCSVIntegerTableProvider('NO_PEDESTALS',["PEDESTAL"])
-            t.validForAllRows([0])
+            t.valid_for_all_rows([0])
         else :
             self.pedestal_table = pedestal_table
             t = SimpleCSVIntegerTableProvider(pedestal_table,["PEDESTAL"])
-            t.validForever(f'file://{pedestal_table}')
+            t.valid_forever(f'file://{pedestal_table}')
 
 class NtuplizeTrigScintQIEDigis(ldmxcfg.Analyzer) :
     def __init__(self,input_name, input_pass = '', name = 'ts') :
@@ -961,7 +967,12 @@ class TrigScintDigiDQM(ldmxcfg.Analyzer) :
         self.trig_scint_passname = ''
 
 class TrigScintDigiVerifierDQM(ldmxcfg.Analyzer) :
-    def __init__(self, name = 'TrigScintDigiVerifier', ts_simhit_coll = 'TriggerPadUpSimHits', ts_digi_coll = 'trigScintDigisUp') :
+    def __init__(
+            self,
+            name='TrigScintDigiVerifier',
+            ts_simhit_coll='TriggerPadUpSimHits',
+            ts_digi_coll='trigScintDigisUp'
+    ):
         super().__init__(name,'dqm::TrigScintDigiVerifier','DQM')
 
         self.ts_simhit_coll = ts_simhit_coll

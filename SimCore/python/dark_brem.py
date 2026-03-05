@@ -16,10 +16,10 @@ class DarkBremModel :
         self.name = name
 
     def __str__(self) :
-        string = '%s {'%self.name
+        string = f'{self.name} {{'
         for key in self.__dict__ :
             if key is not self.name :
-                string += ' %s=%s'%( key , self.__dict__[key] )
+                string += f' {key}={self.__dict__[key]}'
         string += ' }'
         return string
 
@@ -107,11 +107,11 @@ class DarkBrem:
             A human-readable version of all its attributes
         """
 
-        string  = "{ Enabled: %r"%self.enable
+        string  = f"{{ Enabled: {self.enable!r}"
         if self.enable :
-            string += ", Mass: %.1f MeV"%self.ap_mass
-            string += ", Only One Per Event: %r"%self.only_one_per_event
-            string += ", Model: %s"%self.model
+            string += f", Mass: {self.ap_mass:.1f} MeV"
+            string += f", Only One Per Event: {self.only_one_per_event!r}"
+            string += f", Model: {self.model}"
 
         string += " }"
 

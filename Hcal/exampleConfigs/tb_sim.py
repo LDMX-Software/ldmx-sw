@@ -21,9 +21,9 @@ detector = 'ldmx-hcal-prototype-v2.0' # TODO: CHANGE TO FEFIX version
 
 p.output_files = [
         arg.particle
-        +"Sim_%.2fGeV_"%arg.energy
+        +f"Sim_{arg.energy:.2f}GeV_"
         + str(p.max_events)
-        + "_%s.root"%detector
+        + f"_{detector}.root"
         ]
 
 from LDMX.SimCore import simulator

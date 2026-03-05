@@ -26,6 +26,7 @@ class QIEEncoder(ldmxcfg.Producer) :
         self.number_channels = 50
         self.verbose = False
 
+    @staticmethod
     def tagger(map_file) :
         """Get the encoding emulator for the trigger pad upstream of tagger"""
         enc = QIEEncoder(map_file,'tag')
@@ -33,6 +34,7 @@ class QIEEncoder(ldmxcfg.Producer) :
         enc.output_collection= 'QIEstreamTag'
         return enc
 
+    @staticmethod
     def up(map_file) :
         """Get the encoding emulator for the trigger pad upstream of target"""
         enc = QIEEncoder(map_file,'up')
@@ -40,6 +42,7 @@ class QIEEncoder(ldmxcfg.Producer) :
         enc.output_collection= 'QIEstreamUp'
         return enc
 
+    @staticmethod
     def down(map_file) :
         """Get the encoding emulator for the trigger pad downstream of target"""
         enc = QIEEncoder(map_file,'down')
@@ -62,6 +65,7 @@ class QIEDecoder(ldmxcfg.Producer) :
         self.is_real_data=False
         self.verbose = False
 
+    @staticmethod
     def tagger(map_file) :
         """Get the decoding emulator for the trigger pad upstream of tagger"""
         dec = QIEDecoder(map_file,'tag')
@@ -69,6 +73,7 @@ class QIEDecoder(ldmxcfg.Producer) :
         dec.output_collection= 'decodedQIETag'
         return dec
 
+    @staticmethod
     def up(map_file) :
         """Get the decoding emulator for the trigger pad upstream of target"""
         dec = QIEDecoder(map_file,'up')
@@ -76,6 +81,7 @@ class QIEDecoder(ldmxcfg.Producer) :
         dec.output_collection= 'decodedQIEUp'
         return dec
 
+    @staticmethod
     def down(map_file) :
         """Get the decoding emulator for the trigger pad downstream of target"""
         dec = QIEDecoder(map_file,'down')

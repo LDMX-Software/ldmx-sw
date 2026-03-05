@@ -16,7 +16,7 @@ from LDMX.Conditions.SimpleCSVTableProvider import (
 
 HcalTrigPrimConditionsHardcode=SimpleCSVIntegerTableProvider("HcalTrigPrimDigiConditions",["ADC_PEDESTAL","ADC_THRESHOLD","TOT_PEDESTAL","TOT_THRESHOLD","TOT_GAIN"])
 # ADC_PEDESTAL -- should match value from HgcrocEmulator
-HcalTrigPrimConditionsHardcode.validForAllRows([ 1 ,
+HcalTrigPrimConditionsHardcode.valid_for_all_rows([ 1 ,
                                                  5 , # ADC_THRESHOLD -- current noise is
                                                  # TOT_PEDESTAL -- currently set to match ADC pedestal
                                                  1,
@@ -27,18 +27,18 @@ HcalTrigPrimConditionsHardcode.validForAllRows([ 1 ,
                                                )
 
 adc_pedestal = SimpleCSVDoubleTableProvider("hcal_adc_pedestal",["pedestal"])
-adc_pedestal.validForAllRows([1.]) # should match HgcrocEmulator
+adc_pedestal.valid_for_all_rows([1.]) # should match HgcrocEmulator
 
 adc_gain = SimpleCSVDoubleTableProvider("hcal_adc_gain",["gain"])
 #Update this number
 # 4 ADCs per PE - maxADCRange/readoutPadCapacitance/1024
-adc_gain.validForAllRows([738.])
+adc_gain.valid_for_all_rows([738.])
 
 tot_calib = SimpleCSVDoubleTableProvider("hcal_tot_calibration",
                                          ["m_adc_i","cut_point_tot","high_slope","high_offset",
                                           "low_slope","low_power","low_offset","tot_not",
                                           "channel","flagged"])
-tot_calib.validForAllRows([
+tot_calib.valid_for_all_rows([
     1.,1.,1.,1.,
     1.,1.,1.,1.,
     1.,1.
@@ -46,7 +46,7 @@ tot_calib.validForAllRows([
 
 toa_calib =  SimpleCSVDoubleTableProvider("hcal_toa_calibration",
                                           ["bx_shift","mean_shift"])
-toa_calib.validForAllRows([0., 0.]) # dummy values
+toa_calib.valid_for_all_rows([0., 0.]) # dummy values
 
 # wrap our tables in the parent object that is used by the processors
 from .conditions import HcalReconConditionsProvider
@@ -67,7 +67,7 @@ HcalHgcrocConditionsHardcode=SimpleCSVDoubleTableProvider("HcalHgcrocConditions"
             "TOT_THRESHOLD"
         ])
 
-HcalHgcrocConditionsHardcode.validForAllRows([
+HcalHgcrocConditionsHardcode.valid_for_all_rows([
     1. , #PEDESTAL
     0.02*5/1.2, #NOISE - 0.02 PE with 1 PE ~ 5mV and gain = 1.2
     #MEAS_TIME - ns - clock_cycle/2 - defines the point in the BX where an in-time (time=0 in times vector) hit would arrive

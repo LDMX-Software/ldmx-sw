@@ -66,8 +66,7 @@ class EcalGeometry :
     def __str__(self) :
         """Stringify this configuration class"""
 
-        s = 'EcalGeometry { Module Gap: %.1f mm, Module Radius: %.1f mm, N Cell Sides Spanning Height: %.1f }' % (
-                self.gap , self.module_min_r , self.n_cell_r_height )
+        s = f'EcalGeometry {{ Module Gap: {self.gap:.1f} mm, Module Radius: {self.module_min_r:.1f} mm, N Cell Sides Spanning Height: {self.n_cell_r_height:.1f} }}'
         return s
 
     def v9() :

@@ -33,7 +33,7 @@ adc_gain.entries_url = '${LDMX_CONDITION_BASEURL}/Hcal/testbeam04-2022/mips/inde
 tot_calib = SimpleCSVDoubleTableProvider("hcal_tot_calibration",
         ["m_adc_i","cut_point_tot","high_slope","high_offset",
          "low_slope","low_power","low_offset","tot_not","channel","flagged"])
-tot_calib.validForever(f'file://{os.environ["LDMX_BASE"]}/conditions-data/Hcal/testbeam04-2022/tot_calibration/calibrated_tot_calib_v0_1_0.csv')
+tot_calib.valid_forever(f'file://{os.environ["LDMX_BASE"]}/conditions-data/Hcal/testbeam04-2022/tot_calibration/calibrated_tot_calib_v0_1_0.csv')
 
 toa_calib = SimpleCSVDoubleTableProvider("hcal_toa_calibration",
                                          ["bx_shift", "mean_shift"])

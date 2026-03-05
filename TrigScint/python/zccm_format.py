@@ -28,6 +28,7 @@ class ZCCMEncoder(ldmxcfg.Producer) :
         self.channel_map_file = channel_map_file
         self.number_channels = 14*6
 
+    @staticmethod
     def tagger(map_file) :
         """Get the encoding emulator for the trigger pad upstream of tagger"""
         enc = ZCCMEncoder(map_file,'tag')
@@ -35,6 +36,7 @@ class ZCCMEncoder(ldmxcfg.Producer) :
         enc.output_collection= 'ZCCMstreamTag'
         return enc
 
+    @staticmethod
     def up(map_file) :
         """Get the encoding emulator for the trigger pad upstream of target"""
         enc = ZCCMEncoder(map_file,'up')
@@ -42,6 +44,7 @@ class ZCCMEncoder(ldmxcfg.Producer) :
         enc.output_collection= 'ZCCMstreamUp'
         return enc
 
+    @staticmethod
     def down(map_file) :
         """Get the encoding emulator for the trigger pad downstream of target"""
         enc = ZCCMEncoder(map_file,'down')
@@ -63,6 +66,7 @@ class ZCCMDecoder(ldmxcfg.Producer) :
         self.number_time_samples = 70
         self.is_real_data=True
 
+    @staticmethod
     def tagger(map_file) :
         """Get the decoding emulator for the trigger pad upstream of tagger"""
         dec = ZCCMDecoder(map_file,'tag')
@@ -70,6 +74,7 @@ class ZCCMDecoder(ldmxcfg.Producer) :
         dec.output_collection= 'decodedZCCMTag'
         return dec
 
+    @staticmethod
     def up(map_file) :
         """Get the decoding emulator for the trigger pad upstream of target"""
         dec = ZCCMDecoder(map_file,'up')
@@ -77,6 +82,7 @@ class ZCCMDecoder(ldmxcfg.Producer) :
         dec.output_collection= 'decodedZCCMUp'
         return dec
 
+    @staticmethod
     def down(map_file) :
         """Get the decoding emulator for the trigger pad downstream of target"""
         dec = ZCCMDecoder(map_file,'down')

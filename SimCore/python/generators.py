@@ -253,16 +253,26 @@ class genie(simcfg.PrimaryGenerator) :
 
     def __init__(self,name,
                      energy=8.0,
-                     targets = [],
+                     targets = None,
                      target_thickness = 0.3504,
-                     abundances = [],
+                     abundances = None,
                      time = 0.0,
-                     position = [ 0.0, 0.0, 0.0 ],
-                     beam_size = [ 0.0, 0.0 ],
-                     direction = [ 0.0, 0.0, 1.0 ],
+                     position = None,
+                     beam_size = None,
+                     direction = None,
                      tune = 'default',
                      spline_file = '',
                      message_threshold_file = "/usr/local/GENIE/Generator/config/Messenger.xml") :
+        if direction is None:
+            direction = [0.0, 0.0, 1.0]
+        if beam_size is None:
+            beam_size = [0.0, 0.0]
+        if position is None:
+            position = [0.0, 0.0, 0.0]
+        if abundances is None:
+            abundances = []
+        if targets is None:
+            targets = []
         super().__init__( name , "simcore::generators::GenieGenerator" )
 
         self.energy = energy
@@ -306,8 +316,8 @@ def _single_e_upstream_tagger(position, momentum, energy):
     """
 
     import math
-    momentum_mag = math.sqrt(sum(map(lambda x: x*x, momentum)))
-    unit_direction = list(map(lambda x: x/momentum_mag, momentum))
+    momentum_mag = math.sqrt(sum(x*x for x in momentum))
+    unit_direction = [x/momentum_mag for x in momentum]
 
     particle_gun = gun(f'single_{energy}gev_e_upstream_tagger')
     particle_gun.particle = 'e-'

@@ -28,5 +28,5 @@ def event_timing(d : Differ, out_dir = None) :
             branch,
             f'{processor} Event Time [s]',
             out_dir=out_dir,
-            legend_kw=dict(loc='upper right')
+            legend_kw={'loc': 'upper right'}
         )

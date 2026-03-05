@@ -32,7 +32,7 @@ class UserAction:
         string = "UserAction (" + self.__repr__() + ")\n"
         string += " Parameters: \n"
         for k, v in self.__dict__.items():
-            string += "  %s : %s \n" % (k, v)
+            string += f"  {k} : {v} \n"
 
         return string
 
@@ -45,7 +45,7 @@ class UserAction:
             Just printing its instance and class names
         """
 
-        return '%s of class %s' % (self.instance_name, self.class_name)
+        return f'{self.instance_name} of class {self.class_name}'
 
 class PrimaryGenerator:
     """Object that stores parameters for a PrimaryGenerator
@@ -89,7 +89,7 @@ class PrimaryGenerator:
         string = "PrimaryGenerator (" + self.__repr__() + ")\n"
         string += " Parameters: \n"
         for k, v in self.__dict__.items():
-            string += "  %s : %s \n" % (k, v)
+            string += f"  {k} : {v} \n"
 
         return string
 
@@ -102,7 +102,7 @@ class PrimaryGenerator:
             Just printing its instance and class names
         """
 
-        return '%s of class %s' % (self.instance_name, self.class_name)
+        return f'{self.instance_name} of class {self.class_name}'
 
 class SensitiveDetector:
     """Configuration for a sensitive detector we want to load
@@ -137,7 +137,7 @@ class SensitiveDetector:
         string = "SensitiveDetector (" + self.__repr__() + ")\n"
         string += " Parameters: \n"
         for k, v in self.__dict__.items():
-            string += "  %s : %s \n" % (k, v)
+            string += f"  {k} : {v} \n"
 
         return string
 
@@ -150,7 +150,7 @@ class SensitiveDetector:
             Just printing its instance and class names
         """
 
-        return '%s of class %s' % (self.instance_name, self.class_name)
+        return f'{self.instance_name} of class {self.class_name}'
 
 class PhotoNuclearModel:
     """Configuration for a photonuclear model that we want to load
