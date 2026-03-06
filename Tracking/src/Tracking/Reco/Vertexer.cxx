@@ -121,10 +121,10 @@ void Vertexer::produce(framework::Event& event) {
 
   // Retrive the two track collections
 
-  const std::vector<ldmx::NewTrack> tracks_1 =
-      event.getCollection<ldmx::NewTrack>(trk_c_name_1_, input_pass_name_);
-  const std::vector<ldmx::NewTrack> tracks_2 =
-      event.getCollection<ldmx::NewTrack>(trk_c_name_2_, input_pass_name_);
+  const std::vector<ldmx::Track> tracks_1 =
+      event.getCollection<ldmx::Track>(trk_c_name_1_, input_pass_name_);
+  const std::vector<ldmx::Track> tracks_2 =
+      event.getCollection<ldmx::Track>(trk_c_name_2_, input_pass_name_);
 
   ldmx_log(debug) << "Retrieved track collections" << std::endl
                   << "Track 1 size:" << tracks_1.size() << std::endl
@@ -221,16 +221,16 @@ void Vertexer::onProcessEnd() {
 }
 
 void Vertexer::taggerRecoilMonitoring(
-    const std::vector<ldmx::NewTrack>& tagger_tracks,
-    const std::vector<ldmx::NewTrack>& recoil_tracks) {
+    const std::vector<ldmx::Track>& tagger_tracks,
+    const std::vector<ldmx::Track>& recoil_tracks) {
   // For the moment only check that I have 1 tagger track and one recoil track
   // To avoid trying to match them
   // TODO update this logic
 
   if (tagger_tracks.size() != 1 || recoil_tracks.size() != 1) return;
 
-  ldmx::NewTrack t_trk = tagger_tracks.at(0);
-  ldmx::NewTrack r_trk = recoil_tracks.at(0);
+  ldmx::Track t_trk = tagger_tracks.at(0);
+  ldmx::Track r_trk = recoil_tracks.at(0);
 
   double t_p, r_p;
   // these are unsed, should they be? FIXME

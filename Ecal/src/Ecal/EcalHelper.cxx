@@ -2,8 +2,8 @@
 
 namespace ecal {
 
-std::vector<float> trackProp(const ldmx::NewTracks &tracks,
-                             ldmx::NewTrackStateType ts_type,
+std::vector<float> trackProp(const ldmx::Tracks &tracks,
+                             ldmx::TrackStateType ts_type,
                              const std::string &ts_title) {
   // Vector to hold the new track state variables
   std::vector<float> new_track_states;
@@ -17,7 +17,7 @@ std::vector<float> trackProp(const ldmx::NewTracks &tracks,
     auto trk_ts = track.getTrackState(ts_type);
     // Continue if there's no value
     if (!trk_ts.has_value()) continue;
-    ldmx::NewTrack::NewTrackState ecal_track_state = trk_ts.value();
+    ldmx::Track::TrackState ecal_track_state = trk_ts.value();
 
     // Check that the track state is filled
     if (ecal_track_state.pos_.size() < 3 || ecal_track_state.mom_.size() < 3)

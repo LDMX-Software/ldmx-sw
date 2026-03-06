@@ -74,11 +74,11 @@ void HcalVetoProcessor::produce(framework::Event &event) {
     std::vector<float> recoil_track_states;
     // Get the recoil track collection
     auto recoil_tracks{
-        event.getCollection<ldmx::NewTrack>(track_collection_, track_pass_name_)};
+        event.getCollection<ldmx::Track>(track_collection_, track_pass_name_)};
 
     // Use ACTS to propagate the recoil track to the end of the magnetic field
     // This happens to be at the ECAL face
-    ldmx::NewTrackStateType ts_type = ldmx::NewAtECAL;
+    ldmx::TrackStateType ts_type = ldmx::AtECAL;
     recoil_track_states = trackProp(recoil_tracks, ts_type, "ecal");
     if (!recoil_track_states.empty()) {
       recoil_pos_x = recoil_track_states[0];
@@ -198,8 +198,8 @@ void HcalVetoProcessor::produce(framework::Event &event) {
   event.add(output_coll_name_, result);
 }
 
-std::vector<float> HcalVetoProcessor::trackProp(const ldmx::NewTracks &tracks,
-                                                ldmx::NewTrackStateType ts_type,
+std::vector<float> HcalVetoProcessor::trackProp(const ldmx::Tracks &tracks,
+                                                ldmx::TrackStateType ts_type,
                                                 const std::string &ts_title) {
   // Vector to hold the new track state variables
   std::vector<float> new_track_states;
@@ -213,7 +213,7 @@ std::vector<float> HcalVetoProcessor::trackProp(const ldmx::NewTracks &tracks,
     auto trk_ts = track.getTrackState(ts_type);
     // Continue if there's no value
     if (!trk_ts.has_value()) continue;
-    ldmx::NewTrack::NewTrackState hcal_track_state = trk_ts.value();
+    ldmx::Track::TrackState hcal_track_state = trk_ts.value();
 
     // Check that the track state is filled
     if (hcal_track_state.pos_.size() < 3 || hcal_track_state.mom_.size() < 3)

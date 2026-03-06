@@ -1,5 +1,5 @@
 #include "Tracking/Reco/CKFProcessor.h"
-#include "Tracking/Event/NewTrack.h"
+#include "Tracking/Event/Track.h"
 
 #include "Acts/EventData/TrackContainer.hpp"
 #include "Acts/Utilities/TrackHelpers.hpp"
@@ -181,7 +181,7 @@ void CKFProcessor::produce(framework::Event& event) {
 
   // TODO use global variable instead and call clear;
 
-  std::vector<ldmx::NewTrack> tracks;
+  std::vector<ldmx::Track> tracks;
 
   auto start = std::chrono::high_resolution_clock::now();
 
@@ -256,14 +256,14 @@ void CKFProcessor::produce(framework::Event& event) {
   // ============   Setup the CKF  ============
 
   // Retrieve the seeds
-  const std::vector<ldmx::NewTrack> seed_tracks =
-      event.getCollection<ldmx::NewTrack>(seed_coll_name_, input_pass_name_);
+  const std::vector<ldmx::Track> seed_tracks =
+      event.getCollection<ldmx::Track>(seed_coll_name_, input_pass_name_);
 
   ldmx_log(info) << "Number of " << seed_coll_name_
                  << " seed tracks = " << seed_tracks.size();
 
   if (seed_tracks.empty()) {
-    std::vector<ldmx::NewTrack> empty;
+    std::vector<ldmx::Track> empty;
     ldmx_log(warn) << "No seed tracks, returning...";
     event.add(out_trk_collection_, empty);
     return;
@@ -490,8 +490,8 @@ void CKFProcessor::produce(framework::Event& event) {
     for (auto& track : tracks_from_seed) {
       // do the track smoothing...this is not done in the CKF code anymore
       Acts::smoothTrack(geometryContext(), track);  // from TrackHelpers
-      // Build the output NewTrack
-      ldmx::NewTrack trk;
+      // Build the output Track
+      ldmx::Track trk;
 
       // Extrapolate to the target surface
       auto opt_target = trk_extrap_->extrapolate(track, target_surface_);
@@ -535,9 +535,9 @@ void CKFProcessor::produce(framework::Event& event) {
 
       ldmx_log(debug) << "    Successfully obtained TrackState at target";
 
-      // Build NewTrackState in LDMX coordinates and add to track
+      // Build TrackState in LDMX coordinates and add to track
       auto ts_at_target = tracking::sim::utils::makeTrackState(
-          geometryContext(), *opt_target, ldmx::NewAtTarget);
+          geometryContext(), *opt_target, ldmx::AtTarget);
       trk.addTrackState(ts_at_target);
 
       ldmx_log(debug) << "    Position at target (LDMX): ("
@@ -697,7 +697,7 @@ void CKFProcessor::produce(framework::Event& event) {
             trk_extrap_->extrapolate(track, beam_origin_surface);
         if (opt_beam_origin) {
           trk.addTrackState(tracking::sim::utils::makeTrackState(
-              geometryContext(), *opt_beam_origin, ldmx::NewAtBeamOrigin));
+              geometryContext(), *opt_beam_origin, ldmx::AtBeamOrigin));
           ldmx_log(debug) << "    Successfully obtained TrackState at beam origin";
         }
       }
@@ -721,7 +721,7 @@ void CKFProcessor::produce(framework::Event& event) {
 
         if (opt_ecal) {
           auto ts_at_ecal = tracking::sim::utils::makeTrackState(
-              geometryContext(), *opt_ecal, ldmx::NewAtECAL);
+              geometryContext(), *opt_ecal, ldmx::AtECAL);
           trk.addTrackState(ts_at_ecal);
           ldmx_log(debug) << "    Successfully obtained TrackState at ECAL";
           ldmx_log(debug) << "    Position at ECAL (LDMX): ("
@@ -966,7 +966,7 @@ auto CKFProcessor::makeGeoIdSourceLinkMap(
 template <typename geometry_t, typename source_link_hash_t,
           typename source_link_equality_t>
 std::vector<std::vector<std::size_t>> CKFProcessor::computeSharedHits(
-    std::vector<ldmx::NewTrack> tracks, std::vector<ldmx::Measurement> meas_coll,
+    std::vector<ldmx::Track> tracks, std::vector<ldmx::Measurement> meas_coll,
     geometry_t& tg, source_link_hash_t&& sourceLinkHash,
     source_link_equality_t&& sourceLinkEquality) const {
   auto measurement_index_map =

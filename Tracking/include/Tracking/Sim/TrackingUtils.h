@@ -30,7 +30,6 @@
 
 // --- Tracking ---//
 #include "Tracking/Event/Track.h"
-#include "Tracking/Event/NewTrack.h"
 
 // --- < ACTS > --- //
 #include "Acts/Definitions/Algebra.hpp"
@@ -226,47 +225,12 @@ inline Acts::BoundVector boundState(const ldmx::Track& trk) {
   return param_vec;
 }
 
-inline Acts::BoundVector boundState(const ldmx::NewTrack& trk) {
-  Acts::BoundVector param_vec;
-  param_vec << trk.getD0(), trk.getZ0(), trk.getPhi(), trk.getTheta(),
-      trk.getQoP(), trk.getT();
-  return param_vec;
-}
-
-inline Acts::BoundVector boundState(const ldmx::Track::TrackState& ts) {
-  Acts::BoundVector param_vec;
-  param_vec << ts.params_[0], ts.params_[1], ts.params_[2], ts.params_[3],
-      ts.params_[4], ts.params_[5];
-  return param_vec;
-}
-
 inline Acts::BoundTrackParameters boundTrackParameters(
     const ldmx::Track& trk, std::shared_ptr<Acts::PerigeeSurface> perigee) {
   Acts::BoundVector param_vec = boundState(trk);
   Acts::BoundSquareMatrix cov_mat = unpackCov(trk.getPerigeeCov());
   auto part_hypo{Acts::SinglyChargedParticleHypothesis::electron()};
   return Acts::BoundTrackParameters(perigee, param_vec, std::move(cov_mat),
-                                    part_hypo);
-}
-
-inline Acts::BoundTrackParameters boundTrackParameters(
-    const ldmx::NewTrack& trk, std::shared_ptr<Acts::PerigeeSurface> perigee) {
-  Acts::BoundVector param_vec = boundState(trk);
-  Acts::BoundSquareMatrix cov_mat = unpackCov(trk.getPerigeeCov());
-  auto part_hypo{Acts::SinglyChargedParticleHypothesis::electron()};
-  return Acts::BoundTrackParameters(perigee, param_vec, std::move(cov_mat),
-                                    part_hypo);
-}
-
-inline Acts::BoundTrackParameters btp(const ldmx::Track::TrackState& ts,
-                                      std::shared_ptr<Acts::Surface> surf,
-                                      int pdgid) {
-  Acts::BoundVector param_vec = boundState(ts);
-  Acts::BoundSquareMatrix cov_mat = unpackCov(ts.cov_);
-  auto part_hypo{Acts::SinglyChargedParticleHypothesis::electron()};
-  //  auto
-  //  part{Acts::GenericParticleHypothesis(Acts::ParticleHypothesis(Acts::PdgParticle(pdgid)))};
-  return Acts::BoundTrackParameters(surf, param_vec, std::move(cov_mat),
                                     part_hypo);
 }
 
@@ -311,7 +275,7 @@ inline bool sourceLinkEquality(const Acts::SourceLink& a,
          b.get<acts_examples::IndexSourceLink>().index();
 }
 /*
- * Build a NewTrackState from ACTS BoundTrackParameters.
+ * Build a TrackState from ACTS BoundTrackParameters.
  * All output quantities (position, momentum, covariance) are in the LDMX
  * global frame: x=horizontal, y=vertical, z=downstream.
  *
@@ -322,12 +286,12 @@ inline bool sourceLinkEquality(const Acts::SourceLink& a,
  *   4. Rotate 6x6 covariance ACTS -> LDMX via block-diagonal rotation
  *   5. Flatten upper triangle -> 21-element vector
  */
-inline ldmx::NewTrack::NewTrackState makeTrackState(
+inline ldmx::Track::TrackState makeTrackState(
     const Acts::GeometryContext& gctx,
     const Acts::BoundTrackParameters& bound_pars,
-    ldmx::NewTrackStateType ts_type = ldmx::NewInvalid) {
+    ldmx::TrackStateType ts_type = ldmx::Invalid) {
 
-  ldmx::NewTrack::NewTrackState new_ts;
+  ldmx::Track::TrackState new_ts;
   new_ts.ts_type_ = ts_type;
 
   const double p = bound_pars.absoluteMomentum();  // GeV

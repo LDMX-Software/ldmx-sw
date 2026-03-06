@@ -86,7 +86,7 @@ void SeedFinderProcessor::produce(framework::Event& event) {
   // tg is unused, should it be? FIXME
   // const auto& tg{geometry()};
   auto start = std::chrono::high_resolution_clock::now();
-  std::vector<ldmx::NewTrack> seed_tracks;
+  std::vector<ldmx::Track> seed_tracks;
 
   nevents_++;
 
@@ -97,10 +97,10 @@ void SeedFinderProcessor::produce(framework::Event& event) {
       event.getCollection<ldmx::Measurement>(input_hits_collection_,
                                              input_pass_name_);
 
-  std::vector<ldmx::NewTrack> tagger_tracks;
+  std::vector<ldmx::Track> tagger_tracks;
   if (event.exists(tagger_trks_collection_,
                    tagger_trks_event_collection_passname_)) {
-    tagger_tracks = event.getCollection<ldmx::NewTrack>(tagger_trks_collection_,
+    tagger_tracks = event.getCollection<ldmx::Track>(tagger_trks_collection_,
                                                         input_pass_name_);
   }
 
@@ -113,7 +113,7 @@ void SeedFinderProcessor::produce(framework::Event& event) {
   ldmx::Measurements target_pseudo_meas;
 
   for (auto tagtrk : tagger_tracks) {
-    // For NewTrack, the perigee parameters are stored at the target surface.
+    // For Track, the perigee parameters are stored at the target surface.
     // Use d0/z0 as local position and the perigee covariance for the
     // pseudo measurement. Only create the pseudo measurement if cov is available.
 
@@ -222,7 +222,7 @@ void SeedFinderProcessor::produce(framework::Event& event) {
 // while this takes in a target measurement (from tagger, this is pmeas_tgt)
 // this code doesn't do anything with it yet.
 
-ldmx::NewTrack SeedFinderProcessor::seedTracker(
+ldmx::Track SeedFinderProcessor::seedTracker(
     const ldmx::Measurements& vmeas, double xOrigin,
     const Acts::Vector3& perigee_location,
     const ldmx::Measurements& pmeas_tgt) {
@@ -372,7 +372,7 @@ ldmx::NewTrack SeedFinderProcessor::seedTracker(
 
   ldmx_log(debug) << "...now putting together the seed track ...";
 
-  ldmx::NewTrack trk = ldmx::NewTrack();
+  ldmx::Track trk = ldmx::Track();
   Acts::Vector3 perigee_ldmx = tracking::sim::utils::acts2Ldmx(perigee_location);
   trk.setPerigeeLocation(perigee_ldmx(0), perigee_ldmx(1), perigee_ldmx(2));
   trk.setChi2(0.);
@@ -453,7 +453,7 @@ bool SeedFinderProcessor::groupStrips(
 // for each of those This will reshuffle all points. (issue?) Will sort the
 // meas_for_seed vector
 
-void SeedFinderProcessor::findSeedsFromMap(std::vector<ldmx::NewTrack>& seeds,
+void SeedFinderProcessor::findSeedsFromMap(std::vector<ldmx::Track>& seeds,
                                            const ldmx::Measurements& pmeas) {
   std::map<int, std::vector<const ldmx::Measurement*>>::iterator groups_iter =
       groups_map_.begin();
@@ -508,7 +508,7 @@ void SeedFinderProcessor::findSeedsFromMap(std::vector<ldmx::NewTrack>& seeds,
     Acts::Vector3 perigee{perigee_location_[0], perigee_location_[1],
                           perigee_location_[2]};
 
-    ldmx::NewTrack seed_track =
+    ldmx::Track seed_track =
         seedTracker(meas_for_seeds, meas_for_seeds.at(2).getGlobalPosition()[0],
                     perigee, pmeas);
 

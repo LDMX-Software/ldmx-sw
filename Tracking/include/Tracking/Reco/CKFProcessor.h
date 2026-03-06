@@ -68,7 +68,7 @@
 
 //--- Tracking ---//
 #include "Tracking/Event/Measurement.h"
-#include "Tracking/Event/NewTrack.h"
+#include "Tracking/Event/Track.h"
 #include "Tracking/Event/Track.h"
 #include "Tracking/Reco/TrackExtrapolatorTool.h"
 #include "Tracking/Sim/IndexSourceLink.h"
@@ -147,7 +147,7 @@ class CKFProcessor final : public TrackingGeometryUser {
   template <typename geometry_t, typename source_link_hash_t,
             typename source_link_equality_t>
   std::vector<std::vector<std::size_t>> computeSharedHits(
-      std::vector<ldmx::NewTrack> tracks, std::vector<ldmx::Measurement> meas_coll,
+      std::vector<ldmx::Track> tracks, std::vector<ldmx::Measurement> meas_coll,
       geometry_t &tg, source_link_hash_t &&sourceLinkHash,
       source_link_equality_t &&sourceLinkEquality) const;
 

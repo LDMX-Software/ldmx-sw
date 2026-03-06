@@ -271,37 +271,14 @@ class TrackExtrapolatorTool {
     }
 
     if (opt_pars) {
-      if (debug_)
-        std::cout << "[TrackExtrapolatorTool]   Getting surface location...\n";
-      // Reference point
-      Acts::Vector3 surf_loc = target_surface->transform(gctx_).translation();
-      ts.ref_x_ = surf_loc(0);
-      ts.ref_y_ = surf_loc(1);
-      ts.ref_z_ = surf_loc(2);
       if (debug_) {
+        Acts::Vector3 surf_loc = target_surface->transform(gctx_).translation();
         std::cout << "[TrackExtrapolatorTool]   Surface location: ("
                   << surf_loc(0) << ", " << surf_loc(1) << ", " << surf_loc(2)
                   << ")\n";
       }
 
-      if (debug_)
-        std::cout << "[TrackExtrapolatorTool]   Getting parameters...\n";
-      // Parameters
-      ts.params_ =
-          tracking::sim::utils::convertActsToLdmxPars((*opt_pars).parameters());
-      if (debug_) std::cout << "[TrackExtrapolatorTool]   Parameters set\n";
-
-      if (debug_)
-        std::cout << "[TrackExtrapolatorTool]   Getting covariance...\n";
-      // Covariance
-      const Acts::BoundMatrix& trk_cov = *((*opt_pars).covariance());
-      if (debug_)
-        std::cout << "[TrackExtrapolatorTool]   Covariance matrix obtained\n";
-      tracking::sim::utils::flatCov(trk_cov, ts.cov_);
-      if (debug_)
-        std::cout << "[TrackExtrapolatorTool]   Covariance flattened\n";
-
-      ts.ts_type_ = type;
+      ts = tracking::sim::utils::makeTrackState(gctx_, *opt_pars, type);
       if (debug_)
         std::cout << "[TrackExtrapolatorTool]   trackStateAtSurface SUCCESS\n";
       return true;

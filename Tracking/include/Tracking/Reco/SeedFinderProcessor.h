@@ -6,7 +6,7 @@
 #include "Framework/EventProcessor.h"
 
 //---< Tracking >---//
-#include "Tracking/Event/NewTrack.h"
+#include "Tracking/Event/Track.h"
 #include "Tracking/Sim/LdmxSpacePoint.h"
 #include "Tracking/Sim/SeedToTrackParamMaker.h"
 #include "Tracking/Sim/TrackingUtils.h"
@@ -79,11 +79,11 @@ class SeedFinderProcessor : public TrackingGeometryUser {
   bool groupStrips(const std::vector<ldmx::Measurement>& measurements,
                    const std::vector<int> strategy);
 
-  void findSeedsFromMap(std::vector<ldmx::NewTrack>& seeds,
+  void findSeedsFromMap(std::vector<ldmx::Track>& seeds,
                         const ldmx::Measurements& pmeas);
 
  private:
-  ldmx::NewTrack seedTracker(const ldmx::Measurements& vmeas, double xOrigin,
+  ldmx::Track seedTracker(const ldmx::Measurements& vmeas, double xOrigin,
                           const Acts::Vector3& perigee_location,
                           const ldmx::Measurements& pmeas_tgt);
 

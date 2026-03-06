@@ -47,7 +47,7 @@ void TrackingRecoDQM::analyze(const framework::Event& event) {
   }
 
   auto tracks{
-      event.getCollection<ldmx::NewTrack>(track_collection_, track_passname_)};
+      event.getCollection<ldmx::Track>(track_collection_, track_passname_)};
 
   if (!event.exists(measurement_collection_, measurement_passname_)) {
     ldmx_log(error) << "Measurement collection " << measurement_collection_
@@ -61,8 +61,8 @@ void TrackingRecoDQM::analyze(const framework::Event& event) {
 
   // The truth track collection
   if (event.exists(truth_collection_, truth_events_passname_)) {
-    truth_track_collection_ = std::make_shared<std::vector<ldmx::NewTrack>>(
-        event.getCollection<ldmx::NewTrack>(truth_collection_, truth_passname_));
+    truth_track_collection_ = std::make_shared<std::vector<ldmx::Track>>(
+        event.getCollection<ldmx::Track>(truth_collection_, truth_passname_));
     do_truth_comparison_ = true;
   }
 
@@ -116,17 +116,17 @@ void TrackingRecoDQM::analyze(const framework::Event& event) {
   ldmx_log(trace) << "Track Extrapolation to Ecal Monitoring";
   if (std::find(track_states_.begin(), track_states_.end(), "target") !=
       track_states_.end()) {
-    trackStateMonitoring(tracks, ldmx::NewAtTarget, "target");
+    trackStateMonitoring(tracks, ldmx::AtTarget, "target");
   }
 
   if (std::find(track_states_.begin(), track_states_.end(), "ecal") !=
       track_states_.end()) {
-    trackStateMonitoring(tracks, ldmx::NewAtECAL, "ecal");
+    trackStateMonitoring(tracks, ldmx::AtECAL, "ecal");
   }
 
   if (std::find(track_states_.begin(), track_states_.end(), "beamOrigin") !=
       track_states_.end()) {
-    trackStateMonitoring(tracks, ldmx::NewAtBeamOrigin, "beamOrigin");
+    trackStateMonitoring(tracks, ldmx::AtBeamOrigin, "beamOrigin");
   }
 
   // Technical Efficiency plots
@@ -149,7 +149,7 @@ void TrackingRecoDQM::onProcessEnd() {
 }
 
 void TrackingRecoDQM::efficiencyPlots(
-    const std::vector<ldmx::NewTrack>& tracks,
+    const std::vector<ldmx::Track>& tracks,
     const std::vector<ldmx::Measurement>& measurements,
     const std::string& title) {
   // Do all truth track plots - denominator
@@ -219,11 +219,11 @@ void TrackingRecoDQM::efficiencyPlots(
 
   for (auto& track : tracks) {
     // Match the tracks to truth
-    ldmx::NewTrack* truth_trk = nullptr;
+    ldmx::Track* truth_trk = nullptr;
 
     auto it = std::find_if(truth_track_collection_->begin(),
                            truth_track_collection_->end(),
-                           [&](const ldmx::NewTrack& tt) {
+                           [&](const ldmx::Track& tt) {
                              return tt.getTrackID() == track.getTrackID();
                            });
 
@@ -313,7 +313,7 @@ void TrackingRecoDQM::efficiencyPlots(
 }  // Efficiency plots
 
 void TrackingRecoDQM::trackMonitoring(
-    const std::vector<ldmx::NewTrack>& tracks,
+    const std::vector<ldmx::Track>& tracks,
     const std::vector<ldmx::Measurement>& measurements, const std::string title,
     const bool& doDetail, const bool& doTruth) {
   for (auto& track : tracks) {
@@ -409,11 +409,11 @@ void TrackingRecoDQM::trackMonitoring(
 
     if (doTruth) {
       // Match to the truth track
-      ldmx::NewTrack* truth_trk = nullptr;
+      ldmx::Track* truth_trk = nullptr;
 
       auto it = std::find_if(truth_track_collection_->begin(),
                              truth_track_collection_->end(),
-                             [&](const ldmx::NewTrack& tt) {
+                             [&](const ldmx::Track& tt) {
                                return tt.getTrackID() == track.getTrackID();
                              });
 
@@ -509,16 +509,16 @@ void TrackingRecoDQM::trackMonitoring(
 }  // Track Monitoring
 
 void TrackingRecoDQM::trackStateMonitoring(
-    const std::vector<ldmx::NewTrack>& tracks,
-    ldmx::NewTrackStateType ts_type,
+    const std::vector<ldmx::Track>& tracks,
+    ldmx::TrackStateType ts_type,
     const std::string& ts_title) {
   for (auto& track : tracks) {
     // Match the tracks to truth
-    ldmx::NewTrack* truth_trk = nullptr;
+    ldmx::Track* truth_trk = nullptr;
 
     auto it = std::find_if(truth_track_collection_->begin(),
                            truth_track_collection_->end(),
-                           [&](const ldmx::NewTrack& tt) {
+                           [&](const ldmx::Track& tt) {
                              return tt.getTrackID() == track.getTrackID();
                            });
 
@@ -537,8 +537,8 @@ void TrackingRecoDQM::trackStateMonitoring(
     if (!trk_ts.has_value()) continue;
     if (!truth_ts.has_value()) continue;
 
-    const ldmx::NewTrack::NewTrackState& target_state = trk_ts.value();
-    const ldmx::NewTrack::NewTrackState& truth_target_state = truth_ts.value();
+    const ldmx::Track::TrackState& target_state = trk_ts.value();
+    const ldmx::Track::TrackState& truth_target_state = truth_ts.value();
 
     // Check that the covariance is filled
     if (target_state.pos_mom_cov_.size() < 21) continue;
@@ -606,16 +606,16 @@ void TrackingRecoDQM::trackStateMonitoring(
   }  // loop on tracks
 }
 
-void TrackingRecoDQM::sortTracks(const std::vector<ldmx::NewTrack>& tracks,
-                                 std::vector<ldmx::NewTrack>& uniqueTracks,
-                                 std::vector<ldmx::NewTrack>& duplicateTracks,
-                                 std::vector<ldmx::NewTrack>& fakeTracks) {
+void TrackingRecoDQM::sortTracks(const std::vector<ldmx::Track>& tracks,
+                                 std::vector<ldmx::Track>& uniqueTracks,
+                                 std::vector<ldmx::Track>& duplicateTracks,
+                                 std::vector<ldmx::Track>& fakeTracks) {
   // Create a copy of the const vector so we can sort it
-  std::vector<ldmx::NewTrack> sorted_tracks = tracks;
+  std::vector<ldmx::Track> sorted_tracks = tracks;
 
   // Sort the vector of Track objects based on their trackID member
   std::sort(sorted_tracks.begin(), sorted_tracks.end(),
-            [](ldmx::NewTrack& t1, ldmx::NewTrack& t2) {
+            [](ldmx::Track& t1, ldmx::Track& t2) {
               return t1.getTrackID() < t2.getTrackID();
             });
 
@@ -657,17 +657,17 @@ void TrackingRecoDQM::sortTracks(const std::vector<ldmx::NewTrack>& tracks,
 
   // Iterate through the uniqueTracks vector and duplicateTracks vector
   ldmx_log(trace) << "Unique tracks:";
-  for (const ldmx::NewTrack& track : uniqueTracks) {
+  for (const ldmx::Track& track : uniqueTracks) {
     ldmx_log(trace) << "\tTrack ID: " << track.getTrackID()
                     << ", Truth Prob: " << track.getTruthProb();
   }
   ldmx_log(trace) << "Duplicate tracks:";
-  for (const ldmx::NewTrack& track : duplicateTracks) {
+  for (const ldmx::Track& track : duplicateTracks) {
     ldmx_log(trace) << "\tTrack ID: " << track.getTrackID()
                     << ", Truth Prob: " << track.getTruthProb();
   }
   ldmx_log(trace) << "Fake tracks:";
-  for (const ldmx::NewTrack& track : fakeTracks) {
+  for (const ldmx::Track& track : fakeTracks) {
     ldmx_log(trace) << "\tTrack ID: " << track.getTrackID()
                     << ", Truth Prob: " << track.getTruthProb();
   }

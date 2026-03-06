@@ -28,9 +28,9 @@ void TrackerVetoProcessor::configure(framework::config::Parameters& ps) {
 }
 
 void TrackerVetoProcessor::produce(framework::Event& event) {
-  auto tagger_track_collection{event.getCollection<ldmx::NewTrack>(
+  auto tagger_track_collection{event.getCollection<ldmx::Track>(
       tagger_track_collection_name_, input_recoil_pass_name_)};
-  auto recoil_track_collection{event.getCollection<ldmx::NewTrack>(
+  auto recoil_track_collection{event.getCollection<ldmx::Track>(
       recoil_track_collection_name_, input_recoil_pass_name_)};
 
   bool passes_veto{false}, passes_tagger_veto{false}, passes_recoil_veto{false};

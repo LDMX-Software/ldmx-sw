@@ -8,7 +8,7 @@
 #include "SimCore/Event/SimTrackerHit.h"
 
 // --- Tracking --- //
-#include "Tracking/Event/NewTrack.h"
+#include "Tracking/Event/Track.h"
 #include "Tracking/Event/Track.h"
 #include "Tracking/Event/TruthTrack.h"
 #include "Tracking/Reco/TrackExtrapolatorTool.h"
@@ -106,7 +106,7 @@ class TruthSeedProcessor : public TrackingGeometryUser {
    *
    * @param particle The SimParticle to make a seed from.
    */
-  void createTruthTrack(const ldmx::SimParticle& particle, ldmx::NewTrack& trk,
+  void createTruthTrack(const ldmx::SimParticle& particle, ldmx::Track& trk,
                         const std::shared_ptr<Acts::Surface>& target_surface);
 
   /**
@@ -118,7 +118,7 @@ class TruthSeedProcessor : public TrackingGeometryUser {
    * @param hit The SimTrackerHit used to create the seed.
    */
   void createTruthTrack(const ldmx::SimParticle& particle,
-                        const ldmx::SimTrackerHit& hit, ldmx::NewTrack& trk,
+                        const ldmx::SimTrackerHit& hit, ldmx::Track& trk,
                         const std::shared_ptr<Acts::Surface>& target_surface);
 
   /**
@@ -132,7 +132,7 @@ class TruthSeedProcessor : public TrackingGeometryUser {
 
   void createTruthTrack(const std::vector<double>& pos_vec,
                         const std::vector<double>& p_vec, int charge,
-                        ldmx::NewTrack& trk,
+                        ldmx::Track& trk,
                         const std::shared_ptr<Acts::Surface>& target_surface);
 
   /**
@@ -153,9 +153,9 @@ class TruthSeedProcessor : public TrackingGeometryUser {
    * @return seed The seed track
    */
 
-  ldmx::NewTrack seedFromTruth(const ldmx::NewTrack& tt, bool seed_smearing);
+  ldmx::Track seedFromTruth(const ldmx::Track& tt, bool seed_smearing);
 
-  ldmx::NewTrack recoilFullSeed(
+  ldmx::Track recoilFullSeed(
       const ldmx::SimParticle& particle, const int trackID,
       const ldmx::SimTrackerHit& hit, const ldmx::SimTrackerHit& ecal_hit,
       const std::map<int, std::vector<int>>& hit_count_map,
@@ -182,7 +182,7 @@ class TruthSeedProcessor : public TrackingGeometryUser {
    * @param target_surface : the target surface for the truth target state
    */
 
-  ldmx::NewTrack taggerFullSeed(
+  ldmx::Track taggerFullSeed(
       const ldmx::SimParticle& beam_electron, const int trackID,
       const ldmx::SimTrackerHit& hit,
       const std::map<int, std::vector<int>>& hit_count_map,

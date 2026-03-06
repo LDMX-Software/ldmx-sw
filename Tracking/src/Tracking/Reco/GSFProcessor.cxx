@@ -1,5 +1,5 @@
 #include "Tracking/Reco/GSFProcessor.h"
-#include "Tracking/Event/NewTrack.h"
+#include "Tracking/Event/Track.h"
 
 #include <algorithm>
 
@@ -170,7 +170,7 @@ void GSFProcessor::produce(framework::Event& event) {
   if (!event.exists(track_collection_, track_collection_event_passname_))
     return;
   auto tracks{
-      event.getCollection<ldmx::NewTrack>(track_collection_, track_passname_)};
+      event.getCollection<ldmx::Track>(track_collection_, track_passname_)};
 
   // Retrieve the measurements
   if (!event.exists(meas_collection_, meas_collection_event_passname_)) return;
@@ -250,7 +250,7 @@ void GSFProcessor::produce(framework::Event& event) {
   gsf_options.disableAllMaterialHandling = disable_all_material_handling_;
 
   // Output track container
-  std::vector<ldmx::NewTrack> out_tracks;
+  std::vector<ldmx::Track> out_tracks;
 
   Acts::VectorTrackContainer vtc;
   Acts::VectorMultiTrajectory mtj;
@@ -387,7 +387,7 @@ void GSFProcessor::produce(framework::Event& event) {
                     << perigee_pars[Acts::eBoundTheta] << ", "
                     << perigee_pars[Acts::eBoundQOverP] << ") ";
 
-    ldmx::NewTrack trk;
+    ldmx::Track trk;
 
     // Extrapolate GSF track to target surface to get perigee parameters
     auto opt_target = trk_extrap_->extrapolate(gsftrk, target_surface_);
@@ -395,7 +395,7 @@ void GSFProcessor::produce(framework::Event& event) {
     if (opt_target) {
       ldmx_log(debug) << "    GSF target extrapolation succeeded";
       auto ts_at_target = tracking::sim::utils::makeTrackState(
-          geometryContext(), *opt_target, ldmx::NewAtTarget);
+          geometryContext(), *opt_target, ldmx::AtTarget);
       trk.addTrackState(ts_at_target);
 
       trk.setPerigeeParameters(
@@ -432,13 +432,13 @@ void GSFProcessor::produce(framework::Event& event) {
           trk_extrap_->extrapolate(gsftrk, beam_origin_surface_);
       if (opt_beam_origin)
         trk.addTrackState(tracking::sim::utils::makeTrackState(
-            geometryContext(), *opt_beam_origin, ldmx::NewAtBeamOrigin));
+            geometryContext(), *opt_beam_origin, ldmx::AtBeamOrigin));
     } else {
       ldmx_log(debug) << "  ECAL extrapolation";
       auto opt_ecal = trk_extrap_->extrapolate(gsftrk, ecal_surface_);
       if (opt_ecal)
         trk.addTrackState(tracking::sim::utils::makeTrackState(
-            geometryContext(), *opt_ecal, ldmx::NewAtECAL));
+            geometryContext(), *opt_ecal, ldmx::AtECAL));
     }
 
     trk.setChi2(gsftrk.chi2());

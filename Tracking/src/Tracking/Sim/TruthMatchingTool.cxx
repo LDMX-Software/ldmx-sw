@@ -1,5 +1,5 @@
 #include "Tracking/Reco/TruthMatchingTool.h"
-#include "Tracking/Event/NewTrack.h"
+#include "Tracking/Event/Track.h"
 
 namespace tracking {
 namespace sim {
@@ -87,23 +87,6 @@ TruthMatchingTool::TruthInfo TruthMatchingTool::truthMatch(
   return evaluate(trk_track_i_ds, trk.getMeasurementsIdxs().size());
 
 }  // Match Track
-
-TruthMatchingTool::TruthInfo TruthMatchingTool::truthMatch(
-    const ldmx::NewTrack& trk) {
-  std::unordered_map<unsigned int, unsigned int> trk_track_i_ds;
-
-  for (auto meas_id : trk.getMeasurementsIdxs()) {
-    auto meas = measurements_.at(meas_id);
-    for (auto trk_id : meas.getTrackIds()) {
-      if (trk_track_i_ds.find(trk_id) != trk_track_i_ds.end())
-        trk_track_i_ds[trk_id]++;
-      else
-        trk_track_i_ds[trk_id] = 1;
-    }
-  }
-
-  return evaluate(trk_track_i_ds, trk.getMeasurementsIdxs().size());
-}
 
 }  // namespace sim
 }  // namespace tracking

@@ -8,7 +8,7 @@
 #include "SimCore/Event/SimCalorimeterHit.h"
 #include "SimCore/Event/SimParticle.h"
 #include "SimCore/Event/SimTrackerHit.h"
-#include "Tracking/Event/NewTrack.h"
+#include "Tracking/Event/Track.h"
 
 // C++
 #include <algorithm>
@@ -65,7 +65,7 @@ void VisiblesFeatureProducer::analyze(const framework::Event &event) {
 
   if (recoil_from_tracking_) {
     const auto &recoil_tracks{
-        event.getCollection<ldmx::NewTrack>(track_collection_, track_pass_name_)};
+        event.getCollection<ldmx::Track>(track_collection_, track_pass_name_)};
     // Fill this in later when you know how to use it
     for (auto &track : recoil_tracks) {
       // need to figure out how to best isolate candidate electron track
