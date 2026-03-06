@@ -219,7 +219,7 @@ def dark_brem( ap_mass , lhe, detector, generator,
     ap_mass : float
         The mass of the A' in MeV.
     lhe : str
-        The path to the directory containing LHE files to use as events 
+        The path to the directory containing LHE files to use as events
         of the dark brem.
     detector : str
         Name of detector to simulate in
@@ -234,7 +234,7 @@ def dark_brem( ap_mass , lhe, detector, generator,
     for large (>50k) event samples.
 
         from LDMX.SimCore import makePath
-        target_ap_sim = target.dark_brem(1000., makePath.makeLHEPath(1000.), 
+        target_ap_sim = target.dark_brem(1000., makePath.makeLHEPath(1000.),
         'ldmx-det-v12')
 
     In general, the second argument should be the full path to the LHE event library.

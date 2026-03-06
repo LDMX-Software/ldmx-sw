@@ -3,7 +3,7 @@
 <!ENTITY constants SYSTEM "constants.gdml">
 <!ENTITY materials SYSTEM "materials.gdml">
 ]>
-<gdml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://service-spi.web.cern.ch/service-spi/app/releases/GDML/schema/gdml.xsd">
+<gdml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="gdml.xsd">
 
   <define>
 
@@ -64,11 +64,12 @@
     <volume name="World">
       <materialref ref="Air"/>
       <solidref ref="world_box"/>
+      
       <physvol copynumber="1">
         <file name="tagger.gdml"/>
         <positionref ref="tagger_pos"/>
         <rotationref ref="identity"/>
-      </physvol> 
+      </physvol>
       <physvol copynumber="2">
         <file name="target.gdml"  />
         <positionref ref="center" />
@@ -78,7 +79,7 @@
         <file name="trig_scint.gdml"/>
         <positionref ref="trig_scint_pos"/>
         <rotationref ref="identity"/>
-      </physvol>
+      </physvol>      
       <physvol copynumber="5">
         <file name="recoil.gdml"/>
         <positionref ref="recoil_pos"/>
@@ -99,6 +100,7 @@
         <positionref ref="magnet_pos"/> 
         <rotationref ref="identity"/> 
       </physvol>
+      
       <auxiliary auxtype="DetElem" auxvalue="Top"/>
     </volume>
   </structure>

@@ -38,12 +38,27 @@ class RawIO(ldmxcfg.Producer) :
     def __init__(self, raw_file) :
         super().__init__(f'IO_{raw_file}','packing::RawIO','Packing')
         self.raw_file = raw_file
+    @staticmethod
+    def source(raw_file) :
+        """Configure a RawIO producer for reading from a raw data file
 
-    def source(file_name) :
-        return RawIO(RawDataFile(file_name, False))
+        Parameters
+        ----------
+        raw_file : str
+            File path to raw data file to read in
+        """
+        return RawIO(RawDataFile(raw_file, False))
 
-    def destination(file_name) :
-        return RawIO(RawDataFile(file_name, True))
+    @staticmethod
+    def destination(raw_file) :
+        """Configure a RawIO producer for writing to a raw data file
+
+        Parameters
+        ----------
+        raw_file : str
+            File path to raw data file to write to
+        """
+        return RawIO(RawDataFile(raw_file, True))
 
 
 class SingleSubsystemUnpacker(ldmxcfg.Producer) :

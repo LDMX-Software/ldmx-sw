@@ -36,7 +36,7 @@ def makePath( det_name , file_name ) :
 
     full_path = '@CMAKE_INSTALL_PREFIX@/data/detectors/' + det_name + '/' + file_name + '.gdml'
     if not os.path.isfile( full_path ) :
-        raise ValueError('GDML file \'%s\' does not exist.' % ( full_path ))
+        raise ValueError(f'GDML file \'{full_path}\' does not exist.')
 
     return full_path
 

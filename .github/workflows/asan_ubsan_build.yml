@@ -30,18 +30,23 @@ jobs:
       shell: bash
 
     - name: Run ecal_pn config
-      #continue-on-error: true
+      id: run_ecal_pn
+      continue-on-error: true
       run: |
-        just setenv LDMX_NUM_EVENTS=15
+        just setenv LDMX_NUM_EVENTS=1000
         just setenv LDMX_RUN_NUMBER=7500
-        #just setenv ASAN_OPTIONS=log_path=output.log
-        just setenv ASAN_OPTIONS=detect_leaks=0
+        just setenv LDMX_LOG_LEVEL=5
+        just setenv ASAN_OPTIONS=log_path=output.log
+        just setenv LSAN_OPTIONS=suppressions=${GITHUB_WORKSPACE}/lsan_suppressions.txt
         just fire  ${GITHUB_WORKSPACE}/.github/validation_samples/ecal_pn/config.py
       shell: bash
 
-      # For the future, we could try to save the output of ASAN/UBSAN
-      #    - name: Upload log artifact
-      #      uses: actions/upload-artifact@v4
-      #      with:
-      #        name: ASAN_UBSAN_output
-      #        path: output.log*
+    - name: Save the output of ASAN/UBSAN
+      uses: actions/upload-artifact@v7
+      with:
+        name: ASAN_UBSAN_output
+        path: output.log*
+
+    - name: Fail ASAN/UBSAN if there were errors
+      if: steps.run_ecal_pn.outcome == 'failure'
+      run: exit 2

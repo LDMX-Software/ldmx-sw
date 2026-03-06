@@ -138,8 +138,11 @@ class simulator(Producer):
             trigscint = [ sds.TrigScintSD.up(), sds.TrigScintSD.tag(), sds.TrigScintSD.down() ]
         elif 'hcal-prototype' in det_name :
             trigscint = [ sds.TrigScintSD.testbeam() ]
-        else :
+        elif 'v13' in det_name or 'v14' in det_name or 'reduced' in det_name :
             trigscint = [ sds.TrigScintSD.pad1(), sds.TrigScintSD.pad2(), sds.TrigScintSD.pad3() ]
+        else:
+            trigscint = [ sds.TrigScintSD.pad1(), sds.TrigScintSD.pad2(), sds.TrigScintSD.pad3(), sds.TrigScintSD.pad1lg(), sds.TrigScintSD.pad2lg(), sds.TrigScintSD.pad3lg(), sds.TrigScintSD.pad1sipm(), sds.TrigScintSD.pad2sipm(), sds.TrigScintSD.pad3sipm() ]
+
         self.sensitive_detectors = [
                 sds.TrackerSD.tagger(),
                 sds.TrackerSD.recoil(),
@@ -219,7 +222,7 @@ class simulator(Producer):
                 if len(which_runs) != len(which_events):
                     raise ValueError('which_runs must have the same number of entries as which_events if more than one run is provided')
                 resimulator.care_about_run = True
-                resimulator.runs_to_resimulate = [ _EventToReSim(event, run) for event, run in zip(which_events, which_runs) ]
+                resimulator.runs_to_resimulate = [ _EventToReSim(event, run) for event, run in zip(which_events, which_runs, strict=False) ]
             else:
                 raise ValueError('which_runs must be an int or a list of ints if provided')
         else:

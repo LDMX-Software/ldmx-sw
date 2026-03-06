@@ -20,7 +20,7 @@ class TrackersTrackingGeometryProvider(ldmxcfg.ConditionsObjectProvider):
     __instance = None
 
     def get_instance():
-        if TrackersTrackingGeometryProvider.__instance == None:
+        if TrackersTrackingGeometryProvider.__instance is None:
             TrackersTrackingGeometryProvider()
 
         return TrackersTrackingGeometryProvider.__instance
@@ -43,7 +43,7 @@ class TrackersTrackingGeometryProvider(ldmxcfg.ConditionsObjectProvider):
         self.detector = mP.makeDetectorPath( det_name )
 
     def __init__(self):
-        if TrackersTrackingGeometryProvider.__instance != None:
+        if TrackersTrackingGeometryProvider.__instance is not None:
             raise Exception('TrackersTrackingGeometryProvider is a singleton class and should only be retrieved using get_instance()')
         else:
             super().__init__('TrackersTrackingGeometry', 'tracking::geo::TrackersTrackingGeometryProvider', 'Tracking')

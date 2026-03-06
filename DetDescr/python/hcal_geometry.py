@@ -204,7 +204,6 @@ class HcalGeometry:
         num_layers_back_horizontal = 5
         num_layers_back = num_layers_back_vertical + num_layers_back_horizontal
         num_layers = num_layers_front + num_layers_back
-        # back_start = num_layers_front * layer_thickness
         scint_bar_width = 50.0
         num_bars_front = 8
         num_bars_back = 12
@@ -251,13 +250,6 @@ class HcalGeometry:
         scint_bar_length = 2000.0
         scint_bar_cover_thickness = 0.5
         layer_thickness = 45.0
-        bar_mounting_plate_thickness = 3.0
-        # air_thickness = layer_thickness - (
-        #     absorber_thickness
-        #     + bar_mounting_plate_thickness
-        #     + scint_thickness
-        #     + scint_bar_cover_thickness
-        # )
         num_layers_front_vertical = 5
         num_layers_front_horizontal = 4
         num_layers_front = num_layers_front_vertical + num_layers_front_horizontal
@@ -265,7 +257,6 @@ class HcalGeometry:
         num_layers_back_horizontal = 5
         num_layers_back = num_layers_back_vertical + num_layers_back_horizontal
         num_layers = num_layers_front + num_layers_back
-        # back_start = num_layers_front * layer_thickness
         scint_bar_width = 50.0
         num_bars_front = 8
         num_bars_back = 12
@@ -323,8 +314,6 @@ class HcalGeometry:
         )
         back_hcal_scint_length = 2000.0
         back_hcal_dx = back_hcal_scint_length
-        # back_hcal_dy = back_hcal_scint_length
-        back_hcal_dz = back_hcal_num_layers * back_hcal_layer_thick
 
         side_hcal_abso_thick = 20.0
         side_hcal_dz = 600.0
@@ -343,17 +332,7 @@ class HcalGeometry:
             + side_hcal_num_layers[2]
             + side_hcal_num_layers[3]
         ) * 2
-        side_hcal_layer_thick = (
-            side_hcal_abso_thick + 2.0 * hcal_air_thick + hcal_scint_thick
-        )
-        # side_hcal_module_width = side_hcal_num_total_layers * side_hcal_layer_thick
-        # side_hcal_module_length = side_hcal_scint_length[0]
-
-        # hcal_envelope_dx = 3000.0
-        # hcal_envelope_dy = 3000.0
-        # hcal_envelope_dz = back_hcal_dz + side_hcal_dz
-        # hcal_dz = back_hcal_dz + side_hcal_dz
-
+        
         ecal_side_dx = 880.6815
         ecal_side_dy = 600.0
         ecal_front_z = 24.0 * 10

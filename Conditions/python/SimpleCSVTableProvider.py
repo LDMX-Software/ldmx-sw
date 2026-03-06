@@ -27,7 +27,7 @@ class SimpleCSVTableEntry:
         self.last_run=-1
         self.run_type="any"
 
-    def setIOV(self, first_run, last_run):
+    def set_iov(self, first_run, last_run):
         """Set the Interval Of Validity for this table entry
 
         Parameters
@@ -47,16 +47,20 @@ class SimpleCSVTableEntry:
         Returns
         -------
         str
-            A message with all the parameters and member variables in a human readable format
+            A message with all the parameters and member
+            variables in a human readable format
         """
 
         msg = "  TableEntry { "
         if ( self.first_run == -1 and self.last_run == -1 ) :
             msg += "Valid for All Time"
         else :
-            msg += "Valid between %d and %d" %( self.first_run , self.last_run )
+            msg += (
+                f"Valid between {self.first_run}"
+                f" and {self.last_run}"
+            )
 
-        msg += ", Run Type %s, URL %s }" %( self.run_type , self.url )
+        msg += f", Run Type {self.run_type}, URL {self.url} }}"
 
         return msg
 
@@ -66,27 +70,37 @@ class SimpleCSVTableProvider(ldmxcfg.ConditionsObjectProvider):
     Parametrs
     ---------
     obj_name : str
-        Name of object that this provider provides (e.g. EcalGains)
+        Name of object that this provider provides
+        (e.g. EcalGains)
     data_type : str
-        Name of type of data stored in this table (e.g. "int" or "double")
+        Name of type of data stored in this table
+        (e.g. "int" or "double")
     columns : list of str
         List of column names for this table
     conditions_baseURL : str
-        Base location for URLs, filling the LDMX_CONDITION_BASEURL parameter inside any table's URL
+        Base location for URLs, filling the
+        LDMX_CONDITION_BASEURL parameter inside any
+        table's URL
     entriesURL : str
-        URL to a CSV table mapping tables to specific intervals of validity.  Optional.
+        URL to a CSV table mapping tables to specific
+        intervals of validity.  Optional.
     """
 
     def __init__(self,obj_name,data_type, columns):
-        super().__init__(obj_name,"conditions::SimpleCSVTableProvider",'Conditions')
+        super().__init__(
+            obj_name,
+            "conditions::SimpleCSVTableProvider",
+            'Conditions',
+        )
         self.data_type=data_type
         self.columns=columns
         self.entries=[]
         self.conditions_base_url=''
         self.entries_url=''
 
-    def validForever(self, url):
-        """Add an entry to this provider that is valid forever and for all run types (data or MC)
+    def valid_forever(self, url):
+        """Add an entry to this provider that is valid
+        forever and for all run types (data or MC)
 
         Parameters
         ----------
@@ -96,8 +110,9 @@ class SimpleCSVTableProvider(ldmxcfg.ConditionsObjectProvider):
 
         self.entries.append(SimpleCSVTableEntry(url))
 
-    def validForRuns(self, url, first_run, last_run):
-        """Add an entry to this provider that is valid between the input run numbers
+    def valid_for_runs(self, url, first_run, last_run):
+        """Add an entry to this provider that is valid
+        between the input run numbers
 
         Parameters
         ----------
@@ -110,11 +125,12 @@ class SimpleCSVTableProvider(ldmxcfg.ConditionsObjectProvider):
         """
 
         entry=SimpleCSVTableEntry(url)
-        entry.setIOV(first_run,last_run)
+        entry.set_iov(first_run,last_run)
         self.entries.append(entry)
 
-    def validForAllRows(self, values):
-        """Define a value to use for all rows instead of downloading the table from a URL
+    def valid_for_all_rows(self, values):
+        """Define a value to use for all rows instead of
+        downloading the table from a URL
 
         Parameters
         ----------
@@ -135,4 +151,3 @@ class SimpleCSVIntegerTableProvider(SimpleCSVTableProvider):
     """Provider for tables of integers"""
     def __init__(self,obj_name,columns):
         super().__init__(obj_name,"int",columns)
-

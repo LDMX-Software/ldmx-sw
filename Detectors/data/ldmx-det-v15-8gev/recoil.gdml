@@ -3,7 +3,7 @@
 <!ENTITY constants SYSTEM "constants.gdml">
 ]>
 <gdml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-      xsi:noNamespaceSchemaLocation="http://service-spi.web.cern.ch/service-spi/app/releases/GDML/schema/gdml.xsd">
+      xsi:noNamespaceSchemaLocation="gdml.xsd">
   <define>      
     &constants;
   
