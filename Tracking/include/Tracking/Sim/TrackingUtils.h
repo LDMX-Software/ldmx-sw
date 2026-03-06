@@ -353,13 +353,13 @@ inline ldmx::Track::TrackState makeTrackState(
   //   pos-pos (i<3, j<3): x1       [mm^2]
   //   pos-mom (i<3, j>=3): x1000   [mm*MeV]
   //   mom-mom (i>=3, j>=3): x1e6   [MeV^2]
-  const double me_v = Acts::UnitConstants::MeV;
+  const double mev = Acts::UnitConstants::MeV;
   new_ts.pos_mom_cov_.reserve(21);
   for (int i = 0; i < 6; ++i) {
     for (int j = i; j < 6; ++j) {
       double scale = 1.0;
-      if (i >= 3) scale /= me_v;  // row is momentum (GeV -> MeV)
-      if (j >= 3) scale /= me_v;  // col is momentum (GeV -> MeV)
+      if (i >= 3) scale /= mev;  // row is momentum (GeV -> MeV)
+      if (j >= 3) scale /= mev;  // col is momentum (GeV -> MeV)
       new_ts.pos_mom_cov_.push_back(cov_ldmx(i, j) * scale);
     }
   }
