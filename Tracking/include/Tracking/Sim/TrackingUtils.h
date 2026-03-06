@@ -165,10 +165,9 @@ inline Acts::BoundSquareMatrix unpackCov(const std::vector<double>& v_cov) {
   return cov;
 }
 
-// Rotate LDMX global -> ACTS frame: z_ldmx->x_acts, x_ldmx->y_acts, y_ldmx->z_acts
-// (0 0 1) * (x,y,z)_ldmx = x_acts
-// (1 0 0) * (x,y,z)_ldmx = y_acts
-// (0 1 0) * (x,y,z)_ldmx = z_acts
+// Rotate LDMX global -> ACTS frame: z_ldmx->x_acts, x_ldmx->y_acts,
+// y_ldmx->z_acts (0 0 1) * (x,y,z)_ldmx = x_acts (1 0 0) * (x,y,z)_ldmx =
+// y_acts (0 1 0) * (x,y,z)_ldmx = z_acts
 inline Acts::SquareMatrix3 ldmx2ActsRotation() {
   Acts::SquareMatrix3 R;
   R << 0., 0., 1., 1., 0., 0., 0., 1., 0.;
@@ -290,7 +289,6 @@ inline ldmx::Track::TrackState makeTrackState(
     const Acts::GeometryContext& gctx,
     const Acts::BoundTrackParameters& bound_pars,
     ldmx::TrackStateType ts_type = ldmx::Invalid) {
-
   ldmx::Track::TrackState new_ts;
   new_ts.ts_type_ = ts_type;
 
@@ -317,19 +315,19 @@ inline ldmx::Track::TrackState makeTrackState(
 
   // Step 1: Bound (6x6) -> Free (8x8) covariance
   const Acts::BoundToFreeMatrix J_btf =
-      bound_pars.referenceSurface().boundToFreeJacobian(gctx, acts_pos, acts_dir);
-  const Acts::FreeSquareMatrix free_cov = J_btf * bound_cov.value() * J_btf.transpose();
+      bound_pars.referenceSurface().boundToFreeJacobian(gctx, acts_pos,
+                                                        acts_dir);
+  const Acts::FreeSquareMatrix free_cov =
+      J_btf * bound_cov.value() * J_btf.transpose();
 
   // Step 2: Drop time row/col (eFreeTime = 3) -> 7x7
   // Remaining indices: pos(0,1,2), dir(4,5,6), qop(7)
   constexpr std::array<int, 7> kKeep = {
-      Acts::eFreePos0, Acts::eFreePos1, Acts::eFreePos2,
-      Acts::eFreeDir0, Acts::eFreeDir1, Acts::eFreeDir2,
-      Acts::eFreeQOverP};
+      Acts::eFreePos0, Acts::eFreePos1, Acts::eFreePos2,  Acts::eFreeDir0,
+      Acts::eFreeDir1, Acts::eFreeDir2, Acts::eFreeQOverP};
   Eigen::Matrix<double, 7, 7> free_cov7;
   for (int i = 0; i < 7; ++i)
-    for (int j = 0; j < 7; ++j)
-      free_cov7(i, j) = free_cov(kKeep[i], kKeep[j]);
+    for (int j = 0; j < 7; ++j) free_cov7(i, j) = free_cov(kKeep[i], kKeep[j]);
 
   // Step 3: Jacobian from 7D free-no-time -> 6D Cartesian in ACTS frame
   // p_i = dir_i * p,  dp_i/d(dir_j) = p*delta_ij,  dp_i/d(qop) = -dir_i*p/qop
@@ -341,7 +339,8 @@ inline ldmx::Track::TrackState makeTrackState(
   J_fp(4, 6) = -acts_dir[1] * p / qop;                       // qop -> py
   J_fp(5, 6) = -acts_dir[2] * p / qop;                       // qop -> pz
 
-  const Eigen::Matrix<double, 6, 6> cov_acts = J_fp * free_cov7 * J_fp.transpose();
+  const Eigen::Matrix<double, 6, 6> cov_acts =
+      J_fp * free_cov7 * J_fp.transpose();
 
   // Step 4: Rotate covariance ACTS -> LDMX using block-diagonal R_6 = diag(R,R)
   Eigen::Matrix<double, 6, 6> R_6 = Eigen::Matrix<double, 6, 6>::Zero();

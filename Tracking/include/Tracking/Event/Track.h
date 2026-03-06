@@ -59,14 +59,16 @@ class Track {
   //   x: horizontal (bend plane), y: vertical, z: downstream beam direction.
   // ACTS uses a rotated frame (x downstream, y horizontal, z vertical).
   // The conversion ACTS->LDMX is: x_ldmx=y_acts, y_ldmx=z_acts, z_ldmx=x_acts.
-  // This rotation must be applied before filling these fields (see makeTrackState
-  // in TrackingUtils.h).
+  // This rotation must be applied before filling these fields (see
+  // makeTrackState in TrackingUtils.h).
   struct TrackState {
-    std::vector<double> pos_{-666., -666., -666.};  // (x, y, z) in mm, LDMX global
-    std::vector<double> mom_{-666., -666., -666.};  // (px, py, pz) in MeV, LDMX global
+    std::vector<double> pos_{-666., -666.,
+                             -666.};  // (x, y, z) in mm, LDMX global
+    std::vector<double> mom_{-666., -666.,
+                             -666.};  // (px, py, pz) in MeV, LDMX global
     // 21-element upper-triangular 6x6 covariance over (x, y, z, px, py, pz)
-    // in LDMX global coordinates, units: mm^2 (pos-pos), mm*MeV (pos-mom), MeV^2 (mom-mom):
-    // xx xy xz xpx xpy xpz
+    // in LDMX global coordinates, units: mm^2 (pos-pos), mm*MeV (pos-mom),
+    // MeV^2 (mom-mom): xx xy xz xpx xpy xpz
     //    yy yz ypx ypy ypz
     //       zz zpx zpy zpz
     //          pxpx pxpy pxpz
@@ -162,13 +164,17 @@ class Track {
   double getTime() const { return time_; }
 
   // Perigee parameters at the target surface: d0, z0, phi, theta, q/p, t
-  void setPerigeeParameters(const std::vector<double>& par) { perigee_pars_ = par; }
+  void setPerigeeParameters(const std::vector<double>& par) {
+    perigee_pars_ = par;
+  }
   std::vector<double> getPerigeeParameters() const { return perigee_pars_; }
 
   void setPerigeeCov(const std::vector<double>& cov) { perigee_cov_ = cov; }
   std::vector<double> getPerigeeCov() const { return perigee_cov_; }
 
-  void setPerigeeLocation(const std::vector<double>& perigee) { perigee_ = perigee; }
+  void setPerigeeLocation(const std::vector<double>& perigee) {
+    perigee_ = perigee;
+  }
   void setPerigeeLocation(const double& x, const double& y, const double& z) {
     perigee_[0] = x;
     perigee_[1] = y;
@@ -179,12 +185,12 @@ class Track {
   double getPerigeeY() const { return perigee_[1]; }
   double getPerigeeZ() const { return perigee_[2]; }
 
-  double getD0()    const { return perigee_pars_[0]; }
-  double getZ0()    const { return perigee_pars_[1]; }
-  double getPhi()   const { return perigee_pars_[2]; }
+  double getD0() const { return perigee_pars_[0]; }
+  double getZ0() const { return perigee_pars_[1]; }
+  double getPhi() const { return perigee_pars_[2]; }
   double getTheta() const { return perigee_pars_[3]; }
-  double getQoP()   const { return perigee_pars_[4]; }
-  double getT()     const { return perigee_pars_[5]; }
+  double getQoP() const { return perigee_pars_[4]; }
+  double getT() const { return perigee_pars_[5]; }
 
   void addTrackState(const ldmx::Track::TrackState& ts) {
     track_states_.push_back(ts);
@@ -209,7 +215,8 @@ class Track {
   }
 
   /// Returns the momentum (px, py, pz) in MeV in the LDMX global frame
-  /// for the requested TrackState type. Returns an empty vector if not available.
+  /// for the requested TrackState type. Returns an empty vector if not
+  /// available.
   std::vector<double> getMomentum(TrackStateType tstype) const {
     for (const auto& ts : track_states_)
       if (ts.ts_type_ == tstype) return ts.mom_;
@@ -217,7 +224,8 @@ class Track {
   }
 
   /// Returns the position (x, y, z) in mm in the LDMX global frame
-  /// for the requested TrackState type. Returns an empty vector if not available.
+  /// for the requested TrackState type. Returns an empty vector if not
+  /// available.
   std::vector<double> getPosition(TrackStateType tstype) const {
     for (const auto& ts : track_states_)
       if (ts.ts_type_ == tstype) return ts.pos_;
@@ -253,7 +261,8 @@ class Track {
   //                              tt
   std::vector<double> perigee_pars_{0., 0., 0., 0., 0., 0.};
   std::vector<double> perigee_cov_;
-  std::vector<double> perigee_{0., 0., 0.};  // perigee location in mm, LDMX global
+  std::vector<double> perigee_{0., 0.,
+                               0.};  // perigee location in mm, LDMX global
 
   // dE/dx measurements (path length in MeV/mm)
   std::vector<float> dedx_measurements_{};
@@ -279,12 +288,12 @@ class Track {
   // pdgID
   int pdg_id_{0};
 
-  // Track charge  
+  // Track charge
   int q_{0};
 
   // Track time
-  double time_{-666.0}; 
-  
+  double time_{-666.0};
+
   // Track States
   std::vector<TrackState> track_states_;
 

@@ -3,7 +3,6 @@
 #include "SimCore/Event/SimParticle.h"
 #include "Tracking/Event/Measurement.h"
 #include "Tracking/Event/Track.h"
-#include "Tracking/Event/Track.h"
 #include "Tracking/Reco/TruthMatchingTool.h"
 
 namespace tracking {

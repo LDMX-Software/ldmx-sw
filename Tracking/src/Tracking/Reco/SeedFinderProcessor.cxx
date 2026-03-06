@@ -101,7 +101,7 @@ void SeedFinderProcessor::produce(framework::Event& event) {
   if (event.exists(tagger_trks_collection_,
                    tagger_trks_event_collection_passname_)) {
     tagger_tracks = event.getCollection<ldmx::Track>(tagger_trks_collection_,
-                                                        input_pass_name_);
+                                                     input_pass_name_);
   }
 
   // Create an unbound surface at the target
@@ -115,7 +115,8 @@ void SeedFinderProcessor::produce(framework::Event& event) {
   for (auto tagtrk : tagger_tracks) {
     // For Track, the perigee parameters are stored at the target surface.
     // Use d0/z0 as local position and the perigee covariance for the
-    // pseudo measurement. Only create the pseudo measurement if cov is available.
+    // pseudo measurement. Only create the pseudo measurement if cov is
+    // available.
 
     // The covariance matrix passed to the pseudo measurement is considered as
     // uncorrelated. This is an approx that considers that loc-u and loc-v from
@@ -373,7 +374,8 @@ ldmx::Track SeedFinderProcessor::seedTracker(
   ldmx_log(debug) << "...now putting together the seed track ...";
 
   ldmx::Track trk = ldmx::Track();
-  Acts::Vector3 perigee_ldmx = tracking::sim::utils::acts2Ldmx(perigee_location);
+  Acts::Vector3 perigee_ldmx =
+      tracking::sim::utils::acts2Ldmx(perigee_location);
   trk.setPerigeeLocation(perigee_ldmx(0), perigee_ldmx(1), perigee_ldmx(2));
   trk.setChi2(0.);
   trk.setNhits(5);

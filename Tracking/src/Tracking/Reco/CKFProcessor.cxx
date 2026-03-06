@@ -1,9 +1,9 @@
 #include "Tracking/Reco/CKFProcessor.h"
-#include "Tracking/Event/Track.h"
 
 #include "Acts/EventData/TrackContainer.hpp"
 #include "Acts/Utilities/TrackHelpers.hpp"
 #include "SimCore/Event/SimParticle.h"
+#include "Tracking/Event/Track.h"
 #include "Tracking/Reco/TruthMatchingTool.h"
 #include "Tracking/Sim/GeometryContainers.h"
 
@@ -276,9 +276,10 @@ void CKFProcessor::produce(framework::Event& event) {
   int seed_track_index{0};
   for (auto& seed : seed_tracks) {
     // Transform the seed track to bound parameters.
-    // Perigee is stored in LDMX global frame; convert to ACTS frame for surface.
-    Acts::Vector3 perigee_acts = tracking::sim::utils::ldmx2Acts(
-        Acts::Vector3(seed.getPerigeeX(), seed.getPerigeeY(), seed.getPerigeeZ()));
+    // Perigee is stored in LDMX global frame; convert to ACTS frame for
+    // surface.
+    Acts::Vector3 perigee_acts = tracking::sim::utils::ldmx2Acts(Acts::Vector3(
+        seed.getPerigeeX(), seed.getPerigeeY(), seed.getPerigeeZ()));
     std::shared_ptr<Acts::PerigeeSurface> perigee_surface =
         Acts::Surface::makeShared<Acts::PerigeeSurface>(perigee_acts);
 
@@ -552,8 +553,8 @@ void CKFProcessor::produce(framework::Event& event) {
       track.parameters() = opt_target->parameters();
 
       // Store perigee (bound) parameters at the target for convenience
-      trk.setPerigeeParameters(
-          tracking::sim::utils::convertActsToLdmxPars(opt_target->parameters()));
+      trk.setPerigeeParameters(tracking::sim::utils::convertActsToLdmxPars(
+          opt_target->parameters()));
       if (opt_target->covariance()) {
         std::vector<double> cov_vec;
         tracking::sim::utils::flatCov(*(opt_target->covariance()), cov_vec);
@@ -698,7 +699,8 @@ void CKFProcessor::produce(framework::Event& event) {
         if (opt_beam_origin) {
           trk.addTrackState(tracking::sim::utils::makeTrackState(
               geometryContext(), *opt_beam_origin, ldmx::AtBeamOrigin));
-          ldmx_log(debug) << "    Successfully obtained TrackState at beam origin";
+          ldmx_log(debug)
+              << "    Successfully obtained TrackState at beam origin";
         }
       }
 

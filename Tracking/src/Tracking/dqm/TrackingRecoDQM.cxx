@@ -167,8 +167,8 @@ void TrackingRecoDQM::efficiencyPlots(
     auto truth_mom = truth_trk.getMomentumAtTarget();
     double truth_pt_beam{0.}, truth_beam_angle{0.};
     if (truth_mom.size() == 3) {
-      truth_pt_beam = std::sqrt(truth_mom[0] * truth_mom[0] +
-                                truth_mom[1] * truth_mom[1]);
+      truth_pt_beam =
+          std::sqrt(truth_mom[0] * truth_mom[0] + truth_mom[1] * truth_mom[1]);
       truth_beam_angle = std::atan2(truth_pt_beam, truth_mom[2]);
     }
 
@@ -246,8 +246,8 @@ void TrackingRecoDQM::efficiencyPlots(
     auto truth_mom = truth_trk->getMomentumAtTarget();
     double truth_pt_beam{0.}, truth_beam_angle{0.};
     if (truth_mom.size() == 3) {
-      truth_pt_beam = std::sqrt(truth_mom[0] * truth_mom[0] +
-                                truth_mom[1] * truth_mom[1]);
+      truth_pt_beam =
+          std::sqrt(truth_mom[0] * truth_mom[0] + truth_mom[1] * truth_mom[1]);
       truth_beam_angle = std::atan2(truth_pt_beam, truth_mom[2]);
     }
 
@@ -363,7 +363,8 @@ void TrackingRecoDQM::trackMonitoring(
         cov(Acts::BoundIndices::eBoundTheta, Acts::BoundIndices::eBoundTheta));
     double sigmaqop = sqrt(cov(Acts::BoundIndices::eBoundQOverP,
                                Acts::BoundIndices::eBoundQOverP));
-    double sigmap = (1000. / trk_qop) * (1000. / trk_qop) * sigmaqop / 1000.;  // MeV
+    double sigmap =
+        (1000. / trk_qop) * (1000. / trk_qop) * sigmaqop / 1000.;  // MeV
 
     histograms_.fill(title + "d0", trk_d0);
     histograms_.fill(title + "z0", trk_z0);
@@ -509,8 +510,7 @@ void TrackingRecoDQM::trackMonitoring(
 }  // Track Monitoring
 
 void TrackingRecoDQM::trackStateMonitoring(
-    const std::vector<ldmx::Track>& tracks,
-    ldmx::TrackStateType ts_type,
+    const std::vector<ldmx::Track>& tracks, ldmx::TrackStateType ts_type,
     const std::string& ts_title) {
   for (auto& track : tracks) {
     // Match the tracks to truth

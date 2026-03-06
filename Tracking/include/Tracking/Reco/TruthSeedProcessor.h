@@ -9,7 +9,6 @@
 
 // --- Tracking --- //
 #include "Tracking/Event/Track.h"
-#include "Tracking/Event/Track.h"
 #include "Tracking/Event/TruthTrack.h"
 #include "Tracking/Reco/TrackExtrapolatorTool.h"
 #include "Tracking/Reco/TrackingGeometryUser.h"

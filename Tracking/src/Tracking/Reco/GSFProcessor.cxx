@@ -1,9 +1,9 @@
 #include "Tracking/Reco/GSFProcessor.h"
-#include "Tracking/Event/Track.h"
 
 #include <algorithm>
 
 #include "Acts/EventData/SourceLink.hpp"
+#include "Tracking/Event/Track.h"
 
 namespace tracking {
 namespace reco {
@@ -295,9 +295,10 @@ void GSFProcessor::produce(framework::Event& event) {
     ldmx_log(debug) << "  Track bound track parameters preparation:";
 
     // Reconstruct BoundTrackParameters at perigee (target) from stored params.
-    // perigee_ is stored in LDMX frame; rotate to ACTS frame for surface creation.
-    Acts::Vector3 perigee_acts = tracking::sim::utils::ldmx2Acts(
-        Acts::Vector3(track.getPerigeeX(), track.getPerigeeY(), track.getPerigeeZ()));
+    // perigee_ is stored in LDMX frame; rotate to ACTS frame for surface
+    // creation.
+    Acts::Vector3 perigee_acts = tracking::sim::utils::ldmx2Acts(Acts::Vector3(
+        track.getPerigeeX(), track.getPerigeeY(), track.getPerigeeZ()));
     std::shared_ptr<Acts::PerigeeSurface> perigee =
         Acts::Surface::makeShared<Acts::PerigeeSurface>(perigee_acts);
 
@@ -319,9 +320,9 @@ void GSFProcessor::produce(framework::Event& event) {
       trk_btp_fit_start = *opt_beam_origin;
     }
 
-    ldmx_log(debug) << "    Perigee surface (acts): ("
-                    << track.getPerigeeX() << ", " << track.getPerigeeY()
-                    << ", " << track.getPerigeeZ() << ")";
+    ldmx_log(debug) << "    Perigee surface (acts): (" << track.getPerigeeX()
+                    << ", " << track.getPerigeeY() << ", "
+                    << track.getPerigeeZ() << ")";
 
     const Acts::BoundVector& trkpars = trk_btp.parameters();
     ldmx_log(debug) << "    Perigee parameters (d0, z0, phi, theta, q/p)= ("
@@ -398,8 +399,8 @@ void GSFProcessor::produce(framework::Event& event) {
           geometryContext(), *opt_target, ldmx::AtTarget);
       trk.addTrackState(ts_at_target);
 
-      trk.setPerigeeParameters(
-          tracking::sim::utils::convertActsToLdmxPars(opt_target->parameters()));
+      trk.setPerigeeParameters(tracking::sim::utils::convertActsToLdmxPars(
+          opt_target->parameters()));
       if (opt_target->covariance()) {
         std::vector<double> cov_vec;
         tracking::sim::utils::flatCov(*(opt_target->covariance()), cov_vec);
@@ -410,12 +411,13 @@ void GSFProcessor::produce(framework::Event& event) {
       trk.setPerigeeLocation(target_loc_ldmx[0], target_loc_ldmx[1],
                              target_loc_ldmx[2]);
 
-      ldmx_log(debug) << "    GSF target parameters (d0, z0, phi, theta, q/p)= ("
-                      << opt_target->parameters()[Acts::eBoundLoc0] << ", "
-                      << opt_target->parameters()[Acts::eBoundLoc1] << ", "
-                      << opt_target->parameters()[Acts::eBoundPhi] << ", "
-                      << opt_target->parameters()[Acts::eBoundTheta] << ", "
-                      << opt_target->parameters()[Acts::eBoundQOverP] << ")";
+      ldmx_log(debug)
+          << "    GSF target parameters (d0, z0, phi, theta, q/p)= ("
+          << opt_target->parameters()[Acts::eBoundLoc0] << ", "
+          << opt_target->parameters()[Acts::eBoundLoc1] << ", "
+          << opt_target->parameters()[Acts::eBoundPhi] << ", "
+          << opt_target->parameters()[Acts::eBoundTheta] << ", "
+          << opt_target->parameters()[Acts::eBoundQOverP] << ")";
     } else {
       ldmx_log(debug) << "    GSF target extrapolation failed, using GSF fit "
                          "parameters at reference surface";

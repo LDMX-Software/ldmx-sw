@@ -69,7 +69,6 @@
 //--- Tracking ---//
 #include "Tracking/Event/Measurement.h"
 #include "Tracking/Event/Track.h"
-#include "Tracking/Event/Track.h"
 #include "Tracking/Reco/TrackExtrapolatorTool.h"
 #include "Tracking/Sim/IndexSourceLink.h"
 #include "Tracking/Sim/MeasurementCalibrator.h"

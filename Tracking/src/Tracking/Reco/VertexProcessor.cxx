@@ -100,9 +100,9 @@ void VertexProcessor::produce(framework::Event &event) {
   // So should only be created once in principle.
   // There should be no perigeeSurface2
 
-  Acts::Vector3 perigee_acts = tracking::sim::utils::ldmx2Acts(Acts::Vector3(
-      tracks.front().getPerigeeX(), tracks.front().getPerigeeY(),
-      tracks.front().getPerigeeZ()));
+  Acts::Vector3 perigee_acts = tracking::sim::utils::ldmx2Acts(
+      Acts::Vector3(tracks.front().getPerigeeX(), tracks.front().getPerigeeY(),
+                    tracks.front().getPerigeeZ()));
   std::shared_ptr<Acts::PerigeeSurface> perigee_surface =
       Acts::Surface::makeShared<Acts::PerigeeSurface>(perigee_acts);
 
@@ -143,10 +143,10 @@ void VertexProcessor::produce(framework::Event &event) {
 
   if (seeds.size() == 2) {
     for (int i_seed = 0; i_seed < seeds.size(); i_seed++) {
-      Acts::Vector3 seed_perigee_acts = tracking::sim::utils::ldmx2Acts(
-          Acts::Vector3(seeds.at(i_seed).getPerigeeX(),
-                        seeds.at(i_seed).getPerigeeY(),
-                        seeds.at(i_seed).getPerigeeZ()));
+      Acts::Vector3 seed_perigee_acts =
+          tracking::sim::utils::ldmx2Acts(Acts::Vector3(
+              seeds.at(i_seed).getPerigeeX(), seeds.at(i_seed).getPerigeeY(),
+              seeds.at(i_seed).getPerigeeZ()));
       std::shared_ptr<Acts::PerigeeSurface> perigee_surface2 =
           Acts::Surface::makeShared<Acts::PerigeeSurface>(seed_perigee_acts);
 

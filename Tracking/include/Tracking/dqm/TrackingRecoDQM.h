@@ -9,7 +9,6 @@
 #include "SimCore/Event/SimTrackerHit.h"
 #include "Tracking/Event/Measurement.h"
 #include "Tracking/Event/Track.h"
-#include "Tracking/Event/Track.h"
 #include "Tracking/Event/TruthTrack.h"
 #include "Tracking/Sim/TrackingUtils.h"
 
