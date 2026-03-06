@@ -289,7 +289,7 @@ class Track {
   int pdg_id_{0};
 
   // Track charge
-  int q_{0};
+  int charge_{0};
 
   // Track time
   double time_{-666.0};
