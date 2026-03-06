@@ -327,7 +327,8 @@ inline ldmx::Track::TrackState makeTrackState(
       Acts::eFreeDir1, Acts::eFreeDir2, Acts::eFreeQOverP};
   Eigen::Matrix<double, 7, 7> free_cov7;
   for (int i = 0; i < 7; ++i)
-    for (int j = 0; j < 7; ++j) free_cov7(i, j) = free_cov(k_keep[i], k_keep[j]);
+    for (int j = 0; j < 7; ++j)
+      free_cov7(i, j) = free_cov(k_keep[i], k_keep[j]);
 
   // Step 3: Jacobian from 7D free-no-time -> 6D Cartesian in ACTS frame
   // p_i = dir_i * p,  dp_i/d(dir_j) = p*delta_ij,  dp_i/d(qop) = -dir_i*p/qop
