@@ -169,9 +169,9 @@ inline Acts::BoundSquareMatrix unpackCov(const std::vector<double>& v_cov) {
 // y_ldmx->z_acts (0 0 1) * (x,y,z)_ldmx = x_acts (1 0 0) * (x,y,z)_ldmx =
 // y_acts (0 1 0) * (x,y,z)_ldmx = z_acts
 inline Acts::SquareMatrix3 ldmx2ActsRotation() {
-  Acts::SquareMatrix3 R;
-  R << 0., 0., 1., 1., 0., 0., 0., 1., 0.;
-  return R;
+  Acts::SquareMatrix3 r;
+  r << 0., 0., 1., 1., 0., 0., 0., 1., 0.;
+  return r;
 }
 
 inline Acts::Vector3 ldmx2Acts(Acts::Vector3 ldmx_v) {
@@ -297,9 +297,9 @@ inline ldmx::Track::TrackState makeTrackState(
   const Acts::Vector3 acts_dir = bound_pars.direction();
 
   // Rotate position and momentum to LDMX frame
-  const Acts::SquareMatrix3 R = acts2LdmxRotation();
-  const Acts::Vector3 ldmx_pos = R * acts_pos;
-  const Acts::Vector3 ldmx_mom = R * (acts_dir * p);
+  const Acts::SquareMatrix3 r = acts2LdmxRotation();
+  const Acts::Vector3 ldmx_pos = r * acts_pos;
+  const Acts::Vector3 ldmx_mom = r * (acts_dir * p);
 
   new_ts.pos_ = {ldmx_pos[0], ldmx_pos[1], ldmx_pos[2]};
   // Convert momentum from ACTS native units (GeV) to MeV
@@ -314,52 +314,52 @@ inline ldmx::Track::TrackState makeTrackState(
   }
 
   // Step 1: Bound (6x6) -> Free (8x8) covariance
-  const Acts::BoundToFreeMatrix J_btf =
+  const Acts::BoundToFreeMatrix j_btf =
       bound_pars.referenceSurface().boundToFreeJacobian(gctx, acts_pos,
                                                         acts_dir);
   const Acts::FreeSquareMatrix free_cov =
-      J_btf * bound_cov.value() * J_btf.transpose();
+      j_btf * bound_cov.value() * j_btf.transpose();
 
   // Step 2: Drop time row/col (eFreeTime = 3) -> 7x7
   // Remaining indices: pos(0,1,2), dir(4,5,6), qop(7)
-  constexpr std::array<int, 7> kKeep = {
+  constexpr std::array<int, 7> k_keep = {
       Acts::eFreePos0, Acts::eFreePos1, Acts::eFreePos2,  Acts::eFreeDir0,
       Acts::eFreeDir1, Acts::eFreeDir2, Acts::eFreeQOverP};
   Eigen::Matrix<double, 7, 7> free_cov7;
   for (int i = 0; i < 7; ++i)
-    for (int j = 0; j < 7; ++j) free_cov7(i, j) = free_cov(kKeep[i], kKeep[j]);
+    for (int j = 0; j < 7; ++j) free_cov7(i, j) = free_cov(k_keep[i], k_keep[j]);
 
   // Step 3: Jacobian from 7D free-no-time -> 6D Cartesian in ACTS frame
   // p_i = dir_i * p,  dp_i/d(dir_j) = p*delta_ij,  dp_i/d(qop) = -dir_i*p/qop
   const double qop = bound_pars.parameters()[Acts::eBoundQOverP];
-  Eigen::Matrix<double, 6, 7> J_fp = Eigen::Matrix<double, 6, 7>::Zero();
-  J_fp.block<3, 3>(0, 0) = Eigen::Matrix3d::Identity();      // pos -> pos
-  J_fp.block<3, 3>(3, 3) = p * Eigen::Matrix3d::Identity();  // dir -> mom
-  J_fp(3, 6) = -acts_dir[0] * p / qop;                       // qop -> px
-  J_fp(4, 6) = -acts_dir[1] * p / qop;                       // qop -> py
-  J_fp(5, 6) = -acts_dir[2] * p / qop;                       // qop -> pz
+  Eigen::Matrix<double, 6, 7> j_fp = Eigen::Matrix<double, 6, 7>::Zero();
+  j_fp.block<3, 3>(0, 0) = Eigen::Matrix3d::Identity();      // pos -> pos
+  j_fp.block<3, 3>(3, 3) = p * Eigen::Matrix3d::Identity();  // dir -> mom
+  j_fp(3, 6) = -acts_dir[0] * p / qop;                       // qop -> px
+  j_fp(4, 6) = -acts_dir[1] * p / qop;                       // qop -> py
+  j_fp(5, 6) = -acts_dir[2] * p / qop;                       // qop -> pz
 
   const Eigen::Matrix<double, 6, 6> cov_acts =
-      J_fp * free_cov7 * J_fp.transpose();
+      j_fp * free_cov7 * j_fp.transpose();
 
   // Step 4: Rotate covariance ACTS -> LDMX using block-diagonal R_6 = diag(R,R)
-  Eigen::Matrix<double, 6, 6> R_6 = Eigen::Matrix<double, 6, 6>::Zero();
-  R_6.block<3, 3>(0, 0) = R;
-  R_6.block<3, 3>(3, 3) = R;
-  const Eigen::Matrix<double, 6, 6> cov_ldmx = R_6 * cov_acts * R_6.transpose();
+  Eigen::Matrix<double, 6, 6> r_6 = Eigen::Matrix<double, 6, 6>::Zero();
+  r_6.block<3, 3>(0, 0) = r;
+  r_6.block<3, 3>(3, 3) = r;
+  const Eigen::Matrix<double, 6, 6> cov_ldmx = r_6 * cov_acts * r_6.transpose();
 
   // Step 5: Flatten upper triangle -> 21 elements.
   // Scale momentum rows/cols from GeV to MeV:
   //   pos-pos (i<3, j<3): x1       [mm^2]
   //   pos-mom (i<3, j>=3): x1000   [mm*MeV]
   //   mom-mom (i>=3, j>=3): x1e6   [MeV^2]
-  const double MeV = Acts::UnitConstants::MeV;
+  const double me_v = Acts::UnitConstants::MeV;
   new_ts.pos_mom_cov_.reserve(21);
   for (int i = 0; i < 6; ++i) {
     for (int j = i; j < 6; ++j) {
       double scale = 1.0;
-      if (i >= 3) scale /= MeV;  // row is momentum (GeV -> MeV)
-      if (j >= 3) scale /= MeV;  // col is momentum (GeV -> MeV)
+      if (i >= 3) scale /= me_v;  // row is momentum (GeV -> MeV)
+      if (j >= 3) scale /= me_v;  // col is momentum (GeV -> MeV)
       new_ts.pos_mom_cov_.push_back(cov_ldmx(i, j) * scale);
     }
   }
