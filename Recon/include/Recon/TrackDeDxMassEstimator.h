@@ -13,7 +13,7 @@
 #include "Framework/EventProcessor.h"
 #include "Recon/Event/TrackDeDxMassEstimate.h"
 #include "Tracking/Event/Measurement.h"
-#include "Tracking/Event/Track.h"
+#include "Tracking/Event/NewTrack.h"
 
 namespace recon {
 

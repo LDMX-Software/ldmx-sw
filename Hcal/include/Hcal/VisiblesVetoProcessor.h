@@ -15,7 +15,7 @@
 #include "Tools/ONNXRuntime.h"
 
 // recoil tracking
-#include "Tracking/Event/Track.h"
+#include "Tracking/Event/NewTrack.h"
 
 namespace hcal {
 

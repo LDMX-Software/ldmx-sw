@@ -21,7 +21,7 @@
 #include "Event/HcalVetoResult.h"
 #include "Framework/Configure/Parameters.h"
 #include "Framework/EventProcessor.h"
-#include "Tracking/Event/Track.h"
+#include "Tracking/Event/NewTrack.h"
 
 namespace hcal {
 
@@ -55,8 +55,8 @@ class HcalVetoProcessor : public framework::Producer {
    * @param[in] ts_title The track state title, most likely "hcal"
    * @returns Vector of parameters for a propagated recoil track
    */
-  std::vector<float> trackProp(const ldmx::Tracks &tracks,
-                               ldmx::TrackStateType ts_type,
+  std::vector<float> trackProp(const ldmx::NewTracks &tracks,
+                               ldmx::NewTrackStateType ts_type,
                                const std::string &ts_title);
 
  private:

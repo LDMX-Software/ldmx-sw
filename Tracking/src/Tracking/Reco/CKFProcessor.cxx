@@ -1,4 +1,5 @@
 #include "Tracking/Reco/CKFProcessor.h"
+#include "Tracking/Event/NewTrack.h"
 
 #include "Acts/EventData/TrackContainer.hpp"
 #include "Acts/Utilities/TrackHelpers.hpp"
@@ -180,7 +181,7 @@ void CKFProcessor::produce(framework::Event& event) {
 
   // TODO use global variable instead and call clear;
 
-  std::vector<ldmx::Track> tracks;
+  std::vector<ldmx::NewTrack> tracks;
 
   auto start = std::chrono::high_resolution_clock::now();
 
@@ -255,14 +256,14 @@ void CKFProcessor::produce(framework::Event& event) {
   // ============   Setup the CKF  ============
 
   // Retrieve the seeds
-  const std::vector<ldmx::Track> seed_tracks =
-      event.getCollection<ldmx::Track>(seed_coll_name_, input_pass_name_);
+  const std::vector<ldmx::NewTrack> seed_tracks =
+      event.getCollection<ldmx::NewTrack>(seed_coll_name_, input_pass_name_);
 
   ldmx_log(info) << "Number of " << seed_coll_name_
                  << " seed tracks = " << seed_tracks.size();
 
   if (seed_tracks.empty()) {
-    std::vector<ldmx::Track> empty;
+    std::vector<ldmx::NewTrack> empty;
     ldmx_log(warn) << "No seed tracks, returning...";
     event.add(out_trk_collection_, empty);
     return;
@@ -274,10 +275,12 @@ void CKFProcessor::produce(framework::Event& event) {
   ldmx_log(debug) << "Transform the seed track to bound parameters";
   int seed_track_index{0};
   for (auto& seed : seed_tracks) {
-    // Transform the seed track to bound parameters
+    // Transform the seed track to bound parameters.
+    // Perigee is stored in LDMX global frame; convert to ACTS frame for surface.
+    Acts::Vector3 perigee_acts = tracking::sim::utils::ldmx2Acts(
+        Acts::Vector3(seed.getPerigeeX(), seed.getPerigeeY(), seed.getPerigeeZ()));
     std::shared_ptr<Acts::PerigeeSurface> perigee_surface =
-        Acts::Surface::makeShared<Acts::PerigeeSurface>(Acts::Vector3(
-            seed.getPerigeeX(), seed.getPerigeeY(), seed.getPerigeeZ()));
+        Acts::Surface::makeShared<Acts::PerigeeSurface>(perigee_acts);
 
     Acts::BoundVector param_vec;
     param_vec << seed.getD0(), seed.getZ0(), seed.getPhi(), seed.getTheta(),
@@ -487,132 +490,94 @@ void CKFProcessor::produce(framework::Event& event) {
     for (auto& track : tracks_from_seed) {
       // do the track smoothing...this is not done in the CKF code anymore
       Acts::smoothTrack(geometryContext(), track);  // from TrackHelpers
-      // make the empty ldmx::Track() and track state at target
-      ldmx::Track trk = ldmx::Track();
-      ldmx::Track::TrackState ts_at_target;
+      // Build the output NewTrack
+      ldmx::NewTrack trk;
 
-      // Extrapolate to the target
-      bool success = trk_extrap_->trackStateAtSurface(
-          track, target_surface_, ts_at_target, ldmx::TrackStateType::AtTarget);
+      // Extrapolate to the target surface
+      auto opt_target = trk_extrap_->extrapolate(track, target_surface_);
 
-      // If extrapolation with field fails, try appropriate fallback based on
-      // tracking system
-      if (!success) {
+      if (!opt_target) {
         if (tagger_tracking_) {
-          // Tagger tracking: try const-B (1.5T) fallback
           n_fieldmap_target_extrap_failed_tagger_++;
           ldmx_log(debug) << "    Field-map target extrapolation failed, "
                              "trying const-B (1.5T) fallback";
-          success = trk_extrap_const_b_->trackStateAtSurface(
-              track, target_surface_, ts_at_target,
-              ldmx::TrackStateType::AtTarget);
-          if (success) {
+          opt_target = trk_extrap_const_b_->extrapolate(track, target_surface_);
+          if (opt_target)
             n_constb_target_extrap_recovered_tagger_++;
-            ldmx_log(debug)
-                << "    Yay! Const-B target extrapolation successful!";
-          } else {
+          else
             ldmx_log(debug) << "    Both field-map and Const-B target "
                                "extrapolation failed!";
-          }
         } else {
-          // Recoil tracking: try zero-B fallback
           n_fieldmap_target_extrap_failed_recoil_++;
           ldmx_log(debug) << "    Field-map target extrapolation failed, "
                              "trying zero-B fallback";
-          success = trk_extrap_zero_b_->trackStateAtSurface(
-              track, target_surface_, ts_at_target,
-              ldmx::TrackStateType::AtTarget);
-          if (success) {
+          opt_target = trk_extrap_zero_b_->extrapolate(track, target_surface_);
+          if (opt_target)
             n_zerob_target_extrap_recovered_recoil_++;
-            ldmx_log(debug)
-                << "    Yay! Zero-B target extrapolation successful!";
-          } else {
+          else
             ldmx_log(debug)
                 << "    Both field-map and Zero-B target extrapolation failed!";
-          }
         }
       }
 
-      // Check if the extrapolation to target succeeded
-      if (success) {
-        ldmx_log(debug) << "    Successfully obtained TrackState at target";
-
-        ldmx_log(debug) << "    Parameters At Target: Loc0 = "
-                        << ts_at_target.params_[0] << ", Loc1 "
-                        << ts_at_target.params_[1]
-                        << ", phi = " << ts_at_target.params_[2]
-                        << ", theta = " << ts_at_target.params_[3] << ", QoP "
-                        << ts_at_target.params_[4];
-
-        trk.addTrackState(ts_at_target);
-      }  // end if success
-      else {
+      if (!opt_target) {
         ldmx_log(debug) << "    Could not extrapolate to target! nhits = "
-                        << track.nMeasurements() << " Printing track states:  ";
+                        << track.nMeasurements() << " Printing track states:";
         for (const auto ts : track.trackStatesReversed()) {
-          if (ts.hasSmoothed()) {
-            ldmx_log(debug) << "    Track momentum for smoothed track state = "
-                            << 1 / ts.smoothed()[Acts::eBoundQOverP];
+          if (ts.hasSmoothed())
             ldmx_log(debug) << "    Parameters: " << ts.smoothed().transpose();
-          } else {
+          else
             ldmx_log(debug) << "    Track state not smoothed!";
-          }
         }
         ldmx_log(debug) << "    ...skipping this track candidate...";
         continue;
       }
 
-      // get the BoundTrackParameters at the target
-      // ...use to fill in the Acts::TrackProxy object
-      // This isn't really necessary, since we can take
-      // most everything for making the ldmx::track
-      // from tsAtTarget...maybe useful for something?
-      // -->one thing this does is allow Acts to
-      // calculate the momentum 3-vector for you
-      Acts::BoundTrackParameters bound_state_at_target =
-          tracking::sim::utils::btp(ts_at_target, target_surface_, 11);
+      ldmx_log(debug) << "    Successfully obtained TrackState at target";
+
+      // Build NewTrackState in LDMX coordinates and add to track
+      auto ts_at_target = tracking::sim::utils::makeTrackState(
+          geometryContext(), *opt_target, ldmx::NewAtTarget);
+      trk.addTrackState(ts_at_target);
+
+      ldmx_log(debug) << "    Position at target (LDMX): ("
+                      << ts_at_target.pos_[0] << ", " << ts_at_target.pos_[1]
+                      << ", " << ts_at_target.pos_[2] << ") mm"
+                      << "  Momentum: (" << ts_at_target.mom_[0] << ", "
+                      << ts_at_target.mom_[1] << ", " << ts_at_target.mom_[2]
+                      << ") GeV";
+
+      // Update ACTS track reference surface (needed for downstream ACTS usage)
       track.setReferenceSurface(target_surface_);
-      track.parameters() = bound_state_at_target.parameters();
+      track.parameters() = opt_target->parameters();
 
-      // ldmx_log(debug) << "  typeid(track).name() = " << typeid(track).name();
-      // These are the parameters at the target surface
-      const Acts::BoundVector& track_pars = track.parameters();
-      // const Acts::BoundMatrix& trk_cov = track.covariance();
-
-      ldmx_log(debug) << "    Track parameters (at target): Loc0 = "
-                      << track_pars[Acts::eBoundLoc0]
-                      << ", Loc1 = " << track_pars[Acts::eBoundLoc1]
-                      << ", Theta = " << track_pars[Acts::eBoundTheta]
-                      << ", Phi = " << track_pars[Acts::eBoundPhi]
-                      << ", chi2 = " << track.chi2()
-                      << ", nHits = " << track.nMeasurements();
-
-      // the target...it's not really perigee anymore.
-      trk.setPerigeeLocation(0, 0, 0);
-      trk.setPerigeeParameters(ts_at_target.params_);
-      trk.setPerigeeCov(ts_at_target.cov_);
+      // Store perigee (bound) parameters at the target for convenience
+      trk.setPerigeeParameters(
+          tracking::sim::utils::convertActsToLdmxPars(opt_target->parameters()));
+      if (opt_target->covariance()) {
+        std::vector<double> cov_vec;
+        tracking::sim::utils::flatCov(*(opt_target->covariance()), cov_vec);
+        trk.setPerigeeCov(cov_vec);
+      }
+      // Perigee location: target surface origin rotated to LDMX frame
+      Acts::Vector3 target_loc_ldmx = tracking::sim::utils::acts2Ldmx(
+          target_surface_->transform(geometryContext()).translation());
+      trk.setPerigeeLocation(target_loc_ldmx[0], target_loc_ldmx[1],
+                             target_loc_ldmx[2]);
 
       trk.setChi2(track.chi2());
       trk.setNhits(track.nMeasurements());
-      // trk.setNdf(track.nDoF());
-      // TODO Switch back to nDoF when Acts is fixed.
       trk.setNdf(track.nMeasurements() - 5);
       trk.setNsharedHits(track.nSharedHits());
-
-      ldmx_log(debug) << "    Track momentum: px = " << track.momentum()[0]
-                      << " py = " << track.momentum()[1]
-                      << " pz = " << track.momentum()[2];
-      trk.setMomentum(track.momentum()[0], track.momentum()[1],
-                      track.momentum()[2]);
+      trk.setCharge(opt_target->parameters()[Acts::eBoundQOverP] > 0 ? 1 : -1);
 
       // At least min_hits hits and p > 50 MeV
-      if ((trk.getNhits() <= min_hits_) || (abs(1. / trk.getQoP()) <= 0.05)) {
+      if ((trk.getNhits() <= min_hits_) ||
+          (std::abs(1. / trk.getQoP()) <= 0.05)) {
         ldmx_log(debug)
             << "  > Track candidate did NOT meet the requirements: Nhits = "
-            << trk.getNhits() << " and p = " << abs(1. / trk.getQoP())
+            << trk.getNhits() << " and p = " << std::abs(1. / trk.getQoP())
             << " GeV";
-        // No point of doing the extrapolations if the track candidate anyway
-        // wont be kept
         continue;
       }
 
@@ -728,53 +693,40 @@ void CKFProcessor::produce(framework::Event& event) {
 
       if (tagger_tracking_) {
         ldmx_log(debug) << "    Beam Origin Extrapolation";
-        ldmx::Track::TrackState ts_at_beam_origin;
-        success = trk_extrap_->trackStateAtSurface(
-            track, beam_origin_surface, ts_at_beam_origin,
-            ldmx::TrackStateType::AtBeamOrigin);
-
-        if (success) {
-          trk.addTrackState(ts_at_beam_origin);
-          ldmx_log(debug)
-              << "  Successfully obtained TrackState at beam origin";
+        auto opt_beam_origin =
+            trk_extrap_->extrapolate(track, beam_origin_surface);
+        if (opt_beam_origin) {
+          trk.addTrackState(tracking::sim::utils::makeTrackState(
+              geometryContext(), *opt_beam_origin, ldmx::NewAtBeamOrigin));
+          ldmx_log(debug) << "    Successfully obtained TrackState at beam origin";
         }
       }
 
       // Recoil Extrapolation to ECAL only
       if (!tagger_tracking_) {
         ldmx_log(debug) << "    Ecal Extrapolation";
-        ldmx::Track::TrackState ts_at_ecal;
-        success = trk_extrap_->trackStateAtSurface(
-            track, ecal_surface, ts_at_ecal, ldmx::TrackStateType::AtECAL);
+        auto opt_ecal = trk_extrap_->extrapolate(track, ecal_surface);
 
-        // If extrapolation with field fails, try zero-B fallback
-        if (!success) {
+        if (!opt_ecal) {
           n_fieldmap_ecal_extrap_failed_recoil_++;
           ldmx_log(debug) << "    Field-map ECAL extrapolation failed, trying "
                              "zero-B fallback";
-          success = trk_extrap_zero_b_->trackStateAtSurface(
-              track, ecal_surface, ts_at_ecal, ldmx::TrackStateType::AtECAL);
-          if (success) {
+          opt_ecal = trk_extrap_zero_b_->extrapolate(track, ecal_surface);
+          if (opt_ecal)
             n_zerob_ecal_extrap_recovered_recoil_++;
-            ldmx_log(debug) << "    Yay! Zero-B ECAL extrapolation successful";
-          } else {
+          else
             ldmx_log(debug)
                 << "    Both field-map and Zero-B ECAL extrapolation failed!";
-          }
         }
 
-        if (success) {
+        if (opt_ecal) {
+          auto ts_at_ecal = tracking::sim::utils::makeTrackState(
+              geometryContext(), *opt_ecal, ldmx::NewAtECAL);
           trk.addTrackState(ts_at_ecal);
-          ldmx_log(debug) << "    Successfully obtained TrackState at Ecal";
-          ldmx_log(debug) << "    Parameters At Ecal: Loc0 = "
-                          << ts_at_ecal.params_[0]
-                          << ", Loc1 = " << ts_at_ecal.params_[1]
-                          << ", phi = " << ts_at_ecal.params_[2]
-                          << ", theta = " << ts_at_ecal.params_[3]
-                          << ", QoP = " << ts_at_ecal.params_[4];
-        } else {
-          ldmx_log(debug) << "    Could not extrapolate to ECAL!! Please check "
-                             "the track states";
+          ldmx_log(debug) << "    Successfully obtained TrackState at ECAL";
+          ldmx_log(debug) << "    Position at ECAL (LDMX): ("
+                          << ts_at_ecal.pos_[0] << ", " << ts_at_ecal.pos_[1]
+                          << ", " << ts_at_ecal.pos_[2] << ") mm";
         }
       }
 
@@ -1014,7 +966,7 @@ auto CKFProcessor::makeGeoIdSourceLinkMap(
 template <typename geometry_t, typename source_link_hash_t,
           typename source_link_equality_t>
 std::vector<std::vector<std::size_t>> CKFProcessor::computeSharedHits(
-    std::vector<ldmx::Track> tracks, std::vector<ldmx::Measurement> meas_coll,
+    std::vector<ldmx::NewTrack> tracks, std::vector<ldmx::Measurement> meas_coll,
     geometry_t& tg, source_link_hash_t&& sourceLinkHash,
     source_link_equality_t&& sourceLinkEquality) const {
   auto measurement_index_map =

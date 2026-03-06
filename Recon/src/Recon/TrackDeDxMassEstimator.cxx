@@ -27,8 +27,8 @@ void TrackDeDxMassEstimator::produce(framework::Event &event) {
                     << input_pass_name_ << " not in event, exiting...";
     return;
   }
-  const std::vector<ldmx::Track> tracks{
-      event.getCollection<ldmx::Track>(track_collection_, input_pass_name_)};
+  const std::vector<ldmx::NewTrack> tracks{
+      event.getCollection<ldmx::NewTrack>(track_collection_, input_pass_name_)};
 
   int track_type;
   std::string track_coll_str = track_collection_;

@@ -28,7 +28,7 @@
 
 //--- Tracking ---//
 #include "Tracking/Event/Measurement.h"
-#include "Tracking/Event/Track.h"
+#include "Tracking/Event/NewTrack.h"
 #include "Tracking/Reco/TrackExtrapolatorTool.h"
 #include "Tracking/Sim/IndexSourceLink.h"
 #include "Tracking/Sim/MeasurementCalibrator.h"
@@ -128,7 +128,7 @@ class GreedyAmbiguitySolver final : public TrackingGeometryUser {
   /// @param sourceLinkEquality A functor to check equality of two source links.
   template <typename geometry_t, typename source_link_hash_t,
             typename source_link_equality_t>
-  void computeInitialState(std::vector<ldmx::Track> tracks,
+  void computeInitialState(std::vector<ldmx::NewTrack> tracks,
                            std::vector<ldmx::Measurement> measurements,
                            State& state, geometry_t& tg,
                            source_link_hash_t&& sourceLinkHash,

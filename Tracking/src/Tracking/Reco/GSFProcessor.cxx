@@ -1,4 +1,5 @@
 #include "Tracking/Reco/GSFProcessor.h"
+#include "Tracking/Event/NewTrack.h"
 
 #include <algorithm>
 
@@ -169,7 +170,7 @@ void GSFProcessor::produce(framework::Event& event) {
   if (!event.exists(track_collection_, track_collection_event_passname_))
     return;
   auto tracks{
-      event.getCollection<ldmx::Track>(track_collection_, track_passname_)};
+      event.getCollection<ldmx::NewTrack>(track_collection_, track_passname_)};
 
   // Retrieve the measurements
   if (!event.exists(meas_collection_, meas_collection_event_passname_)) return;
@@ -249,7 +250,7 @@ void GSFProcessor::produce(framework::Event& event) {
   gsf_options.disableAllMaterialHandling = disable_all_material_handling_;
 
   // Output track container
-  std::vector<ldmx::Track> out_tracks;
+  std::vector<ldmx::NewTrack> out_tracks;
 
   Acts::VectorTrackContainer vtc;
   Acts::VectorMultiTrajectory mtj;
@@ -293,73 +294,50 @@ void GSFProcessor::produce(framework::Event& event) {
 
     ldmx_log(debug) << "  Track bound track parameters preparation:";
 
-    // Get the track parameters
-
+    // Reconstruct BoundTrackParameters at perigee (target) from stored params.
+    // perigee_ is stored in LDMX frame; rotate to ACTS frame for surface creation.
+    Acts::Vector3 perigee_acts = tracking::sim::utils::ldmx2Acts(
+        Acts::Vector3(track.getPerigeeX(), track.getPerigeeY(), track.getPerigeeZ()));
     std::shared_ptr<Acts::PerigeeSurface> perigee =
-        Acts::Surface::makeShared<Acts::PerigeeSurface>(Acts::Vector3(
-            track.getPerigeeX(), track.getPerigeeY(), track.getPerigeeZ()));
+        Acts::Surface::makeShared<Acts::PerigeeSurface>(perigee_acts);
 
     Acts::BoundTrackParameters trk_btp =
         tracking::sim::utils::boundTrackParameters(track, perigee);
 
-    Acts::BoundTrackParameters trk_btp_beam_origin =
-        tracking::sim::utils::boundTrackParameters(track, perigee);
+    // GSF starting parameters: for tagger, extrapolate back to beam origin;
+    // for recoil, use target parameters directly.
+    Acts::BoundTrackParameters trk_btp_fit_start = trk_btp;
 
     if (tagger_tracking_) {
-      if (!track.getTrackState(ldmx::TrackStateType::AtBeamOrigin)
-               .has_value()) {
-        ldmx_log(warn) << "Failed retreiving AtBeamOrigin TrackState for "
-                          "track. Skipping..";
+      auto opt_beam_origin =
+          trk_extrap_->extrapolate(trk_btp, beam_origin_surface_);
+      if (!opt_beam_origin) {
+        ldmx_log(warn) << "Failed extrapolating to beam origin for GSF start. "
+                          "Skipping..";
         continue;
       }
+      trk_btp_fit_start = *opt_beam_origin;
+    }
 
-      auto ts = track.getTrackState(ldmx::TrackStateType::AtBeamOrigin).value();
-      trk_btp_beam_origin =
-          tracking::sim::utils::btp(ts, beam_origin_surface_, 11);
-    }
-    // Recoil tracking
-    else {
-      if (!track.getTrackState(ldmx::TrackStateType::AtTarget).has_value()) {
-        ldmx_log(warn)
-            << "Failed retreiving AtTarget TrackState for track. Skipping..";
-        continue;
-      }
-      auto ts = track.getTrackState(ldmx::TrackStateType::AtTarget).value();
-      trk_btp_beam_origin = tracking::sim::utils::btp(ts, target_surface_, 11);
-    }
-    ldmx_log(debug) << "    Perigee Surface (acts-x, acts-y, acts-z) = ("
+    ldmx_log(debug) << "    Perigee surface (acts): ("
                     << track.getPerigeeX() << ", " << track.getPerigeeY()
                     << ", " << track.getPerigeeZ() << ")";
 
     const Acts::BoundVector& trkpars = trk_btp.parameters();
-    ldmx_log(debug) << "    Track parameters (d0, z0, phi, theta, q/p)= ("
+    ldmx_log(debug) << "    Perigee parameters (d0, z0, phi, theta, q/p)= ("
                     << trkpars[Acts::eBoundLoc0] << ", "
                     << trkpars[Acts::eBoundLoc1] << ", "
                     << trkpars[Acts::eBoundPhi] << ", "
                     << trkpars[Acts::eBoundTheta] << ", "
                     << trkpars[Acts::eBoundQOverP] << ")";
 
-    Acts::Vector3 trk_pos = trk_btp.position(geometryContext());
-    ldmx_log(debug) << "    Track position (acts-x, acts-y, acts-z) = ("
-                    << trk_pos(0) << ", " << trk_pos(1) << ", " << trk_pos(2)
-                    << ")";
-
-    const Acts::BoundVector& trk_pars_beam_origin =
-        trk_btp_beam_origin.parameters();
-    ldmx_log(debug)
-        << "    BeamOrigin track parameters (d0, z0, phi, theta, q/p)= ("
-        << trk_pars_beam_origin[Acts::eBoundLoc0] << ", "
-        << trk_pars_beam_origin[Acts::eBoundLoc1] << ", "
-        << trk_pars_beam_origin[Acts::eBoundPhi] << ", "
-        << trk_pars_beam_origin[Acts::eBoundTheta] << ", "
-        << trk_pars_beam_origin[Acts::eBoundQOverP] << ")";
-
-    Acts::Vector3 trk_pos_beam_origin =
-        trk_btp_beam_origin.position(geometryContext());
-    ldmx_log(debug)
-        << "    BeamOrigin track position (acts-x, acts-y, acts-z) = ("
-        << trk_pos_beam_origin(0) << ", " << trk_pos_beam_origin(1) << ", "
-        << trk_pos_beam_origin(2) << ")";
+    const Acts::BoundVector& fit_start_pars = trk_btp_fit_start.parameters();
+    ldmx_log(debug) << "    GSF start parameters (d0, z0, phi, theta, q/p)= ("
+                    << fit_start_pars[Acts::eBoundLoc0] << ", "
+                    << fit_start_pars[Acts::eBoundLoc1] << ", "
+                    << fit_start_pars[Acts::eBoundPhi] << ", "
+                    << fit_start_pars[Acts::eBoundTheta] << ", "
+                    << fit_start_pars[Acts::eBoundQOverP] << ")";
 
     ldmx_log(debug) << "  About to run GSF fit with "
                     << fit_track_source_links.size() << " source links";
@@ -372,11 +350,9 @@ void GSFProcessor::produce(framework::Event& event) {
     }
     gsf_options.referenceSurface = &(*gsf_ref_surface);
 
-    // Use beam origin track for GSF fitting (has correct trajectory for
-    // measurements) but we'll extrapolate to (0,0,0) for final parameters
     auto gsf_refit_result =
         gsf_->fit(fit_track_source_links.begin(), fit_track_source_links.end(),
-                  trk_btp_beam_origin, gsf_options, tc);
+                  trk_btp_fit_start, gsf_options, tc);
 
     if (!gsf_refit_result.ok()) {
       ldmx_log(warn) << "GSF re-fit failed: "
@@ -411,82 +387,66 @@ void GSFProcessor::produce(framework::Event& event) {
                     << perigee_pars[Acts::eBoundTheta] << ", "
                     << perigee_pars[Acts::eBoundQOverP] << ") ";
 
-    ldmx::Track trk = ldmx::Track();
+    ldmx::NewTrack trk;
 
-    bool success = false;
-    bool success_ecal = false;
-    ldmx::Track::TrackState ts_at_target_surface;
+    // Extrapolate GSF track to target surface to get perigee parameters
+    auto opt_target = trk_extrap_->extrapolate(gsftrk, target_surface_);
 
-    if (tagger_tracking_) {
-      ldmx_log(debug) << "  Target extrapolation";
-      ldmx::Track::TrackState ts_at_target;
+    if (opt_target) {
+      ldmx_log(debug) << "    GSF target extrapolation succeeded";
+      auto ts_at_target = tracking::sim::utils::makeTrackState(
+          geometryContext(), *opt_target, ldmx::NewAtTarget);
+      trk.addTrackState(ts_at_target);
 
-      success = trk_extrap_->trackStateAtSurface(
-          gsftrk, target_surface_, ts_at_target,
-          ldmx::TrackStateType::AtTarget);
-
-      if (success) {
-        trk.addTrackState(ts_at_target);
-        ts_at_target_surface = ts_at_target;
+      trk.setPerigeeParameters(
+          tracking::sim::utils::convertActsToLdmxPars(opt_target->parameters()));
+      if (opt_target->covariance()) {
+        std::vector<double> cov_vec;
+        tracking::sim::utils::flatCov(*(opt_target->covariance()), cov_vec);
+        trk.setPerigeeCov(cov_vec);
       }
-    }  // end tagger tracking
-    else {
-      ldmx_log(debug) << "  Ecal Extrapolation";
-      ldmx::Track::TrackState ts_at_ecal;
-      success_ecal = trk_extrap_->trackStateAtSurface(
-          gsftrk, ecal_surface_, ts_at_ecal, ldmx::TrackStateType::AtECAL);
+      Acts::Vector3 target_loc_ldmx = tracking::sim::utils::acts2Ldmx(
+          target_surface_->transform(geometryContext()).translation());
+      trk.setPerigeeLocation(target_loc_ldmx[0], target_loc_ldmx[1],
+                             target_loc_ldmx[2]);
 
-      if (success_ecal) trk.addTrackState(ts_at_ecal);
-
-      // Also get track state at target for perigee parameters
-      ldmx_log(debug) << "  Target extrapolation for perigee parameters";
-      success = trk_extrap_->trackStateAtSurface(
-          gsftrk, target_surface_, ts_at_target_surface,
-          ldmx::TrackStateType::AtTarget);
-      if (success) trk.addTrackState(ts_at_target_surface);
-    }  // end recoil tracking
-
-    // Use parameters at target surface (0, 0, 0) for perigee
-    trk.setPerigeeLocation(0., 0., 0.);
-    trk.setChi2(gsftrk.chi2());
-    trk.setNhits(gsftrk.nMeasurements());
-    trk.setNdf(gsftrk.nMeasurements() - 5);
-    if (success) {
-      ldmx_log(debug) << "    Extrapolated track parameters at target (d0, z0, "
-                         "phi, theta, q/p)= ("
-                      << ts_at_target_surface.params_[Acts::eBoundLoc0] << ", "
-                      << ts_at_target_surface.params_[Acts::eBoundLoc1] << ", "
-                      << ts_at_target_surface.params_[Acts::eBoundPhi] << ", "
-                      << ts_at_target_surface.params_[Acts::eBoundTheta] << ", "
-                      << ts_at_target_surface.params_[Acts::eBoundQOverP]
-                      << ")";
-      ldmx_log(debug) << "    Using extrapolated parameters";
-      trk.setPerigeeParameters(ts_at_target_surface.params_);
-      std::vector<double> cov;
-      for (auto c : ts_at_target_surface.cov_) cov.push_back(c);
-      ldmx_log(debug) << "    Setting extrapolated covariance, size="
-                      << cov.size();
-      trk.setPerigeeCov(cov);
+      ldmx_log(debug) << "    GSF target parameters (d0, z0, phi, theta, q/p)= ("
+                      << opt_target->parameters()[Acts::eBoundLoc0] << ", "
+                      << opt_target->parameters()[Acts::eBoundLoc1] << ", "
+                      << opt_target->parameters()[Acts::eBoundPhi] << ", "
+                      << opt_target->parameters()[Acts::eBoundTheta] << ", "
+                      << opt_target->parameters()[Acts::eBoundQOverP] << ")";
     } else {
-      ldmx_log(debug) << "    Extrapolation failed, using perigee parameters";
-      ldmx_log(debug) << "    Perigee parameters (d0, z0, phi, theta, q/p)= ("
-                      << perigee_pars[Acts::eBoundLoc0] << ", "
-                      << perigee_pars[Acts::eBoundLoc1] << ", "
-                      << perigee_pars[Acts::eBoundPhi] << ", "
-                      << perigee_pars[Acts::eBoundTheta] << ", "
-                      << perigee_pars[Acts::eBoundQOverP] << ")";
+      ldmx_log(debug) << "    GSF target extrapolation failed, using GSF fit "
+                         "parameters at reference surface";
       trk.setPerigeeParameters(
           tracking::sim::utils::convertActsToLdmxPars(perigee_pars));
       std::vector<double> v_trk_cov;
       tracking::sim::utils::flatCov(trk_cov, v_trk_cov);
-      ldmx_log(debug) << "    Setting perigee covariance, size="
-                      << v_trk_cov.size();
       trk.setPerigeeCov(v_trk_cov);
     }
-    Acts::Vector3 trk_momentum = gsftrk.momentum();
-    trk.setMomentum(trk_momentum(0), trk_momentum(1), trk_momentum(2));
 
-    // truth information
+    // Tagger: also add beam-origin state; Recoil: add ECAL state
+    if (tagger_tracking_) {
+      auto opt_beam_origin =
+          trk_extrap_->extrapolate(gsftrk, beam_origin_surface_);
+      if (opt_beam_origin)
+        trk.addTrackState(tracking::sim::utils::makeTrackState(
+            geometryContext(), *opt_beam_origin, ldmx::NewAtBeamOrigin));
+    } else {
+      ldmx_log(debug) << "  ECAL extrapolation";
+      auto opt_ecal = trk_extrap_->extrapolate(gsftrk, ecal_surface_);
+      if (opt_ecal)
+        trk.addTrackState(tracking::sim::utils::makeTrackState(
+            geometryContext(), *opt_ecal, ldmx::NewAtECAL));
+    }
+
+    trk.setChi2(gsftrk.chi2());
+    trk.setNhits(gsftrk.nMeasurements());
+    trk.setNdf(gsftrk.nMeasurements() - 5);
+    trk.setCharge(perigee_pars[Acts::eBoundQOverP] > 0 ? 1 : -1);
+
+    // Truth information carried over from input track
     trk.setTrackID(track.getTrackID());
     trk.setPdgID(track.getPdgID());
     trk.setTruthProb(track.getTruthProb());

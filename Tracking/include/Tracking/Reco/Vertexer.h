@@ -6,7 +6,7 @@
 #include "Framework/EventProcessor.h"
 
 // --- Tracking --- //
-#include "Tracking/Event/Track.h"
+#include "Tracking/Event/NewTrack.h"
 #include "Tracking/Sim/BFieldXYZUtils.h"
 #include "Tracking/Sim/TrackingUtils.h"
 
@@ -58,8 +58,8 @@ class Vertexer : public framework::Producer {
 
   void produce(framework::Event& event) override;
 
-  void taggerRecoilMonitoring(const std::vector<ldmx::Track>& tagger_tracks,
-                              const std::vector<ldmx::Track>& recoil_tracks);
+  void taggerRecoilMonitoring(const std::vector<ldmx::NewTrack>& tagger_tracks,
+                              const std::vector<ldmx::NewTrack>& recoil_tracks);
 
  private:
   Acts::GeometryContext gctx_;

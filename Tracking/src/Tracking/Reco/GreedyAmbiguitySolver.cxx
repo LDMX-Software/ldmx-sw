@@ -41,7 +41,7 @@ void GreedyAmbiguitySolver::removeTrack(State& state,
 template <typename geometry_t, typename source_link_hash_t,
           typename source_link_equality_t>
 void GreedyAmbiguitySolver::computeInitialState(
-    std::vector<ldmx::Track> tracks, std::vector<ldmx::Measurement> meas_coll,
+    std::vector<ldmx::NewTrack> tracks, std::vector<ldmx::Measurement> meas_coll,
     State& state, geometry_t& tg, source_link_hash_t&& sourceLinkHash,
     source_link_equality_t&& sourceLinkEquality) const {
   auto measurement_index_map =
@@ -178,7 +178,7 @@ void GreedyAmbiguitySolver::configure(
 
 void GreedyAmbiguitySolver::produce(framework::Event& event) {
   GreedyAmbiguitySolver::State state;
-  std::vector<ldmx::Track> out_tracks;
+  std::vector<ldmx::NewTrack> out_tracks;
 
   auto tg{geometry()};
 
@@ -187,7 +187,7 @@ void GreedyAmbiguitySolver::produce(framework::Event& event) {
     return;
   }
   auto tracks{
-      event.getCollection<ldmx::Track>(track_collection_, input_pass_name_)};
+      event.getCollection<ldmx::NewTrack>(track_collection_, input_pass_name_)};
 
   if (!event.exists(meas_collection_, input_pass_name_)) {
     ldmx_log(debug) << "Measurement collection not found, exiting";

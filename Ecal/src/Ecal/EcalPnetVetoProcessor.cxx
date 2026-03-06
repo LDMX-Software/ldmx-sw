@@ -91,9 +91,9 @@ void EcalPnetVetoProcessor::produce(framework::Event& event) {
       }
     } else if (recoil_from_tracking_) {
       // Use tracking to get electron hit position/momentum at Ecal surface
-      auto recoil_tracks{event.getCollection<ldmx::Track>(track_collection_,
-                                                          track_pass_name_)};
-      ldmx::TrackStateType ts_at_ecal = ldmx::TrackStateType::AtECAL;
+      auto recoil_tracks{event.getCollection<ldmx::NewTrack>(track_collection_,
+                                                             track_pass_name_)};
+      ldmx::NewTrackStateType ts_at_ecal = ldmx::NewAtECAL;
       auto recoil_track_states_ecal =
           ecal::trackProp(recoil_tracks, ts_at_ecal, "ecal");
       if (!recoil_track_states_ecal.empty()) {

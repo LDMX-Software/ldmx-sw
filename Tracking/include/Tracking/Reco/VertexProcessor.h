@@ -6,7 +6,7 @@
 #include "Framework/EventProcessor.h"
 
 // --- Tracking --- //
-#include "Tracking/Event/Track.h"
+#include "Tracking/Event/NewTrack.h"
 #include "Tracking/Sim/BFieldXYZUtils.h"
 #include "Tracking/Sim/TrackingUtils.h"
 

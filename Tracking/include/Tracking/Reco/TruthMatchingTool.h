@@ -2,6 +2,7 @@
 #include "Acts/EventData/VectorTrackContainer.hpp"
 #include "SimCore/Event/SimParticle.h"
 #include "Tracking/Event/Measurement.h"
+#include "Tracking/Event/NewTrack.h"
 #include "Tracking/Event/Track.h"
 #include "Tracking/Reco/TruthMatchingTool.h"
 
@@ -43,6 +44,7 @@ class TruthMatchingTool {
   virtual ~TruthMatchingTool() = default;
 
   TruthInfo truthMatch(const ldmx::Track& trk);
+  TruthInfo truthMatch(const ldmx::NewTrack& trk);
   TruthInfo evaluate(
       const std::unordered_map<unsigned int, unsigned int>& trk_trackIDs,
       int n_meas);

@@ -8,6 +8,7 @@
 #include "Framework/EventProcessor.h"
 #include "SimCore/Event/SimTrackerHit.h"
 #include "Tracking/Event/Measurement.h"
+#include "Tracking/Event/NewTrack.h"
 #include "Tracking/Event/Track.h"
 #include "Tracking/Event/TruthTrack.h"
 #include "Tracking/Sim/TrackingUtils.h"
@@ -35,12 +36,12 @@ class TrackingRecoDQM : public framework::Analyzer {
 
   void analyze(const framework::Event& event) override;
 
-  void trackMonitoring(const std::vector<ldmx::Track>& tracks,
+  void trackMonitoring(const std::vector<ldmx::NewTrack>& tracks,
                        const std::vector<ldmx::Measurement>& measurements,
                        const std::string title, const bool& doDetail,
                        const bool& doTruth);
 
-  void efficiencyPlots(const std::vector<ldmx::Track>& tracks,
+  void efficiencyPlots(const std::vector<ldmx::NewTrack>& tracks,
                        const std::vector<ldmx::Measurement>& measurements,
                        const std::string& title);
 
@@ -51,8 +52,8 @@ class TrackingRecoDQM : public framework::Analyzer {
    *
    */
 
-  void trackStateMonitoring(const ldmx::Tracks& tracks,
-                            ldmx::TrackStateType ts_type,
+  void trackStateMonitoring(const std::vector<ldmx::NewTrack>& tracks,
+                            ldmx::NewTrackStateType ts_type,
                             const std::string& ts_title);
   /**
    * Configure the analyzer using the given user specified parameters.
@@ -64,10 +65,10 @@ class TrackingRecoDQM : public framework::Analyzer {
 
   void onProcessEnd() override;
 
-  void sortTracks(const std::vector<ldmx::Track>& tracks,
-                  std::vector<ldmx::Track>& uniqueTracks,
-                  std::vector<ldmx::Track>& duplicateTracks,
-                  std::vector<ldmx::Track>& fakeTracks);
+  void sortTracks(const std::vector<ldmx::NewTrack>& tracks,
+                  std::vector<ldmx::NewTrack>& uniqueTracks,
+                  std::vector<ldmx::NewTrack>& duplicateTracks,
+                  std::vector<ldmx::NewTrack>& fakeTracks);
 
  private:
   std::string track_collection_;
@@ -91,7 +92,7 @@ class TrackingRecoDQM : public framework::Analyzer {
   std::vector<std::string> track_states_;
 
   // Truth Track collection
-  std::shared_ptr<ldmx::Tracks> truth_track_collection_{nullptr};
+  std::shared_ptr<std::vector<ldmx::NewTrack>> truth_track_collection_{nullptr};
 
   // Ecal scoring plane hits_
   std::shared_ptr<std::vector<ldmx::SimTrackerHit>> ecal_scoring_hits_{nullptr};
@@ -103,11 +104,11 @@ class TrackingRecoDQM : public framework::Analyzer {
   // If I have truth information, sort the tracks vector according to their
   // trackID and truthProb
   // real tracks (truth_prob > cut), unique
-  std::vector<ldmx::Track> unique_tracks_;
+  std::vector<ldmx::NewTrack> unique_tracks_;
   // real tracks (truth_prob > cut), duplicated
-  std::vector<ldmx::Track> duplicate_tracks_;
+  std::vector<ldmx::NewTrack> duplicate_tracks_;
   // fake tracks (truth_prob < cut)
-  std::vector<ldmx::Track> fake_tracks_;
+  std::vector<ldmx::NewTrack> fake_tracks_;
 
   // PID mapping
   std::map<int, int> pidmap_;

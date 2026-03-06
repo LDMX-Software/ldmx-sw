@@ -121,10 +121,10 @@ void Vertexer::produce(framework::Event& event) {
 
   // Retrive the two track collections
 
-  const std::vector<ldmx::Track> tracks_1 =
-      event.getCollection<ldmx::Track>(trk_c_name_1_, input_pass_name_);
-  const std::vector<ldmx::Track> tracks_2 =
-      event.getCollection<ldmx::Track>(trk_c_name_2_, input_pass_name_);
+  const std::vector<ldmx::NewTrack> tracks_1 =
+      event.getCollection<ldmx::NewTrack>(trk_c_name_1_, input_pass_name_);
+  const std::vector<ldmx::NewTrack> tracks_2 =
+      event.getCollection<ldmx::NewTrack>(trk_c_name_2_, input_pass_name_);
 
   ldmx_log(debug) << "Retrieved track collections" << std::endl
                   << "Track 1 size:" << tracks_1.size() << std::endl
@@ -136,10 +136,11 @@ void Vertexer::produce(framework::Event& event) {
 
   // TODO:: The perigee surface should be common between all tracks.
 
+  Acts::Vector3 perigee_acts = tracking::sim::utils::ldmx2Acts(Acts::Vector3(
+      tracks_1.front().getPerigeeX(), tracks_1.front().getPerigeeY(),
+      tracks_1.front().getPerigeeZ()));
   std::shared_ptr<Acts::PerigeeSurface> perigee_surface =
-      Acts::Surface::makeShared<Acts::PerigeeSurface>(Acts::Vector3(
-          tracks_1.front().getPerigeeX(), tracks_1.front().getPerigeeY(),
-          tracks_1.front().getPerigeeZ()));
+      Acts::Surface::makeShared<Acts::PerigeeSurface>(perigee_acts);
 
   // Monitoring of tagger and recoil tracks
   taggerRecoilMonitoring(tracks_1, tracks_2);
@@ -220,16 +221,16 @@ void Vertexer::onProcessEnd() {
 }
 
 void Vertexer::taggerRecoilMonitoring(
-    const std::vector<ldmx::Track>& tagger_tracks,
-    const std::vector<ldmx::Track>& recoil_tracks) {
+    const std::vector<ldmx::NewTrack>& tagger_tracks,
+    const std::vector<ldmx::NewTrack>& recoil_tracks) {
   // For the moment only check that I have 1 tagger track and one recoil track
   // To avoid trying to match them
   // TODO update this logic
 
   if (tagger_tracks.size() != 1 || recoil_tracks.size() != 1) return;
 
-  ldmx::Track t_trk = tagger_tracks.at(0);
-  ldmx::Track r_trk = recoil_tracks.at(0);
+  ldmx::NewTrack t_trk = tagger_tracks.at(0);
+  ldmx::NewTrack r_trk = recoil_tracks.at(0);
 
   double t_p, r_p;
   // these are unsed, should they be? FIXME
@@ -238,8 +239,8 @@ void Vertexer::taggerRecoilMonitoring(
   // double t_theta, r_theta;
   // double t_z0, r_z0;
 
-  t_p = t_trk.q() / t_trk.getQoP();
-  r_p = r_trk.q() / r_trk.getQoP();
+  t_p = t_trk.getCharge() / t_trk.getQoP();
+  r_p = r_trk.getCharge() / r_trk.getQoP();
 
   h_delta_d0_->Fill(t_trk.getD0() - r_trk.getD0());
   h_delta_z0_->Fill(t_trk.getZ0() - r_trk.getZ0());

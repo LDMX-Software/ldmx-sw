@@ -16,5 +16,7 @@
 #pragma link C++ class std::vector < ldmx::Measurement> + ;
 #pragma link C++ class ldmx::TrackerVetoResult + ;
 #pragma link C++ class std::vector < ldmx::TrackerVetoResult> + ;
+#pragma link C++ class ldmx::NewTrack + ;
+#pragma link C++ class std::vector < ldmx::NewTrack> + ;
 
 #endif
