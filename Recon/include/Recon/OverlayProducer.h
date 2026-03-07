@@ -3,6 +3,7 @@
 
 //---< C++ StdLib >---//
 #include <algorithm>
+#include <bitset>
 #include <map>
 #include <memory>
 #include <string>
@@ -63,6 +64,19 @@ class OverlayProducer : public framework::Producer {
    * appended string "Overlay". This name is also currently hardwired.
    */
   void produce(framework::Event &event) override;
+
+  /**
+   * Encode track ID with overlay event information.
+   *
+   * Performs bitwise encoding on track ID integer with version and event
+   * index.
+   *
+   * VERSION DESCRIPTION
+   * - 0 : no encoding, leaves track_id alone
+   * - 1 : four bit version (27-31) plus three bit event index (24-26)
+   */
+  int encodeTrack(int track_id, const unsigned int encoding_version,
+                  const unsigned int event_index = 0);
 
   /**
    * At the start of processing, the pileup overlay file is set up.
@@ -201,6 +215,18 @@ class OverlayProducer : public framework::Producer {
    * Inclusive.
    */
   int start_event_max_{10000};
+
+  /**
+   * Track ID encoding scheme version. Version is stored
+   * in first 4 bits after the sign bit in the track ID int
+   * variables (i.e. bits 28-31)
+   *
+   * If this variable is left as the hardcoded default 0, then
+   * the OverlayProducer will default to not managing track IDs,
+   * instead setting all equal to nonsense values as was the case
+   * before the introduction of this track ID management.
+   */
+  unsigned track_id_encoding_{0};
 };
 }  // namespace recon
 

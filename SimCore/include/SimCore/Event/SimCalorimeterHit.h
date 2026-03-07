@@ -8,6 +8,9 @@
 #ifndef SIMCORE_EVENT_SIMCALORIMETERHIT_H_
 #define SIMCORE_EVENT_SIMCALORIMETERHIT_H_
 
+// C++
+#include <functional>  // for track ID encodings
+
 // ROOT
 #include "TObject.h"  //For ClassDef
 
@@ -275,6 +278,18 @@ class SimCalorimeterHit {
    * @param time The time of the contribution [ns].
    */
   void updateContrib(int i, float edep, float time);
+
+  /**
+   * Encodes all Track IDs in the SimCalorimeterHit object according
+   * to the schema provided in the 'encodeFunc' passed to this method.
+   * @param encodeFunc The track ID encoding function to be called.
+   * @param encoding_version The version number for the track ID bitwise
+   * encoding schema. Possible values range over [0, 15].
+   * @param event_index The sample event index to assign the track ID.
+   */
+  void encodeTracks(
+      std::function<int(int, unsigned int, unsigned int)> encodeFunc,
+      const unsigned int encoding_version, const unsigned int event_index = 0);
 
   /**
    * Sort by time of hit

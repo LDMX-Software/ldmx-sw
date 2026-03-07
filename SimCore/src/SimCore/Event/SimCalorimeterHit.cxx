@@ -16,6 +16,7 @@ void SimCalorimeterHit::clear() {
   pdg_code_contribs_.clear();
   edep_contribs_.clear();
   time_contribs_.clear();
+  origin_contribs_.clear();
 
   n_contribs_ = 0;
   id_ = 0;
@@ -89,4 +90,18 @@ void SimCalorimeterHit::updateContrib(int i, float edep, float time) {
   }
   edep_ += edep;
 }
+
+void SimCalorimeterHit::encodeTracks(
+    std::function<int(int, unsigned int, unsigned int)> encodeFunc,
+    const unsigned int encoding_version, const unsigned int event_index) {
+  for (int i_contrib = 0; i_contrib < this->n_contribs_; i_contrib++) {
+    this->track_id_contribs_[i_contrib] = encodeFunc(
+        this->track_id_contribs_[i_contrib], encoding_version, event_index);
+    this->incident_id_contribs_[i_contrib] = encodeFunc(
+        this->incident_id_contribs_[i_contrib], encoding_version, event_index);
+    this->origin_contribs_[i_contrib] = encodeFunc(
+        this->origin_contribs_[i_contrib], encoding_version, event_index);
+  }
+}
+
 }  // namespace ldmx
