@@ -546,6 +546,18 @@ int OverlayProducer::encodeTrack(int track_id,
                         std::to_string(encoding_version) +
                         " has exceeded version maximum value of 15");
   }
+  if (track_id < 0) {
+    // if track_id < 0 it's probably a default nonsense value -1;
+    // encoding at present DOES NOT WORK for negative values because C++ uses
+    // twos complement encoding for negative numbers;
+    // thus when decoding you should first check the first bit, and
+    // set it to a nonsense -1 if the number is negative.
+    // Right now (2026-03-07) the only place where track IDs are -1 are the origin
+    // ids in the SimCalorimeterHit contribs, which aren't used anyways and present
+    // no risk for overwriting data for duplicate track IDs, so we can leave this alone
+    ldmx_log(warn) << "Track ID has value " << track_id << " < 0; no encoding will be applied";
+    return track_id;
+  }
 
   // encode Track ID according to provided version
   switch (encoding_version) {
