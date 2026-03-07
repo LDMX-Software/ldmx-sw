@@ -26,6 +26,8 @@ void SimulatorBase::updateEventHeader(ldmx::EventHeader& eventHeader) const {
                                 event_info->getENEnergy());
   eventHeader.setFloatParameter("db_material_z",
                                 event_info->getDarkBremMaterialZ());
+  eventHeader.setFloatParameter("aprime_conversion_material_z",
+                                event_info->getAPrimeConversionMaterialZ());
 }
 void SimulatorBase::onProcessEnd() {
   run_manager_->TerminateEventLoop();

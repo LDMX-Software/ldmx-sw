@@ -79,6 +79,9 @@ class DarkBrem:
         self.enable             = False #off by default
         self.cache_xsec         = True
         self.model              = DarkBremModel('UNDEFINED')
+        self.fcp_enable         = False #off by default
+        self.fcp_mass           = 0.    #MeV
+        self.fcp_charge         = 0.1   #in units of e
 
     def activate(self, ap_mass, model = None) :
         """Activate the dark brem process with the input A' mass [MeV] and dark brem model
@@ -97,6 +100,26 @@ class DarkBrem:
 
             self.enable = True
             self.model  = model
+
+    def activate_fcp(self, fcp_mass, fcp_charge=0.1, fcp_xsec_factor=1.0) :
+        """Enable A' -> fcp+ fcp- conversion process
+
+        Parameters
+        ----------
+        fcp_mass : float
+            Mass of the fractionally charged particle in MeV
+        fcp_charge : float, optional
+            Electric charge of the fcp in units of e (default: 0.1)
+        fcp_xsec_factor : float, optional
+            Cross section biasing factor for A' -> fcp conversion.
+            The physical cross section scales as q^4, so for small charges
+            (e.g., 0.1e) a large factor (e.g., 1e8) may be needed to see
+            conversions in a reasonable number of events (default: 1.0)
+        """
+        self.fcp_enable = True
+        self.fcp_mass   = fcp_mass
+        self.fcp_charge = fcp_charge
+        self.fcp_xsec_factor = fcp_xsec_factor
 
     def __str__(self):
         """Stringify the DarkBrem configuration

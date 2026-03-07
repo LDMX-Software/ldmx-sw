@@ -110,7 +110,7 @@ void SampleValidation::analyze(const framework::Event& event) {
 float SampleValidation::pdgidLabel(const int pdgid) {
   // initially assign label as "anything else"/overflow value,
   // only change if the pdg id is something of interest
-  int label = 18;
+  int label = 19;
   if (pdgid == -11) label = 0;    // e+
   if (pdgid == 11) label = 1;     // e-
   if (pdgid == -13) label = 2;    // μ+
@@ -144,7 +144,9 @@ float SampleValidation::pdgidLabel(const int pdgid) {
   // dark photon, need pdg id for other models like ALPs and SIMPs
   if (pdgid == 622) label = 17;
 
-  if (label == 18) {
+  if (pdgid == 17) label = 18;   // fcp-
+  if (pdgid == -17) label = 19;  // fcp+
+  if (label == 19) {
     ldmx_log(debug) << "Unrecognized PDG ID: " << pdgid
                     << ", assigning to 'else'";
   }
