@@ -11,10 +11,14 @@ sim_passname : string
     Pass name of the sim events
 overlay_passname : string
     Pass name of the pileup events
-calo_collections : string
+calo_collections : list[str]
     List of SimCalorimeterHit collections to pull from the sim and pileup events and combine
-tracker_collections_ : string
+tracker_collections : list[str]
     List of SimTrackerHit collections to pull from the sim and pileup events and combine
+particle_collections : list[str]
+    List of SimParticles collections to pull from the sim and pileup events and combine.
+contrib_collections : list[str]
+    List of SimCalorimeterHit collections which need contribs added separately.
 poisson_mu : int
     The total number of interactions combined (including the sim event)
 do_poisson_in_time : bool
