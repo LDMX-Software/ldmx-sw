@@ -30,8 +30,7 @@ void OverlayProducer::configure(framework::config::Parameters &parameters) {
   bunch_spacing_ = parameters.get<double>("bunch_spacing");
   start_event_min_ = parameters.get<int>("start_event_min");
   start_event_max_ = parameters.get<int>("start_event_max");
-  track_id_encoding_ =
-      unsigned(parameters.get<int>("track_id_encoding", 0));
+  track_id_encoding_ = unsigned(parameters.get<int>("track_id_encoding", 0));
 
   /// Print the parameters actually set. Helpful in case of typos.
   ldmx_log(debug) << "Got parameters \n \t overlayFileName = "
@@ -552,10 +551,12 @@ int OverlayProducer::encodeTrack(int track_id,
     // twos complement encoding for negative numbers;
     // thus when decoding you should first check the first bit, and
     // set it to a nonsense -1 if the number is negative.
-    // Right now (2026-03-07) the only place where track IDs are -1 are the origin
-    // ids in the SimCalorimeterHit contribs, which aren't used anyways and present
-    // no risk for overwriting data for duplicate track IDs, so we can leave this alone
-    ldmx_log(warn) << "Track ID has value " << track_id << " < 0; no encoding will be applied";
+    // Right now (2026-03-07) the only place where track IDs are -1 are the
+    // origin ids in the SimCalorimeterHit contribs, which aren't used anyways
+    // and present no risk for overwriting data for duplicate track IDs, so we
+    // can leave this alone
+    ldmx_log(warn) << "Track ID has value " << track_id
+                   << " < 0; no encoding will be applied";
     return track_id;
   }
 
