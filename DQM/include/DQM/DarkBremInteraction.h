@@ -99,7 +99,7 @@ class DarkBremInteraction : public framework::Producer {
       {"support", 5},      // support box is aluminum
       {"CFMix", 3},        // in v12, we called the Glue layers CFMix
       {"C_volume", 1},     // in v12, we called the carbon cooling planes C but
-                        // this is too general for substr matching
+                           // this is too general for substr matching
       {"Air", 8}};
 
   /**

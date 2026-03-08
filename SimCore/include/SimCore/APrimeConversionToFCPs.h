@@ -128,8 +128,6 @@ class APrimeConversionToFCPs : public G4VDiscreteProcess {
   G4double lowest_energy_limit_;
   /// High energy limit of the model
   G4double highest_energy_limit_;
-  /// Actual mean free path in the current medium
-  G4double mean_free_path_ = DBL_MAX;
   /// Factor to artificially scale the cross section
   G4double cross_sec_factor_ = 1.0;
 

@@ -39,7 +39,8 @@ APrimeConversionToFCPs::APrimeConversionToFCPs(const G4String& processName,
   limit_energy_ = 5. * mfcp_;
   lowest_energy_limit_ = 2. * mfcp_;
   highest_energy_limit_ = 1e12 * CLHEP::GeV;
-  ldmx_log(debug) << "Energy limits: lowest=" << lowest_energy_limit_ / CLHEP::MeV
+  ldmx_log(debug) << "Energy limits: lowest="
+                  << lowest_energy_limit_ / CLHEP::MeV
                   << " MeV, limit=" << limit_energy_ / CLHEP::MeV
                   << " MeV, highest=" << highest_energy_limit_ / CLHEP::GeV
                   << " GeV";
@@ -52,12 +53,15 @@ APrimeConversionToFCPs::APrimeConversionToFCPs(const G4String& processName,
   ldmx_log(debug) << "A' particle: "
                   << (the_a_prime_ ? the_a_prime_->GetParticleName() : "NULL")
                   << ", mass="
-                  << (the_a_prime_ ? the_a_prime_->GetPDGMass() / CLHEP::MeV : 0)
+                  << (the_a_prime_ ? the_a_prime_->GetPDGMass() / CLHEP::MeV
+                                   : 0)
                   << " MeV";
   ldmx_log(debug) << "FCP+ particle: "
-                  << (the_fcp_plus_ ? the_fcp_plus_->GetParticleName() : "NULL");
+                  << (the_fcp_plus_ ? the_fcp_plus_->GetParticleName()
+                                    : "NULL");
   ldmx_log(debug) << "FCP- particle: "
-                  << (the_fcp_minus_ ? the_fcp_minus_->GetParticleName() : "NULL");
+                  << (the_fcp_minus_ ? the_fcp_minus_->GetParticleName()
+                                     : "NULL");
 }
 
 G4bool APrimeConversionToFCPs::IsApplicable(
@@ -105,7 +109,8 @@ G4double APrimeConversionToFCPs::computeMeanFreePath(
   }
 
   const G4ElementVector* the_element_vector = aMaterial->GetElementVector();
-  const G4double* nb_of_atoms_per_volume = aMaterial->GetVecNbOfAtomsPerVolume();
+  const G4double* nb_of_atoms_per_volume =
+      aMaterial->GetVecNbOfAtomsPerVolume();
 
   G4double sigma = 0.0;
   G4double fact = 1.0;
@@ -113,15 +118,16 @@ G4double APrimeConversionToFCPs::computeMeanFreePath(
 
   // Low energy approximation as in Bethe-Heitler model
   if (e < limit_energy_) {
-    G4double y = (e - lowest_energy_limit_) / (limit_energy_ - lowest_energy_limit_);
+    G4double y =
+        (e - lowest_energy_limit_) / (limit_energy_ - lowest_energy_limit_);
     fact = y * y;
     e = limit_energy_;
   }
 
   for (std::size_t i = 0; i < aMaterial->GetNumberOfElements(); ++i) {
-    sigma +=
-        nb_of_atoms_per_volume[i] * fact *
-        computeCrossSectionPerAtom(e, G4lrint((*the_element_vector)[i]->GetZ()));
+    sigma += nb_of_atoms_per_volume[i] * fact *
+             computeCrossSectionPerAtom(
+                 e, G4lrint((*the_element_vector)[i]->GetZ()));
   }
   return (sigma > 0.0) ? 1. / sigma : DBL_MAX;
 }
@@ -161,12 +167,13 @@ G4double APrimeConversionToFCPs::computeCrossSectionPerAtom(G4double Egam,
   ecor = -18. + 4347. / (b * zthird);
 
   G4double cor_fuc = 1. + .04 * G4Log(1. + ecor / Egam);
-  G4double eg =
-      G4Exp(G4Log(1. - 4. * mfcp_ / Egam) * pow_thres) *
-      G4Exp(G4Log(G4Exp(G4Log(wsatur) * POW_SAT) + G4Exp(G4Log(Egam) * POW_SAT)) /
-            POW_SAT);
+  G4double eg = G4Exp(G4Log(1. - 4. * mfcp_ / Egam) * pow_thres) *
+                G4Exp(G4Log(G4Exp(G4Log(wsatur) * POW_SAT) +
+                            G4Exp(G4Log(Egam) * POW_SAT)) /
+                      POW_SAT);
 
-  G4double cross_section = 7. / 9. * sigfac * G4Log(1. + w_med_appr * cor_fuc * eg);
+  G4double cross_section =
+      7. / 9. * sigfac * G4Log(1. + w_med_appr * cor_fuc * eg);
   cross_section *= cross_sec_factor_;
   return cross_section;
 }
@@ -214,7 +221,8 @@ G4VParticleChange* APrimeConversionToFCPs::PostStepDoIt(const G4Track& aTrack,
   aParticleChange.ProposeEnergy(0.);
   aParticleChange.ProposeTrackStatus(fStopAndKill);
 
-  G4ParticleMomentum a_prime_direction = a_dynamic_a_prime->GetMomentumDirection();
+  G4ParticleMomentum a_prime_direction =
+      a_dynamic_a_prime->GetMomentumDirection();
 
   // Select randomly one element constituting the material
   const G4Element* an_element = selectRandomAtom(a_dynamic_a_prime, a_material);
@@ -256,7 +264,7 @@ G4VParticleChange* APrimeConversionToFCPs::PostStepDoIt(const G4Track& aTrack,
   G4double ds2 = (dn * SQRTE - 2.);
   G4double s_bz = SQRTE * b * zthird / electron_mass_c2;
   G4double log_wmax_inv = 1. / G4Log(winfty * (1. + 2. * ds2 * gamma_fcp_inv) /
-                                   (1. + 2. * s_bz * mfcp_ * gamma_fcp_inv));
+                                     (1. + 2. * s_bz * mfcp_ * gamma_fcp_inv));
   G4double x_plus = 0.5;
   G4double x_minus = 0.5;
   G4double x_pm = 0.25;
@@ -333,7 +341,8 @@ G4VParticleChange* APrimeConversionToFCPs::PostStepDoIt(const G4Track& aTrack,
     do {
       ++nn;
       psi = CLHEP::twopi * G4UniformRand();
-      f2 = 1. - 2. * x_pm + 4. * x_pm * t * (1. - t) * (1. + std::cos(2. * psi));
+      f2 =
+          1. - 2. * x_pm + 4. * x_pm * t * (1. - t) * (1. + std::cos(2. * psi));
       if (f2 < 0 || f2 > f2_max) {
         f2 = 0.0;
       }
@@ -367,7 +376,8 @@ G4VParticleChange* APrimeConversionToFCPs::PostStepDoIt(const G4Track& aTrack,
         theta_minus = 0.0;
       }
     }
-  } while (std::abs(theta_plus) > CLHEP::pi || std::abs(theta_minus) > CLHEP::pi);
+  } while (std::abs(theta_plus) > CLHEP::pi ||
+           std::abs(theta_minus) > CLHEP::pi);
 
   // Construct the momentum vectors
   // Azimuthal symmetry: take phi0 random between 0 and 2pi
@@ -376,12 +386,13 @@ G4VParticleChange* APrimeConversionToFCPs::PostStepDoIt(const G4Track& aTrack,
   G4double e_minus = x_minus * egam;
 
   // fcp+ fcp- directions for A' in z-direction
-  G4ThreeVector fcp_plus_direction(std::sin(theta_plus) * std::cos(phi0 + phi_half),
-                                 std::sin(theta_plus) * std::sin(phi0 + phi_half),
-                                 std::cos(theta_plus));
+  G4ThreeVector fcp_plus_direction(
+      std::sin(theta_plus) * std::cos(phi0 + phi_half),
+      std::sin(theta_plus) * std::sin(phi0 + phi_half), std::cos(theta_plus));
   G4ThreeVector fcp_minus_direction(
       -std::sin(theta_minus) * std::cos(phi0 - phi_half),
-      -std::sin(theta_minus) * std::sin(phi0 - phi_half), std::cos(theta_minus));
+      -std::sin(theta_minus) * std::sin(phi0 - phi_half),
+      std::cos(theta_minus));
 
   // Rotate to actual A' direction
   fcp_plus_direction.rotateUz(a_prime_direction);
@@ -399,8 +410,8 @@ G4VParticleChange* APrimeConversionToFCPs::PostStepDoIt(const G4Track& aTrack,
   ldmx_log(debug) << "  - Direction: " << fcp_plus_direction;
 
   // Create fcp- secondary
-  auto a_particle2 =
-      new G4DynamicParticle(the_fcp_minus_, fcp_minus_direction, e_minus - mfcp_);
+  auto a_particle2 = new G4DynamicParticle(the_fcp_minus_, fcp_minus_direction,
+                                           e_minus - mfcp_);
   aParticleChange.AddSecondary(a_particle2);
 
   ldmx_log(debug) << "Created FCP- with:";
