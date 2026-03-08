@@ -36,7 +36,7 @@
 #include "G4strstreambuf.hh"
 #include "Tracking/geo/DetectorElement.h"
 #include "Tracking/geo/GeoUtils.h"
-
+#include "Tracking/Sensor/SiSensor.h"
 namespace tracking::geo {
 
 /**
@@ -103,7 +103,8 @@ class TrackingGeometry : public framework::ConditionsObject {
 
   // Global vector holding all the alignable detector elements of the tracking
   // geometry.
-  std::vector<std::shared_ptr<DetectorElement>> det_elements_;
+  //  std::vector<std::shared_ptr<DetectorElement>> det_elements_;
+  std::vector<std::shared_ptr<tracking::sensor::SiSensor>> det_elements_;
 
  protected:
   const Acts::GeometryContext& gctx_;
