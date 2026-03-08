@@ -20,14 +20,14 @@ __main__() {
   start_group Input Deduction
   local _sample="$1"
   local _no_comp="$2"
-  local _ref_dir="${GITHUB_WORKSPACE}/ci-data/${_sample}"
+  local _ref_dir="${CI_DATA}/${_sample}"
   cd ${GITHUB_WORKSPACE}/.github/validation_samples/${_sample} || return $?
   local _sample_dir="$(pwd)"
   echo "Ref Dir: ${_ref_dir}"
   echo "Sample Name: ${_sample}"
   echo "Sample Dir: ${_sample_dir}"
   echo "Not Running Comparison? ${_no_comp}"
-  denv config env copy LDMX_NUM_EVENTS LDMX_RUN_NUMBER
+  denv config env copy LDMX_NUM_EVENTS LDMX_RUN_NUMBER LDMX_LOG_LEVEL CI_DATA
   end_group
 
   start_group Sample-Specific Initialization
@@ -50,7 +50,7 @@ __main__() {
     #    gold_f, gold_label, test_f, test_label
     denv python3 $GITHUB_ACTION_PATH/compare.py \
       ${_ref_dir}/gold.root \
-      $(cat ${GITHUB_WORKSPACE}/ci-data/label) \
+      $(cat ${CI_DATA}/label) \
       hist.root \
       ${HEAD_REF} \
       || return $?

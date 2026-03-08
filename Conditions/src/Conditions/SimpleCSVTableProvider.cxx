@@ -16,13 +16,13 @@ SimpleCSVTableProvider::SimpleCSVTableProvider(
     framework::Process& process)
     : framework::ConditionsObjectProvider(name, tagname, parameters, process) {
   columns_ = parameters.get<std::vector<std::string>>("columns");
-  std::string dtype = parameters.get<std::string>("dataType");
+  std::string dtype = parameters.get<std::string>("data_type");
   if (dtype == "int" || dtype == "integer")
     object_type_ = SimpleCSVTableProvider::OBJ_int;
   if (dtype == "double" || dtype == "float")
     object_type_ = SimpleCSVTableProvider::OBJ_double;
 
-  conditions_base_url_ = parameters.get<std::string>("conditions_baseURL");
+  conditions_base_url_ = parameters.get<std::string>("conditions_base_url");
 
   if (parameters.exists("entries")) {
     std::vector<framework::config::Parameters> plist =
@@ -30,7 +30,7 @@ SimpleCSVTableProvider::SimpleCSVTableProvider(
     if (!plist.empty()) entriesFromPython(plist);
   }
 
-  entries_url_ = parameters.get<std::string>("entriesURL");
+  entries_url_ = parameters.get<std::string>("entries_url");
   if (!entries_url_.empty()) entriesFromCSV();
 }
 
@@ -38,13 +38,13 @@ void SimpleCSVTableProvider::entriesFromPython(
     std::vector<framework::config::Parameters>& plist) {
   for (auto aprov : plist) {
     SimpleCSVTableProvider::Entry item;
-    int first_run = aprov.get<int>("firstRun", -1);
-    int last_run = aprov.get<int>("lastRun", -1);
-    std::string rtype = aprov.get<std::string>("runType", "any");
+    int first_run = aprov.get<int>("first_run", -1);
+    int last_run = aprov.get<int>("last_run", -1);
+    std::string rtype = aprov.get<std::string>("run_type", "any");
     bool is_mc = (rtype == "any" || rtype == "MC");
     bool is_data = (rtype == "any" || rtype == "data");
     item.iov_ = framework::ConditionsIOV(first_run, last_run, is_data, is_mc);
-    item.url_ = aprov.get<std::string>("URL");
+    item.url_ = aprov.get<std::string>("url");
     if (object_type_ == OBJ_int && aprov.exists("values")) {
       item.ivalues_ = aprov.get<std::vector<int>>("values");
       if (item.ivalues_.size() != columns_.size()) {
@@ -92,7 +92,7 @@ void SimpleCSVTableProvider::entriesFromCSV() {
   if (!loader.nextRow()) return;  // need to advance to gather column headers
 
   // check that we have the expected columns
-  const char* column_names[] = {"FIRST_RUN", "LAST_RUN", "RUNTYPE", "URL", 0};
+  const char* column_names[] = {"FIRST_RUN", "LAST_RUN", "RUNTYPE", "url", 0};
   std::vector<std::string> cnames = loader.columnNames();
   for (int i = 0; column_names[i] != 0; i++) {
     bool found = false;
@@ -114,7 +114,7 @@ void SimpleCSVTableProvider::entriesFromCSV() {
     Entry e;
     e.iov_ = framework::ConditionsIOV(first_run, last_run, valid_for_data,
                                       valid_for_mc);
-    e.url_ = loader.get("URL");
+    e.url_ = loader.get("url");
     //    std::cout << valid_for_data << " " << valid_for_mc << " " << e.url_ <<
     //    std::endl;
     entries_.push_back(e);

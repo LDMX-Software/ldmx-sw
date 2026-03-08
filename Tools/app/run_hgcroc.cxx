@@ -10,15 +10,15 @@ int main() {
   double gain = 320. / 20. / 1024;
 
   framework::config::Parameters parameters;
-  parameters.addParameter("clockCycle", 25.);
-  parameters.addParameter("timingJitter", 0.25);
-  parameters.addParameter("nADCs", 10);
-  parameters.addParameter("iSOI", 0);
-  parameters.addParameter("rateUpSlope", -0.345);
-  parameters.addParameter("timeUpSlope", 70.6547);
-  parameters.addParameter("rateDnSlope", 0.140068);
-  parameters.addParameter("timeDnSlope", 87.7649);
-  parameters.addParameter("timePeak", 77.732);
+  parameters.addParameter("clock_cycle", 25.);
+  parameters.addParameter("timing_jitter", 0.25);
+  parameters.addParameter("n_adcs", 10);
+  parameters.addParameter("i_soi", 0);
+  parameters.addParameter("rate_up_slope", -0.345);
+  parameters.addParameter("time_up_slope", 70.6547);
+  parameters.addParameter("rate_dn_slope", 0.140068);
+  parameters.addParameter("time_dn_slope", 87.7649);
+  parameters.addParameter("time_peak", 77.732);
   parameters.addParameter("noiseRMS",
                           (700. + 25. * 20.) * (0.162 / 1000.) / 20.);
   parameters.addParameter("noise", true);

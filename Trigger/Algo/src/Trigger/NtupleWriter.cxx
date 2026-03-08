@@ -10,7 +10,7 @@ NtupleWriter::NtupleWriter(const std::string& name, framework::Process& process)
     : Producer(name, process) {}
 
 void NtupleWriter::configure(framework::config::Parameters& ps) {
-  out_path_ = ps.get<std::string>("outPath");
+  out_path_ = ps.get<std::string>("out_path");
 
   target_sp_hits_event_passname_ =
       ps.get<std::string>("target_sp_hits_event_passname");

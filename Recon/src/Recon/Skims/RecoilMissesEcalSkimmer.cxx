@@ -17,7 +17,8 @@ RecoilMissesEcalSkimmer::~RecoilMissesEcalSkimmer() {}
 
 void RecoilMissesEcalSkimmer::configure(
     framework::config::Parameters &parameters) {
-  ecal_sim_hits_pass_name_ = parameters.get<std::string>("ecalSimHitsPassName");
+  ecal_sim_hits_pass_name_ =
+      parameters.get<std::string>("ecal_sim_hits_pass_name");
 
   sim_particles_pass_name_ =
       parameters.get<std::string>("sim_particles_pass_name");

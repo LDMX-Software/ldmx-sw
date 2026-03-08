@@ -3,191 +3,185 @@ from LDMX.Framework import ldmxcfg
 from LDMX.SimCore import generators
 from LDMX.SimCore import simulator
 
-thisPassName="sim"
-p = ldmxcfg.Process(thisPassName)
+this_pass_name="sim"
+p = ldmxcfg.Process(this_pass_name)
 
-from LDMX.Hcal import HcalGeometry
-#from LDMX.Ecal import EcalGeometry
+from LDMX.Hcal import hcal_geometry
+#from LDMX.Ecal import ecal_geometry
 
-nEvents = 4000
-killChan8 = True # toggle to kill all signal from channel 8 (dead in testbeam)
-nElectrons=2
-beamEnergy=4.  #in GeV
+n_events = 4000
+kill_chan_8 = True # toggle to kill all signal from channel 8 (dead in testbeam)
+n_electrons=2
+beam_energy=4.  #in GeV
 
-nChannels=12
-gainList=[2e6]*nChannels
-pedList=[6.]*nChannels
+n_channels=12
+gain_list=[2e6]*n_channels
+ped_list=[6.]*n_channels
 
-if killChan8 :
-    gainList[8]=gainList[8]*gainList[8]  #to make the hit PEs very small
-    killString="killChan8_"
+if kill_chan_8 :
+    gain_list[8]=gain_list[8]*gain_list[8]  #to make the hit PEs very small
+    kill_string="killChan8_"
 
 
-gunZpos=800 #3000  #mm -- define as positive here, for file naming; set sign below
-detV=2.0        #detector geometry version number 
-beamXsmear=7.5 #mm    7.5mm for reasonable efficiency, larger than TS module to get more empty (no MIP)  events. set to 150mm for large noise 
-beamYsmear=20  #mm    20 mm      -- " --, set to 200 for large noise 
-noisePerEvent=0.08  #average number of PEs from SiPM noise per event (gets scaled by nTimeSamples to be constant) -- 0.1 per event is taken from run183 
-startSample=15
+gun_z_pos=800 #3000  #mm -- define as positive here, for file naming; set sign below
+det_v=2.0        #detector geometry version number
+#mm    7.5mm for reasonable efficiency, larger than TS module to get more empty (no MIP)  events. set to 150mm for large noise
+beam_x_smear=7.5
+beam_y_smear=20  #mm    20 mm      -- " --, set to 200 for large noise
+#average number of PEs from SiPM noise per event (gets scaled by n_time_samples to be constant) -- 0.1 per event is taken from run183
+noise_per_event=0.08
+start_sample=15
 
-if len(sys.argv) > 1 :
-    nTimeSamples=int(sys.argv[1])
-else :
-    nTimeSamples=30 #config default is 5 
-if len(sys.argv) > 2 :
-    elecNoise=float(sys.argv[2])
-else :
-    elecNoise=1.5 #config default is 1.5
-if len(sys.argv) > 3 :
-    kExpo=float(sys.argv[3])
-else :
-    kExpo=0.1   #config default is 0.1
-    
+n_time_samples = int(sys.argv[1]) if len(sys.argv) > 1 else 30 #config default is 5
+elec_noise = float(sys.argv[2]) if len(sys.argv) > 2 else 1.5 #config default is 1.5
+k_expo = float(sys.argv[3]) if len(sys.argv) > 3 else 0.1 #config default is 0.1
+
 p.run = 1
-p.maxEvents = nEvents
-p.outputFiles = ['testbeamSim_'+str(nElectrons)+'e_zNeg'+str(gunZpos)+'mm_beamSpot'+str(beamXsmear)+'x'+str(beamYsmear)+'mm_'+str(nTimeSamples)+'tSamp_eNoise'+str(elecNoise)+'_tauInv'+str(kExpo)+'_detV'+str(detV)+'_'+killString+str(p.maxEvents)+'ev.root']
-print("Producing output file: "+p.outputFiles[0])
+p.max_events = n_events
+p.output_files = ['testbeamSim_'+str(n_electrons)+'e_zNeg'+str(gun_z_pos)+'mm_beamSpot'+str(beam_x_smear)+'x'+str(beam_y_smear)+'mm_'+str(n_time_samples)+'tSamp_eNoise'+str(elec_noise)+'_tauInv'+str(k_expo)+'_detV'+str(det_v)+'_'+kill_string+str(p.max_events)+'ev.root']
+print("Producing output file: "+p.output_files[0])
 
-gunZpos   =-float(gunZpos)  #get sign right, and make floats, to use as parameters
-beamXsmear=float(beamXsmear)
-beamYsmear=float(beamYsmear)
+gun_z_pos   =-float(gun_z_pos)  #get sign right, and make floats, to use as parameters
+beam_x_smear=float(beam_x_smear)
+beam_y_smear=float(beam_y_smear)
 
-#gunZpos=-1404. #mm
-#gunZpos=-1504. #mm
-#gunZpos=-1204. #mm
+#gun_z_pos=-1404. #mm
+#gun_z_pos=-1504. #mm
+#gun_z_pos=-1204. #mm
 
 #------ set up beam simulation -------
 
 
-mpgGen = generators.multi( "mgpGen" ) # this is the line that actually creates the generator
-mpgGen.vertex = [ 0., 0., gunZpos ] # mm
-mpgGen.nParticles = nElectrons
-mpgGen.pdgID = 11
-mpgGen.enablePoisson = False #True
-mpgGen.momentum = [ 0., 0., beamEnergy ]
+mpg_gen = generators.multi( "mgpGen" ) # this is the line that actually creates the generator
+mpg_gen.vertex = [ 0., 0., gun_z_pos ] # mm
+mpg_gen.n_particles = n_electrons
+mpg_gen.pdg_id = 11
+mpg_gen.enable_poisson = False #True
+mpg_gen.momentum = [ 0., 0., beam_energy ]
 
 gun = generators.gun('particle_gun')
 gun.particle = 'e-'
 gun.direction = [0., 0., 1.]
-gun.position = [0., 0., gunZpos]
-gun.energy = beamEnergy   #gev
+gun.position = [0., 0., gun_z_pos]
+gun.energy = beam_energy   #gev
 
 simulation = simulator.simulator('test_TS')
-simulation.generators=[mpgGen] #gun]
-simulation.setDetector('ldmx-hcal-prototype-v'+str(detV))
+simulation.generators=[mpg_gen] #gun]
+simulation.setDetector('ldmx-hcal-prototype-v'+str(det_v))
 #simulation.setDetector('ldmx-hcal-prototype-v1.0')
-simulation.beamSpotSmear = [beamXsmear, beamYsmear, 0] #mm, at start position
-simulation.description = "Inclusive "+str(beamEnergy)+" GeV electron events, "+str(nElectrons)+"e"
+simulation.beamSpotSmear = [beam_x_smear, beam_y_smear, 0] #mm, at start position
+simulation.description = "Inclusive "+str(beam_energy)+" GeV electron events, "+str(n_electrons)+"e"
 
 
-#### the digi and tb hit step not fully implemented !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+#### the digi and tb hit step not fully implemented
+#### !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 #------ set up digitization -------
 
 from LDMX.TrigScint.trigScint import TrigScintQIEDigiProducer
 
-tsDigis = TrigScintQIEDigiProducer.pad1() #up() #
-tsDigis.input_collection= "TriggerPadUpSimHits"
-tsDigis.number_of_strips = 12
-tsDigis.mean_noise=float(noisePerEvent/nTimeSamples)
+ts_digis = TrigScintQIEDigiProducer.pad1() #up() #
+ts_digis.input_collection= "TriggerPadUpSimHits"
+ts_digis.number_of_strips = 12
+ts_digis.mean_noise=float(noise_per_event/n_time_samples)
 
-tsDigis.maxts = nTimeSamples
-tsDigis.elec_noise = elecNoise
-tsDigis.expo_k = kExpo
-tsDigis.sipm_gain = 2.e6
-tsDigis.zeroSupp_in_pe=0.5
-tsDigis.toff_overall = 25.*startSample
-tsDigis.pe_per_mip = 110. #from fit to 2-hit clusters in data run 183, April4 2310, all plastic
+ts_digis.maxts = n_time_samples
+ts_digis.elec_noise = elec_noise
+ts_digis.expo_k = k_expo
+ts_digis.sipm_gain = 2.e6
+ts_digis.zeroSupp_in_pe=0.5
+ts_digis.toff_overall = 25.*start_sample
+ts_digis.pe_per_mip = 110. #from fit to 2-hit clusters in data run 183, April4 2310, all plastic
 
 
 #------ set up event readout linearization -------
 
 from LDMX.TrigScint.trigScint import EventReadoutProducer
 
-tsEv=EventReadoutProducer("eventLinearizer")
-tsEv.input_pass_name=thisPassName
-tsEv.input_collection=tsDigis.output_collection #"trigScintQIEDigisPad1"
-tsEv.time_shift=0 #timeOffset
-tsEv.verbose = True 
+ts_ev=EventReadoutProducer("eventLinearizer")
+ts_ev.input_pass_name=this_pass_name
+ts_ev.input_collection=ts_digis.output_collection #"trigScintQIEDigisPad1"
+ts_ev.time_shift=0 #time_offset
+ts_ev.verbose = True
 
 #------ set up hit reconstruction -------
 
 from LDMX.TrigScint.trigScint import TestBeamHitProducer
 
-tbHits  =TestBeamHitProducer("tbHits")
-tbHits.inputPassName=thisPassName
-#if inputPassName=="sim" : #different conventions in sim and data
-#    tbHits.inputCollection="trigScintQIEDigisPad1"
+tb_hits  =TestBeamHitProducer("tb_hits")
+tb_hits.input_pass_name=this_pass_name
+#if input_pass_name=="sim" : #different conventions in sim and data
+#    tb_hits.input_collection="trigScintQIEDigisPad1"
 #else :
-tbHits.inputCollection="QIEsamplesPad1"
-tbHits.pedestals=pedList
-tbHits.gain=gainList 
-tbHits.startSample=startSample
-tbHits.pulseWidth=12 #5 
-tbHits.pulseWidthLYSO=12
-tbHits.doCleanHits=True
-tbHits.nInstrumentedChannels=nChannels
+tb_hits.input_collection="QIEsamplesPad1"
+tb_hits.pedestals=ped_list
+tb_hits.gain=gain_list
+tb_hits.start_sample=start_sample
+tb_hits.pulse_width=12 #5
+tb_hits.pulse_width_lyso=12
+tb_hits.do_clean_hits=True
+tb_hits.n_instrumented_channels=n_channels
 
 
 #------ set up clustering -------
 
 from LDMX.TrigScint.trigScint import TestBeamClusterProducer
 
-tbClusters  =TestBeamClusterProducer("tbClusters")
-tbClusters.input_pass_name=thisPassName
-tbClusters.input_collection=tbHits.outputCollection #"trigScintQIEDigisPad1" #
-tbClusters.pad_time=100.
-tbClusters.time_tolerance=999.
-tbClusters.verbosity=0
-tbClusters.clustering_threshold = 50.  #to add in neighboring
+tb_clusters  =TestBeamClusterProducer("tb_clusters")
+tb_clusters.input_pass_name=this_pass_name
+tb_clusters.input_collection=tb_hits.output_collection #"trigScintQIEDigisPad1" #
+tb_clusters.pad_time=100.
+tb_clusters.time_tolerance=999.
+tb_clusters.verbosity=0
+tb_clusters.clustering_threshold = 50.  #to add in neighboring
 
-tbClusters3  =TestBeamClusterProducer("tbClusters3")
-tbClusters3.input_pass_name=thisPassName
-tbClusters3.input_collection=tbHits.outputCollection 
-tbClusters3.output_collection=tbClusters.output_collection+"ThreeHits"
-tbClusters3.max_cluster_width=3
-tbClusters3.pad_time=100.
-tbClusters3.time_tolerance=999.
-tbClusters3.verbosity=0
-tbClusters3.clustering_threshold = 50.  #to add in neighboring
+tb_clusters_3  =TestBeamClusterProducer("tb_clusters_3")
+tb_clusters_3.input_pass_name=this_pass_name
+tb_clusters_3.input_collection=tb_hits.output_collection
+tb_clusters_3.output_collection=tb_clusters.output_collection+"ThreeHits"
+tb_clusters_3.max_cluster_width=3
+tb_clusters_3.pad_time=100.
+tb_clusters_3.time_tolerance=999.
+tb_clusters_3.verbosity=0
+tb_clusters_3.clustering_threshold = 50.  #to add in neighboring
 
 
 #### ---- analyzers ------
 
 from LDMX.TrigScint.trigScint import QIEAnalyzer
 
-tsAna=QIEAnalyzer("plotMaker")
-tsAna.inputPassName=thisPassName
-tsAna.startSample=0
-tsAna.pedestals=pedList
-tsAna.gain=gainList
+ts_ana=QIEAnalyzer("plotMaker")
+ts_ana.input_pass_name=this_pass_name
+ts_ana.start_sample=0
+ts_ana.pedestals=ped_list
+ts_ana.gain=gain_list
 
 
 from LDMX.TrigScint.trigScint import TestBeamClusterAnalyzer
 
-clAna2hit = TestBeamClusterAnalyzer("2-hitClusters")
-clAna2hit.inputCollection=tbClusters.output_collection
+cl_ana_2hit = TestBeamClusterAnalyzer("2-hitClusters")
+cl_ana_2hit.input_collection=tb_clusters.output_collection
 
-clAna3hit = TestBeamClusterAnalyzer("3-hitClusters")
-clAna3hit.inputCollection=tbClusters3.output_collection
+cl_ana_3hit = TestBeamClusterAnalyzer("3-hitClusters")
+cl_ana_3hit.input_collection=tb_clusters_3.output_collection
 
 
 
-outname=p.outputFiles[0].replace(".root", "_plots.root")
-#p.outputFiles = [ outname ]
-p.histogramFile = outname 
+outname=p.output_files[0].replace(".root", "_plots.root")
+#p.output_files = [ outname ]
+p.histogram_file = outname
 
 p.sequence=[simulation,
-            tsDigis,
-            tsEv,
-            tbHits,
-            tbClusters3,
-            tbClusters,
-            #clAna2hit,
-            #clAna3hit
-            #      tsEv,
-            #      tsAna
+            ts_digis,
+            ts_ev,
+            tb_hits,
+            tb_clusters_3,
+            tb_clusters,
+            #cl_ana_2hit,
+            #cl_ana_3hit
+            #      ts_ev,
+            #      ts_ana
                   ]
 
 
-p.termLogLevel = 2
+p.term_log_level = 2

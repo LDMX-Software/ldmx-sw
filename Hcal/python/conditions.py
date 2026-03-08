@@ -8,9 +8,10 @@ for conditions between the multiple condition sets
 
 from LDMX.Framework import ldmxcfg
 
+
 class HcalReconConditionsProvider(ldmxcfg.ConditionsObjectProvider) :
     """The HcalReconConditions object packages the reconstructing conditions tables together
-    
+
     This makes the processor using the recon conditions less dependent on the underlying structure.
 
     Parameters
@@ -35,7 +36,7 @@ class HcalReconConditionsProvider(ldmxcfg.ConditionsObjectProvider) :
 
         # our COP only needs the object names but providing the full parent COPs
         #   ensures that they exist
-        self.adc_ped = adc_ped.objectName
-        self.adc_gain = adc_gain.objectName
-        self.tot_calib = tot_calib.objectName
-        self.toa_calib = toa_calib.objectName
+        self.adc_ped = adc_ped.object_name
+        self.adc_gain = adc_gain.object_name
+        self.tot_calib = tot_calib.object_name
+        self.toa_calib = toa_calib.object_name

@@ -3,7 +3,7 @@
 <!ENTITY constants SYSTEM "constants.gdml">
 ]>
 <gdml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-    xsi:noNamespaceSchemaLocation="http://service-spi.web.cern.ch/service-spi/app/releases/GDML/schema/gdml.xsd">
+    xsi:noNamespaceSchemaLocation="gdml.xsd">
 
   <define>
 
@@ -151,13 +151,6 @@
     <variable name="recoil_box_y" value="magnet_gap_dy - (sp_thickness/2)" />
 
   </define>
-
-  <materials>
-    <material name="Vacuum" Z="1" state="gas">
-      <D unit="g/cm3" value="1e-12"/>
-      <atom unit="g/mole" value="1" />
-    </material> 
-  </materials>
 
   <solids>
     <box name="world_box" x="world_dim" y="world_dim" z="world_dim"/>

@@ -6,16 +6,19 @@ Examples
    p.sequence.append( VisiblesVetoProcessor)
 """
 
-from LDMX.Framework import ldmxcfg
-import os, sys
+import os
+import sys
 
-def makeBDTPath(BDTname) :
+from LDMX.Framework import ldmxcfg
+
+
+def makeBDTPath(bdt_name) :
     """ Get the full path to the installed BDT files
     Exits entire python script if the file does not exist.
 
     Parameters
     ----------
-    BDTname : str
+    bdt_name : str
        Name of BDT file (no extension)
 
     Returns
@@ -28,12 +31,12 @@ def makeBDTPath(BDTname) :
        visiblesVeto.bdt_file = makeBDTPath('visibles_v1')
     """
 
-    fullPath = '@CMAKE_INSTALL_PREFIX@/data/Hcal/' + BDTname + '.onnx'
-    if not os.path.isfile(fullPath) :
-        print('ERROR: ONNX model file \'%s\' does not exist.' % (fullPath))
+    full_path = '@CMAKE_INSTALL_PREFIX@/data/Hcal/' + bdt_name + '.onnx'
+    if not os.path.isfile(full_path) :
+        print(f'ERROR: ONNX model file \'{full_path}\' does not exist.')
         sys.exit(1)
 
-    return fullPath
+    return full_path
 
 class VisiblesVetoProcessor(ldmxcfg.Producer) :
     """Configuration for visibles veto"""

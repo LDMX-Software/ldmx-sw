@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no" ?>
-<gdml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://service-spi.web.cern.ch/service-spi/app/releases/GDML/schema/gdml.xsd">
+<gdml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="gdml.xsd">
 
   <define>
     <position name="support_box_v0" unit="mm" x="4.381496" y="2.070568e-15" z="674.116"/>
@@ -1480,7 +1480,7 @@
 
   <structure>
     <volume name="support_box">
-      <materialref ref="G4_Al0x2705780"/>
+      <materialref ref="Aluminum"/>
       <solidref ref="support_box-SOL"/>
     </volume>
   </structure>

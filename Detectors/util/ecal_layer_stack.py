@@ -43,9 +43,11 @@ the polycarbonate in the PDG is 75% C, 5% H and 20% O which
 I deemed close enough.
 """
 
-import sys
-from dataclasses import dataclass, asdict
+import functools
 import json
+import operator
+import sys
+from dataclasses import asdict, dataclass
 
 
 @dataclass
@@ -104,26 +106,26 @@ class PDGMaterialEncoder(json.JSONEncoder):
 
 
 # This dictionary holds materials that are copied down from the PDG site
-materials = dict(
-    Kapton = PDGMaterial(
+materials = {
+    'Kapton': PDGMaterial(
         density = 1.420,
         minimum_ionization = 1.820,
         nuclear_interaction_length = 85.5,
         radiation_length = 40.58
     ),
-    Al = PDGMaterial(
+    'Al': PDGMaterial(
         density = 2.699,
         minimum_ionization = 1.615,
         nuclear_interaction_length = 107.2,
         radiation_length = 24.01
     ),
-    Ti = PDGMaterial(
+    'Ti': PDGMaterial(
         density = 4.540,
         minimum_ionization = 1.477,
         nuclear_interaction_length = 126.2,
         radiation_length = 16.16
     ),
-    Air = PDGMaterial(
+    'Air': PDGMaterial(
         density = 1.205e-3,
         minimum_ionization = 1.815,
         nuclear_interaction_length = 90.1,
@@ -131,44 +133,44 @@ materials = dict(
     ),
     # same as air, but with incorrect density
     # for comparing to past versions of the script with typo
-    SuperDenseAir = PDGMaterial(
+    'SuperDenseAir': PDGMaterial(
         density = 1.205,
         minimum_ionization = 1.815,
         nuclear_interaction_length = 90.1,
         radiation_length = 36.62
     ),
-    Cu = PDGMaterial(
+    'Cu': PDGMaterial(
         density = 8.960,
         minimum_ionization = 1.403,
         nuclear_interaction_length = 137.3,
         radiation_length = 12.86
     ),
     # this oxygen is oxygen gas
-    O = PDGMaterial(
+    'O': PDGMaterial(
         density = 1.332e-3,
         minimum_ionization = 1.801,
         nuclear_interaction_length = 90.2,
         radiation_length = 34.24
     ),
-    Na = PDGMaterial(
+    'Na': PDGMaterial(
         density = 0.9710,
         minimum_ionization = 1.639,
         nuclear_interaction_length = 102.6,
         radiation_length = 27.74
     ),
-    Si = PDGMaterial(
+    'Si': PDGMaterial(
         density = 2.329,
         minimum_ionization = 1.664,
         nuclear_interaction_length = 108.4,
         radiation_length = 21.82
     ),
-    Ca = PDGMaterial(
+    'Ca': PDGMaterial(
         density = 1.550,
         minimum_ionization = 1.655,
         nuclear_interaction_length = 119.8,
         radiation_length = 16.14
     ),
-    W = PDGMaterial(
+    'W': PDGMaterial(
         density = 19.30,
         minimum_ionization = 1.145,
         nuclear_interaction_length = 191.9,
@@ -176,32 +178,32 @@ materials = dict(
     ),
     # this carbon is 6 C carbon (amorphous)
     # with a lower density to represent carbon fiber
-    C = PDGMaterial(
+    'C': PDGMaterial(
         density = 1.800,
         minimum_ionization = 1.749,
         nuclear_interaction_length = 85.8,
         radiation_length = 42.70
     ),
     # FR4 is a fire-retardant version of G10 with 7-8% bromide
-    G10 = PDGMaterial(
+    'G10': PDGMaterial(
         density = 1.800,
         minimum_ionization = 1.762,
         nuclear_interaction_length = 78.4,
         radiation_length = 32.17
     ),
-    polycarbonate = PDGMaterial(
+    'polycarbonate': PDGMaterial(
         density = 1.200,
         minimum_ionization = 1.886,
         nuclear_interaction_length = 83.6,
         radiation_length = 41.50
     )
-)
+}
 
-material_aliases = dict(
-    FR4 = 'G10',
-    Carbon = 'C',
-    Glue = 'polycarbonate'
-)
+material_aliases = {
+    'FR4': 'G10',
+    'Carbon': 'C',
+    'Glue': 'polycarbonate'
+}
 
 
 def get_material(name):
@@ -235,12 +237,15 @@ class Layer :
     def __str__(self) :
         return f'{self.thickness:.2f} mm {self.name}'
 
+    @staticmethod
     def air(t) :
         return Layer('Air',t)
 
+    @staticmethod
     def tungsten(t) :
         return Layer('W', t)
 
+    @staticmethod
     def pcb(*, thickness = 1.2, n_copper_layers = 8) :
         """Estimate PCB layer properties with a layer of copper and a layer of fiberglass
 
@@ -273,21 +278,27 @@ class Layer :
             Layer('FR4', thickness - copper_thickness)
         ]
 
+    @staticmethod
     def glue(t) :
         return Layer('Glue', t)
 
+    @staticmethod
     def silicon() :
         return Layer('Si',Layer.SensDetThickness,sensitive=True)
 
+    @staticmethod
     def carbon(t) :
         return Layer('Carbon',t)
 
+    @staticmethod
     def titanium_baseplate():
         return Layer('Ti', 1)
 
+    @staticmethod
     def aluminum_support_plane():
         return Layer('Al', 3)
 
+    @staticmethod
     def kapton(t):
         return Layer('Kapton', t)
 
@@ -509,33 +520,33 @@ def calc_weights(layers_partitioned_by_sensdet) :
     """
 
     # Does not include sensitive detector layers
-    dE_between_sensdet = [ ]
-    X0_between_sensdet = [ ]
-    L_between_sensdet  = [ ]
+    de_between_sensdet = [ ]
+    x0_between_sensdet = [ ]
+    l_between_sensdet  = [ ]
     # Does include sensitive detector layers
-    Zpos_layer = [ ]
+    zpos_layer = [ ]
     for section in layers_partitioned_by_sensdet :
-        dE_between_sensdet.append(sum(l.thickness * l.dEdx for l in section))
-        X0_between_sensdet.append(sum(l.thickness / l.x0 for l in section))
-        L_between_sensdet.append(sum(l.thickness / l.nuclen for l in section))
+        de_between_sensdet.append(sum(l.thickness * l.dEdx for l in section))
+        x0_between_sensdet.append(sum(l.thickness / l.x0 for l in section))
+        l_between_sensdet.append(sum(l.thickness / l.nuclen for l in section))
         last_layer_pos = 0.0
-        if len(Zpos_layer) > 0:
-            last_layer_pos = Zpos_layer[-1] + Layer.SensDetThickness
-        Zpos_layer.append(last_layer_pos + sum(l.thickness for l in section))
+        if len(zpos_layer) > 0:
+            last_layer_pos = zpos_layer[-1] + Layer.SensDetThickness
+        zpos_layer.append(last_layer_pos + sum(l.thickness for l in section))
     #endfor - sections
 
-    dE_between_sensdet = average(dE_between_sensdet)
-    X0_between_sensdet = average(X0_between_sensdet)
-    L_between_sensdet  = average(L_between_sensdet)
+    de_between_sensdet = average(de_between_sensdet)
+    x0_between_sensdet = average(x0_between_sensdet)
+    l_between_sensdet  = average(l_between_sensdet)
 
-    return dE_between_sensdet, X0_between_sensdet, L_between_sensdet, Zpos_layer
+    return de_between_sensdet, x0_between_sensdet, l_between_sensdet, zpos_layer
 
 
 def print_weights(
-    dE_between_sensdet,
-    X0_between_sensdet,
-    L_between_sensdet,
-    Zpos_layer, 
+    de_between_sensdet,
+    x0_between_sensdet,
+    l_between_sensdet,
+    zpos_layer,
     output = sys.stdout
 ):
     """print the weights in a nice-ly formatted table
@@ -544,20 +555,19 @@ def print_weights(
     function so they can be called directly following each other.
     """
     output.write(
-        '{0:>5s} {1:>7s} {2:>6s} {3:>6s} {4:>6s}\n'.format(
+        '{:>5s} {:>7s} {:>6s} {:>6s} {:>6s}\n'.format(
             'Layer', 'dE', 'X0', 'Lambda', 'Zpos'
         )
     )
     output.write('-----------------------------------\n')
-    for layer in range(len(dE_between_sensdet)-1):
-        output.write('{0:5d} {1:7.3f} {2:6.3f} {3:6.3f} {4:6.3f}\n'.format(
-            layer+1, dE_between_sensdet[layer], X0_between_sensdet[layer], L_between_sensdet[layer], Zpos_layer[layer]))
+    for layer in range(len(de_between_sensdet)-1):
+        output.write(f'{layer+1:5d} {de_between_sensdet[layer]:7.3f} {x0_between_sensdet[layer]:6.3f} {l_between_sensdet[layer]:6.3f} {zpos_layer[layer]:6.3f}\n')
     #endfor - layers
     output.write('-----------------------------------\n')
-    output.write('{0:>5s} {1:7.3f} {2:6.3f} {3:6.3f} {4:6.3f}\n'.format(
-        'Sum', sum(dE_between_sensdet[:-1]), sum(X0_between_sensdet[:-1]), sum(L_between_sensdet[:-1]), Zpos_layer[-1] ))
-    output.write('{0:>5s} {1:7.3f} {2:6.3f} {3:6.3f} {4:6.3f}\n'.format(
-        'Back', dE_between_sensdet[-1], X0_between_sensdet[-1], L_between_sensdet[-1], Zpos_layer[-1]))
+    output.write('{:>5s} {:7.3f} {:6.3f} {:6.3f} {:6.3f}\n'.format(
+        'Sum', sum(de_between_sensdet[:-1]), sum(x0_between_sensdet[:-1]), sum(l_between_sensdet[:-1]), zpos_layer[-1] ))
+    output.write('{:>5s} {:7.3f} {:6.3f} {:6.3f} {:6.3f}\n'.format(
+        'Back', de_between_sensdet[-1], x0_between_sensdet[-1], l_between_sensdet[-1], zpos_layer[-1]))
     output.flush()
 
 
@@ -606,7 +616,7 @@ def ldmx_ecal_v14():
 
     # adding two lists together just appends them, so I "sum" all the
     # bilayer material stacks into a single materal stack for the entire detector
-    layers = sum((bilayer.material_stack() for bilayer in bilayers), [])
+    layers = functools.reduce(operator.iadd, (bilayer.material_stack() for bilayer in bilayers), [])
     # partition the material stack into groups separated by sensitive silicon
     mbs = materials_between_sensdet(layers)
     weights = calc_weights(mbs)
@@ -634,7 +644,7 @@ def ldmx_ecal_v15():
 
     # adding two lists together just appends them, so I "sum" all the
     # bilayer material stacks into a single materal stack for the entire detector
-    layers = sum((bilayer.material_stack() for bilayer in bilayers), [])
+    layers = functools.reduce(operator.iadd, (bilayer.material_stack() for bilayer in bilayers), [])
     # partition the material stack into groups separated by sensitive silicon
     mbs = materials_between_sensdet(layers)
     weights = calc_weights(mbs)
@@ -649,11 +659,7 @@ def minildmx():
     print('N Bi-Layers | X0    | mm    |')
     for n in range(1,4):
         layers = [Layer.kapton(0.1)]+n*BiLayerSandwich(front=0, cooling=0, slice_test=True).material_stack()+[Layer.kapton(0.1)]
-        print('{n:>11} | {x0:<5.3g} | {z:<5.3g} |'.format(
-            n = n,
-            x0 = sum(layer.thickness / layer.x0 for layer in layers),
-            z = sum(layer.thickness for layer in layers)
-        ))
+        print(f'{n:>11} | {sum(layer.thickness / layer.x0 for layer in layers):<5.3g} | {sum(layer.thickness for layer in layers):<5.3g} |')
 
 
 @command

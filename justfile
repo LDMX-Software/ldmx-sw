@@ -8,7 +8,6 @@
 #
 # other recipe ideas:
 #   - production image building
-#   - format python
 
 help_message := "shared recipes for ldmx-sw development
 
@@ -107,6 +106,11 @@ test *ARGS:
 fire config_py *ARGS:
     denv_workspace="{{ this_denv_workspace }}" denv fire {{ config_py }} {{ ARGS }}
 
+# multiple runs of ldmx-sw fire with same input configuration script
+[no-cd]
+fire-parallel config_py *ARGS:
+    denv_workspace="{{ this_denv_workspace }}" denv fire-parallel {{ config_py }} {{ ARGS }}
+
 # run gdb on a config file
 [no-cd]
 debug config_py *ARGS:
@@ -182,6 +186,30 @@ format-cpp: format-cpp-all
 
 # format only the C++ files that have changed relative to trunk
 format-cpp-diff *args='-i': (_clang-tool-impl "git diff --name-only origin/trunk" "clang-format" args)
+
+# format the Python source code
+format-python:
+    denv ruff format
+
+# format only the Python files that have changed relative to trunk
+format-python-diff:
+    #!/usr/bin/env sh
+    set -eu
+    py_list="$(mktemp)"
+    if ! git diff --name-only origin/trunk | grep -E '\.py$' > "${py_list}"; then
+      echo "no Python files to format"
+    else
+      xargs --arg-file="${py_list}" denv ruff format
+    fi
+    rm "${py_list}"
+
+# lint the Python source code with ruff
+lint-python:
+    denv ruff check
+
+# lint and auto-fix the Python source code
+lint-python-fix:
+    denv ruff check --fix
 
 # format the justfile
 format-just:

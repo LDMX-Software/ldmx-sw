@@ -135,7 +135,7 @@ class CaloCluster {
   /// @brief  Delta unc on unc in y-z plane
   double getEDYDZ() const { return err_dydz_; }
 
-  // get hit rawIDs (unused)
+  // get hit rawIDs
   const std::vector<unsigned int>& getHitIDs() const { return hit_ids_; }
 
   // ability to store limited hit info

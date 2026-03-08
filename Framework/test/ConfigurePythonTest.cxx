@@ -125,7 +125,7 @@ TEST_CASE("Configure Python Test", "[Framework][functionality]") {
   // Run a check of the python configuration class without arguments.
   SECTION("No arguments to python script") {
     framework::config::Parameters config{framework::config::run(
-        "ldmxcfg.Process.lastProcess", config_file_name, args, 0)};
+        "ldmxcfg.Process.last_process", config_file_name, args, 0)};
     p = std::make_unique<framework::Process>(config);
 
     CHECK(p->getPassName() == "test");
@@ -142,7 +142,7 @@ TEST_CASE("Configure Python Test", "[Framework][functionality]") {
   out_file.open(config_file_name_arg, std::ios::out | std::ios::binary);
   out_file << in_file.rdbuf();
   out_file << "import sys" << std::endl;
-  out_file << "p.logFrequency = int(sys.argv[1])" << std::endl;
+  out_file << "p.log_frequency = int(sys.argv[1])" << std::endl;
 
   in_file.close();
   out_file.close();
@@ -152,7 +152,7 @@ TEST_CASE("Configure Python Test", "[Framework][functionality]") {
   auto correct_log_freq{9000};
   SECTION("Single argument to python script") {
     args[0] = (char *)"9000";
-    auto config{framework::config::run("ldmxcfg.Process.lastProcess",
+    auto config{framework::config::run("ldmxcfg.Process.last_process",
                                        config_file_name_arg, args, 1)};
     p = std::make_unique<framework::Process>(config);
     CHECK(p->getLogFrequency() == correct_log_freq);
@@ -172,7 +172,7 @@ TEST_CASE("Configure Python Test", "[Framework][functionality]") {
   // warning: this test will fail if the repr of a tuple changes format
   SECTION("Bad parameter exception test") {
     REQUIRE_THROWS_WITH(
-        framework::config::run("ldmxcfg.Process.lastProcess",
+        framework::config::run("ldmxcfg.Process.last_process",
                                config_file_name_arg, args, 0),
         ContainsSubstring("('tuples', 'are', 'not', 'supported')"));
     // we need to manually close up our python interpreter

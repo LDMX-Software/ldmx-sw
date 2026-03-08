@@ -23,9 +23,9 @@ DeepEcalProcessFilter::DeepEcalProcessFilter(
     : simcore::UserAction(name, parameters) {
   bias_threshold_ = parameters.get<double>("bias_threshold");
   processes_ = parameters.get<std::vector<std::string>>("processes");
-  ecal_min_z_ = parameters.get<double>("ecal_min_Z");
+  ecal_min_z_ = parameters.get<double>("ecal_min_z");
   require_photon_from_target_ =
-      parameters.get<bool>("require_photon_fromTarget");
+      parameters.get<bool>("require_photon_from_target");
 }
 
 void DeepEcalProcessFilter::BeginOfEventAction(const G4Event* event) {

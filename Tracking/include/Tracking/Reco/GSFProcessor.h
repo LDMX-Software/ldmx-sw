@@ -164,18 +164,20 @@ class GSFProcessor final : public TrackingGeometryUser {
   // Processing time counter
   // double processing_time_{0.};
 
-  // time profiling
+  /// Time profiling data for performance analysis
   std::map<std::string, double> profiling_map_;
 
   // refitting of tracks
   // bool kf_refit_{false};
   // bool gsf_refit_{false};
 
+  /// Enable verbose debug output logging
   bool debug_{false};
 
-  //--- Smearing ---//
-
+  /// Random number generator for smearing operations
   std::default_random_engine generator_;
+
+  /// Normal distribution for smearing measurements
   std::shared_ptr<std::normal_distribution<float>> normal_;
 
   // Constant BField
@@ -192,17 +194,16 @@ class GSFProcessor final : public TrackingGeometryUser {
   // Minimum number of hits on tracks
   // int min_hits_{7};
 
-  // The extrapolation surface
-  // bool use_extrapolate_location_{true};
+  /// Location to extrapolate tracks to (x, y, z in mm)
   std::vector<double> extrapolate_location_{0., 0., 0.};
   // bool use_seed_perigee_{false};
 
-  // The measurement collection to use for track reconstruction
+  /// Collection name for input measurements
   std::string measurement_collection_{"TaggerMeasurements"};
 
   // double outlier_pval_{3.84};
 
-  // The output track collection
+  /// Collection name for output GSF-refitted tracks
   std::string out_trk_collection_{"GSFTracks"};
 
   // Select the hits using TrackID and pdg_id__
@@ -213,51 +214,77 @@ class GSFProcessor final : public TrackingGeometryUser {
   // Mass for the propagator hypothesis in MeV
   // double mass_{0.511};
 
-  // The seed track collection
+  /// Collection name for seed tracks (currently unused)
   std::string seed_coll_name_{"seedTracks"};
 
-  // The GSF Fitter
+  /// Gaussian Sum Fitter instance for track refitting
   std::unique_ptr<const Acts::GaussianSumFitter<
       GsfPropagator, BetheHeitlerApprox, Acts::VectorMultiTrajectory>>
       gsf_;
 
-  // Configuration
-
+  /// Collection name for input tracks to be refit
   std::string track_collection_{"TaggerTracks"};
+
+  /// Collection name for measurements associated with tracks
   std::string meas_collection_{"DigiTaggerSimHits"};
 
+  /// Pass name for track collection in event
   std::string track_passname_;
+
+  /// Pass name for measurement collection in event
   std::string meas_passname_;
+
+  /// Pass name qualifier for track collection event key
   std::string track_collection_event_passname_;
+
+  /// Pass name qualifier for measurement collection event key
   std::string meas_collection_event_passname_;
 
+  /// Maximum number of mixture components in GSF fit
   size_t max_components_{4};
+
+  /// Abort fit if any error occurs (strict error handling)
   bool abort_on_error_{false};
+
+  /// Disable all material interactions during propagation
   bool disable_all_material_handling_{false};
+
+  /// Weight threshold below which mixture components are dropped
   double weight_cutoff_{1.0e-4};
 
-  double propagator_step_size_{200.};  // mm
+  /// Step size for track propagation in mm
+  double propagator_step_size_{200.};
+
+  /// Maximum number of propagation steps before aborting
   int propagator_max_steps_{1000};
+
+  /// Path to magnetic field map file
   std::string field_map_{""};
 
+  /// Use perigee parameterization for tracks
   bool use_perigee_{false};
-  // bool usePlaneSurface_{false};
 
   // Keep track on which system this processor is running on
   bool tagger_tracking_{true};
 
-  // The Propagators
+  /// Propagator for track extrapolation using eigen stepper
   std::unique_ptr<const Propagator> propagator_;
 
-  // The GSF Fitter
-
-  // This could be a vector
-  // The mapping between layers and Acts::Surface
+  /// Layer ID to ACTS Surface mapping for hit surface lookup
   std::unordered_map<unsigned int, const Acts::Surface *> layer_surface_map_;
 
   // Track Extrapolator Tool
   std::shared_ptr<tracking::reco::TrackExtrapolatorTool<Propagator>>
       trk_extrap_;
+
+  /// Beam origin surface at z=-700 mm (tagger track initialization)
+  std::shared_ptr<Acts::Surface> beam_origin_surface_;
+
+  /// Target surface at z=0 mm (recoil track initialization, perigee output)
+  std::shared_ptr<Acts::Surface> target_surface_;
+
+  /// ECAL surface at z=240.5 mm (ECAL scoring plane for recoil tracking)
+  std::shared_ptr<Acts::Surface> ecal_surface_;
 
 };  // GSFProcessor
 

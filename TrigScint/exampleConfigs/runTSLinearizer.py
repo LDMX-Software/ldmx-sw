@@ -3,50 +3,45 @@ p = ldmxcfg.Process('conv') #
 
 import sys
 
-inputPassName="unpack"
-nEv=400000
+input_pass_name="unpack"
+n_ev=400000
 
-#p.maxEvents = nEv
+#p.max_events = n_ev
 
-if len(sys.argv) > 2 :
-    timeOffset=int(sys.argv[2])
-else :
-    timeOffset=5
-if len(sys.argv) > 3 :
-    logVerbosity=int(sys.argv[3])
-else :
-    logVerbosity=2
+time_offset = int(sys.argv[2]) if len(sys.argv) > 2 else 5
+log_verbosity = int(sys.argv[3]) if len(sys.argv) > 3 else 2
 
 
 from LDMX.TrigScint.trigScint import EventReadoutProducer
 
 
-# ------------------- all set; setup in detail, and run with these settings ---------------
+# ------------------- all set; setup in detail, and run with these settings
+# ---------------
 
-tsEv=EventReadoutProducer("eventLinearizer")
-tsEv.input_pass_name=inputPassName
-tsEv.input_collection="decodedQIEUp"
-tsEv.time_shift=timeOffset
-if logVerbosity < 1 :
-    tsEv.verbose=True 
+ts_ev=EventReadoutProducer("eventLinearizer")
+ts_ev.input_pass_name=input_pass_name
+ts_ev.input_collection="decodedQIEUp"
+ts_ev.time_shift=time_offset
+if log_verbosity < 1 :
+    ts_ev.verbose=True
 p.sequence = [
-    tsEv
+    ts_ev
     ]
 
 
 #generate on the fly
-p.inputFiles = [sys.argv[1]]
+p.input_files = [sys.argv[1]]
 outname=sys.argv[1]
 outname=outname.replace("_reco.root", ".root")
 outname=outname.replace(".root", "_linearize.root")
-p.outputFiles = [ outname ]
+p.output_files = [ outname ]
 
 
-p.logger.filePath=p.outputFiles[0].replace(".root",".log")
-p.logger.termLevel = 2
-p.logger.fileLevel = logVerbosity
+p.logger.file_path=p.output_files[0].replace(".root",".log")
+p.logger.term_level = 2
+p.logger.file_level = log_verbosity
 
 #p.pause()
 
-if (logVerbosity < 1 ) :
-    p.logger.debug(tsEv)
+if (log_verbosity < 1 ) :
+    p.logger.debug(ts_ev)

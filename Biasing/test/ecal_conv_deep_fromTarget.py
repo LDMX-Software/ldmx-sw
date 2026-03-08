@@ -1,42 +1,52 @@
 from LDMX.Framework import ldmxcfg
+
+
 p=ldmxcfg.Process("v14_deep_gammaFromTarget")
 
-from LDMX.Ecal import EcalGeometry
-from LDMX.Hcal import HcalGeometry
 import LDMX.Ecal.ecal_hardcoded_conditions as ecal_conditions
 import LDMX.Hcal.hcal_hardcoded_conditions as hcal_conditions
 from LDMX.Biasing import ecal
+from LDMX.Ecal import ecal_geometry
+from LDMX.Hcal import hcal_geometry
 from LDMX.SimCore import generators
 
+
 det = 'ldmx-det-v14-8gev'
-mysim = ecal.deep_photo_nuclear(det, generators.single_8gev_e_upstream_tagger(), bias_threshold = 5010., processes=['conv','phot)'], ecal_min_Z = 400., require_photon_fromTarget = True)
-#mysim = ecal.deep_photo_nuclear(det, generators.single_8gev_e_upstream_tagger(), bias_threshold = 5010., processes=['conv','phot)'], ecal_min_Z = 200., require_photon_fromTarget = True)
+mysim = ecal.deep_photo_nuclear(
+    det, generators.single_8gev_e_upstream_tagger(),
+    bias_threshold=5010., processes=['conv', 'phot)'],
+    ecal_min_z=400., require_photon_from_target=True)
+#mysim = ecal.deep_photo_nuclear(det, generators.single_8gev_e_upstream_tagger(),
+#bias_threshold = 5010., processes=['conv','phot)'], ecal_min_z = 200.,
+#require_photon_from_target = True)
 mysim.description = "ECal Deep Conversion Test Simulation"
 
-from LDMX.Biasing import util
 #mysim.actions.append( util.StepPrinter(1) )
 #step = util.StepPrinter(track_id=1, depth=3)
 #mysim.actions.extend([step])
-
 import LDMX.Ecal.digi as ecal_digi
 import LDMX.Ecal.vetos as ecal_vetos
+from LDMX.Biasing import util
 
-p.outputFiles = [f'events_pn_deep_fromTarget_test.root']
-p.histogramFile = f'hist_pn_deep_fromTarget_test.root'
 
-p.maxTriesPerEvent = 10000
-p.maxEvents = 10
-p.totalEvents = 10
+p.output_files = ['events_pn_deep_fromTarget_test.root']
+p.histogram_file = 'hist_pn_deep_fromTarget_test.root'
+
+p.max_tries_per_event = 10000
+p.max_events = 10
+p.total_events = 10
 p.run = 20
-p.logFrequency = 100
-p.termLogLevel = 0
+p.log_frequency = 100
+p.term_log_level = 0
 
 p.sequence=[ mysim,
         ecal_digi.EcalDigiProducer(),
         ecal_digi.EcalRecProducer(),
         ecal_vetos.EcalVetoProcessor()
         ]
-      
+
 from LDMX.DQM import dqm
+
+
 p.sequence.append(dqm.SampleValidation())
 p.sequence.extend(dqm.ecal_dqm)

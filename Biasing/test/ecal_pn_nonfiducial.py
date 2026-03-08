@@ -1,14 +1,18 @@
 from LDMX.Framework import ldmxcfg
+
+
 p=ldmxcfg.Process("v14_nonfid")
 
-from LDMX.Ecal import EcalGeometry
-from LDMX.Hcal import HcalGeometry
 import LDMX.Ecal.ecal_hardcoded_conditions as ecal_conditions
 import LDMX.Hcal.hcal_hardcoded_conditions as hcal_conditions
 from LDMX.Biasing import ecal
+from LDMX.Ecal import ecal_geometry
+from LDMX.Hcal import hcal_geometry
 from LDMX.SimCore import generators
 
-mysim = ecal.nonfiducial_photo_nuclear('ldmx-det-v14-8gev', generators.single_8gev_e_upstream_tagger())
+
+mysim = ecal.nonfiducial_photo_nuclear('ldmx-det-v14-8gev',
+        generators.single_8gev_e_upstream_tagger())
 mysim.description = "ECal Non-Fiducial Test Simulation"
 
 #from LDMX.Biasing import util
@@ -17,20 +21,23 @@ mysim.description = "ECal Non-Fiducial Test Simulation"
 import LDMX.Ecal.digi as ecal_digi
 import LDMX.Ecal.vetos as ecal_vetos
 
-p.outputFiles = [f'events_nonfiducial_test_production.root']
-p.histogramFile = f'hist_nonfiducial_test_production.root'
 
-p.maxTriesPerEvent = 10000
-p.maxEvents = 100
+p.output_files = ['events_nonfiducial_test_production.root']
+p.histogram_file = 'hist_nonfiducial_test_production.root'
+
+p.max_tries_per_event = 10000
+p.max_events = 100
 p.run = 2
-p.logFrequency = 100
-#p.termLogLevel = 0
+p.log_frequency = 100
+#p.term_log_level = 0
 
 p.sequence=[ mysim,
         ecal_digi.EcalDigiProducer(),
         ecal_digi.EcalRecProducer(),
         ecal_vetos.EcalVetoProcessor()
         ]
-      
+
 from LDMX.DQM import dqm
+
+
 p.sequence.extend(dqm.ecal_dqm)

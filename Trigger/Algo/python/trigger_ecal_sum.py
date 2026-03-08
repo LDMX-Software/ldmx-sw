@@ -1,6 +1,7 @@
 
 from LDMX.Framework.ldmxcfg import Producer
 
+
 class TrigEcalEnergySum(Producer) :
     """Configuration for TrigEcalEnergySum
     """

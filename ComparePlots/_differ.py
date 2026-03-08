@@ -4,15 +4,17 @@
 import os
 import re
 
+import hist.intervals
+
 # external dependencies
 import matplotlib
-import uproot
-import numpy as np
-import hist.intervals
 import mplhep
+import numpy as np
+import uproot
 
 # us
 from ._file import File
+
 
 class Differ :
     """Differ allowing easy comparison of "similar" files
@@ -58,8 +60,12 @@ class Differ :
             elif isinstance(arg, File) :
                 return arg
             else :
-                raise KeyError(f'Argument provided {arg} is not a ComparePlots.File or a tuple of arguments for its constructor')
-                
+                raise KeyError(
+                    f'Argument provided {arg} is not a'
+                    ' ComparePlots.File or a tuple of'
+                    ' arguments for its constructor'
+                )
+
         self.grp_name = grp_name
         self.files = list(map(open_file, args))
         self.output_type = output_type
@@ -77,7 +83,7 @@ class Differ :
         ylim = (None,None),
         out_dir = None,
         file_name = None,
-        legend_kw = dict(),
+        legend_kw = None,
         rebin = 1,
         **hist_kwargs
     ):
@@ -108,25 +114,33 @@ class Differ :
         out_dir : str
             Directory in which to write the plotting file
         file_name : str
-            Name of file, no extension (default: histname name with directory separators removed)
+            Name of file, no extension
+            (default: histname name with directory
+            separators removed)
         hist_kwargs : dict
             All other key-word arguments are passed into each File.plot1d
         """
+        if legend_kw is None:
+            legend_kw = {}
         fig = matplotlib.pyplot.figure('differ',figsize=(11,8))
         raw_ax, ratio_ax = fig.subplots(
             nrows = 2,
             sharex = 'col',
             height_ratios = [2, 1],
-            gridspec_kw = dict(
-                hspace = 0.05
-            )
+            gridspec_kw = {
+                'hspace': 0.05
+            }
         )
 
         raw_histograms = []
         for f in self.files :
             try:
                 h = f.get(histname)
-                art = h[hist.rebin(rebin)].plot1d(ax=raw_ax, **f.hist_kwargs, **hist_kwargs)
+                art = h[hist.rebin(rebin)].plot1d(
+                    ax=raw_ax,
+                    **f.hist_kwargs,
+                    **hist_kwargs
+                )
                 raw_histograms.append((h, art))
             except uproot.KeyInFileError:
                 f.log.warn(f"Key {histname} doesn't exist in {self}, skipping")
@@ -171,5 +185,9 @@ class Differ :
         else :
             if file_name is None :
                 file_name = re.sub(r'^.*/','',histname)
-            fig.savefig(os.path.join(out_dir,file_name)+ self.output_type, bbox_inches='tight')
+            fig.savefig(
+                os.path.join(out_dir, file_name)
+                + self.output_type,
+                bbox_inches='tight'
+            )
             fig.clf()

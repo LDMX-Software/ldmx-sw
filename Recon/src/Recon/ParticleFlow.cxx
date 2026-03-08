@@ -6,16 +6,16 @@ namespace recon {
 
 void ParticleFlow::configure(framework::config::Parameters& ps) {
   // I/O
-  input_ecal_coll_name_ = ps.get<std::string>("inputEcalCollName");
-  input_hcal_coll_name_ = ps.get<std::string>("inputHcalCollName");
-  input_track_coll_name_ = ps.get<std::string>("inputTrackCollName");
-  output_coll_name_ = ps.get<std::string>("outputCollName");
+  input_ecal_coll_name_ = ps.get<std::string>("input_ecal_coll_name");
+  input_hcal_coll_name_ = ps.get<std::string>("input_hcal_coll_name");
+  input_track_coll_name_ = ps.get<std::string>("input_track_coll_name");
+  output_coll_name_ = ps.get<std::string>("output_coll_name");
   input_ecal_passname_ = ps.get<std::string>("input_ecal_passname");
   input_hcal_passname_ = ps.get<std::string>("input_hcal_passname");
   input_tracks_passname_ = ps.get<std::string>("input_tracks_passname");
 
   // Algorithm configuration
-  single_particle_ = ps.get<bool>("singleParticle");
+  single_particle_ = ps.get<bool>("single_particle");
   use_existing_ecal_clusters_ = ps.get<bool>("use_existing_ecal_clusters");
 
   // Calibration factors, from jason, temperary
@@ -313,10 +313,12 @@ void ParticleFlow::produce(framework::Event& event) {
       ldmx::PFCandidate cand;
       fillCandTrack(cand, tracks[i]);  // append track info to candidate
 
+      cand.setTrackIndex(i);
       if (!tk_is_em_linked[i]) {
         // chargedUnmatch.push_back(cand);
       } else {  // if track is linked with ECal cluster
         fillCandEMCalo(cand, ecal_clusters[tk_em_pairs[i]]);
+        cand.setEcalIndex(tk_em_pairs[i]);
         if (em_is_had_linked[tk_em_pairs[i]]) {  // if ECal is linked with HCal
                                                  // cluster
           fillCandHadCalo(cand, hcal_clusters[em_had_pairs[tk_em_pairs[i]]]);
@@ -331,9 +333,9 @@ void ParticleFlow::produce(framework::Event& event) {
     for (int i = 0; i < ecal_clusters.size(); i++) {
       // already linked with ECal in the previous step
       if (em_is_tk_linked[i]) continue;
-
       ldmx::PFCandidate cand;
       fillCandEMCalo(cand, ecal_clusters[i]);
+      cand.setEcalIndex(i);
       if (em_is_had_linked[tk_em_pairs[i]]) {
         fillCandHadCalo(cand, hcal_clusters[em_had_pairs[i]]);
         // emMatch.push_back(cand);
@@ -347,6 +349,7 @@ void ParticleFlow::produce(framework::Event& event) {
       if (had_is_em_linked[i]) continue;
       ldmx::PFCandidate cand;
       fillCandHadCalo(cand, hcal_clusters[i]);
+      cand.setHcalIndex(i);
       // hadOnly.push_back(cand);
       pf_cands.push_back(cand);
     }

@@ -2,6 +2,7 @@
 
 from LDMX.SimCore import simcfg
 
+
 class ScoringPlaneSD(simcfg.SensitiveDetector) :
     """Scoring plane SD
 
@@ -83,15 +84,19 @@ class HcalSD(simcfg.SensitiveDetector) :
         The current defaults match the mainline LDMX Hcal and
         prototype Hcal (scint_box) scintillator geometries.
 
+    enable_hit_contribs : bool, optional
+        Should the simulation save contributions to Hcal sim hits?
+    compress_hit_contribs : bool, optional
+        Should the simulation compress contributions to Hcal sim hits by PDG ID?
     """
-    def __init__(self, gdml_identifiers = ['scintYVolume', 'scintXVolume',
-                                           'scintX_0Volume', 'scintX_1Volume', 'scintX_2Volume', 'scintX_3Volume',
-                                           'scintY_0Volume', 'scintY_1Volume', 'scintY_2Volume', 'scintY_3Volume',
-                                           'scintZXVolume', 'scintZYVolume',
-                                           'ScintBox',
-                                           'scint_box']) :
+    def __init__(self, gdml_identifiers = None) :
+        if gdml_identifiers is None:
+            gdml_identifiers = ['scintYVolume', 'scintXVolume', 'scintX_0Volume', 'scintX_1Volume', 'scintX_2Volume', 'scintX_3Volume', 'scintY_0Volume', 'scintY_1Volume', 'scintY_2Volume', 'scintY_3Volume', 'scintZXVolume', 'scintZYVolume', 'ScintBox', 'scint_box']
         super().__init__('hcal_sd', 'simcore::HcalSD','SimCore_SDs')
         self.gdml_identifiers = gdml_identifiers
+        self.enable_hit_contribs = True
+        self.compress_hit_contribs = True
+        self.max_origin_track_id = 6
 
 class EcalSD(simcfg.SensitiveDetector) :
     """SD for the ECal
@@ -102,15 +107,15 @@ class EcalSD(simcfg.SensitiveDetector) :
 
     Parameters
     ----------
-    enableHitContribs : bool, optional
+    enable_hit_contribs : bool, optional
         Should the simulation save contributions to Ecal sim hits?
-    compressHitContribs : bool, optional
+    compress_hit_contribs : bool, optional
         Should the simulation compress contributions to Ecal sim hits by PDG ID?
     """
     def __init__(self) :
         super().__init__('ecal_sd', 'simcore::EcalSD','SimCore_SDs')
-        self.enableHitContribs = True
-        self.compressHitContribs = True
+        self.enable_hit_contribs = True
+        self.compress_hit_contribs = True
         self.max_origin_track_id = 6
 
 class TrigScintSD(simcfg.SensitiveDetector) :
@@ -163,14 +168,36 @@ class TrigScintSD(simcfg.SensitiveDetector) :
     def down() :
         return TrigScintSD(2, 'PadDn', 'trigger_pad_dn_bar_volume')
 
+    #Note: light guides and SiPMs added as senstitive detectors in v15
+    #In order to preserve backwards compatibility, pad(1-3) will keep
+    #their original names, but are now slightly inconsistent with the
+    #naming schemes of these new SDs
+    def pad1() :
+        return TrigScintSD(1,'Pad1','trigger_pad1_bar_volume')
+
+    def pad2() :
+        return TrigScintSD(2,'Pad2','trigger_pad2_bar_volume')
+
     def pad3() :
         return TrigScintSD(3,'Pad3','trigger_pad3_bar_volume')
 
-    def pad2() :
-        return TrigScintSD(1,'Pad2','trigger_pad2_bar_volume')
+    def pad1lg() :
+        return TrigScintSD(5,'Pad1LightGuide','tspad1_lightpipe_volume')
 
-    def pad1() :
-        return TrigScintSD(2,'Pad1','trigger_pad1_bar_volume')
+    def pad2lg() :
+        return TrigScintSD(6,'Pad2LightGuide','tspad2_lightpipe_volume')
+
+    def pad3lg() :
+        return TrigScintSD(7,'Pad3LightGuide','tspad3_lightpipe_volume')
+
+    def pad1sipm() :
+        return TrigScintSD(8, 'Pad1SiPM','tspad1_sipm_volume')
+
+    def pad2sipm() :
+        return TrigScintSD(9, 'Pad2SiPM','tspad2_sipm_volume')
+
+    def pad3sipm() :
+        return TrigScintSD(10,'Pad3SiPM','tspad3_sipm_volume')
 
     def target() :
         """Target sensitive detector"""

@@ -107,7 +107,7 @@ void SampleValidation::analyze(const framework::Event& event) {
   return;
 }
 
-int SampleValidation::pdgidLabel(const int pdgid) {
+float SampleValidation::pdgidLabel(const int pdgid) {
   // initially assign label as "anything else"/overflow value,
   // only change if the pdg id is something of interest
   int label = 18;
@@ -126,8 +126,9 @@ int SampleValidation::pdgidLabel(const int pdgid) {
   if (pdgid == 130) label = 12;   // K-Long
   if (pdgid == 310) label = 13;   // K-Short
   if (pdgid == 3122 || pdgid == 3222 || pdgid == 3212 || pdgid == 3112 ||
-      pdgid == 3322 || pdgid == 3312)
-    label = 16;  // strange baryon
+      pdgid == 3322 || pdgid == 3312) {
+    label = 16;  // strange baryons
+  }
   /*
    * Nuclear PDG codes are given by ±10LZZZAAAI so to find the atomic
    * number, we divide by 10 (to lose I) and then take the modulo
@@ -143,7 +144,12 @@ int SampleValidation::pdgidLabel(const int pdgid) {
   // dark photon, need pdg id for other models like ALPs and SIMPs
   if (pdgid == 622) label = 17;
 
-  return label;
+  if (label == 18) {
+    ldmx_log(debug) << "Unrecognized PDG ID: " << pdgid
+                    << ", assigning to 'else'";
+  }
+
+  return label + 0.5;
 }
 
 }  // namespace dqm

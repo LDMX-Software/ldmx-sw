@@ -14,9 +14,9 @@ namespace recon {
 void SequentialTrigger::configure(framework::config::Parameters& ps) {
   trigger_list_ = ps.get<std::vector<std::string>>("trigger_list");
   trigger_pass_names_ = ps.get<std::vector<std::string>>("trigger_passNames");
-  do_and_ = ps.get<bool>("doAND");
-  do_or_ = ps.get<bool>("doOR");
-  do_val_ = ps.get<bool>("doVAL");
+  do_and_ = ps.get<bool>("do_and");
+  do_or_ = ps.get<bool>("do_or");
+  do_val_ = ps.get<bool>("do_val");
   // Returns an error if some bad combination of doOR and doAND is enabled.
   if (do_and_ == do_or_) {
     EXCEPTION_RAISE("InvalidArg",

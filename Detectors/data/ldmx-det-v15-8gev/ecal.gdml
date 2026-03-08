@@ -2,7 +2,7 @@
 <!DOCTYPE gdml [
 <!ENTITY constants SYSTEM "constants.gdml">
 ]>
-<gdml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://service-spi.web.cern.ch/service-spi/app/releases/GDML/schema/gdml.xsd">
+<gdml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="gdml.xsd">
 
   <!--
     The LDMX ECal Geant4 Simulation Model
@@ -112,234 +112,6 @@
     <!-- flip over y-axis for odd-side of bilayer sandwich -->
     <rotation name="flip" unit="deg" x="0" y="180" z="0"/>
   </define>
-
-  <materials>
-    <!-- alimunum for support box -->
-    <material Z="13" name="G4_Al0x2705780" state="solid">
-      <T unit="K" value="293.15"/>
-      <MEE unit="eV" value="166"/>
-      <D unit="g/cm3" value="2.699"/>
-      <atom unit="g/mole" value="26.9815"/>
-    </material>
-
-    <!-- PCB mixture -->
-    <isotope N="63" Z="29" name="Cu630x271bbf0">
-      <atom unit="g/mole" value="62.9296"/>
-    </isotope>
-    <isotope N="65" Z="29" name="Cu650x271bc60">
-      <atom unit="g/mole" value="64.9278"/>
-    </isotope>
-    <element name="Cu0x271b990">
-      <fraction n="0.6917" ref="Cu630x271bbf0"/>
-      <fraction n="0.3083" ref="Cu650x271bc60"/>
-    </element>
-    <isotope N="16" Z="8" name="O160x271e090">
-      <atom unit="g/mole" value="15.9949"/>
-    </isotope>
-    <isotope N="17" Z="8" name="O170x271e400">
-      <atom unit="g/mole" value="16.9991"/>
-    </isotope>
-    <isotope N="18" Z="8" name="O180x271e490">
-      <atom unit="g/mole" value="17.9992"/>
-    </isotope>
-    <element name="O0x271e1a0">
-      <fraction n="0.99757" ref="O160x271e090"/>
-      <fraction n="0.00038" ref="O170x271e400"/>
-      <fraction n="0.00205" ref="O180x271e490"/>
-    </element>
-    <isotope N="23" Z="11" name="Na230x2725ef0">
-      <atom unit="g/mole" value="22.9898"/>
-    </isotope>
-    <element name="Na0x2725c90">
-      <fraction n="1" ref="Na230x2725ef0"/>
-    </element>
-    <isotope N="28" Z="14" name="Si280x271c4f0">
-      <atom unit="g/mole" value="27.9769"/>
-    </isotope>
-    <isotope N="29" Z="14" name="Si290x271c560">
-      <atom unit="g/mole" value="28.9765"/>
-    </isotope>
-    <isotope N="30" Z="14" name="Si300x271c5f0">
-      <atom unit="g/mole" value="29.9738"/>
-    </isotope>
-    <element name="Si0x271c2c0">
-      <fraction n="0.922296077703922" ref="Si280x271c4f0"/>
-      <fraction n="0.0468319531680468" ref="Si290x271c560"/>
-      <fraction n="0.0308719691280309" ref="Si300x271c5f0"/>
-    </element>
-    <isotope N="40" Z="20" name="Ca400x2726160">
-      <atom unit="g/mole" value="39.9626"/>
-    </isotope>
-    <isotope N="42" Z="20" name="Ca420x27261d0">
-      <atom unit="g/mole" value="41.9586"/>
-    </isotope>
-    <isotope N="43" Z="20" name="Ca430x2726240">
-      <atom unit="g/mole" value="42.9588"/>
-    </isotope>
-    <isotope N="44" Z="20" name="Ca440x27262e0">
-      <atom unit="g/mole" value="43.9555"/>
-    </isotope>
-    <isotope N="46" Z="20" name="Ca460x2726350">
-      <atom unit="g/mole" value="45.9537"/>
-    </isotope>
-    <isotope N="48" Z="20" name="Ca480x2726390">
-      <atom unit="g/mole" value="47.9525"/>
-    </isotope>
-    <element name="Ca0x2725f30">
-      <fraction n="0.96941" ref="Ca400x2726160"/>
-      <fraction n="0.00647" ref="Ca420x27261d0"/>
-      <fraction n="0.00135" ref="Ca430x2726240"/>
-      <fraction n="0.02086" ref="Ca440x27262e0"/>
-      <fraction n="4e-05" ref="Ca460x2726350"/>
-      <fraction n="0.00187" ref="Ca480x2726390"/>
-    </element>
-    <material name="FR40x27264f0" state="solid">
-      <T unit="K" value="293.15"/>
-      <MEE unit="eV" value="201.221278976803"/>
-      <D unit="g/cm3" value="5.68"/>
-      <fraction n="0.5" ref="Cu0x271b990"/>
-      <fraction n="0.22990022990023" ref="O0x271e1a0"/>
-      <fraction n="0.0482205482205482" ref="Na0x2725c90"/>
-      <fraction n="0.168276668276668" ref="Si0x271c2c0"/>
-      <fraction n="0.0536025536025536" ref="Ca0x2725f30"/>
-    </material>
-
-    <!-- glue mixture -->
-    <isotope N="12" Z="6" name="C120x271ddf0">
-      <atom unit="g/mole" value="12"/>
-    </isotope>
-    <isotope N="13" Z="6" name="C130x271de60">
-      <atom unit="g/mole" value="13.0034"/>
-    </isotope>
-    <element name="C0x271db90">
-      <fraction n="0.9893" ref="C120x271ddf0"/>
-      <fraction n="0.0107" ref="C130x271de60"/>
-    </element>
-    <isotope N="1" Z="1" name="H10x271f760">
-      <atom unit="g/mole" value="1.00782503081372"/>
-    </isotope>
-    <isotope N="2" Z="1" name="H20x271f7d0">
-      <atom unit="g/mole" value="2.01410199966617"/>
-    </isotope>
-    <element name="H0x271f530">
-      <fraction n="0.999885" ref="H10x271f760"/>
-      <fraction n="0.000115" ref="H20x271f7d0"/>
-    </element>
-    <material name="Glue0x272cce0" state="solid">
-      <T unit="K" value="293.15"/>
-      <MEE unit="eV" value="73.3297495741215"/>
-      <D unit="g/cm3" value="0.845"/>
-      <fraction n="0.84491305" ref="C0x271db90"/>
-      <fraction n="0.042542086" ref="H0x271f530"/>
-      <fraction n="0.11254487" ref="O0x271e1a0"/>
-    </material>
-
-    <!-- sensitive silicon -->
-    <material name="G4_Si0x271c1c0" state="solid">
-      <T unit="K" value="293.15"/>
-      <MEE unit="eV" value="173"/>
-      <D unit="g/cm3" value="2.33"/>
-      <fraction n="1" ref="Si0x271c2c0"/>
-    </material>
-
-    <!-- 
-    carbon+epoxy composite material for cooling plane 
-    
-    - taking the Epoxy mixture from the PDG values for
-      Epotek-301
-      https://pdg.lbl.gov/2022/AtomicNuclearProperties/HTML/Epotek-301-1.html
-    - the MEE value is pretty much made up at this point,
-      assuming it is the same as pure carbon which seems
-      to be an ok assumption since a majority of the epoxy
-      is carbon as well
-    - the epoxy to C-fiber ratio is 0.955 _by weight_
-
-    Fractions calculated by doing
-      C = 1+PDGFrac / 1.955
-      H = PDGFrac / 1.955
-      O = PDGFrac / 1.955
-      N = PDGFrac / 1.955
-    where PDGFrac is that material's mass fraction in the PDG
-    material linked above which we convert to molar fraction
-    by converting each fraction to moles individually and then
-    dividing by the sum.
-    -->
-    <material name="CarbonEpoxyComposite" state="solid">
-      <T unit="K" value="293.15"/>
-      <MEE unit="eV" value="81"/>
-      <D unit="g/cm3" value="1.439"/>
-      <fraction n="0.624883102" ref="C0x271db90"/>
-      <fraction n="0.308001109" ref="H0x271f530"/>
-      <fraction n="0.064281977" ref="O0x271e1a0"/>
-      <fraction n="0.002833811" ref="G4_AIR0x271da60"/><!--ref="N140x271e0d0"/>-->
-    </material>
-
-    <!-- air for gaps -->
-    <isotope N="14" Z="7" name="N140x271e0d0">
-      <atom unit="g/mole" value="14.0031"/>
-    </isotope>
-    <isotope N="15" Z="7" name="N150x271e140">
-      <atom unit="g/mole" value="15.0001"/>
-    </isotope>
-    <element name="N0x271dea0">
-      <fraction n="0.99632" ref="N140x271e0d0"/>
-      <fraction n="0.00368" ref="N150x271e140"/>
-    </element>
-    <isotope N="36" Z="18" name="Ar360x271e730">
-      <atom unit="g/mole" value="35.9675"/>
-    </isotope>
-    <isotope N="38" Z="18" name="Ar380x271e7c0">
-      <atom unit="g/mole" value="37.9627"/>
-    </isotope>
-    <isotope N="40" Z="18" name="Ar400x271e850">
-      <atom unit="g/mole" value="39.9624"/>
-    </isotope>
-    <element name="Ar0x271e500">
-      <fraction n="0.003365" ref="Ar360x271e730"/>
-      <fraction n="0.000632" ref="Ar380x271e7c0"/>
-      <fraction n="0.996003" ref="Ar400x271e850"/>
-    </element>
-    <material name="G4_AIR0x271da60" state="gas">
-      <T unit="K" value="293.15"/>
-      <MEE unit="eV" value="85.7"/>
-      <D unit="g/cm3" value="0.00120479"/>
-      <fraction n="0.000124000124000124" ref="C0x271db90"/>
-      <fraction n="0.755267755267755" ref="N0x271dea0"/>
-      <fraction n="0.231781231781232" ref="O0x271e1a0"/>
-      <fraction n="0.0128270128270128" ref="Ar0x271e500"/>
-    </material>
-
-    <!-- Tungsten for absorber -->
-    <isotope N="180" Z="74" name="W1800x270c100">
-      <atom unit="g/mole" value="179.947"/>
-    </isotope>
-    <isotope N="182" Z="74" name="W1820x270c170">
-      <atom unit="g/mole" value="181.948"/>
-    </isotope>
-    <isotope N="183" Z="74" name="W1830x270c210">
-      <atom unit="g/mole" value="182.95"/>
-    </isotope>
-    <isotope N="184" Z="74" name="W1840x270c2b0">
-      <atom unit="g/mole" value="183.951"/>
-    </isotope>
-    <isotope N="186" Z="74" name="W1860x270c2f0">
-      <atom unit="g/mole" value="185.954"/>
-    </isotope>
-    <element name="W0x270bea0">
-      <fraction n="0.0012" ref="W1800x270c100"/>
-      <fraction n="0.265" ref="W1820x270c170"/>
-      <fraction n="0.1431" ref="W1830x270c210"/>
-      <fraction n="0.3064" ref="W1840x270c2b0"/>
-      <fraction n="0.2843" ref="W1860x270c2f0"/>
-    </element>
-    <material name="G4_W0x270bda0" state="solid">
-      <T unit="K" value="293.15"/>
-      <MEE unit="eV" value="727"/>
-      <D unit="g/cm3" value="19.3"/>
-      <fraction n="1" ref="W0x270bea0"/>
-    </material>
-
-  </materials>
 
   <solids>
     <!--
@@ -519,22 +291,22 @@
     </assembly>
 
     <volume name="PCB_volume">
-      <materialref ref="FR40x27264f0"/>
+      <materialref ref="FR4"/>
       <solidref ref="PCB_hexagon"/>
     </volume>
   
     <volume name="Glue_volume">
-      <materialref ref="Glue0x272cce0"/>
+      <materialref ref="Glue"/>
       <solidref ref="Glue_hexagon"/>
     </volume>
   
     <volume name="Si_volume">
-      <materialref ref="G4_Si0x271c1c0"/>
+      <materialref ref="Silicon"/>
       <solidref ref="Si_hexagon"/>
     </volume>
   
     <volume name="GlueThick_volume">
-      <materialref ref="Glue0x272cce0"/>
+      <materialref ref="Glue"/>
       <solidref ref="GlueThick_hexagon"/>
     </volume>
 
@@ -547,16 +319,16 @@
     <!-- define the tungsten absorber volume corresponding to the correct-thickness solid -->
     <loop for="bilayer" from="1" to="num_bilayers-1" step="1">
       <volume name="strongback_bar_volume[bilayer]">
-        <materialref ref="G4_Al0x2705780" />
+        <materialref ref="Aluminum" />
         <solidref ref="strongback_bar[bilayer]" />
       </volume>
       <volume name="W_front_volume[bilayer]">
-        <materialref ref="G4_W0x270bda0"/>
+        <materialref ref="Tungsten"/>
         <solidref ref="W_front_absorber[bilayer]"/>
         <!--<auxiliary auxtype="VisAttributes" auxvalue="BlueSolid"/>-->
       </volume>
       <volume name="W_cooling_volume[bilayer]">
-        <materialref ref="G4_W0x270bda0"/>
+        <materialref ref="Tungsten"/>
         <solidref ref="W_cooling_absorber[bilayer]"/>
         <!--<auxiliary auxtype="VisAttributes" auxvalue="BlueSolid"/>-->
       </volume>
@@ -599,7 +371,7 @@
                           Back Tolerance Gap
     -->
     <volume name="em_calorimeters">
-      <materialref ref="G4_AIR"/>
+      <materialref ref="Air"/>
       <solidref ref="ECal_box"/>
 
       <!--

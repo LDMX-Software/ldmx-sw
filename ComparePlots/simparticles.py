@@ -1,6 +1,8 @@
+import logging
+
 from ._differ import Differ
 from ._plotter import plotter
-import logging
+
 
 log = logging.getLogger('8GeV')
 
@@ -17,7 +19,10 @@ def sample_validation(d: Differ, out_dir=None):
     d.plot1d("SampleValidation/primarydaughters_pdgid", "PDG ID, primary daughters",
              out_dir=out_dir,
              density=True)
-    d.plot1d("SampleValidation/daughterphoton_energy", "Energy spectrum of all photons from primary [MeV]",
+    d.plot1d(
+        "SampleValidation/daughterphoton_energy",
+        "Energy spectrum of all photons"
+        " from primary [MeV]",
              out_dir=out_dir,
              density=True)
 
@@ -25,15 +30,24 @@ def sample_validation(d: Differ, out_dir=None):
              out_dir=out_dir,
              density=True)
 
-    d.plot1d("SampleValidation/harddaughters_startZ", "Start z position of hard primary daughter [mm]",
+    d.plot1d(
+        "SampleValidation/harddaughters_startZ",
+        "Start z position of hard"
+        " primary daughter [mm]",
              out_dir=out_dir,
              density=True)
 
-    d.plot1d("SampleValidation/harddaughters_endZ", "End z position of hard primary daughter [mm]",
+    d.plot1d(
+        "SampleValidation/harddaughters_endZ",
+        "End z position of hard"
+        " primary daughter [mm]",
              out_dir=out_dir,
              density=True)
 
-    d.plot1d("SampleValidation/harddaughters_energy", "Energy spectrum of hard primary daughter [MeV]",
+    d.plot1d(
+        "SampleValidation/harddaughters_energy",
+        "Energy spectrum of hard"
+        " primary daughter [MeV]",
              out_dir=out_dir,
              density=True)
 
@@ -41,14 +55,22 @@ def sample_validation(d: Differ, out_dir=None):
              out_dir=out_dir,
              density=True)
 
-    d.plot1d("SampleValidation/hardbremdaughters_startZ", "Start z position of hard brem daughters [mm]",
+    d.plot1d(
+        "SampleValidation/hardbremdaughters_startZ",
+        "Start z position of hard"
+        " brem daughters [mm]",
              out_dir=out_dir,
              density=True)
 
-    d.plot1d("SampleValidation/hardbremdaughters_endZ", "End z position of hard brem daughters [mm]",
+    d.plot1d(
+        "SampleValidation/hardbremdaughters_endZ",
+        "End z position of hard"
+        " brem daughters [mm]",
              out_dir=out_dir,
              density=True)
 
-    d.plot1d("SampleValidation/hardbremdaughters_energy", "Energy of hard brem daughters [MeV]",
+    d.plot1d(
+        "SampleValidation/hardbremdaughters_energy",
+        "Energy of hard brem daughters [MeV]",
              out_dir=out_dir,
              density=True)

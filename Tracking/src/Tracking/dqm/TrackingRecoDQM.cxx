@@ -48,6 +48,14 @@ void TrackingRecoDQM::analyze(const framework::Event& event) {
 
   auto tracks{
       event.getCollection<ldmx::Track>(track_collection_, track_passname_)};
+
+  if (!event.exists(measurement_collection_, measurement_passname_)) {
+    ldmx_log(error) << "Measurement collection " << measurement_collection_
+                    << " with pass = " << measurement_passname_
+                    << " not in event";
+    return;
+  }
+
   auto measurements{event.getCollection<ldmx::Measurement>(
       measurement_collection_, measurement_passname_)};
 
@@ -255,9 +263,16 @@ void TrackingRecoDQM::efficiencyPlots(
     histograms_.fill(title + "match_qop", truth_qop);
     histograms_.fill(title + "match_beam_angle", truth_beam_angle);
     histograms_.fill(title + "match_nHits", measurements.size());
-    for (auto track_hit : track.getMeasurementsIdxs()) {
-      histograms_.fill(title + "match_LayersHit",
-                       measurements.at(track_hit).getLayer());
+    auto dedx_measurements = track.getDedxMeasurements();
+    auto measurement_idxs = track.getMeasurementsIdxs();
+    for (size_t i = 0; i < measurement_idxs.size(); ++i) {
+      histograms_.fill(title + "match_layers_hit",
+                       measurements.at(measurement_idxs[i]).getLayer());
+      // Add histogram of the measurement dE/dx
+      if (i < dedx_measurements.size()) {
+        histograms_.fill(title + "match_measurement_dedx",
+                         dedx_measurements[i]);
+      }
     }
 
     // For some particles
@@ -311,9 +326,15 @@ void TrackingRecoDQM::trackMonitoring(
     auto trk_theta = track.getTheta();
     auto trk_phi = track.getPhi();
     auto trk_p = 1. / abs(trk_qop);
-    for (auto track_hit : track.getMeasurementsIdxs()) {
-      histograms_.fill(title + "LayersHit",
-                       measurements.at(track_hit).getLayer());
+    auto dedx_measurements = track.getDedxMeasurements();
+    auto measurement_idxs = track.getMeasurementsIdxs();
+    for (size_t i = 0; i < measurement_idxs.size(); ++i) {
+      histograms_.fill(title + "layers_hit",
+                       measurements.at(measurement_idxs[i]).getLayer());
+      // Add histogram of the measurement dE/dx
+      if (i < dedx_measurements.size()) {
+        histograms_.fill(title + "measurement_dedx", dedx_measurements[i]);
+      }
     }
 
     std::vector<double> trk_mom = track.getMomentum();

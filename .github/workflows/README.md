@@ -89,8 +89,15 @@ which would generate validation histograms to look at and upload those histogram
 
 ## Code Formatting
 
-The `format-check.yml` workflow runs on all pushes to `trunk` and any pushes to an open pull request.
-It checks that the format is respected and, if being run on a PR, pushes any format fixes.
+### C++ Formatting
+The `apply-clang-tools.yml` workflow runs on all pushes to `trunk` and any pushes to an open pull request.
+It checks that the C++ format is respected using clang-format and clang-tidy and, if being run on a PR, 
+pushes any format fixes.
+
+### Python Formatting
+The `apply-python-tools.yml` workflow runs on all pushes to `trunk` and any pushes to an open pull request.
+It formats and lints Python code using Ruff and, if being run on a PR, pushes any fixes.
+Python formatting rules are configured in `pyproject.toml`.
 
 ### Extra Detail
 

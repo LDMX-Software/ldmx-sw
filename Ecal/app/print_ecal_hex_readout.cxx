@@ -33,12 +33,12 @@ int main() {
       254.950, 270.650, 279.750, 298.950, 311.550, 330.750, 343.350,
       362.550, 375.150, 394.350, 406.950, 426.150, 438.750};
   framework::config::Parameters params;
-  params.addParameter("layerZPositions", ecal_sens_layers_z);
-  params.addParameter("ecalFrontZ", 220.);
-  params.addParameter("moduleMinR", 85.0);
-  params.addParameter("nCellRHeight", 35.3);
+  params.addParameter("layer_z_positions", ecal_sens_layers_z);
+  params.addParameter("ecal_front_z", 220.);
+  params.addParameter("module_min_r", 85.0);
+  params.addParameter("n_cell_r_height", 35.3);
   params.addParameter("gap", 1.5);
-  params.addParameter("cornersSideUp", false);
+  params.addParameter("corners_side_up", false);
   params.addParameter("layer_shift_x", 0.);
   params.addParameter("layer_shift_y", 0.);
   params.addParameter("layer_shift_odd", false);

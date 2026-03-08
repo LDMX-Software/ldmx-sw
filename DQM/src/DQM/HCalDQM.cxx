@@ -86,6 +86,8 @@ void HCalDQM::analyzeRecHits(const std::vector<ldmx::HcalHit> &hits) {
   float total_pe{0};
   float max_pe{-1};
   float max_pe_time{-1};
+  float max_pe_adc{-1};
+  float max_pe_adc_time{-1};
   float total_e{0};
   int vetoable_hit_multiplicity{0};
   int hit_multiplicity{0};
@@ -135,6 +137,15 @@ void HCalDQM::analyzeRecHits(const std::vector<ldmx::HcalHit> &hits) {
       max_pe = pe;
       max_pe_time = t;
     }
+
+    // Track max PE for ADC mode only
+    if (hit.getIsADC()) {
+      if (pe > max_pe_adc) {
+        max_pe_adc = pe;
+        max_pe_adc_time = t;
+      }
+    }
+
     histograms_.fill("layer:strip", layer, strip);
     histograms_.fill("pe", pe);
     histograms_.fill("hit_time", t);
@@ -147,6 +158,8 @@ void HCalDQM::analyzeRecHits(const std::vector<ldmx::HcalHit> &hits) {
   histograms_.fill("total_pe", total_pe);
   histograms_.fill("max_pe", max_pe);
   histograms_.fill("max_pe_time", max_pe_time);
+  histograms_.fill("max_pe_adc", max_pe_adc);
+  histograms_.fill("max_pe_adc_time", max_pe_adc_time);
   histograms_.fill("hit_multiplicity", hit_multiplicity);
   histograms_.fill("vetoable_hit_multiplicity", vetoable_hit_multiplicity);
 }

@@ -56,6 +56,12 @@ class TrackDeDxMassEstimate {
   void setMomentum(float momentum) { momentum_ = momentum; }
 
   /**
+   * Set the number of hits used in the dEdx calculation.
+   * @param nhits The number of hits used in the dEdx calculation.
+   */
+  void setNhits(float nhits) { n_hits_ = nhits; }
+
+  /**
    * Set the Ih of the particle/track.
    * @param the_ih The Ih of the particle/track.
    */
@@ -128,6 +134,9 @@ class TrackDeDxMassEstimate {
   /* The momentum of the particle/track */
   float momentum_{0.};
 
+  /* The number of hits used in the dEdx calculation */
+  float n_hits_{0.};
+
   /* The Ih of the particle/track */
   float the_ih_{0.};
 
@@ -146,7 +155,7 @@ class TrackDeDxMassEstimate {
   /**
    * The ROOT class definition.
    */
-  ClassDef(TrackDeDxMassEstimate, 4);
+  ClassDef(TrackDeDxMassEstimate, 5);
 };
 }  // namespace ldmx
 

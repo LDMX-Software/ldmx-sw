@@ -2,6 +2,7 @@
 #define RECON_OVERLAYPRODUCER_H
 
 //---< C++ StdLib >---//
+#include <algorithm>
 #include <map>
 #include <string>
 #include <vector>
@@ -14,6 +15,7 @@
 #include "Framework/Configure/Parameters.h"
 #include "Framework/EventFile.h"
 #include "Framework/EventProcessor.h"
+#include "Framework/Exception/Exception.h"
 #include "Framework/RandomNumberSeedService.h"
 #include "SimCore/Event/SimCalorimeterHit.h"
 #include "SimCore/Event/SimTrackerHit.h"
@@ -96,6 +98,11 @@ class OverlayProducer : public framework::Producer {
    * combining sim and pileup
    */
   std::vector<std::string> tracker_collections_;
+
+  /**
+   * List of SimCalorimeterHit collections which keep track of hit contribs.
+   */
+  std::vector<std::string> contrib_collections_;
 
   /**
    * Pileup overlay events input pass name

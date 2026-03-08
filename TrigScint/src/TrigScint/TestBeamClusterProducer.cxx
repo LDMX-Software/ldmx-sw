@@ -14,7 +14,7 @@ void TestBeamClusterProducer::configure(framework::config::Parameters &ps) {
   input_collection_ = ps.get<std::string>("input_collection");
   pass_name_ = ps.get<std::string>("input_pass_name");
   output_collection_ = ps.get<std::string>("output_collection");
-  do_clean_hits_ = ps.get<bool>("doCleanHits");
+  do_clean_hits_ = ps.get<bool>("do_clean_hits");
   verbose_ = ps.get<int>("verbosity");
 
   time_tolerance_ = ps.get<double>("time_tolerance");

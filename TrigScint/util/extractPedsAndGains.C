@@ -31,8 +31,9 @@ Double_t background(Double_t *x, Double_t *par) {
 
 // Lorentzian Peak function
 Double_t lorentzianPeak(Double_t *x, Double_t *par) {
-  return (0.5*par[0]*par[1]/TMath::Pi()) / TMath::Max(1.e-10,
-													  (x[0]-par[2])*(x[0]-par[2])+ .25*par[1]*par[1]);
+  double numerator = 0.5*par[0]*par[1]/TMath::Pi();
+  double denominator = TMath::Max( 1.e-10, (x[0]-par[2])*(x[0]-par[2]) + 0.25*par[1]*par[1] );  
+  return numerator/denominator;
 }
 
 
@@ -56,7 +57,7 @@ Double_t fitFunction(Double_t *x, Double_t *par) {
   return gaussianPeak(x,par) + background(x,&par[3]);
 }
 
-void extractPedsAndGains(string inFile, int deadChannel=-1, string decodePassName = "conv", int nSamples = 30, int verbosity=2, bool isSim=false, bool doClean=false, string digiName="QIEsamplesUp")
+void extractPedsAndGains(string inFile, int deadChannel=-1, string decodePassName = "conv", int nSamples = 30, int verbosity=2, bool isSim=false, bool doClean=false, string digiName="QIEsamplesPad1", int nChannels = 12)
 {
   // macro extracting the per-channel gain and pedestal based on total Q histograms, and single PE peak fitting
 
@@ -67,13 +68,13 @@ void extractPedsAndGains(string inFile, int deadChannel=-1, string decodePassNam
   fIn->ls();
   int exampleEvNb = 1;
 
-
-  int nChannels = 12;
+  string nSamp = Form("%i", nSamples);
   
-  vector<string> vars = {"avgQ"}; // this variable is totQ/nSamp
-  vector <int> maxVals = {2000};  // don't need to go high, focus on the single-few PE peaks 
-  vector <int> minVals = {-500};  // should cover most negative pedestals 
-  vector <float> binFactor = {0.05}; // histogram binning 
+  //  vector<string> vars = {"tot_q_"}; //avg_q_*"+nSamp}; // this variable is totQ/nSamp
+  vector<string> vars = {"avg_q_*"+nSamp}; // this variable is totQ/nSamp
+  vector <int> maxVals = {2500};  // don't need to go high, focus on the single-few PE peaks 
+  vector <int> minVals = {-500};  // -500 should cover most negative pedestals when using avgQ. totQ starts at 0
+  vector <float> binFactor = {0.1}; // histogram binning. larger means more bins = finer binning //0.05
 
   //  if (!c1)
   c1 = new TCanvas("c1", "plot canvas", 600, 500);
@@ -87,7 +88,7 @@ void extractPedsAndGains(string inFile, int deadChannel=-1, string decodePassNam
   //cleanStr=Form("(%s_%s.flag_ == 0 || %s_%s.flag_ == 4) &&", digiName.c_str(),decodePassName.c_str(), digiName.c_str(),decodePassName.c_str());
   
   for (int iC = 0 ; iC < nChannels ; iC++)
-	cuts.push_back( Form("%s %s_%s.chanID_==%i", cleanStr.c_str(), digiName.c_str(),decodePassName.c_str(), iC));
+	cuts.push_back( Form("%s %s_%s.chan_id_==%i", cleanStr.c_str(), digiName.c_str(),decodePassName.c_str(), iC));
 
   c1->SetRightMargin( 1.5*c1->GetRightMargin());
     
@@ -100,11 +101,11 @@ void extractPedsAndGains(string inFile, int deadChannel=-1, string decodePassNam
 		std::cout << bins << std::endl;
 	  //draw from the tree
 	  string bin = Form("%i", iC);
-	  string nSamp = Form("%i", nSamples);
 	  std::cout<<"At channel " << bin << std::endl;
 	  std::cout<<"Using cut " << cut << std::endl;
 	  c1->cd();
-	  tree->Draw( (nSamp+"*("+digiName+"_"+decodePassName+"."+vars[iV]+"_) >> h"+bin+"("+bins+")").c_str(), cut.c_str() );
+	  //tree->Draw( (nSamp+"*("+digiName+"_"+decodePassName+"."+vars[iV]+"_) >> h"+bin+"("+bins+")").c_str(), cut.c_str() );
+	  tree->Draw( (digiName+"_"+decodePassName+"."+vars[iV]+" >> h"+bin+"("+bins+")").c_str(), cut.c_str() );
 	  //get them each and keep for later
 	  TH1F *hOut = (TH1F*)gDirectory->Get(Form("h%i", iC)); 
 	  if (!hOut || hOut->IsZombie()) {
@@ -162,21 +163,20 @@ void extractPedsAndGains(string inFile, int deadChannel=-1, string decodePassNam
 	g->Draw("ap");
 	g->SetTitle(";Peak nb;Total charge [fC]");
 	g->SetName(Form("g_gainChan%i", iH));
-	TFitResultPtr fResult = g->Fit("pol1", "QS");
+	TFitResultPtr fResult = g->Fit("pol1", "QSR", "same", 0.5, 6.5); //exclude pedestal point -- get that from intercept, don't pull 
 	std::cout << "For channel " << iH << ", got slope \t" << fResult->Parameter(1) << " fC/PE and intercept " << fResult->Parameter(0) << std::endl;
-	std::cout << "Pedestal from intercept would be " << fResult->Parameter(0)/nSamples << std::endl;
+	float ped=fResult->Parameter(0)/nSamples;
+	float pedErr=fResult->ParError(0)/nSamples;//g->GetErrorY( 0 );
+	std::cout << "Pedestal from intercept (div by nSamples): " << fResult->Parameter(0)/nSamples << std::endl;
 	gGains->SetPoint( iH, iH, fResult->Parameter(1)*scaleFac);
 	gGains->SetPointError( iH, 0, fResult->ParError(1)*scaleFac);
-	/*
-	double x, ped;
-	g->GetPoint(0, x, ped);
-	*/
-	float ped=fResult->Parameter(0);
-	ped/=nSamples;
-	float pedErr=fResult->ParError(0)/nSamples;//g->GetErrorY( 0 );
 	gPeds->SetPoint( iH, iH, ped ); 
 	gPeds->SetPointError( iH, 0, pedErr); 
 	std::cout << "Setting gain " << fResult->Parameter(1)*scaleFac << " and pedestal from intercept " << ped << " fC." << std::endl;
+	/* // using just the first point is too risky, might be a weird peak
+	double x, ped;
+	g->GetPoint(0, x, ped);
+	*/
 
 	v_g.push_back( g );
   }
@@ -195,7 +195,14 @@ void extractPedsAndGains(string inFile, int deadChannel=-1, string decodePassNam
     fLine->SetLineColor( iC+1);
     fLine->DrawCopy("same");
   }
-  
+
+
+  std::cout << "Got " << v_hOut.size() << " histograms" << std::endl;
+  if ( skippedGraphs.size() > nChannels/3.) //likely more like 0 in that case
+    {
+      std::cerr << "Too few histograms for fits! Exiting." << std::endl;
+      return;
+    }
   //store this to a root file for later plotting
   TString outFile = inFile;
   outFile=outFile.ReplaceAll(".root", "_gain.root");
@@ -204,7 +211,6 @@ void extractPedsAndGains(string inFile, int deadChannel=-1, string decodePassNam
   TFile * fOut = TFile::Open( outFile.Data(), "RECREATE");
   fOut->cd();
   fOut->ls();
-  std::cout << "Got " << v_hOut.size() << " histograms" << std::endl;
 
   for (unsigned int iH = 0;  iH < v_hOut.size(); iH++) {
 	v_hOut[iH]->Write();
@@ -267,7 +273,8 @@ TGraphErrors* isolateAndFitPeaks( TH1F * hIn, float width, bool verbose, bool is
   minVal = TMath::Max(mean-width,minVal);
   float max=TMath::Min(maxVal, mean+width); //start a bit more narrow, we don't know distance between peaks yet                                              
   TF1 * fBkg = new TF1("fBkg", background, -50, 5000,3);
-  hIn->Fit(fBkg, "RS", "", mean+10, maxVal); // get the background fit by fitting from first peak to end
+  hIn->Fit(fBkg, "RS", "same", mean+3.*width, maxVal); // get the background fit by fitting from second peak to end
+  //start peak fitting 
   std::cout << "Starting with fit interval (" << minVal << ", " << max << ")" << std::endl;
   TF1 * fGaus = new TF1("fGaus", "gaus", hIn->GetXaxis()->GetXmin(), hIn->GetXaxis()->GetXmax());
   //  TF1 * fGaus = new TF1("fGaus", lorentzianPeak, hIn->GetXaxis()->GetXmin(), hIn->GetXaxis()->GetXmax(), 3);
@@ -283,79 +290,100 @@ TGraphErrors* isolateAndFitPeaks( TH1F * hIn, float width, bool verbose, bool is
   bool hasAdjustedWidth=false;
   vector<float> peakIntegrals;
   vector<float> peakIntegralErrors;
-  
+
+  //fit until we reach end of fitting range 
   while ( max <= maxVal ) {
     if (verbose) {
       std::cout<<"Fitting for peak " << iP << ": around mean=" << mean
                << " between " << minVal << " and " << max
                <<  std::endl;
     }//if verbose
-    TFitResultPtr ptr = hToFit->Fit(fGaus, "QRS", "same", minVal, max);//mean-width, mean+width);     
-	if (ptr || ptr->Parameter(1) < oldMean || ptr->Parameter(2) < 0.2*sigma) {//ptr is not 0 --> not converged, try again with narrower range, given that we probably nailed the peak already                                                    
+    //fit 
+    TFitResultPtr ptr = hToFit->Fit(fGaus, "RS", "same", minVal, max);//mean-width, mean+width);     
+
+    // if: ptr is not 0 --> not converged || we went backwards || new sigma is too narrow (should not decrease) 
+    // try again with narrower range, given that we probably nailed the peak already
+    if (ptr || ptr->Parameter(1) < oldMean || ptr->Parameter(2) < 0.5*sigma) {
       minVal=mean-0.4*width;
       max=mean+0.4*width;
       if (verbose) {
-        std::cout<<"\tFitting again for peak " << iP << ": around mean=" << mean
-                 << " between " << minVal << " and " << max
-                 <<  std::endl;
+	std::cout<<"\tFitting again for peak " << iP << ": around mean=" << mean
+		 << " between " << minVal << " and " << max
+		 <<  std::endl;
       }//if verbose
-      ptr = hToFit->Fit(fGaus, "RS", "same",  minVal, max);// mean-0.8*width, mean+0.8*width);                                                                    
+      ptr = hToFit->Fit(fGaus, "RS", "same",  minVal, max);// mean-0.8*width, mean+0.8*width);
+    }//if first fit was not good
+    
+    if (ptr->Parameter(1) < oldMean || ptr->Parameter(1) - oldMean < width/2. || ptr->Parameter(2) < 0.5*sigma ) { //something is very wonky, channel is likely junk, stop fitting
+      std::cout << "\t -- breaking off fitting of channel " << channelNb << " because results are nonsensical" << std::endl;
+      break;
     }
+    
+    if (iP > iPstart && !hasAdjustedWidth) {
+      width=(ptr->Parameter(1)-oldMean)/2.; //total width is half distance between the two peaks
+      hasAdjustedWidth=true;
+      if (verbose) {
+	std::cout<<"\tUpdating width to " << width
+		 <<  std::endl;
+      }
+    }//adjust initial width guess 
+
+    mean=ptr->Parameter(1);
+    sigma=ptr->Parameter(2);
+    peakIntegrals.emplace_back( fGaus->Integral( mean-3*sigma, mean+3*sigma) );
+    peakIntegralErrors.emplace_back( fGaus->IntegralError( mean-3*sigma, mean+3*sigma) );
+
+    fGaus->DrawCopy("same");
+    // now wipe the already used peaks from the histogram (to be able to use max bin)
+    // could keep track of last bin which was reset, for some speed gain
+    for (int iB=1; iB<hToFit->FindBin( mean+TMath::Min(width,float(7*sigma)) ); iB++)
+      hToFit->SetBinContent(iB, 0);
+    
+    oldMean=mean;
+    if (!hasAdjustedWidth)
+      mean=hToFit->GetBinCenter( hToFit->GetMaximumBin() );
+    else
+      mean+=2*width; //ought to be peak-to-peak distance 
+
+    minVal=TMath::Max(minVal, float(mean-0.65*width));
+    max=mean+1.25*width;     								
+    norm+=ptr->Parameter(0);   //keep track of how much stats we have left to work with
+   if (verbose) {
+     std::cout<<"\t\tFor peak " << iP << ", got mean=" << ptr->Parameter(1) <<
+       "\tand sigma=" << ptr->Parameter(2) <<  std::endl;
+     std::cout<<"\t\tUpdated mean to: " <<  mean << std::endl;
+     std::cout<<"\tUpdating sum of peak heights to " << norm
+	      <<  std::endl;
+   }
+   // should probably assess fit quality somewhere here too
    
-   if (iP > iPstart && !hasAdjustedWidth) {
-	 width=(ptr->Parameter(1)-oldMean)/2.; //total width is half distance between the two peaks                                                             
-	 hasAdjustedWidth=true;
-	 if (verbose) {
-	   std::cout<<"\tUpdating width to " << width
-				<<  std::endl;
-	 }
-   }//adjust initial width guess 
-
-   mean=ptr->Parameter(1);
-   sigma=ptr->Parameter(2);
-   peakIntegrals.emplace_back( fGaus->Integral( mean-3*sigma, mean+3*sigma) );
-   peakIntegralErrors.emplace_back( fGaus->IntegralError( mean-3*sigma, mean+3*sigma) );
-
-   fGaus->DrawCopy("same");
-   //could keep track of last bin which was reset, for some speed gain
-   for (int iB=1; iB<hToFit->FindBin( mean+TMath::Min(width,float(7*sigma)) ); iB++)
-	 hToFit->SetBinContent(iB, 0);
-      
-   oldMean=mean;
-   mean=hToFit->GetBinCenter( hToFit->GetMaximumBin() );
-   minVal=TMath::Max(minVal, float(mean-1.25*width));
-   max=mean+1.25*width;     								
-   norm+=ptr->Parameter(0);   //keep track of how much stats we have left to work with
-   if (verbose) {
-	 std::cout<<"\tUpdating sum of peak heights to " << norm
-			  <<  std::endl;
-   }
-   // should probably assess fit quality somewhere here too                                                                                                   
    vPtrs.push_back( ptr );
-   if (verbose) {
-	 std::cout<<"\t\tFor peak " << iP << ", got mean=" << ptr->Parameter(1) <<
-	   "\tand sigma=" << ptr->Parameter(2) <<  std::endl;
-	 std::cout<<"\t\tUpdated mean to: " <<  mean << std::endl;
-   }
    iP++;
-   if ( iP > 10 ) //more than enough, and avoid eternal while loop                                                                                            
-	 break;
+
+   // and some criteria to break:
+   
+   if ( iP > 7 ) //more than enough; avoid eternal while loop
+     break;
    float bkgLevel=0;
    if (!isSim)
-	 bkgLevel=fBkg->Eval(ptr->Parameter(1));
+     bkgLevel=fBkg->Eval(ptr->Parameter(1));
    //   if (hIn->GetEntries()-norm < 0.05*hIn->GetEntries() || ptr->Parameter(0)-bkgLevel< 8) { //don't fit peaks with just a few entries                          
-   if (hToFit->Integral() < 0.001*hIn->Integral() || ptr->Parameter(0)-bkgLevel< 8 || hToFit->Integral() < 10) { //don't fit peaks with just a few entries                          
-	 std::cout<<"\tHitting stats break factor at peak integral " << ptr->Parameter(0)
-			  << " and (in data) fitted background level " << bkgLevel
-			  << " and histogram entries " << hToFit->Integral()
-			  << " out of total from start " << hIn->Integral()
-			  <<  std::endl;
-	 break;
+   if (hToFit->Integral() < 0.001*hIn->Integral() || ptr->Parameter(0)-bkgLevel< 0.5 || hToFit->Integral() < 10) { //don't fit peaks with just a few entries                          
+     std::cout<<"\tHitting stats break factor at peak integral " << ptr->Parameter(0)
+	      << " and (in data) fitted background level " << bkgLevel
+	      << " around fit region mean " << ptr->Parameter(1)
+	      << " and histogram entries " << hToFit->Integral()
+	      << " out of total from start " << hIn->Integral()
+	      <<  std::endl;
+     break;
    }//if stats too low 
    
-  }
-  const int nPoints = TMath::Min(int(vPtrs.size()), 6);
+  }//while over sensible fit range 
 
+  
+  //don't remember what this Min was for but it's not used
+  const int nPoints = int(vPtrs.size()); //TMath::Min(int(vPtrs.size()), 6);
+  // could use the size directly here:
   if (nPoints < 3 ) {// this is too few to fit. probably there was a problem with this channel
     std::cout<<"\tOnly got " << nPoints << " peaks for this channel. Breaking before gain fit"
 	                <<  std::endl;

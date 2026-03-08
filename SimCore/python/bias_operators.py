@@ -22,7 +22,7 @@ class XsecBiasingOperator:
         self.instance_name = instance_name
 
         from LDMX.Framework.ldmxcfg import Process
-        Process.addLibrary( '@CMAKE_INSTALL_PREFIX@/lib/lib%s.so'%module_name )
+        Process.add_library( f'@CMAKE_INSTALL_PREFIX@/lib/lib{module_name}.so' )
 
     def __str__(self):
         """Stringify this XsecBiasingOperator
@@ -35,7 +35,7 @@ class XsecBiasingOperator:
 
         string = "XsecBiasingOperator (" + self.__repr__() + ") {"
         for k, v in self.__dict__.items():
-            string += " %s : %s" % (k, v)
+            string += f" {k} : {v}"
         string += " }"
 
         return string
@@ -49,7 +49,7 @@ class XsecBiasingOperator:
             Just printing its instance and class names
         """
 
-        return '%s of class %s' % (self.instance_name, self.class_name)
+        return f'{self.instance_name} of class {self.class_name}'
 
 class PhotoNuclear(XsecBiasingOperator) :
     """Bias photo nuclear process
@@ -69,7 +69,7 @@ class PhotoNuclear(XsecBiasingOperator) :
     """
 
     def __init__(self,vol,factor,thresh=0.,down_bias_conv=True,only_children_of_primary=False) :
-        super().__init__('%s_bias_pn'%vol,'simcore::biasoperators::PhotoNuclear')
+        super().__init__(f'{vol}_bias_pn','simcore::biasoperators::PhotoNuclear')
 
         self.volume = vol
         self.factor = factor
@@ -91,7 +91,7 @@ class ElectroNuclear(XsecBiasingOperator) :
     """
 
     def __init__(self,vol,factor,thresh=0.) :
-        super().__init__('%s_bias_en'%vol,'simcore::biasoperators::ElectroNuclear')
+        super().__init__(f'{vol}_bias_en','simcore::biasoperators::ElectroNuclear')
 
         self.volume = vol
         self.factor = factor
@@ -111,7 +111,7 @@ class GammaToMuPair(XsecBiasingOperator) :
     """
 
     def __init__(self,vol,factor,thresh=0.) :
-        super().__init__('%s_bias_mumu'%vol,'simcore::biasoperators::GammaToMuPair')
+        super().__init__(f'{vol}_bias_mumu','simcore::biasoperators::GammaToMuPair')
 
         self.volume = vol
         self.factor = factor
@@ -132,7 +132,7 @@ class NeutronInelastic(XsecBiasingOperator) :
     """
 
     def __init__(self,vol,factor,thresh=0.) :
-        super().__init__('%s_bias_neutroninelastic'%vol,'simcore::biasoperators::NeutronInelastic')
+        super().__init__(f'{vol}_bias_neutroninelastic','simcore::biasoperators::NeutronInelastic')
 
         self.volume = vol
         self.factor = factor
@@ -152,7 +152,7 @@ class K0LongInelastic(XsecBiasingOperator) :
     """
 
     def __init__(self,vol,factor,thresh=0.) :
-        super().__init__('%s_bias_k0longinelastic'%vol,'simcore::biasoperators::K0LongInelastic')
+        super().__init__(f'{vol}_bias_k0longinelastic','simcore::biasoperators::K0LongInelastic')
 
         self.volume = vol
         self.factor = factor
@@ -172,16 +172,18 @@ class DarkBrem(XsecBiasingOperator) :
     """
 
     def __init__(self,vol,bias_all,factor) :
-        super().__init__('%s_bias_darkbrem'%vol,'simcore::biasoperators::DarkBrem')
+        super().__init__(f'{vol}_bias_darkbrem','simcore::biasoperators::DarkBrem')
 
         self.volume = vol
         self.bias_all = bias_all
         self.factor = factor
 
+    @staticmethod
     def ecal(factor) :
         """Bias dark brem inside of the ecal by the input factor"""
         return DarkBrem('ecal',True,factor)
 
+    @staticmethod
     def target(factor) :
         """Bias dark brem inside of the target by the input factor"""
         return DarkBrem('target_region',False,factor)

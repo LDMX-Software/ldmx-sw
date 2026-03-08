@@ -48,20 +48,20 @@ class QIEAnalyzer : public framework::Analyzer {
 
   // plotting stuff
   int n_ev_{200};
-  int n_channels_{16};
+  int n_channels_{24};
   // int nTrkMax{100};
 
   // match nev, nchan above
-  TH1F* h_out_[200][16];
-  TH1F* h_pe_[16];
-  TH2F* h_pe_vs_t_[16];
-  TH2F* h_ped_subtracted_avg_q_vs_t_[16];
-  TH2F* h_ped_subtracted_tot_q_vs_ped_[16];
-  TH2F* h_ped_subtracted_tot_q_vs_n_[16];
-  TH2F* h_tot_q_vs_ped_[16];
-  TH2F* h_ped_subtracted_pe_vs_n_[16];
-  TH2F* h_ped_subtracted_pe_vs_t_[16];
-  TH2F* h_avg_q_vs_t_[16];
+  TH1F* h_out_[200][24];
+  TH1F* h_pe_[24];
+  TH2F* h_pe_vs_t_[24];
+  TH2F* h_ped_subtracted_avg_q_vs_t_[24];
+  TH2F* h_ped_subtracted_tot_q_vs_ped_[24];
+  TH2F* h_ped_subtracted_tot_q_vs_n_[24];
+  TH2F* h_tot_q_vs_ped_[24];
+  TH2F* h_ped_subtracted_pe_vs_n_[24];
+  TH2F* h_ped_subtracted_pe_vs_t_[24];
+  TH2F* h_avg_q_vs_t_[24];
 
   TH2F* h_tdc_fire_chan_vs_event_;
   double y_offset_{35.};

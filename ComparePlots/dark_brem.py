@@ -1,8 +1,10 @@
 """Plotting of ECal-related validation plots"""
 
+import logging
+
 from ._differ import Differ
 from ._plotter import plotter
-import logging
+
 
 log = logging.getLogger('dark_brem')
 
@@ -29,11 +31,15 @@ def kinematics(d : Differ, out_dir = None) :
     ]
     for h, name in features :
         log.info(f'plotting {h}')
-        d.plot1d(f'DarkBremDQM/{h}', name, out_dir = out_dir, density=True, ylabel='Weighted Fraction')
+        d.plot1d(
+            f'DarkBremDQM/{h}', name,
+            out_dir=out_dir, density=True,
+            ylabel='Weighted Fraction'
+        )
 
     log.info('plotting dark_brem_element')
     d.plot1d(
-        'DarkBremDQM/dark_brem_element', 
+        'DarkBremDQM/dark_brem_element',
         'Element in which Dark Brem Occurred',
         out_dir = out_dir,
         density=True,
