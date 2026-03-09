@@ -51,7 +51,7 @@ jobs:
     -
       name: Build the Image
       id: docker_build
-      uses: docker/build-push-action@v6
+      uses: docker/build-push-action@v7
       with:
         tags: ${{ steps.meta.outputs.tags }}
         labels: ${{ steps.meta.outputs.labels }}
