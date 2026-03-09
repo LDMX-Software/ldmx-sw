@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
-import sys
 import os
+import sys
 
 from LDMX.Framework import ldmxcfg
 

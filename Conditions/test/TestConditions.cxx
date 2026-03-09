@@ -194,13 +194,13 @@ TEST_CASE("Conditions", "[Conditions]") {
         "SimpleCSVTableProvider\n\np=ldmxcfg.Process('test')\np.testMode="
         "True\ncolumns=['A','B','C']\ncop=SimpleCSVTableProvider."
         "SimpleCSVIntegerTableProvider('test_table_python',columns)\ncop."
-        "validForAllRows([10,45,129])";
+        "valid_for_all_rows([10,45,129])";
 
     FILE* f = fopen("/tmp/test_cond.py", "w");
     fputs(cfgpy, f);
     fclose(f);
 
-    auto cfg{framework::config::run("ldmxcfg.Process.lastProcess",
+    auto cfg{framework::config::run("ldmxcfg.Process.last_process",
                                     "/tmp/test_cond.py", 0, 0)};
     auto hp{std::make_unique<framework::Process>(cfg)};
     ldmx::EventHeader cxt;
@@ -230,14 +230,15 @@ TEST_CASE("Conditions", "[Conditions]") {
         "SimpleCSVTableProvider\n\np=ldmxcfg.Process('test')\np.testMode="
         "True\ncolumns=['SQRT','EXP','LOG']\ncop=SimpleCSVTableProvider."
         "SimpleCSVDoubleTableProvider('test_table_file',columns)\ncop."
-        "validForRuns('file:///tmp/dump_double.csv',0,100)\ncop.validForRuns('/"
+        "valid_for_runs('file:///tmp/"
+        "dump_double.csv',0,100)\ncop.valid_for_runs('/"
         "tmp/dump_double.csv',101,120)\n";
 
     FILE* f = fopen("/tmp/test_cond.py", "w");
     fputs(cfgpy, f);
     fclose(f);
 
-    auto cfg{framework::config::run("ldmxcfg.Process.lastProcess",
+    auto cfg{framework::config::run("ldmxcfg.Process.last_process",
                                     "/tmp/test_cond.py", 0, 0)};
     auto hp{std::make_unique<framework::Process>(cfg)};
     ldmx::EventHeader cxt;
@@ -265,14 +266,14 @@ TEST_CASE("Conditions", "[Conditions]") {
         "columns=[\"A\",\"Q\",\"V\"]\n"
         "cop=SimpleCSVTableProvider.SimpleCSVIntegerTableProvider(\"test_table_"
         "http\",columns)\n"
-        "cop.validForever(\"https://raw.githubusercontent.com/LDMX-Software/"
+        "cop.valid_forever(\"https://raw.githubusercontent.com/LDMX-Software/"
         "ci-data/refs/heads/main/conditions-test/test_table.csv\")\n";
 
     FILE* f = fopen("/tmp/test_cond.py", "w");
     fputs(cfgpy, f);
     fclose(f);
 
-    auto cfg{framework::config::run("ldmxcfg.Process.lastProcess",
+    auto cfg{framework::config::run("ldmxcfg.Process.last_process",
                                     "/tmp/test_cond.py", 0, 0)};
     auto hp{std::make_unique<framework::Process>(cfg)};
     ldmx::EventHeader cxt;
@@ -293,16 +294,16 @@ TEST_CASE("Conditions", "[Conditions]") {
         "columns=[\"PEDESTAL_ADC\"]\n"
         "cop=SimpleCSVTableProvider.SimpleCSVDoubleTableProvider(\"testbeam22_"
         "pedestals\",columns)\n"
-        "cop.conditions_baseURL='https://raw.githubusercontent.com/"
+        "cop.conditions_base_url='https://raw.githubusercontent.com/"
         "LDMX-Software/conditions-data/refs/heads/main/'\n"
-        "cop.entriesURL='${LDMX_CONDITION_BASEURL}/Hcal/testbeam04-2022/"
+        "cop.entries_url='${LDMX_CONDITION_BASEURL}/Hcal/testbeam04-2022/"
         "pedestals/index_v1_0_0.csv'\n";
 
     FILE* f = fopen("/tmp/test_cond.py", "w");
     fputs(cfgpy, f);
     fclose(f);
 
-    auto cfg{framework::config::run("ldmxcfg.Process.lastProcess",
+    auto cfg{framework::config::run("ldmxcfg.Process.last_process",
                                     "/tmp/test_cond.py", 0, 0)};
     auto hp{std::make_unique<framework::Process>(cfg)};
     ldmx::EventHeader cxt;

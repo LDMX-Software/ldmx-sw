@@ -15,9 +15,9 @@ MultiParticleGunPrimaryGenerator::MultiParticleGunPrimaryGenerator(
     : PrimaryGenerator(name, parameters), random_(new TRandom) {
   auto stl_vertex{parameters.get<std::vector<double> >("vertex")};
   auto stl_momentum{parameters.get<std::vector<double> >("momentum")};
-  mpg_n_particles_ = parameters.get<int>("nParticles");
-  mpg_pdg_id_ = parameters.get<int>("pdgID");
-  mpg_enable_poisson_ = parameters.get<bool>("enablePoisson");
+  mpg_n_particles_ = parameters.get<int>("n_particles");
+  mpg_pdg_id_ = parameters.get<int>("pdg_id");
+  mpg_enable_poisson_ = parameters.get<bool>("enable_poisson");
 
   if (stl_vertex.size() != 3 or stl_momentum.size() != 3 or
       mpg_n_particles_ <= 0) {
@@ -72,6 +72,11 @@ void MultiParticleGunPrimaryGenerator::GeneratePrimaryVertex(G4Event* anEvent) {
 
     curvertex->SetPrimary(primary);
     anEvent->AddPrimaryVertex(curvertex);
+
+    // Apply beam spot smearing if configured for this generator
+    if (useBeamspot()) {
+      smearBeamspot(curvertex);
+    }
   }
 }
 

@@ -167,10 +167,10 @@ void GreedyAmbiguitySolver::configure(
       parameters.get<std::string>("out_trk_collection", "TaggerTracksClean");
 
   track_collection_ =
-      parameters.get<std::string>("trackCollection", "TaggerTracks");
+      parameters.get<std::string>("track_collection", "TaggerTracks");
 
   meas_collection_ =
-      parameters.get<std::string>("measCollection", "DigiTaggerSimHits");
+      parameters.get<std::string>("meas_collection", "DigiTaggerSimHits");
   input_pass_name_ = parameters.get<std::string>("input_pass_name");
   n_meas_min_ = parameters.get<int>("nMeasurementsMin", 5);
   maximum_shared_hits_ = parameters.get<int>("maximumSharedHits", 1);

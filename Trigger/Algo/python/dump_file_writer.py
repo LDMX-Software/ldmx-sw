@@ -1,6 +1,7 @@
 
 from LDMX.Framework.ldmxcfg import Analyzer
 
+
 class DumpFileWriter(Analyzer) :
     """Configuration for DumpFileWriter
     """

@@ -6,10 +6,10 @@ EcalTrigPrimDigiProducer::EcalTrigPrimDigiProducer(const std::string& name,
     : Producer(name, process) {}
 
 void EcalTrigPrimDigiProducer::configure(framework::config::Parameters& ps) {
-  digi_coll_name_ = ps.get<std::string>("digiCollName");
-  digi_pass_name_ = ps.get<std::string>("digiPassName");
+  digi_coll_name_ = ps.get<std::string>("digi_coll_name");
+  digi_pass_name_ = ps.get<std::string>("digi_pass_name");
   cond_obj_name_ =
-      ps.get<std::string>("condObjName", "EcalTrigPrimDigiConditions");
+      ps.get<std::string>("cond_obj_name", "EcalTrigPrimDigiConditions");
 }
 
 void EcalTrigPrimDigiProducer::produce(framework::Event& event) {

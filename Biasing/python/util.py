@@ -2,6 +2,7 @@
 
 from LDMX.SimCore import simcfg
 
+
 class BiasingUtilityAction(simcfg.UserAction) :
     """Helpful derived class for this submodule, makes
     sure the library and namespace are set correctly.
@@ -15,9 +16,11 @@ class BiasingUtilityAction(simcfg.UserAction) :
     """
 
     def __init__(self,instance_name,class_name) :
-        super().__init__(instance_name,'biasing::utility::%s'%class_name)
+        super().__init__(
+            instance_name, f'biasing::utility::{class_name}'
+        )
         from LDMX.Framework.ldmxcfg import Process
-        Process.addLibrary('@CMAKE_INSTALL_PREFIX@/lib/libBiasing_Utility.so')
+        Process.add_library('@CMAKE_INSTALL_PREFIX@/lib/libBiasing_Utility.so')
 
 class StepPrinter(BiasingUtilityAction) :
     """Print each step of the input track ID
@@ -31,7 +34,7 @@ class StepPrinter(BiasingUtilityAction) :
     """
 
     def __init__(self,track_id=1, process_name='', depth=0) :
-        super().__init__('print_steps_%s'%track_id,'StepPrinter')
+        super().__init__(f'print_steps_{track_id}', 'StepPrinter')
         self.process_name = process_name
         self.track_id = track_id
         self.depth = depth
@@ -47,27 +50,33 @@ class PartialEnergySorter(BiasingUtilityAction) :
     """
 
     def __init__(self,thresh) :
-        super().__init__('sort_above_%dMeV'%thresh,'PartialEnergySorter')
+        super().__init__(
+            f'sort_above_{thresh}MeV', 'PartialEnergySorter'
+        )
 
         self.threshold = thresh
 
 class TrackProcessFilter(BiasingUtilityAction):
-    """ Configuration used to tag all tracks produced via the given process to persist them to the event.
+    """Configuration used to tag all tracks produced via the
+    given process to persist them to the event.
 
     Parameters
     ----------
     process_name : str
-        The Geant4 process name (e.g. photonNuclear) via which the tracks were produced. 
+        The Geant4 process name (e.g. photonNuclear) via which the tracks were produced.
     """
 
     def __init__(self,process_name) :
-        super().__init__('%s_track_filter'%process_name, 'TrackProcessFilter' )
+        super().__init__(
+            f'{process_name}_track_filter', 'TrackProcessFilter'
+        )
 
         self.process = process_name
 
     def photo_nuclear() :
-        """ Configuration used to tag all photo-nuclear tracks to persist them to the event. 
-    
+        """Configuration used to tag all photo-nuclear tracks
+        to persist them to the event.
+
         Return
         ------
         Instance of TrackProcessFilter configured to tag photo-nuclear tracks.
@@ -75,47 +84,51 @@ class TrackProcessFilter(BiasingUtilityAction):
         return TrackProcessFilter('photonNuclear')
 
     def electro_nuclear() :
-        """ Configuration used to tag all electro-nuclear tracks to persist them to the event. 
-    
+        """Configuration used to tag all electro-nuclear tracks
+        to persist them to the event.
+
         Return
         ------
         Instance of TrackProcessFilter configured to tag electro-nuclear tracks.
-    
+
         """
         return TrackProcessFilter('electronNuclear')
-        
+
     def electron_brem() :
-        """ Configuration used to tag all electron brem tracks to persist them to the event.
-    
+        """Configuration used to tag all electron brem tracks
+        to persist them to the event.
+
         Return
         ------
         Instance of TrackProcessFilter configured to tag eBrem tracks.
-    
+
         """
         return TrackProcessFilter('eBrem')
-        
+
     def conversion() :
-        """ Configuration used to tag all electron conversion tracks to persist them to the event.
-    
+        """Configuration used to tag all electron conversion
+        tracks to persist them to the event.
+
         Return
         ------
         Instance of TrackProcessFilter configured to tag conversion tracks.
-    
+
         """
         return TrackProcessFilter('conv')
 
     def dark_brem() :
-        """ Configuration used to tag all dark brem tracks to persist them to the event. 
-    
+        """ Configuration used to tag all dark brem tracks to persist them to the event.
+
         Return
         ------
         Instance of TrackProcessFilter configured to tag dark brem tracks.
-    
+
         """
         return TrackProcessFilter('DarkBrem')
 
     def gamma_mumu() :
-        """ Configuration used to tag all gamma --> mu+ mu- tracks to persist them to the event.
+        """Configuration used to tag all gamma --> mu+ mu-
+        tracks to persist them to the event.
 
         Return
         ------

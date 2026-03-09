@@ -18,29 +18,29 @@ void EcalDigiProducer::configure(framework::config::Parameters& ps) {
   //  used  in actual digitization
   auto hgcroc_params = ps.get<framework::config::Parameters>("hgcroc");
   hgcroc_ = std::make_unique<ldmx::HgcrocEmulator>(hgcroc_params);
-  clock_cycle_ = hgcroc_params.get<double>("clockCycle");
-  n_adcs_ = hgcroc_params.get<int>("nADCs");
-  i_soi_ = hgcroc_params.get<int>("iSOI");
+  clock_cycle_ = hgcroc_params.get<double>("clock_cycle");
+  n_adcs_ = hgcroc_params.get<int>("n_adcs");
+  i_soi_ = hgcroc_params.get<int>("i_soi");
   noise_ = hgcroc_params.get<bool>("noise");
 
   // collection names
-  input_coll_name_ = ps.get<std::string>("inputCollName");
-  input_pass_name_ = ps.get<std::string>("inputPassName");
-  digi_coll_name_ = ps.get<std::string>("digiCollName");
+  input_coll_name_ = ps.get<std::string>("input_coll_name");
+  input_pass_name_ = ps.get<std::string>("input_pass_name");
+  digi_coll_name_ = ps.get<std::string>("digi_coll_name");
 
   zero_suppression_ = ps.get<bool>("zero_suppression");
 
   // physical constants
   //  used to calculate unit conversions
-  mev_ = ps.get<double>("MeV");
+  mev_ = ps.get<double>("mev");
 
   // Time -> clock counts conversion
   //  time [ns] * ( 2^10 / max time in ns ) = clock counts
   ns_ = 1024. / clock_cycle_;
 
-  readout_threshold_ = ps.get<double>("avgReadoutThreshold");
-  pedestal_ = ps.get<double>("avgPedestal");
-  noise_rms_ = ps.get<double>("avgNoiseRMS");
+  readout_threshold_ = ps.get<double>("avg_readout_threshold");
+  pedestal_ = ps.get<double>("avg_pedestal");
+  noise_rms_ = ps.get<double>("avg_noise_rms");
 }
 
 void EcalDigiProducer::onNewRun(const ldmx::RunHeader&) {

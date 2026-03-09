@@ -1,4 +1,6 @@
-import argparse, sys, os
+import argparse
+import sys
+import os
 
 """
 Takes raw data file after reformat (with run number)
@@ -14,11 +16,11 @@ arg = parser.parse_args()
 
 from LDMX.Framework import ldmxcfg
 p = ldmxcfg.Process('')
-p.maxEvents = arg.max_events
-p.termLogLevel = 0
-p.logFrequency = 1000
+p.max_events = arg.max_events
+p.term_log_level = 0
+p.log_frequency = 1000
 
-import LDMX.Hcal.HcalGeometry
+import LDMX.Hcal.hcal_geometry
 import LDMX.Hcal.hcal_testbeam0422_conditions
 import LDMX.Hcal.digi as hcal_digi
 import LDMX.Hcal.hgcrocFormat as hcal_format
@@ -28,8 +30,8 @@ dir_name  = os.path.dirname(arg.input_file)
 if not dir_name :
     dir_name = '.'
 
-p.inputFiles = [arg.input_file]
-p.outputFiles = [f'{dir_name}/reco_{base_name}.root']
+p.input_files = [arg.input_file]
+p.output_files = [f'{dir_name}/reco_{base_name}.root']
 
 # sequence
 tbl = f'{os.environ["LDMX_BASE"]}/ldmx-sw/Hcal/data/testbeam_connections.csv'
@@ -45,8 +47,8 @@ p.sequence = [
         rec_pass_name = '',
     ),
     hcal_digi.HcalDoubleEndRecProducer(
-        pass_name = '', 
-        coll_name = 'HcalSingleEndRecHits', 
+        pass_name = '',
+        coll_name = 'HcalSingleEndRecHits',
         rec_coll_name = 'HcalDoubleEndRecHits',
         rec_pass_name = ''
     )

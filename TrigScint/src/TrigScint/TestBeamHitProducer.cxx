@@ -14,18 +14,18 @@ TestBeamHitProducer::TestBeamHitProducer(const std::string& name,
     : Producer(name, process) {}
 
 void TestBeamHitProducer::configure(framework::config::Parameters& parameters) {
-  input_col_ = parameters.get<std::string>("inputCollection");
-  output_collection_ = parameters.get<std::string>("outputCollection");
-  input_pass_name_ = parameters.get<std::string>("inputPassName");
+  input_col_ = parameters.get<std::string>("input_collection");
+  output_collection_ = parameters.get<std::string>("output_collection");
+  input_pass_name_ = parameters.get<std::string>("input_pass_name");
   mip_response_ = parameters.get<std::vector<double> >("MIPresponse");
   peds_ = parameters.get<std::vector<double> >("pedestals");
   gain_ = parameters.get<std::vector<double> >("gain");
 
-  start_sample_ = parameters.get<int>("startSample");
-  pulse_width_ = parameters.get<int>("pulseWidth");
-  pulse_width_lyso_ = parameters.get<int>("pulseWidthLYSO");
-  n_instrumented_channels_ = parameters.get<int>("nInstrumentedChannels");
-  do_clean_hits_ = parameters.get<bool>("doCleanHits");
+  start_sample_ = parameters.get<int>("start_sample");
+  pulse_width_ = parameters.get<int>("pulse_width");
+  pulse_width_lyso_ = parameters.get<int>("pulse_width_lyso");
+  n_instrumented_channels_ = parameters.get<int>("n_instrumented_channels");
+  do_clean_hits_ = parameters.get<bool>("do_clean_hits");
 
   std::cout << " [ TestBeamHitProducer ] In configure(), got parameters "
             << "\n\t inputCollection = " << input_col_

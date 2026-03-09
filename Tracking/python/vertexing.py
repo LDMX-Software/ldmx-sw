@@ -2,10 +2,11 @@
 from LDMX.Framework.ldmxcfg import Producer
 from LDMX.Tracking.make_path import makeFieldMapPath
 
+
 class VertexProcessor(Producer) :
     """ Producer to form vertices from a track collection.
 
-    Currently, only vertex fitting has been implemented. Example use cases: K0 
+    Currently, only vertex fitting has been implemented. Example use cases: K0
     and electronuclear studies.
 
     Attributes
@@ -27,15 +28,15 @@ class VertexProcessor(Producer) :
         self.field_map = makeFieldMapPath()
         self.trk_coll_name = 'Tracks'
         self.input_pass_name = ''
-        
+
 
 class Vertexer(Producer) :
-    """ Producer that forms vertices betwen two different track 
+    """ Producer that forms vertices betwen two different track
         collections e.g. tagger and recoil tracks.
 
     Attributes
     ----------
-    debug : bool 
+    debug : bool
         Flag use to enable/disable printing of debug.
     field_map : str
         The path to the magnetic field map.
@@ -55,7 +56,7 @@ class Vertexer(Producer) :
 
         self.debug = False
         self.field_map = makeFieldMapPath()
-        trk_c_name_1 = 'TaggerTracks'
-        trk_c_name_2 = 'RecoilTracks'
+        self.trk_c_name_1 = 'TaggerTracks'
+        self.trk_c_name_2 = 'RecoilTracks'
         self.input_pass_name = ''
-        
+

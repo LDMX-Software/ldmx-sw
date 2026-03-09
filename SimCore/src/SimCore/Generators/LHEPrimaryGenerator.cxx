@@ -6,7 +6,7 @@ namespace generators {
 LHEPrimaryGenerator::LHEPrimaryGenerator(
     const std::string& name, const framework::config::Parameters& parameters)
     : PrimaryGenerator(name, parameters),
-      file_path_{parameters.get<std::string>("filePath")},
+      file_path_{parameters.get<std::string>("file_path")},
       reader_{file_path_},
       vertex_{parameters.get<std::vector<double>>("vertex")} {}
 
@@ -76,6 +76,11 @@ void LHEPrimaryGenerator::GeneratePrimaryVertex(G4Event* anEvent) {
     }
 
     anEvent->AddPrimaryVertex(vertex);
+
+    // Apply beam spot smearing if configured for this generator
+    if (useBeamspot()) {
+      smearBeamspot(vertex);
+    }
 
   } else {
     ldmx_log(error) << "Ran out of input events so run will be aborted!";

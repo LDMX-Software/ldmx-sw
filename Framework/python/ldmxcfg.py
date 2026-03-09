@@ -15,11 +15,11 @@ class EventProcessor:
 
     Parameters
     ----------
-    instanceName : str
+    instance_name : str
         Name of this copy of the producer object
-    className : str
+    class_name : str
         Name (including namespace) of the C++ class that this processor should be
-    moduleName : str
+    module_name : str
         Name of module the C++ class is in (e.g. Ecal or SimCore)
         or full path to the library that should be loaded
 
@@ -35,21 +35,21 @@ class EventProcessor:
     LDMX.Framework.histogram.histogram : histogram configuration object
     """
 
-    def __init__(self, instanceName, className, moduleName):
-        self.instanceName=instanceName
-        self.className=className
+    def __init__(self, instance_name, class_name, module_name):
+        self.instance_name=instance_name
+        self.class_name=class_name
         self.histograms=[]
 
-        if moduleName.endswith('.so'):
+        if module_name.endswith('.so'):
             # assume user passed full path to library
-            Process.addLibrary(moduleName)
+            Process.add_library(module_name)
         else:
             # assume user passed name of module processor is compiled into
-            Process.addModule(moduleName)
+            Process.add_module(module_name)
 
 
     @classmethod
-    def from_file(cls, source_file, class_name = None, needs = [], instance_name = None, compile_notice = True, **config_kwargs):
+    def from_file(cls, source_file, class_name = None, needs = None, instance_name = None, compile_notice = True, **config_kwargs):
         """Construct an event processor "in place" from the passed source file
 
         Since Framework dynamically loads libraries containing processors after
@@ -89,7 +89,7 @@ class EventProcessor:
         Examples
         --------
         A basic walkthrough is available online. https://ldmx-software.github.io/analysis/ldmx-sw.html
-        
+
         If `MyAnalyzer.cxx` contains the class `MyAnalyzer`, then we can put
 
             p.sequence = [ ldmxcfg.Analyzer.from_file('MyAnalyzer.cxx') ]
@@ -112,6 +112,8 @@ class EventProcessor:
             built from the C++ source file and configured with the passed arguments
         """
 
+        if needs is None:
+            needs = []
         if not isinstance(source_file, Path):
             source_file = Path(source_file)
         if not source_file.is_file():
@@ -135,15 +137,17 @@ class EventProcessor:
                     ' (or library does not exist), recompiling...'
                 )
             import subprocess
-            libs_to_link = set(['Framework']+needs)
+            libs_to_link = {'Framework', *needs}
             cmd = [
-                'g++', '-std=c++20', '-fPIC', '-shared', # construct a shared library for dynamic loading
+                # construct a shared library for dynamic loading
+                'g++', '-std=c++20', '-fPIC', '-shared',
                 '-o', str(lib), str(src), # define output file and input source file
             ]+[
                 f'-l{lib}' for lib in libs_to_link
             ]+[
                 '-I/usr/local/include/root', # include ROOT's non-system headers
-                '-I@CMAKE_INSTALL_PREFIX@/include', # include ldmx-sw headers (if non-system)
+                # include ldmx-sw headers (if non-system)
+                '-I@CMAKE_INSTALL_PREFIX@/include',
                 '-L@CMAKE_INSTALL_PREFIX@/lib', # include ldmx-sw libs (if non-system)
             ]
             if compile_notice:
@@ -158,13 +162,13 @@ class EventProcessor:
 
         # load any dependency libraries at runtime as well
         for mod in needs:
-            Process.addModule(mod)
+            Process.add_module(mod)
 
         return instance
 
 
-    def build1DHistogram(self, name, xlabel, bins, xmin = None, xmax = None, weighted=False):
-        """Make a 1D histogram 
+    def build_1d_histogram(self, name, xlabel, bins, xmin = None, xmax = None, weighted=False):
+        """Make a 1D histogram
 
         If xmin and xmax are not provided, bins is assumed to be
         the bin edges on the x-axis. If they are both provided,
@@ -198,8 +202,8 @@ class EventProcessor:
         self.histograms.append(h.histogram(name, xlabel,the_bins, weighted=weighted))
 
 
-    def build2DHistogram(self, name, 
-            xlabel = '', xbins = 1, xmin = None, xmax = None, 
+    def build_2d_histogram(self, name,
+            xlabel = '', xbins = 1, xmin = None, xmax = None,
             ylabel = '', ybins = 1, ymin = None, ymax = None,
             weighted = False) :
         """Create a 2D histogram
@@ -240,12 +244,12 @@ class EventProcessor:
         --------
 
         When doing all uniform binning, you can specify the arguments by position.
-            myProcessor.build2DHistogram( 'dummy' ,
+            myProcessor.build_2d_histogram( 'dummy' ,
                 'My X Axis' , 20 , 0. , 1. ,
                 'My Y Axis' , 60 , 0. , 10. )
 
         When using variable binning, you have to use the parameter names.
-            myProcessor.build2DHistogram( 'dummy2' ,
+            myProcessor.build_2d_histogram( 'dummy2' ,
                 xlabel='My X Axis', xbins=[0.,1.,2.],
                 ylabel='My Y Axis', ybins=60, ymin=0., ymax=10. )
         """
@@ -274,8 +278,8 @@ class Producer(EventProcessor):
     LDMX.Framwork.ldmxcfg.EventProcessor : base class
     """
 
-    def __init__(self, instanceName, className, moduleName):
-        super().__init__(instanceName,className, moduleName)
+    def __init__(self, instance_name, class_name, module_name):
+        super().__init__(instance_name,class_name, module_name)
 
     def __str__(self) :
         """Stringify this Producer, creates a message with all the internal parameters.
@@ -286,7 +290,7 @@ class Producer(EventProcessor):
             A message with all the parameters and member variables in a human readable format
         """
 
-        msg = "\n  Producer(%s of class %s)"%(self.instanceName,self.className)
+        msg = f"\n  Producer({self.instance_name} of class {self.class_name})"
         if len(self.__dict__)>0:
             msg += "\n   Parameters:"
             for k, v in self.__dict__.items():
@@ -304,8 +308,8 @@ class Analyzer(EventProcessor):
     LDMX.Framework.ldmxcfg.EventProcessor : base class
     """
 
-    def __init__(self, instanceName, className, moduleName):
-        super().__init__(instanceName,className, moduleName)
+    def __init__(self, instance_name, class_name, module_name):
+        super().__init__(instance_name,class_name, module_name)
 
     def __str__(self) :
         """Stringify this Analyzer, creates a message with all the internal parameters.
@@ -316,7 +320,7 @@ class Analyzer(EventProcessor):
             A message with all the parameters and member variables in a human readable format
         """
 
-        msg = "\n  Analyzer(%s of class %s)"%(self.instanceName,self.className)
+        msg = f"\n  Analyzer({self.instance_name} of class {self.class_name})"
         if len(self.__dict__)>0:
             msg += "\n   Parameters:"
             for k, v in self.__dict__.items():
@@ -335,11 +339,11 @@ class ConditionsObjectProvider:
 
     Parameters
     ----------
-    objectName : str
+    object_name : str
         Name of the object this provider provides
-    className : str
+    class_name : str
         Name (including namespace) of the C++ class of the provider
-    moduleName : str
+    module_name : str
         Name of module that this COP is compiled into (e.g. Ecal or EventProc)
 
     Attributes
@@ -348,18 +352,18 @@ class ConditionsObjectProvider:
         Tag which identifies the generation of information
     """
 
-    def __init__(self, objectName, className, moduleName):
-        self.objectName=objectName
-        self.className=className
-        self.tagName=''
+    def __init__(self, object_name, class_name, module_name):
+        self.object_name=object_name
+        self.class_name=class_name
+        self.tag_name=''
 
         # make sure process loads this library if it hasn't yet
-        Process.addModule(moduleName)
-        
-        #register this conditions object provider with the process
-        Process.declareConditionsObjectProvider(self)
+        Process.add_module(module_name)
 
-    def setTag(self,newtag) :
+        #register this conditions object provider with the process
+        Process.declare_conditions_object_provider(self)
+
+    def set_tag(self,newtag) :
         """Set the tag generation of the Conditions
 
         Parameters
@@ -368,13 +372,13 @@ class ConditionsObjectProvider:
             Tag for generation of conditions
         """
 
-        self.tagName=newtag
+        self.tag_name=newtag
 
     def __eq__(self,other) :
         """Check if two COPs are the same
 
         We decide that two COPs are 'equal' if they have the same instance and class names
-        
+
         Parameters
         ----------
         other : ConditionsObjectProvider
@@ -384,7 +388,7 @@ class ConditionsObjectProvider:
         if not isinstance(other,ConditionsObjectProvider) :
             return NotImplemented
 
-        return (self.objectName == other.objectName and self.className == other.className)
+        return (self.object_name == other.object_name and self.class_name == other.class_name)
 
     def __str__(self) :
         """Stringify this ConditionsObjectProvider, creates a message with all the internal parameters.
@@ -395,7 +399,7 @@ class ConditionsObjectProvider:
             A message with all the parameters and member variables in a human readable format
         """
 
-        msg = "\n  ConditionsObjectProvider(%s of class %s, tag='%s')"%(self.objectName,self.className,self.tagName)
+        msg = f"\n  ConditionsObjectProvider({self.object_name} of class {self.class_name}, tag='{self.tag_name}')"
         if len(self.__dict__)>0:
             msg += "\n   Parameters:"
             for k, v in self.__dict__.items():
@@ -417,7 +421,7 @@ class RandomNumberSeedService(ConditionsObjectProvider):
 
     def __init__(self) :
         super().__init__('RandomNumberSeedService','framework::RandomNumberSeedService','Framework')
-        self.seedMode = ''
+        self.seed_mode = ''
         self.seed=-1 #only used in external mode
 
         # use run seed mode by default
@@ -425,7 +429,7 @@ class RandomNumberSeedService(ConditionsObjectProvider):
 
     def run(self) :
         """Base random number seeds off of the run number"""
-        self.seedMode = 'run'
+        self.seed_mode = 'run'
 
     def external(self,seed) :
         """Input the master random number seed
@@ -435,12 +439,12 @@ class RandomNumberSeedService(ConditionsObjectProvider):
         seed : int
             Integer to use as master random number seed
         """
-        self.seedMode = 'external'
+        self.seed_mode = 'external'
         self.seed = seed
 
     def time(self) :
         """Set master random seed based off of time"""
-        self.seedMode = 'time'
+        self.seed_mode = 'time'
 
 
 class _LogRule:
@@ -476,17 +480,17 @@ class Logger:
         minimum severity level to print to the terminal
     fileLevel: int
         minimum severity level to print to the file
-    filePath: str
+    file_path: str
         path to file to direct logging to (if not provided, don't open a file for logging)
     logRules: List[_LogRule]
         list of custom logging rules that override the default terminal and file levels
     """
 
     def __init__(self):
-        self.termLevel = 2 # warnings and above
-        self.fileLevel = 0 # everything
-        self.filePath  = '' # don't open file for logging
-        self.logRules = []
+        self.term_level = 2 # warnings and above
+        self.file_level = 0 # everything
+        self.file_path  = '' # don't open file for logging
+        self.log_rules = []
 
 
     def custom(self, name, level):
@@ -504,8 +508,8 @@ class Logger:
         """
 
         if isinstance(name, EventProcessor):
-            name = name.instanceName
-        self.logRules.append(_LogRule(name, level))
+            name = name.instance_name
+        self.log_rules.append(_LogRule(name, level))
 
     def trace(self, name):
         """drop the input channel to the trace level"""
@@ -520,45 +524,45 @@ class Logger:
         """raise the input channel to the error-only level"""
         self.custom(name, level = 3)
 
-    
+
 class Process:
     """Process configuration object
 
     The python object that stores the necessary parameters for configuring
     a Process for ldmx-app to execute.
 
-    Upon construction, the class-wide reference lastProcess is set
+    Upon construction, the class-wide reference last_process is set
     and the rest of the attributes are set to sensible defaults.
 
     Parameters
     ----------
-    passName : str
+    pass_name : str
         Short reference name for this run of the process
 
     Attributes
     ----------
-    lastProcess : Process
+    last_process : Process
         Class-wide reference to the last Process object to be constructed
-    maxEvents : int
+    max_events : int
         Maximum number events to process.
-        If totalEvents is set, this will be ignored.
-    minEvents : int
+        If total_events is set, this will be ignored.
+    min_events : int
         Index of the first events to process.
         The skipping process is relatively slow, if used for anything outside of debugging
         make a  skim to a new file and then run again rather than use this.
         Note: this skips events of *each* input file, you a single file only.
-    maxTriesPerEvent : int
+    max_tries_per_event : int
         Maximum number of attempts to make in a row before giving up on an event
         Only used in Production Mode (no input files)
-        If totalEvents is set, this will be ignored.
-    totalEvents : int
+        If total_events is set, this will be ignored.
+    total_events : int
         Number of events we'd like to produce independetly of the number of tries it would take.
-        Both maxEvents and maxTriesPerEvent will be ignored. Be warned about infinite loops!
+        Both max_events and max_tries_per_event will be ignored. Be warned about infinite loops!
     run : int
         Run number for this process
-    inputFiles : list of strings
+    input_files : list of strings
         Input files to read in event data from and process
-    outputFiles : list of strings
+    output_files : list of strings
         Output files to write out event data to after processing
     sequence : list of Producers and Analyzers
         List of event processors to pass the event bus objects to
@@ -566,19 +570,19 @@ class Process:
         List of rules to keep or drop objects from the event bus
     libraries : list of strings
         List of libraries to load before attempting to build any processors
-    skimDefaultIsKeep : bool
+    skim_default_is_keep : bool
         Flag to say whether to process should by default keep the event or not
-    skimRules : list of strings
+    skim_rules : list of strings
         List of skimming rules for which processors the process should listen to when deciding whether to keep an event
-    logFrequency : int
+    log_frequency : int
         Print the event number whenever its modulus with this frequency is zero
     logger : Logger
         configuration for logging system in ldmx-sw
-    conditionsGlobalTag : str
+    conditions_global_tag : str
         Global tag for the current generation of conditions
-    conditionsObjectProviders : list of ConditionsObjectProviders
+    conditions_object_providers : list of ConditionsObjectProviders
         List of the sources of calibration and conditions information
-    randomNumberSeedService : RandomNumberSeedService
+    random_number_seed_service : RandomNumberSeedService
         conditions object that provides random number seeds in a deterministic way
 
     See Also
@@ -587,61 +591,54 @@ class Process:
     Analyzer : the other type of event processor
     """
 
-    lastProcess=None
-    
-    def __init__(self, passName):
+    last_process = None
 
-        if ( Process.lastProcess is not None ) :
+    def __init__(self, pass_name):
+
+        if ( Process.last_process is not None ) :
             raise Exception( "Process object is already created! You can only create one Process object in a script." )
 
-        self.passName=passName
-        self.maxEvents=-1
-        self.minEvents=-1
-        self.maxTriesPerEvent=1
+        self.pass_name=pass_name
+        self.max_events=-1
+        self.min_events=-1
+        self.max_tries_per_event=1
         self.run=-1
-        self.inputFiles=[]
-        self.outputFiles=[]
+        self.input_files=[]
+        self.output_files=[]
         self.sequence=[]
         self.keep=[]
         self.libraries=[]
-        self.skimDefaultIsKeep=True
-        self.skimRules=[]
-        self.logFrequency=-1
+        self.skim_default_is_keep=True
+        self.skim_rules=[]
+        self.log_frequency=-1
         self.logger = Logger()
-        self.compressionSetting=9
-        self.histogramFile=''
-        self.conditionsGlobalTag='Default'
-        self.conditionsObjectProviders=[]
+        self.compression_setting=9
+        self.histogram_file=''
+        self.conditions_global_tag='Default'
+        self.conditions_object_providers=[]
         self.tree_name = 'LDMX_Events'
-        Process.lastProcess=self
+        Process.last_process = self
 
-        # needs lastProcess defined to self-register
-        self.randomNumberSeedService=RandomNumberSeedService()
+        # needs last_process defined to self-register
+        self.random_number_seed_service=RandomNumberSeedService()
 
 
     def __setattr__(self, key, val):
-        logger_remap = {
-            'termLogLevel' : 'termLevel',
-            'fileLogLevel' : 'fileLevel',
-            'logFileName'  : 'filePath'
-        }
-        if key in logger_remap:
-            setattr(self.logger, logger_remap[key], val)
-            return
-        elif key == 'logFrequency' and val > 0:
+        if key == 'log_frequency' and val > 0:
             # make sure the Process channel is lowered to info
             # later log rules override earlier ones so we put this
             # at the front of the list so the user could have overwritten
             # this if need be
             # 'Process' needs to match the name given in enableLogging
             # in include/Framework/Process.h
-            self.logger.logRules.insert(0, _LogRule('Process', level=1))
+            self.logger.log_rules.insert(0, _LogRule('Process', level=1))
             # fall through to set the key=val
-        
+
         super().__setattr__(key, val)
 
 
-    def addLibrary(lib) :
+    @staticmethod
+    def add_library(lib) :
         """Add a library to the list of dynamically loaded libraries
 
         A process object must already have been created.
@@ -649,7 +646,7 @@ class Process:
         Parameters
         ----------
         lib : str
-            name of library to load 
+            name of library to load
 
         Warnings
         --------
@@ -660,12 +657,13 @@ class Process:
             addLibrary( 'libSimCore.so' )
         """
 
-        if ( Process.lastProcess is not None ) :
-            Process.lastProcess.libraries.append( lib )
+        if ( Process.last_process is not None ) :
+            Process.last_process.libraries.append( lib )
         else :
             raise Exception( "No Process object defined yet! You need to create a Process before creating any EventProcessors." )
-    
-    def addModule(module) :
+
+    @staticmethod
+    def add_module(module) :
         """Add a module to the list of dynamically loaded libraries
 
         A process object must already have been created.
@@ -693,9 +691,10 @@ class Process:
         """
 
         actual_module_name = module.replace('/','_').replace('::','_')
-        Process.addLibrary('@CMAKE_INSTALL_PREFIX@/lib/lib%s.so'%(actual_module_name))
+        Process.add_library(f'@CMAKE_INSTALL_PREFIX@/lib/lib{actual_module_name}.so')
 
-    def declareConditionsObjectProvider(cop):
+    @staticmethod
+    def declare_conditions_object_provider(cop):
         """Declare a conditions object provider to be loaded with the process
 
         A process object must already have been created.
@@ -711,22 +710,22 @@ class Process:
         - Overrides an already declared COP with the passed COP if they are equal
         """
 
-        if ( Process.lastProcess is not None ) :
+        if ( Process.last_process is not None ) :
 
-            cop.setTag(Process.lastProcess.conditionsGlobalTag)
+            cop.set_tag(Process.last_process.conditions_global_tag)
 
             # check if the input COP matches one already declared
             #   if it does match, override the already declared one with the passed one
-            for index, already_defined_cop in enumerate(Process.lastProcess.conditionsObjectProviders) :
+            for index, already_defined_cop in enumerate(Process.last_process.conditions_object_providers) :
                 if cop == already_defined_cop :
-                    Process.lastProcess.conditionsObjectProviders[index] = cop
+                    Process.last_process.conditions_object_providers[index] = cop
                     return
 
-            Process.lastProcess.conditionsObjectProviders.append( cop )
+            Process.last_process.conditions_object_providers.append( cop )
         else :
             raise Exception( "No Process object defined yet! You need to create a Process before declaring any ConditionsObjectProviders." )
 
-    def setConditionsGlobalTag(self,tag) :
+    def set_conditions_global_tag(self,tag) :
         """Set the global tag for all the ConditionsObjectProviders
 
         Parameters
@@ -735,21 +734,21 @@ class Process:
             Global generation tag to pass to all COPs
         """
 
-        self.conditionsGlobalTag=tag
-        for cop in self.conditionsObjectProviders :
-            cop.setTag(tag)
-            
-    def skimDefaultIsSave(self):
+        self.conditions_global_tag=tag
+        for cop in self.conditions_object_providers :
+            cop.set_tag(tag)
+
+    def skim_default_is_save(self):
         """Configure the process to by default keep every event."""
 
-        self.skimDefaultIsKeep=True
-        
-    def skimDefaultIsDrop(self):
+        self.skim_default_is_keep=True
+
+    def skim_default_is_drop(self):
         """Configure the process to by default drop (not save) every event."""
 
-        self.skimDefaultIsKeep=False
+        self.skim_default_is_keep=False
 
-    def skimConsider(self,namePat):
+    def skim_consider(self,name_pat):
         """Configure the process to listen to processors matching input.
 
         The list of skim rules has a rather complicated form, so it
@@ -757,14 +756,14 @@ class Process:
 
         Parameters
         ----------
-        namePat : str
+        name_pat : str
             Pattern for the processor instanceNames to match for the Process to listen
 
         Example
         -------
-            ecalVeto = ldmxcfg.Producer( 'ecalVeto' , 'EcalVetoProcessor' )
+            ecal_veto = ldmxcfg.Producer( 'ecal_veto' , 'EcalVetoProcessor' )
             # Setup of other parameters for the veto
-            p.skimConsider( 'ecalVeto' )
+            p.skim_consider( 'ecal_veto' )
 
         See Also
         --------
@@ -772,10 +771,10 @@ class Process:
 
         """
 
-        self.skimRules.append(namePat)
-        self.skimRules.append("")
+        self.skim_rules.append(name_pat)
+        self.skim_rules.append("")
 
-    def skimConsiderLabelled(self,namePat,labelPat):
+    def skim_consider_labelled(self,name_pat,label_pat):
         """Configure the process to listen to processors matching input.
 
         The list of skim rules has a rather complicated form, so it
@@ -787,9 +786,9 @@ class Process:
 
         Parameters
         ----------
-        namePat : str
+        name_pat : str
             Pattern for the processor instanceNames to match for the Process to listen
-        labelPat : str
+        label_pat : str
             Pattern for the storage hint reason to match for the Process to listen
 
         See Also
@@ -797,8 +796,8 @@ class Process:
         skimConsider
 
         """
-        self.skimRules.append(namePat)
-        self.skimRules.append(labelPat)
+        self.skim_rules.append(name_pat)
+        self.skim_rules.append(label_pat)
 
     def setCompression(self,algorithm,level=9):
         """set the compression settings for any output files in this process
@@ -832,7 +831,7 @@ class Process:
             flag for the level of compression to use
         """
 
-        self.compressionSetting = algorithm*100 + level
+        self.compression_setting = algorithm*100 + level
 
     def inputDir(self, indir) :
         """Scan the input directory and make a list of input root files to read from it
@@ -847,10 +846,10 @@ class Process:
         """
 
         import os
-        fullPathDir = os.path.realpath(indir)
-        self.inputFiles.extend([ os.path.join(fullPathDir,f) 
-                for f in os.listdir(fullPathDir) 
-                if os.path.isfile(os.path.join(fullPathDir,f)) and f.endswith('.root') 
+        full_path_dir = os.path.realpath(indir)
+        self.input_files.extend([ os.path.join(full_path_dir,f)
+                for f in os.listdir(full_path_dir)
+                if os.path.isfile(os.path.join(full_path_dir,f)) and f.endswith('.root')
                 ])
 
     def parameterDump(self) :
@@ -861,8 +860,8 @@ class Process:
 
         keys_to_skip = [ 'histograms' , 'libraries' ]
 
-        from LDMX.SimCore import simcfg
         from LDMX.Framework import histogram as h
+        from LDMX.SimCore import simcfg
 
         def extract(obj):
             """Extract the parameter from the input object"""
@@ -870,7 +869,7 @@ class Process:
             if isinstance(obj,list) :
                 return [ extract(o) for o in obj ]
             elif hasattr(obj,'__dict__') :
-                params = dict()
+                params = {}
                 for k in obj.__dict__ :
                     if k not in keys_to_skip :
                         params[k] = extract(obj.__dict__[k])
@@ -903,38 +902,38 @@ class Process:
             A human-readable, multi-line description of this process object
         """
 
-        msg = "Process with pass name '%s'"%(self.passName)
+        msg = f"Process with pass name '{self.pass_name}'"
         if (self.run>0): msg += "\n using run number %d"%(self.run)
-        if (self.maxEvents>0): msg += "\n Maximum events to process: %d"%(self.maxEvents)
+        if (self.max_events>0): msg += "\n Maximum events to process: %d"%(self.max_events)
         else: msg += "\n No limit on maximum events to process"
-        if (len(self.conditionsObjectProviders)>0):
-            msg += "\n conditionsObjectProviders:\n";
-            for cop in self.conditionsObjectProviders:
+        if (len(self.conditions_object_providers)>0):
+            msg += "\n conditionsObjectProviders:\n"
+            for cop in self.conditions_object_providers:
                 msg+=str(cop)
         msg += "\n Processor sequence:"
         for proc in self.sequence:
             msg += str(proc)
-        if len(self.inputFiles) > 0:
-            if len(self.outputFiles)==len(self.inputFiles):
+        if len(self.input_files) > 0:
+            if len(self.output_files)==len(self.input_files):
                 msg += "\n Files:"
-                for i in range(0,len(self.inputFiles)):
-                    msg += "\n  '%s' -> '%s'"%(self.inputFiles[i],self.outputFiles[i])
+                for i in range(0,len(self.input_files)):
+                    msg += f"\n  '{self.input_files[i]}' -> '{self.output_files[i]}'"
             else:
                 msg += "\n Input files:"
-                for afile in self.inputFiles:
+                for afile in self.input_files:
                     msg += '\n  ' + afile
-                if len(self.outputFiles) > 0:
-                    msg += "\n Output file: " + self.outputFiles[0]
-        elif len(self.outputFiles) > 0:
-            msg += "\n Output file: " + self.outputFiles[0]
+                if len(self.output_files) > 0:
+                    msg += "\n Output file: " + self.output_files[0]
+        elif len(self.output_files) > 0:
+            msg += "\n Output file: " + self.output_files[0]
         msg += "\n Skim rules:"
-        if self.skimDefaultIsKeep: msg += "\n  Default: keep the event"
+        if self.skim_default_is_keep: msg += "\n  Default: keep the event"
         else: msg += "\n  Default: drop the event"
-        for i in range(0,len(self.skimRules)-1,2):
-            if self.skimRules[i+1]=="": 
-                msg += "\n  Listen to hints from processors with names matching '%s'"%(self.skimRules[i])
+        for i in range(0,len(self.skim_rules)-1,2):
+            if self.skim_rules[i+1]=="":
+                msg += f"\n  Listen to hints from processors with names matching '{self.skim_rules[i]}'"
             else:
-                msg += "\n  Listen to hints with labels matching '%s' from processors with names matching '%s'"%(self.skimRules[i+1],self.skimRules[i])
+                msg += f"\n  Listen to hints with labels matching '{self.skim_rules[i+1]}' from processors with names matching '{self.skim_rules[i]}'"
         if len(self.keep) > 0:
             msg += "\n Rules for keeping previous products:"
             for arule in self.keep:
@@ -947,7 +946,7 @@ class Process:
         return msg
 
 class RunHeaderAna(Analyzer) :
-    """                                                                                                                  
+    """
     Contains an instance of RunHeaderAnalyzer that
     has already been configured.
 

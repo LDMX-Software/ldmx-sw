@@ -26,9 +26,9 @@ void Simulator::beforeNewRun(ldmx::RunHeader& header) {
   header.setDescription(parameters_.get<std::string>("description"));
   header.setIntParameter(
       "Included Scoring Planes",
-      !parameters_.get<std::string>("scoringPlanes").empty());
+      !parameters_.get<std::string>("scoring_planes").empty());
   header.setIntParameter("Use Random Seed from Event Header",
-                         parameters_.get<bool>("rootPrimaryGenUseSeed"));
+                         parameters_.get<bool>("root_primary_gen_use_seed"));
 
   // lambda function for dumping 3-vectors into the run header
   auto three_vector_dump = [&header](const std::string& name,

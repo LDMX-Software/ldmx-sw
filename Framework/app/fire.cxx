@@ -73,7 +73,7 @@ int main(int argc, char* argv[]) try {
   framework::ProcessHandle p;
   try {
     framework::config::Parameters config{
-        framework::config::run("ldmxcfg.Process.lastProcess", argv[ptrpy],
+        framework::config::run("ldmxcfg.Process.last_process", argv[ptrpy],
                                argv + ptrpy + 1, argc - ptrpy - 1)};
     p = std::make_unique<framework::Process>(config);
   } catch (const framework::exception::Exception& e) {

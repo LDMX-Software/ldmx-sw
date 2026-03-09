@@ -1,4 +1,5 @@
-import argparse,sys
+import argparse
+import sys
 from LDMX.Framework import ldmxcfg
 
 """
@@ -12,38 +13,38 @@ parser.add_argument('--energy',default=2.0,type=float)
 arg = parser.parse_args()
 
 p = ldmxcfg.Process('sim')
-p.maxEvents = arg.nevents
-p.termLogLevel = 0
-p.logFrequency = 10
+p.max_events = arg.nevents
+p.term_log_level = 0
+p.log_frequency = 10
 
 detector = 'ldmx-hcal-prototype-v2.0' # TODO: CHANGE TO FEFIX version
 
-p.outputFiles = [
+p.output_files = [
         arg.particle
-        +"Sim_%.2fGeV_"%arg.energy
-        + str(p.maxEvents)
-        + "_%s.root"%detector
+        +f"Sim_{arg.energy:.2f}GeV_"
+        + str(p.max_events)
+        + f"_{detector}.root"
         ]
 
 from LDMX.SimCore import simulator
-import LDMX.Ecal.EcalGeometry # geometry required by sim
+import LDMX.Ecal.ecal_geometry # geometry required by sim
 
-mySim = simulator.simulator('mySim')
-mySim.setDetector(detector)
+my_sim = simulator.simulator('my_sim')
+my_sim.setDetector(detector)
 
 # Get a pre-written generator
 from LDMX.SimCore import generators as gen
-myGun = gen.gun('myGun')
-myGun.particle = arg.particle
-myGun.position = [ 0., 0., -600. ] # mm
-myGun.direction = [ 0., 0., 1] # forward in z
-myGun.energy = arg.energy # GeV
-mySim.generators = [ myGun ]
-p.sequence.append( mySim )
-# mySim.verbosity = 1
+my_gun = gen.gun('my_gun')
+my_gun.particle = arg.particle
+my_gun.position = [ 0., 0., -600. ] # mm
+my_gun.direction = [ 0., 0., 1] # forward in z
+my_gun.energy = arg.energy # GeV
+my_sim.generators = [ my_gun ]
+p.sequence.append( my_sim )
+# my_sim.verbosity = 1
 
 # import chip/geometry (hardcoded) conditions
-import LDMX.Hcal.HcalGeometry
+import LDMX.Hcal.hcal_geometry
 import LDMX.Hcal.hcal_testbeamsim_conditions
 import LDMX.Hcal.digi as hcal_digi
 

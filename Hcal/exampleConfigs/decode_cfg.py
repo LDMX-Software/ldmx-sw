@@ -1,18 +1,19 @@
-"""Decoding configuration for raw testbeam data                                                                                                                                                                                                                                                                                                                      
-                                                                                                                                                                                                                                                                                                                                                                     
-Decoding **DOES NOT** attempt                                                                                                                                                                                                                                                                                                       
-to align the two halves of the HCal. We assume a local home path of ldmx-sw installation e.g.                                                                                                                                                                                                                                                                                                                  
-                                                                                                                                                                                                                                                                                                                                                                     
-  LDMX_BASE=/local/cms/user/eichl008/ldmx/                                                                                                                                                                                                                                                                                                                           
-                                                                                                                                                                                                                                                                                                                                                                     
-so that we can construct the output path correctly.                                                                                                                                                                                                                                                                                                                  
-                                                                                                                                                                                                                                                                                                                                                                     
+"""Decoding configuration for raw testbeam data
+
+Decoding **DOES NOT** attempt
+to align the two halves of the HCal. We assume a local home path of ldmx-sw installation e.g.
+
+  LDMX_BASE=/local/cms/user/eichl008/ldmx/
+
+so that we can construct the output path correctly.
+
 The run number is deduced from the file name.
 
 @author Tom Eichlersmith, University of Minnesota
 """
 
-import argparse, sys
+import argparse
+import sys
 
 parser = argparse.ArgumentParser(f'ldmx fire {sys.argv[0]}',
     description=__doc__)
@@ -28,20 +29,20 @@ from LDMX.Framework import ldmxcfg
 
 p = ldmxcfg.Process('decode')
 if arg.max_events is not None :
-    p.maxEvents = arg.max_events
-p.termLogLevel = 0
-p.logFrequency = 1000
+    p.max_events = arg.max_events
+p.term_log_level = 0
+p.log_frequency = 1000
 
 import LDMX.Hcal.hgcrocFormat as hcal_format
-import LDMX.Hcal.HcalGeometry
+import LDMX.Hcal.hcal_geometry
 import LDMX.Hcal.hcal_hardcoded_conditions
 from LDMX.DQM import dqm
 import os
-from LDMX.Hcal.DetectorMap import HcalDetectorMap
+from LDMX.Hcal.detector_map import HcalDetectorMap
 detmap = HcalDetectorMap(f'{os.environ["LDMX_BASE"]}/ldmx-sw/Hcal/data/testbeam_connections.csv')
-detmap.want_d2e = True # helps quicken the det -> elec translation                                                                                                                                                                                                                                                                                                   
+detmap.want_d2e = True # helps quicken the det -> elec translation
 
-# extract and deduce parameters from input file name                                                                                                                                                                                                                                                                                                                 
+# extract and deduce parameters from input file name
 params = os.path.basename(arg.input_file).replace('.root','').split('_')
 run = params[params.index("run")+1]
 day = params[-2]
@@ -66,13 +67,13 @@ os.makedirs(dir_name+'-ntuple', exist_ok=True)
 
 file_name = f'decoded_{provided}_run_{run}_{day}_{time}'
 
-p.inputFiles = [arg.input_file]
-p.outputFiles = [f'{dir_name}/{file_name}.root']
-p.histogramFile = f'{dir_name}-ntuple/ntuple_{file_name}.root'
+p.input_files = [arg.input_file]
+p.output_files = [f'{dir_name}/{file_name}.root']
+p.histogram_file = f'{dir_name}-ntuple/ntuple_{file_name}.root'
 
-# sequence                                                                                                                                                                                                                                                                                                                                                           
-#   1. decode event packet into digi collection                                                                                                                                                                                                                                                                                                                      
-#   2. ntuplize digi collection                                                                                                                                                                                                                                                                                                                                      
+# sequence
+#   1. decode event packet into digi collection
+#   2. ntuplize digi collection
 p.sequence = [
         hcal_format.HcalRawDecoder(
             input_names = input_names,

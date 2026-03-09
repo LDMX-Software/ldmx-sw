@@ -139,6 +139,11 @@ class Track {
   void addSharedIndex(unsigned int measIdx) { shared_idxs_.push_back(measIdx); }
   std::vector<unsigned int> getSharedIdxs() const { return shared_idxs_; }
 
+  void addDedxMeasurement(float path_length) {
+    dedx_measurements_.push_back(path_length);
+  }
+  std::vector<float> getDedxMeasurements() const { return dedx_measurements_; }
+
   /// d_0 z_0 phi_0 theta q/p t
   // void setPerigeeParameters(const Acts::BoundVector& par)  {perigee_pars_ =
   // par; } Acts::BoundVector getPerigeeParameters() {return perigee_pars_;}
@@ -257,6 +262,9 @@ class Track {
   // The vector of shared hit IDs
   std::vector<unsigned int> shared_idxs_{};
 
+  // The vector of dE/dx measurements (in MeV/mm)
+  std::vector<float> dedx_measurements_{};
+
   // ID of the matched particle in the SimParticles map
   int track_id_{-1};
 
@@ -270,7 +278,7 @@ class Track {
   std::vector<TrackState> track_states_;
 
   /// Class declaration needed by the ROOT dictionary.
-  ClassDef(Track, 4);
+  ClassDef(Track, 5);
 
 };  // Track
 

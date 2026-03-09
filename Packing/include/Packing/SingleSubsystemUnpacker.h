@@ -11,8 +11,7 @@ namespace packing {
  * @class SingleSubsystemUnpacker
  *
  * This producer unpacks the data from the a **single** subsystem
- * raw data file into a **single** buffer for a downstream processor
- * to decode.
+ * into a **single** buffer for a downstream processor to decode.
  */
 class SingleSubsystemUnpacker : public framework::Producer {
  public:
@@ -20,7 +19,7 @@ class SingleSubsystemUnpacker : public framework::Producer {
   SingleSubsystemUnpacker(const std::string& name, framework::Process& p)
       : framework::Producer(name, p) {}
   /// empty destructor
-  virtual ~SingleSubsystemUnpacker() {}
+  virtual ~SingleSubsystemUnpacker() = default;
 
   /**
    * Configure the unpacker and open the raw data file for IO
@@ -36,19 +35,23 @@ class SingleSubsystemUnpacker : public framework::Producer {
    */
   void produce(framework::Event& event) override;
 
-  void beforeNewRun(ldmx::RunHeader& rh) override;
-
  private:
-  /// number of bytes in each event
-  int num_bytes_per_event_;
+  /// subsystem ID to filter for
+  int subsystem_;
+  /**
+   * contributor ID to filter for
+   *
+   * (-1 means ignore this filter)
+   */
+  int contributor_;
+  /// number of frames to skip before sending data
+  int frame_offset_;
   /// destination object name
   std::string output_name_;
-  /// Detector file name
-  std::string detector_name_;
-
- private:
   /// raw data file we are reading
   utility::Reader reader_;
+  /// frame count from beginning of file for frame_offset_
+  int frame_count_{0};
 };  // SingleSubsystemUnpacker
 
 }  // namespace packing

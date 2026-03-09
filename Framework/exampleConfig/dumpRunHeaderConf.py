@@ -1,19 +1,23 @@
 import os
 import sys
-fileIn = sys.argv[1:]
-fileName =  " ".join(sys.argv[1:])
+
+
+file_in = sys.argv[1:]
+file_name =  " ".join(sys.argv[1:])
 
 from LDMX.Framework import ldmxcfg
-p = ldmxcfg.Process('myAna')
-dumpRunHeader = ldmxcfg.RunHeaderAna()
 
-p.maxEvents = -1
+
+p = ldmxcfg.Process('myAna')
+dump_run_header = ldmxcfg.RunHeaderAna()
+
+p.max_events = -1
 p.run = 2
 
-p.inputFiles  = fileIn
-print(p.inputFiles)
+p.input_files  = file_in
+print(p.input_files)
 
-p.sequence = [dumpRunHeader]
+p.sequence = [dump_run_header]
 
 
 

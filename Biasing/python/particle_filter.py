@@ -1,8 +1,9 @@
-""" Example configurations for filtering out PN events by the properties of 
+""" Example configurations for filtering out PN events by the properties of
     of the reaction products.
 """
 
 from LDMX.SimCore import simcfg
+
 
 class PhotoNuclearProductsFilter(simcfg.UserAction) :
     """ Configuration for keeping events with specific products of PN interactions
@@ -28,14 +29,15 @@ class PhotoNuclearProductsFilter(simcfg.UserAction) :
         self.min_e = 0.
 
     def kaon() :
-        """ Configuration for filtering photo-nuclear events whose products don't contain a kaon.
-    
-    
+        """ Configuration for filtering photo-nuclear events whose
+        products don't contain a kaon.
+
+
         Returns
         -------
         Instance of configured PhotoNuclearProductsFilter
         """
-    
+
         particle_filter = PhotoNuclearProductsFilter("kaon_filter")
         particle_filter.pdg_ids = [
                 130, # K_L^0
@@ -77,7 +79,7 @@ class PhotoNuclearTopologyFilter(simcfg.UserAction):
         self.count_light_ions = True
 
 
-    def SingleNeutronFilter():
+    def single_neutron_filter():
         """Configuration for keeping photonuclear events where a single neutron
         carries most of the kinetic energy from the interaction
 
@@ -88,11 +90,11 @@ class PhotoNuclearTopologyFilter(simcfg.UserAction):
 
         """
         filter = PhotoNuclearTopologyFilter(name='SingleNeutron',
-                                            filter_class='biasing::SingleNeutronFilter' )
+                filter_class='biasing::SingleNeutronFilter' )
         filter.hard_particle_threshold = 200.
         return filter
 
-    def NothingHardFilter():
+    def nothing_hard_filter():
         """Configuration for keeping photonuclear events no particles received
         significant kinetic energy.
 
@@ -102,11 +104,11 @@ class PhotoNuclearTopologyFilter(simcfg.UserAction):
 
         """
         filter = PhotoNuclearTopologyFilter(name='NothingHard',
-                                            filter_class='biasing::NothingHardFilter')
+                filter_class='biasing::NothingHardFilter')
         filter.hard_particle_threshold = 200.
         return filter
 
 
 
-    
+
 

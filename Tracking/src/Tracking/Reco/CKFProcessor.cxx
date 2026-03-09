@@ -27,6 +27,11 @@ void CKFProcessor::onNewRun(const ldmx::RunHeader& rh) {
   profiling_map_["ckf_run"] = 0.;
   profiling_map_["result_loop"] = 0.;
 
+  // Initialize counters
+  nseeds_ = 0;
+  ntracks_ = 0;
+  eventnr_ = 0;
+
   // Generate a constant magnetic field
   Acts::Vector3 b_field(0., 0., bfield_ * Acts::UnitConstants::T);
 
@@ -134,20 +139,39 @@ void CKFProcessor::onNewRun(const ldmx::RunHeader& rh) {
   nav_cfg.resolveSensitive = true;
   const Acts::Navigator navigator(nav_cfg);
 
-  // Setup the propagators
-  propagator_ =
-      const_b_field_
-          ? std::make_unique<CkfPropagator>(const_stepper, navigator)
-          : std::make_unique<CkfPropagator>(
-                stepper, navigator,
-                Acts::getDefaultLogger("ACTS_PROP", acts_logging_level));
+  propagator_ = std::make_unique<CkfPropagator>(
+      stepper, navigator,
+      Acts::getDefaultLogger("CKF_PROP", acts_logging_level));
 
   // Setup the finder / fitters
   ckf_ = std::make_unique<std::decay_t<decltype(*ckf_)>>(
       *propagator_, Acts::getDefaultLogger("CKF", acts_logging_level));
   trk_extrap_ = std::make_shared<std::decay_t<decltype(*trk_extrap_)>>(
       *propagator_, geometryContext(), magneticFieldContext());
-}
+
+  // Setup zero-B CKF as fallback
+  Acts::ConstantBField zero_b_field(Acts::Vector3(0., 0., 0.));
+  const auto zero_b_stepper = Acts::EigenStepper<>{
+      std::make_shared<Acts::ConstantBField>(zero_b_field)};
+  propagator_zero_b_ =
+      std::make_unique<CkfPropagator>(zero_b_stepper, navigator);
+  ckf_zero_b_ = std::make_unique<std::decay_t<decltype(*ckf_zero_b_)>>(
+      *propagator_zero_b_,
+      Acts::getDefaultLogger("CKF_ZERO_B", acts_logging_level));
+  trk_extrap_zero_b_ =
+      std::make_shared<std::decay_t<decltype(*trk_extrap_zero_b_)>>(
+          *propagator_zero_b_, geometryContext(), magneticFieldContext());
+
+  // Setup const-B (1.5T) CKF as fallback for tagger
+  propagator_const_b_ =
+      std::make_unique<CkfPropagator>(const_stepper, navigator);
+  ckf_const_b_ = std::make_unique<std::decay_t<decltype(*ckf_const_b_)>>(
+      *propagator_const_b_,
+      Acts::getDefaultLogger("CKF_CONST_B", acts_logging_level));
+  trk_extrap_const_b_ =
+      std::make_shared<std::decay_t<decltype(*trk_extrap_const_b_)>>(
+          *propagator_const_b_, geometryContext(), magneticFieldContext());
+}  // end of CKFProcessor::onNewRun()
 
 void CKFProcessor::produce(framework::Event& event) {
   eventnr_++;
@@ -162,9 +186,8 @@ void CKFProcessor::produce(framework::Event& event) {
 
   nevents_++;
 
-  auto logging_level = Acts::Logging::DEBUG;
-  ACTS_LOCAL_LOGGER(
-      Acts::getDefaultLogger("LDMX Tracking Geometry Maker", logging_level));
+  ACTS_LOCAL_LOGGER(Acts::getDefaultLogger("LDMX Tracking Geometry Maker",
+                                           Acts::Logging::DEBUG));
 
   // Move this at the start of the producer
   Acts::PropagatorOptions<Acts::StepperPlainOptions,
@@ -240,7 +263,7 @@ void CKFProcessor::produce(framework::Event& event) {
 
   if (seed_tracks.empty()) {
     std::vector<ldmx::Track> empty;
-    ldmx_log(info) << "No seed tracks, returning...";
+    ldmx_log(warn) << "No seed tracks, returning...";
     event.add(out_trk_collection_, empty);
     return;
   }
@@ -406,10 +429,44 @@ void CKFProcessor::produce(framework::Event& event) {
     ldmx_log(debug) << "  Checking options:  multiple scattering = "
                     << ckf_options.multipleScattering
                     << "  energy loss = " << ckf_options.energyLoss;
+
+    // Try field-map CKF first
     auto results =
         ckf_->findTracks(start_parameters.at(track_id), ckf_options, tc);
 
     auto start_params = start_parameters.at(track_id).parameters().transpose();
+
+    // If field-map CKF fails, try appropriate fallback based on tracking system
+    if (!results.ok()) {
+      if (!tagger_tracking_) {
+        // Recoil tracking: try zero-B CKF as fallback
+        n_fieldmap_ckf_failed_recoil_++;
+        ldmx_log(debug)
+            << "    Field-map CKF failed, trying zero-B CKF fallback";
+        results = ckf_zero_b_->findTracks(start_parameters.at(track_id),
+                                          ckf_options, tc);
+        if (results.ok()) {
+          n_zerob_ckf_recovered_recoil_++;
+          ldmx_log(debug) << "    Yay! Zero-B CKF succeeded as fallback!";
+        } else {
+          ldmx_log(debug) << "    Zero-B CKF also failed!";
+        }
+      } else {
+        // Tagger tracking: try const-B (1.5T) CKF as fallback
+        n_fieldmap_ckf_failed_tagger_++;
+        ldmx_log(debug)
+            << "    Field-map CKF failed, trying const-B (1.5T) CKF fallback";
+        results = ckf_const_b_->findTracks(start_parameters.at(track_id),
+                                           ckf_options, tc);
+        if (results.ok()) {
+          n_constb_ckf_recovered_tagger_++;
+          ldmx_log(debug) << "    Yay! Const-B CKF succeeded as fallback!";
+        } else {
+          ldmx_log(debug) << "    Const-B CKF also failed!";
+        }
+      }
+    }
+
     ldmx_log(debug)
         << "  Checking CKF success for track candidate with params: "
         << " D0 = " << start_params[0] << " Z0 = " << start_params[1]
@@ -437,6 +494,45 @@ void CKFProcessor::produce(framework::Event& event) {
       // Extrapolate to the target
       bool success = trk_extrap_->trackStateAtSurface(
           track, target_surface_, ts_at_target, ldmx::TrackStateType::AtTarget);
+
+      // If extrapolation with field fails, try appropriate fallback based on
+      // tracking system
+      if (!success) {
+        if (tagger_tracking_) {
+          // Tagger tracking: try const-B (1.5T) fallback
+          n_fieldmap_target_extrap_failed_tagger_++;
+          ldmx_log(debug) << "    Field-map target extrapolation failed, "
+                             "trying const-B (1.5T) fallback";
+          success = trk_extrap_const_b_->trackStateAtSurface(
+              track, target_surface_, ts_at_target,
+              ldmx::TrackStateType::AtTarget);
+          if (success) {
+            n_constb_target_extrap_recovered_tagger_++;
+            ldmx_log(debug)
+                << "    Yay! Const-B target extrapolation successful!";
+          } else {
+            ldmx_log(debug) << "    Both field-map and Const-B target "
+                               "extrapolation failed!";
+          }
+        } else {
+          // Recoil tracking: try zero-B fallback
+          n_fieldmap_target_extrap_failed_recoil_++;
+          ldmx_log(debug) << "    Field-map target extrapolation failed, "
+                             "trying zero-B fallback";
+          success = trk_extrap_zero_b_->trackStateAtSurface(
+              track, target_surface_, ts_at_target,
+              ldmx::TrackStateType::AtTarget);
+          if (success) {
+            n_zerob_target_extrap_recovered_recoil_++;
+            ldmx_log(debug)
+                << "    Yay! Zero-B target extrapolation successful!";
+          } else {
+            ldmx_log(debug)
+                << "    Both field-map and Zero-B target extrapolation failed!";
+          }
+        }
+      }
+
       // Check if the extrapolation to target succeeded
       if (success) {
         ldmx_log(debug) << "    Successfully obtained TrackState at target";
@@ -449,19 +545,20 @@ void CKFProcessor::produce(framework::Event& event) {
                         << ts_at_target.params_[4];
 
         trk.addTrackState(ts_at_target);
-      } else {
-        ldmx_log(info) << "    Could not extrapolate to target! nhits = "
-                       << track.nMeasurements() << " Printing track states:  ";
+      }  // end if success
+      else {
+        ldmx_log(debug) << "    Could not extrapolate to target! nhits = "
+                        << track.nMeasurements() << " Printing track states:  ";
         for (const auto ts : track.trackStatesReversed()) {
           if (ts.hasSmoothed()) {
-            ldmx_log(info) << "    Track momentum for smoothed track state = "
-                           << 1 / ts.smoothed()[Acts::eBoundQOverP];
-            ldmx_log(info) << "    Parameters: " << ts.smoothed().transpose();
+            ldmx_log(debug) << "    Track momentum for smoothed track state = "
+                            << 1 / ts.smoothed()[Acts::eBoundQOverP];
+            ldmx_log(debug) << "    Parameters: " << ts.smoothed().transpose();
           } else {
-            ldmx_log(info) << "    Track state not smoothed!";
+            ldmx_log(debug) << "    Track state not smoothed!";
           }
         }
-        ldmx_log(info) << "    ...skipping this track candidate...";
+        ldmx_log(debug) << "    ...skipping this track candidate...";
         continue;
       }
 
@@ -556,6 +653,59 @@ void CKFProcessor::produce(framework::Event& event) {
                           << sl.index();
           ldmx_log(trace) << "    Measurement:\n" << ldmx_meas;
           trk.addMeasurementIndex(sl.index());
+
+          // Extract path length from the track state based on the angle
+          if (ts.hasSmoothed()) {
+            const auto& meas_surface = ts.referenceSurface();
+            const auto& smoothed_params = ts.smoothed();
+
+            // Get the momentum from the track parameters
+            // momentum = p * direction where direction = (sin(theta)*cos(phi),
+            // sin(theta)*sin(phi), cos(theta))
+            float p_inv = smoothed_params[Acts::eBoundQOverP];
+            float p = 1.0f / std::abs(p_inv);
+            float theta = smoothed_params[Acts::eBoundTheta];
+            float phi = smoothed_params[Acts::eBoundPhi];
+
+            Acts::Vector3 global_momentum(p * std::sin(theta) * std::cos(phi),
+                                          p * std::sin(theta) * std::sin(phi),
+                                          p * std::cos(theta));
+
+            // Get the local frame (transform from global to local)
+            auto local_frame_transform =
+                meas_surface.transform(geometryContext());
+            Acts::Vector3 local_momentum =
+                local_frame_transform.rotation().transpose() * global_momentum;
+
+            // Calculate local angle components (tangent of angles)
+            float phi_u = (local_momentum.z() != 0)
+                              ? local_momentum.x() / local_momentum.z()
+                              : 0.;
+            float phi_v = (local_momentum.z() != 0)
+                              ? local_momentum.y() / local_momentum.z()
+                              : 0.;
+
+            // Calculate the total angle from the local angle components
+            // tan(angle) = sqrt(phi_u^2 + phi_v^2)
+            // cos(angle) = 1 / sqrt(1 + tan(angle)^2)
+            // path_length = thickness / cos(angle)
+            const float sensor_thickness = 0.320f;  // mm
+            float tan_angle_sq = phi_u * phi_u + phi_v * phi_v;
+            float cos_angle = 1.0f / std::sqrt(1.0f + tan_angle_sq);
+            float path_length = sensor_thickness / cos_angle;
+
+            ldmx_log(debug) << "      Local angles: phi_u = " << phi_u
+                            << ", phi_v = " << phi_v
+                            << "; Path length = " << path_length << " mm";
+
+            // Calculate dE/dx and add to track (in MeV/mm)
+            float edep = ldmx_meas.getEdep();
+            float dedx = edep / path_length;
+            trk.addDedxMeasurement(dedx);
+
+            ldmx_log(debug) << "      Edep = " << edep
+                            << " MeV, dE/dx = " << dedx << " MeV/mm";
+          }
         } else {
           ldmx_log(debug) << "    This TrackState is not a measurement";
         }
@@ -597,6 +747,22 @@ void CKFProcessor::produce(framework::Event& event) {
         success = trk_extrap_->trackStateAtSurface(
             track, ecal_surface, ts_at_ecal, ldmx::TrackStateType::AtECAL);
 
+        // If extrapolation with field fails, try zero-B fallback
+        if (!success) {
+          n_fieldmap_ecal_extrap_failed_recoil_++;
+          ldmx_log(debug) << "    Field-map ECAL extrapolation failed, trying "
+                             "zero-B fallback";
+          success = trk_extrap_zero_b_->trackStateAtSurface(
+              track, ecal_surface, ts_at_ecal, ldmx::TrackStateType::AtECAL);
+          if (success) {
+            n_zerob_ecal_extrap_recovered_recoil_++;
+            ldmx_log(debug) << "    Yay! Zero-B ECAL extrapolation successful";
+          } else {
+            ldmx_log(debug)
+                << "    Both field-map and Zero-B ECAL extrapolation failed!";
+          }
+        }
+
         if (success) {
           trk.addTrackState(ts_at_ecal);
           ldmx_log(debug) << "    Successfully obtained TrackState at Ecal";
@@ -607,8 +773,8 @@ void CKFProcessor::produce(framework::Event& event) {
                           << ", theta = " << ts_at_ecal.params_[3]
                           << ", QoP = " << ts_at_ecal.params_[4];
         } else {
-          ldmx_log(info) << "    Could not extrapolate to ECAL!! Please check "
-                            "the track states";
+          ldmx_log(debug) << "    Could not extrapolate to ECAL!! Please check "
+                             "the track states";
         }
       }
 
@@ -657,7 +823,7 @@ void CKFProcessor::produce(framework::Event& event) {
   // std::chrono::duration_cast<std::chrono::microseconds>(end-start).count();
   auto diff = end - start;
   processing_time_ += std::chrono::duration<double, std::milli>(diff).count();
-}
+}  // end of produce()
 
 void CKFProcessor::onProcessStart() {
   if (use1_dmeasurements_)
@@ -668,29 +834,89 @@ void CKFProcessor::onProcessStart() {
 }
 
 void CKFProcessor::onProcessEnd() {
-  ldmx_log(info) << "found " << ntracks_ << " tracks  / " << nseeds_
+  ldmx_log(info) << "--------------------------------- ";
+  ldmx_log(info) << "Found " << ntracks_ << " tracks  / " << nseeds_
                  << " nseeds";
   ldmx_log(info) << "AVG Time/Event: " << std::fixed << std::setprecision(1)
                  << processing_time_ / nevents_ << " ms";
   ldmx_log(info) << "Breakdown::";
-  ldmx_log(info) << "setup       Avg Time/Event = " << std::fixed
+  ldmx_log(info) << "  setup       Avg Time/Event = " << std::fixed
                  << std::setprecision(3) << profiling_map_["setup"] / nevents_
                  << " ms";
-  ldmx_log(info) << "hits        Avg Time/Event = " << std::fixed
+  ldmx_log(info) << "  hits        Avg Time/Event = " << std::fixed
                  << std::setprecision(2) << profiling_map_["hits"] / nevents_
                  << " ms";
-  ldmx_log(info) << "seeds       Avg Time/Event = " << std::fixed
+  ldmx_log(info) << "  seeds       Avg Time/Event = " << std::fixed
                  << std::setprecision(3) << profiling_map_["seeds"] / nevents_
                  << " ms";
-  ldmx_log(info) << "cf_setup    Avg Time/Event = " << std::fixed
+  ldmx_log(info) << "  ckf_setup    Avg Time/Event = " << std::fixed
                  << std::setprecision(3)
                  << profiling_map_["ckf_setup"] / nevents_ << " ms";
-  ldmx_log(info) << "ckf_run     Avg Time/Event = " << std::fixed
+  ldmx_log(info) << "  ckf_run     Avg Time/Event = " << std::fixed
                  << std::setprecision(3) << profiling_map_["ckf_run"] / nevents_
                  << " ms";
-  ldmx_log(info) << "result_loop Avg Time/Event = " << std::fixed
+  ldmx_log(info) << "  result_loop Avg Time/Event = " << std::fixed
                  << std::setprecision(1)
                  << profiling_map_["result_loop"] / nevents_ << " ms";
+
+  // CKF fallback statistics
+  ldmx_log(info) << "CKF Fallback Statistics::";
+  if (tagger_tracking_) {
+    ldmx_log(info) << "  Tagger: Field-map CKF failed "
+                   << n_fieldmap_ckf_failed_tagger_
+                   << " times, const-B CKF recovered "
+                   << n_constb_ckf_recovered_tagger_ << " ("
+                   << (n_fieldmap_ckf_failed_tagger_ > 0
+                           ? 100.0 * n_constb_ckf_recovered_tagger_ /
+                                 n_fieldmap_ckf_failed_tagger_
+                           : 0.0)
+                   << "%)";
+
+    // Extrapolation fallback statistics for tagger
+    ldmx_log(info) << "Extrapolation Fallback Statistics::";
+    ldmx_log(info) << "  Tagger Target: Field-map extrap failed "
+                   << n_fieldmap_target_extrap_failed_tagger_
+                   << " times, const-B extrap recovered "
+                   << n_constb_target_extrap_recovered_tagger_ << " ("
+                   << (n_fieldmap_target_extrap_failed_tagger_ > 0
+                           ? 100.0 * n_constb_target_extrap_recovered_tagger_ /
+                                 n_fieldmap_target_extrap_failed_tagger_
+                           : 0.0)
+                   << "%)";
+  }
+
+  if (!tagger_tracking_) {
+    ldmx_log(info) << "  Recoil: Field-map CKF failed "
+                   << n_fieldmap_ckf_failed_recoil_
+                   << " times, zero-B CKF recovered "
+                   << n_zerob_ckf_recovered_recoil_ << " ("
+                   << (n_fieldmap_ckf_failed_recoil_ > 0
+                           ? 100.0 * n_zerob_ckf_recovered_recoil_ /
+                                 n_fieldmap_ckf_failed_recoil_
+                           : 0.0)
+                   << "%)";
+
+    // Extrapolation fallback statistics
+    ldmx_log(info) << "Extrapolation Fallback Statistics::";
+    ldmx_log(info) << "  Recoil Target: Field-map extrap failed "
+                   << n_fieldmap_target_extrap_failed_recoil_
+                   << " times, zero-B extrap recovered "
+                   << n_zerob_target_extrap_recovered_recoil_ << " ("
+                   << (n_fieldmap_target_extrap_failed_recoil_ > 0
+                           ? 100.0 * n_zerob_target_extrap_recovered_recoil_ /
+                                 n_fieldmap_target_extrap_failed_recoil_
+                           : 0.0)
+                   << "%)";
+    ldmx_log(info) << "  Recoil ECAL: Field-map extrap failed "
+                   << n_fieldmap_ecal_extrap_failed_recoil_
+                   << " times, zero-B extrap recovered "
+                   << n_zerob_ecal_extrap_recovered_recoil_ << " ("
+                   << (n_fieldmap_ecal_extrap_failed_recoil_ > 0
+                           ? 100.0 * n_zerob_ecal_extrap_recovered_recoil_ /
+                                 n_fieldmap_ecal_extrap_failed_recoil_
+                           : 0.0)
+                   << "%)";
+  }
 }
 
 void CKFProcessor::configure(framework::config::Parameters& parameters) {
@@ -737,7 +963,7 @@ void CKFProcessor::configure(framework::config::Parameters& parameters) {
       parameters.get<std::vector<double>>("map_offset_", {0., 0., 0.});
 
   input_pass_name_ = parameters.get<std::string>("input_pass_name");
-}
+}  // end of configure()
 
 auto CKFProcessor::makeGeoIdSourceLinkMap(
     const geo::TrackersTrackingGeometry& tg,

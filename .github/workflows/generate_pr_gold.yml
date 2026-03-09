@@ -8,6 +8,7 @@ on:
 env:
   LDMX_DOCKER_TAG: ldmx/dev:latest
   LDMX_NUM_EVENTS: 10000
+  LDMX_LOG_LEVEL: 1
 
 jobs:
   compile-ldmx-sw:
@@ -34,7 +35,7 @@ jobs:
       run: tar cf ldmx-sw-package.tar install/ .github/
 
     - name: Upload ldmx-sw Package
-      uses: actions/upload-artifact@v6
+      uses: actions/upload-artifact@v7
       with:
         name: ldmx-sw-build-${{ github.sha }}
         path: ldmx-sw-package.tar
@@ -54,8 +55,16 @@ jobs:
     - uses: actions/checkout@v6
     - uses: extractions/setup-just@v3
     - run: just install-denv init
+    
+    - name: Checkout ci-data
+      uses: actions/checkout@v6
+      with:
+        repository: LDMX-Software/ci-data
+        path: ci-data
+        token: ${{ secrets.CI_DATA_PAT }}
+        
     - name: Download ldmx-sw Package
-      uses: actions/download-artifact@v7
+      uses: actions/download-artifact@v8
       with:
         name: ldmx-sw-build-${{ github.sha }}
 
@@ -72,7 +81,7 @@ jobs:
         no_comp: true
 
     - name: Upload New Golden Histograms
-      uses: actions/upload-artifact@v6
+      uses: actions/upload-artifact@v7
       with:
         name: ${{matrix.sample}}-new-gold
         path: |
@@ -85,7 +94,7 @@ jobs:
     steps:
     - name: Download All the Gold
       id: download
-      uses: actions/download-artifact@v7
+      uses: actions/download-artifact@v8
 
     - name: Checkout ci-data
       uses: actions/checkout@v6

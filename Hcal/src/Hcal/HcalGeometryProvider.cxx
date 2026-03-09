@@ -19,7 +19,7 @@ class HcalGeometryProvider : public framework::ConditionsObjectProvider {
  public:
   /**
    * Class constructor
-   * @param parameters -- uses the "HcalGeometry" section to configure the
+   * @param parameters -- uses the "hcal_geometry" section to configure the
    * HcalGeometry
    */
   HcalGeometryProvider(const std::string& name, const std::string& tagname,
@@ -92,8 +92,8 @@ HcalGeometryProvider::getCondition(const ldmx::EventHeader& context) {
 
   if (!hcal_geometry_) {
     framework::config::Parameters phex =
-        (params_.exists("HcalGeometry"))
-            ? (params_.get<framework::config::Parameters>("HcalGeometry"))
+        (params_.exists("hcal_geometry"))
+            ? (params_.get<framework::config::Parameters>("hcal_geometry"))
             : (params_);
 
     // search through the subtrees

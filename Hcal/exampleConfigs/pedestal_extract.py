@@ -1,6 +1,7 @@
 """Pedestal file extraction, currently for testbeam"""
 
-import argparse, sys
+import argparse
+import sys
 
 parser = argparse.ArgumentParser(f'ldmx fire {sys.argv[0]}')
 
@@ -14,28 +15,28 @@ arg = parser.parse_args()
 from LDMX.Framework import ldmxcfg
 
 p = ldmxcfg.Process('hcal_ana')
-p.maxEvents = arg.max_events
-p.termLogLevel = 0
-p.logFrequency = 10
+p.max_events = arg.max_events
+p.term_log_level = 0
+p.log_frequency = 10
 
 import LDMX.Hcal.hgcrocFormat as hcal_format
 import LDMX.Hcal.hcal_ana as hcal_ana
-import LDMX.Hcal.HcalGeometry
+import LDMX.Hcal.hcal_geometry
 import LDMX.Hcal.hcal_hardcoded_conditions
 from LDMX.Packing import rawio
 
 import os
 base_name = os.path.basename(arg.input_file).replace('.raw','')
 
-p.outputFiles = [f'/dev/null']
+p.output_files = ['/dev/null']
 
-p.histogramFile = f'hist_{base_name}.root'
+p.histogram_file = f'hist_{base_name}.root'
 tbl = f'{os.environ["LDMX_BASE"]}/ldmx-sw/Hcal/data/testbeam_connections.csv'
 
 # sequence
 #   1. decode event packet into digi collection
 #   2. process pedestals
-p.sequence = [ 
+p.sequence = [
         hcal_format.HcalRawDecoder(
             input_file = arg.input_file,
             connections_table = tbl,

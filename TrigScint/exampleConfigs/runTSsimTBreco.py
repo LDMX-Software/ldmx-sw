@@ -3,135 +3,132 @@ from os.path import exists
 from LDMX.Framework import ldmxcfg
 
 
-thisPassName="TBreco"
+this_pass_name="TBreco"
 
-p = ldmxcfg.Process(thisPassName)
+p = ldmxcfg.Process(this_pass_name)
 
-startSample=14
+start_sample=14
 if len(sys.argv) > 1 :
-    inputFile=sys.argv[1]
+    input_file=sys.argv[1]
 else :
     print("got to specify an input file")
-    exit 
-if len(sys.argv) > 2 :
-    inputPassName=sys.argv[2]
-else :
-    inputPassName="conv" #"sim"
+    exit
+input_pass_name = sys.argv[2] if len(sys.argv) > 2 else "conv" #"sim"
 
-    
+
 p.run = 10
-#p.maxEvents = 2000
-p.inputFiles = [ inputFile ]
-outname=inputFile.replace(".root", "_TBreco.root")
-p.outputFiles = [ outname ]
-print("Running over input file: "+p.inputFiles[0])
-print("Producing output file: "+p.outputFiles[0])
+#p.max_events = 2000
+p.input_files = [ input_file ]
+outname=input_file.replace(".root", "_TBreco.root")
+p.output_files = [ outname ]
+print("Running over input file: "+p.input_files[0])
+print("Producing output file: "+p.output_files[0])
 
 from LDMX.TrigScint.trigScint import TrigScintRecHitProducer
 from LDMX.TrigScint.trigScint import TrigScintClusterProducer
 
 
 #assume we have run linearizer, so we can and have derived the gains
-nChannels=12
+n_channels=12
 
-gainList=[2e6]*nChannels
-pedList=[6.]*nChannels
+gain_list=[2e6]*n_channels
+ped_list=[6.]*n_channels
 
 #look them up and run analyzers and reco
 #now if there is a gain file, use that instead to read in the gain for each channel
-gainFileName=inputFile.replace(".root", "_gains.txt")
+gain_file_name=input_file.replace(".root", "_gains.txt")
 
-if exists(gainFileName) :
-    with open(gainFileName) as f:
+if exists(gain_file_name) :
+    with open(gain_file_name) as f:
         for line in f.readlines() :
             line=line.split(',')  #values are comma separated, one channel per line: channelNB, gain
-            gainList[ int(line[0].strip()) ] = float(line[1].strip())
+            gain_list[ int(line[0].strip()) ] = float(line[1].strip())
 
 print("Using this list of gains:")
-print(gainList)
+print(gain_list)
 
 #now if there is a ped file, use that instead to read in the ped for each channel
-pedFileName=inputFile.replace(".root", "_peds.txt")
+ped_file_name=input_file.replace(".root", "_peds.txt")
 
-if exists(pedFileName) :
-    with open(pedFileName) as f:
+if exists(ped_file_name) :
+    with open(ped_file_name) as f:
         for line in f.readlines() :
             line=line.split(',')  #values are comma separated, one channel per line: channelNB, ped
-            pedList[ int(line[0].strip()) ] = float(line[1].strip())
+            ped_list[ int(line[0].strip()) ] = float(line[1].strip())
 
 print("Using this list of peds:")
-print(pedList)
+print(ped_list)
 
 
 
 from LDMX.TrigScint.trigScint import QIEAnalyzer
 
-tsAna=QIEAnalyzer("QIEplotMaker")
-tsAna.inputPassName=inputPassName
-tsAna.startSample=0
-tsAna.pedestals=pedList
-tsAna.gain=gainList
+ts_ana=QIEAnalyzer("QIEplotMaker")
+ts_ana.input_pass_name=input_pass_name
+ts_ana.start_sample=0
+ts_ana.pedestals=ped_list
+ts_ana.gain=gain_list
 
 outname=outname.replace(".root", "_plots.root")
-p.histogramFile = outname 
+p.histogram_file = outname
 
 
 
 from LDMX.TrigScint.trigScint import TestBeamHitProducer
 
-tbHitsUp  =TestBeamHitProducer("tbHits")
-tbHitsUp.input_pass_name=inputPassName
-tbHitsUp.input_collection="QIEsamplesUp"
-tbHitsUp.pedestals=pedList
-tbHitsUp.gain=gainList 
-tbHitsUp.startSample=startSample
-tbHitsUp.pulseWidth=12 #5 
-tbHitsUp.pulseWidthLYSO=14
-tbHitsUp.doCleanHits=True
-tbHitsUp.nInstrumentedChannels=12
+tb_hits_up  =TestBeamHitProducer("tb_hits")
+tb_hits_up.input_pass_name=input_pass_name
+tb_hits_up.input_collection="QIEsamplesUp"
+tb_hits_up.pedestals=ped_list
+tb_hits_up.gain=gain_list
+tb_hits_up.start_sample=start_sample
+tb_hits_up.pulse_width=12 #5
+tb_hits_up.pulse_width_lyso=14
+tb_hits_up.do_clean_hits=True
+tb_hits_up.n_instrumented_channels=12
 
 
 from LDMX.TrigScint.trigScint import TestBeamClusterProducer
 
-tbClustersUp  =TestBeamClusterProducer("tbClusters")
-tbClustersUp.input_pass_name=thisPassName
-tbClustersUp.input_collection=tbHitsUp.outputCollection
+tbClustersUp  =TestBeamClusterProducer("tb_clusters")
+tbClustersUp.input_pass_name=this_pass_name
+tbClustersUp.input_collection=tb_hits_up.output_collection
 tbClustersUp.pad_time=100.
 tbClustersUp.time_tolerance=999.
 tbClustersUp.verbosity=0
 tbClustersUp.clustering_threshold = 40.  #to add in neighboring
-tbClustersUp.seed_threshold = 50.   # i think 50 cuts off the low tail of the PE distribution 
+tbClustersUp.seed_threshold = 50.   # i think 50 cuts off the low tail of the PE distribution
 
 
-cleanClustersUp  =TestBeamClusterProducer("cleanClusters")
-cleanClustersUp.input_pass_name=thisPassName
-cleanClustersUp.input_collection=tbHitsUp.outputCollection
-cleanClustersUp.output_collection=tbClustersUp.output_collection+"Clean"
-cleanClustersUp.pad_time=100.
-cleanClustersUp.time_tolerance=999.
-cleanClustersUp.verbosity=0
-cleanClustersUp.clustering_threshold = 40.  #to add in neighboring
-cleanClustersUp.seed_threshold = 50.
-cleanClustersUp.doCleanHits=True
+clean_clusters_up  =TestBeamClusterProducer("cleanClusters")
+clean_clusters_up.input_pass_name=this_pass_name
+clean_clusters_up.input_collection=tb_hits_up.output_collection
+clean_clusters_up.output_collection=tbClustersUp.output_collection+"Clean"
+clean_clusters_up.pad_time=100.
+clean_clusters_up.time_tolerance=999.
+clean_clusters_up.verbosity=0
+clean_clusters_up.clustering_threshold = 40.  #to add in neighboring
+clean_clusters_up.seed_threshold = 50.
+clean_clusters_up.do_clean_hits=True
 
 
 from LDMX.TrigScint.trigScint import QualityFlagAnalyzer
 
-flagAna=QualityFlagAnalyzer("plotMaker")
-flagAna.inputEventPassName=inputPassName
-flagAna.inputHitPassName=thisPassName
-flagAna.startSample=0
-flagAna.pedestals=pedList
-flagAna.gain=gainList
+flag_ana=QualityFlagAnalyzer("plotMaker")
+flag_ana.input_event_pass_name=input_pass_name
+flag_ana.input_hit_pass_name=this_pass_name
+flag_ana.start_sample=0
+flag_ana.pedestals=ped_list
+flag_ana.gain=gain_list
 
 p.sequence = [
-    tbHitsUp,
+    tb_hits_up,
     tbClustersUp,
-    cleanClustersUp,
-#    tsAna,
-    flagAna
+    clean_clusters_up,
+#    ts_ana,
+    flag_ana
     ]
 
 
 
-p.termLogLevel = 2 #0
+p.term_log_level = 2 #0

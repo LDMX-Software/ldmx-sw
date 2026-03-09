@@ -17,7 +17,7 @@ namespace conditions {
  *  CSV files.
  *
  * Configuration via Python uses the following parameters:
- * "dataType", "columns", "entries"
+ * "data_type", "columns", "entries"
  * "DataType may be "int" or "double".
  * The "columns" parameter is the list of names of data columns to be read out.
 
@@ -29,18 +29,18 @@ namespace conditions {
  *
  * The "entries" array in python is an array of parameter sets used for direct
  configuration from python.
- * Each entry must contain a "URL"
- * The entry _may_ contain "firstRun", "lastRun", "runType", and "values".
+ * Each entry must contain a "url"
+ * The entry _may_ contain "firstRun", "lastRun", "run_type", and "values".
  * If "firstRun" is not provided, -1 is assumed.  If "lastRun" is not provided,
  -1 is assumed.
- * The parameter "runType" could have the value "data", "MC", or "any".
- * If "runType" is not provided, "any" is assumed.
+ * The parameter "run_type" could have the value "data", "MC", or "any".
+ * If "run_type" is not provided, "any" is assumed.
  * The parameter "values" is only used when the URL is "python:".  In this case,
  the value for each
  * column will be taken from the values array and the configuration is expected
  to be independend of id.
  *
- * The "entriesURL" is a URL pointing to a CSV file containing the following
+ * The "entries_url" is a URL pointing to a CSV file containing the following
  columns:
  * "FIRST_RUN" which is an integer column indicating the first run of the IOV,
  or -1 for no lower limit
@@ -48,7 +48,7 @@ namespace conditions {
  -1 for no upper limit
  * "RUNTYPE" which is a string column with the expected values "data", "MC" or
  "any".  This column is not case-sensitive.
- * "URL" which is a string column indicating the location of the table.
+ * "url" which is a string column indicating the location of the table.
  *
  * In any URL, envrironment variables in the format ${VARNAME} will be expanded.
  * In addition, there are some special 'environment' variables:

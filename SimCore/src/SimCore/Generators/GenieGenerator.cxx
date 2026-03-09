@@ -380,6 +380,11 @@ void GenieGenerator::GeneratePrimaryVertex(G4Event* event) {
   // add the vertex to the event
   event->AddPrimaryVertex(vertex);
 
+  // Apply beam spot smearing if configured for this generator
+  if (useBeamspot()) {
+    smearBeamspot(vertex);
+  }
+
   ++n_events_generated_;
   // delete genie_event;
 }
