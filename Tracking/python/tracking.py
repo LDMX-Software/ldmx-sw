@@ -427,3 +427,121 @@ class TrackerVetoProcessor(Producer):
         self.sim_particles_passname = ""
         self.input_collection_events_passname = ""
 
+
+class StripFitProcessor(Producer):
+    """Fits a pulse shape to each RawSiStripHit to extract amplitude and time.
+
+    Applies to both real and simulated data.  The output FittedSiStripHit
+    collection can be clustered downstream to produce Measurement objects
+    for tracking.
+
+    Attributes
+    ----------
+    in_collection : str
+        Name of the input RawSiStripHit collection.
+    in_pass : str
+        Pass name for the input collection (empty = any).
+    out_collection : str
+        Name of the output FittedSiStripHit collection.
+    pulse_shape : str
+        Pulse shape model: ``"CRRC"`` (default) or ``"FourPole"``.
+    tp : float
+        Peaking time [ns] (default 45).
+    tp2 : float
+        Second time constant [ns] for FourPole only (default 10).
+    t0_offset_ns : float
+        Time of sample 0 in the hit-time reference frame [ns] (default 0).
+        Should match the value used in DigitizationProcessor.
+    sampling_interval_ns : float
+        Interval between consecutive ADC samples [ns] (default 25).
+    pedestal_adc : float
+        Per-sample ADC pedestal to subtract before fitting (default 0).
+    noise_sigma_adc : float
+        Per-sample noise RMS [ADC counts] used for chi2 (default 5).
+    t_scan_min_ns : float
+        Lower bound of the hit-time search range [ns] (default -50).
+    t_scan_max_ns : float
+        Upper bound of the hit-time search range [ns] (default 150).
+    t_scan_step_ns : float
+        Step size of the coarse timing scan [ns] (default 1).
+    max_chi2_ndf : float
+        If > 0, discard fits with chi2/ndf above this value (default -1 = off).
+    """
+
+    def __init__(self, instance_name="StripFitProcessor"):
+        super().__init__(instance_name,
+                         'tracking::reco::StripFitProcessor', 'Tracking')
+        self.in_collection          = 'RawSiStripHits'
+        self.in_pass                = ''
+        self.out_collection         = 'FittedSiStripHits'
+        self.pulse_shape            = 'CRRC'
+        self.tp                     = 45.0
+        self.tp2                    = 10.0
+        self.t0_offset_ns           = 0.0
+        self.sampling_interval_ns   = 25.0
+        self.pedestal_adc           = 0.0
+        self.noise_sigma_adc        = 5.0
+        self.t_scan_min_ns          = -50.0
+        self.t_scan_max_ns          = 150.0
+        self.t_scan_step_ns         = 1.0
+        self.max_chi2_ndf           = -1.0
+
+
+class StripClusterProcessor(Producer):
+    """Clusters FittedSiStripHits into Measurements using nearest-neighbour clustering.
+
+    Groups hits by sensor layer, runs nearest-neighbour BFS clustering on each
+    layer (ported from HPS NearestNeighborRMSClusterer), and converts accepted
+    clusters into ldmx::Measurement objects via the Acts tracking geometry.
+
+    Applies to both real data (after StripFitProcessor) and simulation.
+
+    Attributes
+    ----------
+    in_collection : str
+        Input FittedSiStripHit collection (default "FittedSiStripHits").
+    in_pass : str
+        Pass name for the input collection (default "").
+    out_collection : str
+        Output Measurement collection (default "StripMeasurements").
+    readout_pitch_mm : float
+        Readout strip pitch [mm], used to convert strip index to local U [mm] (default 0.060).
+    sigma_v_mm : float
+        Position uncertainty in V [mm].  V is unmeasured by strips; set to
+        approximately strip_half_length / sqrt(3) (default 20.0).
+    seed_threshold : float
+        Minimum amplitude/noise_sigma to seed a cluster (default 4.0).
+    neighbor_threshold : float
+        Minimum amplitude/noise_sigma for a strip to join a cluster (default 3.0).
+    cluster_threshold : float
+        Minimum total_amp / sqrt(sum_noise^2) for cluster acceptance (default 4.0).
+    noise_sigma_adc : float
+        Per-strip noise RMS [ADC counts].  Should match StripFitProcessor (default 5.0).
+    mean_time_ns : float
+        Expected hit time for the seed timing cut [ns] (default 0.0).
+    time_window_ns : float
+        Half-width of the seed timing window [ns]; <= 0 disables (default -1).
+    neighbor_delta_t_ns : float
+        Max |t0_neighbour - cluster_t| [ns] for a strip to join a cluster;
+        <= 0 disables (default -1).
+    max_chi2_ndf : float
+        Max chi2/ndf for a fitted hit to be used; <= 0 disables (default -1).
+    """
+
+    def __init__(self, instance_name="StripClusterProcessor"):
+        super().__init__(instance_name,
+                         'tracking::reco::StripClusterProcessor', 'Tracking')
+        self.in_collection          = 'FittedSiStripHits'
+        self.in_pass                = ''
+        self.out_collection         = 'StripMeasurements'
+        self.readout_pitch_mm       = 0.060
+        self.sigma_v_mm             = 20.0
+        self.seed_threshold         = 4.0
+        self.neighbor_threshold     = 3.0
+        self.cluster_threshold      = 4.0
+        self.noise_sigma_adc        = 5.0
+        self.mean_time_ns           = 0.0
+        self.time_window_ns         = -1.0
+        self.neighbor_delta_t_ns    = -1.0
+        self.max_chi2_ndf           = -1.0
+

@@ -31,12 +31,13 @@ class RawSiStripHit {
   /**
    * Constructor.
    *
-   * @param[in] samples The ADC samples composing this hit.  For now, the size
-   *    of a sample is assumed to be 16 bits.
-   * @param[in] time The timestamp of this hit as set by the data acquisition
-   *    system.
+   * @param[in] layer_id  Sensor layer identifier (from tracking geometry).
+   * @param[in] strip_id  Readout strip index within the sensor.
+   * @param[in] samples   The ADC samples composing this hit (16-bit each).
+   * @param[in] time      Hit timestamp [ns].
    */
-  RawSiStripHit(std::vector<short> samples, long time);
+  RawSiStripHit(int layer_id, int strip_id, std::vector<short> samples,
+                long time);
 
   /**
    * Destructor.
@@ -72,13 +73,17 @@ class RawSiStripHit {
    */
   std::vector<short> getSamples() const { return samples_; }
 
+  /// Get the sensor layer identifier.
+  int getLayerID() const { return layer_id_; }
+
+  /// Get the readout strip index within the sensor.
+  int getStripID() const { return strip_id_; }
+
   /**
    * Get the time stamp of this hit.
    *
    * This is the time stamp as set by the data aquisition system. This will
    * typically be in units of ns.
-   *
-   * @param[in] time_ The timestamp as set by the data acquisition system.
    *
    * @return[out] The timestamp of this hit in ns.
    */
@@ -112,6 +117,12 @@ class RawSiStripHit {
                                   const RawSiStripHit &hit);
 
  protected:
+  /// Sensor layer identifier (from tracking geometry).
+  int layer_id_{-1};
+
+  /// Readout strip index within the sensor.
+  int strip_id_{-1};
+
   /// 16 bit ADC samples associated with this hit.
   std::vector<short> samples_;
 
@@ -119,7 +130,7 @@ class RawSiStripHit {
   long time_{0};
 
   /// Class declaration needed by the ROOT dictionary.
-  ClassDef(RawSiStripHit, 2);
+  ClassDef(RawSiStripHit, 3);
 
 };  // RawSiStripHit
 }  // namespace ldmx

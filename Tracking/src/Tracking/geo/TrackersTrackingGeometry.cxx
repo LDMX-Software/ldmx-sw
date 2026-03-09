@@ -356,11 +356,9 @@ std::shared_ptr<Acts::PlaneSurface> TrackersTrackingGeometry::getSurfacePtr(
   // Create an alignable detector element and assign it to the surface.
   // The default transformation is the surface parsed transformation
 
-  auto det_element = std::make_shared<tracking::sensor::SiSensor>(
-      surface, surface_transform_tracker, thickness);
-
-  //  auto det_element = std::make_shared<DetectorElement>(
-  //    surface, surface_transform_tracker, thickness);
+  auto det_element = std::make_shared<tracking::geo::DetectorElement>(
+      std::static_pointer_cast<Acts::Surface>(surface),
+      surface_transform_tracker, thickness);
 
   // This is the call that modify the behaviour of surface->transform(gctx)
   // After this call each surface will use the underlying detectorElement
