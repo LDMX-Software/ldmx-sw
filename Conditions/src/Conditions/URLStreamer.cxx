@@ -10,18 +10,18 @@
 
 namespace conditions {
 
-static unsigned int http_requests_ = 0;
-static unsigned int http_failures_ = 0;
+static unsigned int http_requests = 0;
+static unsigned int http_failures = 0;
 
 void urlstatistics(unsigned int& http_requests, unsigned int& http_failures) {
-  http_requests = http_requests_;
-  http_failures = http_failures_;
+  http_requests = http_requests;
+  http_failures = http_failures;
 }
 
 /**
  * Callback for libcurl to write received data into a std::string buffer.
  */
-static size_t WriteCallback(char* ptr, size_t size, size_t nmemb,
+static size_t writeCallback(char* ptr, size_t size, size_t nmemb,
                             void* userdata) {
   auto* buffer = static_cast<std::string*>(userdata);
   size_t total = size * nmemb;
@@ -41,11 +41,11 @@ std::unique_ptr<std::istream> urlstream(const std::string& url) {
     return fs;
   }
   if ((url.find("http://") == 0) || (url.find("https://") == 0)) {
-    http_requests_++;
+    http_requests++;
 
     CURL* curl = curl_easy_init();
     if (!curl) {
-      http_failures_++;
+      http_failures++;
       EXCEPTION_RAISE("ConditionsException",
                       "Failed to initialize libcurl for URL '" + url + "'");
     }
@@ -53,7 +53,7 @@ std::unique_ptr<std::istream> urlstream(const std::string& url) {
     std::string response_body;
 
     curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
-    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
+    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, writeCallback);
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, &response_body);
     curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
     curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 1L);
@@ -65,7 +65,7 @@ std::unique_ptr<std::istream> urlstream(const std::string& url) {
 
     if (res != CURLE_OK) {
       curl_easy_cleanup(curl);
-      http_failures_++;
+      http_failures++;
       EXCEPTION_RAISE("ConditionsException",
                       "Curl error (" + std::string(curl_easy_strerror(res)) +
                           ") retrieving URL '" + url + "'");
@@ -76,7 +76,7 @@ std::unique_ptr<std::istream> urlstream(const std::string& url) {
     curl_easy_cleanup(curl);
 
     if (http_code != 200) {
-      http_failures_++;
+      http_failures++;
       EXCEPTION_RAISE("ConditionsException",
                       "HTTP error " + std::to_string(http_code) +
                           " retrieving URL '" + url + "'");
