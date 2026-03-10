@@ -1,79 +1,55 @@
-"""Configuration for Ecal veto
-
-Examples
---------
-    from LDMX.Ecal.ecal_veto import ecal_veto
-    p.sequence.append( ecal_veto )
-"""
-
-from LDMX.Framework import ldmxcfg
+from LDMX.Framework import Processor, processor
+from .make_path import makeBDTPath, makeRoCPath
 
 
-class EcalVetoProcessor(ldmxcfg.Producer) :
-    """Configuration for the ECal veto"""
+@processor("ecal::EcalVetoProcessor", "Ecal")
+class EcalVetoProcessor(Processor):
+    num_ecal_layers: int = 32
+    verbose: bool = False
+    feature_list_name: str = "input"
+    bdt_file: str = makeBDTPath("segmip")
+    roc_file: str = makeRoCPath("ROC_v14_8gev")
+    beam_energy: float = 8000.0  # MeV
+    disc_cut: float = 0.99741
+    sp_pass_name: str = ""
+    collection_name: str = "EcalVeto"
+    rec_pass_name: str = ""
+    rec_coll_name: str = "EcalRecHits"
+    recoil_from_tracking = True
+    track_collection: str = "RecoilTracksClean"
+    inverse_skim: bool = False
+    sim_particles_passname: str = ""
+    track_pass_name: str = ""
+    ecal_simhits_passname: str = ""
+    ecal_digis_passname: str = ""
+    ecal_rechits_passname: str = ""
+    ecal_trig_digis_passname: str = ""
 
-    def __init__(self,name = 'ecal_veto') :
-        super().__init__(name,"ecal::EcalVetoProcessor",'Ecal')
 
-        from LDMX.Ecal.make_path import makeBDTPath, makeRoCPath
-        self.num_ecal_layers = 32
-        self.verbose = False
-        self.feature_list_name = "input"
-        self.bdt_file = makeBDTPath( "segmip" )
-        self.roc_file = makeRoCPath( "RoC_v14_8gev" )
-        self.beam_energy = 8000.0  # in MeV
-        self.disc_cut = 0.99741
+@processor("ecal::EcalMipTrackingProcessor", "Ecal")
+class EcalMipProcessor(Processor):
+    num_ecal_layers: int = 32
+    linreg_radius: float = 35.0  # in mm
+    ecal_collection_name: str = "EcalVeto"
+    ecal_pass_name: str = ""
+    mip_collection_name: str = "EcalTrajectoryInfo"
+    mip_pass_name: str = ""
+    mip_result_name: str = "EcalMipInfo"
 
-        self.sp_pass_name = ""
-        self.collection_name = "EcalVeto"
-        self.rec_pass_name = ""
-        self.rec_coll_name = "EcalRecHits"
-        self.recoil_from_tracking = True
-        self.track_collection = "RecoilTracksClean"
-        self.inverse_skim = False
 
-        self.sim_particles_passname = ""
-        self.track_pass_name = ""
-
-        self.ecal_simhits_passname = ""
-        self.ecal_digis_passname = ""
-        self.ecal_rechits_passname = ""
-        self.ecal_trig_digis_passname = ""
-
-class EcalMipProcessor(ldmxcfg.Producer) :
-    """Configuration for the ECal MIP processor"""
-
-    def __init__(self,name = 'ecalMipTracking') :
-        super().__init__(name,"ecal::EcalMipTrackingProcessor",'Ecal')
-
-        self.num_ecal_layers = 32
-        self.linreg_radius = 35.0 # in mm
-        self.ecal_collection_name = "EcalVeto"
-        self.ecal_pass_name = ""
-        self.mip_collection_name = "EcalTrajectoryInfo"
-        self.mip_pass_name = ""
-        self.mip_result_name = "EcalMipInfo"
-
-class EcalPnetVetoProcessor(ldmxcfg.Producer) :
+@processor("ecal::EcalPnetVetoProcessor", "Ecal")
+class EcalPnetVetoProcessor(Processor):
     """Configuration for ParticleNet Ecal Veto
-        ParticleNet trained on v14 geometry ecalPN + signal
+
+    ParticleNet trained on v14 geometry ecalPN + signal
     """
 
-    def __init__(self,name = 'EcalPnetVeto') :
-        super().__init__(name,"ecal::EcalPnetVetoProcessor",'Ecal')
-
-        from LDMX.Ecal.make_path import makeBDTPath
-        self.model_path = makeBDTPath("particle_net_ecal_v10")
-        self.disc_cut = 0.65
-        self.collection_name = "EcalPnetVeto"
-        self.rec_coll_name = "EcalRecHits"
-        self.ecal_rec_hits_passname = ""
-        self.ecal_sp_hits_passname = ""
-        self.track_collection = "RecoilTracksClean"
-        self.track_pass_name = ""
-        self.recoil_from_tracking = True
-
-
-
-
-
+    model_path: str = makeBDTPath("particle_net_ecal_v10")
+    disc_cut: float = 0.65
+    collection_name: str = "EcalPnetVeto"
+    rec_coll_name: str = "EcalRecHits"
+    ecal_rec_hits_passname: str = ""
+    ecal_sp_hits_passname: str = ""
+    track_collection: str = "RecoilTracksClean"
+    track_pass_name: str = ""
+    recoil_from_tracking: bool = True

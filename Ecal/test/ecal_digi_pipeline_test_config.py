@@ -23,16 +23,18 @@ from LDMX.Ecal import ecal_geometry
 geom = ecal_geometry.EcalGeometryProvider.getInstance()
 
 # ECal digi
-ecal_digis = digi.EcalDigiProducer(si_thickness = 0.5)
+ecal_digis = digi.EcalDigiProducer(
+        mev = digi.calculate_energy_to_voltage_conversion(si_thickness = 0.5)
+    )
 
 # Turn of noise hits
 ecal_digis.hgcroc.noise = False
 
 p.sequence = [
-    ldmxcfg.Producer('fakeSimHits','ecal::test::EcalFakeSimHits','Ecal'),
+    ldmxcfg.make_processor('fakeSimHits','ecal::test::EcalFakeSimHits','Ecal'),
     ecal_digis,
     ecal_trig_digi.EcalTrigPrimDigiProducer(),
     digi.EcalRecProducer(),
-    ldmxcfg.Analyzer('checkEcalHits','ecal::test::EcalCheckEnergyReconstruction','Ecal'),
+    ldmxcfg.make_processor('checkEcalHits','ecal::test::EcalCheckEnergyReconstruction','Ecal'),
 ]
 

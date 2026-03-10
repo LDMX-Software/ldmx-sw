@@ -6,47 +6,61 @@ Examples
     p.sequence.append( ecalClusters )
 """
 
-from LDMX.Framework import ldmxcfg
+from LDMX.Framework import Processor, processor
 
 
-class EcalClusterProducer(ldmxcfg.Producer) :
-    """Configure the clustering"""
+@processor("ecal::EcalClusterProducer", "Ecal")
+class EcalClusterProducer(Processor):
+    """Configure the clustering
 
-    def __init__(self,name='ecalClusters') :
-        super().__init__(name,"ecal::EcalClusterProducer", 'Ecal')
-        # Pass name rec hits
-        self.rec_hit_coll_name = 'EcalRecHits'
-        self.rec_hit_pass_name = ''
+    Attributes
+    ----------
+    rec_hit_coll_name: str
+        name of input rec hits to use for cluster
+    rec_hit_pass_name: str
+        name of pass of rec hits to use
+    cluster_coll_name: str
+        name of output collection of clusters
+    cutoff: float
+        not clue, minimum rec energy threshold to consider for clustering
+    seed_threshold: float
+        not clue, minimum rec energy threshold to consider as a seed
+    algo_name: str
+        not clue, name of algorithm used to calculate "distance"
+    algo_coll_name: str
+        not clue, output collection to store algorithm information
+    clue: bool
+        enable using the CLUE algorithm instead of default
+    nbr_of_layers: int
+        number of layers to perform CLUE on
+        if equals 1 (default), collapse all hits inot the same z-dimension
+    dc: float
+        cutoff distance in calculation of local desnity
+        only used if nbr_of_layers > 1
+    rhoc: float
+        minimum seed energy (aka maximum outlier energy)
+        not used when nbr_of_layers > 1
+    deltac: float
+        minimum seed separation
+        not used when nbr_of_layers > 1
+    deltao: float
+        minimum outlier separation
+    recluster: bool
+        recluster merged clusters or not
+        No reclustering leads to more undercounting, reclustering leads to more overcounting
+    """
 
-        # Name of the cluster collection to make
-        self.cluster_coll_name = "EcalClusters"
-
-        # --- EXISTING ALGORITHM ---
-        self.cutoff = 10.
-        self.seed_threshold = 100.0 #MeV
-
-        # Name of the algo to save to the root file
-        self.algo_name = "MyClusterAlgo"
-        # Name of the cluster algo collection to make
-        self.algo_coll_name = "ClusterAlgoResult"
-
-        # --- CLUE ALGORITHM ---
-        # Enable CLUE algorithm
-        self.clue = True
-        # Nbr of layers to perform CLUE on
-        # = 1 collapses all hits into same z-dimension, gives best results atm
-        self.nbr_of_layers = 1
-        # Cutoff distance in calculation of local density
-        # Currently only used when nbrOfLayers > 1
-        self.dc = 5.
-        # Minimum seed energy/maximum outlier energy
-        # Not used when nbrOfLayers > 1
-        self.rhoc = 550.
-        # Minimum seed separation
-        # Not used when nbrOfLayers > 1
-        self.deltac = 10.
-        # Minimum outlier separation
-        self.deltao = 40.
-        # Recluster merged clusters or not
-        # No reclustering leads to more undercounting, reclustering leads to more overcounting
-        self.reclustering = False
+    rec_hit_coll_name: str = "EcalRecHits"
+    rec_hit_pass_name: str = ""
+    cluster_coll_name: str = "EcalClusters"
+    cutoff: float = 10.0
+    seed_threshold: float = 100.0  # MeV
+    algo_name: str = "MyClusterAlgo"
+    algo_coll_name: str = "ClusterAlgoResult"
+    clue: bool = True
+    nbr_of_layers: int = 1
+    dc: float = 5.0
+    rhoc: float = 550.0
+    deltac: float = 10.0
+    deltao: float = 40.0
+    reclustering: bool = False

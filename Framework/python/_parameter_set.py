@@ -99,7 +99,7 @@ def validate_and_set_attr(self, attr, val):
     elif expected_type is not Any and not isinstance(val, expected_type):
         raise TypeError(
             f"Attribute {attr} should be type {expected_type} "
-            "instead of type {type(val)}."
+            f"instead of type {type(val)}."
         )
 
     self.__dict__[attr] = val
