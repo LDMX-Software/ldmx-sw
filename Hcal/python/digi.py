@@ -13,7 +13,7 @@ mip_energy: float
     Energy [MeV] of a single MIP
 """
 
-from LDMX.Framework import Processor, processor
+from LDMX.Framework import Processor, processor, parameter_set, field
 from LDMX.Tools.hgcroc_emulator import HgcrocEmulator
 
 
@@ -180,11 +180,11 @@ class HcalDigiProducer(Processor):
     avg_pedestal: float = 1.0
     avg_noise_rms: float = calculate_voltage(0.02) / 1.2
     save_pulse_truth_info: bool = False
-    zero_suppresion: bool = True
-    input_coll_name = "HcalSimHits"
-    input_pass_name = ""
-    digi_coll_name = "HcalDigis"
-    pulse_truth_coll_name = "HcalPulseTruth"
+    zero_suppression: bool = True
+    input_coll_name: str = "HcalSimHits"
+    input_pass_name: str = ""
+    digi_coll_name: str = "HcalDigis"
+    pulse_truth_coll_name: str = "HcalPulseTruth"
     flat_time_shift: float = 0.0
     time_spread_per_hit: DigiTimeSpread = field(default_factory=DigiTimeSpread.none)
     time_spread_per_spill: DigiTimeSpread = field(default_factory=DigiTimeSpread.none)
@@ -279,7 +279,7 @@ class HcalSingleEndRecProducer(Processor):
 
     mip_energy: float = mip_energy
     clock_cycle: float = 25.0
-    pe_per_mip: float = pe_per_mip
+    pe_per_mip: float = n_pe_per_mip
     coll_name: str = "HcalDigis"
     pass_name: str = ""
     rec_coll_name: str = "HcalRecHits"
@@ -307,7 +307,7 @@ class HcalDoubleEndRecProducer(Processor):
 
     mip_energy: float = mip_energy
     clock_cycle: float = 25.0
-    pe_per_mip: float = pe_per_mip
+    pe_per_mip: float = n_pe_per_mip
     coll_name: str = "HcalRecHits"
     pass_name: str = ""
     rec_coll_name: str = "HcalDoubleEndRecHits"
