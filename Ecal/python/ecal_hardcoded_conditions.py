@@ -1,4 +1,5 @@
-"""Package to provide hard-coded conditions sources for Ecal reconstruction and simulation
+"""Package to provide hard-coded conditions sources for Ecal
+reconstruction and simulation
 
 Attributes
 ----------
@@ -36,9 +37,11 @@ EcalReconConditionsHardcode = SimpleCSVDoubleTableProvider(
 EcalReconConditionsHardcode.validForAllRows(
     [
         50.0,  # ADC_PEDESTAL - should match HgcrocEmulator
-        0.3125,  # ADC_GAIN - 320. fC / 1024. counts - conversion to estimated charge deposited in ADC mode
+        0.3125,  # ADC_GAIN - 320. fC / 1024. counts
+                 # - conversion to estimated charge deposited in ADC mode
         50.0,  # TOT_PEDESTAL - tweaked so that we pass the reconstruction tests
-        2.5,  # TOT_GAIN - 10240 fC / 4096 counts - conversion to estimated charge deposited in TOT mode
+        2.5,  # TOT_GAIN - 10240 fC / 4096 counts
+              # - conversion to estimated charge deposited in TOT mode
     ]
 )
 
@@ -61,7 +64,7 @@ EcalHgcrocConditionsHardcode = SimpleCSVDoubleTableProvider(
 EcalHgcrocConditionsHardcode.validForAllRows(
     [
         50.0,  # PEDESTAL - ADC
-        0.6,  # NOISE - ADC, almost certainly too optimistic, but want to mimic previous noise model
+        0.6,  # NOISE - ADC, almost certainly too optimistic
         0.0,  # MEAS_TIME - ns
         20.0,  # PAD_CAPACITANCE - pF
         200.0,  # TOT_MAX - ns - maximum time chip would be in TOT mode

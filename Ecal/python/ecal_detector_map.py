@@ -1,4 +1,6 @@
-"""Conditions object providers for a mapping between ecal electronics IDs and detector IDs"""
+"""Conditions object providers for a mapping between ecal
+electronics IDs and detector IDs
+"""
 
 from LDMX.Framework import ConditionsObjectProvider, conditions_object_provider
 

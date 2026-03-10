@@ -1,7 +1,7 @@
 """ConditionsProvider for EcalGeometry and other Ecal geometry-related aspects"""
 
-from LDMX.Framework import ConditionsObjectProvider, conditions_object_provider, field
 from LDMX.DetDescr.ecal_geometry import EcalGeometry
+from LDMX.Framework import ConditionsObjectProvider, conditions_object_provider, field
 
 
 @conditions_object_provider("EcalGeometry", "ecal::EcalGeometryProvider", "Ecal")
@@ -33,16 +33,17 @@ class EcalGeometryProvider(ConditionsObjectProvider):
             Single instance of the provider
         """
 
-        if EcalGeometryProvider.__instance == None:
+        if EcalGeometryProvider.__instance is None:
             EcalGeometryProvider()
 
         return EcalGeometryProvider.__instance
 
     def __post_init__(self):
         print("creating EcalGeometryProvider")
-        if EcalGeometryProvider.__instance != None:
+        if EcalGeometryProvider.__instance is not None:
             raise Exception(
-                "EcalGeometryProvider is a singleton class and should only be retrieved using getInstance()"
+                "EcalGeometryProvider is a singleton class and "
+                "should only be retrieved using getInstance()"
             )
         else:
             self.geometries = EcalGeometry.geometries()
@@ -81,15 +82,16 @@ class EcalTriggerGeometryProvider(ConditionsObjectProvider):
             Single instance of the provider
         """
 
-        if EcalTriggerGeometryProvider.__instance == None:
+        if EcalTriggerGeometryProvider.__instance is None:
             EcalTriggerGeometryProvider()
 
         return EcalTriggerGeometryProvider.__instance
 
     def __post_init__(self):
-        if EcalTriggerGeometryProvider.__instance != None:
+        if EcalTriggerGeometryProvider.__instance is not None:
             raise Exception(
-                "EcalTriggerGeometryProvider is a singleton class and should only be retrieved using getInstance()"
+                "EcalTriggerGeometryProvider is a singleton class and "
+                "should only be retrieved using getInstance()"
             )
         else:
             EcalTriggerGeometryProvider.__instance = self

@@ -47,7 +47,8 @@ class EcalClusterProducer(Processor):
         minimum outlier separation
     recluster: bool
         recluster merged clusters or not
-        No reclustering leads to more undercounting, reclustering leads to more overcounting
+        No reclustering leads to more undercounting
+        reclustering leads to more overcounting
     """
 
     rec_hit_coll_name: str = "EcalRecHits"

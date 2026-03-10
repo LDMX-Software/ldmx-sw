@@ -13,7 +13,7 @@ mip_si_energy : float
     Energy [MeV] of a single MIP on average in 0.5mm thick Si
 """
 
-from LDMX.Framework import Processor, processor, field
+from LDMX.Framework import Processor, field, processor
 from LDMX.Tools.hgcroc_emulator import HgcrocEmulator
 
 
@@ -205,10 +205,11 @@ class EcalRecProducer(Processor):
 
     @staticmethod
     def v2(**kwargs):
-        """These layerWeights and energy correction were calculated at least before v3 geometry.
+        """These layerWeights and energy correction were calculated at least
+        before v3 geometry.
 
-        The second order energy correction is determined by comparing the mean of 1M single 4GeV
-        electron events with 4GeV.
+        The second order energy correction is determined by comparing the mean of
+        1M single 4GeV electron events with 4GeV.
         """
         return EcalRecProducer(
             second_order_energy_correction=0.948,
@@ -253,10 +254,11 @@ class EcalRecProducer(Processor):
 
     @staticmethod
     def v9(**kwargs):
-        """These layerWeights and energy correction were calculated for the v9 geometry.
+        """These layerWeights and energy correction were calculated for the
+        v9 geometry.
 
-        The second order energy correction is determined by comparing the mean of 1M single 4GeV
-        electron events with 4GeV.
+        The second order energy correction is determined by comparing the mean of
+        1M single 4GeV electron events with 4GeV.
         """
         return EcalRecProducer(
             second_order_energy_correction=4000.0 / 4012.0,
@@ -301,10 +303,11 @@ class EcalRecProducer(Processor):
 
     @staticmethod
     def v12(**kwargs):
-        """These layerWeights and energy correction were calculated for the v12 geometry.
+        """These layerWeights and energy correction were calculated for the v12
+        geometry.
 
-        The second order energy correction is determined by comparing the mean of 1M single 4GeV
-        electron events with 4GeV.
+        The second order energy correction is determined by comparing the mean of
+        1M single 4GeV electron events with 4GeV.
         """
         return EcalRecProducer(
             second_order_energy_correction=4000.0 / 4007.0,
@@ -351,19 +354,22 @@ class EcalRecProducer(Processor):
     def v14(**kwargs):
         """Generated for the v14 geometry
 
-        The secondOrderEnergyCorrection is deteremined by generating 1M single 4GeV or 8GeV
-        electron events shot directly into the front of the ECal from immediately upstream.
-        The mean of the resulting total recon energy is found by fitting a two-sided normal
-        distribution (one mean, a low and high deviation) to the histogram.
+        The secondOrderEnergyCorrection is deteremined by generating 1M single 4GeV
+        or 8GeV electron events shot directly into the front of the ECal from
+        immediately upstream. The mean of the resulting total recon energy is found
+        by fitting a two-sided normal distribution (one mean, a low and high deviation)
+        to the histogram.
         """
 
         return EcalRecProducer(
             # second_order_energy_correction = 4000. / 3940.5,
             second_order_energy_correction=8000.0 / 7998.3,
-            # these layer weights were the 'dE' column of the table output by Detectors/util/ecal_layer_stack.py
+            # these layer weights were the 'dE' column of the table output
+            # by Detectors/util/ecal_layer_stack.py
             # See https://github.com/LDMX-Software/ldmx-sw/issues/1725
-            # TLDR: these are wrong but only off by an absolute value of ~0.2, future detector versions
-            # use the newer script with fixed material properties
+            # TLDR: these are wrong but only off by an absolute value of ~0.2,
+            # future detector versions use the newer script with fixed material
+            # properties
             layerWeights=[
                 2.329,
                 4.339,
@@ -407,14 +413,16 @@ class EcalRecProducer(Processor):
     def v15(**kwargs):
         """Generated for the v15 geometry
 
-        The secondOrderEnergyCorrection is deteremined by generating 1M single 4GeV or 8GeV
-        electron events shot directly into the front of the ECal from immediately upstream.
-        The mean of the resulting total recon energy is found by fitting a two-sided normal
-        distribution (one mean, a low and high deviation) to the histogram.
+        The secondOrderEnergyCorrection is deteremined by generating 1M single
+        4GeV or 8GeV electron events shot directly into the front of the ECal from
+        immediately upstream. The mean of the resulting total recon energy is found
+        by fitting a two-sided normal distribution (one mean, a low and high deviation)
+        to the histogram.
         """
         return EcalRecProducer(
             second_order_energy_correction=latest_second_order_energy_correction,
-            # these layer weights were the 'dE' column of the table output by Detectors/util/ecal_layer_stack.py
+            # these layer weights were the 'dE' column of the table output by
+            # Detectors/util/ecal_layer_stack.py
             layerWeights=latest_layerWeights,
             **kwargs,
         )
@@ -423,8 +431,8 @@ class EcalRecProducer(Processor):
     def reduced_v2(**kwargs):
         """Generated for the reduced v2 geometry
 
-        TODO: The secondOrderEnergyCorrection for this geometry has yet to be calculated,
-        so unity is being used as a placeholder.
+        TODO: The secondOrderEnergyCorrection for this geometry has yet to be
+        calculated, so unity is being used as a placeholder.
         """
 
         return EcalRecProducer(
