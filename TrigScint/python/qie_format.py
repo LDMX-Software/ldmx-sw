@@ -17,7 +17,7 @@ from LDMX.Framework import Processor, processor
 class QIEEncoder(Processor):
     """Configuration for QIE encoder"""
 
-    channel_map_file: str
+    channel_map_file: str = ""
     input_pass_name: str = ""
     input_collection: str = "trigScintQIEDigisTag"
     output_collection: str = "QIEstreamTag"
@@ -62,7 +62,7 @@ class QIEEncoder(Processor):
 class QIEDecoder(Processor):
     """Configuration for QIE decoder"""
 
-    channel_map_file: str
+    channel_map_file: str = ""
     input_pass_name: str = ""
     input_collection: str = "QIEstreamTag"
     output_collection: str = "decodedQIETag"

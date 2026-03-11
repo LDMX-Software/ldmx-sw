@@ -126,10 +126,8 @@ hcal_reco = hcal_digi_and_reco.HcalRecProducer()
 
 # electron counter for trigger processor
 # first argument is number of electrons in simulation
-e_count = ElectronCounter( 1, "ElectronCounter") 
-e_count.input_pass_name = ''
-simple_trig = TriggerProcessor("simple_trig",8000.)
-simple_trig.input_pass=this_pass_name
+e_count = ElectronCounter(simulated_electron_number=1, instance_name="ElectronCounter", input_pass_name='')
+simple_trig = TriggerProcessor(instance_name="simple_trig", beam_energy=8000., input_pass=this_pass_name)
 
 # Load DQM
 from LDMX.DQM import dqm

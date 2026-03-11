@@ -20,7 +20,7 @@ from LDMX.Framework import Processor, processor
 class ZCCMEncoder(Processor):
     """Configuration for ZCCM encoder"""
 
-    channel_map_file: str
+    channel_map_file: str = ""
     module_map_file: str = ""
     input_pass_name: str = ""
     input_collection: str = "trigScintZCCMDigis"
@@ -65,7 +65,7 @@ class ZCCMEncoder(Processor):
 class ZCCMDecoder(Processor):
     """Configuration for ZCCM decoder"""
 
-    channel_map_file: str
+    channel_map_file: str = ""
     input_pass_name: str = ""
     input_collection: str = "ZCCMoutput"
     output_collection: str = "decodedZCCM"

@@ -15,7 +15,7 @@ from LDMX.Framework import Processor, processor
 class ElectronCounter(Processor):
     """Configuration for the event beam electron counter"""
 
-    simulated_electron_number: int
+    simulated_electron_number: int = 1
     input_collection: str = "TriggerPadTracksY"
     input_pass_name: str = "truth"
     output_collection: str = "BeamElectronCount"

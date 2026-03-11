@@ -38,7 +38,7 @@ from LDMX.Framework import Processor, processor
 class TriggerProcessor(Processor):
     """Configuration for the (multi-electron aware but simple) trigger on the ECal reco hits"""
 
-    beam_energy: float
+    beam_energy: float = 8000.0
     thresholds: list[float] = []
     mode: int = 0
     start_layer: int = 0

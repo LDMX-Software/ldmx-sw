@@ -174,7 +174,7 @@ p.sequence.extend([
         hcal_digi,
         hcal_reco,
         hcal_veto,
-        TriggerProcessor('trigger', 8000.),
+        TriggerProcessor(beam_energy=8000., instance_name='trigger'),
         *en_trigger,
         pf_reco,
         recoil_track_mass_estimator

@@ -136,7 +136,7 @@ p.sequence.extend([
         hcal_digi,
         hcal_reco,
         hcal_veto,
-        TriggerProcessor('trigger', 8000.),
+        TriggerProcessor(beam_energy=8000., instance_name='trigger'),
         #hcal_clusters,
         #hcal_wab,
         *recoil_tracker_dqm,

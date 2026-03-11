@@ -22,9 +22,11 @@ from LDMX.Recon.overlay import OverlayProducer
 from LDMX.Tracking import full_tracking_sequence
 
 
-overlay=OverlayProducer('pileup.root')
-overlay.sim_passname = sim_pass_name                  #sim input event pass name
-overlay.overlay_passname = pileup_file_pass_name    #pileup input event pass name
+overlay=OverlayProducer(
+    overlay_filename='pileup.root',
+    sim_passname=sim_pass_name,
+    overlay_passname=pileup_file_pass_name,
+)
 
 p.sequence = [overlay]
 
@@ -109,8 +111,7 @@ from LDMX.Recon.electron_counter import ElectronCounter
 from LDMX.Recon.simple_trigger import TriggerProcessor
 
 
-count = ElectronCounter(2,'ElectronCounter')
-count.input_pass_name = this_pass_name
+count = ElectronCounter(simulated_electron_number=2, instance_name='ElectronCounter', input_pass_name=this_pass_name)
 
 # Load HCAL veto
 import LDMX.Hcal.hcal as hcal
@@ -254,7 +255,7 @@ p.sequence.extend([
     *ts_digis,
     *ts_clusters,
     trig_scint_track,
-    count, TriggerProcessor('trigger', 8000.),
+    count, TriggerProcessor(beam_energy=8000., instance_name='trigger'),
     dqm.PhotoNuclearDQM()
 ])
 

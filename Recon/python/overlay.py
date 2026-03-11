@@ -61,7 +61,7 @@ class OverlayProducer(Processor):
         p.sequence.append( OverlayProducer( overlay_filename='myPileupFileName.root' ) )
     """
 
-    overlay_filename: str
+    overlay_filename: str = ""
     sim_passname: str = "sim"
     overlay_passname: str = "sim"
     calo_collections: list[str] = [

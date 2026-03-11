@@ -124,7 +124,7 @@ p.sequence.extend([
         *ts_digis,
         *ts_clusters,
         trig_scint_track,
-        count, TriggerProcessor('trigger', 8000.),
+        count, TriggerProcessor(beam_energy=8000., instance_name='trigger'),
         dqm.PhotoNuclearDQM(),
         dqm.EcalClusterAnalyzer(),
         visibles_veto,

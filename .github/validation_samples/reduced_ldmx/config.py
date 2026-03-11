@@ -79,8 +79,7 @@ from LDMX.Recon.electron_counter import ElectronCounter
 from LDMX.Recon.simple_trigger import TriggerProcessor
 
 
-count = ElectronCounter(1,'ElectronCounter')
-count.input_pass_name = ''
+count = ElectronCounter(simulated_electron_number=1, instance_name='ElectronCounter', input_pass_name='')
 
 # Load hcal veto
 import LDMX.Hcal.hcal as hcal
@@ -156,7 +155,7 @@ p.sequence.extend([
         TrigScintClusterProducer.pad2(),
         TrigScintClusterProducer.pad3(),
         trig_scint_track,
-        count, TriggerProcessor('trigger', 4000.),
+        count, TriggerProcessor(beam_energy=4000., instance_name='trigger'),
         digi_recoil_reduced,
         truth_tracking,
         r_seed_tracking,
