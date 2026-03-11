@@ -13,9 +13,9 @@ namespace conditions {
 static unsigned int http_requests = 0;
 static unsigned int http_failures = 0;
 
-void urlstatistics(unsigned int& http_requests, unsigned int& http_failures) {
-  http_requests = http_requests;
-  http_failures = http_failures;
+void urlstatistics(unsigned int& requests, unsigned int& failures) {
+  requests = http_requests;
+  failures = http_failures;
 }
 
 /**
