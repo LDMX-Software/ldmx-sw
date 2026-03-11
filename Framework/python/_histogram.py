@@ -4,6 +4,8 @@ These histogram objects are passed to the HistogramPool to be
 created for processors that they are grouped with.
 """
 
+from typing import Any
+
 from ._parameter_set import field, parameter_set
 
 
@@ -54,10 +56,10 @@ class Histogram:
 
     name: str
     xlabel: str = ""
-    xbins: list[float] = []
+    xbins: list[Any] = []
     xcategories: list[str] = field(init=False, metadata={"entry_type": str, "dimension": 1})
     ylabel: str = ""
-    ybins: list[float] = []
+    ybins: list[Any] = []
     ycategories: list[str] = field(init=False, metadata={"entry_type": str, "dimension": 1})
     weighted: bool = False
 

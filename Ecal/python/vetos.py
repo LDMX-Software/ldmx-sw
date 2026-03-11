@@ -16,7 +16,7 @@ class EcalVetoProcessor(Processor):
     collection_name: str = "EcalVeto"
     rec_pass_name: str = ""
     rec_coll_name: str = "EcalRecHits"
-    recoil_from_tracking = True
+    recoil_from_tracking: bool = True
     track_collection: str = "RecoilTracksClean"
     inverse_skim: bool = False
     sim_particles_passname: str = ""

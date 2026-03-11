@@ -10,7 +10,7 @@ class HcalVetoProcessor(Processor):
     back_min_pe: float = 1.0
     input_hit_coll_name: str = "HcalRecHits"
     input_hit_pass_name: str = ""
-    output_coll_name = "HcalVeto"
+    output_coll_name: str = "HcalVeto"
     track_pass_name: str = ""
     inverse_skim: bool = False
 

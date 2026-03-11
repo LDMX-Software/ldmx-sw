@@ -47,14 +47,14 @@ class TrackProcessFilter(UserAction):
 
     Parameters
     ----------
-    process_name : str
+    process : str
         The Geant4 process name (e.g. photonNuclear) via which the tracks were produced.
     """
 
-    process_name: str
+    process: str
 
     def __post_init__(self):
-        self.instance_name = f"{self.process_name}_track_filter"
+        self.instance_name = f"{self.process}_track_filter"
 
     def photo_nuclear():
         """Configuration used to tag all photo-nuclear tracks to persist

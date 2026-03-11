@@ -93,7 +93,7 @@ if arg.pf0 is not None :
             ),
         dqm.NtuplizeHgcrocDigiCollection(
             input_name = 'PF0Digis',
-            name = 'pf0'
+            instance_name = 'pf0'
             )
         ])
 
@@ -107,7 +107,7 @@ if arg.pf1 is not None :
             ),
         dqm.NtuplizeHgcrocDigiCollection(
             input_name = 'PF1Digis',
-            name = 'pf1'
+            instance_name = 'pf1'
             )
         ])
 
@@ -122,7 +122,7 @@ if arg.hcal is not None :
             ),
         dqm.NtuplizeHgcrocDigiCollection(
             input_name = 'HcalDigis',
-            name = 'hcal'
+            instance_name = 'hcal'
             )
         ])
 

@@ -102,7 +102,7 @@ class TargetENFilter(UserAction):
 class TargetProcessFilter(UserAction):
     """Configuration for filtering photo-nuclear events in the target."""
 
-    process: str
+    process: str = "photonNuclear"
 
     def photo_nuclear():
         return TargetProcessFilter("photonNuclear")
