@@ -1,16 +1,16 @@
 """Configuration for TrackDeDxMassEstimator
 
-The tracker dE/dx vs momentum 2d distribution profile 
-histogram can be fitted using an approximated 
+The tracker dE/dx vs momentum 2d distribution profile
+histogram can be fitted using an approximated
 Bethe-Bloch parametrization at low relativistic regime:
     dE/dx = K * m^2 / p^2 + C,
 where m is the particle mass, p is the particle momentum,
 K and C are fit parameters.
-Using the fitted result of the parameters, the mass of 
+Using the fitted result of the parameters, the mass of
 the particle can be calculated from its dE/dx and momentum.
 
 Attributes:
-------------- 
+-------------
 track_collection : string
     Name of the track collection used as input
 fit_res_C : float
@@ -24,18 +24,19 @@ Examples
     p.sequence.append( recoil_track_mass_estimator )
 """
 
-from LDMX.Framework import ldmxcfg
+from LDMX.Framework import Processor, processor
 
 
-class TrackDeDxMassEstimator(ldmxcfg.Producer) :
+@processor("recon::TrackDeDxMassEstimator", "Recon")
+class TrackDeDxMassEstimator(Processor):
     """Configuration for the mass estimator from tracker dEdx"""
 
-    def __init__(self, name="TrackDeDxMassEstimator") :
-        super().__init__(name,'recon::TrackDeDxMassEstimator','Recon')
+    track_collection: str = "RecoilTruthTracks"
+    fit_res_C: float = 3.094
+    fit_res_K: float = 1.862
 
-        self.track_collection = "RecoilTruthTracks"
-        self.fit_res_C = 3.094
-        self.fit_res_K = 1.862
 
-recoil_track_mass_estimator = TrackDeDxMassEstimator("RecoilTrackMassEstimator")
-recoil_track_mass_estimator.track_collection = "RecoilTruthTracks"
+recoil_track_mass_estimator = TrackDeDxMassEstimator(
+    instance_name="RecoilTrackMassEstimator",
+    track_collection="RecoilTruthTracks",
+)

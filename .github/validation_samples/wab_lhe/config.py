@@ -86,8 +86,7 @@ from LDMX.Recon.simple_trigger import TriggerProcessor
 from LDMX.Trigger import trigger_energy_sums
 
 
-count = ElectronCounter(1,'ElectronCounter')
-count.input_pass_name = ''
+count = ElectronCounter(simulated_electron_number=1, instance_name='ElectronCounter', input_pass_name='')
 
 # Load the DQM modules
 from LDMX.DQM import dqm

@@ -3,7 +3,7 @@
 Sets all parameters to reasonable defaults.
 
 Attributes:
-------------- 
+-------------
 trigger_list
     the collection of each trigger we perform sequential skimming with.
 
@@ -20,20 +20,18 @@ doVAL : bool
 
 """
 
-from LDMX.Framework import ldmxcfg
+from LDMX.Framework import Processor, processor
 
 
-class SequentialTrigger(ldmxcfg.Producer) :
+@processor("recon::SequentialTrigger", "Recon")
+class SequentialTrigger(Processor):
     """Configuration for the sequential trigger (skimmer) on the ECal reco hits"""
 
-    def __init__(self,name) :
-        super().__init__(name,'recon::SequentialTrigger','Recon')
+    trigger_list: list[str] = ["Trigger", "Trigger2"]
+    trigger_passNames: list[str] = ["reconSeq", "reconSeq"]
+    do_or: bool = False
+    do_and: bool = True
+    do_val: bool = True
 
-        self.trigger_list = ["Trigger","Trigger2"]
-        self.trigger_passNames = ["reconSeq","reconSeq"]
-        self.do_or = False
-        self.do_and = True
-        self.do_val = True
 
-simple_seq_trigger = SequentialTrigger("simple_seq_trigger")
-
+simple_seq_trigger = SequentialTrigger(instance_name="simple_seq_trigger")

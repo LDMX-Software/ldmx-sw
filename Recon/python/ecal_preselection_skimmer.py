@@ -3,7 +3,7 @@
 Sets all the default parameters that high so it leads to no preselection.
 
 Attributes:
-------------- 
+-------------
 
 use_rechits: bool
     If True, use rechit-based preselection. If False, use veto-based preselection (default: False)
@@ -33,7 +33,7 @@ summed_tight_iso_max: double
    Max value for summed tigh iso (veto mode only)
 ecal_back_energy_max: double
     Max value for ecal back energy (veto mode only)
- shower_rms_max: double 
+ shower_rms_max: double
     Max value for shower rms
  shower_y_std_max: double
    Max value for shower rms in Y
@@ -48,8 +48,8 @@ n_straight_tracks_max: int
 bdt_disc_min: double
     Min value for the BDT disc variable
 fiducial_level: int
-    0: don't care if it's fiducial or not, 
-    1: keep fiducial events only, 
+    0: don't care if it's fiducial or not,
+    1: keep fiducial events only,
     2: keep non-fid events only
 
 
@@ -57,11 +57,11 @@ fiducial_level: int
 Examples
 --------
     from LDMX.Recon.ecalPreselectionSkimmer import EcalPreselectionSkimmer
-    
+
     # Veto-based mode (default):
     ecal_pres_skimmer = EcalPreselectionSkimmer()
     p.sequence.append( ecal_pres_skimmer )
-    
+
     # Rechit-based mode:
     ecal_pres_skimmer = EcalPreselectionSkimmer()
     ecal_pres_skimmer.use_rechits = True
@@ -72,39 +72,36 @@ Examples
     p.sequence.append( ecal_pres_skimmer )
 """
 
-from LDMX.Framework import ldmxcfg
+from LDMX.Framework import Processor, processor
 
 
-class EcalPreselectionSkimmer(ldmxcfg.Producer) :
+@processor("recon::EcalPreselectionSkimmer", "Recon")
+class EcalPreselectionSkimmer(Processor):
     """Configuration for an ECAL-based pre-selection skimmer"""
 
-    def __init__(self, name = "ecalPreselectionSkimmer") :
-        super().__init__(name,'recon::EcalPreselectionSkimmer','Recon')
+    # Mode selection (default: rechit-based)
+    use_rechits: bool = True
 
-        # Mode selection (default: rechit-based)
-        self.use_rechits = True
+    # Rechit-based parameters
+    ecal_rec_hit_coll: str = "EcalRecHits"
+    ecal_rec_hit_pass: str = ""
 
-        # Rechit-based parameters
-        self.ecal_rec_hit_coll = "EcalRecHits"
-        self.ecal_rec_hit_pass = ""
+    # Veto-based parameters
+    ecal_veto_name: str = "EcalVeto"
+    ecal_veto_pass: str = ""
+    ecal_mip_name: str = "EcalMipInfo"
+    ecal_mip_pass: str = ""
 
-        # Veto-based parameters
-        self.ecal_veto_name = "EcalVeto"
-        self.ecal_veto_pass = ""
-        self.ecal_mip_name = 'EcalMipInfo'
-        self.ecal_mip_pass = ''
-
-        # Cut values
-        self.summed_det_max = 4000.0  # MeV
-        self.summed_tight_iso_max = 9999.
-        self.ecal_back_energy_max = 9999.
-        self.n_readout_hits_max = 90
-        self.shower_rms_max = 9999.
-        self.shower_y_std_max = 9999.
-        self.shower_x_std_max = 9999.
-        self.max_cell_dep_max = 9999.
-        self.std_layer_hit_max = 9999
-        self.n_straight_tracks_max = 9999
-        self.bdt_disc_min = 0.
-        self.fiducial_level = 0
-
+    # Cut values
+    summed_det_max: float = 4000.0
+    summed_tight_iso_max: float = 9999.0
+    ecal_back_energy_max: float = 9999.0
+    n_readout_hits_max: int = 90
+    shower_rms_max: float = 9999.0
+    shower_y_std_max: float = 9999.0
+    shower_x_std_max: float = 9999.0
+    max_cell_dep_max: float = 9999.0
+    std_layer_hit_max: int = 9999
+    n_straight_tracks_max: int = 9999
+    bdt_disc_min: float = 0.0
+    fiducial_level: int = 0

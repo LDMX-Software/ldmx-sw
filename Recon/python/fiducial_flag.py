@@ -1,12 +1,11 @@
-from LDMX.Framework import ldmxcfg
-
+from LDMX.Framework import Processor, processor
 
 """Configuration for RecoilFiducialityProcessor
 
 Sets all parameters to defaults.
 
 Attributes:
-------------- 
+-------------
 min_p_mag : double
     Minimum energy of the recoil electron at production.
 min_tracker_hits: int
@@ -21,16 +20,15 @@ output_collection : string
     Name of the output collection containing the fiduciality flags
 """
 
-class RecoilFiducialityProcessor(ldmxcfg.Producer) :
 
-    def __init__(self, name) :
-        super().__init__(name,'recon::RecoilFiducialityProcessor','Recon')
+@processor("recon::RecoilFiducialityProcessor", "Recon")
+class RecoilFiducialityProcessor(Processor):
 
-        self.min_p_mag = 50. # MeV
-        self.min_tracker_hits = 5
-        self.input_pass_name = ""
-        self.ecal_collection = "EcalSimHits"
-        self.hcal_collection = "HcalSimHits"
-        self.recoil_collection = "RecoilSimHits"
-        self.output_collection = "RecoilTruthFiducialFlags"
-        self.inverse_skim = False
+    min_p_mag: float = 50.0
+    min_tracker_hits: int = 5
+    input_pass_name: str = ""
+    ecal_collection: str = "EcalSimHits"
+    hcal_collection: str = "HcalSimHits"
+    recoil_collection: str = "RecoilSimHits"
+    output_collection: str = "RecoilTruthFiducialFlags"
+    inverse_skim: bool = False
