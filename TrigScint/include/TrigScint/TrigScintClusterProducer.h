@@ -45,6 +45,9 @@ class TrigScintClusterProducer : public framework::Producer {
   // collection of clusters produced
   std::vector<ldmx::TrigScintCluster> clusters_;
 
+  //amplitude weighting for centroid values
+  bool ampl_weighting{true};
+  
   // cluster seeding threshold
   double seed_{0.};
 
@@ -92,6 +95,9 @@ class TrigScintClusterProducer : public framework::Producer {
 
   // edep content, only; leave val_ for PE
   float val_e_{0.};
+  
+  // sum of hit cluster weights
+  float sumw_{0.};
 
   // sum of hit cluster weights
   float sumw_{0.};
