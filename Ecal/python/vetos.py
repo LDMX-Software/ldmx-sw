@@ -9,7 +9,7 @@ class EcalVetoProcessor(Processor):
     verbose: bool = False
     feature_list_name: str = "input"
     bdt_file: str = makeBDTPath("segmip")
-    roc_file: str = makeRoCPath("ROC_v14_8gev")
+    roc_file: str = makeRoCPath("RoC_v14_8gev")
     beam_energy: float = 8000.0  # MeV
     disc_cut: float = 0.99741
     sp_pass_name: str = ""

@@ -55,10 +55,10 @@ class Histogram:
     name: str
     xlabel: str = ""
     xbins: list[float] = []
-    xcategories: list[str] = field(init=False)
+    xcategories: list[str] = field(init=False, metadata={"entry_type": str, "dimension": 1})
     ylabel: str = ""
     ybins: list[float] = []
-    ycategories: list[str] = field(init=False)
+    ycategories: list[str] = field(init=False, metadata={"entry_type": str, "dimension": 1})
     weighted: bool = False
 
     def __post_init__(self):
