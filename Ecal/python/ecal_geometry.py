@@ -39,7 +39,6 @@ class EcalGeometryProvider(ConditionsObjectProvider):
         return EcalGeometryProvider.__instance
 
     def __post_init__(self):
-        print("creating EcalGeometryProvider")
         if EcalGeometryProvider.__instance is not None:
             raise Exception(
                 "EcalGeometryProvider is a singleton class and "
