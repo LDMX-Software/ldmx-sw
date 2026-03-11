@@ -1,4 +1,4 @@
-from LDMX.Framework import Processor, field, parameter_set, processor, make_processor
+from LDMX.Framework import Processor, field, make_processor, parameter_set, processor
 
 
 @parameter_set

@@ -1,6 +1,7 @@
+import os
+
 from LDMX.Framework import ldmxcfg
 
-import os
 
 p = ldmxcfg.Process('test')
 

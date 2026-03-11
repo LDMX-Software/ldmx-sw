@@ -2,6 +2,7 @@
 
 from LDMX.Framework import ldmxcfg
 
+
 @ldmxcfg.parameter_set
 class HcalReadoutGeometry:
     """Configuration for HcalGeometry for a specific geometry

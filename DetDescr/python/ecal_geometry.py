@@ -2,6 +2,7 @@
 
 from LDMX.Framework import ldmxcfg
 
+
 @ldmxcfg.parameter_set
 class EcalGeometry :
     """Configuration for EcalHexReadout for a specific geometry

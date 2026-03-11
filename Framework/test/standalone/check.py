@@ -3,8 +3,10 @@
 simple test that hopefully confirms the overall ability of standalone processors
 """
 
-import uproot
 from pathlib import Path
+
+import uproot
+
 
 file = Path("standalone_histogram.root")
 item = "Standalone/event"
@@ -20,7 +22,7 @@ with uproot.open(file) as f:
 
     h = f["Standalone/event"]
     if h.values().sum() != 10.0:
-        print(f"Histogram created does not have number of entries expected")
+        print("Histogram created does not have number of entries expected")
         exit(4)
 
 # exit cleanly and successfully

@@ -5,10 +5,11 @@ p = ldmxcfg.Process('test')
 
 p.max_tries_per_event = 10000
 
+import os
+
 from LDMX.Biasing import target
 from LDMX.SimCore import generators
 
-import os
 
 det = 'ldmx-det-v15-8gev'
 my_sim = target.dark_brem(

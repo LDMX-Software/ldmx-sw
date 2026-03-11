@@ -1,5 +1,6 @@
 from LDMX.Framework import Processor, processor
 
+
 """Configuration for RecoilFiducialityProcessor
 
 Sets all parameters to defaults.

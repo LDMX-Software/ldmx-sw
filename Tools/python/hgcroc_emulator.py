@@ -2,6 +2,7 @@
 
 from LDMX.Framework import parameter_set
 
+
 @parameter_set
 class HgcrocEmulator :
     """Configuration for HGCROC Emulator

@@ -11,6 +11,7 @@ det = 'ldmx-det-v15-8gev'
 my_sim.setDetector(det, include_scoring_planes_minimal = True )
 from LDMX.SimCore import generators as gen
 
+
 my_sim.generators.append( gen.single_8gev_e_upstream_tagger() )
 my_sim.description = 'Basic test Simulation'
 

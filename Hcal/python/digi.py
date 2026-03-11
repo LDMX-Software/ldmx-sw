@@ -13,7 +13,7 @@ mip_energy: float
     Energy [MeV] of a single MIP
 """
 
-from LDMX.Framework import Processor, processor, parameter_set, field
+from LDMX.Framework import Processor, field, parameter_set, processor
 from LDMX.Tools.hgcroc_emulator import HgcrocEmulator
 
 
