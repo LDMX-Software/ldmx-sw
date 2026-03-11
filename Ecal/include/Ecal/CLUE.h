@@ -18,6 +18,7 @@
 #include <set>
 #include <stack>
 
+#include "DetDescr/EcalID.h"
 #include "Ecal/Event/EcalHit.h"
 #include "Ecal/IntermediateCluster.h"
 #include "Framework/Logger.h"

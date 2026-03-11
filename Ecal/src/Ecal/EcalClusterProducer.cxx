@@ -67,27 +67,27 @@ void EcalClusterProducer::produce(framework::Event& event) {
     std::vector<ldmx::EcalCluster> ecal_clusters;
     ldmx_log(debug) << "Filling " << interm_cluster.size()
                     << " clusters into ecal_clusters";
-    for (int cluster_indx = 0; cluster_indx < interm_cluster.size();
+    for (size_t cluster_indx = 0; cluster_indx < interm_cluster.size();
          cluster_indx++) {
       ldmx::EcalCluster cluster;
 
-      cluster.setEnergy(interm_cluster[cluster_indx].centroid().E());
-      cluster.setCentroidXYZ(interm_cluster[cluster_indx].centroid().x(),
-                             interm_cluster[cluster_indx].centroid().y(),
-                             interm_cluster[cluster_indx].centroid().z());
+      cluster.setEnergy(interm_cluster[cluster_indx].energy());
+      cluster.setCentroidXYZ(interm_cluster[cluster_indx].centroidX(),
+                             interm_cluster[cluster_indx].centroidY(),
+                             interm_cluster[cluster_indx].centroidZ());
       cluster.setFirstLayerCentroidXYZ(
-          f_interm_cluster[cluster_indx].centroid().x(),
-          f_interm_cluster[cluster_indx].centroid().y(),
-          f_interm_cluster[cluster_indx].centroid().z());
-      cluster.setNHits(interm_cluster[cluster_indx].getHits().size());
-      cluster.addHits(interm_cluster[cluster_indx].getHits());
-      cluster.addFirstLayerHits(f_interm_cluster[cluster_indx].getHits());
+          f_interm_cluster[cluster_indx].centroidX(),
+          f_interm_cluster[cluster_indx].centroidY(),
+          f_interm_cluster[cluster_indx].centroidZ());
+      cluster.setNHits(interm_cluster[cluster_indx].hits().size());
+      cluster.addHits(interm_cluster[cluster_indx].hits());
+      cluster.addFirstLayerHits(f_interm_cluster[cluster_indx].hits());
 
       float cl_x(0), cl_y(0), cl_z(0), cl_xx(0), cl_yy(0), cl_zz(0);
       float cl_w = 1;  // weight
       float sumw = 0;
 
-      for (auto hit : interm_cluster[cluster_indx].getHits()) {
+      for (auto hit : interm_cluster[cluster_indx].hits()) {
         if (hit->getEnergy() < min_hit_energy_) continue;
         cl_w = log(hit->getEnergy()) - log(min_hit_energy_);
         cl_x += cl_w * hit->getXPos();
@@ -110,7 +110,7 @@ void EcalClusterProducer::produce(framework::Event& event) {
       cl_zz = sqrt(cl_zz - cl_z * cl_z);
 
       cluster.setRMSXYZ(cl_xx, cl_yy, cl_zz);
-      cluster.setLayer(interm_cluster[cluster_indx].getLayer());
+      cluster.setLayer(interm_cluster[cluster_indx].layer());
       ldmx_log(trace) << "Cluster " << cluster_indx
                       << " energy: " << cluster.getEnergy()
                       << ", nHits: " << cluster.getNHits() << ", centroid: ("
@@ -130,7 +130,7 @@ void EcalClusterProducer::produce(framework::Event& event) {
     event.add(cluster_coll_name_, ecal_clusters);
   } else {
     ldmx_log(info) << "Using simple clustering algorithm " << algo_name_;
-    TemplatedClusterFinder<MyClusterWeight> cf;
+    recon::TemplatedClusterFinder<ldmx::EcalHit, MyClusterWeight> cf;
 
     for (const ldmx::EcalHit& hit : ecal_hits) {
       // Skip zero energy digis.
@@ -141,7 +141,7 @@ void EcalClusterProducer::produce(framework::Event& event) {
     }
 
     cf.cluster(seed_threshold_, cutoff_);
-    std::vector<IntermediateCluster> interm_cluster = cf.getClusters();
+    auto interm_cluster = cf.getClusters();
     std::map<int, double> c_weights = cf.getWeights();
 
     ldmx::ClusterAlgoResult algo_result;
@@ -156,18 +156,16 @@ void EcalClusterProducer::produce(framework::Event& event) {
     }
 
     std::vector<ldmx::EcalCluster> ecal_clusters;
-    for (int cluster_indx = 0; cluster_indx < interm_cluster.size();
+    for (size_t cluster_indx = 0; cluster_indx < interm_cluster.size();
          cluster_indx++) {
       ldmx::EcalCluster cluster;
 
-      cluster.setEnergy(interm_cluster[cluster_indx].centroid().E());
-      cluster.setCentroidXYZ(interm_cluster[cluster_indx].centroid().x(),
-                             interm_cluster[cluster_indx].centroid().y(),
-                             interm_cluster[cluster_indx].centroid().z());
-      cluster.setLayer(interm_cluster[cluster_indx].getLayer());
-      std::cout << "Cluster layer: " << cluster.getLayer() << std::endl;
-      cluster.setNHits(interm_cluster[cluster_indx].getHits().size());
-      cluster.addHits(interm_cluster[cluster_indx].getHits());
+      cluster.setEnergy(interm_cluster[cluster_indx].energy());
+      cluster.setCentroidXYZ(interm_cluster[cluster_indx].centroidX(),
+                             interm_cluster[cluster_indx].centroidY(),
+                             interm_cluster[cluster_indx].centroidZ());
+      cluster.setNHits(interm_cluster[cluster_indx].hits().size());
+      cluster.addHits(interm_cluster[cluster_indx].hits());
       ecal_clusters.push_back(cluster);
     }
 
