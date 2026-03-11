@@ -7,6 +7,7 @@
 namespace trigscint {
 
 void TrigScintClusterProducer::configure(framework::config::Parameters &ps) {
+  ampl_weighting = ps.get<bool>("ampl_weighting");
   seed_ = ps.get<double>("seed_threshold");
   min_thr_ = ps.get<double>("clustering_threshold");
   max_width_ = ps.get<int>("max_cluster_width");
@@ -402,7 +403,9 @@ void TrigScintClusterProducer::produce(framework::Event &event) {
       }  // if adding another hit, going forward, was allowed
 
       // done adding hits to cluster. calculate centroid
-      centroid_ /= val_;  // final weighting step: divide by total
+        centroid_ /= sumw_ ; // final weighting step: divide by total amplitude sum
+
+      
       centroid_ -= 1;     // shift back to actual channel center
 
       ldmx::TrigScintCluster cluster;
@@ -445,6 +448,7 @@ void TrigScintClusterProducer::produce(framework::Event &event) {
       val_e_ = 0;
       beam_e_ = 0;
       time_ = 0;
+      sumw_ = 0;
       // book keep which channels have already been added to a cluster
       v_added_indices_.resize(0);
 
@@ -476,13 +480,22 @@ void TrigScintClusterProducer::produce(framework::Event &event) {
 
 void TrigScintClusterProducer::addHit(uint idx, ldmx::TrigScintHit hit) {
   float ampl = hit.getPE();
-  val_ += ampl;
+  float w = 1;
+  if (ampl_weighting) {
+      w = ampl;
+      }
+
+      
   float energy = hit.getEnergy();
   val_e_ += energy;
 
-  centroid_ += (idx + 1) * ampl;  // need non-zero weight of channel 0. shifting
-                                  // centroid back by 1 in the end
-  // this number gets divided by val at the end
+  val_ += ampl;
+  centroid_ += (idx + 1) * w; // need non-zero weight of channel 0. shifting
+                            // centroid back by 1 in the end
+                             // this number gets divided by val at the end
+    
+  sumw_ += w;
+
   v_added_indices_.push_back(idx);
 
   beam_e_ += hit.getBeamEfrac() * energy;
