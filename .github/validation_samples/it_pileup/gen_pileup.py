@@ -12,8 +12,8 @@ p.max_events = int(int(os.environ['LDMX_NUM_EVENTS'])*0.95) // 2
 p.logger.term_level = 4
 
 from LDMX.SimCore import simulator as sim
-mySim = sim.simulator( "mySim" )
-mySim.setDetector( 'ldmx-det-v15-8gev', include_scoring_planes_minimal = True )
+my_sim = sim.simulator( "my_sim" )
+my_sim.setDetector( 'ldmx-det-v15-8gev', include_scoring_planes_minimal = True )
 from LDMX.SimCore import generators as gen
 
 
