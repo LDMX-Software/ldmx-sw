@@ -10,76 +10,96 @@ p.sequence.extend([ dec ])
 
 """
 
+from LDMX.Framework import Processor, processor
 
-from LDMX.Framework import ldmxcfg
 
-
-class QIEEncoder(ldmxcfg.Producer) :
+@processor("trigscint::QIEEncoder", "TrigScint")
+class QIEEncoder(Processor):
     """Configuration for QIE encoder"""
-    def __init__(self, map_file, name = 'QIEEncode'):
-        super().__init__(f'{name}', 'trigscint::QIEEncoder', "TrigScint")
-        self.name = name
-        self.input_pass_name = ''
-        self.input_collection = 'trigScintQIEDigisTag'
-        self.output_collection = 'QIEstreamTag'
-        self.channel_map_file = map_file
-        self.number_channels = 50
-        self.verbose = False
 
-    def tagger(map_file) :
+    channel_map_file: str
+    input_pass_name: str = ""
+    input_collection: str = "trigScintQIEDigisTag"
+    output_collection: str = "QIEstreamTag"
+    number_channels: int = 50
+    verbose: bool = False
+
+    @staticmethod
+    def tagger(map_file, **kwargs):
         """Get the encoding emulator for the trigger pad upstream of tagger"""
-        enc = QIEEncoder(map_file,'tag')
-        enc.input_collection = 'trigScintQIEDigisTag'
-        enc.output_collection= 'QIEstreamTag'
-        return enc
+        return QIEEncoder(
+            channel_map_file=map_file,
+            instance_name="tag",
+            input_collection="trigScintQIEDigisTag",
+            output_collection="QIEstreamTag",
+            **kwargs,
+        )
 
-    def up(map_file) :
+    @staticmethod
+    def up(map_file, **kwargs):
         """Get the encoding emulator for the trigger pad upstream of target"""
-        enc = QIEEncoder(map_file,'up')
-        enc.input_collection = 'trigScintQIEDigisUp'
-        enc.output_collection= 'QIEstreamUp'
-        return enc
+        return QIEEncoder(
+            channel_map_file=map_file,
+            instance_name="up",
+            input_collection="trigScintQIEDigisUp",
+            output_collection="QIEstreamUp",
+            **kwargs,
+        )
 
-    def down(map_file) :
+    @staticmethod
+    def down(map_file, **kwargs):
         """Get the encoding emulator for the trigger pad downstream of target"""
-        enc = QIEEncoder(map_file,'down')
-        enc.input_collection = 'trigScintQIEDigisDown'
-        enc.output_collection= 'QIEstreamDown'
-        return enc
+        return QIEEncoder(
+            channel_map_file=map_file,
+            instance_name="down",
+            input_collection="trigScintQIEDigisDown",
+            output_collection="QIEstreamDown",
+            **kwargs,
+        )
 
 
-class QIEDecoder(ldmxcfg.Producer) :
-    """Configuration for QIE encoder"""
-    def __init__(self, map_file, name = 'QIEDecode'):
-        super().__init__(f'{name}', 'trigscint::QIEDecoder', "TrigScint")
-        self.name = name
-        self.input_pass_name = ''
-        self.input_collection = 'QIEstreamTag'
-        self.output_collection = 'decodedQIETag'
-        self.channel_map_file = map_file
-        self.number_channels = 50
-        self.number_time_samples = 5
-        self.is_real_data=False
-        self.verbose = False
+@processor("trigscint::QIEDecoder", "TrigScint")
+class QIEDecoder(Processor):
+    """Configuration for QIE decoder"""
 
-    def tagger(map_file) :
+    channel_map_file: str
+    input_pass_name: str = ""
+    input_collection: str = "QIEstreamTag"
+    output_collection: str = "decodedQIETag"
+    number_channels: int = 50
+    number_time_samples: int = 5
+    is_real_data: bool = False
+    verbose: bool = False
+
+    @staticmethod
+    def tagger(map_file, **kwargs):
         """Get the decoding emulator for the trigger pad upstream of tagger"""
-        dec = QIEDecoder(map_file,'tag')
-        dec.input_collection = 'QIEstreamTag'
-        dec.output_collection= 'decodedQIETag'
-        return dec
+        return QIEDecoder(
+            channel_map_file=map_file,
+            instance_name="tag",
+            input_collection="QIEstreamTag",
+            output_collection="decodedQIETag",
+            **kwargs,
+        )
 
-    def up(map_file) :
+    @staticmethod
+    def up(map_file, **kwargs):
         """Get the decoding emulator for the trigger pad upstream of target"""
-        dec = QIEDecoder(map_file,'up')
-        dec.input_collection = 'QIEstreamUp'
-        dec.output_collection= 'decodedQIEUp'
-        return dec
+        return QIEDecoder(
+            channel_map_file=map_file,
+            instance_name="up",
+            input_collection="QIEstreamUp",
+            output_collection="decodedQIEUp",
+            **kwargs,
+        )
 
-    def down(map_file) :
+    @staticmethod
+    def down(map_file, **kwargs):
         """Get the decoding emulator for the trigger pad downstream of target"""
-        dec = QIEDecoder(map_file,'down')
-        dec.input_collection = 'QIEstreamDown'
-        dec.output_collection= 'decodedQIEDown'
-        return dec
-
+        return QIEDecoder(
+            channel_map_file=map_file,
+            instance_name="down",
+            input_collection="QIEstreamDown",
+            output_collection="decodedQIEDown",
+            **kwargs,
+        )

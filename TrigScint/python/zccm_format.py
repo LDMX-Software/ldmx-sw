@@ -10,76 +10,98 @@ p.sequence.extend([ dec ])
 
 """
 
-#NOTE this needs rewriting substantially to deal with the fact that we're doing all modules in one stream
+# NOTE this needs rewriting substantially to deal with the fact that
+# we're doing all modules in one stream
 
-from LDMX.Framework import ldmxcfg
+from LDMX.Framework import Processor, processor
 
 
-class ZCCMEncoder(ldmxcfg.Producer) :
+@processor("trigscint::ZCCMEncoder", "TrigScint")
+class ZCCMEncoder(Processor):
     """Configuration for ZCCM encoder"""
-    def __init__(self, channel_map_file, name = 'ZCCMEncode'):
-        super().__init__(f'{name}', 'trigscint::ZCCMEncoder', "TrigScint")
-        self.name = name
-        self.input_pass_name = ''
-        self.input_collection = 'trigScintZCCMDigis'
-        self.output_collection = 'ZCCMDigis'
-        self.module_map_file = module_map_file
-        self.channel_map_file = channel_map_file
-        self.number_channels = 14*6
 
-    def tagger(map_file) :
+    channel_map_file: str
+    module_map_file: str = ""
+    input_pass_name: str = ""
+    input_collection: str = "trigScintZCCMDigis"
+    output_collection: str = "ZCCMDigis"
+    number_channels: int = 84
+
+    @staticmethod
+    def tagger(map_file, **kwargs):
         """Get the encoding emulator for the trigger pad upstream of tagger"""
-        enc = ZCCMEncoder(map_file,'tag')
-        enc.input_collection = 'trigScintZCCMDigisTag'
-        enc.output_collection= 'ZCCMstreamTag'
-        return enc
+        return ZCCMEncoder(
+            channel_map_file=map_file,
+            instance_name="tag",
+            input_collection="trigScintZCCMDigisTag",
+            output_collection="ZCCMstreamTag",
+            **kwargs,
+        )
 
-    def up(map_file) :
+    @staticmethod
+    def up(map_file, **kwargs):
         """Get the encoding emulator for the trigger pad upstream of target"""
-        enc = ZCCMEncoder(map_file,'up')
-        enc.input_collection = 'trigScintZCCMDigisUp'
-        enc.output_collection= 'ZCCMstreamUp'
-        return enc
+        return ZCCMEncoder(
+            channel_map_file=map_file,
+            instance_name="up",
+            input_collection="trigScintZCCMDigisUp",
+            output_collection="ZCCMstreamUp",
+            **kwargs,
+        )
 
-    def down(map_file) :
+    @staticmethod
+    def down(map_file, **kwargs):
         """Get the encoding emulator for the trigger pad downstream of target"""
-        enc = ZCCMEncoder(map_file,'down')
-        enc.input_collection = 'trigScintZCCMDigisDown'
-        enc.output_collection= 'ZCCMstreamDown'
-        return enc
+        return ZCCMEncoder(
+            channel_map_file=map_file,
+            instance_name="down",
+            input_collection="trigScintZCCMDigisDown",
+            output_collection="ZCCMstreamDown",
+            **kwargs,
+        )
 
 
-class ZCCMDecoder(ldmxcfg.Producer) :
+@processor("trigscint::ZCCMDecoder", "TrigScint")
+class ZCCMDecoder(Processor):
     """Configuration for ZCCM decoder"""
-    def __init__(self, map_file, name = 'ZCCMDecode'):
-        super().__init__(f'{name}', 'trigscint::ZCCMDecoder', "TrigScint")
-        self.name = name
-        self.input_pass_name = ''
-        self.input_collection = 'ZCCMoutput'
-        self.output_collection = 'decodedZCCM'
-        self.channel_map_file = map_file
-        self.number_channels = 14*6
-        self.number_time_samples = 70
-        self.is_real_data=True
 
-    def tagger(map_file) :
+    channel_map_file: str
+    input_pass_name: str = ""
+    input_collection: str = "ZCCMoutput"
+    output_collection: str = "decodedZCCM"
+    number_channels: int = 84
+    number_time_samples: int = 70
+    is_real_data: bool = True
+
+    @staticmethod
+    def tagger(map_file, **kwargs):
         """Get the decoding emulator for the trigger pad upstream of tagger"""
-        dec = ZCCMDecoder(map_file,'tag')
-        dec.input_collection = 'ZCCMstreamTag'
-        dec.output_collection= 'decodedZCCMTag'
-        return dec
+        return ZCCMDecoder(
+            channel_map_file=map_file,
+            instance_name="tag",
+            input_collection="ZCCMstreamTag",
+            output_collection="decodedZCCMTag",
+            **kwargs,
+        )
 
-    def up(map_file) :
+    @staticmethod
+    def up(map_file, **kwargs):
         """Get the decoding emulator for the trigger pad upstream of target"""
-        dec = ZCCMDecoder(map_file,'up')
-        dec.input_collection = 'ZCCMoutputUp'
-        dec.output_collection= 'decodedZCCMUp'
-        return dec
+        return ZCCMDecoder(
+            channel_map_file=map_file,
+            instance_name="up",
+            input_collection="ZCCMoutputUp",
+            output_collection="decodedZCCMUp",
+            **kwargs,
+        )
 
-    def down(map_file) :
+    @staticmethod
+    def down(map_file, **kwargs):
         """Get the decoding emulator for the trigger pad downstream of target"""
-        dec = ZCCMDecoder(map_file,'down')
-        dec.input_collection = 'ZCCMstreamDown'
-        dec.output_collection= 'decodedZCCMDown'
-        return dec
-
+        return ZCCMDecoder(
+            channel_map_file=map_file,
+            instance_name="down",
+            input_collection="ZCCMstreamDown",
+            output_collection="decodedZCCMDown",
+            **kwargs,
+        )
