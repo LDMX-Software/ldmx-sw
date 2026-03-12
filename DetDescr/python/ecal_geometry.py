@@ -1,9 +1,9 @@
 """Configuration for EcalHexReadout"""
 
-from LDMX.Framework import ldmxcfg
+from LDMX.Framework import parameter_set
 
 
-@ldmxcfg.parameter_set
+@parameter_set
 class EcalGeometry :
     """Configuration for EcalHexReadout for a specific geometry
 

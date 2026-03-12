@@ -1,4 +1,4 @@
-"""Script to compare two histogram files by 
+"""Script to compare two histogram files by
 overlaying histograms with the same key
 """
 
@@ -12,7 +12,7 @@ import ROOT
 ROOT.gROOT.SetBatch(1)
 ROOT.gStyle.SetOptStat(0)
 
-def flatten(l) :
+def flatten(list) :
     """Get list of all (non-directory) objects in ROOT file with
     the full path to their location in the file.
 
@@ -28,18 +28,18 @@ def flatten(l) :
 
     Parameters
     ----------
-    l : list[TKey]
+    list : list[TKey]
         list of keys to start flattening
 
     Examples
     --------
     To get the full list of (non-directory) objects in a file, do
-        
+
         rf = ROOT.TFile('my_file.root')
         full_list = flatten(rf.GetListOfKeys())
     """
     flat_l = [ ]
-    for k in l :
+    for k in list :
         if k.IsFolder() :
             # recurse into subdirectory
             d = k.GetFile().GetDirectory(k.GetName())
@@ -94,7 +94,8 @@ class HistogramFile :
     def get(self, hist_key) :
         """Get a histogram from this file
 
-        After retrieving the histogram (and checking that it was retrieved successfully),
+        After retrieving the histogram
+        (and checking that it was retrieved successfully),
         we style the histogram by setting the name, color, and fill attributes.
 
         We set the title of the histogram to the name of the histogram file
@@ -104,7 +105,8 @@ class HistogramFile :
 
         h = self.__file.Get(hist_key)
         if 'TH' not in h.__class__.__name__ :
-            raise AttributeError(f'{hist_key} does not exist in {self.__file.GetName()}')
+            raise AttributeError(
+                f'{hist_key} does not exist in {self.__file.GetName()}')
         h.SetTitle(f'{self.__name}')
         h.SetLineColor(self.__color)
         h.SetLineWidth(2)
@@ -114,7 +116,8 @@ class HistogramFile :
         return h
 
 def print_error(msg) :
-    """Use GitHub workflow command to print errors so that they don't get lost in the logs"""
+    """Use GitHub workflow command to print errors
+    so that they don't get lost in the logs"""
     print('::error::',msg)
 
 def compare(gold_f, gold_label, test_f, test_label) :
@@ -177,11 +180,10 @@ def compare(gold_f, gold_label, test_f, test_label) :
             # both empty, call this a pass
             sub_dir = 'pass'
         elif not empty_gold and not empty_test :
-            if gold_h.KolmogorovTest(test_h,'UO') < 0.99 :
-                # both non-empty and they fail the KS test
-                sub_dir = 'fail'
-            else :
-                sub_dir = 'pass'
+            # both non-empty, check KS test
+            sub_dir = ('fail'
+                if gold_h.KolmogorovTest(test_h, 'UO') < 0.99
+                else 'pass')
         else :
             # one empty and other non-empty
             sub_dir = 'fail'

@@ -678,7 +678,7 @@ class NtuplizeHgcrocDigiCollection(Processor):
         if self.pedestal_table == "":
             self.pedestal_table = 'NO_PEDESTALS'
             t = SimpleCSVIntegerTableProvider('NO_PEDESTALS', ["PEDESTAL"])
-            t.validForAllRows([0])
+            t.valid_for_all_rows([0])
         else:
             t = SimpleCSVIntegerTableProvider(self.pedestal_table, ["PEDESTAL"])
             t.validForever(f'file://{self.pedestal_table}')

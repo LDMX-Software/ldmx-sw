@@ -24,7 +24,7 @@ p.run = arg.runnumber
 
 detector = 'ldmx-hcal-prototype-v2.0' # TODO: CHANGE TO FEFIX version
 
-base_name = os.path.basename(arg.particle+"Sim_%.2fGeV_"%arg.energy+str(p.max_events)+"_%s"%detector+"_pass1_%i"%arg.runnumber)
+base_name = os.path.basename(arg.particle+f"Sim_{arg.energy:.2f}GeV_"+str(p.max_events)+f"_{detector}"+"_pass1_%i"%arg.runnumber)
 dir_name  = os.path.dirname(arg.output_dir)
 
 p.output_files = [f'{dir_name}/{base_name}.root']

@@ -110,7 +110,8 @@ p.logger.term_level = 1
 # Example to show trace level logging for recoil CKF  (only)
 #p.logger.custom(full_tracking_sequence.dqm_recoil_ckf, level = -1)
 
-# Add full tracking for both recoil trackers: digi, seeds, CKF, ambiguity resolution, GSF, DQM
+# Add full tracking for both recoil trackers:
+# digi, seeds, CKF, ambiguity resolution, GSF, DQM
 recoil_tracking = [
     full_tracking_sequence.digi_recoil,
     full_tracking_sequence.truth_tracking,
@@ -144,7 +145,12 @@ p.sequence.extend([
         ])
 
 # Remove TS DQM
-almost_all_dqm = [dqm.sample_validation_dqm + dqm.ecal_dqm + dqm.hcal_dqm + dqm.trigger_dqm]
+almost_all_dqm = [
+    dqm.sample_validation_dqm
+    + dqm.ecal_dqm
+    + dqm.hcal_dqm
+    + dqm.trigger_dqm
+    ]
 
 p.sequence.extend(*almost_all_dqm)
 

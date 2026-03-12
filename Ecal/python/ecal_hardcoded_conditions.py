@@ -20,7 +20,7 @@ EcalTrigPrimConditionsHardcode = SimpleCSVIntegerTableProvider(
     ["ADC_PEDESTAL", "ADC_THRESHOLD", "TOT_PEDESTAL", "TOT_THRESHOLD", "TOT_GAIN"],
 )
 
-EcalTrigPrimConditionsHardcode.validForAllRows(
+EcalTrigPrimConditionsHardcode.valid_for_all_rows(
     [
         50,  # ADC_PEDESTAL -- should match value from HgcrocEmulator
         5,  # ADC_THRESHOLD -- current noise is
@@ -34,7 +34,7 @@ EcalReconConditionsHardcode = SimpleCSVDoubleTableProvider(
     "EcalReconConditions", ["ADC_PEDESTAL", "ADC_GAIN", "TOT_PEDESTAL", "TOT_GAIN"]
 )
 
-EcalReconConditionsHardcode.validForAllRows(
+EcalReconConditionsHardcode.valid_for_all_rows(
     [
         50.0,  # ADC_PEDESTAL - should match HgcrocEmulator
         0.3125,  # ADC_GAIN - 320. fC / 1024. counts
@@ -61,7 +61,7 @@ EcalHgcrocConditionsHardcode = SimpleCSVDoubleTableProvider(
     ],
 )
 
-EcalHgcrocConditionsHardcode.validForAllRows(
+EcalHgcrocConditionsHardcode.valid_for_all_rows(
     [
         50.0,  # PEDESTAL - ADC
         0.6,  # NOISE - ADC, almost certainly too optimistic

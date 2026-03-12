@@ -52,7 +52,7 @@ gps_cmds=[ "/gps/particle mu-",
           "/gps/number "+str(n_part),
           ]
 if n_part>1:
-     gps_cmds += (n_part-1)*(['/gps/source/add 1']+gps_cmds)
+     gps_cmds += (n_part-1)*(['/gps/source/add 1', *gps_cmds])
      gps_cmds += ["/gps/source/multiplevertex True"]
 my_gps = generators.gps(gps_cmds)
 sim.generators.append(my_gps)

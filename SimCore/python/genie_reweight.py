@@ -1,23 +1,12 @@
-from LDMX.Framework import ldmxcfg
+from LDMX.Framework import Processor, processor
 
 
-class GenieReweightProducer(ldmxcfg.Producer):
-    def __init__(
-        self,
-        name="genieEventWeights",
-        n_weights=100,
-        seed=10,
-        var_types=None,
-        message_threshold_file="/usr/local/GENIE/Generator/config/Messenger.xml",
-        event_weights_coll_name="genieEventWeights",
-    ):
-        if var_types is None:
-            var_types = ["GENIE_GENERIC"]
-        super().__init__(name, "simcore::GenieReweightProducer", "SimCore::Reweight")
-
-        self.seed = seed
-        self.n_weights = n_weights
-        self.var_types = var_types
-        self.message_threshold_file = message_threshold_file
-
-        self.event_weights_coll_name = event_weights_coll_name
+@processor("simcore::GenieReweightProducer", "SimCore::Reweight")
+class GenieReweightProducer(Processor):
+    seed: int = 10
+    n_weights: int = 100
+    var_types: list[str] = ["GENIE_GENERIC"]
+    message_threshold_file: str = "/usr/local/GENIE/Generator/config/Messenger.xml"
+    event_weights_coll_name: str = "genieEventWeights"
+    hepmc3_coll_name: str = ""
+    hepmc3_pass_name: str = ""

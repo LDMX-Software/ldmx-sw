@@ -10,7 +10,7 @@ from LDMX.Framework import event_tree
 
 
 def addBranch(tree, ldmx_class, branch_name):
-    if tree == None:
+    if tree is None:
         sys.exit('Set tree')
 
     if ldmx_class == 'EventHeader':
@@ -129,11 +129,11 @@ def trackPlotter(tree, event_number, tag, save, save_tag):
     x_sensor_uncertainty = 0.006 #mm
     y_sensor_uncertainty = 0.085 # mm
 
-    for zi, xi, yi in zip(first_sensor_pos[:,0], first_sensor_pos[:,1], first_sensor_pos[:,2]):
+    for zi, xi, yi in zip(first_sensor_pos[:,0], first_sensor_pos[:,1], first_sensor_pos[:,2], strict=False):
         ax.plot([zi, zi], [xi - x_sensor_uncertainty, xi + x_sensor_uncertainty], [yi, yi], color='black',linewidth=2)  # x error
         ax.plot([zi, zi], [xi, xi], [yi - y_sensor_uncertainty, yi + y_sensor_uncertainty], color='black',linewidth=2)  # y error
 
-    for zi, xi, yi in zip(second_sensor_pos[:,0], second_sensor_pos[:,1], second_sensor_pos[:,2]):
+    for zi, xi, yi in zip(second_sensor_pos[:,0], second_sensor_pos[:,1], second_sensor_pos[:,2], strict=False):
         ax.plot([zi, zi], [xi - x_sensor_uncertainty, xi + x_sensor_uncertainty], [yi, yi], color='black',linewidth=2)  # x error
         ax.plot([zi, zi], [xi, xi], [yi - y_sensor_uncertainty, yi + y_sensor_uncertainty], color='black',linewidth=2)  # y error
 
@@ -160,10 +160,10 @@ def trackPlotter(tree, event_number, tag, save, save_tag):
     x = ecal_rec_hits[0][0]
     y_range = np.linspace(min(ecal_rec_hits[:,1]) - 5, max(ecal_rec_hits[:,1]) + 5, 50)
     z_range = np.linspace(min(ecal_rec_hits[:,2]) - 5, max(ecal_rec_hits[:,2]) + 5, 50)
-    y, z = np.meshgrid(y_range, z_range)
+    y, _z = np.meshgrid(y_range, z_range)
     x = np.full(y.shape, ecal_rec_hits[0][0])
 
-    plane = ax.plot_surface(x, y, z, color='red', alpha=0.1, edgecolor='none')
+    # plane = ax.plot_surface(x, y, z, color='red', alpha=0.1, edgecolor='none')
 
     for rec_hit in ecal_rec_hits:
         center_z, center_x, center_y = rec_hit[0], rec_hit[1], rec_hit[2]
@@ -183,7 +183,8 @@ def trackPlotter(tree, event_number, tag, save, save_tag):
     fig.text(0.43, 0.9, 'Work in Progress', ha='center', fontsize=24, fontstyle='italic')
     fig.text(0.85, 0.9, '(4 GeV)', ha='center', fontsize=12, fontstyle='italic')
     fig.subplots_adjust(right=0.99)  # Adjust the value as needed
-    left, bottom, width, height = [0.06, 0.05, 0.85, 0.85]  # Adjust these values as needed
+    # Adjust these values as needed
+    left, bottom, width, height = [0.06, 0.05, 0.85, 0.85]
     ax.set_position([left, bottom, width, height])
 
     ax.legend(fontsize=10)
@@ -203,7 +204,8 @@ def trackPlotter(tree, event_number, tag, save, save_tag):
 #    z_target_range = np.linspace(y_low_lim, y_up_lim, 50)
 #    Y_target, Z_target = np.meshgrid(y_target_range, z_target_range)
 #    X_target = np.full(Y_target.shape, 0.0)
-#    target_plane = ax.plot_surface(X_target, Y_target, Z_target, color='purple', alpha=0.1, edgecolor='none')
+# target_plane = ax.plot_surface(X_target, Y_target, Z_target, color='purple',
+# alpha=0.1, edgecolor='none')
 #
 #    ax.set_ylim(x_low_lim, x_up_lim)
 #    ax.set_zlim(y_low_lim, y_up_lim)

@@ -29,7 +29,12 @@ bias_treshold = 5000.
 
 my_sim = ecal.photo_nuclear(detector, generator)
 my_sim.description = f'8 GeV ECal Kaon PN simulation, xsec bias {bias_factor}'
-my_sim.biasing_operators = [ bias_operators.PhotoNuclear('ecal',bias_factor,bias_treshold,only_children_of_primary = True) ]
+my_sim.biasing_operators = [
+    bias_operators.PhotoNuclear(
+        'ecal', bias_factor, bias_treshold,
+        only_children_of_primary=True,
+    )
+]
 
 # Configure the sequence in which user actions should be called.
 include_biasing.library()
@@ -75,13 +80,13 @@ p.sequence=[my_sim]
 # Load the ECAL modules
 import LDMX.Ecal.ecal_geometry
 import LDMX.Ecal.ecal_hardcoded_conditions
+import LDMX.Hcal.digi as hcal_digi_and_reco
 
 # Load the HCAL modules
 import LDMX.Hcal.hcal_geometry
 import LDMX.Hcal.hcal_hardcoded_conditions
-from LDMX.Ecal import digi as eDigi
+from LDMX.Ecal import digi as ecal_digi_reco
 from LDMX.Ecal import vetos as ecal_vetos
-from LDMX.Hcal import digi as hDigi
 from LDMX.Hcal import hcal
 
 # Load electron counting and trigger
@@ -91,9 +96,9 @@ from LDMX.Tracking import full_tracking_sequence
 
 # Load the TS modules
 from LDMX.TrigScint.trig_scint import (
-        TrigScintClusterProducer,
-        TrigScintDigiProducer,
-        trig_scint_track,
+    TrigScintClusterProducer,
+    TrigScintDigiProducer,
+    trig_scint_track,
 )
 
 
@@ -111,16 +116,13 @@ ts_clusters = [
         ]
 
 # ECAL part
-ecal_reco = eDigi.EcalRecProducer()
-ecal_digi = eDigi.EcalDigiProducer()
+ecal_reco = ecal_digi_reco.EcalRecProducer()
+ecal_digi = ecal_digi_reco.EcalDigiProducer()
 ecal_veto = ecal_vetos.EcalVetoProcessor()
 ecal_mip = ecal_vetos.EcalMipProcessor()
 ecal_veto_pnet = ecal_vetos.EcalPnetVetoProcessor()
 
 # HCAL part
-import LDMX.Hcal.digi as hcal_digi_and_reco
-
-
 hcal_digi = hcal_digi_and_reco.HcalDigiProducer()
 hcal_reco = hcal_digi_and_reco.HcalRecProducer()
 
@@ -141,7 +143,8 @@ p.logger.term_level = 1
 # p.logger.custom("KaonPhysics", level = -1)
 
 
-# Add full tracking for both tagger and recoil trackers: digi, seeds, CFK, ambiguity resolution, GSF, DQM
+# Add full tracking for both tagger and recoil trackers: digi, seeds, CFK, ambiguity
+# resolution, GSF, DQM
 p.sequence.extend(full_tracking_sequence.sequence)
 p.sequence.extend(full_tracking_sequence.dqm_sequence)
 

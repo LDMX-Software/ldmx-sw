@@ -112,7 +112,12 @@ en_trigger = [
         trigger_energy_sums.TrigEcalEnergySum(),
         trigger_energy_sums.TrigHcalEnergySum(),
         trigger_energy_sums.TrigEcalClusterProducer(),
-        trigger_energy_sums.TrigElectronProducer(prop_map_name=f'{os.environ["CI_DATA"]}/target_genie/propagationMap.root'),
+        trigger_energy_sums.TrigElectronProducer(
+            prop_map_name=(
+                f'{os.environ["CI_DATA"]}'
+                '/target_genie/propagationMap.root'
+            )
+        ),
         trigger_energy_sums.HcalTPSelector(),
         trigger_energy_sums.HCalTrigMipReco(),
         trigger_energy_sums.ECalTrigMipReco(),
@@ -150,7 +155,8 @@ p.logger.term_level = 10
 # Example to show trace level logging for ecal veto (only)
 p.logger.custom(full_tracking_sequence.dqm_recoil_ckf, level = -1)
 
-# Add full tracking for both recoil trackers: digi, seeds, CFK, ambiguity resolution, GSF, DQM
+# Add full tracking for both recoil trackers:
+# digi, seeds, CFK, ambiguity resolution, GSF, DQM
 recoil_tracking = [
     full_tracking_sequence.digi_recoil,
     full_tracking_sequence.truth_tracking,
@@ -184,7 +190,14 @@ p.sequence.extend([
         ])
 
 # Remove TS DQM
-almost_all_dqm = [dqm.sample_validation_dqm + recoil_tracker_dqm + dqm.ecal_dqm + dqm.hcal_dqm + dqm.trigger_dqm + dqm.dEdx_dqm]
+almost_all_dqm = [
+    dqm.sample_validation_dqm
+    + recoil_tracker_dqm
+    + dqm.ecal_dqm
+    + dqm.hcal_dqm
+    + dqm.trigger_dqm
+    + dqm.dEdx_dqm
+    ]
 
 p.sequence.extend(*almost_all_dqm)
 

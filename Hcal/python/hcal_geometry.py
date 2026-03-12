@@ -1,13 +1,13 @@
 """ConditionsProvider for HcalGeometry"""
 
 from LDMX.DetDescr.hcal_geometry import HcalGeometry
-from LDMX.Framework import ldmxcfg
+from LDMX.Framework import conditions_object_provider, ConditionsObjectProvider, field
 
 
-@ldmxcfg.conditions_object_provider(
+@conditions_object_provider(
     "HcalGeometryProvider", "hcal::HcalGeometryProvider", "Hcal"
 )
-class HcalGeometryProvider(ldmxcfg.ConditionsObjectProvider):
+class HcalGeometryProvider(ConditionsObjectProvider):
     """Provider that provides access to Hcal geometry (HcalGeometry)
 
     Parameters
@@ -24,7 +24,7 @@ class HcalGeometryProvider(ldmxcfg.ConditionsObjectProvider):
     """
 
     __instance = None
-    hcal_geometry: HcalGeometry = ldmxcfg.field(default_factory=HcalGeometry)
+    hcal_geometry: HcalGeometry = field(default_factory=HcalGeometry)
 
     def getInstance():
         """Get the single instance of the HcalGeometryProvider
@@ -53,10 +53,10 @@ class HcalGeometryProvider(ldmxcfg.ConditionsObjectProvider):
 HcalGeometryProvider.getInstance()
 
 
-@ldmxcfg.conditions_object_provider(
+@conditions_object_provider(
     "HcalTriggerGeometry", "hcal::HcalTriggerGeometryProvider", "Hcal"
 )
-class HcalTriggerGeometryProvider(ldmxcfg.ConditionsObjectProvider):
+class HcalTriggerGeometryProvider(ConditionsObjectProvider):
     """Provider that provides access to Hcal geometry (ldmx::HcalGeometry)
     Parameters
     ----------
@@ -71,7 +71,7 @@ class HcalTriggerGeometryProvider(ldmxcfg.ConditionsObjectProvider):
     """
 
     __instance = None
-    hcal_geometry: HcalGeometry = ldmxcfg.field(default_factory=HcalGeometry)
+    hcal_geometry: HcalGeometry = field(default_factory=HcalGeometry)
 
     def getInstance():
         """Get the single instance of the HcalTriggerGeometryProvider

@@ -12,8 +12,13 @@ from LDMX.SimCore import generators
 
 
 det = 'ldmx-det-v14-8gev'
-mysim = ecal.deep_photo_nuclear(det, generators.single_8gev_e_upstream_tagger(), bias_threshold = 5010., processes=['conv','phot)'], ecal_min_z = 400., require_photon_from_target = True)
-#mysim = ecal.deep_photo_nuclear(det, generators.single_8gev_e_upstream_tagger(), bias_threshold = 5010., processes=['conv','phot)'], ecal_min_z = 200., require_photon_from_target = True)
+mysim = ecal.deep_photo_nuclear(
+    det, generators.single_8gev_e_upstream_tagger(),
+    bias_threshold=5010., processes=['conv', 'phot)'],
+    ecal_min_z=400., require_photon_from_target=True)
+#mysim = ecal.deep_photo_nuclear(det, generators.single_8gev_e_upstream_tagger(),
+#bias_threshold = 5010., processes=['conv','phot)'], ecal_min_z = 200.,
+#require_photon_from_target = True)
 mysim.description = "ECal Deep Conversion Test Simulation"
 
 #mysim.actions.append( util.StepPrinter(1) )

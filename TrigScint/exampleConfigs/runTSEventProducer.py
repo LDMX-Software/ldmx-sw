@@ -8,20 +8,15 @@ n_ev=400000
 
 p.max_events = n_ev
 
-if len(sys.argv) > 2 :
-    time_offset=int(sys.argv[2])
-else :
-    time_offset=0
-if len(sys.argv) > 3 :
-    log_verbosity=int(sys.argv[3])
-else :
-    log_verbosity=2
+time_offset = int(sys.argv[2]) if len(sys.argv) > 2 else 0
+log_verbosity = int(sys.argv[3]) if len(sys.argv) > 3 else 2
 
 
 from LDMX.TrigScint.trigScint import EventReadoutProducer
 
 
-# ------------------- all set; setup in detail, and run with these settings ---------------
+# ------------------- all set; setup in detail, and run with these settings
+# ---------------
 
 ts_ev=EventReadoutProducer("eventLinearizer")
 ts_ev.input_pass_name=input_pass_name

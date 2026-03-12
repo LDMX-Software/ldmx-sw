@@ -17,7 +17,11 @@ my_sim = target.dark_brem(
     10.0,
     # DB library stored in ci-data that is cloned into ldmx-sw root before
     # validation is run
-    f'{os.environ["CI_DATA"]}/signal/v5.2.0_electron_tungsten_MaxE_8.0_MinE_4.0_RelEStep_0.1_UndecayedAP_mA_0.01_run_1.csv',
+    (
+        f'{os.environ["CI_DATA"]}/signal/'
+        'v5.2.0_electron_tungsten_MaxE_8.0_MinE_4.0'
+        '_RelEStep_0.1_UndecayedAP_mA_0.01_run_1.csv'
+    ),
     det,
     generators.single_8gev_e_upstream_tagger()
 )
@@ -108,7 +112,8 @@ ecal_pres_skimmer = EcalPreselectionSkimmer()
 # into the git working tree on GitHub
 p.logger.term_level = 1
 
-# Add full tracking for both tagger and recoil trackers: digi, seeds, CFK, ambiguity resolution, GSF, DQM
+# Add full tracking for both tagger and recoil trackers:
+# digi, seeds, CFK, ambiguity resolution, GSF, DQM
 p.sequence.extend(full_tracking_sequence.sequence)
 p.sequence.extend(full_tracking_sequence.dqm_sequence)
 

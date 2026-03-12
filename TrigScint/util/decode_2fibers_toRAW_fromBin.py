@@ -70,7 +70,7 @@ class qie_frame:
                     return True
         else :
             margin = 10 #adc counts
-            for adc,ped in zip(self.adcs, self.peds):
+            for adc,ped in zip(self.adcs, self.peds, strict=False):
                 if adc > 110 and adc < 255 :
                      print("Got ADC above 3000 fC: "+str(adc))
                 if adc > ped+margin and adc < 255 :
@@ -82,7 +82,9 @@ adcmax=150
 tsmax=64
 hist_pulse=[]
 for i in range(16):
-    hist_pulse.append(r.TH2F(f"pulse{i}",f"pulse{i};time sample;ADC",tsmax,-0.5,tsmax-0.5,adcmax,-0.5,adcmax-0.5))
+    hist_pulse.append(r.TH2F(
+        f"pulse{i}", f"pulse{i};time sample;ADC",
+        tsmax, -0.5, tsmax-0.5, adcmax, -0.5, adcmax-0.5))
 
 hist_adc=[]
 for i in range(16):
@@ -121,7 +123,8 @@ def binToTxt(in_file_name, out_file_name):
                     #format in hex with padding (don't lose leading zeroes)
                     hexnum=f"{dd:0>2X}" #int(hexnum,2))
                     #print(hexnum)
-                    hexline += hexnum #'{:0{}X}'.format(hexnum, 2) #"%2.2X" %num,end='')  # f'{data:X}\n'
+                    #'{:0{}X}'.format(hexnum, 2) #"%2.2X" %num,end='')  # f'{data:X}\n'
+                    hexline += hexnum
                 #print(hexline)
                 out_f.write(hexline) #hexline) #"%2.2X" %data,end='')
                 #out_f.write(hex(int(data, 2)))
@@ -136,7 +139,8 @@ def binToTxt(in_file_name, out_file_name):
 def load_data(file):
   data = open(file) #loads file
   data=data.read()       #reads file
-  data=data.split("\n") #turn one giant string into a list of line strings. The last line is "" and drops it.
+  #turn one giant string into a list of line strings. The last line is "" and drops it.
+  data=data.split("\n")
 
   return data
 
@@ -144,13 +148,13 @@ def load_data(file):
 def sort_into_events(data, address):
   processed_data=[]
   processed_event=[]
-  ev_nbs=[]
+  # ev_nbs=[]
   timestamps=[]
   ts=[]
   time_since_spill=[]
-  t_since_spill=[]
+  # t_since_spill=[]
   print('using "'+address+'" to delimit packet time samples')
-  has_added_first_event_word=False
+  # has_added_first_event_word=False
   skip_one=False #avoid setting timestamp using the first few weird lines in the file
   for line in data[0:] :
     try:
@@ -182,13 +186,13 @@ def sort_into_eventsBin(in_file_name, address):
     # could be interesting if used with a max_events for shorter dev cycle testing
   processed_data=[]
   processed_event=[]
-  ev_nbs=[]
+  # ev_nbs=[]
   timestamps=[]
   ts=[]
   time_since_spill=[]
-  t_since_spill=[]
+  # t_since_spill=[]
   print('using "'+address+'" to delimit packet time samples')
-  has_added_first_event_word=False
+  # has_added_first_event_word=False
   skip_one=True
   with open(in_file_name,'rb') as in_f :
       line = in_f.read(8).hex()
@@ -206,7 +210,8 @@ def sort_into_eventsBin(in_file_name, address):
               elif skip_one :
                   print("Found time since spill line: "+line)
                   #t_since_spill=[]
-                  time_since_spill.append(line[8:]) #spill count is only last half of the line
+                  #spill count is only last half of the line
+                  time_since_spill.append(line[8:])
                   print("Stored time since spill: "+line[8:])
                   skip_one=False
               else : #this is data
@@ -245,24 +250,35 @@ def main(options,args) :
     if is_verbose : #only make plots here in verbose mode
         os.makedirs(plot_dir, exist_ok = True)
 
-    print("in_file = %s,\noutfile = %s,\npassThrough = %i,\ntrigOnTDC = %i,\nmaxEvents = %i,\nverbose = %i,\ntimeSampleCut = %i,\nsamplesPerEvent = %i" % (in_file, outfilename,int(pass_through),int(trig_on_tdc),max_events,is_verbose,time_sample_cut,samples_per_event) )
+    print(
+        "in_file = %s,\noutfile = %s,\npassThrough = %i,\ntrigOnTDC = %i,"
+        "\nmaxEvents = %i,\nverbose = %i,\ntimeSampleCut = %i,"
+        "\nsamplesPerEvent = %i" % (
+            in_file, outfilename, int(pass_through), int(trig_on_tdc),
+            max_events, is_verbose, time_sample_cut, samples_per_event)
+    )
     #header stuff to do:
-    # cap id mismatch has its own flag. could let everything else be some sort of checksum error.
+    # cap id mismatch has its own flag. could let everything else be some sort of
+    # checksum error.
     # this could actually also be some dedicated bits for now; we don't have a checksum
     # protocol in mind.
 
 
     binToTxt(in_file, txt_file_name)
     data = load_data(txt_file_name)
-    time_sample_marker_word='got read response from 192.168.1.30' #'r' #'some bogus that we will never find (to be removed)'#
+    time_sample_marker_word = (
+        'got read response from 192.168.1.30'
+        #'r' #'some bogus that we will never find (to be removed)'#
+    )
     events, spill_time = sort_into_events(data, time_sample_marker_word)
     print(events[0])
     event_counter=0
     sub_event_counter=0
 #    peds=[7, 5, 7, 6, 7, 5, 5, 7, 6, 7, 6, 5, 6, 7, 5, 6]
-    peds=[90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 256, 90]     #use to trigger on high ADC values (margin=10 is added later)
+    peds=[90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 256, 90]
+    #use to trigger on high ADC values (margin=10 is added later)
 
-    for event,spill_t in zip(events,spill_time):
+    for event,spill_t in zip(events,spill_time, strict=False):
         prev_cap_id0=-1 #reset these for every new event, they can be anything..?
         prev_cap_id1=-1
         print('=========== NEW EVENT ========')
@@ -282,20 +298,23 @@ def main(options,args) :
         fiber2 = fiber2.split('BC')
 
         out_values = []
-        #useless definitions already here to avoid errors if there is an empty time sample
+        #useless definitions already here to avoid errors if there is an empty time
+        #sample
         crc0_error=0
         crc1_error=0
         cid_unsync=0
         cid_skip=0
 
-        #adjust the sub-event counter: subtract any remainder mod samples_per_event, to make sure the previous event
+        #adjust the sub-event counter: subtract any remainder mod samples_per_event, to
+        #make sure the previous event
         # doesn't count towards the next event's sample collection
         sub_event_counter-=sub_event_counter%samples_per_event
         has_triggered=pass_through #which is false if we want to actually trigger first
-        time_stamp=0  #this is no longer part of the event info. so set it to 0 and keep for compatibility
+        time_stamp=0  #this is no longer part of the event info.
+        #set it to 0 and keep for compatibility
         time_stamp_tick=0  #same here
         time_since_spill=int(spill_t,16)
-        for i,z in enumerate(zip(fiber1,fiber2)):
+        for i,z in enumerate(zip(fiber1,fiber2, strict=False)):
             print(f'---------- NEW TIME SAMPLE ({i}) ----------')
             if is_verbose:
                 print(z)
@@ -304,7 +323,8 @@ def main(options,args) :
             f1.peds = peds[:8]
             f2.peds = peds[8:]
             if i >= time_sample_cut and not f1.decode(z[0]) + f2.decode(z[1]) :
-                #check if either sets has_triggered. in either case add to a redout "buffer"
+                #check if either sets has_triggered. in either case add to a redout
+                #"buffer"
                 if not has_triggered :
                     has_triggered=f1.triggerForReadout(trig_on_tdc)
                 if not has_triggered :
@@ -315,7 +335,7 @@ def main(options,args) :
                 tdcs_out=[]
                 sub_event_counter+=1
                 #NOTE that these are now filled regardless of trigger decision
-                for j,codes in enumerate(zip(f1.adcs,f1.tdcs)):
+                for j,codes in enumerate(zip(f1.adcs,f1.tdcs, strict=False)):
                     if is_verbose :
                         hist_pulse[j].Fill(i,codes[0])
                         hist_adc[j].Fill(codes[0])
@@ -325,7 +345,7 @@ def main(options,args) :
                 if is_verbose :
                     f1.triggerPrint()
                 #f1.print()
-                for j,codes in enumerate(zip(f2.adcs,f2.tdcs)):
+                for j,codes in enumerate(zip(f2.adcs,f2.tdcs, strict=False)):
                     if is_verbose :
                         hist_pulse[j+8].Fill(i,codes[0])
                         hist_adc[j+8].Fill(codes[0])
@@ -347,10 +367,13 @@ def main(options,args) :
                 cid_skip=False
                 if (prev_cap_id0 < 0) :
                     prev_cap_id0 = f1.capid
-                else :    #this logic still needs some work: what happens if there is a corrupt time sample word in the middle?
+                else :    #this logic still needs some work: what happens if
+                    #there is a corrupt time sample word in the middle?
                     if (prev_cap_id0+1)%4  != (f1.capid)%4 :
                         cid_skip=True
-                        print("Found cid_skip in fiber 1! previous CapID: "+str(prev_cap_id0)+", current: "+str(f1.capid))
+                        print("Found cid_skip in fiber 1! previous CapID: "
+                              + str(prev_cap_id0) + ", current: "
+                              + str(f1.capid))
                         f1.print()
                 prev_cap_id0=f1.capid #update after checking
                 if (prev_cap_id1 < 0) :
@@ -358,7 +381,9 @@ def main(options,args) :
                 else :
                     if (prev_cap_id1+1)%4 != (f2.capid)%4 :
                         cid_skip=True
-                        print("Found cid_skip in fiber 2! previous CapID: "+str(prev_cap_id1)+", current: "+str(f2.capid))
+                        print("Found cid_skip in fiber 2! previous CapID: "
+                              + str(prev_cap_id1) + ", current: "
+                              + str(f2.capid))
                         f2.print()
                 prev_cap_id1=f2.capid #update
 
@@ -366,15 +391,27 @@ def main(options,args) :
                 out_values.append(adcs_out)
                 out_values.append(tdcs_out)
                 if (sub_event_counter % samples_per_event == 0) and has_triggered :
-                    # we want to write this chunk as an "event", with event number count,
+                    # we want to write this chunk as an "event", with event number
+                    # count,
                     # and the rest of the header, to file
                     event_counter+=1
-                    print("\t\t------> writing event "+str(event_counter)+" to file at subevent count: "+str(sub_event_counter))
+                    print("\t\t------> writing event " + str(event_counter)
+                          + " to file at subevent count: "
+                          + str(sub_event_counter))
                     endian="little"
-                    outfile.write( int(time_stamp).to_bytes(4, byteorder=endian, signed=False))
-                    outfile.write( int(time_stamp_tick).to_bytes(4, byteorder=endian, signed=False)) #placeholder number for now, clock ticks?
-                    outfile.write( int(time_since_spill).to_bytes(4, byteorder=endian, signed=False))
-                    outfile.write( int(event_counter).to_bytes(3, byteorder=endian, signed=False))
+                    outfile.write(
+                        int(time_stamp).to_bytes(4, byteorder=endian,
+                                                 signed=False))
+                    outfile.write(
+                        int(time_stamp_tick).to_bytes(
+                            4, byteorder=endian, signed=False)
+                    ) #placeholder number for now, clock ticks?
+                    outfile.write(
+                        int(time_since_spill).to_bytes(4, byteorder=endian,
+                                                       signed=False))
+                    outfile.write(
+                        int(event_counter).to_bytes(3, byteorder=endian,
+                                                    signed=False))
                     error_word=0
                     error_word |= (crc0_error << 0)
                     error_word |= (crc1_error << 1)
@@ -382,24 +419,35 @@ def main(options,args) :
                     error_word |= (cid_skip   << 3)
                     if is_verbose:
                         e_word=error_word.to_bytes(1, byteorder=endian, signed=False)
-                        print("\t\t------> writing header: "+str(event_counter)+", error = "+str(e_word))
-                    outfile.write( error_word.to_bytes(1, byteorder=endian, signed=False))
-                    if len(out_values) != samples_per_event*2 : #1 ADC, 1 TDC vector per time sample
-                        print("UH-OH! got "+str(len(out_values))+" words in the event data!")
+                        print("\t\t------> writing header: "
+                              + str(event_counter) + ", error = "
+                              + str(e_word))
+                    outfile.write(
+                        error_word.to_bytes(1, byteorder=endian, signed=False))
+                    #1 ADC, 1 TDC vector per time sample
+                    if len(out_values) != samples_per_event*2 :
+                        print("UH-OH! got " + str(len(out_values))
+                              + " words in the event data!")
                         print(out_values)
                     for vals in out_values :
                         if len(vals) != 16 : #expect one word per channel
-                            print("UH-OH! got "+str(len(vals))+" words in the event data!")
+                            print("UH-OH! got " + str(len(vals))
+                                  + " words in the event data!")
                             print(vals)
-                        for word in vals :  #ADC and TDC both 8-bit words in final format
-                            outfile.write( int(word).to_bytes(1, byteorder=endian, signed=False))
+                        for word in vals :  #ADC and TDC both 8-bit words
+                            outfile.write(
+                                int(word).to_bytes(1, byteorder=endian,
+                                                   signed=False))
                     out_values.clear()
                     has_triggered=pass_through #False
-                    if i + samples_per_event > 31 : #after writing, don't continue looping if remaining time samples won't make a full event
+                    #after writing, don't continue looping if remaining
+                    #time samples won't make a full event
+                    if i + samples_per_event > 31 :
                         print("Not using time samples after "+str(i)+"; breaking")
                         break #don't use late data
 
-        #this is all just for printing after the last time sample of every "actual" event
+        #this is all just for printing after the last time sample of every "actual"
+        #event
         if is_verbose:
             out_word=''
             out_word+="{0:0{1}X} ".format(event_counter, 32)
@@ -438,16 +486,35 @@ def main(options,args) :
 if __name__ == "__main__":
     #here: add any option flags needed, and then pick them up in "main" above
     parser = OptionParser()
-    parser.add_option('-i', '--in_file', dest='in_file', default='', help='input .txt file')
-    parser.add_option('-o', '--out_file_name', dest='outFile', default='', help='output (.dat) file name (default: .dat --> _reformat.dat)')
-    parser.add_option('-p', '--pass_through', dest='pass_through', action='store_true', default=False, help='whether to "trigger"/pass through all events (default: false)')
-    parser.add_option('-t', '--tdcTrigger', dest='tdcTrig', action='store_true', default=False, help='whether to "trigger" on TDC < 3 (default: false; trigger is then an ADC threshold)')
-    parser.add_option('-a', '--adcTrigger', dest='adcTrig', action='store_true', default=False, help='whether to "trigger" on ADC > pedestal + 10 (default: true)')
+    parser.add_option('-i', '--in_file', dest='in_file', default='',
+                      help='input .txt file')
+    parser.add_option('-o', '--out_file_name', dest='outFile', default='',
+                      help='output (.dat) file name (default: .dat --> _reformat.dat)')
+    parser.add_option('-p', '--pass_through', dest='pass_through',
+                      action='store_true', default=False,
+                      help='whether to "trigger"/pass through all events'
+                           ' (default: false)')
+    parser.add_option('-t', '--tdcTrigger', dest='tdcTrig',
+                      action='store_true', default=False,
+                      help='whether to "trigger" on TDC < 3 (default: false;'
+                           ' trigger is then an ADC threshold)')
+    parser.add_option('-a', '--adcTrigger', dest='adcTrig',
+                      action='store_true', default=False,
+                      help='whether to "trigger" on ADC > pedestal + 10'
+                           ' (default: true)')
 
-    parser.add_option('-N', '--max_events', dest='max_events', default=-1, help='max number of events to process (default: all)')
-    parser.add_option('-v', '--verbose', dest='verbose', action='store_true', default=False, help='to make a lot of verbose printouts (default: false)')
-    parser.add_option('-n', '--n_time_samples', dest='n_time_samples', default=30, help='number of time samples per event (default: 30)')
-    parser.add_option('-f', '--firstTimeSample', dest='firstTimeSample', default=0, help='first time sample to consider when accumulating samples to an event (default: 6)')
+    parser.add_option('-N', '--max_events', dest='max_events', default=-1,
+                      help='max number of events to process (default: all)')
+    parser.add_option('-v', '--verbose', dest='verbose',
+                      action='store_true', default=False,
+                      help='to make a lot of verbose printouts (default: false)')
+    parser.add_option('-n', '--n_time_samples', dest='n_time_samples',
+                      default=30,
+                      help='number of time samples per event (default: 30)')
+    parser.add_option('-f', '--firstTimeSample', dest='firstTimeSample',
+                      default=0,
+                      help='first time sample to consider when accumulating'
+                           ' samples to an event (default: 6)')
 
 
     (options, args) = parser.parse_args()
@@ -457,12 +524,16 @@ if __name__ == "__main__":
     if options.adcTrig : #not actually used in main() but overrides others
         options.pass_through=False
         options.tdcTrig=False
-    if (options.tdcTrig or options.adcTrig) and options.pass_through : # make user choose.
+    if (options.tdcTrig or options.adcTrig) and options.pass_through :
+        # make user choose.
         #in effect, only the combination -t and -p will trigger this message
-        print("Can't choose both -p for passthrough (= no trigger) and -a for adc trigger or -t for tdc trigger at the same time. Pick one.")
+        print("Can't choose both -p for passthrough (= no trigger) and"
+              " -a for adc trigger or -t for tdc trigger at the same time."
+              " Pick one.")
         sys.exit(0)
-    if not (options.tdcTrig or options.adcTrig or options.pass_through) : # make user choose.
-        print("Must choose one mode: -p for passthrough (= no trigger)/-a for adc trigger/-t for tdc trigger.")
+    if not (options.tdcTrig or options.adcTrig or options.pass_through) :
+        # make user choose.
+        print("Must choose one mode: -p for passthrough (= no trigger)"
+              "/-a for adc trigger/-t for tdc trigger.")
         sys.exit(0)
     main(options,args)
-

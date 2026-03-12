@@ -1,6 +1,6 @@
 """Helpful python configuration functions for getting the path to installed detector descriptions.
 
-makePath is meant to be internal to this module, 
+makePath is meant to be internal to this module,
 but there is no reason a user could use it for a different purpose if desired
 
 This file was configured by cmake for the installation of ldmx-sw at
@@ -15,7 +15,7 @@ def makePath( det_name , file_name ) :
     """Return a path to the installed data directory for the input detector and file names.
 
     Assumes the detectors are installed in the 'data/detectors' directory in the installation directory.
-    Errors out the python script if the created full path does exist. 
+    Errors out the python script if the created full path does exist.
     This could happen because
     - The inputs were spelled wrong
     - The detector gdml files were not installed
@@ -36,7 +36,7 @@ def makePath( det_name , file_name ) :
 
     full_path = '@CMAKE_INSTALL_PREFIX@/data/detectors/' + det_name + '/' + file_name + '.gdml'
     if not os.path.isfile( full_path ) :
-        raise ValueError('GDML file \'%s\' does not exist.' % ( full_path ))
+        raise ValueError(f'GDML file \'{full_path}\' does not exist.')
 
     return full_path
 

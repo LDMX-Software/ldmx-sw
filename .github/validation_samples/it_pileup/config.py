@@ -34,10 +34,9 @@ p.sequence = [overlay]
 import LDMX.Ecal.ecal_clusters as ecal_cluster
 import LDMX.Ecal.ecal_hardcoded_conditions
 import LDMX.Hcal.hcal_hardcoded_conditions
-from LDMX.Ecal import digi as eDigi
+from LDMX.Ecal import digi as ecal_digi_reco
 from LDMX.Ecal import ecal_geometry
 from LDMX.Ecal import vetos as ecal_vetos
-from LDMX.Hcal import digi as hDigi
 
 # Hcal hardwired/geometry stuff
 from LDMX.Hcal import hcal_geometry
@@ -74,9 +73,9 @@ trig_scint_track.input_pass_name = this_pass_name
 
 
 # Load the ECAL modules
-ecal_digi   = eDigi.EcalDigiProducer('ecal_digis')
-ecal_reco   = eDigi.EcalRecProducer('ecalRecon')
-ecal_veto   = ecal_vetos.EcalVetoProcessor('ecalVetoBDT')
+ecal_digi   = ecal_digi_reco.EcalDigiProducer('ecal_digis')
+ecal_reco   = ecal_digi_reco.EcalRecProducer('ecal_recon')
+ecal_veto   = ecal_vetos.EcalVetoProcessor('ecal_veto')
 ecal_mip = ecal_vetos.EcalMipProcessor('ecal_mip')
 
 # The newly produced, overlayed simhits
@@ -126,7 +125,8 @@ from LDMX.Recon import pf_reco
 
 
 track_pf = pf_reco.pfTrackProducer()
-track_pf.input_track_coll_name=track_pf.input_track_coll_name+overlay_str #"EcalScoringPlaneHitsOverlay" #
+#"EcalScoringPlaneHitsOverlay" #
+track_pf.input_track_coll_name=track_pf.input_track_coll_name+overlay_str
 track_pf.input_pass_name=this_pass_name
 track_pf.do_electron_tracking=True
 # reference info
@@ -165,16 +165,16 @@ pu_finder.min_momentum=3000.
 from LDMX.DQM import dqm
 
 
-trigScint_sim_dqm = [
+trig_scint_sim_dqm = [
     dqm.TrigScintSimDQM('TrigScintSimPad1','TriggerPad1SimHits','pad1'),
     dqm.TrigScintSimDQM('TrigScintSimPad2','TriggerPad2SimHits','pad2'),
     dqm.TrigScintSimDQM('TrigScintSimPad3','TriggerPad3SimHits','pad3'),
     ]
 
-for ts_sim_dqm in trigScint_sim_dqm :
+for ts_sim_dqm in trig_scint_sim_dqm :
     ts_sim_dqm.hit_collection += overlay_str
 
-trigScint_dqm = [
+trig_scint_dqm = [
     dqm.TrigScintDigiDQM('TrigScintDigiPad1','trigScintDigisPad1','pad1'),
     dqm.TrigScintDigiDQM('TrigScintDigiPad2','trigScintDigisPad2','pad2'),
     dqm.TrigScintDigiDQM('TrigScintDigiPad3','trigScintDigisPad3','pad3'),
@@ -184,7 +184,7 @@ trigScint_dqm = [
     dqm.TrigScintTrackDQM('TrigScintTracks','TriggerPadTracks')
     ]
 
-for ts_dqm in trigScint_dqm :
+for ts_dqm in trig_scint_dqm :
     ts_dqm.pass_name = this_pass_name
 
 # EcalDigiVerify
@@ -235,11 +235,23 @@ trigger_dqm = dqm.Trigger()
 trigger_dqm.trigger_pass = this_pass_name
 
 
-dqm_with_overlay = trigScint_sim_dqm + trigScint_dqm + [trigger_dqm, ecal_digi_verify, ecal_shower_features, ecal_mip_tracking_features, ecal_veto_results] + hcal_dqm
+dqm_with_overlay = (
+    trig_scint_sim_dqm
+    + trig_scint_dqm
+    + [
+        trigger_dqm,
+        ecal_digi_verify,
+        ecal_shower_features,
+        ecal_mip_tracking_features,
+        ecal_veto_results,
+    ]
+    + hcal_dqm
+)
 
 p.logger.term_level = 1
 
-# Add full tracking for both tagger and recoil trackers: digi, seeds, CFK, ambiguity resolution, GSF, DQM
+# Add full tracking for both tagger and recoil trackers: digi, seeds, CFK, ambiguity
+# resolution, GSF, DQM
 p.sequence.extend(full_tracking_sequence.sequence)
 p.sequence.extend(full_tracking_sequence.dqm_sequence)
 

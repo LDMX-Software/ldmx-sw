@@ -7,7 +7,8 @@ import sys
 
 
 n_ev=400000
-#map_file="channelMapFrontBack_"+str(n_chan)+"channels.txt" #../TrigScint/data/channelMapFrontBack.txt")
+#map_file="channelMapFrontBack_"+str(n_chan)+"channels.txt"
+##../TrigScint/data/channelMapFrontBack.txt")
 
 #p.max_events = n_ev
 
@@ -22,15 +23,9 @@ if len(sys.argv) > 5 :
     map_file=sys.argv[5]
 else :
     map_file="channelMap_LYSOback_plasticFront_12-to-16channels_rotated180.txt" # "channelMap_LYSOback_plasticFront_12-to-16channels.txt" # "channelMap_identity_"+str(n_chan)+"channels.txt"
-if len(sys.argv) > 6 :
-    log_verbosity=int(sys.argv[6])
-else :
-    log_verbosity=2
+log_verbosity = int(sys.argv[6]) if len(sys.argv) > 6 else 2
 
-if len(sys.argv) > 7 :
-    n_chan=int(sys.argv[7])
-else :
-    n_chan=16 #default
+n_chan = int(sys.argv[7]) if len(sys.argv) > 7 else 16 #default
 
 from LDMX.TrigScint.qieFormat import QIEDecoder
 dec=QIEDecoder.up(map_file)

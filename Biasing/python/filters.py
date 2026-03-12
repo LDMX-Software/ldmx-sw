@@ -70,8 +70,8 @@ class DeepEcalProcessFilter(UserAction):
     bias_threshold: double
         Threshold for minimum energy that the products should have
     processes: vector of str
-        The allowed processes that can happen deep inside the ECAL, default is
-        conversion (conv) and photoelectron (photo)
+        The allowed processes that can happen deep inside the ECAL,
+        default is conversion (conv) and photoelectron (photo)
     ecal_min_z: double
         Minimum Z location where the deep process should happen
     require_photon_from_target: bool
