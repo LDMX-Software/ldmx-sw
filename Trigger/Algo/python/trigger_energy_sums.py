@@ -1,118 +1,125 @@
-from LDMX.Framework.ldmxcfg import Producer
+from LDMX.Framework import Processor, processor
 
 
-class EcalTPSelector(Producer) :
-    """Configuration for EcalTPSelector
-    """
-    def __init__(self, instance_name = 'myEcalTPSelector') :
-        super().__init__(instance_name , 'trigger::EcalTPSelector','Trigger')
-        self.tp_coll_name = "ecalTrigDigis"
-        self.pass_coll_name = "ecalTrig"
-        self.tp_coll_pass_name = ""
-        self.tp_coll_event_passname = ""
+@processor("trigger::EcalTPSelector", "Trigger")
+class EcalTPSelector(Processor):
+    """Configuration for EcalTPSelector"""
 
-class HcalTPSelector(Producer) :
-    """Configuration for HcalTPSelector (relies on TrigHcalEnergySum)
-    """
-    def __init__(self, instance_name = 'myHcalTPSelector') :
-        super().__init__(instance_name , 'trigger::HcalTPSelector','Trigger')
-        self.combined_quad_coll_name = "hcalTrigQuads"
-        self.pass_coll_name = "hcalTrig"
-        self.tp_coll_pass_name = ""
-        self.tp_coll_event_passname = ""
-
-class TrigEcalEnergySum(Producer) :
-    """Configuration for TrigEcalEnergySum
-    """
-    def __init__(self, instance_name = 'myTrigEcalEnergySum') :
-        super().__init__(instance_name , 'trigger::TrigEcalEnergySum','Trigger')
-        self.hit_coll_name = "ecalTrigDigis"
-        self.hit_coll_passname = ""
-        self.hit_collname_events_passname = ""
-
-class TrigHcalEnergySum(Producer) :
-    """Configuration for TrigHcalEnergySum
-    """
-    def __init__(self, instance_name = 'myTrigHcalEnergySum') :
-        super().__init__(instance_name , 'trigger::TrigHcalEnergySum','Trigger')
-        self.quad_coll_name = "hcalTrigPrimDigiSTQs"
-        self.combined_quad_coll_name = "hcalTrigQuads"
-        self.input_proc = "" # name of the process where the STQs are built
-
-class HCalTrigMipReco(Producer) :
-    """Configuration for TrigMipReco in Hcal
-    """
-    def __init__(self, instance_name = 'myHCalTrigMipReco') :
-        super().__init__(instance_name , 'trigger::TrigMipReco','Trigger')
-        self.hit_coll_name = "hcalTrigHits"
-        self.pass_coll_name = "hcalTrigMIPs"
-        self.hit_coll_passname = ""
-        self.calorimeter_type_is_hcal = True
-
-class ECalTrigMipReco(Producer) :
-    """Configuration for TrigMipReco in Ecal
-    """
-    def __init__(self, instance_name = 'myECalTrigMipReco') :
-        super().__init__(instance_name , 'trigger::TrigMipReco','Trigger')
-        self.hit_coll_name = "ecalTrigHits"
-        self.pass_coll_name = "ecalTrigMIPs"
-        self.hit_coll_passname = ""
-        self.calorimeter_type_is_hcal = False
-
-class TrigEcalClusterProducer(Producer) :
-    """Configuration for TrigEcalClusterProducer
-    """
-    def __init__(self, instance_name = 'myTrigEcalClusterProducer') :
-        super().__init__(instance_name , 'trigger::TrigEcalClusterProducer','Trigger')
-        self.hit_coll_name = "ecalTrigDigis"
-        self.cluster_coll_name = "ecalTrigClusters"
-        self.hit_coll_passname = ""
-        self.hit_coll_name_events_passname = ""
-
-class TrigElectronProducer(Producer) :
-    """Configuration for Tester
-    """
-    def __init__(self, instance_name = 'myTrigElectronProducer', prop_map_name="./propagationMap.root") :
-        super().__init__(instance_name , 'trigger::TrigElectronProducer','Trigger')
-        # self.out_path = out_path
-        self.scoring_plane_coll_name = "TargetScoringPlaneHits"
-        self.cluster_coll_name = "ecalTrigClusters"
-        self.ele_coll_name = "trigElectrons"
-        self.prop_map_name = prop_map_name
-
-        self.target_sp_passname = ""
-        self.cluster_coll_passname = ""
-        self.cluster_collname_events_passname = ""
-        self.sp_collname_events_passname_ = ""
-
-class NtupleWriter(Producer) :
-    """Configuration for Tester
-    """
-    def __init__(self, instance_name = 'myNtupleWriter', out_path="./ntuple.root", ) :
-        super().__init__(instance_name , 'trigger::NtupleWriter','Trigger')
-        self.out_path = out_path
-
-        self.target_sp_hits_event_passname = ""
-        self.target_sp_passname = ""
-        self.ecal_sp_hits_events_passname = ""
-        self.ecal_sp_passname = ""
-        self.ecal_trig_sums_event_passname = ""
-        self.ecal_trig_sums_passname = ""
-        self.trig_electrons_event_passname = ""
-        self.trig_electrons_passname = ""
-        self.hcal_trig_quads_events_passname = ""
-        self.hcal_trig_quads_passname = ""
+    tp_coll_name: str = "ecalTrigDigis"
+    pass_coll_name: str = "ecalTrig"
+    tp_coll_pass_name: str = ""
+    tp_coll_event_passname: str = ""
 
 
-class PropagationMapWriter(Producer) :
-    """Configuration for Tester
-    """
-    def __init__(self, instance_name = 'myPropagationMapWriter', out_path="./propagationMap.root") :
-        super().__init__(instance_name , 'trigger::PropagationMapWriter','Trigger')
-        self.out_path = out_path
+@processor("trigger::HcalTPSelector", "Trigger")
+class HcalTPSelector(Processor):
+    """Configuration for HcalTPSelector (relies on TrigHcalEnergySum)"""
 
-        self.ecal_scoring_plane_passname = ""
-        self.target_scoring_plane_passname = ""
-        self.target_sp_hits_events_passname = ""
-        self.ecal_sp_hits_events_passname = ""
+    combined_quad_coll_name: str = "hcalTrigQuads"
+    pass_coll_name: str = "hcalTrig"
+    tp_coll_pass_name: str = ""
+    tp_coll_event_passname: str = ""
+
+
+@processor("trigger::TrigEcalEnergySum", "Trigger")
+class TrigEcalEnergySum(Processor):
+    """Configuration for TrigEcalEnergySum"""
+
+    hit_coll_name: str = "ecalTrigDigis"
+    hit_coll_passname: str = ""
+    hit_collname_events_passname: str = ""
+
+
+@processor("trigger::TrigHcalEnergySum", "Trigger")
+class TrigHcalEnergySum(Processor):
+    """Configuration for TrigHcalEnergySum"""
+
+    quad_coll_name: str = "hcalTrigPrimDigiSTQs"
+    combined_quad_coll_name: str = "hcalTrigQuads"
+    input_proc: str = ""  # name of the process where the STQs are built
+
+
+@processor("trigger::TrigMipReco", "Trigger")
+class HCalTrigMipReco(Processor):
+    """Configuration for TrigMipReco in Hcal"""
+
+    hit_coll_name: str = "hcalTrigHits"
+    pass_coll_name: str = "hcalTrigMIPs"
+    hit_coll_passname: str = ""
+    calorimeter_type_is_hcal: bool = True
+    max_layer: int = 32
+    search_radius: float = 50.0
+    min_track_length: int = 5
+    isolation_e_cut: float = 180.0
+    hole_fraction_max: float = 0.2
+    hcal_min_energy: float = 8.0
+
+
+@processor("trigger::TrigMipReco", "Trigger")
+class ECalTrigMipReco(Processor):
+    """Configuration for TrigMipReco in Ecal"""
+
+    hit_coll_name: str = "ecalTrigHits"
+    pass_coll_name: str = "ecalTrigMIPs"
+    hit_coll_passname: str = ""
+    calorimeter_type_is_hcal: bool = False
+    max_layer: int = 32
+    search_radius: float = 50.0
+    min_track_length: int = 5
+    isolation_e_cut: float = 180.0
+    hole_fraction_max: float = 0.2
+    ecal_min_energy: float = 3.0
+    ecal_max_energy: float = 26.0
+
+
+@processor("trigger::TrigEcalClusterProducer", "Trigger")
+class TrigEcalClusterProducer(Processor):
+    """Configuration for TrigEcalClusterProducer"""
+
+    hit_coll_name: str = "ecalTrigDigis"
+    cluster_coll_name: str = "ecalTrigClusters"
+    hit_coll_passname: str = ""
+    hit_coll_name_events_passname: str = ""
+
+
+@processor("trigger::TrigElectronProducer", "Trigger")
+class TrigElectronProducer(Processor):
+    """Configuration for TrigElectronProducer"""
+
+    scoring_plane_coll_name: str = "TargetScoringPlaneHits"
+    cluster_coll_name: str = "ecalTrigClusters"
+    ele_coll_name: str = "trigElectrons"
+    prop_map_name: str = "./propagationMap.root"
+    target_sp_passname: str = ""
+    cluster_coll_passname: str = ""
+    cluster_collname_events_passname: str = ""
+    sp_collname_events_passname_: str = ""
+
+
+@processor("trigger::NtupleWriter", "Trigger")
+class NtupleWriter(Processor):
+    """Configuration for NtupleWriter"""
+
+    out_path: str = "./ntuple.root"
+    target_sp_hits_event_passname: str = ""
+    target_sp_passname: str = ""
+    ecal_sp_hits_events_passname: str = ""
+    ecal_sp_passname: str = ""
+    ecal_trig_sums_event_passname: str = ""
+    ecal_trig_sums_passname: str = ""
+    trig_electrons_event_passname: str = ""
+    trig_electrons_passname: str = ""
+    hcal_trig_quads_events_passname: str = ""
+    hcal_trig_quads_passname: str = ""
+
+
+@processor("trigger::PropagationMapWriter", "Trigger")
+class PropagationMapWriter(Processor):
+    """Configuration for PropagationMapWriter"""
+
+    out_path: str = "./propagationMap.root"
+    ecal_scoring_plane_passname: str = ""
+    target_scoring_plane_passname: str = ""
+    target_sp_hits_events_passname: str = ""
+    ecal_sp_hits_events_passname: str = ""
 
