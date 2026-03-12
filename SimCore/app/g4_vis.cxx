@@ -28,7 +28,7 @@ int main(int argc, char* argv[]) {
   if (argc != 2 && argc != 3) {
     printUsage();
     std::cerr << "** Need to be given a single detector description and "
-                 ")optionally) a single macro to execute. **"
+                 "(optionally) a single macro to execute. **"
               << std::endl;
     return 1;
   }
@@ -77,6 +77,12 @@ int main(int argc, char* argv[]) {
   G4VisManager* vis_manager = new G4VisExecutive;
   vis_manager->Initialize();
   if (argc == 3) {
+    if(!std::fopen(argv[2],"r")){
+      std::cerr << "Macro file doesn't exist, or the path is incorrect! "
+	           "Try using an absolute path or checking your directory."
+		<< std::endl << std::endl;
+      return 1;
+    }
     auto* uimanager = G4UImanager::GetUIpointer();
     G4String command = "/control/execute " + the_macro;
     uimanager->ApplyCommand(command);
