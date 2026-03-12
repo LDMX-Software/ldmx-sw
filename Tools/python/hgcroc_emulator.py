@@ -38,7 +38,6 @@ class HgcrocEmulator :
     """
 
     rate_up_slope: float = -0.345
-    rate_up_slope: float = -0.345
     time_up_slope: float = 70.6547
     rate_dn_slope: float = 0.140068
     time_dn_slope: float = 87.7649
