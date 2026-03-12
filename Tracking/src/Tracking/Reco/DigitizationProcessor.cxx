@@ -17,9 +17,9 @@ void DigitizationProcessor::onProcessStart() {
     strip_digitizer_ = std::make_unique<tracking::digitization::SiStripDigitizer>(
         sensor_params_, generator_);
     ldmx_log(info) << "Charge digitization enabled."
-                   << "  thickness="       << sensor_params_.thickness         << " mm"
-                   << "  sense_pitch="     << sensor_params_.sense_pitch       << " mm"
-                   << "  readout_pitch="   << sensor_params_.readout_pitch     << " mm"
+                   << "  thickness=from geometry"
+                   << "  sense_pitch="     << tracking::digitization::SENSE_PITCH_MM   << " mm"
+                   << "  readout_pitch="   << tracking::digitization::READOUT_PITCH_MM << " mm"
                    << "  Vbias="           << sensor_params_.bias_voltage      << " V"
                    << "  Vdep="            << sensor_params_.depletion_voltage << " V"
                    << "  bulk="            << (sensor_params_.is_n_type ? "n" : "p") << "-type"
@@ -32,15 +32,14 @@ void DigitizationProcessor::onProcessStart() {
                    << "  granularity="     << sensor_params_.deposition_granularity;
 
     pulse_shape_ = tracking::digitization::PulseShape::make(
-        pulse_shape_name_, tp_, tp2_);
-    ldmx_log(info) << "Pulse shaping: shape=" << pulse_shape_name_
-                   << "  tp=" << tp_ << " ns"
-                   << (pulse_shape_name_ == "FourPole"
-                           ? "  tp2=" + std::to_string(tp2_) + " ns"
-                           : "")
-                   << "  n_samples=" << N_SAMPLES
-                   << "  sampling_interval=" << sampling_interval_ns_ << " ns"
-                   << "  t0_offset=" << t0_offset_ns_ << " ns";
+        std::string(tracking::digitization::PULSE_SHAPE_NAME),
+        tracking::digitization::PEAKING_TIME_NS,
+        tracking::digitization::SECOND_TIME_CONST_NS);
+    ldmx_log(info) << "Pulse shaping: shape=" << tracking::digitization::PULSE_SHAPE_NAME
+                   << "  tp=" << tracking::digitization::PEAKING_TIME_NS << " ns"
+                   << "  n_samples=" << tracking::digitization::N_SAMPLES
+                   << "  sampling_interval=" << tracking::digitization::SAMPLING_INTERVAL_NS << " ns"
+                   << "  t0_offset=" << tracking::digitization::T0_OFFSET_NS << " ns";
   }
 }
 
@@ -64,12 +63,6 @@ void DigitizationProcessor::configure(
       parameters.get<bool>("use_charge_digitization", false);
 
   if (use_charge_digitization_) {
-    sensor_params_.thickness =
-        parameters.get<double>("thickness", 0.320);
-    sensor_params_.sense_pitch =
-        parameters.get<double>("sense_pitch", 0.030);
-    sensor_params_.readout_pitch =
-        parameters.get<double>("readout_pitch", 0.060);
     sensor_params_.bias_voltage =
         parameters.get<double>("bias_voltage", 200.0);
     sensor_params_.depletion_voltage =
@@ -96,21 +89,11 @@ void DigitizationProcessor::configure(
         parameters.get<double>("deposition_granularity", 0.10);
     sensor_params_.n_segments_min =
         parameters.get<int>("n_segments_min", 5);
+    sensor_params_.n_readout_strips =
+        parameters.get<int>("n_readout_strips", 767);
 
-    // ADC conversion parameters
     out_raw_collection_ =
         parameters.get<std::string>("out_raw_collection", "");
-    adc_electrons_per_count_ =
-        parameters.get<double>("adc_electrons_per_count", 50.0);
-    adc_pedestal_ = parameters.get<int>("adc_pedestal", 0);
-    adc_bits_     = parameters.get<int>("adc_bits", 12);
-
-    // Pulse shape parameters
-    pulse_shape_name_     = parameters.get<std::string>("pulse_shape", "CRRC");
-    tp_                   = parameters.get<double>("tp", 45.0);
-    tp2_                  = parameters.get<double>("tp2", 10.0);
-    t0_offset_ns_         = parameters.get<double>("t0_offset_ns", 0.0);
-    sampling_interval_ns_ = parameters.get<double>("sampling_interval_ns", 25.0);
   }
 }
 
@@ -298,10 +281,23 @@ std::vector<ldmx::Measurement> DigitizationProcessor::digitizeHits(
       continue;
     }
 
+    // Store the projected truth U before any smearing or charge digitization.
+    measurement.setTruthU(static_cast<float>(local_pos_2d[0]));
+
     // -----------------------------------------------------------------------
     // Mode 1: realistic charge digitization
     // -----------------------------------------------------------------------
     if (use_charge_digitization_) {
+      // Read sensor thickness from the geometry.
+      const auto* det_el = hit_surface->associatedDetectorElement();
+      if (!det_el) {
+        ldmx_log(warn) << "No detector element for layer_id=" << layer_id
+                       << " — skipping hit";
+        continue;
+      }
+      const double thickness = det_el->thickness();
+      strip_digitizer_->setThickness(thickness);
+
       // Build the full 3D local position and direction for charge simulation.
       const Acts::Transform3 surf_transform =
           hit_surface->transform(geometryContext());
@@ -331,9 +327,7 @@ std::vector<ldmx::Measurement> DigitizationProcessor::digitizeHits(
       double path_length = sim_hit.getPathLength();
       if (path_length <= 0.0) {
         const double cos_theta = std::abs(local_dir_3d[2]);
-        path_length = (cos_theta > 1e-3)
-                          ? sensor_params_.thickness / cos_theta
-                          : sensor_params_.thickness;
+        path_length = (cos_theta > 1e-3) ? thickness / cos_theta : thickness;
       }
 
       // Compute charge deposited on each strip
@@ -378,23 +372,31 @@ std::vector<ldmx::Measurement> DigitizationProcessor::digitizeHits(
 
       // Produce RawSiStripHit objects (N_SAMPLES shaped ADC samples per strip).
       if (raw_hits && pulse_shape_) {
-        const int  adc_max  = (1 << adc_bits_) - 1;
-        const long hit_time = static_cast<long>(sim_hit.getTime());
+        const int    adc_max  = (1 << tracking::digitization::ADC_BITS) - 1;
+        const double hit_time_ns = sim_hit.getTime();  // absolute hit arrival time [ns]
+        const long   hit_time    = static_cast<long>(hit_time_ns);
 
         for (const auto& [strip_idx, charge] : strip_charges) {
           // Peak ADC value (before shaping) from the collected charge.
-          const double peak_adc = charge / adc_electrons_per_count_;
+          const double peak_adc = charge / tracking::digitization::ADC_ELECTRONS_PER_COUNT;
 
-          std::vector<short> samples(N_SAMPLES);
-          for (int isamp = 0; isamp < N_SAMPLES; ++isamp) {
-            const double t = t0_offset_ns_ + isamp * sampling_interval_ns_;
-            const double val = adc_pedestal_ + peak_adc * pulse_shape_->eval(t);
+          std::vector<short> samples(tracking::digitization::N_SAMPLES);
+          for (int isamp = 0; isamp < tracking::digitization::N_SAMPLES; ++isamp) {
+            // t_sample is the absolute time of this ADC clock tick.
+            // The pulse shape argument is (t_sample - T_hit): time since
+            // hit arrival, so the fitter can recover T_hit as result.t0.
+            const double t_sample = tracking::digitization::T0_OFFSET_NS
+                                    + isamp * tracking::digitization::SAMPLING_INTERVAL_NS;
+            const double val = tracking::digitization::ADC_PEDESTAL
+                               + peak_adc * pulse_shape_->eval(t_sample - hit_time_ns);
             samples[isamp] = static_cast<short>(
                 std::clamp(static_cast<int>(std::round(val)), 0, adc_max));
           }
 
           raw_hits->emplace_back(layer_id, strip_idx, std::move(samples),
-                                 hit_time);
+                                 hit_time, sim_hit.getTrackID(),
+                                 sim_hit.getPdgID(), sim_hit.getID(),
+                                 sim_hit.getEdep());
         }
       }
 

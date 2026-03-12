@@ -6,6 +6,7 @@
 
 #include "Acts/Definitions/Algebra.hpp"
 #include "SimCore/Event/SimTrackerHit.h"
+#include "Tracking/Digitization/SiStripConstants.h"
 
 namespace tracking::digitization {
 
@@ -48,31 +49,34 @@ namespace tracking::digitization {
  * Electrons are collected at W = +thickness/2 (the n-strip side).
  * Holes    are collected at W = −thickness/2 (the p-bulk/backplane side).
  *
- * Strip indexing: sense strip n is centred at U = n · sense_pitch;
- *                 readout strip m is centred at U = m · readout_pitch.
- * Mapping: sense strip n → readout strip ⌊n / ratio⌋
+ * Strip indexing: readout strip m is centred at U = (m − N/2) · readout_pitch,
+ *                 where N = n_readout_strips (default 512).
+ *                 Strip 0 is at the most-negative U edge; strip N−1 at the
+ *                 most-positive U edge.  The sensor centre is between strips
+ *                 N/2−1 and N/2.
+ * Mapping: sense strip n → readout strip ⌊n / ratio⌋ + N/2
  *          where ratio = round(readout_pitch / sense_pitch).
  */
 class SiStripDigitizer {
  public:
   /// All parameters describing one silicon strip sensor layer.
   struct SensorParams {
-    /// Sensor thickness [mm].
-    double thickness{0.320};
+    /// Sensor thickness [mm].  Must be set from the geometry before use.
+    double thickness{0.0};
     /// Sense (inner) electrode pitch [mm].
-    double sense_pitch{0.030};
+    double sense_pitch{SENSE_PITCH_MM};
     /// Readout strip pitch [mm].  Must be an integer multiple of sense_pitch.
-    double readout_pitch{0.060};
+    double readout_pitch{READOUT_PITCH_MM};
     /// Applied reverse-bias voltage [V].
-    double bias_voltage{200.0};
+    double bias_voltage{BIAS_VOLTAGE_V};
     /// Full-depletion voltage [V].
-    double depletion_voltage{70.0};
+    double depletion_voltage{DEPLETION_VOLTAGE_V};
     /// Operating temperature [K].
-    double temperature{300.0};
+    double temperature{TEMPERATURE_K};
     /// Electronic noise sigma [electrons ENC].
-    double noise_electrons{1000.0};
+    double noise_electrons{NOISE_ELECTRONS};
     /// Readout threshold [electrons].  Strips below this are suppressed.
-    double threshold_electrons{3000.0};
+    double threshold_electrons{THRESHOLD_ELECTRONS};
     /// true = n-type bulk;  false = p-type bulk (default, most SVT sensors).
     bool is_n_type{false};
     /// Simulate and read out the electron-collection side (n-strips).
@@ -93,6 +97,9 @@ class SiStripDigitizer {
     /// Minimum number of track sub-segments (used when the track is close to
     /// normal incidence so the adaptive formula gives a very small count).
     int n_segments_min{5};
+    /// Total number of readout strips.  Strip index 0 is at the most-negative
+    /// U edge; strip N−1 at the most-positive edge.
+    int n_readout_strips{N_READOUT_STRIPS};
   };
 
   SiStripDigitizer() = default;
@@ -117,6 +124,8 @@ class SiStripDigitizer {
    * @param path_length Track path length through the sensor volume [mm].
    *
    * @return Map of readout_strip_index → collected charge [electrons].
+   *         Indices are in [0, n_readout_strips); strip 0 is at the
+   *         most-negative U edge of the sensor.
    */
   std::map<int, double> computeStripCharges(double edep,
                                              const Acts::Vector3& local_pos,
@@ -141,6 +150,9 @@ class SiStripDigitizer {
       const std::map<int, double>& strip_charges) const;
 
   const SensorParams& params() const { return params_; }
+
+  /// Set the sensor thickness [mm] from the geometry before processing hits.
+  void setThickness(double thickness) { params_.thickness = thickness; }
 
  private:
   /**

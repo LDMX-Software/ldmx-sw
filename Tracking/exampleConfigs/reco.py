@@ -41,6 +41,7 @@ from LDMX.Tracking import full_tracking_sequence
 # Add full tracking for both tagger and recoil trackers: digi, seeds, CFK, ambiguity
 # resolution, GSF, DQM
 p.sequence.extend(full_tracking_sequence.sequence)
+p.sequence.extend(full_tracking_sequence.dqm_sequence)
 
 # Output name
 #   just append '_withTracking' to the name of the input file

@@ -689,7 +689,14 @@ void CKFProcessor::produce(framework::Event& event) {
             // tan(angle) = sqrt(phi_u^2 + phi_v^2)
             // cos(angle) = 1 / sqrt(1 + tan(angle)^2)
             // path_length = thickness / cos(angle)
-            const float sensor_thickness = 0.320f;  // mm
+            float sensor_thickness = 0.0f;
+            if (const auto* det_el = meas_surface.associatedDetectorElement()) {
+              sensor_thickness = static_cast<float>(det_el->thickness());
+            } else {
+              ldmx_log(warn) << "No detector element for measurement surface"
+                             << " — skipping dE/dx for this hit";
+              continue;
+            }
             float tan_angle_sq = phi_u * phi_u + phi_v * phi_v;
             float cos_angle = 1.0f / std::sqrt(1.0f + tan_angle_sq);
             float path_length = sensor_thickness / cos_angle;

@@ -27,6 +27,87 @@ class TrackerDigiDQM(ldmxcfg.Analyzer):
 
 
 
+class DigiDQM(ldmxcfg.Analyzer):
+    """DQM for silicon-strip digitization and clustering.
+
+    Produces per-sensor histograms for sim hits, digi measurements,
+    fitted strips, clusters, and digi-cluster position residuals.
+
+    Parameters
+    ----------
+    instance_name : str
+        Unique name for this instance.
+    n_sensors : int
+        Number of sensors to histogram (default 14).
+
+    Attributes (set before calling buildHistograms)
+    ----------
+    sim_coll_name     : SimTrackerHit collection name
+    digi_coll_name    : DigitizationProcessor Measurement collection name
+    fitted_coll_name  : FittedSiStripHit collection name
+    cluster_coll_name : StripClusterProcessor Measurement collection name
+    """
+
+    def __init__(self, instance_name='DigiDQM', n_sensors=14):
+        super().__init__(instance_name, 'tracking::dqm::DigiDQM', 'Tracking')
+
+        self.n_sensors         = n_sensors
+        self.sim_coll_name     = 'TaggerSimHits'
+        self.sim_pass_name     = ''
+        self.digi_coll_name    = 'DigiTaggerSimHits'
+        self.digi_pass_name    = ''
+        self.fitted_coll_name  = 'TaggerFittedSiStripHits'
+        self.fitted_pass_name  = ''
+        self.cluster_coll_name = 'TaggerClusterMeasurements'
+        self.cluster_pass_name = ''
+
+    def buildHistograms(self):
+        for i in range(self.n_sensors):
+            s = str(i)
+
+            # --- sim hits ---
+            self.build_1d_histogram(f'sim_n_s{s}',
+                'N sim hits', 10, 0, 10)
+            self.build_1d_histogram(f'sim_edep_s{s}',
+                'Sim E_{dep} (MeV)', 100, 0, 0.5)
+
+            # --- digi measurements ---
+            self.build_1d_histogram(f'digi_n_s{s}',
+                'N digi measurements', 10, 0, 10)
+            self.build_1d_histogram(f'digi_u_s{s}',
+                'Digi local U (mm)', 200, -23.0, 23.0)
+
+            # --- fitted strips ---
+            self.build_1d_histogram(f'strip_n_s{s}',
+                'N fitted strips', 20, 0, 20)
+            self.build_1d_histogram(f'strip_amp_s{s}',
+                'Strip amplitude (ADC)', 150, 0, 1500)
+            self.build_1d_histogram(f'strip_t0_s{s}',
+                'Strip fitted t_{0} (ns)', 100, -50, 150)
+            self.build_1d_histogram(f'strip_chi2ndf_s{s}',
+                'Strip #chi^{2}/ndf', 100, 0, 10)
+
+            # --- clusters ---
+            self.build_1d_histogram(f'cluster_n_s{s}',
+                'N clusters', 10, 0, 10)
+            self.build_1d_histogram(f'cluster_u_s{s}',
+                'Cluster local U (mm)', 200, -23.0, 23.0)
+            self.build_1d_histogram(f'cluster_amp_s{s}',
+                'Cluster amplitude (ADC)', 150, 0, 1500)
+            self.build_1d_histogram(f'cluster_nstrips_s{s}',
+                'Strips per cluster', 10, 0, 10)
+            self.build_1d_histogram(f'cluster_time_s{s}',
+                'Cluster time (ns)', 100, -50, 150)
+
+            # --- digi-cluster residual ---
+            self.build_1d_histogram(f'du_s{s}',
+                                    'Digi U #minus Cluster U (mm)', 100, -0.1, 0.1)
+
+            # --- sim-cluster residual ---
+            self.build_1d_histogram(f'sim_cluster_du_s{s}',
+                                    'Sim U #minus Cluster U (mm)', 100, -0.1, 0.1)
+
+
 class TrackingRecoDQM(ldmxcfg.Analyzer):
     """
     """

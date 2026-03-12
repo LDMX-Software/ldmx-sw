@@ -8,6 +8,7 @@
 #include "Framework/EventProcessor.h"
 
 #include "Tracking/Digitization/PulseShape.h"
+#include "Tracking/Digitization/SiStripConstants.h"
 #include "Tracking/Digitization/StripPulseFitter.h"
 
 namespace tracking::reco {
@@ -55,19 +56,6 @@ class StripFitProcessor : public framework::Producer {
   std::string in_collection_{"RawSiStripHits"};
   std::string in_pass_{""};
   std::string out_collection_{"FittedSiStripHits"};
-
-  // Pulse shape
-  std::string pulse_shape_name_{"CRRC"};
-  double tp_{45.0};
-  double tp2_{10.0};
-
-  // Sampling geometry
-  double t0_offset_ns_{0.0};
-  double sampling_interval_ns_{25.0};
-
-  // Electronics noise model
-  double pedestal_adc_{0.0};
-  double noise_sigma_adc_{5.0};
 
   // Scan range for hit-time search
   double t_scan_min_ns_{-50.0};

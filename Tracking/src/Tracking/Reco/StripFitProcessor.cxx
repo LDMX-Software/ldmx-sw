@@ -16,16 +16,6 @@ void StripFitProcessor::configure(framework::config::Parameters& parameters) {
   in_pass_        = parameters.get<std::string>("in_pass",        "");
   out_collection_ = parameters.get<std::string>("out_collection", "FittedSiStripHits");
 
-  pulse_shape_name_     = parameters.get<std::string>("pulse_shape", "CRRC");
-  tp_                   = parameters.get<double>("tp",  45.0);
-  tp2_                  = parameters.get<double>("tp2", 10.0);
-
-  t0_offset_ns_         = parameters.get<double>("t0_offset_ns",         0.0);
-  sampling_interval_ns_ = parameters.get<double>("sampling_interval_ns", 25.0);
-
-  pedestal_adc_         = parameters.get<double>("pedestal_adc",   0.0);
-  noise_sigma_adc_      = parameters.get<double>("noise_sigma_adc", 5.0);
-
   t_scan_min_ns_  = parameters.get<double>("t_scan_min_ns",  -50.0);
   t_scan_max_ns_  = parameters.get<double>("t_scan_max_ns",  150.0);
   t_scan_step_ns_ = parameters.get<double>("t_scan_step_ns",   1.0);
@@ -34,27 +24,26 @@ void StripFitProcessor::configure(framework::config::Parameters& parameters) {
 }
 
 void StripFitProcessor::onProcessStart() {
-  pulse_shape_ = tracking::digitization::PulseShape::make(
-      pulse_shape_name_, tp_, tp2_);
+  using namespace tracking::digitization;
+
+  pulse_shape_ = PulseShape::make(std::string(PULSE_SHAPE_NAME),
+                                  PEAKING_TIME_NS, SECOND_TIME_CONST_NS);
 
   fitter_ = std::make_unique<tracking::digitization::StripPulseFitter>(
       *pulse_shape_,
-      t0_offset_ns_,
-      sampling_interval_ns_,
-      pedestal_adc_,
-      noise_sigma_adc_,
+      T0_OFFSET_NS,
+      SAMPLING_INTERVAL_NS,
+      static_cast<double>(ADC_PEDESTAL),
+      NOISE_SIGMA_ADC,
       t_scan_min_ns_,
       t_scan_max_ns_,
       t_scan_step_ns_);
 
   ldmx_log(info) << "StripFitProcessor configured:"
-                 << "  shape="    << pulse_shape_name_
-                 << "  tp="       << tp_       << " ns"
-                 << (pulse_shape_name_ == "FourPole"
-                         ? "  tp2=" + std::to_string(tp2_) + " ns"
-                         : "")
-                 << "  pedestal=" << pedestal_adc_    << " ADC"
-                 << "  noise_σ="  << noise_sigma_adc_ << " ADC"
+                 << "  shape="    << PULSE_SHAPE_NAME
+                 << "  tp="       << PEAKING_TIME_NS    << " ns"
+                 << "  pedestal=" << ADC_PEDESTAL        << " ADC"
+                 << "  noise_σ="  << NOISE_SIGMA_ADC     << " ADC"
                  << "  T scan ["  << t_scan_min_ns_ << ", "
                                   << t_scan_max_ns_ << "] ns"
                  << "  step="     << t_scan_step_ns_ << " ns";
@@ -93,7 +82,11 @@ void StripFitProcessor::produce(framework::Event& event) {
         static_cast<float>(result.amplitude),
         static_cast<float>(result.t0),
         static_cast<float>(result.chi2),
-        result.ndf);
+        result.ndf,
+        raw.getTrackID(),
+        raw.getPdgID(),
+        raw.getSimHitID(),
+        raw.getEdep());
 
     ldmx_log(trace) << "Fitted: layer=" << raw.getLayerID()
                     << " strip=" << raw.getStripID()

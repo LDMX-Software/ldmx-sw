@@ -2,6 +2,7 @@
 
 //~~ StdLib ~~//
 #include <array>
+#include <limits>
 
 #include "SimCore/Event/SimTrackerHit.h"
 
@@ -119,6 +120,29 @@ class Measurement {
   ///  place.
   float getEdep() const { return edep_; };
 
+  /// Set the energy deposited in the sensor [MeV].
+  void setEdep(float e) { edep_ = e; };
+
+  // --- Truth local position (set by DigitizationProcessor before digitization) ---
+
+  /// Set the truth local U [mm]: the sim-hit global position projected onto the
+  /// sensor surface, before any smearing or charge digitization.
+  void setTruthU(float u) { truth_u_ = u; }
+  /// @return Truth local U [mm] (quiet_NaN if not set).
+  float getTruthU() const { return truth_u_; }
+
+  // --- Cluster metadata (set by StripClusterProcessor; default -1/0 otherwise) ---
+
+  /// Set the number of strips that formed this cluster (-1 if not a cluster).
+  void setNStrips(int n) { n_strips_ = n; }
+  /// @return Number of strips in the cluster (-1 if not from strip clustering).
+  int getNStrips() const { return n_strips_; }
+
+  /// Set the total cluster amplitude [ADC counts].
+  void setClusterAmplitude(float amp) { cluster_amplitude_ = amp; }
+  /// @return Total cluster amplitude [ADC counts] (0 if not from strip clustering).
+  float getClusterAmplitude() const { return cluster_amplitude_; }
+
   /**
    * Overload the stream insertion operator to output a string representation of
    * this Measurement.
@@ -162,7 +186,16 @@ class Measurement {
   /// TrackIDs the vector of TrackIDs that form the measurement
   std::vector<unsigned int> track_ids_{};
 
-  ClassDef(Measurement, 2);
+  /// Truth local U [mm] projected from the SimTrackerHit before digitization.
+  /// Initialised to quiet_NaN so the DQM can detect "not set".
+  float truth_u_{std::numeric_limits<float>::quiet_NaN()};
+
+  /// Number of strips in the cluster (-1 = not from strip clustering).
+  int n_strips_{-1};
+  /// Total cluster amplitude [ADC counts] (0 = not from strip clustering).
+  float cluster_amplitude_{0};
+
+  ClassDef(Measurement, 4);
 };  // Measurement
 
 typedef std::vector<Measurement> Measurements;

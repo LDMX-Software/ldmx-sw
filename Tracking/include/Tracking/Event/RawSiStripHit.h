@@ -31,13 +31,17 @@ class RawSiStripHit {
   /**
    * Constructor.
    *
-   * @param[in] layer_id  Sensor layer identifier (from tracking geometry).
-   * @param[in] strip_id  Readout strip index within the sensor.
-   * @param[in] samples   The ADC samples composing this hit (16-bit each).
-   * @param[in] time      Hit timestamp [ns].
+   * @param[in] layer_id    Sensor layer identifier (from tracking geometry).
+   * @param[in] strip_id    Readout strip index within the sensor.
+   * @param[in] samples     The ADC samples composing this hit (16-bit each).
+   * @param[in] time        Hit timestamp [ns].
+   * @param[in] track_id    Geant4 track ID of the particle that created this hit.
+   * @param[in] pdg_id      PDG particle ID of the particle that created this hit.
+   * @param[in] sim_hit_id  Detector ID of the originating SimTrackerHit.
    */
   RawSiStripHit(int layer_id, int strip_id, std::vector<short> samples,
-                long time);
+                long time, int track_id = -1, int pdg_id = 0,
+                int sim_hit_id = -1, float edep = 0.f);
 
   /**
    * Destructor.
@@ -89,6 +93,18 @@ class RawSiStripHit {
    */
   long getTime() const { return time_; }
 
+  /// Get the Geant4 track ID of the particle that created this hit (-1 if unknown).
+  int getTrackID() const { return track_id_; }
+
+  /// Get the PDG particle ID of the particle that created this hit (0 if unknown).
+  int getPdgID() const { return pdg_id_; }
+
+  /// Get the detector ID of the originating SimTrackerHit (-1 if unknown).
+  int getSimHitID() const { return sim_hit_id_; }
+
+  /// Get the energy deposited by the parent SimTrackerHit [MeV] (0 if unknown).
+  float getEdep() const { return edep_; }
+
   /**
    * When the less than operator is used for comparison, return true if this
    * hit's time is less than the hit we are comparing against.
@@ -129,8 +145,18 @@ class RawSiStripHit {
   /// The hit time stamp in units of ns.
   long time_{0};
 
+  // Truth information (for MC truth matching; -1/0 means not set)
+  /// Geant4 track ID of the particle that created this hit.
+  int track_id_{-1};
+  /// PDG particle ID of the particle that created this hit.
+  int pdg_id_{0};
+  /// Detector ID of the originating SimTrackerHit.
+  int sim_hit_id_{-1};
+  /// Energy deposited by the parent SimTrackerHit [MeV].
+  float edep_{0.f};
+
   /// Class declaration needed by the ROOT dictionary.
-  ClassDef(RawSiStripHit, 3);
+  ClassDef(RawSiStripHit, 5);
 
 };  // RawSiStripHit
 }  // namespace ldmx

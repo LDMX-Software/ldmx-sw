@@ -1,4 +1,5 @@
 #include "Tracking/Digitization/SiStripDigitizer.h"
+#include "Tracking/Digitization/SiStripConstants.h"
 
 #include <cmath>
 #include <set>
@@ -8,9 +9,6 @@ namespace tracking::digitization {
 // ---------------------------------------------------------------------------
 // Physical constants
 // ---------------------------------------------------------------------------
-
-/// Energy to create one electron-hole pair in silicon [MeV].
-static constexpr double ENERGY_PER_EHP_MEV = 3.62e-6;
 
 /// kT/q at 300 K [V].  Scale linearly with temperature.
 static constexpr double KT_Q_300K = 0.025852;
@@ -161,13 +159,15 @@ std::map<int, double> SiStripDigitizer::senseToReadout(
 
   if (ratio == 1) return sense_charges;
 
-  // Sense strip n maps to readout strip floor(n / ratio).
-  // This convention groups consecutive sense strips into the same readout
-  // channel.  For ratio = 2: sense {0,1}→readout 0, {2,3}→readout 1, etc.
+  // Sense strip n maps to readout strip floor(n / ratio) + N/2, where N is
+  // n_readout_strips.  The offset places strip 0 at the most-negative U edge
+  // so all indices are in [0, N).
+  // For ratio = 2: sense {-2,-1}→readout 255, {0,1}→readout 256, etc.
+  const int offset = params_.n_readout_strips / 2;
   std::map<int, double> readout_charges;
   for (const auto& [sense_strip, charge] : sense_charges) {
     const int readout_strip = static_cast<int>(
-        std::floor(static_cast<double>(sense_strip) / ratio));
+        std::floor(static_cast<double>(sense_strip) / ratio)) + offset;
     readout_charges[readout_strip] += charge;
   }
   return readout_charges;
@@ -255,10 +255,20 @@ std::pair<double, double> SiStripDigitizer::clusterToPosition(
   }
 
   // Charge-weighted centroid using readout-strip centres.
+  // Strip r covers sense strips { ratio*(r-N_int), ..., ratio*(r-N_int)+ratio-1 },
+  // each centred at n*sense_pitch.  The physical centre of strip r is therefore:
+  //   U = (r - N_int + (ratio-1)/(2*ratio)) * readout_pitch
+  //     = (r - offset) * readout_pitch
+  // with offset = N_int - (ratio-1)/(2*ratio), where N_int = integer(N/2).
+  // For N=767, ratio=2: offset = 383 - 0.25 = 382.75.
+  const int    n_int  = params_.n_readout_strips / 2;  // integer division
+  const int    ratio  = static_cast<int>(
+      std::round(params_.readout_pitch / params_.sense_pitch));
+  const double offset = n_int - 0.5 * (ratio - 1.0) / ratio;
   double sum_q  = 0.0;
   double sum_qu = 0.0;
   for (const auto& [strip, charge] : strip_charges) {
-    const double u = strip * params_.readout_pitch;
+    const double u = (strip - offset) * params_.readout_pitch;
     sum_q  += charge;
     sum_qu += charge * u;
   }

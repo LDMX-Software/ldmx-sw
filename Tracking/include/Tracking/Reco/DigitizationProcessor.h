@@ -10,10 +10,12 @@
 
 //--- LDMX ---//
 #include "Tracking/Digitization/PulseShape.h"
+#include "Tracking/Digitization/SiStripConstants.h"
 #include "Tracking/Digitization/SiStripDigitizer.h"
 #include "Tracking/Event/Measurement.h"
 #include "Tracking/Event/RawSiStripHit.h"
 #include "Tracking/Sim/TrackingUtils.h"
+#include "Tracking/geo/DetectorElement.h"
 
 //--- C++ ---//
 #include <chrono>
@@ -118,26 +120,6 @@ class DigitizationProcessor : public TrackingGeometryUser {
   // ADC conversion and pulse shaping (Mode 1 only)
   /// Output raw hit collection name (empty = don't save raw hits).
   std::string out_raw_collection_{""};
-  /// Charge-to-ADC gain [electrons per ADC count].
-  double adc_electrons_per_count_{50.0};
-  /// ADC pedestal [counts].
-  int adc_pedestal_{0};
-  /// ADC dynamic range [bits] (e.g. 12 → max 4095 counts).
-  int adc_bits_{12};
-
-  // Pulse shaping
-  /// Name of the pulse shape: "CRRC" (default) or "FourPole".
-  std::string pulse_shape_name_{"CRRC"};
-  /// Peaking time tp [ns].
-  double tp_{45.0};
-  /// Second time constant tp2 [ns] (FourPole only; must satisfy tp > tp2 > 0).
-  double tp2_{10.0};
-  /// Time of the first ADC sample relative to the hit arrival time [ns].
-  double t0_offset_ns_{0.0};
-  /// Interval between consecutive ADC samples [ns].
-  double sampling_interval_ns_{25.0};
-  /// Number of ADC samples per strip hit (fixed at 3 for LDMX).
-  static constexpr int N_SAMPLES{3};
   /// The constructed pulse shape (created in onProcessStart).
   std::unique_ptr<tracking::digitization::PulseShape> pulse_shape_;
 
