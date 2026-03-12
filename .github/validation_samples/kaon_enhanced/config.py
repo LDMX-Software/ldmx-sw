@@ -40,7 +40,7 @@ my_sim.biasing_operators = [
 include_biasing.library()
 my_sim.actions.clear()
 my_sim.actions.extend([
-        filters.TaggerVetoFilter(thresh=2*3800.),
+        filters.TaggerVetoFilter(threshold=2*3800.),
         # Only consider events where a hard brem occurs
         filters.TargetBremFilter(recoil_max_p = 2*1500., brem_min_e = 2*2500.),
         # Only consider events where a PN reaction happnes in the ECal

@@ -356,7 +356,7 @@ class HcalReadoutGeometry:
             + side_hcal_num_layers[2]
             + side_hcal_num_layers[3]
         ) * 2
-        
+
         ecal_side_dx = 880.6815
         ecal_side_dy = 600.0
         ecal_front_z = 24.0 * 10

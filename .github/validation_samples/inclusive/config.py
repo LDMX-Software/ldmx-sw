@@ -6,7 +6,7 @@ p = ldmxcfg.Process('test')
 from LDMX.SimCore import simulator as sim
 
 
-my_sim = sim.simulator( "my_sim" )
+my_sim = sim.simulator( instance_name="my_sim" )
 det = 'ldmx-det-v15-8gev'
 my_sim.setDetector(det, include_scoring_planes_minimal = True )
 from LDMX.SimCore import generators as gen

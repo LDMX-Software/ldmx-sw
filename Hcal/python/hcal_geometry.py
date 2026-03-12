@@ -1,7 +1,7 @@
 """ConditionsProvider for HcalGeometry"""
 
 from LDMX.DetDescr.hcal_geometry import HcalGeometry
-from LDMX.Framework import conditions_object_provider, ConditionsObjectProvider, field
+from LDMX.Framework import ConditionsObjectProvider, conditions_object_provider, field
 
 
 @conditions_object_provider(

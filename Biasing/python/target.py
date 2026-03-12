@@ -54,7 +54,7 @@ def electro_nuclear(detector, generator):
     tagger_threshold = 0.95 * generator.energy * 1000.0
     sim.actions.extend(
         [
-            filters.TaggerVetoFilter(thresh=tagger_threshold),
+            filters.TaggerVetoFilter(threshold=tagger_threshold),
             filters.TargetENFilter(recoil_thresh),
             util.TrackProcessFilter.electro_nuclear(),
         ]
@@ -123,7 +123,7 @@ def photo_nuclear(detector, generator):
     # Configure the sequence in which user actions should be called.
     sim.actions.extend(
         [
-            filters.TaggerVetoFilter(thresh=tagger_threshold),
+            filters.TaggerVetoFilter(threshold=tagger_threshold),
             # Only consider events where a hard brem occurs
             filters.TargetBremFilter(recoil_max_p=recoil_max_p, brem_min_e=brem_min_e),
             filters.TargetPNFilter(),
@@ -190,7 +190,7 @@ def gamma_mumu(detector, generator):
     sim.actions.extend(
         [
             # Only consider events where a hard brem occurs
-            filters.TaggerVetoFilter(thresh=tagger_threshold),
+            filters.TaggerVetoFilter(threshold=tagger_threshold),
             filters.TargetBremFilter(recoil_max_p=recoil_max_p, brem_min_e=brem_min_e),
             filters.TargetGammaMuMuFilter(),
             util.TrackProcessFilter.gamma_mumu(),

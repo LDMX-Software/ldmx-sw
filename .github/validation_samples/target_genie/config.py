@@ -13,9 +13,9 @@ from LDMX.SimCore import simulator as sim
 
 
 det = 'ldmx-det-v15-8gev'
-my_sim = sim.simulator('sim')
+my_sim = sim.simulator(instance_name='sim')
 my_sim.setDetector(det, include_scoring_planes_minimal = True)
-genie = gen.genie(name='genie_G18_02a_02_11b',
+genie = gen.genie(instance_name='genie_G18_02a_02_11b',
                         energy = 8.0,
                         targets = [ 1000741820, 1000741830, 1000741840, 1000741860 ],
                         target_thickness = 0.3504,

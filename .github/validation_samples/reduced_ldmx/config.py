@@ -11,14 +11,14 @@ from LDMX.SimCore import simulator as sim
 
 
 #my_gun = gen.single_4gev_e_upstream_tagger()
-my_gun = gen.multi( "mgpGen" )
+my_gun = gen.multi( instance_name="mgpGen" )
 my_gun.vertex = [ 0., 0., -880] # mm
 my_gun.momentum = [0.,0.,4000.] # MeV
 my_gun.n_particles = 1
 my_gun.pdg_id = 11
 my_gun.enable_poisson = False #True
 
-my_sim = sim.simulator( "my_sim" ) # Build simulator object
+my_sim = sim.simulator( instance_name="my_sim" ) # Build simulator object
 det = 'ldmx-reduced-v3'
 
 my_sim.setDetector(det, include_scoring_planes_minimal = True )

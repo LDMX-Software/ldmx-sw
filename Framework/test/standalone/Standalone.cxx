@@ -3,7 +3,7 @@
 class Standalone : public framework::Analyzer {
  public:
   Standalone(const std::string& name, framework::Process& p)
-    : framework::Analyzer(name, p) {}
+      : framework::Analyzer(name, p) {}
   ~Standalone() override = default;
   void onProcessStart() override;
   void analyze(const framework::Event& event) override;

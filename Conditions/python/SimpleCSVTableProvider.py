@@ -3,7 +3,11 @@
 Specialization of ConditionsObjectProvider for simple tables indexed by detid
 """
 
-from LDMX.Framework import conditions_object_provider, ConditionsObjectProvider, parameter_set
+from LDMX.Framework import (
+    ConditionsObjectProvider,
+    conditions_object_provider,
+    parameter_set,
+)
 
 
 @parameter_set

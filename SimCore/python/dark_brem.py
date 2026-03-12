@@ -48,6 +48,11 @@ class G4DarkBreMModel(DarkBremModel):
     method: str = "forward_only"
     threshold: float = 2.0
     epsilon: float = 0.01
+    scale_aprime: bool = False
+    decay_mode: str = "no_decay"
+    ap_tau: float = -1.0
+    dist_decay_min: float = 0.0
+    dist_decay_max: float = 1.0
 
 
 @parameter_set

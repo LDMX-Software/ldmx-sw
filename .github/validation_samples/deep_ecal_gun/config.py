@@ -11,7 +11,7 @@ from LDMX.SimCore import simulator as sim
 
 
 det = 'ldmx-det-v15-8gev'
-my_sim = sim.simulator( "my_sim" )
+my_sim = sim.simulator( instance_name="my_sim" )
 my_sim.setDetector(det, include_scoring_planes_minimal = True )
 my_sim.description = 'Deep ECal Gun Simulation'
 
@@ -50,7 +50,7 @@ gps_cmds = ['/gps/particle e-',
             *ene_ang_pos_cmds_gamma,
             '/gps/source/multiplevertex True']
 
-my_sim.generators = [gen.gps('electron_photon', gps_cmds)]
+my_sim.generators = [gen.gps(instance_name='electron_photon', init_commands=gps_cmds)]
 
 p.sequence = [ my_sim ]
 

@@ -367,7 +367,7 @@ def single_backwards_positron(energy: float):
         configured particle gun to shoot positrons backwards at the input energy
     """
     return gun(
-        f"backwards-positron-{energy}GeV",
+        instance_name=f"backwards-positron-{energy}GeV",
         particle="e+",
         position=[0.0, 0.0, 0.0],
         direction=[0.0, 0.0, -1.0],

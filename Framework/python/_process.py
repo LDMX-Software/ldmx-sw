@@ -86,6 +86,7 @@ class Process:
     max_events: int = -1
     min_events: int = -1
     max_tries_per_event: int = 1
+    total_events: int = -1
     run: int = -1
     input_files: list[str] = []
     output_files: list[str] = []
