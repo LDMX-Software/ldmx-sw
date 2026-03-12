@@ -42,6 +42,8 @@ class TrackExtrapolatorTool {
    */
 
   void setDebug(bool debug) { debug_ = debug; }
+  void setMaxStepSize(double step) { max_step_size_ = step; }
+  void setPathLimit(double limit) { path_limit_ = limit; }
 
   /** Method to extrapolate to a target surface given a set of
    BoundTrackParameters
@@ -61,6 +63,8 @@ class TrackExtrapolatorTool {
                                                   pars.direction());
 
     PropagatorOptions p_options(gctx_, mctx_);
+    if (max_step_size_ > 0) p_options.stepping.maxStepSize = max_step_size_;
+    if (path_limit_ > 0) p_options.pathLimit = path_limit_;
 
     p_options.direction = intersection.intersections()[0].pathLength() >= 0
                               ? Acts::Direction::Forward
@@ -295,6 +299,8 @@ class TrackExtrapolatorTool {
   Acts::GeometryContext gctx_;
   Acts::MagneticFieldContext mctx_;
   bool debug_{false};
+  double max_step_size_{-1};
+  double path_limit_{-1};
 };
 
 }  // namespace reco

@@ -42,9 +42,13 @@ void TruthSeedProcessor::onNewRun(const ldmx::RunHeader& rh) {
   nav_cfg.resolveSensitive = true;
   const Acts::Navigator navigator(nav_cfg);
 
-  propagator_ = std::make_unique<TruthPropagator>(stepper, navigator);
+  propagator_ = std::make_unique<TruthPropagator>(
+      stepper, navigator,
+      Acts::getDefaultLogger("TruthPropagator", Acts::Logging::FATAL));
   trk_extrap_ = std::make_shared<std::decay_t<decltype(*trk_extrap_)>>(
       *propagator_, geometryContext(), magneticFieldContext());
+  trk_extrap_->setMaxStepSize(200);  // mm
+  trk_extrap_->setPathLimit(3000);   // mm
 }
 
 void TruthSeedProcessor::configure(framework::config::Parameters& parameters) {
@@ -164,7 +168,8 @@ void TruthSeedProcessor::createTruthTrack(
 
   // The idea here is:
   // 1 - Define a bound track state parameters at point P on track. Basically a
-  // curvilinear representation. 2 - Propagate to target surface to obtain the
+  // curvilinear representation.
+  // 2 - Propagate to target surface to obtain the
   // BoundTrackState there.
 
   // Transform the position, momentum and charge to free parameters.
@@ -193,12 +198,18 @@ void TruthSeedProcessor::createTruthTrack(
   auto prop_bound_state =
       trk_extrap_->extrapolate(bound_trk_pars, target_surface);
 
+  if (!prop_bound_state) {
+    ldmx_log(warn) << "Propagation to target surface failed — "
+                   << "track may have exited the B-field map.";
+    return;
+  }
+
   // Create the seed track object.
   Acts::Vector3 ref = target_surface->center(geometryContext());
-  Acts::Vector3 ref_ldmx = tracking::sim::utils::acts2Ldmx(ref);
-  trk.setPerigeeLocation(ref_ldmx(0), ref_ldmx(1), ref_ldmx(2));
 
-  auto prop_bound_vec = (prop_bound_state.value()).parameters();
+  trk.setPerigeeLocation(ref(0), ref(1), ref(2));
+
+  auto prop_bound_vec = prop_bound_state->parameters();
 
   trk.setPerigeeParameters(
       tracking::sim::utils::convertActsToLdmxPars(prop_bound_vec));
