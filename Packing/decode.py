@@ -47,39 +47,39 @@ p.histogram_file = f'{os.path.dirname(arg.output_file)}ntuple_{os.path.basename(
 if arg.wr is not None :
     p.sequence.append(
         rawio.WRRawDecoder(
-            raw_file = arg.wr,
+            input_file = arg.wr,
             output_name = 'WRRaw')
         )
 
 if arg.ft41 is not None :
     p.sequence.append(
         rawio.FiberTrackerRawDecoder(
-            raw_file = arg.ft41,
-            name = 'ft41',
+            input_file = arg.ft41,
+            instance_name = 'ft41',
             output_name = 'FiberTracker41Raw')
         )
 
 if arg.ft42 is not None :
     p.sequence.append(
         rawio.FiberTrackerRawDecoder(
-            raw_file = arg.ft42,
-            name = 'ft42',
+            input_file = arg.ft42,
+            instance_name = 'ft42',
             output_name = 'FiberTracker42Raw')
         )
 
 if arg.ft50 is not None :
     p.sequence.append(
         rawio.FiberTrackerRawDecoder(
-            raw_file = arg.ft50,
-            name = 'ft50',
+            input_file = arg.ft50,
+            instance_name = 'ft50',
             output_name = 'FiberTracker50Raw')
         )
 
 if arg.ft51 is not None :
     p.sequence.append(
         rawio.FiberTrackerRawDecoder(
-            raw_file = arg.ft51,
-            name = 'ft51',
+            input_file = arg.ft51,
+            instance_name = 'ft51',
             output_name = 'FiberTracker51Raw')
         )
 
