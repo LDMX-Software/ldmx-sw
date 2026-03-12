@@ -12,7 +12,7 @@ from LDMX.SimCore import simulator as sim
 
 #my_gun = gen.single_4gev_e_upstream_tagger()
 my_gun = gen.multi( instance_name="mgpGen" )
-my_gun.vertex = [ 0., 0., -880] # mm
+my_gun.vertex = [ 0., 0., -880.] # mm
 my_gun.momentum = [0.,0.,4000.] # MeV
 my_gun.n_particles = 1
 my_gun.pdg_id = 11

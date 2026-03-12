@@ -34,7 +34,7 @@ my_sim.generators = [ genie ]
 from LDMX.SimCore import genie_reweight
 
 
-genie_rw = genie_reweight.GenieReweightProducer(name='genie_reweight')
+genie_rw = genie_reweight.GenieReweightProducer(instance_name='genie_reweight')
 genie_rw.hepmc3_coll_name = "SimHepMC3Events"
 genie_rw.hepmc3_pass_name = ""
 genie_rw.var_types = ["GENIE_INukeTwkDial_MFP_pi","GENIE_INukeTwkDial_MFP_N"]

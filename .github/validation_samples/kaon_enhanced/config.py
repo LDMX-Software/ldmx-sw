@@ -16,7 +16,6 @@ p.total_events = int(os.environ['LDMX_NUM_EVENTS']) // 2
 p.run = int(os.environ['LDMX_RUN_NUMBER'])
 
 from LDMX.Biasing import ecal, filters, particle_filter, util
-from LDMX.Biasing import include as include_biasing
 from LDMX.SimCore import bias_operators, kaon_physics
 from LDMX.SimCore import generators as gen
 from LDMX.SimCore import photonuclear_models as pn
@@ -37,12 +36,11 @@ my_sim.biasing_operators = [
 ]
 
 # Configure the sequence in which user actions should be called.
-include_biasing.library()
 my_sim.actions.clear()
 my_sim.actions.extend([
         filters.TaggerVetoFilter(threshold=2*3800.),
         # Only consider events where a hard brem occurs
-        filters.TargetBremFilter(recoil_max_p = 2*1500., brem_min_e = 2*2500.),
+        filters.TargetBremFilter(recoil_max_p_threshold = 2*1500., brem_min_energy_threshold = 2*2500.),
         # Only consider events where a PN reaction happnes in the ECal
         filters.EcalProcessFilter(),
         # Tag all photo-nuclear tracks to persist them to the event.

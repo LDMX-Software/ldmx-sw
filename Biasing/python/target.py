@@ -125,8 +125,8 @@ def photo_nuclear(detector, generator):
         [
             filters.TaggerVetoFilter(threshold=tagger_threshold),
             # Only consider events where a hard brem occurs
-            filters.TargetBremFilter(recoil_max_p=recoil_max_p, brem_min_e=brem_min_e),
-            filters.TargetPNFilter(),
+            filters.TargetBremFilter(recoil_max_p_threshold=recoil_max_p, brem_min_energy_threshold=brem_min_e),
+            filters.TargetProcessFilter.photo_nuclear(),
             # Tag all photo-nuclear tracks to persist them to the event.
             util.TrackProcessFilter.photo_nuclear(),
         ]
@@ -191,8 +191,8 @@ def gamma_mumu(detector, generator):
         [
             # Only consider events where a hard brem occurs
             filters.TaggerVetoFilter(threshold=tagger_threshold),
-            filters.TargetBremFilter(recoil_max_p=recoil_max_p, brem_min_e=brem_min_e),
-            filters.TargetGammaMuMuFilter(),
+            filters.TargetBremFilter(recoil_max_p_threshold=recoil_max_p, brem_min_energy_threshold=brem_min_e),
+            filters.TargetProcessFilter.gamma_mu_mu(),
             util.TrackProcessFilter.gamma_mumu(),
         ]
     )

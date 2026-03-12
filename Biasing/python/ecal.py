@@ -123,9 +123,9 @@ def nonfiducial_photo_nuclear(detector, generator):
         [
             filters.TaggerVetoFilter(threshold=tagger_threshold),
             # Only consider events where a hard brem occurs
-            filters.TargetBremFilter(recoil_max_p=recoil_max_p, brem_min_e=brem_min_e),
+            filters.TargetBremFilter(recoil_max_p_threshold=recoil_max_p, brem_min_energy_threshold=brem_min_e),
             # Only considers events that are Non-Fiducial (Doesn't enter an ECal volume)
-            filters.NonFiducialFilter(recoil_max_momentum=recoil_max_p),
+            filters.NonFiducialFilter(recoil_max_p=recoil_max_p),
             # Only consider events where a PN reaction happens in the ECal
             filters.EcalProcessFilter(),
             # Tag all photo-nuclear tracks to persist them to the event.
@@ -192,7 +192,7 @@ def gamma_mumu(detector, generator):
     sim.actions.extend(
         [
             filters.TaggerVetoFilter(threshold=tagger_threshold),
-            filters.TargetBremFilter(recoil_max_p=recoil_max_p, brem_min_e=brem_min_e),
+            filters.TargetBremFilter(recoil_max_p_threshold=recoil_max_p, brem_min_energy_threshold=brem_min_e),
             filters.EcalProcessFilter(process="GammaToMuPair"),
             util.TrackProcessFilter.gamma_mumu(),
         ]
