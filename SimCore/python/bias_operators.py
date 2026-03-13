@@ -141,25 +141,26 @@ class K0LongInelastic(XsecBiasingOperator):
         self.threshold = thresh
 
 
+@biasing_operator("simcore::biasoperators::DarkBrem")
 class DarkBrem(XsecBiasingOperator):
     """Bias dark brem process
 
     Parameters
     ----------
-    vol : str
+    volume : str
         name of volume to bias within
-    bial_all : bool
+    bias_all : bool
         Should we bias all electrons or just the primary?
     factor : float
-        biasing factor to mutliply by
+        biasing factor to multiply by
     """
 
-    def __init__(self, vol, bias_all, factor):
-        super().__init__(f"{vol}_bias_darkbrem", "simcore::biasoperators::DarkBrem")
+    volume: str
+    bias_all: bool
+    factor: float
 
-        self.volume = vol
-        self.bias_all = bias_all
-        self.factor = factor
+    def __post_init__(self):
+        self.instance_name = f"{self.volume}_bias_darkbrem"
 
     @staticmethod
     def ecal(factor):

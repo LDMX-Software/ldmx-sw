@@ -87,10 +87,10 @@ from LDMX.DQM import dqm
 
 
 target_dqm = [
-    dqm.TrigScintSimDQM('TargetSimHits','TargetSimHits','target'),
-    dqm.TrigScintDigiDQM('TargetDigis','TargetDigis','target'),
-    dqm.TrigScintClusterDQM('TargetClusters','TargetClusters','target'),
-    dqm.TrigScintDigiVerifierDQM('TrigScintDigiVerifier','TargetSimHits','TargetDigis'),
+        dqm.TrigScintSimDQM(instance_name='TargetSimHits', hit_collection='TargetSimHits', pad='target'),
+        dqm.TrigScintDigiDQM(instance_name='TargetDigis', hit_collection='TargetDigis', pad='target'),
+        dqm.TrigScintClusterDQM(instance_name='TargetClusters', cluster_collection='TargetClusters', pad='target'),
+        dqm.TrigScintDigiVerifierDQM(instance_name='TrigScintDigiVerifier', ts_simhit_coll='TargetSimHits', ts_digi_coll='TargetDigis'),
     ]
 
 

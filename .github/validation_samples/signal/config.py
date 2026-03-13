@@ -14,7 +14,7 @@ from LDMX.SimCore import generators
 det = 'ldmx-det-v15-8gev'
 my_sim = target.dark_brem(
     #A' mass in MeV - set in init.sh to same value in GeV
-    10.0,
+    ap_mass = 10.0,
     # DB library stored in ci-data that is cloned into ldmx-sw root before
     # validation is run
     (

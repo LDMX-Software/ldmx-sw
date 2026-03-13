@@ -18,7 +18,7 @@ def photo_nuclear(detector, generator):
     produced a brem in the target with an energy greater than 2.5 GeV.  The
     brems are allowed to propagate to the ECal at which point they are
     checked by the EcalProcessFilter.  Only events that see the brem photon
-    undergo a photo-nucler reaction in the ECal are kept.
+    undergo a photo-nuclear reaction in the ECal are kept.
 
     Parameters
     ----------

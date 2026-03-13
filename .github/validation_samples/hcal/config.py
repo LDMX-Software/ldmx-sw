@@ -76,10 +76,10 @@ hcal_veto = hcal.HcalVetoProcessor()
 from LDMX.DQM import dqm
 
 
-simplified_hcal_dqm_back = dqm.HCalDQM( 'HcalSimpleRecoDQM', section = 0 )
+simplified_hcal_dqm_back = dqm.HCalDQM( instance_name = 'HcalSimpleRecoDQM_back', section = 0 )
 simplified_hcal_dqm_back.rec_coll_name = hcal_simplified_digi_and_reco.output_coll_name
 
-simplified_hcal_dqm_top = dqm.HCalDQM( 'HcalSimpleRecoDQM', section = 1 )
+simplified_hcal_dqm_top = dqm.HCalDQM( instance_name = 'HcalSimpleRecoDQM_top', section = 1 )
 simplified_hcal_dqm_top.rec_coll_name = hcal_simplified_digi_and_reco.output_coll_name
 
 dqm.hcal_dqm.extend([simplified_hcal_dqm_back, simplified_hcal_dqm_top])

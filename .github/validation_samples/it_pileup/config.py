@@ -166,22 +166,22 @@ from LDMX.DQM import dqm
 
 
 trig_scint_sim_dqm = [
-    dqm.TrigScintSimDQM('TrigScintSimPad1','TriggerPad1SimHits','pad1'),
-    dqm.TrigScintSimDQM('TrigScintSimPad2','TriggerPad2SimHits','pad2'),
-    dqm.TrigScintSimDQM('TrigScintSimPad3','TriggerPad3SimHits','pad3'),
+    dqm.TrigScintSimDQM(instance_name='TrigScintSimPad1', hit_collection='TriggerPad1SimHits', pad='pad1'),
+    dqm.TrigScintSimDQM(instance_name='TrigScintSimPad2', hit_collection='TriggerPad2SimHits', pad='pad2'),
+    dqm.TrigScintSimDQM(instance_name='TrigScintSimPad3', hit_collection='TriggerPad3SimHits', pad='pad3'),
     ]
 
 for ts_sim_dqm in trig_scint_sim_dqm :
     ts_sim_dqm.hit_collection += overlay_str
 
 trig_scint_dqm = [
-    dqm.TrigScintDigiDQM('TrigScintDigiPad1','trigScintDigisPad1','pad1'),
-    dqm.TrigScintDigiDQM('TrigScintDigiPad2','trigScintDigisPad2','pad2'),
-    dqm.TrigScintDigiDQM('TrigScintDigiPad3','trigScintDigisPad3','pad3'),
-    dqm.TrigScintClusterDQM('TrigScintClusterPad1','TriggerPad1Clusters','pad1'),
-    dqm.TrigScintClusterDQM('TrigScintClusterPad2','TriggerPad2Clusters','pad2'),
-    dqm.TrigScintClusterDQM('TrigScintClusterPad3','TriggerPad3Clusters','pad3'),
-    dqm.TrigScintTrackDQM('TrigScintTracks','TriggerPadTracks')
+    dqm.TrigScintDigiDQM(instance_name='TrigScintDigiPad1', hit_collection='trigScintDigisPad1', pad='pad1'),
+    dqm.TrigScintDigiDQM(instance_name='TrigScintDigiPad2', hit_collection='trigScintDigisPad2', pad='pad2'),
+    dqm.TrigScintDigiDQM(instance_name='TrigScintDigiPad3', hit_collection='trigScintDigisPad3', pad='pad3'),
+    dqm.TrigScintClusterDQM(instance_name='TrigScintClusterPad1', cluster_collection='TriggerPad1Clusters', pad='pad1'),
+    dqm.TrigScintClusterDQM(instance_name='TrigScintClusterPad2', cluster_collection='TriggerPad2Clusters', pad='pad2'),
+    dqm.TrigScintClusterDQM(instance_name='TrigScintClusterPad3', cluster_collection='TriggerPad3Clusters', pad='pad3'),
+    dqm.TrigScintTrackDQM(instance_name='TrigScintTracks', track_collection='TriggerPadTracks')
     ]
 
 for ts_dqm in trig_scint_dqm :

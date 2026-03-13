@@ -47,9 +47,9 @@ my_sim.actions.extend([
         util.TrackProcessFilter.photo_nuclear()
 ])
 
-# set up "upKaon" parameters which reduces the charged kaon lifetimes by a factor 1/50
+# set up "up_kaon" parameters which reduces the charged kaon lifetimes by a factor 1/50
 # and forces decays to be into one of the leptonic decay modes.
-my_sim.kaon_parameters = kaon_physics.KaonPhysics.upKaons()
+my_sim.kaon_parameters = kaon_physics.KaonPhysics.up_kaons()
 
 # Alternative pn models
 my_model = pn.BertiniAtLeastNProductsModel.kaon()

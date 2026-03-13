@@ -7,6 +7,7 @@ from ._parameter_set import field, parameter_set
 
 @parameter_set
 class Processor:
+    instance_name: str
     histograms: list[_histogram.Histogram] = []
 
     def __post_init__(self):
