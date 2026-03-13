@@ -100,7 +100,6 @@ hcal_reco = hcal_digi_and_reco.HcalRecProducer()
 # The newly produced, overlayed simhits
 hcal_digi.input_coll_name  += overlay_str
 hcal_digi.input_pass_name = this_pass_name
-hcal_digi.sim_hit_pass_name = this_pass_name
 # Use the digis produced above
 hcal_reco.input_pass_name = this_pass_name
 hcal_reco.sim_hit_pass_name = this_pass_name
