@@ -136,7 +136,7 @@ subtracted here to make them positive lengths.
     <!-- target_area_box-->
 <constant name="target_area_envelope_x" value="target_array2_dx" />
 <constant name="target_area_envelope_y" value="target_array2_dy" />
-<constant name="target_area_envelope_z" value="3 * (target_thickness/2 + trigger_gap_with_target + trigger_pad_thickness)" />
+<constant name="target_area_envelope_z" value="2.5 * (target_thickness/2 + trigger_gap_with_target + trigger_pad_thickness)" />
 
 <!--
   Tracker common variables 

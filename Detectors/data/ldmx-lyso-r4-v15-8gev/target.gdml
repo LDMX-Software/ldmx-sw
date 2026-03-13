@@ -26,7 +26,7 @@
     <!-- Trigger Scintillator -->
     <box lunit="mm" name="trigger_bar_box" x="trigger_bar_dx" y="trigger_bar_dy" z="trigger_pad_bar_thickness" /> 
 
-    <box lunit="mm" name="target_area_box" x="target_area_envelope_x" y="target_area_envelope_y" z="target_area_envelope_z" />
+    <box lunit="mm" name="target_area_box" x="tspad3_envelope_x*2" y="target_area_envelope_y" z="target_area_envelope_z" />
 
 
   </solids>
