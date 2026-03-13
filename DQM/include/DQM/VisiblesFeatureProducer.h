@@ -40,6 +40,7 @@ class VisiblesFeatureProducer : public framework::Analyzer {
   std::string track_pass_name_;
   std::string sp_collection_;
   std::string sp_pass_name_;
+  std::string sim_particles_coll_name_;
   std::string sim_particles_pass_name_;
 
   bool inList(std::vector<int> parents, int track_id);

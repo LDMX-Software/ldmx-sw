@@ -236,10 +236,10 @@ void CKFProcessor::produce(framework::Event& event) {
       nullptr;
   std::map<int, ldmx::SimParticle> particle_map;
 
-  if (event.exists("SimParticles", sim_particles_event_passname_)) {
+  if (event.exists(sim_particles_coll_name_, sim_particles_event_passname_)) {
     ldmx_log(debug) << "Setting up track truth matching tool";
     particle_map = event.getMap<int, ldmx::SimParticle>(
-        "SimParticles", sim_particles_event_passname_);
+        sim_particles_coll_name_, sim_particles_event_passname_);
     truth_matching_tool = std::make_shared<tracking::sim::TruthMatchingTool>(
         particle_map, measurements);
   }
@@ -948,6 +948,8 @@ void CKFProcessor::configure(framework::config::Parameters& parameters) {
   // seeds from the event
   seed_coll_name_ = parameters.get<std::string>("seed_coll_name", "seedTracks");
 
+  sim_particles_coll_name_ =
+      parameters.get<std::string>("sim_particles_coll_name");
   sim_particles_event_passname_ =
       parameters.get<std::string>("sim_particles_event_passname");
 

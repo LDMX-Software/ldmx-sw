@@ -39,6 +39,7 @@ class ReSimVerifier : public framework::Analyzer {
 
  private:
   std::vector<std::string> collections_;
+  std::string sim_coll_name_{"SimParticles"};
   std::string sim_pass_name_{""};
   std::string re_sim_pass_name_{""};
 
