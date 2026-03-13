@@ -157,8 +157,8 @@ class Track {
   void addSharedIndex(unsigned int measIdx) { shared_idxs_.push_back(measIdx); }
   std::vector<unsigned int> getSharedIdxs() const { return shared_idxs_; }
 
-  void setCharge(int q) { q_ = q; }
-  double getCharge() const { return q_; }
+  void setCharge(int q) { charge_ = q; }
+  double getCharge() const { return charge_; }
 
   void setTime(double time) { time_ = time; }
   double getTime() const { return time_; }
