@@ -89,7 +89,8 @@ class OverlayProducer(Processor):
         "EcalScoringPlaneHits",
         "TargetScoringPlaneHits"
     ]
-    out_coll_postfix: str = "Overlay"g
+    contrib_collections: list[str] = ["EcalSimHits", "HcalSimHits"]
+    out_coll_postfix: str = "Overlay"
     poisson_mu: float = 2.0
     do_poisson_in_time: bool = False
     do_poisson_out_of_time: bool = False

@@ -157,7 +157,7 @@ cluster.rec_hit_pass_name=this_pass_name #run on process+pileup
 # particle flow:
 pf_comb=pf_reco.pfProducer()
 pf_comb.input_ecal_coll_name = cluster.cluster_coll_name # use CLUE
-pf_comb.input_ecal_pass_name = this_pass_name
+pf_comb.input_ecal_passname = this_pass_name
 
 # trigger recasting existing CLUE to caloclusters
 pf_comb.use_existing_ecal_clusters = True
@@ -202,7 +202,7 @@ for ts_dqm in trig_scint_dqm :
 # EcalDigiVerify
 ecal_digi_verify = dqm.EcalDigiVerify()
 ecal_digi_verify.ecal_sim_hit_coll += overlay_str
-ecal_digi_verify.rec_hit_pass_name = this_pass_name
+ecal_digi_verify.ecal_rec_hit_pass = this_pass_name
 
 # EcalShowerFeatures
 ecal_shower_features = dqm.EcalShowerFeatures()
@@ -219,19 +219,19 @@ ecal_veto_results.ecal_veto_pass = this_pass_name
 
 # HCAL DQM
 hcal_dqm = [
-    dqm.HCalDQM(pe_threshold=8,
+    dqm.HCalDQM(pe_veto_threshold=8.0,
                 section=0
                 ),
-    dqm.HCalDQM(pe_threshold=8,
+    dqm.HCalDQM(pe_veto_threshold=8.0,
                 section=1
                 ),
-    dqm.HCalDQM(pe_threshold=8,
+    dqm.HCalDQM(pe_veto_threshold=8.0,
                 section=2
                 ),
-    dqm.HCalDQM(pe_threshold=8,
+    dqm.HCalDQM(pe_veto_threshold=8.0,
                 section=3
                 ),
-    dqm.HCalDQM(pe_threshold=8,
+    dqm.HCalDQM(pe_veto_threshold=8.0,
                 section=4
                 ),
     dqm.HcalInefficiencyAnalyzer(),
