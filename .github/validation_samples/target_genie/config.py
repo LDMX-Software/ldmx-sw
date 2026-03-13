@@ -38,12 +38,9 @@ genie_rw = genie_reweight.GenieReweightProducer(instance_name='genie_reweight')
 genie_rw.hepmc3_coll_name = "SimHepMC3Events"
 genie_rw.hepmc3_pass_name = ""
 genie_rw.var_types = ["GENIE_INukeTwkDial_MFP_pi","GENIE_INukeTwkDial_MFP_N"]
-genie_rw.verbosity = 0
 
 
-p.sequence.append(genie_rw)
-
-p.sequence = [ my_sim ]
+p.sequence = [ my_sim, genie_rw ]
 
 ##################################################################
 # Below should be the same for all sim scenarios
