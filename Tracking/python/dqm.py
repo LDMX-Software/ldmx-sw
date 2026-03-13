@@ -236,6 +236,18 @@ class TrackingRecoDQM(ldmxcfg.Analyzer):
                               "p [GeV]", nbins, 0, pmax,
                               "#sigma_{p} [GeV]", nbins, 0,1)
 
+        # Per-layer unbiased U-residuals and pulls (one histogram per sensor).
+        # Residual = measurement U - Kalman predicted U.  The predicted state
+        # does not include the hit on that layer, so residuals are unbiased.
+        # Pull = residual / sqrt(cov_uu + predicted_cov_loc0).
+        for i in range(14):
+            self.build_1d_histogram(f"unbiased_res_u_l{i}",
+                                    f"Unbiased U residual layer {i} (mm)",
+                                    200, -0.3, 0.3)
+            self.build_1d_histogram(f"unbiased_pull_u_l{i}",
+                                    f"Unbiased U pull layer {i}",
+                                    100, -5., 5.)
+
         self.build_2d_histogram("p_err_vs_p_8hits",
                               "p [GeV]", nbins, 0, pmax,
                               "#sigma_{p} [GeV]", nbins, 0,1)

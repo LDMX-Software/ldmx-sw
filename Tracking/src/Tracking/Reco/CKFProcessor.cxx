@@ -654,6 +654,19 @@ void CKFProcessor::produce(framework::Event& event) {
           ldmx_log(trace) << "    Measurement:\n" << ldmx_meas;
           trk.addMeasurementIndex(sl.index());
 
+          // Store the smoothed state for algebraic unbiased residuals in the
+          // DQM.  The leave-one-out formula (NIM A 262, 444, 1987) removes
+          // this hit's contribution analytically:
+          //   r_ubs = V/(V - C) * (m - x_smooth),  pull = r_ubs * sqrt(V-C)/V
+          // This works correctly for all layers, including seed layers where
+          // the predicted state would be biased.
+          if (ts.hasSmoothed()) {
+            trk.addSmoothedLoc0(
+                static_cast<float>(ts.smoothed()[Acts::eBoundLoc0]),
+                static_cast<float>(ts.smoothedCovariance()(
+                    Acts::eBoundLoc0, Acts::eBoundLoc0)));
+          }
+
           // Extract path length from the track state based on the angle
           if (ts.hasSmoothed()) {
             const auto& meas_surface = ts.referenceSurface();

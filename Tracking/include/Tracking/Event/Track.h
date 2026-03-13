@@ -144,6 +144,21 @@ class Track {
   }
   std::vector<float> getDedxMeasurements() const { return dedx_measurements_; }
 
+  // Per-hit smoothed state at each measurement surface (same order as
+  // meas_idxs_).  Used to form unbiased residuals via the algebraic
+  // leave-one-out formula of NIM A 262, 444 (1987):
+  //   r_ubs  = V/(V - C) * (m - x_smooth)
+  //   pull   = (m - x_smooth) / sqrt(V - C)
+  // where V = cov_uu, C = smoothed_cov_loc0.
+  void addSmoothedLoc0(float loc0, float cov_loc0) {
+    smoothed_loc0_.push_back(loc0);
+    smoothed_cov_loc0_.push_back(cov_loc0);
+  }
+  const std::vector<float>& getSmoothedLoc0() const { return smoothed_loc0_; }
+  const std::vector<float>& getSmoothedCovLoc0() const {
+    return smoothed_cov_loc0_;
+  }
+
   /// d_0 z_0 phi_0 theta q/p t
   // void setPerigeeParameters(const Acts::BoundVector& par)  {perigee_pars_ =
   // par; } Acts::BoundVector getPerigeeParameters() {return perigee_pars_;}
@@ -265,6 +280,11 @@ class Track {
   // The vector of dE/dx measurements (in MeV/mm)
   std::vector<float> dedx_measurements_{};
 
+  // Per-hit Kalman predicted loc0 (mm) and its variance (mm²) at each
+  // measurement surface, in the same order as meas_idxs_.
+  std::vector<float> smoothed_loc0_{};
+  std::vector<float> smoothed_cov_loc0_{};
+
   // ID of the matched particle in the SimParticles map
   int track_id_{-1};
 
@@ -278,7 +298,7 @@ class Track {
   std::vector<TrackState> track_states_;
 
   /// Class declaration needed by the ROOT dictionary.
-  ClassDef(Track, 5);
+  ClassDef(Track, 6);
 
 };  // Track
 

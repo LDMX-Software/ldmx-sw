@@ -337,6 +337,37 @@ void TrackingRecoDQM::trackMonitoring(
       }
     }
 
+    // Per-layer unbiased U-residuals — only filled for the main unique-track
+    // call (title == title_).  Fakes/duplicates use a different title prefix
+    // and do not have these histograms declared.
+    //
+    // Algebraic leave-one-out unbiasing (NIM A 262, 444, 1987):
+    //   r_smooth = m - x_smooth
+    //   denom    = V - C          (V = cov_uu, C = smoothed cov[loc0,loc0])
+    //   r_ubs    = V / denom * r_smooth
+    //   pull     = r_smooth / sqrt(denom)
+    if (title == title_) {
+      const auto& sm_loc0 = track.getSmoothedLoc0();
+      const auto& sm_cov = track.getSmoothedCovLoc0();
+      for (size_t i = 0; i < measurement_idxs.size(); ++i) {
+        if (i >= sm_loc0.size()) break;
+        const auto& meas = measurements.at(measurement_idxs[i]);
+        int layer = meas.getLayer();
+        float meas_u = meas.getLocalPosition()[0];
+        float V = meas.getLocalCovariance()[0];  // cov_uu
+        float C = sm_cov[i];                     // smoothed cov[loc0, loc0]
+        float denom = V - C;
+        if (denom <= 0.f) continue;  // degenerate — skip
+        float r_smooth = meas_u - sm_loc0[i];
+        float res_ubs = r_smooth * V / denom;
+        float pull_ubs = r_smooth / std::sqrt(denom);
+        histograms_.fill(title_ + "unbiased_res_u_l" + std::to_string(layer),
+                         res_ubs);
+        histograms_.fill(title_ + "unbiased_pull_u_l" + std::to_string(layer),
+                         pull_ubs);
+      }
+    }
+
     std::vector<double> trk_mom = track.getMomentum();
 
     // The transverse momentum in the bending plane
