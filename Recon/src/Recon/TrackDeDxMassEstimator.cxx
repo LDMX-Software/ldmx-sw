@@ -22,9 +22,12 @@ void TrackDeDxMassEstimator::configure(framework::config::Parameters &ps) {
 }
 
 void TrackDeDxMassEstimator::produce(framework::Event &event) {
+  std::vector<ldmx::TrackDeDxMassEstimate> mass_estimates;
+
   if (!event.exists(track_collection_, input_pass_name_)) {
     ldmx_log(error) << "Track collection " << track_collection_ << "_"
                     << input_pass_name_ << " not in event, exiting...";
+    event.add("TrackDeDxMassEstimate", mass_estimates);
     return;
   }
   const std::vector<ldmx::Track> tracks{
@@ -49,12 +52,12 @@ void TrackDeDxMassEstimator::produce(framework::Event &event) {
   if (!event.exists(simhit_collection_, input_pass_name_)) {
     ldmx_log(error) << " SimHit collection (" << simhit_collection_ << "_"
                     << input_pass_name_ << ") does not exists, exiting...";
+    event.add("TrackDeDxMassEstimate", mass_estimates);
     return;
   }
   auto simhits{event.getCollection<ldmx::SimTrackerHit>(simhit_collection_,
                                                         input_pass_name_)};
 
-  std::vector<ldmx::TrackDeDxMassEstimate> mass_estimates;
 
   // Loop over the collection of tracks
   for (uint i = 0; i < tracks.size(); i++) {

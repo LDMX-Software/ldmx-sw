@@ -586,6 +586,7 @@ class SimObjects(Processor):
     """
 
     sim_pass: str = ""
+    sim_particles_coll_name: str = "SimParticles"
     sim_particles_passname: str = ""
     sim_particles_map_passname: str = ""
 
