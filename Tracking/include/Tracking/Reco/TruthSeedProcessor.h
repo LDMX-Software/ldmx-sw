@@ -196,6 +196,7 @@ class TruthSeedProcessor : public TrackingGeometryUser {
 
   /// Which scoring plane hits to use for the truth seeds generation
   std::string scoring_hits_coll_name_{"TargetScoringPlaneHits"};
+  std::string ecal_sp_coll_name_{"EcalScoringPlaneHits"};
   std::string sp_pass_name_{""};
 
   /// Sim hits to check if the truth seed is findable
@@ -207,6 +208,7 @@ class TruthSeedProcessor : public TrackingGeometryUser {
   /// Pass name for the sim hit collections
   std::string input_pass_name_{""};
 
+  std::string sim_particles_coll_name_;
   std::string sim_particles_passname_;
 
   /**
@@ -279,5 +281,11 @@ class TruthSeedProcessor : public TrackingGeometryUser {
   std::vector<double> inflate_factors_;
   std::vector<double> beam_origin_{-880.1, -44., 0.};
   int particle_hypothesis_;
+
+  std::string beam_electrons_collection_;
+  std::string tagger_truth_collection_;
+  std::string recoil_truth_collection_;
+  std::string tagger_seeds_collection_;
+  std::string recoil_seeds_collection_;
 };
 }  // namespace tracking::reco
