@@ -75,9 +75,9 @@ class TrackingRecoDQM : public framework::Analyzer {
   std::string measurement_collection_;
   std::string measurement_passname_;
 
-  std::string ecal_sp_events_passname_;
+  std::string ecal_sp_coll_name_;
   std::string ecal_sp_passname_;
-  std::string target_sp_events_passname_;
+  std::string target_sp_coll_name_;
   std::string target_sp_passname_;
   std::string track_collection_events_passname_;
   std::string track_passname_;

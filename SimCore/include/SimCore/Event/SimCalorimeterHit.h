@@ -91,6 +91,12 @@ class SimCalorimeterHit {
    */
   friend std::ostream &operator<<(std::ostream &o, const SimCalorimeterHit &d);
 
+  /*
+   * Print out a contributor.
+   */
+  friend std::ostream &operator<<(std::ostream &o,
+                                  const SimCalorimeterHit::Contrib &contrib);
+
   /**
    * Get the detector ID.
    * @return The detector ID.
@@ -412,7 +418,7 @@ class SimCalorimeterHit {
   /**
    * ROOT class definition.
    */
-  ClassDef(SimCalorimeterHit, 7)
+  ClassDef(SimCalorimeterHit, 8);
 };
 }  // namespace ldmx
 

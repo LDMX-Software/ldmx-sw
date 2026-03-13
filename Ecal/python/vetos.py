@@ -24,21 +24,20 @@ class EcalVetoProcessor(ldmxcfg.Producer) :
         self.beam_energy = 8000.0  # in MeV
         self.disc_cut = 0.99741
 
+        self.ecal_sp_coll_name = "EcalScoringPlaneHits"
+        self.target_sp_coll_name = "TargetScoringPlaneHits"
         self.sp_pass_name = ""
+        self.sim_particles_coll_name = "SimParticles"
+        self.sim_particles_passname = ""
+
         self.collection_name = "EcalVeto"
-        self.rec_pass_name = ""
         self.rec_coll_name = "EcalRecHits"
+        self.rec_pass_name = ""
+
         self.recoil_from_tracking = True
         self.track_collection = "RecoilTracksClean"
-        self.inverse_skim = False
-
-        self.sim_particles_passname = ""
         self.track_pass_name = ""
-
-        self.ecal_simhits_passname = ""
-        self.ecal_digis_passname = ""
-        self.ecal_rechits_passname = ""
-        self.ecal_trig_digis_passname = ""
+        self.inverse_skim = False
 
 class EcalMipProcessor(ldmxcfg.Producer) :
     """Configuration for the ECal MIP processor"""
@@ -68,6 +67,7 @@ class EcalPnetVetoProcessor(ldmxcfg.Producer) :
         self.collection_name = "EcalPnetVeto"
         self.rec_coll_name = "EcalRecHits"
         self.ecal_rec_hits_passname = ""
+        self.ecal_sp_coll_name = "EcalScoringPlaneHits"
         self.ecal_sp_hits_passname = ""
         self.track_collection = "RecoilTracksClean"
         self.track_pass_name = ""

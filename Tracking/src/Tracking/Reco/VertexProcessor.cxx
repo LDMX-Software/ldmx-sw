@@ -46,6 +46,9 @@ void VertexProcessor::configure(framework::config::Parameters &parameters) {
 
   trk_coll_name_ = parameters.get<std::string>("trk_coll_name", "Tracks");
 
+  seeds_coll_name_ =
+      parameters.get<std::string>("seeds_coll_name", "RecoilTruthSeeds");
+
   input_pass_name_ = parameters.get<std::string>("input_pass_name");
 }
 
@@ -89,7 +92,7 @@ void VertexProcessor::produce(framework::Event &event) {
 
   // Retrieve the truth seeds
   const std::vector<ldmx::Track> seeds =
-      event.getCollection<ldmx::Track>("RecoilTruthSeeds", input_pass_name_);
+      event.getCollection<ldmx::Track>(seeds_coll_name_, input_pass_name_);
 
   if (tracks.size() < 1) return;
 

@@ -12,11 +12,14 @@ void PFTruthProducer::configure(framework::config::Parameters &ps) {
   hcal_coll_name_ = ps.get<std::string>("output_hcal_coll_name");
   target_sp_passname_ = ps.get<std::string>("target_sp_passname");
   ecal_sp_passname_ = ps.get<std::string>("ecal_sp_passname");
+  sim_particles_coll_name_ = ps.get<std::string>("sim_particles_coll_name");
   sim_particles_passname_ = ps.get<std::string>("sim_particles_passname");
   sim_particles_event_passname_ =
       ps.get<std::string>("sim_particles_event_passname");
+  ecal_sp_coll_name_ = ps.get<std::string>("ecal_sp_hits_event_passname");
   ecal_sp_hits_event_passname_ =
       ps.get<std::string>("ecal_sp_hits_event_passname");
+  target_sp_coll_name_ = ps.get<std::string>("target_sp_coll_name");
   target_sp_hits_event_passname_ =
       ps.get<std::string>("target_sp_hits_event_passname");
 }
@@ -27,17 +30,17 @@ void sortHits(std::vector<T> spHits) {
 }
 
 void PFTruthProducer::produce(framework::Event &event) {
-  if (!event.exists("TargetScoringPlaneHits", target_sp_hits_event_passname_))
+  if (!event.exists(target_sp_coll_name_, target_sp_hits_event_passname_))
     return;
-  if (!event.exists("EcalScoringPlaneHits", ecal_sp_hits_event_passname_))
+  if (!event.exists(ecal_sp_coll_name_, ecal_sp_hits_event_passname_)) return;
+  if (!event.exists(sim_particles_coll_name_, sim_particles_event_passname_))
     return;
-  if (!event.exists("SimParticles", sim_particles_event_passname_)) return;
   const auto targ_sp_hits = event.getCollection<ldmx::SimTrackerHit>(
-      "TargetScoringPlaneHits", target_sp_passname_);
+      target_sp_coll_name_, target_sp_passname_);
   const auto ecal_sp_hits = event.getCollection<ldmx::SimTrackerHit>(
-      "EcalScoringPlaneHits", ecal_sp_passname_);
+      ecal_sp_coll_name_, ecal_sp_passname_);
   const auto particle_map = event.getMap<int, ldmx::SimParticle>(
-      "SimParticles", sim_particles_passname_);
+      sim_particles_coll_name_, sim_particles_passname_);
 
   std::map<int, ldmx::SimParticle> primaries;
   std::set<int> sim_i_ds;

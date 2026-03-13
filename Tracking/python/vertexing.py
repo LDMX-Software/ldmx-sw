@@ -27,6 +27,7 @@ class VertexProcessor(Producer) :
 
         self.field_map = makeFieldMapPath()
         self.trk_coll_name = 'Tracks'
+        self.seeds_coll_name = 'RecoilTruthSeeds'
         self.input_pass_name = ''
 
 

@@ -23,8 +23,8 @@
 #include "Hcal/Event/HcalCluster.h"
 #include "Hcal/Event/HcalHit.h"
 #include "Hcal/MyClusterWeight.h"
-#include "Hcal/TemplatedClusterFinder.h"
-#include "Hcal/WorkingCluster.h"
+#include "Recon/TemplatedClusterFinder.h"
+
 namespace hcal {
 
 /**

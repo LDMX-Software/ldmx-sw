@@ -1,56 +1,72 @@
-
+/**
+ * @file MyClusterWeight.h
+ * @brief Weight function for Hcal cluster merging decisions
+ */
 #ifndef HCAL_MYCLUSTERWEIGHT_H_
 #define HCAL_MYCLUSTERWEIGHT_H_
 
-#include <iostream>
+#include <cmath>
 
-#include "Hcal/WorkingCluster.h"
+#include "Hcal/Event/HcalHit.h"
+#include "Recon/WorkingCluster.h"
 
 namespace hcal {
 
+/**
+ * @class MyClusterWeight
+ * @brief Computes the weight (distance) between two Hcal clusters.
+ *
+ * The weight is used by TemplatedClusterFinder to decide which clusters
+ * to merge. Smaller weights indicate clusters that should be merged first.
+ * The weight is based on both transverse and longitudinal separation.
+ */
 class MyClusterWeight {
  public:
-  double operator()(
-      const WorkingCluster& a,
-      const WorkingCluster& b) {  // returns weighting function, where smallest
-                                  // weights will be combined first
+  using ClusterType = recon::WorkingCluster<ldmx::HcalHit>;
 
-    double rmol = 10.00;    // Moliere radius_ of detector, roughly. In mm TODO
-    double dzchar = 100.0;  // lateral shower development in mm TODO
+  /**
+   * Compute the weight between two clusters.
+   *
+   * @param a First cluster
+   * @param b Second cluster
+   * @return Weight value (smaller = should merge first)
+   */
+  double operator()(const ClusterType& a, const ClusterType& b) {
+    // Moliere radius of detector, roughly. In mm (TODO: tune for Hcal)
+    double rmol = 10.00;
+    // Lateral shower development in mm (TODO: tune for Hcal)
+    double dzchar = 100.0;
 
-    double a_e = a.centroid().E();
-    double a_x = a.centroid().Px();
-    double a_y = a.centroid().Py();
-    double a_z = a.centroid().Pz();
+    double a_e = a.energy();
+    double a_x = a.centroidX();
+    double a_y = a.centroidY();
+    double a_z = a.centroidZ();
 
-    double b_e = b.centroid().E();
-    double b_x = b.centroid().Px();
-    double b_y = b.centroid().Py();
-    double b_z = b.centroid().Pz();
+    double b_e = b.energy();
+    double b_x = b.centroidX();
+    double b_y = b.centroidY();
+    double b_z = b.centroidZ();
 
     double dijz;
     if (a_e >= b_e) {
-      // differences in Z
       dijz = b_z - a_z;
     } else {
       dijz = a_z - b_z;
     }
 
-    // Transverse Difference
-    double dij_t = pow(pow(a_x - b_x, 2) + pow(a_y - b_y, 2), 0.5);
-    // Trans --> massive
-    double weight_t = exp(pow(dij_t / rmol, 2)) - 1;
-    // Long
-    double weight_z = (exp(abs(dijz) / dzchar) - 1);
+    // Transverse difference
+    double dij_t = std::sqrt(std::pow(a_x - b_x, 2) + std::pow(a_y - b_y, 2));
+
+    // Transverse weight
+    double weight_t = std::exp(std::pow(dij_t / rmol, 2)) - 1;
+    // Longitudinal weight
+    double weight_z = std::exp(std::abs(dijz) / dzchar) - 1;
 
     // Return the highest of the two weights
-    if (weight_t <= weight_z) {
-      return weight_z;
-    } else {
-      return weight_t;
-    }
+    return std::max(weight_t, weight_z);
   }
 };
+
 }  // namespace hcal
 
-#endif
+#endif  // HCAL_MYCLUSTERWEIGHT_H_

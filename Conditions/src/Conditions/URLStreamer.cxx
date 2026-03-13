@@ -1,11 +1,8 @@
 #include "Conditions/URLStreamer.h"
 
-#include <string.h>
-#include <sys/wait.h>
-#include <unistd.h>
+#include <curl/curl.h>
 
 #include <fstream>
-#include <iostream>
 #include <sstream>
 #include <string>
 
@@ -13,62 +10,80 @@
 
 namespace conditions {
 
-static unsigned int http_requests_ = 0;
-static unsigned int http_failures_ = 0;
+static unsigned int http_requests = 0;
+static unsigned int http_failures = 0;
 
-void urlstatistics(unsigned int& http_requests, unsigned int& http_failures) {
-  http_requests = http_requests_;
-  http_failures = http_failures_;
+void urlstatistics(unsigned int& requests, unsigned int& failures) {
+  requests = http_requests;
+  failures = http_failures;
+}
+
+/**
+ * Callback for libcurl to write received data into a std::string buffer.
+ */
+static size_t writeCallback(char* ptr, size_t size, size_t nmemb,
+                            void* userdata) {
+  auto* buffer = static_cast<std::string*>(userdata);
+  size_t total = size * nmemb;
+  buffer->append(ptr, total);
+  return total;
 }
 
 std::unique_ptr<std::istream> urlstream(const std::string& url) {
   if (url.find("file://") == 0 || (url.length() > 0 && url[0] == '/')) {
     std::string fname = url;
-    if (fname.find("file://") == 0)
-      fname = url.substr(url.find("file://") + strlen("file://"));
-    std::ifstream* fs = new std::ifstream(fname);
+    if (fname.find("file://") == 0) fname = url.substr(7);
+    auto fs = std::make_unique<std::ifstream>(fname);
     if (!fs->good()) {
-      delete fs;
       EXCEPTION_RAISE("ConditionsException",
                       "Unable to open CSV file '" + fname + "'");
     }
-    return std::unique_ptr<std::istream>(fs);
+    return fs;
   }
-  if ((url.find("http://") != std::string::npos) ||
-      (url.find("https://") != std::string::npos)) {
-    http_requests_++;
-    // this implementation uses wget to handle the SSL processes
-    static int istream = 0;
-    char fname[250];
-    snprintf(fname, 250, "/tmp/httpstream_%d_%d.csv ", getpid(), istream++);
-    pid_t apid = fork();
-    if (apid == 0) {  // child
-      execl("/usr/bin/wget", "wget", "-q", "--no-check-certificate", "-O",
-            fname, "-o", "/tmp/wget.log", url.c_str(), (char*)0);
-    } else {
-      int wstatus;
-      waitpid(apid, &wstatus, 0);
-      //      std::cout << "EXITED: " << WIFEXITED(wstatus) << " STATUS: " <<
-      //      WEXITSTATUS(wstatus) << std::endl;
-      if (WIFEXITED(wstatus) != 1 || WEXITSTATUS(wstatus) != 0) {
-        http_failures_++;
-        EXCEPTION_RAISE("ConditionsException",
-                        "Wget error " + std::to_string(WEXITSTATUS(wstatus)) +
-                            " retreiving URL '" + url + "'");
-      }
-    }
-    std::ifstream ib(fname);
-    if (ib.bad()) {
-      http_failures_++;
+  if ((url.find("http://") == 0) || (url.find("https://") == 0)) {
+    http_requests++;
+
+    CURL* curl = curl_easy_init();
+    if (!curl) {
+      http_failures++;
       EXCEPTION_RAISE("ConditionsException",
-                      "Bad/empty file retreiving URL '" + url + "'");
+                      "Failed to initialize libcurl for URL '" + url + "'");
     }
-    std::stringstream* ss = new std::stringstream();
-    (*ss) << ib.rdbuf();
-    //    std::cout << "CONTENTS: \n" << ss->str();
-    ib.close();  // needed for some implementations
-    std::remove(fname);
-    return std::unique_ptr<std::istream>(ss);
+
+    std::string response_body;
+
+    curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
+    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, writeCallback);
+    curl_easy_setopt(curl, CURLOPT_WRITEDATA, &response_body);
+    curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
+    curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 1L);
+    curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 2L);
+    curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, 30L);
+    curl_easy_setopt(curl, CURLOPT_TIMEOUT, 300L);
+
+    CURLcode res = curl_easy_perform(curl);
+
+    if (res != CURLE_OK) {
+      curl_easy_cleanup(curl);
+      http_failures++;
+      EXCEPTION_RAISE("ConditionsException",
+                      "Curl error (" + std::string(curl_easy_strerror(res)) +
+                          ") retrieving URL '" + url + "'");
+    }
+
+    long http_code = 0;
+    curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &http_code);
+    curl_easy_cleanup(curl);
+
+    if (http_code != 200) {
+      http_failures++;
+      EXCEPTION_RAISE("ConditionsException",
+                      "HTTP error " + std::to_string(http_code) +
+                          " retrieving URL '" + url + "'");
+    }
+
+    auto ss = std::make_unique<std::stringstream>(std::move(response_body));
+    return ss;
   }
   EXCEPTION_RAISE("ConditionsException", "Unable to handle URL '" + url + "'");
   return std::unique_ptr<std::istream>(nullptr);
