@@ -36,8 +36,11 @@ class PFTruthProducer : public framework::Producer {
   std::string hcal_coll_name_;
   std::string target_sp_passname_;
   std::string ecal_sp_passname_;
+  std::string sim_particles_coll_name_;
   std::string sim_particles_passname_;
+  std::string target_sp_coll_name_;
   std::string target_sp_hits_event_passname_;
+  std::string ecal_sp_coll_name_;
   std::string ecal_sp_hits_event_passname_;
   std::string sim_particles_event_passname_;
 };

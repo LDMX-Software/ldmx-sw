@@ -44,6 +44,9 @@ void VisiblesCutflow::configure(framework::config::Parameters &parameters) {
 
   sp_collection_ = parameters.get<std::string>("sp_coll_name");
   sp_pass_name_ = parameters.get<std::string>("sp_pass_name");
+
+  sim_particles_coll_name_ =
+      parameters.get<std::string>("sim_particles_coll_name");
   sim_particles_pass_name_ =
       parameters.get<std::string>("sim_particles_pass_name");
 
@@ -61,7 +64,7 @@ void VisiblesCutflow::analyze(const framework::Event &event) {
   double decay_z;
 
   const auto &particle_map{event.getMap<int, ldmx::SimParticle>(
-      "SimParticles", sim_particles_pass_name_)};
+      sim_particles_coll_name_, sim_particles_pass_name_)};
 
   for (auto const &it : particle_map) {
     std::vector<int> parents = it.second.getParents();

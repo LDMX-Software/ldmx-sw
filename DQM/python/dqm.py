@@ -64,6 +64,7 @@ class ReSimVerifier(Processor):
         "RecoilSimHits",
         "TaggerSimHits",
     ]
+    sim_coll_name: str = "SimParticles"
     sim_pass_name: str = ""
     resim_pass_name: str = "resim"
     stop_on_error: bool = False
@@ -495,6 +496,7 @@ class VisiblesFeatureProducer(Processor):
     track_pass_name: str = ""
     sp_coll_name: str = "TargetScoringPlaneHits"
     sp_pass_name: str = ""
+    sim_particles_coll_name: str = "SimParticles"
     sim_particles_pass_name: str = ""
 
     def __post_init__(self):
@@ -529,6 +531,7 @@ class VisiblesCutflow(Processor):
     track_pass_name: str = ""
     sp_coll_name: str = "TargetScoringPlaneHits"
     sp_pass_name: str = ""
+    sim_particles_coll_name: str = "SimParticles"
     sim_particles_pass_name: str = ""
     ecal_veto_coll_name: str = "EcalVeto"
     ecal_veto_pass_name: str = ""
@@ -590,6 +593,7 @@ class SimObjects(Processor):
 @processor("dqm::DarkBremInteraction", "DQM")
 class DarkBremInteraction(Processor):
 
+    particle_coll_name: str = "SimParticles"
     particle_passname: str = ""
 
     def __post_init__(self):
@@ -710,6 +714,7 @@ class PhotoNuclearDQM(Processor):
         p.sequence.append( dqm.PhotoNuclearDQM() )
     """
 
+    sim_particles_coll_name: str = "SimParticles"
     sim_particles_passname: str = ""
     count_light_ions: bool = True
 
@@ -914,7 +919,7 @@ class TrigScintDigiDQM(Processor):
 
     hit_collection: str = "trigScintDigisUp"
     pad: str = "up"
-    trig_scint_passname: str = ""
+    pass_name: str = ""
 
 
 @processor("dqm::TrigScintDigiVerifier", "DQM")
@@ -1000,7 +1005,9 @@ class SampleValidation(Processor):
         p.sequence.append(dqm.SampleValidation())
     """
 
+    sim_particles_coll_name: str = "SimParticles"
     sim_particles_passname: str = ""
+    target_scoring_plane_coll_name: str = "TargetScoringPlaneHits"
     target_scoring_plane_passname: str = ""
 
     def __post_init__(self):

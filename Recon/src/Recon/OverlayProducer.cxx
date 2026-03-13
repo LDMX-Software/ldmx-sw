@@ -145,7 +145,7 @@ void OverlayProducer::produce(framework::Event &event) {
 
   }  // over calo collections for sim event
 
-  /* ----------- now do the same with SimTrackerHits! ----------- */
+  /* ----------- then do the same with SimTrackerHits! ----------- */
 
   // get the SimTrackerHit collections that we want to overlay, by looping
   // over the list of collections passed to the producer : tracker_collections_
@@ -297,7 +297,7 @@ void OverlayProducer::produce(framework::Event &event) {
           ldmx_log(debug) << "Nhits in overlay collection " << out_coll_name
                           << ": " << calo_collection_map[out_coll_name].size();
 
-      }  // over caloCollections
+      }  // over calo_collections_
 
       /* ----------- now do simtracker hits_ overlay ----------- */
 
@@ -317,6 +317,8 @@ void OverlayProducer::produce(framework::Event &event) {
         for (auto &overlay_hit : overlay_tracker_hits) {
           auto overlay_time{overlay_hit.getTime() + time_offset};
           overlay_hit.setTime(overlay_time);
+          auto overlay_track_id{overlay_hit.getTrackID()};
+          overlay_hit.setTrackID(overlay_track_id);
           tracker_collection_map[out_coll_name_tracker].push_back(overlay_hit);
 
           ldmx_log(trace) << overlay_hit;
@@ -328,7 +330,8 @@ void OverlayProducer::produce(framework::Event &event) {
                         << out_coll_name_tracker << ": "
                         << tracker_collection_map[out_coll_name_tracker].size();
 
-      }  // over trackerCollections
+      }  // over tracker_collections_
+
     }  // over overlay events
   }  // over bunches
 
@@ -381,6 +384,7 @@ void OverlayProducer::produce(framework::Event &event) {
     }
     event.add(name, coll);
   }
+
   return;
 }  // end produce()
 

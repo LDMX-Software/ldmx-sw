@@ -18,10 +18,13 @@ class VertexProcessor(Processor):
         The name of the collection containing the tracks to vertex.
     input_pass_name : str
         The pass name of the input collections.
+    seeds_coll_name : str
+        The name of the seeds collection.
     """
 
     field_map: str = field(default_factory=makeFieldMapPath)
     trk_coll_name: str = "Tracks"
+    seeds_coll_name: str = "RecoilTruthSeeds"
     input_pass_name: str = ""
 
 

@@ -243,3 +243,33 @@ dqm_sequence = [
     dqm_tagger_gsf,
     dqm_recoil_gsf,
 ]
+
+def setOverlay(pass_name:str):
+    """Modifies full tracking and dqm sequences in-place so that all 
+    relevant input/output collections in the tracking processors point 
+    to the overlay collections."""
+
+    collection_names_to_update = [ # first, collections that are explicitly overlaid in the OverlayProducer
+        "TriggerPad1SimHits", "TriggerPad2SimHits", "TriggerPad3SimHits",
+        "TargetSimHits", "EcalSimHits", "HcalSimHits", "TaggerSimHits",
+        "RecoilSimHits", "EcalScoringPlaneHits", "TargetScoringPlaneHits"
+    ]
+    overlay_str = 'Overlay'
+
+    # iterate through all processors, renaming collections as we go
+    for proc in sequence + dqm_sequence:
+        params = vars(proc) # Python variable assignments are references by default,
+                            # so this works to update the processor class variables
+        for key, value in params.items():
+            if str(key) in ['input_pass_name', 'track_collection_event_passname', 
+                            'track_passname', 'meas_collection_event_passname', 'meas_passname', 
+                            'measurement_passname', 'truth_events_passname', 'truth_passname', 
+                            'track_collection_events_passname', 'input_tagger_pass_name', 
+                            'input_recoil_pass_name', 'input_collection_events_passname', 
+                            'tagger_trks_event_collection_passname']:
+                params[key] = pass_name
+                continue
+            if str(value) in collection_names_to_update:
+                params[key] += overlay_str
+                continue
+

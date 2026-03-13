@@ -11,17 +11,20 @@
 namespace dqm {
 
 void SampleValidation::configure(framework::config::Parameters& ps) {
+  target_scoring_plane_coll_name_ =
+      ps.get<std::string>("target_scoring_plane_coll_name");
   target_scoring_plane_passname_ =
       ps.get<std::string>("target_scoring_plane_passname");
+  sim_particles_coll_name_ = ps.get<std::string>("sim_particles_coll_name");
   sim_particles_passname_ = ps.get<std::string>("sim_particles_passname");
 }
 
 void SampleValidation::analyze(const framework::Event& event) {
   // Grab the SimParticle Map and Target Scoring Plane Hits
   auto target_sp_hits(event.getCollection<ldmx::SimTrackerHit>(
-      "TargetScoringPlaneHits", target_scoring_plane_passname_));
+      target_scoring_plane_coll_name_, target_scoring_plane_passname_));
   auto particle_map{event.getMap<int, ldmx::SimParticle>(
-      "SimParticles", sim_particles_passname_)};
+      sim_particles_coll_name_, sim_particles_passname_)};
 
   std::vector<int> primary_daughters;
 

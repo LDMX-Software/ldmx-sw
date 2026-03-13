@@ -12,31 +12,40 @@ sim_passname : string
 overlay_passname : string
     Pass name of the pileup events
 calo_collections : string
-    List of SimCalorimeterHit collections to pull from the sim and pileup events and combine
+    List of SimCalorimeterHit collections to pull from the sim 
+    and pileup events and combine
 tracker_collections : string
-    List of SimTrackerHit collections to pull from the sim and pileup events and combine
+    List of SimTrackerHit collections to pull from the sim 
+    and pileup events and combine
 poisson_mu : int
     The total number of interactions combined (including the sim event)
 do_poisson_in_time : bool
-    Specifies whether to sample a Poisson(totalNumberOfInteractions) to obtain the number of events to combine in-time
+    Specifies whether to sample a Poisson(totalNumberOfInteractions)
+     to obtain the number of events to combine in-time
     with the sim event (doPoissonIntime=true),
-    or deterministically set nOverlay=totalNumberOfInteractions-1 (doPoissonIntime = false)
+    or deterministically set nOverlay=totalNumberOfInteractions-1
+     (doPoissonIntime = false)
 do_poisson_out_of_time : bool
-    Specifies whether to sample a Poisson(totalNumberOfInteractions) to obtain the number of events to put in
+    Specifies whether to sample a Poisson(totalNumberOfInteractions) 
+    to obtain the number of events to put in
     bunches that are out-of-time with the sim event (doPoissonOutoftime=true),
-    or deterministically set nOverlay=totalNumberOfInteractions-1 (doPoissonOutoftime = false)
+    or deterministically set nOverlay=totalNumberOfInteractions-1
+     (doPoissonOutoftime = false)
 time_sigma : float
     The width of a single bunch in time (expressed in sigma) [ns]
 time_mean : float
     The average time, relative to the sim time, of the pileup events [ns].
-    Note that this should generally be 0. A non-zero number combined with a 0 spread is useful for debugging.
+    Note that this should generally be 0. A non-zero number combined 
+    with a 0 spread is useful for debugging.
 n_earlier : int
     The number of preceding bunches sampled for out-of-time pileup.
-    Furthermore, pileup will be uniformly distributed among this number of bunches m = -N_earlier, -N_earlier+1, ..., N_later
+    Furthermore, pileup will be uniformly distributed among this 
+    number of bunches m = -N_earlier, -N_earlier+1, ..., N_later
     while the sim event is always in bunch m = 0.
 n_later : int
     The number of following bunches sampled for out-of-time pileup.
-    Furthermore, pileup will be uniformly distributed among this number of bunches m = -N_earlier, -N_earlier+1, ..., N_later
+    Furthermore, pileup will be uniformly distributed among this 
+    number of bunches m = -N_earlier, -N_earlier+1, ..., N_later
     while the sim event is always in bunch m = 0.
 bunch_spacing : float
     The spacing in time between bunches [ns]
@@ -58,7 +67,9 @@ class OverlayProducer(Processor):
     Examples
     --------
         from LDMX.Recon.overlay import OverlayProducer
-        p.sequence.append( OverlayProducer( overlay_filename='myPileupFileName.root' ) )
+        p.sequence.append( OverlayProducer( 
+            overlay_filename='myPileupFileName.root' ) 
+        )
     """
 
     overlay_filename: str = ""
@@ -72,8 +83,13 @@ class OverlayProducer(Processor):
         "EcalSimHits",
         "HcalSimHits",
     ]
-    tracker_collections: list[str] = ["TaggerSimHits", "RecoilSimHits"]
-    out_coll_postfix: str = "Overlay"
+    tracker_collections: list[str] = [
+        "TaggerSimHits",
+        "RecoilSimHits",
+        "EcalScoringPlaneHits",
+        "TargetScoringPlaneHits"
+    ]
+    out_coll_postfix: str = "Overlay"g
     poisson_mu: float = 2.0
     do_poisson_in_time: bool = False
     do_poisson_out_of_time: bool = False

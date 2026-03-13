@@ -11,6 +11,7 @@ class HcalVetoProcessor(Processor):
     input_hit_coll_name: str = "HcalRecHits"
     input_hit_pass_name: str = ""
     output_coll_name: str = "HcalVeto"
+    track_collection: str = "RecoilTracks"
     track_pass_name: str = ""
     inverse_skim: bool = False
 
@@ -29,7 +30,7 @@ class HcalWABVetoProcessor(Processor):
     hcal_hit_passname: str = ""
     ecal_hit_passname: str = ""
     hcal_cluster_passname: str = ""
-    track_pass_name: str = ""
+    track_collection: str = "RecoilTracks"
     track_pass_name: str = ""
 
 

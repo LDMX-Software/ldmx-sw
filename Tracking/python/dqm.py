@@ -82,11 +82,11 @@ class TrackingRecoDQM(Processor):
         Name of the measurement collection.
     measurement_passname : str
         The pass name of the measurements.
-    ecal_sp_events_passname : str
+    ecal_sp_coll_name : str
         The events pass name for ecal scoring plane.
     ecal_sp_passname : str
         The pass name for ecal scoring plane.
-    target_sp_events_passname : str
+    target_sp_coll_name : str
         The events pass name for target scoring plane.
     target_sp_passname : str
         The pass name for target scoring plane.
@@ -120,9 +120,9 @@ class TrackingRecoDQM(Processor):
     measurement_collection: str = "DigiTaggerSimHits"
     measurement_passname: str = ""
     title: str = ""
-    ecal_sp_events_passname: str = ""
+    ecal_sp_coll_name: str = "EcalScoringPlaneHits"
     ecal_sp_passname: str = ""
-    target_sp_events_passname: str = ""
+    target_sp_coll_name: str = "TargetScoringPlaneHits"
     target_sp_passname: str = ""
     truth_events_passname: str = ""
     truth_passname: str = ""

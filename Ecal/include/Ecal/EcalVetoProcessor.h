@@ -153,6 +153,8 @@ class EcalVetoProcessor : public framework::Producer {
   std::string feature_list_name_;
 
   // Pass and collection names
+  std::string ecal_sp_coll_name_;
+  std::string target_sp_coll_name_;
   std::string sp_pass_name_;
   std::string rec_pass_name_;
   std::string rec_coll_name_;

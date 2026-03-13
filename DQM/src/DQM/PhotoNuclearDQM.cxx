@@ -156,7 +156,8 @@ void PhotoNuclearDQM::findSubleadingKinematics(
 
 void PhotoNuclearDQM::configure(framework::config::Parameters &parameters) {
   count_light_ions_ = parameters.get<bool>("count_light_ions", true);
-
+  sim_particles_coll_name_ =
+      parameters.get<std::string>("sim_particles_coll_name");
   sim_particles_passname_ =
       parameters.get<std::string>("sim_particles_passname");
 }
@@ -165,7 +166,7 @@ void PhotoNuclearDQM::analyze(const framework::Event &event) {
   // Get the particle map from the event.  If the particle map is empty,
   // don't process the event.
   auto particle_map{event.getMap<int, ldmx::SimParticle>(
-      "SimParticles", sim_particles_passname_)};
+      sim_particles_coll_name_, sim_particles_passname_)};
   if (particle_map.size() == 0) {
     return;
   }

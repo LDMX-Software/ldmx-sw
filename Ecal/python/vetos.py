@@ -12,19 +12,18 @@ class EcalVetoProcessor(Processor):
     roc_file: str = makeRoCPath("RoC_v14_8gev")
     beam_energy: float = 8000.0  # MeV
     disc_cut: float = 0.99741
+    ecal_sp_coll_name: str = "EcalScoringPlaneHits"
+    target_sp_coll_name: str = "TargetScoringPlaneHits"
     sp_pass_name: str = ""
+    sim_particles_coll_name: str = "SimParticles"
+    sim_particles_passname: str = ""
     collection_name: str = "EcalVeto"
-    rec_pass_name: str = ""
     rec_coll_name: str = "EcalRecHits"
+    rec_pass_name: str = ""
     recoil_from_tracking: bool = True
     track_collection: str = "RecoilTracksClean"
-    inverse_skim: bool = False
-    sim_particles_passname: str = ""
     track_pass_name: str = ""
-    ecal_simhits_passname: str = ""
-    ecal_digis_passname: str = ""
-    ecal_rechits_passname: str = ""
-    ecal_trig_digis_passname: str = ""
+    inverse_skim: bool = False
 
 
 @processor("ecal::EcalMipTrackingProcessor", "Ecal")
@@ -50,6 +49,7 @@ class EcalPnetVetoProcessor(Processor):
     collection_name: str = "EcalPnetVeto"
     rec_coll_name: str = "EcalRecHits"
     ecal_rec_hits_passname: str = ""
+    ecal_sp_coll_name: str = "EcalScoringPlaneHits"
     ecal_sp_hits_passname: str = ""
     track_collection: str = "RecoilTracksClean"
     track_pass_name: str = ""

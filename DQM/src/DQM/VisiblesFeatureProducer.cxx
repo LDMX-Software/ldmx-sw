@@ -39,6 +39,9 @@ void VisiblesFeatureProducer::configure(
 
   sp_collection_ = parameters.get<std::string>("sp_coll_name");
   sp_pass_name_ = parameters.get<std::string>("sp_pass_name");
+
+  sim_particles_coll_name_ =
+      parameters.get<std::string>("sim_particles_coll_name");
   sim_particles_pass_name_ =
       parameters.get<std::string>("sim_particles_pass_name");
 }
@@ -51,7 +54,7 @@ void VisiblesFeatureProducer::analyze(const framework::Event &event) {
   std::vector<double> bdt_features;
 
   const auto &particle_map{event.getMap<int, ldmx::SimParticle>(
-      "SimParticles", sim_particles_pass_name_)};
+      sim_particles_coll_name_, sim_particles_pass_name_)};
 
   // Get target scoring plane hits for recoil electron
   // Use this to calculate the projected photon line vector

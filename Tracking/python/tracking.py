@@ -76,6 +76,8 @@ class SeedFinderProcessor(Processor):
         The name of the output collection of seeds to be stored.
     input_pass_name : str
         The pass name of the input collections.
+    sim_particles_coll_name : str
+        The name of the sim particles collection.
     sim_particles_passname : str
         The pass name of the sim particles.
     tagger_trks_event_collection_passname : str
@@ -101,6 +103,7 @@ class SeedFinderProcessor(Processor):
     input_hits_collection: str = "TaggerSimHits"
     out_seed_collection: str = "SeedTracks"
     input_pass_name: str = ""
+    sim_particles_coll_name: str = "SimParticles"
     sim_particles_passname: str = ""
     tagger_trks_event_collection_passname: str = ""
     sim_particles_event_passname: str = ""
@@ -153,6 +156,8 @@ class CKFProcessor(Processor):
         Minimum number of measurements on track to accept the trajectory.
     outlier_pval_ : float
         Outlier p-value threshold.
+    sim_particles_coll_name : str
+        The name of the sim particles collection.
     sim_particles_event_passname : str
         The pass name of the sim particles event.
     input_pass_name : str
@@ -178,6 +183,7 @@ class CKFProcessor(Processor):
     taggerTracking: bool = False
     measurement_collection: str = ""
     outlier_pval_: float = 3.84
+    sim_particles_coll_name: str = "SimParticles"
     sim_particles_event_passname: str = ""
     input_pass_name: str = ""
 
@@ -283,14 +289,28 @@ class TruthSeedProcessor(Processor):
         Ignore the recoil tracker (makes empty collections).
     max_track_id : float
         Maximum track ID for a hit to be selected in the target scoring plane.
+    ecal_sp_coll_name : str
+        The name of the ECAL scoring plane hits collection.
     sp_pass_name : str
         The pass name of the scoring plane hits.
     input_pass_name : str
         The pass name of the input collections.
+    sim_particles_coll_name : str
+        The name of the sim particles collection.
     sim_particles_passname : str
         The pass name of the sim particles.
     particle_hypothesis : int
         PDG ID for the particle hypothesis.
+    beam_electrons_collection: str
+        The name of the beam electrons collection to use
+    tagger_seeds_collection : str
+        The name of the tagger seeds collection to be stored.
+    tagger_truth_collection : str
+        The name of the tagger truth collection.
+    recoil_seeds_collection : str
+        The name of the recoil seeds collection.
+    recoil_truth_collection : str
+        The name of the recoil truth collection.
     """
 
     debug: bool = False
@@ -309,14 +329,21 @@ class TruthSeedProcessor(Processor):
     skip_tagger: bool = False
     skip_recoil: bool = False
     max_track_id: int = 5
+    ecal_sp_coll_name: str = "EcalScoringPlaneHits"
     trk_coll_name: str = ""
     pdgIDs: list[int] = [11]
     scoring_hits: str = "TargetScoringPlaneHits"
     p_cutEcal: float = -1.0
     sp_pass_name: str = ""
     input_pass_name: str = ""
+    sim_particles_coll_name: str = "SimParticles"
     sim_particles_passname: str = ""
     particle_hypothesis: int = 11
+    beam_electrons_collection: str = "BeamElectrons"
+    tagger_seeds_collection: str = "TaggerTruthSeeds"
+    tagger_truth_collection: str = "TaggerTruth"
+    recoil_seeds_collection: str = "RecoilTruthSeeds"
+    recoil_truth_collection: str = "RecoilTruth"
 
 
 @processor("tracking::reco::GreedyAmbiguitySolver", "Tracking")
