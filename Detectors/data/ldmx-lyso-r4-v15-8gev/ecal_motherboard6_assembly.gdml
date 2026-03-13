@@ -361,7 +361,7 @@
 
   <structure>
     <volume name="nohole_motherboard6_assembly">
-      <materialref ref="FR40x27264f0"/>
+      <materialref ref="FR4"/>
       <solidref ref="nohole_motherboard6_assembly-SOL"/>
     </volume>
   </structure>
