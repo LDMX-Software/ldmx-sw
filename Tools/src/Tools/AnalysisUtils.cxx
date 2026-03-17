@@ -44,8 +44,8 @@ std::tuple<int, const ldmx::SimParticle *> getRecoil(
     // need to account for overlay tracks, which replace track ID
     // 1 with 134217729 in the main sample and with 150994945 in the
     // pileup
-    // this code right now is decidedly NOT future proof and only handles a single
-    // encoding version
+    // this code right now is decidedly NOT future proof and only handles a
+    // single encoding version
     return {134217729, &(particleMap.at(134217729))};
   }
 }
