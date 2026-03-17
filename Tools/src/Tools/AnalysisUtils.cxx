@@ -38,7 +38,16 @@ std::tuple<int, const ldmx::SimParticle *> getRecoil(
   // only get here if recoil electron was not "produced" by dark brem
   //   in this case (bkgd), we interpret the primary electron as also the recoil
   //   electron
-  return {1, &(particleMap.at(1))};
+  if (particleMap.find(1) != particleMap.end()) {
+    return {1, &(particleMap.at(1))};
+  } else {
+    // need to account for overlay tracks, which replace track ID
+    // 1 with 134217729 in the main sample and with 150994945 in the
+    // pileup
+    // this code right now is decidedly NOT future proof and only handles a single
+    // encoding version
+    return {134217729, &(particleMap.at(134217729))};
+  }
 }
 
 // Search the recoil electrons daughters for a photon
