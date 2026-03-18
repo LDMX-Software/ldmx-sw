@@ -88,7 +88,21 @@ class HcalReadoutGeometry:
         """
         return s
 
-    def make_v13():
+
+class HcalGeometry:
+    """Container for the various geometries
+
+    Only sets parameters that must align with the Hcal gdml constants.
+    """
+
+    def __init__(self):
+        self.make_v13()
+        self.make_v14()
+        self.make_v1_prototype()
+        self.make_v2_prototype()
+        self.make_test_prototype()
+
+    def make_v13(self):
         """Create the HcalGeometry with the v13 geometry parameters
 
         Only sets parameters that must align with the Hcal gdml constants.
@@ -488,54 +502,66 @@ class HcalReadoutGeometry:
         ]
         # added the reduced geometry temporarily, for the final geometry
         # we should have a new function "reduced()" with the prototype geom
-        detectors_valid = [
-            "ldmx-det-v14",
-            "ldmx-det-v14.*",
-            "ldmx-vertTS-v14.*",
-            "ldmx-reduced",
-            "ldmx-reduced-v2",
-            "ldmx-reduced-v3",
-            "ldmx-lyso-r4-v15",
-            "ldmx-lyso-r4-v15.*",
-            "ldmx-det-v15",
-            "ldmx-det-v15.*",
-            "ldmx-ti-v15-8gev",
-            "ldmx-ti-v15-8gev.*",
-            "ldmx-al-v15-8gev",
-            "ldmx-al-v15-8gev.*",
+        self.v14.detectors_valid = ["ldmx-det-v14", "ldmx-det-v14.*", "ldmx-vertTS-v14.*", "ldmx-reduced", "ldmx-reduced-v2", "ldmx-reduced-v3","ldmx-lyso-r4-v15", "ldmx-lyso-r4-v15.*", "ldmx-det-v15","ldmx-det-v15.*"]
+        self.v14.y_offset = 19.05
+
+#----------------
+#MY CHANGE
+#----------------
+
+    def make_test_prototype(self):
+        """Create the HcalGeometry with the prototype to be set up at SLAC geometry parameters"""
+        self.test_prototype = HcalReadoutGeometry()
+        # GDML-parameters
+        scint_thickness = 20.0
+        scint_bar_length = 2000.0
+        scint_bar_cover_thickness = 0.5
+        layer_thickness = 21.5
+        # air_thickness = layer_thickness - (
+        #     absorber_thickness
+        #     + bar_mounting_plate_thickness
+        #     + scint_thickness
+        #     + scint_bar_cover_thickness
+        # )
+        num_layers_alongx = 4
+        num_layers_alongz = 4
+        num_layers = num_layers_alongx + num_layers_alongz
+        # back_start = num_layers_front * layer_thickness
+        scint_bar_width = 50.0
+        num_bars = 8
+        dy = num_layers * layer_thickness
+        # End GDML-parameters
+
+        self.test_prototype.scint_thickness = scint_thickness
+        self.test_prototype.scint_width = scint_bar_width
+        self.test_prototype.scint_length = [[scint_bar_length for layer in range(num_layers)] ]
+
+        self.test_prototype.zero_layer = [
+            -dy / 2
+            + scint_bar_cover_thickness
+            + scint_thickness / 2
         ]
-        return HcalReadoutGeometry(
-            num_sections=num_sections,
-            num_layers=num_layers,
-            scint_thickness=scint_thickness,
-            scint_width=scint_width,
-            back_horizontal_parity=back_horizontal_parity,
-            side_3d_readout=side_3d_readout,
-            y_offset=19.05,
-            scint_length=scint_length,
-            zero_layer=zero_layer,
-            zero_strip=zero_strip,
-            layer_thickness=layer_thickness,
-            num_strips=num_strips,
-            half_total_width=half_total_width,
-            ecal_dx=ecal_dx,
-            ecal_dy=ecal_dy,
-            detectors_valid=detectors_valid,
-        )
+        self.test_prototype.layer_thickness = [layer_thickness]
+        self.test_prototype.num_sections = 1 #?????????????
+        self.test_prototype.num_layers = [num_layers]
+        num_strips = [num_bars for i in range(num_layers)]
+        self.test_prototype.num_strips = [num_strips]
+        # zero_strip and half_total_width are identical
+        self.test_prototype.zero_strip = [[
+            N * scint_bar_width / 2 for N in num_strips
+        ]]
+        self.test_prototype.half_total_width = self.test_prototype.zero_strip
+        self.test_prototype.ecal_dx = 0.0
+        self.test_prototype.ecal_dy = 0.0
+        self.test_prototype.detectors_valid = [
+            "ldmx-hcal-prototype-test",
+        ]
 
-
-@parameter_set
-class HcalGeometry:
-    """Container for the various geometries
-
-    Only sets parameters that must align with the Hcal gdml constants.
-    """
-
-    v13: HcalReadoutGeometry = field(default_factory=HcalReadoutGeometry.make_v13)
-    v14: HcalReadoutGeometry = field(default_factory=HcalReadoutGeometry.make_v14)
-    v1_prototype: HcalReadoutGeometry = field(
-        default_factory=HcalReadoutGeometry.make_v1_prototype
-    )
-    v2_prototype: HcalReadoutGeometry = field(
-        default_factory=HcalReadoutGeometry.make_v2_prototype
-    )
+        '''
+        # Layers with even parity (0) are horizontal (scintillator bar length
+        # along the x-axis) in the back HCal
+        self.v2_prototype.back_horizontal_parity = 0
+        self.v2_prototype.side_3d_readout = 0
+        # TODO: Check this
+        self.v2_prototype.y_offset = 0.
+        '''
