@@ -1,0 +1,60 @@
+<!-- Center position -->
+<position name="center" x="0" y="0" z="0"/>
+
+<!-- Scintillators  -->
+<variable name="scint_thickness" value="20."/>
+<variable name="scint_bar_width" value="50."/>
+<variable name="scint_bar_length" value="2000."/>
+<variable name="scint_bar_cover_thickness" value="0.5"/>
+
+<!--number of scintillator bars per layer-->
+<variable name="num_bars" value="8"/>
+
+
+
+<!-- Layers -->
+<!--TEST: ASSUMPTION: 4 scintilators along x, 4 scintilators along z, stacked upon each other in y, no absorber-->
+<variable name="layer_thickness" value="21.5"/>
+<variable name="air_thickness" 
+          value="layer_thickness - scint_thickness"/> 
+<variable name="num_layers_alongx" value="4"/>
+<variable name="num_layers_alongz" value="4"/>
+<variable name="num_layers"
+          value="num_layers_alongx + num_layers_alongz"/>
+<variable name="back_start" value="num_layers * layer_thickness"/>
+
+
+<!-- Distances between layers -->
+<constant name="distance_to_subsequent_scint_layer" value="2*layer_thickness"/>
+
+<!-- World and prototype dimensions-->
+<constant name="world_dim" value="10.0*m"/>
+<variable name="dx" value="3000."/> <!--longer than 2000 for some reason-->
+<variable name="dy" value="num_layers * layer_thickness"/>
+<variable name="dz" value="3000."/>
+
+<!-- Positional constants -->
+
+<position name="hadron_calorimeter_pos" x="0.0" y="0.0" z="0.0"/> <!--center of the hcal-->
+
+<variable name="first_layer_ypos" value="-dy/2"/> <!-- -172/2 -->
+<variable name="first_layer_scint_cover_ypos"
+          value="first_layer_ypos + scint_bar_cover_thickness/2"/>
+<variable name="first_layer_scint_ypos"
+          value="first_layer_ypos + scint_bar_cover_thickness  + scint_thickness/2"/>
+<variable name="first_back_layer_ypos" value="first_layer_ypos+back_start"/>
+
+<!-- bars along x-->
+<variable name="scint_alongx_x" value="scint_bar_length"/>
+<variable name="scint_alongx_z" value="num_bars * scint_bar_width"/>
+
+<!-- bars along z -->
+<variable name="scint_alongz_x" value="num_bars * scint_bar_width"/>
+<variable name="scint_alongz_z" value="scint_bar_length"/>
+
+<!-- SKIP FOR NOW: Frame description variables-->
+
+<!-- Prototype box  -->
+<!-- Note: 1m extra spacing -->
+<variable name="prototype_box_dy"
+          value="dy + 1000"/>
