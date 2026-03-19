@@ -1482,6 +1482,7 @@
     <volume name="support_box">
       <materialref ref="Aluminum"/>
       <solidref ref="support_box-SOL"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="InvisibleShowDau"/>
     </volume>
   </structure>
 

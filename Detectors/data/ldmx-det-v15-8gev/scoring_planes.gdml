@@ -181,7 +181,7 @@
       <volume name="sp_target">
         <materialref ref="Vacuum" />
         <solidref ref="sp_target_box" />
-        <auxiliary auxtype="VisAttributes" auxvalue="SpVis"/>
+        <auxiliary auxtype="VisAttributes" auxvalue="SpoorVis"/>
       </volume> 
     </loop>
 
@@ -336,20 +336,7 @@
 
     </volume>
   </structure>
-
-  <userinfo>
-    <auxiliary auxtype="VisAttributes" auxvalue="SpVis">
-      <auxiliary auxtype="R" auxvalue="0.0"/>
-      <auxiliary auxtype="G" auxvalue="0.0"/>
-      <auxiliary auxtype="B" auxvalue="1.0"/>
-      <auxiliary auxtype="A" auxvalue="1.0"/>
-      <auxiliary auxtype="Style" auxvalue="wireframe"/>
-      <auxiliary auxtype="DaughtersInvisible" auxvalue="false"/>
-      <auxiliary auxtype="Visible" auxvalue="true"/>
-      <auxiliary auxtype="LineWidth" auxvalue="2.0"/>
-    </auxiliary>
-  </userinfo>
-
+  
   <setup name="Default" version="1.0">
     <world ref="SP_World" />
   </setup>

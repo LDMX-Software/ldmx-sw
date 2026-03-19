@@ -275,6 +275,7 @@
     <volume name="C_volume_CarbonCoolingPlane">
       <materialref ref="CarbonEpoxyComposite"/>
       <solidref ref="CarbonCoolingPlane"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalRegionVis" />
     </volume>
 
     <assembly name="PCB_motherboard_volume">
@@ -293,27 +294,31 @@
     <volume name="PCB_volume">
       <materialref ref="FR4"/>
       <solidref ref="PCB_hexagon"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalRegionVis" />
     </volume>
   
     <volume name="Glue_volume">
       <materialref ref="Glue"/>
       <solidref ref="Glue_hexagon"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalRegionVis" />
     </volume>
   
     <volume name="Si_volume">
       <materialref ref="Silicon"/>
       <solidref ref="Si_hexagon"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalRegionVis" />
     </volume>
   
     <volume name="GlueThick_volume">
       <materialref ref="Glue"/>
       <solidref ref="GlueThick_hexagon"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalRegionVis" />
     </volume>
 
     <volume name="CarbonBasePlate_volume">
       <materialref ref="CarbonEpoxyComposite"/>
       <solidref ref="CarbonBasePlate_hexagon"/>
-      <!--<auxiliary auxtype="VisAttributes" auxvalue="BlueSolid" />-->
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalRegionVis" />
     </volume>
 
     <!-- define the tungsten absorber volume corresponding to the correct-thickness solid -->
@@ -321,16 +326,17 @@
       <volume name="strongback_bar_volume[bilayer]">
         <materialref ref="Aluminum" />
         <solidref ref="strongback_bar[bilayer]" />
+	<auxiliary auxtype="VisAttributes" auxvalue="EcalRegionVis" />
       </volume>
       <volume name="W_front_volume[bilayer]">
         <materialref ref="Tungsten"/>
         <solidref ref="W_front_absorber[bilayer]"/>
-        <!--<auxiliary auxtype="VisAttributes" auxvalue="BlueSolid"/>-->
+        <auxiliary auxtype="VisAttributes" auxvalue="EcalRegionVis"/>
       </volume>
       <volume name="W_cooling_volume[bilayer]">
         <materialref ref="Tungsten"/>
         <solidref ref="W_cooling_absorber[bilayer]"/>
-        <!--<auxiliary auxtype="VisAttributes" auxvalue="BlueSolid"/>-->
+        <auxiliary auxtype="VisAttributes" auxvalue="EcalRegionVis"/>
       </volume>
     </loop>
 
@@ -934,7 +940,8 @@
       </loop>
 
       <auxiliary auxtype="Region" auxvalue="CalorimeterRegion"/>
-          <!--<auxiliary auxtype="VisAttributes" auxvalue="GrayWireFrame"/>-->
+      <auxiliary auxtype="VisAttributes" auxvalue="GrayWireFrame"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="InvisibleShowDau"/>
       <auxiliary auxtype="DetElem" auxvalue="Ecal"/>
     </volume>
   </structure>
@@ -943,49 +950,5 @@
     <world ref="em_calorimeters"/>
   </setup>
 
-  <userinfo>
-    <!-- define vis attributes
-    -->
-    <auxiliary auxtype="VisAttributes" auxvalue="GrayWireFrame">
-      <auxiliary auxtype="R" auxvalue="0.6"/>
-      <auxiliary auxtype="G" auxvalue="0.6"/>
-      <auxiliary auxtype="B" auxvalue="0.6"/>
-      <auxiliary auxtype="A" auxvalue="1.0"/>
-      <auxiliary auxtype="Style" auxvalue="wireframe"/>
-      <auxiliary auxtype="DaughtersInvisible" auxvalue="false"/>
-      <auxiliary auxtype="Visible" auxvalue="true"/>
-      <auxiliary auxtype="LineWidth" auxvalue="1.0"/>
-    </auxiliary>
-    <auxiliary auxtype="VisAttributes" auxvalue="BlueWireFrame">
-      <auxiliary auxtype="R" auxvalue="0.0"/>
-      <auxiliary auxtype="G" auxvalue="0.0"/>
-      <auxiliary auxtype="B" auxvalue="1.0"/>
-      <auxiliary auxtype="A" auxvalue="1.0"/>
-      <auxiliary auxtype="Style" auxvalue="wireframe"/>
-      <auxiliary auxtype="DaughtersInvisible" auxvalue="false"/>
-      <auxiliary auxtype="Visible" auxvalue="true"/>
-      <auxiliary auxtype="LineWidth" auxvalue="1.0"/>
-    </auxiliary>
-    <auxiliary auxtype="VisAttributes" auxvalue="BlueSolid">
-      <auxiliary auxtype="R" auxvalue="0.0"/>
-      <auxiliary auxtype="G" auxvalue="0.0"/>
-      <auxiliary auxtype="B" auxvalue="1.0"/>
-      <auxiliary auxtype="A" auxvalue="0.4"/>
-      <auxiliary auxtype="Style" auxvalue="solid"/>
-      <auxiliary auxtype="DaughtersInvisible" auxvalue="false"/>
-      <auxiliary auxtype="Visible" auxvalue="true"/>
-      <auxiliary auxtype="LineWidth" auxvalue="1.0"/>
-    </auxiliary>
-    <auxiliary auxtype="VisAttributes" auxvalue="Invisible">
-      <auxiliary auxtype="R" auxvalue="0.0"/>
-      <auxiliary auxtype="G" auxvalue="0.0"/>
-      <auxiliary auxtype="B" auxvalue="1.0"/>
-      <auxiliary auxtype="A" auxvalue="0.4"/>
-      <auxiliary auxtype="Style" auxvalue="solid"/>
-      <auxiliary auxtype="DaughtersInvisible" auxvalue="false"/>
-      <auxiliary auxtype="Visible" auxvalue="false"/>
-      <auxiliary auxtype="LineWidth" auxvalue="1.0"/>
-    </auxiliary> 
-  </userinfo>  
 
 </gdml>
