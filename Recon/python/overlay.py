@@ -11,10 +11,14 @@ sim_passname : string
     Pass name of the sim events
 overlay_passname : string
     Pass name of the pileup events
-calo_collections : string
+calo_collections : list[str]
     List of SimCalorimeterHit collections to pull from the sim and pileup events and combine
-tracker_collections_ : string
+tracker_collections : list[str]
     List of SimTrackerHit collections to pull from the sim and pileup events and combine
+particle_collections : list[str]
+    List of SimParticles collections to pull from the sim and pileup events and combine.
+contrib_collections : list[str]
+    List of SimCalorimeterHit collections which need contribs added separately.
 poisson_mu : int
     The total number of interactions combined (including the sim event)
 do_poisson_in_time : bool
@@ -44,6 +48,8 @@ start_event_min : int
     The minimum event number to start overlaying pileup events.
 start_event_max : int
     The max event number to start overlaying pileup events.
+track_id_encoding : int
+    The version number for the track ID bitwise encoding schema. Possible values range over [0, 15]. The version number is stored in bits 27-31 in the C++ int type.
 """
 
 from LDMX.Framework import ldmxcfg
@@ -69,7 +75,9 @@ class OverlayProducer(ldmxcfg.Producer) :
         self.overlay_passname = "sim"
         self.calo_collections =  ["TriggerPad1SimHits", "TriggerPad2SimHits", "TriggerPad3SimHits",
                                    "TargetSimHits", "EcalSimHits", "HcalSimHits"]
-        self.tracker_collections = [ "TaggerSimHits", "RecoilSimHits", "EcalScoringPlaneHits", "TargetScoringPlaneHits" ]
+        self.tracker_collections = [ "TaggerSimHits", "RecoilSimHits", "EcalScoringPlaneHits",
+                                   "TargetScoringPlaneHits" ]
+        self.particle_collections = [ "SimParticles" ]
         self.contrib_collections = [ "EcalSimHits", "HcalSimHits" ]
         self.out_coll_postfix = "Overlay"
         self.poisson_mu = 2.
@@ -85,3 +93,4 @@ class OverlayProducer(ldmxcfg.Producer) :
         self.tree_name = 'LDMX_Events'
         self.start_event_min = 1
         self.start_event_max = 10000
+        self.track_id_encoding = 1
