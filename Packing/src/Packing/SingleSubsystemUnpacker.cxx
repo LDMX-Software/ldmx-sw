@@ -38,16 +38,16 @@ void SingleSubsystemUnpacker::produce(framework::Event& event) {
     // if we fail any of the filter checks
     const auto frame_end = reader_.tell() + frame_header.size();
 
-    if (frame_header.channel() != 0 or frame_header.probablyYaml()) {
-      // non-data channel in StreamWriter, skip
+    if (frame_header.probablyYaml()) {
+      // configuration/YAML frame written by StreamWriter, skip
       reader_.seek(frame_end);
       continue;
     }
 
     // data channel, read RoR header
     reader_ >> ror_header;
-    if (ror_header.subsystem() != subsystem_) {
-      // wrong subsystem ID number
+    if (!ror_header.valid() or ror_header.subsystem() != subsystem_) {
+      // not a valid LDMX data frame or wrong subsystem ID number
       reader_.seek(frame_end);
       continue;
     }
