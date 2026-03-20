@@ -384,3 +384,86 @@ def aprime_to_fcp( ap_mass, fcp_mass, lhe, detector, generator,
         ])
 
     return sim
+
+def gamma_to_fcp( detector, generator, fcp_mass, fcp_charge = 0.1 ) :
+    """Example configuration for biasing gamma to fcp+ fcp- target conversions
+
+    In this particular example, electrons are fired upstream of the
+    tagger tracker. The TargetBremFilter filters out all events that don't
+    produce a brem in the target with sufficient energy. The gamma -> fcp
+    conversion process is then biased up.
+
+    This is the SM-photon analogue of gamma_mumu(), producing fractionally
+    charged particles instead of muons.
+
+    Parameters
+    ----------
+    detector : str
+        Path to the detector
+    generator : PrimaryGenerator
+        Generator to use for the primary particles.
+    fcp_mass : float
+        The mass of the fcp in MeV.
+    fcp_charge : float, optional
+        Electric charge of the fcp in units of e (default: 0.1).
+
+    Returns
+    -------
+    Instance of the sim configured for target gamma to fcp conversions.
+
+    Example
+    -------
+
+        target_fcp_sim = target.gamma_to_fcp('ldmx-det-v15-8gev',
+            generators.single_8gev_e_upstream_tagger(), 100.0)
+
+    """
+
+    # Instantiate the sim.
+    sim = simulator.simulator("target_gamma_fcp")
+
+    # Set the path to the detector to use.
+    #   Also tell the simulator to include scoring planes
+    sim.setDetector( detector , include_scoring_planes_minimal = True )
+
+    # Set run parameters
+    xsec_bias_threshold = min(0.625 * generator.energy * 1000., 2. * fcp_mass)
+    tagger_threshold = 0.95 * generator.energy * 1000.
+    
+    brem_min_e = min(0.625 * generator.energy * 1000., 2. * fcp_mass)
+    recoil_max_p = generator.energy * 1000. - brem_min_e
+    xsec_bias = 1.E10 if generator.energy == 8.0 else 3.E9
+
+    sim.generators.append(generator)
+
+    # Enable gamma -> fcp conversion via the independent FCPPhysics constructor
+    sim.fcp_physics.activate( fcp_mass, fcp_charge )
+
+    # Enable and configure the biasing
+    sim.description = (
+        f"gamma --> fcp+ fcp-, xsec bias {xsec_bias}"
+        f" xsec threshold {xsec_bias_threshold} MeV"
+        f" fcp mass {fcp_mass} MeV, fcp charge {fcp_charge}e"
+    )
+    sim.biasing_operators = [
+        bias_operators.GammaToFCPPair(
+            'target', xsec_bias, xsec_bias_threshold
+        )
+    ]
+
+    # the following filters are in a library that needs to be included
+    includeBiasing.library()
+
+    # Configure the sequence in which user actions should be called.
+    sim.actions.extend([
+            # Only consider events where a hard brem occurs
+            filters.TaggerVetoFilter(thresh = tagger_threshold),
+            filters.TargetBremFilter(
+                recoil_max_p=recoil_max_p,
+                brem_min_e=brem_min_e,
+            ),
+            filters.TargetGammaFCPFilter(),
+            util.TrackProcessFilter.gamma_to_fcp()
+    ])
+
+    return sim

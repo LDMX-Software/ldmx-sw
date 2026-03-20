@@ -178,6 +178,26 @@ class APrimeToFCPPair(XsecBiasingOperator) :
         self.factor = factor
         self.threshold = thresh
 
+class GammaToFCPPair(XsecBiasingOperator) :
+    """Bias gamma -> fcp+ fcp- process
+
+    Parameters
+    ----------
+    vol : str
+        name of volume to bias within
+    factor : float
+        biasing factor to multiply by
+    threshold : float, optional
+        minimum kinetic energy [MeV] to bias tracks
+    """
+
+    def __init__(self,vol,factor,thresh=0.) :
+        super().__init__(f'{vol}_bias_gammafcppair','simcore::biasoperators::GammaToFCPPair')
+
+        self.volume = vol
+        self.factor = factor
+        self.threshold = thresh
+
 class DarkBrem(XsecBiasingOperator) :
     """Bias dark brem process
 

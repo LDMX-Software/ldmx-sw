@@ -146,6 +146,16 @@ class TrackProcessFilter(BiasingUtilityAction):
         """
         return TrackProcessFilter('APrimeToFCPPair')
 
+    def gamma_to_fcp() :
+        """Configuration used to tag all gamma --> fcp+ fcp-
+        tracks to persist them to the event.
+
+        Return
+        ------
+        Instance of TrackProcessFilter configured to tag gamma --> fcp+ fcp- tracks.
+        """
+        return TrackProcessFilter('GammaToFCPPair')
+
 class DecayChildrenKeeper(BiasingUtilityAction):
     """ Configuration used to store children of specific particle decays
 

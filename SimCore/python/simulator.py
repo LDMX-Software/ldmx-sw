@@ -112,6 +112,10 @@ class simulator(Producer):
         from LDMX.SimCore import kaon_physics
         self.kaon_parameters = kaon_physics.KaonPhysics()
 
+        # Factionally charged particle physics
+        from LDMX.SimCore import fcp_physics
+        self.fcp_physics = fcp_physics.FCPPhysics()
+
     def setDetector(self, det_name , include_scoring_planes_others = False, include_scoring_planes_minimal = False ) :
         """Set the detector description with the option to include the scoring planes
 

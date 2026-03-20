@@ -158,6 +158,17 @@ class TargetAPrimeToFCPFilter(simcfg.UserAction) :
 
         self.process = 'APrimeToFCPPair'
 
+class TargetGammaFCPFilter(simcfg.UserAction) :
+    """ Configuration for filtering gamma -> fcp+ fcp- conversion events in the target."""
+
+    def __init__(self) :
+        super().__init__("target_process_filter", "biasing::TargetProcessFilter")
+
+        from LDMX.Biasing import include
+        include.library()
+
+        self.process = 'GammaToFCPPair'
+
 class EcalDarkBremFilter(simcfg.UserAction):
     """ Configuration for filtering A' events
 
