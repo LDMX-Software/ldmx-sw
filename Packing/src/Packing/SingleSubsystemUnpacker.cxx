@@ -14,7 +14,7 @@ void SingleSubsystemUnpacker::configure(framework::config::Parameters& ps) {
     contributor_ = ps.get<int>("contributor");
   } else {
     auto [subsys, contrib] = packing::LDMXRoRHeader::subsystem(subsystem_name);
-    if (subsystem_ == -1) {
+    if (subsys == -1) {
       EXCEPTION_RAISE("BadName",
                       "Subsystem name '" + subsystem_name +
                           "' not 'ts', 'tdaq', 'tracker', 'ecal', 'hcal'.");
