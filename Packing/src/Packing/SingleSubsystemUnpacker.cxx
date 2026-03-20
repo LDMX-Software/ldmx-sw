@@ -31,12 +31,21 @@ void SingleSubsystemUnpacker::produce(framework::Event& event) {
   static packing::RogueFrameHeader frame_header;
   static packing::LDMXRoRHeader ror_header;
 
+  static int debug_frame_count = 0;
   while (reader_ and not reader_.eof()) {
+    int frame_pos = reader_.tell();
     reader_ >> frame_header;
 
     // store location of end-of-frame for skipping this frame
     // if we fail any of the filter checks
     const auto frame_end = reader_.tell() + frame_header.size();
+
+    std::cout << "[SSU DEBUG] frame " << debug_frame_count++
+              << " pos=" << frame_pos
+              << " size=" << frame_header.size()
+              << " ch=" << frame_header.channel()
+              << " yaml=" << frame_header.probablyYaml()
+              << " end=" << frame_end << std::endl;
 
     if (frame_header.probablyYaml()) {
       // configuration/YAML frame written by StreamWriter, skip
@@ -46,6 +55,10 @@ void SingleSubsystemUnpacker::produce(framework::Event& event) {
 
     // data channel, read RoR header
     reader_ >> ror_header;
+    std::cout << "[SSU DEBUG]   RoR valid=" << ror_header.valid()
+              << " subsys=" << (int)ror_header.subsystem()
+              << " contrib=" << (int)ror_header.contributor()
+              << " (want subsys=" << subsystem_ << ")" << std::endl;
     if (!ror_header.valid() or ror_header.subsystem() != subsystem_) {
       // not a valid LDMX data frame or wrong subsystem ID number
       reader_.seek(frame_end);
