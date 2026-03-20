@@ -58,7 +58,6 @@ void TrackDeDxMassEstimator::produce(framework::Event &event) {
   auto simhits{event.getCollection<ldmx::SimTrackerHit>(simhit_collection_,
                                                         input_pass_name_)};
 
-
   // Loop over the collection of tracks
   for (uint i = 0; i < tracks.size(); i++) {
     auto track = tracks.at(i);
