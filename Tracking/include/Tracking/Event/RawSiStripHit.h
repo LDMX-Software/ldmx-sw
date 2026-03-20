@@ -39,6 +39,15 @@ class RawSiStripHit {
   RawSiStripHit(std::vector<short> samples, long time);
 
   /**
+   * Constructor with full electronics ID and quality fields from raw Rogue
+   * frame data.
+   */
+  RawSiStripHit(std::vector<short> samples, long time,
+                uint8_t channel, uint8_t apv_id, uint8_t hybrid_id,
+                uint8_t feb_id, uint16_t apv_trigger,
+                uint8_t read_error, uint8_t head, uint8_t tail, uint8_t filter);
+
+  /**
    * Destructor.
    *
    * Currently, the destructor does nothing.
@@ -71,6 +80,26 @@ class RawSiStripHit {
    * @return[out] A std::vector of 16 bit samples.
    */
   std::vector<short> getSamples() const { return samples_; }
+
+  uint8_t  getChannel()    const { return channel_; }
+  uint8_t  getApvId()      const { return apv_id_; }
+  uint8_t  getHybridId()   const { return hybrid_id_; }
+  uint8_t  getFebId()      const { return feb_id_; }
+  uint16_t getApvTrigger() const { return apv_trigger_; }
+  uint8_t  getReadError()  const { return read_error_; }
+  uint8_t  getHead()       const { return head_; }
+  uint8_t  getTail()       const { return tail_; }
+  uint8_t  getFilter()     const { return filter_; }
+
+  void setChannel(uint8_t v)      { channel_ = v; }
+  void setApvId(uint8_t v)        { apv_id_ = v; }
+  void setHybridId(uint8_t v)     { hybrid_id_ = v; }
+  void setFebId(uint8_t v)        { feb_id_ = v; }
+  void setApvTrigger(uint16_t v)  { apv_trigger_ = v; }
+  void setReadError(uint8_t v)    { read_error_ = v; }
+  void setHead(uint8_t v)         { head_ = v; }
+  void setTail(uint8_t v)         { tail_ = v; }
+  void setFilter(uint8_t v)       { filter_ = v; }
 
   /**
    * Get the time stamp of this hit.
@@ -118,8 +147,18 @@ class RawSiStripHit {
   /// The hit time stamp in units of ns.
   long time_{0};
 
+  uint8_t  channel_{0};
+  uint8_t  apv_id_{0};
+  uint8_t  hybrid_id_{0};
+  uint8_t  feb_id_{0};
+  uint16_t apv_trigger_{0};
+  uint8_t  read_error_{0};
+  uint8_t  head_{0};
+  uint8_t  tail_{0};
+  uint8_t  filter_{0};
+
   /// Class declaration needed by the ROOT dictionary.
-  ClassDef(RawSiStripHit, 2);
+  ClassDef(RawSiStripHit, 3);
 
 };  // RawSiStripHit
 }  // namespace ldmx
