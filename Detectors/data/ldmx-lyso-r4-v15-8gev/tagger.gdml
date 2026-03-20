@@ -2,7 +2,7 @@
 
 <!DOCTYPE gdml [
 <!ENTITY constants SYSTEM "constants.gdml">
-<!ENTITY materials SYSTEM "materials.gdml">
+
 ]>
 <gdml xmlns:gdml="http://cern.ch/2001/Schemas/GDML" 
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
@@ -46,9 +46,9 @@
   
   
   </define>
-  <materials> 
-    &materials;
-  </materials>
+   
+    
+  
   <solids>
     <box lunit="mm" name="tagger_active_sensor_box" 
        x="si_active_sensor_dx" y="si_active_sensor_dy" z="si_sensor_thickness"/>

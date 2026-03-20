@@ -12,11 +12,15 @@ sim_passname : string
 overlay_passname : string
     Pass name of the pileup events
 calo_collections : string
-    List of SimCalorimeterHit collections to pull from the sim 
+    List of SimCalorimeterHit collections to pull from the sim
     and pileup events and combine
 tracker_collections : string
-    List of SimTrackerHit collections to pull from the sim 
+    List of SimTrackerHit collections to pull from the sim
     and pileup events and combine
+particle_collections : list[str]
+    List of SimParticles collections to pull from the sim and pileup events and combine.
+contrib_collections : list[str]
+    List of SimCalorimeterHit collections which need contribs added separately.
 poisson_mu : int
     The total number of interactions combined (including the sim event)
 do_poisson_in_time : bool
@@ -53,6 +57,8 @@ start_event_min : int
     The minimum event number to start overlaying pileup events.
 start_event_max : int
     The max event number to start overlaying pileup events.
+track_id_encoding : int
+    The version number for the track ID bitwise encoding schema. Possible values range over [0, 15]. The version number is stored in bits 27-31 in the C++ int type.
 """
 
 from LDMX.Framework import Processor, processor
@@ -89,6 +95,7 @@ class OverlayProducer(Processor):
         "EcalScoringPlaneHits",
         "TargetScoringPlaneHits"
     ]
+    particle_collections: list[str] = ["SimParticles"]
     contrib_collections: list[str] = ["EcalSimHits", "HcalSimHits"]
     out_coll_postfix: str = "Overlay"
     poisson_mu: float = 2.0
@@ -102,3 +109,4 @@ class OverlayProducer(Processor):
     tree_name: str = "LDMX_Events"
     start_event_min: int = 1
     start_event_max: int = 10000
+    track_id_encoding: int = 1

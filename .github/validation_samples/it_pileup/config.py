@@ -100,6 +100,9 @@ ecal_veto_pnet.ecal_rec_hits_passname = this_pass_name
 ecal_veto_pnet.ecal_sp_coll_name += overlay_str
 ecal_veto_pnet.track_pass_name = this_pass_name
 
+ecal_mip.ecal_pass_name = this_pass_name
+ecal_mip.mip_pass_name = this_pass_name
+
 # Load the HCAL modules
 import LDMX.Hcal.digi as hcal_digi_and_reco
 

@@ -12,6 +12,8 @@ void OverlayProducer::configure(framework::config::Parameters &parameters) {
       parameters.get<std::vector<std::string>>("calo_collections");
   tracker_collections_ =
       parameters.get<std::vector<std::string>>("tracker_collections");
+  particle_collections_ =
+      parameters.get<std::vector<std::string>>("particle_collections");
   contrib_collections_ =
       parameters.get<std::vector<std::string>>("contrib_collections");
   sim_passname_ = parameters.get<std::string>("sim_passname");
@@ -28,6 +30,7 @@ void OverlayProducer::configure(framework::config::Parameters &parameters) {
   bunch_spacing_ = parameters.get<double>("bunch_spacing");
   start_event_min_ = parameters.get<int>("start_event_min");
   start_event_max_ = parameters.get<int>("start_event_max");
+  track_id_encoding_ = unsigned(parameters.get<int>("track_id_encoding", 0));
 
   /// Print the parameters actually set. Helpful in case of typos.
   ldmx_log(debug) << "Got parameters \n \t overlayFileName = "
@@ -41,6 +44,11 @@ void OverlayProducer::configure(framework::config::Parameters &parameters) {
 
   ldmx_log(debug) << "\n\t overlayTrackerHitCollections = ";
   for (const std::string &coll : tracker_collections_) {
+    ldmx_log(debug) << coll << "; ";
+  }
+
+  ldmx_log(debug) << "\n\t overlayParticleCollections = ";
+  for (const std::string &coll : particle_collections_) {
     ldmx_log(debug) << coll << "; ";
   }
 
@@ -100,6 +108,8 @@ void OverlayProducer::produce(framework::Event &event) {
       calo_collection_map;
   std::map<std::string, std::vector<ldmx::SimTrackerHit>>
       tracker_collection_map;
+  std::map<std::string, std::map<int, ldmx::SimParticle>>
+      particle_collection_map;
   std::map<std::string, std::map<int, ldmx::SimCalorimeterHit>> hit_map;
 
   // start by copying over all the collections from the sim event
@@ -124,6 +134,15 @@ void OverlayProducer::produce(framework::Event &event) {
     // overlay contribs have been added. then add everything through the hit_map
     if (!needs_contribs_added) {
       calo_collection_map[coll_name + out_coll_postfix_] = simhits_calo;
+      // after copying, perform track ID encodings;
+      // the main sample gets the event index 0 by default
+      for (auto &simhit : calo_collection_map[coll_name + out_coll_postfix_]) {
+        simhit.encodeTracks(
+            [this](int id, unsigned enc, unsigned idx) {
+              return encodeTrack(id, enc, idx);
+            },
+            track_id_encoding_, (unsigned)0);
+      }
     }
 
     ldmx_log(debug) << "in loop: start of collection " << coll_name
@@ -139,7 +158,12 @@ void OverlayProducer::produce(framework::Event &event) {
         ldmx_log(trace) << simhit;
         // this copies the hit, its ID and its coordinates directly
         hit_map[coll_name + out_coll_postfix_][simhit.getID()] = simhit;
-
+        // now encode track IDs on copied object
+        hit_map[coll_name + out_coll_postfix_][simhit.getID()].encodeTracks(
+            [this](int id, unsigned enc, unsigned idx) {
+              return encodeTrack(id, enc, idx);
+            },
+            track_id_encoding_, (unsigned)0);
       }  // over calo simhit collection
     }  // if needContribs
 
@@ -153,6 +177,12 @@ void OverlayProducer::produce(framework::Event &event) {
     auto simhits_tracker =
         event.getCollection<ldmx::SimTrackerHit>(coll_name, sim_passname_);
     tracker_collection_map[coll_name + out_coll_postfix_] = simhits_tracker;
+    // after copying, perform track ID encoding
+    for (auto &simhit : tracker_collection_map[coll_name + out_coll_postfix_]) {
+      int encoded_track_id =
+          encodeTrack(simhit.getTrackID(), track_id_encoding_, (unsigned)0);
+      simhit.setTrackID(encoded_track_id);
+    }
 
     // the rest is printouts for debugging
     ldmx_log(debug) << "in loop: size of sim hits_ vector " << coll_name
@@ -166,7 +196,37 @@ void OverlayProducer::produce(framework::Event &event) {
     }
   }  // over tracker collections for sim event
 
-  /* ----------- now do the pileup overlay ----------- */
+  /* ----------- and finish up with SimParticles ----------- */
+
+  // get the SimParticle collections that we want to overlay, by looping
+  // over the list of collections passed to the producer : particle_collections_
+  for (const auto &coll_name : particle_collections_) {
+    auto sim_particles =
+        event.getMap<int, ldmx::SimParticle>(coll_name, sim_passname_);
+    auto &output_map = particle_collection_map[coll_name + out_coll_postfix_];
+
+    ldmx_log(debug) << "in loop: size of sim particles map " << coll_name
+                    << " is " << sim_particles.size();
+
+    ldmx_log(debug) << "in loop: start of collection " << coll_name
+                    << "in loop: printing current sim event: ";
+
+    // need to copy SimParticles individually because of std::map key
+    // immutability
+    for (auto &[track_id, particle] : sim_particles) {
+      int encoded_track_id =
+          encodeTrack(track_id, track_id_encoding_, (unsigned)0);
+      output_map[encoded_track_id] = particle;
+      output_map[encoded_track_id].encodeTracks(
+          [this](int id, unsigned enc, unsigned idx) {
+            return encodeTrack(id, enc, idx);
+          },
+          track_id_encoding_, (unsigned)0);
+      ldmx_log(trace) << particle;
+    }
+  }  // over particle collections for sim event
+
+  /* ----------- now do the overlay ----------- */
 
   // we could shift these by a random number, effectively placing the
   // sim event at random positions in the interval, preserving the
@@ -176,6 +236,10 @@ void OverlayProducer::produce(framework::Event &event) {
   // inclusive interval
   int start_bunch = -n_earlier_;
   int end_bunch = n_later_;
+
+  // this is the event index number assigned to overlay sample hits and
+  // particles for track ID encoding
+  unsigned overlay_event_index = 1;
 
   // TODO -- figure out if we should also randomly shift the time of the sim
   // event (likely only needed if time bias gets picked up by BDT or ML by way
@@ -261,8 +325,17 @@ void OverlayProducer::produce(framework::Event &event) {
         for (ldmx::SimCalorimeterHit &overlay_hit : overlay_hits) {
           ldmx_log(trace) << overlay_hit;
 
-          const float overlay_time = overlay_hit.getTime() + time_offset;
-          overlay_hit.setTime(overlay_time);
+          // update relevant parameters with overlay modifications
+          overlay_hit.setTime(overlay_hit.getTime() + time_offset);
+          overlay_hit.setPreStepTime(overlay_hit.getPreStepTime() +
+                                     time_offset);
+          overlay_hit.setPostStepTime(overlay_hit.getPostStepTime() +
+                                      time_offset);
+          overlay_hit.encodeTracks(
+              [this](int id, unsigned enc, unsigned idx) {
+                return encodeTrack(id, enc, idx);
+              },
+              track_id_encoding_, overlay_event_index);
 
           if (needs_contribs_added) {  // special treatment for (for now only)
                                        // ecal
@@ -272,20 +345,45 @@ void OverlayProducer::produce(framework::Event &event) {
             if (this_coll_hit_map.find(overlay_hit_id) ==
                 this_coll_hit_map
                     .end()) {  // there wasn't already a simhit in this id
-              this_coll_hit_map[overlay_hit_id] = ldmx::SimCalorimeterHit();
-              this_coll_hit_map[overlay_hit_id].setID(overlay_hit_id);
-              std::vector<float> hit_pos = overlay_hit.getPosition();
-              this_coll_hit_map[overlay_hit_id].setPosition(
-                  hit_pos[0], hit_pos[1], hit_pos[2]);
-            }
-            // add the overlay hit (as a) contrib
-            // incidentID = -1000, trackID = -1000, pdgCode = 0  <-- these are
-            // set in the header for now but could be parameters
-            this_coll_hit_map[overlay_hit_id].addContrib(
-                overlay_incident_id_, overlay_track_id_, overlay_pdg_code_,
-                overlay_hit.getEdep(), overlay_time);
+              ldmx_log(trace)
+                  << "No existing simhit found for ID " << overlay_hit_id
+                  << "; copying overlay hit to output collection";
+              auto &output_hit = this_coll_hit_map[overlay_hit_id];
+              output_hit = overlay_hit;  // copy hit
+
+              // we need to do some backflips to get the contribs correct later
+              auto id = output_hit.getID();
+              auto pos = output_hit.getPosition();
+              auto time = output_hit.getTime();
+              output_hit.clear();  // with the below adjustments, this will only
+                                   // clear contribs from the output_hit
+              output_hit.setID(id);
+              output_hit.setPosition(pos[0], pos[1], pos[2]);
+              output_hit.setTime(time);
+            }  // if overlay_hit_id not present
+
+            // add the overlay hit contribs to existing hit,
+            // incrementing track IDs and timestamp as needed
+            int n_contribs = overlay_hit.getNumberOfContribs();
+            ldmx_log(trace)
+                << "Copying and reindexing " << n_contribs
+                << " contributors to the sim hit for ID " << overlay_hit_id;
+            for (int i = 0; i < n_contribs; i++) {
+              ldmx::SimCalorimeterHit::Contrib contrib{
+                  overlay_hit.getContrib(i)};
+              // tracks were encoded in-place above, so we only need to worry
+              // about times
+              this_coll_hit_map[overlay_hit_id].addContrib(
+                  contrib.incident_id_, contrib.track_id_, contrib.pdg_code_,
+                  contrib.edep_, contrib.time_ + time_offset);
+            }  // loop over contribs in overlay_hit
+            ldmx_log(trace)
+                << "There are now "
+                << this_coll_hit_map[overlay_hit_id].getNumberOfContribs()
+                << " total contributors in the output collection";
           }  // if add overlay as contribs
           else {
+            // no need to change contrib timestamps here
             calo_collection_map[out_coll_name].push_back(overlay_hit);
 
             ldmx_log(trace) << "Adding non-Ecal overlay hit to outhit vector "
@@ -301,7 +399,7 @@ void OverlayProducer::produce(framework::Event &event) {
 
       /* ----------- now do simtracker hits_ overlay ----------- */
 
-      // get the SimTrackerHit collections that we want to overlay
+      // loop over the SimTrackerHit collections that we want to overlay
       for (const auto &coll : tracker_collections_) {
         auto overlay_tracker_hits{
             overlay_event_.getCollection<ldmx::SimTrackerHit>(
@@ -317,13 +415,16 @@ void OverlayProducer::produce(framework::Event &event) {
         for (auto &overlay_hit : overlay_tracker_hits) {
           auto overlay_time{overlay_hit.getTime() + time_offset};
           overlay_hit.setTime(overlay_time);
-          auto overlay_track_id{overlay_hit.getTrackID()};
+          auto overlay_track_id{encodeTrack(overlay_hit.getTrackID(),
+                                            track_id_encoding_,
+                                            overlay_event_index)};
           overlay_hit.setTrackID(overlay_track_id);
-          tracker_collection_map[out_coll_name_tracker].push_back(overlay_hit);
 
           ldmx_log(trace) << overlay_hit;
           ldmx_log(trace) << "Adding tracker overlay hit to outhit vector "
                           << out_coll_name_tracker;
+
+          tracker_collection_map[out_coll_name_tracker].push_back(overlay_hit);
         }  // over overlay tracker simhit collection
 
         ldmx_log(debug) << "Nhits in overlay collection "
@@ -331,6 +432,38 @@ void OverlayProducer::produce(framework::Event &event) {
                         << tracker_collection_map[out_coll_name_tracker].size();
 
       }  // over tracker_collections_
+
+      /* ----------- finally do SimParticles overlay ----------- */
+      for (const auto &coll : particle_collections_) {
+        auto overlay_particles{overlay_event_.getMap<int, ldmx::SimParticle>(
+            coll, overlay_passname_)};
+
+        ldmx_log(debug) << "in loop: size of overlay particles map is "
+                        << overlay_particles.size();
+
+        std::string out_coll_name_particles{coll + out_coll_postfix_};
+        auto &output_map = particle_collection_map[out_coll_name_particles];
+
+        ldmx_log(trace) << "in loop: printing overlay event: ";
+
+        for (auto &[track_id, particle] : overlay_particles) {
+          int new_track_id =
+              encodeTrack(track_id, track_id_encoding_, overlay_event_index);
+
+          output_map[new_track_id] = particle;
+          output_map[new_track_id].encodeTracks(
+              [this](int id, unsigned enc, unsigned idx) {
+                return encodeTrack(id, enc, idx);
+              },
+              track_id_encoding_, overlay_event_index);
+          output_map[new_track_id].setTime(particle.getTime() + time_offset);
+
+          ldmx_log(trace) << "Track ID: " << new_track_id << " --- "
+                          << output_map[new_track_id];
+          ldmx_log(trace) << "Adding sim particle to output map "
+                          << out_coll_name_particles;
+        }  // over overlay sim particles collection
+      }  // over particle_collections_
 
     }  // over overlay events
   }  // over bunches
@@ -385,8 +518,76 @@ void OverlayProducer::produce(framework::Event &event) {
     event.add(name, coll);
   }
 
+  // and finally for sim particles
+  for (auto &[name, coll] : particle_collection_map) {
+    ldmx_log(debug) << "Writing " << name << " to event bus.";
+    ldmx_log(trace) << "List of particles added: ";
+    for (auto &[track_id, particle] : coll) {
+      ldmx_log(trace) << "Track ID: " << track_id << " --- " << particle;
+    }
+    event.add(name, coll);
+  }
+
   return;
 }  // end produce()
+
+int OverlayProducer::encodeTrack(int track_id,
+                                 const unsigned int encoding_version,
+                                 const unsigned int event_index) {
+  ldmx_log(trace) << "Encoding track ID " << track_id
+                  << " according to version " << encoding_version;
+  int encoded_id;
+
+  // check if the encoding_version will overflow into the int sign bit
+  if (encoding_version > 15) {
+    EXCEPTION_RAISE("TrackEncodingError",
+                    "Track ID encoding version " +
+                        std::to_string(encoding_version) +
+                        " has exceeded version maximum value of 15");
+  }
+  if (track_id < 0) {
+    // if track_id < 0 it's probably a default nonsense value -1;
+    // encoding at present DOES NOT WORK for negative values because C++ uses
+    // twos complement encoding for negative numbers;
+    // thus when decoding you should first check the first bit, and
+    // set it to a nonsense -1 if the number is negative.
+    // Right now (2026-03-07) the only place where track IDs are -1 are the
+    // origin ids in the SimCalorimeterHit contribs, which aren't used anyways
+    // and present no risk for overwriting data for duplicate track IDs, so we
+    // can leave this alone
+    ldmx_log(warn) << "Track ID has value " << track_id
+                   << " < 0; no encoding will be applied";
+    return track_id;
+  }
+
+  // encode Track ID according to provided version
+  switch (encoding_version) {
+    case (unsigned)0: {  // need braces for variable init scope control
+      ldmx_log(trace) << "No encoding applied";
+      encoded_id = track_id;
+      break;
+    }
+    case (unsigned)1: {
+      // create bitwise masks for encoding from version number and event index
+      unsigned version_mask = (encoding_version << 27);
+      unsigned index_mask = (event_index << 24);
+
+      // encode track ID using bitwise OR
+      encoded_id = track_id | version_mask | index_mask;
+      ldmx_log(trace) << "Encoding successful! encoded_id = " << encoded_id
+                      << ", with bit representation "
+                      << std::bitset<32>(encoded_id);
+      break;
+    }
+    default: {  // version number has no associated encoding scheme
+      ldmx_log(warn) << "Track ID encoding version " << encoding_version
+                     << " has no definition! No encoding will be applied";
+      encoded_id = track_id;
+    }
+  }
+
+  return encoded_id;
+}
 
 void OverlayProducer::onProcessStart() {
   // replace by this line once the corresponding tweak to EventFile is ready:
