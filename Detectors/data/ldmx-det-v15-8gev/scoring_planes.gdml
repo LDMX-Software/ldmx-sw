@@ -181,7 +181,7 @@
       <volume name="sp_target">
         <materialref ref="Vacuum" />
         <solidref ref="sp_target_box" />
-        <auxiliary auxtype="VisAttributes" auxvalue="SpoorVis"/>
+        <auxiliary auxtype="VisAttributes" auxvalue="SpVis"/>
       </volume> 
     </loop>
 
