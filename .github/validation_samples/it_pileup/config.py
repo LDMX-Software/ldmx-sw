@@ -58,6 +58,7 @@ ts_digis = [
         ]
 for digi in ts_digis :
     digi.input_collection += overlay_str
+    digi.sim_particles_coll_name += overlay_str
 
 ts_clusters = [
         TrigScintClusterProducer.pad1(),
