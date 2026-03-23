@@ -28,7 +28,7 @@ class TrigScintDigiProducer(ldmxcfg.Producer) :
         self.input_collection="TriggerPad3SimHits"
         self.input_pass_name="" #take any pass
         self.output_collection="trigScintDigisPad3"
-
+        self.sim_particles_coll_name = "SimParticles"
         self.sim_particles_passname = ""
 
     def pad1() :
