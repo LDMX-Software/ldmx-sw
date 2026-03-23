@@ -339,11 +339,11 @@ class TruthSeedProcessor(Processor):
     sim_particles_coll_name: str = "SimParticles"
     sim_particles_passname: str = ""
     particle_hypothesis: int = 11
-    beam_electrons_collection: str = "BeamElectrons"
+    beam_electrons_collection: str = "beamElectrons"
     tagger_seeds_collection: str = "TaggerTruthSeeds"
-    tagger_truth_collection: str = "TaggerTruth"
+    tagger_truth_collection: str = "TaggerTruthTracks"
     recoil_seeds_collection: str = "RecoilTruthSeeds"
-    recoil_truth_collection: str = "RecoilTruth"
+    recoil_truth_collection: str = "RecoilTruthTracks"
 
 
 @processor("tracking::reco::GreedyAmbiguitySolver", "Tracking")
