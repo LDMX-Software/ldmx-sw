@@ -424,10 +424,10 @@ class TrackingRecoDQM(ldmxcfg.Analyzer):
 
                 self.build_1d_histogram("trk_"+track_state+"_loc0","trk_"+track_state+"_loc0 [mm]",200,-50,50)
                 self.build_1d_histogram("trk_"+track_state+"_loc1","trk_"+track_state+"_loc1 [mm]",200,-50,50)
-                self.build_1d_histogram(track_state+"_sp_hit_X",track_state+"_sp_hit_X [mm]",200,-50,50)
-                self.build_1d_histogram(track_state+"_sp_hit_Y",track_state+"_sp_hit_Y [mm]",200,-50,50)
-                self.build_1d_histogram("trk_"+track_state+"_loc0-sp_hit_X",track_state+"_diff loc0 and hit_X [mm]",200,-0.2,0.2)
-                self.build_1d_histogram("trk_"+track_state+"_loc1-sp_hit_Y",track_state+"_diff loc1 and hit_Y [mm]",200,-5,5)
+                self.build_1d_histogram(track_state+"_truth_loc0",track_state+"_truth_loc0 [mm]",200,-50,50)
+                self.build_1d_histogram(track_state+"_truth_loc1",track_state+"_truth_loc1 [mm]",200,-50,50)
+                self.build_1d_histogram("trk_"+track_state+"_loc0-truth_"+track_state+"_loc0",track_state+"_diff loc0 and truth_loc0 [mm]",200,-0.2,0.2)
+                self.build_1d_histogram("trk_"+track_state+"_loc1-truth_"+track_state+"_loc1",track_state+"_diff loc1 and truth_loc1 [mm]",200,-5,5)
                 self.build_1d_histogram(track_state+"_Pulls_of_loc0",track_state+"_pulls_of_loc0 [mm]",200,-5,5)
                 self.build_1d_histogram(track_state+"_Pulls_of_loc1",track_state+"_pulls_of_loc1 [mm]",200,-5,5)
 

@@ -201,15 +201,39 @@ ldmx::Track TruthSeedProcessor::recoilFullSeed(
   ts_truth_target.ts_type_ = ldmx::AtTarget;
   smeared_truth_track.addTrackState(ts_truth_target);
 
-  // Add truth track state at the ECAL: use ECAL scoring plane hit (already LDMX
-  // frame)
-  ldmx::Track::TrackState ts_truth_ecal;
-  ts_truth_ecal.pos_ = {ecal_hit.getPosition()[0], ecal_hit.getPosition()[1],
-                        ecal_hit.getPosition()[2]};
-  ts_truth_ecal.mom_ = {ecal_hit.getMomentum()[0], ecal_hit.getMomentum()[1],
-                        ecal_hit.getMomentum()[2]};
-  ts_truth_ecal.ts_type_ = ldmx::AtECAL;
-  smeared_truth_track.addTrackState(ts_truth_ecal);
+  // Express truth ECAL state in the bound parametrization of ecal_surface
+  // (same surface definition used by CKFProcessor) rather than storing raw
+  // scoring plane hit coordinates.
+  {
+    Acts::Vector3 ep{ecal_hit.getPosition()[0], ecal_hit.getPosition()[1],
+                     ecal_hit.getPosition()[2]};
+    Acts::Vector3 em{ecal_hit.getMomentum()[0], ecal_hit.getMomentum()[1],
+                     ecal_hit.getMomentum()[2]};
+    ep = tracking::sim::utils::ldmx2Acts(ep);
+    em = tracking::sim::utils::ldmx2Acts(em);
+    // Linearly extrapolate transverse coordinates to ACTS x = 240.5 mm
+    // (= LDMX z = 240.5 mm), correcting for the track slope over the small
+    // z-offset between the scoring plane and the ECAL surface.
+    if (std::abs(em[0]) > 0) {
+      double delta = 240.5 - ep[0];
+      ep[1] += delta * em[1] / em[0];
+      ep[2] += delta * em[2] / em[0];
+      ep[0] = 240.5;
+    }
+    double q_ecal = particle.getCharge() * Acts::UnitConstants::e;
+    auto ecal_free = tracking::sim::utils::toFreeParameters(ep, em, q_ecal);
+    auto ecal_bound =
+        Acts::transformFreeToBoundParameters(ecal_free, *ecal_surface, gctx_);
+    if (ecal_bound.ok()) {
+      auto part{Acts::GenericParticleHypothesis(
+          Acts::ParticleHypothesis(Acts::PdgParticle(particle_hypothesis_)))};
+      Acts::BoundTrackParameters ecal_pars(ecal_surface, ecal_bound.value(),
+                                           Acts::BoundSquareMatrix::Identity(),
+                                           part);
+      smeared_truth_track.addTrackState(tracking::sim::utils::makeTrackState(
+          geometryContext(), ecal_pars, ldmx::AtECAL));
+    }
+  }
 
   // Add the hits
   int nhits = 0;
@@ -719,14 +743,38 @@ void TruthSeedProcessor::produce(framework::Event& event) {
       ts_target.ts_type_ = ldmx::AtTarget;
       truth_recoil_track.addTrackState(ts_target);
 
-      // AtECAL state from ECAL scoring plane hit
-      ldmx::Track::TrackState ts_ecal;
-      ts_ecal.pos_ = {ecal_hit.getPosition()[0], ecal_hit.getPosition()[1],
-                      ecal_hit.getPosition()[2]};
-      ts_ecal.mom_ = {ecal_hit.getMomentum()[0], ecal_hit.getMomentum()[1],
-                      ecal_hit.getMomentum()[2]};
-      ts_ecal.ts_type_ = ldmx::AtECAL;
-      truth_recoil_track.addTrackState(ts_ecal);
+      // Express truth ECAL state in the bound parametrization of ecal_surface
+      // (same surface definition used by CKFProcessor).
+      {
+        Acts::Vector3 ep{ecal_hit.getPosition()[0], ecal_hit.getPosition()[1],
+                         ecal_hit.getPosition()[2]};
+        Acts::Vector3 em{ecal_hit.getMomentum()[0], ecal_hit.getMomentum()[1],
+                         ecal_hit.getMomentum()[2]};
+        ep = tracking::sim::utils::ldmx2Acts(ep);
+        em = tracking::sim::utils::ldmx2Acts(em);
+        // Linearly extrapolate transverse coordinates to ACTS x = 240.5 mm
+        // (= LDMX z = 240.5 mm), correcting for the track slope over the small
+        // z-offset between the scoring plane and the ECAL surface.
+        if (std::abs(em[0]) > 0) {
+          double delta = 240.5 - ep[0];
+          ep[1] += delta * em[1] / em[0];
+          ep[2] += delta * em[2] / em[0];
+          ep[0] = 240.5;
+        }
+        double q_ecal = phit.getCharge() * Acts::UnitConstants::e;
+        auto ecal_free = tracking::sim::utils::toFreeParameters(ep, em, q_ecal);
+        auto ecal_bound =
+            Acts::transformFreeToBoundParameters(ecal_free, *ecal_surface, gctx_);
+        if (ecal_bound.ok()) {
+          auto part{Acts::GenericParticleHypothesis(
+              Acts::ParticleHypothesis(Acts::PdgParticle(particle_hypothesis_)))};
+          Acts::BoundTrackParameters ecal_pars(
+              ecal_surface, ecal_bound.value(),
+              Acts::BoundSquareMatrix::Identity(), part);
+          truth_recoil_track.addTrackState(tracking::sim::utils::makeTrackState(
+              geometryContext(), ecal_pars, ldmx::AtECAL));
+        }
+      }
 
       // Attach sim hit indices
       int nhits = 0;
