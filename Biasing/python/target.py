@@ -433,7 +433,7 @@ def gamma_to_fcp( detector, generator, fcp_mass, fcp_charge = 0.1 ) :
     # Set run parameters
     xsec_bias_threshold = min(0.625 * generator.energy * 1000., 2. * fcp_mass)
     tagger_threshold = 0.95 * generator.energy * 1000.
-    
+
     brem_min_e = min(0.625 * generator.energy * 1000., 2. * fcp_mass)
     recoil_max_p = generator.energy * 1000. - brem_min_e
     xsec_bias = 1.E10 if generator.energy == 8.0 else 3.E9
