@@ -1,9 +1,10 @@
 """Detector map for translations between EIDs and det IDs"""
 
-from LDMX.Framework import ldmxcfg
+from LDMX.Framework import ConditionsObjectProvider, conditions_object_provider
 
 
-class HcalDetectorMap(ldmxcfg.ConditionsObjectProvider) :
+@conditions_object_provider("HcalDetectorMap", "hcal::HcalDetectorMapLoader", "Hcal")
+class HcalDetectorMap(ConditionsObjectProvider):
     """Provider of the Hcal detector map allowing translations between
     electronics IDs and detector IDs.
 
@@ -15,8 +16,5 @@ class HcalDetectorMap(ldmxcfg.ConditionsObjectProvider) :
         Flag determining if we should spend the time to create a detID->EID LUT
     """
 
-    def __init__(self, connections_table, want_d2e = False) :
-        super().__init__('HcalDetectorMap','hcal::HcalDetectorMapLoader','Hcal')
-        self.connections_table = connections_table
-        self.want_d2e = want_d2e
-
+    connections_table: str
+    want_d2e: bool = Falase

@@ -22,9 +22,11 @@ p.max_events = int(os.environ['LDMX_NUM_EVENTS']) // 2
 from LDMX.Recon.overlay import OverlayProducer
 
 
-overlay=OverlayProducer('pileup.root')
-overlay.sim_passname = sim_pass_name                  #sim input event pass name
-overlay.overlay_passname = pileup_file_pass_name    #pileup input event pass name
+overlay=OverlayProducer(
+    overlay_filename='pileup.root',
+    sim_passname=sim_pass_name,
+    overlay_passname=pileup_file_pass_name,
+)
 
 p.sequence = [overlay]
 
@@ -110,6 +112,7 @@ hcal_digi = hcal_digi_and_reco.HcalDigiProducer()
 hcal_reco = hcal_digi_and_reco.HcalRecProducer()
 # The newly produced, overlayed simhits
 hcal_digi.input_coll_name  += overlay_str
+hcal_digi.input_pass_name = this_pass_name
 # Use the digis produced above
 hcal_reco.input_pass_name = this_pass_name
 hcal_reco.sim_hit_coll_name += overlay_str
@@ -119,8 +122,7 @@ from LDMX.Recon.electron_counter import ElectronCounter
 from LDMX.Recon.simple_trigger import TriggerProcessor
 
 
-count = ElectronCounter(2,'ElectronCounter')
-count.input_pass_name = this_pass_name
+count = ElectronCounter(simulated_electron_number=2, instance_name='ElectronCounter', input_pass_name=this_pass_name)
 
 # Load HCAL veto
 from LDMX.Hcal.hcal import HcalVetoProcessor
@@ -159,7 +161,7 @@ cluster.rec_hit_pass_name=this_pass_name #run on process+pileup
 # particle flow:
 pf_comb=pf_reco.pfProducer()
 pf_comb.input_ecal_coll_name = cluster.cluster_coll_name # use CLUE
-pf_comb.input_ecal_pass_name = this_pass_name
+pf_comb.input_ecal_passname = this_pass_name
 
 # trigger recasting existing CLUE to caloclusters
 pf_comb.use_existing_ecal_clusters = True
@@ -180,22 +182,22 @@ from LDMX.DQM import dqm
 
 
 trig_scint_sim_dqm = [
-    dqm.TrigScintSimDQM('TrigScintSimPad1','TriggerPad1SimHits','pad1'),
-    dqm.TrigScintSimDQM('TrigScintSimPad2','TriggerPad2SimHits','pad2'),
-    dqm.TrigScintSimDQM('TrigScintSimPad3','TriggerPad3SimHits','pad3'),
+    dqm.TrigScintSimDQM(instance_name='TrigScintSimPad1', hit_collection='TriggerPad1SimHits', pad='pad1'),
+    dqm.TrigScintSimDQM(instance_name='TrigScintSimPad2', hit_collection='TriggerPad2SimHits', pad='pad2'),
+    dqm.TrigScintSimDQM(instance_name='TrigScintSimPad3', hit_collection='TriggerPad3SimHits', pad='pad3'),
     ]
 
 for ts_sim_dqm in trig_scint_sim_dqm :
     ts_sim_dqm.hit_collection += overlay_str
 
 trig_scint_dqm = [
-    dqm.TrigScintDigiDQM('TrigScintDigiPad1','trigScintDigisPad1','pad1'),
-    dqm.TrigScintDigiDQM('TrigScintDigiPad2','trigScintDigisPad2','pad2'),
-    dqm.TrigScintDigiDQM('TrigScintDigiPad3','trigScintDigisPad3','pad3'),
-    dqm.TrigScintClusterDQM('TrigScintClusterPad1','TriggerPad1Clusters','pad1'),
-    dqm.TrigScintClusterDQM('TrigScintClusterPad2','TriggerPad2Clusters','pad2'),
-    dqm.TrigScintClusterDQM('TrigScintClusterPad3','TriggerPad3Clusters','pad3'),
-    dqm.TrigScintTrackDQM('TrigScintTracks','TriggerPadTracks')
+    dqm.TrigScintDigiDQM(instance_name='TrigScintDigiPad1', hit_collection='trigScintDigisPad1', pad='pad1'),
+    dqm.TrigScintDigiDQM(instance_name='TrigScintDigiPad2', hit_collection='trigScintDigisPad2', pad='pad2'),
+    dqm.TrigScintDigiDQM(instance_name='TrigScintDigiPad3', hit_collection='trigScintDigisPad3', pad='pad3'),
+    dqm.TrigScintClusterDQM(instance_name='TrigScintClusterPad1', cluster_collection='TriggerPad1Clusters', pad='pad1'),
+    dqm.TrigScintClusterDQM(instance_name='TrigScintClusterPad2', cluster_collection='TriggerPad2Clusters', pad='pad2'),
+    dqm.TrigScintClusterDQM(instance_name='TrigScintClusterPad3', cluster_collection='TriggerPad3Clusters', pad='pad3'),
+    dqm.TrigScintTrackDQM(instance_name='TrigScintTracks', track_collection='TriggerPadTracks')
     ]
 
 for ts_dqm in trig_scint_dqm :
@@ -204,7 +206,7 @@ for ts_dqm in trig_scint_dqm :
 # EcalDigiVerify
 ecal_digi_verify = dqm.EcalDigiVerify()
 ecal_digi_verify.ecal_sim_hit_coll += overlay_str
-ecal_digi_verify.rec_hit_pass_name = this_pass_name
+ecal_digi_verify.ecal_rec_hit_pass = this_pass_name
 
 # EcalShowerFeatures
 ecal_shower_features = dqm.EcalShowerFeatures()
@@ -221,19 +223,19 @@ ecal_veto_results.ecal_veto_pass = this_pass_name
 
 # HCAL DQM
 hcal_dqm = [
-    dqm.HCalDQM(pe_threshold=8,
+    dqm.HCalDQM(pe_veto_threshold=8.0,
                 section=0
                 ),
-    dqm.HCalDQM(pe_threshold=8,
+    dqm.HCalDQM(pe_veto_threshold=8.0,
                 section=1
                 ),
-    dqm.HCalDQM(pe_threshold=8,
+    dqm.HCalDQM(pe_veto_threshold=8.0,
                 section=2
                 ),
-    dqm.HCalDQM(pe_threshold=8,
+    dqm.HCalDQM(pe_veto_threshold=8.0,
                 section=3
                 ),
-    dqm.HCalDQM(pe_threshold=8,
+    dqm.HCalDQM(pe_veto_threshold=8.0,
                 section=4
                 ),
     dqm.HcalInefficiencyAnalyzer(),
@@ -282,7 +284,7 @@ p.sequence.extend([
     *ts_digis,
     *ts_clusters,
     trig_scint_track,
-    count, TriggerProcessor('trigger', 8000.),
+    count, TriggerProcessor(beam_energy=8000., instance_name='trigger'),
     dqm.PhotoNuclearDQM()
 ])
 

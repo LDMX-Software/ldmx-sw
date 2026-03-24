@@ -1,5 +1,6 @@
-import sys
 import os
+import sys
+
 
 abspath = os.path.abspath(__file__)
 dname = os.path.dirname(abspath)
@@ -41,7 +42,7 @@ should still be defined elsewhere, for example in the constants.gdml or material
 
 #Material variable names (material definitions should be found in materials.gdml)
 scintillator_mat ="Polyvinyltoluene"
-lightpipe_mat    ="AcrylicPMMA" 
+lightpipe_mat    ="AcrylicPMMA"
 sipm_mat         ="Silicon"
 
 #To streamline TargetDarkBremFilter.cxx, TSPad3 and its components are considered part of

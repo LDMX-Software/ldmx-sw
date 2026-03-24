@@ -6,7 +6,7 @@ p = ldmxcfg.Process('test')
 from LDMX.SimCore import simulator as sim
 
 
-my_sim = sim.simulator( "my_sim" )
+my_sim = sim.simulator( instance_name="my_sim" )
 det = 'ldmx-det-v15-8gev'
 my_sim.setDetector(det, include_scoring_planes_minimal = True )
 from LDMX.SimCore import generators as gen
@@ -77,8 +77,7 @@ from LDMX.Recon.electron_counter import ElectronCounter
 from LDMX.Recon.simple_trigger import TriggerProcessor
 
 
-count = ElectronCounter(1,'ElectronCounter')
-count.input_pass_name = ''
+count = ElectronCounter(simulated_electron_number=1, instance_name='ElectronCounter', input_pass_name='')
 
 # Load ecal veto and use tracking in it
 ecal_veto = ecal_vetos.EcalVetoProcessor()
@@ -119,7 +118,7 @@ p.sequence.extend([
         *ts_digis,
         *ts_clusters,
         trig_scint_track,
-        count, TriggerProcessor('trigger', 8000.),
+        count, TriggerProcessor(beam_energy=8000., instance_name='trigger'),
         dqm.PhotoNuclearDQM(),
         dqm.EcalClusterAnalyzer()
         ])

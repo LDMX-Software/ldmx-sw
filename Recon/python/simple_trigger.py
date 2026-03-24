@@ -31,26 +31,31 @@ Examples
     p.sequence.append( simple_trigger )
 """
 
-from LDMX.Framework import ldmxcfg
+from LDMX.Framework import Processor, processor
 
 
-class TriggerProcessor(ldmxcfg.Producer) :
+@processor("recon::TriggerProcessor", "Recon")
+class TriggerProcessor(Processor):
     """Configuration for the (multi-electron aware but simple) trigger on the ECal reco hits"""
 
-    def __init__(self, name, beam_energy) :
-        super().__init__(name,'recon::TriggerProcessor','Recon')
+    beam_energy: float = 8000.0
+    thresholds: list[float] = []
+    mode: int = 0
+    start_layer: int = 0
+    end_layer: int = 20
+    input_collection: str = "EcalRecHits"
+    input_pass: str = ""
+    trigger_collection: str = "Trigger"
 
-        self.beam_energy = beam_energy
-        if (self.beam_energy == 4000.):
-            self.thresholds = [ 1500., 5000., 8200., 11800. ]
-        else:
-            self.thresholds = [ 3000., 10790., 18540., 26250. ]
-        self.mode = 0
-        self.start_layer = 0
-        self.end_layer = 20
-        self.input_collection = "EcalRecHits"
-        self.input_pass = ''
-        self.trigger_collection = "Trigger"
+    def __post_init__(self):
+        if len(self.thresholds) == 0:
+            if self.beam_energy == 4000.0:
+                self.thresholds = [1500.0, 5000.0, 8200.0, 11800.0]
+            else:
+                self.thresholds = [3000.0, 10790.0, 18540.0, 26250.0]
 
-simple_trigger = TriggerProcessor("simple_trigger", 8000.)
 
+simple_trigger = TriggerProcessor(
+    beam_energy=8000.0,
+    instance_name="simple_trigger",
+)

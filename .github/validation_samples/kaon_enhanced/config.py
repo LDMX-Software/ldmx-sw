@@ -16,7 +16,6 @@ p.total_events = int(os.environ['LDMX_NUM_EVENTS']) // 2
 p.run = int(os.environ['LDMX_RUN_NUMBER'])
 
 from LDMX.Biasing import ecal, filters, particle_filter, util
-from LDMX.Biasing import include as include_biasing
 from LDMX.SimCore import bias_operators, kaon_physics
 from LDMX.SimCore import generators as gen
 from LDMX.SimCore import photonuclear_models as pn
@@ -37,21 +36,20 @@ my_sim.biasing_operators = [
 ]
 
 # Configure the sequence in which user actions should be called.
-include_biasing.library()
 my_sim.actions.clear()
 my_sim.actions.extend([
-        filters.TaggerVetoFilter(thresh=2*3800.),
+        filters.TaggerVetoFilter(threshold=2*3800.),
         # Only consider events where a hard brem occurs
-        filters.TargetBremFilter(recoil_max_p = 2*1500., brem_min_e = 2*2500.),
+        filters.TargetBremFilter(recoil_max_p_threshold = 2*1500., brem_min_energy_threshold = 2*2500.),
         # Only consider events where a PN reaction happnes in the ECal
         filters.EcalProcessFilter(),
         # Tag all photo-nuclear tracks to persist them to the event.
         util.TrackProcessFilter.photo_nuclear()
 ])
 
-# set up "upKaon" parameters which reduces the charged kaon lifetimes by a factor 1/50
+# set up "up_kaon" parameters which reduces the charged kaon lifetimes by a factor 1/50
 # and forces decays to be into one of the leptonic decay modes.
-my_sim.kaon_parameters = kaon_physics.KaonPhysics.upKaons()
+my_sim.kaon_parameters = kaon_physics.KaonPhysics.up_kaons()
 
 # Alternative pn models
 my_model = pn.BertiniAtLeastNProductsModel.kaon()
@@ -128,10 +126,8 @@ hcal_reco = hcal_digi_and_reco.HcalRecProducer()
 
 # electron counter for trigger processor
 # first argument is number of electrons in simulation
-e_count = ElectronCounter( 1, "ElectronCounter")
-e_count.input_pass_name = ''
-simple_trig = TriggerProcessor("simple_trig",8000.)
-simple_trig.input_pass=this_pass_name
+e_count = ElectronCounter(simulated_electron_number=1, instance_name="ElectronCounter", input_pass_name='')
+simple_trig = TriggerProcessor(instance_name="simple_trig", beam_energy=8000., input_pass=this_pass_name)
 
 # Load DQM
 from LDMX.DQM import dqm

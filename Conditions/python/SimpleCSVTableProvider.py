@@ -3,9 +3,14 @@
 Specialization of ConditionsObjectProvider for simple tables indexed by detid
 """
 
-from LDMX.Framework import ldmxcfg
+from LDMX.Framework import (
+    ConditionsObjectProvider,
+    conditions_object_provider,
+    parameter_set,
+)
 
 
+@parameter_set
 class SimpleCSVTableEntry:
     """One entry in the providing table
 
@@ -19,52 +24,25 @@ class SimpleCSVTableEntry:
     ----------
     url : str
         URL to download the table entry from
+    first_run: int
+        first run number (inclusive) the entry is valid for
+    last_run: int
+        last run number (inclusive) the entry is valid for
+    run_type: str
+        data (real), mc (simulation), or any (both)
+    values: list[float|int]
+        values for each of the columns hardcoded instead of read from a file
     """
 
-    def __init__(self, url):
-        self.url=url
-        self.first_run=-1
-        self.last_run=-1
-        self.run_type="any"
+    url: str
+    first_run: int = -1
+    last_run: int = -1
+    run_type: str = "any"
+    values: list[float|int] = []
 
-    def set_iov(self, first_run, last_run):
-        """Set the Interval Of Validity for this table entry
 
-        Parameters
-        ----------
-        first_run : int
-            First run number that this entry is valid for
-        last_run : int
-            Last run number that this entry is valid for
-        """
-
-        self.first_run=first_run
-        self.last_run=last_run
-
-    def __str__(self) :
-        """Stringify this table entry
-
-        Returns
-        -------
-        str
-            A message with all the parameters and member
-            variables in a human readable format
-        """
-
-        msg = "  TableEntry { "
-        if ( self.first_run == -1 and self.last_run == -1 ) :
-            msg += "Valid for All Time"
-        else :
-            msg += (
-                f"Valid between {self.first_run}"
-                f" and {self.last_run}"
-            )
-
-        msg += f", Run Type {self.run_type}, URL {self.url} }}"
-
-        return msg
-
-class SimpleCSVTableProvider(ldmxcfg.ConditionsObjectProvider):
+@conditions_object_provider("UNDEFINED", "conditions::SimpleCSVTableProvider", "Conditions")
+class SimpleCSVTableProvider(ConditionsObjectProvider):
     """Provides a uniform table of a specific type
 
     Parametrs
@@ -77,26 +55,23 @@ class SimpleCSVTableProvider(ldmxcfg.ConditionsObjectProvider):
         (e.g. "int" or "double")
     columns : list of str
         List of column names for this table
-    conditions_baseURL : str
-        Base location for URLs, filling the
-        LDMX_CONDITION_BASEURL parameter inside any
-        table's URL
-    entriesURL : str
-        URL to a CSV table mapping tables to specific
-        intervals of validity.  Optional.
+    conditions_base_url : str
+        Base location for URLs, filling the LDMX_CONDITION_BASEURL parameter inside any table's URL
+    entries_url : str
+        URL to a CSV table mapping tables to specific intervals of validity.  Optional.
     """
 
-    def __init__(self,obj_name,data_type, columns):
-        super().__init__(
-            obj_name,
-            "conditions::SimpleCSVTableProvider",
-            'Conditions',
-        )
-        self.data_type=data_type
-        self.columns=columns
-        self.entries=[]
-        self.conditions_base_url=''
-        self.entries_url=''
+    obj_name: str
+    data_type: str
+    columns: list[str]
+    conditions_base_url: str = ""
+    entries_url: str = ""
+    entries: list[SimpleCSVTableEntry] = []
+
+
+    def __post_init__(self):
+        self.object_name = self.obj_name
+
 
     def valid_forever(self, url):
         """Add an entry to this provider that is valid
@@ -108,7 +83,8 @@ class SimpleCSVTableProvider(ldmxcfg.ConditionsObjectProvider):
             Location to download the table from
         """
 
-        self.entries.append(SimpleCSVTableEntry(url))
+        self.entries.append(SimpleCSVTableEntry(url = url))
+
 
     def valid_for_runs(self, url, first_run, last_run):
         """Add an entry to this provider that is valid
@@ -123,10 +99,8 @@ class SimpleCSVTableProvider(ldmxcfg.ConditionsObjectProvider):
         last_run : int
             Last run number that this entry is valid for
         """
+        self.entries.append(SimpleCSVTableEntry(url = url, first_run = first_run, last_run = last_run))
 
-        entry=SimpleCSVTableEntry(url)
-        entry.set_iov(first_run,last_run)
-        self.entries.append(entry)
 
     def valid_for_all_rows(self, values):
         """Define a value to use for all rows instead of
@@ -138,16 +112,13 @@ class SimpleCSVTableProvider(ldmxcfg.ConditionsObjectProvider):
             A value for each column to use for all rows
         """
 
-        entry=SimpleCSVTableEntry("python:")
-        entry.values=values
-        self.entries.append(entry)
+        self.entries.append(SimpleCSVTableEntry(url = "python:", values = values))
 
-class SimpleCSVDoubleTableProvider(SimpleCSVTableProvider):
-    """Provider for tables of doubles"""
-    def __init__(self,obj_name,columns):
-        super().__init__(obj_name,"double",columns)
 
-class SimpleCSVIntegerTableProvider(SimpleCSVTableProvider):
-    """Provider for tables of integers"""
-    def __init__(self,obj_name,columns):
-        super().__init__(obj_name,"int",columns)
+def SimpleCSVDoubleTableProvider(obj_name, columns):
+    """Factory for a SimpleCSVTableProvider for tables of doubles"""
+    return SimpleCSVTableProvider(obj_name=obj_name, data_type="double", columns=columns)
+
+def SimpleCSVIntegerTableProvider(obj_name, columns):
+    """Factory for a SimpleCSVTableProvider for tables of integers"""
+    return SimpleCSVTableProvider(obj_name=obj_name, data_type="int", columns=columns)

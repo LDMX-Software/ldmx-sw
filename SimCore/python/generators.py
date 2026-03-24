@@ -1,19 +1,46 @@
-"""Primary Generator templates for use throughout ldmx-sw
+"""Primary Generator templates for use throughout ldmx-sw"""
 
-Mainly focused on reducing the number of places that certain parameter and class names
-are hardcoded into the python configuration.
-"""
-
-from LDMX.SimCore import simcfg
+from LDMX.Framework import _register, field, parameter_set
 
 
-class gun(simcfg.PrimaryGenerator) :
-    """New basic particle gun primary generator
+class PrimaryGenerator:
+    """Base for all primary generators for type checking"""
+
+    pass
+
+
+def primary_generator(class_name: str, module_name: str = "SimCore_Generators"):
+    """Label a class as configuration for a primary generator
 
     Parameters
     ----------
-    name : str
-        name of new primary generator
+    class_name : str
+        Name of C++ class that this PrimaryGenerator should be
+    module_name : str, optional
+        Name of C++ library that this primary generator is compiled into
+
+    Attributes
+    ----------
+    instance_name : str
+        Unique name for this particular instance of a PrimaryGenerator
+    beam_spot_smear : list of float, optional
+        2 (x,y) or 3 (x,y,z) widths to smear primary vertices from this generator [mm].
+        If set, this generator will handle its own beam spot smearing instead of using
+        the global simulator beam_spot_smear setting.
+    """
+    return parameter_set(
+        class_name=field(default=class_name, init=False),
+        module_name=field(default=module_name, init=False),
+        instance_name=class_name,
+        beam_spot_smear=[20.0, 80.0, 0.0],
+        post_init=lambda self: _register.library(self.module_name),
+        required_base=PrimaryGenerator,
+    )
+
+
+@primary_generator("simcore::generators::ParticleGun")
+class gun(PrimaryGenerator):
+    """basic particle gun primary generator
 
     Attributes
     ----------
@@ -29,150 +56,71 @@ class gun(simcfg.PrimaryGenerator) :
         Position to shoot from [mm]
     direction : list of float
         Unit vector direction to shoot from
-    vertex : list of float, optional
-        Vertex position to shoot from [mm]. Defaults to [0.0, 0.0, 0.0]
-    beam_spot_smear : list of float, optional
-        2 (x,y) or 3 (x,y,z) widths to smear vertices from this generator [mm]
-        If set, overrides the global simulator beam_spot_smear for this generator.
 
     Examples
     --------
-        my_gun = gun( 'my_gun' )
-        my_gun.particle = 'e-'
-        my_gun.energy = 4.0
-        my_gun.direction = [ 0., 0., 1. ]
-        my_gun.position = [ 0., 0., 0. ]
-        my_gun.beam_spot_smear = [20., 80., 0.]
+        my_gun = gun(
+            instance_name = '4gev-e-into-target',
+            particle = 'e-',
+            energy = 4.0,
+            direction = [0., 0., 1.],
+            position = [0., 0., 0.]
+        )
     """
 
-    def __init__(self, name ) :
-        super().__init__( name , "simcore::generators::ParticleGun" )
+    time: float = 0.0
+    verbosity: int = 0
+    particle: str = ""
+    energy: float = 0.0
+    position: list[float] = []
+    direction: list[float] = []
+    __legacy__ = {"vertex": "position"}
 
-        self.time = 0.
-        self.verbosity = 0
-        self.particle = ''
-        self.energy = 0.
-        self.position = [ ]
-        self.direction = [ ]
-        self.vertex = [0.0, 0.0, 0.0]
 
-class multi(simcfg.PrimaryGenerator) :
-    """New multi particle gun primary generator
-
-    Parameters
-    ----------
-    name : str
-        name of new primary generator
+@primary_generator("simcore::generators::MultiParticleGunPrimaryGenerator")
+class multi(PrimaryGenerator):
+    """multi particle gun primary generator
 
     Attributes
     ----------
-    enablePoisson : bool, optional
+    enable_poisson : bool, optional
         Poisson-distribute number of particles?
     vertex : list of float
         Position to shoot particle(s) from [mm]
     momentum : list of float
         3-momentum to give particle(s) in [MeV]
-    nParticles : int, optional
+    n_particles : int, optional
         Number of particles to shoot (or average of Poisson distribution)
-    pdgID : int
+    pdg_id : int
         PDG ID of particle(s) to shoot
-    beam_spot_smear : list of float, optional
-        2 (x,y) or 3 (x,y,z) widths to smear vertices from this generator [mm]
-        If set, overrides the global simulator beam_spot_smear for this generator.
     """
 
-    def __init__(self,name) :
-        super().__init__(name,'simcore::generators::MultiParticleGunPrimaryGenerator')
-
-        #turn off Poisson by default
-        self.enable_poisson = False
-        self.vertex = [ ]
-        self.momentum = [ ]
-        self.n_particles = 1
-        self.pdg_id = 0
+    enable_poisson: bool = False
+    vertex: list[float] = []
+    momentum: list[float] = []
+    n_particles: int = 1
+    pdg_id: int = 0
 
 
-class lhe(simcfg.PrimaryGenerator) :
-    """New LHE file primary generator
+@primary_generator("simcore::generators::LHEPrimaryGenerator")
+class lhe(PrimaryGenerator):
+    """LHE file primary generator
 
     Parameters
     ----------
-    name : str
-        name of new primary generator
     file_path : str
         path to LHE file containing the primary vertices
     vertex : list of float, optional
         Vertex position to shoot from [mm]. Defaults to [0.0, 0.0, 0.0]
-    beam_spot_smear : list of float, optional
-        2 (x,y) or 3 (x,y,z) widths to smear vertices from this generator [mm]
-        If set, overrides the global simulator beam_spot_smear for this generator.
     """
 
-    def __init__(self,name,file_path):
-        super().__init__(name,'simcore::generators::LHEPrimaryGenerator')
-
-        self.file_path = file_path
-        self.vertex = [0.0, 0.0, 0.0]
-
-class completeReSim(simcfg.PrimaryGenerator) :
-    """New complete re-simprimary generator
-
-    Parameters
-    ----------
-    name : str
-        name of new primary generator
-    file_path : str
-        path to ROOT file containing the SimParticles to re-simulate
-
-    Attributes
-    ----------
-    collection_name : str
-        Name of SimParticles collection to re-sim
-    pass_name : str
-        Pass name of SimParticles to re-sim
-    """
-
-    def __init__(self,name,file_path) :
-        super().__init__(name,'simcore::generators::RootCompleteReSim')
-
-        self.file_path = file_path
-        self.collection_name = 'SimParticles'
-        self.pass_name = ''
-
-class ecalSP(simcfg.PrimaryGenerator) :
-    """New ecal scoring planes primary generator
-
-    Sets the collection name, pass name, and time cutoff
-    to reasonable defaults.
-
-    Parameters
-    ----------
-    name : str
-        name of new primary generator
-    file_path : str
-        path to ROOT file containing the EcalScoringPlanes to re-simulate
+    file_path: str
+    vertex: list[float] = [0.0, 0.0, 0.0]
 
 
-    Attributes
-    ----------
-    collection_name : str, optional
-        Name of EcalScoringPlaneHits collection to re-sim
-    pass_name : str, optional
-        Pass name of EcalScoringPlaneHits to re-sim
-    time_cutoff : float, optional
-        Maximum time of scoring plane hit to still re-sim [ns]
-    """
-
-    def __init__(self,name,file_path) :
-        super().__init__( name , 'simcore::generators::RootSimFromEcalSP' )
-
-        self.file_path = file_path
-        self.collection_name = 'EcalScoringPlaneHits'
-        self.pass_name = ''
-        self.time_cutoff = 50.
-
-class gps(simcfg.PrimaryGenerator) :
-    """New general particle source
+@primary_generator("simcore::generators::GeneralParticleSource")
+class gps(PrimaryGenerator):
+    """general particle source
 
     The input initialization commands are run in the order that they are listed.
 
@@ -206,17 +154,12 @@ class gps(simcfg.PrimaryGenerator) :
             ] )
     """
 
-    def __init__(self,name,init_commands) :
-        super().__init__(name,'simcore::generators::GeneralParticleSource')
-        self.init_commands = init_commands
+    init_commands: list[str]
 
-class genie(simcfg.PrimaryGenerator) :
+
+@primary_generator("simcore::generators::GenieGenerator")
+class genie(PrimaryGenerator):
     """Simple GENIE generator
-
-    Parameters
-    ----------
-    name : str
-        name of new primary generator
 
     Attributes
     ----------
@@ -251,41 +194,18 @@ class genie(simcfg.PrimaryGenerator) :
                          tune='G18_02a_00_000')
     """
 
-    def __init__(self,name,
-                     energy=8.0,
-                     targets = None,
-                     target_thickness = 0.3504,
-                     abundances = None,
-                     time = 0.0,
-                     position = None,
-                     beam_size = None,
-                     direction = None,
-                     tune = 'default',
-                     spline_file = '',
-                     message_threshold_file = "/usr/local/GENIE/Generator/config/Messenger.xml") :
-        if direction is None:
-            direction = [0.0, 0.0, 1.0]
-        if beam_size is None:
-            beam_size = [0.0, 0.0]
-        if position is None:
-            position = [0.0, 0.0, 0.0]
-        if abundances is None:
-            abundances = []
-        if targets is None:
-            targets = []
-        super().__init__( name , "simcore::generators::GenieGenerator" )
+    energy: float = 8.0
+    targets: list[int] = []
+    target_thickness: float = 0.3504
+    abundances: list[float] = []
+    time: float = 0.0
+    position: list[float] = [0.0, 0.0, 0.0]
+    beam_size: list[float] = [0.0, 0.0]
+    direction: list[float] = [0.0, 0.0, 1.0]
+    tune: str = "default"
+    spline_file: str = ""
+    message_threshold_file: str = "/usr/local/GENIE/Generator/config/Messenger.xml"
 
-        self.energy = energy
-        self.targets = targets
-        self.target_thickness = target_thickness
-        self.abundances = abundances
-        self.time = time
-        self.position = position
-        self.beam_size = beam_size
-        self.direction = direction
-        self.tune = tune
-        self.spline_file = spline_file
-        self.message_threshold_file = message_threshold_file
 
 def _single_e_upstream_tagger(position, momentum, energy):
     """Internal helper function for creating electron beam guns upstream of tagger
@@ -316,17 +236,19 @@ def _single_e_upstream_tagger(position, momentum, energy):
     """
 
     import math
-    momentum_mag = math.sqrt(sum(x*x for x in momentum))
-    unit_direction = [x/momentum_mag for x in momentum]
 
-    particle_gun = gun(f'single_{energy}gev_e_upstream_tagger')
-    particle_gun.particle = 'e-'
-    particle_gun.position = position
-    particle_gun.direction = unit_direction
-    particle_gun.energy = energy
-    return particle_gun
+    momentum_mag = math.sqrt(sum(x * x for x in momentum))
+    unit_direction = [x / momentum_mag for x in momentum]
+    return gun(
+        instance_name=f"single_{energy}gev_e_upstream_tagger",
+        particle="e-",
+        position=position,
+        direction=unit_direction,
+        energy=energy,
+    )
 
-def single_4gev_e_upstream_tagger() :
+
+def single_4gev_e_upstream_tagger():
     """Configure a particle gun to fire a 4 GeV electron upstream of the tagger tracker.
 
     The position and direction are set such that the electron will be bent by
@@ -340,12 +262,11 @@ def single_4gev_e_upstream_tagger() :
     upstream of the entire detector apparatus.
     """
     return _single_e_upstream_tagger(
-        [ -43.56748, 0.0, -883.0 ],
-        [ 388.5554, 0.0, 3981.5967 ],
-        4.0
+        [-43.56748, 0.0, -883.0], [388.5554, 0.0, 3981.5967], 4.0
     )
 
-def single_4gev_e_upstream_target() :
+
+def single_4gev_e_upstream_target():
     """Configure a particle gun to fire a 4 GeV electron upstream of the tagger tracker.
 
     The position and direction are set such that the electron will be bent by
@@ -358,13 +279,14 @@ def single_4gev_e_upstream_target() :
     directly upstream of the target.
     """
 
-    particle_gun = gun('single_4gev_e_upstream_target')
-    particle_gun.particle = 'e-'
-    particle_gun.position = [ 0., 0., -1.2 ]  # mm
-    particle_gun.direction = [ 0., 0., 1]
-    particle_gun.energy = 4.0 # GeV
+    return gun(
+        instance_name="single_4gev_e_upstream_target",
+        particle="e-",
+        position=[0.0, 0.0, -1.2],
+        direction=[0.0, 0.0, 1],
+        energy=4.0,
+    )
 
-    return particle_gun
 
 def single_1pt2gev_e_upstream_tagger():
     """Configure a particle gun to fire a 8 GeV electron upstream of the tagger tracker.
@@ -380,10 +302,9 @@ def single_1pt2gev_e_upstream_tagger():
     upstream of the entire detector apparatus.
     """
     return _single_e_upstream_tagger(
-        [ -148.95303, 0.0, -883.0 ],
-        [ 388.57147, 0.0, 1135.8867 ],
-        1.2
+        [-148.95303, 0.0, -883.0], [388.57147, 0.0, 1135.8867], 1.2
     )
+
 
 def single_8gev_e_upstream_tagger():
     """Configure a particle gun to fire a 8 GeV electron upstream of the tagger tracker.
@@ -399,13 +320,11 @@ def single_8gev_e_upstream_tagger():
     upstream of the entire detector apparatus.
     """
     return _single_e_upstream_tagger(
-        [ -21.745876, 0.0, -883.0 ],
-        [ 388.55154, 0.0, 7991.0703],
-        8.0
+        [-21.745876, 0.0, -883.0], [388.55154, 0.0, 7991.0703], 8.0
     )
 
 
-def single_e_beam_pipe(ene = 8.0):
+def single_e_beam_pipe(ene=8.0):
     """Configure a particle gun to fire an electron of settable energy
     upstream of the tagger tracker.
 
@@ -424,17 +343,18 @@ def single_e_beam_pipe(ene = 8.0):
     upstream of the entire detector apparatus.
     """
     return _single_e_upstream_tagger(
-        [ -299.2386690686212, 0.0, -6000.0 ],
-        [ 434.59663056485   , 0.0, 7988.698356992288],
-        ene
+        [-299.2386690686212, 0.0, -6000.0],
+        [434.59663056485, 0.0, 7988.698356992288],
+        ene,
     )
+
 
 def single_backwards_positron(energy: float):
     """A particle gun configured to shoot positrons backwards (i.e. upstream)
     from the target at the input energy.
 
-    This generator is helpful for studying where electron guns of different energies should
-    be started from if they should end up at the center of the target.
+    This generator is helpful for studying where electron guns of different
+    energies should be started from if they should end up at the center of the target.
 
     Parameters
     ----------
@@ -446,10 +366,10 @@ def single_backwards_positron(energy: float):
     gun:
         configured particle gun to shoot positrons backwards at the input energy
     """
-    beam = gun(f'backwards-positron-{energy}GeV')
-    beam.particle = 'e+'
-    beam.position = [0., 0., 0.]
-    beam.direction = [0., 0., -1.]
-    beam.energy = energy
-    return beam
-
+    return gun(
+        instance_name=f"backwards-positron-{energy}GeV",
+        particle="e+",
+        position=[0.0, 0.0, 0.0],
+        direction=[0.0, 0.0, -1.0],
+        energy=energy,
+    )

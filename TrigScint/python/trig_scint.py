@@ -11,478 +11,485 @@ Examples
 
 """
 
-from LDMX.Framework import ldmxcfg
+from LDMX.Framework import Processor, processor
 
 
-class TrigScintDigiProducer(ldmxcfg.Producer) :
+@processor("trigscint::TrigScintDigiProducer", "TrigScint")
+class TrigScintDigiProducer(Processor):
     """Configuration for digitizer for Trigger Scintillators"""
 
-    def __init__(self,name) :
-        super().__init__(name,'trigscint::TrigScintDigiProducer','TrigScint')
+    mean_noise: float = 0.02
+    number_of_strips: int = 50
+    number_of_arrays: int = 1
+    mev_per_mip: float = 0.4
+    pe_per_mip: float = 100.0
+    input_collection: str = "TriggerPad3SimHits"
+    input_pass_name: str = ""
+    output_collection: str = "trigScintDigisPad3"
+    sim_particles_coll_name: str = "SimParticles"
+    sim_particles_passname: str = ""
 
-        self.mean_noise = 0.02
-        self.number_of_strips = 50
-        self.number_of_arrays = 1
-        self.mev_per_mip = 0.4
-        self.pe_per_mip = 100.
-        self.input_collection="TriggerPad3SimHits"
-        self.input_pass_name="" #take any pass
-        self.output_collection="trigScintDigisPad3"
-        self.sim_particles_coll_name = "SimParticles"
-        self.sim_particles_passname = ""
-
-    def pad1() :
+    @staticmethod
+    def pad1(**kwargs):
         """Get the digitizer for the trigger pad most upstream of tagger"""
-        digi = TrigScintDigiProducer( 'trigScintDigisPad1' )
-        digi.input_collection = 'TriggerPad1SimHits'
-        digi.output_collection= 'trigScintDigisPad1'
-        return digi
+        return TrigScintDigiProducer(
+            instance_name="trigScintDigisPad1",
+            input_collection="TriggerPad1SimHits",
+            output_collection="trigScintDigisPad1",
+            **kwargs,
+        )
 
-    def pad2() :
+    @staticmethod
+    def pad2(**kwargs):
         """Get the digitizer for the trigger pad just upstream of tagger"""
-        digi = TrigScintDigiProducer( 'trigScintDigisPad2' )
-        digi.input_collection = 'TriggerPad2SimHits'
-        digi.output_collection= 'trigScintDigisPad2'
-        return digi
+        return TrigScintDigiProducer(
+            instance_name="trigScintDigisPad2",
+            input_collection="TriggerPad2SimHits",
+            output_collection="trigScintDigisPad2",
+            **kwargs,
+        )
 
-    def pad3() :
+    @staticmethod
+    def pad3(**kwargs):
         """Get the digitizer for the trigger pad upstream of target"""
-        digi = TrigScintDigiProducer( 'trigScintDigisPad3' )
-        digi.input_collection = 'TriggerPad3SimHits'
-        digi.output_collection= 'trigScintDigisPad3'
-        return digi
+        return TrigScintDigiProducer(
+            instance_name="trigScintDigisPad3",
+            input_collection="TriggerPad3SimHits",
+            output_collection="trigScintDigisPad3",
+            **kwargs,
+        )
 
-    def target() :
+    @staticmethod
+    def target(**kwargs):
         """Get the digitizer for the active target"""
-        digi = TrigScintDigiProducer( 'TargetDigis' )
-        digi.input_collection = 'TargetSimHits'
-        digi.output_collection= 'TargetDigis'
-        digi.mev_per_mip = 1.
-        digi.pe_per_mip = 300.
-        return digi
+        return TrigScintDigiProducer(
+            instance_name="TargetDigis",
+            input_collection="TargetSimHits",
+            output_collection="TargetDigis",
+            mev_per_mip=1.0,
+            pe_per_mip=300.0,
+            **kwargs,
+        )
 
 
-class TrigScintQIEDigiProducer(ldmxcfg.Producer) :
+@processor("trigscint::TrigScintQIEDigiProducer", "TrigScint")
+class TrigScintQIEDigiProducer(Processor):
     """Configuration for digitizer for Trigger Scintillators's QIE chip"""
 
-    def __init__(self,name) :
-        super().__init__(name,'trigscint::TrigScintQIEDigiProducer','TrigScint')
+    mean_noise: float = 0.02
+    number_of_strips: int = 50
+    number_of_arrays: int = 1
+    mev_per_mip: float = 0.4
+    pe_per_mip: float = 100.0
+    input_collection: str = "TriggerPad3SimHits"
+    input_pass_name: str = ""
+    output_collection: str = "trigScintQIEDigisPad3"
+    input_pulse_shape: str = "Expo"
+    expo_k: float = 0.1
+    expo_tmax: float = 5.0
+    maxts: int = 5
+    toff_overall: float = 55.0
+    tdc_thr: float = 3.4
+    pedestal: float = 6.0
+    elec_noise: float = 1.5
+    sipm_gain: float = 1.0e6
+    qie_sf: float = 40.0
+    zeroSupp_in_pe: float = 1.0
+    verbose: bool = False
 
-        self.mean_noise = 0.02
-        self.number_of_strips = 50
-        self.number_of_arrays = 1
-        self.mev_per_mip = 0.4
-        self.pe_per_mip = 100.
-        self.input_collection="TriggerPad3SimHits"
-        self.input_pass_name="" #take any pass
-        self.output_collection="trigScintQIEDigisPad3"
-        self.input_pulse_shape="Expo" # Name of the input pulse class
-        self.expo_k=0.1          # Inverse of decay time of piece-wise exponential
-        self.expo_tmax=5.0       # Time at which piece-wise exponential peaks
-        self.maxts=5             # No. of time samples to analyze
-        self.toff_overall = 55.0 # Global time offset
-        self.tdc_thr = 3.4       # Threshold current in uA for TDC latch
-        self.pedestal= 6.0       # QIE pedestal value (in fC)
-        self.elec_noise = 1.5    # Electronic noise (in fC)
-        self.sipm_gain = 1.e6    # SiPM Gain
-        self.qie_sf = 40.        # QIE sampling frequency in MHz
-        self.zeroSupp_in_pe = 1. # min nPE in integrated pulse to keep hit
-
-        import time
-        self.verbose = False
-
-    def pad3() :
+    @staticmethod
+    def pad3(**kwargs):
         """Get the digitizer for the trigger pad upstream of target"""
-        digi = TrigScintQIEDigiProducer( 'trigScintQIEDigisPad3' )
-        digi.input_collection = 'TriggerPad3SimHits'
-        digi.output_collection= 'trigScintQIEDigisPad3'
-        return digi
+        return TrigScintQIEDigiProducer(
+            instance_name="trigScintQIEDigisPad3",
+            input_collection="TriggerPad3SimHits",
+            output_collection="trigScintQIEDigisPad3",
+            **kwargs,
+        )
 
-    def pad1() :
-        """Get the digitizer for the first trigger pad """
-        digi = TrigScintQIEDigiProducer( 'trigScintQIEDigisPad1' )
-        digi.input_collection = 'TriggerPad1SimHits'
-        digi.output_collection= 'trigScintQIEDigisPad1'
-        return digi
+    @staticmethod
+    def pad1(**kwargs):
+        """Get the digitizer for the first trigger pad"""
+        return TrigScintQIEDigiProducer(
+            instance_name="trigScintQIEDigisPad1",
+            input_collection="TriggerPad1SimHits",
+            output_collection="trigScintQIEDigisPad1",
+            **kwargs,
+        )
 
-    def pad2() :
-        """Get the digitizer for the second trigger pad """
-        digi = TrigScintQIEDigiProducer( 'trigScintQIEDigisPad2' )
-        digi.input_collection = 'TriggerPad2SimHits'
-        digi.output_collection= 'trigScintQIEDigisPad2'
-        return digi
+    @staticmethod
+    def pad2(**kwargs):
+        """Get the digitizer for the second trigger pad"""
+        return TrigScintQIEDigiProducer(
+            instance_name="trigScintQIEDigisPad2",
+            input_collection="TriggerPad2SimHits",
+            output_collection="trigScintQIEDigisPad2",
+            **kwargs,
+        )
 
 
-class EventReadoutProducer(ldmxcfg.Producer) :
+@processor("trigscint::EventReadoutProducer", "TrigScint")
+class EventReadoutProducer(Processor):
     """Configuration for rechit producer for Trigger Scintillators"""
 
-    def __init__(self,name) :
-        super().__init__(name,'trigscint::EventReadoutProducer','TrigScint')
+    input_collection: str = "decodedQIEPad1"
+    input_pass_name: str = ""
+    output_collection: str = "QIEsamplesPad1"
+    number_pedestal_samples: int = 5
+    time_shift: int = 5
+    fiber_to_shift: int = 0
+    verbose: bool = False
 
-        self.input_collection="decodedQIEPad1"
-        self.input_pass_name=""   #take any pass
-        self.output_collection="QIEsamplesPad1"
-        self.number_pedestal_samples=5
-        self.time_shift=5
-        self.fiber_to_shift=0
-        self.verbose = False
 
-class TestBeamHitProducer(ldmxcfg.Producer) :
+@processor("trigscint::TestBeamHitProducer", "TrigScint")
+class TestBeamHitProducer(Processor):
     """Configuration for testbeam hit producer for Trigger Scintillators"""
 
-    def __init__(self,name) :
-        super().__init__(name,'trigscint::TestBeamHitProducer','TrigScint')
-
-        self.input_collection="QIEsamplesPad1"
-        self.input_pass_name=""   #take any pass
-        self.output_collection="testBeamHitsPad1"
-        self.verbose = False
-        #whether to apply quality criteria in hit reconstruction
-        self.do_clean_hits = False
-        self.n_instrumented_channels=12 #number of channels
-        # Sample where pulse is expected to start (triggered mode)
-        self.start_sample=10
-        self.pulse_width=5     # Number of consecutive samples to include in the pulse
-        self.pulse_width_lyso=8 # as above, for LYSO
-        self.gain = [2.e6]*12      # SiPM Gain
-        self.MIPresponse = [1.]*12      # channel MIP response correction factor
-        self.pedestals=[
-            -4.6, #0.6,
-            -2.6, #4.4,
-            -0.6, #-1.25,
-            4.5,  #3.9, 	 # #3
-            1.9,  #10000., # #4: (used to be) dead channel during test beam
-            -2.2, #-2.1,   # #5
-            0.9,  #2.9,    # #6
-            -1.2, #-2,     # #7
-            4.8,  #-0.4,   # #8
-            -4.4, #-1.1,   # #9: dead channel in TTU teststand setup
-            -0.1, #1.5,    # #10
-            -1.7, #2.0,    # #11
-            3.3,  #3.7,    # #12 -- uninstrumented
-            -0.3, #2.8,    # #13 -- uninstrumented
-            1.3,  #-1.5,   # #14 -- uninstrumented
-            1.3   #1.6     # #15 -- uninstrumented
-        ]
+    input_collection: str = "QIEsamplesPad1"
+    input_pass_name: str = ""
+    output_collection: str = "testBeamHitsPad1"
+    verbose: bool = False
+    do_clean_hits: bool = False
+    n_instrumented_channels: int = 12
+    start_sample: int = 10
+    pulse_width: int = 5
+    pulse_width_lyso: int = 8
+    gain: list[float] = [2.0e6] * 12
+    MIPresponse: list[float] = [1.0] * 12
+    pedestals: list[float] = [
+        -4.6,
+        -2.6,
+        -0.6,
+        4.5,
+        1.9,
+        -2.2,
+        0.9,
+        -1.2,
+        4.8,
+        -4.4,
+        -0.1,
+        -1.7,
+        3.3,
+        -0.3,
+        1.3,
+        1.3,
+    ]
 
 
-class TestBeamClusterProducer(ldmxcfg.Producer) :
+@processor("trigscint::TestBeamClusterProducer", "TrigScint")
+class TestBeamClusterProducer(Processor):
     """Configuration for cluster producer for Trigger Scintillators"""
 
-    def __init__(self,name) :
-        super().__init__(name,'trigscint::TestBeamClusterProducer','TrigScint')
+    max_cluster_width: int = 2
+    max_channel_nb: int = 11
+    clustering_threshold: float = 40.0
+    seed_threshold: float = 60.0
+    pad_time: float = -999.0
+    time_tolerance: float = 50.0
+    input_collection: str = "testBeamHitsPad1"
+    input_pass_name: str = ""
+    output_collection: str = "TestBeamClustersPad1"
+    do_clean_hits: bool = False
+    verbosity: int = 0
 
-        self.max_cluster_width = 2
-        self.max_channel_nb = 11
-        self.clustering_threshold = 40.  #to add in neighboring channels
-        self.seed_threshold = 60.
-        self.pad_time = -999.
-        self.time_tolerance = 50.
-        self.input_collection="testBeamHitsPad1"
-        self.input_pass_name="" #take any pass
-        self.output_collection="TestBeamClustersPad1"
-        #whether to apply quality criteria from hit reconstruction
-        self.do_clean_hits = False
-        self.verbosity = 0
+    @staticmethod
+    def pad1(**kwargs):
+        """Get the cluster producer for the trigger pad upstream of hcal"""
+        return TestBeamClusterProducer(
+            instance_name="testBeamClustersPad1",
+            input_collection="testBeamHitsPad1",
+            output_collection="TeastBeamClustersPad1",
+            pad_time=-999.0,
+            **kwargs,
+        )
 
-    def pad1() :
-        """Get the cluster producer for the trigger pad upstream of hcal """
-        cluster = TestBeamClusterProducer( 'testBeamClustersPad1' )
-        cluster.input_collection = 'testBeamHitsPad1'
-        cluster.output_collection= 'TeastBeamClustersPad1'
-        cluster.pad_time= -999.
-        return cluster
 
-class TrigScintRecHitProducer(ldmxcfg.Producer) :
+@processor("trigscint::TrigScintRecHitProducer", "TrigScint")
+class TrigScintRecHitProducer(Processor):
     """Configuration for rechit producer for Trigger Scintillators"""
 
-    def __init__(self,name) :
-        super().__init__(name,'trigscint::TrigScintRecHitProducer','TrigScint')
+    mev_per_mip: float = 0.4
+    pe_per_mip: float = 100.0
+    pedestal: float = 6.0
+    gain: float = 1.0e6
+    input_collection: str = "trigScintQIEDigisPad3"
+    input_pass_name: str = ""
+    output_collection: str = "trigScintRecHitsPad3"
+    verbose: bool = False
+    sample_of_interest: int = 2
 
-        self .mev_per_mip = 0.4   #\
-                                  # >>>both are for converting edep to PEs
-        self.pe_per_mip = 100.    #/
-        self.pedestal= 6.0        # QIE pedestal value (in fC)
-        self.gain = 1.e6      # SiPM Gain
-        self.input_collection="trigScintQIEDigisPad3"
-        self.input_pass_name=""   #take any pass
-        self.output_collection="trigScintRecHitsPad3"
-        self.verbose = False
-        self.sample_of_interest=2 # Sample of interest. Range 0 to 3
-
-    def pad1() :
+    @staticmethod
+    def pad1(**kwargs):
         """Get the rechit producer for first pad"""
-        rechit = TrigScintRecHitProducer( 'trigScintRecHitsPad1' )
-        rechit.input_collection  = 'trigScintQIEDigisPad1'
-        rechit.output_collection = 'trigScintRecHitsPad1'
-        return rechit
+        return TrigScintRecHitProducer(
+            instance_name="trigScintRecHitsPad1",
+            input_collection="trigScintQIEDigisPad1",
+            output_collection="trigScintRecHitsPad1",
+            **kwargs,
+        )
 
-    def pad2() :
+    @staticmethod
+    def pad2(**kwargs):
         """Get the rechit producer for second pad"""
-        rechit = TrigScintRecHitProducer( 'trigScintRecHitsPad2' )
-        rechit.input_collection  = 'trigScintQIEDigisPad2'
-        rechit.output_collection = 'trigScintRecHitsPad2'
-        return rechit
+        return TrigScintRecHitProducer(
+            instance_name="trigScintRecHitsPad2",
+            input_collection="trigScintQIEDigisPad2",
+            output_collection="trigScintRecHitsPad2",
+            **kwargs,
+        )
 
-    def pad3() :
+    @staticmethod
+    def pad3(**kwargs):
         """Get the rechit producer for third pad"""
-        rechit = TrigScintRecHitProducer( 'trigScintRecHitsPad3' )
-        rechit.input_collection  = 'trigScintQIEDigisPad3'
-        rechit.output_collection = 'trigScintRecHitsPad3'
-        return rechit
+        return TrigScintRecHitProducer(
+            instance_name="trigScintRecHitsPad3",
+            input_collection="trigScintQIEDigisPad3",
+            output_collection="trigScintRecHitsPad3",
+            **kwargs,
+        )
 
-class TrigScintFirmwareHitProducer(ldmxcfg.Producer) :
-    """Configuration for rechit producer for Trigger Scintillators incorporating validated Firmware, regular and pileUp"""
 
-    def __init__(self,name) :
-        super().__init__(name,'trigscint::TrigScintFirmwareHitProducer','TrigScint')
+@processor("trigscint::TrigScintFirmwareHitProducer", "TrigScint")
+class TrigScintFirmwareHitProducer(Processor):
+    """Configuration for rechit producer for Trigger Scintillators
+    incorporating validated Firmware, regular and pileUp"""
 
-        self .mev_per_mip = 0.4   #\
-                                  # >>>both are for converting edep to PEs
-        self.pe_per_mip = 100.    #/
-        self.pedestal= 6.0        # QIE pedestal value (in fC)
-        self.gain = 1.e6      # SiPM Gain
-        self.input_collection="trigScintQIEDigisPad3"
-        self.test_collection="trigScintRecHitsPad3"
-        self.input_pass_name=""   #take any pass
-        self.output_collection="trigScintFirmHitsPad3"
-        self.verbose = False
-        self.sample_of_interest=2 # Sample of interest. Range 0 to 3
+    mev_per_mip: float = 0.4
+    pe_per_mip: float = 100.0
+    pedestal: float = 6.0
+    gain: float = 1.0e6
+    input_collection: str = "trigScintQIEDigisPad3"
+    test_collection: str = "trigScintRecHitsPad3"
+    input_pass_name: str = ""
+    output_collection: str = "trigScintFirmHitsPad3"
+    verbose: bool = False
+    sample_of_interest: int = 2
 
-    def pad1() :
+    @staticmethod
+    def pad1(**kwargs):
         """Get the firmware hit producer for first pad"""
-        rechit = TrigScintRecHitProducer( 'trigScintFirmHitsPad1' )
-        rechit.input_collection  = 'trigScintQIEDigisPad1'
-        rechit.output_collection = 'trigScintFirmHitsPad1'
-        rechit.test_collection = 'trigScintRecHitsPad1'
-        return rechit
+        return TrigScintRecHitProducer(
+            instance_name="trigScintFirmHitsPad1",
+            input_collection="trigScintQIEDigisPad1",
+            output_collection="trigScintFirmHitsPad1",
+            test_collection="trigScintRecHitsPad1",
+            **kwargs,
+        )
 
-    def pad2() :
+    @staticmethod
+    def pad2(**kwargs):
         """Get the firmware hit producer for second pad"""
-        rechit = TrigScintRecHitProducer( 'trigScintFirmHitsPad2' )
-        rechit.input_collection  = 'trigScintQIEDigisPad2'
-        rechit.output_collection = 'trigScintFirmHitsPad2'
-        rechit.test_collection = 'trigScintRecHitsPad2'
-        return rechit
+        return TrigScintRecHitProducer(
+            instance_name="trigScintFirmHitsPad2",
+            input_collection="trigScintQIEDigisPad2",
+            output_collection="trigScintFirmHitsPad2",
+            test_collection="trigScintRecHitsPad2",
+            **kwargs,
+        )
 
-    def pad3() :
+    @staticmethod
+    def pad3(**kwargs):
         """Get the firmware hit for third pad"""
-        rechit = TrigScintRecHitProducer( 'trigScintFirmHitsPad3' )
-        rechit.input_collection  = 'trigScintQIEDigisPad3'
-        rechit.output_collection = 'trigScintFirmHitsPad3'
-        rechit.test_collection= 'trigScintRecHitsPad3'
-        return rechit
+        return TrigScintRecHitProducer(
+            instance_name="trigScintFirmHitsPad3",
+            input_collection="trigScintQIEDigisPad3",
+            output_collection="trigScintFirmHitsPad3",
+            test_collection="trigScintRecHitsPad3",
+            **kwargs,
+        )
 
-class TrigScintClusterProducer(ldmxcfg.Producer) :
+
+@processor("trigscint::TrigScintClusterProducer", "TrigScint")
+class TrigScintClusterProducer(Processor):
     """Configuration for cluster producer for Trigger Scintillators"""
 
-    def __init__(self,name) :
-        super().__init__(name,'trigscint::TrigScintClusterProducer','TrigScint')
+    max_cluster_width: int = 2
+    clustering_threshold: float = 0.0
+    seed_threshold: float = 30.0
+    pad_time: float = 0.0
+    time_tolerance: float = 0.5
+    vertical_bar_start_index: int = 52
+    input_collection: str = "trigScintDigisPad1"
+    input_pass_name: str = ""
+    output_collection: str = "TriggerPad1Clusters"
+    verbosity: int = 0
 
-        self.max_cluster_width = 2
-        self.clustering_threshold = 0.  #to add in neighboring channels
-        self.seed_threshold = 30.
-        self.pad_time = 0.
-        self.time_tolerance = 0.5
-        self.vertical_bar_start_index = 52
-        self.input_collection="trigScintDigisPad1"
-        self.input_pass_name="" #take any pass
-        self.output_collection="TriggerPad1Clusters"
-        self.verbosity = 0
-
-    def pad1() :
+    @staticmethod
+    def pad1(**kwargs):
         """Get the cluster producer for the trigger pad most upstream of tagger"""
-        cluster = TrigScintClusterProducer( 'trigScintClustersPad1' )
-        cluster.input_collection = 'trigScintDigisPad1'
-        cluster.output_collection= 'TriggerPad1Clusters'
-        cluster.pad_time= -2.9
-        return cluster
+        return TrigScintClusterProducer(
+            instance_name="trigScintClustersPad1",
+            input_collection="trigScintDigisPad1",
+            output_collection="TriggerPad1Clusters",
+            pad_time=-2.9,
+            **kwargs,
+        )
 
-    def pad2() :
+    @staticmethod
+    def pad2(**kwargs):
         """Get the cluster producer for the trigger pad just upstream of tagger"""
-        cluster = TrigScintClusterProducer( 'trigScintClustersPad2' )
-        cluster.input_collection = 'trigScintDigisPad2'
-        cluster.output_collection= 'TriggerPad2Clusters'
-        cluster.pad_time= -2.7
-        return cluster
+        return TrigScintClusterProducer(
+            instance_name="trigScintClustersPad2",
+            input_collection="trigScintDigisPad2",
+            output_collection="TriggerPad2Clusters",
+            pad_time=-2.7,
+            **kwargs,
+        )
 
-    def pad3() :
+    @staticmethod
+    def pad3(**kwargs):
         """Get the cluster producer for the trigger pad just upstream of target"""
-        cluster = TrigScintClusterProducer( 'trigScintClustersPad3' )
-        cluster.input_collection = 'trigScintDigisPad3'
-        cluster.output_collection= 'TriggerPad3Clusters'
-        cluster.pad_time= 0.
-        return cluster
+        return TrigScintClusterProducer(
+            instance_name="trigScintClustersPad3",
+            input_collection="trigScintDigisPad3",
+            output_collection="TriggerPad3Clusters",
+            pad_time=0.0,
+            **kwargs,
+        )
 
-    def target() :
+    @staticmethod
+    def target(**kwargs):
         """Get the cluster producer for the active target"""
-        cluster = TrigScintClusterProducer( 'TargetClusters' )
-        cluster.input_collection = 'TargetDigis'
-        cluster.output_collection= 'TargetClusters'
-        cluster.pad_time= 0.
-        return cluster
+        return TrigScintClusterProducer(
+            instance_name="TargetClusters",
+            input_collection="TargetDigis",
+            output_collection="TargetClusters",
+            pad_time=0.0,
+            **kwargs,
+        )
 
 
-class TrigScintTrackProducer(ldmxcfg.Producer) :
+@processor("trigscint::TrigScintTrackProducer", "TrigScint")
+class TrigScintTrackProducer(Processor):
     """Configuration for track producer for Trigger Scintillators"""
 
-    def __init__(self,name) :
-        super().__init__(name,'trigscint::TrigScintTrackProducer','TrigScint')
+    delta_max: float = 0.75
+    tracking_threshold: float = 0.0
+    seeding_collection: str = "TriggerPad1Clusters"
+    further_input_collections: list[str] = ["TriggerPad2Clusters", "TriggerPad3Clusters"]
+    allow_skip_last_collection: bool = False
+    vertical_bar_start_index: int = 52
+    number_horizontal_bars: int = 24
+    number_vertical_bars: int = 0
+    horizontal_bar_width: float = 3.0
+    horizontal_bar_gap: float = 0.3
+    vertical_bar_width: float = 3.0
+    vertical_bar_gap: float = 0.3
+    input_pass_name: str = ""
+    output_collection: str = "TriggerPadTracks"
+    verbosity: int = 0
 
-        self.delta_max = 0.75
-        self.tracking_threshold = 0.  #to add in neighboring channels
-        self.seeding_collection = "TriggerPad1Clusters"
-        self.further_input_collections = ["TriggerPad2Clusters","TriggerPad3Clusters"]
-        self.allow_skip_last_collection = False
-        self.vertical_bar_start_index = 52
-        self.number_horizontal_bars = 24  #16 for x,y segmented geometry only
-        self.number_vertical_bars = 0     #8 for x,y segmented geometry only
-        self.horizontal_bar_width = 3.
-        self.horizontal_bar_gap = 0.3
-        self.vertical_bar_width = 3.
-        self.vertical_bar_gap = 0.3
-        self.input_pass_name="" #take any pass
-        self.output_collection="TriggerPadTracks"
-        self.verbosity = 0
 
-trig_scint_track = TrigScintTrackProducer( "trig_scint_track" )
+trig_scint_track = TrigScintTrackProducer(instance_name="trig_scint_track")
 
-class TrigScintTrackProducer(ldmxcfg.Producer) :
-    """Configuration for track producer for Trigger Scintillators"""
 
-    def __init__(self,name) :
-        super().__init__(name,'trigscint::','TrigScint')
-
-        self.delta_max = 0.75
-        self.tracking_threshold = 0.  #to add in neighboring channels
-        self.seeding_collection = "TriggerPad1Clusters"
-        self.further_input_collections = ["TriggerPad2Clusters","TriggerPad3Clusters"]
-        self.allow_skip_last_collection = False
-        self.vertical_bar_start_index = 52
-        self.number_horizontal_bars = 24  #16 for x,y segmented geometry only
-        self.number_vertical_bars = 0     #8 for x,y segmented geometry only
-        self.horizontal_bar_width = 3.
-        self.horizontal_bar_gap = 0.3
-        self.vertical_bar_width = 3.
-        self.vertical_bar_gap = 0.3
-        self.input_pass_name="" #take any pass
-        self.output_collection="TriggerPadTracks"
-        self.verbosity = 0
-
-class TrigScintFirmwareTracker(ldmxcfg.Producer) :
+@processor("trigscint::TrigScintFirmwareTracker", "TrigScint")
+class TrigScintFirmwareTracker(Processor):
     """Configuration for the track producer from the Firmware Tracker"""
-    def __init__(self,name) :
-        super().__init__(name,'trigscint::TrigScintFirmwareTracker','TrigScint')
-        self.clustering_threshold=40.0
-        self.digis1_collection='trigScintDigisPad1'
-        self.digis2_collection='trigScintDigisPad2'
-        self.digis3_collection='trigScintDigisPad3'
-        self.input_pass_name=""
-        self.output_collection="TriggerPadTracks"
-        self.verbosity = 0
-        self.time_tolerance = 50.0
-        self.pad_time = -1.5
 
-class QIEAnalyzer(ldmxcfg.Analyzer) :
+    clustering_threshold: float = 40.0
+    digis1_collection: str = "trigScintDigisPad1"
+    digis2_collection: str = "trigScintDigisPad2"
+    digis3_collection: str = "trigScintDigisPad3"
+    input_pass_name: str = ""
+    output_collection: str = "TriggerPadTracks"
+    verbosity: int = 0
+    time_tolerance: float = 50.0
+    pad_time: float = -1.5
+
+
+@processor("trigscint::QIEAnalyzer", "TrigScint")
+class QIEAnalyzer(Processor):
     """Configuration for linearized QIE analyzer for Trigger Scintillators"""
 
-    def __init__(self,name) :
-        super().__init__(name,'trigscint::QIEAnalyzer','TrigScint')
-
-        self.input_collection="QIEsamplesPad1"
-        self.input_pass_name=""   #take any pass
-        self.start_sample=2      #first time sample included in reformatting
-        self.gain = [2.e6]*16      # SiPM Gain  //TODO: vector
-        self.pedestals=[
-            -4.6, #0.6,
-            -2.6, #4.4,
-            -0.6, #-1.25,
-            4.5,  #3.9, 	 # #3
-            1.9,  #10000., # #4: (used to be) dead channel during test beam
-            -2.2, #-2.1,   # #5
-            0.9,  #2.9,    # #6
-            -1.2, #-2,     # #7
-            4.8,  #-0.4,   # #8
-            -4.4, #-1.1,   # #9: dead channel in TTU teststand setup
-            -0.1, #1.5,    # #10
-            -1.7, #2.0,    # #11
-            3.3,  #3.7,    # #12 -- uninstrumented
-            -0.3, #2.8,    # #13 -- uninstrumented
-            1.3,  #-1.5,   # #14 -- uninstrumented
-            1.3   #1.6     # #15 -- uninstrumented
-        ]
+    input_collection: str = "QIEsamplesPad1"
+    input_pass_name: str = ""
+    start_sample: int = 2
+    gain: list[float] = [2.0e6] * 16
+    pedestals: list[float] = [
+        -4.6,
+        -2.6,
+        -0.6,
+        4.5,
+        1.9,
+        -2.2,
+        0.9,
+        -1.2,
+        4.8,
+        -4.4,
+        -0.1,
+        -1.7,
+        3.3,
+        -0.3,
+        1.3,
+        1.3,
+    ]
 
 
-class QualityFlagAnalyzer(ldmxcfg.Analyzer) :
+@processor("trigscint::QualityFlagAnalyzer", "TrigScint")
+class QualityFlagAnalyzer(Processor):
     """Configuration for linearized QIE analyzer for Trigger Scintillators"""
 
-    def __init__(self,name) :
-        super().__init__(name,'trigscint::QualityFlagAnalyzer','TrigScint')
+    input_event_collection: str = "QIEsamplesUp"
+    input_event_pass_name: str = ""
+    input_hit_collection: str = "testBeamHitsUp"
+    input_hit_pass_name: str = ""
+    start_sample: int = 2
+    gain: list[float] = [2.0e6] * 16
+    pedestals: list[float] = [
+        -4.6,
+        -2.6,
+        -0.6,
+        4.5,
+        1.9,
+        -2.2,
+        0.9,
+        -1.2,
+        4.8,
+        -4.4,
+        -0.1,
+        -1.7,
+        3.3,
+        -0.3,
+        1.3,
+        1.3,
+    ]
 
-        self.input_event_collection="QIEsamplesUp"
-        self.input_event_pass_name=""   #take any pass
-        self.input_hit_collection="testBeamHitsUp"
-        self.input_hit_pass_name=""   #take any pass
-        self.start_sample=2      #first time sample included in reformatting
-        self.gain = [2.e6]*16      # SiPM Gain  //TODO: vector
-        self.pedestals=[
-            -4.6, #0.6,
-            -2.6, #4.4,
-            -0.6, #-1.25,
-            4.5,  #3.9, 	 # #3
-            1.9,  #10000., # #4: (used to be) dead channel during test beam
-            -2.2, #-2.1,   # #5
-            0.9,  #2.9,    # #6
-            -1.2, #-2,     # #7
-            4.8,  #-0.4,   # #8
-            -4.4, #-1.1,   # #9: dead channel in TTU teststand setup
-            -0.1, #1.5,    # #10
-            -1.7, #2.0,    # #11
-            3.3,  #3.7,    # #12 -- uninstrumented
-            -0.3, #2.8,    # #13 -- uninstrumented
-            1.3,  #-1.5,   # #14 -- uninstrumented
-            1.3   #1.6     # #15 -- uninstrumented
-        ]
 
-class TestBeamHitAnalyzer(ldmxcfg.Analyzer) :
+@processor("trigscint::TestBeamHitAnalyzer", "TrigScint")
+class TestBeamHitAnalyzer(Processor):
     """Configuration for linearized QIE analyzer for Trigger Scintillators"""
 
-    def __init__(self,name) :
-        super().__init__(name,'trigscint::TestBeamHitAnalyzer','TrigScint')
-
-        self.input_collection="testBeamHitsPad1"
-        self.input_pass_name=""   #take any pass
-        self.start_sample=2      #first time sample included in reformatting
-        self.pedestals=[
-            -4.6, #0.6,
-            -2.6, #4.4,
-            -0.6, #-1.25,
-            4.5,  #3.9, 	 # #3
-            1.9,  #10000., # #4: (used to be) dead channel during test beam
-            -2.2, #-2.1,   # #5
-            0.9,  #2.9,    # #6
-            -1.2, #-2,     # #7
-            4.8,  #-0.4,   # #8
-            -4.4, #-1.1,   # #9: dead channel in TTU teststand setup
-            -0.1, #1.5,    # #10
-            -1.7, #2.0,    # #11
-            3.3,  #3.7,    # #12 -- uninstrumented
-            -0.3, #2.8,    # #13 -- uninstrumented
-            1.3,  #-1.5,   # #14 -- uninstrumented
-            1.3   #1.6     # #15 -- uninstrumented
-        ]
+    input_collection: str = "testBeamHitsPad1"
+    input_pass_name: str = ""
+    start_sample: int = 2
+    pedestals: list[float] = [
+        -4.6,
+        -2.6,
+        -0.6,
+        4.5,
+        1.9,
+        -2.2,
+        0.9,
+        -1.2,
+        4.8,
+        -4.4,
+        -0.1,
+        -1.7,
+        3.3,
+        -0.3,
+        1.3,
+        1.3,
+    ]
 
 
-class TestBeamClusterAnalyzer(ldmxcfg.Analyzer) :
+@processor("trigscint::TestBeamClusterAnalyzer", "TrigScint")
+class TestBeamClusterAnalyzer(Processor):
     """Configuration for linearized QIE analyzer for Trigger Scintillators"""
 
-    def __init__(self,name) :
-        super().__init__(name,'trigscint::TestBeamClusterAnalyzer','TrigScint')
-
-        self.input_collection="TestBeamClustersUpClean"
-        self.input_pass_name=""   #take any pass
-        self.input_hit_collection="testBeamHitsUp"
-        self.input_hit_pass_name=""   #take any pass
-        self.start_sample=2      #first time sample included in reformatting
-        self.deadChannels=[ 8 ]
-
+    input_collection: str = "TestBeamClustersUpClean"
+    input_pass_name: str = ""
+    input_hit_collection: str = "testBeamHitsUp"
+    input_hit_pass_name: str = ""
+    start_sample: int = 2
+    deadChannels: list[int] = [8]

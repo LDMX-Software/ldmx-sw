@@ -1,29 +1,26 @@
 """Configuration module for dark brem simulation"""
 
-class DarkBremModel :
-    """Storage for parameters of a dark brem model
+from LDMX.Framework import field, parameter_set
 
-    All other models should inherit from this class
-    in order to keep the correct internal parameters.
 
-    Parameters
-    ----------
-    name : str
-        Name of this dark brem model
-    """
+@parameter_set
+class DarkBremModel:
+    """base class for dark brem models for type checking"""
 
-    def __init__(self,name) :
-        self.name = name
+    pass
 
-    def __str__(self) :
-        string = f'{self.name} {{'
-        for key in self.__dict__ :
-            if key is not self.name :
-                string += f' {key}={self.__dict__[key]}'
-        string += ' }'
-        return string
 
-class G4DarkBreMModel(DarkBremModel) :
+def dark_brem_model(name):
+    return parameter_set(name=name, required_base=DarkBremModel)
+
+
+@dark_brem_model("UNDEFINED")
+class UndefinedModel(DarkBremModel):
+    pass
+
+
+@dark_brem_model("g4db")
+class G4DarkBreMModel(DarkBremModel):
     """Configuration for the event library dark brem model
 
     This model uses G4DarkBreM's library model. The library
@@ -41,21 +38,24 @@ class G4DarkBreMModel(DarkBremModel) :
     method : str
         Interpretation method for LHE files
     threshold : float
-        Minimum energy [GeV] that electron should have for dark brem to have nonzero xsec
+        Minimum energy [GeV] that electron should have for dark brem
+        to have nonzero xsec
     epsilon : float
         Epsilon for dark brem xsec calculation
     """
 
-    def __init__(self, library_path) :
-        super().__init__('g4db')
-        self.library_path = library_path
-        self.method       = 'forward_only'
-        self.threshold    = 2.0 #GeV
-        self.epsilon      = 0.01
+    library_path: str
+    method: str = "forward_only"
+    threshold: float = 2.0
+    epsilon: float = 0.01
+    scale_aprime: bool = False
+    decay_mode: str = "no_decay"
+    ap_tau: float = -1.0
+    dist_decay_min: float = 0.0
+    dist_decay_max: float = 1.0
 
-# for legacy reasons, we define another name for the G4DB model
-VertexLibraryModel = G4DarkBreMModel
 
+@parameter_set
 class DarkBrem:
     """Storage for parameters of dark brem process
 
@@ -64,24 +64,27 @@ class DarkBrem:
     ap_mass : float
         Mass of A' in MeV
     enable : bool
-        Should we use the custom Geant4 dark brem process? (Default: No)
+        Should we use the custom Geant4 dark brem process?
+        (Default: No)
     only_one_per_event : bool
-        Should we deactivate the process after one dark brem or allow for more than one? (Default: No)
+        Should we deactivate the process after one dark brem
+        or allow for more than one? (Default: No)
     cache_xsec : bool
-        Should we cache the xsec's computed from the model? (Default: yes)
+        Should we cache the xsec's computed from the model? 
+        (Default: yes)
     model : DarkBremModel
         The model that should be use for dark bremming
     """
 
-    def __init__(self) :
-        self.ap_mass            = 0.
-        self.only_one_per_event = False
-        self.enable             = False #off by default
-        self.cache_xsec         = True
-        self.model              = DarkBremModel('UNDEFINED')
+    ap_mass: float = 0.0
+    only_one_per_event: bool = False
+    enable: bool = False
+    cache_xsec: bool = True
+    model: DarkBremModel = UndefinedModel()
 
-    def activate(self, ap_mass, model = None) :
-        """Activate the dark brem process with the input A' mass [MeV] and dark brem model
+    def activate(self, ap_mass, model=None):
+        """Activate the dark brem process with the input A' mass [MeV]
+        and dark brem model
 
         If no dark brem model is given, we do not activate the process
         and only define the A' mass. This allows for some backwards
@@ -91,28 +94,6 @@ class DarkBrem:
 
         self.ap_mass = ap_mass
 
-        if model is not None :
-            if not isinstance(model,DarkBremModel) :
-                raise Exception('Dark brem process needs to be configured with an associated DarkBremModel.')
-
+        if model is not None:
             self.enable = True
-            self.model  = model
-
-    def __str__(self):
-        """Stringify the DarkBrem configuration
-
-        Returns
-        -------
-        str
-            A human-readable version of all its attributes
-        """
-
-        string  = f"{{ Enabled: {self.enable!r}"
-        if self.enable :
-            string += f", Mass: {self.ap_mass:.1f} MeV"
-            string += f", Only One Per Event: {self.only_one_per_event!r}"
-            string += f", Model: {self.model}"
-
-        string += " }"
-
-        return string
+            self.model = model

@@ -13,9 +13,9 @@ from LDMX.SimCore import simulator as sim
 
 
 det = 'ldmx-det-v15-8gev'
-my_sim = sim.simulator('sim')
+my_sim = sim.simulator(instance_name='sim')
 my_sim.setDetector(det, include_scoring_planes_minimal = True)
-genie = gen.genie(name='genie_G18_02a_02_11b',
+genie = gen.genie(instance_name='genie_G18_02a_02_11b',
                         energy = 8.0,
                         targets = [ 1000741820, 1000741830, 1000741840, 1000741860 ],
                         target_thickness = 0.3504,
@@ -25,10 +25,7 @@ genie = gen.genie(name='genie_G18_02a_02_11b',
                         beam_size = [ 20., 80. ],
                         direction = [0.,0.,1.],
                         tune='G18_02a_02_11b',
-                        spline_file=(
-                            f'{os.environ["CI_DATA"]}/target_genie'
-                            '/gxspl_emode_GENIE_v3_04_00.xml'
-                        ),
+                        spline_file=f'{os.environ["CI_DATA"]}/target_genie/gxspl_emode_GENIE_v3_04_00.xml',
                         message_threshold_file='Messenger_ErrorOnly.xml')
 
 
@@ -37,16 +34,13 @@ my_sim.generators = [ genie ]
 from LDMX.SimCore import genie_reweight
 
 
-genie_rw = genie_reweight.GenieReweightProducer(name='genie_reweight')
+genie_rw = genie_reweight.GenieReweightProducer(instance_name='genie_reweight')
 genie_rw.hepmc3_coll_name = "SimHepMC3Events"
 genie_rw.hepmc3_pass_name = ""
 genie_rw.var_types = ["GENIE_INukeTwkDial_MFP_pi","GENIE_INukeTwkDial_MFP_N"]
-genie_rw.verbosity = 0
 
 
-p.sequence.append(genie_rw)
-
-p.sequence = [ my_sim ]
+p.sequence = [ my_sim, genie_rw ]
 
 ##################################################################
 # Below should be the same for all sim scenarios
@@ -106,8 +100,7 @@ from LDMX.Recon.simple_trigger import TriggerProcessor
 from LDMX.Trigger import trigger_energy_sums
 
 
-count = ElectronCounter(1,'ElectronCounter')
-count.input_pass_name = ''
+count = ElectronCounter(simulated_electron_number=1, instance_name='ElectronCounter', input_pass_name='')
 
 en_trigger = [
         ecal_trig_digi.EcalTrigPrimDigiProducer(),
@@ -187,7 +180,7 @@ p.sequence.extend([
         hcal_digi,
         hcal_reco,
         hcal_veto,
-        TriggerProcessor('trigger', 8000.),
+        TriggerProcessor(beam_energy=8000., instance_name='trigger'),
         *en_trigger,
         pf_reco,
         recoil_track_mass_estimator

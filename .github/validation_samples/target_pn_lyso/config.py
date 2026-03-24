@@ -78,20 +78,19 @@ from LDMX.Recon.electron_counter import ElectronCounter
 from LDMX.Recon.simple_trigger import TriggerProcessor
 
 
-trigger = TriggerProcessor('trigger', 8000.)
+trigger = TriggerProcessor(beam_energy=8000., instance_name='trigger')
 
-count = ElectronCounter(1,'ElectronCounter')
-count.input_pass_name = ''
+count = ElectronCounter(simulated_electron_number=1, instance_name='ElectronCounter', input_pass_name='')
 
 # Load the DQM modules
 from LDMX.DQM import dqm
 
 
 target_dqm = [
-    dqm.TrigScintSimDQM('TargetSimHits','TargetSimHits','target'),
-    dqm.TrigScintDigiDQM('TargetDigis','TargetDigis','target'),
-    dqm.TrigScintClusterDQM('TargetClusters','TargetClusters','target'),
-    dqm.TrigScintDigiVerifierDQM('TrigScintDigiVerifier','TargetSimHits','TargetDigis'),
+        dqm.TrigScintSimDQM(instance_name='TargetSimHits', hit_collection='TargetSimHits', pad='target'),
+        dqm.TrigScintDigiDQM(instance_name='TargetDigis', hit_collection='TargetDigis', pad='target'),
+        dqm.TrigScintClusterDQM(instance_name='TargetClusters', cluster_collection='TargetClusters', pad='target'),
+        dqm.TrigScintDigiVerifierDQM(instance_name='TrigScintDigiVerifier', ts_simhit_coll='TargetSimHits', ts_digi_coll='TargetDigis'),
     ]
 
 
