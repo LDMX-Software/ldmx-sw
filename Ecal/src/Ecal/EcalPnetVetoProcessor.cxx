@@ -27,6 +27,7 @@ void EcalPnetVetoProcessor::configure(
   rec_coll_name_ = parameters.get<std::string>("rec_coll_name");
   ecal_rec_hits_passname_ =
       parameters.get<std::string>("ecal_rec_hits_passname");
+  ecal_sp_coll_name_ = parameters.get<std::string>("ecal_sp_coll_name");
   ecal_sp_hits_passname_ = parameters.get<std::string>("ecal_sp_hits_passname");
   track_pass_name_ = parameters.get<std::string>("track_pass_name", "");
   track_collection_ = parameters.get<std::string>("track_collection");
@@ -55,9 +56,9 @@ void EcalPnetVetoProcessor::produce(framework::Event& event) {
     const ldmx::SimTrackerHit* electron_hit = nullptr;
     // Use Scoring Plane or Tracking
     if (!recoil_from_tracking_ &&
-        event.exists("EcalScoringPlaneHits", ecal_sp_hits_passname_)) {
+        event.exists(ecal_sp_coll_name_, ecal_sp_hits_passname_)) {
       auto const& ecal_sp_hits = event.getCollection<ldmx::SimTrackerHit>(
-          "EcalScoringPlaneHits", ecal_sp_hits_passname_);
+          ecal_sp_coll_name_, ecal_sp_hits_passname_);
       double electron_pz_max = -1.0;
       for (auto const& hit : ecal_sp_hits) {
         // Look at the electron only

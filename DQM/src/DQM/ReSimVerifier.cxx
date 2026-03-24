@@ -2,6 +2,7 @@
 namespace dqm {
 
 void ReSimVerifier::configure(framework::config::Parameters& parameters) {
+  sim_coll_name_ = parameters.get<std::string>("sim_coll_name");
   sim_pass_name_ = parameters.get<std::string>("sim_pass_name");
   re_sim_pass_name_ = parameters.get<std::string>("resim_pass_name");
   stop_on_error_ = parameters.get<bool>("stop_on_error");
@@ -37,9 +38,9 @@ bool ReSimVerifier::verifySimCalorimeterHits(
 
 bool ReSimVerifier::verifySimParticles(const framework::Event& event) {
   const auto& sim_particles{
-      event.getMap<int, ldmx::SimParticle>("SimParticles", sim_pass_name_)};
+      event.getMap<int, ldmx::SimParticle>(sim_coll_name_, sim_pass_name_)};
   const auto& re_sim_particles{
-      event.getMap<int, ldmx::SimParticle>("SimParticles", re_sim_pass_name_)};
+      event.getMap<int, ldmx::SimParticle>(sim_coll_name_, re_sim_pass_name_)};
   for (auto [id, simParticle] : sim_particles) {
     if (!re_sim_particles.count(id)) {
       return false;

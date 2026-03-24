@@ -327,7 +327,8 @@ inline ldmx::Track::TrackState makeTrackState(
       Acts::eFreeDir1, Acts::eFreeDir2, Acts::eFreeQOverP};
   Eigen::Matrix<double, 7, 7> free_cov7;
   for (int i = 0; i < 7; ++i)
-    for (int j = 0; j < 7; ++j) free_cov7(i, j) = free_cov(k_keep[i], k_keep[j]);
+    for (int j = 0; j < 7; ++j)
+      free_cov7(i, j) = free_cov(k_keep[i], k_keep[j]);
 
   // Step 3: Jacobian from 7D free-no-time -> 6D Cartesian in ACTS frame
   // p_i = dir_i * p,  dp_i/d(dir_j) = p*delta_ij,  dp_i/d(qop) = -dir_i*p/qop
@@ -353,13 +354,13 @@ inline ldmx::Track::TrackState makeTrackState(
   //   pos-pos (i<3, j<3): x1       [mm^2]
   //   pos-mom (i<3, j>=3): x1000   [mm*MeV]
   //   mom-mom (i>=3, j>=3): x1e6   [MeV^2]
-  const double me_v = Acts::UnitConstants::MeV;
+  const double mev = Acts::UnitConstants::MeV;
   new_ts.pos_mom_cov_.reserve(21);
   for (int i = 0; i < 6; ++i) {
     for (int j = i; j < 6; ++j) {
       double scale = 1.0;
-      if (i >= 3) scale /= me_v;  // row is momentum (GeV -> MeV)
-      if (j >= 3) scale /= me_v;  // col is momentum (GeV -> MeV)
+      if (i >= 3) scale /= mev;  // row is momentum (GeV -> MeV)
+      if (j >= 3) scale /= mev;  // col is momentum (GeV -> MeV)
       new_ts.pos_mom_cov_.push_back(cov_ldmx(i, j) * scale);
     }
   }

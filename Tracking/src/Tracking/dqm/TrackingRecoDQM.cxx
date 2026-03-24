@@ -9,11 +9,9 @@ void TrackingRecoDQM::configure(framework::config::Parameters& parameters) {
       parameters.get<std::string>("measurement_collection");
   measurement_passname_ = parameters.get<std::string>("measurement_passname");
 
-  ecal_sp_events_passname_ =
-      parameters.get<std::string>("ecal_sp_events_passname");
+  ecal_sp_coll_name_ = parameters.get<std::string>("ecal_sp_coll_name");
   ecal_sp_passname_ = parameters.get<std::string>("ecal_sp_passname");
-  target_sp_events_passname_ =
-      parameters.get<std::string>("target_sp_events_passname");
+  target_sp_coll_name_ = parameters.get<std::string>("target_sp_coll_name");
   target_sp_passname_ = parameters.get<std::string>("target_sp_passname");
   truth_passname_ = parameters.get<std::string>("truth_passname");
   truth_events_passname_ = parameters.get<std::string>("truth_events_passname");
@@ -67,15 +65,15 @@ void TrackingRecoDQM::analyze(const framework::Event& event) {
   }
 
   // The scoring plane hits_
-  if (event.exists("EcalScoringPlaneHits", ecal_sp_events_passname_)) {
+  if (event.exists(ecal_sp_coll_name_, ecal_sp_passname_)) {
     ecal_scoring_hits_ = std::make_shared<std::vector<ldmx::SimTrackerHit>>(
-        event.getCollection<ldmx::SimTrackerHit>("EcalScoringPlaneHits",
+        event.getCollection<ldmx::SimTrackerHit>(ecal_sp_coll_name_,
                                                  ecal_sp_passname_));
   }
 
-  if (event.exists("target_scoring_plane_hits", target_sp_events_passname_)) {
+  if (event.exists(target_sp_coll_name_, target_sp_passname_)) {
     target_scoring_hits_ = std::make_shared<std::vector<ldmx::SimTrackerHit>>(
-        event.getCollection<ldmx::SimTrackerHit>("target_scoring_plane_hits",
+        event.getCollection<ldmx::SimTrackerHit>(target_sp_coll_name_,
                                                  target_sp_passname_));
   }
 

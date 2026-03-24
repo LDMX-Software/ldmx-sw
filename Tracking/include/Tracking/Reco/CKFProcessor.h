@@ -193,7 +193,7 @@ class CKFProcessor final : public TrackingGeometryUser {
   // The measurement collection to use for track reconstruction
   std::string measurement_collection_{"TaggerMeasurements"};
 
-  std::string sim_particles_pass_name_;
+  std::string sim_particles_coll_name_;
   std::string sim_particles_event_passname_;
 
   // Outlier removal pvalue

@@ -24,12 +24,15 @@ void TruthSeedProcessor::onNewRun(const ldmx::RunHeader& rh) {
 void TruthSeedProcessor::configure(framework::config::Parameters& parameters) {
   scoring_hits_coll_name_ =
       parameters.get<std::string>("scoring_hits_coll_name");
+  ecal_sp_coll_name_ = parameters.get<std::string>("ecal_sp_coll_name");
   sp_pass_name_ = parameters.get<std::string>("sp_pass_name");
   recoil_sim_hits_coll_name_ =
       parameters.get<std::string>("recoil_sim_hits_coll_name");
   tagger_sim_hits_coll_name_ =
       parameters.get<std::string>("tagger_sim_hits_coll_name");
   input_pass_name_ = parameters.get<std::string>("input_pass_name");
+  sim_particles_coll_name_ =
+      parameters.get<std::string>("sim_particles_coll_name");
   sim_particles_passname_ =
       parameters.get<std::string>("sim_particles_passname");
 
@@ -74,6 +77,17 @@ void TruthSeedProcessor::configure(framework::config::Parameters& parameters) {
   skip_tagger_ = parameters.get<bool>("skip_tagger", false);
   skip_recoil_ = parameters.get<bool>("skip_recoil", false);
   particle_hypothesis_ = parameters.get<int>("particle_hypothesis");
+
+  beam_electrons_collection_ =
+      parameters.get<std::string>("beam_electrons_collection");
+  tagger_truth_collection_ =
+      parameters.get<std::string>("tagger_truth_collection");
+  recoil_truth_collection_ =
+      parameters.get<std::string>("recoil_truth_collection");
+  tagger_seeds_collection_ =
+      parameters.get<std::string>("tagger_seeds_collection");
+  recoil_seeds_collection_ =
+      parameters.get<std::string>("recoil_seeds_collection");
 }
 
 void TruthSeedProcessor::createTruthTrack(
@@ -520,7 +534,7 @@ bool TruthSeedProcessor::scoringPlaneHitFilter(
 void TruthSeedProcessor::produce(framework::Event& event) {
   // Retrieve the particleMap
   auto particle_map{event.getMap<int, ldmx::SimParticle>(
-      "SimParticles", sim_particles_passname_)};
+      sim_particles_coll_name_, sim_particles_passname_)};
 
   // Retrieve the target scoring hits
   // Information is extracted using the
@@ -532,7 +546,7 @@ void TruthSeedProcessor::produce(framework::Event& event) {
 
   // Retrieve the scoring plane hits at the ECAL
   const std::vector<ldmx::SimTrackerHit> scoring_hits_ecal{
-      event.getCollection<ldmx::SimTrackerHit>("EcalScoringPlaneHits",
+      event.getCollection<ldmx::SimTrackerHit>(ecal_sp_coll_name_,
                                                sp_pass_name_)};
 
   // Retrieve the sim hits in the tagger tracker
@@ -695,7 +709,7 @@ void TruthSeedProcessor::produce(framework::Event& event) {
 
   // Recover the EcalScoring hits
   std::vector<ldmx::SimTrackerHit> ecal_sp_hits =
-      event.getCollection<ldmx::SimTrackerHit>("EcalScoringPlaneHits",
+      event.getCollection<ldmx::SimTrackerHit>(ecal_sp_coll_name_,
                                                sp_pass_name_);
   // Select ECAL hits
   std::vector<ldmx::SimTrackerHit> sel_ecal_sp_hits;
@@ -822,11 +836,11 @@ void TruthSeedProcessor::produce(framework::Event& event) {
 
   // even if skip_tagger/recoil_ is true, still make the collections in the
   // event
-  event.add("beamElectrons", beam_electrons);
-  event.add("TaggerTruthTracks", tagger_truth_tracks);
-  event.add("RecoilTruthTracks", recoil_truth_tracks);
-  event.add("TaggerTruthSeeds", tagger_truth_seeds);
-  event.add("RecoilTruthSeeds", recoil_truth_seeds);
+  event.add(beam_electrons_collection_, beam_electrons);
+  event.add(tagger_truth_collection_, tagger_truth_tracks);
+  event.add(recoil_truth_collection_, recoil_truth_tracks);
+  event.add(tagger_seeds_collection_, tagger_truth_seeds);
+  event.add(recoil_seeds_collection_, recoil_truth_seeds);
 }
 }  // namespace tracking::reco
 

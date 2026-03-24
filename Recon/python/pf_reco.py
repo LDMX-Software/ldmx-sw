@@ -71,10 +71,12 @@ class pfTruthProducer(ldmxcfg.Producer) :
         self.output_ecal_coll_name    = 'PFTruthEcal'
         self.output_hcal_coll_name    = 'PFTruthHcal'
 
+        self.target_sp_coll_name = 'TargetScoringPlaneHits'
         self.target_sp_passname = ''
+        self.ecal_sp_coll_name = 'EcalScoringPlaneHits'
         self.ecal_sp_passname = ''
+        self.sim_particles_coll_name = 'SimParticles'
         self.sim_particles_passname = ''
         self.sim_particles_event_passname = ''
         self.ecal_sp_hits_event_passname = ''
         self.target_sp_hits_event_passname = ''
-        self.target_sp_passname = ''

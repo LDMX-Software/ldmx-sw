@@ -157,8 +157,8 @@ class Track {
   void addSharedIndex(unsigned int measIdx) { shared_idxs_.push_back(measIdx); }
   std::vector<unsigned int> getSharedIdxs() const { return shared_idxs_; }
 
-  void setCharge(int q) { q_ = q; }
-  double getCharge() const { return q_; }
+  void setCharge(int q) { charge_ = q; }
+  double getCharge() const { return charge_; }
 
   void setTime(double time) { time_ = time; }
   double getTime() const { return time_; }
@@ -289,7 +289,7 @@ class Track {
   int pdg_id_{0};
 
   // Track charge
-  int q_{0};
+  int charge_{0};
 
   // Track time
   double time_{-666.0};
@@ -298,7 +298,7 @@ class Track {
   std::vector<TrackState> track_states_;
 
   /// Class declaration needed by the ROOT dictionary.
-  ClassDef(Track, 5);
+  ClassDef(Track, 6);
 
 };  // Track
 
