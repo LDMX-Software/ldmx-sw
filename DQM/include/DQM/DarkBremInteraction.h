@@ -132,7 +132,7 @@ class DarkBremInteraction : public framework::Producer {
   std::map<int, int> known_elements_ = {{1, 1},  {6, 2},  {8, 3},  {11, 4},
                                         {14, 5}, {20, 6}, {29, 7}, {39, 8},
                                         {71, 9}, {74, 10}};
-
+  std::string particle_coll_name_;
   std::string particle_passname_;
 };
 

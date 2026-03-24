@@ -9,11 +9,9 @@ void TrackingRecoDQM::configure(framework::config::Parameters& parameters) {
       parameters.get<std::string>("measurement_collection");
   measurement_passname_ = parameters.get<std::string>("measurement_passname");
 
-  ecal_sp_events_passname_ =
-      parameters.get<std::string>("ecal_sp_events_passname");
+  ecal_sp_coll_name_ = parameters.get<std::string>("ecal_sp_coll_name");
   ecal_sp_passname_ = parameters.get<std::string>("ecal_sp_passname");
-  target_sp_events_passname_ =
-      parameters.get<std::string>("target_sp_events_passname");
+  target_sp_coll_name_ = parameters.get<std::string>("target_sp_coll_name");
   target_sp_passname_ = parameters.get<std::string>("target_sp_passname");
   truth_passname_ = parameters.get<std::string>("truth_passname");
   truth_events_passname_ = parameters.get<std::string>("truth_events_passname");
@@ -67,15 +65,15 @@ void TrackingRecoDQM::analyze(const framework::Event& event) {
   }
 
   // The scoring plane hits_
-  if (event.exists("EcalScoringPlaneHits", ecal_sp_events_passname_)) {
+  if (event.exists(ecal_sp_coll_name_, ecal_sp_passname_)) {
     ecal_scoring_hits_ = std::make_shared<std::vector<ldmx::SimTrackerHit>>(
-        event.getCollection<ldmx::SimTrackerHit>("EcalScoringPlaneHits",
+        event.getCollection<ldmx::SimTrackerHit>(ecal_sp_coll_name_,
                                                  ecal_sp_passname_));
   }
 
-  if (event.exists("TargetScoringPlaneHits", target_sp_events_passname_)) {
+  if (event.exists(target_sp_coll_name_, target_sp_passname_)) {
     target_scoring_hits_ = std::make_shared<std::vector<ldmx::SimTrackerHit>>(
-        event.getCollection<ldmx::SimTrackerHit>("TargetScoringPlaneHits",
+        event.getCollection<ldmx::SimTrackerHit>(target_sp_coll_name_,
                                                  target_sp_passname_));
   }
 
@@ -113,21 +111,24 @@ void TrackingRecoDQM::analyze(const framework::Event& event) {
   }
 
   // Track Extrapolation to Ecal Monitoring
+  // trackStateMonitoring requires truth_track_collection_ to be available
   ldmx_log(trace) << "Track Extrapolation to Ecal Monitoring";
-  if (std::find(track_states_.begin(), track_states_.end(), "target") !=
-      track_states_.end()) {
-    trackStateMonitoring(tracks, ldmx::TrackStateType::AtTarget, "target");
-  }
+  if (do_truth_comparison_) {
+    if (std::find(track_states_.begin(), track_states_.end(), "target") !=
+        track_states_.end()) {
+      trackStateMonitoring(tracks, ldmx::TrackStateType::AtTarget, "target");
+    }
 
-  if (std::find(track_states_.begin(), track_states_.end(), "ecal") !=
-      track_states_.end()) {
-    trackStateMonitoring(tracks, ldmx::TrackStateType::AtECAL, "ecal");
-  }
+    if (std::find(track_states_.begin(), track_states_.end(), "ecal") !=
+        track_states_.end()) {
+      trackStateMonitoring(tracks, ldmx::TrackStateType::AtECAL, "ecal");
+    }
 
-  if (std::find(track_states_.begin(), track_states_.end(), "beamOrigin") !=
-      track_states_.end()) {
-    trackStateMonitoring(tracks, ldmx::TrackStateType::AtBeamOrigin,
-                         "beamOrigin");
+    if (std::find(track_states_.begin(), track_states_.end(), "beamOrigin") !=
+        track_states_.end()) {
+      trackStateMonitoring(tracks, ldmx::TrackStateType::AtBeamOrigin,
+                           "beamOrigin");
+    }
   }
 
   // Technical Efficiency plots

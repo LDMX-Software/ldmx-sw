@@ -4,54 +4,27 @@ Mainly focused on reducing the number of places that certain parameter and class
 are hardcoded into the python configuration.
 """
 
+from LDMX.Framework import _register, field, parameter_set
+
+
 class XsecBiasingOperator:
-    """Object that stores parameters for a XsecBiasingOperator
+    """required base class for biasing operators for type-checking"""
 
-    Parameters
-    ----------
-    instance_name : str
-        Unique name for this particular instance of a XsecBiasingOperator
-    class_name : str
-        Name of C++ class that this XsecBiasingOperator should be
-    module_name : str, optional
-        Name of module that the class was compiled into
-    """
+    pass
 
-    def __init__(self, instance_name, class_name, module_name='SimCore_BiasOperators'):
-        self.class_name    = class_name
-        self.instance_name = instance_name
 
-        from LDMX.Framework.ldmxcfg import Process
-        Process.add_library( f'@CMAKE_INSTALL_PREFIX@/lib/lib{module_name}.so' )
+def biasing_operator(class_name, module_name="SimCore_BiasOperators"):
+    return parameter_set(
+        class_name=field(default=class_name, init=False),
+        module_name=field(default=module_name, init=False),
+        instance_name=class_name,
+        post_init=lambda self: _register.library(self.module_name),
+        required_base=XsecBiasingOperator,
+    )
 
-    def __str__(self):
-        """Stringify this XsecBiasingOperator
 
-        Returns
-        -------
-        str
-            A human-readable version of this XsecBiasingOperator printing all its attributes
-        """
-
-        string = "XsecBiasingOperator (" + self.__repr__() + ") {"
-        for k, v in self.__dict__.items():
-            string += f" {k} : {v}"
-        string += " }"
-
-        return string
-
-    def __repr__(self):
-        """A shorter string representation of this XsecBiasingOperator
-
-        Returns
-        -------
-        str
-            Just printing its instance and class names
-        """
-
-        return f'{self.instance_name} of class {self.class_name}'
-
-class PhotoNuclear(XsecBiasingOperator) :
+@biasing_operator("simcore::biasoperators::PhotoNuclear")
+class PhotoNuclear(XsecBiasingOperator):
     """Bias photo nuclear process
 
     Parameters
@@ -68,21 +41,23 @@ class PhotoNuclear(XsecBiasingOperator) :
         Should we only bias photons that are children of the primary particle?
     """
 
-    def __init__(self,vol,factor,thresh=0.,down_bias_conv=True,only_children_of_primary=False) :
-        super().__init__(f'{vol}_bias_pn','simcore::biasoperators::PhotoNuclear')
+    volume: str
+    factor: float
+    threshold: float = 0.0
+    down_bias_conv: bool = True
+    only_children_of_primary: bool = False
 
-        self.volume = vol
-        self.factor = factor
-        self.threshold = thresh
-        self.down_bias_conv = down_bias_conv
-        self.only_children_of_primary = only_children_of_primary
+    def __post_init__(self):
+        self.instance_name = f"{self.volume}_bias_pn"
 
-class ElectroNuclear(XsecBiasingOperator) :
+
+@biasing_operator("simcore::biasoperators::ElectroNuclear")
+class ElectroNuclear(XsecBiasingOperator):
     """Bias electro nuclear process
 
     Parameters
     ----------
-    vol : str
+    volume : str
         name of volume to bias within
     factor : float
         biasing factor to mutliply by
@@ -90,19 +65,21 @@ class ElectroNuclear(XsecBiasingOperator) :
         minimum kinetic energy [MeV] to bias tracks
     """
 
-    def __init__(self,vol,factor,thresh=0.) :
-        super().__init__(f'{vol}_bias_en','simcore::biasoperators::ElectroNuclear')
+    volume: str
+    factor: float
+    threshold: float = 0.0
 
-        self.volume = vol
-        self.factor = factor
-        self.threshold = thresh
+    def __post_init__(self):
+        self.instance_name = f"{self.volume}_bias_en"
 
-class GammaToMuPair(XsecBiasingOperator) :
+
+@biasing_operator("simcore::biasoperators::GammaToMuPair")
+class GammaToMuPair(XsecBiasingOperator):
     """Bias gamma -> mu+ mu- process
 
     Parameters
     ----------
-    vol : str
+    volume : str
         name of volume to bias within
     factor : float
         biasing factor to multiply by
@@ -110,15 +87,15 @@ class GammaToMuPair(XsecBiasingOperator) :
         minimum kinetic energy [MeV] to bias tracks
     """
 
-    def __init__(self,vol,factor,thresh=0.) :
-        super().__init__(f'{vol}_bias_mumu','simcore::biasoperators::GammaToMuPair')
+    volume: str
+    factor: float
+    threshold: float = 0.0
 
-        self.volume = vol
-        self.factor = factor
-        self.threshold = thresh
+    def __post_init__(self):
+        self.instance_name = f"{self.volume}_bias_mumu"
 
 
-class NeutronInelastic(XsecBiasingOperator) :
+class NeutronInelastic(XsecBiasingOperator):
     """Bias neutron inelastic collisions
 
     Parameters
@@ -131,14 +108,17 @@ class NeutronInelastic(XsecBiasingOperator) :
         minimum kinetic energy [MeV] to bias tracks
     """
 
-    def __init__(self,vol,factor,thresh=0.) :
-        super().__init__(f'{vol}_bias_neutroninelastic','simcore::biasoperators::NeutronInelastic')
+    def __init__(self, vol, factor, thresh=0.0):
+        super().__init__(
+            f"{vol}_bias_neutroninelastic", "simcore::biasoperators::NeutronInelastic"
+        )
 
         self.volume = vol
         self.factor = factor
         self.threshold = thresh
 
-class K0LongInelastic(XsecBiasingOperator) :
+
+class K0LongInelastic(XsecBiasingOperator):
     """Bias K0 Long inelastic collisions
 
     Parameters
@@ -151,19 +131,23 @@ class K0LongInelastic(XsecBiasingOperator) :
         minimum kinetic energy [MeV] to bias tracks
     """
 
-    def __init__(self,vol,factor,thresh=0.) :
-        super().__init__(f'{vol}_bias_k0longinelastic','simcore::biasoperators::K0LongInelastic')
+    def __init__(self, vol, factor, thresh=0.0):
+        super().__init__(
+            f"{vol}_bias_k0longinelastic", "simcore::biasoperators::K0LongInelastic"
+        )
 
         self.volume = vol
         self.factor = factor
         self.threshold = thresh
 
-class APrimeToFCPPair(XsecBiasingOperator) :
+
+@biasing_operator("simcore::biasoperators::APrimeToFCPPair")
+class APrimeToFCPPair(XsecBiasingOperator):
     """Bias A' -> fcp+ fcp- process
 
     Parameters
     ----------
-    vol : str
+    volume : str
         name of volume to bias within
     factor : float
         biasing factor to multiply by
@@ -171,19 +155,21 @@ class APrimeToFCPPair(XsecBiasingOperator) :
         minimum kinetic energy [MeV] to bias tracks
     """
 
-    def __init__(self,vol,factor,thresh=0.) :
-        super().__init__(f'{vol}_bias_fcppair','simcore::biasoperators::APrimeToFCPPair')
+    volume: str
+    factor: float
+    threshold: float = 0.0
 
-        self.volume = vol
-        self.factor = factor
-        self.threshold = thresh
+    def __post_init__(self):
+        self.instance_name = f"{self.volume}_bias_fcppair"
 
-class GammaToFCPPair(XsecBiasingOperator) :
+
+@biasing_operator("simcore::biasoperators::GammaToFCPPair")
+class GammaToFCPPair(XsecBiasingOperator):
     """Bias gamma -> fcp+ fcp- process
 
     Parameters
     ----------
-    vol : str
+    volume : str
         name of volume to bias within
     factor : float
         biasing factor to multiply by
@@ -191,39 +177,41 @@ class GammaToFCPPair(XsecBiasingOperator) :
         minimum kinetic energy [MeV] to bias tracks
     """
 
-    def __init__(self,vol,factor,thresh=0.) :
-        super().__init__(f'{vol}_bias_gammafcppair','simcore::biasoperators::GammaToFCPPair')
+    volume: str
+    factor: float
+    threshold: float = 0.0
 
-        self.volume = vol
-        self.factor = factor
-        self.threshold = thresh
+    def __post_init__(self):
+        self.instance_name = f"{self.volume}_bias_gammafcppair"
 
-class DarkBrem(XsecBiasingOperator) :
+
+@biasing_operator("simcore::biasoperators::DarkBrem")
+class DarkBrem(XsecBiasingOperator):
     """Bias dark brem process
 
     Parameters
     ----------
-    vol : str
+    volume : str
         name of volume to bias within
-    bial_all : bool
+    bias_all : bool
         Should we bias all electrons or just the primary?
     factor : float
-        biasing factor to mutliply by
+        biasing factor to multiply by
     """
 
-    def __init__(self,vol,bias_all,factor) :
-        super().__init__(f'{vol}_bias_darkbrem','simcore::biasoperators::DarkBrem')
+    volume: str
+    bias_all: bool
+    factor: float
 
-        self.volume = vol
-        self.bias_all = bias_all
-        self.factor = factor
+    def __post_init__(self):
+        self.instance_name = f"{self.volume}_bias_darkbrem"
 
     @staticmethod
-    def ecal(factor) :
+    def ecal(factor):
         """Bias dark brem inside of the ecal by the input factor"""
-        return DarkBrem('ecal',True,factor)
+        return DarkBrem("ecal", True, factor)
 
     @staticmethod
-    def target(factor) :
+    def target(factor):
         """Bias dark brem inside of the target by the input factor"""
-        return DarkBrem('target_region',False,factor)
+        return DarkBrem("target_region", False, factor)

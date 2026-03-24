@@ -35,7 +35,7 @@ hcal_digis.hgcroc.noise = False
 from LDMX.SimCore import generators, simulator
 
 
-sim = simulator.simulator("single_neutron")
+sim = simulator.simulator(instance_name = "single_neutron")
 sim.setDetector( 'ldmx-det-v14' , False )
 sim.description = "HCal muon"
 
@@ -54,11 +54,11 @@ gps_cmds=[ "/gps/particle mu-",
 if n_part>1:
      gps_cmds += (n_part-1)*(['/gps/source/add 1', *gps_cmds])
      gps_cmds += ["/gps/source/multiplevertex True"]
-my_gps = generators.gps( 'my_gps' , gps_cmds )
+my_gps = generators.gps(gps_cmds)
 sim.generators.append(my_gps)
 
 p.sequence = [
     sim,
     hcal_digis,
-    ldmxcfg.Analyzer('hcalpos','hcal::test::HcalCheckPositionMap','Hcal'),
+    ldmxcfg.make_processor('hcalpos','hcal::test::HcalCheckPositionMap','Hcal'),
 ]

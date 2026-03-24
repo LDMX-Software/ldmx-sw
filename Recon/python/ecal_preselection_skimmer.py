@@ -72,39 +72,36 @@ Examples
     p.sequence.append( ecal_pres_skimmer )
 """
 
-from LDMX.Framework import ldmxcfg
+from LDMX.Framework import Processor, processor
 
 
-class EcalPreselectionSkimmer(ldmxcfg.Producer) :
+@processor("recon::EcalPreselectionSkimmer", "Recon")
+class EcalPreselectionSkimmer(Processor):
     """Configuration for an ECAL-based pre-selection skimmer"""
 
-    def __init__(self, name = "ecalPreselectionSkimmer") :
-        super().__init__(name,'recon::EcalPreselectionSkimmer','Recon')
+    # Mode selection (default: rechit-based)
+    use_rechits: bool = True
 
-        # Mode selection (default: rechit-based)
-        self.use_rechits = True
+    # Rechit-based parameters
+    ecal_rec_hit_coll: str = "EcalRecHits"
+    ecal_rec_hit_pass: str = ""
 
-        # Rechit-based parameters
-        self.ecal_rec_hit_coll = "EcalRecHits"
-        self.ecal_rec_hit_pass = ""
+    # Veto-based parameters
+    ecal_veto_name: str = "EcalVeto"
+    ecal_veto_pass: str = ""
+    ecal_mip_name: str = "EcalMipInfo"
+    ecal_mip_pass: str = ""
 
-        # Veto-based parameters
-        self.ecal_veto_name = "EcalVeto"
-        self.ecal_veto_pass = ""
-        self.ecal_mip_name = 'EcalMipInfo'
-        self.ecal_mip_pass = ''
-
-        # Cut values
-        self.summed_det_max = 4000.0  # MeV
-        self.summed_tight_iso_max = 9999.
-        self.ecal_back_energy_max = 9999.
-        self.n_readout_hits_max = 90
-        self.shower_rms_max = 9999.
-        self.shower_y_std_max = 9999.
-        self.shower_x_std_max = 9999.
-        self.max_cell_dep_max = 9999.
-        self.std_layer_hit_max = 9999
-        self.n_straight_tracks_max = 9999
-        self.bdt_disc_min = 0.
-        self.fiducial_level = 0
-
+    # Cut values
+    summed_det_max: float = 4000.0
+    summed_tight_iso_max: float = 9999.0
+    ecal_back_energy_max: float = 9999.0
+    n_readout_hits_max: int = 90
+    shower_rms_max: float = 9999.0
+    shower_y_std_max: float = 9999.0
+    shower_x_std_max: float = 9999.0
+    max_cell_dep_max: float = 9999.0
+    std_layer_hit_max: int = 9999
+    n_straight_tracks_max: int = 9999
+    bdt_disc_min: float = 0.0
+    fiducial_level: int = 0

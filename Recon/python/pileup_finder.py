@@ -8,18 +8,18 @@ Examples
     p.sequence.append( pileupFinder )
 """
 
-from LDMX.Framework import ldmxcfg
+from LDMX.Framework import Processor, processor
 
 
-class pileupFinder(ldmxcfg.Producer) :
+@processor("recon::PileupFinder", "Recon")
+class pileupFinder(Processor):
     """Configuration for pileup finding from particle flow objects"""
-    def __init__(self, name='PileupFinder') :
-        super().__init__(name, 'recon::PileupFinder','Recon')
-        self.rec_hit_coll_name = 'EcalRecHits'
-        self.rec_hit_pass_name = ''
-        self.cluster_coll_name = 'PFEcalClusters'
-        self.cluster_pass_name = ''
-        self.pf_cand_coll_name = 'PFCandidates'
-        self.pf_cand_pass_name = ''
-        self.output_rec_hit_coll_name  = 'EcalRecHitsNoPileup'
-        self.min_momentum = 4000.
+
+    rec_hit_coll_name: str = "EcalRecHits"
+    rec_hit_pass_name: str = ""
+    cluster_coll_name: str = "PFEcalClusters"
+    cluster_pass_name: str = ""
+    pf_cand_coll_name: str = "PFCandidates"
+    pf_cand_pass_name: str = ""
+    output_rec_hit_coll_name: str = "EcalRecHitsNoPileup"
+    min_momentum: float = 4000.0

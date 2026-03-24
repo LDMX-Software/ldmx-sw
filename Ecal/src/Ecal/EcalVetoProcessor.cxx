@@ -123,7 +123,11 @@ void EcalVetoProcessor::configure(framework::config::Parameters &parameters) {
 
   beam_energy_mev_ = parameters.get<double>("beam_energy");
   // Set the collection name as defined in the configuration
+  ecal_sp_coll_name_ = parameters.get<std::string>("ecal_sp_coll_name");
+  target_sp_coll_name_ = parameters.get<std::string>("target_sp_coll_name");
   sp_pass_name_ = parameters.get<std::string>("sp_pass_name");
+  sim_particles_coll_name_ =
+      parameters.get<std::string>("sim_particles_coll_name");
   collection_name_ = parameters.get<std::string>("collection_name");
   rec_pass_name_ = parameters.get<std::string>("rec_pass_name");
   rec_coll_name_ = parameters.get<std::string>("rec_coll_name");
@@ -187,7 +191,7 @@ void EcalVetoProcessor::produce(framework::Event &event) {
       std::chrono::duration<float, std::milli>(setup - start).count();
 
   if (!recoil_from_tracking_ &&
-      event.exists("EcalScoringPlaneHits", sp_pass_name_)) {
+      event.exists(ecal_sp_coll_name_, sp_pass_name_)) {
     ldmx_log(trace) << "   Loop through all of the sim particles and find the "
                        "recoil electron";
     //
@@ -196,14 +200,14 @@ void EcalVetoProcessor::produce(framework::Event &event) {
 
     // Get the collection of simulated particles from the event
     auto particle_map{event.getMap<int, ldmx::SimParticle>(
-        "SimParticles", sim_particles_passname_)};
+        sim_particles_coll_name_, sim_particles_passname_)};
 
     // Search for the recoil electron
     auto [recoil_track_id, recoil_electron] = analysis::getRecoil(particle_map);
 
     // Find ECAL SP hit for recoil electron
     auto ecal_sp_hits{event.getCollection<ldmx::SimTrackerHit>(
-        "EcalScoringPlaneHits", sp_pass_name_)};
+        ecal_sp_coll_name_, sp_pass_name_)};
     float pmax = 0;
     for (ldmx::SimTrackerHit &sp_hit : ecal_sp_hits) {
       ldmx::SimSpecialID hit_id(sp_hit.getID());
@@ -228,9 +232,9 @@ void EcalVetoProcessor::produce(framework::Event &event) {
     }
 
     // Find target SP hit for recoil electron
-    if (event.exists("TargetScoringPlaneHits", sp_pass_name_)) {
+    if (event.exists(target_sp_coll_name_, sp_pass_name_)) {
       std::vector<ldmx::SimTrackerHit> target_sp_hits =
-          event.getCollection<ldmx::SimTrackerHit>("TargetScoringPlaneHits",
+          event.getCollection<ldmx::SimTrackerHit>(target_sp_coll_name_,
                                                    sp_pass_name_);
       pmax = 0;
       for (ldmx::SimTrackerHit &sp_hit : target_sp_hits) {

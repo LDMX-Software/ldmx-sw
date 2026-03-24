@@ -56,20 +56,22 @@ void CLUE::electronSeparation(std::vector<ldmx::EcalHit> hits) {
       break;
     }
     first_layers.push_back(hit);
-    first_layer_clusters.push_back(IntermediateCluster(hit, layer_tag));
+    IntermediateCluster cluster(hit);
+    cluster.setLayer(layer_tag);
+    first_layer_clusters.push_back(cluster);
   }
   bool merge = false;
   do {
     merge = false;
     for (int i = 0; i < first_layer_clusters.size(); i++) {
       if (first_layer_clusters[i].empty()) continue;
-      // if (firstLayerClusters[i].centroid().E() >= seedThreshold_) {
+      // if (firstLayerClusters[i].energy() >= seedThreshold_) {
       for (int j = i + 1; j < first_layer_clusters.size(); j++) {
         if (first_layer_clusters[j].empty()) continue;
-        if (dist(first_layer_clusters[i].centroid().Px(),
-                 first_layer_clusters[i].centroid().Py(),
-                 first_layer_clusters[j].centroid().Px(),
-                 first_layer_clusters[j].centroid().Py()) < 8.) {
+        if (dist(first_layer_clusters[i].centroidX(),
+                 first_layer_clusters[i].centroidY(),
+                 first_layer_clusters[j].centroidX(),
+                 first_layer_clusters[j].centroidY()) < 8.) {
           first_layer_clusters[i].add(first_layer_clusters[j]);
           first_layer_clusters[j].clear();
           merge = true;
@@ -82,14 +84,14 @@ void CLUE::electronSeparation(std::vector<ldmx::EcalHit> hits) {
   for (int i = 0; i < first_layer_clusters.size(); i++) {
     if (first_layer_clusters[i].empty()) continue;
     ldmx_log(trace) << "  Cluster " << i
-                    << " x: " << first_layer_clusters[i].centroid().Px()
-                    << " y: " << first_layer_clusters[i].centroid().Py();
+                    << " x: " << first_layer_clusters[i].centroidX()
+                    << " y: " << first_layer_clusters[i].centroidY();
     for (int j = i + 1; j < first_layer_clusters.size(); j++) {
       if (first_layer_clusters[j].empty()) continue;
-      auto d = dist(first_layer_clusters[i].centroid().Px(),
-                    first_layer_clusters[i].centroid().Py(),
-                    first_layer_clusters[j].centroid().Px(),
-                    first_layer_clusters[j].centroid().Py());
+      auto d = dist(first_layer_clusters[i].centroidX(),
+                    first_layer_clusters[i].centroidY(),
+                    first_layer_clusters[j].centroidX(),
+                    first_layer_clusters[j].centroidY());
       ldmx_log(trace) << "Dist to cluster " << j << ": " << d;
     }
   }
@@ -331,8 +333,8 @@ std::vector<std::vector<const ldmx::EcalHit*>> CLUE::clustering(
 
       bool is_seed;
       if (delta_c_mod != deltac_ && merged_densities[density->cluster_id_] &&
-          dist(density->x_, density->y_, event_centroid_.centroid().x(),
-               event_centroid_.centroid().y()) < centroid_radius) {
+          dist(density->x_, density->y_, event_centroid_.centroidX(),
+               event_centroid_.centroidY()) < centroid_radius) {
         // if energy has been overloaded and this density belongs to cluster
         // that was overloaded and this density is close enough to event
         // centroid use modded delta c
@@ -343,8 +345,8 @@ std::vector<std::vector<const ldmx::EcalHit*>> CLUE::clustering(
         if (is_seed) {
           ldmx_log(trace) << "  Distance to event centroid: "
                           << dist(density->x_, density->y_,
-                                  event_centroid_.centroid().x(),
-                                  event_centroid_.centroid().y());
+                                  event_centroid_.centroidX(),
+                                  event_centroid_.centroidY());
         }
       }
       bool is_outlier =
@@ -354,8 +356,8 @@ std::vector<std::vector<const ldmx::EcalHit*>> CLUE::clustering(
         ldmx_log(trace) << "      This is a Seed";
         ldmx_log(trace) << "      Distance to centroid: "
                         << dist(density->x_, density->y_,
-                                event_centroid_.centroid().x(),
-                                event_centroid_.centroid().y())
+                                event_centroid_.centroidX(),
+                                event_centroid_.centroidY())
                         << "; with delta " << density->delta_;
         ldmx_log(trace) << "      Setting cluster ID to " << k;
         density->cluster_id_ = k;
@@ -568,10 +570,10 @@ void CLUE::convertToIntermediateClusters(
     }
     final_clusters_.push_back(intermediate_cluster);
     first_layer_centroids_.push_back(intermediate_cluster_first_layer);
-    auto cent_x = intermediate_cluster.centroid().x();
-    auto cent_y = intermediate_cluster.centroid().y();
-    auto event_cent_x = event_centroid_.centroid().x();
-    auto event_cent_y = event_centroid_.centroid().y();
+    auto cent_x = intermediate_cluster.centroidX();
+    auto cent_y = intermediate_cluster.centroidY();
+    auto event_cent_x = event_centroid_.centroidX();
+    auto event_cent_y = event_centroid_.centroidY();
     const auto& distance = dist(cent_x, cent_y, event_cent_x, event_cent_y);
     centroid_distances_.push_back(distance);
   }

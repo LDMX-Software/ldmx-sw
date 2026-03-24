@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE gdml [
 <!ENTITY constants SYSTEM "constants.gdml">
+
 ]>
 <gdml xmlns:gdml="http://cern.ch/2001/Schemas/GDML" 
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
@@ -25,50 +26,14 @@
     <!-- Trigger Scintillator -->
     <box lunit="mm" name="trigger_bar_box" x="trigger_bar_dx" y="trigger_bar_dy" z="trigger_pad_bar_thickness" /> 
 
-    <box lunit="mm" name="target_area_box" x="target_area_envelope_x" y="target_area_envelope_y" z="target_area_envelope_z" />
+    <box lunit="mm" name="target_area_box" x="tspad3_envelope_x*2" y="target_area_envelope_y" z="target_area_envelope_z" />
 
 
   </solids>
 
-  <materials>
-
-    <material name="Vacuum" state="gas">
-      <MEE unit="eV" value="19.2"/>
-      <D unit="g/cm3" value="9.99999473841014e-09"/>
-      <fraction n="1" ref="H"/>
-    </material>
-
-    <!-- Scintillator -->
-    <material name="Polyvinyltoluene">
-      <D type="density" value="1.023" unit="g/cm3"/>
-      <composite n="27" ref="C"/>
-      <composite n="30" ref="H"/>
-    </material>
+  
     
-    <!-- LYSO target -->
-    <!--
-      Molar mass calculations:
-    - Lu: 1.86 × 174.967 = 325.44 g/mol
-    - Y: 0.2 × 88.906 = 17.78 g/mol
-    - Si: 1 × 28.085 = 28.09 g/mol
-    - O: 5 × 15.999 = 80.00 g/mol
-    - Total molar mass: 325.44 + 17.78 + 28.09 + 80.00 = 451.31 g/mol
-
-    Mass fraction calculations:
-    - Lu fraction: 325.44 / 451.31 = 0.7211
-    - Y fraction: 17.78 / 451.31 = 0.0394
-    - Si fraction: 28.09 / 451.31 = 0.0623
-    - O fraction: 80.00 / 451.31 = 0.1772
-    -->
-    <material formula="Lu1.86Y0.2SiO5" name="LYSO" >
-        <D value="7.1" unit="g/cm3" />
-        <fraction n="0.7211" ref="Lu" />
-        <fraction n="0.0394" ref="Y"  />
-        <fraction n="0.0623" ref="Si" />
-        <fraction n="0.1772" ref="O"  />
-    </material>
-
-  </materials>
+  
 
   <structure>
     <!-- LYSO target -->
@@ -124,22 +89,11 @@
       <materialref ref="Vacuum"/>
       <solidref ref="target_area_box" />
 
-      <loop for="x" from="1" to="number_of_bars" step="1">
-        <physvol copynumber="2*x-2">
-          <volumeref ref="trigger_pad3_bar_volume" />
-          <position name="trigger_pad3_bar_layer1_pos" unit="mm" x="0" 
-                y="-target_dim_y/2 + trigger_bar_dy*(x - 0.5) + trigger_pad_bar_gap*(x - 1) + trigger_pad_offset" 
-                z="trigger_pad3_z - trigger_pad_bar_thickness/2 - trigger_pad_bar_gap/2" />
-          <rotationref ref="identity" />
-        </physvol>
-        <physvol copynumber="2*x - 1">
-          <volumeref ref="trigger_pad3_bar_volume" />
-          <position name="trigger_pad3_bar_layer2_pos" unit="mm" x="0" 
-                y="-target_dim_y/2 + trigger_bar_dy*x + trigger_pad_bar_gap*(x - 1) + trigger_pad_offset" 
-                z="trigger_pad3_z + trigger_pad_bar_thickness/2 + trigger_pad_bar_gap/2" />
-          <rotationref ref="identity" />
-        </physvol>
-      </loop>
+            <physvol>
+        <file name="tspad3_assembly.gdml"/>
+        <position name="tspad3_pos" unit="mm" x="(tspad3_envelope_x-trigger_bar_dx)/2" y="0"
+		  z="trigger_pad3_z" />
+      </physvol>
 
       <physvol name="lvTarget_phys" copynumber="3">
         <volumeref ref="lvTarget"/>

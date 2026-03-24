@@ -6,7 +6,7 @@ p = ldmxcfg.Process('test')
 from LDMX.SimCore import simulator as sim
 
 
-my_sim = sim.simulator( "my_sim" )
+my_sim = sim.simulator( instance_name="my_sim" )
 my_sim.description = 'Hcal Muons and Neutrons'
 my_sim.setDetector( 'ldmx-det-v15-8gev' )
 from LDMX.SimCore import generators as gen
@@ -37,7 +37,7 @@ gps_cmds = ['/gps/particle mu-',
         *ene_ang_pos_cmds,
         '/gps/source/multiplevertex True']
 
-my_sim.generators = [gen.gps('muon_neutron',gps_cmds)]
+my_sim.generators = [gen.gps(instance_name='muon_neutron', init_commands=gps_cmds)]
 
 p.sequence = [ my_sim ]
 
@@ -76,10 +76,10 @@ hcal_veto = hcal.HcalVetoProcessor()
 from LDMX.DQM import dqm
 
 
-simplified_hcal_dqm_back = dqm.HCalDQM( 'HcalSimpleRecoDQM', section = 0 )
+simplified_hcal_dqm_back = dqm.HCalDQM( instance_name = 'HcalSimpleRecoDQM_back', section = 0 )
 simplified_hcal_dqm_back.rec_coll_name = hcal_simplified_digi_and_reco.output_coll_name
 
-simplified_hcal_dqm_top = dqm.HCalDQM( 'HcalSimpleRecoDQM', section = 1 )
+simplified_hcal_dqm_top = dqm.HCalDQM( instance_name = 'HcalSimpleRecoDQM_top', section = 1 )
 simplified_hcal_dqm_top.rec_coll_name = hcal_simplified_digi_and_reco.output_coll_name
 
 dqm.hcal_dqm.extend([simplified_hcal_dqm_back, simplified_hcal_dqm_top])

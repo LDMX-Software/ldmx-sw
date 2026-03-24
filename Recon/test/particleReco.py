@@ -24,7 +24,7 @@ import LDMX.Hcal.hcal_geometry
 from LDMX.SimCore import simulator as sim
 
 
-my_sim = sim.simulator( "my_sim" )
+my_sim = sim.simulator( instance_name="my_sim" )
 my_sim.setDetector( 'ldmx-det-v14' , include_scoring_planes_minimal = True )
 sim.beamSpotSmear = [20., 80., 0.]
 
@@ -34,7 +34,7 @@ from particleSources import cocktail_commands
 from LDMX.SimCore import generators as gen
 
 
-my_sim.generators.append( gen.gps( 'my_gps' , cocktail_commands) )
+my_sim.generators.append( gen.gps( instance_name='my_gps' , init_commands=cocktail_commands) )
 # add your configured simulation to the sequence
 p.sequence.append( my_sim )
 
@@ -67,8 +67,7 @@ from LDMX.Recon.electron_counter import ElectronCounter
 from LDMX.Recon.simple_trigger import TriggerProcessor
 
 
-count = ElectronCounter(1,'ElectronCounter')
-count.input_pass_name = ''
+count = ElectronCounter(simulated_electron_number=1, instance_name='ElectronCounter', input_pass_name='')
 
 from LDMX.Ecal import ecal_trig_digi
 from LDMX.Hcal import hcal_trig_digi

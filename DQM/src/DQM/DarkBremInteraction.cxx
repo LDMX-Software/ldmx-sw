@@ -3,6 +3,7 @@
 namespace dqm {
 
 void DarkBremInteraction::configure(framework::config::Parameters& parameters) {
+  particle_coll_name_ = parameters.get<std::string>("particle_coll_name");
   particle_passname_ = parameters.get<std::string>("particle_passname");
 }
 /**
@@ -36,8 +37,8 @@ static double quadsum(const std::initializer_list<double>& list) {
 
 void DarkBremInteraction::produce(framework::Event& event) {
   histograms_.setWeight(event.getEventHeader().getWeight());
-  const auto& particle_map{
-      event.getMap<int, ldmx::SimParticle>("SimParticles", particle_passname_)};
+  const auto& particle_map{event.getMap<int, ldmx::SimParticle>(
+      particle_coll_name_, particle_passname_)};
   const ldmx::SimParticle *recoil{nullptr}, *aprime{nullptr}, *beam{nullptr};
   for (const auto& [track_id, particle] : particle_map) {
     if (track_id == 1) beam = &particle;

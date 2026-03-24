@@ -261,6 +261,10 @@ root *ARGS="":
 rootbrowse FILE:
     denv rootbrowse {{ FILE }}
 
+# execute g4-vis
+g4-vis gdml_file macro_file="":
+    denv g4-vis {{gdml_file}} {{macro_file}}
+
 # change which image is used for the denv
 use IMAGE:
     denv config image {{ IMAGE }}
