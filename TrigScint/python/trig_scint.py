@@ -26,6 +26,7 @@ class TrigScintDigiProducer(Processor):
     input_collection: str = "TriggerPad3SimHits"
     input_pass_name: str = ""
     output_collection: str = "trigScintDigisPad3"
+    sim_particles_coll_name: str = "SimParticles"
     sim_particles_passname: str = ""
 
     @staticmethod
