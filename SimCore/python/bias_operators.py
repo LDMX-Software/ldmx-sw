@@ -141,6 +141,50 @@ class K0LongInelastic(XsecBiasingOperator):
         self.threshold = thresh
 
 
+@biasing_operator("simcore::biasoperators::APrimeToFCPPair")
+class APrimeToFCPPair(XsecBiasingOperator):
+    """Bias A' -> fcp+ fcp- process
+
+    Parameters
+    ----------
+    volume : str
+        name of volume to bias within
+    factor : float
+        biasing factor to multiply by
+    threshold : float, optional
+        minimum kinetic energy [MeV] to bias tracks
+    """
+
+    volume: str
+    factor: float
+    threshold: float = 0.0
+
+    def __post_init__(self):
+        self.instance_name = f"{self.volume}_bias_fcppair"
+
+
+@biasing_operator("simcore::biasoperators::GammaToFCPPair")
+class GammaToFCPPair(XsecBiasingOperator):
+    """Bias gamma -> fcp+ fcp- process
+
+    Parameters
+    ----------
+    volume : str
+        name of volume to bias within
+    factor : float
+        biasing factor to multiply by
+    threshold : float, optional
+        minimum kinetic energy [MeV] to bias tracks
+    """
+
+    volume: str
+    factor: float
+    threshold: float = 0.0
+
+    def __post_init__(self):
+        self.instance_name = f"{self.volume}_bias_gammafcppair"
+
+
 @biasing_operator("simcore::biasoperators::DarkBrem")
 class DarkBrem(XsecBiasingOperator):
     """Bias dark brem process

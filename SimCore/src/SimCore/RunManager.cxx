@@ -13,6 +13,7 @@
 #include "SimCore/APrimePhysics.h"
 #include "SimCore/BiasOperators/XsecBiasingOperator.h"
 #include "SimCore/DetectorConstruction.h"
+#include "SimCore/FCPPhysics.h"
 #include "SimCore/G4User/EventAction.h"
 #include "SimCore/G4User/RunAction.h"
 #include "SimCore/G4User/StackingAction.h"
@@ -63,6 +64,9 @@ void RunManager::setupPhysics() {
   p_list->RegisterPhysics(new KaonPhysics(
       "KaonPhysics",
       parameters_.get<framework::config::Parameters>("kaon_parameters")));
+  p_list->RegisterPhysics(new FCPPhysics(
+      "FCPPhysics",
+      parameters_.get<framework::config::Parameters>("fcp_physics")));
 
   auto biasing_operators{
       parameters_.get<std::vector<framework::config::Parameters>>(

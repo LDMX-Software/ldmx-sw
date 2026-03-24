@@ -111,6 +111,13 @@ class TargetProcessFilter(UserAction):
         return TargetProcessFilter("GammaToMuPair")
 
 
+    def aprime_to_fcp():
+        return TargetProcessFilter("APrimeToFCPPair")
+
+    def gamma_to_fcp():
+        return TargetProcessFilter("GammaToFCPPair")
+
+
 @user_action("biasing::EcalDarkBremFilter", "Biasing")
 class EcalDarkBremFilter(UserAction):
     """Configuration for filtering A' events

@@ -14,6 +14,8 @@
 #include "G4DarkBreM/G4APrime.h"
 #include "G4DarkBreM/G4DarkBreMModel.h"
 #include "G4DarkBreM/G4DarkBremsstrahlung.h"
+#include "G4DarkBreM/G4FractionallyCharged.h"
+#include "SimCore/APrimeConversionToFCPs.h"
 #include "SimCore/G4User/UserEventInformation.h"
 
 // Geant4
@@ -55,7 +57,7 @@ class APrimePhysics : public G4VPhysicsConstructor {
    *
    * @param params Parameters to configure the dark brem process
    */
-  APrimePhysics(const framework::config::Parameters &params);
+  APrimePhysics(const framework::config::Parameters& params);
 
   /**
    * Class destructor.
@@ -84,10 +86,13 @@ class APrimePhysics : public G4VPhysicsConstructor {
    * Links the dark brem processs to the electron through the process manager
    * only if the dark brem process is enabled ('enable' is True).
    *
+   * Also sets up the A' -> fcp+ fcp- conversion process if fcp is enabled.
+   *
    * G4ProcessManager registers and cleans up any created processes,
    * so we can forget about it after creating it.
    *
    * @see G4DarkBremsstrahlung in G4DarkBreM
+   * @see APrimeConversionToFCPs
    */
   void ConstructProcess();
 
@@ -97,6 +102,18 @@ class APrimePhysics : public G4VPhysicsConstructor {
 
   /// is dark brem enabled for this run?
   bool enable_;
+
+  /// is A' -> fcp conversion enabled for this run?
+  bool fcp_enable_;
+
+  /// mass of the fcp in MeV
+  G4double fcp_mass_;
+
+  /// charge of the fcp in units of e
+  G4double fcp_charge_;
+
+  /// cross section biasing factor for A' -> fcp conversion
+  G4double fcp_xsec_factor_;
 
   /**
    * Dark brem parameters to pass to the process (if enabled)
@@ -108,6 +125,10 @@ class APrimePhysics : public G4VPhysicsConstructor {
   framework::config::Parameters parameters_;
 
   std::unique_ptr<G4DarkBremsstrahlung> process_;
+
+  /// A' -> fcp conversion process (owned by G4 process manager after
+  /// registration)
+  APrimeConversionToFCPs* fcp_conversion_process_{nullptr};
 
   /**
    * Enable logging for this class.

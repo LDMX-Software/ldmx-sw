@@ -605,6 +605,31 @@ class DarkBremInteraction(Processor):
         self.histogram('aprime_theta',
                        'Dark Photon Theta [degree]', 50, 0., 100.)
 
+        self.histogram('aprime_daughter_pdgid',
+                       'Dark Photon Daughter PDG ID',
+                       ["did not decay", "e- 11", "e+ -11", "mu- 13", "mu+ -13",
+                        "fcp- 17", "fcp+ 17", "pi- 211", "pi+ -211", "other"])
+        self.histogram('aprime_daughter_energy',
+                       'Dark Photon Daughter Energy [MeV]', 101, 0, 8080)
+        self.histogram('aprime_daughter_pt',
+                       'Dark Photon Daughter pT [MeV]', 100, 0, 2000)
+        self.histogram('aprime_daughter_start_z',
+                       'Dark Photon Daughter Creation Z [mm]', 60, -100, 500)
+        self.histogram('aprime_daughter_element',
+                       "Element in which A' conversion occurred",
+                       ["did not happen", "H 1", "C 6", "O 8", "Na 11", "Si 14",
+                        "Ca 20", "Cu 29", "Y 39", "Lu 71", "W 74", "unlisted"])
+        self.histogram('aprime_daughter_material',
+                       "Material in which A' conversion occurred",
+                       ["Unknown", "C", "PCB", "Glue", "Si", "Al", "W / LYSO", "PVT", "Air"])
+
+        self.histogram('recoil_brem_daughter_energy',
+                       'Recoil Brem Daughter Energy [MeV]', 101, 0, 8080)
+        self.histogram('recoil_brem_daughter_energy_ratio',
+                       'Recoil Brem Daughter Energy Ratio', 100, 0, 1)
+        self.histogram('recoil_brem_daughter_num',
+                       'Number of Recoil Brem Daughters', 10, 0, 10)
+
         self.histogram('recoil_energy',
                        'Recoil Electron Energy [MeV]', 101, 0, 8080)
         self.histogram('recoil_pt',
@@ -1013,7 +1038,9 @@ class SampleValidation(Processor):
             "heavy-N",                 # 15
             "#Lambda / #Sigma / #Xi",  # 16
             "A'",                      # 17
-            "else",                    # 18
+            "fcp+",                    # 18
+            "fcp-",                    # 19
+            "else",                    # 20
         ]
 
         self.histogram("primaries_pdgid", "ID of primary particles", pdgid_bin_labels)

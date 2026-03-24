@@ -46,6 +46,24 @@ class UserEventInformation : public G4VUserEventInformation {
   double getDarkBremMaterialZ() const { return db_material_z_; }
 
   /**
+   * Set the Z of the element in which the A' -> fcp conversion occurred.
+   *
+   * @param[in] z_ atomic Z of element in which A' conversion occurred
+   */
+  void setAPrimeConversionMaterialZ(double z_) {
+    aprime_conversion_material_z_ = z_;
+  }
+
+  /**
+   * Get the Z of the element in which the A' -> fcp conversion occurred.
+   *
+   * @note This returns -1 if no A' conversion occurred within this event.
+   */
+  double getAPrimeConversionMaterialZ() const {
+    return aprime_conversion_material_z_;
+  }
+
+  /**
    * Set the event weight.
    *
    * @param[in] weight the event weight
@@ -176,6 +194,12 @@ class UserEventInformation : public G4VUserEventInformation {
    * dark brem did not occur within the event in question.
    */
   double db_material_z_{-1.};
+
+  /**
+   * atomic Z of the element in which A' -> fcp conversion occurred
+   * (-1 if conversion didn't happen)
+   */
+  double aprime_conversion_material_z_{-1.};
 
   /**
    * a collection of HepMC3 event records.

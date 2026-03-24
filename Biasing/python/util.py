@@ -121,7 +121,28 @@ class TrackProcessFilter(UserAction):
         return TrackProcessFilter("GammaToMuPair")
 
 
-@biasing_utility
+    def aprime_to_fcp():
+        """Configuration used to tag all A' --> fcp+ fcp-
+        tracks to persist them to the event.
+
+        Return
+        ------
+        Instance of TrackProcessFilter configured to tag A' --> fcp+ fcp- tracks.
+        """
+        return TrackProcessFilter("APrimeToFCPPair")
+
+    def gamma_to_fcp():
+        """Configuration used to tag all gamma --> fcp+ fcp-
+        tracks to persist them to the event.
+
+        Return
+        ------
+        Instance of TrackProcessFilter configured to tag gamma --> fcp+ fcp- tracks.
+        """
+        return TrackProcessFilter("GammaToFCPPair")
+
+
+@biasing_utility("DecayChildrenKeeper")
 class DecayChildrenKeeper(UserAction):
     """Configuration used to store children of specific particle decays
 

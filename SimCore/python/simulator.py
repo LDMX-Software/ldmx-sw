@@ -8,6 +8,7 @@ from LDMX.Framework import Processor, field, parameter_set, processor
 
 from .bias_operators import XsecBiasingOperator
 from .dark_brem import DarkBrem
+from .fcp_physics import FCPPhysics
 from .generators import PrimaryGenerator
 from .kaon_physics import KaonPhysics
 from .photonuclear_models import BertiniModel, PhotoNuclearModel
@@ -102,6 +103,7 @@ class simulator(Processor):
     dark_brem: DarkBrem = field(default_factory=DarkBrem)
     photonuclear_model: PhotoNuclearModel = field(default_factory=BertiniModel)
     kaon_parameters: KaonPhysics = field(default_factory=KaonPhysics)
+    fcp_physics: FCPPhysics = field(default_factory=FCPPhysics)
 
     def setDetector(
         self,
