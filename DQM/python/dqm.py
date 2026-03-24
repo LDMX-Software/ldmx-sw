@@ -106,7 +106,7 @@ class HCalDQM(Processor):
         section_name = section_names[self.section]
 
         # Auto-set instance_name with section suffix if still at default
-        if self.instance_name == 'dqm::HCalDQM':
+        if self.instance_name == self.__dataclass_fields__["instance_name"].default:
             self.instance_name = f'hcal_dqm_{section_name}'
 
         pe_bins = [1500, 0, 1500]
@@ -591,16 +591,13 @@ class SimObjects(Processor):
     sim_particles_map_passname: str = ""
 
 
-@processor("dqm::DarkBremInteraction", "DQM")
+@processor("dqm::DarkBremInteraction", "DQM", "DarkBremDQM")
 class DarkBremInteraction(Processor):
 
     particle_coll_name: str = "SimParticles"
     particle_passname: str = ""
 
     def __post_init__(self):
-        if self.instance_name == 'dqm::DarkBremInteraction':
-            self.instance_name = 'DarkBremDQM'
-
         self.histogram('aprime_energy',
                        'Dark Photon Energy [MeV]', 101, 0, 8080)
         self.histogram('aprime_pt',
@@ -631,18 +628,13 @@ class DarkBremInteraction(Processor):
                        ["Unknown", "C", "PCB", "Glue", "Si", "Al", "W / LYSO", "PVT"])
 
 
-@processor("dqm::HCalRawDigi", "DQM")
+@processor("dqm::HCalRawDigi", "DQM", "hcal_pedestals")
 class HCalRawDigi(Processor):
-
     input_name: str = ""
     input_pass: str = ""
 
-    def __post_init__(self):
-        if self.instance_name == 'dqm::HCalRawDigi':
-            self.instance_name = 'hcal_pedestals'
 
-
-@processor("dqm::HgcrocPulseTruth", "DQM")
+@processor("dqm::HgcrocPulseTruth", "DQM", "hgcroc_pulse_truth")
 class HgcrocPulseTruth(Processor):
 
     input_digi_name: str = ""
@@ -651,9 +643,6 @@ class HgcrocPulseTruth(Processor):
     input_truth_pass: str = ""
 
     def __post_init__(self):
-        if self.instance_name == 'dqm::HgcrocPulseTruth':
-            self.instance_name = 'hgcroc_pulse_truth'
-
         self.histogram("vpeak_sumADC",
                        "Pulse Peak Voltage [mV]",
                        200, 0, 2000,
@@ -666,7 +655,7 @@ class HgcrocPulseTruth(Processor):
                        512, 0, 4096)
 
 
-@processor("dqm::NtuplizeHgcrocDigiCollection", "DQM")
+@processor("dqm::NtuplizeHgcrocDigiCollection", "DQM", "ntuplizehgcroc")
 class NtuplizeHgcrocDigiCollection(Processor):
 
     input_name: str = ""
@@ -676,9 +665,6 @@ class NtuplizeHgcrocDigiCollection(Processor):
     pedestal_table: str = ""
 
     def __post_init__(self):
-        if self.instance_name == 'dqm::NtuplizeHgcrocDigiCollection':
-            self.instance_name = 'ntuplizehgcroc'
-
         from LDMX.Conditions.SimpleCSVTableProvider import SimpleCSVIntegerTableProvider
         if self.pedestal_table == "":
             self.pedestal_table = 'NO_PEDESTALS'
@@ -689,15 +675,11 @@ class NtuplizeHgcrocDigiCollection(Processor):
             t.validForever(f'file://{self.pedestal_table}')
 
 
-@processor("dqm::NtuplizeTrigScintQIEDigis", "DQM")
+@processor("dqm::NtuplizeTrigScintQIEDigis", "DQM", "ts")
 class NtuplizeTrigScintQIEDigis(Processor):
 
     input_name: str = ""
     input_pass: str = ""
-
-    def __post_init__(self):
-        if self.instance_name == 'dqm::NtuplizeTrigScintQIEDigis':
-            self.instance_name = 'ts'
 
 
 @processor("dqm::PhotoNuclearDQM", "DQM")

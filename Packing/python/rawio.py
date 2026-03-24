@@ -86,7 +86,7 @@ class SingleSubsystemUnpacker(Processor):
     frame_offset: int = 0
 
     def __post_init__(self):
-        if self.instance_name == "packing::SingleSubsystemUnpacker":
+        if self.instance_name == self.__dataclass_fields__["instance_name"].default:
             self.instance_name = f"unpack_{os.path.basename(self.dat_file)}"
 
 
@@ -110,19 +110,15 @@ class SingleSubsystemPacker(Processor):
     input_pass: str = ""
 
     def __post_init__(self):
-        if self.instance_name == "packing::SingleSubsystemPacker":
+        if self.instance_name == self.__dataclass_fields__["instance_name"].default:
             self.instance_name = f"pack_{os.path.basename(self.raw_file)}"
 
 
-@processor("packing::WRRawDecoder", "Packing")
+@processor("packing::WRRawDecoder", "Packing", "wr")
 class WRRawDecoder(Processor):
     input_file: str = ""
     output_name: str = ""
     ntuplize: bool = True
-
-    def __post_init__(self):
-        if self.instance_name == "packing::WRRawDecoder":
-            self.instance_name = "wr"
 
 
 @processor("packing::FiberTrackerRawDecoder", "Packing")

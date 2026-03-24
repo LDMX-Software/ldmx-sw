@@ -10,14 +10,6 @@ class Processor:
     instance_name: str
     histograms: list[_histogram.Histogram] = []
 
-    def __post_init__(self):
-        """necessary post_init for all processors
-
-        we make sure the module this processor belongs to
-        is registered to be loaded
-        """
-        _register.library(self.module_name)
-
     def histogram(
         self,
         name,
@@ -91,7 +83,7 @@ class Processor:
             )
 
 
-def processor(class_name: str, module_name: str):
+def processor(class_name: str, module_name: str, default_instance_name: str = None):
     """declare a processor configuration class
 
     Parameters
@@ -100,12 +92,19 @@ def processor(class_name: str, module_name: str):
         fully-specified C++ class name including namespace
     module_name: str
         name of library that the processor belongs to
+    default_instance_name: str
+        default name for an instance of this processor
+        default value is the base class name with namespaces removed
     """
+
+    if default_instance_name is None:
+        default_instance_name = class_name.split("::")[-1]
 
     return parameter_set(
         class_name=field(default=class_name, init=False),
         module_name=field(default=module_name, init=False),
-        instance_name=class_name.split("::")[-1],
+        instance_name=default_instance_name,
+        post_init = lambda self: _register.library(self.module_name),
         required_base=Processor,
     )
 
