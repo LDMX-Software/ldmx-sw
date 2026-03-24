@@ -32,9 +32,9 @@ hcal_rec = digi.HcalRecProducer()
 hcal_rec.sim_hit_coll_name = 'HcalFakeSimHits'
 
 p.sequence = [
-    ldmxcfg.Producer('fakeSimHits','hcal::test::HcalFakeSimHits','Hcal'),
+    ldmxcfg.make_processor('fakeSimHits','hcal::test::HcalFakeSimHits','Hcal'),
     hcal_digis,
     digi.HcalRecProducer(),
-    ldmxcfg.Analyzer('checkHcalHits','hcal::test::HcalCheckReconstruction','Hcal'),
+    ldmxcfg.make_processor('checkHcalHits','hcal::test::HcalCheckReconstruction','Hcal'),
 ]
 

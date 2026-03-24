@@ -21,7 +21,8 @@ setup_library(module SimCore
               dependencies Framework::Configure
                            Framework::Exception
                            Framework::Framework
-                           Geant4::Interface)
+                           Geant4::Interface
+                           SimCore::Event)
 
 
 # Set the LHE Reading Library

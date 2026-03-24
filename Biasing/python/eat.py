@@ -15,7 +15,8 @@ from LDMX.SimCore import generators, simulator
 
 
 def midshower_nuclear(
-    detector, generator, bias_factor, bias_threshold, min_nuclear_energy):
+    detector, generator, bias_factor, bias_threshold, min_nuclear_energy
+):
     """Example configuration for producing mid-shower nuclear interactions in
     the ECal that fake a missing energy (ME) signal.
 
@@ -59,41 +60,42 @@ def midshower_nuclear(
 
     """
 
-    #Instantiate the simulator.
-    sim = simulator.simulator("eat-midshower-nuclear")
+    # Instantiate the simulator.
+    sim = simulator.simulator(instance_name = "eat-midshower-nuclear")
     from LDMX.Ecal import ecal_geometry
 
-    #Set the path to the detector to use.
-    #the second parameter says we want to include scoring planes
-    sim.setDetector( detector , include_scoring_planes_minimal = True )
+    # Set the path to the detector to use.
+    # the second parameter says we want to include scoring planes
+    sim.setDetector(detector, include_scoring_planes_minimal=True)
 
-    #Set run parameters
+    # Set run parameters
     sim.description = "Biased Mid-Shower Nuclear Interactions ME Background"
-    sim.beamSpotSmear = [20., 80., 0.] #mm
 
-    sim.generators = [ generator ]
+    sim.generators = [generator]
 
-    #Enable and configure the biasing
+    # Enable and configure the biasing
     from LDMX.SimCore import bias_operators
-    sim.biasing_operators = [
-            bias_operators.PhotoNuclear('ecal',bias_factor,bias_threshold),
-            bias_operators.ElectroNuclear('ecal',bias_factor,bias_threshold)
-            ]
 
-    #Configure the sequence in which user actions should be called.
+    sim.biasing_operators = [
+        bias_operators.PhotoNuclear("ecal", bias_factor, bias_threshold),
+        bias_operators.ElectroNuclear("ecal", bias_factor, bias_threshold),
+    ]
+
+    # Configure the sequence in which user actions should be called.
     sim.actions = [
-            filters.PrimaryToEcalFilter(0.875*generator.energy*1000),
-            #Make sure all particles above 1500MeV are processed first
-            util.PartialEnergySorter(bias_threshold),
-            #Make sure a total of 1700MeV energy went PN in ECal
-            filters.MidShowerNuclearBkgdFilter(min_nuclear_energy),
+        filters.PrimaryToEcalFilter(0.875 * generator.energy * 1000),
+        # Make sure all particles above 1500MeV are processed first
+        util.PartialEnergySorter(bias_threshold),
+        # Make sure a total of 1700MeV energy went PN in ECal
+        filters.MidShowerNuclearBkgdFilter(min_nuclear_energy),
     ]
 
     return sim
 
 
 def midshower_dimuon(
-    detector , generator, bias_factor , bias_threshold , min_dimuon_energy ) :
+    detector, generator, bias_factor, bias_threshold, min_dimuon_energy
+):
     """Example configuration for producing mid-shower dimuon interactions in
     the ECal that fake a missing energy (ME) signal.
 
@@ -137,39 +139,47 @@ def midshower_dimuon(
 
     """
 
-    #Instantiate the simulator.
-    sim = simulator.simulator("eat-midshower-dimuon")
+    # Instantiate the simulator.
+    sim = simulator.simulator(instance_name = "eat-midshower-dimuon")
     from LDMX.Ecal import ecal_geometry
 
-    #Set the path to the detector to use.
-    #the second parameter says we want to include scoring planes
-    sim.setDetector( detector , include_scoring_planes_minimal = True )
+    # Set the path to the detector to use.
+    # the second parameter says we want to include scoring planes
+    sim.setDetector(detector, include_scoring_planes_minimal=True)
 
-    #Set run parameters
+    # Set run parameters
     sim.description = "Biased Mid-Shower DiMuon Interactions ME Background"
-    sim.beamSpotSmear = [20., 80., 0.] #mm
 
-    sim.generators = [ generator ]
+    sim.generators = [generator]
 
-    #Enable and configure the biasing
+    # Enable and configure the biasing
     from LDMX.SimCore import bias_operators
-    sim.biasing_operators = [ bias_operators.GammaToMuPair(
-        'ecal', bias_factor, bias_threshold) ]
 
-    #Configure the sequence in which user actions should be called.
+    sim.biasing_operators = [
+        bias_operators.GammaToMuPair("ecal", bias_factor, bias_threshold)
+    ]
+
+    # Configure the sequence in which user actions should be called.
     sim.actions = [
-            filters.PrimaryToEcalFilter(0.875*generator.energy*1000),
-            util.PartialEnergySorter(bias_threshold),
-            filters.MidShowerDiMuonBkgdFilter(min_dimuon_energy),
+        filters.PrimaryToEcalFilter(0.875 * generator.energy * 1000),
+        util.PartialEnergySorter(bias_threshold),
+        filters.MidShowerDiMuonBkgdFilter(min_dimuon_energy),
     ]
 
     return sim
 
 
-def dark_brem(ap_mass, db_event_lib, detector, generator,
-              scale_aprime = False, decay_mode = 'no_decay',
-              ap_tau = -1.0, dist_decay_min = 0.0,
-              dist_decay_max = 1.0) :
+def dark_brem(
+    ap_mass,
+    db_event_lib,
+    detector,
+    generator,
+    scale_aprime=False,
+    decay_mode="no_decay",
+    ap_tau=-1.0,
+    dist_decay_min=0.0,
+    dist_decay_max=1.0,
+):
     """Example configuration for producing dark brem interactions in the ECal.
 
     This configures the simulator to fire a 4 GeV electron upstream of the
@@ -217,48 +227,50 @@ def dark_brem(ap_mass, db_event_lib, detector, generator,
 
     """
 
-    sim = simulator.simulator(f"ecal_dark_brem_{ap_mass}MeV")
+    sim = simulator.simulator(instance_name = f"ecal_dark_brem_{ap_mass!s}MeV")
     from LDMX.Ecal import ecal_geometry
 
     sim.description = (
-        "One e- fired far upstream with Dark Brem turned on"
-        " and biased up in ECal"
+        "One e- fired far upstream with Dark Brem turned on and biased up in ECal"
     )
-    sim.setDetector( detector , include_scoring_planes_minimal = True )
-    sim.generators = [ generator ]
-    sim.beamSpotSmear = [ 20., 80., 0. ] #mm
+    sim.setDetector(detector, include_scoring_planes_minimal=True)
+    sim.generators = [generator]
 
-    #Activiate dark bremming with a certain A' mass and LHE library
+    # Activiate dark bremming with a certain A' mass and LHE library
     from LDMX.SimCore import dark_brem
-    db_model = dark_brem.G4DarkBreMModel( db_event_lib )
-    #GeV - minimum energy electron needs to have to dark brem
-    db_model.threshold = 0.5*generator.energy
-    #decrease epsilon from one to help with Geant4 biasing calculations
-    db_model.epsilon   = 0.01
+
+    db_model = dark_brem.G4DarkBreMModel(db_event_lib)
+    db_model.threshold = (
+        0.5 * generator.energy
+    )  # GeV - minimum energy electron needs to have to dark brem
+    db_model.epsilon = (
+        0.01  # decrease epsilon from one to help with Geant4 biasing calculations
+    )
     db_model.scale_aprime = scale_aprime
     db_model.decay_mode = decay_mode
     db_model.ap_tau = ap_tau
     db_model.dist_decay_min = dist_decay_min
     db_model.dist_decay_max = dist_decay_max
-    sim.dark_brem.activate( ap_mass , db_model )
+    sim.dark_brem.activate(ap_mass, db_model)
 
-    #Biasing dark brem up inside of the ecal volumes
+    # Biasing dark brem up inside of the ecal volumes
     from math import log10
 
     from LDMX.SimCore import bias_operators
-    sim.biasing_operators = [
-            bias_operators.DarkBrem.ecal(
-                sim.dark_brem.ap_mass**max(
-                    2, log10(sim.dark_brem.ap_mass)) / db_model.epsilon**2
-              )
-            ]
 
-    beam_energy = generator.energy*1000
+    sim.biasing_operators = [
+        bias_operators.DarkBrem.ecal(
+            sim.dark_brem.ap_mass ** max(2, log10(sim.dark_brem.ap_mass))
+            / db_model.epsilon**2
+        )
+    ]
+
+    beam_energy = generator.energy * 1000
     sim.actions = [
-            util.DecayChildrenKeeper([622]), # keep children of A' decay
-            util.PartialEnergySorter(0.5*beam_energy),
-            filters.PrimaryToEcalFilter(0.875*beam_energy),
-            filters.EcalDarkBremFilter(0.5*beam_energy)
+        util.DecayChildrenKeeper([622]),  # keep children of A' decay
+        util.PartialEnergySorter(0.5 * beam_energy),
+        filters.PrimaryToEcalFilter(0.875 * beam_energy),
+        filters.EcalDarkBremFilter(0.5 * beam_energy),
     ]
 
     return sim

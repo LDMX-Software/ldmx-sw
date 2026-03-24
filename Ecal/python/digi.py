@@ -13,17 +13,34 @@ mip_si_energy : float
     Energy [MeV] of a single MIP on average in 0.5mm thick Si
 """
 
-from LDMX.Framework.ldmxcfg import Producer
+from LDMX.Framework import Processor, field, processor
+from LDMX.Tools.hgcroc_emulator import HgcrocEmulator
 
 
-#thousand e-h pairs created per MIP <- derived from 0.5mm thick Si
 n_kelectrons_per_mip = 37.0
-charge_per_mip = n_kelectrons_per_mip*0.1602 #fC
-#MeV - corresponds to ~3.5 eV per e-h pair <- derived from 0.5mm thick Si
-mip_si_energy = 0.130
+"""thousand e-h pairs created per MIP
 
-def EcalHgcrocEmulator() :
-    """Get an HGCROC emulator and configure for the ECal specifically
+derived from 0.5mm thick Si
+"""
+
+charge_per_mip = n_kelectrons_per_mip * 0.1602
+"""in fC, convering number of electrons to charge"""
+
+mip_si_energy = 0.130
+"""in MeV, corresponds to ~3.5 eV per e-h pair
+
+derived from 0.5mm thick Si
+"""
+
+ecal_pulse_rate_up_slope = -0.345
+ecal_pulse_time_up_slope = 70.6547
+ecal_pulse_rate_dn_slope = 0.140068
+ecal_pulse_time_dn_slope = 87.7649
+ecal_pulse_time_peak = 77.732
+
+
+def ecal_hgcroc_emulator():
+    """Get an HGCROC emulator configured for the ECal specifically
 
     This sets the pulse shape parameters to the ones from a fit
     to a test readout of an ECal module and then thresholds to the
@@ -31,28 +48,42 @@ def EcalHgcrocEmulator() :
     electrons per MIP.
     """
 
-    from LDMX.Tools import hgcroc_emulator
-    hgcroc = hgcroc_emulator.HgcrocEmulator()
+    return HgcrocEmulator(
+        rate_up_slope=ecal_pulse_rate_up_slope,
+        time_up_slope=ecal_pulse_time_up_slope,
+        rate_dn_slope=ecal_pulse_rate_dn_slope,
+        time_dn_slope=ecal_pulse_time_dn_slope,
+        time_peak=ecal_pulse_time_peak,
+        n_adcs=10,
+        i_soi=2,
+    )
 
-    # set pulse shape parameters
-    hgcroc.rate_up_slope =  -0.345
-    hgcroc.time_up_slope = 70.6547
-    hgcroc.rate_dn_slope = 0.140068
-    hgcroc.time_dn_slope = 87.7649
-    hgcroc.time_peak    = 77.732
 
-    hgcroc.n_adcs        = 10
-    hgcroc.i_soi         = 2
+def calculate_energy_to_voltage_conversion(si_thickness: float):
+    """calculate the conversion from a simulated energy [MeV] to voltage [mV]
 
-    return hgcroc
+     energy [MeV] * (thousand electrons per MIP)
+                  * (charge per thousand electrons fC)
+                  * (avg pad capacitance pF = 1/20)
+                  * ( 1 MIP / energy [MeV] )
+                  = voltage [mV]
 
-class EcalDigiProducer(Producer) :
-    """Configuration for EcalDigiProducer
+    this leads to ~ 470 mV/MeV or ~6.8 MeV maximum hit (if 320 fC is max ADC range)
 
     Parameters
     ----------
     si_thickness : float
         thickness of silicon sensitive layers in mm
+    """
+    return charge_per_mip / 20.0 / (mip_si_energy * si_thickness / 0.5)
+
+
+ecal_avg_gain: float = 0.3125 / 20.0
+
+
+@processor("ecal::EcalDigiProducer", "Ecal")
+class EcalDigiProducer(Processor):
+    """Configuration for EcalDigiProducer
 
     Attributes
     ----------
@@ -60,10 +91,16 @@ class EcalDigiProducer(Producer) :
         Configuration for the chip emulator
     mev : float
         Conversion between energy [MeV] and voltage [mV]
-    avgReadoutThreshold : float
+        Depends on silicon thickness in simulation relative to the 0.5mm
+        thickness that the physical constants were derived from.
+        Default uses a silicon thickness of 0.4mm
+    avg_readout_threshold : float
         Average readout threshold for all channels [mV], for noise emulation
-    avgPedestal : float
+    avg_pedestal : float
         Average pedestal for all channels [mV], for noise emulation
+    avg_noise_rms: float
+        Average noise RMS for all channels [mV], for noise emulation in empty channels
+        Default is too optimistic, but need to mimic old noise model
     zero_suppresion : bool
         Should we suppress pure noise "hits" below readout threshold?
     input_coll_name : str
@@ -74,36 +111,56 @@ class EcalDigiProducer(Producer) :
         Output name of digis put into event bus
     """
 
-    def __init__(self, instance_name = 'ecal_digis', si_thickness = 0.4) :
-        super().__init__(instance_name , 'ecal::EcalDigiProducer','Ecal')
-
-        self.hgcroc = EcalHgcrocEmulator()
-
-        #Energy -> Volts converstion
-        #   energy [MeV] (thousand electrons per MIP) (charge per thousand electrons fC)
-        #        (avg pad capacitance pF) ( 1 MIP / energy [MeV] ) = voltage [mV]
-        # this leads to ~ 470 mV/MeV or ~6.8 MeV maximum hit (if 320 fC is max ADC
-        # range)
-        self.mev = charge_per_mip/20./(mip_si_energy*si_thickness/0.5)
-
-        # these averages are for configuring the noise generator
-        #   _only_ and are not meant to be propated to a chip-by-chip basis
-        avg_gain = 0.3125/20.
-        self.avg_readout_threshold = 53.*avg_gain
-        self.avg_pedestal = 50.*avg_gain
-        # noise is too optimistic, but need to mimic old noise model
-        self.avg_noise_rms = 0.6*avg_gain
-
-        # Should we suppress noise "hits" below readout threshold?
-        self.zero_suppression = True
-
-        # input and output collection name parameters
-        self.input_coll_name = 'EcalSimHits'
-        self.input_pass_name = ''
-        self.digi_coll_name = 'EcalDigis'
+    hgcroc: HgcrocEmulator = field(default_factory=ecal_hgcroc_emulator)
+    mev: float = calculate_energy_to_voltage_conversion(0.4)
+    avg_readout_threshold: float = 53.0 * ecal_avg_gain
+    avg_pedestal: float = 50 * ecal_avg_gain
+    avg_noise_rms: float = 0.6 * ecal_avg_gain
+    zero_suppression: bool = True
+    input_coll_name: str = "EcalSimHits"
+    input_pass_name: str = ""
+    digi_coll_name: str = "EcalDigis"
 
 
-class EcalRecProducer(Producer) :
+latest_second_order_energy_correction = 8000.0 / 7332.8
+latest_layerWeights = [
+    1.743,
+    3.401,
+    5.610,
+    6.715,
+    7.820,
+    10.030,
+    11.135,
+    11.135,
+    11.135,
+    11.135,
+    11.135,
+    11.135,
+    11.135,
+    11.135,
+    11.135,
+    11.135,
+    11.135,
+    11.135,
+    11.135,
+    11.135,
+    11.135,
+    11.135,
+    11.135,
+    15.555,
+    18.869,
+    18.869,
+    18.869,
+    18.869,
+    18.869,
+    18.869,
+    18.869,
+    9.478,
+]
+
+
+@processor("ecal::EcalRecProducer", "Ecal")
+class EcalRecProducer(Processor):
     """Configuration for the EcalRecProducer
 
     The layer weights and second order energy correction
@@ -113,142 +170,273 @@ class EcalRecProducer(Producer) :
 
     Attributes
     ----------
-    MeV_per_mV : float
-        Conversion from voltage [mV] to energy [MeV]
     mip_si_energy : float
         Copied from module-wide mip_si_energy [MeV]
+    charge_per_mip float
+        Copied from module-wide charge_per_mip [fC]
     clock_cycle : float
         Time for one DAQ clock cycle to pass [ns]
-    digiCollName : str
+    digi_coll_name : str
         Name of digi collection
-    digiPassName : str
+    digi_pass_name : str
         Name of digi pass
-    simHitCollName : str
-        Name of sim collection to check for pure noise hits
-    simHitPassName : str
+    sim_hit_coll_name : str
+        Name of sim collection to check for pure noise hit ID
+    sim_hit_pass_name : str
         Name of sim pass
-    recHitCollName : str
+    rec_hit_coll_name : str
         Name of output collection
-    secondOrderEnergyCorrection : float
-        Correction to weighted energy
+    second_order_energy_correction : float
+        Correction to weighted energy, default to v15 geometry
     layerWeights : list of floats
-        Weighting factors depending on layer index
+        Weighting factors depending on layer index, default to v15 geometry
     """
 
-    def __init__(self, instance_name = 'ecalRecon') :
-        super().__init__(instance_name , 'ecal::EcalRecProducer','Ecal')
+    layerWeights: list[float] = latest_layerWeights
+    second_order_energy_correction: float = latest_second_order_energy_correction
+    mip_si_energy: float = mip_si_energy
+    charge_per_mip: float = charge_per_mip
+    clock_cycle: float = 25.0
+    digi_coll_name: str = "EcalDigis"
+    digi_pass_name: str = ""
+    sim_hit_coll_name: str = "EcalSimHits"
+    sim_hit_pass_name: str = ""
+    rec_hit_coll_name: str = "EcalRecHits"
 
-        self.mip_si_energy = mip_si_energy #MeV / MIP
-        self.charge_per_mip = charge_per_mip #fC / MIP
-        self.clock_cycle = 25. #ns - needs to match the setting on the chip
+    @staticmethod
+    def v2(**kwargs):
+        """These layerWeights and energy correction were calculated at least
+        before v3 geometry.
 
-        self.digi_coll_name = 'EcalDigis'
-        self.digi_pass_name = ''
-        self.sim_hit_coll_name = 'EcalSimHits'
-        self.sim_hit_pass_name = ''
-        self.rec_hit_coll_name = 'EcalRecHits'
-
-        # geometry dependent settings
-        # use helper functions to set these
-        self.second_order_energy_correction = 1.
-        self.layerWeights = [ ]
-        self.v15()
-
-    def v2(self) :
-        """These layerWeights and energy correction were calculated at least before v3 geometry.
-
-        The second order energy correction is determined by comparing the mean of 1M single 4GeV
-        electron events with 4GeV.
+        The second order energy correction is determined by comparing the mean of
+        1M single 4GeV electron events with 4GeV.
         """
+        return EcalRecProducer(
+            second_order_energy_correction=0.948,
+            layerWeights=[
+                1.641,
+                3.526,
+                5.184,
+                6.841,
+                8.222,
+                8.775,
+                8.775,
+                8.775,
+                8.775,
+                8.775,
+                8.775,
+                8.775,
+                8.775,
+                8.775,
+                8.775,
+                8.775,
+                8.775,
+                8.775,
+                8.775,
+                8.775,
+                8.775,
+                8.775,
+                12.642,
+                16.51,
+                16.51,
+                16.51,
+                16.51,
+                16.51,
+                16.51,
+                16.51,
+                16.51,
+                16.51,
+                16.51,
+                8.45,
+            ],
+            **kwargs,
+        )
 
-        self.second_order_energy_correction = 0.948
-        self.layerWeights = [
-            1.641, 3.526, 5.184, 6.841,
-            8.222, 8.775, 8.775, 8.775, 8.775, 8.775, 8.775, 8.775, 8.775, 8.775,
-            8.775, 8.775, 8.775, 8.775, 8.775, 8.775, 8.775, 8.775, 12.642, 16.51,
-            16.51, 16.51, 16.51, 16.51, 16.51, 16.51, 16.51, 16.51, 16.51, 8.45
-            ]
+    @staticmethod
+    def v9(**kwargs):
+        """These layerWeights and energy correction were calculated for the
+        v9 geometry.
 
-    def v9(self) :
-        """These layerWeights and energy correction were calculated for the v9 geometry.
-
-        The second order energy correction is determined by comparing the mean of 1M single 4GeV
-        electron events with 4GeV.
+        The second order energy correction is determined by comparing the mean of
+        1M single 4GeV electron events with 4GeV.
         """
+        return EcalRecProducer(
+            second_order_energy_correction=4000.0 / 4012.0,
+            layerWeights=[
+                1.019,
+                1.707,
+                3.381,
+                5.022,
+                6.679,
+                8.060,
+                8.613,
+                8.613,
+                8.613,
+                8.613,
+                8.613,
+                8.613,
+                8.613,
+                8.613,
+                8.613,
+                8.613,
+                8.613,
+                8.613,
+                8.613,
+                8.613,
+                8.613,
+                8.613,
+                8.613,
+                12.480,
+                16.347,
+                16.347,
+                16.347,
+                16.347,
+                16.347,
+                16.347,
+                16.347,
+                16.347,
+                16.347,
+                8.334,
+            ],
+            **kwargs,
+        )
 
-        self.second_order_energy_correction = 4000. / 4012.
-        self.layerWeights = [
-            1.019, 1.707, 3.381, 5.022, 6.679, 8.060, 8.613, 8.613, 8.613, 8.613, 8.613,
-            8.613, 8.613, 8.613, 8.613, 8.613, 8.613, 8.613, 8.613, 8.613, 8.613, 8.613,
-            8.613, 12.480, 16.347, 16.347, 16.347, 16.347, 16.347, 16.347, 16.347, 16.347,
-            16.347, 8.334
-            ]
+    @staticmethod
+    def v12(**kwargs):
+        """These layerWeights and energy correction were calculated for the v12
+        geometry.
 
-    def v12(self) :
-        """These layerWeights and energy correction were calculated for the v12 geometry.
-
-        The second order energy correction is determined by comparing the mean of 1M single 4GeV
-        electron events with 4GeV.
+        The second order energy correction is determined by comparing the mean of
+        1M single 4GeV electron events with 4GeV.
         """
+        return EcalRecProducer(
+            second_order_energy_correction=4000.0 / 4007.0,
+            layerWeights=[
+                1.675,
+                2.724,
+                4.398,
+                6.039,
+                7.696,
+                9.077,
+                9.630,
+                9.630,
+                9.630,
+                9.630,
+                9.630,
+                9.630,
+                9.630,
+                9.630,
+                9.630,
+                9.630,
+                9.630,
+                9.630,
+                9.630,
+                9.630,
+                9.630,
+                9.630,
+                9.630,
+                13.497,
+                17.364,
+                17.364,
+                17.364,
+                17.364,
+                17.364,
+                17.364,
+                17.364,
+                17.364,
+                17.364,
+                8.990,
+            ],
+            **kwargs,
+        )
 
-        self.second_order_energy_correction = 4000. / 4007.
-        self.layerWeights = [
-            1.675, 2.724, 4.398, 6.039, 7.696, 9.077, 9.630, 9.630, 9.630, 9.630, 9.630,
-            9.630, 9.630, 9.630, 9.630, 9.630, 9.630, 9.630, 9.630, 9.630, 9.630, 9.630,
-            9.630, 13.497, 17.364, 17.364, 17.364, 17.364, 17.364, 17.364, 17.364, 17.364,
-            17.364, 8.990
-            ]
-
-    def v14(self) :
+    @staticmethod
+    def v14(**kwargs):
         """Generated for the v14 geometry
 
-        The secondOrderEnergyCorrection is deteremined by generating 1M single 4GeV or 8GeV
-        electron events shot directly into the front of the ECal from immediately upstream.
-        The mean of the resulting total recon energy is found by fitting a two-sided normal
-        distribution (one mean, a low and high deviation) to the histogram.
+        The secondOrderEnergyCorrection is deteremined by generating 1M single 4GeV
+        or 8GeV electron events shot directly into the front of the ECal from
+        immediately upstream. The mean of the resulting total recon energy is found
+        by fitting a two-sided normal distribution (one mean, a low and high deviation)
+        to the histogram.
         """
 
-        #self.second_order_energy_correction = 4000. / 3940.5
-        self.second_order_energy_correction = 8000. / 7998.3
-        # these layer weights were the 'dE' column of the table output by
-        # Detectors/util/ecal_layer_stack.py
-        # See https://github.com/LDMX-Software/ldmx-sw/issues/1725
-        # TLDR: these are wrong but only off by an absolute value of ~0.2, future
-        # detector versions
-        # use the newer script with fixed material properties
-        self.layerWeights = [
-                2.329, 4.339, 6.495, 7.490, 8.595, 10.253, 10.915, 10.915, 10.915, 10.915, 10.915,
-                10.915, 10.915, 10.915, 10.915, 10.915, 10.915, 10.915, 10.915, 10.915, 10.915,
-                10.915, 10.915, 14.783, 18.539, 18.539, 18.539, 18.539, 18.539, 18.539, 18.539,
-                18.539, 18.539, 9.938
-                ]
+        return EcalRecProducer(
+            # second_order_energy_correction = 4000. / 3940.5,
+            second_order_energy_correction=8000.0 / 7998.3,
+            # these layer weights were the 'dE' column of the table output
+            # by Detectors/util/ecal_layer_stack.py
+            # See https://github.com/LDMX-Software/ldmx-sw/issues/1725
+            # TLDR: these are wrong but only off by an absolute value of ~0.2,
+            # future detector versions use the newer script with fixed material
+            # properties
+            layerWeights=[
+                2.329,
+                4.339,
+                6.495,
+                7.490,
+                8.595,
+                10.253,
+                10.915,
+                10.915,
+                10.915,
+                10.915,
+                10.915,
+                10.915,
+                10.915,
+                10.915,
+                10.915,
+                10.915,
+                10.915,
+                10.915,
+                10.915,
+                10.915,
+                10.915,
+                10.915,
+                10.915,
+                14.783,
+                18.539,
+                18.539,
+                18.539,
+                18.539,
+                18.539,
+                18.539,
+                18.539,
+                18.539,
+                18.539,
+                9.938,
+            ],
+            **kwargs,
+        )
 
-    def v15(self) :
+    @staticmethod
+    def v15(**kwargs):
         """Generated for the v15 geometry
 
-        The secondOrderEnergyCorrection is deteremined by generating 1M single 4GeV or 8GeV
-        electron events shot directly into the front of the ECal from immediately upstream.
-        The mean of the resulting total recon energy is found by fitting a two-sided normal
-        distribution (one mean, a low and high deviation) to the histogram.
+        The secondOrderEnergyCorrection is deteremined by generating 1M single
+        4GeV or 8GeV electron events shot directly into the front of the ECal from
+        immediately upstream. The mean of the resulting total recon energy is found
+        by fitting a two-sided normal distribution (one mean, a low and high deviation)
+        to the histogram.
         """
-        self.second_order_energy_correction = 8000. / 7332.8
-        # these layer weights were the 'dE' column of the table output by
-        # Detectors/util/ecal_layer_stack.py
-        self.layerWeights = [
-            1.743, 3.401, 5.610, 6.715, 7.820, 10.030, 11.135, 11.135, 11.135, 11.135,
-            11.135, 11.135, 11.135, 11.135, 11.135, 11.135, 11.135, 11.135, 11.135, 11.135,
-            11.135, 11.135, 11.135, 15.555, 18.869, 18.869, 18.869, 18.869, 18.869, 18.869,
-            18.869, 9.478
-        ]
+        return EcalRecProducer(
+            second_order_energy_correction=latest_second_order_energy_correction,
+            # these layer weights were the 'dE' column of the table output by
+            # Detectors/util/ecal_layer_stack.py
+            layerWeights=latest_layerWeights,
+            **kwargs,
+        )
 
-    def reduced_v2(self) :
+    @staticmethod
+    def reduced_v2(**kwargs):
         """Generated for the reduced v2 geometry
 
-        TODO: The secondOrderEnergyCorrection for this geometry has yet to be calculated,
-        so unity is being used as a placeholder.
+        TODO: The secondOrderEnergyCorrection for this geometry has yet to be
+        calculated, so unity is being used as a placeholder.
         """
 
-        self.second_order_energy_correction = 1.
-        self.layerWeights = [
-                2.312, 5.417, 9.837, 11.910, 11.910, 11.910
-                ]
+        return EcalRecProducer(
+            second_order_energy_correction=1.0,
+            layerWeights=[2.312, 5.417, 9.837, 11.910, 11.910, 11.910],
+            **kwargs,
+        )

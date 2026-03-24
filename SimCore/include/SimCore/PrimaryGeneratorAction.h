@@ -26,11 +26,18 @@
 // Forward declarations
 class G4Event;
 
-namespace simcore::g4user {
+namespace simcore {
 
 /**
  * @class PrimaryGeneratorAction
  * @brief Implementation of Geant4 primary generator action
+ *
+ * While logically this class "should" be in the G4User module with
+ * the other G4User actions, the fact that it needs access to the
+ * PrimaryGenerator::Factory singleton in the Generators library
+ * _and_ other libraries want to link to G4User without linking to
+ * the Generators means that it needs to be in the downstream SimCore
+ * library.
  */
 class PrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction {
  public:
@@ -91,6 +98,6 @@ class PrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction {
 
 };  // PrimaryGeneratorAction
 
-}  // namespace simcore::g4user
+}  // namespace simcore
 
 #endif  // SIMCORE_G4USER_PRIMARYGENERATORACTION_H
