@@ -136,6 +136,7 @@ def make_processor(name: str, class_name: str, module_name: str, **kwargs):
         class_name=class_name,
         module_name=module_name,
         instance_name=name,
+        post_init = lambda self: _register.library(self.module_name),
         required_base=Processor,
         **kwargs,
     )(types.new_class(name, (Processor,)))
