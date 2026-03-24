@@ -105,7 +105,7 @@ def processor(class_name: str, module_name: str):
     return parameter_set(
         class_name=field(default=class_name, init=False),
         module_name=field(default=module_name, init=False),
-        instance_name=class_name,
+        instance_name=class_name.split("::")[-1],
         required_base=Processor,
     )
 
