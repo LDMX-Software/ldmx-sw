@@ -20,23 +20,44 @@ class TrackerDigiDQM(Processor):
         for i in range(0, 14):
             self.histogram(
                 f"global_yz_l{i}",
-                "Global y (mm)", 70, -50, 20,
-                "Global z (mm)", 100, -50, 50,
+                "Global y (mm)",
+                70,
+                -50,
+                20,
+                "Global z (mm)",
+                100,
+                -50,
+                50,
             )
             self.histogram(
                 f"local_uv_l{i}",
-                "u (mm)", 60, -30, 30,
-                "v (mm)", 100, -50, 50,
+                "u (mm)",
+                60,
+                -30,
+                30,
+                "v (mm)",
+                100,
+                -50,
+                50,
             )
             self.histogram(
                 f"time_l{i}",
-                "Time (ns)", 100, 0, 100,
+                "Time (ns)",
+                100,
+                0,
+                100,
             )
 
         self.histogram(
             "global_xy",
-            "Global x (mm)", 100, -1000, 0,
-            "Global y (mm)", 100, -50, 50,
+            "Global x (mm)",
+            100,
+            -1000,
+            0,
+            "Global y (mm)",
+            100,
+            -50,
+            50,
         )
 
 
@@ -172,108 +193,234 @@ class TrackingRecoDQM(Processor):
 
         self.histogram(
             "d0_err_vs_p",
-            "p [GeV]", nbins, 0, pmax,
-            "#sigma_{d0} [mm]", nbins, 0, 0.2,
+            "p [GeV]",
+            nbins,
+            0,
+            pmax,
+            "#sigma_{d0} [mm]",
+            nbins,
+            0,
+            0.2,
         )
         self.histogram(
             "z0_err_vs_p",
-            "p [GeV]", nbins, 0, pmax,
-            "#sigma_{z0} [mm]", nbins, 0, 0.8,
+            "p [GeV]",
+            nbins,
+            0,
+            pmax,
+            "#sigma_{z0} [mm]",
+            nbins,
+            0,
+            0.8,
         )
         self.histogram(
             "p_err_vs_p",
-            "p [GeV]", nbins, 0, pmax,
-            "#sigma_{p} [GeV]", nbins, 0, 1,
+            "p [GeV]",
+            nbins,
+            0,
+            pmax,
+            "#sigma_{p} [GeV]",
+            nbins,
+            0,
+            1,
         )
         self.histogram(
             "p_err_vs_p_8hits",
-            "p [GeV]", nbins, 0, pmax,
-            "#sigma_{p} [GeV]", nbins, 0, 1,
+            "p [GeV]",
+            nbins,
+            0,
+            pmax,
+            "#sigma_{p} [GeV]",
+            nbins,
+            0,
+            1,
         )
         self.histogram(
             "p_err_vs_p_9hits",
-            "p [GeV]", nbins, 0, pmax,
-            "#sigma_{p} [GeV]", nbins, 0, 1,
+            "p [GeV]",
+            nbins,
+            0,
+            pmax,
+            "#sigma_{p} [GeV]",
+            nbins,
+            0,
+            1,
         )
         self.histogram(
             "p_err_vs_p_10hits",
-            "p [GeV]", nbins, 0, pmax,
-            "#sigma_{p} [GeV]", nbins, 0, 1,
+            "p [GeV]",
+            nbins,
+            0,
+            pmax,
+            "#sigma_{p} [GeV]",
+            nbins,
+            0,
+            1,
         )
         self.histogram(
             "res_p_vs_p",
-            "p [GeV]", nbins, 0, pmax,
-            "res_{p} [GeV]", nbins, -3, 3,
+            "p [GeV]",
+            nbins,
+            0,
+            pmax,
+            "res_{p} [GeV]",
+            nbins,
+            -3,
+            3,
         )
         self.histogram(
             "res_qop_vs_p",
-            "p [GeV]", nbins, 0, pmax,
-            "res_{qop} [GeV^{-1}]", nbins, -0.5, 0.5,
+            "p [GeV]",
+            nbins,
+            0,
+            pmax,
+            "res_{qop} [GeV^{-1}]",
+            nbins,
+            -0.5,
+            0.5,
         )
         self.histogram(
             "res_d0_vs_p",
-            "p [GeV]", nbins, 0, pmax,
-            "res_{d0} [mm]", nbins, -0.05, 0.05,
+            "p [GeV]",
+            nbins,
+            0,
+            pmax,
+            "res_{d0} [mm]",
+            nbins,
+            -0.05,
+            0.05,
         )
         self.histogram(
             "res_z0_vs_p",
-            "p [GeV]", nbins, 0, pmax,
-            "res_{z0} [mm]", nbins, -0.5, 0.5,
+            "p [GeV]",
+            nbins,
+            0,
+            pmax,
+            "res_{z0} [mm]",
+            nbins,
+            -0.5,
+            0.5,
         )
         self.histogram(
             "res_phi_vs_p",
-            "p [GeV]", nbins, 0, pmax,
-            "res_{#phi}", nbins, -0.005, 0.005,
+            "p [GeV]",
+            nbins,
+            0,
+            pmax,
+            "res_{#phi}",
+            nbins,
+            -0.005,
+            0.005,
         )
         self.histogram(
             "res_theta_vs_p",
-            "p [GeV]", nbins, 0, pmax,
-            "res_{#theta}", nbins, -0.01, 0.01,
+            "p [GeV]",
+            nbins,
+            0,
+            pmax,
+            "res_{#theta}",
+            nbins,
+            -0.01,
+            0.01,
         )
         self.histogram(
             "res_p_vs_p_8hits",
-            "p [GeV]", nbins, 0, pmax,
-            "res_{p} [GeV]", nbins, -3, 3,
+            "p [GeV]",
+            nbins,
+            0,
+            pmax,
+            "res_{p} [GeV]",
+            nbins,
+            -3,
+            3,
         )
         self.histogram(
             "res_p_vs_p_9hits",
-            "p [GeV]", nbins, 0, pmax,
-            "res_{p} [GeV]", nbins, -3, 3,
+            "p [GeV]",
+            nbins,
+            0,
+            pmax,
+            "res_{p} [GeV]",
+            nbins,
+            -3,
+            3,
         )
         self.histogram(
             "res_p_vs_p_10hits",
-            "p [GeV]", nbins, 0, pmax,
-            "res_{p} [GeV]", nbins, -3, 3,
+            "p [GeV]",
+            nbins,
+            0,
+            pmax,
+            "res_{p} [GeV]",
+            nbins,
+            -3,
+            3,
         )
         self.histogram(
             "pull_qop_vs_p",
-            "p [GeV]", nbins, 0, pmax,
-            "pull_{qop}", nbins, -5, 5,
+            "p [GeV]",
+            nbins,
+            0,
+            pmax,
+            "pull_{qop}",
+            nbins,
+            -5,
+            5,
         )
         self.histogram(
             "pull_d0_vs_p",
-            "p [GeV]", nbins, 0, pmax,
-            "pull_{d0}", nbins, -5, 5,
+            "p [GeV]",
+            nbins,
+            0,
+            pmax,
+            "pull_{d0}",
+            nbins,
+            -5,
+            5,
         )
         self.histogram(
             "pull_z0_vs_p",
-            "p [GeV]", nbins, 0, pmax,
-            "pull_{z0}", nbins, -5, 5,
+            "p [GeV]",
+            nbins,
+            0,
+            pmax,
+            "pull_{z0}",
+            nbins,
+            -5,
+            5,
         )
         self.histogram(
             "pull_phi_vs_p",
-            "p [GeV]", nbins, 0, pmax,
-            "pull_{#phi}", nbins, -5, 5,
+            "p [GeV]",
+            nbins,
+            0,
+            pmax,
+            "pull_{#phi}",
+            nbins,
+            -5,
+            5,
         )
         self.histogram(
             "pull_theta_vs_p",
-            "p [GeV]", nbins, 0, pmax,
-            "pull_{#theta}", nbins, -5, 5,
+            "p [GeV]",
+            nbins,
+            0,
+            pmax,
+            "pull_{#theta}",
+            nbins,
+            -5,
+            5,
         )
         self.histogram(
             "res_pt_beam_vs_p",
-            "truth p [GeV]", nbins, 0, pmax,
-            "res_{pt} beam", nbins, -0.5, 0.5,
+            "truth p [GeV]",
+            nbins,
+            0,
+            pmax,
+            "res_{pt} beam",
+            nbins,
+            -0.5,
+            0.5,
         )
 
         if self.do_truth:
@@ -290,7 +437,10 @@ class TrackingRecoDQM(Processor):
             self.histogram("truth_PID", "Particles", 8, -4, 4)
             self.histogram(
                 "truth_measurement_dedx",
-                "Truth measurement dE/dx (MeV/mm)", 60, 0.0, 0.6,
+                "Truth measurement dE/dx (MeV/mm)",
+                60,
+                0.0,
+                0.6,
             )
             self.histogram("truth_kminus_p", "truth p", nbins, 0.0, pmax)
             self.histogram("truth_kplus_p", "truth p", nbins, 0.0, pmax)
@@ -334,7 +484,10 @@ class TrackingRecoDQM(Processor):
             self.histogram("match_nHits", "match nHits", 15, 0, 15)
             self.histogram(
                 "match_measurement_dedx",
-                "Match measurement dE/dx (MeV/mm)", 60, 0.0, 0.6,
+                "Match measurement dE/dx (MeV/mm)",
+                60,
+                0.0,
+                0.6,
             )
             self.histogram("match_layers_hit", "match layers hit", 15, 0, 15)
             self.histogram("match_kminus_p", "truth p", nbins, 0.0, pmax)
@@ -359,7 +512,10 @@ class TrackingRecoDQM(Processor):
             self.histogram("fake_layers_hit", "fake layers hit", 15, 0, 15)
             self.histogram(
                 "fake_measurement_dedx",
-                "Fake measurement dE/dx (MeV/mm)", 60, 0.0, 0.6,
+                "Fake measurement dE/dx (MeV/mm)",
+                60,
+                0.0,
+                0.6,
             )
             self.histogram("fake_Chi2", "fake Chi2", 100, 0, chi2_fake_max)
             self.histogram(
@@ -379,7 +535,10 @@ class TrackingRecoDQM(Processor):
             self.histogram("dup_layers_hit", "dup layers hit", 15, 0, 15)
             self.histogram(
                 "dup_measurement_dedx",
-                "Dup measurement dE/dx (MeV/mm)", 60, 0.0, 0.6,
+                "Dup measurement dE/dx (MeV/mm)",
+                60,
+                0.0,
+                0.6,
             )
             self.histogram("dup_Chi2", "dup Chi2", 100, 0, 100)
             self.histogram("dup_Chi2_per_ndf", "dup Chi2/ndf", 100, 0, 10)
@@ -390,75 +549,147 @@ class TrackingRecoDQM(Processor):
             for track_state in self.track_states:
                 self.histogram(
                     "trk_" + track_state + "_loc0",
-                    "trk_" + track_state + "_loc0 [mm]", 200, -50, 50,
+                    "trk_" + track_state + "_loc0 [mm]",
+                    200,
+                    -50,
+                    50,
                 )
                 self.histogram(
                     "trk_" + track_state + "_loc1",
-                    "trk_" + track_state + "_loc1 [mm]", 200, -50, 50,
+                    "trk_" + track_state + "_loc1 [mm]",
+                    200,
+                    -50,
+                    50,
                 )
                 self.histogram(
                     track_state + "_sp_hit_X",
-                    track_state + "_sp_hit_X [mm]", 200, -50, 50,
+                    track_state + "_sp_hit_X [mm]",
+                    200,
+                    -50,
+                    50,
                 )
                 self.histogram(
                     track_state + "_sp_hit_Y",
-                    track_state + "_sp_hit_Y [mm]", 200, -50, 50,
+                    track_state + "_sp_hit_Y [mm]",
+                    200,
+                    -50,
+                    50,
                 )
                 self.histogram(
                     "trk_" + track_state + "_loc0-sp_hit_X",
-                    track_state + "_diff loc0 and hit_X [mm]", 200, -0.2, 0.2,
+                    track_state + "_diff loc0 and hit_X [mm]",
+                    200,
+                    -0.2,
+                    0.2,
                 )
                 self.histogram(
                     "trk_" + track_state + "_loc1-sp_hit_Y",
-                    track_state + "_diff loc1 and hit_Y [mm]", 200, -5, 5,
+                    track_state + "_diff loc1 and hit_Y [mm]",
+                    200,
+                    -5,
+                    5,
                 )
                 self.histogram(
                     track_state + "_Pulls_of_loc0",
-                    track_state + "_pulls_of_loc0 [mm]", 200, -5, 5,
+                    track_state + "_pulls_of_loc0 [mm]",
+                    200,
+                    -5,
+                    5,
                 )
                 self.histogram(
                     track_state + "_Pulls_of_loc1",
-                    track_state + "_pulls_of_loc1 [mm]", 200, -5, 5,
+                    track_state + "_pulls_of_loc1 [mm]",
+                    200,
+                    -5,
+                    5,
                 )
                 self.histogram(
                     track_state + "_res_loc0-vs-N_hits",
-                    "N_hits", 5, 6.5, 11.5,
-                    track_state + "_res_loc0 [mm]", 100, -0.2, 0.2,
+                    "N_hits",
+                    5,
+                    6.5,
+                    11.5,
+                    track_state + "_res_loc0 [mm]",
+                    100,
+                    -0.2,
+                    0.2,
                 )
                 self.histogram(
                     track_state + "_res_loc1-vs-N_hits",
-                    "N_hits", 5, 6.5, 11.5,
-                    track_state + "_res_loc1 [mm]", 100, -5, 5,
+                    "N_hits",
+                    5,
+                    6.5,
+                    11.5,
+                    track_state + "_res_loc1 [mm]",
+                    100,
+                    -5,
+                    5,
                 )
                 self.histogram(
                     track_state + "_res_loc0-vs-trk_p",
-                    "trk_p", 200, 0, 5,
-                    track_state + "_res_loc0 [mm]", 100, -0.2, 0.2,
+                    "trk_p",
+                    200,
+                    0,
+                    5,
+                    track_state + "_res_loc0 [mm]",
+                    100,
+                    -0.2,
+                    0.2,
                 )
                 self.histogram(
                     track_state + "_res_loc1-vs-trk_p",
-                    "trk_p", 200, 0, 5,
-                    track_state + "_res_loc1 [mm]", 100, -5, 5,
+                    "trk_p",
+                    200,
+                    0,
+                    5,
+                    track_state + "_res_loc1 [mm]",
+                    100,
+                    -5,
+                    5,
                 )
                 self.histogram(
                     track_state + "_pulls_loc0-vs-N_hits",
-                    "N_hits", 5, 6.5, 11.5,
-                    track_state + "_pulls_loc0 [mm]", 100, -3, 3,
+                    "N_hits",
+                    5,
+                    6.5,
+                    11.5,
+                    track_state + "_pulls_loc0 [mm]",
+                    100,
+                    -3,
+                    3,
                 )
                 self.histogram(
                     track_state + "_pulls_loc1-vs-N_hits",
-                    "N_hits", 5, 6.5, 11.5,
-                    track_state + "_pulls_loc1 [mm]", 100, -3, 3,
+                    "N_hits",
+                    5,
+                    6.5,
+                    11.5,
+                    track_state + "_pulls_loc1 [mm]",
+                    100,
+                    -3,
+                    3,
                 )
                 self.histogram(
                     track_state + "_pulls_loc0-vs-trk_p",
-                    "trk_p", 200, 0, 5,
-                    track_state + "_pulls_loc0 [mm]", 100, -3, 3,
+                    "trk_p",
+                    200,
+                    0,
+                    5,
+                    track_state + "_pulls_loc0 [mm]",
+                    100,
+                    -3,
+                    3,
                 )
                 self.histogram(
                     track_state + "_pulls_loc1-vs-trk_p",
-                    "trk_p", 200, 0, 5,
-                    track_state + "_pulls_loc1 [mm]", 100, -3, 3,
+                    "trk_p",
+                    200,
+                    0,
+                    5,
+                    track_state + "_pulls_loc1 [mm]",
+                    100,
+                    -3,
+                    3,
                 )
 
 
@@ -529,7 +760,11 @@ class StraightTracksDQM(Processor):
         self.histogram("ndf", "ndf", 5, 0, 5)
         self.histogram("Chi2_per_ndf", "Chi2/ndf", nbins, 0, 10)
         self.histogram(
-            "dRecHit", "Distance to Nearest EcalRecHit [mm]", nbins, 0.0, 20.0,
+            "dRecHit",
+            "Distance to Nearest EcalRecHit [mm]",
+            nbins,
+            0.0,
+            20.0,
         )
         self.histogram("phi_err", "#sigma_{#phi} [rad]", nbins, 0, 0.001)
         self.histogram("theta_err", "#sigma_{#theta} [rad]", nbins, 0, 0.03)
@@ -570,21 +805,33 @@ class StraightTracksDQM(Processor):
             self.histogram("trk_target_loc1", "trk_target_loc1 [mm]", 200, -50, 50)
             self.histogram(
                 "trk_target_loc0-truth_target_loc0",
-                "target trk_loc0 - truth_loc0 [mm]", 100, -0.1, 0.1,
+                "target trk_loc0 - truth_loc0 [mm]",
+                100,
+                -0.1,
+                0.1,
             )
             self.histogram(
                 "trk_target_loc1-truth_target_loc1",
-                "target trk_loc1 - truth_loc1 [mm]", 100, -2, 2,
+                "target trk_loc1 - truth_loc1 [mm]",
+                100,
+                -2,
+                2,
             )
             self.histogram("trk_ecal_loc0", "trk_ecal_loc0 [mm]", 200, -50, 50)
             self.histogram("trk_ecal_loc1", "trk_ecal_loc1 [mm]", 200, -50, 50)
             self.histogram(
                 "trk_ecal_loc0-truth_ecal_loc0",
-                "ecal trk_loc0 - truth_loc0 [mm]", 200, -0.3, 0.3,
+                "ecal trk_loc0 - truth_loc0 [mm]",
+                200,
+                -0.3,
+                0.3,
             )
             self.histogram(
                 "trk_ecal_loc1-truth_ecal_loc1",
-                "ecal trk_loc1 - truth_loc1 [mm]", 200, -6, 6,
+                "ecal trk_loc1 - truth_loc1 [mm]",
+                200,
+                -6,
+                6,
             )
 
             self.histogram(
@@ -598,41 +845,89 @@ class StraightTracksDQM(Processor):
 
             self.histogram(
                 "target_res_loc0-vs-N_hits",
-                "N_hits", 5, 0.0, 5.0,
-                "target_res_loc0 [mm]", 100, -0.2, 0.2,
+                "N_hits",
+                5,
+                0.0,
+                5.0,
+                "target_res_loc0 [mm]",
+                100,
+                -0.2,
+                0.2,
             )
             self.histogram(
                 "target_res_loc1-vs-N_hits",
-                "N_hits", 5, 0.0, 5.0,
-                "target_res_loc1 [mm]", 100, -5, 5,
+                "N_hits",
+                5,
+                0.0,
+                5.0,
+                "target_res_loc1 [mm]",
+                100,
+                -5,
+                5,
             )
             self.histogram(
                 "ecal_res_loc0-vs-N_hits",
-                "N_hits", 5, 0.0, 5.0,
-                "ecal_res_loc0 [mm]", 100, -0.2, 0.2,
+                "N_hits",
+                5,
+                0.0,
+                5.0,
+                "ecal_res_loc0 [mm]",
+                100,
+                -0.2,
+                0.2,
             )
             self.histogram(
                 "ecal_res_loc1-vs-N_hits",
-                "N_hits", 5, 0.0, 5.0,
-                "ecal_res_loc1 [mm]", 100, -5, 5,
+                "N_hits",
+                5,
+                0.0,
+                5.0,
+                "ecal_res_loc1 [mm]",
+                100,
+                -5,
+                5,
             )
             self.histogram(
                 "target_pulls_loc0-vs-N_hits",
-                "N_hits", 5, 0.0, 5.0,
-                "target_pulls_loc0 [mm]", 100, -3, 3,
+                "N_hits",
+                5,
+                0.0,
+                5.0,
+                "target_pulls_loc0 [mm]",
+                100,
+                -3,
+                3,
             )
             self.histogram(
                 "target_pulls_loc1-vs-N_hits",
-                "N_hits", 5, 0.0, 5.0,
-                "target_pulls_loc1 [mm]", 100, -3, 3,
+                "N_hits",
+                5,
+                0.0,
+                5.0,
+                "target_pulls_loc1 [mm]",
+                100,
+                -3,
+                3,
             )
             self.histogram(
                 "ecal_pulls_loc0-vs-N_hits",
-                "N_hits", 5, 0.0, 5.0,
-                "ecal_pulls_loc0 [mm]", 100, -3, 3,
+                "N_hits",
+                5,
+                0.0,
+                5.0,
+                "ecal_pulls_loc0 [mm]",
+                100,
+                -3,
+                3,
             )
             self.histogram(
                 "ecal_pulls_loc1-vs-N_hits",
-                "N_hits", 5, 0.0, 5.0,
-                "ecal_pulls_loc1 [mm]", 100, -3, 3,
+                "N_hits",
+                5,
+                0.0,
+                5.0,
+                "ecal_pulls_loc1 [mm]",
+                100,
+                -3,
+                3,
             )

@@ -1,7 +1,7 @@
 from LDMX.Framework import ldmxcfg
 
 
-p = ldmxcfg.Process('test')
+p = ldmxcfg.Process("test")
 
 p.max_tries_per_event = 100
 
@@ -10,32 +10,32 @@ from LDMX.SimCore import generators as gen
 from LDMX.SimCore import simulator as sim
 
 
-#my_gun = gen.single_4gev_e_upstream_tagger()
-my_gun = gen.Multi( instance_name="mgpGen" )
-my_gun.vertex = [ 0., 0., -880.] # mm
-my_gun.momentum = [0.,0.,4000.] # MeV
+# my_gun = gen.single_4gev_e_upstream_tagger()
+my_gun = gen.Multi(instance_name="mgpGen")
+my_gun.vertex = [0.0, 0.0, -880.0]  # mm
+my_gun.momentum = [0.0, 0.0, 4000.0]  # MeV
 my_gun.n_particles = 1
 my_gun.pdg_id = 11
-my_gun.enable_poisson = False #True
+my_gun.enable_poisson = False  # True
 
-my_sim = sim.Simulator( instance_name="my_sim" ) # Build simulator object
-det = 'ldmx-reduced-v3'
+my_sim = sim.Simulator(instance_name="my_sim")  # Build simulator object
+det = "ldmx-reduced-v3"
 
-my_sim.set_detector(det, include_scoring_planes_minimal = True )
-my_sim.description = 'Reduced ECal Electron Gun Test Simulation'
+my_sim.set_detector(det, include_scoring_planes_minimal=True)
+my_sim.description = "Reduced ECal Electron Gun Test Simulation"
 
-my_sim.generators = [ my_gun ]
-p.sequence = [ my_sim ]
+my_sim.generators = [my_gun]
+p.sequence = [my_sim]
 p.logger.term_level = 0
 
 import os
 
 
-p.max_events = int(os.environ['LDMX_NUM_EVENTS'])
-p.run = int(os.environ['LDMX_RUN_NUMBER'])
+p.max_events = int(os.environ["LDMX_NUM_EVENTS"])
+p.run = int(os.environ["LDMX_RUN_NUMBER"])
 
-p.histogram_file = 'hist.root'
-p.output_files = ['events.root']
+p.histogram_file = "hist.root"
+p.output_files = ["events.root"]
 
 import LDMX.Ecal.digi as ecal_digi
 import LDMX.Ecal.ecal_geometry
@@ -52,7 +52,7 @@ hcal_reco = hcal_digi_and_reco.HcalRecProducer()
 
 ecal_veto = ecal_vetos.EcalVetoProcessor()
 ecal_veto.num_ecal_layers = 4
-ecal_veto.beam_energy = 4000.
+ecal_veto.beam_energy = 4000.0
 ecal_veto.recoil_from_tracking = False
 
 ecal_mip = ecal_vetos.EcalMipProcessor()
@@ -68,10 +68,10 @@ from LDMX.TrigScint.trig_scint import (
 
 
 ts_digis = [
-        TrigScintDigiProducer.pad1(),
-        TrigScintDigiProducer.pad2(),
-        TrigScintDigiProducer.pad3(),
-        ]
+    TrigScintDigiProducer.pad1(),
+    TrigScintDigiProducer.pad2(),
+    TrigScintDigiProducer.pad3(),
+]
 
 from LDMX.Recon.electron_counter import ElectronCounter
 from LDMX.Recon.simple_trigger import TriggerProcessor
@@ -79,8 +79,8 @@ from LDMX.Recon.simple_trigger import TriggerProcessor
 
 count = ElectronCounter(
     simulated_electron_number=1,
-    instance_name='ElectronCounter',
-    input_pass_name='',
+    instance_name="ElectronCounter",
+    input_pass_name="",
 )
 
 # Load hcal veto
@@ -113,14 +113,15 @@ digi_recoil_reduced.merge_hits = True
 digi_recoil_reduced.sigma_u = 0.006
 digi_recoil_reduced.sigma_v = 0.000001
 
-#Midpoints between recoil layers. Used to classify hits by layer
-#Need to be manually updated for geometry changes that move the Recoil positions
-layer12_mid = (9.5+15.5)/2.
-layer23_mid = (15.5+24.5)/2.
-layer34_mid = (24.5+30.5)/2.
+# Midpoints between recoil layers. Used to classify hits by layer
+# Need to be manually updated for geometry changes that move the Recoil positions
+layer12_mid = (9.5 + 15.5) / 2.0
+layer23_mid = (15.5 + 24.5) / 2.0
+layer34_mid = (24.5 + 30.5) / 2.0
 
 truth_tracking = reduced_tracking.LinearTruthTracking(
-    instance_name="LinearTruthTracking")
+    instance_name="LinearTruthTracking"
+)
 truth_tracking.input_hits_collection = "RecoilSimHits"
 truth_tracking.input_rec_hits_collection = "EcalRecHits"
 truth_tracking.out_track_collection = "LinearRecoilTruthTracks"
@@ -143,9 +144,10 @@ r_tracking_dqm = trk_dqm.StraightTracksDQM(instance_name="LinearRecoilTracksDQM"
 r_tracking_dqm.track_collection = r_tracking.out_trk_collection
 r_tracking_dqm.truth_collection = truth_tracking.out_track_collection
 r_tracking_dqm.title = ""
-r_tracking_dqm.measurement_collection=digi_recoil_reduced.out_collection
+r_tracking_dqm.measurement_collection = digi_recoil_reduced.out_collection
 
-p.sequence.extend([
+p.sequence.extend(
+    [
         ecal_digi.EcalDigiProducer(),
         ecal_digi.EcalRecProducer(),
         ecal_veto,
@@ -158,27 +160,30 @@ p.sequence.extend([
         TrigScintClusterProducer.pad2(),
         TrigScintClusterProducer.pad3(),
         trig_scint_track,
-        count, TriggerProcessor(beam_energy=4000., instance_name='trigger'),
+        count,
+        TriggerProcessor(beam_energy=4000.0, instance_name="trigger"),
         digi_recoil_reduced,
         truth_tracking,
         r_seed_tracking,
         r_tracking,
         r_tracking_dqm,
         ecal_wab,
-        ecal_wab_dqm])
+        ecal_wab_dqm,
+    ]
+)
 
 reduced_ecal_dqm = [
-        dqm.EcalDigiVerify(),
-        dqm.EcalShowerFeatures(),
-        dqm.EcalMipTrackingFeatures(),
-        dqm.EcalVetoResults()
-        ]
+    dqm.EcalDigiVerify(),
+    dqm.EcalShowerFeatures(),
+    dqm.EcalMipTrackingFeatures(),
+    dqm.EcalVetoResults(),
+]
 
 reduced_dqm = [
-        dqm.sample_validation_dqm
-         + reduced_ecal_dqm
-         +  dqm.hcal_dqm
-         +  dqm.trig_scint_dqm
-         +  dqm.trigger_dqm
-         ]
+    dqm.sample_validation_dqm
+    + reduced_ecal_dqm
+    + dqm.hcal_dqm
+    + dqm.trig_scint_dqm
+    + dqm.trigger_dqm
+]
 p.sequence.extend(*reduced_dqm)

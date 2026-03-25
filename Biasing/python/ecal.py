@@ -40,7 +40,7 @@ def photo_nuclear(detector, generator):
     """
 
     # Instantiate the simulator.
-    sim = simulator.Simulator(instance_name = "photo-nuclear")
+    sim = simulator.Simulator(instance_name="photo-nuclear")
 
     # Set the path to the detector to use.
     #   the second parameter says we want to include scoring planes
@@ -92,7 +92,7 @@ def photo_nuclear(detector, generator):
 def nonfiducial_photo_nuclear(detector, generator):
 
     # Instantiate the simulator.
-    sim = simulator.Simulator(instance_name = "photo-nuclear")
+    sim = simulator.Simulator(instance_name="photo-nuclear")
 
     # Set the path to the detector to use.
     #   the second parameter says we want to include scoring planes
@@ -167,7 +167,7 @@ def gamma_mumu(detector, generator):
     """
 
     # Initiate the sim
-    sim = simulator.Simulator(instance_name = "ecal_gammamumu")
+    sim = simulator.Simulator(instance_name="ecal_gammamumu")
 
     # Set the path to the detector to use
     # Also tell the simulator to include scoring planes
@@ -220,7 +220,7 @@ def deep_photo_nuclear(
 ):
 
     # Instantiate the simulator.
-    sim = simulator.Simulator(instance_name = "photo-nuclear")
+    sim = simulator.Simulator(instance_name="photo-nuclear")
 
     # Set the path to the detector to use.
     #   the second parameter says we want to include scoring planes
@@ -239,7 +239,7 @@ def deep_photo_nuclear(
         + " GeV"
     )
 
-    sim.generators = [ generator ]
+    sim.generators = [generator]
 
     # Enable and configure the biasing
     sim.biasing_operators = [

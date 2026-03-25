@@ -1,7 +1,7 @@
 from LDMX.Framework import ldmxcfg
 
 
-p = ldmxcfg.Process('test')
+p = ldmxcfg.Process("test")
 
 p.max_tries_per_event = 10000
 
@@ -10,49 +10,52 @@ from LDMX.SimCore import generators as gen
 from LDMX.SimCore import simulator as sim
 
 
-det = 'ldmx-det-v15-8gev'
-my_sim = sim.Simulator( instance_name="my_sim" )
-my_sim.set_detector(det, include_scoring_planes_minimal = True )
-my_sim.description = 'Deep ECal Gun Simulation'
+det = "ldmx-det-v15-8gev"
+my_sim = sim.Simulator(instance_name="my_sim")
+my_sim.set_detector(det, include_scoring_planes_minimal=True)
+my_sim.description = "Deep ECal Gun Simulation"
 
 ene_ang_pos_cmds_ele = [
-        '/gps/ene/type Lin',
-        '/gps/ene/min 1 GeV',
-        '/gps/ene/max 3 GeV',
-        '/gps/ene/gradient 0.',
-        '/gps/ene/intercept 1.',
-        '/gps/ang/type cos',
-        '/gps/pos/type Plane',
-        '/gps/pos/shape Square',
-        '/gps/pos/centre 0 0 600 mm',
-        '/gps/pos/halfx 100 mm',
-        '/gps/pos/halfy 100 mm'
-        ]
+    "/gps/ene/type Lin",
+    "/gps/ene/min 1 GeV",
+    "/gps/ene/max 3 GeV",
+    "/gps/ene/gradient 0.",
+    "/gps/ene/intercept 1.",
+    "/gps/ang/type cos",
+    "/gps/pos/type Plane",
+    "/gps/pos/shape Square",
+    "/gps/pos/centre 0 0 600 mm",
+    "/gps/pos/halfx 100 mm",
+    "/gps/pos/halfy 100 mm",
+]
 
 ene_ang_pos_cmds_gamma = [
-        '/gps/ene/type Lin',
-        '/gps/ene/min 3 GeV',
-        '/gps/ene/max 5 GeV',
-        '/gps/ene/gradient 0.',
-        '/gps/ene/intercept 1.',
-        '/gps/ang/type cos',
-        '/gps/pos/type Plane',
-        '/gps/pos/shape Square',
-        '/gps/pos/centre 0 0 600 mm',
-        '/gps/pos/halfx 100 mm',
-        '/gps/pos/halfy 100 mm'
-        ]
+    "/gps/ene/type Lin",
+    "/gps/ene/min 3 GeV",
+    "/gps/ene/max 5 GeV",
+    "/gps/ene/gradient 0.",
+    "/gps/ene/intercept 1.",
+    "/gps/ang/type cos",
+    "/gps/pos/type Plane",
+    "/gps/pos/shape Square",
+    "/gps/pos/centre 0 0 600 mm",
+    "/gps/pos/halfx 100 mm",
+    "/gps/pos/halfy 100 mm",
+]
 
 # One electron and one photon both with the above initial kinematics
-gps_cmds = ['/gps/particle e-',
-            *ene_ang_pos_cmds_ele,
-            '/gps/source/add 1', '/gps/particle gamma',
-            *ene_ang_pos_cmds_gamma,
-            '/gps/source/multiplevertex True']
+gps_cmds = [
+    "/gps/particle e-",
+    *ene_ang_pos_cmds_ele,
+    "/gps/source/add 1",
+    "/gps/particle gamma",
+    *ene_ang_pos_cmds_gamma,
+    "/gps/source/multiplevertex True",
+]
 
-my_sim.generators = [gen.Gps(instance_name='electron_photon', init_commands=gps_cmds)]
+my_sim.generators = [gen.Gps(instance_name="electron_photon", init_commands=gps_cmds)]
 
-p.sequence = [ my_sim ]
+p.sequence = [my_sim]
 
 ##################################################################
 # Below should be the same for all sim scenarios
@@ -61,11 +64,11 @@ import os
 import sys
 
 
-p.max_events = int(os.environ['LDMX_NUM_EVENTS'])
-p.run = int(os.environ['LDMX_RUN_NUMBER'])
+p.max_events = int(os.environ["LDMX_NUM_EVENTS"])
+p.run = int(os.environ["LDMX_RUN_NUMBER"])
 
-p.histogram_file = 'hist.root'
-p.output_files = ['events.root']
+p.histogram_file = "hist.root"
+p.output_files = ["events.root"]
 
 # Load the full tracking sequance
 import LDMX.Ecal.digi as ecal_digi
@@ -94,11 +97,11 @@ from LDMX.Recon.simple_trigger import TriggerProcessor
 
 count = ElectronCounter(
     simulated_electron_number=1,
-    instance_name='ElectronCounter',
-    input_pass_name='',
+    instance_name="ElectronCounter",
+    input_pass_name="",
 )
 
-trigger = TriggerProcessor(beam_energy=8000., instance_name='trigger')
+trigger = TriggerProcessor(beam_energy=8000.0, instance_name="trigger")
 
 # Load the DQM modules
 from LDMX.DQM import dqm
@@ -110,7 +113,7 @@ ecal_veto.recoil_from_tracking = False
 
 ecal_mip = ecal_vetos.EcalMipProcessor()
 
-ecal_veto_pnet =  ecal_vetos.EcalPnetVetoProcessor()
+ecal_veto_pnet = ecal_vetos.EcalPnetVetoProcessor()
 ecal_veto_pnet.recoil_from_tracking = False
 
 # Load hcal veto
@@ -121,9 +124,10 @@ hcal_veto = hcal.HcalVetoProcessor()
 
 p.logger.term_level = 1
 # Example to show trace level logging for trigger (only)
-p.logger.custom(trigger, level = -1)
+p.logger.custom(trigger, level=-1)
 
-p.sequence.extend([
+p.sequence.extend(
+    [
         ecal_digi.EcalDigiProducer(),
         ecal_digi.EcalRecProducer(),
         ecal_cluster.EcalClusterProducer(),
@@ -134,17 +138,15 @@ p.sequence.extend([
         hcal_reco,
         hcal_veto,
         trigger,
-        dqm.EcalClusterAnalyzer()
-        ])
+        dqm.EcalClusterAnalyzer(),
+    ]
+)
 
 p.skim_default_is_drop()
 p.skim_consider(trigger.instance_name)
 
 almost_all_dqm = [
-        dqm.sample_validation_dqm
-        + dqm.ecal_dqm
-        + dqm.hcal_dqm
-        + dqm.trigger_dqm
-        ]
+    dqm.sample_validation_dqm + dqm.ecal_dqm + dqm.hcal_dqm + dqm.trigger_dqm
+]
 
 p.sequence.extend(*almost_all_dqm)

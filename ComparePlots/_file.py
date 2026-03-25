@@ -8,7 +8,7 @@ import mplhep
 import uproot
 
 
-class File :
+class File:
     """File entry in Differ object holding histogram objects
 
     Parameters
@@ -21,22 +21,21 @@ class File :
     open_kwargs : dict
         all other key-word arguments are passed to uproot.open
     """
-    log = logging.getLogger('File')
 
-    def __init__(self, filepath, hist_kwargs = None, **open_kwargs) :
+    log = logging.getLogger("File")
+
+    def __init__(self, filepath, hist_kwargs=None, **open_kwargs):
         if hist_kwargs is None:
             hist_kwargs = {}
         self.root_file = uproot.open(filepath, **open_kwargs)
         self.hist_kwargs = hist_kwargs
 
-
-    def __repr__(self) :
+    def __repr__(self):
         """Represent this File in a short form"""
-        return 'File { Histograms labeled '+self.hist_kwargs['label']+' }'
-
+        return "File { Histograms labeled " + self.hist_kwargs["label"] + " }"
 
     @staticmethod
-    def from_path(filepath, legendlabel_parameter = None) :
+    def from_path(filepath, legendlabel_parameter=None):
         """Extract the legend-label for histograms from this file using the filepath
 
         This is separated from the contsructor because
@@ -61,41 +60,34 @@ class File :
         legendlabel_parameter : str, optional
             key-name to use in legend-label for this File
         """
-        fn = os.path.basename(filepath).replace('.root','')
-        parts = fn.split('_')
-        if len(parts)%2 != 0 :
+        fn = os.path.basename(filepath).replace(".root", "")
+        parts = fn.split("_")
+        if len(parts) % 2 != 0:
             raise ValueError(
-                f'The filename provided {fn} cannot be'
-                ' split into key_val pairs.'
-                '\n\tWorking example: hist_new.root'
+                f"The filename provided {fn} cannot be"
+                " split into key_val pairs."
+                "\n\tWorking example: hist_new.root"
             )
         file_params = {
-            parts[i]: parts[i+1]
-            for i in range(len(parts)-1)
-            if i%2 == 0
+            parts[i]: parts[i + 1] for i in range(len(parts) - 1) if i % 2 == 0
         }
-        File.log.debug(f'Deduced File Parameters: {file_params}')
+        File.log.debug(f"Deduced File Parameters: {file_params}")
 
-        if legendlabel_parameter is None :
+        if legendlabel_parameter is None:
             legendlabel_parameter = [next(iter(file_params))]
-        ll = [
-            file_params[key]
-            for key in legendlabel_parameter
-            if key in file_params
-        ]
+        ll = [file_params[key] for key in legendlabel_parameter if key in file_params]
         if len(ll) < len(legendlabel_parameter):
             missing_params = set(legendlabel_parameter) - set(file_params.keys())
             raise KeyError(
                 f"{', '.join(missing_params)} not in"
                 f" deduced file parameters:\n{file_params}"
             )
-        ll='_'.join(ll)
+        ll = "_".join(ll)
 
-        File.log.debug(f'Deduced File Label: {ll}')
-        return File(filepath, hist_kwargs={'label': ll})
+        File.log.debug(f"Deduced File Label: {ll}")
+        return File(filepath, hist_kwargs={"label": ll})
 
-
-    def keys(self, *args, **kwargs) :
+    def keys(self, *args, **kwargs):
         """Callback into uproot keys
 
         Helpful for exploring the file when trying to decide
@@ -103,12 +95,10 @@ class File :
         """
         return self.root_file.keys(*args, **kwargs)
 
-
     @property
     def path(self):
         """Retrun the path to the file on disk"""
         return self.root_file.file_path
-
 
     def get(self, obj):
         """Get the input ROOT histogram by name and return it as a hist.Hist"""

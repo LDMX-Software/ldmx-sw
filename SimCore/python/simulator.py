@@ -148,12 +148,12 @@ class Simulator(Processor):
                 sds.TrigScintSD.pad3(),
             ]
         self.sensitive_detectors = [
-                sds.TrackerSD.tagger(),
-                sds.TrackerSD.recoil(),
-                sds.HcalSD(),
-                sds.EcalSD(),
-                sds.TrigScintSD.target(),
-                *trigscint
+            sds.TrackerSD.tagger(),
+            sds.TrackerSD.recoil(),
+            sds.HcalSD(),
+            sds.EcalSD(),
+            sds.TrigScintSD.target(),
+            *trigscint,
         ]
         if include_scoring_planes_minimal:
             self.scoring_planes = make_path.make_scoring_planes_path(det_name)

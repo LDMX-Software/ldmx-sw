@@ -4,16 +4,16 @@ import sys
 from LDMX.Framework import ldmxcfg
 
 
-this_pass_name = 'test'
-p=ldmxcfg.Process(this_pass_name)
+this_pass_name = "test"
+p = ldmxcfg.Process(this_pass_name)
 
 # This need to be set but has no meaning given p.total_events
 p.max_events = 1
 # kaon-focused sample takes about twice as long as normal PN,
 # so we ask for half as many events such that validation jobs stay
 # time-limited by the PN
-p.total_events = int(os.environ['LDMX_NUM_EVENTS']) // 2
-p.run = int(os.environ['LDMX_RUN_NUMBER'])
+p.total_events = int(os.environ["LDMX_NUM_EVENTS"]) // 2
+p.run = int(os.environ["LDMX_RUN_NUMBER"])
 
 from LDMX.Biasing import ecal, filters, particle_filter, util
 from LDMX.SimCore import bias_operators, kaon_physics
@@ -21,34 +21,38 @@ from LDMX.SimCore import generators as gen
 from LDMX.SimCore import photonuclear_models as pn
 
 
-detector = 'ldmx-det-v15-8gev'
-generator=gen.single_8gev_e_upstream_tagger()
-bias_factor = 550.
-bias_treshold = 5000.
+detector = "ldmx-det-v15-8gev"
+generator = gen.single_8gev_e_upstream_tagger()
+bias_factor = 550.0
+bias_treshold = 5000.0
 
 my_sim = ecal.photo_nuclear(detector, generator)
-my_sim.description = f'8 GeV ECal Kaon PN simulation, xsec bias {bias_factor}'
+my_sim.description = f"8 GeV ECal Kaon PN simulation, xsec bias {bias_factor}"
 my_sim.biasing_operators = [
     bias_operators.PhotoNuclear(
-        'ecal', bias_factor, bias_treshold,
+        "ecal",
+        bias_factor,
+        bias_treshold,
         only_children_of_primary=True,
     )
 ]
 
 # Configure the sequence in which user actions should be called.
 my_sim.actions.clear()
-my_sim.actions.extend([
-        filters.TaggerVetoFilter(threshold=2*3800.),
+my_sim.actions.extend(
+    [
+        filters.TaggerVetoFilter(threshold=2 * 3800.0),
         # Only consider events where a hard brem occurs
         filters.TargetBremFilter(
-            recoil_max_p_threshold=2*1500.,
-            brem_min_energy_threshold=2*2500.,
+            recoil_max_p_threshold=2 * 1500.0,
+            brem_min_energy_threshold=2 * 2500.0,
         ),
         # Only consider events where a PN reaction happnes in the ECal
         filters.EcalProcessFilter(),
         # Tag all photo-nuclear tracks to persist them to the event.
-        util.TrackProcessFilter.photo_nuclear()
-])
+        util.TrackProcessFilter.photo_nuclear(),
+    ]
+)
 
 # set up "up_kaon" parameters which reduces the charged kaon lifetimes by a factor 1/50
 # and forces decays to be into one of the leptonic decay modes.
@@ -57,11 +61,11 @@ my_sim.kaon_parameters = kaon_physics.KaonPhysics.up_kaons()
 # Alternative pn models
 my_model = pn.BertiniAtLeastNProductsModel.kaon()
 # Count all (not stopped) particles as "hard"
-my_model.hard_particle_threshold = 0.
+my_model.hard_particle_threshold = 0.0
 # Apply the model to any nucleus
 my_model.zmin = 0
 # Apply the model for photonuclear reactions with > 5000 MeV photons
-my_model.emin = 5000.
+my_model.emin = 5000.0
 # PDG ids for K^0_L, K^0_S, K^0, K^+, and K^- respectively
 my_model.pdg_ids = [130, 310, 311, 321, -321]
 # Require at least 1 hard particle from the list above
@@ -75,7 +79,7 @@ my_sim.photonuclear_model = my_model
 my_filter = particle_filter.PhotoNuclearProductsFilter.kaon()
 my_sim.actions.extend([my_filter])
 
-p.sequence=[my_sim]
+p.sequence = [my_sim]
 
 # Load the full tracking sequance
 # Load the ECAL modules
@@ -103,18 +107,18 @@ from LDMX.TrigScint.trig_scint import (
 )
 
 
-#TS digi + clustering + track chain
+# TS digi + clustering + track chain
 ts_digis = [
-        TrigScintDigiProducer.pad1(),
-        TrigScintDigiProducer.pad2(),
-        TrigScintDigiProducer.pad3(),
-        ]
+    TrigScintDigiProducer.pad1(),
+    TrigScintDigiProducer.pad2(),
+    TrigScintDigiProducer.pad3(),
+]
 
 ts_clusters = [
-        TrigScintClusterProducer.pad1(),
-        TrigScintClusterProducer.pad2(),
-        TrigScintClusterProducer.pad3(),
-        ]
+    TrigScintClusterProducer.pad1(),
+    TrigScintClusterProducer.pad2(),
+    TrigScintClusterProducer.pad3(),
+]
 
 # ECAL part
 ecal_reco = ecal_digi_reco.EcalRecProducer()
@@ -132,11 +136,11 @@ hcal_reco = hcal_digi_and_reco.HcalRecProducer()
 e_count = ElectronCounter(
     simulated_electron_number=1,
     instance_name="ElectronCounter",
-    input_pass_name='',
+    input_pass_name="",
 )
 simple_trig = TriggerProcessor(
     instance_name="simple_trig",
-    beam_energy=8000.,
+    beam_energy=8000.0,
     input_pass=this_pass_name,
 )
 
@@ -157,7 +161,8 @@ p.logger.term_level = 1
 p.sequence.extend(full_tracking_sequence.sequence)
 p.sequence.extend(full_tracking_sequence.dqm_sequence)
 
-p.sequence.extend([
+p.sequence.extend(
+    [
         ecal_digi,
         ecal_reco,
         ecal_veto,
@@ -171,11 +176,12 @@ p.sequence.extend([
         hcal_digi,
         hcal_reco,
         hcal_veto,
-        dqm.PhotoNuclearDQM()
-        ])
+        dqm.PhotoNuclearDQM(),
+    ]
+)
 
 p.sequence.extend(dqm.all_dqm)
 
 
-p.histogram_file = 'hist.root'
-p.output_files = ['events.root']
+p.histogram_file = "hist.root"
+p.output_files = ["events.root"]

@@ -12,7 +12,7 @@ import os
 import sys
 
 
-def _make_path( det_name , file_name ) :
+def _make_path(det_name, file_name):
     """Return a path to the installed data directory for the input detector and
     file names.
 
@@ -39,14 +39,16 @@ def _make_path( det_name , file_name ) :
         full path to installed detector gdml description
     """
 
-    full_path = ('@CMAKE_INSTALL_PREFIX@/data/detectors/'
-                 + det_name + '/' + file_name + '.gdml')
-    if not os.path.isfile( full_path ) :
-        raise ValueError(f'GDML file \'{full_path}\' does not exist.')
+    full_path = (
+        "@CMAKE_INSTALL_PREFIX@/data/detectors/" + det_name + "/" + file_name + ".gdml"
+    )
+    if not os.path.isfile(full_path):
+        raise ValueError(f"GDML file '{full_path}' does not exist.")
 
     return full_path
 
-def make_detector_path( det_name ) :
+
+def make_detector_path(det_name):
     """Get the full path to the installed ldmx detector description
 
     Parameters
@@ -67,9 +69,10 @@ def make_detector_path( det_name ) :
         mySimulator.detector = make_detector_path( 'ldmx-det-v12' )
     """
 
-    return _make_path( det_name , 'detector' )
+    return _make_path(det_name, "detector")
 
-def make_scoring_planes_path( det_name ) :
+
+def make_scoring_planes_path(det_name):
     """Get the full path to the installed ldmx scoring planes description
 
     Parameters
@@ -90,4 +93,4 @@ def make_scoring_planes_path( det_name ) :
         mySimulator.scoring_planes = make_scoring_planes_path( 'ldmx-det-v12' )
     """
 
-    return _make_path( det_name , 'scoring_planes' )
+    return _make_path(det_name, "scoring_planes")

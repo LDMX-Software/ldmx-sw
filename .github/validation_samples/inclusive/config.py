@@ -1,21 +1,21 @@
 from LDMX.Framework import ldmxcfg
 
 
-p = ldmxcfg.Process('test')
+p = ldmxcfg.Process("test")
 
 from LDMX.SimCore import simulator as sim
 
 
-my_sim = sim.Simulator( instance_name="my_sim" )
-det = 'ldmx-det-v15-8gev'
-my_sim.set_detector(det, include_scoring_planes_minimal = True )
+my_sim = sim.Simulator(instance_name="my_sim")
+det = "ldmx-det-v15-8gev"
+my_sim.set_detector(det, include_scoring_planes_minimal=True)
 from LDMX.SimCore import generators as gen
 
 
-my_sim.generators.append( gen.single_8gev_e_upstream_tagger() )
-my_sim.description = 'Basic test Simulation'
+my_sim.generators.append(gen.single_8gev_e_upstream_tagger())
+my_sim.description = "Basic test Simulation"
 
-p.sequence = [ my_sim ]
+p.sequence = [my_sim]
 
 ##################################################################
 # Below should be the same for all sim scenarios
@@ -24,11 +24,11 @@ import os
 import sys
 
 
-p.run = int(os.environ['LDMX_RUN_NUMBER'])
-p.max_events = int(os.environ['LDMX_NUM_EVENTS'])
+p.run = int(os.environ["LDMX_RUN_NUMBER"])
+p.max_events = int(os.environ["LDMX_NUM_EVENTS"])
 
-p.histogram_file = 'hist.root'
-p.output_files = ['events.root']
+p.histogram_file = "hist.root"
+p.output_files = ["events.root"]
 
 # Load the full tracking sequence
 import LDMX.Ecal.digi as ecal_digi
@@ -51,23 +51,23 @@ hcal_reco = hcal_digi_and_reco.HcalRecProducer()
 
 # Load the TS modules
 from LDMX.TrigScint.trig_scint import (
-        TrigScintClusterProducer,
-        TrigScintDigiProducer,
-        trig_scint_track,
+    TrigScintClusterProducer,
+    TrigScintDigiProducer,
+    trig_scint_track,
 )
 
 
 ts_digis = [
-        TrigScintDigiProducer.pad1(),
-        TrigScintDigiProducer.pad2(),
-        TrigScintDigiProducer.pad3(),
-        ]
+    TrigScintDigiProducer.pad1(),
+    TrigScintDigiProducer.pad2(),
+    TrigScintDigiProducer.pad3(),
+]
 
 ts_clusters = [
-        TrigScintClusterProducer.pad1(),
-        TrigScintClusterProducer.pad2(),
-        TrigScintClusterProducer.pad3(),
-        ]
+    TrigScintClusterProducer.pad1(),
+    TrigScintClusterProducer.pad2(),
+    TrigScintClusterProducer.pad3(),
+]
 
 # Load the DQM modules
 from LDMX.DQM import dqm
@@ -79,8 +79,8 @@ from LDMX.Recon.simple_trigger import TriggerProcessor
 
 count = ElectronCounter(
     simulated_electron_number=1,
-    instance_name='ElectronCounter',
-    input_pass_name='',
+    instance_name="ElectronCounter",
+    input_pass_name="",
 )
 
 # Load ecal veto and use tracking in it
@@ -108,7 +108,8 @@ p.logger.term_level = 1
 p.sequence.extend(full_tracking_sequence.sequence)
 p.sequence.extend(full_tracking_sequence.dqm_sequence)
 
-p.sequence.extend([
+p.sequence.extend(
+    [
         ecal_digi.EcalDigiProducer(),
         ecal_digi.EcalRecProducer(),
         ecal_pres_skimmer,
@@ -122,9 +123,11 @@ p.sequence.extend([
         *ts_digis,
         *ts_clusters,
         trig_scint_track,
-        count, TriggerProcessor(beam_energy=8000., instance_name='trigger'),
+        count,
+        TriggerProcessor(beam_energy=8000.0, instance_name="trigger"),
         dqm.PhotoNuclearDQM(),
-        dqm.EcalClusterAnalyzer()
-        ])
+        dqm.EcalClusterAnalyzer(),
+    ]
+)
 
 p.sequence.extend(dqm.all_dqm)

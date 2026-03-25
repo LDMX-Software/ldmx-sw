@@ -38,7 +38,7 @@ class SimpleCSVTableEntry:
     first_run: int = -1
     last_run: int = -1
     run_type: str = "any"
-    values: list[float|int] = []
+    values: list[float | int] = []
 
 
 @conditions_object_provider(
@@ -71,10 +71,8 @@ class SimpleCSVTableProvider(ConditionsObjectProvider):
     entries_url: str = ""
     entries: list[SimpleCSVTableEntry] = []
 
-
     def __post_init__(self):
         self.object_name = self.obj_name
-
 
     def valid_forever(self, url):
         """Add an entry to this provider that is valid
@@ -86,8 +84,7 @@ class SimpleCSVTableProvider(ConditionsObjectProvider):
             Location to download the table from
         """
 
-        self.entries.append(SimpleCSVTableEntry(url = url))
-
+        self.entries.append(SimpleCSVTableEntry(url=url))
 
     def valid_for_runs(self, url, first_run, last_run):
         """Add an entry to this provider that is valid
@@ -106,7 +103,6 @@ class SimpleCSVTableProvider(ConditionsObjectProvider):
             SimpleCSVTableEntry(url=url, first_run=first_run, last_run=last_run)
         )
 
-
     def valid_for_all_rows(self, values):
         """Define a value to use for all rows instead of
         downloading the table from a URL
@@ -117,7 +113,7 @@ class SimpleCSVTableProvider(ConditionsObjectProvider):
             A value for each column to use for all rows
         """
 
-        self.entries.append(SimpleCSVTableEntry(url = "python:", values = values))
+        self.entries.append(SimpleCSVTableEntry(url="python:", values=values))
 
 
 def simple_csv_double_table_provider(obj_name, columns):
@@ -125,6 +121,7 @@ def simple_csv_double_table_provider(obj_name, columns):
     return SimpleCSVTableProvider(
         obj_name=obj_name, data_type="double", columns=columns
     )
+
 
 def simple_csv_integer_table_provider(obj_name, columns):
     """Factory for a SimpleCSVTableProvider for tables of integers"""

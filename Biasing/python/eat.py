@@ -61,7 +61,7 @@ def midshower_nuclear(
     """
 
     # Instantiate the simulator.
-    sim = simulator.Simulator(instance_name = "eat-midshower-nuclear")
+    sim = simulator.Simulator(instance_name="eat-midshower-nuclear")
     from LDMX.Ecal import ecal_geometry
 
     # Set the path to the detector to use.
@@ -140,7 +140,7 @@ def midshower_dimuon(
     """
 
     # Instantiate the simulator.
-    sim = simulator.Simulator(instance_name = "eat-midshower-dimuon")
+    sim = simulator.Simulator(instance_name="eat-midshower-dimuon")
     from LDMX.Ecal import ecal_geometry
 
     # Set the path to the detector to use.
@@ -227,7 +227,7 @@ def dark_brem(
 
     """
 
-    sim = simulator.Simulator(instance_name = f"ecal_dark_brem_{ap_mass!s}MeV")
+    sim = simulator.Simulator(instance_name=f"ecal_dark_brem_{ap_mass!s}MeV")
     from LDMX.Ecal import ecal_geometry
 
     sim.description = (

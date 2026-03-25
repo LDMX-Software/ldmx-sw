@@ -106,7 +106,7 @@ def processor(
         class_name=field(default=class_name, init=False),
         module_name=field(default=module_name, init=False),
         instance_name=default_instance_name,
-        post_init = lambda self: _register.library(self.module_name),
+        post_init=lambda self: _register.library(self.module_name),
         required_base=Processor,
     )
 
@@ -138,7 +138,7 @@ def make_processor(name: str, class_name: str, module_name: str, **kwargs):
         class_name=class_name,
         module_name=module_name,
         instance_name=name,
-        post_init = lambda self: _register.library(self.module_name),
+        post_init=lambda self: _register.library(self.module_name),
         required_base=Processor,
         **kwargs,
     )(types.new_class(name, (Processor,)))

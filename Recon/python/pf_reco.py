@@ -74,11 +74,11 @@ class PFTruthProducer(Processor):
     output_target_coll_name: str = "PFTruthTarget"
     output_ecal_coll_name: str = "PFTruthEcal"
     output_hcal_coll_name: str = "PFTruthHcal"
-    target_sp_coll_name: str = 'TargetScoringPlaneHits'
+    target_sp_coll_name: str = "TargetScoringPlaneHits"
     target_sp_passname: str = ""
-    ecal_sp_coll_name: str = 'EcalScoringPlaneHits'
+    ecal_sp_coll_name: str = "EcalScoringPlaneHits"
     ecal_sp_passname: str = ""
-    sim_particles_coll_name: str = 'SimParticles'
+    sim_particles_coll_name: str = "SimParticles"
     sim_particles_passname: str = ""
     sim_particles_event_passname: str = ""
     ecal_sp_hits_event_passname: str = ""

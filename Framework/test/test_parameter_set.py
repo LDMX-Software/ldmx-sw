@@ -161,17 +161,16 @@ class TestParameter(unittest.TestCase):
             c.className = "OldClass"
         self.assertEqual(c.class_name, "OldClass")
 
-
     def test_make_processor(self):
-        p = make_processor('MyClass2', 'my::Class', 'MyModule')
+        p = make_processor("MyClass2", "my::Class", "MyModule")
         self.assertDictEqual(
             p.__dict__,
             {
-                'instance_name': 'MyClass2',
-                'class_name': 'my::Class',
-                'module_name': 'MyModule',
-                'histograms': []
-            }
+                "instance_name": "MyClass2",
+                "class_name": "my::Class",
+                "module_name": "MyModule",
+                "histograms": [],
+            },
         )
 
 

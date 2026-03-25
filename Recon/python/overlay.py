@@ -95,7 +95,7 @@ class OverlayProducer(Processor):
         "TaggerSimHits",
         "RecoilSimHits",
         "EcalScoringPlaneHits",
-        "TargetScoringPlaneHits"
+        "TargetScoringPlaneHits",
     ]
     particle_collections: list[str] = ["SimParticles"]
     contrib_collections: list[str] = ["EcalSimHits", "HcalSimHits"]

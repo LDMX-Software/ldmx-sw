@@ -35,7 +35,7 @@ def electro_nuclear(detector, generator):
     """
 
     # Instantiate the sim.
-    sim = simulator.Simulator(instance_name = "target_electronNuclear")
+    sim = simulator.Simulator(instance_name="target_electronNuclear")
 
     # Set the path to the detector to use.
     #   Also tell the simulator to include scoring planes
@@ -90,7 +90,7 @@ def photo_nuclear(detector, generator):
     """
 
     # Instantiate the sim.
-    sim = simulator.Simulator(instance_name = "target_photonNuclear")
+    sim = simulator.Simulator(instance_name="target_photonNuclear")
 
     # Set the path to the detector to use.
     #   Also tell the simulator to include scoring planes
@@ -163,7 +163,7 @@ def gamma_mumu(detector, generator):
     """
 
     # Instantiate the sim.
-    sim = simulator.Simulator(instance_name = "target_gammamumu")
+    sim = simulator.Simulator(instance_name="target_gammamumu")
 
     # Set the path to the detector to use.
     #   Also tell the simulator to include scoring planes
@@ -244,7 +244,7 @@ def dark_brem(
 
         target_ap_sim = target.dark_brem(1000, 'path/to/lhe', 'ldmx-det-v12')
     """
-    sim = simulator.Simulator(instance_name = f"target_dark_brem_{ap_mass!s}_MeV")
+    sim = simulator.Simulator(instance_name=f"target_dark_brem_{ap_mass!s}_MeV")
 
     sim.description = (
         "One e- fired far upstream with Dark Brem turned on and biased up in target"
@@ -292,12 +292,20 @@ def dark_brem(
     return sim
 
 
-def aprime_to_fcp( ap_mass, fcp_mass, lhe, detector, generator,
-                   fcp_charge = 0.1,
-                   fcp_xsec_factor = 1e10,
-                   scale_aprime = False, decay_mode = 'no_decay',
-                   ap_tau = -1.0, dist_decay_min = 0.0,
-                   dist_decay_max = 1.0) :
+def aprime_to_fcp(
+    ap_mass,
+    fcp_mass,
+    lhe,
+    detector,
+    generator,
+    fcp_charge=0.1,
+    fcp_xsec_factor=1e10,
+    scale_aprime=False,
+    decay_mode="no_decay",
+    ap_tau=-1.0,
+    dist_decay_min=0.0,
+    dist_decay_max=1.0,
+):
     """Example configuration for producing A' -> fcp+ fcp- in the target.
 
     This configures the sim to fire an 8 GeV electron upstream of the
@@ -347,55 +355,61 @@ def aprime_to_fcp( ap_mass, fcp_mass, lhe, detector, generator,
             0.01, 100., makePath.makeLHEPath(0.01), 'ldmx-det-v15-8gev',
             generators.single_8gev_e_upstream_tagger())
     """
-    sim = simulator.Simulator( "target_aprime_fcp_" + str(fcp_mass) + "_MeV" )
+    sim = simulator.Simulator("target_aprime_fcp_" + str(fcp_mass) + "_MeV")
 
     sim.description = (
         f"One e- fired far upstream with Dark Brem turned on and biased up in target,"
         f" A' mass {ap_mass} MeV, fcp mass {fcp_mass} MeV, fcp charge {fcp_charge}e"
     )
-    sim.set_detector( detector , include_scoring_planes_minimal = True )
-    sim.generators.append( generator )
+    sim.set_detector(detector, include_scoring_planes_minimal=True)
+    sim.generators.append(generator)
 
     # Activate dark bremming with a certain A' mass and LHE library
     from LDMX.SimCore import dark_brem
+
     db_model = dark_brem.G4DarkBreMModel(lhe)
-    db_model.threshold = 4.  # GeV
-    db_model.epsilon   = 0.01
+    db_model.threshold = 4.0  # GeV
+    db_model.epsilon = 0.01
     db_model.scale_aprime = scale_aprime
     db_model.decay_mode = decay_mode
     db_model.ap_tau = ap_tau
     db_model.dist_decay_min = dist_decay_min
     db_model.dist_decay_max = dist_decay_max
-    sim.dark_brem.activate( ap_mass , db_model )
+    sim.dark_brem.activate(ap_mass, db_model)
 
     # Activate A' -> fcp+ fcp- conversion with cross section biasing
-    sim.dark_brem.activate_fcp( fcp_mass , fcp_charge, fcp_xsec_factor )
+    sim.dark_brem.activate_fcp(fcp_mass, fcp_charge, fcp_xsec_factor)
 
     import math
-    mass_power = max(math.log10(sim.dark_brem.ap_mass), 2.)
+
+    mass_power = max(math.log10(sim.dark_brem.ap_mass), 2.0)
 
     # Biasing dark brem up inside of the target
     sim.biasing_operators = [
-            bias_operators.DarkBrem.target(
-                sim.dark_brem.ap_mass**mass_power / db_model.epsilon**2)
-            ]
+        bias_operators.DarkBrem.target(
+            sim.dark_brem.ap_mass**mass_power / db_model.epsilon**2
+        )
+    ]
 
     # the following filters are in a library that needs to be included
     includeBiasing.library()  # noqa: F821
 
-    sim.actions.extend([
-        # make sure electron reaches target with 7 GeV
-        filters.TaggerVetoFilter(7000.),
-        # make sure dark brem occurs in the target where A' has at least 4GeV
-        filters.TargetDarkBremFilter(4000.),
-        # keep all products of dark brem and fcp conversion
-        util.TrackProcessFilter.dark_brem(),
-        util.TrackProcessFilter.aprime_to_fcp()
-        ])
+    sim.actions.extend(
+        [
+            # make sure electron reaches target with 7 GeV
+            filters.TaggerVetoFilter(7000.0),
+            # make sure dark brem occurs in the target where A' has at least 4GeV
+            filters.TargetDarkBremFilter(4000.0),
+            # keep all products of dark brem and fcp conversion
+            util.TrackProcessFilter.dark_brem(),
+            util.TrackProcessFilter.aprime_to_fcp(),
+        ]
+    )
 
     return sim
 
-def gamma_to_fcp( detector, generator, fcp_mass, fcp_charge = 0.1 ) :
+
+def gamma_to_fcp(detector, generator, fcp_mass, fcp_charge=0.1):
     """Example configuration for biasing gamma to fcp+ fcp- target conversions
 
     In this particular example, electrons are fired upstream of the
@@ -434,20 +448,20 @@ def gamma_to_fcp( detector, generator, fcp_mass, fcp_charge = 0.1 ) :
 
     # Set the path to the detector to use.
     #   Also tell the simulator to include scoring planes
-    sim.set_detector( detector , include_scoring_planes_minimal = True )
+    sim.set_detector(detector, include_scoring_planes_minimal=True)
 
     # Set run parameters
-    xsec_bias_threshold = min(0.625 * generator.energy * 1000., 2. * fcp_mass)
-    tagger_threshold = 0.95 * generator.energy * 1000.
+    xsec_bias_threshold = min(0.625 * generator.energy * 1000.0, 2.0 * fcp_mass)
+    tagger_threshold = 0.95 * generator.energy * 1000.0
 
-    brem_min_e = min(0.625 * generator.energy * 1000., 2. * fcp_mass)
-    recoil_max_p = generator.energy * 1000. - brem_min_e
-    xsec_bias = 1.E10 if generator.energy == 8.0 else 3.E9
+    brem_min_e = min(0.625 * generator.energy * 1000.0, 2.0 * fcp_mass)
+    recoil_max_p = generator.energy * 1000.0 - brem_min_e
+    xsec_bias = 1.0e10 if generator.energy == 8.0 else 3.0e9
 
     sim.generators.append(generator)
 
     # Enable gamma -> fcp conversion via the independent FCPPhysics constructor
-    sim.fcp_physics.activate( fcp_mass, fcp_charge )
+    sim.fcp_physics.activate(fcp_mass, fcp_charge)
 
     # Enable and configure the biasing
     sim.description = (
@@ -456,24 +470,24 @@ def gamma_to_fcp( detector, generator, fcp_mass, fcp_charge = 0.1 ) :
         f" fcp mass {fcp_mass} MeV, fcp charge {fcp_charge}e"
     )
     sim.biasing_operators = [
-        bias_operators.GammaToFCPPair(
-            'target', xsec_bias, xsec_bias_threshold
-        )
+        bias_operators.GammaToFCPPair("target", xsec_bias, xsec_bias_threshold)
     ]
 
     # the following filters are in a library that needs to be included
     includeBiasing.library()  # noqa: F821
 
     # Configure the sequence in which user actions should be called.
-    sim.actions.extend([
+    sim.actions.extend(
+        [
             # Only consider events where a hard brem occurs
-            filters.TaggerVetoFilter(thresh = tagger_threshold),
+            filters.TaggerVetoFilter(thresh=tagger_threshold),
             filters.TargetBremFilter(
                 recoil_max_p=recoil_max_p,
                 brem_min_e=brem_min_e,
             ),
             filters.TargetGammaFCPFilter(),
-            util.TrackProcessFilter.gamma_to_fcp()
-    ])
+            util.TrackProcessFilter.gamma_to_fcp(),
+        ]
+    )
 
     return sim

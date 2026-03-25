@@ -7,7 +7,7 @@ abspath = os.path.abspath(__file__)
 dname = os.path.dirname(abspath)
 os.chdir(dname)
 
-'''
+"""
 
 Author: CJ Barton / Lund University group
 Added to ldmx-sw Feb 2026
@@ -47,27 +47,26 @@ It should be noted that this script is only concerned with differentiating
 TSPads+instruments. External factors, like where to place them in the world or
 the definitions of the materials, should still be defined elsewhere, for
 example in the constants.gdml or materials.gdml files.
-'''
+"""
 
-#Material variable names (material definitions should be found in materials.gdml)
-scintillator_mat ="Polyvinyltoluene"
-lightpipe_mat    ="AcrylicPMMA"
-sipm_mat         ="Silicon"
+# Material variable names (material definitions should be found in materials.gdml)
+scintillator_mat = "Polyvinyltoluene"
+lightpipe_mat = "AcrylicPMMA"
+sipm_mat = "Silicon"
 
-#To streamline TargetDarkBremFilter.cxx, TSPad3 and its components are
-#considered part of the 'target' G4Region, whereas TSPad1/2 are in the
+# To streamline TargetDarkBremFilter.cxx, TSPad3 and its components are
+# considered part of the 'target' G4Region, whereas TSPad1/2 are in the
 #'trig_scint' region.
-region_name = ["trig_scint","trig_scint","target"]
+region_name = ["trig_scint", "trig_scint", "target"]
 
 for i in range(3):
+    # Variables that must change between iterations
+    filename = f"tspad{i + 1}_assembly.gdml"
+    scintillator_lvname = f"trigger_pad{i + 1}_bar_volume"
+    lightpipe_lvname = f"tspad{i + 1}_lightpipe_volume"
+    sipm_lvname = f"tspad{i + 1}_sipm_volume"
 
-    #Variables that must change between iterations
-    filename = f"tspad{i+1}_assembly.gdml"
-    scintillator_lvname=f"trigger_pad{i+1}_bar_volume"
-    lightpipe_lvname=f"tspad{i+1}_lightpipe_volume"
-    sipm_lvname=f"tspad{i+1}_sipm_volume"
-
-    with open(filename,"w") as f:
+    with open(filename, "w") as f:
         f.write(f'''<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
 <!DOCTYPE gdml [
 <!ENTITY constants SYSTEM "constants.gdml">
@@ -101,13 +100,13 @@ to the housing, and maybe see if the visattributes can be reworked
 
   <solids>
     <!--The envelope encompassing the assembly-->
-    <box lunit="mm" name="one_pad_box{i+1}" x="tspad{i+1}_envelope_x" y="(trigger_bar_dy+trigger_pad_bar_gap)*number_of_bars*1.1" z="trigger_pad_thickness"/>
+    <box lunit="mm" name="one_pad_box{i + 1}" x="tspad{i + 1}_envelope_x" y="(trigger_bar_dy+trigger_pad_bar_gap)*number_of_bars*1.1" z="trigger_pad_thickness"/>
     <!--The scintillator bar dimensions (same for each pad)-->
-    <box lunit="mm" name="trigger_bar_box{i+1}" x="trigger_bar_dx" y="trigger_bar_dy" z="trigger_pad_bar_thickness" />
+    <box lunit="mm" name="trigger_bar_box{i + 1}" x="trigger_bar_dx" y="trigger_bar_dy" z="trigger_pad_bar_thickness" />
         <!--The light pipe dimensions (different for each TSPad)-->
-    <box lunit="mm" name="trigger_light_pipe_box{i+1}" x="trigger_light_pipe{i+1}_dx" y="trigger_light_pipe_dy" z="trigger_light_pipe_thickness" />
+    <box lunit="mm" name="trigger_light_pipe_box{i + 1}" x="trigger_light_pipe{i + 1}_dx" y="trigger_light_pipe_dy" z="trigger_light_pipe_thickness" />
     <!--SiPM dimensions-->
-    <box lunit="mm" name="trigger_sipm_box{i+1}" x="sipm_thickness" y="sipm_dy" z="sipm_dz" />
+    <box lunit="mm" name="trigger_sipm_box{i + 1}" x="sipm_thickness" y="sipm_dy" z="sipm_dz" />
   </solids>
 
 
@@ -116,7 +115,7 @@ to the housing, and maybe see if the visattributes can be reworked
     <!--TS pad is made of polyvinyl toluene-->
     <volume name="{scintillator_lvname}">
       <materialref ref="{scintillator_mat}"/>
-      <solidref ref="trigger_bar_box{i+1}"/>
+      <solidref ref="trigger_bar_box{i + 1}"/>
       <auxiliary auxtype="VisAttributes" auxvalue="TriggerPadVis"/>
       <auxiliary auxtype="DetElem" auxvalue="TriggerPad"/>
     </volume>
@@ -124,7 +123,7 @@ to the housing, and maybe see if the visattributes can be reworked
     <!--TS light guides are made of acrylic PMMA-->
     <volume name="{lightpipe_lvname}">
       <materialref ref="{lightpipe_mat}"/>
-      <solidref ref="trigger_light_pipe_box{i+1}"/>
+      <solidref ref="trigger_light_pipe_box{i + 1}"/>
       <auxiliary auxtype="VisAttributes" auxvalue="TriggerPadVis"/>
       <auxiliary auxtype="DetElem" auxvalue="TriggerPad"/>
     </volume>
@@ -133,14 +132,14 @@ to the housing, and maybe see if the visattributes can be reworked
   The model is the Hamamatsu S13360-2050VE-->
     <volume name="{sipm_lvname}">
       <materialref ref="{sipm_mat}"/>
-      <solidref ref="trigger_sipm_box{i+1}"/>
+      <solidref ref="trigger_sipm_box{i + 1}"/>
       <auxiliary auxtype="VisAttributes" auxvalue="TriggerPadVis"/>
       <auxiliary auxtype="DetElem" auxvalue="TriggerPad"/>
     </volume>
 
-    <volume name="tspad{i+1}_volume">
+    <volume name="tspad{i + 1}_volume">
       <materialref ref="Vacuum"/>
-      <solidref ref="one_pad_box{i+1}" />
+      <solidref ref="one_pad_box{i + 1}" />
 
       <loop for="x" from="1" to="number_of_bars" step="1">
 
@@ -154,7 +153,7 @@ to the housing, and maybe see if the visattributes can be reworked
   <physvol copynumber="2*x-2">
     <volumeref ref="{sipm_lvname}" />
           <position name="trigger_sipm_layer1_pos" unit="mm"
-                x="(tspad{i+1}_envelope_x-sipm_thickness)/2"
+                x="(tspad{i + 1}_envelope_x-sipm_thickness)/2"
                     y="-target_dim_y/2+trigger_bar_dy*(x-0.5)+trigger_pad_bar_gap*(x-1)+trigger_pad_offset"
                     z="-trigger_pad_bar_thickness/2 - trigger_pad_bar_gap/2" />
           <rotationref ref="identity" />
@@ -163,7 +162,7 @@ to the housing, and maybe see if the visattributes can be reworked
         <physvol copynumber="2*x-1">
           <volumeref ref="{sipm_lvname}" />
           <position name="trigger_sipm_layer2_pos" unit="mm"
-                x="(tspad{i+1}_envelope_x-sipm_thickness)/2"
+                x="(tspad{i + 1}_envelope_x-sipm_thickness)/2"
                     y="-target_dim_y/2+trigger_bar_dy*x+trigger_pad_bar_gap*(x-1)+trigger_pad_offset"
                     z="trigger_pad_bar_thickness/2 + trigger_pad_bar_gap/2" />
           <rotationref ref="identity" />
@@ -172,7 +171,7 @@ to the housing, and maybe see if the visattributes can be reworked
   <physvol copynumber="2*x-2">
     <volumeref ref="{lightpipe_lvname}" />
           <position name="trigger_pad_pipe_layer1_pos" unit="mm"
-                x="(tspad{i+1}_envelope_x-trigger_light_pipe{i+1}_dx-2*sipm_thickness)/2"
+                x="(tspad{i + 1}_envelope_x-trigger_light_pipe{i + 1}_dx-2*sipm_thickness)/2"
                     y="-target_dim_y/2+trigger_bar_dy*(x-0.5)+trigger_pad_bar_gap*(x-1)+trigger_pad_offset"
                     z="-trigger_pad_bar_thickness/2 - trigger_pad_bar_gap/2" />
           <rotationref ref="identity" />
@@ -181,7 +180,7 @@ to the housing, and maybe see if the visattributes can be reworked
         <physvol copynumber="2*x-1">
           <volumeref ref="{lightpipe_lvname}" />
           <position name="trigger_pad_pipe_layer2_pos" unit="mm"
-                x="(tspad{i+1}_envelope_x-trigger_light_pipe{i+1}_dx-2*sipm_thickness)/2"
+                x="(tspad{i + 1}_envelope_x-trigger_light_pipe{i + 1}_dx-2*sipm_thickness)/2"
                     y="-target_dim_y/2+trigger_bar_dy*x+trigger_pad_bar_gap*(x-1)+trigger_pad_offset"
                     z="trigger_pad_bar_thickness/2 + trigger_pad_bar_gap/2" />
           <rotationref ref="identity" />
@@ -190,7 +189,7 @@ to the housing, and maybe see if the visattributes can be reworked
   <physvol copynumber="2*x-2">
           <volumeref ref="{scintillator_lvname}" />
           <position name="trigger_pad_bar_layer1_pos" unit="mm"
-        x="(tspad{i+1}_envelope_x-trigger_bar_dx-2*trigger_light_pipe{i+1}_dx-2*sipm_thickness)/2"
+        x="(tspad{i + 1}_envelope_x-trigger_bar_dx-2*trigger_light_pipe{i + 1}_dx-2*sipm_thickness)/2"
                     y="-target_dim_y/2 + trigger_bar_dy*(x - 0.5) + trigger_pad_bar_gap*(x - 1) + trigger_pad_offset"
                     z="-trigger_pad_bar_thickness/2 - trigger_pad_bar_gap/2" />
           <rotationref ref="identity" />
@@ -199,7 +198,7 @@ to the housing, and maybe see if the visattributes can be reworked
         <physvol copynumber="2*x - 1">
           <volumeref ref="{scintillator_lvname}" />
           <position name="trigger_pad_bar_layer2_pos" unit="mm"
-        x="(tspad{i+1}_envelope_x-trigger_bar_dx-2*trigger_light_pipe{i+1}_dx-2*sipm_thickness)/2"
+        x="(tspad{i + 1}_envelope_x-trigger_bar_dx-2*trigger_light_pipe{i + 1}_dx-2*sipm_thickness)/2"
                     y="-target_dim_y/2 + trigger_bar_dy*x + trigger_pad_bar_gap*(x - 1) + trigger_pad_offset"
                     z="trigger_pad_bar_thickness/2 + trigger_pad_bar_gap/2" />
           <rotationref ref="identity" />
@@ -216,9 +215,8 @@ to the housing, and maybe see if the visattributes can be reworked
 
 
   <setup name="Default" version="1.0">
-    <world ref="tspad{i+1}_volume"/>
+    <world ref="tspad{i + 1}_volume"/>
   </setup>
 
 </gdml>
 ''')
-
