@@ -54,6 +54,14 @@ jobs:
 
     - name: Install just
       uses: extractions/setup-just@v3
+
+    - name: Cache ccache
+      uses: actions/cache@v4
+      with:
+        path: ~/.ccache
+        key: ccache-pr-${{ github.sha }}
+        restore-keys: |
+          ccache-pr-
  
     - name: Compile and Install ldmx-sw
       run: |
