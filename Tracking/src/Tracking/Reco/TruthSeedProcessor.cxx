@@ -777,11 +777,11 @@ void TruthSeedProcessor::produce(framework::Event& event) {
         }
         double q_ecal = phit.getCharge() * Acts::UnitConstants::e;
         auto ecal_free = tracking::sim::utils::toFreeParameters(ep, em, q_ecal);
-        auto ecal_bound =
-            Acts::transformFreeToBoundParameters(ecal_free, *ecal_surface, gctx_);
+        auto ecal_bound = Acts::transformFreeToBoundParameters(
+            ecal_free, *ecal_surface, gctx_);
         if (ecal_bound.ok()) {
-          auto part{Acts::GenericParticleHypothesis(
-              Acts::ParticleHypothesis(Acts::PdgParticle(particle_hypothesis_)))};
+          auto part{Acts::GenericParticleHypothesis(Acts::ParticleHypothesis(
+              Acts::PdgParticle(particle_hypothesis_)))};
           Acts::BoundTrackParameters ecal_pars(
               ecal_surface, ecal_bound.value(),
               Acts::BoundSquareMatrix::Identity(), part);

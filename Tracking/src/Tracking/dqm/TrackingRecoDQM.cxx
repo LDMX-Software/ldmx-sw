@@ -565,10 +565,12 @@ void TrackingRecoDQM::trackStateMonitoring(
     histograms_.fill(title_ + ts_title + "_truth_loc1", truth_state_loc1);
 
     // TH1F  residuals
-    histograms_.fill(title_ + "trk_" + ts_title + "_loc0-truth_" + ts_title + "_loc0",
-                     track_state_loc0 - truth_state_loc0);
-    histograms_.fill(title_ + "trk_" + ts_title + "_loc1-truth_" + ts_title + "_loc1",
-                     track_state_loc1 - truth_state_loc1);
+    histograms_.fill(
+        title_ + "trk_" + ts_title + "_loc0-truth_" + ts_title + "_loc0",
+        track_state_loc0 - truth_state_loc0);
+    histograms_.fill(
+        title_ + "trk_" + ts_title + "_loc1-truth_" + ts_title + "_loc1",
+        track_state_loc1 - truth_state_loc1);
 
     // TH1F  The pulls of loc0 and loc1
     histograms_.fill(title_ + ts_title + "_Pulls_of_loc0",
