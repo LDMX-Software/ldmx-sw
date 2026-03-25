@@ -275,6 +275,7 @@
     <volume name="C_volume_CarbonCoolingPlane">
       <materialref ref="CarbonEpoxyComposite"/>
       <solidref ref="CarbonCoolingPlane"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="CarbonMaterialVis" />
       <auxiliary auxtype="VisAttributes" auxvalue="EcalRegionVis" />
     </volume>
 
@@ -294,30 +295,35 @@
     <volume name="PCB_volume">
       <materialref ref="FR4"/>
       <solidref ref="PCB_hexagon"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="FR4MaterialVis" />
       <auxiliary auxtype="VisAttributes" auxvalue="EcalRegionVis" />
     </volume>
   
     <volume name="Glue_volume">
       <materialref ref="Glue"/>
       <solidref ref="Glue_hexagon"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="GlueMaterialVis" />
       <auxiliary auxtype="VisAttributes" auxvalue="EcalRegionVis" />
     </volume>
   
     <volume name="Si_volume">
       <materialref ref="Silicon"/>
       <solidref ref="Si_hexagon"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="SiliconMaterialVis" />
       <auxiliary auxtype="VisAttributes" auxvalue="EcalRegionVis" />
     </volume>
   
     <volume name="GlueThick_volume">
       <materialref ref="Glue"/>
       <solidref ref="GlueThick_hexagon"/>
+            <auxiliary auxtype="VisAttributes" auxvalue="GlueMaterialVis" />
       <auxiliary auxtype="VisAttributes" auxvalue="EcalRegionVis" />
     </volume>
 
     <volume name="CarbonBasePlate_volume">
       <materialref ref="CarbonEpoxyComposite"/>
       <solidref ref="CarbonBasePlate_hexagon"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="CarbonEpoxyCompositeMaterialVis" />
       <auxiliary auxtype="VisAttributes" auxvalue="EcalRegionVis" />
     </volume>
 
@@ -326,16 +332,19 @@
       <volume name="strongback_bar_volume[bilayer]">
         <materialref ref="Aluminum" />
         <solidref ref="strongback_bar[bilayer]" />
+      <auxiliary auxtype="VisAttributes" auxvalue="AluminumMaterialVis" />
 	<auxiliary auxtype="VisAttributes" auxvalue="EcalRegionVis" />
       </volume>
       <volume name="W_front_volume[bilayer]">
         <materialref ref="Tungsten"/>
         <solidref ref="W_front_absorber[bilayer]"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="TungstenMaterialVis" />
         <auxiliary auxtype="VisAttributes" auxvalue="EcalRegionVis"/>
       </volume>
       <volume name="W_cooling_volume[bilayer]">
         <materialref ref="Tungsten"/>
         <solidref ref="W_cooling_absorber[bilayer]"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="TungstenMaterialVis" />
         <auxiliary auxtype="VisAttributes" auxvalue="EcalRegionVis"/>
       </volume>
     </loop>
@@ -940,7 +949,6 @@
       </loop>
 
       <auxiliary auxtype="Region" auxvalue="CalorimeterRegion"/>
-      <auxiliary auxtype="VisAttributes" auxvalue="GrayWireFrame"/>
       <auxiliary auxtype="VisAttributes" auxvalue="InvisibleShowDau"/>
       <auxiliary auxtype="DetElem" auxvalue="Ecal"/>
     </volume>

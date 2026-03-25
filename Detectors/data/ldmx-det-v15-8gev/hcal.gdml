@@ -83,18 +83,21 @@
     <volume name="back_hcal_absoVolume">
       <materialref ref="Steel" />
       <solidref ref="back_hcal_absoBox" />
+      <auxiliary auxtype="VisAttributes" auxvalue="SteelMaterialVis"/>
       <auxiliary auxtype="VisAttributes" auxvalue="HcalRegionVis" />
     </volume>
 
     <volume name="back_hcal_scintYVolume">
       <materialref ref="Scintillator" />
       <solidref ref="back_hcal_scintYBox" />
+      <auxiliary auxtype="VisAttributes" auxvalue="ScintillatorMaterialVis"/>
       <auxiliary auxtype="VisAttributes" auxvalue="HcalRegionVis" />
     </volume>
 
     <volume name="back_hcal_scintXVolume">
       <materialref ref="Scintillator" />
       <solidref ref="back_hcal_scintXBox" />
+      <auxiliary auxtype="VisAttributes" auxvalue="ScintillatorMaterialVis"/>
       <auxiliary auxtype="VisAttributes" auxvalue="HcalRegionVis" />
     </volume>
 
@@ -103,21 +106,25 @@
       <volume name="side_hcal_absoX[module]Volume">
         <materialref ref="Steel" />
         <solidref ref="side_hcal_absoX[module]Box" />
+	<auxiliary auxtype="VisAttributes" auxvalue="SteelMaterialVis"/>
 	<auxiliary auxtype="VisAttributes" auxvalue="HcalRegionVis" />
       </volume>
       <volume name="side_hcal_absoY[module]Volume">
         <materialref ref="Steel" />
         <solidref ref="side_hcal_absoY[module]Box" />
+	<auxiliary auxtype="VisAttributes" auxvalue="SteelMaterialVis"/>
 	<auxiliary auxtype="VisAttributes" auxvalue="HcalRegionVis" />
       </volume>
       <volume name="side_hcal_scintX[module]Volume">
         <materialref ref="Scintillator" />
         <solidref ref="side_hcal_scintX[module]Box" />
+	<auxiliary auxtype="VisAttributes" auxvalue="ScintillatorMaterialVis"/>
 	<auxiliary auxtype="VisAttributes" auxvalue="HcalRegionVis" />
       </volume>
       <volume name="side_hcal_scintY[module]Volume">
         <materialref ref="Scintillator" />
         <solidref ref="side_hcal_scintY[module]Box" />
+	<auxiliary auxtype="VisAttributes" auxvalue="ScintillatorMaterialVis"/>
 	<auxiliary auxtype="VisAttributes" auxvalue="HcalRegionVis" />
       </volume>
     </loop>
@@ -125,11 +132,13 @@
     <volume name="side_hcal_scintZXVolume">
       <materialref ref="Scintillator" />
       <solidref ref="side_hcal_scintZXBox" />
+      <auxiliary auxtype="VisAttributes" auxvalue="ScintillatorMaterialVis"/>
       <auxiliary auxtype="VisAttributes" auxvalue="HcalRegionVis" />
     </volume>
     <volume name="side_hcal_scintZYVolume">
       <materialref ref="Scintillator" />
       <solidref ref="side_hcal_scintZYBox" />
+      <auxiliary auxtype="VisAttributes" auxvalue="ScintillatorMaterialVis"/>
       <auxiliary auxtype="VisAttributes" auxvalue="HcalRegionVis" />
     </volume>
       
@@ -332,7 +341,7 @@
         </loop> <!-- Y-oriented Side Hcal Sections  -->
 
       <auxiliary auxtype="Region" auxvalue="CalorimeterRegion"/>
-      <auxiliary auxtype="VisAttributes" auxvalue="HcalRegionVis"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="InvisibleShowDau"/>
       <auxiliary auxtype="DetElem" auxvalue="Hcal"/>
     </volume>
   </structure>

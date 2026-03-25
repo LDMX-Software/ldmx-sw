@@ -10207,51 +10207,61 @@
         <volume name="coil_1_vol" >
             <materialref ref="Copper" />
             <solidref ref="coil_1" />
+      <auxiliary auxtype="VisAttributes" auxvalue="CopperMaterialVis"/>
 	    <auxiliary auxtype="VisAttributes" auxvalue="MagnetRegionVis" />
         </volume>
         <volume name="coil_2_vol" >
             <materialref ref="Copper" />
             <solidref ref="coil_2" />
+	    <auxiliary auxtype="VisAttributes" auxvalue="CopperMaterialVis"/>
 	    <auxiliary auxtype="VisAttributes" auxvalue="MagnetRegionVis" />
         </volume>
         <volume name="shim_right" >
             <materialref ref="Iron" />
             <solidref ref="shim_right_box" />
+      <auxiliary auxtype="VisAttributes" auxvalue="IronMaterialVis"/>
 	    <auxiliary auxtype="VisAttributes" auxvalue="MagnetRegionVis" />
         </volume>
         <volume name="shim_left" >
             <materialref ref="Iron" />
             <solidref ref="shim_left_box" />
+	    <auxiliary auxtype="VisAttributes" auxvalue="IronMaterialVis"/>
 	    <auxiliary auxtype="VisAttributes" auxvalue="MagnetRegionVis" />
         </volume>
         <volume name="corner_iron_block_top_left" >
             <materialref ref="Iron" />
             <solidref ref="corner_iron_block_top_left_box" />
+	    <auxiliary auxtype="VisAttributes" auxvalue="IronMaterialVis"/>
 	    <auxiliary auxtype="VisAttributes" auxvalue="MagnetRegionVis" />
         </volume>
         <volume name="corner_iron_block_top_right" >
             <materialref ref="Iron" />
             <solidref ref="corner_iron_block_top_right_box" />
+	    <auxiliary auxtype="VisAttributes" auxvalue="IronMaterialVis"/>
 	    <auxiliary auxtype="VisAttributes" auxvalue="MagnetRegionVis" />
         </volume>
         <volume name="corner_iron_block_bot_left" >
             <materialref ref="Iron" />
             <solidref ref="corner_iron_block_bot_left_box" />
+	    <auxiliary auxtype="VisAttributes" auxvalue="IronMaterialVis"/>
 	    <auxiliary auxtype="VisAttributes" auxvalue="MagnetRegionVis" />
         </volume>
         <volume name="corner_iron_block_bot_right" >
             <materialref ref="Iron" />
             <solidref ref="corner_iron_block_bot_right_box" />
+	    <auxiliary auxtype="VisAttributes" auxvalue="IronMaterialVis"/>
 	    <auxiliary auxtype="VisAttributes" auxvalue="MagnetRegionVis" />
         </volume>
         <volume name="center_iron_block_top" >
             <materialref ref="Iron" />
             <solidref ref="center_iron_block_top_box" />
+	    <auxiliary auxtype="VisAttributes" auxvalue="IronMaterialVis"/>
 	    <auxiliary auxtype="VisAttributes" auxvalue="MagnetRegionVis" />
         </volume>
         <volume name="center_iron_block_bot" >
             <materialref ref="Iron" />
             <solidref ref="center_iron_block_bot_box" />
+	    <auxiliary auxtype="VisAttributes" auxvalue="IronMaterialVis"/>
 	    <auxiliary auxtype="VisAttributes" auxvalue="MagnetRegionVis" />
         </volume>
         <volume name="ldmx_magnet" >
@@ -10307,8 +10317,9 @@
                 <positionref ref="center_iron_block_bot_pos" />
                 <rotationref ref="identity" />
             </physvol>
-            <auxiliary auxtype="Region" auxvalue="MagnetRegion"/>
-            <auxiliary auxtype="VisAttributes" auxvalue="MagnetRegionVis"/>
+
+	    <auxiliary auxtype="Region" auxvalue="MagnetRegion"/>
+            <auxiliary auxtype="VisAttributes" auxvalue="InvisibleShowDau"/>
         </volume>
     </structure>
     <setup name="Default" version="1.0" >

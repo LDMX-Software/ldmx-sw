@@ -71,6 +71,12 @@ class AuxInfoReader {
   void createRegion(const G4String &name, const G4GDMLAuxListType *auxInfoList);
 
   /**
+   * Select the 'mode' for coloring in the visualization.
+   * @param name The selected mode
+   */
+  void selectColorMode(const G4String &mode);
+
+  /**
    * Create visualization attributes from GDML data.
    * @param name The name of the visualization attributes.
    * @param auxInfoList The aux info defining the visualization attributes.
@@ -101,6 +107,12 @@ class AuxInfoReader {
    * Detector header with name and version.
    */
   ldmx::DetectorHeader *detector_header_{nullptr};
+
+  /**
+   * Color mode for visattributes.
+   */
+  std::string color_mode_;
+  std::vector<std::string> universal_visattributes;
 };
 
 }  // namespace simcore::geo

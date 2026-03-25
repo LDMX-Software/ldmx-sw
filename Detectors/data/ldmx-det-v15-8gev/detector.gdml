@@ -6,9 +6,11 @@
 ]>
 <gdml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="gdml.xsd">
 
+
+  
   <define>
 
-    &constants;  
+    &constants;
 
     <!--
       Position of the tagger and recoil tracker envelopes with respect to
@@ -140,6 +142,9 @@
       <auxiliary auxtype="StoreTrajectories" auxvalue="true"/>
     </auxiliary>
 
+    <!--Set color mode for visualization (optional)-->
+    <auxiliary auxtype="ColorMode" auxvalue="Region"/>
+    
     &visattributes;
     
   </userinfo>  

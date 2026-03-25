@@ -2,12 +2,10 @@
 
 <!--
 There are 3 categories of visattributes included here: invisible options,
-options by region, and options by material. It's non-trivial to switch
-between them - I'm still thinking about how best to make a toggle for this.
-The toggle itself would probably have to go into the AuxInfoReader, and
-be activated by feeding an auxvalue in at the detector.gdml stage.
-A clever user might be able to come up with a sed or similar that can
-do the manual toggling for them.
+options by region, and options by material. To switch between definition
+by region and definition by material, set the optional 'ColorMode' tag
+in detector.gdml, in the userinfo, before loading this accessory file.
+The default is definition by region, or invisible.
 
 For the material visattributes, I arbitrarily assigned object colors
 based on my imagination. These can be changed as the user pleases.
@@ -100,7 +98,7 @@ perfect color.
       <auxiliary auxtype="Visible" auxvalue="true"/>
       <auxiliary auxtype="LineWidth" auxvalue="1.0"/>
     </auxiliary>
-    <auxiliary auxtype="VisAttributes" auxvalue="SpVis">
+    <auxiliary auxtype="VisAttributes" auxvalue="SpRegionVis">
       <auxiliary auxtype="R" auxvalue="0.0"/>
       <auxiliary auxtype="G" auxvalue="0.0"/>
       <auxiliary auxtype="B" auxvalue="1.0"/>
@@ -116,7 +114,7 @@ perfect color.
     <!--Only solid materials get a color and are visible-->
     <!--'Unimportant' materials are semi-transparent-->
 
-    <auxiliary auxtype="VisAttributes" auxvalue="CarbonVis">
+    <auxiliary auxtype="VisAttributes" auxvalue="CarbonMaterialVis">
       <auxiliary auxtype="R" auxvalue="0.1"/>
       <auxiliary auxtype="G" auxvalue="0.1"/>
       <auxiliary auxtype="B" auxvalue="0.1"/>
@@ -126,7 +124,7 @@ perfect color.
       <auxiliary auxtype="Visible" auxvalue="true"/>
       <auxiliary auxtype="LineWidth" auxvalue="1.0"/>
     </auxiliary>
-    <auxiliary auxtype="VisAttributes" auxvalue="AluminumVis">
+    <auxiliary auxtype="VisAttributes" auxvalue="AluminumMaterialVis">
       <auxiliary auxtype="R" auxvalue="0.9"/>
       <auxiliary auxtype="G" auxvalue="0.9"/>
       <auxiliary auxtype="B" auxvalue="0.9"/>
@@ -136,7 +134,7 @@ perfect color.
       <auxiliary auxtype="Visible" auxvalue="true"/>
       <auxiliary auxtype="LineWidth" auxvalue="1.0"/>
     </auxiliary>
-    <auxiliary auxtype="VisAttributes" auxvalue="SiliconVis">
+    <auxiliary auxtype="VisAttributes" auxvalue="SiliconMaterialVis">
       <auxiliary auxtype="R" auxvalue="0.0"/>
       <auxiliary auxtype="G" auxvalue="0.0"/>
       <auxiliary auxtype="B" auxvalue="0.0"/>
@@ -146,7 +144,7 @@ perfect color.
       <auxiliary auxtype="Visible" auxvalue="true"/>
       <auxiliary auxtype="LineWidth" auxvalue="1.0"/>
     </auxiliary>
-    <auxiliary auxtype="VisAttributes" auxvalue="IronVis">
+    <auxiliary auxtype="VisAttributes" auxvalue="IronMaterialVis">
       <auxiliary auxtype="R" auxvalue="0.3"/>
       <auxiliary auxtype="G" auxvalue="0.3"/>
       <auxiliary auxtype="B" auxvalue="0.3"/>
@@ -156,7 +154,7 @@ perfect color.
       <auxiliary auxtype="Visible" auxvalue="true"/>
       <auxiliary auxtype="LineWidth" auxvalue="1.0"/>
     </auxiliary>
-    <auxiliary auxtype="VisAttributes" auxvalue="CopperVis">
+    <auxiliary auxtype="VisAttributes" auxvalue="CopperMaterialVis">
       <auxiliary auxtype="R" auxvalue="0.741"/>
       <auxiliary auxtype="G" auxvalue="0.4"/>
       <auxiliary auxtype="B" auxvalue="0.114"/>
@@ -166,7 +164,7 @@ perfect color.
       <auxiliary auxtype="Visible" auxvalue="true"/>
       <auxiliary auxtype="LineWidth" auxvalue="1.0"/>
     </auxiliary>
-    <auxiliary auxtype="VisAttributes" auxvalue="TungstenVis">
+    <auxiliary auxtype="VisAttributes" auxvalue="TungstenMaterialVis">
       <auxiliary auxtype="R" auxvalue="1.0"/>
       <auxiliary auxtype="G" auxvalue="0.0"/>
       <auxiliary auxtype="B" auxvalue="0.0"/>
@@ -177,7 +175,7 @@ perfect color.
       <auxiliary auxtype="LineWidth" auxvalue="1.0"/>
     </auxiliary>
     
-    <auxiliary auxtype="VisAttributes" auxvalue="FR4Vis">
+    <auxiliary auxtype="VisAttributes" auxvalue="FR4MaterialVis">
       <auxiliary auxtype="R" auxvalue="0.075"/>
       <auxiliary auxtype="G" auxvalue="0.651"/>
       <auxiliary auxtype="B" auxvalue="0.2"/>
@@ -187,7 +185,7 @@ perfect color.
       <auxiliary auxtype="Visible" auxvalue="true"/>
       <auxiliary auxtype="LineWidth" auxvalue="1.0"/>
     </auxiliary>
-    <auxiliary auxtype="VisAttributes" auxvalue="GlueVis">
+    <auxiliary auxtype="VisAttributes" auxvalue="GlueMaterialVis">
       <auxiliary auxtype="R" auxvalue="1.0"/>
       <auxiliary auxtype="G" auxvalue="1.0"/>
       <auxiliary auxtype="B" auxvalue="1.0"/>
@@ -197,7 +195,7 @@ perfect color.
       <auxiliary auxtype="Visible" auxvalue="true"/>
       <auxiliary auxtype="LineWidth" auxvalue="1.0"/>
     </auxiliary>
-    <auxiliary auxtype="VisAttributes" auxvalue="CarbonEpoxyCompositeVis">
+    <auxiliary auxtype="VisAttributes" auxvalue="CarbonEpoxyCompositeMaterialVis">
       <auxiliary auxtype="R" auxvalue="1.0"/>
       <auxiliary auxtype="G" auxvalue="1.0"/>
       <auxiliary auxtype="B" auxvalue="1.0"/>
@@ -207,7 +205,7 @@ perfect color.
       <auxiliary auxtype="Visible" auxvalue="true"/>
       <auxiliary auxtype="LineWidth" auxvalue="1.0"/>
     </auxiliary>
-    <auxiliary auxtype="VisAttributes" auxvalue="SteelVis">
+    <auxiliary auxtype="VisAttributes" auxvalue="SteelMaterialVis">
       <auxiliary auxtype="R" auxvalue="0.71"/>
       <auxiliary auxtype="G" auxvalue="0.737"/>
       <auxiliary auxtype="B" auxvalue="0.82"/>
@@ -217,7 +215,7 @@ perfect color.
       <auxiliary auxtype="Visible" auxvalue="true"/>
       <auxiliary auxtype="LineWidth" auxvalue="1.0"/>
     </auxiliary>
-    <auxiliary auxtype="VisAttributes" auxvalue="ScintillatorVis">
+    <auxiliary auxtype="VisAttributes" auxvalue="ScintillatorMaterialVis">
       <auxiliary auxtype="R" auxvalue="1.0"/>
       <auxiliary auxtype="G" auxvalue="0.9"/>
       <auxiliary auxtype="B" auxvalue="0.8"/>
@@ -227,7 +225,7 @@ perfect color.
       <auxiliary auxtype="Visible" auxvalue="true"/>
       <auxiliary auxtype="LineWidth" auxvalue="1.0"/>
     </auxiliary>
-    <auxiliary auxtype="VisAttributes" auxvalue="PolyvinyltolueneVis">
+    <auxiliary auxtype="VisAttributes" auxvalue="PolyvinyltolueneMaterialVis">
       <auxiliary auxtype="R" auxvalue="0.949"/>
       <auxiliary auxtype="G" auxvalue="0.902"/>
       <auxiliary auxtype="B" auxvalue="1.0"/>
@@ -237,7 +235,7 @@ perfect color.
       <auxiliary auxtype="Visible" auxvalue="true"/>
       <auxiliary auxtype="LineWidth" auxvalue="1.0"/>
     </auxiliary>
-    <auxiliary auxtype="VisAttributes" auxvalue="AcrylicPMMAVis">
+    <auxiliary auxtype="VisAttributes" auxvalue="AcrylicPMMAMaterialVis">
       <auxiliary auxtype="R" auxvalue="1.0"/>
       <auxiliary auxtype="G" auxvalue="0.89"/>
       <auxiliary auxtype="B" auxvalue="0.62"/>

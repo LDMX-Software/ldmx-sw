@@ -27,6 +27,7 @@
     <volume name="target">
       <materialref ref="Tungsten"/>
       <solidref ref="target_box"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="TungstenMaterialVis"/>
       <auxiliary auxtype="VisAttributes" auxvalue="TargetRegionVis"/>
       <auxiliary auxtype="DetElem" auxvalue="Target"/>
     </volume>
@@ -48,7 +49,7 @@
       </physvol>
 
       <auxiliary auxtype="Region" auxvalue="target" />
-      <!-- <auxiliary auxtype="VisAttributes" auxvalue="InvisibleShowDau"/> -->
+      <auxiliary auxtype="VisAttributes" auxvalue="InvisibleShowDau"/>
       <auxiliary auxtype="DetElem" auxvalue="target"/>
 
     </volume>
