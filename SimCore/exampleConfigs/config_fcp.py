@@ -1,7 +1,7 @@
 from LDMX.Framework import ldmxcfg
 
 
-p = ldmxcfg.Process('test')
+p = ldmxcfg.Process("test")
 
 p.max_tries_per_event = 10000
 
@@ -11,7 +11,7 @@ from LDMX.Biasing import target
 from LDMX.SimCore import generators
 
 
-det = 'ldmx-det-v15-8gev'
+det = "ldmx-det-v15-8gev"
 # my_sim = target.aprime_to_fcp(
 #     #A' mass in MeV - set in init.sh to same value in GeV
 #     10.0,
@@ -34,7 +34,7 @@ my_sim = target.gamma_to_fcp(
     100.0,
 )
 
-p.sequence = [ my_sim ]
+p.sequence = [my_sim]
 
 ##################################################################
 # Below should be the same for all sim scenarios
@@ -42,11 +42,11 @@ p.sequence = [ my_sim ]
 import sys
 
 
-p.max_events = 10000 #int(os.environ['LDMX_NUM_EVENTS'])
-p.run = int(os.environ['LDMX_RUN_NUMBER'])
+p.max_events = 10000  # int(os.environ['LDMX_NUM_EVENTS'])
+p.run = int(os.environ["LDMX_RUN_NUMBER"])
 
-p.histogram_file = 'hist.root'
-p.output_files = ['events.root']
+p.histogram_file = "hist.root"
+p.output_files = ["events.root"]
 
 # Load the full tracking sequance
 import LDMX.Ecal.digi as ecal_digi
@@ -75,24 +75,24 @@ from LDMX.TrigScint.trig_scint import (
 
 
 ts_digis = [
-        TrigScintDigiProducer.pad1(),
-        TrigScintDigiProducer.pad2(),
-        TrigScintDigiProducer.pad3(),
-        ]
+    TrigScintDigiProducer.pad1(),
+    TrigScintDigiProducer.pad2(),
+    TrigScintDigiProducer.pad3(),
+]
 
 ts_clusters = [
-        TrigScintClusterProducer.pad1(),
-        TrigScintClusterProducer.pad2(),
-        TrigScintClusterProducer.pad3(),
-        ]
+    TrigScintClusterProducer.pad1(),
+    TrigScintClusterProducer.pad2(),
+    TrigScintClusterProducer.pad3(),
+]
 
 # Load electron counting and trigger
 from LDMX.Recon.electron_counter import ElectronCounter
 from LDMX.Recon.simple_trigger import TriggerProcessor
 
 
-count = ElectronCounter(1,'ElectronCounter')
-count.input_pass_name = ''
+count = ElectronCounter(1, "ElectronCounter")
+count.input_pass_name = ""
 
 # Load the DQM modules
 from LDMX.DQM import dqm
@@ -115,20 +115,22 @@ from LDMX.Recon.ecal_preselection_skimmer import EcalPreselectionSkimmer
 
 ecal_pres_skimmer = EcalPreselectionSkimmer()
 
-# keep everythning at highest level ecept the ones that deal with A' -> fcp+ fcp- conversion, which we want to log at level 0
+# keep everythning at highest level ecept the ones that deal with
+# A' -> fcp+ fcp- conversion, which we want to log at level 0
 p.logger.term_level = 10
 
 # Dark photon to FCP conversion related logging
 # p.logger.custom("DarkBremInteraction", level = 0)
 # p.logger.custom("APrimeConversionToFCPs", level = -1)
-p.logger.custom("GammaConversionToFCPs", level = -1)
+p.logger.custom("GammaConversionToFCPs", level=-1)
 
 # Add full tracking for both tagger and recoil trackers:
 # digi, seeds, CFK, ambiguity resolution, GSF, DQM
 # p.sequence.extend(full_tracking_sequence.sequence)
 # p.sequence.extend(full_tracking_sequence.dqm_sequence)
 
-p.sequence.extend([
+p.sequence.extend(
+    [
         # ecal_digi.EcalDigiProducer(),
         # ecal_digi.EcalRecProducer(),
         # ecal_pres_skimmer,
@@ -144,6 +146,7 @@ p.sequence.extend([
         # count, TriggerProcessor('trigger', 8000.),
         # dqm.DarkBremInteraction(),
         dqm.SampleValidation(),
-        ])
+    ]
+)
 
 # p.sequence.extend(dqm.all_dqm)

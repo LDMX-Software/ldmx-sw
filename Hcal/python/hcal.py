@@ -36,8 +36,8 @@ class HcalWABVetoProcessor(Processor):
 
 @processor("hcal::HcalOldDigiProducer", "Hcal")
 class HcalOldDigiProducer(Processor):
-    meanNoise: float = 0.02
-    readoutThreshold: int = 1
+    mean_noise: float = 0.02
+    readout_threshold: int = 1
     strips_side_lr_per_layer: int = 12
     num_side_lr_hcal_layers: int = 26
     strips_side_tb_per_layer: int = 12

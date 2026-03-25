@@ -1,21 +1,47 @@
 import argparse
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--max-energy',help='maximum energy [GeV] to sample from', default=4.0, type=float)
-parser.add_argument('--min-energy',help='minimum energy [GeV] to sample from', default=0.0, type=float)
-parser.add_argument('--angle',help='maximum polar angle [degrees] to sample from', default=60.0, type=float)
-parser.add_argument('--n-events',help='number of events to simulate',default=10,type=int)
+parser.add_argument(
+    "--max-energy",
+    help="maximum energy [GeV] to sample from",
+    default=4.0,
+    type=float,
+)
+parser.add_argument(
+    "--min-energy",
+    help="minimum energy [GeV] to sample from",
+    default=0.0,
+    type=float,
+)
+parser.add_argument(
+    "--angle",
+    help="maximum polar angle [degrees] to sample from",
+    default=60.0,
+    type=float,
+)
+parser.add_argument(
+    "--n-events",
+    help="number of events to simulate",
+    default=10,
+    type=int,
+)
 args = parser.parse_args()
 
 from LDMX.Framework import ldmxcfg
 
-p = ldmxcfg.Process('uniele')
+p = ldmxcfg.Process("uniele")
 p.max_events = args.n_events
 p.run = 1
 
-filename = f'uniform_electrons_maxE_{args.max_energy}_minE_{args.min_energy}_maxPolar_{args.angle}_N_{args.n_events}_run_{p.run:04d}.root'
-p.output_files = [ 'events_'+filename ]
-p.histogram_file = 'hists_'+filename
+filename = (
+    f"uniform_electrons_maxE_{args.max_energy}"
+    f"_minE_{args.min_energy}"
+    f"_maxPolar_{args.angle}"
+    f"_N_{args.n_events}"
+    f"_run_{p.run:04d}.root"
+)
+p.output_files = ["events_" + filename]
+p.histogram_file = "hists_" + filename
 
 import LDMX.Hcal.hcal_geometry
 import LDMX.Ecal.ecal_geometry
@@ -23,39 +49,44 @@ import LDMX.Ecal.ecal_geometry
 from LDMX.SimCore import simulator
 from LDMX.SimCore import generators
 
-sim = simulator.simulator("uniform-electrons")
-sim.setDetector('ldmx-det-v14-8gev', include_scoring_planes_minimal = True)
+sim = simulator.Simulator("uniform-electrons")
+sim.set_detector("ldmx-det-v14-8gev", include_scoring_planes_minimal=True)
 sim.description = "Electrons with uniformly sampled energy and angle shot from target"
-sim.beamSpotSmear = [20., 80., 0.]
+sim.beamSpotSmear = [20.0, 80.0, 0.0]
 # GPS generator
 sim.generators = [
-    generators.gps('uniform-electrons', [
-        # electrons
-        '/gps/particle e-',
-        # position distribution: all from the same point, simulator smears beam spot
-        '/gps/pos/type Point', # beamSpotSmear will smear for us
-        '/gps/pos/centre 0 0 0 mm', # shoot from center of target
-        # angular distribution, isotropic with maximum polar angle relative to z-axis
-        '/gps/direction 0 0 1',
-        # the default direction is negative z (like cosmics coming down from the sky)
-        # so we need to rotate the frame of the angular distribution to be pointed along
-        # positive z
-        '/gps/ang/rot1 1 0 0',
-        '/gps/ang/rot2 0 -1 0',
-        '/gps/ang/type cos', # isotropic angular distribution
-        '/gps/ang/mintheta 0 deg', # minimum polar angle
-        f'/gps/ang/maxtheta {args.angle} deg', # maximum polar angle
-        '/gps/ang/minphi 0 deg', # minimum azimuthal angle
-        '/gps/ang/maxphi 360 deg', # maximum azimuthal angle
-        # energy distribution, uniform between the two configured limits
-        '/gps/ene/type Lin', # linear distribution (will set slope to zero)
-        f'/gps/ene/min {args.min_energy} GeV',
-        f'/gps/ene/max {args.max_energy} GeV',
-        '/gps/ene/gradient 0', # make linear distribution flat
-        '/gps/ene/intercept 1',
-        # one particle per event
-        '/gps/number 1',
-    ])
+    generators.Gps(
+        "uniform-electrons",
+        [
+            # electrons
+            "/gps/particle e-",
+            # position distribution: all from the same point, simulator smears beam spot
+            "/gps/pos/type Point",  # beamSpotSmear will smear for us
+            "/gps/pos/centre 0 0 0 mm",  # shoot from center of target
+            # angular distribution, isotropic with maximum polar angle
+            # relative to z-axis
+            "/gps/direction 0 0 1",
+            # the default direction is negative z (like cosmics coming down from the
+            # sky), so we need to rotate the frame of the angular distribution to be
+            # pointed along
+            # positive z
+            "/gps/ang/rot1 1 0 0",
+            "/gps/ang/rot2 0 -1 0",
+            "/gps/ang/type cos",  # isotropic angular distribution
+            "/gps/ang/mintheta 0 deg",  # minimum polar angle
+            f"/gps/ang/maxtheta {args.angle} deg",  # maximum polar angle
+            "/gps/ang/minphi 0 deg",  # minimum azimuthal angle
+            "/gps/ang/maxphi 360 deg",  # maximum azimuthal angle
+            # energy distribution, uniform between the two configured limits
+            "/gps/ene/type Lin",  # linear distribution (will set slope to zero)
+            f"/gps/ene/min {args.min_energy} GeV",
+            f"/gps/ene/max {args.max_energy} GeV",
+            "/gps/ene/gradient 0",  # make linear distribution flat
+            "/gps/ene/intercept 1",
+            # one particle per event
+            "/gps/number 1",
+        ],
+    )
 ]
 
 from LDMX.Tracking import tracking
@@ -66,24 +97,24 @@ import LDMX.Tracking.geo
 # Runs truth tracking producing tracks from target scoring plane hits for Recoil
 # and generated electros for Tagger.
 # Truth tracks can be used for assessing tracking performance or using as seeds
-truth_tracking           = tracking.TruthSeedProcessor()
-truth_tracking.debug             = True
-truth_tracking.trk_coll_name     = "RecoilTruthSeeds"
-truth_tracking.pdgIDs            = [11]
-truth_tracking.scoring_hits      = "TargetScoringPlaneHits"
-truth_tracking.z_min             = 0.
-truth_tracking.track_id          = -1
-truth_tracking.p_cut             = 0.05 # In MeV
-truth_tracking.pz_cut            = 0.03
-truth_tracking.p_cutEcal         = 0. # In MeV
+truth_tracking = tracking.TruthSeedProcessor()
+truth_tracking.debug = True
+truth_tracking.trk_coll_name = "RecoilTruthSeeds"
+truth_tracking.pdg_ids = [11]
+truth_tracking.scoring_hits = "TargetScoringPlaneHits"
+truth_tracking.z_min = 0.0
+truth_tracking.track_id = -1
+truth_tracking.p_cut = 0.05  # In MeV
+truth_tracking.pz_cut = 0.03
+truth_tracking.p_cut_ecal = 0.0  # In MeV
 
 # These smearing quantities are default. We expect around 6um hit resolution in bending
 # plane
 # v-smearing is actually not used as 1D measurements are used for tracking. These
 # smearing parameters
 # are fed to the digitization producer.
-u_smearing = 0.006       #mm
-v_smearing = 0.000001    #mm
+u_smearing = 0.006  # mm
+v_smearing = 0.000001  # mm
 
 # Runs G4 hit smearing producing measurements in the Tagger tracker.
 # Hits that belong to the same sensor with the same trackID are merged together to
@@ -104,40 +135,41 @@ digi_recoil.sigma_v = v_smearing
 # parameters and the impact parameters at the target or generation point. For the tagger
 # one should look
 # for compatibility with the beam orbit / beam spot
-#Seed finder processor - Recoil
+# Seed finder processor - Recoil
 seeder_recoil = tracking.SeedFinderProcessor("SeedRecoil")
-seeder_recoil.perigee_location = [0.,0.,0.]
-seeder_recoil.input_hits_collection =  digi_recoil.out_collection
+seeder_recoil.perigee_location = [0.0, 0.0, 0.0]
+seeder_recoil.input_hits_collection = digi_recoil.out_collection
 seeder_recoil.out_seed_collection = "RecoilRecoSeeds"
 seeder_recoil.bfield = 1.5
-seeder_recoil.pmin  = 0.1
-seeder_recoil.pmax  = 4.
+seeder_recoil.pmin = 0.1
+seeder_recoil.pmax = 4.0
 seeder_recoil.d0min = -0.5
 seeder_recoil.d0max = 0.5
-seeder_recoil.z0max = 10.
+seeder_recoil.z0max = 10.0
 
 
 # Producer for running the CKF track finding starting from the found seeds.
-#CKF Options
-tracking_recoil  = tracking.CKFProcessor("Recoil_TrackFinder")
+# CKF Options
+tracking_recoil = tracking.CKFProcessor("Recoil_TrackFinder")
 tracking_recoil.dumpobj = False
 tracking_recoil.debug = True
-tracking_recoil.propagator_step_size = 1000.  #mm
-tracking_recoil.bfield = -1.5  #in T #From looking at the BField map
+tracking_recoil.propagator_step_size = 1000.0  # mm
+tracking_recoil.bfield = -1.5  # in T #From looking at the BField map
 tracking_recoil.const_b_field = False
 
-#Target location for the CKF extrapolation
-#tracking_recoil.seed_coll_name = seeder_recoil.out_seed_collection
+# Target location for the CKF extrapolation
+# tracking_recoil.seed_coll_name = seeder_recoil.out_seed_collection
 tracking_recoil.seed_coll_name = "RecoilTruthSeeds"
 tracking_recoil.out_trk_collection = "RecoilTracks"
 
-#smear the hits used for finding/fitting
-tracking_recoil.trackID = -1 #1
-tracking_recoil.pdg_id = -9999 #11
+# smear the hits used for finding/fitting
+tracking_recoil.trackID = -1  # 1
+tracking_recoil.pdg_id = -9999  # 11
 tracking_recoil.measurement_collection = digi_recoil.out_collection
 tracking_recoil.min_hits = 5
 
 from LDMX.Tracking import dqm
+
 digi_dqm = dqm.TrackerDigiDQM()
 tracking_dqm = dqm.TrackingRecoDQM()
 
@@ -163,5 +195,6 @@ p.sequence = [
     truth_tracking,
     seeder_recoil,
     tracking_recoil,
-    recoil_dqm, seed_recoil_dqm
+    recoil_dqm,
+    seed_recoil_dqm,
 ]

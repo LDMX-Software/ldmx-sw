@@ -15,7 +15,7 @@ p.output_files = ["ecal_digi_pipeline_test.root"]
 # The the histogram file name
 p.histogram_file = "ecal_digi_pipeline_test_histo.root"
 
-geom = ecal_geometry.EcalGeometryProvider.getInstance()
+geom = ecal_geometry.EcalGeometryProvider.get_instance()
 
 # ECal digi
 ecal_digis = digi.EcalDigiProducer(

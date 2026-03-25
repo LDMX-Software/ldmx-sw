@@ -16,7 +16,7 @@ class TrackersTrackingGeometryProvider(ConditionsObjectProvider):
     the simulation, you would
 
         from LDMX.Tracking.geo import TrackersTrackingGeometryProvider as trackgeo
-        trackgeo.get_instance().setDetector('ldmx-det-v12')
+        trackgeo.get_instance().set_detector('ldmx-det-v12')
 
     The default detector is 'ldmx-det-v15-8gev'.
     """
@@ -33,7 +33,7 @@ class TrackersTrackingGeometryProvider(ConditionsObjectProvider):
 
         return TrackersTrackingGeometryProvider.__instance
 
-    def setDetector(self, det_name):
+    def set_detector(self, det_name):
         """Set the detector GDML based on the detector name
 
         Parameters
@@ -46,10 +46,10 @@ class TrackersTrackingGeometryProvider(ConditionsObjectProvider):
         LDMX.Detectors.makePath for definitions of the path making functions.
         """
 
-        from LDMX.Detectors import make_path as mP
+        from LDMX.Detectors import make_path as mp
 
         print("Setting detector for tracking to " + det_name)
-        self.detector = mP.makeDetectorPath(det_name)
+        self.detector = mp.make_detector_path(det_name)
 
     def __post_init__(self):
         if TrackersTrackingGeometryProvider.__instance is not None:
@@ -58,7 +58,7 @@ class TrackersTrackingGeometryProvider(ConditionsObjectProvider):
                 "should only be retrieved using get_instance()"
             )
         else:
-            self.setDetector("ldmx-det-v15-8gev")
+            self.set_detector("ldmx-det-v15-8gev")
             TrackersTrackingGeometryProvider.__instance = self
 
 

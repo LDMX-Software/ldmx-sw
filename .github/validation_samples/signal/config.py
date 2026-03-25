@@ -1,7 +1,7 @@
 from LDMX.Framework import ldmxcfg
 
 
-p = ldmxcfg.Process('test')
+p = ldmxcfg.Process("test")
 
 p.max_tries_per_event = 10000
 
@@ -11,22 +11,22 @@ from LDMX.Biasing import target
 from LDMX.SimCore import generators
 
 
-det = 'ldmx-det-v15-8gev'
+det = "ldmx-det-v15-8gev"
 my_sim = target.dark_brem(
-    #A' mass in MeV - set in init.sh to same value in GeV
-    ap_mass = 10.0,
+    # A' mass in MeV - set in init.sh to same value in GeV
+    ap_mass=10.0,
     # DB library stored in ci-data that is cloned into ldmx-sw root before
     # validation is run
-    lhe = (
-        f'{os.environ["CI_DATA"]}/signal/'
-        'v5.2.0_electron_tungsten_MaxE_8.0_MinE_4.0'
-        '_RelEStep_0.1_UndecayedAP_mA_0.01_run_1.csv'
+    lhe=(
+        f"{os.environ['CI_DATA']}/signal/"
+        "v5.2.0_electron_tungsten_MaxE_8.0_MinE_4.0"
+        "_RelEStep_0.1_UndecayedAP_mA_0.01_run_1.csv"
     ),
-    detector = det,
-    generator = generators.single_8gev_e_upstream_tagger()
+    detector=det,
+    generator=generators.single_8gev_e_upstream_tagger(),
 )
 
-p.sequence = [ my_sim ]
+p.sequence = [my_sim]
 
 ##################################################################
 # Below should be the same for all sim scenarios
@@ -35,11 +35,11 @@ import os
 import sys
 
 
-p.max_events = int(os.environ['LDMX_NUM_EVENTS'])
-p.run = int(os.environ['LDMX_RUN_NUMBER'])
+p.max_events = int(os.environ["LDMX_NUM_EVENTS"])
+p.run = int(os.environ["LDMX_RUN_NUMBER"])
 
-p.histogram_file = 'hist.root'
-p.output_files = ['events.root']
+p.histogram_file = "hist.root"
+p.output_files = ["events.root"]
 
 # Load the full tracking sequance
 import LDMX.Ecal.digi as ecal_digi
@@ -68,23 +68,27 @@ from LDMX.TrigScint.trig_scint import (
 
 
 ts_digis = [
-        TrigScintDigiProducer.pad1(),
-        TrigScintDigiProducer.pad2(),
-        TrigScintDigiProducer.pad3(),
-        ]
+    TrigScintDigiProducer.pad1(),
+    TrigScintDigiProducer.pad2(),
+    TrigScintDigiProducer.pad3(),
+]
 
 ts_clusters = [
-        TrigScintClusterProducer.pad1(),
-        TrigScintClusterProducer.pad2(),
-        TrigScintClusterProducer.pad3(),
-        ]
+    TrigScintClusterProducer.pad1(),
+    TrigScintClusterProducer.pad2(),
+    TrigScintClusterProducer.pad3(),
+]
 
 # Load electron counting and trigger
 from LDMX.Recon.electron_counter import ElectronCounter
 from LDMX.Recon.simple_trigger import TriggerProcessor
 
 
-count = ElectronCounter(simulated_electron_number=1, instance_name='ElectronCounter', input_pass_name='')
+count = ElectronCounter(
+    simulated_electron_number=1,
+    instance_name="ElectronCounter",
+    input_pass_name="",
+)
 
 # Load the DQM modules
 from LDMX.DQM import dqm
@@ -117,7 +121,8 @@ p.logger.term_level = 1
 p.sequence.extend(full_tracking_sequence.sequence)
 p.sequence.extend(full_tracking_sequence.dqm_sequence)
 
-p.sequence.extend([
+p.sequence.extend(
+    [
         ecal_digi.EcalDigiProducer(),
         ecal_digi.EcalRecProducer(),
         ecal_pres_skimmer,
@@ -130,8 +135,10 @@ p.sequence.extend([
         *ts_digis,
         *ts_clusters,
         trig_scint_track,
-        count, TriggerProcessor(beam_energy=8000., instance_name='trigger'),
+        count,
+        TriggerProcessor(beam_energy=8000.0, instance_name="trigger"),
         dqm.DarkBremInteraction(),
-        ])
+    ]
+)
 
 p.sequence.extend(dqm.all_dqm)

@@ -24,7 +24,7 @@ class EcalGeometryProvider(ConditionsObjectProvider):
     __instance = None
     geometries: list[EcalGeometry] = []
 
-    def getInstance():
+    def get_instance():
         """Get the single instance of the EcalGeometryProvider
 
         Returns
@@ -42,7 +42,7 @@ class EcalGeometryProvider(ConditionsObjectProvider):
         if EcalGeometryProvider.__instance is not None:
             raise Exception(
                 "EcalGeometryProvider is a singleton class and "
-                "should only be retrieved using getInstance()"
+                "should only be retrieved using get_instance()"
             )
         else:
             self.geometries = EcalGeometry.geometries()
@@ -50,7 +50,7 @@ class EcalGeometryProvider(ConditionsObjectProvider):
 
 
 # make sure global instance is created, this registers the condition
-EcalGeometryProvider.getInstance()
+EcalGeometryProvider.get_instance()
 
 
 @conditions_object_provider(
@@ -72,7 +72,7 @@ class EcalTriggerGeometryProvider(ConditionsObjectProvider):
 
     __instance = None
 
-    def getInstance():
+    def get_instance():
         """Get the single instance of the EcalTriggerGeometryProvider
 
         Returns
@@ -90,11 +90,11 @@ class EcalTriggerGeometryProvider(ConditionsObjectProvider):
         if EcalTriggerGeometryProvider.__instance is not None:
             raise Exception(
                 "EcalTriggerGeometryProvider is a singleton class and "
-                "should only be retrieved using getInstance()"
+                "should only be retrieved using get_instance()"
             )
         else:
             EcalTriggerGeometryProvider.__instance = self
 
 
 # make sure global instance is created, this registers the condition
-EcalTriggerGeometryProvider.getInstance()
+EcalTriggerGeometryProvider.get_instance()

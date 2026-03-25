@@ -142,19 +142,19 @@ void GSFProcessor::configure(framework::config::Parameters& parameters) {
   meas_collection_event_passname_ =
       parameters.get<std::string>("meas_collection_event_passname");
 
-  max_components_ = parameters.get<int>("maxComponents", 4);
-  abort_on_error_ = parameters.get<bool>("abortOnError", false);
+  max_components_ = parameters.get<int>("max_components", 4);
+  abort_on_error_ = parameters.get<bool>("abort_on_error", false);
   disable_all_material_handling_ =
-      parameters.get<bool>("disableAllMaterialHandling", false);
+      parameters.get<bool>("disable_all_material_handling", false);
   weight_cutoff_ = parameters.get<double>("weight_cutoff_", 1.0e-4);
 
-  propagator_max_steps_ = parameters.get<int>("propagator_maxSteps", 10000);
+  propagator_max_steps_ = parameters.get<int>("propagator_max_steps", 10000);
   propagator_step_size_ = parameters.get<double>("propagator_step_size", 200.);
   field_map_ = parameters.get<std::string>("field_map");
   use_perigee_ = parameters.get<bool>("usePerigee", false);
 
   debug_ = parameters.get<bool>("debug", false);
-  tagger_tracking_ = parameters.get<bool>("taggerTracking", true);
+  tagger_tracking_ = parameters.get<bool>("tagger_tracking", true);
 
   // final_reduction_method_ =
   // parameters.get<double>("finalReductionMethod",);

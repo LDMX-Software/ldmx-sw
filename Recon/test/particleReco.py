@@ -1,12 +1,12 @@
 from LDMX.Framework import ldmxcfg
 
 
-p = ldmxcfg.Process( "PF" )
+p = ldmxcfg.Process("PF")
 import sys
 
 
 p.max_events = 10
-if len(sys.argv) > 1 :
+if len(sys.argv) > 1:
     p.max_events = int(sys.argv[1])
 
 # we want to see every event
@@ -17,16 +17,16 @@ p.term_log_level = 1
 p.run = 9001
 
 # we also only have an output file
-p.output_files = [ "pfReco_" + str(p.max_events) + "_events.root" ]
+p.output_files = ["pfReco_" + str(p.max_events) + "_events.root"]
 
 import LDMX.Ecal.ecal_geometry
 import LDMX.Hcal.hcal_geometry
 from LDMX.SimCore import simulator as sim
 
 
-my_sim = sim.simulator( instance_name="my_sim" )
-my_sim.setDetector( 'ldmx-det-v14' , include_scoring_planes_minimal = True )
-sim.beamSpotSmear = [20., 80., 0.]
+my_sim = sim.Simulator(instance_name="my_sim")
+my_sim.set_detector("ldmx-det-v14", include_scoring_planes_minimal=True)
+sim.beamSpotSmear = [20.0, 80.0, 0.0]
 
 # Get a pre-written generator
 from particleSources import cocktail_commands
@@ -34,9 +34,11 @@ from particleSources import cocktail_commands
 from LDMX.SimCore import generators as gen
 
 
-my_sim.generators.append( gen.gps( instance_name='my_gps' , init_commands=cocktail_commands) )
+my_sim.generators.append(
+    gen.Gps(instance_name="my_gps", init_commands=cocktail_commands)
+)
 # add your configured simulation to the sequence
-p.sequence.append( my_sim )
+p.sequence.append(my_sim)
 
 # reco stuff
 
@@ -55,11 +57,11 @@ from LDMX.TrigScint.trigScint import (
 
 
 ts_digis = [
-        TrigScintDigiProducer.pad1(),
-        TrigScintDigiProducer.pad2(),
-        TrigScintDigiProducer.pad3(),
-        ]
-for d in ts_digis :
+    TrigScintDigiProducer.pad1(),
+    TrigScintDigiProducer.pad2(),
+    TrigScintDigiProducer.pad3(),
+]
+for d in ts_digis:
     d.randomSeed = 1
 
 from LDMX.DQM import dqm
@@ -67,48 +69,56 @@ from LDMX.Recon.electron_counter import ElectronCounter
 from LDMX.Recon.simple_trigger import TriggerProcessor
 
 
-count = ElectronCounter(simulated_electron_number=1, instance_name='ElectronCounter', input_pass_name='')
+count = ElectronCounter(
+    simulated_electron_number=1,
+    instance_name="ElectronCounter",
+    input_pass_name="",
+)
 
 from LDMX.Ecal import ecal_trig_digi
 from LDMX.Hcal import hcal_trig_digi
 
 
-p.sequence.extend([
+p.sequence.extend(
+    [
         ecal_digi.EcalDigiProducer(),
         ecal_digi.EcalRecProducer(),
         hcal_digi.HcalDigiProducer(),
         hcal_digi.HcalRecProducer(),
-        ])
+    ]
+)
 
-if True: #False:
-    p.set_compression(2, level=9) # LZMA
+if True:  # False:
+    p.set_compression(2, level=9)  # LZMA
     from LDMX.Recon import pf_reco
-    ecal_pf = pfReco.pfEcalClusterProducer()
-    hcal_pf = pfReco.pfHcalClusterProducer()
-    track_pf = pfReco.pfTrackProducer()
-    truth_pf = pfReco.pfTruthProducer()
 
+    ecal_pf = pf_reco.PFEcalClusterProducer()
+    hcal_pf = pf_reco.PFHcalClusterProducer()
+    track_pf = pf_reco.PFTrackProducer()
+    truth_pf = pf_reco.PFTruthProducer()
 
     # configure clustering options
     ecal_pf.do_single_cluster = False
     ecal_pf.log_energy_weight = True
 
     hcal_pf.do_single_cluster = False
-    hcal_pf.cluster_hit_dist = 200. # mm
+    hcal_pf.cluster_hit_dist = 200.0  # mm
     hcal_pf.log_energy_weight = True
 
-    ecalPF_simple = pfReco.pfEcalClusterProducer()
-    ecalPF_simple.cluster_coll_name += "Simple"
-    ecalPF_simple.do_single_cluster = True
-    hcalPF_simple = pfReco.pfHcalClusterProducer()
-    hcalPF_simple.cluster_coll_name += "Simple"
-    hcalPF_simple.do_single_cluster = True
+    ecal_pf_simple = pf_reco.PFEcalClusterProducer()
+    ecal_pf_simple.cluster_coll_name += "Simple"
+    ecal_pf_simple.do_single_cluster = True
+    hcal_pf_simple = pf_reco.PFHcalClusterProducer()
+    hcal_pf_simple.cluster_coll_name += "Simple"
+    hcal_pf_simple.do_single_cluster = True
 
-    p.sequence.extend([
-        ecal_pf, hcal_pf, track_pf,
-        pfReco.pfProducer(),
-        truth_pf,
-        #ecalPF_simple, hcalPF_simple
-    ])
-
-
+    p.sequence.extend(
+        [
+            ecal_pf,
+            hcal_pf,
+            track_pf,
+            pf_reco.PFProducer(),
+            truth_pf,
+            # ecal_pf_simple, hcal_pf_simple
+        ]
+    )

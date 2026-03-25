@@ -44,7 +44,8 @@ def calculate_voltage(pe):
 energy_to_voltage_conversion = (1.0 / mip_energy) * calculate_voltage(n_pe_per_mip)
 """conversion from energy in MeV to voltage in mV
 
-energy [MeV] ( 1 MIP / energy per MIP [MeV] ) ( voltage per MIP [mV] / 1 MIP ) = voltage [mV]
+energy [MeV] ( 1 MIP / energy per MIP [MeV] ) ( voltage per MIP [mV] / 1 MIP )
+= voltage [mV]
 - assuming 1 PEs ~ 5mV ->  72.961 mV/MeV
 """
 
@@ -91,7 +92,8 @@ class DigiTimeSpread:
     def __post_init__(self):
         if self.kind not in [-1, 0, 1, 2]:
             raise ValueError(
-                "Invalid kind of time spread, must be -1 (No spread), 0 (Gaussian), 1 (Uniform) or 2 (Constant)"
+                "Invalid kind of time spread, must be -1 (No spread), "
+                "0 (Gaussian), 1 (Uniform) or 2 (Constant)"
             )
 
     def none():
