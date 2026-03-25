@@ -141,11 +141,13 @@ trig_firm.digis3_collection = "trigScintDigisPad3"
 trig_firm.output_collection = "TriggerPadTracksFirmware"
 
 from LDMX.Recon.electron_counter import ElectronCounter
-# first argument is number of electrons in simulation
-e_count = ElectronCounter( n_electrons, "ElectronCounter")
-e_count.use_simulated_electron_number = False
-e_count.input_collection="TriggerPadTracks"
-e_count.input_pass_name=pass_name
+e_count = ElectronCounter(
+    simulated_electron_number=n_electrons,
+    instance_name="ElectronCounter",
+    use_simulated_electron_number=False,
+    input_collection="TriggerPadTracks",
+    input_pass_name=pass_name,
+)
 
 # # p.sequence=[ sim, ecal_digi, ecal_reco, ecal_veto, hcalDigi, hcalReco, hcalVeto,
 # ts_digis_tag, ts_digis_up, ts_digis_down, ts_clusters_tag, ts_clusters_up,

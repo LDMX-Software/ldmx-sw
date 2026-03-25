@@ -11,14 +11,14 @@ from LDMX.SimCore import simulator as sim
 
 
 #my_gun = gen.single_4gev_e_upstream_tagger()
-my_gun = gen.multi( "mgpGen" )
-my_gun.vertex = [ 0., 0., -880] # mm
+my_gun = gen.multi( instance_name="mgpGen" )
+my_gun.vertex = [ 0., 0., -880.] # mm
 my_gun.momentum = [0.,0.,4000.] # MeV
 my_gun.n_particles = 1
 my_gun.pdg_id = 11
 my_gun.enable_poisson = False #True
 
-my_sim = sim.simulator( "my_sim" ) # Build simulator object
+my_sim = sim.simulator( instance_name="my_sim" ) # Build simulator object
 det = 'ldmx-reduced-v3'
 
 my_sim.setDetector(det, include_scoring_planes_minimal = True )
@@ -72,15 +72,12 @@ ts_digis = [
         TrigScintDigiProducer.pad2(),
         TrigScintDigiProducer.pad3(),
         ]
-for d in ts_digis :
-    d.randomSeed = 1
 
 from LDMX.Recon.electron_counter import ElectronCounter
 from LDMX.Recon.simple_trigger import TriggerProcessor
 
 
-count = ElectronCounter(1,'ElectronCounter')
-count.input_pass_name = ''
+count = ElectronCounter(simulated_electron_number=1, instance_name='ElectronCounter', input_pass_name='')
 
 # Load hcal veto
 import LDMX.Hcal.hcal as hcal
@@ -116,15 +113,12 @@ layer12_mid = (9.5+15.5)/2.
 layer23_mid = (15.5+24.5)/2.
 layer34_mid = (24.5+30.5)/2.
 
-truth_tracking = reduced_tracking.LinearTruthTracking("LinearTruthTracking")
+truth_tracking = reduced_tracking.LinearTruthTracking(instance_name="LinearTruthTracking")
 truth_tracking.input_hits_collection = "RecoilSimHits"
 truth_tracking.input_rec_hits_collection = "EcalRecHits"
 truth_tracking.out_track_collection = "LinearRecoilTruthTracks"
-truth_tracking.layer12_midpoint = layer12_mid
-truth_tracking.layer23_midpoint = layer23_mid
-truth_tracking.layer34_midpoint = layer34_mid
 
-r_seed_tracking = reduced_tracking.LinearSeedFinder("LinearSeedFinder")
+r_seed_tracking = reduced_tracking.LinearSeedFinder(instance_name="LinearSeedFinder")
 r_seed_tracking.input_hits_collection = "DigiRecoilSimHits"
 r_seed_tracking.input_rec_hits_collection = "EcalRecHits"
 r_seed_tracking.out_seed_collection = "LinearRecoilSeedTracks"
@@ -134,16 +128,15 @@ r_seed_tracking.layer34_midpoint = layer34_mid
 r_seed_tracking.recoil_uncertainty = [0.006, 0.085]
 r_seed_tracking.ecal_distance_threshold = 15.0
 
-r_tracking = reduced_tracking.LinearTrackFinder("LinearTrackFinder")
-r_tracking.seed_collection = "LinearRecoilSeedTracks"
+r_tracking = reduced_tracking.LinearTrackFinder(instance_name="LinearTrackFinder")
+r_tracking.seed_collection_ = "LinearRecoilSeedTracks"
 r_tracking.out_trk_collection = "LinearRecoilTracks"
 
-r_tracking_dqm = trk_dqm.StraightTracksDQM("LinearRecoilTracksDQM")
+r_tracking_dqm = trk_dqm.StraightTracksDQM(instance_name="LinearRecoilTracksDQM")
 r_tracking_dqm.track_collection = r_tracking.out_trk_collection
 r_tracking_dqm.truth_collection = truth_tracking.out_track_collection
 r_tracking_dqm.title = ""
 r_tracking_dqm.measurement_collection=digi_recoil_reduced.out_collection
-r_tracking_dqm.buildHistograms()
 
 p.sequence.extend([
         ecal_digi.EcalDigiProducer(),
@@ -158,7 +151,7 @@ p.sequence.extend([
         TrigScintClusterProducer.pad2(),
         TrigScintClusterProducer.pad3(),
         trig_scint_track,
-        count, TriggerProcessor('trigger', 4000.),
+        count, TriggerProcessor(beam_energy=4000., instance_name='trigger'),
         digi_recoil_reduced,
         truth_tracking,
         r_seed_tracking,

@@ -42,6 +42,7 @@ select = [
 
 # Disable specific rules that might be too strict
 ignore = [
+    "RUF012", # allow mutable class attributes to not have typing.ClassVar annotation
     "F401", # Allow unused imports
     "E402"  # Imports dont have to be on top
 ]

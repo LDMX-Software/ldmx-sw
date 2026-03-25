@@ -16,6 +16,7 @@ void TrigScintDigiProducer::configure(framework::config::Parameters &ps) {
   input_collection_ = ps.get<std::string>("input_collection");
   input_pass_name_ = ps.get<std::string>("input_pass_name");
   output_collection_ = ps.get<std::string>("output_collection");
+  sim_particles_coll_name_ = ps.get<std::string>("sim_particles_coll_name");
   sim_particles_passname_ = ps.get<std::string>("sim_particles_passname");
 }
 
@@ -54,7 +55,7 @@ void TrigScintDigiProducer::produce(framework::Event &event) {
   const auto sim_hits{event.getCollection<ldmx::SimCalorimeterHit>(
       input_collection_, input_pass_name_)};
   auto particle_map{event.getMap<int, ldmx::SimParticle>(
-      "SimParticles", sim_particles_passname_)};
+      sim_particles_coll_name_, sim_particles_passname_)};
 
   int module{-1};
   for (const auto &sim_hit : sim_hits) {

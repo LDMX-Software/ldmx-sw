@@ -1,5 +1,9 @@
 """Configuration for EcalHexReadout"""
 
+from LDMX.Framework import parameter_set
+
+
+@parameter_set
 class EcalGeometry :
     """Configuration for EcalHexReadout for a specific geometry
 
@@ -33,41 +37,18 @@ class EcalGeometry :
         UNLIKELY TO CHANGE - will only change if the CMS HGCAL High-Density design changes
     """
 
-    def __init__(self,
-            layer_z_positions,
-            ecal_front_z,
-            gap,
-            corners_side_up,
-            detectors_valid,
-            layer_shift_x = 0.,
-            layer_shift_y = 0.,
-            layer_shift_odd = False,
-            layer_shift_odd_bilayer = False,
-            si_thickness = 0.3,
-            n_cell_r_height = 35.3,
-            module_min_r = 85.0) :
-
-        # parameters that must align with the geometry
-        self.layer_z_positions = layer_z_positions
-        self.ecal_front_z = ecal_front_z
-        self.gap = gap
-        self.corners_side_up = corners_side_up
-        self.layer_shift_x = layer_shift_x
-        self.layer_shift_y = layer_shift_y
-        self.layer_shift_odd = layer_shift_odd
-        self.layer_shift_odd_bilayer = layer_shift_odd_bilayer
-        self.si_thickness = si_thickness
-        self.module_min_r = module_min_r
-        self.detectors_valid = detectors_valid
-
-        # parameters which are somewhat independent of GDML
-        self.n_cell_r_height = n_cell_r_height
-
-    def __str__(self) :
-        """Stringify this configuration class"""
-
-        s = f'EcalGeometry {{ Module Gap: {self.gap:.1f} mm, Module Radius: {self.module_min_r:.1f} mm, N Cell Sides Spanning Height: {self.n_cell_r_height:.1f} }}'
-        return s
+    layer_z_positions: list[float]
+    ecal_front_z: float
+    gap: float
+    corners_side_up: bool
+    detectors_valid: list[str]
+    layer_shift_x: float = 0.0
+    layer_shift_y: float = 0.0
+    layer_shift_odd: bool = False
+    layer_shift_odd_bilayer: bool = False
+    si_thickness: float = 0.3
+    n_cell_r_height: float = 35.3
+    module_min_r: float = 85.0
 
     def v9() :
         return EcalGeometry(detectors_valid = ["ldmx-det-v9","ldmx-det-v10","ldmx-det-v11"],

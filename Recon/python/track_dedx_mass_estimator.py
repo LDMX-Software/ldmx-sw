@@ -24,18 +24,19 @@ Examples
     p.sequence.append( recoil_track_mass_estimator )
 """
 
-from LDMX.Framework import ldmxcfg
+from LDMX.Framework import Processor, processor
 
 
-class TrackDeDxMassEstimator(ldmxcfg.Producer) :
+@processor("recon::TrackDeDxMassEstimator", "Recon")
+class TrackDeDxMassEstimator(Processor):
     """Configuration for the mass estimator from tracker dEdx"""
 
-    def __init__(self, name="TrackDeDxMassEstimator") :
-        super().__init__(name,'recon::TrackDeDxMassEstimator','Recon')
+    track_collection: str = "RecoilTruthTracks"
+    fit_res_C: float = 3.094
+    fit_res_K: float = 1.862
 
-        self.track_collection = "RecoilTruthTracks"
-        self.fit_res_C = 3.094
-        self.fit_res_K = 1.862
 
-recoil_track_mass_estimator = TrackDeDxMassEstimator("RecoilTrackMassEstimator")
-recoil_track_mass_estimator.track_collection = "RecoilTruthTracks"
+recoil_track_mass_estimator = TrackDeDxMassEstimator(
+    instance_name="RecoilTrackMassEstimator",
+    track_collection="RecoilTruthTracks",
+)

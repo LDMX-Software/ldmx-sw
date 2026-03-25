@@ -52,5 +52,11 @@ foreach(detector ${detectors})
   endif()
 endforeach()
 
+#Add visualization directory to build
+install(
+  DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/data/visualization/
+  DESTINATION data/detectors/visualization
+)
+
 # configure python scripts that need cmake variables
 setup_python(package_name LDMX/Detectors)

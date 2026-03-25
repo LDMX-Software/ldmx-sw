@@ -14,16 +14,16 @@ from LDMX.SimCore import generators
 det = 'ldmx-det-v15-8gev'
 my_sim = target.dark_brem(
     #A' mass in MeV - set in init.sh to same value in GeV
-    10.0,
+    ap_mass = 10.0,
     # DB library stored in ci-data that is cloned into ldmx-sw root before
     # validation is run
-    (
+    lhe = (
         f'{os.environ["CI_DATA"]}/signal/'
         'v5.2.0_electron_tungsten_MaxE_8.0_MinE_4.0'
         '_RelEStep_0.1_UndecayedAP_mA_0.01_run_1.csv'
     ),
-    det,
-    generators.single_8gev_e_upstream_tagger()
+    detector = det,
+    generator = generators.single_8gev_e_upstream_tagger()
 )
 
 p.sequence = [ my_sim ]
@@ -84,8 +84,7 @@ from LDMX.Recon.electron_counter import ElectronCounter
 from LDMX.Recon.simple_trigger import TriggerProcessor
 
 
-count = ElectronCounter(1,'ElectronCounter')
-count.input_pass_name = ''
+count = ElectronCounter(simulated_electron_number=1, instance_name='ElectronCounter', input_pass_name='')
 
 # Load the DQM modules
 from LDMX.DQM import dqm
@@ -131,7 +130,7 @@ p.sequence.extend([
         *ts_digis,
         *ts_clusters,
         trig_scint_track,
-        count, TriggerProcessor('trigger', 8000.),
+        count, TriggerProcessor(beam_energy=8000., instance_name='trigger'),
         dqm.DarkBremInteraction(),
         ])
 

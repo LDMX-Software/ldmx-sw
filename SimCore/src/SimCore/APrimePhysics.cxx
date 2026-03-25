@@ -33,6 +33,17 @@ APrimePhysics::APrimePhysics(const framework::config::Parameters& params)
       process_{nullptr} {
   ap_mass_ = parameters_.get<double>("ap_mass", 0.) * MeV;
   enable_ = parameters_.get<bool>("enable", false);
+  fcp_enable_ = parameters_.get<bool>("fcp_enable", false);
+  fcp_mass_ = parameters_.get<double>("fcp_mass", 0.) * MeV;
+  fcp_charge_ = parameters_.get<double>("fcp_charge", 0.1);
+  fcp_xsec_factor_ = parameters_.get<double>("fcp_xsec_factor", 1.0);
+
+  ldmx_log(info) << "Configuration:" << " A' mass: " << ap_mass_ / MeV << " MeV"
+                 << ", Dark brem enabled: " << (enable_ ? "YES" : "NO")
+                 << ", FCP enabled: " << (fcp_enable_ ? "YES" : "NO")
+                 << ", FCP mass: " << fcp_mass_ / MeV << " MeV"
+                 << ", FCP charge: " << fcp_charge_ << " e"
+                 << ", FCP xsec factor: " << fcp_xsec_factor_;
 }
 
 void APrimePhysics::ConstructParticle() {
@@ -59,13 +70,36 @@ void APrimePhysics::ConstructParticle() {
    * Geant4 registers all instances derived from G4ParticleDefinition and
    * deletes them at the end of the run. We configure the A' to have
    * the input mass and the PDG ID number of 622.
+   *
+   * If fcp is enabled, the A' decays to fcp+fcp- (decay_id=17),
+   * otherwise to e+e- (decay_id=11).
    */
-  G4APrime::Initialize(ap_mass_, 622, ap_tau, decay_it->second);
+  int decay_id = fcp_enable_ ? 17 : 11;
+  ldmx_log(info) << "Initializing A' with:" << ", Mass: " << ap_mass_ / MeV
+                 << " MeV" << ", PDG ID: 622" << ", Lifetime (tau): " << ap_tau
+                 << ", Decay mode: "
+                 << model.get<std::string>("decay_mode", "no_decay")
+                 << ", Decay product ID: " << decay_id
+                 << (fcp_enable_ ? " (fcp+fcp-)" : " (e+e-)");
+
+  // Initialize the A' with the specified parameters
+  G4APrime::Initialize(ap_mass_, 622, ap_tau, decay_it->second, decay_id);
+
+  /**
+   * If fcp is enabled, initialize the fractionally charged particles.
+   * This registers fcp- and fcp+ in the Geant4 particle table.
+   */
+  if (fcp_enable_) {
+    G4FractionallyCharged::Initialize(fcp_mass_, 17, fcp_charge_);
+  }
 }
 
 void APrimePhysics::ConstructProcess() {
+  ldmx_log(trace) << "=== APrimePhysics::ConstructProcess ===";
   // add process to electron if we are enabled
   if (enable_) {
+    ldmx_log(debug)
+        << "Dark brem is enabled, setting up G4DarkBremsstrahlung...";
     auto model{parameters_.get<framework::config::Parameters>("model")};
     auto model_name{model.get<std::string>("name")};
     if (model_name == "vertex_library" or model_name == "g4db") {
@@ -109,6 +143,36 @@ void APrimePhysics::ConstructProcess() {
                       "Unrecognized model name '" + model_name + "'.");
     }
     ldmx_log(trace) << "Initialization of dark brem complete";
+  }
+
+  // Add A' -> fcp+ fcp- conversion process if enabled
+  if (fcp_enable_) {
+    ldmx_log(debug)
+        << "FCP is enabled, setting up A' -> fcp+ fcp- conversion process...";
+    G4ProcessManager* aprime_proc_man = G4APrime::APrime()->GetProcessManager();
+    if (aprime_proc_man == nullptr) {
+      ldmx_log(error) << "FATAL: Unable to access process manager for A'!";
+      EXCEPTION_RAISE("APrimePhysics",
+                      "Was unable to access the process manager for A', "
+                      "something is very wrong!");
+    }
+    ldmx_log(debug) << "Creating APrimeConversionToFCPs process...";
+    fcp_conversion_process_ = new APrimeConversionToFCPs();
+
+    // Apply cross section biasing factor
+    if (fcp_xsec_factor_ != 1.0) {
+      fcp_conversion_process_->setCrossSecFactor(fcp_xsec_factor_);
+      ldmx_log(debug) << "Applied cross section biasing factor: "
+                      << fcp_xsec_factor_;
+    }
+
+    aprime_proc_man->AddDiscreteProcess(fcp_conversion_process_);
+    aprime_proc_man->SetProcessOrderingToFirst(
+        fcp_conversion_process_, G4ProcessVectorDoItIndex::idxAll);
+    ldmx_log(info)
+        << "A' -> fcp+ fcp- conversion process registered successfully!";
+  } else {
+    ldmx_log(info) << "FCP not enabled, A' conversion process not registered";
   }
 }
 

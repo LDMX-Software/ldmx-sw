@@ -111,20 +111,23 @@ void TrackingRecoDQM::analyze(const framework::Event& event) {
   }
 
   // Track Extrapolation to Ecal Monitoring
+  // trackStateMonitoring requires truth_track_collection_ to be available
   ldmx_log(trace) << "Track Extrapolation to Ecal Monitoring";
-  if (std::find(track_states_.begin(), track_states_.end(), "target") !=
-      track_states_.end()) {
-    trackStateMonitoring(tracks, ldmx::AtTarget, "target");
-  }
+  if (do_truth_comparison_) {
+    if (std::find(track_states_.begin(), track_states_.end(), "target") !=
+        track_states_.end()) {
+      trackStateMonitoring(tracks, ldmx::AtTarget, "target");
+    }
 
-  if (std::find(track_states_.begin(), track_states_.end(), "ecal") !=
-      track_states_.end()) {
-    trackStateMonitoring(tracks, ldmx::AtECAL, "ecal");
-  }
+    if (std::find(track_states_.begin(), track_states_.end(), "ecal") !=
+        track_states_.end()) {
+      trackStateMonitoring(tracks, ldmx::AtECAL, "ecal");
+    }
 
-  if (std::find(track_states_.begin(), track_states_.end(), "beamOrigin") !=
-      track_states_.end()) {
-    trackStateMonitoring(tracks, ldmx::AtBeamOrigin, "beamOrigin");
+    if (std::find(track_states_.begin(), track_states_.end(), "beamOrigin") !=
+        track_states_.end()) {
+      trackStateMonitoring(tracks, ldmx::AtBeamOrigin, "beamOrigin");
+    }
   }
 
   // Technical Efficiency plots
