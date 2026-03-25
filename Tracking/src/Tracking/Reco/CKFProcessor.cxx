@@ -881,7 +881,7 @@ void CKFProcessor::configure(framework::config::Parameters& parameters) {
   const_b_field_ = parameters.get<bool>("const_b_field", false);
   field_map_ = parameters.get<std::string>("field_map");
   propagator_step_size_ = parameters.get<double>("propagator_step_size", 200.);
-  propagator_max_steps_ = parameters.get<int>("propagator_maxSteps", 10000);
+  propagator_max_steps_ = parameters.get<int>("propagator_max_steps", 10000);
   measurement_collection_ = parameters.get<std::string>(
       "measurement_collection", "TaggerMeasurements");
   outlier_pval_ = parameters.get<double>("outlier_pval_", 3.84);
@@ -912,7 +912,7 @@ void CKFProcessor::configure(framework::config::Parameters& parameters) {
       parameters.get<std::string>("out_trk_collection", "Tracks");
 
   // keep track on which system tracking is running
-  tagger_tracking_ = parameters.get<bool>("taggerTracking", true);
+  tagger_tracking_ = parameters.get<bool>("tagger_tracking", true);
 
   // BField Systematics
   map_offset_ =

@@ -3,19 +3,19 @@ reconstruction and simulation
 
 Attributes
 ----------
-EcalTrigPrimConditionsHardcode : SimpleCSVIntegerTableProvider
+EcalTrigPrimConditionsHardcode : simple_csv_integer_table_provider
     Provides a table of integer conditions for ecal trigger primitives producer
-EcalReconConditionsHardcode : SimpleCSVDoubleTableProvider
+EcalReconConditionsHardcode : simple_csv_double_table_provider
     Provides a table of double conditions for ecal precision reconstruction
 """
 
 from LDMX.Conditions.SimpleCSVTableProvider import (
-    SimpleCSVDoubleTableProvider,
-    SimpleCSVIntegerTableProvider,
+    simple_csv_double_table_provider,
+    simple_csv_integer_table_provider,
 )
 
 
-EcalTrigPrimConditionsHardcode = SimpleCSVIntegerTableProvider(
+EcalTrigPrimConditionsHardcode = simple_csv_integer_table_provider(
     "EcalTrigPrimDigiConditions",
     ["ADC_PEDESTAL", "ADC_THRESHOLD", "TOT_PEDESTAL", "TOT_THRESHOLD", "TOT_GAIN"],
 )
@@ -30,7 +30,7 @@ EcalTrigPrimConditionsHardcode.valid_for_all_rows(
     ]  # TOT_GAIN, ratio of recon TOT gain over recon ADC gain
 )
 
-EcalReconConditionsHardcode = SimpleCSVDoubleTableProvider(
+EcalReconConditionsHardcode = simple_csv_double_table_provider(
     "EcalReconConditions", ["ADC_PEDESTAL", "ADC_GAIN", "TOT_PEDESTAL", "TOT_GAIN"]
 )
 
@@ -45,7 +45,7 @@ EcalReconConditionsHardcode.valid_for_all_rows(
     ]
 )
 
-EcalHgcrocConditionsHardcode = SimpleCSVDoubleTableProvider(
+EcalHgcrocConditionsHardcode = simple_csv_double_table_provider(
     "EcalHgcrocConditions",
     [
         "PEDESTAL",

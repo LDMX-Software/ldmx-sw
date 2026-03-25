@@ -21,8 +21,8 @@ import LDMX.Hcal.hcal_geometry
 from LDMX.SimCore import simulator as sim
 
 
-my_sim = sim.simulator(instance_name="my_sim")
-my_sim.setDetector("ldmx-det-v14", include_scoring_planes_minimal=True)
+my_sim = sim.Simulator(instance_name="my_sim")
+my_sim.set_detector("ldmx-det-v14", include_scoring_planes_minimal=True)
 # Get a pre-written generator
 from LDMX.SimCore import generators as gen
 

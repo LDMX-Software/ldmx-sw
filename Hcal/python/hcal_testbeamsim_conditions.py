@@ -2,19 +2,19 @@
 
 Attributes
 ----------
-HcalReconConditionsHardcode : SimpleCSVDoubleTableProvider
+HcalReconConditionsHardcode : simple_csv_double_table_provider
     Provides a table of double conditions for hcal precision reconstruction
-HcalHgcrocConditionsHardcode: SimpleCSVDoubleTableProvider
+HcalHgcrocConditionsHardcode: simple_csv_double_table_provider
     Provides a table of double conditions for hcal hgcroc emulator
 """
 
 from LDMX.Conditions.SimpleCSVTableProvider import (
-    SimpleCSVDoubleTableProvider,
-    SimpleCSVIntegerTableProvider,
+    simple_csv_double_table_provider,
+    simple_csv_integer_table_provider,
 )
 
 
-HcalTrigPrimConditionsHardcode = SimpleCSVIntegerTableProvider(
+HcalTrigPrimConditionsHardcode = simple_csv_integer_table_provider(
     "HcalTrigPrimDigiConditions",
     ["ADC_PEDESTAL", "ADC_THRESHOLD", "TOT_PEDESTAL", "TOT_THRESHOLD", "TOT_GAIN"],
 )
@@ -28,16 +28,16 @@ HcalTrigPrimConditionsHardcode.valid_for_all_rows(
     ]  # TOT_GAIN, ratio of recon TOT gain over recon ADC gain
 )
 
-adc_pedestal = SimpleCSVDoubleTableProvider("hcal_adc_pedestal", ["pedestal"])
+adc_pedestal = simple_csv_double_table_provider("hcal_adc_pedestal", ["pedestal"])
 adc_pedestal.valid_for_all_rows([1.0])  # should match HgcrocEmulator
 
-adc_gain = SimpleCSVDoubleTableProvider("hcal_adc_gain", ["gain"])
+adc_gain = simple_csv_double_table_provider("hcal_adc_gain", ["gain"])
 # Update this number
 adc_gain.valid_for_all_rows(
     [738.0]
 )  # 4 ADCs per PE - maxADCRange/readoutPadCapacitance/1024
 
-tot_calib = SimpleCSVDoubleTableProvider(
+tot_calib = simple_csv_double_table_provider(
     "hcal_tot_calibration",
     [
         "m_adc_i",
@@ -56,7 +56,7 @@ tot_calib.valid_for_all_rows(
     [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]
 )  # dummy value since TOT is not implemented
 
-toa_calib = SimpleCSVDoubleTableProvider(
+toa_calib = simple_csv_double_table_provider(
     "hcal_toa_calibration", ["bx_shift", "mean_shift"]
 )
 toa_calib.valid_for_all_rows([0.0, 0.0])  # dummy values
@@ -72,7 +72,7 @@ HcalReconConditionsProvider(
     toa_calib.object_name,
 )
 
-HcalHgcrocConditionsHardcode = SimpleCSVDoubleTableProvider(
+HcalHgcrocConditionsHardcode = simple_csv_double_table_provider(
     "HcalHgcrocConditions",
     [
         "PEDESTAL",

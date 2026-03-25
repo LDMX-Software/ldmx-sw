@@ -17,4 +17,4 @@ class HcalDetectorMap(ConditionsObjectProvider):
     """
 
     connections_table: str
-    want_d2e: bool = Falase
+    want_d2e: bool = False

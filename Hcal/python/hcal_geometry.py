@@ -26,7 +26,7 @@ class HcalGeometryProvider(ConditionsObjectProvider):
     __instance = None
     hcal_geometry: HcalGeometry = field(default_factory=HcalGeometry)
 
-    def getInstance():
+    def get_instance():
         """Get the single instance of the HcalGeometryProvider
 
         Returns
@@ -43,14 +43,15 @@ class HcalGeometryProvider(ConditionsObjectProvider):
     def __post_init__(self):
         if HcalGeometryProvider.__instance is not None:
             raise Exception(
-                "HcalGeometryProvider is a singleton class and should only be retrieved using getInstance()"
+                "HcalGeometryProvider is a singleton class and should only be "
+                "retrieved using get_instance()"
             )
         else:
             HcalGeometryProvider.__instance = self
 
 
 # make sure global instance is created, this registers the condition
-HcalGeometryProvider.getInstance()
+HcalGeometryProvider.get_instance()
 
 
 @conditions_object_provider(
@@ -73,7 +74,7 @@ class HcalTriggerGeometryProvider(ConditionsObjectProvider):
     __instance = None
     hcal_geometry: HcalGeometry = field(default_factory=HcalGeometry)
 
-    def getInstance():
+    def get_instance():
         """Get the single instance of the HcalTriggerGeometryProvider
         Returns
         -------
@@ -89,11 +90,12 @@ class HcalTriggerGeometryProvider(ConditionsObjectProvider):
     def __post_init__(self):
         if HcalTriggerGeometryProvider.__instance is not None:
             raise Exception(
-                "HcalTriggerGeometryProvider is a singleton class and should only be retrieved using getInstance()"
+                "HcalTriggerGeometryProvider is a singleton class and should only be "
+                "retrieved using get_instance()"
             )
         else:
             HcalTriggerGeometryProvider.__instance = self
 
 
 # make sure global instance is created, this registers the condition
-HcalTriggerGeometryProvider.getInstance()
+HcalTriggerGeometryProvider.get_instance()

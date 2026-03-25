@@ -4,15 +4,15 @@ Sets all parameters to reasonable defaults.
 
 Examples
 --------
-    from LDMX.Recon.pf_reco import pfEcalClusterProducer
-    p.sequence.append( pfEcalClusterProducer )
+    from LDMX.Recon.pf_reco import PFEcalClusterProducer
+    p.sequence.append( PFEcalClusterProducer )
 """
 
 from LDMX.Framework import Processor, processor
 
 
 @processor("recon::PFEcalClusterProducer", "Recon")
-class pfEcalClusterProducer(Processor):
+class PFEcalClusterProducer(Processor):
     """Configuration for Ecal cluster builder for particle reco"""
 
     hit_coll_name: str = "EcalRecHits"
@@ -26,7 +26,7 @@ class pfEcalClusterProducer(Processor):
 
 
 @processor("recon::PFHcalClusterProducer", "Recon")
-class pfHcalClusterProducer(Processor):
+class PFHcalClusterProducer(Processor):
     """Configuration for Hcal cluster builder for particle reco"""
 
     hit_coll_name: str = "HcalRecHits"
@@ -40,7 +40,7 @@ class pfHcalClusterProducer(Processor):
 
 
 @processor("recon::PFTrackProducer", "Recon")
-class pfTrackProducer(Processor):
+class PFTrackProducer(Processor):
     """Configuration for track selector for particle reco"""
 
     input_track_coll_name: str = "EcalScoringPlaneHits"
@@ -52,7 +52,7 @@ class pfTrackProducer(Processor):
 
 
 @processor("recon::ParticleFlow", "Recon")
-class pfProducer(Processor):
+class PFProducer(Processor):
     """Configuration for particle reco"""
 
     input_ecal_coll_name: str = "PFEcalClusters"
@@ -67,18 +67,18 @@ class pfProducer(Processor):
 
 
 @processor("recon::PFTruthProducer", "Recon")
-class pfTruthProducer(Processor):
+class PFTruthProducer(Processor):
     """Configuration for track selector for particle reco"""
 
     output_primary_coll_name: str = "PFTruth"
     output_target_coll_name: str = "PFTruthTarget"
     output_ecal_coll_name: str = "PFTruthEcal"
     output_hcal_coll_name: str = "PFTruthHcal"
-    target_sp_coll_name: str = 'TargetScoringPlaneHits'
+    target_sp_coll_name: str = "TargetScoringPlaneHits"
     target_sp_passname: str = ""
-    ecal_sp_coll_name: str = 'EcalScoringPlaneHits'
+    ecal_sp_coll_name: str = "EcalScoringPlaneHits"
     ecal_sp_passname: str = ""
-    sim_particles_coll_name: str = 'SimParticles'
+    sim_particles_coll_name: str = "SimParticles"
     sim_particles_passname: str = ""
     sim_particles_event_passname: str = ""
     ecal_sp_hits_event_passname: str = ""

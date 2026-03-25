@@ -76,7 +76,9 @@ class TestParameter(unittest.TestCase):
         c.instance_name = "cowabunga"
         self.assert_my_class(c, class_name="baz", instance_name="cowabunga")
 
-        self.assert_my_class(MyClass(instance_name="cowabunga"), instance_name="cowabunga")
+        self.assert_my_class(
+            MyClass(instance_name="cowabunga"), instance_name="cowabunga"
+        )
 
     def test_change_after_creation(self):
         c = MyClass()
@@ -159,17 +161,16 @@ class TestParameter(unittest.TestCase):
             c.className = "OldClass"
         self.assertEqual(c.class_name, "OldClass")
 
-
     def test_make_processor(self):
-        p = make_processor('MyClass2', 'my::Class', 'MyModule')
+        p = make_processor("MyClass2", "my::Class", "MyModule")
         self.assertDictEqual(
             p.__dict__,
             {
-                'instance_name': 'MyClass2',
-                'class_name': 'my::Class',
-                'module_name': 'MyModule',
-                'histograms': []
-            }
+                "instance_name": "MyClass2",
+                "class_name": "my::Class",
+                "module_name": "MyModule",
+                "histograms": [],
+            },
         )
 
 

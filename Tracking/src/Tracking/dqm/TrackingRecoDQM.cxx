@@ -22,7 +22,7 @@ void TrackingRecoDQM::configure(framework::config::Parameters& parameters) {
   title_ = parameters.get<std::string>("title", "tagger_trk_");
   track_prob_cut_ = parameters.get<double>("trackProb_cut", 0.5);
   subdetector_ = parameters.get<std::string>("subdetector", "Tagger");
-  track_states_ = parameters.get<std::vector<std::string>>("trackStates", {});
+  track_states_ = parameters.get<std::vector<std::string>>("track_states", {});
 
   pidmap_[-321] = PIDBins::kminus;
   pidmap_[321] = PIDBins::kplus;

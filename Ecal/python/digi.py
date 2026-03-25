@@ -123,7 +123,7 @@ class EcalDigiProducer(Processor):
 
 
 latest_second_order_energy_correction = 8000.0 / 7332.8
-latest_layerWeights = [
+latest_layer_weights = [
     1.743,
     3.401,
     5.610,
@@ -188,11 +188,11 @@ class EcalRecProducer(Processor):
         Name of output collection
     second_order_energy_correction : float
         Correction to weighted energy, default to v15 geometry
-    layerWeights : list of floats
+    layer_weights : list of floats
         Weighting factors depending on layer index, default to v15 geometry
     """
 
-    layerWeights: list[float] = latest_layerWeights
+    layer_weights: list[float] = latest_layer_weights
     second_order_energy_correction: float = latest_second_order_energy_correction
     mip_si_energy: float = mip_si_energy
     charge_per_mip: float = charge_per_mip
@@ -213,7 +213,7 @@ class EcalRecProducer(Processor):
         """
         return EcalRecProducer(
             second_order_energy_correction=0.948,
-            layerWeights=[
+            layer_weights=[
                 1.641,
                 3.526,
                 5.184,
@@ -262,7 +262,7 @@ class EcalRecProducer(Processor):
         """
         return EcalRecProducer(
             second_order_energy_correction=4000.0 / 4012.0,
-            layerWeights=[
+            layer_weights=[
                 1.019,
                 1.707,
                 3.381,
@@ -311,7 +311,7 @@ class EcalRecProducer(Processor):
         """
         return EcalRecProducer(
             second_order_energy_correction=4000.0 / 4007.0,
-            layerWeights=[
+            layer_weights=[
                 1.675,
                 2.724,
                 4.398,
@@ -370,7 +370,7 @@ class EcalRecProducer(Processor):
             # TLDR: these are wrong but only off by an absolute value of ~0.2,
             # future detector versions use the newer script with fixed material
             # properties
-            layerWeights=[
+            layer_weights=[
                 2.329,
                 4.339,
                 6.495,
@@ -423,7 +423,7 @@ class EcalRecProducer(Processor):
             second_order_energy_correction=latest_second_order_energy_correction,
             # these layer weights were the 'dE' column of the table output by
             # Detectors/util/ecal_layer_stack.py
-            layerWeights=latest_layerWeights,
+            layer_weights=latest_layer_weights,
             **kwargs,
         )
 
@@ -437,6 +437,6 @@ class EcalRecProducer(Processor):
 
         return EcalRecProducer(
             second_order_energy_correction=1.0,
-            layerWeights=[2.312, 5.417, 9.837, 11.910, 11.910, 11.910],
+            layer_weights=[2.312, 5.417, 9.837, 11.910, 11.910, 11.910],
             **kwargs,
         )

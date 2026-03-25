@@ -39,7 +39,7 @@ def primary_generator(class_name: str, module_name: str = "SimCore_Generators"):
 
 
 @primary_generator("simcore::generators::ParticleGun")
-class gun(PrimaryGenerator):
+class Gun(PrimaryGenerator):
     """basic particle gun primary generator
 
     Attributes
@@ -78,7 +78,7 @@ class gun(PrimaryGenerator):
 
 
 @primary_generator("simcore::generators::MultiParticleGunPrimaryGenerator")
-class multi(PrimaryGenerator):
+class Multi(PrimaryGenerator):
     """multi particle gun primary generator
 
     Attributes
@@ -103,7 +103,7 @@ class multi(PrimaryGenerator):
 
 
 @primary_generator("simcore::generators::LHEPrimaryGenerator")
-class lhe(PrimaryGenerator):
+class Lhe(PrimaryGenerator):
     """LHE file primary generator
 
     Parameters
@@ -119,7 +119,7 @@ class lhe(PrimaryGenerator):
 
 
 @primary_generator("simcore::generators::GeneralParticleSource")
-class gps(PrimaryGenerator):
+class Gps(PrimaryGenerator):
     """general particle source
 
     The input initialization commands are run in the order that they are listed.
@@ -158,7 +158,7 @@ class gps(PrimaryGenerator):
 
 
 @primary_generator("simcore::generators::GenieGenerator")
-class genie(PrimaryGenerator):
+class Genie(PrimaryGenerator):
     """Simple GENIE generator
 
     Attributes
@@ -239,7 +239,7 @@ def _single_e_upstream_tagger(position, momentum, energy):
 
     momentum_mag = math.sqrt(sum(x * x for x in momentum))
     unit_direction = [x / momentum_mag for x in momentum]
-    return gun(
+    return Gun(
         instance_name=f"single_{energy}gev_e_upstream_tagger",
         particle="e-",
         position=position,
@@ -279,7 +279,7 @@ def single_4gev_e_upstream_target():
     directly upstream of the target.
     """
 
-    return gun(
+    return Gun(
         instance_name="single_4gev_e_upstream_target",
         particle="e-",
         position=[0.0, 0.0, -1.2],
@@ -366,7 +366,7 @@ def single_backwards_positron(energy: float):
     gun:
         configured particle gun to shoot positrons backwards at the input energy
     """
-    return gun(
+    return Gun(
         instance_name=f"backwards-positron-{energy}GeV",
         particle="e+",
         position=[0.0, 0.0, 0.0],

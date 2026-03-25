@@ -37,7 +37,7 @@ class _EventToReSim:
 
 
 @processor("simcore::Simulator", "SimCore")
-class simulator(Processor):
+class Simulator(Processor):
     """A instance of the simulation configuration
 
     This class is derived from ldmxcfg.Producer and is mainly
@@ -57,7 +57,7 @@ class simulator(Processor):
     generators : list of PrimaryGenerator
         Generators to use to make primaries
     detector : str
-        Full path to detector description gdml (suggested to use setDetector)
+        Full path to detector description gdml (suggested to use set_detector)
     validate_detector : bool, optional
         Should we have Geant4 validate that the gdml is correctly formatted?
     sensitive_detectors : list[SensitiveDetector]
@@ -65,12 +65,12 @@ class simulator(Processor):
     description : str
         Describe this run in a human-readable way
     scoringPlanes : str, optional
-        Full path to the scoring planes gdml (suggested to use setDetector)
+        Full path to the scoring planes gdml (suggested to use set_detector)
     time_shift_primaries : bool
         Should we shift the times of primaries so that z=0mm corresponds to t=0ns?
-    preInitCommands : list of str, optional
+    pre_init_commands : list of str, optional
         Geant4 commands to run before the run is initialized
-    postInitCommands : list of str, optional
+    post_init_commands : list of str, optional
         Geant4 commands to run after run is initialized (but before run starts)
     actions : list of UserAction, optional
         Special User-defined actions to take during the simulation
@@ -92,8 +92,8 @@ class simulator(Processor):
     description: str = ""
     scoring_planes: str = ""
     time_shift_primaries: bool = True
-    preInitCommands: list[str] = []
-    postInitCommands: list[str] = []
+    pre_init_commands: list[str] = []
+    post_init_commands: list[str] = []
     actions: list[UserAction] = []
     biasing_operators: list[XsecBiasingOperator] = []
     logging_prefix: str = "GEANT4"
@@ -105,7 +105,7 @@ class simulator(Processor):
     kaon_parameters: KaonPhysics = field(default_factory=KaonPhysics)
     fcp_physics: FCPPhysics = field(default_factory=FCPPhysics)
 
-    def setDetector(
+    def set_detector(
         self,
         det_name,
         include_scoring_planes_others=False,
@@ -132,7 +132,7 @@ class simulator(Processor):
 
         from . import sensitive_detectors as sds
 
-        self.detector = make_path.makeDetectorPath(det_name)
+        self.detector = make_path.make_detector_path(det_name)
         if "v12" in det_name:
             trigscint = [
                 sds.TrigScintSD.up(),
@@ -148,15 +148,15 @@ class simulator(Processor):
                 sds.TrigScintSD.pad3(),
             ]
         self.sensitive_detectors = [
-                sds.TrackerSD.tagger(),
-                sds.TrackerSD.recoil(),
-                sds.HcalSD(),
-                sds.EcalSD(),
-                sds.TrigScintSD.target(),
-                *trigscint
+            sds.TrackerSD.tagger(),
+            sds.TrackerSD.recoil(),
+            sds.HcalSD(),
+            sds.EcalSD(),
+            sds.TrigScintSD.target(),
+            *trigscint,
         ]
         if include_scoring_planes_minimal:
-            self.scoring_planes = make_path.makeScoringPlanesPath(det_name)
+            self.scoring_planes = make_path.make_scoring_planes_path(det_name)
             self.sensitive_detectors.extend(
                 [
                     sds.ScoringPlaneSD.target(),
@@ -164,7 +164,7 @@ class simulator(Processor):
                 ]
             )
         if include_scoring_planes_others:
-            self.scoring_planes = make_path.makeScoringPlanesPath(det_name)
+            self.scoring_planes = make_path.make_scoring_planes_path(det_name)
             self.sensitive_detectors.extend(
                 [
                     sds.ScoringPlaneSD.hcal(),

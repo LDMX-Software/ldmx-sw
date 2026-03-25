@@ -33,7 +33,7 @@ void TrigScintQIEDigiProducer::configure(
   elec_noise_ = parameters.get<double>("elec_noise");
   sipm_gain_ = parameters.get<double>("sipm_gain");
   s_freq_ = parameters.get<double>("qie_sf");
-  zero_supp_cut_ = parameters.get<double>("zeroSupp_in_pe");
+  zero_supp_cut_ = parameters.get<double>("zero_supp_in_pe");
 
   if (input_pulse_shape_ == "Expo") {
     pulse_params_.clear();
@@ -53,7 +53,7 @@ void TrigScintQIEDigiProducer::configure(
   ldmx_log(debug) << "elec_noise =" << elec_noise_;
   ldmx_log(debug) << "sipm_gain =" << sipm_gain_;
   ldmx_log(debug) << "qie_sf =" << s_freq_;
-  ldmx_log(debug) << "zeroSupp_in_pe =" << zero_supp_cut_;
+  ldmx_log(debug) << "zero_supp_in_pe =" << zero_supp_cut_;
   ldmx_log(debug) << "pe_per_mip =" << pe_per_mip_;
   ldmx_log(debug) << "mev_per_mip =" << mev_per_mip_;
 }

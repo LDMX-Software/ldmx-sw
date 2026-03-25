@@ -11,8 +11,8 @@
 namespace recon {
 
 void TrackDeDxMassEstimator::configure(framework::config::Parameters &ps) {
-  fit_res_c_ = ps.get<double>("fit_res_C");
-  fit_res_k_ = ps.get<double>("fit_res_K");
+  fit_res_c_ = ps.get<double>("fit_res_c");
+  fit_res_k_ = ps.get<double>("fit_res_k");
   input_pass_name_ = ps.get<std::string>("input_pass_name", "");
   track_collection_ =
       ps.get<std::string>("track_collection", "RecoilTruthSeeds");

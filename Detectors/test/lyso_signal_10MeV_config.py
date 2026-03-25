@@ -1,25 +1,25 @@
 from LDMX.Framework import ldmxcfg
 
 
-p = ldmxcfg.Process('test')
+p = ldmxcfg.Process("test")
 
 p.max_tries_per_event = 10000
 
-det = 'ldmx-lyso-r1-v14-8gev'
+det = "ldmx-lyso-r1-v14-8gev"
 from LDMX.Biasing import target
 
 
 my_sim = target.dark_brem(
-    #A' mass in MeV - set in init.sh to same value in GeV
+    # A' mass in MeV - set in init.sh to same value in GeV
     10.0,
     # library path is uniquely determined by arguments given to `dbgen run` in init.sh
     #   easiest way to find this path out is by running `. init.sh` locally to see what
     #   is produced
-    'electron_lutetiumyttriumsiliconoxygen_MaxE_8.0_MinE_4.0_RelEStep_0.1_UndecayedAP_mA_0.01_run_3000',
-    det
+    "electron_lutetiumyttriumsiliconoxygen_MaxE_8.0_MinE_4.0_RelEStep_0.1_UndecayedAP_mA_0.01_run_3000",
+    det,
 )
 
-p.sequence = [ my_sim ]
+p.sequence = [my_sim]
 
 ##################################################################
 # Below should be the same for all sim scenarios
@@ -31,8 +31,8 @@ import sys
 p.max_events = 100
 p.run = 1
 
-p.histogram_file = 'hist.root'
-p.output_files = ['events.root']
+p.histogram_file = "hist.root"
+p.output_files = ["events.root"]
 p.term_log_level = 0
 
 import LDMX.Ecal.digi as ecal_digi
@@ -50,23 +50,26 @@ from LDMX.TrigScint.trigScint import (
 
 
 ts_digis = [
-        TrigScintDigiProducer.pad1(),
-        TrigScintDigiProducer.pad2(),
-        TrigScintDigiProducer.pad3(),
-        ]
-for d in ts_digis :
+    TrigScintDigiProducer.pad1(),
+    TrigScintDigiProducer.pad2(),
+    TrigScintDigiProducer.pad3(),
+]
+for d in ts_digis:
     d.randomSeed = 1
 
 from LDMX.Recon.electron_counter import ElectronCounter
 from LDMX.Recon.simple_trigger import TriggerProcessor
 
 
-count = ElectronCounter(simulated_electron_number=1, instance_name='ElectronCounter', input_pass_name='')
+count = ElectronCounter(
+    simulated_electron_number=1, instance_name="ElectronCounter", input_pass_name=""
+)
 
 from LDMX.DQM import dqm
 
 
-p.sequence.extend([
+p.sequence.extend(
+    [
         ecal_digi.EcalDigiProducer(),
         ecal_digi.EcalRecProducer(),
         ecal_vetos.EcalVetoProcessor(),
@@ -77,6 +80,9 @@ p.sequence.extend([
         TrigScintClusterProducer.pad2(),
         TrigScintClusterProducer.pad3(),
         trig_scint_track,
-        count, TriggerProcessor(beam_energy=8000., instance_name='trigger'),
-        dqm.DarkBremInteraction()
-        ] + dqm.all_dqm)
+        count,
+        TriggerProcessor(beam_energy=8000.0, instance_name="trigger"),
+        dqm.DarkBremInteraction(),
+        *dqm.all_dqm,
+    ]
+)

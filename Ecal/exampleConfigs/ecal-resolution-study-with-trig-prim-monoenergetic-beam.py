@@ -66,7 +66,7 @@ import LDMX.Hcal.hcal_geometry
 import LDMX.Ecal.digi as ecal_digi
 import LDMX.Ecal.ecal_trig_digi as ecal_trig_digi
 
-electrons = generators.gun("ecal-electrons")
+electrons = generators.Gun("ecal-electrons")
 electrons.particle = "e-"
 electrons.energy = arg.energy
 from math import sin, cos, tan, pi
@@ -92,8 +92,8 @@ electrons.position = (
     else [0.0, 0.0, z]
 )
 
-validator = simulator.simulator("plain")
-validator.setDetector("ldmx-det-v14", False)
+validator = simulator.Simulator("plain")
+validator.set_detector("ldmx-det-v14", False)
 validator.description = "Electrons straight into ECal for ECal geometry testing"
 validator.generators = [electrons]
 

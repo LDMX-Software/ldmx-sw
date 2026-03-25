@@ -1,6 +1,6 @@
 from LDMX.Framework import Processor, processor
 
-from .make_path import makeBDTPath, makeRoCPath
+from .make_path import make_bdt_path, make_roc_path
 
 
 @processor("ecal::EcalVetoProcessor", "Ecal")
@@ -8,8 +8,8 @@ class EcalVetoProcessor(Processor):
     num_ecal_layers: int = 32
     verbose: bool = False
     feature_list_name: str = "input"
-    bdt_file: str = makeBDTPath("segmip")
-    roc_file: str = makeRoCPath("RoC_v14_8gev")
+    bdt_file: str = make_bdt_path("segmip")
+    roc_file: str = make_roc_path("RoC_v14_8gev")
     beam_energy: float = 8000.0  # MeV
     disc_cut: float = 0.99741
     ecal_sp_coll_name: str = "EcalScoringPlaneHits"
@@ -44,7 +44,7 @@ class EcalPnetVetoProcessor(Processor):
     ParticleNet trained on v14 geometry ecalPN + signal
     """
 
-    model_path: str = makeBDTPath("particle_net_ecal_v10")
+    model_path: str = make_bdt_path("particle_net_ecal_v10")
     disc_cut: float = 0.65
     collection_name: str = "EcalPnetVeto"
     rec_coll_name: str = "EcalRecHits"

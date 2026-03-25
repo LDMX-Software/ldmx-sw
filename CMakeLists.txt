@@ -28,6 +28,12 @@ project(LDMX_SW VERSION ${LDMXSW_VERSION_NUM}
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_INSTALL_MESSAGE LAZY)
 
+# Use ccache if available to speed up rebuilds
+find_program(CCACHE_FOUND ccache)
+if(CCACHE_FOUND)
+    set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE ccache)
+endif()
+
 # Load additional macros used by this project. 
 list(APPEND CMAKE_MODULE_PATH ${LDMX_SW_SOURCE_DIR}/cmake/)
 

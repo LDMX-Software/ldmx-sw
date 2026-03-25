@@ -5,14 +5,14 @@ Sets all parameters to reasonable defaults.
 Examples
 --------
     from LDMX.Recon import pileup_finder
-    p.sequence.append( pileupFinder )
+    p.sequence.append( PileupFinder )
 """
 
 from LDMX.Framework import Processor, processor
 
 
 @processor("recon::PileupFinder", "Recon")
-class pileupFinder(Processor):
+class PileupFinder(Processor):
     """Configuration for pileup finding from particle flow objects"""
 
     rec_hit_coll_name: str = "EcalRecHits"
