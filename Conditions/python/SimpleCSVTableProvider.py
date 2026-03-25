@@ -41,7 +41,9 @@ class SimpleCSVTableEntry:
     values: list[float|int] = []
 
 
-@conditions_object_provider("UNDEFINED", "conditions::SimpleCSVTableProvider", "Conditions")
+@conditions_object_provider(
+    "UNDEFINED", "conditions::SimpleCSVTableProvider", "Conditions"
+)
 class SimpleCSVTableProvider(ConditionsObjectProvider):
     """Provides a uniform table of a specific type
 
@@ -56,7 +58,8 @@ class SimpleCSVTableProvider(ConditionsObjectProvider):
     columns : list of str
         List of column names for this table
     conditions_base_url : str
-        Base location for URLs, filling the LDMX_CONDITION_BASEURL parameter inside any table's URL
+        Base location for URLs, filling the LDMX_CONDITION_BASEURL parameter
+        inside any table's URL
     entries_url : str
         URL to a CSV table mapping tables to specific intervals of validity.  Optional.
     """
@@ -99,7 +102,9 @@ class SimpleCSVTableProvider(ConditionsObjectProvider):
         last_run : int
             Last run number that this entry is valid for
         """
-        self.entries.append(SimpleCSVTableEntry(url = url, first_run = first_run, last_run = last_run))
+        self.entries.append(
+            SimpleCSVTableEntry(url=url, first_run=first_run, last_run=last_run)
+        )
 
 
     def valid_for_all_rows(self, values):
@@ -115,10 +120,12 @@ class SimpleCSVTableProvider(ConditionsObjectProvider):
         self.entries.append(SimpleCSVTableEntry(url = "python:", values = values))
 
 
-def SimpleCSVDoubleTableProvider(obj_name, columns):
+def simple_csv_double_table_provider(obj_name, columns):
     """Factory for a SimpleCSVTableProvider for tables of doubles"""
-    return SimpleCSVTableProvider(obj_name=obj_name, data_type="double", columns=columns)
+    return SimpleCSVTableProvider(
+        obj_name=obj_name, data_type="double", columns=columns
+    )
 
-def SimpleCSVIntegerTableProvider(obj_name, columns):
+def simple_csv_integer_table_provider(obj_name, columns):
     """Factory for a SimpleCSVTableProvider for tables of integers"""
     return SimpleCSVTableProvider(obj_name=obj_name, data_type="int", columns=columns)

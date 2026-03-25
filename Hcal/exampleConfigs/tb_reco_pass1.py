@@ -27,7 +27,7 @@ print(arg.output_dir)
 import LDMX.Hcal.hcal_geometry
 import LDMX.Hcal.hcal_testbeam0422_conditions
 import LDMX.Hcal.digi as hcal_digi
-import LDMX.Hcal.hgcrocFormat as hcal_format
+import LDMX.Hcal.hgcrocFormat as HcalFormat
 
 base_name = os.path.basename(arg.input_file).replace('.root','')
 dir_name  = os.path.dirname(arg.output_dir)

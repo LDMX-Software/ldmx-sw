@@ -38,7 +38,7 @@ def pndqm(d: Differ, out_dir=None):
         "Photo-nuclear Neutron Multiplicity",
         out_dir=out_dir
     )
-    d.plot1d("PN/pn_gamma_energy", "γ Energy [MeV]", out_dir=out_dir)
+    d.plot1d("PN/pn_gamma_energy", r"$\gamma$ Energy [MeV]", out_dir=out_dir)
     d.plot1d(
         "PN/pn_total_ke",
         "Total Kinetic Energy of Photo-Nuclear"
@@ -52,32 +52,39 @@ def pndqm(d: Differ, out_dir=None):
         out_dir=out_dir
     )
     d.plot1d("PN/1n_neutron_energy", "Neutron Energy [MeV]", out_dir=out_dir)
-    d.plot1d("PN/1n_energy_diff", "E(γ_{PN}) - E(n) [MeV]", out_dir=out_dir)
-    d.plot1d("PN/1n_energy_frac", "E(n)/E(γ_{PN}) [MeV]", out_dir=out_dir)
+    d.plot1d("PN/1n_energy_diff", r"$E(\gamma_{PN}) - E(n)$ [MeV]", out_dir=out_dir)
+    d.plot1d("PN/1n_energy_frac", r"$E(n)/E(\gamma_{PN})$ [MeV]", out_dir=out_dir)
     d.plot1d(
         "PN/2n_n2_energy",
         "Energy of second hardest neutron [MeV]",
         out_dir=out_dir
     )
-    d.plot1d("PN/2n_energy_frac", "E(n)/E(γ_{PN}) [MeV]", out_dir=out_dir)
+    d.plot1d("PN/2n_energy_frac", r"$E(n)/E(\gamma_{PN})$ [MeV]", out_dir=out_dir)
     d.plot1d("PN/2n_energy_other", "E_{other} [MeV]", out_dir=out_dir)
     d.plot1d("PN/1kp_energy", "Charged Kaon Energy [MeV]", out_dir=out_dir)
-    d.plot1d("PN/1kp_energy_diff", "E(γ_{PN}) - E(K±) [MeV]", out_dir=out_dir)
-    d.plot1d("PN/1kp_energy_frac", "E(K±)/E(γ_{PN}) [MeV]", out_dir=out_dir)
+    d.plot1d("PN/1kp_energy_diff",
+             r"$E(\gamma_{PN}) - E(K^\pm)$ [MeV]", out_dir=out_dir)
+    d.plot1d("PN/1kp_energy_frac",
+             r"$E(K^\pm)/E(\gamma_{PN})$ [MeV]", out_dir=out_dir)
     d.plot1d("PN/1k0_energy", "K0 Energy [MeV]", out_dir=out_dir)
-    d.plot1d("PN/1k0_energy_diff", "E(γ_{PN}) - E(K0) [MeV]", out_dir=out_dir)
-    d.plot1d("PN/1k0_energy_frac", "E(K0)/E(γ_{PN}) [MeV]", out_dir=out_dir)
+    d.plot1d("PN/1k0_energy_diff",
+             r"$E(\gamma_{PN}) - E(K^0)$ [MeV]", out_dir=out_dir)
+    d.plot1d("PN/1k0_energy_frac",
+             r"$E(K^0)/E(\gamma_{PN})$ [MeV]", out_dir=out_dir)
 
     d.plot1d("PN/recoil_vertex_x",   "Recoil e^{-} Vertex - x [mm]", out_dir=out_dir)
     d.plot1d("PN/recoil_vertex_y",   "Recoil e^{-} Vertex - y [mm]", out_dir=out_dir)
     d.plot1d("PN/recoil_vertex_z",   "Recoil e^{-} Vertex - z [mm]", out_dir=out_dir)
 
-    d.plot1d("PN/pn_gamma_int_x",    "γ Interaction Vertex X [mm]", out_dir=out_dir)
-    d.plot1d("PN/pn_gamma_int_y",    "γ Interaction Vertex Y [mm]", out_dir=out_dir)
-    d.plot1d("PN/pn_gamma_int_z",    "γ Interaction Vertex Z [mm]", out_dir=out_dir)
-    d.plot1d("PN/pn_gamma_vertex_z", "γ Vertex [mm]", out_dir=out_dir)
-    d.plot1d("PN/pn_gamma_vertex_x", "γ Vertex [mm]", out_dir=out_dir)
-    d.plot1d("PN/pn_gamma_vertex_y", "γ Vertex [mm]", out_dir=out_dir)
+    d.plot1d("PN/pn_gamma_int_x",
+             r"$\gamma$ Interaction Vertex X [mm]", out_dir=out_dir)
+    d.plot1d("PN/pn_gamma_int_y",
+             r"$\gamma$ Interaction Vertex Y [mm]", out_dir=out_dir)
+    d.plot1d("PN/pn_gamma_int_z",
+             r"$\gamma$ Interaction Vertex Z [mm]", out_dir=out_dir)
+    d.plot1d("PN/pn_gamma_vertex_z", r"$\gamma$ Vertex [mm]", out_dir=out_dir)
+    d.plot1d("PN/pn_gamma_vertex_x", r"$\gamma$ Vertex [mm]", out_dir=out_dir)
+    d.plot1d("PN/pn_gamma_vertex_y", r"$\gamma$ Vertex [mm]", out_dir=out_dir)
 
     d.plot1d(
         "PN/hardest_ke",

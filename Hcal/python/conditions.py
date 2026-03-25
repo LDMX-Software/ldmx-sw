@@ -12,9 +12,11 @@ from LDMX.Framework import ConditionsObjectProvider, conditions_object_provider
     "HcalReconConditions", "hcal::HcalReconConditionsProvider", "Hcal"
 )
 class HcalReconConditionsProvider(ConditionsObjectProvider):
-    """The HcalReconConditions object packages the reconstructing conditions tables together
+    """The HcalReconConditions object packages the reconstructing conditions
+    tables together
 
-    This makes the processor using the recon conditions less dependent on the underlying structure.
+    This makes the processor using the recon conditions less dependent on the
+    underlying structure.
 
     Parameters
     ----------
@@ -29,8 +31,8 @@ class HcalReconConditionsProvider(ConditionsObjectProvider):
 
     Examples
     --------
-    The hcal_hardcoded_conditions.py file provides a working example where each condition
-    wrapped here are constant for all runs and all channels.
+    The hcal_hardcoded_conditions.py file provides a working example
+    where each condition wrapped here are constant for all runs and all channels.
     """
 
     adc_ped: str

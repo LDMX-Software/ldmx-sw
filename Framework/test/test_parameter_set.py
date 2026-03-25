@@ -76,7 +76,9 @@ class TestParameter(unittest.TestCase):
         c.instance_name = "cowabunga"
         self.assert_my_class(c, class_name="baz", instance_name="cowabunga")
 
-        self.assert_my_class(MyClass(instance_name="cowabunga"), instance_name="cowabunga")
+        self.assert_my_class(
+            MyClass(instance_name="cowabunga"), instance_name="cowabunga"
+        )
 
     def test_change_after_creation(self):
         c = MyClass()

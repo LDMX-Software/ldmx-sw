@@ -29,12 +29,12 @@ p.output_files = [
 from LDMX.SimCore import simulator
 import LDMX.Ecal.ecal_geometry # geometry required by sim
 
-my_sim = simulator.simulator('my_sim')
-my_sim.setDetector(detector)
+my_sim = simulator.Simulator('my_sim')
+my_sim.set_detector(detector)
 
 # Get a pre-written generator
 from LDMX.SimCore import generators as gen
-my_gun = gen.gun(instance_name='my_gun')
+my_gun = gen.Gun(instance_name='my_gun')
 my_gun.particle = arg.particle
 my_gun.position = [ 0., 0., -600. ] # mm
 my_gun.direction = [ 0., 0., 1] # forward in z

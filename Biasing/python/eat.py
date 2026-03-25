@@ -61,12 +61,12 @@ def midshower_nuclear(
     """
 
     # Instantiate the simulator.
-    sim = simulator.simulator(instance_name = "eat-midshower-nuclear")
+    sim = simulator.Simulator(instance_name = "eat-midshower-nuclear")
     from LDMX.Ecal import ecal_geometry
 
     # Set the path to the detector to use.
     # the second parameter says we want to include scoring planes
-    sim.setDetector(detector, include_scoring_planes_minimal=True)
+    sim.set_detector(detector, include_scoring_planes_minimal=True)
 
     # Set run parameters
     sim.description = "Biased Mid-Shower Nuclear Interactions ME Background"
@@ -140,12 +140,12 @@ def midshower_dimuon(
     """
 
     # Instantiate the simulator.
-    sim = simulator.simulator(instance_name = "eat-midshower-dimuon")
+    sim = simulator.Simulator(instance_name = "eat-midshower-dimuon")
     from LDMX.Ecal import ecal_geometry
 
     # Set the path to the detector to use.
     # the second parameter says we want to include scoring planes
-    sim.setDetector(detector, include_scoring_planes_minimal=True)
+    sim.set_detector(detector, include_scoring_planes_minimal=True)
 
     # Set run parameters
     sim.description = "Biased Mid-Shower DiMuon Interactions ME Background"
@@ -227,13 +227,13 @@ def dark_brem(
 
     """
 
-    sim = simulator.simulator(instance_name = f"ecal_dark_brem_{ap_mass!s}MeV")
+    sim = simulator.Simulator(instance_name = f"ecal_dark_brem_{ap_mass!s}MeV")
     from LDMX.Ecal import ecal_geometry
 
     sim.description = (
         "One e- fired far upstream with Dark Brem turned on and biased up in ECal"
     )
-    sim.setDetector(detector, include_scoring_planes_minimal=True)
+    sim.set_detector(detector, include_scoring_planes_minimal=True)
     sim.generators = [generator]
 
     # Activiate dark bremming with a certain A' mass and LHE library

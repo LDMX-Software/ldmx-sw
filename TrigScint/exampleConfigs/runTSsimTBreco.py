@@ -12,7 +12,7 @@ if len(sys.argv) > 1 :
     input_file=sys.argv[1]
 else :
     print("got to specify an input file")
-    exit
+    exit()
 input_pass_name = sys.argv[2] if len(sys.argv) > 2 else "conv" #"sim"
 
 
@@ -41,7 +41,8 @@ gain_file_name=input_file.replace(".root", "_gains.txt")
 if exists(gain_file_name) :
     with open(gain_file_name) as f:
         for line in f.readlines() :
-            line=line.split(',')  #values are comma separated, one channel per line: channelNB, gain
+            #values are comma separated, one channel per line: channelNB, gain
+            line=line.split(',')
             gain_list[ int(line[0].strip()) ] = float(line[1].strip())
 
 print("Using this list of gains:")
@@ -53,7 +54,8 @@ ped_file_name=input_file.replace(".root", "_peds.txt")
 if exists(ped_file_name) :
     with open(ped_file_name) as f:
         for line in f.readlines() :
-            line=line.split(',')  #values are comma separated, one channel per line: channelNB, ped
+            # comma separated: channelNB, ped
+            line=line.split(',')
             ped_list[ int(line[0].strip()) ] = float(line[1].strip())
 
 print("Using this list of peds:")
@@ -90,20 +92,21 @@ tb_hits_up.n_instrumented_channels=12
 
 from LDMX.TrigScint.trigScint import TestBeamClusterProducer
 
-tbClustersUp  =TestBeamClusterProducer("tb_clusters")
-tbClustersUp.input_pass_name=this_pass_name
-tbClustersUp.input_collection=tb_hits_up.output_collection
-tbClustersUp.pad_time=100.
-tbClustersUp.time_tolerance=999.
-tbClustersUp.verbosity=0
-tbClustersUp.clustering_threshold = 40.  #to add in neighboring
-tbClustersUp.seed_threshold = 50.   # i think 50 cuts off the low tail of the PE distribution
+tb_clusters_up  =TestBeamClusterProducer("tb_clusters")
+tb_clusters_up.input_pass_name=this_pass_name
+tb_clusters_up.input_collection=tb_hits_up.output_collection
+tb_clusters_up.pad_time=100.
+tb_clusters_up.time_tolerance=999.
+tb_clusters_up.verbosity=0
+tb_clusters_up.clustering_threshold = 40.  #to add in neighboring
+# 50 cuts off the low tail of the PE distribution
+tb_clusters_up.seed_threshold = 50.
 
 
 clean_clusters_up  =TestBeamClusterProducer("cleanClusters")
 clean_clusters_up.input_pass_name=this_pass_name
 clean_clusters_up.input_collection=tb_hits_up.output_collection
-clean_clusters_up.output_collection=tbClustersUp.output_collection+"Clean"
+clean_clusters_up.output_collection=tb_clusters_up.output_collection+"Clean"
 clean_clusters_up.pad_time=100.
 clean_clusters_up.time_tolerance=999.
 clean_clusters_up.verbosity=0
@@ -123,7 +126,7 @@ flag_ana.gain=gain_list
 
 p.sequence = [
     tb_hits_up,
-    tbClustersUp,
+    tb_clusters_up,
     clean_clusters_up,
 #    ts_ana,
     flag_ana

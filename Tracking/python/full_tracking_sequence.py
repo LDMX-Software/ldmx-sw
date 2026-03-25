@@ -1,9 +1,11 @@
 # Load the tracking module
 from LDMX.Tracking import geo, tracking
-from LDMX.Tracking.geo import TrackersTrackingGeometryProvider as trackgeo
+from LDMX.Tracking.geo import (
+    TrackersTrackingGeometryProvider as TrackGeo,
+)
 
 
-trackgeo.get_instance().setDetector("ldmx-det-v15-8gev")
+TrackGeo.get_instance().set_detector("ldmx-det-v15-8gev")
 
 # Truth seeder
 # Runs truth tracking producing tracks from target scoring plane hits for Recoil
@@ -12,13 +14,13 @@ trackgeo.get_instance().setDetector("ldmx-det-v15-8gev")
 truth_tracking = tracking.TruthSeedProcessor(
     debug=True,
     trk_coll_name="RecoilTruthSeeds",
-    pdgIDs=[11],
+    pdg_ids=[11],
     scoring_hits="TargetScoringPlaneHits",
     z_min=0.0,
     track_id=-1,
     p_cut=0.05,
     pz_cut=0.03,
-    p_cutEcal=0.0,
+    p_cut_ecal=0.0,
 )
 
 # Smearing Processor - Tagger
@@ -76,7 +78,7 @@ seeder_recoil = tracking.SeedFinderProcessor(
 # CKF track finding for tagger tracker using seeds.
 tracking_tagger = tracking.CKFProcessor(
     instance_name="Tagger_TrackFinder",
-    taggerTracking=True,
+    tagger_tracking=True,
     seed_coll_name=seeder_tagger.out_seed_collection,
     out_trk_collection="TaggerTracks",
     measurement_collection=digi_tagger.out_collection,
@@ -87,7 +89,7 @@ tracking_tagger = tracking.CKFProcessor(
 # CKF track finding for recoil tracker using seeds.
 tracking_recoil = tracking.CKFProcessor(
     instance_name="Recoil_TrackFinder",
-    taggerTracking=False,
+    tagger_tracking=False,
     seed_coll_name=seeder_recoil.out_seed_collection,
     out_trk_collection="RecoilTracks",
     measurement_collection=digi_recoil.out_collection,
@@ -114,7 +116,7 @@ greedy_solver_recoil = tracking.GreedyAmbiguitySolver(
 # Gaussian sum filter for the tagger
 GSF_tagger = tracking.GSFProcessor(
     instance_name="Tagger_GSF",
-    taggerTracking=True,
+    tagger_tracking=True,
     track_collection=greedy_solver_tagger.out_trk_collection,
     meas_collection=digi_tagger.out_collection,
     out_trk_collection="GSFTaggerTracks",
@@ -123,7 +125,7 @@ GSF_tagger = tracking.GSFProcessor(
 # Gaussian sum filter for the recoil
 GSF_recoil = tracking.GSFProcessor(
     instance_name="Recoil_GSF",
-    taggerTracking=False,
+    tagger_tracking=False,
     track_collection=greedy_solver_recoil.out_trk_collection,
     meas_collection=digi_recoil.out_collection,
     out_trk_collection="GSFRecoilTracks",
@@ -155,7 +157,7 @@ dqm_tagger_ckf = tkdqm.TrackingRecoDQM(
     track_collection=tracking_tagger.out_trk_collection,
     truth_hit_collection="TaggerSimHits",
     truth_collection="TaggerTruthTracks",
-    trackStates=["target"],
+    track_states=["target"],
     title="",
     measurement_collection=digi_tagger.out_collection,
 )
@@ -165,7 +167,7 @@ dqm_recoil_ckf = tkdqm.TrackingRecoDQM(
     instance_name="RecoilDQM",
     track_collection=tracking_recoil.out_trk_collection,
     truth_collection="RecoilTruthTracks",
-    trackStates=["ecal", "target"],
+    track_states=["ecal", "target"],
     title="",
     measurement_collection=digi_recoil.out_collection,
     truth_hit_collection="RecoilSimHits",
@@ -177,7 +179,7 @@ dqm_tagger_gas = tkdqm.TrackingRecoDQM(
     track_collection=greedy_solver_tagger.out_trk_collection,
     truth_hit_collection="TaggerSimHits",
     truth_collection="TaggerTruthTracks",
-    trackStates=["target"],
+    track_states=["target"],
     title="",
     measurement_collection=digi_tagger.out_collection,
 )
@@ -187,7 +189,7 @@ dqm_recoil_gas = tkdqm.TrackingRecoDQM(
     instance_name="RecoilGASDQM",
     track_collection=greedy_solver_recoil.out_trk_collection,
     truth_collection="RecoilTruthTracks",
-    trackStates=["ecal", "target"],
+    track_states=["ecal", "target"],
     title="",
     measurement_collection=digi_recoil.out_collection,
     truth_hit_collection="RecoilSimHits",
@@ -199,7 +201,7 @@ dqm_tagger_gsf = tkdqm.TrackingRecoDQM(
     track_collection=GSF_tagger.out_trk_collection,
     truth_hit_collection="TaggerSimHits",
     truth_collection="TaggerTruthTracks",
-    trackStates=["target"],
+    track_states=["target"],
     title="",
     measurement_collection=digi_tagger.out_collection,
 )
@@ -209,7 +211,7 @@ dqm_recoil_gsf = tkdqm.TrackingRecoDQM(
     instance_name="RecoilGSFDQM",
     track_collection=GSF_recoil.out_trk_collection,
     truth_collection="RecoilTruthTracks",
-    trackStates=["ecal", "target"],
+    track_states=["ecal", "target"],
     title="",
     measurement_collection=digi_recoil.out_collection,
     truth_hit_collection="RecoilSimHits",
@@ -244,12 +246,13 @@ dqm_sequence = [
     dqm_recoil_gsf,
 ]
 
-def setOverlay(pass_name:str):
-    """Modifies full tracking and dqm sequences in-place so that all 
-    relevant input/output collections in the tracking processors point 
+def set_overlay(pass_name:str):
+    """Modifies full tracking and dqm sequences in-place so that all
+    relevant input/output collections in the tracking processors point
     to the overlay collections."""
 
-    collection_names_to_update = [ # first, collections that are explicitly overlaid in the OverlayProducer
+    # first, collections that are explicitly overlaid in the OverlayProducer
+    collection_names_to_update = [
         "TriggerPad1SimHits", "TriggerPad2SimHits", "TriggerPad3SimHits",
         "TargetSimHits", "EcalSimHits", "HcalSimHits", "TaggerSimHits",
         "RecoilSimHits", "EcalScoringPlaneHits", "TargetScoringPlaneHits",
@@ -262,12 +265,21 @@ def setOverlay(pass_name:str):
         params = vars(proc) # Python variable assignments are references by default,
                             # so this works to update the processor class variables
         for key, value in params.items():
-            if str(key) in ['input_pass_name', 'track_collection_event_passname',
-                            'track_passname', 'meas_collection_event_passname', 'meas_passname',
-                            'measurement_passname', 'truth_events_passname', 'truth_passname',
-                            'track_collection_events_passname', 'input_tagger_pass_name',
-                            'input_recoil_pass_name', 'input_collection_events_passname',
-                            'tagger_trks_event_collection_passname']:
+            if str(key) in [
+                'input_pass_name',
+                'track_collection_event_passname',
+                'track_passname',
+                'meas_collection_event_passname',
+                'meas_passname',
+                'measurement_passname',
+                'truth_events_passname',
+                'truth_passname',
+                'track_collection_events_passname',
+                'input_tagger_pass_name',
+                'input_recoil_pass_name',
+                'input_collection_events_passname',
+                'tagger_trks_event_collection_passname',
+            ]:
                 params[key] = pass_name
                 continue
             if str(value) in collection_names_to_update:

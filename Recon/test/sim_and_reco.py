@@ -14,8 +14,8 @@ import LDMX.Ecal.ecal_geometry
 from LDMX.SimCore import simulator
 
 
-sim = simulator.simulator("my_sim")
-sim.setDetector( 'ldmx-det-v12', include_scoring_planes_minimal = True  )
+sim = simulator.Simulator("my_sim")
+sim.set_detector( 'ldmx-det-v12', include_scoring_planes_minimal = True  )
 sim.description = "ECal photo-nuclear, xsec bias 450"
 sim.randomSeeds = [ 2*p.run , 2*p.run+1 ]
 sim.beamSpotSmear = [20., 80., 0]

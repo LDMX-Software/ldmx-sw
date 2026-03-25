@@ -1,10 +1,30 @@
 import argparse
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--max-energy',help='maximum energy [GeV] to sample from', default=4.0, type=float)
-parser.add_argument('--min-energy',help='minimum energy [GeV] to sample from', default=0.0, type=float)
-parser.add_argument('--angle',help='maximum polar angle [degrees] to sample from', default=60.0, type=float)
-parser.add_argument('--n-events',help='number of events to simulate',default=10,type=int)
+parser.add_argument(
+    '--max-energy',
+    help='maximum energy [GeV] to sample from',
+    default=4.0,
+    type=float,
+)
+parser.add_argument(
+    '--min-energy',
+    help='minimum energy [GeV] to sample from',
+    default=0.0,
+    type=float,
+)
+parser.add_argument(
+    '--angle',
+    help='maximum polar angle [degrees] to sample from',
+    default=60.0,
+    type=float,
+)
+parser.add_argument(
+    '--n-events',
+    help='number of events to simulate',
+    default=10,
+    type=int,
+)
 args = parser.parse_args()
 
 from LDMX.Framework import ldmxcfg
@@ -13,7 +33,13 @@ p = ldmxcfg.Process('uniele')
 p.max_events = args.n_events
 p.run = 1
 
-filename = f'uniform_electrons_maxE_{args.max_energy}_minE_{args.min_energy}_maxPolar_{args.angle}_N_{args.n_events}_run_{p.run:04d}.root'
+filename = (
+    f'uniform_electrons_maxE_{args.max_energy}'
+    f'_minE_{args.min_energy}'
+    f'_maxPolar_{args.angle}'
+    f'_N_{args.n_events}'
+    f'_run_{p.run:04d}.root'
+)
 p.output_files = [ 'events_'+filename ]
 p.histogram_file = 'hists_'+filename
 
@@ -23,22 +49,24 @@ import LDMX.Ecal.ecal_geometry
 from LDMX.SimCore import simulator
 from LDMX.SimCore import generators
 
-sim = simulator.simulator("uniform-electrons")
-sim.setDetector('ldmx-det-v14-8gev', include_scoring_planes_minimal = True)
+sim = simulator.Simulator("uniform-electrons")
+sim.set_detector('ldmx-det-v14-8gev', include_scoring_planes_minimal = True)
 sim.description = "Electrons with uniformly sampled energy and angle shot from target"
 sim.beamSpotSmear = [20., 80., 0.]
 # GPS generator
 sim.generators = [
-    generators.gps('uniform-electrons', [
+    generators.Gps('uniform-electrons', [
         # electrons
         '/gps/particle e-',
         # position distribution: all from the same point, simulator smears beam spot
         '/gps/pos/type Point', # beamSpotSmear will smear for us
         '/gps/pos/centre 0 0 0 mm', # shoot from center of target
-        # angular distribution, isotropic with maximum polar angle relative to z-axis
+        # angular distribution, isotropic with maximum polar angle
+        # relative to z-axis
         '/gps/direction 0 0 1',
-        # the default direction is negative z (like cosmics coming down from the sky)
-        # so we need to rotate the frame of the angular distribution to be pointed along
+        # the default direction is negative z (like cosmics coming down from the
+        # sky), so we need to rotate the frame of the angular distribution to be
+        # pointed along
         # positive z
         '/gps/ang/rot1 1 0 0',
         '/gps/ang/rot2 0 -1 0',
@@ -69,13 +97,13 @@ import LDMX.Tracking.geo
 truth_tracking           = tracking.TruthSeedProcessor()
 truth_tracking.debug             = True
 truth_tracking.trk_coll_name     = "RecoilTruthSeeds"
-truth_tracking.pdgIDs            = [11]
+truth_tracking.pdg_ids            = [11]
 truth_tracking.scoring_hits      = "TargetScoringPlaneHits"
 truth_tracking.z_min             = 0.
 truth_tracking.track_id          = -1
 truth_tracking.p_cut             = 0.05 # In MeV
 truth_tracking.pz_cut            = 0.03
-truth_tracking.p_cutEcal         = 0. # In MeV
+truth_tracking.p_cut_ecal         = 0. # In MeV
 
 # These smearing quantities are default. We expect around 6um hit resolution in bending
 # plane

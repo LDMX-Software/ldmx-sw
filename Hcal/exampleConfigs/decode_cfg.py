@@ -1,7 +1,8 @@
 """Decoding configuration for raw testbeam data
 
 Decoding **DOES NOT** attempt
-to align the two halves of the HCal. We assume a local home path of ldmx-sw installation e.g.
+to align the two halves of the HCal. We assume a local home path of ldmx-sw
+installation e.g.
 
   LDMX_BASE=/local/cms/user/eichl008/ldmx/
 
@@ -33,13 +34,15 @@ if arg.max_events is not None :
 p.term_log_level = 0
 p.log_frequency = 1000
 
-import LDMX.Hcal.hgcrocFormat as hcal_format
+import LDMX.Hcal.hgcrocFormat as HcalFormat
 import LDMX.Hcal.hcal_geometry
 import LDMX.Hcal.hcal_hardcoded_conditions
 from LDMX.DQM import dqm
 import os
 from LDMX.Hcal.detector_map import HcalDetectorMap
-detmap = HcalDetectorMap(f'{os.environ["LDMX_BASE"]}/ldmx-sw/Hcal/data/testbeam_connections.csv')
+detmap = HcalDetectorMap(
+    f'{os.environ["LDMX_BASE"]}/ldmx-sw/Hcal/data/testbeam_connections.csv'
+)
 detmap.want_d2e = True # helps quicken the det -> elec translation
 
 # extract and deduce parameters from input file name
@@ -59,7 +62,10 @@ elif 'hcal' in params :
     input_names = [ f'Polarfire{pf}Raw' for pf in [0,1] ]
     out_name = 'HcalRawDigis'
 else :
-    raise KeyError(f'Unable to deduce alignment from {fp}, need either "fpga" or "hcal" in base file name.')
+    raise KeyError(
+        f'Unable to deduce alignment from {arg.input_file}, '
+        'need either "fpga" or "hcal" in base file name.'
+    )
 
 dir_name  = f'{os.environ["LDMX_BASE"]}/testbeam/{alignment}/v2-decoded'
 os.makedirs(dir_name, exist_ok=True)
@@ -75,7 +81,7 @@ p.histogram_file = f'{dir_name}-ntuple/ntuple_{file_name}.root'
 #   1. decode event packet into digi collection
 #   2. ntuplize digi collection
 p.sequence = [
-        hcal_format.HcalRawDecoder(
+        HcalFormat.HcalRawDecoder(
             input_names = input_names,
             output_name = out_name
             ),

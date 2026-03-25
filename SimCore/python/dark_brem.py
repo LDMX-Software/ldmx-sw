@@ -70,7 +70,7 @@ class DarkBrem:
         Should we deactivate the process after one dark brem
         or allow for more than one? (Default: No)
     cache_xsec : bool
-        Should we cache the xsec's computed from the model? 
+        Should we cache the xsec's computed from the model?
         (Default: yes)
     model : DarkBremModel
         The model that should be use for dark bremming

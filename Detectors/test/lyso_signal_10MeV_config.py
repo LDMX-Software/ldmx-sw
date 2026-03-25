@@ -61,22 +61,26 @@ from LDMX.Recon.electron_counter import ElectronCounter
 from LDMX.Recon.simple_trigger import TriggerProcessor
 
 
-count = ElectronCounter(simulated_electron_number=1, instance_name='ElectronCounter', input_pass_name='')
+count = ElectronCounter(
+    simulated_electron_number=1,
+    instance_name='ElectronCounter',
+    input_pass_name='')
 
 from LDMX.DQM import dqm
 
 
 p.sequence.extend([
-        ecal_digi.EcalDigiProducer(),
-        ecal_digi.EcalRecProducer(),
-        ecal_vetos.EcalVetoProcessor(),
-        hcal_digi.HcalDigiProducer(),
-        hcal_digi.HcalRecProducer(),
-        *ts_digis,
-        TrigScintClusterProducer.pad1(),
-        TrigScintClusterProducer.pad2(),
-        TrigScintClusterProducer.pad3(),
-        trig_scint_track,
-        count, TriggerProcessor(beam_energy=8000., instance_name='trigger'),
-        dqm.DarkBremInteraction()
-        ] + dqm.all_dqm)
+    ecal_digi.EcalDigiProducer(),
+    ecal_digi.EcalRecProducer(),
+    ecal_vetos.EcalVetoProcessor(),
+    hcal_digi.HcalDigiProducer(),
+    hcal_digi.HcalRecProducer(),
+    *ts_digis,
+    TrigScintClusterProducer.pad1(),
+    TrigScintClusterProducer.pad2(),
+    TrigScintClusterProducer.pad3(),
+    trig_scint_track,
+    count,
+    TriggerProcessor(beam_energy=8000.0, instance_name='trigger'),
+    dqm.DarkBremInteraction(),
+    *dqm.all_dqm])

@@ -14,8 +14,8 @@ p.logger.term_level = 4
 from LDMX.SimCore import simulator as sim
 
 
-my_sim = sim.simulator( instance_name="my_sim" )
-my_sim.setDetector( 'ldmx-det-v15-8gev', include_scoring_planes_minimal=True)
+my_sim = sim.Simulator( instance_name="my_sim" )
+my_sim.set_detector( 'ldmx-det-v15-8gev', include_scoring_planes_minimal=True)
 from LDMX.SimCore import generators as gen
 
 

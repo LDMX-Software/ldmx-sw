@@ -1,6 +1,6 @@
 from LDMX.Framework import Processor, field, processor
 
-from .make_path import makeFieldMapPath
+from .make_path import make_field_map_path
 
 
 @processor("tracking::reco::VertexProcessor", "Tracking")
@@ -22,7 +22,7 @@ class VertexProcessor(Processor):
         The name of the seeds collection.
     """
 
-    field_map: str = field(default_factory=makeFieldMapPath)
+    field_map: str = field(default_factory=make_field_map_path)
     trk_coll_name: str = "Tracks"
     seeds_coll_name: str = "RecoilTruthSeeds"
     input_pass_name: str = ""
@@ -49,7 +49,7 @@ class Vertexer(Processor):
     """
 
     debug: bool = False
-    field_map: str = field(default_factory=makeFieldMapPath)
+    field_map: str = field(default_factory=make_field_map_path)
     trk_c_name_1: str = "TaggerTracks"
     trk_c_name_2: str = "RecoilTracks"
     input_pass_name: str = ""

@@ -29,7 +29,8 @@ default_run="unpacked_4gev_negativeMu_Apr03_2200_reformat_30timeSamplesFrom0_lin
 data_path=path.dirname( sys.argv[1] ) #extract the path to where we keep the data
 default_gain_file_name=data_path+"/"+default_run+"_gains.txt"
 
-#if for some reason, gains are not derived for this run. probably too low stats --> fits
+# if for some reason, gains are not derived for this run. probably too low
+# stats --> fits
 #not converging. bet on that inter-channel gain differences are larger than variations
 #in channel over time; then it is better to use an old file than a flat default gain.
 #also, this could be edited to become an average file.
@@ -39,7 +40,8 @@ if not exists(gain_file_name) :
 if exists(gain_file_name) :
     with open(gain_file_name) as f:
         for line in f.readlines() :
-            line=line.split(',')  #values are comma separated, one channel per line: channelNB, gain
+            # comma separated: channelNB, gain
+            line=line.split(',')
             gain_list[ int(line[0].strip()) ] = float(line[1].strip())
 
 print("Using this list of gains:")
@@ -75,7 +77,8 @@ if not exists(ped_file_name) :
 if exists(ped_file_name) :
     with open(ped_file_name) as f:
         for line in f.readlines() :
-            line=line.split(',')  #values are comma separated, one channel per line: channelNB, ped
+            # comma separated: channelNB, ped
+            line=line.split(',')
             ped_list[ int(line[0].strip()) ] = float(line[1].strip())
 
 print("Using this list of peds:")

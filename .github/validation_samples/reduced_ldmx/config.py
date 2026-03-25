@@ -11,17 +11,17 @@ from LDMX.SimCore import simulator as sim
 
 
 #my_gun = gen.single_4gev_e_upstream_tagger()
-my_gun = gen.multi( instance_name="mgpGen" )
+my_gun = gen.Multi( instance_name="mgpGen" )
 my_gun.vertex = [ 0., 0., -880.] # mm
 my_gun.momentum = [0.,0.,4000.] # MeV
 my_gun.n_particles = 1
 my_gun.pdg_id = 11
 my_gun.enable_poisson = False #True
 
-my_sim = sim.simulator( instance_name="my_sim" ) # Build simulator object
+my_sim = sim.Simulator( instance_name="my_sim" ) # Build simulator object
 det = 'ldmx-reduced-v3'
 
-my_sim.setDetector(det, include_scoring_planes_minimal = True )
+my_sim.set_detector(det, include_scoring_planes_minimal = True )
 my_sim.description = 'Reduced ECal Electron Gun Test Simulation'
 
 my_sim.generators = [ my_gun ]
@@ -77,7 +77,11 @@ from LDMX.Recon.electron_counter import ElectronCounter
 from LDMX.Recon.simple_trigger import TriggerProcessor
 
 
-count = ElectronCounter(simulated_electron_number=1, instance_name='ElectronCounter', input_pass_name='')
+count = ElectronCounter(
+    simulated_electron_number=1,
+    instance_name='ElectronCounter',
+    input_pass_name='',
+)
 
 # Load hcal veto
 import LDMX.Hcal.hcal as hcal
@@ -92,10 +96,12 @@ ecal_wab_dqm = dqm.EcalWABRecResults()
 
 from LDMX.Tracking import dqm as trk_dqm
 from LDMX.Tracking import geo, reduced_tracking, tracking
-from LDMX.Tracking.geo import TrackersTrackingGeometryProvider as trackgeo
+from LDMX.Tracking.geo import (
+    TrackersTrackingGeometryProvider as TrackGeo,
+)
 
 
-trackgeo.get_instance().setDetector(det)
+TrackGeo.get_instance().set_detector(det)
 
 # Smearing Processor - Recoil
 digi_recoil_reduced = tracking.DigitizationProcessor(
@@ -113,7 +119,8 @@ layer12_mid = (9.5+15.5)/2.
 layer23_mid = (15.5+24.5)/2.
 layer34_mid = (24.5+30.5)/2.
 
-truth_tracking = reduced_tracking.LinearTruthTracking(instance_name="LinearTruthTracking")
+truth_tracking = reduced_tracking.LinearTruthTracking(
+    instance_name="LinearTruthTracking")
 truth_tracking.input_hits_collection = "RecoilSimHits"
 truth_tracking.input_rec_hits_collection = "EcalRecHits"
 truth_tracking.out_track_collection = "LinearRecoilTruthTracks"
@@ -171,7 +178,7 @@ reduced_dqm = [
         dqm.sample_validation_dqm
          + reduced_ecal_dqm
          +  dqm.hcal_dqm
-         +  dqm.trigScint_dqm
+         +  dqm.trig_scint_dqm
          +  dqm.trigger_dqm
          ]
 p.sequence.extend(*reduced_dqm)

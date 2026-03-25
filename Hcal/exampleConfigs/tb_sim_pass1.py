@@ -24,7 +24,10 @@ p.run = arg.runnumber
 
 detector = 'ldmx-hcal-prototype-v2.0' # TODO: CHANGE TO FEFIX version
 
-base_name = os.path.basename(arg.particle+f"Sim_{arg.energy:.2f}GeV_"+str(p.max_events)+f"_{detector}"+"_pass1_%i"%arg.runnumber)
+base_name = os.path.basename(
+    arg.particle + f"Sim_{arg.energy:.2f}GeV_" + str(p.max_events)
+    + f"_{detector}" + f"_pass1_{arg.runnumber}"
+)
 dir_name  = os.path.dirname(arg.output_dir)
 
 p.output_files = [f'{dir_name}/{base_name}.root']
@@ -32,12 +35,12 @@ p.output_files = [f'{dir_name}/{base_name}.root']
 from LDMX.SimCore import simulator
 import LDMX.Ecal.ecal_geometry # geometry required by sim
 
-my_sim = simulator.simulator('my_sim')
-my_sim.setDetector(detector)
+my_sim = simulator.Simulator('my_sim')
+my_sim.set_detector(detector)
 
 # Get a pre-written generator
 from LDMX.SimCore import generators as gen
-my_gun = gen.gun(instance_name='my_gun')
+my_gun = gen.Gun(instance_name='my_gun')
 my_gun.particle = arg.particle
 my_gun.position = [ 0., 0., -600. ] # mm
 my_gun.direction = [ 0., 0., 1] # forward in z

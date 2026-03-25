@@ -83,7 +83,9 @@ class Processor:
             )
 
 
-def processor(class_name: str, module_name: str, default_instance_name: str = None):
+def processor(
+    class_name: str, module_name: str, default_instance_name: str | None = None
+):
     """declare a processor configuration class
 
     Parameters

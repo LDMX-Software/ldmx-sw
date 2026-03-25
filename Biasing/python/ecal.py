@@ -40,11 +40,11 @@ def photo_nuclear(detector, generator):
     """
 
     # Instantiate the simulator.
-    sim = simulator.simulator(instance_name = "photo-nuclear")
+    sim = simulator.Simulator(instance_name = "photo-nuclear")
 
     # Set the path to the detector to use.
     #   the second parameter says we want to include scoring planes
-    sim.setDetector(detector, include_scoring_planes_minimal=True)
+    sim.set_detector(detector, include_scoring_planes_minimal=True)
 
     # Set run parameters
     xsec_bias_threshold = 0.625 * generator.energy * 1000.0
@@ -75,7 +75,10 @@ def photo_nuclear(detector, generator):
         [
             filters.TaggerVetoFilter(threshold=tagger_threshold),
             # Only consider events where a hard brem occurs
-            filters.TargetBremFilter(recoil_max_p_threshold=recoil_max_p, brem_min_energy_threshold=brem_min_e),
+            filters.TargetBremFilter(
+                recoil_max_p_threshold=recoil_max_p,
+                brem_min_energy_threshold=brem_min_e,
+            ),
             # Only consider events where a PN reaction happnes in the ECal
             filters.EcalProcessFilter(),
             # Tag all photo-nuclear tracks to persist them to the event.
@@ -89,11 +92,11 @@ def photo_nuclear(detector, generator):
 def nonfiducial_photo_nuclear(detector, generator):
 
     # Instantiate the simulator.
-    sim = simulator.simulator(instance_name = "photo-nuclear")
+    sim = simulator.Simulator(instance_name = "photo-nuclear")
 
     # Set the path to the detector to use.
     #   the second parameter says we want to include scoring planes
-    sim.setDetector(detector, include_scoring_planes_minimal=True)
+    sim.set_detector(detector, include_scoring_planes_minimal=True)
 
     # Set run parameters
     xsec_bias_threshold = 0.625 * generator.energy * 1000.0
@@ -123,7 +126,10 @@ def nonfiducial_photo_nuclear(detector, generator):
         [
             filters.TaggerVetoFilter(threshold=tagger_threshold),
             # Only consider events where a hard brem occurs
-            filters.TargetBremFilter(recoil_max_p_threshold=recoil_max_p, brem_min_energy_threshold=brem_min_e),
+            filters.TargetBremFilter(
+                recoil_max_p_threshold=recoil_max_p,
+                brem_min_energy_threshold=brem_min_e,
+            ),
             # Only considers events that are Non-Fiducial (Doesn't enter an ECal volume)
             filters.NonFiducialFilter(recoil_max_p=recoil_max_p),
             # Only consider events where a PN reaction happens in the ECal
@@ -161,11 +167,11 @@ def gamma_mumu(detector, generator):
     """
 
     # Initiate the sim
-    sim = simulator.simulator(instance_name = "ecal_gammamumu")
+    sim = simulator.Simulator(instance_name = "ecal_gammamumu")
 
     # Set the path to the detector to use
     # Also tell the simulator to include scoring planes
-    sim.setDetector(detector, include_scoring_planes_minimal=True)
+    sim.set_detector(detector, include_scoring_planes_minimal=True)
 
     # Set run parameters
     xsec_bias_threshold = 0.625 * generator.energy * 1000.0
@@ -192,7 +198,10 @@ def gamma_mumu(detector, generator):
     sim.actions.extend(
         [
             filters.TaggerVetoFilter(threshold=tagger_threshold),
-            filters.TargetBremFilter(recoil_max_p_threshold=recoil_max_p, brem_min_energy_threshold=brem_min_e),
+            filters.TargetBremFilter(
+                recoil_max_p_threshold=recoil_max_p,
+                brem_min_energy_threshold=brem_min_e,
+            ),
             filters.EcalProcessFilter(process="GammaToMuPair"),
             util.TrackProcessFilter.gamma_mumu(),
         ]
@@ -211,11 +220,11 @@ def deep_photo_nuclear(
 ):
 
     # Instantiate the simulator.
-    sim = simulator.simulator(instance_name = "photo-nuclear")
+    sim = simulator.Simulator(instance_name = "photo-nuclear")
 
     # Set the path to the detector to use.
     #   the second parameter says we want to include scoring planes
-    sim.setDetector(detector, include_scoring_planes_minimal=True)
+    sim.set_detector(detector, include_scoring_planes_minimal=True)
 
     # Set run parameters
     # Set run parameters

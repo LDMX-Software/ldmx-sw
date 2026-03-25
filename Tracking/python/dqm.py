@@ -19,17 +19,17 @@ class TrackerDigiDQM(Processor):
     def __post_init__(self):
         for i in range(0, 14):
             self.histogram(
-                "global_yz_l%s" % i,
+                f"global_yz_l{i}",
                 "Global y (mm)", 70, -50, 20,
                 "Global z (mm)", 100, -50, 50,
             )
             self.histogram(
-                "local_uv_l%s" % i,
+                f"local_uv_l{i}",
                 "u (mm)", 60, -30, 30,
                 "v (mm)", 100, -50, 50,
             )
             self.histogram(
-                "time_l%s" % i,
+                f"time_l{i}",
                 "Time (ns)", 100, 0, 100,
             )
 
@@ -70,9 +70,9 @@ class TrackingRecoDQM(Processor):
         Maximum q/p for histograms.
     pmax : float
         Maximum momentum for histograms.
-    trackStates : list[str]
+    track_states : list[str]
         Track states to build histograms for.
-    doTruth : bool
+    do_truth : bool
         Whether to build truth histograms.
     track_collection : str
         Name of the track collection.
@@ -112,8 +112,8 @@ class TrackingRecoDQM(Processor):
     qopmin: float = -10.0
     qopmax: float = 10.0
     pmax: float = 10.0
-    trackStates: list[str] = ["ecal", "target"]
-    doTruth: bool = True
+    track_states: list[str] = ["ecal", "target"]
+    do_truth: bool = True
     track_collection: str = "TruthTracks"
     truth_collection: str = "TaggerTruthTracks"
     truth_hit_collection: str = ""
@@ -276,7 +276,7 @@ class TrackingRecoDQM(Processor):
             "res_{pt} beam", nbins, -0.5, 0.5,
         )
 
-        if self.doTruth:
+        if self.do_truth:
             self.histogram("truth_N_tracks", "truth_N tracks", 10, 0, 10)
             self.histogram("truth_nHits", "truth nHits", 15, 0, 15)
             self.histogram("truth_layers_hit", "truth layers hit", 15, 0, 15)
@@ -318,11 +318,15 @@ class TrackingRecoDQM(Processor):
             self.histogram("pull_qop", "pull q/p", 100, -5, 5)
 
             # Efficiency plots
-            self.histogram("match_prob", "reco truth match probability", nbins, 0.0, 1.1)
+            self.histogram(
+                "match_prob", "reco truth match probability", nbins, 0.0, 1.1
+            )
             self.histogram("match_d0", "reco match d0 [mm]", nbins, d0min, d0max)
             self.histogram("match_z0", "reco match z0 [mm]", nbins, z0min, z0max)
             self.histogram("match_phi", "reco match #phi", nbins, phimin, phimax)
-            self.histogram("match_theta", "reco match #theta", nbins, thetamin, thetamax)
+            self.histogram(
+                "match_theta", "reco match #theta", nbins, thetamin, thetamax
+            )
             self.histogram("match_qop", "truth q/p [GeV^{-1}]", nbins, qopmin, qopmax)
             self.histogram("match_p", "truth p [GeV]", nbins, 0, pmax)
             self.histogram("match_beam_angle", "angle wrt beam axis", 20, 0, 2)
@@ -358,7 +362,9 @@ class TrackingRecoDQM(Processor):
                 "Fake measurement dE/dx (MeV/mm)", 60, 0.0, 0.6,
             )
             self.histogram("fake_Chi2", "fake Chi2", 100, 0, chi2_fake_max)
-            self.histogram("fake_Chi2_per_ndf", "fake Chi2/ndf", 100, 0, chi2_ndf_fake_max)
+            self.histogram(
+                "fake_Chi2_per_ndf", "fake Chi2/ndf", 100, 0, chi2_ndf_fake_max
+            )
             self.histogram("fake_nShared", "fake nShared", 5, 0, 5)
             self.histogram("fake_nHoles", "fake nHoles", 5, 0, 5)
 
@@ -381,7 +387,7 @@ class TrackingRecoDQM(Processor):
             self.histogram("dup_nHoles", "dup nHoles", 5, 0, 5)
 
             # Track states extrapolations
-            for track_state in self.trackStates:
+            for track_state in self.track_states:
                 self.histogram(
                     "trk_" + track_state + "_loc0",
                     "trk_" + track_state + "_loc0 [mm]", 200, -50, 50,
@@ -472,7 +478,7 @@ class StraightTracksDQM(Processor):
         Minimum theta for histograms.
     thetamax : float
         Maximum theta for histograms.
-    doTruth : bool
+    do_truth : bool
         Whether to build truth histograms.
     track_collection : str
         Name of the track collection.
@@ -497,7 +503,7 @@ class StraightTracksDQM(Processor):
     phimax: float = 0.2
     thetamin: float = -0.3
     thetamax: float = 0.3
-    doTruth: bool = True
+    do_truth: bool = True
     track_collection: str = "LinearRecoilTracks"
     truth_collection: str = "LinearRecoilTruthTracks"
     title: str = "recoil_lin_trk_"
@@ -528,7 +534,7 @@ class StraightTracksDQM(Processor):
         self.histogram("phi_err", "#sigma_{#phi} [rad]", nbins, 0, 0.001)
         self.histogram("theta_err", "#sigma_{#theta} [rad]", nbins, 0, 0.03)
 
-        if self.doTruth:
+        if self.do_truth:
             self.histogram("truth_phi", "truth #phi", nbins, phimin, phimax)
             self.histogram("truth_theta", "truth #theta", nbins, thetamin, thetamax)
             self.histogram("truth_PID", "Particles", 30, -15, 15)
@@ -547,7 +553,9 @@ class StraightTracksDQM(Processor):
             self.histogram("fake_theta", "fake #theta", nbins, thetamin, thetamax)
             self.histogram("fake_nHits", "fake nHits", 5, 0, 5)
             self.histogram("fake_Chi2", "fake Chi2", nbins, 0, chi2_fake_max)
-            self.histogram("fake_Chi2_per_ndf", "fake Chi2/ndf", nbins, 0, chi2_ndf_fake_max)
+            self.histogram(
+                "fake_Chi2_per_ndf", "fake Chi2/ndf", nbins, 0, chi2_ndf_fake_max
+            )
             self.histogram("fake_trk_PID", "Particles", 8, -4, 4)
 
             # Duplicate plots
@@ -579,8 +587,12 @@ class StraightTracksDQM(Processor):
                 "ecal trk_loc1 - truth_loc1 [mm]", 200, -6, 6,
             )
 
-            self.histogram("target_Pulls_of_loc0", "target_pulls_of_loc0 [mm]", 200, -5, 5)
-            self.histogram("target_Pulls_of_loc1", "target_pulls_of_loc1 [mm]", 200, -5, 5)
+            self.histogram(
+                "target_Pulls_of_loc0", "target_pulls_of_loc0 [mm]", 200, -5, 5
+            )
+            self.histogram(
+                "target_Pulls_of_loc1", "target_pulls_of_loc1 [mm]", 200, -5, 5
+            )
             self.histogram("ecal_Pulls_of_loc0", "ecal_pulls_of_loc0 [mm]", 200, -5, 5)
             self.histogram("ecal_Pulls_of_loc1", "ecal_pulls_of_loc1 [mm]", 200, -5, 5)
 

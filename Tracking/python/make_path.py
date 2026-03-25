@@ -9,7 +9,7 @@ import os
 import sys
 
 
-def makeFieldMapPath() -> str:
+def make_field_map_path() -> str:
     """Get the full path to the fieldmap.
 
     If the fieldmap doesn't exist, exit the app.
@@ -27,7 +27,7 @@ def makeFieldMapPath() -> str:
 
     return path
 
-def makeDetectorPath(det_name : str) -> str:
+def make_detector_path(det_name : str) -> str:
     """Get the full path to the detector description.
 
     This will generate a path to detector.gdml, the main entry point for the

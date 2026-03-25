@@ -6,7 +6,8 @@ Attributes:
 -------------
 
 use_rechits: bool
-    If True, use rechit-based preselection. If False, use veto-based preselection (default: False)
+    If True, use rechit-based preselection.
+    If False, use veto-based preselection (default: False)
 
 Rechit-based mode parameters:
 ecal_rec_hit_coll: string

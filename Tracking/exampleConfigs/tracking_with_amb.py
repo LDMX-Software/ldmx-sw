@@ -25,13 +25,13 @@ from LDMX.Tracking import geo
 
 truth_tracking           = tracking.TruthSeedProcessor()
 truth_tracking.debug             = False
-truth_tracking.pdgIDs            = [11]
+truth_tracking.pdg_ids            = [11]
 truth_tracking.scoring_hits      = "TargetScoringPlaneHits"
 truth_tracking.z_min             = 0.
 truth_tracking.track_id          = -1
 truth_tracking.p_cut             = 0.05 # In MeV
 truth_tracking.pz_cut            = 0.03
-truth_tracking.p_cutEcal         = 0. # In MeV
+truth_tracking.p_cut_ecal         = 0. # In MeV
 
 
 # These smearing quantities are default. We expect around 6um hit resolution in bending
@@ -103,7 +103,7 @@ tracking_tagger.dumpobj = False
 tracking_tagger.debug = False
 tracking_tagger.propagator_step_size = 1000.  #mm
 tracking_tagger.const_b_field = False
-tracking_tagger.seed_coll_name = "TaggerRecoSeeds" #seeder_tagger.out_seed_collection #"TaggerTruthSeeds" #
+tracking_tagger.seed_coll_name = "TaggerRecoSeeds"  # "TaggerTruthSeeds"
 tracking_tagger.out_trk_collection = "TaggerTracks"
 tracking_tagger.measurement_collection = digi_tagger.out_collection
 tracking_tagger.min_hits = 5
@@ -116,7 +116,7 @@ tracking_recoil.debug = False
 tracking_recoil.propagator_step_size = 1000.  #mm
 tracking_recoil.bfield = -1.5  #in T #From looking at the BField map
 tracking_recoil.const_b_field = False
-tracking_recoil.taggerTracking = False
+tracking_recoil.tagger_tracking = False
 tracking_recoil.seed_coll_name = "RecoilRecoSeeds"
 tracking_recoil.out_trk_collection = "RecoilTracks"
 tracking_recoil.measurement_collection = digi_recoil.out_collection
@@ -128,26 +128,26 @@ GSF_tagger = tracking.GSFProcessor("Tagger_GSF")
 GSF_tagger.track_collection = "TaggerTracksClean"
 GSF_tagger.meas_collection  = "DigiTaggerSimHits"
 GSF_tagger.out_trk_collection = "GSFTagger"
-GSF_tagger.taggerTracking = True
+GSF_tagger.tagger_tracking = True
 GSF_tagger.debug = False
 
 GSF_recoil = tracking.GSFProcessor("Recoil_GSF")
 GSF_recoil.track_collection = "RecoilTracksClean"
 GSF_recoil.meas_collection  = "DigiRecoilSimHits"
 GSF_recoil.out_trk_collection = "GSFRecoil"
-GSF_recoil.taggerTracking = False
+GSF_recoil.tagger_tracking = False
 GSF_recoil.debug = True
 
 greedy_solver_tagger = tracking.GreedyAmbiguitySolver("GreedySolverTagger")
-greedy_solver_tagger.nMeasurementsMin = 5
-greedy_solver_tagger.maximumSharedHits = 2
+greedy_solver_tagger.n_measurements_min = 5
+greedy_solver_tagger.maximum_shared_hits = 2
 greedy_solver_tagger.out_trk_collection = "TaggerTracksClean"
 greedy_solver_tagger.track_collection = "TaggerTracks"
 greedy_solver_tagger.meas_collection = "DigiTaggerSimHits"
 
 greedy_solver_recoil = tracking.GreedyAmbiguitySolver("GreedySolverRecoil")
-greedy_solver_recoil.nMeasurementsMin = 5
-greedy_solver_recoil.maximumSharedHits = 2
+greedy_solver_recoil.n_measurements_min = 5
+greedy_solver_recoil.maximum_shared_hits = 2
 greedy_solver_recoil.out_trk_collection = "RecoilTracksClean"
 greedy_solver_recoil.track_collection = "RecoilTracks"
 greedy_solver_recoil.meas_collection = "DigiRecoilSimHits"
@@ -199,7 +199,8 @@ tagger_dqm.buildHistograms()
 p.sequence   = [digi_tagger, digi_recoil,
                 truth_tracking,
                 seeder_tagger, seeder_recoil,
-                tracking_tagger, tracking_recoil, greedy_solver_tagger, greedy_solver_recoil,
+                tracking_tagger, tracking_recoil,
+                greedy_solver_tagger, greedy_solver_recoil,
                 recoil_dqm, seed_recoil_dqm, seed_tagger_dqm, tagger_dqm]
 
 # The input file to be added.
@@ -235,4 +236,4 @@ p.term_log_level=4
 # Number of events
 p.max_events = 2000
 # Where to store DQM plots
-p.histogram_file = out_dir+'_hists/'+output_name_string #' #out_dir+'_hists/'+output_name_string #+"_hists.root"
+p.histogram_file = out_dir+'_hists/'+output_name_string

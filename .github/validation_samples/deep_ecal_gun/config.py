@@ -11,8 +11,8 @@ from LDMX.SimCore import simulator as sim
 
 
 det = 'ldmx-det-v15-8gev'
-my_sim = sim.simulator( instance_name="my_sim" )
-my_sim.setDetector(det, include_scoring_planes_minimal = True )
+my_sim = sim.Simulator( instance_name="my_sim" )
+my_sim.set_detector(det, include_scoring_planes_minimal = True )
 my_sim.description = 'Deep ECal Gun Simulation'
 
 ene_ang_pos_cmds_ele = [
@@ -50,7 +50,7 @@ gps_cmds = ['/gps/particle e-',
             *ene_ang_pos_cmds_gamma,
             '/gps/source/multiplevertex True']
 
-my_sim.generators = [gen.gps(instance_name='electron_photon', init_commands=gps_cmds)]
+my_sim.generators = [gen.Gps(instance_name='electron_photon', init_commands=gps_cmds)]
 
 p.sequence = [ my_sim ]
 
@@ -92,7 +92,11 @@ from LDMX.Recon.electron_counter import ElectronCounter
 from LDMX.Recon.simple_trigger import TriggerProcessor
 
 
-count = ElectronCounter(simulated_electron_number=1, instance_name='ElectronCounter', input_pass_name='')
+count = ElectronCounter(
+    simulated_electron_number=1,
+    instance_name='ElectronCounter',
+    input_pass_name='',
+)
 
 trigger = TriggerProcessor(beam_energy=8000., instance_name='trigger')
 

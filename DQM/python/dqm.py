@@ -32,11 +32,23 @@ class HCalGeometryVerifier(Processor):
 
     def __post_init__(self):
         section_names = ['back', 'top', 'bottom', 'right', 'left']
-        self.histogram('passes_sim', 'Simulated hits within scintillator bounds?', 2, 0, 2)
-        self.histogram('passes_rec', 'Reconstructed hits within scintillator bounds?', 2, 0, 2)
+        self.histogram(
+            'passes_sim', 'Simulated hits within scintillator bounds?', 2, 0, 2
+        )
+        self.histogram(
+            'passes_rec', 'Reconstructed hits within scintillator bounds?', 2, 0, 2
+        )
         for name in section_names:
-            self.histogram(f'passes_sim_{name}', f'Simulated hits within scintillator bounds? ({name})', 2, 0, 2)
-            self.histogram(f'passes_rec_{name}', f'Reconstructed hits within scintillator bounds? Passing ({name})', 2, 0, 2)
+            self.histogram(
+                f'passes_sim_{name}',
+                f'Simulated hits within scintillator bounds? ({name})',
+                2, 0, 2
+            )
+            self.histogram(
+                f'passes_rec_{name}',
+                f'Reconstructed hits within scintillator bounds? Passing ({name})',
+                2, 0, 2
+            )
 
 
 @processor("dqm::ReSimVerifier", "DQM")
@@ -159,9 +171,10 @@ class HCalDQM(Processor):
         self.histogram('max_pe',
                        f"Maximum photoelectrons in the HCal ({section_name})",
                        *pe_bins)
-        self.histogram('max_pe_adc',
-                       f"Maximum photoelectrons (ADC mode only) in the HCal ({section_name})",
-                       *pe_bins)
+        self.histogram(
+            'max_pe_adc',
+            f"Maximum photoelectrons (ADC mode only) in the HCal ({section_name})",
+            *pe_bins)
         self.histogram('sim_layer:strip',
                        f'HCal Layer ({section_name})',
                        *layer_bins,
@@ -179,17 +192,21 @@ class HCalDQM(Processor):
         self.histogram("sim_num_bars_hit",
                        f"HCal hit multiplicity ({section_name})",
                        *multiplicity_bins)
-        self.histogram("vetoable_hit_multiplicity",
-                       f"Multiplicity of vetoable hits at {int(self.pe_veto_threshold)} PE ({section_name})",
-                       *multiplicity_bins)
+        self.histogram(
+            "vetoable_hit_multiplicity",
+            f"Multiplicity of vetoable hits at {int(self.pe_veto_threshold)} PE"
+            f" ({section_name})",
+            *multiplicity_bins)
         self.histogram('max_pe_time',
                        f"Max PE hit time ({section_name}) [ns]",
                        *time_bins)
         self.histogram('max_pe_adc_time',
                        f"Max PE (ADC mode only) hit time ({section_name}) [ns]",
                        *time_bins)
-        self.histogram('hit_z', f"Reconstructed Z position in the HCal ({section_name}) [mm]",
-                       1000, 0, 6000)
+        self.histogram(
+            'hit_z',
+            f"Reconstructed Z position in the HCal ({section_name}) [mm]",
+            1000, 0, 6000)
 
 
 @processor("dqm::HcalVetoResults", "DQM")
@@ -291,8 +308,10 @@ class EcalDigiVerify(Processor):
         self.histogram("rec_sim_hit_residual_z:layer",
                        "RecHit Z - SimHit Z [mm]", 48, -0.6, 0.6,
                        "RecHit Layer", 34, 0.5, 34.5)
-        self.histogram("num_sim_hits_per_cell",
-                       "Number of SimHits per ECal Cell (excluding empty rec cells)", 20, -0.5, 19.5)
+        self.histogram(
+            "num_sim_hits_per_cell",
+            "Number of SimHits per ECal Cell (excluding empty rec cells)",
+            20, -0.5, 19.5)
         self.histogram("num_rec_hits",
                        "Number of RecHits", 100, -0.5, 299.5)
         self.histogram("num_noise_hits",
@@ -473,10 +492,22 @@ class EcalWABRecResults(Processor):
                        80, 0, 4000,
                        "True Photon Energy [MeV]",
                        80, 0, 4000)
-        self.histogram("ElectronThetaDiff", "Electron True and Reconstruction #theta Difference [Degrees]", 181, 0, 181)
-        self.histogram("PhotonThetaDiff", "Photon True and Reconstruction #theta Difference [Degrees]", 181, 0, 181)
-        self.histogram("ElectronPhiDiff", "Electron True and Reconstruction #phi Difference [Degrees]", 181, 0, 181)
-        self.histogram("PhotonPhiDiff", "Photon True and Reconstruction #phi Difference [Degrees]", 181, 0, 181)
+        self.histogram(
+            "ElectronThetaDiff",
+            "Electron True and Reconstruction #theta Difference [Degrees]",
+            181, 0, 181)
+        self.histogram(
+            "PhotonThetaDiff",
+            "Photon True and Reconstruction #theta Difference [Degrees]",
+            181, 0, 181)
+        self.histogram(
+            "ElectronPhiDiff",
+            "Electron True and Reconstruction #phi Difference [Degrees]",
+            181, 0, 181)
+        self.histogram(
+            "PhotonPhiDiff",
+            "Photon True and Reconstruction #phi Difference [Degrees]",
+            181, 0, 181)
         self.histogram("ProgressNum", "Reconstruction Progress", 4, 0, 4)
 
 
@@ -511,7 +542,9 @@ class VisiblesFeatureProducer(Processor):
         self.histogram("iso_energy", "Total isolated energy [MeV]", 80, 0, 800)
         self.histogram("n_hits", "Total Hcal hits", 200, 0, 200)
         self.histogram("total_energy", "Total Hcal energy [MeV]", 100, 4800, 9800)
-        self.histogram("photon_track", "Average distance from photon track [mm]", 80, 0, 800)
+        self.histogram(
+            "photon_track", "Average distance from photon track [mm]", 80, 0, 800
+        )
 
 
 @processor("dqm::VisiblesCutflow", "DQM")
@@ -554,8 +587,13 @@ class VisiblesCutflow(Processor):
 
         self.histogram("visibles_disc", "visibles_disc", 100, 0, 1)
         self.histogram("visibles_disc_high", "visibles_disc_high", 10000, 0.999, 1)
-        self.histogram("visibles_disc_high_norm", "visibles_disc_high_norm", 10000, 0.999, 1)
-        self.histogram("ecal_disc_vs_vis_disc", "vis_disc", 1000, 0.9999, 1, "ecal_disc", 1000, 0.999, 1)
+        self.histogram(
+            "visibles_disc_high_norm", "visibles_disc_high_norm", 10000, 0.999, 1
+        )
+        self.histogram(
+            "ecal_disc_vs_vis_disc",
+            "vis_disc", 1000, 0.9999, 1,
+            "ecal_disc", 1000, 0.999, 1)
         self.histogram("roc", "roc", 10000, 0.99, 1)
 
         self.histogram("beam_energy_frac", "beam_energy_frac", 100, 0.5, 1)
@@ -572,7 +610,9 @@ class VisiblesCutflow(Processor):
         self.histogram("iso_energy", "Total isolated energy [MeV]", 80, 0, 800)
         self.histogram("n_hits", "Total Hcal hits", 200, 0, 200)
         self.histogram("total_energy", "Total Hcal energy [MeV]", 100, 4800, 9800)
-        self.histogram("photon_track", "Average distance from photon track [mm]", 80, 0, 800)
+        self.histogram(
+            "photon_track", "Average distance from photon track [mm]", 80, 0, 800
+        )
 
 
 @processor("dqm::SimObjects", "DQM")
@@ -621,7 +661,8 @@ class DarkBremInteraction(Processor):
                         "Ca 20", "Cu 29", "Y 39", "Lu 71", "W 74", "unlisted"])
         self.histogram('aprime_daughter_material',
                        "Material in which A' conversion occurred",
-                       ["Unknown", "C", "PCB", "Glue", "Si", "Al", "W / LYSO", "PVT", "Air"])
+                       ["Unknown", "C", "PCB", "Glue", "Si", "Al", "W / LYSO",
+                        "PVT", "Air"])
 
         self.histogram('recoil_brem_daughter_energy',
                        'Recoil Brem Daughter Energy [MeV]', 101, 0, 8080)
@@ -690,13 +731,15 @@ class NtuplizeHgcrocDigiCollection(Processor):
     pedestal_table: str = ""
 
     def __post_init__(self):
-        from LDMX.Conditions.SimpleCSVTableProvider import SimpleCSVIntegerTableProvider
+        from LDMX.Conditions.SimpleCSVTableProvider import (
+            simple_csv_integer_table_provider,
+        )
         if self.pedestal_table == "":
             self.pedestal_table = 'NO_PEDESTALS'
-            t = SimpleCSVIntegerTableProvider('NO_PEDESTALS', ["PEDESTAL"])
+            t = simple_csv_integer_table_provider('NO_PEDESTALS', ["PEDESTAL"])
             t.valid_for_all_rows([0])
         else:
-            t = SimpleCSVIntegerTableProvider(self.pedestal_table, ["PEDESTAL"])
+            t = simple_csv_integer_table_provider(self.pedestal_table, ["PEDESTAL"])
             t.validForever(f'file://{self.pedestal_table}')
 
 
@@ -777,43 +820,73 @@ class PhotoNuclearDQM(Processor):
             "PVT", "Glue", "Air"
         ])
         self.histogram("pn_particle_mult"   , "Photo-nuclear Multiplicity", 200, 0, 200)
-        self.histogram("pn_neutron_mult"    , "Photo-nuclear Neutron Multiplicity", 200, 0, 200)
+        self.histogram(
+            "pn_neutron_mult", "Photo-nuclear Neutron Multiplicity", 200, 0, 200)
         self.histogram("pn_gamma_energy"    , "#gamma Energy [MeV]", 100, 0, 10000)
-        self.histogram("pn_total_ke"        , "Total Kineitc Energy of Photo-Nuclear Products [MeV]", 100, 0, 10000)
-        self.histogram("pn_total_neutron_ke", "Total Kineitc Energy of Photo-Nuclear Neutrons  [MeV]", 100, 0, 10000)
+        self.histogram(
+            "pn_total_ke",
+            "Total Kineitc Energy of Photo-Nuclear Products [MeV]", 100, 0, 10000)
+        self.histogram(
+            "pn_total_neutron_ke",
+            "Total Kineitc Energy of Photo-Nuclear Neutrons  [MeV]", 100, 0, 10000)
         self.histogram("1n_neutron_energy"  , "Neutron Energy [MeV]", 100, 0, 10000)
-        self.histogram("1n_energy_diff"     , "E(#gamma_{PN}) - E(n) [MeV]", 100, 0, 10000)
+        self.histogram(
+            "1n_energy_diff", "E(#gamma_{PN}) - E(n) [MeV]", 100, 0, 10000)
         self.histogram("1n_energy_frac"     , "E(n)/E(#gamma_{PN}) [MeV]", 100, 0, 1)
-        self.histogram("2n_n2_energy"       , "Energy of second hardest neutron [MeV]", 100, 0, 10000)
+        self.histogram(
+            "2n_n2_energy", "Energy of second hardest neutron [MeV]", 100, 0, 10000)
         self.histogram("2n_energy_frac"     , "E(n)/E(#gamma_{PN}) [MeV]", 100, 0, 1)
         self.histogram("2n_energy_other"    , "E_{other} [MeV]", 100, 0, 10000)
-        self.histogram("1kp_energy"         , "Charged Kaon Energy [MeV]", 100, 0, 10000)
-        self.histogram("1kp_energy_diff"    , "E(#gamma_{PN}) - E(K#pm) [MeV]", 100, 0, 100000)
+        self.histogram(
+            "1kp_energy", "Charged Kaon Energy [MeV]", 100, 0, 10000)
+        self.histogram(
+            "1kp_energy_diff", "E(#gamma_{PN}) - E(K#pm) [MeV]", 100, 0, 100000)
         self.histogram("1kp_energy_frac"    , "E(K#pm)/E(#gamma_{PN}) [MeV]", 100, 0, 1)
         self.histogram("1k0_energy"         , "K0 Energy [MeV]", 100, 0, 10000)
-        self.histogram("1k0_energy_diff"    , "E(#gamma_{PN}) - E(K0) [MeV]", 100, 0, 10000)
+        self.histogram(
+            "1k0_energy_diff", "E(#gamma_{PN}) - E(K0) [MeV]", 100, 0, 10000)
         self.histogram("1k0_energy_frac"    , "E(K0)/E(#gamma_{PN}) [MeV]", 100, 0, 1)
 
         self.histogram("recoil_vertex_x",   "Recoil e^{-} Vertex - x [mm]", 40, -40, 40)
         self.histogram("recoil_vertex_y",   "Recoil e^{-} Vertex - y [mm]", 80, -80, 80)
-        self.histogram("recoil_vertex_z",   "Recoil e^{-} Vertex - z [mm]", 20, -950, -850)
+        self.histogram(
+            "recoil_vertex_z", "Recoil e^{-} Vertex - z [mm]", 20, -950, -850)
 
-        self.histogram("pn_gamma_int_x",    "#gamma Interaction Vertex - x [mm]", 50, -250, 250)
-        self.histogram("pn_gamma_int_y",    "#gamma Interaction Vertex - y [mm]", 50, -250, 250)
-        self.histogram("pn_gamma_int_z",    "#gamma Interaction Vertex - z [mm]", 40, 200, 400)
+        self.histogram(
+            "pn_gamma_int_x", "#gamma Interaction Vertex - x [mm]", 50, -250, 250)
+        self.histogram(
+            "pn_gamma_int_y", "#gamma Interaction Vertex - y [mm]", 50, -250, 250)
+        self.histogram(
+            "pn_gamma_int_z", "#gamma Interaction Vertex - z [mm]", 40, 200, 400)
 
         self.histogram("pn_gamma_vertex_x", "#gamma Vertex - y [mm]", 40, -40, 40)
         self.histogram("pn_gamma_vertex_y", "#gamma Vertex - y [mm]", 80, -80, 80)
         self.histogram("pn_gamma_vertex_z", "#gamma Vertex - z [mm]", 10, -5, 5)
 
-        self.histogram("hardest_ke",       "Kinetic Energy Hardest Photo-nuclear Particle [MeV]", 200, 0, 8000)
-        self.histogram("hardest_theta",    "#theta of Hardest Photo-nuclear Particle [Degrees]", 180, 0, 180)
-        self.histogram("hardest_p_ke",     "Kinetic Energy Hardest Photo-nuclear Proton [MeV]", 200, 0, 8000)
-        self.histogram("hardest_p_theta",  "#theta of Hardest Photo-nuclear Proton [Degrees]", 180, 0, 180)
-        self.histogram("hardest_n_ke",     "Kinetic Energy Hardest Photo-nuclear Neutron [MeV]", 200, 0, 8000)
-        self.histogram("hardest_n_theta",  "#theta of Hardest Photo-nuclear Neutron [Degrees]", 180, 0, 180)
-        self.histogram("hardest_pi_ke",    "Kinetic Energy Hardest Photo-nuclear #pi [MeV]", 200, 0, 8000)
-        self.histogram("hardest_pi_theta", "#theta of Hardest Photo-nuclear #pi [Degrees]", 180, 0, 180)
+        self.histogram(
+            "hardest_ke",
+            "Kinetic Energy Hardest Photo-nuclear Particle [MeV]", 200, 0, 8000)
+        self.histogram(
+            "hardest_theta",
+            "#theta of Hardest Photo-nuclear Particle [Degrees]", 180, 0, 180)
+        self.histogram(
+            "hardest_p_ke",
+            "Kinetic Energy Hardest Photo-nuclear Proton [MeV]", 200, 0, 8000)
+        self.histogram(
+            "hardest_p_theta",
+            "#theta of Hardest Photo-nuclear Proton [Degrees]", 180, 0, 180)
+        self.histogram(
+            "hardest_n_ke",
+            "Kinetic Energy Hardest Photo-nuclear Neutron [MeV]", 200, 0, 8000)
+        self.histogram(
+            "hardest_n_theta",
+            "#theta of Hardest Photo-nuclear Neutron [Degrees]", 180, 0, 180)
+        self.histogram(
+            "hardest_pi_ke",
+            "Kinetic Energy Hardest Photo-nuclear #pi [MeV]", 200, 0, 8000)
+        self.histogram(
+            "hardest_pi_theta",
+            "#theta of Hardest Photo-nuclear #pi [Degrees]", 180, 0, 180)
 
         self.histogram("h_ke_h_theta",
                        "Kinetic Energy Hardest Photo-nuclear Particle [MeV]",
@@ -871,8 +944,13 @@ class TrkDeDxMassEstFeatures(Processor):
     mass_estimate_pass: str = ""
 
     def __post_init__(self):
-        momentum_bins = [90., 100., 125., 150., 175., 200., 250., 300., 350., 400., 450., 500., 600., 700., 800., 900., 1000., 1300., 2000., 3000., 4000., 6000., 8000.]
-        low_momentum_bins = [50., 70., 90., 100., 125., 150., 175., 200., 250., 300., 350., 400., 450., 500., 600., 700., 800., 900., 1000., 2000.]
+        momentum_bins = [
+            90., 100., 125., 150., 175., 200., 250., 300., 350., 400.,
+            450., 500., 600., 700., 800., 900., 1000., 1300., 2000.,
+            3000., 4000., 6000., 8000.]
+        low_momentum_bins = [
+            50., 70., 90., 100., 125., 150., 175., 200., 250., 300.,
+            350., 400., 450., 500., 600., 700., 800., 900., 1000., 2000.]
         self.histogram('momentum:harmonic_mean_dedx',
                        xlabel='Momentum [MeV]', xbins=momentum_bins,
                        ylabel='I_{h} [MeV/cm]', ybins=50, ymin=0., ymax=30.)
@@ -882,11 +960,20 @@ class TrkDeDxMassEstFeatures(Processor):
         self.histogram("harmonic_mean_dedx", "I_{h} [MeV/cm]", 50, 0., 30.)
         self.histogram("mass_estimate", "Mass Estimate [MeV]", 100, 0., 2000.)
         self.histogram("mass_estimate_low_p", "Mass Estimate [MeV]", 100, 0., 2000.)
-        self.histogram("mass_estimate_very_low_p", "Mass Estimate [MeV]", 100, 0., 2000.)
-        self.histogram("mass_estimate_very_low_p_electron", "Mass Estimate for electrons [MeV]", 20, 0., 200.)
-        self.histogram("mass_estimate_very_low_p_pion", "Mass Estimate for pions [MeV]", 20, 0., 200.)
-        self.histogram("mass_estimate_very_low_p_kaon", "Mass Estimate for kaons [MeV]", 60, 200., 800.)
-        self.histogram("mass_estimate_very_low_p_proton", "Mass Estimate for proton [MeV]", 40, 800., 1200.)
+        self.histogram(
+            "mass_estimate_very_low_p", "Mass Estimate [MeV]", 100, 0., 2000.)
+        self.histogram(
+            "mass_estimate_very_low_p_electron",
+            "Mass Estimate for electrons [MeV]", 20, 0., 200.)
+        self.histogram(
+            "mass_estimate_very_low_p_pion",
+            "Mass Estimate for pions [MeV]", 20, 0., 200.)
+        self.histogram(
+            "mass_estimate_very_low_p_kaon",
+            "Mass Estimate for kaons [MeV]", 60, 200., 800.)
+        self.histogram(
+            "mass_estimate_very_low_p_proton",
+            "Mass Estimate for proton [MeV]", 40, 800., 1200.)
         self.histogram("track_type", "Track Type", ['Other', 'Tagger', 'Recoil'])
 
 
@@ -1044,27 +1131,49 @@ class SampleValidation(Processor):
         ]
 
         self.histogram("primaries_pdgid", "ID of primary particles", pdgid_bin_labels)
-        self.histogram("primaries_energy", "Energy of primary particles [MeV]", 90, 0, 9000)
+        self.histogram(
+            "primaries_energy",
+            "Energy of primary particles [MeV]", 90, 0, 9000)
         self.histogram("primaries_theta", "Theta [degree]", 50, 0., 100.)
         self.histogram("primaries_pt", "Transverse Momentum [MeV]", 200, 0., 2000.)
 
         self.histogram("beam_smear", "x [mm]", 30, -150, 150, "y [mm]", 30, -150, 150)
-        self.histogram("primarydaughters_pdgid", "ID of primary daughters", pdgid_bin_labels)
-        self.histogram("daughterphoton_energy", "Energy spectrum of all photons from primary [MeV]", 170, 0, 8500)
+        self.histogram(
+            "primarydaughters_pdgid",
+            "ID of primary daughters", pdgid_bin_labels)
+        self.histogram(
+            "daughterphoton_energy",
+            "Energy spectrum of all photons from primary [MeV]", 170, 0, 8500)
 
-        self.histogram("harddaughters_pdgid", "ID of primary daughters", pdgid_bin_labels)
-        self.histogram("harddaughters_startZ", "Start z position of hard primary daughter [mm]", 100, -500, 500)
-        self.histogram("harddaughters_endZ", "End z position of hard primary daughter [mm]", 100, -500, 500)
-        self.histogram("harddaughters_energy", "Energy spectrum of hard primary daughter [MeV]", 130, 2000, 8500)
+        self.histogram(
+            "harddaughters_pdgid", "ID of primary daughters", pdgid_bin_labels)
+        self.histogram(
+            "harddaughters_startZ",
+            "Start z position of hard primary daughter [mm]", 100, -500, 500)
+        self.histogram(
+            "harddaughters_endZ",
+            "End z position of hard primary daughter [mm]", 100, -500, 500)
+        self.histogram(
+            "harddaughters_energy",
+            "Energy spectrum of hard primary daughter [MeV]", 130, 2000, 8500)
         self.histogram("harddaughters_theta", "Theta [degree]", 25, 0., 50.)
         self.histogram("harddaughters_pt", "Transverse Momentum [MeV]", 50, 0., 100.)
 
-        self.histogram("hardbremdaughters_pdgid", "ID of hard brem daughters", pdgid_bin_labels)
-        self.histogram("hardbremdaughters_startZ", "Start z position of hard brem daughters  [mm]", 200, -1000, 1000)
-        self.histogram("hardbremdaughters_endZ", "End z position of hard brem daughters  [mm]", 70, -1000, 6000)
-        self.histogram("hardbremdaughters_energy", "Energy of hard brem daughters  [MeV]", 170, 0, 8500)
+        self.histogram(
+            "hardbremdaughters_pdgid",
+            "ID of hard brem daughters", pdgid_bin_labels)
+        self.histogram(
+            "hardbremdaughters_startZ",
+            "Start z position of hard brem daughters  [mm]", 200, -1000, 1000)
+        self.histogram(
+            "hardbremdaughters_endZ",
+            "End z position of hard brem daughters  [mm]", 70, -1000, 6000)
+        self.histogram(
+            "hardbremdaughters_energy",
+            "Energy of hard brem daughters  [MeV]", 170, 0, 8500)
         self.histogram("hardbremdaughters_theta", "Theta [degree]", 50, 0., 100.)
-        self.histogram("hardbremdaughters_pt", "Transverse Momentum [MeV]", 200, 0., 1000.)
+        self.histogram(
+            "hardbremdaughters_pt", "Transverse Momentum [MeV]", 200, 0., 1000.)
 
 
 @processor("dqm::GenieTruthDQM", "DQM")
@@ -1108,37 +1217,80 @@ class EcalClusterAnalyzer(Processor):
     n_ecal_clusters_min: int = 1
 
     def __post_init__(self):
-        self.histogram("number_of_clusters_first_layer", "Number of CLUE clusters on the first layer", 5, -0.5, 4.5)
-        self.histogram("number_of_clusters_per_layer", "Number of CLUE clusters per layer", 5, -0.5, 4.5)
-        self.histogram("number_of_clusters", "Total number of CLUE clusters", 51, -0.5, 50.5)
+        self.histogram(
+            "number_of_clusters_first_layer",
+            "Number of CLUE clusters on the first layer", 5, -0.5, 4.5)
+        self.histogram(
+            "number_of_clusters_per_layer",
+            "Number of CLUE clusters per layer", 5, -0.5, 4.5)
+        self.histogram(
+            "number_of_clusters",
+            "Total number of CLUE clusters", 51, -0.5, 50.5)
         self.histogram("correctly_predicted_events", "Correct Cluster Count",
                        ["Underpredicted", "Correct", "Overpredicted"])
 
         self.histogram("ancestors", "Ancestors of particles", 4, 0., 4.)
 
-        self.histogram("same_ancestor", "Percentage of hits in cluster coming from the electron that produced most hits", 21, 0., 105.)
-        self.histogram("energy_percentage", "Percentage of energy in cluster coming from the electron that produced most of energy", 21, 0., 105.)
-        self.histogram("mixed_hit_energy", "Percentage of total energy coming from hits with energy contributions from more than one electron", 21, 0., 105.)
-        self.histogram("unclustered_hits", "Number of hits not in a cluster", 10, 0., 200.)
-        self.histogram("unclustered_hits_percentage", "Percentage of hits not in a cluster", 21, 0., 105.)
+        self.histogram(
+            "same_ancestor",
+            "Percentage of hits in cluster coming from the electron"
+            " that produced most hits", 21, 0., 105.)
+        self.histogram(
+            "energy_percentage",
+            "Percentage of energy in cluster coming from the electron"
+            " that produced most of energy", 21, 0., 105.)
+        self.histogram(
+            "mixed_hit_energy",
+            "Percentage of total energy coming from hits with energy"
+            " contributions from more than one electron", 21, 0., 105.)
+        self.histogram(
+            "unclustered_hits", "Number of hits not in a cluster", 10, 0., 200.)
+        self.histogram(
+            "unclustered_hits_percentage",
+            "Percentage of hits not in a cluster", 21, 0., 105.)
         self.histogram("total_rechits_in_event", "RecHits per event", 20, 0., 500.)
 
-        self.histogram("total_energy_vs_hits", "Total energy (edep) [MeV]", 30, 0., 150., "Hits in cluster", 30, 0., 300.)
-        self.histogram("total_energy_vs_purity", "Total energy (edep) [MeV]", 30, 0., 150., "Energy purity %", 21, 0, 105.)
-        self.histogram("sp_ele_distance_vs_purity", "SP ele distance in xy-plane [mm]", 50, 0, 250, "Energy purity %", 21, 0., 105.)
-        self.histogram("sp_clue_distance_vs_layer", "CLUE centroid to SP ele distance in xy-plane [mm]", 125, 0., 250., "Layer", 33, -0.5, 32.5)
+        self.histogram(
+            "total_energy_vs_hits",
+            "Total energy (edep) [MeV]", 30, 0., 150.,
+            "Hits in cluster", 30, 0., 300.)
+        self.histogram(
+            "total_energy_vs_purity",
+            "Total energy (edep) [MeV]", 30, 0., 150.,
+            "Energy purity %", 21, 0, 105.)
+        self.histogram(
+            "sp_ele_distance_vs_purity",
+            "SP ele distance in xy-plane [mm]", 50, 0, 250,
+            "Energy purity %", 21, 0., 105.)
+        self.histogram(
+            "sp_clue_distance_vs_layer",
+            "CLUE centroid to SP ele distance in xy-plane [mm]",
+            125, 0., 250., "Layer", 33, -0.5, 32.5)
 
-        self.histogram("sp_clue_distance", "CLUE centroid to SP ele distance in xy-plane [mm]", 125, 0., 250.)
-        self.histogram("sp_clue_x_residual", "CLUE centroid X - SP ele X [mm]", 250, -250., 250.)
-        self.histogram("sp_clue_y_residual", "CLUE centroid Y - SP ele Y [mm]", 250, -250., 250.)
+        self.histogram(
+            "sp_clue_distance",
+            "CLUE centroid to SP ele distance in xy-plane [mm]", 125, 0., 250.)
+        self.histogram(
+            "sp_clue_x_residual",
+            "CLUE centroid X - SP ele X [mm]", 250, -250., 250.)
+        self.histogram(
+            "sp_clue_y_residual",
+            "CLUE centroid Y - SP ele Y [mm]", 250, -250., 250.)
 
         self.histogram("sp_distance", "dR(SPhit_1, SPhit_2)", 100, -1, 202)
         self.histogram("cluster_distance", "dR(cl_1, cl_2)", 100, -1, 202)
         self.histogram("cluster_RMSX", "RMS(hits in cluster) X", 100, -1, 202)
         self.histogram("cluster_RMSY", "RMS(hits in cluster) Y", 100, -1, 202)
-        self.histogram("dE_cl2_vs_cl1", "E_{cl}-E_{true}^{SP}, cluster 1 [MeV]", 100, -10000, 10000, "E_{cl}-E_{true}^{SP}, cluster 2 [MeV]", 100, -10000, 10000)
+        self.histogram(
+            "dE_cl2_vs_cl1",
+            "E_{cl}-E_{true}^{SP}, cluster 1 [MeV]", 100, -10000, 10000,
+            "E_{cl}-E_{true}^{SP}, cluster 2 [MeV]", 100, -10000, 10000)
 
-        self.histogram("tag0frac_vs_SPdist", "dR(SPhit_1, SPhit_2)", 251, -1, 250, f"Fraction of mixed (purity less than {int(100*(1.-self.mixed_hit_cutoff))}%) ancestors", 200, 0, 1)
+        mixed_pct = int(100*(1.-self.mixed_hit_cutoff))
+        self.histogram(
+            "tag0frac_vs_SPdist", "dR(SPhit_1, SPhit_2)", 251, -1, 250,
+            f"Fraction of mixed (purity less than {mixed_pct}%) ancestors",
+            200, 0, 1)
 
 
 ecal_dqm = [
@@ -1159,25 +1311,45 @@ hcal_dqm = [
     HcalVetoResults(),
 ]
 
-dEdx_dqm = [
+dedx_dqm = [
     TrkDeDxMassEstFeatures()
 ]
 
-trigScint_dqm = [
-    TrigScintSimDQM(instance_name='TrigScintSimPad1', hit_collection='TriggerPad1SimHits', pad='pad1'),
-    TrigScintSimDQM(instance_name='TrigScintSimPad2', hit_collection='TriggerPad2SimHits', pad='pad2'),
-    TrigScintSimDQM(instance_name='TrigScintSimPad3', hit_collection='TriggerPad3SimHits', pad='pad3'),
-    TrigScintDigiDQM(instance_name='TrigScintDigiPad1', hit_collection='trigScintDigisPad1', pad='pad1'),
-    TrigScintDigiDQM(instance_name='TrigScintDigiPad2', hit_collection='trigScintDigisPad2', pad='pad2'),
-    TrigScintDigiDQM(instance_name='TrigScintDigiPad3', hit_collection='trigScintDigisPad3', pad='pad3'),
-    TrigScintClusterDQM(instance_name='TrigScintClusterPad1', cluster_collection='TriggerPad1Clusters', pad='pad1'),
-    TrigScintClusterDQM(instance_name='TrigScintClusterPad2', cluster_collection='TriggerPad2Clusters', pad='pad2'),
-    TrigScintClusterDQM(instance_name='TrigScintClusterPad3', cluster_collection='TriggerPad3Clusters', pad='pad3'),
-    TrigScintTrackDQM(instance_name='TrigScintTracks', track_collection='TriggerPadTracks')
+trig_scint_dqm = [
+    TrigScintSimDQM(
+        instance_name='TrigScintSimPad1',
+        hit_collection='TriggerPad1SimHits', pad='pad1'),
+    TrigScintSimDQM(
+        instance_name='TrigScintSimPad2',
+        hit_collection='TriggerPad2SimHits', pad='pad2'),
+    TrigScintSimDQM(
+        instance_name='TrigScintSimPad3',
+        hit_collection='TriggerPad3SimHits', pad='pad3'),
+    TrigScintDigiDQM(
+        instance_name='TrigScintDigiPad1',
+        hit_collection='trigScintDigisPad1', pad='pad1'),
+    TrigScintDigiDQM(
+        instance_name='TrigScintDigiPad2',
+        hit_collection='trigScintDigisPad2', pad='pad2'),
+    TrigScintDigiDQM(
+        instance_name='TrigScintDigiPad3',
+        hit_collection='trigScintDigisPad3', pad='pad3'),
+    TrigScintClusterDQM(
+        instance_name='TrigScintClusterPad1',
+        cluster_collection='TriggerPad1Clusters', pad='pad1'),
+    TrigScintClusterDQM(
+        instance_name='TrigScintClusterPad2',
+        cluster_collection='TriggerPad2Clusters', pad='pad2'),
+    TrigScintClusterDQM(
+        instance_name='TrigScintClusterPad3',
+        cluster_collection='TriggerPad3Clusters', pad='pad3'),
+    TrigScintTrackDQM(
+        instance_name='TrigScintTracks',
+        track_collection='TriggerPadTracks')
 ]
 
 trigger_dqm = [
     Trigger()
 ]
 
-all_dqm = sample_validation_dqm + ecal_dqm + hcal_dqm + trigScint_dqm + trigger_dqm
+all_dqm = sample_validation_dqm + ecal_dqm + hcal_dqm + trig_scint_dqm + trigger_dqm

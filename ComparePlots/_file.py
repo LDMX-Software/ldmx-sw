@@ -62,19 +62,27 @@ class File :
             key-name to use in legend-label for this File
         """
         fn = os.path.basename(filepath).replace('.root','')
-        l = fn.split('_')
-        if len(l)%2 != 0 :
+        parts = fn.split('_')
+        if len(parts)%2 != 0 :
             raise ValueError(
                 f'The filename provided {fn} cannot be'
                 ' split into key_val pairs.'
                 '\n\tWorking example: hist_new.root'
             )
-        file_params =  { l[i] : l[i+1] for i in range(len(l)-1) if i%2 == 0 }
+        file_params = {
+            parts[i]: parts[i+1]
+            for i in range(len(parts)-1)
+            if i%2 == 0
+        }
         File.log.debug(f'Deduced File Parameters: {file_params}')
 
         if legendlabel_parameter is None :
             legendlabel_parameter = [next(iter(file_params))]
-        ll = [file_params[l] for l in legendlabel_parameter if l in file_params]
+        ll = [
+            file_params[key]
+            for key in legendlabel_parameter
+            if key in file_params
+        ]
         if len(ll) < len(legendlabel_parameter):
             missing_params = set(legendlabel_parameter) - set(file_params.keys())
             raise KeyError(

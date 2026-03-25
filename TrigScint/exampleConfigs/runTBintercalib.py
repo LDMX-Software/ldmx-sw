@@ -12,7 +12,7 @@ if len(sys.argv) > 1 :
     input_file=sys.argv[1]
 else :
     print("got to specify an input file")
-    exit
+    exit()
 input_pass_name = sys.argv[2] if len(sys.argv) > 2 else "conv" #"sim"
 
 
@@ -43,7 +43,8 @@ gain_file_name=gain_file_name.replace("_TBreco", "")
 if exists(gain_file_name) :
     with open(gain_file_name) as f:
         for line in f.readlines() :#        line = f.readline()
-            line=line.split(',')  #values are comma separated, one channel per line: channelNB, gain
+            # comma separated: channelNB, gain
+            line=line.split(',')
             #        print(line[1:])
             gain_list[ int(line[0].strip()) ] = float(line[1].strip())
             #for line in lines :
@@ -57,7 +58,8 @@ ped_file_name=gain_file_name.replace("gains", "peds")
 if exists(ped_file_name) :
     with open(ped_file_name) as f:
         for line in f.readlines() :#        line = f.readline()
-            line=line.split(',')  #values are comma separated, one channel per line: channelNB, ped
+            # comma separated: channelNB, ped
+            line=line.split(',')
             ped_list[ int(line[0].strip()) ] = float(line[1].strip())
 
 print("Using this list of peds:")
@@ -70,7 +72,8 @@ response_file_name=input_file.replace(".root", "_response.txt")
 if exists(response_file_name) :
     with open(response_file_name) as f:
         for line in f.readlines() :#        line = f.readline()
-            line=line.split(',')  #values are comma separated, one channel per line: channelNB, response
+            # comma separated: channelNB, response
+            line=line.split(',')
             response_list[ int(line[0].strip()) ] = float(line[1].strip())
 
 print("Using this list of relative response correction factors:")

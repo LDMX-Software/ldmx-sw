@@ -25,10 +25,12 @@ if kill_chan_8 :
 
 gun_z_pos=800 #3000  #mm -- define as positive here, for file naming; set sign below
 det_v=2.0        #detector geometry version number
-#mm    7.5mm for reasonable efficiency, larger than TS module to get more empty (no MIP)  events. set to 150mm for large noise
+#mm    7.5mm for reasonable efficiency, larger than TS module to get more empty
+#mm    (no MIP) events. set to 150mm for large noise
 beam_x_smear=7.5
 beam_y_smear=20  #mm    20 mm      -- " --, set to 200 for large noise
-#average number of PEs from SiPM noise per event (gets scaled by n_time_samples to be constant) -- 0.1 per event is taken from run183
+#average number of PEs from SiPM noise per event (gets scaled by n_time_samples
+#to be constant) -- 0.1 per event is taken from run183
 noise_per_event=0.08
 start_sample=15
 
@@ -38,7 +40,28 @@ k_expo = float(sys.argv[3]) if len(sys.argv) > 3 else 0.1 #config default is 0.1
 
 p.run = 1
 p.max_events = n_events
-p.output_files = ['testbeamSim_'+str(n_electrons)+'e_zNeg'+str(gun_z_pos)+'mm_beamSpot'+str(beam_x_smear)+'x'+str(beam_y_smear)+'mm_'+str(n_time_samples)+'tSamp_eNoise'+str(elec_noise)+'_tauInv'+str(k_expo)+'_detV'+str(det_v)+'_'+kill_string+str(p.max_events)+'ev.root']
+p.output_files = [
+    'testbeamSim_'
+    + str(n_electrons)
+    + 'e_zNeg'
+    + str(gun_z_pos)
+    + 'mm_beamSpot'
+    + str(beam_x_smear)
+    + 'x'
+    + str(beam_y_smear)
+    + 'mm_'
+    + str(n_time_samples)
+    + 'tSamp_eNoise'
+    + str(elec_noise)
+    + '_tauInv'
+    + str(k_expo)
+    + '_detV'
+    + str(det_v)
+    + '_'
+    + kill_string
+    + str(p.max_events)
+    + 'ev.root'
+]
 print("Producing output file: "+p.output_files[0])
 
 gun_z_pos   =-float(gun_z_pos)  #get sign right, and make floats, to use as parameters
@@ -52,25 +75,28 @@ beam_y_smear=float(beam_y_smear)
 #------ set up beam simulation -------
 
 
-mpg_gen = generators.multi( "mgpGen" ) # this is the line that actually creates the generator
+# this is the line that actually creates the generator
+mpg_gen = generators.Multi( "mgpGen" )
 mpg_gen.vertex = [ 0., 0., gun_z_pos ] # mm
 mpg_gen.n_particles = n_electrons
 mpg_gen.pdg_id = 11
 mpg_gen.enable_poisson = False #True
 mpg_gen.momentum = [ 0., 0., beam_energy ]
 
-gun = generators.gun('particle_gun')
+gun = generators.Gun('particle_gun')
 gun.particle = 'e-'
 gun.direction = [0., 0., 1.]
 gun.position = [0., 0., gun_z_pos]
 gun.energy = beam_energy   #gev
 
-simulation = simulator.simulator('test_TS')
+simulation = simulator.Simulator('test_TS')
 simulation.generators=[mpg_gen] #gun]
-simulation.setDetector('ldmx-hcal-prototype-v'+str(det_v))
-#simulation.setDetector('ldmx-hcal-prototype-v1.0')
+simulation.set_detector('ldmx-hcal-prototype-v'+str(det_v))
+#simulation.set_detector('ldmx-hcal-prototype-v1.0')
 simulation.beamSpotSmear = [beam_x_smear, beam_y_smear, 0] #mm, at start position
-simulation.description = "Inclusive "+str(beam_energy)+" GeV electron events, "+str(n_electrons)+"e"
+simulation.description = (
+    "Inclusive " + str(beam_energy) + " GeV electron events, " + str(n_electrons) + "e"
+)
 
 
 #### the digi and tb hit step not fully implemented
@@ -89,9 +115,10 @@ ts_digis.maxts = n_time_samples
 ts_digis.elec_noise = elec_noise
 ts_digis.expo_k = k_expo
 ts_digis.sipm_gain = 2.e6
-ts_digis.zeroSupp_in_pe=0.5
+ts_digis.zero_supp_in_pe=0.5
 ts_digis.toff_overall = 25.*start_sample
-ts_digis.pe_per_mip = 110. #from fit to 2-hit clusters in data run 183, April4 2310, all plastic
+#from fit to 2-hit clusters in data run 183, April4 2310, all plastic
+ts_digis.pe_per_mip = 110.
 
 
 #------ set up event readout linearization -------

@@ -13,9 +13,9 @@ Attributes:
 -------------
 track_collection : string
     Name of the track collection used as input
-fit_res_C : float
+fit_res_c : float
     The fitted result of the constant term C (unit: MeV/mm)
-fit_res_K : float
+fit_res_k : float
     The fitted result of the factor K of the quadratic term (dimentionless)
 
 Examples
@@ -32,8 +32,8 @@ class TrackDeDxMassEstimator(Processor):
     """Configuration for the mass estimator from tracker dEdx"""
 
     track_collection: str = "RecoilTruthTracks"
-    fit_res_C: float = 3.094
-    fit_res_K: float = 1.862
+    fit_res_c: float = 3.094
+    fit_res_k: float = 1.862
 
 
 recoil_track_mass_estimator = TrackDeDxMassEstimator(

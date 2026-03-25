@@ -30,8 +30,8 @@ p.max_events = arg.max_events
 p.term_log_level = 1
 p.log_frequency = 1
 
-import LDMX.Hcal.hgcrocFormat as hcal_format
-import LDMX.TrigScint.qieFormat as ts_format
+import LDMX.Hcal.hgcrocFormat as HcalFormat
+import LDMX.TrigScint.qieFormat as TsFormat
 from LDMX.DQM import dqm
 from LDMX.Packing import rawio
 
@@ -42,7 +42,10 @@ p.output_files = [arg.output_file]
 import os
 
 
-p.histogram_file = f'{os.path.dirname(arg.output_file)}ntuple_{os.path.basename(arg.output_file)}'
+p.histogram_file = (
+    f'{os.path.dirname(arg.output_file)}'
+    f'ntuple_{os.path.basename(arg.output_file)}'
+)
 
 if arg.wr is not None :
     p.sequence.append(
@@ -86,7 +89,7 @@ if arg.ft51 is not None :
 if arg.pf0 is not None :
     p.input_files = [arg.pf0]
     p.sequence.extend([
-        hcal_format.HcalRawDecoder(
+        HcalFormat.HcalRawDecoder(
             input_names = ['Polarfire0Raw'],
             input_pass = 'raw',
             output_name = 'PF0Digis'
@@ -100,7 +103,7 @@ if arg.pf0 is not None :
 if arg.pf1 is not None :
     p.input_files = [arg.pf1]
     p.sequence.extend([
-        hcal_format.HcalRawDecoder(
+        HcalFormat.HcalRawDecoder(
             input_names = ['Polarfire1Raw'],
             input_pass = 'raw',
             output_name = 'PF1Digis'
@@ -114,8 +117,11 @@ if arg.pf1 is not None :
 if arg.hcal is not None :
     p.input_files = [arg.hcal]
     p.sequence.extend([
-        hcal_format.HcalRawDecoder(
-            connections_table = f'{os.environ["LDMX_BASE"]}/ldmx-sw/Hcal/data/testbeam_connections.csv',
+        HcalFormat.HcalRawDecoder(
+            connections_table = (
+                f'{os.environ["LDMX_BASE"]}'
+                '/ldmx-sw/Hcal/data/testbeam_connections.csv'
+            ),
             input_names = ['Polarfire0Raw','Polarfire1Raw'],
             input_pass = 'raw',
             output_name = 'HcalDigis'
@@ -131,7 +137,7 @@ if arg.ts is not None :
     n_channels = 16
     n_timesamples = 30
     header_len = 4+4+4+3+1
-    qie_decoder = ts_format.QIEDecoder.up(
+    qie_decoder = TsFormat.QIEDecoder.up(
             os.environ['LDMX_BASE']+
             '/ldmx-sw/TrigScint/data/'+
             'channelMap_LYSOback_plasticFront_12-to-16channels_rotated180.txt')

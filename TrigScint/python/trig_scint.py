@@ -5,9 +5,17 @@ Sets all parameters to reasonable defaults.
 Examples
 --------
     from LDMX.TrigScint.trigScint import TrigScintDigiProducer
-    p.sequence.extend([ TrigScintDigiProducer.pad1() , TrigScintDigiProducer.pad2() , TrigScintDigiProducer.pad3() ])
+    p.sequence.extend([
+        TrigScintDigiProducer.pad1(),
+        TrigScintDigiProducer.pad2(),
+        TrigScintDigiProducer.pad3(),
+    ])
     from LDMX.TrigScint.trigScint import TrigScintClusterProducer
-    p.sequence.extend([ TrigScintClusterProducer.pad1() , TrigScintClusterProducer.pad2(), TrigScintClusterProducer.pad3() ])
+    p.sequence.extend([
+        TrigScintClusterProducer.pad1(),
+        TrigScintClusterProducer.pad2(),
+        TrigScintClusterProducer.pad3(),
+    ])
 
 """
 
@@ -94,7 +102,7 @@ class TrigScintQIEDigiProducer(Processor):
     elec_noise: float = 1.5
     sipm_gain: float = 1.0e6
     qie_sf: float = 40.0
-    zeroSupp_in_pe: float = 1.0
+    zero_supp_in_pe: float = 1.0
     verbose: bool = False
 
     @staticmethod
@@ -366,7 +374,10 @@ class TrigScintTrackProducer(Processor):
     delta_max: float = 0.75
     tracking_threshold: float = 0.0
     seeding_collection: str = "TriggerPad1Clusters"
-    further_input_collections: list[str] = ["TriggerPad2Clusters", "TriggerPad3Clusters"]
+    further_input_collections: list[str] = [
+        "TriggerPad2Clusters",
+        "TriggerPad3Clusters",
+    ]
     allow_skip_last_collection: bool = False
     vertical_bar_start_index: int = 52
     number_horizontal_bars: int = 24
@@ -492,4 +503,4 @@ class TestBeamClusterAnalyzer(Processor):
     input_hit_collection: str = "testBeamHitsUp"
     input_hit_pass_name: str = ""
     start_sample: int = 2
-    deadChannels: list[int] = [8]
+    dead_channels: list[int] = [8]

@@ -115,7 +115,8 @@ from LDMX.Recon.ecal_preselection_skimmer import EcalPreselectionSkimmer
 
 ecal_pres_skimmer = EcalPreselectionSkimmer()
 
-# keep everythning at highest level ecept the ones that deal with A' -> fcp+ fcp- conversion, which we want to log at level 0
+# keep everythning at highest level ecept the ones that deal with
+# A' -> fcp+ fcp- conversion, which we want to log at level 0
 p.logger.term_level = 10
 
 # Dark photon to FCP conversion related logging

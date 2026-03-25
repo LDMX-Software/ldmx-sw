@@ -69,7 +69,8 @@ class HcalReadoutGeometry:
         """Stringify this configuration class"""
         s = f"""
         HcalReadoutGeometry {{
-            Scintillator thickness: {self.scint_thickness:.1f} [mm], width: {self.scint_width:.1f} [mm],
+            Scintillator thickness: {self.scint_thickness:.1f} [mm],
+            width: {self.scint_width:.1f} [mm],
             Number of sections: {{{self.num_sections}}},
             Layers: {{
                 Number of layers: {self.num_layers}
@@ -101,14 +102,20 @@ class HcalReadoutGeometry:
         scint_width = 50.0
 
         back_scint_length = 3100.0
-        # See https://github.com/LDMX-Software/ldmx-sw/blob/trunk/Detectors/data/ldmx-det-v13/hcal.gdml#L21
-        # and https://github.com/LDMX-Software/ldmx-sw/blob/trunk/Detectors/data/ldmx-det-v13/hcal.gdml#L177
-        # and the corresponding discussion https://github.com/LDMX-Software/ldmx-sw/pull/1135#discussion_r1178068211
+        # See https://github.com/LDMX-Software/ldmx-sw/blob/trunk/Detectors/
+        #     data/ldmx-det-v13/hcal.gdml#L21
+        # and https://github.com/LDMX-Software/ldmx-sw/blob/trunk/Detectors/
+        #     data/ldmx-det-v13/hcal.gdml#L177
+        # and the corresponding discussion
+        #     https://github.com/LDMX-Software/ldmx-sw/pull/1135#discussion_r1178068211
         side_tb_scint_length = 1944.0
 
-        # See https://github.com/LDMX-Software/ldmx-sw/blob/trunk/Detectors/data/ldmx-det-v13/hcal.gdml#L22
-        # and https://github.com/LDMX-Software/ldmx-sw/blob/trunk/Detectors/data/ldmx-det-v13/hcal.gdml#L181
-        # and the corresponding discussion https://github.com/LDMX-Software/ldmx-sw/pull/1135#discussion_r1178070801
+        # See https://github.com/LDMX-Software/ldmx-sw/blob/trunk/Detectors/
+        #     data/ldmx-det-v13/hcal.gdml#L22
+        # and https://github.com/LDMX-Software/ldmx-sw/blob/trunk/Detectors/
+        #     data/ldmx-det-v13/hcal.gdml#L181
+        # and the corresponding discussion
+        #     https://github.com/LDMX-Software/ldmx-sw/pull/1135#discussion_r1178070801
         side_lr_scint_length = 1832.0
         scint_length = [[back_scint_length for layer in range(num_layers[0])],
                         [side_tb_scint_length for layer in range(num_layers[1])],
@@ -144,7 +151,8 @@ class HcalReadoutGeometry:
         ecal_dx = 800.0
         ecal_dy = 600.0
         half_total_width = [
-            [(num_strips[0][layer] * scint_width) / 2 for layer in range(num_layers[0])],
+            [(num_strips[0][layer] * scint_width) / 2
+             for layer in range(num_layers[0])],
             [(num_layers[1] * layer_thickness[1] + ecal_dx)
             / 2
              for layer in range(num_layers[1])],
@@ -297,8 +305,6 @@ class HcalReadoutGeometry:
             N * scint_bar_width / 2 for N in num_strips_total
         ]]
         half_total_width = zero_strip
-        ecal_dx = 0.0
-        ecal_dy = 0.0
         return HcalReadoutGeometry(
             num_sections = num_sections,
             num_layers = num_layers,
@@ -333,9 +339,6 @@ class HcalReadoutGeometry:
         back_hcal_num_layers = 96
         back_hcal_num_scint = 40
         back_hcal_abso_thick = 25
-        back_hcal_layer_thick = (
-            back_hcal_abso_thick + hcal_scint_thick + 2.0 * hcal_air_thick
-        )
         back_hcal_scint_length = 2000.0
         back_hcal_dx = back_hcal_scint_length
 
@@ -396,22 +399,26 @@ class HcalReadoutGeometry:
         # In back hcal: odd layers are horizontal, even layers are vertical
         back_horizontal_parity = 1
 
-        scint_length = [[back_hcal_scint_length for layer in range(back_hcal_num_layers)],
-                                 [0.] * side_hcal_num_total_layers, # Filled below
-                                 [0.] * side_hcal_num_total_layers,
-                                 [0.] * side_hcal_num_total_layers,
-                                 [0.] * side_hcal_num_total_layers]
+        scint_length = [
+            [back_hcal_scint_length for layer in range(back_hcal_num_layers)],
+            [0.] * side_hcal_num_total_layers,  # Filled below
+            [0.] * side_hcal_num_total_layers,
+            [0.] * side_hcal_num_total_layers,
+            [0.] * side_hcal_num_total_layers,
+        ]
         for s in range(side_hcal_num_sections):
             for m in range(side_num_modules):
-                for l in range(side_hcal_num_layers[m] * 2):
+                for layer_idx in range(side_hcal_num_layers[m] * 2):
                     # Layer numbering starts at 1
-                    layer = l + 1
+                    layer = layer_idx + 1
                     # The back hcal (section 0) has already been handled
                     section_index = s + 1
-                    layer_index = l + side_hcal_num_prev_layers[m] * 2
+                    layer_index = layer_idx + side_hcal_num_prev_layers[m] * 2
                     if layer % 2 == 0:
                         # Layer number is even, length is along X/Y
-                        scint_length[section_index][layer_index] = side_hcal_scint_length[m]
+                        scint_length[section_index][layer_index] = (
+                            side_hcal_scint_length[m]
+                        )
                     else:
                         # Layer number is odd, length is along Z
                         scint_length[section_index][layer_index] = side_hcal_dz
@@ -423,8 +430,8 @@ class HcalReadoutGeometry:
         half_total_width_side = []
         num_strips_side = []
         for m in range(side_num_modules):
-            for l in range(side_hcal_num_layers[m] * 2):
-                if (l + 1) % 2 == 0:
+            for layer_idx in range(side_hcal_num_layers[m] * 2):
+                if (layer_idx + 1) % 2 == 0:
                     # Layer number is even
                     half_total_width_side.append(side_hcal_dz / 2)
                     num_strips_side.append(int(side_hcal_num_scint_xy))
@@ -445,8 +452,8 @@ class HcalReadoutGeometry:
         for s in range(side_hcal_num_sections):
             zero_strip_section = []
             for m in range(side_num_modules):
-                for l in range(side_hcal_num_layers[m] * 2):
-                    if (l + 1) % 2 == 0:
+                for layer_idx in range(side_hcal_num_layers[m] * 2):
+                    if (layer_idx + 1) % 2 == 0:
                         zero_strip_section.append(zero_strip_even)
                     else:
                         zero_strip_section.append(zero_strip_odd[s])
@@ -476,7 +483,12 @@ class HcalReadoutGeometry:
         ]
         # added the reduced geometry temporarily, for the final geometry
         # we should have a new function "reduced()" with the prototype geom
-        detectors_valid = ["ldmx-det-v14", "ldmx-det-v14.*", "ldmx-vertTS-v14.*", "ldmx-reduced", "ldmx-reduced-v2", "ldmx-reduced-v3","ldmx-lyso-r4-v15", "ldmx-lyso-r4-v15.*", "ldmx-det-v15","ldmx-det-v15.*"]
+        detectors_valid = [
+            "ldmx-det-v14", "ldmx-det-v14.*", "ldmx-vertTS-v14.*",
+            "ldmx-reduced", "ldmx-reduced-v2", "ldmx-reduced-v3",
+            "ldmx-lyso-r4-v15", "ldmx-lyso-r4-v15.*",
+            "ldmx-det-v15", "ldmx-det-v15.*",
+        ]
         return HcalReadoutGeometry(
             num_sections = num_sections,
             num_layers = num_layers,
@@ -506,5 +518,9 @@ class HcalGeometry:
 
     v13: HcalReadoutGeometry = field(default_factory = HcalReadoutGeometry.make_v13)
     v14: HcalReadoutGeometry = field(default_factory = HcalReadoutGeometry.make_v14)
-    v1_prototype: HcalReadoutGeometry = field(default_factory = HcalReadoutGeometry.make_v1_prototype)
-    v2_prototype: HcalReadoutGeometry = field(default_factory = HcalReadoutGeometry.make_v2_prototype)
+    v1_prototype: HcalReadoutGeometry = field(
+        default_factory = HcalReadoutGeometry.make_v1_prototype
+    )
+    v2_prototype: HcalReadoutGeometry = field(
+        default_factory = HcalReadoutGeometry.make_v2_prototype
+    )

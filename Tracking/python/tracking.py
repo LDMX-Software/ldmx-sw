@@ -2,7 +2,7 @@ from math import sqrt
 
 from LDMX.Framework import Processor, field, processor
 
-from .make_path import makeFieldMapPath
+from .make_path import make_field_map_path
 
 
 @processor("tracking::reco::DigitizationProcessor", "Tracking")
@@ -134,7 +134,7 @@ class CKFProcessor(Processor):
         Path to the location of the magnetic field map.
     propagator_step_size : float
         Size of each RK propagator step.
-    propagator_maxSteps : int
+    propagator_max_steps : int
         Maximum number of steps for the propagator.
     hit_collection : str
         The hit collection for pattern reconstruction.
@@ -169,9 +169,9 @@ class CKFProcessor(Processor):
     pionstates: int = 0
     bfield: float = -1.5
     const_b_field: bool = False
-    field_map: str = field(default_factory=makeFieldMapPath)
+    field_map: str = field(default_factory=make_field_map_path)
     propagator_step_size: float = 1000.0
-    propagator_maxSteps: int = 10000
+    propagator_max_steps: int = 10000
     hit_collection: str = "RecoilSimHits"
     remove_stereo: bool = False
     use_extrapolate_location: bool = True
@@ -180,7 +180,7 @@ class CKFProcessor(Processor):
     seed_coll_name: str = "SeedTracks"
     out_trk_collection: str = "Tracks"
     min_hits: int = 5
-    taggerTracking: bool = False
+    tagger_tracking: bool = False
     measurement_collection: str = ""
     outlier_pval_: float = 3.84
     sim_particles_coll_name: str = "SimParticles"
@@ -194,23 +194,23 @@ class GSFProcessor(Processor):
 
     Attributes
     ----------
-    maxComponent : int
+    max_components : int
         How many gaussians to use to sample the BetheHeitler.
-    abortOnError : bool
+    abort_on_error : bool
         Abort fitting if an error occurred.
-    disableAllMaterialHandling : bool
+    disable_all_material_handling : bool
         Disable material effects on surfaces. True only for debug purpose.
-    weightCutoff : float
+    weight_cutoff : float
         Kill a component if its weight is smaller than a certain threshold.
     debug : bool
         Enable debug output.
     propagator_step_size : float
         Size of each RK propagator step.
-    propagator_maxSteps : int
+    propagator_max_steps : int
         Maximum number of steps for the propagator.
     field_map : str
         Path to the location of the magnetic field map.
-    taggerTracking : bool
+    tagger_tracking : bool
         Whether tracking in the tagger.
     out_trk_collection : str
         Name of the output Track collection.
@@ -228,15 +228,15 @@ class GSFProcessor(Processor):
         The event pass name of the measurements collection.
     """
 
-    maxComponent: int = 12
-    abortOnError: bool = False
-    disableAllMaterialHandling: bool = False
-    weightCutoff: float = 1.0e-4
+    max_components: int = 12
+    abort_on_error: bool = False
+    disable_all_material_handling: bool = False
+    weight_cutoff: float = 1.0e-4
     debug: bool = False
     propagator_step_size: float = 200.0
-    propagator_maxSteps: int = 1000
-    field_map: str = field(default_factory=makeFieldMapPath)
-    taggerTracking: bool = True
+    propagator_max_steps: int = 1000
+    field_map: str = field(default_factory=make_field_map_path)
+    tagger_tracking: bool = True
     out_trk_collection: str = "GSFTracks"
     track_collection: str = "TaggerTracks"
     meas_collection: str = "DigiTaggerSimHits"
@@ -331,9 +331,9 @@ class TruthSeedProcessor(Processor):
     max_track_id: int = 5
     ecal_sp_coll_name: str = "EcalScoringPlaneHits"
     trk_coll_name: str = ""
-    pdgIDs: list[int] = [11]
+    pdg_ids: list[int] = [11]
     scoring_hits: str = "TargetScoringPlaneHits"
-    p_cutEcal: float = -1.0
+    p_cut_ecal: float = -1.0
     sp_pass_name: str = ""
     input_pass_name: str = ""
     sim_particles_coll_name: str = "SimParticles"
@@ -352,11 +352,11 @@ class GreedyAmbiguitySolver(Processor):
 
     Attributes
     ----------
-    maximumSharedHits : int
+    maximum_shared_hits : int
         Maximum number of shared hits for a track to remain.
-    maximumIterations : int
+    maximum_iterations : int
         Maximum number of iterations in track cleaning loop.
-    nMeasurementsMin : int
+    n_measurements_min : int
         Minimum number of hits on a track.
     out_trk_collection : str
         Name of the output Track collection.
@@ -368,9 +368,9 @@ class GreedyAmbiguitySolver(Processor):
         The pass name of the input collections.
     """
 
-    maximumSharedHits: int = 2
-    maximumIterations: int = 1000
-    nMeasurementsMin: int = 5
+    maximum_shared_hits: int = 2
+    maximum_iterations: int = 1000
+    n_measurements_min: int = 5
     out_trk_collection: str = "TaggerTracksClean"
     track_collection: str = "TaggerTracks"
     meas_collection: str = "DigiTaggerSimHits"

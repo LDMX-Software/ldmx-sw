@@ -5,7 +5,9 @@ Sets all parameters to reasonable defaults.
 Examples
 --------
     from LDMX.TrigScint.truthHits import TruthHitProducer
-    p.sequence.extend([ TruthHitProducer.tagger(), TruthHitProducer.up(), TruthHitProducer.down() ])
+    p.sequence.extend([
+        TruthHitProducer.tagger(), TruthHitProducer.up(), TruthHitProducer.down()
+    ])
 
 """
 

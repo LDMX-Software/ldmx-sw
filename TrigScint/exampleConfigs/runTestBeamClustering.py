@@ -13,15 +13,15 @@ time_sample = int(sys.argv[2]) if len(sys.argv) > 2 else 21
 from LDMX.TrigScint.trigScint import TestBeamClusterProducer
 
 
-tbClustersUp  =TestBeamClusterProducer("tb_clusters")
-tbClustersUp.input_pass_name=input_pass_name
-#tbClustersUp.input_collection="TestBeamHitsUp"
-tbClustersUp.pad_time=0.
-tbClustersUp.threshold=15.
-tbClustersUp.time_tolerance=50.
-tbClustersUp.verbosity=0
+tb_clusters_up  =TestBeamClusterProducer("tb_clusters")
+tb_clusters_up.input_pass_name=input_pass_name
+#tb_clusters_up.input_collection="TestBeamHitsUp"
+tb_clusters_up.pad_time=0.
+tb_clusters_up.threshold=15.
+tb_clusters_up.time_tolerance=50.
+tb_clusters_up.verbosity=0
 p.sequence = [
-    tbClustersUp
+    tb_clusters_up
     ]
 
 

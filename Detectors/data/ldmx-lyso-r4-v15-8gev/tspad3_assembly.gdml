@@ -18,17 +18,17 @@ to the housing, and maybe see if the visattributes can be reworked
 -->
 
 
-<gdml xmlns:gdml="http://cern.ch/2001/Schemas/GDML" 
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+<gdml xmlns:gdml="http://cern.ch/2001/Schemas/GDML"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation="http://service-spi.web.cern.ch/service-spi/app/releases/GDML/schema/gdml.xsd" >
 
-  
+
   <define>
-    &constants;    
+    &constants;
     <variable name="x" value="1"/>
   </define>
 
-  
+
   <solids>
     <!--The envelope encompassing the assembly-->
     <box lunit="mm" name="one_pad_box3" x="tspad3_envelope_x" y="(trigger_bar_dy+trigger_pad_bar_gap)*number_of_bars*1.1" z="trigger_pad_thickness"/>
@@ -36,11 +36,11 @@ to the housing, and maybe see if the visattributes can be reworked
     <box lunit="mm" name="trigger_bar_box3" x="trigger_bar_dx" y="trigger_bar_dy" z="trigger_pad_bar_thickness" />
         <!--The light pipe dimensions (different for each TSPad)-->
     <box lunit="mm" name="trigger_light_pipe_box3" x="trigger_light_pipe3_dx" y="trigger_light_pipe_dy" z="trigger_light_pipe_thickness" />
-    <!--SiPM dimensions-->    
+    <!--SiPM dimensions-->
     <box lunit="mm" name="trigger_sipm_box3" x="sipm_thickness" y="sipm_dy" z="sipm_dz" />
   </solids>
 
-  
+
   <structure>
 
     <!--TS pad is made of polyvinyl toluene-->
@@ -60,14 +60,14 @@ to the housing, and maybe see if the visattributes can be reworked
     </volume>
 
     <!--I'll let you guess what the SiPMs are made of :^)
-	The model is the Hamamatsu S13360-2050VE-->
+  The model is the Hamamatsu S13360-2050VE-->
     <volume name="tspad3_sipm_volume">
       <materialref ref="Silicon"/>
       <solidref ref="trigger_sipm_box3"/>
       <auxiliary auxtype="VisAttributes" auxvalue="TriggerPadVis"/>
       <auxiliary auxtype="DetElem" auxvalue="TriggerPad"/>
     </volume>
-    
+
     <volume name="tspad3_volume">
       <materialref ref="Vacuum"/>
       <solidref ref="one_pad_box3" />
@@ -81,60 +81,60 @@ to the housing, and maybe see if the visattributes can be reworked
         There are more elegant ways to write the x offset, but this one is the most legible.
         -->
 
-	<physvol copynumber="2*x-2">
-	  <volumeref ref="tspad3_sipm_volume" />
-          <position name="trigger_sipm_layer1_pos" unit="mm" 
-          	    x="(tspad3_envelope_x-sipm_thickness)/2"
-                    y="-target_dim_y/2+trigger_bar_dy*(x-0.5)+trigger_pad_bar_gap*(x-1)+trigger_pad_offset" 
+  <physvol copynumber="2*x-2">
+    <volumeref ref="tspad3_sipm_volume" />
+          <position name="trigger_sipm_layer1_pos" unit="mm"
+                x="(tspad3_envelope_x-sipm_thickness)/2"
+                    y="-target_dim_y/2+trigger_bar_dy*(x-0.5)+trigger_pad_bar_gap*(x-1)+trigger_pad_offset"
                     z="-trigger_pad_bar_thickness/2 - trigger_pad_bar_gap/2" />
           <rotationref ref="identity" />
         </physvol>
-	
+
         <physvol copynumber="2*x-1">
           <volumeref ref="tspad3_sipm_volume" />
-          <position name="trigger_sipm_layer2_pos" unit="mm" 
-          	    x="(tspad3_envelope_x-sipm_thickness)/2"
+          <position name="trigger_sipm_layer2_pos" unit="mm"
+                x="(tspad3_envelope_x-sipm_thickness)/2"
                     y="-target_dim_y/2+trigger_bar_dy*x+trigger_pad_bar_gap*(x-1)+trigger_pad_offset"
                     z="trigger_pad_bar_thickness/2 + trigger_pad_bar_gap/2" />
           <rotationref ref="identity" />
         </physvol>
 
-	<physvol copynumber="2*x-2">
-	  <volumeref ref="tspad3_lightpipe_volume" />
-          <position name="trigger_pad_pipe_layer1_pos" unit="mm" 
-          	    x="(tspad3_envelope_x-trigger_light_pipe3_dx-2*sipm_thickness)/2"
-                    y="-target_dim_y/2+trigger_bar_dy*(x-0.5)+trigger_pad_bar_gap*(x-1)+trigger_pad_offset" 
+  <physvol copynumber="2*x-2">
+    <volumeref ref="tspad3_lightpipe_volume" />
+          <position name="trigger_pad_pipe_layer1_pos" unit="mm"
+                x="(tspad3_envelope_x-trigger_light_pipe3_dx-2*sipm_thickness)/2"
+                    y="-target_dim_y/2+trigger_bar_dy*(x-0.5)+trigger_pad_bar_gap*(x-1)+trigger_pad_offset"
                     z="-trigger_pad_bar_thickness/2 - trigger_pad_bar_gap/2" />
           <rotationref ref="identity" />
         </physvol>
-	
+
         <physvol copynumber="2*x-1">
           <volumeref ref="tspad3_lightpipe_volume" />
-          <position name="trigger_pad_pipe_layer2_pos" unit="mm" 
-          	    x="(tspad3_envelope_x-trigger_light_pipe3_dx-2*sipm_thickness)/2"
+          <position name="trigger_pad_pipe_layer2_pos" unit="mm"
+                x="(tspad3_envelope_x-trigger_light_pipe3_dx-2*sipm_thickness)/2"
                     y="-target_dim_y/2+trigger_bar_dy*x+trigger_pad_bar_gap*(x-1)+trigger_pad_offset"
                     z="trigger_pad_bar_thickness/2 + trigger_pad_bar_gap/2" />
           <rotationref ref="identity" />
         </physvol>
 
-	<physvol copynumber="2*x-2">
+  <physvol copynumber="2*x-2">
           <volumeref ref="trigger_pad3_bar_volume" />
           <position name="trigger_pad_bar_layer1_pos" unit="mm"
-		    x="(tspad3_envelope_x-trigger_bar_dx-2*trigger_light_pipe3_dx-2*sipm_thickness)/2"
-                    y="-target_dim_y/2 + trigger_bar_dy*(x - 0.5) + trigger_pad_bar_gap*(x - 1) + trigger_pad_offset" 
+        x="(tspad3_envelope_x-trigger_bar_dx-2*trigger_light_pipe3_dx-2*sipm_thickness)/2"
+                    y="-target_dim_y/2 + trigger_bar_dy*(x - 0.5) + trigger_pad_bar_gap*(x - 1) + trigger_pad_offset"
                     z="-trigger_pad_bar_thickness/2 - trigger_pad_bar_gap/2" />
           <rotationref ref="identity" />
         </physvol>
-	
+
         <physvol copynumber="2*x - 1">
           <volumeref ref="trigger_pad3_bar_volume" />
           <position name="trigger_pad_bar_layer2_pos" unit="mm"
-		    x="(tspad3_envelope_x-trigger_bar_dx-2*trigger_light_pipe3_dx-2*sipm_thickness)/2"
+        x="(tspad3_envelope_x-trigger_bar_dx-2*trigger_light_pipe3_dx-2*sipm_thickness)/2"
                     y="-target_dim_y/2 + trigger_bar_dy*x + trigger_pad_bar_gap*(x - 1) + trigger_pad_offset"
                     z="trigger_pad_bar_thickness/2 + trigger_pad_bar_gap/2" />
           <rotationref ref="identity" />
         </physvol>
-	
+
       </loop>
 
       <auxiliary auxtype="Region" auxvalue="target" />
@@ -142,9 +142,9 @@ to the housing, and maybe see if the visattributes can be reworked
       <auxiliary auxtype="DetElem" auxvalue="TriggerPad"/>
 
     </volume>
-  </structure> 
+  </structure>
 
-  
+
   <setup name="Default" version="1.0">
     <world ref="tspad3_volume"/>
   </setup>

@@ -13,7 +13,7 @@ from LDMX.SimCore import simulator as sim
 
 
 # Load LHE file containing WAB events
-wab_gen = gen.lhe(
+wab_gen = gen.Lhe(
     instance_name="WAB Generator",
     file_path=f'{os.environ["CI_DATA"]}/wab_lhe/8GeV_WABFF2_10K.lhe'
 )
@@ -22,8 +22,8 @@ wab_gen = gen.lhe(
 wab_gen.vertex = [0.0, 0.0, 0.0]
 
 det = 'ldmx-det-v15-8gev'
-my_sim = sim.simulator(instance_name='sim')
-my_sim.setDetector(det, include_scoring_planes_minimal = True)
+my_sim = sim.Simulator(instance_name='sim')
+my_sim.set_detector(det, include_scoring_planes_minimal = True)
 my_sim.generators.append(wab_gen)
 
 p.sequence = [ my_sim ]
@@ -87,7 +87,11 @@ from LDMX.Recon.simple_trigger import TriggerProcessor
 from LDMX.Trigger import trigger_energy_sums
 
 
-count = ElectronCounter(simulated_electron_number=1, instance_name='ElectronCounter', input_pass_name='')
+count = ElectronCounter(
+    simulated_electron_number=1,
+    instance_name='ElectronCounter',
+    input_pass_name='',
+)
 
 # Load the DQM modules
 from LDMX.DQM import dqm

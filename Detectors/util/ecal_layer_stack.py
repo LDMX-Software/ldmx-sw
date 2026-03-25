@@ -11,7 +11,8 @@ In order to align with Geant4, we use the following units
 We keep a few reference tables so that all layers
 can access the properties of their materials.
 The materials that are copied from the PDG
-[Atomic and Nuclear Properties](https://pdg.lbl.gov/2023/AtomicNuclearProperties/index.html)
+[Atomic and Nuclear Properties](
+https://pdg.lbl.gov/2023/AtomicNuclearProperties/index.html)
 are kept as PDGMaterial in the materials dictionary and a few aliases of these
 materials are kept in material_aliases to be clear about the material names we
 use (in the GDML) and the material names from the PDG.
@@ -23,7 +24,8 @@ attribute the rest of its thickness to fiberglass (FR4 -> G10).
 
 The unit-conversion calculations are left in PDGMaterial for transparency.
 
-Natalia found [this study of the ALICE TRD](https://www-physics.lbl.gov/~gilg/PixelUpgradeMechanicsCooling/Material/Radiationlength.pdf)
+Natalia found [this study of the ALICE TRD](
+https://www-physics.lbl.gov/~gilg/PixelUpgradeMechanicsCooling/Material/Radiationlength.pdf)
 which is a helpful source of comparison to make sure we aren't wildly off.
 
 Here   | PDG
@@ -72,7 +74,7 @@ class PDGMaterial:
     nuclear_interaction_length: float
 
 
-    def minimum_ionization_MeV_mm(self):
+    def minimum_ionization_mev_mm(self):
         """need to resolve the minimum ionization into MeV/mm units"""
         return (self.minimum_ionization * self.density) / 10
 
@@ -232,7 +234,7 @@ class Layer :
 
         self.nuclen = the_material.nuclear_interaction_length_mm()
         self.x0 = the_material.radiation_length_mm()
-        self.dEdx = the_material.minimum_ionization_MeV_mm()
+        self.dEdx = the_material.minimum_ionization_mev_mm()
 
     def __str__(self) :
         return f'{self.thickness:.2f} mm {self.name}'
@@ -247,16 +249,20 @@ class Layer :
 
     @staticmethod
     def pcb(*, thickness = 1.2, n_copper_layers = 8) :
-        """Estimate PCB layer properties with a layer of copper and a layer of fiberglass
+        """Estimate PCB layer properties with a layer of copper and a layer of
+        fiberglass
 
-        The total thickness of the PCB is given as well as the expected number of copper layers.
-        The total thickness of the copper is then determined assuming that 2 of the copper layers
-        are 1 oz/ft^2 and the rest are 0.5 oz/ft^2.
+        The total thickness of the PCB is given as well as the expected number of
+        copper layers. The total thickness of the copper is then determined assuming
+        that 2 of the copper layers are 1 oz/ft^2 and the rest are 0.5 oz/ft^2.
         The rest of the PCB thickness is then attributed to the fiberglass.
         """
 
         if n_copper_layers < 3:
-            raise ValueError('This estimate for the PCB does not make sense if there are less than 3 copper layers.')
+            raise ValueError(
+                'This estimate for the PCB does not make sense if there are'
+                ' less than 3 copper layers.'
+            )
 
         # after dividing the copper weight (in oz/ft^2) by the density (in g/cm^3)
         # we need to scale by this factor to get the units into mm
@@ -271,7 +277,10 @@ class Layer :
         )
 
         if copper_thickness >= thickness:
-            raise ValueError(f'Total thickness of PCB provided {thickness} is smaller than thickness for {n_copper_layers} of copper {copper_thickness}.')
+            raise ValueError(
+                f'Total thickness of PCB provided {thickness} is smaller than'
+                f' thickness for {n_copper_layers} of copper {copper_thickness}.'
+            )
 
         return [
             Layer('Cu', copper_thickness),
@@ -448,15 +457,19 @@ def print_gdml_list(**kwargs) :
     that will be injected into the GDML.
     """
 
-    for name, l in kwargs.items() :
-        newline_list = f'{l[0]:.1f}\n' + '\n'.join([f'                {v:.1f}' for v in l[1:]])
+    for name, values in kwargs.items() :
+        newline_list = (
+            f'{values[0]:.1f}\n'
+            + '\n'.join([f'                {v:.1f}' for v in values[1:]])
+        )
         print(f'<matrix name="{name}"')
         print( '        coldim="1"')
         print(f'        values="{newline_list}"/>')
 
 
 def enumerate_absorber_dz(bilayers) :
-    """go through layers and keep track of the longitudinal depth (dz) of the absorber"""
+    """go through layers and keep track of the longitudinal depth (dz) of the
+    absorber"""
 
     cooling_tungsten_dz = []
     front_tungsten_dz = []
@@ -502,7 +515,8 @@ def materials_between_sensdet(layer_stack) :
 
 
 def calc_weights(layers_partitioned_by_sensdet) :
-    """calculate different material properties for the layer stacks between sensitive layers
+    """calculate different material properties for the layer stacks between
+    sensitive layers
 
     These material properties do not include the sensitive layers themselves since
     the partitioning drops them out (see materials_between_sensdet).
@@ -526,13 +540,21 @@ def calc_weights(layers_partitioned_by_sensdet) :
     # Does include sensitive detector layers
     zpos_layer = [ ]
     for section in layers_partitioned_by_sensdet :
-        de_between_sensdet.append(sum(l.thickness * l.dEdx for l in section))
-        x0_between_sensdet.append(sum(l.thickness / l.x0 for l in section))
-        l_between_sensdet.append(sum(l.thickness / l.nuclen for l in section))
+        de_between_sensdet.append(
+            sum(layer.thickness * layer.dEdx for layer in section)
+        )
+        x0_between_sensdet.append(
+            sum(layer.thickness / layer.x0 for layer in section)
+        )
+        l_between_sensdet.append(
+            sum(layer.thickness / layer.nuclen for layer in section)
+        )
         last_layer_pos = 0.0
         if len(zpos_layer) > 0:
             last_layer_pos = zpos_layer[-1] + Layer.SensDetThickness
-        zpos_layer.append(last_layer_pos + sum(l.thickness for l in section))
+        zpos_layer.append(
+            last_layer_pos + sum(layer.thickness for layer in section)
+        )
     #endfor - sections
 
     de_between_sensdet = average(de_between_sensdet)
@@ -561,13 +583,29 @@ def print_weights(
     )
     output.write('-----------------------------------\n')
     for layer in range(len(de_between_sensdet)-1):
-        output.write(f'{layer+1:5d} {de_between_sensdet[layer]:7.3f} {x0_between_sensdet[layer]:6.3f} {l_between_sensdet[layer]:6.3f} {zpos_layer[layer]:6.3f}\n')
+        output.write(
+            f'{layer+1:5d}'
+            f' {de_between_sensdet[layer]:7.3f}'
+            f' {x0_between_sensdet[layer]:6.3f}'
+            f' {l_between_sensdet[layer]:6.3f}'
+            f' {zpos_layer[layer]:6.3f}\n'
+        )
     #endfor - layers
     output.write('-----------------------------------\n')
     output.write('{:>5s} {:7.3f} {:6.3f} {:6.3f} {:6.3f}\n'.format(
-        'Sum', sum(de_between_sensdet[:-1]), sum(x0_between_sensdet[:-1]), sum(l_between_sensdet[:-1]), zpos_layer[-1] ))
+        'Sum',
+        sum(de_between_sensdet[:-1]),
+        sum(x0_between_sensdet[:-1]),
+        sum(l_between_sensdet[:-1]),
+        zpos_layer[-1],
+    ))
     output.write('{:>5s} {:7.3f} {:6.3f} {:6.3f} {:6.3f}\n'.format(
-        'Back', de_between_sensdet[-1], x0_between_sensdet[-1], l_between_sensdet[-1], zpos_layer[-1]))
+        'Back',
+        de_between_sensdet[-1],
+        x0_between_sensdet[-1],
+        l_between_sensdet[-1],
+        zpos_layer[-1],
+    ))
     output.flush()
 
 
@@ -586,7 +624,7 @@ def print_layer_materials():
         name : {
             attr: getattr(material, attr)()
             for attr in [
-                'minimum_ionization_MeV_mm',
+                'minimum_ionization_mev_mm',
                 'radiation_length_mm',
                 'nuclear_interaction_length_mm'
             ]
@@ -616,7 +654,11 @@ def ldmx_ecal_v14():
 
     # adding two lists together just appends them, so I "sum" all the
     # bilayer material stacks into a single materal stack for the entire detector
-    layers = functools.reduce(operator.iadd, (bilayer.material_stack() for bilayer in bilayers), [])
+    layers = functools.reduce(
+        operator.iadd,
+        (bilayer.material_stack() for bilayer in bilayers),
+        [],
+    )
     # partition the material stack into groups separated by sensitive silicon
     mbs = materials_between_sensdet(layers)
     weights = calc_weights(mbs)
@@ -644,7 +686,11 @@ def ldmx_ecal_v15():
 
     # adding two lists together just appends them, so I "sum" all the
     # bilayer material stacks into a single materal stack for the entire detector
-    layers = functools.reduce(operator.iadd, (bilayer.material_stack() for bilayer in bilayers), [])
+    layers = functools.reduce(
+        operator.iadd,
+        (bilayer.material_stack() for bilayer in bilayers),
+        [],
+    )
     # partition the material stack into groups separated by sensitive silicon
     mbs = materials_between_sensdet(layers)
     weights = calc_weights(mbs)
@@ -658,8 +704,18 @@ def minildmx():
     print('            |     Depth     |')
     print('N Bi-Layers | X0    | mm    |')
     for n in range(1,4):
-        layers = [Layer.kapton(0.1)]+n*BiLayerSandwich(front=0, cooling=0, slice_test=True).material_stack()+[Layer.kapton(0.1)]
-        print(f'{n:>11} | {sum(layer.thickness / layer.x0 for layer in layers):<5.3g} | {sum(layer.thickness for layer in layers):<5.3g} |')
+        layers = (
+            [Layer.kapton(0.1)]
+            + n * BiLayerSandwich(
+                front=0, cooling=0, slice_test=True
+            ).material_stack()
+            + [Layer.kapton(0.1)]
+        )
+        print(
+            f'{n:>11}'
+            f' | {sum(layer.thickness / layer.x0 for layer in layers):<5.3g}'
+            f' | {sum(layer.thickness for layer in layers):<5.3g} |'
+        )
 
 
 @command
@@ -670,7 +726,9 @@ def bilayer_spec():
     if slice_test:
         Layer.SensDetThickness = 0.3
 
-    layers = 3*BiLayerSandwich(front=0, cooling=0, slice_test=slice_test).material_stack()
+    layers = 3 * BiLayerSandwich(
+        front=0, cooling=0, slice_test=slice_test
+    ).material_stack()
 
     if include_kapton:
         layers.insert(0, Layer.kapton(0.1))
@@ -681,7 +739,12 @@ def bilayer_spec():
     print('Full Layer Stack')
     print('Material, Depth / mm, Depth / X0')
     for layer in layers:
-        print(layer.name, layer.thickness, f'{layer.thickness / layer.x0:.3g}', sep=', ')
+        print(
+            layer.name,
+            layer.thickness,
+            f'{layer.thickness / layer.x0:.3g}',
+            sep=', ',
+        )
         if layer.name not in totals_by_material:
             totals_by_material[layer.name] = 0.0
         totals_by_material[layer.name] += layer.thickness
@@ -690,7 +753,9 @@ def bilayer_spec():
     print('Total Depths')
     print('Material, Depth / mm, Depth / X0')
     for material, depth in totals_by_material.items():
-        print(material, f'{depth:.3g}', f'{depth/get_material(material).radiation_length_mm():.3g}', sep=', ')
+        print(material, f'{depth:.3g}',
+              f'{depth/get_material(material).radiation_length_mm():.3g}',
+              sep=', ')
 
 
 @command

@@ -22,7 +22,9 @@ log_name= p.output_files[0].replace(".root", "_toLDMX.log")
 if len(sys.argv) > 5 :
     map_file=sys.argv[5]
 else :
-    map_file="channelMap_LYSOback_plasticFront_12-to-16channels_rotated180.txt" # "channelMap_LYSOback_plasticFront_12-to-16channels.txt" # "channelMap_identity_"+str(n_chan)+"channels.txt"
+    map_file = (
+        "channelMap_LYSOback_plasticFront_12-to-16channels_rotated180.txt"
+    )
 log_verbosity = int(sys.argv[6]) if len(sys.argv) > 6 else 2
 
 n_chan = int(sys.argv[7]) if len(sys.argv) > 7 else 16 #default

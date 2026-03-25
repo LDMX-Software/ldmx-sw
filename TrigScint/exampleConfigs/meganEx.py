@@ -17,7 +17,7 @@ from LDMX.SimCore import generators
 from LDMX.SimCore import simulator
 from LDMX.Biasing import filters
 
-from LDMX.Detectors.makePath import *
+from LDMX.Detectors.make_path import make_scoring_planes_path
 from LDMX.SimCore import simcfg
 
 #pull in command line options
@@ -30,13 +30,13 @@ out_dir= ""    #sample identifier
 #
 # Instantiate the simulator.
 #
-sim = simulator.simulator("test")
+sim = simulator.Simulator("test")
 
 #
 # Set the path to the detector to use (pulled from job config)
 #
-sim.setDetector( version, include_scoring_planes_minimal = True )
-sim.scoring_planes = makeScoringPlanesPath(version)
+sim.set_detector( version, include_scoring_planes_minimal = True )
+sim.scoring_planes = make_scoring_planes_path(version)
 
 outname=output_name_string #+".root"
 print("NAME = " + outname)
@@ -49,13 +49,15 @@ p.max_events = 100
 n_electrons = n_ele
 beam_energy = 4.0  #in GeV
 
-sim.description = "Inclusive "+str(beam_energy)+" GeV electron events, "+str(n_electrons)+"e"
+sim.description = (
+    "Inclusive "+str(beam_energy)+" GeV electron events, "+str(n_electrons)+"e"
+)
 #sim.randomSeeds = [ SEED1 , SEED2 ]
 sim.beamSpotSmear = [20., 80., 0]
 
 
 # this is the line that actually creates the generator
-mpg_gen = generators.multi( "mgpGen" )
+mpg_gen = generators.Multi( "mgpGen" )
 mpg_gen.vertex = [ -44., 0., -880. ] # mm
 mpg_gen.n_particles = n_electrons
 mpg_gen.pdg_id = 11
@@ -80,16 +82,16 @@ sim.generators = [ mpg_gen ]
 #import LDMX.Ecal.ecal_geometry
 import LDMX.Ecal.ecal_hardcoded_conditions
 from LDMX.Ecal import ecal_geometry
-#egeom = EcalGeometry.EcalGeometryProvider.getInstance()
+#egeom = EcalGeometry.EcalGeometryProvider.get_instance()
 #Hcal hardwired/geometry stuff
 from LDMX.Hcal import hcal_geometry
 import LDMX.Hcal.hcal_hardcoded_conditions
-#hgeom = HcalGeometry.HcalGeometryProvider.getInstance()
+#hgeom = HcalGeometry.HcalGeometryProvider.get_instance()
 
 
-from LDMX.Ecal import digi as eDigi
+from LDMX.Ecal import digi as ecal_digi
 from LDMX.Ecal import vetos
-from LDMX.Hcal import digi as hDigi
+from LDMX.Hcal import digi as hcal_digi
 from LDMX.Hcal import hcal
 
 from LDMX.Recon.simple_trigger import TriggerProcessor
@@ -99,18 +101,20 @@ from LDMX.TrigScint.trigScint import TrigScintClusterProducer
 from LDMX.TrigScint.trigScint import trig_scint_track
 
 if "v12" in version :
-     ts_sim_colls=[ "TriggerPadTagSimHits", "TriggerPadUpSimHits", "TriggerPadDnSimHits" ]
+     ts_sim_colls = [
+         "TriggerPadTagSimHits", "TriggerPadUpSimHits", "TriggerPadDnSimHits"
+     ]
 else :
      ts_sim_colls=[ "TriggerPad2SimHits", "TriggerPad3SimHits", "TriggerPad1SimHits" ]
 
 # ecal digi chain
-# ecal_digi   =eDigi.EcalDigiProducer('EcalDigis')
-# ecal_reco   =eDigi.EcalRecProducer('ecalRecon')
+# ecal_digi   =ecal_digi.EcalDigiProducer('EcalDigis')
+# ecal_reco   =ecal_digi.EcalRecProducer('ecalRecon')
 # ecal_veto   =vetos.EcalVetoProcessor('ecalVetoBDT')
 
 # #hcal digi chain
-# hcalDigi   =hDigi.HcalDigiProducer('hcal_digis')
-# hcalReco   =hDigi.HcalRecProducer('hcalRecon')
+# hcalDigi   =hcal_digi.HcalDigiProducer('hcal_digis')
+# hcalReco   =hcal_digi.HcalRecProducer('hcalRecon')
 # hcalVeto   =hcal.HcalVetoProcessor('hcalVeto')
 # #hcalDigi.inputCollName="HcalSimHits"
 #hcalDigi.input_pass_name=pass_name
@@ -154,7 +158,11 @@ e_count = ElectronCounter(
 # ts_digis_tag, ts_digis_up, ts_digis_down, ts_clusters_tag, ts_clusters_up,
 # ts_clusters_down, trig_scint_track, e_count ]
 # #hcal digi keeps crashing in config step
-p.sequence=[ sim, ts_digis_tag, ts_digis_up, ts_digis_down, ts_clusters_tag, ts_clusters_up, ts_clusters_down, trig_scint_track, e_count]
+p.sequence = [
+    sim, ts_digis_tag, ts_digis_up, ts_digis_down,
+    ts_clusters_tag, ts_clusters_up, ts_clusters_down,
+    trig_scint_track, e_count,
+]
 # p.sequence=[sim]
 
 p.output_files=[outname]
@@ -162,7 +170,8 @@ p.output_files=[outname]
 # default is 2 (WARNING); but then logFrequency is ignored. level 1 = INFO.
 p.term_log_level = 0
 
-#print this many events to stdout (independent on number of events, edge case: round-off
+# print this many events to stdout (independent on number of events,
+# edge case: round-off
 #effects when not divisible. so can go up by a factor 2 or so)
 log_events=20
 if p.max_events < log_events :

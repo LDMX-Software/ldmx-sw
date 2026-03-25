@@ -28,7 +28,7 @@ def make_bdt_path(bdt_name):
 
     Examples
     --------
-       visiblesVeto.bdt_file = makeBDTPath('visibles_v1')
+       visiblesVeto.bdt_file = make_bdt_path('visibles_v1')
     """
 
     full_path = "@CMAKE_INSTALL_PREFIX@/data/Hcal/" + bdt_name + ".onnx"

@@ -30,7 +30,7 @@ do_poisson_in_time : bool
     or deterministically set nOverlay=totalNumberOfInteractions-1
      (doPoissonIntime = false)
 do_poisson_out_of_time : bool
-    Specifies whether to sample a Poisson(totalNumberOfInteractions) 
+    Specifies whether to sample a Poisson(totalNumberOfInteractions)
     to obtain the number of events to put in
     bunches that are out-of-time with the sim event (doPoissonOutoftime=true),
     or deterministically set nOverlay=totalNumberOfInteractions-1
@@ -39,16 +39,16 @@ time_sigma : float
     The width of a single bunch in time (expressed in sigma) [ns]
 time_mean : float
     The average time, relative to the sim time, of the pileup events [ns].
-    Note that this should generally be 0. A non-zero number combined 
+    Note that this should generally be 0. A non-zero number combined
     with a 0 spread is useful for debugging.
 n_earlier : int
     The number of preceding bunches sampled for out-of-time pileup.
-    Furthermore, pileup will be uniformly distributed among this 
+    Furthermore, pileup will be uniformly distributed among this
     number of bunches m = -N_earlier, -N_earlier+1, ..., N_later
     while the sim event is always in bunch m = 0.
 n_later : int
     The number of following bunches sampled for out-of-time pileup.
-    Furthermore, pileup will be uniformly distributed among this 
+    Furthermore, pileup will be uniformly distributed among this
     number of bunches m = -N_earlier, -N_earlier+1, ..., N_later
     while the sim event is always in bunch m = 0.
 bunch_spacing : float
@@ -58,7 +58,9 @@ start_event_min : int
 start_event_max : int
     The max event number to start overlaying pileup events.
 track_id_encoding : int
-    The version number for the track ID bitwise encoding schema. Possible values range over [0, 15]. The version number is stored in bits 27-31 in the C++ int type.
+    The version number for the track ID bitwise encoding schema.
+    Possible values range over [0, 15].
+    The version number is stored in bits 27-31 in the C++ int type.
 """
 
 from LDMX.Framework import Processor, processor
@@ -73,8 +75,8 @@ class OverlayProducer(Processor):
     Examples
     --------
         from LDMX.Recon.overlay import OverlayProducer
-        p.sequence.append( OverlayProducer( 
-            overlay_filename='myPileupFileName.root' ) 
+        p.sequence.append( OverlayProducer(
+            overlay_filename='myPileupFileName.root' )
         )
     """
 

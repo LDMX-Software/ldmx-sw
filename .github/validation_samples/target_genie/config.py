@@ -13,9 +13,9 @@ from LDMX.SimCore import simulator as sim
 
 
 det = 'ldmx-det-v15-8gev'
-my_sim = sim.simulator(instance_name='sim')
-my_sim.setDetector(det, include_scoring_planes_minimal = True)
-genie = gen.genie(instance_name='genie_G18_02a_02_11b',
+my_sim = sim.Simulator(instance_name='sim')
+my_sim.set_detector(det, include_scoring_planes_minimal = True)
+genie = gen.Genie(instance_name='genie_G18_02a_02_11b',
                         energy = 8.0,
                         targets = [ 1000741820, 1000741830, 1000741840, 1000741860 ],
                         target_thickness = 0.3504,
@@ -100,7 +100,11 @@ from LDMX.Recon.simple_trigger import TriggerProcessor
 from LDMX.Trigger import trigger_energy_sums
 
 
-count = ElectronCounter(simulated_electron_number=1, instance_name='ElectronCounter', input_pass_name='')
+count = ElectronCounter(
+    simulated_electron_number=1,
+    instance_name='ElectronCounter',
+    input_pass_name='',
+)
 
 en_trigger = [
         ecal_trig_digi.EcalTrigPrimDigiProducer(),
@@ -125,7 +129,7 @@ en_trigger = [
 from LDMX.Recon import pf_reco
 
 
-pf_reco = pf_reco.pfTruthProducer()
+pf_reco = pf_reco.PFTruthProducer()
 
 # Load the dEdx mass estimator
 from LDMX.Recon import track_dedx_mass_estimator
@@ -193,7 +197,7 @@ almost_all_dqm = [
     + dqm.ecal_dqm
     + dqm.hcal_dqm
     + dqm.trigger_dqm
-    + dqm.dEdx_dqm
+    + dqm.dedx_dqm
     ]
 
 p.sequence.extend(*almost_all_dqm)

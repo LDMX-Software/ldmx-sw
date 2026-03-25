@@ -23,9 +23,11 @@ class HcalPedestalAnalyzer(Processor):
     filter_no_tot : bool
         Ignore any event for a channel where the TOT fired in any sample (default=true)
     low_cutoff : int
-        Ignore any event for a channel where any sample was below this level (default=10)
+        Ignore any event for a channel where any sample was below this level
+        (default=10)
     high_cutoff : int
-        Ignore any event for a channel where any sample was above this level (default=300)
+        Ignore any event for a channel where any sample was above this level
+        (default=300)
     comments : str
         Comments to put into the output CSV file for logging purposes
 

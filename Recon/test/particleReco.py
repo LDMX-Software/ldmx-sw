@@ -24,8 +24,8 @@ import LDMX.Hcal.hcal_geometry
 from LDMX.SimCore import simulator as sim
 
 
-my_sim = sim.simulator( instance_name="my_sim" )
-my_sim.setDetector( 'ldmx-det-v14' , include_scoring_planes_minimal = True )
+my_sim = sim.Simulator( instance_name="my_sim" )
+my_sim.set_detector( 'ldmx-det-v14' , include_scoring_planes_minimal = True )
 sim.beamSpotSmear = [20., 80., 0.]
 
 # Get a pre-written generator
@@ -34,7 +34,8 @@ from particleSources import cocktail_commands
 from LDMX.SimCore import generators as gen
 
 
-my_sim.generators.append( gen.gps( instance_name='my_gps' , init_commands=cocktail_commands) )
+my_sim.generators.append(
+    gen.Gps(instance_name='my_gps', init_commands=cocktail_commands))
 # add your configured simulation to the sequence
 p.sequence.append( my_sim )
 
@@ -67,7 +68,11 @@ from LDMX.Recon.electron_counter import ElectronCounter
 from LDMX.Recon.simple_trigger import TriggerProcessor
 
 
-count = ElectronCounter(simulated_electron_number=1, instance_name='ElectronCounter', input_pass_name='')
+count = ElectronCounter(
+    simulated_electron_number=1,
+    instance_name='ElectronCounter',
+    input_pass_name='',
+)
 
 from LDMX.Ecal import ecal_trig_digi
 from LDMX.Hcal import hcal_trig_digi
@@ -83,10 +88,10 @@ p.sequence.extend([
 if True: #False:
     p.set_compression(2, level=9) # LZMA
     from LDMX.Recon import pf_reco
-    ecal_pf = pfReco.pfEcalClusterProducer()
-    hcal_pf = pfReco.pfHcalClusterProducer()
-    track_pf = pfReco.pfTrackProducer()
-    truth_pf = pfReco.pfTruthProducer()
+    ecal_pf = pf_reco.PFEcalClusterProducer()
+    hcal_pf = pf_reco.PFHcalClusterProducer()
+    track_pf = pf_reco.PFTrackProducer()
+    truth_pf = pf_reco.PFTruthProducer()
 
 
     # configure clustering options
@@ -97,18 +102,18 @@ if True: #False:
     hcal_pf.cluster_hit_dist = 200. # mm
     hcal_pf.log_energy_weight = True
 
-    ecalPF_simple = pfReco.pfEcalClusterProducer()
-    ecalPF_simple.cluster_coll_name += "Simple"
-    ecalPF_simple.do_single_cluster = True
-    hcalPF_simple = pfReco.pfHcalClusterProducer()
-    hcalPF_simple.cluster_coll_name += "Simple"
-    hcalPF_simple.do_single_cluster = True
+    ecal_pf_simple = pf_reco.PFEcalClusterProducer()
+    ecal_pf_simple.cluster_coll_name += "Simple"
+    ecal_pf_simple.do_single_cluster = True
+    hcal_pf_simple = pf_reco.PFHcalClusterProducer()
+    hcal_pf_simple.cluster_coll_name += "Simple"
+    hcal_pf_simple.do_single_cluster = True
 
     p.sequence.extend([
         ecal_pf, hcal_pf, track_pf,
-        pfReco.pfProducer(),
+        pf_reco.PFProducer(),
         truth_pf,
-        #ecalPF_simple, hcalPF_simple
+        #ecal_pf_simple, hcal_pf_simple
     ])
 
 

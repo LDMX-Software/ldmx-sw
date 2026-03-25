@@ -40,7 +40,10 @@ my_sim.actions.clear()
 my_sim.actions.extend([
         filters.TaggerVetoFilter(threshold=2*3800.),
         # Only consider events where a hard brem occurs
-        filters.TargetBremFilter(recoil_max_p_threshold = 2*1500., brem_min_energy_threshold = 2*2500.),
+        filters.TargetBremFilter(
+            recoil_max_p_threshold=2*1500.,
+            brem_min_energy_threshold=2*2500.,
+        ),
         # Only consider events where a PN reaction happnes in the ECal
         filters.EcalProcessFilter(),
         # Tag all photo-nuclear tracks to persist them to the event.
@@ -126,8 +129,16 @@ hcal_reco = hcal_digi_and_reco.HcalRecProducer()
 
 # electron counter for trigger processor
 # first argument is number of electrons in simulation
-e_count = ElectronCounter(simulated_electron_number=1, instance_name="ElectronCounter", input_pass_name='')
-simple_trig = TriggerProcessor(instance_name="simple_trig", beam_energy=8000., input_pass=this_pass_name)
+e_count = ElectronCounter(
+    simulated_electron_number=1,
+    instance_name="ElectronCounter",
+    input_pass_name='',
+)
+simple_trig = TriggerProcessor(
+    instance_name="simple_trig",
+    beam_energy=8000.,
+    input_pass=this_pass_name,
+)
 
 # Load DQM
 from LDMX.DQM import dqm

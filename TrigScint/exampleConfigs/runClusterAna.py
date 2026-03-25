@@ -11,7 +11,7 @@ if len(sys.argv) > 1 :
     in_file=sys.argv[1]
 else :
     print("specify an input file")
-    exit
+    exit()
 
 p.input_files=[  in_file ]
 
