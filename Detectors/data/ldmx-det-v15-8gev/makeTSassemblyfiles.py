@@ -208,6 +208,7 @@ to the housing
 
       </loop>
 
+      <auxiliary auxtype="VisAttributes" auxvalue="InvisibleShowDau"/>
       <auxiliary auxtype="Region" auxvalue="{region_name[i]}" />
       <auxiliary auxtype="DetElem" auxvalue="TriggerPad"/>
 
