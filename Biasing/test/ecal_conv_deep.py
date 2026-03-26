@@ -30,10 +30,10 @@ p.output_files = ['events_pn_deep_test.root']
 p.histogram_file = 'hist_pn_deep_test.root'
 
 p.max_tries_per_event = 100
-p.max_events = 10 
+p.max_events = 10
 p.run = 20
 p.log_frequency = 100
-p.logger.term_level = 1 
+p.logger.term_level = 1
 
 p.sequence=[ mysim,
         ecal_digi.EcalDigiProducer(),
@@ -42,5 +42,7 @@ p.sequence=[ mysim,
         ]
 
 from LDMX.DQM import dqm
+
+
 p.sequence.append(dqm.SampleValidation())
 # p.sequence.extend(dqm.ecal_dqm)

@@ -20,6 +20,8 @@ mysim.description = "ECal Non-Fiducial Test Simulation"
 
 import LDMX.Ecal.digi as ecal_digi
 import LDMX.Ecal.vetos as ecal_vetos
+
+
 ecal_veto = ecal_vetos.EcalVetoProcessor(
         recoil_from_tracking = False)
 
