@@ -91,11 +91,11 @@ class TargetENFilter(UserAction):
 
     Parameters
     ----------
-    recoil_thresh : float
+    recoil_threshold : float
         Maximum energy recoil electron is allowed to have [MeV]
     """
 
-    recoil_thresh: float
+    recoil_threshold: float
 
 
 @user_action("biasing::TargetProcessFilter", "Biasing")

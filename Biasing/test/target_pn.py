@@ -10,10 +10,10 @@ from LDMX.SimCore import generators
 
 p.sequence = [
     target.photo_nuclear(
-        'ldmx-det-v14' ,
+        'ldmx-det-v15-8gev' ,
         generators.single_4gev_e_upstream_tagger()
         )
     ]
-p.max_events = 1000
+p.max_events = 10
 p.max_tries_per_event = 1000
 p.output_files = [ 'target_pn.root' ]

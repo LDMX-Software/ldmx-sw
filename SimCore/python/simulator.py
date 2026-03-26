@@ -36,6 +36,47 @@ class _EventToReSim:
     run: int = -1
 
 
+@processor("simcore::ReSimulator", "SimCore")
+class ReSimulator(Processor):
+    """Configuration for resimulating events from an existing file.
+
+    Created via Simulator.resimulate() to carry the same configuration
+    as the original simulation plus the re-simulation-specific parameters.
+
+    Attributes
+    ----------
+    resimulate_all_events : bool
+        If True, every event in the input file is re-simulated.
+    care_about_run : bool
+        If True, match both run *and* event number when selecting events.
+    events_to_resimulate : list of _EventToReSim
+        Specific events (and optionally runs) to re-simulate when
+        resimulate_all_events is False.
+    """
+
+    generators: list[PrimaryGenerator] = []
+    detector: str = ""
+    sensitive_detectors: list[SensitiveDetector] = []
+    description: str = ""
+    scoring_planes: str = ""
+    time_shift_primaries: bool = True
+    pre_init_commands: list[str] = []
+    post_init_commands: list[str] = []
+    actions: list[UserAction] = []
+    biasing_operators: list[XsecBiasingOperator] = []
+    logging_prefix: str = "GEANT4"
+    root_primary_gen_use_seed: bool = False
+    validate_detector: bool = False
+    verbosity: int = 0
+    dark_brem: DarkBrem = field(default_factory=DarkBrem)
+    photonuclear_model: PhotoNuclearModel = field(default_factory=BertiniModel)
+    kaon_parameters: KaonPhysics = field(default_factory=KaonPhysics)
+    fcp_physics: FCPPhysics = field(default_factory=FCPPhysics)
+    resimulate_all_events: bool = True
+    care_about_run: bool = False
+    events_to_resimulate: list[_EventToReSim] = []
+
+
 @processor("simcore::Simulator", "SimCore")
 class Simulator(Processor):
     """A instance of the simulation configuration
@@ -210,8 +251,13 @@ class Simulator(Processor):
             required.
 
         """
-        resimulator = self
-        resimulator.class_name = "simcore::ReSimulator"
+        resimulator = ReSimulator(self.instance_name)
+        # Copy all Simulator fields into the ReSimulator
+        _skip = {"class_name", "module_name", "instance_name", "histograms"}
+        for fname in self.__dataclass_fields__:
+            if fname not in _skip:
+                resimulator.__dict__[fname] = self.__dict__[fname]
+
         if which_events is None:
             resimulator.resimulate_all_events = True
             resimulator.care_about_run = False
@@ -243,7 +289,7 @@ class Simulator(Processor):
                         "which_events if more than one run is provided"
                     )
                 resimulator.care_about_run = True
-                resimulator.runs_to_resimulate = [
+                resimulator.events_to_resimulate = [
                     _EventToReSim(event, run)
                     for event, run in zip(which_events, which_runs, strict=True)
                 ]

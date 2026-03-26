@@ -32,12 +32,12 @@ from LDMX.Biasing import util
 p.output_files = ['events_pn_deep_fromTarget_test.root']
 p.histogram_file = 'hist_pn_deep_fromTarget_test.root'
 
-p.max_tries_per_event = 10000
+p.max_tries_per_event = 10
 p.max_events = 10
-p.total_events = 10
+#p.total_events = 1
 p.run = 20
 p.log_frequency = 100
-p.term_log_level = 0
+p.logger.term_level = 1
 
 p.sequence=[ mysim,
         ecal_digi.EcalDigiProducer(),

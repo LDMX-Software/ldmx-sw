@@ -36,7 +36,7 @@ p.max_tries_per_event = 10000
 p.max_events = 1000
 p.run = 20
 p.log_frequency = 100
-p.term_log_level = 0
+p.logger.term_level = 0
 
 p.sequence=[mysim.resimulate(which_events = [1]),
 #        mysim.actions.extend([filters.TargetBremFilter()]),

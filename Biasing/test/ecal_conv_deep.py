@@ -1,7 +1,7 @@
 from LDMX.Framework import ldmxcfg
 
 
-p=ldmxcfg.Process("v14_conv_deep")
+p=ldmxcfg.Process("v15_conv_deep")
 
 import LDMX.Ecal.ecal_hardcoded_conditions as ecal_conditions
 import LDMX.Hcal.hcal_hardcoded_conditions as hcal_conditions
@@ -11,7 +11,7 @@ from LDMX.Hcal import hcal_geometry
 from LDMX.SimCore import generators
 
 
-det = 'ldmx-det-v14-8gev'
+det = 'ldmx-det-v15-8gev'
 mysim = ecal.deep_photo_nuclear(det, generators.single_8gev_e_upstream_tagger(),
 bias_threshold = 5010., processes=['conv','phot)'], ecal_min_z = 400.)
 #mysim = ecal.deep_photo_nuclear(det, generators.single_8gev_e_upstream_tagger(),
@@ -29,11 +29,11 @@ from LDMX.Biasing import util
 p.output_files = ['events_pn_deep_test.root']
 p.histogram_file = 'hist_pn_deep_test.root'
 
-p.max_tries_per_event = 10000
-p.max_events = 10
+p.max_tries_per_event = 100
+p.max_events = 10 
 p.run = 20
 p.log_frequency = 100
-p.term_log_level = 0
+p.logger.term_level = 1 
 
 p.sequence=[ mysim,
         ecal_digi.EcalDigiProducer(),
@@ -42,7 +42,5 @@ p.sequence=[ mysim,
         ]
 
 from LDMX.DQM import dqm
-
-
 p.sequence.append(dqm.SampleValidation())
-p.sequence.extend(dqm.ecal_dqm)
+# p.sequence.extend(dqm.ecal_dqm)

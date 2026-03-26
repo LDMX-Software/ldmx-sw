@@ -37,5 +37,9 @@ jobs:
       shell: bash
 
     - name: Basic Tests for Functionality
-      run: just test 
+      run: just test
+      shell: bash
+
+    - name: Python Configuration Tests
+      run: just test-configs
       shell: bash
