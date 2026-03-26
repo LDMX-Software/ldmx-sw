@@ -1,7 +1,7 @@
 from LDMX.Framework import ldmxcfg
 
 
-p = ldmxcfg.Process('target_pn')
+p = ldmxcfg.Process("target_pn")
 import LDMX.Ecal.ecal_geometry
 import LDMX.Hcal.hcal_geometry
 from LDMX.Biasing import target
@@ -10,10 +10,9 @@ from LDMX.SimCore import generators
 
 p.sequence = [
     target.photo_nuclear(
-        'ldmx-det-v15-8gev' ,
-        generators.single_4gev_e_upstream_tagger()
-        )
-    ]
+        "ldmx-det-v15-8gev", generators.single_4gev_e_upstream_tagger()
+    )
+]
 p.max_events = 10
 p.max_tries_per_event = 1000
-p.output_files = [ 'target_pn.root' ]
+p.output_files = ["target_pn.root"]

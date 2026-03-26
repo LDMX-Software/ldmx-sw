@@ -110,7 +110,6 @@ class TargetProcessFilter(UserAction):
     def gamma_mu_mu():
         return TargetProcessFilter("GammaToMuPair")
 
-
     def aprime_to_fcp():
         return TargetProcessFilter("APrimeToFCPPair")
 
