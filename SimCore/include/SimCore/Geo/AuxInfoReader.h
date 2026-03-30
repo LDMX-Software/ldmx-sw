@@ -10,6 +10,7 @@
 
 //---< Framework >---//
 #include "Framework/Configure/Parameters.h"
+#include "Framework/Logger.h"
 
 namespace simcore::geo {
 
@@ -113,6 +114,11 @@ class AuxInfoReader {
    */
   std::string color_mode_;
   std::vector<std::string> universal_visattributes;
+
+  /**
+   * The logger
+   */
+  enableLogging("AuxInfoReader")
 };
 
 }  // namespace simcore::geo

@@ -107,13 +107,12 @@ void AuxInfoReader::assignAuxInfoToVolumes() {
                                              "' was not found!");
         }
       } else if (aux_type == "VisAttributes") {
-	//Same as when registering visattributes, must match mode (is in use)
+	//Same as when registering visattributes, must match mode (if in use)
 	auto match = std::find(universal_visattributes.begin(),universal_visattributes.end(),aux_val);
-	if(match==universal_visattributes.end() && color_mode_!="" && aux_val.find(color_mode_)==std::string::npos)
-	  {
-	    std::cerr << "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" << aux_val <<std::endl;
+	if(match==universal_visattributes.end() && color_mode_!="" && aux_val.find(color_mode_)==std::string::npos){
+	  
 	  continue;
-	  }
+	}      
         const G4String& vis_name = aux_val;
         G4VisAttributes* vis_attributes =
             VisAttributesStore::getInstance()->getVisAttributes(vis_name);
@@ -281,11 +280,8 @@ void AuxInfoReader::selectColorMode(const G4String& mode) {
 
   if(match == valid_modes.end())
     {
-      std::cerr << "Color mode setting doesn't match any available modes!"
-		<< std::endl << "Currently available modes:" << std::endl;
-      for(auto& valid_mode : valid_modes)
-	std::cerr << valid_mode << std::endl;
-      exit(1);
+      EXCEPTION_RAISE("InvalidMode",
+		      "Color mode setting " + mode + " doesn't match any available modes!");
     }
 
   //If the input matches a valid mode (doesn't matter which one), proceed
@@ -309,10 +305,12 @@ void AuxInfoReader::createVisAttributes(const G4String& name,
 
   //If a visattribute is not universal, a color mode is set, and the visattribute
   //doesn't match the current mode, don't register it
-  if(match==universal_visattributes.end() && color_mode_!="" && name.find(color_mode_)==std::string::npos)
+  if(match==universal_visattributes.end() && color_mode_!="" && name.find(color_mode_)==std::string::npos) {
+    ldmx_log(debug) << "VisAttribute " << name << " doesn't match current mode. Skipping...";
     return;
   //Note that if color mode is not set, the last visattributes
   //defined for each volume will be the active ones
+  }
   
   for (const auto& aux_info : *auxInfoList) {
     G4String aux_type = aux_info.type;

@@ -143,7 +143,7 @@
     </auxiliary>
 
     <!--Set color mode for visualization (optional)-->
-    <auxiliary auxtype="ColorMode" auxvalue="Region"/>
+    <auxiliary auxtype="ColorMode" auxvalue="Material"/>
     
     &visattributes;
     
