@@ -113,7 +113,7 @@ class AuxInfoReader {
    * Color mode for visattributes.
    */
   std::string color_mode_;
-  std::vector<std::string> universal_visattributes;
+  std::vector<std::string> universal_visattributes_;
 
   /**
    * The logger
