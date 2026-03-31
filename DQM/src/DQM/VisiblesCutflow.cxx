@@ -93,11 +93,14 @@ void VisiblesCutflow::analyze(const framework::Event &event) {
         event.getCollection<ldmx::Track>(track_collection_, track_pass_name_)};
     for (auto &track : recoil_tracks) {
       // need to figure out how to best isolate candidate electron track
-      if (track.q() == 1 && track.getNhits() == 5) {
-        gamma_x0 = track.getPosition();
-        gamma_p[0] = -1. * track.getMomentum()[0];
-        gamma_p[1] = -1. * track.getMomentum()[1];
-        gamma_p[2] = 8000. - track.getMomentum()[2];
+      auto trk_pos = track.getPositionAtTarget();
+      auto trk_mom = track.getMomentumAtTarget();
+      if (track.getCharge() == 1 && track.getNhits() == 5 &&
+          trk_pos.size() == 3 && trk_mom.size() == 3) {
+        gamma_x0 = trk_pos;
+        gamma_p[0] = -1. * trk_mom[0];
+        gamma_p[1] = -1. * trk_mom[1];
+        gamma_p[2] = 8000. - trk_mom[2];
       }
     }
   } else {

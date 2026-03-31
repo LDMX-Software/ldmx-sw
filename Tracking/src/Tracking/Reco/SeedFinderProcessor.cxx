@@ -88,7 +88,7 @@ void SeedFinderProcessor::produce(framework::Event& event) {
   // tg is unused, should it be? FIXME
   // const auto& tg{geometry()};
   auto start = std::chrono::high_resolution_clock::now();
-  ldmx::Tracks seed_tracks;
+  std::vector<ldmx::Track> seed_tracks;
 
   nevents_++;
 
@@ -115,19 +115,21 @@ void SeedFinderProcessor::produce(framework::Event& event) {
   ldmx::Measurements target_pseudo_meas;
 
   for (auto tagtrk : tagger_tracks) {
-    auto ts = tagtrk.getTrackState(ldmx::TrackStateType::AtTarget);
+    // For Track, the perigee parameters are stored at the target surface.
+    // Use d0/z0 as local position and the perigee covariance for the
+    // pseudo measurement. Only create the pseudo measurement if cov is
+    // available.
 
     // The covariance matrix passed to the pseudo measurement is considered as
     // uncorrelated. This is an approx that considers that loc-u and loc-v from
     // the track have small correlation.
 
-    if (ts.has_value()) {
-      auto track_state = ts.value();
-
+    const auto& perigee_cov = tagtrk.getPerigeeCov();
+    if (!perigee_cov.empty()) {
       Acts::BoundSquareMatrix cov =
-          tracking::sim::utils::unpackCov(track_state.cov_);
-      double locu = track_state.params_[0];
-      double locv = track_state.params_[1];
+          tracking::sim::utils::unpackCov(perigee_cov);
+      double locu = tagtrk.getD0();
+      double locv = tagtrk.getZ0();
       double covuu =
           cov(Acts::BoundIndices::eBoundLoc0, Acts::BoundIndices::eBoundLoc0);
       double covvv =
@@ -374,12 +376,14 @@ ldmx::Track SeedFinderProcessor::seedTracker(
   ldmx_log(debug) << "...now putting together the seed track ...";
 
   ldmx::Track trk = ldmx::Track();
-  trk.setPerigeeLocation(perigee_location(0), perigee_location(1),
-                         perigee_location(2));
+  Acts::Vector3 perigee_ldmx =
+      tracking::sim::utils::acts2Ldmx(perigee_location);
+  trk.setPerigeeLocation(perigee_ldmx(0), perigee_ldmx(1), perigee_ldmx(2));
   trk.setChi2(0.);
   trk.setNhits(5);
   trk.setNdf(0);
   trk.setNsharedHits(0);
+  trk.setCharge(q < 0 ? -1 : 1);
   std::vector<double> v_seed_params(
       (bound_params).data(),
       bound_params.data() + bound_params.rows() * bound_params.cols());
@@ -387,14 +391,6 @@ ldmx::Track SeedFinderProcessor::seedTracker(
   tracking::sim::utils::flatCov(bound_cov, v_seed_cov);
   trk.setPerigeeParameters(v_seed_params);
   trk.setPerigeeCov(v_seed_cov);
-
-  // Store the global position and momentum at the perigee
-  // TODO:: The eFreePos0 is wrong due to the linear intersection.
-  // YZ are ~ correct
-  trk.setPosition(seed_free[Acts::eFreePos0], seed_free[Acts::eFreePos1],
-                  seed_free[Acts::eFreePos2]);
-  trk.setMomentum(seed_free[Acts::eFreeDir0], seed_free[Acts::eFreeDir1],
-                  seed_free[Acts::eFreeDir2]);
 
   ldmx_log(debug)
       << "...making the ParticleHypothesis ...assume electron for now";
@@ -461,7 +457,7 @@ bool SeedFinderProcessor::groupStrips(
 // for each of those This will reshuffle all points. (issue?) Will sort the
 // meas_for_seed vector
 
-void SeedFinderProcessor::findSeedsFromMap(ldmx::Tracks& seeds,
+void SeedFinderProcessor::findSeedsFromMap(std::vector<ldmx::Track>& seeds,
                                            const ldmx::Measurements& pmeas) {
   std::map<int, std::vector<const ldmx::Measurement*>>::iterator groups_iter =
       groups_map_.begin();

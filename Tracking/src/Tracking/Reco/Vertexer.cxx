@@ -136,10 +136,11 @@ void Vertexer::produce(framework::Event& event) {
 
   // TODO:: The perigee surface should be common between all tracks.
 
+  Acts::Vector3 perigee_acts = tracking::sim::utils::ldmx2Acts(Acts::Vector3(
+      tracks_1.front().getPerigeeX(), tracks_1.front().getPerigeeY(),
+      tracks_1.front().getPerigeeZ()));
   std::shared_ptr<Acts::PerigeeSurface> perigee_surface =
-      Acts::Surface::makeShared<Acts::PerigeeSurface>(Acts::Vector3(
-          tracks_1.front().getPerigeeX(), tracks_1.front().getPerigeeY(),
-          tracks_1.front().getPerigeeZ()));
+      Acts::Surface::makeShared<Acts::PerigeeSurface>(perigee_acts);
 
   // Monitoring of tagger and recoil tracks
   taggerRecoilMonitoring(tracks_1, tracks_2);
@@ -238,8 +239,8 @@ void Vertexer::taggerRecoilMonitoring(
   // double t_theta, r_theta;
   // double t_z0, r_z0;
 
-  t_p = t_trk.q() / t_trk.getQoP();
-  r_p = r_trk.q() / r_trk.getQoP();
+  t_p = t_trk.getCharge() / t_trk.getQoP();
+  r_p = r_trk.getCharge() / r_trk.getQoP();
 
   h_delta_d0_->Fill(t_trk.getD0() - r_trk.getD0());
   h_delta_z0_->Fill(t_trk.getZ0() - r_trk.getZ0());

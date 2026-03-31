@@ -169,10 +169,10 @@ class TrackingRecoDQM(Processor):
         self.histogram("z0", "z0 [mm]", nbins, z0min, z0max)
         self.histogram("phi", "#phi [rad]", nbins, phimin, phimax)
         self.histogram("theta", "#theta [rad]", nbins, thetamin, thetamax)
-        self.histogram("p", "P [GeV]", nbins, 0, pmax)
+        self.histogram("p", "P [MeV]", nbins, 0, pmax * 1000)
         self.histogram("qop", "qOverP [GeV^{-1}]", nbins, qopmin, qopmax)
-        self.histogram("pt_bending", "pT bending plane [GeV]", nbins, 0.0, pmax)
-        self.histogram("pt_beam", "pT beam axis [GeV]", nbins, 0, 0.5)
+        self.histogram("pt_bending", "pT bending plane [MeV]", nbins, 0.0, pmax * 1000)
+        self.histogram("pt_beam", "pT beam axis [MeV]", nbins, 0, 500)
         self.histogram("nHits", "nHits", 15, 0, 15)
         self.histogram("layers_hit", "Num layers hit", 15, 0, 15)
         self.histogram("measurement_dedx", "Measurement dE/dx (MeV/mm)", 60, 0.0, 0.6)
@@ -181,22 +181,22 @@ class TrackingRecoDQM(Processor):
         self.histogram("Chi2_per_ndf", "Chi2/ndf", nbins, 0, 10)
         self.histogram("nShared", "nShared", 5, 0, 5)
         self.histogram("nHoles", "nHoles", 5, 0, 5)
-        self.histogram("px", "pX [GeV]", nbins, 0.0, pmax)
-        self.histogram("py", "pY [GeV]", nbins, -pmax / 20.0, pmax / 20.0)
-        self.histogram("pz", "pZ [GeV]", nbins, -pmax / 20.0, pmax / 20.0)
+        self.histogram("px", "pX [MeV]", nbins, -pmax * 1000 / 40.0, pmax * 1000 / 40.0)
+        self.histogram("py", "pY [MeV]", nbins, -pmax * 1000 / 40.0, pmax * 1000 / 40.0)
+        self.histogram("pz", "pZ [MeV]", nbins, 0.0, pmax * 1000)
         self.histogram("d0_err", "#sigma_{d0} [mm]", nbins, 0, 0.2)
         self.histogram("z0_err", "#sigma_{z0} [mm]", nbins, 0, 0.7)
         self.histogram("phi_err", "#sigma_{#phi} [rad]", nbins, 0, 0.04)
         self.histogram("theta_err", "#sigma_{#theta} [rad]", nbins, 0, 0.06)
         self.histogram("qop_err", "#sigma_{qOp} [GeV^{-1}]", nbins, 0, 1)
-        self.histogram("p_err", "#sigma_{p} [GeV]", nbins, 0, 1)
+        self.histogram("p_err", "#sigma_{p} [MeV]", nbins, 0, 1000)
 
         self.histogram(
             "d0_err_vs_p",
-            "p [GeV]",
+            "p [MeV]",
             nbins,
             0,
-            pmax,
+            pmax * 1000,
             "#sigma_{d0} [mm]",
             nbins,
             0,
@@ -204,10 +204,10 @@ class TrackingRecoDQM(Processor):
         )
         self.histogram(
             "z0_err_vs_p",
-            "p [GeV]",
+            "p [MeV]",
             nbins,
             0,
-            pmax,
+            pmax * 1000,
             "#sigma_{z0} [mm]",
             nbins,
             0,
@@ -215,65 +215,65 @@ class TrackingRecoDQM(Processor):
         )
         self.histogram(
             "p_err_vs_p",
-            "p [GeV]",
+            "p [MeV]",
             nbins,
             0,
-            pmax,
-            "#sigma_{p} [GeV]",
+            pmax * 1000,
+            "#sigma_{p} [MeV]",
             nbins,
             0,
-            1,
+            1000,
         )
         self.histogram(
             "p_err_vs_p_8hits",
-            "p [GeV]",
+            "p [MeV]",
             nbins,
             0,
-            pmax,
-            "#sigma_{p} [GeV]",
+            pmax * 1000,
+            "#sigma_{p} [MeV]",
             nbins,
             0,
-            1,
+            1000,
         )
         self.histogram(
             "p_err_vs_p_9hits",
-            "p [GeV]",
+            "p [MeV]",
             nbins,
             0,
-            pmax,
-            "#sigma_{p} [GeV]",
+            pmax * 1000,
+            "#sigma_{p} [MeV]",
             nbins,
             0,
-            1,
+            1000,
         )
         self.histogram(
             "p_err_vs_p_10hits",
-            "p [GeV]",
+            "p [MeV]",
             nbins,
             0,
-            pmax,
-            "#sigma_{p} [GeV]",
+            pmax * 1000,
+            "#sigma_{p} [MeV]",
             nbins,
             0,
-            1,
+            1000,
         )
         self.histogram(
             "res_p_vs_p",
-            "p [GeV]",
+            "p [MeV]",
             nbins,
             0,
-            pmax,
-            "res_{p} [GeV]",
+            pmax * 1000,
+            "res_{p} [MeV]",
             nbins,
-            -3,
-            3,
+            -3000,
+            3000,
         )
         self.histogram(
             "res_qop_vs_p",
-            "p [GeV]",
+            "p [MeV]",
             nbins,
             0,
-            pmax,
+            pmax * 1000,
             "res_{qop} [GeV^{-1}]",
             nbins,
             -0.5,
@@ -281,10 +281,10 @@ class TrackingRecoDQM(Processor):
         )
         self.histogram(
             "res_d0_vs_p",
-            "p [GeV]",
+            "p [MeV]",
             nbins,
             0,
-            pmax,
+            pmax * 1000,
             "res_{d0} [mm]",
             nbins,
             -0.05,
@@ -292,10 +292,10 @@ class TrackingRecoDQM(Processor):
         )
         self.histogram(
             "res_z0_vs_p",
-            "p [GeV]",
+            "p [MeV]",
             nbins,
             0,
-            pmax,
+            pmax * 1000,
             "res_{z0} [mm]",
             nbins,
             -0.5,
@@ -303,10 +303,10 @@ class TrackingRecoDQM(Processor):
         )
         self.histogram(
             "res_phi_vs_p",
-            "p [GeV]",
+            "p [MeV]",
             nbins,
             0,
-            pmax,
+            pmax * 1000,
             "res_{#phi}",
             nbins,
             -0.005,
@@ -314,10 +314,10 @@ class TrackingRecoDQM(Processor):
         )
         self.histogram(
             "res_theta_vs_p",
-            "p [GeV]",
+            "p [MeV]",
             nbins,
             0,
-            pmax,
+            pmax * 1000,
             "res_{#theta}",
             nbins,
             -0.01,
@@ -325,43 +325,43 @@ class TrackingRecoDQM(Processor):
         )
         self.histogram(
             "res_p_vs_p_8hits",
-            "p [GeV]",
+            "p [MeV]",
             nbins,
             0,
-            pmax,
-            "res_{p} [GeV]",
+            pmax * 1000,
+            "res_{p} [MeV]",
             nbins,
-            -3,
-            3,
+            -3000,
+            3000,
         )
         self.histogram(
             "res_p_vs_p_9hits",
-            "p [GeV]",
+            "p [MeV]",
             nbins,
             0,
-            pmax,
-            "res_{p} [GeV]",
+            pmax * 1000,
+            "res_{p} [MeV]",
             nbins,
-            -3,
-            3,
+            -3000,
+            3000,
         )
         self.histogram(
             "res_p_vs_p_10hits",
-            "p [GeV]",
+            "p [MeV]",
             nbins,
             0,
-            pmax,
-            "res_{p} [GeV]",
+            pmax * 1000,
+            "res_{p} [MeV]",
             nbins,
-            -3,
-            3,
+            -3000,
+            3000,
         )
         self.histogram(
             "pull_qop_vs_p",
-            "p [GeV]",
+            "p [MeV]",
             nbins,
             0,
-            pmax,
+            pmax * 1000,
             "pull_{qop}",
             nbins,
             -5,
@@ -369,10 +369,10 @@ class TrackingRecoDQM(Processor):
         )
         self.histogram(
             "pull_d0_vs_p",
-            "p [GeV]",
+            "p [MeV]",
             nbins,
             0,
-            pmax,
+            pmax * 1000,
             "pull_{d0}",
             nbins,
             -5,
@@ -380,10 +380,10 @@ class TrackingRecoDQM(Processor):
         )
         self.histogram(
             "pull_z0_vs_p",
-            "p [GeV]",
+            "p [MeV]",
             nbins,
             0,
-            pmax,
+            pmax * 1000,
             "pull_{z0}",
             nbins,
             -5,
@@ -391,10 +391,10 @@ class TrackingRecoDQM(Processor):
         )
         self.histogram(
             "pull_phi_vs_p",
-            "p [GeV]",
+            "p [MeV]",
             nbins,
             0,
-            pmax,
+            pmax * 1000,
             "pull_{#phi}",
             nbins,
             -5,
@@ -402,10 +402,10 @@ class TrackingRecoDQM(Processor):
         )
         self.histogram(
             "pull_theta_vs_p",
-            "p [GeV]",
+            "p [MeV]",
             nbins,
             0,
-            pmax,
+            pmax * 1000,
             "pull_{#theta}",
             nbins,
             -5,
@@ -413,14 +413,14 @@ class TrackingRecoDQM(Processor):
         )
         self.histogram(
             "res_pt_beam_vs_p",
-            "truth p [GeV]",
+            "truth p [MeV]",
             nbins,
             0,
-            pmax,
-            "res_{pt} beam",
+            pmax * 1000,
+            "res_{pt} beam [MeV]",
             nbins,
-            -0.5,
-            0.5,
+            -500,
+            500,
         )
 
         if self.do_truth:
@@ -432,7 +432,7 @@ class TrackingRecoDQM(Processor):
             self.histogram("truth_phi", "truth #phi", nbins, phimin, phimax)
             self.histogram("truth_theta", "truth #theta", nbins, thetamin, thetamax)
             self.histogram("truth_qop", "truth q/p [GeV^{-1}]", nbins, qopmin, qopmax)
-            self.histogram("truth_p", "truth p [GeV]", nbins, 0.0, pmax)
+            self.histogram("truth_p", "truth p [MeV]", nbins, 0.0, pmax * 1000)
             self.histogram("truth_beam_angle", "angle wrt beam axis", 20, 0, 2)
             self.histogram("truth_PID", "Particles", 8, -4, 4)
             self.histogram(
@@ -442,21 +442,21 @@ class TrackingRecoDQM(Processor):
                 0.0,
                 0.6,
             )
-            self.histogram("truth_kminus_p", "truth p", nbins, 0.0, pmax)
-            self.histogram("truth_kplus_p", "truth p", nbins, 0.0, pmax)
-            self.histogram("truth_piminus_p", "truth p", nbins, 0.0, pmax)
-            self.histogram("truth_piplus_p", "truth p", nbins, 0.0, pmax)
-            self.histogram("truth_electron_p", "truth p", nbins, 0.0, pmax)
-            self.histogram("truth_positron_p", "truth p", nbins, 0.0, pmax)
-            self.histogram("truth_proton_p", "truth p", nbins, 0.0, pmax)
+            self.histogram("truth_kminus_p", "truth p [MeV]", nbins, 0.0, pmax * 1000)
+            self.histogram("truth_kplus_p", "truth p [MeV]", nbins, 0.0, pmax * 1000)
+            self.histogram("truth_piminus_p", "truth p [MeV]", nbins, 0.0, pmax * 1000)
+            self.histogram("truth_piplus_p", "truth p [MeV]", nbins, 0.0, pmax * 1000)
+            self.histogram("truth_electron_p", "truth p [MeV]", nbins, 0.0, pmax * 1000)
+            self.histogram("truth_positron_p", "truth p [MeV]", nbins, 0.0, pmax * 1000)
+            self.histogram("truth_proton_p", "truth p [MeV]", nbins, 0.0, pmax * 1000)
 
             # Residuals
             self.histogram("res_d0", "res d0 [mm]", nbins, -0.2, 0.2)
             self.histogram("res_z0", "res z0 [mm]", nbins, -0.6, 0.6)
             self.histogram("res_phi", "res #phi", nbins, -0.02, 0.02)
             self.histogram("res_theta", "res #theta", nbins, -0.04, 0.04)
-            self.histogram("res_p", "res p [GeV]", nbins, -1, 1)
-            self.histogram("res_pt_beam", "res pt beam [GeV]", nbins, -1, 1)
+            self.histogram("res_p", "res p [MeV]", nbins, -1000, 1000)
+            self.histogram("res_pt_beam", "res pt beam [MeV]", nbins, -1000, 1000)
             self.histogram("res_qop", "res q/p [GeV^{-1}]", nbins, -1, 1)
 
             # Pulls
@@ -478,7 +478,7 @@ class TrackingRecoDQM(Processor):
                 "match_theta", "reco match #theta", nbins, thetamin, thetamax
             )
             self.histogram("match_qop", "truth q/p [GeV^{-1}]", nbins, qopmin, qopmax)
-            self.histogram("match_p", "truth p [GeV]", nbins, 0, pmax)
+            self.histogram("match_p", "truth p [MeV]", nbins, 0, pmax * 1000)
             self.histogram("match_beam_angle", "angle wrt beam axis", 20, 0, 2)
             self.histogram("match_PID", "Particles", 8, -4, 4)
             self.histogram("match_nHits", "match nHits", 15, 0, 15)
@@ -490,13 +490,13 @@ class TrackingRecoDQM(Processor):
                 0.6,
             )
             self.histogram("match_layers_hit", "match layers hit", 15, 0, 15)
-            self.histogram("match_kminus_p", "truth p", nbins, 0.0, pmax)
-            self.histogram("match_kplus_p", "truth p", nbins, 0.0, pmax)
-            self.histogram("match_piminus_p", "truth p", nbins, 0.0, pmax)
-            self.histogram("match_piplus_p", "truth p", nbins, 0.0, pmax)
-            self.histogram("match_electron_p", "truth p", nbins, 0.0, pmax)
-            self.histogram("match_positron_p", "truth p", nbins, 0.0, pmax)
-            self.histogram("match_proton_p", "truth p", nbins, 0.0, pmax)
+            self.histogram("match_kminus_p", "truth p [MeV]", nbins, 0.0, pmax * 1000)
+            self.histogram("match_kplus_p", "truth p [MeV]", nbins, 0.0, pmax * 1000)
+            self.histogram("match_piminus_p", "truth p [MeV]", nbins, 0.0, pmax * 1000)
+            self.histogram("match_piplus_p", "truth p [MeV]", nbins, 0.0, pmax * 1000)
+            self.histogram("match_electron_p", "truth p [MeV]", nbins, 0.0, pmax * 1000)
+            self.histogram("match_positron_p", "truth p [MeV]", nbins, 0.0, pmax * 1000)
+            self.histogram("match_proton_p", "truth p [MeV]", nbins, 0.0, pmax * 1000)
 
             chi2_fake_max = 500
             chi2_ndf_fake_max = 50
@@ -506,7 +506,7 @@ class TrackingRecoDQM(Processor):
             self.histogram("fake_z0", "fake z0 [mm]", nbins, z0min, z0max)
             self.histogram("fake_phi", "fake #phi", nbins, phimin, phimax)
             self.histogram("fake_theta", "fake #theta", nbins, thetamin, thetamax)
-            self.histogram("fake_p", "fake p [GeV]", nbins, 0, pmax)
+            self.histogram("fake_p", "fake p [MeV]", nbins, 0, pmax * 1000)
             self.histogram("fake_qop", "fake qOverP [GeV^{-1}]", nbins, -40, 40)
             self.histogram("fake_nHits", "fake nHits", 15, 0, 15)
             self.histogram("fake_layers_hit", "fake layers hit", 15, 0, 15)
@@ -529,7 +529,7 @@ class TrackingRecoDQM(Processor):
             self.histogram("dup_z0", "dup z0 [mm]", 100, z0min, z0max)
             self.histogram("dup_phi", "dup #phi", 100, phimin, phimax)
             self.histogram("dup_theta", "dup #theta", 100, thetamin, thetamax)
-            self.histogram("dup_p", "dup p [GeV]", 100, 0, pmax)
+            self.histogram("dup_p", "dup p [MeV]", 100, 0, pmax * 1000)
             self.histogram("dup_qop", "dup qOverP [GeV^{-1}]", nbins, qopmin, qopmax)
             self.histogram("dup_nHits", "dup nHits", 15, 0, 15)
             self.histogram("dup_layers_hit", "dup layers hit", 15, 0, 15)
@@ -562,29 +562,29 @@ class TrackingRecoDQM(Processor):
                     50,
                 )
                 self.histogram(
-                    track_state + "_sp_hit_X",
-                    track_state + "_sp_hit_X [mm]",
+                    track_state + "_truth_loc0",
+                    track_state + "_truth_loc0 [mm]",
                     200,
                     -50,
                     50,
                 )
                 self.histogram(
-                    track_state + "_sp_hit_Y",
-                    track_state + "_sp_hit_Y [mm]",
+                    track_state + "_truth_loc1",
+                    track_state + "_truth_loc1 [mm]",
                     200,
                     -50,
                     50,
                 )
                 self.histogram(
-                    "trk_" + track_state + "_loc0-sp_hit_X",
-                    track_state + "_diff loc0 and hit_X [mm]",
+                    "trk_" + track_state + "_loc0-truth_" + track_state + "_loc0",
+                    track_state + "_diff loc0 and truth_loc0 [mm]",
                     200,
                     -0.2,
                     0.2,
                 )
                 self.histogram(
-                    "trk_" + track_state + "_loc1-sp_hit_Y",
-                    track_state + "_diff loc1 and hit_Y [mm]",
+                    "trk_" + track_state + "_loc1-truth_" + track_state + "_loc1",
+                    track_state + "_diff loc1 and truth_loc1 [mm]",
                     200,
                     -5,
                     5,
@@ -627,10 +627,10 @@ class TrackingRecoDQM(Processor):
                 )
                 self.histogram(
                     track_state + "_res_loc0-vs-trk_p",
-                    "trk_p",
+                    "trk_p [MeV]",
                     200,
                     0,
-                    5,
+                    10000,
                     track_state + "_res_loc0 [mm]",
                     100,
                     -0.2,
@@ -638,10 +638,10 @@ class TrackingRecoDQM(Processor):
                 )
                 self.histogram(
                     track_state + "_res_loc1-vs-trk_p",
-                    "trk_p",
+                    "trk_p [MeV]",
                     200,
                     0,
-                    5,
+                    10000,
                     track_state + "_res_loc1 [mm]",
                     100,
                     -5,
@@ -671,10 +671,10 @@ class TrackingRecoDQM(Processor):
                 )
                 self.histogram(
                     track_state + "_pulls_loc0-vs-trk_p",
-                    "trk_p",
+                    "trk_p [MeV]",
                     200,
                     0,
-                    5,
+                    10000,
                     track_state + "_pulls_loc0 [mm]",
                     100,
                     -3,
@@ -682,10 +682,10 @@ class TrackingRecoDQM(Processor):
                 )
                 self.histogram(
                     track_state + "_pulls_loc1-vs-trk_p",
-                    "trk_p",
+                    "trk_p [MeV]",
                     200,
                     0,
-                    5,
+                    10000,
                     track_state + "_pulls_loc1 [mm]",
                     100,
                     -3,
