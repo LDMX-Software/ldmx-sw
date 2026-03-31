@@ -108,9 +108,9 @@ void AuxInfoReader::assignAuxInfoToVolumes() {
         }
       } else if (aux_type == "VisAttributes") {
         // Same as when registering visattributes, must match mode (if in use)
-        auto match = std::find(universal_visattributes.begin(),
-                               universal_visattributes.end(), aux_val);
-        if (match == universal_visattributes.end() && color_mode_ != "" &&
+        auto match = std::find(universal_visattributes_.begin(),
+                               universal_visattributes_.end(), aux_val);
+        if (match == universal_visattributes_.end() && color_mode_ != "" &&
             aux_val.find(color_mode_) == std::string::npos) {
           continue;
         }
@@ -299,15 +299,15 @@ void AuxInfoReader::createVisAttributes(const G4String& name,
   G4VisAttributes::LineStyle line_style = G4VisAttributes::unbroken;
 
   // There are some visattributes which should be accepted regardless of mode
-  universal_visattributes = {"InvisibleNoDau", "InvisibleShowDau", "NoDau",
+  universal_visattributes_ = {"InvisibleNoDau", "InvisibleShowDau", "NoDau",
                              "GrayWireFrame",  "BlueWireFrame",    "BlueSolid",
                              "Invisible"};
-  auto match = std::find(universal_visattributes.begin(),
-                         universal_visattributes.end(), name);
+  auto match = std::find(universal_visattributes_.begin(),
+                         universal_visattributes_.end(), name);
 
   // If a visattribute is not universal, a color mode is set, and the
   // visattribute doesn't match the current mode, don't register it
-  if (match == universal_visattributes.end() && color_mode_ != "" &&
+  if (match == universal_visattributes_.end() && color_mode_ != "" &&
       name.find(color_mode_) == std::string::npos) {
     ldmx_log(debug) << "VisAttribute " << name
                     << " doesn't match current mode. Skipping...";
