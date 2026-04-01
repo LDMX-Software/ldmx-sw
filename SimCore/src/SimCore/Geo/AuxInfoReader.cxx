@@ -301,7 +301,7 @@ void AuxInfoReader::createVisAttributes(const G4String& name,
   // There are some visattributes which should be accepted regardless of mode
   universal_visattributes_ = {"InvisibleNoDau", "InvisibleShowDau", "NoDau",
                               "GrayWireFrame",  "BlueWireFrame",    "BlueSolid",
-                              "Invisible"};
+                              "Invisible", "SpVis"};
   auto match = std::find(universal_visattributes_.begin(),
                          universal_visattributes_.end(), name);
 

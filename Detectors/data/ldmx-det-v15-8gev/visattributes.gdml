@@ -98,7 +98,7 @@ perfect color.
       <auxiliary auxtype="Visible" auxvalue="true"/>
       <auxiliary auxtype="LineWidth" auxvalue="1.0"/>
     </auxiliary>
-    <auxiliary auxtype="VisAttributes" auxvalue="SpRegionVis">
+    <auxiliary auxtype="VisAttributes" auxvalue="SpVis">
       <auxiliary auxtype="R" auxvalue="0.0"/>
       <auxiliary auxtype="G" auxvalue="0.0"/>
       <auxiliary auxtype="B" auxvalue="1.0"/>

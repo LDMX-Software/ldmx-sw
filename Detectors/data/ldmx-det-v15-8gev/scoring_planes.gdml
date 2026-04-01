@@ -182,7 +182,7 @@
         <materialref ref="Vacuum" />
         <solidref ref="sp_target_box" />
         <auxiliary auxtype="VisAttributes" auxvalue="InvisibleNoDau"/>
-        <auxiliary auxtype="VisAttributes" auxvalue="SpRegionVis"/>
+        <auxiliary auxtype="VisAttributes" auxvalue="SpVis"/>
       </volume> 
     </loop>
 
@@ -196,7 +196,7 @@
         <materialref ref="Vacuum" />
         <solidref ref="sp_trigscint_box" />
         <auxiliary auxtype="VisAttributes" auxvalue="InvisibleNoDau"/>
-        <auxiliary auxtype="VisAttributes" auxvalue="SpRegionVis"/>
+        <auxiliary auxtype="VisAttributes" auxvalue="SpVis"/>
       </volume> 
     </loop>
 
@@ -206,7 +206,7 @@
         <materialref ref="Vacuum" />
         <solidref ref="sp_recoil_box" />
         <auxiliary auxtype="VisAttributes" auxvalue="InvisibleNoDau"/>
-        <auxiliary auxtype="VisAttributes" auxvalue="SpRegionVis"/>
+        <auxiliary auxtype="VisAttributes" auxvalue="SpVis"/>
       </volume> 
     </loop> 
     
@@ -215,13 +215,13 @@
         <materialref ref="Vacuum" />
         <solidref ref="sp_magnet_gap_top_bot_box" />
         <auxiliary auxtype="VisAttributes" auxvalue="InvisibleNoDau"/>
-        <auxiliary auxtype="VisAttributes" auxvalue="SpRegionVis"/>
+        <auxiliary auxtype="VisAttributes" auxvalue="SpVis"/>
       </volume>
       <volume name="sp_magnet_gap_left_right"> 
         <materialref ref="Vacuum" />
         <solidref ref="sp_magnet_gap_left_right_box" />
         <auxiliary auxtype="VisAttributes" auxvalue="InvisibleNoDau"/>
-        <auxiliary auxtype="VisAttributes" auxvalue="SpRegionVis"/>
+        <auxiliary auxtype="VisAttributes" auxvalue="SpVis"/>
       </volume> 
     </loop> 
 
@@ -230,19 +230,19 @@
         <materialref ref="Vacuum" />
         <solidref ref="sp_ecal_front_back_box" />
         <auxiliary auxtype="VisAttributes" auxvalue="InvisibleNoDau"/>
-        <auxiliary auxtype="VisAttributes" auxvalue="SpRegionVis"/>
+        <auxiliary auxtype="VisAttributes" auxvalue="SpVis"/>
       </volume>  
       <volume name="sp_ecal_top_bot"> 
         <materialref ref="Vacuum" />
         <solidref ref="sp_ecal_top_bot_box" />
         <auxiliary auxtype="VisAttributes" auxvalue="InvisibleNoDau"/>
-        <auxiliary auxtype="VisAttributes" auxvalue="SpRegionVis"/>
+        <auxiliary auxtype="VisAttributes" auxvalue="SpVis"/>
       </volume>
       <volume name="sp_ecal_left_right"> 
         <materialref ref="Vacuum" />
         <solidref ref="sp_ecal_left_right_box" />
         <auxiliary auxtype="VisAttributes" auxvalue="InvisibleNoDau"/>
-        <auxiliary auxtype="VisAttributes" auxvalue="SpRegionVis"/>
+        <auxiliary auxtype="VisAttributes" auxvalue="SpVis"/>
       </volume> 
     </loop>
 
@@ -251,19 +251,19 @@
         <materialref ref="Vacuum" />
         <solidref ref="sp_hcal_front_back_box" />
         <auxiliary auxtype="VisAttributes" auxvalue="InvisibleNoDau"/>
-        <auxiliary auxtype="VisAttributes" auxvalue="SpRegionVis"/>
+        <auxiliary auxtype="VisAttributes" auxvalue="SpVis"/>
       </volume>  
       <volume name="sp_hcal_top_bot"> 
         <materialref ref="Vacuum" />
         <solidref ref="sp_hcal_top_bot_box" />
         <auxiliary auxtype="VisAttributes" auxvalue="InvisibleNoDau"/>
-        <auxiliary auxtype="VisAttributes" auxvalue="SpRegionVis"/>
+        <auxiliary auxtype="VisAttributes" auxvalue="SpVis"/>
       </volume>
       <volume name="sp_hcal_left_right"> 
         <materialref ref="Vacuum" />
         <solidref ref="sp_hcal_left_right_box" />
         <auxiliary auxtype="VisAttributes" auxvalue="InvisibleNoDau"/>
-        <auxiliary auxtype="VisAttributes" auxvalue="SpRegionVis"/>
+        <auxiliary auxtype="VisAttributes" auxvalue="SpVis"/>
       </volume> 
     </loop>
 
