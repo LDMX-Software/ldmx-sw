@@ -104,7 +104,7 @@ simulation.description = (
 
 # ------ set up digitization -------
 
-from LDMX.TrigScint.trigScint import TrigScintQIEDigiProducer
+from LDMX.TrigScint.trig_scint import TrigScintQIEDigiProducer
 
 ts_digis = TrigScintQIEDigiProducer.pad1()  # up() #
 ts_digis.input_collection = "TriggerPadUpSimHits"

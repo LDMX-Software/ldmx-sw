@@ -12,7 +12,7 @@ time_offset = int(sys.argv[2]) if len(sys.argv) > 2 else 0
 log_verbosity = int(sys.argv[3]) if len(sys.argv) > 3 else 2
 
 
-from LDMX.TrigScint.trigScint import EventReadoutProducer
+from LDMX.TrigScint.trig_scint import EventReadoutProducer
 
 
 # ------------------- all set; setup in detail, and run with these settings

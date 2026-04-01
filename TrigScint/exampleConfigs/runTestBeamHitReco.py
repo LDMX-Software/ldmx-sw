@@ -14,7 +14,7 @@ time_sample = int(sys.argv[2]) if len(sys.argv) > 2 else 1
 
 pulse_width = int(sys.argv[3]) if len(sys.argv) > 3 else 5
 
-from LDMX.TrigScint.trigScint import TestBeamHitProducer
+from LDMX.TrigScint.trig_scint import TestBeamHitProducer
 
 
 n_channels = 24
@@ -104,4 +104,5 @@ p.sequence = [tb_hits_up]
 p.input_files = [sys.argv[1]]
 p.output_files = [sys.argv[1].replace(".root", "_hits.root")]
 
-p.term_log_level = 2
+# p.term_log_level = 2
+p.logger.term_level = 2

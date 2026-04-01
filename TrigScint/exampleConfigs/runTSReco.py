@@ -8,7 +8,7 @@ n_ev=60000
 
 time_sample = int(sys.argv[2]) if len(sys.argv) > 2 else 21
 
-from LDMX.TrigScint.trigScint import TrigScintRecHitProducer
+from LDMX.TrigScint.trig_scint import TrigScintRecHitProducer
 
 
 # ------------------- all set; setup in detail, and run with these settings
