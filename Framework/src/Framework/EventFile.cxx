@@ -30,7 +30,7 @@ EventFile::EventFile(const framework::config::Parameters &params,
     //  Check out the TFile constructor for explanation of how this integer is
     //  built Short Reference: setting = 100*algorithem + level algorithm = 0
     //  ==> use global default
-    file_->SetCompressionSettings(params.get<int>("compressionSetting", 9));
+    file_->SetCompressionSettings(params.get<int>("compression_setting", 9));
 
     if (parent_) {
       // output file when there are input files
@@ -57,7 +57,7 @@ EventFile::EventFile(const framework::config::Parameters &params,
                                        "' is not readable or does not exist.");
     }
 
-    bool skip_corrupted = params.get<bool>("skipCorruptedInputFiles", false);
+    bool skip_corrupted = params.get<bool>("skip_corrupted_input_files", false);
 
     // make sure file is not a zombie file
     // (i.e. process ended without closing or the file was corrupted some other

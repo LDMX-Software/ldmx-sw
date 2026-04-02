@@ -57,6 +57,9 @@ class Process:
     skim_rules : list of strings
         list of skimming rules for which processors the process should listen to
         when deciding whether to keep an event
+    skip_corrupted_input_files: bool
+        whether to skip past files that are marked "zombie" by ROOT
+        helpful for batch processing
     log_frequency : int
         Print the event number whenever its modulus with this frequency is zero
     logger : Logger
@@ -95,6 +98,7 @@ class Process:
     libraries: list[str] = []
     skim_default_is_keep: bool = True
     skim_rules: list[str] = []
+    skip_corrupted_input_files: bool = False
     log_frequency: int = -1
     logger: Logger = field(default_factory=Logger)
     compression_setting: int = 9
