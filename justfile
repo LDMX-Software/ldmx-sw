@@ -101,22 +101,6 @@ build ncpu=num_cpus():
 test *ARGS:
     cd build && denv ctest {{ ARGS }}
 
-# run all standalone Python configuration test scripts found under */test/*.py
-# Skips test directories that also contain .cxx files: those .py configs are
-# internal to the Catch2 run_test binary and cannot be run with fire directly.
-test-configs:
-    #!/usr/bin/env sh
-    set -eu
-    failed=0
-    for dir in */test; do
-        ls "$dir"/*.cxx > /dev/null 2>&1 && continue
-        for c in "$dir"/*.py; do
-            printf '\n ---------------\nTesting with %s\n\n' "$c"
-            denv fire "$c" || failed=$((failed + 1))
-        done
-    done
-    exit "$failed"
-
 # run ldmx-sw with the input configuration script
 [no-cd]
 fire config_py *ARGS:

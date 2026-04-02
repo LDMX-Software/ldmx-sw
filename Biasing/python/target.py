@@ -391,9 +391,6 @@ def aprime_to_fcp(
         )
     ]
 
-    # the following filters are in a library that needs to be included
-    includeBiasing.library()  # noqa: F821
-
     sim.actions.extend(
         [
             # make sure electron reaches target with 7 GeV
@@ -473,19 +470,16 @@ def gamma_to_fcp(detector, generator, fcp_mass, fcp_charge=0.1):
         bias_operators.GammaToFCPPair("target", xsec_bias, xsec_bias_threshold)
     ]
 
-    # the following filters are in a library that needs to be included
-    includeBiasing.library()  # noqa: F821
-
     # Configure the sequence in which user actions should be called.
     sim.actions.extend(
         [
             # Only consider events where a hard brem occurs
-            filters.TaggerVetoFilter(thresh=tagger_threshold),
+            filters.TaggerVetoFilter(threshold=tagger_threshold),
             filters.TargetBremFilter(
-                recoil_max_p=recoil_max_p,
-                brem_min_e=brem_min_e,
+                recoil_max_p_threshold=recoil_max_p,
+                brem_min_energy_threshold=brem_min_e,
             ),
-            filters.TargetGammaFCPFilter(),
+            filters.TargetProcessFilter.gamma_to_fcp(),
             util.TrackProcessFilter.gamma_to_fcp(),
         ]
     )
