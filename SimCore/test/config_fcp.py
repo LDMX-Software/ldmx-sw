@@ -42,7 +42,7 @@ p.sequence = [my_sim]
 import sys
 
 
-p.max_events = 10000  # int(os.environ['LDMX_NUM_EVENTS'])
+p.max_events = 10  # int(os.environ['LDMX_NUM_EVENTS'])
 p.run = int(os.environ["LDMX_RUN_NUMBER"])
 
 p.histogram_file = "hist.root"
@@ -91,7 +91,8 @@ from LDMX.Recon.electron_counter import ElectronCounter
 from LDMX.Recon.simple_trigger import TriggerProcessor
 
 
-count = ElectronCounter(1, "ElectronCounter")
+count = ElectronCounter("ElectronCounter")
+count.simulated_electron_number = 1
 count.input_pass_name = ""
 
 # Load the DQM modules
@@ -122,7 +123,7 @@ p.logger.term_level = 10
 # Dark photon to FCP conversion related logging
 # p.logger.custom("DarkBremInteraction", level = 0)
 # p.logger.custom("APrimeConversionToFCPs", level = -1)
-p.logger.custom("GammaConversionToFCPs", level=-1)
+# p.logger.custom("GammaConversionToFCPs", level=-1)
 
 # Add full tracking for both tagger and recoil trackers:
 # digi, seeds, CFK, ambiguity resolution, GSF, DQM

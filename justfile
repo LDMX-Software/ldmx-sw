@@ -196,7 +196,7 @@ format-python-diff:
     #!/usr/bin/env sh
     set -eu
     py_list="$(mktemp)"
-    if ! git diff --name-only origin/trunk | grep -E '\.py$' > "${py_list}"; then
+    if ! git diff --name-only --diff-filter=d origin/trunk | grep -E '\.py$' > "${py_list}"; then
       echo "no Python files to format"
     else
       xargs --arg-file="${py_list}" denv ruff format
