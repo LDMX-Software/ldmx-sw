@@ -14,7 +14,7 @@ For now all vertical surfaces are flush with no space left in between
 Horizontal surfaces have gaps (the spaces between the bars)
 
 Todo: add the plastic casing, add the metal feet which attach the bars
-to the housing, and maybe see if the visattributes can be reworked
+to the housing
 -->
 
 
@@ -47,7 +47,8 @@ to the housing, and maybe see if the visattributes can be reworked
     <volume name="trigger_pad3_bar_volume">
       <materialref ref="Polyvinyltoluene"/>
       <solidref ref="trigger_bar_box3"/>
-      <auxiliary auxtype="VisAttributes" auxvalue="TriggerPadVis"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="PolyvinyltolueneMaterialVis"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="TriggerPadRegionVis"/>
       <auxiliary auxtype="DetElem" auxvalue="TriggerPad"/>
     </volume>
 
@@ -55,7 +56,8 @@ to the housing, and maybe see if the visattributes can be reworked
     <volume name="tspad3_lightpipe_volume">
       <materialref ref="AcrylicPMMA"/>
       <solidref ref="trigger_light_pipe_box3"/>
-      <auxiliary auxtype="VisAttributes" auxvalue="TriggerPadVis"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="AcrylicPMMAMaterialVis"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="TriggerPadRegionVis"/>
       <auxiliary auxtype="DetElem" auxvalue="TriggerPad"/>
     </volume>
 
@@ -64,7 +66,8 @@ to the housing, and maybe see if the visattributes can be reworked
     <volume name="tspad3_sipm_volume">
       <materialref ref="Silicon"/>
       <solidref ref="trigger_sipm_box3"/>
-      <auxiliary auxtype="VisAttributes" auxvalue="TriggerPadVis"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="SiliconMaterialVis"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="TriggerPadRegionVis"/>
       <auxiliary auxtype="DetElem" auxvalue="TriggerPad"/>
     </volume>
 
@@ -137,8 +140,8 @@ to the housing, and maybe see if the visattributes can be reworked
 
       </loop>
 
+      <auxiliary auxtype="VisAttributes" auxvalue="InvisibleShowDau"/>
       <auxiliary auxtype="Region" auxvalue="target" />
-      <!--<auxiliary auxtype="VisAttributes" auxvalue="TriggerPadVis"/>-->
       <auxiliary auxtype="DetElem" auxvalue="TriggerPad"/>
 
     </volume>

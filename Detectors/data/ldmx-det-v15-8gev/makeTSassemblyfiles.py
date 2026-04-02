@@ -1,4 +1,3 @@
-# ruff: noqa: E501
 import os
 import sys
 
@@ -83,7 +82,7 @@ For now all vertical surfaces are flush with no space left in between
 Horizontal surfaces have gaps (the spaces between the bars)
 
 Todo: add the plastic casing, add the metal feet which attach the bars
-to the housing, and maybe see if the visattributes can be reworked
+to the housing
 -->
 
 
@@ -115,16 +114,18 @@ to the housing, and maybe see if the visattributes can be reworked
     <!--TS pad is made of polyvinyl toluene-->
     <volume name="{scintillator_lvname}">
       <materialref ref="{scintillator_mat}"/>
-      <solidref ref="trigger_bar_box{i + 1}"/>
-      <auxiliary auxtype="VisAttributes" auxvalue="TriggerPadVis"/>
+      <solidref ref="trigger_bar_box{i+1}"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="{scintillator_mat}MaterialVis"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="TriggerPadRegionVis"/>
       <auxiliary auxtype="DetElem" auxvalue="TriggerPad"/>
     </volume>
 
     <!--TS light guides are made of acrylic PMMA-->
     <volume name="{lightpipe_lvname}">
       <materialref ref="{lightpipe_mat}"/>
-      <solidref ref="trigger_light_pipe_box{i + 1}"/>
-      <auxiliary auxtype="VisAttributes" auxvalue="TriggerPadVis"/>
+      <solidref ref="trigger_light_pipe_box{i+1}"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="{lightpipe_mat}MaterialVis"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="TriggerPadRegionVis"/>
       <auxiliary auxtype="DetElem" auxvalue="TriggerPad"/>
     </volume>
 
@@ -132,8 +133,9 @@ to the housing, and maybe see if the visattributes can be reworked
   The model is the Hamamatsu S13360-2050VE-->
     <volume name="{sipm_lvname}">
       <materialref ref="{sipm_mat}"/>
-      <solidref ref="trigger_sipm_box{i + 1}"/>
-      <auxiliary auxtype="VisAttributes" auxvalue="TriggerPadVis"/>
+      <solidref ref="trigger_sipm_box{i+1}"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="{sipm_mat}MaterialVis"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="TriggerPadRegionVis"/>
       <auxiliary auxtype="DetElem" auxvalue="TriggerPad"/>
     </volume>
 
@@ -206,8 +208,8 @@ to the housing, and maybe see if the visattributes can be reworked
 
       </loop>
 
+      <auxiliary auxtype="VisAttributes" auxvalue="InvisibleShowDau"/>
       <auxiliary auxtype="Region" auxvalue="{region_name[i]}" />
-      <!--<auxiliary auxtype="VisAttributes" auxvalue="TriggerPadVis"/>-->
       <auxiliary auxtype="DetElem" auxvalue="TriggerPad"/>
 
     </volume>

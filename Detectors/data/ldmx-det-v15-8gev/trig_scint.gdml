@@ -55,7 +55,7 @@
 
 
       <auxiliary auxtype="Region" auxvalue="trig_scint" />
-      <!--<auxiliary auxtype="VisAttributes" auxvalue="TriggerPadVis"/>-->
+      <auxiliary auxtype="VisAttributes" auxvalue="InvisibleShowDau"/>
       <auxiliary auxtype="DetElem" auxvalue="TriggerPad"/>
 
     </volume>
