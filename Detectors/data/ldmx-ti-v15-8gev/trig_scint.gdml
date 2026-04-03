@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE gdml [
+<!ENTITY constants SYSTEM "constants.gdml">
+]>
+
+
+<gdml xmlns:gdml="http://cern.ch/2001/Schemas/GDML" 
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+    xsi:noNamespaceSchemaLocation="gdml.xsd" >
+
+  
+  <!--
+      The TS system consists of two trigger pads
+    including the scintillating bars, the light
+    pipes, and the SiPMs, details of which are
+    in the tspadX_assembly.gdml files.
+
+    Since the pads are used multiple times in
+    multiple systems, they have been placed
+    in separate files and then imported.
+  -->
+
+  
+  <define>
+    &constants;    
+  </define>
+
+  
+  <solids>
+    <!--Only the envelope which holds all the other volumes is defined here - the rest are in their separate files-->
+    <box lunit="mm" name="trigger_pad_box" x="trig_scint_area_envelope_x" y="trig_scint_area_envelope_y" z="trig_scint_area_envelope_z"/>
+  </solids>
+
+
+  <structure>
+
+<volume name="trig_scint_tagger">
+      <materialref ref="Vacuum"/>
+      <solidref ref="trigger_pad_box" />
+
+      <!--For x offsets, use what worked in target.gdml and add the offset-->
+
+      <physvol>
+	 <file name="tspad1_assembly.gdml"/>
+         <position name="tspad1_pos" unit="mm" x="(tspad3_envelope_x-trigger_bar_dx + trigger_pad1_x)/2" y="0"
+		   z="trig_scint_area_envelope_z/2+trigger_pad1_z" />
+       </physvol>
+
+       <physvol>
+	 <file name="tspad2_assembly.gdml"/>
+         <position name="tspad2_pos" unit="mm" x="(tspad3_envelope_x-trigger_bar_dx + trigger_pad2_x)/2" y="0"
+		   z="trig_scint_area_envelope_z/2+trigger_pad2_z" />
+       </physvol>
+
+
+
+      <auxiliary auxtype="Region" auxvalue="trig_scint" />
+      <auxiliary auxtype="VisAttributes" auxvalue="InvisibleShowDau"/>
+      <auxiliary auxtype="DetElem" auxvalue="TriggerPad"/>
+
+    </volume>
+  </structure> 
+
+   
+  <setup name="Default" version="1.0">
+    <world ref="trig_scint_tagger"/>
+  </setup>
+
+  
+</gdml>
