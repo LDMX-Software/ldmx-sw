@@ -122,7 +122,7 @@ to the housing
     <!--TS pad is made of polyvinyl toluene-->
     <volume name="{scintillator_lvname}">
       <materialref ref="{scintillator_mat}"/>
-      <solidref ref="trigger_bar_box{i+1}"/>
+      <solidref ref="trigger_bar_box{i + 1}"/>
       <auxiliary auxtype="VisAttributes" auxvalue="{scintillator_mat}MaterialVis"/>
       <auxiliary auxtype="VisAttributes" auxvalue="TriggerPadRegionVis"/>
       <auxiliary auxtype="DetElem" auxvalue="TriggerPad"/>
@@ -131,7 +131,7 @@ to the housing
     <!--TS light guides are made of acrylic PMMA-->
     <volume name="{lightpipe_lvname}">
       <materialref ref="{lightpipe_mat}"/>
-      <solidref ref="trigger_light_pipe_box{i+1}"/>
+      <solidref ref="trigger_light_pipe_box{i + 1}"/>
       <auxiliary auxtype="VisAttributes" auxvalue="{lightpipe_mat}MaterialVis"/>
       <auxiliary auxtype="VisAttributes" auxvalue="TriggerPadRegionVis"/>
       <auxiliary auxtype="DetElem" auxvalue="TriggerPad"/>
@@ -141,7 +141,7 @@ to the housing
   The model is the Hamamatsu S13360-2050VE-->
     <volume name="{sipm_lvname}">
       <materialref ref="{sipm_mat}"/>
-      <solidref ref="trigger_sipm_box{i+1}"/>
+      <solidref ref="trigger_sipm_box{i + 1}"/>
       <auxiliary auxtype="VisAttributes" auxvalue="{sipm_mat}MaterialVis"/>
       <auxiliary auxtype="VisAttributes" auxvalue="TriggerPadRegionVis"/>
       <auxiliary auxtype="DetElem" auxvalue="TriggerPad"/>
