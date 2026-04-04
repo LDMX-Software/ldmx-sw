@@ -23,9 +23,9 @@ import os
 import sys
 
 
-# this sample takes about 5 times more than the other CI wfs
-# so we divide with 5 to get the same ballpark in time
-p.max_events = int(os.environ["LDMX_NUM_EVENTS"]) // 5
+# this sample takes about 20 times more than the other CI wfs
+# so we divide with 20 to get the same ballpark in time
+p.max_events = int(os.environ["LDMX_NUM_EVENTS"]) // 20
 p.run = int(os.environ["LDMX_RUN_NUMBER"])
 
 p.histogram_file = "hist.root"
