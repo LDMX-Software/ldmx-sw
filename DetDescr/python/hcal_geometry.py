@@ -499,6 +499,10 @@ class HcalReadoutGeometry:
             "ldmx-lyso-r4-v15.*",
             "ldmx-det-v15",
             "ldmx-det-v15.*",
+            "ldmx-ti-v15-8gev",
+            "ldmx-ti-v15-8gev.*",
+            "ldmx-al-v15-8gev",
+            "ldmx-al-v15-8gev.*",
         ]
         return HcalReadoutGeometry(
             num_sections=num_sections,
