@@ -12,11 +12,12 @@ namespace framework {
 
 EventFile::EventFile(const framework::config::Parameters &params,
                      const std::string &filename, EventFile *parent,
-                     bool is_output_file, bool isSingleOutput, bool isLoopable)
+                     bool is_output_file, bool is_single_output,
+                     bool is_loopable)
     : file_name_(filename),
       is_output_file_(is_output_file),
-      is_single_output_(isSingleOutput),
-      is_loopable_(isLoopable),
+      is_single_output_(is_single_output),
+      is_loopable_(is_loopable),
       parent_(parent) {
   if (is_output_file_) {
     // we are writting out so open the file and make sure it is writable
@@ -89,8 +90,8 @@ EventFile::EventFile(const framework::config::Parameters &params,
 }
 
 EventFile::EventFile(const framework::config::Parameters &params,
-                     const std::string &filename, bool isLoopable)
-    : EventFile(params, filename, nullptr, false, false, isLoopable) {}
+                     const std::string &filename, bool is_loopable)
+    : EventFile(params, filename, nullptr, false, false, is_loopable) {}
 
 EventFile::EventFile(const framework::config::Parameters &params,
                      const std::string &filename)
@@ -98,8 +99,8 @@ EventFile::EventFile(const framework::config::Parameters &params,
 
 EventFile::EventFile(const framework::config::Parameters &params,
                      const std::string &filename, EventFile *parent,
-                     bool isSingleOutput)
-    : EventFile(params, filename, parent, true, isSingleOutput, false) {}
+                     bool is_single_output)
+    : EventFile(params, filename, parent, true, is_single_output, false) {}
 
 EventFile::~EventFile() {
   // Before an output file, the Event tree needs to be written.
@@ -159,6 +160,8 @@ void EventFile::addDrop(const std::string &rule) {
     // this branch will then be copied over into output tree and be active
   } else if (is_ignore) {
     // don't even read it from the input file
+    // pass regex (with dots) to event bus so setInputTree skips these branches
+    event_->addIgnore(srule);  // requires event_ to be set
     // root needs . removed otherwise it gets cranky
     srule.erase(std::remove(srule.begin(), srule.end(), '.'), srule.end());
     pre_clone_rules_.emplace_back(srule, false);
