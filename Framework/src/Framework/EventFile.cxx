@@ -1,3 +1,5 @@
+#include <regex.h>
+
 #include <ctime>
 
 #include "TTreeReader.h"
@@ -122,26 +124,23 @@ bool EventFile::isCorrupted() const {
 void EventFile::addDrop(const std::string &rule) {
   int offset;
   bool is_keep = false, is_drop = false, is_ignore = false;
-  size_t i = rule.find("keep");
-  if (i != std::string::npos) {
-    offset = i + 4;
+  // keywords must appear at the start of the rule string
+  if (rule.find("keep") == 0) {
+    offset = 4;
     is_keep = true;
-  }
-  i = rule.find("drop");
-  if (i != std::string::npos) {
-    offset = i + 4;
+  } else if (rule.find("drop") == 0) {
+    offset = 4;
     is_drop = true;
-  }
-  i = rule.find("ignore");
-  if (i != std::string::npos) {
-    offset = i + 6;
+  } else if (rule.find("ignore") == 0) {
+    offset = 6;
     is_ignore = true;
   }
 
-  // more than one of (keep,drop,ignore) was provided => not valid rule
+  // none of (keep,drop,ignore) was provided => not valid rule
   if (int(is_keep) + int(is_drop) + int(is_ignore) != 1) return;
 
   std::string srule = rule.substr(offset);
+  size_t i;
   for (i = srule.find_first_of(" \t\n\r"); i != std::string::npos;
        i = srule.find_first_of(" \t\n\r"))
     srule.erase(i, 1);
@@ -151,6 +150,24 @@ void EventFile::addDrop(const std::string &rule) {
 
   // add wild card at end for matching purposes
   if (srule.back() != '*') srule += ".*";  // add wildcard to back
+
+  // Guard: EventHeader must never be dropped or ignored
+  if (is_drop or is_ignore) {
+    regex_t guard_reg;
+    if (regcomp(&guard_reg, srule.c_str(),
+                REG_EXTENDED | REG_ICASE | REG_NOSUB) == 0) {
+      bool matches_event_header =
+          (regexec(&guard_reg, ldmx::EventHeader::BRANCH.c_str(), 0, 0, 0) ==
+           0);
+      regfree(&guard_reg);
+      if (matches_event_header) {
+        EXCEPTION_RAISE("BadRule",
+                        "Drop/ignore rule '" + rule +
+                            "' would affect EventHeader which is required by "
+                            "the framework and cannot be removed.");
+      }
+    }
+  }
 
   if (is_keep) {
     // turn both the input and output tree's on
@@ -164,6 +181,10 @@ void EventFile::addDrop(const std::string &rule) {
     event_->addIgnore(srule);  // requires event_ to be set
     // root needs . removed otherwise it gets cranky
     srule.erase(std::remove(srule.begin(), srule.end(), '.'), srule.end());
+    // warn if this rule drops all collections
+    if (srule == "*")
+      ldmx_log(fatal) << "Ignore rule '" << rule
+                      << "' will hide all input collections from processors.";
     pre_clone_rules_.emplace_back(srule, false);
     // these branches won't be copied over into output tree
   } else if (is_drop) {
@@ -173,6 +194,10 @@ void EventFile::addDrop(const std::string &rule) {
 
     // root needs . removed otherwise it gets cranky
     srule.erase(std::remove(srule.begin(), srule.end(), '.'), srule.end());
+    // warn if this rule drops all collections
+    if (srule == "*")
+      ldmx_log(fatal) << "Drop rule '" << rule
+                      << "' will drop all collections from the output file.";
     pre_clone_rules_.emplace_back(srule, false);
     // these branches won't be copied over into output tree
     // reactivate input branch after clone
