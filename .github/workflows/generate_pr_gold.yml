@@ -23,7 +23,7 @@ jobs:
         fetch-depth: 0
 
     - name : Install just
-      uses: extractions/setup-just@v3
+      uses: extractions/setup-just@v4
 
     - name: Compile and Install ldmx-sw
       run: | 
@@ -53,7 +53,7 @@ jobs:
       matrix: ${{fromJson(needs.compile-ldmx-sw.outputs.job_matrix)}}
     steps:
     - uses: actions/checkout@v6
-    - uses: extractions/setup-just@v3
+    - uses: extractions/setup-just@v4
     - run: just install-denv init
     
     - name: Checkout ci-data

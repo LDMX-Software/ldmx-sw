@@ -53,7 +53,7 @@ jobs:
         ref: ${{ env.HEAD_REF }}
 
     - name: Install just
-      uses: extractions/setup-just@v3
+      uses: extractions/setup-just@v4
 
     - name: Cache ccache
       uses: actions/cache@v5
@@ -112,7 +112,7 @@ jobs:
         fetch-depth: 0
         ref: ${{ env.HEAD_REF }}
           
-    - uses: extractions/setup-just@v3
+    - uses: extractions/setup-just@v4
 
     - run: just install-denv init
 
