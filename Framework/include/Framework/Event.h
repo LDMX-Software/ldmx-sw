@@ -156,6 +156,17 @@ class Event {
   void addDrop(const std::string &exp);
 
   /**
+   * Add an ignore rule to the list of regex expressions to ignore on input.
+   *
+   * If a branch name matches one of the stored regex expressions, it will
+   * not be added to the list of known products when reading the input tree.
+   * This prevents processors from accessing these collections at all.
+   *
+   * @param exp regex to match
+   */
+  void addIgnore(const std::string &exp);
+
+  /**
    * Adds an object to the event bus
    *
    * @throws Exception if there is an underscore in the collection name.
@@ -504,6 +515,17 @@ class Event {
   bool shouldDrop(const std::string &collName) const;
 
   /**
+   * Check if a branch from the input tree should be ignored.
+   *
+   * Ignored branches are not added to the products list and are
+   * therefore inaccessible to processors.
+   *
+   * @param branchName name of branch
+   * @return true if the branch should be ignored (i.e. NOT loaded)
+   */
+  bool shouldIgnore(const std::string &branchName) const;
+
+  /**
    * Make a branch name from a collection and pass name.
    * @param collectionName The collection name.
    * @param passName The pass name.
@@ -569,6 +591,11 @@ class Event {
    * Regex of collection names to *not* store in event.
    */
   std::vector<regex_t> regex_drop_collections_;
+
+  /**
+   * Regex of branch names to not even read from the input tree.
+   */
+  std::vector<regex_t> regex_ignore_collections_;
 
   /**
    * Efficiency cache for empty pass name lookups.
