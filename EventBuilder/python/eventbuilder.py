@@ -19,7 +19,7 @@ class Builder(ldmxcfg.Producer):
 
     def __init__(self, dat_file=None, output_name='PhysicsEventData', verbose_parse=True,
                  instance_name='Builder'):
-        super().__init__(instance_name, 'eventbuilder::Builder', 'Builder')
+        super().__init__(instance_name, 'eventbuilder::Builder', 'EventBuilder')
         self.dat_file = dat_file or ''
         self.output_name = output_name
         self.verbose_parse = verbose_parse
@@ -39,4 +39,4 @@ def from_dat_file(dat_file, output_name='PhysicsEventData', verbose_parse=True,
         import os
         instance_name = f'EventBuilder_{os.path.basename(dat_file)}'
     return Builder(dat_file=dat_file, output_name=output_name,
-                                verbose_parse=verbose_parse, instance_name=instance_name)
+                   verbose_parse=verbose_parse, instance_name=instance_name)
