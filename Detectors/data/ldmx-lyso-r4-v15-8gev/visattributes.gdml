@@ -1,0 +1,299 @@
+<!-- define vis attributes -->
+
+<!--
+There are 3 categories of visattributes included here: invisible options,
+options by region, and options by material. To switch between definition
+by region and definition by material, set the optional 'ColorMode' tag
+in detector.gdml, in the userinfo, before loading this accessory file.
+The default is definition by region, or invisible.
+
+For the material visattributes, I arbitrarily assigned object colors
+based on my imagination. These can be changed as the user pleases.
+I'd recommend a free online RGB color picker to help you select the
+perfect color.
+-->
+
+<!--Styles of invisible (applicable in many scenarios)-->
+    <auxiliary auxtype="VisAttributes" auxvalue="InvisibleNoDau">
+      <auxiliary auxtype="DaughtersInvisible" auxvalue="true"/>
+      <auxiliary auxtype="Visible" auxvalue="false"/>
+    </auxiliary>  
+    <auxiliary auxtype="VisAttributes" auxvalue="InvisibleShowDau">
+      <auxiliary auxtype="DaughtersInvisible" auxvalue="false"/>
+      <auxiliary auxtype="Visible" auxvalue="false"/>
+    </auxiliary>  
+    <auxiliary auxtype="VisAttributes" auxvalue="NoDau">
+      <auxiliary auxtype="DaughtersInvisible" auxvalue="true"/>
+      <auxiliary auxtype="Visible" auxvalue="true"/>
+    </auxiliary>  
+
+    <!--Visattributes by region (applies to all volumes in the region)-->
+    <auxiliary auxtype="VisAttributes" auxvalue="TargetRegionVis">
+      <auxiliary auxtype="R" auxvalue="1.0"/>
+      <auxiliary auxtype="G" auxvalue="0.0"/>
+      <auxiliary auxtype="B" auxvalue="0.0"/>
+      <auxiliary auxtype="A" auxvalue="1.0"/>
+      <auxiliary auxtype="Style" auxvalue="solid"/>
+      <auxiliary auxtype="DaughtersInvisible" auxvalue="true"/>
+      <auxiliary auxtype="Visible" auxvalue="true"/>
+      <auxiliary auxtype="LineWidth" auxvalue="1.0"/>
+    </auxiliary>
+    <auxiliary auxtype="VisAttributes" auxvalue="EcalRegionVis">
+      <auxiliary auxtype="R" auxvalue="0.6"/>
+      <auxiliary auxtype="G" auxvalue="0.6"/>
+      <auxiliary auxtype="B" auxvalue="0.6"/>
+      <auxiliary auxtype="A" auxvalue="1.0"/>
+      <auxiliary auxtype="Style" auxvalue="wireframe"/>
+      <auxiliary auxtype="DaughtersInvisible" auxvalue="false"/>
+      <auxiliary auxtype="Visible" auxvalue="true"/>
+      <auxiliary auxtype="LineWidth" auxvalue="1.0"/>
+    </auxiliary>  
+    <auxiliary auxtype="VisAttributes" auxvalue="HcalRegionVis">
+      <auxiliary auxtype="R" auxvalue="0.6"/>
+      <auxiliary auxtype="G" auxvalue="0.3"/>
+      <auxiliary auxtype="B" auxvalue="0.0"/>
+      <auxiliary auxtype="A" auxvalue="1.0"/>
+      <auxiliary auxtype="Style" auxvalue="wireframe"/>
+      <auxiliary auxtype="DaughtersInvisible" auxvalue="false"/>
+      <auxiliary auxtype="Visible" auxvalue="true"/>
+      <auxiliary auxtype="LineWidth" auxvalue="1.0"/>
+    </auxiliary>
+    <auxiliary auxtype="VisAttributes" auxvalue="TaggerRegionVis">
+      <auxiliary auxtype="R" auxvalue="0.8"/>
+      <auxiliary auxtype="G" auxvalue="0.8"/>
+      <auxiliary auxtype="B" auxvalue="0.0"/>
+      <auxiliary auxtype="A" auxvalue="1.0"/>
+      <auxiliary auxtype="Style" auxvalue="wireframe"/>
+      <auxiliary auxtype="DaughtersInvisible" auxvalue="false"/>
+      <auxiliary auxtype="Visible" auxvalue="true"/>
+      <auxiliary auxtype="LineWidth" auxvalue="1.0"/>
+    </auxiliary>
+    <auxiliary auxtype="VisAttributes" auxvalue="RecoilRegionVis">
+      <auxiliary auxtype="R" auxvalue="0.6"/>
+      <auxiliary auxtype="G" auxvalue="0.6"/>
+      <auxiliary auxtype="B" auxvalue="0.0"/>
+      <auxiliary auxtype="A" auxvalue="1.0"/>
+      <auxiliary auxtype="Style" auxvalue="wireframe"/>
+      <auxiliary auxtype="DaughtersInvisible" auxvalue="false"/>
+      <auxiliary auxtype="Visible" auxvalue="true"/>
+      <auxiliary auxtype="LineWidth" auxvalue="1.0"/>
+    </auxiliary>
+    <auxiliary auxtype="VisAttributes" auxvalue="TriggerPadRegionVis">
+      <auxiliary auxtype="R" auxvalue="0.9"/>
+      <auxiliary auxtype="G" auxvalue="0.8"/>
+      <auxiliary auxtype="B" auxvalue="1.0"/>
+      <auxiliary auxtype="A" auxvalue="1.0"/>
+      <auxiliary auxtype="Style" auxvalue="wireframe"/>
+      <auxiliary auxtype="DaughtersInvisible" auxvalue="true"/>
+      <auxiliary auxtype="Visible" auxvalue="true"/>
+      <auxiliary auxtype="LineWidth" auxvalue="1.0"/>
+    </auxiliary>
+    <auxiliary auxtype="VisAttributes" auxvalue="MagnetRegionVis">
+      <auxiliary auxtype="R" auxvalue="0.75"/>
+      <auxiliary auxtype="G" auxvalue="0.75"/>
+      <auxiliary auxtype="B" auxvalue="0.75"/>
+      <auxiliary auxtype="A" auxvalue="0.8"/>
+      <auxiliary auxtype="Style" auxvalue="wireframe"/>
+      <auxiliary auxtype="DaughtersInvisible" auxvalue="false"/>
+      <auxiliary auxtype="Visible" auxvalue="true"/>
+      <auxiliary auxtype="LineWidth" auxvalue="1.0"/>
+    </auxiliary>
+    <auxiliary auxtype="VisAttributes" auxvalue="SpVis">
+      <auxiliary auxtype="R" auxvalue="0.0"/>
+      <auxiliary auxtype="G" auxvalue="0.0"/>
+      <auxiliary auxtype="B" auxvalue="1.0"/>
+      <auxiliary auxtype="A" auxvalue="1.0"/>
+      <auxiliary auxtype="Style" auxvalue="wireframe"/>
+      <auxiliary auxtype="DaughtersInvisible" auxvalue="false"/>
+      <auxiliary auxtype="Visible" auxvalue="true"/>
+      <auxiliary auxtype="LineWidth" auxvalue="2.0"/>
+    </auxiliary>
+
+
+    <!--Visattributes by material-->
+    <!--Only solid materials get a color and are visible-->
+    <!--'Unimportant' materials are semi-transparent-->
+
+    <auxiliary auxtype="VisAttributes" auxvalue="CarbonMaterialVis">
+      <auxiliary auxtype="R" auxvalue="0.1"/>
+      <auxiliary auxtype="G" auxvalue="0.1"/>
+      <auxiliary auxtype="B" auxvalue="0.1"/>
+      <auxiliary auxtype="A" auxvalue="1.0"/>
+      <auxiliary auxtype="Style" auxvalue="wireframe"/>
+      <auxiliary auxtype="DaughtersInvisible" auxvalue="false"/>
+      <auxiliary auxtype="Visible" auxvalue="true"/>
+      <auxiliary auxtype="LineWidth" auxvalue="1.0"/>
+    </auxiliary>
+    <auxiliary auxtype="VisAttributes" auxvalue="AluminumMaterialVis">
+      <auxiliary auxtype="R" auxvalue="0.9"/>
+      <auxiliary auxtype="G" auxvalue="0.9"/>
+      <auxiliary auxtype="B" auxvalue="0.9"/>
+      <auxiliary auxtype="A" auxvalue="1.0"/>
+      <auxiliary auxtype="Style" auxvalue="wireframe"/>
+      <auxiliary auxtype="DaughtersInvisible" auxvalue="false"/>
+      <auxiliary auxtype="Visible" auxvalue="true"/>
+      <auxiliary auxtype="LineWidth" auxvalue="1.0"/>
+    </auxiliary>
+    <auxiliary auxtype="VisAttributes" auxvalue="SiliconMaterialVis">
+      <auxiliary auxtype="R" auxvalue="0.0"/>
+      <auxiliary auxtype="G" auxvalue="0.0"/>
+      <auxiliary auxtype="B" auxvalue="0.0"/>
+      <auxiliary auxtype="A" auxvalue="1.0"/>
+      <auxiliary auxtype="Style" auxvalue="wireframe"/>
+      <auxiliary auxtype="DaughtersInvisible" auxvalue="false"/>
+      <auxiliary auxtype="Visible" auxvalue="true"/>
+      <auxiliary auxtype="LineWidth" auxvalue="1.0"/>
+    </auxiliary>
+    <auxiliary auxtype="VisAttributes" auxvalue="IronMaterialVis">
+      <auxiliary auxtype="R" auxvalue="0.3"/>
+      <auxiliary auxtype="G" auxvalue="0.3"/>
+      <auxiliary auxtype="B" auxvalue="0.3"/>
+      <auxiliary auxtype="A" auxvalue="1.0"/>
+      <auxiliary auxtype="Style" auxvalue="wireframe"/>
+      <auxiliary auxtype="DaughtersInvisible" auxvalue="false"/>
+      <auxiliary auxtype="Visible" auxvalue="true"/>
+      <auxiliary auxtype="LineWidth" auxvalue="1.0"/>
+    </auxiliary>
+    <auxiliary auxtype="VisAttributes" auxvalue="CopperMaterialVis">
+      <auxiliary auxtype="R" auxvalue="0.741"/>
+      <auxiliary auxtype="G" auxvalue="0.4"/>
+      <auxiliary auxtype="B" auxvalue="0.114"/>
+      <auxiliary auxtype="A" auxvalue="1.0"/>
+      <auxiliary auxtype="Style" auxvalue="wireframe"/>
+      <auxiliary auxtype="DaughtersInvisible" auxvalue="false"/>
+      <auxiliary auxtype="Visible" auxvalue="true"/>
+      <auxiliary auxtype="LineWidth" auxvalue="1.0"/>
+    </auxiliary>
+    <auxiliary auxtype="VisAttributes" auxvalue="TungstenMaterialVis">
+      <auxiliary auxtype="R" auxvalue="1.0"/>
+      <auxiliary auxtype="G" auxvalue="0.0"/>
+      <auxiliary auxtype="B" auxvalue="0.0"/>
+      <auxiliary auxtype="A" auxvalue="1.0"/>
+      <auxiliary auxtype="Style" auxvalue="wireframe"/>
+      <auxiliary auxtype="DaughtersInvisible" auxvalue="false"/>
+      <auxiliary auxtype="Visible" auxvalue="true"/>
+      <auxiliary auxtype="LineWidth" auxvalue="1.0"/>
+    </auxiliary>
+    
+    <auxiliary auxtype="VisAttributes" auxvalue="FR4MaterialVis">
+      <auxiliary auxtype="R" auxvalue="0.075"/>
+      <auxiliary auxtype="G" auxvalue="0.651"/>
+      <auxiliary auxtype="B" auxvalue="0.2"/>
+      <auxiliary auxtype="A" auxvalue="1.0"/>
+      <auxiliary auxtype="Style" auxvalue="wireframe"/>
+      <auxiliary auxtype="DaughtersInvisible" auxvalue="false"/>
+      <auxiliary auxtype="Visible" auxvalue="true"/>
+      <auxiliary auxtype="LineWidth" auxvalue="1.0"/>
+    </auxiliary>
+    <auxiliary auxtype="VisAttributes" auxvalue="GlueMaterialVis">
+      <auxiliary auxtype="R" auxvalue="1.0"/>
+      <auxiliary auxtype="G" auxvalue="1.0"/>
+      <auxiliary auxtype="B" auxvalue="1.0"/>
+      <auxiliary auxtype="A" auxvalue="0.5"/>
+      <auxiliary auxtype="Style" auxvalue="wireframe"/>
+      <auxiliary auxtype="DaughtersInvisible" auxvalue="false"/>
+      <auxiliary auxtype="Visible" auxvalue="true"/>
+      <auxiliary auxtype="LineWidth" auxvalue="1.0"/>
+    </auxiliary>
+    <auxiliary auxtype="VisAttributes" auxvalue="CarbonEpoxyCompositeMaterialVis">
+      <auxiliary auxtype="R" auxvalue="1.0"/>
+      <auxiliary auxtype="G" auxvalue="1.0"/>
+      <auxiliary auxtype="B" auxvalue="1.0"/>
+      <auxiliary auxtype="A" auxvalue="0.5"/>
+      <auxiliary auxtype="Style" auxvalue="wireframe"/>
+      <auxiliary auxtype="DaughtersInvisible" auxvalue="false"/>
+      <auxiliary auxtype="Visible" auxvalue="true"/>
+      <auxiliary auxtype="LineWidth" auxvalue="1.0"/>
+    </auxiliary>
+    <auxiliary auxtype="VisAttributes" auxvalue="SteelMaterialVis">
+      <auxiliary auxtype="R" auxvalue="0.71"/>
+      <auxiliary auxtype="G" auxvalue="0.737"/>
+      <auxiliary auxtype="B" auxvalue="0.82"/>
+      <auxiliary auxtype="A" auxvalue="1.0"/>
+      <auxiliary auxtype="Style" auxvalue="wireframe"/>
+      <auxiliary auxtype="DaughtersInvisible" auxvalue="false"/>
+      <auxiliary auxtype="Visible" auxvalue="true"/>
+      <auxiliary auxtype="LineWidth" auxvalue="1.0"/>
+    </auxiliary>
+    <auxiliary auxtype="VisAttributes" auxvalue="ScintillatorMaterialVis">
+      <auxiliary auxtype="R" auxvalue="1.0"/>
+      <auxiliary auxtype="G" auxvalue="0.9"/>
+      <auxiliary auxtype="B" auxvalue="0.8"/>
+      <auxiliary auxtype="A" auxvalue="1.0"/>
+      <auxiliary auxtype="Style" auxvalue="wireframe"/>
+      <auxiliary auxtype="DaughtersInvisible" auxvalue="false"/>
+      <auxiliary auxtype="Visible" auxvalue="true"/>
+      <auxiliary auxtype="LineWidth" auxvalue="1.0"/>
+    </auxiliary>
+    <auxiliary auxtype="VisAttributes" auxvalue="PolyvinyltolueneMaterialVis">
+      <auxiliary auxtype="R" auxvalue="0.949"/>
+      <auxiliary auxtype="G" auxvalue="0.902"/>
+      <auxiliary auxtype="B" auxvalue="1.0"/>
+      <auxiliary auxtype="A" auxvalue="1.0"/>
+      <auxiliary auxtype="Style" auxvalue="wireframe"/>
+      <auxiliary auxtype="DaughtersInvisible" auxvalue="false"/>
+      <auxiliary auxtype="Visible" auxvalue="true"/>
+      <auxiliary auxtype="LineWidth" auxvalue="1.0"/>
+    </auxiliary>
+    <auxiliary auxtype="VisAttributes" auxvalue="AcrylicPMMAMaterialVis">
+      <auxiliary auxtype="R" auxvalue="1.0"/>
+      <auxiliary auxtype="G" auxvalue="0.89"/>
+      <auxiliary auxtype="B" auxvalue="0.62"/>
+      <auxiliary auxtype="A" auxvalue="1.0"/>
+      <auxiliary auxtype="Style" auxvalue="wireframe"/>
+      <auxiliary auxtype="DaughtersInvisible" auxvalue="false"/>
+      <auxiliary auxtype="Visible" auxvalue="true"/>
+      <auxiliary auxtype="LineWidth" auxvalue="1.0"/>
+    </auxiliary>
+    <auxiliary auxtype="VisAttributes" auxvalue="LYSOMaterialVis">
+      <auxiliary auxtype="R" auxvalue="0.0"/>
+      <auxiliary auxtype="G" auxvalue="1.0"/>
+      <auxiliary auxtype="B" auxvalue="0.0"/>
+      <auxiliary auxtype="A" auxvalue="1.0"/>
+      <auxiliary auxtype="Style" auxvalue="wireframe"/>
+      <auxiliary auxtype="DaughtersInvisible" auxvalue="false"/>
+      <auxiliary auxtype="Visible" auxvalue="true"/>
+      <auxiliary auxtype="LineWidth" auxvalue="1.0"/>
+    </auxiliary>
+    
+    <!--Historic visattributes definitions (unsure if needed)-->
+    <auxiliary auxtype="VisAttributes" auxvalue="GrayWireFrame">
+      <auxiliary auxtype="R" auxvalue="0.6"/>
+      <auxiliary auxtype="G" auxvalue="0.6"/>
+      <auxiliary auxtype="B" auxvalue="0.6"/>
+      <auxiliary auxtype="A" auxvalue="1.0"/>
+      <auxiliary auxtype="Style" auxvalue="wireframe"/>
+      <auxiliary auxtype="DaughtersInvisible" auxvalue="false"/>
+      <auxiliary auxtype="Visible" auxvalue="true"/>
+      <auxiliary auxtype="LineWidth" auxvalue="1.0"/>
+    </auxiliary>
+    <auxiliary auxtype="VisAttributes" auxvalue="BlueWireFrame">
+      <auxiliary auxtype="R" auxvalue="0.0"/>
+      <auxiliary auxtype="G" auxvalue="0.0"/>
+      <auxiliary auxtype="B" auxvalue="1.0"/>
+      <auxiliary auxtype="A" auxvalue="1.0"/>
+      <auxiliary auxtype="Style" auxvalue="wireframe"/>
+      <auxiliary auxtype="DaughtersInvisible" auxvalue="false"/>
+      <auxiliary auxtype="Visible" auxvalue="true"/>
+      <auxiliary auxtype="LineWidth" auxvalue="1.0"/>
+    </auxiliary>
+    <auxiliary auxtype="VisAttributes" auxvalue="BlueSolid">
+      <auxiliary auxtype="R" auxvalue="0.0"/>
+      <auxiliary auxtype="G" auxvalue="0.0"/>
+      <auxiliary auxtype="B" auxvalue="1.0"/>
+      <auxiliary auxtype="A" auxvalue="0.4"/>
+      <auxiliary auxtype="Style" auxvalue="solid"/>
+      <auxiliary auxtype="DaughtersInvisible" auxvalue="false"/>
+      <auxiliary auxtype="Visible" auxvalue="true"/>
+      <auxiliary auxtype="LineWidth" auxvalue="1.0"/>
+    </auxiliary>
+    <auxiliary auxtype="VisAttributes" auxvalue="Invisible">
+      <auxiliary auxtype="R" auxvalue="0.0"/>
+      <auxiliary auxtype="G" auxvalue="0.0"/>
+      <auxiliary auxtype="B" auxvalue="1.0"/>
+      <auxiliary auxtype="A" auxvalue="0.4"/>
+      <auxiliary auxtype="Style" auxvalue="solid"/>
+      <auxiliary auxtype="DaughtersInvisible" auxvalue="false"/>
+      <auxiliary auxtype="Visible" auxvalue="false"/>
+      <auxiliary auxtype="LineWidth" auxvalue="1.0"/>      
+    </auxiliary>

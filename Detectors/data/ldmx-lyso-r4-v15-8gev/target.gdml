@@ -5,7 +5,7 @@
 ]>
 <gdml xmlns:gdml="http://cern.ch/2001/Schemas/GDML" 
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-    xsi:noNamespaceSchemaLocation="http://service-spi.web.cern.ch/service-spi/app/releases/GDML/schema/gdml.xsd" >
+    xsi:noNamespaceSchemaLocation="gdml.xsd" >
 
   <define>
 
@@ -40,7 +40,11 @@
     <volume name="target">
       <materialref ref="LYSO"/>
       <solidref ref="target_bar"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="LYSOMaterialVis"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="TargetRegionVis"/>
+
     </volume>
+
     <volume name="lvTargetArray1">
       <materialref ref="Vacuum"/>
       <solidref ref="target_array1"/>
@@ -81,7 +85,8 @@
     <volume name="trigger_pad3_bar_volume">
       <materialref ref="Polyvinyltoluene"/>
       <solidref ref="trigger_bar_box"/>
-      <auxiliary auxtype="VisAttributes" auxvalue="TriggerPadVis"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="PolyvinyltolueneMaterialVis"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="TriggerPadRegionVis"/>
       <auxiliary auxtype="DetElem" auxvalue="TriggerPad"/>
     </volume>
 
@@ -89,7 +94,7 @@
       <materialref ref="Vacuum"/>
       <solidref ref="target_area_box" />
 
-            <physvol>
+      <physvol>
         <file name="tspad3_assembly.gdml"/>
         <position name="tspad3_pos" unit="mm" x="(tspad3_envelope_x-trigger_bar_dx)/2" y="0"
 		  z="trigger_pad3_z" />
@@ -102,7 +107,7 @@
       </physvol>
 
       <auxiliary auxtype="Region" auxvalue="target" />
-      <!-- <auxiliary auxtype="VisAttributes" auxvalue="InvisibleShowDau"/> -->
+      <auxiliary auxtype="VisAttributes" auxvalue="InvisibleShowDau"/>
       <auxiliary auxtype="DetElem" auxvalue="target"/>
 
     </volume>
