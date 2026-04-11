@@ -8,9 +8,9 @@
 namespace eventbuilder {
 
 // Define a simple CRC32 implementation for checksum
-inline uint32_t crc32(const std::vector<char>& data) {
+inline uint32_t crc32(const std::vector<uint8_t>& data) {
     uint32_t crc = 0xFFFFFFFF;
-    for (char c : data) {
+    for (uint8_t c : data) {
         crc ^= static_cast<uint8_t>(c);
         for (int i = 0; i < 8; ++i) {
             if (crc & 1) {
@@ -47,7 +47,7 @@ struct FragmentHeader {
 // Represents a single data fragment
 struct DataFragment {
     FragmentHeader header;
-    std::vector<char> payload; // Raw byte data from the readout
+    std::vector<uint8_t> payload; // Raw byte data from the readout
     FragmentTrailer trailer;
 };
 

@@ -9,13 +9,13 @@ namespace eventbuilder {
 struct PhysicsEventData {
     long long timestamp = 0;
     long long event_id = 0;
+
     // Generic, encoded blocks for downstream DAQ to decode per-subsystem
     std::vector<GenericDataBlock> blocks;
-    // List of subsystem ids present in the assembled event (for quick inspection)
+    
+    // List of subsystem ids present in the assembled event
     std::vector<uint64_t> systems_readout;
 
-    // Provide a clear() method so this lightweight struct satisfies
-    // interfaces (e.g. framework::Bus::Passenger) that expect a clear()
     // member to reset the stored payload.
     void clear() {
         timestamp = 0;
