@@ -1,6 +1,7 @@
 name: Apply Python formatting
 on:
   pull_request:
+      types: [opened, ready_for_review]
   workflow_dispatch:
   schedule:
     - cron: '0 0 * * 0'

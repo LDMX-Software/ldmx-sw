@@ -26,6 +26,8 @@ void SimulatorBase::updateEventHeader(ldmx::EventHeader& eventHeader) const {
                                 event_info->getENEnergy());
   eventHeader.setFloatParameter("db_material_z",
                                 event_info->getDarkBremMaterialZ());
+  eventHeader.setFloatParameter("aprime_conversion_material_z",
+                                event_info->getAPrimeConversionMaterialZ());
 }
 void SimulatorBase::onProcessEnd() {
   run_manager_->TerminateEventLoop();
@@ -110,11 +112,11 @@ void SimulatorBase::configure(framework::config::Parameters& parameters) {
   parameters_ = parameters;
 
   pre_init_commands_ =
-      parameters_.get<std::vector<std::string>>("preInitCommands", {});
+      parameters_.get<std::vector<std::string>>("pre_init_commands", {});
 
   // Get the extra simulation configuring commands
   post_init_commands_ =
-      parameters_.get<std::vector<std::string>>("postInitCommands", {});
+      parameters_.get<std::vector<std::string>>("post_init_commands", {});
 
   verifyParameters();
   if (run_manager_) {

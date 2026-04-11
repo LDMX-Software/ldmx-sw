@@ -55,10 +55,10 @@ void Simulator::beforeNewRun(ldmx::RunHeader& header) {
 
   string_vector_dump(
       "Pre Init Command",
-      parameters_.get<std::vector<std::string>>("preInitCommands", {}));
+      parameters_.get<std::vector<std::string>>("pre_init_commands", {}));
   string_vector_dump(
       "Post Init Command",
-      parameters_.get<std::vector<std::string>>("postInitCommands", {}));
+      parameters_.get<std::vector<std::string>>("post_init_commands", {}));
 
   simcore::XsecBiasingOperator::Factory::get().apply(
       [&header](auto bop) { bop->RecordConfig(header); });

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE gdml [
 <!ENTITY constants SYSTEM "constants.gdml">
+
 ]>
 <gdml xmlns:gdml="http://cern.ch/2001/Schemas/GDML" 
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
@@ -3455,24 +3456,9 @@
         <rotation name="identity" unit="radian" z="0" x="0" y="0" />
     </define>
 
-    <materials>
-        <element Z="1" formula="H" name="H">
-            <atom type="A" unit="g/mol" value="1.00794"/>
-        </element>
-        <material name="Vacuum" state="gas">
-            <MEE unit="eV" value="19.2"/>
-            <D unit="g/cm3" value="9.99999473841014e-09"/>
-            <fraction n="1" ref="H"/>
-        </material>
-        <material name="Fe" Z="26.0">
-            <D value="7.874" />
-            <atom value="55.845" />
-        </material>
-        <material name="Cu" Z="29.0">
-            <D value="8.96" />
-            <atom value="63.546" />
-        </material>
-    </materials>
+    
+      
+    
 
     <solids>
         <box aunit="radian" lunit="mm" name="magnet_box" x="magnet_box_x" y="magnet_box_y" z="magnet_box_z" />
@@ -10224,43 +10210,43 @@
     
     <structure>
         <volume name="coil_1_vol" >
-            <materialref ref="Cu" />
+            <materialref ref="Copper" />
             <solidref ref="coil_1" />
         </volume>
         <volume name="coil_2_vol" >
-            <materialref ref="Cu" />
+            <materialref ref="Copper" />
             <solidref ref="coil_2" />
         </volume>
         <volume name="shim_right" >
-            <materialref ref="Fe" />
+            <materialref ref="Iron" />
             <solidref ref="shim_right_box" />
         </volume>
         <volume name="shim_left" >
-            <materialref ref="Fe" />
+            <materialref ref="Iron" />
             <solidref ref="shim_left_box" />
         </volume>
         <volume name="corner_iron_block_top_left" >
-            <materialref ref="Fe" />
+            <materialref ref="Iron" />
             <solidref ref="corner_iron_block_top_left_box" />
         </volume>
         <volume name="corner_iron_block_top_right" >
-            <materialref ref="Fe" />
+            <materialref ref="Iron" />
             <solidref ref="corner_iron_block_top_right_box" />
         </volume>
         <volume name="corner_iron_block_bot_left" >
-            <materialref ref="Fe" />
+            <materialref ref="Iron" />
             <solidref ref="corner_iron_block_bot_left_box" />
         </volume>
         <volume name="corner_iron_block_bot_right" >
-            <materialref ref="Fe" />
+            <materialref ref="Iron" />
             <solidref ref="corner_iron_block_bot_right_box" />
         </volume>
         <volume name="center_iron_block_top" >
-            <materialref ref="Fe" />
+            <materialref ref="Iron" />
             <solidref ref="center_iron_block_top_box" />
         </volume>
         <volume name="center_iron_block_bot" >
-            <materialref ref="Fe" />
+            <materialref ref="Iron" />
             <solidref ref="center_iron_block_bot_box" />
         </volume>
         <volume name="ldmx_magnet" >

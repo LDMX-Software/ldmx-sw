@@ -16,6 +16,7 @@ void SimCalorimeterHit::clear() {
   pdg_code_contribs_.clear();
   edep_contribs_.clear();
   time_contribs_.clear();
+  origin_contribs_.clear();
 
   n_contribs_ = 0;
   id_ = 0;
@@ -33,6 +34,15 @@ std::ostream& operator<<(std::ostream& o, const SimCalorimeterHit& hit) {
               "position: ( "
            << hit.x_ << ", " << hit.y_ << ", " << hit.z_
            << " ), num contribs: " << hit.n_contribs_ << " }";
+}
+
+std::ostream& operator<<(std::ostream& o,
+                         const SimCalorimeterHit::Contrib& contrib) {
+  return o << "Contrib { " << "incident_id: " << contrib.incident_id_
+           << ",  track_id: " << contrib.track_id_
+           << ", pdg_code: " << contrib.pdg_code_ << ", edep: " << contrib.edep_
+           << ", time: " << contrib.time_
+           << ", origin_id: " << contrib.origin_id_ << " }";
 }
 
 void SimCalorimeterHit::addContrib(int incidentID, int trackID, int pdgCode,
@@ -80,4 +90,18 @@ void SimCalorimeterHit::updateContrib(int i, float edep, float time) {
   }
   edep_ += edep;
 }
+
+void SimCalorimeterHit::encodeTracks(
+    std::function<int(int, unsigned int, unsigned int)> encodeFunc,
+    const unsigned int encoding_version, const unsigned int event_index) {
+  for (int i_contrib = 0; i_contrib < this->n_contribs_; i_contrib++) {
+    this->track_id_contribs_[i_contrib] = encodeFunc(
+        this->track_id_contribs_[i_contrib], encoding_version, event_index);
+    this->incident_id_contribs_[i_contrib] = encodeFunc(
+        this->incident_id_contribs_[i_contrib], encoding_version, event_index);
+    this->origin_contribs_[i_contrib] = encodeFunc(
+        this->origin_contribs_[i_contrib], encoding_version, event_index);
+  }
+}
+
 }  // namespace ldmx

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE gdml [
 <!ENTITY constants SYSTEM "constants.gdml">
+
 ]>
 <gdml xmlns:gdml="http://cern.ch/2001/Schemas/GDML" 
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
@@ -22,22 +23,9 @@
   
   </solids>
 
-  <materials>
-
-      <material name="Vacuum" state="gas">
-      <MEE unit="eV" value="19.2"/>
-      <D unit="g/cm3" value="9.99999473841014e-09"/>
-      <fraction n="1" ref="H"/>
-    </material>
+  
     
-    <!-- Scintillator -->
-    <material name="Polyvinyltoluene">
-      <D type="density" value="1.023" unit="g/cm3"/>
-      <composite n="27" ref="C"/>
-      <composite n="30" ref="H"/>
-    </material>
-
-  </materials>
+  
 
   <structure>
 

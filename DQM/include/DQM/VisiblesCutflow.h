@@ -43,6 +43,7 @@ class VisiblesCutflow : public framework::Analyzer {
   std::string track_pass_name_;
   std::string sp_collection_;
   std::string sp_pass_name_;
+  std::string sim_particles_coll_name_;
   std::string sim_particles_pass_name_;
   std::string ecal_veto_collection_;
   std::string ecal_veto_pass_;

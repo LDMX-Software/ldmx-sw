@@ -8,7 +8,7 @@ import os
 import sys
 
 
-def makeBDTPath( bdt_name ) :
+def make_bdt_path(bdt_name):
     """Get the full path to the installed BDT files
 
     Exits entire python script if file does not exist.
@@ -25,17 +25,18 @@ def makeBDTPath( bdt_name ) :
 
     Examples
     --------
-        ecal_veto.bdt_file = makeBDTPath( 'gabrielle' )
+        ecal_veto.bdt_file = make_bdt_path( 'gabrielle' )
     """
 
-    full_path = '@CMAKE_INSTALL_PREFIX@/data/Ecal/' + bdt_name + '.onnx'
-    if not os.path.isfile( full_path ) :
-        print(f'ERROR: ONNX model file \'{full_path}\' does not exist.')
+    full_path = "@CMAKE_INSTALL_PREFIX@/data/Ecal/" + bdt_name + ".onnx"
+    if not os.path.isfile(full_path):
+        print(f"ERROR: ONNX model file '{full_path}' does not exist.")
         sys.exit(1)
 
     return full_path
 
-def makeRoCPath( roc_name ) :
+
+def make_roc_path(roc_name):
     """Get the full path to the RoC csv file
 
     Exits entire python script if file does not exist.
@@ -52,12 +53,12 @@ def makeRoCPath( roc_name ) :
 
     Examples
     --------
-        ecal_veto.roc_file = makeRoCPath( 'RoC_v14_8gev' )
+        ecal_veto.roc_file = make_roc_path( 'RoC_v14_8gev' )
     """
 
-    full_path = '@CMAKE_INSTALL_PREFIX@/data/Ecal/' + roc_name + '.csv'
-    if not os.path.isfile( full_path ) :
-        print(f'ERROR: RoC csv file \'{full_path}\' does not exist.')
+    full_path = "@CMAKE_INSTALL_PREFIX@/data/Ecal/" + roc_name + ".csv"
+    if not os.path.isfile(full_path):
+        print(f"ERROR: RoC csv file '{full_path}' does not exist.")
         sys.exit(1)
 
     return full_path

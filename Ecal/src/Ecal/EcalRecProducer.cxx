@@ -26,7 +26,7 @@ void EcalRecProducer::configure(framework::config::Parameters& ps) {
   sim_hit_pass_name_ = ps.get<std::string>("sim_hit_pass_name");
   rec_hit_coll_name_ = ps.get<std::string>("rec_hit_coll_name");
 
-  layer_weights_ = ps.get<std::vector<double>>("layerWeights");
+  layer_weights_ = ps.get<std::vector<double>>("layer_weights");
   second_order_energy_correction_ =
       ps.get<double>("second_order_energy_correction");
 

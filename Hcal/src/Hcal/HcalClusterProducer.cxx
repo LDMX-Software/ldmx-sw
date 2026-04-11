@@ -4,8 +4,7 @@
 #include <iostream>
 
 #include "Hcal/MyClusterWeight.h"
-#include "Hcal/TemplatedClusterFinder.h"
-#include "Hcal/WorkingCluster.h"
+#include "Recon/TemplatedClusterFinder.h"
 #include "TFile.h"
 #include "TString.h"
 #include "TTree.h"
@@ -35,7 +34,7 @@ void HcalClusterProducer::produce(framework::Event& event) {
   const ldmx::HcalGeometry& hcal_geom = getCondition<ldmx::HcalGeometry>(
       ldmx::HcalGeometry::CONDITIONS_OBJECT_NAME);
 
-  TemplatedClusterFinder<MyClusterWeight> finder;
+  recon::TemplatedClusterFinder<ldmx::HcalHit, MyClusterWeight> finder;
 
   std::vector<ldmx::HcalCluster> hcal_clusters;
   std::list<const ldmx::HcalHit*> seed_list;
@@ -49,23 +48,22 @@ void HcalClusterProducer::produce(framework::Event& event) {
   for (ldmx::HcalHit& hit : hcal_hits) {
     if (hit.getEnergy() < enoise_cut_) continue;
     if (hit.getEnergy() == 0) continue;
-    finder.add(&hit, hcal_geom);
+    auto pos = hcal_geom.getStripCenterPosition(hit.getID());
+    finder.add(&hit, pos.x(), pos.y(), pos.z());
   }
 
-  // seedList.sort([](const ldmx::HcalHit* a, const ldmx::HcalHit* b) {return
-  // a->getEnergy() > b->getEnergy();});
-  finder.cluster(emin_cluster_, cut_off_, delta_time_);
+  finder.cluster(emin_cluster_, cut_off_);
 
-  std::vector<WorkingCluster> wc_vec = finder.getClusters();
-  for (unsigned int c = 0; c < wc_vec.size(); c++) {
+  auto wc_vec = finder.getClusters();
+  for (size_t c = 0; c < wc_vec.size(); c++) {
     if (wc_vec[c].empty()) continue;
     ldmx::HcalCluster cluster;
-    cluster.setEnergy(wc_vec[c].centroid().E());
-    cluster.setCentroidXYZ(wc_vec[c].centroid().Px(), wc_vec[c].centroid().Py(),
-                           wc_vec[c].centroid().Pz());
-    cluster.setNHits(wc_vec[c].getHits().size());
-    cluster.addHits(wc_vec[c].getHits());
-    std::vector<const ldmx::HcalHit*> hits = wc_vec[c].getHits();
+    cluster.setEnergy(wc_vec[c].energy());
+    cluster.setCentroidXYZ(wc_vec[c].centroidX(), wc_vec[c].centroidY(),
+                           wc_vec[c].centroidZ());
+    cluster.setNHits(wc_vec[c].hits().size());
+    cluster.addHits(wc_vec[c].hits());
+    auto hits = wc_vec[c].hits();
     if (hits.size() > 0) {
       std::sort(hits.begin(), hits.end(), compHitTimes);
       cluster.setTime(hits[0]->getTime());

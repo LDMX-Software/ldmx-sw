@@ -46,6 +46,9 @@ void VertexProcessor::configure(framework::config::Parameters &parameters) {
 
   trk_coll_name_ = parameters.get<std::string>("trk_coll_name", "Tracks");
 
+  seeds_coll_name_ =
+      parameters.get<std::string>("seeds_coll_name", "RecoilTruthSeeds");
+
   input_pass_name_ = parameters.get<std::string>("input_pass_name");
 }
 
@@ -89,7 +92,7 @@ void VertexProcessor::produce(framework::Event &event) {
 
   // Retrieve the truth seeds
   const std::vector<ldmx::Track> seeds =
-      event.getCollection<ldmx::Track>("RecoilTruthSeeds", input_pass_name_);
+      event.getCollection<ldmx::Track>(seeds_coll_name_, input_pass_name_);
 
   if (tracks.size() < 1) return;
 
@@ -100,10 +103,11 @@ void VertexProcessor::produce(framework::Event &event) {
   // So should only be created once in principle.
   // There should be no perigeeSurface2
 
+  Acts::Vector3 perigee_acts = tracking::sim::utils::ldmx2Acts(
+      Acts::Vector3(tracks.front().getPerigeeX(), tracks.front().getPerigeeY(),
+                    tracks.front().getPerigeeZ()));
   std::shared_ptr<Acts::PerigeeSurface> perigee_surface =
-      Acts::Surface::makeShared<Acts::PerigeeSurface>(Acts::Vector3(
-          tracks.front().getPerigeeX(), tracks.front().getPerigeeY(),
-          tracks.front().getPerigeeZ()));
+      Acts::Surface::makeShared<Acts::PerigeeSurface>(perigee_acts);
 
   for (unsigned int i_track = 0; i_track < tracks.size(); i_track++) {
     Acts::BoundVector param_vec;
@@ -142,10 +146,12 @@ void VertexProcessor::produce(framework::Event &event) {
 
   if (seeds.size() == 2) {
     for (int i_seed = 0; i_seed < seeds.size(); i_seed++) {
-      std::shared_ptr<Acts::PerigeeSurface> perigee_surface2 =
-          Acts::Surface::makeShared<Acts::PerigeeSurface>(Acts::Vector3(
+      Acts::Vector3 seed_perigee_acts =
+          tracking::sim::utils::ldmx2Acts(Acts::Vector3(
               seeds.at(i_seed).getPerigeeX(), seeds.at(i_seed).getPerigeeY(),
               seeds.at(i_seed).getPerigeeZ()));
+      std::shared_ptr<Acts::PerigeeSurface> perigee_surface2 =
+          Acts::Surface::makeShared<Acts::PerigeeSurface>(seed_perigee_acts);
 
       Acts::BoundVector param_vec;
       param_vec << seeds.at(i_seed).getD0(), seeds.at(i_seed).getZ0(),
@@ -155,7 +161,7 @@ void VertexProcessor::produce(framework::Event &event) {
       Acts::BoundSquareMatrix cov_mat =
           tracking::sim::utils::unpackCov(seeds.at(i_seed).getPerigeeCov());
       int pion_pdg_id = 211;  // pi+
-      if (seeds.at(i_seed).q() < 0) pion_pdg_id = -211;
+      if (seeds.at(i_seed).getCharge() < 0) pion_pdg_id = -211;
       // BoundTrackParameters needs the particle hypothesis
       auto part{Acts::GenericParticleHypothesis(
           Acts::ParticleHypothesis(Acts::PdgParticle(pion_pdg_id)))};
