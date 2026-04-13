@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <fstream>
+#include <iomanip>
 #include <vector>
 #include <cstdint>
 #include <cstring>
@@ -12,12 +13,49 @@
 #include "EventBuilder/Fragment.hh"
 #include "EventBuilder/Event/PhysicsEventData.hh"
 #include "EventBuilder/Event/GenericDataBlock.hh"
-#include "EventBuilder/EventSummary.hh"
+#include "Framework/EventSummary.h"
 #include "Packing/LDMXRoRHeader.h"
 #include "Packing/RogueFrameHeader.h"
 #include "Packing/RawDataFile/SubsystemPacket.h"
 
 using namespace eventbuilder;
+
+// Global flag to track if performance CSV header has been written
+static bool g_perf_csv_header_written = false;
+
+// Helper function to write performance metrics to CSV
+void write_performance_metric(
+    unsigned int event_id,
+    double build_time_ms,
+    double cum_events_per_sec,
+    double cum_mb_per_sec,
+    double window_events_per_sec,
+    double window_mb_per_sec,
+    uint64_t total_events,
+    uint64_t total_bytes) {
+    
+    std::ofstream perf_csv("event_performance.csv", std::ios::app);
+    if (!perf_csv) return;
+    
+    // Write header on first call
+    if (!g_perf_csv_header_written) {
+        perf_csv << "event_id,event_build_time_ms,cum_events_per_sec,cum_mb_per_sec,"
+                 << "window_events_per_sec,window_mb_per_sec,total_events,total_bytes_mb\n";
+        g_perf_csv_header_written = true;
+    }
+    
+    // Write data with consistent formatting
+    double total_mb = total_bytes / (1024.0 * 1024.0);
+    perf_csv << event_id << ","
+             << std::fixed << std::setprecision(3) << build_time_ms << ","
+             << std::fixed << std::setprecision(2) << cum_events_per_sec << ","
+             << std::fixed << std::setprecision(3) << cum_mb_per_sec << ","
+             << std::fixed << std::setprecision(2) << window_events_per_sec << ","
+             << std::fixed << std::setprecision(3) << window_mb_per_sec << ","
+             << total_events << ","
+             << std::fixed << std::setprecision(2) << total_mb << "\n";
+    perf_csv.flush();
+}
 
 void EventBuilder::configure(framework::config::Parameters &ps) {
   if (ps.exists("verbose_parse")) {
@@ -48,6 +86,17 @@ void EventBuilder::configure(framework::config::Parameters &ps) {
     std::cerr << "[EventBuilder] ERROR: no input file specified\n";
   }
   std::cerr.flush();
+
+  // Initialize performance tracking
+  m_start_time = std::chrono::steady_clock::now();
+  m_total_bytes_read = 0;
+  m_total_events_built = 0;
+  m_events_since_last_report = 0;
+  
+  // Initialize windowed metrics for real-time DAQ monitoring
+  m_window_start_time = m_start_time;
+  m_window_events_count = 0;
+  m_window_bytes_read = 0;
 }
 
 void EventBuilder::produce(framework::Event &event) {
@@ -59,9 +108,15 @@ void EventBuilder::produce(framework::Event &event) {
         std::cerr << "[EventBuilder] produce() call #" << produce_call_count << std::endl;
     }
 
+    // Start timing for this event
+    m_event_start_time = std::chrono::steady_clock::now();
+
     // Read ONE event per produce() call
     // Loop through frames in the file until we form a complete event
     const long long coherence_window_ns = 5000000;  // 5 ms window for collecting fragments from same physics event
+    
+    // Track errors encountered during event assembly
+    uint32_t current_event_errors = 0;
     
     // Helper to convert subsystem ID to name
     auto subsystem_id_to_name = [](uint64_t id) -> std::string {
@@ -128,6 +183,7 @@ void EventBuilder::produce(framework::Event &event) {
         } catch (...) {
             // RoR parse failed, try packing subsystem format
             if (m_verbose_parse) std::cerr << "[EventBuilder] RoR header parse failed, trying packing subsystem format\n";
+            current_event_errors |= ldmx::EventSummary::ERROR_PARSE_FAILURE;
             m_reader.seek(pos_before_ror);
         }
         
@@ -152,6 +208,7 @@ void EventBuilder::produce(framework::Event &event) {
             } catch (...) {
                 // Both parse attempts failed, skip this frame
                 if (m_verbose_parse) std::cerr << "[EventBuilder] failed to parse as either format, skipping frame\n";
+                current_event_errors |= ldmx::EventSummary::ERROR_PARSE_FAILURE;
                 m_reader.seek(frame_end);
                 continue;
             }
@@ -195,21 +252,73 @@ void EventBuilder::produce(framework::Event &event) {
                 std::cerr << "[EventBuilder] assembled event id=" << m_event_id << " timestamp=" << final_event.timestamp
                           << " fragments=" << assembled_event_fragments.size() << " systems=" << final_event.systems_readout.size() << std::endl;
                 
-                EventSummary summary;
-                summary.event_id = m_event_id;
-                summary.timestamp_ns = static_cast<uint64_t>(final_event.timestamp);
+                ldmx::EventSummary summary;
+                summary.setEventId(m_event_id);
+                summary.setTimestampNs(static_cast<uint64_t>(final_event.timestamp));
                 std::set<uint64_t> unique_sys;
                 uint64_t total_payload = 0;
                 for (const auto &f : assembled_event_fragments) {
                     unique_sys.insert(f.header.subsystem_id);
                     total_payload += f.payload.size();
                 }
-                summary.nsystems = static_cast<uint32_t>(unique_sys.size());
-                summary.system_ids.assign(unique_sys.begin(), unique_sys.end());
-                summary.payload_size = total_payload;
-                summary.error_flags = 0;
-                std::ofstream ofs("event_summaries.txt", std::ios::app);
-                if (ofs) ofs << summary.to_csv() << '\n';
+                // Check for duplicate subsystems
+                if (unique_sys.size() != assembled_event_fragments.size()) {
+                    current_event_errors |= ldmx::EventSummary::ERROR_DUPLICATE_SUBSYSTEM;
+                }
+                summary.setNSystems(static_cast<uint32_t>(unique_sys.size()));
+                summary.setSystemIds(std::vector<uint64_t>(unique_sys.begin(), unique_sys.end()));
+                summary.setPayloadSize(total_payload);
+                summary.setErrorFlags(current_event_errors);
+                event.add("EventSummary", summary);
+                
+                // Update performance metrics
+                m_total_bytes_read += total_payload;
+                m_total_events_built++;
+                m_events_since_last_report++;
+                auto now = std::chrono::steady_clock::now();
+                auto event_build_time_ms = std::chrono::duration_cast<std::chrono::milliseconds>(now - m_event_start_time);
+                auto total_elapsed_s = std::chrono::duration_cast<std::chrono::seconds>(now - m_start_time);
+                
+                double events_per_sec = (total_elapsed_s.count() > 0) ? (double)m_total_events_built / total_elapsed_s.count() : 0.0;
+                double mb_per_sec = (total_elapsed_s.count() > 0) ? (double)m_total_bytes_read / (1024.0 * 1024.0) / total_elapsed_s.count() : 0.0;
+                
+                // Update windowed metrics
+                m_window_events_count++;
+                m_window_bytes_read += total_payload;
+                auto window_elapsed_s = std::chrono::duration_cast<std::chrono::seconds>(now - m_window_start_time);
+                
+                // Reset window if we've processed WINDOW_SIZE events
+                double window_events_per_sec = 0.0;
+                double window_mb_per_sec = 0.0;
+                if (m_window_events_count >= WINDOW_SIZE) {
+                    double window_time_sec = std::max(1.0, (double)window_elapsed_s.count());
+                    window_events_per_sec = (double)m_window_events_count / window_time_sec;
+                    window_mb_per_sec = (double)m_window_bytes_read / (1024.0 * 1024.0) / window_time_sec;
+                    
+                    // Reset window
+                    m_window_start_time = now;
+                    m_window_events_count = 0;
+                    m_window_bytes_read = 0;
+                }
+                
+                // Write performance metrics to CSV
+                auto event_build_time_ms_val = event_build_time_ms.count();
+                write_performance_metric(m_event_id, static_cast<double>(event_build_time_ms_val), 
+                                        events_per_sec, mb_per_sec, 
+                                        window_events_per_sec, window_mb_per_sec,
+                                        m_total_events_built, m_total_bytes_read);
+                
+                if (m_verbose_parse || m_events_since_last_report % 100 == 0) {
+                    std::cerr << "[EventBuilder] Performance (Cumulative): "
+                              << "events_per_sec=" << std::fixed << std::setprecision(2) << events_per_sec << ", "
+                              << "mb_per_sec=" << std::fixed << std::setprecision(3) << mb_per_sec << " | "
+                              << "(Window-100): "
+                              << "events_per_sec=" << std::fixed << std::setprecision(2) << window_events_per_sec << ", "
+                              << "mb_per_sec=" << std::fixed << std::setprecision(3) << window_mb_per_sec << " | "
+                              << "build_time=" << event_build_time_ms.count() << "ms" << std::endl;
+                }
+                
+                current_event_errors = 0;  // Reset for next event
                 return;  // Return the event to framework
             }
         }
@@ -226,6 +335,9 @@ void EventBuilder::produce(framework::Event &event) {
     std::vector<DataFragment> assembled_event_fragments;
     while (m_event_buffer.try_build_event(coherence_window_ns, assembled_event_fragments)) {
         if (assembled_event_fragments.empty()) break;
+        
+        // Mark truncated events (those flushed at EOF)
+        current_event_errors |= ldmx::EventSummary::ERROR_TRUNCATED_EVENT;
         
         ++m_event_id;
         // Add each subsystem's raw data as vector<uint8_t> directly
@@ -245,25 +357,86 @@ void EventBuilder::produce(framework::Event &event) {
         std::cerr << "[EventBuilder] assembled event id=" << m_event_id << " timestamp=" << final_event.timestamp
                   << " fragments=" << assembled_event_fragments.size() << " systems=" << final_event.systems_readout.size() << std::endl;
         
-        EventSummary summary;
-        summary.event_id = m_event_id;
-        summary.timestamp_ns = static_cast<uint64_t>(final_event.timestamp);
+        ldmx::EventSummary summary;
+        summary.setEventId(m_event_id);
+        summary.setTimestampNs(static_cast<uint64_t>(final_event.timestamp));
         std::set<uint64_t> unique_sys;
         uint64_t total_payload = 0;
         for (const auto &f : assembled_event_fragments) {
             unique_sys.insert(f.header.subsystem_id);
             total_payload += f.payload.size();
         }
-        summary.nsystems = static_cast<uint32_t>(unique_sys.size());
-        summary.system_ids.assign(unique_sys.begin(), unique_sys.end());
-        summary.payload_size = total_payload;
-        summary.error_flags = 0;
-        std::ofstream ofs("event_summaries.txt", std::ios::app);
-        if (ofs) ofs << summary.to_csv() << '\n';
+        // Check for duplicate subsystems
+        if (unique_sys.size() != assembled_event_fragments.size()) {
+            current_event_errors |= ldmx::EventSummary::ERROR_DUPLICATE_SUBSYSTEM;
+        }
+        summary.setNSystems(static_cast<uint32_t>(unique_sys.size()));
+        summary.setSystemIds(std::vector<uint64_t>(unique_sys.begin(), unique_sys.end()));
+        summary.setPayloadSize(total_payload);
+        summary.setErrorFlags(current_event_errors);
+        event.add("EventSummary", summary);
+        
+        // Update performance metrics
+        m_total_bytes_read += total_payload;
+        m_total_events_built++;
+        m_events_since_last_report++;
+        auto now = std::chrono::steady_clock::now();
+        auto event_build_time_ms = std::chrono::duration_cast<std::chrono::milliseconds>(now - m_event_start_time);
+        auto total_elapsed_s = std::chrono::duration_cast<std::chrono::seconds>(now - m_start_time);
+        
+        double events_per_sec = (total_elapsed_s.count() > 0) ? (double)m_total_events_built / total_elapsed_s.count() : 0.0;
+        double mb_per_sec = (total_elapsed_s.count() > 0) ? (double)m_total_bytes_read / (1024.0 * 1024.0) / total_elapsed_s.count() : 0.0;
+        
+        // Update windowed metrics
+        m_window_events_count++;
+        m_window_bytes_read += total_payload;
+        auto window_elapsed_s = std::chrono::duration_cast<std::chrono::seconds>(now - m_window_start_time);
+        
+        // Calculate window metrics (for final event, may not have full window)
+        double window_events_per_sec = 0.0;
+        double window_mb_per_sec = 0.0;
+        if (m_window_events_count >= WINDOW_SIZE || window_elapsed_s.count() > 0) {
+            double window_time_sec = std::max(1.0, (double)window_elapsed_s.count());
+            window_events_per_sec = (double)m_window_events_count / window_time_sec;
+            window_mb_per_sec = (double)m_window_bytes_read / (1024.0 * 1024.0) / window_time_sec;
+        }
+        
+        // Write performance metrics to CSV
+        auto event_build_time_ms_val = event_build_time_ms.count();
+        write_performance_metric(m_event_id, static_cast<double>(event_build_time_ms_val), 
+                                events_per_sec, mb_per_sec,
+                                window_events_per_sec, window_mb_per_sec,
+                                m_total_events_built, m_total_bytes_read);
+        
+        if (m_verbose_parse || m_events_since_last_report % 100 == 0) {
+            std::cerr << "[EventBuilder] Performance (Cumulative): "
+                      << "events_per_sec=" << std::fixed << std::setprecision(2) << events_per_sec << ", "
+                      << "mb_per_sec=" << std::fixed << std::setprecision(3) << mb_per_sec << " | "
+                      << "(Window-100): "
+                      << "events_per_sec=" << std::fixed << std::setprecision(2) << window_events_per_sec << ", "
+                      << "mb_per_sec=" << std::fixed << std::setprecision(3) << window_mb_per_sec << " | "
+                      << "build_time=" << event_build_time_ms.count() << "ms" << std::endl;
+        }
+        
+        current_event_errors = 0;  // Reset for next event
         
         assembled_event_fragments.clear();
         return;
     }
+    
+    // No more events - print final summary statistics
+    auto final_time = std::chrono::steady_clock::now();
+    auto total_time_s = std::chrono::duration_cast<std::chrono::seconds>(final_time - m_start_time);
+    double final_events_per_sec = (total_time_s.count() > 0) ? (double)m_total_events_built / total_time_s.count() : 0.0;
+    double final_mb_per_sec = (total_time_s.count() > 0) ? (double)m_total_bytes_read / (1024.0 * 1024.0) / total_time_s.count() : 0.0;
+    
+    std::cerr << "\n[EventBuilder] ===== FINAL STATISTICS =====\n"
+              << "[EventBuilder] Total events built: " << m_total_events_built << "\n"
+              << "[EventBuilder] Total bytes read: " << m_total_bytes_read / (1024.0 * 1024.0) << " MB\n"
+              << "[EventBuilder] Total time: " << total_time_s.count() << " seconds\n"
+              << "[EventBuilder] Average events/sec: " << final_events_per_sec << "\n"
+              << "[EventBuilder] Average MB/sec: " << final_mb_per_sec << "\n"
+              << "[EventBuilder] ============================\n" << std::endl;
     
     abortEvent();
 }

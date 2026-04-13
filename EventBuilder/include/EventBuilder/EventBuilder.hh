@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include <chrono>
 #include "FragmentBuffer.hh"
 #include "Event/PhysicsEventData.hh"
 #include "Framework/EventProcessor.h"
@@ -30,6 +31,19 @@ class EventBuilder : public framework::Producer {
   std::string m_input_file;
   packing::utility::Reader m_reader;
   std::string m_output_name{"BuilderOutput"};
+
+  // Performance metrics
+  std::chrono::steady_clock::time_point m_start_time;
+  std::chrono::steady_clock::time_point m_event_start_time;
+  uint64_t m_total_bytes_read{0};
+  uint64_t m_total_events_built{0};
+  unsigned long m_events_since_last_report{0};
+
+  // Windowed metrics for real-time monitoring (DAQ use)
+  static constexpr unsigned int WINDOW_SIZE = 100;  // Calculate rates over last 100 events
+  std::chrono::steady_clock::time_point m_window_start_time;
+  uint64_t m_window_events_count{0};
+  uint64_t m_window_bytes_read{0};
 };
 
 }  // namespace eventbuilder

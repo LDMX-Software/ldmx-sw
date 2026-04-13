@@ -1,35 +1,17 @@
-// EventSummary.hh - simple event summary structure for event builder
+// EventSummary.hh - DEPRECATED
+// EventSummary has been moved to Framework/include/Framework/EventSummary.h
+// in the ldmx namespace for proper ROOT serialization
+// This file is kept for backwards compatibility during transition
+
 #ifndef EVENT_SUMMARY_H
 #define EVENT_SUMMARY_H
 
-#include <cstdint>
-#include <vector>
-#include <string>
-#include <sstream>
+#include "Framework/EventSummary.h"
 
+// For backwards compatibility, create aliases in eventbuilder namespace
 namespace eventbuilder {
-
-struct EventSummary {
-    uint64_t event_id = 0;
-    uint64_t timestamp_ns = 0;
-    uint32_t nsystems = 0;
-    std::vector<uint64_t> system_ids;
-    uint64_t payload_size = 0;
-    uint32_t error_flags = 0;
-
-    // CSV format: eventID,timestamp_ns,nsystems,systemid1;systemid2;...,payload_size,errorflags
-    std::string to_csv() const {
-        std::ostringstream oss;
-        oss << event_id << ',' << timestamp_ns << ',' << nsystems << ',';
-        for (size_t i = 0; i < system_ids.size(); ++i) {
-            if (i) oss << ';';
-            oss << system_ids[i];
-        }
-        oss << ',' << payload_size << ',' << error_flags;
-        return oss.str();
-    }
-};
-
-} // namespace eventbuilder
+  using EventSummary = ldmx::EventSummary;
+  using ERROR_FLAGS = ldmx::EventSummary::ErrorFlags;
+}
 
 #endif // EVENT_SUMMARY_H

@@ -5,6 +5,7 @@
 
 #pragma link C++ namespace ldmx;
 #pragma link C++ class ldmx::EventHeader + ;
+#pragma link C++ class ldmx::EventSummary + ;
 #pragma link C++ class ldmx::RunHeader + ;
 
 #endif
