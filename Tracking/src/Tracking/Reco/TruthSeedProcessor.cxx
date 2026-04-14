@@ -206,8 +206,8 @@ void TruthSeedProcessor::createTruthTrack(
 
   // Create the seed track object.
   Acts::Vector3 ref = target_surface->center(geometryContext());
-
-  trk.setPerigeeLocation(ref(0), ref(1), ref(2));
+  Acts::Vector3 ref_ldmx = tracking::sim::utils::acts2Ldmx(ref);
+  trk.setPerigeeLocation(ref_ldmx(0), ref_ldmx(1), ref_ldmx(2));
 
   auto prop_bound_vec = prop_bound_state->parameters();
 
