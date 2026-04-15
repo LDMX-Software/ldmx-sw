@@ -45,7 +45,7 @@ p.logger.term_level = 2
 p.logger.file_path = log_name
 p.logger.file_level = log_verbosity
 
-# if log_verbosity < 2:
-#     p.logger.debug(dec)
-# if log_verbosity < 1:
-#     p.logger.trace(dec)
+if log_verbosity < 2:
+    p.logger.debug(dec)
+if log_verbosity < 1:
+    p.logger.trace(dec)

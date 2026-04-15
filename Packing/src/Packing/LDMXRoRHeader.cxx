@@ -25,23 +25,27 @@ std::tuple<int, int> LDMXRoRHeader::subsystem(const std::string& name) {
 }
 
 utility::Reader& LDMXRoRHeader::read(utility::Reader& r) {
+  valid_ = false;
+
   uint8_t sentinel;
   uint32_t zero;
+
   if (!(r >> version_ >> subsystem_ >> contributor_ >> sentinel)) {
     return r;
   }
 
-  // sentinel should be 0xa5
-  assert(sentinel == 0xa5);
+  // sentinel should be 0xa5; if not, this is not a valid LDMX data frame
+  if (sentinel != 0xa5) return r;
 
-  if (!(r >> zero)) {
-    return r;
-  }
+  if (!(r >> zero)) return r;
 
   // next 32b should be zero since they are unused
-  assert(zero == 0);
+  if (zero != 0) return r;
 
-  return (r >> timestamp_);
+  if (!(r >> timestamp_)) return r;
+
+  valid_ = true;
+  return r;
 }
 
 }  // namespace packing

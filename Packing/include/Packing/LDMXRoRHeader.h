@@ -48,6 +48,8 @@ class LDMXRoRHeader {
    */
   static const std::unordered_map<std::string, int> CONTRIBUTOR_ID;
 
+  bool valid() const { return valid_; }
+
   /**
    * Get the (subsystem, contributor) pair for the input subsystem name
    *
@@ -88,6 +90,9 @@ class LDMXRoRHeader {
    * time.
    */
   uint64_t timestamp_;
+  
+  bool valid_{false};
+
 };
 
 }  // namespace packing

@@ -15,7 +15,7 @@ p.sequence = [
     rawio.SingleSubsystemUnpacker(
         dat_file=RAWfileName,
         output_name="ZCCMoutput",
-        frame_offset=1,
+        frame_offset=0,
         subsystem=2,
         contributor=1,   
     )
