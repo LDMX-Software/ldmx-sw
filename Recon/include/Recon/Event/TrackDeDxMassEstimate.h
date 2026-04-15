@@ -59,7 +59,7 @@ class TrackDeDxMassEstimate {
    * Set the number of hits used in the dEdx calculation.
    * @param nhits The number of hits used in the dEdx calculation.
    */
-  void setNhits(float nhits) { n_hits_ = nhits; }
+  void setNhits(int nhits) { n_hits_ = nhits; }
 
   /**
    * Set the Ih of the particle/track.
@@ -125,6 +125,12 @@ class TrackDeDxMassEstimate {
   int getTrackType() const { return track_type_; }
 
   /**
+   * Get the number of hits on the track.
+   * @return The umber of hits on the track.
+   */
+  int getNhits() const { return n_hits_; }
+
+  /**
    * Get the PDG ID of the track.
    * @return The DPG ID of the track.
    */
@@ -135,7 +141,7 @@ class TrackDeDxMassEstimate {
   float momentum_{0.};
 
   /* The number of hits used in the dEdx calculation */
-  float n_hits_{0.};
+  int n_hits_{0};
 
   /* The Ih of the particle/track */
   float the_ih_{0.};
@@ -155,7 +161,7 @@ class TrackDeDxMassEstimate {
   /**
    * The ROOT class definition.
    */
-  ClassDef(TrackDeDxMassEstimate, 5);
+  ClassDef(TrackDeDxMassEstimate, 6);
 };
 }  // namespace ldmx
 

@@ -8,11 +8,14 @@ where m is the particle mass, p is the particle momentum,
 K and C are fit parameters.
 Using the fitted result of the parameters, the mass of
 the particle can be calculated from its dE/dx and momentum.
+More info in https://arxiv.org/pdf/2412.12125
 
 Attributes:
 -------------
 track_collection : string
     Name of the track collection used as input
+input_pass_name: string
+    Pass name of the track collection used as input
 fit_res_c : float
     The fitted result of the constant term C (unit: MeV/mm)
 fit_res_k : float
@@ -31,12 +34,13 @@ from LDMX.Framework import Processor, processor
 class TrackDeDxMassEstimator(Processor):
     """Configuration for the mass estimator from tracker dEdx"""
 
-    track_collection: str = "RecoilTruthTracks"
+    track_collection: str = "RecoilTracks"
+    input_pass_name: str = ""
     fit_res_c: float = 3.094
     fit_res_k: float = 1.862
 
 
 recoil_track_mass_estimator = TrackDeDxMassEstimator(
     instance_name="RecoilTrackMassEstimator",
-    track_collection="RecoilTruthTracks",
+    track_collection="RecoilTracks",
 )
