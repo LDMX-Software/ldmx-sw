@@ -311,6 +311,8 @@ class TruthSeedProcessor(Processor):
         The name of the recoil seeds collection.
     recoil_truth_collection : str
         The name of the recoil truth collection.
+    field_map: str
+        Magnetic field map
     """
 
     debug: bool = False
@@ -330,10 +332,6 @@ class TruthSeedProcessor(Processor):
     skip_recoil: bool = False
     max_track_id: int = 5
     ecal_sp_coll_name: str = "EcalScoringPlaneHits"
-    trk_coll_name: str = ""
-    pdg_ids: list[int] = [11]
-    scoring_hits: str = "TargetScoringPlaneHits"
-    p_cut_ecal: float = -1.0
     sp_pass_name: str = ""
     input_pass_name: str = ""
     sim_particles_coll_name: str = "SimParticles"
@@ -344,6 +342,7 @@ class TruthSeedProcessor(Processor):
     tagger_truth_collection: str = "TaggerTruthTracks"
     recoil_seeds_collection: str = "RecoilTruthSeeds"
     recoil_truth_collection: str = "RecoilTruthTracks"
+    field_map: str = field(default_factory=make_field_map_path)
 
 
 @processor("tracking::reco::GreedyAmbiguitySolver", "Tracking")

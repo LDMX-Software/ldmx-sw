@@ -12,13 +12,43 @@ void TruthSeedProcessor::onNewRun(const ldmx::RunHeader& rh) {
   gctx_ = Acts::GeometryContext();
   normal_ = std::make_shared<std::normal_distribution<float>>(0., 1.);
 
-  Acts::StraightLineStepper stepper;
+  // Custom transformation of the interpolated bfield map
+  auto transform_pos = [](const Acts::Vector3& pos_) {
+    Acts::Vector3 rot_pos;
+    rot_pos(0) = pos_(1);
+    rot_pos(1) = pos_(2);
+    rot_pos(2) = pos_(0) + DIPOLE_OFFSET;
+    return rot_pos;
+  };
+
+  auto transform_b_field = [](const Acts::Vector3& field,
+                              const Acts::Vector3& /*pos_*/) {
+    Acts::Vector3 rot_field;
+    rot_field(0) = field(2);
+    rot_field(1) = field(0);
+    rot_field(2) = field(1);
+    return rot_field;
+  };
+
+  // Setup the interpolated bfield map
+  const auto map = std::make_shared<InterpolatedMagneticField3>(
+      loadDefaultBField(field_map_, transform_pos, transform_b_field));
+
+  // Setup the stepper and navigator
+  const auto stepper = Acts::EigenStepper<>{map};
   Acts::Navigator::Config nav_cfg{geometry().getTG()};
+  nav_cfg.resolveMaterial = true;
+  nav_cfg.resolvePassive = true;
+  nav_cfg.resolveSensitive = true;
   const Acts::Navigator navigator(nav_cfg);
 
-  linpropagator_ = std::make_shared<LinPropagator>(stepper, navigator);
+  propagator_ = std::make_unique<TruthPropagator>(
+      stepper, navigator,
+      Acts::getDefaultLogger("TruthPropagator", Acts::Logging::FATAL));
   trk_extrap_ = std::make_shared<std::decay_t<decltype(*trk_extrap_)>>(
-      *linpropagator_, geometryContext(), magneticFieldContext());
+      *propagator_, geometryContext(), magneticFieldContext());
+  trk_extrap_->setMaxStepSize(200);  // mm
+  trk_extrap_->setPathLimit(3000);   // mm
 }
 
 void TruthSeedProcessor::configure(framework::config::Parameters& parameters) {
@@ -88,6 +118,8 @@ void TruthSeedProcessor::configure(framework::config::Parameters& parameters) {
       parameters.get<std::string>("tagger_seeds_collection");
   recoil_seeds_collection_ =
       parameters.get<std::string>("recoil_seeds_collection");
+  // Get the field map for the propagator
+  field_map_ = parameters.get<std::string>("field_map");
 }
 
 void TruthSeedProcessor::createTruthTrack(
@@ -136,7 +168,8 @@ void TruthSeedProcessor::createTruthTrack(
 
   // The idea here is:
   // 1 - Define a bound track state parameters at point P on track. Basically a
-  // curvilinear representation. 2 - Propagate to target surface to obtain the
+  // curvilinear representation.
+  // 2 - Propagate to target surface to obtain the
   // BoundTrackState there.
 
   // Transform the position, momentum and charge to free parameters.
@@ -162,28 +195,21 @@ void TruthSeedProcessor::createTruthTrack(
   Acts::BoundTrackParameters bound_trk_pars(gen_surface, bound_params,
                                             std::nullopt, part);
 
-  // CAUTION:: The target surface should be close to the gen surface
-  // Linear propagation to the target surface. I assume 1mm of tolerance
-  Acts::Vector3 tgt_surf_center = target_surface->center(geometryContext());
-  Acts::Vector3 gen_surf_center = gen_surface->center(geometryContext());
-  // Tolerance
-  double tol = 1;  // mm
-
-  if (abs(tgt_surf_center(0) - gen_surf_center(0)) > tol)
-    ldmx_log(error) << "Linear extrapolation to a far away surface in B field."
-                    << "  This will cause inaccuracies in track parameters"
-                    << "  Distance extrapolated = "
-                    << (tgt_surf_center(0) - gen_surf_center(0));
-
   auto prop_bound_state =
       trk_extrap_->extrapolate(bound_trk_pars, target_surface);
+
+  if (!prop_bound_state) {
+    ldmx_log(warn) << "Propagation to target surface failed — "
+                   << "track may have exited the B-field map.";
+    return;
+  }
 
   // Create the seed track object.
   Acts::Vector3 ref = target_surface->center(geometryContext());
   Acts::Vector3 ref_ldmx = tracking::sim::utils::acts2Ldmx(ref);
   trk.setPerigeeLocation(ref_ldmx(0), ref_ldmx(1), ref_ldmx(2));
 
-  auto prop_bound_vec = (prop_bound_state.value()).parameters();
+  auto prop_bound_vec = prop_bound_state->parameters();
 
   trk.setPerigeeParameters(
       tracking::sim::utils::convertActsToLdmxPars(prop_bound_vec));
