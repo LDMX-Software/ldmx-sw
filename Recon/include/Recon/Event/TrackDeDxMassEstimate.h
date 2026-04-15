@@ -126,7 +126,7 @@ class TrackDeDxMassEstimate {
 
   /**
    * Get the number of hits on the track.
-   * @return The umber of hits on the track.
+   * @return The number of hits on the track.
    */
   int getNhits() const { return n_hits_; }
 
