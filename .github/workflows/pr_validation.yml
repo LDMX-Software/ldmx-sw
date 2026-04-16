@@ -91,9 +91,14 @@ jobs:
 
     - name: Get PR Info for Validation Job
       id: get_pr_again
+      env:
+        COMMENT_BODY: ${{ github.event.comment.body }}
       run: |
         if [[ "${{ github.event_name }}" == "issue_comment" ]]; then
           HEAD_REF=refs/pull/${{ github.event.issue.number }}/merge
+          if [[ "$COMMENT_BODY" =~ /run-validation[[:space:]]+with[[:space:]]+([0-9]+)[[:space:]]+events ]]; then
+            echo "LDMX_NUM_EVENTS=${BASH_REMATCH[1]}" >> $GITHUB_ENV
+          fi
         else
           HEAD_REF=${{ github.ref }}
         fi
