@@ -524,6 +524,29 @@ class EcalVetoResults(Processor):
         self.histogram("bdt_pass", "Event passed the ECal BDT", 2, -0.5, 1.5)
 
 
+@processor("dqm::EcalSPElectronKinematics", "DQM")
+class EcalSPElectronKinematics(Processor):
+    """Kinematics of the primary electron at the ECal front-face scoring plane.
+
+    Searches EcalScoringPlaneHits for the primary beam electron (track ID 1,
+    PDG ID 11) at plane 31 and fills histograms + event-tree branches for its
+    energy, momentum, and transverse position.
+    """
+
+    ecal_sp_coll_name: str = "EcalScoringPlaneHits"
+    ecal_sp_pass_name: str = ""
+
+    def __post_init__(self):
+        self.histogram(
+            "energy", "Primary Electron Energy at ECal SP [MeV]", 101, 0, 8080
+        )
+        self.histogram("pt", "Primary Electron pT at ECal SP [MeV]", 100, 0, 2000)
+        self.histogram("px", "Primary Electron px at ECal SP [MeV]", 200, -200, 200)
+        self.histogram("py", "Primary Electron py at ECal SP [MeV]", 200, -200, 200)
+        self.histogram("x", "Primary Electron x at ECal SP [mm]", 200, -100, 100)
+        self.histogram("y", "Primary Electron y at ECal SP [mm]", 200, -100, 100)
+
+
 @processor("dqm::EcalPnetVetoResults", "DQM")
 class EcalPnetVetoResults(Processor):
     """Configured EcalMipTrackingFeatures python object"""
@@ -1814,6 +1837,7 @@ ecal_dqm = [
     EcalMipTrackingFeatures(),
     EcalVetoResults(),
     EcalPnetVetoResults(),
+    EcalSPElectronKinematics(),
 ]
 
 hcal_dqm = [
