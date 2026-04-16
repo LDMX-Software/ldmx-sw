@@ -88,7 +88,6 @@ count = ElectronCounter(
 )
 
 
-
 # Load the DQM modules
 from LDMX.DQM import dqm
 
