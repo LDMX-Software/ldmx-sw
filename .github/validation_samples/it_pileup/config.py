@@ -162,6 +162,12 @@ cluster.nbr_of_layers = 1
 cluster.reclustering = True
 cluster.rec_hit_pass_name = this_pass_name  # run on process+pileup
 
+# DBScan-based ECAL and HCAL cluster producers
+ecal_pf = pf_reco.PFEcalClusterProducer()
+ecal_pf.hit_pass_name = this_pass_name
+hcal_pf = pf_reco.PFHcalClusterProducer()
+hcal_pf.hit_pass_name = this_pass_name
+
 # particle flow:
 pf_comb = pf_reco.PFProducer()
 pf_comb.input_ecal_coll_name = cluster.cluster_coll_name  # use CLUE
@@ -330,7 +336,16 @@ p.sequence.extend(dqm_with_overlay)
 
 # Add PFlow + pileup finding sequence
 p.sequence.extend(
-    [cluster, dqm.EcalClusterAnalyzer(), track_pf, truth_pf, pf_comb, pu_finder]
+    [
+        cluster,
+        dqm.EcalClusterAnalyzer(),
+        track_pf,
+        truth_pf,
+        ecal_pf,
+        hcal_pf,
+        pf_comb,
+        pu_finder,
+    ]
 )
 
 p.input_files = ["ecal_pn.root"]

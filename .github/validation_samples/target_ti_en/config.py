@@ -74,6 +74,7 @@ target_digis = TrigScintDigiProducer.target()
 target_clusters = TrigScintClusterProducer.target()
 
 # Load electron counting and trigger
+from LDMX.Recon import pf_reco
 from LDMX.Recon.electron_counter import ElectronCounter
 from LDMX.Recon.simple_trigger import TriggerProcessor
 
@@ -85,6 +86,8 @@ count = ElectronCounter(
     instance_name="ElectronCounter",
     input_pass_name="",
 )
+
+
 
 # Load the DQM modules
 from LDMX.DQM import dqm
@@ -131,6 +134,11 @@ from LDMX.Recon.ecal_preselection_skimmer import EcalPreselectionSkimmer
 
 ecal_pres_skimmer = EcalPreselectionSkimmer()
 
+ecal_pf = pf_reco.PFEcalClusterProducer()
+hcal_pf = pf_reco.PFHcalClusterProducer()
+track_pf = pf_reco.PFTrackProducer()
+pf_comb = pf_reco.PFProducer()
+
 p.logger.term_level = 1
 # Example to show trace level logging for ecal veto (only)
 # p.logger.custom(ecal_veto, level = -1)
@@ -159,6 +167,10 @@ p.sequence.extend(
         target_clusters,
         count,
         trigger,
+        ecal_pf,
+        hcal_pf,
+        track_pf,
+        pf_comb,
         *target_dqm,
         dqm.PhotoNuclearDQM(),
         dqm.EcalClusterAnalyzer(),
