@@ -172,6 +172,8 @@ hcal_pf.hit_pass_name = this_pass_name
 pf_comb = pf_reco.PFProducer()
 pf_comb.input_ecal_coll_name = cluster.cluster_coll_name  # use CLUE
 pf_comb.input_ecal_passname = this_pass_name
+pf_comb.input_hcal_passname = this_pass_name
+pf_comb.input_tracks_passname = this_pass_name
 
 # trigger recasting existing CLUE to caloclusters
 pf_comb.use_existing_ecal_clusters = True
@@ -185,6 +187,7 @@ pu_finder.rec_hit_pass_name = this_pass_name
 # needs recast caloclusters, not (CLUE) ecalclusters
 pu_finder.cluster_coll_name = pf_comb.input_ecal_coll_name + "Cast"
 pu_finder.pf_cand_coll_name = pf_comb.output_coll_name
+pu_finder.pf_cand_pass_name = this_pass_name
 pu_finder.min_momentum = 3000.0
 
 # Load the DQM modules
