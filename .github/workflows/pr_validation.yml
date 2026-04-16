@@ -40,10 +40,7 @@ jobs:
       id: get_pr
       if: github.event_name == 'issue_comment'
       run: |
-        PR_DATA=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-          "https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.issue.number }}")
-        HEAD_REF=$(echo "$PR_DATA" | jq -r .head.ref)
-        echo "HEAD_REF=$HEAD_REF" >> $GITHUB_ENV
+        echo "HEAD_REF=refs/pull/${{ github.event.issue.number }}/merge" >> $GITHUB_ENV
 
     - name: Checkout ldmx-sw
       uses: actions/checkout@v6
@@ -96,9 +93,7 @@ jobs:
       id: get_pr_again
       run: |
         if [[ "${{ github.event_name }}" == "issue_comment" ]]; then
-          PR_DATA=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-            "https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.issue.number }}")
-          HEAD_REF=$(echo "$PR_DATA" | jq -r .head.ref)
+          HEAD_REF=refs/pull/${{ github.event.issue.number }}/merge
         else
           HEAD_REF=${{ github.ref }}
         fi
