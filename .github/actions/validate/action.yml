@@ -25,6 +25,9 @@ outputs:
   log:
     description: 'Generated Log File'
     value: ${{ steps.run-val.outputs.log }}
+  timing:
+    description: 'Wall-clock seconds taken by the fire command'
+    value: ${{ steps.run-val.outputs.timing }}
 
 runs:
   using: 'composite'
