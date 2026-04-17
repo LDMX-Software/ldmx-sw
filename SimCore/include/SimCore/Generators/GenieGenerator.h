@@ -73,11 +73,9 @@ class GenieGenerator : public simcore::PrimaryGenerator {
 
  private:
   /**
-   * One GENIE event generator driver per target and convertor to
-   * HepMC3GenEvent. Each driver is configured once for its target during
-   * initialization.
+   * The GENIE event generator driver and convertor to HepMC3GenEvent
    */
-  std::vector<genie::GEVGDriver> evg_drivers_;
+  genie::GEVGDriver evg_driver_;
   genie::HepMC3Converter hep_mc3_converter_;
 
   double energy_;

@@ -187,23 +187,23 @@ void GenieGenerator::initializeGENIE() {
 
   // set GHEP print level (needed?)
   genie::GHepRecord::SetPrintLevel(0);
+
+  // setup for event driver
+  evg_driver_.SetEventGeneratorList(
+      genie::RunOpt::Instance()->EventGeneratorList());
+  evg_driver_.SetUnphysEventMask(*genie::RunOpt::Instance()->UnphysEventMask());
 }
 
 void GenieGenerator::calculateTotalXS() {
   // initializing...
   xsec_total_ = 0;
   ev_weighting_integral_.resize(targets_.size(), 0.0);
-  evg_drivers_.resize(targets_.size());
 
   // calculate the total xsec per target...
   for (size_t i_t = 0; i_t < targets_.size(); ++i_t) {
     genie::InitialState initial_state(targets_[i_t], 11);
-    evg_drivers_[i_t].SetEventGeneratorList(
-        genie::RunOpt::Instance()->EventGeneratorList());
-    evg_drivers_[i_t].SetUnphysEventMask(
-        *genie::RunOpt::Instance()->UnphysEventMask());
-    evg_drivers_[i_t].Configure(initial_state);
-    evg_drivers_[i_t].UseSplines();
+    evg_driver_.Configure(initial_state);
+    evg_driver_.UseSplines();
 
     // setup the initial election
     TParticle initial_e;
@@ -215,7 +215,7 @@ void GenieGenerator::calculateTotalXS() {
     TLorentzVector e_p4;
     initial_e.Momentum(e_p4);
 
-    xsec_by_target_[i_t] = evg_drivers_[i_t].XSecSum(e_p4);
+    xsec_by_target_[i_t] = evg_driver_.XSecSum(e_p4);
     xsec_total_ += xsec_by_target_[i_t] * abundances_[i_t];
 
     ev_weighting_integral_[i_t] = xsec_total_;  // running sum
@@ -299,6 +299,10 @@ void GenieGenerator::GeneratePrimaryVertex(G4Event* event) {
   ldmx_log(debug) << "Generating interaction at (x_,y_,z_)=" << "(" << x_pos
                   << "," << y_pos << "," << z_pos << ")";
 
+  genie::InitialState initial_state(targets_.at(nucl_target_i), 11);
+  evg_driver_.Configure(initial_state);
+  evg_driver_.UseSplines();
+
   // setup the initial election
   TParticle initial_e;
   initial_e.SetPdgCode(11);
@@ -313,12 +317,15 @@ void GenieGenerator::GeneratePrimaryVertex(G4Event* event) {
                   << e_p4.Px() << "," << e_p4.Py() << "," << e_p4.Pz() << ","
                   << e_p4.E() << ")";
 
+  // calculate total xsec
+  if (n_events_by_target_[nucl_target_i] == 0)
+    xsec_by_target_[nucl_target_i] = evg_driver_.XSecSum(e_p4);
+
   n_events_by_target_[nucl_target_i] += 1;
 
-  // GENIE magic — use the pre-configured driver for this target
+  // GENIE magic
   genie::EventRecord* genie_event = NULL;
-  while (!genie_event)
-    genie_event = evg_drivers_[nucl_target_i].GenerateEvent(e_p4);
+  while (!genie_event) genie_event = evg_driver_.GenerateEvent(e_p4);
 
   auto ev_info = new UserEventInformation;
   auto hepmc3_genie = hep_mc3_converter_.ConvertToHepMC3(*genie_event);
