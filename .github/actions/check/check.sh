@@ -38,7 +38,7 @@ __main__() {
     end_group
   fi
 
-  # check character count of logs, allowing up to 5% difference to avoid
+  # check character count of logs, allowing up to 0.5% difference to avoid
   # false positives from minor run-to-run output variations
   ngold=$(wc --chars gold.log | cut -f 1 -d ' ')
   nnew=$(wc --chars output.log | cut -f 1 -d ' ')
@@ -46,7 +46,7 @@ __main__() {
     if (( ngold > 0 )); then
       char_diff_pct=$(( (nnew - ngold) * 100 / ngold ))
       char_abs_pct=${char_diff_pct#-}
-      if (( char_abs_pct > 5 )); then
+      if (( char_abs_pct > 0.5 )); then
         error "Log character count differs by ${char_abs_pct}%: gold=${ngold}, new=${nnew}"
         rc=1
       else
