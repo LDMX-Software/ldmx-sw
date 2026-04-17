@@ -379,7 +379,7 @@ void GenieGenerator::GeneratePrimaryVertex(G4Event* event) {
   }
 
   ++n_events_generated_;
-  // delete genie_event;
+  delete genie_event;
 }
 
 void GenieGenerator::RecordConfig(const std::string& id, ldmx::RunHeader& rh) {
