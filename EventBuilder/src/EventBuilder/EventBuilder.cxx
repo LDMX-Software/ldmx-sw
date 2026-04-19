@@ -118,22 +118,6 @@ void EventBuilder::produce(framework::Event &event) {
     // Track errors encountered during event assembly
     uint32_t current_event_errors = 0;
     
-    // Helper to convert subsystem ID to name
-    auto subsystem_id_to_name = [](uint64_t id) -> std::string {
-        switch(id) {
-            case 1: return "TDAQTrigger";
-            case 2: return "TSDaq";
-            case 3: return "TSTrigger";
-            case 4: return "TrackerDaq";
-            case 5: return "EcalDaq";
-            case 6: return "EcalTrigger";
-            case 7: return "HcalDaq";
-            case 8: return "HcalTrigger";
-            case 9: return "Generic";
-            default: return "Subsystem" + std::to_string(id);
-        }
-    };
-    
     while (m_reader && !m_reader.eof()) {
         // Try to read a RogueFrameHeader
         packing::RogueFrameHeader frame_header;
@@ -163,6 +147,7 @@ void EventBuilder::produce(framework::Event &event) {
             ror_header.read(m_reader);
             // Successfully parsed RoR header
             fragment.header.subsystem_id = static_cast<uint64_t>(ror_header.subsystem());
+            fragment.header.contributor_id = static_cast<uint64_t>(ror_header.contributor());
             fragment.header.timestamp = ror_header.timestamp();
             
             if (m_verbose_parse) {
@@ -193,6 +178,7 @@ void EventBuilder::produce(framework::Event &event) {
             try {
                 pkt.read(m_reader);
                 fragment.header.subsystem_id = static_cast<uint64_t>(pkt.id());
+                fragment.header.contributor_id = 0;  // Not available in packing subsystem format
                 fragment.header.timestamp = static_cast<uint64_t>(pkt.header()[1]) * 1000000000ULL;  // event number to ns
                 
                 // Convert packet data to payload bytes
@@ -238,7 +224,9 @@ void EventBuilder::produce(framework::Event &event) {
                 // Add each subsystem's raw data as vector<uint8_t> directly
                 uint64_t event_timestamp = 0;
                 for (const auto &frag : assembled_event_fragments) {
-                    std::string subsys_name = subsystem_id_to_name(frag.header.subsystem_id);
+                    std::string subsys_name = packing::LDMXRoRHeader::getSubsystemName(
+                        static_cast<uint8_t>(frag.header.subsystem_id),
+                        static_cast<uint8_t>(frag.header.contributor_id));
                     std::vector<uint8_t> payload_bytes(frag.payload.begin(), frag.payload.end());
                     event.add(subsys_name, payload_bytes);
                     if (event_timestamp == 0) {
@@ -253,7 +241,7 @@ void EventBuilder::produce(framework::Event &event) {
                           << " fragments=" << assembled_event_fragments.size() << " systems=" << final_event.systems_readout.size() << std::endl;
                 
                 ldmx::EventSummary summary;
-                summary.setEventId(m_event_id);
+                summary.setEventNumber(m_event_id);
                 summary.setTimestampNs(static_cast<uint64_t>(final_event.timestamp));
                 std::set<uint64_t> unique_sys;
                 uint64_t total_payload = 0;
@@ -343,7 +331,9 @@ void EventBuilder::produce(framework::Event &event) {
         // Add each subsystem's raw data as vector<uint8_t> directly
         uint64_t event_timestamp = 0;
         for (const auto &frag : assembled_event_fragments) {
-            std::string subsys_name = subsystem_id_to_name(frag.header.subsystem_id);
+            std::string subsys_name = packing::LDMXRoRHeader::getSubsystemName(
+                static_cast<uint8_t>(frag.header.subsystem_id),
+                static_cast<uint8_t>(frag.header.contributor_id));
             std::vector<uint8_t> payload_bytes(frag.payload.begin(), frag.payload.end());
             event.add(subsys_name, payload_bytes);
             if (event_timestamp == 0) {
@@ -358,7 +348,7 @@ void EventBuilder::produce(framework::Event &event) {
                   << " fragments=" << assembled_event_fragments.size() << " systems=" << final_event.systems_readout.size() << std::endl;
         
         ldmx::EventSummary summary;
-        summary.setEventId(m_event_id);
+        summary.setEventNumber(m_event_id);
         summary.setTimestampNs(static_cast<uint64_t>(final_event.timestamp));
         std::set<uint64_t> unique_sys;
         uint64_t total_payload = 0;

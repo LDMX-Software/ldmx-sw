@@ -66,16 +66,16 @@ class EventSummary : public TObject {
   void print(Option_t* o = "") const;
 
   /**
-   * Get the event ID.
-   * @return The event ID
+   * Get the event number.
+   * @return The event number
    */
-  uint64_t getEventId() const { return event_id_; }
+  uint64_t getEventNumber() const { return event_number_; }
 
   /**
-   * Set the event ID.
-   * @param[in] id The event ID
+   * Set the event number.
+   * @param[in] num The event number
    */
-  void setEventId(uint64_t id) { event_id_ = id; }
+  void setEventNumber(uint64_t num) { event_number_ = num; }
 
   /**
    * Get the timestamp in nanoseconds.
@@ -152,9 +152,9 @@ class EventSummary : public TObject {
 
  private:
   /**
-   * The event ID
+   * The event number
    */
-  uint64_t event_id_ = 0;
+  uint64_t event_number_ = 0;
 
   /**
    * The event timestamp in nanoseconds

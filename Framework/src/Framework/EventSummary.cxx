@@ -9,7 +9,7 @@ namespace ldmx {
 const std::string EventSummary::BRANCH = "EventSummary";
 
 void EventSummary::clear(Option_t*) {
-  event_id_ = 0;
+  event_number_ = 0;
   timestamp_ns_ = 0;
   nsystems_ = 0;
   system_ids_.clear();
@@ -18,7 +18,7 @@ void EventSummary::clear(Option_t*) {
 }
 
 void EventSummary::print(Option_t*) const {
-  std::cout << "EventSummary {" << " eventId: " << event_id_
+  std::cout << "EventSummary {" << " eventNumber: " << event_number_
             << ", timestamp: " << timestamp_ns_ << " ns"
             << ", nSystems: " << nsystems_
             << ", payloadSize: " << payload_size_ << " bytes"
