@@ -42,7 +42,8 @@ HepMCReader::HepMCReader(std::string& filename) {
       reader_ = std::make_shared<HepMC3::ReaderAscii>(filename);
     }
   } else {
-    ldmx_log(warn) << "Could not find non-empty line, defaulting to HepMC3 format";
+    ldmx_log(warn)
+        << "Could not find non-empty line, defaulting to HepMC3 format";
     reader_ = std::make_shared<HepMC3::ReaderAscii>(filename);
   }
 

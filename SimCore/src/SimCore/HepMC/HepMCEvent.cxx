@@ -6,7 +6,8 @@ namespace hepmc {
 HepMCEvent::HepMCEvent(std::shared_ptr<HepMC3::GenEvent> event)
     : event_(event) {
   if (!event_) {
-    EXCEPTION_RAISE("NullEvent", "Attempted to create HepMCEvent with null GenEvent");
+    EXCEPTION_RAISE("NullEvent",
+                    "Attempted to create HepMCEvent with null GenEvent");
   }
 
   // Extract vertex information from the signal process vertex
@@ -50,15 +51,12 @@ double HepMCEvent::getEventWeight() const {
   return weights.empty() ? 1.0 : weights[0];
 }
 
-const double* HepMCEvent::getVertex() const {
-  return vtx_;
-}
+const double* HepMCEvent::getVertex() const { return vtx_; }
 
-double HepMCEvent::getVertexTime() const {
-  return vtxt_;
-}
+double HepMCEvent::getVertexTime() const { return vtxt_; }
 
-const std::vector<std::unique_ptr<HepMCParticle>>& HepMCEvent::getParticles() const {
+const std::vector<std::unique_ptr<HepMCParticle>>& HepMCEvent::getParticles()
+    const {
   if (!particles_extracted_) {
     extractParticles();
   }

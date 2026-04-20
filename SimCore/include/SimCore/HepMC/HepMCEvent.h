@@ -31,7 +31,8 @@ namespace simcore::hepmc {
  *
  * @note
  * Detailed information on the HepMC3 format is provided here:
- * <a href="https://doi.org/10.1016/j.cpc.2020.107310">HepMC3: A modernized Monte Carlo event structure library</a>.
+ * <a href="https://doi.org/10.1016/j.cpc.2020.107310">HepMC3: A modernized
+ * Monte Carlo event structure library</a>.
  */
 class HepMCEvent {
  public:

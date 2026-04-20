@@ -11,8 +11,8 @@
 #include "Framework/Exception/Exception.h"
 
 // HepMC3
-#include "HepMC3/GenParticle.h"
 #include "HepMC3/FourVector.h"
+#include "HepMC3/GenParticle.h"
 
 // STL
 #include <iostream>

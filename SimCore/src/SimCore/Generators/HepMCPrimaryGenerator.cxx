@@ -11,7 +11,8 @@ HepMCPrimaryGenerator::HepMCPrimaryGenerator(
       vertex_{parameters.get<std::vector<double>>("vertex")} {}
 
 void HepMCPrimaryGenerator::GeneratePrimaryVertex(G4Event* anEvent) {
-  std::unique_ptr<simcore::hepmc::HepMCEvent> hepmc_event = reader_.readNextEvent();
+  std::unique_ptr<simcore::hepmc::HepMCEvent> hepmc_event =
+      reader_.readNextEvent();
 
   if (hepmc_event != nullptr) {
     // Create a primary vertex for the Geant4 event
@@ -24,7 +25,8 @@ void HepMCPrimaryGenerator::GeneratePrimaryVertex(G4Event* anEvent) {
     vertex->SetWeight(hepmc_event->getEventWeight());
 
     // Map to track parent-daughter relationships
-    std::map<std::shared_ptr<HepMC3::GenParticle>, G4PrimaryParticle*> particle_map;
+    std::map<std::shared_ptr<HepMC3::GenParticle>, G4PrimaryParticle*>
+        particle_map;
 
     const auto& particles = hepmc_event->getParticles();
     for (const auto& particle : particles) {
@@ -36,18 +38,18 @@ void HepMCPrimaryGenerator::GeneratePrimaryVertex(G4Event* anEvent) {
 
       // Set the primary particle's momentum
       // HepMC3 uses GeV by default, which is what Geant4 expects
-      primary->Set4Momentum(
-          particle->getMomentum(0) * GeV,  // px
-          particle->getMomentum(1) * GeV,  // py
-          particle->getMomentum(2) * GeV,  // pz
-          particle->getMomentum(3) * GeV   // E
+      primary->Set4Momentum(particle->getMomentum(0) * GeV,  // px
+                            particle->getMomentum(1) * GeV,  // py
+                            particle->getMomentum(2) * GeV,  // pz
+                            particle->getMomentum(3) * GeV   // E
       );
 
       auto primary_info = std::make_unique<UserPrimaryParticleInformation>();
       primary_info->setHepEvtStatus(particle->getStatus());
       primary->SetUserInformation(primary_info.release());
 
-      // Store the particle in the map for potential parent-daughter relationships
+      // Store the particle in the map for potential parent-daughter
+      // relationships
       particle_map[particle->getGenParticle()] = primary;
 
       // Add the particle to the vertex
