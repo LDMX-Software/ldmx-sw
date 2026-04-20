@@ -31,7 +31,8 @@ class DBScanClusterBuilder {
 
   void fillClusterInfoFromHits(ldmx::CaloCluster *cl,
                                std::vector<const ldmx::CalorimeterHit *> hits_,
-                               bool logEnergyWeight);
+                               bool logEnergyWeight,
+                               bool saveHitContribs = true);
 
   void setMinHitEnergy(float x_) { min_hit_energy_ = x_; }
 
