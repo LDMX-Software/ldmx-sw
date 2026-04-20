@@ -26,10 +26,17 @@ setup_library(module SimCore
 
 
 # Set the LHE Reading Library
-setup_library(module SimCore 
+setup_library(module SimCore
               name LHE
               dependencies Framework::Exception
                            Geant4::Interface)
+
+# Set the HepMC Reading Library
+setup_library(module SimCore
+              name HepMC
+              dependencies Framework::Exception
+                           Geant4::Interface
+                           HepMC3)
 
 # Setup the biasing operators library
 setup_library(module SimCore
@@ -45,10 +52,11 @@ setup_library(module SimCore
               dependencies SimCore::G4User)
 
 
-# Primary Generators library needs G4User and LHE
+# Primary Generators library needs G4User, LHE, and HepMC
 setup_library(module SimCore
               name Generators
               dependencies SimCore::LHE
+                           SimCore::HepMC
                            SimCore::G4User
 			                     SimCore::Event
                            GENIE::GENIE
