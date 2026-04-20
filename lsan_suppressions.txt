@@ -45,3 +45,14 @@ leak:Acts::BoundarySurface
 
 # Boost.Log
 leak:boost::log
+
+# GENIE internals
+leak:ROOT::new_geniecLcLHAIntranuke2018
+leak:genie::rew::GSystSet::Init
+leak:genie::GRV98LO::Initialize
+leak:genie::rew::GReWeightINukeParams::GReWeightINukeParams
+
+# ROOT Cling / interpreter
+leak:TF1::InitStandardFunctions
+leak:cling::IncrementalExecutor::executeWrapper
+leak:StrDup
