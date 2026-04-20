@@ -87,6 +87,7 @@ jobs:
         path: |
           ${{steps.validation.outputs.hists}}
           ${{steps.validation.outputs.log}}
+          ${{steps.validation.outputs.timing}}
 
   push-new-gold:
     needs: [generation]
@@ -120,6 +121,7 @@ jobs:
           mkdir -p ci-data/${sample}
           mv ${sample_d}/hist.root ci-data/${sample}/gold.root
           mv ${sample_d}/output.log ci-data/${sample}/gold.log
+          cat ${sample_d}/timing.txt >> ci-data/gold.time
         done
         echo "${GITHUB_REF##refs/tags/}" | tee ci-data/label
 
