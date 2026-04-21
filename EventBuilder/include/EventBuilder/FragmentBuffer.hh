@@ -1,5 +1,5 @@
-#ifndef FRAGMENTBUFFER_H
-#define FRAGMENTBUFFER_H
+#ifndef EVENTBUILDER_FRAGMENTBUFFER_H
+#define EVENTBUILDER_FRAGMENTBUFFER_H
 #pragma once
 #include <map>
 #include <vector>
