@@ -99,8 +99,6 @@ void SimCalorimeterHit::encodeTracks(
         this->track_id_contribs_[i_contrib], encoding_version, event_index);
     this->incident_id_contribs_[i_contrib] = encodeFunc(
         this->incident_id_contribs_[i_contrib], encoding_version, event_index);
-    this->origin_contribs_[i_contrib] = encodeFunc(
-        this->origin_contribs_[i_contrib], encoding_version, event_index);
   }
 }
 

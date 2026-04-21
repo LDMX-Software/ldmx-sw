@@ -6,9 +6,9 @@ p = ldmxcfg.Process("pileup")
 import os
 
 
-p.run = int(os.environ["LDMX_RUN_NUMBER"])
+p.run = 10# int(os.environ["LDMX_RUN_NUMBER"])
 # slightly less than the others to test wrapping
-p.max_events = int(int(os.environ["LDMX_NUM_EVENTS"]) * 0.95) // 2
+p.max_events = 10 #int(int(os.environ["LDMX_NUM_EVENTS"]) * 0.95) // 2
 p.logger.term_level = 4
 
 from LDMX.SimCore import simulator as sim

@@ -14,8 +14,8 @@ this_pass_name = "overlay"
 p = ldmxcfg.Process(this_pass_name)
 
 det = "ldmx-det-v15-8gev"
-p.run = int(os.environ["LDMX_RUN_NUMBER"])
-p.max_events = int(os.environ["LDMX_NUM_EVENTS"]) // 2
+p.run = 10 # int(os.environ["LDMX_RUN_NUMBER"])
+p.max_events = 10 # int(os.environ["LDMX_NUM_EVENTS"]) // 2
 
 
 # Load the full tracking sequance
@@ -27,7 +27,7 @@ overlay = OverlayProducer(
     sim_passname=sim_pass_name,
     overlay_passname=pileup_file_pass_name,
 )
-
+overlay.poisson_mu = 3.
 p.sequence = [overlay]
 
 # ECal geometry nonsense
@@ -154,13 +154,15 @@ truth_pf.sim_particles_coll_name += overlay_str
 # CLUE
 import LDMX.Ecal.ecal_clusters as cl
 
-
 cluster = cl.EcalClusterProducer()
 cluster.seed_threshold = 350.0
 cluster.dc = 0.3
 cluster.nbr_of_layers = 1
 cluster.reclustering = True
 cluster.rec_hit_pass_name = this_pass_name  # run on process+pileup
+
+# HCAL clusters for pfProducer
+hcal_pf = pf_reco.PFHcalClusterProducer()
 
 # particle flow:
 pf_comb = pf_reco.PFProducer()
@@ -330,9 +332,15 @@ p.sequence.extend(dqm_with_overlay)
 
 # Add PFlow + pileup finding sequence
 p.sequence.extend(
-    [cluster, dqm.EcalClusterAnalyzer(), track_pf, truth_pf, pf_comb, pu_finder]
+    [cluster, dqm.EcalClusterAnalyzer(), 
+     track_pf, 
+     truth_pf, 
+     hcal_pf, 
+     pf_comb, 
+     pu_finder]
 )
 
 p.input_files = ["ecal_pn.root"]
 p.output_files = ["events.root"]
 p.histogram_file = "hist.root"
+
