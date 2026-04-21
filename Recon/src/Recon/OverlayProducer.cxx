@@ -237,10 +237,6 @@ void OverlayProducer::produce(framework::Event &event) {
   int start_bunch = -n_earlier_;
   int end_bunch = n_later_;
 
-  // this is the event index number assigned to overlay sample hits and
-  // particles for track ID encoding
-  //unsigned i_ev+1 = 1;
-
   // TODO -- figure out if we should also randomly shift the time of the sim
   // event (likely only needed if time bias gets picked up by BDT or ML by way
   // of pulse behaviour)
