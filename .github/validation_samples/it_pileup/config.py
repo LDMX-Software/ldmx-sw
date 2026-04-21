@@ -27,6 +27,7 @@ overlay = OverlayProducer(
     sim_passname=sim_pass_name,
     overlay_passname=pileup_file_pass_name,
 )
+
 p.sequence = [overlay]
 
 # ECal geometry nonsense
@@ -152,6 +153,7 @@ truth_pf.sim_particles_coll_name += overlay_str
 
 # CLUE
 import LDMX.Ecal.ecal_clusters as cl
+
 
 cluster = cl.EcalClusterProducer()
 cluster.seed_threshold = 350.0
@@ -352,4 +354,3 @@ p.sequence.extend(
 p.input_files = ["ecal_pn.root"]
 p.output_files = ["events.root"]
 p.histogram_file = "hist.root"
-
