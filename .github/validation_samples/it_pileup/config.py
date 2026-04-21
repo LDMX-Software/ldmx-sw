@@ -161,13 +161,18 @@ cluster.nbr_of_layers = 1
 cluster.reclustering = True
 cluster.rec_hit_pass_name = this_pass_name  # run on process+pileup
 
-# HCAL clusters for pfProducer
+# DBScan-based ECAL and HCAL cluster producers
+ecal_pf = pf_reco.PFEcalClusterProducer()
+ecal_pf.hit_pass_name = this_pass_name
 hcal_pf = pf_reco.PFHcalClusterProducer()
+hcal_pf.hit_pass_name = this_pass_name
 
 # particle flow:
 pf_comb = pf_reco.PFProducer()
 pf_comb.input_ecal_coll_name = cluster.cluster_coll_name  # use CLUE
 pf_comb.input_ecal_passname = this_pass_name
+pf_comb.input_hcal_passname = this_pass_name
+pf_comb.input_tracks_passname = this_pass_name
 
 # trigger recasting existing CLUE to caloclusters
 pf_comb.use_existing_ecal_clusters = True
@@ -181,6 +186,7 @@ pu_finder.rec_hit_pass_name = this_pass_name
 # needs recast caloclusters, not (CLUE) ecalclusters
 pu_finder.cluster_coll_name = pf_comb.input_ecal_coll_name + "Cast"
 pu_finder.pf_cand_coll_name = pf_comb.output_coll_name
+pu_finder.pf_cand_pass_name = this_pass_name
 pu_finder.min_momentum = 3000.0
 
 # Load the DQM modules
@@ -332,12 +338,16 @@ p.sequence.extend(dqm_with_overlay)
 
 # Add PFlow + pileup finding sequence
 p.sequence.extend(
-    [cluster, dqm.EcalClusterAnalyzer(), 
-     track_pf, 
-     truth_pf, 
-     hcal_pf, 
-     pf_comb, 
-     pu_finder]
+    [
+        cluster,
+        dqm.EcalClusterAnalyzer(),
+        track_pf,
+        truth_pf,
+        ecal_pf,
+        hcal_pf,
+        pf_comb,
+        pu_finder,
+    ]
 )
 
 p.input_files = ["ecal_pn.root"]

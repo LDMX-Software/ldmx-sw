@@ -562,8 +562,9 @@ int OverlayProducer::encodeTrack(int track_id,
     // origin ids in the SimCalorimeterHit contribs, which aren't used anyways
     // and present no risk for overwriting data for duplicate track IDs, so we
     // can leave this alone
-    ldmx_log(warn) << "Track ID has value " << track_id
-                   << " < 0; no encoding will be applied";
+    ldmx_log(trace) << "Track ID has value " << track_id
+                    << " < 0; no encoding will be applied (this is expected "
+                       "for origin IDs in SimCalorimeterHits)";
     return track_id;
   }
 

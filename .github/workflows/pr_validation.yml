@@ -40,10 +40,7 @@ jobs:
       id: get_pr
       if: github.event_name == 'issue_comment'
       run: |
-        PR_DATA=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-          "https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.issue.number }}")
-        HEAD_REF=$(echo "$PR_DATA" | jq -r .head.ref)
-        echo "HEAD_REF=$HEAD_REF" >> $GITHUB_ENV
+        echo "HEAD_REF=refs/pull/${{ github.event.issue.number }}/merge" >> $GITHUB_ENV
 
     - name: Checkout ldmx-sw
       uses: actions/checkout@v6
@@ -94,11 +91,14 @@ jobs:
 
     - name: Get PR Info for Validation Job
       id: get_pr_again
+      env:
+        COMMENT_BODY: ${{ github.event.comment.body }}
       run: |
         if [[ "${{ github.event_name }}" == "issue_comment" ]]; then
-          PR_DATA=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-            "https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.issue.number }}")
-          HEAD_REF=$(echo "$PR_DATA" | jq -r .head.ref)
+          HEAD_REF=refs/pull/${{ github.event.issue.number }}/merge
+          if [[ "$COMMENT_BODY" =~ /run-validation[[:space:]]+with[[:space:]]+([0-9]+)[[:space:]]+events ]]; then
+            echo "LDMX_NUM_EVENTS=${BASH_REMATCH[1]}" >> $GITHUB_ENV
+          fi
         else
           HEAD_REF=${{ github.ref }}
         fi
@@ -145,7 +145,98 @@ jobs:
         path: ${{ steps.validation.outputs.plots }}
 
     - name: Did any validation plots fail?
+      id: check_result
+      continue-on-error: true
       uses: ./.github/actions/check
       with:
         plots: ${{ steps.validation.outputs.plots }}
+
+    - name: Upload validation status
+      if: always()
+      run: |
+        plots="${{ steps.validation.outputs.plots }}"
+        if [[ "${{ steps.check_result.outcome }}" == "success" ]]; then
+          echo "PASS" > status.txt
+        else
+          echo "FAIL" > status.txt
+          # Append one line per failed histogram (for counting)
+          if [[ -f "$plots" ]]; then
+            tar -tf "$plots" | grep -c "fail/.*.pdf" >> status.txt || true
+          fi
+        fi
+
+    - name: Upload status artifact
+      if: always()
+      uses: actions/upload-artifact@v7
+      with:
+        name: ${{ matrix.sample }}-validation-status
+        path: status.txt
+
+    - name: Fail if validation failed
+      if: steps.check_result.outcome == 'failure'
+      run: exit 1
+
+  post-validation:
+    needs: [check-comment, validation]
+    if: always() && (github.event_name == 'pull_request' || (github.event_name == 'issue_comment' && github.event.issue.pull_request && contains(github.event.comment.body, '/run-validation')))
+    runs-on: ubuntu-latest
+    steps:
+      - name: Resolve PR number
+        run: |
+          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            echo "PR_NUMBER=${{ github.event.pull_request.number }}" >> $GITHUB_ENV
+          else
+            echo "PR_NUMBER=${{ github.event.issue.number }}" >> $GITHUB_ENV
+          fi
+
+      - name: Download all status artifacts
+        uses: actions/download-artifact@v8
+        with:
+          pattern: '*-validation-status'
+          merge-multiple: false
+          path: statuses
+
+      - name: Post validation summary comment
+        run: |
+          passed=()
+          failed=()
+          declare -A reasons
+          for dir in statuses/*/; do
+            sample=$(basename "$dir" -validation-status)
+            mapfile -t lines < "$dir/status.txt"
+            status="${lines[0]:-FAIL}"
+            if [[ "$status" == "PASS" ]]; then
+              passed+=("$sample")
+            else
+              failed+=("$sample")
+              reasons[$sample]="${lines[1]:-0}"
+            fi
+          done
+
+          if [[ ${#failed[@]} -eq 0 ]]; then
+            header="All validation samples passed! :white_check_mark:"
+          else
+            header="Some validation samples failed! :x:"
+          fi
+
+          table="| Sample | Status |\n|--------|--------|\n"
+          for s in "${passed[@]}"; do
+            table+="| \`$s\` | :white_check_mark: PASS |\n"
+          done
+          for s in "${failed[@]}"; do
+            n="${reasons[$s]}"
+            if [[ "$n" -gt 0 ]]; then
+              table+="| \`$s\` | :x: FAIL ($n histograms failed KS test) |\n"
+            else
+              table+="| \`$s\` | :x: FAIL |\n"
+            fi
+          done
+
+          body="## Validation Results\n\n${header}\n\n${table}"
+
+          curl -s -X POST \
+            -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            -d "$(jq -n --arg body "$(printf "$body")" '{"body": $body}')" \
+            "https://api.github.com/repos/${{ github.repository }}/issues/${PR_NUMBER}/comments"
 
