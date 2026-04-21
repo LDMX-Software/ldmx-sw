@@ -282,8 +282,9 @@ void OverlayProducer::produce(framework::Event &event) {
         ldmx_log(error) << "Couldn't read next overlay event!";
         return;
       }
-      if (i_ev+1 > 7) {
-        ldmx_log(error) << "Too many overlay events! Maximum events that can be overlayed is 7.";
+      if (i_ev + 1 > 7) {
+        ldmx_log(error) << "Too many overlay events! Maximum events that can "
+                           "be overlayed is 7.";
         return;
       }
 
@@ -335,7 +336,7 @@ void OverlayProducer::produce(framework::Event &event) {
               [this](int id, unsigned enc, unsigned idx) {
                 return encodeTrack(id, enc, idx);
               },
-              track_id_encoding_, i_ev+1);
+              track_id_encoding_, i_ev + 1);
 
           if (needs_contribs_added) {  // special treatment for (for now only)
                                        // ecal
@@ -374,12 +375,9 @@ void OverlayProducer::produce(framework::Event &event) {
               // tracks were encoded in-place above, so we only need to worry
               // about times
               this_coll_hit_map[overlay_hit_id].addContrib(
-                  contrib.incident_id_, 
-                  contrib.track_id_, 
-                  contrib.pdg_code_,
-                  contrib.edep_, 
-                  contrib.time_ + time_offset,
-                  contrib.origin_id_+i_ev+1);
+                  contrib.incident_id_, contrib.track_id_, contrib.pdg_code_,
+                  contrib.edep_, contrib.time_ + time_offset,
+                  contrib.origin_id_ + i_ev + 1);
             }  // loop over contribs in overlay_hit
             ldmx_log(trace)
                 << "There are now "
@@ -420,8 +418,7 @@ void OverlayProducer::produce(framework::Event &event) {
           auto overlay_time{overlay_hit.getTime() + time_offset};
           overlay_hit.setTime(overlay_time);
           auto overlay_track_id{encodeTrack(overlay_hit.getTrackID(),
-                                            track_id_encoding_,
-                                            i_ev+1)};
+                                            track_id_encoding_, i_ev + 1)};
           overlay_hit.setTrackID(overlay_track_id);
 
           ldmx_log(trace) << overlay_hit;
@@ -452,14 +449,14 @@ void OverlayProducer::produce(framework::Event &event) {
 
         for (auto &[track_id, particle] : overlay_particles) {
           int new_track_id =
-              encodeTrack(track_id, track_id_encoding_, i_ev+1);
+              encodeTrack(track_id, track_id_encoding_, i_ev + 1);
 
           output_map[new_track_id] = particle;
           output_map[new_track_id].encodeTracks(
               [this](int id, unsigned enc, unsigned idx) {
                 return encodeTrack(id, enc, idx);
               },
-              track_id_encoding_, i_ev+1);
+              track_id_encoding_, i_ev + 1);
           output_map[new_track_id].setTime(particle.getTime() + time_offset);
 
           ldmx_log(trace) << "Track ID: " << new_track_id << " --- "
