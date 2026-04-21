@@ -7,8 +7,8 @@ import os
 
 
 p.max_tries_per_event = 1000
-p.run = 10 # int(os.environ['LDMX_RUN_NUMBER'])
-p.max_events = 10 # int(os.environ['LDMX_NUM_EVENTS']) // 2
+p.run = int(os.environ['LDMX_RUN_NUMBER'])
+p.max_events = int(os.environ['LDMX_NUM_EVENTS']) // 2
 p.logger.term_level = 4
 
 

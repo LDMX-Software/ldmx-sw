@@ -14,8 +14,8 @@ this_pass_name = "overlay"
 p = ldmxcfg.Process(this_pass_name)
 
 det = "ldmx-det-v15-8gev"
-p.run = 10 # int(os.environ["LDMX_RUN_NUMBER"])
-p.max_events = 10 # int(os.environ["LDMX_NUM_EVENTS"]) // 2
+p.run = int(os.environ["LDMX_RUN_NUMBER"])
+p.max_events = int(os.environ["LDMX_NUM_EVENTS"]) // 2
 
 
 # Load the full tracking sequance
@@ -27,7 +27,6 @@ overlay = OverlayProducer(
     sim_passname=sim_pass_name,
     overlay_passname=pileup_file_pass_name,
 )
-overlay.poisson_mu = 3.
 p.sequence = [overlay]
 
 # ECal geometry nonsense
