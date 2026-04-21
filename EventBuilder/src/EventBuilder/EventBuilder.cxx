@@ -1,4 +1,4 @@
-#include "EventBuilder/EventBuilder.hh"
+#include "EventBuilder/EventBuilder.h"
 
 #include <iostream>
 #include <fstream>
@@ -9,10 +9,11 @@
 #include <set>
 #include <algorithm>
 #include <chrono>
+#include "Framework/Logger.h"
 
-#include "EventBuilder/Fragment.hh"
-#include "EventBuilder/Event/PhysicsEventData.hh"
-#include "EventBuilder/Event/GenericDataBlock.hh"
+#include "EventBuilder/Fragment.h"
+#include "EventBuilder/Event/PhysicsEventData.h"
+#include "EventBuilder/Event/GenericDataBlock.h"
 #include "Framework/EventSummary.h"
 #include "Packing/LDMXRoRHeader.h"
 #include "Packing/RogueFrameHeader.h"
@@ -68,24 +69,25 @@ void EventBuilder::configure(framework::config::Parameters &ps) {
     if (env_input) m_input_file = env_input;
   }
   if (ps.exists("output_name")) m_output_name = ps.get<std::string>("output_name");
+  if (ps.exists("coherence_window_ns")) {
+    m_coherence_window_ns = ps.get<double>("coherence_window_ns");
+  }
   
-  std::cerr << "[EventBuilder] configure(): dat_file='" << m_input_file << "' output_name='" << m_output_name
-                      << "' verbose_parse=" << (m_verbose_parse?"true":"false") << std::endl;
-  std::cerr.flush();
+  ldmx_log(info) << "configure(): dat_file='" << m_input_file << "' output_name='" << m_output_name
+                 << "' verbose_parse=" << (m_verbose_parse?"true":"false")
+                 << " coherence_window_ns=" << m_coherence_window_ns;
   
   if (!m_input_file.empty()) {
-    std::cerr << "[EventBuilder] configure(): opening file '" << m_input_file << "'" << std::endl;
-    std::cerr.flush();
+    ldmx_log(info) << "configure(): opening file '" << m_input_file << "'";
     m_reader.open(m_input_file);
     if (!m_reader) {
-      std::cerr << "[EventBuilder] ERROR: failed to open input file: '" << m_input_file << "'\n";
+      ldmx_log(error) << "failed to open input file: '" << m_input_file << "'";
     } else {
-      std::cerr << "[EventBuilder] configure(): file opened successfully" << std::endl;
+      ldmx_log(info) << "configure(): file opened successfully";
     }
   } else {
-    std::cerr << "[EventBuilder] ERROR: no input file specified\n";
+    ldmx_log(error) << "no input file specified";
   }
-  std::cerr.flush();
 
   // Initialize performance tracking
   m_start_time = std::chrono::steady_clock::now();
@@ -102,19 +104,15 @@ void EventBuilder::configure(framework::config::Parameters &ps) {
 void EventBuilder::produce(framework::Event &event) {
     static int produce_call_count = 0;
     produce_call_count++;
-    std::cerr << "[EventBuilder] produce() called, count=" << produce_call_count << std::endl;
-    std::cerr<< "[EventBuilder] verbose_parse=" << (m_verbose_parse ? "true" : "false") << std::endl;
+    ldmx_log(debug) << "produce() called, count=" << produce_call_count;
+    ldmx_log(debug) << "verbose_parse=" << (m_verbose_parse ? "true" : "false");
     if (m_verbose_parse || produce_call_count <= 3) {
-        std::cerr << "[EventBuilder] produce() call #" << produce_call_count << std::endl;
+        ldmx_log(info) << "produce() call #" << produce_call_count;
     }
 
     // Start timing for this event
     m_event_start_time = std::chrono::steady_clock::now();
 
-    // Read ONE event per produce() call
-    // Loop through frames in the file until we form a complete event
-    const long long coherence_window_ns = 5000000;  // 5 ms window for collecting fragments from same physics event
-    
     // Track errors encountered during event assembly
     uint32_t current_event_errors = 0;
     
@@ -129,7 +127,7 @@ void EventBuilder::produce(framework::Event &event) {
         // Check if this is a data frame (channel 0) and not YAML
         if (frame_header.channel() != 0 || frame_header.probablyYaml()) {
             // Skip this frame
-            if (m_verbose_parse) std::cerr << "[EventBuilder] skipping non-data frame (channel=" << frame_header.channel() << ")\n";
+            if (m_verbose_parse) ldmx_log(debug) << "skipping non-data frame (channel=" << frame_header.channel() << ")";
             m_reader.seek(frame_end);
             continue;
         }
@@ -151,9 +149,9 @@ void EventBuilder::produce(framework::Event &event) {
             fragment.header.timestamp = ror_header.timestamp();
             
             if (m_verbose_parse) {
-                std::cerr << "[EventBuilder] parsed RoR header subsys=" << (int)ror_header.subsystem()
-                          << " contrib=" << (int)ror_header.contributor() 
-                          << " ts=" << ror_header.timestamp() << std::endl;
+                ldmx_log(debug) << "parsed RoR header subsys=" << (int)ror_header.subsystem()
+                                << " contrib=" << (int)ror_header.contributor() 
+                                << " ts=" << ror_header.timestamp();
             }
             
             // Read remaining frame payload after RoR header
@@ -167,7 +165,7 @@ void EventBuilder::produce(framework::Event &event) {
             parsed_ok = true;
         } catch (...) {
             // RoR parse failed, try packing subsystem format
-            if (m_verbose_parse) std::cerr << "[EventBuilder] RoR header parse failed, trying packing subsystem format\n";
+            if (m_verbose_parse) ldmx_log(debug) << "RoR header parse failed, trying packing subsystem format";
             current_event_errors |= ldmx::EventSummary::ERROR_PARSE_FAILURE;
             m_reader.seek(pos_before_ror);
         }
@@ -187,13 +185,13 @@ void EventBuilder::produce(framework::Event &event) {
                 std::memcpy(fragment.payload.data(), reinterpret_cast<const char*>(data.data()), data.size() * 4);
                 
                 if (m_verbose_parse) {
-                    std::cerr << "[EventBuilder] parsed packing subsystem pkt subsys=" << pkt.id()
-                              << " data_size=" << data.size() << std::endl;
+                    ldmx_log(debug) << "parsed packing subsystem pkt subsys=" << pkt.id()
+                                    << " data_size=" << data.size();
                 }
                 parsed_ok = true;
             } catch (...) {
                 // Both parse attempts failed, skip this frame
-                if (m_verbose_parse) std::cerr << "[EventBuilder] failed to parse as either format, skipping frame\n";
+                if (m_verbose_parse) ldmx_log(debug) << "failed to parse as either format, skipping frame";
                 current_event_errors |= ldmx::EventSummary::ERROR_PARSE_FAILURE;
                 m_reader.seek(frame_end);
                 continue;
@@ -205,19 +203,19 @@ void EventBuilder::produce(framework::Event &event) {
             continue;
         }
 
-        if (m_verbose_parse) std::cerr << "[EventBuilder] adding fragment subsys=" << fragment.header.subsystem_id
-                        << " ts=" << fragment.header.timestamp << " bytes=" << fragment.payload.size() << std::endl;
+        if (m_verbose_parse) ldmx_log(debug) << "adding fragment subsys=" << fragment.header.subsystem_id
+                                             << " ts=" << fragment.header.timestamp << " bytes=" << fragment.payload.size();
         
         // Check if this fragment is outside the coherence window of the current event batch
         // If so, it means we should finalize the previous event before adding this one
         long long fragment_ts = fragment.header.timestamp;
         long long buffer_ref_time = m_event_buffer.get_reference_time();
         
-        if (buffer_ref_time > 0 && (fragment_ts < buffer_ref_time - coherence_window_ns || 
-                                     fragment_ts > buffer_ref_time + coherence_window_ns)) {
+        if (buffer_ref_time > 0 && (fragment_ts < buffer_ref_time - m_coherence_window_ns || 
+                                     fragment_ts > buffer_ref_time + m_coherence_window_ns)) {
             // This fragment is outside the current window - try to build the previous event
             std::vector<DataFragment> assembled_event_fragments;
-            if (m_event_buffer.try_build_event(coherence_window_ns, assembled_event_fragments) && 
+            if (m_event_buffer.try_build_event(m_coherence_window_ns, assembled_event_fragments) && 
                 !assembled_event_fragments.empty()) {
                 // Output the complete event and return
                 ++m_event_id;
@@ -237,8 +235,8 @@ void EventBuilder::produce(framework::Event &event) {
                 // Still create PhysicsEventData for binary output file
                 PhysicsEventData final_event = assemble_payload(assembled_event_fragments);
                 write_event_binary(final_event, "events.bin");
-                std::cerr << "[EventBuilder] assembled event id=" << m_event_id << " timestamp=" << final_event.timestamp
-                          << " fragments=" << assembled_event_fragments.size() << " systems=" << final_event.systems_readout.size() << std::endl;
+                ldmx_log(info) << "assembled event id=" << m_event_id << " timestamp=" << final_event.timestamp
+                               << " fragments=" << assembled_event_fragments.size() << " systems=" << final_event.systems_readout.size();
                 
                 ldmx::EventSummary summary;
                 summary.setEventNumber(m_event_id);
@@ -263,25 +261,25 @@ void EventBuilder::produce(framework::Event &event) {
                 m_total_bytes_read += total_payload;
                 m_total_events_built++;
                 m_events_since_last_report++;
-                auto now = std::chrono::steady_clock::now();
-                auto event_build_time_ms = std::chrono::duration_cast<std::chrono::milliseconds>(now - m_event_start_time);
-                auto total_elapsed_s = std::chrono::duration_cast<std::chrono::seconds>(now - m_start_time);
+                std::chrono::steady_clock::time_point now = std::chrono::steady_clock::now();
+                std::chrono::milliseconds event_build_time_ms = std::chrono::duration_cast<std::chrono::milliseconds>(now - m_event_start_time);
+                std::chrono::seconds total_elapsed_s = std::chrono::duration_cast<std::chrono::seconds>(now - m_start_time);
                 
-                double events_per_sec = (total_elapsed_s.count() > 0) ? (double)m_total_events_built / total_elapsed_s.count() : 0.0;
-                double mb_per_sec = (total_elapsed_s.count() > 0) ? (double)m_total_bytes_read / (1024.0 * 1024.0) / total_elapsed_s.count() : 0.0;
+                double events_per_sec = (total_elapsed_s.count() > 0) ? static_cast<double>(m_total_events_built) / total_elapsed_s.count() : 0.0;
+                double mb_per_sec = (total_elapsed_s.count() > 0) ? static_cast<double>(m_total_bytes_read) / (1024.0 * 1024.0) / total_elapsed_s.count() : 0.0;
                 
                 // Update windowed metrics
                 m_window_events_count++;
                 m_window_bytes_read += total_payload;
-                auto window_elapsed_s = std::chrono::duration_cast<std::chrono::seconds>(now - m_window_start_time);
+                std::chrono::seconds window_elapsed_s = std::chrono::duration_cast<std::chrono::seconds>(now - m_window_start_time);
                 
                 // Reset window if we've processed WINDOW_SIZE events
                 double window_events_per_sec = 0.0;
                 double window_mb_per_sec = 0.0;
                 if (m_window_events_count >= WINDOW_SIZE) {
-                    double window_time_sec = std::max(1.0, (double)window_elapsed_s.count());
-                    window_events_per_sec = (double)m_window_events_count / window_time_sec;
-                    window_mb_per_sec = (double)m_window_bytes_read / (1024.0 * 1024.0) / window_time_sec;
+                    double window_time_sec = std::max(1.0, static_cast<double>(window_elapsed_s.count()));
+                    window_events_per_sec = static_cast<double>(m_window_events_count) / window_time_sec;
+                    window_mb_per_sec = static_cast<double>(m_window_bytes_read) / (1024.0 * 1024.0) / window_time_sec;
                     
                     // Reset window
                     m_window_start_time = now;
@@ -290,20 +288,17 @@ void EventBuilder::produce(framework::Event &event) {
                 }
                 
                 // Write performance metrics to CSV
-                auto event_build_time_ms_val = event_build_time_ms.count();
+                long long event_build_time_ms_val = event_build_time_ms.count();
                 write_performance_metric(m_event_id, static_cast<double>(event_build_time_ms_val), 
                                         events_per_sec, mb_per_sec, 
                                         window_events_per_sec, window_mb_per_sec,
                                         m_total_events_built, m_total_bytes_read);
                 
                 if (m_verbose_parse || m_events_since_last_report % 100 == 0) {
-                    std::cerr << "[EventBuilder] Performance (Cumulative): "
-                              << "events_per_sec=" << std::fixed << std::setprecision(2) << events_per_sec << ", "
-                              << "mb_per_sec=" << std::fixed << std::setprecision(3) << mb_per_sec << " | "
-                              << "(Window-100): "
-                              << "events_per_sec=" << std::fixed << std::setprecision(2) << window_events_per_sec << ", "
-                              << "mb_per_sec=" << std::fixed << std::setprecision(3) << window_mb_per_sec << " | "
-                              << "build_time=" << event_build_time_ms.count() << "ms" << std::endl;
+                    ldmx_log(info) << "Performance: "
+                                   << "total_events=" << m_total_events_built << ", "
+                                   << "events_per_sec=" << std::fixed << std::setprecision(2) << events_per_sec << ", "
+                                   << "mb_per_sec=" << std::fixed << std::setprecision(3) << mb_per_sec;
                 }
                 
                 current_event_errors = 0;  // Reset for next event
@@ -314,14 +309,14 @@ void EventBuilder::produce(framework::Event &event) {
         // Add fragment to buffer (may start a new event batch if buffer was empty)
         m_event_buffer.add_fragment(std::move(fragment));
         
-        if (m_verbose_parse) std::cerr << "[EventBuilder] frame added to buffer, searching for more frames...\n";
+        if (m_verbose_parse) ldmx_log(debug) << "frame added to buffer, searching for more frames...";
     }
 
     // Reached EOF - flush any remaining events in the buffer
-    if (m_verbose_parse) std::cerr << "[EventBuilder] reached EOF, flushing remaining events\n";
+    if (m_verbose_parse) ldmx_log(debug) << "reached EOF, flushing remaining events";
     
     std::vector<DataFragment> assembled_event_fragments;
-    while (m_event_buffer.try_build_event(coherence_window_ns, assembled_event_fragments)) {
+    while (m_event_buffer.try_build_event(m_coherence_window_ns, assembled_event_fragments)) {
         if (assembled_event_fragments.empty()) break;
         
         // Mark truncated events (those flushed at EOF)
@@ -344,8 +339,8 @@ void EventBuilder::produce(framework::Event &event) {
         // Still create PhysicsEventData for binary output file
         PhysicsEventData final_event = assemble_payload(assembled_event_fragments);
         write_event_binary(final_event, "events.bin");
-        std::cerr << "[EventBuilder] assembled event id=" << m_event_id << " timestamp=" << final_event.timestamp
-                  << " fragments=" << assembled_event_fragments.size() << " systems=" << final_event.systems_readout.size() << std::endl;
+        ldmx_log(info) << "assembled event id=" << m_event_id << " timestamp=" << final_event.timestamp
+                       << " fragments=" << assembled_event_fragments.size() << " systems=" << final_event.systems_readout.size();
         
         ldmx::EventSummary summary;
         summary.setEventNumber(m_event_id);
@@ -370,42 +365,39 @@ void EventBuilder::produce(framework::Event &event) {
         m_total_bytes_read += total_payload;
         m_total_events_built++;
         m_events_since_last_report++;
-        auto now = std::chrono::steady_clock::now();
-        auto event_build_time_ms = std::chrono::duration_cast<std::chrono::milliseconds>(now - m_event_start_time);
-        auto total_elapsed_s = std::chrono::duration_cast<std::chrono::seconds>(now - m_start_time);
+        std::chrono::steady_clock::time_point now = std::chrono::steady_clock::now();
+        std::chrono::milliseconds event_build_time_ms = std::chrono::duration_cast<std::chrono::milliseconds>(now - m_event_start_time);
+        std::chrono::seconds total_elapsed_s = std::chrono::duration_cast<std::chrono::seconds>(now - m_start_time);
         
-        double events_per_sec = (total_elapsed_s.count() > 0) ? (double)m_total_events_built / total_elapsed_s.count() : 0.0;
-        double mb_per_sec = (total_elapsed_s.count() > 0) ? (double)m_total_bytes_read / (1024.0 * 1024.0) / total_elapsed_s.count() : 0.0;
+        double events_per_sec = (total_elapsed_s.count() > 0) ? static_cast<double>(m_total_events_built) / total_elapsed_s.count() : 0.0;
+        double mb_per_sec = (total_elapsed_s.count() > 0) ? static_cast<double>(m_total_bytes_read) / (1024.0 * 1024.0) / total_elapsed_s.count() : 0.0;
         
         // Update windowed metrics
         m_window_events_count++;
         m_window_bytes_read += total_payload;
-        auto window_elapsed_s = std::chrono::duration_cast<std::chrono::seconds>(now - m_window_start_time);
+        std::chrono::seconds window_elapsed_s = std::chrono::duration_cast<std::chrono::seconds>(now - m_window_start_time);
         
         // Calculate window metrics (for final event, may not have full window)
         double window_events_per_sec = 0.0;
         double window_mb_per_sec = 0.0;
         if (m_window_events_count >= WINDOW_SIZE || window_elapsed_s.count() > 0) {
-            double window_time_sec = std::max(1.0, (double)window_elapsed_s.count());
-            window_events_per_sec = (double)m_window_events_count / window_time_sec;
-            window_mb_per_sec = (double)m_window_bytes_read / (1024.0 * 1024.0) / window_time_sec;
+            double window_time_sec = std::max(1.0, static_cast<double>(window_elapsed_s.count()));
+            window_events_per_sec = static_cast<double>(m_window_events_count) / window_time_sec;
+            window_mb_per_sec = static_cast<double>(m_window_bytes_read) / (1024.0 * 1024.0) / window_time_sec;
         }
         
         // Write performance metrics to CSV
-        auto event_build_time_ms_val = event_build_time_ms.count();
+        long long event_build_time_ms_val = event_build_time_ms.count();
         write_performance_metric(m_event_id, static_cast<double>(event_build_time_ms_val), 
                                 events_per_sec, mb_per_sec,
                                 window_events_per_sec, window_mb_per_sec,
                                 m_total_events_built, m_total_bytes_read);
         
         if (m_verbose_parse || m_events_since_last_report % 100 == 0) {
-            std::cerr << "[EventBuilder] Performance (Cumulative): "
-                      << "events_per_sec=" << std::fixed << std::setprecision(2) << events_per_sec << ", "
-                      << "mb_per_sec=" << std::fixed << std::setprecision(3) << mb_per_sec << " | "
-                      << "(Window-100): "
-                      << "events_per_sec=" << std::fixed << std::setprecision(2) << window_events_per_sec << ", "
-                      << "mb_per_sec=" << std::fixed << std::setprecision(3) << window_mb_per_sec << " | "
-                      << "build_time=" << event_build_time_ms.count() << "ms" << std::endl;
+            ldmx_log(info) << "Performance: "
+                           << "total_events=" << m_total_events_built << ", "
+                           << "events_per_sec=" << std::fixed << std::setprecision(2) << events_per_sec << ", "
+                           << "mb_per_sec=" << std::fixed << std::setprecision(3) << mb_per_sec;
         }
         
         current_event_errors = 0;  // Reset for next event
@@ -415,18 +407,20 @@ void EventBuilder::produce(framework::Event &event) {
     }
     
     // No more events - print final summary statistics
-    auto final_time = std::chrono::steady_clock::now();
-    auto total_time_s = std::chrono::duration_cast<std::chrono::seconds>(final_time - m_start_time);
-    double final_events_per_sec = (total_time_s.count() > 0) ? (double)m_total_events_built / total_time_s.count() : 0.0;
-    double final_mb_per_sec = (total_time_s.count() > 0) ? (double)m_total_bytes_read / (1024.0 * 1024.0) / total_time_s.count() : 0.0;
+    std::chrono::steady_clock::time_point final_time = std::chrono::steady_clock::now();
+    std::chrono::seconds total_time_s = std::chrono::duration_cast<std::chrono::seconds>(final_time - m_start_time);
+    double final_events_per_sec = (total_time_s.count() > 0) ? static_cast<double>(m_total_events_built) / total_time_s.count() : 0.0;
+    double final_mb_per_sec = (total_time_s.count() > 0) ? static_cast<double>(m_total_bytes_read) / (1024.0 * 1024.0) / total_time_s.count() : 0.0;
     
-    std::cerr << "\n[EventBuilder] ===== FINAL STATISTICS =====\n"
-              << "[EventBuilder] Total events built: " << m_total_events_built << "\n"
-              << "[EventBuilder] Total bytes read: " << m_total_bytes_read / (1024.0 * 1024.0) << " MB\n"
-              << "[EventBuilder] Total time: " << total_time_s.count() << " seconds\n"
-              << "[EventBuilder] Average events/sec: " << final_events_per_sec << "\n"
-              << "[EventBuilder] Average MB/sec: " << final_mb_per_sec << "\n"
-              << "[EventBuilder] ============================\n" << std::endl;
+    ldmx_log(info) << "\n===== FINAL STATISTICS =====";
+    ldmx_log(info) << "Total events built: " << m_total_events_built;
+    ldmx_log(info) << "Total bytes read: " << m_total_bytes_read / (1024.0 * 1024.0) << " MB";
+    ldmx_log(info) << "Total time: " << total_time_s.count() << " seconds";
+    ldmx_log(info) << "Average throughput: "
+                   << "events_per_sec=" << std::fixed << std::setprecision(2) << final_events_per_sec << ", "
+                   << "mb_per_sec=" << std::fixed << std::setprecision(3) << final_mb_per_sec;
+    ldmx_log(info) << "=============================\n";
+    ldmx_log(info) << "Event building complete";
     
     abortEvent();
 }

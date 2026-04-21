@@ -59,11 +59,7 @@ class EventSummary : public TObject {
    */
   void clear(Option_t* o = "");
 
-  /**
-   * Print this object.
-   * @param[in] o ROOT-style Option (ignored)
-   */
-  void print(Option_t* o = "") const;
+
 
   /**
    * Get the event number.

@@ -17,13 +17,13 @@ void EventSummary::clear(Option_t*) {
   error_flags_ = 0;
 }
 
-void EventSummary::print(Option_t*) const {
-  std::cout << "EventSummary {" << " eventNumber: " << event_number_
-            << ", timestamp: " << timestamp_ns_ << " ns"
-            << ", nSystems: " << nsystems_
-            << ", payloadSize: " << payload_size_ << " bytes"
-            << ", errorFlags: 0x" << std::hex << error_flags_ << std::dec;
-  std::cout << " }" << std::endl;
+std::ostream& operator<<(std::ostream& o, const EventSummary& c) {
+  return o << "EventSummary { " << "eventNumber: " << c.getEventNumber()
+           << ", timestamp: " << c.getTimestampNs() << " ns"
+           << ", nSystems: " << c.getNSystems()
+           << ", payloadSize: " << c.getPayloadSize() << " bytes"
+           << ", errorFlags: 0x" << std::hex << c.getErrorFlags() << std::dec
+           << " }";
 }
 
 }  // namespace ldmx
