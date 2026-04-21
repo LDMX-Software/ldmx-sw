@@ -1,4 +1,3 @@
-// FragmentBuffer.hh (revised)
 #ifndef FRAGMENTBUFFER_H
 #define FRAGMENTBUFFER_H
 #pragma once
