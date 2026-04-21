@@ -104,7 +104,7 @@ G4bool EcalSD::ProcessHits(G4Step* aStep, G4TouchableHistory*) {
       // "origin" checks if a hit "originates" from one of the earliest
       // track IDs (i.e. probably one of the primaries)
       int origin{incident};
-      for (int i{1}; i < max_origin_track_id_; ++i) { // här ska vi inte leta efter <6 track id utan vi ska kolla på event_indx
+      for (int i{1}; i < max_origin_track_id_; ++i) {
         if (map.isDescendant(track_id, i, 100)) {
           origin = i;
           break;
