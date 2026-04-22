@@ -198,6 +198,15 @@ jobs:
 
       - name: Post validation summary comment
         run: |
+          # Fetch artifact list for this workflow run
+          declare -A artifact_urls
+          artifacts_json=$(curl -s \
+            -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            "https://api.github.com/repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/artifacts?per_page=100")
+          while IFS=$'\t' read -r aname aid; do
+            artifact_urls[$aname]="https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}/artifacts/${aid}"
+          done < <(echo "$artifacts_json" | jq -r '.artifacts[] | [.name, (.id|tostring)] | @tsv')
+
           passed=()
           failed=()
           declare -A reasons
@@ -225,10 +234,15 @@ jobs:
           done
           for s in "${failed[@]}"; do
             n="${reasons[$s]}"
+            artifact_link=""
+            artifact_name="${s}-pr-validation"
+            if [[ -n "${artifact_urls[$artifact_name]:-}" ]]; then
+              artifact_link=" ([plots](${artifact_urls[$artifact_name]}))"
+            fi
             if [[ "$n" -gt 0 ]]; then
-              table+="| \`$s\` | :x: FAIL ($n histograms failed KS test) |\n"
+              table+="| \`$s\` | :x: FAIL ($n histograms failed KS test)${artifact_link} |\n"
             else
-              table+="| \`$s\` | :x: FAIL |\n"
+              table+="| \`$s\` | :x: FAIL${artifact_link} |\n"
             fi
           done
 
