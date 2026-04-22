@@ -147,9 +147,11 @@ jobs:
     - name: Did any validation plots fail?
       id: check_result
       continue-on-error: true
-      uses: ./.github/actions/check
-      with:
-        plots: ${{ steps.validation.outputs.plots }}
+      run: |
+        set +e
+        bash .github/actions/check/check.sh "${{ steps.validation.outputs.plots }}" 2>&1 | tee check_output.txt
+        echo "check_rc=${PIPESTATUS[0]}" >> $GITHUB_OUTPUT
+      shell: bash
 
     - name: Upload validation status
       if: always()
@@ -165,12 +167,23 @@ jobs:
           fi
         fi
 
+        # Extract and store check messages
+        if [[ -f check_output.txt ]]; then
+          # Extract error and warning messages, removing GitHub annotation prefixes
+          grep -E '::(error|warning)::' check_output.txt | \
+            sed -e 's/::error:://' -e 's/::warning:://' > check_messages.txt || true
+          # Also include regular info messages about timing and log diffs
+          grep -E '^(Timing for |Log character count differs|Timing within)' check_output.txt >> check_messages.txt || true
+        fi
+
     - name: Upload status artifact
       if: always()
       uses: actions/upload-artifact@v7
       with:
         name: ${{ matrix.sample }}-validation-status
-        path: status.txt
+        path: |
+          status.txt
+          check_messages.txt
 
     - name: Fail if validation failed
       if: steps.check_result.outcome == 'failure'
@@ -210,6 +223,7 @@ jobs:
           passed=()
           failed=()
           declare -A reasons
+          declare -A check_details
           for dir in statuses/*/; do
             sample=$(basename "$dir" -validation-status)
             mapfile -t lines < "$dir/status.txt"
@@ -219,6 +233,11 @@ jobs:
             else
               failed+=("$sample")
               reasons[$sample]="${lines[1]:-0}"
+            fi
+
+            # Read check messages if available
+            if [[ -f "$dir/check_messages.txt" ]]; then
+              check_details[$sample]=$(cat "$dir/check_messages.txt" | sed 's/^/- /')
             fi
           done
 
@@ -246,7 +265,16 @@ jobs:
             fi
           done
 
-          body="## Validation Results\n\n${header}\n\n${table}"
+          # Add details section for samples with check messages
+          details_section=""
+          all_samples=("${failed[@]}" "${passed[@]}")
+          for s in "${all_samples[@]}"; do
+            if [[ -n "${check_details[$s]:-}" ]]; then
+              details_section+="\n**\`${s}\`:**\n${check_details[$s]}\n"
+            fi
+          done
+
+          body="## Validation Results\n\n${header}\n\n${table}${details_section}"
 
           curl -s -X POST \
             -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
