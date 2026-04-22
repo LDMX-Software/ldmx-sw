@@ -15,3 +15,22 @@ def user_action(class_name: str, module_name: str = "SimCore"):
         post_init=lambda self: _register.library(self.module_name),
         required_base=UserAction,
     )
+
+
+@user_action("simcore::PhotonuclearTracker")
+class PhotonuclearTracker(UserAction):
+    """Configuration for tracking detailed photonuclear interaction information
+
+    This UserAction captures comprehensive details about photonuclear (PN)
+    interactions during simulation, including incident photon kinematics,
+    target nucleus information, immediate secondaries, and descendant genealogy.
+
+    The collected interactions are saved to the event as "PhotonuclearInteractions".
+
+    Attributes
+    ----------
+    enabled : bool, optional
+        Enable or disable tracking (default: True)
+    """
+
+    enabled: bool = True
