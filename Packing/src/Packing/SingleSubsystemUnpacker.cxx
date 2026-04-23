@@ -40,7 +40,7 @@ void SingleSubsystemUnpacker::produce(framework::Event& event) {
   static long n_accepted = 0;
   static bool summary_printed = false;
 
-  while (reader_ and not reader_.eof()) {
+  while (reader_ and not reader_.eof()) { 
     reader_ >> frame_header;
     n_total++;
 
