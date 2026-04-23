@@ -7,13 +7,13 @@ set -o errexit
 set -o nounset
 
 #some defaults
-nSamp=70
+nSamp=30
 startSamp=0
 nEvents=-1
 doVerbose=0
 startDoRerun=0
 deadChannel=-1 #8   #sometimes elecID 8 is not really connected
-recoSamp=32
+recoSamp=10
 RUN_FIRE='just fire'
 fileList=""
 channelMap="channelMap_4modules_14lanes.txt" #<--- use this for 2025 data 
