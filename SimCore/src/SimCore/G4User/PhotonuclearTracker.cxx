@@ -18,7 +18,6 @@ PhotonuclearTracker* PhotonuclearTracker::instance = nullptr;
 PhotonuclearTracker::PhotonuclearTracker(
     const std::string& name, framework::config::Parameters& parameters)
     : UserAction(name, parameters) {
-  enabled_ = parameters.getParameter<bool>("enabled", false);
   instance = this;  // Set the static instance pointer
 }
 
@@ -35,8 +34,6 @@ void PhotonuclearTracker::EndOfEventAction(const G4Event* event) {
 }
 
 void PhotonuclearTracker::stepping(const G4Step* step) {
-  if (!enabled_) return;
-
   // Check if any secondaries were created in this step
   const std::vector<const G4Track*>* secondaries =
       step->GetSecondaryInCurrentStep();
@@ -121,8 +118,6 @@ void PhotonuclearTracker::stepping(const G4Step* step) {
 }
 
 void PhotonuclearTracker::PreUserTrackingAction(const G4Track* track) {
-  if (!enabled_) return;
-
   // Propagate ancestry information to new tracks
   int track_id = track->GetTrackID();
   int parent_id = track->GetParentID();
@@ -140,8 +135,6 @@ void PhotonuclearTracker::PreUserTrackingAction(const G4Track* track) {
 }
 
 void PhotonuclearTracker::PostUserTrackingAction(const G4Track* track) {
-  if (!enabled_) return;
-
   int track_id = track->GetTrackID();
 
   // Check if this track is a descendant of a PN secondary

@@ -46,9 +46,6 @@ namespace simcore {
  * 3. Tracking descendants through the event via ancestry propagation
  * 4. Building final state maps when tracks complete
  *
- * This feature is opt-in and can be enabled via:
- *   sim.enablePhotonuclearTracking = True
- *
  * The collected interactions are saved to the event bus as a vector:
  *   "PhotonuclearInteractions"
  */
@@ -174,9 +171,6 @@ class PhotonuclearTracker : public UserAction {
   /// Propagates through the genealogy to trace back to the original PN
   /// secondary
   std::map<int, int> descendant_ancestry_;
-
-  /// Configuration: enable/disable tracking (default: true when instantiated)
-  bool enabled_{true};
 
   /// Static pointer to the current instance
   static PhotonuclearTracker* instance;

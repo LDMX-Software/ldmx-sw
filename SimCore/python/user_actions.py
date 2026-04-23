@@ -26,11 +26,6 @@ class PhotonuclearTracker(UserAction):
     target nucleus information, immediate secondaries, and descendant genealogy.
 
     The collected interactions are saved to the event as "PhotonuclearInteractions".
-
-    Attributes
-    ----------
-    enabled : bool, optional
-        Enable or disable tracking (default: True)
     """
 
-    enabled: bool = True
+    pass
