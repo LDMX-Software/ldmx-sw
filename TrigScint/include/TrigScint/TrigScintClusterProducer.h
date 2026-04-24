@@ -45,9 +45,6 @@ class TrigScintClusterProducer : public framework::Producer {
   // collection of clusters produced
   std::vector<ldmx::TrigScintCluster> clusters_;
 
-  //amplitude weighting for centroid values
-  bool ampl_weighting{true};
-  
   // cluster seeding threshold
   double seed_{0.};
 

@@ -7,7 +7,6 @@
 namespace trigscint {
 
 void TrigScintClusterProducer::configure(framework::config::Parameters &ps) {
-  ampl_weighting = ps.get<bool>("ampl_weighting");
   seed_ = ps.get<double>("seed_threshold");
   min_thr_ = ps.get<double>("clustering_threshold");
   max_width_ = ps.get<int>("max_cluster_width");
