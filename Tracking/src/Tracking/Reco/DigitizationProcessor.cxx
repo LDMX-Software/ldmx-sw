@@ -2,6 +2,8 @@
 
 #include <algorithm>
 
+#include "Tracking/Digitization/ChargeCarrier.h"
+
 using namespace framework;
 
 namespace tracking::reco {
@@ -40,6 +42,11 @@ void DigitizationProcessor::onProcessStart() {
                    << "  n_samples=" << tracking::digitization::N_SAMPLES
                    << "  sampling_interval=" << tracking::digitization::SAMPLING_INTERVAL_NS << " ns"
                    << "  t0_offset=" << tracking::digitization::T0_OFFSET_NS << " ns";
+
+    if (field_map_.empty()) {
+      ldmx_log(debug) << "field_map not set; will auto-load from GDML";
+    }
+    buildLorentzCache();
   }
 }
 
@@ -94,7 +101,58 @@ void DigitizationProcessor::configure(
 
     out_raw_collection_ =
         parameters.get<std::string>("out_raw_collection", "");
+    field_map_ =
+        parameters.get<std::string>("field_map", "");
   }
+}
+
+void DigitizationProcessor::buildLorentzCache() {
+  if (!use_charge_digitization_) return;
+
+  if (field_map_.empty())
+    loadBField();
+  else
+    loadBField(field_map_);
+
+  // Low-field (Hall) mobility from the Canali model [cm²/(V·s)] → [m²/(V·s)]
+  const double T   = sensor_params_.temperature;
+  auto carrier_e   = tracking::digitization::getCarrier(-1);
+  auto carrier_h   = tracking::digitization::getCarrier(1);
+  const double mu_e = carrier_e.mu0(T) * 1.0e-4;  // m²/(V·s)
+  const double mu_h = carrier_h.mu0(T) * 1.0e-4;
+
+  auto bfield_cache = bField()->makeCache(magneticFieldContext());
+
+  for (const auto& [layer_id, surface] : geometry().layer_surface_map_) {
+    const Acts::Vector3 center_mm = surface->center(geometryContext());
+    const auto b_result = bField()->getField(center_mm, bfield_cache);
+    if (!b_result.ok()) continue;
+
+    // B in Tesla (ACTS field providers return values in Acts internal units)
+    const Acts::Vector3 b_T = b_result.value() / Acts::UnitConstants::T;
+
+    // Sensor W-normal = 3rd column of the rotation matrix
+    const Acts::Vector3 w_hat =
+        surface->transform(geometryContext()).rotation().col(2);
+
+    const double Bw = b_T.dot(w_hat);  // [T]
+
+    // tan(θ_L) = charge_sign · μ · Bw
+    // electrons: charge = −1, holes: charge = +1
+    const double tan_e = -mu_e * Bw;
+    const double tan_h = +mu_h * Bw;
+
+    lorentz_tan_cache_[layer_id] = {tan_e, tan_h};
+
+    ldmx_log(debug) << "Lorentz cache: layer=" << layer_id
+                    << "  Bw=" << Bw << " T"
+                    << "  tan_e=" << tan_e
+                    << "  tan_h=" << tan_h;
+  }
+
+  ldmx_log(info) << "Lorentz tangents computed for "
+                 << lorentz_tan_cache_.size() << " layers from field map "
+                 << (field_map_.empty() ? geometry().fieldMapFile() : field_map_);
 }
 
 void DigitizationProcessor::onNewRun(const ldmx::RunHeader& runHeader) {
@@ -328,6 +386,15 @@ std::vector<ldmx::Measurement> DigitizationProcessor::digitizeHits(
       if (path_length <= 0.0) {
         const double cos_theta = std::abs(local_dir_3d[2]);
         path_length = (cos_theta > 1e-3) ? thickness / cos_theta : thickness;
+      }
+
+      // Apply per-layer Lorentz tangents from the B-field cache (if available).
+      auto lorentz_it = lorentz_tan_cache_.find(layer_id);
+      if (lorentz_it != lorentz_tan_cache_.end()) {
+        strip_digitizer_->mutableParams().electron_lorentz_tangent =
+            lorentz_it->second.first;
+        strip_digitizer_->mutableParams().hole_lorentz_tangent =
+            lorentz_it->second.second;
       }
 
       // Compute charge deposited on each strip

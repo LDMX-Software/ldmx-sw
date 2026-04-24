@@ -26,6 +26,7 @@ TrackGeo.get_instance().set_detector("ldmx-det-v15-8gev")
 #
 # Set this flag before importing this module, or edit it here directly.
 # ---------------------------------------------------------------------------
+#use_truth_smearing = True
 use_truth_smearing = False
 
 # Truth seeder

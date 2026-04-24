@@ -21,6 +21,8 @@
 #include <chrono>
 #include <memory>
 #include <random>
+#include <unordered_map>
+#include <utility>
 
 namespace ldmx {
 class Measurement;
@@ -122,6 +124,16 @@ class DigitizationProcessor : public TrackingGeometryUser {
   std::string out_raw_collection_{""};
   /// The constructed pulse shape (created in onProcessStart).
   std::unique_ptr<tracking::digitization::PulseShape> pulse_shape_;
+
+  // -------------------------------------------------------------------------
+  // Lorentz angle computation (Mode 1, optional)
+  // -------------------------------------------------------------------------
+  /// Path to the magnetic field map file.  Empty = use fixed configured tangents.
+  std::string field_map_{""};
+  /// Per-layer cached Lorentz tangents: layer_id → {tan_electron, tan_hole}.
+  std::unordered_map<unsigned int, std::pair<double, double>> lorentz_tan_cache_;
+
+  void buildLorentzCache();
 
   // -------------------------------------------------------------------------
   // Common

@@ -157,18 +157,43 @@ std::map<int, double> SiStripDigitizer::senseToReadout(
       1, static_cast<int>(
              std::round(params_.readout_pitch / params_.sense_pitch)));
 
-  if (ratio == 1) return sense_charges;
-
-  // Sense strip n maps to readout strip floor(n / ratio) + N/2, where N is
-  // n_readout_strips.  The offset places strip 0 at the most-negative U edge
-  // so all indices are in [0, N).
-  // For ratio = 2: sense {-2,-1}→readout 255, {0,1}→readout 256, etc.
   const int offset = params_.n_readout_strips / 2;
   std::map<int, double> readout_charges;
+
+  if (ratio == 1) {
+    // No interleaving: paired strip only, apply readout transfer efficiency.
+    for (const auto& [sense_strip, charge] : sense_charges) {
+      readout_charges[sense_strip + offset] +=
+          charge * params_.readout_transfer_efficiency;
+    }
+    return readout_charges;
+  }
+
+  // AC-coupled sense→readout transfer following HPS CDFSiSensorSim.
+  //
+  // For each sense strip n, compute its position within its readout group:
+  //   k                = floor(n / ratio)   — group index
+  //   position_in_group = n − ratio × k     — 0 … ratio−1
+  //
+  // position_in_group == 0: "paired" strip, physically under readout strip r.
+  //   → transfers readout_transfer_efficiency × charge to readout r.
+  //
+  // position_in_group > 0: "unpaired" strip, between readout strips r and r+1.
+  //   → transfers sense_transfer_efficiency × charge to EACH of r and r+1.
+  //   (total ≈ 2 × 0.419 = 0.838; ~16% lost to capacitive cross-talk)
+
   for (const auto& [sense_strip, charge] : sense_charges) {
-    const int readout_strip = static_cast<int>(
-        std::floor(static_cast<double>(sense_strip) / ratio)) + offset;
-    readout_charges[readout_strip] += charge;
+    const int k = static_cast<int>(
+        std::floor(static_cast<double>(sense_strip) / ratio));
+    const int position_in_group = sense_strip - ratio * k;
+    const int r = k + offset;
+
+    if (position_in_group == 0) {
+      readout_charges[r] += charge * params_.readout_transfer_efficiency;
+    } else {
+      readout_charges[r]     += charge * params_.sense_transfer_efficiency;
+      readout_charges[r + 1] += charge * params_.sense_transfer_efficiency;
+    }
   }
   return readout_charges;
 }
@@ -255,16 +280,12 @@ std::pair<double, double> SiStripDigitizer::clusterToPosition(
   }
 
   // Charge-weighted centroid using readout-strip centres.
-  // Strip r covers sense strips { ratio*(r-N_int), ..., ratio*(r-N_int)+ratio-1 },
-  // each centred at n*sense_pitch.  The physical centre of strip r is therefore:
-  //   U = (r - N_int + (ratio-1)/(2*ratio)) * readout_pitch
-  //     = (r - offset) * readout_pitch
-  // with offset = N_int - (ratio-1)/(2*ratio), where N_int = integer(N/2).
-  // For N=767, ratio=2: offset = 383 - 0.25 = 382.75.
-  const int    n_int  = params_.n_readout_strips / 2;  // integer division
-  const int    ratio  = static_cast<int>(
-      std::round(params_.readout_pitch / params_.sense_pitch));
-  const double offset = n_int - 0.5 * (ratio - 1.0) / ratio;
+  // With AC-coupled transfer efficiencies, readout strip r is anchored at the
+  // position of its paired sense strip (position_in_group == 0):
+  //   U = (r - N_int) * readout_pitch,  N_int = integer(N/2).
+  // For N=767: offset = 383, so readout 383 → U=0, 384 → U=60 µm, etc.
+  const int    n_int  = params_.n_readout_strips / 2;  // integer division = 383
+  const double offset = static_cast<double>(n_int);
   double sum_q  = 0.0;
   double sum_qu = 0.0;
   for (const auto& [strip, charge] : strip_charges) {

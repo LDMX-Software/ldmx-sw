@@ -47,6 +47,7 @@ file(GLOB SRC_FILES CONFIGURE_DEPENDS
 # Other files in that directory (CDFSiSensorSim, SiElectrodeDataCollection,
 # SiSensor, ...) are still under development and excluded from the glob.
 list(APPEND SRC_FILES
+  ${PROJECT_SOURCE_DIR}/src/Tracking/Digitization/ChargeCarrier.cxx
   ${PROJECT_SOURCE_DIR}/src/Tracking/Digitization/PulseShape.cxx
   ${PROJECT_SOURCE_DIR}/src/Tracking/Digitization/SiStripDigitizer.cxx
   ${PROJECT_SOURCE_DIR}/src/Tracking/Digitization/StripClusterer.cxx

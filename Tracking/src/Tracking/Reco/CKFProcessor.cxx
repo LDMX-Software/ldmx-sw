@@ -61,69 +61,12 @@ void CKFProcessor::onNewRun(const ldmx::RunHeader& rh) {
   target_surface_ =
       Acts::Surface::makeShared<Acts::PlaneSurface>(target_transform);
 
-  // Custom transformation of the interpolated bfield map
-  bool debug_transform = false;
-  auto transform_pos = [this, debug_transform](const Acts::Vector3& pos_) {
-    Acts::Vector3 rot_pos;
-    rot_pos(0) = pos_(1);
-    rot_pos(1) = pos_(2);
-    rot_pos(2) = pos_(0) + DIPOLE_OFFSET;
-
-    // Systematic effect
-    rot_pos(0) += this->map_offset_[0];
-    rot_pos(1) += this->map_offset_[1];
-    rot_pos(2) += this->map_offset_[2];
-
-    // Apply A rotation around the center of the magnet. (I guess offset first
-    // and then rotation)
-
-    if (debug_transform) {
-      std::cout << "PF::DEFAULT3 TRANSFORM" << std::endl;
-      std::cout << "PF::Check:: transforming Pos" << std::endl;
-      std::cout << pos_ << std::endl;
-      std::cout << "TO" << std::endl;
-      std::cout << rot_pos << std::endl;
-    }
-
-    return rot_pos;
-  };
-
-  Acts::RotationMatrix3 rotation = Acts::RotationMatrix3::Identity();
-  double scale = 1.;
-
-  auto transform_b_field = [rotation, scale, debug_transform](
-                               const Acts::Vector3& field,
-                               const Acts::Vector3& /*pos_*/) {
-    // Rotate the field in tracking coordinates
-    Acts::Vector3 rot_field;
-    rot_field(0) = field(2);
-    rot_field(1) = field(0);
-    rot_field(2) = field(1);
-
-    // Scale the field
-    rot_field = scale * rot_field;
-
-    // Rotate the field
-    rot_field = rotation * rot_field;
-
-    // A distortion scaled by position.
-    if (debug_transform) {
-      std::cout << "PF::DEFAULT3 TRANSFORM" << std::endl;
-      std::cout << "PF::Check:: transforming" << std::endl;
-      std::cout << field << std::endl;
-      std::cout << "TO" << std::endl;
-      std::cout << rot_field << std::endl;
-    }
-
-    return rot_field;
-  };
-
   // Setup a interpolated bfield map
-  const auto map = std::make_shared<InterpolatedMagneticField3>(
-      loadDefaultBField(field_map_,
-                        // default_transformPos,
-                        // default_transformBField));
-                        transform_pos, transform_b_field));
+  if (field_map_.empty())
+    loadBField(map_offset_);
+  else
+    loadBField(field_map_, map_offset_);
+  const auto map = std::static_pointer_cast<InterpolatedMagneticField3>(bField());
 
   auto acts_logging_level = Acts::Logging::FATAL;
   if (debug_acts_) acts_logging_level = Acts::Logging::VERBOSE;

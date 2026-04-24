@@ -3,6 +3,7 @@
 #include <fstream>
 #include <functional>
 #include <iostream>
+#include <stdexcept>
 
 #include "Acts/Definitions/Algebra.hpp"
 #include "Acts/MagneticField/BFieldMapUtils.hpp"
@@ -228,6 +229,10 @@ inline InterpolatedMagneticField3 makeMagneticFieldMapXyzFromText(
   b_field.reserve(k_default_size);
   // [1] Read in file and fill values
   std::ifstream map_file(fieldMapFile.c_str(), std::ios::in);
+  if (!map_file.is_open()) {
+    throw std::runtime_error("BFieldXYZUtils: cannot open field map file '" +
+                             fieldMapFile + "'");
+  }
   std::string line;
   double pos_x = 0., pos_y = 0., pos_z = 0.;
   double bx = 0., by = 0., bz = 0.;
@@ -251,9 +256,13 @@ inline InterpolatedMagneticField3 makeMagneticFieldMapXyzFromText(
   map_file.close();
 
   if (!header_found) {
-    std::cout << "MAP LOADING ERROR:: line containing the word 'Header' not "
-                 "found in the BMap."
-              << std::endl;
+    throw std::runtime_error(
+        "BFieldXYZUtils: no 'Header' line found in field map file '" +
+        fieldMapFile + "'");
+  }
+  if (b_field.empty()) {
+    throw std::runtime_error(
+        "BFieldXYZUtils: no field data read from '" + fieldMapFile + "'");
   }
 
   x_pos.shrink_to_fit();

@@ -77,16 +77,18 @@ class SiStripDigitizer {
     double noise_electrons{NOISE_ELECTRONS};
     /// Readout threshold [electrons].  Strips below this are suppressed.
     double threshold_electrons{THRESHOLD_ELECTRONS};
-    /// true = n-type bulk;  false = p-type bulk (default, most SVT sensors).
-    bool is_n_type{false};
+    /// true = n-type bulk;  false = p-type bulk; HPS sensors are n_type
+    bool is_n_type{true};
     /// Simulate and read out the electron-collection side (n-strips).
     bool electron_side_readout{false};
     /// Simulate and read out the hole-collection side (p-strips / backplane).
     bool hole_side_readout{true};
+    /*****   lorentz angles should be calculated from sensor geometry  and bfield  *********/
     /// tan(θ_Lorentz) for electrons.  Sign encodes U-shift direction.
     double electron_lorentz_tangent{0.0};
     /// tan(θ_Lorentz) for holes.
     double hole_lorentz_tangent{0.0};
+    /////////////////////////////////////////////////////////////////////////////////////////
     /// Charge-trapping fraction lost per 100 µm of drift.
     /// 0.0 for unirradiated; ~0.2 is typical at 1×10¹⁵ n_eq/cm².
     double trapping{0.0};
@@ -100,6 +102,13 @@ class SiStripDigitizer {
     /// Total number of readout strips.  Strip index 0 is at the most-negative
     /// U edge; strip N−1 at the most-positive edge.
     int n_readout_strips{N_READOUT_STRIPS};
+    /// AC-coupling transfer efficiency from a paired sense strip (physically
+    /// under a readout strip, even index within its group) to its readout strip.
+    double readout_transfer_efficiency{READOUT_TRANSFER_EFFICIENCY};
+    /// AC-coupling transfer efficiency from an unpaired sense strip (between
+    /// two readout strips, odd index within its group) to each of its two
+    /// adjacent readout strips.  Applied to both neighbours independently.
+    double sense_transfer_efficiency{SENSE_TRANSFER_EFFICIENCY};
   };
 
   SiStripDigitizer() = default;
@@ -150,6 +159,7 @@ class SiStripDigitizer {
       const std::map<int, double>& strip_charges) const;
 
   const SensorParams& params() const { return params_; }
+  SensorParams& mutableParams() { return params_; }
 
   /// Set the sensor thickness [mm] from the geometry before processing hits.
   void setThickness(double thickness) { params_.thickness = thickness; }

@@ -165,8 +165,20 @@ std::vector<StripClusterer::ClusterCandidate> StripClusterer::findClusters(
     cand.total_amplitude = cluster_total_amp;
     cand.time_ns         = cluster_weighted_t / cluster_total_amp;
     cand.n_strips        = static_cast<int>(cand.strip_ids.size());
-    // σ [strips] = 1/√(12·N) — uniform distribution over N adjacent strips.
-    cand.sigma_strip     = 1.0 / std::sqrt(12.0 * cand.n_strips);
+
+    // Charge-weighted RMS around the centroid [strips].
+    // For multi-strip clusters this uses the actual charge-sharing profile,
+    // giving sub-pitch resolution when charge is sharply peaked.
+    // For single-strip clusters the RMS is zero, so we floor at the binary
+    // single-strip uncertainty 1/√12.
+    double sum_amp_dsq = 0.0;
+    for (int ch : cand.strip_ids) {
+      double d = ch - cand.centroid_strip;
+      sum_amp_dsq += channel_map.at(ch)->getAmplitude() * d * d;
+    }
+    constexpr double k_single_strip_sigma = 1.0 / 3.4641;  // 1/√12
+    const double rms = std::sqrt(sum_amp_dsq / cluster_total_amp);
+    cand.sigma_strip = (rms > 0.0) ? rms : k_single_strip_sigma;
     cand.layer_id        = channel_map.at(seed_ch)->getLayerID();
 
     clusters.push_back(std::move(cand));

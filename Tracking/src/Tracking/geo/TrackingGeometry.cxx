@@ -1,6 +1,8 @@
 
 #include "Tracking/geo/TrackingGeometry.h"
 
+#include <stdexcept>
+
 namespace tracking::geo {
 
 /**
@@ -74,6 +76,36 @@ TrackingGeometry::TrackingGeometry(const std::string& name,
 
   // Validation requires internet
   parser.Read(gdml_, false);
+
+  // Extract field map filename from GDML auxiliary data and resolve full path.
+  // GDML path: .../data/detectors/<det>/detector.gdml
+  // Field map:  .../data/fieldmap/<filename>
+  const G4GDMLAuxListType* aux_list = parser.GetAuxList();
+  for (const auto& aux : *aux_list) {
+    if (aux.type == "MagneticField") {
+      for (const auto& sub : *aux.auxList) {
+        if (sub.type == "File") {
+          boost::filesystem::path fmap(std::string(sub.value));
+          if (fmap.is_absolute()) {
+            field_map_file_ = fmap.string();
+          } else {
+            boost::filesystem::path prefix =
+                boost::filesystem::path(gdml_)
+                    .parent_path().parent_path().parent_path();
+            field_map_file_ = (prefix / "fieldmap" / fmap).string();
+          }
+          break;
+        }
+      }
+      break;
+    }
+  }
+
+  if (field_map_file_.empty()) {
+    throw std::runtime_error(
+        "TrackingGeometry: no MagneticField/File auxiliary entry found in '" +
+        gdml_ + "'");
+  }
 
   f_world_phys_vol_ = parser.GetWorldVolume();
 

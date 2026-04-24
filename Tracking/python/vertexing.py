@@ -22,7 +22,7 @@ class VertexProcessor(Processor):
         The name of the seeds collection.
     """
 
-    field_map: str = field(default_factory=make_field_map_path)
+    field_map: str = ""
     trk_coll_name: str = "Tracks"
     seeds_coll_name: str = "RecoilTruthSeeds"
     input_pass_name: str = ""
@@ -49,7 +49,7 @@ class Vertexer(Processor):
     """
 
     debug: bool = False
-    field_map: str = field(default_factory=make_field_map_path)
+    field_map: str = ""
     trk_c_name_1: str = "TaggerTracks"
     trk_c_name_2: str = "RecoilTracks"
     input_pass_name: str = ""

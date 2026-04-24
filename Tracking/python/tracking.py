@@ -216,7 +216,7 @@ class CKFProcessor(Processor):
     pionstates: int = 0
     bfield: float = -1.5
     const_b_field: bool = False
-    field_map: str = field(default_factory=make_field_map_path)
+    field_map: str = ""
     propagator_step_size: float = 1000.0
     propagator_max_steps: int = 10000
     hit_collection: str = "RecoilSimHits"
@@ -282,7 +282,7 @@ class GSFProcessor(Processor):
     debug: bool = False
     propagator_step_size: float = 200.0
     propagator_max_steps: int = 1000
-    field_map: str = field(default_factory=make_field_map_path)
+    field_map: str = ""
     tagger_tracking: bool = True
     out_trk_collection: str = "GSFTracks"
     track_collection: str = "TaggerTracks"

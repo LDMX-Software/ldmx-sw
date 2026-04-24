@@ -82,6 +82,27 @@ inline constexpr double ADC_ELECTRONS_PER_COUNT =
                      * (1 << ADC_BITS) / ADC_FULL_SCALE_MV);
 
 // ---------------------------------------------------------------------------
+// Sense-to-readout charge transfer efficiencies (AC-coupled sensor)
+//
+// From HPS CDFSiSensorSim / HpsSiSensor.  The transfer_efficiencies matrix
+// is {{readoutTransferEfficiency, senseTransferEfficiency}}.
+//
+// For ratio = readout_pitch / sense_pitch = 2:
+//   - Paired sense strips (even index, physically under a readout strip):
+//       fraction transferred = READOUT_TRANSFER_EFFICIENCY
+//   - Unpaired sense strips (odd index, between two readout strips):
+//       fraction transferred to EACH adjacent readout strip
+//       = SENSE_TRANSFER_EFFICIENCY  (total ≈ 0.838; ~16% lost)
+// ---------------------------------------------------------------------------
+
+/// Transfer efficiency from a paired sense strip to its readout strip.
+inline constexpr double READOUT_TRANSFER_EFFICIENCY = 0.986;
+/// Transfer efficiency from an unpaired sense strip to each adjacent readout
+/// strip.  Applied twice (left and right neighbour), so total charge
+/// transferred ≈ 2 × 0.419 = 0.838.
+inline constexpr double SENSE_TRANSFER_EFFICIENCY   = 0.419;
+
+// ---------------------------------------------------------------------------
 // Electronics noise and readout threshold
 // ---------------------------------------------------------------------------
 

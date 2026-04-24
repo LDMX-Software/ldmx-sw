@@ -96,17 +96,14 @@ void StripClusterProcessor::produce(framework::Event& event) {
     for (const auto& cl : clusters) {
       // -------------------------------------------------------------------
       // Local position: U from charge-weighted centroid, V unmeasured (= 0).
-      // Strip r covers sense strips { ratio*(r-N_int), ..., +ratio-1 },
-      // so its physical centre is at:
-      //   U = (r - N_int + (ratio-1)/(2*ratio)) * readout_pitch
-      // with N_int = integer(N/2), ratio = round(readout_pitch / sense_pitch).
-      // For N=767, ratio=2: offset = 383 - 0.25 = 382.75.
+      // With AC-coupled transfer efficiencies, each readout strip r is anchored
+      // at the position of its paired sense strip (position_in_group == 0),
+      // which is at U = (r - N_int) * readout_pitch where N_int = N/2 (integer).
+      // For N=767: offset = 383, so readout 383 → U=0, 384 → U=60 µm, etc.
       // -------------------------------------------------------------------
       using namespace tracking::digitization;
-      const int    n_int_  = N_READOUT_STRIPS / 2;  // integer division
-      const int    ratio_  = static_cast<int>(
-          std::round(READOUT_PITCH_MM / SENSE_PITCH_MM));
-      const double offset_ = n_int_ - 0.5 * (ratio_ - 1.0) / ratio_;
+      const int    n_int_  = N_READOUT_STRIPS / 2;  // integer division = 383
+      const double offset_ = static_cast<double>(n_int_);
       const double local_u = (cl.centroid_strip - offset_) * READOUT_PITCH_MM;
       const double sigma_u = cl.sigma_strip    * READOUT_PITCH_MM;
       constexpr double local_v = 0.0;

@@ -33,7 +33,9 @@ namespace tracking::digitization {
  *   centroid_strip  Charge-weighted mean strip index (fractional).
  *   total_amplitude Σ amplitude [ADC counts].
  *   time_ns         Amplitude-weighted mean hit time [ns].
- *   sigma_strip     Position uncertainty [strips] = 1/√(12·N) for N strips.
+ *   sigma_strip     Position uncertainty [strips]: charge-weighted RMS around
+ *                the centroid (uses actual charge-sharing profile); floored
+ *                at 1/√12 (single-strip binary limit) when RMS = 0.
  *   n_strips        Number of strips in the cluster.
  *   layer_id        Sensor layer (copied from the input hits).
  *   strip_ids       Constituent strip indices (for diagnostics).
