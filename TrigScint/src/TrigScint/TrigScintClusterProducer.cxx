@@ -7,10 +7,10 @@
 namespace trigscint {
 
 void TrigScintClusterProducer::configure(framework::config::Parameters &ps) {
-  ampl_weighting = ps.get<bool>("ampl_weighting");
   seed_ = ps.get<double>("seed_threshold");
   min_thr_ = ps.get<double>("clustering_threshold");
   max_width_ = ps.get<int>("max_cluster_width");
+  ampl_weighting_ = ps.get<bool>("ampl_weighting");
   input_collection_ = ps.get<std::string>("input_collection");
   pass_name_ = ps.get<std::string>("input_pass_name");
   output_collection_ = ps.get<std::string>("output_collection");
@@ -23,6 +23,7 @@ void TrigScintClusterProducer::configure(framework::config::Parameters &ps) {
     ldmx_log(info) << "Got parameters: \nSeed threshold:   " << seed_
                    << "\nClustering threshold: " << min_thr_
                    << "\nMax cluster width: " << max_width_
+                   << "\nAmplitude weighting: " << ampl_weighting_
                    << "\nExpected pad hit time: " << pad_time_
                    << "\nMax hit time delay: " << time_tolerance_
                    << "\nVertical bar start index:     " << vert_bar_start_idx_
@@ -481,7 +482,7 @@ void TrigScintClusterProducer::produce(framework::Event &event) {
 void TrigScintClusterProducer::addHit(uint idx, ldmx::TrigScintHit hit) {
   float ampl = hit.getPE();
   float w = 1;
-  if (ampl_weighting) {
+  if (ampl_weighting_) { //if choosing to PE-weight centroid positions
       w = ampl;
       }
 

@@ -45,9 +45,6 @@ class TrigScintClusterProducer : public framework::Producer {
   // collection of clusters produced
   std::vector<ldmx::TrigScintCluster> clusters_;
 
-  //amplitude weighting for centroid values
-  bool ampl_weighting{true};
-  
   // cluster seeding threshold
   double seed_{0.};
 
@@ -56,6 +53,9 @@ class TrigScintClusterProducer : public framework::Producer {
 
   // max number of neighboring hits to combine when forming a cluster
   int max_width_{2};
+
+  //PE-amplitude weighting for centroid values
+  bool ampl_weighting_{true};  
 
   // specific verbosity of this producer
   int verbose_{0};

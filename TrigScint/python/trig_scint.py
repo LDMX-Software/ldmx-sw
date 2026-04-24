@@ -280,6 +280,7 @@ class TrigScintClusterProducer(ldmxcfg.Producer) :
         super().__init__(name,'trigscint::TrigScintClusterProducer','TrigScint')
 
         self.max_cluster_width = 2
+        self.ampl_weighting = True
         self.clustering_threshold = 0.  #to add in neighboring channels
         self.seed_threshold = 30.
         self.pad_time = 0.
