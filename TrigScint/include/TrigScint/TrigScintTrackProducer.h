@@ -10,6 +10,8 @@
 #include "TrigScint/Event/TrigScintCluster.h"
 #include "TrigScint/Event/TrigScintTrack.h"
 
+#include <unordered_set>
+
 namespace trigscint {
 
 /**
@@ -64,6 +66,9 @@ class TrigScintTrackProducer : public framework::Producer {
 
   // allow forming tracks without match in the last collection
   bool skip_last_{false};
+  
+  // do tracking using LUT method instead of with max_delta
+  bool lut_tracking_{false};
 
   // vertical bar start index
   int vert_bar_start_idx_{52};
@@ -87,6 +92,24 @@ class TrigScintTrackProducer : public framework::Producer {
 
   // track residual in units of channel nb (will not be content weighted)
   // float residual_{0.};
+  
+  struct LUTKey { 
+    float p1, p2, p3;
+
+    bool operator==(const LUTKey& other) const {
+      return p1 == other.p1 && p2 == other.p2 && p3 == other.p3;
+    }
+  };
+  
+  struct LUTKeyHash {
+    size_t operator()(const LUTKey& k) const {
+      return std::hash<float>()(k.p1) ^
+        (std::hash<float>()(k.p2) << 1) ^
+         (std::hash<float>()(k.p3) << 2);
+    }
+  };
+    
+  std::unordered_set<LUTKey, LUTKeyHash> lut_;
 
   float bar_width_y_{3.};  // mm
   float bar_gap_y_{2.1};   // mm
