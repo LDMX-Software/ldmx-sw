@@ -335,6 +335,8 @@ class TrigScintTrackProducer(ldmxcfg.Producer) :
         self.seeding_collection = "TriggerPad1Clusters"
         self.further_input_collections = ["TriggerPad2Clusters","TriggerPad3Clusters"]
         self.allow_skip_last_collection = False
+        self.lut_tracking = False
+        self.lut_file = "LUT.txt"
         self.vertical_bar_start_index = 52
         self.number_horizontal_bars = 24  #16 for x,y segmented geometry only
         self.number_vertical_bars = 0     #8 for x,y segmented geometry only
@@ -347,28 +349,6 @@ class TrigScintTrackProducer(ldmxcfg.Producer) :
         self.verbosity = 0
 
 trig_scint_track = TrigScintTrackProducer( "trig_scint_track" )
-
-class TrigScintTrackProducer(ldmxcfg.Producer) :
-    """Configuration for track producer for Trigger Scintillators"""
-
-    def __init__(self,name) :
-        super().__init__(name,'trigscint::','TrigScint')
-
-        self.delta_max = 0.75
-        self.tracking_threshold = 0.  #to add in neighboring channels
-        self.seeding_collection = "TriggerPad1Clusters"
-        self.further_input_collections = ["TriggerPad2Clusters","TriggerPad3Clusters"]
-        self.allow_skip_last_collection = False
-        self.vertical_bar_start_index = 52
-        self.number_horizontal_bars = 24  #16 for x,y segmented geometry only
-        self.number_vertical_bars = 0     #8 for x,y segmented geometry only
-        self.horizontal_bar_width = 3.
-        self.horizontal_bar_gap = 0.3
-        self.vertical_bar_width = 3.
-        self.vertical_bar_gap = 0.3
-        self.input_pass_name="" #take any pass
-        self.output_collection="TriggerPadTracks"
-        self.verbosity = 0
 
 class TrigScintFirmwareTracker(ldmxcfg.Producer) :
     """Configuration for the track producer from the Firmware Tracker"""
