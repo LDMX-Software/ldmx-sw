@@ -43,6 +43,7 @@ import LDMX.Ecal.vetos as ecal_vetos
 ecal_veto = ecal_vetos.EcalVetoProcessor(
     recoil_from_tracking = False
 )
+ecal_tracking = ecal_vetos.EcalTrackFinderProcessor()
 
 import LDMX.Hcal.digi as hcal_digi
 import LDMX.Hcal.hcal as hcal
@@ -86,6 +87,7 @@ p.sequence.extend(
     [
         ecal_digi.EcalDigiProducer(),
         ecal_digi.EcalRecProducer(),
+        ecal_tracking,
         ecal_veto,
         hcal_digi.HcalDigiProducer(),
         hcal_digi.HcalRecProducer(),
@@ -96,6 +98,8 @@ p.sequence.extend(
         counter,
         trigger,
         dqm.EcalSPElectronKinematics(),
+        dqm.EcalTrackAnalyzer(),
+        dqm.EcalSPTrackCompare(),
         dqm.DarkBremInteraction(),
         dqm.HcalVetoResults(),
     ]

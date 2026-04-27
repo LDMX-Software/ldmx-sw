@@ -126,6 +126,7 @@ ecal_digi = ecal_digi_reco.EcalDigiProducer()
 ecal_veto = ecal_vetos.EcalVetoProcessor()
 ecal_mip = ecal_vetos.EcalMipProcessor()
 ecal_veto_pnet = ecal_vetos.EcalPnetVetoProcessor()
+ecal_tracking = ecal_vetos.EcalTrackFinderProcessor()
 
 # HCAL part
 hcal_digi = hcal_digi_and_reco.HcalDigiProducer()
@@ -165,6 +166,7 @@ p.sequence.extend(
     [
         ecal_digi,
         ecal_reco,
+        ecal_tracking,
         ecal_veto,
         ecal_mip,
         ecal_veto_pnet,

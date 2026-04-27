@@ -1831,6 +1831,161 @@ class EcalClusterAnalyzer(Processor):
         )
 
 
+@processor("dqm::EcalTrackAnalyzer", "DQM")
+class EcalTrackAnalyzer(Processor):
+    """Analyze ECAL tracks produced by ACTS tracking"""
+
+    track_collection: str = "EcalTracks"
+    track_pass_name: str = ""
+    rec_hit_collection: str = "EcalRecHits"
+    rec_hit_pass_name: str = ""
+
+    def __post_init__(self):
+        self.histogram("n_tracks", "Number of ECAL Tracks", 20, 0, 20)
+        self.histogram("track_chi2", "Track Chi2", 100, 0, 100)
+        self.histogram("track_chi2_ndf", "Track Chi2/NDF", 100, 0, 10)
+        self.histogram("track_ndf", "Track NDF", 50, 0, 50)
+        self.histogram("track_nhits", "Track Number of Hits", 40, 0, 40)
+        self.histogram("track_d0", "Track d0 [mm]", 100, -50, 50)
+        self.histogram("track_z0", "Track z0 [mm]", 100, 200, 400)
+        self.histogram("track_phi", "Track phi [rad]", 100, -3.2, 3.2)
+        self.histogram("track_theta", "Track theta [rad]", 100, 0, 3.2)
+        self.histogram("track_qop", "Track q/p [1/MeV]", 100, -0.01, 0.01)
+        self.histogram("track_p", "Track momentum [MeV]", 100, 0, 5000)
+        self.histogram("track_pt", "Track pT [MeV]", 100, 0, 2000)
+        self.histogram("track_px", "Track px [MeV]", 100, -1000, 1000)
+        self.histogram("track_py", "Track py [MeV]", 100, -1000, 1000)
+        self.histogram("track_pz", "Track pz [MeV]", 100, 0, 5000)
+        self.histogram("track_charge", "Track charge", 5, -2.5, 2.5)
+        self.histogram("track_x", "Track x [mm]", 100, -300, 300)
+        self.histogram("track_y", "Track y [mm]", 100, -300, 300)
+        self.histogram("track_p_multitracks", "Track p (multi-track events) [MeV]", 100, 0, 5000)
+        self.histogram("track_separation", "Track angular separation [rad]", 100, 0, 3.2)
+        self.histogram(
+            "track_xy",
+            "Track x [mm]",
+            100,
+            -300,
+            300,
+            "Track y [mm]",
+            100,
+            -300,
+            300,
+        )
+        self.histogram(
+            "track_p_vs_theta",
+            "Track momentum [MeV]",
+            100,
+            0,
+            5000,
+            "Track theta [rad]",
+            100,
+            0,
+            3.2,
+        )
+        self.histogram(
+            "track_chi2_vs_nhits",
+            "Track Chi2",
+            100,
+            0,
+            100,
+            "Track Number of Hits",
+            40,
+            0,
+            40,
+        )
+        self.histogram(
+            "track_nhits_vs_chi2",
+            "Track Number of Hits",
+            40,
+            0,
+            40,
+            "Track Chi2",
+            100,
+            0,
+            100,
+        )
+        self.histogram(
+            "track_p_vs_chi2",
+            "Track momentum [MeV]",
+            100,
+            0,
+            5000,
+            "Track Chi2",
+            100,
+            0,
+            100,
+        )
+        self.histogram(
+            "track_p_vs_nhits",
+            "Track momentum [MeV]",
+            100,
+            0,
+            5000,
+            "Track Number of Hits",
+            40,
+            0,
+            40,
+        )
+
+
+@processor("dqm::EcalSPTrackCompare", "DQM")
+class EcalSPTrackCompare(Processor):
+    """Compare primary electron at ECal scoring plane with reconstructed EcalTracks."""
+
+    ecal_sp_coll_name: str = "EcalScoringPlaneHits"
+    ecal_sp_pass_name: str = ""
+    track_collection: str = "EcalTracks"
+    track_pass_name: str = ""
+
+    def __post_init__(self):
+        # SP electron truth
+        self.histogram("sp_x", "SP Electron x [mm]", 200, -200, 200)
+        self.histogram("sp_y", "SP Electron y [mm]", 200, -200, 200)
+        self.histogram("sp_p", "SP Electron p [MeV]", 100, 0, 5000)
+        self.histogram("sp_theta", "SP Electron theta [rad]", 100, 0, 0.5)
+        self.histogram("sp_phi", "SP Electron phi [rad]", 100, 0, 6.3)
+
+        # Event-level
+        self.histogram("n_tracks", "Number of ECAL Tracks", 20, 0, 20)
+        self.histogram("has_match", "Has track match", 2, -0.5, 1.5)
+
+        # Best-match track
+        self.histogram("trk_x", "Track x [mm]", 200, -200, 200)
+        self.histogram("trk_y", "Track y [mm]", 200, -200, 200)
+        self.histogram("trk_p", "Track p [MeV]", 100, 0, 5000)
+        self.histogram("trk_theta", "Track theta [rad]", 100, 0, 0.5)
+        self.histogram("trk_phi", "Track phi [rad]", 100, 0, 6.3)
+
+        # Residuals (track - truth)
+        self.histogram("delta_x", "Track x - SP x [mm]", 200, -100, 100)
+        self.histogram("delta_y", "Track y - SP y [mm]", 200, -100, 100)
+        self.histogram("delta_theta", "Track theta - SP theta [rad]", 200, -0.2, 0.2)
+        self.histogram("delta_phi", "Track phi - SP phi [rad]", 200, -0.5, 0.5)
+        self.histogram("delta_p", "Track p - SP p [MeV]", 200, -2000, 2000)
+        self.histogram("delta_p_frac", "(Track p - SP p) / SP p", 200, -2, 2)
+        self.histogram("delta_r", "Track-SP position distance [mm]", 100, 0, 200)
+        self.histogram("delta_angle", "Track-SP angular distance [rad]", 100, 0, 1.0)
+
+        # 2D correlations
+        self.histogram(
+            "sp_x_vs_trk_x", "SP x [mm]", 100, -200, 200,
+            "Track x [mm]", 100, -200, 200,
+        )
+        self.histogram(
+            "sp_y_vs_trk_y", "SP y [mm]", 100, -200, 200,
+            "Track y [mm]", 100, -200, 200,
+        )
+        self.histogram(
+            "sp_p_vs_trk_p", "SP p [MeV]", 100, 0, 5000,
+            "Track p [MeV]", 100, 0, 5000,
+        )
+        self.histogram(
+            "sp_theta_vs_trk_theta", "SP theta [rad]", 100, 0, 0.5,
+            "Track theta [rad]", 100, 0, 0.5,
+        )
+
+
 ecal_dqm = [
     EcalDigiVerify(),
     EcalShowerFeatures(),

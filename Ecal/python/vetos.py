@@ -54,3 +54,23 @@ class EcalPnetVetoProcessor(Processor):
     track_collection: str = "RecoilTracksClean"
     track_pass_name: str = ""
     recoil_from_tracking: bool = True
+
+
+@processor("ecal::EcalTrackFinderProcessor", "Ecal")
+class EcalTrackFinderProcessor(Processor):
+    """Configuration for ACTS-based ECAL track finder with zero B-field
+
+    Uses ACTS Combinatorial Kalman Filter to fit straight-line tracks
+    through ECAL hits.
+    """
+
+    rec_coll_name: str = "EcalRecHits"
+    rec_pass_name: str = ""
+    out_track_collection: str = "EcalTracks"
+    min_hits: int = 3
+    max_chi2: float = 10.0
+    cell_resolution: float = 1.5  # mm
+    debug: bool = False
+    max_seed_rms: float = 60.0  # mm
+    min_momentum: float = 50.0  # MeV
+    max_momentum: float = 10000.0  # MeV
