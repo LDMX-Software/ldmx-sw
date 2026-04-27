@@ -2,7 +2,7 @@
 
 from LDMX.Framework import ldmxcfg
 
-p = ldmxcfg.Process('uptoclustering')
+p = ldmxcfg.Process('nontruthclusters')
 p.input_files =  ["SimSamples.root"]
 p.output_files = ["AllSamples.root"]
 #an additional output file called clusters.txt will be created as well, 
@@ -34,10 +34,14 @@ for cluster, digi in zip(clusters, digis):
     cluster.ampl_weighting = False #for LUT making for tracking
     cluster.clustering_threshold = 3.0 #prevents some (not all) "extra" clusters
 
+CVA = ldmxcfg.Analyzer.from_file('ClusterViewerAnalyzer.cxx', 
+              needs = ['TrigScint_Event', 'SimCore_Event'])
+
+CVA.pass_name = "nontruthclusters"
+
 p.sequence = [*digis,
               *clusters, 
-              ldmxcfg.Analyzer.from_file('ClusterViewerAnalyzer.cxx', 
-                            needs = ['TrigScint_Event', 'SimCore_Event'])
+              CVA
               ]
 
     
