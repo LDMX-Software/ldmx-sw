@@ -42,10 +42,14 @@ for cluster, digi in zip(clusters, digis):
     cluster.input_collection = digi.output_collection
     cluster.ampl_weighting = False
     cluster.clustering_threshold = 3.0
+    
+    
+CVA = ldmxcfg.Analyzer.from_file('ClusterViewerAnalyzer.cxx', 
+                           needs = ['TrigScint_Event', 'SimCore_Event'])
+CVA.pass_name = "truthisolater"
 
 p.sequence = [*truth_hits,
               *digis,
               *clusters, 
-              ldmxcfg.Analyzer.from_file('ClusterViewerAnalyzer.cxx', 
-                            needs = ['TrigScint_Event', 'SimCore_Event']),
+              CVA
               ]
