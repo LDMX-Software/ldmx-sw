@@ -10,7 +10,7 @@ Created on Tue Apr 14 21:58:25 2026
 
 from LDMX.Framework import ldmxcfg
 
-p = ldmxcfg.Process('truthisolater')
+p = ldmxcfg.Process('nontruthclusters')
 p.input_files =  ["SimSamples.root"]
 p.output_files = ["AllSamples.root"]
 #an additional output file called clusters.txt will be created as well
@@ -41,13 +41,16 @@ for cluster, digi in zip(clusters, digis):
     cluster.ampl_weighting = False
     cluster.clustering_threshold = 3.0
 
+CVA= ldmxcfg.Analyzer.from_file('ClusterViewerAnalyzer.cxx', 
+     needs = ['TrigScint_Event', 'SimCore_Event'])
+
+CVA.pass_name = "nontruthclusters"
+
 p.sequence = [
              #*truth_hits,
               *digis,
               *clusters, 
-              ldmxcfg.Analyzer.from_file('ClusterViewerAnalyzer.cxx', 
-                            needs = ['TrigScint_Event', 'SimCore_Event']),
-              #tracks
+              CVA
               ]
 
     

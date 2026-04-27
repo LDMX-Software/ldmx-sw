@@ -11,7 +11,13 @@ class ClusterViewerAnalyzer : public framework::Analyzer {
     public:
     
     std::ofstream outfile;
-    
+        
+        void configure(framework::config::Parameters& ps) override {
+        pass_name_ = ps.get<std::string>("pass_name");
+        }
+        
+        std::string pass_name_;
+        
         ClusterViewerAnalyzer(const std::string& name, framework::Process& p)
           : framework::Analyzer(name, p) {
           
@@ -21,13 +27,13 @@ class ClusterViewerAnalyzer : public framework::Analyzer {
         void analyze(const framework::Event& event) override {
         
         const auto& clusters1 = 
-        event.getCollection<ldmx::TrigScintCluster>("TriggerPad1Clusters","truthisolater");
+        event.getCollection<ldmx::TrigScintCluster>("TriggerPad1Clusters", pass_name_);
         
         const auto& clusters2 = 
-        event.getCollection<ldmx::TrigScintCluster>("TriggerPad2Clusters","truthisolater");
+        event.getCollection<ldmx::TrigScintCluster>("TriggerPad2Clusters", pass_name_);
                 
         const auto& clusters3 = 
-        event.getCollection<ldmx::TrigScintCluster>("TriggerPad3Clusters","truthisolater");
+        event.getCollection<ldmx::TrigScintCluster>("TriggerPad3Clusters", pass_name_);
         
         size_t Clusters = std::min({clusters1.size(), clusters2.size(), clusters3.size()});
 

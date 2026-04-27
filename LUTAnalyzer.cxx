@@ -1,4 +1,4 @@
-
+//WRITES LUT BASED ON FREQUENCY OF TRACK CANDIDATE PROPAGATION COMBINATIONS
 #include "Framework/EventProcessor.h"
 #include "Framework/Event.h"
 #include "TrigScint/Event/TrigScintTrack.h"
@@ -13,20 +13,39 @@ class LUTAnalyzer : public framework::Analyzer {
     struct Line {int event; float p1, p2, p3, p3alt;
     };
     
-    std::ifstream infile;
-    std::ofstream outfile;
+    void configure(framework::config::Parameters& ps) override {
+        input_file_ = ps.get<std::string>("input_file");
+        output_file_ = ps.get<std::string>("output_file");
+        lut_threshold_ = ps.get<double>("lut_threshold"); 
+        //The LUT threshold is the minimum percentage of times that a track 
+        //must appear in a pool of events to be written to the LUT. 
+        //Example --- straight tracks whose pad 1-2 and pad 2-3 delta values 
+        //            are both 0 make up ~85% of tracks out of 10.000 events,
+        //            while a track with deltas (+22,-22), meaning pad 1 cluster in 
+        //            e.g. bar 4, pad 2 cluster in bar 26, and pad 3 cluster in bar 4
+        //            only appears once in 10.000 events (0.01%). The straight 
+        //            tracks are written to the LUT and the single "anomaly" is not
+        
+    }
 
+    std::ifstream infile;
+    std::ofstream outfile; 
+    std::string input_file_;
+    std::string output_file_;
+    double lut_threshold_;
+    
     std::map<std::pair<float,float>, std::vector<Line>> groups;
     
     int totalLines = 0;
     
     LUTAnalyzer(const std::string& name, framework::Process& p)
      : framework::Analyzer(name,p) {
-
-        infile.open("clusters.txt");
-        outfile.open("LUT.txt");
     }
-
+        void onProcessStart() override {
+        infile.open(input_file_);
+        outfile.open(output_file_);
+        }
+        
         void analyze(const framework::Event& event) override {
             if (totalLines > 0) return;
             
@@ -50,9 +69,7 @@ class LUTAnalyzer : public framework::Analyzer {
             
             std::cout << "Total number of track candidates: " << totalLines << "\n";
             std::cout << "Number of track candidate types: " << groups.size() << "\n";
-            
-            double threshold = 1.0/1000.0;
-            std::cout << "Threshold: " << threshold << "\n";
+            std::cout << "LUT Threshold: " << lut_threshold_ * 100 << "%\n";
             
             for (auto& g : groups) {
             
@@ -63,7 +80,7 @@ class LUTAnalyzer : public framework::Analyzer {
                 double frac = (double)count / totalLines;
                 
                 std::cout << "(" << p12 << "," << p23 << ") appears " 
-                << count << " times, (" << frac << " %)" << "\n";
+                << count << " times, (" << frac * 100 << " %)" << "\n";
             }
             
             for (auto& g : groups) { 
@@ -71,7 +88,7 @@ class LUTAnalyzer : public framework::Analyzer {
                 int count = g.second.size();
                 double frac = (double)count / totalLines; 
                 
-                if (frac > threshold) {
+                if (frac > lut_threshold_) {
                     
                     combs++;
                     
@@ -91,11 +108,3 @@ class LUTAnalyzer : public framework::Analyzer {
 };
 
 DECLARE_ANALYZER(LUTAnalyzer)
-
-	
-
-
-
-
-
-
