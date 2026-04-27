@@ -90,6 +90,7 @@ class LdmxMeasurementCalibrator {
     projector(1, 1) = 1.;
 
     trackState.setProjector(projector);
+    trackState.setUncalibratedSourceLink(genericSourceLink);
   }
 
   /// Find the measurement corresponding to the source link.

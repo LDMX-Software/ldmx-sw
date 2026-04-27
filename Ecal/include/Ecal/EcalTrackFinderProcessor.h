@@ -93,7 +93,8 @@ class EcalTrackFinderProcessor : public framework::Producer {
    * Create ACTS measurement objects from ECAL hits
    */
   std::vector<ldmx::Measurement> createMeasurements(
-      const std::vector<ldmx::EcalHit>& hits);
+      const std::vector<ldmx::EcalHit>& hits,
+      std::vector<double>& energies);
 
   /**
    * Create unbounded plane surfaces at each ECAL layer
@@ -162,6 +163,11 @@ class EcalTrackFinderProcessor : public framework::Producer {
   double max_seed_rms_{10.0};    // Max RMS for seed fit [mm]
   double min_momentum_{50.0};    // Min momentum estimate [MeV]
   double max_momentum_{10000.0}; // Max momentum estimate [MeV]
+
+  // ROC cone energy collection
+  bool use_roc_energy_{true};    // Use 68% containment cone for track energy
+  std::string roc_file_name_;    // Path to ROC containment radii CSV file
+  std::vector<std::vector<float>> roc_range_values_; // ROC data from file
 
   // Geometry
   const ldmx::EcalGeometry* geometry_{nullptr};

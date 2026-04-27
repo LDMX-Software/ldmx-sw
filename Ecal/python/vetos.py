@@ -74,3 +74,5 @@ class EcalTrackFinderProcessor(Processor):
     max_seed_rms: float = 60.0  # mm
     min_momentum: float = 50.0  # MeV
     max_momentum: float = 10000.0  # MeV
+    use_roc_energy: bool = True
+    roc_file: str = make_roc_path("RoC_v14_8gev")

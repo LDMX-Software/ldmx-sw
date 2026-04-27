@@ -37,6 +37,8 @@
 #include <algorithm>
 #include <chrono>
 #include <cmath>
+#include <fstream>
+#include <sstream>
 
 namespace ecal {
 
@@ -64,6 +66,29 @@ void EcalTrackFinderProcessor::configure(
   max_seed_rms_ = parameters.get<double>("max_seed_rms");
   min_momentum_ = parameters.get<double>("min_momentum");
   max_momentum_ = parameters.get<double>("max_momentum");
+
+  use_roc_energy_ = parameters.get<bool>("use_roc_energy");
+  if (use_roc_energy_) {
+    roc_file_name_ = parameters.get<std::string>("roc_file");
+    std::ifstream rocfile(roc_file_name_);
+    if (!rocfile.good()) {
+      EXCEPTION_RAISE("EcalTrackFinderProcessor",
+                      "ROC file '" + roc_file_name_ + "' does not exist!");
+    }
+    std::string line, value;
+    // Skip header line
+    std::getline(rocfile, line);
+    while (std::getline(rocfile, line)) {
+      std::stringstream ss(line);
+      std::vector<float> values;
+      while (std::getline(ss, value, ',')) {
+        values.push_back(value.empty() ? -1.0f : std::stof(value));
+      }
+      roc_range_values_.push_back(values);
+    }
+    ldmx_log(info) << "Loaded ROC file with " << roc_range_values_.size()
+                    << " bins";
+  }
 }
 
 void EcalTrackFinderProcessor::onNewRun(const ldmx::RunHeader&) {
@@ -231,9 +256,12 @@ void EcalTrackFinderProcessor::createEcalSurfaces() {
 }
 
 std::vector<ldmx::Measurement> EcalTrackFinderProcessor::createMeasurements(
-    const std::vector<ldmx::EcalHit>& hits) {
+    const std::vector<ldmx::EcalHit>& hits,
+    std::vector<double>& energies) {
   std::vector<ldmx::Measurement> measurements;
   measurements.reserve(hits.size());
+  energies.clear();
+  energies.reserve(hits.size());
 
   for (const auto& hit : hits) {
     // Skip noise hits
@@ -260,6 +288,7 @@ std::vector<ldmx::Measurement> EcalTrackFinderProcessor::createMeasurements(
     meas.setLocalCovariance(cov, cov);
 
     measurements.push_back(meas);
+    energies.push_back(hit.getEnergy());
   }
 
   return measurements;
@@ -291,6 +320,12 @@ EcalTrackFinderProcessor::fitStraightLine(
   Eigen::SelfAdjointEigenSolver<Eigen::Matrix3d> solver(cov);
   Acts::Vector3 direction = solver.eigenvectors().col(2); // Largest eigenvalue
   direction.normalize();
+
+  // Eigenvector has sign ambiguity — ensure it points forward along the beam.
+  // In ACTS coords, beam direction is +X (LDMX Z -> ACTS X).
+  if (direction.x() < 0) {
+    direction = -direction;
+  }
 
   // Calculate RMS residual
   double rms = 0.0;
@@ -480,8 +515,9 @@ void EcalTrackFinderProcessor::produce(framework::Event& event) {
 
   ldmx_log(debug) << "Processing " << ecal_hits.size() << " ECAL hits";
 
-  // Convert hits to measurements
-  auto measurements = createMeasurements(ecal_hits);
+  // Convert hits to measurements (with parallel energy vector)
+  std::vector<double> measurement_energies;
+  auto measurements = createMeasurements(ecal_hits, measurement_energies);
   ldmx_log(debug) << "Created " << measurements.size() << " measurements";
 
   if (measurements.empty()) {
@@ -584,32 +620,25 @@ void EcalTrackFinderProcessor::produce(framework::Event& event) {
     const auto& seed = seed_tracks[seed_idx];
 
     // Convert seed to BoundTrackParameters
-    Acts::Vector3 perigee_acts = tracking::sim::utils::ldmx2Acts(
-        Acts::Vector3(seed.getPerigeeX(), seed.getPerigeeY(),
-                      seed.getPerigeeZ()));
-
-    auto perigee_surface =
-        Acts::Surface::makeShared<Acts::PerigeeSurface>(perigee_acts);
-
+    // The seed was created with bound parameters on the reference PlaneSurface,
+    // so we must start the CKF from that same surface (NOT a PerigeeSurface,
+    // which interprets loc0/loc1 as d0/z0 instead of plane-local coordinates).
     Acts::BoundVector param_vec;
     param_vec << seed.getD0(), seed.getZ0(), seed.getPhi(), seed.getTheta(),
         seed.getQoP(), seed.getT();
 
     ldmx_log(debug) << "Seed " << seed_idx
-                   << ": d0=" << param_vec[0]
-                   << " z0=" << param_vec[1]
+                   << ": loc0=" << param_vec[0]
+                   << " loc1=" << param_vec[1]
                    << " phi=" << param_vec[2]
                    << " theta=" << param_vec[3]
-                   << " qop=" << param_vec[4]
-                   << " perigee=(" << perigee_acts.x()
-                   << "," << perigee_acts.y()
-                   << "," << perigee_acts.z() << ")";
+                   << " qop=" << param_vec[4];
 
     Acts::BoundSquareMatrix cov_mat =
         tracking::sim::utils::unpackCov(seed.getPerigeeCov());
 
     auto part_hypo{Acts::SinglyChargedParticleHypothesis::electron()};
-    Acts::BoundTrackParameters start_params(perigee_surface, param_vec,
+    Acts::BoundTrackParameters start_params(reference_surface_, param_vec,
                                             cov_mat, part_hypo);
 
     // Setup CKF options
@@ -738,6 +767,80 @@ void EcalTrackFinderProcessor::produce(framework::Event& event) {
           trk.addMeasurementIndex(sl.index());
         }
       }
+
+      // Compute track energy from RecHits
+      double track_energy = 0.0;
+
+      if (use_roc_energy_ && !roc_range_values_.empty()) {
+        // Use 68% containment cone: project track through each layer,
+        // sum energies of all RecHits within the ROC radius
+
+        // Track momentum magnitude and angle for ROC bin selection
+        double trk_p_mag = 1.0 / std::abs(smoothed_params[Acts::eBoundQOverP]);
+        double trk_theta_deg = theta * 180.0 / M_PI;
+
+        // Select ROC bin based on momentum and angle
+        std::vector<float> ele_radii(
+            roc_range_values_[0].begin() + 4, roc_range_values_[0].end());
+        for (const auto& row : roc_range_values_) {
+          float theta_min = row[0], theta_max = row[1];
+          float p_min = row[2], p_max = row[3];
+          bool inrange = true;
+          if (theta_min != -1.0f) inrange = inrange && (trk_theta_deg >= theta_min);
+          if (theta_max != -1.0f) inrange = inrange && (trk_theta_deg < theta_max);
+          if (p_min != -1.0f) inrange = inrange && (trk_p_mag >= p_min);
+          if (p_max != -1.0f) inrange = inrange && (trk_p_mag < p_max);
+          if (inrange) {
+            ele_radii.assign(row.begin() + 4, row.end());
+          }
+        }
+
+        // Project track through each ECAL layer (straight line in LDMX coords)
+        // Track at (x, y, z) with direction (px, py, pz) normalized
+        for (const auto& hit : ecal_hits) {
+          if (hit.isNoise()) continue;
+          ldmx::EcalID ecal_id(hit.getID());
+          int layer = ecal_id.layer();
+          if (layer < 0 || layer >= static_cast<int>(ele_radii.size())) continue;
+
+          auto [hx, hy, hz] = geometry_->getPosition(ecal_id);
+
+          // Project track to this layer's z
+          double dz = hz - z;
+          double proj_x = x + (px / pz) * dz;
+          double proj_y = y + (py / pz) * dz;
+
+          // Distance from projected track to hit
+          double dx = hx - proj_x;
+          double dy = hy - proj_y;
+          double dist = std::sqrt(dx * dx + dy * dy);
+
+          if (dist < ele_radii[layer]) {
+            track_energy += hit.getEnergy();
+          }
+        }
+      } else {
+        // Fallback: sum on-track hit energies only
+        for (const auto ts : track.trackStatesReversed()) {
+          if (ts.typeFlags().test(Acts::TrackStateFlag::MeasurementFlag) &&
+              ts.hasUncalibratedSourceLink()) {
+            const acts_examples::IndexSourceLink sl =
+                ts.getUncalibratedSourceLink()
+                    .template get<acts_examples::IndexSourceLink>();
+            track_energy += measurement_energies[sl.index()];
+          }
+        }
+      }
+
+      // Use energy as track momentum (E ≈ p for relativistic electrons)
+      double track_p = track_energy;
+      qop = (track_p > 0) ? -1.0 / track_p : 0.0;
+      perigee_params[Acts::eBoundQOverP] = qop;
+      trk.setPerigeeParameters(
+          tracking::sim::utils::convertActsToLdmxPars(perigee_params));
+
+      ldmx_log(debug) << "Track energy from RecHits: " << track_energy
+                       << " MeV, q/p=" << qop;
 
       tracks.push_back(trk);
       ntracks_++;
