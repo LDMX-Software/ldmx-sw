@@ -14,14 +14,18 @@ class ClusterViewerAnalyzer : public framework::Analyzer {
         
         void configure(framework::config::Parameters& ps) override {
         pass_name_ = ps.get<std::string>("pass_name");
+        output_file_ = ps.get<std::string>("output_file");
+        
+        outfile.open(output_file_);
         }
         
         std::string pass_name_;
+        std::string output_file_;
         
         ClusterViewerAnalyzer(const std::string& name, framework::Process& p)
           : framework::Analyzer(name, p) {
           
-        outfile.open("clusters.txt");
+
         }
                 
         void analyze(const framework::Event& event) override {
@@ -43,32 +47,26 @@ class ClusterViewerAnalyzer : public framework::Analyzer {
             float c1 = clusters1[i].getCentroid();
             float c2 = clusters2[i].getCentroid();
             float c3 = clusters3[i].getCentroid();
-            float c3_alt = c3;
-
-            if (clusters3.size() > i + 1) {
-                c3_alt = clusters3[i + 1].getCentroid();
-            }
 
             outfile << eventNumber << " "
                     << c1 << " "
                     << c2 << " "
-                    << c3 << " "
-                    << c3_alt << "\n";
+                    << c3 << "\n";
         }
         	
     	
         for (size_t i = 1; i < clusters1.size(); i++){
-            std::cout << "In event " << event.getEventNumber() <<", extra cluster in pad 1: " 
+            ldmx_log(trace) << "In event " << event.getEventNumber() << ", extra cluster in pad 1: " 
             << clusters1[i].getCentroid() << "\n"; 
         }	
         
         for (size_t i = 1; i < clusters2.size(); i++){
-            std::cout << "In event " << event.getEventNumber() <<", extra cluster in pad 2: " 
+            ldmx_log(trace) << "In event " << event.getEventNumber() << ", extra cluster in pad 2: " 
             << clusters2[i].getCentroid() << "\n"; 
         }	
         
         for (size_t i = 1; i < clusters3.size(); i++){
-            std::cout << "In event " << event.getEventNumber() <<", extra cluster in pad 3: " 
+            ldmx_log(trace) << "In event " << event.getEventNumber() << ", extra cluster in pad 3: " 
             <<  clusters3[i].getCentroid() << "\n"; 
         }	
         
