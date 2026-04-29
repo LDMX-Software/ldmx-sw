@@ -1,3 +1,4 @@
+#EXAMPLE CONFIG TO USE CLUSTERVIEWERANALYZER.CXX (without truthhitproducer)
 #Makes digis, clusters, and saves clusters to clusters.txt
 
 from LDMX.Framework import ldmxcfg
@@ -38,6 +39,7 @@ CVA = ldmxcfg.Analyzer.from_file('ClusterViewerAnalyzer.cxx',
               needs = ['TrigScint_Event', 'SimCore_Event'])
 
 CVA.pass_name = "nontruthclusters"
+CVA.output_file = "clusters.txt"
 
 p.sequence = [*digis,
               *clusters, 
