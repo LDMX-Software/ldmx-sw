@@ -711,14 +711,13 @@ class TrackingRecoDQM(Processor):
 class DigiDQM(Processor):
     """DQM for silicon-strip digitization and clustering.
 
-    Produces per-sensor histograms for sim hits, digi measurements,
-    fitted strips, clusters, and digi-cluster position residuals.
+    Produces per-sensor histograms for sim hits, fitted strips, and clusters.
     """
 
     n_sensors: int = 14
     sim_coll_name: str = "TaggerSimHits"
     sim_pass_name: str = ""
-    digi_coll_name: str = "DigiTaggerSimHits"
+    digi_coll_name: str = ""
     digi_pass_name: str = ""
     fitted_coll_name: str = "TaggerFittedSiStripHits"
     fitted_pass_name: str = ""
@@ -733,29 +732,20 @@ class DigiDQM(Processor):
             self.histogram(f"sim_n_s{s}", "N sim hits", 10, 0, 10)
             self.histogram(f"sim_edep_s{s}", "Sim E_{dep} (MeV)", 100, 0, 0.5)
 
-            # digi measurements
-            self.histogram(f"digi_n_s{s}", "N digi measurements", 10, 0, 10)
-            self.histogram(f"digi_u_s{s}", "Digi local U (mm)", 200, -23.0, 23.0)
-
             # fitted strips
             self.histogram(f"strip_n_s{s}", "N fitted strips", 20, 0, 20)
-            self.histogram(f"strip_amp_s{s}", "Strip amplitude (ADC)", 150, 0, 1500)
+            self.histogram(f"strip_amp_s{s}", "Strip amplitude (ADC)", 150, 0, 2500)
             self.histogram(f"strip_t0_s{s}", "Strip fitted t_{0} (ns)", 100, -50, 150)
-            self.histogram(f"strip_chi2ndf_s{s}", "Strip #chi^{{2}}/ndf", 100, 0, 10)
+            self.histogram(f"strip_chi2ndf_s{s}", "Strip #chi^{{2}}/ndf", 100, 0, 5)
 
             # clusters
             self.histogram(f"cluster_n_s{s}", "N clusters", 10, 0, 10)
             self.histogram(f"cluster_u_s{s}", "Cluster local U (mm)", 200, -23.0, 23.0)
-            self.histogram(f"cluster_amp_s{s}", "Cluster amplitude (ADC)", 150, 0, 1500)
+            self.histogram(f"cluster_amp_s{s}", "Cluster amplitude (ADC)", 150, 0, 2500)
             self.histogram(f"cluster_nstrips_s{s}", "Strips per cluster", 10, 0, 10)
             self.histogram(f"cluster_time_s{s}", "Cluster time (ns)", 100, -50, 150)
 
-            # digi-cluster residual
-            self.histogram(
-                f"du_s{s}", "Digi U #minus Cluster U (mm)", 100, -0.1, 0.1
-            )
-
-            # sim-cluster residual
+            # sim-cluster residual (filled only when digi_coll_name is set)
             self.histogram(
                 f"sim_cluster_du_s{s}", "Sim U #minus Cluster U (mm)", 100, -0.1, 0.1
             )

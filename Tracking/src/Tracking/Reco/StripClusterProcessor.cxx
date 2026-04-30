@@ -105,7 +105,18 @@ void StripClusterProcessor::produce(framework::Event& event) {
       const int    n_int_  = N_READOUT_STRIPS / 2;  // integer division = 383
       const double offset_ = static_cast<double>(n_int_);
       const double local_u = (cl.centroid_strip - offset_) * READOUT_PITCH_MM;
-      const double sigma_u = cl.sigma_strip    * READOUT_PITCH_MM;
+
+      // Cluster-size-dependent position uncertainty using sense pitch (30 µm).
+      // Divisors follow the HPS convention: 1/√12 for single-strip (binary
+      // resolution), 1/5 for 2-strip (best charge-sharing), then degrading.
+      double sigma_u;
+      switch (cl.n_strips) {
+        case 1:  sigma_u = SENSE_PITCH_MM / std::sqrt(12.0); break;  // 8.7 µm
+        case 2:  sigma_u = SENSE_PITCH_MM / 5.0;             break;  // 6.0 µm
+        case 3:  sigma_u = SENSE_PITCH_MM / 3.0;             break;  // 10.0 µm
+        case 4:  sigma_u = SENSE_PITCH_MM / 2.0;             break;  // 15.0 µm
+        default: sigma_u = SENSE_PITCH_MM;                   break;  // 30.0 µm
+      }
       constexpr double local_v = 0.0;
 
       // -------------------------------------------------------------------

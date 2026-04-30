@@ -46,7 +46,10 @@ void DigitizationProcessor::onProcessStart() {
     if (field_map_.empty()) {
       ldmx_log(debug) << "field_map not set; will auto-load from GDML";
     }
-    buildLorentzCache();
+    if (use_lorentz_)
+      buildLorentzCache();
+    else
+      ldmx_log(info) << "Lorentz angle correction disabled (use_lorentz=false).";
   }
 }
 
@@ -86,6 +89,7 @@ void DigitizationProcessor::configure(
         parameters.get<bool>("electron_side_readout", false);
     sensor_params_.hole_side_readout =
         parameters.get<bool>("hole_side_readout", true);
+    use_lorentz_ = parameters.get<bool>("use_lorentz", true);
     sensor_params_.electron_lorentz_tangent =
         parameters.get<double>("electron_lorentz_tangent", 0.0);
     sensor_params_.hole_lorentz_tangent =
@@ -389,12 +393,14 @@ std::vector<ldmx::Measurement> DigitizationProcessor::digitizeHits(
       }
 
       // Apply per-layer Lorentz tangents from the B-field cache (if available).
-      auto lorentz_it = lorentz_tan_cache_.find(layer_id);
-      if (lorentz_it != lorentz_tan_cache_.end()) {
-        strip_digitizer_->mutableParams().electron_lorentz_tangent =
-            lorentz_it->second.first;
-        strip_digitizer_->mutableParams().hole_lorentz_tangent =
-            lorentz_it->second.second;
+      if (use_lorentz_) {
+        auto lorentz_it = lorentz_tan_cache_.find(layer_id);
+        if (lorentz_it != lorentz_tan_cache_.end()) {
+          strip_digitizer_->mutableParams().electron_lorentz_tangent =
+              lorentz_it->second.first;
+          strip_digitizer_->mutableParams().hole_lorentz_tangent =
+              lorentz_it->second.second;
+        }
       }
 
       // Compute charge deposited on each strip
@@ -414,28 +420,6 @@ std::vector<ldmx::Measurement> DigitizationProcessor::digitizeHits(
         ldmx_log(debug) << "Hit suppressed by threshold after noise addition.";
         continue;
       }
-
-      // Cluster to get the U measurement
-      auto [centroid_u, resolution_u] =
-          strip_digitizer_->clusterToPosition(strip_charges);
-
-      // Keep V from the simple 2D projection (strips give no V information)
-      const double meas_v  = local_pos_2d[1];
-      const double sigma_v_charge = sigma_v_ > 0.0 ? sigma_v_ : 1.0;  // [mm]
-
-      measurement.setLocalPosition(static_cast<float>(centroid_u),
-                                   static_cast<float>(meas_v));
-      measurement.setLocalCovariance(static_cast<float>(resolution_u * resolution_u),
-                                     static_cast<float>(sigma_v_charge * sigma_v_charge));
-
-      // Update the global position from the new local U (keep V, Z unchanged)
-      auto transf_global =
-          hit_surface->localToGlobal(geometryContext(),
-                                     Acts::Vector2(centroid_u, meas_v),
-                                     dummy_momentum);
-      measurement.setGlobalPosition(measurement.getGlobalPosition()[0],
-                                    transf_global(1),
-                                    transf_global(2));
 
       // Produce RawSiStripHit objects (N_SAMPLES shaped ADC samples per strip).
       if (raw_hits && pulse_shape_) {
@@ -467,7 +451,8 @@ std::vector<ldmx::Measurement> DigitizationProcessor::digitizeHits(
         }
       }
 
-      measurements.push_back(measurement);
+      // Measurements are produced downstream by StripFitProcessor +
+      // StripClusterProcessor; do not add one here.
 
     // -----------------------------------------------------------------------
     // Mode 0: simple Gaussian smearing

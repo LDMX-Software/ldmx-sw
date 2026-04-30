@@ -149,15 +149,6 @@ class SiStripDigitizer {
    */
   void applyNoiseAndThreshold(std::map<int, double>& strip_charges);
 
-  /**
-   * Compute a charge-weighted centroid position from a readout-strip cluster.
-   *
-   * @param strip_charges  Map of readout_strip_index → charge [electrons].
-   * @return Pair {centroid_u [mm], resolution_u [mm]}.
-   */
-  std::pair<double, double> clusterToPosition(
-      const std::map<int, double>& strip_charges) const;
-
   const SensorParams& params() const { return params_; }
   SensorParams& mutableParams() { return params_; }
 

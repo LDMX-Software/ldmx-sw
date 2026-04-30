@@ -16,10 +16,6 @@ namespace tracking::dqm {
  *     sim_n_sN        — number of sim hits per event
  *     sim_edep_sN     — energy deposition [MeV]
  *
- *   Digi hits (from DigitizationProcessor Measurement collection)
- *     digi_n_sN       — number of digi measurements per event
- *     digi_u_sN       — local U position [mm]
- *
  *   Fitted strips (from FittedSiStripHit collection)
  *     strip_n_sN      — number of fitted strips per event
  *     strip_amp_sN    — fitted amplitude [ADC counts]
@@ -32,17 +28,13 @@ namespace tracking::dqm {
  *     cluster_amp_sN  — total cluster amplitude [ADC counts]
  *     cluster_nstrips_sN — number of strips per cluster
  *     cluster_time_sN — cluster hit time [ns]
- *
- *   Residuals (digi Measurement matched to cluster Measurement by layer + track_id)
- *     du_sN           — digi_u - cluster_u [mm]
- *
- * The sensor index N runs from 0 to n_sensors-1 using Measurement::getLayer().
+ *     sim_cluster_du_sN — truth U minus cluster U [mm]  (requires digi_coll_name)
  *
  * Configuration parameters
  * ------------------------
  *   sim_coll_name     SimTrackerHit collection  (default "TaggerSimHits")
  *   sim_pass_name     pass name                 (default "")
- *   digi_coll_name    digi Measurement coll.    (default "DigiTaggerSimHits")
+ *   digi_coll_name    digi Measurement coll. for truth_u lookup (default "" = disabled)
  *   digi_pass_name    pass name                 (default "")
  *   fitted_coll_name  FittedSiStripHit coll.    (default "TaggerFittedSiStripHits")
  *   fitted_pass_name  pass name                 (default "")
@@ -63,7 +55,7 @@ class DigiDQM : public framework::Analyzer {
  private:
   std::string sim_coll_name_{"TaggerSimHits"};
   std::string sim_pass_name_{""};
-  std::string digi_coll_name_{"DigiTaggerSimHits"};
+  std::string digi_coll_name_{""};
   std::string digi_pass_name_{""};
   std::string fitted_coll_name_{"TaggerFittedSiStripHits"};
   std::string fitted_pass_name_{""};

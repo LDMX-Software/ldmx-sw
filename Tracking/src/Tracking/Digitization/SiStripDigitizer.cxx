@@ -273,32 +273,4 @@ void SiStripDigitizer::applyNoiseAndThreshold(
   }
 }
 
-std::pair<double, double> SiStripDigitizer::clusterToPosition(
-    const std::map<int, double>& strip_charges) const {
-  if (strip_charges.empty()) {
-    return {0.0, params_.readout_pitch / std::sqrt(12.0)};
-  }
-
-  // Charge-weighted centroid using readout-strip centres.
-  // With AC-coupled transfer efficiencies, readout strip r is anchored at the
-  // position of its paired sense strip (position_in_group == 0):
-  //   U = (r - N_int) * readout_pitch,  N_int = integer(N/2).
-  // For N=767: offset = 383, so readout 383 → U=0, 384 → U=60 µm, etc.
-  const int    n_int  = params_.n_readout_strips / 2;  // integer division = 383
-  const double offset = static_cast<double>(n_int);
-  double sum_q  = 0.0;
-  double sum_qu = 0.0;
-  for (const auto& [strip, charge] : strip_charges) {
-    const double u = (strip - offset) * params_.readout_pitch;
-    sum_q  += charge;
-    sum_qu += charge * u;
-  }
-
-  const double centroid_u = (sum_q > 0.0) ? sum_qu / sum_q : 0.0;
-  const double resolution =
-      params_.readout_pitch / std::sqrt(12.0 * strip_charges.size());
-
-  return {centroid_u, resolution};
-}
-
 }  // namespace tracking::digitization

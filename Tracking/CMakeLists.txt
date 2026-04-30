@@ -43,9 +43,7 @@ file(GLOB SRC_FILES CONFIGURE_DEPENDS
   ${PROJECT_SOURCE_DIR}/src/Tracking/[a-zA-z]*.cxx
 )
 
-# Add individual Digitization sources that are ready to build.
-# Other files in that directory (CDFSiSensorSim, SiElectrodeDataCollection,
-# SiSensor, ...) are still under development and excluded from the glob.
+# Add individual Digitization sources.
 list(APPEND SRC_FILES
   ${PROJECT_SOURCE_DIR}/src/Tracking/Digitization/ChargeCarrier.cxx
   ${PROJECT_SOURCE_DIR}/src/Tracking/Digitization/PulseShape.cxx

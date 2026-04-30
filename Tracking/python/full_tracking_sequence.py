@@ -374,7 +374,7 @@ dqm_recoil_gsf = tkdqm.TrackingRecoDQM(
 dqm_digi_tagger = tkdqm.DigiDQM(
     instance_name="TaggerDigiDQM",
     sim_coll_name="TaggerSimHits",
-    digi_coll_name=digi_tagger.out_collection,
+    digi_coll_name="" if use_truth_smearing else digi_tagger.out_collection,
     fitted_coll_name="" if use_truth_smearing else fit_tagger.out_collection,
     cluster_coll_name="" if use_truth_smearing else cluster_tagger.out_collection,
 )
@@ -382,7 +382,7 @@ dqm_digi_tagger = tkdqm.DigiDQM(
 dqm_digi_recoil = tkdqm.DigiDQM(
     instance_name="RecoilDigiDQM",
     sim_coll_name="RecoilSimHits",
-    digi_coll_name=digi_recoil.out_collection,
+    digi_coll_name="" if use_truth_smearing else digi_recoil.out_collection,
     fitted_coll_name="" if use_truth_smearing else fit_recoil.out_collection,
     cluster_coll_name="" if use_truth_smearing else cluster_recoil.out_collection,
 )

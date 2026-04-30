@@ -76,6 +76,7 @@ class DigitizationProcessor(Processor):
     out_collection: str = "OutputMeasurements"
     tracker_hit_passname: str = ""
     use_charge_digitization: bool = False
+    use_lorentz: bool = True
     bias_voltage: float = 200.0
     depletion_voltage: float = 70.0
     noise_electrons: float = 1000.0
@@ -515,6 +516,57 @@ class StripFitProcessor(Processor):
     t_scan_max_ns: float = 150.0
     t_scan_step_ns: float = 1.0
     max_chi2_ndf: float = -1.0
+
+
+@processor("tracking::reco::TrackComparisonProcessor", "Tracking")
+class TrackComparisonProcessor(Processor):
+    """Compares tracking performance between a truth-smeared and a charge-digitized
+    hit chain on a track-by-track basis.
+
+    Tracks from two upstream collections are matched by their truth-matched
+    SimParticle ID.  For each matched pair a row is written to a flat ROOT TTree
+    and a set of quick-look TH1F histograms is filled.
+
+    Attributes
+    ----------
+    trk_collection_smear : str
+        Tagger truth-smeared track collection name.
+    trk_collection_digi : str
+        Tagger charge-digitized track collection name.
+    pass_name_smear : str
+        Pass name for the smeared tagger collection.
+    pass_name_digi : str
+        Pass name for the digi tagger collection.
+    do_tagger : bool
+        Enable tagger comparison.
+    do_recoil : bool
+        Enable recoil comparison.
+    recoil_collection_smear : str
+        Recoil truth-smeared track collection name.
+    recoil_collection_digi : str
+        Recoil charge-digitized track collection name.
+    recoil_pass_smear : str
+        Pass name for the smeared recoil collection.
+    recoil_pass_digi : str
+        Pass name for the digi recoil collection.
+    min_truth_prob : float
+        Minimum truth_prob required on both tracks to accept a pair.
+    output_file : str
+        Name of the output ROOT file containing the TTrees.
+    """
+
+    trk_collection_smear: str = "TaggerTracks"
+    trk_collection_digi: str = "TaggerDigiTracks"
+    pass_name_smear: str = ""
+    pass_name_digi: str = ""
+    do_tagger: bool = True
+    do_recoil: bool = False
+    recoil_collection_smear: str = "RecoilTracks"
+    recoil_collection_digi: str = "RecoilDigiTracks"
+    recoil_pass_smear: str = ""
+    recoil_pass_digi: str = ""
+    min_truth_prob: float = 0.5
+    output_file: str = "track_comparison.root"
 
 
 @processor("tracking::reco::StripClusterProcessor", "Tracking")
