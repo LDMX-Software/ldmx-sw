@@ -109,7 +109,8 @@ int main(int argc, char* argv[]) {
     while (r) {
       r >> frame_header;
       frame_count++;
-      const int frame_end = r.tell() + static_cast<std::streamoff>(frame_header.size());
+      const int frame_end =
+          r.tell() + static_cast<std::streamoff>(frame_header.size());
       if (frame_header.channel() != 0) {
         // non-data channel in StreamWriter, skip
         r.seek(frame_end);

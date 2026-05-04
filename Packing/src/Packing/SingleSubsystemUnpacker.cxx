@@ -36,7 +36,8 @@ void SingleSubsystemUnpacker::produce(framework::Event& event) {
 
     // store location of end-of-frame for skipping this frame
     // if we fail any of the filter checks
-    const auto frame_end = reader_.tell() + static_cast<std::streamoff>(frame_header.size());
+    const auto frame_end =
+        reader_.tell() + static_cast<std::streamoff>(frame_header.size());
 
     if (frame_header.channel() != 0 or frame_header.probablyYaml()) {
       // non-data channel in StreamWriter, skip
