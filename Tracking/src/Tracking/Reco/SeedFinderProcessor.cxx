@@ -244,6 +244,11 @@ ldmx::Track SeedFinderProcessor::seedTracker(
 
     // Get the surface
     const Acts::Surface* hit_surface = geometry().getSurface(meas.getLayerID());
+    if (!hit_surface) {
+      ldmx_log(warn) << "Missing surface for layerID=" << meas.getLayerID()
+                    << " (skipping measurement)";
+      continue;
+    }
 
     // Get the global to local transformation
     auto rot = hit_surface->transform(geometryContext()).rotation();

@@ -95,7 +95,9 @@ class TrackingGeometry : public framework::ConditionsObject {
   void getSurfaces(std::vector<const Acts::Surface*>& surfaces) const;
 
   const Acts::Surface* getSurface(int layerid) const {
-    return layer_surface_map_.at(layerid);
+    auto it = layer_surface_map_.find(layerid);
+    if (it == layer_surface_map_.end()) return nullptr;
+    return it->second;
   }
 
   std::unordered_map<unsigned int, const Acts::Surface*> layer_surface_map_;
