@@ -73,7 +73,7 @@ ts_digis = [
     TrigScintDigiProducer.pad3(),
 ]
 
-# TS clustering timing tune  
+# TS clustering timing tune
 ts_cl1 = TrigScintClusterProducer.pad1()
 ts_cl2 = TrigScintClusterProducer.pad2()
 ts_cl3 = TrigScintClusterProducer.pad3()
@@ -133,13 +133,13 @@ digi_recoil_reduced.sigma_v = 0.000001
 
 
 # ESA slice test recoil layer midpoints (update for new geometry)
-recoil_l14_z = [-100.0, 0.0]   # from recoil.gdml
-recoil_sensor_sep = 3.0        # from constants.gdml
+recoil_l14_z = [-100.0, 0.0]  # from recoil.gdml
+recoil_sensor_sep = 3.0  # from constants.gdml
 
-z1 = recoil_l14_z[0] - recoil_sensor_sep   # -103
-z2 = recoil_l14_z[0] + recoil_sensor_sep   # -97
-z3 = recoil_l14_z[1] - recoil_sensor_sep   # -3
-z4 = recoil_l14_z[1] + recoil_sensor_sep   # +3
+z1 = recoil_l14_z[0] - recoil_sensor_sep  # -103
+z2 = recoil_l14_z[0] + recoil_sensor_sep  # -97
+z3 = recoil_l14_z[1] - recoil_sensor_sep  # -3
+z4 = recoil_l14_z[1] + recoil_sensor_sep  # +3
 
 layer12_mid = 0.5 * (z1 + z2)  # -100
 layer23_mid = 0.5 * (z2 + z3)  # -50
