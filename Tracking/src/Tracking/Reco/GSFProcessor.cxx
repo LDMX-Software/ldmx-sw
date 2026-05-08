@@ -215,23 +215,23 @@ void GSFProcessor::produce(framework::Event& event) {
     std::vector<Acts::SourceLink> fit_track_source_links;
 
     for (auto imeas : track.getMeasurementsIdxs()) {
-    auto meas = measurements.at(imeas);
-    meas_on_track.push_back(meas);
+      auto meas = measurements.at(imeas);
+      meas_on_track.push_back(meas);
 
-    // Retrieve the surface
-    const Acts::Surface* hit_surface =
-        tg.geo::TrackingGeometry::getSurface(meas.getLayerID());
+      // Retrieve the surface
+      const Acts::Surface* hit_surface =
+          tg.geo::TrackingGeometry::getSurface(meas.getLayerID());
 
-    // Guard against missing surfaces (reduced geometry can miss some IDs)
-    if (!hit_surface) {
+      // Guard against missing surfaces (reduced geometry can miss some IDs)
+      if (!hit_surface) {
         ldmx_log(warn) << "Missing surface for layerID=" << meas.getLayerID()
-                    << " (skipping measurement idx=" << imeas << ")";
+                       << " (skipping measurement idx=" << imeas << ")";
         continue;
-    }
+      }
 
-    // Store the index source link
-    acts_examples::IndexSourceLink idx_sl(hit_surface->geometryId(), imeas);
-    fit_track_source_links.push_back(Acts::SourceLink(idx_sl));
+      // Store the index source link
+      acts_examples::IndexSourceLink idx_sl(hit_surface->geometryId(), imeas);
+      fit_track_source_links.push_back(Acts::SourceLink(idx_sl));
     }
 
     // Reverse the order of the vectors

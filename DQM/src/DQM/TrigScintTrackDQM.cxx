@@ -35,7 +35,7 @@ void TrigScintTrackDQM::configure(framework::config::Parameters &ps) {
 
 void TrigScintTrackDQM::analyze(const framework::Event &event) {
   // Get the collection of TrigScintTrack digitized tracks if the exists
-  if (not event.exists(track_collection_name_, pass_name_)) return;  
+  if (not event.exists(track_collection_name_, pass_name_)) return;
   const std::vector<ldmx::TrigScintTrack> trig_scint_tracks =
       event.getCollection<ldmx::TrigScintTrack>(track_collection_name_,
                                                 pass_name_);

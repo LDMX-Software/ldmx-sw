@@ -246,7 +246,7 @@ ldmx::Track SeedFinderProcessor::seedTracker(
     const Acts::Surface* hit_surface = geometry().getSurface(meas.getLayerID());
     if (!hit_surface) {
       ldmx_log(warn) << "Missing surface for layerID=" << meas.getLayerID()
-                    << " (skipping measurement)";
+                     << " (skipping measurement)";
       continue;
     }
 
