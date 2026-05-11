@@ -64,9 +64,6 @@ void GreedyAmbiguitySolver::computeInitialState(
     for (auto imeas : track.getMeasurementsIdxs()) {
       auto meas = meas_coll.at(imeas);
       const Acts::Surface* hit_surface = tg.getSurface(meas.getLayerID());
-      if (!hit_surface) {
-        continue;
-      }
       // Store the index_ source link
       acts_examples::IndexSourceLink idx_sl(hit_surface->geometryId(), imeas);
       Acts::SourceLink source_link = Acts::SourceLink(idx_sl);

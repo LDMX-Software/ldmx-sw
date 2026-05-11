@@ -219,15 +219,9 @@ void GSFProcessor::produce(framework::Event& event) {
       meas_on_track.push_back(meas);
 
       // Retrieve the surface
+
       const Acts::Surface* hit_surface =
           tg.geo::TrackingGeometry::getSurface(meas.getLayerID());
-
-      // Guard against missing surfaces (reduced geometry can miss some IDs)
-      if (!hit_surface) {
-        ldmx_log(warn) << "Missing surface for layerID=" << meas.getLayerID()
-                       << " (skipping measurement idx=" << imeas << ")";
-        continue;
-      }
 
       // Store the index source link
       acts_examples::IndexSourceLink idx_sl(hit_surface->geometryId(), imeas);
