@@ -1016,6 +1016,8 @@ class PhotoNuclearDQM(Processor):
     sim_particles_coll_name: str = "SimParticles"
     sim_particles_passname: str = ""
     count_light_ions: bool = True
+    pn_collection_name: str = "PhotonuclearInteractions"
+    pn_pass_name: str = ""
 
     def __post_init__(self):
         event_type_labels = [
@@ -1275,6 +1277,69 @@ class PhotoNuclearDQM(Processor):
             -250,
             250,
         )
+
+        # PhotonuclearInteraction collection histograms
+        self.histogram(
+            "pn_interaction_count",
+            "Number of PN Interactions per Event",
+            20,
+            0,
+            20,
+        )
+        self.histogram(
+            "pn_target_z",
+            "Target Atomic Number (Z)",
+            100,
+            0,
+            100,
+        )
+        self.histogram(
+            "pn_target_a",
+            "Target Mass Number (A)",
+            250,
+            0,
+            250,
+        )
+        self.histogram(
+            "pn_target_z:target_a",
+            "Target Atomic Number (Z)",
+            100,
+            0,
+            100,
+            "Target Mass Number (A)",
+            250,
+            0,
+            250,
+        )
+        self.histogram(
+            "pn_cascade_multiplicity",
+            "PN cascade multiplicity ",
+            200,
+            0,
+            200,
+        )
+        self.histogram(
+            "pn_descendants_per_cascade_particle",
+            "All Descendants per cascade",
+            200,
+            0,
+            5000,
+        )
+        self.histogram(
+            "pn_total_final_state_descendants",
+            "Total Descendants in all cascades",
+            200,
+            0,
+            10000,
+        )
+        self.histogram(
+            "pn_cascade_evolution_ratio",
+            "Cascade compactness (immediate secondaries / all)",
+            100,
+            0,
+            1,
+        )
+
 
 
 @processor("dqm::TrkDeDxMassEstFeatures", "DQM")

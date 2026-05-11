@@ -154,12 +154,73 @@ void PhotoNuclearDQM::findSubleadingKinematics(
   }
 }
 
+void PhotoNuclearDQM::analyzeInteractionDetails(const framework::Event &event) {
+  // Check if PhotonuclearInteraction collection exists
+  if (!event.exists(pn_collection_name_, pn_pass_name_)) {
+    // Collection not present - PN tracing was not enabled
+    return;
+  }
+
+  // Get the PhotonuclearInteraction collection
+  const auto &pn_interactions =
+      event.getCollection<ldmx::PhotonuclearInteraction>(pn_collection_name_,
+                                                         pn_pass_name_);
+
+  // Analyze full cascade genealogy information not available from SimParticles:
+  // - Target nucleus Z/A
+  // - Immediate cascade multiplicity
+  // - Full descendant genealogy tree (ALL particles, not just final state)
+
+  int n_interactions = pn_interactions.size();
+  histograms_.fill("pn_interaction_count", n_interactions);
+
+  for (const auto &interaction : pn_interactions) {
+    // Target nucleus information - UNIQUE to PhotonuclearInteraction
+    histograms_.fill("pn_target_z", interaction.getTargetZ());
+    histograms_.fill("pn_target_a", interaction.getTargetA());
+    histograms_.fill("pn_target_z:target_a", interaction.getTargetZ(),
+                     interaction.getTargetA());
+
+    // Cascade multiplicity: how many particles created in initial cascade
+    int n_cascade_secondaries = interaction.getNumImmediateSecondaries();
+    histograms_.fill("pn_cascade_multiplicity", n_cascade_secondaries);
+
+    // Full cascade genealogy tree - includes ALL descendants (intermediate +
+    // final) This shows the complete cascade evolution, not just final state
+    // particles
+    auto descendant_map = interaction.getDescendantMap();
+    int total_descendants = 0;
+    for (const auto &[secondary_id, descendants] : descendant_map) {
+      int n_desc = descendants.size();
+      total_descendants += n_desc;
+      // How many particles (intermediate + final) descended from each cascade
+      // particle
+      histograms_.fill("pn_descendants_per_cascade_particle", n_desc);
+    }
+    histograms_.fill("pn_total_final_state_descendants", total_descendants);
+
+    // Cascade compactness: ratio shows what fraction of tree are immediate
+    // secondaries ~1.0 → Compact cascade, few branches (most particles are
+    // immediate secondaries) ~0.5 → Moderate branching (half the particles are
+    // from further generations) ~0.1 → Highly branched cascade with extensive
+    // decay/rescatter chains ~0.0 → Extreme branching (the "tungsten bomb"
+    // scenarios)
+    if (total_descendants > 0) {
+      double compactness_ratio =
+          static_cast<double>(n_cascade_secondaries) / total_descendants;
+      histograms_.fill("pn_cascade_evolution_ratio", compactness_ratio);
+    }
+  }
+}
+
 void PhotoNuclearDQM::configure(framework::config::Parameters &parameters) {
   count_light_ions_ = parameters.get<bool>("count_light_ions", true);
   sim_particles_coll_name_ =
       parameters.get<std::string>("sim_particles_coll_name");
   sim_particles_passname_ =
       parameters.get<std::string>("sim_particles_passname");
+  pn_collection_name_ = parameters.get<std::string>("pn_collection_name");
+  pn_pass_name_ = parameters.get<std::string>("pn_pass_name");
 }
 
 void PhotoNuclearDQM::analyze(const framework::Event &event) {
@@ -317,6 +378,9 @@ void PhotoNuclearDQM::analyze(const framework::Event &event) {
     default:  // Nothing to do
       break;
   }
+
+  // Analyze detailed photonuclear interaction tracking if available
+  analyzeInteractionDetails(event);
 }
 
 PhotoNuclearDQM::EventType PhotoNuclearDQM::classifyEvent(

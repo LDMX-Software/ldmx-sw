@@ -30,6 +30,12 @@ G4HadFinalState* BertiniEventTopologyProcess::ApplyYourself(
     G4CascadeInterface::ApplyYourself(projectile, targetNucleus);
     if (acceptEvent()) {
       incrementEventWeight(attempts);
+      // Record the number of resample attempts
+      auto event_info{static_cast<UserEventInformation*>(
+          G4EventManager::GetEventManager()->GetUserInformation())};
+      if (event_info) {
+        event_info->setPNResampleCount(attempts);
+      }
       return &theParticleChange;
     }
     attempts++;

@@ -137,6 +137,8 @@ void Simulator::produce(framework::Event& event) {
 
   saveSDHits(event);
 
+  savePhotonuclearInteractions(event);
+
   run_manager_->TerminateOneEvent();
 
   return;
