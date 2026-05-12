@@ -123,7 +123,8 @@ class Measurement {
   /// Set the energy deposited in the sensor [MeV].
   void setEdep(float e) { edep_ = e; };
 
-  // --- Truth local position (set by DigitizationProcessor before digitization) ---
+  // --- Truth local position (set by DigitizationProcessor before digitization)
+  // ---
 
   /// Set the truth local U [mm]: the sim-hit global position projected onto the
   /// sensor surface, before any smearing or charge digitization.
@@ -131,7 +132,8 @@ class Measurement {
   /// @return Truth local U [mm] (quiet_NaN if not set).
   float getTruthU() const { return truth_u_; }
 
-  // --- Cluster metadata (set by StripClusterProcessor; default -1/0 otherwise) ---
+  // --- Cluster metadata (set by StripClusterProcessor; default -1/0 otherwise)
+  // ---
 
   /// Set the number of strips that formed this cluster (-1 if not a cluster).
   void setNStrips(int n) { n_strips_ = n; }
@@ -140,7 +142,8 @@ class Measurement {
 
   /// Set the total cluster amplitude [ADC counts].
   void setClusterAmplitude(float amp) { cluster_amplitude_ = amp; }
-  /// @return Total cluster amplitude [ADC counts] (0 if not from strip clustering).
+  /// @return Total cluster amplitude [ADC counts] (0 if not from strip
+  /// clustering).
   float getClusterAmplitude() const { return cluster_amplitude_; }
 
   /**

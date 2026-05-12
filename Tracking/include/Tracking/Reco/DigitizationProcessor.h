@@ -131,10 +131,12 @@ class DigitizationProcessor : public TrackingGeometryUser {
   /// If false, skip Lorentz angle calculation and drift carriers straight
   /// (equivalent to zero magnetic field perpendicular to the sensor normal).
   bool use_lorentz_{true};
-  /// Path to the magnetic field map file.  Empty = use fixed configured tangents.
+  /// Path to the magnetic field map file.  Empty = use fixed configured
+  /// tangents.
   std::string field_map_{""};
   /// Per-layer cached Lorentz tangents: layer_id → {tan_electron, tan_hole}.
-  std::unordered_map<unsigned int, std::pair<double, double>> lorentz_tan_cache_;
+  std::unordered_map<unsigned int, std::pair<double, double>>
+      lorentz_tan_cache_;
 
   void buildLorentzCache();
 

@@ -9,9 +9,9 @@
 #include "Framework/Event.h"
 #include "Framework/EventProcessor.h"
 #include "SimCore/Event/SimParticle.h"
-#include "Tracking/Event/Track.h"
 #include "TFile.h"
 #include "TTree.h"
+#include "Tracking/Event/Track.h"
 
 namespace tracking::reco {
 
@@ -62,14 +62,13 @@ class TrackComparisonProcessor : public framework::Analyzer {
 
   void setupTree(TTree* tree, PairVars& v);
   void fillPair(const ldmx::Track& smear, const ldmx::Track& digi,
-                const ldmx::SimParticle& truth,
-                PairVars& v, const std::string& prefix);
+                const ldmx::SimParticle& truth, PairVars& v,
+                const std::string& prefix);
   void processTracker(const framework::Event& event,
                       const std::string& coll_smear,
                       const std::string& pass_smear,
                       const std::string& coll_digi,
-                      const std::string& pass_digi,
-                      TTree* tree, PairVars& vars,
+                      const std::string& pass_digi, TTree* tree, PairVars& vars,
                       const std::string& histo_prefix);
 
   // configuration

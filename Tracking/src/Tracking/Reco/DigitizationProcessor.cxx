@@ -17,32 +17,40 @@ void DigitizationProcessor::onProcessStart() {
   normal_ = std::make_shared<std::normal_distribution<float>>(0., 1.);
 
   if (use_charge_digitization_) {
-    strip_digitizer_ = std::make_unique<tracking::digitization::SiStripDigitizer>(
-        sensor_params_, generator_);
+    strip_digitizer_ =
+        std::make_unique<tracking::digitization::SiStripDigitizer>(
+            sensor_params_, generator_);
     ldmx_log(info) << "Charge digitization enabled."
                    << "  thickness=from geometry"
-                   << "  sense_pitch="     << tracking::digitization::SENSE_PITCH_MM   << " mm"
-                   << "  readout_pitch="   << tracking::digitization::READOUT_PITCH_MM << " mm"
-                   << "  Vbias="           << sensor_params_.bias_voltage      << " V"
-                   << "  Vdep="            << sensor_params_.depletion_voltage << " V"
-                   << "  bulk="            << (sensor_params_.is_n_type ? "n" : "p") << "-type"
-                   << "  e_lorentz_tan="   << sensor_params_.electron_lorentz_tangent
-                   << "  h_lorentz_tan="   << sensor_params_.hole_lorentz_tangent
-                   << "  trapping="        << sensor_params_.trapping
-                   << "  noise="           << sensor_params_.noise_electrons   << " e-"
-                   << "  threshold="       << sensor_params_.threshold_electrons << " e-"
-                   << "  n_segments_min="  << sensor_params_.n_segments_min
-                   << "  granularity="     << sensor_params_.deposition_granularity;
+                   << "  sense_pitch=" << tracking::digitization::SENSE_PITCH_MM
+                   << " mm" << "  readout_pitch="
+                   << tracking::digitization::READOUT_PITCH_MM << " mm"
+                   << "  Vbias=" << sensor_params_.bias_voltage << " V"
+                   << "  Vdep=" << sensor_params_.depletion_voltage << " V"
+                   << "  bulk=" << (sensor_params_.is_n_type ? "n" : "p")
+                   << "-type" << "  e_lorentz_tan="
+                   << sensor_params_.electron_lorentz_tangent
+                   << "  h_lorentz_tan=" << sensor_params_.hole_lorentz_tangent
+                   << "  trapping=" << sensor_params_.trapping
+                   << "  noise=" << sensor_params_.noise_electrons << " e-"
+                   << "  threshold=" << sensor_params_.threshold_electrons
+                   << " e-"
+                   << "  n_segments_min=" << sensor_params_.n_segments_min
+                   << "  granularity=" << sensor_params_.deposition_granularity;
 
     pulse_shape_ = tracking::digitization::PulseShape::make(
         std::string(tracking::digitization::PULSE_SHAPE_NAME),
         tracking::digitization::PEAKING_TIME_NS,
         tracking::digitization::SECOND_TIME_CONST_NS);
-    ldmx_log(info) << "Pulse shaping: shape=" << tracking::digitization::PULSE_SHAPE_NAME
-                   << "  tp=" << tracking::digitization::PEAKING_TIME_NS << " ns"
+    ldmx_log(info) << "Pulse shaping: shape="
+                   << tracking::digitization::PULSE_SHAPE_NAME
+                   << "  tp=" << tracking::digitization::PEAKING_TIME_NS
+                   << " ns"
                    << "  n_samples=" << tracking::digitization::N_SAMPLES
-                   << "  sampling_interval=" << tracking::digitization::SAMPLING_INTERVAL_NS << " ns"
-                   << "  t0_offset=" << tracking::digitization::T0_OFFSET_NS << " ns";
+                   << "  sampling_interval="
+                   << tracking::digitization::SAMPLING_INTERVAL_NS << " ns"
+                   << "  t0_offset=" << tracking::digitization::T0_OFFSET_NS
+                   << " ns";
 
     if (field_map_.empty()) {
       ldmx_log(debug) << "field_map not set; will auto-load from GDML";
@@ -50,7 +58,8 @@ void DigitizationProcessor::onProcessStart() {
     if (use_lorentz_)
       buildLorentzCache();
     else
-      ldmx_log(info) << "Lorentz angle correction disabled (use_lorentz=false).";
+      ldmx_log(info)
+          << "Lorentz angle correction disabled (use_lorentz=false).";
   }
 
   // Dump all ACTS surfaces to CSV for geometry verification.
@@ -58,21 +67,19 @@ void DigitizationProcessor::onProcessStart() {
     std::ofstream csv(dump_geo_csv_);
     csv << "layer_id,cx,cy,cz,Ux,Uy,Uz,Vx,Vy,Vz,Wx,Wy,Wz\n";
     for (const auto& [layer_id, surface] : geometry().layer_surface_map_) {
-      const auto& xf  = surface->transform(geometryContext());
-      const auto  ctr = xf.translation();          // centre [mm in Acts units]
-      const auto  R   = xf.rotation();
-      const auto  U   = R.col(0);
-      const auto  V   = R.col(1);
-      const auto  W   = R.col(2);
-      csv << layer_id
-          << "," << ctr.x() << "," << ctr.y() << "," << ctr.z()
-          << "," << U.x() << "," << U.y() << "," << U.z()
-          << "," << V.x() << "," << V.y() << "," << V.z()
-          << "," << W.x() << "," << W.y() << "," << W.z()
-          << "\n";
+      const auto& xf = surface->transform(geometryContext());
+      const auto ctr = xf.translation();  // centre [mm in Acts units]
+      const auto R = xf.rotation();
+      const auto U = R.col(0);
+      const auto V = R.col(1);
+      const auto W = R.col(2);
+      csv << layer_id << "," << ctr.x() << "," << ctr.y() << "," << ctr.z()
+          << "," << U.x() << "," << U.y() << "," << U.z() << "," << V.x() << ","
+          << V.y() << "," << V.z() << "," << W.x() << "," << W.y() << ","
+          << W.z() << "\n";
     }
-    ldmx_log(info) << "Surface geometry written to " << dump_geo_csv_
-                   << "  (" << geometry().layer_surface_map_.size() << " surfaces)";
+    ldmx_log(info) << "Surface geometry written to " << dump_geo_csv_ << "  ("
+                   << geometry().layer_surface_map_.size() << " surfaces)";
   }
 }
 
@@ -85,29 +92,26 @@ void DigitizationProcessor::configure(
   out_collection_ =
       parameters.get<std::string>("out_collection", "OutputMeasuements");
   min_e_dep_ = parameters.get<double>("min_e_dep", 0.05);
-  track_id_  = parameters.get<int>("track_id", -1);
-  do_smearing_  = parameters.get<bool>("do_smearing", true);
-  sigma_u_      = parameters.get<double>("sigma_u", 0.01);
-  sigma_v_      = parameters.get<double>("sigma_v", 0.);
-  merge_hits_   = parameters.get<bool>("merge_hits", false);
+  track_id_ = parameters.get<int>("track_id", -1);
+  do_smearing_ = parameters.get<bool>("do_smearing", true);
+  sigma_u_ = parameters.get<double>("sigma_u", 0.01);
+  sigma_v_ = parameters.get<double>("sigma_v", 0.);
+  merge_hits_ = parameters.get<bool>("merge_hits", false);
 
   // Mode 1: charge digitization parameters
   use_charge_digitization_ =
       parameters.get<bool>("use_charge_digitization", false);
 
   if (use_charge_digitization_) {
-    sensor_params_.bias_voltage =
-        parameters.get<double>("bias_voltage", 200.0);
+    sensor_params_.bias_voltage = parameters.get<double>("bias_voltage", 200.0);
     sensor_params_.depletion_voltage =
         parameters.get<double>("depletion_voltage", 70.0);
-    sensor_params_.temperature =
-        parameters.get<double>("temperature", 300.0);
+    sensor_params_.temperature = parameters.get<double>("temperature", 300.0);
     sensor_params_.noise_electrons =
         parameters.get<double>("noise_electrons", 1000.0);
     sensor_params_.threshold_electrons =
         parameters.get<double>("threshold_electrons", 3000.0);
-    sensor_params_.is_n_type =
-        parameters.get<bool>("is_n_type", false);
+    sensor_params_.is_n_type = parameters.get<bool>("is_n_type", false);
     sensor_params_.electron_side_readout =
         parameters.get<bool>("electron_side_readout", false);
     sensor_params_.hole_side_readout =
@@ -117,19 +121,15 @@ void DigitizationProcessor::configure(
         parameters.get<double>("electron_lorentz_tangent", 0.0);
     sensor_params_.hole_lorentz_tangent =
         parameters.get<double>("hole_lorentz_tangent", 0.0);
-    sensor_params_.trapping =
-        parameters.get<double>("trapping", 0.0);
+    sensor_params_.trapping = parameters.get<double>("trapping", 0.0);
     sensor_params_.deposition_granularity =
         parameters.get<double>("deposition_granularity", 0.10);
-    sensor_params_.n_segments_min =
-        parameters.get<int>("n_segments_min", 5);
+    sensor_params_.n_segments_min = parameters.get<int>("n_segments_min", 5);
     sensor_params_.n_readout_strips =
         parameters.get<int>("n_readout_strips", 767);
 
-    out_raw_collection_ =
-        parameters.get<std::string>("out_raw_collection", "");
-    field_map_ =
-        parameters.get<std::string>("field_map", "");
+    out_raw_collection_ = parameters.get<std::string>("out_raw_collection", "");
+    field_map_ = parameters.get<std::string>("field_map", "");
   }
 
   dump_geo_csv_ = parameters.get<std::string>("dump_geo_csv", "");
@@ -144,9 +144,9 @@ void DigitizationProcessor::buildLorentzCache() {
     loadBField(field_map_);
 
   // Low-field (Hall) mobility from the Canali model [cm²/(V·s)] → [m²/(V·s)]
-  const double T   = sensor_params_.temperature;
-  auto carrier_e   = tracking::digitization::getCarrier(-1);
-  auto carrier_h   = tracking::digitization::getCarrier(1);
+  const double T = sensor_params_.temperature;
+  auto carrier_e = tracking::digitization::getCarrier(-1);
+  auto carrier_h = tracking::digitization::getCarrier(1);
   const double mu_e = carrier_e.mu0(T) * 1.0e-4;  // m²/(V·s)
   const double mu_h = carrier_h.mu0(T) * 1.0e-4;
 
@@ -173,15 +173,14 @@ void DigitizationProcessor::buildLorentzCache() {
 
     lorentz_tan_cache_[layer_id] = {tan_e, tan_h};
 
-    ldmx_log(debug) << "Lorentz cache: layer=" << layer_id
-                    << "  Bw=" << Bw << " T"
-                    << "  tan_e=" << tan_e
-                    << "  tan_h=" << tan_h;
+    ldmx_log(debug) << "Lorentz cache: layer=" << layer_id << "  Bw=" << Bw
+                    << " T" << "  tan_e=" << tan_e << "  tan_h=" << tan_h;
   }
 
   ldmx_log(info) << "Lorentz tangents computed for "
                  << lorentz_tan_cache_.size() << " layers from field map "
-                 << (field_map_.empty() ? geometry().fieldMapFile() : field_map_);
+                 << (field_map_.empty() ? geometry().fieldMapFile()
+                                        : field_map_);
 }
 
 void DigitizationProcessor::onNewRun(const ldmx::RunHeader& runHeader) {
@@ -197,11 +196,12 @@ void DigitizationProcessor::produce(framework::Event& event) {
       event.getCollection<ldmx::SimTrackerHit>(hit_collection_,
                                                tracker_hit_passname_);
 
-  std::vector<ldmx::SimTrackerHit>  merged_hits;
-  std::vector<ldmx::Measurement>    measurements;
-  std::vector<ldmx::RawSiStripHit>  raw_hits;
+  std::vector<ldmx::SimTrackerHit> merged_hits;
+  std::vector<ldmx::Measurement> measurements;
+  std::vector<ldmx::RawSiStripHit> raw_hits;
 
-  const bool save_raw = use_charge_digitization_ && !out_raw_collection_.empty();
+  const bool save_raw =
+      use_charge_digitization_ && !out_raw_collection_.empty();
   auto* raw_ptr = save_raw ? &raw_hits : nullptr;
 
   if (merge_hits_) {
@@ -244,14 +244,14 @@ bool DigitizationProcessor::mergeHits(
   for (auto hit : sihits) {
     double edep_hit = hit.getEdep();
     edep += edep_hit;
-    e    += hit.getEnergy();
-    t    += edep_hit * hit.getTime();
-    x    += edep_hit * hit.getPosition()[0];
-    y    += edep_hit * hit.getPosition()[1];
-    z    += edep_hit * hit.getPosition()[2];
-    px   += edep_hit * hit.getMomentum()[0];
-    py   += edep_hit * hit.getMomentum()[1];
-    pz   += edep_hit * hit.getMomentum()[2];
+    e += hit.getEnergy();
+    t += edep_hit * hit.getTime();
+    x += edep_hit * hit.getPosition()[0];
+    y += edep_hit * hit.getPosition()[1];
+    z += edep_hit * hit.getPosition()[2];
+    px += edep_hit * hit.getMomentum()[0];
+    py += edep_hit * hit.getMomentum()[1];
+    pz += edep_hit * hit.getMomentum()[2];
     path += edep_hit * hit.getPathLength();
 
     if (hit.getPdgID() != pdg_id) {
@@ -284,7 +284,7 @@ bool DigitizationProcessor::mergeSimHits(
   std::map<int, std::map<int, std::vector<ldmx::SimTrackerHit>>> hitmap;
 
   for (const auto& hit : sim_hits) {
-    unsigned int index   = tracking::sim::utils::getSensorID(hit);
+    unsigned int index = tracking::sim::utils::getSensorID(hit);
     unsigned int trackid = hit.getTrackID();
     hitmap[index][trackid].push_back(hit);
 
@@ -306,8 +306,12 @@ bool DigitizationProcessor::mergeSimHits(
   ldmx_log(debug) << "Sim_hits Size = " << sim_hits.size()
                   << " Merged_hits Size = " << merged_hits.size();
 
-  for (const auto& hit  : sim_hits)    { ldmx_log(trace) << hit; }
-  for (const auto& mhit : merged_hits) { ldmx_log(trace) << mhit; }
+  for (const auto& hit : sim_hits) {
+    ldmx_log(trace) << hit;
+  }
+  for (const auto& mhit : merged_hits) {
+    ldmx_log(trace) << mhit;
+  }
 
   return true;
 }
@@ -328,10 +332,10 @@ std::vector<ldmx::Measurement> DigitizationProcessor::digitizeHits(
   struct StripContrib {
     double charge_electrons;
     double hit_time_ns;
-    int    track_id;
-    int    pdg_id;
-    int    sim_hit_id;
-    float  edep;
+    int track_id;
+    int pdg_id;
+    int sim_hit_id;
+    float edep;
   };
   // layer_id -> strip_idx -> per-hit contributions (populated in Phase 1,
   // consumed in Phase 2 after the loop to apply noise once per strip)
@@ -370,11 +374,10 @@ std::vector<ldmx::Measurement> DigitizationProcessor::digitizeHits(
                              measurement.getGlobalPosition()[2]);
 
     try {
-      local_pos_2d =
-          hit_surface
-              ->globalToLocal(geometryContext(), global_pos, dummy_momentum,
-                              surface_thickness)
-              .value();
+      local_pos_2d = hit_surface
+                         ->globalToLocal(geometryContext(), global_pos,
+                                         dummy_momentum, surface_thickness)
+                         .value();
     } catch (const std::exception& e) {
       ldmx_log(warn) << "hit not on surface... Skipping.";
       continue;
@@ -403,8 +406,7 @@ std::vector<ldmx::Measurement> DigitizationProcessor::digitizeHits(
 
       // 3D local position: apply the inverse surface transform to the global
       // hit position so that we know the depth (W) coordinate.
-      const Acts::Vector3 local_pos_3d =
-          surf_transform.inverse() * global_pos;
+      const Acts::Vector3 local_pos_3d = surf_transform.inverse() * global_pos;
 
       // 3D local direction: rotate the global unit momentum into local frame.
       // Apply the same LDMX→ACTS frame permutation as Measurement.cxx:
@@ -456,10 +458,9 @@ std::vector<ldmx::Measurement> DigitizationProcessor::digitizeHits(
       if (raw_hits && pulse_shape_) {
         const double hit_time_ns = sim_hit.getTime();
         for (const auto& [strip_idx, charge] : strip_charges) {
-          layer_strip_contribs[layer_id][strip_idx].push_back(
-              StripContrib{charge, hit_time_ns,
-                           sim_hit.getTrackID(), sim_hit.getPdgID(),
-                           sim_hit.getID(), sim_hit.getEdep()});
+          layer_strip_contribs[layer_id][strip_idx].push_back(StripContrib{
+              charge, hit_time_ns, sim_hit.getTrackID(), sim_hit.getPdgID(),
+              sim_hit.getID(), sim_hit.getEdep()});
         }
       }
 
@@ -474,9 +475,9 @@ std::vector<ldmx::Measurement> DigitizationProcessor::digitizeHits(
       measurement.setLocalCovariance(0., 0.);
       measurements.push_back(measurement);
 
-    // -----------------------------------------------------------------------
-    // Mode 0: simple Gaussian smearing
-    // -----------------------------------------------------------------------
+      // -----------------------------------------------------------------------
+      // Mode 0: simple Gaussian smearing
+      // -----------------------------------------------------------------------
     } else {
       if (do_smearing_) {
         float smear_factor{(*normal_)(generator_)};
@@ -505,7 +506,6 @@ std::vector<ldmx::Measurement> DigitizationProcessor::digitizeHits(
     const int adc_max = (1 << tracking::digitization::ADC_BITS) - 1;
 
     for (auto& [lyr_id, strip_contribs_map] : layer_strip_contribs) {
-
       // Sum all contributions to get the total pre-noise charge per strip.
       std::map<int, double> total_charges;
       for (const auto& [strip_idx, contribs] : strip_contribs_map) {
@@ -522,11 +522,11 @@ std::vector<ldmx::Measurement> DigitizationProcessor::digitizeHits(
         const auto contrib_it = strip_contribs_map.find(strip_idx);
         const bool has_signal = (contrib_it != strip_contribs_map.end());
 
-        int    track_id_out   = -1;
-        int    pdg_id_out     = 0;
-        int    sim_hit_id_out = -1;
-        float  edep_out       = 0.f;
-        double ref_time_ns    = 0.0;
+        int track_id_out = -1;
+        int pdg_id_out = 0;
+        int sim_hit_id_out = -1;
+        float edep_out = 0.f;
+        double ref_time_ns = 0.0;
         std::vector<short> samples(tracking::digitization::N_SAMPLES);
 
         if (has_signal) {
@@ -537,26 +537,31 @@ std::vector<ldmx::Measurement> DigitizationProcessor::digitizeHits(
           for (const auto& c : contribs)
             if (c.charge_electrons > dom->charge_electrons) dom = &c;
 
-          ref_time_ns    = dom->hit_time_ns;
-          track_id_out   = dom->track_id;
-          pdg_id_out     = dom->pdg_id;
+          ref_time_ns = dom->hit_time_ns;
+          track_id_out = dom->track_id;
+          pdg_id_out = dom->pdg_id;
           sim_hit_id_out = dom->sim_hit_id;
           for (const auto& c : contribs) edep_out += c.edep;
 
           // ADC = pedestal + superposition of each contributor's shaped pulse.
-          for (int isamp = 0; isamp < tracking::digitization::N_SAMPLES; ++isamp) {
-            const double t_samp = tracking::digitization::T0_OFFSET_NS
-                                + isamp * tracking::digitization::SAMPLING_INTERVAL_NS;
-            double val = static_cast<double>(tracking::digitization::ADC_PEDESTAL);
+          for (int isamp = 0; isamp < tracking::digitization::N_SAMPLES;
+               ++isamp) {
+            const double t_samp =
+                tracking::digitization::T0_OFFSET_NS +
+                isamp * tracking::digitization::SAMPLING_INTERVAL_NS;
+            double val =
+                static_cast<double>(tracking::digitization::ADC_PEDESTAL);
             for (const auto& c : contribs)
-              val += (c.charge_electrons / tracking::digitization::ADC_ELECTRONS_PER_COUNT)
-                     * pulse_shape_->eval(t_samp - c.hit_time_ns);
+              val += (c.charge_electrons /
+                      tracking::digitization::ADC_ELECTRONS_PER_COUNT) *
+                     pulse_shape_->eval(t_samp - c.hit_time_ns);
             samples[isamp] = static_cast<short>(
                 std::clamp(static_cast<int>(std::round(val)), 0, adc_max));
           }
         } else {
-          // Noise-only strip: added as a ±1 neighbour by applyNoiseAndThreshold.
-          // Borrow the nearest signal strip's dominant hit time for pulse shaping.
+          // Noise-only strip: added as a ±1 neighbour by
+          // applyNoiseAndThreshold. Borrow the nearest signal strip's dominant
+          // hit time for pulse shaping.
           for (int delta : {-1, +1}) {
             const auto nb = strip_contribs_map.find(strip_idx + delta);
             if (nb != strip_contribs_map.end() && !nb->second.empty()) {
@@ -569,21 +574,22 @@ std::vector<ldmx::Measurement> DigitizationProcessor::digitizeHits(
           }
           const double peak_adc =
               final_charge / tracking::digitization::ADC_ELECTRONS_PER_COUNT;
-          for (int isamp = 0; isamp < tracking::digitization::N_SAMPLES; ++isamp) {
-            const double t_samp = tracking::digitization::T0_OFFSET_NS
-                                + isamp * tracking::digitization::SAMPLING_INTERVAL_NS;
+          for (int isamp = 0; isamp < tracking::digitization::N_SAMPLES;
+               ++isamp) {
+            const double t_samp =
+                tracking::digitization::T0_OFFSET_NS +
+                isamp * tracking::digitization::SAMPLING_INTERVAL_NS;
             const double val =
-                static_cast<double>(tracking::digitization::ADC_PEDESTAL)
-                + peak_adc * pulse_shape_->eval(t_samp - ref_time_ns);
+                static_cast<double>(tracking::digitization::ADC_PEDESTAL) +
+                peak_adc * pulse_shape_->eval(t_samp - ref_time_ns);
             samples[isamp] = static_cast<short>(
                 std::clamp(static_cast<int>(std::round(val)), 0, adc_max));
           }
         }
 
         raw_hits->emplace_back(lyr_id, strip_idx, std::move(samples),
-                               static_cast<long>(ref_time_ns),
-                               track_id_out, pdg_id_out,
-                               sim_hit_id_out, edep_out);
+                               static_cast<long>(ref_time_ns), track_id_out,
+                               pdg_id_out, sim_hit_id_out, edep_out);
       }
     }
   }  // Phase 2

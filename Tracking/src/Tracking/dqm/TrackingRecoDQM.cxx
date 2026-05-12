@@ -367,7 +367,6 @@ void TrackingRecoDQM::trackMonitoring(
       }
     }
 
-   
     auto trk_mom = track.getMomentumAtTarget();
     // getMomentumAtTarget() returns MeV (LDMX convention)
     double px_ldmx{0.}, py_ldmx{0.}, pz_ldmx{0.};

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vector>
+
 #include "Tracking/Digitization/PulseShape.h"
 
 namespace tracking::digitization {
@@ -39,11 +40,12 @@ namespace tracking::digitization {
 class StripPulseFitter {
  public:
   struct FitResult {
-    double amplitude{0};   ///< Fitted peak amplitude [ADC counts], ped-subtracted.
-    double t0{0};          ///< Fitted hit arrival time T [ns].
-    double chi2{0};        ///< Chi-squared value at the minimum.
-    int    ndf{0};         ///< Degrees of freedom = n_samples − 2.
-    bool   converged{false}; ///< False if no above-pedestal samples found.
+    double amplitude{
+        0};          ///< Fitted peak amplitude [ADC counts], ped-subtracted.
+    double t0{0};    ///< Fitted hit arrival time T [ns].
+    double chi2{0};  ///< Chi-squared value at the minimum.
+    int ndf{0};      ///< Degrees of freedom = n_samples − 2.
+    bool converged{false};  ///< False if no above-pedestal samples found.
   };
 
   /**
@@ -56,19 +58,16 @@ class StripPulseFitter {
    * @param t_scan_max_ns       Upper bound of the T scan range [ns].
    * @param t_scan_step_ns      Step size of the coarse T scan [ns].
    */
-  StripPulseFitter(const PulseShape& shape,
-                   double t0_offset_ns,
-                   double sampling_interval_ns,
-                   double pedestal_adc,
-                   double noise_sigma_adc,
-                   double t_scan_min_ns  = -50.0,
-                   double t_scan_max_ns  = 150.0,
-                   double t_scan_step_ns = 1.0);
+  StripPulseFitter(const PulseShape& shape, double t0_offset_ns,
+                   double sampling_interval_ns, double pedestal_adc,
+                   double noise_sigma_adc, double t_scan_min_ns = -50.0,
+                   double t_scan_max_ns = 150.0, double t_scan_step_ns = 1.0);
 
   /**
    * Fit the pulse to the given ADC sample vector.
    *
-   * @param samples  ADC values (one per sample, any integer type cast to short).
+   * @param samples  ADC values (one per sample, any integer type cast to
+   * short).
    */
   FitResult fit(const std::vector<short>& samples) const;
 
@@ -81,7 +80,7 @@ class StripPulseFitter {
   double t0_offset_ns_;
   double sampling_interval_ns_;
   double pedestal_adc_;
-  double inv_sigma2_;      ///< 1/σ², pre-computed.
+  double inv_sigma2_;  ///< 1/σ², pre-computed.
   double t_scan_min_ns_;
   double t_scan_max_ns_;
   double t_scan_step_ns_;

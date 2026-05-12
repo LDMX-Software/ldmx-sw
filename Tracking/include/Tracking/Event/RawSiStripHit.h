@@ -35,8 +35,10 @@ class RawSiStripHit {
    * @param[in] strip_id    Readout strip index within the sensor.
    * @param[in] samples     The ADC samples composing this hit (16-bit each).
    * @param[in] time        Hit timestamp [ns].
-   * @param[in] track_id    Geant4 track ID of the particle that created this hit.
-   * @param[in] pdg_id      PDG particle ID of the particle that created this hit.
+   * @param[in] track_id    Geant4 track ID of the particle that created this
+   * hit.
+   * @param[in] pdg_id      PDG particle ID of the particle that created this
+   * hit.
    * @param[in] sim_hit_id  Detector ID of the originating SimTrackerHit.
    */
   RawSiStripHit(int layer_id, int strip_id, std::vector<short> samples,
@@ -93,10 +95,12 @@ class RawSiStripHit {
    */
   long getTime() const { return time_; }
 
-  /// Get the Geant4 track ID of the particle that created this hit (-1 if unknown).
+  /// Get the Geant4 track ID of the particle that created this hit (-1 if
+  /// unknown).
   int getTrackID() const { return track_id_; }
 
-  /// Get the PDG particle ID of the particle that created this hit (0 if unknown).
+  /// Get the PDG particle ID of the particle that created this hit (0 if
+  /// unknown).
   int getPdgID() const { return pdg_id_; }
 
   /// Get the detector ID of the originating SimTrackerHit (-1 if unknown).

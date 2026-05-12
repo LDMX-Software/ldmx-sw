@@ -1,8 +1,9 @@
 #include "Tracking/Digitization/SiStripDigitizer.h"
-#include "Tracking/Digitization/SiStripConstants.h"
 
 #include <cmath>
 #include <set>
+
+#include "Tracking/Digitization/SiStripConstants.h"
 
 namespace tracking::digitization {
 
@@ -18,7 +19,7 @@ static constexpr double KT_Q_300K = 0.025852;
 // ---------------------------------------------------------------------------
 
 SiStripDigitizer::SiStripDigitizer(const SensorParams& params,
-                                    std::default_random_engine& generator)
+                                   std::default_random_engine& generator)
     : params_(params), generator_(&generator) {}
 
 // ---------------------------------------------------------------------------
@@ -26,12 +27,11 @@ SiStripDigitizer::SiStripDigitizer(const SensorParams& params,
 // ---------------------------------------------------------------------------
 
 int SiStripDigitizer::adaptiveNSegments(const Acts::Vector3& local_dir,
-                                         double path_length) const {
+                                        double path_length) const {
   // Ensure U-displacement per segment <= granularity * sense_pitch.
   // For near-normal-incidence tracks (dir_u ≈ 0) the adaptive count can be
   // very small; clamp to n_segments_min.
-  const double max_step =
-      params_.deposition_granularity * params_.sense_pitch;
+  const double max_step = params_.deposition_granularity * params_.sense_pitch;
   const double total_u = std::abs(path_length * local_dir[0]);
   const int adaptive =
       (max_step > 0.0) ? static_cast<int>(std::ceil(total_u / max_step)) : 1;
@@ -39,16 +39,16 @@ int SiStripDigitizer::adaptiveNSegments(const Acts::Vector3& local_dir,
 }
 
 double SiStripDigitizer::diffusionSigma(double d, bool is_minority) const {
-  const double kt_q  = KT_Q_300K * params_.temperature / 300.0;
-  const double t     = params_.thickness;
-  const double vb    = params_.bias_voltage;
-  const double vd    = params_.depletion_voltage;
+  const double kt_q = KT_Q_300K * params_.temperature / 300.0;
+  const double t = params_.thickness;
+  const double vb = params_.bias_voltage;
+  const double vd = params_.depletion_voltage;
 
   double sigma_sq = 0.0;
 
   if (vb > vd && vd > 0.0) {
-    const double cf    = 2.0 * vd * d / t;
-    const double base  = kt_q * t * t / vd;
+    const double cf = 2.0 * vd * d / t;
+    const double base = kt_q * t * t / vd;
 
     if (is_minority) {
       // Minority carriers (e⁻ in p-type, h⁺ in n-type):
@@ -80,9 +80,10 @@ double SiStripDigitizer::diffusionSigma(double d, bool is_minority) const {
 }
 
 double SiStripDigitizer::stripFraction(double u0, double sigma,
-                                        double strip_center,
-                                        double pitch) const {
-  // Integral of N(u0, sigma) over [strip_center − pitch/2, strip_center + pitch/2]
+                                       double strip_center,
+                                       double pitch) const {
+  // Integral of N(u0, sigma) over [strip_center − pitch/2, strip_center +
+  // pitch/2]
   const double inv_sqrt2_sigma = 1.0 / (std::sqrt(2.0) * sigma);
   const double lo = (strip_center - 0.5 * pitch - u0) * inv_sqrt2_sigma;
   const double hi = (strip_center + 0.5 * pitch - u0) * inv_sqrt2_sigma;
@@ -93,7 +94,6 @@ std::map<int, double> SiStripDigitizer::computeCarrierCharges(
     double q_per_seg, int n_seg, const Acts::Vector3& local_pos,
     const Acts::Vector3& local_dir, double path_length, double w_collect,
     double lorentz_tan, bool is_minority) const {
-
   // 1/cos²(θ_L) = 1 + tan²(θ_L): Lorentz broadening of the diffusion sigma.
   const double inv_cos2 = 1.0 + lorentz_tan * lorentz_tan;
 
@@ -111,8 +111,8 @@ std::map<int, double> SiStripDigitizer::computeCarrierCharges(
     const double w_seg = seg_pos[2];
 
     // Drift distance to collection electrode, clamped to sensor thickness.
-    const double drift = std::max(
-        0.0, std::min(params_.thickness, std::abs(w_collect - w_seg)));
+    const double drift =
+        std::max(0.0, std::min(params_.thickness, std::abs(w_collect - w_seg)));
 
     // Charge trapping: linear model from CDFSiSensorSim.
     // trapping_ = fraction lost per 100 µm (= 0.1 mm) of drift.
@@ -153,9 +153,9 @@ std::map<int, double> SiStripDigitizer::computeCarrierCharges(
 
 std::map<int, double> SiStripDigitizer::senseToReadout(
     const std::map<int, double>& sense_charges) const {
-  const int ratio = std::max(
-      1, static_cast<int>(
-             std::round(params_.readout_pitch / params_.sense_pitch)));
+  const int ratio =
+      std::max(1, static_cast<int>(
+                      std::round(params_.readout_pitch / params_.sense_pitch)));
 
   const int offset = params_.n_readout_strips / 2;
   std::map<int, double> readout_charges;
@@ -183,15 +183,15 @@ std::map<int, double> SiStripDigitizer::senseToReadout(
   //   (total ≈ 2 × 0.419 = 0.838; ~16% lost to capacitive cross-talk)
 
   for (const auto& [sense_strip, charge] : sense_charges) {
-    const int k = static_cast<int>(
-        std::floor(static_cast<double>(sense_strip) / ratio));
+    const int k =
+        static_cast<int>(std::floor(static_cast<double>(sense_strip) / ratio));
     const int position_in_group = sense_strip - ratio * k;
     const int r = k + offset;
 
     if (position_in_group == 0) {
       readout_charges[r] += charge * params_.readout_transfer_efficiency;
     } else {
-      readout_charges[r]     += charge * params_.sense_transfer_efficiency;
+      readout_charges[r] += charge * params_.sense_transfer_efficiency;
       readout_charges[r + 1] += charge * params_.sense_transfer_efficiency;
     }
   }
@@ -205,26 +205,25 @@ std::map<int, double> SiStripDigitizer::senseToReadout(
 std::map<int, double> SiStripDigitizer::computeStripCharges(
     double edep, const Acts::Vector3& local_pos, const Acts::Vector3& local_dir,
     double path_length) const {
-
   const double total_electrons = edep / ENERGY_PER_EHP_MEV;
-  const int    n_seg            = adaptiveNSegments(local_dir, path_length);
-  const double q_per_seg        = total_electrons / n_seg;
+  const int n_seg = adaptiveNSegments(local_dir, path_length);
+  const double q_per_seg = total_electrons / n_seg;
 
   // Minority-carrier flags for the two bulk types.
   // p-type bulk (is_n_type = false): electrons = minority, holes = majority.
-  // n-type bulk (is_n_type = true):  holes     = minority, electrons = majority.
+  // n-type bulk (is_n_type = true):  holes     = minority, electrons =
+  // majority.
   const bool electron_is_minority = !params_.is_n_type;
-  const bool hole_is_minority     =  params_.is_n_type;
+  const bool hole_is_minority = params_.is_n_type;
 
   std::map<int, double> readout_charges;
 
   // Electron side: collection at W = +thickness/2 (n-strip side).
   if (params_.electron_side_readout) {
     const double w_electron = +0.5 * params_.thickness;
-    auto sense = computeCarrierCharges(q_per_seg, n_seg, local_pos, local_dir,
-                                       path_length, w_electron,
-                                       params_.electron_lorentz_tangent,
-                                       electron_is_minority);
+    auto sense = computeCarrierCharges(
+        q_per_seg, n_seg, local_pos, local_dir, path_length, w_electron,
+        params_.electron_lorentz_tangent, electron_is_minority);
     for (const auto& [strip, charge] : senseToReadout(sense)) {
       readout_charges[strip] += charge;
     }
@@ -233,10 +232,9 @@ std::map<int, double> SiStripDigitizer::computeStripCharges(
   // Hole side: collection at W = −thickness/2 (p-bulk / backplane side).
   if (params_.hole_side_readout) {
     const double w_hole = -0.5 * params_.thickness;
-    auto sense = computeCarrierCharges(q_per_seg, n_seg, local_pos, local_dir,
-                                       path_length, w_hole,
-                                       params_.hole_lorentz_tangent,
-                                       hole_is_minority);
+    auto sense = computeCarrierCharges(
+        q_per_seg, n_seg, local_pos, local_dir, path_length, w_hole,
+        params_.hole_lorentz_tangent, hole_is_minority);
     for (const auto& [strip, charge] : senseToReadout(sense)) {
       readout_charges[strip] += charge;
     }

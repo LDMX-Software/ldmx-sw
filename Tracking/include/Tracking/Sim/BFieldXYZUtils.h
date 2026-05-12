@@ -261,8 +261,8 @@ inline InterpolatedMagneticField3 makeMagneticFieldMapXyzFromText(
         fieldMapFile + "'");
   }
   if (b_field.empty()) {
-    throw std::runtime_error(
-        "BFieldXYZUtils: no field data read from '" + fieldMapFile + "'");
+    throw std::runtime_error("BFieldXYZUtils: no field data read from '" +
+                             fieldMapFile + "'");
   }
 
   x_pos.shrink_to_fit();

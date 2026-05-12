@@ -82,20 +82,21 @@ void TrackComparisonProcessor::onProcessStart() {
   file_->cd();
 
   if (do_tagger_) {
-    tagger_tree_ = new TTree("tagger_pairs", "Tagger smear-vs-digi track pairs");
+    tagger_tree_ =
+        new TTree("tagger_pairs", "Tagger smear-vs-digi track pairs");
     tagger_tree_->SetDirectory(file_);
     setupTree(tagger_tree_, tagger_vars_);
 
-    histograms_.create("tagger_delta_d0", "#Delta d_{0} (digi-smear) [mm]",
-                       200, -0.5, 0.5);
-    histograms_.create("tagger_delta_z0", "#Delta z_{0} (digi-smear) [mm]",
-                       200, -2.0, 2.0);
-    histograms_.create("tagger_delta_phi",
-                       "#Delta #phi (digi-smear) [rad]", 200, -0.02, 0.02);
-    histograms_.create("tagger_delta_theta",
-                       "#Delta #theta (digi-smear) [rad]", 200, -0.02, 0.02);
-    histograms_.create("tagger_delta_p_over_p",
-                       "#Delta p/p (digi-smear)/smear", 200, -0.1, 0.1);
+    histograms_.create("tagger_delta_d0", "#Delta d_{0} (digi-smear) [mm]", 200,
+                       -0.5, 0.5);
+    histograms_.create("tagger_delta_z0", "#Delta z_{0} (digi-smear) [mm]", 200,
+                       -2.0, 2.0);
+    histograms_.create("tagger_delta_phi", "#Delta #phi (digi-smear) [rad]",
+                       200, -0.02, 0.02);
+    histograms_.create("tagger_delta_theta", "#Delta #theta (digi-smear) [rad]",
+                       200, -0.02, 0.02);
+    histograms_.create("tagger_delta_p_over_p", "#Delta p/p (digi-smear)/smear",
+                       200, -0.1, 0.1);
     histograms_.create("tagger_nhits_s", "N hits (smear)", 15, 0, 15);
     histograms_.create("tagger_nhits_d", "N hits (digi)", 15, 0, 15);
     histograms_.create("tagger_chi2ndf_s", "#chi^{2}/ndf (smear)", 100, 0, 10);
@@ -110,20 +111,21 @@ void TrackComparisonProcessor::onProcessStart() {
   }
 
   if (do_recoil_) {
-    recoil_tree_ = new TTree("recoil_pairs", "Recoil smear-vs-digi track pairs");
+    recoil_tree_ =
+        new TTree("recoil_pairs", "Recoil smear-vs-digi track pairs");
     recoil_tree_->SetDirectory(file_);
     setupTree(recoil_tree_, recoil_vars_);
 
-    histograms_.create("recoil_delta_d0", "#Delta d_{0} (digi-smear) [mm]",
-                       200, -2.0, 2.0);
-    histograms_.create("recoil_delta_z0", "#Delta z_{0} (digi-smear) [mm]",
-                       200, -5.0, 5.0);
-    histograms_.create("recoil_delta_phi",
-                       "#Delta #phi (digi-smear) [rad]", 200, -0.02, 0.02);
-    histograms_.create("recoil_delta_theta",
-                       "#Delta #theta (digi-smear) [rad]", 200, -0.02, 0.02);
-    histograms_.create("recoil_delta_p_over_p",
-                       "#Delta p/p (digi-smear)/smear", 200, -0.4, 0.4);
+    histograms_.create("recoil_delta_d0", "#Delta d_{0} (digi-smear) [mm]", 200,
+                       -2.0, 2.0);
+    histograms_.create("recoil_delta_z0", "#Delta z_{0} (digi-smear) [mm]", 200,
+                       -5.0, 5.0);
+    histograms_.create("recoil_delta_phi", "#Delta #phi (digi-smear) [rad]",
+                       200, -0.02, 0.02);
+    histograms_.create("recoil_delta_theta", "#Delta #theta (digi-smear) [rad]",
+                       200, -0.02, 0.02);
+    histograms_.create("recoil_delta_p_over_p", "#Delta p/p (digi-smear)/smear",
+                       200, -0.4, 0.4);
     histograms_.create("recoil_nhits_s", "N hits (smear)", 15, 0, 15);
     histograms_.create("recoil_nhits_d", "N hits (digi)", 15, 0, 15);
     histograms_.create("recoil_chi2ndf_s", "#chi^{2}/ndf (smear)", 100, 0, 10);
@@ -160,7 +162,8 @@ void TrackComparisonProcessor::fillPair(const ldmx::Track& smear,
   v.theta_d = digi.getTheta();
   v.qop_s = smear.getQoP();
   v.qop_d = digi.getQoP();
-  // QoP is in e/GeV (ACTS units); convert to MeV so p_s/p_d match SimParticle units.
+  // QoP is in e/GeV (ACTS units); convert to MeV so p_s/p_d match SimParticle
+  // units.
   v.p_s = (v.qop_s != 0) ? std::abs(1000.0 / v.qop_s) : -1;
   v.p_d = (v.qop_d != 0) ? std::abs(1000.0 / v.qop_d) : -1;
   v.delta_d0 = v.d0_d - v.d0_s;
@@ -186,7 +189,7 @@ void TrackComparisonProcessor::fillPair(const ldmx::Track& smear,
   v.px_t = mom_t[0];
   v.py_t = mom_t[1];
   v.pz_t = mom_t[2];
-  v.p_t = std::sqrt(v.px_t*v.px_t + v.py_t*v.py_t + v.pz_t*v.pz_t);
+  v.p_t = std::sqrt(v.px_t * v.px_t + v.py_t * v.py_t + v.pz_t * v.pz_t);
   auto vtx = truth.getVertex();
   v.vx_t = vtx[0];
   v.vy_t = vtx[1];
@@ -211,11 +214,13 @@ void TrackComparisonProcessor::fillPair(const ldmx::Track& smear,
   histograms_.fill(prefix + "delta_p_over_p_d", v.delta_p_over_p_d);
 }
 
-void TrackComparisonProcessor::processTracker(
-    const framework::Event& event,
-    const std::string& coll_smear, const std::string& pass_smear,
-    const std::string& coll_digi, const std::string& pass_digi,
-    TTree* tree, PairVars& vars, const std::string& histo_prefix) {
+void TrackComparisonProcessor::processTracker(const framework::Event& event,
+                                              const std::string& coll_smear,
+                                              const std::string& pass_smear,
+                                              const std::string& coll_digi,
+                                              const std::string& pass_digi,
+                                              TTree* tree, PairVars& vars,
+                                              const std::string& histo_prefix) {
   if (!event.exists(coll_smear, pass_smear)) {
     ldmx_log(warn) << "Smear collection " << coll_smear << " not found";
     return;
@@ -225,18 +230,15 @@ void TrackComparisonProcessor::processTracker(
     return;
   }
 
-  auto tracks_smear{
-      event.getCollection<ldmx::Track>(coll_smear, pass_smear)};
-  auto tracks_digi{
-      event.getCollection<ldmx::Track>(coll_digi, pass_digi)};
+  auto tracks_smear{event.getCollection<ldmx::Track>(coll_smear, pass_smear)};
+  auto tracks_digi{event.getCollection<ldmx::Track>(coll_digi, pass_digi)};
 
-  auto particle_map{
-      event.getMap<int, ldmx::SimParticle>("SimParticles", sim_particles_pass_)};
+  auto particle_map{event.getMap<int, ldmx::SimParticle>("SimParticles",
+                                                         sim_particles_pass_)};
 
   std::map<int, const ldmx::Track*> smear_by_id;
   for (const auto& t : tracks_smear) {
-    if (t.getTruthProb() >= min_truth_prob_)
-      smear_by_id[t.getTrackID()] = &t;
+    if (t.getTruthProb() >= min_truth_prob_) smear_by_id[t.getTrackID()] = &t;
   }
 
   for (const auto& t : tracks_digi) {
@@ -254,13 +256,13 @@ void TrackComparisonProcessor::processTracker(
 void TrackComparisonProcessor::analyze(const framework::Event& event) {
   if (do_tagger_) {
     processTracker(event, trk_collection_smear_, pass_name_smear_,
-                   trk_collection_digi_, pass_name_digi_,
-                   tagger_tree_, tagger_vars_, "tagger_");
+                   trk_collection_digi_, pass_name_digi_, tagger_tree_,
+                   tagger_vars_, "tagger_");
   }
   if (do_recoil_) {
     processTracker(event, recoil_collection_smear_, recoil_pass_smear_,
-                   recoil_collection_digi_, recoil_pass_digi_,
-                   recoil_tree_, recoil_vars_, "recoil_");
+                   recoil_collection_digi_, recoil_pass_digi_, recoil_tree_,
+                   recoil_vars_, "recoil_");
   }
 }
 

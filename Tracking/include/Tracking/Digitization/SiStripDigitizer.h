@@ -83,7 +83,8 @@ class SiStripDigitizer {
     bool electron_side_readout{false};
     /// Simulate and read out the hole-collection side (p-strips / backplane).
     bool hole_side_readout{true};
-    /*****   lorentz angles should be calculated from sensor geometry  and bfield  *********/
+    /*****   lorentz angles should be calculated from sensor geometry  and
+     * bfield  *********/
     /// tan(θ_Lorentz) for electrons.  Sign encodes U-shift direction.
     double electron_lorentz_tangent{0.0};
     /// tan(θ_Lorentz) for holes.
@@ -103,7 +104,8 @@ class SiStripDigitizer {
     /// U edge; strip N−1 at the most-positive edge.
     int n_readout_strips{N_READOUT_STRIPS};
     /// AC-coupling transfer efficiency from a paired sense strip (physically
-    /// under a readout strip, even index within its group) to its readout strip.
+    /// under a readout strip, even index within its group) to its readout
+    /// strip.
     double readout_transfer_efficiency{READOUT_TRANSFER_EFFICIENCY};
     /// AC-coupling transfer efficiency from an unpaired sense strip (between
     /// two readout strips, odd index within its group) to each of its two
@@ -137,9 +139,9 @@ class SiStripDigitizer {
    *         most-negative U edge of the sensor.
    */
   std::map<int, double> computeStripCharges(double edep,
-                                             const Acts::Vector3& local_pos,
-                                             const Acts::Vector3& local_dir,
-                                             double path_length) const;
+                                            const Acts::Vector3& local_pos,
+                                            const Acts::Vector3& local_dir,
+                                            double path_length) const;
 
   /**
    * Add Gaussian electronic noise to signal strips and their immediate
@@ -193,13 +195,10 @@ class SiStripDigitizer {
    * @param lorentz_tan   tan(θ_Lorentz) for this carrier (may be 0).
    * @param is_minority   True if this carrier is the minority species.
    */
-  std::map<int, double> computeCarrierCharges(double q_per_seg, int n_seg,
-                                               const Acts::Vector3& local_pos,
-                                               const Acts::Vector3& local_dir,
-                                               double path_length,
-                                               double w_collect,
-                                               double lorentz_tan,
-                                               bool is_minority) const;
+  std::map<int, double> computeCarrierCharges(
+      double q_per_seg, int n_seg, const Acts::Vector3& local_pos,
+      const Acts::Vector3& local_dir, double path_length, double w_collect,
+      double lorentz_tan, bool is_minority) const;
 
   /**
    * Sum sense-strip charges into readout-strip charges according to the

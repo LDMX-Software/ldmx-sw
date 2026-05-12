@@ -66,7 +66,8 @@ void CKFProcessor::onNewRun(const ldmx::RunHeader& rh) {
     loadBField(map_offset_);
   else
     loadBField(field_map_, map_offset_);
-  const auto map = std::static_pointer_cast<InterpolatedMagneticField3>(bField());
+  const auto map =
+      std::static_pointer_cast<InterpolatedMagneticField3>(bField());
 
   auto acts_logging_level = Acts::Logging::FATAL;
   if (debug_acts_) acts_logging_level = Acts::Logging::VERBOSE;
@@ -572,8 +573,8 @@ void CKFProcessor::produce(framework::Event& event) {
           if (ts.hasSmoothed()) {
             trk.addSmoothedLoc0(
                 static_cast<float>(ts.smoothed()[Acts::eBoundLoc0]),
-                static_cast<float>(ts.smoothedCovariance()(
-                    Acts::eBoundLoc0, Acts::eBoundLoc0)));
+                static_cast<float>(ts.smoothedCovariance()(Acts::eBoundLoc0,
+                                                           Acts::eBoundLoc0)));
           }
 
           // Extract path length from the track state based on the angle

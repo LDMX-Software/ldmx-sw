@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vector>
+
 #include "Tracking/Event/FittedSiStripHit.h"
 
 namespace tracking::digitization {
@@ -47,34 +48,36 @@ namespace tracking::digitization {
 class StripClusterer {
  public:
   struct ClusterCandidate {
-    double centroid_strip{0};  ///< Charge-weighted mean strip index.
-    double total_amplitude{0}; ///< Total cluster amplitude [ADC counts].
-    double time_ns{0};         ///< Amplitude-weighted mean hit time [ns].
-    double sigma_strip{0};     ///< Position uncertainty [strips].
-    int    n_strips{0};
-    int    layer_id{-1};
+    double centroid_strip{0};   ///< Charge-weighted mean strip index.
+    double total_amplitude{0};  ///< Total cluster amplitude [ADC counts].
+    double time_ns{0};          ///< Amplitude-weighted mean hit time [ns].
+    double sigma_strip{0};      ///< Position uncertainty [strips].
+    int n_strips{0};
+    int layer_id{-1};
     std::vector<int> strip_ids;
   };
 
   /**
-   * @param seed_threshold      Minimum amplitude/noise to seed a cluster (default 4).
-   * @param neighbor_threshold  Minimum amplitude/noise for a strip to join a cluster (default 3).
-   * @param cluster_threshold   Minimum Σamp / √Σnoise² for the cluster to be kept (default 4).
+   * @param seed_threshold      Minimum amplitude/noise to seed a cluster
+   * (default 4).
+   * @param neighbor_threshold  Minimum amplitude/noise for a strip to join a
+   * cluster (default 3).
+   * @param cluster_threshold   Minimum Σamp / √Σnoise² for the cluster to be
+   * kept (default 4).
    * @param noise_sigma_adc     Per-strip noise RMS [ADC counts].
-   * @param mean_time_ns        Expected hit time for the seed timing cut [ns] (default 0).
-   * @param time_window_ns      Half-width of seed timing window [ns]; ≤ 0 disables (default -1).
-   * @param neighbor_delta_t_ns Max |t0_neighbour − cluster_t| to join cluster [ns];
-   *                            ≤ 0 disables (default -1).
-   * @param max_chi2_ndf        Max chi2/ndf for a hit to be used; ≤ 0 disables (default -1).
+   * @param mean_time_ns        Expected hit time for the seed timing cut [ns]
+   * (default 0).
+   * @param time_window_ns      Half-width of seed timing window [ns]; ≤ 0
+   * disables (default -1).
+   * @param neighbor_delta_t_ns Max |t0_neighbour − cluster_t| to join cluster
+   * [ns]; ≤ 0 disables (default -1).
+   * @param max_chi2_ndf        Max chi2/ndf for a hit to be used; ≤ 0 disables
+   * (default -1).
    */
-  StripClusterer(double seed_threshold     = 4.0,
-                 double neighbor_threshold = 3.0,
-                 double cluster_threshold  = 4.0,
-                 double noise_sigma_adc    = 5.0,
-                 double mean_time_ns       = 0.0,
-                 double time_window_ns     = -1.0,
-                 double neighbor_delta_t_ns = -1.0,
-                 double max_chi2_ndf       = -1.0);
+  StripClusterer(double seed_threshold = 4.0, double neighbor_threshold = 3.0,
+                 double cluster_threshold = 4.0, double noise_sigma_adc = 5.0,
+                 double mean_time_ns = 0.0, double time_window_ns = -1.0,
+                 double neighbor_delta_t_ns = -1.0, double max_chi2_ndf = -1.0);
 
   /**
    * Cluster a set of fitted strip hits from a single sensor layer.

@@ -28,18 +28,19 @@ namespace tracking::dqm {
  *     cluster_amp_sN  — total cluster amplitude [ADC counts]
  *     cluster_nstrips_sN — number of strips per cluster
  *     cluster_time_sN — cluster hit time [ns]
- *     sim_cluster_du_sN — truth U minus cluster U [mm]  (requires digi_coll_name)
+ *     sim_cluster_du_sN — truth U minus cluster U [mm]  (requires
+ * digi_coll_name)
  *
  * Configuration parameters
  * ------------------------
  *   sim_coll_name     SimTrackerHit collection  (default "TaggerSimHits")
  *   sim_pass_name     pass name                 (default "")
- *   digi_coll_name    digi Measurement coll. for truth_u lookup (default "" = disabled)
- *   digi_pass_name    pass name                 (default "")
- *   fitted_coll_name  FittedSiStripHit coll.    (default "TaggerFittedSiStripHits")
- *   fitted_pass_name  pass name                 (default "")
- *   cluster_coll_name cluster Measurement coll. (default "TaggerClusterMeasurements")
- *   cluster_pass_name pass name                 (default "")
+ *   digi_coll_name    digi Measurement coll. for truth_u lookup (default "" =
+ * disabled) digi_pass_name    pass name                 (default "")
+ *   fitted_coll_name  FittedSiStripHit coll.    (default
+ * "TaggerFittedSiStripHits") fitted_pass_name  pass name (default "")
+ *   cluster_coll_name cluster Measurement coll. (default
+ * "TaggerClusterMeasurements") cluster_pass_name pass name (default "")
  *   n_sensors         number of sensors         (default 14)
  */
 class DigiDQM : public framework::Analyzer {

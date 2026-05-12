@@ -1,18 +1,17 @@
 #pragma once
 
+#include <memory>
+#include <string>
+#include <vector>
+
+#include "Acts/MagneticField/MagneticFieldProvider.hpp"
 #include "Framework/Configure/Parameters.h"
 #include "Framework/EventProcessor.h"
+#include "Tracking/Sim/BFieldXYZUtils.h"
 #include "Tracking/geo/CalibrationContext.h"
 #include "Tracking/geo/GeometryContext.h"
 #include "Tracking/geo/MagneticFieldContext.h"
 #include "Tracking/geo/TrackersTrackingGeometry.h"
-
-#include "Acts/MagneticField/MagneticFieldProvider.hpp"
-#include "Tracking/Sim/BFieldXYZUtils.h"
-
-#include <memory>
-#include <string>
-#include <vector>
 
 namespace tracking::reco {
 /**

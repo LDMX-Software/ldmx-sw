@@ -21,7 +21,8 @@ void GSFProcessor::onNewRun(const ldmx::RunHeader& rh) {
     loadBField();
   else
     loadBField(field_map_);
-  const auto map = std::static_pointer_cast<InterpolatedMagneticField3>(bField());
+  const auto map =
+      std::static_pointer_cast<InterpolatedMagneticField3>(bField());
 
   auto acts_logging_level = Acts::Logging::FATAL;
 

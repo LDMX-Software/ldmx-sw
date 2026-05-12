@@ -89,9 +89,10 @@ TrackingGeometry::TrackingGeometry(const std::string& name,
           if (fmap.is_absolute()) {
             field_map_file_ = fmap.string();
           } else {
-            boost::filesystem::path prefix =
-                boost::filesystem::path(gdml_)
-                    .parent_path().parent_path().parent_path();
+            boost::filesystem::path prefix = boost::filesystem::path(gdml_)
+                                                 .parent_path()
+                                                 .parent_path()
+                                                 .parent_path();
             field_map_file_ = (prefix / "fieldmap" / fmap).string();
           }
           break;
