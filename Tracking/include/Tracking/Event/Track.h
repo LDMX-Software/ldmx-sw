@@ -318,7 +318,7 @@ class Track {
   std::vector<TrackState> track_states_;
 
   /// Class declaration needed by the ROOT dictionary.
-  ClassDef(Track, 6);
+  ClassDef(Track, 7);
 
 };  // Track
 

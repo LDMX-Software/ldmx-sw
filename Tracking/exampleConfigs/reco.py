@@ -35,13 +35,14 @@ sim.generators.append(particle_gun)
 p.sequence = [sim]
 ####  end beam simulation
 
-# Load the full tracking sequance
-from LDMX.Tracking import full_tracking_sequence
+# Load the full tracking sequence
+from LDMX.Tracking.full_tracking_sequence import full_tracking_sequence
 
 # Add full tracking for both tagger and recoil trackers: digi, seeds, CFK, ambiguity
 # resolution, GSF, DQM
-p.sequence.extend(full_tracking_sequence.sequence)
-p.sequence.extend(full_tracking_sequence.dqm_sequence)
+trk = full_tracking_sequence(detector=detector)
+p.sequence.extend(trk.sequence)
+p.sequence.extend(trk.dqm_sequence)
 
 # Output name
 #   just append '_withTracking' to the name of the input file

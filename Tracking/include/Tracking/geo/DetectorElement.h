@@ -1,7 +1,7 @@
 #pragma once
 
 #include <iostream>
-#include <stdexcept>  // Include for std::logic_error
+#include "Framework/Exception/Exception.h"
 
 #include "Acts/Definitions/Algebra.hpp"
 #include "Acts/Geometry/DetectorElementBase.hpp"
@@ -67,7 +67,7 @@ class DetectorElement : public Acts::DetectorElementBase {
 
   Acts::GeometryIdentifier geometryId() const {
     if (!m_surface_)
-      throw std::logic_error("DetectorElement:: surface not assigned");
+      EXCEPTION_RAISE("BadGeometry", "DetectorElement:: surface not assigned");
 
     return (m_surface_->geometryId());
   }

@@ -18,10 +18,6 @@ static constexpr double KT_Q_300K = 0.025852;
 // Constructor
 // ---------------------------------------------------------------------------
 
-SiStripDigitizer::SiStripDigitizer(const SensorParams& params,
-                                   std::default_random_engine& generator)
-    : params_(params), generator_(&generator) {}
-
 // ---------------------------------------------------------------------------
 // Private helpers
 // ---------------------------------------------------------------------------
@@ -245,8 +241,6 @@ std::map<int, double> SiStripDigitizer::computeStripCharges(
 
 void SiStripDigitizer::applyNoiseAndThreshold(
     std::map<int, double>& strip_charges) {
-  if (!generator_) return;
-
   // Add the immediate neighbours of every signal strip so that noise alone
   // can promote them above threshold (as in a real detector where every
   // strip has readout noise).
@@ -261,7 +255,7 @@ void SiStripDigitizer::applyNoiseAndThreshold(
 
   // Add Gaussian noise to all strips.
   for (auto& [strip, charge] : strip_charges) {
-    charge += params_.noise_electrons * normal_(*generator_);
+    charge += params_.noise_electrons * normal_(generator_);
   }
 
   // Remove strips below the readout threshold.

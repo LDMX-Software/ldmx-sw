@@ -1,7 +1,7 @@
 
 #include "Tracking/geo/TrackingGeometry.h"
 
-#include <stdexcept>
+#include "Framework/Exception/Exception.h"
 
 namespace tracking::geo {
 
@@ -103,9 +103,9 @@ TrackingGeometry::TrackingGeometry(const std::string& name,
   }
 
   if (field_map_file_.empty()) {
-    throw std::runtime_error(
-        "TrackingGeometry: no MagneticField/File auxiliary entry found in '" +
-        gdml_ + "'");
+    EXCEPTION_RAISE("BadGeometry",
+                    "TrackingGeometry: no MagneticField/File auxiliary entry "
+                    "found in '" + gdml_ + "'");
   }
 
   f_world_phys_vol_ = parser.GetWorldVolume();
@@ -281,7 +281,8 @@ Acts::Vector3 TrackingGeometry::convertG4Pos(const G4ThreeVector& g4pos) const {
 void TrackingGeometry::getSurfaces(
     std::vector<const Acts::Surface*>& surfaces) const {
   if (!t_geometry_)
-    throw std::runtime_error("TrackingGeometry::getSurfaces tGeometry is null");
+    EXCEPTION_RAISE("BadGeometry",
+                    "TrackingGeometry::getSurfaces tGeometry is null");
 
   const Acts::TrackingVolume* t_volume = t_geometry_->highestTrackingVolume();
   if (t_volume->confinedVolumes()) {

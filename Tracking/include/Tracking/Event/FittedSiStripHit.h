@@ -112,7 +112,7 @@ class FittedSiStripHit {
   /// Energy deposited by the parent SimTrackerHit [MeV].
   float edep_{0.f};
 
-  ClassDef(FittedSiStripHit, 3);
+  ClassDef(FittedSiStripHit, 1);
 };
 
 }  // namespace ldmx

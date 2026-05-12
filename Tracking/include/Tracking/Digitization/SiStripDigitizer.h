@@ -115,12 +115,11 @@ class SiStripDigitizer {
 
   SiStripDigitizer() = default;
 
-  /**
-   * @param params     Sensor parameters.
-   * @param generator  Random-number engine (owned by caller).
-   */
-  SiStripDigitizer(const SensorParams& params,
-                   std::default_random_engine& generator);
+  explicit SiStripDigitizer(const SensorParams& params) : params_(params) {}
+
+  /// Seed the internal random-number engine.  Call from onNewRun once a
+  /// seed is available from the framework seed service.
+  void seed(uint64_t s) { generator_.seed(s); }
 
   /**
    * Simulate charge collection for a single hit.
@@ -209,8 +208,8 @@ class SiStripDigitizer {
       const std::map<int, double>& sense_charges) const;
 
   SensorParams params_;
-  std::default_random_engine* generator_{nullptr};
-  mutable std::normal_distribution<double> normal_{0.0, 1.0};
+  std::default_random_engine generator_;
+  std::normal_distribution<double> normal_{0.0, 1.0};
 };
 
 }  // namespace tracking::digitization

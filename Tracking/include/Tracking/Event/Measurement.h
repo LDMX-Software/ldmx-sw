@@ -198,7 +198,7 @@ class Measurement {
   /// Total cluster amplitude [ADC counts] (0 = not from strip clustering).
   float cluster_amplitude_{0};
 
-  ClassDef(Measurement, 4);
+  ClassDef(Measurement, 3);
 };  // Measurement
 
 typedef std::vector<Measurement> Measurements;

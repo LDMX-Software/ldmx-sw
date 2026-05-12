@@ -19,7 +19,7 @@ void DigitizationProcessor::onProcessStart() {
   if (use_charge_digitization_) {
     strip_digitizer_ =
         std::make_unique<tracking::digitization::SiStripDigitizer>(
-            sensor_params_, generator_);
+            sensor_params_);
     ldmx_log(info) << "Charge digitization enabled."
                    << "  thickness=from geometry"
                    << "  sense_pitch=" << tracking::digitization::SENSE_PITCH_MM
@@ -185,7 +185,9 @@ void DigitizationProcessor::buildLorentzCache() {
 void DigitizationProcessor::onNewRun(const ldmx::RunHeader& runHeader) {
   const auto& rseed = getCondition<framework::RandomNumberSeedService>(
       framework::RandomNumberSeedService::CONDITIONS_OBJECT_NAME);
-  generator_.seed(rseed.getSeed("Tracking::DigitizationProcessor"));
+  const uint64_t seed = rseed.getSeed("Tracking::DigitizationProcessor");
+  generator_.seed(seed);
+  if (strip_digitizer_) strip_digitizer_->seed(seed);
 }
 
 void DigitizationProcessor::produce(framework::Event& event) {

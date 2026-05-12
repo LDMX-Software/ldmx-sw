@@ -1,6 +1,6 @@
 #include "Tracking/Digitization/PulseShape.h"
 
-#include <stdexcept>
+#include "Framework/Exception/Exception.h"
 
 namespace tracking::digitization {
 
@@ -10,7 +10,7 @@ namespace tracking::digitization {
 
 FourPoleShape::FourPoleShape(double tp, double tp2) : tp_(tp), tp2_(tp2) {
   if (tp2_ <= 0.0 || tp_ <= tp2_) {
-    throw std::invalid_argument("FourPoleShape: requires tp > tp2 > 0");
+    EXCEPTION_RAISE("InvalidArgument", "FourPoleShape: requires tp > tp2 > 0");
   }
 
   A_ = (tp_ * tp_) / std::pow(tp_ - tp2_, 3.0);
@@ -44,8 +44,9 @@ std::unique_ptr<PulseShape> PulseShape::make(const std::string& name, double tp,
   } else if (name == "FourPole") {
     return std::make_unique<FourPoleShape>(tp, tp2);
   }
-  throw std::invalid_argument("PulseShape::make: unknown shape '" + name +
-                              "'. Use 'CRRC' or 'FourPole'.");
+  EXCEPTION_RAISE("InvalidArgument",
+                  "PulseShape::make: unknown shape '" + name +
+                      "'. Use 'CRRC' or 'FourPole'.");
 }
 
 }  // namespace tracking::digitization

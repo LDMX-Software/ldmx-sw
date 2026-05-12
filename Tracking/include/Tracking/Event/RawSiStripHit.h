@@ -160,7 +160,7 @@ class RawSiStripHit {
   float edep_{0.f};
 
   /// Class declaration needed by the ROOT dictionary.
-  ClassDef(RawSiStripHit, 5);
+  ClassDef(RawSiStripHit, 3);
 
 };  // RawSiStripHit
 }  // namespace ldmx
