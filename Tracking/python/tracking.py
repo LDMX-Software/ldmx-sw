@@ -46,12 +46,6 @@ class DigitizationProcessor(Processor):
         Equivalent noise charge [e-] (Mode 1).
     threshold_electrons : float
         Strip hit threshold [e-] (Mode 1).
-    is_n_type : bool
-        True if sensor bulk is n-type (Mode 1).
-    electron_side_readout : bool
-        True if electrons are read out (Mode 1).
-    hole_side_readout : bool
-        True if holes are read out (Mode 1).
     electron_lorentz_tangent : float
         tan(theta_L) for electrons (Mode 1).
     hole_lorentz_tangent : float
@@ -81,9 +75,6 @@ class DigitizationProcessor(Processor):
     depletion_voltage: float = 70.0
     noise_electrons: float = 1000.0
     threshold_electrons: float = 3000.0
-    is_n_type: bool = False
-    electron_side_readout: bool = False
-    hole_side_readout: bool = True
     electron_lorentz_tangent: float = 0.0
     hole_lorentz_tangent: float = 0.0
     trapping: float = 0.0

@@ -77,7 +77,7 @@ class SiStripDigitizer {
     double noise_electrons{NOISE_ELECTRONS};
     /// Readout threshold [electrons].  Strips below this are suppressed.
     double threshold_electrons{THRESHOLD_ELECTRONS};
-    /// true = n-type bulk;  false = p-type bulk; HPS sensors are n_type
+    /// true = n-type bulk; false = p-type bulk. LDMX (and HPS) use n-type bulk.
     bool is_n_type{true};
     /// Simulate and read out the electron-collection side (n-strips).
     bool electron_side_readout{false};

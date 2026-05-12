@@ -111,11 +111,11 @@ void DigitizationProcessor::configure(
         parameters.get<double>("noise_electrons", 1000.0);
     sensor_params_.threshold_electrons =
         parameters.get<double>("threshold_electrons", 3000.0);
-    sensor_params_.is_n_type = parameters.get<bool>("is_n_type", false);
-    sensor_params_.electron_side_readout =
-        parameters.get<bool>("electron_side_readout", false);
-    sensor_params_.hole_side_readout =
-        parameters.get<bool>("hole_side_readout", true);
+    // Fixed sensor properties — not user-configurable.
+    // LDMX (and HPS) use n-type bulk with hole-side readout.
+    sensor_params_.is_n_type = true;
+    sensor_params_.electron_side_readout = false;
+    sensor_params_.hole_side_readout = true;
     use_lorentz_ = parameters.get<bool>("use_lorentz", true);
     sensor_params_.electron_lorentz_tangent =
         parameters.get<double>("electron_lorentz_tangent", 0.0);
@@ -125,8 +125,7 @@ void DigitizationProcessor::configure(
     sensor_params_.deposition_granularity =
         parameters.get<double>("deposition_granularity", 0.10);
     sensor_params_.n_segments_min = parameters.get<int>("n_segments_min", 5);
-    sensor_params_.n_readout_strips =
-        parameters.get<int>("n_readout_strips", 767);
+    // n_readout_strips is fixed by the sensor geometry constant N_READOUT_STRIPS.
 
     out_raw_collection_ = parameters.get<std::string>("out_raw_collection", "");
     field_map_ = parameters.get<std::string>("field_map", "");
