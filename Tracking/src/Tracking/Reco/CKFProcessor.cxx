@@ -172,7 +172,7 @@ void CKFProcessor::produce(framework::Event& event) {
   profiling_map_["setup"] +=
       std::chrono::duration<double, std::milli>(setup - start).count();
 
-  const std::vector<ldmx::Measurement> measurements =
+  const auto& measurements =
       event.getCollection<ldmx::Measurement>(measurement_collection_,
                                              input_pass_name_);
 
@@ -200,7 +200,7 @@ void CKFProcessor::produce(framework::Event& event) {
   // ============   Setup the CKF  ============
 
   // Retrieve the seeds
-  const std::vector<ldmx::Track> seed_tracks =
+  const auto& seed_tracks =
       event.getCollection<ldmx::Track>(seed_coll_name_, input_pass_name_);
 
   ldmx_log(info) << "Number of " << seed_coll_name_

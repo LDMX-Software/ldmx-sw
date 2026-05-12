@@ -45,7 +45,7 @@ void StripFitProcessor::onProcessStart() {
 }
 
 void StripFitProcessor::produce(framework::Event& event) {
-  const auto raw_hits =
+  const auto& raw_hits =
       event.getCollection<ldmx::RawSiStripHit>(in_collection_, in_pass_);
 
   std::vector<ldmx::FittedSiStripHit> fitted_hits;

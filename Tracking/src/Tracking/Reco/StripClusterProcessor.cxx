@@ -55,7 +55,7 @@ void StripClusterProcessor::onProcessStart() {
 // ---------------------------------------------------------------------------
 
 void StripClusterProcessor::produce(framework::Event& event) {
-  const auto fitted_hits =
+  const auto& fitted_hits =
       event.getCollection<ldmx::FittedSiStripHit>(in_collection_, in_pass_);
 
   ldmx_log(debug) << "Clustering " << fitted_hits.size()

@@ -230,11 +230,11 @@ void TrackComparisonProcessor::processTracker(const framework::Event& event,
     return;
   }
 
-  auto tracks_smear{event.getCollection<ldmx::Track>(coll_smear, pass_smear)};
-  auto tracks_digi{event.getCollection<ldmx::Track>(coll_digi, pass_digi)};
+  const auto& tracks_smear = event.getCollection<ldmx::Track>(coll_smear, pass_smear);
+  const auto& tracks_digi = event.getCollection<ldmx::Track>(coll_digi, pass_digi);
 
-  auto particle_map{event.getMap<int, ldmx::SimParticle>("SimParticles",
-                                                         sim_particles_pass_)};
+  const auto& particle_map =
+      event.getMap<int, ldmx::SimParticle>("SimParticles", sim_particles_pass_);
 
   std::map<int, const ldmx::Track*> smear_by_id;
   for (const auto& t : tracks_smear) {

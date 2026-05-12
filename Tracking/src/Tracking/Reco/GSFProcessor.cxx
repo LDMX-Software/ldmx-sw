@@ -113,13 +113,13 @@ void GSFProcessor::produce(framework::Event& event) {
   // Retrieve the tracks
   if (!event.exists(track_collection_, track_collection_event_passname_))
     return;
-  auto tracks{
-      event.getCollection<ldmx::Track>(track_collection_, track_passname_)};
+  const auto& tracks =
+      event.getCollection<ldmx::Track>(track_collection_, track_passname_);
 
   // Retrieve the measurements
   if (!event.exists(meas_collection_, meas_collection_event_passname_)) return;
-  auto measurements{
-      event.getCollection<ldmx::Measurement>(meas_collection_, meas_passname_)};
+  const auto& measurements =
+      event.getCollection<ldmx::Measurement>(meas_collection_, meas_passname_);
 
   tracking::sim::LdmxMeasurementCalibrator calibrator{measurements};
 

@@ -87,11 +87,11 @@ void VertexProcessor::produce(framework::Event &event) {
   Acts::VertexingOptions vf_options(gctx_, bctx_);
 
   // Retrieve the track collection
-  const std::vector<ldmx::Track> tracks =
+  const auto& tracks =
       event.getCollection<ldmx::Track>(trk_coll_name_, input_pass_name_);
 
   // Retrieve the truth seeds
-  const std::vector<ldmx::Track> seeds =
+  const auto& seeds =
       event.getCollection<ldmx::Track>(seeds_coll_name_, input_pass_name_);
 
   if (tracks.size() < 1) return;

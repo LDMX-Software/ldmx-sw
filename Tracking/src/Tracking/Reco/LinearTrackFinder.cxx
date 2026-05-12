@@ -38,7 +38,7 @@ void LinearTrackFinder::produce(framework::Event& event) {
 
   ldmx_log(debug) << "Retrieve the seeds::" << seed_collection_;
 
-  const std::vector<ldmx::StraightTrack> seed_tracks =
+  const auto& seed_tracks =
       event.getCollection<ldmx::StraightTrack>(seed_collection_,
                                                input_pass_name_);
 

@@ -95,7 +95,7 @@ void SeedFinderProcessor::produce(framework::Event& event) {
   // check if SimParticleMap is available for truth matching
   std::map<int, ldmx::SimParticle> particle_map;
 
-  const std::vector<ldmx::Measurement> measurements =
+  const auto& measurements =
       event.getCollection<ldmx::Measurement>(input_hits_collection_,
                                              input_pass_name_);
 

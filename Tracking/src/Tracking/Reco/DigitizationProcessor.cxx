@@ -193,7 +193,7 @@ void DigitizationProcessor::onNewRun(const ldmx::RunHeader& runHeader) {
 void DigitizationProcessor::produce(framework::Event& event) {
   ldmx_log(trace) << " Getting the tracking geometry:" << geometry().getTG();
 
-  const std::vector<ldmx::SimTrackerHit> sim_hits =
+  const auto& sim_hits =
       event.getCollection<ldmx::SimTrackerHit>(hit_collection_,
                                                tracker_hit_passname_);
 
