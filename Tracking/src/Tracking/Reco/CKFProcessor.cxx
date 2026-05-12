@@ -172,9 +172,8 @@ void CKFProcessor::produce(framework::Event& event) {
   profiling_map_["setup"] +=
       std::chrono::duration<double, std::milli>(setup - start).count();
 
-  const auto& measurements =
-      event.getCollection<ldmx::Measurement>(measurement_collection_,
-                                             input_pass_name_);
+  const auto& measurements = event.getCollection<ldmx::Measurement>(
+      measurement_collection_, input_pass_name_);
 
   // check if SimParticleMap is available for truth matching
   std::shared_ptr<tracking::sim::TruthMatchingTool> truth_matching_tool =

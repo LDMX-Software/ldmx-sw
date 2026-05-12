@@ -193,8 +193,8 @@ void GreedyAmbiguitySolver::produce(framework::Event& event) {
     ldmx_log(debug) << "Measurement collection not found, exiting";
     return;
   }
-  const auto& measurements =
-      event.getCollection<ldmx::Measurement>(meas_collection_, input_pass_name_);
+  const auto& measurements = event.getCollection<ldmx::Measurement>(
+      meas_collection_, input_pass_name_);
 
   computeInitialState(tracks, measurements, state, tg,
                       tracking::sim::utils::sourceLinkHash,

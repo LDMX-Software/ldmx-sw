@@ -31,12 +31,10 @@ void LinearTruthTracking::produce(framework::Event& event) {
   std::vector<ldmx::StraightTrack> straight_truth_tracks;
   n_events_++;
 
-  const auto& recoil_hits =
-      event.getCollection<ldmx::SimTrackerHit>(input_hits_collection_,
-                                               input_pass_name_);
-  const auto& ecal_rec_hit =
-      event.getCollection<ldmx::EcalHit>(input_rec_hits_collection_,
-                                         input_pass_name_);
+  const auto& recoil_hits = event.getCollection<ldmx::SimTrackerHit>(
+      input_hits_collection_, input_pass_name_);
+  const auto& ecal_rec_hit = event.getCollection<ldmx::EcalHit>(
+      input_rec_hits_collection_, input_pass_name_);
 
   std::vector<std::array<double, 3>> first_layer_ecal_rec_hits;
 

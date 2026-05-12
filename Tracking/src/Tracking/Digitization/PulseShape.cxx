@@ -44,9 +44,8 @@ std::unique_ptr<PulseShape> PulseShape::make(const std::string& name, double tp,
   } else if (name == "FourPole") {
     return std::make_unique<FourPoleShape>(tp, tp2);
   }
-  EXCEPTION_RAISE("InvalidArgument",
-                  "PulseShape::make: unknown shape '" + name +
-                      "'. Use 'CRRC' or 'FourPole'.");
+  EXCEPTION_RAISE("InvalidArgument", "PulseShape::make: unknown shape '" +
+                                         name + "'. Use 'CRRC' or 'FourPole'.");
 }
 
 }  // namespace tracking::digitization

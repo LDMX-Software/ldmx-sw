@@ -125,7 +125,8 @@ void DigitizationProcessor::configure(
     sensor_params_.deposition_granularity =
         parameters.get<double>("deposition_granularity", 0.10);
     sensor_params_.n_segments_min = parameters.get<int>("n_segments_min", 5);
-    // n_readout_strips is fixed by the sensor geometry constant N_READOUT_STRIPS.
+    // n_readout_strips is fixed by the sensor geometry constant
+    // N_READOUT_STRIPS.
 
     out_raw_collection_ = parameters.get<std::string>("out_raw_collection", "");
     field_map_ = parameters.get<std::string>("field_map", "");
@@ -193,9 +194,8 @@ void DigitizationProcessor::onNewRun(const ldmx::RunHeader& runHeader) {
 void DigitizationProcessor::produce(framework::Event& event) {
   ldmx_log(trace) << " Getting the tracking geometry:" << geometry().getTG();
 
-  const auto& sim_hits =
-      event.getCollection<ldmx::SimTrackerHit>(hit_collection_,
-                                               tracker_hit_passname_);
+  const auto& sim_hits = event.getCollection<ldmx::SimTrackerHit>(
+      hit_collection_, tracker_hit_passname_);
 
   std::vector<ldmx::SimTrackerHit> merged_hits;
   std::vector<ldmx::Measurement> measurements;

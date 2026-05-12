@@ -10,7 +10,8 @@ DetectorElement::~DetectorElement(){};
 const Acts::Transform3& DetectorElement::transform(
     const Acts::GeometryContext& gctx) const {
   if (!m_surface_)
-    EXCEPTION_RAISE("BadGeometry", "DetectorElement:: Sensor/Element ID not set");
+    EXCEPTION_RAISE("BadGeometry",
+                    "DetectorElement:: Sensor/Element ID not set");
 
   // The elementId will be valid only after tracking geometry is built
   // I will use this fact to return the default transform in order to build
@@ -50,14 +51,16 @@ const Acts::Transform3& DetectorElement::transform(
 
 const Acts::Surface& DetectorElement::surface() const {
   if (!m_surface_)
-    EXCEPTION_RAISE("BadGeometry",
-                    "DetectorElement::Attempted to return reference of null ptr");
+    EXCEPTION_RAISE(
+        "BadGeometry",
+        "DetectorElement::Attempted to return reference of null ptr");
   return *m_surface_;
 }
 Acts::Surface& DetectorElement::surface() {
   if (!m_surface_)
-    EXCEPTION_RAISE("BadGeometry",
-                    "DetectorElement::Attempted to return reference of null ptr");
+    EXCEPTION_RAISE(
+        "BadGeometry",
+        "DetectorElement::Attempted to return reference of null ptr");
   return *m_surface_;
 }
 

@@ -3,7 +3,6 @@
 #include <fstream>
 #include <functional>
 #include <iostream>
-#include "Framework/Exception/Exception.h"
 
 #include "Acts/Definitions/Algebra.hpp"
 #include "Acts/MagneticField/BFieldMapUtils.hpp"
@@ -13,6 +12,7 @@
 #include "Acts/Utilities/Grid.hpp"
 #include "Acts/Utilities/Interpolation.hpp"
 #include "Acts/Utilities/Result.hpp"
+#include "Framework/Exception/Exception.h"
 
 static const double DIPOLE_OFFSET = 400.;  // 400 mm
 
@@ -258,7 +258,8 @@ inline InterpolatedMagneticField3 makeMagneticFieldMapXyzFromText(
   if (!header_found) {
     EXCEPTION_RAISE("BadConf",
                     "BFieldXYZUtils: no 'Header' line found in field map "
-                    "file '" + fieldMapFile + "'");
+                    "file '" +
+                        fieldMapFile + "'");
   }
   if (b_field.empty()) {
     EXCEPTION_RAISE("BadConf", "BFieldXYZUtils: no field data read from '" +

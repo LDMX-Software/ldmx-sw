@@ -105,7 +105,8 @@ TrackingGeometry::TrackingGeometry(const std::string& name,
   if (field_map_file_.empty()) {
     EXCEPTION_RAISE("BadGeometry",
                     "TrackingGeometry: no MagneticField/File auxiliary entry "
-                    "found in '" + gdml_ + "'");
+                    "found in '" +
+                        gdml_ + "'");
   }
 
   f_world_phys_vol_ = parser.GetWorldVolume();

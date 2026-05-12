@@ -1,7 +1,6 @@
 #pragma once
 
 #include <iostream>
-#include "Framework/Exception/Exception.h"
 
 #include "Acts/Definitions/Algebra.hpp"
 #include "Acts/Geometry/DetectorElementBase.hpp"
@@ -9,6 +8,7 @@
 #include "Acts/Geometry/GeometryIdentifier.hpp"
 #include "Acts/Material/HomogeneousSurfaceMaterial.hpp"
 #include "Acts/Surfaces/Surface.hpp"
+#include "Framework/Exception/Exception.h"
 #include "Tracking/geo/GeoUtils.h"
 
 // This class is necessary in order to apply any transformation change passed

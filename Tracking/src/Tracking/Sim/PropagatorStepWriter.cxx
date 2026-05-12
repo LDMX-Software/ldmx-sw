@@ -7,7 +7,6 @@
 #include <Acts/Surfaces/Surface.hpp>
 
 #include "Acts/Geometry/DetectorElementBase.hpp"
-
 #include "Framework/Exception/Exception.h"
 // mg ... I don't think these are used, and they are not defined in acts v36
 // #include "Acts/Plugins/Identification/IdentifiedDetectorElement.hpp"
