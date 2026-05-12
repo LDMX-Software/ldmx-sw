@@ -40,10 +40,7 @@ jobs:
       id: get_pr
       if: github.event_name == 'issue_comment'
       run: |
-        PR_DATA=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-          "https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.issue.number }}")
-        HEAD_REF=$(echo "$PR_DATA" | jq -r .head.ref)
-        echo "HEAD_REF=$HEAD_REF" >> $GITHUB_ENV
+        echo "HEAD_REF=refs/pull/${{ github.event.issue.number }}/merge" >> $GITHUB_ENV
 
     - name: Checkout ldmx-sw
       uses: actions/checkout@v6
@@ -53,7 +50,7 @@ jobs:
         ref: ${{ env.HEAD_REF }}
 
     - name: Install just
-      uses: extractions/setup-just@v3
+      uses: extractions/setup-just@v4
 
     - name: Cache ccache
       uses: actions/cache@v5
@@ -94,11 +91,14 @@ jobs:
 
     - name: Get PR Info for Validation Job
       id: get_pr_again
+      env:
+        COMMENT_BODY: ${{ github.event.comment.body }}
       run: |
         if [[ "${{ github.event_name }}" == "issue_comment" ]]; then
-          PR_DATA=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-            "https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.issue.number }}")
-          HEAD_REF=$(echo "$PR_DATA" | jq -r .head.ref)
+          HEAD_REF=refs/pull/${{ github.event.issue.number }}/merge
+          if [[ "$COMMENT_BODY" =~ /run-validation[[:space:]]+with[[:space:]]+([0-9]+)[[:space:]]+events ]]; then
+            echo "LDMX_NUM_EVENTS=${BASH_REMATCH[1]}" >> $GITHUB_ENV
+          fi
         else
           HEAD_REF=${{ github.ref }}
         fi
@@ -112,7 +112,7 @@ jobs:
         fetch-depth: 0
         ref: ${{ env.HEAD_REF }}
           
-    - uses: extractions/setup-just@v3
+    - uses: extractions/setup-just@v4
 
     - run: just install-denv init
 
@@ -145,7 +145,140 @@ jobs:
         path: ${{ steps.validation.outputs.plots }}
 
     - name: Did any validation plots fail?
-      uses: ./.github/actions/check
+      id: check_result
+      continue-on-error: true
+      run: |
+        set +e
+        bash .github/actions/check/check.sh "${{ steps.validation.outputs.plots }}" 2>&1 | tee check_output.txt
+        echo "check_rc=${PIPESTATUS[0]}" >> $GITHUB_OUTPUT
+      shell: bash
+
+    - name: Upload validation status
+      if: always()
+      run: |
+        plots="${{ steps.validation.outputs.plots }}"
+        if [[ "${{ steps.check_result.outcome }}" == "success" ]]; then
+          echo "PASS" > status.txt
+        else
+          echo "FAIL" > status.txt
+          # Append one line per failed histogram (for counting)
+          if [[ -f "$plots" ]]; then
+            tar -tf "$plots" | grep -c "fail/.*.pdf" >> status.txt || true
+          fi
+        fi
+
+        # Extract and store check messages
+        if [[ -f check_output.txt ]]; then
+          # Extract error and warning messages, removing GitHub annotation prefixes
+          grep -E '::(error|warning)::' check_output.txt | \
+            sed -e 's/::error:://' -e 's/::warning:://' > check_messages.txt || true
+          # Also include regular info messages about timing and log diffs
+          grep -E '^(Timing for |Log character count differs|Timing within)' check_output.txt >> check_messages.txt || true
+        fi
+
+    - name: Upload status artifact
+      if: always()
+      uses: actions/upload-artifact@v7
       with:
-        plots: ${{ steps.validation.outputs.plots }}
+        name: ${{ matrix.sample }}-validation-status
+        path: |
+          status.txt
+          check_messages.txt
+
+    - name: Fail if validation failed
+      if: steps.check_result.outcome == 'failure'
+      run: exit 1
+
+  post-validation:
+    needs: [check-comment, validation]
+    if: always() && (github.event_name == 'pull_request' || (github.event_name == 'issue_comment' && github.event.issue.pull_request && contains(github.event.comment.body, '/run-validation')))
+    runs-on: ubuntu-latest
+    steps:
+      - name: Resolve PR number
+        run: |
+          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            echo "PR_NUMBER=${{ github.event.pull_request.number }}" >> $GITHUB_ENV
+          else
+            echo "PR_NUMBER=${{ github.event.issue.number }}" >> $GITHUB_ENV
+          fi
+
+      - name: Download all status artifacts
+        uses: actions/download-artifact@v8
+        with:
+          pattern: '*-validation-status'
+          merge-multiple: false
+          path: statuses
+
+      - name: Post validation summary comment
+        run: |
+          # Fetch artifact list for this workflow run
+          declare -A artifact_urls
+          artifacts_json=$(curl -s \
+            -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            "https://api.github.com/repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/artifacts?per_page=100")
+          while IFS=$'\t' read -r aname aid; do
+            artifact_urls[$aname]="https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}/artifacts/${aid}"
+          done < <(echo "$artifacts_json" | jq -r '.artifacts[] | [.name, (.id|tostring)] | @tsv')
+
+          passed=()
+          failed=()
+          declare -A reasons
+          declare -A check_details
+          for dir in statuses/*/; do
+            sample=$(basename "$dir" -validation-status)
+            mapfile -t lines < "$dir/status.txt"
+            status="${lines[0]:-FAIL}"
+            if [[ "$status" == "PASS" ]]; then
+              passed+=("$sample")
+            else
+              failed+=("$sample")
+              reasons[$sample]="${lines[1]:-0}"
+            fi
+
+            # Read check messages if available
+            if [[ -f "$dir/check_messages.txt" ]]; then
+              check_details[$sample]=$(cat "$dir/check_messages.txt" | sed 's/^/- /')
+            fi
+          done
+
+          if [[ ${#failed[@]} -eq 0 ]]; then
+            header="All validation samples passed! :white_check_mark:"
+          else
+            header="Some validation samples failed! :x:"
+          fi
+
+          table="| Sample | Status |\n|--------|--------|\n"
+          for s in "${passed[@]}"; do
+            table+="| \`$s\` | :white_check_mark: PASS |\n"
+          done
+          for s in "${failed[@]}"; do
+            n="${reasons[$s]}"
+            artifact_link=""
+            artifact_name="${s}-pr-validation"
+            if [[ -n "${artifact_urls[$artifact_name]:-}" ]]; then
+              artifact_link=" ([plots](${artifact_urls[$artifact_name]}))"
+            fi
+            if [[ "$n" -gt 0 ]]; then
+              table+="| \`$s\` | :x: FAIL ($n histograms failed KS test)${artifact_link} |\n"
+            else
+              table+="| \`$s\` | :x: FAIL${artifact_link} |\n"
+            fi
+          done
+
+          # Add details section for samples with check messages
+          details_section=""
+          all_samples=("${failed[@]}" "${passed[@]}")
+          for s in "${all_samples[@]}"; do
+            if [[ -n "${check_details[$s]:-}" ]]; then
+              details_section+="\n**\`${s}\`:**\n${check_details[$s]}\n"
+            fi
+          done
+
+          body="## Validation Results\n\n${header}\n\n${table}${details_section}"
+
+          curl -s -X POST \
+            -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            -d "$(jq -n --arg body "$(printf "$body")" '{"body": $body}')" \
+            "https://api.github.com/repos/${{ github.repository }}/issues/${PR_NUMBER}/comments"
 

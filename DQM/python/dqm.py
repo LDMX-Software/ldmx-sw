@@ -524,6 +524,29 @@ class EcalVetoResults(Processor):
         self.histogram("bdt_pass", "Event passed the ECal BDT", 2, -0.5, 1.5)
 
 
+@processor("dqm::EcalSPElectronKinematics", "DQM")
+class EcalSPElectronKinematics(Processor):
+    """Kinematics of the primary electron at the ECal front-face scoring plane.
+
+    Searches EcalScoringPlaneHits for the primary beam electron (track ID 1,
+    PDG ID 11) at plane 31 and fills histograms + event-tree branches for its
+    energy, momentum, and transverse position.
+    """
+
+    ecal_sp_coll_name: str = "EcalScoringPlaneHits"
+    ecal_sp_pass_name: str = ""
+
+    def __post_init__(self):
+        self.histogram(
+            "energy", "Primary Electron Energy at ECal SP [MeV]", 101, 0, 8080
+        )
+        self.histogram("pt", "Primary Electron pT at ECal SP [MeV]", 100, 0, 2000)
+        self.histogram("px", "Primary Electron px at ECal SP [MeV]", 200, -200, 200)
+        self.histogram("py", "Primary Electron py at ECal SP [MeV]", 200, -200, 200)
+        self.histogram("x", "Primary Electron x at ECal SP [mm]", 200, -100, 100)
+        self.histogram("y", "Primary Electron y at ECal SP [mm]", 200, -100, 100)
+
+
 @processor("dqm::EcalPnetVetoResults", "DQM")
 class EcalPnetVetoResults(Processor):
     """Configured EcalMipTrackingFeatures python object"""
@@ -993,6 +1016,8 @@ class PhotoNuclearDQM(Processor):
     sim_particles_coll_name: str = "SimParticles"
     sim_particles_passname: str = ""
     count_light_ions: bool = True
+    pn_collection_name: str = "PhotonuclearInteractions"
+    pn_pass_name: str = ""
 
     def __post_init__(self):
         event_type_labels = [
@@ -1252,6 +1277,69 @@ class PhotoNuclearDQM(Processor):
             -250,
             250,
         )
+
+        # PhotonuclearInteraction collection histograms
+        self.histogram(
+            "pn_interaction_count",
+            "Number of PN Interactions per Event",
+            20,
+            0,
+            20,
+        )
+        self.histogram(
+            "pn_target_z",
+            "Target Atomic Number (Z)",
+            100,
+            0,
+            100,
+        )
+        self.histogram(
+            "pn_target_a",
+            "Target Mass Number (A)",
+            250,
+            0,
+            250,
+        )
+        self.histogram(
+            "pn_target_z:target_a",
+            "Target Atomic Number (Z)",
+            100,
+            0,
+            100,
+            "Target Mass Number (A)",
+            250,
+            0,
+            250,
+        )
+        self.histogram(
+            "pn_cascade_multiplicity",
+            "PN cascade multiplicity ",
+            200,
+            0,
+            200,
+        )
+        self.histogram(
+            "pn_descendants_per_cascade_particle",
+            "All Descendants per cascade",
+            200,
+            0,
+            5000,
+        )
+        self.histogram(
+            "pn_total_final_state_descendants",
+            "Total Descendants in all cascades",
+            200,
+            0,
+            10000,
+        )
+        self.histogram(
+            "pn_cascade_evolution_ratio",
+            "Cascade compactness (immediate secondaries / all)",
+            100,
+            0,
+            1,
+        )
+
 
 
 @processor("dqm::TrkDeDxMassEstFeatures", "DQM")
@@ -1814,6 +1902,7 @@ ecal_dqm = [
     EcalMipTrackingFeatures(),
     EcalVetoResults(),
     EcalPnetVetoResults(),
+    EcalSPElectronKinematics(),
 ]
 
 hcal_dqm = [

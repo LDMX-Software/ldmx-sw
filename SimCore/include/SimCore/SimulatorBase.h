@@ -83,6 +83,11 @@ class SimulatorBase : public framework::Producer {
    */
   virtual void saveSDHits(framework::Event& event);
 
+  /*
+   * Save photonuclear interactions if tracking is enabled.
+   */
+  virtual void savePhotonuclearInteractions(framework::Event& event);
+
   virtual void produce(framework::Event& event) override = 0;
 
  private:

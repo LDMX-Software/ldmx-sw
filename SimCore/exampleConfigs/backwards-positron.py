@@ -36,7 +36,7 @@ import LDMX.Ecal.ecal_geometry
 import LDMX.Hcal.hcal_geometry
 
 my_sim = simulator.Simulator("my_sim")
-my_sim.set_detector("ldmx-det-v14", include_scoring_planes_minimal=True)
+my_sim.set_detector("ldmx-det-v15-8gev", include_scoring_planes_minimal=True)
 my_sim.generators = [generators.single_backwards_positron(args.beam)]
 my_sim.description = "Basic test Simulation"
 p.sequence = [my_sim]

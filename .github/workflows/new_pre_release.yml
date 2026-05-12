@@ -31,7 +31,7 @@ jobs:
         fetch-depth: 0
 
     - name: Install just
-      uses: extractions/setup-just@v3
+      uses: extractions/setup-just@v4
 
     - name: Compile and Install ldmx-sw
       run: | 
@@ -72,7 +72,7 @@ jobs:
         cd ${GITHUB_WORKSPACE}
         tar xf ldmx-sw-package.tar
 
-    - uses: extractions/setup-just@v3
+    - uses: extractions/setup-just@v4
 
     - run: just install-denv init
 
@@ -103,7 +103,7 @@ jobs:
         cd ${GITHUB_WORKSPACE}
         tar xf ldmx-sw-build-${GITHUB_SHA}/ldmx-sw-package.tar
 
-    - uses: extractions/setup-just@v3
+    - uses: extractions/setup-just@v4
 
     - run: just install-denv init
 

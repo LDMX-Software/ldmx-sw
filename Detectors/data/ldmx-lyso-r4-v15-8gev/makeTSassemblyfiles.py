@@ -1,4 +1,3 @@
-# ruff: noqa: E501
 import os
 import sys
 
@@ -83,13 +82,13 @@ For now all vertical surfaces are flush with no space left in between
 Horizontal surfaces have gaps (the spaces between the bars)
 
 Todo: add the plastic casing, add the metal feet which attach the bars
-to the housing, and maybe see if the visattributes can be reworked
+to the housing
 -->
 
 
 <gdml xmlns:gdml="http://cern.ch/2001/Schemas/GDML"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:noNamespaceSchemaLocation="http://service-spi.web.cern.ch/service-spi/app/releases/GDML/schema/gdml.xsd" >
+    xsi:noNamespaceSchemaLocation="gdml.xsd" >
 
 
   <define>
@@ -100,13 +99,21 @@ to the housing, and maybe see if the visattributes can be reworked
 
   <solids>
     <!--The envelope encompassing the assembly-->
-    <box lunit="mm" name="one_pad_box{i + 1}" x="tspad{i + 1}_envelope_x" y="(trigger_bar_dy+trigger_pad_bar_gap)*number_of_bars*1.1" z="trigger_pad_thickness"/>
+    <box lunit="mm" name="one_pad_box{i + 1}"
+         x="tspad{i + 1}_envelope_x"
+         y="(trigger_bar_dy+trigger_pad_bar_gap)*number_of_bars*2"
+         z="trigger_pad_thickness"/>
     <!--The scintillator bar dimensions (same for each pad)-->
-    <box lunit="mm" name="trigger_bar_box{i + 1}" x="trigger_bar_dx" y="trigger_bar_dy" z="trigger_pad_bar_thickness" />
+    <box lunit="mm" name="trigger_bar_box{i + 1}"
+         x="trigger_bar_dx" y="trigger_bar_dy"
+         z="trigger_pad_bar_thickness" />
         <!--The light pipe dimensions (different for each TSPad)-->
-    <box lunit="mm" name="trigger_light_pipe_box{i + 1}" x="trigger_light_pipe{i + 1}_dx" y="trigger_light_pipe_dy" z="trigger_light_pipe_thickness" />
+    <box lunit="mm" name="trigger_light_pipe_box{i + 1}"
+         x="trigger_light_pipe{i + 1}_dx"
+         y="trigger_light_pipe_dy" z="trigger_light_pipe_thickness" />
     <!--SiPM dimensions-->
-    <box lunit="mm" name="trigger_sipm_box{i + 1}" x="sipm_thickness" y="sipm_dy" z="sipm_dz" />
+    <box lunit="mm" name="trigger_sipm_box{i + 1}"
+         x="sipm_thickness" y="sipm_dy" z="sipm_dz" />
   </solids>
 
 
@@ -116,7 +123,8 @@ to the housing, and maybe see if the visattributes can be reworked
     <volume name="{scintillator_lvname}">
       <materialref ref="{scintillator_mat}"/>
       <solidref ref="trigger_bar_box{i + 1}"/>
-      <auxiliary auxtype="VisAttributes" auxvalue="TriggerPadVis"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="{scintillator_mat}MaterialVis"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="TriggerPadRegionVis"/>
       <auxiliary auxtype="DetElem" auxvalue="TriggerPad"/>
     </volume>
 
@@ -124,7 +132,8 @@ to the housing, and maybe see if the visattributes can be reworked
     <volume name="{lightpipe_lvname}">
       <materialref ref="{lightpipe_mat}"/>
       <solidref ref="trigger_light_pipe_box{i + 1}"/>
-      <auxiliary auxtype="VisAttributes" auxvalue="TriggerPadVis"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="{lightpipe_mat}MaterialVis"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="TriggerPadRegionVis"/>
       <auxiliary auxtype="DetElem" auxvalue="TriggerPad"/>
     </volume>
 
@@ -133,7 +142,8 @@ to the housing, and maybe see if the visattributes can be reworked
     <volume name="{sipm_lvname}">
       <materialref ref="{sipm_mat}"/>
       <solidref ref="trigger_sipm_box{i + 1}"/>
-      <auxiliary auxtype="VisAttributes" auxvalue="TriggerPadVis"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="{sipm_mat}MaterialVis"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="TriggerPadRegionVis"/>
       <auxiliary auxtype="DetElem" auxvalue="TriggerPad"/>
     </volume>
 
@@ -144,70 +154,77 @@ to the housing, and maybe see if the visattributes can be reworked
       <loop for="x" from="1" to="number_of_bars" step="1">
 
         <!--
-        The light pipes and therefore the TS modules as a whole are of variable length. However, they align at the 'left'
-        edge along the beam direction (positive x in the simulation). Therefore in the x position, we align the SiPMs
-        along the +x edge of the TSPad envelope, and work backwards from there.
-        There are more elegant ways to write the x offset, but this one is the most legible.
+        The light pipes and therefore the TS modules as a whole are of
+        variable length. However, they align at the 'left' edge along
+        the beam direction (positive x in the simulation). Therefore in
+        the x position, we align the SiPMs along the +x edge of the
+        TSPad envelope, and work backwards from there.
+        There are more elegant ways to write the x offset, but this
+        one is the most legible.
         -->
 
   <physvol copynumber="2*x-2">
     <volumeref ref="{sipm_lvname}" />
           <position name="trigger_sipm_layer1_pos" unit="mm"
-                x="(tspad{i + 1}_envelope_x-sipm_thickness)/2"
-                    y="-target_dim_y/2+trigger_bar_dy*(x-0.5)+trigger_pad_bar_gap*(x-1)+trigger_pad_offset"
-                    z="-trigger_pad_bar_thickness/2 - trigger_pad_bar_gap/2" />
+ x="(tspad{i + 1}_envelope_x-sipm_thickness)/2"
+ y="-target_dim_y/2+trigger_bar_dy*(x-0.5)+trigger_pad_bar_gap*(x-1)+trigger_pad_offset"
+ z="-trigger_pad_bar_thickness/2 - trigger_pad_bar_gap/2" />
           <rotationref ref="identity" />
         </physvol>
 
         <physvol copynumber="2*x-1">
           <volumeref ref="{sipm_lvname}" />
           <position name="trigger_sipm_layer2_pos" unit="mm"
-                x="(tspad{i + 1}_envelope_x-sipm_thickness)/2"
-                    y="-target_dim_y/2+trigger_bar_dy*x+trigger_pad_bar_gap*(x-1)+trigger_pad_offset"
-                    z="trigger_pad_bar_thickness/2 + trigger_pad_bar_gap/2" />
+ x="(tspad{i + 1}_envelope_x-sipm_thickness)/2"
+ y="-target_dim_y/2+trigger_bar_dy*x+trigger_pad_bar_gap*(x-1)+trigger_pad_offset"
+ z="trigger_pad_bar_thickness/2 + trigger_pad_bar_gap/2" />
           <rotationref ref="identity" />
         </physvol>
 
   <physvol copynumber="2*x-2">
     <volumeref ref="{lightpipe_lvname}" />
           <position name="trigger_pad_pipe_layer1_pos" unit="mm"
-                x="(tspad{i + 1}_envelope_x-trigger_light_pipe{i + 1}_dx-2*sipm_thickness)/2"
-                    y="-target_dim_y/2+trigger_bar_dy*(x-0.5)+trigger_pad_bar_gap*(x-1)+trigger_pad_offset"
-                    z="-trigger_pad_bar_thickness/2 - trigger_pad_bar_gap/2" />
+ x="(tspad{i + 1}_envelope_x-trigger_light_pipe{i + 1}_dx-2*sipm_thickness)/2"
+ y="-target_dim_y/2+trigger_bar_dy*(x-0.5)+trigger_pad_bar_gap*(x-1)+trigger_pad_offset"
+ z="-trigger_pad_bar_thickness/2 - trigger_pad_bar_gap/2" />
           <rotationref ref="identity" />
         </physvol>
 
         <physvol copynumber="2*x-1">
           <volumeref ref="{lightpipe_lvname}" />
           <position name="trigger_pad_pipe_layer2_pos" unit="mm"
-                x="(tspad{i + 1}_envelope_x-trigger_light_pipe{i + 1}_dx-2*sipm_thickness)/2"
-                    y="-target_dim_y/2+trigger_bar_dy*x+trigger_pad_bar_gap*(x-1)+trigger_pad_offset"
-                    z="trigger_pad_bar_thickness/2 + trigger_pad_bar_gap/2" />
+ x="(tspad{i + 1}_envelope_x-trigger_light_pipe{i + 1}_dx-2*sipm_thickness)/2"
+ y="-target_dim_y/2+trigger_bar_dy*x+trigger_pad_bar_gap*(x-1)+trigger_pad_offset"
+ z="trigger_pad_bar_thickness/2 + trigger_pad_bar_gap/2" />
           <rotationref ref="identity" />
         </physvol>
 
   <physvol copynumber="2*x-2">
           <volumeref ref="{scintillator_lvname}" />
           <position name="trigger_pad_bar_layer1_pos" unit="mm"
-        x="(tspad{i + 1}_envelope_x-trigger_bar_dx-2*trigger_light_pipe{i + 1}_dx-2*sipm_thickness)/2"
-                    y="-target_dim_y/2 + trigger_bar_dy*(x - 0.5) + trigger_pad_bar_gap*(x - 1) + trigger_pad_offset"
-                    z="-trigger_pad_bar_thickness/2 - trigger_pad_bar_gap/2" />
+ x="(tspad{i + 1}_envelope_x-trigger_bar_dx
+   -2*trigger_light_pipe{i + 1}_dx-2*sipm_thickness)/2"
+ y="-target_dim_y/2 + trigger_bar_dy*(x - 0.5)
+   + trigger_pad_bar_gap*(x - 1) + trigger_pad_offset"
+ z="-trigger_pad_bar_thickness/2 - trigger_pad_bar_gap/2" />
           <rotationref ref="identity" />
         </physvol>
 
         <physvol copynumber="2*x - 1">
           <volumeref ref="{scintillator_lvname}" />
           <position name="trigger_pad_bar_layer2_pos" unit="mm"
-        x="(tspad{i + 1}_envelope_x-trigger_bar_dx-2*trigger_light_pipe{i + 1}_dx-2*sipm_thickness)/2"
-                    y="-target_dim_y/2 + trigger_bar_dy*x + trigger_pad_bar_gap*(x - 1) + trigger_pad_offset"
-                    z="trigger_pad_bar_thickness/2 + trigger_pad_bar_gap/2" />
+ x="(tspad{i + 1}_envelope_x-trigger_bar_dx
+   -2*trigger_light_pipe{i + 1}_dx-2*sipm_thickness)/2"
+ y="-target_dim_y/2 + trigger_bar_dy*x
+   + trigger_pad_bar_gap*(x - 1) + trigger_pad_offset"
+ z="trigger_pad_bar_thickness/2 + trigger_pad_bar_gap/2" />
           <rotationref ref="identity" />
         </physvol>
 
       </loop>
 
+      <auxiliary auxtype="VisAttributes" auxvalue="InvisibleShowDau"/>
       <auxiliary auxtype="Region" auxvalue="{region_name[i]}" />
-      <!--<auxiliary auxtype="VisAttributes" auxvalue="TriggerPadVis"/>-->
       <auxiliary auxtype="DetElem" auxvalue="TriggerPad"/>
 
     </volume>

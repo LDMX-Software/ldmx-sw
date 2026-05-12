@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no" ?>
 <!DOCTYPE gdml [
 <!ENTITY constants SYSTEM "constants.gdml">
-
 ]>
-<gdml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://service-spi.web.cern.ch/service-spi/app/releases/GDML/schema/gdml.xsd">
+<gdml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="gdml.xsd">
 
   <define>
 
@@ -44,12 +43,8 @@
                   -(ecal_side_dy/2.0-hcal_scintWidth/2.0)
                   ecal_side_dy/2.0-hcal_scintWidth/2.0"/>
   </define>
-    
-  
-    
-  
 
-
+  
   <solids>
   
     <!-- - - - - - - - - HCal solids - - - - - - - -  -->
@@ -88,16 +83,22 @@
     <volume name="back_hcal_absoVolume">
       <materialref ref="Steel" />
       <solidref ref="back_hcal_absoBox" />
+      <auxiliary auxtype="VisAttributes" auxvalue="SteelMaterialVis"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="HcalRegionVis" />
     </volume>
 
     <volume name="back_hcal_scintYVolume">
       <materialref ref="Scintillator" />
       <solidref ref="back_hcal_scintYBox" />
+      <auxiliary auxtype="VisAttributes" auxvalue="ScintillatorMaterialVis"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="HcalRegionVis" />
     </volume>
 
     <volume name="back_hcal_scintXVolume">
       <materialref ref="Scintillator" />
       <solidref ref="back_hcal_scintXBox" />
+      <auxiliary auxtype="VisAttributes" auxvalue="ScintillatorMaterialVis"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="HcalRegionVis" />
     </volume>
 
     <!-- - - - - - - - -  SIDE HCAL STRUCTURES - - - - - - - -  -->
@@ -105,28 +106,40 @@
       <volume name="side_hcal_absoX[module]Volume">
         <materialref ref="Steel" />
         <solidref ref="side_hcal_absoX[module]Box" />
+	<auxiliary auxtype="VisAttributes" auxvalue="SteelMaterialVis"/>
+	<auxiliary auxtype="VisAttributes" auxvalue="HcalRegionVis" />
       </volume>
       <volume name="side_hcal_absoY[module]Volume">
         <materialref ref="Steel" />
         <solidref ref="side_hcal_absoY[module]Box" />
+	<auxiliary auxtype="VisAttributes" auxvalue="SteelMaterialVis"/>
+	<auxiliary auxtype="VisAttributes" auxvalue="HcalRegionVis" />
       </volume>
       <volume name="side_hcal_scintX[module]Volume">
         <materialref ref="Scintillator" />
         <solidref ref="side_hcal_scintX[module]Box" />
+	<auxiliary auxtype="VisAttributes" auxvalue="ScintillatorMaterialVis"/>
+	<auxiliary auxtype="VisAttributes" auxvalue="HcalRegionVis" />
       </volume>
       <volume name="side_hcal_scintY[module]Volume">
         <materialref ref="Scintillator" />
         <solidref ref="side_hcal_scintY[module]Box" />
+	<auxiliary auxtype="VisAttributes" auxvalue="ScintillatorMaterialVis"/>
+	<auxiliary auxtype="VisAttributes" auxvalue="HcalRegionVis" />
       </volume>
     </loop>
 
     <volume name="side_hcal_scintZXVolume">
       <materialref ref="Scintillator" />
       <solidref ref="side_hcal_scintZXBox" />
+      <auxiliary auxtype="VisAttributes" auxvalue="ScintillatorMaterialVis"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="HcalRegionVis" />
     </volume>
     <volume name="side_hcal_scintZYVolume">
       <materialref ref="Scintillator" />
       <solidref ref="side_hcal_scintZYBox" />
+      <auxiliary auxtype="VisAttributes" auxvalue="ScintillatorMaterialVis"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="HcalRegionVis" />
     </volume>
       
       <!-- - - - - - - - -  FULL HCAL STRUCTURES - - - - - - - -  -->
@@ -328,7 +341,7 @@
         </loop> <!-- Y-oriented Side Hcal Sections  -->
 
       <auxiliary auxtype="Region" auxvalue="CalorimeterRegion"/>
-      <auxiliary auxtype="VisAttributes" auxvalue="HcalVis"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="InvisibleShowDau"/>
       <auxiliary auxtype="DetElem" auxvalue="Hcal"/>
     </volume>
   </structure>

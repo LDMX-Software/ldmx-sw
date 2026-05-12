@@ -23,7 +23,7 @@ jobs:
         fetch-depth: 0
 
     - name : Install just
-      uses: extractions/setup-just@v3
+      uses: extractions/setup-just@v4
 
     - name: Compile and Install ldmx-sw
       run: | 
@@ -53,7 +53,7 @@ jobs:
       matrix: ${{fromJson(needs.compile-ldmx-sw.outputs.job_matrix)}}
     steps:
     - uses: actions/checkout@v6
-    - uses: extractions/setup-just@v3
+    - uses: extractions/setup-just@v4
     - run: just install-denv init
     
     - name: Checkout ci-data
@@ -87,6 +87,7 @@ jobs:
         path: |
           ${{steps.validation.outputs.hists}}
           ${{steps.validation.outputs.log}}
+          ${{steps.validation.outputs.timing}}
 
   push-new-gold:
     needs: [generation]
@@ -120,6 +121,7 @@ jobs:
           mkdir -p ci-data/${sample}
           mv ${sample_d}/hist.root ci-data/${sample}/gold.root
           mv ${sample_d}/output.log ci-data/${sample}/gold.log
+          cat ${sample_d}/timing.txt >> ci-data/gold.time
         done
         echo "${GITHUB_REF##refs/tags/}" | tee ci-data/label
 
