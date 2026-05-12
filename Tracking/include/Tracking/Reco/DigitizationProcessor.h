@@ -144,6 +144,9 @@ class DigitizationProcessor : public TrackingGeometryUser {
   /// Input collection pass name.
   std::string tracker_hit_passname_;
 
+  /// If non-empty, write a CSV of all ACTS surface transforms to this path.
+  std::string dump_geo_csv_{""};
+
   std::default_random_engine generator_;
   std::shared_ptr<std::normal_distribution<float>> normal_;
 };  // DigitizationProcessor

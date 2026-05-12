@@ -1,6 +1,7 @@
 #include "Tracking/Reco/DigitizationProcessor.h"
 
 #include <algorithm>
+#include <fstream>
 
 #include "Tracking/Digitization/ChargeCarrier.h"
 
@@ -50,6 +51,28 @@ void DigitizationProcessor::onProcessStart() {
       buildLorentzCache();
     else
       ldmx_log(info) << "Lorentz angle correction disabled (use_lorentz=false).";
+  }
+
+  // Dump all ACTS surfaces to CSV for geometry verification.
+  if (!dump_geo_csv_.empty()) {
+    std::ofstream csv(dump_geo_csv_);
+    csv << "layer_id,cx,cy,cz,Ux,Uy,Uz,Vx,Vy,Vz,Wx,Wy,Wz\n";
+    for (const auto& [layer_id, surface] : geometry().layer_surface_map_) {
+      const auto& xf  = surface->transform(geometryContext());
+      const auto  ctr = xf.translation();          // centre [mm in Acts units]
+      const auto  R   = xf.rotation();
+      const auto  U   = R.col(0);
+      const auto  V   = R.col(1);
+      const auto  W   = R.col(2);
+      csv << layer_id
+          << "," << ctr.x() << "," << ctr.y() << "," << ctr.z()
+          << "," << U.x() << "," << U.y() << "," << U.z()
+          << "," << V.x() << "," << V.y() << "," << V.z()
+          << "," << W.x() << "," << W.y() << "," << W.z()
+          << "\n";
+    }
+    ldmx_log(info) << "Surface geometry written to " << dump_geo_csv_
+                   << "  (" << geometry().layer_surface_map_.size() << " surfaces)";
   }
 }
 
@@ -108,6 +131,8 @@ void DigitizationProcessor::configure(
     field_map_ =
         parameters.get<std::string>("field_map", "");
   }
+
+  dump_geo_csv_ = parameters.get<std::string>("dump_geo_csv", "");
 }
 
 void DigitizationProcessor::buildLorentzCache() {
@@ -300,6 +325,18 @@ std::vector<ldmx::Measurement> DigitizationProcessor::digitizeHits(
 
   std::vector<ldmx::Measurement> measurements;
 
+  struct StripContrib {
+    double charge_electrons;
+    double hit_time_ns;
+    int    track_id;
+    int    pdg_id;
+    int    sim_hit_id;
+    float  edep;
+  };
+  // layer_id -> strip_idx -> per-hit contributions (populated in Phase 1,
+  // consumed in Phase 2 after the loop to apply noise once per strip)
+  std::map<int, std::map<int, std::vector<StripContrib>>> layer_strip_contribs;
+
   for (auto& sim_hit : sim_hits) {
     // Energy deposition cut
     if (sim_hit.getEdep() <= min_e_dep_) continue;
@@ -370,9 +407,11 @@ std::vector<ldmx::Measurement> DigitizationProcessor::digitizeHits(
           surf_transform.inverse() * global_pos;
 
       // 3D local direction: rotate the global unit momentum into local frame.
-      Acts::Vector3 global_mom(sim_hit.getMomentum()[0],
-                               sim_hit.getMomentum()[1],
-                               sim_hit.getMomentum()[2]);
+      // Apply the same LDMX→ACTS frame permutation as Measurement.cxx:
+      //   ACTS-X = LDMX-z [2], ACTS-Y = LDMX-x [0], ACTS-Z = LDMX-y [1].
+      Acts::Vector3 global_mom(sim_hit.getMomentum()[2],
+                               sim_hit.getMomentum()[0],
+                               sim_hit.getMomentum()[1]);
       const double mom_mag = global_mom.norm();
 
       Acts::Vector3 local_dir_3d;
@@ -408,51 +447,32 @@ std::vector<ldmx::Measurement> DigitizationProcessor::digitizeHits(
           sim_hit.getEdep(), local_pos_3d, local_dir_3d, path_length);
 
       ldmx_log(trace) << "Charge digi: " << strip_charges.size()
-                      << " strips before threshold";
+                      << " strips from computeStripCharges (pre-noise)";
 
-      // Add noise and apply threshold
-      strip_digitizer_->applyNoiseAndThreshold(strip_charges);
-
-      ldmx_log(trace) << "Charge digi: " << strip_charges.size()
-                      << " strips after threshold";
-
-      if (strip_charges.empty()) {
-        ldmx_log(debug) << "Hit suppressed by threshold after noise addition.";
-        continue;
-      }
-
-      // Produce RawSiStripHit objects (N_SAMPLES shaped ADC samples per strip).
+      // Phase 1: accumulate this hit's strip charges into the per-layer map.
+      // Noise is applied once per strip in Phase 2 (after the sim-hit loop)
+      // so that overlapping contributions from different SimParticles are
+      // summed before threshold is applied.
       if (raw_hits && pulse_shape_) {
-        const int    adc_max  = (1 << tracking::digitization::ADC_BITS) - 1;
-        const double hit_time_ns = sim_hit.getTime();  // absolute hit arrival time [ns]
-        const long   hit_time    = static_cast<long>(hit_time_ns);
-
+        const double hit_time_ns = sim_hit.getTime();
         for (const auto& [strip_idx, charge] : strip_charges) {
-          // Peak ADC value (before shaping) from the collected charge.
-          const double peak_adc = charge / tracking::digitization::ADC_ELECTRONS_PER_COUNT;
-
-          std::vector<short> samples(tracking::digitization::N_SAMPLES);
-          for (int isamp = 0; isamp < tracking::digitization::N_SAMPLES; ++isamp) {
-            // t_sample is the absolute time of this ADC clock tick.
-            // The pulse shape argument is (t_sample - T_hit): time since
-            // hit arrival, so the fitter can recover T_hit as result.t0.
-            const double t_sample = tracking::digitization::T0_OFFSET_NS
-                                    + isamp * tracking::digitization::SAMPLING_INTERVAL_NS;
-            const double val = tracking::digitization::ADC_PEDESTAL
-                               + peak_adc * pulse_shape_->eval(t_sample - hit_time_ns);
-            samples[isamp] = static_cast<short>(
-                std::clamp(static_cast<int>(std::round(val)), 0, adc_max));
-          }
-
-          raw_hits->emplace_back(layer_id, strip_idx, std::move(samples),
-                                 hit_time, sim_hit.getTrackID(),
-                                 sim_hit.getPdgID(), sim_hit.getID(),
-                                 sim_hit.getEdep());
+          layer_strip_contribs[layer_id][strip_idx].push_back(
+              StripContrib{charge, hit_time_ns,
+                           sim_hit.getTrackID(), sim_hit.getPdgID(),
+                           sim_hit.getID(), sim_hit.getEdep()});
         }
       }
 
       // Measurements are produced downstream by StripFitProcessor +
-      // StripClusterProcessor; do not add one here.
+      // StripClusterProcessor for the reconstructed position, but we still
+      // emit a truth-position Measurement here so that DigiDQM can build a
+      // per-layer truth-U lookup for the sim_cluster_du residual.
+      // Global position, time, edep, ID, and track ID are already populated
+      // by the Measurement(sim_hit) constructor above; set local coords and
+      // zero the covariance (this is a truth hit, not a smeared measurement).
+      measurement.setLocalPosition(local_pos_2d(0), local_pos_2d(1));
+      measurement.setLocalCovariance(0., 0.);
+      measurements.push_back(measurement);
 
     // -----------------------------------------------------------------------
     // Mode 0: simple Gaussian smearing
@@ -478,6 +498,95 @@ std::vector<ldmx::Measurement> DigitizationProcessor::digitizeHits(
       measurements.push_back(measurement);
     }
   }  // loop over sim hits
+
+  // Phase 2: apply noise once per strip across all sim-hit contributions,
+  // then build RawSiStripHits with correctly superimposed pulse shapes.
+  if (raw_hits && pulse_shape_) {
+    const int adc_max = (1 << tracking::digitization::ADC_BITS) - 1;
+
+    for (auto& [lyr_id, strip_contribs_map] : layer_strip_contribs) {
+
+      // Sum all contributions to get the total pre-noise charge per strip.
+      std::map<int, double> total_charges;
+      for (const auto& [strip_idx, contribs] : strip_contribs_map) {
+        double total = 0.0;
+        for (const auto& c : contribs) total += c.charge_electrons;
+        total_charges[strip_idx] = total;
+      }
+
+      // Add noise to every strip (and its ±1 neighbours) then apply threshold.
+      strip_digitizer_->applyNoiseAndThreshold(total_charges);
+      if (total_charges.empty()) continue;
+
+      for (const auto& [strip_idx, final_charge] : total_charges) {
+        const auto contrib_it = strip_contribs_map.find(strip_idx);
+        const bool has_signal = (contrib_it != strip_contribs_map.end());
+
+        int    track_id_out   = -1;
+        int    pdg_id_out     = 0;
+        int    sim_hit_id_out = -1;
+        float  edep_out       = 0.f;
+        double ref_time_ns    = 0.0;
+        std::vector<short> samples(tracking::digitization::N_SAMPLES);
+
+        if (has_signal) {
+          const auto& contribs = contrib_it->second;
+
+          // Dominant contributor = strip's largest single charge deposit.
+          const StripContrib* dom = &contribs.front();
+          for (const auto& c : contribs)
+            if (c.charge_electrons > dom->charge_electrons) dom = &c;
+
+          ref_time_ns    = dom->hit_time_ns;
+          track_id_out   = dom->track_id;
+          pdg_id_out     = dom->pdg_id;
+          sim_hit_id_out = dom->sim_hit_id;
+          for (const auto& c : contribs) edep_out += c.edep;
+
+          // ADC = pedestal + superposition of each contributor's shaped pulse.
+          for (int isamp = 0; isamp < tracking::digitization::N_SAMPLES; ++isamp) {
+            const double t_samp = tracking::digitization::T0_OFFSET_NS
+                                + isamp * tracking::digitization::SAMPLING_INTERVAL_NS;
+            double val = static_cast<double>(tracking::digitization::ADC_PEDESTAL);
+            for (const auto& c : contribs)
+              val += (c.charge_electrons / tracking::digitization::ADC_ELECTRONS_PER_COUNT)
+                     * pulse_shape_->eval(t_samp - c.hit_time_ns);
+            samples[isamp] = static_cast<short>(
+                std::clamp(static_cast<int>(std::round(val)), 0, adc_max));
+          }
+        } else {
+          // Noise-only strip: added as a ±1 neighbour by applyNoiseAndThreshold.
+          // Borrow the nearest signal strip's dominant hit time for pulse shaping.
+          for (int delta : {-1, +1}) {
+            const auto nb = strip_contribs_map.find(strip_idx + delta);
+            if (nb != strip_contribs_map.end() && !nb->second.empty()) {
+              const StripContrib* dom = &nb->second.front();
+              for (const auto& c : nb->second)
+                if (c.charge_electrons > dom->charge_electrons) dom = &c;
+              ref_time_ns = dom->hit_time_ns;
+              break;
+            }
+          }
+          const double peak_adc =
+              final_charge / tracking::digitization::ADC_ELECTRONS_PER_COUNT;
+          for (int isamp = 0; isamp < tracking::digitization::N_SAMPLES; ++isamp) {
+            const double t_samp = tracking::digitization::T0_OFFSET_NS
+                                + isamp * tracking::digitization::SAMPLING_INTERVAL_NS;
+            const double val =
+                static_cast<double>(tracking::digitization::ADC_PEDESTAL)
+                + peak_adc * pulse_shape_->eval(t_samp - ref_time_ns);
+            samples[isamp] = static_cast<short>(
+                std::clamp(static_cast<int>(std::round(val)), 0, adc_max));
+          }
+        }
+
+        raw_hits->emplace_back(lyr_id, strip_idx, std::move(samples),
+                               static_cast<long>(ref_time_ns),
+                               track_id_out, pdg_id_out,
+                               sim_hit_id_out, edep_out);
+      }
+    }
+  }  // Phase 2
 
   return measurements;
 }  // digitizeHits
