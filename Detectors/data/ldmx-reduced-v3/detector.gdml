@@ -62,7 +62,7 @@
     
   <structure>
     <volume name="World">
-      <materialref ref="Vacuum"/>
+      <materialref ref="Air"/>
       <solidref ref="world_box"/>
       <!-- remove tagger tracker for 2025 ESA slice test run -->
       <physvol copynumber="2">

@@ -68,7 +68,7 @@
 
     <!-- Array containers -->
     <volume name="lvTargetArray1">
-      <materialref ref="Vacuum"/>
+      <materialref ref="Air"/>
       <solidref ref="target_array1"/>
       <loop for="x" from="1" to="number_of_target_bars1" step="1">
         <physvol>
@@ -83,7 +83,7 @@
     </volume>
 
     <volume name="lvTargetArray2">
-      <materialref ref="Vacuum"/>
+      <materialref ref="Air"/>
       <solidref ref="target_array2"/>
       <loop for="x" from="1" to="number_of_target_bars2" step="1">
         <physvol>
@@ -99,7 +99,7 @@
 
     <!-- Target envelope that holds both layers -->
     <volume name="lvTarget">
-      <materialref ref="Vacuum"/>
+      <materialref ref="Air"/>
       <solidref ref="target_box"/>
       <auxiliary auxtype="VisAttributes" auxvalue="TargetVis"/>
       <auxiliary auxtype="DetElem" auxvalue="Target"/>
@@ -146,7 +146,7 @@
 
     <!-- Combined target+TS3 mother -->
     <volume name="TS_trgt">
-      <materialref ref="Vacuum"/>
+      <materialref ref="Air"/>
       <solidref ref="target_area_box"/>
 
       <!-- LYSO light pipes: 12 bars, glued by x-shift (same style as TS3 LPs) -->
