@@ -52,7 +52,6 @@ from LDMX.SimCore import generators
 sim = simulator.Simulator("uniform-electrons")
 sim.set_detector("ldmx-det-v14-8gev", include_scoring_planes_minimal=True)
 sim.description = "Electrons with uniformly sampled energy and angle shot from target"
-sim.beamSpotSmear = [20.0, 80.0, 0.0]
 # GPS generator
 sim.generators = [
     generators.Gps(
@@ -60,8 +59,8 @@ sim.generators = [
         [
             # electrons
             "/gps/particle e-",
-            # position distribution: all from the same point, simulator smears beam spot
-            "/gps/pos/type Point",  # beamSpotSmear will smear for us
+            # position distribution: all from the same point, generator smears beam spot
+            "/gps/pos/type Point",  # beam_spot_smear on the generator will smear for us
             "/gps/pos/centre 0 0 0 mm",  # shoot from center of target
             # angular distribution, isotropic with maximum polar angle
             # relative to z-axis

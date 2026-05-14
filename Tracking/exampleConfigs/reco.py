@@ -29,9 +29,8 @@ detector = "ldmx-det-v14-8gev-no-cals"
 sim = simulator.Simulator("inclusive_single_8gev")
 sim.set_detector(detector, include_scoring_planes_minimal=True)
 sim.description = "A single 8gev electron shot from upstream of the 8gev tagger."
-sim.beamSpotSmear = [20.0, 80.0, 0]
 particle_gun = generators.single_8gev_e_upstream_tagger()
-sim.generators.append(particle_gun)
+sim.generators = [particle_gun]
 p.sequence = [sim]
 ####  end beam simulation
 
