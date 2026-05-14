@@ -51,6 +51,7 @@ setup_library(module Tracking
                            ROOT::Physics
                            Tracking::Event
                            Ecal::Event
+                           DetDescr::DetDescr
               sources ${SRC_FILES})
 
 setup_python(package_name LDMX/Tracking)
