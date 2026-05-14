@@ -403,6 +403,7 @@ def full_tracking_sequence(
         GSF_tagger,
         GSF_recoil,
         tracker_veto,
+    ]
 
     dqm_sequence = [
         dqm_seed_tagger,
