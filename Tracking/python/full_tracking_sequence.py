@@ -62,7 +62,7 @@ class TrackingSequence:
 
 
 def full_tracking_sequence(
-    use_truth_smearing=False,
+    use_truth_smearing=True,
     detector="ldmx-det-v15-8gev",
 ):
     """Build and return the full LDMX tracking processor sequence.
@@ -70,8 +70,8 @@ def full_tracking_sequence(
     Parameters
     ----------
     use_truth_smearing : bool
-        If True, use simple Gaussian smearing (Mode 0).
-        If False (default), use full charge digitization (Mode 1).
+        If True (default), use simple Gaussian smearing (Mode 0).
+        If False, use full charge digitization (Mode 1).
     detector : str
         Detector geometry tag.
 
@@ -419,3 +419,21 @@ def full_tracking_sequence(
     ]
 
     return TrackingSequence(sequence, dqm_sequence)
+
+
+def __getattr__(name):
+    """Backward-compatible module-level access.
+
+    Old configs that do:
+        from LDMX.Tracking import full_tracking_sequence
+        p.sequence.extend(full_tracking_sequence.sequence)
+        p.sequence.extend(full_tracking_sequence.dqm_sequence)
+    still work: the default TrackingSequence is built lazily on first access
+    and the results are cached as real module attributes for subsequent lookups.
+    """
+    if name in ("sequence", "dqm_sequence"):
+        _default = full_tracking_sequence()
+        globals()["sequence"] = _default.sequence
+        globals()["dqm_sequence"] = _default.dqm_sequence
+        return globals()[name]
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
