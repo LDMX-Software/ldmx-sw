@@ -29,7 +29,7 @@ foreach(detector ${detectors})
       add_custom_command(
         OUTPUT ${output}
         COMMAND mkdir -p ${CMAKE_CURRENT_BINARY_DIR}/data/${detector}
-        COMMAND sed -E "'s|\"([A-Za-z_0-9]*.gdml)\"|\"${detector_install_path}/${detector}/\\1\"|g;s|\"(Bmap.*dat)\"|\"${magmap_install_path}/\\1\"|g'" ${input} > ${output}
+        COMMAND sed -E "'s|\"([A-Za-z_0-9]*.gdml)\"|\"${detector_install_path}/${detector}/\\1\"|g;s|\"(Bmap.*dat)\"|\"${magmap_install_path}/\\1\"|g;s|\"([A-Za-z_0-9]*.xsd)\"|\"${detector_install_path}/xsd_files/\\1\"|g'" ${input} > ${output}
         DEPENDS ${input}
         COMMENT "Writing full paths to ${detector}/${gdml_file}"
       )
@@ -52,10 +52,14 @@ foreach(detector ${detectors})
   endif()
 endforeach()
 
-#Add visualization directory to build
+#Add visualization directory and XSD files directory to build
 install(
-  DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/data/visualization/
+  DIRECTORY ${detector_data}/visualization/
   DESTINATION data/detectors/visualization
+)
+install(
+  DIRECTORY ${detector_data}/xsd_files/
+  DESTINATION data/detectors/xsd_files
 )
 
 # configure python scripts that need cmake variables
