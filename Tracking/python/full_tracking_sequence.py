@@ -87,10 +87,9 @@ def full_tracking_sequence(
     # Truth seeder
     # ------------------------------------------------------------------
     truth_tracking = tracking.TruthSeedProcessor(
-        debug=True,
-        trk_coll_name="RecoilTruthSeeds",
+        recoil_seeds_collection="RecoilTruthSeeds",
         pdg_ids=[11],
-        scoring_hits="TargetScoringPlaneHits",
+        scoring_hits_coll_name="TargetScoringPlaneHits",
         z_min=0.0,
         track_id=-1,
         p_cut=0.05,
