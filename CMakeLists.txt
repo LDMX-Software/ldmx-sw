@@ -63,8 +63,7 @@ find_package(GENIE)
 
 find_package(
   Boost REQUIRED
-  COMPONENTS system
-             log
+  COMPONENTS log
              filesystem
              thread
              chrono
