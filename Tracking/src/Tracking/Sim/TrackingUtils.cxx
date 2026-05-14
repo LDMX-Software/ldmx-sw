@@ -163,8 +163,9 @@ Acts::BoundTrackParameters boundTrackParameters(
 }
 
 // Return an unbound surface
-const std::shared_ptr<Acts::PlaneSurface> unboundSurface(
-    double xloc, double yloc, double zloc) {
+const std::shared_ptr<Acts::PlaneSurface> unboundSurface(double xloc,
+                                                         double yloc,
+                                                         double zloc) {
   // Define the target surface - be careful:
   //  x_ - downstream
   //  y_ - left (when looking along x_)
@@ -197,8 +198,7 @@ std::size_t sourceLinkHash(const Acts::SourceLink& a) {
 }
 
 // This method checks if two source links are equal by index
-bool sourceLinkEquality(const Acts::SourceLink& a,
-                        const Acts::SourceLink& b) {
+bool sourceLinkEquality(const Acts::SourceLink& a, const Acts::SourceLink& b) {
   return a.get<acts_examples::IndexSourceLink>().index() ==
          b.get<acts_examples::IndexSourceLink>().index();
 }
