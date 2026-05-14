@@ -99,9 +99,9 @@ import LDMX.Tracking.geo
 # Truth tracks can be used for assessing tracking performance or using as seeds
 truth_tracking = tracking.TruthSeedProcessor()
 truth_tracking.debug = True
-truth_tracking.trk_coll_name = "RecoilTruthSeeds"
+truth_tracking.recoil_seeds_collection = "RecoilTruthSeeds"
 truth_tracking.pdg_ids = [11]
-truth_tracking.scoring_hits = "TargetScoringPlaneHits"
+truth_tracking.scoring_hits_coll_name = "TargetScoringPlaneHits"
 truth_tracking.z_min = 0.0
 truth_tracking.track_id = -1
 truth_tracking.p_cut = 0.05  # In MeV

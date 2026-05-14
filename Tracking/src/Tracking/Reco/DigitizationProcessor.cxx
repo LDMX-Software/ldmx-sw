@@ -486,8 +486,10 @@ std::vector<ldmx::Measurement> DigitizationProcessor::digitizeHits(
         smear_factor = (*normal_)(generator_);
         local_pos_2d[1] += smear_factor * sigma_v_;
 
-        measurement.setLocalCovariance(sigma_u_ * sigma_u_,
-                                       sigma_v_ * sigma_v_);
+        measurement.setLocalCovariance(
+            static_cast<float>(sigma_u_ * sigma_u_),
+            static_cast<float>(tracking::digitization::SIGMA_V_MM *
+                               tracking::digitization::SIGMA_V_MM));
 
         auto transf_global_pos{hit_surface->localToGlobal(
             geometryContext(), local_pos_2d, dummy_momentum)};
