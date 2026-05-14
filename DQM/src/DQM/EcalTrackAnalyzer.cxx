@@ -16,11 +16,6 @@ void EcalTrackAnalyzer::configure(framework::config::Parameters& ps) {
   rec_hit_pass_name_ = ps.get<std::string>("rec_hit_pass_name");
 }
 
-// Histograms are declared in the Python EcalTrackAnalyzer.__post_init__
-// via self.histogram() calls.  The framework base class EventProcessor
-// creates them from those declarations in its own onProcessStart, so
-// we must not call histograms_.create() here to avoid double-registration.
-
 void EcalTrackAnalyzer::analyze(const framework::Event& event) {
   // Check if track collection exists
   if (!event.exists(track_collection_, track_pass_name_)) {
@@ -29,8 +24,8 @@ void EcalTrackAnalyzer::analyze(const framework::Event& event) {
   }
 
   // Get ECAL tracks
-  const auto& ecal_tracks = event.getCollection<ldmx::Track>(
-      track_collection_, track_pass_name_);
+  const auto& ecal_tracks =
+      event.getCollection<ldmx::Track>(track_collection_, track_pass_name_);
 
   int n_tracks = ecal_tracks.size();
   histograms_.fill("n_tracks", n_tracks);
@@ -83,9 +78,11 @@ void EcalTrackAnalyzer::analyze(const framework::Event& event) {
     double py = p * std::sin(theta) * std::sin(phi);
     double pz = p * std::cos(theta);
 
+    double pt = std::sqrt(px * px + py * py);
     histograms_.fill("track_px", px);
     histograms_.fill("track_py", py);
     histograms_.fill("track_pz", pz);
+    histograms_.fill("track_pt", pt);
 
     // Position at ECAL front (from d0, z0)
     // d0 and z0 are in the perigee frame
@@ -98,8 +95,11 @@ void EcalTrackAnalyzer::analyze(const framework::Event& event) {
 
     // 2D correlations
     histograms_.fill("track_nhits_vs_chi2", nhits, chi2);
+    histograms_.fill("track_nhits_vs_chi2_ndf", nhits, (ndf > 0) ? chi2 / ndf : 0.0);
+    histograms_.fill("track_chi2_vs_nhits", chi2, nhits);
     histograms_.fill("track_p_vs_chi2", p, chi2);
     histograms_.fill("track_p_vs_nhits", p, nhits);
+    histograms_.fill("track_p_vs_theta", p, theta);
 
     // If multiple tracks, fill special histograms
     if (n_tracks > 1) {
@@ -129,31 +129,6 @@ void EcalTrackAnalyzer::analyze(const framework::Event& event) {
         double angle = std::acos(std::max(-1.0, std::min(1.0, dot)));
 
         histograms_.fill("track_separation", angle);
-      }
-    }
-  }
-
-  // Get RecHits to analyze layer occupancy
-  if (event.exists(rec_hit_collection_, rec_hit_pass_name_)) {
-    const auto& ecal_rec_hits = event.getCollection<ldmx::EcalHit>(
-        rec_hit_collection_, rec_hit_pass_name_);
-
-    // Create set of measurement indices from all tracks
-    std::set<int> track_hit_indices;
-    for (const auto& track : ecal_tracks) {
-      const auto& meas_indices = track.getMeasurementsIdxs();
-      track_hit_indices.insert(meas_indices.begin(), meas_indices.end());
-    }
-
-    // Map layer -> hit count
-    std::map<int, int> layer_hit_count;
-
-    // Loop over measurement indices and fill layer histogram
-    for (int idx : track_hit_indices) {
-      if (idx >= 0 && idx < static_cast<int>(ecal_rec_hits.size())) {
-        // Get the hit (note: measurement index might not directly map to hit index
-        // This is a simplification - in reality we'd need the measurement→hit mapping)
-        // For now, we'll skip this part since we don't have direct access to measurements
       }
     }
   }

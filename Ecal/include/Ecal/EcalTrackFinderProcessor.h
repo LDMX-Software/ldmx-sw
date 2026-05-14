@@ -1,7 +1,7 @@
 /**
  * @file EcalTrackFinderProcessor.h
  * @brief Processor that uses ACTS to fit tracks through ECAL hits
- * @author Claude Code
+ * @author Tamas Almos Vami (UCSB) 
  */
 
 #ifndef ECAL_ECALTRACKFINDERPROCESSOR_H_
@@ -25,8 +25,8 @@
 #include "Acts/EventData/VectorTrackContainer.hpp"
 #include "Acts/Geometry/GeometryIdentifier.hpp"
 #include "Acts/Geometry/TrackingGeometry.hpp"
-#include "Acts/Material/HomogeneousVolumeMaterial.hpp"
 #include "Acts/MagneticField/ConstantBField.hpp"
+#include "Acts/Material/HomogeneousVolumeMaterial.hpp"
 #include "Acts/Propagator/EigenStepper.hpp"
 #include "Acts/Propagator/Navigator.hpp"
 #include "Acts/Propagator/Propagator.hpp"
@@ -93,8 +93,7 @@ class EcalTrackFinderProcessor : public framework::Producer {
    * Create ACTS measurement objects from ECAL hits
    */
   std::vector<ldmx::Measurement> createMeasurements(
-      const std::vector<ldmx::EcalHit>& hits,
-      std::vector<double>& energies);
+      const std::vector<ldmx::EcalHit>& hits, std::vector<double>& energies);
 
   /**
    * Create unbounded plane surfaces at each ECAL layer
@@ -154,20 +153,20 @@ class EcalTrackFinderProcessor : public framework::Producer {
   std::string rec_coll_name_{"EcalRecHits"};
   std::string rec_pass_name_{""};
   std::string out_track_collection_{"EcalTracks"};
-  int min_hits_{3};             // Minimum hits per track
-  double max_chi2_{10.0};       // Outlier chi2 cut
-  double cell_resolution_{1.5}; // ECAL cell resolution [mm]
-  bool debug_{false};           // ACTS debug logging
+  int min_hits_{3};              // Minimum hits per track
+  double max_chi2_{10.0};        // Outlier chi2 cut
+  double cell_resolution_{1.5};  // ECAL cell resolution [mm]
+  bool debug_{false};            // ACTS debug logging
 
   // Seed finding parameters
-  double max_seed_rms_{10.0};    // Max RMS for seed fit [mm]
-  double min_momentum_{50.0};    // Min momentum estimate [MeV]
-  double max_momentum_{10000.0}; // Max momentum estimate [MeV]
+  double max_seed_rms_{10.0};     // Max RMS for seed fit [mm]
+  double min_momentum_{50.0};     // Min momentum estimate [MeV]
+  double max_momentum_{10000.0};  // Max momentum estimate [MeV]
 
   // ROC cone energy collection
-  bool use_roc_energy_{true};    // Use 68% containment cone for track energy
-  std::string roc_file_name_;    // Path to ROC containment radii CSV file
-  std::vector<std::vector<float>> roc_range_values_; // ROC data from file
+  bool use_roc_energy_{true};  // Use 68% containment cone for track energy
+  std::string roc_file_name_;  // Path to ROC containment radii CSV file
+  std::vector<std::vector<float>> roc_range_values_;  // ROC data from file
 
   // Geometry
   const ldmx::EcalGeometry* geometry_{nullptr};

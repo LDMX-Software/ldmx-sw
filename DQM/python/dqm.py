@@ -1906,6 +1906,17 @@ class EcalTrackAnalyzer(Processor):
             100,
         )
         self.histogram(
+            "track_nhits_vs_chi2_ndf",
+            "Track Number of Hits",
+            40,
+            0,
+            40,
+            "Track Chi2/NDF",
+            100,
+            0,
+            10,
+        )
+        self.histogram(
             "track_p_vs_chi2",
             "Track momentum [MeV]",
             100,
@@ -1943,6 +1954,7 @@ class EcalSPTrackCompare(Processor):
         self.histogram("sp_x", "SP Electron x [mm]", 200, -200, 200)
         self.histogram("sp_y", "SP Electron y [mm]", 200, -200, 200)
         self.histogram("sp_p", "SP Electron p [MeV]", 100, 0, 5000)
+        self.histogram("sp_pt", "SP Electron pT [MeV]", 100, 0, 2000)
         self.histogram("sp_theta", "SP Electron theta [rad]", 100, 0, 0.5)
         self.histogram("sp_phi", "SP Electron phi [rad]", 100, 0, 6.3)
 
@@ -1954,6 +1966,7 @@ class EcalSPTrackCompare(Processor):
         self.histogram("trk_x", "Track x [mm]", 200, -200, 200)
         self.histogram("trk_y", "Track y [mm]", 200, -200, 200)
         self.histogram("trk_p", "Track p [MeV]", 100, 0, 5000)
+        self.histogram("trk_pt", "Track pT [MeV]", 100, 0, 2000)
         self.histogram("trk_theta", "Track theta [rad]", 100, 0, 0.5)
         self.histogram("trk_phi", "Track phi [rad]", 100, 0, 6.3)
 
@@ -1963,6 +1976,7 @@ class EcalSPTrackCompare(Processor):
         self.histogram("delta_theta", "Track theta - SP theta [rad]", 200, -0.2, 0.2)
         self.histogram("delta_phi", "Track phi - SP phi [rad]", 200, -0.5, 0.5)
         self.histogram("delta_p", "Track p - SP p [MeV]", 200, -2000, 2000)
+        self.histogram("delta_pt", "Track pT - SP pT [MeV]", 200, -1000, 1000)
         self.histogram("delta_p_frac", "(Track p - SP p) / SP p", 200, -2, 2)
         self.histogram("delta_r", "Track-SP position distance [mm]", 100, 0, 200)
         self.histogram("delta_angle", "Track-SP angular distance [rad]", 100, 0, 1.0)

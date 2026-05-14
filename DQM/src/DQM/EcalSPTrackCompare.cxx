@@ -55,7 +55,7 @@ void EcalSPTrackCompare::analyze(const framework::Event& event) {
   double sp_y = sp_pos[1];
 
   ldmx_log(debug) << "SP electron: trackID=" << sp_electron->getTrackID()
-                   << " pos=(" << sp_x << ", " << sp_y << ") pz=" << best_pz;
+                  << " pos=(" << sp_x << ", " << sp_y << ") pz=" << best_pz;
   double sp_px = sp_mom[0];
   double sp_py = sp_mom[1];
   double sp_pz = sp_mom[2];
@@ -68,6 +68,7 @@ void EcalSPTrackCompare::analyze(const framework::Event& event) {
   histograms_.fill("sp_x", sp_x);
   histograms_.fill("sp_y", sp_y);
   histograms_.fill("sp_p", sp_p);
+  histograms_.fill("sp_pt", sp_pt);
   histograms_.fill("sp_theta", sp_theta);
   histograms_.fill("sp_phi", sp_phi);
 
@@ -131,9 +132,13 @@ void EcalSPTrackCompare::analyze(const framework::Event& event) {
   double trk_y = perigee[1] + (trk_d0 * std::cos(trk_phi));
 
   ldmx_log(debug) << "Track perigee: (" << perigee[0] << ", " << perigee[1]
-                   << ", " << perigee[2] << ")  d0=" << trk_d0;
-  ldmx_log(debug) << "Track pos: (" << trk_x << ", " << trk_y << ")  p=" << trk_p
-                   << " theta=" << trk_theta << " phi=" << trk_phi;
+                  << ", " << perigee[2] << ")  d0=" << trk_d0;
+  ldmx_log(debug) << "Track pos: (" << trk_x << ", " << trk_y
+                  << ")  p=" << trk_p << " theta=" << trk_theta
+                  << " phi=" << trk_phi;
+
+  // Derived track quantities
+  double trk_pt = trk_p * std::sin(trk_theta);
 
   // Residuals
   double dx = trk_x - sp_x;
@@ -143,12 +148,14 @@ void EcalSPTrackCompare::analyze(const framework::Event& event) {
   while (dphi > M_PI) dphi -= 2.0 * M_PI;
   while (dphi < -M_PI) dphi += 2.0 * M_PI;
   double dp = trk_p - sp_p;
+  double dpt = trk_pt - sp_pt;
   double dp_frac = (sp_p > 1.0) ? dp / sp_p : 0.0;
 
   // Track properties
   histograms_.fill("trk_x", trk_x);
   histograms_.fill("trk_y", trk_y);
   histograms_.fill("trk_p", trk_p);
+  histograms_.fill("trk_pt", trk_pt);
   histograms_.fill("trk_theta", trk_theta);
   histograms_.fill("trk_phi", trk_phi);
 
@@ -158,6 +165,7 @@ void EcalSPTrackCompare::analyze(const framework::Event& event) {
   histograms_.fill("delta_theta", dtheta);
   histograms_.fill("delta_phi", dphi);
   histograms_.fill("delta_p", dp);
+  histograms_.fill("delta_pt", dpt);
   histograms_.fill("delta_p_frac", dp_frac);
   histograms_.fill("delta_r", std::sqrt(dx * dx + dy * dy));
   histograms_.fill("delta_angle", best_dr);

@@ -42,14 +42,14 @@
 
 namespace ecal {
 
-EcalTrackFinderProcessor::EcalTrackFinderProcessor(
-    const std::string& name, framework::Process& process)
+EcalTrackFinderProcessor::EcalTrackFinderProcessor(const std::string& name,
+                                                   framework::Process& process)
     : Producer(name, process) {
   // Setup surface rotation: u=+Y, v=+Z, w=+X (beam direction)
   surf_rotation_ = Acts::RotationMatrix3::Zero();
-  surf_rotation_(1, 0) = 1; // u along Y
-  surf_rotation_(2, 1) = 1; // v along Z
-  surf_rotation_(0, 2) = 1; // w along X (beam/normal)
+  surf_rotation_(1, 0) = 1;  // u along Y
+  surf_rotation_(2, 1) = 1;  // v along Z
+  surf_rotation_(0, 2) = 1;  // w along X (beam/normal)
 }
 
 void EcalTrackFinderProcessor::configure(
@@ -87,7 +87,7 @@ void EcalTrackFinderProcessor::configure(
       roc_range_values_.push_back(values);
     }
     ldmx_log(info) << "Loaded ROC file with " << roc_range_values_.size()
-                    << " bins";
+                   << " bins";
   }
 }
 
@@ -109,15 +109,17 @@ void EcalTrackFinderProcessor::onNewRun(const ldmx::RunHeader&) {
   // Each ECAL layer becomes a sensitive layer in the tracking geometry
 
   auto& gctx = getCondition<tracking::geo::GeometryContext>(
-      tracking::geo::GeometryContext::NAME).get();
+                   tracking::geo::GeometryContext::NAME)
+                   .get();
 
   // Get ECAL extent in ACTS coordinates
   double ecal_front_z = geometry_->getEcalFrontZ();
-  double ecal_back_z = geometry_->getZPosition(geometry_->getNumLayers() - 1) + 50.0;
-  Acts::Vector3 front_acts = tracking::sim::utils::ldmx2Acts(
-      Acts::Vector3(0.0, 0.0, ecal_front_z));
-  Acts::Vector3 back_acts = tracking::sim::utils::ldmx2Acts(
-      Acts::Vector3(0.0, 0.0, ecal_back_z));
+  double ecal_back_z =
+      geometry_->getZPosition(geometry_->getNumLayers() - 1) + 50.0;
+  Acts::Vector3 front_acts =
+      tracking::sim::utils::ldmx2Acts(Acts::Vector3(0.0, 0.0, ecal_front_z));
+  Acts::Vector3 back_acts =
+      tracking::sim::utils::ldmx2Acts(Acts::Vector3(0.0, 0.0, ecal_back_z));
 
   // Create layer configurations - one per ECAL layer
   std::vector<Acts::CuboidVolumeBuilder::LayerConfig> layer_configs;
@@ -172,16 +174,15 @@ void EcalTrackFinderProcessor::onNewRun(const ldmx::RunHeader&) {
     if (surface->geometryId().sensitive() == 0) return;
 
     // Match to ECAL layer by z position (LDMX frame)
-    Acts::Vector3 center_ldmx = tracking::sim::utils::acts2Ldmx(
-        surface->center(gctx));
+    Acts::Vector3 center_ldmx =
+        tracking::sim::utils::acts2Ldmx(surface->center(gctx));
     double z_ldmx = center_ldmx[2];
 
     for (int layer = 0; layer < geometry_->getNumLayers(); ++layer) {
       double layer_z = geometry_->getZPosition(layer);
       if (std::abs(z_ldmx - layer_z) < 0.1) {  // 0.1 mm tolerance
         layer_geo_ids_[layer] = surface->geometryId();
-        ldmx_log(debug) << "ECAL layer " << layer
-                        << " -> builder geo_id: vol="
+        ldmx_log(debug) << "ECAL layer " << layer << " -> builder geo_id: vol="
                         << surface->geometryId().volume()
                         << " lay=" << surface->geometryId().layer()
                         << " sen=" << surface->geometryId().sensitive();
@@ -204,7 +205,8 @@ void EcalTrackFinderProcessor::onNewRun(const ldmx::RunHeader&) {
   const Acts::Navigator navigator(nav_cfg);
 
   // Create propagator
-  auto acts_logging_level = debug_ ? Acts::Logging::VERBOSE : Acts::Logging::WARNING;
+  auto acts_logging_level =
+      debug_ ? Acts::Logging::VERBOSE : Acts::Logging::WARNING;
   propagator_ = std::make_unique<EcalPropagator>(
       stepper, navigator,
       Acts::getDefaultLogger("ECAL_PROP", acts_logging_level));
@@ -226,16 +228,16 @@ void EcalTrackFinderProcessor::createEcalSurfaces() {
 
     // Create plane surface at this z position
     // Position in ACTS frame (x=z_ldmx, y=x_ldmx, z=y_ldmx)
-    Acts::Vector3 acts_pos = tracking::sim::utils::ldmx2Acts(
-        Acts::Vector3(0.0, 0.0, z_pos));
+    Acts::Vector3 acts_pos =
+        tracking::sim::utils::ldmx2Acts(Acts::Vector3(0.0, 0.0, z_pos));
 
     Acts::Translation3 translation(acts_pos);
     Acts::Transform3 transform(translation * surf_rotation_);
 
     // Create bounded plane surface (500mm x 500mm, covers full ECAL)
     auto bounds = std::make_shared<Acts::RectangleBounds>(500.0, 500.0);
-    auto surface = Acts::Surface::makeShared<Acts::PlaneSurface>(
-        transform, bounds);
+    auto surface =
+        Acts::Surface::makeShared<Acts::PlaneSurface>(transform, bounds);
 
     // Assign a geometry ID (use layer as volume, 0 as layer in ACTS sense)
     Acts::GeometryIdentifier geo_id;
@@ -248,16 +250,16 @@ void EcalTrackFinderProcessor::createEcalSurfaces() {
 
   // Create reference surface at ECAL front face
   double ecal_front_z = geometry_->getEcalFrontZ();
-  Acts::Vector3 ref_pos = tracking::sim::utils::ldmx2Acts(
-      Acts::Vector3(0.0, 0.0, ecal_front_z));
+  Acts::Vector3 ref_pos =
+      tracking::sim::utils::ldmx2Acts(Acts::Vector3(0.0, 0.0, ecal_front_z));
   Acts::Translation3 ref_translation(ref_pos);
   Acts::Transform3 ref_transform(ref_translation * surf_rotation_);
-  reference_surface_ = Acts::Surface::makeShared<Acts::PlaneSurface>(ref_transform);
+  reference_surface_ =
+      Acts::Surface::makeShared<Acts::PlaneSurface>(ref_transform);
 }
 
 std::vector<ldmx::Measurement> EcalTrackFinderProcessor::createMeasurements(
-    const std::vector<ldmx::EcalHit>& hits,
-    std::vector<double>& energies) {
+    const std::vector<ldmx::EcalHit>& hits, std::vector<double>& energies) {
   std::vector<ldmx::Measurement> measurements;
   measurements.reserve(hits.size());
   energies.clear();
@@ -318,7 +320,7 @@ EcalTrackFinderProcessor::fitStraightLine(
 
   // Find principal direction (eigenvector with largest eigenvalue)
   Eigen::SelfAdjointEigenSolver<Eigen::Matrix3d> solver(cov);
-  Acts::Vector3 direction = solver.eigenvectors().col(2); // Largest eigenvalue
+  Acts::Vector3 direction = solver.eigenvectors().col(2);  // Largest eigenvalue
   direction.normalize();
 
   // Eigenvector has sign ambiguity — ensure it points forward along the beam.
@@ -344,8 +346,8 @@ std::vector<ldmx::Track> EcalTrackFinderProcessor::findSeeds(
   std::vector<ldmx::Track> seeds;
 
   if (measurements.size() < static_cast<size_t>(min_hits_)) {
-    ldmx_log(debug) << "Too few measurements for seed: "
-                   << measurements.size() << " < " << min_hits_;
+    ldmx_log(debug) << "Too few measurements for seed: " << measurements.size()
+                    << " < " << min_hits_;
     return seeds;
   }
 
@@ -376,34 +378,37 @@ std::vector<ldmx::Track> EcalTrackFinderProcessor::findSeeds(
   }
 
   if (points.size() < static_cast<size_t>(min_hits_)) {
-    ldmx_log(debug) << "Too few layers hit for seed: "
-                   << points.size() << " < " << min_hits_;
+    ldmx_log(debug) << "Too few layers hit for seed: " << points.size() << " < "
+                    << min_hits_;
     return seeds;
   }
 
   // Fit straight line
   auto [position, direction, rms] = fitStraightLine(points);
 
-  ldmx_log(debug) << "Seed line fit: rms=" << rms
-                 << " dir=(" << direction.x()
-                 << "," << direction.y()
-                 << "," << direction.z() << ")";
+  ldmx_log(debug) << "Seed line fit: rms=" << rms << " dir=(" << direction.x()
+                  << "," << direction.y() << "," << direction.z() << ")";
 
   if (rms > max_seed_rms_) {
-    ldmx_log(debug) << "Seed RMS too large: " << rms
-                   << " > " << max_seed_rms_ << " mm";
+    ldmx_log(debug) << "Seed RMS too large: " << rms << " > " << max_seed_rms_
+                    << " mm";
     return seeds;
   }
 
   // Create seed track at reference surface (ECAL front)
   // Intersect line with reference surface
-  auto& gctx = getCondition<tracking::geo::GeometryContext>(tracking::geo::GeometryContext::NAME).get();
+  auto& gctx = getCondition<tracking::geo::GeometryContext>(
+                   tracking::geo::GeometryContext::NAME)
+                   .get();
 
-  // For a plane surface, normal is the third column of rotation (z-direction in local frame)
-  Acts::Vector3 ref_normal = reference_surface_->transform(gctx).rotation().col(2);
+  // For a plane surface, normal is the third column of rotation (z-direction in
+  // local frame)
+  Acts::Vector3 ref_normal =
+      reference_surface_->transform(gctx).rotation().col(2);
   Acts::Vector3 ref_center = reference_surface_->center(gctx);
 
-  double t = (ref_center - position).dot(ref_normal) / direction.dot(ref_normal);
+  double t =
+      (ref_center - position).dot(ref_normal) / direction.dot(ref_normal);
   Acts::Vector3 seed_pos = position + t * direction;
 
   // Estimate momentum (assume MIP ~200 MeV for now)
@@ -414,8 +419,8 @@ std::vector<ldmx::Track> EcalTrackFinderProcessor::findSeeds(
   Acts::ActsScalar q = Acts::UnitConstants::e;
 
   // Convert to bound parameters at reference surface
-  Acts::FreeVector seed_free = tracking::sim::utils::toFreeParameters(
-      seed_pos, seed_mom, q);
+  Acts::FreeVector seed_free =
+      tracking::sim::utils::toFreeParameters(seed_pos, seed_mom, q);
 
   auto bound_params_result = Acts::transformFreeToBoundParameters(
       seed_free, *reference_surface_, gctx);
@@ -491,8 +496,7 @@ EcalTrackFinderProcessor::makeGeoIdSourceLinkMap(
   }
 
   ldmx_log(debug) << "Source link map has " << geo_id_sl_map.size()
-                   << " entries from " << measurements.size()
-                   << " measurements";
+                  << " entries from " << measurements.size() << " measurements";
 
   return geo_id_sl_map;
 }
@@ -540,8 +544,9 @@ void EcalTrackFinderProcessor::produce(framework::Event& event) {
   }
 
   // Get ACTS contexts
-  auto& gctx =
-      getCondition<tracking::geo::GeometryContext>(tracking::geo::GeometryContext::NAME).get();
+  auto& gctx = getCondition<tracking::geo::GeometryContext>(
+                   tracking::geo::GeometryContext::NAME)
+                   .get();
   auto& mctx = getCondition<tracking::geo::MagneticFieldContext>(
                    tracking::geo::MagneticFieldContext::NAME)
                    .get();
@@ -627,12 +632,9 @@ void EcalTrackFinderProcessor::produce(framework::Event& event) {
     param_vec << seed.getD0(), seed.getZ0(), seed.getPhi(), seed.getTheta(),
         seed.getQoP(), seed.getT();
 
-    ldmx_log(debug) << "Seed " << seed_idx
-                   << ": loc0=" << param_vec[0]
-                   << " loc1=" << param_vec[1]
-                   << " phi=" << param_vec[2]
-                   << " theta=" << param_vec[3]
-                   << " qop=" << param_vec[4];
+    ldmx_log(debug) << "Seed " << seed_idx << ": loc0=" << param_vec[0]
+                    << " loc1=" << param_vec[1] << " phi=" << param_vec[2]
+                    << " theta=" << param_vec[3] << " qop=" << param_vec[4];
 
     Acts::BoundSquareMatrix cov_mat =
         tracking::sim::utils::unpackCov(seed.getPerigeeCov());
@@ -651,14 +653,14 @@ void EcalTrackFinderProcessor::produce(framework::Event& event) {
     auto results = ckf_->findTracks(start_params, ckf_options, tc);
 
     if (!results.ok()) {
-      ldmx_log(debug) << "CKF failed for seed " << seed_idx
-                     << ": " << results.error().message();
+      ldmx_log(debug) << "CKF failed for seed " << seed_idx << ": "
+                      << results.error().message();
       continue;
     }
 
     auto& tracks_from_seed = results.value();
     ldmx_log(debug) << "CKF returned " << tracks_from_seed.size()
-                   << " tracks from seed " << seed_idx;
+                    << " tracks from seed " << seed_idx;
     for (auto& track : tracks_from_seed) {
       // Smooth the track
       Acts::smoothTrack(gctx, track);
@@ -667,7 +669,8 @@ void EcalTrackFinderProcessor::produce(framework::Event& event) {
       ldmx::Track trk;
 
       // Get parameters from first smoothed state
-      // (setReferenceSurface doesn't actually transform params, need actual state)
+      // (setReferenceSurface doesn't actually transform params, need actual
+      // state)
       Acts::BoundVector smoothed_params;
       std::shared_ptr<const Acts::Surface> smoothed_surface;
       bool found_smoothed = false;
@@ -687,10 +690,10 @@ void EcalTrackFinderProcessor::produce(framework::Event& event) {
       }
 
       ldmx_log(debug) << "Smoothed params: loc0=" << smoothed_params[0]
-                       << " loc1=" << smoothed_params[1]
-                       << " phi=" << smoothed_params[2]
-                       << " theta=" << smoothed_params[3]
-                       << " qop=" << smoothed_params[4];
+                      << " loc1=" << smoothed_params[1]
+                      << " phi=" << smoothed_params[2]
+                      << " theta=" << smoothed_params[3]
+                      << " qop=" << smoothed_params[4];
 
       // Convert to free parameters (in ACTS global coords)
       Acts::FreeVector free_params = Acts::transformBoundToFreeParameters(
@@ -698,11 +701,11 @@ void EcalTrackFinderProcessor::produce(framework::Event& event) {
 
       // Convert ACTS position and momentum to LDMX coordinates
       Acts::Vector3 pos_acts(free_params[Acts::eFreePos0],
-                              free_params[Acts::eFreePos1],
-                              free_params[Acts::eFreePos2]);
+                             free_params[Acts::eFreePos1],
+                             free_params[Acts::eFreePos2]);
       Acts::Vector3 mom_acts(free_params[Acts::eFreeDir0],
-                              free_params[Acts::eFreeDir1],
-                              free_params[Acts::eFreeDir2]);
+                             free_params[Acts::eFreeDir1],
+                             free_params[Acts::eFreeDir2]);
 
       Acts::Vector3 pos_ldmx = tracking::sim::utils::acts2Ldmx(pos_acts);
       Acts::Vector3 mom_ldmx = tracking::sim::utils::acts2Ldmx(mom_acts);
@@ -714,28 +717,29 @@ void EcalTrackFinderProcessor::produce(framework::Event& event) {
       double py = mom_ldmx[1];
       double pz = mom_ldmx[2];
 
-      ldmx_log(debug) << "LDMX momentum: px=" << px << " py=" << py << " pz=" << pz;
+      ldmx_log(debug) << "LDMX momentum: px=" << px << " py=" << py
+                      << " pz=" << pz;
 
       // Compute theta and phi same way as SP electron (atan2(pt, pz))
-      double pt = std::sqrt(px*px + py*py);
+      double pt = std::sqrt(px * px + py * py);
       double theta = std::atan2(pt, pz);
       double phi = std::atan2(py, px);
-      if (phi < 0) phi += 2.0 * M_PI;  // Shift to [0, 2π] to avoid boundary artifacts
+      if (phi < 0)
+        phi += 2.0 * M_PI;  // Shift to [0, 2π] to avoid boundary artifacts
       double qop = free_params[Acts::eFreeQOverP];
 
-      // Compute perigee parameters (point of closest approach to z-axis)
-      // For a straight track: d0 and z0 are computed at closest approach
-      double d0 = x * std::sin(phi) - y * std::cos(phi);
-      double z0 = z; // Use reference point z (approximation for high momentum)
+      // Compute perigee parameters from smoothed track state position.
+      // PCA-based z0 is ill-defined for forward tracks (pz >> pt), so
+      // we just use the z of the smoothed state directly.
+      double d0 = -(x * std::sin(phi) - y * std::cos(phi));
+      double z0 = z;
       double time = free_params[Acts::eFreeTime];
 
       Acts::BoundVector perigee_params;
       perigee_params << d0, z0, phi, theta, qop, time;
 
-      ldmx_log(debug) << "Perigee params: d0=" << d0
-                       << " z0=" << z0
-                       << " phi=" << phi
-                       << " theta=" << theta;
+      ldmx_log(debug) << "Perigee params: d0=" << d0 << " z0=" << z0
+                      << " phi=" << phi << " theta=" << theta;
 
       // Store perigee parameters
       trk.setPerigeeParameters(
@@ -746,10 +750,9 @@ void EcalTrackFinderProcessor::produce(framework::Event& event) {
       tracking::sim::utils::flatCov(track.covariance(), cov_vec);
       trk.setPerigeeCov(cov_vec);
 
-      Acts::Vector3 ref_loc_ldmx = tracking::sim::utils::acts2Ldmx(
-          reference_surface_->center(gctx));
-      trk.setPerigeeLocation(ref_loc_ldmx[0], ref_loc_ldmx[1],
-                             ref_loc_ldmx[2]);
+      Acts::Vector3 ref_loc_ldmx =
+          tracking::sim::utils::acts2Ldmx(reference_surface_->center(gctx));
+      trk.setPerigeeLocation(ref_loc_ldmx[0], ref_loc_ldmx[1], ref_loc_ldmx[2]);
 
       trk.setChi2(track.chi2());
       trk.setNhits(track.nMeasurements());
@@ -780,14 +783,16 @@ void EcalTrackFinderProcessor::produce(framework::Event& event) {
         double trk_theta_deg = theta * 180.0 / M_PI;
 
         // Select ROC bin based on momentum and angle
-        std::vector<float> ele_radii(
-            roc_range_values_[0].begin() + 4, roc_range_values_[0].end());
+        std::vector<float> ele_radii(roc_range_values_[0].begin() + 4,
+                                     roc_range_values_[0].end());
         for (const auto& row : roc_range_values_) {
           float theta_min = row[0], theta_max = row[1];
           float p_min = row[2], p_max = row[3];
           bool inrange = true;
-          if (theta_min != -1.0f) inrange = inrange && (trk_theta_deg >= theta_min);
-          if (theta_max != -1.0f) inrange = inrange && (trk_theta_deg < theta_max);
+          if (theta_min != -1.0f)
+            inrange = inrange && (trk_theta_deg >= theta_min);
+          if (theta_max != -1.0f)
+            inrange = inrange && (trk_theta_deg < theta_max);
           if (p_min != -1.0f) inrange = inrange && (trk_p_mag >= p_min);
           if (p_max != -1.0f) inrange = inrange && (trk_p_mag < p_max);
           if (inrange) {
@@ -801,7 +806,8 @@ void EcalTrackFinderProcessor::produce(framework::Event& event) {
           if (hit.isNoise()) continue;
           ldmx::EcalID ecal_id(hit.getID());
           int layer = ecal_id.layer();
-          if (layer < 0 || layer >= static_cast<int>(ele_radii.size())) continue;
+          if (layer < 0 || layer >= static_cast<int>(ele_radii.size()))
+            continue;
 
           auto [hx, hy, hz] = geometry_->getPosition(ecal_id);
 
@@ -840,7 +846,7 @@ void EcalTrackFinderProcessor::produce(framework::Event& event) {
           tracking::sim::utils::convertActsToLdmxPars(perigee_params));
 
       ldmx_log(debug) << "Track energy from RecHits: " << track_energy
-                       << " MeV, q/p=" << qop;
+                      << " MeV, q/p=" << qop;
 
       tracks.push_back(trk);
       ntracks_++;
