@@ -1859,8 +1859,16 @@ class EcalTrackAnalyzer(Processor):
         self.histogram("track_charge", "Track charge", 5, -2.5, 2.5)
         self.histogram("track_x", "Track x [mm]", 100, -300, 300)
         self.histogram("track_y", "Track y [mm]", 100, -300, 300)
-        self.histogram("track_p_multitracks", "Track p (multi-track events) [MeV]", 100, 0, 5000)
-        self.histogram("track_separation", "Track angular separation [rad]", 100, 0, 3.2)
+        self.histogram(
+            "track_p_multitracks",
+            "Track p (multi-track events) [MeV]",
+            100, 0, 5000,
+        )
+        self.histogram(
+            "track_separation",
+            "Track angular separation [rad]",
+            100, 0, 3.2,
+        )
         self.histogram(
             "track_xy",
             "Track x [mm]",
