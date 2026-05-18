@@ -10,7 +10,8 @@
 #ifndef SIMCORE_BERTINI_G4BERTINIHACK_H
 #define SIMCORE_BERTINI_G4BERTINIHACK_H
 
-// Include standard library headers before the hack or it affects std:: internals
+// Include standard library headers before the hack or it affects std::
+// internals
 #include <algorithm>
 #include <cmath>
 #include <cstdlib>

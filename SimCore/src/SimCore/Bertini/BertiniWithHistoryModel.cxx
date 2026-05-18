@@ -17,7 +17,8 @@ BertiniWithHistoryModel::BertiniWithHistoryModel(
     const std::string& name, const framework::config::Parameters& parameters)
     : PhotoNuclearModel{name, parameters} {
   max_energy_ = parameters.getParameter<double>("max_energy", 15000.0);
-  energy_threshold_ = parameters.getParameter<double>("energy_threshold", 5000.0);
+  energy_threshold_ =
+      parameters.getParameter<double>("energy_threshold", 5000.0);
 }
 
 void BertiniWithHistoryModel::constructGammaProcess(

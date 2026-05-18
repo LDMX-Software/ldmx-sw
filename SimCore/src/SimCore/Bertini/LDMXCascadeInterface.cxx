@@ -234,7 +234,8 @@ G4HadFinalState* LDMXCascadeInterface::ApplyYourself(
     captureHistory();
     last_history_.setIncidentEnergy(photon_energy);
 
-    ldmx_log(debug) << "  Captured " << last_history_.getSteps().size() << " steps";
+    ldmx_log(debug) << "  Captured " << last_history_.getSteps().size()
+                    << " steps";
 
     // De-excitation (evaporation, gamma) happens after the cascade via
     // G4ExcitationHandler. These products appear in the final state but
@@ -333,8 +334,8 @@ void LDMXCascadeInterface::captureHistory() {
 
     // Geant4 Bertini uses GeV for momentum, fm for position
     G4LorentzVector mom = cpart.getMomentum();
-    step.setMomentum(mom.px() * 1000.0, mom.py() * 1000.0,
-                     mom.pz() * 1000.0, mom.e() * 1000.0);
+    step.setMomentum(mom.px() * 1000.0, mom.py() * 1000.0, mom.pz() * 1000.0,
+                     mom.e() * 1000.0);
 
     const G4ThreeVector& pos = cpart.getPosition();
     step.setPosition(pos.x(), pos.y(), pos.z());
@@ -351,7 +352,8 @@ void LDMXCascadeInterface::captureHistory() {
     bool interacted = (entry.n > 0);
     step.setInteracted(interacted);
 
-    // Escaped if didn't interact (simplification - true escape needs more tracking)
+    // Escaped if didn't interact (simplification - true escape needs more
+    // tracking)
     bool escaped = !interacted && cpart.getGeneration() >= 0;
     step.setEscaped(escaped);
     step.setTargetPdgId(0);  // inferred in second pass
