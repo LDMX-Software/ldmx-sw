@@ -1,7 +1,8 @@
 #include "TrigScint/TrigScintTrackProducer.h"
+//Ricardo,05-26
 
 #include <iterator>  // std::next
-#include <map> //Ricardo,05-26
+#include <map> 
 
 namespace trigscint {
 
