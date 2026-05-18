@@ -566,24 +566,16 @@ void TruthSeedProcessor::produce(framework::Event& event) {
   // Information is extracted using the
   // scoring plane hit left by the particle at the target.
 
-  const std::vector<ldmx::SimTrackerHit> scoring_hits{
-      event.getCollection<ldmx::SimTrackerHit>(scoring_hits_coll_name_,
-                                               sp_pass_name_)};
-
-  // Retrieve the scoring plane hits at the ECAL
-  const std::vector<ldmx::SimTrackerHit> scoring_hits_ecal{
-      event.getCollection<ldmx::SimTrackerHit>(ecal_sp_coll_name_,
-                                               sp_pass_name_)};
+  const auto& scoring_hits = event.getCollection<ldmx::SimTrackerHit>(
+      scoring_hits_coll_name_, sp_pass_name_);
 
   // Retrieve the sim hits in the tagger tracker
-  const std::vector<ldmx::SimTrackerHit> tagger_sim_hits =
-      event.getCollection<ldmx::SimTrackerHit>(tagger_sim_hits_coll_name_,
-                                               input_pass_name_);
+  const auto& tagger_sim_hits = event.getCollection<ldmx::SimTrackerHit>(
+      tagger_sim_hits_coll_name_, input_pass_name_);
 
   // Retrieve the sim hits in the recoil tracker
-  const std::vector<ldmx::SimTrackerHit> recoil_sim_hits =
-      event.getCollection<ldmx::SimTrackerHit>(recoil_sim_hits_coll_name_,
-                                               input_pass_name_);
+  const auto& recoil_sim_hits = event.getCollection<ldmx::SimTrackerHit>(
+      recoil_sim_hits_coll_name_, input_pass_name_);
 
   // If sim hit collections are empty throw a warning
   if (tagger_sim_hits.size() == 0 && !skip_tagger_) {
@@ -734,9 +726,8 @@ void TruthSeedProcessor::produce(framework::Event& event) {
   }
 
   // Recover the EcalScoring hits
-  std::vector<ldmx::SimTrackerHit> ecal_sp_hits =
-      event.getCollection<ldmx::SimTrackerHit>(ecal_sp_coll_name_,
-                                               sp_pass_name_);
+  const auto& ecal_sp_hits = event.getCollection<ldmx::SimTrackerHit>(
+      ecal_sp_coll_name_, sp_pass_name_);
   // Select ECAL hits
   std::vector<ldmx::SimTrackerHit> sel_ecal_sp_hits;
 

@@ -1,7 +1,5 @@
 #include "Tracking/geo/GeometryContext.h"
 
-#include <stdexcept>  // Include for std::logic_error
-
 #include "Framework/ConditionsObjectProvider.h"
 #include "Framework/Configure/Parameters.h"
 #include "Framework/Exception/Exception.h"
@@ -51,7 +49,8 @@ void GeometryContext::addAlignCorrection(unsigned int sensorId,
   // Add the correction to the alignment map
 
   if (alignment_map_.count(sensorId) < 1) {
-    throw std::logic_error("GeometryContext:: could not addAlignCorrection");
+    EXCEPTION_RAISE("BadGeometry",
+                    "GeometryContext:: could not addAlignCorrection");
   }
 
   if (active) {

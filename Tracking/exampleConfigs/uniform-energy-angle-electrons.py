@@ -52,7 +52,6 @@ from LDMX.SimCore import generators
 sim = simulator.Simulator("uniform-electrons")
 sim.set_detector("ldmx-det-v14-8gev", include_scoring_planes_minimal=True)
 sim.description = "Electrons with uniformly sampled energy and angle shot from target"
-sim.beamSpotSmear = [20.0, 80.0, 0.0]
 # GPS generator
 sim.generators = [
     generators.Gps(
@@ -60,8 +59,8 @@ sim.generators = [
         [
             # electrons
             "/gps/particle e-",
-            # position distribution: all from the same point, simulator smears beam spot
-            "/gps/pos/type Point",  # beamSpotSmear will smear for us
+            # position distribution: all from the same point, generator smears beam spot
+            "/gps/pos/type Point",  # beam_spot_smear on the generator will smear for us
             "/gps/pos/centre 0 0 0 mm",  # shoot from center of target
             # angular distribution, isotropic with maximum polar angle
             # relative to z-axis
@@ -99,9 +98,9 @@ import LDMX.Tracking.geo
 # Truth tracks can be used for assessing tracking performance or using as seeds
 truth_tracking = tracking.TruthSeedProcessor()
 truth_tracking.debug = True
-truth_tracking.trk_coll_name = "RecoilTruthSeeds"
+truth_tracking.recoil_seeds_collection = "RecoilTruthSeeds"
 truth_tracking.pdg_ids = [11]
-truth_tracking.scoring_hits = "TargetScoringPlaneHits"
+truth_tracking.scoring_hits_coll_name = "TargetScoringPlaneHits"
 truth_tracking.z_min = 0.0
 truth_tracking.track_id = -1
 truth_tracking.p_cut = 0.05  # In MeV

@@ -7,30 +7,57 @@ from .make_path import make_field_map_path
 
 @processor("tracking::reco::DigitizationProcessor", "Tracking")
 class DigitizationProcessor(Processor):
-    """Producer that smears simulated tracker hits.
+    """Smears or fully digitizes simulated tracker hits.
+
+    Mode 0 (use_charge_digitization=False): Gaussian smear in U/V directly to
+    Measurement objects.
+
+    Mode 1 (use_charge_digitization=True): Full silicon-strip charge simulation
+    producing RawSiStripHit objects (and optionally Measurements), suitable for
+    downstream StripFitProcessor + StripClusterProcessor.
 
     Attributes
     ----------
     merge_hits : bool
-        Activate merging of all hits that have the same track ID on the same
-        layer.
+        Merge hits with the same track ID on the same layer.
     do_smearing : bool
-        Activate the smearing.
+        Activate Gaussian smearing (Mode 0 only).
     sigma_u : float
-        Smearing sigma in the sensitive direction.
+        Smearing sigma in the precision direction [mm] (Mode 0 only).
     sigma_v : float
-        Smearing sigma in the un-sensitive direction.
+        Smearing sigma in the strip direction [mm] (Mode 0 only).
     track_id : int
-        If track_id > 0, retain only hits with that particular track_id and
-        discard the rest.
+        If > 0, retain only hits with this track ID.
     min_e_dep : float
-        Minimum energy deposited by G4 to consider the hit.
+        Minimum energy deposit [MeV] to process a hit.
     hit_collection : str
-        Input hit collection to be smeared.
+        Input SimTrackerHit collection name.
     out_collection : str
-        Output hit collection to be stored.
+        Output Measurement collection name.
     tracker_hit_passname : str
-        The pass name of the tracker hits.
+        Pass name of the input hit collection.
+    use_charge_digitization : bool
+        If True, run full charge simulation (Mode 1).
+    bias_voltage : float
+        Sensor bias voltage [V] (Mode 1).
+    depletion_voltage : float
+        Sensor depletion voltage [V] (Mode 1).
+    noise_electrons : float
+        Equivalent noise charge [e-] (Mode 1).
+    threshold_electrons : float
+        Strip hit threshold [e-] (Mode 1).
+    electron_lorentz_tangent : float
+        tan(theta_L) for electrons (Mode 1).
+    hole_lorentz_tangent : float
+        tan(theta_L) for holes (Mode 1).
+    trapping : float
+        Charge trapping fraction per 100 um drift (Mode 1).
+    deposition_granularity : float
+        Step size for charge deposition segments [fraction of sense pitch] (Mode 1).
+    n_segments_min : int
+        Minimum number of charge deposition segments (Mode 1).
+    out_raw_collection : str
+        Output RawSiStripHit collection name; empty disables (Mode 1).
     """
 
     merge_hits: bool = True
@@ -42,6 +69,18 @@ class DigitizationProcessor(Processor):
     hit_collection: str = "TaggerSimHits"
     out_collection: str = "OutputMeasurements"
     tracker_hit_passname: str = ""
+    use_charge_digitization: bool = False
+    use_lorentz: bool = True
+    bias_voltage: float = 200.0
+    depletion_voltage: float = 70.0
+    noise_electrons: float = 1000.0
+    threshold_electrons: float = 3000.0
+    electron_lorentz_tangent: float = 0.0
+    hole_lorentz_tangent: float = 0.0
+    trapping: float = 0.0
+    deposition_granularity: float = 0.10
+    n_segments_min: int = 5
+    out_raw_collection: str = ""
 
 
 @processor("tracking::reco::SeedFinderProcessor", "Tracking")
@@ -169,7 +208,7 @@ class CKFProcessor(Processor):
     pionstates: int = 0
     bfield: float = -1.5
     const_b_field: bool = False
-    field_map: str = field(default_factory=make_field_map_path)
+    field_map: str = ""
     propagator_step_size: float = 1000.0
     propagator_max_steps: int = 10000
     hit_collection: str = "RecoilSimHits"
@@ -235,7 +274,7 @@ class GSFProcessor(Processor):
     debug: bool = False
     propagator_step_size: float = 200.0
     propagator_max_steps: int = 1000
-    field_map: str = field(default_factory=make_field_map_path)
+    field_map: str = ""
     tagger_tracking: bool = True
     out_trk_collection: str = "GSFTracks"
     track_collection: str = "TaggerTracks"
@@ -433,3 +472,136 @@ class TrackerVetoProcessor(Processor):
     output_collection: str = "TrackerVeto"
     sim_particles_passname: str = ""
     input_collection_events_passname: str = ""
+
+@processor("tracking::reco::StripFitProcessor", "Tracking")
+class StripFitProcessor(Processor):
+    """Fits a pulse shape to each RawSiStripHit to extract amplitude and time.
+
+    Applies to both real and simulated data.  The output FittedSiStripHit
+    collection can be clustered downstream to produce Measurement objects
+    for tracking.
+
+    Attributes
+    ----------
+    in_collection : str
+        Name of the input RawSiStripHit collection.
+    in_pass : str
+        Pass name for the input collection (empty = any).
+    out_collection : str
+        Name of the output FittedSiStripHit collection.
+    t_scan_min_ns : float
+        Lower bound of the hit-time search range [ns] (default -50).
+    t_scan_max_ns : float
+        Upper bound of the hit-time search range [ns] (default 150).
+    t_scan_step_ns : float
+        Step size of the coarse timing scan [ns] (default 1).
+    max_chi2_ndf : float
+        If > 0, discard fits with chi2/ndf above this value (default -1 = off).
+    """
+
+    in_collection: str = 'RawSiStripHits'
+    in_pass: str = ''
+    out_collection: str = 'FittedSiStripHits'
+    t_scan_min_ns: float = -50.0
+    t_scan_max_ns: float = 150.0
+    t_scan_step_ns: float = 1.0
+    max_chi2_ndf: float = -1.0
+
+
+@processor("tracking::reco::TrackComparisonProcessor", "Tracking")
+class TrackComparisonProcessor(Processor):
+    """Compares tracking performance between a truth-smeared and a charge-digitized
+    hit chain on a track-by-track basis.
+
+    Tracks from two upstream collections are matched by their truth-matched
+    SimParticle ID.  For each matched pair a row is written to a flat ROOT TTree
+    and a set of quick-look TH1F histograms is filled.
+
+    Attributes
+    ----------
+    trk_collection_smear : str
+        Tagger truth-smeared track collection name.
+    trk_collection_digi : str
+        Tagger charge-digitized track collection name.
+    pass_name_smear : str
+        Pass name for the smeared tagger collection.
+    pass_name_digi : str
+        Pass name for the digi tagger collection.
+    do_tagger : bool
+        Enable tagger comparison.
+    do_recoil : bool
+        Enable recoil comparison.
+    recoil_collection_smear : str
+        Recoil truth-smeared track collection name.
+    recoil_collection_digi : str
+        Recoil charge-digitized track collection name.
+    recoil_pass_smear : str
+        Pass name for the smeared recoil collection.
+    recoil_pass_digi : str
+        Pass name for the digi recoil collection.
+    min_truth_prob : float
+        Minimum truth_prob required on both tracks to accept a pair.
+    output_file : str
+        Name of the output ROOT file containing the TTrees.
+    """
+
+    trk_collection_smear: str = "TaggerTracks"
+    trk_collection_digi: str = "TaggerDigiTracks"
+    pass_name_smear: str = ""
+    pass_name_digi: str = ""
+    do_tagger: bool = True
+    do_recoil: bool = False
+    recoil_collection_smear: str = "RecoilTracks"
+    recoil_collection_digi: str = "RecoilDigiTracks"
+    recoil_pass_smear: str = ""
+    recoil_pass_digi: str = ""
+    min_truth_prob: float = 0.5
+    output_file: str = "track_comparison.root"
+
+
+@processor("tracking::reco::StripClusterProcessor", "Tracking")
+class StripClusterProcessor(Processor):
+    """Clusters FittedSiStripHits into Measurements using nearest-neighbour clustering.
+
+    Groups hits by sensor layer, runs nearest-neighbour BFS clustering on each
+    layer (ported from HPS NearestNeighborRMSClusterer), and converts accepted
+    clusters into ldmx::Measurement objects via the Acts tracking geometry.
+
+    Applies to both real data (after StripFitProcessor) and simulation.
+
+    Attributes
+    ----------
+    in_collection : str
+        Input FittedSiStripHit collection (default "FittedSiStripHits").
+    in_pass : str
+        Pass name for the input collection (default "").
+    out_collection : str
+        Output Measurement collection (default "StripMeasurements").
+    seed_threshold : float
+        Minimum amplitude/noise_sigma to seed a cluster (default 4.0).
+    neighbor_threshold : float
+        Minimum amplitude/noise_sigma for a strip to join a cluster (default 3.0).
+    cluster_threshold : float
+        Minimum total_amp / sqrt(sum_noise^2) for cluster acceptance (default 4.0).
+    mean_time_ns : float
+        Expected hit time for the seed timing cut [ns] (default 0.0).
+    time_window_ns : float
+        Half-width of the seed timing window [ns]; <= 0 disables (default -1).
+    neighbor_delta_t_ns : float
+        Max |t0_neighbour - cluster_t| [ns] for a strip to join a cluster;
+        <= 0 disables (default -1).
+    max_chi2_ndf : float
+        Max chi2/ndf for a fitted hit to be used; <= 0 disables (default -1).
+    """
+
+    in_collection: str = 'FittedSiStripHits'
+    in_pass: str = ''
+    out_collection: str = 'StripMeasurements'
+    seed_threshold: float = 4.0
+    neighbor_threshold: float = 3.0
+    cluster_threshold: float = 4.0
+    mean_time_ns: float = 0.0
+    time_window_ns: float = -1.0
+    neighbor_delta_t_ns: float = -1.0
+    max_chi2_ndf: float = -1.0
+
