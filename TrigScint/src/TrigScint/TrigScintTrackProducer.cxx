@@ -126,31 +126,6 @@ void TrigScintTrackProducer::produce(framework::Event &event) {
                     << input_collections_.at(1) << " with "
                     << clusters_pad2.size() << " entries.";
   }
-        ////////////////////////// Ricardo
-  if (verbose_ > 1) {
-
-    ldmx_log(debug) << "max_delta = " << max_delta_;
-    
-    
-    auto print_cluster = [&](const std::string& name,
-                            const ldmx::TrigScintCluster& cl) {
-      ldmx_log(debug) << name
-                      << " c=" << cl.getCentroid()
-                      << " cx=" << cl.getCentroidX()
-                      << " cy=" << cl.getCentroidY()
-                      << " type=" << (cl.getCentroid() >= vert_bar_start_idx_ ? "VERT" : "HORIZ");
-    };
-
-    ldmx_log(debug) << "=== SEEDS ===";
-    for (const auto& cl : seeds) print_cluster("seed", cl);
-
-    ldmx_log(debug) << "=== PAD1 ===";
-    for (const auto& cl : clusters_pad1) print_cluster("pad2", cl);
-
-    ldmx_log(debug) << "=== PAD2 ===";
-    for (const auto& cl : clusters_pad2) print_cluster("pad3", cl);
-  }
-                //////////////////////////////////////
   std::vector<ldmx::TrigScintTrack> cleaned_tracks;
   std::vector<ldmx::TrigScintTrack> cleaned_tracks_y;
   std::vector<ldmx::TrigScintTrack> cleaned_tracks_x;

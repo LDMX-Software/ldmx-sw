@@ -77,7 +77,7 @@ count = ElectronCounter(
     input_pass_name="",
 )
 
-p.logger.term_level = 1
+p.logger.term_level = 0
 
 p.sequence.extend([
         *ts_digis,
