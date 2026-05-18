@@ -38,6 +38,7 @@ import LDMX.Ecal.digi as ecal_digi
 import LDMX.Ecal.ecal_geometry
 import LDMX.Ecal.ecal_hardcoded_conditions
 import LDMX.Ecal.vetos as ecal_vetos
+import LDMX.Tracking.geo
 
 
 ecal_veto = ecal_vetos.EcalVetoProcessor(
