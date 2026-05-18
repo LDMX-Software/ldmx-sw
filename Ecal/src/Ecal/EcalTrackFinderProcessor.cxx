@@ -584,11 +584,15 @@ void EcalTrackFinderProcessor::produce(framework::Event& event) {
     using BaseIt = decltype(geo_id_sl_map.begin());
     BaseIt it_;
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-local-typedefs"
+
     using difference_type = typename BaseIt::difference_type;
     using iterator_category = std::input_iterator_tag;
     using value_type = Acts::SourceLink;
     using pointer = value_type*;
     using reference = value_type&;
+#pragma GCC diagnostic pop
 
     SourceLinkAccIt& operator++() {
       ++it_;
