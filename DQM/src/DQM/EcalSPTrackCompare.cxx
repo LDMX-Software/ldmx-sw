@@ -120,7 +120,6 @@ void EcalSPTrackCompare::analyze(const framework::Event& event) {
 
   // Get track parameters at perigee
   double trk_d0 = best.getD0();
-  double trk_z0 = best.getZ0();
   double trk_phi = best.getPhi();
   double trk_theta = best.getTheta();
   double trk_qop = best.getQoP();
