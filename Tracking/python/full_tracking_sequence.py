@@ -1,5 +1,4 @@
 from LDMX.Tracking import geo, tracking
-
 from LDMX.Tracking.geo import TrackersTrackingGeometryProvider as TrackGeo
 
 
@@ -14,7 +13,7 @@ class TrackingSequence:
         DQM processor sequence.
 
     Individual processors are also accessible as attributes, e.g.
-    ``trk.digi_recoil``, ``trk.seeder_tagger``, ``trk.GSF_recoil``.
+    ``trk.digi_recoil``, ``trk.seeder_tagger``, ``trk.gsf_recoil``.
     Charge-digitization processors (``fit_tagger``, ``cluster_recoil``, etc.)
     are only present when ``use_truth_smearing=False``.
     """
@@ -93,7 +92,7 @@ def full_tracking_sequence(
     -------
     TrackingSequence
         Object with .sequence, .dqm_sequence, .set_overlay(), and individual
-        processor attributes (e.g. .digi_recoil, .seeder_tagger, .GSF_recoil).
+        processor attributes (e.g. .digi_recoil, .seeder_tagger, .gsf_recoil).
     """
 
     def tagged(name):
@@ -225,12 +224,12 @@ def full_tracking_sequence(
             fit_tagger,     fit_recoil,
             cluster_tagger, cluster_recoil,
         ]
-        charge_digi_processors = dict(
-            fit_tagger=fit_tagger,
-            fit_recoil=fit_recoil,
-            cluster_tagger=cluster_tagger,
-            cluster_recoil=cluster_recoil,
-        )
+        charge_digi_processors = {
+            "fit_tagger": fit_tagger,
+            "fit_recoil": fit_recoil,
+            "cluster_tagger": cluster_tagger,
+            "cluster_recoil": cluster_recoil,
+        }
 
     # ------------------------------------------------------------------
     # Seeding
@@ -306,7 +305,7 @@ def full_tracking_sequence(
     # ------------------------------------------------------------------
     # Gaussian sum filter
     # ------------------------------------------------------------------
-    GSF_tagger = tracking.GSFProcessor(
+    gsf_tagger = tracking.GSFProcessor(
         instance_name=tagged("Tagger_GSF"),
         tagger_tracking=True,
         track_collection=greedy_solver_tagger.out_trk_collection,
@@ -314,7 +313,7 @@ def full_tracking_sequence(
         out_trk_collection=tagged("GSFTaggerTracks"),
     )
 
-    GSF_recoil = tracking.GSFProcessor(
+    gsf_recoil = tracking.GSFProcessor(
         instance_name=tagged("Recoil_GSF"),
         tagger_tracking=False,
         track_collection=greedy_solver_recoil.out_trk_collection,
@@ -392,7 +391,7 @@ def full_tracking_sequence(
 
     dqm_tagger_gsf = tkdqm.TrackingRecoDQM(
         instance_name=tagged("TaggerGSFDQM"),
-        track_collection=GSF_tagger.out_trk_collection,
+        track_collection=gsf_tagger.out_trk_collection,
         truth_hit_collection="TaggerSimHits",
         truth_collection=tagged("TaggerTruthTracks"),
         track_states=["target"],
@@ -402,7 +401,7 @@ def full_tracking_sequence(
 
     dqm_recoil_gsf = tkdqm.TrackingRecoDQM(
         instance_name=tagged("RecoilGSFDQM"),
-        track_collection=GSF_recoil.out_trk_collection,
+        track_collection=gsf_recoil.out_trk_collection,
         truth_collection=tagged("RecoilTruthTracks"),
         track_states=["ecal", "target"],
         title="",
@@ -429,7 +428,8 @@ def full_tracking_sequence(
     # ------------------------------------------------------------------
     # Assemble
     # ------------------------------------------------------------------
-    sequence = digi_sequence + [
+    sequence = [
+        *digi_sequence,
         truth_tracking,
         seeder_tagger,
         seeder_recoil,
@@ -437,8 +437,8 @@ def full_tracking_sequence(
         tracking_recoil,
         greedy_solver_tagger,
         greedy_solver_recoil,
-        GSF_tagger,
-        GSF_recoil,
+        gsf_tagger,
+        gsf_recoil,
         tracker_veto,
     ]
 
@@ -467,8 +467,8 @@ def full_tracking_sequence(
         tracking_recoil=tracking_recoil,
         greedy_solver_tagger=greedy_solver_tagger,
         greedy_solver_recoil=greedy_solver_recoil,
-        GSF_tagger=GSF_tagger,
-        GSF_recoil=GSF_recoil,
+        gsf_tagger=gsf_tagger,
+        gsf_recoil=gsf_recoil,
         tracker_veto=tracker_veto,
         dqm_seed_tagger=dqm_seed_tagger,
         dqm_seed_recoil=dqm_seed_recoil,
@@ -520,12 +520,13 @@ def recoil_sequence(
     else:
         digi_seq = [full.digi_recoil, full.fit_recoil, full.cluster_recoil]
 
-    sequence = digi_seq + [
+    sequence = [
+        *digi_seq,
         full.truth_tracking,
         full.seeder_recoil,
         full.tracking_recoil,
         full.greedy_solver_recoil,
-        full.GSF_recoil,
+        full.gsf_recoil,
     ]
 
     dqm_sequence = [
@@ -576,12 +577,13 @@ def tagger_sequence(
     else:
         digi_seq = [full.digi_tagger, full.fit_tagger, full.cluster_tagger]
 
-    sequence = digi_seq + [
+    sequence = [
+        *digi_seq,
         full.truth_tracking,
         full.seeder_tagger,
         full.tracking_tagger,
         full.greedy_solver_tagger,
-        full.GSF_tagger,
+        full.gsf_tagger,
     ]
 
     dqm_sequence = [
