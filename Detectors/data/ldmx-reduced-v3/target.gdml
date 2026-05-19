@@ -170,7 +170,7 @@
           <volumeref ref="trigger_pad3_bar_volume"/>
           <position name="trigger_pad3_bar_layer1_pos" unit="mm"
                     x="0"
-                    y="-target_dim_y/2 + trigger_bar_dy*(j - 0.5) + trigger_bar_y_gap*(j - 1) + trigger_pad_offset"
+                    y="-target_dim_y/2 + lp_bar_dy*(j - 0.5) + lp_bar_y_gap*(j - 1) + lp_pad_offset"
                     z="trigger_pad3_z - trigger_pad_bar_thickness/2 - trigger_pad_bar_gap/2"/>
           <rotationref ref="identity"/>
         </physvol>
@@ -178,7 +178,7 @@
           <volumeref ref="trigger_pad3_bar_volume"/>
           <position name="trigger_pad3_bar_layer2_pos" unit="mm"
                     x="0"
-                    y="-target_dim_y/2 + trigger_bar_dy*(j - 0.5) + trigger_bar_y_gap*(j - 1) + trigger_pad_offset + trigger_layer_y_shift"
+                    y="-target_dim_y/2 + lp_bar_dy*(j - 0.5) + lp_bar_y_gap*(j - 1) + lp_pad_offset + lp_layer_y_shift"
                     z="trigger_pad3_z + trigger_pad_bar_thickness/2 + trigger_pad_bar_gap/2"/>
           <rotationref ref="identity"/>
         </physvol>
