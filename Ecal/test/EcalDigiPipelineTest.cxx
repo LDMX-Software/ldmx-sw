@@ -180,7 +180,7 @@ class EcalFakeSimHits : public framework::Producer {
   ~EcalFakeSimHits() {}
 
   void beforeNewRun(ldmx::RunHeader &header) final override {
-    header.setDetectorName("ldmx-det-v14-8gev");
+    header.setDetectorName("ldmx-det-v15-8gev");
   }
 
   void produce(framework::Event &event) final override {
