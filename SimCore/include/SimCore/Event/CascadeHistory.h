@@ -78,7 +78,7 @@ class CascadeHistory {
   int residual_z_{0};
   std::vector<CascadeStep> steps_;
 
-  ClassDef(CascadeHistory, 3);
+  ClassDef(CascadeHistory, 1);
 };
 
 }  // namespace ldmx
