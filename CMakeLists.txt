@@ -61,6 +61,7 @@ find_package(Geant4Interface)
 
 find_package(GENIE)
 
+cmake_policy(SET CMP0167 NEW)
 find_package(
   Boost REQUIRED
   COMPONENTS log
