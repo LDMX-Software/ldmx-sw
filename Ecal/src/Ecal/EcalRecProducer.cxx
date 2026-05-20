@@ -40,6 +40,22 @@ void EcalRecProducer::produce(framework::Event& event) {
   const auto& geometry = getCondition<ldmx::EcalGeometry>(
       ldmx::EcalGeometry::CONDITIONS_OBJECT_NAME);
 
+  // Safety check: ensure layer_weights_ covers all geometry layers.
+  // A mismatch here typically means an outdated geometry configuration
+  // (e.g. v14) is being used with layer weights for a different geometry
+  // version (e.g. v15).
+  if (geometry.getNumLayers() > static_cast<int>(layer_weights_.size())) {
+    EXCEPTION_RAISE(
+        "InvalidConfig",
+        "The number of layers in the Ecal geometry (" +
+            std::to_string(geometry.getNumLayers()) +
+            ") exceeds the number of configured layer_weights (" +
+            std::to_string(layer_weights_.size()) +
+            "). This is likely caused by a mismatch between the geometry "
+            "version and the reconstruction configuration. Please ensure "
+            "that the correct geometry is being used.");
+  }
+
   // Get the reconstruction parameters
   EcalReconConditions the_conditions(
       getCondition<conditions::DoubleTableCondition>(
