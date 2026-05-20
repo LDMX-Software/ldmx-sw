@@ -139,6 +139,17 @@ void Simulator::produce(framework::Event& event) {
 
   savePhotonuclearInteractions(event);
 
+  // Extract and save Bertini cascade histories if any were recorded
+  auto& history_store = bertini::CascadeHistoryStore::getInstance();
+  ldmx_log(debug) << "Checking cascade history store: "
+                  << (history_store.empty() ? "empty" : "has histories");
+  if (!history_store.empty()) {
+    auto cascade_histories = history_store.extractHistories();
+    ldmx_log(info) << "Saving " << cascade_histories.size()
+                   << " cascade histories to event";
+    event.add("PhotonuclearCascadeHistories", cascade_histories);
+  }
+
   run_manager_->TerminateOneEvent();
 
   return;
