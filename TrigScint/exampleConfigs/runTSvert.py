@@ -64,6 +64,13 @@ trig_scint_track.delta_vert_max=1. #0 or 1
 #1 allows for tracks with a deviation in the last pad
 # one centroid to the left or to the right
 
+# In order to run this geometry, one have 
+# to manually define these quantities
+trig_scint_track.number_horizontal_bars = 16
+trig_scint_track.horizontal_bar_gap = 2.1
+trig_scint_track.number_vertical_bars = 8 
+trig_scint_track.vertical_bar_gap = 0.1
+
 # Load the DQM modules
 from LDMX.DQM import dqm
 
