@@ -404,10 +404,10 @@ void TrigScintClusterProducer::produce(framework::Event &event) {
       }  // if adding another hit, going forward, was allowed
 
       // done adding hits to cluster. calculate centroid
-        centroid_ /= sumw_ ; // final weighting step: divide by total amplitude sum
+      centroid_ /=
+          sumw_;  // final weighting step: divide by total amplitude sum
 
-      
-      centroid_ -= 1;     // shift back to actual channel center
+      centroid_ -= 1;  // shift back to actual channel center
 
       ldmx::TrigScintCluster cluster;
 
@@ -482,19 +482,18 @@ void TrigScintClusterProducer::produce(framework::Event &event) {
 void TrigScintClusterProducer::addHit(uint idx, ldmx::TrigScintHit hit) {
   float ampl = hit.getPE();
   float w = 1;
-  if (ampl_weighting_) { //if choosing to PE-weight centroid positions
-      w = ampl;
-      }
+  if (ampl_weighting_) {  // if choosing to PE-weight centroid positions
+    w = ampl;
+  }
 
-      
   float energy = hit.getEnergy();
   val_e_ += energy;
 
   val_ += ampl;
-  centroid_ += (idx + 1) * w; // need non-zero weight of channel 0. shifting
-                            // centroid back by 1 in the end
-                             // this number gets divided by val at the end
-    
+  centroid_ += (idx + 1) * w;  // need non-zero weight of channel 0. shifting
+                               // centroid back by 1 in the end
+                               // this number gets divided by val at the end
+
   sumw_ += w;
 
   v_added_indices_.push_back(idx);
