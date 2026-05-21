@@ -20,7 +20,7 @@ find_package(Eigen3 CONFIG REQUIRED)
 
 setup_library(module Ecal
               dependencies ROOT::Physics
-                           Framework::Framework Recon::Event Tools::Tools DetDescr::DetDescr 
+                           Framework::Framework Recon::Event Recon::Recon Tools::Tools DetDescr::DetDescr 
                            ONNXRuntime::Interface Ecal::Event Tracking::Event SimCore::Event
                            Eigen3::Eigen
 )

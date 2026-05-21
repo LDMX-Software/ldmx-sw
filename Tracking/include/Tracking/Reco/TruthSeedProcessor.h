@@ -15,17 +15,18 @@
 #include "Tracking/Sim/TrackingUtils.h"
 
 // --- ACTS --- //
-#include <Acts/Propagator/StraightLineStepper.hpp>
 #include <random>
 
 #include "Acts/Definitions/Algebra.hpp"
 #include "Acts/Definitions/TrackParametrization.hpp"
 #include "Acts/EventData/TrackParameters.hpp"
+#include "Acts/Propagator/EigenStepper.hpp"
 #include "Acts/Propagator/Navigator.hpp"
+#include "Acts/Propagator/Propagator.hpp"
 #include "Acts/Surfaces/PerigeeSurface.hpp"
+#include "Tracking/Sim/BFieldXYZUtils.h"
 
-using LinPropagator =
-    Acts::Propagator<Acts::StraightLineStepper, Acts::Navigator>;
+using TruthPropagator = Acts::Propagator<Acts::EigenStepper<>, Acts::Navigator>;
 
 namespace tracking::reco {
 
@@ -196,6 +197,7 @@ class TruthSeedProcessor : public TrackingGeometryUser {
 
   /// Which scoring plane hits to use for the truth seeds generation
   std::string scoring_hits_coll_name_{"TargetScoringPlaneHits"};
+  std::string ecal_sp_coll_name_{"EcalScoringPlaneHits"};
   std::string sp_pass_name_{""};
 
   /// Sim hits to check if the truth seed is findable
@@ -207,6 +209,7 @@ class TruthSeedProcessor : public TrackingGeometryUser {
   /// Pass name for the sim hit collections
   std::string input_pass_name_{""};
 
+  std::string sim_particles_coll_name_;
   std::string sim_particles_passname_;
 
   /**
@@ -257,11 +260,14 @@ class TruthSeedProcessor : public TrackingGeometryUser {
   // Maximum track id for hit to be selected from target scoring plane
   int max_track_id_{5};
 
-  std::shared_ptr<LinPropagator> linpropagator_;
+  std::unique_ptr<const TruthPropagator> propagator_;
 
-  // Track Extrapolator Tool :: TODO Use the real extrapolator!
-  std::shared_ptr<tracking::reco::TrackExtrapolatorTool<LinPropagator>>
+  // Track Extrapolator Tool
+  std::shared_ptr<tracking::reco::TrackExtrapolatorTool<TruthPropagator>>
       trk_extrap_;
+
+  /// Path to the magnetic field map
+  std::string field_map_{""};
 
   //--- Smearing ---//
 
@@ -279,5 +285,11 @@ class TruthSeedProcessor : public TrackingGeometryUser {
   std::vector<double> inflate_factors_;
   std::vector<double> beam_origin_{-880.1, -44., 0.};
   int particle_hypothesis_;
+
+  std::string beam_electrons_collection_;
+  std::string tagger_truth_collection_;
+  std::string recoil_truth_collection_;
+  std::string tagger_seeds_collection_;
+  std::string recoil_seeds_collection_;
 };
 }  // namespace tracking::reco

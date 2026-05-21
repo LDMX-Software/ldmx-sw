@@ -8,6 +8,7 @@
 #include "Framework/Configure/Parameters.h"
 #include "Framework/Event.h"
 #include "Framework/EventProcessor.h"
+#include "SimCore/Event/PhotonuclearInteraction.h"
 #include "SimCore/Event/SimParticle.h"
 #include "TH1F.h"
 #include "TH2F.h"
@@ -81,7 +82,11 @@ class PhotoNuclearDQM : public framework::Analyzer {
   EventType classifyEvent(
       const std::vector<const ldmx::SimParticle *> daughters, double threshold);
 
+  std::string sim_particles_coll_name_;
   std::string sim_particles_passname_;
+
+  std::string pn_collection_name_;
+  std::string pn_pass_name_;
 
   /** Method used to classify events in a compact manner. */
   CompactEventType classifyCompactEvent(
@@ -127,6 +132,16 @@ class PhotoNuclearDQM : public framework::Analyzer {
       const ldmx::SimParticle *pnGamma,
       const std::vector<const ldmx::SimParticle *> &pnDaughters,  //
       const EventType eventType);
+
+  /**
+   * Analyze detailed photonuclear interaction tracking data
+   *
+   * If the PhotonuclearInteraction collection is present in the event,
+   * analyze the detailed cascade and descendant information.
+   *
+   * @param event The event to analyze
+   */
+  void analyzeInteractionDetails(const framework::Event &event);
 
  public:
   /**

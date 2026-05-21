@@ -1,0 +1,58 @@
+# LeakSanitizer suppressions for external dependencies
+
+# ROOT (CERN) - internal object management
+leak:TStorage::ObjectAlloc
+leak:TList::NewLink
+leak:THashTable
+leak:TString::Clobber
+leak:TStreamerInfo
+leak:TBufferFile::ReadStdString
+leak:ROOT::new_ldmx
+
+# Geant4 / CLHEP
+leak:CLHEP::Evaluator
+leak:HepTool::Evaluator
+leak:G4GDMLParser
+leak:G4GDMLRead
+leak:G4GDMLMatrix
+leak:G4GDMLAuxStructType
+leak:G4LogicalVolume::SetVisAttributes
+leak:G4EnergyLossMessenger
+leak:G4GDMLMessenger
+leak:G4RunMessenger
+leak:G4CascadeParamMessenger
+leak:G4UIcmdWith
+leak:G4HadronicAbsorptionFritiof
+leak:G4ElectroVDNuclearModel
+leak:G4KineticTrack::G4KineticTrack
+leak:G4MuonVDNuclearModel
+leak:G4ElectroNuclearCrossSection
+leak:G4HadronElasticPhysics::ConstructProcess
+leak:G4HadronPhysicsFTFP_BERT::ConstructProcess
+leak:G4BinaryLightIonReaction::Interact
+leak:G4BOptnChangeCrossSection
+leak:G4VBiasingOperation
+leak:G4VElasticCollision::FinalState
+leak:simcore::RunManager::Initialize
+
+# Acts tracking library
+leak:Acts::CuboidVolumeBuilder
+leak:Acts::SurfaceArrayCreator
+leak:Acts::TrackingVolume
+leak:Acts::PlaneLayer
+leak:Acts::NavigationLayer
+leak:Acts::BoundarySurface
+
+# Boost.Log
+leak:boost::log
+
+# GENIE internals
+leak:ROOT::new_geniecLcLHAIntranuke2018
+leak:genie::rew::GSystSet::Init
+leak:genie::GRV98LO::Initialize
+leak:genie::rew::GReWeightINukeParams::GReWeightINukeParams
+
+# ROOT Cling / interpreter
+leak:TF1::InitStandardFunctions
+leak:cling::IncrementalExecutor::executeWrapper
+leak:StrDup

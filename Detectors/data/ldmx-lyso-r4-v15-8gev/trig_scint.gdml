@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE gdml [
 <!ENTITY constants SYSTEM "constants.gdml">
+
 ]>
 <gdml xmlns:gdml="http://cern.ch/2001/Schemas/GDML" 
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-    xsi:noNamespaceSchemaLocation="http://service-spi.web.cern.ch/service-spi/app/releases/GDML/schema/gdml.xsd" >
+    xsi:noNamespaceSchemaLocation="gdml.xsd" >
 
   <define>
 
@@ -22,36 +23,25 @@
   
   </solids>
 
-  <materials>
-
-      <material name="Vacuum" state="gas">
-      <MEE unit="eV" value="19.2"/>
-      <D unit="g/cm3" value="9.99999473841014e-09"/>
-      <fraction n="1" ref="H"/>
-    </material>
+  
     
-    <!-- Scintillator -->
-    <material name="Polyvinyltoluene">
-      <D type="density" value="1.023" unit="g/cm3"/>
-      <composite n="27" ref="C"/>
-      <composite n="30" ref="H"/>
-    </material>
-
-  </materials>
+  
 
   <structure>
 
     <volume name="trigger_pad2_bar_volume">
       <materialref ref="Polyvinyltoluene"/>
       <solidref ref="trigger_bar_box"/>
-      <auxiliary auxtype="VisAttributes" auxvalue="TriggerPadVis"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="PolyvinyltolueneMaterialVis"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="TriggerPadRegionVis"/>
       <auxiliary auxtype="DetElem" auxvalue="TriggerPad"/>
     </volume>
 
     <volume name="trigger_pad1_bar_volume">
       <materialref ref="Polyvinyltoluene"/>
       <solidref ref="trigger_bar_box"/>
-      <auxiliary auxtype="VisAttributes" auxvalue="TriggerPadVis"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="PolyvinyltolueneMaterialVis"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="TriggerPadRegionVis"/>
       <auxiliary auxtype="DetElem" auxvalue="TriggerPad"/>
     </volume>
 
@@ -91,7 +81,7 @@
       </loop>
 
       <auxiliary auxtype="Region" auxvalue="trig_scint" />
-      <!-- <auxiliary auxtype="VisAttributes" auxvalue="VisibleShowDau"/> -->
+      <auxiliary auxtype="VisAttributes" auxvalue="InvisibleShowDau"/>
       <auxiliary auxtype="DetElem" auxvalue="TriggerPad"/>
 
     </volume>

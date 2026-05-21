@@ -42,6 +42,8 @@ class TrackExtrapolatorTool {
    */
 
   void setDebug(bool debug) { debug_ = debug; }
+  void setMaxStepSize(double step) { max_step_size_ = step; }
+  void setPathLimit(double limit) { path_limit_ = limit; }
 
   /** Method to extrapolate to a target surface given a set of
    BoundTrackParameters
@@ -61,6 +63,8 @@ class TrackExtrapolatorTool {
                                                   pars.direction());
 
     PropagatorOptions p_options(gctx_, mctx_);
+    if (max_step_size_ > 0) p_options.stepping.maxStepSize = max_step_size_;
+    if (path_limit_ > 0) p_options.pathLimit = path_limit_;
 
     p_options.direction = intersection.intersections()[0].pathLength() >= 0
                               ? Acts::Direction::Forward
@@ -271,37 +275,14 @@ class TrackExtrapolatorTool {
     }
 
     if (opt_pars) {
-      if (debug_)
-        std::cout << "[TrackExtrapolatorTool]   Getting surface location...\n";
-      // Reference point
-      Acts::Vector3 surf_loc = target_surface->transform(gctx_).translation();
-      ts.ref_x_ = surf_loc(0);
-      ts.ref_y_ = surf_loc(1);
-      ts.ref_z_ = surf_loc(2);
       if (debug_) {
+        Acts::Vector3 surf_loc = target_surface->transform(gctx_).translation();
         std::cout << "[TrackExtrapolatorTool]   Surface location: ("
                   << surf_loc(0) << ", " << surf_loc(1) << ", " << surf_loc(2)
                   << ")\n";
       }
 
-      if (debug_)
-        std::cout << "[TrackExtrapolatorTool]   Getting parameters...\n";
-      // Parameters
-      ts.params_ =
-          tracking::sim::utils::convertActsToLdmxPars((*opt_pars).parameters());
-      if (debug_) std::cout << "[TrackExtrapolatorTool]   Parameters set\n";
-
-      if (debug_)
-        std::cout << "[TrackExtrapolatorTool]   Getting covariance...\n";
-      // Covariance
-      const Acts::BoundMatrix& trk_cov = *((*opt_pars).covariance());
-      if (debug_)
-        std::cout << "[TrackExtrapolatorTool]   Covariance matrix obtained\n";
-      tracking::sim::utils::flatCov(trk_cov, ts.cov_);
-      if (debug_)
-        std::cout << "[TrackExtrapolatorTool]   Covariance flattened\n";
-
-      ts.ts_type_ = type;
+      ts = tracking::sim::utils::makeTrackState(gctx_, *opt_pars, type);
       if (debug_)
         std::cout << "[TrackExtrapolatorTool]   trackStateAtSurface SUCCESS\n";
       return true;
@@ -318,6 +299,8 @@ class TrackExtrapolatorTool {
   Acts::GeometryContext gctx_;
   Acts::MagneticFieldContext mctx_;
   bool debug_{false};
+  double max_step_size_{-1};
+  double path_limit_{-1};
 };
 
 }  // namespace reco

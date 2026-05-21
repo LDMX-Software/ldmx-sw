@@ -11,20 +11,22 @@
 namespace recon {
 
 void TrackDeDxMassEstimator::configure(framework::config::Parameters &ps) {
-  fit_res_c_ = ps.get<double>("fit_res_C");
-  fit_res_k_ = ps.get<double>("fit_res_K");
-  input_pass_name_ = ps.get<std::string>("input_pass_name", "");
-  track_collection_ =
-      ps.get<std::string>("track_collection", "RecoilTruthSeeds");
+  fit_res_c_ = ps.get<double>("fit_res_c");
+  fit_res_k_ = ps.get<double>("fit_res_k");
+  input_pass_name_ = ps.get<std::string>("input_pass_name");
+  track_collection_ = ps.get<std::string>("track_collection");
 
   ldmx_log(info) << "Track Collection used for TrackDeDxMassEstimator "
                  << track_collection_;
 }
 
 void TrackDeDxMassEstimator::produce(framework::Event &event) {
+  std::vector<ldmx::TrackDeDxMassEstimate> mass_estimates;
+
   if (!event.exists(track_collection_, input_pass_name_)) {
     ldmx_log(error) << "Track collection " << track_collection_ << "_"
                     << input_pass_name_ << " not in event, exiting...";
+    event.add("TrackDeDxMassEstimate", mass_estimates);
     return;
   }
   const std::vector<ldmx::Track> tracks{
@@ -34,27 +36,38 @@ void TrackDeDxMassEstimator::produce(framework::Event &event) {
   std::string track_coll_str = track_collection_;
   std::transform(track_coll_str.begin(), track_coll_str.end(),
                  track_coll_str.begin(), ::tolower);
-  if (track_coll_str.find("tagger") != std::string::npos) {
-    track_type = 1;
-    simhit_collection_ = "TaggerSimHits";
-  } else if (track_coll_str.find("recoil") != std::string::npos) {
-    track_type = 2;
-    simhit_collection_ = "RecoilSimHits";
+
+  bool is_truth = track_coll_str.find("truth") != std::string::npos;
+
+  if (is_truth) {
+    if (track_coll_str.find("tagger") != std::string::npos) {
+      track_type = 1;
+      simhit_collection_ = "TaggerSimHits";
+    } else if (track_coll_str.find("recoil") != std::string::npos) {
+      track_type = 2;
+      simhit_collection_ = "RecoilSimHits";
+    } else {
+      track_type = 0;
+      simhit_collection_ = "";
+    }
   } else {
-    track_type = 0;
+    // Reco tracks (e.g. RecoilTracks, RecoilTracksClean)
+    track_type = 4;
     simhit_collection_ = "";
   }
 
-  // Retrieve the simhits
-  if (!event.exists(simhit_collection_, input_pass_name_)) {
-    ldmx_log(error) << " SimHit collection (" << simhit_collection_ << "_"
-                    << input_pass_name_ << ") does not exists, exiting...";
-    return;
+  // Retrieve simhits only for truth tracks
+  std::vector<ldmx::SimTrackerHit> simhits;
+  if (is_truth) {
+    if (!event.exists(simhit_collection_, input_pass_name_)) {
+      ldmx_log(error) << " SimHit collection (" << simhit_collection_ << "_"
+                      << input_pass_name_ << ") does not exists, exiting...";
+      event.add("TrackDeDxMassEstimate", mass_estimates);
+      return;
+    }
+    simhits = event.getCollection<ldmx::SimTrackerHit>(simhit_collection_,
+                                                       input_pass_name_);
   }
-  auto simhits{event.getCollection<ldmx::SimTrackerHit>(simhit_collection_,
-                                                        input_pass_name_)};
-
-  std::vector<ldmx::TrackDeDxMassEstimate> mass_estimates;
 
   // Loop over the collection of tracks
   for (uint i = 0; i < tracks.size(); i++) {
@@ -70,18 +83,29 @@ void TrackDeDxMassEstimator::produce(framework::Event &event) {
     float momentum = 1. / std::abs(the_qop) * 1000;  // unit: MeV
     ldmx_log(debug) << "Track " << i << " has momentum " << momentum;
 
-    /// Get the hits_ associated with the truth track
     ldmx::TrackDeDxMassEstimate mass_est;
     float sum_dedx_inv2 = 0.;
     float dedx;
-    float n_simhits = 0;
-    for (auto hit : simhits) {
-      // Check if the hit is associated with the track
-      if (hit.getTrackID() != track.getTrackID()) continue;
-      if (hit.getEdep() >= 0 && hit.getPathLength() > 0) {
-        dedx = hit.getEdep() / hit.getPathLength() * 10;  // unit: MeV/cm
-        sum_dedx_inv2 += 1. / (dedx * dedx);
-        n_simhits++;
+    int n_hits = 0;
+
+    if (is_truth) {
+      // Use simhits associated with the truth track
+      for (auto hit : simhits) {
+        if (hit.getTrackID() != track.getTrackID()) continue;
+        if (hit.getEdep() >= 0 && hit.getPathLength() > 0) {
+          dedx = hit.getEdep() / hit.getPathLength() * 10;  // unit: MeV/cm
+          sum_dedx_inv2 += 1. / (dedx * dedx);
+          n_hits++;
+        }
+      }
+    } else {
+      // Use dE/dx measurements stored on the reco track (in MeV/mm)
+      for (auto dedx_meas : track.getDedxMeasurements()) {
+        if (dedx_meas > 0) {
+          dedx = dedx_meas * 10;  // convert MeV/mm to MeV/cm
+          sum_dedx_inv2 += 1. / (dedx * dedx);
+          n_hits++;
+        }
       }
     }  // end of loop over measurements
 
@@ -91,7 +115,7 @@ void TrackDeDxMassEstimator::produce(framework::Event &event) {
     }
 
     // Ih = (1/N * sum_i^N(dE/dx_i)^-2)^-1/2
-    float the_ih = 1. / sqrt(1. / n_simhits * sum_dedx_inv2);
+    float the_ih = 1. / sqrt(1. / n_hits * sum_dedx_inv2);
 
     float mass = 0.;
     if (the_ih > fit_res_c_) {
@@ -103,7 +127,7 @@ void TrackDeDxMassEstimator::produce(framework::Event &event) {
     }
 
     mass_est.setMomentum(momentum);
-    mass_est.setNhits(n_simhits);
+    mass_est.setNhits(n_hits);
     mass_est.setIh(the_ih);
     mass_est.setMass(mass);
     mass_est.setTrackIndex(i);

@@ -1,7 +1,7 @@
 from LDMX.Framework import ldmxcfg
 
 
-p = ldmxcfg.Process('test')
+p = ldmxcfg.Process("test")
 
 p.max_tries_per_event = 10000
 
@@ -9,12 +9,12 @@ from LDMX.Biasing import target
 from LDMX.SimCore import generators as gen
 
 
-det = 'ldmx-lyso-r4-v15-8gev'
+det = "ldmx-lyso-r4-v15-8gev"
 
 my_sim = target.photo_nuclear(det, gen.single_8gev_e_upstream_tagger())
-my_sim.description = 'LYSO Target PN Simulation'
+my_sim.description = "LYSO Target PN Simulation"
 
-p.sequence = [ my_sim ]
+p.sequence = [my_sim]
 
 ##################################################################
 # Below should be the same for all sim scenarios
@@ -25,11 +25,11 @@ import sys
 
 # this sample takes about 5 times more than the other CI wfs
 # so we divide with 5 to get the same ballpark in time
-p.max_events = int(os.environ['LDMX_NUM_EVENTS']) // 5
-p.run = int(os.environ['LDMX_RUN_NUMBER'])
+p.max_events = int(os.environ["LDMX_NUM_EVENTS"]) // 5
+p.run = int(os.environ["LDMX_RUN_NUMBER"])
 
-p.histogram_file = 'hist.root'
-p.output_files = ['events.root']
+p.histogram_file = "hist.root"
+p.output_files = ["events.root"]
 
 # Load the full tracking sequance
 import LDMX.Ecal.digi as ecal_digi
@@ -52,23 +52,23 @@ hcal_reco = hcal_digi_and_reco.HcalRecProducer()
 
 # Load the TS modules
 from LDMX.TrigScint.trig_scint import (
-        TrigScintClusterProducer,
-        TrigScintDigiProducer,
-        trig_scint_track,
+    TrigScintClusterProducer,
+    TrigScintDigiProducer,
+    trig_scint_track,
 )
 
 
 ts_digis = [
-        TrigScintDigiProducer.pad1(),
-        TrigScintDigiProducer.pad2(),
-        TrigScintDigiProducer.pad3(),
-        ]
+    TrigScintDigiProducer.pad1(),
+    TrigScintDigiProducer.pad2(),
+    TrigScintDigiProducer.pad3(),
+]
 
 ts_clusters = [
-        TrigScintClusterProducer.pad1(),
-        TrigScintClusterProducer.pad2(),
-        TrigScintClusterProducer.pad3(),
-        ]
+    TrigScintClusterProducer.pad1(),
+    TrigScintClusterProducer.pad2(),
+    TrigScintClusterProducer.pad3(),
+]
 
 target_digis = TrigScintDigiProducer.target()
 target_clusters = TrigScintClusterProducer.target()
@@ -78,27 +78,46 @@ from LDMX.Recon.electron_counter import ElectronCounter
 from LDMX.Recon.simple_trigger import TriggerProcessor
 
 
-trigger = TriggerProcessor('trigger', 8000.)
+trigger = TriggerProcessor(beam_energy=8000.0, instance_name="trigger")
 
-count = ElectronCounter(1,'ElectronCounter')
-count.input_pass_name = ''
+count = ElectronCounter(
+    simulated_electron_number=1,
+    instance_name="ElectronCounter",
+    input_pass_name="",
+)
 
 # Load the DQM modules
 from LDMX.DQM import dqm
 
 
 target_dqm = [
-    dqm.TrigScintSimDQM('TargetSimHits','TargetSimHits','target'),
-    dqm.TrigScintDigiDQM('TargetDigis','TargetDigis','target'),
-    dqm.TrigScintClusterDQM('TargetClusters','TargetClusters','target'),
-    dqm.TrigScintDigiVerifierDQM('TrigScintDigiVerifier','TargetSimHits','TargetDigis'),
-    ]
+    dqm.TrigScintSimDQM(
+        instance_name="TargetSimHits",
+        hit_collection="TargetSimHits",
+        pad="target",
+    ),
+    dqm.TrigScintDigiDQM(
+        instance_name="TargetDigis",
+        hit_collection="TargetDigis",
+        pad="target",
+    ),
+    dqm.TrigScintClusterDQM(
+        instance_name="TargetClusters",
+        cluster_collection="TargetClusters",
+        pad="target",
+    ),
+    dqm.TrigScintDigiVerifierDQM(
+        instance_name="TrigScintDigiVerifier",
+        ts_simhit_coll="TargetSimHits",
+        ts_digi_coll="TargetDigis",
+    ),
+]
 
 
 # Load ecal veto and use tracking in it
 ecal_veto = ecal_vetos.EcalVetoProcessor()
 ecal_mip = ecal_vetos.EcalMipProcessor()
-ecal_veto_pnet =  ecal_vetos.EcalPnetVetoProcessor()
+ecal_veto_pnet = ecal_vetos.EcalPnetVetoProcessor()
 
 # Load hcal veto
 import LDMX.Hcal.hcal as hcal
@@ -121,7 +140,8 @@ p.logger.term_level = 1
 p.sequence.extend(full_tracking_sequence.sequence)
 p.sequence.extend(full_tracking_sequence.dqm_sequence)
 
-p.sequence.extend([
+p.sequence.extend(
+    [
         ecal_digi.EcalDigiProducer(),
         ecal_digi.EcalRecProducer(),
         ecal_pres_skimmer,
@@ -141,8 +161,8 @@ p.sequence.extend([
         trigger,
         *target_dqm,
         dqm.PhotoNuclearDQM(),
-        dqm.EcalClusterAnalyzer()
-        ])
+        dqm.EcalClusterAnalyzer(),
+    ]
+)
 
 p.sequence.extend(dqm.all_dqm)
-

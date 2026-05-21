@@ -28,6 +28,12 @@ project(LDMX_SW VERSION ${LDMXSW_VERSION_NUM}
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_INSTALL_MESSAGE LAZY)
 
+# Use ccache if available to speed up rebuilds
+find_program(CCACHE_FOUND ccache)
+if(CCACHE_FOUND)
+    set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE ccache)
+endif()
+
 # Load additional macros used by this project. 
 list(APPEND CMAKE_MODULE_PATH ${LDMX_SW_SOURCE_DIR}/cmake/)
 
@@ -105,3 +111,13 @@ add_subdirectory(Detectors)
 add_subdirectory(MagFieldMap)
 
 build_test()
+add_test(
+  NAME PythonConfigParameterSet
+  COMMAND python3 -m unittest Framework/test/test_parameter_set.py
+  WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+)
+add_test(
+  NAME StandaloneProcessor
+  COMMAND ./run
+  WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/Framework/test/standalone
+)

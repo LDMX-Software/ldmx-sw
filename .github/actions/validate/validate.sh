@@ -27,7 +27,7 @@ __main__() {
   echo "Sample Name: ${_sample}"
   echo "Sample Dir: ${_sample_dir}"
   echo "Not Running Comparison? ${_no_comp}"
-  denv config env copy LDMX_NUM_EVENTS LDMX_RUN_NUMBER CI_DATA
+  denv config env copy LDMX_NUM_EVENTS LDMX_RUN_NUMBER LDMX_LOG_LEVEL CI_DATA
   end_group
 
   start_group Sample-Specific Initialization
@@ -40,7 +40,9 @@ __main__() {
 
   # assume sample directory has its config called 'config.py'
   start_group Run config.py
+  local _t0=${SECONDS}
   denv fire config.py | tee output.log || return $?
+  echo "${_sample} $(( SECONDS - _t0 ))" > timing.txt
   end_group
 
   start_group Compare to Golden Histograms
@@ -56,7 +58,11 @@ __main__() {
       || return $?
 
     # print log diff into output directory
-    cp -t ${_sample_dir}/plots ${_ref_dir}/gold.log output.log || return $?
+    cp -t ${_sample_dir}/plots ${_ref_dir}/gold.log output.log timing.txt || return $?
+    # include the shared gold timing reference if it exists
+    if [[ -f ${CI_DATA}/gold.time ]]; then
+      cp ${CI_DATA}/gold.time ${_sample_dir}/plots/
+    fi
 
     # compare.py puts plots into the plots/ directory
     #   Package them up for upload
@@ -73,6 +79,7 @@ __main__() {
     set_output plots $(pwd)/${_sample}_recon_validation_plots.tar.gz
   fi
   set_output log ${_sample_dir}/output.log
+  set_output timing ${_sample_dir}/timing.txt
   set_output hists ${_sample_dir}/hist.root
   set_output events ${_sample_dir}/events.root
   end_group

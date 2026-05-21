@@ -8,6 +8,9 @@
 #ifndef SIMCORE_EVENT_SIMCALORIMETERHIT_H_
 #define SIMCORE_EVENT_SIMCALORIMETERHIT_H_
 
+// C++
+#include <functional>  // for track ID encodings
+
 // ROOT
 #include "TObject.h"  //For ClassDef
 
@@ -90,6 +93,12 @@ class SimCalorimeterHit {
    * Print out the object.
    */
   friend std::ostream &operator<<(std::ostream &o, const SimCalorimeterHit &d);
+
+  /*
+   * Print out a contributor.
+   */
+  friend std::ostream &operator<<(std::ostream &o,
+                                  const SimCalorimeterHit::Contrib &contrib);
 
   /**
    * Get the detector ID.
@@ -271,6 +280,18 @@ class SimCalorimeterHit {
   void updateContrib(int i, float edep, float time);
 
   /**
+   * Encodes all Track IDs in the SimCalorimeterHit object according
+   * to the schema provided in the 'encodeFunc' passed to this method.
+   * @param encodeFunc The track ID encoding function to be called.
+   * @param encoding_version The version number for the track ID bitwise
+   * encoding schema. Possible values range over [0, 15].
+   * @param event_index The sample event index to assign the track ID.
+   */
+  void encodeTracks(
+      std::function<int(int, unsigned int, unsigned int)> encodeFunc,
+      const unsigned int encoding_version, const unsigned int event_index = 0);
+
+  /**
    * Sort by time of hit
    */
   bool operator<(const SimCalorimeterHit &rhs) const {
@@ -412,7 +433,7 @@ class SimCalorimeterHit {
   /**
    * ROOT class definition.
    */
-  ClassDef(SimCalorimeterHit, 7)
+  ClassDef(SimCalorimeterHit, 8);
 };
 }  // namespace ldmx
 

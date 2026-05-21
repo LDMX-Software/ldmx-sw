@@ -16,6 +16,9 @@ class PhotoNuclear : public XsecBiasingOperator {
   /** Constructor */
   PhotoNuclear(std::string name, const framework::config::Parameters& p);
 
+  /** Destructor */
+  ~PhotoNuclear() override { delete em_xsec_operation_; }
+
   /** Method called at the beginning of a run. */
   void StartRun() override;
 

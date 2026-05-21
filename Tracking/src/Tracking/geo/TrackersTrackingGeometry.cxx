@@ -1,5 +1,7 @@
 #include "Tracking/geo/TrackersTrackingGeometry.h"
 
+#include "Framework/Exception/Exception.h"
+
 namespace tracking::geo {
 
 const std::string TrackersTrackingGeometry::NAME = "TrackersTrackingGeometry";
@@ -74,8 +76,8 @@ void TrackersTrackingGeometry::buildRecoilLayoutMap(G4VPhysicalVolume* pvol,
             findDaughterByName(l_vol->GetDaughter(i),
                                "LDMXRecoilL14ModuleVolume_component0_physvol");
         if (!component0_volume)
-          throw std::runtime_error(
-              "Could not find component0 volume for L14 Recoil");
+          EXCEPTION_RAISE("BadGeometry",
+                          "Could not find component0 volume for L14 Recoil");
         active_sensor = findDaughterByName(
             component0_volume,
             "LDMXRecoilL14ModuleVolume_component0Sensor0_physvol");
@@ -90,8 +92,8 @@ void TrackersTrackingGeometry::buildRecoilLayoutMap(G4VPhysicalVolume* pvol,
             findDaughterByName(l_vol->GetDaughter(i),
                                "LDMXRecoilL56ModuleVolume_component0_physvol");
         if (!component0_volume)
-          throw std::runtime_error(
-              "Could not find component0 volume for L56 Recoil");
+          EXCEPTION_RAISE("BadGeometry",
+                          "Could not find component0 volume for L56 Recoil");
         active_sensor = findDaughterByName(
             component0_volume,
             "LDMXRecoilL56ModuleVolume_component0Sensor0_physvol");
@@ -106,11 +108,11 @@ void TrackersTrackingGeometry::buildRecoilLayoutMap(G4VPhysicalVolume* pvol,
       }
 
       else
-        throw std::runtime_error("Could not build recoil layout");
+        EXCEPTION_RAISE("BadGeometry", "Could not build recoil layout");
 
       if (!active_sensor)
-        throw std::runtime_error(
-            "Could not find ActiveSensor for recoil volume");
+        EXCEPTION_RAISE("BadGeometry",
+                        "Could not find ActiveSensor for recoil volume");
 
       Acts::Transform3 ref2_transform = Acts::Transform3::Identity();
 
@@ -356,8 +358,9 @@ std::shared_ptr<Acts::PlaneSurface> TrackersTrackingGeometry::getSurfacePtr(
   // Create an alignable detector element and assign it to the surface.
   // The default transformation is the surface parsed transformation
 
-  auto det_element = std::make_shared<DetectorElement>(
-      surface, surface_transform_tracker, thickness);
+  auto det_element = std::make_shared<tracking::geo::DetectorElement>(
+      std::static_pointer_cast<Acts::Surface>(surface),
+      surface_transform_tracker, thickness);
 
   // This is the call that modify the behaviour of surface->transform(gctx)
   // After this call each surface will use the underlying detectorElement

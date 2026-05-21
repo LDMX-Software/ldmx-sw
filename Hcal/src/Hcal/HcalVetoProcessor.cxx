@@ -76,9 +76,9 @@ void HcalVetoProcessor::produce(framework::Event &event) {
     auto recoil_tracks{
         event.getCollection<ldmx::Track>(track_collection_, track_pass_name_)};
 
-    // Use ACTS to propage the recoil track to the end of the magnetic field
+    // Use ACTS to propagate the recoil track to the end of the magnetic field
     // This happens to be at the ECAL face
-    ldmx::TrackStateType ts_type = ldmx::TrackStateType::AtECAL;
+    ldmx::TrackStateType ts_type = ldmx::AtECAL;
     recoil_track_states = trackProp(recoil_tracks, ts_type, "ecal");
     if (!recoil_track_states.empty()) {
       recoil_pos_x = recoil_track_states[0];
@@ -213,36 +213,19 @@ std::vector<float> HcalVetoProcessor::trackProp(const ldmx::Tracks &tracks,
     auto trk_ts = track.getTrackState(ts_type);
     // Continue if there's no value
     if (!trk_ts.has_value()) continue;
-    ldmx::Track::TrackState &hcal_track_state = trk_ts.value();
+    ldmx::Track::TrackState hcal_track_state = trk_ts.value();
 
     // Check that the track state is filled
-    if (hcal_track_state.params_.size() < 5) continue;
+    if (hcal_track_state.pos_.size() < 3 || hcal_track_state.mom_.size() < 3)
+      continue;
 
-    float track_state_loc0 = static_cast<float>(hcal_track_state.params_[0]);
-    float track_state_loc1 = static_cast<float>(hcal_track_state.params_[1]);
-
-    // param 2 = phi (azimuthal), param 3 = theta (polar)
-    // param 4 = QoP
-    // ACTS (local)  to  LDMX (global) coordinates: (y_,z_,x_)->  (x_,y_,z_)
-    // convert qop [1/GeV] to p [MeV]
-    double p_track_state = (-1 / hcal_track_state.params_[4]) * 1000;
-    // p * sin(theta) * sin(phi)
-    double recoil_mom_x = p_track_state * sin(hcal_track_state.params_[3]) *
-                          sin(hcal_track_state.params_[2]);
-    // p * cos(theta)
-    double recoil_mom_y = p_track_state * cos(hcal_track_state.params_[3]);
-    // p * sin(theta) * cos(phi)
-    double recoil_mom_z = p_track_state * sin(hcal_track_state.params_[3]) *
-                          cos(hcal_track_state.params_[2]);
-
-    // Store the new track state variables
-    new_track_states.push_back(track_state_loc0);
-    new_track_states.push_back(track_state_loc1);
-    // z_-position as in the tracking exptrapolation
-    new_track_states.push_back(240.5);
-    new_track_states.push_back(recoil_mom_x);
-    new_track_states.push_back(recoil_mom_y);
-    new_track_states.push_back(recoil_mom_z);
+    // pos_ is (x, y, z) in mm (LDMX global); mom_ is (px, py, pz) in MeV
+    new_track_states.push_back(static_cast<float>(hcal_track_state.pos_[0]));
+    new_track_states.push_back(static_cast<float>(hcal_track_state.pos_[1]));
+    new_track_states.push_back(static_cast<float>(hcal_track_state.pos_[2]));
+    new_track_states.push_back(static_cast<float>(hcal_track_state.mom_[0]));
+    new_track_states.push_back(static_cast<float>(hcal_track_state.mom_[1]));
+    new_track_states.push_back(static_cast<float>(hcal_track_state.mom_[2]));
     break;
   }
 

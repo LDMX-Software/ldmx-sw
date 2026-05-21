@@ -10,6 +10,9 @@ Event::~Event() {
   for (regex_t& reg : regex_drop_collections_) {
     regfree(&reg);
   }
+  for (regex_t& reg : regex_ignore_collections_) {
+    regfree(&reg);
+  }
 }
 
 void Event::print() const {
@@ -24,6 +27,16 @@ void Event::addDrop(const std::string& exp) {
     regex_drop_collections_.push_back(reg);
   } else {
     EXCEPTION_RAISE("InvalidRegex", "The passed drop rule regex '" + exp +
+                                        "' is not a valid regex.");
+  }
+}
+
+void Event::addIgnore(const std::string& exp) {
+  regex_t reg;
+  if (!regcomp(&reg, exp.c_str(), REG_EXTENDED | REG_ICASE | REG_NOSUB)) {
+    regex_ignore_collections_.push_back(reg);
+  } else {
+    EXCEPTION_RAISE("InvalidRegex", "The passed ignore rule regex '" + exp +
                                         "' is not a valid regex.");
   }
 }
@@ -134,6 +147,7 @@ void Event::setInputTree(TTree* tree) {
       brname = branches->At(i)->GetName();
     }
     if (brname != ldmx::EventHeader::BRANCH) {
+      if (shouldIgnore(brname)) continue;
       size_t j = brname.find("_");
       auto br = dynamic_cast<TBranchElement*>(branches->At(i));
       // can't determine type if branch isn't
@@ -180,6 +194,13 @@ void Event::onEndOfFile() {
 
 bool Event::shouldDrop(const std::string& branch_name) const {
   for (const regex_t& exp : regex_drop_collections_) {
+    if (!regexec(&exp, branch_name.c_str(), 0, 0, 0)) return true;
+  }
+  return false;
+}
+
+bool Event::shouldIgnore(const std::string& branch_name) const {
+  for (const regex_t& exp : regex_ignore_collections_) {
     if (!regexec(&exp, branch_name.c_str(), 0, 0, 0)) return true;
   }
   return false;

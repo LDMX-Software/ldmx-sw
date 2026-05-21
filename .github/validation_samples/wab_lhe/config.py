@@ -3,7 +3,7 @@ import os
 from LDMX.Framework import ldmxcfg
 
 
-p = ldmxcfg.Process('test')
+p = ldmxcfg.Process("test")
 
 p.max_tries_per_event = 10000
 
@@ -13,20 +13,20 @@ from LDMX.SimCore import simulator as sim
 
 
 # Load LHE file containing WAB events
-wab_gen = gen.lhe(
-    "WAB Generator",
-    f'{os.environ["CI_DATA"]}/wab_lhe/8GeV_WABFF2_10K.lhe'
+wab_gen = gen.Lhe(
+    instance_name="WAB Generator",
+    file_path=f"{os.environ['CI_DATA']}/wab_lhe/8GeV_WABFF2_10K.lhe",
 )
 
 # Place them in the middle of the target
 wab_gen.vertex = [0.0, 0.0, 0.0]
 
-det = 'ldmx-det-v15-8gev'
-my_sim = sim.simulator('sim')
-my_sim.setDetector(det, include_scoring_planes_minimal = True)
+det = "ldmx-det-v15-8gev"
+my_sim = sim.Simulator(instance_name="sim")
+my_sim.set_detector(det, include_scoring_planes_minimal=True)
 my_sim.generators.append(wab_gen)
 
-p.sequence = [ my_sim ]
+p.sequence = [my_sim]
 
 ##################################################################
 # Below should be the same for all sim scenarios
@@ -35,11 +35,11 @@ import os
 import sys
 
 
-p.max_events = int(int(os.environ['LDMX_NUM_EVENTS']) * 0.99)
-p.run = int(os.environ['LDMX_RUN_NUMBER'])
+p.max_events = int(int(os.environ["LDMX_NUM_EVENTS"]) * 0.99)
+p.run = int(os.environ["LDMX_RUN_NUMBER"])
 
-p.histogram_file = 'hist.root'
-p.output_files = ['events.root']
+p.histogram_file = "hist.root"
+p.output_files = ["events.root"]
 
 # Load the full tracking sequance
 import LDMX.Ecal.digi as ecal_digi
@@ -87,8 +87,11 @@ from LDMX.Recon.simple_trigger import TriggerProcessor
 from LDMX.Trigger import trigger_energy_sums
 
 
-count = ElectronCounter(1,'ElectronCounter')
-count.input_pass_name = ''
+count = ElectronCounter(
+    simulated_electron_number=1,
+    instance_name="ElectronCounter",
+    input_pass_name="",
+)
 
 # Load the DQM modules
 from LDMX.DQM import dqm
@@ -97,7 +100,7 @@ from LDMX.DQM import dqm
 # Load ecal veto and use tracking in it
 ecal_veto = ecal_vetos.EcalVetoProcessor()
 ecal_mip = ecal_vetos.EcalMipProcessor()
-ecal_veto_pnet =  ecal_vetos.EcalPnetVetoProcessor()
+ecal_veto_pnet = ecal_vetos.EcalPnetVetoProcessor()
 
 # Load hcal veto
 import LDMX.Hcal.hcal as hcal
@@ -109,7 +112,7 @@ hcal_wab = hcal.HcalWABVetoProcessor()
 
 p.logger.term_level = 1
 # Example to show trace level logging for recoil CKF  (only)
-#p.logger.custom(full_tracking_sequence.dqm_recoil_ckf, level = -1)
+# p.logger.custom(full_tracking_sequence.dqm_recoil_ckf, level = -1)
 
 # Add full tracking for both recoil trackers:
 # digi, seeds, CKF, ambiguity resolution, GSF, DQM
@@ -119,16 +122,17 @@ recoil_tracking = [
     full_tracking_sequence.seeder_recoil,
     full_tracking_sequence.tracking_recoil,
     full_tracking_sequence.greedy_solver_recoil,
-    full_tracking_sequence.GSF_recoil
+    full_tracking_sequence.GSF_recoil,
 ]
 
 recoil_tracker_dqm = [
     full_tracking_sequence.dqm_recoil_ckf,
-#     full_tracking_sequence.dqm_recoil_gas,
-#     full_tracking_sequence.dqm_recoil_gsf
+    #     full_tracking_sequence.dqm_recoil_gas,
+    #     full_tracking_sequence.dqm_recoil_gsf
 ]
 
-p.sequence.extend([
+p.sequence.extend(
+    [
         *recoil_tracking,
         ecal_digi.EcalDigiProducer(),
         ecal_digi.EcalRecProducer(),
@@ -139,19 +143,16 @@ p.sequence.extend([
         hcal_digi,
         hcal_reco,
         hcal_veto,
-        TriggerProcessor('trigger', 8000.),
-        #hcal_clusters,
-        #hcal_wab,
+        TriggerProcessor(beam_energy=8000.0, instance_name="trigger"),
+        # hcal_clusters,
+        # hcal_wab,
         *recoil_tracker_dqm,
-        ])
+    ]
+)
 
 # Remove TS DQM
 almost_all_dqm = [
-    dqm.sample_validation_dqm
-    + dqm.ecal_dqm
-    + dqm.hcal_dqm
-    + dqm.trigger_dqm
-    ]
+    dqm.sample_validation_dqm + dqm.ecal_dqm + dqm.hcal_dqm + dqm.trigger_dqm
+]
 
 p.sequence.extend(*almost_all_dqm)
-

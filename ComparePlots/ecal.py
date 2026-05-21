@@ -24,7 +24,7 @@ def digi_verify(d : Differ, out_dir = None) :
         ' (excluding empty rec cells)'
     )
     log.info(f'plotting {col}')
-    d.plot1d(col, name, out_dir = out_dir, legend_kw = dict(loc='upper left'))
+    d.plot1d(col, name, out_dir = out_dir, legend_kw = {'loc': 'upper left'})
 
     features = [
         ('EcalDigiVerify/num_rec_hits', 'Number of RecHits'),
@@ -50,7 +50,7 @@ def shower_feats(d : Differ, out_dir = None) :
 
     col, name = 'EcalShowerFeatures/deepest_layer_hit', 'Deepest Layer Hit'
     log.info(f'plotting {col}')
-    d.plot1d(col, name, out_dir = out_dir, legend_kw = dict(loc='upper left'))
+    d.plot1d(col, name, out_dir = out_dir, legend_kw = {'loc': 'upper left'})
 
     features = [
         ('EcalShowerFeatures/num_readout_hits', 'N Readout Hits'),
@@ -80,7 +80,7 @@ def mip_tracking(d : Differ, out_dir = None) :
 
     col, name = 'EcalMipTrackingFeatures/n_straight_tracks', 'Number of Straight Tracks'
     log.info(f'plotting {col}')
-    d.plot1d(col, name, out_dir = out_dir, legend_kw = dict(loc='upper left'))
+    d.plot1d(col, name, out_dir = out_dir, legend_kw = {'loc': 'upper left'})
 
     features = [
         ('EcalMipTrackingFeatures/n_linreg_segments',
@@ -110,7 +110,7 @@ def veto_results(d : Differ, out_dir = None) :
 
     col, name = 'EcalVetoResults/bdt_disc', 'BDT discriminating score'
     log.info(f'plotting {col}')
-    d.plot1d(col, name, out_dir = out_dir, legend_kw = dict(loc='upper left'))
+    d.plot1d(col, name, out_dir = out_dir, legend_kw = {'loc': 'upper left'})
 
     features = [
         ('EcalVetoResults/bdt_disc_log', '-log(1-BDT discriminating score)'),

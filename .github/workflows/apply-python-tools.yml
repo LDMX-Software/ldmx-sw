@@ -1,6 +1,7 @@
 name: Apply Python formatting
 on:
   pull_request:
+      types: [opened, ready_for_review]
   workflow_dispatch:
   schedule:
     - cron: '0 0 * * 0'
@@ -12,7 +13,7 @@ jobs:
   ruff-format:
     runs-on: ubuntu-latest
     steps:
-    - uses: extractions/setup-just@v3
+    - uses: extractions/setup-just@v4
     - uses: actions/checkout@v6
       with:
         submodules: 'recursive'
