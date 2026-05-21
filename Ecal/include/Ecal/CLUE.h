@@ -17,6 +17,8 @@
 #include <memory>
 #include <set>
 #include <stack>
+#include <stdlib.h>
+#include <fstream>
 
 #include "DetDescr/EcalID.h"
 #include "Ecal/Event/EcalHit.h"
@@ -88,7 +90,7 @@ class CLUE {
   // number we're working on
   std::vector<std::vector<const ldmx::EcalHit*>> clustering(
       std::vector<std::shared_ptr<Density>>& densities, bool connectingLayers,
-      int layerTag = 0);
+      int layerTag = 0, std::string roc_file_name="");
 
   std::vector<std::shared_ptr<Density>> setupForClue3D();
 
@@ -97,7 +99,7 @@ class CLUE {
 
   void cluster(const std::vector<ldmx::EcalHit>& hits, double dc, double rc,
                double deltac, double deltao, int nbrOfLayers,
-               bool reclustering);
+               bool reclustering, std::string roc_file_name);
 
   std::vector<double> getCentroidDistances() const {
     return centroid_distances_;

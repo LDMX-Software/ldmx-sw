@@ -7,7 +7,7 @@ Examples
 """
 
 from LDMX.Framework import Processor, processor
-
+from .make_path import make_roc_path
 
 @processor("ecal::EcalClusterProducer", "Ecal")
 class EcalClusterProducer(Processor):
@@ -45,10 +45,12 @@ class EcalClusterProducer(Processor):
         not used when nbr_of_layers > 1
     deltao: float
         minimum outlier separation
-    recluster: bool
+    reclustering: bool
         recluster merged clusters or not
         No reclustering leads to more undercounting
         reclustering leads to more overcounting
+    roc_file: str
+        Used in CLUE to set the roc values, if available
     """
 
     rec_hit_coll_name: str = "EcalRecHits"
@@ -65,3 +67,4 @@ class EcalClusterProducer(Processor):
     deltac: float = 10.0
     deltao: float = 40.0
     reclustering: bool = False
+    roc_file: str = make_roc_path("RoC_v14_8gev")

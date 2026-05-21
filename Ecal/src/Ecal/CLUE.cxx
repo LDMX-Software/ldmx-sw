@@ -1,6 +1,4 @@
-
 #include "Ecal/CLUE.h"
-
 #include <cmath>
 
 namespace ecal {
@@ -254,13 +252,50 @@ std::vector<std::shared_ptr<CLUE::Density>> CLUE::setup(
 // number we're working on
 std::vector<std::vector<const ldmx::EcalHit*>> CLUE::clustering(
     std::vector<std::shared_ptr<CLUE::Density>>& densities,
-    bool connecting_layers, int layer_index) {
+    bool connecting_layers, int layer_index, std::string roc_file_name) {
   ldmx_log(trace) << "--- CLUSTERING ---";
   ldmx_log(trace) << "Number of densities: " << densities.size()
                   << "; connecting_layers: " << connecting_layers
                   << "; layer_index: " << layer_index;
+
   if (!connecting_layers && nbr_of_layers_ > 1) {
     // if layerwise clustering override rhoc_ and deltac_ with per-layer values
+
+    //If possible, overwrite hard-coded roc values with values imported from the CSV file
+    //These should only need to be read once
+    static std::vector<double> radius_from_file_;
+    if(radius_from_file_.empty()&&roc_file_name!=""){
+      ldmx_log(info) << "Attempting to use RoC values from CSV file.";
+      //File reading algorithm adapted from EcalVetoProcessor.cxx
+      if (!std::ifstream(roc_file_name).good()) {
+	EXCEPTION_RAISE(
+			"CLUE",
+			"The specified RoC file '" + roc_file_name + "' does not exist!");
+      } else {
+	std::ifstream rocfile(roc_file_name);
+	std::string line, value;
+	
+	// Throw away the first (header) line in the file
+	std::getline(rocfile, line);
+	// In EcalVetoProcessor, the RoC values are a 2D array for many angle ranges
+	//As near as I (CJ) can tell, the RoC values in CLUE are only for the first
+	//angle range, 0<theta<10. So we only read the first line of the CSV file's values
+	
+	std::getline(rocfile, line);
+	std::stringstream ss(line);
+	int values_read = 0;
+	while (std::getline(ss, value, ',')) {
+	  values_read++;
+	  if(values_read < 5) continue;//First few entries in each line of RoC file are not RoC values
+	  float f_value = (value != "") ? std::stof(value) : -1.0;
+	  radius_from_file_.push_back(f_value);
+	}
+      }
+    }
+
+    if(!radius_from_file_.empty())
+      radius_ = radius_from_file_;
+
     rhoc_ = layer_rho_c_[layer_index];
     ldmx_log(trace) << "Setting rho_c on layer " << layer_index << " to "
                     << rhoc_;
@@ -278,7 +313,6 @@ std::vector<std::vector<const ldmx::EcalHit*>> CLUE::clustering(
     // deltac_ = 100.;
     // rhoc_ = 1000.;
   }
-
   bool energy_overload = false;
   double max_energy = 10000.;
   clustering_loops_ = 0;
@@ -581,7 +615,8 @@ void CLUE::convertToIntermediateClusters(
 
 void CLUE::cluster(const std::vector<ldmx::EcalHit>& unsorted_hits, double dc,
                    double rc, double delta_c, double delta_o, int nbr_of_layers,
-                   bool reclustering) {
+                   bool reclustering, std::string roc_file_name) {
+
   ldmx_log(info) << "Starting CLUE clustering with parameters:" << "dc " << dc
                  << ", rc " << rc << ", delta_c " << delta_c << ", delta_o "
                  << delta_o << ", nbr_of_layers " << nbr_of_layers
@@ -636,7 +671,7 @@ void CLUE::cluster(const std::vector<ldmx::EcalHit>& unsorted_hits, double dc,
     for (int i = 0; i < layers.size(); i++) {
       ldmx_log(trace) << "--- LAYER " << i + 1 << " ---";
       auto densities = setup(layers[i]);
-      auto clusters = clustering(densities, false, i);
+      auto clusters = clustering(densities, false, i, roc_file_name);
       convertToIntermediateClusters(clusters);
       // clustering without 3D
     }
@@ -648,7 +683,7 @@ void CLUE::cluster(const std::vector<ldmx::EcalHit>& unsorted_hits, double dc,
   } else {
     ldmx_log(debug) << "Only one layer, doing 2D clustering";
     auto densities = setup(hits);
-    auto clusters = clustering(densities, false);
+    auto clusters = clustering(densities, false, 0, roc_file_name);
     convertToIntermediateClusters(clusters);
   }
 }

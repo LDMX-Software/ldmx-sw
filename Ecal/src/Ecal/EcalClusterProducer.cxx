@@ -31,6 +31,7 @@ void EcalClusterProducer::configure(framework::config::Parameters& ps) {
   clue_ = ps.get<bool>("clue");
   nbr_of_layers_ = ps.get<int>("nbr_of_layers");
   reclustering_ = ps.get<bool>("reclustering");
+  roc_file_name_ = ps.get<std::string>("roc_file");
 }
 
 void EcalClusterProducer::produce(framework::Event& event) {
@@ -46,7 +47,7 @@ void EcalClusterProducer::produce(framework::Event& event) {
     ldmx_log(info) << "Using CLUE clustering algorithm";
     CLUE cf;
     cf.cluster(ecal_hits, dc_, rhoc_, deltac_, deltao_, nbr_of_layers_,
-               reclustering_);
+               reclustering_, roc_file_name_);
     ldmx_log(debug) << "CLUE algorithm finished clustering";
     std::vector<IntermediateCluster> interm_cluster = cf.getClusters();
     std::vector<IntermediateCluster> f_interm_cluster =

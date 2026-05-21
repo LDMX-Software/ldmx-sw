@@ -74,6 +74,7 @@ class EcalClusterProducer : public framework::Producer {
   bool clue_;
   int nbr_of_layers_;
   bool reclustering_;
+  std::string roc_file_name_;
 
   /** The name of the cluster algorithm used. */
   TString algo_name_;
