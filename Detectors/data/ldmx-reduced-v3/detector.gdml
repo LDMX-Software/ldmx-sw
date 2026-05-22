@@ -2,6 +2,7 @@
 <!DOCTYPE gdml [
 <!ENTITY constants SYSTEM "constants.gdml">
 <!ENTITY materials SYSTEM "materials.gdml">
+<!ENTITY visattributes SYSTEM "visattributes.gdml">
 ]>
 <gdml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://service-spi.web.cern.ch/service-spi/app/releases/GDML/schema/gdml.xsd">
 
@@ -117,89 +118,11 @@
       <auxiliary auxtype="StoreTrajectories" auxvalue="true"/>
     </auxiliary>
 
-    <!-- define vis attributes -->
-    <auxiliary auxtype="VisAttributes" auxvalue="InvisibleNoDau">
-      <auxiliary auxtype="DaughtersInvisible" auxvalue="true"/>
-      <auxiliary auxtype="Visible" auxvalue="false"/>
-    </auxiliary>  
-    <auxiliary auxtype="VisAttributes" auxvalue="InvisibleShowDau">
-      <auxiliary auxtype="DaughtersInvisible" auxvalue="false"/>
-      <auxiliary auxtype="Visible" auxvalue="false"/>
-    </auxiliary>  
-    <auxiliary auxtype="VisAttributes" auxvalue="NoDau">
-      <auxiliary auxtype="DaughtersInvisible" auxvalue="true"/>
-      <auxiliary auxtype="Visible" auxvalue="true"/>
-    </auxiliary>  
-    <auxiliary auxtype="VisAttributes" auxvalue="TargetVis">
-      <auxiliary auxtype="R" auxvalue="1.0"/>
-      <auxiliary auxtype="G" auxvalue="0.0"/>
-      <auxiliary auxtype="B" auxvalue="0.0"/>
-      <auxiliary auxtype="A" auxvalue="1.0"/>
-      <auxiliary auxtype="Style" auxvalue="solid"/>
-      <auxiliary auxtype="DaughtersInvisible" auxvalue="true"/>
-      <auxiliary auxtype="Visible" auxvalue="true"/>
-      <auxiliary auxtype="LineWidth" auxvalue="1.0"/>
-    </auxiliary>
-    <auxiliary auxtype="VisAttributes" auxvalue="EcalVis">
-      <auxiliary auxtype="R" auxvalue="0.6"/>
-      <auxiliary auxtype="G" auxvalue="0.6"/>
-      <auxiliary auxtype="B" auxvalue="0.6"/>
-      <auxiliary auxtype="A" auxvalue="1.0"/>
-      <auxiliary auxtype="Style" auxvalue="wireframe"/>
-      <auxiliary auxtype="DaughtersInvisible" auxvalue="false"/>
-      <auxiliary auxtype="Visible" auxvalue="true"/>
-      <auxiliary auxtype="LineWidth" auxvalue="1.0"/>
-    </auxiliary>  
-    <auxiliary auxtype="VisAttributes" auxvalue="HcalVis">
-      <auxiliary auxtype="R" auxvalue="0.6"/>
-      <auxiliary auxtype="G" auxvalue="0.3"/>
-      <auxiliary auxtype="B" auxvalue="0.0"/>
-      <auxiliary auxtype="A" auxvalue="1.0"/>
-      <auxiliary auxtype="Style" auxvalue="wireframe"/>
-      <auxiliary auxtype="DaughtersInvisible" auxvalue="false"/>
-      <auxiliary auxtype="Visible" auxvalue="true"/>
-      <auxiliary auxtype="LineWidth" auxvalue="1.0"/>
-    </auxiliary>
-    <auxiliary auxtype="VisAttributes" auxvalue="TaggerVis">
-      <auxiliary auxtype="R" auxvalue="0.8"/>
-      <auxiliary auxtype="G" auxvalue="0.8"/>
-      <auxiliary auxtype="B" auxvalue="0.0"/>
-      <auxiliary auxtype="A" auxvalue="1.0"/>
-      <auxiliary auxtype="Style" auxvalue="wireframe"/>
-      <auxiliary auxtype="DaughtersInvisible" auxvalue="false"/>
-      <auxiliary auxtype="Visible" auxvalue="true"/>
-      <auxiliary auxtype="LineWidth" auxvalue="1.0"/>
-    </auxiliary>
-    <auxiliary auxtype="VisAttributes" auxvalue="RecoilVis">
-      <auxiliary auxtype="R" auxvalue="0.6"/>
-      <auxiliary auxtype="G" auxvalue="0.6"/>
-      <auxiliary auxtype="B" auxvalue="0.0"/>
-      <auxiliary auxtype="A" auxvalue="1.0"/>
-      <auxiliary auxtype="Style" auxvalue="wireframe"/>
-      <auxiliary auxtype="DaughtersInvisible" auxvalue="false"/>
-      <auxiliary auxtype="Visible" auxvalue="true"/>
-      <auxiliary auxtype="LineWidth" auxvalue="1.0"/>
-    </auxiliary>
-    <auxiliary auxtype="VisAttributes" auxvalue="TriggerPadVis">
-      <auxiliary auxtype="R" auxvalue="0.9"/>
-      <auxiliary auxtype="G" auxvalue="0.8"/>
-      <auxiliary auxtype="B" auxvalue="1.0"/>
-      <auxiliary auxtype="A" auxvalue="1.0"/>
-      <auxiliary auxtype="Style" auxvalue="wireframe"/>
-      <auxiliary auxtype="DaughtersInvisible" auxvalue="true"/>
-      <auxiliary auxtype="Visible" auxvalue="true"/>
-      <auxiliary auxtype="LineWidth" auxvalue="1.0"/>
-    </auxiliary>
-    <auxiliary auxtype="VisAttributes" auxvalue="MagnetVis">
-      <auxiliary auxtype="R" auxvalue="0.75"/>
-      <auxiliary auxtype="G" auxvalue="0.75"/>
-      <auxiliary auxtype="B" auxvalue="0.75"/>
-      <auxiliary auxtype="A" auxvalue="0.8"/>
-      <auxiliary auxtype="Style" auxvalue="wireframe"/>
-      <auxiliary auxtype="DaughtersInvisible" auxvalue="false"/>
-      <auxiliary auxtype="Visible" auxvalue="false"/>
-      <auxiliary auxtype="LineWidth" auxvalue="1.0"/>
-    </auxiliary>  
+        <!--Set color mode for visualization (optional)-->
+    <auxiliary auxtype="ColorMode" auxvalue="Region"/>
+    
+    &visattributes;
+
   </userinfo>  
 
   <setup name="Default" version="1.0">
