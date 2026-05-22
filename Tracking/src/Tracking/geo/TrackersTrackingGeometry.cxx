@@ -422,7 +422,7 @@ TrackersTrackingGeometry::buildVolumeConfig(
     lcfg.surfaces = layer.second;
 
     // Get the surface thickness
-    double clearance = 0.01;
+    double clearance = 1.0;  // mm
     double thickness = layer.second.front()
                            ->surfaceMaterial()
                            ->materialSlab(Acts::Vector2{0., 0.})

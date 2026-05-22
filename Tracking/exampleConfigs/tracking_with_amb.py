@@ -123,19 +123,19 @@ tracking_recoil.min_hits = 8
 tracking_recoil.outlier_pval_ = 22.165497985508754
 
 
-GSF_tagger = tracking.GSFProcessor("Tagger_GSF")
-GSF_tagger.track_collection = "TaggerTracksClean"
-GSF_tagger.meas_collection = "DigiTaggerSimHits"
-GSF_tagger.out_trk_collection = "GSFTagger"
-GSF_tagger.tagger_tracking = True
-GSF_tagger.debug = False
+gsf_tagger = tracking.GSFProcessor("Tagger_GSF")
+gsf_tagger.track_collection = "TaggerTracksClean"
+gsf_tagger.meas_collection = "DigiTaggerSimHits"
+gsf_tagger.out_trk_collection = "GSFTagger"
+gsf_tagger.tagger_tracking = True
+gsf_tagger.debug = False
 
-GSF_recoil = tracking.GSFProcessor("Recoil_GSF")
-GSF_recoil.track_collection = "RecoilTracksClean"
-GSF_recoil.meas_collection = "DigiRecoilSimHits"
-GSF_recoil.out_trk_collection = "GSFRecoil"
-GSF_recoil.tagger_tracking = False
-GSF_recoil.debug = True
+gsf_recoil = tracking.GSFProcessor("Recoil_GSF")
+gsf_recoil.track_collection = "RecoilTracksClean"
+gsf_recoil.meas_collection = "DigiRecoilSimHits"
+gsf_recoil.out_trk_collection = "GSFRecoil"
+gsf_recoil.tagger_tracking = False
+gsf_recoil.debug = True
 
 greedy_solver_tagger = tracking.GreedyAmbiguitySolver("GreedySolverTagger")
 greedy_solver_tagger.n_measurements_min = 5
