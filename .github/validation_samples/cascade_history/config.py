@@ -29,6 +29,7 @@ p.sequence = [my_sim]
 
 import os
 
+
 p.max_events = int(os.environ["LDMX_NUM_EVENTS"])
 p.run = int(os.environ["LDMX_RUN_NUMBER"])
 
