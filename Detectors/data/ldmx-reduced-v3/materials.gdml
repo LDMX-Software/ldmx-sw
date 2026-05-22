@@ -17,7 +17,12 @@
 <element Z="74" formula="W" name="W">
   <atom type="A" unit="g/mol" value="183.842"/>
 </element>           
-
+<element name="Lu" formula="Lu" Z="71">
+  <atom value="174.9668" unit="g/mole"/>
+</element>
+<element name="Y" formula="Y" Z="39">
+  <atom value="88.90584" unit="g/mole"/>
+</element>
 <material name="Air" state="gas">
   <MEE unit="eV" value="85.643664635028"/>
   <D unit="g/cm3" value="0.00119999936860922"/>
@@ -42,4 +47,17 @@
   <MEE unit="eV" value="19.2"/>
   <D unit="g/cm3" value="9.99999473841014e-09"/>
   <fraction n="1" ref="H"/>
+</material>
+<material name="AcrylicPMMA">
+  <D type="density" value="1.19" unit="g/cm3"/>
+  <composite n="5" ref="C"/>
+  <composite n="8" ref="H"/>
+  <composite n="2" ref="O"/>
+</material>
+<material formula="Lu1.86Y0.2SiO5" name="LYSO" >
+    <D value="7.1" unit="g/cm3" />
+    <fraction n="0.7211" ref="Lu" />
+    <fraction n="0.0394" ref="Y"  />
+    <fraction n="0.0623" ref="Si" />
+    <fraction n="0.1772" ref="O"  />
 </material>

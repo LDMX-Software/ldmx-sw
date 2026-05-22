@@ -73,6 +73,24 @@ ts_digis = [
     TrigScintDigiProducer.pad3(),
 ]
 
+# TS clustering timing tune
+ts_cl1 = TrigScintClusterProducer.pad1()
+ts_cl2 = TrigScintClusterProducer.pad2()
+ts_cl3 = TrigScintClusterProducer.pad3()
+
+
+ts_cl1.pad_time = -0.438
+ts_cl1.time_tolerance = 0.7
+ts_cl1.seed_threshold = 0.1
+
+ts_cl2.pad_time = -0.3499
+ts_cl2.time_tolerance = 0.6
+ts_cl2.seed_threshold = 0.1
+
+ts_cl3.pad_time = -0.08726
+ts_cl3.time_tolerance = 0.5
+ts_cl3.seed_threshold = 1.0
+
 from LDMX.Recon.electron_counter import ElectronCounter
 from LDMX.Recon.simple_trigger import TriggerProcessor
 
@@ -113,11 +131,19 @@ digi_recoil_reduced.merge_hits = True
 digi_recoil_reduced.sigma_u = 0.006
 digi_recoil_reduced.sigma_v = 0.000001
 
-# Midpoints between recoil layers. Used to classify hits by layer
-# Need to be manually updated for geometry changes that move the Recoil positions
-layer12_mid = (9.5 + 15.5) / 2.0
-layer23_mid = (15.5 + 24.5) / 2.0
-layer34_mid = (24.5 + 30.5) / 2.0
+
+# ESA slice test recoil layer midpoints (update for new geometry)
+recoil_l14_z = [-100.0, 0.0]  # from recoil.gdml
+recoil_sensor_sep = 3.0  # from constants.gdml
+
+z1 = recoil_l14_z[0] - recoil_sensor_sep  # -103
+z2 = recoil_l14_z[0] + recoil_sensor_sep  # -97
+z3 = recoil_l14_z[1] - recoil_sensor_sep  # -3
+z4 = recoil_l14_z[1] + recoil_sensor_sep  # +3
+
+layer12_mid = 0.5 * (z1 + z2)  # -100
+layer23_mid = 0.5 * (z2 + z3)  # -50
+layer34_mid = 0.5 * (z3 + z4)  # 0
 
 truth_tracking = reduced_tracking.LinearTruthTracking(
     instance_name="LinearTruthTracking"
@@ -156,9 +182,9 @@ p.sequence.extend(
         hcal_reco,
         hcal_veto,
         *ts_digis,
-        TrigScintClusterProducer.pad1(),
-        TrigScintClusterProducer.pad2(),
-        TrigScintClusterProducer.pad3(),
+        ts_cl1,
+        ts_cl2,
+        ts_cl3,
         trig_scint_track,
         count,
         TriggerProcessor(beam_energy=4000.0, instance_name="trigger"),

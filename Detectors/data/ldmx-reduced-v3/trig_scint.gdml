@@ -19,12 +19,14 @@
 
     <box lunit="mm" name="trigger_pad_box" x="trig_scint_area_envelope_x" y="trig_scint_area_envelope_y" z="trig_scint_area_envelope_z"/>
     <box lunit="mm" name="trigger_bar_box" x="trigger_bar_dx" y="trigger_bar_dy" z="trigger_pad_bar_thickness" />
+    <!-- Single light pipe bar: same x-length as TS bar, 2 mm × 2 mm in (y,z) -->
+    <box lunit="mm" name="light_pipe_bar_box" x="trigger_bar_dx" y="lp_bar_dy" z="trigger_pad_bar_thickness"/>
   
   </solids>
 
   <materials>
 
-      <material name="Vacuum" state="gas">
+    <material name="Vacuum" state="gas">
       <MEE unit="eV" value="19.2"/>
       <D unit="g/cm3" value="9.99999473841014e-09"/>
       <fraction n="1" ref="H"/>
@@ -55,41 +57,102 @@
       <auxiliary auxtype="DetElem" auxvalue="TriggerPad"/>
     </volume>
 
+    <!-- Light pipe bars for TS pads 2 and 1 -->
+    <volume name="lp_pad2_bar_volume">
+      <materialref ref="AcrylicPMMA"/>
+      <solidref ref="light_pipe_bar_box"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="TriggerPadVis"/>
+      <auxiliary auxtype="DetElem"       auxvalue="LightPipe"/>
+    </volume>
+
+    <volume name="lp_pad1_bar_volume">
+      <materialref ref="AcrylicPMMA"/>
+      <solidref ref="light_pipe_bar_box"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="TriggerPadVis"/>
+      <auxiliary auxtype="DetElem"       auxvalue="LightPipe"/>
+    </volume>
+
     <volume name="trig_scint_tagger">
-      <materialref ref="Vacuum"/>
+      <materialref ref="Air"/>
       <solidref ref="trigger_pad_box" />
-      <loop for="x" to="number_of_bars" step="1">
-        <physvol copynumber="2*x-2">
+      <loop for="x" from="1" to="number_of_bars" step="1">
+        <physvol copynumber="2*x-2">  <!-- pad 2, layer 1-->
           <volumeref ref="trigger_pad2_bar_volume" />
           <position name="trigger_pad2_bar_layer1_pos" unit="mm" 
           		x="0"
-                y="-target_dim_y/2 + trigger_bar_dy*(x - 0.5) + trigger_pad_bar_gap*(x - 1) + trigger_pad_offset" 
-                z="trig_scint_area_envelope_z/2 + trigger_pad2_z - trigger_pad_bar_thickness/2 - trigger_pad_bar_gap/2" />
+                y="-target_dim_y/2 + lp_bar_dy*(x - 0.5) + lp_bar_y_gap*(x - 1) + lp_pad_offset"
+                z="trig_scint_area_envelope_z/2 + trigger_pad2_z - trigger_pad_bar_thickness/2 - trigger_pad_bar_gap" />
           <rotationref ref="identity" />
         </physvol>
-        <physvol copynumber="2*x - 1">
+        <physvol copynumber="2*x - 1">  <!-- pad 2, layer 2-->
           <volumeref ref="trigger_pad2_bar_volume" />
           <position name="trigger_pad2_bar_layer2_pos" unit="mm" 
           		x="0"
-                y="-target_dim_y/2 + trigger_bar_dy*x + trigger_pad_bar_gap*(x - 1) + trigger_pad_offset"
-                z="trig_scint_area_envelope_z/2+trigger_pad2_z + trigger_pad_bar_thickness/2 + trigger_pad_bar_gap/2" />
+                y="-target_dim_y/2 + lp_bar_dy*(x - 0.5) + lp_bar_y_gap*(x - 1) + lp_pad_offset + lp_layer_y_shift"
+                z="trig_scint_area_envelope_z/2+trigger_pad2_z + trigger_pad_bar_thickness/2" />
           <rotationref ref="identity" />
         </physvol>
 
-        <physvol copynumber="2*x-2">
+        <physvol copynumber="2*x-2">  <!-- pad 1, layer 1-->
           <volumeref ref="trigger_pad1_bar_volume" />
           <position name="trigger_pad1_bar_layer1_pos" unit="mm" 
           		x="0"
-                y="-target_dim_y/2 + trigger_bar_dy*(x - 0.5) + trigger_pad_bar_gap*(x - 1) + trigger_pad_offset"
+                y="-target_dim_y/2 + lp_bar_dy*(x - 0.5) + lp_bar_y_gap*(x - 1) + lp_pad_offset"
                 z="trig_scint_area_envelope_z/2+trigger_pad1_z - trigger_pad_bar_thickness/2 - trigger_pad_bar_gap/2" />
           <rotationref ref="identity" />
         </physvol>
-        <physvol copynumber="2*x - 1">
+        <physvol copynumber="2*x - 1">  <!-- pad 1, layer 2-->
           <volumeref ref="trigger_pad1_bar_volume" />
           <position name="trigger_pad1_bar_layer2_pos" unit="mm" 
           		x="0"
-                y="-target_dim_y/2 + trigger_bar_dy*x + trigger_pad_bar_gap*(x - 1) + trigger_pad_offset"
+                y="-target_dim_y/2 + lp_bar_dy*(x - 0.5) + lp_bar_y_gap*(x - 1) + lp_pad_offset + lp_layer_y_shift"
                 z="trig_scint_area_envelope_z/2+trigger_pad1_z + trigger_pad_bar_thickness/2 + trigger_pad_bar_gap/2" />
+          <rotationref ref="identity" />
+        </physvol>
+      </loop>
+
+      <loop for="x" from="1" to="number_of_bars" step="1">
+        <physvol copynumber="2*x-2">  <!-- Pad 2, layer 1 light pipe -->
+          <volumeref ref="lp_pad2_bar_volume" />
+          <position name="lp_pad2_bar_layer1_pos" unit="mm"
+                    x="trigger_bar_dx"
+                    y="-target_dim_y/2 + lp_bar_dy*(x - 0.5) + lp_bar_y_gap*(x - 1) + lp_pad_offset"
+                    z="trig_scint_area_envelope_z/2
+                      + trigger_pad2_z
+                      - trigger_pad_bar_thickness/2
+                      - trigger_pad_bar_gap" />
+          <rotationref ref="identity" />
+        </physvol>
+        <physvol copynumber="2*x-1">  <!-- Pad 2, layer 2 light pipe -->
+          <volumeref ref="lp_pad2_bar_volume" />
+          <position name="lp_pad2_bar_layer2_pos" unit="mm"
+                    x="trigger_bar_dx"
+                    y="-target_dim_y/2 + lp_bar_dy*(x - 0.5) + lp_bar_y_gap*(x - 1) + lp_pad_offset + lp_layer_y_shift"
+                    z="trig_scint_area_envelope_z/2
+                      + trigger_pad2_z
+                      + trigger_pad_bar_thickness/2" />
+          <rotationref ref="identity" />
+        </physvol>
+        <physvol copynumber="2*x-2">  <!-- Pad 1, layer 1 light pipe -->
+          <volumeref ref="lp_pad1_bar_volume" />
+          <position name="lp_pad1_bar_layer1_pos" unit="mm"
+                    x="trigger_bar_dx"
+                    y="-target_dim_y/2 + lp_bar_dy*(x - 0.5) + lp_bar_y_gap*(x - 1) + lp_pad_offset"
+                    z="trig_scint_area_envelope_z/2
+                      + trigger_pad1_z
+                      - trigger_pad_bar_thickness/2
+                      - trigger_pad_bar_gap/2" />
+          <rotationref ref="identity" />
+        </physvol>
+        <physvol copynumber="2*x-1">  <!-- Pad 1, layer 2 light pipe -->
+          <volumeref ref="lp_pad1_bar_volume" />
+          <position name="lp_pad1_bar_layer2_pos" unit="mm"
+                    x="trigger_bar_dx"
+                    y="-target_dim_y/2 + lp_bar_dy*(x - 0.5) + lp_bar_y_gap*(x - 1) + lp_pad_offset + lp_layer_y_shift"
+                    z="trig_scint_area_envelope_z/2
+                      + trigger_pad1_z
+                      + trigger_pad_bar_thickness/2
+                      + trigger_pad_bar_gap/2" />
           <rotationref ref="identity" />
         </physvol>
       </loop>

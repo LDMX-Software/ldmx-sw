@@ -223,7 +223,7 @@ void GSFProcessor::produce(framework::Event& event) {
       const Acts::Surface* hit_surface =
           tg.geo::TrackingGeometry::getSurface(meas.getLayerID());
 
-      // Store the index_ source link
+      // Store the index source link
       acts_examples::IndexSourceLink idx_sl(hit_surface->geometryId(), imeas);
       fit_track_source_links.push_back(Acts::SourceLink(idx_sl));
     }
