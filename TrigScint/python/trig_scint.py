@@ -312,6 +312,7 @@ class TrigScintClusterProducer(Processor):
     """Configuration for cluster producer for Trigger Scintillators"""
 
     max_cluster_width: int = 2
+    ampl_weighting: bool = True
     clustering_threshold: float = 0.0
     seed_threshold: float = 30.0
     pad_time: float = 0.0
