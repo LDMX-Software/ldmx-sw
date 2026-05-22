@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no" ?>
 <!DOCTYPE gdml [
 <!ENTITY constants SYSTEM "constants.gdml">
-<!ENTITY materials SYSTEM "materials.gdml">
 ]>
 <gdml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
       xsi:noNamespaceSchemaLocation="http://service-spi.web.cern.ch/service-spi/app/releases/GDML/schema/gdml.xsd">
@@ -70,9 +69,8 @@
                                                       stereo_angle
                                                      -stereo_angle" />
   </define>
-  <materials> 
-    &materials;
-  </materials>
+
+  
   <solids>
     <box lunit="mm" name="recoil_l14_active_sensor_box" 
          x="si_large_active_sensor_dx" y="si_large_active_sensor_dy" z="si_sensor_thickness"/>

@@ -137,13 +137,7 @@
 
   </define>
 
-  <materials>
-    <material name="Vacuum" Z="1" state="gas">
-      <D unit="g/cm3" value="1e-12"/>
-      <atom unit="g/mole" value="1" />
-    </material> 
-  </materials>
-
+  
   <solids>
     <box name="world_box" x="world_dim" y="world_dim" z="world_dim"/>
 
@@ -170,7 +164,7 @@
       <volume name="sp_target">
         <materialref ref="Vacuum" />
         <solidref ref="sp_target_box" />
-        <auxiliary auxtype="VisAttributes" auxvalue="SpVis"/>
+        <auxiliary auxtype="VisAttributes" auxvalue="Invisible"/>
       </volume> 
     </loop>
 
@@ -183,7 +177,7 @@
       <volume name="sp_trigScint">
         <materialref ref="Vacuum" />
         <solidref ref="sp_trigscint_box" />
-        <auxiliary auxtype="VisAttributes" auxvalue="SpVis"/>
+        <auxiliary auxtype="VisAttributes" auxvalue="Invisible"/>
       </volume> 
     </loop>
 
@@ -192,7 +186,7 @@
       <volume name="sp_recoil"> 
         <materialref ref="Vacuum" />
         <solidref ref="sp_recoil_box" />
-        <auxiliary auxtype="VisAttributes" auxvalue="SpVis"/>
+        <auxiliary auxtype="VisAttributes" auxvalue="Invisible"/>
       </volume> 
     </loop> 
 
@@ -200,17 +194,17 @@
       <volume name="sp_ecal_front_back"> 
         <materialref ref="Vacuum" />
         <solidref ref="sp_ecal_front_back_box" />
-        <auxiliary auxtype="VisAttributes" auxvalue="SpVis"/>
+        <auxiliary auxtype="VisAttributes" auxvalue="Invisible"/>
       </volume>  
       <volume name="sp_ecal_top_bot"> 
         <materialref ref="Vacuum" />
         <solidref ref="sp_ecal_top_bot_box" />
-        <auxiliary auxtype="VisAttributes" auxvalue="SpVis"/>
+        <auxiliary auxtype="VisAttributes" auxvalue="Invisible"/>
       </volume>
       <volume name="sp_ecal_left_right"> 
         <materialref ref="Vacuum" />
         <solidref ref="sp_ecal_left_right_box" />
-        <auxiliary auxtype="VisAttributes" auxvalue="SpVis"/>
+        <auxiliary auxtype="VisAttributes" auxvalue="Invisible"/>
       </volume> 
     </loop>
 
@@ -218,17 +212,17 @@
       <volume name="sp_hcal_front_back"> 
         <materialref ref="Vacuum" />
         <solidref ref="sp_hcal_front_back_box" />
-        <auxiliary auxtype="VisAttributes" auxvalue="SpVis"/>
+        <auxiliary auxtype="VisAttributes" auxvalue="Invisible"/>
       </volume>  
       <volume name="sp_hcal_top_bot"> 
         <materialref ref="Vacuum" />
         <solidref ref="sp_hcal_top_bot_box" />
-        <auxiliary auxtype="VisAttributes" auxvalue="SpVis"/>
+        <auxiliary auxtype="VisAttributes" auxvalue="Invisible"/>
       </volume>
       <volume name="sp_hcal_left_right"> 
         <materialref ref="Vacuum" />
         <solidref ref="sp_hcal_left_right_box" />
-        <auxiliary auxtype="VisAttributes" auxvalue="SpVis"/>
+        <auxiliary auxtype="VisAttributes" auxvalue="Invisible"/>
       </volume> 
     </loop>
 
@@ -300,7 +294,7 @@
   </structure>
 
   <userinfo>
-    <auxiliary auxtype="VisAttributes" auxvalue="SpVis">
+    <auxiliary auxtype="VisAttributes" auxvalue="Invisible">
       <auxiliary auxtype="R" auxvalue="0.0"/>
       <auxiliary auxtype="G" auxvalue="0.0"/>
       <auxiliary auxtype="B" auxvalue="1.0"/>
