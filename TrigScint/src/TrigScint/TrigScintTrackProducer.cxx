@@ -628,7 +628,8 @@ void TrigScintTrackProducer::matchXYTracks(
   // this should be half the pad... could also set
   // it to full beam spot width
   float sx0 = fabs(x_start_); 
-  float sx0_=fabs(bar_length_y_/2); // When there are no hits along the vertical bars
+  float sx0_vert=fabs(bar_length_y_/2); // When there are no hits 
+  // along the vertical bars
 
   // y_start_ is half the pad, so this should be half a quadrant
   float sy0 = fabs(y_start_) / 4.;
@@ -651,7 +652,7 @@ void TrigScintTrackProducer::matchXYTracks(
     if (n_xin_quad == 0) {  // then there's no hope of setting a better x here
       // just use the beam spot width... and center of pad
       x = x0;
-      sx = sx0_;
+      sx = sx0_vert;
       if (verbose_)
         ldmx_log(debug) << "\t\t\t no x info in quad " << (*yitr).first
                         << "; will set x to middle of pad, pad half-width as "
