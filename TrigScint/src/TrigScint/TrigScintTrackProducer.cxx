@@ -356,16 +356,13 @@ void TrigScintTrackProducer::produce(framework::Event &event) {
               ((track.getCentroid()>=vert_bar_start_idx_) && ((consts_1[1].getCentroidX() == consts_2[1].getCentroidX()) ||
               (consts_1[2].getCentroidX() == consts_2[2].getCentroidX()) 
               || (consts_1[0].getCentroidX() == consts_2[0].getCentroidX())))) { //and vertical bars
-                 // we have overlap downstream of the
-            // seeding pad. probably, one cluster
-            // in seeding pad is noise
 
             if (verbose_ > 1) {
               ldmx_log(debug) << "Found overlap! Tracks at index " << idx
                               << " and " << idx_comp;
               ldmx_log(trace) << tracks_.at(idx);
               ldmx_log(trace) << tracks_.at(idx_comp);
-            } // 110 0.67 112 1.33
+            }
 
             if (((fabs((tracks_.at(idx)).getResidualX() -(tracks_.at(idx_comp)).getResidualX()))< 0.01) //it should be equal 
             && (track.getCentroid()>=vert_bar_start_idx_)){ //specific case for the vertical bars
@@ -686,7 +683,7 @@ void TrigScintTrackProducer::matchXYTracks(
         sx1 = x_conv_factor_ / 2.;  // 1 bar width
         sx2 = sx1;
         x = (x1 + x2) / 2.;
-        sx = fabs(x1 - x2) / 2;  // Ricardo: REMOVE the *x_conv_factor -- ,rely on x precision being one single pad width
+        sx = fabs(x1 - x2) / 2;  // rely on x precision being one single pad width
         if (verbose_)
           ldmx_log(debug) << "\t\t -- 2 x in quad: setting y track x "
                              "coordinate to midpoint";
@@ -697,7 +694,9 @@ void TrigScintTrackProducer::matchXYTracks(
       x = x0;
       sx = sx0;
       if (verbose_)
-        ldmx_log(debug) << "\t\t\t no x info in quad " << (*yitr).first
+        ldmx_log(debug) << "\t\t\t  currently no x info assigned in ambiguous case of "
+                        << n_xin_quad 
+                        << "vertical bar track candidates in quad " << (*yitr).first
                         << "; will set x to middle of pad, pad half-width as "
                            "precision: set (x, sx)=("
                         << x << ", " << sx << ")";
@@ -751,7 +750,7 @@ void TrigScintTrackProducer::matchXYTracks(
       if (sy1 == 0) sy1 = 1. / 2 * y_conv_factor_;
       if (sy2 == 0) sy2 = 1. / 2 * y_conv_factor_;
       y = (y1 + y2) / 2.;
-      sy = fabs(y1 - y2) / 2 ; //Ricardo: remove y_conv_factor
+      sy = fabs(y1 - y2) / 2 ; 
       if (verbose_)
         ldmx_log(debug)
             << "\t\t -- 2 y in quad: setting x track y coordinate to midpoint";
@@ -761,7 +760,7 @@ void TrigScintTrackProducer::matchXYTracks(
       if (n_xin_quad == 0){
         if (verbose_)
           ldmx_log(debug)
-            << "\t\t -- No x tracks but 2 y tracks in quad: unsual behaviour";
+            << "\t\t -- No x tracks but 2 y tracks in quad: unusual behaviour";
       }
       auto yidx1 = y_idx_quad_map.lower_bound((*yitr).first);
       auto yidx2 = y_idx_quad_map.upper_bound((*yitr).first);
