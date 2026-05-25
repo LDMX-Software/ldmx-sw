@@ -1342,6 +1342,311 @@ class PhotoNuclearDQM(Processor):
 
 
 
+@processor("dqm::ElectroNuclearDQM", "DQM")
+class ElectroNuclearDQM(Processor):
+    """Configured ElectroNuclearDQM python object
+
+    Analyzes Geant4 electro-nuclear (EN) interactions. Finds daughters of the
+    primary electron that were produced via the electronNuclear process and
+    histograms their kinematics and multiplicities.
+
+    Examples
+    --------
+        from LDMX.DQM import dqm
+        p.sequence.append( dqm.ElectroNuclearDQM() )
+    """
+
+    sim_particles_coll_name: str = "SimParticles"
+    sim_particles_passname: str = ""
+    count_light_ions: bool = True
+
+    def __post_init__(self):
+        event_type_labels = [
+            "Nothing hard",  # 0
+            "1 n",  # 1
+            "2 n",  # 2
+            "#geq 3 n",  # 3
+            "1 #pi^{#pm}",  # 4
+            "2 #pi^{#pm}",  # 5
+            "1 #pi^{0}",  # 6
+            "1 #pi^{#pm} A",  # 7
+            "1 #pi^{#pm} 2 A",  # 8
+            "2 #pi^{#pm} A",  # 9
+            "1 #pi^{0} A",  # 10
+            "1 #pi^{0} 2 A",  # 11
+            "#pi^{0} #pi^{#pm} A",  # 12
+            "1 p",  # 13
+            "2 p",  # 14
+            "pn",  # 15
+            "K^{0}_{L} X",  # 16
+            "K X",  # 17
+            "K^{0}_{S} X",  # 18
+            "exotics",  # 19
+            "multi-body",  # 20
+        ]
+        self.histogram(
+            "en_particle_mult", "Electro-nuclear Daughter Multiplicity", 75, 0, 75
+        )
+        self.histogram(
+            "en_neutron_mult", "Electro-nuclear Neutron Multiplicity", 20, 0, 20
+        )
+        self.histogram(
+            "en_proton_mult", "Electro-nuclear Proton Multiplicity", 20, 0, 20
+        )
+        self.histogram(
+            "en_charged_pion_mult",
+            "Electro-nuclear Charged Pion Multiplicity",
+            20,
+            0,
+            20,
+        )
+        self.histogram(
+            "en_neutral_pion_mult",
+            "Electro-nuclear Neutral Pion Multiplicity",
+            20,
+            0,
+            20,
+        )
+        self.histogram(
+            "en_electron_energy", "EN Electron Energy [MeV]", 100, 0, 8000
+        )
+        self.histogram(
+            "en_electron_vertex_x", "EN Electron Vertex x [mm]", 40, -40, 40
+        )
+        self.histogram(
+            "en_electron_vertex_y", "EN Electron Vertex y [mm]", 80, -80, 80
+        )
+        self.histogram(
+            "en_electron_vertex_z", "EN Electron Vertex z [mm]", 20, -950, -850
+        )
+        self.histogram("en_vertex_x", "EN Interaction Vertex x [mm]", 40, -40, 40)
+        self.histogram("en_vertex_y", "EN Interaction Vertex y [mm]", 80, -80, 80)
+        self.histogram("en_vertex_z", "EN Interaction Vertex z [mm]", 100, -5, 5)
+        self.histogram(
+            "en_total_ke",
+            "Total Kinetic Energy of Electro-nuclear Products [MeV]",
+            100,
+            0,
+            8000,
+        )
+        self.histogram(
+            "en_total_neutron_ke",
+            "Total Kinetic Energy of Electro-nuclear Neutrons [MeV]",
+            100,
+            0,
+            8000,
+        )
+        self.histogram(
+            "leading_particle_type",
+            "Leading Particle Type",
+            [
+                "#pi^{#pm} + X",
+                "#pi^{0} + X",
+                "K^{#pm} + X",
+                "K^{0}_{S/L} + X",
+                "p + X",
+                "n + X",
+                "other + X",
+            ],
+        )
+        self.histogram(
+            "hardest_ke",
+            "Kinetic Energy Hardest Electro-nuclear Particle [MeV]",
+            200,
+            0,
+            8000,
+        )
+        self.histogram(
+            "hardest_theta",
+            "#theta of Hardest Electro-nuclear Particle [Degrees]",
+            180,
+            0,
+            180,
+        )
+        self.histogram(
+            "hardest_p_ke",
+            "Kinetic Energy Hardest Electro-nuclear Proton [MeV]",
+            200,
+            0,
+            8000,
+        )
+        self.histogram(
+            "hardest_p_theta",
+            "#theta of Hardest Electro-nuclear Proton [Degrees]",
+            180,
+            0,
+            180,
+        )
+        self.histogram(
+            "hardest_n_ke",
+            "Kinetic Energy Hardest Electro-nuclear Neutron [MeV]",
+            200,
+            0,
+            8000,
+        )
+        self.histogram(
+            "hardest_n_theta",
+            "#theta of Hardest Electro-nuclear Neutron [Degrees]",
+            180,
+            0,
+            180,
+        )
+        self.histogram(
+            "hardest_pi0_ke",
+            "Kinetic Energy Hardest Electro-nuclear #pi^{0} [MeV]",
+            200,
+            0,
+            8000,
+        )
+        self.histogram(
+            "hardest_pi0_theta",
+            "#theta of Hardest Electro-nuclear #pi^{0} [Degrees]",
+            180,
+            0,
+            180,
+        )
+        self.histogram(
+            "h_ke_h_theta",
+            "Kinetic Energy Hardest Electro-nuclear Particle [MeV]",
+            200,
+            0,
+            8000,
+            "#theta of Hardest Electro-nuclear Particle [Degrees]",
+            180,
+            0,
+            180,
+        )
+        # Reconstructable (semi-inclusive acceptance) histograms:
+        #   theta < 80 deg, |p| > 100 MeV/c (pi+/-), |p| > 800 MeV/c (p, K),
+        #   KE > 1 GeV (n), KE > 2 GeV (pi0)
+        self.histogram("event_type_recon", "", event_type_labels)
+        self.histogram(
+            "recon_leading_particle_type",
+            "Reconstructable Leading Particle Type",
+            [
+                "#pi^{#pm} + X",
+                "#pi^{0} + X",
+                "K^{#pm} + X",
+                "K^{0}_{S/L} + X",
+                "p + X",
+                "n + X",
+                "other + X",
+            ],
+        )
+        self.histogram(
+            "recon_hardest_ke",
+            "KE Hardest Reconstructable Particle [MeV]",
+            200,
+            0,
+            8000,
+        )
+        self.histogram(
+            "recon_hardest_theta",
+            "#theta of Hardest Reconstructable Particle [Degrees]",
+            180,
+            0,
+            180,
+        )
+        self.histogram(
+            "recon_hardest_n_ke",
+            "KE Hardest Reconstructable Neutron [MeV]",
+            200,
+            0,
+            8000,
+        )
+        self.histogram(
+            "recon_hardest_n_theta",
+            "#theta of Hardest Reconstructable Neutron [Degrees]",
+            180,
+            0,
+            180,
+        )
+        self.histogram(
+            "recon_hardest_p_ke",
+            "KE Hardest Reconstructable Proton [MeV]",
+            200,
+            0,
+            8000,
+        )
+        self.histogram(
+            "recon_hardest_p_theta",
+            "#theta of Hardest Reconstructable Proton [Degrees]",
+            180,
+            0,
+            180,
+        )
+        self.histogram(
+            "recon_hardest_pi_ke",
+            "KE Hardest Reconstructable #pi^{#pm} [MeV]",
+            200,
+            0,
+            8000,
+        )
+        self.histogram(
+            "recon_hardest_pi_theta",
+            "#theta of Hardest Reconstructable #pi^{#pm} [Degrees]",
+            180,
+            0,
+            180,
+        )
+        self.histogram(
+            "recon_hardest_pi0_ke",
+            "KE Hardest Reconstructable #pi^{0} [MeV]",
+            200,
+            0,
+            8000,
+        )
+        self.histogram(
+            "recon_hardest_pi0_theta",
+            "#theta of Hardest Reconstructable #pi^{0} [Degrees]",
+            180,
+            0,
+            180,
+        )
+        self.histogram(
+            "en_recon_neutron_mult",
+            "Reconstructable Neutron Multiplicity",
+            20,
+            0,
+            20,
+        )
+        self.histogram(
+            "en_recon_proton_mult",
+            "Reconstructable Proton Multiplicity",
+            20,
+            0,
+            20,
+        )
+        self.histogram(
+            "en_recon_charged_pion_mult",
+            "Reconstructable Charged Pion Multiplicity",
+            20,
+            0,
+            20,
+        )
+        self.histogram(
+            "en_recon_neutral_pion_mult",
+            "Reconstructable Neutral Pion Multiplicity",
+            20,
+            0,
+            20,
+        )
+        self.histogram(
+            "en_recon_total_ke",
+            "Total KE of Reconstructable EN Products [MeV]",
+            100,
+            0,
+            8000,
+        )
+        self.histogram(
+            "en_recon_total_neutron_ke",
+            "Total KE of Reconstructable EN Neutrons [MeV]",
+            100,
+            0,
+            8000,
+        )
+
+
 @processor("dqm::TrkDeDxMassEstFeatures", "DQM")
 class TrkDeDxMassEstFeatures(Processor):
     """Configured TrkDeDxMassEstFeatures python object
