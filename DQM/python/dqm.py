@@ -1341,7 +1341,6 @@ class PhotoNuclearDQM(Processor):
         )
 
 
-
 @processor("dqm::ElectroNuclearDQM", "DQM")
 class ElectroNuclearDQM(Processor):
     """Configured ElectroNuclearDQM python object
@@ -1407,15 +1406,9 @@ class ElectroNuclearDQM(Processor):
             0,
             20,
         )
-        self.histogram(
-            "en_electron_energy", "EN Electron Energy [MeV]", 100, 0, 8000
-        )
-        self.histogram(
-            "en_electron_vertex_x", "EN Electron Vertex x [mm]", 40, -40, 40
-        )
-        self.histogram(
-            "en_electron_vertex_y", "EN Electron Vertex y [mm]", 80, -80, 80
-        )
+        self.histogram("en_electron_energy", "EN Electron Energy [MeV]", 100, 0, 8000)
+        self.histogram("en_electron_vertex_x", "EN Electron Vertex x [mm]", 40, -40, 40)
+        self.histogram("en_electron_vertex_y", "EN Electron Vertex y [mm]", 80, -80, 80)
         self.histogram(
             "en_electron_vertex_z", "EN Electron Vertex z [mm]", 20, -950, -850
         )
@@ -2059,9 +2052,7 @@ class CascadeHistoryDQM(Processor):
         ]
 
         # Number of cascades per event
-        self.histogram(
-            "n_cascades", "Number of PN cascades per event", 20, 0, 20
-        )
+        self.histogram("n_cascades", "Number of PN cascades per event", 20, 0, 20)
 
         # Per-cascade histograms
         self.histogram("cascade_n_steps", "Number of cascade steps", 100, 0, 100)
@@ -2072,18 +2063,10 @@ class CascadeHistoryDQM(Processor):
         )
 
         # Particle multiplicities
-        self.histogram(
-            "cascade_n_protons", "Number of protons in cascade", 50, 0, 50
-        )
-        self.histogram(
-            "cascade_n_neutrons", "Number of neutrons in cascade", 50, 0, 50
-        )
-        self.histogram(
-            "cascade_n_pions", "Number of pions in cascade", 30, 0, 30
-        )
-        self.histogram(
-            "cascade_n_kaons", "Number of kaons in cascade", 20, 0, 20
-        )
+        self.histogram("cascade_n_protons", "Number of protons in cascade", 50, 0, 50)
+        self.histogram("cascade_n_neutrons", "Number of neutrons in cascade", 50, 0, 50)
+        self.histogram("cascade_n_pions", "Number of pions in cascade", 30, 0, 30)
+        self.histogram("cascade_n_kaons", "Number of kaons in cascade", 20, 0, 20)
         self.histogram(
             "cascade_n_other", "Number of other particles in cascade", 20, 0, 20
         )
@@ -2122,27 +2105,15 @@ class CascadeHistoryDQM(Processor):
         self.histogram(
             "primary_n_daughters", "Number of primary reaction products", 20, 0, 20
         )
-        self.histogram(
-            "primary_n_protons", "Number of protons from primary", 10, 0, 10
-        )
+        self.histogram("primary_n_protons", "Number of protons from primary", 10, 0, 10)
         self.histogram(
             "primary_n_neutrons", "Number of neutrons from primary", 10, 0, 10
         )
-        self.histogram(
-            "primary_n_piplus", "Number of #pi^{+} from primary", 10, 0, 10
-        )
-        self.histogram(
-            "primary_n_piminus", "Number of #pi^{-} from primary", 10, 0, 10
-        )
-        self.histogram(
-            "primary_n_pizero", "Number of #pi^{0} from primary", 10, 0, 10
-        )
-        self.histogram(
-            "primary_n_pions", "Number of pions from primary", 15, 0, 15
-        )
-        self.histogram(
-            "primary_n_kaons", "Number of kaons from primary", 5, 0, 5
-        )
+        self.histogram("primary_n_piplus", "Number of #pi^{+} from primary", 10, 0, 10)
+        self.histogram("primary_n_piminus", "Number of #pi^{-} from primary", 10, 0, 10)
+        self.histogram("primary_n_pizero", "Number of #pi^{0} from primary", 10, 0, 10)
+        self.histogram("primary_n_pions", "Number of pions from primary", 15, 0, 15)
+        self.histogram("primary_n_kaons", "Number of kaons from primary", 5, 0, 5)
         self.histogram(
             "primary_n_other", "Number of other particles from primary", 10, 0, 10
         )
@@ -2151,9 +2122,7 @@ class CascadeHistoryDQM(Processor):
             "Primary daughter particle type",
             particle_categories,
         )
-        self.histogram(
-            "primary_daughter_ke", "Primary daughter KE [MeV]", 100, 0, 5000
-        )
+        self.histogram("primary_daughter_ke", "Primary daughter KE [MeV]", 100, 0, 5000)
         self.histogram(
             "primary_total_daughter_ke",
             "Total KE of primary daughters [MeV]",
@@ -2169,22 +2138,12 @@ class CascadeHistoryDQM(Processor):
         self.histogram(
             "deexcitation_pdg", "De-excitation particle type", particle_categories
         )
-        self.histogram(
-            "deexcitation_ke", "De-excitation product KE [MeV]", 100, 0, 500
-        )
+        self.histogram("deexcitation_ke", "De-excitation product KE [MeV]", 100, 0, 500)
         self.histogram("n_deexcitation", "N de-excitation products", 30, 0, 30)
-        self.histogram(
-            "n_deexcitation_neutrons", "N de-excitation neutrons", 20, 0, 20
-        )
-        self.histogram(
-            "n_deexcitation_protons", "N de-excitation protons", 10, 0, 10
-        )
-        self.histogram(
-            "n_deexcitation_gammas", "N de-excitation gammas", 20, 0, 20
-        )
-        self.histogram(
-            "n_deexcitation_alphas", "N de-excitation alphas", 10, 0, 10
-        )
+        self.histogram("n_deexcitation_neutrons", "N de-excitation neutrons", 20, 0, 20)
+        self.histogram("n_deexcitation_protons", "N de-excitation protons", 10, 0, 10)
+        self.histogram("n_deexcitation_gammas", "N de-excitation gammas", 20, 0, 20)
+        self.histogram("n_deexcitation_alphas", "N de-excitation alphas", 10, 0, 10)
         self.histogram(
             "deexcitation_neutron_ke", "De-excitation neutron KE [MeV]", 100, 0, 100
         )
@@ -2202,9 +2161,7 @@ class CascadeHistoryDQM(Processor):
         )
 
         # Excitation energy and residual nucleus
-        self.histogram(
-            "excitation_energy", "Excitation energy [MeV]", 100, 0, 5000
-        )
+        self.histogram("excitation_energy", "Excitation energy [MeV]", 100, 0, 5000)
         self.histogram("residual_A", "Residual nucleus A", 250, 0, 250)
         self.histogram("residual_Z", "Residual nucleus Z", 100, 0, 100)
 
