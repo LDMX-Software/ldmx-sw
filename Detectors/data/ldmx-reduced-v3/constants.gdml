@@ -1,4 +1,4 @@
-<!-- Constant defining the clearance between volumes --> 
+s<!-- Constant defining the clearance between volumes --> 
 <constant name="clearance" value="0.001*mm" />
 
 <!-- Define center position and identity rotation -->
@@ -195,16 +195,49 @@
 
 <!--
    HCal
-  TODO:
-  - add Hcal case
-  - do airBoxes need to be added?
+
+   The current implementation of the HCal is about as simple as it gets
+   The 80/20, most of the plastic housing, and the bench are currently not implemented
+   Only components directly in the beamline are included, which is two of the sides of
+   the plastic housing and, of course, the quad bars.
+
+   The z offset is arbitrarily chosen to place the structure directly behind the ECal
 --> 
 
-<!-- Common HCal components
-- Scintillator Thickness: oriented in z in back Hcal, y/x in side hcal
-- Scintillator Width: oriented in x/y in back Hcal
--->
+<!--The envelope holding all other HCal solids (dimensions chosen "just big enough"-->
+    <!--IMPORTANT: if you adjust any other dimensions, be careful! It may adjust the-->
+    <!--envelope's z value (thickness), which is calculated at the end-->
+    <!--This could eventually cause overlap with other envelopes-->
+    <constant name="hcal_envelope_x" value="1200"/>
+    <constant name="hcal_envelope_y" value="220"/>
 
+    <!--Quad spacing = air gap between quad bars-->
+    <constant name="quadspacing" value="10"/>
+    <!--Quadbar dimensions from on-site measurements and are approximate-->
+    <constant name="quadx" value="1000"/>
+    <constant name="quady" value="200"/>
+    <constant name="quadz" value="20"/>
+
+    <!--Housing spacing = space between plastic housing and first quad bar-->
+    <!--as well as space between last quad bar and plastic housing-->
+    <constant name="housingspacing" value="25"/>
+    <!--Plastic panel thickness is exact, other dimensions aren't accurate
+    but don't need to be atm-->
+    <constant name="housingx" value="1000"/>
+    <constant name="housingy" value="200"/>
+    <constant name="housingz" value="6.35"/>
+
+    <variable name="housinglayers" value="2"/>
+    <variable name="quadlayers" value="6"/>
+    
+    <!--Use the rest of the parameters to calculate the envelope thickness-->
+    <constant name="hcal_envelope_z" value="(quadlayers*quadz) + ((quadlayers-1)*quadspacing)+(housinglayers*housingspacing)+(housinglayers*housingz)"/>
+
+    <!--The rest of the hcal variables are kept here because other components
+        in ecal.gdml and scoring_planes.gdml still rely on them.
+        This should probably be updated by the responsible persons.
+    -->
+    
 <constant name="hcal_airThick" value="2."/>
 <constant name="hcal_scintThick" value="20."/> 
 <constant name="hcal_scintWidth" value="50."/> 
