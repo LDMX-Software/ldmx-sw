@@ -134,9 +134,8 @@ jobs:
 
     - name: Run Validation
       id: validation
-      uses: ./.github/actions/validate
-      with:
-        sample: ${{matrix.sample}}
+      run: just run-validation ${{matrix.sample}}
+      shell: bash
 
     - name: Upload Validation Plots
       uses: actions/upload-artifact@v7
@@ -149,7 +148,7 @@ jobs:
       continue-on-error: true
       run: |
         set +e
-        bash .github/actions/check/check.sh "${{ steps.validation.outputs.plots }}" 2>&1 | tee check_output.txt
+        just check-validation "${{ steps.validation.outputs.plots }}" 2>&1 | tee check_output.txt
         echo "check_rc=${PIPESTATUS[0]}" >> $GITHUB_OUTPUT
       shell: bash
 
