@@ -75,10 +75,8 @@ jobs:
 
     - name: Run Validation
       id: validation
-      uses: ./.github/actions/validate
-      with:
-        sample: ${{matrix.sample}}
-        no_comp: true
+      run: just run-validation ${{matrix.sample}} true
+      shell: bash
 
     - name: Upload New Golden Histograms
       uses: actions/upload-artifact@v7

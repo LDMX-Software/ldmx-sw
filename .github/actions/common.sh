@@ -24,7 +24,9 @@ set_output() {
   local _key="$1"
   local _val="$2"
   echo "${_key} = ${_val}"
-  echo "${_key}=${_val}" >> $GITHUB_OUTPUT
+  if [[ -n "${GITHUB_OUTPUT:-}" ]]; then
+    echo "${_key}=${_val}" >> $GITHUB_OUTPUT
+  fi
 }
 
 # GitHub workflow command to start an group of output messages
@@ -46,11 +48,13 @@ warn() {
   echo "::warning::$@"
 }
 
-start_group Deduce Common Environment Variables
-export LDMX_BASE=$(cd ${GITHUB_WORKSPACE}/../ && pwd)
-export CI_DATA=$(cd ${GITHUB_WORKSPACE}/ci-data && pwd)
-echo "LDMX_BASE=${LDMX_BASE}"
-echo "GITHUB_WORKSPACE=${GITHUB_WORKSPACE}"
-echo "CI_DATA=${CI_DATA}"
-end_group
+if [[ -n "${GITHUB_WORKSPACE:-}" ]]; then
+  start_group Deduce Common Environment Variables
+  export LDMX_BASE=$(cd ${GITHUB_WORKSPACE}/../ && pwd)
+  export CI_DATA=$(cd ${GITHUB_WORKSPACE}/ci-data && pwd)
+  echo "LDMX_BASE=${LDMX_BASE}"
+  echo "GITHUB_WORKSPACE=${GITHUB_WORKSPACE}"
+  echo "CI_DATA=${CI_DATA}"
+  end_group
+fi
 

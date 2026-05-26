@@ -56,6 +56,153 @@ _default:
 install-denv:
     curl -s https://raw.githubusercontent.com/tomeichlersmith/denv/main/install | sh
 
+# check a validation plots archive for failures
+[no-cd]
+check-validation archive:
+    #!/usr/bin/env bash
+    set -e
+    source "{{ justfile_directory() }}/.github/actions/common.sh"
+    _archive="{{ archive }}"
+    rc=0
+    _failed_plots=($(tar -tf ${_archive} | grep "fail/.*.pdf")) || true
+    if [[ ${#_failed_plots[@]} -gt 0 ]]; then
+      error ${#_failed_plots[@]} plots failed the KS test against gold.
+      start_group List of Plots Failing KS Test
+      for p in ${_failed_plots[@]}; do
+        echo $(basename ${p})
+      done
+      end_group
+      rc=1
+    fi
+    # unpack the logs so we can compare them
+    tar xzf ${_archive} gold.log output.log
+    # use sed replace (by blank) to run the diff without the initial HH:MM:SS timestamp
+    if ! diff  -I '^#' <(sed -e 's/^[0-9]\{2\}:[0-9]\{2\}:[0-9]\{2\}/ /g' gold.log) <(sed -e 's/^[0-9]\{2\}:[0-9]\{2\}:[0-9]\{2\}/ /g' output.log) > log.diff; then
+      # do not error out (don't set rc here) if diff is non-zero, the timestamps printed out
+      # by some processors prevent a full text diff so we do the character
+      # count check below to look for big changes
+      warn Text Differences Between Logs
+      start_group diff gold.log output.log
+      cat log.diff
+      end_group
+    fi
+    # check character count of logs, allowing up to 0.5% difference to avoid
+    # false positives from minor run-to-run output variations
+    ngold=$(wc --chars gold.log | cut -f 1 -d ' ')
+    nnew=$(wc --chars output.log | cut -f 1 -d ' ')
+    if (( ngold != nnew )); then
+      if (( ngold > 0 )); then
+        char_diff_pct=$(( (nnew - ngold) * 100 / ngold ))
+        char_abs_pct=${char_diff_pct#-}
+        if (( char_abs_pct > 0 )); then
+          error "Log character count differs by ${char_abs_pct}%: gold=${ngold}, new=${nnew}"
+          rc=1
+        else
+          warn "Log character count differs by ${char_abs_pct}% (gold=${ngold}, new=${nnew}); within tolerance"
+        fi
+      fi
+    fi
+    # compare total wall-clock run time if gold.time is available in the archive
+    # gold.time has one line per sample: "<sample> <seconds>"
+    # timing.txt has one line for this job: "<sample> <seconds>"
+    _timing_tolerance=10
+    if tar -tf ${_archive} gold.time timing.txt &>/dev/null 2>&1; then
+      tar xzf ${_archive} gold.time timing.txt
+      read _sample new_s < timing.txt
+      gold_s=$(awk -v s="${_sample}" '$1 == s {print $2}' gold.time)
+      if [[ -z "${gold_s}" ]]; then
+        warn "No gold timing entry for sample '${_sample}'; skipping timing check."
+      else
+        echo "Timing for ${_sample}: gold=${gold_s}s, new=${new_s}s"
+        if (( gold_s > 0 )); then
+          timing_diff_pct=$(( (new_s - gold_s) * 100 / gold_s ))
+          timing_abs_pct=${timing_diff_pct#-}
+          if (( timing_abs_pct > _timing_tolerance )); then
+            if (( new_s > gold_s )); then
+              warn "Timing regression for ${_sample}: new=${new_s}s vs gold=${gold_s}s (+${timing_diff_pct}%, tolerance ${_timing_tolerance}%)"
+            else
+              warn "Timing anomaly for ${_sample}: new=${new_s}s vs gold=${gold_s}s (${timing_diff_pct}%, tolerance ${_timing_tolerance}%)"
+            fi
+          else
+            echo "Timing within ${timing_abs_pct}% of gold (tolerance ${_timing_tolerance}%)"
+          fi
+        fi
+      fi
+    else
+      warn "No gold.time found; skipping timing check. Re-generate gold data to enable timing comparisons."
+    fi
+    exit ${rc}
+
+# run a validation sample and optionally compare against golden histograms
+[no-cd]
+[private]
+run-validation sample no_comp='false':
+    #!/usr/bin/env bash
+    set -e
+    set -o pipefail
+    export GITHUB_WORKSPACE="${GITHUB_WORKSPACE:-{{ justfile_directory() }}}"
+    source "{{ justfile_directory() }}/.github/actions/common.sh"
+    _sample="{{ sample }}"
+    _no_comp="{{ no_comp }}"
+    _ref_dir="${CI_DATA}/${_sample}"
+    start_group Input Deduction
+    cd ${GITHUB_WORKSPACE}/.github/validation_samples/${_sample} || exit $?
+    _sample_dir="$(pwd)"
+    echo "Ref Dir: ${_ref_dir}"
+    echo "Sample Name: ${_sample}"
+    echo "Sample Dir: ${_sample_dir}"
+    echo "Not Running Comparison? ${_no_comp}"
+    denv config env copy LDMX_NUM_EVENTS LDMX_RUN_NUMBER LDMX_LOG_LEVEL CI_DATA
+    end_group
+    start_group Sample-Specific Initialization
+    if [[ -f init.sh ]]; then
+      . init.sh
+    else
+      echo "No 'init.sh' file in ${_sample_dir}."
+    fi
+    end_group
+    # assume sample directory has its config called 'config.py'
+    start_group Run config.py
+    _t0=${SECONDS}
+    denv fire config.py | tee output.log || exit $?
+    echo "${_sample} $(( SECONDS - _t0 ))" > timing.txt
+    end_group
+    start_group Compare to Golden Histograms
+    if [[ "${_no_comp}" == "false" ]]; then
+      # assume sample directory has its gold histogram called 'gold.root'
+      #   compare has 4 CLI inputs:
+      #    gold_f, gold_label, test_f, test_label
+      denv python3 {{ justfile_directory() }}/.github/actions/validate/compare.py \
+        ${_ref_dir}/gold.root \
+        $(cat ${CI_DATA}/label) \
+        hist.root \
+        ${HEAD_REF} \
+        || exit $?
+      # print log diff into output directory
+      cp -t ${_sample_dir}/plots ${_ref_dir}/gold.log output.log timing.txt || exit $?
+      # include the shared gold timing reference if it exists
+      if [[ -f ${CI_DATA}/gold.time ]]; then
+        cp ${CI_DATA}/gold.time ${_sample_dir}/plots/
+      fi
+      # compare.py puts plots into the plots/ directory
+      #   Package them up for upload
+      cd ${_sample_dir}/plots || exit $?
+      tar -czf ${_sample}_recon_validation_plots.tar.gz * || exit $?
+    else
+      echo "Not running comparison script."
+    fi
+    end_group
+    # Share paths to plot archive
+    start_group Share Paths to Outputs
+    if [[ "${_no_comp}" == "false" ]]; then
+      set_output plots $(pwd)/${_sample}_recon_validation_plots.tar.gz
+    fi
+    set_output log ${_sample_dir}/output.log
+    set_output timing ${_sample_dir}/timing.txt
+    set_output hists ${_sample_dir}/hist.root
+    set_output events ${_sample_dir}/events.root
+    end_group
+
 # prep version file
 [private]
 prep-version:
