@@ -14,14 +14,27 @@ TrackGeo.get_instance().set_detector("ldmx-det-v15-8gev")
 truth_tracking = tracking.TruthSeedProcessor(
     debug=True,
     recoil_seeds_collection="RecoilTruthSeeds",
+    tagger_seeds_collection="TaggerTruthSeeds",
     pdg_ids=[11],
     scoring_hits_coll_name="TargetScoringPlaneHits",
     z_min=0.0,
     track_id=-1,
     p_cut=0.05,
-    pz_cut=0.03,
     p_cut_ecal=0.0,
 )
+
+# Truth tracker
+# Takes truth seeds from the Truth seeder and performs extrapolation and cuts
+# to create truth tracks.
+# Separates tracks between Tagger and Recoil
+truth_tracks = tracking.TruthTrackProcessor(
+    recoil_seeds_collection="RecoilTruthSeeds",
+    tagger_seeds_collection="TaggerTruthSeeds",
+    tagger_tracks_collection="TaggerTruthTracks",
+    recoil_tracks_collection="RecoilTruthTracks",
+    pz_cut=0.03,
+)
+
 
 # Smearing Processor - Tagger
 # Runs G4 hit smearing producing measurements in the Tagger tracker.
@@ -224,6 +237,7 @@ sequence = [
     digi_tagger,
     digi_recoil,
     truth_tracking,
+    truth_tracks,
     seeder_tagger,
     seeder_recoil,
     tracking_tagger,
@@ -265,6 +279,7 @@ def set_overlay(pass_name: str):
         "EcalScoringPlaneHits",
         "TargetScoringPlaneHits",
         "SimParticles",
+        "beamElectrons",
     ]
     overlay_str = "Overlay"
 
@@ -287,6 +302,8 @@ def set_overlay(pass_name: str):
                 "input_recoil_pass_name",
                 "input_collection_events_passname",
                 "tagger_trks_event_collection_passname",
+                "sp_pass_name",
+                "sim_particles_passname",
             ]:
                 params[key] = pass_name
                 continue

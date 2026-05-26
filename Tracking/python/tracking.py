@@ -267,30 +267,26 @@ class TruthSeedProcessor(Processor):
         The name of the sim tracker hits collection for recoil.
     tagger_sim_hits_coll_name : str
         The name of the sim tracker hits collection for tagger.
-    n_min_hits_tagger : int
-        The minimum number of hits to create a seed from in the tagger tracker.
-    n_min_hits_recoil : int
-        The minimum number of hits to create a seed from in the recoil tracker.
     z_min : float
         Request a minimum z (mm) for the scoring plane hits.
     track_id : int
         If positive, select only scoring hits with that particular track ID.
-    pz_cut : float
-        Minimum cut on the momentum (MeV) of the seed along the beam axis.
     p_cut : float
         Minimum cut on the momentum (MeV) of the seed.
-    p_cut_max : float
-        Maximum cut on the momentum of the seed.
     p_cut_ecal : float
         Minimum seed track momentum (MeV) at the ECAL scoring plane.
+    recoil_sp : bool
+        Whether to use the scoring plane for recoil truth tracks.
+    n_min_hits_tagger : int
+        Minimum number of tagger hits to consider the seed as findable.
+    n_min_hits_recoil : int
+        Minimum number of recoil hits to consider the seed as findable.
     skip_tagger : bool
         Ignore the tagger tracker (makes empty collections).
     skip_recoil : bool
         Ignore the recoil tracker (makes empty collections).
     max_track_id : float
         Maximum track ID for a hit to be selected in the target scoring plane.
-    ecal_sp_coll_name : str
-        The name of the ECAL scoring plane hits collection.
     sp_pass_name : str
         The pass name of the scoring plane hits.
     input_pass_name : str
@@ -305,33 +301,27 @@ class TruthSeedProcessor(Processor):
         The name of the beam electrons collection to use
     tagger_seeds_collection : str
         The name of the tagger seeds collection to be stored.
-    tagger_truth_collection : str
-        The name of the tagger truth collection.
     recoil_seeds_collection : str
         The name of the recoil seeds collection.
-    recoil_truth_collection : str
-        The name of the recoil truth collection.
     field_map: str
         Magnetic field map
     """
 
     debug: bool = False
-    pdg_ids: list[int] = [11]
+    pdg_ids: list[int] = field(default_factory=lambda: [11], metadata={"entry_type": int, "dimension": 1})
     scoring_hits_coll_name: str = "TargetScoringPlaneHits"
     recoil_sim_hits_coll_name: str = "RecoilSimHits"
     tagger_sim_hits_coll_name: str = "TaggerSimHits"
-    n_min_hits_tagger: int = 11
-    n_min_hits_recoil: int = 7
     z_min: float = -9999.0
     track_id: int = -9999
-    pz_cut: float = -9999.0
     p_cut: float = 0.0
-    p_cut_max: float = 100000.0
     p_cut_ecal: float = -1.0
+    recoil_sp: bool = True
+    n_min_hits_tagger: int = 11
+    beamOrigin: list[float] = field(default_factory=lambda: [-883.0, -21.745876, 0.0], metadata={"entry_type": float, "dimension": 1})
     skip_tagger: bool = False
     skip_recoil: bool = False
     max_track_id: int = 5
-    ecal_sp_coll_name: str = "EcalScoringPlaneHits"
     sp_pass_name: str = ""
     input_pass_name: str = ""
     sim_particles_coll_name: str = "SimParticles"
@@ -339,10 +329,74 @@ class TruthSeedProcessor(Processor):
     particle_hypothesis: int = 11
     beam_electrons_collection: str = "beamElectrons"
     tagger_seeds_collection: str = "TaggerTruthSeeds"
-    tagger_truth_collection: str = "TaggerTruthTracks"
     recoil_seeds_collection: str = "RecoilTruthSeeds"
-    recoil_truth_collection: str = "RecoilTruthTracks"
     field_map: str = field(default_factory=make_field_map_path)
+
+
+@processor("tracking::reco::TruthTrackProcessor", "Tracking")
+class TruthTrackProcessor(Processor):
+    """Producer that takes truth seeds and produces truth tracks by extrapolating them and applying cuts.
+
+    Attributes
+    ----------
+    tagger_seeds_collection : str
+        The name of the tagger seeds collection to be read.
+    recoil_seeds_collection : str
+        The name of the recoil seeds collection to be read.
+    tagger_tracks_collection : str
+        The name of the output tagger truth tracks collection.
+    recoil_tracks_collection : str
+        The name of the output recoil truth tracks collection.
+    n_min_hits_tagger : int
+        The minimum number of hits to consider a tagger track.
+    n_min_hits_recoil : int
+        The minimum number of hits to consider a recoil track.
+    pz_cut : float
+        Minimum cut on the momentum (MeV) along the beam axis.
+    p_cut : float
+        Minimum cut on the momentum (MeV).
+    p_cut_max : float
+        Maximum cut on the momentum.
+    skip_tagger : bool
+        Ignore the tagger tracker.
+    skip_recoil : bool
+        Ignore the recoil tracker.
+    particle_hypothesis : int
+        PDG ID for the particle hypothesis.
+    relpsmear : float
+        Relative momentum smearing factor for the truth seed.
+    field_map : str
+        Magnetic field map.
+    input_pass_name : str
+        The pass name of the input collections.
+    """
+
+    tagger_seeds_collection: str = "TaggerTruthSeeds"
+    recoil_seeds_collection: str = "RecoilTruthSeeds"
+    tagger_tracks_collection: str = "TaggerTruthTracks"
+    recoil_tracks_collection: str = "RecoilTruthTracks"
+    n_min_hits_tagger: int = 11
+    n_min_hits_recoil: int = 7
+    pz_cut: float = -9999.0
+    p_cut: float = 0.0
+    p_cut_max: float = 100000.0
+    skip_tagger: bool = False
+    skip_recoil: bool = False
+    particle_hypothesis: int = 11
+    seedSmearing: bool = False
+    d0smear: list[float] = field(default_factory=lambda: [0.01, 0.01, 0.01], metadata={"entry_type": float, "dimension": 1})
+    z0smear: list[float] = field(default_factory=lambda: [0.1, 0.1, 0.1], metadata={"entry_type": float, "dimension": 1})
+    phismear: float = 0.001
+    thetasmear: float = 0.001
+    relpsmear: float = 0.1
+    rel_smearfactors: list[float] = field(default_factory=lambda: [0.1, 0.1, 0.1, 0.1, 0.1, 0.1], metadata={"entry_type": float, "dimension": 1})
+    inflate_factors: list[float] = field(default_factory=lambda: [10.0, 10.0, 10.0, 10.0, 10.0, 10.0], metadata={"entry_type": float, "dimension": 1})
+    field_map: str = field(default_factory=make_field_map_path)
+    input_pass_name: str = ""
+    ecal_sp_coll_name: str = "EcalScoringPlaneHits"
+    sp_pass_name: str = ""
+    sim_particles_coll_name: str = "SimParticles"
+    sim_particles_passname: str = ""
 
 
 @processor("tracking::reco::GreedyAmbiguitySolver", "Tracking")
