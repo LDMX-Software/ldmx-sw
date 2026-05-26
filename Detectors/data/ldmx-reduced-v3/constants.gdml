@@ -1,4 +1,4 @@
-s<!-- Constant defining the clearance between volumes --> 
+<!-- Constant defining the clearance between volumes --> 
 <constant name="clearance" value="0.001*mm" />
 
 <!-- Define center position and identity rotation -->
