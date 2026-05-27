@@ -79,7 +79,7 @@ void TruthSeedProcessor::configure(framework::config::Parameters& parameters) {
   pdg_ids_ = parameters.get<std::vector<int>>("pdg_ids", {11});
   z_min_ = parameters.get<double>("z_min", -9999);  // mm
   track_id_ = parameters.get<int>("track_id", -9999);
-  p_cut_ecal_ = parameters.get<double>("p_cut_ecal", -1.); 
+  p_cut_ecal_ = parameters.get<double>("p_cut_ecal", -1.);
   target_sp_ = parameters.get<bool>("tagger_sp", true); // MeV
   recoil_sp_ = parameters.get<bool>("recoil_sp", true);
   n_min_hits_tagger_ = parameters.get<int>("n_min_hits_tagger", 11);
@@ -695,7 +695,7 @@ void TruthSeedProcessor::produce(framework::Event& event) {
     else {
       // Recoil selection cuts
       // Positive scoring plane hit, going forward
-      
+     
       if (p_vec(2) < 0. || p_vec.norm() < p_cut_) continue;
 
 
@@ -821,7 +821,7 @@ void TruthSeedProcessor::produce(framework::Event& event) {
     // hit with the highest momentum.
     const ldmx::SimTrackerHit& hit = scoring_hits.at(element.second.at(0));
     const ldmx::SimParticle& phit = particle_map[hit.getTrackID()];
-    
+   
 
 
     // Findable particle selection
@@ -867,6 +867,7 @@ void TruthSeedProcessor::produce(framework::Event& event) {
       // add smearing to the seed
       truth_recoil_seed = seedFromTruth(truth_recoil_seed, seed_smearing_);
 
+      if (truth_recoil_seed.getPerigeeParameters().empty()) continue;
 
       recoil_truth_seeds.push_back(truth_recoil_seed);
     }
@@ -903,5 +904,6 @@ void TruthSeedProcessor::produce(framework::Event& event) {
 
 
 DECLARE_PRODUCER(tracking::reco::TruthSeedProcessor)
+
 
 
