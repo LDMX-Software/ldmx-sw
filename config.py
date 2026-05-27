@@ -26,7 +26,7 @@ import sys
 p.max_events = int(os.environ["LDMX_NUM_EVENTS"])
 p.run = int(os.environ["LDMX_RUN_NUMBER"])
 
-p.histogram_file = "hist2.root"
+p.histogram_file = "hist5.root"
 p.output_files = ["events.root"]
 
 # Load the full tracking sequence
@@ -43,53 +43,6 @@ import LDMX.Hcal.digi as hcal_digi_and_reco
 import LDMX.Hcal.hcal_geometry
 import LDMX.Hcal.hcal_hardcoded_conditions
 from LDMX.Tracking import full_tracking_sequence
-
-from LDMX.Tracking import full_tracking_sequence
-from LDMX.Tracking.tracking import TruthSeedProcessor, TruthTrackProcessor
-
-# Configure TruthSeedProcessor
-truth_seeder = TruthSeedProcessor("TruthSeedProcessor")
-truth_seeder.scoring_hits_coll_name = "TargetScoringPlaneHits"
-truth_seeder.sp_pass_name = ""
-truth_seeder.sim_particles_coll_name = "SimParticles"
-truth_seeder.sim_particles_passname = ""
-truth_seeder.tagger_sim_hits_coll_name = "TaggerSimHits"
-truth_seeder.recoil_sim_hits_coll_name = "RecoilSimHits"
-truth_seeder.input_pass_name = ""
-truth_seeder.beam_electrons_collection = "BeamElectrons"
-truth_seeder.tagger_seeds_collection = "TaggerTruthSeeds"
-truth_seeder.recoil_seeds_collection = "RecoilTruthSeeds"
-truth_seeder.n_min_hits_tagger = 11
-truth_seeder.p_cut = 0.
-truth_seeder.p_cut_ecal = -1.
-truth_seeder.particle_hypothesis = 11
-truth_seeder.skip_tagger = False
-truth_seeder.skip_recoil = False
-truth_seeder.recoil_sp = True
-truth_seeder.beamOrigin = [-883.0, -21.745876, 0.0]
-
-track_constructor = TruthTrackProcessor("TruthTrackProcessor")
-track_constructor.tagger_seeds_collection = "TaggerTruthSeeds"
-track_constructor.recoil_seeds_collection = "RecoilTruthSeeds"
-track_constructor.input_pass_name = ""
-track_constructor.tagger_tracks_collection = "TaggerTruthTracks"
-track_constructor.recoil_tracks_collection = "RecoilTruthTracks"
-track_constructor.n_min_hits_tagger = 11
-track_constructor.n_min_hits_recoil = 7
-track_constructor.p_cut = 0.
-track_constructor.pz_cut = -9999.0
-track_constructor.particle_hypothesis = 11
-track_constructor.skip_tagger = False
-track_constructor.skip_recoil = False
-track_constructor.seedSmearing = False
-track_constructor.sim_particles_coll_name = "SimParticles"
-track_constructor.sim_particles_passname = ""
-track_constructor.ecal_sp_coll_name = "EcalScoringPlaneHits"
-track_constructor.sp_pass_name = ""
-
-# Overwrite the default truth processors in the sequence
-full_tracking_sequence.sequence[2] = truth_seeder
-full_tracking_sequence.sequence[3] = track_constructor
 
 
 hcal_digi = hcal_digi_and_reco.HcalDigiProducer()
