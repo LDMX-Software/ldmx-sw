@@ -252,7 +252,7 @@ jobs:
             artifact_link=""
             artifact_name="${s}-pr-validation"
             if [[ -n "${artifact_urls[$artifact_name]:-}" ]]; then
-              artifact_link=" ([plots](${artifact_urls[$artifact_name]}))"
+              artifact_link=" ([artifact](${artifact_urls[$artifact_name]}))"
             fi
             if [[ "$n" -gt 0 ]]; then
               table+="| \`$s\` | :x: FAIL ($n histograms failed KS test)${artifact_link} |\n"

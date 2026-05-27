@@ -81,7 +81,8 @@ check-validation archive:
       # do not error out (don't set rc here) if diff is non-zero, the timestamps printed out
       # by some processors prevent a full text diff so we do the character
       # count check below to look for big changes
-      warn Text Differences Between Logs
+      _n_diff_lines=$(grep -c '^[<>]' log.diff || echo 0)
+      warn "Text Differences Between Logs (${_n_diff_lines} lines differ)"
       start_group diff gold.log output.log
       cat log.diff
       end_group
@@ -109,7 +110,7 @@ check-validation archive:
     if tar -tf ${_archive} gold.time timing.txt &>/dev/null 2>&1; then
       tar xzf ${_archive} gold.time timing.txt
       read _sample new_s < timing.txt
-      gold_s=$(awk -v s="${_sample}" '$1 == s {print $2}' gold.time)
+      gold_s=$(awk -v s="${_sample}" '$1 == s {v=$2} END {print v}' gold.time)
       if [[ -z "${gold_s}" ]]; then
         warn "No gold timing entry for sample '${_sample}'; skipping timing check."
       else

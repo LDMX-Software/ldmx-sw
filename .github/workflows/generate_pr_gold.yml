@@ -112,6 +112,7 @@ jobs:
           error "No artifacts matching '${artifacts_d}/*-new-gold'."
           exit 1
         fi
+        > ci-data/gold.time
         for sample_d in ${artifacts_d}/*-new-gold; do
           sample=$(basename ${sample_d})
           sample=${sample%%-new-gold}
