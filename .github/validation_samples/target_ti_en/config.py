@@ -171,7 +171,7 @@ p.sequence.extend(
         track_pf,
         pf_comb,
         *target_dqm,
-        dqm.PhotoNuclearDQM(),
+        dqm.ElectroNuclearDQM(),
         dqm.EcalClusterAnalyzer(),
     ]
 )
