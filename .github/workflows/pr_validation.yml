@@ -146,10 +146,7 @@ jobs:
     - name: Did any validation plots fail?
       id: check_result
       continue-on-error: true
-      run: |
-        set +e
-        just check-validation "${{ steps.validation.outputs.plots }}" 2>&1 | tee check_output.txt
-        echo "check_rc=${PIPESTATUS[0]}" >> $GITHUB_OUTPUT
+      run: just check-validation "${{ steps.validation.outputs.plots }}" 2>&1 | tee check_output.txt
       shell: bash
 
     - name: Upload validation status
@@ -278,6 +275,6 @@ jobs:
           curl -s -X POST \
             -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
             -H "Content-Type: application/json" \
-            -d "$(jq -n --arg body "$(printf "$body")" '{"body": $body}')" \
+            -d "$(jq -n --arg body "$(printf '%b' "$body")" '{"body": $body}')" \
             "https://api.github.com/repos/${{ github.repository }}/issues/${PR_NUMBER}/comments"
 
