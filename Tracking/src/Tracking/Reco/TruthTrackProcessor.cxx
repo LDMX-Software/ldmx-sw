@@ -165,7 +165,7 @@ void TruthTrackProcessor::produce(framework::Event& event) {
       Acts::Vector3 perigee_ldmx(seed.getPerigeeLocation()[0],
                                  seed.getPerigeeLocation()[1],
                                  seed.getPerigeeLocation()[2]);
-	Acts::Vector3 perigee_acts = tracking::sim::utils::ldmx2Acts(perigee_ldmx);
+  Acts::Vector3 perigee_acts = tracking::sim::utils::ldmx2Acts(perigee_ldmx);
 
 
       auto perigee_surface{Acts::Surface::makeShared<Acts::PerigeeSurface>(perigee_acts)};
@@ -233,13 +233,28 @@ Acts::BoundSquareMatrix cov = tracking::sim::utils::unpackCov(seed.getPerigeeCov
   }
 
 
-  ldmx::Track track;
   if (!skip_recoil_) {
     for (const auto& seed : recoil_seeds) {
+      ldmx::Track track;
       if (seed.getNhits() <= n_min_hits_recoil_) continue;
 
+      //continue as soon as possible if seed is not found
+      auto part_it = particle_map.find(seed.getTrackID());
+      if (part_it == particle_map.end()) continue;
 
-	auto seed_mom = seed.getMomentumAtTarget();
+      ldmx::SimTrackerHit ecal_hit;
+      bool found_ecal_hit = false;
+      for (const auto& ecal_sp_hit : sel_ecal_sp_hits) {
+        if (ecal_sp_hit.getTrackID() == seed.getTrackID()) {
+          ecal_hit = ecal_sp_hit;
+          found_ecal_hit = true;
+          break;
+        }
+      }
+      if (!found_ecal_hit) continue;
+
+
+      auto seed_mom = seed.getMomentumAtTarget();
       //only continue extrapolation based on these cuts
       if (seed.getPerigeeParameters().empty()) continue;
 
@@ -329,23 +344,8 @@ Acts::BoundSquareMatrix cov = tracking::sim::utils::unpackCov(seed.getPerigeeCov
         track.addMeasurementIndex(sim_hit_idx);
       }
 
-    //look at ecal bound state to finalize recoil tracks
-    ldmx::SimTrackerHit ecal_hit;
-    bool found_ecal_hit = false;
-    for (const auto& ecal_sp_hit : sel_ecal_sp_hits) {
-    if (ecal_sp_hit.getTrackID() == seed.getTrackID()) {
-      ecal_hit = ecal_sp_hit;
-      found_ecal_hit = true;
-      break;
-    }
-  }
-
-  if (!found_ecal_hit || !particle_map.count(seed.getTrackID())) {
-    continue;
-  }
-
-  const ldmx::SimParticle& phit = particle_map.at(seed.getTrackID());
-  
+  const ldmx::SimParticle& phit = part_it->second;
+ 
   // Express truth ECAL state in the bound parametrization of ecal_surface
   // (same surface definition used by CKFProcessor) rather than storing raw
   // scoring plane hit coordinates.
@@ -376,9 +376,9 @@ Acts::BoundSquareMatrix cov = tracking::sim::utils::unpackCov(seed.getPerigeeCov
                                            part_ecal);
       track.addTrackState(tracking::sim::utils::makeTrackState(
           geometryContext(), ecal_pars, ldmx::AtECAL));
+          recoil_tracks.push_back(track);
       }
     }
-    recoil_tracks.push_back(track);
   }
 
 
