@@ -50,7 +50,7 @@ def electro_nuclear(detector, generator):
     sim.biasing_operators = [bias_operators.ElectroNuclear("target", 1e5)]
 
     # Configure the sequence in which user actions should be called.
-    recoil_thresh = 0.975 * generator.energy * 1000.0
+    recoil_thresh = 0.9875 * generator.energy * 1000.0
     tagger_threshold = 0.95 * generator.energy * 1000.0
     sim.actions.extend(
         [
