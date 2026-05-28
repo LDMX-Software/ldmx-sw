@@ -48,7 +48,7 @@
     <position name="hadron_calorimeter_pos"
 		  x="0.0" 
 		  y="support_box_shift"
-		  z="hadron_calorimeter_pos_z"/>
+		  z="1000.0"/>
     <position name="magnet_pos" x="0.0" y="0.0" z="magnet_pos_z" />
 	
   </define>
