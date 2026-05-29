@@ -37,8 +37,15 @@ void RawTrackerDecoder::produce(framework::Event& event) {
     return;
   }
 
-  auto timestamp = static_cast<long>(
-      event.getEventHeader().getIntParameter("RoR Timestamp"));
+  const auto& hdr = event.getEventHeader();
+  uint64_t ror_ts = 0;
+  if (hdr.hasIntParameter("RoR Timestamp LSB") &&
+      hdr.hasIntParameter("RoR Timestamp MSB")) {
+    ror_ts = (static_cast<uint64_t>(
+                  static_cast<uint32_t>(hdr.getIntParameter("RoR Timestamp MSB"))) << 32) |
+             static_cast<uint32_t>(hdr.getIntParameter("RoR Timestamp LSB"));
+  }
+  auto timestamp = static_cast<long>(ror_ts);
 
   hits.reserve(n_multisamples - 1);
 
