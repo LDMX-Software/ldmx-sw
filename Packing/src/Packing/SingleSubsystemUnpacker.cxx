@@ -7,7 +7,14 @@
 namespace packing {
 
 void SingleSubsystemUnpacker::configure(framework::config::Parameters& ps) {
-  reader_.open(ps.get<std::string>("dat_file"));
+  auto dat_file{ps.get<std::string>("dat_file")};
+  reader_.open(dat_file);
+  if (!reader_) {
+    EXCEPTION_RAISE("FileNotFound",
+                    "SingleSubsystemUnpacker could not open '" + dat_file +
+                        "'. Check the path and that it is mounted inside the "
+                        "container (denv_mounts in .denv/config).");
+  }
   auto subsystem_name{ps.get<std::string>("subsystem_name")};
   if (subsystem_name.empty()) {
     subsystem_ = ps.get<int>("subsystem");
@@ -31,21 +38,12 @@ void SingleSubsystemUnpacker::produce(framework::Event& event) {
   static packing::RogueFrameHeader frame_header;
   static packing::LDMXRoRHeader ror_header;
 
-  static int debug_frame_count = 0;
   while (reader_ and not reader_.eof()) {
-    int frame_pos = reader_.tell();
     reader_ >> frame_header;
 
     // store location of end-of-frame for skipping this frame
     // if we fail any of the filter checks
     const auto frame_end = reader_.tell() + frame_header.size();
-
-    std::cout << "[SSU DEBUG] frame " << debug_frame_count++
-              << " pos=" << frame_pos
-              << " size=" << frame_header.size()
-              << " ch=" << frame_header.channel()
-              << " yaml=" << frame_header.probablyYaml()
-              << " end=" << frame_end << std::endl;
 
     if (frame_header.probablyYaml()) {
       // configuration/YAML frame written by StreamWriter, skip
@@ -55,10 +53,6 @@ void SingleSubsystemUnpacker::produce(framework::Event& event) {
 
     // data channel, read RoR header
     reader_ >> ror_header;
-    std::cout << "[SSU DEBUG]   RoR valid=" << ror_header.valid()
-              << " subsys=" << (int)ror_header.subsystem()
-              << " contrib=" << (int)ror_header.contributor()
-              << " (want subsys=" << subsystem_ << ")" << std::endl;
     if (!ror_header.valid() or ror_header.subsystem() != subsystem_) {
       // not a valid LDMX data frame or wrong subsystem ID number
       reader_.seek(frame_end);
@@ -90,9 +84,13 @@ void SingleSubsystemUnpacker::produce(framework::Event& event) {
 
     // buff has subsystem data without RoR header
     event.add(output_name_, buff);
-    // ror_header has global RoR information
-    event.getEventHeader().setIntParameter("RoR Timestamp",
-                                           ror_header.timestamp());
+    // Store the full 64-bit RoR timestamp as two 32-bit halves since
+    // EventHeader::setIntParameter only accepts int.
+    uint64_t ts = ror_header.timestamp();
+    event.getEventHeader().setIntParameter("RoR Timestamp LSB",
+                                           static_cast<int>(ts & 0xFFFFFFFFU));
+    event.getEventHeader().setIntParameter("RoR Timestamp MSB",
+                                           static_cast<int>(ts >> 32));
     // successfully unpacked an event, return from produce
     return;
   }
