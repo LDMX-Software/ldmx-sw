@@ -51,6 +51,20 @@ class RawSiStripHit : public SiStripHit {
    */
   virtual ~RawSiStripHit() = default;
 
+  /// Get the Geant4 track ID of the particle that created this hit (-1 if
+  /// unknown).
+  int getTrackID() const { return track_id_; }
+
+  /// Get the PDG particle ID of the particle that created this hit (0 if
+  /// unknown).
+  int getPdgID() const { return pdg_id_; }
+
+  /// Get the detector ID of the originating SimTrackerHit (-1 if unknown).
+  int getSimHitID() const { return sim_hit_id_; }
+
+  /// Get the energy deposited by the parent SimTrackerHit [MeV] (0 if unknown).
+  float getEdep() const { return edep_; }
+
   /**
    * Clear the samples, time stamp and electronics/quality fields.
    *
@@ -102,6 +116,16 @@ class RawSiStripHit : public SiStripHit {
   uint8_t  head_{0};
   uint8_t  tail_{0};
   uint8_t  filter_{0};
+
+  // Truth information (for MC truth matching; -1/0 means not set)
+  /// Geant4 track ID of the particle that created this hit.
+  int track_id_{-1};
+  /// PDG particle ID of the particle that created this hit.
+  int pdg_id_{0};
+  /// Detector ID of the originating SimTrackerHit.
+  int sim_hit_id_{-1};
+  /// Energy deposited by the parent SimTrackerHit [MeV].
+  float edep_{0.f};
 
   /// Class declaration needed by the ROOT dictionary.
   ClassDefOverride(RawSiStripHit, 4);

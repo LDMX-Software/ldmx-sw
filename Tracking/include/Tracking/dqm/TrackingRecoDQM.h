@@ -51,7 +51,7 @@ class TrackingRecoDQM : public framework::Analyzer {
    *
    */
 
-  void trackStateMonitoring(const ldmx::Tracks& tracks,
+  void trackStateMonitoring(const std::vector<ldmx::Track>& tracks,
                             ldmx::TrackStateType ts_type,
                             const std::string& ts_title);
   /**
@@ -91,7 +91,7 @@ class TrackingRecoDQM : public framework::Analyzer {
   std::vector<std::string> track_states_;
 
   // Truth Track collection
-  std::shared_ptr<ldmx::Tracks> truth_track_collection_{nullptr};
+  std::shared_ptr<std::vector<ldmx::Track>> truth_track_collection_{nullptr};
 
   // Ecal scoring plane hits_
   std::shared_ptr<std::vector<ldmx::SimTrackerHit>> ecal_scoring_hits_{nullptr};

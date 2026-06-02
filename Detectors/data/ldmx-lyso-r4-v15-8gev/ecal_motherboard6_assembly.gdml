@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no" ?>
-<gdml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://service-spi.web.cern.ch/service-spi/app/releases/GDML/schema/gdml.xsd">
+<gdml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="gdml.xsd">
 
   <define>
     <position name="nohole_motherboard6_assembly_v0" unit="mm" x="106.2316" y="8.166" z="10.69263"/>
@@ -361,8 +361,10 @@
 
   <structure>
     <volume name="nohole_motherboard6_assembly">
-      <materialref ref="FR40x27264f0"/>
+      <materialref ref="FR4"/>
       <solidref ref="nohole_motherboard6_assembly-SOL"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="FR4MaterialVis"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalRegionVis" />
     </volume>
   </structure>
 

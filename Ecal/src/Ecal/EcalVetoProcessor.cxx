@@ -126,6 +126,8 @@ void EcalVetoProcessor::configure(framework::config::Parameters &parameters) {
   ecal_sp_coll_name_ = parameters.get<std::string>("ecal_sp_coll_name");
   target_sp_coll_name_ = parameters.get<std::string>("target_sp_coll_name");
   sp_pass_name_ = parameters.get<std::string>("sp_pass_name");
+  sim_particles_coll_name_ =
+      parameters.get<std::string>("sim_particles_coll_name");
   collection_name_ = parameters.get<std::string>("collection_name");
   rec_pass_name_ = parameters.get<std::string>("rec_pass_name");
   rec_coll_name_ = parameters.get<std::string>("rec_coll_name");
@@ -198,7 +200,7 @@ void EcalVetoProcessor::produce(framework::Event &event) {
 
     // Get the collection of simulated particles from the event
     auto particle_map{event.getMap<int, ldmx::SimParticle>(
-        "SimParticles", sim_particles_passname_)};
+        sim_particles_coll_name_, sim_particles_passname_)};
 
     // Search for the recoil electron
     auto [recoil_track_id, recoil_electron] = analysis::getRecoil(particle_map);
@@ -271,11 +273,11 @@ void EcalVetoProcessor::produce(framework::Event &event) {
         event.getCollection<ldmx::Track>(track_collection_, track_pass_name_)};
 
     ldmx_log(trace) << "  Propagate the recoil ele to the ECAL";
-    ldmx::TrackStateType ts_type = ldmx::TrackStateType::AtECAL;
+    ldmx::TrackStateType ts_type = ldmx::AtECAL;
     auto recoil_track_states_ecal =
         ecal::trackProp(recoil_tracks, ts_type, "ecal");
     ldmx_log(trace) << "  Propagate the recoil ele to the Target";
-    ldmx::TrackStateType ts_type_target = ldmx::TrackStateType::AtTarget;
+    ldmx::TrackStateType ts_type_target = ldmx::AtTarget;
     auto recoil_track_states_target =
         ecal::trackProp(recoil_tracks, ts_type_target, "target");
 

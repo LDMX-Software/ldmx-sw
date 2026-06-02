@@ -3,7 +3,7 @@
 #   for the development image, look at the LDMX-Software/dev-build-context repo
 ###############################################################################
 
-FROM ldmx/dev:v5.2.3
+FROM ldmx/dev:v5.2.4
 
 # install ldmx-sw into the container at /usr/local
 COPY . /code

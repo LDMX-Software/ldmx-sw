@@ -8,42 +8,49 @@ from LDMX.Framework import ldmxcfg
 Simulation of particles through TB prototype
 """
 
-parser = argparse.ArgumentParser(f'ldmx fire {sys.argv[0]}')
-parser.add_argument('--nevents',default=100,type=int)
-parser.add_argument('--particle',default='neutron') # other options, mu-,e-,pi-,proton
-parser.add_argument('--energy',default=2.0,type=float)
-parser.add_argument('--runnumber',default=1,type=int)
-parser.add_argument('--output_dir',default='.',type=pathlib.Path)
+parser = argparse.ArgumentParser(f"ldmx fire {sys.argv[0]}")
+parser.add_argument("--nevents", default=100, type=int)
+parser.add_argument("--particle", default="neutron")  # other options, mu-,e-,pi-,proton
+parser.add_argument("--energy", default=2.0, type=float)
+parser.add_argument("--runnumber", default=1, type=int)
+parser.add_argument("--output_dir", default=".", type=pathlib.Path)
 arg = parser.parse_args()
 
-p = ldmxcfg.Process('sim')
+p = ldmxcfg.Process("sim")
 p.max_events = arg.nevents
 p.term_log_level = 0
 p.log_frequency = 10
 p.run = arg.runnumber
 
-detector = 'ldmx-hcal-prototype-v2.0' # TODO: CHANGE TO FEFIX version
+detector = "ldmx-hcal-prototype-v2.0"  # TODO: CHANGE TO FEFIX version
 
-base_name = os.path.basename(arg.particle+f"Sim_{arg.energy:.2f}GeV_"+str(p.max_events)+f"_{detector}"+"_pass1_%i"%arg.runnumber)
-dir_name  = os.path.dirname(arg.output_dir)
+base_name = os.path.basename(
+    arg.particle
+    + f"Sim_{arg.energy:.2f}GeV_"
+    + str(p.max_events)
+    + f"_{detector}"
+    + f"_pass1_{arg.runnumber}"
+)
+dir_name = os.path.dirname(arg.output_dir)
 
-p.output_files = [f'{dir_name}/{base_name}.root']
+p.output_files = [f"{dir_name}/{base_name}.root"]
 
 from LDMX.SimCore import simulator
-import LDMX.Ecal.ecal_geometry # geometry required by sim
+import LDMX.Ecal.ecal_geometry  # geometry required by sim
 
-my_sim = simulator.simulator('my_sim')
-my_sim.setDetector(detector)
+my_sim = simulator.Simulator("my_sim")
+my_sim.set_detector(detector)
 
 # Get a pre-written generator
 from LDMX.SimCore import generators as gen
-my_gun = gen.gun('my_gun')
+
+my_gun = gen.Gun(instance_name="my_gun")
 my_gun.particle = arg.particle
-my_gun.position = [ 0., 0., -600. ] # mm
-my_gun.direction = [ 0., 0., 1] # forward in z
-my_gun.energy = arg.energy # GeV
-my_sim.generators = [ my_gun ]
-p.sequence.append( my_sim )
+my_gun.position = [0.0, 0.0, -600.0]  # mm
+my_gun.direction = [0.0, 0.0, 1]  # forward in z
+my_gun.energy = arg.energy  # GeV
+my_sim.generators = [my_gun]
+p.sequence.append(my_sim)
 # my_sim.verbosity = 1
 
 # import chip/geometry (hardcoded) conditions
@@ -57,15 +64,15 @@ p.sequence.extend(
         hcal_digi.HcalDigiProducer(),
         hcal_digi.HcalRecProducer(),
         hcal_digi.HcalSingleEndRecProducer(
-            pass_name = 'sim', coll_name = 'HcalDigis',
-            rec_coll_name = 'HcalSingleEndRecHits',
+            pass_name="sim",
+            coll_name="HcalDigis",
+            rec_coll_name="HcalSingleEndRecHits",
         ),
         hcal_digi.HcalDoubleEndRecProducer(
-            pass_name = '',
-            coll_name = 'HcalSingleEndRecHits',
-            rec_coll_name = 'HcalDoubleEndRecHits',
-            rec_pass_name = ''
-        )
+            pass_name="",
+            coll_name="HcalSingleEndRecHits",
+            rec_coll_name="HcalDoubleEndRecHits",
+            rec_pass_name="",
+        ),
     ]
 )
-

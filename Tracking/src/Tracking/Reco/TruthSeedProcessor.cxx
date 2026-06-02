@@ -12,13 +12,43 @@ void TruthSeedProcessor::onNewRun(const ldmx::RunHeader& rh) {
   gctx_ = Acts::GeometryContext();
   normal_ = std::make_shared<std::normal_distribution<float>>(0., 1.);
 
-  Acts::StraightLineStepper stepper;
+  // Custom transformation of the interpolated bfield map
+  auto transform_pos = [](const Acts::Vector3& pos_) {
+    Acts::Vector3 rot_pos;
+    rot_pos(0) = pos_(1);
+    rot_pos(1) = pos_(2);
+    rot_pos(2) = pos_(0) + DIPOLE_OFFSET;
+    return rot_pos;
+  };
+
+  auto transform_b_field = [](const Acts::Vector3& field,
+                              const Acts::Vector3& /*pos_*/) {
+    Acts::Vector3 rot_field;
+    rot_field(0) = field(2);
+    rot_field(1) = field(0);
+    rot_field(2) = field(1);
+    return rot_field;
+  };
+
+  // Setup the interpolated bfield map
+  const auto map = std::make_shared<InterpolatedMagneticField3>(
+      loadDefaultBField(field_map_, transform_pos, transform_b_field));
+
+  // Setup the stepper and navigator
+  const auto stepper = Acts::EigenStepper<>{map};
   Acts::Navigator::Config nav_cfg{geometry().getTG()};
+  nav_cfg.resolveMaterial = true;
+  nav_cfg.resolvePassive = true;
+  nav_cfg.resolveSensitive = true;
   const Acts::Navigator navigator(nav_cfg);
 
-  linpropagator_ = std::make_shared<LinPropagator>(stepper, navigator);
+  propagator_ = std::make_unique<TruthPropagator>(
+      stepper, navigator,
+      Acts::getDefaultLogger("TruthPropagator", Acts::Logging::FATAL));
   trk_extrap_ = std::make_shared<std::decay_t<decltype(*trk_extrap_)>>(
-      *linpropagator_, geometryContext(), magneticFieldContext());
+      *propagator_, geometryContext(), magneticFieldContext());
+  trk_extrap_->setMaxStepSize(200);  // mm
+  trk_extrap_->setPathLimit(3000);   // mm
 }
 
 void TruthSeedProcessor::configure(framework::config::Parameters& parameters) {
@@ -88,6 +118,8 @@ void TruthSeedProcessor::configure(framework::config::Parameters& parameters) {
       parameters.get<std::string>("tagger_seeds_collection");
   recoil_seeds_collection_ =
       parameters.get<std::string>("recoil_seeds_collection");
+  // Get the field map for the propagator
+  field_map_ = parameters.get<std::string>("field_map");
 }
 
 void TruthSeedProcessor::createTruthTrack(
@@ -136,7 +168,8 @@ void TruthSeedProcessor::createTruthTrack(
 
   // The idea here is:
   // 1 - Define a bound track state parameters at point P on track. Basically a
-  // curvilinear representation. 2 - Propagate to target surface to obtain the
+  // curvilinear representation.
+  // 2 - Propagate to target surface to obtain the
   // BoundTrackState there.
 
   // Transform the position, momentum and charge to free parameters.
@@ -162,37 +195,24 @@ void TruthSeedProcessor::createTruthTrack(
   Acts::BoundTrackParameters bound_trk_pars(gen_surface, bound_params,
                                             std::nullopt, part);
 
-  // CAUTION:: The target surface should be close to the gen surface
-  // Linear propagation to the target surface. I assume 1mm of tolerance
-  Acts::Vector3 tgt_surf_center = target_surface->center(geometryContext());
-  Acts::Vector3 gen_surf_center = gen_surface->center(geometryContext());
-  // Tolerance
-  double tol = 1;  // mm
-
-  if (abs(tgt_surf_center(0) - gen_surf_center(0)) > tol)
-    ldmx_log(error) << "Linear extrapolation to a far away surface in B field."
-                    << "  This will cause inaccuracies in track parameters"
-                    << "  Distance extrapolated = "
-                    << (tgt_surf_center(0) - gen_surf_center(0));
-
   auto prop_bound_state =
       trk_extrap_->extrapolate(bound_trk_pars, target_surface);
 
+  if (!prop_bound_state) {
+    ldmx_log(warn) << "Propagation to target surface failed — "
+                   << "track may have exited the B-field map.";
+    return;
+  }
+
   // Create the seed track object.
   Acts::Vector3 ref = target_surface->center(geometryContext());
-  // trk.setPerigeeLocation(free_params[Acts::eFreePos0],
-  //                        free_params[Acts::eFreePos1],
-  //                        free_params[Acts::eFreePos2]);
+  Acts::Vector3 ref_ldmx = tracking::sim::utils::acts2Ldmx(ref);
+  trk.setPerigeeLocation(ref_ldmx(0), ref_ldmx(1), ref_ldmx(2));
 
-  trk.setPerigeeLocation(ref(0), ref(1), ref(2));
-
-  auto prop_bound_vec = (prop_bound_state.value()).parameters();
+  auto prop_bound_vec = prop_bound_state->parameters();
 
   trk.setPerigeeParameters(
       tracking::sim::utils::convertActsToLdmxPars(prop_bound_vec));
-
-  trk.setPosition(pos(0), pos(1), pos(2));
-  trk.setMomentum(mom(0), mom(1), mom(2));
 }
 
 // origin_surface is the perigee
@@ -211,34 +231,49 @@ ldmx::Track TruthSeedProcessor::recoilFullSeed(
   // Seed at the target location
   ldmx::Track smeared_truth_track = seedFromTruth(truth_recoil_track, false);
 
-  // Add the track state at the target
-  ldmx::Track truth_track_target;
-  createTruthTrack(particle, hit, truth_track_target, target_surface);
-
-  // Store the truth track state on the seed track
+  // Add truth track state at the target: use scoring plane hit (already LDMX
+  // frame)
   ldmx::Track::TrackState ts_truth_target;
-  Acts::Vector3 ref = target_surface->center(geometryContext());
-  ts_truth_target.ref_x_ = ref(0);
-  ts_truth_target.ref_y_ = ref(1);
-  ts_truth_target.ref_z_ = ref(2);
-  ts_truth_target.params_ = truth_track_target.getPerigeeParameters();
-  // empty cov
-  ts_truth_target.ts_type_ = ldmx::TrackStateType::AtTarget;
+  ts_truth_target.pos_ = {hit.getPosition()[0], hit.getPosition()[1],
+                          hit.getPosition()[2]};
+  ts_truth_target.mom_ = {hit.getMomentum()[0], hit.getMomentum()[1],
+                          hit.getMomentum()[2]};
+  ts_truth_target.ts_type_ = ldmx::AtTarget;
   smeared_truth_track.addTrackState(ts_truth_target);
 
-  // Add the track state at the ecal
-  ldmx::Track truth_track_ecal;
-  createTruthTrack(particle, ecal_hit, truth_track_ecal, ecal_surface);
-
-  ldmx::Track::TrackState ts_truth_ecal;
-  Acts::Vector3 ref_ecal = ecal_surface->center(geometryContext());
-  ts_truth_ecal.ref_x_ = ref_ecal(0);
-  ts_truth_ecal.ref_y_ = ref_ecal(1);
-  ts_truth_ecal.ref_z_ = ref_ecal(2);
-  ts_truth_ecal.params_ = truth_track_ecal.getPerigeeParameters();
-  // empty cov
-  ts_truth_ecal.ts_type_ = ldmx::TrackStateType::AtECAL;
-  smeared_truth_track.addTrackState(ts_truth_ecal);
+  // Express truth ECAL state in the bound parametrization of ecal_surface
+  // (same surface definition used by CKFProcessor) rather than storing raw
+  // scoring plane hit coordinates.
+  {
+    Acts::Vector3 ep{ecal_hit.getPosition()[0], ecal_hit.getPosition()[1],
+                     ecal_hit.getPosition()[2]};
+    Acts::Vector3 em{ecal_hit.getMomentum()[0], ecal_hit.getMomentum()[1],
+                     ecal_hit.getMomentum()[2]};
+    ep = tracking::sim::utils::ldmx2Acts(ep);
+    em = tracking::sim::utils::ldmx2Acts(em);
+    // Linearly extrapolate transverse coordinates to ACTS x = 240.5 mm
+    // (= LDMX z = 240.5 mm), correcting for the track slope over the small
+    // z-offset between the scoring plane and the ECAL surface.
+    if (std::abs(em[0]) > 0) {
+      double delta = 240.5 - ep[0];
+      ep[1] += delta * em[1] / em[0];
+      ep[2] += delta * em[2] / em[0];
+      ep[0] = 240.5;
+    }
+    double q_ecal = particle.getCharge() * Acts::UnitConstants::e;
+    auto ecal_free = tracking::sim::utils::toFreeParameters(ep, em, q_ecal);
+    auto ecal_bound =
+        Acts::transformFreeToBoundParameters(ecal_free, *ecal_surface, gctx_);
+    if (ecal_bound.ok()) {
+      auto part{Acts::GenericParticleHypothesis(
+          Acts::ParticleHypothesis(Acts::PdgParticle(particle_hypothesis_)))};
+      Acts::BoundTrackParameters ecal_pars(ecal_surface, ecal_bound.value(),
+                                           Acts::BoundSquareMatrix::Identity(),
+                                           part);
+      smeared_truth_track.addTrackState(tracking::sim::utils::makeTrackState(
+          geometryContext(), ecal_pars, ldmx::AtECAL));
+    }
+  }
 
   // Add the hits
   int nhits = 0;
@@ -266,52 +301,35 @@ ldmx::Track TruthSeedProcessor::taggerFullSeed(
 
   // Smeared track at the beam origin
   ldmx::Track smeared_truth_track = seedFromTruth(truth_track, true);
-  // ldmx_log(trace) << "!!!!! Smeared truth track momentums: "
-  //           << smearedTruthTrack.getMomentum()[0] << " "
-  //           << smearedTruthTrack.getMomentum()[1] << " "
-  //           << smearedTruthTrack.getMomentum()[2];
-  // ldmx_log(trace) << "!!!!! Smeared truth track Q/P: " <<
-  // smearedTruthTrack.getQoP()
-  //          ;
+
   ldmx_log(debug) << "Truth parameters at beam origin";
   for (auto par : truth_track.getPerigeeParameters())
     ldmx_log(debug) << par << " ";
   ldmx_log(debug);
 
-  // Add the truth track state at the target
-  //  Truth track target will be obtained from the scoring plane hit then
-  //  extrapolated linearly to the target surface
-
-  ldmx::Track truth_track_target;
-  createTruthTrack(beam_electron, hit, truth_track_target, target_surface);
-
-  // Store the truth track state on the seed track
+  // Add the truth track state at the target using the scoring plane hit
+  // (position and momentum are already in LDMX global frame)
   ldmx::Track::TrackState ts_truth_target;
-  Acts::Vector3 ref = target_surface->center(geometryContext());
-  ts_truth_target.ref_x_ = ref(0);
-  ts_truth_target.ref_y_ = ref(1);
-  ts_truth_target.ref_z_ = ref(2);
-  ts_truth_target.params_ = truth_track_target.getPerigeeParameters();
-  // empty cov
-  ts_truth_target.ts_type_ = ldmx::TrackStateType::AtTarget;
+  ts_truth_target.pos_ = {hit.getPosition()[0], hit.getPosition()[1],
+                          hit.getPosition()[2]};
+  ts_truth_target.mom_ = {hit.getMomentum()[0], hit.getMomentum()[1],
+                          hit.getMomentum()[2]};
+  ts_truth_target.ts_type_ = ldmx::AtTarget;
   smeared_truth_track.addTrackState(ts_truth_target);
 
-  ldmx_log(debug) << "Truth parameters at target";
-  for (auto par : truth_track_target.getPerigeeParameters())
-    ldmx_log(debug) << par << " ";
-  ldmx_log(debug);
+  ldmx_log(debug) << "Truth position at target: " << hit.getPosition()[0] << " "
+                  << hit.getPosition()[1] << " " << hit.getPosition()[2];
 
-  // This is the un-smeared truth track that can be used for pulls and residuals
-  ldmx::Track seed_truth_track = seedFromTruth(truth_track, false);
-
+  // Add the truth track state at the beam origin using particle vertex/momentum
+  // (SimParticle vertex and momentum are in LDMX global frame)
   ldmx::Track::TrackState ts_truth_beam_origin;
-  Acts::Vector3 ref_origin = origin_surface->center(geometryContext());
-  ts_truth_beam_origin.ref_x_ = ref_origin(0);
-  ts_truth_beam_origin.ref_y_ = ref_origin(1);
-  ts_truth_beam_origin.ref_z_ = ref_origin(2);
-  ts_truth_beam_origin.params_ = seed_truth_track.getPerigeeParameters();
-  // ts_truth_beam_origin.cov         = seedTruthTrack.getPerigeeCov();
-  ts_truth_beam_origin.ts_type_ = ldmx::TrackStateType::AtBeamOrigin;
+  ts_truth_beam_origin.pos_ = {beam_electron.getVertex()[0],
+                               beam_electron.getVertex()[1],
+                               beam_electron.getVertex()[2]};
+  ts_truth_beam_origin.mom_ = {beam_electron.getMomentum()[0],
+                               beam_electron.getMomentum()[1],
+                               beam_electron.getMomentum()[2]};
+  ts_truth_beam_origin.ts_type_ = ldmx::AtBeamOrigin;
   smeared_truth_track.addTrackState(ts_truth_beam_origin);
 
   ldmx_log(debug) << "Smeared parameters at origin";
@@ -548,24 +566,16 @@ void TruthSeedProcessor::produce(framework::Event& event) {
   // Information is extracted using the
   // scoring plane hit left by the particle at the target.
 
-  const std::vector<ldmx::SimTrackerHit> scoring_hits{
-      event.getCollection<ldmx::SimTrackerHit>(scoring_hits_coll_name_,
-                                               sp_pass_name_)};
-
-  // Retrieve the scoring plane hits at the ECAL
-  const std::vector<ldmx::SimTrackerHit> scoring_hits_ecal{
-      event.getCollection<ldmx::SimTrackerHit>(ecal_sp_coll_name_,
-                                               sp_pass_name_)};
+  const auto& scoring_hits = event.getCollection<ldmx::SimTrackerHit>(
+      scoring_hits_coll_name_, sp_pass_name_);
 
   // Retrieve the sim hits in the tagger tracker
-  const std::vector<ldmx::SimTrackerHit> tagger_sim_hits =
-      event.getCollection<ldmx::SimTrackerHit>(tagger_sim_hits_coll_name_,
-                                               input_pass_name_);
+  const auto& tagger_sim_hits = event.getCollection<ldmx::SimTrackerHit>(
+      tagger_sim_hits_coll_name_, input_pass_name_);
 
   // Retrieve the sim hits in the recoil tracker
-  const std::vector<ldmx::SimTrackerHit> recoil_sim_hits =
-      event.getCollection<ldmx::SimTrackerHit>(recoil_sim_hits_coll_name_,
-                                               input_pass_name_);
+  const auto& recoil_sim_hits = event.getCollection<ldmx::SimTrackerHit>(
+      recoil_sim_hits_coll_name_, input_pass_name_);
 
   // If sim hit collections are empty throw a warning
   if (tagger_sim_hits.size() == 0 && !skip_tagger_) {
@@ -667,7 +677,7 @@ void TruthSeedProcessor::produce(framework::Event& event) {
   std::vector<ldmx::Track> tagger_truth_seeds;
   std::vector<ldmx::Track> recoil_truth_tracks;
   std::vector<ldmx::Track> recoil_truth_seeds;
-  ldmx::Tracks beam_electrons;
+  std::vector<ldmx::Track> beam_electrons;
 
   // TODO:: The target should be taken from some conditions DB in the future.
   // Define the perigee_surface at 0.0.0
@@ -693,6 +703,15 @@ void TruthSeedProcessor::produce(framework::Event& event) {
         createTruthTrack(phit, hit, truth_tagger_track, target_surface);
         truth_tagger_track.setNhits(
             hit_count_map_tagger[hit.getTrackID()].size());
+        // Add AtTarget state from the scoring plane hit (pos in mm, mom in MeV,
+        // both already in LDMX global frame)
+        ldmx::Track::TrackState ts_target;
+        ts_target.pos_ = {hit.getPosition()[0], hit.getPosition()[1],
+                          hit.getPosition()[2]};
+        ts_target.mom_ = {hit.getMomentum()[0], hit.getMomentum()[1],
+                          hit.getMomentum()[2]};
+        ts_target.ts_type_ = ldmx::AtTarget;
+        truth_tagger_track.addTrackState(ts_target);
         tagger_truth_tracks.push_back(truth_tagger_track);
 
         if (hit.getPdgID() == 11 && hit.getTrackID() < max_track_id_) {
@@ -707,9 +726,8 @@ void TruthSeedProcessor::produce(framework::Event& event) {
   }
 
   // Recover the EcalScoring hits
-  std::vector<ldmx::SimTrackerHit> ecal_sp_hits =
-      event.getCollection<ldmx::SimTrackerHit>(ecal_sp_coll_name_,
-                                               sp_pass_name_);
+  const auto& ecal_sp_hits = event.getCollection<ldmx::SimTrackerHit>(
+      ecal_sp_coll_name_, sp_pass_name_);
   // Select ECAL hits
   std::vector<ldmx::SimTrackerHit> sel_ecal_sp_hits;
 
@@ -725,8 +743,7 @@ void TruthSeedProcessor::produce(framework::Event& event) {
     // Only take the first entry of the vector: it should be the scoring plane
     // hit with the highest momentum.
     const ldmx::SimTrackerHit& hit = scoring_hits.at(element.second.at(0));
-    [[maybe_unused]] const ldmx::SimParticle& phit =
-        particle_map[hit.getTrackID()];
+    const ldmx::SimParticle& phit = particle_map[hit.getTrackID()];
     ldmx::SimTrackerHit ecal_hit;
 
     bool found_ecal_hit = false;
@@ -743,17 +760,61 @@ void TruthSeedProcessor::produce(framework::Event& event) {
     // hit_count_map_recoil[hit.getTrackID()].size();
     if (hit_count_map_recoil[hit.getTrackID()].size() > n_min_hits_recoil_ &&
         found_ecal_hit && !skip_recoil_) {
-      ldmx::Track truth_recoil_track =
-          recoilFullSeed(particle_map[hit.getTrackID()], hit.getTrackID(), hit,
-                         ecal_hit, hit_count_map_recoil, target_surface,
-                         target_unbound_surface, ecal_surface);
-      // ldmx_log(trace) << "!!! Recoil track created";
-      // ldmx_log(trace) << "!!! Recoil track momentum: " <<
-      // truth_recoil_track.getMomentum()[0] << " " <<
-      // truth_recoil_track.getMomentum()[1] << " " <<
-      // truth_recoil_track.getMomentum()[2]; ldmx_log(trace) << "!!! Hit
-      // momentum: " << hit.getMomentum()[0] << " " << hit.getMomentum()[1] << "
-      // " << hit.getMomentum()[2];
+      ldmx::Track truth_recoil_track;
+      createTruthTrack(phit, hit, truth_recoil_track, target_surface);
+      truth_recoil_track.setTrackID(hit.getTrackID());
+
+      // AtTarget state from target scoring plane hit (pos mm, mom MeV, LDMX
+      // frame)
+      ldmx::Track::TrackState ts_target;
+      ts_target.pos_ = {hit.getPosition()[0], hit.getPosition()[1],
+                        hit.getPosition()[2]};
+      ts_target.mom_ = {hit.getMomentum()[0], hit.getMomentum()[1],
+                        hit.getMomentum()[2]};
+      ts_target.ts_type_ = ldmx::AtTarget;
+      truth_recoil_track.addTrackState(ts_target);
+
+      // Express truth ECAL state in the bound parametrization of ecal_surface
+      // (same surface definition used by CKFProcessor).
+      {
+        Acts::Vector3 ep{ecal_hit.getPosition()[0], ecal_hit.getPosition()[1],
+                         ecal_hit.getPosition()[2]};
+        Acts::Vector3 em{ecal_hit.getMomentum()[0], ecal_hit.getMomentum()[1],
+                         ecal_hit.getMomentum()[2]};
+        ep = tracking::sim::utils::ldmx2Acts(ep);
+        em = tracking::sim::utils::ldmx2Acts(em);
+        // Linearly extrapolate transverse coordinates to ACTS x = 240.5 mm
+        // (= LDMX z = 240.5 mm), correcting for the track slope over the small
+        // z-offset between the scoring plane and the ECAL surface.
+        if (std::abs(em[0]) > 0) {
+          double delta = 240.5 - ep[0];
+          ep[1] += delta * em[1] / em[0];
+          ep[2] += delta * em[2] / em[0];
+          ep[0] = 240.5;
+        }
+        double q_ecal = phit.getCharge() * Acts::UnitConstants::e;
+        auto ecal_free = tracking::sim::utils::toFreeParameters(ep, em, q_ecal);
+        auto ecal_bound = Acts::transformFreeToBoundParameters(
+            ecal_free, *ecal_surface, gctx_);
+        if (ecal_bound.ok()) {
+          auto part{Acts::GenericParticleHypothesis(Acts::ParticleHypothesis(
+              Acts::PdgParticle(particle_hypothesis_)))};
+          Acts::BoundTrackParameters ecal_pars(
+              ecal_surface, ecal_bound.value(),
+              Acts::BoundSquareMatrix::Identity(), part);
+          truth_recoil_track.addTrackState(tracking::sim::utils::makeTrackState(
+              geometryContext(), ecal_pars, ldmx::AtECAL));
+        }
+      }
+
+      // Attach sim hit indices
+      int nhits = 0;
+      for (auto sim_hit_idx : hit_count_map_recoil.at(hit.getTrackID())) {
+        truth_recoil_track.addMeasurementIndex(sim_hit_idx);
+        nhits++;
+      }
+      truth_recoil_track.setNhits(nhits);
+
       recoil_truth_tracks.push_back(truth_recoil_track);
     }
   }

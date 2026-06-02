@@ -13,14 +13,15 @@
 #include "SimCore/APrimePhysics.h"
 #include "SimCore/BiasOperators/XsecBiasingOperator.h"
 #include "SimCore/DetectorConstruction.h"
+#include "SimCore/FCPPhysics.h"
 #include "SimCore/G4User/EventAction.h"
-#include "SimCore/G4User/PrimaryGeneratorAction.h"
 #include "SimCore/G4User/RunAction.h"
 #include "SimCore/G4User/StackingAction.h"
 #include "SimCore/G4User/SteppingAction.h"
 #include "SimCore/G4User/TrackingAction.h"
 #include "SimCore/GammaPhysics.h"
 #include "SimCore/ParallelWorld.h"
+#include "SimCore/PrimaryGeneratorAction.h"
 
 //------------//
 //   Geant4   //
@@ -63,6 +64,9 @@ void RunManager::setupPhysics() {
   p_list->RegisterPhysics(new KaonPhysics(
       "KaonPhysics",
       parameters_.get<framework::config::Parameters>("kaon_parameters")));
+  p_list->RegisterPhysics(new FCPPhysics(
+      "FCPPhysics",
+      parameters_.get<framework::config::Parameters>("fcp_physics")));
 
   auto biasing_operators{
       parameters_.get<std::vector<framework::config::Parameters>>(
@@ -124,7 +128,7 @@ void RunManager::Initialize() {
   G4RunManager::Initialize();
 
   // create our G4User actions
-  auto primary_action{new g4user::PrimaryGeneratorAction(parameters_)};
+  auto primary_action{new PrimaryGeneratorAction(parameters_)};
   auto run_action{new g4user::RunAction};
   auto event_action{new g4user::EventAction};
   auto tracking_action{new g4user::TrackingAction};

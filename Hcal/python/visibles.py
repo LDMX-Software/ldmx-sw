@@ -9,11 +9,11 @@ Examples
 import os
 import sys
 
-from LDMX.Framework import ldmxcfg
+from LDMX.Framework import Processor, processor
 
 
-def makeBDTPath(bdt_name) :
-    """ Get the full path to the installed BDT files
+def make_bdt_path(bdt_name):
+    """Get the full path to the installed BDT files
     Exits entire python script if the file does not exist.
 
     Parameters
@@ -28,33 +28,29 @@ def makeBDTPath(bdt_name) :
 
     Examples
     --------
-       visiblesVeto.bdt_file = makeBDTPath('visibles_v1')
+       visiblesVeto.bdt_file = make_bdt_path('visibles_v1')
     """
 
-    full_path = '@CMAKE_INSTALL_PREFIX@/data/Hcal/' + bdt_name + '.onnx'
-    if not os.path.isfile(full_path) :
-        print(f'ERROR: ONNX model file \'{full_path}\' does not exist.')
+    full_path = "@CMAKE_INSTALL_PREFIX@/data/Hcal/" + bdt_name + ".onnx"
+    if not os.path.isfile(full_path):
+        print(f"ERROR: ONNX model file '{full_path}' does not exist.")
         sys.exit(1)
 
     return full_path
 
-class VisiblesVetoProcessor(ldmxcfg.Producer) :
-    """Configuration for visibles veto"""
 
-    def __init__(self, name = 'visiblesVeto') :
-        super().__init__(name, "hcal::VisiblesVetoProcessor", "Visibles")
-
-        self.verbose = False
-        self.feature_list_name = "input"
-        self.bdt_file = makeBDTPath("visibles")
-        self.beam_energy = 8000.0 # in MeV
-        self.disc_cut = 0.999965
-        self.collection_name = "VisiblesVeto"
-        self.rec_coll_name = "HcalRecHits"
-        self.rec_pass_name = ''
-        self.recoil_from_tracking = False
-        self.track_collection = 'RecoilTracks'
-        self.track_pass_name = ''
-        self.sp_coll_name = 'TargetScoringPlaneHits'
-        self.sp_pass_name = ''
-        self.sim_particles_pass_name = ''
+@processor("hcal::VisiblesVetoProcessor", "Hcal")
+class VisiblesVetoProcessor(Processor):
+    feature_list_name: str = "input"
+    bdt_file: str = make_bdt_path("visibles")
+    beam_energy: float = 8000.0  # in MeV
+    disc_cut: float = 0.999965
+    collection_name: str = "VisiblesVeto"
+    rec_coll_name: str = "HcalRecHits"
+    rec_pass_name: str = ""
+    recoil_from_tracking: bool = False
+    track_collection: str = "RecoilTracks"
+    track_pass_name: str = ""
+    sp_coll_name: str = "TargetScoringPlaneHits"
+    sp_pass_name: str = ""
+    sim_particles_pass_name: str = ""

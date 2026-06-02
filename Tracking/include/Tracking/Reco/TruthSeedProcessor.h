@@ -15,17 +15,18 @@
 #include "Tracking/Sim/TrackingUtils.h"
 
 // --- ACTS --- //
-#include <Acts/Propagator/StraightLineStepper.hpp>
 #include <random>
 
 #include "Acts/Definitions/Algebra.hpp"
 #include "Acts/Definitions/TrackParametrization.hpp"
 #include "Acts/EventData/TrackParameters.hpp"
+#include "Acts/Propagator/EigenStepper.hpp"
 #include "Acts/Propagator/Navigator.hpp"
+#include "Acts/Propagator/Propagator.hpp"
 #include "Acts/Surfaces/PerigeeSurface.hpp"
+#include "Tracking/Sim/BFieldXYZUtils.h"
 
-using LinPropagator =
-    Acts::Propagator<Acts::StraightLineStepper, Acts::Navigator>;
+using TruthPropagator = Acts::Propagator<Acts::EigenStepper<>, Acts::Navigator>;
 
 namespace tracking::reco {
 
@@ -259,11 +260,14 @@ class TruthSeedProcessor : public TrackingGeometryUser {
   // Maximum track id for hit to be selected from target scoring plane
   int max_track_id_{5};
 
-  std::shared_ptr<LinPropagator> linpropagator_;
+  std::unique_ptr<const TruthPropagator> propagator_;
 
-  // Track Extrapolator Tool :: TODO Use the real extrapolator!
-  std::shared_ptr<tracking::reco::TrackExtrapolatorTool<LinPropagator>>
+  // Track Extrapolator Tool
+  std::shared_ptr<tracking::reco::TrackExtrapolatorTool<TruthPropagator>>
       trk_extrap_;
+
+  /// Path to the magnetic field map
+  std::string field_map_{""};
 
   //--- Smearing ---//
 

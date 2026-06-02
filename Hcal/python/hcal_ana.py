@@ -1,9 +1,10 @@
 """Configuration for standard Hcal analysis scripts"""
 
-from LDMX.Framework import ldmxcfg
+from LDMX.Framework import Processor, processor
 
 
-class HcalPedestalAnalyzer(ldmxcfg.Analyzer) :
+@processor("hcal::HcalPedestalAnalyzer", "Hcal")
+class HcalPedestalAnalyzer(Processor):
     """Constructs standard pedestal text files and
     optionally produces histograms for each channel.
 
@@ -22,31 +23,30 @@ class HcalPedestalAnalyzer(ldmxcfg.Analyzer) :
     filter_no_tot : bool
         Ignore any event for a channel where the TOT fired in any sample (default=true)
     low_cutoff : int
-        Ignore any event for a channel where any sample was below this level (default=10)
+        Ignore any event for a channel where any sample was below this level
+        (default=10)
     high_cutoff : int
-        Ignore any event for a channel where any sample was above this level (default=300)
+        Ignore any event for a channel where any sample was above this level
+        (default=300)
     comments : str
         Comments to put into the output CSV file for logging purposes
 
 
     Examples
     --------
-        from LDMX.EventProc.hcal import HcalPedestalAnalyzer
-        p.sequence.append( HcalPedestalAnalyzer() )
+        from LDMX.Hcal.hcal_ana import HcalPedestalAnalyzer
+        p.sequence.append( HcalPedestalAnalyzer(
+            input_name = "HcalDigis",
+            output_file = "pedestals_per_channel.txt"
+        ) )
     """
 
-    def __init__(self,name = 'hcal_ped_ana', input_name="", input_pass="", output_file="", make_histos=False,
-                 filter_no_tot=True, filter_no_toa=True, low_cutoff=10, high_cutoff=300, comments="") :
-        super().__init__(name,'hcal::HcalPedestalAnalyzer','Hcal')
-
-        self.input_name = input_name
-        self.input_pass= input_pass
-        self.output_file = output_file
-        self.make_histos = make_histos
-        self.filter_no_tot = filter_no_tot
-        self.filter_no_toa = filter_no_toa
-        self.low_cutoff = low_cutoff
-        self.high_cutoff = high_cutoff
-        self.comments=comments
-
-
+    input_name: str
+    output_file: str
+    input_pass: str = ""
+    make_histos: bool = False
+    filter_no_tot: bool = True
+    filter_no_toa: bool = True
+    low_cutoff: int = 10
+    high_cutoff: int = 300
+    comments: str = ""

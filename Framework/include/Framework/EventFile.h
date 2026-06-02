@@ -9,6 +9,7 @@
 //---< Framework >---//
 #include "Framework/Configure/Parameters.h"
 #include "Framework/Event.h"
+#include "Framework/Logger.h"
 
 //---< ROOT >---//
 #include "TFile.h"
@@ -335,6 +336,8 @@ class EventFile {
    * production
    */
   std::map<int, std::pair<bool, ldmx::RunHeader *>> run_map_;
+
+  enableLogging("EventFile")
 };
 }  // namespace framework
 

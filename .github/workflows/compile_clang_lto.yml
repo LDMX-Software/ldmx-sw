@@ -21,7 +21,15 @@ jobs:
         fetch-depth: 0
 
     - name: Install just
-      uses: extractions/setup-just@v3
+      uses: extractions/setup-just@v4
+
+    - name: Cache ccache
+      uses: actions/cache@v5
+      with:
+        path: ~/.ccache
+        key: ccache-clang-lto-${{ github.sha }}
+        restore-keys: |
+          ccache-clang-lto-
 
     - name: Compile and Install ldmx-sw
       run: | 

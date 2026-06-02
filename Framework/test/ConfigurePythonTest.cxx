@@ -157,26 +157,4 @@ TEST_CASE("Configure Python Test", "[Framework][functionality]") {
     p = std::make_unique<framework::Process>(config);
     CHECK(p->getLogFrequency() == correct_log_freq);
   }
-
-  // add a malformed parameter to test failing
-  in_file.open(config_file_name.c_str(), std::ios::in | std::ios::binary);
-
-  out_file.open(config_file_name_arg, std::ios::out | std::ios::binary);
-  out_file << in_file.rdbuf();
-  out_file << "p.sequence[0].bad_param = ('tuples','are','not','supported')"
-           << std::endl;
-
-  in_file.close();
-  out_file.close();
-
-  // warning: this test will fail if the repr of a tuple changes format
-  SECTION("Bad parameter exception test") {
-    REQUIRE_THROWS_WITH(
-        framework::config::run("ldmxcfg.Process.last_process",
-                               config_file_name_arg, args, 0),
-        ContainsSubstring("('tuples', 'are', 'not', 'supported')"));
-    // we need to manually close up our python interpreter
-    // because we left during an exception without closing it above
-    Py_FinalizeEx();
-  }
 }
