@@ -499,7 +499,7 @@ class StripFitProcessor(Processor):
         If > 0, discard fits with chi2/ndf above this value (default -1 = off).
     """
 
-    in_collection: str = 'RawSiStripHits'
+    in_collection: str = 'SimSiStripHits'
     in_pass: str = ''
     out_collection: str = 'FittedSiStripHits'
     t_scan_min_ns: float = -50.0

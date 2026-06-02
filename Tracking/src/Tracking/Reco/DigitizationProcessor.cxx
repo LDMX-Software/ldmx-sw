@@ -504,7 +504,7 @@ std::vector<ldmx::Measurement> DigitizationProcessor::digitizeHits(
   }  // loop over sim hits
 
   // Phase 2: apply noise once per strip across all sim-hit contributions,
-  // then build RawSiStripHits with correctly superimposed pulse shapes.
+  // then build SimSiStripHits with correctly superimposed pulse shapes.
   if (raw_hits && pulse_shape_) {
     const int adc_max = (1 << tracking::digitization::ADC_BITS) - 1;
 

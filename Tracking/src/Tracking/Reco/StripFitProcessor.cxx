@@ -13,7 +13,7 @@ StripFitProcessor::StripFitProcessor(const std::string& name,
 
 void StripFitProcessor::configure(framework::config::Parameters& parameters) {
   in_collection_ =
-      parameters.get<std::string>("in_collection", "RawSiStripHits");
+      parameters.get<std::string>("in_collection", "SimSiStripHits");
   in_pass_ = parameters.get<std::string>("in_pass", "");
   out_collection_ =
       parameters.get<std::string>("out_collection", "FittedSiStripHits");
@@ -51,7 +51,7 @@ void StripFitProcessor::produce(framework::Event& event) {
   std::vector<ldmx::FittedSiStripHit> fitted_hits;
   fitted_hits.reserve(raw_hits.size());
 
-  ldmx_log(debug) << "Fitting " << raw_hits.size() << " RawSiStripHits";
+  ldmx_log(debug) << "Fitting " << raw_hits.size() << " SimSiStripHits";
 
   for (const auto& raw : raw_hits) {
     const auto result = fitter_->fit(raw.getSamples());
