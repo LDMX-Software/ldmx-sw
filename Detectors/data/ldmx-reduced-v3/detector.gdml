@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE gdml [
 <!ENTITY constants SYSTEM "constants.gdml">
-<!ENTITY materials SYSTEM "materials.gdml">
-<!ENTITY visattributes SYSTEM "visattributes.gdml">
+<!ENTITY materials SYSTEM "shared_gdml_files/materials.gdml">
+<!ENTITY visattributes SYSTEM "shared_gdml_files/visattributes.gdml">
 ]>
 <gdml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://service-spi.web.cern.ch/service-spi/app/releases/GDML/schema/gdml.xsd">
 
