@@ -64,7 +64,8 @@ class LDMXRoRHeader {
 
   /// read the next LDMX RoR header into memory
   utility::Reader& read(utility::Reader& r);
-  /// true if the header was parsed successfully (sentinel and reserved word matched)
+  /// true if the header was parsed successfully (sentinel and reserved word
+  /// matched)
   bool valid() const { return valid_; }
   /// version of LDMX data (should be zero)
   uint8_t version() const { return version_; }

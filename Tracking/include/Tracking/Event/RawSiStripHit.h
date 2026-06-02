@@ -58,25 +58,25 @@ class RawSiStripHit : public SiStripHit {
    */
   void clear() override;
 
-  uint8_t  getChannel()    const { return channel_; }
-  uint8_t  getApvId()      const { return apv_id_; }
-  uint8_t  getHybridId()   const { return hybrid_id_; }
-  uint8_t  getFebId()      const { return feb_id_; }
+  uint8_t getChannel() const { return channel_; }
+  uint8_t getApvId() const { return apv_id_; }
+  uint8_t getHybridId() const { return hybrid_id_; }
+  uint8_t getFebId() const { return feb_id_; }
   uint16_t getApvTrigger() const { return apv_trigger_; }
-  uint8_t  getReadError()  const { return read_error_; }
-  uint8_t  getHead()       const { return head_; }
-  uint8_t  getTail()       const { return tail_; }
-  uint8_t  getFilter()     const { return filter_; }
+  uint8_t getReadError() const { return read_error_; }
+  uint8_t getHead() const { return head_; }
+  uint8_t getTail() const { return tail_; }
+  uint8_t getFilter() const { return filter_; }
 
-  void setChannel(uint8_t v)      { channel_ = v; }
-  void setApvId(uint8_t v)        { apv_id_ = v; }
-  void setHybridId(uint8_t v)     { hybrid_id_ = v; }
-  void setFebId(uint8_t v)        { feb_id_ = v; }
-  void setApvTrigger(uint16_t v)  { apv_trigger_ = v; }
-  void setReadError(uint8_t v)    { read_error_ = v; }
-  void setHead(uint8_t v)         { head_ = v; }
-  void setTail(uint8_t v)         { tail_ = v; }
-  void setFilter(uint8_t v)       { filter_ = v; }
+  void setChannel(uint8_t v) { channel_ = v; }
+  void setApvId(uint8_t v) { apv_id_ = v; }
+  void setHybridId(uint8_t v) { hybrid_id_ = v; }
+  void setFebId(uint8_t v) { feb_id_ = v; }
+  void setApvTrigger(uint16_t v) { apv_trigger_ = v; }
+  void setReadError(uint8_t v) { read_error_ = v; }
+  void setHead(uint8_t v) { head_ = v; }
+  void setTail(uint8_t v) { tail_ = v; }
+  void setFilter(uint8_t v) { filter_ = v; }
 
   /**
    * Overload the stream insertion operator to output a string representation
@@ -93,15 +93,15 @@ class RawSiStripHit : public SiStripHit {
                                   const RawSiStripHit &hit);
 
  protected:
-  uint8_t  channel_{0};
-  uint8_t  apv_id_{0};
-  uint8_t  hybrid_id_{0};
-  uint8_t  feb_id_{0};
+  uint8_t channel_{0};
+  uint8_t apv_id_{0};
+  uint8_t hybrid_id_{0};
+  uint8_t feb_id_{0};
   uint16_t apv_trigger_{0};
-  uint8_t  read_error_{0};
-  uint8_t  head_{0};
-  uint8_t  tail_{0};
-  uint8_t  filter_{0};
+  uint8_t read_error_{0};
+  uint8_t head_{0};
+  uint8_t tail_{0};
+  uint8_t filter_{0};
 
   /// Class declaration needed by the ROOT dictionary.
   ClassDefOverride(RawSiStripHit, 4);

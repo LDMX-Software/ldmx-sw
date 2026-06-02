@@ -21,8 +21,8 @@ namespace ldmx {
  * This is the output of the realistic tracker digitization of simulated data.
  * In addition to the ADC samples and time stamp held by the SiStripHit base
  * class, it carries the sensor position (layer/strip) and the MC-truth matching
- * information (originating track, particle, SimTrackerHit and deposited energy).
- * The reco-level (real data) counterpart is RawSiStripHit.
+ * information (originating track, particle, SimTrackerHit and deposited
+ * energy). The reco-level (real data) counterpart is RawSiStripHit.
  */
 class SimSiStripHit : public SiStripHit {
  public:

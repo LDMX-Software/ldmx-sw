@@ -27,14 +27,12 @@ std::ostream &operator<<(std::ostream &output, const RawSiStripHit &hit) {
   for (auto isample{0}; isample < (hit.samples_.size() - 1); ++isample)
     output << hit.samples_[isample] << ", ";
   output << hit.samples_[hit.samples_.size() - 1] << " } "
-         << "Time: " << hit.time_
-         << " Ch: " << static_cast<int>(hit.channel_)
+         << "Time: " << hit.time_ << " Ch: " << static_cast<int>(hit.channel_)
          << " APV: " << static_cast<int>(hit.apv_id_)
          << " Hybrid: " << static_cast<int>(hit.hybrid_id_)
          << " FEB: " << static_cast<int>(hit.feb_id_)
          << " Trig: " << hit.apv_trigger_
-         << " Err: " << static_cast<int>(hit.read_error_)
-         << std::endl;
+         << " Err: " << static_cast<int>(hit.read_error_) << std::endl;
 
   return output;
 }
